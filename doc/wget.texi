@@ -518,8 +518,11 @@ which are not retried.
 @itemx --output-document=@var{file}
 The documents will not be written to the appropriate files, but all will
 be concatenated together and written to @var{file}.  If @var{file}
-already exists, it will be overwritten.  If the @var{file} is @samp{-},
-the documents will be written to standard output.
+already exists, it will be overwritten.  If the @var{file} is @samp{-}, 
+the documents will be written to standard output (disabling @samp{-k}).
+ 
+Note that a combination with @samp{-k} is only well-defined for downloading
+a single document.
 
 @cindex clobbering, file
 @cindex downloading multiple times

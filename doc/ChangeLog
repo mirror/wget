@@ -1,3 +1,7 @@
+2004-11-20  Hans-Andreas Engel  <engel@node.ch>  
+	
+	* wget.texi: Describe limitations of combining `-O' with `-k'.
+
 2004-05-13  Nico R.  <n-roeser@gmx.net>
 
 	* Makefile.in: Allow building in a separate tree with source tree
