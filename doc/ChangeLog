@@ -1,3 +1,7 @@
+2001-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* texi2pod.pl.in: Handle @asis in table.
+
 2001-12-09  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi: Bump version to 1.8.
