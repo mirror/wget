@@ -27,7 +27,7 @@ notice identical to this one.
 Indirect:
 wget.info-1: 961
 wget.info-2: 50943
-wget.info-3: 91700
+wget.info-3: 91737
 
 Tag Table:
 (Indirect)
@@ -62,27 +62,27 @@ Node: Wgetrc Location51816
 Node: Wgetrc Syntax52631
 Node: Wgetrc Commands53346
 Node: Sample Wgetrc60628
-Node: Examples65610
-Node: Simple Usage66217
-Node: Advanced Usage68611
-Node: Guru Usage71362
-Node: Various73024
-Node: Proxies73548
-Node: Distribution76313
-Node: Mailing List76664
-Node: Reporting Bugs77363
-Node: Portability79148
-Node: Signals80523
-Node: Appendices81177
-Node: Robots81592
-Node: Introduction to RES82739
-Node: RES Format84632
-Node: User-Agent Field85736
-Node: Disallow Field86500
-Node: Norobots Examples87111
-Node: Security Considerations88065
-Node: Contributors89061
-Node: Copying91700
-Node: Concept Index110863
+Node: Examples65647
+Node: Simple Usage66254
+Node: Advanced Usage68648
+Node: Guru Usage71399
+Node: Various73061
+Node: Proxies73585
+Node: Distribution76350
+Node: Mailing List76701
+Node: Reporting Bugs77400
+Node: Portability79185
+Node: Signals80560
+Node: Appendices81214
+Node: Robots81629
+Node: Introduction to RES82776
+Node: RES Format84669
+Node: User-Agent Field85773
+Node: Disallow Field86537
+Node: Norobots Examples87148
+Node: Security Considerations88102
+Node: Contributors89098
+Node: Copying91737
+Node: Concept Index110900
 
 End Tag Table
