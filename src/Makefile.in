@@ -138,9 +138,10 @@ cmpt$o: wget.h
 connect$o: wget.h connect.h host.h
 fnmatch$o: wget.h fnmatch.h
 ftp-basic$o: wget.h utils.h rbuf.h connect.h host.h
-ftp-ls$o: wget.h utils.h ftp.h url.h
+ftp-ls$o: wget.h utils.h ftp.h url.h ftpparse.h
 ftp-opie$o: wget.h md5.h
 ftp$o: wget.h utils.h url.h rbuf.h retr.h ftp.h connect.h host.h fnmatch.h netrc.h
+ftpparse$o: ftpparse.h
 getopt$o: wget.h getopt.h
 hash$o: wget.h utils.h hash.h
 headers$o: wget.h connect.h rbuf.h headers.h
