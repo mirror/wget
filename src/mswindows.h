@@ -130,6 +130,40 @@ __int64 str_to_int64 (const char *, char **, int);
 # define mkdir(a, b) mkdir(a)
 #endif /* __BORLANDC__ */
 
+#ifndef INHIBIT_WRAP
+
+/* Winsock functions don't set errno, so we provide wrappers
+   that do. */
+
+#define socket wrap_socket
+#define bind wrap_bind
+#define connect wrap_connect
+#define recv wrap_recv
+#define send wrap_send
+#define select wrap_select
+#define getsockname wrap_getsockname
+#define getpeername wrap_getpeername
+#define setsockopt wrap_setsockopt
+
+#endif /* not INHIBIT_WRAP */
+
+int wrap_socket (int, int, int);
+int wrap_bind (int, struct sockaddr *, int);
+int wrap_connect (int, const struct sockaddr *, int);
+int wrap_recv (int, void *, int, int);
+int wrap_send (int, const void *, int, int);
+int wrap_select (int, fd_set *, fd_set *, fd_set *, const struct timeval *);
+int wrap_getsockname (int, struct sockaddr *, int *);
+int wrap_getpeername (int, struct sockaddr *, int *);
+int wrap_setsockopt (int, int, int, const void *, int);
+
+/* Finally, provide a private version of strerror that does the
+   right thing with Winsock errors. */
+#ifndef INHIBIT_WRAP
+# define strerror windows_strerror
+#endif
+const char *windows_strerror (int);
+
 /* Declarations of various socket errors:  */
 
 #define EWOULDBLOCK             WSAEWOULDBLOCK
@@ -181,7 +215,7 @@ void ws_startup (void);
 void ws_changetitle (const char *);
 void ws_percenttitle (double);
 char *ws_mypath (void);
-void windows_main_junk (int *, char **, char **);
+void windows_main (int *, char **, char **);
 
 /* Things needed for IPv6; missing in <ws2tcpip.h>.  */
 #ifdef ENABLE_IPV6

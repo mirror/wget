@@ -48,6 +48,8 @@ so, delete this exception statement from your version.  */
 # endif
 #endif
 
+#define INHIBIT_WRAP /* avoid wrapping of socket, bind, ... */
+
 #include "wget.h"
 #include "utils.h"
 #include "url.h"
@@ -210,7 +212,7 @@ str_to_int64 (const char *nptr, char **endptr, int base)
 #endif /* !defined(__BORLANDC__) && (!defined(_MSC_VER) || _MSC_VER >= 1300) */
 
 void
-windows_main_junk (int *argc, char **argv, char **exec_name)
+windows_main (int *argc, char **argv, char **exec_name)
 {
   char *p;
 
@@ -335,7 +337,7 @@ fake_fork (void)
   char *name;
   BOOL rv;
 
-  event = section = pi.hProcess = pi.hThread = NULL;
+  section = pi.hProcess = pi.hThread = NULL;
 
   /* Get the fully qualified name of our executable.  This is more reliable
      than using argv[0].  */
@@ -694,7 +696,7 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
   static HANDLE thread_hnd = NULL;
   struct thread_data thread_arg;
   DWORD thread_id;
-  int rc = 0;
+  int rc;
 
   DEBUGP (("seconds %.2f, ", seconds));
 
@@ -737,4 +739,118 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
   CloseHandle (thread_hnd);	/* Clear-up after TerminateThread().  */
   thread_hnd = NULL;
   return rc;
+}
+
+/* Wget expects network calls such as bind, connect, etc., to set errno.
+   To achieve that, we place Winsock calls in wrapper functions that, in
+   case of error, sets errno to the value of GetLastError().  In addition,
+   we provide a wrapper around strerror, which recognizes Winsock errors
+   and prints the appropriate error message. */
+
+/* Define a macro that creates a function definition that wraps FUN into
+   a function that sets errno the way the rest of the code expects. */
+
+#define WRAP(fun, decl, call) int wrap_##fun decl {	\
+  int retval = fun call;				\
+  if (retval < 0)					\
+    errno = WSAGetLastError ();				\
+  return retval;					\
+}
+
+WRAP (socket, (int domain, int type, int protocol), (domain, type, protocol))
+WRAP (bind, (int s, struct sockaddr *a, int alen), (s, a, alen))
+WRAP (connect, (int s, const struct sockaddr *a, int alen), (s, a, alen))
+WRAP (recv, (int s, void *buf, int len, int flags), (s, buf, len, flags))
+WRAP (send, (int s, const void *buf, int len, int flags), (s, buf, len, flags))
+WRAP (select, (int n, fd_set *r, fd_set *w, fd_set *e, const struct timeval *tm),
+              (n, r, w, e, tm))
+WRAP (getsockname, (int s, struct sockaddr *n, int *nlen), (s, n, nlen))
+WRAP (getpeername, (int s, struct sockaddr *n, int *nlen), (s, n, nlen))
+WRAP (setsockopt, (int s, int level, int opt, const void *val, int len),
+                  (s, level, opt, val, len))
+
+/* Return the text of the error message for Winsock error WSERR. */
+
+static const char *
+get_winsock_error (int wserr)
+{
+  switch (wserr) {
+  case WSAEINTR:           return "Interrupted system call";
+  case WSAEBADF:           return "Bad file number";
+  case WSAEACCES:          return "Permission denied";
+  case WSAEFAULT:          return "Bad address";
+  case WSAEINVAL:          return "Invalid argument";
+  case WSAEMFILE:          return "Too many open files";
+  case WSAEWOULDBLOCK:     return "Resource temporarily unavailable";
+  case WSAEINPROGRESS:     return "Operation now in progress";
+  case WSAEALREADY:        return "Operation already in progress";
+  case WSAENOTSOCK:        return "Socket operation on nonsocket";
+  case WSAEDESTADDRREQ:    return "Destination address required";
+  case WSAEMSGSIZE:        return "Message too long";
+  case WSAEPROTOTYPE:      return "Protocol wrong type for socket";
+  case WSAENOPROTOOPT:     return "Bad protocol option";
+  case WSAEPROTONOSUPPORT: return "Protocol not supported";
+  case WSAESOCKTNOSUPPORT: return "Socket type not supported";
+  case WSAEOPNOTSUPP:      return "Operation not supported";
+  case WSAEPFNOSUPPORT:    return "Protocol family not supported";
+  case WSAEAFNOSUPPORT:    return "Address family not supported by protocol family";
+  case WSAEADDRINUSE:      return "Address already in use";
+  case WSAEADDRNOTAVAIL:   return "Cannot assign requested address";
+  case WSAENETDOWN:        return "Network is down";
+  case WSAENETUNREACH:     return "Network is unreachable";
+  case WSAENETRESET:       return "Network dropped connection on reset";
+  case WSAECONNABORTED:    return "Software caused connection abort";
+  case WSAECONNRESET:      return "Connection reset by peer";
+  case WSAENOBUFS:         return "No buffer space available";
+  case WSAEISCONN:         return "Socket is already connected";
+  case WSAENOTCONN:        return "Socket is not connected";
+  case WSAESHUTDOWN:       return "Cannot send after socket shutdown";
+  case WSAETOOMANYREFS:    return "Too many references";
+  case WSAETIMEDOUT:       return "Connection timed out";
+  case WSAECONNREFUSED:    return "Connection refused";
+  case WSAELOOP:           return "Too many levels of symbolic links";
+  case WSAENAMETOOLONG:    return "File name too long";
+  case WSAEHOSTDOWN:       return "Host is down";
+  case WSAEHOSTUNREACH:    return "No route to host";
+  case WSAENOTEMPTY:       return "Not empty";
+  case WSAEPROCLIM:        return "Too many processes";
+  case WSAEUSERS:          return "Too many users";
+  case WSAEDQUOT:          return "Bad quota";
+  case WSAESTALE:          return "Something is stale";
+  case WSAEREMOTE:         return "Remote error";
+  case WSAEDISCON:         return "Disconnected";
+
+  /* Extended Winsock errors */
+  case WSASYSNOTREADY:     return "Winsock library is not ready";
+  case WSANOTINITIALISED:  return "Winsock library not initalised";
+  case WSAVERNOTSUPPORTED: return "Winsock version not supported";
+
+  case WSAHOST_NOT_FOUND: return "Host not found";
+  case WSATRY_AGAIN:      return "Host not found, try again";
+  case WSANO_RECOVERY:    return "Unrecoverable error in call to nameserver";
+  case WSANO_DATA:        return "No data record of requested type";
+
+  default:
+    return NULL;
+  }
+}
+
+/* Return the error message corresponding to ERR.  This is different
+   from Windows libc strerror() in that it handles Winsock errors
+   correctly.  */
+
+const char *
+windows_strerror (int err)
+{
+  const char *p;
+  if (err >= 0 && err < sys_nerr)
+    return strerror (err);
+  else if ((p = get_winsock_error (err)) != NULL)
+    return p;
+  else
+    {
+      static char buf[32];
+      snprintf (buf, sizeof (buf), "Unknown error %d (%#x)", err, err);
+      return buf;
+    }
 }

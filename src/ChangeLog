@@ -1,5 +1,14 @@
 2005-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* mswindows.c: Provide wrappers to Winsock functions that set
+	errno to WSAGetLastError() in case of failure.  Also provide a
+	Windows-specific version of strerror.
+
+	* mswindows.h: Wrap calls to socket, bind, connect, recv, send,
+	select, getsockname, getpeername, and setsockopt.
+
+2005-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (url_parse): Reject port numbers larger than 65535.  We
 	also check for overflow while parsing port numbers.
 
