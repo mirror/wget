@@ -6,6 +6,7 @@
 
 	* wget.texi (Recursive Retrieval Options): Improved --delete-after docs.
 	(Download Options): Documented Rob Mayoff's new --bind-address option.
+	(Wgetrc Commands): Documented Rob Mayoff's new bind_address command.
 	
 2000-10-20  Dan Harkless  <dan-wget@dilvish.speed.net>
 
