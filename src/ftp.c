@@ -1221,7 +1221,7 @@ Already have correct symlink %s -> %s\n\n"),
       else if (f->tstamp == -1)
 	logprintf (LOG_NOTQUIET, _("%s: corrupt time-stamp.\n"), u->local);
 
-      if (f->perms && dlthis)
+      if (f->perms && f->type == FT_PLAINFILE && dlthis)
 	chmod (u->local, f->perms);
       else
 	DEBUGP (("Unrecognized permissions for %s.\n", u->local));
