@@ -132,8 +132,9 @@ Logging and input file:\n\
   -q,  --quiet                quiet (no output).\n\
   -v,  --verbose              be verbose (this is the default).\n\
   -nv, --non-verbose          turn off verboseness, without being quiet.\n\
-  -i,  --input-file=FILE      read URL-s from file.\n\
+  -i,  --input-file=FILE      download URLs found in FILE.\n\
   -F,  --force-html           treat input file as HTML.\n\
+  -B,  --base=URL             prepends URL to relative links in -F -i file.\n\
 \n"), _("\
 Download:\n\
   -t,  --tries=NUMBER           set number of retries to NUMBER (0 unlimits).\n\
