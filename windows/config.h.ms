@@ -32,11 +32,6 @@
 /* Define if you have the <alloca.h> header file.  */
 #undef HAVE_ALLOCA_H
 
-#if !defined(__GNUC__) && !defined(__DMC__) && !defined(__WATCOMC__)
-/* Microsoft and Watcom libraries have an alloca function. */
-char *alloca ();
-#endif
-
 /* Define to empty if the keyword does not work.  */
 /* #undef const */
 
@@ -52,9 +47,6 @@ char *alloca ();
 /* Define if your architecture is big endian (with the most
    significant byte first).  */
 #undef WORDS_BIGENDIAN
-
-/* Define this if you want the NLS support.  */
-#undef ENABLE_NLS
 
 /* Define if you want the FTP support for Opie compiled in.  */
 #define USE_OPIE 1
@@ -127,6 +119,11 @@ char *alloca ();
 
 /* Define if you have the <stdarg.h> header file.  */
 #define HAVE_STDARG_H 1
+
+/* Use ANSI-style stdargs regardless of whether the compiler bothers
+   to define __STDC__.  (Many don't when extensions are enabled.)
+   This define used to be in mswindows.h, but wheren't making any use there */
+#define WGET_USE_STDARG
 
 /* Define if you have the <stdlib.h> header file.  */
 #define HAVE_STDLIB_H 1
