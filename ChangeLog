@@ -1,3 +1,7 @@
+2001-12-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* configure.in: Autodetect SSL.  Check for SSL includes too.
+
 2001-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* config.sub: Ditto.

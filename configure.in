@@ -46,7 +46,8 @@ AC_ARG_WITH(socks,
 [AC_DEFINE(HAVE_SOCKS)])
 
 AC_ARG_WITH(ssl,
-[  --with-ssl[=SSL_ROOT]   link with libssl [in SSL_ROOT/lib] for https: support])
+[  --with-ssl[=SSL-ROOT]   link with SSL support [default=auto]
+  --without-ssl           disable SSL autodetection])
 
 AC_ARG_ENABLE(opie,
 [  --disable-opie          disable support for opie or s/key FTP login],
@@ -215,25 +216,53 @@ then
   AC_CHECK_LIB(socks, Rconnect)
 fi
 
-dnl If --with-ssl was specified, make sure we can link with the
-dnl OpenSSL libs.  We should probably auto-detect this by default.
+dnl $with_ssl can be one of:
+dnl  - empty string or "auto", meaning autodetect SSL and use it if found.
+dnl  - "yes", meaning link with SSL or bail out.
+dnl  - "no", meaning don't link with SSL.
+dnl  - anything else, meaning use that as the SSL root, and bail out
+dnl    if it fails.
 
-if test x"$with_ssl" != x -a x"$with_ssl" != x"no"; then
+if test x"$with_ssl" = x; then
+  dnl Canonicalize unspecified with-ssl setting to "auto".  This
+  dnl implements the "auto-detect by default" feature.  If you want to
+  dnl change this to "ignore SSL by default", change "auto" to "no".
+  with_ssl=auto
+fi
+
+dnl Detection of OpenSSL is much hairier than the detection of other
+dnl libraries because OpenSSL can be compiled as a third-party
+dnl library, which means it will not be found without additional
+dnl linker magic.  It would be really nice to rework this check into
+dnl an AC_DEFUN so that we can reuse it for other third-party
+dnl libraries.
+
+if test x"$with_ssl" != x"no"; then
+
+  wget_force_ssl=no
   if test x"$with_ssl" = x"yes"; then
-    dnl OpenSSL's default install location is "/usr/local/ssl".  We also
-    dnl allow /usr/local for regular-style install, and /usr for Linux
-    dnl stuff.
-    ssl_all_roots="default /usr/local/ssl /usr/local /opt"
-  else
-    dnl Root has been kindly provided by the user.
-    ssl_all_roots=$with_ssl
+    wget_force_ssl=yes
   fi
 
+  if test x"$with_ssl" = x"yes" || test x"$with_ssl" = x"auto"; then
+    dnl OpenSSL's root was not specified, so we have to guess.  First
+    dnl try the system default location, then "/usr/local/ssl" (where
+    dnl OpenSSL installs by default), then "/usr/local" (traditional
+    dnl choice for installation root), then "/opt".
+    ssl_all_roots="system-default /usr/local/ssl /usr/local /opt"
+  else
+    dnl Root has been specified by the user.
+    ssl_all_roots=$with_ssl
+    wget_force_ssl=yes
+  fi
+
+  wget_save_CC=$CC
   wget_save_LIBS=$LIBS
   wget_save_LDFLAGS=$LDFLAGS
-  wget_save_CC=$CC
+  wget_save_CPPFLAGS=$CPPFLAGS
 
-  dnl Use libtool for OpenSSL tests to handle the "-R<rpath>" option.
+  dnl Use libtool for OpenSSL tests so we can specify "-R<rpath>"
+  dnl without having to know how the linker handles it.
   CC="$SHELL ./libtool $CC"
 
   dnl Unfortunately, as of this writing (OpenSSL 0.9.6), the libcrypto
@@ -244,13 +273,13 @@ if test x"$with_ssl" != x -a x"$with_ssl" != x"no"; then
   AC_CHECK_LIB(dl,dlopen)
   AC_CHECK_LIB(dl,shl_load)
 
-  ssl_linked=no
+  ssl_success=no
 
   dnl Now try to find SSL libraries in each of the likely SSL roots.
   for ssl_root in $ssl_all_roots
   do
-    if test x"$ssl_root" = xdefault; then
-      dnl Try the default library locations.
+    if test x"$ssl_root" = x"system-default"; then
+      dnl Try the default include and library locations.
       SSL_INCLUDES=
     else
       dnl Try this specific root.
@@ -260,9 +289,29 @@ if test x"$with_ssl" != x -a x"$with_ssl" != x"no"; then
       LDFLAGS="-L$ssl_root/lib -R$ssl_root/lib $wget_save_LDFLAGS"
     fi
 
-    ssl_link_failure=no
-
     AC_MSG_RESULT(["Looking for SSL libraries in $ssl_root"])
+
+    dnl Check whether the compiler can find the include files.  On
+    dnl some systems Gcc finds libraries in /usr/local/lib, but fails
+    dnl to find the includes in /usr/local/include.
+
+    ssl_found_includes=no
+    CPPFLAGS="$SSL_INCLUDES $wget_save_CPPFLAGS"
+
+    AC_MSG_CHECKING(["for includes"])
+
+    AC_TRY_CPP([#include <openssl/ssl.h>
+#include <openssl/rsa.h>
+],
+      AC_MSG_RESULT("found"); ssl_found_includes=yes,
+      AC_MSG_RESULT("not found")
+    )
+
+    if test x"$ssl_found_includes" = xno; then
+      continue
+    fi
+
+    ssl_link_failure=no
 
     dnl Make sure that the checks don't run afoul of the cache.  It
     dnl would be nicer to temporarily turn off the cache, but
@@ -278,69 +327,74 @@ if test x"$with_ssl" != x -a x"$with_ssl" != x"no"; then
     AC_CHECK_LIB(crypto, RSA_new, , ssl_link_failure=yes)
     AC_CHECK_LIB(ssl, SSL_new, , ssl_link_failure=yes)
 
-    dnl If ssl_link_failure is still no, the libraries link.  But we
-    dnl still need to check if the program linked with those libraries
-    dnl under these settings with run.  On some systems (Solaris), Gcc
-    dnl adds -L/usr/local/lib to the linking line, but fails to add
-    dnl -R/usr/local/lib, thus creating executables that link, but
-    dnl fail to run.
+    if test x"$ssl_link_failure" = xyes; then
+      dnl One or both libs failed to link.
+      continue
+    fi
+
+    dnl The libraries link.  But we still need to check if the program
+    dnl linked with those libraries under these settings with run.  On
+    dnl some systems (Solaris), Gcc adds -L/usr/local/lib to the
+    dnl linking line, but fails to add -R/usr/local/lib, thus creating
+    dnl executables that link, but fail to run.
 
     dnl If we are cross-compiling, just assume that working linkage
     dnl implies working executable.
 
-    if test x"$ssl_link_failure" = xno; then
-      dnl Now try to run the thing.
-      AC_MSG_CHECKING("whether SSL libs are resolved at runtime")
-      AC_TRY_RUN([
+    ssl_run_failure=no
+
+    AC_MSG_CHECKING("whether SSL libs are resolved at runtime")
+    AC_TRY_RUN([
 int RSA_new();
 int SSL_new();
 main(){return 0;}
 ],
-	AC_MSG_RESULT("yes"),
-	AC_MSG_RESULT("no"); ssl_link_failure=yes,
-	AC_MSG_RESULT("cross"))
-    fi
+      AC_MSG_RESULT("yes"),
+      AC_MSG_RESULT("no"); ssl_run_failure=yes,
+      AC_MSG_RESULT("cross")
+    )
 
-    if test x"$ssl_link_failure" = xno; then
-      dnl This echo doesn't look right, but I'm not sure what to use
-      dnl instead.
-      AC_MSG_RESULT("Compiling in support for SSL in $ssl_root")
-      AC_DEFINE(HAVE_SSL)
-      AC_SUBST(SSL_INCLUDES)
-      SSL_OBJ='gen_sslfunc$o'
-      AC_SUBST(SSL_OBJ)
-      ssl_linked=yes
+    if test x"$ssl_run_failure" = xno; then
+      ssl_success=yes
       break
     fi
   done
 
-  if test x"$ssl_linked" = xno; then
-    LD_FLAGS=$wget_save_LDFLAGS
+  if test x"$ssl_success" = xyes; then
+    dnl AC_MSG_RESULT doesn't look right here, but I'm not sure what
+    dnl to use instead.
+    AC_MSG_RESULT("Compiling in support for SSL in $ssl_root")
+    AC_DEFINE(HAVE_SSL)
+    AC_SUBST(SSL_INCLUDES)
+    SSL_OBJ='gen_sslfunc$o'
+    AC_SUBST(SSL_OBJ)
+  else
+    LDFLAGS=$wget_save_LDFLAGS
     LIBS=$wget_save_LIBS
 
-    dnl Perhaps we should abort here.  Dan argues that configure
-    dnl scripts shouldn't abort out of principle, but on the other
-    dnl hand remember that the user explicitly requested linking with
-    dnl SSL.
-
-    dnl IMHO there should be a way to specify whether SSL should be
-    dnl avoided, auto-detected, or required, defaulting to
-    dnl `autodetect'.  Only in the `require' mode the script would
-    dnl abort if SSL is not found.
-    echo
-    echo "WARNING: Failed to link with OpenSSL libraries in $ssl_root/lib."
-    echo "         Wget will be built without support for https://... URLs."
-    echo
+    dnl If linking with SSL was forced rather than auto-detected, then
+    dnl bail out if SSL failed.
+    if test x"$wget_force_ssl" = x"yes"; then
+      exec >&2
+      echo "ERROR: Failed to find OpenSSL libraries."
+      exit 2
+    fi
   fi
 
+  dnl Restore the compiler setting.
   CC=$wget_save_CC
+
+  dnl Restore the CPPFLAGS.  Do this regardless of whether linking
+  dnl with SSL succeeded -- SSL includes will be handled using
+  dnl @SSL_INCLUDES@.
+  CPPFLAGS=$wget_save_CPPFLAGS
 fi
 
 dnl
 dnl Find an md5 implementation.
 dnl
 
-if test x$wget_need_md5 = xyes
+if test x"$wget_need_md5" = xyes
 then
   MD5_OBJ='gen-md5$o'
 
@@ -350,7 +404,7 @@ then
   dnl something simple like "MD5Update" because there are a number of
   dnl MD5 implementations that use that name.  md5_calc is, hopefully,
   dnl specific to the Solaris MD5 library.
-  if test x$found_md5 = xno; then
+  if test x"$found_md5" = xno; then
     AC_CHECK_LIB(md5, md5_calc, [
       AC_DEFINE(HAVE_SOLARIS_MD5)
       LIBS="-lmd5 $LIBS"
@@ -360,15 +414,15 @@ then
 
   dnl Then see if we're linking OpenSSL anyway; if yes, use its md5
   dnl implementation.
-  if test x$found_md5 = xno; then
-    if test x$ssl_linked = xyes; then
+  if test x"$found_md5" = xno; then
+    if test x"$ssl_success" = xyes; then
       AC_DEFINE(HAVE_OPENSSL_MD5)
       found_md5=yes
     fi
   fi
 
-  dnl If none of the above worked, use the builtin one.
-  if test x$found_md5 = xno; then
+  dnl If none of the above worked, use the one we ship with Wget.
+  if test x"$found_md5" = xno; then
     AC_DEFINE(HAVE_BUILTIN_MD5)
     found_md5=yes
     MD5_OBJ="$MD5_OBJ gnu-md5\$o"
