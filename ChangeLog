@@ -1,3 +1,7 @@
+2001-04-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* po/POTFILES.in: Add src/cookies.c.
+
 2001-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* configure.in: Check for inline.
