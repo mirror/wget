@@ -138,8 +138,9 @@ echo "done."
 # Create the distribution file.
 echo $e_n "Creating distribution tarball... $e_c"
 $MAKE dist 1>>$O 2>&1
-mv wget-*.tar.gz $DEST_DIR
-echo "done."
+archive=`echo wget-*.tar.gz`
+mv $archive $DEST_DIR
+echo "$DEST_DIR/$archive"
 
 cd ..
 
