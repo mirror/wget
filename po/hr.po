@@ -293,7 +293,7 @@ msgstr "Izbrisao `%s'.\n"
 #: src/ftp.c:1265
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
-msgstr "Dubina rekurzije %d prelazi najveæu dozvoljenu %d.\n"
+msgstr "Dubina rekurzije %d prelazi najveæu dopu¹tenu %d.\n"
 
 #. Remote file is older, file sizes can be compared and
 #. are both equal.
@@ -407,7 +407,7 @@ msgstr "%s: uz opciju `--%s' ne ide argument\n"
 #: src/getopt.c:483
 #, c-format
 msgid "%s: option `%c%s' doesn't allow an argument\n"
-msgstr "%s: opcija `%c%s' ne dozvoljava argument\n"
+msgstr "%s: opcija `%c%s' ne dopu¹ta argument\n"
 
 #: src/getopt.c:498
 #, c-format
@@ -898,8 +898,8 @@ msgstr ""
 "HTTP options:\n"
 "       --http-user=KORISNIK     postavi HTTP korisnika na KORISNIK.\n"
 "       --http-passwd=ZAPORKA    postavi HTTP zaporku na ZAPORKA.\n"
-"  -C,  --cache=on/off           dozvoli ili zabrani ke¹iranje na poslu¾itelju\n"
-"                                  (obièno dozvoljeno).\n"
+"  -C,  --cache=on/off           dopusti ili zabrani ke¹iranje na poslu¾itelju\n"
+"                                  (obièno dopu¹teno).\n"
 "  -E,  --html-extension         snimaj sve dokumente tipa text/html s nastavkom\n"
 "                                  `.html'.\n"
 "       --ignore-length          ignoriraj zaglavlje `Content-Length'.\n"
@@ -989,17 +989,15 @@ msgstr ""
 "  -A,  --accept=POPIS                popis prihvaæenih nastavaka.\n"
 "  -R,  --reject=POPIS                popis odbijenih nastavaka.\n"
 "  -D,  --domains=POPIS               popis prihvaæenih domena.\n"
-"       --exclude-domains=POPIS       zarezom odvojen popis odbijenih "
-"domena.\n"
+"       --exclude-domains=POPIS       zarezom odvojen popis odbijenih domena.\n"
 "  -L,  --relative                    prati samo relativne linkove.\n"
 "       --follow-ftp                  prati FTP linkove iz HTML dokumenata.\n"
 "       --follow-tags=LIST            zarezom odvojeni HTML tagovi koje\n"
 "                                       treba pratiti.\n"
-"  -G,  --ignore-tags=LIST            zarezom odvojeni ignorirani HTML "
-"tagovi.\n"
+"  -G,  --ignore-tags=LIST            zarezom odvojeni ignorirani HTML tagovi.\n"
 "  -H,  --span-hosts                  idi na druga raèunala pri rekurziji.\n"
-"  -I,  --include-directories=POPIS   popis dozvoljenih direktorija.\n"
-"  -X,  --exclude-directories=POPIS   popis nedozvoljenih direktorija.\n"
+"  -I,  --include-directories=POPIS   popis dopu¹tenih direktorija.\n"
+"  -X,  --exclude-directories=POPIS   popis nedopu¹tenih direktorija.\n"
 "  -np, --no-parent                   ne idi u direktorij iznad.\n"
 "\n"
 
@@ -1053,7 +1051,7 @@ msgstr "%s: %s: neispravna naredba\n"
 #: src/main.c:639
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
-msgstr "%s: nedozvoljena opcija -- `-n%c'\n"
+msgstr "%s: nedopu¹tena opcija -- `-n%c'\n"
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
@@ -1233,7 +1231,7 @@ msgstr "%s: %s: Nema dovoljno memorije.\n"
 #: src/utils.c:476
 #, c-format
 msgid "Continuing in background, pid %d.\n"
-msgstr "Nastavljam u pozadini, s pid-jem %d.\n"
+msgstr "Nastavljam u pozadini, s pid-om %d.\n"
 
 #: src/utils.c:520
 #, c-format
