@@ -33,6 +33,7 @@ DEBUG=no
 
 EXPORT_TAG='-r HEAD'
 VERSION=
+MAKE=${MAKE-make}
 
 if test x"$TMPDIR" = x
 then
@@ -103,14 +104,14 @@ fi
 # Create configure and friends.
 if test ! -f configure; then
   echo $e_n "Creating \`configure' from \`configure.in'... $e_c"
-  make -f Makefile.cvs 1>>$O 2>&1
+  $MAKE -f Makefile.cvs 1>>$O 2>&1
   echo "done."
 fi
 
 # Remove `Makefile' if it already exists.
 if test -f Makefile; then
-  echo $e_n "Cleaning old Makefiles with \`make distclean'... $e_c"
-  make distclean 1>>$O 2>&1
+  echo $e_n "Cleaning old Makefiles with \`$MAKE distclean'... $e_c"
+  $MAKE distclean 1>>$O 2>&1
   echo "done."
 fi
 
@@ -122,20 +123,20 @@ echo "done."
 # Now build the MO files.
 echo $e_n "Building MO files out of PO files... $e_c"
 cd po
-make 1>>$O 2>&1
+$MAKE 1>>$O 2>&1
 cd ..
 echo "done."
 
 # Now build the Info documentation and the man page.
 echo $e_n "Building Info and man documentation... $e_c"
 cd doc
-make 1>>$O 2>&1
+$MAKE 1>>$O 2>&1
 cd ..
 echo "done."
 
 # Create the distribution file.
 echo $e_n "Creating distribution tarball... $e_c"
-make dist 1>>$O 2>&1
+$MAKE dist 1>>$O 2>&1
 mv wget-*.tar.gz $DEST_DIR
 echo "done."
 
