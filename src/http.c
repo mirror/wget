@@ -374,6 +374,15 @@ register_persistent (const char *host, unsigned short port, int fd
   DEBUGP (("Registered fd %d for persistent reuse.\n", fd));
 }
 
+#ifdef HAVE_SSL
+# define SHUTDOWN_SSL(ssl) do {		\
+  if (ssl)				\
+    shutdown_ssl (ssl);			\
+} while (0)
+#else
+# define SHUTDOWN_SSL(ssl) 
+#endif
+
 /* Return non-zero if a persistent connection is available for
    connecting to HOST:PORT.  */
 
@@ -429,20 +438,15 @@ persistent_available_p (const char *host, unsigned short port
          let's invalidate the persistent connection before returning
          0.  */
       CLOSE (pc_last_fd);
+#ifdef HAVE_SSL
+      SHUTDOWN_SSL (pc_last_ssl);
+      pc_last_ssl = NULL;
+#endif
       invalidate_persistent ();
       return 0;
     }
   return 1;
 }
-
-#ifdef HAVE_SSL
-# define SHUTDOWN_SSL(ssl) do {		\
-  if (ssl)				\
-    shutdown_ssl (ssl);			\
-} while (0)
-#else
-# define SHUTDOWN_SSL(ssl) 
-#endif
 
 /* The idea behind these two CLOSE macros is to distinguish between
    two cases: one when the job we've been doing is finished, and we

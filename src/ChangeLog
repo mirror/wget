@@ -1,3 +1,8 @@
+2001-11-30  T. Bharath  <TBharath@responsenetworks.com>
+
+	* http.c (persistent_available_p): Call SHUTDOWN_SSL if
+	test_socket_open fails.
+
 2001-11-30  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* progress.c (display_image): Just print one CR to reset the
