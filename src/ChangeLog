@@ -1,5 +1,9 @@
 2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* version.c: Wget 1.8-pre1 is released.
+
+2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* progress.c (progress_create): Make sure that, when the output is
 	redirected, the progress implementation gets changed to the
 	fallback one.
