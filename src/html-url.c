@@ -270,8 +270,8 @@ struct map_context {
    size.  */
 
 static struct urlpos *
-append_one_url (const char *link_uri,
-		struct taginfo *tag, int attrind, struct map_context *ctx)
+append_url (const char *link_uri,
+	    struct taginfo *tag, int attrind, struct map_context *ctx)
 {
   int link_has_scheme = url_has_scheme (link_uri);
   struct urlpos *newel;
@@ -400,7 +400,7 @@ tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
 	  if (0 == strcasecmp (tag->attrs[attrind].name,
 			       tag_url_attributes[i].attr_name))
 	    {
-	      struct urlpos *up = append_one_url (link, tag, attrind, ctx);
+	      struct urlpos *up = append_url (link, tag, attrind, ctx);
 	      if (up)
 		{
 		  int flags = tag_url_attributes[i].flags;
@@ -425,7 +425,7 @@ tag_handle_base (int tagid, struct taginfo *tag, struct map_context *ctx)
   if (!newbase)
     return;
 
-  base_urlpos = append_one_url (newbase, tag, attrind, ctx);
+  base_urlpos = append_url (newbase, tag, attrind, ctx);
   if (!base_urlpos)
     return;
   base_urlpos->ignore_when_downloading = 1;
@@ -448,7 +448,7 @@ tag_handle_form (int tagid, struct taginfo *tag, struct map_context *ctx)
   char *action = find_attr (tag, "action", &attrind);
   if (action)
     {
-      struct urlpos *up = append_one_url (action, tag, attrind, ctx);
+      struct urlpos *up = append_url (action, tag, attrind, ctx);
       if (up)
 	up->ignore_when_downloading = 1;
     }
@@ -471,7 +471,7 @@ tag_handle_link (int tagid, struct taginfo *tag, struct map_context *ctx)
   */
   if (href)
     {
-      struct urlpos *up = append_one_url (href, tag, attrind, ctx);
+      struct urlpos *up = append_url (href, tag, attrind, ctx);
       if (up)
 	{
 	  char *rel = find_attr (tag, "rel", NULL);
@@ -528,11 +528,12 @@ tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
       while (ISSPACE (*p))
 	++p;
 
-      entry = append_one_url (p, tag, attrind, ctx);
+      entry = append_url (p, tag, attrind, ctx);
       if (entry)
 	{
 	  entry->link_refresh_p = 1;
 	  entry->refresh_timeout = timeout;
+	  entry->link_expect_html = 1;
 	}
     }
   else if (name && 0 == strcasecmp (name, "robots"))
