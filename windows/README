@@ -6,6 +6,14 @@ a copy of makinfo to convert wget.texi to rtf. I've made a copy
 available at <URL:ftp://sunsite.dk/projects/wget/makeinfo.zip>.  This
 copy of makeinfo is from the miktxt 1.10 archive available from ctan.
 
+To configure Wget with VC++ with ssl support first get openssl,
+compile it and install relevant headers and libraries where your
+compiler can find them; then uncomment the SSL related lines in
+windows\Makefile.src; then follow the normal instructions
+(configure.bat and so on).
+Usually at runtime some openssl libraries (currently ssleay32.dll and
+libeay32.dll) will need to be available in your environment PATH.
+
 Windows contributors:
 
 * Darko Budor <dbudor@zesoi.fer.hr> -- the initial work on the Windows

@@ -19,6 +19,12 @@
 # Version: 1.4.4
 #
 
+#Uncomment these if you have openssl available
+#SSLDEFS	=	/DHAVE_SSL
+#SSLLIBS	=	libeay32.lib ssleay32.lib
+#SSLSRC	=	gen_sslfunc.c
+#SSLOBJ	=	gen_sslfunc$o
+
 SHELL = command
 
 VPATH       = .
@@ -38,7 +44,7 @@ LIBS     = kernel32.lib advapi32.lib wsock32.lib user32.lib
 
 INCLUDES = /I.
 
-COMPILE = $(CC) $(INCLUDES) $(CPPFLAGS) $(DEBUGCF) $(DEFS) $(CFLAGS)
+COMPILE = $(CC) $(INCLUDES) $(CPPFLAGS) $(DEBUGCF) $(DEFS) $(SSLDEFS) $(CFLAGS)
 LINK    = $(LD) $(LDFLAGS) $(DEBUGLF) /out:$@
 
 #INSTALL = @INSTALL@
@@ -49,12 +55,12 @@ RM      = del
 SRC = cmpt.c safe-ctype.c connect.c host.c http.c netrc.c ftp-basic.c ftp.c \
       ftp-ls.c ftp-opie.c getopt.c hash.c headers.c html-parse.c html-url.c \
       retr.c recur.c url.c cookies.c init.c utils.c main.c version.c \
-      mswindows.c fnmatch.c md5.c rbuf.c log.c
+      mswindows.c fnmatch.c md5.c rbuf.c log.c $(SSLSRC)
 
 OBJ = cmpt$o safe-ctype$o connect$o host$o http$o netrc$o ftp-basic$o ftp$o \
       ftp-ls$o ftp-opie$o getopt$o hash$o headers$o html-parse$o html-url$o \
       retr$o recur$o url$o cookies$o init$o utils$o main$o version$o \
-      mswindows$o fnmatch$o md5$o rbuf$o log$o
+      mswindows$o fnmatch$o md5$o rbuf$o log$o $(SSLOBJ)
 
 .SUFFIXES: .c .obj
 
@@ -66,7 +72,7 @@ OBJ = cmpt$o safe-ctype$o connect$o host$o http$o netrc$o ftp-basic$o ftp$o \
 wget: wget.exe
 
 wget.exe: $(OBJ)
-         $(LD) @<< $(LDFLAGS) $(DEBUGLF) /out:$@ $(LIBS) $(OBJ)
+         $(LD) @<< $(LDFLAGS) $(DEBUGLF) /out:$@ $(LIBS) $(SSLLIBS) $(OBJ)
 <<
         ren wget.exe WGET.EXE
 

@@ -1,3 +1,7 @@
+2001-05-14  Herold Heiko  <Heiko.Herold@previnet.it>
+
+	* windows/Makefile.src: Update for SSL.
+
 2001-05-14  Csaba Raduly  <csaba.raduly@sophos.com>
 
 	* windows/Makefile.watcom: Updated.
