@@ -436,14 +436,17 @@ then
   dnl specific to the Solaris MD5 library.
   if test x"$found_md5" = xno; then
     AC_CHECK_LIB(md5, md5_calc, [
-      dnl There are programs that insert bogus <md5.h> in the include
-      dnl path.  That makes the system md5 library is useless to us.
-      AC_CHECK_HEADERS([md5.h], [
+      dnl Some installations have bogus <md5.h> in the compiler's
+      dnl include path, making the system md5 library useless.
+      AC_MSG_CHECKING([whether md5.h can be included])
+      AC_COMPILE_IFELSE([#include <md5.h>
+                        ], [
+        AC_MSG_RESULT(yes)
         AC_DEFINE(HAVE_SOLARIS_MD5)
         LIBS="-lmd5 $LIBS"
         found_md5=yes
-        AC_MSG_NOTICE([using Solaris MD5 implementation])
-      ])
+        AC_MSG_NOTICE([using the Solaris MD5 implementation])
+      ], [AC_MSG_RESULT(no)])
     ])
   fi
 
@@ -453,7 +456,7 @@ then
     if test x"$ssl_success" = xyes; then
       AC_DEFINE(HAVE_OPENSSL_MD5)
       found_md5=yes
-      AC_MSG_NOTICE([using OpenSSL MD5 implementation])
+      AC_MSG_NOTICE([using the OpenSSL MD5 implementation])
     fi
   fi
 
@@ -462,7 +465,7 @@ then
     AC_DEFINE(HAVE_BUILTIN_MD5)
     MD5_OBJ="$MD5_OBJ gnu-md5\$o"
     found_md5=yes
-    AC_MSG_NOTICE([using GNU MD5 implementation])
+    AC_MSG_NOTICE([using the GNU MD5 implementation])
   fi
 fi
 AC_DEFINE(HAVE_MD5)
