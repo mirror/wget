@@ -804,7 +804,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
     set_progress_implementation (opt.progress_type);
 
   /* Allocate basic pointer.  */
-  url = ALLOCA_ARRAY (char *, nurl + 1);
+  url = (char **) alloca ((nurl + 1) * sizeof (char *));
   /* Fill in the arguments.  */
   for (i = 0; i < nurl; i++, optind++)
     {

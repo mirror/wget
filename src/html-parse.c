@@ -147,60 +147,58 @@ static struct options opt;
 struct pool {
   char *contents;		/* pointer to the contents. */
   int size;			/* size of the pool. */
-  int index;			/* next unoccupied position in
-                                   contents. */
+  int tail;			/* next available position index. */
+  int resized;			/* whether the pool has been resized
+				   using malloc. */
 
-  int alloca_p;			/* whether contents was allocated
-                                   using alloca(). */
-  char *orig_contents;		/* orig_contents, allocated by
-                                   alloca().  this is used by
-                                   POOL_FREE to restore the pool to
-                                   the "initial" state. */
+  char *orig_contents;		/* original pool contents, usually
+                                   stack-allocated.  used by POOL_FREE
+                                   to restore the pool to the initial
+                                   state. */
   int orig_size;
 };
 
 /* Initialize the pool to hold INITIAL_SIZE bytes of storage. */
 
-#define POOL_INIT(pool, initial_size) do {		\
-  (pool).size = (initial_size);				\
-  (pool).contents = ALLOCA_ARRAY (char, (pool).size);	\
-  (pool).index = 0;					\
-  (pool).alloca_p = 1;					\
-  (pool).orig_contents = (pool).contents;		\
-  (pool).orig_size = (pool).size;			\
+#define POOL_INIT(p, initial_storage, initial_size) do {	\
+  struct pool *P = (p);						\
+  P->contents = (initial_storage);				\
+  P->size = (initial_size);					\
+  P->tail = 0;							\
+  P->resized = 0;						\
+  P->orig_contents = P->contents;				\
+  P->orig_size = P->size;					\
 } while (0)
 
 /* Grow the pool to accomodate at least SIZE new bytes.  If the pool
    already has room to accomodate SIZE bytes of data, this is a no-op.  */
 
-#define POOL_GROW(pool, increase) do {					\
-  int PG_newsize = (pool).index + increase;				\
-  DO_REALLOC_FROM_ALLOCA ((pool).contents, (pool).size, PG_newsize,	\
-			  (pool).alloca_p, char);			\
-} while (0)
+#define POOL_GROW(p, increase)					\
+  GROW_ARRAY ((p)->contents, (p)->size, (p)->tail + increase,	\
+	      (p)->resized, char)
 
 /* Append text in the range [beg, end) to POOL.  No zero-termination
    is done.  */
 
-#define POOL_APPEND(pool, beg, end) do {			\
-  const char *PA_beg = (beg);					\
-  int PA_size = (end) - PA_beg;					\
-  POOL_GROW (pool, PA_size);					\
-  memcpy ((pool).contents + (pool).index, PA_beg, PA_size);	\
-  (pool).index += PA_size;					\
+#define POOL_APPEND(p, beg, end) do {			\
+  const char *PA_beg = (beg);				\
+  int PA_size = (end) - PA_beg;				\
+  POOL_GROW (p, PA_size);				\
+  memcpy ((p)->contents + (p)->tail, PA_beg, PA_size);	\
+  (p)->tail += PA_size;					\
 } while (0)
 
 /* Append one character to the pool.  Can be used to zero-terminate
    pool strings.  */
 
-#define POOL_APPEND_CHR(pool, ch) do {		\
+#define POOL_APPEND_CHR(p, ch) do {		\
   char PAC_char = (ch);				\
-  POOL_GROW (pool, 1);				\
-  (pool).contents[(pool).index++] = PAC_char;	\
+  POOL_GROW (p, 1);				\
+  (p)->contents[(p)->tail++] = PAC_char;	\
 } while (0)
 
 /* Forget old pool contents.  The allocated memory is not freed. */
-#define POOL_REWIND(pool) pool.index = 0
+#define POOL_REWIND(p) (p)->tail = 0
 
 /* Free heap-allocated memory for contents of POOL.  This calls
    xfree() if the memory was allocated through malloc.  It also
@@ -208,15 +206,47 @@ struct pool {
    values.  That way after POOL_FREE, the pool is fully usable, just
    as if it were freshly initialized with POOL_INIT.  */
 
-#define POOL_FREE(pool) do {			\
-  if (!(pool).alloca_p)				\
-    xfree ((pool).contents);			\
-  (pool).contents = (pool).orig_contents;	\
-  (pool).size = (pool).orig_size;		\
-  (pool).index = 0;				\
-  (pool).alloca_p = 1;				\
+#define POOL_FREE(p) do {			\
+  struct pool *P = p;				\
+  if (P->resized)				\
+    xfree (P->contents);			\
+  P->contents = P->orig_contents;		\
+  P->size = P->orig_size;			\
+  P->tail = 0;					\
+  P->resized = 0;				\
 } while (0)
 
+/* Used for small stack-allocated memory chunks that might grow.  Like
+   DO_REALLOC, this macro grows BASEVAR as necessary to take
+   NEEDED_SIZE items of TYPE.
+
+   The difference is that on the first resize, it will use
+   malloc+memcpy rather than realloc.  That way you can stack-allocate
+   the initial chunk, and only resort to heap allocation if you
+   stumble upon large data.
+
+   After the first resize, subsequent ones are performed with realloc,
+   just like DO_REALLOC.  */
+
+#define GROW_ARRAY(basevar, sizevar, needed_size, resized, type) do {		\
+  long ga_needed_size = (needed_size);						\
+  long ga_newsize = (sizevar);							\
+  while (ga_newsize < ga_needed_size)						\
+    ga_newsize <<= 1;								\
+  if (ga_newsize != (sizevar))							\
+    {										\
+      if (resized)								\
+	basevar = (type *)xrealloc (basevar, ga_newsize * sizeof (type));	\
+      else									\
+	{									\
+	  void *ga_new = xmalloc (ga_newsize * sizeof (type));			\
+	  memcpy (ga_new, basevar, (sizevar) * sizeof (type));			\
+	  (basevar) = ga_new;							\
+	  resized = 1;								\
+	}									\
+      (sizevar) = ga_newsize;							\
+    }										\
+} while (0)
 
 #define AP_DOWNCASE		1
 #define AP_PROCESS_ENTITIES	2
@@ -239,7 +269,7 @@ struct pool {
 static void
 convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags)
 {
-  int old_index = pool->index;
+  int old_tail = pool->tail;
   int size;
 
   /* First, skip blanks if required.  We must do this before entities
@@ -263,9 +293,9 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
 	 It's safe (and necessary) to grow the pool in advance because
 	 processing the entities can only *shorten* the string, it can
 	 never lengthen it.  */
-      POOL_GROW (*pool, end - beg);
+      POOL_GROW (pool, end - beg);
       const char *from = beg;
-      char *to = pool->contents + pool->index;
+      char *to = pool->contents + pool->tail;
 
       while (from < end)
 	{
@@ -338,23 +368,23 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
 	}
       /* Verify that we haven't exceeded the original size.  (It
 	 shouldn't happen, hence the assert.)  */
-      assert (to - (pool->contents + pool->index) <= end - beg);
+      assert (to - (pool->contents + pool->tail) <= end - beg);
 
       /* Make POOL's tail point to the position following the string
 	 we've written.  */
-      pool->index = to - pool->contents;
-      POOL_APPEND_CHR (*pool, '\0');
+      pool->tail = to - pool->contents;
+      POOL_APPEND_CHR (pool, '\0');
     }
   else
     {
       /* Just copy the text to the pool.  */
-      POOL_APPEND (*pool, beg, end);
-      POOL_APPEND_CHR (*pool, '\0');
+      POOL_APPEND (pool, beg, end);
+      POOL_APPEND_CHR (pool, '\0');
     }
 
   if (flags & AP_DOWNCASE)
     {
-      char *p = pool->contents + old_index;
+      char *p = pool->contents + old_tail;
       for (; *p; p++)
 	*p = TOLOWER (*p);
     }
@@ -681,18 +711,23 @@ map_html_tags (const char *text, int size,
 	       void (*mapfun) (struct taginfo *, void *),
 	       void *closure)
 {
+  /* storage for strings passed to MAPFUN callback; if 256 bytes is
+     too little, POOL_APPEND allocates more with malloc. */
+  char pool_initial_storage[256];
+  struct pool pool;
+
   const char *p = text;
   const char *end = text + size;
 
-  int attr_pair_count = 8;
-  int attr_pair_alloca_p = 1;
-  struct attr_pair *pairs = ALLOCA_ARRAY (struct attr_pair, attr_pair_count);
-  struct pool pool;
+  struct attr_pair attr_pair_initial_storage[8];
+  int attr_pair_size = countof (attr_pair_initial_storage);
+  int attr_pair_resized = 0;
+  struct attr_pair *pairs = attr_pair_initial_storage;
 
   if (!size)
     return;
 
-  POOL_INIT (pool, 256);
+  POOL_INIT (&pool, pool_initial_storage, countof (pool_initial_storage));
 
   {
     int nattrs, end_tag;
@@ -701,7 +736,7 @@ map_html_tags (const char *text, int size,
     int uninteresting_tag;
 
   look_for_tag:
-    POOL_REWIND (pool);
+    POOL_REWIND (&pool);
 
     nattrs = 0;
     end_tag = 0;
@@ -906,13 +941,13 @@ map_html_tags (const char *text, int size,
 			       attr_name_end))
 	  continue;
 
-	DO_REALLOC_FROM_ALLOCA (pairs, attr_pair_count, nattrs + 1,
-				attr_pair_alloca_p, struct attr_pair);
+	GROW_ARRAY (pairs, attr_pair_size, nattrs + 1, attr_pair_resized,
+		    struct attr_pair);
 
-	pairs[nattrs].name_pool_index = pool.index;
+	pairs[nattrs].name_pool_index = pool.tail;
 	convert_and_copy (&pool, attr_name_begin, attr_name_end, AP_DOWNCASE);
 
-	pairs[nattrs].value_pool_index = pool.index;
+	pairs[nattrs].value_pool_index = pool.tail;
 	convert_and_copy (&pool, attr_value_begin, attr_value_end, operation);
 	pairs[nattrs].value_raw_beginning = attr_raw_value_begin;
 	pairs[nattrs].value_raw_size = (attr_raw_value_end
@@ -964,8 +999,8 @@ map_html_tags (const char *text, int size,
   }
 
  finish:
-  POOL_FREE (pool);
-  if (!attr_pair_alloca_p)
+  POOL_FREE (&pool);
+  if (attr_pair_resized)
     xfree (pairs);
 }
 

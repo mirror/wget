@@ -1,5 +1,14 @@
 2003-10-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.h (XMALLOC_ARRAY): Removed.
+	(ALLOCA_ARRAY): Ditto.
+
+	* html-parse.c: Renamed alloca_p to resized.
+	(GROW_ARRAY): Renamed DO_REALLOC_FROM_ALLOCA to GROW_ARRAY and
+	returned it to html-parse.c, since nothing else was using it.
+
+2003-10-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* retr.c (retrieve_url): Initialize DUMMY storage for DT.  Caught
 	by valgrind.
 

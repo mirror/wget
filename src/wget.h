@@ -235,11 +235,6 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
   strcpy (ptr, str);				\
 } while (0)
 
-#define ALLOCA_ARRAY(type, len) ((type *) alloca ((len) * sizeof (type)))
-
-#define XREALLOC_ARRAY(ptr, type, len)					\
-     ((void) (ptr = (type *) xrealloc (ptr, (len) * sizeof (type))))
-
 /* Generally useful if you want to avoid arbitrary size limits but
    don't need a full dynamic array.  Assumes that BASEVAR points to a
    malloced array of TYPE objects (or possibly a NULL pointer, if
@@ -247,51 +242,19 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
    will realloc BASEVAR as necessary so that it can hold at least
    NEEDED_SIZE objects.  The reallocing is done by doubling, which
    ensures constant amortized time per element.  */
-#define DO_REALLOC(basevar, sizevar, needed_size, type)	do	\
-{								\
-  /* Avoid side-effectualness.  */				\
-  long do_realloc_needed_size = (needed_size);			\
-  long do_realloc_newsize = 0;					\
-  while ((sizevar) < (do_realloc_needed_size)) {		\
-    do_realloc_newsize = 2*(sizevar);				\
-    if (do_realloc_newsize < 32)				\
-      do_realloc_newsize = 32;					\
-    (sizevar) = do_realloc_newsize;				\
-  }								\
-  if (do_realloc_newsize)					\
-    XREALLOC_ARRAY (basevar, type, do_realloc_newsize);		\
-} while (0)
-
-/* Use this for small stack-allocated memory chunks that might grow.
-   The initial array is created using alloca(), and this macro
-   requests it to grow.  If the needed size is larger than the array,
-   this macro will use malloc to allocate it to new size, and copy the
-   old contents.  After that, successive invocations behave just like
-   DO_REALLOC.  */
-#define DO_REALLOC_FROM_ALLOCA(basevar, sizevar, needed_size, allocap, type) do	\
+#define DO_REALLOC(basevar, sizevar, needed_size, type)	do			\
 {										\
   /* Avoid side-effectualness.  */						\
   long do_realloc_needed_size = (needed_size);					\
-  long do_realloc_newsize = (sizevar);						\
-  while (do_realloc_newsize < do_realloc_needed_size) {				\
-    do_realloc_newsize <<= 1;							\
-    if (do_realloc_newsize < 16)						\
-      do_realloc_newsize = 16;							\
+  long do_realloc_newsize = 0;							\
+  while ((sizevar) < (do_realloc_needed_size)) {				\
+    do_realloc_newsize = 2*(sizevar);						\
+    if (do_realloc_newsize < 32)						\
+      do_realloc_newsize = 32;							\
+    (sizevar) = do_realloc_newsize;						\
   }										\
-  if (do_realloc_newsize != (sizevar))						\
-    {										\
-      if (!allocap)								\
-	XREALLOC_ARRAY (basevar, type, do_realloc_newsize);			\
-      else									\
-	{									\
-	  void *drfa_new_basevar =						\
-		xmalloc (do_realloc_newsize * sizeof (type));			\
-	  memcpy (drfa_new_basevar, basevar, (sizevar) * sizeof (type));	\
-	  (basevar) = drfa_new_basevar;						\
-	  allocap = 0;								\
-	}									\
-      (sizevar) = do_realloc_newsize;						\
-    }										\
+  if (do_realloc_newsize)							\
+    basevar = (type *)xrealloc (basevar, do_realloc_newsize * sizeof (type));	\
 } while (0)
 
 /* Free FOO if it is non-NULL.  */
