@@ -1,5 +1,11 @@
 2003-11-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* headers.c: Removed.  The file is no longer relevant, now that no
+	special handling of headers is done by the rbuf code.  Moved
+	portions to http.c.
+
+2003-11-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* rbuf.c: Removed.
 
 	* ftp-basic.c (ftp_response): Use fd_read_line.  No longer use

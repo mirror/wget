@@ -62,7 +62,6 @@ extern int errno;
 #include "url.h"
 #include "host.h"
 #include "retr.h"
-#include "headers.h"
 #include "connect.h"
 #include "netrc.h"
 #ifdef HAVE_SSL
@@ -250,6 +249,80 @@ next_header (const char *h)
   return end;
 }
 
+/* Skip LWS (linear white space), if present.  Returns number of
+   characters to skip.  */
+static int
+skip_lws (const char *string)
+{
+  const char *p = string;
+
+  while (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n')
+    ++p;
+  return p - string;
+}
+
+/* Check whether HEADER begins with NAME and, if yes, skip the `:' and
+   the whitespace, and call PROCFUN with the arguments of HEADER's
+   contents (after the `:' and space) and ARG.  Otherwise, return 0.  */
+int
+header_process (const char *header, const char *name,
+		int (*procfun) (const char *, void *),
+		void *arg)
+{
+  /* Check whether HEADER matches NAME.  */
+  while (*name && (TOLOWER (*name) == TOLOWER (*header)))
+    ++name, ++header;
+  if (*name || *header++ != ':')
+    return 0;
+
+  header += skip_lws (header);
+
+  return ((*procfun) (header, arg));
+}
+
+/* Helper functions for use with header_process().  */
+
+/* Extract a long integer from HEADER and store it to CLOSURE.  If an
+   error is encountered, return 0, else 1.  */
+int
+header_extract_number (const char *header, void *closure)
+{
+  const char *p = header;
+  long result;
+
+  for (result = 0; ISDIGIT (*p); p++)
+    result = 10 * result + (*p - '0');
+
+  /* Failure if no number present. */
+  if (p == header)
+    return 0;
+
+  /* Skip trailing whitespace. */
+  p += skip_lws (p);
+
+  /* Indicate failure if trailing garbage is present. */
+  if (*p)
+    return 0;
+
+  *(long *)closure = result;
+  return 1;
+}
+
+/* Strdup HEADER, and place the pointer to CLOSURE.  */
+int
+header_strdup (const char *header, void *closure)
+{
+  *(char **)closure = xstrdup (header);
+  return 1;
+}
+
+/* Write the value 1 into the integer pointed to by CLOSURE.  */
+int
+header_exists (const char *header, void *closure)
+{
+  *(int *)closure = 1;
+  return 1;
+}
 
 /* Functions to be used as arguments to header_process(): */
 

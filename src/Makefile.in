@@ -74,7 +74,7 @@ GETOPT_OBJ = @GETOPT_OBJ@
 
 OBJ = $(ALLOCA) cmpt$o connect$o convert$o cookies$o              \
       ftp$o ftp-basic$o ftp-ls$o $(OPIE_OBJ) $(GETOPT_OBJ) hash$o \
-      headers$o host$o html-parse$o html-url$o http$o init$o      \
+      host$o html-parse$o html-url$o http$o init$o      \
       log$o main$o $(MD5_OBJ) netrc$o progress$o recur$o   \
       res$o retr$o safe-ctype$o snprintf$o $(SSL_OBJ) url$o       \
       utils$o version$o xmalloc$o
@@ -170,13 +170,11 @@ gen_sslfunc$o: wget.h sysdep.h options.h safe-ctype.h utils.h connect.h host.h \
 getopt$o: wget.h sysdep.h options.h safe-ctype.h getopt.h
 gnu-md5$o: wget.h sysdep.h options.h safe-ctype.h gnu-md5.h
 hash$o: wget.h sysdep.h options.h safe-ctype.h utils.h hash.h
-headers$o: wget.h sysdep.h options.h safe-ctype.h connect.h host.h \
-	headers.h
 host$o: wget.h sysdep.h options.h safe-ctype.h utils.h host.h url.h hash.h
 html-parse$o: wget.h sysdep.h options.h safe-ctype.h html-parse.h
 html-url$o: wget.h sysdep.h options.h safe-ctype.h html-parse.h url.h utils.h
 http$o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h host.h \
-	retr.h headers.h connect.h host.h netrc.h gen_sslfunc.h \
+	retr.h connect.h host.h netrc.h gen_sslfunc.h 
 	cookies.h gen-md5.h
 init$o: wget.h sysdep.h options.h safe-ctype.h utils.h init.h host.h recur.h \
 	netrc.h cookies.h progress.h

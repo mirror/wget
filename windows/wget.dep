@@ -13,11 +13,10 @@ gen_sslfunc$o: gen_sslfunc.c config.h wget.h sysdep.h mswindows.h options.h safe
 getopt$o: getopt.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h getopt.h
 gnu-md5$o: gnu-md5.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h gnu-md5.h
 hash$o: hash.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h utils.h hash.h
-headers$o: headers.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h connect.h host.h headers.h
 host$o: host.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h utils.h host.h url.h hash.h
 html-parse$o: html-parse.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h html-parse.h
 html-url$o: html-url.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h html-parse.h url.h utils.h
-http$o: http.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h utils.h url.h host.h retr.h headers.h connect.h netrc.h gen-md5.h
+http$o: http.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h utils.h url.h host.h retr.h connect.h netrc.h gen-md5.h
 init$o: init.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h utils.h init.h host.h recur.h netrc.h cookies.h progress.h
 log$o: log.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h utils.h
 main$o: main.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h utils.h getopt.h init.h retr.h recur.h host.h gen_sslfunc.h getopt.h
