@@ -1,3 +1,7 @@
+2003-09-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.in (all): Don't build configure.bat by default.
+
 2003-09-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in, aclocal.m4: Added configure check for IPv6 and

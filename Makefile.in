@@ -85,7 +85,7 @@ infodir='$(infodir)' mandir='$(mandir)' manext='$(manext)'
 SUBDIRS = src doc po util windows
 
 # default target
-all: libtool src/config.h Makefile configure.bat $(SUBDIRS)
+all: libtool src/config.h Makefile $(SUBDIRS)
 
 check: all
 
