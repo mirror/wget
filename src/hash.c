@@ -458,6 +458,15 @@ hash_table_map (struct hash_table *ht,
 	  return;
     }
 }
+
+/* Return the number of elements in the hash table.  This is not the
+   same as the physical size of the hash table, which is always
+   greater than the number of elements.  */
+int
+hash_table_count (struct hash_table *ht)
+{
+  return ht->count;
+}
 
 /* Support for hash tables whose keys are strings.  */
 

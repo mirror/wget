@@ -1,3 +1,7 @@
+2001-04-08  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* hash.c (hash_table_count): New function.
+
 2001-04-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* utils.c (read_file): Cast MAP_FAILED to char *.  Enforced by
@@ -34,6 +38,7 @@
 	username was present, but the URL did not contain a slash, e.g.
 	http://foo:bar@myhost.
 
+>>>>>>> 1.148
 2001-04-03  KOJIMA Hajime  <kjm@rins.ryukoku.ac.jp>
 
 	* http.c (http_atotm): Use %A instead of %a to match full
