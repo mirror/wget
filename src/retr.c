@@ -141,9 +141,8 @@ limit_bandwidth (long bytes, struct wget_timer *timer)
    otherwise ignored.
 
    If opt.verbose is set, the progress is also shown.  RESTVAL
-   represents a value from which to start downloading (which will be
-   shown accordingly).  If RESTVAL is non-zero, the stream should have
-   been open for appending.
+   (RESTart VALue) is the position from which the download starts,
+   needed for progress display.
 
    The function exits and returns codes of 0, -1 and -2 if the
    connection was closed, there was a read error, or if it could not
@@ -190,7 +189,7 @@ fd_read_body (int fd, FILE *out, long *len, long restval, long expected,
   if (opt.limit_rate && opt.limit_rate < dlbufsize)
     dlbufsize = opt.limit_rate;
 
-  /* Read from fd while there is available data.
+  /* Read from FD while there is available data.
 
      Normally, if expected is 0, it means that it is not known how
      much data is expected.  However, if use_expected is specified,
@@ -230,17 +229,20 @@ fd_read_body (int fd, FILE *out, long *len, long restval, long expected,
       wtimer_update (timer);
       if (res > 0)
 	{
-	  fwrite (dlbuf, 1, res, out);
-	  /* Always flush the contents of the network packet.  This
-	     should not hinder performance: fast downloads will be
-	     received in 16K chunks (which stdio would write out
-	     anyway), and slow downloads won't be limited by disk
-	     performance.  */
-	  fflush (out);
-	  if (ferror (out))
+	  if (out)
 	    {
-	      res = -2;
-	      goto out;
+	      fwrite (dlbuf, 1, res, out);
+	      /* Always flush the contents of the network packet.
+		 This should not hinder performance: fast downloads
+		 will be received in 16K chunks (which stdio would
+		 write out anyway), and slow downloads won't be
+		 limited by disk performance.  */
+	      fflush (out);
+	      if (ferror (out))
+		{
+		  res = -2;
+		  goto out;
+		}
 	    }
 	  last_successful_read_tm = wtimer_read (timer);
 	}

@@ -348,6 +348,53 @@ request_free (struct request *req)
   xfree_null (req->headers);
   xfree (req);
 }
+
+/* Send the contents of FILE_NAME to SOCK/SSL.  Make sure that exactly
+   PROMISED_SIZE bytes are sent over the wire -- if the file is
+   longer, read only that much; if the file is shorter, report an error.  */
+
+static int
+post_file (int sock, const char *file_name, long promised_size)
+{
+  static char chunk[8192];
+  long written = 0;
+  int write_error;
+  FILE *fp;
+
+  DEBUGP (("[writing POST file %s ... ", file_name));
+
+  fp = fopen (file_name, "rb");
+  if (!fp)
+    return -1;
+  while (!feof (fp) && written < promised_size)
+    {
+      int towrite;
+      int length = fread (chunk, 1, sizeof (chunk), fp);
+      if (length == 0)
+	break;
+      towrite = MIN (promised_size - written, length);
+      write_error = fd_write (sock, chunk, towrite, -1);
+      if (write_error < 0)
+	{
+	  fclose (fp);
+	  return -1;
+	}
+      written += towrite;
+    }
+  fclose (fp);
+
+  /* If we've written less than was promised, report a (probably
+     nonsensical) error rather than break the promise.  */
+  if (written < promised_size)
+    {
+      errno = EINVAL;
+      return -1;
+    }
+
+  assert (written == promised_size);
+  DEBUGP (("done]\n"));
+  return 0;
+}
 
 static const char *
 head_terminator (const char *hunk, int oldlen, int peeklen)
@@ -692,52 +739,28 @@ parse_content_range (const char *hdr, long *first_byte_ptr,
   *entity_length_ptr = num;
   return 1;
 }
-
-/* Send the contents of FILE_NAME to SOCK/SSL.  Make sure that exactly
-   PROMISED_SIZE bytes are sent over the wire -- if the file is
-   longer, read only that much; if the file is shorter, report an error.  */
 
-static int
-post_file (int sock, const char *file_name, long promised_size)
+/* Read the body of the request, but don't store it anywhere.  This is
+   useful when reading error responses that are not logged anywhere,
+   but which need to be read so the same connection can be reused.  */
+
+static void
+skip_body (int fd, long contlen)
 {
-  static char chunk[8192];
-  long written = 0;
-  int write_error;
-  FILE *fp;
+  int oldverbose;
+  long dummy;
 
-  DEBUGP (("[writing POST file %s ... ", file_name));
+  /* Skipping the body doesn't make sense if the content length is
+     unknown because, in that case, persistent connections cannot be
+     used.  (#### This is not the case with HTTP/1.1 where they can
+     still be used with the magic of the "chunked" transfer!)  */
+  if (contlen == -1)
+    return;
 
-  fp = fopen (file_name, "rb");
-  if (!fp)
-    return -1;
-  while (!feof (fp) && written < promised_size)
-    {
-      int towrite;
-      int length = fread (chunk, 1, sizeof (chunk), fp);
-      if (length == 0)
-	break;
-      towrite = MIN (promised_size - written, length);
-      write_error = fd_write (sock, chunk, towrite, -1);
-      if (write_error < 0)
-	{
-	  fclose (fp);
-	  return -1;
-	}
-      written += towrite;
-    }
-  fclose (fp);
-
-  /* If we've written less than was promised, report a (probably
-     nonsensical) error rather than break the promise.  */
-  if (written < promised_size)
-    {
-      errno = EINVAL;
-      return -1;
-    }
-
-  assert (written == promised_size);
-  DEBUGP (("done]\n"));
-  return 0;
+  oldverbose = opt.verbose;
+  opt.verbose = 0;
+  fd_read_body (fd, NULL, &dummy, 0, contlen, 1, NULL);
+  opt.verbose = oldverbose;
 }
 
 /* Persistent connections.  Currently, we cache the most recently used
@@ -925,7 +948,10 @@ persistent_available_p (const char *host, int port, int ssl,
       if (pconn_active && (fd) == pconn.socket)	\
 	invalidate_persistent ();		\
       else					\
-	fd_close (fd);				\
+	{					\
+	  fd_close (fd);			\
+	  fd = -1;				\
+	}					\
     }						\
 } while (0)
 
@@ -1020,9 +1046,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   /* Whether this connection will be kept alive after the HTTP request
      is done. */
   int keep_alive;
-
-  /* Flag that detects having received a keep-alive response.  */
-  int keep_alive_confirmed;
 
   /* Whether keep-alive should be inhibited. */
   int inhibit_keep_alive = !opt.http_keep_alive;
@@ -1239,7 +1262,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
      for the Digest authorization scheme.)  */
 
   keep_alive = 0;
-  keep_alive_confirmed = 0;
 
   /* Establish the connection.  */
 
@@ -1374,7 +1396,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       else if (opt.post_file_name && post_data_size != 0)
 	write_error = post_file (sock, opt.post_file_name, post_data_size);
     }
-  DEBUGP (("---request end---\n"));
 
   if (write_error < 0)
     {
@@ -1425,11 +1446,31 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       print_server_response (resp, "  ");
     }
 
+  if (response_header_copy (resp, "Content-Length", hdrval, sizeof (hdrval)))
+    contlen = strtol (hdrval, NULL, 10);
+
+  /* Check for keep-alive related responses. */
+  if (!inhibit_keep_alive && contlen != -1)
+    {
+      if (response_header_copy (resp, "Keep-Alive", NULL, 0))
+	keep_alive = 1;
+      else if (response_header_copy (resp, "Connection", hdrval,
+				     sizeof (hdrval)))
+	{
+	  if (0 == strcasecmp (hdrval, "Keep-Alive"))
+	    keep_alive = 1;
+	}
+    }
+  if (keep_alive)
+    /* The server has promised that it will not close the connection
+       when we're done.  This means that we can register it.  */
+    register_persistent (conn->host, conn->port, sock, using_ssl);
+
   if (statcode == HTTP_STATUS_UNAUTHORIZED)
     {
       /* Authorization is required.  */
-      CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
-				   might be more bytes in the body. */
+      skip_body (sock, contlen);
+      CLOSE_FINISH (sock);
       if (auth_tried_already || !(user && passwd))
 	{
 	  /* If we have tried it already, then there is not point
@@ -1479,8 +1520,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   else
     hs->error = xstrdup (message);
 
-  if (response_header_copy (resp, "Content-Length", hdrval, sizeof (hdrval)))
-    contlen = strtol (hdrval, NULL, 10);
   type = response_header_strdup (resp, "Content-Type");
   if (type)
     {
@@ -1512,25 +1551,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 			       &entity_length))
 	contrange = first_byte_pos;
     }
-
-  /* Check for keep-alive related responses. */
-  if (!inhibit_keep_alive && contlen != -1)
-    {
-      if (response_header_copy (resp, "Keep-Alive", NULL, 0))
-	keep_alive = 1;
-      else if (response_header_copy (resp, "Connection", hdrval,
-				     sizeof (hdrval)))
-	{
-	  if (0 == strcasecmp (hdrval, "Keep-Alive"))
-	    keep_alive = 1;
-	}
-    }
   response_free (resp);
-
-  if (keep_alive)
-    /* The server has promised that it will not close the connection
-       when we're done.  This means that we can register it.  */
-    register_persistent (conn->host, conn->port, sock, using_ssl);
 
   /* 20x responses are counted among successful by default.  */
   if (H_20X (statcode))
@@ -1552,8 +1573,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 		     _("Location: %s%s\n"),
 		     hs->newloc ? hs->newloc : _("unspecified"),
 		     hs->newloc ? _(" [following]") : "");
-	  CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
-					   might be more bytes in the body. */
+	  if (keep_alive)
+	    skip_body (sock, contlen);
+	  CLOSE_FINISH (sock);
 	  xfree_null (type);
 	  return NEWLOCATION;
 	}
@@ -1639,7 +1661,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 Continued download failed on this file, which conflicts with `-c'.\n\
 Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
 	      xfree_null (type);
-	      CLOSE_INVALIDATE (sock);
+	      CLOSE_INVALIDATE (sock); /* see above */
 	      return CONTNOTSUPPORTED;
 	    }
 
@@ -1702,8 +1724,11 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
       hs->len = 0L;
       hs->res = 0;
       xfree_null (type);
-      CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
-				   might be more bytes in the body. */
+      /* Pre-1.10 Wget used CLOSE_INVALIDATE here.  Now we trust the
+	 servers not to send body in response to a HEAD request.  If
+	 you encounter such a server (more likely a broken CGI), use
+	 `--no-http-keep-alive'.  */
+      CLOSE_FINISH (sock);
       return RETRFINISHED;
     }
 

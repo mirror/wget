@@ -1,3 +1,13 @@
+2003-11-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (skip_body): New function.
+	(gethttp): Use it to skip the body of the responses we don't care
+	to download.  That allows us to reuse the connection.
+	(gethttp): Trust that the HEAD requests will not generate body
+	data.
+
+	* retr.c (fd_read_body): Don't write to OUT if it's NULL.
+
 2003-11-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (gethttp): Initialize SSL only the first time when SSL
