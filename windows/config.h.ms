@@ -187,5 +187,20 @@
 /* Define if you have the memmove function */
 #define HAVE_MEMMOVE 1
 
+/* Define to the length of int. */
+#define SIZEOF_INT 4
+
+/* Define to the length of long. */
+#define SIZEOF_LONG 4
+
+/* Defined to int or size_t on systems without socklen_t.  */
+#define socklen_t int
+
+/* Define if you have int32_t.  */
+#define HAVE_INT32_T 1
+
+/* Define if you have u_int32_t.  */
+#define HAVE_U_INT32_T 1
+
 #endif /* CONFIG_H */
 
