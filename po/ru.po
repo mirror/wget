@@ -1,509 +1,602 @@
-# Russian messages for GNU Wget.
-# Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+# Translation of wget-1.9.1.ru.po to Russian
+# Copyright (C) 1998, 1999, 2000, 2001, 2004 Free Software Foundation, Inc.
 # Const Kaplinsky <const@ce.cctpu.edu.ru>, 1998, 1999, 2000, 2001.
+# Pavel Maryanov <acid_jack@ukr.net>, 2004.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.8\n"
-"POT-Creation-Date: 2001-12-08 23:28+0100\n"
-"PO-Revision-Date: 2001-12-10 22:22+07:00\n"
-"Last-Translator: Const Kaplinsky <const@ce.cctpu.edu.ru>\n"
+"Project-Id-Version: wget 1.9.1\n"
+"POT-Creation-Date: 2003-10-11 16:21+0200\n"
+"PO-Revision-Date: 2004-05-13 11:35+0300\n"
+"Last-Translator: Pavel Maryanov <acid_jack@ukr.net>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=koi8-r\n"
+"Content-Type: text/plain; charset=KOI8-R\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.0.2\n"
 
-#: src/connect.c:94
+#: src/connect.c:88
+#, c-format
+msgid "Unable to convert `%s' to a bind address.  Reverting to ANY.\n"
+msgstr "Невозможно преобразовать `%s' в связанный адрес. Возврат к ANY.\n"
+
+#: src/connect.c:165
 #, c-format
 msgid "Connecting to %s[%s]:%hu... "
-msgstr "Установка соединения с %s[%s]:%hu... "
+msgstr "Устанавливается соединение с %s[%s]:%hu... "
 
-#: src/connect.c:97
+#: src/connect.c:168
 #, c-format
 msgid "Connecting to %s:%hu... "
-msgstr "Установка соединения с %s:%hu... "
+msgstr "Устанавливается соединение с %s:%hu... "
 
-#: src/connect.c:131
+#: src/connect.c:222
 msgid "connected.\n"
-msgstr "соединились.\n"
+msgstr "соедининие установлено.\n"
 
-#: src/cookies.c:595
+#: src/convert.c:171
+#, c-format
+msgid "Converted %d files in %.2f seconds.\n"
+msgstr "Преобразовано %d файлов за %.2f секунд.\n"
+
+#: src/convert.c:197
+#, c-format
+msgid "Converting %s... "
+msgstr "Выполняется преобразование %s... "
+
+#: src/convert.c:210
+msgid "nothing to do.\n"
+msgstr "нечего выполнять.\n"
+
+#: src/convert.c:218 src/convert.c:242
+#, c-format
+msgid "Cannot convert links in %s: %s\n"
+msgstr "Невозможно преобразовать ссылки в %s: %s\n"
+
+#: src/convert.c:233
+#, c-format
+msgid "Unable to delete `%s': %s\n"
+msgstr "Невозможно удалить `%s': %s\n"
+
+#: src/convert.c:439
+#, c-format
+msgid "Cannot back up %s as %s: %s\n"
+msgstr "Невозможно сохранить %s под именем %s: %s\n"
+
+#: src/cookies.c:606
 #, c-format
 msgid "Error in Set-Cookie, field `%s'"
 msgstr "Ошибка в Set-Cookie, поле `%s'"
 
-#: src/cookies.c:619
+#: src/cookies.c:629
 #, c-format
-msgid "Syntax error in Set-Cookie at character `%c'.\n"
-msgstr "Синтаксическая ошибка в Set-Cookie, символ `%c'.\n"
+msgid "Syntax error in Set-Cookie: %s at position %d.\n"
+msgstr "Синтаксическая ошибка в Set-Cookie: %s в позиции %d.\n"
 
-#: src/cookies.c:627
-msgid "Syntax error in Set-Cookie: premature end of string.\n"
-msgstr "Синтаксическая ошибка в Set-Cookie: преждевременный конец строки.\n"
-
-#: src/cookies.c:1329
+#: src/cookies.c:1426
 #, c-format
 msgid "Cannot open cookies file `%s': %s\n"
-msgstr "Не удается открыть файл с \"cookies\", `%s': %s\n"
+msgstr "Невозможно открыть файл cookies, `%s': %s\n"
 
-#: src/cookies.c:1341
+#: src/cookies.c:1438
 #, c-format
 msgid "Error writing to `%s': %s\n"
 msgstr "Ошибка записи в `%s': %s\n"
 
-#: src/cookies.c:1345
+#: src/cookies.c:1442
 #, c-format
 msgid "Error closing `%s': %s\n"
 msgstr "Ошибка закрытия `%s': %s\n"
 
-#: src/ftp-ls.c:787
+#: src/ftp-ls.c:812
 msgid "Unsupported listing type, trying Unix listing parser.\n"
-msgstr "Формат листинга не поддерживается, попытка использования Unix-формата.\n"
+msgstr "Неподдерживаемый формат листинга, пробуется парсер листинга для Unix.\n"
 
-#: src/ftp-ls.c:832 src/ftp-ls.c:834
+#: src/ftp-ls.c:857 src/ftp-ls.c:859
 #, c-format
 msgid "Index of /%s on %s:%d"
-msgstr "Листинг каталога /%s на %s:%d"
+msgstr "Индекс /%s на %s:%d"
 
-#: src/ftp-ls.c:856
+#: src/ftp-ls.c:882
 msgid "time unknown       "
 msgstr "время неизвестно   "
 
-#: src/ftp-ls.c:860
+#: src/ftp-ls.c:886
 msgid "File        "
 msgstr "Файл        "
 
-#: src/ftp-ls.c:863
+#: src/ftp-ls.c:889
 msgid "Directory   "
 msgstr "Каталог     "
 
-#: src/ftp-ls.c:866
+#: src/ftp-ls.c:892
 msgid "Link        "
 msgstr "Ссылка      "
 
-#: src/ftp-ls.c:869
+#: src/ftp-ls.c:895
 msgid "Not sure    "
 msgstr "Неизвестно  "
 
-#: src/ftp-ls.c:887
+#: src/ftp-ls.c:913
 #, c-format
 msgid " (%s bytes)"
 msgstr " (%s байт)"
 
 #. Second: Login with proper USER/PASS sequence.
-#: src/ftp.c:179
+#: src/ftp.c:202
 #, c-format
 msgid "Logging in as %s ... "
-msgstr "Регистрация под именем %s ... "
+msgstr "Выполняется вход под именем %s ... "
 
-#: src/ftp.c:188 src/ftp.c:241 src/ftp.c:272 src/ftp.c:326 src/ftp.c:419
-#: src/ftp.c:470 src/ftp.c:500 src/ftp.c:564 src/ftp.c:628 src/ftp.c:689
-#: src/ftp.c:737
+#: src/ftp.c:215 src/ftp.c:268 src/ftp.c:299 src/ftp.c:353 src/ftp.c:468
+#: src/ftp.c:519 src/ftp.c:551 src/ftp.c:611 src/ftp.c:675 src/ftp.c:748
+#: src/ftp.c:796
 msgid "Error in server response, closing control connection.\n"
-msgstr "Ошибка в реакции сервера, закрытие управляющего соединения.\n"
+msgstr "Ошибка в ответе сервера, управляющее соединение закрывается.\n"
 
-#: src/ftp.c:196
+#: src/ftp.c:223
 msgid "Error in server greeting.\n"
 msgstr "Ошибка в приветствии сервера.\n"
 
-#: src/ftp.c:204 src/ftp.c:335 src/ftp.c:428 src/ftp.c:509 src/ftp.c:574
-#: src/ftp.c:638 src/ftp.c:699 src/ftp.c:747
+#: src/ftp.c:231 src/ftp.c:362 src/ftp.c:477 src/ftp.c:560 src/ftp.c:621
+#: src/ftp.c:685 src/ftp.c:758 src/ftp.c:806
 msgid "Write failed, closing control connection.\n"
-msgstr "Ошибка записи, закрытие управляющего соединения.\n"
+msgstr "Ошибка записи, управляющее соединение закрывается.\n"
 
-#: src/ftp.c:211
+#: src/ftp.c:238
 msgid "The server refuses login.\n"
-msgstr "Сервер отклонил регистрацию.\n"
+msgstr "Сервер отклонил логин.\n"
 
-#: src/ftp.c:218
+#: src/ftp.c:245
 msgid "Login incorrect.\n"
-msgstr "Недопустимое имя или пароль.\n"
+msgstr "Неверный логин.\n"
 
-#: src/ftp.c:225
+#: src/ftp.c:252
 msgid "Logged in!\n"
-msgstr "Регистрация прошла успешно!\n"
+msgstr "Выполнен вход в систему!\n"
 
-#: src/ftp.c:250
+#: src/ftp.c:277
 msgid "Server error, can't determine system type.\n"
-msgstr "Ошибка на сервере, не удается определить тип системы.\n"
+msgstr "Ошибка сервера, невозможно определить тип системы.\n"
 
-#: src/ftp.c:260 src/ftp.c:549 src/ftp.c:612 src/ftp.c:669
+#: src/ftp.c:287 src/ftp.c:596 src/ftp.c:659 src/ftp.c:716
 msgid "done.    "
-msgstr "сделано.    "
+msgstr "готово.  "
 
-#: src/ftp.c:314 src/ftp.c:449 src/ftp.c:484 src/ftp.c:720 src/ftp.c:768
-#: src/host.c:280
+#: src/ftp.c:341 src/ftp.c:498 src/ftp.c:533 src/ftp.c:779 src/ftp.c:827
 msgid "done.\n"
-msgstr "сделано.\n"
+msgstr "готово.\n"
 
-#: src/ftp.c:343
+#: src/ftp.c:370
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
-msgstr "Неизвестный тип `%c', закрытие управляющего соединения.\n"
+msgstr "Неизвестный тип `%c', управляющее соединение закрывается.\n"
 
-#: src/ftp.c:356
+#: src/ftp.c:383
 msgid "done.  "
-msgstr "сделано.  "
+msgstr "готово.   "
 
-#: src/ftp.c:362
+#: src/ftp.c:389
 msgid "==> CWD not needed.\n"
-msgstr "==> CWD не нужна.\n"
+msgstr "==> CWD не нужен.\n"
 
-#: src/ftp.c:435
+#: src/ftp.c:484
 #, c-format
-msgid "No such directory `%s'.\n\n"
-msgstr "Отсутствует каталог `%s'.\n\n"
+msgid ""
+"No such directory `%s'.\n"
+"\n"
+msgstr ""
+"Нет такого каталога `%s'.\n"
+"\n"
 
 #. do not CWD
-#: src/ftp.c:453
+#: src/ftp.c:502
 msgid "==> CWD not required.\n"
 msgstr "==> CWD не требуется.\n"
 
-#: src/ftp.c:516
+#: src/ftp.c:567
 msgid "Cannot initiate PASV transfer.\n"
-msgstr "Не удается начать PASV-передачу.\n"
+msgstr "Невозможно начать PASV-передачу.\n"
 
-#: src/ftp.c:520
+#: src/ftp.c:571
 msgid "Cannot parse PASV response.\n"
-msgstr "Ошибка синтаксического разбора ответа PASV.\n"
+msgstr "Ошибка парсинга ответа PASV.\n"
 
-#: src/ftp.c:541
+#: src/ftp.c:588
 #, c-format
 msgid "couldn't connect to %s:%hu: %s\n"
-msgstr "не удалось соединиться с %s:%hu: %s\n"
+msgstr "невозможно было соединиться с %s:%hu: %s\n"
 
-#: src/ftp.c:591
+#: src/ftp.c:638
 #, c-format
 msgid "Bind error (%s).\n"
 msgstr "Ошибка bind (%s).\n"
 
-#: src/ftp.c:598
+#: src/ftp.c:645
 msgid "Invalid PORT.\n"
 msgstr "Недопустимый PORT.\n"
 
-#: src/ftp.c:651
+#: src/ftp.c:698
 #, c-format
-msgid "\nREST failed; will not truncate `%s'.\n"
-msgstr "\nКоманда REST не выполнена; усечение `%s' не производится.\n"
+msgid ""
+"\n"
+"REST failed; will not truncate `%s'.\n"
+msgstr ""
+"\n"
+"Сбой REST; `%s' не будет обрезан.\n"
 
-#: src/ftp.c:658
-msgid "\nREST failed, starting from scratch.\n"
-msgstr "\nКоманда REST не выполнена, повтор с нулевой позиции.\n"
+#: src/ftp.c:705
+msgid ""
+"\n"
+"REST failed, starting from scratch.\n"
+msgstr ""
+"\n"
+"Сбой REST, запуск с начала.\n"
 
-#: src/ftp.c:707
+#: src/ftp.c:766
 #, c-format
-msgid "No such file `%s'.\n\n"
-msgstr "Отсутствует файл `%s'.\n\n"
+msgid ""
+"No such file `%s'.\n"
+"\n"
+msgstr ""
+"Нет такого файла `%s'.\n"
+"\n"
 
-#: src/ftp.c:755
+#: src/ftp.c:814
 #, c-format
-msgid "No such file or directory `%s'.\n\n"
-msgstr "Отсутствует файл или каталог `%s'.\n\n"
+msgid ""
+"No such file or directory `%s'.\n"
+"\n"
+msgstr ""
+"Нет такого файла или каталога `%s'.\n"
+"\n"
 
-#: src/ftp.c:839 src/ftp.c:847
+#: src/ftp.c:898 src/ftp.c:906
 #, c-format
 msgid "Length: %s"
 msgstr "Длина: %s"
 
-#: src/ftp.c:841 src/ftp.c:849
+#: src/ftp.c:900 src/ftp.c:908
 #, c-format
 msgid " [%s to go]"
 msgstr " [осталось %s]"
 
-#: src/ftp.c:851
+#: src/ftp.c:910
 msgid " (unauthoritative)\n"
 msgstr " (не достоверно)\n"
 
-#: src/ftp.c:877
+#: src/ftp.c:936
 #, c-format
 msgid "%s: %s, closing control connection.\n"
-msgstr "%s: %s, закрытие управляющего соединения.\n"
+msgstr "%s: %s, управляющее соединение закрывается.\n"
 
-#: src/ftp.c:885
+#: src/ftp.c:944
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
 msgstr "%s (%s) - Соединение: %s; "
 
-#: src/ftp.c:902
+#: src/ftp.c:961
 msgid "Control connection closed.\n"
 msgstr "Управляющее соединение закрыто.\n"
 
-#: src/ftp.c:920
+#: src/ftp.c:979
 msgid "Data transfer aborted.\n"
 msgstr "Передача данных прервана.\n"
 
-#: src/ftp.c:984
+#: src/ftp.c:1044
 #, c-format
 msgid "File `%s' already there, not retrieving.\n"
-msgstr "Файл `%s' уже существует, получать не требуется.\n"
+msgstr "Файл `%s' уже существует, не загружается.\n"
 
-#: src/ftp.c:1054 src/http.c:1527
+#: src/ftp.c:1114 src/http.c:1716
 #, c-format
 msgid "(try:%2d)"
 msgstr "(попытка:%2d)"
 
-#: src/ftp.c:1118 src/http.c:1786
+#: src/ftp.c:1180 src/http.c:1975
 #, c-format
-msgid "%s (%s) - `%s' saved [%ld]\n\n"
-msgstr "%s (%s) - `%s' сохранен [%ld]\n\n"
+msgid ""
+"%s (%s) - `%s' saved [%ld]\n"
+"\n"
+msgstr ""
+"%s (%s) - `%s' сохранен [%ld]\n"
+"\n"
 
-#: src/ftp.c:1160 src/main.c:822 src/recur.c:349 src/retr.c:587
+#: src/ftp.c:1222 src/main.c:890 src/recur.c:377 src/retr.c:596
 #, c-format
 msgid "Removing %s.\n"
-msgstr "Удаление %s.\n"
+msgstr "Удаляется %s.\n"
 
-#: src/ftp.c:1202
+#: src/ftp.c:1264
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
-msgstr "Листинг будет сохранен во временном файле `%s'.\n"
+msgstr "`%s' используется как временный файл для листинга.\n"
 
-#: src/ftp.c:1217
+#: src/ftp.c:1279
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr "Удален `%s'.\n"
 
-#: src/ftp.c:1252
+#: src/ftp.c:1314
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr "Глубина рекурсии %d превысила максимальную глубину %d.\n"
 
 #. Remote file is older, file sizes can be compared and
 #. are both equal.
-#: src/ftp.c:1317
-#, c-format
-msgid "Remote file no newer than local file `%s' -- not retrieving.\n"
-msgstr "Файл на сервере не новее локального файла `%s' -- пропуск.\n"
-
-#. Remote file is newer or sizes cannot be matched
-#: src/ftp.c:1324
-#, c-format
-msgid "Remote file is newer than local file `%s' -- retrieving.\n\n"
-msgstr "Файл на сервере новее локального файла `%s' -- получение.\n"
-
-#. Sizes do not match
-#: src/ftp.c:1331
-#, c-format
-msgid "The sizes do not match (local %ld) -- retrieving.\n\n"
-msgstr "Размеры не совпадают (локальный размер %ld) -- получение.\n"
-
-#: src/ftp.c:1348
-msgid "Invalid name of the symlink, skipping.\n"
-msgstr "Недопустимое имя символьной ссылки, пропущено.\n"
-
-#: src/ftp.c:1365
-#, c-format
-msgid "Already have correct symlink %s -> %s\n\n"
-msgstr "Корректная ссылка %s -> %s уже существует.\n\n"
-
-#: src/ftp.c:1373
-#, c-format
-msgid "Creating symlink %s -> %s\n"
-msgstr "Создание символьной ссылки %s -> %s\n"
-
 #: src/ftp.c:1384
 #, c-format
-msgid "Symlinks not supported, skipping symlink `%s'.\n"
-msgstr "Символьные ссылки не поддерживаются, пропуск `%s'.\n"
+msgid "Remote file no newer than local file `%s' -- not retrieving.\n"
+msgstr "Удаленный файл не новее локального файла `%s' -- не загружается.\n"
 
-#: src/ftp.c:1396
+#. Remote file is newer or sizes cannot be matched
+#: src/ftp.c:1391
 #, c-format
-msgid "Skipping directory `%s'.\n"
-msgstr "Пропуск каталога `%s'.\n"
+msgid ""
+"Remote file is newer than local file `%s' -- retrieving.\n"
+"\n"
+msgstr "Удаленный файл новее локального файла `%s' -- загружается.\n"
 
-#: src/ftp.c:1405
+#. Sizes do not match
+#: src/ftp.c:1398
 #, c-format
-msgid "%s: unknown/unsupported file type.\n"
-msgstr "%s: тип файла неизвестен или не поддерживается.\n"
+msgid ""
+"The sizes do not match (local %ld) -- retrieving.\n"
+"\n"
+msgstr "Размеры не совпадают (локальный размер %ld) -- загружается.\n"
+
+#: src/ftp.c:1415
+msgid "Invalid name of the symlink, skipping.\n"
+msgstr "Недопустимое имя символической ссылки, пропускается.\n"
 
 #: src/ftp.c:1432
 #, c-format
-msgid "%s: corrupt time-stamp.\n"
-msgstr "%s: неверное время изменения файла.\n"
+msgid ""
+"Already have correct symlink %s -> %s\n"
+"\n"
+msgstr ""
+"Корректная символическая ссылка %s -> %s уже существует.\n"
+"\n"
 
-#: src/ftp.c:1457
+#: src/ftp.c:1440
+#, c-format
+msgid "Creating symlink %s -> %s\n"
+msgstr "Создется символическая ссылка %s -> %s\n"
+
+#: src/ftp.c:1451
+#, c-format
+msgid "Symlinks not supported, skipping symlink `%s'.\n"
+msgstr "Символические ссылки не поддерживаются, ссылка `%s' пропускается.\n"
+
+#: src/ftp.c:1463
+#, c-format
+msgid "Skipping directory `%s'.\n"
+msgstr "Пропускается каталог `%s'.\n"
+
+#: src/ftp.c:1472
+#, c-format
+msgid "%s: unknown/unsupported file type.\n"
+msgstr "%s: неизвестный/неподдерживаемый тип файла.\n"
+
+#: src/ftp.c:1499
+#, c-format
+msgid "%s: corrupt time-stamp.\n"
+msgstr "%s: повреждена метка даты/времени.\n"
+
+#: src/ftp.c:1524
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
-msgstr "Каталоги не будут получены, глубина составляет %d (максимум %d).\n"
+msgstr "Каталоги не будут загружены, т.к. глубина составляет %d (максимум %d).\n"
 
-#: src/ftp.c:1507
+#: src/ftp.c:1574
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
-msgstr "Каталог `%s' пропущен, так как находится в списке исключенных.\n"
+msgstr "Вход в каталог `%s' не выполняется, т.к. он исключен/не включен.\n"
 
-#: src/ftp.c:1561
+#: src/ftp.c:1639 src/ftp.c:1652
 #, c-format
 msgid "Rejecting `%s'.\n"
-msgstr "Пропуск `%s'.\n"
+msgstr "Отклоняется `%s'.\n"
 
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1608
+#: src/ftp.c:1698
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr "Нет совпадений с шаблоном `%s'.\n"
 
-#: src/ftp.c:1673
+#: src/ftp.c:1764
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
-msgstr "Листинг в формате HTML записан в файл `%s' [%ld].\n"
+msgstr "Индекс в формате HTML записан в файл `%s' [%ld].\n"
 
-#: src/ftp.c:1678
+#: src/ftp.c:1769
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
-msgstr "Листинг в формате HTML записан в файл `%s'.\n"
+msgstr "Индекс в формате HTML записан в файл `%s'.\n"
 
-#: src/gen_sslfunc.c:109
+#: src/gen_sslfunc.c:117
 msgid "Could not seed OpenSSL PRNG; disabling SSL.\n"
-msgstr "Не удалось инициализировать PRNG в OpenSSL; протокол SSL запрещен.\n"
+msgstr "Невозможно породить PRNG в OpenSSL; протокол SSL отключается.\n"
 
-#: src/getopt.c:454
+#: src/getopt.c:675
 #, c-format
 msgid "%s: option `%s' is ambiguous\n"
-msgstr "%s: ключ `%s' недопустим в данном контексте\n"
+msgstr "%s: опция `%s' неоднозначна\n"
 
-#: src/getopt.c:478
+#: src/getopt.c:700
 #, c-format
 msgid "%s: option `--%s' doesn't allow an argument\n"
-msgstr "%s: ключ `--%s' не позволяет задавать аргумент\n"
+msgstr "%s: опция `--%s' не разрешает использовать аргумент\n"
 
-#: src/getopt.c:483
+#: src/getopt.c:705
 #, c-format
 msgid "%s: option `%c%s' doesn't allow an argument\n"
-msgstr "%s: ключ `%c%s' не позволяет задавать аргумент\n"
+msgstr "%s: опция `%c%s' не разрешает использовать аргумент\n"
 
-#: src/getopt.c:498
+#: src/getopt.c:723 src/getopt.c:896
 #, c-format
 msgid "%s: option `%s' requires an argument\n"
-msgstr "%s: ключ `%s' требует указания аргумента\n"
+msgstr "%s: для опции `%s' требуется аргумент\n"
 
 #. --option
-#: src/getopt.c:528
+#: src/getopt.c:752
 #, c-format
 msgid "%s: unrecognized option `--%s'\n"
-msgstr "%s: нераспознанный ключ `--%s'\n"
+msgstr "%s: нераспознанная опция `--%s'\n"
 
 #. +option or -option
-#: src/getopt.c:532
+#: src/getopt.c:756
 #, c-format
 msgid "%s: unrecognized option `%c%s'\n"
-msgstr "%s: нераспознанный ключ `%c%s'\n"
+msgstr "%s: нераспознанная опция `%c%s'\n"
 
 #. 1003.2 specifies the format of this message.
-#: src/getopt.c:563
+#: src/getopt.c:782
 #, c-format
 msgid "%s: illegal option -- %c\n"
-msgstr "%s: недопустимый ключ командной строки -- %c\n"
+msgstr "%s: недопустимая опция -- %c\n"
+
+#: src/getopt.c:785
+#, c-format
+msgid "%s: invalid option -- %c\n"
+msgstr "%s: неверная опция -- %c\n"
 
 #. 1003.2 specifies the format of this message.
-#: src/getopt.c:602
+#: src/getopt.c:815 src/getopt.c:945
 #, c-format
 msgid "%s: option requires an argument -- %c\n"
-msgstr "%s: ключ требует указания аргумента -- %c\n"
+msgstr "%s: для опции требуется аргумент -- %c\n"
 
-#: src/host.c:268
+#: src/getopt.c:862
+#, c-format
+msgid "%s: option `-W %s' is ambiguous\n"
+msgstr "%s: опция `-W %s' неоднозначна\n"
+
+#: src/getopt.c:880
+#, c-format
+msgid "%s: option `-W %s' doesn't allow an argument\n"
+msgstr "%s: опция `-W %s' не разрешает использовать аргумент\n"
+
+#: src/host.c:636
 #, c-format
 msgid "Resolving %s... "
-msgstr "Преобразование адреса %s... "
+msgstr "Распознается %s... "
 
-#: src/host.c:275
+#: src/host.c:656 src/host.c:672
 #, c-format
 msgid "failed: %s.\n"
-msgstr "ошибка: %s.\n"
+msgstr "сбой: %s.\n"
 
-#: src/host.c:345
+#: src/host.c:674
+msgid "failed: timed out.\n"
+msgstr "сбой: превышен тайм-аут.\n"
+
+#: src/host.c:762
 msgid "Host not found"
 msgstr "Хост не найден"
 
-#: src/host.c:347
+#: src/host.c:764
 msgid "Unknown error"
 msgstr "Неизвестная ошибка"
 
-#. this is fatal
-#: src/http.c:573
-msgid "Failed to set up an SSL context\n"
-msgstr "Не удалось установить контекст SSL\n"
+#: src/html-url.c:293
+#, c-format
+msgid "%s: Cannot resolve incomplete link %s.\n"
+msgstr "%s: Невозможно распознать неполную ссылку %s.\n"
 
-#: src/http.c:579
+#. this is fatal
+#: src/http.c:674
+msgid "Failed to set up an SSL context\n"
+msgstr "Сбой установки контекста SSL\n"
+
+#: src/http.c:680
 #, c-format
 msgid "Failed to load certificates from %s\n"
-msgstr "Не удалось загрузить сертификаты с %s\n"
+msgstr "Сбой загрузки сертификатов из %s\n"
 
-#: src/http.c:583 src/http.c:591
+#: src/http.c:684 src/http.c:692
 msgid "Trying without the specified certificate\n"
-msgstr "Попытка продолжить без указанного сертификата\n"
+msgstr "Выполняется попытка без указанного сертификата\n"
 
-#: src/http.c:587
+#: src/http.c:688
 #, c-format
 msgid "Failed to get certificate key from %s\n"
-msgstr "Не удалось получить ключ сертификата с %s\n"
+msgstr "Сбой получения ключа сертификата из %s\n"
 
-#: src/http.c:657 src/http.c:1620
+#: src/http.c:761 src/http.c:1809
 msgid "Unable to establish SSL connection.\n"
-msgstr "Не удается установить соединение SSL.\n"
+msgstr "Невозможно установить соединение SSL.\n"
 
-#: src/http.c:666
+#: src/http.c:770
 #, c-format
 msgid "Reusing connection to %s:%hu.\n"
 msgstr "Повторное использование соединения с %s:%hu.\n"
 
-#: src/http.c:868
+#: src/http.c:1034
 #, c-format
 msgid "Failed writing HTTP request: %s.\n"
-msgstr "Ошибка записи запроса HTTP: %s.\n"
+msgstr "Сбой записи запроса HTTP: %s.\n"
 
-#: src/http.c:873
+#: src/http.c:1039
 #, c-format
 msgid "%s request sent, awaiting response... "
-msgstr "Запрос %s послан, ожидание ответа... "
+msgstr "Запрос %s послан, ожидается ответ... "
 
-#: src/http.c:917
+#: src/http.c:1083
 msgid "End of file while parsing headers.\n"
-msgstr "Конец файла во время разбора заголовков.\n"
+msgstr "Конец файла при разборе заголовков.\n"
 
-#: src/http.c:927
+#: src/http.c:1093
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr "Ошибка чтения (%s) в заголовках.\n"
 
-#: src/http.c:962
+#: src/http.c:1128
 msgid "No data received"
 msgstr "Не получено никаких данных"
 
-#: src/http.c:964
+#: src/http.c:1130
 msgid "Malformed status line"
 msgstr "Неполная строка статуса"
 
-#: src/http.c:969
+#: src/http.c:1135
 msgid "(no description)"
 msgstr "(нет описания)"
 
-#: src/http.c:1101
+#: src/http.c:1267
 msgid "Authorization failed.\n"
-msgstr "Авторизация прошла неудачно.\n"
+msgstr "Сбой авторизации.\n"
 
-#: src/http.c:1108
+#: src/http.c:1274
 msgid "Unknown authentication scheme.\n"
-msgstr "Неизвестная схема проверки полномочий.\n"
+msgstr "Неизвестная схема аутентификации.\n"
 
-#: src/http.c:1148
+#: src/http.c:1314
 #, c-format
 msgid "Location: %s%s\n"
 msgstr "Адрес: %s%s\n"
 
-#: src/http.c:1149 src/http.c:1282
+#: src/http.c:1315 src/http.c:1454
 msgid "unspecified"
 msgstr "нет информации"
 
-#: src/http.c:1150
+#: src/http.c:1316
 msgid " [following]"
 msgstr " [переход]"
 
-#: src/http.c:1213
-msgid "\n    The file is already fully retrieved; nothing to do.\n\n"
-msgstr "\n    Файл уже получен полностью; нет действий.\n\n"
+#: src/http.c:1383
+msgid ""
+"\n"
+"    The file is already fully retrieved; nothing to do.\n"
+"\n"
+msgstr ""
+"\n"
+"    Файл уже полностью загружен; нечего выполнять.\n"
+"\n"
 
-#: src/http.c:1229
+#: src/http.c:1401
 #, c-format
 msgid ""
 "\n"
@@ -512,171 +605,223 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"Возобновление при получении данного файла, подразумеваемое ключом -c,\n"
-"не выполнено. Существующий файл `%s' не будет усечен.\n"
+"Не удалось возобновить загрузку этого файла с опцией `-c'.\n"
+"Существующий файл `%s' не будет усечен.\n"
 "\n"
 
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
-#: src/http.c:1272
+#: src/http.c:1444
 msgid "Length: "
 msgstr "Длина: "
 
-#: src/http.c:1277
+#: src/http.c:1449
 #, c-format
 msgid " (%s to go)"
 msgstr " (осталось %s)"
 
-#: src/http.c:1282
+#: src/http.c:1454
 msgid "ignored"
 msgstr "игнорируется"
 
-#: src/http.c:1413
+#: src/http.c:1598
 msgid "Warning: wildcards not supported in HTTP.\n"
-msgstr "Предупреждение: в HTTP шаблоны не поддерживаются.\n"
+msgstr "Предупреждение: в HTTP маски не поддерживаются.\n"
 
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:1443
+#: src/http.c:1628
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
-msgstr "Файл `%s' уже существует, получение не производится.\n"
+msgstr "Файл `%s' уже существует, не будет загружен.\n"
 
-#: src/http.c:1611
+#: src/http.c:1800
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
-msgstr "Ошибка записи в `%s' (%s).\n"
+msgstr "Невозможно записать в `%s' (%s).\n"
 
-#: src/http.c:1630
+#: src/http.c:1819
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "ОШИБКА: Перенаправление (%d) без указания адреса.\n"
 
-#: src/http.c:1662
+#: src/http.c:1851
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s ОШИБКА %d: %s.\n"
 
-#: src/http.c:1675
+#: src/http.c:1864
 msgid "Last-modified header missing -- time-stamps turned off.\n"
-msgstr "Нет заголовка last-modified -- временные отметки выключены.\n"
+msgstr "Отсутствует заголовок last-modified -- временные отметки выключены.\n"
 
-#: src/http.c:1683
+#: src/http.c:1872
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
-msgstr "Заголовок last-modified некорректен -- временные отметки игнорируются.\n"
+msgstr "Неверный заголовок last-modified -- временные отметки проигнорированы.\n"
 
-#: src/http.c:1706
+#: src/http.c:1895
 #, c-format
-msgid "Server file no newer than local file `%s' -- not retrieving.\n\n"
-msgstr "Файл на сервере не новее локального файла `%s' -- пропуск.\n"
+msgid ""
+"Server file no newer than local file `%s' -- not retrieving.\n"
+"\n"
+msgstr "Файл на сервере не новее локального файла `%s' -- не загружается.\n"
 
-#: src/http.c:1714
+#: src/http.c:1903
 #, c-format
 msgid "The sizes do not match (local %ld) -- retrieving.\n"
-msgstr "Размеры файлов не совпадают (локальный размер %ld) -- получение.\n"
+msgstr "Размеры файлов не совпадают (локальный размер %ld) -- загружается.\n"
 
-#: src/http.c:1718
+#: src/http.c:1907
 msgid "Remote file is newer, retrieving.\n"
-msgstr "Файл новее локального, получение.\n"
+msgstr "Удаленный файл более новый, загружается.\n"
 
-#: src/http.c:1759
+#: src/http.c:1948
 #, c-format
-msgid "%s (%s) - `%s' saved [%ld/%ld]\n\n"
-msgstr "%s (%s) - `%s' сохранен [%ld/%ld]\n\n"
+msgid ""
+"%s (%s) - `%s' saved [%ld/%ld]\n"
+"\n"
+msgstr ""
+"%s (%s) - `%s' сохранен [%ld/%ld]\n"
+"\n"
 
-#: src/http.c:1809
+#: src/http.c:1998
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld. "
 msgstr "%s (%s) - Соединение закрыто, позиция %ld. "
 
-#: src/http.c:1818
+#: src/http.c:2007
 #, c-format
-msgid "%s (%s) - `%s' saved [%ld/%ld])\n\n"
-msgstr "%s (%s) - `%s' сохранен [%ld/%ld])\n\n"
+msgid ""
+"%s (%s) - `%s' saved [%ld/%ld])\n"
+"\n"
+msgstr ""
+"%s (%s) - `%s' сохранен [%ld/%ld])\n"
+"\n"
 
-#: src/http.c:1839
+#: src/http.c:2028
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld/%ld. "
 msgstr "%s (%s) - Соединение закрыто, позиция %ld/%ld. "
 
-#: src/http.c:1851
+#: src/http.c:2040
 #, c-format
 msgid "%s (%s) - Read error at byte %ld (%s)."
 msgstr "%s (%s) - Ошибка чтения, позиция %ld (%s)."
 
-#: src/http.c:1860
+#: src/http.c:2049
 #, c-format
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr "%s (%s) - Ошибка чтения, позиция %ld/%ld (%s). "
 
-#: src/init.c:354 src/netrc.c:265
+#: src/init.c:342
+#, c-format
+msgid "%s: WGETRC points to %s, which doesn't exist.\n"
+msgstr "%s: WGETRC указывает на несуществующий %s.\n"
+
+#: src/init.c:398 src/netrc.c:276
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
-msgstr "%s: Ошибка чтения %s (%s).\n"
+msgstr "%s: Невозможно прочитать %s (%s).\n"
 
-#: src/init.c:372 src/init.c:378
+#: src/init.c:416 src/init.c:422
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Ошибка в %s в строке %d.\n"
 
-#: src/init.c:410
+#: src/init.c:454
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: Предупреждение: системный и пользовательский wgetrc указывают на `%s'.\n"
 
-#: src/init.c:502
+#: src/init.c:594
 #, c-format
-msgid "%s: BUG: unknown command `%s', value `%s'.\n"
-msgstr "%s: ОШИБКА В ПРОГРАММЕ: неизвестная команда `%s', значение `%s'.\n"
+msgid "%s: Invalid --execute command `%s'\n"
+msgstr "%s: Неверная команда --execute `%s'\n"
 
-#: src/init.c:536
+#: src/init.c:630
 #, c-format
-msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
-msgstr "%s: %s: Ошибка определения IP-адреса для `%s'.\n"
+msgid "%s: %s: Invalid boolean `%s', use `on' or `off'.\n"
+msgstr "%s: %s: Неверное логическое выражение `%s', используйте `on' или `off'.\n"
 
-#: src/init.c:569
+#: src/init.c:673
 #, c-format
-msgid "%s: %s: Please specify on or off.\n"
-msgstr "%s: %s: Пожалуйста, укажите on или off.\n"
+msgid "%s: %s: Invalid boolean `%s', use always, on, off, or never.\n"
+msgstr "%s: %s: Неверное логическое выражение `%s', используйте always, on, off или never.\n"
 
-#: src/init.c:613
+#: src/init.c:691
 #, c-format
-msgid "%s: %s: Please specify always, on, off, or never.\n"
-msgstr "%s: %s: Пожалуйста, укажите always, on, off или never.\n"
+msgid "%s: %s: Invalid number `%s'.\n"
+msgstr "%s: %s: Неверное число `%s'.\n"
 
-#: src/init.c:632 src/init.c:899 src/init.c:978
+#: src/init.c:930 src/init.c:949
 #, c-format
-msgid "%s: %s: Invalid specification `%s'.\n"
-msgstr "%s: %s: Недопустимое описание `%s'.\n"
+msgid "%s: %s: Invalid byte value `%s'\n"
+msgstr "%s: %s: Неверное значение байта `%s'\n"
 
-#: src/init.c:788 src/init.c:810 src/init.c:832 src/init.c:858
+#: src/init.c:974
 #, c-format
-msgid "%s: Invalid specification `%s'\n"
-msgstr "%s: Недопустимое описание `%s'\n"
+msgid "%s: %s: Invalid time period `%s'\n"
+msgstr "%s: %s: Неверный диапазон времени`%s'.\n"
 
-#: src/init.c:949
+#: src/init.c:1051
+#, c-format
+msgid "%s: %s: Invalid header `%s'.\n"
+msgstr "%s: %s: Неверный заголовок `%s'.\n"
+
+#: src/init.c:1106
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
-msgstr "%s: %s: Неверный режим отображения прогресса, `%s'.\n"
+msgstr "%s: %s: Неверный тип прогресса, `%s'.\n"
 
-#: src/main.c:116
+#: src/init.c:1157
+#, c-format
+msgid "%s: %s: Invalid restriction `%s', use `unix' or `windows'.\n"
+msgstr "%s: %s: Неверное ограничение `%s', используйте `unix' или `windows'.\n"
+
+#: src/init.c:1198
+#, c-format
+msgid "%s: %s: Invalid value `%s'.\n"
+msgstr "%s: %s: Неверное значение `%s'.\n"
+
+#: src/log.c:636
+#, c-format
+msgid ""
+"\n"
+"%s received, redirecting output to `%s'.\n"
+msgstr ""
+"\n"
+"Получен сигнал %s, вывод перенаправляется в `%s'.\n"
+
+#. Eek!  Opening the alternate log file has failed.  Nothing we
+#. can do but disable printing completely.
+#: src/log.c:643
+#, c-format
+msgid "%s: %s; disabling logging.\n"
+msgstr "%s: %s; журналирование отключается.\n"
+
+#: src/main.c:127
 #, c-format
 msgid "Usage: %s [OPTION]... [URL]...\n"
-msgstr "Использование: %s [КЛЮЧ]... [URL]...\n"
+msgstr "Использование: %s [ОПЦИЯ]... [URL]...\n"
 
-#: src/main.c:124
+#: src/main.c:135
 #, c-format
 msgid "GNU Wget %s, a non-interactive network retriever.\n"
-msgstr "GNU Wget %s, программа автоматического получения файлов по сети.\n"
+msgstr "GNU Wget %s, программа для неинтерактивной загрузки файлов по сети.\n"
 
 #. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
 #. don't bitch.  Also, it makes translation much easier.
-#: src/main.c:129
-msgid "\nMandatory arguments to long options are mandatory for short options too.\n\n"
-msgstr "\nКороткие ключи требуют указания тех же аргументов, что и длинные ключи.\n\n"
+#: src/main.c:140
+msgid ""
+"\n"
+"Mandatory arguments to long options are mandatory for short options too.\n"
+"\n"
+msgstr ""
+"\n"
+"Обязательные аргументы для длинных опций также являются обязательными и для коротких опций.\n"
+"\n"
 
-#: src/main.c:133
+#: src/main.c:144
 msgid ""
 "Startup:\n"
 "  -V,  --version           display the version of Wget and exit.\n"
@@ -686,13 +831,13 @@ msgid ""
 "\n"
 msgstr ""
 "Запуск:\n"
-"  -V,  --version           отобразить версию Wget и выйти.\n"
-"  -h,  --help              вывести данную подсказку.\n"
-"  -b,  --background        перейти в фоновый режим после запуска.\n"
-"  -e,  --execute=КОМАНДА   выполнить команду в стиле `.wgetrc'.\n"
+"  -V,  --version           вывод версии Wget и выход.\n"
+"  -h,  --help              вывод этой справки.\n"
+"  -b,  --background        переход в фоновый режим после запуска.\n"
+"  -e,  --execute=КОМАНДА   выполнение команды в стиле `.wgetrc'.\n"
 "\n"
 
-#: src/main.c:140
+#: src/main.c:151
 msgid ""
 "Logging and input file:\n"
 "  -o,  --output-file=FILE     log messages to FILE.\n"
@@ -704,32 +849,25 @@ msgid ""
 "  -i,  --input-file=FILE      download URLs found in FILE.\n"
 "  -F,  --force-html           treat input file as HTML.\n"
 "  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
-"       --sslcertfile=FILE     optional client certificate.\n"
-"       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
-"       --egd-file=FILE        file name of the EGD socket.\n"
 "\n"
 msgstr ""
-"Ведение протоколов и входные файлы:\n"
-"  -o,  --output-file=ФАЙЛ     записывать протокол в указанный ФАЙЛ.\n"
-"  -a,  --append-output=ФАЙЛ   дописывать протокол в конец ФАЙЛА.\n"
-"  -d,  --debug                выводить отладочную информацию.\n"
-"  -q,  --quiet                тихий режим (не выводить ничего).\n"
-"  -v,  --verbose              выводить максимум информации (по умолчанию).\n"
-"  -nv, --non-verbose          выводить минимум информации.\n"
-"  -i,  --input-file=ФАЙЛ      читать адреса URL из ФАЙЛА.\n"
-"  -F,  --force-html           обрабатывать входной файл как HTML.\n"
-"  -B,  --base=URL             добавлять URL к относительнымм ссылкам при\n"
-"                              использовании ключей -F -i.\n"
-"       --sslcertfile=ФАЙЛ     сертификат клиента.\n"
-"       --sslcertkey=ФАЙЛ      файл с ключом для данного сертификата.\n"
-"       --egd-file=ФАЙЛ        имя файла сокета EGD.\n"
+"Файл журнала и входной файл:\n"
+"  -o,  --output-file=ФАЙЛ     запись сообщений в ФАЙЛ.\n"
+"  -a,  --append-output=ФАЙЛ   добавление сообщений в ФАЙЛ.\n"
+"  -d,  --debug                вывод отладочной информации.\n"
+"  -q,  --quiet                режим молчания (без выходных данных).\n"
+"  -v,  --verbose              подробный режим (по умолчанию).\n"
+"  -nv, --non-verbose          отключение подробного режима, но и не молчание.\n"
+"  -i,  --input-file=ФАЙЛ      загрузка URL'ов, найденных в из ФАЙЛе.\n"
+"  -F,  --force-html           обработка входного файла как HTML.\n"
+"  -B,  --base=URL             добавление URL в начало относительных ссылок в файле -F -i\n"
 "\n"
 
-#: src/main.c:155
+#: src/main.c:163
 msgid ""
 "Download:\n"
-"       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n"
 "  -t,  --tries=NUMBER           set number of retries to NUMBER (0 unlimits).\n"
+"       --retry-connrefused      retry even if connection is refused.\n"
 "  -O   --output-document=FILE   write documents to FILE.\n"
 "  -nc, --no-clobber             don't clobber existing files or use .# suffixes.\n"
 "  -c,  --continue               resume getting a partially-downloaded file.\n"
@@ -737,39 +875,55 @@ msgid ""
 "  -N,  --timestamping           don't re-retrieve files unless newer than local.\n"
 "  -S,  --server-response        print server response.\n"
 "       --spider                 don't download anything.\n"
-"  -T,  --timeout=SECONDS        set the read timeout to SECONDS.\n"
+"  -T,  --timeout=SECONDS        set all timeout values to SECONDS.\n"
+"       --dns-timeout=SECS       set the DNS lookup timeout to SECS.\n"
+"       --connect-timeout=SECS   set the connect timeout to SECS.\n"
+"       --read-timeout=SECS      set the read timeout to SECS.\n"
 "  -w,  --wait=SECONDS           wait SECONDS between retrievals.\n"
 "       --waitretry=SECONDS      wait 1...SECONDS between retries of a retrieval.\n"
 "       --random-wait            wait from 0...2*WAIT secs between retrievals.\n"
 "  -Y,  --proxy=on/off           turn proxy on or off.\n"
 "  -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n"
+"       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n"
 "       --limit-rate=RATE        limit download rate to RATE.\n"
+"       --dns-cache=off          disable caching DNS lookups.\n"
+"       --restrict-file-names=OS restrict chars in file names to ones OS allows.\n"
 "\n"
 msgstr ""
-"Получение файлов:\n"
-"       --bind-address=АДРЕС     привязка к локальному АДРЕСУ, доменному или IP.\n"
-"  -t,  --tries=ЧИСЛО            указать ЧИСЛО попыток (0 -- неограниченное).\n"
-"  -O   --output-document=ФАЙЛ   записывать документы в ФАЙЛ.\n"
-"  -nc, --no-clobber             не получать существующие файлы повторно.\n"
-"  -c,  --continue               продолжать получение существующих файлов.\n"
-"       --progress=РЕЖИМ         установить РЕЖИМ отображения прогресса.\n"
-"  -N,  --timestamping           не замещать имеющиеся файлы более ранними.\n"
-"  -S,  --server-response        выводить ответ сервера.\n"
-"       --spider                 не запрашивать реального получения файлов.\n"
-"  -T,  --timeout=СЕКУНДЫ        ограничить время ожидания при приеме данных.\n"
-"  -w,  --wait=СЕКУНДЫ           установить паузу между получением файлов.\n"
-"       --waitretry=СЕКУНДЫ      пауза 1...СЕКУНДЫ между повторными попытками.\n"
-"       --random-wait            пауза в интервале 0...2*WAIT секунд между\n"
-"                                получением файлов.\n"
-"  -Y,  --proxy=on/off           включить или выключить поддержку proxy.\n"
-"  -Q,  --quota=ЧИСЛО            ограничить суммарный объем получаемых файлов.\n"
-"       --limit-rate=СКОРОСТЬ    ограничить скорость скачивания файлов.\n"
+"Загрузка:\n"
+"  -t,  --tries=ЧИСЛО            установка количества попыток в ЧИСЛО\n"
+"                                (0 означает неограниченное).\n"
+"       --retry-connrefused      повтор даже, если в соединении отказано.\n"
+"  -O   --output-document=ФАЙЛ   запись документов в ФАЙЛ.\n"
+"  -nc, --no-clobber             не затирать существующие файлы или использовать\n"
+"                                суффиксы .#.\n"
+"  -c,  --continue               возобновление загрузки частично загруженного файла.\n"
+"       --progress=ТИП           выбор типа индикации прогресса.\n"
+"  -N,  --timestamping           не загружать повторно файлы более старые,\n"
+"                                чем локальные.\n"
+"  -S,  --server-response        вывод ответа сервера.\n"
+"       --spider                 ничего не загружать.\n"
+"  -T,  --timeout=СЕКУНДЫ        установка всех значений тайм-аутов в СЕКУНДЫ.\n"
+"       --dns-timeout=СЕК        установка тайм-аута поиска в DNS в СЕК.\n"
+"  -w,  --wait=СЕКУНДЫ           пауза в СЕКУНДЫ между загрузками.\n"
+"       --waitretry=СЕКУНДЫ      пауза в 1...СЕКУНДЫ между повторными попытками\n"
+"                                загрузки.\n"
+"       --random-wait            пауза в диапазоне 0...2*WAIT секунд между\n"
+"                                загрузками.\n"
+"  -Y,  --proxy=on/off           включение или выключение прокси.\n"
+"  -Q,  --quota=ЧИСЛО            установка ограничения на загрузку в ЧИСЛО.\n"
+"       --bind-address=АДРЕС     привязка к АДРЕСу (имени хоста или IP) на\n"
+"                                локальном хосте.\n"
+"       --limit-rate=СКОРОСТЬ    ограничение скорости загрузки до СКОРОСТИ.\n"
+"       --dns-cache=off          отключение кэширования поисков в DNS.\n"
+"       --restrict-file-names=ОС ограничение символов в именах файлов до тех,\n"
+"                                что разрешены в указанной ОС.\n"
 "\n"
 
-#: src/main.c:174
+#: src/main.c:188
 msgid ""
 "Directories:\n"
-"  -nd  --no-directories            don't create directories.\n"
+"  -nd, --no-directories            don't create directories.\n"
 "  -x,  --force-directories         force creation of directories.\n"
 "  -nH, --no-host-directories       don't create host directories.\n"
 "  -P,  --directory-prefix=PREFIX   save files to PREFIX/...\n"
@@ -777,14 +931,14 @@ msgid ""
 "\n"
 msgstr ""
 "Каталоги:\n"
-"  -nd  --no-directories            не создавать каталоги.\n"
-"  -x,  --force-directories         создавать все недостающие каталоги.\n"
-"  -nH, --no-host-directories       не создавать каталоги с именами хостов.\n"
-"  -P,  --directory-prefix=PREFIX   сохранять файлы в PREFIX/...\n"
-"       --cut-dirs=ЧИСЛО            усечь заданное ЧИСЛО компонент каталога.\n"
+"  -nd  --no-directories            не создавать каталогов.\n"
+"  -x,  --force-directories         принудительное создание каталогов.\n"
+"  -nH, --no-host-directories       не создавать каталогов хостов.\n"
+"  -P,  --directory-prefix=ПРЕФИКС  сохранение файлов в ПРЕФИКС/...\n"
+"       --cut-dirs=ЧИСЛО            игнорирование ЧИСЛА компонентов удаленного каталога.\n"
 "\n"
 
-#: src/main.c:182
+#: src/main.c:196
 msgid ""
 "HTTP options:\n"
 "       --http-user=USER      set http user to USER.\n"
@@ -802,26 +956,58 @@ msgid ""
 "       --cookies=off         don't use cookies.\n"
 "       --load-cookies=FILE   load cookies from FILE before session.\n"
 "       --save-cookies=FILE   save cookies to FILE after session.\n"
+"       --post-data=STRING    use the POST method; send STRING as the data.\n"
+"       --post-file=FILE      use the POST method; send contents of FILE.\n"
 "\n"
 msgstr ""
 "Параметры HTTP:\n"
-"       --http-user=ИМЯ        установить ИМЯ пользователя для http-запросов.\n"
-"       --http-passwd=ПАРОЛЬ   установить ПАРОЛЬ для http-запросов.\n"
-"  -C,  --cache=on/off         включить/выключить кеширование на сервере.\n"
-"  -E,  --html-extension       сохранять все HTML-документы с суффиксом .html.\n"
-"       --ignore-length        игнорировать поле заголовка `Content-Length'.\n"
-"       --header=СТРОКА        вставить СТРОКУ в заголовки HTTP.\n"
-"       --proxy-user=ИМЯ       установить ИМЯ пользователя для прокси-сервера.\n"
-"       --proxy-passwd=ПАРОЛЬ  установить ПАРОЛЬ для прокси-сервера.\n"
-"       --referer=URL          включить заголовок `Referer: URL' в запрос HTTP.\n"
-"  -s,  --save-headers         сохранять заголовки HTTP в файл.\n"
-"  -U,  --user-agent=СТРОКА    задать имя агента СТРОКА вместо Wget/ВЕРСИЯ.\n"
-"       --no-http-keep-alive   запретить повторное использование HTTP-соединений.\n"
-"       --load-cookies=ФАЙЛ    загрузить \"cookies\" из ФАЙЛА до начала сеанса.\n"
-"       --save-cookies=ФАЙЛ    сохранить \"cookies\" в ФАЙЛЕ по окончании сеанса.\n"
+"       --http-user=ПОЛЬЗОВ   установка пользователя http в ПОЛЬЗОВ.\n"
+"       --http-passwd=ПАРОЛЬ  установка пароля http в ПАРОЛЬ.\n"
+"  -C,  --cache=on/off        включение/выключение даных, кэшированных на сервере\n"
+"                             (обычно разрешено).\n"
+"  -E,  --html-extension      сохранение всех документов text/html с расширением .html.\n"
+"       --ignore-length       игнорирование поля заголовка `Content-Length'.\n"
+"       --header=СТРОКА       вставка СТРОКИ внутрь заголовков.\n"
+"       --proxy-user=ПОЛЬЗОВ  установка ПОЛЬЗОВ как имя пользователя для прокси.\n"
+"       --proxy-passwd=ПАРОЛЬ установка ПАРОЛЬ как пароль для прокси.\n"
+"       --referer=URL         включение заголовка `Referer: URL' в запрос HTTP.\n"
+"  -s,  --save-headers        сохранение заголовков HTTP в файл.\n"
+"  -U,  --user-agent=АГЕНТ    идентификация как АГЕНТ вместо Wget/ВЕРСИЯ.\n"
+"       --no-http-keep-alive  отключение HTTP keep-alive (поддерживаемые соединения).\n"
+"       --cookies=off         не использовать cookies.\n"
+"       --load-cookies=ФАЙЛ   загрузка cookies из ФАЙЛа до начала сеанса.\n"
+"       --save-cookies=ФАЙЛ   сохранение cookies в ФАЙЛе по окончании сеанса.\n"
+"       --post-data=СТРОКА    использование метода POST; отправка СТРОКИ в качестве данных.\n"
+"       --post-file=ФАЙЛ      использование метода POST; отправка содержимого ФАЙЛа.\n"
 "\n"
 
-#: src/main.c:200
+#: src/main.c:217
+msgid ""
+"HTTPS (SSL) options:\n"
+"       --sslcertfile=FILE     optional client certificate.\n"
+"       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
+"       --egd-file=FILE        file name of the EGD socket.\n"
+"       --sslcadir=DIR         dir where hash list of CA's are stored.\n"
+"       --sslcafile=FILE       file with bundle of CA's\n"
+"       --sslcerttype=0/1      Client-Cert type 0=PEM (default) / 1=ASN1 (DER)\n"
+"       --sslcheckcert=0/1     Check the server cert agenst given CA\n"
+"       --sslprotocol=0-3      choose SSL protocol; 0=automatic,\n"
+"                              1=SSLv2 2=SSLv3 3=TLSv1\n"
+"\n"
+msgstr ""
+"Опции HTTPS (SSL):\n"
+"       --sslcertfile=ФАЙЛ     необязательный сертификат клиента.\n"
+"       --sslcertkey=KEY-ФАЙЛ  необязательный файл ключа для этого сертификата.\n"
+"       --egd-file=ФАЙЛ        имя файла сокета EGD.\n"
+"       --sslcadir=КАТАЛОГ     каталог, в котором хранится список хэшей CA.\n"
+"       --sslcafile=ФАЙЛ       файл с пакетом CA\n"
+"       --sslcerttype=0/1      тип Client-Cert 0=PEM (по умолчанию) / 1=ASN1 (DER)\n"
+"       --sslcheckcert=0/1     проверка server cert agenst указанного CA\n"
+"       --sslprotocol=0-3      выбор протокола SSL; 0=автоматически,\n"
+"                              1=SSLv2 2=SSLv3 3=TLSv1\n"
+"\n"
+
+#: src/main.c:230
 msgid ""
 "FTP options:\n"
 "  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
@@ -830,39 +1016,41 @@ msgid ""
 "       --retr-symlinks         when recursing, get linked-to files (not dirs).\n"
 "\n"
 msgstr ""
-"Параметры FTP:\n"
-"  -nr, --dont-remove-listing   не удялять файлы `.listing'.\n"
-"  -g,  --glob=on/off           включить/выключить работу с шаблонами в именах.\n"
-"       --passive-ftp           использовать \"пассивный\" режим передачи.\n"
-"       --retr-symlinks         получать по FTP целевые файлы вместо ссылок\n"
-"                               при рекурсии (не относится к каталогам).\n"
+"Опции FTP:\n"
+"  -nr, --dont-remove-listing   не удалять файлы `.listing'.\n"
+"  -g,  --glob=on/off           включение/выключение универсализации имен файлов.\n"
+"       --passive-ftp           использование \"пассивного\" режима передачи.\n"
+"       --retr-symlinks         загрузка файлов по символическим ссылкам\n"
+"                               при рекурсии (не каталогов).\n"
 "\n"
 
-#: src/main.c:207
+#: src/main.c:237
 msgid ""
 "Recursive retrieval:\n"
-"  -r,  --recursive          recursive web-suck -- use with care!\n"
+"  -r,  --recursive          recursive download.\n"
 "  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n"
 "       --delete-after       delete files locally after downloading them.\n"
 "  -k,  --convert-links      convert non-relative links to relative.\n"
 "  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
 "  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"
 "  -p,  --page-requisites    get all images, etc. needed to display HTML page.\n"
+"       --strict-comments    turn on strict (SGML) handling of HTML comments.\n"
 "\n"
 msgstr ""
-"Рекурсивное получение файлов:\n"
-"  -r,  --recursive             рекурсивный режим -- пользуйтесь осторожно!.\n"
-"  -l,  --level=ЧИСЛО           максимальная глубина рекурсии (inf или 0\n"
-"                               обозначают бесконечность).\n"
-"       --delete-after          локальное удаление файлов после их получения.\n"
-"  -k,  --convert-links         перевести абсолютные ссылки в относительные.\n"
-"  -K,  --backup-converted      скопировать X в X.orig перед изменением ссылок.\n"
-"  -m,  --mirror                краткий синоним для -r -N -l inf -nr.\n"
-"  -p,  --page-requisites       получать изображения и все прочие файлы,\n"
-"                               необходимые для отображения HTML-страницы.\n"
+"Рекурсивная загрузка:\n"
+"  -r,  --recursive          рекурсивная загрузка.\n"
+"  -l,  --level=ЧИСЛО        максимальная глубина рекурсии (inf или 0\n"
+"                            обозначают бесконечность).\n"
+"       --delete-after       локальное удаление файлов после их получения.\n"
+"  -k,  --convert-links      преобразование абсолютных ссылок в относительные.\n"
+"  -K,  --backup-converted   копирование файла X в X.orig перед преобразованием.\n"
+"  -m,  --mirror             краткий эквивалент опции -r -N -l inf -nr.\n"
+"  -p,  --page-requisites    загрузка всех изображений и т.п., необходимых для\n"
+"                            отображения страницы HTML.\n"
+"       --strict-comments    включение строгой (SGML) обработки комментариев HTML.\n"
 "\n"
 
-#: src/main.c:217
+#: src/main.c:248
 msgid ""
 "Recursive accept/reject:\n"
 "  -A,  --accept=LIST                comma-separated list of accepted extensions.\n"
@@ -879,87 +1067,86 @@ msgid ""
 "  -np, --no-parent                  don't ascend to the parent directory.\n"
 "\n"
 msgstr ""
-"Включение/исключение файлов при рекурсии:\n"
-"  -A,  --accept=СПИСОК               список разрешенных суффиксов.\n"
-"  -R,  --reject=СПИСОК               список запрещенных суффиксов.\n"
-"  -D,  --domains=СПИСОК              список разрешенных доменов.\n"
-"       --exclude-domains=СПИСОК      список запрещенных доменов.\n"
-"       --follow-ftp                  идти по FTP-ссылкам в HTML-документах.\n"
-"       --follow-tags=СПИСОК          HTML-теги, по которым переходы разрешены.\n"
-"  -G,  --ignore-tags=СПИСОК          список игнорируемых HTML-тегов.\n"
-"  -H,  --span-hosts                  переходить на другие хосты при рекурсии.\n"
-"  -L,  --relative                    идти только по относительным ссылкам.\n"
-"  -I,  --include-directories=СПИСОК  список разрешенных каталогов.\n"
-"  -X,  --exclude-directories=СПИСОК  список запрещенных каталогов.\n"
-"  -np, --no-parent                   не подниматься в родительский каталог.\n"
+"Разрешения/запреты при рекурсии:\n"
+"  -A,  --accept=СПИСОК              список разрешенных расширений через запятую.\n"
+"  -R,  --reject=СПИСОК              список запрещенных суффиксов через запятую.\n"
+"  -D,  --domains=СПИСОК             список разрешенных доменов через запятую.\n"
+"       --exclude-domains=СПИСОК     список запрещенных доменов через запятую.\n"
+"       --follow-ftp                 переход по FTP-ссылкам в HTML-документах.\n"
+"       --follow-tags=СПИСОК         список разрешенных для перехода тегов HTML.\n"
+"  -G,  --ignore-tags=СПИСОК         список игнорируемых тегов HTML.\n"
+"  -H,  --span-hosts                 переход на другие хосты при рекурсии.\n"
+"  -L,  --relative                   переход только по относительным ссылкам.\n"
+"  -I,  --include-directories=СПИСОК список разрешенных каталогов.\n"
+"  -X,  --exclude-directories=СПИСОК список запрещенных каталогов.\n"
+"  -np, --no-parent                  не подниматься в родительский каталог.\n"
 "\n"
 
-#: src/main.c:232
+#: src/main.c:263
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
-msgstr "Сообщения о замеченных ошибках отправляйте по адресу <bug-wget@gnu.org>.\n"
+msgstr "Отчеты об ошибках и рекомендации отправляйте на <bug-wget@gnu.org>.\n"
 
-#: src/main.c:420
+#: src/main.c:465
 #, c-format
 msgid "%s: debug support not compiled in.\n"
 msgstr "%s: поддержка отладки не была включена при компиляции.\n"
 
-#: src/main.c:472
-msgid "Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.\n"
-msgstr "Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.\n"
+#: src/main.c:517
+msgid "Copyright (C) 2003 Free Software Foundation, Inc.\n"
+msgstr "Copyright (C) 2003 Free Software Foundation, Inc.\n"
 
-#: src/main.c:474
+#: src/main.c:519
 msgid ""
 "This program is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 msgstr ""
-"Данная программа распространяется в надежде, что она принесет пользу,\n"
-"но БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ; в том числе подразумеваемой гарантии\n"
-"ПОЛЕЗНОСТИ или ПРИГОДНОСТИ ДЛЯ ОПРЕДЕЛЕННОЙ ЦЕЛИ. Для получения более\n"
-"подробной информации смотрите GNU General Public License.\n"
+"Эта программа распространяется в надежде, что она будет полезна,\n"
+"но БЕЗ ВСЯКОЙ ГАРАНТИИ; даже без подразумеваемой гарантии\n"
+"РАБОТОСПОСОБНОСТИ или ПРИГОДНОСТИ ДЛЯ КАКОЙ-ЛИБО ЦЕЛИ. За более\n"
+"подробной информацией обращайтесь к GNU General Public License.\n"
 
-#: src/main.c:479
-msgid "\nOriginally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
-msgstr "\nПервоначальный разработчик: Hrvoje Niksic <hniksic@arsdigita.com>.\n"
+#: src/main.c:524
+msgid ""
+"\n"
+"Originally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"
+msgstr ""
+"\n"
+"Автор оригинальной версии: Hrvoje Niksic <hniksic@xemacs.org>.\n"
 
-#: src/main.c:578
-#, c-format
-msgid "%s: %s: invalid command\n"
-msgstr "%s: %s: недопустимая команда\n"
-
-#: src/main.c:631
+#: src/main.c:703
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
-msgstr "%s: недопустимый ключ -- `-n%c'\n"
+msgstr "%s: недопустимая опция -- `-n%c'\n"
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:634 src/main.c:676 src/main.c:727
+#: src/main.c:706 src/main.c:748 src/main.c:794
 #, c-format
 msgid "Try `%s --help' for more options.\n"
-msgstr "Запустите `%s --help' для получения более подробной справки.\n"
+msgstr "Попробуйте `%s --help' для получения списка опций.\n"
 
-#: src/main.c:707
+#: src/main.c:774
 msgid "Can't be verbose and quiet at the same time.\n"
-msgstr "Режимы verbose и quiet противоречат друг другу.\n"
+msgstr "Невозможно одновременно использовать режимы verbose и quiet.\n"
 
-#: src/main.c:713
+#: src/main.c:780
 msgid "Can't timestamp and not clobber old files at the same time.\n"
-msgstr "Режимы поддержки отметок времени и сохранения старых файлов несовместимы.\n"
+msgstr "Невозможно одновременно использовать временные метки и не затирать старые файлы.\n"
 
 #. No URL specified.
-#: src/main.c:722
+#: src/main.c:789
 #, c-format
 msgid "%s: missing URL\n"
-msgstr "%s: не указан URL\n"
+msgstr "%s: отсутствует URL\n"
 
-#: src/main.c:837
+#: src/main.c:905
 #, c-format
 msgid "No URLs found in %s.\n"
-msgstr "В файле %s не обнаружено строк URL.\n"
+msgstr "Не найдены URL'ы в файле %s.\n"
 
-#: src/main.c:846
+#: src/main.c:914
 #, c-format
 msgid ""
 "\n"
@@ -968,177 +1155,153 @@ msgid ""
 msgstr ""
 "\n"
 "ЗАВЕРШЕНО --%s--\n"
-"Принято: %s байт в %d файлax\n"
+"Загружено: %s байт в %d файлах\n"
 
-#: src/main.c:854
+#: src/main.c:920
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
-msgstr "ПРЕВЫШЕНО ограничение объема (%s байт)!\n"
+msgstr "ПРЕВЫШЕНО ограничение на загрузку (%s байт)!\n"
 
-#. Please note that the double `%' in `%%s' is intentional, because
-#. redirect_output passes tmp through printf.
-#: src/main.c:896
-#, c-format
-msgid "%s received, redirecting output to `%%s'.\n"
-msgstr "Получен сигнал %s, вывод перенаправлен в `%%s'.\n"
-
-#: src/mswindows.c:106
-#, c-format
-msgid ""
-"\n"
-"CTRL+Break received, redirecting output to `%s'.\n"
-"Execution continued in background.\n"
-"You may stop Wget by pressing CTRL+ALT+DELETE.\n"
-msgstr ""
-"\n"
-"Нажаты CTRL+Break, вывод перенаправляется в `%s'.\n"
-"Выполнение программы будет продолжено в фоновом режиме.\n"
-"Вы можете остановить работу Wget нажатием CTRL+ALT+DELETE.\n"
-
-#. parent, no error
-#: src/mswindows.c:123 src/utils.c:467
+#: src/mswindows.c:147
 msgid "Continuing in background.\n"
-msgstr "Продолжение работы в фоновом режиме.\n"
+msgstr "Работа продолжается в фоновом режиме.\n"
 
-#: src/mswindows.c:125 src/utils.c:469
+#: src/mswindows.c:149 src/utils.c:487
 #, c-format
 msgid "Output will be written to `%s'.\n"
-msgstr "Выходная информация будет записана в файл `%s'.\n"
+msgstr "Выходные данные будут записаны в `%s'.\n"
 
-#: src/mswindows.c:205
+#: src/mswindows.c:245
 #, c-format
 msgid "Starting WinHelp %s\n"
-msgstr "Запуск WinHelp %s\n"
+msgstr "Запускается WinHelp %s\n"
 
-#: src/mswindows.c:232 src/mswindows.c:239
+#: src/mswindows.c:272 src/mswindows.c:279
 #, c-format
 msgid "%s: Couldn't find usable socket driver.\n"
-msgstr "%s: Не найден подходящий драйвер TCP/IP.\n"
+msgstr "%s: Невозможно найти подходящий драйвер сокета.\n"
 
-#: src/netrc.c:365
+#: src/netrc.c:380
 #, c-format
 msgid "%s: %s:%d: warning: \"%s\" token appears before any machine name\n"
-msgstr "%s: %s:%d: предупреждение: лексема \"%s\" встречена ранее имени машины\n"
+msgstr "%s: %s:%d: предупреждение: перед именем каждой машины встречается маркер \"%s\"\n"
 
-#: src/netrc.c:396
+#: src/netrc.c:411
 #, c-format
 msgid "%s: %s:%d: unknown token \"%s\"\n"
-msgstr "%s: %s:%d: неизвестная лексема \"%s\"\n"
+msgstr "%s: %s:%d: неизвестный маркер \"%s\"\n"
 
-#: src/netrc.c:460
+#: src/netrc.c:475
 #, c-format
 msgid "Usage: %s NETRC [HOSTNAME]\n"
-msgstr "Использование: %s NETRC [HOSTNAME]\n"
+msgstr "Использование: %s NETRC [ИМЯ_ХОСТА]\n"
 
-#: src/netrc.c:470
+#: src/netrc.c:485
 #, c-format
 msgid "%s: cannot stat %s: %s\n"
-msgstr "%s: не удается выполнить stat для %s: %s\n"
+msgstr "%s: невозможно выполнить stat для %s: %s\n"
 
 #. Align the [ skipping ... ] line with the dots.  To do
 #. that, insert the number of spaces equal to the number of
 #. digits in the skipped amount in K.
-#: src/progress.c:224
+#: src/progress.c:234
 #, c-format
-msgid "\n%*s[ skipping %dK ]"
-msgstr "\n%*s[ пропуск %dK ]"
+msgid ""
+"\n"
+"%*s[ skipping %dK ]"
+msgstr ""
+"\n"
+"%*s[ пропускается %dK ]"
 
-#: src/progress.c:391
+#: src/progress.c:401
 #, c-format
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
-msgstr "Недопустимое описание `%s'; стиль оставлен без изменений.\n"
+msgstr "Недопустимая спецификация dot-стиля `%s'; оставлен без изменения.\n"
 
-#: src/recur.c:350
+#: src/recur.c:378
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
-msgstr "Удаление %s, так как этот файл должен быть исключен.\n"
+msgstr "Удаляется %s, т.к. он должен быть исключен.\n"
 
-#: src/recur.c:916
-#, c-format
-msgid "Converted %d files in %.2f seconds.\n"
-msgstr "Преобразовано %d файлов за %.2f секунд.\n"
-
-#: src/res.c:541
+#: src/res.c:549
 msgid "Loading robots.txt; please ignore errors.\n"
-msgstr "Загрузка robots.txt; не обращайте внимания на ошибки.\n"
+msgstr "Загружается robots.txt; не обращайте внимание на ошибки.\n"
 
-#: src/retr.c:363
-msgid "Could not find proxy host.\n"
-msgstr "Не найден прокси-сервер.\n"
-
-#: src/retr.c:375
+#: src/retr.c:400
 #, c-format
 msgid "Error parsing proxy URL %s: %s.\n"
-msgstr "Ошибка разбора URL прокси-сервера %s: %s\n"
+msgstr "Ошибка разбора URL прокси %s: %s\n"
 
-#: src/retr.c:384
+#: src/retr.c:408
 #, c-format
 msgid "Error in proxy URL %s: Must be HTTP.\n"
-msgstr "Ошибка в URL прокси-сервера %s: Допускается только HTTP.\n"
+msgstr "Ошибка в URL прокси %s: Должен быть HTTP.\n"
 
-#: src/retr.c:476
+#: src/retr.c:493
 #, c-format
 msgid "%d redirections exceeded.\n"
-msgstr "Более %d перенаправлений.\n"
+msgstr "Превышено число перенаправлений %d.\n"
 
-#: src/retr.c:491
-#, c-format
-msgid "%s: Redirection cycle detected.\n"
-msgstr "%s: Замкнутый цикл перенаправлений.\n"
+#: src/retr.c:617
+msgid ""
+"Giving up.\n"
+"\n"
+msgstr ""
+"Завершение.\n"
+"\n"
 
-#: src/retr.c:608
-msgid "Giving up.\n\n"
-msgstr "Завершение.\n\n"
+#: src/retr.c:617
+msgid ""
+"Retrying.\n"
+"\n"
+msgstr ""
+"Повтор.\n"
+"\n"
 
-#: src/retr.c:608
-msgid "Retrying.\n\n"
-msgstr "Продолжение попыток.\n\n"
+#: src/url.c:621
+msgid "No error"
+msgstr "Нет ошибок"
 
-#: src/url.c:1748
-#, c-format
-msgid "Converting %s... "
-msgstr "Преобразование %s... "
+#: src/url.c:623
+msgid "Unsupported scheme"
+msgstr "Неподдерживаемая схема"
 
-#: src/url.c:1761
-msgid "nothing to do.\n"
-msgstr "действия не заданы.\n"
+#: src/url.c:625
+msgid "Empty host"
+msgstr "Пустой хост"
 
-#: src/url.c:1769 src/url.c:1793
-#, c-format
-msgid "Cannot convert links in %s: %s\n"
-msgstr "Не удается преобразовать ссылки в %s: %s\n"
+#: src/url.c:627
+msgid "Bad port number"
+msgstr "Неверный номер порта"
 
-#: src/url.c:1784
-#, c-format
-msgid "Unable to delete `%s': %s\n"
-msgstr "Ошибка удаления `%s': %s\n"
+#: src/url.c:629
+msgid "Invalid user name"
+msgstr "Неверное имя пользователя"
 
-#: src/url.c:1990
-#, c-format
-msgid "Cannot back up %s as %s: %s\n"
-msgstr "Не удается сохранить %s под именем %s: %s\n"
+#: src/url.c:631
+msgid "Unterminated IPv6 numeric address"
+msgstr "Незавершенные числовые адреса IPv6"
 
-#: src/utils.c:102
+#: src/url.c:633
+msgid "IPv6 addresses not supported"
+msgstr "Адреса IPv6 не поддерживаются"
+
+#: src/url.c:635
+msgid "Invalid IPv6 numeric address"
+msgstr "Неверный числовой адрес IPv6"
+
+#: src/utils.c:120
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: Недостаточно памяти.\n"
 
-#: src/utils.c:667
+#. parent, no error
+#: src/utils.c:485
+#, c-format
+msgid "Continuing in background, pid %d.\n"
+msgstr "Работа продолжается в фоновом режиме, pid %d.\n"
+
+#: src/utils.c:529
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
-msgstr "Ошибка удаления символьной ссылки `%s': %s\n"
-
-#~ msgid "Connection to %s:%hu refused.\n"
-#~ msgstr "Сервер %s:%hu отклонил соединение.\n"
-
-#~ msgid "Will try connecting to %s:%hu.\n"
-#~ msgstr "Попытки соединения с %s:%hu будут продолжены.\n"
-
-#~ msgid "Unknown/unsupported protocol"
-#~ msgstr "Протокол неизвестен или не поддерживается."
-
-#~ msgid "Invalid port specification"
-#~ msgstr "Недопустимое обозначение порта"
-
-#~ msgid "Invalid host name"
-#~ msgstr "Недопустимое имя машины"
+msgstr "Не удалось разорвать символическую ссылку `%s': %s\n"
