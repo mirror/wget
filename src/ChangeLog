@@ -1,5 +1,9 @@
 2003-09-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* host.c (lookup_host): Print the result of the DNS lookup.
+
+2003-09-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c (cmd_boolean): Accept yes/no along with on/off.
 	(cmd_lockable_boolean): Ditto.
 

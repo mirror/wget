@@ -202,10 +202,10 @@ address_list_from_addrinfo (struct addrinfo *ai)
   return al;
 }
 #else
-/* Create an address_list out of a NULL-terminated list of addresses,
-   as returned by gethostbyname.  */
+/* Create an address_list out of a NULL-terminated vector of
+   addresses, as returned by gethostbyname.  */
 static struct address_list *
-address_list_new (char **h_addr_list)
+address_list_from_vector (char **h_addr_list)
 {
   int count = 0, i;
 
@@ -226,10 +226,11 @@ address_list_new (char **h_addr_list)
 }
 #endif
 
-/* Like address_list_new, but initialized with only one address. */
+/* Like address_list_from_vector, but initialized with a single
+   address. */
 
 static struct address_list *
-address_list_new_one (ip_address *addr)
+address_list_from_single (ip_address *addr)
 {
   struct address_list *al = xmalloc (sizeof (struct address_list));
   al->count     = 1;
@@ -608,7 +609,7 @@ lookup_host (const char *host, int silent)
 
 #ifdef ENABLE_IPV6
   if (inet_pton (AF_INET6, host, &addr) > 0)
-    return address_list_new_one (&addr);
+    return address_list_from_single (&addr);
 #endif
 
   addr_ipv4 = (unsigned long)inet_addr (host);
@@ -624,7 +625,7 @@ lookup_host (const char *host, int silent)
       offset = sizeof (unsigned long) - sizeof (ip4_address);
 #endif
       map_ipv4_to_ip ((ip4_address *)((char *)&addr_ipv4 + offset), &addr);
-      return address_list_new_one (&addr);
+      return address_list_from_single (&addr);
     }
 
   if (host_name_addresses_map)
@@ -682,13 +683,28 @@ lookup_host (const char *host, int silent)
 	return NULL;
       }
     /* Do all systems have h_addr_list, or is it a newer thing?  If
-       the latter, use address_list_new_one.  */
-    al = address_list_new (hptr->h_addr_list);
+       the latter, use address_list_from_single.  */
+    al = address_list_from_vector (hptr->h_addr_list);
   }
 #endif
 
+  /* Print the addresses determined by DNS lookup, but no more than
+     three.  */
   if (!silent)
-    logprintf (LOG_VERBOSE, _("done.\n"));
+    {
+      int i;
+      int printmax = al->count <= 3 ? al->count : 3;
+      for (i = 0; i < printmax; i++)
+	{
+	  logprintf (LOG_VERBOSE, "%s",
+		     pretty_print_address (al->addresses + i));
+	  if (i < printmax - 1)
+	    logputs (LOG_VERBOSE, ", ");
+	}
+      if (printmax != al->count)
+	logputs (LOG_VERBOSE, ", ...");
+      logputs (LOG_VERBOSE, "\n");
+    }
 
   /* Cache the lookup information. */
   if (opt.dns_cache)
