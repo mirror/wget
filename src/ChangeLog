@@ -1,3 +1,8 @@
+2001-11-26  Ian Abbott <abbotti@mev.co.uk>
+
+	* http.c (gethttp): fix undeclared variable 'err' when compiled
+	with HAVE_SSL.
+
 2001-11-26  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* progress.c: Don't allocate new timers; use the timing data

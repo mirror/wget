@@ -563,7 +563,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   /* initialize ssl_ctx on first run */
   if (!ssl_ctx)
     {
-      err = init_ssl (&ssl_ctx);
+      uerr_t err = init_ssl (&ssl_ctx);
       if (err != 0)
 	{
 	  switch (err)
