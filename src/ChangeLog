@@ -1,3 +1,13 @@
+2001-05-09  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* cookies.c (eliminate_dups): New function.
+	(build_cookies_request): Use it.
+	(build_cookies_request): Set chain_store_size after reallocating
+	all_chains.
+	(check_domain_match): Annotated for easier future debugging.
+	(store_cookie): In the debug message, print whether the cookie is
+	permanent.
+
 2001-05-08  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* http.c (http_loop): Reset no_truncate before deciding whether to

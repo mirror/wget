@@ -274,8 +274,10 @@ store_cookie (struct cookie *cookie)
 
   hash_table_put (cookies_hash_table, chain_key, cookie);
 
-  DEBUGP (("\nStored cookie %s %d %s %d %s %s %s\n",
-	   cookie->domain, cookie->port, cookie->path, cookie->secure,
+  DEBUGP (("\nStored cookie %s %d %s %s %d %s %s %s\n",
+	   cookie->domain, cookie->port, cookie->path,
+	   cookie->permanent ? "permanent" : "nonpermanent",
+	   cookie->secure,
 	   asctime (localtime ((time_t *)&cookie->expiry_time)),
 	   cookie->attr, cookie->value));
 }
@@ -706,6 +708,8 @@ check_domain_match (const char *cookie_domain, const char *host)
   int headlen;
   const char *tail;
 
+  DEBUGP (("cdm: 1"));
+
   /* Numeric address requires exact match.  It also requires HOST to
      be an IP address.  I suppose we *could* resolve HOST with
      store_hostaddress (it would hit the hash table), but rfc2109
@@ -713,6 +717,8 @@ check_domain_match (const char *cookie_domain, const char *host)
      don't.  */
   if (numeric_address_p (cookie_domain))
     return !strcmp (cookie_domain, host);
+
+  DEBUGP ((" 2"));
 
   /* The domain must contain at least one embedded dot. */
   {
@@ -730,15 +736,21 @@ check_domain_match (const char *cookie_domain, const char *host)
       return 0;
   }
 
+  DEBUGP ((" 3"));
+
   /* For the sake of efficiency, check for exact match first. */
   if (!strcasecmp (cookie_domain, host))
     return 1;
+
+  DEBUGP ((" 4"));
 
   /* In rfc2109 terminology, HOST needs domain-match COOKIE_DOMAIN.
      This means that COOKIE_DOMAIN needs to start with `.' and be an
      FQDN, and that HOST must end with COOKIE_DOMAIN.  */
   if (*cookie_domain != '.')
     return 0;
+
+  DEBUGP ((" 5"));
 
   /* Two proceed, we need to examine two parts of HOST: its head and
      its tail.  Head and tail are defined in terms of the length of
@@ -762,9 +774,13 @@ check_domain_match (const char *cookie_domain, const char *host)
     return 0;
   tail = host + headlen;
 
+  DEBUGP ((" 6"));
+
   /* (1) */
   if (strcasecmp (tail, cookie_domain))
     return 0;
+
+  DEBUGP ((" 7"));
 
   /* Test (2) is not part of the "domain-match" itself, but is
      recommended by rfc2109 for reasons of privacy.  */
@@ -772,6 +788,8 @@ check_domain_match (const char *cookie_domain, const char *host)
   /* (2) */
   if (memchr (host, '.', headlen))
     return 0;
+
+  DEBUGP ((" 8"));
 
   return 1;
 }
@@ -978,6 +996,43 @@ equality_comparator (const void *p1, const void *p2)
   return namecmp ? namecmp : valuecmp;
 }
 
+/* Eliminate duplicate cookies.  "Duplicate cookies" are any two
+   cookies whose name and value are the same.  Whenever a duplicate
+   pair is found, one of the cookies is removed.  */
+
+static int
+eliminate_dups (struct weighed_cookie *outgoing, int count)
+{
+  int i;
+
+  /* We deploy a simple uniquify algorithm: first sort the array
+     according to our sort criterion, then uniquify it by comparing
+     each cookie with its neighbor.  */
+
+  qsort (outgoing, count, sizeof (struct weighed_cookie), equality_comparator);
+
+  for (i = 0; i < count - 1; i++)
+    {
+      struct cookie *c1 = outgoing[i].cookie;
+      struct cookie *c2 = outgoing[i + 1].cookie;
+      if (!strcmp (c1->attr, c2->attr) && !strcmp (c1->value, c2->value))
+	{
+	  /* c1 and c2 are the same; get rid of c2. */
+	  if (count > i + 1)
+	    /* move all ptrs from positions [i + 1, count) to i. */
+	    memmove (outgoing + i, outgoing + i + 1,
+		     (count - (i + 1)) * sizeof (struct weighed_cookie));
+	  /* We decrement i to counter the ++i above.  Remember that
+	     we've just removed the element in front of us; we need to
+	     remain in place to check whether outgoing[i] matches what
+	     used to be outgoing[i + 2].  */
+	  --i;
+	  --count;
+	}
+    }
+  return count;
+}
+
 /* Comparator used for sorting by quality. */
 
 static int
@@ -997,11 +1052,11 @@ goodness_comparator (const void *p1, const void *p2)
   return dgdiff ? dgdiff : pgdiff;
 }
 
-/* Build a `Cookies' header for a request that goes to HOST:PORT and
-   requests PATH from the server.  Memory is allocated by `malloc',
-   and the caller is responsible for freeing it.  If no cookies
-   pertain to this request, i.e. no cookie header should be generated,
-   NULL is returned.  */
+/* Build a `Cookie' header for a request that goes to HOST:PORT and
+   requests PATH from the server.  The resulting string is allocated
+   with `malloc', and the caller is responsible for freeing it.  If no
+   cookies pertain to this request, i.e. no cookie header should be
+   generated, NULL is returned.  */
 
 char *
 build_cookies_request (const char *host, int port, const char *path,
@@ -1023,9 +1078,11 @@ build_cookies_request (const char *host, int port, const char *path,
   if (chain_count > chain_store_size)
     {
       /* It's extremely unlikely that more than 20 chains will ever
-	 match.  But in this case it's easy to not have the
-	 limitation, so we don't.  */
+	 match.  But since find_matching_chains reports the exact size
+	 it needs, it's easy to not have the limitation, so we
+	 don't.  */
       all_chains = alloca (chain_count * sizeof (struct cookie *));
+      chain_store_size = chain_count;
       goto again;
     }
 
@@ -1047,6 +1104,8 @@ build_cookies_request (const char *host, int port, const char *path,
   /* Allocate the array. */
   outgoing = alloca (count * sizeof (struct weighed_cookie));
 
+  /* Fill the array with all the matching cookies from all the
+     matching chains. */
   ocnt = 0;
   for (i = 0; i < chain_count; i++)
     for (cookie = all_chains[i]; cookie; cookie = cookie->next)
@@ -1062,28 +1121,8 @@ build_cookies_request (const char *host, int port, const char *path,
   assert (ocnt == count);
 
   /* Eliminate duplicate cookies; that is, those whose name and value
-     are the same.  We do it by first sorting the array, and then
-     uniq'ing it.  */
-  qsort (outgoing, count, sizeof (struct weighed_cookie), equality_comparator);
-  for (i = 0; i < count - 1; i++)
-    {
-      struct cookie *c1 = outgoing[i].cookie;
-      struct cookie *c2 = outgoing[i + 1].cookie;
-      if (!strcmp (c1->attr, c2->attr) && !strcmp (c1->value, c2->value))
-	{
-	  /* c1 and c2 are the same; get rid of c2. */
-	  if (count > i + 1)
-	    /* move all ptrs from positions [i + 1, count) to i. */
-	    memmove (outgoing + i, outgoing + i + 1,
-		     (count - (i + 1)) * sizeof (struct weighed_cookie));
-	  /* We decrement i to counter the ++i above.  Remember that
-	     we've just removed the element in front of us; we need to
-	     remain in place to check whether outgoing[i] what used to
-	     be outgoing[i + 2].  */
-	  --i;
-	  --count;
-	}
-    }
+     are the same.  */
+  count = eliminate_dups (outgoing, count);
 
   /* Sort the array so that best-matching domains come first, and
      that, within one domain, best-matching paths come first. */
@@ -1192,7 +1231,7 @@ domain_port (const char *domain_b, const char *domain_e,
     ++p;					\
 } while (0)
 
-#define SET_WORD_BOUNDARIES(p, b, e) do {			\
+#define SET_WORD_BOUNDARIES(p, b, e) do {	\
   SKIP_WS (p);					\
   b = p;					\
   /* skip non-ws */				\
