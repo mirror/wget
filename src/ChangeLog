@@ -1,3 +1,18 @@
+2003-11-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c: Deleted the old functions header_process,
+	header_extract_number, header_exists, header_strdup,
+	http_process_range, http_process_none, http_process_type, and
+	http_process_connection.
+
+	* http.c (response_new): New function.
+	(response_header_bounds): Ditto.
+	(response_header_copy): Ditto.
+	(response_header_strdup): Ditto.
+	(response_status): Ditto.
+	(gethttp): Use the new response_* functions to parse the response.
+	Support HTTP/0.9 responses.
+
 2003-11-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* progress.c (create_image): Don't calculate ETA if nothing has

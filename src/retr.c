@@ -129,7 +129,9 @@ limit_bandwidth (long bytes, struct wget_timer *timer)
   limit_data.chunk_start = wtimer_read (timer);
 }
 
-#define MIN(i, j) ((i) <= (j) ? (i) : (j))
+#ifndef MIN
+# define MIN(i, j) ((i) <= (j) ? (i) : (j))
+#endif
 
 /* Reads the contents of file descriptor FD, until it is closed, or a
    read error occurs.  The data is read in 8K chunks, and stored to
@@ -269,16 +271,47 @@ fd_read_body (int fd, FILE *out, long *len, long restval, long expected,
 
 typedef const char *(*finder_t) PARAMS ((const char *, int, int));
 
-/* Driver for fd_read_line and fd_read_head: keeps reading data until
-   a terminator (as decided by FINDER) occurs in the data.  The trick
-   is that the data is first peeked at, and only then actually read.
-   That way the data after the terminator is never read.  */
+/* Read a hunk of data from FD, up until a terminator.  The terminator
+   is whatever the TERMINATOR function determines it to be; for
+   example, it can be a line of data, or the head of an HTTP response.
+   The function returns the data read allocated with malloc.
 
-static char *
-fd_read_until (int fd, finder_t finder, int bufsize)
+   In case of error, NULL is returned.  In case of EOF and no data
+   read, NULL is returned and errno set to 0.  In case of EOF with
+   data having been read, the data is returned, but it will
+   (obviously) not contain the terminator.
+
+   The idea is to be able to read a line of input, or otherwise a hunk
+   of text, such as the head of an HTTP request, without crossing the
+   boundary, so that the next call to fd_read etc. reads the data
+   after the hunk.  To achieve that, this function does the following:
+
+   1. Peek at available data.
+
+   2. Determine whether the peeked data, along with the previously
+      read data, includes the terminator.
+
+      2a. If yes, read the data until the end of the terminator, and
+          exit.
+
+      2b. If no, read the peeked data and goto 1.
+
+   The function is careful to assume as little as possible about the
+   implementation of peeking.  For example, every peek is followed by
+   a read.  If the read returns a different amount of data, the
+   process is retried until all data arrives safely.
+
+   BUFSIZE is the size of the initial buffer expected to read all the
+   data in the typical case.
+
+   This function should be used as a building block for other
+   functions -- see fd_read_line as a simple example.  */
+
+char *
+fd_read_hunk (int fd, hunk_terminator_t hunk_terminator, int bufsize)
 {
-  int size = bufsize, tail = 0;
-  char *buf = xmalloc (size);
+  char *hunk = xmalloc (bufsize);
+  int tail = 0;			/* tail position in HUNK */
 
   while (1)
     {
@@ -287,23 +320,28 @@ fd_read_until (int fd, finder_t finder, int bufsize)
 
       /* First, peek at the available data. */
 
-      pklen = fd_peek (fd, buf + tail, size - tail, -1);
+      pklen = fd_peek (fd, hunk + tail, bufsize - 1 - tail, -1);
       if (pklen < 0)
 	{
-	  xfree (buf);
+	  xfree (hunk);
 	  return NULL;
 	}
-      end = finder (buf, tail, pklen);
+      end = hunk_terminator (hunk, tail, pklen);
       if (end)
 	{
-	  /* The data contains the terminator: we'll read the data up
+	  /* The data contains the terminator: we'll drain the data up
 	     to the end of the terminator.  */
-	  remain = end - (buf + tail);
-	  /* Note +1 for trailing \0. */
-	  if (size < tail + remain + 1)
+	  remain = end - (hunk + tail);
+	  if (remain == 0)
 	    {
-	      size = tail + remain + 1;
-	      buf = xrealloc (buf, size);
+	      /* No more data needs to be read. */
+	      hunk[tail] = '\0';
+	      return hunk;
+	    }
+	  if (bufsize - 1 < tail + remain)
+	    {
+	      bufsize = tail + remain + 1;
+	      hunk = xrealloc (hunk, bufsize);
 	    }
 	}
       else
@@ -315,54 +353,47 @@ fd_read_until (int fd, finder_t finder, int bufsize)
 	 how much data we'll get.  (Some TCP stacks are notorious for
 	 read returning less data than the previous MSG_PEEK.)  */
 
-      rdlen = fd_read (fd, buf + tail, remain, 0);
+      rdlen = fd_read (fd, hunk + tail, remain, 0);
       if (rdlen < 0)
 	{
-	  xfree_null (buf);
+	  xfree_null (hunk);
 	  return NULL;
 	}
+      tail += rdlen;
+      hunk[tail] = '\0';
+
       if (rdlen == 0)
 	{
 	  if (tail == 0)
 	    {
 	      /* EOF without anything having been read */
-	      xfree (buf);
+	      xfree (hunk);
 	      errno = 0;
 	      return NULL;
 	    }
-	  /* Return what we received so far. */
-	  if (size < tail + 1)
-	    {
-	      size = tail + 1;	/* expand the buffer to receive the
-				   terminating \0 */
-	      buf = xrealloc (buf, size);
-	    }
-	  buf[tail] = '\0';
-	  return buf;
+	  else
+	    /* EOF seen: return the data we've read. */
+	    return hunk;
 	}
-      tail += rdlen;
       if (end && rdlen == remain)
-	{
-	  /* The end was seen and the data read -- we got what we came
-	     for.  */
-	  buf[tail] = '\0';
-	  return buf;
-	}
+	/* The terminator was seen and the remaining data drained --
+	   we got what we came for.  */
+	return hunk;
 
       /* Keep looping until all the data arrives. */
 
-      if (tail == size)
+      if (tail == bufsize - 1)
 	{
-	  size <<= 1;
-	  buf = xrealloc (buf, size);
+	  bufsize <<= 1;
+	  hunk = xrealloc (hunk, bufsize);
 	}
     }
 }
 
 static const char *
-line_terminator (const char *buf, int tail, int peeklen)
+line_terminator (const char *hunk, int oldlen, int peeklen)
 {
-  const char *p = memchr (buf + tail, '\n', peeklen);
+  const char *p = memchr (hunk + oldlen, '\n', peeklen);
   if (p)
     /* p+1 because we want the line to include '\n' */
     return p + 1;
@@ -379,43 +410,7 @@ line_terminator (const char *buf, int tail, int peeklen)
 char *
 fd_read_line (int fd)
 {
-  return fd_read_until (fd, line_terminator, 128);
-}
-
-static const char *
-head_terminator (const char *buf, int tail, int peeklen)
-{
-  const char *start, *end;
-  if (tail < 4)
-    start = buf;
-  else
-    start = buf + tail - 4;
-  end = buf + tail + peeklen;
-
-  for (; start < end - 1; start++)
-    if (*start == '\n')
-      {
-	if (start < end - 2
-	    && start[1] == '\r'
-	    && start[2] == '\n')
-	  return start + 3;
-	if (start[1] == '\n')
-	  return start + 2;
-      }
-  return NULL;
-}
-
-/* Read the request head from FD and return it.  The chunk of data is
-   allocated using malloc.
-
-   If an error occurs, or if no data can be read, NULL is returned.
-   In the former case errno indicates the error condition, and in the
-   latter case, errno is NULL.  */
-
-char *
-fd_read_head (int fd)
-{
-  return fd_read_until (fd, head_terminator, 512);
+  return fd_read_hunk (fd, line_terminator, 128);
 }
 
 /* Return a printed representation of the download rate, as
@@ -904,7 +899,7 @@ getproxy (struct url *u)
   rewritten_url = rewrite_shorthand_url (proxy);
   if (rewritten_url)
     {
-      strncpy (rewritten_storage, rewritten_url, sizeof(rewritten_storage));
+      strncpy (rewritten_storage, rewritten_url, sizeof (rewritten_storage));
       rewritten_storage[sizeof (rewritten_storage) - 1] = '\0';
       proxy = rewritten_storage;
     }

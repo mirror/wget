@@ -76,6 +76,10 @@ extern int errno;
 extern char *version_string;
 extern LARGE_INT total_downloaded_bytes;
 
+#ifndef MIN
+# define MIN(x, y) ((x) > (y) ? (y) : (x))
+#endif
+
 
 static int cookies_loaded_p;
 struct cookie_jar *wget_cookie_jar;
@@ -118,73 +122,308 @@ struct cookie_jar *wget_cookie_jar;
 #define HTTP_STATUS_BAD_GATEWAY		502
 #define HTTP_STATUS_UNAVAILABLE		503
 
-
+static const char *
+head_terminator (const char *hunk, int oldlen, int peeklen)
+{
+  const char *start, *end;
+
+  /* If at first peek, verify whether HUNK starts with "HTTP".  If
+     not, this is a HTTP/0.9 request and we must bail out without
+     reading anything.  */
+  if (oldlen == 0 && 0 != memcmp (hunk, "HTTP", MIN (peeklen, 4)))
+    return hunk;
+
+  if (oldlen < 4)
+    start = hunk;
+  else
+    start = hunk + oldlen - 4;
+  end = hunk + oldlen + peeklen;
+
+  for (; start < end - 1; start++)
+    if (*start == '\n')
+      {
+	if (start < end - 2
+	    && start[1] == '\r'
+	    && start[2] == '\n')
+	  return start + 3;
+	if (start[1] == '\n')
+	  return start + 2;
+      }
+  return NULL;
+}
+
+/* Read the HTTP request head from FD and return it.  The error
+   conditions are the same as with fd_read_hunk.
+
+   To support HTTP/0.9 responses, this function tries to make sure
+   that the data begins with "HTTP".  If this is not the case, no data
+   is read and an empty request is returned, so that the remaining
+   data can be treated as body.  */
+
+static char *
+fd_read_http_head (int fd)
+{
+  return fd_read_hunk (fd, head_terminator, 512);
+}
+
+struct response {
+  /* The response data. */
+  const char *data;
+
+  /* The array of pointers that indicate where each header starts.
+     For example, given three headers "foo", "bar", and "baz":
+       foo: value\r\nbar: value\r\nbaz: value\r\n\r\n
+       0             1             2             3
+     I.e. headers[0] points to the beginning of foo, headers[1] points
+     to the end of foo and the beginning of bar, etc.  */
+  const char **headers;
+};
+
+static struct response *
+response_new (const char *head)
+{
+  const char *hdr;
+  int count, size;
+
+  struct response *resp = xnew0 (struct response);
+  resp->data = head;
+
+  if (*head == '\0')
+    {
+      /* Empty head means that we're dealing with a headerless
+	 (HTTP/0.9) response.  In that case, don't set HEADERS at
+	 all.  */
+      return resp;
+    }
+
+  /* Split HEAD into header lines, so that response_header_* functions
+     don't need to do this over and over again.  */
+
+  size = count = 0;
+  hdr = head;
+  while (1)
+    {
+      DO_REALLOC (resp->headers, size, count + 1, const char *);
+      resp->headers[count++] = hdr;
+
+      /* Break upon encountering an empty line. */
+      if (!hdr[0] || (hdr[0] == '\r' && hdr[1] == '\n') || hdr[0] == '\n')
+	break;
+
+      /* Find the end of HDR, including continuations. */
+      do
+	{
+	  const char *end = strchr (hdr, '\n');
+	  if (end)
+	    hdr = end + 1;
+	  else
+	    hdr += strlen (hdr);
+	}
+      while (*hdr == ' ' || *hdr == '\t');
+    }
+  DO_REALLOC (resp->headers, size, count + 1, const char *);
+  resp->headers[count++] = NULL;
+
+  return resp;
+}
+
+static int
+response_header_bounds (const struct response *resp, const char *name,
+			const char **begptr, const char **endptr)
+{
+  int i;
+  const char **headers = resp->headers;
+  int name_len;
+
+  if (!headers || !headers[1])
+    return 0;
+
+  name_len = strlen (name);
+
+  for (i = 1; headers[i + 1]; i++)
+    {
+      const char *b = headers[i];
+      const char *e = headers[i + 1];
+      if (e - b > name_len
+	  && b[name_len] == ':'
+	  && 0 == strncasecmp (b, name, name_len))
+	{
+	  b += name_len + 1;
+	  while (b < e && ISSPACE (*b))
+	    ++b;
+	  while (b < e && ISSPACE (e[-1]))
+	    --e;
+	  *begptr = b;
+	  *endptr = e;
+	  return 1;
+	}
+    }
+  return 0;
+}
+
+static int
+response_header_copy (const struct response *resp, const char *name,
+		      char *buf, int bufsize)
+{
+  const char *b, *e;
+  if (!response_header_bounds (resp, name, &b, &e))
+    return 0;
+  if (bufsize)
+    {
+      int len = MIN (e - b, bufsize);
+      strncpy (buf, b, len);
+      buf[len] = '\0';
+    }
+  return 1;
+}
+
+static char *
+response_header_strdup (const struct response *resp, const char *name)
+{
+  const char *b, *e;
+  if (!response_header_bounds (resp, name, &b, &e))
+    return NULL;
+  return strdupdelim (b, e);
+}
+
 /* Parse the HTTP status line, which is of format:
 
    HTTP-Version SP Status-Code SP Reason-Phrase
 
-   The function returns the status-code, or -1 if the status line is
-   malformed.  The pointer to reason-phrase is returned in RP.  */
+   The function returns the status-code, or -1 if the status line
+   appears malformed.  The pointer to "reason-phrase" message is
+   returned in *MESSAGE.  */
+
 static int
-parse_http_status_line (const char *line, const char **reason_phrase_ptr)
+response_status (const struct response *resp, char **message)
 {
-  /* (the variables must not be named `major' and `minor', because
-     that breaks compilation with SunOS4 cc.)  */
-  int mjr, mnr, statcode;
-  const char *p;
+  int status;
+  const char *p, *end;
 
-  *reason_phrase_ptr = NULL;
-
-  /* The standard format of HTTP-Version is: `HTTP/X.Y', where X is
-     major version, and Y is minor version.  */
-  if (strncmp (line, "HTTP/", 5) != 0)
-    return -1;
-  line += 5;
-
-  /* Calculate major HTTP version.  */
-  p = line;
-  for (mjr = 0; ISDIGIT (*line); line++)
-    mjr = 10 * mjr + (*line - '0');
-  if (*line != '.' || p == line)
-    return -1;
-  ++line;
-
-  /* Calculate minor HTTP version.  */
-  p = line;
-  for (mnr = 0; ISDIGIT (*line); line++)
-    mnr = 10 * mnr + (*line - '0');
-  if (*line != ' ' || p == line)
-    return -1;
-  /* Wget will accept only 1.0 and higher HTTP-versions.  The value of
-     minor version can be safely ignored.  */
-  if (mjr < 1)
-    return -1;
-  ++line;
-
-  /* Calculate status code.  */
-  if (!(ISDIGIT (*line) && ISDIGIT (line[1]) && ISDIGIT (line[2])))
-    return -1;
-  statcode = 100 * (*line - '0') + 10 * (line[1] - '0') + (line[2] - '0');
-
-  /* Set up the reason phrase pointer.  */
-  line += 3;
-  /* RFC2068 requires SPC here, but we allow the string to finish
-     here, in case no reason-phrase is present.  */
-  if (*line != ' ')
+  if (!resp->headers)
     {
-      if (!*line)
-	*reason_phrase_ptr = line;
-      else
-	return -1;
+      /* For a HTTP/0.9 response, always assume 200 response. */
+      if (message)
+	*message = xstrdup ("OK");
+      return 200;
     }
-  else
-    *reason_phrase_ptr = line + 1;
 
-  return statcode;
+  p = resp->headers[0];
+  end = resp->headers[1];
+
+  if (!end)
+    return -1;
+
+  /* "HTTP" */
+  if (end - p < 4 || 0 != strncmp (p, "HTTP", 4))
+    return -1;
+  p += 4;
+
+  /* "/x.x" (optional because some Gnutella servers have been reported
+     as not sending the "/x.x" part.  */
+  if (p < end && *p == '/')
+    {
+      ++p;
+      while (p < end && ISDIGIT (*p))
+	++p;
+      if (p < end && *p == '.')
+	++p; 
+      while (p < end && ISDIGIT (*p))
+	++p;
+    }
+
+  while (p < end && ISSPACE (*p))
+    ++p;
+  if (end - p < 3 || !ISDIGIT (p[0]) || !ISDIGIT (p[1]) || !ISDIGIT (p[2]))
+    return -1;
+
+  status = 100 * (p[0] - '0') + 10 * (p[1] - '0') + (p[2] - '0');
+  p += 3;
+
+  if (message)
+    {
+      while (p < end && ISSPACE (*p))
+	++p;
+      while (p < end && ISSPACE (end[-1]))
+	--end;
+      *message = strdupdelim (p, end);
+    }
+
+  return status;
+}
+
+static void
+response_free (struct response *resp)
+{
+  xfree_null (resp->headers);
+  xfree (resp);
+}
+
+static void
+print_server_response_1 (const char *b, const char *e)
+{
+  char *ln;
+  if (b < e && e[-1] == '\n')
+    --e;
+  if (b < e && e[-1] == '\r')
+    --e;
+  BOUNDED_TO_ALLOCA (b, e, ln);
+  logprintf (LOG_VERBOSE, "  %s\n", ln);
+}
+
+static void
+print_server_response (const struct response *resp)
+{
+  int i;
+  if (!resp->headers)
+    return;
+  for (i = 0; resp->headers[i + 1]; i++)
+    print_server_response_1 (resp->headers[i], resp->headers[i + 1]);
+}
+
+/* Parse the `Content-Range' header and extract the information it
+   contains.  Returns 1 if successful, -1 otherwise.  */
+static int
+parse_content_range (const char *hdr, long *first_byte_ptr,
+		     long *last_byte_ptr, long *entity_length_ptr)
+{
+  long num;
+
+  /* Ancient versions of Netscape proxy server, presumably predating
+     rfc2068, sent out `Content-Range' without the "bytes"
+     specifier.  */
+  if (!strncasecmp (hdr, "bytes", 5))
+    {
+      hdr += 5;
+      /* "JavaWebServer/1.1.1" sends "bytes: x-y/z", contrary to the
+	 HTTP spec. */
+      if (*hdr == ':')
+	++hdr;
+      while (ISSPACE (*hdr))
+	++hdr;
+      if (!*hdr)
+	return 0;
+    }
+  if (!ISDIGIT (*hdr))
+    return 0;
+  for (num = 0; ISDIGIT (*hdr); hdr++)
+    num = 10 * num + (*hdr - '0');
+  if (*hdr != '-' || !ISDIGIT (*(hdr + 1)))
+    return 0;
+  *first_byte_ptr = num;
+  ++hdr;
+  for (num = 0; ISDIGIT (*hdr); hdr++)
+    num = 10 * num + (*hdr - '0');
+  if (*hdr != '/' || !ISDIGIT (*(hdr + 1)))
+    return 0;
+  *last_byte_ptr = num;
+  ++hdr;
+  for (num = 0; ISDIGIT (*hdr); hdr++)
+    num = 10 * num + (*hdr - '0');
+  *entity_length_ptr = num;
+  return 1;
 }
 
-#define WMIN(x, y) ((x) > (y) ? (y) : (x))
-
 /* Send the contents of FILE_NAME to SOCK/SSL.  Make sure that exactly
    PROMISED_SIZE bytes are sent over the wire -- if the file is
    longer, read only that much; if the file is shorter, report an error.  */
@@ -208,7 +447,7 @@ post_file (int sock, const char *file_name, long promised_size)
       int length = fread (chunk, 1, sizeof (chunk), fp);
       if (length == 0)
 	break;
-      towrite = WMIN (promised_size - written, length);
+      towrite = MIN (promised_size - written, length);
       write_error = fd_write (sock, chunk, towrite, -1);
       if (write_error < 0)
 	{
@@ -231,204 +470,6 @@ post_file (int sock, const char *file_name, long promised_size)
   DEBUGP (("done]\n"));
   return 0;
 }
-
-static const char *
-next_header (const char *h)
-{
-  const char *end = NULL;
-  const char *p = h;
-  do
-    {
-      p = strchr (p, '\n');
-      if (!p)
-	return end;
-      end = ++p;
-    }
-  while (*p == ' ' || *p == '\t');
-
-  return end;
-}
-
-/* Skip LWS (linear white space), if present.  Returns number of
-   characters to skip.  */
-static int
-skip_lws (const char *string)
-{
-  const char *p = string;
-
-  while (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n')
-    ++p;
-  return p - string;
-}
-
-/* Check whether HEADER begins with NAME and, if yes, skip the `:' and
-   the whitespace, and call PROCFUN with the arguments of HEADER's
-   contents (after the `:' and space) and ARG.  Otherwise, return 0.  */
-int
-header_process (const char *header, const char *name,
-		int (*procfun) (const char *, void *),
-		void *arg)
-{
-  /* Check whether HEADER matches NAME.  */
-  while (*name && (TOLOWER (*name) == TOLOWER (*header)))
-    ++name, ++header;
-  if (*name || *header++ != ':')
-    return 0;
-
-  header += skip_lws (header);
-
-  return ((*procfun) (header, arg));
-}
-
-/* Helper functions for use with header_process().  */
-
-/* Extract a long integer from HEADER and store it to CLOSURE.  If an
-   error is encountered, return 0, else 1.  */
-int
-header_extract_number (const char *header, void *closure)
-{
-  const char *p = header;
-  long result;
-
-  for (result = 0; ISDIGIT (*p); p++)
-    result = 10 * result + (*p - '0');
-
-  /* Failure if no number present. */
-  if (p == header)
-    return 0;
-
-  /* Skip trailing whitespace. */
-  p += skip_lws (p);
-
-  /* Indicate failure if trailing garbage is present. */
-  if (*p)
-    return 0;
-
-  *(long *)closure = result;
-  return 1;
-}
-
-/* Strdup HEADER, and place the pointer to CLOSURE.  */
-int
-header_strdup (const char *header, void *closure)
-{
-  *(char **)closure = xstrdup (header);
-  return 1;
-}
-
-/* Write the value 1 into the integer pointed to by CLOSURE.  */
-int
-header_exists (const char *header, void *closure)
-{
-  *(int *)closure = 1;
-  return 1;
-}
-
-/* Functions to be used as arguments to header_process(): */
-
-struct http_process_range_closure {
-  long first_byte_pos;
-  long last_byte_pos;
-  long entity_length;
-};
-
-/* Parse the `Content-Range' header and extract the information it
-   contains.  Returns 1 if successful, -1 otherwise.  */
-static int
-http_process_range (const char *hdr, void *arg)
-{
-  struct http_process_range_closure *closure
-    = (struct http_process_range_closure *)arg;
-  long num;
-
-  /* Certain versions of Nutscape proxy server send out
-     `Content-Length' without "bytes" specifier, which is a breach of
-     RFC2068 (as well as the HTTP/1.1 draft which was current at the
-     time).  But hell, I must support it...  */
-  if (!strncasecmp (hdr, "bytes", 5))
-    {
-      hdr += 5;
-      /* "JavaWebServer/1.1.1" sends "bytes: x-y/z", contrary to the
-	 HTTP spec. */
-      if (*hdr == ':')
-	++hdr;
-      hdr += skip_lws (hdr);
-      if (!*hdr)
-	return 0;
-    }
-  if (!ISDIGIT (*hdr))
-    return 0;
-  for (num = 0; ISDIGIT (*hdr); hdr++)
-    num = 10 * num + (*hdr - '0');
-  if (*hdr != '-' || !ISDIGIT (*(hdr + 1)))
-    return 0;
-  closure->first_byte_pos = num;
-  ++hdr;
-  for (num = 0; ISDIGIT (*hdr); hdr++)
-    num = 10 * num + (*hdr - '0');
-  if (*hdr != '/' || !ISDIGIT (*(hdr + 1)))
-    return 0;
-  closure->last_byte_pos = num;
-  ++hdr;
-  for (num = 0; ISDIGIT (*hdr); hdr++)
-    num = 10 * num + (*hdr - '0');
-  closure->entity_length = num;
-  return 1;
-}
-
-/* Place 1 to ARG if the HDR contains the word "none", 0 otherwise.
-   Used for `Accept-Ranges'.  */
-static int
-http_process_none (const char *hdr, void *arg)
-{
-  int *where = (int *)arg;
-
-  if (strstr (hdr, "none"))
-    *where = 1;
-  else
-    *where = 0;
-  return 1;
-}
-
-/* Place the malloc-ed copy of HDR hdr, to the first `;' to ARG.  */
-static int
-http_process_type (const char *hdr, void *arg)
-{
-  char **result = (char **)arg;
-  /* Locate P on `;' or the terminating zero, whichever comes first. */
-  const char *p = strchr (hdr, ';');
-  if (!p)
-    p = hdr + strlen (hdr);
-  while (p > hdr && ISSPACE (*(p - 1)))
-    --p;
-  *result = strdupdelim (hdr, p);
-  return 1;
-}
-
-/* Check whether the `Connection' header is set to "keep-alive". */
-static int
-http_process_connection (const char *hdr, void *arg)
-{
-  int *flag = (int *)arg;
-  if (!strcasecmp (hdr, "Keep-Alive"))
-    *flag = 1;
-  return 1;
-}
-
-/* Commit the cookie to the cookie jar. */
-
-int
-http_process_set_cookie (const char *hdr, void *arg)
-{
-  struct url *u = (struct url *)arg;
-
-  /* The jar should have been created by now. */
-  assert (wget_cookie_jar != NULL);
-
-  cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port, u->path, hdr);
-  return 1;
-}
-
 
 /* Persistent connections.  Currently, we cache the most recently used
    connection as persistent, provided that the HTTP server agrees to
@@ -690,7 +731,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   char *proxyauth;
   char *port_maybe;
   char *request_keep_alive;
-  int sock, hcount, statcode;
+  int sock, statcode;
   int write_error;
   long contlen, contrange;
   struct url *conn;
@@ -700,15 +741,17 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   char *cookies = NULL;
 
   char *head;
-  const char *hdr_beg, *hdr_end;
+  struct response *resp;
+  char hdrval[256];
+  char *message;
+  char *set_cookie;
 
   /* Whether this connection will be kept alive after the HTTP request
      is done. */
   int keep_alive;
 
-  /* Flags that detect the two ways of specifying HTTP keep-alive
-     response.  */
-  int http_keep_alive_1, http_keep_alive_2;
+  /* Flag that detects having received a keep-alive response.  */
+  int keep_alive_confirmed;
 
   /* Whether keep-alive should be inhibited. */
   int inhibit_keep_alive;
@@ -758,7 +801,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
        know the local filename so we can save to it. */
     assert (*hs->local_file != NULL);
 
-  authenticate_h = 0;
+  authenticate_h = NULL;
   auth_tried_already = 0;
 
   inhibit_keep_alive = !opt.http_keep_alive || proxy != NULL;
@@ -769,7 +812,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
      for the Digest authorization scheme.)  */
 
   keep_alive = 0;
-  http_keep_alive_1 = http_keep_alive_2 = 0;
+  keep_alive_confirmed = 0;
 
   post_content_type = NULL;
   post_content_length = NULL;
@@ -1080,9 +1123,7 @@ Accept: %s\r\n\
   statcode = -1;
   *dt &= ~RETROKF;
 
-  DEBUGP (("\n---response begin---\n"));
-
-  head = fd_read_head (sock);
+  head = fd_read_http_head (sock);
   if (!head)
     {
       logputs (LOG_VERBOSE, "\n");
@@ -1101,154 +1142,78 @@ Accept: %s\r\n\
 	}
     }
 
-  /* Loop through the headers and process them. */
-
-  hcount = 0;
-  for (hdr_beg = head;
-       (hdr_end = next_header (hdr_beg));
-       hdr_beg = hdr_end)
-    {
-      char *hdr = strdupdelim (hdr_beg, hdr_end);
-      {
-	char *tmp = hdr + strlen (hdr);
-	if (tmp > hdr && tmp[-1] == '\n')
-	  *--tmp = '\0';
-	if (tmp > hdr && tmp[-1] == '\r')
-	  *--tmp = '\0';
-      }
-      ++hcount;
-
-      /* Check for status line.  */
-      if (hcount == 1)
-	{
-	  const char *error;
-	  /* Parse the first line of server response.  */
-	  statcode = parse_http_status_line (hdr, &error);
-	  hs->statcode = statcode;
-	  /* Store the descriptive response.  */
-	  if (statcode == -1) /* malformed response */
-	    {
-	      /* A common reason for "malformed response" error is the
-                 case when no data was actually received.  Handle this
-                 special case.  */
-	      if (!*hdr)
-		hs->error = xstrdup (_("No data received"));
-	      else
-		hs->error = xstrdup (_("Malformed status line"));
-	      xfree (hdr);
-	      break;
-	    }
-	  else if (!*error)
-	    hs->error = xstrdup (_("(no description)"));
-	  else
-	    hs->error = xstrdup (error);
-
-	  if ((statcode != -1)
-#ifdef ENABLE_DEBUG
-	      && !opt.debug
-#endif
-	      )
-	    {
-             if (opt.server_response)
-	       logprintf (LOG_VERBOSE, "\n%2d %s", hcount, hdr);
-             else
-	       logprintf (LOG_VERBOSE, "%2d %s", statcode, error);
-	    }
-
-	  goto done_header;
-	}
-
-      /* Exit on empty header.  */
-      if (!*hdr)
-	{
-	  xfree (hdr);
-	  break;
-	}
-
-      /* Print the header if requested.  */
-      if (opt.server_response && hcount != 1)
-	logprintf (LOG_VERBOSE, "\n%2d %s", hcount, hdr);
-
-      /* Try getting content-length.  */
-      if (contlen == -1 && !opt.ignore_length)
-	if (header_process (hdr, "Content-Length", header_extract_number,
-			    &contlen))
-	  goto done_header;
-      /* Try getting content-type.  */
-      if (!type)
-	if (header_process (hdr, "Content-Type", http_process_type, &type))
-	  goto done_header;
-      /* Try getting location.  */
-      if (!hs->newloc)
-	if (header_process (hdr, "Location", header_strdup, &hs->newloc))
-	  goto done_header;
-      /* Try getting last-modified.  */
-      if (!hs->remote_time)
-	if (header_process (hdr, "Last-Modified", header_strdup,
-			    &hs->remote_time))
-	  goto done_header;
-      /* Try getting cookies. */
-      if (opt.cookies)
-	if (header_process (hdr, "Set-Cookie", http_process_set_cookie, u))
-	  goto done_header;
-      /* Try getting www-authentication.  */
-      if (!authenticate_h)
-	if (header_process (hdr, "WWW-Authenticate", header_strdup,
-			    &authenticate_h))
-	  goto done_header;
-      /* Check for accept-ranges header.  If it contains the word
-	 `none', disable the ranges.  */
-      if (*dt & ACCEPTRANGES)
-	{
-	  int nonep;
-	  if (header_process (hdr, "Accept-Ranges", http_process_none, &nonep))
-	    {
-	      if (nonep)
-		*dt &= ~ACCEPTRANGES;
-	      goto done_header;
-	    }
-	}
-      /* Try getting content-range.  */
-      if (contrange == -1)
-	{
-	  struct http_process_range_closure closure;
-	  if (header_process (hdr, "Content-Range", http_process_range, &closure))
-	    {
-	      contrange = closure.first_byte_pos;
-	      goto done_header;
-	    }
-	}
-      /* Check for keep-alive related responses. */
-      if (!inhibit_keep_alive)
-	{
-	  /* Check for the `Keep-Alive' header. */
-	  if (!http_keep_alive_1)
-	    {
-	      if (header_process (hdr, "Keep-Alive", header_exists,
-				  &http_keep_alive_1))
-		goto done_header;
-	    }
-	  /* Check for `Connection: Keep-Alive'. */
-	  if (!http_keep_alive_2)
-	    {
-	      if (header_process (hdr, "Connection", http_process_connection,
-				  &http_keep_alive_2))
-		goto done_header;
-	    }
-	}
-    done_header:
-      xfree (hdr);
-    }
+  DEBUGP (("\n---response begin---\n"));
+  DEBUGP (("%s", head));
   DEBUGP (("---response end---\n"));
 
-  logputs (LOG_VERBOSE, "\n");
+  resp = response_new (head);
 
-  if (contlen != -1
-      && (http_keep_alive_1 || http_keep_alive_2))
+  /* Check for status line.  */
+  message = NULL;
+  statcode = response_status (resp, &message);
+  if (!opt.server_response)
+    logprintf (LOG_VERBOSE, "%2d %s\n", statcode, message ? message : "");
+  else
     {
-      assert (inhibit_keep_alive == 0);
-      keep_alive = 1;
+      logprintf (LOG_VERBOSE, "\n");
+      print_server_response (resp);
     }
+
+  hs->statcode = statcode;
+  if (statcode == -1)
+    hs->error = xstrdup (_("Malformed status line"));
+  else if (!*message)
+    hs->error = xstrdup (_("(no description)"));
+  else
+    hs->error = xstrdup (message);
+
+  if (response_header_copy (resp, "Content-Length", hdrval, sizeof (hdrval)))
+    contlen = strtol (hdrval, NULL, 10);
+  type = response_header_strdup (resp, "Content-Type");
+  if (type)
+    {
+      char *tmp = strchr (type, ';');
+      if (tmp)
+	{
+	  while (tmp > type && ISSPACE (tmp[-1]))
+	    --tmp;
+	  *tmp = '\0';
+	}
+    }
+  hs->newloc = response_header_strdup (resp, "Location");
+  hs->remote_time = response_header_strdup (resp, "Last-Modified");
+  set_cookie = response_header_strdup (resp, "Set-Cookie");
+  if (set_cookie)
+    {
+      /* The jar should have been created by now. */
+      assert (wget_cookie_jar != NULL);
+      cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port, u->path,
+				set_cookie);
+      xfree (set_cookie);
+    }
+  authenticate_h = response_header_strdup (resp, "WWW-Authenticate");
+  if (response_header_copy (resp, "Content-Range", hdrval, sizeof (hdrval)))
+    {
+      long first_byte_pos, last_byte_pos, entity_length;
+      if (parse_content_range (hdrval, &first_byte_pos, &last_byte_pos,
+			       &entity_length))
+	contrange = first_byte_pos;
+    }
+
+  /* Check for keep-alive related responses. */
+  if (!inhibit_keep_alive && contlen != -1)
+    {
+      if (response_header_copy (resp, "Keep-Alive", NULL, 0))
+	keep_alive = 1;
+      else if (response_header_copy (resp, "Connection", hdrval,
+				     sizeof (hdrval)))
+	{
+	  if (0 == strcasecmp (hdrval, "Keep-Alive"))
+	    keep_alive = 1;
+	}
+    }
+  response_free (resp);
+
   if (keep_alive)
     /* The server has promised that it will not close the connection
        when we're done.  This means that we can register it.  */
@@ -2290,6 +2255,11 @@ basic_authentication_encode (const char *user, const char *passwd,
   return res;
 }
 
+#define SKIP_WS(x) do {				\
+  while (ISSPACE (*(x)))			\
+    ++(x);					\
+} while (0)
+
 #ifdef USE_DIGEST
 /* Parse HTTP `WWW-Authenticate:' header.  AU points to the beginning
    of a field in such a header.  If the field is the one specified by
@@ -2309,12 +2279,12 @@ extract_header_attr (const char *au, const char *attr_name, char **ret)
       cp += strlen (attr_name);
       if (!*cp)
 	return -1;
-      cp += skip_lws (cp);
+      SKIP_WS (cp);
       if (*cp != '=')
 	return -1;
       if (!*++cp)
 	return -1;
-      cp += skip_lws (cp);
+      SKIP_WS (cp);
       if (*cp != '\"')
 	return -1;
       if (!*++cp)
@@ -2373,7 +2343,7 @@ digest_authentication_encode (const char *au, const char *user,
     {
       int i;
 
-      au += skip_lws (au);
+      SKIP_WS (au);
       for (i = 0; i < countof (options); i++)
 	{
 	  int skip = extract_header_attr (au, options[i].name,
@@ -2397,7 +2367,7 @@ digest_authentication_encode (const char *au, const char *user,
 	    au++;
 	  if (*au && *++au)
 	    {
-	      au += skip_lws (au);
+	      SKIP_WS (au);
 	      if (*au == '\"')
 		{
 		  au++;

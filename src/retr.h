@@ -30,8 +30,10 @@ so, delete this exception statement from your version.  */
 #ifndef RETR_H
 #define RETR_H
 
+typedef const char *(*hunk_terminator_t) PARAMS ((const char *, int, int));
+
+char *fd_read_hunk PARAMS ((int, hunk_terminator_t, int));
 char *fd_read_line PARAMS ((int));
-char *fd_read_head PARAMS ((int));
 
 int fd_read_body PARAMS ((int, FILE *, long *, long, long, int, double *));
 
