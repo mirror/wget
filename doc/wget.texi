@@ -828,11 +828,6 @@ servers denying information to clients other than @code{Mozilla} or
 Microsoft @code{Internet Explorer}.  This option allows you to change
 the @code{User-Agent} line issued by Wget.  Use of this option is
 discouraged, unless you really know what you are doing.
-
-@strong{NOTE} that Netscape Communications Corp. has claimed that false
-transmissions of @samp{Mozilla} as the @code{User-Agent} are a copyright
-infringement, which will be prosecuted.  @strong{DO NOT} misrepresent
-Wget as Mozilla.
 @end table
 
 @node FTP Options, Recursive Retrieval Options, HTTP Options, Invoking
@@ -2688,10 +2683,10 @@ me).
 @cindex contributors
 
 @iftex
-GNU Wget was written by Hrvoje Nik@v{s}i@'{c} @email{hniksic@@iskon.hr}.
+GNU Wget was written by Hrvoje Nik@v{s}i@'{c} @email{hniksic@@arsdigita.com}.
 @end iftex
 @ifinfo
-GNU Wget was written by Hrvoje Niksic @email{hniksic@@iskon.hr}.
+GNU Wget was written by Hrvoje Niksic @email{hniksic@@arsdigita.com}.
 @end ifinfo
 However, its development could never have gone as far as it has, were it
 not for the help of many people, either with bug reports, feature
