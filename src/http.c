@@ -185,8 +185,7 @@ parse_http_status_line (const char *line, const char **reason_phrase_ptr)
 
 /* Send the contents of FILE_NAME to SOCK/SSL.  Make sure that exactly
    PROMISED_SIZE bytes are sent over the wire -- if the file is
-   longer, read only that much; if the file is shorter, pad it with
-   zeros.  */
+   longer, read only that much; if the file is shorter, report an error.  */
 
 static int
 post_file (int sock, void *ssl, const char *file_name, long promised_size)
@@ -204,8 +203,8 @@ post_file (int sock, void *ssl, const char *file_name, long promised_size)
 
   fp = fopen (file_name, "rb");
   if (!fp)
-    goto pad;
-  while (written < promised_size)
+    return -1;
+  while (!feof (fp) && written < promised_size)
     {
       int towrite;
       int length = fread (chunk, 1, sizeof (chunk), fp);
@@ -227,29 +226,14 @@ post_file (int sock, void *ssl, const char *file_name, long promised_size)
     }
   fclose (fp);
 
- pad:
+  /* If we've written less than was promised, report a (probably
+     nonsensical) error rather than break the promise.  */
   if (written < promised_size)
     {
-      /* This highly unlikely case can happen only if the file has
-	 shrunk under us.  To uphold the promise that exactly
-	 promised_size bytes would be delivered, pad the remaining
-	 data with zeros.  #### Should we abort instead?  */
-      DEBUGP (("padding %ld bytes ... ", promised_size - written));
-      memset (chunk, '\0', sizeof (chunk));
-      while (written < promised_size)
-	{
-	  int towrite = WMIN (promised_size - written, sizeof (chunk));
-#ifdef HAVE_SSL
-	  if (ssl)
-	    write_error = ssl_iwrite (ssl, chunk, towrite);
-	  else
-#endif
-	    write_error = iwrite (sock, chunk, towrite);
-	  if (write_error < 0)
-	    return -1;
-	  written += towrite;
-	}
+      errno = EINVAL;
+      return -1;
     }
+
   assert (written == promised_size);
   DEBUGP (("done]\n"));
   return 0;
