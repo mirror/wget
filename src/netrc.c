@@ -269,13 +269,6 @@ parse_netrc (const char *path)
   /* While there are lines in the file...  */
   while ((line = read_whole_line (fp)))
     {
-      /* Do away with line separators. */
-      int len = strlen (line);
-      if (len && line[len - 1] == '\n')
-	line[--len] = '\0';
-      if (len && line[len - 1] == '\r')
-	line[--len] = '\0';
-
       ln ++;
 
       /* Parse the line.  */
@@ -294,8 +287,9 @@ parse_netrc (const char *path)
 	  while (*p && ISSPACE (*p))
 	    p ++;
 
-	  /* Discard end-of-line comments.  */
-	  if (*p == '#')
+	  /* Discard end-of-line comments; also, stop processing if
+	     the above `while' merely skipped trailing whitespace.  */
+	  if (*p == '#' || !*p)
 	    break;
 
 	  /* If the token starts with quotation mark, note this fact,

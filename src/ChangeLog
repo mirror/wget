@@ -1,5 +1,20 @@
 2001-04-02  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* netrc.c (parse_netrc): Don't trim the line endings explicitly;
+	they will be handled as whitespace.
+	(parse_netrc): Correctly handle lines that end with whitespace.
+
+2001-04-02  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* retr.c (retrieve_url): New variable global_download_count used
+	to identify first retrieval.
+
+	* ftp.c (getftp): Ditto.
+
+	* http.c (gethttp): Rewind opt.dfp only on first retrieval.
+
+2001-04-02  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* init.c (cmd_address): Heap-allocate the address that gets stored
 	to CLOSURE.  Old code would simply assign an address on the stack.
 
