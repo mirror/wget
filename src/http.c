@@ -441,7 +441,7 @@ register_persistent (const char *host, unsigned short port, int fd)
 
   /* This lookup_host cannot fail, because it has the results in the
      cache.  */
-  pc_last_host_ip = lookup_host (host, 1);
+  pc_last_host_ip = lookup_host (host, LH_SILENT);
   assert (pc_last_host_ip != NULL);
 
   pc_last_port = port;
@@ -496,7 +496,7 @@ persistent_available_p (const char *host, unsigned short port)
     return 0;
 #endif /* HAVE_SSL */
 
-  this_host_ip = lookup_host (host, 1);
+  this_host_ip = lookup_host (host, LH_SILENT);
   if (!this_host_ip)
     return 0;
 

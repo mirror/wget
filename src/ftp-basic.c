@@ -29,6 +29,7 @@ so, delete this exception statement from your version.  */
 
 #include <config.h>
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -126,7 +127,7 @@ ftp_request (const char *command, const char *value)
       if (strncmp (res, "PASS", 4) != 0)
         logprintf (LOG_ALWAYS, "--> %s\n", res);
       else
-        logputs (LOG_ALWAYS, "--> PASS Turtle Power!\n");
+        logputs (LOG_ALWAYS, "--> PASS Turtle Power!\n\n");
     }
   else
     DEBUGP (("\n--> %s\n", res));
@@ -252,61 +253,23 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
   return FTPOK;
 }
 
-#ifdef ENABLE_IPV6
-uerr_t
-ftp_eprt (struct rbuf *rbuf)
+static void
+ip_address_to_port_repr (const ip_address *addr, unsigned short port, char *buf, 
+                         size_t buflen)
 {
-  uerr_t err;
+  unsigned char *ptr;
 
-  char *request, *respline;
-  ip_address in_addr;
-  unsigned short port;
+  assert (addr != NULL);
+  assert (addr->type == IPv4_ADDRESS);
+  assert (buf != NULL);
+  /* buf must contain the argument of PORT (of the form a,b,c,d,e,f). */
+  assert (buflen >= 6 * 4);
 
-  char ipv6 [8 * (4 * 3 + 3) + 8];
-  char *bytes;
-
-  /* Setting port to 0 lets the system choose a free port.  */
-  port = 0;
-  err = bindport (&port, ip_default_family);
-  if (err != BINDOK)	/* Bind the port.  */
-    return err;
-
-  /* Get the address of this side of the connection.  */
-  if (!conaddr (RBUF_FD (rbuf), &in_addr))
-    /* Huh?  This is not BINDERR! */
-    return BINDERR;
-  inet_ntop (AF_INET6, &in_addr, ipv6, sizeof (ipv6));
-
-  /* Construct the argument of EPRT (of the form |2|IPv6.ascii|PORT.ascii|). */
-  bytes = alloca (3 + strlen (ipv6) + 1 + numdigit (port) + 1 + 1);
-  sprintf (bytes, "|2|%s|%u|", ipv6, port);
-  /* Send PORT request.  */
-  request = ftp_request ("EPRT", bytes);
-  if (0 > iwrite (RBUF_FD (rbuf), request, strlen (request)))
-    {
-      closeport (port);
-      xfree (request);
-      return WRITEFAILED;
-    }
-  xfree (request);
-  /* Get appropriate response.  */
-  err = ftp_response (rbuf, &respline);
-  if (err != FTPOK)
-    {
-      closeport (port);
-      xfree (respline);
-      return err;
-    }
-  if (*respline != '2')
-    {
-      closeport (port);
-      xfree (respline);
-      return FTPPORTERR;
-    }
-  xfree (respline);
-  return FTPOK;
+  ptr = (unsigned char *)(&addr->addr.ipv4.addr.s_addr);
+  snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d", ptr[0], ptr[1],
+            ptr[2], ptr[3], (unsigned) (port & 0xff00) >> 8, port & 0xff);
+  buf[buflen - 1] = '\0';
 }
-#endif
 
 /* Bind a port and send the appropriate PORT command to the FTP
    server.  Use acceptport after RETR, to get the socket of data
@@ -316,53 +279,136 @@ ftp_port (struct rbuf *rbuf)
 {
   uerr_t err;
   char *request, *respline;
-  char bytes[6 * 4 +1];
-
-  ip_address in_addr;
-  ip4_address in_addr_4;
-  unsigned char *in_addr4_ptr = (unsigned char *)&in_addr_4;
-
+  ip_address addr;
   int nwritten;
   unsigned short port;
-#ifdef ENABLE_IPV6
-  /*
-    Only try the Extented Version if we actually use IPv6
-  */
-  if (ip_default_family == AF_INET6)
-    {
-      err = ftp_eprt (rbuf);
-      if (err == FTPOK)
-	return err;
-    }
-#endif
+  /* Must contain the argument of PORT (of the form a,b,c,d,e,f). */
+  char bytes[6 * 4 + 1];
+
+  assert (rbuf != NULL);
+  assert (rbuf_initialized_p (rbuf));
+
+  /* Get the address of this side of the connection. */
+  if (!conaddr (RBUF_FD (rbuf), &addr))
+    return BINDERR;
+
+  assert (addr.type == IPv4_ADDRESS);
+
   /* Setting port to 0 lets the system choose a free port.  */
   port = 0;
 
-  err = bindport (&port, AF_INET);
+  /* Bind the port.  */
+  err = bindport (&addr, &port);
   if (err != BINDOK)
     return err;
 
-  /* Get the address of this side of the connection and convert it
-     (back) to IPv4.  */
-  if (!conaddr (RBUF_FD (rbuf), &in_addr))
-    /* Huh?  This is not BINDERR! */
-    return BINDERR;
-  if (!map_ip_to_ipv4 (&in_addr, &in_addr_4))
-    return BINDERR;
+  /* Construct the argument of PORT (of the form a,b,c,d,e,f). */
+  ip_address_to_port_repr (&addr, port, bytes, sizeof (bytes));
 
-  /* Construct the argument of PORT (of the form a,b,c,d,e,f).  Port
-     is unsigned short so (unsigned) (port & 0xff000) >> 8 is the same
-     like port >> 8
-   */
-  sprintf (bytes, "%d,%d,%d,%d,%d,%d",
-	   in_addr4_ptr[0], in_addr4_ptr[1], in_addr4_ptr[2], in_addr4_ptr[3],
-	   port >> 8, port & 0xff);
   /* Send PORT request.  */
   request = ftp_request ("PORT", bytes);
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
   if (nwritten < 0)
     {
       xfree (request);
+      closeport (-1);
+      return WRITEFAILED;
+    }
+  xfree (request);
+
+  /* Get appropriate response.  */
+  err = ftp_response (rbuf, &respline);
+  if (err != FTPOK)
+    {
+      xfree (respline);
+      closeport (-1);
+      return err;
+    }
+  if (*respline != '2')
+    {
+      xfree (respline);
+      closeport (-1);
+      return FTPPORTERR;
+    }
+  xfree (respline);
+  return FTPOK;
+}
+
+#ifdef ENABLE_IPV6
+static void
+ip_address_to_lprt_repr (const ip_address *addr, unsigned short port, char *buf, 
+                         size_t buflen)
+{
+  unsigned char *ptr;
+
+  assert (addr != NULL);
+  assert (addr->type == IPv4_ADDRESS || addr->type == IPv6_ADDRESS);
+  assert (buf != NULL);
+  /* buf must contain the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
+  assert (buflen >= 21 * 4);
+
+  /* Construct the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
+  switch (addr->type) 
+    {
+      case IPv4_ADDRESS: 
+	ptr = (unsigned char *)(&addr->addr.ipv4.addr);
+        snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d,%d,%d,%d", 4, 4, 
+                  ptr[0], ptr[1], ptr[2], ptr[3], 2,
+                  (unsigned) (port & 0xff00) >> 8, port & 0xff);
+        buf[buflen - 1] = '\0';
+        break;
+      case IPv6_ADDRESS: 
+	ptr = (unsigned char *)(&addr->addr.ipv6.addr);
+	snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+	          6, 16, ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7], 
+		  ptr[8], ptr[9], ptr[10], ptr[11], ptr[12], ptr[13], ptr[14], ptr[15], 2,
+		  (unsigned) (port & 0xff00) >> 8, port & 0xff);
+	buf[buflen - 1] = '\0';
+	break;
+    }
+}
+
+/* Bind a port and send the appropriate PORT command to the FTP
+   server.  Use acceptport after RETR, to get the socket of data
+   connection.  */
+uerr_t
+ftp_lprt (struct rbuf *rbuf)
+{
+  uerr_t err;
+  char *request, *respline;
+  ip_address addr;
+  int nwritten;
+  unsigned short port;
+  /* Must contain the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
+  char bytes[21 * 4 + 1];
+
+  assert (rbuf != NULL);
+  assert (rbuf_initialized_p (rbuf));
+
+  /* Get the address of this side of the connection. */
+  if (!conaddr (RBUF_FD (rbuf), &addr))
+    return BINDERR;
+
+  assert (addr.type == IPv4_ADDRESS || addr.type == IPv6_ADDRESS);
+
+  /* Setting port to 0 lets the system choose a free port.  */
+  port = 0;
+
+  /* Bind the port.  */
+  err = bindport (&addr, &port);
+  if (err != BINDOK)
+    return err;
+
+  /* Construct the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
+  ip_address_to_lprt_repr (&addr, port, bytes, sizeof (bytes));
+
+  /* Send PORT request.  */
+  request = ftp_request ("LPRT", bytes);
+  nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
+  if (nwritten < 0)
+    {
+      xfree (request);
+      closeport (-1);
       return WRITEFAILED;
     }
   xfree (request);
@@ -371,76 +417,103 @@ ftp_port (struct rbuf *rbuf)
   if (err != FTPOK)
     {
       xfree (respline);
+      closeport (-1);
       return err;
     }
   if (*respline != '2')
     {
       xfree (respline);
+      closeport (-1);
       return FTPPORTERR;
     }
   xfree (respline);
   return FTPOK;
 }
 
-#ifdef ENABLE_IPV6
-uerr_t
-ftp_epsv (struct rbuf *rbuf, ip_address *addr, unsigned short *port, 
-	  char *typ)
+static void
+ip_address_to_eprt_repr (const ip_address *addr, unsigned short port, char *buf, 
+                         size_t buflen)
 {
-  int err;
-  char *s, *respline;
-  char *request = ftp_request ("EPSV", typ);
-  if (0 > iwrite (RBUF_FD (rbuf), request, strlen (request)))
+  int afnum;
+
+  assert (addr != NULL);
+  assert (addr->type == IPv4_ADDRESS || addr->type == IPv6_ADDRESS);
+  assert (buf != NULL);
+  /* buf must contain the argument of EPRT (of the form |af|addr|port|). 
+   * 4 chars for the | separators, INET6_ADDRSTRLEN chars for addr  
+   * 1 char for af (1-2) and 5 chars for port (0-65535) */
+  assert (buflen >= 4 + INET6_ADDRSTRLEN + 1 + 5); 
+
+  /* Construct the argument of EPRT (of the form |af|addr|port|). */
+  afnum = (addr->type == IPv4_ADDRESS ? 1 : 2);
+  snprintf (buf, buflen, "|%d|%s|%d|", afnum, pretty_print_address (addr), port);
+  buf[buflen - 1] = '\0';
+}
+
+/* Bind a port and send the appropriate PORT command to the FTP
+   server.  Use acceptport after RETR, to get the socket of data
+   connection.  */
+uerr_t
+ftp_eprt (struct rbuf *rbuf)
+{
+  uerr_t err;
+  char *request, *respline;
+  ip_address addr;
+  int nwritten;
+  unsigned short port;
+  /* Must contain the argument of EPRT (of the form |af|addr|port|). 
+   * 4 chars for the | separators, ENABLE_IPV6_ADDRSTRLEN chars for addr  
+   * 1 char for af (1-2) and 5 chars for port (0-65535) */
+  char bytes[4 + INET6_ADDRSTRLEN + 1 + 5 + 1];
+
+  assert (rbuf != NULL);
+  assert (rbuf_initialized_p(rbuf));
+
+  /* Get the address of this side of the connection. */
+  if (!conaddr (RBUF_FD (rbuf), &addr))
+    return BINDERR;
+
+  assert (addr.type == IPv4_ADDRESS || addr.type == IPv6_ADDRESS);
+
+  /* Setting port to 0 lets the system choose a free port.  */
+  port = 0;
+
+  /* Bind the port.  */
+  err = bindport (&addr, &port);
+  if (err != BINDOK)
+    return err;
+
+  /* Construct the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
+  ip_address_to_eprt_repr (&addr, port, bytes, sizeof (bytes));
+
+  /* Send PORT request.  */
+  request = ftp_request ("EPRT", bytes);
+  nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
+  if (nwritten < 0)
     {
       xfree (request);
+      closeport (-1);
       return WRITEFAILED;
     }
-  /* Get the server response.  */
+  xfree (request);
+  /* Get appropriate response.  */
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
+      closeport (-1);
       return err;
     }
   if (*respline != '2')
     {
       xfree (respline);
-      return FTPNOPASV;
+      closeport (-1);
+      return FTPPORTERR;
     }
-  /* Parse the request.  */
-  s = respline;
-  /* respline::=229 Entering Extended Passive Mode (|||6446|) */
-  for (s += 4; *s && !ISDIGIT (*s); s++);
-  if (!*s)
-    return FTPINVPASV;
-  *port=0; 
-  for (; ISDIGIT (*s); s++) 
-    *port = (*s - '0') + 10 * (*port);
   xfree (respline);
-  /* Now we have the port but we need the IPv6 :-( */
-  {
-    wget_sockaddr remote;
-    socklen_t addrlen = sizeof (remote);
-    struct sockaddr_in *ipv4_sock = (struct sockaddr_in *)&remote;
-    getpeername (RBUF_FD (rbuf), (struct sockaddr *)&remote, &addrlen);
-    switch(remote.sa.sa_family)
-      {
-        case AF_INET6:
-          memcpy (addr, &remote.sin6.sin6_addr, 16);
-	  break;
-	case AF_INET:  
-          map_ipv4_to_ip ((ip4_address *)&ipv4_sock->sin_addr, addr);
-	  break;
-	default:
-	  abort();
-	  return FTPINVPASV;
-	  /* realy bad */
-      }
-  }
   return FTPOK;
 }
 #endif
-
 
 /* Similar to ftp_port, but uses `PASV' to initiate the passive FTP
    transfer.  Reads the response from server and parses it.  Reads the
@@ -451,19 +524,15 @@ ftp_pasv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
   char *request, *respline, *s;
   int nwritten, i;
   uerr_t err;
-  unsigned char addr4[4];
+  unsigned char tmp[6];
 
-#ifdef ENABLE_IPV6
-  if (ip_default_family == AF_INET6) 
-    {
-      err = ftp_epsv (rbuf, addr, port, "2");	/* try IPv6 with EPSV */
-      if (FTPOK == err) 
-        return FTPOK;
-      err = ftp_epsv (rbuf, addr, port, "1");	/* try IPv4 with EPSV */
-      if (FTPOK == err) 
-        return FTPOK;
-    }
-#endif  
+  assert (rbuf != NULL);
+  assert (rbuf_initialized_p(rbuf));
+  assert (addr != NULL);
+  assert (port != NULL);
+
+  memset (addr, 0, sizeof (ip_address));
+
   /* Form the request.  */
   request = ftp_request ("PASV", NULL);
   /* And send it.  */
@@ -487,16 +556,132 @@ ftp_pasv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
       return FTPNOPASV;
     }
   /* Parse the request.  */
-  /* respline::=227 Entering Passive Mode (h1,h2,h3,h4,p1,p2). 	*/
   s = respline;
   for (s += 4; *s && !ISDIGIT (*s); s++);
   if (!*s)
     return FTPINVPASV;
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < 6; i++)
     {
-      addr4[i] = 0;
+      tmp[i] = 0;
       for (; ISDIGIT (*s); s++)
-        addr4[i] = (*s - '0') + 10 * addr4[i];
+        tmp[i] = (*s - '0') + 10 * tmp[i];
+      if (*s == ',')
+        s++;
+      else if (i < 5)
+        {
+          /* When on the last number, anything can be a terminator.  */
+          xfree (respline);
+          return FTPINVPASV;
+        }
+    }
+  xfree (respline);
+
+  addr->type = IPv4_ADDRESS;
+  /* Mauro Tortonesi: is this safe and/or elegant enough? */
+  memcpy (&addr->addr.ipv4.addr, tmp, 4);
+  *port = ((tmp[4] << 8) & 0xff00) + tmp[5];
+
+  return FTPOK;
+}
+
+#ifdef ENABLE_IPV6
+/* Similar to ftp_lprt, but uses `LPSV' to initiate the passive FTP
+   transfer.  Reads the response from server and parses it.  Reads the
+   host and port addresses and returns them.  */
+uerr_t
+ftp_lpsv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
+{
+  char *request, *respline, *s;
+  int nwritten, i, af, addrlen, portlen;
+  uerr_t err;
+  unsigned char tmp[16];
+  unsigned char tmpprt[2];
+
+  assert (rbuf != NULL);
+  assert (rbuf_initialized_p(rbuf));
+  assert (addr != NULL);
+  assert (port != NULL);
+
+  memset (addr, 0, sizeof (ip_address));
+
+  /* Form the request.  */
+  request = ftp_request ("LPSV", NULL);
+
+  /* And send it.  */
+  nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
+  if (nwritten < 0)
+    {
+      xfree (request);
+      return WRITEFAILED;
+    }
+  xfree (request);
+
+  /* Get the server response.  */
+  err = ftp_response (rbuf, &respline);
+  if (err != FTPOK)
+    {
+      xfree (respline);
+      return err;
+    }
+  if (*respline != '2')
+    {
+      xfree (respline);
+      return FTPNOPASV;
+    }  
+
+  /* Parse the response.  */
+  s = respline;
+  for (s += 4; *s && !ISDIGIT (*s); s++);
+  if (!*s)
+    return FTPINVPASV;
+
+  /* First, get the address family */
+  af = 0;
+  for (; ISDIGIT (*s); s++)
+    af = (*s - '0') + 10 * af;
+
+  if (af != 4 && af != 6)
+    {
+      xfree (respline);
+      return FTPINVPASV;
+    }
+
+  if (!*s || *s++ != ',')
+    {
+      xfree (respline);
+      return FTPINVPASV;
+    }
+
+  /* Then, get the address length */
+  addrlen = 0;
+  for (; ISDIGIT (*s); s++)
+    addrlen = (*s - '0') + 10 * addrlen;
+
+  if (!*s || *s++ != ',')
+    {
+      xfree (respline);
+      return FTPINVPASV;
+    }
+
+  if (addrlen > 16)
+    {
+      xfree (respline);
+      return FTPINVPASV;
+    }
+
+  if ((af == 4 && addrlen != 4)
+      || (af == 6 && addrlen != 16))
+    {
+      xfree (respline);
+      return FTPINVPASV;
+    }
+
+  /* Now, we get the actual address */
+  for (i = 0; i < addrlen; i++)
+    {
+      tmp[i] = 0;
+      for (; ISDIGIT (*s); s++)
+        tmp[i] = (*s - '0') + 10 * tmp[i];
       if (*s == ',')
         s++;
       else
@@ -506,29 +691,184 @@ ftp_pasv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
         }
     }
 
-  /* Eventually make an IPv4 in IPv6 adress if needed */
-  map_ipv4_to_ip ((ip4_address *)addr4, addr);
-
-  *port=0;
+  /* Now, get the port length */
+  portlen = 0;
   for (; ISDIGIT (*s); s++)
-    *port = (*s - '0') + 10 * (*port);
-  if (*s == ',') 
-    s++;
-  else
+    portlen = (*s - '0') + 10 * portlen;
+
+  if (!*s || *s++ != ',')
     {
       xfree (respline);
       return FTPINVPASV;
     }
 
-  {
-    unsigned short port2 = 0; 
-    for (; ISDIGIT (*s); s++) 
-      port2 = (*s - '0') + 10 * port2;
-    *port = (*port) * 256 + port2;
-  }
+  if (portlen > 2)
+    {
+      xfree (respline);
+      return FTPINVPASV;
+    }
+
+  /* Finally, we get the port number */
+  tmpprt[0] = 0;
+  for (; ISDIGIT (*s); s++)
+    tmpprt[0] = (*s - '0') + 10 * tmpprt[0];
+
+  if (!*s || *s++ != ',')
+    {
+      xfree (respline);
+      return FTPINVPASV;
+    }
+
+  tmpprt[1] = 0;
+  for (; ISDIGIT (*s); s++)
+    tmpprt[1] = (*s - '0') + 10 * tmpprt[1];
+
+  assert (s != NULL);
+
+  if (af == 4)
+    {
+      addr->type = IPv4_ADDRESS;
+      memcpy (&addr->addr.ipv4.addr, tmp, 4);
+      *port = ((tmpprt[0] << 8) & 0xff00) + tmpprt[1];
+      DEBUGP (("lpsv addr is: %s\n", pretty_print_address(addr)));
+      DEBUGP (("tmpprt[0] is: %d\n", tmpprt[0]));
+      DEBUGP (("tmpprt[1] is: %d\n", tmpprt[1]));
+      DEBUGP (("*port is: %d\n", *port));
+    }
+  else
+    {
+      assert (af == 6);
+      addr->type = IPv6_ADDRESS;
+      memcpy (&addr->addr.ipv6.addr, tmp, 16);
+      *port = ((tmpprt[0] << 8) & 0xff00) + tmpprt[1];
+      DEBUGP (("lpsv addr is: %s\n", pretty_print_address(addr)));
+      DEBUGP (("tmpprt[0] is: %d\n", tmpprt[0]));
+      DEBUGP (("tmpprt[1] is: %d\n", tmpprt[1]));
+      DEBUGP (("*port is: %d\n", *port));
+    }
+
   xfree (respline);
   return FTPOK;
 }
+
+/* Similar to ftp_eprt, but uses `EPSV' to initiate the passive FTP
+   transfer.  Reads the response from server and parses it.  Reads the
+   host and port addresses and returns them.  */
+uerr_t
+ftp_epsv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
+{
+  char *request, *respline, *start, delim, *s;
+  int nwritten, i;
+  uerr_t err;
+  unsigned short tport;
+  socklen_t addrlen;
+  struct sockaddr_storage ss;
+  struct sockaddr *sa = (struct sockaddr *)&ss;
+
+  assert (rbuf != NULL);
+  assert (rbuf_initialized_p(rbuf));
+  assert (addr != NULL);
+  assert (port != NULL);
+
+  addrlen = sizeof (ss);
+  if (getpeername (rbuf->fd, sa, &addrlen) < 0)
+    /* Mauro Tortonesi: HOW DO WE HANDLE THIS ERROR? */
+    return CONPORTERR;
+
+  assert (sa->sa_family == AF_INET || sa->sa_family == AF_INET6);
+
+  sockaddr_get_address (sa, NULL, addr);
+
+  /* Form the request.  */
+  /* EPSV 1 means that we ask for IPv4 and EPSV 2 means that we ask for IPv6. */
+  request = ftp_request ("EPSV", (sa->sa_family == AF_INET ? "1" : "2"));
+
+  /* And send it.  */
+  nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
+  if (nwritten < 0)
+    {
+      xfree (request);
+      return WRITEFAILED;
+    }
+  xfree (request);
+
+  /* Get the server response.  */
+  err = ftp_response (rbuf, &respline);
+  if (err != FTPOK)
+    {
+      xfree (respline);
+      return err;
+    }
+  if (*respline != '2')
+    {
+      xfree (respline);
+      return FTPNOPASV;
+    }  
+
+  assert (respline != NULL);
+
+  DEBUGP(("respline is %s\n", respline));
+
+  /* Parse the response.  */
+  s = respline;
+
+  /* Skip the useless stuff and get what's inside the parentheses */
+  start = strchr (respline, '(');
+  if (start == NULL)
+    {
+      xfree (respline);
+      return FTPINVPASV;
+    }  
+
+  /* Skip the first two void fields */
+  s = start + 1;
+  delim = *s++;
+  if (delim < 33 || delim > 126)
+    {
+      xfree (respline);
+      return FTPINVPASV;
+    }  
+
+  for (i = 0; i < 2; i++)
+    {
+      if (*s++ != delim) 
+        {
+          xfree (respline);
+        return FTPINVPASV;
+        }  
+    }
+
+  /* Finally, get the port number */
+  tport = 0; 
+  for (i = 1; ISDIGIT (*s); s++) 
+    {
+      if (i > 5)
+        {
+          xfree (respline);
+          return FTPINVPASV;
+        }  
+      tport = (*s - '0') + 10 * tport;
+    }
+
+  /* Make sure that the response terminates correcty */
+  if (*s++ != delim)
+    {
+      xfree (respline);
+      return FTPINVPASV;
+    }  
+
+  if (*s++ != ')')
+    {
+      xfree (respline);
+      return FTPINVPASV;
+    }  
+
+  *port = tport;
+
+  xfree (respline);
+  return FTPOK;
+}
+#endif
 
 /* Sends the TYPE request to the server.  */
 uerr_t
@@ -755,7 +1095,7 @@ ftp_syst (struct rbuf *rbuf, enum stype *server_type)
 
   /* Skip the number (215, but 200 (!!!) in case of VMS) */
   strtok (respline, " ");
-  
+
   /* Which system type has been reported (we are interested just in the
      first word of the server response)?  */
   request = strtok (NULL, " ");
@@ -812,7 +1152,7 @@ ftp_pwd (struct rbuf *rbuf, char **pwd)
      and everything following it. */
   strtok (respline, "\"");
   request = strtok (NULL, "\"");
-  
+
   /* Has the `pwd' been already allocated?  Free! */
   FREE_MAYBE (*pwd);
 

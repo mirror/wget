@@ -32,6 +32,12 @@ so, delete this exception statement from your version.  */
 
 #include "host.h"
 
+/* bindport flags */
+#define BIND_ON_IPV4_ONLY LH_IPv4_ONLY
+#ifdef ENABLE_IPV6
+#define BIND_ON_IPV6_ONLY LH_IPv6_ONLY
+#endif /* ENABLE_IPV6 */
+
 /* Function declarations */
 
 int connect_to_one PARAMS ((ip_address *, unsigned short, int));
@@ -40,7 +46,7 @@ void set_connection_host_name PARAMS ((const char *));
 
 int test_socket_open PARAMS ((int));
 int select_fd PARAMS ((int, double, int));
-uerr_t bindport PARAMS ((unsigned short *, int));
+uerr_t bindport PARAMS ((const ip_address *, unsigned short *));
 uerr_t acceptport PARAMS ((int *));
 void closeport PARAMS ((int));
 int conaddr PARAMS ((int, ip_address *));

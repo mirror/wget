@@ -45,7 +45,7 @@ so, delete this exception statement from your version.  */
 
 #ifdef WINDOWS
 # include <winsock.h>
-# define SET_H_ERRNO(err) WSASetLastError(err)
+# define SET_H_ERRNO(err) WSASetLastError (err)
 #else
 # include <sys/socket.h>
 # include <netinet/in.h>
@@ -82,9 +82,9 @@ extern int h_errno;
 #endif
 
 #ifdef ENABLE_IPV6
-int     ip_default_family = AF_INET6;
+int ip_default_family = AF_UNSPEC;
 #else
-int     ip_default_family = AF_INET;
+int ip_default_family = AF_INET;
 #endif
 
 /* Mapping between known hosts and to lists of their addresses. */
@@ -105,7 +105,7 @@ struct address_list {
 /* Get the bounds of the address list.  */
 
 void
-address_list_get_bounds (struct address_list *al, int *start, int *end)
+address_list_get_bounds (const struct address_list *al, int *start, int *end)
 {
   *start = al->faulty;
   *end   = al->count;
@@ -114,7 +114,7 @@ address_list_get_bounds (struct address_list *al, int *start, int *end)
 /* Copy address number INDEX to IP_STORE.  */
 
 void
-address_list_copy_one (struct address_list *al, int index, ip_address *ip_store)
+address_list_copy_one (const struct address_list *al, int index, ip_address *ip_store)
 {
   assert (index >= al->faulty && index < al->count);
   memcpy (ip_store, al->addresses + index, sizeof (ip_address));
@@ -123,14 +123,43 @@ address_list_copy_one (struct address_list *al, int index, ip_address *ip_store)
 /* Check whether two address lists have all their IPs in common.  */
 
 int
-address_list_match_all (struct address_list *al1, struct address_list *al2)
+address_list_match_all (const struct address_list *al1, const struct address_list *al2)
 {
+  int i;
   if (al1 == al2)
     return 1;
   if (al1->count != al2->count)
     return 0;
-  return 0 == memcmp (al1->addresses, al2->addresses,
-		      al1->count * sizeof (ip_address));
+  for (i = 0; i < al1->count; ++i) 
+    {
+#ifdef ENABLE_IPv6
+      if (al1->addresses[i].type != al2->addresses[i].type) 
+	return 0;
+      if (al1->addresses[i].type == IPv6_ADDRESS)
+	{
+	  const struct in6_addr *addr1 = &al1->addresses[i].addr.ipv6.addr;
+	  const struct in6_addr *addr2 = &al2->addresses[i].addr.ipv6.addr;
+
+#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+	  if ((al1->addresses[i].address.scope_id
+	       != al2->addresses[i].address.scope_id)
+	      || !IN6_ARE_ADDR_EQUAL (addr1, addr2))
+#else
+	  if (!IN6_ARE_ADDR_EQUAL (addr1, addr2))
+#endif
+	    return 0;
+	}
+      else
+#endif
+	{
+	  const struct in_addr *addr1 = (const struct in_addr *)&al1->addresses[i].addr.ipv4.addr;
+	  const struct in_addr *addr2 = (const struct in_addr *)&al2->addresses[i].addr.ipv4.addr;
+	  
+	  if (addr1->s_addr != addr2->s_addr)
+	    return 0;
+	}
+    }
+  return 1;
 }
 
 /* Mark the INDEXth element of AL as faulty, so that the next time
@@ -153,7 +182,7 @@ address_list_set_faulty (struct address_list *al, int index)
     al->faulty = 0;
 }
 
-#ifdef HAVE_GETADDRINFO
+#ifdef ENABLE_IPV6
 /**
   * address_list_from_addrinfo
   *
@@ -166,15 +195,15 @@ address_list_set_faulty (struct address_list *al, int index)
   * address_list*	New allocated address_list
   */
 static struct address_list *
-address_list_from_addrinfo (struct addrinfo *ai)
+address_list_from_addrinfo (const struct addrinfo *ai)
 {
   struct address_list *al;
-  struct addrinfo *ai_head = ai;
+  const struct addrinfo *ptr;
   int cnt = 0;
   int i;
 
-  for (ai = ai_head; ai; ai = ai->ai_next)
-    if (ai->ai_family == AF_INET || ai->ai_family == AF_INET6)
+  for (ptr = ai; ptr != NULL ; ptr = ptr->ai_next)
+    if (ptr->ai_family == AF_INET || ptr->ai_family == AF_INET6)
       ++cnt;
   if (cnt == 0)
     return NULL;
@@ -185,17 +214,24 @@ address_list_from_addrinfo (struct addrinfo *ai)
   al->faulty    = 0;
   al->refcount  = 1;
 
-  for (i = 0, ai = ai_head; ai; ai = ai->ai_next)
-    if (ai->ai_family == AF_INET6) 
+  for (i = 0, ptr = ai; ptr != NULL; ptr = ptr->ai_next)
+    if (ptr->ai_family == AF_INET6) 
       {
-	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)ai->ai_addr;
-	memcpy (al->addresses + i, &sin6->sin6_addr, 16);
+	const struct sockaddr_in6 *sin6 =
+	  (const struct sockaddr_in6 *)ptr->ai_addr;
+	al->addresses[i].addr.ipv6.addr = sin6->sin6_addr;
+	al->addresses[i].type = IPv6_ADDRESS;
+#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+	al->addresses[i].addr.ipv6.scope_id = sin6->sin6_scope_id;
+#endif
 	++i;
       } 
-    else if (ai->ai_family == AF_INET)
+    else if (ptr->ai_family == AF_INET)
       {
-	struct sockaddr_in *sin = (struct sockaddr_in *)ai->ai_addr;
-        map_ipv4_to_ip ((ip4_address *)&sin->sin_addr, al->addresses + i);
+	const struct sockaddr_in *sin =
+	  (const struct sockaddr_in *)ptr->ai_addr;
+	al->addresses[i].addr.ipv4.addr = sin->sin_addr;
+	al->addresses[i].type = IPv4_ADDRESS;
 	++i;
       }
   assert (i == cnt);
@@ -219,18 +255,20 @@ address_list_from_vector (char **h_addr_list)
   al->addresses = xmalloc (count * sizeof (ip_address));
   al->refcount  = 1;
 
-  for (i = 0; i < count; i++)
-    map_ipv4_to_ip ((ip4_address *)h_addr_list[i], al->addresses + i);
+  for (i = 0; i < count; i++) {
+    /* Mauro Tortonesi: is this safe? */
+    memcpy (&((al->addresses + i)->addr.ipv4.addr.s_addr), h_addr_list[i], 4);
+    (al->addresses + i)->type = IPv4_ADDRESS;
+  }
 
   return al;
 }
-#endif
 
 /* Like address_list_from_vector, but initialized with a single
    address. */
 
 static struct address_list *
-address_list_from_single (ip_address *addr)
+address_list_from_single (const ip_address *addr)
 {
   struct address_list *al = xmalloc (sizeof (struct address_list));
   al->count     = 1;
@@ -241,6 +279,7 @@ address_list_from_single (ip_address *addr)
 
   return al;
 }
+#endif
 
 static void
 address_list_delete (struct address_list *al)
@@ -262,58 +301,93 @@ address_list_release (struct address_list *al)
 }
 
 /**
-  * wget_sockaddr_set_address
+  * sockaddr_set_address
   *
-  * This function takes an wget_sockaddr and fill in the protocol type,
-  * the port number and the address, there NULL in address means wildcard.
-  * Unsuported adress family will abort the whole programm.
+  * This function takes a sockaddr struct and fills in the protocol type,
+  * the port number and the address. If ENABLE_IPV6 is defined, the sa
+  * parameter should point to a sockaddr_storage structure; if not, it 
+  * should point to a sockaddr_in structure.
+  * If the address parameter is NULL, the function will use the unspecified 
+  * address (0.0.0.0 for IPv4 and :: for IPv6). 
+  * Unsupported address family will abort the whole programm.
   *
   * Input:
-  * wget_sockaddr*	The space to be filled
-  * int			The wished protocol
+  * struct sockaddr*	The space to be filled
   * unsigned short	The port
-  * const ip_address	The Binary IP adress
+  * const ip_address	The IP address
   *
   * Return:
-  * -			Only modify 1. param
+  * -			Only modifies 1st parameter.
   */
 void
-wget_sockaddr_set_address (wget_sockaddr *sa, 
-			   int ip_family, unsigned short port, ip_address *addr)
+sockaddr_set_address (struct sockaddr *sa, unsigned short port, 
+		      const ip_address *addr)
 {
-  if (ip_family == AF_INET) 
+  if (addr->type == IPv4_ADDRESS)
     {
-      sa->sin.sin_family = ip_family;
-      sa->sin.sin_port = htons (port);
+      struct sockaddr_in *sin = (struct sockaddr_in *)sa;
+
+      sin->sin_family = AF_INET;
+      sin->sin_port = htons (port);
       if (addr == NULL) 
-	memset (&sa->sin.sin_addr, 0,      sizeof(ip4_address));
+	sin->sin_addr.s_addr = INADDR_ANY;
       else
-	{
-	  ip4_address addr4;
-	  if (!map_ip_to_ipv4 (addr, &addr4))
-	    /* should the callers have prevented this? */
-	    abort ();
-	  memcpy (&sa->sin.sin_addr, &addr4, sizeof(ip4_address));
-	}
-      return;
+	sin->sin_addr = addr->addr.ipv4.addr;
     }
 #ifdef ENABLE_IPV6
-  if (ip_family == AF_INET6) 
+  else if (addr->type == IPv6_ADDRESS) 
     {
-      sa->sin6.sin6_family = ip_family;
-      sa->sin6.sin6_port = htons (port);
+      struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
+
+      sin6->sin6_family = AF_INET6;
+      sin6->sin6_port = htons (port);
       if (addr == NULL) 
-	memset (&sa->sin6.sin6_addr, 0   , 16);
-      else	     
-	memcpy (&sa->sin6.sin6_addr, addr, 16);
-      return;
+	sin6->sin6_addr = in6addr_any;
+      else
+	sin6->sin6_addr = addr->addr.ipv6.addr;
+#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+      sin6->sin6_scope_id = addr->addr.ipv6.scope_id;
+#endif /* HAVE_SOCKADDR_IN6_SCOPE_ID */
     }
-#endif  
-  abort();
+#endif /* ENABLE_IPV6 */
+  else
+    abort ();
 }
 
+void
+sockaddr_get_address (const struct sockaddr *sa, unsigned short *port, 
+		      ip_address *addr)
+{
+  if (sa->sa_family == AF_INET)
+    {
+      struct sockaddr_in *sin = (struct sockaddr_in *)sa;
+
+      addr->type = IPv4_ADDRESS;
+      addr->addr.ipv4.addr = sin->sin_addr;
+      if (port != NULL) 
+	*port = ntohs (sin->sin_port);
+    }
+#ifdef ENABLE_IPV6
+  else if (sa->sa_family == AF_INET6) 
+    {
+      struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
+
+      addr->type = IPv6_ADDRESS;
+      addr->addr.ipv6.addr = sin6->sin6_addr;
+#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+      addr->addr.ipv6.scope_id = sin6->sin6_scope_id;
+#endif  
+      if (port != NULL) 
+	*port = ntohs (sin6->sin6_port);
+    }
+#endif  
+  else
+    abort ();
+}
+
+#if 0				/* currently unused */
 /**
-  * wget_sockaddr_set_port
+  * sockaddr_set_port
   *
   * This funtion only fill the port of the socket information.
   * If the protocol is not supported nothing is done.
@@ -330,54 +404,27 @@ wget_sockaddr_set_address (wget_sockaddr *sa,
   * -			Only modify 1. param
   */
 void 
-wget_sockaddr_set_port (wget_sockaddr *sa, unsigned short port)
+sockaddr_set_port (struct sockaddr *sa, unsigned short port)
 {
-  if (sa->sa.sa_family == AF_INET)
+  if (sa->sa_family == AF_INET)
     {
-      sa->sin.sin_port = htons (port);
-      return;
+      struct sockaddr_in *sin = (struct sockaddr_in *)sa;
+      sin->sin_port = htons (port);
     }  
 #ifdef ENABLE_IPV6
-  if (sa->sa.sa_family == AF_INET6)
+  else if (sa->sa_family == AF_INET6)
     {
-      sa->sin6.sin6_port = htons (port);
-      return;
+      struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
+      sin6->sin6_port = htons (port);
     }
 #endif
-  abort();
+  else
+    abort ();
 }
-
-/**
-  * wget_sockaddr_get_addr
-  *
-  * This function return the adress from an sockaddr as byte string.
-  * Unsuported adress family will abort the whole programm.
-  * 
-  * Require:
-  * that the IP-Protocol already is set.
-  *
-  * Input:
-  * wget_sockaddr*	Socket Information
-  *
-  * Output:
-  * unsigned char *	IP address as byte string.
-  */
-void *
-wget_sockaddr_get_addr (wget_sockaddr *sa)
-{ 
-  if (sa->sa.sa_family == AF_INET)
-    return &sa->sin.sin_addr;
-#ifdef ENABLE_IPV6
-  if (sa->sa.sa_family == AF_INET6)
-    return &sa->sin6.sin6_addr;
 #endif
-  abort();
-  /* unreached */
-  return NULL;
-}
 
 /**
-  * wget_sockaddr_get_port
+  * sockaddr_get_port
   *
   * This function only return the port from the input structure
   * Unsuported adress family will abort the whole programm.
@@ -392,15 +439,18 @@ wget_sockaddr_get_addr (wget_sockaddr *sa)
   * unsigned short	Port Number in host order.
   */
 unsigned short 
-wget_sockaddr_get_port (const wget_sockaddr *sa)
+sockaddr_get_port (const struct sockaddr *sa)
 {
-  if (sa->sa.sa_family == AF_INET)
-      return htons (sa->sin.sin_port);
+  if (sa->sa_family == AF_INET) {
+      const struct sockaddr_in *sin = (const struct sockaddr_in *)sa;
+      return htons (sin->sin_port);
 #ifdef ENABLE_IPV6
-  if (sa->sa.sa_family == AF_INET6)
-      return htons (sa->sin6.sin6_port);
+  } else if (sa->sa_family == AF_INET6) {
+      const struct sockaddr_in6 *sin6 = (const struct sockaddr_in6 *)sa;
+      return htons (sin6->sin6_port);
 #endif
-  abort();
+  } else
+    abort ();
   /* do not complain about return nothing */
   return -1;
 }
@@ -419,57 +469,25 @@ wget_sockaddr_get_port (const wget_sockaddr *sa)
   * -		Public IP-Family Information
   *
   * Output:
-  * socklen_t	structure length for socket options
+  * int		structure length for socket options
   */
 socklen_t
-sockaddr_len () 
+sockaddr_len (const struct sockaddr *sa)
 {
-  if (ip_default_family == AF_INET) 
-    return sizeof (struct sockaddr_in);
+  if (sa->sa_family == AF_INET)
+    {
+      return sizeof (struct sockaddr_in);
+    }  
 #ifdef ENABLE_IPV6
-  if (ip_default_family == AF_INET6) 
-    return sizeof (struct sockaddr_in6);
+  else if (sa->sa_family == AF_INET6)
+    {
+      return sizeof (struct sockaddr_in6);
+    }
 #endif
-  abort();
+  else
+    abort ();
   /* do not complain about return nothing */
   return 0;
-}
-
-/**
-  * Map an IPv4 adress to the internal adress format.
-  */
-void 
-map_ipv4_to_ip (ip4_address *ipv4, ip_address *ip) 
-{
-#ifdef ENABLE_IPV6
-  static unsigned char ipv64[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
-  memcpy ((char *)ip + 12, ipv4 , 4);
-  memcpy ((char *)ip + 0, ipv64, 12);
-#else
-  if ((char *)ip != (char *)ipv4)
-    memcpy (ip, ipv4, 4);
-#endif
-}
-
-/* Detect whether an IP adress represents an IPv4 address and, if so,
-   copy it to IPV4.  0 is returned on failure.
-   This operation always succeeds when Wget is compiled without IPv6.
-   If IPV4 is NULL, don't copy, just detect.  */
-
-int 
-map_ip_to_ipv4 (ip_address *ip, ip4_address *ipv4) 
-{
-#ifdef ENABLE_IPV6
-  static unsigned char ipv64[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
-  if (0 != memcmp (ip, ipv64, 12))
-    return 0;
-  if (ipv4)
-    memcpy (ipv4, (char *)ip + 12, 4);
-#else
-  if (ipv4)
-    memcpy (ipv4, (char *)ip, 4);
-#endif
-  return 1;
 }
 
 /* Versions of gethostbyname and getaddrinfo that support timeout. */
@@ -555,21 +573,33 @@ getaddrinfo_with_timeout (const char *node, const char *service,
    inet_ntoa.  With IPv6, it either prints an IPv6 address or an IPv4
    address.  */
 
-char *
-pretty_print_address (ip_address *addr)
+const char *
+pretty_print_address (const ip_address *addr)
 {
+  switch (addr->type) 
+    {
+    case IPv4_ADDRESS:
+      return inet_ntoa (addr->addr.ipv4.addr);
 #ifdef ENABLE_IPV6
-  ip4_address addr4;
-  static char buf[128];
-
-  if (map_ip_to_ipv4 (addr, &addr4))
-    return inet_ntoa (*(struct in_addr *)&addr4);
-
-  if (!inet_ntop (AF_INET6, addr, buf, sizeof (buf)))
-    return "<unknown>";
-  return buf;
+    case IPv6_ADDRESS:
+      {
+        int len;
+        static char buf[128];
+	inet_ntop (AF_INET6, &addr->addr.ipv6.addr, buf, sizeof (buf));
+#if 0
+#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+        /* print also scope_id for all ?non-global? addresses */
+        snprintf (buf + len, sizeof (buf) - len, "%%%d", addr->addr.ipv6.scope_id);
 #endif
-  return inet_ntoa (*(struct in_addr *)addr);
+#endif
+        len = strlen (buf);
+        buf[sizeof (buf) - 1] = '\0';
+        return buf;
+      }
+#endif
+    }
+  abort ();
+  return NULL;
 }
 
 /* Add host name HOST with the address ADDR_TEXT to the cache.
@@ -598,28 +628,66 @@ cache_host_lookup (const char *host, struct address_list *al)
 }
 
 struct address_list *
-lookup_host (const char *host, int silent)
+lookup_host (const char *host, int flags)
 {
   struct address_list *al = NULL;
-  uint32_t addr_ipv4;
-  ip_address addr;
-
-  /* First, try to check whether the address is already a numeric
-     address.  */
 
 #ifdef ENABLE_IPV6
-  if (inet_pton (AF_INET6, host, &addr) > 0)
-    return address_list_from_single (&addr);
+  int err, family;
+  struct addrinfo hints, *res;
+
+  /* This ip_default_family+flags business looks like bad design to
+     me.  This function should rather accept a FAMILY argument.  */
+  if (flags & LH_IPv4_ONLY)
+    family = AF_INET;
+  else if (flags & LH_IPv6_ONLY)
+    family = AF_INET6;
+  else
+    family = ip_default_family;
+#endif
+	  
+  /* First, try to check whether the address is already a numeric
+     address.  Where getaddrinfo is available, we do it using the
+     AI_NUMERICHOST flag.  Without IPv6, we check whether inet_addr
+     succeeds.  */
+
+#ifdef ENABLE_IPV6
+  memset (&hints, 0, sizeof (hints));
+  hints.ai_family   = family;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags    = AI_NUMERICHOST;
+  if (flags & LH_PASSIVE)
+    hints.ai_flags = AI_PASSIVE;
+
+  /* no need to call getaddrinfo_with_timeout here, as we're not
+   * relying on the DNS, but we're only doing an address translation
+   * from presentation (ASCII) to network format */
+  err = getaddrinfo (host, NULL, &hints, &res);
+  if (err == 0 && res != NULL)
+    {
+      al = address_list_from_addrinfo (res);
+      freeaddrinfo (res);
+      return al;
+    }
+#else
+  {
+    uint32_t addr_ipv4 = (uint32_t)inet_addr (host);
+    if (addr_ipv4 != (uint32_t) -1)
+      {
+	/* The return value of inet_addr is in network byte order, so
+	   we can just copy it to ADDR.  */
+	ip_address addr;
+	/* This has a huge number of dereferences because C doesn't
+	   support anonymous unions and because struct in_addr adds a
+	   cast.  */
+	addr.addr.ipv4.addr.s_addr = addr_ipv4;
+	addr.type = IPv4_ADDRESS;
+	return address_list_from_single (&addr);
+      }
+  }
 #endif
 
-  addr_ipv4 = (uint32_t)inet_addr (host);
-  if (addr_ipv4 != (uint32_t)-1)
-    {
-      /* ADDR is defined to be in network byte order, which is what
-	 this returns, so we can just copy it to STORE_IP.  */
-      map_ipv4_to_ip ((ip4_address *)&addr_ipv4, &addr);
-      return address_list_from_single (&addr);
-    }
+  /* Then, try to find the host in the cache. */
 
   if (host_name_addresses_map)
     {
@@ -632,41 +700,37 @@ lookup_host (const char *host, int silent)
 	}
     }
 
-  if (!silent)
+  if (!(flags & LH_SILENT))
     logprintf (LOG_VERBOSE, _("Resolving %s... "), host);
 
   /* Host name lookup goes on below. */
 
-#ifdef HAVE_GETADDRINFO
+#ifdef ENABLE_IPV6
   {
-    struct addrinfo hints, *ai;
-    int err;
-
     memset (&hints, 0, sizeof (hints));
-    if (ip_default_family == AF_INET)
-      hints.ai_family   = AF_INET;
-    else
-      hints.ai_family   = PF_UNSPEC;
+    hints.ai_family   = family;
     hints.ai_socktype = SOCK_STREAM;
-    err = getaddrinfo_with_timeout (host, NULL, &hints, &ai, opt.dns_timeout);
+    if (flags & LH_PASSIVE) 
+      hints.ai_flags = AI_PASSIVE;
 
-    if (err != 0 || ai == NULL)
+    err = getaddrinfo_with_timeout (host, NULL, &hints, &res, opt.dns_timeout);
+
+    if (err != 0 || res == NULL)
       {
-        if (!silent)
+        if (!(flags & LH_SILENT))
 	  logprintf (LOG_VERBOSE, _("failed: %s.\n"),
 		     err != EAI_SYSTEM ? gai_strerror (err) : strerror (errno));
         return NULL;
       }
-    al = address_list_from_addrinfo (ai);
-    freeaddrinfo (ai);
+    al = address_list_from_addrinfo (res);
+    freeaddrinfo (res);
   }
 #else
   {
-    struct hostent *hptr;
-    hptr = gethostbyname_with_timeout (host, opt.dns_timeout);
+    struct hostent *hptr = gethostbyname_with_timeout (host, opt.dns_timeout);
     if (!hptr)
       {
-	if (!silent)
+	if (!(flags & LH_SILENT))
 	  {
 	    if (errno != ETIMEDOUT)
 	      logprintf (LOG_VERBOSE, _("failed: %s.\n"), herrmsg (h_errno));
@@ -675,6 +739,7 @@ lookup_host (const char *host, int silent)
 	  }
 	return NULL;
       }
+    assert (hptr->h_length == 4);
     /* Do all systems have h_addr_list, or is it a newer thing?  If
        the latter, use address_list_from_single.  */
     al = address_list_from_vector (hptr->h_addr_list);
@@ -683,7 +748,7 @@ lookup_host (const char *host, int silent)
 
   /* Print the addresses determined by DNS lookup, but no more than
      three.  */
-  if (!silent)
+  if (!(flags & LH_SILENT))
     {
       int i;
       int printmax = al->count <= 3 ? al->count : 3;

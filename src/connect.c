@@ -67,32 +67,44 @@ extern int errno;
 
 /* Variables shared by bindport and acceptport: */
 static int msock = -1;
-static struct sockaddr *addr;
+/*static struct sockaddr *addr;*/
 
-static ip_address bind_address;
-static int bind_address_resolved;
-
-static void
-resolve_bind_address (void)
+static int
+resolve_bind_address (int flags, ip_address *addr)
 {
-  struct address_list *al;
+  struct address_list *al = NULL;
+  int bind_address_resolved = 0;
 
-  if (bind_address_resolved || opt.bind_address == NULL)
-    /* Nothing to do. */
-    return;
-
-  al = lookup_host (opt.bind_address, 1);
-  if (!al)
+  if (opt.bind_address != NULL)
     {
-      logprintf (LOG_NOTQUIET,
-		 _("Unable to convert `%s' to a bind address.  Reverting to ANY.\n"),
-		 opt.bind_address);
-      return;
+      al = lookup_host (opt.bind_address, flags | LH_SILENT | LH_PASSIVE);
+
+      if (al == NULL)
+        {
+          logprintf (LOG_NOTQUIET,
+		     _("Unable to convert `%s' to a bind address.  Reverting to ANY.\n"),
+		     opt.bind_address);
+	}
+      else 
+        bind_address_resolved = 1;
     }
 
-  address_list_copy_one (al, 0, &bind_address);
+  if (al == NULL)
+    {
+      const char *unspecified_address = "0.0.0.0";
+#ifdef ENABLE_IPV6
+      if (flags & BIND_ON_IPV6_ONLY)
+	unspecified_address = "::";
+#endif
+      al = lookup_host (unspecified_address, LH_SILENT | LH_PASSIVE);
+    }
+
+  assert (al != NULL);
+
+  address_list_copy_one (al, 0, addr);
   address_list_release (al);
-  bind_address_resolved = 1;
+
+  return bind_address_resolved;
 }
 
 struct cwt_context {
@@ -151,15 +163,16 @@ set_connection_host_name (const char *host)
 int
 connect_to_one (ip_address *addr, unsigned short port, int silent)
 {
-  wget_sockaddr sa;
+  struct sockaddr_storage ss;
+  struct sockaddr *sa = (struct sockaddr *)&ss;
   int sock, save_errno;
 
   /* Set port and protocol */
-  wget_sockaddr_set_address (&sa, ip_default_family, port, addr);
+  sockaddr_set_address (sa, port, addr);
 
   if (!silent)
     {
-      char *pretty_addr = pretty_print_address (addr);
+      const char *pretty_addr = pretty_print_address (addr);
       if (connection_host_name
 	  && 0 != strcmp (connection_host_name, pretty_addr))
 	logprintf (LOG_VERBOSE, _("Connecting to %s[%s]:%hu... "),
@@ -170,7 +183,7 @@ connect_to_one (ip_address *addr, unsigned short port, int silent)
     }
 
   /* Make an internet socket, stream type.  */
-  sock = socket (ip_default_family, SOCK_STREAM, 0);
+  sock = socket (sa->sa_family, SOCK_STREAM, 0);
   if (sock < 0)
     goto out;
 
@@ -191,22 +204,26 @@ connect_to_one (ip_address *addr, unsigned short port, int silent)
 	 `--post-file', also set SO_SNDBUF here.  */
     }
 
-  resolve_bind_address ();
-  if (bind_address_resolved)
+  if (opt.bind_address)
     {
       /* Bind the client side to the requested address. */
-      wget_sockaddr bsa;
-      wget_sockaddr_set_address (&bsa, ip_default_family, 0, &bind_address);
-      if (bind (sock, &bsa.sa, sockaddr_len ()))
-	{
-	  CLOSE (sock);
-	  sock = -1;
-	  goto out;
+      ip_address bind_address;
+      if (resolve_bind_address (0, &bind_address))
+        {
+          struct sockaddr_storage bss;
+          struct sockaddr *bsa = (struct sockaddr *)&bss;
+          sockaddr_set_address (bsa, 0, &bind_address);
+          if (bind (sock, bsa, sockaddr_len (bsa)))
+	    {
+	      CLOSE (sock);
+	      sock = -1;
+	      goto out;
+	    }
 	}
     }
 
   /* Connect the socket to the remote host.  */
-  if (connect_with_timeout (sock, &sa.sa, sockaddr_len (),
+  if (connect_with_timeout (sock, sa, sockaddr_len (sa),
 			    opt.connect_timeout) < 0)
     {
       CLOSE (sock);
@@ -297,28 +314,47 @@ test_socket_open (int sock)
    chosen by the system, and its value is stored to *PORT.  The
    internal variable MPORT is set to the value of the ensuing master
    socket.  Call acceptport() to block for and accept a connection.  */
+
 uerr_t
-bindport (unsigned short *port, int family)
+bindport (const ip_address *bind_address, unsigned short *port)
 {
-  int optval = 1;
-  wget_sockaddr srv;
-  memset (&srv, 0, sizeof (wget_sockaddr));
+  int family = AF_INET;
+  int optval;
+  struct sockaddr_storage ss;
+  struct sockaddr *sa = (struct sockaddr *)&ss;
+  memset (&ss, 0, sizeof (ss));
 
   msock = -1;
 
+#ifdef ENABLE_IPV6
+  if (bind_address->type == IPv6_ADDRESS) 
+    family = AF_INET6;
+#endif
+  
   if ((msock = socket (family, SOCK_STREAM, 0)) < 0)
     return CONSOCKERR;
 
 #ifdef SO_REUSEADDR
+  optval = 1;
   if (setsockopt (msock, SOL_SOCKET, SO_REUSEADDR,
 		  (char *)&optval, sizeof (optval)) < 0)
     return CONSOCKERR;
 #endif
 
-  resolve_bind_address ();
-  wget_sockaddr_set_address (&srv, ip_default_family, htons (*port),
-			     bind_address_resolved ? &bind_address : NULL);
-  if (bind (msock, &srv.sa, sockaddr_len ()) < 0)
+#ifdef ENABLE_IPV6
+# ifdef HAVE_IPV6_V6ONLY
+  if (family == AF_INET6)
+    {
+      optval = 1;
+      /* if setsockopt fails, go on anyway */
+      setsockopt (msock, IPPROTO_IPV6, IPV6_V6ONLY,
+                  (char *)&optval, sizeof (optval));
+    }
+# endif
+#endif
+  
+  sockaddr_set_address (sa, htons (*port), bind_address);
+  if (bind (msock, sa, sockaddr_len (sa)) < 0)
     {
       CLOSE (msock);
       msock = -1;
@@ -327,15 +363,16 @@ bindport (unsigned short *port, int family)
   DEBUGP (("Master socket fd %d bound.\n", msock));
   if (!*port)
     {
-      socklen_t sa_len = sockaddr_len ();
-      if (getsockname (msock, &srv.sa, &sa_len) < 0)
+      socklen_t sa_len = sockaddr_len (sa);
+      if (getsockname (msock, sa, &sa_len) < 0)
 	{
 	  CLOSE (msock);
 	  msock = -1;
 	  return CONPORTERR;
 	}
-      *port = wget_sockaddr_get_port (&srv);
-      DEBUGP (("using port %i.\n", *port));
+      *port = sockaddr_get_port (sa);
+      DEBUGP (("binding to address %s using port %i.\n", 
+	       pretty_print_address (bind_address), *port));
     }
   if (listen (msock, 1) < 0)
     {
@@ -389,13 +426,15 @@ select_fd (int fd, double maxtime, int writep)
 uerr_t
 acceptport (int *sock)
 {
-  socklen_t addrlen = sockaddr_len ();
+  struct sockaddr_storage ss;
+  struct sockaddr *sa = (struct sockaddr *)&ss;
+  socklen_t addrlen = sizeof (ss);
 
 #ifdef HAVE_SELECT
   if (select_fd (msock, opt.connect_timeout, 0) <= 0)
     return ACCEPTERR;
 #endif
-  if ((*sock = accept (msock, addr, &addrlen)) < 0)
+  if ((*sock = accept (msock, sa, &addrlen)) < 0)
     return ACCEPTERR;
   DEBUGP (("Created socket fd %d.\n", *sock));
   return ACCEPTOK;
@@ -419,24 +458,34 @@ closeport (int sock)
 int
 conaddr (int fd, ip_address *ip)
 {
-  wget_sockaddr mysrv;
-  socklen_t addrlen = sizeof (mysrv);	
-  if (getsockname (fd, &mysrv.sa, &addrlen) < 0)
+  struct sockaddr_storage ss;
+  struct sockaddr *sa = (struct sockaddr *)&ss;
+  socklen_t addrlen = sizeof (ss);	
+
+  if (getsockname (fd, sa, &addrlen) < 0)
     return 0;
 
-  switch (mysrv.sa.sa_family)
+  switch (sa->sa_family)
     {
 #ifdef ENABLE_IPV6
     case AF_INET6:
-      memcpy (ip, &mysrv.sin6.sin6_addr, 16);
+      ip->type = IPv6_ADDRESS;
+      ip->addr.ipv6.addr = ((struct sockaddr_in6 *)sa)->sin6_addr;
+#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+      ip->addr.ipv6.scope_id = ((struct sockaddr_in6 *)sa)->sin6_scope_id;
+#endif
+      DEBUGP (("conaddr is: %s\n", pretty_print_address (ip)));
       return 1;
 #endif
     case AF_INET:
-      map_ipv4_to_ip ((ip4_address *)&mysrv.sin.sin_addr, ip);
+      ip->type = IPv4_ADDRESS;
+      ip->addr.ipv4.addr = ((struct sockaddr_in *)sa)->sin_addr;
+      DEBUGP (("conaddr is: %s\n", pretty_print_address (ip)));
       return 1;
     default:
       abort ();
     }
+
   return 0;
 }
 
