@@ -1,3 +1,8 @@
+2000-12-17  Csaba Raduly  <csaba.raduly@sophos.com>
+
+	* sysdep.h: Test for __EMX__ rather than for EMXOS2 for OS/2
+	compilation.
+
 2000-12-17  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* mswindows.c: Include <errno.h>.
