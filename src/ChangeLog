@@ -1,5 +1,10 @@
 2003-10-31  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* connect.c (sockaddr_set_data): Remove the broken code that
+	checked for NULL address.
+
+2003-10-31  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* host.c (address_list_from_single): Removed.
 	(address_list_from_ipv4_addresses): Renamed from
 	address_list_from_vector.
