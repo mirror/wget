@@ -333,15 +333,20 @@ File: wget.info,  Node: Wgetrc Commands,  Next: Sample Wgetrc,  Prev: Wgetrc Syn
 Wgetrc Commands
 ===============
 
-   The complete set of commands is listed below, the letter after `='
-denoting the value the command takes. It is `on/off' for `on' or `off'
-(which can also be `1' or `0'), STRING for any non-empty string or N
-for a positive integer.  For example, you may specify `use_proxy = off'
-to disable use of proxy servers by default. You may use `inf' for
-infinite values, where appropriate.
+   The complete set of commands is listed below.  Legal values are
+listed after the `='.  Simple Boolean values can be set or unset using
+`on' and `off' or `1' and `0'.  A fancier kind of Boolean allowed in
+some cases is the "lockable" Boolean, which may be set to `on', `off',
+`always', or `never'.  If an option is set to `always' or `never', that
+value will be locked in for the duration of the wget invocation -
+commandline options will not override.
 
-   Most of the commands have their equivalent command-line option
-(*Note Invoking::), except some more obscure or rarely used ones.
+   Some commands take pseudo-arbitrary values.  STRING values can be
+any non-empty string.  N can be any positive integer, or `inf' for
+infinity, where appropriate.
+
+   Most of these commands have commandline equivalents (*Note
+Invoking::), though some of the more obscure or rarely used ones do not.
 
 accept/reject = STRING
      Same as `-A'/`-R' (*Note Types of Files::).
@@ -501,8 +506,11 @@ page_requisites = on/off
      Download all ancillary documents necessary for a single HTML page
      to display properly - the same as `-p'.
 
-passive_ftp = on/off
-     Set passive FTP - the same as `--passive-ftp'.
+passive_ftp = on/off/always/never
+     Set passive FTP - the same as `--passive-ftp'.  Some scripts and
+     `.pm' (Perl module) files download files using `wget
+     --passive-ftp'.  If your firewall does not allow this, you can set
+     `passive_ftp = never' to override the commandline.
 
 passwd = STRING
      Set your FTP password to PASSWORD.  Without this setting, the
@@ -513,6 +521,11 @@ proxy_user = STRING
 
 proxy_passwd = STRING
      Set proxy authentication password to STRING, like `--proxy-passwd'.
+
+referer = STRING
+     Set HTTP `Referer:' header just like `--referer'.  (Note it was
+     the folks who wrote the HTTP spec who got the spelling of
+     "referrer" wrong.)
 
 quiet = on/off
      Quiet mode - the same as `-q'.

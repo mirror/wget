@@ -337,7 +337,7 @@ Error in server response, closing control connection.\n"));
   /* If anything is to be retrieved, PORT (or PASV) must be sent.  */
   if (cmd & (DO_LIST | DO_RETR))
     {
-      if (opt.ftp_pasv)
+      if (opt.ftp_pasv > 0)
 	{
 	  char thost[256];
 	  unsigned short tport;

@@ -1697,16 +1697,21 @@ reject =
 @section Wgetrc Commands
 @cindex wgetrc commands
 
-The complete set of commands is listed below, the letter after @samp{=}
-denoting the value the command takes. It is @samp{on/off} for @samp{on}
-or @samp{off} (which can also be @samp{1} or @samp{0}), @var{string} for
-any non-empty string or @var{n} for a positive integer.  For example,
-you may specify @samp{use_proxy = off} to disable use of proxy servers
-by default. You may use @samp{inf} for infinite values, where
-appropriate.
+The complete set of commands is listed below.  Legal values are listed
+after the @samp{=}.  Simple Boolean values can be set or unset using
+@samp{on} and @samp{off} or @samp{1} and @samp{0}.  A fancier kind of
+Boolean allowed in some cases is the "lockable" Boolean, which may be
+set to @samp{on}, @samp{off}, @samp{always}, or @samp{never}.  If an
+option is set to @samp{always} or @samp{never}, that value will be
+locked in for the duration of the wget invocation -- commandline options
+will not override.
 
-Most of the commands have their equivalent command-line option
-(@xref{Invoking}), except some more obscure or rarely used ones.
+Some commands take pseudo-arbitrary values.  @var{string} values can be
+any non-empty string.  @var{n} can be any positive integer, or
+@samp{inf} for infinity, where appropriate.
+
+Most of these commands have commandline equivalents (@xref{Invoking}),
+though some of the more obscure or rarely used ones do not.
 
 @table @asis
 @item accept/reject = @var{string}
@@ -1872,20 +1877,26 @@ Set the output filename -- the same as @samp{-O}.
 Download all ancillary documents necessary for a single HTML page to
 display properly -- the same as @samp{-p}.
 
-@item passive_ftp = on/off
-Set passive @sc{ftp} -- the same as @samp{--passive-ftp}.
+@item passive_ftp = on/off/always/never
+Set passive @sc{ftp} -- the same as @samp{--passive-ftp}.  Some scripts
+and @samp{.pm} (Perl module) files download files using @samp{wget
+--passive-ftp}.  If your firewall does not allow this, you can set
+@samp{passive_ftp = never} to override the commandline.
 
 @item passwd = @var{string}
 Set your @sc{ftp} password to @var{password}.  Without this setting, the
 password defaults to @samp{username@@hostname.domainname}.
 
 @item proxy_user = @var{string}
-Set proxy authentication user name to @var{string}, like
-@samp{--proxy-user}.
+Set proxy authentication user name to @var{string}, like @samp{--proxy-user}.
 
 @item proxy_passwd = @var{string}
-Set proxy authentication password to @var{string}, like
-@samp{--proxy-passwd}.
+Set proxy authentication password to @var{string}, like @samp{--proxy-passwd}.
+
+@item referer = @var{string}
+Set HTTP @samp{Referer:} header just like @samp{--referer}.  (Note it
+was the folks who wrote the @sc{http} spec who got the spelling of
+"referrer" wrong.)
 
 @item quiet = on/off
 Quiet mode -- the same as @samp{-q}.

@@ -27,7 +27,7 @@ notice identical to this one.
 Indirect:
 wget.info-1: 961
 wget.info-2: 48421
-wget.info-3: 96314
+wget.info-3: 96945
 
 Tag Table:
 (Indirect)
@@ -61,28 +61,28 @@ Node: Startup File57815
 Node: Wgetrc Location58688
 Node: Wgetrc Syntax59503
 Node: Wgetrc Commands60218
-Node: Sample Wgetrc67844
-Node: Examples72863
-Node: Simple Usage73470
-Node: Advanced Usage75864
-Node: Guru Usage78615
-Node: Various80277
-Node: Proxies80801
-Node: Distribution83566
-Node: Mailing List83917
-Node: Reporting Bugs84616
-Node: Portability86401
-Node: Signals87776
-Node: Appendices88430
-Node: Robots88845
-Node: Introduction to RES89992
-Node: RES Format91885
-Node: User-Agent Field92989
-Node: Disallow Field93753
-Node: Norobots Examples94364
-Node: Security Considerations95318
-Node: Contributors96314
-Node: Copying98953
-Node: Concept Index118116
+Node: Sample Wgetrc68475
+Node: Examples73494
+Node: Simple Usage74101
+Node: Advanced Usage76495
+Node: Guru Usage79246
+Node: Various80908
+Node: Proxies81432
+Node: Distribution84197
+Node: Mailing List84548
+Node: Reporting Bugs85247
+Node: Portability87032
+Node: Signals88407
+Node: Appendices89061
+Node: Robots89476
+Node: Introduction to RES90623
+Node: RES Format92516
+Node: User-Agent Field93620
+Node: Disallow Field94384
+Node: Norobots Examples94995
+Node: Security Considerations95949
+Node: Contributors96945
+Node: Copying99584
+Node: Concept Index118747
 
 End Tag Table

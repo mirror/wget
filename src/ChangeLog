@@ -8,6 +8,9 @@
 	the case of gethttp() called xrealloc() on u->local.
 
 	* init.c (commands): Added new "htmlextension" command.
+	Also renamed John Daily's cmd_quad() to the more descriptive
+	cmd_lockable_boolean(), alpha-sorted the CMD_DECLARE()s and
+	removed duplicate cmd_boolean() declaration.
 
 	* main.c (print_help): Added my new -E / --html-extension option.
 	(main): Undocumented --email-address option previously used -E synonym.
@@ -30,6 +33,14 @@
 		
 	* main.c (print_help): Clarified what --retr-symlinks does.
 	
+2000-09-15  John Daily  <jdaily@cyberdude.com>
+
+	* init.c: Add support for "always" and "never" values to allow
+	.wgetrc to override commandline (useful e.g. with .pm files
+	calling `wget --passive-ftp' when your firewall doesn't allow that).
+
+	* ftp.c (getftp): passive_ftp is first option to support always/never.
+
 2000-08-30  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* ftp.c (ftp_retrieve_list): Use new INFINITE_RECURSION #define.

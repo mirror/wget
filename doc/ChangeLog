@@ -1,7 +1,11 @@
 2000-10-19  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (HTTP Options): Documented my new -E / --html-extension.
-
+	(Wgetrc Commands): Documented my new html_extension option and
+	John Daily's "quad" values (which I renamed to "lockable
+	Boolean").  When I documented Damir Dzeko's --referer, I forgot to
+	add the .wgetrc equivalent; mentioned the "referrer" spelling issue.
+	
 2000-10-09  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (FTP Options): --retr-symlinks wasn't documented properly.
@@ -9,7 +13,8 @@
 2000-08-30  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (Recursive Retrieval Options): Documented new -p option.
-
+	(Wgetrc Commands): Documented -p's equvialent, page_requisites.
+	
 2000-08-23  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (Download Options): Using -c on a file that's already fully
@@ -69,7 +74,7 @@
 	
 	* sample.wgetrc: Added entries for backup_converted and waitretry.
 
-	* wget.texi (Download Options): Herold Heiko
+	* wget.texi (Download Options and Wgetrc Commands): Herold Heiko
  	<Heiko.Herold@previnet.it>'s new --waitretry option was
  	undocumented until now.  Reworded the suggested documentation he
  	sent to the list.
@@ -105,7 +110,9 @@
 
 2000-02-18  Dan Harkless  <dan-wget@dilvish.speed.net>
 
-	* wget.texi (-K / --backup-converted): Documented this new option.
+	* wget.texi (Recursive Retrieval Options): Documented my new -K /
+ 	--backup-converted option.
+	(Wgetrc Commands): Documented backup_converted equivalent.
 
 1998-09-10  Hrvoje Niksic  <hniksic@srce.hr>
 
