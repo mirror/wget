@@ -18,9 +18,6 @@ may tend towards the top).  Not all of these represent user-visible changes.
   files in a certain directory on _one_ of the hosts (-I and -X apply to all).
   Perhaps -I and -X should take an optional hostname before the directory?
 
-* When simplifying paths, wget needs to stop at any '?' character.  Also, wget 
-  behaves differently from popular browsers in removing './'s from abs. URLs.
-
 * Add an option to not encode special characters like ' ' and '~' when saving
   local files.  Would be good to have a mode that encodes all special characters
   (as now), one that encodes none (as above), and one that only encodes a
