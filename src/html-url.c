@@ -1,12 +1,12 @@
 /* Collect URLs from HTML source.
-   Copyright (C) 1998, 2000, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
 GNU Wget is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ (at your option) any later version.
 
 GNU Wget is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -43,6 +43,7 @@ so, delete this exception statement from your version.  */
 #include "html-parse.h"
 #include "url.h"
 #include "utils.h"
+#include "hash.h"
 #include "convert.h"
 
 #ifndef errno
@@ -63,54 +64,58 @@ DECLARE_TAG_HANDLER (tag_handle_form);
 DECLARE_TAG_HANDLER (tag_handle_link);
 DECLARE_TAG_HANDLER (tag_handle_meta);
 
+enum {
+  TAG_A,
+  TAG_APPLET,
+  TAG_AREA,
+  TAG_BASE,
+  TAG_BGSOUND,
+  TAG_BODY,
+  TAG_EMBED,
+  TAG_FIG,
+  TAG_FORM,
+  TAG_FRAME,
+  TAG_IFRAME,
+  TAG_IMG,
+  TAG_INPUT,
+  TAG_LAYER,
+  TAG_LINK,
+  TAG_META,
+  TAG_OVERLAY,
+  TAG_SCRIPT,
+  TAG_TABLE,
+  TAG_TD,
+  TAG_TH
+};
+
 /* The list of known tags and functions used for handling them.  Most
    tags are simply harvested for URLs. */
-static struct {
+static struct known_tag {
+  int tagid;
   const char *name;
   tag_handler_t handler;
 } known_tags[] = {
-#define TAG_A		0
-  { "a",	tag_find_urls },
-#define TAG_APPLET	1
-  { "applet",	tag_find_urls },
-#define TAG_AREA	2
-  { "area",	tag_find_urls },
-#define TAG_BASE	3
-  { "base",	tag_handle_base },
-#define TAG_BGSOUND	4
-  { "bgsound",	tag_find_urls },
-#define TAG_BODY	5
-  { "body",	tag_find_urls },
-#define TAG_EMBED	6
-  { "embed",	tag_find_urls },
-#define TAG_FIG		7
-  { "fig",	tag_find_urls },
-#define TAG_FORM	8
-  { "form",	tag_handle_form },
-#define TAG_FRAME	9
-  { "frame",	tag_find_urls },
-#define TAG_IFRAME	10
-  { "iframe",	tag_find_urls },
-#define TAG_IMG		11
-  { "img",	tag_find_urls },
-#define TAG_INPUT	12
-  { "input",	tag_find_urls },
-#define TAG_LAYER	13
-  { "layer",	tag_find_urls },
-#define TAG_LINK	14
-  { "link",	tag_handle_link },
-#define TAG_META	15
-  { "meta",	tag_handle_meta },
-#define TAG_OVERLAY	16
-  { "overlay",	tag_find_urls },
-#define TAG_SCRIPT	17
-  { "script",	tag_find_urls },
-#define TAG_TABLE	18
-  { "table",	tag_find_urls },
-#define TAG_TD		19
-  { "td",	tag_find_urls },
-#define TAG_TH		20
-  { "th",	tag_find_urls }
+  { TAG_A,	 "a",		tag_find_urls },
+  { TAG_APPLET,	 "applet",	tag_find_urls },
+  { TAG_AREA,	 "area",	tag_find_urls },
+  { TAG_BASE,	 "base",	tag_handle_base },
+  { TAG_BGSOUND, "bgsound",	tag_find_urls },
+  { TAG_BODY,	 "body",	tag_find_urls },
+  { TAG_EMBED,	 "embed",	tag_find_urls },
+  { TAG_FIG,	 "fig",		tag_find_urls },
+  { TAG_FORM,	 "form",	tag_handle_form },
+  { TAG_FRAME,	 "frame",	tag_find_urls },
+  { TAG_IFRAME,	 "iframe",	tag_find_urls },
+  { TAG_IMG,	 "img",		tag_find_urls },
+  { TAG_INPUT,	 "input",	tag_find_urls },
+  { TAG_LAYER,	 "layer",	tag_find_urls },
+  { TAG_LINK,	 "link",	tag_handle_link },
+  { TAG_META,	 "meta",	tag_handle_meta },
+  { TAG_OVERLAY, "overlay",	tag_find_urls },
+  { TAG_SCRIPT,	 "script",	tag_find_urls },
+  { TAG_TABLE,	 "table",	tag_find_urls },
+  { TAG_TD,	 "td",		tag_find_urls },
+  { TAG_TH,	 "th",		tag_find_urls }
 };
 
 /* tag_url_attributes documents which attributes of which tags contain
@@ -162,8 +167,8 @@ static const char *additional_attributes[] = {
   "action"			/* used by tag_handle_form */
 };
 
-static const char **interesting_tags;
-static const char **interesting_attributes;
+struct hash_table *interesting_tags;
+struct hash_table *interesting_attributes;
 
 static void
 init_interesting (void)
@@ -175,125 +180,49 @@ init_interesting (void)
 
      Here we also make sure that what we put in interesting_tags
      matches the user's preferences as specified through --ignore-tags
-     and --follow-tags.
+     and --follow-tags.  */
 
-     This function is as large as this only because of the glorious
-     expressivity of the C programming language.  */
+  int i;
+  interesting_tags = make_nocase_string_hash_table (countof (known_tags));
 
-  {
-    int i, ind = 0;
-    int size = countof (known_tags);
-    interesting_tags = (const char **)xmalloc ((size + 1) * sizeof (char *));
+  /* First, add all the tags we know hot to handle, mapped to their
+     respective entries in known_tags.  */
+  for (i = 0; i < countof (known_tags); i++)
+    hash_table_put (interesting_tags, known_tags[i].name, known_tags + i);
 
-    for (i = 0; i < size; i++)
-      {
-	const char *name = known_tags[i].name;
-
-	/* Normally here we could say:
-	   interesting_tags[i] = name;
-	   But we need to respect the settings of --ignore-tags and
-	   --follow-tags, so the code gets a bit hairier.  */
-
-	if (opt.ignore_tags)
-	  {
-	    /* --ignore-tags was specified.  Do not match these
-	       specific tags.  --ignore-tags takes precedence over
-	       --follow-tags, so we process --ignore first and fall
-	       through if there's no match. */
-	    int j, lose = 0;
-	    for (j = 0; opt.ignore_tags[j] != NULL; j++)
-	      /* Loop through all the tags this user doesn't care about. */
-	      if (strcasecmp(opt.ignore_tags[j], name) == EQ)
-		{
-		  lose = 1;
-		  break;
-		}
-	    if (lose)
-	      continue;
-	  }
-
-	if (opt.follow_tags)
-	  {
-	    /* --follow-tags was specified.  Only match these specific tags, so
-	       continue back to top of for if we don't match one of them. */
-	    int j, win = 0;
-	    for (j = 0; opt.follow_tags[j] != NULL; j++)
-	      /* Loop through all the tags this user cares about. */
-	      if (strcasecmp(opt.follow_tags[j], name) == EQ)
-		{
-		  win = 1;
-		  break;
-		}
-	    if (!win)
-	      continue;  /* wasn't one of the explicitly desired tags */
-	  }
-
-	/* If we get to here, --follow-tags isn't being used or the
-	   tag is among the ones that are followed, and --ignore-tags,
-	   if specified, didn't include this tag, so it's an
-	   "interesting" one. */
-	interesting_tags[ind++] = name;
-      }
-    interesting_tags[ind] = NULL;
-  }
-
-  /* The same for attributes, except we loop through tag_url_attributes.
-     Here we also need to make sure that the list of attributes is
-     unique, and to include the attributes from additional_attributes.  */
-  {
-    int i, ind;
-    const char **att = xmalloc ((countof (additional_attributes) + 1)
-				* sizeof (char *));
-    /* First copy the "additional" attributes. */
-    for (i = 0; i < countof (additional_attributes); i++)
-      att[i] = additional_attributes[i];
-    ind = i;
-    att[ind] = NULL;
-    for (i = 0; i < countof (tag_url_attributes); i++)
-      {
-	int j, seen = 0;
-	const char *look_for = tag_url_attributes[i].attr_name;
-	for (j = 0; j < ind - 1; j++)
-	  if (!strcmp (att[j], look_for))
-	    {
-	      seen = 1;
-	      break;
-	    }
-	if (!seen)
-	  {
-	    att = xrealloc (att, (ind + 2) * sizeof (*att));
-	    att[ind++] = look_for;
-	    att[ind] = NULL;
-	  }
-      }
-    interesting_attributes = att;
-  }
-}
-
-/* Find tag with name TAG_NAME in KNOWN_TAGS and return its index.  */
-
-static int
-find_tag (const char *tag_name)
-{
-  /* Originally implemented as linear search.  In Wget 1.9 known_tags
-     contains 21 elements, for which binary search requires max. 5
-     comparisons, whereas linear search performs 10 on average.  */
-
-  int lo = 0, hi = countof (known_tags) - 1;
-
-  while (lo <= hi)
+  /* Then remove the tags ignored through --ignore-tags.  */
+  if (opt.ignore_tags)
     {
-      int mid = (lo + hi) >> 1;
-      int cmp = strcasecmp (tag_name, known_tags[mid].name);
-      if (cmp < 0)
-	hi = mid - 1;
-      else if (cmp > 0)
-	lo = mid + 1;
-      else
-	return mid;
+      char **ignored;
+      for (ignored = opt.ignore_tags; *ignored; ignored++)
+	hash_table_remove (interesting_tags, *ignored);
     }
 
-  return -1;
+  /* If --follow-tags is specified, use only those tags.  */
+  if (opt.follow_tags)
+    {
+      /* Create a new hash table with the intersection of tags in
+	 --follow-tags and known_tags, and use that as
+	 interesting_tags.  */
+      struct hash_table *intersect = make_nocase_string_hash_table (0);
+      char **followed;
+      for (followed = opt.follow_tags; *followed; followed++)
+	{
+	  struct known_tag *t = hash_table_get (interesting_tags, *followed);
+	  if (!t)
+	    continue;		/* ignore unknown tags in --follow-tags. */
+	  hash_table_put (intersect, *followed, t);
+	}
+      hash_table_destroy (interesting_tags);
+      interesting_tags = intersect;
+    }
+
+  /* Add the attributes we care about. */
+  interesting_attributes = make_nocase_string_hash_table (17);
+  for (i = 0; i < countof (additional_attributes); i++)
+    string_set_add (interesting_attributes, additional_attributes[i]);
+  for (i = 0; i < countof (tag_url_attributes); i++)
+    string_set_add (interesting_attributes, tag_url_attributes[i].attr_name);
 }
 
 /* Find the value of attribute named NAME in the taginfo TAG.  If the
@@ -427,10 +356,10 @@ append_one_url (const char *link_uri, int inlinep,
 static void
 tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
 {
-  int i, attrind, first = -1;
-  int size = countof (tag_url_attributes);
+  int i, attrind;
+  int first = -1;
 
-  for (i = 0; i < size; i++)
+  for (i = 0; i < countof (tag_url_attributes); i++)
     if (tag_url_attributes[i].tagid == tagid)
       {
 	/* We've found the index of tag_url_attributes where the
@@ -454,11 +383,12 @@ tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
       /* Find whether TAG/ATTRIND is a combination that contains a
 	 URL. */
       char *link = tag->attrs[attrind].value;
+      const int size = countof (tag_url_attributes);
 
       /* If you're cringing at the inefficiency of the nested loops,
-	 remember that they both iterate over a laughably small
-	 quantity of items.  The worst-case inner loop is for the IMG
-	 tag, which has three attributes.  */
+	 remember that they both iterate over a very small number of
+	 items.  The worst-case inner loop is for the IMG tag, which
+	 has three attributes.  */
       for (i = first; i < size && tag_url_attributes[i].tagid == tagid; i++)
 	{
 	  if (0 == strcasecmp (tag->attrs[attrind].name,
@@ -617,21 +547,20 @@ tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
     }
 }
 
-/* Examine name and attributes of TAG and take appropriate action
-   according to the tag.  */
+/* Dispatch the tag handler appropriate for the tag we're mapping
+   over.  See known_tags[] for definition of tag handlers.  */
 
 static void
 collect_tags_mapper (struct taginfo *tag, void *arg)
 {
   struct map_context *ctx = (struct map_context *)arg;
-  int tagid;
-  tag_handler_t handler;
 
-  tagid = find_tag (tag->name);
-  assert (tagid != -1);
-  handler = known_tags[tagid].handler;
+  /* Find the tag in our table of tags.  This must not fail because
+     map_html_tags only returns tags found in interesting_tags.  */
+  struct known_tag *t = hash_table_get (interesting_tags, tag->name);
+  assert (t != NULL);
 
-  handler (tagid, tag, ctx);
+  t->handler (t->tagid, tag, ctx);
 }
 
 /* Analyze HTML tags FILE and construct a list of URLs referenced from

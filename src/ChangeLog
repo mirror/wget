@@ -1,5 +1,16 @@
 2003-10-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* html-url.c (init_interesting): Initialize interesting_tags and
+	interesting_attributes as hash tables.  This simplifies the code
+	immensely because hash tables handle allocation and remove
+	duplicates automatically.
+	(find_tag): Removed.
+	(collect_tags_mapper): Instead of calling find_tag, simply get the
+	entry from interesting_tags hash table, which is both simpler and
+	faster.
+
+2003-10-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* hash.c (hash_table_get): Declare hash-table argument as const.
 	(find_mapping): Ditto.
 	(hash_table_get_pair): Ditto.

@@ -129,7 +129,18 @@ so, delete this exception statement from your version.  */
 # define ISALNUM(x) isalnum (x)
 # define TOLOWER(x) tolower (x)
 # define TOUPPER(x) toupper (x)
-#endif /* STANDALONE */
+
+struct hash_table {
+  int dummy;
+};
+static void *
+hash_table_get (const struct hash_table *ht, void *ptr)
+{
+  return ptr;
+}
+#else  /* not STANDALONE */
+# include "hash.h"
+#endif
 
 /* Pool support.  A pool is a resizable chunk of memory.  It is first
    allocated on the stack, and moved to the heap if it needs to be
@@ -390,24 +401,6 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
     }
 }
 
-/* Check whether the contents of [POS, POS+LENGTH) match any of the
-   strings in the ARRAY.  */
-static int
-array_allowed (const char **array, const char *beg, const char *end)
-{
-  int length = end - beg;
-  if (array)
-    {
-      for (; *array; array++)
-	if (length >= strlen (*array)
-	    && !strncasecmp (*array, beg, length))
-	  break;
-      if (!*array)
-	return 0;
-    }
-  return 1;
-}
-
 /* Originally we used to adhere to rfc 1866 here, and allowed only
    letters, digits, periods, and hyphens as names (of tags or
    attributes).  However, this broke too many pages which used
@@ -659,6 +652,19 @@ find_comment_end (const char *beg, const char *end)
   return NULL;
 }
 
+/* Return non-zero of the string inside [b, e) are present in hash
+   table HT.  */
+
+static int
+name_allowed (const struct hash_table *ht, const char *b, const char *e)
+{
+  char *copy;
+  if (!ht)
+    return 1;
+  BOUNDED_TO_ALLOCA (b, e, copy);
+  return hash_table_get (ht, copy) != NULL;
+}
+
 /* Advance P (a char pointer), with the explicit intent of being able
    to read the next character.  If this is not possible, go to finish.  */
 
@@ -708,8 +714,8 @@ void
 map_html_tags (const char *text, int size,
 	       void (*mapfun) (struct taginfo *, void *), void *maparg,
 	       int flags,
-	       const char **allowed_tag_names,
-	       const char **allowed_attribute_names)
+	       const struct hash_table *allowed_tags,
+	       const struct hash_table *allowed_attributes)
 {
   /* storage for strings passed to MAPFUN callback; if 256 bytes is
      too little, POOL_APPEND allocates more with malloc. */
@@ -793,7 +799,7 @@ map_html_tags (const char *text, int size,
     if (end_tag && *p != '>')
       goto backout_tag;
 
-    if (!array_allowed (allowed_tag_names, tag_name_begin, tag_name_end))
+    if (!name_allowed (allowed_tags, tag_name_begin, tag_name_end))
       /* We can't just say "goto look_for_tag" here because we need
          the loop below to properly advance over the tag's attributes.  */
       uninteresting_tag = 1;
@@ -934,9 +940,7 @@ map_html_tags (const char *text, int size,
 	/* If we aren't interested in the attribute, skip it.  We
            cannot do this test any sooner, because our text pointer
            needs to correctly advance over the attribute.  */
-	if (allowed_attribute_names
-	    && !array_allowed (allowed_attribute_names, attr_name_begin,
-			       attr_name_end))
+	if (!name_allowed (allowed_attributes, attr_name_begin, attr_name_end))
 	  continue;
 
 	GROW_ARRAY (pairs, attr_pair_size, nattrs + 1, attr_pair_resized,
@@ -1034,7 +1038,7 @@ int main ()
       x = (char *)xrealloc (x, size);
     }
 
-  map_html_tags (x, length, NULL, NULL, test_mapper, &tag_counter);
+  map_html_tags (x, length, test_mapper, &tag_counter, 0, NULL, NULL);
   printf ("TAGS: %d\n", tag_counter);
   printf ("Tag backouts:     %d\n", tag_backout_count);
   printf ("Comment backouts: %d\n", comment_backout_count);

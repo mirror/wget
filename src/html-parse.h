@@ -53,13 +53,16 @@ struct taginfo {
   const char *end_position;	/* end position of tag */
 };
 
+struct hash_table;		/* forward declaration */
+
 /* Flags for map_html_tags: */
 #define MHT_STRICT_COMMENTS  1  /* use strict comment interpretation */
 #define MHT_TRIM_VALUES      2  /* trim attribute values, e.g. interpret
                                    <a href=" foo "> as "foo" */
 
 void map_html_tags PARAMS ((const char *, int,
-			    void (*) (struct taginfo *, void *), void *,
-			    int, const char **, const char **));
+			    void (*) (struct taginfo *, void *), void *, int,
+			    const struct hash_table *,
+			    const struct hash_table *));
 
 #endif /* HTML_PARSE_H */
