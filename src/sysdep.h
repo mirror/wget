@@ -252,6 +252,11 @@ void *memcpy ();
 int fnmatch ();
 #endif
 
+/* Provide sig_atomic_t if the system doesn't.  */
+#ifndef HAVE_SIG_ATOMIC_T
+typedef int sig_atomic_t;
+#endif
+
 /* Provide uint32_t on the platforms that don't define it.  Although
    most code should be agnostic about integer sizes, some code really
    does need a 32-bit integral type.  Such code should use uint32_t.

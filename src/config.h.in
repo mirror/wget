@@ -64,6 +64,9 @@ char *alloca ();
 /* Define to empty or __inline__ or __inline.  */
 #undef inline
 
+/* Define `volatile' to be empty if the compiler doesn't support it.  */
+#undef volatile
+
 /* Define to `unsigned' if <sys/types.h> doesn't define.  */
 #undef size_t
 
@@ -116,14 +119,8 @@ char *alloca ();
 /* Define if you have struct utimbuf.  */
 #undef HAVE_STRUCT_UTIMBUF
 
-/* Define if you have the uname function.  */
-#undef HAVE_UNAME
-
 /* Define if you have a working version of mmap.  */
 #undef HAVE_MMAP
-
-/* Define if you have the gethostname function.  */
-#undef HAVE_GETHOSTNAME
 
 /* Define if you have the select function.  */
 #undef HAVE_SELECT
@@ -286,6 +283,9 @@ char *alloca ();
 
 /* Define if you have uint32_t.  */
 #undef HAVE_UINT32_T
+
+/* Define if you have sig_atomic_t.  */
+#undef HAVE_SIG_ATOMIC_T
 
 /* Some autoconf-unrelated preprocessor magic that cannot be in
    sysdep.h because it must be done before including the system

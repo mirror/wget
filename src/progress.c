@@ -408,7 +408,13 @@ dot_set_params (const char *params)
    create_image will overflow the buffer.  */
 #define MINIMUM_SCREEN_WIDTH 45
 
-static int screen_width = DEFAULT_SCREEN_WIDTH;
+/* The last known screen width.  This can be updated by the code that
+   detects that SIGWINCH was received (but it's never updated from the
+   signal handler).  */
+static int screen_width;
+
+/* A flag that, when set, means SIGWINCH was received.  */
+static volatile sig_atomic_t received_sigwinch;
 
 /* Size of the download speed history ring. */
 #define DLSPEED_HISTORY_SIZE 20
@@ -484,6 +490,18 @@ bar_create (long initial, long total)
   bp->initial_length = initial;
   bp->total_length   = total;
 
+  /* Initialize screen_width if this hasn't been done or if it might
+     have changed, as indicated by receiving SIGWINCH.  */
+  if (!screen_width || received_sigwinch)
+    {
+      screen_width = determine_screen_width ();
+      if (!screen_width)
+	screen_width = DEFAULT_SCREEN_WIDTH;
+      else if (screen_width < MINIMUM_SCREEN_WIDTH)
+	screen_width = MINIMUM_SCREEN_WIDTH;
+      received_sigwinch = 0;
+    }
+
   /* - 1 because we don't want to use the last screen column. */
   bp->width = screen_width - 1;
   /* + 1 for the terminating zero. */
@@ -517,11 +535,23 @@ bar_update (void *progress, long howmuch, double dltime)
 
   update_speed_ring (bp, howmuch, dltime);
 
-  if (screen_width - 1 != bp->width)
+  /* If SIGWINCH (the window size change signal) been received,
+     determine the new screen size and update the screen.  */
+  if (received_sigwinch)
     {
-      bp->width = screen_width - 1;
-      bp->buffer = xrealloc (bp->buffer, bp->width + 1);
-      force_screen_update = 1;
+      int old_width = screen_width;
+      screen_width = determine_screen_width ();
+      if (!screen_width)
+	screen_width = DEFAULT_SCREEN_WIDTH;
+      else if (screen_width < MINIMUM_SCREEN_WIDTH)
+	screen_width = MINIMUM_SCREEN_WIDTH;
+      if (screen_width != old_width)
+	{
+	  bp->width = screen_width - 1;
+	  bp->buffer = xrealloc (bp->buffer, bp->width + 1);
+	  force_screen_update = 1;
+	}
+      received_sigwinch = 0;
     }
 
   if (dltime - bp->last_screen_update < 200 && !force_screen_update)
@@ -844,7 +874,6 @@ display_image (char *buf)
 static void
 bar_set_params (const char *params)
 {
-  int sw;
   char *term = getenv ("TERM");
 
   if (params
@@ -877,19 +906,13 @@ bar_set_params (const char *params)
       set_progress_implementation (FALLBACK_PROGRESS_IMPLEMENTATION);
       return;
     }
-
-  sw = determine_screen_width ();
-  if (sw && sw >= MINIMUM_SCREEN_WIDTH)
-    screen_width = sw;
 }
 
 #ifdef SIGWINCH
 RETSIGTYPE
 progress_handle_sigwinch (int sig)
 {
-  int sw = determine_screen_width ();
-  if (sw && sw >= MINIMUM_SCREEN_WIDTH)
-    screen_width = sw;
+  received_sigwinch = 1;
   signal (SIGWINCH, progress_handle_sigwinch);
 }
 #endif

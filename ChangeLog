@@ -1,5 +1,10 @@
 2003-11-04  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Check whether volatile is supported.  Don't check
+	for gethostname and uname, which are not used.
+
+2003-11-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Move some checks into aclocal.m4.  Check whether
 	fnmatch.h is includable.
 
