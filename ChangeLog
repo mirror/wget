@@ -1,9 +1,13 @@
 2001-01-09  Dan Harkless  <wget@harkless.org>
 
 	* TODO: If -c is on, don't re-download a 100%-downloaded file.
-  	Also, the bug where you couldn't recurse into ftp directories if
- 	logging in put you somewhere else besides the server's "/"
- 	directory got fixed without the TODO entry for it being removed.
+	
+	* TODO: The bug where you couldn't recurse into ftp directories if
+	logging in put you somewhere else besides the server's "/"
+	directory got fixed without the TODO entry for it being removed.
+
+	* TODO: Add a "rollback" option to have --continue throw away X
+ 	corrupted (e.g. by proxy) bytes from end of file before resuming.
 
 2001-01-06  Dan Harkless  <wget@harkless.org>
 
