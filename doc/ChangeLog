@@ -1,3 +1,7 @@
+2000-03-02  Hrvoje Niksic  <hniksic@iskon.hr>
+
+	* wget.texi (Contributors): Update contributors list.
+
 2000-03-01  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (HTTP Time-Stamping Internals): Added a note about my

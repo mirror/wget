@@ -14,6 +14,7 @@
 @afourpaper
 @end iftex
 
+@c This should really be auto-generated!
 @set VERSION 1.5.3+dev
 @set UPDATED Feb 2000
 
@@ -2635,6 +2636,7 @@ Kristijan @v{C}onka@v{s},
 @ifinfo
 Kristijan Conkas,
 @end ifinfo
+Andrew Deryabin,
 @iftex
 Damir D@v{z}eko,
 @end iftex
@@ -2656,6 +2658,7 @@ Howard Gayle,
 Marcel Gerrits,
 Hans Grobler,
 Mathieu Guillaume,
+Dan Harkless,
 Karl Heuer,
 Gregor Hoffleit,
 Erik Magnus Hulthen,
@@ -2704,6 +2707,7 @@ Juan Jos\'{e} Rodr\'{\i}gues,
 @ifinfo
 Juan Jose Rodrigues,
 @end ifinfo
+Edward J. Sabol,
 Heinz Salzmann,
 Robert Schmidt,
 Toomas Soome,
