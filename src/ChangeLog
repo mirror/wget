@@ -1,3 +1,9 @@
+2003-10-03  Gisle Vanem  <giva@bgnett.no>
+
+	* connect.c: And don't include them here.
+
+	* mswindows.h: Include winsock headers here.
+
 2003-10-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* html-parse.c (convert_and_copy): Move variable declarations

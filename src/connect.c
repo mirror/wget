@@ -37,16 +37,14 @@ so, delete this exception statement from your version.  */
 #endif
 #include <assert.h>
 
-#ifdef WINDOWS
-# include <winsock.h>
-#else
+#ifndef WINDOWS
 # include <sys/socket.h>
 # include <netdb.h>
 # include <netinet/in.h>
-#ifndef __BEOS__
-# include <arpa/inet.h>
-#endif
-#endif /* WINDOWS */
+# ifndef __BEOS__
+#  include <arpa/inet.h>
+# endif
+#endif /* not WINDOWS */
 
 #include <errno.h>
 #ifdef HAVE_STRING_H
@@ -201,7 +199,7 @@ connect_to_one (ip_address *addr, unsigned short port, int silent)
       wget_sockaddr_set_address (&bsa, ip_default_family, 0, &bind_address);
       if (bind (sock, &bsa.sa, sockaddr_len ()))
 	{
-	  close (sock);
+	  CLOSE (sock);
 	  sock = -1;
 	  goto out;
 	}
@@ -211,7 +209,7 @@ connect_to_one (ip_address *addr, unsigned short port, int silent)
   if (connect_with_timeout (sock, &sa.sa, sockaddr_len (),
 			    opt.connect_timeout) < 0)
     {
-      close (sock);
+      CLOSE (sock);
       sock = -1;
       goto out;
     }

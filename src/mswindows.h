@@ -30,6 +30,37 @@ so, delete this exception statement from your version.  */
 #ifndef MSWINDOWS_H
 #define MSWINDOWS_H
 
+#ifndef WGET_H
+#error Include mswindows.h inside or after "wget.h"
+#endif
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN  /* Prevent inclusion of <winsock*.h> in <windows.h> */
+#endif
+
+#include <windows.h>
+
+/* Use the correct winsock header; <ws2tcpip.h> includes <winsock2.h> only on
+ * Watcom/MingW. We cannot use <winsock.h> for IPv6. Using getaddrinfo() requires
+ * <ws2tcpip.h>
+ */
+#if defined(ENABLE_IPV6) || defined(HAVE_GETADDRINFO)
+# include <winsock2.h>
+# include <ws2tcpip.h>
+#else
+# include <winsock.h>
+#endif
+
+#ifndef EAI_SYSTEM
+# define EAI_SYSTEM -1   /* value doesn't matter */
+#endif
+
+/* Must include <sys/stat.h> because of 'stat' define below. */
+#include <sys/stat.h>
+
+/* Missing in several .c files. Include here. */
+#include <io.h>
+
 /* Apparently needed for alloca(). */
 #include <malloc.h>
 
@@ -80,8 +111,6 @@ so, delete this exception statement from your version.  */
 #else  /* __BORLANDC__ */
 # define mkdir(a, b) mkdir(a)
 #endif /* __BORLANDC__ */
-
-#include <windows.h>
 
 /* Declarations of various socket errors: */
 
@@ -136,5 +165,15 @@ void ws_percenttitle (double);
 char *ws_mypath (void);
 void ws_help (const char *);
 void windows_main_junk (int *, char **, char **);
+
+/* Things needed for IPv6; missing in <ws2tcpip.h>. */
+#ifdef ENABLE_IPV6
+# ifndef HAVE_NTOP
+  extern const char *inet_ntop (int af, const void *src, char *dst, size_t size);
+# endif
+# ifndef HAVE_PTON
+  extern int inet_pton (int af, const char *src, void *dst);
+# endif
+#endif /* ENABLE_IPV6 */
 
 #endif /* MSWINDOWS_H */
