@@ -50,6 +50,9 @@ as "//img.foo.com/foo.jpg".
 
 ** Boolean options in `.wgetrc' and on the command line now accept
 values "yes" and "no" along with the traditional "on" and "off".
+
+** It is now possible to specify decimal values for --timeout, --wait,
+and --waitretry.  For instance, `--wait=0.5' now works as expected.
 
 * Wget 1.8.2 is a bugfix release with no user-visible changes.
 
