@@ -1,3 +1,10 @@
+2002-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (url_filename): Use compose_file_name regardless of
+	whether opt.dirstruct is set.
+	(mkstruct): Don't handle the query and the reencoding of DIR; that
+	is done in compose_file_name.
+
 2002-04-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.h: Ditto for extern char *exec_name.

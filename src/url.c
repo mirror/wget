@@ -1228,9 +1228,8 @@ count_slashes (const char *s)
 static char *
 mkstruct (const struct url *u)
 {
-  char *dir, *dir_preencoding;
-  char *file, *res, *dirpref;
-  char *query = u->query && *u->query ? u->query : NULL;
+  char *dir, *file;
+  char *res, *dirpref;
   int l;
 
   if (opt.cut_dirs)
@@ -1284,9 +1283,6 @@ mkstruct (const struct url *u)
       dir = newdir;
     }
 
-  dir_preencoding = dir;
-  dir = reencode_string (dir_preencoding);
-
   l = strlen (dir);
   if (l && dir[l - 1] == '/')
     dir[l - 1] = '\0';
@@ -1298,16 +1294,9 @@ mkstruct (const struct url *u)
 
   /* Finally, construct the full name.  */
   res = (char *)xmalloc (strlen (dir) + 1 + strlen (file)
-			 + (query ? (1 + strlen (query)) : 0)
 			 + 1);
   sprintf (res, "%s%s%s", dir, *dir ? "/" : "", file);
-  if (query)
-    {
-      strcat (res, "?");
-      strcat (res, query);
-    }
-  if (dir != dir_preencoding)
-    xfree (dir);
+
   return res;
 }
 
@@ -1374,26 +1363,25 @@ char *
 url_filename (const struct url *u)
 {
   char *file, *name;
-  int have_prefix = 0;		/* whether we must prepend opt.dir_prefix */
+
+  char *query = u->query && *u->query ? u->query : NULL;
 
   if (opt.dirstruct)
     {
-      file = mkstruct (u);
-      have_prefix = 1;
+      char *base = mkstruct (u);
+      file = compose_file_name (base, query);
+      xfree (base);
     }
   else
     {
       char *base = *u->file ? u->file : "index.html";
-      char *query = u->query && *u->query ? u->query : NULL;
       file = compose_file_name (base, query);
-    }
 
-  if (!have_prefix)
-    {
       /* Check whether the prefix directory is something other than "."
 	 before prepending it.  */
       if (!DOTP (opt.dir_prefix))
 	{
+	  /* #### should just realloc FILE and prepend dir_prefix. */
 	  char *nfile = (char *)xmalloc (strlen (opt.dir_prefix)
 					 + 1 + strlen (file) + 1);
 	  sprintf (nfile, "%s/%s", opt.dir_prefix, file);
@@ -1401,6 +1389,7 @@ url_filename (const struct url *u)
 	  file = nfile;
 	}
     }
+
   /* DOS-ish file systems don't like `%' signs in them; we change it
      to `@'.  */
 #ifdef WINDOWS
