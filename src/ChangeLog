@@ -1,3 +1,9 @@
+2004-02-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c (sockaddr_set_data): Zero out
+	sockaddr_in/sockaddr_in6.  Apparently BSD-derived stacks need this
+	when binding a socket to local address.
+
 2004-02-04  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* hash.c: Make the file compilable outside Wget source tree when

@@ -87,6 +87,7 @@ sockaddr_set_data (struct sockaddr *sa, const ip_address *ip, int port)
     case IPV4_ADDRESS:
       {
 	struct sockaddr_in *sin = (struct sockaddr_in *)sa;
+	xzero (*sin);
 	sin->sin_family = AF_INET;
 	sin->sin_port = htons (port);
 	sin->sin_addr = ADDRESS_IPV4_IN_ADDR (ip);
@@ -96,6 +97,7 @@ sockaddr_set_data (struct sockaddr *sa, const ip_address *ip, int port)
     case IPV6_ADDRESS:
       {
 	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
+	xzero (*sin6);
 	sin6->sin6_family = AF_INET6;
 	sin6->sin6_port = htons (port);
 	sin6->sin6_addr = ADDRESS_IPV6_IN6_ADDR (ip);
