@@ -11,7 +11,7 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 requests.  For example, `wget --post-data="id=foo&data=bar" URL' will
 send a POST request with the specified contents.
 
-** IPv6 is experimentally supported.
+** IPv6 support is available, although it's still experimental.
 
 ** The `--timeout' option now also affects DNS lookup and establishing
 the TCP connection.  Previously it only affected reading and writing
