@@ -1,5 +1,10 @@
 2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* progress.c (bar_update): If the downloaded amount becomes larger
+	than the expected amount, adjust the expected amount accordingly.
+
+2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* utils.c (determine_screen_width): New function.
 
 	* main.c (main): New option `--progress=TYPE'.
