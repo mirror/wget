@@ -160,6 +160,7 @@ struct options
   char *sslcertkey;		/* the keyfile for this certificate
 				   (if not internal) included in the
 				   certfile. */
+  char *sslegdsock;             /* optional socket of the egd daemon */
 #endif /* HAVE_SSL */
 
   int   cookies;

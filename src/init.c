@@ -179,6 +179,7 @@ static struct {
 #ifdef HAVE_SSL
   { "sslcertfile",	&opt.sslcertfile,	cmd_file },
   { "sslcertkey",	&opt.sslcertkey,	cmd_file },
+  { "sslegdsock",	&opt.sslegdsock,	cmd_file },
 #endif /* HAVE_SSL */
   { "timeout",		&opt.timeout,		cmd_time },
   { "timestamping",	&opt.timestamping,	cmd_boolean },

@@ -53,11 +53,13 @@ ssl_init_prng (void)
     {
       char rand_file[256];
       time_t t;
-      pid_t pid;
       long l,seed;
 
       t = time(NULL);
-      pid = getpid();
+      /* gets random data from egd if opt.sslegdsock was set */
+      if (opt.sslegdsock != NULL)
+	RAND_egd(opt.sslegdsock);
+      /* gets the file ~/.rnd or $RANDFILE if set */
       RAND_file_name(rand_file, 256);
       if (rand_file != NULL)
 	{
@@ -66,8 +68,6 @@ ssl_init_prng (void)
 	}
       /* Seed in time (mod_ssl does this) */
       RAND_seed((unsigned char *)&t, sizeof(time_t));
-      /* Seed in pid (mod_ssl does this) */
-      RAND_seed((unsigned char *)&pid, sizeof(pid_t));
       /* Initialize system's random number generator */
       RAND_bytes((unsigned char *)&seed, sizeof(long));
       srand48(seed);

@@ -1,3 +1,11 @@
+2001-11-30  Christian Fraenkel  <c.fraenkel@gmx.net>
+
+	* init.c: New command `ssl_egd_sock'.
+
+	* main.c (main): New option `--sslegdsock'.
+
+	* gen_sslfunc.c (ssl_init_prng): Seed the RNG using EGD.
+
 2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* cmpt.c (memmove): Include a simple memmove implementation.
