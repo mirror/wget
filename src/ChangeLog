@@ -1,3 +1,8 @@
+2002-02-19  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* host.h: Include Unix-specific includes #ifndef WINDOWS.
+	Patch originally provided by Christian Lackas.
+
 2002-02-11  Christian Lackas  <delta@lackas.net>
 
 	* recur.c: recurive downloading for https fixed.

@@ -21,8 +21,16 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define HOST_H
 
 #include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
+
+#ifdef WINDOWS
+# include <winsock.h>
+#else
+# include <sys/socket.h>
+# include <netinet/in.h>
+#ifndef __BEOS__
+# include <arpa/inet.h>
+#endif
+#endif
 
 #undef INET6
 
