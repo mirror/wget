@@ -514,7 +514,7 @@ parseurl (const char *url, struct urlinfo *u, int strict)
   DEBUGP (("ndir %s\n", u->dir));
   /* Strip trailing `/'.  */
   l = strlen (u->dir);
-  if (l && u->dir[l - 1] == '/')
+  if (l > 1 && u->dir[l - 1] == '/')
     u->dir[l - 1] = '\0';
   /* Re-create the path: */
   abs_ftp = (u->proto == URLFTP && *u->dir == '/');

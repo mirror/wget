@@ -298,6 +298,29 @@ Error in server response, closing control connection.\n"));
 	  abort ();
 	  break;
 	}
+      /* VMS will report something like "PUB$DEVICE:[INITIAL.FOLDER]".
+         Convert it to "/INITIAL/FOLDER" */ 
+      if (con->rs == ST_VMS)
+        {
+          char *path = strchr (con->id, '[');
+	  char *pathend = path ? strchr (path + 1, ']') : NULL;
+	  if (!path || !pathend)
+	    DEBUGP (("Initial VMS directory not in the form [...]!\n"));
+	  else
+	    {
+	      char *idir = con->id;
+	      DEBUGP (("Preprocessing the initial VMS directory\n"));
+	      DEBUGP (("  old = '%s'\n", con->id));
+	      /* We do the conversion in-place by copying the stuff
+		 between [ and ] to the beginning, and changing dots
+		 to slashes at the same time.  */
+	      *idir++ = '/';
+	      for (++path; path < pathend; path++, idir++)
+		*idir = *path == '.' ? '/' : *path;
+	      *idir = '\0';
+	      DEBUGP (("  new = '%s'\n\n", con->id));
+	    }
+	}
       if (!opt.server_response)
 	logputs (LOG_VERBOSE, _("done.\n"));
 
@@ -361,19 +384,27 @@ Error in server response, closing control connection.\n"));
 	    {
 	      int idlen = strlen (con->id);
 	      char *ntarget = (char *)alloca (idlen + 1 + strlen (u->dir) + 1);
-	      /* pwd_len == 1 means pwd = "/" */
+	      /* idlen == 1 means con->id = "/" */
 	      sprintf (ntarget, "%s%s%s", con->id, idlen == 1 ? "" : "/",
 		       target);
+              DEBUGP (("Prepended initial PWD to relative path:\n"));
+              DEBUGP (("  old: '%s'\n  new: '%s'\n", target, ntarget));
 	      target = ntarget;
 	    }
 
-	  /* If the FTP host runs VMS, we will have to convert it to
-	     VMS style as VMS does not like leading slashes.  "VMS
-	     style" is [dir.subdir.subsubdir].  */
+	  /* If the FTP host runs VMS, we will have to convert the absolute
+             directory path in UNIX notation to absolute directory path in
+             VMS notation as VMS FTP servers do not like UNIX notation of
+             absolute paths.  "VMS notation" is [dir.subdir.subsubdir]. */
+
 	  if (con->rs == ST_VMS)
 	    {
 	      char *tmpp;
-	      char *ntarget = (char *)alloca (strlen (target) + 1);
+	      char *ntarget = (char *)alloca (strlen (target) + 2);
+	      /* We use a converted initial dir, so directories in
+                 TARGET will be separated with slashes, something like
+                 "/INITIAL/FOLDER/DIR/SUBDIR".  Convert that to
+                 "[INITIAL.FOLDER.DIR.SUBDIR]".  */
 	      strcpy (ntarget, target);
 	      assert (*ntarget == '/');
 	      *ntarget = '[';
@@ -382,6 +413,8 @@ Error in server response, closing control connection.\n"));
 		  *tmpp = '.';
 	      *tmpp++ = ']';
 	      *tmpp = '\0';
+              DEBUGP (("Changed file name to VMS syntax:\n"));
+              DEBUGP (("  Unix: '%s'\n  VMS: '%s'\n", target, ntarget));
 	      target = ntarget;
 	    }
 
@@ -1460,8 +1493,18 @@ ftp_retrieve_dirs (struct urlinfo *u, struct fileinfo *f, ccon *con)
       if (len > current_length)
 	current_container = (char *)alloca (len);
       u->dir = current_container;
-      sprintf (u->dir, "%s%s%s", odir,
-	       (*odir == '/' && !*(odir + 1)) ? "" : "/", f->name);
+      if (*odir == '\0'
+	  || (*odir == '/' && *(odir + 1) == '\0'))
+	/* If ODIR is empty or just "/", simply append f->name to
+	   ODIR.  (In the former case, to preserve u->dir being
+	   relative; in the latter case, to avoid double slash.)  */
+	sprintf (u->dir, "%s%s", odir, f->name);
+      else
+	/* Else, use a separator. */
+	sprintf (u->dir, "%s/%s", odir, f->name);
+      DEBUGP (("Composing new CWD relative to the initial directory.\n"));
+      DEBUGP (("  odir = '%s'\n  f->name = '%s'\n  u->dir = '%s'\n\n",
+	       odir, f->name, u->dir));
       if (!accdir (u->dir, ALLABS))
 	{
 	  logprintf (LOG_VERBOSE, _("\

@@ -1,3 +1,16 @@
+2001-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (parseurl): Don't strip trailing slash when u->dir is "/"
+	because that strips the *leading* slash, thus forcing relative
+	FTP retrieval.
+
+2001-04-10  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
+
+	* ftp.c (getftp): Convert initial FTP directory from VMS to UNIX
+	notation for VMS servers. 
+	(ftp_retrieve_dirs): Do not prepend '/' to f->name when
+	odir is an empty string.
+
 2001-04-10  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
 	* ftp-ls.c (ftp_parse_winnt_ls): Made the fix for AM/PM more
