@@ -572,23 +572,27 @@ this invocation of Wget, and whose local files are still sitting around.
 
 Without @samp{-c}, the previous example would just download the remote
 file to @file{ls-lR.Z.1}, leaving the truncated @file{ls-lR.Z} file
-alone.  
+alone.
 
-If you use @samp{-c} on a file which is now smaller on the server than
-locally (presumably because it was changed on the server since your last
-download attempt), the file will be re-downloaded from scratch.
-Unfortunately this also happens if the local file is the same length as
-the server file---this will be fixed in a future version of Wget, but in
-the meantime you can use @samp{--timestamping} to prevent this on files
-for which the server gives timestamps (e.g. static files but not CGI
-output or @sc{http} directory listings).
+Beginning with Wget 1.7, if you use @samp{-c} on a non-empty file, and
+it turns out that the server does not support continued downloading,
+Wget will refuse to start the download from scratch, which would
+effectively ruin existing contents.  If you really want the download to
+start from scratch, remove the file.
+
+Also beginning with Wget 1.7, if you use @samp{-c} on a file which is of
+equal size as the one on the server, Wget will refuse to download the
+file and print an explanatory message.  The same happens when the file
+is smaller on the server than locally (presumably because it was changed
+on the server since your last download attempt)---because ``continuing''
+is not meaningful, no download occurs.
 
 On the other side of the coin, while using @samp{-c}, any file that's
 bigger on the server than locally will be considered an incomplete
-download and only @code{(length(server) - length(local))} bytes will
-be downloaded and tacked onto the end of the local file.  This behavior
-can be desirable in certain cases---for instance, you can use @samp{wget
--c} to download just the new portion that's been appended to a data
+download and only @code{(length(remote) - length(local))} bytes will be
+downloaded and tacked onto the end of the local file.  This behavior can
+be desirable in certain cases---for instance, you can use @samp{wget -c}
+to download just the new portion that's been appended to a data
 collection or log file.
 
 However, if the file is bigger on the server because it's been
@@ -1901,8 +1905,8 @@ Same as @samp{-A}/@samp{-R} (@pxref{Types of Files}).
 Enable/disable host-prefixed file names.  @samp{-nH} disables it.
 
 @item continue = on/off
-Enable/disable continuation of the retrieval---the same as @samp{-c}
-(which enables it).
+If set to on, force continuation of preexistent partially retrieved
+files.  See @samp{-c} before setting it.
 
 @item background = on/off
 Enable/disable going to background---the same as @samp{-b} (which
