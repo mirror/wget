@@ -278,6 +278,7 @@ wgetrc_file_name (void)
       file = (char *)xmalloc (strlen (home) + 1 + strlen (".wgetrc") + 1);
       sprintf (file, "%s/.wgetrc", home);
     }
+  FREE_MAYBE (home);
 #else  /* WINDOWS */
   /* Under Windows, "home" is (for the purposes of this function) the
      directory where `wget.exe' resides, and `wget.ini' will be used
@@ -293,7 +294,6 @@ wgetrc_file_name (void)
     }
 #endif /* WINDOWS */
 
-  FREE_MAYBE (home);
   if (!file)
     return NULL;
   if (!file_exists_p (file))
@@ -623,7 +623,7 @@ cmd_bytes (const char *com, const char *val, void *closure)
       return 0;
     }
   /* Search for a designator.  */
-  switch (tolower (*p))
+  switch (TOLOWER (*p))
     {
     case '\0':
       /* None */
@@ -667,7 +667,7 @@ cmd_time (const char *com, const char *val, void *closure)
       return 0;
     }
   /* Search for a suffix.  */
-  switch (tolower (*p))
+  switch (TOLOWER (*p))
     {
     case '\0':
       /* None */
