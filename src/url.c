@@ -78,7 +78,12 @@ static int path_simplify PARAMS ((char *));
 
 /* Support for encoding and decoding of URL strings.  We determine
    whether a character is unsafe through static table lookup.  This
-   code assumes ASCII character set and 8-bit chars.  */
+   code assumes ASCII character set and 8-bit chars.
+
+   Note that rfc2396 chose a different terminology from rfc1738.  The
+   recoding that URL does should be compliant with both specs,
+   although escaping the "unsafe" ("unreserved" in rfc2396 parlance)
+   chars where not strictly necessary is now frowned upon.  */
 
 enum {
   /* rfc1738 reserved chars, preserved from encoding.  */
@@ -103,8 +108,8 @@ const static unsigned char urlchr_table[256] =
   U,  U,  U,  U,   U,  U,  U,  U,   /* BS  HT  LF  VT   FF  CR  SO  SI  */
   U,  U,  U,  U,   U,  U,  U,  U,   /* DLE DC1 DC2 DC3  DC4 NAK SYN ETB */
   U,  U,  U,  U,   U,  U,  U,  U,   /* CAN EM  SUB ESC  FS  GS  RS  US  */
-  U,  0,  U, RU,   0,  U,  R,  0,   /* SP  !   "   #    $   %   &   '   */
-  0,  0,  0,  R,   0,  0,  0,  R,   /* (   )   *   +    ,   -   .   /   */
+  U,  0,  U, RU,   R,  U,  R,  0,   /* SP  !   "   #    $   %   &   '   */
+  0,  0,  0,  R,   R,  0,  0,  R,   /* (   )   *   +    ,   -   .   /   */
   0,  0,  0,  0,   0,  0,  0,  0,   /* 0   1   2   3    4   5   6   7   */
   0,  0, RU,  R,   U,  R,  U,  R,   /* 8   9   :   ;    <   =   >   ?   */
  RU,  0,  0,  0,   0,  0,  0,  0,   /* @   A   B   C    D   E   F   G   */
@@ -892,25 +897,20 @@ url_parse (const char *url, int *error)
       p = strpbrk_or_eos (p, "/;?#");
       port_e = p;
 
-      if (port_b == port_e)
+      /* Allow empty port, as per rfc2396. */
+      if (port_b != port_e)
 	{
-	  /* http://host:/whatever */
-	  /*             ^         */
-          error_code = PE_BAD_PORT_NUMBER;
-	  goto error;
-	}
-
-      for (port = 0, pp = port_b; pp < port_e; pp++)
-	{
-	  if (!ISDIGIT (*pp))
+	  for (port = 0, pp = port_b; pp < port_e; pp++)
 	    {
-	      /* http://host:12randomgarbage/blah */
-	      /*               ^                  */
-              error_code = PE_BAD_PORT_NUMBER;
-              goto error;
+	      if (!ISDIGIT (*pp))
+		{
+	 	  /* http://host:12randomgarbage/blah */
+		  /*               ^                  */
+		  error_code = PE_BAD_PORT_NUMBER;
+		  goto error;
+		}
+	      port = 10 * port + (*pp - '0');
 	    }
-	  
-	  port = 10 * port + (*pp - '0');
 	}
     }
 
