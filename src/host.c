@@ -97,8 +97,9 @@ struct address_list {
   ip_address *addresses;	/* pointer to the string of addresses */
 
   int faulty;			/* number of addresses known not to work. */
-  int from_cache;		/* whether this entry was pulled from
-				   cache or freshly looked up. */
+  int connected;		/* whether we were able to connect to
+				   one of the addresses in the list,
+				   at least once. */
 
   int refcount;			/* reference count; when it drops to
 				   0, the entry is freed. */
@@ -111,15 +112,6 @@ address_list_get_bounds (const struct address_list *al, int *start, int *end)
 {
   *start = al->faulty;
   *end   = al->count;
-}
-
-/* Return whether this address list entry has been obtained from the
-   cache.  */
-
-int
-address_list_cached_p (const struct address_list *al)
-{
-  return al->from_cache;
 }
 
 /* Return a pointer to the address at position POS.  */
@@ -189,6 +181,23 @@ address_list_set_faulty (struct address_list *al, int index)
        time, we'll rather make them all clean, so that they can be
        retried anew.  */
     al->faulty = 0;
+}
+
+/* Set the "connected" flag to true.  This flag used by connect.c to
+   see if the host perhaps needs to be resolved again.  */
+
+void
+address_list_set_connected (struct address_list *al)
+{
+  al->connected = 1;
+}
+
+/* Return the value of the "connected" flag. */
+
+int
+address_list_connected_p (const struct address_list *al)
+{
+  return al->connected;
 }
 
 #ifdef ENABLE_IPV6
@@ -513,7 +522,6 @@ lookup_host (const char *host, int silent)
 	{
 	  DEBUGP (("Found %s in host_name_addresses_map (%p)\n", host, al));
 	  ++al->refcount;
-	  al->from_cache = 1;
 	  return al;
 	}
     }

@@ -98,11 +98,12 @@ void forget_host_lookup PARAMS ((const char *));
 
 void address_list_get_bounds PARAMS ((const struct address_list *,
 				      int *, int *));
-int address_list_cached_p PARAMS ((const struct address_list *));
 const ip_address *address_list_address_at PARAMS ((const struct address_list *,
 						   int));
 int address_list_find PARAMS ((const struct address_list *, const ip_address *));
 void address_list_set_faulty PARAMS ((struct address_list *, int));
+void address_list_set_connected PARAMS ((struct address_list *));
+int address_list_connected_p PARAMS ((const struct address_list *));
 void address_list_release PARAMS ((struct address_list *));
 
 const char *pretty_print_address PARAMS ((const ip_address *));

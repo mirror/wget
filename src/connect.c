@@ -356,12 +356,16 @@ connect_to_host (const char *host, int port)
     }
   address_list_release (al);
 
-  if (sock < 0 && address_list_cached_p (al))
+  if (sock >= 0)
+    /* Mark a successful connection to one of the addresses. */
+    address_list_set_connected (al);
+
+  if (sock < 0 && address_list_connected_p (al))
     {
-      /* We were unable to connect to any address in a list we've
-	 obtained from cache.  There is a possibility that the host is
-	 under dynamic DNS and has changed its address.  Resolve it
-	 again.  */
+      /* We are unable to connect to any of HOST's addresses, although
+	 we were previously able to connect to HOST.  That might
+	 indicate that HOST is under dynamic DNS and the addresses
+	 we're connecting to have expired.  Resolve it again.  */
       forget_host_lookup (host);
       goto again;
     }
@@ -648,6 +652,10 @@ struct extended_info {
   xcloser_t closer;
   void *ctx;
 };
+
+/* Register the handlers for operations on FD.  This is meant
+   primarily for transport layers like SSL that piggyback on sockets,
+   but with their own readers, writers, etc.  */
 
 void
 register_extended (int fd, xreader_t reader, xwriter_t writer,
