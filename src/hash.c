@@ -300,7 +300,9 @@ grow_hash_table (struct hash_table *ht)
   int needed_size = prime_size (ht->count * 3);
   ht->size = MAX (old_size, needed_size);
 
+#if 0
   printf ("growing from %d to %d\n", old_size, ht->size);
+#endif
 
   ht->mappings = xmalloc (ht->size * sizeof (struct mapping));
   memset (ht->mappings, '\0', ht->size * sizeof (struct mapping));
