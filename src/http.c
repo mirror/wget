@@ -916,11 +916,15 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 			     + (proxyauth ? strlen (proxyauth) : 0));
 	  sprintf (connect, "CONNECT %s:%d HTTP/1.0\r\n%s\r\n",
 		   u->host, u->port, proxyauth ? proxyauth : "");
+	  /* Now that PROXYAUTH is part of the CONNECT request, zero
+	     it out so we don't send proxy authorization with the
+	     regular request below.  */
+	  proxyauth = NULL;
+
 	  DEBUGP (("Writing to proxy: [%s]\n", connect));
 	  write_error = fd_write (sock, connect, strlen (connect), -1);
 	  if (write_error < 0)
 	    {
-	      xfree_null (proxyauth);
 	      logprintf (LOG_VERBOSE, _("Failed writing to proxy: %s.\n"),
 			 strerror (errno));
 	      CLOSE_INVALIDATE (sock);
@@ -930,7 +934,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  head = fd_read_http_head (sock);
 	  if (!head)
 	    {
-	      xfree_null (proxyauth);
 	      logprintf (LOG_VERBOSE, _("Failed reading proxy response: %s\n"),
 			 strerror (errno));
 	      CLOSE_INVALIDATE (sock);
@@ -950,7 +953,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  if (statcode != 200)
 	    {
 	    failed_tunnel:
-	      xfree_null (proxyauth);
 	      logprintf (LOG_NOTQUIET, _("Proxy tunneling failed: %s"),
 			 message ? message : "?");
 	      xfree_null (message);

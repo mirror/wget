@@ -1,5 +1,10 @@
 2003-11-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (gethttp): Don't include the Proxy-Authorization header
+	in the request tunneled through proxy.
+
+2003-11-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (gethttp): Use the CONNECT handle to establish SSL
 	passthrough through non-SSL proxies.
 
