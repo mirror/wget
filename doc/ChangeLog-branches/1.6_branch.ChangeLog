@@ -1,37 +1,20 @@
-2001-01-06  Dan Harkless  <wget@harkless.org>
-
-	* ChangeLog: The '[Not in 1.6 branch.]'s were decided not to be
-	the best way to go about my aim.  Removed them in favor of:
-
-	* ChangeLog-branches/1.6_branch.ChangeLog: New file.
-	
-2000-12-31  Dan Harkless  <wget@harkless.org>
+2000-12-30  Dan Harkless  <wget@harkless.org>
 
 	* Makefile.in (distclean): sample.wgetrc.munged_for_texi_inclusion
-	needs to be included in the distribution or it'll get regenerated
-	due to the wget.info dependency, and then that file will get
-	regenerated, forcing people to have makeinfo installed
-	unnecessarily.	We could use a kludge of a 0-length file in the
-	distro, but the file isn't that big and should compress very well.
+ 	needs to be included in the distribution or it'll get regenerated
+ 	due to the wget.info dependency, and then that file will get
+ 	regenerated, forcing people to have makeinfo installed
+ 	unnecessarily.  We could use a kludge of a 0-length file in the
+ 	distro, but the file isn't that big and should compress very well.
 	
-	* wget.texi: Changed "VERSION 1.5.3+dev" to "VERSION 1.7-dev" and
+	* wget.texi: Changed "VERSION 1.5.3+dev" to "VERSION 1.6" and
 	"UPDATED Feb 2000" to "UPDATED Dec 2000".  Like the comment in the
 	file says, it'd be nice if these were handled automatically...
 	
-	* ChangeLog: Since this flat file doesn't have multiple branches,
-	looking at the dates would make you think that things went into
-	1.6 that actually just went into the 1.7-dev branch.  Added "[Not
-	in 1.6 branch.]" where appropriate to clarify.
-        
 2000-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* Makefile.in (install.info): Info files are *not* in $(srcdir),
 	but in the current build dir.
-
-2000-11-15  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* wget.texi (Robots): Document that we now support the meta tag
-	exclusion.
 
 2000-11-16  Hrvoje Niksic  <hniksic@arsdigita.com>
 

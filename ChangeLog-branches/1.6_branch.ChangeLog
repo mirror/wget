@@ -1,77 +1,25 @@
-2001-01-06  Dan Harkless  <wget@harkless.org>
+2000-12-30  Dan Harkless  <wget@harkless.org>
 
-	* ChangeLog: The '[Not in 1.6 branch.]'s were decided not to be
-	the best way to go about my aim.  Removed them in favor of:
-
-	* ChangeLog-branches/1.6_branch.ChangeLog: New file.
-
-	* README.branches: Explains the 1.6_branch.ChangeLog files.
-
-2001-01-03  Dan Harkless  <wget@harkless.org>
-
-	* TODO: We should make a simple man page referring to info doco.
-
-2000-12-31  Dan Harkless  <wget@harkless.org>
-
+	* Makefile.in (dist, DISTFILES): Committed Karl Eichwalder
+ 	<ke@suse.de>'s patch to not distribute CVS directories.
+	
 	* README: Changed 1.5.3 in the FTP URL to 1.6.
 
-	* NEWS: Released Wget version 1.6.
-
 	* po/*.po: 'Project-Id-Version's were very haphazard, saying
-	either "wget" or "GNU wget", and with versions of 1.5.2-b[124],
-	1.5.3, the nonexistent 1.5.4, and 1.6-pre.  Standardized all to
-	"GNU Wget 1.7-dev".  Perhaps this is wrong to do because some of
-	the translations haven't been updated since the versions they
-	state, but I know some of the files were updated specifically for
-	1.6, and none of them used this version (unless you count the sole
-	"1.6-pre" guy).  In any case, the 'POT-Creation-Date's and
-	'PO-Revision-Date's remain the best indicator of whether a
-	translation's out of date.
+ 	either "wget" or "GNU wget", and with versions of 1.5.2-b[124],
+ 	1.5.3, the nonexistent 1.5.4, and 1.6-pre.  Standardized all to
+ 	"GNU Wget 1.6".  Perhaps this is wrong to do because some of the
+ 	translations haven't been updated since the versions they state,
+ 	but I know some of the files were updated specifically for 1.6,
+ 	and none of them used this version.  In any case, the
+ 	'POT-Creation-Date's and 'PO-Revision-Date's remain the best
+ 	indicator of whether a translation's out of date.
 	
-	* ChangeLog: Since this flat file doesn't have multiple branches,
-	looking at the dates would make you think that things went into
-	1.6 that actually just went into the 1.7-dev branch.  Added "[Not
-	in 1.6 branch.]" where appropriate to clarify.
-	
-2000-12-18  Csaba Raduly  <csaba.raduly@sophos.com>
-
-	* windows/Makefile.watcom: Updated.
-
-2000-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* po/POTFILES.in: Updated.
-
-2000-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* configure.in: Add windows/Makefile to the output block.
-
-	* windows/Makefile.in: New file.
-
-2000-11-25  Karl Eichwalder  <ke@suse.de>
-
-	* Makefile.in (SUBDIRS): Add 'windows'.
-	(dist, DISTFILES): Don't distribute CVS directories.
-	
-2000-12-05  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* configure.in: Don't unconditionally define HAVE_SSL, even when
-	--with-ssl is given.
-
-2000-12-03  Christian Fraenkel  <christian.fraenkel@gmx.net>
-
-	* INSTALL: Added the --with-ssl switch.
-	
-	* configure.in: Ditto.
-	
-	* TODO: Removed the corresponding entry.
+	* NEWS: Released Wget version 1.6.
 
 2000-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* configure.in: Build ALL_LINGUAS dynamically.
-
-2000-11-10  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* configure.in: Test for MMAP.
 
 2000-11-16  Hrvoje Niksic  <hniksic@arsdigita.com>
 
@@ -157,10 +105,10 @@
 2000-08-25  Dan Harkless  <wget@harkless.org>
 
 	* MACHINES: Alphabetized, changed "architectures" to "OSes and
-	architectures", added missing company names, removed needless ^L,
-	made AIX and FreeBSD entries more general to reflect successful
-	use on those platforms by myself and others, removed the
-	non-factual "this version of", and fixed some grammatical errors.
+ 	architecures", added missing company names, removed needless ^L,
+ 	made AIX and FreeBSD entries more general to reflect successful
+ 	use on those platforms by myself and others, removed the
+ 	non-factual "this version of", and fixed some grammatical errors.
 	
 2000-07-21  Dan Harkless  <wget@harkless.org>
 
@@ -177,7 +125,7 @@
 2000-05-22  Dan Harkless  <wget@harkless.org>
 
 	* AUTHORS: Added myself to this file, as Hrvoje got confirmation
-	of my FSF copyright assignment.
+ 	of my FSF copyright assignment.
 
 	* TODO: Added note that fragment identifiers don't work properly.
 	
@@ -203,7 +151,7 @@
 2000-03-10  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Removed done item: we now have an option (-G) that makes
-	it easy to download a single HTML document and all its constituents.
+ 	it easy to download a single HTML document and all its constituents.
 	
 	* po/*.{gmo,po,pot}: Regenerated after adding new options.
 
@@ -340,7 +288,7 @@
 1998-03-28  Hrvoje Niksic  <hniksic@srce.hr>
 
 	* aclocal.m4 (WGET_WITH_NLS): Disable USE_NLS if gettext is
-	unavailable.
+ 	unavailable.
 
 	* aclocal.m4: Renamed AM_STRUCT_UTIMBUF to WGET_STRUCT_UTIMBUF;
 	renamed AM_WITH_NLS to WGET_WITH_NLS.

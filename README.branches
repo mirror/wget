@@ -1,0 +1,23 @@
+In late 2000, time constraints delayed the release of Wget 1.6.  While
+it was awaiting release, people had new features and other changes they
+wanted added to the CVS archive, but these were deemed not safe to
+introduce just before a release.
+
+The solution was to split the stable 1.6 off onto its own branch, while
+free-wheeling development continued on the main branch (whose version
+was changed from 1.5.3+dev to 1.7-dev).
+
+Unfortunately it's difficult to portray this branched development in the
+flat ChangeLog file.  Either you include 1.6-branch changes in the
+1.7-branch ChangeLog, in which case it becomes impossible to tell what
+release version a given change first went into Wget, just judging by
+date and position in the ChangeLog, or you omit all 1.6-branch changes
+from the 1.7-branch ChangeLog, in which case all evidence of the
+existence of 1.6 (and further information about that branch) disappears
+from future versions of Wget.
+
+The solution that was decided upon was to make a subdirectory called
+ChangeLog-branches adjacent to each ChangeLog file.  Inside is the
+corresponding ChangeLog from the most recent release on the stable
+branch (e.g. 1.6_branch.ChangeLog).  This way, no information is lost
+and there's no misleading information in the ChangeLog.

@@ -1,40 +1,17 @@
-2001-01-06  Dan Harkless  <wget@harkless.org>
-
-	* ChangeLog: The '[Not in 1.6 branch.]'s were decided not to be
-	the best way to go about my aim.  Removed them in favor of:
-
-	* ChangeLog-branches/1.6_branch.ChangeLog: New file.
-
-2001-01-04  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* url.c (replace_attr): New function, to be used by both
-	TO_COMPLETE and TO_RELATIVE case in convert_links.
-	(find_fragment): New function for finding URL fragments.
-	(replace_attr): Better handle the case where the original string
-	is not quoted.  Use find_fragment.
-	(convert_links): Use replace_attr().
-
-2000-12-18  Csaba Raduly  <csaba.raduly@sophos.com>
-
-	* sysdep.h: Include <malloc.h> and <io.h> under Watcom.
-
-2000-12-31  Dan Harkless  <wget@harkless.org>
-
-	* ChangeLog: Since this flat file doesn't have multiple branches,
-	looking at the dates would make you think that things went into
-	1.6 that actually just went into the 1.7-dev branch.  Added "[Not
-	in 1.6 branch.]" where appropriate to clarify.
-	
 2000-12-30  Dan Harkless  <wget@harkless.org>
 
 	* ftp.c, http.c:  Applied Hack Kampbjørn <hack@hackdata.com>'s
 	patch to deal with h_errno not being defined in netdb.h under Cygwin.
+
+	* version.c: Released Wget version 1.6.
 
 2000-12-17  Igor Khristophorov  <igor@atdot.org>
 
 	* http.c (check_end): Fix test for '+' or '-'.
 
 2000-12-17  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (get_urls_html): Use xmalloc, not malloc.
 
 	* url.c (parseurl): Rename inner loop var from i to ind to avoid
 	clash with the function top-level-declared variable i.
@@ -66,8 +43,6 @@
 
 	* mswindows.c: Include <errno.h>.
 
-	* gen_sslfunc.c: Include <errno.h>.
-
 	* ftp-basic.c: Don't attempt to declare errno or h_errno because
 	they're not used.
 
@@ -76,18 +51,6 @@
 	* ftp.c: Ditto.
 
 	* http.c: Include <netdb.h> for h_errno.
-
-2000-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* html-parse.c (advance_declaration): MSVC assert() chokes on
-	'\"'.  Use '"' instead.
-
-2000-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* utils.c (xfree_real): Removed.
-	(xfree_debug): Just call free().
-
-	* wget.h (xfree): Make it an alias for free.
 
 2000-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
@@ -103,11 +66,6 @@
 
 2000-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
-	* http.c: Include gen_sslfunc.h after including Wget's headers.
-	(persistent_available_p): Needed coma before `int ssl'.
-
-2000-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
-
 	* ftp.c (ftp_loop_internal): Ditto.
 
 	* http.c (http_loop): Use it.
@@ -115,185 +73,16 @@
 	* retr.c (sleep_between_retrievals): New function that handles the
 	logic of opt.wait and opt.waitretry.
 
-2000-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* rbuf.h: Implement only a single version of RBUF_READCHAR, using
-	rbuf_read_bufferful when the buffer is depleted.
-
-	* rbuf.c (rbuf_read_bufferful): New function.
-
-2000-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* gen_sslfunc.h: Use ansi2knr style function declarations.
-
-	* gen_sslfunc.c: Reformat according to the GNU coding standards.
-	More should be done.
-
-	* http.c (persistent_available_p): Place the cheap SSL test nearer
-	the top of the function.
-	(CLOSE_FINISH, CLOSE_INVALIDATE): Define only one version of each.
-
-2000-12-03  Christian Fraenkel <christian.fraenkel@gmx.net>
-
-	* Makefile.in: added gen_sslfunc object
-	* config.h.in: added HAVE_SSL define
-	* connect.c: changed select_fd from static int to int
-	* connect.h: ditto
-	* gen_sslfunc.h: New file
-	* gen_sslfunc.c: ditto
-	* http.c: added HTTPS fuctionality
-	* retrc.c: ditto
-	* url.c: ditto
-	* init.c: added opt.httpsproxy
-	* options.h: ditto
-	* rbuf.h: added alternate rbuf struct
-	* wget.h: added CONSSLERR
-	* rbuf.c: ditto
-
-	* http.c: Added HTTPS fuctionality.
-
-	* retrc.c: Ditto.
-
-	* url.c: Ditto.
-
-	* init.c: Added opt.httpsproxy.
-
-	* options.h: Ditto.
-
-	* rbuf.h: Added alternate rbuf struct.
-
-	* wget.h: Added CONSSLERR.
-
-	* rbuf.c: Ditto.
-
-2000-11-30  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
-
-        * ftp-ls.c (ftp_parse_unix_ls): Added second parameter
-        "ignore_perms" to ignore file and directory permissions for
-        Windows NT FTP server listings.
-        (ftp_parse_winnt_ls): New function.
-        (ftp_parse_ls): Parses UNIX and Windows NT listings
-        separately. Simple heuristics for distinguishing between UNIX
-        and MS-DOS-like FTP listing provided by Windows NT FTP service.
-
-2000-12-05  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* url.c (init_unsafe_char_table): Reinstate space as an unsafe
-	char.
-
-2000-11-29  John Summerfield  <summer@OS2.ami.com.au>
-
-	* netrc.c (parse_netrc): Get rid of line ending.
-
-2000-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* ftp.c (ftp_retrieve_list): Undo typo "fix" until resolution by
-	Dan.
-
 2000-11-24  Karl Eichwalder  <ke@suse.de>
 
 	* main.c (print_help): Untabify.
-
-2000-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* utils.c (xrealloc_debug): Do the unregister/register thing only
-	if the pointer has actually changed.
-	(xmalloc_real): Declare `static' in DEBUG_MALLOC builds.
-	(xfree_real): Ditto.
-	(xrealloc_real): Ditto.
-	(xstrdup_real): Ditto.
 
 2000-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp.c (getftp): ftp_getaddress() returns a malloc'ed copy of the
 	string; no need to strdup() it.
-	(getftp): Make pwd_len a local variable.
-	(ftp_loop): Free PWD before returning.
 
 	* init.c (cleanup): Free opt.ftp_pass only if it's non-NULL.
-
-2000-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* all: Use xfree() instead of free.
-
-	* utils.c (xfree): New function.
-
-2000-11-21  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* url.c (convert_links): HTML-quote the converted string.
-
-	* utils.c (html_quote_string): Move here from ftp-ls.c
-	(html_quote_string): Make non-static; declare in utils.h.
-	(html_quote_string): Convert SP to &#32;.
-
-2000-11-21  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* ftp.c (getftp): Reformat Jan's code according to GNU coding
-	standards; remove (debugging?) printf's; use '\0' for the ASCII
-	zero character.  Use alloca() instead of malloc() for
-	inter-function temporary allocations.
-
-2000-11-18  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
-
-	* ftpparse.c, ftpparse.h: New files.
-
-	* ftp-ls.c (ftp_parse_ls): Use ftp_parse_unix_ls for UNIX servers
-	only. Use ftp_parse_nonunix_ls otherwise.
-	(ftp_parse_nonunix_ls): Stub to the ftpparse library handling all
-	exotic FTP servers.
-
-	* ftp.h (stype): New enum, distinguishes UNIX, VMS, and "other"
-	FTP servers.
-
-	* ftp.c: New static wariables host_type, pwd, and pwd_len. 
-	(getftp): Support for VMS. Support for FTP servers that do not
-	place you in the root directory after login.
-	(ftp_retrieve_list): VMS is silent about the real file size, issue
-	a more appropriate message.
-	(ftp_get_listing): Pass host_type to ftp_parse_ls.
-
-	* ftp-basic.c (ftp_pwd, ftp_syst): New functions.
-
-2000-11-21  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* hash.c (hash_table_put): Don't overwrite deleted mappings.
-
-2000-11-21  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* hash.c (find_mapping): New function.
-	(hash_table_get): Use it.
-	(hash_table_get_pair): Ditto.
-	(hash_table_exists): Ditto.
-	(hash_table_remove): Ditto.
-	(hash_table_remove): Really delete the entry if the mapping
-	following LOCATION is empty.
-
-	* utils.c (string_set_add): Check whether the element has existed
-	before.
-
-	* hash.c (hash_table_get_pair): New function.
-
-2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* http.c (http_process_type): Ignore trailing whitespace; use
-	strdupdelim().
-
-	* recur.c (recursive_retrieve): Use the new `convert' field.
-	(convert_all_links): Ditto.
-	(convert_all_links): Don't respect meta_disallow_follow.
-
-	* html-url.c (handle_link): Fill out link_relative_p and
-	link_complete_p.
-
-	* url.h (struct _urlpos): Make elements more readable.
-
-	* recur.c (recursive_retrieve): Call slist_prepend instead of
-	slist_append.
-	(convert_all_links): Call slist_nreverse before iterating through
-	urls_html.
-
-	* utils.c (slist_prepend): New function.
-	(slist_nreverse): Ditto.
 
 2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
 
@@ -301,146 +90,7 @@
 
 2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
 
-	* http.c (http_loop): If username and password are known, try the
-	`Basic' authentication scheme by default.
-
-	* connect.h: Declare test_socket_open.
-
-2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* version.c: Bump version from 1.5.3+dev to 1.7-dev.
-
-2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* http.c (gethttp): Don't use the return value of sprintf().
-	(gethttp): Inhibit keep-alive if opt.http_keep_alive is 0.
-
-2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* recur.c (recursive_retrieve): Print the "so we don't load"
-	debugging message only if we really don't load.
-
-	* http.c (gethttp): Inhibit keep-alive if proxy is being used.
-	(gethttp): Don't request keep-alive if keep-alive is inhibited.
-
-2000-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* http.c (gethttp): Make the HTTP persistent connections more
-	robust.
-
-2000-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* retr.c (get_contents): If use_expected, make sure that the
-	appropriate amount of data is being read.
-
-	* http.c (gethttp): Check for both `Keep-Alive: ...' and
-	`Connection: Keep-Alive'.
-
-	* wget.h (DEBUGP): Call debug_logprintf only if opt.debug is
-	turned on.
-
-2000-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* http.c (connection_available_p): Use it.
-
-	* connect.c (test_socket_open): New function.
-
-	* http.c (gethttp): Support persistent connections.  Based on the
-	ideas, and partly on code, by Sam Horrocks <sam@daemoninc.com>.
-	(register_persistent): New function.
-	(connection_available_p): Ditto.
-	(invalidate_connection): Ditto.
-
-2000-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* url.c (convert_links): Handle UREL2ABS case.
-
-	* recur.c (recursive_retrieve): Instead of the list
-	urls_downloaded, use hash tables dl_file_url_map and
-	dl_url_file_map.
-	(convert_all_links): Use them to retrieve data.
-
-	* host.c (clean_hosts): Free the hash tables.
-
-	* main.c (private_initialize): Call host_init().
-
-	* host.c (store_hostaddress): Use a saner, hash table-based data
-	model.
-	(realhost): Ditto.
-	(host_init): Initialize the hash tables.
-
-2000-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* utils.c (slist_append): Eviscerate NOSORT.  Hash tables are now
-	used for what the sorted slists used to be used for.
-	(slist_contains): Don't rely on the list being sorted.
-	(slist_append): Simplify the code.
-
-	* recur.c (recursive_cleanup): Use free_string_set.
-
-	* utils.c (string_set_add, string_set_exists, string_set_free):
-	New functions for easier freeing of hash tables whose keys are
-	strdup'ed strings.
-
-	* recur.c (recursive_retrieve): Use the hash table functions for
-	storing undesirable URLs.
-
-	* hash.c: New file.
-
-2000-11-17  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* main.c (private_initialize): Call url_init.
-	(main): Call private_initialize.
-
-	* url.c (unsafe_char_table): New table.
-	(UNSAFE_CHAR): Use it.
-	(init_unsafe_char_table): New function.
-	(url_init): New function; call init_unsafe_char_table.
-
-2000-11-15  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* html-url.c (handle_link): Handle HTML fragment identifiers.
-
-	* recur.c (recursive_retrieve): If norobot info is respected and
-	the file is specified not to be followed by robots, respect that.
-
-	* html-url.c (collect_tags_mapper): Handle <meta name=robots
-	content=X>.  For us the important cases are where X is NONE or
-	where X contains NOFOLLOW.
-	(get_urls_html): Propagate that information to the caller.
-
-2000-11-13  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* url.c (convert_links): Unlink the file we might be reading from
-	before writing to it.
-	(convert_links): Use alloca instead of malloc for
-	filename_plus_orig_suffix.
-
-2000-11-10  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* url.c (get_urls_file): Ditto.
-	(convert_links): Ditto.
-
-	* html-url.c (get_urls_html): Use read_file() instead of
-	load_file().
-
-	* utils.c (read_file): New function, instead of the old
-	load_file().
-	(read_file_free): Ditto.
-
-	* url.c (findurl): Search only for the supported protocols.
-	(convert_links): Use fwrite() when writing out a region of
-	characters.
-
-2000-11-10  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* ftp-ls.c: Move html_quote_string and ftp_index here.
-
-	* url.c: Remove get_urls_html, since that's now in html-url.c.
-
-	* html-url.c: New file.
-
-	* html-parse.c: New file.
+	* version.c: Bump version to 1.6-pre.
 
 2000-11-16  Hrvoje Niksic  <hniksic@arsdigita.com>
 
