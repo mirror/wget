@@ -1,3 +1,8 @@
+2003-10-01  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* ftp.c (ftp_loop_internal): Initialize TMRATE to NULL to shut up
+	the compiler.
+
 2003-09-26  Gisle Vanem  <giva@bgnett.no>
 
 	* src/mswindows.c: Added ws_percenttitle() showing progress in the

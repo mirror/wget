@@ -1029,7 +1029,8 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 {
   int count, orig_lp;
   long restval, len;
-  char *tms, *tmrate, *locf;
+  char *tms, *locf;
+  char *tmrate = NULL;
   uerr_t err;
   struct stat st;
 
