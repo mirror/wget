@@ -47,8 +47,6 @@ so, delete this exception statement from your version.  */
 #include "wget.h"
 #include "utils.h"
 #include "url.h"
-#include "host.h"
-#include "hash.h"
 
 #ifndef errno
 extern int errno;
