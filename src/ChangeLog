@@ -1,5 +1,14 @@
 2000-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* ftp.c (getftp): ftp_getaddress() returns a malloc'ed copy of the
+	string; no need to strdup() it.
+	(getftp): Make pwd_len a local variable.
+	(ftp_loop): Free PWD before returning.
+
+	* init.c (cleanup): Free opt.ftp_pass only if it's non-NULL.
+
+2000-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* all: Use xfree() instead of free.
 
 	* utils.c (xfree): New function.

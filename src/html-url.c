@@ -566,3 +566,10 @@ get_urls_html (const char *file, const char *this_url, int dash_p_leaf_HTML,
   read_file_free (fm);
   return closure.head;
 }
+
+void
+cleanup_html_url (void)
+{
+  FREE_MAYBE (interesting_tags);
+  FREE_MAYBE (interesting_attributes);
+}

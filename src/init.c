@@ -981,6 +981,10 @@ check_user_specified_header (const char *s)
   return 1;
 }
 
+void cleanup_html_url PARAMS ((void));
+void downloaded_files_free PARAMS ((void));
+
+
 /* Free the memory allocated by global variables.  */
 void
 cleanup (void)
@@ -992,6 +996,8 @@ cleanup (void)
   free_netrc (netrc_list);
   if (opt.dfp)
     fclose (opt.dfp);
+  cleanup_html_url ();
+  downloaded_files_free ();
   FREE_MAYBE (opt.lfilename);
   xfree (opt.dir_prefix);
   FREE_MAYBE (opt.input_filename);
@@ -1004,7 +1010,7 @@ cleanup (void)
   free_vec (opt.follow_tags);
   free_vec (opt.ignore_tags);
   xfree (opt.ftp_acc);
-  xfree (opt.ftp_pass);
+  FREE_MAYBE (opt.ftp_pass);
   FREE_MAYBE (opt.ftp_proxy);
   FREE_MAYBE (opt.http_proxy);
   free_vec (opt.no_proxy);

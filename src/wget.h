@@ -98,10 +98,31 @@ void debug_logprintf ();
 void logputs PARAMS ((enum log_options, const char *));
 
 /* Defined in `utils.c', but used literally everywhere.  */
-void *xmalloc PARAMS ((size_t));
-void xfree PARAMS ((void *));
-void *xrealloc PARAMS ((void *, size_t));
-char *xstrdup PARAMS ((const char *));
+#ifndef DEBUG_MALLOC
+
+#define xmalloc  xmalloc_real
+#define xfree    xfree_real
+#define xrealloc xrealloc_real
+#define xstrdup  xstrdup_real
+
+void *xmalloc_real PARAMS ((size_t));
+void xfree_real PARAMS ((void *));
+void *xrealloc_real PARAMS ((void *, size_t));
+char *xstrdup_real PARAMS ((const char *));
+
+#else  /* DEBUG_MALLOC */
+
+#define xmalloc(s)     xmalloc_debug (s, __FILE__, __LINE__)
+#define xfree(p)       xfree_debug (p, __FILE__, __LINE__)
+#define xrealloc(p, s) xrealloc_debug (p, s, __FILE__, __LINE__)
+#define xstrdup(p)     xstrdup_debug (p, __FILE__, __LINE__)
+
+void *xmalloc_debug PARAMS ((size_t, const char *, int));
+void xfree_debug PARAMS ((void *, const char *, int));
+void *xrealloc_debug PARAMS ((void *, size_t, const char *, int));
+char *xstrdup_debug PARAMS ((const char *, const char *, int));
+
+#endif /* DEBUG_MALLOC */
 
 /* #### Find a better place for this.  */
 /* The log file to which Wget writes to after HUP.  */

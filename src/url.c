@@ -1577,6 +1577,14 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
     }
 }
 
+typedef struct _downloaded_file_list {
+  char*                          file;
+  downloaded_file_t              download_type;
+  struct _downloaded_file_list*  next;
+} downloaded_file_list;
+
+static downloaded_file_list *downloaded_files;
+
 /* Remembers which files have been downloaded.  In the standard case, should be
    called with mode == FILE_DOWNLOADED_NORMALLY for each file we actually
    download successfully (i.e. not for ones we have failures on or that we skip
@@ -1592,15 +1600,7 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
 downloaded_file_t
 downloaded_file (downloaded_file_t  mode, const char*  file)
 {
-  typedef struct _downloaded_file_list
-  {
-    char*                          file;
-    downloaded_file_t              download_type;
-    struct _downloaded_file_list*  next;
-  } downloaded_file_list;
-  
   boolean                       found_file = FALSE;
-  static downloaded_file_list*  downloaded_files = NULL;
   downloaded_file_list*         rover = downloaded_files;
 
   while (rover != NULL)
@@ -1626,6 +1626,19 @@ downloaded_file (downloaded_file_t  mode, const char*  file)
 	}
 
       return FILE_NOT_ALREADY_DOWNLOADED;
+    }
+}
+
+void
+downloaded_files_free (void)
+{
+  downloaded_file_list*         rover = downloaded_files;
+  while (rover)
+    {
+      downloaded_file_list *next = rover->next;
+      xfree (rover->file);
+      xfree (rover);
+      rover = next;
     }
 }
 

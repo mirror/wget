@@ -57,9 +57,11 @@ extern int h_errno;
 
 extern char ftp_last_respline[];
 
+/* #### Global variables??  These two should be members of struct
+   ccon!  */
+
 static enum stype host_type=ST_UNIX;
 static char *pwd;
-static int  pwd_len;
 
 /* Look for regexp "( *[0-9]+ *byte" (literal parenthesis) anywhere in
    the string S, and return the number converted to long, if found, 0
@@ -133,7 +135,7 @@ getftp (const struct urlinfo *u, long *len, long restval, ccon *con)
   search_netrc (u->host, (const char **)&user, (const char **)&passwd, 1);
   user = user ? user : opt.ftp_acc;
   if (!opt.ftp_pass)
-    opt.ftp_pass = xstrdup (ftp_getaddress ());
+    opt.ftp_pass = ftp_getaddress ();
   passwd = passwd ? passwd : opt.ftp_pass;
   assert (user && passwd);
 
@@ -279,7 +281,6 @@ Error in server response, closing control connection.\n"));
       if (!opt.server_response)
 	logprintf (LOG_VERBOSE, "==> PWD ... ");
       err = ftp_pwd(&con->rbuf, &pwd);
-      pwd_len = strlen(pwd);
       /* FTPRERR */
       switch (err)
       {
@@ -354,6 +355,7 @@ Error in server response, closing control connection.\n"));
              it to VMS style as VMS does not like leading slashes */
 	  if (*(u->dir) == '/')
 	    {
+	      int pwd_len = strlen (pwd);
 	      char *result = (char *)alloca (strlen (u->dir) + pwd_len + 10);
 	      *result = '\0';
 	      switch (host_type)
@@ -1634,6 +1636,8 @@ ftp_loop (struct urlinfo *u, int *dt)
   /* If a connection was left, quench it.  */
   if (rbuf_initialized_p (&con.rbuf))
     CLOSE (RBUF_FD (&con.rbuf));
+  FREE_MAYBE (pwd);
+  pwd = NULL;
   return res;
 }
 

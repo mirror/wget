@@ -42,6 +42,10 @@ struct file_memory {
 char *time_str PARAMS ((time_t *));
 const char *uerrmsg PARAMS ((uerr_t));
 
+#ifdef DEBUG_MALLOC
+void print_malloc_debug_stats ();
+#endif
+
 char *strdupdelim PARAMS ((const char *, const char *));
 char **sepstring PARAMS ((const char *));
 int frontcmp PARAMS ((const char *, const char *));

@@ -809,6 +809,9 @@ Can't timestamp and not clobber old files at the same time.\n"));
     }
   log_close ();
   cleanup ();
+#ifdef DEBUG_MALLOC
+  print_malloc_debug_stats ();
+#endif
   if (status == RETROK)
     return 0;
   else
