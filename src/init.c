@@ -491,12 +491,21 @@ setval (const char *com, const char *val)
 
 static int myatoi PARAMS ((const char *s));
 
-/* Store the address (specified as hostname or dotted-quad IP address) from VAL
-   to CLOSURE.  COM is ignored, except for error messages.  */
+/* Interpret VAL as an Internet address (a hostname or a dotted-quad
+   IP address), and write it (in network order) to a malloc-allocated
+   address.  That address gets stored to the memory pointed to by
+   CLOSURE.  COM is ignored, except for error messages.
+
+   #### IMHO it's a mistake to do this kind of work so early in the
+   process (before any download even started!)  opt.bind_address
+   should simply remember the provided value as a string.  Another
+   function should do the lookup, when needed, and cache the
+   result.  --hniksic  */
 static int
 cmd_address (const char *com, const char *val, void *closure)
 {
   struct sockaddr_in sin;
+  struct sockaddr_in **target = (struct sockaddr_in **)closure;
 
   if (!store_hostaddress ((unsigned char *)&sin.sin_addr, val))
     {
@@ -508,7 +517,10 @@ cmd_address (const char *com, const char *val, void *closure)
   sin.sin_family = AF_INET;
   sin.sin_port = 0;
 
-  memcpy (closure, &sin, sizeof (sin));
+  FREE_MAYBE (*target);
+
+  *target = xmalloc (sizeof (sin));
+  memcpy (*target, &sin, sizeof (sin));
 
   return 1;
 }
@@ -1021,4 +1033,5 @@ cleanup (void)
   FREE_MAYBE (opt.sslcertkey);
   FREE_MAYBE (opt.sslcertfile);
 #endif /* HAVE_SSL */
+  FREE_MAYBE (opt.bind_address);
 }

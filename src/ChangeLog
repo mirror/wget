@@ -1,3 +1,8 @@
+2001-04-02  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* init.c (cmd_address): Heap-allocate the address that gets stored
+	to CLOSURE.  Old code would simply assign an address on the stack.
+
 2001-04-01  Nicolas Lichtmaier <nick@debian.org>
 
 	* ftp.c (ftp_get_listing): Propagate error status.
