@@ -59,6 +59,8 @@ save session cookies along with the permanent ones.  This is useful on
 sites that require you to log in before you can access some pages.
 With this option, multiple Wget runs will be treated as a single
 browser session.
+
+* `wget -b' now works correctly under Windows.
 
 * Wget 1.9.1 is a bugfix release with no user-visible changes.
 
