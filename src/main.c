@@ -81,11 +81,6 @@ extern char *version_string;
 
 extern struct cookie_jar *wget_cookie_jar;
 
-/* From log.c.  */
-void log_init PARAMS ((const char *, int));
-void log_close PARAMS ((void));
-void log_request_redirect_output PARAMS ((const char *));
-
 static RETSIGTYPE redirect_output_signal PARAMS ((int));
 
 const char *exec_name;
@@ -342,8 +337,11 @@ init_switches (void)
 	    }
 	}
     }
-  xzero (long_options[o]);
+  /* Terminate short_options. */
   *p = '\0';
+  /* No need for xzero(long_options[o]) because its storage is static
+     and it will be zeroed by default.  */
+  assert (o <= countof (long_options));
 }
 
 /* Print the usage message.  */

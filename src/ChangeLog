@@ -1,3 +1,8 @@
+2003-11-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* log.h: Declare log_init, log_close, and
+	log_request_redirect_output here.
+
 2003-11-05  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* main.c: (main): added --preserve-permissions option.

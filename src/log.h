@@ -55,4 +55,8 @@ void logflush PARAMS ((void));
 void log_set_flush PARAMS ((int));
 int log_set_save_context PARAMS ((int));
 
+void log_init PARAMS ((const char *, int));
+void log_close PARAMS ((void));
+void log_request_redirect_output PARAMS ((const char *));
+
 #endif /* LOG_H */
