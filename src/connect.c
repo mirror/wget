@@ -447,8 +447,8 @@ bind_local (const ip_address *bind_address, int *port)
   /* If *PORT is 0, find out which port we've bound to.  */
   if (*port == 0)
     {
-      socklen_t sa_len = sockaddr_size (sa);
-      if (getsockname (sock, sa, &sa_len) < 0)
+      socklen_t addrlen = sockaddr_size (sa);
+      if (getsockname (sock, sa, &addrlen) < 0)
 	{
 	  /* If we can't find out the socket's local address ("name"),
 	     something is seriously wrong with the socket, and it's

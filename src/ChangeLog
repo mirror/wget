@@ -1,3 +1,8 @@
+2003-11-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c (bind_local): Rename sa_len to addrlen because IRIX
+	headers define sa_len as a macro.
+
 2003-11-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* html-parse.c (convert_and_copy): Remove embedded newlines when
