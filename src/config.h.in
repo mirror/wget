@@ -197,28 +197,24 @@ char *alloca ();
 /* Define to 1 if ANSI function prototypes are usable.  */
 #undef PROTOTYPES
 
-/* Debian says:
-
-   to get prototype for strptime, we need this  (taken from lftp)
-   #ifdef __linux__
-   #define __USE_XOPEN 1
-   #endif
-
-   But I don't think that's right.  The __USE_XOPEN thing is an
-   internal glibc2 thing that gets defined in features.h.  From
-   reading that file carefully, I think we need something like this
-   incantation to get the kind of features we use.
-
-   However, testing Wget under Solaris showed that compilation of
-   connect.c chokes because of the _XOPEN_SOURCE definition.  So I'm
-   disabling it.  If anyone understands this maze, please help!  */
-
-#ifdef __linux__
-# define _XOPEN_SOURCE 500
-# define _SVID_SOURCE
-#endif
-
 /* Define if all libs needed for ssl support are existing */
 #undef HAVE_SSL
+
+/* The following several lines can be very dangerous; they can cripple
+   the header files and break compilation in _verY_ non-obvious ways.  If
+   compilation fails mysteriously and the errors are reported in
+   system headers, try commenting these out.  */
+
+/* Request the "Unix 98 compilation environment". */
+#define _XOPEN_SOURCE 500
+
+/* For Solaris: request everything else that is available and doesn't
+   conflict with the above.  */
+#define __EXTENSIONS__
+
+/* For Linux: request features of 4.3BSD and SVID (System V Interface
+   Definition). */
+#define _SVID_SOURCE
+#define _BSD_SOURCE
 
 #endif /* CONFIG_H */
