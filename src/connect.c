@@ -722,7 +722,7 @@ sock_read (int fd, char *buf, int bufsize)
 static int
 sock_write (int fd, char *buf, int bufsize)
 {
-  int res = 0;
+  int res;
   do
     res = write (fd, buf, bufsize);
   while (res == -1 && errno == EINTR);
