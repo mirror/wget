@@ -1,9 +1,12 @@
                                  Hey Emacs, this is -*- outline -*- mode
 
-This is the to-do list for Wget.  There is no timetable of when we
+This is the to-do list for GNU Wget.  There is no timetable of when we
 plan to implement these features -- this is just a list of features
 we'd like to see in Wget, as well as a list of problems that need
-fixing.  Patches to implement these items are likely to be accepted.
+fixing.  Patches to implement these items are likely to be accepted,
+especially if they follow the coding convention outlined in PATCHES
+and if they patch the documentation as well.
+
 The items are not listed in any particular order (except that
 recently-added items may tend towards the top).  Not all of these
 represent user-visible changes.
@@ -64,11 +67,6 @@ represent user-visible changes.
   files in a certain directory on _one_ of the hosts (-I and -X apply to all).
   Perhaps -I and -X should take an optional hostname before the directory?
 
-* Add an option to not encode special characters like ' ' and '~' when saving
-  local files.  Would be good to have a mode that encodes all special characters
-  (as now), one that encodes none (as above), and one that only encodes a
-  character if it was encoded in the original URL (e.g. %20 but not %7E).
-
 * --retr-symlinks should cause wget to traverse links to directories too.
 
 * Make wget return non-zero status in more situations, like incorrect HTTP auth.
@@ -108,17 +106,10 @@ represent user-visible changes.
 
 * Make HTTP timestamping use If-Modified-Since facility.
 
-* Implement better spider options.
-
 * Add more protocols (e.g. gopher and news), implementing them in a
   modular fashion.
-
-* Implement a concept of "packages" a la mirror.
 
 * Add a "rollback" option to have continued retrieval throw away a
   configurable number of bytes at the end of a file before resuming
   download.  Apparently, some stupid proxies insert a "transfer
   interrupted" string we need to get rid of.
-
-* When using --accept and --reject, you can end up with empty directories.  Have
-  Wget any such at the end.
