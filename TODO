@@ -16,13 +16,18 @@ represent user-visible changes.
   option add an option that enables this back on.
 
 * Honor `Content-Disposition: XXX; filename="FILE"' when creating the
-  file name.
+  file name.  If possible, try not to break `-nc' and friends when
+  doing that.
 
 * Should allow retries with multiple downloads when using -O on
   regular files.  As the source comment says: "A possible solution to
   [rewind not working with multiple downloads] would be to remember
   the file position in the output document and to seek to that
   position, instead of rewinding."
+
+  But the above won't work for -O/dev/stdout, when stdout is a pipe.
+  An even better solution would be to simply keep writing to the same
+  file descriptor each time, instead of reopening it in append mode.
 
 * Wget shouldn't delete rejected files that were not downloaded, but
   just found on disk because of `-nc'.  For example, `wget -r -nc
@@ -32,10 +37,10 @@ represent user-visible changes.
 * Be careful not to lose username/password information given for the
   URL on the command line.
 
-* Add a --range parameter allowing you to explicitly specify a range of bytes to
-  get from a file over HTTP (FTP only supports ranges ending at the end of the
-  file, though forcibly disconnecting from the server at the desired endpoint
-  might be workable).
+* Add a --range parameter allowing you to explicitly specify a range
+  of bytes to get from a file over HTTP (FTP only supports ranges
+  ending at the end of the file, though forcibly disconnecting from
+  the server at the desired endpoint might be workable).
 
 * If multiple FTP URLs are specified that are on the same host, Wget should
   re-use the connection rather than opening a new one for each file.
@@ -46,11 +51,12 @@ represent user-visible changes.
 * If -c used with -N, check to make sure a file hasn't changed on the server
   before "continuing" to download it (preventing a bogus hybrid file).
 
-* Generalize --html-extension to something like --mime-extensions and have it
-  look at mime.types/mimecap file for preferred extension.  Non-HTML files with
-  filenames changed this way would be re-downloaded each time despite -N unless
-  .orig files were saved for them.  Since .orig would contain the same data as
-  non-.orig, the latter could be just a link to the former.  Another possibility
+* Generalize --html-extension to something like --mime-extensions and
+  have it look at mime.types/mimecap file for preferred extension.
+  Non-HTML files with filenames changed this way would be
+  re-downloaded each time despite -N unless .orig files were saved for
+  them.  Since .orig would contain the same data as non-.orig, the
+  latter could be just a link to the former.  Another possibility
   would be to implement a per-directory database called something like
   .wget_url_mapping containing URLs and their corresponding filenames.
 
@@ -75,20 +81,16 @@ represent user-visible changes.
 
 * Add option to clobber existing file names (no `.N' suffixes).
 
-* Introduce a concept of "boolean" options.  For instance, every
-  boolean option `--foo' would have a `--no-foo' equivalent for
-  turning it off.  Get rid of `--foo=no' stuff.  Short options would
-  be handled as `-x' vs. `-nx'.
+* Introduce real "boolean" options.  Every `--foo' setting should have
+  a corresponding `--no-foo' that turns off.  This is useful even for
+  options turned off by default, because the default can be reversed
+  in `.wgetrc'.  Get rid of `--foo=no'.  Short options would be
+  handled as `-x' vs. `-nx'.
 
 * Add option to only list wildcard matches without doing the download.
 
-* Add case-insensitivity as an option.
-
 * Handle MIME types correctly.  There should be an option to (not)
   retrieve files based on MIME types, e.g. `--accept-types=image/*'.
-
-* Implement "persistent" retrieving.  In "persistent" mode Wget should
-  treat most of the errors as transient.
 
 * Allow time-stamping by arbitrary date.
 
