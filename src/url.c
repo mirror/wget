@@ -1611,19 +1611,18 @@ find_last_char (const char *b, const char *e, char c)
 }
 
 /* Resolve "." and ".." elements of PATH by destructively modifying
-   PATH.  "." is resolved by removing that path element, and ".." is
-   resolved by removing the preceding path element.  Single leading
-   and trailing slashes are preserved.
+   PATH and return non-zero if PATH has been modified, zero otherwise.
 
-   Return non-zero if any changes have been made.
+   The algorithm is in spirit similar to the one described in rfc1808,
+   although implemented differently, in one pass.  To recap, path
+   elements containing only "." are removed, and ".." is taken to mean
+   "back up one element".  Single leading and trailing slashes are
+   preserved.
 
    For example, "a/b/c/./../d/.." will yield "a/b/".  More exhaustive
    test examples are provided below.  If you change anything in this
    function, run test_path_simplify to make sure you haven't broken a
-   test case.
-
-   A previous version of this function was based on path_simplify()
-   from GNU Bash, but it has been rewritten for Wget 1.8.1.  */
+   test case.  */
 
 static int
 path_simplify (char *path)
@@ -1651,7 +1650,6 @@ path_simplify (char *path)
 	{
 	  /* Handle "../" by retreating the tortoise by one path
 	     element -- but not past beggining of PATH.  */
-
 	  if (t > path)
 	    {
 	      /* Move backwards until B hits the beginning of the
@@ -1663,12 +1661,12 @@ path_simplify (char *path)
 	}
       else if (*h == '/')
 	{
-	  /* Ignore empty path elements.  Supporting them is hard (in
-	     which directory do you save http://x.com///y.html?), and
-	     they don't bring any practical gain.  Plus, they break
-	     our filesystem-influenced assumptions: allowing empty
-	     path elements means that "x/y/../z" simplifies to
-	     "x/y/z", whereas most people would expect "x/z".  */
+	  /* Ignore empty path elements.  Supporting them well is hard
+	     (where do you save "http://x.com///y.html"?), and they
+	     don't bring any practical gain.  Plus, they break our
+	     filesystem-influenced assumptions: allowing them would
+	     make "x/y//../z" simplify to "x/y/z", whereas most people
+	     would expect "x/z".  */
 	  ++h;
 	}
       else
