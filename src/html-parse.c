@@ -360,17 +360,16 @@ enum {
      the ASCII range when copying the string.
 
    * AP_TRIM_BLANKS -- ignore blanks at the beginning and at the end
-     of text.  */
+     of text, as well as embedded newlines.  */
 
 static void
 convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags)
 {
   int old_tail = pool->tail;
-  int size;
 
-  /* First, skip blanks if required.  We must do this before entities
-     are processed, so that blanks can still be inserted as, for
-     instance, `&#32;'.  */
+  /* Skip blanks if required.  We must do this before entities are
+     processed, so that blanks can still be inserted as, for instance,
+     `&#32;'.  */
   if (flags & AP_TRIM_BLANKS)
     {
       while (beg < end && ISSPACE (*beg))
@@ -378,7 +377,6 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
       while (end > beg && ISSPACE (end[-1]))
 	--end;
     }
-  size = end - beg;
 
   if (flags & AP_DECODE_ENTITIES)
     {
@@ -391,15 +389,14 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
 	 never lengthen it.  */
       const char *from = beg;
       char *to;
+      int squash_newlines = flags & AP_TRIM_BLANKS;
 
       POOL_GROW (pool, end - beg);
       to = pool->contents + pool->tail;
 
       while (from < end)
 	{
-	  if (*from != '&')
-	    *to++ = *from++;
-	  else
+	  if (*from == '&')
 	    {
 	      int entity = decode_entity (&from, end);
 	      if (entity != -1)
@@ -407,6 +404,10 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
 	      else
 		*to++ = *from++;
 	    }
+	  else if ((*from == '\n' || *from == '\r') && squash_newlines)
+	    ++from;
+	  else
+	    *to++ = *from++;
 	}
       /* Verify that we haven't exceeded the original size.  (It
 	 shouldn't happen, hence the assert.)  */

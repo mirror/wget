@@ -1,5 +1,10 @@
 2003-11-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* html-parse.c (convert_and_copy): Remove embedded newlines when
+	AP_TRIM_BLANKS is specified.
+
+2003-11-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ftp.c: Set con->csock to -1 where rbuf_uninitialize was
 	previously used.
 

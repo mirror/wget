@@ -612,9 +612,12 @@ get_urls_html (const char *file, const char *url, int *meta_disallow_follow)
     init_interesting ();
 
   /* Specify MHT_TRIM_VALUES because of buggy HTML generators that
-     generate <a href=" foo"> instead of <a href="foo"> (Netscape
-     ignores spaces as well.)  If you really mean space, use &32; or
-     %20.  */
+     generate <a href=" foo"> instead of <a href="foo"> (browsers
+     ignore spaces as well.)  If you really mean space, use &32; or
+     %20.  MHT_TRIM_VALUES also causes squashing of embedded newlines,
+     e.g. in <img src="foo.[newline]html">.  Such newlines are also
+     ignored by IE and Mozilla and are presumably introduced by
+     writing HTML with editors that force word wrap.  */
   flags = MHT_TRIM_VALUES;
   if (opt.strict_comments)
     flags |= MHT_STRICT_COMMENTS;
