@@ -4,6 +4,15 @@
 	Make -I and -X allow an optional hostname before the directory name?
 	When simplifying paths, wget needs to stop at any '?' character.
 
+	* configure.in: Put "it" language in proper alphabetical order and
+	added new languages "pl" and "ru".
+
+	* po/pl.{gmo,po}: Added Grzegorz Kowal <g_kowal@poczta.onet.pl>'s
+	Polish message translation file.
+
+	* po/ru.{gmo,po}: Added Const Kaplinsky <const@ce.cctpu.edu.ru>'s 
+	Russian message translation file.
+
 2000-10-16  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* TODO: Add option to save local filenames without extra %-encoding.

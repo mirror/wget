@@ -1,97 +1,78 @@
-# German messages for GNU Wget.
-# Copyright © 1997, 1998 Free Software Foundation, Inc.
-# Karl Eichwalder <ke@suse.de>, 1998
-# Karl Eichwalder <ke@ke.Central.DE>, 1997-1998
-#
-# 1998-06-15 19:31:58 MEST
-# Kosmetische Änderungen für 1.5.2-b4. -ke-
-#
-# 1998-05-03 09:56:27 MEST
-# Nachträge für wget-1.5.1. -ke-
-#
-# 1998-04-01 20:19:31 MEST
-# Nachträge für wget-1.5-b14.
-# getopt.c übersetzt. -ke-
-#
-# 1998-02-21 13:39:23 MET
-# Nachträge für wget-1.5-b8. -ke-
-#
-# 1998-02-08 12:29:34 MET
-# Abstimmungen auf wget-1.5-b5.
-# Meldungen von getopt.c habe ich bewusst nicht übersetzt. -ke-
+# Polish translation of wget.
+# Copyright (C) 2000 Free Software Foundation, Inc.
+# Grzegorz Kowal <g_kowal@poczta.onet.pl>, 2000.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.5.2-b4\n"
+"Project-Id-Version: wget 1.5.3\n"
 "POT-Creation-Date: 2000-10-20 00:07-0700\n"
-"PO-Revision-Date: 1998-06-15 19:25+02:00\n"
-"Last-Translator: Karl Eichwalder <ke@suse.de>\n"
-"Language-Team: German <de@li.org>\n"
+"PO-Revision-Date: 2000-09-15 23:44+0200\n"
+"Last-Translator: Grzegorz Kowal <g_kowal@poczta.onet.pl>\n"
+"Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-1\n"
-"Content-Transfer-Encoding: 8-bit\n"
+"Content-Type: text/plain; charset=iso-8859-2\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #. Login to the server:
 #. First: Establish the control connection.
 #: src/ftp.c:147 src/http.c:348
 #, c-format
 msgid "Connecting to %s:%hu... "
-msgstr "Verbindungsaufbau zu %s:%hu... "
+msgstr "??czenie si? z %s:%hu... "
 
 #: src/ftp.c:169 src/ftp.c:411 src/http.c:365
 #, c-format
 msgid "Connection to %s:%hu refused.\n"
-msgstr "Verbindung nach %s:%hu zurückgewiesen.\n"
+msgstr "Po??czenie z %s:%hu zosta?o odrzucone.\n"
 
 #. Second: Login with proper USER/PASS sequence.
 #: src/ftp.c:190 src/http.c:376
 msgid "connected!\n"
-msgstr "verbunden!\n"
+msgstr "po??czony!\n"
 
 #: src/ftp.c:191
 #, c-format
 msgid "Logging in as %s ... "
-msgstr "Einloggen als %s ... "
+msgstr "Logowanie si? jako %s ... "
 
-# Ist das gemeint?
 #: src/ftp.c:200 src/ftp.c:253 src/ftp.c:301 src/ftp.c:353 src/ftp.c:447
 #: src/ftp.c:520 src/ftp.c:568 src/ftp.c:616
 msgid "Error in server response, closing control connection.\n"
-msgstr "Fehler bei der Antwort des Servers, schließe Kontroll-Verbindung.\n"
+msgstr "B??d w odpowiedzi serwera, zamykanie po??czenia kontrolnego.\n"
 
 #: src/ftp.c:208
 msgid "Error in server greeting.\n"
-msgstr "Fehler bei der Begrüßung des Servers.\n"
+msgstr "B??d w powitaniu serwera.\n"
 
 #: src/ftp.c:216 src/ftp.c:262 src/ftp.c:310 src/ftp.c:362 src/ftp.c:457
 #: src/ftp.c:530 src/ftp.c:578 src/ftp.c:626
 msgid "Write failed, closing control connection.\n"
-msgstr "Schreiben schlug fehl, schließe Kontroll-Verbindung.\n"
+msgstr "B??d zapisu, zamykanie po??czenia kontrolnego.\n"
 
 #: src/ftp.c:223
 msgid "The server refuses login.\n"
-msgstr "Der Server weist Einloggen zurück.\n"
+msgstr "Serwer odrzuci? login.\n"
 
 #: src/ftp.c:230
 msgid "Login incorrect.\n"
-msgstr "Einloggen nicht richtig.\n"
+msgstr "Nieprawid?owy login.\n"
 
 #: src/ftp.c:237
 msgid "Logged in!\n"
-msgstr "Eingeloggt!\n"
+msgstr "Zalogowany!\n"
 
 #: src/ftp.c:270
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
-msgstr "Unbekannte Art »%c«, schließe Kontroll-Verbindung.\n"
+msgstr "Nieznany typ `%c', zamykanie po??czenia kontrolnego.\n"
 
 #: src/ftp.c:283
 msgid "done.  "
-msgstr "fertig.  "
+msgstr "zrobione. "
 
 #: src/ftp.c:289
 msgid "==> CWD not needed.\n"
-msgstr "==> CWD nicht notwendig.\n"
+msgstr "==> CWD nie jest potrzebne.\n"
 
 #: src/ftp.c:317
 #, c-format
@@ -99,43 +80,43 @@ msgid ""
 "No such directory `%s'.\n"
 "\n"
 msgstr ""
-"Kein solches Verzeichnis »%s«.\n"
+"Nie ma takiego katalogu `%s'.\n"
 "\n"
 
 #: src/ftp.c:331 src/ftp.c:599 src/ftp.c:647 src/url.c:1523
 msgid "done.\n"
-msgstr "fertig.\n"
+msgstr "zrobione.\n"
 
 #. do not CWD
 #: src/ftp.c:335
 msgid "==> CWD not required.\n"
-msgstr "==> CWD nicht erforderlich.\n"
+msgstr "==> CWD nie jest wymagany.\n"
 
 #: src/ftp.c:369
 msgid "Cannot initiate PASV transfer.\n"
-msgstr "Kann PASV-Übertragung nicht beginnen.\n"
+msgstr "Nie mog? zainicjowa? transferu PASV.\n"
 
 #: src/ftp.c:373
 msgid "Cannot parse PASV response.\n"
-msgstr "Kann PASV-Antwort nicht auswerten.\n"
+msgstr "Nie mog? przetworzy? odpowiedzi PASV.\n"
 
 #: src/ftp.c:387
 #, c-format
 msgid "Will try connecting to %s:%hu.\n"
-msgstr "Versuche Verbindung zu %s:%hu herzustellen.\n"
+msgstr "Spróbuj? po??czy? si? z %s:%hu.\n"
 
 #: src/ftp.c:432 src/ftp.c:504 src/ftp.c:548
 msgid "done.    "
-msgstr "fertig.    "
+msgstr "zrobione.  "
 
 #: src/ftp.c:474
 #, c-format
 msgid "Bind error (%s).\n"
-msgstr "Verbindungsfehler (%s).\n"
+msgstr "B??d przywi?zania (%s).\n"
 
 #: src/ftp.c:490
 msgid "Invalid PORT.\n"
-msgstr "Ungültiger PORT.\n"
+msgstr "Nieprawid?owy PORT.\n"
 
 #: src/ftp.c:537
 msgid ""
@@ -143,7 +124,7 @@ msgid ""
 "REST failed, starting from scratch.\n"
 msgstr ""
 "\n"
-"REST schlug fehl, starte von Null.\n"
+"Wykonanie REST nie powiod?o si?, zaczynam od pocz?tku.\n"
 
 #: src/ftp.c:586
 #, c-format
@@ -151,7 +132,7 @@ msgid ""
 "No such file `%s'.\n"
 "\n"
 msgstr ""
-"Keine solche Datei »%s«.\n"
+"Nie ma takiego pliku `%s'.\n"
 "\n"
 
 #: src/ftp.c:634
@@ -160,76 +141,74 @@ msgid ""
 "No such file or directory `%s'.\n"
 "\n"
 msgstr ""
-"Keine solche Datei oder kein solches Verzeichnis »%s«.\n"
+"Nie ma takiego pliku lub katalogu `%s'.\n"
 "\n"
 
 #: src/ftp.c:692 src/ftp.c:699
 #, c-format
 msgid "Length: %s"
-msgstr "Länge: %s"
+msgstr "D?ugo??: %s"
 
 #: src/ftp.c:694 src/ftp.c:701
 #, c-format
 msgid " [%s to go]"
-msgstr " [noch %s]"
+msgstr " [pozosta?o %s]"
 
-# wohl "unmaßgeblich", nicht "ohne Berechtigung"
 #: src/ftp.c:703
 msgid " (unauthoritative)\n"
-msgstr " (unmaßgeblich)\n"
+msgstr " (nieautorytatywny)\n"
 
 #: src/ftp.c:729
 #, c-format
 msgid "%s: %s, closing control connection.\n"
-msgstr "%s: %s, schließe Kontroll-Verbindung.\n"
+msgstr "%s: %s, zamykam po??czenie kontrolne.\n"
 
 #: src/ftp.c:737
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
-msgstr "%s (%s) - Daten-Verbindung: %s; "
+msgstr "%s (%s) - Po??czenie danych: %s; "
 
 #: src/ftp.c:754
 msgid "Control connection closed.\n"
-msgstr "Kontroll-Verbindung geschlossen.\n"
+msgstr "Po??czenie kontrolne zosta?o zamkni?te.\n"
 
 #: src/ftp.c:772
 msgid "Data transfer aborted.\n"
-msgstr "Daten-Übertragung abgeschlossen.\n"
+msgstr "Transfer danych zosta? przerwany.\n"
 
 #: src/ftp.c:838
 #, c-format
 msgid "File `%s' already there, not retrieving.\n"
-msgstr "Datei »%s« ist schon vorhanden, kein Hol-Versuch.\n"
+msgstr "Plik `%s' jest ju? tam, wi?c go nie pobieram.\n"
 
 #: src/ftp.c:915 src/http.c:1016
 #, c-format
 msgid "(try:%2d)"
-msgstr "(versuche:%2d)"
+msgstr "(próba:%2d)"
 
-# oder "gesichert"?
 #: src/ftp.c:979 src/http.c:1236
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld]\n"
 "\n"
 msgstr ""
-"%s (%s) - »%s« gespeichert [%ld]\n"
+"%s (%s) - zapisano `%s' [%ld]\n"
 "\n"
 
 #: src/ftp.c:1025
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
-msgstr "Benutze »%s« als temporäre Auflistungsdatei.\n"
+msgstr "U?ycie `%s' jako tymczasowego pliku wylistowania.\n"
 
 #: src/ftp.c:1037
 #, c-format
 msgid "Removed `%s'.\n"
-msgstr "Entfernt »%s«.\n"
+msgstr "Usuni?to `%s'.\n"
 
 #: src/ftp.c:1073
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
-msgstr "Die Rekursionstiefe %d übersteigt die max. Tiefe %d.\n"
+msgstr "G??boko?? rekursji %d przekroczy?a g??boko?? maksymaln? %d.\n"
 
 #: src/ftp.c:1125 src/http.c:1163
 #, c-format
@@ -241,61 +220,60 @@ msgstr ""
 #: src/ftp.c:1131 src/http.c:1171
 #, fuzzy, c-format
 msgid "The sizes do not match (local %ld) -- retrieving.\n"
-msgstr "Größen stimmen nicht überein (lokal %ld), Hol-Versuch.\n"
+msgstr "Rozmiary nie s? zgodne (lokalny %ld), wi?c pobieram.\n"
 
 #: src/ftp.c:1148
 msgid "Invalid name of the symlink, skipping.\n"
-msgstr "Ungültiger Name für einen symbolischen Verweis, überspringe.\n"
+msgstr "Nieprawid?owa nazwa ??cza symbolicznego, wi?c pomijam go.\n"
 
 #: src/ftp.c:1165
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
 "\n"
-msgstr "Der richtige symbolische Verweis %s -> %s ist schon vorhanden\n"
+msgstr ""
+"Istnieje ju? prawid?owe ??cze symboliczne %s -> %s\n"
+"\n"
 
 #: src/ftp.c:1173
 #, c-format
 msgid "Creating symlink %s -> %s\n"
-msgstr "Lege symbolischen Verweis %s -> %s an\n"
+msgstr "Tworz? ??cze symboliczne %s -> %s\n"
 
 #: src/ftp.c:1184
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
-msgstr ""
-"Symbolische Verweise nicht unterstützt, überspringe symbolischen Verweis "
-"»%s«.\n"
+msgstr "??cza symboliczne nie s? obs?ugiwane, wi?c pomijam ??cze `%s'.\n"
 
 #: src/ftp.c:1196
 #, c-format
 msgid "Skipping directory `%s'.\n"
-msgstr "Überspringe Verzeichnis »%s«.\n"
+msgstr "Pomijam katalog `%s'.\n"
 
 #: src/ftp.c:1205
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
-msgstr "%s: unbekannter/nicht unterstüzter Dateityp.\n"
+msgstr "%s: nieznany/nieobs?ugiwany typ pliku.\n"
 
 #: src/ftp.c:1222
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
-msgstr "%s: beschädigter Zeitstempel.\n"
+msgstr "%s: zniszczony znacznik czasu.\n"
 
 #: src/ftp.c:1243
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
-msgstr "Hole Verzeichnisse nicht, da die Tiefe %d ist (max %d).\n"
+msgstr "Nie b?d? pobiera? katalogów dopóki g??boko?? wynosi %d (maks. %d).\n"
 
 #: src/ftp.c:1282
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
-msgstr ""
-"Steige nicht zu »%s« hinab, da es ausgeschlossen/nicht eingeschlossen ist.\n"
+msgstr "Brak zej?cia do `%s', tak jak to jest wykluczone/nie w??czone.\n"
 
 #: src/ftp.c:1327
 #, c-format
 msgid "Rejecting `%s'.\n"
-msgstr "Weise zurück »%s«.\n"
+msgstr "Odrzucam `%s'.\n"
 
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
@@ -303,86 +281,86 @@ msgstr "Weise zurück »%s«.\n"
 #: src/ftp.c:1374
 #, c-format
 msgid "No matches on pattern `%s'.\n"
-msgstr "Keine Übereinstimmungen bei dem Muster »%s«.\n"
+msgstr "Brak dopasowa? do wzorca `%s'.\n"
 
 #: src/ftp.c:1434
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
-msgstr "Schreibe HTML-artigen Index nach »%s« [%ld].\n"
+msgstr "Indeks w formacie HTML zosta? zapisany w `%s' [%ld].\n"
 
 #: src/ftp.c:1439
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
-msgstr "HTML-artiger Index nach »%s« geschrieben.\n"
+msgstr "Indeks w formacie HTML zosta? zapisany w `%s'.\n"
 
 #: src/getopt.c:454
 #, c-format
 msgid "%s: option `%s' is ambiguous\n"
-msgstr "%s: Option `%s' ist zweideutig\n"
+msgstr "%s: opcja `%s' jest niejasna\n"
 
 #: src/getopt.c:478
 #, c-format
 msgid "%s: option `--%s' doesn't allow an argument\n"
-msgstr "%s: Option `--%s' erlaubt kein Argument\n"
+msgstr "%s: opcja `--%s' nie posiada argumentu\n"
 
 #: src/getopt.c:483
 #, c-format
 msgid "%s: option `%c%s' doesn't allow an argument\n"
-msgstr "%s: Option `%c%s' erlaubt kein Argument\n"
+msgstr "%s: opcja `%c%s' nie posiada argumentu\n"
 
 #: src/getopt.c:498
 #, c-format
 msgid "%s: option `%s' requires an argument\n"
-msgstr "%s: Option `%s' benötigt kein Argument\n"
+msgstr "%s: opcja `%s' wymaga argumentu\n"
 
 #. --option
 #: src/getopt.c:528
 #, c-format
 msgid "%s: unrecognized option `--%s'\n"
-msgstr "%s: nicht erkannte Option `--%s'\n"
+msgstr "%s: nierozpoznana opcja `--%s'\n"
 
 #. +option or -option
 #: src/getopt.c:532
 #, c-format
 msgid "%s: unrecognized option `%c%s'\n"
-msgstr "%s: nicht erkannte Option `%c%s'\n"
+msgstr "%s: nierozpoznana opcja `%c%s'\n"
 
 #. 1003.2 specifies the format of this message.
 #: src/getopt.c:563
 #, c-format
 msgid "%s: illegal option -- %c\n"
-msgstr "%s: ungültige Option -- %c\n"
+msgstr "%s: nielegalna opcja -- %c\n"
 
 #. 1003.2 specifies the format of this message.
 #: src/getopt.c:602
 #, c-format
 msgid "%s: option requires an argument -- %c\n"
-msgstr "%s: Option verlangt ein Argument -- %c\n"
+msgstr "%s: opcja wymaga argumentu -- %c\n"
 
 #: src/host.c:437
 #, c-format
 msgid "%s: Cannot determine user-id.\n"
-msgstr "%s: Kann Benutzer-Kennung (User-ID) nicht bestimmen.\n"
+msgstr "%s: Nie mog? okre?li? identyfikatora u?ytkownika.\n"
 
 #: src/host.c:449
 #, c-format
 msgid "%s: Warning: uname failed: %s\n"
-msgstr "%s: Warnung: uname fehlgeschlagen: %s\n"
+msgstr "%s: Ostrze?enie: wykonanie uname nie powiod?o si?: %s\n"
 
 #: src/host.c:461
 #, c-format
 msgid "%s: Warning: gethostname failed\n"
-msgstr "%s: Warnung: gethostname fehlgeschlagen\n"
+msgstr "%s: Ostrze?enie: wykonanie gethostname nie powiod?o si?\n"
 
 #: src/host.c:489
 #, c-format
 msgid "%s: Warning: cannot determine local IP address.\n"
-msgstr "%s: Warnung: lokale IP-Adresse nicht bestimmbar.\n"
+msgstr "%s: Ostrze?enie: nie mog? okre?li? lokalnego adresu IP.\n"
 
 #: src/host.c:503
 #, c-format
 msgid "%s: Warning: cannot reverse-lookup local IP address.\n"
-msgstr "%s: Warnung: kein \"reverse-lookup\" für lokale IP-Adresse möglich.\n"
+msgstr "%s: Ostrze?enie: nie mog? odszuka? lokalnego adresu IP.\n"
 
 #. This gets ticked pretty often.  Karl Berry reports
 #. that there can be valid reasons for the local host
@@ -391,155 +369,155 @@ msgstr "%s: Warnung: kein \"reverse-lookup\" für lokale IP-Adresse möglich.\n"
 #: src/host.c:516
 #, c-format
 msgid "%s: Warning: reverse-lookup of local address did not yield FQDN!\n"
-msgstr ""
-"%s: Warnung: \"reverse-lookup\" für lokale Adresse ergibt keinen FQDN!\n"
+msgstr "%s: Ostrze?enie: odszukanie lokalnego adresu nie wyprodukowa?o FQDN!\n"
 
 #: src/host.c:544
 msgid "Host not found"
-msgstr "Host nicht gefunden"
+msgstr "Serwer nie zosta? odnaleziony"
 
 #: src/host.c:546
 msgid "Unknown error"
-msgstr "Unbekannter Fehler"
+msgstr "Nieznany b??d"
 
 #: src/html.c:539 src/html.c:541
 #, c-format
 msgid "Index of /%s on %s:%d"
-msgstr "Index von /%s auf %s:%d"
+msgstr "Indeks /%s dla %s:%d"
 
 #: src/html.c:563
 msgid "time unknown       "
-msgstr "Zeit unbekannt     "
+msgstr "nieznany czas      "
 
 #: src/html.c:567
 msgid "File        "
-msgstr "Datei       "
+msgstr "Plik        "
 
 #: src/html.c:570
 msgid "Directory   "
-msgstr "Verzeichnis "
+msgstr "Katalog     "
 
 #: src/html.c:573
 msgid "Link        "
-msgstr "Verweis     "
+msgstr "??cze       "
 
 #: src/html.c:576
 msgid "Not sure    "
-msgstr "Nicht sicher"
+msgstr "Niepewne    "
 
 #: src/html.c:594
 #, c-format
 msgid " (%s bytes)"
-msgstr " (%s Bytes)"
+msgstr " (%s bajtów)"
 
 #: src/http.c:508
 msgid "Failed writing HTTP request.\n"
-msgstr "HTTP-Anforderung zu schreiben schlug fehl.\n"
+msgstr "Zapisanie ??dania o HTTP nie powiod?o si?.\n"
 
 #: src/http.c:512
 #, c-format
 msgid "%s request sent, awaiting response... "
-msgstr "%s Anforderung gesendet, warte auf Antwort... "
+msgstr "??danie o %s zosta?o wys?ane, oczekiwanie na odpowied?... "
 
 #: src/http.c:551
 msgid "End of file while parsing headers.\n"
-msgstr "Dateiende beim auswerten der Kopfzeilen.\n"
+msgstr "Wyst?pi? koniec pliku podczas przetwarzania nag?ówków.\n"
 
 #: src/http.c:562
 #, c-format
 msgid "Read error (%s) in headers.\n"
-msgstr "Lesefehler (%s) bei den Kopfzeilen.\n"
+msgstr "B??d odczytu (%s) w nag?ówkach.\n"
 
 #: src/http.c:602
 msgid "No data received"
-msgstr "Keine Daten empfangen"
+msgstr "Nie pobrano ?adnych danych"
 
 #: src/http.c:604
 msgid "Malformed status line"
-msgstr "Nicht korrekte Statuszeile"
+msgstr "Zniekszta?cona linia stanu"
 
 #: src/http.c:609
 msgid "(no description)"
-msgstr "(keine Beschreibung)"
+msgstr "(brak opisu)"
 
 #. If we have tried it already, then there is not point
 #. retrying it.
 #: src/http.c:693
 msgid "Authorization failed.\n"
-msgstr "Authorisierung fehlgeschlagen.\n"
+msgstr "Autoryzacja nie powiod?a si?.\n"
 
 #: src/http.c:700
 msgid "Unknown authentication scheme.\n"
-msgstr "Unbekannten Authentifizierungsablauf.\n"
+msgstr "Nieznany schemat autentyfikacji.\n"
 
 #: src/http.c:783
 #, c-format
 msgid "Location: %s%s\n"
-msgstr "Platz: %s%s\n"
+msgstr "Po?o?enie: %s%s\n"
 
 #: src/http.c:784 src/http.c:809
 msgid "unspecified"
-msgstr "nicht spezifiziert"
+msgstr "nieokre?lony"
 
 #: src/http.c:785
 msgid " [following]"
-msgstr "[folge]"
+msgstr " [nast?puj?cy]"
 
-# Header
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
 #: src/http.c:799
 msgid "Length: "
-msgstr "Länge: "
+msgstr "D?ugo??: "
 
 #: src/http.c:804
 #, c-format
 msgid " (%s to go)"
-msgstr " (noch %s)"
+msgstr " (pozosta?o %s)"
 
 #: src/http.c:809
 msgid "ignored"
-msgstr "übergangen"
+msgstr "zignorowano"
 
 #: src/http.c:903
 msgid "Warning: wildcards not supported in HTTP.\n"
-msgstr "Warnung: Joker-Zeichen werden bei HTTP nicht unterstützt.\n"
+msgstr "Ostrze?enie: znaki specjalne nie s? obs?ugiwane z HTTP.\n"
 
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
 #: src/http.c:924
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
-msgstr "Datei »%s« schon vorhanden, kein Hol-Versuch.\n"
+msgstr "Plik `%s' ju? tam jest, wi?c nie zostanie pobrany.\n"
 
 #: src/http.c:1083
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
-msgstr "Kann nicht nach »%s« schreiben (%s).\n"
+msgstr "Nie mog? zapisa? do `%s' (%s).\n"
 
-# Was meint hier location?
 #: src/http.c:1094
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
-msgstr "FEHLER: Redirektion (%d) ohne Ziel(?).\n"
+msgstr "B??D: Przekierowanie (%d) bez po?o?enia.\n"
 
 #: src/http.c:1119
 #, c-format
 msgid "%s ERROR %d: %s.\n"
-msgstr "%s FEHLER %d: %s.\n"
+msgstr "%s B??D %d: %s.\n"
 
 #: src/http.c:1132
 msgid "Last-modified header missing -- time-stamps turned off.\n"
-msgstr "»Last-modified«-Kopfzeile fehlt -- Zeitstempel abgeschaltet.\n"
+msgstr ""
+"Brak nag?ówka ostatniej modyfikacji -- znaczniki czasowe zosta?y wy??czone.\n"
 
 #: src/http.c:1140
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
-msgstr "»Last-modified«-Kopfzeile ungültig -- Zeitstempeln übergangen.\n"
+msgstr ""
+"Nieprawid?owy nag?ówek ostatniej modyfikacji -- znacznik czasowy zosta? "
+"zignorowany.\n"
 
 #: src/http.c:1175
 msgid "Remote file is newer, retrieving.\n"
-msgstr "Entfernte Datei ist neuer, Hol-Versuch.\n"
+msgstr "Odleg?y plik jest nowszy, wi?c pobieram go.\n"
 
 #: src/http.c:1210
 #, c-format
@@ -547,13 +525,13 @@ msgid ""
 "%s (%s) - `%s' saved [%ld/%ld]\n"
 "\n"
 msgstr ""
-"%s (%s) - »%s« gesichert [%ld/%ld]\n"
+"%s (%s) - `%s' zosta? zapisany [%ld/%ld]\n"
 "\n"
 
 #: src/http.c:1258
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld. "
-msgstr "%s (%s) - Verbindung bei Byte %ld geschlossen. "
+msgstr "%s (%s) - Po??czenie zosta?o zamkni?te przy bajcie %ld. "
 
 #: src/http.c:1266
 #, c-format
@@ -561,73 +539,75 @@ msgid ""
 "%s (%s) - `%s' saved [%ld/%ld])\n"
 "\n"
 msgstr ""
-"%s (%s) - »%s« gesichert [%ld/%ld])\n"
+"%s (%s) - `%s' zosta? zapisany [%ld/%ld])\n"
 "\n"
 
 #: src/http.c:1286
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld/%ld. "
-msgstr "%s (%s) - Verbindung bei Byte %ld/%ld geschlossen. "
+msgstr "%s (%s) - Po??czenie zosta?o zamkni?te przy bajcie %ld/%ld. "
 
 #: src/http.c:1297
 #, c-format
 msgid "%s (%s) - Read error at byte %ld (%s)."
-msgstr "%s (%s) - Lesefehler bei Byte %ld (%s)."
+msgstr "%s (%s) - B??d odczytu przy bajcie %ld (%s)."
 
 #: src/http.c:1305
 #, c-format
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
-msgstr "%s (%s) - Lesefehler bei Byte %ld/%ld (%s). "
+msgstr "%s (%s) - B??d odczytu przy bajcie %ld/%ld (%s). "
 
 #: src/init.c:320 src/netrc.c:260
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
-msgstr "%s: Kann »%s« nicht lesen (%s).\n"
+msgstr "%s: Nie mog? odczyta? %s (%s).\n"
 
 #: src/init.c:341 src/init.c:347
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
-msgstr "%s: Fehler in »%s« bei Zeile %d.\n"
+msgstr "%s: B??d w %s w linii %d.\n"
 
 #: src/init.c:378
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
-msgstr "%s: Warnung: wgetrc des Systems und des Benutzers zeigen nach »%s«.\n"
+msgstr ""
+"%s: Ostrze?enie: Zarówno plik systemowy wgetrc jak i u?ytkownika odnosz? si? "
+"do `%s'.\n"
 
 #: src/init.c:466
 #, c-format
 msgid "%s: BUG: unknown command `%s', value `%s'.\n"
-msgstr "%s: Unbekannter Befehl »%s«, Wert »%s«.\n"
+msgstr "%s: B??D W PROGRAMIE: nieznane polecenie `%s', warto?? `%s'.\n"
 
 #: src/init.c:493
 #, c-format
 msgid "%s: %s: Please specify on or off.\n"
-msgstr "%s: %s: Bitte »on« oder »off« angeben.\n"
+msgstr "%s: %s: Prosz? okre?li?: on lub off.\n"
 
 #: src/init.c:537
 #, fuzzy, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
-msgstr "%s: %s: Bitte »on« oder »off« angeben.\n"
+msgstr "%s: %s: Prosz? okre?li?: on lub off.\n"
 
 #: src/init.c:556 src/init.c:813 src/init.c:835 src/init.c:908
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
-msgstr "%s: %s: Ungültige Angabe »%s«\n"
+msgstr "%s: %s: Nieprawid?owa specyfikacja `%s'.\n"
 
 #: src/init.c:669 src/init.c:691 src/init.c:713 src/init.c:739
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
-msgstr "%s: Ungültige Angabe »%s«\n"
+msgstr "%s: Nieprawid?owa specyfikacja `%s'\n"
 
 #: src/main.c:105
 #, c-format
 msgid "Usage: %s [OPTION]... [URL]...\n"
-msgstr "Syntax: %s [OPTION]... [URL]...\n"
+msgstr "U?ycie: %s [OPCJA]... [URL]...\n"
 
 #: src/main.c:113
 #, c-format
 msgid "GNU Wget %s, a non-interactive network retriever.\n"
-msgstr "GNU Wget %s, ein nicht-interaktives Netzwerk-Tool zum Holen.\n"
+msgstr "GNU Wget %s, nieinteraktywna ?ci?garka sieciowa.\n"
 
 #. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
 #. don't bitch.  Also, it makes translation much easier.
@@ -638,8 +618,8 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"Zwingende Argumente zu langen Optionen sind auch zwingend bei kurzen "
-"Optionen.\n"
+"Argumenty obowi?zkowe dla opcji d?ugich s? równie? obowi?zkowe dla opcji "
+"krótkich.\n"
 "\n"
 
 #: src/main.c:121
@@ -652,11 +632,11 @@ msgid ""
 "  -e,  --execute=COMMAND   execute a `.wgetrc'-style command.\n"
 "\n"
 msgstr ""
-"Beim Start:\n"
-"  -V,  --version          Programmversion anzeigen\n"
-"  -h,  --help             diese Hilfe anzeigen\n"
-"  -b,  --background       nach dem Starten in den Hintergrund gehen\n"
-"  -e,  --execute=BEFEHL   einen ».wgetrc«-Befehl ausführen\n"
+"Wywo?anie:\n"
+"  -V,  --version           wy?wietla wersj? Wget i ko?czy dzia?anie.\n"
+"  -h,  --help              drukuje t? pomoc.\n"
+"  -b,  --background        po starcie przechodzi do pracy w tle.\n"
+"  -e,  --execute=KOMENDA   wykonuje komend? `.wgetrc'.\n"
 "\n"
 
 #: src/main.c:127
@@ -674,15 +654,15 @@ msgid ""
 "  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
 "\n"
 msgstr ""
-"Log-Datei schreiben und Eingabe-Datei:\n"
-"  -o,  --output-file=DATEI    Log-Meldungen in DATEI schreiben\n"
-"  -a,  --append-output=DATEI  Meldungen der DATEI anhängen\n"
-"  -d,  --debug                Debug-Ausgabe anzeigen\n"
-"  -q,  --quiet                still (keine Ausgabe von Meldungen)\n"
-"  -v,  --verbose              mitteilsam (dies ist Standard)\n"
-"  -nv, --non-verbose          Mitteilsamkeit reduzieren; nicht ganz still\n"
-"  -i,  --input-file=DATEI     URLs aus DATEI lesen\n"
-"  -F,  --force-html           Eingabe-Datei als HTML behandeln\n"
+"Logowanie i plik wej?ciowy:\n"
+"  -o,  --output-file=PLIK     zapisuj komunikaty do PLIK.\n"
+"  -a,  --append-output=PLIK   do??czaj komunikaty do PLIK.\n"
+"  -d,  --debug                drukuj komunikaty debugowania.\n"
+"  -q,  --quiet                cicho (bez komunikatów wyj?ciowych).\n"
+"  -v,  --verbose              wypisuj informacje o pracy (domy?lne).\n"
+"  -nv, --non-verbose          wy??cz komunikaty, ale nie b?d? cicho.\n"
+"  -i,  --input-file=PLIK      odczytaj URL'e z pliku.\n"
+"  -F,  --force-html           potraktuj plik jako HTML.\n"
 "\n"
 
 #: src/main.c:138
@@ -707,23 +687,21 @@ msgid ""
 "  -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n"
 "\n"
 msgstr ""
-"Holen (download):\n"
-"  -t,  --tries=ZAHL             setze Anzahl der Wiederholversuch auf ZAHL\n"
-"                                  (0 ohne Beschränkung)\n"
-"  -O   --output-document=DATEI  schreibe Dokumente in DATEI\n"
-"  -nc, --no-clobber             bestehende Dateien nicht überschreiben\n"
-"  -c,  --continue               beginne erneut, eine existierende Datei\n"
-"                                  zu holen\n"
-"       --dot-style=STYLE        Hol-Anzeige auf STYLE setzen\n"
-"  -N,  --timestamping           hole keine Dateien, die älter als die "
-"lokalen\n"
-"                                  sind\n"
-"  -S,  --server-response        Antwort des Servers anzeigen\n"
-"       --spider                 nichts holen (don't download anything)\n"
-"  -T,  --timeout=SEKUNDEN       den Lese-Timeout auf SEKUNDEN setzen\n"
-"  -w,  --wait=SEKUNDEN          SEKUNDEN zwischen den Hol-Versuchen warten\n"
-"  -Y,  --proxy=on/off           Proxy ein (»on«) oder aus (»off«) stellen\n"
-"  -Q,  --quota=ZAHL             setze die Hol-Vorgänge auf ZAHL\n"
+"Pobieranie:\n"
+"  -t,  --tries=NUMER            ustaw liczb? prób równ? NUMER (0 bez "
+"ograniczenia).\n"
+"  -O   --output-document=PLIK   zapisz dokumenty do PLIK.\n"
+"  -nc, --no-clobber             nie pobieraj lokalnie istniej?cych plików.\n"
+"  -c,  --continue               wznów pobieranie istniej?cego pliku.\n"
+"       --dot-style=STYL         ustaw styl wy?wietlania stopnia pobrania.\n"
+"  -N,  --timestamping           nie pobieraj plików starszych ni? lokalne.\n"
+"  -S,  --server-response        drukuj odpowied? serwera.\n"
+"       --spider                 nic nie pobieraj.\n"
+"  -T,  --timeout=SEKUNDY        ustaw limit czasu odczytu na SEKUNDY.\n"
+"  -w,  --wait=SEKUNDY           czekaj przez SEKUNDY pomi?dzy pobieraniami.\n"
+"  -Y,  --proxy=on/off           w??cz (on) lub wy??cz (off) proxy.\n"
+"  -Q,  --quota=NUMER            ustaw ograniczenie pobieranego rozmiaru na "
+"NUMER.\n"
 "\n"
 
 #: src/main.c:153
@@ -737,13 +715,13 @@ msgid ""
 "components.\n"
 "\n"
 msgstr ""
-"Verzeichnisse:\n"
-"  -nd  --no-directories            keine Verzeichnisse anlegen\n"
-"  -x,  --force-directories         Anlegen von Verzeichnissen erwingen\n"
-"  -nH, --no-host-directories       keine Host-Verzeichnisse anlegen\n"
-"  -P,  --directory-prefix=PREFIX   Dateien nach PREFIX/... sichern\n"
-"       --cut-dirs=ZAHL             ignoriere die ZAHL der entfernten\n"
-"                                     Verzeichnisbestandteile\n"
+"Katalogi:\n"
+"  -nd  --no-directories            nie twórz katalogów.\n"
+"  -x,  --force-directories         wymuszaj tworzenie katalogów.\n"
+"  -nH, --no-host-directories       nie twórz katalogów serwera.\n"
+"  -P,  --directory-prefix=PREFIKS  zapisz pliki do PREFIKS/...\n"
+"       --cut-dirs=NUMER            ignoruj sk?adowe odleg?ego katalogu "
+"NUMER.\n"
 "\n"
 
 #: src/main.c:160
@@ -765,19 +743,18 @@ msgid ""
 "  -U,  --user-agent=AGENT    identify as AGENT instead of Wget/VERSION.\n"
 "\n"
 msgstr ""
-"HTTP-Optionen:\n"
-"       --http-user=USER       setze http-Benutzer auf USER\n"
-"       --http-passwd=PASS     setse http-Passwort auf PASS\n"
-"  -C,  --cache=on/off         erlaube/verbiete server-gepufferte Daten\n"
-"                                (server-cached data) (normalerweise "
-"erlaubt)\n"
-"       --ignore-length        ignoriere das »Content-Length«-Kopffeld\n"
-"       --header=ZEICHENKETTE  ZEICHENKETTE zwischen die Kopfzeilen einfügen\n"
-"       --proxy-user=USER      setze USER als Proxy-Benutzername\n"
-"       --proxy-passwd=PASS    setze PASS als Proxy-Passwort\n"
-"  -s,  --save-headers         sichere die HTTP-Kopfzeilen in Datei\n"
-"  -U,  --user-agent=AGENT     als AGENT anstelle of Wget/VERSION "
-"identifizieren\n"
+"Opcje HTTP:\n"
+"       --http-user=U?YT      ustaw u?ytkownika http jako U?YT.\n"
+"       --http-passwd=HAS?O   ustaw has?o http jako HAS?O.\n"
+"  -C,  --cache=on/off        pozwól/zabro? na buforowanie danych z serwera "
+"(normalnie zezwolone).\n"
+"       --ignore-length       ignoruj pole nag?ówka `Content-Length'.\n"
+"       --header=TEKST        wstaw TEKST pomi?dzy nag?ówki.\n"
+"       --proxy-user=U?YT     ustaw u?ytkownika dla proxy jako U?YT.\n"
+"       --proxy-passwd=HAS?O  ustaw has?o dla proxy jako HAS?O.\n"
+"  -s,  --save-headers        zapisz nag?ówki HTTP do pliku.\n"
+"  -U,  --user-agent=AGENT    identyfikuj si? jako AGENT, zamiast "
+"Wget/WERSJA.\n"
 "\n"
 
 #: src/main.c:173
@@ -790,11 +767,10 @@ msgid ""
 "       --passive-ftp     use the \"passive\" transfer mode.\n"
 "\n"
 msgstr ""
-"FTP-Optionen:\n"
-"       --retr-symlinks   hole symbolische Verweise (FTP)\n"
-"  -g,  --glob=on/off     Dateinamen-»Globbing« ein (»on«) oder aus (»off«)\n"
-"                           stellen\n"
-"       --passive-ftp     den \"passiven\" Übertragungsmodus verwenden\n"
+"Opcje FTP:\n"
+"       --retr-symlinks   pobierz ??cza symboliczne FTP.\n"
+"  -g,  --glob=on/off     w??cz lub wy??cz uogólnienie nazw plików.\n"
+"       --passive-ftp     u?yj \"pasywnego\" trybu dla transferu.\n"
 "\n"
 
 #: src/main.c:178
@@ -814,16 +790,15 @@ msgid ""
 "page.\n"
 "\n"
 msgstr ""
-"Rekursives Holen:\n"
-"  -r,  --recursive             rekursives Web-Saugen -- mit Umsicht "
-"verwenden!\n"
-"  -l,  --level=Zahl            maximale Rekursionstiefe (0 ohne Begrenzung)\n"
-"       --delete-after          geholte Dateien löschen\n"
-"  -k,  --convert-links         nicht-relative Verweise in relative "
-"umwandeln\n"
-"  -m,  --mirror                geeignete Optionen fürs Spiegeln (mirroring)\n"
-"                                 einschalten\n"
-"  -nr, --dont-remove-listing   ».listing«-Dateien nicht entfernen\n"
+"Pobieranie rekursywne:\n"
+"  -r,  --recursive             rekursywne pobieranie - u?ywaj ostro?nie!.\n"
+"  -l,  --level=NUMER           maksymalna g??boko?? rekursji (0 - "
+"nieograniczona).\n"
+"       --delete-after          usu? pobrane pliki.\n"
+"  -k,  --convert-links         przekonwertuj ??cza bezwzgl?dne do "
+"wzgl?dnych.\n"
+"  -m,  --mirror                w??cz opcje odpowiednie dla obrazowania.\n"
+"  -nr, --dont-remove-listing   nie usuwaj plików `.listing'.\n"
 "\n"
 
 #: src/main.c:188
@@ -851,39 +826,31 @@ msgid ""
 "  -np, --no-parent                  don't ascend to the parent directory.\n"
 "\n"
 msgstr ""
-"Recursiv erlauben/zurückweisen:\n"
-"  -A,  --accept=LISTE                Liste der erlaubten Erweiterungen\n"
-"  -R,  --reject=LISTE                Liste der zurückzuweisenden "
-"Erweiterungen\n"
-"  -D,  --domains=LISTE               Liste der erlaubten Domains\n"
-"       --exclude-domains=LISTE       komma-unterteilte Liste der\n"
-"                                       zurückzuweisen Domains\n"
-"  -L,  --relative                    nur relativen Verweisen folgen\n"
-"       --follow-ftp                  FTP-Verweisen von HTML-Dokumenten aus\n"
-"                                       folgen\n"
-"  -H,  --span-hosts                  wenn »--recursive«, auch zu fremden "
-"Hosts\n"
-"                                       gehen\n"
-"  -I,  --include-directories=LISTE   Liste der erlaubten Verzeichnisse\n"
-"  -X,  --exclude-directories=LISTE   Liste der auszuschließenden "
-"Verzeichnisse\n"
-"  -nh, --no-host-lookup              kein DNS-lookup für Hosts durchführen\n"
-"  -np, --no-parent                   nicht zum übergeordneten Verzeichnis\n"
-"                                       hinaufsteigen\n"
+"Rekursywne akceptacje/odrzucenia:\n"
+"  -A,  --accept=LISTA               lista akceptowanych rozszerze?.\n"
+"  -R,  --reject=LISTA               lista odrzucanych rozszerze?.\n"
+"  -D,  --domains=LISTA              lista akceptowanych domen.\n"
+"       --exclude-domains=LISTA      lista odrzucanych domen, oddzielonych "
+"przecinkami.\n"
+"  -L,  --relative                   pod??aj tylko za wzgl?dnymi ??czami.\n"
+"       --follow-ftp                 pod??aj za ??czami FTP z dokumentów "
+"HTML.\n"
+"  -H,  --span-hosts                 przechod? do innych serwerów podczas "
+"pobierania rekursywnego.\n"
+"  -I,  --include-directories=LISTA  lista zezwolonych katalogów.\n"
+"  -X,  --exclude-directories=LISTA  lista wykluczonych katalogów.\n"
+"  -nh, --no-host-lookup             nie odszukuj serwerów poprzez DNS.\n"
+"  -np, --no-parent                  nie przechod? do katalogu nadrz?dnego.\n"
 "\n"
 
 #: src/main.c:203
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
-msgstr ""
-"Fehlerberichte und Verbesserungsvorschläge bitte an <bug-wget@gnu.org>\n"
-"schicken.\n"
-"\n"
-"Für die deutsche Übersetzung ist die Mailingliste <de@li.org> zuständig.\n"
+msgstr "Raporty b??dów i sugestie prosz? wysy?a? do <bug-wget@gnu.org>.\n"
 
 #: src/main.c:378
 #, c-format
 msgid "%s: debug support not compiled in.\n"
-msgstr "%s: Debug-Unterstützung nicht hineinkompiliert.\n"
+msgstr "%s: wsparcie dla debugowania nie zosta?o wkompilowane.\n"
 
 #: src/main.c:430
 msgid ""
@@ -893,12 +860,11 @@ msgid ""
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 msgstr ""
-"Copyright © 1995, 1996, 1997, 1998 Free Software Foundation, Inc.\n"
-"Es gibt KEINERLEI Garantie, nicht einmal für die TAUGLICHKEIT oder die,\n"
-"VERWENDBARKEIT ZU EINEM ANGEGEBENEN ZWECK.  In den Quellen befindet sich "
-"die\n"
-"Lizenz- und Kopierbedingung; die Einzelheiten sind in der Datei COPYING\n"
-"(GNU General Public License) beschrieben.\n"
+"Prawa autorskie (C) 1995 - 1998 Free Software Foundation, Inc.\n"
+"Program ten rozprowadzany jest z nadziej?, ?e b?dzie u?yteczny,\n"
+"ale BEZ ?ADNEJ GWARANCJI; nie zawieraj?cej nawet gwarancji\n"
+"HANDLOWEJ lub ZASTOSOWANIA DO SZCZEGÓLNEGO CELU. Zobacz do\n"
+"GNU General Public License, aby uzyska? wi?cej informacji.\n"
 
 #: src/main.c:436
 #, fuzzy
@@ -907,45 +873,45 @@ msgid ""
 "Originally written by Hrvoje Niksic <hniksic@iskon.hr>.\n"
 msgstr ""
 "\n"
-"Geschrieben von Hrvoje Niksic <hniksic@srce.hr>.\n"
+"Napisany przez Hrvoje Niksic <hniksic@srce.hr>.\n"
 
 #: src/main.c:510
 #, c-format
 msgid "%s: %s: invalid command\n"
-msgstr "%s: %s: ungültiger Befehl\n"
+msgstr "%s: %s: nieprawid?owa komenda\n"
 
 #: src/main.c:563
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
-msgstr "%s: ungültige Option -- »-n%c«\n"
+msgstr "%s: nielegalna opcja -- `-n%c'\n"
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
 #: src/main.c:566 src/main.c:608 src/main.c:666
 #, c-format
 msgid "Try `%s --help' for more options.\n"
-msgstr "»%s --help« gibt weitere Informationen.\n"
+msgstr "Spróbuj `%s --help' w celu uzyskania opisu opcji.\n"
 
 #: src/main.c:646
 msgid "Can't be verbose and quiet at the same time.\n"
-msgstr "\"Mitteilsam\" und \"still\" ist gleichzeitig unmöglich.\n"
+msgstr "Nie mog? wy?wietla? komunikatów i by? cicho w tym samym czasie.\n"
 
 #: src/main.c:652
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr ""
-"Zeitstempeln und nicht Überschreiben alter Dateien ist gleichzeitig "
-"unmöglich.\n"
+"Nie mog? jednocze?nie zwraca? uwagi na znaczniki czasowe i nie pobiera? "
+"starszych plików ni? lokalne.\n"
 
 #. No URL specified.
 #: src/main.c:661
 #, c-format
 msgid "%s: missing URL\n"
-msgstr "%s: URL fehlt\n"
+msgstr "%s: brak URL'a\n"
 
 #: src/main.c:749
 #, c-format
 msgid "No URLs found in %s.\n"
-msgstr "Keine URLs in %s gefunden.\n"
+msgstr "Nie znaleziono ?adnych URL'i w %s.\n"
 
 #: src/main.c:758
 #, c-format
@@ -955,19 +921,19 @@ msgid ""
 "Downloaded: %s bytes in %d files\n"
 msgstr ""
 "\n"
-"BEENDET --%s--\n"
-"Geholt: %s Bytes in %d Dateien\n"
+"ZAKO?CZONO --%s--\n"
+"Pobrano: %s bajtów w %d plikach\n"
 
 #: src/main.c:763
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
-msgstr "Hol-Kontingent (%s Bytes) ERSCHÖPFT!\n"
+msgstr "Ograniczenie rozmiaru pobierania (%s bajtów) zosta?o PRZEKROCZONE!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
 #: src/main.c:790
 msgid "%s received, redirecting output to `%%s'.\n"
-msgstr "%s erhalten, weise Ausgabe nach »%%s« zurück.\n"
+msgstr "pobrano %s, przekierowanie wyj?cia do `%%s'.\n"
 
 #: src/mswindows.c:118
 #, c-format
@@ -978,65 +944,65 @@ msgid ""
 "You may stop Wget by pressing CTRL+ALT+DELETE.\n"
 msgstr ""
 "\n"
-"CTRL+Break (= Strg+Abbruch) empfangen, Ausgabe wird nach »%s« umgeleitet.\n"
-"Ausführung wird im Hintergrund fortgeführt.\n"
-"Wget kann durch das Drücken von CTRL+ALT+DELETE (= Strg+Alt+Entf)\n"
-"gestopt werden.\n"
+"Przechwycono CTRL+Break, przekierowanie wyj?cia do `%s'.\n"
+"Wykonywanie b?dzie kontynuowane w tle.\n"
+"Mo?esz zatrzyma? Wget poprzez wci?ni?cie CTRL+ALT+DELETE.\n"
 
 #. parent, no error
 #: src/mswindows.c:135 src/utils.c:268
 msgid "Continuing in background.\n"
-msgstr "Im Hintergrund geht's weiter.\n"
+msgstr "Kontynuacja w tle.\n"
 
 #: src/mswindows.c:137 src/utils.c:270
 #, c-format
 msgid "Output will be written to `%s'.\n"
-msgstr "Ausgabe wird nach »%s« geschrieben.\n"
+msgstr "Wyj?cie zostanie zapisane w `%s'.\n"
 
 #: src/mswindows.c:227
 #, c-format
 msgid "Starting WinHelp %s\n"
-msgstr "WinHelp %s wird gestartet\n"
+msgstr "Uruchomienie WinHelp %s\n"
 
 #: src/mswindows.c:254 src/mswindows.c:262
 #, c-format
 msgid "%s: Couldn't find usable socket driver.\n"
-msgstr "%s: Kann keinen benutzbaren \"socket driver\" finden.\n"
+msgstr "%s: Nie mog? znale?? u?ytecznego sterownika gniazdka.\n"
 
 #: src/netrc.c:359
 #, c-format
 msgid "%s: %s:%d: warning: \"%s\" token appears before any machine name\n"
-msgstr "%s: %s:%d: Warnung: »%s«-Wortteil erscheint vor einem Maschinennamen\n"
+msgstr ""
+"%s: %s:%d: ostrze?enie: pojawia si? znak \"%s\" przed jak?kolwiek nazw? "
+"maszyny\n"
 
 #: src/netrc.c:390
 #, c-format
 msgid "%s: %s:%d: unknown token \"%s\"\n"
-msgstr "%s: %s:%d: unbekannter Wortteil »%s«\n"
+msgstr "%s: %s:%d: nieznany znak \"%s\"\n"
 
 #: src/netrc.c:454
 #, c-format
 msgid "Usage: %s NETRC [HOSTNAME]\n"
-msgstr "Syntax: %s NETRC [HOSTNAME]\n"
+msgstr "U?ycie: %s NETRC [NAZWA_SERWERA]\n"
 
-# stat
 #: src/netrc.c:464
 #, c-format
 msgid "%s: cannot stat %s: %s\n"
-msgstr "%s: kann nicht finden %s: %s\n"
+msgstr "%s: nie mog? przeprowadzi? statystyki %s: %s\n"
 
 #: src/recur.c:463 src/retr.c:468
 #, c-format
 msgid "Removing %s.\n"
-msgstr "Entferne »%s«.\n"
+msgstr "Usuwanie %s.\n"
 
 #: src/recur.c:464
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
-msgstr "Entferne »%s«, da dies zurückgewiesen werden soll.\n"
+msgstr "Usuni?cie %s poniewa? powinien by? odrzucony.\n"
 
 #: src/recur.c:624
 msgid "Loading robots.txt; please ignore errors.\n"
-msgstr "Lade »robots.txt«; bitte Fehler ignorieren.\n"
+msgstr "?adowanie robots.txt; prosz? zignorowa? b??dy.\n"
 
 #: src/retr.c:193
 #, c-format
@@ -1045,28 +1011,28 @@ msgid ""
 "          [ skipping %dK ]"
 msgstr ""
 "\n"
-"          [ überspringe %dK ]"
+"          [ pomijam %d kB ]"
 
 #: src/retr.c:349
 msgid "Could not find proxy host.\n"
-msgstr "Kann Proxy-Host nicht finden.\n"
+msgstr "Nie mog? odnale?? serwera proxy.\n"
 
 #: src/retr.c:360
 #, c-format
 msgid "Proxy %s: Must be HTTP.\n"
-msgstr "Proxy %s: Muss HTTP sein.\n"
+msgstr "Proxy %s: Musi by? HTTP.\n"
 
 #: src/retr.c:403
 #, c-format
 msgid "%s: Redirection to itself.\n"
-msgstr "%s: Redirektion auf sich selber.\n"
+msgstr "%s: Przekierowanie na samego siebie.\n"
 
 #: src/retr.c:489
 msgid ""
 "Giving up.\n"
 "\n"
 msgstr ""
-"Gebe auf.\n"
+"Poddaj? si?.\n"
 "\n"
 
 #: src/retr.c:489
@@ -1074,60 +1040,59 @@ msgid ""
 "Retrying.\n"
 "\n"
 msgstr ""
-"Versuche erneut.\n"
+"Ponawiam prób?.\n"
 "\n"
 
-# ???
 #: src/url.c:951
 #, c-format
 msgid "Error (%s): Link %s without a base provided.\n"
-msgstr "Fehler (%s): Verweis »%s« ohne »base« versucht.\n"
+msgstr "B??d (%s): ??cze %s zosta?o dostarczone bez bazy.\n"
 
 #: src/url.c:966
 #, c-format
 msgid "Error (%s): Base %s relative, without referer URL.\n"
-msgstr "Fehler (%s): »Base« %s relativ, ohne Bezugs-URL.\n"
+msgstr "B??d (%s): Baza %s jest wzgl?dna, bez odniesienia do URL'a.\n"
 
 #: src/url.c:1385
 #, c-format
 msgid "Converting %s... "
-msgstr "Wandle um %s... "
+msgstr "Konwersja %s... "
 
 #: src/url.c:1390 src/url.c:1477
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
-msgstr "Kann Verweise nicht umwandeln zu %s: %s\n"
+msgstr "Nie mog? przekonwertowa? ??cza w %s: %s\n"
 
 #: src/url.c:1453
 #, fuzzy, c-format
 msgid "Cannot back up %s as %s: %s\n"
-msgstr "Kann Verweise nicht umwandeln zu %s: %s\n"
+msgstr "Nie mog? przekonwertowa? ??cza w %s: %s\n"
 
 #: src/utils.c:71
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
-msgstr "%s: %s: Nicht genügend Speicher.\n"
+msgstr "%s: %s: Brak pami?ci.\n"
 
 #: src/utils.c:203
 msgid "Unknown/unsupported protocol"
-msgstr "Unbekanntes/nicht unterstütztes Protokoll"
+msgstr "Nieznany/nieobs?ugiwany protokó?"
 
 #: src/utils.c:206
 msgid "Invalid port specification"
-msgstr "Ungültige Port-Angabe"
+msgstr "Nieprawid?owa specyfikacja portu"
 
 #: src/utils.c:209
 msgid "Invalid host name"
-msgstr "Ungültiger Hostname"
+msgstr "Nieprawid?owa nazwa serwera"
 
 #: src/utils.c:430
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
-msgstr "Entfernen des symbolischen Verweises »%s« schlug fehlt: %s\n"
+msgstr "Od??czenie ??cza symbolicznego `%s' nie powiod?o si?: %s\n"
 
 #~ msgid ""
 #~ "Local file `%s' is more recent, not retrieving.\n"
 #~ "\n"
 #~ msgstr ""
-#~ "Lokale Datei »%s« ist neuer, kein Hol-Versuch.\n"
+#~ "Plik lokalny `%s' jest nowszy, wi?c go nie pobieram.\n"
 #~ "\n"

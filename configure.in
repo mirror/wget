@@ -183,7 +183,7 @@ dnl
 dnl #### This kind of sucks.  Shouldn't the configure process
 dnl determine this automagically by scanning `.po' files in `po/'
 dnl subdirectory?
-ALL_LINGUAS="cs de hr no it pt_BR"
+ALL_LINGUAS="cs de hr it no pl pt_BR ru"
 
 dnl internationalization macros
 WGET_WITH_NLS

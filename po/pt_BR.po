@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.5-b9\n"
-"POT-Creation-Date: 2000-10-19 22:52-0700\n"
+"POT-Creation-Date: 2000-10-20 00:07-0700\n"
 "PO-Revision-Date: 1998-04-06 22:09-0300\n"
 "Last-Translator: Wanderlei Antonio Cavasin <cavassin@conectiva.com.br>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
@@ -644,13 +644,19 @@ msgid "%s: %s: Please specify on or off.\n"
 msgstr "%s: %s: Por favor especifique on ou off.\n"
 
 # , c-format
-#: src/init.c:511 src/init.c:768 src/init.c:790 src/init.c:863
+#: src/init.c:537
+#, fuzzy, c-format
+msgid "%s: %s: Please specify always, on, off, or never.\n"
+msgstr "%s: %s: Por favor especifique on ou off.\n"
+
+# , c-format
+#: src/init.c:556 src/init.c:813 src/init.c:835 src/init.c:908
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: Especificação inválida `%s'\n"
 
 # , c-format
-#: src/init.c:624 src/init.c:646 src/init.c:668 src/init.c:694
+#: src/init.c:669 src/init.c:691 src/init.c:713 src/init.c:739
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: Especificação inválida `%s'\n"
