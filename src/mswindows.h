@@ -125,11 +125,6 @@ so, delete this exception statement from your version.  */
 #define ESTALE                  WSAESTALE
 #define EREMOTE                 WSAEREMOTE
 
-#ifdef __DMC__
-# define HAVE_SLEEP 1
-# define HAVE_USLEEP 1
-#endif
-
 /* Public functions.  */
 
 #ifndef HAVE_SLEEP

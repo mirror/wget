@@ -1,5 +1,11 @@
 2003-09-26  Gisle Vanem  <giva@bgnett.no>
 
+	* mswindows.c (read_registry): Removed.
+	(set_sleep_mode): New function.
+	(windows_main_junk): Call it.
+
+2003-09-26  Gisle Vanem  <giva@bgnett.no>
+
 	* mswindows.c (read_registry): Fix invocation of registry
 	functions.
 

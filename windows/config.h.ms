@@ -139,9 +139,10 @@ char *alloca ();
 #undef HAVE_UNISTD_H
 #endif
 
-/* None except Digital Mars have usleep function */
+/* None except Digital Mars have sleep/usleep functions */
 #if defined(__DMC__)
 #define HAVE_USLEEP
+#define HAVE_SLEEP
 #endif
 
 /* Define if you have the <utime.h> header file.  */

@@ -57,13 +57,25 @@ so, delete this exception statement from your version.  */
 extern int errno;
 #endif
 
+#ifndef ES_SYSTEM_REQUIRED
+#define ES_SYSTEM_REQUIRED  0x00000001
+#endif
+
+#ifndef ES_CONTINUOUS
+#define ES_CONTINUOUS       0x80000000
+#endif
+
+
 /* Defined in log.c.  */
 void log_request_redirect_output PARAMS ((const char *));
 
+static DWORD set_sleep_mode (DWORD mode);
+
+static DWORD pwr_mode = 0;
 static int windows_nt_p;
 
-
 #ifndef HAVE_SLEEP
+
 /* Emulation of Unix sleep.  */
 
 unsigned int
@@ -92,21 +104,6 @@ usleep (unsigned long usec)
 }
 #endif  /* HAVE_USLEEP */
 
-static char *
-read_registry (HKEY hkey, char *subkey, char *valuename, char *buf, int *len)
-{
-  HKEY result;
-  DWORD size = *len;
-  DWORD type = REG_SZ;
-  if (RegOpenKeyEx (hkey, subkey, 0, KEY_READ, &result) != ERROR_SUCCESS)
-    return NULL;
-  if (RegQueryValueEx (result, valuename, NULL, &type, (LPBYTE)buf, &size) != ERROR_SUCCESS)
-    buf = NULL;
-  *len = size;
-  RegCloseKey (result);
-  return buf;
-}
-
 void
 windows_main_junk (int *argc, char **argv, char **exec_name)
 {
@@ -125,6 +122,9 @@ static void
 ws_cleanup (void)
 {
   WSACleanup ();
+  if (pwr_mode)
+     set_sleep_mode (pwr_mode);
+  pwr_mode = 0;
 }
 
 static void
@@ -170,7 +170,7 @@ ws_handler (DWORD dwEvent)
     case CTRL_CLOSE_EVENT:
     case CTRL_LOGOFF_EVENT:
     default:
-      WSACleanup ();
+      ws_cleanup ();
       return FALSE;
     }
   return TRUE;
@@ -266,6 +266,7 @@ ws_startup (void)
       exit (1);
     }
   atexit (ws_cleanup);
+  pwr_mode = set_sleep_mode (0);
   SetConsoleCtrlHandler (ws_handler, TRUE);
 }
 
@@ -295,3 +296,31 @@ int borland_utime(const char *path, const struct utimbuf *times)
   return res;
 }
 #endif
+
+/*
+ * Prevent Windows entering sleep/hibernation-mode while wget is doing a lengthy transfer.
+ * Windows does by default not consider network activity in console-programs as activity !
+ * Works on Win-98/ME/2K and up.
+ */
+static
+DWORD set_sleep_mode (DWORD mode)
+{
+  HMODULE mod = LoadLibrary ("kernel32.dll");
+  DWORD (*_SetThreadExecutionState) (DWORD) = NULL;
+  DWORD rc = (DWORD)-1;
+
+  if (mod)
+     (void*)_SetThreadExecutionState = GetProcAddress ((HINSTANCE)mod, "SetThreadExecutionState");
+
+  if (_SetThreadExecutionState)
+    {
+      if (mode == 0)  /* first time */
+         mode = (ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
+      rc = (*_SetThreadExecutionState) (mode);
+    }
+  if (mod)
+     FreeLibrary (mod);
+  DEBUGP (("set_sleep_mode(): mode 0x%08lX, rc 0x%08lX\n", mode, rc));
+  return (rc);
+}
+
