@@ -22,6 +22,8 @@
 SHELL = /bin/sh
 @SET_MAKE@
 
+top_builddir = .
+
 srcdir = @srcdir@
 VPATH  = @srcdir@
 
@@ -40,8 +42,6 @@ sysconfdir  = @sysconfdir@
 mandir      = @mandir@
 manext      = 1
 localedir   = $(prefix)/share/locale
-
-top_builddir = .
 
 CC = @CC@
 CFLAGS = @CFLAGS@

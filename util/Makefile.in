@@ -21,10 +21,10 @@
 
 SHELL = /bin/sh
 
+top_builddir = ..
+
 srcdir = @srcdir@
 VPATH  = @srcdir@
-
-top_builddir = ..
 
 RM = rm -f
 

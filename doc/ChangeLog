@@ -1,3 +1,8 @@
+2001-03-27  Dan Harkless  <wget@harkless.org>
+
+	* Makefile.in: Moved top_builddir out of "User configuration
+	section" of top Makefile and analogous spot in this one.
+
 2001-03-26  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Recursive Retrieval Options): Explained that you need

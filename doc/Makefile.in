@@ -30,6 +30,8 @@ DVIPS = dvips -D 300
 # Program to convert texinfo files to html
 TEXI2HTML = texi2html -expandinfo -split_chapter
 
+top_builddir = ..
+
 top_srcdir = @top_srcdir@
 srcdir     = @srcdir@
 VPATH      = @srcdir@
@@ -39,8 +41,6 @@ infodir    = @infodir@
 mandir     = @mandir@
 manext     = 1
 sysconfdir = @sysconfdir@
-
-top_builddir = ..
 
 INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@

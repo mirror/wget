@@ -8,6 +8,12 @@
 	in checks for -ldl, necessary since the libcrypto shared library
 	doesn't record its dependency on libdl.
 
+	* {.,util,windows}/Makefile.in: Moved top_builddir out of "User
+	configuration section" of top Makefile and analogous spot in others.
+
+	* po/Makefile.in.in: Previous addition of top_builddir to
+	po/Makefile.in was bogus -- it's generated from po/Makefile.in.in.
+
 2001-03-26  Dan Harkless  <wget@harkless.org>
 
 	* TODO: -p should probably go "_two_ more hops" on <FRAMESET> pages.

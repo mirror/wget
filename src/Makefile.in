@@ -21,6 +21,8 @@
 
 SHELL = /bin/sh
 
+top_builddir = ..
+
 top_srcdir = @top_srcdir@
 srcdir     = @srcdir@
 VPATH      = @srcdir@
@@ -32,8 +34,6 @@ exec_prefix  = @exec_prefix@
 bindir       = @bindir@
 sysconfdir   = @sysconfdir@
 localedir    = $(prefix)/share/locale
-
-top_builddir = ..
 
 CC       = @CC@
 CPPFLAGS = @CPPFLAGS@
