@@ -3007,34 +3007,43 @@ subscribers of the Wget mailing list.
 @cindex copying
 @cindex GPL
 @cindex GFDL
+@cindex free software
 
-Wget is @dfn{free software}, where ``free'' refers to liberty, not
-price.  As the GNU people like to say, think of ``free speech'' rather
-than ``free beer''.  The exact legal distribution terms follow below,
-but in short, you have the right (freedom) to run and change Wget and
-distribute it to other people, and even---if you want---charge money for
-any of these things.  The sole restriction is that you have to grant
-your recipients the same rights.
+GNU Wget is licensed under the GNU GPL, which makes it @dfn{free
+software}.
 
-This method of licensing software is also known as @dfn{open-source},
-because it requires that the recipients always receive a program's
-source code along with the program.
+Please note that ``free'' in ``free software'' refers to liberty, not
+price.  As some GNU project advocates like to point out, think of ``free
+speech'' rather than ``free beer''.  The exact and legally binding
+distribution terms are spelled out below; in short, you have the right
+(freedom) to run and change Wget and distribute it to other people, and
+even---if you want---charge money for doing either.  The important
+restriction is that you have to grant your recipients the same rights
+and impose the same restrictions.
 
-More specifically:
+This method of licensing software is also known as @dfn{open source}
+because, among other things, it makes sure that all recipients will
+receive the source code along with the program, and be able to improve
+it.  The GNU project prefers the term ``free software'' for reasons
+outlined at
+@url{http://www.gnu.org/philosophy/free-software-for-freedom.html}.
+
+The exact license terms are defined by this paragraph and the GNU
+General Public License it refers to:
 
 @quotation
-This program is free software; you can redistribute it and/or modify it
+GNU Wget is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
 Free Software Foundation; either version 2 of the License, or (at your
 option) any later version.
 
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.
+GNU Wget is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
+A copy of the GNU General Public License is included as part of this
+manual; if you did not receive it, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 @end quotation
 

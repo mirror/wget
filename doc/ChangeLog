@@ -1,3 +1,8 @@
+2001-05-27  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.texi (Copying): Clarify.  Link to
+	"free-software-for-freedom.html".
+
 2001-05-26  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi (Contributors): Updated list of contributors.
