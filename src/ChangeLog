@@ -1,5 +1,9 @@
 2001-04-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (gethttp): Prepend literal newline with `\n\'.
+
+2001-04-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* sysdep.h: Don't define VERY_LONG_FORMAT.
 
 	* utils.c (very_long_to_string): New function.
