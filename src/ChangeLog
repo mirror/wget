@@ -1,3 +1,7 @@
+2002-04-12  Ian Abbott  <abbotti@mev.co.uk>
+
+	* Makefile.in: Specify libtool mode explicitly when linking.
+
 2002-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* connect.c (connect_with_timeout): New function.

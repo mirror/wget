@@ -49,7 +49,7 @@ exeext   = @exeext@
 INCLUDES = -I. -I$(srcdir) @SSL_INCLUDES@
 
 COMPILE = $(CC) $(INCLUDES) $(CPPFLAGS)  $(DEFS) $(CFLAGS)
-LINK    = @LIBTOOL@ $(CC) $(CFLAGS) $(LDFLAGS) -o $@
+LINK    = @LIBTOOL@ --mode=link $(CC) $(CFLAGS) $(LDFLAGS) -o $@
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 RM = rm -f
