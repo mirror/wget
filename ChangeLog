@@ -1,3 +1,10 @@
+2000-08-25  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* MACHINES: Alphabetized, changed "architectures" to "OSes and
+ 	architecures", added missing company names, removed needless ^L,
+ 	made AIX entry more general to reflect my testing, removed the
+ 	non-factual "this version of", and fixed some grammatical errors.
+	
 2000-07-21  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* TODO: But Brian McMahon <bm@iucr.org> wants old behavior as an option.
