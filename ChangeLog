@@ -3,6 +3,9 @@
 	* configure.in: Also check whether #include <md5.h> works before
 	deciding to use Solaris libmd5.
 
+	* configure.in: Use AC_MSG_NOTICE instead of echo.  Use
+	AC_MSG_ERROR for fatal errors.
+
 2003-11-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Look for nanosleep in -lrt and -lposix4, which is

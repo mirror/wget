@@ -37,7 +37,7 @@ dnl
 dnl What version of Wget are we building?
 dnl
 VERSION=`sed -e 's/^.*"\(.*\)";$/\1/' ${srcdir}/src/version.c`
-echo "configuring for GNU Wget $VERSION"
+AC_MSG_NOTICE([configuring for GNU Wget $VERSION])
 AC_SUBST(VERSION)
 PACKAGE=wget
 AC_SUBST(PACKAGE)
@@ -407,9 +407,7 @@ main(){return 0;}
     dnl If linking with SSL was forced rather than auto-detected, then
     dnl bail out if SSL failed.
     if test x"$wget_force_ssl" = x"yes"; then
-      exec >&2
-      echo "ERROR: Failed to find OpenSSL libraries."
-      exit 2
+      AC_MSG_ERROR([failed to find OpenSSL libraries], 2)
     fi
   fi
 
@@ -440,11 +438,11 @@ then
     AC_CHECK_LIB(md5, md5_calc, [
       dnl There are programs that insert bogus <md5.h> in the include
       dnl path.  That makes the system md5 library is useless to us.
-      AC_TRY_CPP([#include <md5.h>
-                 ], [
+      AC_CHECK_HEADERS([md5.h], [
         AC_DEFINE(HAVE_SOLARIS_MD5)
         LIBS="-lmd5 $LIBS"
         found_md5=yes
+        AC_MSG_NOTICE([using Solaris MD5 implementation])
       ])
     ])
   fi
@@ -455,14 +453,16 @@ then
     if test x"$ssl_success" = xyes; then
       AC_DEFINE(HAVE_OPENSSL_MD5)
       found_md5=yes
+      AC_MSG_NOTICE([using OpenSSL MD5 implementation])
     fi
   fi
 
   dnl If none of the above worked, use the one we ship with Wget.
   if test x"$found_md5" = xno; then
     AC_DEFINE(HAVE_BUILTIN_MD5)
-    found_md5=yes
     MD5_OBJ="$MD5_OBJ gnu-md5\$o"
+    found_md5=yes
+    AC_MSG_NOTICE([using GNU MD5 implementation])
   fi
 fi
 AC_DEFINE(HAVE_MD5)
