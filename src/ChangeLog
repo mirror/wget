@@ -1,3 +1,8 @@
+2000-12-05  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (init_unsafe_char_table): Reinstate space as an unsafe
+	char.
+
 2000-11-29  John Summerfield  <summer@OS2.ami.com.au>
 
 	* netrc.c (parse_netrc): Get rid of line ending.

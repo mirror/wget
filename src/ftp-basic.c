@@ -541,7 +541,7 @@ ftp_list (struct rbuf *rbuf, const char *file)
 
 /* Sends the SYST command to the server. */
 uerr_t
-ftp_syst (struct rbuf *rbuf, enum stype *host_type)
+ftp_syst (struct rbuf *rbuf, enum stype *server_type)
 {
   char *request, *respline;
   int nwritten;
@@ -577,12 +577,15 @@ ftp_syst (struct rbuf *rbuf, enum stype *host_type)
   request = strtok (NULL, " ");
 
   if (!strcasecmp (request, "VMS"))
-    *host_type = ST_VMS;
+    *server_type = ST_VMS;
   else
     if (!strcasecmp (request, "UNIX"))
-      *host_type = ST_UNIX;
+      *server_type = ST_UNIX;
     else
-      *host_type = ST_OTHER;
+      if (!strcasecmp (request, "WINDOWS_NT"))
+        *server_type = ST_WINNT;
+      else
+        *server_type = ST_OTHER;
 
   xfree (respline);
   /* All OK.  */

@@ -353,6 +353,7 @@ Error in server response, closing control connection.\n"));
 	  /* Change working directory. If the FTP host runs VMS and
              the path specified is absolute, we will have to convert
              it to VMS style as VMS does not like leading slashes */
+	  DEBUGP (("changing working directory\n"));
 	  if (*(u->dir) == '/')
 	    {
 	      int pwd_len = strlen (pwd);
@@ -375,6 +376,7 @@ Error in server response, closing control connection.\n"));
 		  }
 		  break;
 		case ST_UNIX:
+		case ST_WINNT:
 		  /* pwd_len == 1 means pwd = "/", but u->dir begins with '/'
 		     already */
 		  if (pwd_len > 1)

@@ -26,6 +26,7 @@ enum stype
 {
   ST_UNIX,
   ST_VMS,
+  ST_WINNT,
   ST_OTHER
 };
   

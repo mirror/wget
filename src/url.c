@@ -176,6 +176,7 @@ init_unsafe_char_table (void)
   int i;
   for (i = 0; i < 256; i++)
     if (i < 32 || i >= 127
+	|| i == ' '
 	|| i == '<'
 	|| i == '>'
 	|| i == '\"'
