@@ -38,7 +38,7 @@ AC_SUBST(ANSI2KNR)dnl
 
 AC_DEFUN(AM_PROG_CC_STDC,
 [AC_REQUIRE([AC_PROG_CC])
-AC_MSG_CHECKING(for ${CC-cc} option to accept ANSI C)
+AC_MSG_CHECKING([for ${CC-cc} option to accept ANSI C])
 AC_CACHE_VAL(am_cv_prog_cc_stdc,
 [am_cv_prog_cc_stdc=no
 ac_save_CC="$CC"
@@ -75,7 +75,7 @@ esac
 ])
 
 AC_DEFUN(WGET_STRUCT_UTIMBUF,
-[AC_MSG_CHECKING(for struct utimbuf)
+[AC_MSG_CHECKING([for struct utimbuf])
 if test x"$ac_cv_header_utime_h" = xyes; then
   AC_EGREP_CPP([struct[ 	]+utimbuf],
     [#include <utime.h>],
@@ -102,7 +102,7 @@ AC_DEFUN(WGET_WITH_NLS,
     dnl last moment.
 
     if test x"$HAVE_NLS" = xyes; then
-      AC_MSG_RESULT("language catalogs: $ALL_LINGUAS")
+      AC_MSG_RESULT([language catalogs: $ALL_LINGUAS])
       AM_PATH_PROG_WITH_TEST(MSGFMT, msgfmt,
 	[test -z "`$ac_dir/$ac_word -h 2>&1 | grep 'dv '`"], msgfmt)
       AM_PATH_PROG_WITH_TEST(XGETTEXT, xgettext,
@@ -178,7 +178,7 @@ dnl This is not strictly an Autoconf macro, because it is run from
 dnl within `config.status' rather than from within configure.  This
 dnl is why special rules must be applied for it.
 AC_DEFUN(WGET_PROCESS_PO,
-  [srcdir=$ac_given_srcdir # Advanced autoconf hackery
+  [
    dnl I wonder what the following several lines do...
    if test "x$srcdir" != "x."; then
      if test "x`echo $srcdir | sed 's@/.*@@'`" = "x"; then

@@ -300,7 +300,7 @@ if test x"$with_ssl" != x"no"; then
       LDFLAGS="-L$ssl_root/lib -R$ssl_root/lib $wget_save_LDFLAGS"
     fi
 
-    AC_MSG_RESULT(["Looking for SSL libraries in $ssl_root"])
+    AC_MSG_RESULT([Looking for SSL libraries in $ssl_root])
 
     dnl Check whether the compiler can find the include files.  On
     dnl some systems Gcc finds libraries in /usr/local/lib, but fails
@@ -309,13 +309,13 @@ if test x"$with_ssl" != x"no"; then
     ssl_found_includes=no
     CPPFLAGS="$SSL_INCLUDES $wget_save_CPPFLAGS"
 
-    AC_MSG_CHECKING(["for includes"])
+    AC_MSG_CHECKING([for includes])
 
     AC_TRY_CPP([#include <openssl/ssl.h>
 #include <openssl/rsa.h>
 ],
-      AC_MSG_RESULT("found"); ssl_found_includes=yes,
-      AC_MSG_RESULT("not found")
+      AC_MSG_RESULT(found); ssl_found_includes=yes,
+      AC_MSG_RESULT([not found])
     )
 
     if test x"$ssl_found_includes" = xno; then
@@ -354,7 +354,7 @@ if test x"$with_ssl" != x"no"; then
 
     ssl_run_failure=no
 
-    AC_MSG_CHECKING("whether SSL libs are resolved at runtime")
+    AC_MSG_CHECKING([whether SSL libs are resolved at runtime])
     AC_TRY_RUN([
 int RSA_new();
 int SSL_new();
@@ -374,7 +374,7 @@ main(){return 0;}
   if test x"$ssl_success" = xyes; then
     dnl AC_MSG_RESULT doesn't look right here, but I'm not sure what
     dnl to use instead.
-    AC_MSG_RESULT("Compiling in support for SSL in $ssl_root")
+    AC_MSG_RESULT([Compiling in support for SSL in $ssl_root])
     AC_DEFINE(HAVE_SSL)
     AC_SUBST(SSL_INCLUDES)
     SSL_OBJ='gen_sslfunc$o'
@@ -445,7 +445,7 @@ AC_SUBST(MD5_OBJ)
 dnl
 dnl Set of available languages.
 dnl
-ALL_LINGUAS=`(cd ${srcdir}/po && ls *.po | sed -e 's/\.po$//')`
+ALL_LINGUAS=`(cd ${srcdir}/po && ls *.po | sed -e 's/\.po$//' | tr '\012' ' ')`
 
 dnl Originally this used to be static, looking like this:
 dnl     ALL_LINGUAS="cs de hr it ..."
