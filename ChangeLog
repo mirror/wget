@@ -1,3 +1,12 @@
+2001-04-28  Herold Heiko  <Heiko.Herold@previnet.it>
+
+	* windows/wget.dep: Update.
+
+	* windows/Makefile.src: Update.
+
+	* windows/config.h.ms: Define inline to __inline.
+	Define ftruncate to chsize.
+
 2001-04-27  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* po/hr.po: Updated.

@@ -2,6 +2,7 @@ alloca$o: alloca.c
 ansi2knr$o: ansi2knr.c 
 cmpt$o: cmpt.c config.h wget.h sysdep.h options.h
 connect$o: connect.c config.h wget.h sysdep.h options.h connect.h host.h
+cookies$o: cookies.c wget.h cookies.h hash.h url.h utils.h
 fnmatch$o: fnmatch.c config.h wget.h sysdep.h options.h fnmatch.h
 ftp-basic$o: ftp-basic.c config.h wget.h sysdep.h options.h utils.h rbuf.h connect.h host.h
 ftp-ls$o: ftp-ls.c config.h wget.h sysdep.h options.h utils.h ftp.h url.h
@@ -24,6 +25,7 @@ netrc$o: netrc.c wget.h sysdep.h options.h utils.h netrc.h init.h
 rbuf$o: rbuf.c config.h wget.h sysdep.h options.h rbuf.h connect.h
 recur$o: recur.c config.h wget.h sysdep.h options.h url.h recur.h utils.h retr.h ftp.h fnmatch.h host.h hash.h
 retr$o: retr.c config.h wget.h sysdep.h options.h utils.h retr.h url.h recur.h ftp.h host.h connect.h hash.h
+safe-ctype$o: safe-ctype.c safe-ctype.h
 url$o: url.c config.h wget.h sysdep.h options.h utils.h url.h host.h
 utils$o: utils.c config.h wget.h sysdep.h options.h utils.h fnmatch.h hash.h
 version$o: version.c

@@ -173,4 +173,9 @@ char *alloca ();
 /* Define to 1 if ANSI function prototypes are usable.  */
 #define PROTOTYPES 1
 
+/* Work around VC 6 issues */
+#define inline __inline
+#define ftruncate chsize
+
 #endif /* CONFIG_H */
+
