@@ -195,9 +195,9 @@ AC_CHECK_FUNCS(strdup strstr strcasecmp strncasecmp strpbrk memmove)
 AC_CHECK_FUNCS(gettimeofday mktime strptime strerror snprintf vsnprintf)
 AC_CHECK_FUNCS(select sigblock sigsetjmp signal symlink access isatty)
 AC_CHECK_FUNCS(uname gethostname usleep)
-AC_CHECK_FUNC(nanosleep,,[
-  AC_CHECK_LIB(rt,nanosleep,,[
-    AC_CHECK_LIB(posix4,nanosleep)])])
+AC_CHECK_FUNCS(nanosleep,,[
+  AC_CHECK_LIB(rt,nanosleep,[AC_DEFINE(HAVE_NANOSLEEP)],[
+    AC_CHECK_LIB(posix4,nanosleep,[AC_DEFINE(HAVE_NANOSLEEP)])])])
 
 dnl
 dnl Check if we need to compile in getopt.c.
