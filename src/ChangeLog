@@ -1,3 +1,9 @@
+2002-02-19  Alan Eldridge  <alane@geeksrus.net>
+
+	* host.h: Also include <netinet/in.h> and <sys/socket.h>.
+
+	* ftp-basic.c: Also include <netinet/in.h>.
+
 2002-02-05  Ian Abbott  <abbotti@mev.co.uk>
 
 	* http.c (gethttp): when -c used, mark already fully retrieved

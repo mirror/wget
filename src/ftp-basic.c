@@ -36,6 +36,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 /* For inet_ntop. */
 #ifndef WINDOWS
 #include <sys/socket.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 #endif
 
