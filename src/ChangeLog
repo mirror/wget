@@ -1,5 +1,10 @@
 2003-11-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp.c: Set con->csock to -1 where rbuf_uninitialize was
+	previously used.
+
+2003-11-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* Makefile.in (http$o): Added the trailing backslash that was
 	missing.
 

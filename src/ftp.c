@@ -290,6 +290,11 @@ getftp (struct url *u, long *len, long restval, ccon *con)
 	return (retryable_socket_connect_error (errno)
 		? CONERROR : CONIMPOSSIBLE);
 
+      if (cmd & LEAVE_PENDING)
+	con->csock = csock;
+      else
+	con->csock = -1;
+
       /* Second: Login with proper USER/PASS sequence.  */
       logprintf (LOG_VERBOSE, _("Logging in as %s ... "), user);
       if (opt.server_response)
@@ -307,12 +312,14 @@ getftp (struct url *u, long *len, long restval, ccon *con)
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  return err;
 	  break;
 	case FTPSRVERR:
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("Error in server greeting.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  return err;
 	  break;
 	case WRITEFAILED:
@@ -320,18 +327,21 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET,
 		   _("Write failed, closing control connection.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  return err;
 	  break;
 	case FTPLOGREFUSED:
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("The server refuses login.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  return FTPLOGREFUSED;
 	  break;
 	case FTPLOGINC:
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("Login incorrect.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  return FTPLOGINC;
 	  break;
 	case FTPOK:
@@ -355,6 +365,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  return err;
 	  break;
 	case FTPSRVERR:
@@ -376,7 +387,7 @@ Error in server response, closing control connection.\n"));
 
       if (!opt.server_response)
 	logprintf (LOG_VERBOSE, "==> PWD ... ");
-      err = ftp_pwd(csock, &con->id);
+      err = ftp_pwd (csock, &con->id);
       /* FTPRERR */
       switch (err)
 	{
@@ -385,6 +396,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  return err;
 	  break;
 	case FTPSRVERR :
@@ -438,6 +450,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  return err;
 	  break;
 	case WRITEFAILED:
@@ -445,6 +458,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET,
 		   _("Write failed, closing control connection.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  return err;
 	  break;
 	case FTPUNKNOWNTYPE:
@@ -453,6 +467,7 @@ Error in server response, closing control connection.\n"));
 		     _("Unknown type `%c', closing control connection.\n"),
 		     type_char);
 	  fd_close (csock);
+	  con->csock = -1;
 	  return err;
 	case FTPOK:
 	  /* Everything is OK.  */
@@ -550,6 +565,7 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	      fd_close (csock);
+	      con->csock = -1;
 	      return err;
 	      break;
 	    case WRITEFAILED:
@@ -557,6 +573,7 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_NOTQUIET,
 		       _("Write failed, closing control connection.\n"));
 	      fd_close (csock);
+	      con->csock = -1;
 	      return err;
 	      break;
 	    case FTPNSFOD:
@@ -564,6 +581,7 @@ Error in server response, closing control connection.\n"));
 	      logprintf (LOG_NOTQUIET, _("No such directory `%s'.\n\n"),
 			 u->dir);
 	      fd_close (csock);
+	      con->csock = -1;
 	      return err;
 	      break;
 	    case FTPOK:
@@ -588,7 +606,7 @@ Error in server response, closing control connection.\n"));
 	    logprintf (LOG_VERBOSE, "==> SIZE %s ... ", u->file);
 	}
 
-      err = ftp_size(csock, u->file, len);
+      err = ftp_size (csock, u->file, len);
       /* FTPRERR */
       switch (err)
 	{
@@ -598,6 +616,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  return err;
 	  break;
 	case FTPOK:
@@ -627,6 +646,7 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	      fd_close (csock);
+	      con->csock = -1;
 	      return err;
 	      break;
 	    case WRITEFAILED:
@@ -634,6 +654,7 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_NOTQUIET,
 		       _("Write failed, closing control connection.\n"));
 	      fd_close (csock);
+	      con->csock = -1;
 	      return err;
 	      break;
 	    case FTPNOPASV:
@@ -650,7 +671,7 @@ Error in server response, closing control connection.\n"));
 	    default:
 	      abort ();
 	      break;
-	    }	/* switch(err) */
+	    }	/* switch (err) */
 	  if (err==FTPOK)
 	    {
 	      DEBUGP (("trying to connect to %s port %d\n", 
@@ -661,7 +682,8 @@ Error in server response, closing control connection.\n"));
 		{
 		  int save_errno = errno;
 		  fd_close (csock);
-		  logprintf (LOG_VERBOSE, _("couldn't connect to %s port %hu: %s\n"),
+		  con->csock = -1;
+		  logprintf (LOG_VERBOSE, _("couldn't connect to %s port %d: %s\n"),
 			     pretty_print_address (&passive_addr), passive_port,
 			     strerror (save_errno));
 		  return (retryable_socket_connect_error (save_errno)
@@ -686,6 +708,7 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	      fd_close (csock);
+	      con->csock = -1;
 	      fd_close (dtsock);
 	      fd_close (local_sock);
 	      return err;
@@ -695,6 +718,7 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_NOTQUIET,
 		       _("Write failed, closing control connection.\n"));
 	      fd_close (csock);
+	      con->csock = -1;
 	      fd_close (dtsock);
 	      fd_close (local_sock);
 	      return err;
@@ -703,6 +727,7 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_VERBOSE, "\n");
 	      logprintf (LOG_NOTQUIET, "socket: %s\n", strerror (errno));
 	      fd_close (csock);
+	      con->csock = -1;
 	      fd_close (dtsock);
 	      fd_close (local_sock);
 	      return err;
@@ -718,6 +743,7 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_VERBOSE, "\n");
 	      logputs (LOG_NOTQUIET, _("Invalid PORT.\n"));
 	      fd_close (csock);
+	      con->csock = -1;
 	      fd_close (dtsock);
 	      fd_close (local_sock);
 	      return err;
@@ -749,6 +775,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  fd_close (dtsock);
 	  fd_close (local_sock);
 	  return err;
@@ -758,6 +785,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET,
 		   _("Write failed, closing control connection.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  fd_close (dtsock);
 	  fd_close (local_sock);
 	  return err;
@@ -772,6 +800,7 @@ Error in server response, closing control connection.\n"));
 			 _("\nREST failed; will not truncate `%s'.\n"),
 			 con->target);
 	      fd_close (csock);
+	      con->csock = -1;
 	      fd_close (dtsock);
 	      fd_close (local_sock);
 	      return CONTNOTSUPPORTED;
@@ -799,6 +828,7 @@ Error in server response, closing control connection.\n"));
       if (opt.spider)
 	{
 	  fd_close (csock);
+	  con->csock = -1;
 	  fd_close (dtsock);
 	  fd_close (local_sock);
 	  return RETRFINISHED;
@@ -823,6 +853,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  fd_close (dtsock);
 	  fd_close (local_sock);
 	  return err;
@@ -832,6 +863,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET,
 		   _("Write failed, closing control connection.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  fd_close (dtsock);
 	  fd_close (local_sock);
 	  return err;
@@ -872,6 +904,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  fd_close (dtsock);
 	  fd_close (local_sock);
 	  return err;
@@ -881,6 +914,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET,
 		   _("Write failed, closing control connection.\n"));
 	  fd_close (csock);
+	  con->csock = -1;
 	  fd_close (dtsock);
 	  fd_close (local_sock);
 	  return err;
@@ -945,6 +979,7 @@ Error in server response, closing control connection.\n"));
 	{
 	  logprintf (LOG_NOTQUIET, "%s: %s\n", con->target, strerror (errno));
 	  fd_close (csock);
+	  con->csock = -1;
 	  fd_close (dtsock);
 	  fd_close (local_sock);
 	  return FOPENERR;
@@ -1015,6 +1050,7 @@ Error in server response, closing control connection.\n"));
       logprintf (LOG_NOTQUIET, _("%s: %s, closing control connection.\n"),
 		 con->target, strerror (errno));
       fd_close (csock);
+      con->csock = -1;
       return FWRITEERR;
     }
   else if (res == -1)
@@ -1040,6 +1076,7 @@ Error in server response, closing control connection.\n"));
 	 whole file was retrieved nevertheless (but that is for
 	 ftp_loop_internal to decide).  */
       fd_close (csock);
+      con->csock = -1;
       return FTPRETRINT;
     } /* err != FTPOK */
   /* If retrieval failed for any reason, return FTPRETRINT, but do not
@@ -1068,6 +1105,7 @@ Error in server response, closing control connection.\n"));
       /* I should probably send 'QUIT' and check for a reply, but this
 	 is faster.  #### Is it OK, though?  */
       fd_close (csock);
+      con->csock = -1;
     }
   /* If it was a listing, and opt.server_response is true,
      print it out.  */
@@ -1677,7 +1715,7 @@ has_insecure_name_p (const char *s)
   if (*s == '/')
     return 1;
 
-  if (strstr(s, "../") != 0)
+  if (strstr (s, "../") != 0)
     return 1;
 
   return 0;
