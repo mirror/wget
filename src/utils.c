@@ -77,10 +77,14 @@ so, delete this exception statement from your version.  */
 #ifdef HAVE_SETJMP_H
 # include <setjmp.h>
 #endif
+
+#ifndef HAVE_SIGSETJMP
 /* If sigsetjmp is a macro, configure won't pick it up. */
-#ifdef sigsetjmp
-# define HAVE_SIGSETJMP
+# ifdef sigsetjmp
+#  define HAVE_SIGSETJMP
+# endif
 #endif
+
 #ifdef HAVE_SIGNAL
 # ifdef HAVE_SIGSETJMP
 #  define USE_SIGNAL_TIMEOUT

@@ -462,7 +462,7 @@ advance_declaration (const char *beg, const char *end)
     AC_S_DASH4,
     AC_S_QUOTE1,
     AC_S_IN_QUOTE,
-    AC_S_QUOTE2,
+    AC_S_QUOTE2
   } state = AC_S_BANG;
 
   if (beg == end)

@@ -1350,7 +1350,7 @@ append_char (char ch, struct growable *dest)
 enum {
   filechr_not_unix    = 1,	/* unusable on Unix, / and \0 */
   filechr_not_windows = 2,	/* unusable on Windows, one of \|/<>?:*" */
-  filechr_control     = 4,	/* a control character, e.g. 0-31 */
+  filechr_control     = 4	/* a control character, e.g. 0-31 */
 };
 
 #define FILE_CHAR_TEST(c, mask) (filechr_table[(unsigned char)(c)] & (mask))
