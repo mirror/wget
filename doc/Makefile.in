@@ -44,25 +44,36 @@ INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 RM = rm -f
 
-MAN        = wget.$(manext)
-WGETRC     = $(sysconfdir)/wgetrc
+TEXI2POD     = ./texi2pod.pl
+POD2MAN      = pod2man
+MAN          = wget.$(manext)
+WGETRC       = $(sysconfdir)/wgetrc
+SAMPLERCTEXI = sample.wgetrc.munged_for_texi_inclusion
 
 #
 # Dependencies for building
 #
 
-all: wget.info # wget.cat
+all: wget.info
 
 everything: all wget_us.ps wget_a4.ps wget_toc.html
 
-sample.wgetrc.munged_for_texi_inclusion: sample.wgetrc
-	sed s/@/@@/g $(srcdir)/sample.wgetrc > sample.wgetrc.munged_for_texi_inclusion
+$(SAMPLERCTEXI): $(srcdir)/sample.wgetrc
+	sed s/@/@@/g $< > $@
 
-wget.info: sample.wgetrc.munged_for_texi_inclusion wget.texi
+wget.info: $(SAMPLERCTEXI) wget.texi
 	-$(MAKEINFO)
 
+wget.pod: wget.texi
+	$(TEXI2POD) $< > $@
+
+$(MAN): wget.pod
+	$(POD2MAN) --center="GNU Wget" --release="GNU Wget @VERSION@" $< > $@
+
+man: $(MAN)
+
 #wget.cat: $(MAN)
-#	nroff -man $(srcdir)/$(MAN) > wget.cat
+#	nroff -man $< > $@
 
 dvi: wget.dvi
 
@@ -96,9 +107,9 @@ install.info: wget.info
 	done
 
 # install man page, creating install directory if necessary
-#install.man:
-#	$(top_srcdir)/mkinstalldirs $(mandir)/man$(manext)
-#	$(INSTALL_DATA) $(srcdir)/$(MAN) $(mandir)/man$(manext)/$(MAN)
+install.man:
+	$(top_srcdir)/mkinstalldirs $(mandir)/man$(manext)
+	$(INSTALL_DATA) $(srcdir)/$(MAN) $(mandir)/man$(manext)/$(MAN)
 
 # install sample.wgetrc
 install.wgetrc:
@@ -127,22 +138,24 @@ uninstall.info:
 	$(RM) $(infodir)/wget.info*
 
 # uninstall man page
-#uninstall.man:
-#	$(RM) $(mandir)/man$(manext)/$(MAN)
+uninstall.man:
+	$(RM) $(mandir)/man$(manext)/$(MAN)
 
 #
 # Dependencies for cleanup
 #
 
 clean:
-	$(RM) *~ *.bak *.cat *.html
+	$(RM) *~ *.bak *.cat *.pod *.html
 	$(RM) *.dvi *.aux *.cp *.cps *.fn *.toc *.tp *.vr *.ps *.ky *.pg *.log
 
 distclean: clean
 	$(RM) Makefile
+	$(RM) $(MAN)
 
 realclean: distclean
 	$(RM) wget.info*
+	$(RM) $(SAMPLERCTEXI)
 
 #
 # Dependencies for maintenance

@@ -16,7 +16,7 @@
 
 @c This should really be auto-generated!
 @set VERSION 1.7-dev
-@set UPDATED Dec 2000
+@set UPDATED Jan 2001
 
 @dircategory Net Utilities
 @dircategory World Wide Web
@@ -28,7 +28,9 @@
 This file documents the the GNU Wget utility for downloading network
 data.
 
-Copyright (C) 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
+@c man begin COPYRIGHT
+Copyright @copyright{} 1996, 1997, 1998, 2000, 2001 Free Software
+Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -47,6 +49,7 @@ Invariant Sections being ``GNU General Public License'' and ``GNU Free
 Documentation License'', with no Front-Cover Texts, and with no
 Back-Cover Texts.  A copy of the license is included in the section
 entitled ``GNU Free Documentation License''.
+@c man end
 @end ifinfo
 
 @titlepage
@@ -55,9 +58,19 @@ entitled ``GNU Free Documentation License''.
 @subtitle Updated for Wget @value{VERSION}, @value{UPDATED}
 @author by Hrvoje Nik@v{s}i@'{c} and the developers
 
+@ignore
+@c man begin AUTHOR
+Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.
+@c man end
+@c man begin SEEALSO
+GNU Info entry for @file{wget}.
+@c man end
+@end ignore
+
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
+Copyright @copyright{} 1996, 1997, 1998, 2000, 2001 Free Software
+Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -97,6 +110,7 @@ Copyright @copyright{} 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
 @cindex overview
 @cindex features
 
+@c man begin DESCRIPTION
 GNU Wget is a freely available network utility to retrieve files from
 the World Wide Web, using @sc{http} (Hyper Text Transfer Protocol) and
 @sc{ftp} (File Transfer Protocol), the two most widely used Internet
@@ -110,8 +124,10 @@ while the user is not logged on.  This allows you to start a retrieval
 and disconnect from the system, letting Wget finish the work.  By
 contrast, most of the Web browsers require constant user's presence,
 which can be a great hindrance when transferring a lot of data.
+@c man end
 
 @sp 1
+@c man begin DESCRIPTION
 @item
 Wget is capable of descending recursively through the structure of
 @sc{html} documents and @sc{ftp} directory trees, making a local copy of
@@ -119,8 +135,10 @@ the directory hierarchy similar to the one on the remote server.  This
 feature can be used to mirror archives and home pages, or traverse the
 web in search of data, like a @sc{www} robot (@pxref{Robots}).  In that
 spirit, Wget understands the @code{norobots} convention.
+@c man end
 
 @sp 1
+@c man begin DESCRIPTION
 @item
 File name wildcard matching and recursive mirroring of directories are
 available when retrieving via @sc{ftp}.  Wget can read the time-stamp
@@ -129,16 +147,20 @@ locally.  Thus Wget can see if the remote file has changed since last
 retrieval, and automatically retrieve the new version if it has.  This
 makes Wget suitable for mirroring of @sc{ftp} sites, as well as home
 pages.
+@c man end
 
 @sp 1
+@c man begin DESCRIPTION
 @item
 Wget works exceedingly well on slow or unstable connections,
 retrying the document until it is fully retrieved, or until a
 user-specified retry count is surpassed.  It will try to resume the
 download from the point of interruption, using @code{REST} with @sc{ftp}
 and @code{Range} with @sc{http} servers that support them.
+@c man end
 
 @sp 1
+@c man begin DESCRIPTION
 @item
 By default, Wget supports proxy servers, which can lighten the network
 load, speed up retrieval and provide access behind firewalls.  However,
@@ -146,32 +168,53 @@ if you are behind a firewall that requires that you use a socks style
 gateway, you can get the socks library and build Wget with support for
 socks.  Wget also supports the passive @sc{ftp} downloading as an
 option.
+@c man end
 
 @sp 1
+@c man begin DESCRIPTION
 @item
 Builtin features offer mechanisms to tune which links you wish to follow
 (@pxref{Following Links}).
+@c man end
 
 @sp 1
+@c man begin DESCRIPTION
 @item
 The retrieval is conveniently traced with printing dots, each dot
 representing a fixed amount of data received (1KB by default).  These
 representations can be customized to your preferences.
+@c man end
 
 @sp 1
+@c man begin DESCRIPTION
 @item
 Most of the features are fully configurable, either through command line
 options, or via the initialization file @file{.wgetrc} (@pxref{Startup
 File}).  Wget allows you to define @dfn{global} startup files
 (@file{/usr/local/etc/wgetrc} by default) for site settings.
+@c man end
+
+@ignore
+@c man begin FILES
+@table @samp
+@item /usr/local/etc/wgetrc
+Default location of the @dfn{global} startup file.
+
+@item .wgetrc
+User startup file.
+@end table
+@c man end
+@end ignore
 
 @sp 1
+@c man begin DESCRIPTION
 @item
 Finally, GNU Wget is free software.  This means that everyone may use
 it, redistribute it and/or modify it under the terms of the GNU General
 Public License, as published by the Free Software Foundation
 (@pxref{Copying}).
 @end itemize
+@c man end
 
 @node Invoking, Recursive Retrieval, Overview, Top
 @chapter Invoking
@@ -183,7 +226,9 @@ Public License, as published by the Free Software Foundation
 By default, Wget is very simple to invoke.  The basic syntax is:
 
 @example
+@c man begin SYNOPSIS
 wget [@var{option}]@dots{} [@var{URL}]@dots{}
+@c man end
 @end example
 
 Wget will simply download all the @sc{url}s specified on the command
@@ -326,6 +371,8 @@ and @file{/~somebody}.  You can also clear the lists in @file{.wgetrc}
 @example
 wget -X '' -X /~nobody,/~somebody
 @end example
+
+@c man begin OPTIONS
 
 @node Basic Startup Options, Logging and Input File Options, Option Syntax, Invoking
 @section Basic Startup Options
@@ -1129,6 +1176,8 @@ This is a useful option, since it guarantees that only the files
 @emph{below} a certain hierarchy will be downloaded.
 @xref{Directory-Based Limits}, for more details.
 @end table
+
+@c man end
 
 @node Recursive Retrieval, Following Links, Invoking, Top
 @chapter Recursive Retrieval
@@ -2386,17 +2435,18 @@ the magic word @samp{subscribe} in the subject line.  Unsubscribe by
 mailing to @email{wget-unsubscribe@@sunsite.auc.dk}.
 
 The mailing list is archived at @url{http://fly.srk.fer.hr/archive/wget}.
-
+Alternative archive is available at
+@url{http://www.mail-archive.com/wget%40sunsite.auc.dk/}.
+ 
 @node Reporting Bugs, Portability, Mailing List, Various
 @section Reporting Bugs
 @cindex bugs
 @cindex reporting bugs
 @cindex bug reports
 
+@c man begin BUGS
 You are welcome to send bug reports about GNU Wget to
-@email{bug-wget@@gnu.org}.  The bugs that you think are of the
-interest to the public (i.e. more people should be informed about them)
-can be Cc-ed to the mailing list at @email{wget@@sunsite.auc.dk}.
+@email{bug-wget@@gnu.org}.
 
 Before actually submitting a bug report, please try to follow a few
 simple guidelines.
@@ -2434,6 +2484,7 @@ wget` core} and type @code{where} to get the backtrace.
 @item
 Find where the bug is, fix it and send me the patches. :-)
 @end enumerate
+@c man end
 
 @node Portability, Signals, Reporting Bugs, Various
 @section Portability
@@ -2755,7 +2806,12 @@ Charlie Negyesi,
 R. K. Owen,
 Andrew Pollock,
 Steve Pothier,
+@iftex
+Jan P@v{r}ikryl,
+@end iftex
+@ifinfo
 Jan Prikryl,
+@end ifinfo
 Marin Purgar,
 Keith Refson,
 Tyler Riddle,
