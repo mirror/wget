@@ -15,6 +15,15 @@ using -N as well, it is these .orig files that are compared against the server.
 following only certain HTML tags when doing a recursive retrieval.  -G /
 --ignore-tags / ignore_tags = ... is just the opposite -- all tags but the ones
 you specify will be followed.
+
+** New --waitretry / waitretry = SECONDS option allows waiting between retries
+of failed downloads.  Wget will use "linear" backoff, waiting 1 second after the
+first failure, 2 after the second, up to SECONDS.  waitretry is set to 10 by
+default in the system wgetrc.
+
+** New -p / --page-requisites / page_requisites = on option causes wget to
+download all ancillary files necessary to display a given HTML page properly
+(e.g. inlined images).
 
 * Wget 1.5.3 is a bugfix release with no user-visible changes.
 

@@ -2,6 +2,13 @@
 
 	* po/*.{gmo,po,pot}: Regenerated after modifying wget --help output.
 
+	* MACHINES: Previously said to send updates to "me" (Hrvoje) --
+	now says to email the mailing list or bug-wget@gnu.org.
+
+	* MAILING-LIST: Added mention of bug-wget@gnu.org.
+	
+	* NEWS: Added --waitretry and --page-requisites.
+
 2000-08-25  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* MACHINES: Alphabetized, changed "architectures" to "OSes and
