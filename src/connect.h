@@ -1,5 +1,5 @@
 /* Declarations for connect.
-   Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 2000 Free Software Foundation, Inc.
 
 This file is part of Wget.
 
@@ -22,6 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 /* Function declarations */
 uerr_t make_connection PARAMS ((int *, char *, unsigned short));
+int test_socket_open PARAMS ((int));
 uerr_t bindport PARAMS ((unsigned short *));
 uerr_t acceptport PARAMS ((int *));
 void closeport PARAMS ((int));

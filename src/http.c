@@ -422,6 +422,11 @@ static int known_authentication_scheme_p PARAMS ((const char *));
 
 static time_t http_atotm PARAMS ((char *));
 
+#define BEGINS_WITH(line, string_constant)				\
+  (!strncasecmp (line, string_constant, sizeof (string_constant) - 1)	\
+   && (ISSPACE (line[sizeof (string_constant) - 1])			\
+       || !line[sizeof (string_constant) - 1]))
+
 /* Retrieve a document through HTTP protocol.  It recognizes status
    code, and correctly handles redirections.  It closes the network
    socket.  If it receives an error from the functions below it, it
@@ -477,7 +482,9 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 
  again:
   /* We need to come back here when the initial attempt to retrieve
-     without authorization header fails.  */
+     without authorization header fails.  (Expected to happen at least
+     for the Digest authorization scheme.)  */
+
   keep_alive = 0;
   http_keep_alive_1 = http_keep_alive_2 = 0;
 
@@ -588,10 +595,37 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   passwd = passwd ? passwd : opt.http_passwd;
 
   wwwauth = NULL;
-  if (authenticate_h && user && passwd)
+  if (user && passwd)
     {
-      wwwauth = create_authorization_line (authenticate_h, user, passwd,
-					   command, ou->path);
+      if (!authenticate_h)
+	{
+	  /* We have the username and the password, but haven't tried
+	     any authorization yet.  Let's see if the "Basic" method
+	     works.  If not, we'll come back here and construct a
+	     proper authorization method with the right challenges.
+
+	     If we didn't employ this kind of logic, every URL that
+	     requires authorization would have to be processed twice,
+	     which is very suboptimal and generates a bunch of false
+	     "unauthorized" errors in the server log.
+
+	     #### But this logic also has a serious problem when used
+	     with stronger authentications: we *first* transmit the
+	     username and the password in clear text, and *then*
+	     attempt a stronger authentication scheme.  That cannot be
+	     right!  We are only fortunate that almost everyone still
+	     uses the `Basic' scheme anyway.
+
+	     There should be an option to prevent this from happening,
+	     for those who use strong authentication schemes and value
+	     their passwords.  */
+	  wwwauth = basic_authentication_encode (user, passwd, "Authorization");
+	}
+      else
+	{
+	  wwwauth = create_authorization_line (authenticate_h, user, passwd,
+					       command, ou->path);
+	}
     }
 
   proxyauth = NULL;
@@ -891,6 +925,7 @@ Accept: %s\r\n\
 	{
 	  /* If we have tried it already, then there is not point
 	     retrying it.  */
+	failed:
 	  logputs (LOG_NOTQUIET, _("Authorization failed.\n"));
 	  free (authenticate_h);
 	  return AUTHFAILED;
@@ -900,6 +935,13 @@ Accept: %s\r\n\
 	  free (authenticate_h);
 	  logputs (LOG_NOTQUIET, _("Unknown authentication scheme.\n"));
 	  return AUTHFAILED;
+	}
+      else if (BEGINS_WITH (authenticate_h, "Basic"))
+	{
+	  /* The authentication scheme is basic, the one we try by
+             default, and it failed.  There's no sense in trying
+             again.  */
+	  goto failed;
 	}
       else
 	{
@@ -1908,7 +1950,7 @@ username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\"",
 #endif /* USE_DIGEST */
 
 
-#define HACK_O_MATIC(line, string_constant)				\
+#define BEGINS_WITH(line, string_constant)				\
   (!strncasecmp (line, string_constant, sizeof (string_constant) - 1)	\
    && (ISSPACE (line[sizeof (string_constant) - 1])			\
        || !line[sizeof (string_constant) - 1]))
@@ -1916,12 +1958,12 @@ username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\"",
 static int
 known_authentication_scheme_p (const char *au)
 {
-  return HACK_O_MATIC (au, "Basic")
-    || HACK_O_MATIC (au, "Digest")
-    || HACK_O_MATIC (au, "NTLM");
+  return BEGINS_WITH (au, "Basic")
+    || BEGINS_WITH (au, "Digest")
+    || BEGINS_WITH (au, "NTLM");
 }
 
-#undef HACK_O_MATIC
+#undef BEGINS_WITH
 
 /* Create the HTTP authorization request header.  When the
    `WWW-Authenticate' response header is seen, according to the

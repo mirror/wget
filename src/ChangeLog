@@ -1,5 +1,12 @@
 2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (http_loop): If username and password are known, try the
+	`Basic' authentication scheme by default.
+
+	* connect.h: Declare test_socket_open.
+
+2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* version.c: Bump version to 1.7-dev.
 
 2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
