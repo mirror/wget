@@ -164,7 +164,8 @@ AC_CHECK_SIZEOF(short)
 AC_CHECK_SIZEOF(int)
 AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(long long)
-AC_CHECK_TYPES(u_int32_t)
+AC_CHECK_HEADERS(inttypes.h)
+AC_CHECK_TYPES(uint32_t)
 
 dnl
 dnl Checks for headers

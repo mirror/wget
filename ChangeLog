@@ -1,5 +1,11 @@
 2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Switch from u_int32_t to uint32_t.  Check for
+	inttypes.h so it's used to get the definition of uint32_t where
+	available.
+
+2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* windows/Makefile.src.watcom (OBJS): Use convert.c.
 	From Chin-yuan Kuo.
 

@@ -110,6 +110,9 @@ char *alloca ();
 /* Define if you can safely include both <sys/time.h> and <time.h>.  */
 #undef TIME_WITH_SYS_TIME
 
+/* Define if you have inttypes.h header.  */
+#undef HAVE_INTTYPES_H
+
 /* Define if you have struct utimbuf.  */
 #undef HAVE_STRUCT_UTIMBUF
 
@@ -275,8 +278,8 @@ char *alloca ();
 /* Defined to int or size_t on systems without socklen_t.  */
 #undef socklen_t
 
-/* Define if you have u_int32_t.  */
-#undef HAVE_U_INT32_T
+/* Define if you have uint32_t.  */
+#undef HAVE_UINT32_T
 
 /* Some autoconf-unrelated preprocessor magic that cannot be in
    sysdep.h because it must be done before including the system
@@ -289,17 +292,6 @@ char *alloca ();
 #  define solaris
 # endif
 #endif
-
-/* Under Ultrix, u_int32_t is only defined when <sys/bitypes.h> is
-   included.  Therefore, configure doesn't pick it up, but files that
-   include <netdb.h> (or <resolv.h>) fail to compile because it includes
-   bitypes.h.  This magic define causes netdb.h/resolv.h not to include
-   bitypes.h under Ultrix.  */
-
-#ifdef __ultrix
-# define BSD 199306
-#endif
-
 
 /* The following several lines can be very dangerous; they can cripple
    the header files and break compilation in _verY_ non-obvious ways.

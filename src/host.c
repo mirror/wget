@@ -601,7 +601,7 @@ struct address_list *
 lookup_host (const char *host, int silent)
 {
   struct address_list *al = NULL;
-  u_int32_t addr_ipv4;
+  uint32_t addr_ipv4;
   ip_address addr;
 
   /* First, try to check whether the address is already a numeric
@@ -612,8 +612,8 @@ lookup_host (const char *host, int silent)
     return address_list_from_single (&addr);
 #endif
 
-  addr_ipv4 = (u_int32_t)inet_addr (host);
-  if (addr_ipv4 != (u_int32_t)-1)
+  addr_ipv4 = (uint32_t)inet_addr (host);
+  if (addr_ipv4 != (uint32_t)-1)
     {
       /* ADDR is defined to be in network byte order, which is what
 	 this returns, so we can just copy it to STORE_IP.  */

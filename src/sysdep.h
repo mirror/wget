@@ -48,6 +48,10 @@ so, delete this exception statement from your version.  */
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif
+
 #ifdef WINDOWS
 /* Windows doesn't have some functions.  Include mswindows.h so we get
    their declarations, as well as some additional declarations and
@@ -245,23 +249,23 @@ void *memcpy ();
 int fnmatch ();
 #endif
 
-/* Provide u_int32_t on the platforms that don't define it.  Although
+/* Provide uint32_t on the platforms that don't define it.  Although
    most code should be agnostic about integer sizes, some code really
-   does need a 32-bit integral type.  Such code should use u_int32_t.
+   does need a 32-bit integral type.  Such code should use uint32_t.
    (The exception is gnu-md5.[ch], which uses its own detection for
    portability across platforms.)  */
 
-#ifndef HAVE_U_INT32_T
+#ifndef HAVE_UINT32_T
 # if SIZEOF_INT == 4
-typedef unsigned int u_int32_t;
+typedef unsigned int uint32_t;
 # else
 #  if SIZEOF_LONG == 4
-typedef unsigned long u_int32_t;
+typedef unsigned long uint32_t;
 #  else
 #   if SIZEOF_SHORT == 4
-typedef unsigned short u_int32_t;
+typedef unsigned short uint32_t;
 #   else
- #error "Cannot determine a 32-bit type"
+ #error "Cannot determine a 32-bit unsigned integer type"
 #   endif
 #  endif
 # endif

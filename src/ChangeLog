@@ -1,5 +1,11 @@
 2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* sysdep.h: Include inttypes.h where available.
+
+	* host.c: Switch from u_int32_t to uint32_t.
+
+2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* netrc.c (parse_netrc): Reset the QUOTE flag after the closing
 	quote.
 
