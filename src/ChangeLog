@@ -1,5 +1,10 @@
 2001-04-27  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (mktime_from_utc): Improve documentation.
+	(http_atotm): Put format strings into a separate array.
+
+2001-04-27  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* safe-ctype.h: Instead of throwing #error when isalpha is
 	defined, redefine it to something that will throw a compile-time
 	error if actually *used*.  Do the same for the rest of the

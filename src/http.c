@@ -1828,7 +1828,38 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 }
 
 /* Converts struct tm to time_t, assuming the data in tm is UTC rather
-   than local timezone (mktime assumes the latter).
+   than local timezone.
+
+   mktime is similar but assumes struct tm, also known as the
+   "broken-down" form of time, is in local time zone.  mktime_from_utc
+   uses mktime to make the conversion understanding that an offset
+   will be introduced by the local time assumption.
+
+   mktime_from_utc then measures the introduced offset by applying
+   gmtime to the initial result and applying mktime to the resulting
+   "broken-down" form.  The difference between the two mktime results
+   is the measured offset which is then subtracted from the initial
+   mktime result to yield a calendar time which is the value returned.
+
+   tm_isdst in struct tm is set to 0 to force mktime to introduce a
+   consistent offset (the non DST offset) since tm and tm+o might be
+   on opposite sides of a DST change.
+
+   Some implementations of mktime return -1 for the nonexistent
+   localtime hour at the beginning of DST.  In this event, use
+   mktime(tm - 1hr) + 3600.
+
+   Schematically
+     mktime(tm)   --> t+o
+     gmtime(t+o)  --> tm+o
+     mktime(tm+o) --> t+2o
+     t+o - (t+2o - t+o) = t
+
+   Note that glibc contains a function of the same purpose named
+   `timegm' (reverse of gmtime).  But obviously, it is not universally
+   available, and unfortunately it is not straightforwardly
+   extractable for use here.  Perhaps configure should detect timegm
+   and use it where available.
 
    Contributed by Roger Beeman <beeman@cisco.com>, with the help of
    Mark Baushke <mdb@cisco.com> and the rest of the Gurus at CISCO.
@@ -1870,8 +1901,8 @@ mktime_from_utc (struct tm *t)
    `+X', or at the end of the string.
 
    In extended regexp parlance, the function returns 1 if P matches
-   "^ *(GMT|[+-][0-9]|$)", 0 otherwise.  P being NULL (a valid result of
-   strptime()) is considered a failure and 0 is returned.  */
+   "^ *(GMT|[+-][0-9]|$)", 0 otherwise.  P being NULL (which strptime
+   can return) is considered a failure and 0 is returned.  */
 static int
 check_end (const char *p)
 {
@@ -1887,28 +1918,50 @@ check_end (const char *p)
     return 0;
 }
 
-/* Convert TIME_STRING time to time_t.  TIME_STRING can be in any of
-   the three formats RFC2068 allows the HTTP servers to emit --
-   RFC1123-date, RFC850-date or asctime-date.  Timezones are ignored,
-   and should be GMT.
+/* Convert the textual specification of time in TIME_STRING to the
+   number of seconds since the Epoch.
 
-   We use strptime() to recognize various dates, which makes it a
-   little bit slacker than the RFC1123/RFC850/asctime (e.g. it always
-   allows shortened dates and months, one-digit days, etc.).  It also
-   allows more than one space anywhere where the specs require one SP.
-   The routine should probably be even more forgiving (as recommended
-   by RFC2068), but I do not have the time to write one.
+   TIME_STRING can be in any of the three formats RFC2068 allows the
+   HTTP servers to emit -- RFC1123-date, RFC850-date or asctime-date.
+   Timezones are ignored, and should be GMT.
 
-   Return the computed time_t representation, or -1 if all the
-   schemes fail.
+   Return the computed time_t representation, or -1 if the conversion
+   fails.
 
-   Needless to say, what we *really* need here is something like
-   Marcus Hennecke's atotm(), which is forgiving, fast, to-the-point,
-   and does not use strptime().  atotm() is to be found in the sources
-   of `phttpd', a little-known HTTP server written by Peter Erikson.  */
+   This function uses strptime with various string formats for parsing
+   TIME_STRING.  This results in a parser that is not as lenient in
+   interpreting TIME_STRING as I would like it to be.  Being based on
+   strptime, it always allows shortened months, one-digit days, etc.,
+   but due to the multitude of formats in which time can be
+   represented, an ideal HTTP time parser would be even more
+   forgiving.  It should completely ignore things like week days and
+   concentrate only on the various forms of representing years,
+   months, days, hours, minutes, and seconds.  For example, it would
+   be nice if it accepted ISO 8601 out of the box.
+
+   I've investigated free and PD code for this purpose, but none was
+   usable.  getdate was big and unwieldy, and had potential copyright
+   issues, or so I was informed.  Dr. Marcus Hennecke's atotm(),
+   distributed with phttpd, is excellent, but we cannot use it because
+   it is not assigned to the FSF.  So I stuck it with strptime.  */
+
 time_t
 http_atotm (char *time_string)
 {
+  /* NOTE: Solaris strptime man page claims that %n and %t match white
+     space, but that's not universally available.  Instead, we simply
+     use ` ' to mean "skip all WS", which works under all strptime
+     implementations I've tested.  */
+
+  static const char *time_formats[] = {
+    "%a, %d %b %Y %T",		/* RFC1123: Thu, 29 Jan 1998 22:12:57 */
+    "%A, %d-%b-%y %T",		/* RFC850:  Thursday, 29-Jan-98 22:12:57 */
+    "%a, %d-%b-%Y %T",		/* pseudo-RFC850:  Thu, 29-Jan-1998 22:12:57
+				   (google.com uses this for their cookies.) */
+    "%a %b %d %T %Y"		/* asctime: Thu Jan 29 22:12:57 1998 */
+  };
+
+  int i;
   struct tm t;
 
   /* According to Roger Beeman, we need to initialize tm_isdst, since
@@ -1916,41 +1969,23 @@ http_atotm (char *time_string)
   t.tm_isdst = 0;
 
   /* Note that under foreign locales Solaris strptime() fails to
-     recognize English dates, which renders this function useless.  I
-     assume that other non-GNU strptime's are plagued by the same
-     disease.  We solve this by setting only LC_MESSAGES in
-     i18n_initialize(), instead of LC_ALL.
+     recognize English dates, which renders this function useless.  We
+     solve this by being careful not to affect LC_TIME when
+     initializing locale.
 
-     Another solution could be to temporarily set locale to C, invoke
+     Another solution would be to temporarily set locale to C, invoke
      strptime(), and restore it back.  This is slow and dirty,
      however, and locale support other than LC_MESSAGES can mess other
      things, so I rather chose to stick with just setting LC_MESSAGES.
 
-     Also note that none of this is necessary under GNU strptime(),
-     because it recognizes both international and local dates.  */
+     GNU strptime does not have this problem because it recognizes
+     both international and local dates.  */
 
-  /* NOTE: We don't use `%n' for white space, as OSF's strptime uses
-     it to eat all white space up to (and including) a newline, and
-     the function fails if there is no newline (!).
+  for (i = 0; i < ARRAY_SIZE (time_formats); i++)
+    if (check_end (strptime (time_string, time_formats[i], &t)))
+      return mktime_from_utc (&t);
 
-     Let's hope all strptime() implementations use ` ' to skip *all*
-     whitespace instead of just one (it works that way on all the
-     systems I've tested it on).  */
-
-  /* RFC1123: Thu, 29 Jan 1998 22:12:57 */
-  if (check_end (strptime (time_string, "%a, %d %b %Y %T", &t)))
-    return mktime_from_utc (&t);
-  /* RFC850:  Thursday, 29-Jan-98 22:12:57 */
-  if (check_end (strptime (time_string, "%A, %d-%b-%y %T", &t)))
-    return mktime_from_utc (&t);
-  /* pseudo-RFC850:  Thu, 29-Jan-1998 22:12:57
-     (google.com uses this for their cookies.)*/
-  if (check_end (strptime (time_string, "%a, %d-%b-%Y %T", &t)))
-    return mktime_from_utc (&t);
-  /* asctime: Thu Jan 29 22:12:57 1998 */
-  if (check_end (strptime (time_string, "%a %b %d %T %Y", &t)))
-    return mktime_from_utc (&t);
-  /* Failure.  */
+  /* All formats have failed.  */
   return -1;
 }
 
