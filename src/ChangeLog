@@ -1,3 +1,8 @@
+2003-09-21  Bertrand Demiddelaer  <bert@b3rt.org>
+
+	* url.c (path_simplify): Would read two bytes past the end of the
+	string in the "./" case.
+
 2003-09-21  Matthew J. Mellon  <mellon@tymenet.com>
 
 	* http.c (gethttp): Recognize content-type "application/xhtml+xml"

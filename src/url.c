@@ -1776,7 +1776,7 @@ path_simplify (char *path)
 	  if (*(p + 1) == '/')
 	    {
 	      change = 1;
-	      memmove (p, p + 2, end - p);
+	      memmove (p, p + 2, end - (p + 2));
 	      end -= 2;
 	      goto again;
 	    }
