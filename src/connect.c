@@ -176,8 +176,11 @@ bindport (unsigned short *port)
   DEBUGP (("Master socket fd %d bound.\n", msock));
   if (!*port)
     {
-      size_t addrlen = sizeof (struct sockaddr_in);
-      if (getsockname (msock, addr, (int *)&addrlen) < 0)
+      /* #### addrlen should be a 32-bit type, which int is not
+         guaranteed to be.  Oh, and don't try to make it a size_t,
+         because that can be 64-bit.  */
+      int addrlen = sizeof (struct sockaddr_in);
+      if (getsockname (msock, addr, &addrlen) < 0)
 	{
 	  CLOSE (msock);
 	  msock = -1;
@@ -260,7 +263,8 @@ conaddr (int fd)
   static unsigned char res[4];
   struct sockaddr_in mysrv;
   struct sockaddr *myaddr;
-  size_t addrlen = sizeof (mysrv);
+  int addrlen = sizeof (mysrv);	/* see bindport() for discussion of
+                                   using `int' here. */
 
   myaddr = (struct sockaddr *) (&mysrv);
   if (getsockname (fd, myaddr, (int *)&addrlen) < 0)

@@ -1,3 +1,9 @@
+2001-01-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* connect.c (bindport): Declare addrlen as int.  Diagnosed by
+	Drazen Kacar <dave@arsdigita.com>.
+	(conaddr): Ditto.
+
 2001-01-09  Dan Harkless  <wget@harkless.org>
 
 	* html-url.c: A bunch of fixup of `--page-requisites'-related
