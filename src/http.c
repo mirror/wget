@@ -1712,7 +1712,7 @@ check_end (const char *p)
     ++p;
   if (!*p
       || (p[0] == 'G' && p[1] == 'M' && p[2] == 'T')
-      || ((p[0] == '+' || p[1] == '-') && ISDIGIT (p[1])))
+      || ((p[0] == '+' || p[0] == '-') && ISDIGIT (p[1])))
     return 1;
   else
     return 0;

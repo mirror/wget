@@ -1,3 +1,7 @@
+2000-12-17  Igor Khristophorov  <igor@atdot.org>
+
+	* http.c (check_end): Fix test for '+' or '-'.
+
 2000-12-17  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* url.c (parseurl): Rename inner loop var from i to ind to avoid
