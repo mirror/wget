@@ -1,13 +1,13 @@
 # Croatian messages for GNU Wget
-# Copyright (C) 1998 Free Software Foundation, Inc.
-# Hrvoje Niksic <hniksic@srce.hr>, 1998.
+# Copyright (C) 2003 Free Software Foundation, Inc.
+# Hrvoje Niksic <hniksic@xemacs.org>, 2003.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.8\n"
+"Project-Id-Version: wget 1.9\n"
 "POT-Creation-Date: 2003-10-01 22:01+0200\n"
-"PO-Revision-Date: 2002-04-15 18:09+02:00\n"
-"Last-Translator: Hrvoje Niksic <hniksic@arsdigita.com>\n"
+"PO-Revision-Date: 2003-10-01 22:24+0200\n"
+"Last-Translator: Hrvoje Niksic <hniksic@xemacs.org>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-2\n"
@@ -67,9 +67,9 @@ msgid "Error in Set-Cookie, field `%s'"
 msgstr "Gre¹ka u zaglavlju Set-Cookie, polje `%s'"
 
 #: src/cookies.c:615
-#, fuzzy, c-format
+#, c-format
 msgid "Syntax error in Set-Cookie: %s at position %d.\n"
-msgstr "Gre¹ka u Set-Cookie: prerani kraj stringa.\n"
+msgstr "Gre¹ka u Set-Cookie: %s na poziciji %d.\n"
 
 #: src/cookies.c:1411
 #, c-format
@@ -700,7 +700,7 @@ msgstr "%s (%s) - Gre¹ka pri èitanju na bajtu %ld/%ld (%s). "
 #: src/init.c:341
 #, c-format
 msgid "%s: WGETRC points to %s, which doesn't exist.\n"
-msgstr ""
+msgstr "%s: WGETRC pokazuje na %s, koji ne postoji.\n"
 
 #: src/init.c:397 src/netrc.c:276
 #, c-format
@@ -718,39 +718,39 @@ msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: Upozorenje: sistemski i korisnikov wgetrc su `%s'.\n"
 
 #: src/init.c:593
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Invalid --execute command `%s'\n"
-msgstr "wget: %s: Neispravna naznaka `%s'\n"
+msgstr "%s: Neispravna --execute naredba `%s'\n"
 
 #: src/init.c:629
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid boolean `%s', use `on' or `off'.\n"
-msgstr "%s: %s: Molim navedite on ili off.\n"
+msgstr "%s: %s: Neispravan boolean `%s', navedite `on' ili `off'.\n"
 
 #: src/init.c:672
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid boolean `%s', use always, on, off, or never.\n"
-msgstr "%s: %s: Molim navedite on, off ili never.\n"
+msgstr "%s: %s: Neispravan boolean `%s', navedite always, on, off ili never.\n"
 
 #: src/init.c:690
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid number `%s'.\n"
-msgstr "%s: %s: Neispravna naznaka `%s'\n"
+msgstr "%s: %s: Neispravan broj `%s'.\n"
 
 #: src/init.c:887
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid byte value `%s'\n"
-msgstr "%s: %s: Neispravan indikator napretka `%s'.\n"
+msgstr "%s: %s: Neispravna bajtovna vrijednost `%s'\n"
 
 #: src/init.c:941
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid time period `%s'\n"
-msgstr "%s: %s: Neispravna naznaka `%s'\n"
+msgstr "%s: %s: Neispravan vremenski period `%s'\n"
 
 #: src/init.c:1018
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid header `%s'.\n"
-msgstr "%s: %s: Neispravna naznaka `%s'\n"
+msgstr "%s: %s: Neispravno zaglavlje `%s'.\n"
 
 #: src/init.c:1073
 #, c-format
@@ -758,14 +758,14 @@ msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: Neispravan indikator napretka `%s'.\n"
 
 #: src/init.c:1124
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid restriction `%s', use `unix' or `windows'.\n"
-msgstr "%s: %s: Neispravna naznaka `%s'\n"
+msgstr "%s: %s: Neispravna restrikcija `%s', upotrijebite `unix' ili `windows'.\n"
 
 #: src/init.c:1165
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid value `%s'.\n"
-msgstr "%s: %s: Neispravna naznaka `%s'\n"
+msgstr "%s: %s: Neispravna vrijednost `%s'.\n"
 
 #: src/log.c:664
 #, c-format
@@ -822,7 +822,6 @@ msgstr ""
 "\n"
 
 #: src/main.c:151
-#, fuzzy
 msgid ""
 "Logging and input file:\n"
 "  -o,  --output-file=FILE     log messages to FILE.\n"
@@ -846,14 +845,9 @@ msgstr ""
 "  -i,  --input-file=SPIS      dohvati URL-ove navedene u SPISU.\n"
 "  -F,  --force-html           tretiraj ulazni spis kao HTML.\n"
 "  -B,  --base=URL             temeljni URL za relativne linkove kod -F -i.\n"
-"       --sslcertfile=SPIS     opcionalni certifikat klijenta.\n"
-"       --sslcertkey=SPIS      opcionalni spis s kljuèem certifikata.\n"
-"       --egd-file=SPIS        spisa vezan s EGD demonom (izvorom "
-"sluèajnosti).\n"
 "\n"
 
 #: src/main.c:163
-#, fuzzy
 msgid ""
 "Download:\n"
 "  -t,  --tries=NUMBER           set number of retries to NUMBER (0 "
@@ -889,8 +883,7 @@ msgid ""
 msgstr ""
 "Dohvat:\n"
 "       --bind-address=ADRESA    koristi ADRESU (ime ili IP) pri bindanju.\n"
-"  -t,  --tries=BROJ             postavi broj poku¹aja na BROJ (0 je "
-"beskonaèno).\n"
+"  -t,  --tries=BROJ             postavi broj poku¹aja na BROJ (0 je beskonaèno).\n"
 "  -O   --output-document=SPIS   spremaj dohvaæene dokumente u SPIS.\n"
 "  -nc, --no-clobber             ne dohvaæaj spise koji postoje lokalno.\n"
 "  -c,  --continue               nastavi s dohvatom na pola skinutog spisa.\n"
@@ -904,10 +897,12 @@ msgstr ""
 "  -Y,  --proxy=on/off           ukljuèi ili iskljuèi meðuserver (proxy).\n"
 "  -Q,  --quota=BROJ             ogranièi kolièinu dohvaæenog na BROJ.\n"
 "       --limit-rate=BRZINA      ne dohvaæaj podatke br¾e od BRZINE.\n"
+"       --dns-cache=off          ne pamti DNS dohvate.\n"
+"       --restrict-file-names=OS ogranièi znakove u nazivima spisa na one koje\n"
+"                                 OS podr¾ava.\n"
 "\n"
 
 #: src/main.c:188
-#, fuzzy
 msgid ""
 "Directories:\n"
 "  -nd, --no-directories            don't create directories.\n"
@@ -994,6 +989,18 @@ msgid ""
 "                              1=SSLv2 2=SSLv3 3=TLSv1\n"
 "\n"
 msgstr ""
+"HTTPS (SSL) opcije:\n"
+"       --sslcertfile=FILE     opcionalna ovjera klijenta.\n"
+"       --sslcertkey=KEYFILE   opcionalni spis s kljuèem za ovu ovjeru.\n"
+"       --egd-file=FILE        datoteka EGD socketa.\n"
+"       --sslcadir=DIR         direktorij gdje je pohranjena lista CA-ova.\n"
+"       --sslcafile=FILE       spis s CA-ova na okupu.\n"
+"       --sslcerttype=0/1      vrst Client-Certa, 0=PEM (podrazumijevano) /\n"
+"                               1=ASN1 (DER)\n"
+"       --sslcheckcert=0/1     provjeri poslu¾iteljevu ovjeru spram zadanog CA.\n"
+"       --sslprotocol=0-3      izaberi SSL protokol; 0=automatski,\n"
+"                               1=SSLv2 2=SSLv3 3=TLSv1\n"
+"\n"
 
 #: src/main.c:230
 msgid ""
@@ -1015,7 +1022,6 @@ msgstr ""
 "\n"
 
 #: src/main.c:237
-#, fuzzy
 msgid ""
 "Recursive retrieval:\n"
 "  -r,  --recursive          recursive download.\n"
@@ -1032,14 +1038,13 @@ msgid ""
 "\n"
 msgstr ""
 "Rekurzivni dohvat:\n"
-"  -r,  --recursive             rekurzivni dohvat -- koristi pa¾ljivo!\n"
-"  -l,  --level=NUMBER          maks. dubina rekurzije (inf ili 0 je "
-"beskonaèno).\n"
-"       --delete-after          pobri¹i lokalne spise nakon dohvata.\n"
-"  -k,  --convert-links         pretvori ne-relativne linkove u relativne.\n"
-"  -m,  --mirror                kratica za -r -N -l inf -nr.\n"
-"  -p,  --page-requisites       skupi slike i drugo potrebno za prikaz HTML-"
-"a.\n"
+"  -r,  --recursive         rekurzivni dohvat -- koristi pa¾ljivo!\n"
+"  -l,  --level=NUMBER      maks. dubina rekurzije (inf ili 0 je beskonaèno).\n"
+"       --delete-after      pobri¹i lokalne spise nakon dohvata.\n"
+"  -k,  --convert-links     pretvori ne-relativne linkove u relativne.\n"
+"  -m,  --mirror            kratica za -r -N -l inf -nr.\n"
+"  -p,  --page-requisites   skupi slike i drugo potrebno za prikaz HTML-a.\n"
+"       --strict-comments   strogo (po SGML-u) interpretiraj HTML komentare.\n"
 "\n"
 
 #: src/main.c:248
@@ -1093,11 +1098,8 @@ msgid "%s: debug support not compiled in.\n"
 msgstr "%s: podr¹ka za debugiranje nije ugraðena.\n"
 
 #: src/main.c:517
-#, fuzzy
 msgid "Copyright (C) 2003 Free Software Foundation, Inc.\n"
-msgstr ""
-"Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, "
-"Inc.\n"
+msgstr "Copyright (C) 2003 Free Software Foundation, Inc.\n"
 
 #: src/main.c:519
 msgid ""
@@ -1117,13 +1119,10 @@ msgstr ""
 "General Public License za vi¹e detalja.\n"
 
 #: src/main.c:524
-#, fuzzy
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"
-msgstr ""
-"\n"
-"Izvorno napisao Hrvoje Nik¹iæ <hniksic@arsdigita.com>.\n"
+msgstr "\nIzvorno napisao Hrvoje Nik¹iæ <hniksic@xemacs.org>.\n"
 
 #: src/main.c:703
 #, c-format
@@ -1271,37 +1270,36 @@ msgstr ""
 "\n"
 
 #: src/url.c:621
-#, fuzzy
 msgid "No error"
-msgstr "Nepoznata gre¹ka"
+msgstr "Nema gre¹ke"
 
 #: src/url.c:623
 msgid "Unsupported scheme"
-msgstr ""
+msgstr "Nepodr¾ana shema"
 
 #: src/url.c:625
 msgid "Empty host"
-msgstr ""
+msgstr "Prazno ime poslu¾itelja"
 
 #: src/url.c:627
 msgid "Bad port number"
-msgstr ""
+msgstr "Neispravan broj porta"
 
 #: src/url.c:629
 msgid "Invalid user name"
-msgstr ""
+msgstr "Neispravno korisnièko ime"
 
 #: src/url.c:631
 msgid "Unterminated IPv6 numeric address"
-msgstr ""
+msgstr "Nedovrssena IPv6 numerièka adresa"
 
 #: src/url.c:633
 msgid "IPv6 addresses not supported"
-msgstr ""
+msgstr "IPv6 adrese nisu podr¾ane"
 
 #: src/url.c:635
 msgid "Invalid IPv6 numeric address"
-msgstr ""
+msgstr "Neispravna IPv6 numerièka adresa"
 
 #: src/utils.c:121
 #, c-format
@@ -1318,21 +1316,3 @@ msgstr "Nastavljam u pozadini, s pid-om %d.\n"
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Ne mogu izbrisati link `%s': %s\n"
-
-#~ msgid "Syntax error in Set-Cookie at character `%c'.\n"
-#~ msgstr "Gre¹ka u Set-Cookie kod znaka `%c'.\n"
-
-#~ msgid "%s: BUG: unknown command `%s', value `%s'.\n"
-#~ msgstr "%s: BUG: nepoznata naredba `%s', vrijednost `%s'.\n"
-
-#~ msgid "%s: %s: invalid command\n"
-#~ msgstr "%s: %s: neispravna naredba\n"
-
-#~ msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
-#~ msgstr "%s: %s: Ne mogu pretvoriti `%s' u IP adresu.\n"
-
-#~ msgid "Could not find proxy host.\n"
-#~ msgstr "Ne mogu naæi proxy raèunalo.\n"
-
-#~ msgid "%s: Redirection cycle detected.\n"
-#~ msgstr "%s: Uoèeno kru¾no preusmjeravanje.\n"

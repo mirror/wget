@@ -1,5 +1,9 @@
 2003-10-01  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* po/hr.po: Updated.
+
+2003-10-01  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* po/POTFILES.in: Added src/convert.c.
 
 2003-09-30  Herold Heiko  <Heiko.Herold@previnet.it>
