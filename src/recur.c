@@ -59,6 +59,7 @@ extern int errno;
 #endif
 
 extern char *version_string;
+extern LARGE_INT total_downloaded_bytes;
 
 extern struct hash_table *dl_url_file_map;
 extern struct hash_table *downloaded_html_set;
@@ -224,7 +225,7 @@ retrieve_tree (const char *start_url)
       int depth, html_allowed;
       boolean dash_p_leaf_HTML = FALSE;
 
-      if (downloaded_exceeds_quota ())
+      if (opt.quota && total_downloaded_bytes > opt.quota)
 	break;
       if (status == FWRITEERR)
 	break;
@@ -404,7 +405,7 @@ retrieve_tree (const char *start_url)
     url_free (start_url_parsed);
   string_set_free (blacklist);
 
-  if (downloaded_exceeds_quota ())
+  if (opt.quota && total_downloaded_bytes > opt.quota)
     return QUOTEXC;
   else if (status == FWRITEERR)
     return FWRITEERR;

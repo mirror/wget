@@ -1,5 +1,31 @@
 2003-10-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (large_int_to_string): Use snprintf() to print the
+	number.  This will work even on systems where libc doesn't
+	understand %lld, but the compiler does, because it will use our
+	snprintf replacement.
+
+	* init.c (parse_bytes_helper): New function.
+	(cmd_bytes): Use it to parse bytes, but cast the result to long.
+	(cmd_bytes_large): Ditto, but store the result to LARGE_INT.  Used
+	for --quota so that --quota=10G works even on machines without
+	long long.
+
+	* options.h (struct options): Declare quota as LARGE_INT.
+
+	* retr.c (downloaded_exceeds_quota): Removed.
+	(downloaded_increase): Ditto.
+	(total_downloaded_bytes): New variable, replaces opt.downloaded,
+	which was the wrong place for it anyway.  Updated callers of
+	downloaded_exceeds_quota and downloaded_increase to check this
+	variable directly.
+
+	* sysdep.h: Get rid of VERY_LONG_TYPE.  Use LARGE_INT for the same
+	purpose, defined as `long', `long long' or `double', depending on
+	size of long and whether long long is available.
+
+2003-10-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* sysdep.h: Also check size of short for int32_t.
 
 2003-10-11  Hrvoje Niksic  <hniksic@xemacs.org>

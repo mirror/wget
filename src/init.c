@@ -84,6 +84,7 @@ static int enable_tilde_expansion;
 
 CMD_DECLARE (cmd_boolean);
 CMD_DECLARE (cmd_bytes);
+CMD_DECLARE (cmd_bytes_large);
 CMD_DECLARE (cmd_directory_vector);
 CMD_DECLARE (cmd_lockable_boolean);
 CMD_DECLARE (cmd_number);
@@ -184,7 +185,7 @@ static struct {
   { "proxypasswd",	&opt.proxy_passwd,	cmd_string },
   { "proxyuser",	&opt.proxy_user,	cmd_string },
   { "quiet",		&opt.quiet,		cmd_boolean },
-  { "quota",		&opt.quota,		cmd_bytes },
+  { "quota",		&opt.quota,		cmd_bytes_large },
   { "randomwait",	&opt.random_wait,	cmd_boolean },
   { "readtimeout",	&opt.read_timeout,	cmd_time },
   { "reclevel",		&opt.reclevel,		cmd_number_inf },
@@ -849,6 +850,63 @@ cmd_directory_vector (const char *com, const char *val, void *closure)
 
 static int simple_atof PARAMS ((const char *, const char *, double *));
 
+/* Enginge for cmd_bytes and cmd_bytes_large: converts a string such
+   as "100k" or "2.5G" to a floating point number.  */
+
+static int
+parse_bytes_helper (const char *val, double *result)
+{
+  double number, mult;
+  const char *end = val + strlen (val);
+
+  /* Check for "inf".  */
+  if (0 == strcmp (val, "inf"))
+    {
+      *result = 0;
+      return 1;
+    }
+
+  /* Strip trailing whitespace.  */
+  while (val < end && ISSPACE (end[-1]))
+    --end;
+  if (val == end)
+    return 0;
+
+  switch (TOLOWER (end[-1]))
+    {
+    case 'k':
+      --end, mult = 1024.0;
+      break;
+    case 'm':
+      --end, mult = 1048576.0;
+      break;
+    case 'g':
+      --end, mult = 1073741824.0;
+      break;
+    case 't':
+      --end, mult = 1099511627776.0;
+      break;
+    default:
+      /* Not a recognized suffix: assume it's a digit.  (If not,
+	 simple_atof will raise an error.)  */
+      mult = 1;
+    }
+
+  /* Skip leading and trailing whitespace. */
+  while (val < end && ISSPACE (*val))
+    ++val;
+  while (val < end && ISSPACE (end[-1]))
+    --end;
+  if (val == end)
+    return 0;
+
+  if (!simple_atof (val, end, &number))
+    return 0;
+
+  *result = number * mult;
+  return 1;
+}
+
 /* Parse VAL as a number and set its value to CLOSURE (which should
    point to a long int).
 
@@ -866,58 +924,33 @@ static int simple_atof PARAMS ((const char *, const char *, double *));
 static int
 cmd_bytes (const char *com, const char *val, void *closure)
 {
-  long mult;
-  double number;
-  const char *end = val + strlen (val);
-
-  /* Check for "inf".  */
-  if (0 == strcmp (val, "inf"))
+  double byte_value;
+  if (!parse_bytes_helper (val, &byte_value))
     {
-      *(long *)closure = 0;
-      return 1;
-    }
-
-  /* Strip trailing whitespace.  */
-  while (val < end && ISSPACE (end[-1]))
-    --end;
-
-  if (val == end)
-    {
-    err:
       fprintf (stderr, _("%s: %s: Invalid byte value `%s'\n"),
 	       exec_name, com, val);
       return 0;
     }
+  *(long *)closure = (long)byte_value;
+  return 1;
+}
 
-  switch (TOLOWER (end[-1]))
+/* Like cmd_bytes, but CLOSURE is interpreted as a pointer to
+   LARGE_INT.  It works by converting the string to double, therefore
+   working with values up to 2^53-1 without loss of precision.  This
+   value (8192 TB) is large enough to serve for a while.  */
+
+static int
+cmd_bytes_large (const char *com, const char *val, void *closure)
+{
+  double byte_value;
+  if (!parse_bytes_helper (val, &byte_value))
     {
-    case 'k':
-      --end, mult = 1L<<10;
-      break;
-    case 'm':
-      --end, mult = 1L<<20;
-      break;
-    case 'g':
-      --end, mult = 1L<<30;
-      break;
-    default:
-      /* Not a recognized suffix: assume it belongs to the number.
-	 (If not, atof simple_atof will raise an error.)  */
-      mult = 1;
+      fprintf (stderr, _("%s: %s: Invalid byte value `%s'\n"),
+	       exec_name, com, val);
+      return 0;
     }
-
-  /* Skip leading and trailing whitespace. */
-  while (val < end && ISSPACE (*val))
-    ++val;
-  while (val < end && ISSPACE (end[-1]))
-    --end;
-  if (val == end)
-    goto err;
-
-  if (!simple_atof (val, end, &number))
-    goto err;
-
-  *(long *)closure = (long)(number * mult);
+  *(LARGE_INT *)closure = (LARGE_INT)byte_value;
   return 1;
 }
 

@@ -1290,13 +1290,13 @@ free_keys_and_values (struct hash_table *ht)
 }
 
 
-/* Engine for legible and legible_very_long; this function works on
-   strings.  */
+/* Engine for legible and legible_large_int; add thousand separators
+   to numbers printed in strings.  */
 
 static char *
 legible_1 (const char *repr)
 {
-  static char outbuf[128];
+  static char outbuf[48];
   int i, i1, mod;
   char *outptr;
   const char *inptr;
@@ -1304,7 +1304,9 @@ legible_1 (const char *repr)
   /* Reset the pointers.  */
   outptr = outbuf;
   inptr = repr;
-  /* If the number is negative, shift the pointers.  */
+
+  /* Ignore the sign for the purpose of adding thousand
+     separators.  */
   if (*inptr == '-')
     {
       *outptr++ = '-';
@@ -1329,6 +1331,7 @@ legible_1 (const char *repr)
 }
 
 /* Legible -- return a static pointer to the legibly printed long.  */
+
 char *
 legible (long l)
 {
@@ -1338,53 +1341,29 @@ legible (long l)
   return legible_1 (inbuf);
 }
 
-/* Write a string representation of NUMBER into the provided buffer.
-   We cannot use sprintf() because we cannot be sure whether the
-   platform supports printing of what we chose for VERY_LONG_TYPE.
+/* Write a string representation of LARGE_INT NUMBER into the provided
+   buffer.  The buffer should be able to accept 24 characters,
+   including the terminating zero.
 
-   Example: Gcc supports `long long' under many platforms, but on many
-   of those the native libc knows nothing of it and therefore cannot
-   print it.
-
-   How long BUFFER needs to be depends on the platform and the content
-   of NUMBER.  For 64-bit VERY_LONG_TYPE (the most common case), 24
-   bytes are sufficient.  Using more might be a good idea.
-
-   This function does not go through the hoops that long_to_string
-   goes to because it doesn't aspire to be fast.  (It's called perhaps
-   once in a Wget run.)  */
+   It would be dangerous to use sprintf, because the code wouldn't
+   work on a machine with gcc-provided long long support, but without
+   libc support for "%lld".  However, such platforms will typically
+   not have snprintf and will use our version, which does support
+   "%lld" where long longs are available.  */
 
 static void
-very_long_to_string (char *buffer, VERY_LONG_TYPE number)
+large_int_to_string (char *buffer, LARGE_INT number)
 {
-  int i = 0;
-  int j;
-
-  /* Print the number backwards... */
-  do
-    {
-      buffer[i++] = '0' + number % 10;
-      number /= 10;
-    }
-  while (number);
-
-  /* ...and reverse the order of the digits. */
-  for (j = 0; j < i / 2; j++)
-    {
-      char c = buffer[j];
-      buffer[j] = buffer[i - 1 - j];
-      buffer[i - 1 - j] = c;
-    }
-  buffer[i] = '\0';
+  snprintf (buffer, 24, LARGE_INT_FMT, number);
 }
 
-/* The same as legible(), but works on VERY_LONG_TYPE.  See sysdep.h.  */
+/* The same as legible(), but works on LARGE_INT.  */
+
 char *
-legible_very_long (VERY_LONG_TYPE l)
+legible_large_int (LARGE_INT l)
 {
-  char inbuf[128];
-  /* Print the number into the buffer.  */
-  very_long_to_string (inbuf, l);
+  char inbuf[48];
+  large_int_to_string (inbuf, l);
   return legible_1 (inbuf);
 }
 

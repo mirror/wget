@@ -119,10 +119,8 @@ struct options
 
   long limit_rate;		/* Limit the download rate to this
 				   many bps. */
-  long quota;			/* Maximum number of bytes to
-				   retrieve. */
-  VERY_LONG_TYPE downloaded;	/* How much we downloaded already. */
-  int downloaded_overflow;	/* Whether the above overflowed. */
+  LARGE_INT quota;		/* Maximum file size to download and
+				   store. */
   int numurls;			/* Number of successfully downloaded
 				   URLs */
 

@@ -53,6 +53,9 @@ so, delete this exception statement from your version.  */
 #  include <time.h>
 # endif
 #endif
+#ifndef errno
+extern int errno;
+#endif
 
 #include "wget.h"
 #include "utils.h"
@@ -73,10 +76,8 @@ so, delete this exception statement from your version.  */
 #include "convert.h"
 
 extern char *version_string;
+extern LARGE_INT total_downloaded_bytes;
 
-#ifndef errno
-extern int errno;
-#endif
 
 static int cookies_loaded_p;
 struct cookie_jar *wget_cookie_jar;
@@ -1951,7 +1952,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 			 tms, u->url, hstat.len, hstat.contlen, locf, count);
 	    }
 	  ++opt.numurls;
-	  downloaded_increase (hstat.len);
+	  total_downloaded_bytes += hstat.len;
 
 	  /* Remember that we downloaded the file for later ".orig" code. */
 	  if (*dt & ADDED_HTML_EXTENSION)
@@ -1978,7 +1979,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 			     tms, u->url, hstat.len, locf, count);
 		}
 	      ++opt.numurls;
-	      downloaded_increase (hstat.len);
+	      total_downloaded_bytes += hstat.len;
 
 	      /* Remember that we downloaded the file for later ".orig" code. */
 	      if (*dt & ADDED_HTML_EXTENSION)
@@ -2009,7 +2010,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 			 "%s URL:%s [%ld/%ld] -> \"%s\" [%d]\n",
 			 tms, u->url, hstat.len, hstat.contlen, locf, count);
 	      ++opt.numurls;
-	      downloaded_increase (hstat.len);
+	      total_downloaded_bytes += hstat.len;
 
 	      /* Remember that we downloaded the file for later ".orig" code. */
 	      if (*dt & ADDED_HTML_EXTENSION)

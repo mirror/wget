@@ -102,7 +102,7 @@ void string_set_free PARAMS ((struct hash_table *));
 void free_keys_and_values PARAMS ((struct hash_table *));
 
 char *legible PARAMS ((long));
-char *legible_very_long PARAMS ((VERY_LONG_TYPE));
+char *legible_large_int PARAMS ((LARGE_INT));
 int numdigit PARAMS ((long));
 char *number_to_string PARAMS ((char *, long));
 

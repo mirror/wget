@@ -59,6 +59,8 @@ so, delete this exception statement from your version.  */
 extern int errno;
 #endif
 
+extern LARGE_INT total_downloaded_bytes;
+
 /* File where the "ls -al" listing will be saved.  */
 #define LIST_FILENAME ".listing"
 
@@ -1195,7 +1197,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	    /* --dont-remove-listing was specified, so do count this towards the
 	       number of bytes and files downloaded. */
 	    {
-	      downloaded_increase (len);
+	      total_downloaded_bytes += len;
 	      opt.numurls++;
 	    }
 
@@ -1210,7 +1212,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	     downloaded if they're going to be deleted.  People seeding proxies,
 	     for instance, may want to know how many bytes and files they've
 	     downloaded through it. */
-	  downloaded_increase (len);
+	  total_downloaded_bytes += len;
 	  opt.numurls++;
 
 	  if (opt.delete_after)
@@ -1336,7 +1338,7 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
     {
       char *old_target, *ofile;
 
-      if (downloaded_exceeds_quota ())
+      if (opt.quota && total_downloaded_bytes > opt.quota)
 	{
 	  --depth;
 	  return QUOTEXC;
@@ -1540,7 +1542,7 @@ ftp_retrieve_dirs (struct url *u, struct fileinfo *f, ccon *con)
       int size;
       char *odir, *newdir;
 
-      if (downloaded_exceeds_quota ())
+      if (opt.quota && total_downloaded_bytes > opt.quota)
 	break;
       if (f->type != FT_DIRECTORY)
 	continue;
@@ -1586,7 +1588,7 @@ Not descending to `%s' as it is excluded/not-included.\n"), newdir);
       /* Set the time-stamp?  */
     }
 
-  if (opt.quota && opt.downloaded > opt.quota)
+  if (opt.quota && total_downloaded_bytes > opt.quota)
     return QUOTEXC;
   else
     return RETROK;
@@ -1704,7 +1706,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
 	}
     }
   freefileinfo (start);
-  if (downloaded_exceeds_quota ())
+  if (opt.quota && total_downloaded_bytes > opt.quota)
     return QUOTEXC;
   else
     /* #### Should we return `res' here?  */
