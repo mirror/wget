@@ -426,9 +426,9 @@ ftp_rest (struct rbuf *rbuf, long offset)
   char *request, *respline;
   int nwritten;
   uerr_t err;
-  static char numbuf[20]; /* Buffer for the number */
+  static char numbuf[24]; /* Buffer for the number */
 
-  long_to_string (numbuf, offset);
+  number_to_string (numbuf, offset);
   request = ftp_request ("REST", numbuf);
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
   if (nwritten < 0)

@@ -478,7 +478,7 @@ static struct hash_table *registered_specs;
   result = alloca (HP_len + 1 + numdigit (port) + 1);	\
   memcpy (result, host, HP_len);			\
   result[HP_len] = ':';					\
-  long_to_string (result + HP_len + 1, port);		\
+  number_to_string (result + HP_len + 1, port);		\
 } while (0)
 
 /* Register RES specs that below to server on HOST:PORT.  They will

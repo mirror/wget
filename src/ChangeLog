@@ -1,5 +1,11 @@
 2001-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* utils.c (long_to_string): Return a pointer after where the
+	number ends.
+	(long_to_string): Rename to number_to_string.
+
+2001-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* utils.c (path_simplify): Correctly handle the unlikely case that
 	b starts out as path + 1.
 

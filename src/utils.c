@@ -1343,7 +1343,7 @@ legible (long l)
 {
   char inbuf[24];
   /* Print the number into the buffer.  */
-  long_to_string (inbuf, l);
+  number_to_string (inbuf, l);
   return legible_1 (inbuf);
 }
 
@@ -1399,17 +1399,17 @@ legible_very_long (VERY_LONG_TYPE l)
 
 /* Count the digits in a (long) integer.  */
 int
-numdigit (long a)
+numdigit (long number)
 {
-  int res = 1;
-  if (a < 0)
+  int cnt = 1;
+  if (number < 0)
     {
-      a = -a;
-      ++res;
+      number = -number;
+      ++cnt;
     }
-  while ((a /= 10) != 0)
-    ++res;
-  return res;
+  while ((number /= 10) > 0)
+    ++cnt;
+  return cnt;
 }
 
 #define ONE_DIGIT(figure) *p++ = n / (figure) + '0'
@@ -1438,21 +1438,26 @@ numdigit (long a)
 #define DIGITS_18(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_17 ((figure) / 10)
 #define DIGITS_19(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_18 ((figure) / 10)
 
-/* Print NUMBER to BUFFER in base 10.  This is completely equivalent
-   to `sprintf(buffer, "%ld", number)', only much faster.
+/* Print NUMBER to BUFFER in base 10.  This should be completely
+   equivalent to `sprintf(buffer, "%ld", number)', only much faster.
 
    The speedup may make a difference in programs that frequently
    convert numbers to strings.  Some implementations of sprintf,
    particularly the one in GNU libc, have been known to be extremely
    slow compared to this function.
 
-   BUFFER should accept as many bytes as you expect the number to take
-   up.  On machines with 64-bit longs the maximum needed size is 24
-   bytes.  That includes the worst-case digits, the optional `-' sign,
-   and the trailing \0.  */
+   Return the pointer to the location where the terminating zero was
+   printed.  (Equivalent to calling buffer+strlen(buffer) after the
+   function is done.)
 
-void
-long_to_string (char *buffer, long number)
+   BUFFER should be big enough to accept as many bytes as you expect
+   the number to take up.  On machines with 64-bit longs the maximum
+   needed size is 24 bytes.  That includes the digits needed for the
+   largest 64-bit number, the `-' sign in case it's negative, and the
+   terminating '\0'.  */
+
+char *
+number_to_string (char *buffer, long number)
 {
   char *p = buffer;
   long n = number;
@@ -1461,6 +1466,7 @@ long_to_string (char *buffer, long number)
   /* We are running in a strange or misconfigured environment.  Let
      sprintf cope with it.  */
   sprintf (buffer, "%ld", n);
+  p += strlen (buffer);
 #else  /* (SIZEOF_LONG == 4) || (SIZEOF_LONG == 8) */
 
   if (n < 0)
@@ -1496,6 +1502,8 @@ long_to_string (char *buffer, long number)
 
   *p = '\0';
 #endif /* (SIZEOF_LONG == 4) || (SIZEOF_LONG == 8) */
+
+  return p;
 }
 
 #undef ONE_DIGIT

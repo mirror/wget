@@ -1206,7 +1206,7 @@ mkstruct (const struct url *u)
 	{
 	  int len = strlen (dirpref);
 	  dirpref[len] = ':';
-	  long_to_string (dirpref + len + 1, u->port);
+	  number_to_string (dirpref + len + 1, u->port);
 	}
     }
   else				/* not add_hostdir */
@@ -1654,8 +1654,7 @@ url_string (const struct url *url, int hide_password)
   if (url->port != scheme_port)
     {
       *p++ = ':';
-      long_to_string (p, url->port);
-      p += strlen (p);
+      p = number_to_string (p, url->port);
     }
 
   full_path_write (url, p);

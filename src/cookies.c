@@ -121,7 +121,7 @@ delete_cookie (struct cookie *cookie)
   result = alloca (HP_len + 1 + numdigit (port) + 1);	\
   memcpy (result, host, HP_len);			\
   result[HP_len] = ':';					\
-  long_to_string (result + HP_len + 1, port);		\
+  number_to_string (result + HP_len + 1, port);		\
 } while (0)
 
 /* Find cookie chain that corresponds to DOMAIN (exact) and PORT.  */

@@ -91,7 +91,7 @@ void free_keys_and_values PARAMS ((struct hash_table *));
 char *legible PARAMS ((long));
 char *legible_very_long PARAMS ((VERY_LONG_TYPE));
 int numdigit PARAMS ((long));
-void long_to_string PARAMS ((char *, long));
+char *number_to_string PARAMS ((char *, long));
 
 struct wget_timer *wtimer_allocate PARAMS ((void));
 struct wget_timer *wtimer_new PARAMS ((void));
