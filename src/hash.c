@@ -241,9 +241,12 @@ static int ptrcmp PARAMS ((const void *, const void *));
    needed, simply specify zero ITEMS.
 
    If hash and test callbacks are not specified, identity mapping is
-   assumed, i.e. pointer values are used for key comparison.  If,
-   instead of that, you want strings with equal contents to hash the
-   same, use make_string_hash_table.  */
+   assumed, i.e. pointer values are used for key comparison.  (Common
+   Lisp calls such tables EQ hash tables, and Java calls them
+   IdentityHashMaps.)  If your keys require different comparison,
+   specify hash and test functions.  For easy use of C strings as hash
+   keys, you can use the convenience functions make_string_hash_table
+   and make_nocase_string_hash_table.  */
 
 struct hash_table *
 hash_table_new (int items,
@@ -637,9 +640,7 @@ make_nocase_string_hash_table (int items)
   return hash_table_new (items, string_hash_nocase, string_cmp_nocase);
 }
 
-/* Hashing of numeric values, such as pointers and integers.  Used for
-   hash tables that are keyed by pointer identity.  (Common Lisp calls
-   them EQ hash tables, and Java calls them IdentityHashMaps.)
+/* Hashing of numeric values, such as pointers and integers.
 
    This implementation is the Robert Jenkins' 32 bit Mix Function,
    with a simple adaptation for 64-bit values.  It offers excellent
