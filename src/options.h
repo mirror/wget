@@ -192,6 +192,9 @@ struct options
   int restrict_files_ctrl;	/* non-zero if control chars in URLs
 				   are restricted from appearing in
 				   generated file names. */
+
+  int strict_comments;		/* whether strict SGML comments are
+				   enforced.  */
 };
 
 extern struct options opt;

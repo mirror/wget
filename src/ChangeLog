@@ -1,3 +1,12 @@
+2003-09-19  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* main.c (main): New option --strict-comments.
+
+	* html-parse.c (find_comment_end): New function: simple BM search
+	for "-->".
+	(map_html_tags): Use it if looking at a comment and not in strict
+	comments mode.
+
 2003-09-17  Aurelien Marchand  <artaxerxes@users.sf.net>
 
 	* ftp.h: Added OS400 system in enum

@@ -1365,6 +1365,40 @@ To finish off this topic, it's worth knowing that Wget's idea of an
 external document link is any URL specified in an @code{<A>} tag, an
 @code{<AREA>} tag, or a @code{<LINK>} tag other than @code{<LINK
 REL="stylesheet">}.
+
+@cindex HTML comments
+@cindex comments, HTML
+@item --strict-comments
+Turn on strict parsing of HTML comments.  The default is to terminate
+comments at the first occurrence of @samp{-->}.
+
+According to specifications, HTML comments are expressed as SGML
+@dfn{declarations}.  Declaration is special markup that begins with
+@samp{<!} and ends with @samp{>}, such as @samp{<!DOCTYPE ...>}, that
+may contain comments between a pair of @samp{--} delimiters.  HTML
+comments are ``empty declarations'', SGML declarations without any
+non-comment text.  Therefore, @samp{<!--foo-->} is a valid comment, and
+so is @samp{<!--one-- --two-->}, but @samp{<!--1--2-->} is not.
+
+On the other hand, most HTML writers don't perceive comments as anything
+other than text delimited with @samp{<!--} and @samp{-->}, which is not
+quite the same.  For example, something like @samp{<!------------>}
+works as a valid comment as long as the number of dashes is a multiple
+of four (!).  If not, the comment technically lasts until the next
+@samp{--}, which may be at the other end of the document.  Because of
+this, many popular browsers completely ignore the specification and
+implement what users have come to expect: comments delimited with
+@samp{<!--} and @samp{-->}.
+
+Until version 1.9, Wget interpreted comments strictly, which resulted in
+missing links in many web pages that displayed fine in browsers, but had
+the misfortune of containing non-compliant comments.  Beginning with
+version 1.9, Wget has joined the ranks of clients that implements
+``naive'' comments, terminating each comment at the first occurrence of
+@samp{-->}.
+
+If, for whatever reason, you want strict comment parsing, use this
+option to turn it on.
 @end table
 
 @node Recursive Accept/Reject Options,  , Recursive Retrieval Options, Invoking
@@ -2305,6 +2339,9 @@ responses---the same as @samp{-S}.
 
 @item span_hosts = on/off
 Same as @samp{-H}.
+
+@item strict_comments = on/off
+Same as @samp{--strict-comments}.
 
 @item timeout = @var{n}
 Set timeout value---the same as @samp{-T}.

@@ -207,6 +207,7 @@ static struct {
   { "sslcheckcert",	&opt.sslcheckcert,	cmd_number },
   { "sslprotocol",	&opt.sslprotocol,	cmd_number },
 #endif /* HAVE_SSL */
+  { "strictcomments",	&opt.strict_comments,	cmd_boolean },
   { "timeout",		&opt.timeout,		cmd_time },
   { "timestamping",	&opt.timestamping,	cmd_boolean },
   { "tries",		&opt.ntry,		cmd_number_inf },

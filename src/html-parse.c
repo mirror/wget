@@ -1,5 +1,5 @@
 /* HTML parser for Wget.
-   Copyright (C) 1998, 2000 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2000, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -344,10 +344,10 @@ array_allowed (const char **array, const char *beg, const char *end)
   return 1;
 }
 
-/* Originally we used to adhere to RFC1866 here, and allowed only
+/* Originally we used to adhere to rfc 1866 here, and allowed only
    letters, digits, periods, and hyphens as names (of tags or
    attributes).  However, this broke too many pages which used
-   proprietary or strange attributes, e.g.  <img src="a.gif"
+   proprietary or strange attributes, e.g. <img src="a.gif"
    v:shapes="whatever">.
 
    So now we allow any character except:
@@ -362,29 +362,13 @@ array_allowed (const char **array, const char *beg, const char *end)
 #define NAME_CHAR_P(x) ((x) > 32 && (x) < 127				\
 			&& (x) != '=' && (x) != '>' && (x) != '/')
 
-/* States while advancing through comments. */
-#define AC_S_DONE	0
-#define AC_S_BACKOUT	1
-#define AC_S_BANG	2
-#define AC_S_DEFAULT	3
-#define AC_S_DCLNAME	4
-#define AC_S_DASH1	5
-#define AC_S_DASH2	6
-#define AC_S_COMMENT	7
-#define AC_S_DASH3	8
-#define AC_S_DASH4	9
-#define AC_S_QUOTE1	10
-#define AC_S_IN_QUOTE	11
-#define AC_S_QUOTE2	12
-
 #ifdef STANDALONE
 static int comment_backout_count;
 #endif
 
-/* Advance over an SGML declaration (the <!...> forms you find in HTML
-   documents).  The function returns the location after the
-   declaration.  The reason we need this is that HTML comments are
-   expressed as comments in so-called "empty declarations".
+/* Advance over an SGML declaration, such as <!DOCTYPE ...>.  In
+   strict comments mode, this is used for skipping over comments as
+   well.
 
    To recap: any SGML declaration may have comments associated with
    it, e.g.
@@ -398,17 +382,31 @@ static int comment_backout_count;
        <!-- have -- -- fun -->
 
    Whitespace is allowed between and after the comments, but not
-   before the first comment.
+   before the first comment.  Additionally, this function attempts to
+   handle double quotes in SGML declarations correctly.  */
 
-   Additionally, this function attempts to handle double quotes in
-   SGML declarations correctly.  */
 static const char *
 advance_declaration (const char *beg, const char *end)
 {
   const char *p = beg;
   char quote_char = '\0';	/* shut up, gcc! */
   char ch;
-  int state = AC_S_BANG;
+
+  enum {
+    AC_S_DONE,
+    AC_S_BACKOUT,
+    AC_S_BANG,
+    AC_S_DEFAULT,
+    AC_S_DCLNAME,
+    AC_S_DASH1,
+    AC_S_DASH2,
+    AC_S_COMMENT,
+    AC_S_DASH3,
+    AC_S_DASH4,
+    AC_S_QUOTE1,
+    AC_S_IN_QUOTE,
+    AC_S_QUOTE2,
+  } state = AC_S_BANG;
 
   if (beg == end)
     return beg;
@@ -547,6 +545,55 @@ advance_declaration (const char *beg, const char *end)
     }
   return p;
 }
+
+/* Find the first occurrence of the substring "-->" in [BEG, END) and
+   return the pointer to the character after the substring.  If the
+   substring is not found, return NULL.  */
+
+static const char *
+find_comment_end (const char *beg, const char *end)
+{
+  /* Open-coded Boyer-Moore search for "-->".  Examine the third char;
+     if it's not '>' or '-', advance by three characters.  Otherwise,
+     look at the preceding characters and try to find a match.  */
+
+  const char *p = beg - 1;
+
+  while ((p += 3) < end)
+    switch (p[0])
+      {
+      case '>':
+	if (p[-1] == '-' && p[-2] == '-')
+	  return p + 1;
+	break;
+      case '-':
+      at_dash:
+	if (p[-1] == '-')
+	  {
+	  at_dash_dash:
+	    if (++p == end) return NULL;
+	    switch (p[0])
+	      {
+	      case '>': return p + 1;
+	      case '-': goto at_dash_dash;
+	      }
+	  }
+	else
+	  {
+	    if ((p += 2) >= end) return NULL;
+	    switch (p[0])
+	      {
+	      case '>':
+		if (p[-1] == '-')
+		  return p + 1;
+		break;
+	      case '-':
+		goto at_dash;
+	      }
+	  }
+      }
+  return NULL;
+}
 
 /* Advance P (a char pointer), with the explicit intent of being able
    to read the next character.  If this is not possible, go to finish.  */
@@ -638,8 +685,26 @@ map_html_tags (const char *text, int size,
        declaration).  */
     if (*p == '!')
       {
-	/* This is an SGML declaration -- just skip it.  */
-	p = advance_declaration (p, end);
+	if (!opt.strict_comments
+	    && p < end + 3 && p[1] == '-' && p[2] == '-')
+	  {
+	    /* If strict comments are not enforced and if we know
+	       we're looking at a comment, simply look for the
+	       terminating "-->".  Non-strict is the default because
+	       it works in other browsers and most HTML writers can't
+	       be bothered with getting the comments right.  */
+	    const char *comment_end = find_comment_end (p + 3, end);
+	    if (comment_end)
+	      p = comment_end;
+	  }
+	else
+	  {
+	    /* Either in strict comment mode or looking at a non-empty
+	       declaration.  Real declarations are much less likely to
+	       be misused the way comments are, so advance over them
+	       properly regardless of strictness.  */
+	    p = advance_declaration (p, end);
+	  }
 	if (p == end)
 	  goto finish;
 	goto look_for_tag;

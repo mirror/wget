@@ -239,6 +239,7 @@ Recursive retrieval:\n\
   -K,  --backup-converted   before converting file X, back up as X.orig.\n\
   -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n\
   -p,  --page-requisites    get all images, etc. needed to display HTML page.\n\
+       --strict-comments    turn on strict (SGML) handling of HTML comments.\n\
 \n"), stdout);
   fputs (_("\
 Recursive accept/reject:\n\
@@ -302,6 +303,7 @@ main (int argc, char *const *argv)
     { "server-response", no_argument, NULL, 'S' },
     { "span-hosts", no_argument, NULL, 'H' },
     { "spider", no_argument, NULL, 132 },
+    { "strict-comments", no_argument, NULL, 177 },
     { "timestamping", no_argument, NULL, 'N' },
     { "verbose", no_argument, NULL, 'v' },
     { "version", no_argument, NULL, 'V' },
@@ -523,6 +525,9 @@ GNU General Public License for more details.\n"));
 	  break;
 	case 174:
 	  setval ("retryconnrefused", "on");
+	  break;
+	case 177:
+	  setval ("strictcomments", "on");
 	  break;
 
 	  /* Options accepting an argument: */

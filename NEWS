@@ -19,7 +19,7 @@ data.
 
 ** Download speed shown by the progress bar is based on the data
 recently read, rather than the average speed of the entire download.
-The ETA is still based on the average speed, though.
+The ETA projection is still based on the overall average.
 
 ** It is now possible to connect to FTP servers through FWTK
 firewalls.  Set ftp_proxy to an FTP URL, and Wget will automatically
@@ -39,6 +39,17 @@ characters such as space.  You can use the new option
 --restrict-file-names to relax or strengthen these rules, which can be
 useful if you dislike the default or if you're downloading to
 non-native partitions.
+
+** Handling of HTML comments has been dumbed down to conform to what
+users expect and other browsers do: instead of being treated as SGML
+declaration, a comment is terminated at the first occurrence of "-->".
+Use `--strict-comments' to revert to the old behavior.
+
+** Wget now correctly handles relative URIs that begin with "//", such
+as "//img.foo.com/foo.jpg".
+
+** Boolean options in `.wgetrc' and on the command line now accept
+values "yes" and "no" along with the traditional "on" and "off".
 
 * Wget 1.8.2 is a bugfix release with no user-visible changes.
 
