@@ -622,7 +622,7 @@ parse_uname (const char *url, char **user, char **passwd)
   if (*p != '@')
     return URLOK;
   /* Else find the username and password.  */
-  for (p = q = col = url; *p != '/'; p++)
+  for (p = q = col = url; *p && *p != '/'; p++)
     {
       if (*p == ':' && !*user)
 	{

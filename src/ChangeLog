@@ -1,3 +1,9 @@
+2001-04-04  Christian Fraenkel  <christian.fraenkel@gmx.net>
+
+	* url.c (parse_uname): Would run past the end of the string if the
+	username was present, but the URL did not contain a slash, e.g.
+	http://foo:bar@myhost.
+
 2001-04-03  KOJIMA Hajime  <kjm@rins.ryukoku.ac.jp>
 
 	* http.c (http_atotm): Use %A instead of %a to match full
