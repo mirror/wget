@@ -661,10 +661,11 @@ process_ftp_type (char *path)
     return '\0';
 }
 
-/* Return the URL as fine-formed string, with a proper protocol,
-   optional port number, directory and optional user/password.  If
-   HIDE is non-zero, password will be hidden.  The forbidden
-   characters in the URL will be cleansed.  */
+/* Return the URL as fine-formed string, with a proper protocol, optional port
+   number, directory and optional user/password.  If `hide' is non-zero (as it
+   is when we're calling this on a URL we plan to print, but not when calling it
+   to canonicalize a URL for use within the program), password will be hidden.
+   The forbidden characters in the URL will be cleansed.  */
 char *
 str_url (const struct urlinfo *u, int hide)
 {
@@ -693,7 +694,7 @@ str_url (const struct urlinfo *u, int hide)
 	   shoulder (or in saved wget output).  Don't give away the number of
 	   characters in the password, either, as we did in past versions of
 	   this code, when we replaced the password characters with 'x's. */
-	passwd = "<password>";
+	passwd = xstrdup("<password>");
       else
 	passwd = CLEANDUP (u->passwd);
     }

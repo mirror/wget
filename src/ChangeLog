@@ -1,3 +1,9 @@
+2001-01-10  Dan Harkless  <wget@harkless.org>
+
+	* url.c (str_url): Clarified this function's comment header after
+	Hrvoje answered my question on the list as to when hide != 1.
+	Also Hrvoje pointed out I need to use xstrdup() on the string literal.
+
 2001-01-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* connect.c (bindport): Declare addrlen as int.  Diagnosed by
