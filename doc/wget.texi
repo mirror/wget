@@ -2179,9 +2179,6 @@ what you are doing before changing the default (which is @samp{on}).
 Choose whether or not to print the @sc{http} and @sc{ftp} server
 responses---the same as @samp{-S}.
 
-@item simple_host_check = on/off
-Same as @samp{-nh} (@pxref{Spanning Hosts}).
-
 @item span_hosts = on/off
 Same as @samp{-H}.
 

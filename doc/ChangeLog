@@ -1,3 +1,7 @@
+2001-12-16  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.texi (Wgetrc Commands): Undocument simple_host_check.
+
 2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi (Robots): Fix broken URLs that point to the webcrawler
