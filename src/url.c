@@ -1469,22 +1469,31 @@ append_uri_pathel (const char *b, const char *e, int escaped_p,
       e = unescaped + strlen (unescaped);
     }
 
+  /* Defang ".." when found as component of path.  Remember that path
+     comes from the URL and might contain malicious input.  */
+  if (e - b == 2 && b[0] == '.' && b[1] == '.')
+    {
+      b = "%2E%2E";
+      e = b + 6;
+    }
+
   /* Walk the PATHEL string and check how many characters we'll need
-     to add for file quoting.  */
+     to quote.  */
   quoted = 0;
   for (p = b; p < e; p++)
     if (FILE_CHAR_TEST (*p, mask))
       ++quoted;
 
-  /* e-b is the string length.  Each quoted char means two additional
+  /* Calculate the length of the output string.  e-b is the input
+     string length.  Each quoted char introduces two additional
      characters in the string, hence 2*quoted.  */
   outlen = (e - b) + (2 * quoted);
   GROW (dest, outlen);
 
   if (!quoted)
     {
-      /* If there's nothing to quote, we don't need to go through the
-	 string the second time.  */
+      /* If there's nothing to quote, we can simply append the string
+	 without processing it again.  */
       memcpy (TAIL (dest), b, outlen);
     }
   else
@@ -1623,29 +1632,6 @@ url_file_name (const struct url *u)
     xfree (fname);
   return unique;
 }
-
-/* Return the length of URL's path.  Path is considered to be
-   terminated by one of '?', ';', '#', or by the end of the
-   string.  */
-static int
-path_length (const char *url)
-{
-  const char *q = strpbrk_or_eos (url, "?;#");
-  return q - url;
-}
-
-/* Find the last occurrence of character C in the range [b, e), or
-   NULL, if none are present.  This is equivalent to strrchr(b, c),
-   except that it accepts an END argument instead of requiring the
-   string to be zero-terminated.  Why is there no memrchr()?  */
-static const char *
-find_last_char (const char *b, const char *e, char c)
-{
-  for (; e > b; e--)
-    if (*e == c)
-      return e;
-  return NULL;
-}
 
 /* Resolve "." and ".." elements of PATH by destructively modifying
    PATH and return non-zero if PATH has been modified, zero otherwise.
@@ -1669,15 +1655,10 @@ find_last_char (const char *b, const char *e, char c)
 static int
 path_simplify (char *path)
 {
-  char *h, *t, *end;
-
-  /* Preserve the leading '/'. */
-  if (path[0] == '/')
-    ++path;
-
-  h = path;			/* hare */
-  t = path;			/* tortoise */
-  end = path + strlen (path);
+  char *h = path;		/* hare */
+  char *t = path;		/* tortoise */
+  char *beg = path;		/* boundary for backing the tortoise */
+  char *end = path + strlen (path);
 
   while (h < end)
     {
@@ -1691,28 +1672,27 @@ path_simplify (char *path)
       else if (h[0] == '.' && h[1] == '.' && (h[2] == '/' || h[2] == '\0'))
 	{
 	  /* Handle "../" by retreating the tortoise by one path
-	     element -- but not past beggining of PATH.  */
-	  if (t > path)
+	     element -- but not past beggining.  */
+	  if (t > beg)
 	    {
 	      /* Move backwards until T hits the beginning of the
 		 previous path element or the beginning of path. */
-	      for (--t; t > path && t[-1] != '/'; t--)
+	      for (--t; t > beg && t[-1] != '/'; t--)
 		;
+	    }
+	  else
+	    {
+	      /* If we're at the beginning, copy the "../" literally
+		 move the beginning so a later ".." doesn't remove
+		 it.  */
+	      beg = t + 3;
+	      goto regular;
 	    }
 	  h += 3;
 	}
-      else if (*h == '/')
-	{
-	  /* Ignore empty path elements.  Supporting them well is hard
-	     (where do you save "http://x.com///y.html"?), and they
-	     don't bring any practical gain.  Plus, they break our
-	     filesystem-influenced assumptions: allowing them would
-	     make "x/y//../z" simplify to "x/y/z", whereas most people
-	     would expect "x/z".  */
-	  ++h;
-	}
       else
 	{
+	regular:
 	  /* A regular path element.  If H hasn't advanced past T,
 	     simply skip to the next path element.  Otherwise, copy
 	     the path element until the next slash.  */
@@ -1741,6 +1721,30 @@ path_simplify (char *path)
   return t != h;
 }
 
+/* Return the length of URL's path.  Path is considered to be
+   terminated by one of '?', ';', '#', or by the end of the
+   string.  */
+
+static int
+path_length (const char *url)
+{
+  const char *q = strpbrk_or_eos (url, "?;#");
+  return q - url;
+}
+
+/* Find the last occurrence of character C in the range [b, e), or
+   NULL, if none are present.  We might want to use memrchr (a GNU
+   extension) under GNU libc.  */
+
+static const char *
+find_last_char (const char *b, const char *e, char c)
+{
+  for (; e > b; e--)
+    if (*e == c)
+      return e;
+  return NULL;
+}
+
 /* Merge BASE with LINK and return the resulting URI.
 
    Either of the URIs may be absolute or relative, complete with the
@@ -1748,8 +1752,10 @@ path_simplify (char *path)
    foreseeable cases.  It only employs minimal URL parsing, without
    knowledge of the specifics of schemes.
 
-   Perhaps this function should call path_simplify so that the callers
-   don't have to call url_parse unconditionally.  */
+   I briefly considered making this function call path_simplify after
+   the merging process, as rfc1738 seems to suggest.  This is a bad
+   idea for several reasons: 1) it complexifies the code, and 2)
+   url_parse has to simplify path anyway, so it's wasteful to boot.  */
 
 char *
 uri_merge (const char *base, const char *link)
@@ -1899,24 +1905,8 @@ uri_merge (const char *base, const char *link)
       const char *last_slash = find_last_char (base, end, '/');
       if (!last_slash)
 	{
-	  /* No slash found at all.  Append LINK to what we have,
-	     but we'll need a slash as a separator.
-
-	     Example: if base == "foo" and link == "qux/xyzzy", then
-	     we cannot just append link to base, because we'd get
-	     "fooqux/xyzzy", whereas what we want is
-	     "foo/qux/xyzzy".
-
-	     To make sure the / gets inserted, we set
-	     need_explicit_slash to 1.  We also set start_insert
-	     to end + 1, so that the length calculations work out
-	     correctly for one more (slash) character.  Accessing
-	     that character is fine, since it will be the
-	     delimiter, '\0' or '?'.  */
-	  /* example: "foo?..." */
-	  /*               ^    ('?' gets changed to '/') */
-	  start_insert = end + 1;
-	  need_explicit_slash = 1;
+	  /* No slash found at all.  Replace what we have with LINK. */
+	  start_insert = base;
 	}
       else if (last_slash && last_slash >= base + 2
 	       && last_slash[-2] == ':' && last_slash[-1] == '/')
@@ -2095,10 +2085,10 @@ run_test (char *test, char *expected_result, int expected_change)
   if (modified != expected_change)
     {
       if (expected_change == 1)
-	printf ("Expected no modification with path_simplify(\"%s\").\n",
+	printf ("Expected modification with path_simplify(\"%s\").\n",
 		test);
       else
-	printf ("Expected modification with path_simplify(\"%s\").\n",
+	printf ("Expected no modification with path_simplify(\"%s\").\n",
 		test);
     }
   xfree (test_copy);
@@ -2111,24 +2101,28 @@ test_path_simplify (void)
     char *test, *result;
     int should_modify;
   } tests[] = {
-    { "",		"",		0 },
-    { ".",		"",		1 },
-    { "..",		"",		1 },
-    { "foo",		"foo",		0 },
-    { "foo/bar",	"foo/bar",	0 },
-    { "foo///bar",	"foo/bar",	1 },
-    { "foo/.",		"foo/",		1 },
-    { "foo/./",		"foo/",		1 },
-    { "foo./",		"foo./",	0 },
-    { "foo/../bar",	"bar",		1 },
-    { "foo/../bar/",	"bar/",		1 },
-    { "foo/bar/..",	"foo/",		1 },
-    { "foo/bar/../x",	"foo/x",	1 },
-    { "foo/bar/../x/",	"foo/x/",	1 },
-    { "foo/..",		"",		1 },
-    { "foo/../..",	"",		1 },
-    { "a/b/../../c",	"c",		1 },
-    { "./a/../b",	"b",		1 }
+    { "",			"",		0 },
+    { ".",			"",		1 },
+    { "./",			"",		1 },
+    { "..",			"..",		0 },
+    { "../",			"../",		0 },
+    { "foo",			"foo",		0 },
+    { "foo/bar",		"foo/bar",	0 },
+    { "foo///bar",		"foo///bar",	0 },
+    { "foo/.",			"foo/",		1 },
+    { "foo/./",			"foo/",		1 },
+    { "foo./",			"foo./",	0 },
+    { "foo/../bar",		"bar",		1 },
+    { "foo/../bar/",		"bar/",		1 },
+    { "foo/bar/..",		"foo/",		1 },
+    { "foo/bar/../x",		"foo/x",	1 },
+    { "foo/bar/../x/",		"foo/x/",	1 },
+    { "foo/..",			"",		1 },
+    { "foo/../..",		"..",		1 },
+    { "foo/../../..",		"../..",	1 },
+    { "foo/../../bar/../../baz", "../../baz",	1 },
+    { "a/b/../../c",		"c",		1 },
+    { "./a/../b",		"b",		1 }
   };
   int i;
 
@@ -2138,25 +2132,6 @@ test_path_simplify (void)
       char *expected_result = tests[i].result;
       int   expected_change = tests[i].should_modify;
       run_test (test, expected_result, expected_change);
-    }
-
-  /* Now run all the tests with a leading slash before the test case,
-     to prove that the slash is being preserved.  */
-  for (i = 0; i < countof (tests); i++)
-    {
-      char *test, *expected_result;
-      int expected_change = tests[i].should_modify;
-
-      test = xmalloc (1 + strlen (tests[i].test) + 1);
-      sprintf (test, "/%s", tests[i].test);
-
-      expected_result = xmalloc (1 + strlen (tests[i].result) + 1);
-      sprintf (expected_result, "/%s", tests[i].result);
-
-      run_test (test, expected_result, expected_change);
-
-      xfree (test);
-      xfree (expected_result);
     }
 }
 #endif

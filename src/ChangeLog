@@ -1,3 +1,14 @@
+2003-11-14  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (uri_merge): Merging "foo" and "bar" should result in
+	"bar", not in "foo/bar".
+	(path_simplify): Don't remove empty path elements; don't
+	special-case leading slash.
+	(path_simplify): Don't swallow ".."'s at the beginning of string.
+	E.g. simplify "foo/../../bar" as "../bar", not as "bar".
+	(append_uri_pathel): Defang ".." path element upon encountering
+	it.
+
 2003-11-13  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (persistent_available_p): Don't attempt to talk to two
