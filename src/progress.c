@@ -62,13 +62,18 @@ static struct progress_implementation implementations[] = {
 };
 static struct progress_implementation *current_impl;
 
-/* Default progress implementation should be something that works
+/* Progress implementation used by default.  Can be overriden in
+   wgetrc or by the fallback one.  */
+
+#define DEFAULT_PROGRESS_IMPLEMENTATION "bar"
+
+/* Fallnback progress implementation should be something that works
    under all display types.  If you put something other than "dot"
    here, remember that bar_set_params tries to switch to this if we're
    not running on a TTY.  So changing this to "bar" could cause
    infloop.  */
 
-#define DEFAULT_PROGRESS_IMPLEMENTATION "dot"
+#define FALLBACK_PROGRESS_IMPLEMENTATION "dot"
 
 /* Return non-zero if NAME names a valid progress bar implementation.
    The characters after the first : will be ignored.  */
@@ -659,9 +664,9 @@ bar_set_params (const char *params)
       /* We're not printing to a TTY, so revert to the fallback
 	 display.  #### We're recursively calling
 	 set_progress_implementation here, which is slightly kludgy.
-	 It would be nicer if that function could resolve this problem
-	 itself.  */
-      set_progress_implementation (NULL);
+	 It would be nicer if we provided that function a return value
+	 indicating a failure of some sort.  */
+      set_progress_implementation (FALLBACK_PROGRESS_IMPLEMENTATION);
       return;
     }
 

@@ -7,8 +7,11 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.8.
 
-** A new progress indicator is now available.  Try it with
---progress=bar or using `progress = bar' in `.wgetrc'.
+** A new progress indicator is now available and used by default.
+You can choose the progress bar type with `--progress=TYPE'.  Two
+types are available, "bar" (the new default), and "dot" (the old
+dotted indicator).  You can permanently revert to the old progress
+indicator by putting `progress = dot' in your `.wgetrc'.
 
 ** "Recursive retrieval" has been revamped:
 
