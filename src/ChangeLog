@@ -1,5 +1,11 @@
 2001-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* url.c (convert_links): Attempt to quote '?' as "%3F" when
+	linking to local files.  Given up on the attempt, as it breaks
+	local browsing.
+
+2001-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* main.c (private_initialize): Removed.
 	(main): Don't call private_initialize.
 

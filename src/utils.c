@@ -319,6 +319,19 @@ xstrdup_lower (const char *s)
   return copy;
 }
 
+/* Return a count of how many times CHR occurs in STRING. */
+
+int
+count_char (const char *string, char chr)
+{
+  const char *p;
+  int count = 0;
+  for (p = string; *p; p++)
+    if (*p == chr)
+      ++count;
+  return count;
+}
+
 /* Copy the string formed by two pointers (one on the beginning, other
    on the char after the last char) to a new, malloc-ed location.
    0-terminate it.  */

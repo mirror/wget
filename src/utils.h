@@ -49,6 +49,8 @@ void print_malloc_debug_stats ();
 #endif
 
 char *xstrdup_lower PARAMS ((const char *));
+int count_char PARAMS ((const char *, char));
+
 char *strdupdelim PARAMS ((const char *, const char *));
 char **sepstring PARAMS ((const char *));
 int frontcmp PARAMS ((const char *, const char *));

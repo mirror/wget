@@ -836,20 +836,6 @@ set_cookie_header_cb (const char *hdr, void *closure)
    previously stored cookies.  Entry point is
    `build_cookies_request'.  */
 
-
-/* Count how many times CHR occurs in STRING. */
-
-static int
-count_char (const char *string, char chr)
-{
-  const char *p;
-  int count = 0;
-  for (p = string; *p; p++)
-    if (*p == chr)
-      ++count;
-  return count;
-}
-
 /* Store CHAIN to STORE if there is room in STORE.  If not, inrecement
    COUNT anyway, so that when the function is done, we end up with the
    exact count of how much place we actually need.  */

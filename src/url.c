@@ -1699,16 +1699,20 @@ no_proxy_match (const char *host, const char **no_proxy)
 
 static void write_backup_file PARAMS ((const char *, downloaded_file_t));
 static void replace_attr PARAMS ((const char **, int, FILE *, const char *));
+static char *local_quote_string PARAMS ((const char *));
 
-/* Change the links in an HTML document.  Accepts a structure that
-   defines the positions of all the links.  */
+/* Change the links in one HTML file.  LINKS is a list of links in the
+   document, along with their positions and the desired direction of
+   the conversion.  */
 void
-convert_links (const char *file, struct urlpos *l)
+convert_links (const char *file, struct urlpos *links)
 {
   struct file_memory *fm;
-  FILE               *fp;
-  const char         *p;
-  downloaded_file_t  downloaded_file_return;
+  FILE *fp;
+  const char *p;
+  downloaded_file_t downloaded_file_return;
+
+  struct urlpos *link;
   int to_url_count = 0, to_file_count = 0;
 
   logprintf (LOG_VERBOSE, _("Converting %s... "), file);
@@ -1718,8 +1722,8 @@ convert_links (const char *file, struct urlpos *l)
        any URL needs to be converted in the first place.  If not, just
        leave the file alone.  */
     int dry_count = 0;
-    struct urlpos *dry = l;
-    for (dry = l; dry; dry = dry->next)
+    struct urlpos *dry = links;
+    for (dry = links; dry; dry = dry->next)
       if (dry->convert != CO_NOCONVERT)
 	++dry_count;
     if (!dry_count)
@@ -1764,19 +1768,19 @@ convert_links (const char *file, struct urlpos *l)
   /* Here we loop through all the URLs in file, replacing those of
      them that are downloaded with relative references.  */
   p = fm->content;
-  for (; l; l = l->next)
+  for (link = links; link; link = link->next)
     {
-      char *url_start = fm->content + l->pos;
+      char *url_start = fm->content + link->pos;
 
-      if (l->pos >= fm->length)
+      if (link->pos >= fm->length)
 	{
 	  DEBUGP (("Something strange is going on.  Please investigate."));
 	  break;
 	}
       /* If the URL is not to be converted, skip it.  */
-      if (l->convert == CO_NOCONVERT)
+      if (link->convert == CO_NOCONVERT)
 	{
-	  DEBUGP (("Skipping %s at position %d.\n", l->url->url, l->pos));
+	  DEBUGP (("Skipping %s at position %d.\n", link->url->url, link->pos));
 	  continue;
 	}
 
@@ -1784,26 +1788,26 @@ convert_links (const char *file, struct urlpos *l)
          quote, to the outfile.  */
       fwrite (p, 1, url_start - p, fp);
       p = url_start;
-      if (l->convert == CO_CONVERT_TO_RELATIVE)
+      if (link->convert == CO_CONVERT_TO_RELATIVE)
 	{
 	  /* Convert absolute URL to relative. */
-	  char *newname = construct_relative (file, l->local_name);
-	  char *quoted_newname = html_quote_string (newname);
-	  replace_attr (&p, l->size, fp, quoted_newname);
+	  char *newname = construct_relative (file, link->local_name);
+	  char *quoted_newname = local_quote_string (newname);
+	  replace_attr (&p, link->size, fp, quoted_newname);
 	  DEBUGP (("TO_RELATIVE: %s to %s at position %d in %s.\n",
-		   l->url->url, newname, l->pos, file));
+		   link->url->url, newname, link->pos, file));
 	  xfree (newname);
 	  xfree (quoted_newname);
 	  ++to_file_count;
 	}
-      else if (l->convert == CO_CONVERT_TO_COMPLETE)
+      else if (link->convert == CO_CONVERT_TO_COMPLETE)
 	{
 	  /* Convert the link to absolute URL. */
-	  char *newlink = l->url->url;
+	  char *newlink = link->url->url;
 	  char *quoted_newlink = html_quote_string (newlink);
-	  replace_attr (&p, l->size, fp, quoted_newlink);
+	  replace_attr (&p, link->size, fp, quoted_newlink);
 	  DEBUGP (("TO_COMPLETE: <something> to %s at position %d in %s.\n",
-		   newlink, l->pos, file));
+		   newlink, link->pos, file));
 	  xfree (quoted_newlink);
 	  ++to_url_count;
 	}
@@ -1967,10 +1971,10 @@ replace_attr (const char **pp, int raw_size, FILE *fp, const char *new_str)
 
   /* Structure of our string is:
        "...old-contents..."
-       <---  l->size   --->  (with quotes)
+       <---    size    --->  (with quotes)
      OR:
        ...old-contents...
-       <---  l->size  -->    (no quotes)   */
+       <---    size   -->    (no quotes)   */
 
   if (*p == '\"' || *p == '\'')
     {
@@ -2024,6 +2028,66 @@ find_fragment (const char *beg, int size, const char **bp, const char **ep)
 	}
     }
   return 0;
+}
+
+/* The idea here was to quote ? as %3F to avoid passing part of the
+   file name as the parameter when browsing the converted file through
+   HTTP.  However, actually doing that breaks local browsing because
+   "index.html%3Ffoo=bar" isn't even recognized as an HTML file!
+   Perhaps this should be controlled by an option, but for now I'm
+   leaving the question marks.
+
+   This is the original docstring of this function:
+
+   FILE should be a relative link to a local file.  It should be
+   quoted as HTML because it will be used in HTML context.  However,
+   we need to quote ? as %3F to avoid passing part of the file name as
+   the parameter.  (This is not a problem when viewing locally, but is
+   if the downloaded and converted tree is served by an HTTP
+   server.)  */
+
+/* Quote string as HTML. */
+
+static char *
+local_quote_string (const char *file)
+{
+  return html_quote_string (file);
+
+#if 0
+  const char *file_sans_qmark;
+  int qm = count_char (file, '?');
+
+  if (qm)
+    {
+      const char *from = file;
+      char *to, *newname;
+
+      /* qm * 2 because we replace each question mark with "%3F",
+	 i.e. replace one char with three, hence two more.  */
+      int fsqlen = strlen (file) + qm * 2;
+
+      to = newname = (char *)alloca (fsqlen + 1);
+      for (; *from; from++)
+	{
+	  if (*from != '?')
+	    *to++ = *from;
+	  else
+	    {
+	      *to++ = '%';
+	      *to++ = '3';
+	      *to++ = 'F';
+	    }
+	}
+      assert (to - newname == fsqlen);
+      *to = '\0';
+
+      file_sans_qmark = newname;
+    }
+  else
+    file_sans_qmark = file;
+
+  return html_quote_string (file_sans_qmark);
+#endif
 }
 
 /* We're storing "modes" of type downloaded_file_t in the hash table.
