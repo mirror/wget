@@ -56,6 +56,7 @@ LDFLAGS = @LDFLAGS@
 #
 
 DISTNAME = wget-@VERSION@
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
 RM = rm -f
 
 # These are used for maintenance only, so they are safe without
@@ -74,7 +75,7 @@ infodir='$(infodir)' mandir='$(mandir)' manext='$(manext)'
 SUBDIRS = src doc po util windows
 
 # default target
-all: src/config.h Makefile $(SUBDIRS)
+all: libtool src/config.h Makefile $(SUBDIRS)
 
 check: all
 
@@ -96,6 +97,10 @@ install.info uninstall.info install.man uninstall.man install.wgetrc:
 # Install `.mo' files
 install.mo:
 	cd po && $(MAKE) $(MAKEDEFS) $@
+
+# Regenerate libtool if ltconfig and/or ltmain are updated
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status --recheck
 
 # create tag files for Emacs
 TAGS:

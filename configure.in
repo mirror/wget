@@ -84,9 +84,10 @@ dnl
 AC_PROG_INSTALL
 
 dnl
-dnl Configure our included libtool
+dnl Configure our included libtool and make sure it's regenerated when needed
 dnl
 AM_PROG_LIBTOOL
+AC_SUBST(LIBTOOL_DEPS)
 
 dnl
 dnl Find the compiler
