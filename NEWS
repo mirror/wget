@@ -7,6 +7,12 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.9+.
 
+** Many options that previously unconditionally set or unset features
+are now boolean options that can be invoked as `--OPTION[=yes/no]' or
+with `--no-OPTION'.  This is useful because it allows you to specify
+non-default behavior via `.wgetrc' and then revert it again on the
+command-line.
+
 ** The new option `--keep-session-cookies' causes `--save-cookies' to
 save session cookies along with the permanent ones.  This is useful on
 sites that require you to log in before you can access some pages.

@@ -79,12 +79,6 @@ represent user-visible changes.
 
 * Add option to clobber existing file names (no `.N' suffixes).
 
-* Introduce real "boolean" options.  Every `--foo' setting should have
-  a corresponding `--no-foo' that turns off.  This is useful even for
-  options turned off by default, because the default can be reversed
-  in `.wgetrc'.  Get rid of `--foo=no'.  Short options would be
-  handled as `-x' vs. `-nx'.
-
 * Add option to only list wildcard matches without doing the download.
 
 * Handle MIME types correctly.  There should be an option to (not)
