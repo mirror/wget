@@ -1442,9 +1442,6 @@ ftp_retrieve_dirs (struct urlinfo *u, struct fileinfo *f, ccon *con)
       if (len > current_length)
 	current_container = (char *)alloca (len);
       u->dir = current_container;
-      /* When retrieving recursively, all directories must be
-	 absolute.  This restriction will (hopefully!) be lifted in
-	 the future.  */
       sprintf (u->dir, "/%s%s%s", odir + (*odir == '/'),
 	      (!*odir || (*odir == '/' && !* (odir + 1))) ? "" : "/", f->name);
       if (!accdir (u->dir, ALLABS))

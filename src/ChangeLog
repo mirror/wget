@@ -6,6 +6,11 @@
 
 	* url.c (write_backup_file): Clarified a comment.
 
+	* ftp.c (ftp_retrieve_dirs): I don't see a ChangeLog entry for
+ 	this, but the bug where recursion into FTP directories didn't work
+ 	if logging in put you in a directory other than "/" is apparently
+ 	fixed now.  Removed the comment here warning of the bug.
+
 2001-01-06  Dan Harkless  <wget@harkless.org>
 
 	* ChangeLog: The '[Not in 1.6 branch.]'s were decided not to be

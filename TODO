@@ -51,9 +51,6 @@ changes.
 * Make -K compare X.orig to X and move the former on top of the latter if 
   they're the same, rather than leaving identical .orig files laying around.
 
-* Allow mirroring of FTP URLs where logging in puts you somewhere else besides 
-  '/'. 
-
 * If CGI output is saved to a file, e.g. cow.cgi?param, -k needs to change the
   '?' to a "%3F" in links to that file to avoid passing part of the filename as
   a parameter.
