@@ -63,32 +63,6 @@ read_registry (HKEY hkey, char *subkey, char *valuename, char *buf, int *len)
   return buf;
 }
 
-char *
-pwd_cuserid (char *where)
-{
-  char buf[32], *ptr;
-  int len = sizeof (buf);
-  if (GetUserName (buf, (LPDWORD) &len) == TRUE)
-    {
-      ;
-    }
-  else if (!!(ptr = getenv ("USERNAME")))
-    {
-      strcpy (buf, ptr);
-    }
-  else if (!read_registry (HKEY_LOCAL_MACHINE, "Network\\Logon",
-			  "username", buf, &len))
-    {
-      return NULL;
-    }
-  if (where)
-    {
-      strncpy (where, buf, len);
-      return where;
-    }
-  return xstrdup (buf);
-}
-
 void
 windows_main_junk (int *argc, char **argv, char **exec_name)
 {

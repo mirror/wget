@@ -431,31 +431,7 @@ uerrmsg (uerr_t errnum)
 /* The Windows versions of the following two functions are defined in
    mswindows.c.  */
 
-/* A cuserid() immitation using getpwuid(), to avoid hassling with
-   utmp.  Besides, not all systems have cuesrid().  Under Windows, it
-   is defined in mswindows.c.
-
-   If WHERE is non-NULL, the username will be stored there.
-   Otherwise, it will be returned as a static buffer (as returned by
-   getpwuid()).  In the latter case, the buffer should be copied
-   before calling getpwuid() or pwd_cuserid() again.  */
 #ifndef WINDOWS
-char *
-pwd_cuserid (char *where)
-{
-  struct passwd *pwd;
-
-  if (!(pwd = getpwuid (getuid ())) || !pwd->pw_name)
-    return NULL;
-  if (where)
-    {
-      strcpy (where, pwd->pw_name);
-      return where;
-    }
-  else
-    return pwd->pw_name;
-}
-
 void
 fork_to_background (void)
 {

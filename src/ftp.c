@@ -133,8 +133,6 @@ getftp (struct urlinfo *u, long *len, long restval, ccon *con)
   passwd = u->passwd;
   search_netrc (u->host, (const char **)&user, (const char **)&passwd, 1);
   user = user ? user : opt.ftp_acc;
-  if (!opt.ftp_pass)
-    opt.ftp_pass = ftp_getaddress ();
   passwd = passwd ? passwd : opt.ftp_pass;
   assert (user && passwd);
 

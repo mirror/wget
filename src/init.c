@@ -227,8 +227,8 @@ defaults (void)
   opt.ntry = 20;
   opt.reclevel = 5;
   opt.add_hostdir = 1;
-  opt.ftp_acc = xstrdup ("anonymous");
-  /*opt.ftp_pass = xstrdup (ftp_getaddress ());*/
+  opt.ftp_acc  = xstrdup ("anonymous");
+  opt.ftp_pass = xstrdup ("-wget@");
   opt.netrc = 1;
   opt.ftp_glob = 1;
   opt.htmlify = 1;

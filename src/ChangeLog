@@ -1,5 +1,19 @@
 2001-04-28  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* main.c (main): Removed undocumented option `--email-address'.
+
+	* netrc.c: Use the latest read_whole_line.
+
+	* init.c (defaults): Set opt.ftp_pass to "-wget@".
+
+	* mswindows.c (pwd_cuserid): Ditto.
+
+	* utils.c (pwd_cuserid): Removed.
+
+	* host.c (ftp_getaddress): Removed.
+
+2001-04-28  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	(http_loop): Allocate space for filename_plus_orig_suffix with
 	alloca; this is more efficient and removes the need to free it
 	before each and every return.

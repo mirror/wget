@@ -251,7 +251,6 @@ main (int argc, char *const *argv)
     { "debug", no_argument, NULL, 'd' },
     { "delete-after", no_argument, NULL, 136 },
     { "dont-remove-listing", no_argument, NULL, 149 },
-    { "email-address", no_argument, NULL, 154 }, /* undocumented (debug) */
     { "follow-ftp", no_argument, NULL, 142 },
     { "force-directories", no_argument, NULL, 'x' },
     { "force-hier", no_argument, NULL, 'x' }, /* obsolete */
@@ -399,11 +398,6 @@ hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:C:",
 	  break;
 	case 150:
 	  setval ("simplehostcheck", "on");
-	  break;
-	case 154:
-	  /* For debugging purposes.  */
-	  printf ("%s\n", ftp_getaddress ());
-	  exit (0);
 	  break;
 	case 155:
 	  setval ("bindaddress", optarg);
