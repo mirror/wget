@@ -1318,6 +1318,9 @@ typedef ULARGE_INTEGER wget_sys_time;
 #endif
 
 struct wget_timer {
+  /* Whether the start time has been initialized. */
+  int initialized;
+
   /* The starting point in time which, subtracted from the current
      time, yields elapsed time. */
   wget_sys_time start;
@@ -1331,13 +1334,15 @@ struct wget_timer {
   double elapsed_pre_start;
 };
 
-/* Allocate a timer.  It is not legal to do anything with a freshly
-   allocated timer, except call wtimer_reset() or wtimer_delete().  */
+/* Allocate a timer.  Calling wtimer_read on the timer will return
+   zero.  It is not legal to call wtimer_update with a freshly
+   allocated timer -- use wtimer_reset first.  */
 
 struct wget_timer *
 wtimer_allocate (void)
 {
   struct wget_timer *wt = xnew (struct wget_timer);
+  xzero (*wt);
   return wt;
 }
 
@@ -1408,6 +1413,7 @@ wtimer_reset (struct wget_timer *wt)
   wtimer_sys_set (&wt->start);
   wt->elapsed_last = 0;
   wt->elapsed_pre_start = 0;
+  wt->initialized = 1;
 }
 
 static double
@@ -1443,6 +1449,8 @@ wtimer_update (struct wget_timer *wt)
 {
   wget_sys_time now;
   double elapsed;
+
+  assert (wt->initialized != 0);
 
   wtimer_sys_set (&now);
   elapsed = wt->elapsed_pre_start + wtimer_sys_diff (&now, &wt->start);

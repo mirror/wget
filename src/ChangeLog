@@ -1,5 +1,12 @@
 2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (wtimer_allocate): Bless the use of wtimer_read on a
+	timer that has merely been allocated because get_contents() does
+	that.
+	(wtimer_update): Abort if the timer is not initialized.
+
+2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* retr.c (get_contents): Pass the timer to limit_bandwidth().
 
 	* utils.c (wtimer_update): New function instead of wget_elapsed;
