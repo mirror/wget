@@ -30,8 +30,8 @@ This file documents the the GNU Wget utility for downloading network
 data.
 
 @c man begin COPYRIGHT
-Copyright @copyright{} 1996, 1997, 1998, 2000, 2001 Free Software
-Foundation, Inc.
+Copyright @copyright{} 1996, 1997, 1998, 2000, 2001, 2002, 2003 Free
+Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
