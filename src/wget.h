@@ -224,7 +224,7 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
 /* [Is this weird hack really necessary on any compilers?  No ANSI C compiler
     should complain about "extern const char *exec_name;" followed by
     "const char *exec_name;".  Are we doing this for K&R compilers, or...??
-    -- Dan Harkless <dan-wget@dilvish.speed.net>] */
+    -- Dan Harkless <wget@harkless.org>] */
 #ifndef OPTIONS_DEFINED_HERE
 extern const char *exec_name;
 #endif

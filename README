@@ -55,7 +55,7 @@ developers or fund the development for a specific purpose, please send
 mail to the development mailing list at <wget@sunsite.auc.dk>.
 
 
-MAINTAINERS: Dan Harkless <dan-wget@dilvish.speed.net>
+MAINTAINERS: Dan Harkless <wget@harkless.org>
              Hrvoje Niksic <hniksic@arsdigita.com>
 
 Wget was originally written by Hrvoje Niksic.

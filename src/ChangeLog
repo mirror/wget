@@ -629,13 +629,13 @@
 	* retr.c (reset_timer): GetSystemTime() on WINDOWS.
 	* retr.c (elapsed_time): Calculate delta time to msec on WINDOWS.
 
-2000-10-27  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-27  Dan Harkless  <wget@harkless.org>
 
 	* retr.c (retrieve_url): Manually applied T. Bharath
  	<TBharath@responsenetworks.com>'s patch to get wget to grok
  	illegal relative URL redirects.  Reformatted and re-commented it.
 
-2000-10-23  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-23  Dan Harkless  <wget@harkless.org>
 
 	* connect.c (make_connection and bindport): Manually applied Rob
  	Mayoff <mayoff@dqd.com>'s 1.5.3 patch to add --bind-address,
@@ -666,7 +666,7 @@
 		
 	* retr.c (retrieve_from_file): Just added a DEBUGP().
 		
-2000-10-19  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-19  Dan Harkless  <wget@harkless.org>
 
 	* ftp.c (ftp_loop_internal): downloaded_file() enumerators changed.
 	(getftp): Applied Piotr Sulecki <Piotr.Sulecki@ios.krakow.pl>'s
@@ -698,7 +698,7 @@
 
 	* wget.h (unnamed "dt" enum): Added ADDED_HTML_EXTENSION enumerator.
 	
-2000-10-09  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-09  Dan Harkless  <wget@harkless.org>
 
 	* html.c (htmlfindurl): Added unneeded initialization to quiet warning.
 		
@@ -712,7 +712,7 @@
 
 	* ftp.c (getftp): passive_ftp is first option to support always/never.
 
-2000-08-30  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-08-30  Dan Harkless  <wget@harkless.org>
 
 	* ftp.c (ftp_retrieve_list): Use new INFINITE_RECURSION #define.
 	
@@ -746,11 +746,11 @@
 
 	* wget.h: Added some comments and new INFINITE_RECURSION #define.
 	
-2000-08-23  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-08-23  Dan Harkless  <wget@harkless.org>
 
 	* main.c (print_help): -B / --base was not mentioned.
 
-2000-08-22  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-08-22  Dan Harkless  <wget@harkless.org>
 
 	* main.c (print_help): Modified -nc description to mention that it
 	also prevents the creation of multiple versions of the same file
@@ -761,7 +761,7 @@
 	* retr.c (retrieve_url): Consistently strdup opt.referer when
 	setting u->referer.
 
-2000-06-09  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-06-09  Dan Harkless  <wget@harkless.org>
 
 	* main.c (print_help): --help output for --waitretry was over 80 cols.
 
@@ -780,7 +780,7 @@
 	* url.c (str_url): Print the port number only if it's different
 	from the default port number for that protocol.
 
-2000-05-22  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-05-22  Dan Harkless  <wget@harkless.org>
 
 	* main.c (print_help): Added --help line for Damir Dzeko
  	<ddzeko@zesoi.fer.hr>'s until-now-undocumented --referer option.
@@ -805,7 +805,7 @@
 	alloca().
 	Pointed out by Gisle Vanem <gvanem@eunet.no>.
 
-2000-04-04  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-04-04  Dan Harkless  <wget@harkless.org>
 
 	* host.c (store_hostaddress): R. K. Owen's patch introduces a
 	"left shift count >= width of type" warning on 32-bit
@@ -858,7 +858,7 @@
 	(TOLOWER): Ditto.
 	(TOUPPER): Ditto.
 
-2000-03-10  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-03-10  Dan Harkless  <wget@harkless.org>
 
 	* html.c (idmatch): Implemented checking of my new --follow-tags
 	and --ignore-tags options.
@@ -882,7 +882,7 @@
 	
 	* wget.h: Added "#define EQ 0" so we can say "strcmp(a, b) == EQ".
 	
-2000-03-02  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-03-02  Dan Harkless  <wget@harkless.org>
 
 	* ftp.c (ftp_loop_internal): Heiko introduced "suggest explicit
 	braces to avoid ambiguous `else'" warnings.  Eliminated them.
@@ -948,7 +948,7 @@
 	specified, and we're are already at that depth, don't download the
 	HTML file for parsing.
 
-2000-03-01  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-03-01  Dan Harkless  <wget@harkless.org>
 
 	* ftp.c (ftp_loop_internal): Call new downloaded_file() function,
 	even though we don't do conversion on HTML files retrieved via
@@ -980,11 +980,11 @@
 
 	* wget.h (boolean): Added this new typedef and TRUE and FALSE #defines.
 
-2000-02-29  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-02-29  Dan Harkless  <wget@harkless.org>
 
 	* version.c: Upped version to developer-only "1.5.3+dev".
 
-2000-02-18  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-02-18  Dan Harkless  <wget@harkless.org>
 
 	* init.c (backup_converted): Added this new option.
 

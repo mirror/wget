@@ -49,19 +49,19 @@
 
 	* configure.in: Check for size of long and long long.
 
-2000-10-30  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-30  Dan Harkless  <wget@harkless.org>
 
 	* NEWS: Hrvoje pointed out that relative URL grokking deserves mention.
 
-2000-10-27  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-27  Dan Harkless  <wget@harkless.org>
 
 	* TODO: wget now groks illegal relative URL HTTP redirects.
 
-2000-10-24  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-24  Dan Harkless  <wget@harkless.org>
 
 	* NEWS: Forgot to update regarding new --bind-address option.
 
-2000-10-20  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-20  Dan Harkless  <wget@harkless.org>
 
 	* TODO: -k needs to convert '?' to "%3F" in links to saved files
 	containing the '?' character (e.g. CGI output).  Also, we need to
@@ -73,7 +73,7 @@
 
 	* NEWS: Always forget to update this file when making user-vis. changes.
 
-2000-10-19  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-19  Dan Harkless  <wget@harkless.org>
 
 	* TODO: -E / --html-extension / html_extension has been implemented.
 	Make -I and -X allow an optional hostname before the directory name?
@@ -88,20 +88,20 @@
 	* po/ru.{gmo,po}: Added Const Kaplinsky <const@ce.cctpu.edu.ru>'s 
 	Russian message translation file.
 
-2000-10-16  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-16  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Add option to save local filenames without extra %-encoding.
 
-2000-10-09  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-09  Dan Harkless  <wget@harkless.org>
 
 	* TODO: --retr-symlinks should cause wget to traverse links to dirs too.
 
-2000-09-25  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-09-25  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Make wget return nonzero in situations like bad HTTP
 	auth.  Make wget follow (illegal) relative URL HTTP redirects.
 
-2000-08-30  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-08-30  Dan Harkless  <wget@harkless.org>
 
 	* po/*.{gmo,po,pot}: Regenerated after modifying wget --help output.
 
@@ -112,7 +112,7 @@
 	
 	* NEWS: Added --waitretry and --page-requisites.
 
-2000-08-25  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-08-25  Dan Harkless  <wget@harkless.org>
 
 	* MACHINES: Alphabetized, changed "architectures" to "OSes and
  	architecures", added missing company names, removed needless ^L,
@@ -120,19 +120,19 @@
  	use on those platforms by myself and others, removed the
  	non-factual "this version of", and fixed some grammatical errors.
 	
-2000-07-21  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-07-21  Dan Harkless  <wget@harkless.org>
 
 	* TODO: But Brian McMahon <bm@iucr.org> wants old behavior as an option.
 	
-2000-07-19  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-07-19  Dan Harkless  <wget@harkless.org>
 
 	* TODO: -k should convert "hostless absolute" URLs, like "/index.html".
 	
-2000-05-24  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-05-24  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Timestamps sometimes not copied over on files retrieved by FTP.
 	
-2000-05-22  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-05-22  Dan Harkless  <wget@harkless.org>
 
 	* AUTHORS: Added myself to this file, as Hrvoje got confirmation
  	of my FSF copyright assignment.
@@ -141,24 +141,24 @@
 	
 	* po/*.{gmo,po,pot}: Regenerated after modifying wget --help output.
 
-2000-05-17  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-05-17  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Make `-k' check for files that were downloaded in the past
 	and convert links to them in newly-downloaded documents.
 
-2000-04-05  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-04-05  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Make -K only leave .orig files around when different.  Add
 	an option to save all text/html files with .html extension.  Allow
 	mirroring of FTP URLs where logging in puts you somewhere else
 	besides '/'.
 
-2000-04-04  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-04-04  Dan Harkless  <wget@harkless.org>
 
 	* NEWS (--follow-tags, -G / --ignore-tags): Forgot to mention
 	these new options when I added them.
 
-2000-03-10  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-03-10  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Removed done item: we now have an option (-G) that makes
  	it easy to download a single HTML document and all its constituents.
@@ -168,17 +168,17 @@
 	* po/hr.po: Hrvoje forgot '\n's on his translations of my altered
 	messages, causing msgfmt to balk and `make install' to fail.
 
-2000-03-01  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-03-01  Dan Harkless  <wget@harkless.org>
 
 	* NEWS (-K): Now possible to use -N with -k thanks to this option.
 
 	* TODO: Removed the -K / -N interaction item.
 
-2000-02-29  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-02-29  Dan Harkless  <wget@harkless.org>
 
 	* NEWS (-K / --backup-converted): Mentioned this new option.
 
-2000-02-18  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-02-18  Dan Harkless  <wget@harkless.org>
 
 	* TODO: When -K is used with -N, check local X.orig against server X.
 

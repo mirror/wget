@@ -44,17 +44,17 @@
 
 	* wget.texi (HTTP Options): Remove Netscape bullying.
 
-2000-10-23  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-23  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Recursive Retrieval Options): Improved --delete-after docs.
 	(Download Options): Documented Rob Mayoff's new --bind-address option.
 	(Wgetrc Commands): Documented Rob Mayoff's new bind_address command.
 	
-2000-10-20  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-20  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Recursive Retrieval Options): Sugg. -E on 1-page download.
 	
-2000-10-19  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-19  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (HTTP Options): Documented my new -E / --html-extension.
 	(Wgetrc Commands): Documented my new html_extension option and
@@ -62,16 +62,16 @@
 	Boolean").  When I documented Damir Dzeko's --referer, I forgot to
 	add the .wgetrc equivalent; mentioned the "referrer" spelling issue.
 	
-2000-10-09  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-10-09  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (FTP Options): --retr-symlinks wasn't documented properly.
 
-2000-08-30  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-08-30  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Recursive Retrieval Options): Documented new -p option.
 	(Wgetrc Commands): Documented -p's equvialent, page_requisites.
 	
-2000-08-23  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-08-23  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Download Options): Using -c on a file that's already fully
 	downloaded results in an unchanged file and no second ".1" copy.
@@ -82,7 +82,7 @@
 	* wget.texi (Wgetrc Commands): Changed all instances of 
 	", the same as" to the more grammatical " -- the same as".
 
-2000-08-22  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-08-22  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Download Options): --no-clobber's documentation was
  	severely lacking -- ameliorated the situation.  Some of the
@@ -92,21 +92,21 @@
  	elsewhere, but due to the way that wget.texi's hierarchy is laid
  	out, I had a hard time finding anywhere else appropriate.
 
-2000-07-17  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-07-17  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (HTTP Options): Minor clarification in "download a
  	single HTML page and all files necessary to display it" example.
 
-2000-05-22  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-05-22  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (HTTP Options): Damir Dzeko <ddzeko@zesoi.fer.hr> did
  	not document his new --referer option.  Did so.
 
-2000-04-18  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-04-18  Dan Harkless  <wget@harkless.org>
 
 	* sample.wgetrc: Realized I put a global setting in the local section.
 	
-2000-04-13  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-04-13  Dan Harkless  <wget@harkless.org>
 
 	* Makefile.in (sample.wgetrc.munged_for_texi_inclusion): Added
 	build, dependencies, and distclean cleanup of this new file.
@@ -120,7 +120,7 @@
 	sample.wgetrc are commented out.  Don't have an entire hand-
 	cut-and-pasted copy of sample.wgetrc in this file -- use @include.
 
-2000-04-12  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-04-12  Dan Harkless  <wget@harkless.org>
 
 	* Makefile.in (install.wgetrc): I completely missed the message
  	that the new wgetrc wasn't being installed the first couple of
@@ -135,7 +135,7 @@
  	undocumented until now.  Reworded the suggested documentation he
  	sent to the list.
 
-2000-03-10  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-03-10  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Recursive Retrieval Options): In -K description,
  	added a link to the discussion of interaction with -N.
@@ -153,18 +153,18 @@
 
 	* wget.texi (Contributors): Update contributors list.
 
-2000-03-01  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-03-01  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (HTTP Time-Stamping Internals): Added a note about my
  	newly-implemented interaction between -K and -N.
 
-2000-02-29  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-02-29  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi: Updated version to 1.5.3+dev, updated copyrights to
 	2000, changed Hrvoje's old, invalid email address to his new one,
 	and added " and the developers" to the .texi file's byline.
 
-2000-02-18  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-02-18  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Recursive Retrieval Options): Documented my new -K /
  	--backup-converted option.

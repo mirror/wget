@@ -329,7 +329,7 @@ main (int argc, char *const *argv)
   /* [Is the order of the option letters significant?  If not, they should be
       alphabetized, like the long_options.  The only thing I know for sure is
       that the options with required arguments must be followed by a ':'.
-      -- Dan Harkless <dan-wget@dilvish.speed.net>] */
+      -- Dan Harkless <wget@harkless.org>] */
   while ((c = getopt_long (argc, argv, "\
 hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
 			   long_options, (int *)0)) != EOF)
