@@ -595,7 +595,7 @@ lowercase_str (char *str)
 {
   int change = 0;
   for (; *str; str++)
-    if (!ISLOWER (*str))
+    if (ISUPPER (*str))
       {
 	change = 1;
 	*str = TOLOWER (*str);
@@ -787,13 +787,11 @@ url_parse (const char *url, int *error)
   if (fragment_b)
     u->fragment = strdupdelim (fragment_b, fragment_e);
 
-
-  if (path_modified || u->fragment || host_modified)
+  if (path_modified || u->fragment || host_modified || path_b == path_e)
     {
-      /* If path_simplify modified the path, or if a fragment is
-	 present, or if the original host name had caps in it, make
-	 sure that u->url is equivalent to what would be printed by
-	 url_string.  */
+      /* If we suspect that a transformation has rendered what
+	 url_string might return different from URL_ENCODED, rebuild
+	 u->url using url_string.  */
       u->url = url_string (u, 0);
 
       if (url_encoded != url)

@@ -511,11 +511,11 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     {
       if (*dt & RETROKF)
 	{
-	  register_download (url, local_file);
+	  register_download (u->url, local_file);
 	  if (redirections)
-	    register_all_redirections (redirections, url);
+	    register_all_redirections (redirections, u->url);
 	  if (*dt & TEXTHTML)
-	    register_html (url, local_file);
+	    register_html (u->url, local_file);
 	}
     }
 

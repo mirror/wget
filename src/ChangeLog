@@ -1,3 +1,22 @@
+2001-12-04  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* recur.c (retrieve_tree): Check whether the URL was already
+	downloaded before downloading it again.
+	(descend_child_p): Renamed to download_child_p.
+	(register_download): When one URL is downloaded to a file already
+	"owned" by another URL, delete all references that map any URL to
+	that file.
+	(register_delete_file): New function.
+	(retrieve_tree): Use it after deleting a file.
+
+	* url.c (url_parse): Re-canonicalize the URL also if the path is
+	empty, so that e.g. "http://www.server.com" ->
+	"http://www.server.com/".
+	(lowercase_str): Use ISUPPER instead of !ISLOWER.
+
+	* retr.c (retrieve_url): Use the canonical URL form when calling
+	register_download().
+
 2001-12-04  Ian Abbott <abbotti@mev.co.uk>
 
 	* snprintf.c (dopr): Use `unsigned int' as the second argument to

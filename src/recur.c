@@ -58,6 +58,8 @@ static struct hash_table *dl_url_file_map;
    in order.  If you need to check whether a file has been downloaded,
    use a hash table, e.g. dl_file_url_map.  */
 static slist *downloaded_html_files;
+
+static void register_delete_file PARAMS ((const char *));
 
 /* Functions for maintaining the URL queue.  */
 
@@ -150,8 +152,8 @@ url_dequeue (struct url_queue *queue,
   return 1;
 }
 
-static int descend_url_p PARAMS ((const struct urlpos *, struct url *, int,
-				  struct url *, struct hash_table *));
+static int download_child_p PARAMS ((const struct urlpos *, struct url *, int,
+				     struct url *, struct hash_table *));
 static int descend_redirect_p PARAMS ((const char *, const char *, int,
 				       struct url *, struct hash_table *));
 
@@ -205,52 +207,63 @@ retrieve_tree (const char *start_url)
 
       if (downloaded_exceeds_quota ())
 	break;
-
       if (status == FWRITEERR)
 	break;
 
-      /* Get the next URL from the queue. */
+      /* Get the next URL from the queue... */
 
       if (!url_dequeue (queue,
 			(const char **)&url, (const char **)&referer,
 			&depth))
 	break;
 
-      /* And download it. */
+      /* ...and download it.  Note that this download is in most cases
+	 unconditional, as download_child_p already makes sure a file
+	 doesn't get enqueued twice -- and yet this check is here, and
+	 not in download_child_p.  This is so that if you run `wget -r
+	 URL1 URL2', and a random URL is encountered once under URL1
+	 and again under URL2, but at a different (possibly smaller)
+	 depth, we want the URL's children to be taken into account
+	 the second time.  */
+      if (dl_url_file_map && hash_table_contains (dl_url_file_map, url))
+	{
+	  DEBUGP (("Already downloaded \"%s\", reusing it from \"%s\".\n",
+		   url, (char *)hash_table_get (dl_url_file_map, url)));
+	}
+      else
+	{
+	  int dt = 0;
+	  char *redirected = NULL;
+	  int oldrec = opt.recursive;
 
-      {
-	int dt = 0;
-	char *redirected = NULL;
-	int oldrec = opt.recursive;
+	  opt.recursive = 0;
+	  status = retrieve_url (url, &file, &redirected, NULL, &dt);
+	  opt.recursive = oldrec;
 
-	opt.recursive = 0;
-	status = retrieve_url (url, &file, &redirected, NULL, &dt);
-	opt.recursive = oldrec;
+	  if (file && status == RETROK
+	      && (dt & RETROKF) && (dt & TEXTHTML))
+	    descend = 1;
 
-	if (file && status == RETROK
-	    && (dt & RETROKF) && (dt & TEXTHTML))
-	  descend = 1;
+	  if (redirected)
+	    {
+	      /* We have been redirected, possibly to another host, or
+		 different path, or wherever.  Check whether we really
+		 want to follow it.  */
+	      if (descend)
+		{
+		  if (!descend_redirect_p (redirected, url, depth,
+					   start_url_parsed, blacklist))
+		    descend = 0;
+		  else
+		    /* Make sure that the old pre-redirect form gets
+		       blacklisted. */
+		    string_set_add (blacklist, url);
+		}
 
-	if (redirected)
-	  {
-	    /* We have been redirected, possibly to another host, or
-	       different path, or wherever.  Check whether we really
-	       want to follow it.  */
-	    if (descend)
-	      {
-		if (!descend_redirect_p (redirected, url, depth,
-					 start_url_parsed, blacklist))
-		  descend = 0;
-		else
-		  /* Make sure that the old pre-redirect form gets
-		     blacklisted. */
-		  string_set_add (blacklist, url);
-	      }
-
-	    xfree (url);
-	    url = redirected;
-	  }
-      }
+	      xfree (url);
+	      url = redirected;
+	    }
+	}
 
       if (descend
 	  && depth >= opt.reclevel && opt.reclevel != INFINITE_RECURSION)
@@ -305,8 +318,8 @@ retrieve_tree (const char *start_url)
 		    continue;
 		  if (dash_p_leaf_HTML && !child->link_inline_p)
 		    continue;
-		  if (descend_url_p (child, url_parsed, depth, start_url_parsed,
-				     blacklist))
+		  if (download_child_p (child, url_parsed, depth, start_url_parsed,
+					blacklist))
 		    {
 		      url_enqueue (queue, xstrdup (child->url->url),
 				   xstrdup (url), depth + 1);
@@ -338,6 +351,7 @@ retrieve_tree (const char *start_url)
 		     file);
 	  if (unlink (file))
 	    logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
+	  register_delete_file (file);
 	}
 
       xfree (url);
@@ -379,8 +393,8 @@ retrieve_tree (const char *start_url)
    will help if those URLs are encountered many times.  */
 
 static int
-descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
-	       struct url *start_url_parsed, struct hash_table *blacklist)
+download_child_p (const struct urlpos *upos, struct url *parent, int depth,
+		  struct url *start_url_parsed, struct hash_table *blacklist)
 {
   struct url *u = upos->url;
   const char *url = u->url;
@@ -555,10 +569,10 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
   return 0;
 }
 
-/* This function determines whether we should descend the children of
-   the URL whose download resulted in a redirection, possibly to
-   another host, etc.  It is needed very rarely, and thus it is merely
-   a simple-minded wrapper around descend_url_p.  */
+/* This function determines whether we will consider downloading the
+   children of a URL whose download resulted in a redirection,
+   possibly to another host, etc.  It is needed very rarely, and thus
+   it is merely a simple-minded wrapper around download_child_p.  */
 
 static int
 descend_redirect_p (const char *redirected, const char *original, int depth,
@@ -578,8 +592,8 @@ descend_redirect_p (const char *redirected, const char *original, int depth,
   memset (upos, 0, sizeof (*upos));
   upos->url = new_parsed;
 
-  success = descend_url_p (upos, orig_parsed, depth,
-			   start_url_parsed, blacklist);
+  success = download_child_p (upos, orig_parsed, depth,
+			      start_url_parsed, blacklist);
 
   url_free (orig_parsed);
   url_free (new_parsed);
@@ -592,22 +606,95 @@ descend_redirect_p (const char *redirected, const char *original, int depth,
 }
 
 
-/* Register that URL has been successfully downloaded to FILE. */
+#define ENSURE_TABLES_EXIST do {			\
+  if (!dl_file_url_map)					\
+    dl_file_url_map = make_string_hash_table (0);	\
+  if (!dl_url_file_map)					\
+    dl_url_file_map = make_string_hash_table (0);	\
+} while (0)
+
+static int
+dissociate_urls_from_file_mapper (void *key, void *value, void *arg)
+{
+  char *mapping_url = (char *)key;
+  char *mapping_file = (char *)value;
+  char *file = (char *)arg;
+
+  if (0 == strcmp (mapping_file, file))
+    {
+      hash_table_remove (dl_url_file_map, mapping_url);
+      xfree (mapping_url);
+      xfree (mapping_file);
+    }
+
+  /* Continue mapping. */
+  return 0;
+}
+
+/* Remove all associations from various URLs to FILE from dl_url_file_map. */
+
+static void
+dissociate_urls_from_file (const char *file)
+{
+  hash_table_map (dl_url_file_map, dissociate_urls_from_file_mapper,
+		  (char *)file);
+}
+
+/* Register that URL has been successfully downloaded to FILE.  This
+   is used by the link conversion code to convert references to URLs
+   to references to local files.  It is also being used to check if a
+   URL has already been downloaded.  */
 
 void
 register_download (const char *url, const char *file)
 {
-  if (!opt.convert_links)
-    return;
-  if (!dl_file_url_map)
-    dl_file_url_map = make_string_hash_table (0);
-  if (!dl_url_file_map)
-    dl_url_file_map = make_string_hash_table (0);
+  char *old_file, *old_url;
 
-  if (!hash_table_contains (dl_file_url_map, file))
-    hash_table_put (dl_file_url_map, xstrdup (file), xstrdup (url));
-  if (!hash_table_contains (dl_url_file_map, url))
-    hash_table_put (dl_url_file_map, xstrdup (url), xstrdup (file));
+  ENSURE_TABLES_EXIST;
+
+  /* With some forms of retrieval, it is possible, although not
+     likely, for different URLs to resolve to the same file name.  For
+     example, "http://www.server.com/" and
+     "http://www.server.com/index.html" will both resolve to the same
+     file, "index.html".  If both are downloaded, the second download
+     will override the first one.
+
+     If that happens, dissociate the old file name from the URL.  */
+
+  if (hash_table_get_pair (dl_file_url_map, file, &old_file, &old_url))
+    {
+      if (0 == strcmp (url, old_url))
+	/* We have somehow managed to download the same URL twice.
+	   Nothing to do.  */
+	return;
+
+      hash_table_remove (dl_file_url_map, file);
+      xfree (old_file);
+      xfree (old_url);
+
+      /* Remove all the URLs that point to this file.  Yes, there can
+	 be more than one such URL, because we store redirections as
+	 multiple entries in dl_url_file_map.  For example, if URL1
+	 redirects to URL2 which gets downloaded to FILE, we map both
+	 URL1 and URL2 to FILE in dl_url_file_map.  (dl_file_url_map
+	 only points to URL2.)  When another URL gets loaded to FILE,
+	 we want both URL1 and URL2 dissociated from it.
+
+         This is a relatively expensive operation because it performs
+         a linear search of the whole hash table, but it should be
+         called very rarely, only when two URLs resolve to the same
+         file name, *and* the "<file>.1" extensions are turned off.
+         In other words, almost never.  */
+      dissociate_urls_from_file (file);
+    }
+
+  /* A URL->FILE mapping is not possible without a FILE->URL mapping.
+     If the latter were present, it should have been removed by the
+     above `if'.  */
+  assert (!hash_table_contains (dl_url_file_map, url));
+
+  hash_table_put (dl_file_url_map, xstrdup (file), xstrdup (url));
+  hash_table_put (dl_url_file_map, xstrdup (url), xstrdup (file));
 }
 
 /* Register that FROM has been redirected to TO.  This assumes that TO
@@ -619,8 +706,7 @@ register_redirection (const char *from, const char *to)
 {
   char *file;
 
-  if (!opt.convert_links)
-    return;
+  ENSURE_TABLES_EXIST;
 
   file = hash_table_get (dl_url_file_map, to);
   assert (file != NULL);
@@ -628,7 +714,25 @@ register_redirection (const char *from, const char *to)
     hash_table_put (dl_url_file_map, xstrdup (from), xstrdup (file));
 }
 
-/* Register that URL corresponds to the HTML file FILE. */
+/* Register that the file has been deleted. */
+
+static void
+register_delete_file (const char *file)
+{
+  char *old_url, *old_file;
+
+  ENSURE_TABLES_EXIST;
+
+  if (!hash_table_get_pair (dl_file_url_map, file, &old_file, &old_url))
+    return;
+
+  hash_table_remove (dl_file_url_map, file);
+  xfree (old_file);
+  xfree (old_url);
+  dissociate_urls_from_file (file);
+}
+
+/* Register that FILE is an HTML file that has been downloaded. */
 
 void
 register_html (const char *url, const char *file)
@@ -672,15 +776,16 @@ convert_all_links (void)
       struct urlpos *urls, *cur_url;
       char *url;
 
-      DEBUGP (("Rescanning %s\n", html->string));
-
       /* Determine the URL of the HTML file.  get_urls_html will need
 	 it.  */
       url = hash_table_get (dl_file_url_map, html->string);
-      if (url)
-	DEBUGP (("It should correspond to %s.\n", url));
-      else
-	DEBUGP (("I cannot find the corresponding URL.\n"));
+      if (!url)
+	{
+	  DEBUGP (("Apparently %s has been removed.\n", html->string));
+	  continue;
+	}
+
+      DEBUGP (("Rescanning %s (from %s)\n", html->string, url));
 
       /* Parse the HTML file...  */
       urls = get_urls_html (html->string, url, NULL);
