@@ -492,13 +492,7 @@ GNU General Public License for more details.\n"));
 	  setval ("header", optarg);
 	  break;
 	case 134:
-	  /* Supported for compatibility; --dot-style=foo equivalent
-	     to --progress=dot:foo.  */
-	  {
-	    char *tmp = alloca (3 + 1 + strlen (optarg));
-	    sprintf (tmp, "dot:%s", optarg);
-	    setval ("progress", tmp);
-	  }
+	  setval ("dotstyle", optarg);
 	  break;
 	case 135:
 	  setval ("htmlify", optarg);

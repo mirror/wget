@@ -1,3 +1,15 @@
+2001-11-28  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* progress.c (dot_set_params): If PARAMS is unspecified, use
+	dot_style, if available.
+
+	* init.c: Ditto.
+
+	* main.c (main): Resurect --dot-style.
+
+	* progress.c (dot_finish): Print the quantity if we're left at the
+	beginning of a row.
+
 2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* cmpt.c (random): Removed.

@@ -288,6 +288,8 @@ dot_finish (void *progress, long dltime)
 
   log_set_flush (0);
 
+  if (dp->dots == 0)
+    logprintf (LOG_VERBOSE, "\n%5ldK", dp->rows * row_bytes / 1024);
   for (i = dp->dots; i < opt.dots_in_line; i++)
     {
       if (i % opt.dot_spacing == 0)
@@ -323,6 +325,9 @@ dot_finish (void *progress, long dltime)
 static void
 dot_set_params (const char *params)
 {
+  if (!params || !*params)
+    params = opt.dot_style;
+
   if (!params)
     return;
 
@@ -409,7 +414,7 @@ bar_create (long initial, long total)
   bp->width = screen_width;
   bp->buffer = xmalloc (bp->width + 1);
 
-  logputs (LOG_VERBOSE, "\n\n");
+  logputs (LOG_VERBOSE, "\n");
 
   create_image (bp, 0);
   display_image (bp->buffer);

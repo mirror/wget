@@ -122,6 +122,7 @@ static struct {
   { "dotbytes",		&opt.dot_bytes,		cmd_bytes },
   { "dotsinline",	&opt.dots_in_line,	cmd_number },
   { "dotspacing",	&opt.dot_spacing,	cmd_number },
+  { "dotstyle",		&opt.dot_style,		cmd_string },
   { "excludedirectories", &opt.excludes,	cmd_directory_vector },
   { "excludedomains",	&opt.exclude_domains,	cmd_vector },
   { "followftp",	&opt.follow_ftp,	cmd_boolean },

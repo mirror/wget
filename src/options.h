@@ -139,6 +139,7 @@ struct options
   int htmlify;			/* Do we HTML-ify the OS-dependent
 				   listings? */
 
+  char *dot_style;
   long dot_bytes;		/* How many bytes in a printing
 				   dot. */
   int dots_in_line;		/* How many dots in one line. */
