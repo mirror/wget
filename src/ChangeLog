@@ -1,5 +1,9 @@
 2003-10-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* version.c: Bump version.
+
+2003-10-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c: Ditto.
 
 	* html-parse.c (advance_declaration): Don't use trailing comma in

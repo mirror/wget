@@ -1,1 +1,1 @@
-@set VERSION 1.9-cvs
+@set VERSION 1.9+cvs-dev
