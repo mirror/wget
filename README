@@ -36,24 +36,23 @@ options, or via initialization file .wgetrc.  Wget allows you to
 install a global startup file (/usr/local/etc/wgetrc by default) for
 site settings.
 
-Wget works under almost all modern Unix variants and, unlike many of
-its predecessors, is written entirely in C, thus requiring no
-additional software (like perl).  As Wget uses the GNU Autoconf, it is
-easily built on and ported to other Unix's. Installation procedure is
-described in the INSTALL file.
+Wget works under almost all Unix variants in use today and, unlike
+many of its historical predecessors, is written entirely in C, thus
+requiring no additional software, such as Perl.  The external software
+it does work with, such as OpenSSL, is optional.  As Wget uses the GNU
+Autoconf, it is easily built on and ported to new Unix-like systems.
+The installation procedure is described in the INSTALL file.
 
-Like all GNU utilities, the latest version of Wget can be found at the
-master GNU archive site ftp.gnu.org, and its mirrors.  For example,
-Wget 1.9 is available at:
-
-    ftp://ftp.gnu.org/pub/gnu/wget/wget-1.9.tar.gz
+As with other GNU software, the latest version of Wget can be found at
+the master GNU archive site ftp.gnu.org, and its mirrors.  Wget
+resides at <ftp://ftp.gnu.org/pub/gnu/wget/>.
 
 Please report bugs in Wget to <bug-wget@gnu.org>.
 
-Wget has a mailing list at <wget@sunsite.dk>.  To subscribe, mail to
-<wget-subscribe@sunsite.dk>.  Wget's home page is temporarily at
-<http://wget.sunsite.dk/>.  It is being migrated to
-<http://www.gnu.org/software/wget/>, where will be its permanent home.
+See the file `MAILING-LIST' for information about Wget mailing lists.
+Wget's home page is temporarily at <http://wget.sunsite.dk/>.  It is
+being migrated to <http://www.gnu.org/software/wget/>, where will be
+its permanent home.
 
 
 MAINTAINER: Hrvoje Niksic <hniksic@xemacs.org>

@@ -1,3 +1,8 @@
+2003-11-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* README: Remove explicit version reference, so that the file
+	doesn't have to be updated for each new release.
+
 2003-11-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* libtool.m4, ltmain.sh, config.sub, config.guess: Upgrade to
