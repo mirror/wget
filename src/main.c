@@ -303,7 +303,7 @@ main (int argc, char *const *argv)
   windows_main_junk (&argc, (char **) argv, (char **) &exec_name);
 #endif
 
-  initialize (); /* sets option defaults; reads the system.wgetrc and .wgetrc */
+  initialize (); /* sets option defaults; reads the system wgetrc and .wgetrc */
 
   /* [Is the order of the option letters significant?  If not, they should be
       alphabetized, like the long_options.  The only thing I know for sure is
