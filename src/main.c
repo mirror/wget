@@ -223,7 +223,6 @@ Recursive accept/reject:\n\
   -L,  --relative                   follow relative links only.\n\
   -I,  --include-directories=LIST   list of allowed directories.\n\
   -X,  --exclude-directories=LIST   list of excluded directories.\n\
-  -nh, --no-host-lookup             don\'t DNS-lookup hosts.\n\
   -np, --no-parent                  don\'t ascend to the parent directory.\n\
 \n"), stdout);
   fputs (_("Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"),

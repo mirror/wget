@@ -1,5 +1,9 @@
 2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* main.c (print_help): Don't document the removed `-nh'.
+
+2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (url_full_path): Document better.
 
 	* http.c (gethttp): Use the full path when creating digest
