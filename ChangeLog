@@ -1,3 +1,7 @@
+2001-03-27  Dan Harkless  <wget@harkless.org>
+
+	* INSTALL: Updated to reflect --with-ssl's new optional parameter.
+
 2001-03-26  Dan Harkless  <wget@harkless.org>
 
 	* TODO: -p should probably go "_two_ more hops" on <FRAMESET> pages.

@@ -29,7 +29,7 @@ scripts take.  The most important ones are:
 
 --enable and --with options recognized (mostly Wget-specific):
   --with-socks            use the socks library
-  --with-ssl              use the openssl library
+  --with-ssl[=SSL_ROOT]   link with libssl [in SSL_ROOT/lib] for https: support
   --disable-opie          disable support for opie or s/key FTP login
   --disable-digest        disable support for HTTP digest authorization
   --disable-debug         disable support for debugging output
@@ -45,6 +45,13 @@ files, but it is useful to have a look at things you can change there.
 
 If you use socks, it is useful to add -L/usr/local/lib (or wherever
 the socks library is installed) to LDFLAGS in Makefile.
+
+If you have OpenSSL installed in its default /usr/local/ssl directory
+(i.e. libraries are in /usr/local/ssl/lib), you can simply 
+`configure --with-ssl'.  If you have it installed elsewhere, you need
+to specify your alternate OpenSSL root directory.  For instance, if
+libcrypto.* and libssl.* are in /usr/local/lib, you need to 
+`configure --with-ssl=/usr/local'.
 
 To configure Wget on Windows, run configure.bat and follow the
 instructions in the windows/ directory.  If this doesn't work for any
