@@ -900,8 +900,8 @@ has_html_suffix_p (const char *fname)
 }
 
 /* Read a line from FP and return the pointer to freshly allocated
-   storage.  The stoarage space is obtained through malloc() and
-   should be freed with free() when it is no longer needed.
+   storage.  The storage space is obtained through malloc() and should
+   be freed with free() when it is no longer needed.
 
    The length of the line is not limited, except by available memory.
    The newline character at the end of line is retained.  The line is
@@ -1035,7 +1035,7 @@ read_file (const char *file)
 	  /* Normally, we grow SIZE exponentially to make the number
              of calls to read() and realloc() logarithmic in relation
              to file size.  However, read() can read an amount of data
-             smaller than requested, and it would be unreasonably to
+             smaller than requested, and it would be unreasonable to
              double SIZE every time *something* was read.  Therefore,
              we double SIZE only when the length exceeds half of the
              entire allocated size.  */
@@ -1962,7 +1962,7 @@ abort_run_with_timeout (int sig)
      if we longjumped out of the handler at this point, SIGALRM would
      remain blocked.  We must unblock it manually. */
   int mask = siggetmask ();
-  mask &= ~sigmask(SIGALRM);
+  mask &= ~sigmask (SIGALRM);
   sigsetmask (mask);
 
   /* Now it's safe to longjump. */
@@ -2019,8 +2019,9 @@ alarm_cancel (void)
 #endif /* not ITIMER_REAL */
 }
 
-/* Run FUN(ARG) for not more than TIMEOUT seconds.  Returns non-zero
-   if the function was interrupted with a timeout, zero otherwise.
+/* Call FUN(ARG), but don't allow it to run for more than TIMEOUT
+   seconds.  Returns non-zero if the function was interrupted with a
+   timeout, zero otherwise.
 
    This works by setting up SIGALRM to be delivered in TIMEOUT seconds
    using setitimer() or alarm().  The timeout is enforced by
