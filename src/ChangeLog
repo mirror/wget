@@ -1,3 +1,8 @@
+2002-04-21  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* recur.c (download_child_p): Revert order of items in check
+	number 6 for clarity.
+
 2002-04-20  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* init.c: Ditto.

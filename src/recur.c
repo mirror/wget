@@ -514,8 +514,8 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
      That is, unless we've exhausted the recursion depth anyway.  */
   if (u->file[0] != '\0'
       && !(has_html_suffix_p (u->file)
-	   && depth < opt.reclevel - 1
-	   && depth != INFINITE_RECURSION))
+	   && depth != INFINITE_RECURSION
+	   && depth < opt.reclevel - 1))
     {
       if (!acceptable (u->file))
 	{
