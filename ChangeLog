@@ -1,3 +1,10 @@
+2001-04-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* aclocal.m4 (AM_PROG_CC_STDC): Don't use -Xc under SYSV.  It
+	forces strict ANSI mode, which means we lose `long long'.
+	Generally, don't require __STDC__ to be defined to 1 because that
+	signifies strict ANSI.
+
 2001-04-04  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* NEWS: Cosmetic changes.
