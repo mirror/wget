@@ -321,7 +321,8 @@ defaults (void)
   {
     int sock = socket (AF_INET6, SOCK_STREAM, 0);
     if (sock < 0)
-      opt.ipv4_only = 1;
+      opt.ipv4_only = -1;	/* special value -1 because the option
+				   was not specified by the user.  */
     else
       close (sock);
   }

@@ -1,3 +1,11 @@
+2003-11-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* main.c (main): Don't allow setting of both opt.ipv4_only and
+	opt.ipv6_only.
+
+	* init.c (defaults): Mark opt.ipv4_only specially when set
+	automatically.
+
 2003-11-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* host.c (lookup_host): Use AI_ADDRCONFIG only if the family is
