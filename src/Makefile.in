@@ -130,6 +130,7 @@ uninstall.bin:
 
 clean:
 	$(RM) *.o wget$(exeext) *~ *.bak core core.[0-9]* $(ANSI2KNR) *._o *._c
+	$(RM) -r .libs
 
 distclean: clean
 	$(RM) Makefile config.h
