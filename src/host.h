@@ -61,9 +61,9 @@ typedef struct {
 #ifdef ENABLE_IPV6
     struct {
       struct in6_addr addr;
-#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+# ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
       unsigned int scope_id;
-#endif /* HAVE_SOCKADDR_IN6_SCOPE_ID */
+# endif
     } ipv6;
 #endif /* ENABLE_IPV6 */
     struct {

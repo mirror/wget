@@ -259,9 +259,9 @@ address_list_from_ipv4_addresses (char **vec)
     ++count;
   assert (count > 0);
 
-  al->addresses  = xnew_array (ip_address, count);
-  al->count      = count;
-  al->refcount   = 1;
+  al->addresses = xnew_array (ip_address, count);
+  al->count     = count;
+  al->refcount  = 1;
 
   for (i = 0; i < count; i++)
     {
