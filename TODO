@@ -15,10 +15,6 @@ represent user-visible changes.
   mirror remote FTP permissions by default.  There should be a new
   option add an option that enables this back on.
 
-* Implement a `--disable-dns-cache' option that disables DNS caching.
-  It is trivial to implement; simply avoid calling cache_host_lookup
-  at the end of lookup_host.
-
 * Honor `Content-Disposition: XXX; filename="FILE"' when creating the
   file name.
 

@@ -16,8 +16,8 @@
 
 @c This should really be generated automatically, possibly by including
 @c an auto-generated file.
-@set VERSION 1.8.1+cvs
-@set UPDATED December 2001
+@set VERSION 1.9-cvs
+@set UPDATED September 2003
 
 @dircategory Net Utilities
 @dircategory World Wide Web
@@ -777,6 +777,29 @@ Thus you may safely type @samp{wget -Q2m -i sites}---download will be
 aborted when the quota is exceeded.
 
 Setting quota to 0 or to @samp{inf} unlimits the download quota.
+
+@cindex DNS cache
+@cindex caching of DNS lookups
+@itemx --dns-cache=off
+Turn off caching of DNS lookups.  Normally, Wget remembers the addresses
+it looked up from DNS so it doesn't have to repeatedly contact the DNS
+server for the same (typically small) set of addresses it retrieves
+from.  This cache exists in memory only; a new Wget run will contact DNS
+again.
+
+However, in some cases it is not desirable to cache host names, even for
+the duration of a short-running application like Wget.  For example,
+some HTTP servers are hosted on machines with dynamically allocated IP
+addresses that change from time to time.  Their DNS entries are updated
+along with each change.  When Wget's download from such a host gets
+interrupted by IP address change, Wget retries the download, but (due to
+DNS caching) it contacts the old address.  With the DNS cache turned
+off, Wget will repeat the DNS lookup for every connect and will thus get
+the correct dynamic address every time---at the cost of additional DNS
+lookups where they're probably not needed.
+
+If you don't understand the above description, you probably won't need
+this option.
 @end table
 
 @node Directory Options, HTTP Options, Download Options, Invoking
@@ -2045,6 +2068,10 @@ Top of directory tree---the same as @samp{-P}.
 @item dirstruct = on/off
 Turning dirstruct on or off---the same as @samp{-x} or @samp{-nd},
 respectively.
+
+@item dns_cache = on/off
+Turn DNS caching on/off.  Since DNS caching is on by default, this
+option is normally used to turn it off.  Same as @samp{--dns-cache}.
 
 @item domains = @var{string}
 Same as @samp{-D} (@pxref{Spanning Hosts}).

@@ -70,6 +70,7 @@ struct options
 
   char **domains;		/* See host.c */
   char **exclude_domains;
+  int dns_cache;		/* whether we cache DNS lookups. */
 
   char **follow_tags;           /* List of HTML tags to recursively follow. */
   char **ignore_tags;           /* List of HTML tags to ignore if recursing. */

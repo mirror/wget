@@ -1,3 +1,9 @@
+2003-09-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* init.c: New command dns_cache.
+
+	* main.c (main): New option --dns-cache[=off].
+
 2003-09-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* config.h.in: Initialize HAVE_GETADDRINFO and ENABLE_IPV6.

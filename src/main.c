@@ -178,6 +178,7 @@ Download:\n\
   -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n\
        --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n\
        --limit-rate=RATE        limit download rate to RATE.\n\
+       --dns-cache=off          disable caching DNS lookups.\n\
 \n"), stdout);
   fputs (_("\
 Directories:\n\
@@ -314,6 +315,7 @@ main (int argc, char *const *argv)
     { "cookies", required_argument, NULL, 160 },
     { "cut-dirs", required_argument, NULL, 145 },
     { "directory-prefix", required_argument, NULL, 'P' },
+    { "dns-cache", required_argument, NULL, 175 },
     { "domains", required_argument, NULL, 'D' },
     { "dot-style", required_argument, NULL, 134 },
     { "execute", required_argument, NULL, 'e' },
@@ -604,6 +606,9 @@ GNU General Public License for more details.\n"));
 	  break;
 	case 168:
 	  setval ("postfile", optarg);
+	  break;
+	case 175:
+	  setval ("dnscache", optarg);
 	  break;
 	case 'A':
 	  setval ("accept", optarg);

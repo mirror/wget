@@ -131,6 +131,7 @@ static struct {
   { "deleteafter",	&opt.delete_after,	cmd_boolean },
   { "dirprefix",	&opt.dir_prefix,	cmd_directory },
   { "dirstruct",	NULL,			cmd_spec_dirstruct },
+  { "dnscache",		&opt.dns_cache,		cmd_boolean },
   { "domains",		&opt.domains,		cmd_vector },
   { "dotbytes",		&opt.dot_bytes,		cmd_bytes },
   { "dotsinline",	&opt.dots_in_line,	cmd_number },
@@ -278,6 +279,8 @@ defaults (void)
   opt.dot_bytes = 1024;
   opt.dot_spacing = 10;
   opt.dots_in_line = 50;
+
+  opt.dns_cache = 1;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is

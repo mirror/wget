@@ -691,7 +691,8 @@ lookup_host (const char *host, int silent)
     logprintf (LOG_VERBOSE, _("done.\n"));
 
   /* Cache the lookup information. */
-  cache_host_lookup (host, al);
+  if (opt.dns_cache)
+    cache_host_lookup (host, al);
 
   return al;
 }
