@@ -1,5 +1,9 @@
 2003-09-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* retr.c (get_contents): Cosmetic fixes.
+
+2003-09-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (uri_merge): Get rid of uri_merge_1.
 	(uri_merge): Merge "foo//", "bar" as "foo//bar", not "foo///bar",
 	i.e. don't add an extra slash merely because BASE ends with two

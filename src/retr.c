@@ -79,9 +79,8 @@ limit_bandwidth_reset (void)
 }
 
 /* Limit the bandwidth by pausing the download for an amount of time.
-   BYTES is the number of bytes received from the network, DELTA is
-   how long it took to receive them, DLTIME the current download time,
-   TIMER the timer, and ADJUSTMENT the previous.  */
+   BYTES is the number of bytes received from the network, and DELTA
+   is how long it took to receive them.  */
 
 static void
 limit_bandwidth (long bytes, double delta)
@@ -196,35 +195,34 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 #endif /* HAVE_SSL */
 	res = iread (fd, dlbuf, amount_to_read);
 
-      if (res > 0)
-	{
-	  fwrite (dlbuf, 1, res, fp);
-	  /* Always flush the contents of the network packet.  This
-	     should not be adverse to performance, as the network
-	     packets typically won't be too tiny anyway.  */
-	  fflush (fp);
-	  if (ferror (fp))
-	    {
-	      res = -2;
-	      goto out;
-	    }
-
-	  /* If bandwidth is not limited, one call to wtimer_elapsed
-	     is sufficient.  */
-	  dltime = wtimer_elapsed (timer);
-	  if (opt.limit_rate)
-	    {
-	      limit_bandwidth (res, dltime - last_dltime);
-	      dltime = wtimer_elapsed (timer);
-	      last_dltime = dltime;
-	    }
-
-	  if (progress)
-	    progress_update (progress, res, dltime);
-	  *len += res;
-	}
-      else
+      if (res <= 0)
 	break;
+
+      fwrite (dlbuf, 1, res, fp);
+      /* Always flush the contents of the network packet.  This should
+	 not hinder performance: fast downloads will be received in
+	 16K chunks (which stdio would write out anyway), and slow
+	 downloads won't be limited with disk performance.  */
+      fflush (fp);
+      if (ferror (fp))
+	{
+	  res = -2;
+	  goto out;
+	}
+
+      /* If bandwidth is not limited, one call to wtimer_elapsed is
+	 sufficient.  */
+      dltime = wtimer_elapsed (timer);
+      if (opt.limit_rate)
+	{
+	  limit_bandwidth (res, dltime - last_dltime);
+	  dltime = wtimer_elapsed (timer);
+	  last_dltime = dltime;
+	}
+
+      if (progress)
+	progress_update (progress, res, dltime);
+      *len += res;
     }
   if (res < -1)
     res = -1;
@@ -284,8 +282,7 @@ calc_rate (long bytes, double msecs, int *units)
   else if (dlrate < 1024.0 * 1024.0 * 1024.0)
     *units = 2, dlrate /= (1024.0 * 1024.0);
   else
-    /* Maybe someone will need this one day.  More realistically, it
-       will get tickled by buggy timers. */
+    /* Maybe someone will need this, one day. */
     *units = 3, dlrate /= (1024.0 * 1024.0 * 1024.0);
 
   return dlrate;
