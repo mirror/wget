@@ -1,3 +1,7 @@
+2002-01-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* source: Integrated IPv6 support by Thomas Lussnig.
+
 2002-01-15  Ian Abbott  <abbotti@mev.co.uk>
 
 	* init.c (cmd_file): Change `\' to `/' for Windows (yes, really!)

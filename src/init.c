@@ -527,10 +527,10 @@ static int
 cmd_address (const char *com, const char *val, void *closure)
 {
   struct address_list *al;
-  struct sockaddr_in sin;
-  struct sockaddr_in **target = (struct sockaddr_in **)closure;
+  wget_sockaddr sa;
+  wget_sockaddr **target = (wget_sockaddr **)closure;
 
-  memset (&sin, '\0', sizeof (sin));
+  memset (&sa, '\0', sizeof (sa));
 
   al = lookup_host (val, 1);
   if (!al)
@@ -539,16 +539,15 @@ cmd_address (const char *com, const char *val, void *closure)
 	       exec_name, com, val);
       return 0;
     }
-  address_list_copy_one (al, 0, (unsigned char *)&sin.sin_addr);
+  sa.sa.sa_family = ip_default_family;
+  wget_sockaddr_set_port (&sa, 0);
+  address_list_copy_one (al, 0, wget_sockaddr_get_addr (&sa));
   address_list_release (al);
-
-  sin.sin_family = AF_INET;
-  sin.sin_port = 0;
 
   FREE_MAYBE (*target);
 
-  *target = xmalloc (sizeof (sin));
-  memcpy (*target, &sin, sizeof (sin));
+  *target = xmalloc (sizeof (sa));
+  memcpy (*target, &sa, sizeof (sa));
 
   return 1;
 }

@@ -76,15 +76,13 @@ set_connection_host_name (const char *host)
 
 /* Connect to a remote host whose address has been resolved. */
 int
-connect_to_one (const unsigned char *addr, unsigned short port, int silent)
+connect_to_one (ip_address *addr, unsigned short port, int silent)
 {
-  struct sockaddr_in sock_name;
+  wget_sockaddr sa;
   int sock, save_errno;
 
   /* Set port and protocol */
-  sock_name.sin_family = AF_INET;
-  sock_name.sin_port = htons (port);
-  memcpy ((unsigned char *)&sock_name.sin_addr, addr, 4);
+  wget_sockaddr_set_address (&sa, ip_default_family, port, addr);
 
   if (!silent)
     {
@@ -99,15 +97,14 @@ connect_to_one (const unsigned char *addr, unsigned short port, int silent)
     }
 
   /* Make an internet socket, stream type.  */
-  sock = socket (AF_INET, SOCK_STREAM, 0);
+  sock = socket (ip_default_family, SOCK_STREAM, 0);
   if (sock < 0)
     goto out;
 
   if (opt.bind_address)
     {
       /* Bind the client side to the requested address. */
-      if (bind (sock, (struct sockaddr *)opt.bind_address,
-		sizeof (*opt.bind_address)))
+      if (bind (sock, (struct sockaddr *)opt.bind_address, sockaddr_len ()))
 	{
 	  close (sock);
 	  sock = -1;
@@ -116,7 +113,7 @@ connect_to_one (const unsigned char *addr, unsigned short port, int silent)
     }
 
   /* Connect the socket to the remote host.  */
-  if (connect (sock, (struct sockaddr *)&sock_name, sizeof (sock_name)) < 0)
+  if (connect (sock, &sa.sa, sockaddr_len ()) < 0)
     {
       close (sock);
       sock = -1;
@@ -151,11 +148,11 @@ connect_to_many (struct address_list *al, unsigned short port, int silent)
   address_list_get_bounds (al, &start, &end);
   for (i = start; i < end; i++)
     {
-      unsigned char addr[4];
+      ip_address addr;
       int sock;
-      address_list_copy_one (al, i, addr);
+      address_list_copy_one (al, i, &addr);
 
-      sock = connect_to_one (addr, port, silent);
+      sock = connect_to_one (&addr, port, silent);
       if (sock >= 0)
 	/* Success. */
 	return sock;
@@ -207,29 +204,26 @@ test_socket_open (int sock)
    internal variable MPORT is set to the value of the ensuing master
    socket.  Call acceptport() to block for and accept a connection.  */
 uerr_t
-bindport (unsigned short *port)
+bindport (unsigned short *port, int family)
 {
   int optval = 1;
-  static struct sockaddr_in srv;
+  wget_sockaddr srv;
+  memset (&srv, 0, sizeof (wget_sockaddr));
 
   msock = -1;
-  addr = (struct sockaddr *) &srv;
-  if ((msock = socket (AF_INET, SOCK_STREAM, 0)) < 0)
+
+  if ((msock = socket (family, SOCK_STREAM, 0)) < 0)
     return CONSOCKERR;
   if (setsockopt (msock, SOL_SOCKET, SO_REUSEADDR,
 		  (char *)&optval, sizeof (optval)) < 0)
     return CONSOCKERR;
 
   if (opt.bind_address == NULL)
-    {
-      srv.sin_family = AF_INET;
-      srv.sin_addr.s_addr = htonl (INADDR_ANY);
-    }
+    wget_sockaddr_set_address (&srv, ip_default_family, htons (*port), NULL);
   else
     srv = *opt.bind_address;
-
-  srv.sin_port = htons (*port);
-  if (bind (msock, addr, sizeof (struct sockaddr_in)) < 0)
+  wget_sockaddr_set_port (&srv, *port);
+  if (bind (msock, &srv.sa, sockaddr_len ()) < 0)
     {
       CLOSE (msock);
       msock = -1;
@@ -241,14 +235,15 @@ bindport (unsigned short *port)
       /* #### addrlen should be a 32-bit type, which int is not
          guaranteed to be.  Oh, and don't try to make it a size_t,
          because that can be 64-bit.  */
-      int addrlen = sizeof (struct sockaddr_in);
-      if (getsockname (msock, addr, &addrlen) < 0)
+      int sa_len = sockaddr_len ();
+      if (getsockname (msock, &srv.sa, &sa_len) < 0)
 	{
 	  CLOSE (msock);
 	  msock = -1;
 	  return CONPORTERR;
 	}
-      *port = ntohs (srv.sin_port);
+      *port = wget_sockaddr_get_port (&srv);
+      DEBUGP (("using port %i.\n", *port));
     }
   if (listen (msock, 1) < 0)
     {
@@ -292,7 +287,7 @@ select_fd (int fd, int maxtime, int writep)
 uerr_t
 acceptport (int *sock)
 {
-  int addrlen = sizeof (struct sockaddr_in);
+  int addrlen = sockaddr_len ();
 
 #ifdef HAVE_SELECT
   if (select_fd (msock, opt.timeout, 0) <= 0)
@@ -317,22 +312,33 @@ closeport (int sock)
   msock = -1;
 }
 
-/* Return the local IP address associated with the connection on FD.
-   It is returned in a static buffer.  */
-unsigned char *
-conaddr (int fd)
-{
-  static unsigned char res[4];
-  struct sockaddr_in mysrv;
-  struct sockaddr *myaddr;
-  int addrlen = sizeof (mysrv);	/* see bindport() for discussion of
-                                   using `int' here. */
+/* Return the local IP address associated with the connection on FD.  */
 
-  myaddr = (struct sockaddr *) (&mysrv);
-  if (getsockname (fd, myaddr, (int *)&addrlen) < 0)
-    return NULL;
-  memcpy (res, &mysrv.sin_addr, 4);
-  return res;
+int
+conaddr (int fd, ip_address *ip)
+{
+  wget_sockaddr mysrv;
+
+  /* see bindport() for discussion of using `int' here. */
+  int addrlen = sizeof (mysrv);	
+
+  if (getsockname (fd, &mysrv.sa, (int *)&addrlen) < 0)
+    return 0;
+
+  switch (mysrv.sa.sa_family)
+    {
+#ifdef INET6
+    case AF_INET6:
+      memcpy (ip, &mysrv.sin6.sin6_addr, 16);
+      return 1;
+#endif
+    case AF_INET:
+      map_ipv4_to_ip ((ip4_address *)&mysrv.sin.sin_addr, ip);
+      return 1;
+    default:
+      abort ();
+    }
+  return 0;
 }
 
 /* Read at most LEN bytes from FD, storing them to BUF.  This is

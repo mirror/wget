@@ -24,16 +24,16 @@ struct address_list;
 
 /* Function declarations */
 
-int connect_to_one PARAMS ((const unsigned char *, unsigned short, int));
+int connect_to_one PARAMS ((ip_address *, unsigned short, int));
 int connect_to_many PARAMS ((struct address_list *, unsigned short, int));
 void set_connection_host_name PARAMS ((const char *));
 
 int test_socket_open PARAMS ((int));
 int select_fd PARAMS ((int, int, int));
-uerr_t bindport PARAMS ((unsigned short *));
+uerr_t bindport PARAMS ((unsigned short *, int));
 uerr_t acceptport PARAMS ((int *));
 void closeport PARAMS ((int));
-unsigned char *conaddr PARAMS ((int));
+int conaddr PARAMS ((int, ip_address *));
 
 int iread PARAMS ((int, char *, int));
 int iwrite PARAMS ((int, char *, int));

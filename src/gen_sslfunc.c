@@ -125,7 +125,8 @@ init_ssl (SSL_CTX **ctx)
   meth = SSLv23_client_method ();
   *ctx = SSL_CTX_new (meth);
   SSL_CTX_set_verify (*ctx, verify, verify_callback);
-  if (*ctx == NULL) return SSLERRCTXCREATE;
+  if (*ctx == NULL) 
+    return SSLERRCTXCREATE;
   if (opt.sslcertfile)
     {
       if (SSL_CTX_use_certificate_file (*ctx, opt.sslcertfile,
