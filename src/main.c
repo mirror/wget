@@ -852,12 +852,6 @@ Can't timestamp and not clobber old files at the same time.\n"));
     }
   url[i] = NULL;
 
-  /* Change the title of console window on Windows.  #### I think this
-     statement should belong to retrieve_url().  --hniksic.  */
-#ifdef WINDOWS
-  ws_changetitle (*url, nurl);
-#endif
-
   /* Initialize logging.  */
   log_init (opt.lfilename, append_to_log);
 

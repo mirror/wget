@@ -165,33 +165,43 @@ ws_handler (DWORD dwEvent)
 
 static char *title_buf = NULL;
 static char *curr_url  = NULL;
-static int   num_urls  = 0;
+static int old_percentage = -1;
 
+/* Updates the console title with the URL of the current file being
+   transferred.  */
 void
-ws_changetitle (const char *url, int nurl)
+ws_changetitle (const char *url)
 {
-  if (!nurl)
-    return;
-
-  num_urls = nurl;
-  if (title_buf)
-     xfree(title_buf);
-  if (curr_url)
-     xfree(curr_url);
+  xfree_null (title_buf);
+  xfree_null (curr_url);
   title_buf = (char *)xmalloc (strlen (url) + 20);
-  curr_url = xstrdup(url);
-  sprintf(title_buf, "Wget %s%s", url, nurl == 1 ? "" : " ...");
-  SetConsoleTitle(title_buf);
+  curr_url = xstrdup (url);
+  old_percentage = -1;
+  sprintf (title_buf, "Wget %s", curr_url);
+  SetConsoleTitle (title_buf);
 }
 
+/* Updates the console title with the percentage of the current file
+   transferred.  */
 void
-ws_percenttitle (double percent)
+ws_percenttitle (double percentage_float)
 {
-  if (num_urls == 1 && title_buf && curr_url && fabs(percent) <= 100.0)
-    {
-      sprintf (title_buf, "Wget [%.0f%%] %s", percent, curr_url);
-      SetConsoleTitle (title_buf);
-    }
+  int percentage = (int) percentage_float;
+
+  /* Only update the title when the percentage has changed.  */
+  if (percentage == old_percentage)
+    return;
+
+  old_percentage = percentage;
+
+  if (percentage > 100)
+    return;
+
+  assert (title_buf != NULL);
+  assert (curr_url != NULL);
+
+  sprintf (title_buf, "Wget [%d%%] %s", percentage, curr_url);
+  SetConsoleTitle (title_buf);
 }
 
 /* Returns a pointer to the fully qualified name of the directory that

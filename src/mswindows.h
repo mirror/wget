@@ -157,7 +157,7 @@ int usleep (unsigned long);
 #endif
 
 void ws_startup (void);
-void ws_changetitle (const char*, int);
+void ws_changetitle (const char *);
 void ws_percenttitle (double);
 char *ws_mypath (void);
 void windows_main_junk (int *, char **, char **);

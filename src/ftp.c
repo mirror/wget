@@ -1203,7 +1203,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	  logprintf (LOG_VERBOSE, "--%s--  %s\n  %s => `%s'\n",
 		     tms, hurl, tmp, locf);
 #ifdef WINDOWS
-	  ws_changetitle (hurl, 1);
+	  ws_changetitle (hurl);
 #endif
 	  xfree (hurl);
 	}

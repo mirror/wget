@@ -1,5 +1,19 @@
 2004-02-23  David Fritz  <zeroxdf@att.net>
 
+	* http.c (http_loop): Ditto.
+
+	* ftp.c (ftp_loop_internal): Update call to ws_changetitle().
+
+	* main.c (main): Don't bother calling ws_changetitle().
+
+	* mswindows.h (ws_changetitle): Update prototype.
+
+	* mswindows.c (ws_changetitle): Remove second argument.  Use
+	xfree_null().
+	(ws_percenttitle): Only update title when percentage has changed.
+
+2004-02-23  David Fritz  <zeroxdf@att.net>
+
 	* mswindows.h: Ditto.
 
 	* mswindows.c: Misc. formatting/comment tweaks throughout.
