@@ -65,10 +65,6 @@ so, delete this exception statement from your version.  */
 #endif
 #endif
 
-/* Use ANSI-style stdargs regardless of whether the compiler bothers
-   to define __STDC__.  (Many don't when extensions are enabled.)  */
-#define WGET_USE_STDARG
-
 #define REALCLOSE(x) closesocket (x)
 
 /* read & write don't work with sockets on Windows 95.  */
@@ -135,7 +131,8 @@ int usleep (unsigned long);
 #endif
 
 void ws_startup (void);
-void ws_changetitle (char*, int);
+void ws_changetitle (const char*, int);
+void ws_percenttitle (double);
 char *ws_mypath (void);
 void ws_help (const char *);
 void windows_main_junk (int *, char **, char **);

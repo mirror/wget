@@ -236,9 +236,13 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
       if (opt.limit_rate)
 	limit_bandwidth (res, &dltime, timer);
 
+      *len += res;
       if (progress)
 	progress_update (progress, res, dltime);
-      *len += res;
+#ifdef WINDOWS
+      if (use_expected && expected > 0)
+	ws_percenttitle (100.0 * (double)(*len) / (double)expected);
+#endif
     }
   if (res < -1)
     res = -1;

@@ -37,6 +37,7 @@ so, delete this exception statement from your version.  */
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
+#include <math.h>
 
 #ifdef HACK_BCC_UTIME_BUG
 # include <io.h>
@@ -176,22 +177,41 @@ ws_handler (DWORD dwEvent)
   return TRUE;
 }
 
+static char *title_buf = NULL;
+static char *curr_url  = NULL;
+static int   num_urls  = 0;
+
 void
-ws_changetitle (char *url, int nurl)
+ws_changetitle (const char *url, int nurl)
 {
-  char *title_buf;
   if (!nurl)
     return;
 
-  title_buf = (char *)alloca (strlen (url) + 20);
-  sprintf (title_buf, "Wget %s%s", url, nurl == 1 ? "" : " ...");
-  SetConsoleTitle (title_buf);
+  num_urls = nurl;
+  if (title_buf)
+     xfree(title_buf);
+  if (curr_url)
+     xfree(curr_url);
+  title_buf = (char *)xmalloc (strlen (url) + 20);
+  curr_url = xstrdup(url);
+  sprintf(title_buf, "Wget %s%s", url, nurl == 1 ? "" : " ...");
+  SetConsoleTitle(title_buf);
+}
+
+void
+ws_percenttitle (double percent)
+{
+  if (num_urls == 1 && title_buf && curr_url && fabs(percent) <= 100.0)
+    {
+      sprintf (title_buf, "Wget [%.1f%%] %s", percent, curr_url);
+      SetConsoleTitle (title_buf);
+    }
 }
 
 char *
 ws_mypath (void)
 {
-  static char *wspathsave;
+  static char *wspathsave = NULL;
   char buffer[MAX_PATH];
   char *ptr;
 
@@ -200,14 +220,11 @@ ws_mypath (void)
       return wspathsave;
     }
 
-  GetModuleFileName (NULL, buffer, MAX_PATH);
-
-  ptr = strrchr (buffer, '\\');
-  if (ptr)
+  if (GetModuleFileName (NULL, buffer, MAX_PATH) &&
+      (ptr = strrchr (buffer, PATH_SEPARATOR)) != NULL)
     {
       *(ptr + 1) = '\0';
-      wspathsave = (char*) xmalloc (strlen (buffer) + 1);
-      strcpy (wspathsave, buffer);
+      wspathsave = xstrdup (buffer);
     }
   else
     wspathsave = NULL;
