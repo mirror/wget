@@ -438,9 +438,14 @@ then
   dnl specific to the Solaris MD5 library.
   if test x"$found_md5" = xno; then
     AC_CHECK_LIB(md5, md5_calc, [
-      AC_DEFINE(HAVE_SOLARIS_MD5)
-      LIBS="-lmd5 $LIBS"
-      found_md5=yes
+      dnl There are programs that insert bogus <md5.h> in the include
+      dnl path.  That makes the system md5 library is useless to us.
+      AC_TRY_CPP([#include <md5.h>
+                 ], [
+        AC_DEFINE(HAVE_SOLARIS_MD5)
+        LIBS="-lmd5 $LIBS"
+        found_md5=yes
+      ])
     ])
   fi
 
