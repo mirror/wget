@@ -769,8 +769,8 @@ Recursive Accept/Reject Options
      certain HTML tags when recursively looking for documents to
      download, specify them in a comma-separated LIST.  The author of
      this option likes to use the following command to download a
-     single HTML page and all documents necessary to display it
-     properly:
+     single HTML page and all files (e.g. images, sounds, and
+     stylesheets) necessary to display it properly:
 
           wget -Ga,area -H -k -K -nh -r http://SITE/DOCUMENT
 

@@ -917,7 +917,8 @@ This is the opposite of the @samp{--follow-tags} option.  To skip
 certain HTML tags when recursively looking for documents to download,
 specify them in a comma-separated @var{list}.  The author of this option
 likes to use the following command to download a single HTML page and
-all documents necessary to display it properly:
+all files (e.g. images, sounds, and stylesheets) necessary to display it
+properly:
 
 @example
 wget -Ga,area -H -k -K -nh -r http://@var{site}/@var{document}

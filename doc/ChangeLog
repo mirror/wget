@@ -1,3 +1,8 @@
+2000-07-17  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* wget.texi (HTTP Options): Minor clarification in "download a
+ 	single HTML page and all files necessary to display it" example.
+
 2000-05-22  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (HTTP Options): Damir Dzeko <ddzeko@zesoi.fer.hr> did
