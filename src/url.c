@@ -1030,6 +1030,38 @@ mkstruct (const struct urlinfo *u)
   return res;
 }
 
+/* Return a malloced copy of S, but protect any '/' characters. */
+
+static char *
+file_name_protect_query_string (const char *s)
+{
+  const char *from;
+  char *to, *dest;
+  int destlen = 0;
+  for (from = s; *from; from++)
+    {
+      ++destlen;
+      if (*from == '/')
+	destlen += 2;		/* each / gets replaced with %2F, so
+				   it adds two more chars.  */
+    }
+  dest = (char *)xmalloc (destlen + 1);
+  for (from = s, to = dest; *from; from++)
+    {
+      if (*from != '/')
+	*to++ = *from;
+      else
+	{
+	  *to++ = '%';
+	  *to++ = '2';
+	  *to++ = 'F';
+	}
+    }
+  assert (to - dest == destlen);
+  *to = '\0';
+  return dest;
+}
+
 /* Create a unique filename, corresponding to a given URL.  Calls
    mkstruct if necessary.  Does *not* actually create any directories.  */
 char *
@@ -1048,7 +1080,20 @@ url_filename (const struct urlinfo *u)
       if (!*u->file)
 	file = xstrdup ("index.html");
       else
-	file = xstrdup (u->file);
+	{
+	  /* If the URL came with a query string, u->file will contain
+	     a question mark followed by query string contents.  These
+	     contents can contain '/' which would make us create
+	     unwanted directories.  These slashes must be protected
+	     explicitly.  */
+	  if (!strchr (u->file, '/'))
+	    file = xstrdup (u->file);
+	  else
+	    {
+	      /*assert (strchr (u->file, '?') != NULL);*/
+	      file = file_name_protect_query_string (u->file);
+	    }
+	}
     }
 
   if (!have_prefix)
