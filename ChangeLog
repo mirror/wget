@@ -1,3 +1,10 @@
+2003-10-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* libtool.m4: New file with contents imported from libtool.
+
+	* aclocal.m4: Move libtool stuff into a separate file.  That
+	leaves this file only with Wget-specific stuff.
+
 2003-10-01  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* po/hu.po: Updated from the TP.
