@@ -58,6 +58,17 @@ rbuf_uninitialize (struct rbuf *rbuf)
   rbuf->fd = -1;
 }
 
+int
+rbuf_read_bufferful (struct rbuf *rbuf)
+{
+#ifdef HAVE_SSL
+  if (rbuf->ssl)
+    return ssl_iread (rbuf->ssl, rbuf->buffer, sizeof (rbuf->buffer));
+  else
+#endif
+    return iread (rbuf->fd, rbuf->buffer, sizeof (rbuf->buffer));
+}
+
 /* Currently unused -- see RBUF_READCHAR.  */
 #if 0
 /* Function version of RBUF_READCHAR.  */

@@ -1,5 +1,12 @@
 2000-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* rbuf.h: Implement only a single version of RBUF_READCHAR, using
+	rbuf_read_bufferful when the buffer is depleted.
+
+	* rbuf.c (rbuf_read_bufferful): New function.
+
+2000-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* gen_sslfunc.h: Use ansi2knr style function declarations.
 
 	* gen_sslfunc.c: Reformat according to the GNU coding standards.

@@ -49,38 +49,18 @@ struct rbuf
    result of historical implementation of header code.  The macro
    should return the character or EOF, and in case of error store it
    to rbuf->err or something.  */
-#ifdef HAVE_SSL
-/* SSL version of rbuf. If rbuf.ssl isn't NULL use ssl_iread instead 
-   of iread  */
+
 #define RBUF_READCHAR(rbuf, store)					\
 ((rbuf)->buffer_left							\
  ? (--(rbuf)->buffer_left,						\
     *((char *) (store)) = *(rbuf)->buffer_pos++, 1)			\
  : ((rbuf)->buffer_pos = (rbuf)->buffer,				\
     ((((rbuf)->internal_dont_touch_this					\
-		= (rbuf->ssl == NULL) ? (iread ((rbuf)->fd, (rbuf)->buffer,				\
-		sizeof ((rbuf)->buffer))) : (ssl_iread ((rbuf)->ssl, (rbuf)->buffer,		\
-		sizeof ((rbuf)->buffer))) ) <= 0)				\
+       = rbuf_read_bufferful (rbuf)) <= 0)				\
      ? (rbuf)->internal_dont_touch_this					\
      : ((rbuf)->buffer_left = (rbuf)->internal_dont_touch_this - 1,	\
 	*((char *) (store)) = *(rbuf)->buffer_pos++,			\
 	1))))
-#else
-#define RBUF_READCHAR(rbuf, store)					\
-((rbuf)->buffer_left							\
- ? (--(rbuf)->buffer_left,						\
-    *((char *) (store)) = *(rbuf)->buffer_pos++, 1)			\
- : ((rbuf)->buffer_pos = (rbuf)->buffer,				\
-    ((((rbuf)->internal_dont_touch_this					\
-       = iread ((rbuf)->fd, (rbuf)->buffer,				\
-		sizeof ((rbuf)->buffer))) <= 0)				\
-     ? (rbuf)->internal_dont_touch_this					\
-     : ((rbuf)->buffer_left = (rbuf)->internal_dont_touch_this - 1,	\
-	*((char *) (store)) = *(rbuf)->buffer_pos++,			\
-	1))))
-
-
-#endif /* HAVE_SSL */
 
 /* Return the file descriptor of RBUF.  */
 #define RBUF_FD(rbuf) ((rbuf)->fd)
@@ -96,5 +76,8 @@ int rbuf_readchar PARAMS ((struct rbuf *, char *));
 int rbuf_peek PARAMS ((struct rbuf *, char *));
 int rbuf_flush PARAMS ((struct rbuf *, char *, int));
 void rbuf_discard PARAMS ((struct rbuf *));
+
+/* Internal, but used by the macro. */
+int rbuf_read_bufferful PARAMS ((struct rbuf *));
 
 #endif /* RBUF_H */
