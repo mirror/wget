@@ -190,9 +190,16 @@ dot_create (long initial, long total)
 
       if (skipped)
 	{
-	  logputs (LOG_VERBOSE, "\n      "); /* leave spacing untranslated */
-	  logprintf (LOG_VERBOSE, _("[ skipping %dK ]"),
-		     (int) (skipped / 1024));
+	  int skipped_k = (int) (skipped / 1024); /* skipped amount in K */
+	  int skipped_k_len = numdigit (skipped_k);
+	  if (skipped_k_len < 5)
+	    skipped_k_len = 5;
+
+	  /* Align the [ skipping ... ] line with the dots.  To do
+	     that, insert the number of spaces equal to the number of
+	     digits in the skipped amount in K.  */
+	  logprintf (LOG_VERBOSE, "\n%*s%s",
+		     2 + skipped_k_len, "", _("[ skipping %dK ]"));
 	}
 
       logprintf (LOG_VERBOSE, "\n%5ldK", skipped / 1024);
@@ -224,7 +231,7 @@ print_download_speed (struct dot_progress *dp, long bytes)
 {
   long timer_value = wtimer_elapsed (dp->timer);
   logprintf (LOG_VERBOSE, " %s",
-	     rate (bytes, timer_value - dp->last_timer_value, 1));
+	     retr_rate (bytes, timer_value - dp->last_timer_value, 1));
   dp->last_timer_value = timer_value;
 }
 
@@ -380,6 +387,8 @@ struct bar_progress {
 				   progress gauge was created. */
   char *buffer;			/* buffer where the bar "image" is
 				   stored. */
+
+  int tick;
 };
 
 static void create_image PARAMS ((struct bar_progress *, long));
@@ -468,44 +477,53 @@ create_image (struct bar_progress *bp, long dltime)
   long size = bp->initial_length + bp->count;
 
   /* The progress bar should look like this:
-     xxx% |=======>             | xx KB/s nnnnn ETA: 00:00
+     xx% [=======>             ] xx KB/s nnnnn ETA 00:00
 
      Calculate its geometry:
 
-     "xxx% "         - percentage                - 5 chars
-     "| ... |"       - progress bar decorations  - 2 chars
-     "1012.56 K/s "  - dl rate                   - 12 chars
-     "nnnn "         - downloaded bytes          - 11 chars
-     "ETA: xx:xx:xx" - ETA                       - 13 chars
+     "xx% " or "100%" - percentage                - 4 chars exactly
+     "[]"             - progress bar decorations  - 2 chars exactly
+     "1012.56K/s "    - dl rate                   - 11 chars exactly
+     "n,nnn,nnn,nnn " - downloaded bytes          - 14 or less chars
+     "ETA xx:xx:xx"   - ETA                       - 12 or less chars
 
-     "=====>..."     - progress bar content      - the rest
+     "=====>..."      - progress bar content      - the rest
   */
-  int progress_len = screen_width - (5 + 2 + 12 + 11 + 13);
+  int progress_size = screen_width - (4 + 2 + 11 + 14 + 12);
 
-  if (progress_len < 7)
-    progress_len = 0;
+  if (progress_size < 5)
+    progress_size = 0;
 
-  /* "xxx% " */
+  /* "xxx%" */
   if (bp->total_length > 0)
     {
       int percentage = (int)(100.0 * size / bp->total_length);
 
       assert (percentage <= 100);
 
-      sprintf (p, "%3d%% ", percentage);
-      p += 5;
+      if (percentage < 100)
+	sprintf (p, "%2d%% ", percentage);
+      else
+	strcpy (p, "100%");
+      p += 4;
+    }
+  else
+    {
+      int i = 5;
+      while (i--)
+	*p++ = ' ';
     }
 
-  /* The progress bar: "|====>      | " */
-  if (progress_len && bp->total_length > 0)
+  /* The progress bar: "|====>      |" */
+  if (progress_size && bp->total_length > 0)
     {
       double fraction = (double)size / bp->total_length;
-      int dlsz = (int)(fraction * progress_len);
+      int dlsz = (int)(fraction * progress_size);
       char *begin;
 
-      assert (dlsz <= progress_len);
+      assert (dlsz <= progress_size);
 
-      *p++ = '|';
+      *p++ = '[';
       begin = p;
 
       if (dlsz > 0)
@@ -516,20 +534,46 @@ create_image (struct bar_progress *bp, long dltime)
 	  *p++ = '>';
 	}
 
-      while (p - begin < progress_len)
+      while (p - begin < progress_size)
 	*p++ = ' ';
 
-      *p++ = '|';
-      *p++ = ' ';
+      *p++ = ']';
+    }
+  else if (progress_size)
+    {
+      /* If we can't draw a real progress bar, then at least show
+	 *something* to the user.  */
+      int ind = bp->tick % (progress_size * 2 - 6);
+      int i, pos;
+
+      /* Make the star move in two directions. */
+      if (ind < progress_size - 2)
+	pos = ind + 1;
+      else
+	pos = progress_size - (ind - progress_size + 5);
+
+      *p++ = '[';
+      for (i = 0; i < progress_size; i++)
+	{
+	  if      (i == pos - 1) *p++ = '<';
+	  else if (i == pos    ) *p++ = '=';
+	  else if (i == pos + 1) *p++ = '>';
+	  else
+	    *p++ = ' ';
+	}
+      *p++ = ']';
+
+      ++bp->tick;
     }
 
-  /* "1012.45 K/s " */
+  /* "1012.45K/s " */
   if (dltime && bp->count)
     {
-      char *rt = rate (bp->count, dltime, 1);
-      strcpy (p, rt);
+      static char *short_units[] = { "B/s", "K/s", "M/s", "G/s" };
+      int units = 0;
+      double dlrate = calc_rate (bp->count, dltime, &units);
+      sprintf (p, "%7.2f%s ", dlrate, short_units[units]);
       p += strlen (p);
-      *p++ = ' ';
     }
   else
     {
@@ -537,11 +581,15 @@ create_image (struct bar_progress *bp, long dltime)
       p += 12;
     }
 
-  /* "12376 " */
-  sprintf (p, "%ld ", size);
+  /* "1,234,567 " */
+  /* If there are 7 or less digits (9 because of "legible" comas),
+     print the number in constant space.  This will prevent the "ETA"
+     string from jerking as the data begins to arrive.  */
+  sprintf (p, "%9s", legible (size));
   p += strlen (p);
+  *p++ = ' ';
 
-  /* "ETA: xx:xx:xx" */
+  /* "ETA xx:xx:xx" */
   if (bp->total_length > 0 && bp->count > 0)
     {
       int eta, eta_hrs, eta_min, eta_sec;
@@ -560,7 +608,6 @@ create_image (struct bar_progress *bp, long dltime)
       *p++ = 'E';
       *p++ = 'T';
       *p++ = 'A';
-      *p++ = ':';
       *p++ = ' ';
 
       if (eta_hrs > 99)
@@ -574,8 +621,8 @@ create_image (struct bar_progress *bp, long dltime)
     }
   else if (bp->total_length > 0)
     {
-      strcpy (p, "ETA: --:--");
-      p += 10;
+      strcpy (p, "ETA --:--");
+      p += 9;
     }
 
   assert (p - bp->buffer <= screen_width);
@@ -591,15 +638,11 @@ create_image (struct bar_progress *bp, long dltime)
 static void
 display_image (char *buf)
 {
-  int len = strlen (buf);
-  char *del_buf = alloca (len + 1);
-
-  logputs (LOG_VERBOSE, buf);
-
-  memset (del_buf, '\b', len);
-  del_buf[len] = '\0';
-
+  char *del_buf = alloca (screen_width + 1);
+  memset (del_buf, '\b', screen_width);
+  del_buf[screen_width] = '\0';
   logputs (LOG_VERBOSE, del_buf);
+  logputs (LOG_VERBOSE, buf);
 }
 
 static void

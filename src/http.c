@@ -1752,7 +1752,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	  return RETROK;
 	}
 
-      tmrate = rate (hstat.len - hstat.restval, hstat.dltime, 0);
+      tmrate = retr_rate (hstat.len - hstat.restval, hstat.dltime, 0);
 
       if (hstat.len == hstat.contlen)
 	{

@@ -1,5 +1,17 @@
 2001-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* progress.c (dot_create): Align the "[ skipping ... ]" string
+	with the dots.
+
+	* retr.c (rate): Split into two functions: calc_rate and
+	retr_rate.
+
+	* progress.c (create_image): Draw a dummy progress bar even when
+	total size is unknown.
+	(display_image): Place the text cursor at the end of the "image".
+
+2001-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (reencode_string): Use unsigned char, not char --
 	otherwise the hex digits come out wrong for 8-bit chars such as
 	nbsp.

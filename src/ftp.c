@@ -924,7 +924,7 @@ Error in server response, closing control connection.\n"));
   con->dltime = wtimer_elapsed (timer);
   wtimer_delete (timer);
   tms = time_str (NULL);
-  tmrate = rate (*len - restval, con->dltime, 0);
+  tmrate = retr_rate (*len - restval, con->dltime, 0);
   /* Close data connection socket.  */
   closeport (dtsock);
   /* Close the local file.  */
@@ -1173,7 +1173,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	}
       /* Time?  */
       tms = time_str (NULL);
-      tmrate = rate (len - restval, con->dltime, 0);
+      tmrate = retr_rate (len - restval, con->dltime, 0);
 
       /* If we get out of the switch above without continue'ing, we've
 	 successfully downloaded a file.  Remember this fact. */

@@ -147,16 +147,31 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 }
 
 /* Return a printed representation of the download rate, as
-   appropriate for the speed.  Appropriate means that if rate is
-   greater than 1K/s, kilobytes are used, and if rate is greater than
-   1MB/s, megabytes are used.
-
-   If PAD is non-zero, strings will be padded to the width of 7
-   characters (xxxx.xx).  */
+   appropriate for the speed.  If PAD is non-zero, strings will be
+   padded to the width of 7 characters (xxxx.xx).  */
 char *
-rate (long bytes, long msecs, int pad)
+retr_rate (long bytes, long msecs, int pad)
 {
-  static char res[15];
+  static char res[20];
+  static char *rate_names[] = {"B/s", "KB/s", "MB/s", "GB/s" };
+  int units = 0;
+
+  double dlrate = calc_rate (bytes, msecs, &units);
+  sprintf (res, pad ? "%7.2f %s" : "%.2f %s", dlrate, rate_names[units]);
+
+  return res;
+}
+
+/* Calculate the download rate and trim it as appropriate for the
+   speed.  Appropriate means that if rate is greater than 1K/s,
+   kilobytes are used, and if rate is greater than 1MB/s, megabytes
+   are used.
+
+   UNITS is zero for B/s, one for KB/s, two for MB/s, and three for
+   GB/s.  */
+double
+calc_rate (long bytes, long msecs, int *units)
+{
   double dlrate;
 
   assert (msecs >= 0);
@@ -170,18 +185,17 @@ rate (long bytes, long msecs, int pad)
 
   dlrate = (double)1000 * bytes / msecs;
   if (dlrate < 1024.0)
-    sprintf (res, pad ? "%7.2f B/s" : "%.2f B/s", dlrate);
+    *units = 0;
   else if (dlrate < 1024.0 * 1024.0)
-    sprintf (res, pad ? "%7.2f K/s" : "%.2f K/s", dlrate / 1024.0);
+    *units = 1, dlrate /= 1024.0;
   else if (dlrate < 1024.0 * 1024.0 * 1024.0)
-    sprintf (res, pad ? "%7.2f M/s" : "%.2f M/s", dlrate / (1024.0 * 1024.0));
+    *units = 2, dlrate /= (1024.0 * 1024.0);
   else
     /* Maybe someone will need this one day.  More realistically, it
        will get tickled by buggy timers. */
-    sprintf (res, pad ? "%7.2f GB/s" : "%.2f GB/s",
-	     dlrate / (1024.0 * 1024.0 * 1024.0));
+    *units = 3, dlrate /= (1024.0 * 1024.0 * 1024.0);
 
-  return res;
+  return dlrate;
 }
 
 static int
