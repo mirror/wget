@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.8.1\n"
 "POT-Creation-Date: 2001-12-17 16:30+0100\n"
-"PO-Revision-Date: 2001-12-29 16:10+0100\n"
+"PO-Revision-Date: 2002-04-20 16:47+0200\n"
 "Last-Translator: Jochen Hein <jochen@jochen.org>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -104,9 +104,7 @@ msgstr "Anmelden als %s ... "
 #     ... Kontroll-Verbindung wird geschlossen
 # oder
 #     ... Schließen der Kontroll-Verbindung
-#: src/ftp.c:188 src/ftp.c:241 src/ftp.c:272 src/ftp.c:326 src/ftp.c:419
-#: src/ftp.c:470 src/ftp.c:500 src/ftp.c:564 src/ftp.c:628 src/ftp.c:689
-#: src/ftp.c:737
+#: src/ftp.c:188 src/ftp.c:241 src/ftp.c:272 src/ftp.c:326 src/ftp.c:419 src/ftp.c:470 src/ftp.c:500 src/ftp.c:564 src/ftp.c:628 src/ftp.c:689 src/ftp.c:737
 msgid "Error in server response, closing control connection.\n"
 msgstr "Fehler in der Antwort des Servers; schließe Kontroll-Verbindung.\n"
 
@@ -114,8 +112,7 @@ msgstr "Fehler in der Antwort des Servers; schließe Kontroll-Verbindung.\n"
 msgid "Error in server greeting.\n"
 msgstr "Fehler bei der Begrüßung des Servers.\n"
 
-#: src/ftp.c:204 src/ftp.c:335 src/ftp.c:428 src/ftp.c:509 src/ftp.c:574
-#: src/ftp.c:638 src/ftp.c:699 src/ftp.c:747
+#: src/ftp.c:204 src/ftp.c:335 src/ftp.c:428 src/ftp.c:509 src/ftp.c:574 src/ftp.c:638 src/ftp.c:699 src/ftp.c:747
 msgid "Write failed, closing control connection.\n"
 msgstr "Schreiben schlug fehl; Kontroll-Verbindung schließen.\n"
 
@@ -139,8 +136,7 @@ msgstr "Fehler beim Server; es ist nicht möglich, die Art des Systems festzustel
 msgid "done.    "
 msgstr "fertig.    "
 
-#: src/ftp.c:314 src/ftp.c:449 src/ftp.c:484 src/ftp.c:720 src/ftp.c:768
-#: src/host.c:283
+#: src/ftp.c:314 src/ftp.c:449 src/ftp.c:484 src/ftp.c:720 src/ftp.c:768 src/host.c:283
 msgid "done.\n"
 msgstr "fertig.\n"
 
@@ -159,8 +155,12 @@ msgstr "==> CWD nicht notwendig.\n"
 
 #: src/ftp.c:435
 #, c-format
-msgid "No such directory `%s'.\n\n"
-msgstr "Das Verzeichnis »%s« gibt es nicht.\n\n"
+msgid ""
+"No such directory `%s'.\n"
+"\n"
+msgstr ""
+"Das Verzeichnis »%s« gibt es nicht.\n"
+"\n"
 
 #. do not CWD
 #: src/ftp.c:453
@@ -191,23 +191,39 @@ msgstr "Ungültiger PORT.\n"
 
 #: src/ftp.c:651
 #, c-format
-msgid "\nREST failed; will not truncate `%s'.\n"
-msgstr "\nREST schlug fehl; »%s« wird nicht abgeschnitten.\n"
+msgid ""
+"\n"
+"REST failed; will not truncate `%s'.\n"
+msgstr ""
+"\n"
+"REST schlug fehl; »%s« wird nicht abgeschnitten.\n"
 
 # Wieder das mit der 1. Person :)
 #: src/ftp.c:658
-msgid "\nREST failed, starting from scratch.\n"
-msgstr "\nREST schlug fehl; es wird wieder von vorn begonnen.\n"
+msgid ""
+"\n"
+"REST failed, starting from scratch.\n"
+msgstr ""
+"\n"
+"REST schlug fehl; es wird wieder von vorn begonnen.\n"
 
 #: src/ftp.c:707
 #, c-format
-msgid "No such file `%s'.\n\n"
-msgstr "Die Datei »%s« gibt es nicht.\n\n"
+msgid ""
+"No such file `%s'.\n"
+"\n"
+msgstr ""
+"Die Datei »%s« gibt es nicht.\n"
+"\n"
 
 #: src/ftp.c:755
 #, c-format
-msgid "No such file or directory `%s'.\n\n"
-msgstr "Die Datei oder das Verzeichnis »%s« gibt es nicht.\n\n"
+msgid ""
+"No such file or directory `%s'.\n"
+"\n"
+msgstr ""
+"Die Datei oder das Verzeichnis »%s« gibt es nicht.\n"
+"\n"
 
 #: src/ftp.c:839 src/ftp.c:847
 #, c-format
@@ -255,8 +271,12 @@ msgstr "(Versuch:%2d)"
 # oder "gesichert"?
 #: src/ftp.c:1118 src/http.c:1786
 #, c-format
-msgid "%s (%s) - `%s' saved [%ld]\n\n"
-msgstr "%s (%s) - »%s« gespeichert [%ld]\n\n"
+msgid ""
+"%s (%s) - `%s' saved [%ld]\n"
+"\n"
+msgstr ""
+"%s (%s) - »%s« gespeichert [%ld]\n"
+"\n"
 
 #: src/ftp.c:1160 src/main.c:819 src/recur.c:349 src/retr.c:587
 #, c-format
@@ -288,14 +308,20 @@ msgstr "Datei auf dem Server nicht neuer als die lokale Datei »%s« -- kein Downl
 #. Remote file is newer or sizes cannot be matched
 #: src/ftp.c:1324
 #, c-format
-msgid "Remote file is newer than local file `%s' -- retrieving.\n\n"
+msgid ""
+"Remote file is newer than local file `%s' -- retrieving.\n"
+"\n"
 msgstr "Datei auf dem Server neuer als die lokale Datei »%s«, -- erneuter Download.\n"
 
 #. Sizes do not match
 #: src/ftp.c:1331
 #, c-format
-msgid "The sizes do not match (local %ld) -- retrieving.\n\n"
-msgstr "Größen stimmen nicht überein (lokal %ld) -- erneuter Download.\n\n"
+msgid ""
+"The sizes do not match (local %ld) -- retrieving.\n"
+"\n"
+msgstr ""
+"Größen stimmen nicht überein (lokal %ld) -- erneuter Download.\n"
+"\n"
 
 #: src/ftp.c:1348
 msgid "Invalid name of the symlink, skipping.\n"
@@ -303,7 +329,9 @@ msgstr "Ungültiger Name für einen symbolischen Verweis; übersprungen.\n"
 
 #: src/ftp.c:1365
 #, c-format
-msgid "Already have correct symlink %s -> %s\n\n"
+msgid ""
+"Already have correct symlink %s -> %s\n"
+"\n"
 msgstr "Der richtige symbolische Verweis %s -> %s ist schon vorhanden.\n"
 
 #: src/ftp.c:1373
@@ -517,8 +545,14 @@ msgid " [following]"
 msgstr "[folge]"
 
 #: src/http.c:1213
-msgid "\n    The file is already fully retrieved; nothing to do.\n\n"
-msgstr "\n    Download der Datei schon vollständig; kein Download notwendig.\n\n"
+msgid ""
+"\n"
+"    The file is already fully retrieved; nothing to do.\n"
+"\n"
+msgstr ""
+"\n"
+"    Download der Datei schon vollständig; kein Download notwendig.\n"
+"\n"
 
 #: src/http.c:1229
 #, c-format
@@ -588,8 +622,12 @@ msgstr "»Last-modified«-Kopfzeile ungültig -- Zeitstempel übergangen.\n"
 
 #: src/http.c:1706
 #, c-format
-msgid "Server file no newer than local file `%s' -- not retrieving.\n\n"
-msgstr "Datei auf dem Server nicht neuer als die lokale Datei »%s« -- kein Download.\n\n"
+msgid ""
+"Server file no newer than local file `%s' -- not retrieving.\n"
+"\n"
+msgstr ""
+"Datei auf dem Server nicht neuer als die lokale Datei »%s« -- kein Download.\n"
+"\n"
 
 #: src/http.c:1714
 #, c-format
@@ -602,8 +640,12 @@ msgstr "Datei der Gegenseite ist neuer, erneuter Download.\n"
 
 #: src/http.c:1759
 #, c-format
-msgid "%s (%s) - `%s' saved [%ld/%ld]\n\n"
-msgstr "%s (%s) - »%s« gespeichert [%ld/%ld]\n\n"
+msgid ""
+"%s (%s) - `%s' saved [%ld/%ld]\n"
+"\n"
+msgstr ""
+"%s (%s) - »%s« gespeichert [%ld/%ld]\n"
+"\n"
 
 #: src/http.c:1809
 #, c-format
@@ -612,8 +654,12 @@ msgstr "%s (%s) - Verbindung bei Byte %ld geschlossen. "
 
 #: src/http.c:1818
 #, c-format
-msgid "%s (%s) - `%s' saved [%ld/%ld])\n\n"
-msgstr "%s (%s) - »%s« gespeichert [%ld/%ld])\n\n"
+msgid ""
+"%s (%s) - `%s' saved [%ld/%ld])\n"
+"\n"
+msgstr ""
+"%s (%s) - »%s« gespeichert [%ld/%ld])\n"
+"\n"
 
 #: src/http.c:1839
 #, c-format
@@ -682,8 +728,12 @@ msgstr "%s: %s: Ungültiger Fortschrittstyp »%s.«\n"
 
 #: src/log.c:641
 #, c-format
-msgid "\n%s received, redirecting output to `%s'.\n"
-msgstr "\n%s erhalten, Ausgabe wird nach »%s« umgeleitet.\n"
+msgid ""
+"\n"
+"%s received, redirecting output to `%s'.\n"
+msgstr ""
+"\n"
+"%s erhalten, Ausgabe wird nach »%s« umgeleitet.\n"
 
 #. Eek!  Opening the alternate log file has failed.  Nothing we
 #. can do but disable printing completely.
@@ -705,8 +755,14 @@ msgstr "GNU Wget %s, ein nicht-interaktives Netz-Werkzeug zum Download von Datei
 #. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
 #. don't bitch.  Also, it makes translation much easier.
 #: src/main.c:129
-msgid "\nMandatory arguments to long options are mandatory for short options too.\n\n"
-msgstr "\nErforderliche Argumente zu langen Optionen sind auch bei kurzen Optionen erforderlich.\n\n"
+msgid ""
+"\n"
+"Mandatory arguments to long options are mandatory for short options too.\n"
+"\n"
+msgstr ""
+"\n"
+"Erforderliche Argumente zu langen Optionen sind auch bei kurzen Optionen erforderlich.\n"
+"\n"
 
 #: src/main.c:133
 msgid ""
@@ -814,7 +870,7 @@ msgid ""
 msgstr ""
 "Verzeichnisse:\n"
 "  -nd  --no-directories            keine Verzeichnisse anlegen\n"
-"  -x,  --force-directories         Anlegen von Verzeichnissen erwingen\n"
+"  -x,  --force-directories         Anlegen von Verzeichnissen erzwingen\n"
 "  -nH, --no-host-directories       keine Host-Verzeichnisse anlegen\n"
 "  -P,  --directory-prefix=PREFIX   Dateien unter dem Verzeichnis PREFIX/...\n"
 "                                     speichern\n"
@@ -979,8 +1035,12 @@ msgstr ""
 "(GNU General Public License) beschrieben.\n"
 
 #: src/main.c:479
-msgid "\nOriginally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
-msgstr "\nUrsprünglich geschrieben von Hrvoje Niksic <hniksic@arsdigita.com>.\n"
+msgid ""
+"\n"
+"Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
+msgstr ""
+"\n"
+"Ursprünglich geschrieben von Hrvoje Niksic <hniksic@arsdigita.com>.\n"
 
 #: src/main.c:578
 #, c-format
@@ -1079,8 +1139,12 @@ msgstr "%s: kann nicht finden %s: %s\n"
 #. digits in the skipped amount in K.
 #: src/progress.c:224
 #, c-format
-msgid "\n%*s[ skipping %dK ]"
-msgstr "\n%*s[ überspringe %dK ]"
+msgid ""
+"\n"
+"%*s[ skipping %dK ]"
+msgstr ""
+"\n"
+"%*s[ überspringe %dK ]"
 
 #: src/progress.c:391
 #, c-format
@@ -1126,12 +1190,20 @@ msgid "%s: Redirection cycle detected.\n"
 msgstr "%s: Zyklischer Verweis festgestellt.\n"
 
 #: src/retr.c:608
-msgid "Giving up.\n\n"
-msgstr "Aufgegeben.\n\n"
+msgid ""
+"Giving up.\n"
+"\n"
+msgstr ""
+"Aufgegeben.\n"
+"\n"
 
 #: src/retr.c:608
-msgid "Retrying.\n\n"
-msgstr "Erneuter Versuch.\n\n"
+msgid ""
+"Retrying.\n"
+"\n"
+msgstr ""
+"Erneuter Versuch.\n"
+"\n"
 
 #: src/url.c:1875
 #, c-format

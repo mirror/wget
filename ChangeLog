@@ -1,3 +1,7 @@
+2002-04-20  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* po/de.po: Updated from the TP.
+
 2001-04-15  Ian Abbott  <abbotti@mev.co.uk>
 
 	windows/wget.dep: The target `connect$o' (connect.obj) now depends on
