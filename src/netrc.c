@@ -79,7 +79,7 @@ search_netrc (const char *host, const char **acc, const char **passwd,
 	  char *path = (char *)alloca (strlen (home) + 1
 				       + strlen (NETRC_FILE_NAME) + 1);
 	  sprintf (path, "%s/%s", home, NETRC_FILE_NAME);
-	  free (home);
+	  xfree (home);
 	  err = stat (path, &buf);
 	  if (err == 0)
 	    netrc_list = parse_netrc (path);
@@ -173,7 +173,7 @@ read_whole_line (FILE *fp)
     }
   if (c == EOF && !i)
     {
-      free(line);
+      xfree(line);
       return NULL;
     }
 
@@ -200,9 +200,9 @@ maybe_add_to_list (acc_t **newentry, acc_t **list)
   if (a && ! a->acc)
     {
       /* Free any allocated space.  */
-      free (a->host);
-      free (a->acc);
-      free (a->passwd);
+      xfree (a->host);
+      xfree (a->acc);
+      xfree (a->passwd);
     }
   else
     {
@@ -392,14 +392,14 @@ parse_netrc (const char *path)
 	    }
 	}
 
-      free (line);
+      xfree (line);
     }
 
   fclose (fp);
 
   /* Finalize the last machine entry we found.  */
   maybe_add_to_list (&current, &retval);
-  free (current);
+  xfree (current);
 
   /* Reverse the order of the list so that it appears in file order.  */
   current = retval;
@@ -433,7 +433,7 @@ free_netrc(acc_t *l)
       FREE_MAYBE (l->acc);
       FREE_MAYBE (l->passwd);
       FREE_MAYBE (l->host);
-      free(l);
+      xfree (l);
       l = t;
     }
 }

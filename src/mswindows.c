@@ -208,7 +208,7 @@ ws_mypath (void)
       strcpy (wspathsave, buffer);
       return wspathsave;
     }
-  free (buffer);
+  xfree (buffer);
   return NULL;
 }
 

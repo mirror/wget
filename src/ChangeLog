@@ -1,3 +1,17 @@
+2000-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* all: Use xfree() instead of free.
+
+	* utils.c (xfree): New function.
+
+2000-11-21  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (convert_links): HTML-quote the converted string.
+
+	* utils.c (html_quote_string): Move here from ftp-ls.c
+	(html_quote_string): Make non-static; declare in utils.h.
+	(html_quote_string): Convert SP to &#32;.
+
 2000-11-21  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp.c (getftp): Reformat Jan's code according to GNU coding

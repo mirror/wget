@@ -112,7 +112,7 @@ free_log_line (int num)
   struct log_ln *ln = log_lines + num;
   if (ln->malloced_line)
     {
-      free (ln->malloced_line);
+      xfree (ln->malloced_line);
       ln->malloced_line = NULL;
     }
   ln->content = NULL;
@@ -346,7 +346,7 @@ logvprintf (enum log_options o, const char *fmt, va_list args)
       saved_append (write_ptr);
       fputs (write_ptr, logfp);
       if (bigmsg)
-	free (bigmsg);
+	xfree (bigmsg);
     }
   if (!opt.no_flush)
     fflush (logfp);
@@ -524,7 +524,7 @@ redirect_output (const char *messij)
       logfp = stdin;
     }
   fprintf (stderr, messij, logfile);
-  free (logfile);
+  xfree (logfile);
   /* Dump the previous screenful of output to LOGFILE.  */
   log_dump ();
   save_log_p = 0;

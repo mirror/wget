@@ -763,7 +763,7 @@ Accept: %s\r\n\
 	     what you accept."  Oh boy.  */
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("End of file while parsing headers.\n"));
-	  free (hdr);
+	  xfree (hdr);
 	  FREE_MAYBE (type);
 	  FREE_MAYBE (hs->newloc);
 	  FREE_MAYBE (all_headers);
@@ -775,7 +775,7 @@ Accept: %s\r\n\
 	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET, _("Read error (%s) in headers.\n"),
 		     strerror (errno));
-	  free (hdr);
+	  xfree (hdr);
 	  FREE_MAYBE (type);
 	  FREE_MAYBE (hs->newloc);
 	  FREE_MAYBE (all_headers);
@@ -816,7 +816,7 @@ Accept: %s\r\n\
 		hs->error = xstrdup (_("No data received"));
 	      else
 		hs->error = xstrdup (_("Malformed status line"));
-	      free (hdr);
+	      xfree (hdr);
 	      break;
 	    }
 	  else if (!*error)
@@ -837,7 +837,7 @@ Accept: %s\r\n\
       /* Exit on empty header.  */
       if (!*hdr)
 	{
-	  free (hdr);
+	  xfree (hdr);
 	  break;
 	}
 
@@ -905,7 +905,7 @@ Accept: %s\r\n\
 	    }
 	}
     done_header:
-      free (hdr);
+      xfree (hdr);
     }
 
   logputs (LOG_VERBOSE, "\n");
@@ -935,12 +935,12 @@ Accept: %s\r\n\
 	     retrying it.  */
 	failed:
 	  logputs (LOG_NOTQUIET, _("Authorization failed.\n"));
-	  free (authenticate_h);
+	  xfree (authenticate_h);
 	  return AUTHFAILED;
 	}
       else if (!known_authentication_scheme_p (authenticate_h))
 	{
-	  free (authenticate_h);
+	  xfree (authenticate_h);
 	  logputs (LOG_NOTQUIET, _("Unknown authentication scheme.\n"));
 	  return AUTHFAILED;
 	}
@@ -960,7 +960,7 @@ Accept: %s\r\n\
   /* We do not need this anymore.  */
   if (authenticate_h)
     {
-      free (authenticate_h);
+      xfree (authenticate_h);
       authenticate_h = NULL;
     }
 
@@ -1192,8 +1192,8 @@ File `%s' already there, will not retrieve.\n"), u->local);
       if (((suf = suffix (u->local)) != NULL)
 	  && (!strcmp (suf, "html") || !strcmp (suf, "htm")))
 	*dt |= TEXTHTML;
-      free (suf);
-      free(filename_plus_orig_suffix);  /* must precede every return! */
+      xfree (suf);
+      xfree (filename_plus_orig_suffix); /* must precede every return! */
       /* Another harmless lie: */
       return RETROK;
     }
@@ -1286,7 +1286,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
 #ifdef WINDOWS
 	  ws_changetitle (hurl, 1);
 #endif
-	  free (hurl);
+	  xfree (hurl);
 	}
 
       /* Default document type is empty.  However, if spider mode is
@@ -1341,7 +1341,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	case HOSTERR: case CONREFUSED: case PROXERR: case AUTHFAILED:
 	  /* Fatal errors just return from the function.  */
 	  FREEHSTAT (hstat);
-	  free(filename_plus_orig_suffix);  /* must precede every return! */
+	  xfree (filename_plus_orig_suffix); /* must precede every return! */
 	  return err;
 	  break;
 	case FWRITEERR: case FOPENERR:
@@ -1350,7 +1350,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	  logprintf (LOG_NOTQUIET, _("Cannot write to `%s' (%s).\n"),
 		     u->local, strerror (errno));
 	  FREEHSTAT (hstat);
-	  free(filename_plus_orig_suffix);  /* must precede every return! */
+	  xfree (filename_plus_orig_suffix); /* must precede every return! */
 	  return err;
 	  break;
 	case NEWLOCATION:
@@ -1360,11 +1360,11 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	      logprintf (LOG_NOTQUIET,
 			 _("ERROR: Redirection (%d) without location.\n"),
 			 hstat.statcode);
-	      free(filename_plus_orig_suffix);  /* must precede every return! */
+	      xfree (filename_plus_orig_suffix); /* must precede every return! */
 	      return WRONGCODE;
 	    }
 	  FREEHSTAT (hstat);
-	  free(filename_plus_orig_suffix);  /* must precede every return! */
+	  xfree (filename_plus_orig_suffix); /* must precede every return! */
 	  return NEWLOCATION;
 	  break;
 	case RETRFINISHED:
@@ -1381,13 +1381,13 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	      /* #### Ugly ugly ugly! */
 	      char *hurl = str_url (u->proxy ? u->proxy : u, 1);
 	      logprintf (LOG_NONVERBOSE, "%s:\n", hurl);
-	      free (hurl);
+	      xfree (hurl);
 	    }
 	  logprintf (LOG_NOTQUIET, _("%s ERROR %d: %s.\n"),
 		     tms, hstat.statcode, hstat.error);
 	  logputs (LOG_VERBOSE, "\n");
 	  FREEHSTAT (hstat);
-	  free(filename_plus_orig_suffix);  /* must precede every return! */
+	  xfree (filename_plus_orig_suffix); /* must precede every return! */
 	  return WRONGCODE;
 	}
 
@@ -1431,7 +1431,7 @@ Last-modified header invalid -- time-stamp ignored.\n"));
 Server file no newer than local file `%s' -- not retrieving.\n\n"),
 			     local_filename);
 		  FREEHSTAT (hstat);
-		  free(filename_plus_orig_suffix);/*must precede every return!*/
+		  xfree (filename_plus_orig_suffix); /*must precede every return!*/
 		  return RETROK;
 		}
 	      else if (tml >= tmr)
@@ -1459,7 +1459,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
       if (opt.spider)
 	{
 	  logprintf (LOG_NOTQUIET, "%d %s\n\n", hstat.statcode, hstat.error);
-	  free(filename_plus_orig_suffix);  /* must precede every return! */
+	  xfree (filename_plus_orig_suffix); /* must precede every return! */
 	  return RETROK;
 	}
 
@@ -1489,7 +1489,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	  else
 	    downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
 
-	  free(filename_plus_orig_suffix);  /* must precede every return! */
+	  xfree(filename_plus_orig_suffix); /* must precede every return! */
 	  return RETROK;
 	}
       else if (hstat.res == 0) /* No read error */
@@ -1515,7 +1515,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	      else
 		downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
 	      
-	      free(filename_plus_orig_suffix);  /* must precede every return! */
+	      xfree (filename_plus_orig_suffix); /* must precede every return! */
 	      return RETROK;
 	    }
 	  else if (hstat.len < hstat.contlen) /* meaning we lost the
@@ -1544,7 +1544,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	      else
 		downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
 	      
-	      free(filename_plus_orig_suffix);  /* must precede every return! */
+	      xfree (filename_plus_orig_suffix); /* must precede every return! */
 	      return RETROK;
 	    }
 	  else			/* the same, but not accepted */
@@ -1580,7 +1580,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
       break;
     }
   while (!opt.ntry || (count < opt.ntry));
-  free(filename_plus_orig_suffix);  /* must precede every return! */
+  xfree (filename_plus_orig_suffix); /* must precede every return! */
   return TRYLIMEXC;
 }
 

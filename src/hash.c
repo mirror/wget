@@ -192,8 +192,8 @@ hash_table_new (int initial_size,
 void
 hash_table_destroy (struct hash_table *ht)
 {
-  free (ht->mappings);
-  free (ht);
+  xfree (ht->mappings);
+  xfree (ht);
 }
 
 /* The heart of almost all functions in this file -- find the mapping
@@ -320,7 +320,7 @@ grow_hash_table (struct hash_table *ht)
 	hash_table_put (ht, mp_key, mp->value);
     }
   assert (ht->count == old_count);
-  free (old_mappings);
+  xfree (old_mappings);
 }
 
 /* Put VALUE in the hash table HT under the key KEY.  This regrows the
@@ -544,7 +544,7 @@ main (void)
 	  if (hash_table_get_pair (ht, line, &line_copy, NULL))
 	    {
 	      hash_table_remove (ht, line);
-	      free (line_copy);
+	      xfree (line_copy);
 	    }
 	}
 #endif

@@ -355,7 +355,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       freeurl (u, 1);
       if (redirections)
 	string_set_free (redirections);
-      free (url);
+      xfree (url);
       return result;
     }
 
@@ -392,7 +392,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  freeurl (u, 1);
 	  if (redirections)
 	    string_set_free (redirections);
-	  free (url);
+	  xfree (url);
 	  return PROXERR;
 	}
       /* Parse the proxy URL.  */
@@ -406,7 +406,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  freeurl (u, 1);
 	  if (redirections)
 	    string_set_free (redirections);
-	  free (url);
+	  xfree (url);
 	  return PROXERR;
 	}
       u->proto = URLHTTP;
@@ -456,7 +456,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	 there break the rules and use relative URLs, and popular
 	 browsers are lenient about this, so wget should be too. */
       construced_newloc = url_concat (url, mynewloc);
-      free (mynewloc);
+      xfree (mynewloc);
       mynewloc = construced_newloc;
 
       /* Now, see if this new location makes sense. */
@@ -469,15 +469,15 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  freeurl (u, 1);
 	  if (redirections)
 	    string_set_free (redirections);
-	  free (url);
-	  free (mynewloc);
+	  xfree (url);
+	  xfree (mynewloc);
 	  return result;
 	}
 
       /* Now mynewloc will become newloc_struct->url, because if the
          Location contained relative paths like .././something, we
          don't want that propagating as url.  */
-      free (mynewloc);
+      xfree (mynewloc);
       mynewloc = xstrdup (newloc_struct->url);
 
       if (!redirections)
@@ -498,13 +498,13 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  freeurl (u, 1);
 	  if (redirections)
 	    string_set_free (redirections);
-	  free (url);
-	  free (mynewloc);
+	  xfree (url);
+	  xfree (mynewloc);
 	  return WRONGCODE;
 	}
       string_set_add (redirections, newloc_struct->url);
 
-      free (url);
+      xfree (url);
       url = mynewloc;
       freeurl (u, 1);
       u = newloc_struct;
@@ -525,7 +525,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   if (newloc)
     *newloc = url;
   else
-    free (url);
+    xfree (url);
 
   return result;
 }

@@ -869,7 +869,7 @@ Error in server response, closing control connection.\n"));
   rbuf_discard (&con->rbuf);
   if (err != FTPOK)
     {
-      free (respline);
+      xfree (respline);
       /* The control connection is decidedly closed.  Print the time
 	 only if it hasn't already been printed.  */
       if (res != -1)
@@ -889,13 +889,13 @@ Error in server response, closing control connection.\n"));
      become apparent later.  */
   if (*respline != '2')
     {
-      free (respline);
+      xfree (respline);
       if (res != -1)
 	logprintf (LOG_NOTQUIET, "%s (%s) - ", tms, tmrate);
       logputs (LOG_NOTQUIET, _("Data transfer aborted.\n"));
       return FTPRETRINT;
     }
-  free (respline);
+  xfree (respline);
 
   if (res == -1)
     {
@@ -927,7 +927,7 @@ Error in server response, closing control connection.\n"));
 	  while ((line = read_whole_line (fp)))
 	    {
 	      logprintf (LOG_ALWAYS, "%s\n", line);
-	      free (line);
+	      xfree (line);
 	    }
 	  fclose (fp);
 	}
@@ -1041,7 +1041,7 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 #ifdef WINDOWS
 	  ws_changetitle (hurl, 1);
 #endif
-	  free (hurl);
+	  xfree (hurl);
 	}
       /* Send getftp the proper length, if fileinfo was provided.  */
       if (f)
@@ -1109,7 +1109,7 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	  char *hurl = str_url (u->proxy ? u->proxy : u, 1);
 	  logprintf (LOG_NONVERBOSE, "%s URL: %s [%ld] -> \"%s\" [%d]\n",
 		     tms, hurl, len, locf, count);
-	  free (hurl);
+	  xfree (hurl);
 	}
 
       if ((con->cmd & DO_LIST))
@@ -1196,7 +1196,7 @@ ftp_get_listing (struct urlinfo *u, ccon *con)
       else
 	logprintf (LOG_VERBOSE, _("Removed `%s'.\n"), list_filename);
     }
-  free (list_filename);
+  xfree (list_filename);
   con->cmd &= ~DO_LIST;
   return f;
 }
@@ -1395,7 +1395,7 @@ Already have correct symlink %s -> %s\n\n"),
       else
 	DEBUGP (("Unrecognized permissions for %s.\n", u->local));
 
-      free (u->local);
+      xfree (u->local);
       u->local = olocal;
       u->file = ofile;
       /* Break on fatals.  */
@@ -1608,7 +1608,7 @@ ftp_loop (struct urlinfo *u, int *dt)
 			       _("Wrote HTML-ized index to `%s'.\n"),
 			       filename);
 		}
-	      free (filename);
+	      xfree (filename);
 	    }
 	  freefileinfo (f);
 	}
@@ -1646,9 +1646,9 @@ delelement (struct fileinfo *f, struct fileinfo **start)
   struct fileinfo *prev = f->prev;
   struct fileinfo *next = f->next;
 
-  free (f->name);
+  xfree (f->name);
   FREE_MAYBE (f->linkto);
-  free (f);
+  xfree (f);
 
   if (next)
     next->prev = prev;
@@ -1666,10 +1666,10 @@ freefileinfo (struct fileinfo *f)
   while (f)
     {
       struct fileinfo *next = f->next;
-      free (f->name);
+      xfree (f->name);
       if (f->linkto)
-	free (f->linkto);
-      free (f);
+	xfree (f->linkto);
+      xfree (f);
       f = next;
     }
 }

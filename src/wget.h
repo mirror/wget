@@ -99,6 +99,7 @@ void logputs PARAMS ((enum log_options, const char *));
 
 /* Defined in `utils.c', but used literally everywhere.  */
 void *xmalloc PARAMS ((size_t));
+void xfree PARAMS ((void *));
 void *xrealloc PARAMS ((void *, size_t));
 char *xstrdup PARAMS ((const char *));
 
@@ -197,7 +198,7 @@ char *xstrdup PARAMS ((const char *));
 } while (0)
 
 /* Free FOO if it is non-NULL.  */
-#define FREE_MAYBE(foo) do { if (foo) free (foo); } while (0)
+#define FREE_MAYBE(foo) do { if (foo) xfree (foo); } while (0)
 
 /* #### Hack: OPTIONS_DEFINED_HERE is defined in main.c.  */
 /* [Is this weird hack really necessary on any compilers?  No ANSI C compiler

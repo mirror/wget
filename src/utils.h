@@ -82,4 +82,6 @@ char *legible_very_long PARAMS ((VERY_LONG_TYPE));
 int numdigit PARAMS ((long));
 void long_to_string PARAMS ((char *, long));
 
+char *html_quote_string PARAMS ((const char *));
+
 #endif /* UTILS_H */

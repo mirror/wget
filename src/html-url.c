@@ -416,7 +416,7 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 	    if (!newbase)
 	      break;
 	    if (closure->base)
-	      free (closure->base);
+	      xfree (closure->base);
 	    if (closure->parent_base)
 	      closure->base = url_concat (closure->parent_base, newbase);
 	    else

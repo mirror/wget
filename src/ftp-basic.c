@@ -139,41 +139,41 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
     {
-      free (respline);
+      xfree (respline);
       return err;
     }
   if (*respline != '2')
     {
-      free (respline);
+      xfree (respline);
       return FTPSRVERR;
     }
-  free (respline);
+  xfree (respline);
   /* Send USER username.  */
   request = ftp_request ("USER", acc);
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
   if (nwritten < 0)
     {
-      free (request);
+      xfree (request);
       return WRITEFAILED;
     }
-  free (request);
+  xfree (request);
   /* Get appropriate response.  */
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
     {
-      free (respline);
+      xfree (respline);
       return err;
     }
   /* An unprobable possibility of logging without a password.  */
   if (*respline == '2')
     {
-      free (respline);
+      xfree (respline);
       return FTPOK;
     }
   /* Else, only response 3 is appropriate.  */
   if (*respline != '3')
     {
-      free (respline);
+      xfree (respline);
       return FTPLOGREFUSED;
     }
 #ifdef USE_OPIE
@@ -205,7 +205,7 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
 	else
 	  {
 	  bad:
-	    free (respline);
+	    xfree (respline);
 	    return FTPLOGREFUSED;
 	  }
 	if ((cp = calculate_skey_response (skey_sequence, cp, pass)) == 0)
@@ -214,29 +214,29 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
       }
   }
 #endif /* USE_OPIE */
-  free (respline);
+  xfree (respline);
   /* Send PASS password.  */
   request = ftp_request ("PASS", pass);
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
   if (nwritten < 0)
     {
-      free (request);
+      xfree (request);
       return WRITEFAILED;
     }
-  free (request);
+  xfree (request);
   /* Get appropriate response.  */
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
     {
-      free (respline);
+      xfree (respline);
       return err;
     }
   if (*respline != '2')
     {
-      free (respline);
+      xfree (respline);
       return FTPLOGINC;
     }
-  free (respline);
+  xfree (respline);
   /* All OK.  */
   return FTPOK;
 }
@@ -272,23 +272,23 @@ ftp_port (struct rbuf *rbuf)
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
   if (nwritten < 0)
     {
-      free (request);
+      xfree (request);
       return WRITEFAILED;
     }
-  free (request);
+  xfree (request);
   /* Get appropriate response.  */
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
     {
-      free (respline);
+      xfree (respline);
       return err;
     }
   if (*respline != '2')
     {
-      free (respline);
+      xfree (respline);
       return FTPPORTERR;
     }
-  free (respline);
+  xfree (respline);
   return FTPOK;
 }
 
@@ -308,20 +308,20 @@ ftp_pasv (struct rbuf *rbuf, unsigned char *addr)
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
   if (nwritten < 0)
     {
-      free (request);
+      xfree (request);
       return WRITEFAILED;
     }
-  free (request);
+  xfree (request);
   /* Get the server response.  */
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
     {
-      free (respline);
+      xfree (respline);
       return err;
     }
   if (*respline != '2')
     {
-      free (respline);
+      xfree (respline);
       return FTPNOPASV;
     }
   /* Parse the request.  */
@@ -339,11 +339,11 @@ ftp_pasv (struct rbuf *rbuf, unsigned char *addr)
       else if (i < 5)
 	{
 	  /* When on the last number, anything can be a terminator.  */
-	  free (respline);
+	  xfree (respline);
 	  return FTPINVPASV;
 	}
     }
-  free (respline);
+  xfree (respline);
   return FTPOK;
 }
 
@@ -364,23 +364,23 @@ ftp_type (struct rbuf *rbuf, int type)
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
   if (nwritten < 0)
     {
-      free (request);
+      xfree (request);
       return WRITEFAILED;
     }
-  free (request);
+  xfree (request);
   /* Get appropriate response.  */
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
     {
-      free (respline);
+      xfree (respline);
       return err;
     }
   if (*respline != '2')
     {
-      free (respline);
+      xfree (respline);
       return FTPUNKNOWNTYPE;
     }
-  free (respline);
+  xfree (respline);
   /* All OK.  */
   return FTPOK;
 }
@@ -399,28 +399,28 @@ ftp_cwd (struct rbuf *rbuf, const char *dir)
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
   if (nwritten < 0)
     {
-      free (request);
+      xfree (request);
       return WRITEFAILED;
     }
-  free (request);
+  xfree (request);
   /* Get appropriate response.  */
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
     {
-      free (respline);
+      xfree (respline);
       return err;
     }
   if (*respline == '5')
     {
-      free (respline);
+      xfree (respline);
       return FTPNSFOD;
     }
   if (*respline != '2')
     {
-      free (respline);
+      xfree (respline);
       return FTPRERR;
     }
-  free (respline);
+  xfree (respline);
   /* All OK.  */
   return FTPOK;
 }
@@ -439,23 +439,23 @@ ftp_rest (struct rbuf *rbuf, long offset)
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
   if (nwritten < 0)
     {
-      free (request);
+      xfree (request);
       return WRITEFAILED;
     }
-  free (request);
+  xfree (request);
   /* Get appropriate response.  */
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
     {
-      free (respline);
+      xfree (respline);
       return err;
     }
   if (*respline != '3')
     {
-      free (respline);
+      xfree (respline);
       return FTPRESTFAIL;
     }
-  free (respline);
+  xfree (respline);
   /* All OK.  */
   return FTPOK;
 }
@@ -473,28 +473,28 @@ ftp_retr (struct rbuf *rbuf, const char *file)
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
   if (nwritten < 0)
     {
-      free (request);
+      xfree (request);
       return WRITEFAILED;
     }
-  free (request);
+  xfree (request);
   /* Get appropriate response.  */
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
     {
-      free (respline);
+      xfree (respline);
       return err;
     }
   if (*respline == '5')
     {
-      free (respline);
+      xfree (respline);
       return FTPNSFOD;
     }
   if (*respline != '1')
     {
-      free (respline);
+      xfree (respline);
       return FTPRERR;
     }
-  free (respline);
+  xfree (respline);
   /* All OK.  */
   return FTPOK;
 }
@@ -513,28 +513,28 @@ ftp_list (struct rbuf *rbuf, const char *file)
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
   if (nwritten < 0)
     {
-      free (request);
+      xfree (request);
       return WRITEFAILED;
     }
-  free (request);
+  xfree (request);
   /* Get appropriate respone.  */
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
     {
-      free (respline);
+      xfree (respline);
       return err;
     }
   if (*respline == '5')
     {
-      free (respline);
+      xfree (respline);
       return FTPNSFOD;
     }
   if (*respline != '1')
     {
-      free (respline);
+      xfree (respline);
       return FTPRERR;
     }
-  free (respline);
+  xfree (respline);
   /* All OK.  */
   return FTPOK;
 }
@@ -552,20 +552,20 @@ ftp_syst (struct rbuf *rbuf, enum stype *host_type)
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
   if (nwritten < 0)
     {
-      free (request);
+      xfree (request);
       return WRITEFAILED;
     }
-  free (request);
+  xfree (request);
   /* Get appropriate response.  */
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
     {
-      free (respline);
+      xfree (respline);
       return err;
     }
   if (*respline == '5')
     {
-      free (respline);
+      xfree (respline);
       return FTPSRVERR;
     }
 
@@ -584,7 +584,7 @@ ftp_syst (struct rbuf *rbuf, enum stype *host_type)
     else
       *host_type = ST_OTHER;
 
-  free (respline);
+  xfree (respline);
   /* All OK.  */
   return FTPOK;
 }
@@ -602,20 +602,20 @@ ftp_pwd (struct rbuf *rbuf, char **pwd)
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
   if (nwritten < 0)
     {
-      free (request);
+      xfree (request);
       return WRITEFAILED;
     }
-  free (request);
+  xfree (request);
   /* Get appropriate response.  */
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
     {
-      free (respline);
+      xfree (respline);
       return err;
     }
   if (*respline == '5')
     {
-      free (respline);
+      xfree (respline);
       return FTPSRVERR;
     }
 
@@ -624,12 +624,12 @@ ftp_pwd (struct rbuf *rbuf, char **pwd)
   strtok (respline, "\"");
   request = strtok (NULL, "\"");
   
-  /* Has the `pwd' been already allocated? Free! */
-  if (*pwd) free (*pwd);
+  /* Has the `pwd' been already allocated?  Free! */
+  FREE_MAYBE (*pwd);
 
   *pwd = xstrdup (request);
 
-  free (respline);
+  xfree (respline);
   /* All OK.  */
   return FTPOK;
 }

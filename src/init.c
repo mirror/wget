@@ -311,7 +311,7 @@ wgetrc_file_name (void)
     return NULL;
   if (!file_exists_p (file))
     {
-      free (file);
+      xfree (file);
       return NULL;
     }
   return file;
@@ -341,15 +341,15 @@ run_wgetrc (const char *file)
 
       /* Parse the line.  */
       status = parse_line (line, &com, &val);
-      free (line);
+      xfree (line);
       /* If everything is OK, set the value.  */
       if (status == 1)
 	{
 	  if (!setval (com, val))
 	    fprintf (stderr, _("%s: Error in %s at line %d.\n"), exec_name,
 		     file, ln);
-	  free (com);
-	  free (val);
+	  xfree (com);
+	  xfree (val);
 	}
       else if (status == 0)
 	fprintf (stderr, _("%s: Error in %s at line %d.\n"), exec_name,
@@ -390,7 +390,7 @@ initialize (void)
   else
 #endif
     run_wgetrc (file);
-  free (file);
+  xfree (file);
   return;
 }
 
@@ -436,7 +436,7 @@ parse_line (const char *line, char **com, char **val)
   /* If the command is invalid, exit now.  */
   if (comind (*com) == -1)
     {
-      free (*com);
+      xfree (*com);
       return 0;
     }
 
@@ -445,7 +445,7 @@ parse_line (const char *line, char **com, char **val)
   /* If '=' not found, bail out.  */
   if (*p != '=')
     {
-      free (*com);
+      xfree (*com);
       return 0;
     }
   /* Skip spaces after '='.  */
@@ -993,7 +993,7 @@ cleanup (void)
   if (opt.dfp)
     fclose (opt.dfp);
   FREE_MAYBE (opt.lfilename);
-  free (opt.dir_prefix);
+  xfree (opt.dir_prefix);
   FREE_MAYBE (opt.input_filename);
   FREE_MAYBE (opt.output_document);
   free_vec (opt.accepts);
@@ -1003,8 +1003,8 @@ cleanup (void)
   free_vec (opt.domains);
   free_vec (opt.follow_tags);
   free_vec (opt.ignore_tags);
-  free (opt.ftp_acc);
-  free (opt.ftp_pass);
+  xfree (opt.ftp_acc);
+  xfree (opt.ftp_pass);
   FREE_MAYBE (opt.ftp_proxy);
   FREE_MAYBE (opt.http_proxy);
   free_vec (opt.no_proxy);

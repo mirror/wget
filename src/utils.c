@@ -80,7 +80,9 @@ memfatal (const char *s)
 
 /* xmalloc, xrealloc and xstrdup exit the program if there is not
    enough memory.  xstrdup also implements strdup on systems that do
-   not have it.  */
+   not have it.  xfree is provided to make leak-tracking easier.
+   Currently it's a no-op.  */
+
 void *
 xmalloc (size_t size)
 {
@@ -90,6 +92,12 @@ xmalloc (size_t size)
   if (!res)
     memfatal ("malloc");
   return res;
+}
+
+void
+xfree (void *ptr)
+{
+  free (ptr);
 }
 
 void *
@@ -488,7 +496,7 @@ unique_name_1 (const char *fileprefix, int count)
     return filename;
   else
     {
-      free (filename);
+      xfree (filename);
       return NULL;
     }
 }
@@ -730,7 +738,7 @@ read_whole_line (FILE *fp)
     }
   if (length == 0 || ferror (fp))
     {
-      free (line);
+      xfree (line);
       return NULL;
     }
   if (length + 1 < bufsize)
@@ -858,13 +866,13 @@ read_file (const char *file)
  lose:
   if (!inhibit_close)
     close (fd);
-  free (fm->content);
-  free (fm);
+  xfree (fm->content);
+  xfree (fm);
   return NULL;
 }
 
 /* Release the resources held by FM.  Specifically, this calls
-   munmap() or free() on fm->content, depending whether mmap or
+   munmap() or xfree() on fm->content, depending whether mmap or
    malloc/read were used to read in the file.  It also frees the
    memory needed to hold the FM structure itself.  */
 
@@ -879,9 +887,9 @@ read_file_free (struct file_memory *fm)
   else
 #endif
     {
-      free (fm->content);
+      xfree (fm->content);
     }
-  free (fm);
+  xfree (fm);
 }
 
 /* Free the pointers in a NULL-terminated vector of pointers, then
@@ -893,8 +901,8 @@ free_vec (char **vec)
     {
       char **p = vec;
       while (*p)
-	free (*p++);
-      free (vec);
+	xfree (*p++);
+      xfree (vec);
     }
 }
 
@@ -913,7 +921,7 @@ merge_vecs (char **v1, char **v2)
   if (!*v2)
     {
       /* To avoid j == 0 */
-      free (v2);
+      xfree (v2);
       return v1;
     }
   /* Count v1.  */
@@ -923,7 +931,7 @@ merge_vecs (char **v1, char **v2)
   /* Reallocate v1.  */
   v1 = (char **)xrealloc (v1, (i + j + 1) * sizeof (char **));
   memcpy (v1 + i, v2, (j + 1) * sizeof (char *));
-  free (v2);
+  xfree (v2);
   return v1;
 }
 
@@ -1006,8 +1014,8 @@ slist_free (slist *l)
   while (l)
     {
       slist *n = l->next;
-      free (l->string);
-      free (l);
+      xfree (l->string);
+      xfree (l);
       l = n;
     }
 }
@@ -1044,7 +1052,7 @@ string_set_exists (struct hash_table *ht, const char *s)
 static int
 string_set_free_mapper (void *key, void *value_ignored, void *arg_ignored)
 {
-  free (key);
+  xfree (key);
   return 0;
 }
 
@@ -1058,8 +1066,8 @@ string_set_free (struct hash_table *ht)
 static int
 free_keys_and_values_mapper (void *key, void *value, void *arg_ignored)
 {
-  free (key);
-  free (value);
+  xfree (key);
+  xfree (value);
   return 0;
 }
 
@@ -1190,4 +1198,79 @@ long_to_string (char *buffer, long number)
   *p++ = number + '0';
   *p = '\0';
 #endif /* (SIZEOF_LONG == 4) || (SIZEOF_LONG == 8) */
+}
+
+/* This should probably be at a better place, but it doesn't really
+   fit into html-parse.c.  */
+
+/* The function returns the pointer to the malloc-ed quoted version of
+   string s.  It will recognize and quote numeric and special graphic
+   entities, as per RFC1866:
+
+   `&' -> `&amp;'
+   `<' -> `&lt;'
+   `>' -> `&gt;'
+   `"' -> `&quot;'
+   SP  -> `&#32;'
+
+   No other entities are recognized or replaced.  */
+char *
+html_quote_string (const char *s)
+{
+  const char *b = s;
+  char *p, *res;
+  int i;
+
+  /* Pass through the string, and count the new size.  */
+  for (i = 0; *s; s++, i++)
+    {
+      if (*s == '&')
+	i += 4;			/* `amp;' */
+      else if (*s == '<' || *s == '>')
+	i += 3;			/* `lt;' and `gt;' */
+      else if (*s == '\"')
+	i += 5;			/* `quot;' */
+      else if (*s == ' ')
+	i += 4;			/* #32; */
+    }
+  res = (char *)xmalloc (i + 1);
+  s = b;
+  for (p = res; *s; s++)
+    {
+      switch (*s)
+	{
+	case '&':
+	  *p++ = '&';
+	  *p++ = 'a';
+	  *p++ = 'm';
+	  *p++ = 'p';
+	  *p++ = ';';
+	  break;
+	case '<': case '>':
+	  *p++ = '&';
+	  *p++ = (*s == '<' ? 'l' : 'g');
+	  *p++ = 't';
+	  *p++ = ';';
+	  break;
+	case '\"':
+	  *p++ = '&';
+	  *p++ = 'q';
+	  *p++ = 'u';
+	  *p++ = 'o';
+	  *p++ = 't';
+	  *p++ = ';';
+	  break;
+	case ' ':
+	  *p++ = '&';
+	  *p++ = '#';
+	  *p++ = '3';
+	  *p++ = '2';
+	  *p++ = ';';
+	  break;
+	default:
+	  *p++ = *s;
+	}
+    }
+  *p = '\0';
+  return res;
 }

@@ -114,14 +114,14 @@ ftp_parse_unix_ls (const char *file)
       /* Skip if total...  */
       if (!strncasecmp (line, "total", 5))
 	{
-	  free (line);
+	  xfree (line);
 	  continue;
 	}
       /* Get the first token (permissions).  */
       tok = strtok (line, " ");
       if (!tok)
 	{
-	  free (line);
+	  xfree (line);
 	  continue;
 	}
 
@@ -330,7 +330,7 @@ ftp_parse_unix_ls (const char *file)
 	  DEBUGP (("Skipping.\n"));
 	  FREE_MAYBE (cur.name);
 	  FREE_MAYBE (cur.linkto);
-	  free (line);
+	  xfree (line);
 	  continue;
 	}
 
@@ -378,7 +378,7 @@ ftp_parse_unix_ls (const char *file)
       timestruct.tm_isdst = -1;
       l->tstamp = mktime (&timestruct); /* store the time-stamp */
 
-      free (line);
+      xfree (line);
     }
 
   fclose (fp);
@@ -459,7 +459,7 @@ ftp_parse_nonunix_ls (const char *file)
 	  l->tstamp = fp.mtime;
       }
 
-      free (line);
+      xfree (line);
     }
 
   fclose (fp);
@@ -494,68 +494,6 @@ ftp_parse_ls (const char *file, const enum stype system_type)
 
 /* Stuff for creating FTP index. */
 
-/* The function returns the pointer to the malloc-ed quoted version of
-   string s.  It will recognize and quote numeric and special graphic
-   entities, as per RFC1866:
-
-   `&' -> `&amp;'
-   `<' -> `&lt;'
-   `>' -> `&gt;'
-   `"' -> `&quot;'
-
-   No other entities are recognized or replaced.  */
-static char *
-html_quote_string (const char *s)
-{
-  const char *b = s;
-  char *p, *res;
-  int i;
-
-  /* Pass through the string, and count the new size.  */
-  for (i = 0; *s; s++, i++)
-    {
-      if (*s == '&')
-	i += 4;                /* `amp;' */
-      else if (*s == '<' || *s == '>')
-	i += 3;                /* `lt;' and `gt;' */
-      else if (*s == '\"')
-	i += 5;                /* `quot;' */
-    }
-  res = (char *)xmalloc (i + 1);
-  s = b;
-  for (p = res; *s; s++)
-    {
-      switch (*s)
-	{
-	case '&':
-	  *p++ = '&';
-	  *p++ = 'a';
-	  *p++ = 'm';
-	  *p++ = 'p';
-	  *p++ = ';';
-	  break;
-	case '<': case '>':
-	  *p++ = '&';
-	  *p++ = (*s == '<' ? 'l' : 'g');
-	  *p++ = 't';
-	  *p++ = ';';
-	  break;
-	case '\"':
-	  *p++ = '&';
-	  *p++ = 'q';
-	  *p++ = 'u';
-	  *p++ = 'o';
-	  *p++ = 't';
-	  *p++ = ';';
-	  break;
-	default:
-	  *p++ = *s;
-	}
-    }
-  *p = '\0';
-  return res;
-}
-
 /* The function creates an HTML index containing references to given
    directories and files on the appropriate host.  The references are
    FTP.  */
@@ -586,7 +524,7 @@ ftp_index (const char *file, struct urlinfo *u, struct fileinfo *f)
       upwd = (char *)xmalloc (strlen (tmpu)
 			     + (tmpp ? (1 + strlen (tmpp)) : 0) + 2);
       sprintf (upwd, "%s%s%s@", tmpu, tmpp ? ":" : "", tmpp ? tmpp : "");
-      free (tmpu);
+      xfree (tmpu);
       FREE_MAYBE (tmpp);
     }
   else
@@ -652,11 +590,11 @@ ftp_index (const char *file, struct urlinfo *u, struct fileinfo *f)
       else if (f->type == FT_SYMLINK)
 	fprintf (fp, "-> %s", f->linkto ? f->linkto : "(nil)");
       putc ('\n', fp);
-      free (htclfile);
+      xfree (htclfile);
       f = f->next;
     }
   fprintf (fp, "</pre>\n</body>\n</html>\n");
-  free (upwd);
+  xfree (upwd);
   if (!opt.dfp)
     fclose (fp);
   else

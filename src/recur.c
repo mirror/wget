@@ -382,10 +382,10 @@ recursive_retrieve (const char *file, const char *this_url)
 	      /* Just lowercase the hostname.  */
 	      for (p = u->host; *p; p++)
 		*p = TOLOWER (*p);
-	      free (u->url);
+	      xfree (u->url);
 	      u->url = str_url (u, 0);
 	    }
-	  free (constr);
+	  xfree (constr);
 	  constr = xstrdup (u->url);
 	  string_set_add (undesirable_urls, constr);
 	  if (!inl && !((u->proto == URLFTP) && !this_url_ftp))
@@ -422,7 +422,7 @@ recursive_retrieve (const char *file, const char *this_url)
 		  rfile = url_filename (rurl);
 		  forbidden = parse_robots (rfile);
 		  freeurl (rurl, 1);
-		  free (rfile);
+		  xfree (rfile);
 		}
 	    }
 
@@ -463,7 +463,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	    }
 	  if (newloc)
 	    {
-	      free (constr);
+	      xfree (constr);
 	      constr = newloc;
 	    }
 	  /* In case of convert_links: If there was no error, add it to
@@ -657,9 +657,9 @@ robots_url (const char *url, const char *robots_filename)
 
   err = parseurl (url, u, 0);
   assert (err == URLOK && u->proto == URLHTTP);
-  free (u->file);
-  free (u->dir);
-  free (u->url);
+  xfree (u->file);
+  xfree (u->dir);
+  xfree (u->url);
   u->dir = xstrdup ("");
   u->file = xstrdup (robots_filename);
   u->url = str_url (u, 0);
@@ -764,7 +764,7 @@ parse_robots (const char *robots_filename)
       for (cmd = line; *cmd && ISSPACE (*cmd); cmd++);
       if (!*cmd)
 	{
-	  free (line);
+	  xfree (line);
 	  DEBUGP (("(chucked out)\n"));
 	  continue;
 	}
@@ -772,7 +772,7 @@ parse_robots (const char *robots_filename)
       for (str = cmd; *str && *str != ':'; str++);
       if (!*str)
 	{
-	  free (line);
+	  xfree (line);
 	  DEBUGP (("(chucked out)\n"));
 	  continue;
 	}
@@ -831,7 +831,7 @@ parse_robots (const char *robots_filename)
 	}
       else if (!wget_matched)
 	{
-	  free (line);
+	  xfree (line);
 	  DEBUGP (("(chucking out since it is not applicable for Wget)\n"));
 	  continue;
 	}
@@ -861,7 +861,7 @@ parse_robots (const char *robots_filename)
 	  /* unknown command */
 	  DEBUGP (("(chucked out)\n"));
 	}
-      free (line);
+      xfree (line);
     }
   fclose (fp);
   return entries;

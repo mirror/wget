@@ -289,34 +289,34 @@ same_host (const char *u1, const char *u2)
   DEBUGP (("Comparing hosts %s and %s...\n", p1, p2));
   if (strcasecmp (p1, p2) == 0)
     {
-      free (p1);
-      free (p2);
+      xfree (p1);
+      xfree (p2);
       DEBUGP (("They are quite alike.\n"));
       return 1;
     }
   else if (opt.simple_check)
     {
-      free (p1);
-      free (p2);
+      xfree (p1);
+      xfree (p2);
       DEBUGP (("Since checking is simple, I'd say they are not the same.\n"));
       return 0;
     }
   real1 = realhost (p1);
   real2 = realhost (p2);
-  free (p1);
-  free (p2);
+  xfree (p1);
+  xfree (p2);
   if (strcasecmp (real1, real2) == 0)
     {
       DEBUGP (("They are alike, after realhost()->%s.\n", real1));
-      free (real1);
-      free (real2);
+      xfree (real1);
+      xfree (real2);
       return 1;
     }
   else
     {
       DEBUGP (("They are not the same (%s, %s).\n", real1, real2));
-      free (real1);
-      free (real2);
+      xfree (real1);
+      xfree (real2);
       return 0;
     }
 }

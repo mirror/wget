@@ -61,7 +61,7 @@ static char unsafe_char_table[256];
   if (contains_unsafe (s))			\
     {						\
       char *uc_tmp = encode_string (s);		\
-      free (s);					\
+      xfree (s);				\
       (s) = uc_tmp;				\
     }						\
 } while (0)
@@ -377,7 +377,7 @@ freeurl (struct urlinfo *u, int complete)
   if (u->proxy)
     freeurl (u->proxy, 1);
   if (complete)
-    free (u);
+    xfree (u);
   return;
 }
 
@@ -697,7 +697,7 @@ str_url (const struct urlinfo *u, int hide)
       tmp[1] = '2';
       tmp[2] = 'F';
       strcpy (tmp + 3, dir + 1);
-      free (dir);
+      xfree (dir);
       dir = tmp;
     }
 
@@ -741,9 +741,9 @@ str_url (const struct urlinfo *u, int hide)
   if (*dir)
     res[l++] = '/';
   strcpy (res + l, file);
-  free (host);
-  free (dir);
-  free (file);
+  xfree (host);
+  xfree (dir);
+  xfree (file);
   FREE_MAYBE (user);
   FREE_MAYBE (passwd);
   return res;
@@ -839,9 +839,9 @@ free_urlpos (urlpos *l)
   while (l)
     {
       urlpos *next = l->next;
-      free (l->url);
+      xfree (l->url);
       FREE_MAYBE (l->local_name);
-      free (l);
+      xfree (l);
       l = next;
     }
 }
@@ -894,7 +894,7 @@ mkalldirs (const char *path)
     {
       if (S_ISDIR (st.st_mode))
 	{
-	  free (t);
+	  xfree (t);
 	  return 0;
 	}
       else
@@ -918,7 +918,7 @@ mkalldirs (const char *path)
   res = make_directory (t);
   if (res != 0)
     logprintf (LOG_NOTQUIET, "%s: %s", t, strerror (errno));
-  free (t);
+  xfree (t);
   return res;
 }
 
@@ -962,7 +962,7 @@ mkstruct (const struct urlinfo *u)
   if (opt.add_hostdir && !opt.simple_check)
     {
       char *nhost = realhost (host);
-      free (host);
+      xfree (host);
       host = nhost;
     }
   /* Add dir_prefix and hostname (if required) to the beginning of
@@ -985,7 +985,7 @@ mkstruct (const struct urlinfo *u)
       else
 	dirpref = "";
     }
-  free (host);
+  xfree (host);
 
   /* If there is a prefix, prepend it.  */
   if (*dirpref)
@@ -1008,7 +1008,7 @@ mkstruct (const struct urlinfo *u)
   /* Finally, construct the full name.  */
   res = (char *)xmalloc (strlen (dir) + 1 + strlen (file) + 1);
   sprintf (res, "%s%s%s", dir, *dir ? "/" : "", file);
-  free (dir);
+  xfree (dir);
   return res;
 }
 
@@ -1042,7 +1042,7 @@ url_filename (const struct urlinfo *u)
 	  char *nfile = (char *)xmalloc (strlen (opt.dir_prefix)
 					 + 1 + strlen (file) + 1);
 	  sprintf (nfile, "%s/%s", opt.dir_prefix, file);
-	  free (file);
+	  xfree (file);
 	  file = nfile;
 	}
     }
@@ -1071,7 +1071,7 @@ url_filename (const struct urlinfo *u)
 
   /* Find a unique name.  */
   name = unique_name (file);
-  free (file);
+  xfree (file);
   return name;
 }
 
@@ -1245,11 +1245,11 @@ opt_url (struct urlinfo *u)
 {
   /* Find the "true" host.  */
   char *host = realhost (u->host);
-  free (u->host);
+  xfree (u->host);
   u->host = host;
   assert (u->dir != NULL);      /* the URL must have been parsed */
   /* Refresh the printed representation.  */
-  free (u->url);
+  xfree (u->url);
   u->url = str_url (u, 0);
 }
 
@@ -1389,24 +1389,28 @@ convert_links (const char *file, urlpos *l)
 	{
 	  /* Convert absolute URL to relative. */
 	  char *newname = construct_relative (file, l->local_name);
+	  char *quoted_newname = html_quote_string (newname);
 	  putc (*p, fp);	/* quoting char */
-	  fputs (newname, fp);
+	  fputs (quoted_newname, fp);
 	  p += l->size - 1;
 	  putc (*p, fp);	/* close quote */
 	  ++p;
+	  xfree (newname);
+	  xfree (quoted_newname);
 	  DEBUGP (("TO_RELATIVE: %s to %s at position %d in %s.\n",
 		   l->url, newname, l->pos, file));
-	  free (newname);
 	}
       else if (l->convert == CO_CONVERT_TO_COMPLETE)
 	{
 	  /* Convert the link to absolute URL. */
 	  char *newlink = l->url;
+	  char *quoted_newlink = html_quote_string (newlink);
 	  putc (*p, fp);	/* quoting char */
-	  fputs (newlink, fp);
+	  fputs (quoted_newlink, fp);
 	  p += l->size - 1;
 	  putc (*p, fp);	/* close quote */
 	  ++p;
+	  xfree (quoted_newlink);
 	  DEBUGP (("TO_COMPLETE: <something> to %s at position %d in %s.\n",
 		   newlink, l->pos, file));
 	}
@@ -1553,7 +1557,19 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
 	 rather than making a copy of the string...  Another note is that I
 	 thought I could just add a field to the urlpos structure saying
 	 that we'd written a .orig file for this URL, but that didn't work,
-	 so I had to make this separate list. */
+	 so I had to make this separate list.
+
+         This [adding a field to the urlpos structure] didn't work
+         because convert_file() is called twice: once after all its
+         sublinks have been retrieved in recursive_retrieve(), and
+         once at the end of the day in convert_all_links().  The
+         original linked list collected in recursive_retrieve() is
+         lost after the first invocation of convert_links(), and
+         convert_all_links() makes a new one (it calls get_urls_html()
+         for each file it covers.)  That's why your approach didn't
+         work.  The way to make it work is perhaps to make this flag a
+         field in the `urls_html' list.  */
+
       converted_file_ptr = xmalloc(sizeof(*converted_file_ptr));
       converted_file_ptr->string = xstrdup(file);  /* die on out-of-mem. */
       converted_file_ptr->next = converted_files;

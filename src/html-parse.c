@@ -166,15 +166,15 @@ struct pool {
 /* Forget old pool contents.  The allocated memory is not freed. */
 #define POOL_REWIND(pool) pool.index = 0
 
-/* Free heap-allocated memory for contents of POOL.  This calls free()
-   if the memory was allocated through malloc.  It also restores
-   `contents' and `size' to their original, pre-malloc values.  That
-   way after POOL_FREE, the pool is fully usable, just as if it were
-   freshly initialized with POOL_INIT.  */
+/* Free heap-allocated memory for contents of POOL.  This calls
+   xfree() if the memory was allocated through malloc.  It also
+   restores `contents' and `size' to their original, pre-malloc
+   values.  That way after POOL_FREE, the pool is fully usable, just
+   as if it were freshly initialized with POOL_INIT.  */
 
 #define POOL_FREE(pool) do {			\
   if (!(pool).alloca_p)				\
-    free ((pool).contents);			\
+    xfree ((pool).contents);			\
   (pool).contents = (pool).orig_contents;	\
   (pool).size = (pool).orig_size;		\
   (pool).index = 0;				\
@@ -812,7 +812,7 @@ map_html_tags (const char *text, int size,
  finish:
   POOL_FREE (pool);
   if (!attr_pair_alloca_p)
-    free (pairs);
+    xfree (pairs);
 }
 
 #undef ADVANCE

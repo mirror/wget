@@ -535,8 +535,8 @@ GNU General Public License for more details.\n"));
 			 optarg);
 		exit (1);
 	      }
-	    free (com);
-	    free (val);
+	    xfree (com);
+	    xfree (val);
 	  }
 	  break;
 	case 'G':

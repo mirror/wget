@@ -182,7 +182,7 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init,
 	  s->tag = strdupdelim (p, buf);
 	  if (*buf == '>')
 	    {
-	      free (s->tag);
+	      xfree (s->tag);
 	      s->tag = NULL;
 	      ++buf, --bufsize;
 	      continue;
@@ -605,7 +605,7 @@ ftp_index (const char *file, struct urlinfo *u, struct fileinfo *f)
       upwd = (char *)xmalloc (strlen (tmpu)
 			     + (tmpp ? (1 + strlen (tmpp)) : 0) + 2);
       sprintf (upwd, "%s%s%s@", tmpu, tmpp ? ":" : "", tmpp ? tmpp : "");
-      free (tmpu);
+      xfree (tmpu);
       FREE_MAYBE (tmpp);
     }
   else
@@ -671,11 +671,11 @@ ftp_index (const char *file, struct urlinfo *u, struct fileinfo *f)
       else if (f->type == FT_SYMLINK)
 	fprintf (fp, "-> %s", f->linkto ? f->linkto : "(nil)");
       putc ('\n', fp);
-      free (htclfile);
+      xfree (htclfile);
       f = f->next;
     }
   fprintf (fp, "</pre>\n</body>\n</html>\n");
-  free (upwd);
+  xfree (upwd);
   if (!opt.dfp)
     fclose (fp);
   else
