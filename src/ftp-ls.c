@@ -155,15 +155,16 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
  	  switch (cur.type)
  	    {
  	    case FT_PLAINFILE:
- 	      cur.perms = 420;
+ 	      cur.perms = 0644;
  	      break;
  	    case FT_DIRECTORY:
- 	      cur.perms = 493;
+ 	      cur.perms = 0755;
  	      break;
  	    default:
- 	      cur.perms = 1023;
+ 	      /*cur.perms = 1023;*/	/* #### What is this?  --hniksic */
+	      cur.perms = 0644;
  	    }
- 	  DEBUGP (("implicite perms %0o; ", cur.perms));
+ 	  DEBUGP (("implicit perms %0o; ", cur.perms));
 	}
        else
          {
@@ -489,14 +490,14 @@ ftp_parse_winnt_ls (const char *file)
 	{
 	  cur.type  = FT_DIRECTORY;
 	  cur.size  = 0;
-	  cur.perms = 493; /* my gcc does not like 0755 ?? */
+	  cur.perms = 0755;
 	  DEBUGP(("Directory\n"));
 	}
       else
 	{
 	  cur.type  = FT_PLAINFILE;
 	  cur.size  = atoi(tok);
-	  cur.perms = 420; /* 0664 octal */
+	  cur.perms = 0644;
 	  DEBUGP(("File, size %ld bytes\n", cur.size));
 	}
 

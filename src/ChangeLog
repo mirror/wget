@@ -1,3 +1,10 @@
+2001-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* ftp-ls.c (ftp_parse_unix_ls): Use octal constants for
+	permissions.  A compiler that doesn't accept octal constants is
+	seriously broken and shouldn't be used -- octal constants were
+	present in K&R C!
+
 2001-01-20  Karl Eichwalder  <ke@suse.de>
 
 	* Makefile.in: Provide and use DESTDIR according to the Coding
