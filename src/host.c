@@ -459,6 +459,85 @@ map_ip_to_ipv4 (ip_address *ip, ip4_address *ipv4)
   return 1;
 }
 
+/* Versions of gethostbyname and getaddrinfo that support timeout. */
+
+#ifndef INET6
+
+struct ghbnwt_context {
+  const char *host_name;
+  struct hostent *hptr;
+};
+
+static void
+gethostbyname_with_timeout_callback (void *arg)
+{
+  struct ghbnwt_context *ctx = (struct ghbnwt_context *)arg;
+  ctx->hptr = gethostbyname (ctx->host_name);
+}
+
+/* Just like gethostbyname, except it times out after TIMEOUT seconds.
+   In case of timeout, NULL is returned and errno is set to ETIMEDOUT.
+   The function makes sure that when NULL is returned for reasons
+   other than timeout, errno is reset.  */
+
+static struct hostent *
+gethostbyname_with_timeout (const char *host_name, int timeout)
+{
+  struct ghbnwt_context ctx;
+  ctx.host_name = host_name;
+  if (run_with_timeout (timeout, gethostbyname_with_timeout_callback, &ctx))
+    {
+      h_errno = HOST_NOT_FOUND;
+      errno = ETIMEDOUT;
+      return NULL;
+    }
+  if (!ctx.hptr)
+    errno = 0;
+  return ctx.hptr;
+}
+
+#else  /* INET6 */
+
+struct gaiwt_context {
+  const char *node;
+  const char *service;
+  const struct addrinfo *hints;
+  struct addrinfo **res;
+  int exit_code;
+};
+
+static void
+getaddrinfo_with_timeout_callback (void *arg)
+{
+  struct gaiwt_context *ctx = (struct gaiwt_context *)arg;
+  ctx->exit_code = getaddrinfo (ctx->node, ctx->service, ctx->hints, ctx->res);
+}
+
+/* Just like getaddrinfo, except it times out after TIMEOUT seconds.
+   In case of timeout, the EAI_SYSTEM error code is returned and errno
+   is set to ETIMEDOUT.  */
+
+static int
+getaddrinfo_with_timeout (const char *node, const char *service,
+			  const struct addrinfo *hints, struct addrinfo **res,
+			  int timeout)
+{
+  struct gaiwt_context ctx;
+  ctx.node = node;
+  ctx.service = service;
+  ctx.hints = hints;
+  ctx.res = res;
+
+  if (run_with_timeout (timeout, getaddrinfo_with_timeout_callback, &ctx))
+    {
+      errno = ETIMEDOUT;
+      return EAI_SYSTEM;
+    }
+  return ctx.exit_code;
+}
+
+#endif /* INET6 */
+
 /* Pretty-print ADDR.  When compiled without IPv6, this is the same as
    inet_ntoa.  With IPv6, it either prints an IPv6 address or an IPv4
    address.  */
@@ -551,9 +630,7 @@ lookup_host (const char *host, int silent)
   if (!silent)
     logprintf (LOG_VERBOSE, _("Resolving %s... "), host);
 
-  /* Host name lookup goes on below.  #### We should implement
-     getaddrinfo_with_timeout and gethostbyname_with_timeout the same
-     way connect.c implements connect_with_timeout.  */
+  /* Host name lookup goes on below. */
 
 #ifdef INET6
   {
@@ -566,12 +643,13 @@ lookup_host (const char *host, int silent)
     else
       hints.ai_family   = PF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
-    err = getaddrinfo (host, NULL, &hints, &ai);
+    err = getaddrinfo_with_timeout (host, NULL, &hints, &ai, opt.timeout);
 
     if (err != 0 || ai == NULL)
       {
         if (!silent)
-	  logprintf (LOG_VERBOSE, _("failed: %s.\n"), gai_strerror (err));
+	  logprintf (LOG_VERBOSE, _("failed: %s.\n"),
+		     err != EAI_SYSTEM ? gai_strerror (err) : strerror (errno));
         return NULL;
       }
     al = address_list_from_addrinfo (ai);
@@ -579,11 +657,16 @@ lookup_host (const char *host, int silent)
   }
 #else
   {
-    struct hostent *hptr = gethostbyname (host);
+    struct hostent *hptr = gethostbyname_with_timeout (host, opt.timeout);
     if (!hptr)
       {
 	if (!silent)
-	  logprintf (LOG_VERBOSE, _("failed: %s.\n"), herrmsg (h_errno));
+	  {
+	    if (errno != ETIMEDOUT)
+	      logprintf (LOG_VERBOSE, _("failed: %s.\n"), herrmsg (h_errno));
+	    else
+	      logputs (LOG_VERBOSE, _("failed: timed out.\n"));
+	  }
 	return NULL;
       }
     /* Do all systems have h_addr_list, or is it a newer thing?  If

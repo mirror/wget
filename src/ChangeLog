@@ -1,3 +1,9 @@
+2002-04-15  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* host.c (getaddrinfo_with_timeout): New function.
+	(gethostbyname_with_timeout): Ditto.
+	(lookup_host): Use them.
+
 2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* utils.c (number_to_string): Handle the case when n < -INT_MAX.
