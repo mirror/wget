@@ -157,10 +157,6 @@ recursive_retrieve (const char *file, const char *this_url)
 
       hash_table_clear (undesirable_urls);
       string_set_add (undesirable_urls, this_url);
-      if (dl_file_url_map)
-	hash_table_clear (dl_file_url_map);
-      if (dl_url_file_map)
-	hash_table_clear (dl_url_file_map);
       /* Enter this_url to the hash table, in original and "enhanced" form.  */
       u = newurl ();
       err = parseurl (this_url, u, 0);

@@ -1,5 +1,10 @@
 2001-03-31  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	(recursive_retrieve): Don't clear the hash tables at this point at
+	all; it interferes with the normal operation of register_download.
+
+2001-03-31  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* recur.c (recursive_retrieve): Clear the hash tables only when
 	they are defined.
 
