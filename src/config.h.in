@@ -257,6 +257,8 @@ char *alloca ();
 
 #ifdef solaris
 # define NAMESPACE_TWEAKS
+/* Prevent stdio.h from declaring va_list. */
+# define _VA_LIST
 #endif
 
 #ifdef __linux__
