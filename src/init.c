@@ -1092,8 +1092,6 @@ myatoi (const char *s)
     return res;
 }
 
-#define ISODIGIT(x) ((x) >= '0' && (x) <= '7')
-
 static int
 check_user_specified_header (const char *s)
 {
