@@ -145,12 +145,13 @@ so, delete this exception statement from your version.  */
    hash_table_remove is careful to rehash the mappings that follow the
    deleted one.  */
 
-/* When hash table's fullness exceeds this threshold, the hash table
-   is resized.  */
-#define HASH_FULLNESS_THRESHOLD 0.75
+/* Maximum allowed fullness: when hash table's fullness exceeds this
+   value, the table is resized.  */
+#define HASH_MAX_FULLNESS 0.75
 
-/* The hash table size is multiplied by this factor with each resize.
-   This guarantees infrequent resizes.  */
+/* The hash table size is multiplied by this factor (and then rounded
+   to the next prime) with each resize.  This guarantees infrequent
+   resizes.  */
 #define HASH_RESIZE_FACTOR 2
 
 struct mapping {
@@ -268,14 +269,16 @@ hash_table_new (int items,
   ht->hash_function = hash_function ? hash_function : ptrhash;
   ht->test_function = test_function ? test_function : ptrcmp;
 
+  /* If the size of struct hash_table ever becomes a concern, this
+     field can go.  (Wget doesn't create many hashes.)  */
   ht->prime_offset = 0;
 
   /* Calculate the size that ensures that the table will store at
      least ITEMS keys without the need to resize.  */
-  size = 1 + items / HASH_FULLNESS_THRESHOLD;
+  size = 1 + items / HASH_MAX_FULLNESS;
   size = prime_size (size, &ht->prime_offset);
   ht->size = size;
-  ht->resize_threshold = size * HASH_FULLNESS_THRESHOLD;
+  ht->resize_threshold = size * HASH_MAX_FULLNESS;
   /*assert (ht->resize_threshold >= items);*/
 
   ht->mappings = xnew0_array (struct mapping, ht->size);
@@ -377,17 +380,16 @@ grow_hash_table (struct hash_table *ht)
 #endif
 
   ht->size = newsize;
-  ht->resize_threshold = newsize * HASH_FULLNESS_THRESHOLD;
-
+  ht->resize_threshold = newsize * HASH_MAX_FULLNESS;
   ht->mappings = mappings = xnew0_array (struct mapping, ht->size);
 
   for (mp = old_mappings; mp < old_end; mp++)
     if (NON_EMPTY (mp))
       {
 	struct mapping *new_mp = mappings + HASH_POSITION (ht, mp->key);
-	/* We don't need to test for uniqueness of keys because all
-	   the keys come from the hash table and are therefore known
-	   to be unique.  */
+	/* We don't need to test for uniqueness of keys because they
+	   come from the hash table and are therefore known to be
+	   unique.  */
 	LOOP_NON_EMPTY (new_mp, mappings, newsize)
 	  ;
 	*new_mp = *mp;
