@@ -1,5 +1,10 @@
 2003-11-18  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* gen_sslfunc.c (ssl_init_prng): Warn the user when using a weak
+	random seed.
+
+2003-11-18  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* host.c (address_list_contains): Renamed address_list_find to
 	address_list_contains because its result is boolean.
 
