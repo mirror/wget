@@ -1,5 +1,10 @@
 2003-09-19  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* safe-ctype.h (_sch_test): Cast BIT to unsigned char, like latest
+	gcc does.
+
+2003-09-19  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.h (BOUNDED_TO_ALLOCA): Evaluate PLACE only once.
 	(ARRAY_SIZE): Renamed to countof.  All callers updated.
 
