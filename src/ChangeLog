@@ -1,3 +1,7 @@
+2003-12-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (gethttp): Fix generation of `Content-Length'.
+
 2003-12-15  Gisle Vanem  <giva@bgnett.no>
 
 	* url.c (url_skip_credentials): Fixed return value; 'url' if no
