@@ -8,6 +8,10 @@ The items are not listed in any particular order (except that
 recently-added items may tend towards the top).  Not all of these
 represent user-visible changes.
 
+* Implement a `--disable-dns-cache' option that disables DNS caching.
+  It is trivial to implement; simply avoid calling cache_host_lookup
+  at the end of lookup_host.
+
 * Honor `Content-Disposition: XXX; filename="FILE"' when creating the
   file name.
 
