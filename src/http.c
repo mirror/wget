@@ -1060,7 +1060,8 @@ Accept: %s\r\n\
       FREE_MAYBE (type);
       type = NULL;
       FREEHSTAT (*hs);
-      CLOSE_FINISH (sock);
+      CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
+				   might be more bytes in the body. */
       if (auth_tried_already)
 	{
 	  /* If we have tried it already, then there is not point
@@ -1166,7 +1167,8 @@ Accept: %s\r\n\
 		     _("Location: %s%s\n"),
 		     hs->newloc ? hs->newloc : _("unspecified"),
 		     hs->newloc ? _(" [following]") : "");
-	  CLOSE_FINISH (sock);
+	  CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
+					   might be more bytes in the body. */
 	  FREE_MAYBE (type);
 	  FREE_MAYBE (all_headers);
 	  return NEWLOCATION;
@@ -1207,7 +1209,8 @@ Accept: %s\r\n\
       hs->res = 0;
       FREE_MAYBE (type);
       FREE_MAYBE (all_headers);
-      CLOSE_FINISH (sock);
+      CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
+				   might be more bytes in the body. */
       return RETRFINISHED;
     }
 
@@ -1221,7 +1224,8 @@ Accept: %s\r\n\
       if (!fp)
 	{
 	  logprintf (LOG_NOTQUIET, "%s: %s\n", u->local, strerror (errno));
-	  CLOSE_FINISH (sock);
+	  CLOSE_INVALIDATE (sock); /* would be CLOSE_FINISH, but there
+				      might be more bytes in the body. */
 	  FREE_MAYBE (all_headers);
 	  return FOPENERR;
 	}
