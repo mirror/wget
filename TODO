@@ -3,8 +3,14 @@
 This is the to-do list for Wget.  There is no timetable of when we plan to
 implement these features -- this is just a list of things it'd be nice to see in
 Wget.  Patches to implement any of these items would be gladly accepted.  The
-items are not listed in any particular order.  Not all of them represent
-user-visible changes.
+items are not listed in any particular order (except that recently-added items
+may tend towards the top).  Not all of these represent user-visible changes.
+
+* When spanning hosts, there's no way to say that you are only interested in
+  files in a certain directory on _one_ of the hosts (-I and -X apply to all).
+  Perhaps -I and -X should take an optional hostname before the directory?
+
+* When simplifying paths, wget needs to stop at any '?' character.
 
 * Add an option to not encode special characters like ' ' and '~' when saving
   local files.  Would be good to have a mode that encodes all special characters
@@ -67,7 +73,8 @@ user-visible changes.
 
 * Fix Unix directory parser to allow for spaces in file names.
 
-* Allow size limit to files.
+* Allow size limit to files (perhaps with an option to download oversize files 
+  up through the limit or not at all, to get more functionality than [u]limit.
 
 * Recognize HTML comments correctly.  Add more options for handling
   bogus HTML found all over the 'net.
@@ -76,11 +83,9 @@ user-visible changes.
 
 * Download to .in* when mirroring.
 
-* Add an option to delete or move no-longer-existent files when
-  mirroring.
+* Add an option to delete or move no-longer-existent files when mirroring.
 
-* Implement a switch to avoid downloading multiple files (e.g. x and
-  x.gz).
+* Implement a switch to avoid downloading multiple files (e.g. x and x.gz).
 
 * Implement uploading (--upload URL?) in FTP and HTTP.
 

@@ -1,6 +1,8 @@
 2000-10-19  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* TODO: -E / --html-extension / html_extension has been implemented.
+	Make -I and -X allow an optional hostname before the directory name?
+	When simplifying paths, wget needs to stop at any '?' character.
 
 2000-10-16  Dan Harkless  <dan-wget@dilvish.speed.net>
 
