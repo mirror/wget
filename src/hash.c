@@ -1,5 +1,5 @@
 /* Hash tables.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of Wget.
 
@@ -86,13 +86,15 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
      distinct value, only that non-distinct objects must produce the
      same values!  For instance, a hash function that returns 0 for
      any given object is a perfectly valid (albeit extremely bad) hash
+     function.  A hash function that hashes a string by adding up all
+     its characters is another example of a valid (but quite bad) hash
      function.
 
      The above stated rule is quite easy to enforce.  For example, if
      your testing function compares strings case-insensitively, all
      your function needs to do is lower-case the string characters
      before calculating a hash.  That way you have easily guaranteed
-     that changes in case will not result in a different hash.
+     that case differences will not result in a different hash.
 
    - (optional) Choose the hash function to get as good "spreading" as
      possible.  A good hash function will react to even a small change
@@ -125,8 +127,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
    Collisions make deletion tricky because finding collisions again
    relies on new empty spots not being created.  That's why
-   hash_table_remove only marks the spot as deleted rather than really
-   making it empty. */
+   hash_table_remove is careful to rehash the mappings that follow the
+   deleted one.  */
 
 struct mapping {
   void *key;
@@ -138,18 +140,20 @@ struct hash_table {
   int (*test_function) (const void *, const void *);
 
   int size;			/* size of the array */
-  int fullness;			/* number of non-empty fields */
   int count;			/* number of non-empty, non-deleted
                                    fields. */
 
   struct mapping *mappings;
 };
 
-#define ENTRY_DELETED ((void *)0xdeadbeef)
-#define ENTRY_EMPTY   NULL
+#define EMPTY_MAPPING_P(mp)  ((mp)->key == NULL)
+#define NEXT_MAPPING(mp, mappings, size) (mp == mappings + (size - 1)	\
+					  ? mappings : mp + 1)
 
-#define DELETED_ENTRY_P(ptr) ((ptr) == ENTRY_DELETED)
-#define EMPTY_ENTRY_P(ptr)   ((ptr) == ENTRY_EMPTY)
+#define LOOP_NON_EMPTY(mp, mappings, size)				\
+  for (; !EMPTY_MAPPING_P (mp); mp = NEXT_MAPPING (mp, mappings, size))
+
+#define HASH_POSITION(ht, key) (ht->hash_function (key) % ht->size)
 
 /* Find a prime near, but greather than or equal to SIZE. */
 
@@ -190,7 +194,6 @@ hash_table_new (int initial_size,
   ht->hash_function = hash_function;
   ht->test_function = test_function;
   ht->size = prime_size (initial_size);
-  ht->fullness = 0;
   ht->count    = 0;
   ht->mappings = xmalloc (ht->size * sizeof (struct mapping));
   memset (ht->mappings, '\0', ht->size * sizeof (struct mapping));
@@ -208,31 +211,20 @@ hash_table_destroy (struct hash_table *ht)
 
 /* The heart of almost all functions in this file -- find the mapping
    whose KEY is equal to key, using a linear probing loop.  Returns
-   the offset of the mapping in ht->mappings.  This should probably be
-   declared inline.  */
+   the offset of the mapping in ht->mappings.  */
 
-static int
+static inline struct mapping *
 find_mapping (struct hash_table *ht, const void *key)
 {
   struct mapping *mappings = ht->mappings;
   int size = ht->size;
-  int location = ht->hash_function (key) % size;
-  while (1)
-    {
-      struct mapping *mp = mappings + location;
-      void *mp_key = mp->key;
+  struct mapping *mp = mappings + HASH_POSITION (ht, key);
+  int (*equals) (const void *, const void *) = ht->test_function;
 
-      if (EMPTY_ENTRY_P (mp_key))
-	return -1;
-      else if (DELETED_ENTRY_P (mp_key)
-	       || !ht->test_function (key, mp_key))
-	{
-	  if (++location == size)
-	    location = 0;
-	}
-      else
-	return location;
-    }
+  LOOP_NON_EMPTY (mp, mappings, size)
+    if (equals (key, mp->key))
+      return mp;
+  return NULL;
 }
 
 /* Get the value that corresponds to the key KEY in the hash table HT.
@@ -245,11 +237,11 @@ find_mapping (struct hash_table *ht, const void *key)
 void *
 hash_table_get (struct hash_table *ht, const void *key)
 {
-  int location = find_mapping (ht, key);
-  if (location < 0)
-    return NULL;
+  struct mapping *mp = find_mapping (ht, key);
+  if (mp)
+    return mp->value;
   else
-    return ht->mappings[location].value;
+    return NULL;
 }
 
 /* Like hash_table_get, but writes out the pointers to both key and
@@ -259,18 +251,18 @@ int
 hash_table_get_pair (struct hash_table *ht, const void *lookup_key,
 		     void *orig_key, void *value)
 {
-  int location = find_mapping (ht, lookup_key);
-  if (location < 0)
-    return 0;
-  else
+  struct mapping *mp = find_mapping (ht, lookup_key);
+
+  if (mp)
     {
-      struct mapping *mp = ht->mappings + location;
       if (orig_key)
 	*(void **)orig_key = mp->key;
       if (value)
 	*(void **)value = mp->value;
       return 1;
     }
+  else
+    return 0;
 }
 
 /* Return 1 if KEY exists in HT, 0 otherwise. */
@@ -278,7 +270,7 @@ hash_table_get_pair (struct hash_table *ht, const void *lookup_key,
 int
 hash_table_exists (struct hash_table *ht, const void *key)
 {
-  return find_mapping (ht, key) >= 0;
+  return find_mapping (ht, key) != NULL;
 }
 
 #define MAX(i, j) (((i) >= (j)) ? (i) : (j))
@@ -289,46 +281,27 @@ hash_table_exists (struct hash_table *ht, const void *key)
 static void
 grow_hash_table (struct hash_table *ht)
 {
-  int i;
   struct mapping *old_mappings = ht->mappings;
+  struct mapping *old_end      = ht->mappings + ht->size;
+  struct mapping *mp;
   int old_count = ht->count;	/* for assert() below */
-  int old_size = ht->size;
-
-  /* To minimize the number of regrowth, we'd like to resize the hash
-     table exponentially.  Normally, this would be done by doubling
-     ht->size (and round it to next prime) on each regrow:
-
-         ht->size = prime_size (ht->size * 2);
-
-     But it is possible that the table has large fullness because of
-     the many deleted entries.  If that is the case, we don't want to
-     blindly grow the table; we just want to rehash it.  For that
-     reason, we use ht->count as the relevant parameter.  MAX is used
-     only because we don't want to actually shrink the table.  (But
-     maybe that's wrong.)  */
-
-  int needed_size = prime_size (ht->count * 3);
-  ht->size = MAX (old_size, needed_size);
 
 #if 0
-  printf ("growing from %d to %d\n", old_size, ht->size);
+  printf ("growing from %d to %d\n", ht->size, prime_size (ht->size * 2));
 #endif
+
+  ht->size = prime_size (ht->size * 2);
 
   ht->mappings = xmalloc (ht->size * sizeof (struct mapping));
   memset (ht->mappings, '\0', ht->size * sizeof (struct mapping));
 
-  /* Need to reset these two; hash_table_put will reinitialize them.  */
-  ht->fullness = 0;
+  /* Need to reset this; hash_table_put will reinitialize it.  */
   ht->count    = 0;
-  for (i = 0; i < old_size; i++)
-    {
-      struct mapping *mp = old_mappings + i;
-      void *mp_key = mp->key;
 
-      if (!EMPTY_ENTRY_P (mp_key)
-	  && !DELETED_ENTRY_P (mp_key))
-	hash_table_put (ht, mp_key, mp->value);
-    }
+  for (mp = old_mappings; mp < old_end; mp++)
+    if (!EMPTY_MAPPING_P (mp))
+      hash_table_put (ht, mp->key, mp->value);
+
   assert (ht->count == old_count);
   xfree (old_mappings);
 }
@@ -339,86 +312,71 @@ grow_hash_table (struct hash_table *ht)
 void
 hash_table_put (struct hash_table *ht, const void *key, void *value)
 {
-  /* Cannot use find_mapping here because we're actually looking for
-     an *empty* entry.  */
-
   struct mapping *mappings = ht->mappings;
   int size = ht->size;
-  int location = ht->hash_function (key) % size;
-  while (1)
-    {
-      struct mapping *mp = mappings + location;
-      void *mp_key = mp->key;
+  int (*equals) (const void *, const void *) = ht->test_function;
 
-      if (EMPTY_ENTRY_P (mp_key))
-	{
-	  ++ht->fullness;
-	  ++ht->count;
-	just_insert:
-	  mp->key = (void *)key; /* const? */
-	  mp->value = value;
-	  break;
-	}
-      else if (DELETED_ENTRY_P (mp_key)
-	       || !ht->test_function (key, mp_key))
-	{
-	  if (++location == size)
-	    location = 0;
-	}
-      else			/* equal to key and not deleted */
-	{
-	  /* We're replacing an existing entry, so ht->count and
-             ht->fullness remain unchanged.  */
-	  goto just_insert;
-	}
-    }
-  if (ht->fullness * 4 > ht->size * 3)
-    /* When fullness exceeds 75% of size, regrow the table. */
+  struct mapping *mp = mappings + HASH_POSITION (ht, key);
+
+  LOOP_NON_EMPTY (mp, mappings, size)
+    if (equals (key, mp->key))
+      {
+	mp->key   = (void *)key; /* const? */
+	mp->value = value;
+	return;
+      }
+
+  ++ht->count;
+  mp->key   = (void *)key;	/* const? */
+  mp->value = value;
+
+  if (ht->count > ht->size * 3 / 4)
+    /* When table is 75% full, regrow it. */
     grow_hash_table (ht);
 }
 
-/* Remove KEY from HT. */
+/* Remove a mapping that matches KEY from HT.  Return 0 if there was
+   no such entry; return 1 if an entry was removed.  */
 
 int
 hash_table_remove (struct hash_table *ht, const void *key)
 {
-  int location = find_mapping (ht, key);
-  if (location < 0)
+  struct mapping *mp = find_mapping (ht, key);
+  if (!mp)
     return 0;
   else
     {
+      int size = ht->size;
       struct mapping *mappings = ht->mappings;
-      struct mapping *mp = mappings + location;
-      /* We don't really remove an entry from the hash table: we just
-	 mark it as deleted.  This is because there may be other
-	 entries located after this entry whose hash points to a
-	 location before this entry.  (Example: keys A, B and C have
-	 the same hash.  If you were to really *delete* B from the
-	 table, C could no longer be found.) */
 
-      /* Optimization addendum: if the mapping that follows LOCATION
-	 is already empty, that is a sure sign that nobody depends on
-	 LOCATION being non-empty.  (This is because we're using
-	 linear probing.  This would not be the case with double
-	 hashing.)  In that case, we may safely delete the mapping.  */
-
-      /* This could be generalized so that the all the non-empty
-	 locations following LOCATION are simply shifted leftward.  It
-	 would make deletion a bit slower, but it would remove the
-	 ugly DELETED_ENTRY_P checks from all the rest of the code,
-	 making the whole thing faster.  */
-      int location_after = (location + 1) == ht->size ? 0 : location + 1;
-      struct mapping *mp_after = mappings + location_after;
-
-      if (EMPTY_ENTRY_P (mp_after->key))
-	{
-	  mp->key = ENTRY_EMPTY;
-	  --ht->fullness;
-	}
-      else
-	mp->key = ENTRY_DELETED;
-
+      mp->key = NULL;
       --ht->count;
+
+      /* Rehash all the entries following MP.  The alternative
+	 approach is to mark entry as deleted, but that leaves a lot
+	 of garbage.  More importantly, this method makes
+	 hash_table_get and hash_table_put measurably faster.  */
+
+      mp = NEXT_MAPPING (mp, mappings, size);
+      LOOP_NON_EMPTY (mp, mappings, size)
+	{
+	  const void *key2 = mp->key;
+	  struct mapping *mp_new = mappings + HASH_POSITION (ht, key2);
+
+	  /* Find the new location for the key. */
+
+	  LOOP_NON_EMPTY (mp_new, mappings, size)
+	    if (key2 == mp_new->key)
+	      /* The mapping MP (key2) is already where we want it (in
+		 MP_NEW's "chain" of keys.)  */
+	      goto next_rehash;
+
+	  *mp_new = *mp;
+	  mp->key = NULL;
+
+	next_rehash:
+	  ;
+	}
       return 1;
     }
 }
@@ -431,32 +389,36 @@ void
 hash_table_clear (struct hash_table *ht)
 {
   memset (ht->mappings, '\0', ht->size * sizeof (struct mapping));
-  ht->fullness = 0;
   ht->count    = 0;
 }
 
 /* Map MAPFUN over all the mappings in hash table HT.  MAPFUN is
    called with three arguments: the key, the value, and the CLOSURE.
-   Don't add or remove entries from HT while hash_table_map is being
-   called, or strange things may happen.  */
+
+   It is undefined what happens if you add or remove entries in the
+   hash table while hash_table_map is running.  The exception is the
+   entry you're currently mapping over; you may remove or change that
+   entry.  */
 
 void
 hash_table_map (struct hash_table *ht,
 		int (*mapfun) (void *, void *, void *),
 		void *closure)
 {
-  struct mapping *mappings = ht->mappings;
-  int i;
-  for (i = 0; i < ht->size; i++)
-    {
-      struct mapping *mp = mappings + i;
-      void *mp_key = mp->key;
+  struct mapping *mp  = ht->mappings;
+  struct mapping *end = ht->mappings + ht->size;
 
-      if (!EMPTY_ENTRY_P (mp_key)
-	  && !DELETED_ENTRY_P (mp_key))
-	if (mapfun (mp_key, mp->value, closure))
+  for (; mp < end; mp++)
+    if (!EMPTY_MAPPING_P (mp))
+      {
+	void *key;
+      repeat:
+	key = mp->key;
+	if (mapfun (key, mp->value, closure))
 	  return;
-    }
+	if (mp->key != key && !EMPTY_MAPPING_P (mp))
+	  goto repeat;
+      }
 }
 
 /* Return the number of elements in the hash table.  This is not the
@@ -470,21 +432,18 @@ hash_table_count (struct hash_table *ht)
 
 /* Support for hash tables whose keys are strings.  */
 
-/* supposedly from the Dragon Book P436. */
+/* 31 bit hash function.  Taken from Gnome's glib.  This seems to
+   perform much better than the above.  */
 unsigned long
-string_hash (const void *sv)
+string_hash (const void *key)
 {
-  unsigned int h = 0;
-  unsigned const char *x = (unsigned const char *) sv;
-
-  while (*x)
-    {
-      unsigned int g;
-      h = (h << 4) + *x++;
-      if ((g = h & 0xf0000000) != 0)
-	h = (h ^ (g >> 24)) ^ g;
-    }
-
+  const char *p = key;
+  unsigned int h = *p;
+  
+  if (h)
+    for (p += 1; *p != '\0'; p++)
+      h = (h << 5) - h + *p;
+  
   return h;
 }
 
@@ -557,7 +516,7 @@ main (void)
       if (!hash_table_exists (ht, line))
 	hash_table_put (ht, strdup (line), "here I am!");
 #if 1
-      if (len % 3)
+      if (len % 5 == 0)
 	{
 	  char *line_copy;
 	  if (hash_table_get_pair (ht, line, &line_copy, NULL))
@@ -572,7 +531,7 @@ main (void)
   print_hash (ht);
 #endif
 #if 1
-  printf ("%d %d %d\n", ht->count, ht->fullness, ht->size);
+  printf ("%d %d\n", ht->count, ht->size);
 #endif
   return 0;
 }

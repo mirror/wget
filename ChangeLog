@@ -1,3 +1,7 @@
+2001-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* configure.in: Check for inline.
+
 2001-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* po/zh_TW.Big5.po: New file, submitted by Abel Cheung.

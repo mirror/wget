@@ -1,3 +1,19 @@
+2001-04-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* cookies.c (unsigned_string_hash): Use the new code in
+	string_hash as reference.
+
+	* hash.c (hash_table_map): Allow deletion and change of the
+	element processed by MAPFUN.
+	(string_hash): Use the function from glib.
+
+2001-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* config.h.in: Include #undef stub.
+
+	* hash.c (hash_table_remove): Rewrite to actually clear deleted
+	entries instead of just marking them as deleted.
+
 2001-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* hash.h: Declare hash_table_get_pair and hash_table_count.

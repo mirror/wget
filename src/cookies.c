@@ -111,21 +111,15 @@ delete_cookie (struct cookie *cookie)
    case.  */
 
 static unsigned long
-unsigned_string_hash (const void *sv)
+unsigned_string_hash (const void *key)
 {
-  unsigned int h = 0;
-  unsigned const char *x = (unsigned const char *) sv;
-
-  while (*x)
-    {
-      unsigned int g;
-      unsigned char c = TOLOWER (*x);
-      h = (h << 4) + c;
-      if ((g = h & 0xf0000000) != 0)
-	h = (h ^ (g >> 24)) ^ g;
-      ++x;
-    }
-
+  const char *p = key;
+  unsigned int h = TOLOWER (*p);
+  
+  if (h)
+    for (p += 1; *p != '\0'; p++)
+      h = (h << 5) - h + TOLOWER (*p);
+  
   return h;
 }
 
