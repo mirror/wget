@@ -483,15 +483,15 @@ scheme_disable (enum url_scheme scheme)
 
    If no username and password are found, return 0.  */
 
-static int
+static const char *
 url_skip_credentials (const char *url)
 {
   /* Look for '@' that comes before terminators, such as '/', '?',
      '#', or ';'.  */
   const char *p = (const char *)strpbrk (url, "@/?#;");
   if (!p || *p != '@')
-    return 0;
-  return p + 1 - url;
+    return p;
+  return p + 1;
 }
 
 /* Parse credentials contained in [BEG, END).  The region is expected
@@ -840,7 +840,7 @@ url_parse (const char *url, int *error)
 
   p += strlen (supported_schemes[scheme].leading_string);
   uname_b = p;
-  p += url_skip_credentials (p);
+  p = url_skip_credentials (p);
   uname_e = p;
 
   /* scheme://user:pass@host[:port]... */

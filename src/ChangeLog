@@ -1,5 +1,9 @@
 2003-12-14  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c (url_skip_credentials): Return a pointer directly.
+
+2003-12-14  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (url_file_name): Ditto.
 	(parse_errors): Ditto.
 
