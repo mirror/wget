@@ -46,7 +46,7 @@ CC       = cl
 LD       = link
 
 CFLAGS   = /nologo /MT /W0 /O2
-#DEBUGCF  = /DDEBUG /Zi /Od #/Fd /FR
+#DEBUGCF  = /DENABLE_DEBUG /Zi /Od #/Fd /FR
 CPPFLAGS = 
 DEFS     = /DWINDOWS /D_CONSOLE /DHAVE_CONFIG_H /DSYSTEM_WGETRC=\"wgetrc\"
 LDFLAGS  = /subsystem:console /incremental:no /warn:3

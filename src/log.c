@@ -509,7 +509,7 @@ logprintf (enum log_options o, const char *fmt, ...)
   while (!done);
 }
 
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
 /* The same as logprintf(), but does anything only if opt.debug is
    non-zero.  */
 void
@@ -535,7 +535,7 @@ debug_logprintf (const char *fmt, ...)
       while (!done);
     }
 }
-#endif /* DEBUG */
+#endif /* ENABLE_DEBUG */
 
 /* Open FILE and set up a logging stream.  If FILE cannot be opened,
    exit with status of 1.  */

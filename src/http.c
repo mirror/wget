@@ -1136,7 +1136,7 @@ Accept: %s\r\n\
 	    hs->error = xstrdup (error);
 
 	  if ((statcode != -1)
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
 	      && !opt.debug
 #endif
 	      )

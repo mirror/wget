@@ -101,7 +101,7 @@ char *alloca ();
 #undef USE_DIGEST
 
 /* Define if you want the debug output support compiled in.  */
-#undef DEBUG
+#undef ENABLE_DEBUG
 
 /* Define if you have sys/time.h header.  */
 #undef HAVE_SYS_TIME_H

@@ -585,7 +585,7 @@ cache_host_lookup (const char *host, struct address_list *al)
   ++al->refcount;
   hash_table_put (host_name_addresses_map, xstrdup_lower (host), al);
 
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
   if (opt.debug)
     {
       int i;

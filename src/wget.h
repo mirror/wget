@@ -34,9 +34,10 @@ so, delete this exception statement from your version.  */
 #ifndef WGET_H
 #define WGET_H
 
-#ifndef DEBUG
-# define NDEBUG /* To kill off assertions */
-#endif /* not DEBUG */
+/* Disable assertions when debug support is not compiled in. */
+#ifndef ENABLE_DEBUG
+# define NDEBUG
+#endif
 
 /* Define this if you want primitive but extensive malloc debugging.
    It will make Wget extremely slow, so only do it in development
@@ -65,7 +66,7 @@ so, delete this exception statement from your version.  */
 /* No-op version of gettext, used for constant strings. */
 #define N_(string) (string)
 
-/* I18N NOTE: You will notice that none of the DEBUG messages are
+/* I18N NOTE: You will notice that none of the DEBUGP messages are
    marked as translatable.  This is intentional, for a few reasons:
 
    1) The debug messages are not meant for the users to look at, but
@@ -90,11 +91,11 @@ so, delete this exception statement from your version.  */
 #define DO_NOTHING do {} while (0)
 
 /* Print X if debugging is enabled; a no-op otherwise.  */
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
 # define DEBUGP(x) do { if (opt.debug) { debug_logprintf x; } } while (0)
-#else  /* not DEBUG */
+#else  /* not ENABLE_DEBUG */
 # define DEBUGP(x) DO_NOTHING
-#endif /* not DEBUG */
+#endif /* not ENABLE_DEBUG */
 
 /* Make gcc check for the format of logmsg() and debug_logmsg().  */
 #ifdef __GNUC__

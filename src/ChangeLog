@@ -1,5 +1,12 @@
 2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* config.h.in: Renamed DEBUG to ENABLE_DEBUG.  ENABLE_DEBUG is, I
+	think, a better name, because it implies that debugging output is
+	merely possible, not "on by default", as might be construed from
+	just DEBUG.
+
+2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ftp.c (has_insecure_name_p): Define it here.
 
 	* utils.c (has_wildcards_p): Define it here.

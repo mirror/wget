@@ -130,9 +130,9 @@ struct options
   int save_headers;		/* Do we save headers together with
 				   file? */
 
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
   int debug;			/* Debugging on/off */
-#endif /* DEBUG */
+#endif
 
   int timestamping;		/* Whether to use time-stamping. */
 

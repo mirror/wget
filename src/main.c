@@ -459,12 +459,12 @@ hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:C:",
 	  setoptval ("continue", "on");
 	  break;
 	case 'd':
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
 	  setoptval ("debug", "on");
-#else  /* not DEBUG */
+#else
 	  fprintf (stderr, _("%s: debug support not compiled in.\n"),
 		   exec_name);
-#endif /* not DEBUG */
+#endif
 	  break;
 	case 'E':
 	  setoptval ("htmlextension", "on");

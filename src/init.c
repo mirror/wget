@@ -128,7 +128,7 @@ static struct {
   { "convertlinks",	&opt.convert_links,	cmd_boolean },
   { "cookies",		&opt.cookies,		cmd_boolean },
   { "cutdirs",		&opt.cut_dirs,		cmd_number },
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
   { "debug",		&opt.debug,		cmd_boolean },
 #endif
   { "deleteafter",	&opt.delete_after,	cmd_boolean },
