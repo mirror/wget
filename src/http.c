@@ -73,7 +73,9 @@ extern char *version_string;
 extern int errno;
 #endif
 #ifndef h_errno
+# ifndef __CYGWIN__
 extern int h_errno;
+# endif
 #endif
 
 

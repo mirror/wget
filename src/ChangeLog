@@ -1,3 +1,12 @@
+2000-12-31  Dan Harkless  <wget@harkless.org>
+
+        * ftp.c, http.c:  Applied Hack Kampbjørn <hack@hackdata.com>'s
+        patch to deal with h_errno not being defined in netdb.h under Cygwin.
+
+2000-12-30  Dan Harkless  <wget@harkless.org>
+
+        * version.c: Released Wget version 1.6.
+
 2000-12-17  Igor Khristophorov  <igor@atdot.org>
 
 	* http.c (check_end): Fix test for '+' or '-'.

@@ -52,7 +52,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 extern int errno;
 #endif
 #ifndef h_errno
+# ifndef __CYGWIN__
 extern int h_errno;
+# endif
 #endif
 
 /* File where the "ls -al" listing will be saved.  */
