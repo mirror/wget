@@ -29,6 +29,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define HAVE_SNPRINTF
+
 #define HAVE_MEMMOVE
 #define ftruncate chsize
 #define inline __inline
@@ -76,7 +78,7 @@
 #define USE_DIGEST 1
 
 /* Define if you want the debug output support compiled in.  */
-#define DEBUG
+#define ENABLE_DEBUG
 
 /* Define if you have sys/time.h header. */
 #undef HAVE_SYS_TIME_H
@@ -196,6 +198,6 @@
 #define socklen_t int
 
 /* Define if you have u_int32_t.  */
-#define HAVE_U_INT32_T 1
+/* #undef HAVE_U_INT32_T */
 
 #endif /* CONFIG_H */

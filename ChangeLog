@@ -1,5 +1,14 @@
 2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* windows/config.h.bor: DEBUG is now ENABLE_DEBUG.  Borland has
+	snprintf, but not u_int32_t.
+
+	* windows/Makefile.src.bor (OBJS): Use convert.c.
+
+	From Chin-yuan Kuo.
+
+2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* windows/config.h.mingw: Ditto.
 
 	* windows/Makefile.top.mingw: Ditto.
