@@ -199,9 +199,6 @@
 /* Defined to int or size_t on systems without socklen_t.  */
 #define socklen_t int
 
-/* Define if you have int32_t.  */
-#define HAVE_INT32_T 1
-
 /* Define if you have u_int32_t.  */
 #undef HAVE_U_INT32_T
 

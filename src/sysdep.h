@@ -245,26 +245,11 @@ void *memcpy ();
 int fnmatch ();
 #endif
 
-/* Provide 32-bit types.  Most code shouldn't care, but there is code
-   that really needs a 32-bit integral type.  If int32_t and u_int32_t
-   are present, we use them, otherwise we pick one of int/short/long,
-   and throw an error if none of them works.  */
-
-#ifndef HAVE_INT32_T
-# if SIZEOF_INT == 4
-typedef int int32_t;
-# else
-#  if SIZEOF_LONG == 4
-typedef long int32_t;
-#  else
-#   if SIZEOF_SHORT == 4
-typedef short int32_t;
-#   else
- #error "Cannot determine a 32-bit type"
-#   endif
-#  endif
-# endif
-#endif
+/* Provide u_int32_t on the platforms that don't define it.  Although
+   most code should be agnostic about integer sizes, some code really
+   does need a 32-bit integral type.  Such code should use u_int32_t.
+   (The exception is gnu-md5.[ch], which uses its own detection for
+   portability across platforms.)  */
 
 #ifndef HAVE_U_INT32_T
 # if SIZEOF_INT == 4
