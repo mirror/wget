@@ -1,3 +1,11 @@
+2002-03-19  Chin-yuan Kuo  <sr1111111@yahoo.com.tw>
+
+	* configure.bat.in: Do not check %BORPATH% as C++Builder compiler
+	does not use it.
+	* windows/Makefile.src.bor:
+	* windows/config.h.bor:
+	Migrated to free (as in beer) C++Builder compiler.
+
 2002-03-13  Ian Abbott  <abbotti@mev.co.uk>
 
 	* configure.bat: Removed (renamed to configure.bat.ini).

@@ -2,16 +2,16 @@
 ## Makefile for use with watcom win95/winnt executable.
 
 CC=bcc32
-LINK=tlink32
+LINK=ilink32
 
 LFLAGS=
-CFLAGS=-DWINDOWS -DHAVE_CONFIG_H -I. -H -H=wget.csm -w-
+CFLAGS=-DWINDOWS -DHAVE_CONFIG_H -I. -H -H=wget.csm -w- -O2
 
 ## variables
 OBJS=cmpt.obj connect.obj fnmatch.obj ftp.obj ftp-basic.obj  \
-      ftp-ls.obj ftp-opie.obj getopt.obj headers.obj host.obj html.obj \
+      ftp-ls.obj ftp-opie.obj getopt.obj headers.obj host.obj html-parse.obj html-url.obj \
       http.obj init.obj log.obj main.obj gnu-md5.obj netrc.obj rbuf.obj  \
-      alloca.obj \
+      safe-ctype.obj hash.obj progress.obj gen-md5.obj cookies.obj \
       recur.obj res.obj retr.obj url.obj utils.obj version.obj mswindows.obj
 
 LIBDIR=$(MAKEDIR)\..\lib
@@ -20,7 +20,9 @@ wget.exe: $(OBJS)
   $(LINK) @&&|
 $(LFLAGS) -Tpe -ap -c +
 $(LIBDIR)\c0x32.obj+
-alloca.obj+
+cookies.obj+
+hash.obj+
+safe-ctype.obj+
 version.obj+
 utils.obj+
 url.obj+
@@ -37,7 +39,8 @@ main.obj+
 log.obj+
 init.obj+
 http.obj+
-html.obj+
+html-parse.obj+
+html-url.obj+
 host.obj+
 headers.obj+
 getopt.obj+

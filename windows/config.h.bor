@@ -19,6 +19,10 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define HAVE_MEMMOVE
+#define ftruncate chsize
+#define inline __inline
+
 /* Define if you have the <alloca.h> header file.  */
 #undef HAVE_ALLOCA_H
 
@@ -33,7 +37,7 @@
  #pragma alloca
 #  else
 #   ifndef alloca /* predefined by HP cc +Olibcalls */
-char *alloca ();
+#    include <malloc.h>
 #   endif
 #  endif
 # endif
@@ -177,7 +181,7 @@ char *alloca ();
 #define HAVE_BUILTIN_MD5 1
 
 /* Define if you have the isatty function.  */
-#undef HAVE_ISATTY
+#define HAVE_ISATTY
 
 
 #endif /* CONFIG_H */
