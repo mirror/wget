@@ -1,3 +1,11 @@
+2001-08-21  Dave Turner <dct25@hermes.cam.ac.uk>
+
+	* ftp-basic.c (ftp_size): New function to send non-standard SIZE
+	  command to server to request file size.
+	* ftp.h (ftp_size): Export it.
+	* ftp.c (getftp): Use new ftp_size function if restoring
+	  transfer of a file with unknown size.
+
 2001-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* url.c (parseurl): Don't depend on the now-obsolete TYPE.

@@ -21,6 +21,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+
 #ifdef HAVE_STRING_H
 # include <string.h>
 #else
@@ -626,6 +628,63 @@ ftp_pwd (struct rbuf *rbuf, char **pwd)
   FREE_MAYBE (*pwd);
 
   *pwd = xstrdup (request);
+
+  xfree (respline);
+  /* All OK.  */
+  return FTPOK;
+}
+/* Sends the SIZE command to the server, and returns the value in 'size'.
+ * If an error occurs, size is set to zero. */
+uerr_t
+ftp_size (struct rbuf *rbuf, const char *file, long int *size)
+{
+  char *request, *respline;
+  int nwritten;
+  uerr_t err;
+
+  /* Send PWD request.  */
+  request = ftp_request ("SIZE", file);
+  nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
+  if (nwritten < 0)
+    {
+      xfree (request);
+      *size = 0;
+      return WRITEFAILED;
+    }
+  xfree (request);
+  /* Get appropriate response.  */
+  err = ftp_response (rbuf, &respline);
+  if (err != FTPOK)
+    {
+      xfree (respline);
+      *size = 0;
+      return err;
+    }
+  if (*respline == '5')
+    {
+      /* 
+       * Probably means SIZE isn't supported on this server.
+       * Error is nonfatal since SIZE isn't in RFC 959 
+       */
+      xfree (respline);
+      *size = 0;
+      return FTPOK;
+    }
+
+  errno = 0;
+  *size = strtol (respline + 4, NULL, 0);
+  if (errno) 
+    {
+      /* 
+       * Couldn't parse the response for some reason.  On the (few)
+       * tests I've done, the response is 213 <SIZE> with nothing else -
+       * maybe something a bit more resilient is necessary.  It's not a
+       * fatal error, however.
+       */
+      xfree (respline);
+      *size = 0;
+      return FTPOK;
+    }
 
   xfree (respline);
   /* All OK.  */

@@ -44,6 +44,7 @@ uerr_t ftp_rest PARAMS ((struct rbuf *, long));
 uerr_t ftp_list PARAMS ((struct rbuf *, const char *));
 uerr_t ftp_syst PARAMS ((struct rbuf *, enum stype *));
 uerr_t ftp_pwd PARAMS ((struct rbuf *, char **));
+uerr_t ftp_size PARAMS ((struct rbuf *, const char *, long int *));
 
 struct urlinfo;
 
