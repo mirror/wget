@@ -381,7 +381,13 @@ recursive_retrieve (const char *file, const char *this_url)
 	    }
 	  xfree (constr);
 	  constr = xstrdup (u->url);
-	  string_set_add (undesirable_urls, constr);
+	  /* After we have canonicalized the URL, check if we have it
+	     on the black list. */
+	  if (string_set_contains (undesirable_urls, constr))
+	    inl = 1;
+	  /* This line is bogus. */
+	  /*string_set_add (undesirable_urls, constr);*/
+
 	  if (!inl && !((u->proto == URLFTP) && !this_url_ftp))
 	    if (!opt.spanhost && this_url && !same_host (this_url, constr))
 	      {

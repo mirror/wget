@@ -1,5 +1,10 @@
 2001-06-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* recur.c (recursive_retrieve): Also check undesirable_urls with
+	canonicalized URL.
+
+2001-06-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* http.c (gethttp): Search `.netrc' with real host, not the proxy
 	one.
 
