@@ -1,5 +1,10 @@
 2001-12-18  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* recur.c (retrieve_tree): Make a copy of file obtained from
+	dl_url_file_map because the code calls xfree(file) later.
+
+2001-12-18  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* recur.c (register_html): Maintain a hash table of HTML files
 	along with the list.  Disallow duplicates.
 	(retrieve_tree): Use downloaded_html_set to check whether the file

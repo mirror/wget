@@ -228,15 +228,10 @@ retrieve_tree (const char *start_url)
 	 the second time.  */
       if (dl_url_file_map && hash_table_contains (dl_url_file_map, url))
 	{
-	  file = hash_table_get (dl_url_file_map, url);
+	  file = xstrdup (hash_table_get (dl_url_file_map, url));
 
 	  DEBUGP (("Already downloaded \"%s\", reusing it from \"%s\".\n",
 		   url, file));
-
-	  /* #### This check might be horribly slow when downloading
-	     sites with a huge number of HTML docs.  Use a hash table
-	     instead!  Thankfully, it gets tripped only when you use
-	     `wget -r URL1 URL2 ...', as explained above.  */
 
 	  if (string_set_contains (downloaded_html_set, file))
 	    descend = 1;
