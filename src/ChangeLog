@@ -1,5 +1,10 @@
 2003-12-12  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* retr.c (fd_read_body): Pass total size to progress_create, not
+	the remaining amount.
+
+2003-12-12  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* retr.c (fd_read_body): Don't fiddle with "interactive timeout"
 	if read timeout is unset.
 

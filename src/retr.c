@@ -224,9 +224,10 @@ fd_read_body (int fd, FILE *out, long toread, long startpos,
 
   if (opt.verbose)
     {
-      /* If we're skipping STARTPOS bytes, hide it from
-	 progress_create because the indicator can't deal with it.  */
-      progress = progress_create (skip ? 0 : startpos, toread);
+      /* If we're skipping STARTPOS bytes, pass 0 as the INITIAL
+	 argument to progress_create because the indicator doesn't
+	 (yet) know about "skipping" data.  */
+      progress = progress_create (skip ? 0 : startpos, startpos + toread);
       progress_interactive = progress_interactive_p (progress);
     }
 

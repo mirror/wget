@@ -1718,6 +1718,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   if (keep_alive)
     flags |= rb_read_exactly;
   if (hs->restval > 0 && contrange == 0)
+    /* If the server ignored our range request, instruct fd_read_body
+       to skip the first RESTVAL bytes of body.  */
     flags |= rb_skip_startpos;
   hs->len = hs->restval;
   hs->rd_size = 0;
