@@ -1,5 +1,9 @@
 2000-11-05  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* Makefile.in (sample.wgetrc.munged_for_texi_inclusion): Use $(srcdir).
+
+2000-11-05  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* wget.texi: Updated names of contributors.
 
 2000-10-23  Hrvoje Niksic  <hniksic@arsdigita.com>

@@ -56,7 +56,7 @@ all: wget.info # wget.cat
 everything: all wget_us.ps wget_a4.ps wget_toc.html
 
 sample.wgetrc.munged_for_texi_inclusion: sample.wgetrc
-	sed s/@/@@/g sample.wgetrc > sample.wgetrc.munged_for_texi_inclusion
+	sed s/@/@@/g $(srcdir)/sample.wgetrc > sample.wgetrc.munged_for_texi_inclusion
 
 wget.info: sample.wgetrc.munged_for_texi_inclusion wget.texi
 	-$(MAKEINFO)
