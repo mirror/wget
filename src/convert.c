@@ -327,52 +327,67 @@ convert_links (const char *file, struct urlpos *links)
   logprintf (LOG_VERBOSE, "%d-%d\n", to_file_count, to_url_count);
 }
 
-/* Construct and return a link that points from S1's position to S2.
-   Both files should be local file names, S1 of the referrering file,
-   and S2 of the referred file.
+/* Construct and return a link that points from BASEFILE to LINKFILE.
+   Both files should be local file names, BASEFILE of the referrering
+   file, and LINKFILE of the referred file.
 
-   So, if S1 is "H/index.html" and S2 is "H/images/news.gif", this
-   function will return "images/news.gif".  On the other hand, if S1
-   is "H/ioccc/index.html", and S2 is "H/images/fly.gif", it will
-   return "../images/fly.gif".
+   Examples:
 
-   Caveats: S1 should not begin with `/', unless S2 also begins with
-   '/'.  S1 should not contain things like ".." and such --
-   construct_relative ("fly/ioccc/../index.html",
-   "fly/images/fly.gif") will fail.  (A workaround is to call
-   something like path_simplify() on S1).  */
+   cr("foo", "bar")         -> "bar"
+   cr("A/foo", "A/bar")     -> "bar"
+   cr("A/foo", "A/B/bar")   -> "B/bar"
+   cr("A/X/foo", "A/Y/bar") -> "../Y/bar"
+   cr("X/", "Y/bar")        -> "../Y/bar" (trailing slash does matter in BASE)
+
+   Both files should be absolute or relative, otherwise strange
+   results might ensue.  The function makes no special efforts to
+   handle "." and ".." in links, so make sure they're not there
+   (e.g. using path_simplify).  */
 
 static char *
-construct_relative (const char *s1, const char *s2)
+construct_relative (const char *basefile, const char *linkfile)
 {
-  int i, cnt, sepdirs1;
-  char *res;
+  char *link;
+  int basedirs;
+  const char *b, *l;
+  int i, start;
 
-  i = cnt = 0;
-  /* Skip the directories common to both strings.  */
-  while (1)
+  /* First, skip the initial directory components common to both
+     files.  */
+  start = 0;
+  for (b = basefile, l = linkfile; *b == *l && *b != '\0'; ++b, ++l)
     {
-      while (s1[i] && s2[i]
-	     && (s1[i] == s2[i])
-	     && (s1[i] != '/')
-	     && (s2[i] != '/'))
-	++i;
-      if (s1[i] == '/' && s2[i] == '/')
-	cnt = ++i;
-      else
-	break;
+      if (*b == '/')
+	start = (b - basefile) + 1;
     }
-  for (sepdirs1 = 0; s1[i]; i++)
-    if (s1[i] == '/')
-      ++sepdirs1;
-  /* Now, construct the file as of:
-     - ../ repeated sepdirs1 time
-     - all the non-mutual directories of S2.  */
-  res = (char *)xmalloc (3 * sepdirs1 + strlen (s2 + cnt) + 1);
-  for (i = 0; i < sepdirs1; i++)
-    memcpy (res + 3 * i, "../", 3);
-  strcpy (res + 3 * i, s2 + cnt);
-  return res;
+  basefile += start;
+  linkfile += start;
+
+  /* With common directories out of the way, the situation we have is
+     as follows:
+         b - b1/b2/[...]/bfile
+         l - l1/l2/[...]/lfile
+
+     The link we're constructing needs to be:
+       lnk - ../../l1/l2/[...]/lfile
+
+     Where the number of ".."'s equals the number of bN directory
+     components in B.  */
+
+  /* Count the directory components in B. */
+  basedirs = 0;
+  for (b = basefile; *b; b++)
+    {
+      if (*b == '/')
+	++basedirs;
+    }
+
+  /* Construct LINK as explained above. */
+  link = (char *)xmalloc (3 * basedirs + strlen (linkfile) + 1);
+  for (i = 0; i < basedirs; i++)
+    memcpy (link + 3 * i, "../", 3);
+  strcpy (link + 3 * i, linkfile);
+  return link;
 }
 
 static void

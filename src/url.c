@@ -641,48 +641,52 @@ static char *parse_errors[] = {
 static int
 is_valid_ipv4_address (const char *str, const char *end)
 {
-  int saw_digit, octets;
-  int val;
+  int saw_digit = 0;
+  int octets = 0;
+  int val = 0;
 
-  saw_digit = 0;
-  octets = 0;
-  val = 0;
+  while (str < end)
+    {
+      int ch = *str++;
 
-  while (str < end) {
-    int ch = *str++;
+      if (ch >= '0' && ch <= '9')
+	{
+	  val = val * 10 + (ch - '0');
 
-    if (ch >= '0' && ch <= '9') {
-      val = val * 10 + (ch - '0');
-
-      if (val > 255)
-        return 0;
-      if (saw_digit == 0) {
-        if (++octets > 4)
-          return 0;
-        saw_digit = 1;
-      }
-    } else if (ch == '.' && saw_digit == 1) {
-      if (octets == 4)
-        return 0;
-      val = 0;
-      saw_digit = 0;
-    } else
-      return 0;
-  }
+	  if (val > 255)
+	    return 0;
+	  if (saw_digit == 0)
+	    {
+	      if (++octets > 4)
+		return 0;
+	      saw_digit = 1;
+	    }
+	}
+      else if (ch == '.' && saw_digit == 1)
+	{
+	  if (octets == 4)
+	    return 0;
+	  val = 0;
+	  saw_digit = 0;
+	}
+      else
+	return 0;
+    }
   if (octets < 4)
     return 0;
   
   return 1;
 }
 
-static const int NS_INADDRSZ  = 4;
-static const int NS_IN6ADDRSZ = 16;
-static const int NS_INT16SZ   = 2;
-
 static int
 is_valid_ipv6_address (const char *str, const char *end)
 {
-  static const char xdigits[] = "0123456789abcdef";
+  enum {
+    NS_INADDRSZ  = 4,
+    NS_IN6ADDRSZ = 16,
+    NS_INT16SZ   = 2
+  };
+
   const char *curtok;
   int tp;
   const char *colonp;
@@ -707,62 +711,67 @@ is_valid_ipv6_address (const char *str, const char *end)
   saw_xdigit = 0;
   val = 0;
 
-  while (str < end) {
-    int ch = *str++;
-    const char *pch;
+  while (str < end)
+    {
+      int ch = *str++;
 
-    /* if ch is a number, add it to val. */
-    pch = strchr(xdigits, ch);
-    if (pch != NULL) {
-      val <<= 4;
-      val |= (pch - xdigits);
-      if (val > 0xffff)
-	return 0;
-      saw_xdigit = 1;
-      continue;
+      /* if ch is a number, add it to val. */
+      if (ISXDIGIT (ch))
+	{
+	  val <<= 4;
+	  val |= XDIGIT_TO_NUM (ch);
+	  if (val > 0xffff)
+	    return 0;
+	  saw_xdigit = 1;
+	  continue;
+	}
+
+      /* if ch is a colon ... */
+      if (ch == ':')
+	{
+	  curtok = str;
+	  if (saw_xdigit == 0)
+	    {
+	      if (colonp != NULL)
+		return 0;
+	      colonp = str + tp;
+	      continue;
+	    }
+	  else if (str == end)
+	    return 0;
+	  if (tp > NS_IN6ADDRSZ - NS_INT16SZ)
+	    return 0;
+	  tp += NS_INT16SZ;
+	  saw_xdigit = 0;
+	  val = 0;
+	  continue;
+	}
+
+      /* if ch is a dot ... */
+      if (ch == '.' && (tp <= NS_IN6ADDRSZ - NS_INADDRSZ)
+	  && is_valid_ipv4_address (curtok, end) == 1)
+	{
+	  tp += NS_INADDRSZ;
+	  saw_xdigit = 0;
+	  break;
+	}
+    
+      return 0;
     }
 
-    /* if ch is a colon ... */
-    if (ch == ':') {
-      curtok = str;
-      if (saw_xdigit == 0) {
-	if (colonp != NULL)
-	  return 0;
-	colonp = str + tp;
-	continue;
-      } else if (str == end) {
-	return 0;
-      }
-      if (tp > NS_IN6ADDRSZ - NS_INT16SZ)
+  if (saw_xdigit == 1)
+    {
+      if (tp > NS_IN6ADDRSZ - NS_INT16SZ) 
 	return 0;
       tp += NS_INT16SZ;
-      saw_xdigit = 0;
-      val = 0;
-      continue;
     }
 
-    /* if ch is a dot ... */
-    if (ch == '.' && (tp <= NS_IN6ADDRSZ - NS_INADDRSZ) &&
-	is_valid_ipv4_address(curtok, end) == 1) {
-      tp += NS_INADDRSZ;
-      saw_xdigit = 0;
-      break;
+  if (colonp != NULL)
+    {
+      if (tp == NS_IN6ADDRSZ) 
+	return 0;
+      tp = NS_IN6ADDRSZ;
     }
-    
-    return 0;
-  }
-
-  if (saw_xdigit == 1) {
-    if (tp > NS_IN6ADDRSZ - NS_INT16SZ) 
-      return 0;
-    tp += NS_INT16SZ;
-  }
-
-  if (colonp != NULL) {
-    if (tp == NS_IN6ADDRSZ) 
-      return 0;
-    tp = NS_IN6ADDRSZ;
-  }
 
   if (tp != NS_IN6ADDRSZ)
     return 0;
