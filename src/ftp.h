@@ -42,6 +42,7 @@ enum stype
   ST_VMS,
   ST_WINNT,
   ST_MACOS,
+  ST_OS400,
   ST_OTHER
 };
   

@@ -768,6 +768,8 @@ ftp_syst (struct rbuf *rbuf, enum stype *server_type)
     *server_type = ST_WINNT;
   else if (!strcasecmp (request, "MACOS"))
     *server_type = ST_MACOS;
+  else if (!strcasecmp (request, "OS/400"))
+    *server_type = ST_OS400;
   else
     *server_type = ST_OTHER;
 

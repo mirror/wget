@@ -1,3 +1,10 @@
+2003-09-17  Aurelien Marchand  <artaxerxes@users.sf.net>
+
+	* ftp.h: Added OS400 system in enum
+	* ftp-basic.c: recognize OS400 systems
+	* ftp.c: don't prepend the CWD if talking to OS400, since it
+	breaks the change in library
+
 2003-09-18  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* retr.c (get_contents): Pass the correct argument to ssl_iread.

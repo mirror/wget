@@ -397,11 +397,19 @@ Error in server response, closing control connection.\n"));
 
 	     A relative directory is one that does not begin with '/'
 	     and, on non-Unix OS'es, one that doesn't begin with
-	     "<letter>:".  */
+	     "[a-z]:".
+
+	     This is not done for OS400, which doesn't use
+	     "/"-delimited directories, nor does it support directory
+	     hierarchies.  "CWD foo" followed by "CWD bar" leaves us
+	     in "bar", not in "foo/bar", as would be customary
+	     elsewhere.  */
 
 	  if (target[0] != '/'
 	      && !(con->rs != ST_UNIX
-		   && ISALPHA (target[0]) && target[1] == ':'))
+		   && ISALPHA (target[0])
+		   && target[1] == ':')
+	      && con->rs != ST_OS400)
 	    {
 	      int idlen = strlen (con->id);
 	      char *ntarget, *p;
