@@ -204,7 +204,6 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
       }
     if (seed)
       {
-        const char *seed;
         int skey_sequence = 0;
 
 	/* Extract the sequence from SEED.  */

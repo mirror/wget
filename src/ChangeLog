@@ -1,5 +1,10 @@
 2003-11-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp-basic.c (ftp_login): Remove shadowing (and bogus)
+	declaration of SEED.
+
+2003-11-03  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* log.c (logvprintf): Documented better.  Renamed to
 	log_vprintf_internal to avoid confusion with the public API
 	functions logprintf and logputs.
