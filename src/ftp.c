@@ -62,12 +62,6 @@ extern int h_errno;
 
 extern char ftp_last_respline[];
 
-/* #### Global variables??  These two should be members of struct
-   ccon!  */
-
-static enum stype host_type=ST_UNIX;
-static char *pwd;
-
 /* Look for regexp "( *[0-9]+ *byte" (literal parenthesis) anywhere in
    the string S, and return the number converted to long, if found, 0
    otherwise.  */
@@ -114,7 +108,7 @@ ftp_expected_bytes (const char *s)
    connection to the server.  It always closes the data connection,
    and closes the control connection in case of error.  */
 static uerr_t
-getftp (const struct urlinfo *u, long *len, long restval, ccon *con)
+getftp (struct urlinfo *u, long *len, long restval, ccon *con)
 {
   int csock, dtsock, res;
   uerr_t err;
@@ -254,7 +248,7 @@ Error in server response, closing control connection.\n"));
       /* Third: Get the system type */
       if (!opt.server_response)
 	logprintf (LOG_VERBOSE, "==> SYST ... ");
-      err = ftp_syst (&con->rbuf, &host_type);
+      err = ftp_syst (&con->rbuf, &con->rs);
       /* FTPRERR */
       switch (err)
 	{
@@ -285,7 +279,7 @@ Error in server response, closing control connection.\n"));
 
       if (!opt.server_response)
 	logprintf (LOG_VERBOSE, "==> PWD ... ");
-      err = ftp_pwd(&con->rbuf, &pwd);
+      err = ftp_pwd(&con->rbuf, &con->id);
       /* FTPRERR */
       switch (err)
       {
@@ -361,10 +355,10 @@ Error in server response, closing control connection.\n"));
 	  DEBUGP (("changing working directory\n"));
 	  if (*(u->dir) == '/')
 	    {
-	      int pwd_len = strlen (pwd);
+	      int pwd_len = strlen (con->id);
 	      char *result = (char *)alloca (strlen (u->dir) + pwd_len + 10);
 	      *result = '\0';
-	      switch (host_type)
+	      switch (con->rs)
 		{
 		case ST_VMS:
 		  {
@@ -373,7 +367,7 @@ Error in server response, closing control connection.\n"));
 		    for (tmpp = tmp_dir; *tmpp; tmpp++)
 		      if (*tmpp=='/')
 			*tmpp = '.';
-		    strcpy (result, pwd);
+		    strcpy (result, con->id);
 		    /* pwd ends with ']', we have to get rid of it */
 		    result[pwd_len - 1]= '\0';
 		    strcat (result, tmp_dir);
@@ -382,16 +376,14 @@ Error in server response, closing control connection.\n"));
 		  break;
 		case ST_UNIX:
 		case ST_WINNT:
+		case ST_MACOS:
 		  /* pwd_len == 1 means pwd = "/", but u->dir begins with '/'
 		     already */
 		  if (pwd_len > 1)
-		    strcpy (result, pwd);
+		    strcpy (result, con->id);
 		  strcat (result, u->dir);
-		  /* These look like debugging messages to me.  */
-#if 0
-		  logprintf (LOG_VERBOSE, "\npwd=\"%s\"", pwd);
-		  logprintf (LOG_VERBOSE, "\nu->dir=\"%s\"", u->dir);
-#endif
+		  DEBUGP(("\npwd=\"%s\"", con->id));
+		  DEBUGP(("\nu->dir=\"%s\"", u->dir));
 		  break;
 		default:
 		  abort ();
@@ -1177,7 +1169,7 @@ ftp_get_listing (struct urlinfo *u, ccon *con)
   err = ftp_loop_internal (u, NULL, con);
   u->local = olocal;
   if (err == RETROK)
-    f = ftp_parse_ls (list_filename, host_type);
+    f = ftp_parse_ls (list_filename, con->rs);
   else
     f = NULL;
   if (opt.remove_listing)
@@ -1259,7 +1251,7 @@ ftp_retrieve_list (struct urlinfo *u, struct fileinfo *f, ccon *con)
 
       dlthis = 1;
       if (opt.timestamping && f->type == FT_PLAINFILE)
-	{
+        {
 	  struct stat st;
 	  /* If conversion of HTML files retrieved via FTP is ever implemented,
 	     we'll need to stat() <file>.orig here when -K has been specified.
@@ -1268,30 +1260,38 @@ ftp_retrieve_list (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	     .orig suffix. */
 	  if (!stat (u->local, &st))
 	    {
+              int eq_size;
+              int cor_val;
 	      /* Else, get it from the file.  */
 	      local_size = st.st_size;
 	      tml = st.st_mtime;
-	      if (local_size == f->size && tml >= f->tstamp)
+              /* Compare file sizes only for servers that tell us correct
+                 values. Assumme sizes being equal for servers that lie
+                 about file size.  */
+              cor_val = (con->rs == ST_UNIX || con->rs == ST_WINNT);
+              eq_size = cor_val ? (local_size == f->size) : 1 ;
+	      if (f->tstamp <= tml && eq_size)
 		{
-		  logprintf (LOG_VERBOSE, _("\
-Server file no newer than local file `%s' -- not retrieving.\n\n"), u->local);
+		  /* Remote file is older, file sizes can be compared and
+                     are both equal. */
+                  logprintf (LOG_VERBOSE, _("\
+Remote file no newer than local file `%s' -- not retrieving.\n"), u->local);
 		  dlthis = 0;
 		}
-	      else if (local_size != f->size)
-		{
-		  if (host_type == ST_VMS)
-		    {
-		      logprintf (LOG_VERBOSE, _("\
-Cannot compare sizes, remote system is VMS.\n"));
-		      dlthis = 0;
-		    }
-		  else
-		    {
-		      logprintf (LOG_VERBOSE, _("\
-The sizes do not match (local %ld) -- retrieving.\n"), local_size);
-		    }
-		}
-	    }
+	      else if (eq_size)
+                {
+                  /* Remote file is newer or sizes cannot be matched */
+                  logprintf (LOG_VERBOSE, _("\
+Remote file is newer than local file `%s' -- retrieving.\n\n"),
+                             u->local);
+                }
+              else
+                {
+                  /* Sizes do not match */
+                  logprintf (LOG_VERBOSE, _("\
+The sizes do not match (local %ld) -- retrieving.\n\n"), local_size);
+                }
+            }
 	}	/* opt.timestamping && f->type == FT_PLAINFILE */
       switch (f->type)
 	{
@@ -1571,6 +1571,8 @@ ftp_loop (struct urlinfo *u, int *dt)
 
   rbuf_uninitialize (&con.rbuf);
   con.st = ON_YOUR_OWN;
+  con.rs = ST_UNIX;
+  con.id = NULL;
   res = RETROK;			/* in case it's not used */
 
   /* If the file name is empty, the user probably wants a directory
@@ -1634,8 +1636,8 @@ ftp_loop (struct urlinfo *u, int *dt)
   /* If a connection was left, quench it.  */
   if (rbuf_initialized_p (&con.rbuf))
     CLOSE (RBUF_FD (&con.rbuf));
-  FREE_MAYBE (pwd);
-  pwd = NULL;
+  FREE_MAYBE (con.id);
+  con.id = NULL;
   return res;
 }
 

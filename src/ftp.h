@@ -27,6 +27,7 @@ enum stype
   ST_UNIX,
   ST_VMS,
   ST_WINNT,
+  ST_MACOS,
   ST_OTHER
 };
   
@@ -98,6 +99,8 @@ typedef struct
   int cmd;			/* command code */
   struct rbuf rbuf;		/* control connection buffer */
   long dltime;			/* time of the download */
+  enum stype rs;		/* remote system reported by ftp server */ 
+  char *id;			/* initial directory */
 } ccon;
 
 struct fileinfo *ftp_parse_ls PARAMS ((const char *, enum stype));

@@ -60,33 +60,33 @@ ftp_response (struct rbuf *rbuf, char **line)
   do
     {
       for (i = 0; 1; i++)
-	{
-	  int res;
-	  if (i > bufsize - 1)
-	    *line = (char *)xrealloc (*line, (bufsize <<= 1));
-	  res = RBUF_READCHAR (rbuf, *line + i);
-	  /* RES is number of bytes read.  */
-	  if (res == 1)
-	    {
-	      if ((*line)[i] == '\n')
-		{
-		  (*line)[i] = '\0';
-		  /* Get rid of \r.  */
-		  if (i > 0 && (*line)[i - 1] == '\r')
-		    (*line)[i - 1] = '\0';
-		  break;
-		}
-	    }
-	  else
-	    return FTPRERR;
-	}
+        {
+          int res;
+          if (i > bufsize - 1)
+            *line = (char *)xrealloc (*line, (bufsize <<= 1));
+          res = RBUF_READCHAR (rbuf, *line + i);
+          /* RES is number of bytes read.  */
+          if (res == 1)
+            {
+              if ((*line)[i] == '\n')
+                {
+                  (*line)[i] = '\0';
+                  /* Get rid of \r.  */
+                  if (i > 0 && (*line)[i - 1] == '\r')
+                    (*line)[i - 1] = '\0';
+                  break;
+                }
+            }
+          else
+            return FTPRERR;
+        }
       if (opt.server_response)
-	logprintf (LOG_ALWAYS, "%s\n", *line);
+        logprintf (LOG_ALWAYS, "%s\n", *line);
       else
-	DEBUGP (("%s\n", *line));
+        DEBUGP (("%s\n", *line));
     }
   while (!(i >= 3 && ISDIGIT (**line) && ISDIGIT ((*line)[1]) &&
-	   ISDIGIT ((*line)[2]) && (*line)[3] == ' '));
+           ISDIGIT ((*line)[2]) && (*line)[3] == ' '));
   strncpy (ftp_last_respline, *line, sizeof (ftp_last_respline));
   ftp_last_respline[sizeof (ftp_last_respline) - 1] = '\0';
   return FTPOK;
@@ -99,16 +99,16 @@ static char *
 ftp_request (const char *command, const char *value)
 {
   char *res = (char *)xmalloc (strlen (command)
-			       + (value ? (1 + strlen (value)) : 0)
-			       + 2 + 1);
+                               + (value ? (1 + strlen (value)) : 0)
+                               + 2 + 1);
   sprintf (res, "%s%s%s\r\n", command, value ? " " : "", value ? value : "");
   if (opt.server_response)
     {
       /* Hack: don't print out password.  */
       if (strncmp (res, "PASS", 4) != 0)
-	logprintf (LOG_ALWAYS, "--> %s\n", res);
+        logprintf (LOG_ALWAYS, "--> %s\n", res);
       else
-	logputs (LOG_ALWAYS, "--> PASS Turtle Power!\n");
+        logputs (LOG_ALWAYS, "--> PASS Turtle Power!\n");
     }
   else
     DEBUGP (("\n--> %s\n", res));
@@ -179,31 +179,31 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
 
     for (i = 0; i < ARRAY_SIZE (skey_head); i++)
       {
-	if (strncasecmp (skey_head[i], respline, strlen (skey_head[i])) == 0)
-	  break;
+        if (strncasecmp (skey_head[i], respline, strlen (skey_head[i])) == 0)
+          break;
       }
     if (i < ARRAY_SIZE (skey_head))
       {
-	const char *cp;
-	int skey_sequence = 0;
+        const char *cp;
+        int skey_sequence = 0;
 
-	for (cp = respline + strlen (skey_head[i]);
-	     '0' <= *cp && *cp <= '9';
-	     cp++)
-	  {
-	    skey_sequence = skey_sequence * 10 + *cp - '0';
-	  }
-	if (*cp == ' ')
-	  cp++;
-	else
-	  {
-	  bad:
-	    xfree (respline);
-	    return FTPLOGREFUSED;
-	  }
-	if ((cp = calculate_skey_response (skey_sequence, cp, pass)) == 0)
-	  goto bad;
-	pass = cp;
+        for (cp = respline + strlen (skey_head[i]);
+             '0' <= *cp && *cp <= '9';
+             cp++)
+          {
+            skey_sequence = skey_sequence * 10 + *cp - '0';
+          }
+        if (*cp == ' ')
+          cp++;
+        else
+          {
+          bad:
+            xfree (respline);
+            return FTPLOGREFUSED;
+          }
+        if ((cp = calculate_skey_response (skey_sequence, cp, pass)) == 0)
+          goto bad;
+        pass = cp;
       }
   }
 #endif /* USE_OPIE */
@@ -258,8 +258,8 @@ ftp_port (struct rbuf *rbuf)
   /* Construct the argument of PORT (of the form a,b,c,d,e,f).  */
   bytes = (char *)alloca (6 * 4 + 1);
   sprintf (bytes, "%d,%d,%d,%d,%d,%d", in_addr[0], in_addr[1],
-	  in_addr[2], in_addr[3], (unsigned) (port & 0xff00) >> 8,
-	  port & 0xff);
+          in_addr[2], in_addr[3], (unsigned) (port & 0xff00) >> 8,
+          port & 0xff);
   /* Send PORT request.  */
   request = ftp_request ("PORT", bytes);
   nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
@@ -326,15 +326,15 @@ ftp_pasv (struct rbuf *rbuf, unsigned char *addr)
     {
       addr[i] = 0;
       for (; ISDIGIT (*s); s++)
-	addr[i] = (*s - '0') + 10 * addr[i];
+        addr[i] = (*s - '0') + 10 * addr[i];
       if (*s == ',')
-	s++;
+        s++;
       else if (i < 5)
-	{
-	  /* When on the last number, anything can be a terminator.  */
-	  xfree (respline);
-	  return FTPINVPASV;
-	}
+        {
+          /* When on the last number, anything can be a terminator.  */
+          xfree (respline);
+          return FTPINVPASV;
+        }
     }
   xfree (respline);
   return FTPOK;
@@ -578,7 +578,10 @@ ftp_syst (struct rbuf *rbuf, enum stype *server_type)
       if (!strcasecmp (request, "WINDOWS_NT"))
         *server_type = ST_WINNT;
       else
-        *server_type = ST_OTHER;
+        if (!strcasecmp (request, "MACOS"))
+          *server_type = ST_MACOS;
+        else
+          *server_type = ST_OTHER;
 
   xfree (respline);
   /* All OK.  */

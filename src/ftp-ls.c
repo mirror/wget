@@ -1,5 +1,6 @@
 /* Parsing FTP `ls' output.
-   Copyright (C) 1995, 1996, 1997, 2000 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 2000, 2001 Free Software Foundation,
+   Inc. 
 
 This file is part of Wget.
 
@@ -38,15 +39,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "ftp.h"
 #include "url.h"
 
-/* Undef this if FTPPARSE is not available.  In that case, Wget will
-   still work with Unix FTP servers, which covers most cases.  */
-
-#define HAVE_FTPPARSE
-
-#ifdef HAVE_FTPPARSE
-#include "ftpparse.h"
-#endif
-
 /* Converts symbolic permissions to number-style ones, e.g. string
    rwxr-xr-x to 755.  For now, it knows nothing of
    setuid/setgid/sticky.  ACLs are ignored.  */
@@ -66,6 +58,23 @@ symperms (const char *s)
   return perms;
 }
 
+
+/* Cleans a line of text so that it can be consistently parsed. Destroys
+   <CR> and <LF> in case that thay occur at the end of the line and
+   replaces all <TAB> character with <SPACE>. Returns the length of the
+   modified line. */
+static int
+clean_line(char *line)
+{
+  int len = strlen (line);
+  if (!len) return 0; 
+  if (line[len - 1] == '\n')
+    line[--len] = '\0';
+  if (line[len - 1] == '\r')
+    line[--len] = '\0';
+  for ( ; *line ; line++ ) if (*line == '\t') *line = ' '; 
+  return len;
+}
 
 /* Convert the Un*x-ish style directory listing stored in FILE to a
    linked list of fileinfo (system-independent) entries.  The contents
@@ -103,14 +112,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
   /* Line loop to end of file: */
   while ((line = read_whole_line (fp)))
     {
-      DEBUGP (("%s\n", line));
-      len = strlen (line);
-      /* Destroy <CR><LF> if present.  */
-      if (len && line[len - 1] == '\n')
-	line[--len] = '\0';
-      if (len && line[len - 1] == '\r')
-	line[--len] = '\0';
-
+      len = clean_line (line);
       /* Skip if total...  */
       if (!strncasecmp (line, "total", 5))
 	{
@@ -426,13 +428,7 @@ ftp_parse_winnt_ls (const char *file)
   /* Line loop to end of file: */
   while ((line = read_whole_line (fp)))
     {
-      DEBUGP (("%s\n", line));
-      len = strlen (line);
-      /* Destroy <CR><LF> if present.  */
-      if (len && line[len - 1] == '\n')
-        line[--len] = '\0';
-      if (len && line[len - 1] == '\r')
-        line[--len] = '\0';
+      len = clean_line (line);
 
       /* Extracting name is a bit of black magic and we have to do it
          before `strtok' inserted extra \0 characters in the line
@@ -529,20 +525,45 @@ ftp_parse_winnt_ls (const char *file)
   return dir;
 }
 
+/* Converts VMS symbolic permissions to number-style ones, e.g. string
+   RWED,RWE,RE to 755. "D" (delete) is taken to be equal to "W"
+   (write). Inspired by a patch of Stoyan Lekov <lekov@eda.bg>. */
+static int
+vmsperms (const char *s)
+{
+  int perms = 0;
 
-#ifdef HAVE_FTPPARSE
+  do
+    {
+      switch (*s) {
+        case ',': perms <<= 3; break;
+        case 'R': perms  |= 4; break;
+        case 'W': perms  |= 2; break;
+        case 'D': perms  |= 2; break;
+        case 'E': perms  |= 1; break;
+        default:  DEBUGP(("wrong VMS permissons!\n")); 
+      }
+    }
+  while (*++s);
+  return perms;
+}
 
-/* This is a "glue function" that connects the ftpparse interface to
-   the interface Wget expects.  ftpparse is used to parse listings
-   from servers other than Unix, like those running VMS or NT. */
 
 static struct fileinfo *
-ftp_parse_nonunix_ls (const char *file)
+ftp_parse_vms_ls (const char *file)
 {
   FILE *fp;
-  int len;
+  /* #### A third copy of more-or-less the same array ? */
+  static const char *months[] = {
+    "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+    "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+  };
+  int i;
+  int year, month, day;          /* for time analysis */
+  int hour, min, sec;
+  struct tm timestruct;
 
-  char *line;          /* tokenizer */
+  char *line, *tok, *p;          /* tokenizer */
   struct fileinfo *dir, *l, cur; /* list creation */
 
   fp = fopen (file, "rb");
@@ -553,56 +574,161 @@ ftp_parse_nonunix_ls (const char *file)
     }
   dir = l = NULL;
 
+  /* Empty line */
+  read_whole_line (fp);
+  /* "Directory PUB$DEVICE[PUB]" */
+  read_whole_line (fp);
+  /* Empty line */
+  read_whole_line (fp);
+
   /* Line loop to end of file: */
   while ((line = read_whole_line (fp)))
     {
-      struct ftpparse fp;
+      i = clean_line (line);
+      if (!i) break;
 
-      DEBUGP (("%s\n", line));
-      len = strlen (line);
-      /* Destroy <CR><LF> if present.  */
-      if (len && line[len - 1] == '\n')
-	line[--len] = '\0';
-      if (len && line[len - 1] == '\r')
-	line[--len] = '\0';
+      /* First column: Name. A bit of black magic again. The name my be
+         either ABCD.EXT or ABCD.EXT;NUM and it might be on a separate
+         line. Therefore we will first try to get the complete name
+         until the first space character; if it fails, we assume that the name
+         occupies the whole line. After that we search for the version
+         separator ";", we remove it and check the extension of the file;
+         extension .DIR denotes directory. */
 
-      if (ftpparse(&fp, line, len))
+      tok = strtok(line, " ");
+      if (tok == NULL) tok = line;
+      DEBUGP(("file name: '%s'\n", tok));
+      for (p = tok ; *p && *p != ';' ; p++);
+      if (*p == ';') *p = '\0';
+      p   = tok + strlen(tok) - 4;
+      if (!strcmp(p, ".DIR")) *p = '\0';
+      cur.name = xstrdup(tok);
+      DEBUGP(("Name: '%s'\n", cur.name));
+
+      /* If the name ends on .DIR or .DIR;#, it's a directory. We also set
+         the file size to zero as the listing does tell us only the size in
+         filesystem blocks - for an integrity check (when mirroring, for
+         example) we would need the size in bytes. */
+      
+      if (! *p)
         {
-	  cur.size = fp.size;
-	  cur.name = (char *)xmalloc (fp.namelen + 1);
-	  memcpy (cur.name, fp.name, fp.namelen);
-	  cur.name[fp.namelen] = '\0';
-	  DEBUGP (("%s\n", cur.name));
-	  /* No links on non-UNIX systems */
-	  cur.linkto = NULL;
-	  /* ftpparse won't tell us correct permisions. So lets just invent
-	     something. */
-	  if (fp.flagtrycwd)
-	    {
-	      cur.type = FT_DIRECTORY;
-	      cur.perms = 0755;
-            } 
-	  else 
-	    {
-	      cur.type = FT_PLAINFILE;
-	      cur.perms = 0644;
-	    }
-	  if (!dir)
-	    {
-	      l = dir = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
-	      memcpy (l, &cur, sizeof (cur));
-	      l->prev = l->next = NULL;
-	    }
-	  else 
-	    {
-	      cur.prev = l;
-	      l->next = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
-	      l = l->next;
-	      memcpy (l, &cur, sizeof (cur));
-	      l->next = NULL;
-	    }
-	  l->tstamp = fp.mtime;
+          cur.type  = FT_DIRECTORY;
+          cur.size  = 0;
+          DEBUGP(("Directory\n"));
+        }
+      else
+        {
+          cur.type  = FT_PLAINFILE;
+          DEBUGP(("File\n"));
+        }
+
+      cur.size  = 0;
+
+      /* Second column, if exists, or the first column of the next line
+         contain file size in blocks. We will skip it. */
+
+      tok = strtok(NULL, " ");
+      if (tok == NULL) 
+      {
+        DEBUGP(("Getting additional line\n"));
+        xfree (line);
+        line = read_whole_line (fp);
+        if (!line)
+        {
+          DEBUGP(("empty line read, leaving listing parser\n"));
+          break;
+        }
+        i = clean_line (line);
+        if (!i) 
+        {
+          DEBUGP(("confusing VMS listing item, leaving listing parser\n"));
+          break;
+        }
+        tok = strtok(line, " ");
       }
+      DEBUGP(("second token: '%s'\n", tok));
+
+      /* Third/Second column: Date DD-MMM-YYYY. */
+
+      tok = strtok(NULL, "-");
+      DEBUGP(("day: '%s'\n",tok));
+      day = atoi(tok);
+      tok = strtok(NULL, "-");
+      if (!tok)
+      {
+        /* If the server produces garbage like
+           'EA95_0PS.GZ;1      No privilege for attempted operation'
+           the first strtok(NULL, "-") will return everything until the end
+           of the line and only the next strtok() call will return NULL. */
+        DEBUGP(("nonsense in VMS listing, skipping this line\n"));
+        break;
+      }
+      for (i=0; i<12; i++) if (!strcmp(tok,months[i])) break;
+      /* Uknown months are mapped to January */
+      month = (i%12)+1; 
+      tok = strtok(NULL, " ");
+      year = atoi(tok)-1900;
+      DEBUGP(("date parsed\n"));
+
+      /* Fourth/Third column: Time hh:mm:ss */
+      tok = strtok(NULL,  ":");
+      hour = atoi(tok);
+      tok = strtok(NULL,  ":");
+      min = atoi(tok);
+      tok = strtok(NULL,  " ");
+      sec = atoi(tok);
+
+      DEBUGP(("YYYY/MM/DD HH:MM:SS - %d/%02d/%02d %02d:%02d:%02d\n", 
+              year+1900, month, day, hour, min, sec));
+      
+      /* Build the time-stamp (copy & paste from above) */
+      timestruct.tm_sec   = sec;
+      timestruct.tm_min   = min;
+      timestruct.tm_hour  = hour;
+      timestruct.tm_mday  = day;
+      timestruct.tm_mon   = month;
+      timestruct.tm_year  = year;
+      timestruct.tm_wday  = 0;
+      timestruct.tm_yday  = 0;
+      timestruct.tm_isdst = -1;
+      cur.tstamp = mktime (&timestruct); /* store the time-stamp */
+
+      DEBUGP(("Timestamp: %ld\n", cur.tstamp));
+
+      /* Skip the fifth column */
+
+      tok = strtok(NULL, " ");
+
+      /* Sixth column: Permissions */
+
+      tok = strtok(NULL, ","); /* Skip the VMS-specific SYSTEM permissons */
+      tok = strtok(NULL, ")");
+      if (tok == NULL)
+        {
+          DEBUGP(("confusing VMS permissions, skipping line\n"));
+          continue;
+        }
+      /* Permissons have the format "RWED,RWED,RE" */
+      cur.perms = vmsperms(tok);
+      DEBUGP(("permissions: %s -> 0%o\n", tok, cur.perms));
+
+      cur.linkto = NULL;
+
+      /* And put everything into the linked list */
+      if (!dir)
+        {
+          l = dir = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
+          memcpy (l, &cur, sizeof (cur));
+          l->prev = l->next = NULL;
+        }
+      else
+        {
+          cur.prev = l;
+          l->next = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
+          l = l->next;
+          memcpy (l, &cur, sizeof (cur));
+          l->next = NULL;
+        }
 
       xfree (line);
     }
@@ -610,14 +736,13 @@ ftp_parse_nonunix_ls (const char *file)
   fclose (fp);
   return dir;
 }
-#endif
 
-/* This function switches between the correct parsing routine
-   depending on the SYSTEM_TYPE.  If system type is ST_UNIX, we use
-   our home-grown ftp_parse_unix_ls; otherwise, we use our interface
-   to ftpparse, also known as ftp_parse_nonunix_ls.  The system type
-   should be based on the result of the "SYST" response of the FTP
-   server.  */
+
+/* This function switches between the correct parsing routine depending on
+   the SYSTEM_TYPE. The system type should be based on the result of the
+   "SYST" response of the FTP server. According to this repsonse we will
+   use on of the three different listing parsers that cover the most of FTP
+   servers used nowadays.  */
 
 struct fileinfo *
 ftp_parse_ls (const char *file, const enum stype system_type)
@@ -636,23 +761,24 @@ ftp_parse_ls (const char *file, const enum stype system_type)
 	{
 	  logprintf (LOG_NOTQUIET, "%s: %s\n", file, strerror (errno));
 	  return NULL;
-    }
+        }
 	c = fgetc(fp);
 	fclose(fp);
 	/* If the first character of the file is '0'-'9', it's WINNT
 	   format. */
 	if (c >= '0' && c <='9')
 	  return ftp_parse_winnt_ls (file);
-  else
-	  return ftp_parse_unix_ls (file, TRUE);
+        else
+          return ftp_parse_unix_ls (file, TRUE);
       }
+    case ST_VMS:
+      return ftp_parse_vms_ls (file);
+    case ST_MACOS:
+      return ftp_parse_unix_ls (file, TRUE);
     default:
-#ifdef HAVE_FTPPARSE
-      return ftp_parse_nonunix_ls (file);
-#else
-      /* #### Maybe log some warning here? */ 
-      return ftp_parse_unix_ls (file);
-#endif
+      logprintf (LOG_NOTQUIET, _("\
+Usupported listing type, trying Unix listing parser.\n"));
+      return ftp_parse_unix_ls (file, FALSE);
     }
 }
 
