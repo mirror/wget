@@ -406,6 +406,28 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	}
       if (mynewloc)
 	{
+	  /* The HTTP specs only allow absolute URLs to appear in redirects, but
+	     a ton of boneheaded webservers and CGIs out there break the rules
+	     and use relative URLs, and popular browsers are lenient about this,
+	     so wget should be too. */
+	  if (strstr(mynewloc, "://") == NULL)
+	    /* Doesn't look like an absolute URL (this check will incorrectly
+	       think that rare relative URLs containing "://" later in the
+	       string are absolute). */
+	    {
+	      char *temp = malloc(strlen(url) + strlen(mynewloc) + 1);
+	      
+	      if (mynewloc[0] == '/')
+		/* "Hostless absolute" URL.  Convert to absolute. */
+		sprintf(temp,"%s%s", url, mynewloc);
+	      else
+		/* Relative URL.  Convert to absolute. */
+		sprintf(temp,"%s/%s", url, mynewloc);
+
+	      free(mynewloc);
+	      mynewloc = temp;
+	    }
+	  
 	  free (url);
 	  url = mynewloc;
 	}

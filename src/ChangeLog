@@ -1,3 +1,9 @@
+2000-10-27  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* retr.c (retrieve_url): Manually applied T. Bharath
+ 	<TBharath@responsenetworks.com>'s patch to get wget to grok
+ 	illegal relative URL redirects.  Reformatted and re-commented it.
+
 2000-10-23  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* connect.c (make_connection and bindport): Manually applied Rob

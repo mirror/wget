@@ -28,9 +28,6 @@ may tend towards the top).  Not all of these represent user-visible changes.
 
 * --retr-symlinks should cause wget to traverse links to directories too.
 
-* Lots of noncompliant webservers issue HTTP redirects to relative URLs, and
-  browsers follow them, so wget should too.
-
 * Make wget return non-zero status in more situations, like incorrect HTTP auth.
 
 * Timestamps are sometimes not copied over on files retrieved by FTP.
