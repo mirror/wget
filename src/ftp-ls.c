@@ -146,7 +146,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
 	  break;
 	default:
 	  cur.type = FT_UNKNOWN;
-	  DEBUGP (("UNKOWN; "));
+	  DEBUGP (("UNKNOWN; "));
 	  break;
 	}
 
@@ -441,9 +441,11 @@ ftp_parse_winnt_ls (const char *file)
       cur.name = xstrdup(tok);
       DEBUGP(("Name: '%s'\n", cur.name));
 
-      /* First column: mm-dd-yy */
+      /* First column: mm-dd-yy. Should atoi() on the month fail, january
+	 will be assumed.  */
       tok = strtok(line, "-");
-      month = atoi(tok);
+      month = atoi(tok) - 1;
+      if (month < 0) month = 0;
       tok = strtok(NULL, "-");
       day = atoi(tok);
       tok = strtok(NULL, " ");
@@ -667,9 +669,9 @@ ftp_parse_vms_ls (const char *file)
       }
       for (i=0; i<12; i++) if (!strcmp(tok,months[i])) break;
       /* Uknown months are mapped to January */
-      month = (i%12)+1; 
-      tok = strtok(NULL, " ");
-      year = atoi(tok)-1900;
+      month = i % 12 ; 
+      tok = strtok (NULL, " ");
+      year = atoi (tok) - 1900;
       DEBUGP(("date parsed\n"));
 
       /* Fourth/Third column: Time hh:mm[:ss] */
