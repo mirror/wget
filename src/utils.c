@@ -2017,8 +2017,6 @@ alarm_cancel (void)
 #endif /* not ITIMER_REAL */
 }
 
-#endif /* USE_SIGNAL_TIMEOUT */
-
 /* Run FUN(ARG) for not more than TIMEOUT seconds.  Returns non-zero
    if the function was interrupted with a timeout, zero otherwise.
 
@@ -2048,10 +2046,6 @@ alarm_cancel (void)
 int
 run_with_timeout (double timeout, void (*fun) (void *), void *arg)
 {
-#ifndef USE_SIGNAL_TIMEOUT
-  fun (arg);
-  return 0;
-#else
   int saved_errno;
 
   if (timeout == 0)
@@ -2077,5 +2071,20 @@ run_with_timeout (double timeout, void (*fun) (void *), void *arg)
   errno = saved_errno;
 
   return 0;
-#endif
 }
+
+#else  /* not USE_SIGNAL_TIMEOUT */
+
+#ifndef WINDOWS
+/* A stub version of run_with_timeout that just calls FUN(ARG).  Don't
+   define it under Windows, because Windows has its own version of
+   run_with_timeout that uses threads.  */
+
+int
+run_with_timeout (double timeout, void (*fun) (void *), void *arg)
+{
+  fun (arg);
+  return 0;
+}
+#endif /* not WINDOWS */
+#endif /* not USE_SIGNAL_TIMEOUT */

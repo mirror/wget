@@ -1,3 +1,9 @@
+2003-10-02  Gisle Vanem  <giva@bgnett.no>
+        
+        * mswindows.c (run_with_timeout): For Windows: Run the 'fun' in a
+	thread via a helper function. Continually query the thread's
+	exit-code until finished or timed out.
+
 2003-10-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.h (XMALLOC_ARRAY): Removed.
