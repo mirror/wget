@@ -1,3 +1,8 @@
+2002-07-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* recur.c (retrieve_tree): Check whether downloaded_html_set is
+	non-NULL before using it.
+
 2002-05-27  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* html-parse.c (NAME_CHAR_P): Allow almost any character here.

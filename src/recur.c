@@ -254,7 +254,8 @@ retrieve_tree (const char *start_url)
 	  DEBUGP (("Already downloaded \"%s\", reusing it from \"%s\".\n",
 		   url, file));
 
-	  if (string_set_contains (downloaded_html_set, file))
+	  if (downloaded_html_set
+	      && string_set_contains (downloaded_html_set, file))
 	    descend = 1;
 	}
       else
