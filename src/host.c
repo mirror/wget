@@ -201,17 +201,10 @@ address_list_connected_p (const struct address_list *al)
 }
 
 #ifdef ENABLE_IPV6
-/**
-  * address_list_from_addrinfo
-  *
-  * This function transform an addrinfo links list in and address_list.
-  *
-  * Input:
-  * addrinfo*		Linked list of addrinfo
-  *
-  * Output:
-  * address_list*	New allocated address_list
-  */
+
+/* Create an address_list from the addresses in the given struct
+   addrinfo.  */
+
 static struct address_list *
 address_list_from_addrinfo (const struct addrinfo *ai)
 {
@@ -256,7 +249,9 @@ address_list_from_addrinfo (const struct addrinfo *ai)
   assert (ip - al->addresses == cnt);
   return al;
 }
-#else
+
+#else  /* not ENABLE_IPV6 */
+
 /* Create an address_list from a NULL-terminated vector of IPv4
    addresses.  This kind of vector is returned by gethostbyname.  */
 
@@ -284,7 +279,8 @@ address_list_from_ipv4_addresses (char **vec)
 
   return al;
 }
-#endif
+
+#endif /* not ENABLE_IPV6 */
 
 static void
 address_list_delete (struct address_list *al)
@@ -292,6 +288,10 @@ address_list_delete (struct address_list *al)
   xfree (al->addresses);
   xfree (al);
 }
+
+/* Mark the address list as being no longer in use.  This will reduce
+   its reference count which will cause the list to be freed when the
+   count reaches 0.  */
 
 void
 address_list_release (struct address_list *al)
