@@ -91,8 +91,8 @@ uninstall: uninstall.info # uninstall.man
 # install info pages, creating install directory if necessary
 install.info: wget.info
 	$(top_srcdir)/mkinstalldirs $(infodir)
-	-for file in $(srcdir)/wget.info $(srcdir)/wget.info-*[0-9]; do \
-	   test -f "$$file" && $(INSTALL_DATA) $$file $(infodir) ; \
+	-for file in wget.info wget.info-*[0-9]; do \
+	   test -f $$file && $(INSTALL_DATA) $$file $(infodir)/$$file ; \
 	done
 
 # install man page, creating install directory if necessary

@@ -1,3 +1,8 @@
+2000-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* Makefile.in (install.info): Info files are *not* in $(srcdir),
+	but in the current build dir.
+
 2000-11-15  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi (Robots): Document that we now support the meta tag
