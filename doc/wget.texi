@@ -768,8 +768,8 @@ Some web sites may perform log analysis to identify retrieval programs
 such as Wget by looking for statistically significant similarities in
 the time between requests. This option causes the time between requests
 to vary between 0 and 2 * @var{wait} seconds, where @var{wait} was
-specified using the @samp{-w} or @samp{--wait} options, in order to mask
-Wget's presence from such analysis.
+specified using the @samp{--wait} option, in order to mask Wget's
+presence from such analysis.
 
 A recent article in a publication devoted to development on a popular
 consumer platform provided code to perform this analysis on the fly.
@@ -848,7 +848,7 @@ When mode is set to ``unix'', Wget escapes the character @samp{/} and
 the control characters in the ranges 0--31 and 128--159.  This is the
 default on Unix-like OS'es.
 
-When mode is seto to ``windows'', Wget escapes the characters @samp{\},
+When mode is set to ``windows'', Wget escapes the characters @samp{\},
 @samp{|}, @samp{/}, @samp{:}, @samp{?}, @samp{"}, @samp{*}, @samp{<},
 @samp{>}, and the control characters in the ranges 0--31 and 128--159.
 In addition to this, Wget in Windows mode uses @samp{+} instead of
@@ -1057,9 +1057,9 @@ wget --cookies=off --header "Cookie: @var{name}=@var{value}"
 @cindex saving cookies
 @cindex cookies, saving
 @item --save-cookies @var{file}
-Save cookies from @var{file} at the end of session.  Cookies whose
-expiry time is not specified, or those that have already expired, are
-not saved.
+Save cookies to @var{file} at the end of session.  Cookies whose expiry
+time is not specified, or those that have already expired, are not
+saved.
 
 @cindex Content-Length, ignore
 @cindex ignore length
@@ -1139,6 +1139,48 @@ servers denying information to clients other than @code{Mozilla} or
 Microsoft @code{Internet Explorer}.  This option allows you to change
 the @code{User-Agent} line issued by Wget.  Use of this option is
 discouraged, unless you really know what you are doing.
+
+@cindex POST
+@item --post-data=@var{string}
+@itemx --post-file=@var{file}
+Use POST as the method for all HTTP requests and send the specified data
+in the request body.  @code{--post-data} sends @var{string} as data,
+whereas @code{--post-file} sends the contents of @var{file}.  Other than
+that, they work in exactly the same way.
+
+Please be aware that Wget needs to know the size of the POST data in
+advance.  Therefore the argument to @code{--post-file} must be a regular
+file; specifying a FIFO or something like @file{/dev/stdin} won't work.
+It's not quite clear how to work around this limitation inherent in
+HTTP/1.0.  Although HTTP/1.1 introduces @dfn{chunked} transfer that
+doesn't require knowing the request length in advance, a client can't
+use chunked unless it knows it's talking to an HTTP/1.1 server.  And it
+can't know that until it receives a response, which in turn requires the
+request to have been completed -- a chicken-and-egg problem.
+
+Note: if Wget is redirected after the POST request is completed, it will
+not send the POST data to the redirected URL.  This is because URLs that
+process POST often respond with a redirection to a regular page
+(although that's technically disallowed), which does not desire or
+accept POST.  It is not yet clear that this behavior is optimal; if it
+doesn't work out, it will be changed.
+
+This example shows how to log to a server using POST and then proceed to
+download the desired pages, presumably only accessible to authorized
+users:
+
+@example
+@group
+# @r{Log in to the server.  This can be done only once.}
+wget --save-cookies cookies.txt \
+     --post-data 'user=foo&password=bar' \
+     http://server.com/auth.php
+
+# @r{Now grab the page or pages we care about.}
+wget --load-cookies cookies.txt \
+     -p http://server.com/interesting/article.php
+@end group
+@end example
 @end table
 
 @node FTP Options, Recursive Retrieval Options, HTTP Options, Invoking
@@ -2306,6 +2348,14 @@ and @samp{.pm} (Perl module) files download files using @samp{wget
 @item passwd = @var{string}
 Set your @sc{ftp} password to @var{password}.  Without this setting, the
 password defaults to @samp{username@@hostname.domainname}.
+
+@item post_data = @var{string}
+Use POST as the method for all HTTP requests and send @var{string} in
+the request body.  The same as @samp{--post-data}.
+
+@item post_file = @var{file}
+Use POST as the method for all HTTP requests and send the contents of
+@var{file} in the request body.  The same as @samp{--post-file}.
 
 @item progress = @var{string}
 Set the type of the progress indicator.  Legal types are ``dot'' and
