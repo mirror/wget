@@ -326,4 +326,7 @@ typedef unsigned char  boolean;
    retrieve the requisites of a single document. */
 #define INFINITE_RECURSION -1
 
+#define CONNECT_ERROR(x) ((x) == ECONNREFUSED && !opt.retry_connrefused	\
+			  ? CONREFUSED : CONERROR)
+
 #endif /* WGET_H */

@@ -765,7 +765,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       address_list_release (al);
 
       if (sock < 0)
-	return errno == ECONNREFUSED ? CONREFUSED : CONERROR;
+	return CONNECT_ERROR (errno);
 
 #ifdef HAVE_SSL
      if (conn->scheme == SCHEME_HTTPS)

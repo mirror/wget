@@ -185,7 +185,7 @@ getftp (struct url *u, long *len, long restval, ccon *con)
       address_list_release (al);
 
       if (csock < 0)
-	return errno == ECONNREFUSED ? CONREFUSED : CONERROR;
+	return CONNECT_ERROR (errno);
 
       if (cmd & LEAVE_PENDING)
 	rbuf_initialize (&con->rbuf, csock);
@@ -578,7 +578,7 @@ Error in server response, closing control connection.\n"));
 		  logprintf (LOG_VERBOSE, _("couldn't connect to %s:%hu: %s\n"),
 			     pretty_print_address (&passive_addr), passive_port,
 			     strerror (save_errno));
-		  return save_errno == ECONNREFUSED ? CONREFUSED : CONERROR;
+		  return CONNECT_ERROR (save_errno);
 		}
 
 	      pasv_mode_open = 1;  /* Flag to avoid accept port */

@@ -35,6 +35,7 @@ struct options
   int verbose;			/* Are we verbose? */
   int quiet;			/* Are we quiet? */
   int ntry;			/* Number of tries per URL */
+  int retry_connrefused;	/* Treat CONNREFUSED as non-fatal. */
   int background;		/* Whether we should work in background. */
   int kill_longer;		/* Do we reject messages with *more*
 				   data than specified in

@@ -1,11 +1,13 @@
 GNU Wget NEWS -- history of user-visible changes.
 
-Copyright (C) 1997, 1998, 2000, 2001, 2002 Free Software Foundation, Inc.
+Copyright (C) 1997, 1998, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.9.
+
+** The build process now requires Autoconf 2.5x.
 
 ** It is now possible to specify that POST method be used for HTTP
 requests.  For example, `wget --post-data="id=foo&data=bar" URL' will
@@ -23,6 +25,10 @@ The ETA is still based on the average speed, though.
 ** It is now possible to connect to FTP servers through FWTK
 firewalls.  Set ftp_proxy to an FTP URL, and Wget will automatically
 log on to the proxy as "username@host".
+
+** The new option `--retry-connrefused' makes Wget retry downloads
+even in the face of refused connections, which are otherwise
+considered a fatal error.
 
 * Wget 1.8.1 is a bugfix release with no user-visible changes.
 

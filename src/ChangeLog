@@ -1,3 +1,15 @@
+2003-09-03  Ahmon Dancy  <dancy@dancysoft.com>
+
+	* main.c init.c options.h: Added --retry-connrefused option so
+	that Connection Refused failures are treated as non-fatal (when
+	trying to retrieve from busy servers).
+
+	* wget.h: New CONNECT_ERROR macro for encapsulating this
+	modification.
+
+	* ftp.c http.c : Use CONNECT_ERROR macro in places where
+	ECONNREFUSED was checked.
+
 2003-01-11  Ian Abbott	<abbotti@mev.co.uk>
 
 	* ftp.c (ftp_retrieve_glob): Reject insecure filenames as determined

@@ -162,6 +162,7 @@ Logging and input file:\n\
   fputs (_("\
 Download:\n\
   -t,  --tries=NUMBER           set number of retries to NUMBER (0 unlimits).\n\
+       --retry-connrefused      retry even if connection is refused.\n\
   -O   --output-document=FILE   write documents to FILE.\n\
   -nc, --no-clobber             don\'t clobber existing files or use .# suffixes.\n\
   -c,  --continue               resume getting a partially-downloaded file.\n\
@@ -294,6 +295,7 @@ main (int argc, char *const *argv)
     { "recursive", no_argument, NULL, 'r' },
     { "relative", no_argument, NULL, 'L' },
     { "retr-symlinks", no_argument, NULL, 137 },
+    { "retry-connrefused", no_argument, NULL, 174 },
     { "save-headers", no_argument, NULL, 's' },
     { "server-response", no_argument, NULL, 'S' },
     { "span-hosts", no_argument, NULL, 'H' },
@@ -514,6 +516,9 @@ GNU General Public License for more details.\n"));
 	  break;
 	case 'x':
 	  setval ("dirstruct", "on");
+	  break;
+	case 174:
+	  setval ("retryconnrefused", "on");
 	  break;
 
 	  /* Options accepting an argument: */
