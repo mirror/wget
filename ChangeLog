@@ -1,3 +1,8 @@
+2002-04-15  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* po/hr.po: Editing the Project-Id-Version to say "wget" rather
+	than "GNU Wget".
+
 2002-04-12  Ian Abbott  <abbotti@mev.co.uk>
 
 	* windows/Makefile.src.bor: Removed pre-compiled header options as
