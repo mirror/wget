@@ -1,3 +1,8 @@
+2003-12-15  Gisle Vanem  <giva@bgnett.no>
+
+	* url.c (url_skip_credentials): Fixed return value; 'url' if no
+	credentials.
+
 2003-12-14  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (url_skip_credentials): Return a pointer directly.

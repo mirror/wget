@@ -477,11 +477,11 @@ scheme_disable (enum url_scheme scheme)
   supported_schemes[scheme].enabled = 0;
 }
 
-/* Skip the username and password, if present here.  The function
-   should *not* be called with the complete URL, but with the part
-   right after the scheme.
+/* Skip the username and password, if present in the URL.  The
+   function should *not* be called with the complete URL, but with the
+   portion after the scheme.
 
-   If no username and password are found, return 0.  */
+   If no username and password are found, return URL.  */
 
 static const char *
 url_skip_credentials (const char *url)
@@ -490,7 +490,7 @@ url_skip_credentials (const char *url)
      '#', or ';'.  */
   const char *p = (const char *)strpbrk (url, "@/?#;");
   if (!p || *p != '@')
-    return p;
+    return url;
   return p + 1;
 }
 
