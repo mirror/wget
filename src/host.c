@@ -250,9 +250,7 @@ lookup_host (const char *host, int silent)
   if (!silent)
     logprintf (LOG_VERBOSE, _("Resolving %s... "), host);
 
-  /* Look up the host using gethostbyname().  Note that we use
-     gethostbyname() rather than ngethostbyname(), because we already
-     know that the address is not numerical.  */
+  /* Look up the host using gethostbyname().  */
   hptr = gethostbyname (host);
   if (!hptr)
     {
