@@ -1,5 +1,10 @@
 2002-04-15  Ian Abbott  <abbotti@mev.co.uk>
 
+	Makefile.in: Updated several dependencies for object files to take
+	account of nested include files.
+
+2002-04-15  Ian Abbott  <abbotti@mev.co.uk>
+
 	Makefile.in: The target `connect$o' (connect.o) now depends on
 	`utils.h'
 
