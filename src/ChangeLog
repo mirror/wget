@@ -1,5 +1,22 @@
 2000-11-05  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* wget.h (DO_REALLOC_FROM_ALLOCA): Use braces to disambiguate
+	`if'.
+
+2000-11-05  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (construct): Insert unneeded initialization for the
+	compiler to shut up.
+
+	* config.h.in: Define _XOPEN_SOURCE to 500 to get the prototype
+	for strptime() (*duh*).  Define _SVID_SOURCE to get S_IFLNK which
+	otherwise gets lost when you define _XOPEN_SOURCE.
+
+	* utils.c (touch): Include the file name in the error message.
+	From Debian.
+
+2000-11-05  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* log.c (logvprintf): Use vsnprintf() in all cases.  If necessary,
 	resize the buffer to fit the formated message.  That way, messages
 	of arbitrary size may be printed.

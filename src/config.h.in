@@ -194,4 +194,20 @@ char *alloca ();
 /* Define to 1 if ANSI function prototypes are usable.  */
 #undef PROTOTYPES
 
+/* Debian says:
+
+   to get prototype for strptime, we need this  (taken from lftp)
+   #ifdef __linux__
+   #define __USE_XOPEN 1
+   #endif
+
+   But I don't think that's right.  The __USE_XOPEN thing is an
+   internal glibc2 thing that gets defined in features.h.  From
+   reading that file carefully, I think we need something like this
+   incantation.  Without testing it, I can only hope that this won't
+   screw things up on other, non-glibc2 systems.  */
+
+#define _XOPEN_SOURCE 500
+#define _SVID_SOURCE
+
 #endif /* CONFIG_H */

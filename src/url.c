@@ -1395,7 +1395,8 @@ construct (const char *url, const char *sub, int subsize, int no_proto)
 	     "/qux/xyzzy", our result should be
 	     "http://host/qux/xyzzy".  */
 	  int span;
-	  const char *slash, *start_insert;
+	  const char *slash;
+	  const char *start_insert = NULL; /* for gcc to shut up. */
 	  const char *pos = url;
 	  int seen_slash_slash = 0;
 	  /* We're looking for the first slash, but want to ignore

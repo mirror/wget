@@ -173,25 +173,27 @@ char *xstrdup PARAMS ((const char *));
    DO_REALLOC.  */
 #define DO_REALLOC_FROM_ALLOCA(basevar, sizevar, needed_size, allocap, type) do	\
 {										\
-  /* Avoid side-effectualness.  */				\
-  long do_realloc_needed_size = (needed_size);			\
-  long do_realloc_newsize = 0;					\
-  while ((sizevar) < (do_realloc_needed_size)) {		\
-    do_realloc_newsize = 2*(sizevar);				\
-    if (do_realloc_newsize < 16)				\
-      do_realloc_newsize = 16;					\
-    (sizevar) = do_realloc_newsize;				\
-  }								\
-  if (do_realloc_newsize)					\
-    if (!allocap)						\
-      XREALLOC_ARRAY (basevar, type, do_realloc_newsize);	\
-    else							\
-      {								\
-	void *drfa_new_basevar = xmalloc (do_realloc_newsize);	\
-	memcpy (drfa_new_basevar, basevar, sizevar);		\
-	(basevar) = drfa_new_basevar;				\
-	allocap = 0;						\
-      }								\
+  /* Avoid side-effectualness.  */						\
+  long do_realloc_needed_size = (needed_size);					\
+  long do_realloc_newsize = 0;							\
+  while ((sizevar) < (do_realloc_needed_size)) {				\
+    do_realloc_newsize = 2*(sizevar);						\
+    if (do_realloc_newsize < 16)						\
+      do_realloc_newsize = 16;							\
+    (sizevar) = do_realloc_newsize;						\
+  }										\
+  if (do_realloc_newsize)							\
+    {										\
+      if (!allocap)								\
+	XREALLOC_ARRAY (basevar, type, do_realloc_newsize);			\
+      else									\
+	{									\
+	  void *drfa_new_basevar = xmalloc (do_realloc_newsize);		\
+	  memcpy (drfa_new_basevar, basevar, sizevar);				\
+	  (basevar) = drfa_new_basevar;						\
+	  allocap = 0;								\
+	}									\
+    }										\
 } while (0)
 
 /* Free FOO if it is non-NULL.  */
