@@ -2,10 +2,9 @@
 
                           Mailing List Info
 
-
-Thanks to Karsten Thygesen, Wget has its own mailing list for
-discussion and announcements.  The list address is hosted at Sunsite
-Denmark, <wget@sunsite.auc.dk>.  To subscribe, send mail to
+Thanks to Karsten Thygesen from Sunsite Denmark, Wget has a mailing
+list for discussion and announcements.  The list address is
+<wget@sunsite.auc.dk>.  To subscribe, send mail to
 <wget-subscribe@sunsite.auc.dk>.
 
 The list is fairly low-volume -- one or two messages per day and with
@@ -13,7 +12,12 @@ sporadic periods of intensive activity.  If you are interested in
 using or hacking Wget, or wish to read the important announcements,
 you are very welcome to subscribe.
 
-The list is archived at <URL:http://fly.cc.fer.hr/archive/wget>.
+The list is archived at <URL:http://fly.srk.fer.hr/archive/wget>.
 
-As of this writing, the list allows posts from non-subscribers, and
-<bug-wget@gnu.org> is an alias for <wget@sunsite.auc.dk>.
+NOTE: The list allows posts from non-subscribers.  This is
+intentional; I hate having to subscribe to a list if I only want to
+ask a single question.  If you're not subscribed to the list and ask
+something, don't forget to request that the responses be Cc'ed to you.
+
+As of this writing, the address <bug-wget@gnu.org> is an alias for
+<wget@sunsite.auc.dk>.
