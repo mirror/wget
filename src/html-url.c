@@ -92,8 +92,13 @@ static struct {
   { "th",	TC_LINK }
 };
 
+
 /* Flags for specific url-attr pairs handled through TC_LINK: */
+
+/* This tag points to an external document not necessary for rendering this 
+   document (i.e. it's not an inlined image, stylesheet, etc.). */
 #define AF_EXTERNAL 1
+
 
 /* For tags handled by TC_LINK: attributes that contain URLs to
    download. */
@@ -392,8 +397,8 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 	    if (closure->dash_p_leaf_HTML
 		&& (url_tag_attr_map[i].flags & AF_EXTERNAL))
 	      /* If we're at a -p leaf node, we don't want to retrieve
-                 links to references we know are external, such as <a
-                 href=...>.  */
+                 links to references we know are external to this document,
+		 such as <a href=...>.  */
 	      continue;
 
 	    /* This find_attr() buried in a loop may seem inefficient
@@ -437,7 +442,7 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 		   and we're at a leaf node (relative to the -l
 		   max. depth) in the HTML document tree, the only
 		   <LINK> tag we'll follow is a <LINK REL=
-		   "stylesheet">, as it's necessary for displaying
+		   "stylesheet">, as it'll be necessary for displaying
 		   this document properly.  We won't follow other
 		   <LINK> tags, like <LINK REL="home">, for instance,
 		   as they refer to external documents.  */
