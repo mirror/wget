@@ -1,3 +1,8 @@
+2000-11-16  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* mswindows.h: Define snprintf and vsnprintf to _snprintf and
+	_vsnprintf respectively.
+
 2000-11-15  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* config.h.in: Do the _XOPEN_SOURCE and _SVID_SOURCE things only

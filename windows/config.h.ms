@@ -107,6 +107,12 @@ char *alloca ();
 /* Define if you have the strerror function. */
 #define HAVE_STRERROR 1
 
+/* Define if you have the snprintf function.  */
+#undef HAVE_SNPRINTF
+
+/* Define if you have the vsnprintf function.  */
+#undef HAVE_VSNPRINTF
+
 /* Define if you have the strstr function. */
 #define HAVE_STRSTR 1
 

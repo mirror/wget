@@ -31,6 +31,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define strcasecmp stricmp
 #define strncasecmp strnicmp
 
+/* The same for snprintf() and vsnprintf().  */
+#define snprintf _snprintf
+#define vsnprintf _vsnprintf
+
 /* No stat on Windows.  */
 #define lstat stat
 
