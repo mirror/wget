@@ -6,7 +6,7 @@ This file is part of GNU Wget.
 GNU Wget is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ (at your option) any later version.
 
 GNU Wget is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,21 +32,32 @@ so, delete this exception statement from your version.  */
 
 #include "host.h"		/* for definition of ip_address */
 
+/* Returned by connect_to_host when host name cannot be resolved.  */
+enum {
+  E_HOST = -100
+};
+
 /* bindport flags */
 #define BIND_ON_IPV4_ONLY LH_IPV4_ONLY
 #define BIND_ON_IPV6_ONLY LH_IPV6_ONLY
 
+#ifndef ENABLE_IPV6
+# ifndef HAVE_SOCKADDR_STORAGE
+#  define sockaddr_storage sockaddr_in
+# endif
+#endif /* ENABLE_IPV6 */
+
 /* Function declarations */
 
-int connect_to_one PARAMS ((ip_address *, unsigned short, int));
-int connect_to_many PARAMS ((struct address_list *, unsigned short, int));
-void set_connection_host_name PARAMS ((const char *));
+int connect_to_ip PARAMS ((const ip_address *, int, const char *));
+int connect_to_host PARAMS ((const char *, int));
+
+void sockaddr_get_data PARAMS ((const struct sockaddr *, ip_address *, int *));
 
 int test_socket_open PARAMS ((int));
 int select_fd PARAMS ((int, double, int));
-uerr_t bindport PARAMS ((const ip_address *, unsigned short *));
-uerr_t acceptport PARAMS ((int *));
-void closeport PARAMS ((int));
+uerr_t bindport PARAMS ((const ip_address *, int *, int *));
+uerr_t acceptport PARAMS ((int, int *));
 int conaddr PARAMS ((int, ip_address *));
 
 int iread PARAMS ((int, char *, int));

@@ -744,15 +744,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 #endif /* HAVE_SSL */
       )
     {
-      struct address_list *al = lookup_host (conn->host, 0);
-      if (!al)
+      sock = connect_to_host (conn->host, conn->port);
+      if (sock == E_HOST)
 	return HOSTERR;
-      set_connection_host_name (conn->host);
-      sock = connect_to_many (al, conn->port, 0);
-      set_connection_host_name (NULL);
-      address_list_release (al);
-
-      if (sock < 0)
+      else if (sock < 0)
 	return CONNECT_ERROR (errno);
 
 #ifdef HAVE_SSL

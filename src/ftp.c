@@ -143,7 +143,7 @@ getfamily (int fd)
  * It is merely a wrapper around ftp_epsv, ftp_lpsv and ftp_pasv.
  */
 static uerr_t
-ftp_do_pasv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
+ftp_do_pasv (struct rbuf *rbuf, ip_address *addr, int *port)
 {
   uerr_t err;
   int family;
@@ -183,7 +183,7 @@ ftp_do_pasv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
  * It is merely a wrapper around ftp_eprt, ftp_lprt and ftp_port.
  */
 static uerr_t
-ftp_do_port (struct rbuf *rbuf)
+ftp_do_port (struct rbuf *rbuf, int *local_sock)
 {
   uerr_t err;
   int family;
@@ -201,28 +201,42 @@ ftp_do_port (struct rbuf *rbuf)
     {
       if (!opt.server_response)
         logputs (LOG_VERBOSE, "==> EPRT ... ");
-      err = ftp_eprt (rbuf);
+      err = ftp_eprt (rbuf, local_sock);
 
       /* If EPRT is not supported try LPRT */
       if (err == FTPPORTERR)
         {
           if (!opt.server_response)
             logputs (LOG_VERBOSE, "==> LPRT ... ");
-          err = ftp_lprt (rbuf);
+          err = ftp_lprt (rbuf, local_sock);
         }
     }
   else 
     {
       if (!opt.server_response)
         logputs (LOG_VERBOSE, "==> PORT ... ");
-      err = ftp_port (rbuf);
+      err = ftp_port (rbuf, local_sock);
     }
 
   return err;
 }
 #else
-#define ftp_do_pasv ftp_pasv
-#define ftp_do_port ftp_port
+
+static uerr_t
+ftp_do_pasv (struct rbuf *rbuf, ip_address *addr, int *port)
+{
+  if (!opt.server_response)
+    logputs (LOG_VERBOSE, "==> PASV ... ");
+  return ftp_pasv (rbuf, addr, port);
+}
+
+static uerr_t
+ftp_do_port (struct rbuf *rbuf, int *local_sock)
+{
+  if (!opt.server_response)
+    logputs (LOG_VERBOSE, "==> PORT ... ");
+  return ftp_port (rbuf, local_sock);
+}
 #endif
 
 /* Retrieves a file with denoted parameters through opening an FTP
@@ -231,7 +245,7 @@ ftp_do_port (struct rbuf *rbuf)
 static uerr_t
 getftp (struct url *u, long *len, long restval, ccon *con)
 {
-  int csock, dtsock, res;
+  int csock, dtsock, local_sock, res;
   uerr_t err;
   FILE *fp;
   char *user, *passwd, *respline;
@@ -258,6 +272,7 @@ getftp (struct url *u, long *len, long restval, ccon *con)
   assert (user && passwd);
 
   dtsock = -1;
+  local_sock = -1;
   con->dltime = 0;
 
   if (!(cmd & DO_LOGIN))
@@ -265,8 +280,6 @@ getftp (struct url *u, long *len, long restval, ccon *con)
   else				/* cmd & DO_LOGIN */
     {
       char type_char;
-      struct address_list *al;
-
       char    *host = con->proxy ? con->proxy->host : u->host;
       int      port = con->proxy ? con->proxy->port : u->port;
       char *logname = user;
@@ -282,15 +295,10 @@ getftp (struct url *u, long *len, long restval, ccon *con)
 
       /* First: Establish the control connection.  */
 
-      al = lookup_host (host, 0);
-      if (!al)
+      csock = connect_to_host (host, port);
+      if (csock == E_HOST)
 	return HOSTERR;
-      set_connection_host_name (host);
-      csock = connect_to_many (al, port, 0);
-      set_connection_host_name (NULL);
-      address_list_release (al);
-
-      if (csock < 0)
+      else if (csock < 0)
 	return CONNECT_ERROR (errno);
 
       if (cmd & LEAVE_PENDING)
@@ -642,10 +650,8 @@ Error in server response, closing control connection.\n"));
     {
       if (opt.ftp_pasv > 0)
 	{
-  	  ip_address     passive_addr;
-  	  unsigned short passive_port;
-	  if (!opt.server_response)
-	    logputs (LOG_VERBOSE, "==> PASV ... ");
+  	  ip_address passive_addr;
+  	  int        passive_port;
 	  err = ftp_do_pasv (&con->rbuf, &passive_addr, &passive_port);
 	  /* FTPRERR, WRITEFAILED, FTPNOPASV, FTPINVPASV */
 	  switch (err)
@@ -686,7 +692,7 @@ Error in server response, closing control connection.\n"));
 	      DEBUGP (("trying to connect to %s port %d\n", 
 		      pretty_print_address (&passive_addr),
 		      passive_port));
-	      dtsock = connect_to_one (&passive_addr, passive_port, 1);
+	      dtsock = connect_to_ip (&passive_addr, passive_port, NULL);
 	      if (dtsock < 0)
 		{
 		  int save_errno = errno;
@@ -706,9 +712,7 @@ Error in server response, closing control connection.\n"));
 
       if (!pasv_mode_open)   /* Try to use a port command if PASV failed */
 	{
-	  if (!opt.server_response)
-	    logputs (LOG_VERBOSE, "==> PORT ... ");
-	  err = ftp_do_port (&con->rbuf);
+	  err = ftp_do_port (&con->rbuf, &local_sock);
 	  /* FTPRERR, WRITEFAILED, bindport (CONSOCKERR, CONPORTERR, BINDERR,
 	     LISTENERR), HOSTERR, FTPPORTERR */
 	  switch (err)
@@ -718,7 +722,8 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	      CLOSE (csock);
-	      closeport (dtsock);
+	      CLOSE (dtsock);
+	      CLOSE (local_sock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
@@ -727,7 +732,8 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_NOTQUIET,
 		       _("Write failed, closing control connection.\n"));
 	      CLOSE (csock);
-	      closeport (dtsock);
+	      CLOSE (dtsock);
+	      CLOSE (local_sock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
@@ -735,7 +741,8 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_VERBOSE, "\n");
 	      logprintf (LOG_NOTQUIET, "socket: %s\n", strerror (errno));
 	      CLOSE (csock);
-	      closeport (dtsock);
+	      CLOSE (dtsock);
+	      CLOSE (local_sock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
@@ -744,14 +751,16 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_VERBOSE, "\n");
 	      logprintf (LOG_NOTQUIET, _("Bind error (%s).\n"),
 			 strerror (errno));
-	      closeport (dtsock);
+	      CLOSE (dtsock);
+	      CLOSE (local_sock);
 	      return err;
 	      break;
 	    case FTPPORTERR:
 	      logputs (LOG_VERBOSE, "\n");
 	      logputs (LOG_NOTQUIET, _("Invalid PORT.\n"));
 	      CLOSE (csock);
-	      closeport (dtsock);
+	      CLOSE (dtsock);
+	      CLOSE (local_sock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
@@ -782,7 +791,8 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	  CLOSE (csock);
-	  closeport (dtsock);
+	  CLOSE (dtsock);
+	  CLOSE (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -791,7 +801,8 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET,
 		   _("Write failed, closing control connection.\n"));
 	  CLOSE (csock);
-	  closeport (dtsock);
+	  CLOSE (dtsock);
+	  CLOSE (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -805,7 +816,8 @@ Error in server response, closing control connection.\n"));
 			 _("\nREST failed; will not truncate `%s'.\n"),
 			 con->target);
 	      CLOSE (csock);
-	      closeport (dtsock);
+	      CLOSE (dtsock);
+	      CLOSE (local_sock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return CONTNOTSUPPORTED;
 	    }
@@ -832,7 +844,8 @@ Error in server response, closing control connection.\n"));
       if (opt.spider)
 	{
 	  CLOSE (csock);
-	  closeport (dtsock);
+	  CLOSE (dtsock);
+	  CLOSE (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return RETRFINISHED;
 	}
@@ -856,7 +869,8 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	  CLOSE (csock);
-	  closeport (dtsock);
+	  CLOSE (dtsock);
+	  CLOSE (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -865,14 +879,16 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET,
 		   _("Write failed, closing control connection.\n"));
 	  CLOSE (csock);
-	  closeport (dtsock);
+	  CLOSE (dtsock);
+	  CLOSE (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
 	case FTPNSFOD:
 	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET, _("No such file `%s'.\n\n"), u->file);
-	  closeport (dtsock);
+	  CLOSE (dtsock);
+	  CLOSE (local_sock);
 	  return err;
 	  break;
 	case FTPOK:
@@ -904,7 +920,8 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	  CLOSE (csock);
-	  closeport (dtsock);
+	  CLOSE (dtsock);
+	  CLOSE (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -913,7 +930,8 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_NOTQUIET,
 		   _("Write failed, closing control connection.\n"));
 	  CLOSE (csock);
-	  closeport (dtsock);
+	  CLOSE (dtsock);
+	  CLOSE (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -921,7 +939,8 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET, _("No such file or directory `%s'.\n\n"),
 		     ".");
-	  closeport (dtsock);
+	  CLOSE (dtsock);
+	  CLOSE (local_sock);
 	  return err;
 	  break;
 	case FTPOK:
@@ -953,7 +972,7 @@ Error in server response, closing control connection.\n"));
 			      to accept */
     {
       /* Open the data transmission socket by calling acceptport().  */
-      err = acceptport (&dtsock);
+      err = acceptport (local_sock, &dtsock);
       /* Possible errors: ACCEPTERR.  */
       if (err == ACCEPTERR)
 	{
@@ -977,7 +996,8 @@ Error in server response, closing control connection.\n"));
 	  logprintf (LOG_NOTQUIET, "%s: %s\n", con->target, strerror (errno));
 	  CLOSE (csock);
 	  rbuf_uninitialize (&con->rbuf);
-	  closeport (dtsock);
+	  CLOSE (dtsock);
+	  CLOSE (local_sock);
 	  return FOPENERR;
 	}
     }
@@ -1024,7 +1044,8 @@ Error in server response, closing control connection.\n"));
   tms = time_str (NULL);
   tmrate = retr_rate (*len - restval, con->dltime, 0);
   /* Close data connection socket.  */
-  closeport (dtsock);
+  CLOSE (dtsock);
+  CLOSE (local_sock);
   /* Close the local file.  */
   {
     /* Close or flush the file.  We have to be careful to check for

@@ -1,3 +1,36 @@
+2003-10-31  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* sysdep.h (CLOSE): Don't call close on file descriptors less than
+	0, i.e. on uncreated sockets.
+
+	* connect.c (resolve_bind_address): Work on struct sockaddr
+	directly.
+	(connect_to_host): Replacement for connect_to_many.  Resolve HOST
+	and connect to any of its addresses.  If we can't connect and the
+	host name lookup was cached, try to resolve it again.  This should
+	fix problems with hosts behind dynamic DNS.  Updated all callers.
+	(connect_to_ip): Replacement for connect_to_one.  Removed SILENT;
+	added the argument PRINT instead.  Updated all callers.
+	(set_connection_host_name): Removed.
+
+	* host.c (address_list_address_at): New function instead of
+	address_list_copy_one. It returns a pointer to ip_address *, so
+	it's not necessary to copy the data.
+	(address_list_cached_p): New function.
+	(forget_host_lookup): Ditto.
+
+	* connect.c: Got rid of the MSOCK global variable.  Made bindport
+	return the local socket it creates.  Added a new argument to
+	acceptport, the socket to call accept on.  Updated callers.
+	(closeport): Removed.
+
+	* connect.c: Moved the sockaddr code from host.c to this file,
+	because most of that stuff is used for connecting, and has nothing
+	to do with host names anyway.
+	(sockaddr_set_data, sockaddr_get_data): New functions, replace the
+	old sockaddr_set_address, sockaddr_set_port, sockaddr_get_address,
+	and sockaddr_get_port.
+
 2003-10-30  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* sysdep.h: Use `S >= 8' rather than `S == 8' when looking for

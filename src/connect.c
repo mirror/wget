@@ -6,7 +6,7 @@ This file is part of GNU Wget.
 GNU Wget is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ (at your option) any later version.
 
 GNU Wget is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -65,48 +65,143 @@ so, delete this exception statement from your version.  */
 extern int errno;
 #endif
 
-/* Variables shared by bindport and acceptport: */
-static int msock = -1;
-/*static struct sockaddr *addr;*/
-
-static int
-resolve_bind_address (int flags, ip_address *addr)
+
+/**
+  * sockaddr_set_data
+  *
+  * This function takes a sockaddr struct and fills in the protocol
+  * type, the port number and the address.  If ENABLE_IPV6 is defined,
+  * SA should really point to struct sockaddr_storage; otherwise, it
+  * should point to struct sockaddr_in.
+  *
+  * Input:
+  * struct sockaddr*	The space to be filled
+  * const ip_address	The IP address
+  * int			The port
+  *
+  * Return:
+  * -			Only modifies 1st parameter.
+  */
+static void
+sockaddr_set_data (struct sockaddr *sa, const ip_address *addr, int port)
 {
-  struct address_list *al = NULL;
-  int resolved = 0;
-
-  if (opt.bind_address != NULL)
+  if (addr->type == IPV4_ADDRESS)
     {
-      al = lookup_host (opt.bind_address, flags | LH_SILENT | LH_PASSIVE);
-      if (al == NULL)
-        {
-          logprintf (LOG_NOTQUIET,
-		     _("Unable to convert `%s' to a bind address.  Reverting to ANY.\n"),
-		     opt.bind_address);
-	}
-      else 
-        resolved = 1;
+      struct sockaddr_in *sin = (struct sockaddr_in *)sa;
+      sin->sin_family = AF_INET;
+      sin->sin_port = htons (port);
+      if (addr == NULL)
+	sin->sin_addr.s_addr = INADDR_ANY;
+      else
+	sin->sin_addr = ADDRESS_IPV4_IN_ADDR (addr);
     }
+#ifdef ENABLE_IPV6
+  else if (addr->type == IPV6_ADDRESS) 
+    {
+      struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
+      sin6->sin6_family = AF_INET6;
+      sin6->sin6_port = htons (port);
+      /* #### How can ADDR be NULL?  We have dereferenced it above by
+	 accessing addr->type!  */
+      if (addr == NULL)
+	{
+	  sin6->sin6_addr = in6addr_any;
+	  /* #### Should we set the scope_id here? */
+	}
+      else
+	{
+	  sin6->sin6_addr = ADDRESS_IPV6_IN6_ADDR (addr);
+#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+	  sin6->sin6_scope_id = ADDRESS_IPV6_SCOPE (addr);
+#endif
+	}
+    }
+#endif /* ENABLE_IPV6 */
+  else
+    abort ();
+}
 
+/* Get the data of SA, specifically the IP address and the port.  If
+   you're not interested in one or the other information, pass NULL as
+   the pointer.  */
+
+void
+sockaddr_get_data (const struct sockaddr *sa, ip_address *ip, int *port)
+{
+  if (sa->sa_family == AF_INET)
+    {
+      struct sockaddr_in *sin = (struct sockaddr_in *)sa;
+      if (ip)
+	{
+	  ip->type = IPV4_ADDRESS;
+	  ADDRESS_IPV4_IN_ADDR (ip) = sin->sin_addr;
+	}
+      if (port)
+	*port = ntohs (sin->sin_port);
+    }
+#ifdef ENABLE_IPV6
+  else if (sa->sa_family == AF_INET6) 
+    {
+      struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
+      if (ip)
+	{
+	  ip->type = IPV6_ADDRESS;
+	  ADDRESS_IPV6_IN6_ADDR (ip) = sin6->sin6_addr;
+#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+	  ADDRESS_IPV6_SCOPE (ip) = sin6->sin6_scope_id;
+#endif
+	}
+      if (port)
+	*port = ntohs (sin6->sin6_port);
+    }
+#endif  
+  else
+    abort ();
+}
+
+/* Return the size of the sockaddr structure depending on its
+   family.  */
+
+static socklen_t
+sockaddr_size (const struct sockaddr *sa)
+{
+  switch (sa->sa_family)
+    {
+    case AF_INET:
+      return sizeof (struct sockaddr_in);
+#ifdef ENABLE_IPV6
+    case AF_INET6:
+      return sizeof (struct sockaddr_in6);
+#endif
+    default:
+      abort ();
+      return 0;			/* so the compiler shuts up. */
+    }
+}
+
+static int
+resolve_bind_address (const char *host, struct sockaddr *sa, int flags)
+{
+  struct address_list *al;
+
+  /* #### Shouldn't we do this only once?  opt.bind_address won't
+     change during a Wget run!  */
+
+  al = lookup_host (host, flags | LH_SILENT | LH_PASSIVE);
   if (al == NULL)
     {
-      /* #### Is there really a need for this?  Shouldn't we simply
-	 return 0 and have the caller use sockaddr_set_address to
-	 specify INADDR_ANY/in6addr_any?  */
-      const char *unspecified_address = "0.0.0.0";
-#ifdef ENABLE_IPV6
-      if (flags & BIND_ON_IPV6_ONLY)
-	unspecified_address = "::";
-#endif
-      al = lookup_host (unspecified_address, LH_SILENT | LH_PASSIVE);
+      logprintf (LOG_NOTQUIET,
+		 _("Unable to convert `%s' to a bind address.  Reverting to ANY.\n"),
+		 opt.bind_address);
+      return 0;
     }
 
-  assert (al != NULL);
-
-  address_list_copy_one (al, 0, addr);
+  /* Pick the first address in the list and use it as bind address.
+     Perhaps we should try multiple addresses, but I don't think
+     that's necessary in practice.  */
+  sockaddr_set_data (sa, address_list_address_at (al, 0), 0);
   address_list_release (al);
-
-  return resolved;
+  return 1;
 }
 
 struct cwt_context {
@@ -146,43 +241,29 @@ connect_with_timeout (int fd, const struct sockaddr *addr, socklen_t addrlen,
   return ctx.result;
 }
 
-/* A kludge, but still better than passing the host name all the way
-   to connect_to_one.  */
-static const char *connection_host_name;
+/* Connect to a remote endpoint whose IP address is known.  */
 
-void
-set_connection_host_name (const char *host)
-{
-  if (host)
-    assert (connection_host_name == NULL);
-  else
-    assert (connection_host_name != NULL);
-
-  connection_host_name = host;
-}
-
-/* Connect to a remote host whose address has been resolved. */
 int
-connect_to_one (ip_address *addr, unsigned short port, int silent)
+connect_to_ip (const ip_address *ip, int port, const char *print)
 {
   struct sockaddr_storage ss;
   struct sockaddr *sa = (struct sockaddr *)&ss;
   int sock, save_errno;
 
-  /* Set port and protocol */
-  sockaddr_set_address (sa, port, addr);
-
-  if (!silent)
+  /* If PRINT is non-NULL, print the "Connecting to..." line, with
+     PRINT being the host name we're connecting to.  */
+  if (print)
     {
-      const char *pretty_addr = pretty_print_address (addr);
-      if (connection_host_name
-	  && 0 != strcmp (connection_host_name, pretty_addr))
-	logprintf (LOG_VERBOSE, _("Connecting to %s[%s]:%hu... "),
-		   connection_host_name, pretty_addr, port);
+      const char *txt_addr = pretty_print_address (ip);
+      if (print && 0 != strcmp (print, txt_addr))
+	logprintf (LOG_VERBOSE,
+		   _("Connecting to %s{%s}:%d... "), print, txt_addr, port);
       else
-	logprintf (LOG_VERBOSE, _("Connecting to %s:%hu... "),
-		   pretty_addr, port);
+	logprintf (LOG_VERBOSE, _("Connecting to %s:%d... "), txt_addr, port);
     }
+
+  /* Store the sockaddr info to SA.  */
+  sockaddr_set_data (sa, ip, port);
 
   /* Create the socket of the family appropriate for the address.  */
   sock = socket (sa->sa_family, SOCK_STREAM, 0);
@@ -190,32 +271,31 @@ connect_to_one (ip_address *addr, unsigned short port, int silent)
     goto out;
 
   /* For very small rate limits, set the buffer size (and hence,
-     hopefully, the size of the kernel window) to the size of the
-     limit.  That way we don't sleep for more than 1s between network
-     reads.  */
+     hopefully, the kernel's TCP window size) to the per-second limit.
+     That way we should never have to sleep for more than 1s between
+     network reads.  */
   if (opt.limit_rate && opt.limit_rate < 8192)
     {
       int bufsize = opt.limit_rate;
       if (bufsize < 512)
-	bufsize = 512;
+	bufsize = 512;		/* avoid pathologically small values */
 #ifdef SO_RCVBUF
       setsockopt (sock, SOL_SOCKET, SO_RCVBUF,
-		  (char *)&bufsize, sizeof (bufsize));
+		  (void *)&bufsize, (socklen_t)sizeof (bufsize));
 #endif
-      /* When we add opt.limit_rate support for writing, as with
-	 `--post-file', also set SO_SNDBUF here.  */
+      /* When we add limit_rate support for writing, which is useful
+	 for POST, we should also set SO_SNDBUF here.  */
     }
 
   if (opt.bind_address)
     {
-      /* Bind the client side to the requested address. */
-      ip_address bind_address;
-      if (resolve_bind_address (0, &bind_address))
-        {
-          struct sockaddr_storage bss;
-          struct sockaddr *bsa = (struct sockaddr *)&bss;
-          sockaddr_set_address (bsa, 0, &bind_address);
-          if (bind (sock, bsa, sockaddr_len (bsa)))
+      /* Bind the client side of the socket to the requested
+	 address.  */
+      struct sockaddr_storage bind_ss;
+      struct sockaddr *bind_sa = (struct sockaddr *)&bind_ss;
+      if (resolve_bind_address (opt.bind_address, bind_sa, 0))
+	{
+          if (bind (sock, bind_sa, sockaddr_size (bind_sa)) < 0)
 	    {
 	      CLOSE (sock);
 	      sock = -1;
@@ -224,8 +304,8 @@ connect_to_one (ip_address *addr, unsigned short port, int silent)
 	}
     }
 
-  /* Connect the socket to the remote host.  */
-  if (connect_with_timeout (sock, sa, sockaddr_len (sa),
+  /* Connect the socket to the remote endpoint.  */
+  if (connect_with_timeout (sock, sa, sockaddr_size (sa),
 			    opt.connect_timeout) < 0)
     {
       CLOSE (sock);
@@ -237,14 +317,14 @@ connect_to_one (ip_address *addr, unsigned short port, int silent)
   if (sock >= 0)
     {
       /* Success. */
-      if (!silent)
+      if (print)
 	logprintf (LOG_VERBOSE, _("connected.\n"));
       DEBUGP (("Created socket %d.\n", sock));
     }
   else
     {
       save_errno = errno;
-      if (!silent)
+      if (print)
 	logprintf (LOG_VERBOSE, "failed: %s.\n", strerror (errno));
       errno = save_errno;
     }
@@ -252,31 +332,47 @@ connect_to_one (ip_address *addr, unsigned short port, int silent)
   return sock;
 }
 
-/* Connect to a remote host whose address has been resolved. */
+/* Connect to a remote endpoint specified by host name.  */
+
 int
-connect_to_many (struct address_list *al, unsigned short port, int silent)
+connect_to_host (const char *host, int port)
 {
   int i, start, end;
+  struct address_list *al;
+  int sock = -1;
+
+ again:
+  al = lookup_host (host, 0);
+  if (!al)
+    return E_HOST;
 
   address_list_get_bounds (al, &start, &end);
   for (i = start; i < end; i++)
     {
-      ip_address addr;
-      int sock;
-      address_list_copy_one (al, i, &addr);
-
-      sock = connect_to_one (&addr, port, silent);
+      const ip_address *ip = address_list_address_at (al, i);
+      sock = connect_to_ip (ip, port, host);
       if (sock >= 0)
 	/* Success. */
-	return sock;
+	break;
 
       address_list_set_faulty (al, i);
 
       /* The attempt to connect has failed.  Continue with the loop
 	 and try next address. */
     }
+  address_list_release (al);
 
-  return -1;
+  if (sock < 0 && address_list_cached_p (al))
+    {
+      /* We were unable to connect to any address in a list we've
+	 obtained from cache.  There is a possibility that the host is
+	 under dynamic DNS and has changed its address.  Resolve it
+	 again.  */
+      forget_host_lookup (host);
+      goto again;
+    }
+
+  return sock;
 }
 
 int
@@ -310,37 +406,36 @@ test_socket_open (int sock)
 #endif
 }
 
-/* Bind the local port PORT.  This does all the necessary work, which
-   is creating a socket, setting SO_REUSEADDR option on it, then
-   calling bind() and listen().  If *PORT is 0, a random port is
-   chosen by the system, and its value is stored to *PORT.  The
-   internal variable MPORT is set to the value of the ensuing master
-   socket.  Call acceptport() to block for and accept a connection.  */
+/* Create a socket and bind it to PORT locally.  Calling accept() on
+   such a socket waits for and accepts incoming TCP connections.  The
+   resulting socket is stored to LOCAL_SOCK.  */
 
 uerr_t
-bindport (const ip_address *bind_address, unsigned short *port)
+bindport (const ip_address *bind_address, int *port, int *local_sock)
 {
+  int msock;
   int family = AF_INET;
   int optval;
   struct sockaddr_storage ss;
   struct sockaddr *sa = (struct sockaddr *)&ss;
   memset (&ss, 0, sizeof (ss));
 
-  msock = -1;
-
 #ifdef ENABLE_IPV6
   if (bind_address->type == IPV6_ADDRESS) 
     family = AF_INET6;
 #endif
-  
+
   if ((msock = socket (family, SOCK_STREAM, 0)) < 0)
     return CONSOCKERR;
 
 #ifdef SO_REUSEADDR
   optval = 1;
   if (setsockopt (msock, SOL_SOCKET, SO_REUSEADDR,
-		  (char *)&optval, sizeof (optval)) < 0)
-    return CONSOCKERR;
+		  (void *)&optval, (socklen_t)sizeof (optval)) < 0)
+    {
+      CLOSE (msock);
+      return CONSOCKERR;
+    }
 #endif
 
 #ifdef ENABLE_IPV6
@@ -350,38 +445,36 @@ bindport (const ip_address *bind_address, unsigned short *port)
       optval = 1;
       /* if setsockopt fails, go on anyway */
       setsockopt (msock, IPPROTO_IPV6, IPV6_V6ONLY,
-                  (char *)&optval, sizeof (optval));
+                  (void *)&optval, (socklen_t)sizeof (optval));
     }
 # endif
 #endif
-  
-  sockaddr_set_address (sa, htons (*port), bind_address);
-  if (bind (msock, sa, sockaddr_len (sa)) < 0)
+
+  sockaddr_set_data (sa, bind_address, *port);
+  if (bind (msock, sa, sockaddr_size (sa)) < 0)
     {
       CLOSE (msock);
-      msock = -1;
       return BINDERR;
     }
-  DEBUGP (("Master socket fd %d bound.\n", msock));
+  DEBUGP (("Local socket fd %d bound.\n", msock));
   if (!*port)
     {
-      socklen_t sa_len = sockaddr_len (sa);
+      socklen_t sa_len = sockaddr_size (sa);
       if (getsockname (msock, sa, &sa_len) < 0)
 	{
 	  CLOSE (msock);
-	  msock = -1;
 	  return CONPORTERR;
 	}
-      *port = sockaddr_get_port (sa);
+      sockaddr_get_data (sa, NULL, port);
       DEBUGP (("binding to address %s using port %i.\n", 
 	       pretty_print_address (bind_address), *port));
     }
   if (listen (msock, 1) < 0)
     {
       CLOSE (msock);
-      msock = -1;
       return LISTENERR;
     }
+  *local_sock = msock;
   return BINDOK;
 }
 
@@ -420,39 +513,26 @@ select_fd (int fd, double maxtime, int writep)
 }
 #endif /* HAVE_SELECT */
 
-/* Call accept() on MSOCK and store the result to *SOCK.  This assumes
-   that bindport() has been used to initialize MSOCK to a correct
-   value.  It blocks the caller until a connection is established.  If
-   no connection is established for OPT.CONNECT_TIMEOUT seconds, the
+/* Accept a connection on LOCAL_SOCK, and store the new socket to
+   *SOCK.  It blocks the caller until a connection is established.  If
+   no connection is established for opt.connect_timeout seconds, the
    function exits with an error status.  */
+
 uerr_t
-acceptport (int *sock)
+acceptport (int local_sock, int *sock)
 {
   struct sockaddr_storage ss;
   struct sockaddr *sa = (struct sockaddr *)&ss;
   socklen_t addrlen = sizeof (ss);
 
 #ifdef HAVE_SELECT
-  if (select_fd (msock, opt.connect_timeout, 0) <= 0)
+  if (select_fd (local_sock, opt.connect_timeout, 0) <= 0)
     return ACCEPTERR;
 #endif
-  if ((*sock = accept (msock, sa, &addrlen)) < 0)
+  if ((*sock = accept (local_sock, sa, &addrlen)) < 0)
     return ACCEPTERR;
   DEBUGP (("Created socket fd %d.\n", *sock));
   return ACCEPTOK;
-}
-
-/* Close SOCK, as well as the most recently remembered MSOCK, created
-   via bindport().  If SOCK is -1, close MSOCK only.  */
-void
-closeport (int sock)
-{
-  /*shutdown (sock, 2);*/
-  if (sock != -1)
-    CLOSE (sock);
-  if (msock != -1)
-    CLOSE (msock);
-  msock = -1;
 }
 
 /* Return the local IP address associated with the connection on FD.  */

@@ -48,13 +48,13 @@ enum stype
   
 uerr_t ftp_response PARAMS ((struct rbuf *, char **));
 uerr_t ftp_login PARAMS ((struct rbuf *, const char *, const char *));
-uerr_t ftp_port PARAMS ((struct rbuf *));
-uerr_t ftp_pasv PARAMS ((struct rbuf *, ip_address *, unsigned short *));
+uerr_t ftp_port PARAMS ((struct rbuf *, int *));
+uerr_t ftp_pasv PARAMS ((struct rbuf *, ip_address *, int *));
 #ifdef ENABLE_IPV6
-uerr_t ftp_lprt PARAMS ((struct rbuf *));
-uerr_t ftp_lpsv PARAMS ((struct rbuf *, ip_address *, unsigned short *));
-uerr_t ftp_eprt PARAMS ((struct rbuf *));
-uerr_t ftp_epsv PARAMS ((struct rbuf *, ip_address *, unsigned short *));
+uerr_t ftp_lprt PARAMS ((struct rbuf *, int *));
+uerr_t ftp_lpsv PARAMS ((struct rbuf *, ip_address *, int *));
+uerr_t ftp_eprt PARAMS ((struct rbuf *, int *));
+uerr_t ftp_epsv PARAMS ((struct rbuf *, ip_address *, int *));
 #endif
 uerr_t ftp_type PARAMS ((struct rbuf *, int));
 uerr_t ftp_cwd PARAMS ((struct rbuf *, const char *));

@@ -111,8 +111,8 @@ so, delete this exception statement from your version.  */
 #ifdef __BEOS__
 # undef READ
 # undef WRITE
-# define READ(fd, buf, cnt) recv((fd), (buf), (cnt), 0)
-# define WRITE(fd, buf, cnt) send((fd), (buf), (cnt), 0)
+# define READ(fd, buf, cnt) recv ((fd), (buf), (cnt), 0)
+# define WRITE(fd, buf, cnt) send ((fd), (buf), (cnt), 0)
 #endif
 
 /* mswindows.h defines these.  */
@@ -126,10 +126,13 @@ so, delete this exception statement from your version.  */
 # define REALCLOSE(x) close (x)
 #endif
 
-#define CLOSE(x)				\
-do {						\
-  REALCLOSE (x);				\
-  DEBUGP (("Closing fd %d\n", x));		\
+#define CLOSE(x) do {				\
+  int C_sock = (x);				\
+  if (C_sock >= 0)				\
+    {						\
+      REALCLOSE (C_sock);			\
+      DEBUGP (("Closing fd %d\n", C_sock));	\
+    }						\
 } while (0)
 
 /* Define a large integral type useful for storing large sizes that

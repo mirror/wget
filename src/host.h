@@ -84,12 +84,6 @@ typedef struct {
 #define ADDRESS_IPV4_IN_ADDR(x) ((x)->u.ipv4.addr)
 #define ADDRESS_IPV4_DATA(x) ((void *)&(x)->u.ipv4.addr.s_addr)
 
-#ifndef ENABLE_IPV6
-# ifndef HAVE_SOCKADDR_STORAGE
-#  define sockaddr_storage sockaddr_in
-# endif
-#endif /* ENABLE_IPV6 */
-
 /* Flags for lookup_host */
 #define LH_SILENT    0x0001
 #define LH_PASSIVE   0x0002
@@ -100,10 +94,13 @@ typedef struct {
 struct address_list *lookup_host PARAMS ((const char *, int));
 char *herrmsg PARAMS ((int));
 
+void forget_host_lookup PARAMS ((const char *));
+
 void address_list_get_bounds PARAMS ((const struct address_list *,
 				      int *, int *));
-void address_list_copy_one PARAMS ((const struct address_list *, int,
-				    ip_address *));
+int address_list_cached_p PARAMS ((const struct address_list *));
+const ip_address *address_list_address_at PARAMS ((const struct address_list *,
+						   int));
 int address_list_match_all PARAMS ((const struct address_list *,
 				    const struct address_list *));
 void address_list_set_faulty PARAMS ((struct address_list *, int));
@@ -113,13 +110,6 @@ const char *pretty_print_address PARAMS ((const ip_address *));
 
 int accept_domain PARAMS ((struct url *));
 int sufmatch PARAMS ((const char **, const char *));
-
-void sockaddr_set_address PARAMS ((struct sockaddr *, unsigned short,
-				   const ip_address *));
-void sockaddr_get_address PARAMS ((const struct sockaddr *, unsigned short *,
-				   ip_address *));
-unsigned short sockaddr_get_port PARAMS ((const struct sockaddr *));
-socklen_t sockaddr_len PARAMS ((const struct sockaddr *sa));
 
 void host_cleanup PARAMS ((void));
 

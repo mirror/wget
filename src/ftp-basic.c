@@ -254,7 +254,7 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
 }
 
 static void
-ip_address_to_port_repr (const ip_address *addr, unsigned short port, char *buf, 
+ip_address_to_port_repr (const ip_address *addr, int port, char *buf, 
                          size_t buflen)
 {
   unsigned char *ptr;
@@ -267,7 +267,7 @@ ip_address_to_port_repr (const ip_address *addr, unsigned short port, char *buf,
 
   ptr = ADDRESS_IPV4_DATA (addr);
   snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d", ptr[0], ptr[1],
-            ptr[2], ptr[3], (unsigned) (port & 0xff00) >> 8, port & 0xff);
+            ptr[2], ptr[3], (port & 0xff00) >> 8, port & 0xff);
   buf[buflen - 1] = '\0';
 }
 
@@ -275,13 +275,13 @@ ip_address_to_port_repr (const ip_address *addr, unsigned short port, char *buf,
    server.  Use acceptport after RETR, to get the socket of data
    connection.  */
 uerr_t
-ftp_port (struct rbuf *rbuf)
+ftp_port (struct rbuf *rbuf, int *local_sock)
 {
   uerr_t err;
   char *request, *respline;
   ip_address addr;
   int nwritten;
-  unsigned short port;
+  int port;
   /* Must contain the argument of PORT (of the form a,b,c,d,e,f). */
   char bytes[6 * 4 + 1];
 
@@ -298,7 +298,7 @@ ftp_port (struct rbuf *rbuf)
   port = 0;
 
   /* Bind the port.  */
-  err = bindport (&addr, &port);
+  err = bindport (&addr, &port, local_sock);
   if (err != BINDOK)
     return err;
 
@@ -311,7 +311,7 @@ ftp_port (struct rbuf *rbuf)
   if (nwritten < 0)
     {
       xfree (request);
-      closeport (-1);
+      CLOSE (*local_sock);
       return WRITEFAILED;
     }
   xfree (request);
@@ -321,13 +321,13 @@ ftp_port (struct rbuf *rbuf)
   if (err != FTPOK)
     {
       xfree (respline);
-      closeport (-1);
+      CLOSE (*local_sock);
       return err;
     }
   if (*respline != '2')
     {
       xfree (respline);
-      closeport (-1);
+      CLOSE (*local_sock);
       return FTPPORTERR;
     }
   xfree (respline);
@@ -336,7 +336,7 @@ ftp_port (struct rbuf *rbuf)
 
 #ifdef ENABLE_IPV6
 static void
-ip_address_to_lprt_repr (const ip_address *addr, unsigned short port, char *buf, 
+ip_address_to_lprt_repr (const ip_address *addr, int port, char *buf, 
                          size_t buflen)
 {
   unsigned char *ptr;
@@ -354,7 +354,7 @@ ip_address_to_lprt_repr (const ip_address *addr, unsigned short port, char *buf,
 	ptr = ADDRESS_IPV4_DATA (addr);
         snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d,%d,%d,%d", 4, 4, 
                   ptr[0], ptr[1], ptr[2], ptr[3], 2,
-                  (unsigned) (port & 0xff00) >> 8, port & 0xff);
+                  (port & 0xff00) >> 8, port & 0xff);
         buf[buflen - 1] = '\0';
         break;
       case IPV6_ADDRESS: 
@@ -362,7 +362,7 @@ ip_address_to_lprt_repr (const ip_address *addr, unsigned short port, char *buf,
 	snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
 	          6, 16, ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7], 
 		  ptr[8], ptr[9], ptr[10], ptr[11], ptr[12], ptr[13], ptr[14], ptr[15], 2,
-		  (unsigned) (port & 0xff00) >> 8, port & 0xff);
+		  (port & 0xff00) >> 8, port & 0xff);
 	buf[buflen - 1] = '\0';
 	break;
     }
@@ -372,13 +372,13 @@ ip_address_to_lprt_repr (const ip_address *addr, unsigned short port, char *buf,
    server.  Use acceptport after RETR, to get the socket of data
    connection.  */
 uerr_t
-ftp_lprt (struct rbuf *rbuf)
+ftp_lprt (struct rbuf *rbuf, int *local_sock)
 {
   uerr_t err;
   char *request, *respline;
   ip_address addr;
   int nwritten;
-  unsigned short port;
+  int port;
   /* Must contain the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
   char bytes[21 * 4 + 1];
 
@@ -395,7 +395,7 @@ ftp_lprt (struct rbuf *rbuf)
   port = 0;
 
   /* Bind the port.  */
-  err = bindport (&addr, &port);
+  err = bindport (&addr, &port, local_sock);
   if (err != BINDOK)
     return err;
 
@@ -408,7 +408,7 @@ ftp_lprt (struct rbuf *rbuf)
   if (nwritten < 0)
     {
       xfree (request);
-      closeport (-1);
+      CLOSE (*local_sock);
       return WRITEFAILED;
     }
   xfree (request);
@@ -417,13 +417,13 @@ ftp_lprt (struct rbuf *rbuf)
   if (err != FTPOK)
     {
       xfree (respline);
-      closeport (-1);
+      CLOSE (*local_sock);
       return err;
     }
   if (*respline != '2')
     {
       xfree (respline);
-      closeport (-1);
+      CLOSE (*local_sock);
       return FTPPORTERR;
     }
   xfree (respline);
@@ -431,7 +431,7 @@ ftp_lprt (struct rbuf *rbuf)
 }
 
 static void
-ip_address_to_eprt_repr (const ip_address *addr, unsigned short port, char *buf, 
+ip_address_to_eprt_repr (const ip_address *addr, int port, char *buf, 
                          size_t buflen)
 {
   int afnum;
@@ -454,13 +454,13 @@ ip_address_to_eprt_repr (const ip_address *addr, unsigned short port, char *buf,
    server.  Use acceptport after RETR, to get the socket of data
    connection.  */
 uerr_t
-ftp_eprt (struct rbuf *rbuf)
+ftp_eprt (struct rbuf *rbuf, int *local_sock)
 {
   uerr_t err;
   char *request, *respline;
   ip_address addr;
   int nwritten;
-  unsigned short port;
+  int port;
   /* Must contain the argument of EPRT (of the form |af|addr|port|). 
    * 4 chars for the | separators, ENABLE_IPV6_ADDRSTRLEN chars for addr  
    * 1 char for af (1-2) and 5 chars for port (0-65535) */
@@ -479,7 +479,7 @@ ftp_eprt (struct rbuf *rbuf)
   port = 0;
 
   /* Bind the port.  */
-  err = bindport (&addr, &port);
+  err = bindport (&addr, &port, local_sock);
   if (err != BINDOK)
     return err;
 
@@ -492,7 +492,7 @@ ftp_eprt (struct rbuf *rbuf)
   if (nwritten < 0)
     {
       xfree (request);
-      closeport (-1);
+      CLOSE (*local_sock);
       return WRITEFAILED;
     }
   xfree (request);
@@ -501,13 +501,13 @@ ftp_eprt (struct rbuf *rbuf)
   if (err != FTPOK)
     {
       xfree (respline);
-      closeport (-1);
+      CLOSE (*local_sock);
       return err;
     }
   if (*respline != '2')
     {
       xfree (respline);
-      closeport (-1);
+      CLOSE (*local_sock);
       return FTPPORTERR;
     }
   xfree (respline);
@@ -519,7 +519,7 @@ ftp_eprt (struct rbuf *rbuf)
    transfer.  Reads the response from server and parses it.  Reads the
    host and port addresses and returns them.  */
 uerr_t
-ftp_pasv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
+ftp_pasv (struct rbuf *rbuf, ip_address *addr, int *port)
 {
   char *request, *respline, *s;
   int nwritten, i;
@@ -588,7 +588,7 @@ ftp_pasv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
    transfer.  Reads the response from server and parses it.  Reads the
    host and port addresses and returns them.  */
 uerr_t
-ftp_lpsv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
+ftp_lpsv (struct rbuf *rbuf, ip_address *addr, int *port)
 {
   char *request, *respline, *s;
   int nwritten, i, af, addrlen, portlen;
@@ -754,19 +754,19 @@ ftp_lpsv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
    transfer.  Reads the response from server and parses it.  Reads the
    host and port addresses and returns them.  */
 uerr_t
-ftp_epsv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
+ftp_epsv (struct rbuf *rbuf, ip_address *ip, int *port)
 {
   char *request, *respline, *start, delim, *s;
   int nwritten, i;
   uerr_t err;
-  unsigned short tport;
+  int tport;
   socklen_t addrlen;
   struct sockaddr_storage ss;
   struct sockaddr *sa = (struct sockaddr *)&ss;
 
   assert (rbuf != NULL);
   assert (rbuf_initialized_p(rbuf));
-  assert (addr != NULL);
+  assert (ip != NULL);
   assert (port != NULL);
 
   addrlen = sizeof (ss);
@@ -776,7 +776,7 @@ ftp_epsv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
 
   assert (sa->sa_family == AF_INET || sa->sa_family == AF_INET6);
 
-  sockaddr_get_address (sa, NULL, addr);
+  sockaddr_get_data (sa, ip, NULL);
 
   /* Form the request.  */
   /* EPSV 1 means that we ask for IPv4 and EPSV 2 means that we ask for IPv6. */
