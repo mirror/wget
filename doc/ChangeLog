@@ -1,3 +1,9 @@
+2003-11-14  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* fdl.texi: New file.
+
+	* wget.texi: Upgrade to GNU Free Documentation License 1.2.
+
 2003-11-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi: Remove next/previous/up node links.  Makeinfo doesn't
