@@ -33,7 +33,6 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <winsock.h>
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
@@ -203,7 +202,7 @@ ws_percenttitle (double percent)
 {
   if (num_urls == 1 && title_buf && curr_url && fabs(percent) <= 100.0)
     {
-      sprintf (title_buf, "Wget [%.1f%%] %s", percent, curr_url);
+      sprintf (title_buf, "Wget [%.0f%%] %s", percent, curr_url);
       SetConsoleTitle (title_buf);
     }
 }
@@ -244,7 +243,7 @@ ws_help (const char *name)
       if (stat (buf, &sbuf) == 0) 
 	{
           printf (_("Starting WinHelp %s\n"), buf);
-          WinHelp (NULL, buf, HELP_INDEX, NULL);
+          WinHelp (NULL, buf, HELP_INDEX, 0);
         }
       else
         {
@@ -343,11 +342,10 @@ DWORD set_sleep_mode (DWORD mode)
 
 /* run_with_timeout Windows implementation. */
 
-/* Wait for thread completion in 0.1s intervals (a tradeoff between 
- * CPU loading and resolution).
+ /* Stack size 0 uses default thread stack-size (reserve+commit).
+  * Determined by what's in the PE header.
  */
-#define THREAD_WAIT_INTV   100  
-#define THREAD_STACK_SIZE  4096 
+#define THREAD_STACK_SIZE  0
 
 struct thread_data {
    void (*fun) (void *);
@@ -355,35 +353,37 @@ struct thread_data {
    DWORD ws_error; 
 };
 
+/* The callback that runs FUN(ARG) in a separate thread.  This
+   function exists for two reasons: a) to not require FUN to be
+   declared WINAPI/__stdcall[1], and b) to retrieve Winsock errors,
+   which are per-thread.  The latter is useful when FUN calls Winsock
+   functions, which is how run_with_timeout is used in Wget.
+
+   [1] MSVC can use __fastcall globally (cl /Gr) and on Watcom this is
+   the default (wcc386 -3r).  */
+
 static DWORD WINAPI 
 thread_helper (void *arg)
 {
   struct thread_data *td = (struct thread_data *) arg;
-  
-  WSASetLastError (0);
-  td->ws_error = 0;
-  (*td->fun) (td->arg);
-  
-  /* Since run_with_timeout() is only used for Winsock functions and
-   * Winsock errors are per-thread, we must return this to caller.
-   */
-  td->ws_error = WSAGetLastError();
-  return (0); 
-}
 
-#ifdef GV_DEBUG  /* I'll remove this eventually */
-# define DEBUGN(lvl,x)  do { if (opt.verbose >= (lvl)) DEBUGP (x); } while (0)
-#else
-# define DEBUGN(lvl,x)  ((void)0)
-#endif  
+  /* Initialize Winsock error to what it was in the parent.  That way
+     the subsequent call to WSAGetLastError will return the same value
+     if td->fun doesn't change Winsock error state.  */
+  WSASetLastError (td->ws_error);
+
+  td->fun (td->arg);
+
+  /* Return Winsock error to the caller, in case FUN ran Winsock
+     code.  */
+  td->ws_error = WSAGetLastError();
+  return 0; 
+}
 
 /*
  * Run FUN with timeout.  This is done by creating a thread for 'fun'
- * to run in.  Since call-convention of 'fun' is undefined [1], we
- * must call it via thread_helper() which must be __stdcall/WINAPI.
- *
- * [1] MSVC can use __fastcall globally (cl /Gr) and on Watcom this is the
- *     default (wcc386 -3r). 
+ * to run in and terminating the thread if it doesn't finish in
+ * SECONDS time.
  */
 
 int
@@ -391,10 +391,10 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
 {
   static HANDLE thread_hnd = NULL;
   struct thread_data thread_arg;
-  struct wget_timer *timer;
-  DWORD  thread_id, exitCode;
+  DWORD  thread_id;
+  int    rc = 0;
 
-  DEBUGN (2, ("seconds %.2f, ", seconds));
+  DEBUGP (("seconds %.2f, ", seconds));
   
   if (seconds == 0)
     {
@@ -405,51 +405,33 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
 
   /* Should never happen, but test for recursivety anyway */
   assert (thread_hnd == NULL);  
-  thread_arg.arg = arg;
+
   thread_arg.fun = fun;
-  thread_hnd = CreateThread (NULL, THREAD_STACK_SIZE,
-                             thread_helper, (void*)&thread_arg, 
-                             0, &thread_id); 
+  thread_arg.arg = arg;
+  thread_arg.ws_error = WSAGetLastError ();
+  thread_hnd = CreateThread (NULL, THREAD_STACK_SIZE, thread_helper,
+			     &thread_arg, 0, &thread_id); 
   if (!thread_hnd)
     {
       DEBUGP (("CreateThread() failed; %s\n", strerror(GetLastError())));
       goto blocking_fallback;
     }
 
-  timer = wtimer_new();
-
-  exitCode = 0;
-
-  /* Keep checking for thread's state until the timeout expires. */
-  while (wtimer_elapsed (timer) < 1000 * seconds)
+  if (WaitForSingleObject(thread_hnd, (DWORD)(1000*seconds)) == WAIT_OBJECT_0)
     {
-      GetExitCodeThread (thread_hnd, &exitCode);
-      DEBUGN (2, ("thread exit-code %lu\n", exitCode));
-      if (exitCode != STILL_ACTIVE)
-	break;
-      Sleep (THREAD_WAIT_INTV);
-    }
-
-  DEBUGN (2, ("elapsed %.2f, wtimer_elapsed %.2f, ", elapsed,
-	      wtimer_elapsed (timer)));
-
-  wtimer_delete (timer);
-
-  /* If we timed out kill the thread. Normal thread exitCode would be 0.
-   */
-  if (exitCode == STILL_ACTIVE)
-    {
-      DEBUGN (2, ("thread timed out\n"));
-      TerminateThread (thread_hnd, 0);
-    }  
-  else
-    {
-      DEBUGN (2, ("thread exit-code %lu, WS error %lu\n", exitCode, thread_arg.ws_error));
-
       /* Propagate error state (which is per-thread) to this thread,
 	 so the caller can inspect it.  */
       WSASetLastError (thread_arg.ws_error);
+      DEBUGP (("Winsock error: %d\n", WSAGetLastError()));
+      rc = 0;
     }
+  else
+    {
+      TerminateThread (thread_hnd, 1);
+      rc = 1;
+    }
+
+  CloseHandle (thread_hnd); /* clear-up after TerminateThread() */
   thread_hnd = NULL;
-  return exitCode == STILL_ACTIVE;
+  return rc;
 }

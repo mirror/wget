@@ -1,3 +1,8 @@
+2003-10-04  Gisle Vanem  <giva@bgnett.no>
+
+	* mswindows.c (run_with_timeout): Use WaitForSingleObject to wait
+	for thread termination.
+
 2003-10-04  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* log.c: Use `...' in function definitions; ansi2knr will convert
