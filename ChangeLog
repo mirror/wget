@@ -1,3 +1,8 @@
+2003-02-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* libtool.m4, ltmain.sh, config.sub, config.guess: Upgrade to
+	libtool 1.5.14.
+
 2003-02-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* libtool.m4, ltmain.sh, config.sub, config.guess: Upgrade to
