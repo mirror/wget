@@ -1,5 +1,9 @@
 2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* version.c: Wget 1.8.1-pre1 is released.
+
+2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* res.c (matches): Fix broken URL in the docstring.
 
 2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
