@@ -274,26 +274,6 @@ calc_rate (long bytes, long msecs, int *units)
   return dlrate;
 }
 
-static int
-register_redirections_mapper (void *key, void *value, void *arg)
-{
-  const char *redirected_from = (const char *)key;
-  const char *redirected_to   = (const char *)arg;
-  if (0 != strcmp (redirected_from, redirected_to))
-    register_redirection (redirected_from, redirected_to);
-  return 0;
-}
-
-/* Register the redirections that lead to the successful download of
-   this URL.  This is necessary so that the link converter can convert
-   redirected URLs to the local file.  */
-
-static void
-register_all_redirections (struct hash_table *redirections, const char *final)
-{
-  hash_table_map (redirections, register_redirections_mapper, (void *)final);
-}
-
 #define USE_PROXY_P(u) (opt.use_proxy && getproxy((u)->scheme)		\
 			&& no_proxy_match((u)->host,			\
 					  (const char **)opt.no_proxy))
@@ -320,7 +300,6 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   struct url *u;
   int up_error_code;		/* url parse error code */
   char *local_file;
-  struct hash_table *redirections = NULL;
   int redirection_count = 0;
 
   /* If dt is NULL, just ignore it.  */
@@ -336,8 +315,6 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   if (!u)
     {
       logprintf (LOG_NOTQUIET, "%s: %s.\n", url, url_error (up_error_code));
-      if (redirections)
-	string_set_free (redirections);
       xfree (url);
       return URLERROR;
     }
@@ -362,8 +339,6 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	{
 	  logputs (LOG_NOTQUIET, _("Could not find proxy host.\n"));
 	  url_free (u);
-	  if (redirections)
-	    string_set_free (redirections);
 	  xfree (url);
 	  return PROXERR;
 	}
@@ -374,8 +349,6 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	{
 	  logprintf (LOG_NOTQUIET, _("Error parsing proxy URL %s: %s.\n"),
 		     proxy, url_error (up_error_code));
-	  if (redirections)
-	    string_set_free (redirections);
 	  xfree (url);
 	  return PROXERR;
 	}
@@ -383,8 +356,6 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	{
 	  logprintf (LOG_NOTQUIET, _("Error in proxy URL %s: Must be HTTP.\n"), proxy);
 	  url_free (proxy_url);
-	  if (redirections)
-	    string_set_free (redirections);
 	  xfree (url);
 	  return PROXERR;
 	}
@@ -406,7 +377,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	 retrieval, so we save recursion to oldrec, and restore it
 	 later.  */
       int oldrec = opt.recursive;
-      if (redirections)
+      if (redirection_count)
 	opt.recursive = 0;
       result = ftp_loop (u, dt);
       opt.recursive = oldrec;
@@ -415,7 +386,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	 FTP.  In these cases we must decide whether the text is HTML
 	 according to the suffix.  The HTML suffixes are `.html' and
 	 `.htm', case-insensitive.  */
-      if (redirections && local_file && u->scheme == SCHEME_FTP)
+      if (redirection_count && local_file && u->scheme == SCHEME_FTP)
 	{
 	  char *suf = suffix (local_file);
 	  if (suf && (!strcasecmp (suf, "html") || !strcasecmp (suf, "htm")))
@@ -448,8 +419,6 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  logprintf (LOG_NOTQUIET, "%s: %s.\n", mynewloc,
 		     url_error (up_error_code));
 	  url_free (u);
-	  if (redirections)
-	    string_set_free (redirections);
 	  xfree (url);
 	  xfree (mynewloc);
 	  return result;
@@ -461,44 +430,17 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       xfree (mynewloc);
       mynewloc = xstrdup (newloc_parsed->url);
 
-      if (!redirections)
-	{
-	  redirections = make_string_hash_table (0);
-	  /* Add current URL immediately so we can detect it as soon
-             as possible in case of a cycle. */
-	  string_set_add (redirections, u->url);
-	}
-
-      /* The new location is OK.  Check for max. number of
-	 redirections.  */
+      /* Check for max. number of redirections.  */
       if (++redirection_count > MAX_REDIRECTIONS)
 	{
 	  logprintf (LOG_NOTQUIET, _("%d redirections exceeded.\n"),
 		     MAX_REDIRECTIONS);
 	  url_free (newloc_parsed);
 	  url_free (u);
-	  if (redirections)
-	    string_set_free (redirections);
 	  xfree (url);
 	  xfree (mynewloc);
 	  return WRONGCODE;
 	}
-
-      /*Check for redirection cycle by
-         peeking through the history of redirections. */
-      if (string_set_contains (redirections, newloc_parsed->url))
-	{
-	  logprintf (LOG_NOTQUIET, _("%s: Redirection cycle detected.\n"),
-		     mynewloc);
-	  url_free (newloc_parsed);
-	  url_free (u);
-	  if (redirections)
-	    string_set_free (redirections);
-	  xfree (url);
-	  xfree (mynewloc);
-	  return WRONGCODE;
-	}
-      string_set_add (redirections, newloc_parsed->url);
 
       xfree (url);
       url = mynewloc;
@@ -512,8 +454,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       if (*dt & RETROKF)
 	{
 	  register_download (u->url, local_file);
-	  if (redirections)
-	    register_all_redirections (redirections, u->url);
+	  if (redirection_count && 0 != strcmp (origurl, u->url))
+	    register_redirection (origurl, u->url);
 	  if (*dt & TEXTHTML)
 	    register_html (u->url, local_file);
 	}
@@ -526,9 +468,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 
   url_free (u);
 
-  if (redirections)
+  if (redirection_count)
     {
-      string_set_free (redirections);
       if (newloc)
 	*newloc = url;
       else

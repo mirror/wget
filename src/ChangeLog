@@ -1,3 +1,11 @@
+2002-01-30  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* retr.c (retrieve_url): Remove redirection cycle detection.  This
+	is because some sites legitimately redirect the user back to the
+	same location, e.g. after an authorization check performed by
+	another page.  MAX_REDIRECTIONS is still used to prevent infinite
+	redirection loops.
+
 2002-01-26  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* http.c (gethttp): Wrap host name in square brackets if it
