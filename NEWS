@@ -33,6 +33,9 @@ always, or never.  This allows the .wgetrc to override the commandline.  So far,
 passive_ftp is the only .wgetrc command which takes a lockable Boolean.
 
 ** Polish and Russian message translation files have been added.
+
+** New --bind-address / bind_address = <address> option for people on hosts 
+bound to multiple IP addresses.
 
 * Wget 1.5.3 is a bugfix release with no user-visible changes.
 

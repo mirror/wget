@@ -1,3 +1,7 @@
+2000-10-24  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* NEWS: Forgot to update regarding new --bind-address option.
+
 2000-10-20  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* TODO: -k needs to convert '?' to "%3F" in links to saved files
