@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
+#include "gen_sslfunc.h"	/* for ssl_iread */
 #endif /* HAVE_SSL */
 
 void

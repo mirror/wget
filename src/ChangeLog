@@ -1,5 +1,9 @@
 2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* connect.h: Declare select_fd.
+
+2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* recur.c (descend_url_p): When resolving no_parent, compare with
 	start_url, not parent url.  Otherwise link from /a/b/ to /a/c/
 	wouldn't be followed, although the download started from /a/.

@@ -29,6 +29,7 @@ int connect_to_many PARAMS ((struct address_list *, unsigned short, int));
 void set_connection_host_name PARAMS ((const char *));
 
 int test_socket_open PARAMS ((int));
+int select_fd PARAMS ((int, int, int));
 uerr_t bindport PARAMS ((unsigned short *));
 uerr_t acceptport PARAMS ((int *));
 void closeport PARAMS ((int));
