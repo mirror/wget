@@ -1688,8 +1688,8 @@ ftp_loop (struct url *u, int *dt)
 	  /* ftp_retrieve_glob is a catch-all function that gets called
 	     if we need globbing, time-stamping or recursion.  Its
 	     third argument is just what we really need.  */
-	  ftp_retrieve_glob (u, &con,
-			     (opt.ftp_glob && wild) ? GLOBALL : GETONE);
+	  res = ftp_retrieve_glob (u, &con,
+				   (opt.ftp_glob && wild) ? GLOBALL : GETONE);
 	}
       else
 	res = ftp_loop_internal (u, NULL, &con);
