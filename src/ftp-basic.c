@@ -1090,7 +1090,8 @@ ftp_syst (struct rbuf *rbuf, enum stype *server_type)
     *server_type = ST_VMS;
   else if (!strcasecmp (request, "UNIX"))
     *server_type = ST_UNIX;
-  else if (!strcasecmp (request, "WINDOWS_NT"))
+  else if (!strcasecmp (request, "WINDOWS_NT")
+	   || !strcasecmp (request, "WINDOWS2000"))
     *server_type = ST_WINNT;
   else if (!strcasecmp (request, "MACOS"))
     *server_type = ST_MACOS;

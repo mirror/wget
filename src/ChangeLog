@@ -1,3 +1,8 @@
+2003-11-08  Gisle Vanem  <giva@bgnett.no>
+
+	* ftp-basic.c: Support Windows-2000 ftp servers. Win-2000 *is*
+	Win-NT 5.0 so calling it ST_WINNT is okay I guess.
+
 2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* progress.c (update_speed_ring): Clear the speed ring when the
