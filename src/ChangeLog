@@ -3,13 +3,29 @@
 	* ftp.c (ftp_loop_internal): Heiko introduced "suggest explicit
 	braces to avoid ambiguous `else'" warnings.  Eliminated them.
 	
-	* http.c (http_loop): Heiko introduced "suggest explicit
+	* http.c (gethttp): Dan Berger's query string patch is totally
+	bogus.  If you have two different URLs, gen_page.cgi?page1 and
+	get_page.cgi?page2, they'll both be saved as get_page.cgi and the
+	second will overwrite the first.  Also, parameters to implicit
+	CGIs, like "http://www.host.com/db/?2000-03-02" cause the URLs to
+	be printed with trailing garbage characters, and could seg fault.
+	I'm not sure what Dan had in mind with this patch (no explanatory
+	comments), but I'm removing it for now.  If he can rewrite it so
+	it doesn't break stuff, okay.
+	(http_loop): Heiko introduced "suggest explicit
 	braces to avoid ambiguous `else'" warnings.  Eliminated them.
 	
 	* main.c: Heiko's --wait / --waitretry backwards compatibility
 	code looks to have been totally untested -- automatic variable
 	'wr' was used without being initialized, and a long int was passed
 	into setval()'s char* val parameter.
+	
+	* recur.c (parse_robots): Applied Edward J. Sabol
+	<sabol@alderaan.gsfc.nasa.gov>'s patch for Guan Yang's reported
+	problem with "User-agent:<space>*<space>" lines in robots.txt.
+	
+	* url.c (parseurl, str_url): Removing Dan Berger's code (see
+	http.c above for explanation).
 	
 1999-08-25  Heiko Herold  <Heiko.Herold@previnet.it>
 
