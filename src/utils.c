@@ -1812,8 +1812,9 @@ debug_test_md5 (char *buf)
 
 /* Implementation of run_with_timeout, a generic timeout handler for
    systems with Unix-like signal handling.  */
-#ifdef HAVE_SIGSETJMP
-#define SETJMP(env) sigsetjmp (env, 1)
+#ifdef USE_SIGNAL_TIMEOUT
+# ifdef HAVE_SIGSETJMP
+#  define SETJMP(env) sigsetjmp (env, 1)
 
 static sigjmp_buf run_with_timeout_env;
 
@@ -1823,8 +1824,8 @@ abort_run_with_timeout (int sig)
   assert (sig == SIGALRM);
   siglongjmp (run_with_timeout_env, -1);
 }
-#else  /* not HAVE_SIGSETJMP */
-#define SETJMP(env) setjmp (env)
+# else /* not HAVE_SIGSETJMP */
+#  define SETJMP(env) setjmp (env)
 
 static jmp_buf run_with_timeout_env;
 
@@ -1842,7 +1843,8 @@ abort_run_with_timeout (int sig)
   /* Now it's safe to longjump. */
   longjmp (run_with_timeout_env, -1);
 }
-#endif /* not HAVE_SIGSETJMP */
+# endif /* not HAVE_SIGSETJMP */
+#endif /* USE_SIGNAL_TIMEOUT */
 
 int
 run_with_timeout (long timeout, void (*fun) (void *), void *arg)

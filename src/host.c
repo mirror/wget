@@ -35,6 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #ifdef WINDOWS
 # include <winsock.h>
+# define SET_H_ERRNO(err) WSASetLastError(err)
 #else
 # include <sys/socket.h>
 # include <netinet/in.h>
@@ -42,6 +43,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #  include <arpa/inet.h>
 # endif
 # include <netdb.h>
+# define SET_H_ERRNO(err) ((void)(h_errno = (err)))
 #endif /* WINDOWS */
 
 #ifndef NO_ADDRESS
@@ -487,7 +489,7 @@ gethostbyname_with_timeout (const char *host_name, int timeout)
   ctx.host_name = host_name;
   if (run_with_timeout (timeout, gethostbyname_with_timeout_callback, &ctx))
     {
-      h_errno = HOST_NOT_FOUND;
+      SET_H_ERRNO (HOST_NOT_FOUND);
       errno = ETIMEDOUT;
       return NULL;
     }
