@@ -886,7 +886,10 @@ full_path_write (const struct url *url, char *where)
 #undef FROB
 }
 
-/* Public function for getting the "full path". */
+/* Public function for getting the "full path".  E.g. if u->path is
+   "foo/bar" and u->query is "param=value", full_path will be
+   "/foo/bar?param=value". */
+
 char *
 url_full_path (const struct url *url)
 {
@@ -900,6 +903,7 @@ url_full_path (const struct url *url)
 }
 
 /* Sync u->path and u->url with u->dir and u->file. */
+
 static void
 sync_path (struct url *url)
 {

@@ -1,5 +1,12 @@
 2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* url.c (url_full_path): Document better.
+
+	* http.c (gethttp): Use the full path when creating digest
+	authorization.
+
+2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* cookies.c (path_matches): Return 0 if PREFIX doesn't begin with
 	'/'.
 

@@ -756,8 +756,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	}
       else
 	{
+	  /* Use the full path, i.e. one that includes the leading
+	     slash and the query string, but is independent of proxy
+	     setting.  */
+	  char *pth = url_full_path (u);
 	  wwwauth = create_authorization_line (authenticate_h, user, passwd,
-					       command, u->path);
+					       command, pth);
+	  xfree (pth);
 	}
     }
 
@@ -812,6 +817,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   if (proxy)
     full_path = xstrdup (u->url);
   else
+    /* Use the full path, i.e. one that includes the leading slash and
+       the query string.  E.g. if u->path is "foo/bar" and u->query is
+       "param=value", full_path will be "/foo/bar?param=value".  */
     full_path = url_full_path (u);
 
   /* Allocate the memory for the request.  */
