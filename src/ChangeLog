@@ -1,5 +1,15 @@
 2002-01-24  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* connect.c (resolve_bind_address): New function.
+	(connect_to_one): Use it.
+	(bindport): Ditto.
+
+	* init.c: Don't resolve bind-address here.
+
+	* host.c (wget_sockaddr_set_address): Would bug out with ADDR == NULL.
+
+2002-01-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* host.c (lookup_host): Use sizeof(ip4_address) to calculate the
 	offset.
 	(address_list_new): Use map_ipv4_to_ip.
@@ -8,7 +18,8 @@
 
 2002-01-24  Hrvoje Niksic  <hniksic@arsdigita.com>
 
-	* source: Integrated IPv6 support by Thomas Lussnig.
+	* source: Integrated IPv6 support.
+	Written by Thomas Lussnig <thomas.lussnig@bewegungsmelder.de>.
 
 2002-01-15  Ian Abbott  <abbotti@mev.co.uk>
 

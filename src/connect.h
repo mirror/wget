@@ -20,7 +20,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifndef CONNECT_H
 #define CONNECT_H
 
-struct address_list;
+#include "host.h"
 
 /* Function declarations */
 

@@ -19,7 +19,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 /* Needed for FDP.  */
 #include <stdio.h>
-#include "host.h"
 
 struct options
 {
@@ -153,7 +152,7 @@ struct options
 
   int page_requisites;		/* Whether we need to download all files
 				   necessary to display a page properly. */
-  wget_sockaddr *bind_address;  /* What local IP address to bind to. */
+  char *bind_address;		/* What local IP address to bind to. */
 #ifdef HAVE_SSL
   char *sslcertfile;		/* external client cert to use. */
   char *sslcertkey;		/* the keyfile for this certificate

@@ -23,6 +23,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 /* Need it for struct rbuf.  */
 #include "rbuf.h"
 
+#include "host.h"
+
 /* System types. */
 enum stype
 {

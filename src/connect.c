@@ -1,5 +1,5 @@
 /* Establishing and handling network connections.
-   Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 2001, 2002 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -48,8 +48,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #endif /* HAVE_SYS_SELECT_H */
 
 #include "wget.h"
-#include "connect.h"
 #include "host.h"
+#include "connect.h"
 
 #ifndef errno
 extern int errno;
@@ -58,6 +58,32 @@ extern int errno;
 /* Variables shared by bindport and acceptport: */
 static int msock = -1;
 static struct sockaddr *addr;
+
+static ip_address bind_address;
+static int bind_address_resolved;
+
+static void
+resolve_bind_address (void)
+{
+  struct address_list *al;
+
+  if (bind_address_resolved || opt.bind_address == NULL)
+    /* Nothing to do. */
+    return;
+
+  al = lookup_host (opt.bind_address, 1);
+  if (!al)
+    {
+      logprintf (LOG_NOTQUIET,
+		 _("Unable to convert `%s' to a bind address.  Reverting to ANY.\n"),
+		 opt.bind_address);
+      return;
+    }
+
+  address_list_copy_one (al, 0, &bind_address);
+  address_list_release (al);
+  bind_address_resolved = 1;
+}
 
 /* A kludge, but still better than passing the host name all the way
    to connect_to_one.  */
@@ -101,10 +127,13 @@ connect_to_one (ip_address *addr, unsigned short port, int silent)
   if (sock < 0)
     goto out;
 
-  if (opt.bind_address)
+  resolve_bind_address ();
+  if (bind_address_resolved)
     {
       /* Bind the client side to the requested address. */
-      if (bind (sock, (struct sockaddr *)opt.bind_address, sockaddr_len ()))
+      wget_sockaddr bsa;
+      wget_sockaddr_set_address (&bsa, ip_default_family, 0, &bind_address);
+      if (bind (sock, &bsa.sa, sockaddr_len ()))
 	{
 	  close (sock);
 	  sock = -1;
@@ -218,11 +247,9 @@ bindport (unsigned short *port, int family)
 		  (char *)&optval, sizeof (optval)) < 0)
     return CONSOCKERR;
 
-  if (opt.bind_address == NULL)
-    wget_sockaddr_set_address (&srv, ip_default_family, htons (*port), NULL);
-  else
-    srv = *opt.bind_address;
-  wget_sockaddr_set_port (&srv, *port);
+  resolve_bind_address ();
+  wget_sockaddr_set_address (&srv, ip_default_family, htons (*port),
+			     bind_address_resolved ? &bind_address : NULL);
   if (bind (msock, &srv.sa, sockaddr_len ()) < 0)
     {
       CLOSE (msock);

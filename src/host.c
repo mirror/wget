@@ -101,7 +101,7 @@ address_list_get_bounds (struct address_list *al, int *start, int *end)
 void
 address_list_copy_one (struct address_list *al, int index, ip_address *ip_store)
 {
-  assert (index >= al->faulty && index < al->count && ip_store!=NULL );
+  assert (index >= al->faulty && index < al->count);
   memcpy (ip_store, al->addresses + index, sizeof (ip_address));
 }
 
@@ -267,16 +267,18 @@ wget_sockaddr_set_address (wget_sockaddr *sa,
 {
   if (ip_family == AF_INET) 
     {
-      ip4_address addr4;
-      if (!map_ip_to_ipv4 (addr, &addr4))
-	/* should the callers have prevented this? */
-	abort ();
       sa->sin.sin_family = ip_family;
       sa->sin.sin_port = htons (port);
       if (addr == NULL) 
 	memset (&sa->sin.sin_addr, 0,      sizeof(ip4_address));
-      else	 
-	memcpy (&sa->sin.sin_addr, &addr4, sizeof(ip4_address));
+      else
+	{
+	  ip4_address addr4;
+	  if (!map_ip_to_ipv4 (addr, &addr4))
+	    /* should the callers have prevented this? */
+	    abort ();
+	  memcpy (&sa->sin.sin_addr, &addr4, sizeof(ip4_address));
+	}
       return;
     }
 #ifdef INET6
