@@ -163,7 +163,8 @@ address_list_match_all (const struct address_list *al1,
 	{
 	case IPV4_ADDRESS:
 	  if (ADDRESS_IPV4_IN_ADDR (ip1).s_addr
-	      != ADDRESS_IPV4_IN_ADDR (ip2).s_addr)
+	      !=
+	      ADDRESS_IPV4_IN_ADDR (ip2).s_addr)
 	    return 0;
 	  break;
 	case IPV6_ADDRESS:

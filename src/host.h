@@ -56,7 +56,7 @@ typedef struct {
   } type;
 
   /* Address data union: ipv6 contains IPv6-related data (address and
-     scope), and ipv4 contains IPv4 address.  */
+     scope), and ipv4 contains the IPv4 address.  */
   union {
 #ifdef ENABLE_IPV6
     struct {
@@ -73,14 +73,23 @@ typedef struct {
 } ip_address;
 
 /* Because C doesn't support anonymous unions, access to ip_address
-   elements is clunky.  Hence the accessors.  */
+   elements is unwieldy.  Hence the accessors.
 
-#define ADDRESS_IPV6_IN6_ADDR(x) ((x)->u.ipv6.addr)
-#define ADDRESS_IPV6_DATA(x) ((void *)&(x)->u.ipv6.addr.s6_addr)
-#define ADDRESS_IPV6_SCOPE(x) ((x)->u.ipv6.scope_id)
+   The _ADDR accessors return the address as the struct in_addr or
+   in6_addr.  The _DATA accessor returns a pointer to the address data
+   -- pretty much the same as the above, but cast to void*.  The
+   _SCOPE accessor returns the address's scope_id, and makes sense
+   only when IPv6 and HAVE_SOCKADDR_IN6_SCOPE_ID are both defined.  */
 
 #define ADDRESS_IPV4_IN_ADDR(x) ((x)->u.ipv4.addr)
-#define ADDRESS_IPV4_DATA(x) ((void *)&(x)->u.ipv4.addr.s_addr)
+/* Don't use &x->u.ipv4.addr.s_addr because it can be #defined to a
+   bitfield, which you can't take an address of.  */
+#define ADDRESS_IPV4_DATA(x) ((void *)&(x)->u.ipv4.addr)
+
+#define ADDRESS_IPV6_IN6_ADDR(x) ((x)->u.ipv6.addr)
+#define ADDRESS_IPV6_DATA(x) ((void *)&(x)->u.ipv6.addr)
+#define ADDRESS_IPV6_SCOPE(x) ((x)->u.ipv6.scope_id)
+
 
 /* Flags for lookup_host */
 #define LH_SILENT    0x0001
