@@ -18,6 +18,9 @@ changes.
 
 * Limit the number of successive redirection to max. 20 or so.
 
+* If -c used on a file that's already completely downloaded, don't re-download
+  it (unless normal --timestamping processing would cause you to do so).
+
 * Take a look at
   <http://info.webcrawler.com/mak/projects/robots/norobots-rfc.html>
   and support the new directives.
