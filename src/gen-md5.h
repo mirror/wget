@@ -36,8 +36,9 @@ typedef struct gen_md5_context gen_md5_context;
    includes.  */
 struct gen_md5_context;
 
-#define ALLOCA_MD5_CONTEXT(var_name) \
-  gen_md5_context *var_name = alloca (gen_md5_context_size ())
+#define ALLOCA_MD5_CONTEXT(var_name)			\
+  gen_md5_context *var_name =				\
+  (gen_md5_context *) alloca (gen_md5_context_size ())
 
 int gen_md5_context_size PARAMS ((void));
 void gen_md5_init PARAMS ((gen_md5_context *));

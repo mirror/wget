@@ -1,3 +1,14 @@
+2003-09-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* init.c: Improved documentation of functions.
+	(cmd_boolean): Attempt to make code that tries to avoid calling
+	strcmp for "speed" a bit more readable.
+
+	* init.c (simple_atof): Report error on encountering non-digit,
+	non-"." character.
+	(simple_atoi): Replacement for myatoi(), calling interface
+	compatible with simple_atof.  Updated myatoi's callers.
+
 2003-09-21  Bertrand Demiddelaer  <bert@b3rt.org>
 
 	* url.c (path_simplify): Would read two bytes past the end of the

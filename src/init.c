@@ -339,7 +339,8 @@ wgetrc_file_name (void)
     {
       if (!file_exists_p (env))
 	{
-	  fprintf (stderr, "%s: %s: %s.\n", exec_name, env, strerror (errno));
+	  fprintf (stderr, _("%s: WGETRC points to %s, which doesn't exist.\n"),
+		   exec_name, env);
 	  exit (1);
 	}
       return xstrdup (env);
@@ -478,14 +479,18 @@ dehyphen (char *s)
 }
 
 /* Parse the line pointed by line, with the syntax:
-   <sp>* command <sp>* = <sp>* value <newline>
+   <sp>* command <sp>* = <sp>* value <sp>*
    Uses malloc to allocate space for command and value.
    If the line is invalid, data is freed and 0 is returned.
 
    Return values:
     1 - success
-    0 - failure
-   -1 - empty */
+    0 - error
+   -1 - empty
+
+   In case of success, *COM and *VAL point to freshly allocated
+   strings, and *COMIND points to com's index.  In case of error or
+   empty line, those values are unaffected.  */
 
 static int
 parse_line (const char *line, char **com, char **val, int *comind)
@@ -563,11 +568,13 @@ setval_internal (int comind, const char *com, const char *val)
 void
 setoptval (const char *com, const char *val)
 {
-  int comind = findcmd (com);
-  assert (comind != -1);
-  if (!setval_internal (comind, com, val))
+  if (!setval_internal (findcmd (com), com, val))
     exit (2);
 }
+
+/* Parse OPT into command and value and run it.  For example,
+   run_command("foo=bar") is equivalent to setoptval("foo", "bar").
+   This is used by the `--execute' flag in main.c.  */
 
 void
 run_command (const char *opt)
@@ -584,14 +591,25 @@ run_command (const char *opt)
     }
   else if (status == 0)
     {
-      fprintf (stderr, "Invalid command `%s'\n", opt);
+      fprintf (stderr, _("%s: Invalid --execute command `%s'\n"),
+	       exec_name, opt);
       exit (2);
     }
 }
 
 /* Generic helper functions, for use with `commands'. */
 
-static int myatoi PARAMS ((const char *s));
+#define CMP1(p, c0) (TOLOWER((p)[0]) == (c0) && (p)[1] == '\0')
+
+#define CMP2(p, c0, c1) (TOLOWER((p)[0]) == (c0)	\
+			 && TOLOWER((p)[1]) == (c1)	\
+			 && (p)[2] == '\0')
+
+#define CMP3(p, c0, c1, c2) (TOLOWER((p)[0]) == (c0)	\
+		     && TOLOWER((p)[1]) == (c1)		\
+		     && TOLOWER((p)[2]) == (c2)		\
+		     && (p)[3] == '\0')
+
 
 /* Store the boolean value from VAL to CLOSURE.  COM is ignored,
    except for error messages.  */
@@ -599,27 +617,18 @@ static int
 cmd_boolean (const char *com, const char *val, void *closure)
 {
   int bool_value;
-  const char *v = val;
-#define LC(x) TOLOWER(x)
 
-  if ((LC(v[0]) == 'o' && LC(v[1]) == 'n' && !v[2])
-      ||
-      (LC(v[0]) == 'y' && LC(v[1]) == 'e' && LC(v[2]) == 's' && !v[3])
-      ||
-      (v[0] == '1' && !v[1]))
+  if (CMP2 (val, 'o', 'n') || CMP3 (val, 'y', 'e', 's') || CMP1 (val, '1'))
     /* "on", "yes" and "1" mean true. */
     bool_value = 1;
-  else if ((LC(v[0]) == 'o' && LC(v[1]) == 'f' && LC(v[2]) == 'f' && !v[3])
-	   ||
-	   (LC(v[0]) == 'n' && LC(v[1]) == 'o' && !v[2])
-	   ||
-	   (v[0] == '0' && !v[1]))
+  else if (CMP3 (val, 'o', 'f', 'f') || CMP2 (val, 'n', 'o') || CMP1 (val, '0'))
     /* "off", "no" and "0" mean false. */
     bool_value = 0;
   else
     {
-      fprintf (stderr, _("%s: %s: Please specify on or off.\n"),
-	       exec_name, com);
+      fprintf (stderr,
+	       _("%s: %s: Invalid boolean `%s', use `on' or `off'.\n"),
+	       exec_name, com, val);
       return 0;
     }
 
@@ -627,10 +636,10 @@ cmd_boolean (const char *com, const char *val, void *closure)
   return 1;
 }
 
-/* Store the lockable_boolean {2, 1, 0, -1} value from VAL to CLOSURE.  COM is
-   ignored, except for error messages.  Values 2 and -1 indicate that once
-   defined, the value may not be changed by successive wgetrc files or
-   command-line arguments.
+/* Store the lockable_boolean {2, 1, 0, -1} value from VAL to CLOSURE.
+   COM is ignored, except for error messages.  Values 2 and -1
+   indicate that once defined, the value may not be changed by
+   successive wgetrc files or command-line arguments.
 
    Values: 2 - Enable a particular option for good ("always")
            1 - Enable an option ("on")
@@ -641,30 +650,28 @@ cmd_lockable_boolean (const char *com, const char *val, void *closure)
 {
   int lockable_boolean_value;
 
+  int oldval = *(int *)closure;
+
   /*
    * If a config file said "always" or "never", don't allow command line
    * arguments to override the config file.
    */
-  if (*(int *)closure == -1 || *(int *)closure == 2)
+  if (oldval == -1 || oldval == 2)
     return 1;
 
-  if (!strcasecmp (val, "always") || !strcmp (val, "2"))
+  if (0 == strcasecmp (val, "always") || CMP1 (val, '2'))
     lockable_boolean_value = 2;
-  else if (!strcasecmp (val, "on")
-	   || !strcasecmp (val, "yes")
-	   || !strcmp (val, "1"))
+  else if (CMP2 (val, 'o', 'n') || CMP3 (val, 'y', 'e', 's') || CMP1 (val, '1'))
     lockable_boolean_value = 1;
-  else if (!strcasecmp (val, "off")
-	   || !strcasecmp (val, "no")
-	   || !strcmp (val, "0"))
+  else if (CMP3 (val, 'o', 'f', 'f') || CMP2 (val, 'n', 'o') || CMP1 (val, '0'))
     lockable_boolean_value = 0;
-  else if (!strcasecmp (val, "never") || !strcmp (val, "-1"))
+  else if (0 == strcasecmp (val, "never") || CMP2 (val, '-', '1'))
     lockable_boolean_value = -1;
   else
     {
-      fprintf (stderr, _("%s: %s: Please specify always, on, off, "
-			 "or never.\n"),
-	       exec_name, com);
+      fprintf (stderr,
+	       _("%s: %s: Invalid boolean `%s', use always, on, off, or never.\n"),
+	       exec_name, com, val);
       return 0;
     }
 
@@ -672,20 +679,19 @@ cmd_lockable_boolean (const char *com, const char *val, void *closure)
   return 1;
 }
 
+static int simple_atoi PARAMS ((const char *, const char *, int *));
+
 /* Set the non-negative integer value from VAL to CLOSURE.  With
    incorrect specification, the number remains unchanged.  */
 static int
 cmd_number (const char *com, const char *val, void *closure)
 {
-  int num = myatoi (val);
-
-  if (num == -1)
+  if (!simple_atoi (val, val + strlen (val), closure))
     {
-      fprintf (stderr, _("%s: %s: Invalid specification `%s'.\n"),
+      fprintf (stderr, _("%s: %s: Invalid number `%s'.\n"),
 	       exec_name, com, val);
       return 0;
     }
-  *(int *)closure = num;
   return 1;
 }
 
@@ -792,9 +798,10 @@ cmd_directory (const char *com, const char *val, void *closure)
   return 1;
 }
 
-/* Merge the vector (array of strings separated with `,') in COM with
-   the vector (NULL-terminated array of strings) pointed to by
-   CLOSURE.  */
+/* Split VAL by space to a vector of values, and append those values
+   to vector pointed to by the CLOSURE argument.  If VAL is empty, the
+   CLOSURE vector is cleared instead.  */
+
 static int
 cmd_vector (const char *com, const char *val, void *closure)
 {
@@ -841,46 +848,7 @@ cmd_directory_vector (const char *com, const char *val, void *closure)
   return 1;
 }
 
-/* Poor man's atof: handles only <digits>.<digits>.  Returns 1 on
-   success, 0 on failure.  In case of success, stores its result to
-   *DEST.  */
-
-static int
-simple_atof (const char *beg, const char *end, double *dest)
-{
-  double result = 0;
-
-  int seen_dot = 0;
-  int seen_digit = 0;
-  double divider = 1;
-
-  const char *p = beg;
-
-  while (p < end)
-    {
-      char ch = *p++;
-      if (ISDIGIT (ch))
-	{
-	  if (!seen_dot)
-	    result = (10 * result) + (ch - '0');
-	  else
-	    result += (ch - '0') / (divider *= 10);
-	  seen_digit = 1;
-	}
-      else if (ch == '.')
-	{
-	  if (!seen_dot)
-	    seen_dot = 1;
-	  else
-	    return 0;
-	}
-    }
-  if (!seen_digit)
-    return 0;
-
-  *dest = result;
-  return 1;
-}
+static int simple_atof PARAMS ((const char *, const char *, double *));
 
 /* Parse VAL as a number and set its value to CLOSURE (which should
    point to a long int).
@@ -917,7 +885,8 @@ cmd_bytes (const char *com, const char *val, void *closure)
   if (val == end)
     {
     err:
-      fprintf (stderr, _("%s: Invalid byte value `%s'\n"), com, val);
+      fprintf (stderr, _("%s: %s: Invalid byte value `%s'\n"),
+	       exec_name, com, val);
       return 0;
     }
 
@@ -970,7 +939,8 @@ cmd_time (const char *com, const char *val, void *closure)
   if (val == end)
     {
     err:
-      fprintf (stderr, _("%s: Invalid time specification `%s'\n"), com, val);
+      fprintf (stderr, _("%s: %s: Invalid time period `%s'\n"),
+	       exec_name, com, val);
       return 0;
     }
 
@@ -1046,7 +1016,7 @@ cmd_spec_header (const char *com, const char *val, void *closure)
 
       if (!check_user_specified_header (val))
 	{
-	  fprintf (stderr, _("%s: %s: Invalid specification `%s'.\n"),
+	  fprintf (stderr, _("%s: %s: Invalid header `%s'.\n"),
 		   exec_name, com, val);
 	  return 0;
 	}
@@ -1071,6 +1041,9 @@ cmd_spec_htmlify (const char *com, const char *val, void *closure)
   return flag;
 }
 
+/* Set the "mirror" mode.  It means: recursive download, timestamping,
+   no limit on max. recursion depth, and don't remove listings.  */
+
 static int
 cmd_spec_mirror (const char *com, const char *val, void *closure)
 {
@@ -1090,6 +1063,9 @@ cmd_spec_mirror (const char *com, const char *val, void *closure)
   return 1;
 }
 
+/* Set progress.type to VAL, but verify that it's a valid progress
+   implementation before that.  */
+
 static int
 cmd_spec_progress (const char *com, const char *val, void *closure)
 {
@@ -1106,6 +1082,10 @@ cmd_spec_progress (const char *com, const char *val, void *closure)
   opt.progress_type = xstrdup (val);
   return 1;
 }
+
+/* Set opt.recursive to VAL as with cmd_boolean.  If opt.recursive is
+   set to true, also set opt.dirstruct to 1, unless opt.no_dirstruct
+   is specified.  */
 
 static int
 cmd_spec_recursive (const char *com, const char *val, void *closure)
@@ -1141,7 +1121,8 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *closure)
   else
     {
     err:
-      fprintf (stderr, _("%s: %s: Invalid specification `%s'.\n"),
+      fprintf (stderr,
+	       _("%s: %s: Invalid restriction `%s', use `unix' or `windows'.\n"),
 	       exec_name, com, val);
       return 0;
     }
@@ -1182,7 +1163,7 @@ cmd_spec_useragent (const char *com, const char *val, void *closure)
      junk to the server.  */
   if (!*val || strchr (val, '\n'))
     {
-      fprintf (stderr, _("%s: %s: Invalid specification `%s'.\n"),
+      fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"),
 	       exec_name, com, val);
       return 0;
     }
@@ -1192,20 +1173,70 @@ cmd_spec_useragent (const char *com, const char *val, void *closure)
 
 /* Miscellaneous useful routines.  */
 
-/* Return the integer value of a positive integer written in S, or -1
-   if an error was encountered.  */
-static int
-myatoi (const char *s)
-{
-  int res;
-  const char *orig = s;
+/* A very simple atoi clone, more portable than strtol and friends,
+   but reports errors, unlike atoi.  Returns 1 on success, 0 on
+   failure.  In case of success, stores result to *DEST.  */
 
-  for (res = 0; *s && ISDIGIT (*s); s++)
-    res = 10 * res + (*s - '0');
-  if (*s || orig == s)
-    return -1;
-  else
-    return res;
+static int
+simple_atoi (const char *beg, const char *end, int *dest)
+{
+  int result = 0;
+  const char *p;
+
+  if (beg == end)
+    return 0;
+
+  for (p = beg; p < end && ISDIGIT (*p); p++)
+    result = (10 * result) + (*p - '0');
+
+  if (p != end)
+    return 0;
+
+  *dest = result;
+  return 1;
+}
+
+/* Trivial atof, with error reporting.  Handles "<digits>[.<digits>]",
+   doesn't handle exponential notation.  Returns 1 on success, 0 on
+   failure.  In case of success, stores its result to *DEST.  */
+
+static int
+simple_atof (const char *beg, const char *end, double *dest)
+{
+  double result = 0;
+
+  int seen_dot = 0;
+  int seen_digit = 0;
+  double divider = 1;
+
+  const char *p;
+
+  for (p = beg; p < end; p++)
+    {
+      char ch = *p;
+      if (ISDIGIT (ch))
+	{
+	  if (!seen_dot)
+	    result = (10 * result) + (ch - '0');
+	  else
+	    result += (ch - '0') / (divider *= 10);
+	  seen_digit = 1;
+	}
+      else if (ch == '.')
+	{
+	  if (!seen_dot)
+	    seen_dot = 1;
+	  else
+	    return 0;
+	}
+      else
+	return 0;
+    }
+  if (!seen_digit)
+    return 0;
+
+  *dest = result;
+  return 1;
 }
 
 static int
