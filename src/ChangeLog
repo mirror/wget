@@ -1,3 +1,8 @@
+2002-01-07  Ian Abbott <abbotti@mev.co.uk>
+
+	* url.c (uri_merge_1): Deal with "net path" relative URL (one that
+	starts with "//").
+
 2002-01-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* http.c (gethttp): Invalidate SOCK if get_contents encountered an

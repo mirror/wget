@@ -1575,6 +1575,37 @@ uri_merge_1 (const char *base, const char *link, int linklength, int no_scheme)
 	  memcpy (constr + baselength, link, linklength);
 	  constr[baselength + linklength] = '\0';
 	}
+      else if (linklength > 1 && *link == '/' && *(link + 1) == '/')
+	{
+	  /* LINK begins with "//" and so is a net path: we need to
+	     replace everything after (and including) the double slash
+	     with LINK. */
+
+	  /* uri_merge("foo", "//new/bar")            -> "//new/bar"      */
+	  /* uri_merge("//old/foo", "//new/bar")      -> "//new/bar"      */
+	  /* uri_merge("http://old/foo", "//new/bar") -> "http://new/bar" */
+
+	  int span;
+	  const char *slash;
+	  const char *start_insert;
+
+	  /* Look for first slash. */
+	  slash = memchr (base, '/', end - base);
+	  /* If found slash and it is a double slash, then replace
+	     from this point, else default to replacing from the
+	     beginning.  */
+	  if (slash && *(slash + 1) == '/')
+	    start_insert = slash;
+	  else
+	    start_insert = base;
+
+	  span = start_insert - base;
+	  constr = (char *)xmalloc (span + linklength + 1);
+	  if (span)
+	    memcpy (constr, base, span);
+	  memcpy (constr + span, link, linklength);
+	  constr[span + linklength] = '\0';
+	}
       else if (*link == '/')
 	{
 	  /* LINK is an absolute path: we need to replace everything
