@@ -13,6 +13,11 @@ types are available, "bar" (the new default), and "dot" (the old
 dotted indicator).  You can permanently revert to the old progress
 indicator by putting `progress = dot' in your `.wgetrc'.
 
+** You can limit the bandwidth spent by the retrieval using the
+`--limit-rate' option.  For example, "wget --limit-rate=15k URL" will
+tell Wget not to download the body of the URL faster than 15 kilobytes
+per second.
+
 ** "Recursive retrieval" has been revamped:
 
 *** Wget now traverses links breadth-first.  This makes the
