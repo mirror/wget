@@ -1,5 +1,10 @@
 2003-11-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* aclocal.m4 (WGET_SOCKLEN_T): Use AC_COMPILE_IFELSE instead of
+	AC_TRY_COMPILE.
+
+2003-11-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* aclocal.m4 (WGET_STRUCT_UTIMBUF): Use AC_CHECK_TYPES instead of
 	AC_EGREP_CPP to check for struct utimbuf.
 

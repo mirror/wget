@@ -23,18 +23,16 @@ dnl size_t *, we use that, else we use int.
 
 AC_DEFUN([WGET_SOCKLEN_T], [
   AC_MSG_CHECKING(for socklen_t)
-  AC_TRY_COMPILE([
+  AC_COMPILE_IFELSE([
 #include <sys/types.h>
 #include <sys/socket.h>
 socklen_t x;
-],
-    [], [AC_MSG_RESULT(socklen_t)], [
-      AC_TRY_COMPILE([
+  ], [AC_MSG_RESULT(socklen_t)], [
+    AC_COMPILE_IFELSE([
 #include <sys/types.h>
 #include <sys/socket.h>
 int accept (int, struct sockaddr *, size_t *);
-],
-      [], [
+    ], [
       AC_MSG_RESULT(size_t)
       AC_DEFINE([socklen_t], [size_t],
                 [Define to int or size_t on systems without socklen_t.])
