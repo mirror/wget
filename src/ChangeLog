@@ -1,5 +1,15 @@
 2001-04-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* utils.c (read_file): Cast MAP_FAILED to char *.  Enforced by
+	Digital Unix cc.
+
+2001-04-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* config.h.in: Oops, do the namespace tweaks only on systems we
+	know about.
+
+2001-04-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* hash.c: Include <string.h>.
 
 2001-04-06  Hrvoje Niksic  <hniksic@arsdigita.com>

@@ -200,10 +200,30 @@ char *alloca ();
 /* Define if all libs needed for ssl support are existing */
 #undef HAVE_SSL
 
+/* First a gambit to see whether we're on Solaris.  We'll
+   need it below.  */
+#ifdef __sun
+# ifdef __SVR4
+#  define solaris
+# endif
+#endif
+
 /* The following several lines can be very dangerous; they can cripple
-   the header files and break compilation in _verY_ non-obvious ways.  If
-   compilation fails mysteriously and the errors are reported in
-   system headers, try commenting these out.  */
+   the header files and break compilation in _verY_ non-obvious ways.
+   Because of that, we define them only on architectures we know
+   about.  */
+
+#undef NAMESPACE_TWEAKS
+
+#ifdef solaris
+# define NAMESPACE_TWEAKS
+#endif
+
+#ifdef __linux__
+# define NAMESPACE_TWEAKS
+#endif
+
+#ifdef NAMESPACE_TWEAKS
 
 /* Request the "Unix 98 compilation environment". */
 #define _XOPEN_SOURCE 500
@@ -216,5 +236,7 @@ char *alloca ();
    Definition). */
 #define _SVID_SOURCE
 #define _BSD_SOURCE
+
+#endif /* NAMESPACE_TWEAKS */
 
 #endif /* CONFIG_H */
