@@ -869,13 +869,20 @@ find_matching_chains (const char *host, int port,
 static int
 path_matches (const char *full_path, const char *prefix)
 {
-  int len = strlen (prefix);
-  if (strncmp (full_path, prefix, len))
+  int len;
+
+  if (*prefix == '/')
+    /* Our HTTP paths don't begin with /; do the same change to
+       PREFIX.  */
+    ++prefix;
+
+  len = strlen (prefix);
+  if (0 != strncmp (full_path, prefix, len))
     /* FULL_PATH doesn't begin with PREFIX. */
     return 0;
 
   /* Length of PREFIX determines the quality of the match. */
-  return len;
+  return len + 1;
 }
 
 static int
