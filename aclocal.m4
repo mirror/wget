@@ -2,17 +2,21 @@ dnl
 dnl Check for `struct utimbuf'.
 dnl
 
-AC_DEFUN([WGET_STRUCT_UTIMBUF],
-[AC_MSG_CHECKING([for struct utimbuf])
-if test x"$ac_cv_header_utime_h" = xyes; then
-  AC_EGREP_CPP([struct[ 	]+utimbuf],
-    [#include <utime.h>],
-    [AC_DEFINE(HAVE_STRUCT_UTIMBUF)
-      AC_MSG_RESULT(yes)],
-    AC_MSG_RESULT(no))
-else
-  AC_MSG_RESULT(no)
-fi])
+AC_DEFUN([WGET_STRUCT_UTIMBUF], [
+  AC_MSG_CHECKING([for struct utimbuf])
+  if test x"$ac_cv_header_utime_h" = xyes; then
+    AC_EGREP_CPP([struct[ 	]+utimbuf],
+      [#include <utime.h>
+      ], [
+	AC_DEFINE([HAVE_STRUCT_UTIMBUF], [],
+		  [Define if you have struct utimbuf.])
+	AC_MSG_RESULT(yes)
+      ],
+      [AC_MSG_RESULT(no)])
+  else
+    AC_MSG_RESULT(no)
+  fi
+])
 
 
 dnl Check for socklen_t.  The third argument of accept, getsockname,
@@ -36,10 +40,12 @@ int accept (int, struct sockaddr *, size_t *);
 ],
       [], [
       AC_MSG_RESULT(size_t)
-      AC_DEFINE(socklen_t, size_t)
+      AC_DEFINE([socklen_t], [size_t],
+                [Define to int or size_t on systems without socklen_t.])
     ], [
       AC_MSG_RESULT(int)
-      AC_DEFINE(socklen_t, int)
+      AC_DEFINE([socklen_t], [int],
+                [Define to int or size_t on systems without socklen_t.])
     ])
   ])
 ])
@@ -51,11 +57,12 @@ dnl even on those because Apache installs its own fnmatch.h to
 dnl /usr/local/include (!), which GCC uses before /usr/include.
 
 AC_DEFUN([WGET_FNMATCH], [
-  AC_MSG_CHECKING([whether fnmatch.h can be included])
+  AC_MSG_CHECKING([for working fnmatch.h])
   AC_COMPILE_IFELSE([#include <fnmatch.h>
                     ], [
     AC_MSG_RESULT(yes)
-    AC_DEFINE(HAVE_FNMATCH_H)
+    AC_DEFINE([HAVE_WORKING_FNMATCH_H], [],
+              [Define if fnmatch.h can be included.])
   ], [
     AC_MSG_RESULT(no)
   ])
@@ -67,11 +74,13 @@ dnl link with -lt (recently) or with -lposix (older releases).
 AC_DEFUN([WGET_NANOSLEEP], [
   AC_CHECK_FUNCS(nanosleep, [], [
     AC_CHECK_LIB(rt, nanosleep, [
-      AC_DEFINE(HAVE_NANOSLEEP)
+      AC_DEFINE([HAVE_NANOSLEEP], [],
+                [Define if you have the nanosleep function.])
       LIBS="-lrt $LIBS"
     ], [
       AC_CHECK_LIB(posix4, nanosleep, [
-	AC_DEFINE(HAVE_NANOSLEEP)
+	AC_DEFINE([HAVE_NANOSLEEP], [],
+		  [Define if you have the nanosleep function.])
 	LIBS="-lposix4 $LIBS"
       ])
     ])
@@ -112,7 +121,8 @@ AC_BEFORE([$0], [AC_C_INLINE])
 AC_MSG_CHECKING([for function prototypes])
 if test "$am_cv_prog_cc_stdc" != no; then
   AC_MSG_RESULT(yes)
-  AC_DEFINE(PROTOTYPES)
+  AC_DEFINE([PROTOTYPES], [],
+            [Define if ANSI function prototypes are available.])
   U= ANSI2KNR=
 else
   AC_MSG_RESULT(no)
@@ -383,7 +393,8 @@ AC_DEFUN(WGET_WITH_NLS,
       AC_CHECK_LIB(intl, gettext, [
         dnl gettext is in libintl; announce the fact manually.
         LIBS="-lintl $LIBS"
-	AC_DEFINE(HAVE_GETTEXT)
+	AC_DEFINE([HAVE_GETTEXT], [],
+                  [Define if you have the gettext function.])
       ], [
         AC_CHECK_FUNCS(gettext, [], [
           AC_MSG_RESULT([gettext not found; disabling NLS])
@@ -418,7 +429,7 @@ AC_DEFUN(WGET_WITH_NLS,
     USE_NLS=$HAVE_NLS
     AC_SUBST(USE_NLS)
     if test "x$HAVE_NLS" = xyes; then
-      AC_DEFINE(HAVE_NLS)
+      AC_DEFINE([HAVE_NLS], [], [Define this if you want the NLS support.])
     fi
   ])
 

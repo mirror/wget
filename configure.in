@@ -46,14 +46,17 @@ dnl
 dnl Get cannonical host
 dnl
 AC_CANONICAL_HOST
-AC_DEFINE_UNQUOTED(OS_TYPE, "$host_os")
+AC_DEFINE_UNQUOTED([OS_TYPE], "$host_os",
+                   [Define to be the name of the operating system.])
 
 dnl
 dnl Process features.
 dnl
 AC_ARG_WITH(socks,
-[  --with-socks            use the socks library],
-[AC_DEFINE(HAVE_SOCKS)])
+  [  --with-socks            use the socks library],
+  [AC_DEFINE([HAVE_SOCKS], [],
+             [Define if you wish to compile with socks support.])]
+)
 
 AC_ARG_WITH(ssl,
 [[  --with-ssl[=SSL-ROOT]   link with SSL support [default=auto]
@@ -62,17 +65,20 @@ AC_ARG_WITH(ssl,
 AC_ARG_ENABLE(opie,
 [  --disable-opie          disable support for opie or s/key FTP login],
 USE_OPIE=$enableval, USE_OPIE=yes)
-test x"${USE_OPIE}" = xyes && AC_DEFINE(USE_OPIE)
+test x"${USE_OPIE}" = xyes && AC_DEFINE([USE_OPIE], [],
+   [Define if you want the Opie support for FTP compiled in.])
 
 AC_ARG_ENABLE(digest,
 [  --disable-digest        disable support for HTTP digest authorization],
 USE_DIGEST=$enableval, USE_DIGEST=yes)
-test x"${USE_DIGEST}" = xyes && AC_DEFINE(USE_DIGEST)
+test x"${USE_DIGEST}" = xyes && AC_DEFINE([USE_DIGEST], [],
+   [Define if you want the HTTP Digest Authorization compiled in.])
 
 AC_ARG_ENABLE(debug,
 [  --disable-debug         disable support for debugging output],
 ENABLE_DEBUG=$enableval, ENABLE_DEBUG=yes)
-test x"${ENABLE_DEBUG}" = xyes && AC_DEFINE(ENABLE_DEBUG)
+test x"${ENABLE_DEBUG}" = xyes && AC_DEFINE([ENABLE_DEBUG], [],
+   [Define if you want the debug output support compiled in.])
 
 wget_need_md5=no
 
@@ -373,7 +379,8 @@ main(){return 0;}
 
   if test x"$ssl_success" = xyes; then
     AC_MSG_NOTICE([compiling in support for SSL in $ssl_root])
-    AC_DEFINE(HAVE_SSL)
+    AC_DEFINE([HAVE_SSL], [],
+              [Define if SSL support should be compiled in.])
     AC_SUBST(SSL_INCLUDES)
     SSL_OBJ='gen_sslfunc$o'
     AC_SUBST(SSL_OBJ)
@@ -421,7 +428,7 @@ then
       AC_COMPILE_IFELSE([#include <md5.h>
                         ], [
         AC_MSG_RESULT(yes)
-        AC_DEFINE(HAVE_SOLARIS_MD5)
+        AC_DEFINE([HAVE_SOLARIS_MD5], [], [Define to use Solaris MD5.])
         LIBS="-lmd5 $LIBS"
         found_md5=yes
         AC_MSG_NOTICE([using the Solaris MD5 implementation])
@@ -433,7 +440,7 @@ then
   dnl implementation.
   if test x"$found_md5" = xno; then
     if test x"$ssl_success" = xyes; then
-      AC_DEFINE(HAVE_OPENSSL_MD5)
+      AC_DEFINE([HAVE_OPENSSL_MD5], [], [Define to use OpenSSL MD5.])
       found_md5=yes
       AC_MSG_NOTICE([using the OpenSSL MD5 implementation])
     fi
@@ -441,13 +448,13 @@ then
 
   dnl If none of the above worked, use the one we ship with Wget.
   if test x"$found_md5" = xno; then
-    AC_DEFINE(HAVE_BUILTIN_MD5)
+    AC_DEFINE([HAVE_BUILTIN_MD5], [], [Define to use built-in MD5.])
     MD5_OBJ="$MD5_OBJ gnu-md5\$o"
     found_md5=yes
     AC_MSG_NOTICE([using the GNU MD5 implementation])
   fi
 fi
-AC_DEFINE(HAVE_MD5)
+AC_DEFINE([HAVE_MD5], [], [Define if we're compiling support for MD5.])
 AC_SUBST(MD5_OBJ)
 
 dnl **********************************************************************
