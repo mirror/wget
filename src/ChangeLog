@@ -1,5 +1,7 @@
 2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* url.c (convert_links): Don't translate %d-%d.
+
 	* main.c (print_help): Remove stray HAVE_RANDOM code.
 
 2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
