@@ -39,9 +39,9 @@ described in the INSTALL file.
 
 Like all GNU utilities, the latest version of Wget can be found at the
 master GNU archive site ftp.gnu.org, and its mirrors.  For example,
-Wget 1.6 is at:
+Wget 1.7 is at:
 
-    <URL:ftp://ftp.gnu.org/pub/gnu/wget/wget-1.6.tar.gz>.
+    <URL:ftp://ftp.gnu.org/pub/gnu/wget/wget-1.7.tar.gz>.
 
 Please report bugs in Wget to <bug-wget@gnu.org>.
 
