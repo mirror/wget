@@ -283,12 +283,21 @@ fork_to_background (void)
 {
   pid_t pid;
   /* Whether we arrange our own version of opt.lfilename here.  */
-  int changedp = 0;
+  int logfile_changed = 0;
 
   if (!opt.lfilename)
     {
-      opt.lfilename = unique_name (DEFAULT_LOGFILE, 0);
-      changedp = 1;
+      /* We must create the file immediately to avoid either a race
+	 condition (which arises from using unique_name and failing to
+	 use fopen_excl) or lying to the user about the log file name
+	 (which arises from using unique_name, printing the name, and
+	 using fopen_excl later on.)  */
+      FILE *new_log_fp = unique_create (DEFAULT_LOGFILE, 0, &opt.lfilename);
+      if (new_log_fp)
+	{
+	  logfile_changed = 1;
+	  fclose (new_log_fp);
+	}
     }
   pid = fork ();
   if (pid < 0)
@@ -301,7 +310,7 @@ fork_to_background (void)
     {
       /* parent, no error */
       printf (_("Continuing in background, pid %d.\n"), (int)pid);
-      if (changedp)
+      if (logfile_changed)
 	printf (_("Output will be written to `%s'.\n"), opt.lfilename);
       exit (0);			/* #### should we use _exit()? */
     }
@@ -439,7 +448,7 @@ unique_name_1 (const char *prefix)
    exist at the point in time when the function was called.
    Therefore, where security matters, don't rely that the file created
    by this function exists until you open it with O_EXCL or
-   something.
+   equivalent.
 
    If ALLOW_PASSTHROUGH is 0, it always returns a freshly allocated
    string.  Otherwise, it may return FILE if the file doesn't exist
@@ -456,6 +465,65 @@ unique_name (const char *file, int allow_passthrough)
   /* Otherwise, find a numeric suffix that results in unused file name
      and return it.  */
   return unique_name_1 (file);
+}
+
+/* Create a file based on NAME, except without overwriting an existing
+   file with that name.  Providing O_EXCL is correctly implemented,
+   this function does not have the race condition associated with
+   opening the file returned by unique_name.  */
+
+FILE *
+unique_create (const char *name, int binary, char **opened_name)
+{
+  /* unique file name, based on NAME */
+  char *uname = unique_name (name, 0);
+  FILE *fp;
+  while ((fp = fopen_excl (uname, binary)) == NULL && errno == EEXIST)
+    {
+      xfree (uname);
+      uname = unique_name (name, 0);
+    }
+  if (opened_name && fp != NULL)
+    {
+      if (fp)
+	*opened_name = uname;
+      else
+	{
+	  *opened_name = NULL;
+	  xfree (uname);
+	}
+    }
+  else
+    xfree (uname);
+  return fp;
+}
+
+/* Open the file for writing, with the addition that the file is
+   opened "exclusively".  This means that, if the file already exists,
+   this function will *fail* and errno will be set to EEXIST.  If
+   BINARY is set, the file will be opened in binary mode, equivalent
+   to fopen's "wb".
+
+   If opening the file fails for any reason, including the file having
+   previously existed, this function returns NULL and sets errno
+   appropriately.  */
+   
+FILE *
+fopen_excl (const char *fname, int binary)
+{
+#ifdef O_EXCL
+  int flags = O_WRONLY | O_CREAT | O_EXCL;
+# ifdef O_BINARY
+  if (binary)
+    flags |= O_BINARY
+# endif
+  int fd = open (fname, flags, 0666);
+  if (fd < 0)
+    return NULL;
+  return fdopen (fd, binary ? "wb" : "w");
+#else  /* not O_EXCL */
+  return fopen (fname, binary ? "wb" : "w");
+#endif /* not O_EXCL */
 }
 
 /* Create DIRECTORY.  If some of the pathname components of DIRECTORY

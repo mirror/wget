@@ -82,6 +82,8 @@ int file_non_directory_p PARAMS ((const char *));
 wgint file_size PARAMS ((const char *));
 int make_directory PARAMS ((const char *));
 char *unique_name PARAMS ((const char *, int));
+FILE *unique_create PARAMS ((const char *, int, char **));
+FILE *fopen_excl PARAMS ((const char *, int));
 char *file_merge PARAMS ((const char *, const char *));
 
 int acceptable PARAMS ((const char *));

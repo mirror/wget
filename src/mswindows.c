@@ -230,18 +230,7 @@ ws_cleanup (void)
 static void
 ws_hangup (const char *reason)
 {
-  /* Whether we arrange our own version of opt.lfilename here.  */
-  int changedp = 0;
-
-  if (!opt.lfilename)
-    {
-      opt.lfilename = unique_name (DEFAULT_LOGFILE, 0);
-      changedp = 1;
-    }
-  printf (_("Continuing in background.\n"));
-  if (changedp)
-    printf (_("Output will be written to `%s'.\n"), opt.lfilename);
-
+  fprintf (stderr, _("Continuing in background.\n"));
   log_request_redirect_output (reason);
 
   /* Detach process from the current console.  Under Windows 9x, if we
@@ -265,7 +254,7 @@ make_section_name (DWORD pid)
 struct fake_fork_info
 {
   HANDLE event;
-  int changedp;
+  int logfile_changed;
   char lfilename[MAX_PATH + 1];
 };
 
@@ -300,15 +289,19 @@ fake_fork_child (void)
 
   event = info->event;
 
+  info->logfile_changed = 0;
   if (!opt.lfilename)
     {
-      opt.lfilename = unique_name (DEFAULT_LOGFILE, 0);
-      info->changedp = 1;
-      strncpy (info->lfilename, opt.lfilename, sizeof (info->lfilename));
-      info->lfilename[sizeof (info->lfilename) - 1] = '\0';
+      /* See utils:fork_to_background for explanation. */
+      FILE *new_log_fp = unique_create (DEFAULT_LOGFILE, 0, &opt.lfilename);
+      if (new_log_fp)
+	{
+	  info->logfile_changed = 1;
+	  strncpy (info->lfilename, opt.lfilename, sizeof (info->lfilename));
+	  info->lfilename[sizeof (info->lfilename) - 1] = '\0';
+	  fclose (new_log_fp);
+	}
     }
-  else
-    info->changedp = 0;
 
   UnmapViewOfFile (info);
   CloseHandle (section);
@@ -422,7 +415,7 @@ fake_fork (void)
     }
 
   /* Ensure string is properly terminated.  */
-  if (info->changedp &&
+  if (info->logfile_changed &&
       !memchr (info->lfilename, '\0', sizeof (info->lfilename)))
     {
       rv = FALSE;
@@ -430,7 +423,7 @@ fake_fork (void)
     }
 
   printf (_("Continuing in background, pid %lu.\n"), pi.dwProcessId);
-  if (info->changedp)
+  if (info->logfile_changed)
     printf (_("Output will be written to `%s'.\n"), info->lfilename);
 
   UnmapViewOfFile (info);

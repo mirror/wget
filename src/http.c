@@ -1720,7 +1720,27 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       mkalldirs (*hs->local_file);
       if (opt.backups)
 	rotate_backups (*hs->local_file);
-      fp = fopen (*hs->local_file, hs->restval ? "ab" : "wb");
+      if (hs->restval)
+	fp = fopen (*hs->local_file, "ab");
+      else if (opt.noclobber || opt.always_rest || opt.timestamping || opt.dirstruct
+	       || opt.output_document)
+	fp = fopen (*hs->local_file, "wb");
+      else
+	{
+	  fp = fopen_excl (*hs->local_file, 0);
+	  if (!fp && errno == EEXIST)
+	    {
+	      /* We cannot just invent a new name and use it (which is
+		 what functions like unique_create typically do)
+		 because we told the user we'd use this name.
+		 Instead, return and retry the download.  */
+	      logprintf (LOG_NOTQUIET,
+			 _("%s has sprung into existence.\n"),
+			 *hs->local_file);
+	      CLOSE_INVALIDATE (sock);
+	      return FOPEN_EXCL_ERR;
+	    }
+	}
       if (!fp)
 	{
 	  logprintf (LOG_NOTQUIET, "%s: %s\n", *hs->local_file, strerror (errno));
@@ -1992,12 +2012,35 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	{
 	case HERR: case HEOF: case CONSOCKERR: case CONCLOSED:
 	case CONERROR: case READERR: case WRITEFAILED:
-	case RANGEERR:
+	case RANGEERR: case FOPEN_EXCL_ERR:
 	  /* Non-fatal errors continue executing the loop, which will
 	     bring them to "while" statement at the end, to judge
 	     whether the number of tries was exceeded.  */
 	  free_hstat (&hstat);
 	  printwhat (count, opt.ntry);
+	  if (err == FOPEN_EXCL_ERR)
+	    {
+	      /* Re-determine the file name. */
+	      if (local_file && *local_file)
+		{
+		  xfree (*local_file);
+		  *local_file = url_file_name (u);
+		  hstat.local_file = local_file;
+		}
+	      else
+		{
+		  xfree (dummy);
+		  dummy = url_file_name (u);
+		  hstat.local_file = &dummy;
+		}
+	      /* be honest about where we will save the file */
+	      if (local_file && opt.output_document)
+		*local_file = HYPHENP (opt.output_document) ? NULL : xstrdup (opt.output_document);
+	      if (!opt.output_document)
+		locf = *hstat.local_file;
+	      else
+		locf = opt.output_document;
+	    }
 	  continue;
 	  break;
 	case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED: 

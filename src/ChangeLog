@@ -1,5 +1,25 @@
 2005-02-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp.c (getftp): Ditto.
+
+	* http.c (gethttp): When we're not supposed to overwrite files,
+	use fopen_excl to open the file and recompute the file name.
+
+	* log.c (redirect_output): Use unique_create to avoid a race
+	condition.
+
+	* mswindows.c (fake_fork_child): Use unique_create.
+
+	* utils.c (fopen_excl): New function that opens a stdio stream
+	with the O_EXCL flag (where available).
+	(unique_create): New function, like unique_name, but also creating
+	the file and returning a file pointer.
+	(fork_to_background): Use unique_create to create the file
+	immediately to avoid race condition with multiple instances of
+	wget -b.
+
+2005-02-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* host.c (lookup_host): Test for AI_ADDRCONFIG directly, instead
 	of checking for HAVE_GETADDRINFO_AI_ADDRCONFIG.
 
