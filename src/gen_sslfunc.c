@@ -335,9 +335,9 @@ ssl_connect (int fd)
 
   /* Register FD with Wget's transport layer, i.e. arrange that
      SSL-enabled functions are used for reading, writing, and polling.
-     That way the rest of Wget can keep using xread, xwrite, and
-     friends and not care what happens underneath.  */
-  register_transport (fd, ssl_read, ssl_write, ssl_poll, ssl_close, ssl);
+     That way the rest of Wget can use fd_read, fd_write, and friends
+     and not care what happens underneath.  */
+  fd_register_transport (fd, ssl_read, ssl_write, ssl_poll, ssl_close, ssl);
   DEBUGP (("Connected %d to SSL 0x%0lx\n", fd, (unsigned long) ssl));
   return ssl;
 

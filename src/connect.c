@@ -321,7 +321,7 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
        logprintf.  */
     int save_errno = errno;
     if (sock >= 0)
-      xclose (sock);
+      fd_close (sock);
     if (print)
       logprintf (LOG_VERBOSE, "failed: %s.\n", strerror (errno));
     errno = save_errno;
@@ -431,7 +431,7 @@ bind_local (const ip_address *bind_address, int *port)
   sockaddr_set_data (sa, bind_address, *port);
   if (bind (sock, sa, sockaddr_size (sa)) < 0)
     {
-      xclose (sock);
+      fd_close (sock);
       return -1;
     }
   DEBUGP (("Local socket fd %d bound.\n", sock));
@@ -446,7 +446,7 @@ bind_local (const ip_address *bind_address, int *port)
 	     something is seriously wrong with the socket, and it's
 	     unusable for us anyway because we must know the chosen
 	     port.  */
-	  xclose (sock);
+	  fd_close (sock);
 	  return -1;
 	}
       sockaddr_get_data (sa, NULL, port);
@@ -455,7 +455,7 @@ bind_local (const ip_address *bind_address, int *port)
     }
   if (listen (sock, 1) < 0)
     {
-      xclose (sock);
+      fd_close (sock);
       return -1;
     }
   return sock;
@@ -609,7 +609,7 @@ socket_has_inet6 (void)
 	supported = 0;
       else
 	{
-	  xclose (sock);
+	  fd_close (sock);
 	  supported = 1;
 	}
     }
@@ -750,17 +750,17 @@ sock_close (int fd)
    that are not mere file descriptors under the hood, such as SSL
    sockets.
 
-   That way the user code can call xread(fd, ...) and we'll run read
+   That way the user code can call fd_read(fd, ...) and we'll run read
    or SSL_read or whatever is necessary.  */
 
 static struct hash_table *transport_map;
 static int transport_map_modified_tick;
 
 struct transport_info {
-  xreader_t reader;
-  xwriter_t writer;
-  xpoller_t poller;
-  xcloser_t closer;
+  fd_reader_t reader;
+  fd_writer_t writer;
+  fd_poller_t poller;
+  fd_closer_t closer;
   void *ctx;
 };
 
@@ -772,13 +772,13 @@ struct transport_info {
    call getpeername, etc.  */
 
 void
-register_transport (int fd, xreader_t reader, xwriter_t writer,
-		    xpoller_t poller, xcloser_t closer, void *ctx)
+fd_register_transport (int fd, fd_reader_t reader, fd_writer_t writer,
+		       fd_poller_t poller, fd_closer_t closer, void *ctx)
 {
   struct transport_info *info;
 
   /* The file descriptor must be non-negative to be registered.
-     Negative values are ignored by xclose(), and -1 cannot be used as
+     Negative values are ignored by fd_close(), and -1 cannot be used as
      hash key.  */
   assert (fd >= 0);
 
@@ -794,7 +794,7 @@ register_transport (int fd, xreader_t reader, xwriter_t writer,
   ++transport_map_modified_tick;
 }
 
-/* When xread/xwrite are called multiple times in a loop, they should
+/* When fd_read/fd_write are called multiple times in a loop, they should
    remember the INFO pointer instead of fetching it every time.  It is
    not enough to compare FD to LAST_FD because FD might have been
    closed and reopened.  modified_tick ensures that changes to
@@ -825,7 +825,7 @@ register_transport (int fd, xreader_t reader, xwriter_t writer,
    opt.timeout is used for TIMEOUT.  */
 
 int
-xread (int fd, char *buf, int bufsize, double timeout)
+fd_read (int fd, char *buf, int bufsize, double timeout)
 {
   struct transport_info *info;
   LAZY_RETRIEVE_INFO (info);
@@ -855,7 +855,7 @@ xread (int fd, char *buf, int bufsize, double timeout)
    TIMEOUT.  */
 
 int
-xwrite (int fd, char *buf, int bufsize, double timeout)
+fd_write (int fd, char *buf, int bufsize, double timeout)
 {
   int res;
   struct transport_info *info;
@@ -895,13 +895,13 @@ xwrite (int fd, char *buf, int bufsize, double timeout)
 /* Close the file descriptor FD.  */
 
 void
-xclose (int fd)
+fd_close (int fd)
 {
   struct transport_info *info;
   if (fd < 0)
     return;
 
-  /* Don't use LAZY_RETRIEVE_INFO because xclose() is only called once
+  /* Don't use LAZY_RETRIEVE_INFO because fd_close() is only called once
      per socket, so that particular optimization wouldn't work.  */
   info = NULL;
   if (transport_map)

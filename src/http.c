@@ -211,7 +211,7 @@ post_file (int sock, const char *file_name, long promised_size)
       if (length == 0)
 	break;
       towrite = WMIN (promised_size - written, length);
-      write_error = xwrite (sock, chunk, towrite, -1);
+      write_error = fd_write (sock, chunk, towrite, -1);
       if (write_error < 0)
 	{
 	  fclose (fp);
@@ -370,7 +370,7 @@ invalidate_persistent (void)
 {
   DEBUGP (("Disabling further reuse of socket %d.\n", pconn.socket));
   pconn_active = 0;
-  xclose (pconn.socket);
+  fd_close (pconn.socket);
   xfree (pconn.host);
   xzero (pconn);
 }
@@ -525,7 +525,7 @@ persistent_available_p (const char *host, int port, int ssl,
       if (pconn_active && (fd) == pconn.socket)	\
 	invalidate_persistent ();		\
       else					\
-	xclose (fd);				\
+	fd_close (fd);				\
     }						\
 } while (0)
 
@@ -533,7 +533,7 @@ persistent_available_p (const char *host, int port, int ssl,
   if (pconn_active && (fd) == pconn.socket)	\
     invalidate_persistent ();			\
   else						\
-    xclose (fd);				\
+    fd_close (fd);				\
 } while (0)
 
 struct http_stat
@@ -728,7 +728,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	     logputs (LOG_VERBOSE, "\n");
 	     logprintf (LOG_NOTQUIET,
 			_("Unable to establish SSL connection.\n"));
-	     xclose (sock);
+	     fd_close (sock);
 	     return CONSSLERR;
 	   }
 	 using_ssl = 1;
@@ -961,14 +961,14 @@ Accept: %s\r\n\
   xfree (full_path);
 
   /* Send the request to server.  */
-  write_error = xwrite (sock, request, strlen (request), -1);
+  write_error = fd_write (sock, request, strlen (request), -1);
 
   if (write_error >= 0)
     {
       if (opt.post_data)
 	{
 	  DEBUGP (("[POST data: %s]\n", opt.post_data));
-	  write_error = xwrite (sock, opt.post_data, post_data_size, -1);
+	  write_error = fd_write (sock, opt.post_data, post_data_size, -1);
 	}
       else if (opt.post_file_name && post_data_size != 0)
 	write_error = post_file (sock, opt.post_file_name, post_data_size);

@@ -67,15 +67,16 @@ int select_fd PARAMS ((int, double, int));
 int test_socket_open PARAMS ((int));
 int socket_has_inet6 PARAMS ((void));
 
-typedef int (*xreader_t) PARAMS ((int, char *, int, void *));
-typedef int (*xwriter_t) PARAMS ((int, char *, int, void *));
-typedef int (*xpoller_t) PARAMS ((int, double, int, void *));
-typedef void (*xcloser_t) PARAMS ((int, void *));
-void register_transport PARAMS ((int,
-				 xreader_t, xwriter_t, xpoller_t, xcloser_t,
-				 void *));
+typedef int (*fd_reader_t) PARAMS ((int, char *, int, void *));
+typedef int (*fd_writer_t) PARAMS ((int, char *, int, void *));
+typedef int (*fd_poller_t) PARAMS ((int, double, int, void *));
+typedef void (*fd_closer_t) PARAMS ((int, void *));
+void fd_register_transport PARAMS ((int,
+				    fd_reader_t, fd_writer_t,
+				    fd_poller_t, fd_closer_t,
+				    void *));
 
-int xread PARAMS ((int, char *, int, double));
-int xwrite PARAMS ((int, char *, int, double));
-void xclose PARAMS ((int));
+int fd_read PARAMS ((int, char *, int, double));
+int fd_write PARAMS ((int, char *, int, double));
+void fd_close PARAMS ((int));
 #endif /* CONNECT_H */

@@ -65,7 +65,7 @@ rbuf_uninitialize (struct rbuf *rbuf)
 int
 rbuf_read_bufferful (struct rbuf *rbuf)
 {
-  return xread (rbuf->fd, rbuf->buffer, sizeof (rbuf->buffer), -1);
+  return fd_read (rbuf->fd, rbuf->buffer, sizeof (rbuf->buffer), -1);
 }
 
 /* Currently unused -- see RBUF_READCHAR.  */
@@ -87,7 +87,7 @@ rbuf_peek (struct rbuf *rbuf, char *store)
       int res;
       rbuf->buffer_pos = rbuf->buffer;
       rbuf->buffer_left = 0;
-      res = xread (rbuf->fd, rbuf->buffer, sizeof (rbuf->buffer), -1);
+      res = fd_read (rbuf->fd, rbuf->buffer, sizeof (rbuf->buffer), -1);
       if (res <= 0)
 	return res;
       rbuf->buffer_left = res;

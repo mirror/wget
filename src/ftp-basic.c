@@ -147,7 +147,7 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
   xfree (respline);
   /* Send USER username.  */
   request = ftp_request ("USER", acc);
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -214,7 +214,7 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
   xfree (respline);
   /* Send PASS password.  */
   request = ftp_request ("PASS", pass);
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -292,11 +292,11 @@ ftp_port (struct rbuf *rbuf, int *local_sock)
 
   /* Send PORT request.  */
   request = ftp_request ("PORT", bytes);
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
-      xclose (*local_sock);
+      fd_close (*local_sock);
       return WRITEFAILED;
     }
   xfree (request);
@@ -306,13 +306,13 @@ ftp_port (struct rbuf *rbuf, int *local_sock)
   if (err != FTPOK)
     {
       xfree (respline);
-      xclose (*local_sock);
+      fd_close (*local_sock);
       return err;
     }
   if (*respline != '2')
     {
       xfree (respline);
-      xclose (*local_sock);
+      fd_close (*local_sock);
       return FTPPORTERR;
     }
   xfree (respline);
@@ -389,11 +389,11 @@ ftp_lprt (struct rbuf *rbuf, int *local_sock)
 
   /* Send PORT request.  */
   request = ftp_request ("LPRT", bytes);
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
-      xclose (*local_sock);
+      fd_close (*local_sock);
       return WRITEFAILED;
     }
   xfree (request);
@@ -402,13 +402,13 @@ ftp_lprt (struct rbuf *rbuf, int *local_sock)
   if (err != FTPOK)
     {
       xfree (respline);
-      xclose (*local_sock);
+      fd_close (*local_sock);
       return err;
     }
   if (*respline != '2')
     {
       xfree (respline);
-      xclose (*local_sock);
+      fd_close (*local_sock);
       return FTPPORTERR;
     }
   xfree (respline);
@@ -473,11 +473,11 @@ ftp_eprt (struct rbuf *rbuf, int *local_sock)
 
   /* Send PORT request.  */
   request = ftp_request ("EPRT", bytes);
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
-      xclose (*local_sock);
+      fd_close (*local_sock);
       return WRITEFAILED;
     }
   xfree (request);
@@ -486,13 +486,13 @@ ftp_eprt (struct rbuf *rbuf, int *local_sock)
   if (err != FTPOK)
     {
       xfree (respline);
-      xclose (*local_sock);
+      fd_close (*local_sock);
       return err;
     }
   if (*respline != '2')
     {
       xfree (respline);
-      xclose (*local_sock);
+      fd_close (*local_sock);
       return FTPPORTERR;
     }
   xfree (respline);
@@ -521,7 +521,7 @@ ftp_pasv (struct rbuf *rbuf, ip_address *addr, int *port)
   /* Form the request.  */
   request = ftp_request ("PASV", NULL);
   /* And send it.  */
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -592,7 +592,7 @@ ftp_lpsv (struct rbuf *rbuf, ip_address *addr, int *port)
   request = ftp_request ("LPSV", NULL);
 
   /* And send it.  */
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -759,7 +759,7 @@ ftp_epsv (struct rbuf *rbuf, ip_address *ip, int *port)
   request = ftp_request ("EPSV", (ip->type == IPV4_ADDRESS ? "1" : "2"));
 
   /* And send it.  */
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -859,7 +859,7 @@ ftp_type (struct rbuf *rbuf, int type)
   stype[1] = 0;
   /* Send TYPE request.  */
   request = ftp_request ("TYPE", stype);
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -894,7 +894,7 @@ ftp_cwd (struct rbuf *rbuf, const char *dir)
 
   /* Send CWD request.  */
   request = ftp_request ("CWD", dir);
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -934,7 +934,7 @@ ftp_rest (struct rbuf *rbuf, long offset)
 
   number_to_string (numbuf, offset);
   request = ftp_request ("REST", numbuf);
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -968,7 +968,7 @@ ftp_retr (struct rbuf *rbuf, const char *file)
 
   /* Send RETR request.  */
   request = ftp_request ("RETR", file);
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -1008,7 +1008,7 @@ ftp_list (struct rbuf *rbuf, const char *file)
 
   /* Send LIST request.  */
   request = ftp_request ("LIST", file);
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -1047,7 +1047,7 @@ ftp_syst (struct rbuf *rbuf, enum stype *server_type)
 
   /* Send SYST request.  */
   request = ftp_request ("SYST", NULL);
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -1104,7 +1104,7 @@ ftp_pwd (struct rbuf *rbuf, char **pwd)
 
   /* Send PWD request.  */
   request = ftp_request ("PWD", NULL);
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -1150,7 +1150,7 @@ ftp_size (struct rbuf *rbuf, const char *file, long int *size)
 
   /* Send PWD request.  */
   request = ftp_request ("SIZE", file);
-  nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);

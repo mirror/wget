@@ -243,7 +243,7 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 		}
 	    }
 	}
-      res = xread (fd, dlbuf, amount_to_read, tmout);
+      res = fd_read (fd, dlbuf, amount_to_read, tmout);
 
       if (res == 0 || (res < 0 && errno != ETIMEDOUT))
 	break;

@@ -1,5 +1,12 @@
 2003-11-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* connect.c: Renamed xread/xwrite/xclose to
+	fd_read/fd_write/fd_close.  The "x" prefix is not appropriate
+	because the semantics have diverged from read/write/close too
+	significantly.  Updated all callers.
+
+2003-11-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c (sock_write): It's not necessary to initialize RES.
 
 2003-11-19  Hrvoje Niksic  <hniksic@xemacs.org>
