@@ -703,7 +703,7 @@ numeric_address_p (const char *addr)
 static int
 check_domain_match (const char *cookie_domain, const char *host)
 {
-  int i, headlen;
+  int headlen;
   const char *tail;
 
   /* Numeric address requires exact match.  It also requires HOST to
@@ -1370,7 +1370,7 @@ save_cookies (const char *file)
     logprintf (LOG_NOTQUIET, _("Error closing `%s': %s\n"),
 	       file, strerror (errno));
 
-  DEBUGP (("Done saving cookies.\n", file));
+  DEBUGP (("Done saving cookies.\n"));
 }
 
 static int

@@ -71,9 +71,9 @@ static void path_simplify_with_kludge PARAMS ((char *));
 #endif
 static int urlpath_length PARAMS ((const char *));
 
-/* NULL-terminated list of strings to be recognized as prototypes (URL
-   schemes).  Note that recognized doesn't mean supported -- only HTTP,
-   HTTPS and FTP are currently supported .
+/* A NULL-terminated list of strings to be recognized as prototypes
+   (URL schemes).  Note that recognized doesn't mean supported -- only
+   HTTP, HTTPS and FTP are currently supported .
 
    However, a string that does not match anything in the list will be
    considered a relative URL.  Thus it's important that this list has
@@ -131,8 +131,7 @@ static struct proto sup_protos[] =
 #ifdef HAVE_SSL
   { "https://",URLHTTPS, DEFAULT_HTTPS_PORT},
 #endif
-  { "ftp://", URLFTP, DEFAULT_FTP_PORT },
-  /*{ "file://", URLFILE, DEFAULT_FTP_PORT },*/
+  { "ftp://", URLFTP, DEFAULT_FTP_PORT }
 };
 
 static void parse_dir PARAMS ((const char *, char **, char **));
@@ -142,27 +141,6 @@ static char *construct_relative PARAMS ((const char *, const char *));
 static char process_ftp_type PARAMS ((char *));
 
 
-/* Returns the number of characters to be skipped if the first thing
-   in a URL is URL: (which is 0 or 4+).  The optional spaces after
-   URL: are also skipped.  */
-int
-skip_url (const char *url)
-{
-  int i;
-
-  if (TOUPPER (url[0]) == 'U'
-      && TOUPPER (url[1]) == 'R'
-      && TOUPPER (url[2]) == 'L'
-      && url[3] == ':')
-    {
-      /* Skip blanks.  */
-      for (i = 4; url[i] && ISSPACE (url[i]); i++);
-      return i;
-    }
-  else
-    return 0;
-}
-
 /* Unsafe chars:
    - anything <= 32;
    - stuff from rfc1738 ("<>\"#%{}|\\^~[]`");
@@ -270,7 +248,6 @@ urlproto (const char *url)
 {
   int i;
 
-  url += skip_url (url);
   for (i = 0; i < ARRAY_SIZE (sup_protos); i++)
     if (!strncasecmp (url, sup_protos[i].name, strlen (sup_protos[i].name)))
       return sup_protos[i].ind;
@@ -317,7 +294,6 @@ has_proto (const char *url)
 {
   char **s;
 
-  url += skip_url (url);
   for (s = protostrings; *s; s++)
     if (strncasecmp (url, *s, strlen (*s)) == 0)
       return 1;
@@ -409,7 +385,6 @@ parseurl (const char *url, struct urlinfo *u, int strict)
   uerr_t type;
 
   DEBUGP (("parseurl (\"%s\") -> ", url));
-  url += skip_url (url);
   recognizable = has_proto (url);
   if (strict && !recognizable)
     return URLUNKNOWN;
@@ -607,8 +582,8 @@ parse_uname (const char *url, char **user, char **passwd)
 
   *user = NULL;
   *passwd = NULL;
-  url += skip_url (url);
-  /* Look for end of protocol string.  */
+
+  /* Look for the end of the protocol string.  */
   l = skip_proto (url);
   if (!l)
     return URLUNKNOWN;

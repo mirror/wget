@@ -1,5 +1,19 @@
 2001-04-13  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* init.c: Include cookies.h.
+
+	* cookies.h: Declare cookies_cleanup.
+
+	* cookies.c (check_domain_match): Remove unused variable.
+	(save_cookies): Remove extraneous argument from debug statement.
+
+	* host.c (same_host): Don't call skip_url.
+
+	* url.c (skip_url): Removed.  Removed its calls from various
+	functions in url.c.
+
+2001-04-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* cookies.c (unsigned_string_hash): Use the new code in
 	string_hash as reference.
 

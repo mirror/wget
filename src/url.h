@@ -97,8 +97,6 @@ typedef enum
 
 /* Function declarations */
 
-int skip_url PARAMS ((const char *));
-
 int contains_unsafe PARAMS ((const char *));
 char *encode_string PARAMS ((const char *));
 

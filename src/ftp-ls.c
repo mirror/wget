@@ -564,7 +564,7 @@ ftp_parse_vms_ls (const char *file)
   int hour, min, sec;
   struct tm timestruct;
 
-  char *line, *tok, *p;          /* tokenizer */
+  char *line, *tok;		 /* tokenizer */
   struct fileinfo *dir, *l, cur; /* list creation */
 
   fp = fopen (file, "rb");

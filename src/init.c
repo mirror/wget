@@ -50,6 +50,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "host.h"
 #include "recur.h"
 #include "netrc.h"
+#include "cookies.h"		/* for cookies_cleanup */
 
 #ifndef errno
 extern int errno;

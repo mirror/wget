@@ -26,3 +26,5 @@ char *build_cookies_request PARAMS ((const char *, int, const char *, int));
 
 void load_cookies PARAMS ((const char *));
 void save_cookies PARAMS ((const char *));
+
+void cookies_cleanup PARAMS ((void));
