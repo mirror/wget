@@ -1,6 +1,7 @@
 2001-02-27  Dan Harkless  <wget@harkless.org>
 
-	* TODO: Re-use FTP connection if multiple URLs on one host specified.
+	* TODO: Re-use FTP connection if multiple URLs on one host
+	specified.  Make "ftp://<host>/%2F<file>" cause an initial "CWD /".
 
 2001-02-23  Dan Harkless  <wget@harkless.org>
 

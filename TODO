@@ -7,6 +7,15 @@ items are not listed in any particular order (except that recently-added items
 may tend towards the top).  Not all of these represent user-visible
 changes.
 
+* RFC 1738 says that if logging on to an FTP server puts you in a directory
+  other than '/', the way to specify a file relative to '/' in a URL (let's use
+  "/bin/ls" in this example) is "ftp://host/%2Fbin/ls".  Wget needs to support
+  this (and ideally not consider "ftp://host//bin/ls" to be equivalent, as that
+  would equate to the command "CWD " rather than "CWD /").  To accomodate people
+  used to broken FTP clients like Internet Explorer and Netscape, if
+  "ftp://host/bin/ls" doesn't exist, Wget should try again (perhaps under
+  control of an option), acting as if the user had typed "ftp://host/%2Fbin/ls".
+
 * If multiple FTP URLs are specified that are on the same host, Wget should
   re-use the connection rather than opening a new one for each file.
 
