@@ -1,6 +1,5 @@
 /* URL handling.
-   Copyright (C) 1995, 1996, 1997, 2000, 2001, 2003, 2003
-   Free Software Foundation, Inc.
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -1017,6 +1016,30 @@ url_full_path (const struct url *url)
   return full_path;
 }
 
+/* Unescape CHR in an otherwise escaped STR.  Used to selectively
+   escaping of certain characters, such as "/" and ":".  Returns a
+   count of unescaped chars.  */
+
+static void
+unescape_single_char (char *str, char chr)
+{
+  const char c1 = XNUM_TO_DIGIT (chr >> 4);
+  const char c2 = XNUM_TO_DIGIT (chr & 0xf);
+  char *h = str;		/* hare */
+  char *t = str;		/* tortoise */
+  for (; *h; h++, t++)
+    {
+      if (h[0] == '%' && h[1] == c1 && h[2] == c2)
+	{
+	  *t = chr;
+	  h += 2;
+	}
+      else
+	*t = *h;
+    }
+  *t = '\0';
+}
+
 /* Escape unsafe and reserved characters, except for the slash
    characters.  */
 
@@ -1024,28 +1047,10 @@ static char *
 url_escape_dir (const char *dir)
 {
   char *newdir = url_escape_1 (dir, urlchr_unsafe | urlchr_reserved, 1);
-  char *h, *t;
   if (newdir == dir)
     return (char *)dir;
 
-  /* Unescape slashes in NEWDIR. */
-
-  h = newdir;			/* hare */
-  t = newdir;			/* tortoise */
-
-  for (; *h; h++, t++)
-    {
-      /* url_escape_1 having converted '/' to "%2F" exactly. */
-      if (*h == '%' && h[1] == '2' && h[2] == 'F')
-	{
-	  *t = '/';
-	  h += 2;
-	}
-      else
-	*t = *h;
-    }
-  *t = '\0';
-
+  unescape_single_char (newdir, '/');
   return newdir;
 }
 
@@ -1845,7 +1850,7 @@ url_string (const struct url *url, int hide_password)
 {
   int size;
   char *result, *p;
-  char *quoted_user = NULL, *quoted_passwd = NULL;
+  char *quoted_host, *quoted_user = NULL, *quoted_passwd = NULL;
 
   int scheme_port  = supported_schemes[url->scheme].default_port;
   const char *scheme_str = supported_schemes[url->scheme].leading_string;
@@ -1868,12 +1873,19 @@ url_string (const struct url *url, int hide_password)
 	}
     }
 
-  /* Numeric IPv6 addresses can contain ':' and need to be quoted with
-     brackets.  */
-  brackets_around_host = strchr (url->host, ':') != NULL;
+  /* In the unlikely event that the host name contains non-printable
+     characters, quote it for displaying to the user.  */
+  quoted_host = url_escape_allow_passthrough (url->host);
+
+  /* Undo the quoting of colons that URL escaping performs.  IPv6
+     addresses may legally contain colons, and in that case must be
+     placed in square brackets.  */
+  if (quoted_host != url->host)
+    unescape_single_char (quoted_host, ':');
+  brackets_around_host = strchr (quoted_host, ':') != NULL;
 
   size = (strlen (scheme_str)
-	  + strlen (url->host)
+	  + strlen (quoted_host)
 	  + (brackets_around_host ? 2 : 0)
 	  + fplen
 	  + 1);
@@ -1902,7 +1914,7 @@ url_string (const struct url *url, int hide_password)
 
   if (brackets_around_host)
     *p++ = '[';
-  APPEND (p, url->host);
+  APPEND (p, quoted_host);
   if (brackets_around_host)
     *p++ = ']';
   if (url->port != scheme_port)
@@ -1919,9 +1931,10 @@ url_string (const struct url *url, int hide_password)
 
   if (quoted_user && quoted_user != url->user)
     xfree (quoted_user);
-  if (quoted_passwd && !hide_password
-      && quoted_passwd != url->passwd)
+  if (quoted_passwd && !hide_password && quoted_passwd != url->passwd)
     xfree (quoted_passwd);
+  if (quoted_host != url->host)
+    xfree (quoted_host);
 
   return result;
 }

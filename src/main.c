@@ -61,7 +61,6 @@ extern int errno;
 #include "retr.h"
 #include "recur.h"
 #include "host.h"
-#include "cookies.h"
 #include "url.h"
 #include "progress.h"		/* for progress_handle_sigwinch */
 #include "convert.h"
@@ -953,8 +952,8 @@ Can't timestamp and not clobber old files at the same time.\n"));
 		   legible (opt.quota));
     }
 
-  if (opt.cookies_output && wget_cookie_jar)
-    cookie_jar_save (wget_cookie_jar, opt.cookies_output);
+  if (opt.cookies_output)
+    save_cookies ();
 
   if (opt.convert_links && !opt.delete_after)
     convert_all_links ();

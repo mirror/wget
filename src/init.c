@@ -1,6 +1,5 @@
 /* Reading/parsing the initialization file.
-   Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001, 2003, 2004
-   Free Software Foundation, Inc.
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -53,15 +52,13 @@ so, delete this exception statement from your version.  */
 #include "init.h"
 #include "host.h"
 #include "netrc.h"
-#include "cookies.h"		/* for cookie_jar_delete */
 #include "progress.h"
 #include "recur.h"		/* for INFINITE_RECURSION */
+#include "convert.h"		/* for convert_cleanup */
 
 #ifndef errno
 extern int errno;
 #endif
-
-extern struct cookie_jar *wget_cookie_jar;
 
 /* We want tilde expansion enabled only when reading `.wgetrc' lines;
    otherwise, it will be performed by the shell.  This variable will
@@ -1337,8 +1334,7 @@ cleanup (void)
   cleanup_html_url ();
   downloaded_files_free ();
   host_cleanup ();
-  if (wget_cookie_jar)
-    cookie_jar_delete (wget_cookie_jar);
+  log_cleanup ();
 
   {
     extern acc_t *netrc_list;
@@ -1366,7 +1362,7 @@ cleanup (void)
   xfree_null (opt.referer);
   xfree_null (opt.http_user);
   xfree_null (opt.http_passwd);
-  xfree_null (opt.user_header);
+  free_vec (opt.user_headers);
 #ifdef HAVE_SSL
   xfree_null (opt.sslcertkey);
   xfree_null (opt.sslcertfile);

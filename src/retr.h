@@ -62,6 +62,7 @@ struct url;
 
 uerr_t http_loop PARAMS ((struct url *, char **, char **, const char *,
 			  int *, struct url *));
+void save_cookies PARAMS ((void));
 
 
 #endif /* RETR_H */

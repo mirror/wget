@@ -558,6 +558,14 @@ fopen_excl (const char *fname, int binary)
     return NULL;
   return fdopen (fd, binary ? "wb" : "w");
 #else  /* not O_EXCL */
+  /* Manually check whether the file exists.  This is prone to race
+     conditions, but systems without O_EXCL haven't deserved
+     better.  */
+  if (file_exists_p (fname))
+    {
+      errno = EEXIST;
+      return NULL;
+    }
   return fopen (fname, binary ? "wb" : "w");
 #endif /* not O_EXCL */
 }

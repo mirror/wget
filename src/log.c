@@ -1,5 +1,5 @@
 /* Messages logging.
-   Copyright (C) 1998, 2000, 2001 Free Software Foundation, Inc.
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -684,11 +684,11 @@ struct ringel {
   char *buffer;
   int size;
 };
+static struct ringel ring[RING_SIZE];	/* ring data */
 
 static const char *
 escnonprint_internal (const char *str, int for_uri)
 {
-  static struct ringel ring[RING_SIZE];	/* ring data */
   static int ringpos;		        /* current ring position */
 
   int nprcnt = count_nonprint (str);
@@ -706,12 +706,15 @@ escnonprint_internal (const char *str, int for_uri)
        i.e. with three *additional* chars (two in URI-mode).  Size
        must also include the length of the original string and an
        additional char for the terminating \0. */
-    int needed_size = strlen (str) + 1 + for_uri ? (2 * nprcnt) : (3 * nprcnt);
+    int needed_size = strlen (str) + 1 + (for_uri ? 2 * nprcnt : 3 * nprcnt);
 
     /* If the current buffer is uninitialized or too small,
        (re)allocate it.  */
     if (r->buffer == NULL || r->size < needed_size)
-      r->buffer = xrealloc (r->buffer, needed_size);
+      {
+	r->buffer = xrealloc (r->buffer, needed_size);
+	r->size = needed_size;
+      }
 
     copy_and_escape (str, r->buffer, for_uri);
     ringpos = (ringpos + 1) % RING_SIZE;
@@ -747,6 +750,14 @@ const char *
 escnonprint_uri (const char *str)
 {
   return escnonprint_internal (str, 1);
+}
+
+void
+log_cleanup (void)
+{
+  int i;
+  for (i = 0; i < countof (ring); i++)
+    xfree_null (ring[i].buffer);
 }
 
 /* When SIGHUP or SIGUSR1 are received, the output is redirected

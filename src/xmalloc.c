@@ -1,5 +1,5 @@
 /* Wrappers around malloc and memory debugging support.
-   Copyright (C) 2003 Free Software Foundation, Inc.
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -42,6 +42,7 @@ so, delete this exception statement from your version.  */
 
 #include "wget.h"
 #include "xmalloc.h"
+#include "hash.h"		/* for hash_pointer */
 
 #ifndef errno
 extern int errno;
@@ -79,11 +80,11 @@ memfatal (const char *context, long attempted_size)
 
    If memory debugging is not turned on, xmalloc.h defines these:
 
-     #define xmalloc xmalloc_real
-     #define xmalloc0 xmalloc0_real
-     #define xrealloc xrealloc_real
-     #define xstrdup xstrdup_real
-     #define xfree xfree_real
+     #define xmalloc checking_malloc
+     #define xmalloc0 checking_malloc0
+     #define xrealloc checking_realloc
+     #define xstrdup checking_strdup
+     #define xfree checking_free
 
    In case of memory debugging, the definitions are a bit more
    complex, because we want to provide more information, *and* we want
@@ -91,13 +92,14 @@ memfatal (const char *context, long attempted_size)
    and friends need to be macros in the first place.)  Then it looks
    like this:
 
-     #define xmalloc(a) xmalloc_debug (a, __FILE__, __LINE__)
-     #define xmalloc0(a) xmalloc0_debug (a, __FILE__, __LINE__)
-     #define xrealloc(a, b) xrealloc_debug (a, b, __FILE__, __LINE__)
-     #define xstrdup(a) xstrdup_debug (a, __FILE__, __LINE__)
-     #define xfree(a) xfree_debug (a, __FILE__, __LINE__)
+     #define xmalloc(a) debugging_malloc (a, __FILE__, __LINE__)
+     #define xmalloc0(a) debugging_malloc0 (a, __FILE__, __LINE__)
+     #define xrealloc(a, b) debugging_realloc (a, b, __FILE__, __LINE__)
+     #define xstrdup(a) debugging_strdup (a, __FILE__, __LINE__)
+     #define xfree(a) debugging_free (a, __FILE__, __LINE__)
 
-   Each of the *_debug function does its magic and calls the real one.  */
+   Each of the debugging_* functions does its magic and calls the
+   corresponding checking_* one.  */
 
 #ifdef DEBUG_MALLOC
 # define STATIC_IF_DEBUG static
@@ -106,7 +108,7 @@ memfatal (const char *context, long attempted_size)
 #endif
 
 STATIC_IF_DEBUG void *
-xmalloc_real (size_t size)
+checking_malloc (size_t size)
 {
   void *ptr = malloc (size);
   if (!ptr)
@@ -115,7 +117,7 @@ xmalloc_real (size_t size)
 }
 
 STATIC_IF_DEBUG void *
-xmalloc0_real (size_t size)
+checking_malloc0 (size_t size)
 {
   /* Using calloc can be faster than malloc+memset because some calloc
      implementations know when they're dealing with zeroed-out memory
@@ -127,7 +129,7 @@ xmalloc0_real (size_t size)
 }
 
 STATIC_IF_DEBUG void *
-xrealloc_real (void *ptr, size_t newsize)
+checking_realloc (void *ptr, size_t newsize)
 {
   void *newptr;
 
@@ -144,7 +146,7 @@ xrealloc_real (void *ptr, size_t newsize)
 }
 
 STATIC_IF_DEBUG char *
-xstrdup_real (const char *s)
+checking_strdup (const char *s)
 {
   char *copy;
 
@@ -164,31 +166,31 @@ xstrdup_real (const char *s)
 }
 
 STATIC_IF_DEBUG void
-xfree_real (void *ptr)
+checking_free (void *ptr)
 {
   /* Wget's xfree() must not be passed a NULL pointer.  This is for
-     historical reasons: many pre-C89 systems were known to bomb at
-     free(NULL), and Wget was careful to use xfree_null when there is
+     historical reasons: pre-C89 systems were reported to bomb at
+     free(NULL), and Wget was careful to not call xfree when there was
      a possibility of PTR being NULL.  (It might have been better to
      simply have xfree() do nothing if ptr==NULL.)
 
      Since the code is already written that way, this assert simply
-     enforces that constraint.  Code that thinks it doesn't deal with
-     NULL, and it in fact does, aborts immediately.  If you trip on
-     this, either the code has a pointer handling bug or should have
-     called xfree_null instead of xfree.  Correctly written code
-     should never trigger this assertion.
+     enforces the existing constraint.  The benefit is double-checking
+     the logic: code that thinks it can't be passed a NULL pointer,
+     while it in fact can, aborts here.  If you trip on this, either
+     the code has a pointer handling bug or should have called
+     xfree_null instead of xfree.  Correctly written code should never
+     trigger this assertion.
 
-     If the assertion proves to be too much of a hassle, it can be
-     removed and a check that makes NULL a no-op placed in its stead.
-     If that is done, xfree_null is no longer needed and should be
-     removed.  */
+     The downside is that the uninitiated might not expect xfree(NULL)
+     to abort.  If the assertion proves to be too much of a hassle, it
+     can be removed and a check that makes NULL a no-op placed in its
+     stead.  If that is done, xfree_null is no longer needed and
+     should be removed.  */
   assert (ptr != NULL);
+
   free (ptr);
 }
-
-/* xfree_real is unnecessary because free doesn't require any special
-   functionality.  */
 
 #ifdef DEBUG_MALLOC
 
@@ -202,8 +204,10 @@ xfree_real (void *ptr)
    * Making malloc store its entry into a simple array and free remove
      stuff from that array.  At the end, print the pointers which have
      not been freed, along with the source file and the line number.
-     This also has the side-effect of detecting freeing memory that
-     was never allocated.
+
+   * Checking for "invalid frees", where free is called on a pointer
+     not obtained with malloc, or where the same pointer is freed
+     twice.
 
    Note that this kind of memory leak checking strongly depends on
    every malloc() being followed by a free(), even if the program is
@@ -212,58 +216,82 @@ xfree_real (void *ptr)
 
 static int malloc_count, free_count;
 
+/* Home-grown hash table of mallocs: */
+
+#define SZ 100003		/* Prime number a little over 100,000.
+				   Increase the table size if you need
+				   to debug larger Wget runs.  */
+
 static struct {
-  char *ptr;
+  const void *ptr;
   const char *file;
   int line;
-} malloc_debug[100000];
+} malloc_table[SZ];
 
-/* Both register_ptr and unregister_ptr take O(n) operations to run,
-   which can be a real problem.  It would be nice to use a hash table
-   for malloc_debug, but the functions in hash.c are not suitable
-   because they can call malloc() themselves.  Maybe it would work if
-   the hash table were preallocated to a huge size, and if we set the
-   rehash threshold to 1.0.  */
+/* Find PTR's position in malloc_table.  If PTR is not found, return
+   the next available position.  */
 
-/* Register PTR in malloc_debug.  Abort if this is not possible
-   (presumably due to the number of current allocations exceeding the
-   size of malloc_debug.)  */
-
-static void
-register_ptr (void *ptr, const char *file, int line)
+static inline int
+ptr_position (const void *ptr)
 {
-  int i;
-  for (i = 0; i < countof (malloc_debug); i++)
-    if (malloc_debug[i].ptr == NULL)
-      {
-	malloc_debug[i].ptr = ptr;
-	malloc_debug[i].file = file;
-	malloc_debug[i].line = line;
-	return;
-      }
-  abort ();
+  int i = hash_pointer (ptr) % SZ;
+  for (; malloc_table[i].ptr != NULL; i = (i + 1) % SZ)
+    if (malloc_table[i].ptr == ptr)
+      return i;
+  return i;
 }
 
-/* Unregister PTR from malloc_debug.  Abort if PTR is not present in
-   malloc_debug.  (This catches calling free() with a bogus pointer.)  */
+/* Register PTR in malloc_table.  Abort if this is not possible
+   (presumably due to the number of current allocations exceeding the
+   size of malloc_table.)  */
 
 static void
+register_ptr (const void *ptr, const char *file, int line)
+{
+  int i;
+  if (malloc_count - free_count > SZ)
+    abort ();
+
+  i = ptr_position (ptr);
+  malloc_table[i].ptr = ptr;
+  malloc_table[i].file = file;
+  malloc_table[i].line = line;
+}
+
+/* Unregister PTR from malloc_table.  Return 0 if PTR is not present
+   in malloc_table.  */
+
+static int
 unregister_ptr (void *ptr)
 {
-  int i;
-  for (i = 0; i < countof (malloc_debug); i++)
-    if (malloc_debug[i].ptr == ptr)
-      {
-	malloc_debug[i].ptr = NULL;
-	return;
-      }
-  abort ();
+  int i = ptr_position (ptr);
+  if (malloc_table[i].ptr == NULL)
+    return 0;
+  malloc_table[i].ptr = NULL;
+
+  /* Relocate malloc_table entries immediately following PTR. */
+  for (i = (i + 1) % SZ; malloc_table[i].ptr != NULL; i = (i + 1) % SZ)
+    {
+      const void *ptr2 = malloc_table[i].ptr;
+      /* Find the new location for the key. */
+      int j = hash_pointer (ptr2) % SZ;
+      for (; malloc_table[j].ptr != NULL; j = (j + 1) % SZ)
+	if (ptr2 == malloc_table[j].ptr)
+	  /* No need to relocate entry at [i]; it's already at or near
+	     its hash position. */
+	  goto cont_outer;
+      malloc_table[j] = malloc_table[i];
+      malloc_table[i].ptr = NULL;
+    cont_outer:
+      ;
+    }
+  return 1;
 }
 
-/* Print the malloc debug stats that can be gathered from the above
-   information.  Currently this is the count of mallocs, frees, the
-   difference between the two, and the dump of the contents of
-   malloc_debug.  The last part are the memory leaks.  */
+/* Print the malloc debug stats gathered from the above information.
+   Currently this is the count of mallocs, frees, the difference
+   between the two, and the dump of the contents of malloc_table.  The
+   last part are the memory leaks.  */
 
 void
 print_malloc_debug_stats (void)
@@ -271,34 +299,35 @@ print_malloc_debug_stats (void)
   int i;
   printf ("\nMalloc:  %d\nFree:    %d\nBalance: %d\n\n",
 	  malloc_count, free_count, malloc_count - free_count);
-  for (i = 0; i < countof (malloc_debug); i++)
-    if (malloc_debug[i].ptr != NULL)
-      printf ("0x%08ld: %s:%d\n", (long)malloc_debug[i].ptr,
-	      malloc_debug[i].file, malloc_debug[i].line);
+  for (i = 0; i < SZ; i++)
+    if (malloc_table[i].ptr != NULL)
+      printf ("0x%0*lx: %s:%d\n", 2 * sizeof (void *),
+	      (long) malloc_table[i].ptr,
+	      malloc_table[i].file, malloc_table[i].line);
 }
 
 void *
-xmalloc_debug (size_t size, const char *source_file, int source_line)
+debugging_malloc (size_t size, const char *source_file, int source_line)
 {
-  void *ptr = xmalloc_real (size);
+  void *ptr = checking_malloc (size);
   ++malloc_count;
   register_ptr (ptr, source_file, source_line);
   return ptr;
 }
 
 void *
-xmalloc0_debug (size_t size, const char *source_file, int source_line)
+debugging_malloc0 (size_t size, const char *source_file, int source_line)
 {
-  void *ptr = xmalloc0_real (size);
+  void *ptr = checking_malloc0 (size);
   ++malloc_count;
   register_ptr (ptr, source_file, source_line);
   return ptr;
 }
 
 void *
-xrealloc_debug (void *ptr, size_t newsize, const char *source_file, int source_line)
+debugging_realloc (void *ptr, size_t newsize, const char *source_file, int source_line)
 {
-  void *newptr = xrealloc_real (ptr, newsize);
+  void *newptr = checking_realloc (ptr, newsize);
   if (!ptr)
     {
       ++malloc_count;
@@ -313,29 +342,36 @@ xrealloc_debug (void *ptr, size_t newsize, const char *source_file, int source_l
 }
 
 char *
-xstrdup_debug (const char *s, const char *source_file, int source_line)
+debugging_strdup (const char *s, const char *source_file, int source_line)
 {
-  char *copy = xstrdup_real (s);
+  char *copy = checking_strdup (s);
   ++malloc_count;
   register_ptr (copy, source_file, source_line);
   return copy;
 }
 
 void
-xfree_debug (void *ptr, const char *source_file, int source_line)
+debugging_free (void *ptr, const char *source_file, int source_line)
 {
-  /* See xfree_real for rationale of this abort.  We repeat it here
+  /* See checking_free for rationale of this abort.  We repeat it here
      because we can print the file and the line where the offending
      free occurred.  */
   if (ptr == NULL)
     {
-      fprintf ("%s: xfree(NULL) at %s:%d\n",
+      fprintf (stderr, "%s: xfree(NULL) at %s:%d\n",
 	       exec_name, source_file, source_line);
       abort ();
     }
+  if (!unregister_ptr (ptr))
+    {
+      fprintf (stderr, "%s: bad xfree(%0*lx) at %s:%d\n",
+	       exec_name, 2 * sizeof (void *), (long) ptr,
+	       source_file, source_line);
+      abort ();
+    }
   ++free_count;
-  unregister_ptr (ptr);
-  xfree_real (ptr);
+
+  checking_free (ptr);
 }
 
 #endif /* DEBUG_MALLOC */

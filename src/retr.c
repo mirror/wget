@@ -214,8 +214,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
      data arrives slowly. */
   int progress_interactive = 0;
 
-  /*int exact = flags & rb_read_exactly;*/
-  int exact = 1;
+  int exact = flags & rb_read_exactly;
   wgint skip = 0;
 
   /* How much data we've read/written.  */

@@ -84,7 +84,7 @@ extern int output_stream_regular;
 
 
 static int cookies_loaded_p;
-struct cookie_jar *wget_cookie_jar;
+static struct cookie_jar *wget_cookie_jar;
 
 #define TEXTHTML_S "text/html"
 #define TEXTXHTML_S "application/xhtml+xml"
@@ -1349,14 +1349,23 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	 look up conn->host in some cases.  If that lookup failed, we
 	 don't need to bother with connect_to_host.  */
       if (host_lookup_failed)
-	return HOSTERR;
+	{
+	  request_free (req);
+	  return HOSTERR;
+	}
 
       sock = connect_to_host (conn->host, conn->port);
       if (sock == E_HOST)
-	return HOSTERR;
+	{
+	  request_free (req);
+	  return HOSTERR;
+	}
       else if (sock < 0)
-	return (retryable_socket_connect_error (errno)
-		? CONERROR : CONIMPOSSIBLE);
+	{
+	  request_free (req);
+	  return (retryable_socket_connect_error (errno)
+		  ? CONERROR : CONIMPOSSIBLE);
+	}
 
 #ifdef HAVE_SSL
       if (proxy && u->scheme == SCHEME_HTTPS)
@@ -1405,6 +1414,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  resp = resp_new (head);
 	  statcode = resp_status (resp, &message);
 	  resp_free (resp);
+	  xfree (head);
 	  if (statcode != 200)
 	    {
 	    failed_tunnel:
@@ -1582,6 +1592,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     hs->error = xstrdup (_("(no description)"));
   else
     hs->error = xstrdup (message);
+  xfree (message);
 
   type = resp_header_strdup (resp, "Content-Type");
   if (type)
@@ -1623,6 +1634,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	contrange = first_byte_pos;
     }
   resp_free (resp);
+  xfree (head);
 
   /* 20x responses are counted among successful by default.  */
   if (H_20X (statcode))
@@ -2833,6 +2845,16 @@ create_authorization_line (const char *au, const char *user,
 }
 
 void
+save_cookies (void)
+{
+  if (wget_cookie_jar)
+    cookie_jar_save (wget_cookie_jar, opt.cookies_output);
+}
+
+void
 http_cleanup (void)
 {
+  xfree_null (pconn.host);
+  if (wget_cookie_jar)
+    cookie_jar_delete (wget_cookie_jar);
 }

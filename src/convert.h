@@ -96,5 +96,6 @@ void register_redirection PARAMS ((const char *, const char *));
 void register_html PARAMS ((const char *, const char *));
 void register_delete_file PARAMS ((const char *));
 void convert_all_links PARAMS ((void));
+void convert_cleanup PARAMS ((void));
 
 #endif /* CONVERT_H */

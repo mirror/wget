@@ -1,3 +1,38 @@
+2005-03-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (unescape_single_char): New function.
+	(url_escape_dir): Use it to unescape slashes in directory
+	components.
+	(url_string): Escape unsafe chars in host name, except for the ':'
+	charaters, which can appear in IPv6 addresses.
+
+	* main.c (main): Don't access the cookie jar directly.
+
+	* log.c (escnonprint_internal): Correctly calculate the needed
+	string size.  Don't forget the buffer's new size after having
+	reallocated it.
+	(log_cleanup): New function.  Free the escnonprint ring data.
+
+	* init.c (cleanup): Don't free the cookie jar explicitly, it is
+	now done by http_cleanup.
+	(cleanup): opt.user_headers is now a vector, free it with
+	free_vec.
+
+	* http.c (gethttp): Make sure to free the request data, the status
+	message, and the response data before returning from the function.
+	(save_cookies): New function.
+	(http_cleanup): Free the cookie jar here.
+
+	* hash.c: Renamed string_hash to hash_string and ptrhash to
+	hash_pointer.  Exported hash_pointer.
+
+	* xmalloc.c: Organized malloc_table (previously malloc_debug) as a
+	simple EQ hash table.  register_ptr and unregister_ptr are now of
+	O(1) complexity.
+
+	* xmalloc.c: Renamed "*_debug" to debugging_* and "*_real" to
+	checking_*.
+
 2005-03-12  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (debug_test_md5): Moved to gen-md5.c.

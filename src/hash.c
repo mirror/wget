@@ -244,8 +244,7 @@ prime_size (int size, int *prime_offset)
   return 0;
 }
 
-static unsigned long ptrhash PARAMS ((const void *));
-static int ptrcmp PARAMS ((const void *, const void *));
+static int cmp_pointer PARAMS ((const void *, const void *));
 
 /* Create a hash table with hash function HASH_FUNCTION and test
    function TEST_FUNCTION.  The table is empty (its count is 0), but
@@ -279,8 +278,8 @@ hash_table_new (int items,
   int size;
   struct hash_table *ht = xnew (struct hash_table);
 
-  ht->hash_function = hash_function ? hash_function : ptrhash;
-  ht->test_function = test_function ? test_function : ptrcmp;
+  ht->hash_function = hash_function ? hash_function : hash_pointer;
+  ht->test_function = test_function ? test_function : cmp_pointer;
 
   /* If the size of struct hash_table ever becomes a concern, this
      field can go.  (Wget doesn't create many hashes.)  */
@@ -596,8 +595,8 @@ hash_table_count (const struct hash_table *ht)
    We used to use the popular hash function from the Dragon Book, but
    this one seems to perform much better.  */
 
-unsigned long
-string_hash (const void *key)
+static unsigned long
+hash_string (const void *key)
 {
   const char *p = key;
   unsigned int h = *p;
@@ -611,8 +610,8 @@ string_hash (const void *key)
 
 /* Frontend for strcmp usable for hash tables. */
 
-int
-string_cmp (const void *s1, const void *s2)
+static int
+cmp_string (const void *s1, const void *s2)
 {
   return !strcmp ((const char *)s1, (const char *)s2);
 }
@@ -623,7 +622,7 @@ string_cmp (const void *s1, const void *s2)
 struct hash_table *
 make_string_hash_table (int items)
 {
-  return hash_table_new (items, string_hash, string_cmp);
+  return hash_table_new (items, hash_string, cmp_string);
 }
 
 /*
@@ -632,10 +631,10 @@ make_string_hash_table (int items)
  *
  */
 
-/* Like string_hash, but produce the same hash regardless of the case. */
+/* Like hash_string, but produce the same hash regardless of the case. */
 
 static unsigned long
-string_hash_nocase (const void *key)
+hash_string_nocase (const void *key)
 {
   const char *p = key;
   unsigned int h = TOLOWER (*p);
@@ -661,7 +660,7 @@ string_cmp_nocase (const void *s1, const void *s2)
 struct hash_table *
 make_nocase_string_hash_table (int items)
 {
-  return hash_table_new (items, string_hash_nocase, string_cmp_nocase);
+  return hash_table_new (items, hash_string_nocase, string_cmp_nocase);
 }
 
 /* Hashing of numeric values, such as pointers and integers.
@@ -671,8 +670,8 @@ make_nocase_string_hash_table (int items)
    spreading of values and doesn't need to know the hash table size to
    work (unlike the very popular Knuth's multiplication hash).  */
 
-static unsigned long
-ptrhash (const void *ptr)
+unsigned long
+hash_pointer (const void *ptr)
 {
   unsigned long key = (unsigned long)ptr;
   key += (key << 12);
@@ -697,7 +696,7 @@ ptrhash (const void *ptr)
 }
 
 static int
-ptrcmp (const void *ptr1, const void *ptr2)
+cmp_pointer (const void *ptr1, const void *ptr2)
 {
   return ptr1 == ptr2;
 }

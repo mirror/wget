@@ -30,18 +30,6 @@ so, delete this exception statement from your version.  */
 #ifndef HASH_H
 #define HASH_H
 
-/* From XEmacs, and hence from Dragon book. */
-
-#define GOOD_HASH 65599 /* prime number just over 2^16; Dragon book, p. 435 */
-#define HASH2(a,b)               (GOOD_HASH * (a)                     + (b))
-#define HASH3(a,b,c)             (GOOD_HASH * HASH2 (a,b)             + (c))
-#define HASH4(a,b,c,d)           (GOOD_HASH * HASH3 (a,b,c)           + (d))
-#define HASH5(a,b,c,d,e)         (GOOD_HASH * HASH4 (a,b,c,d)         + (e))
-#define HASH6(a,b,c,d,e,f)       (GOOD_HASH * HASH5 (a,b,c,d,e)       + (f))
-#define HASH7(a,b,c,d,e,f,g)     (GOOD_HASH * HASH6 (a,b,c,d,e,f)     + (g))
-#define HASH8(a,b,c,d,e,f,g,h)   (GOOD_HASH * HASH7 (a,b,c,d,e,f,g)   + (h))
-#define HASH9(a,b,c,d,e,f,g,h,i) (GOOD_HASH * HASH8 (a,b,c,d,e,f,g,h) + (i))
-
 struct hash_table;
 
 struct hash_table *hash_table_new PARAMS ((int,
@@ -64,9 +52,21 @@ void hash_table_map PARAMS ((struct hash_table *,
 			     void *));
 int hash_table_count PARAMS ((const struct hash_table *));
 
-unsigned long string_hash PARAMS ((const void *));
-int string_cmp PARAMS ((const void *, const void *));
 struct hash_table *make_string_hash_table PARAMS ((int));
 struct hash_table *make_nocase_string_hash_table PARAMS ((int));
+
+unsigned long hash_pointer PARAMS ((const void *));
+
+/* From XEmacs, and hence from Dragon book. */
+
+#define GOOD_HASH 65599 /* prime number just over 2^16; Dragon book, p. 435 */
+#define HASH2(a,b)               (GOOD_HASH * (a)                     + (b))
+#define HASH3(a,b,c)             (GOOD_HASH * HASH2 (a,b)             + (c))
+#define HASH4(a,b,c,d)           (GOOD_HASH * HASH3 (a,b,c)           + (d))
+#define HASH5(a,b,c,d,e)         (GOOD_HASH * HASH4 (a,b,c,d)         + (e))
+#define HASH6(a,b,c,d,e,f)       (GOOD_HASH * HASH5 (a,b,c,d,e)       + (f))
+#define HASH7(a,b,c,d,e,f,g)     (GOOD_HASH * HASH6 (a,b,c,d,e,f)     + (g))
+#define HASH8(a,b,c,d,e,f,g,h)   (GOOD_HASH * HASH7 (a,b,c,d,e,f,g)   + (h))
+#define HASH9(a,b,c,d,e,f,g,h,i) (GOOD_HASH * HASH8 (a,b,c,d,e,f,g,h) + (i))
 
 #endif /* HASH_H */

@@ -30,46 +30,50 @@ so, delete this exception statement from your version.  */
 #ifndef XMALLOC_H
 #define XMALLOC_H
 
-/* Define this if you want primitive but extensive malloc debugging.
-   It will make Wget extremely slow, so only do it in development
-   builds.  */
+/* Define this to get Wget's builtin malloc debugging, which is
+   primitive but fairly extensive.  It will make Wget somewhat slower
+   and larger, so it should be used by developers only.  */
 #undef DEBUG_MALLOC
 
 /* When DEBUG_MALLOC is not defined (which is normally the case), the
-   allocation functions directly map to *_real wrappers.  In the
-   DEBUG_MALLOC mode, they also record the file and line where the
-   offending malloc/free/... was invoked.
+   allocator identifiers are mapped to checking_* wrappers, which exit
+   Wget if malloc/realloc/strdup return NULL
 
-   *Note*: xfree(NULL) aborts.  If the pointer you're freeing can be
-   NULL, use xfree_null instead.  */
+   In DEBUG_MALLOC mode, the allocators are mapped to debugging_*
+   wrappers, which also record the file and line from which the
+   allocation was attempted.  At the end of the program, a detailed
+   summary of unfreed allocations is displayed.
+
+   *Note*: xfree(NULL) aborts in both modes.  If the pointer you're
+   freeing can be NULL, use xfree_null instead.  */
 
 #ifndef DEBUG_MALLOC
 
-#define xmalloc  xmalloc_real
-#define xmalloc0 xmalloc0_real
-#define xrealloc xrealloc_real
-#define xstrdup  xstrdup_real
-#define xfree    xfree_real
+#define xmalloc  checking_malloc
+#define xmalloc0 checking_malloc0
+#define xrealloc checking_realloc
+#define xstrdup  checking_strdup
+#define xfree    checking_free
 
-void *xmalloc_real PARAMS ((size_t));
-void *xmalloc0_real PARAMS ((size_t));
-void *xrealloc_real PARAMS ((void *, size_t));
-char *xstrdup_real PARAMS ((const char *));
-void xfree_real PARAMS ((void *));
+void *checking_malloc PARAMS ((size_t));
+void *checking_malloc0 PARAMS ((size_t));
+void *checking_realloc PARAMS ((void *, size_t));
+char *checking_strdup PARAMS ((const char *));
+void checking_free PARAMS ((void *));
 
 #else  /* DEBUG_MALLOC */
 
-#define xmalloc(s)     xmalloc_debug (s, __FILE__, __LINE__)
-#define xmalloc0(s)    xmalloc0_debug (s, __FILE__, __LINE__)
-#define xrealloc(p, s) xrealloc_debug (p, s, __FILE__, __LINE__)
-#define xstrdup(p)     xstrdup_debug (p, __FILE__, __LINE__)
-#define xfree(p)       xfree_debug (p, __FILE__, __LINE__)
+#define xmalloc(s)     debugging_malloc (s, __FILE__, __LINE__)
+#define xmalloc0(s)    debugging_malloc0 (s, __FILE__, __LINE__)
+#define xrealloc(p, s) debugging_realloc (p, s, __FILE__, __LINE__)
+#define xstrdup(p)     debugging_strdup (p, __FILE__, __LINE__)
+#define xfree(p)       debugging_free (p, __FILE__, __LINE__)
 
-void *xmalloc_debug PARAMS ((size_t, const char *, int));
-void *xmalloc0_debug PARAMS ((size_t, const char *, int));
-void *xrealloc_debug PARAMS ((void *, size_t, const char *, int));
-char *xstrdup_debug PARAMS ((const char *, const char *, int));
-void xfree_debug PARAMS ((void *, const char *, int));
+void *debugging_malloc PARAMS ((size_t, const char *, int));
+void *debugging_malloc0 PARAMS ((size_t, const char *, int));
+void *debugging_realloc PARAMS ((void *, size_t, const char *, int));
+char *debugging_strdup PARAMS ((const char *, const char *, int));
+void debugging_free PARAMS ((void *, const char *, int));
 
 #endif /* DEBUG_MALLOC */
 
