@@ -1,3 +1,9 @@
+2001-10-31 Daniel BODEA <dali@dali-designs.com>
+
+	* netrc.c (search_netrc): When slack_default is 0, still look for
+	an account with matching password, just not the "default account".
+	HTTP Authorization using .netrc should now work as expected.
+
 2001-11-30  T. Bharath  <TBharath@responsenetworks.com>
 
 	* http.c (persistent_available_p): Call SHUTDOWN_SSL if

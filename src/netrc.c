@@ -90,8 +90,6 @@ search_netrc (const char *host, const char **acc, const char **passwd,
   /* Acc and password found; all OK.  */
   if (*acc && *passwd)
     return;
-  if (!*acc && !slack_default)
-    return;
   /* Some data not given -- try finding the host.  */
   for (l = netrc_list; l; l = l->next)
     {
