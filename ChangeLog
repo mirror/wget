@@ -1,5 +1,15 @@
 2001-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* config.sub: Ditto.
+
+	* config.guess: Ditto.
+
+	* aclocal.m4: Ditto.
+
+	* ltmain.sh: Upgrade to libtool 1.4.2.
+
+2001-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* configure.in: Check for md5_calc rather than MD5Update when
 	looking for Solaris md5.
 
