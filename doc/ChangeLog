@@ -1,3 +1,8 @@
+2002-04-15  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.texi (Download Options): Fix the documentation of
+	`--progress'.
+
 2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi (Wgetrc Commands): Document `--limit-rate'.

@@ -625,9 +625,14 @@ servers that support the @code{Range} header.
 Select the type of the progress indicator you wish to use.  Legal
 indicators are ``dot'' and ``bar''.
 
-The ``dot'' indicator is used by default.  It traces the retrieval by
-printing dots on the screen, each dot representing a fixed amount of
-downloaded data.
+The ``bar'' indicator is used by default.  It draws an ASCII progress
+bar graphics (a.k.a ``thermometer'' display) indicating the status of
+retrieval.  If the output is not a TTY, the ``dot'' bar will be used by
+default.
+
+Use @samp{--progress=dot} to switch to the ``dot'' display.  It traces
+the retrieval by printing dots on the screen, each dot representing a
+fixed amount of downloaded data.
 
 When using the dotted retrieval, you may also set the @dfn{style} by
 specifying the type as @samp{dot:@var{style}}.  Different styles assign
@@ -639,11 +644,11 @@ lines).  The @code{mega} style is suitable for downloading very large
 files---each dot represents 64K retrieved, there are eight dots in a
 cluster, and 48 dots on each line (so each line contains 3M).
 
-Specifying @samp{--progress=bar} will draw a nice ASCII progress bar
-graphics (a.k.a ``thermometer'' display) to indicate retrieval.  If the
-output is not a TTY, this option will be ignored, and Wget will revert
-to the dot indicator.  If you want to force the bar indicator, use
-@samp{--progress=bar:force}.
+Note that you can set the default style using the @code{progress}
+command in @file{.wgetrc}.  That setting may be overridden from the
+command line.  The exception is that, when the output is not a TTY, the
+``dot'' progress will be favored over ``bar''.  To force the bar output,
+use @samp{--progress=bar:force}.
 
 @item -N
 @itemx --timestamping
