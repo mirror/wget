@@ -1,5 +1,10 @@
 2002-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* html-url.c (tag_handle_form): New function.  Pick up form
+	actions and mark them for conversion only.
+
+2002-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* progress.c (struct progress_implementation): Use PARAMS when
 	declaring the parameters of *create, *update, *finish, and
 	*set_params.

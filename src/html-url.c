@@ -48,6 +48,7 @@ typedef void (*tag_handler_t) PARAMS ((int, struct taginfo *,
 
 DECLARE_TAG_HANDLER (tag_find_urls);
 DECLARE_TAG_HANDLER (tag_handle_base);
+DECLARE_TAG_HANDLER (tag_handle_form);
 DECLARE_TAG_HANDLER (tag_handle_link);
 DECLARE_TAG_HANDLER (tag_handle_meta);
 
@@ -73,29 +74,31 @@ static struct {
   { "embed",	tag_find_urls },
 #define TAG_FIG		7
   { "fig",	tag_find_urls },
-#define TAG_FRAME	8
+#define TAG_FORM	8
+  { "form",	tag_handle_form },
+#define TAG_FRAME	9
   { "frame",	tag_find_urls },
-#define TAG_IFRAME	9
+#define TAG_IFRAME	10
   { "iframe",	tag_find_urls },
-#define TAG_IMG		10
+#define TAG_IMG		11
   { "img",	tag_find_urls },
-#define TAG_INPUT	11
+#define TAG_INPUT	12
   { "input",	tag_find_urls },
-#define TAG_LAYER	12
+#define TAG_LAYER	13
   { "layer",	tag_find_urls },
-#define TAG_LINK	13
+#define TAG_LINK	14
   { "link",	tag_handle_link },
-#define TAG_META	14
+#define TAG_META	15
   { "meta",	tag_handle_meta },
-#define TAG_OVERLAY	15
+#define TAG_OVERLAY	16
   { "overlay",	tag_find_urls },
-#define TAG_SCRIPT	16
+#define TAG_SCRIPT	17
   { "script",	tag_find_urls },
-#define TAG_TABLE	17
+#define TAG_TABLE	18
   { "table",	tag_find_urls },
-#define TAG_TD		18
+#define TAG_TD		19
   { "td",	tag_find_urls },
-#define TAG_TH		19
+#define TAG_TH		20
   { "th",	tag_find_urls }
 };
 
@@ -141,10 +144,11 @@ static struct {
    from the information above.  However, some places in the code refer
    to the attributes not mentioned here.  We add them manually.  */
 static const char *additional_attributes[] = {
-  "rel",			/* for TAG_LINK */
-  "http-equiv",			/* for TAG_META */
-  "name",			/* for TAG_META */
-  "content"			/* for TAG_META */
+  "rel",			/* used by tag_handle_link */
+  "http-equiv",			/* used by tag_handle_meta */
+  "name",			/* used by tag_handle_meta */
+  "content",			/* used by tag_handle_meta */
+  "action"			/* used by tag_handle_form */
 };
 
 static const char **interesting_tags;
@@ -473,6 +477,22 @@ tag_handle_base (int tagid, struct taginfo *tag, struct map_context *ctx)
     ctx->base = uri_merge (ctx->parent_base, newbase);
   else
     ctx->base = xstrdup (newbase);
+}
+
+/* Mark the URL found in <form action=...> for conversion. */
+
+static void
+tag_handle_form (int tagid, struct taginfo *tag, struct map_context *ctx)
+{
+  int attrind;
+  char *action = find_attr (tag, "action", &attrind);
+  if (action)
+    {
+      struct urlpos *action_urlpos = append_one_url (action, 0, tag,
+						     attrind, ctx);
+      if (action_urlpos)
+	action_urlpos->ignore_when_downloading = 1;
+    }
 }
 
 /* Handle the LINK tag.  It requires special handling because how its
