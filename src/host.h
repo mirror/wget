@@ -97,7 +97,7 @@ void wget_sockaddr_set_address PARAMS((wget_sockaddr *, int,
 void wget_sockaddr_set_port PARAMS((wget_sockaddr *, unsigned short));
 void *wget_sockaddr_get_addr PARAMS((wget_sockaddr *));
 unsigned short wget_sockaddr_get_port PARAMS((const wget_sockaddr *));
-int sockaddr_len PARAMS(());
+socklen_t sockaddr_len PARAMS(());
 void map_ipv4_to_ip PARAMS((ip4_address *, ip_address *));
 int  map_ip_to_ipv4 PARAMS((ip_address *, ip4_address *));
  

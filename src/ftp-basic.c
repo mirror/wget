@@ -420,9 +420,9 @@ ftp_epsv (struct rbuf *rbuf, ip_address *addr, unsigned short *port,
   /* Now we have the port but we need the IPv6 :-( */
   {
     wget_sockaddr remote;
-    int len = sizeof (remote);
-    struct sockaddr_in *ipv4_sock = ( struct sockaddr_in *)&remote;
-    getpeername (RBUF_FD (rbuf), (struct sockaddr*)&remote, &len);
+    socklen_t addrlen = sizeof (remote);
+    struct sockaddr_in *ipv4_sock = (struct sockaddr_in *)&remote;
+    getpeername (RBUF_FD (rbuf), (struct sockaddr *)&remote, &addrlen);
     switch(remote.sa.sa_family)
       {
         case AF_INET6:

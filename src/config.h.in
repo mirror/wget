@@ -271,6 +271,9 @@ char *alloca ();
 /* Define if you want to enable the IPv6 support.  */
 #undef ENABLE_IPV6
 
+/* Define if you don't have socklen_t.  */
+#undef socklen_t
+
 /* First a gambit to see whether we're on Solaris.  We'll
    need it below.  */
 #ifdef __sun

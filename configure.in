@@ -175,8 +175,10 @@ dnl
 AC_TYPE_SIGNAL
 
 dnl
-dnl Check for struct utimbuf
+dnl Call several of Wget's macros.
+dnl
 WGET_STRUCT_UTIMBUF
+WGET_SOCKLEN_T
 
 dnl
 dnl Checks for library functions.

@@ -98,7 +98,7 @@ resolve_bind_address (void)
 struct cwt_context {
   int fd;
   const struct sockaddr *addr;
-  int addrlen;
+  socklen_t addrlen;
   int result;
 };
 
@@ -114,7 +114,7 @@ connect_with_timeout_callback (void *arg)
    ETIMEDOUT.  */
 
 static int
-connect_with_timeout (int fd, const struct sockaddr *addr, int addrlen,
+connect_with_timeout (int fd, const struct sockaddr *addr, socklen_t addrlen,
 		      double timeout)
 {
   struct cwt_context ctx;
@@ -327,10 +327,7 @@ bindport (unsigned short *port, int family)
   DEBUGP (("Master socket fd %d bound.\n", msock));
   if (!*port)
     {
-      /* #### addrlen should be a 32-bit type, which int is not
-         guaranteed to be.  Oh, and don't try to make it a size_t,
-         because that can be 64-bit.  */
-      int sa_len = sockaddr_len ();
+      socklen_t sa_len = sockaddr_len ();
       if (getsockname (msock, &srv.sa, &sa_len) < 0)
 	{
 	  CLOSE (msock);
@@ -392,7 +389,7 @@ select_fd (int fd, double maxtime, int writep)
 uerr_t
 acceptport (int *sock)
 {
-  int addrlen = sockaddr_len ();
+  socklen_t addrlen = sockaddr_len ();
 
 #ifdef HAVE_SELECT
   if (select_fd (msock, opt.connect_timeout, 0) <= 0)
@@ -423,11 +420,8 @@ int
 conaddr (int fd, ip_address *ip)
 {
   wget_sockaddr mysrv;
-
-  /* see bindport() for discussion of using `int' here. */
-  int addrlen = sizeof (mysrv);	
-
-  if (getsockname (fd, &mysrv.sa, (int *)&addrlen) < 0)
+  socklen_t addrlen = sizeof (mysrv);	
+  if (getsockname (fd, &mysrv.sa, &addrlen) < 0)
     return 0;
 
   switch (mysrv.sa.sa_family)

@@ -419,9 +419,9 @@ wget_sockaddr_get_port (const wget_sockaddr *sa)
   * -		Public IP-Family Information
   *
   * Output:
-  * int		structure length for socket options
+  * socklen_t	structure length for socket options
   */
-int 
+socklen_t
 sockaddr_len () 
 {
   if (ip_default_family == AF_INET) 
