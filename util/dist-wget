@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 
 # Copyright (C) 2001 Free Software Foundation, Inc.
 
@@ -26,6 +26,7 @@
 # file, but you are not obligated to do so.  If you do not wish to do
 # so, delete this exception statement from your version.
 
+set -e
 
 CVSROOT=:pserver:cvs@sunsite.dk:/pack/anoncvs
 SUBDIR=wget.cvs.$$
@@ -53,7 +54,7 @@ do
       ;;
     -r)
       shift
-      EXPORT_TAG="-r $1"
+      EXPORT_TAG="-r '$1'"
       ;;
     --force-version)
       shift
@@ -85,7 +86,7 @@ echo "Output from commands is in $O."
 echo "-----------" >$O
 
 # Checkout clean sources from the repository.
-echo $e_n "Exporting ($EXPORT_TAG) out the CVS tree to $SUBDIR... $e_c"
+echo $e_n "Exporting ($EXPORT_TAG) out the CVS tree to $TMPDIR/$SUBDIR... $e_c"
 cvs -d $CVSROOT export $EXPORT_TAG -d $SUBDIR wget 1>>$O 2>&1
 echo "done."
 
