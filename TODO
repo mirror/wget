@@ -123,3 +123,6 @@ changes.
 * Add a "rollback" option to have --continue throw away a configurable number of
   bytes at the end of a file before resuming download.  Apparently, some stupid
   proxies insert a "transfer interrupted" string we need to get rid of.
+
+* When using --accept and --reject, you can end up with empty directories.  Have
+  Wget any such at the end.
