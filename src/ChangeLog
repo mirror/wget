@@ -1,3 +1,8 @@
+2001-11-30  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* progress.c (display_image): Just print one CR to reset the
+	cursor position.
+
 2001-11-30  Christian Fraenkel  <c.fraenkel@gmx.net>
 
 	* init.c: New command `ssl_egd_sock'.
