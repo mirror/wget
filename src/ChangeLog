@@ -1,3 +1,9 @@
+1999-09-24  Charles G Waldman  <cgw@fnal.gov>
+
+	* netrc.c (parse_netrc): Allow passwords to contain spaces.
+
+	* netrc.c (parse_netrc): New function.
+
 1999-09-17  Dan Berger  <dberger@ix.netcom.com>
 
 	* http.c (gethttp): Send it.
