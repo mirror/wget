@@ -1,5 +1,9 @@
 2003-09-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* progress.c (create_image): Print the current ETA if we're done
+	with the download.
+	(create_image): Change '-' display char to '+' in the progress bar.
+
 	* Makefile.in (clean): Remove .libs.
 
 2003-09-23  Hrvoje Niksic  <hniksic@xemacs.org>

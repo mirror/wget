@@ -688,7 +688,7 @@ create_image (struct bar_progress *bp, double dl_total_time)
   else
     APPEND_LITERAL ("    ");
 
-  /* The progress bar: "[====>      ]" or "[--==>      ]". */
+  /* The progress bar: "[====>      ]" or "[++==>      ]". */
   if (progress_size && bp->total_length > 0)
     {
       /* Size of the initial portion. */
@@ -706,10 +706,10 @@ create_image (struct bar_progress *bp, double dl_total_time)
       *p++ = '[';
       begin = p;
 
-      /* Print the initial portion of the download with '-' chars, the
+      /* Print the initial portion of the download with '+' chars, the
 	 rest with '=' and one '>'.  */
       for (i = 0; i < insz; i++)
-	*p++ = '-';
+	*p++ = '+';
       dlsz -= insz;
       if (dlsz > 0)
 	{
@@ -780,8 +780,9 @@ create_image (struct bar_progress *bp, double dl_total_time)
       /* Don't change the value of ETA more than approximately once
 	 per second; doing so would cause flashing without providing
 	 any value to the user. */
-      if (dl_total_time - bp->last_eta_time < 900
-	  && bp->last_eta_value != 0)
+      if (bp->total_length != size
+	  && bp->last_eta_value != 0
+	  && dl_total_time - bp->last_eta_time < 900)
 	eta = bp->last_eta_value;
       else
 	{
