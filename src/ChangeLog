@@ -1,3 +1,7 @@
+2001-12-08  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* version.c: Wget 1.8-pre2 is released.
+
 2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* progress.c (progress_handle_sigwinch): Set up the signal again.

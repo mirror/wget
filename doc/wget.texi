@@ -15,8 +15,8 @@
 @end iftex
 
 @c This should really be auto-generated!
-@set VERSION 1.8-beta1
-@set UPDATED November 2001
+@set VERSION 1.8-pre2
+@set UPDATED December 2001
 
 @dircategory Net Utilities
 @dircategory World Wide Web
