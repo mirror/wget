@@ -28,21 +28,35 @@
 
 CVSROOT=:pserver:cvs@sunsite.dk:/pack/anoncvs
 DIR=$HOME/work/tmp
+SUBDIR=wget.cvs.$$
 DEBUG=no
-CHECKOUT=yes
 
-for arg; do
-  case "$arg" in
+EXPORT_TAG='-D now'
+VERSION=
+
+while test x"$*" != x
+do
+  case "$1" in
     -d)
       DEBUG=yes
       ;;
-    --no-checkout)
-      CHECKOUT=no
+    -D)
+      shift
+      EXPORT_TAG="-D '$1'"
+      ;;
+    -r)
+      shift
+      EXPORT_TAG="-r $1"
+      ;;
+    --force-version)
+      shift
+      VERSION=$1
       ;;
     *)
-      echo "Usage: $0 [-d] [--no-checkout]" >&2
+      echo "Usage: $0 [-d] [-r TAG | -D DATE]" >&2
       exit 1
   esac
+  shift
 done
 
 # Resolve echo -n incompatibilities.
@@ -63,18 +77,22 @@ echo "Output from commands is in $DIR/dist-output."
 
 echo "-----------" >$O
 
-if test $CHECKOUT = yes; then
-  # Checkout clean sources from the repository.
-  echo $e_n "Checking out CVS sources from the repository... $e_c"
-  rm -rf wget 1>>$O 2>&1
-  cvs -d $CVSROOT checkout wget 1>>$O 2>&1
-  echo "done."
-fi
+# Checkout clean sources from the repository.
+echo $e_n "Exporting ($EXPORT_TAG) out the CVS tree to $SUBDIR... $e_c"
+cvs -d $CVSROOT export $EXPORT_TAG -d $SUBDIR wget 1>>$O 2>&1
+echo "done."
 
-cd wget
+cd $SUBDIR
 
 # Remove the dummy `Branches' directory.
 rm -rf Branches 1>>$O 2>&1
+
+# Force the version if required.
+if test x"$VERSION" != x
+then
+  echo "char *version_string = \"$VERSION\";" > src/version.c
+  echo "Forcing version to $VERSION."
+fi
 
 # Create configure and friends.
 if ! test -f configure; then
@@ -117,6 +135,6 @@ echo "done."
 
 cd ..
 
-if test $DEBUG = no && test $CHECKOUT = yes; then
-  rm -rf wget 1>>$O 2>&1
+if test $DEBUG = no; then
+  rm -rf $SUBDIR 1>>$O 2>&1
 fi
