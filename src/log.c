@@ -660,7 +660,7 @@ static const char *redirect_request_signal_name;
 static void
 redirect_output (void)
 {
-  char *logfile = unique_name (DEFAULT_LOGFILE);
+  char *logfile = unique_name (DEFAULT_LOGFILE, 0);
   fprintf (stderr, _("\n%s received, redirecting output to `%s'.\n"),
 	   redirect_request_signal_name, logfile);
   logfp = fopen (logfile, "w");

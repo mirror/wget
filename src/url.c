@@ -1694,15 +1694,15 @@ url_file_name (const struct url *u)
      4) Hierarchy is built.
 
      The exception is the case when file does exist and is a
-     directory (actually support for bad httpd-s).  */
+     directory (see `mkalldirs' for explanation).  */
 
   if ((opt.noclobber || opt.always_rest || opt.timestamping || opt.dirstruct)
       && !(file_exists_p (fname) && !file_non_directory_p (fname)))
-    return fnres.base;
+    return fname;
 
-  /* Find a unique name.  */
-  unique = unique_name (fname);
-  xfree (fname);
+  unique = unique_name (fname, 1);
+  if (unique != fname)
+    xfree (fname);
   return unique;
 }
 

@@ -1,5 +1,12 @@
 2003-09-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c (url_file_name): Don't reallocate FNAME if the file
+	doesn't exist, as is usually the case.
+
+	* utils.c (unique_name): New flag allow_passthrough.
+
+2003-09-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (wtimer_sys_diff): Convert the time difference to signed
 	__int64, then to double.  This works around MS VC++ 6 which can't
 	convert unsigned __int64 to double directly.

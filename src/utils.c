@@ -470,7 +470,7 @@ fork_to_background (void)
 
   if (!opt.lfilename)
     {
-      opt.lfilename = unique_name (DEFAULT_LOGFILE);
+      opt.lfilename = unique_name (DEFAULT_LOGFILE, 0);
       changedp = 1;
     }
   pid = fork ();
@@ -580,39 +580,55 @@ file_size (const char *filename)
   return size;
 }
 
-/* Return a unique filename, given a prefix and count */
+/* stat file names named PREFIX.1, PREFIX.2, etc., until one that
+   doesn't exist is found.  Return a freshly allocated copy of the
+   unused file name.  */
+
 static char *
-unique_name_1 (const char *fileprefix, int count)
+unique_name_1 (const char *prefix)
 {
-  char *filename;
+  int count = 1;
+  int plen = strlen (prefix);
+  char *template = (char *)alloca (plen + 1 + 24);
+  char *template_tail = template + plen;
 
-  if (count)
-    {
-      filename = (char *)xmalloc (strlen (fileprefix) + numdigit (count) + 2);
-      sprintf (filename, "%s.%d", fileprefix, count);
-    }
-  else
-    filename = xstrdup (fileprefix);
+  memcpy (template, prefix, plen);
+  *template_tail++ = '.';
 
-  if (!file_exists_p (filename))
-    return filename;
-  else
-    {
-      xfree (filename);
-      return NULL;
-    }
+  do
+    number_to_string (template_tail, count++);
+  while (file_exists_p (template));
+
+  return xstrdup (template);
 }
 
-/* Return a unique file name, based on PREFIX.  */
-char *
-unique_name (const char *prefix)
-{
-  char *file = NULL;
-  int count = 0;
+/* Return a unique file name, based on FILE.
 
-  while (!file)
-    file = unique_name_1 (prefix, count++);
-  return file;
+   More precisely, if FILE doesn't exist, it is returned unmodified.
+   If not, FILE.1 is tried, then FILE.2, etc.  The first FILE.<number>
+   file name that doesn't exist is returned.
+
+   The resulting file is not created, only verified that it didn't
+   exist at the point in time when the function was called.
+   Therefore, where security matters, don't rely that the file created
+   by this function exists until you open it with O_EXCL or
+   something.
+
+   If ALLOW_PASSTHROUGH is 0, it always returns a freshly allocated
+   string.  Otherwise, it may return FILE if the file doesn't exist
+   (and therefore doesn't need changing).  */
+
+char *
+unique_name (const char *file, int allow_passthrough)
+{
+  /* If the FILE itself doesn't exist, return it without
+     modification. */
+  if (!file_exists_p (file))
+    return allow_passthrough ? (char *)file : xstrdup (file);
+
+  /* Otherwise, find a numeric suffix that results in unused file name
+     and return it.  */
+  return unique_name_1 (file);
 }
 
 /* Create DIRECTORY.  If some of the pathname components of DIRECTORY

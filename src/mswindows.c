@@ -136,7 +136,7 @@ fork_to_background (void)
 
   if (!opt.lfilename)
     {
-      opt.lfilename = unique_name (DEFAULT_LOGFILE);
+      opt.lfilename = unique_name (DEFAULT_LOGFILE, 0);
       changedp = 1;
     }
   printf (_("Continuing in background.\n"));
