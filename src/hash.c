@@ -59,63 +59,38 @@ so, delete this exception statement from your version.  */
 
 /* INTERFACE:
 
-   Hash tables are an implementation technique used to implement
-   mapping between objects.  Assuming a good hashing function is used,
-   they provide near-constant-time access and storing of information.
-   Duplicate keys are not allowed.
+   Hash tables are a technique used to implement mapping between
+   objects with near-constant-time access and storage.  The table
+   associates keys to values, and a value can be very quickly
+   retrieved by providing the key.  Fast lookup tables are typically
+   implemented as hash tables.
 
-   This file defines the following entry points: hash_table_new
-   creates a hash table, and hash_table_destroy deletes it.
-   hash_table_put establishes a mapping between a key and a value.
-   hash_table_get retrieves the value that corresponds to a key.
-   hash_table_contains queries whether a key is stored in a table at
-   all.  hash_table_remove removes a mapping that corresponds to a
-   key.  hash_table_map allows you to map through all the entries in a
-   hash table.  hash_table_clear clears all the entries from the hash
-   table.
+   The entry points are
+     hash_table_new       -- creates the table.
+     hash_table_destroy   -- destroys the table.
+     hash_table_put       -- establishes or updates key->value mapping.
+     hash_table_get       -- retrieves value of key.
+     hash_table_get_pair  -- get key/value pair for key.
+     hash_table_contains  -- test whether the table contains key.
+     hash_table_remove    -- remove the key->value mapping for key.
+     hash_table_map       -- iterate through table mappings.
+     hash_table_clear     -- clear hash table contents.
+     hash_table_count     -- return the number of entries in the table.
 
-   The number of mappings in a table is not limited, except by the
-   amount of memory.  As you add new elements to a table, it regrows
-   as necessary.  If you have an idea about how many elements you will
-   store, you can provide a hint to hash_table_new().
+   The hash table grows internally as new entries are added and is not
+   limited in size, except by available memory.  The table doubles
+   with each resize, which ensures that the amortized time per
+   operation remains constant.
 
-   The hashing and equality functions depend on the type of key and
-   are normally provided by the user.  For the special (and frequent)
-   case of using string keys, you can use the pre-canned
-   make_string_hash_table(), which provides an efficient string
-   hashing function, and a string equality wrapper around strcmp().
-
-   When specifying your hash and test functions, make sure the
-   following holds true:
-
-   - The test function returns non-zero for keys that are considered
-     "equal", zero otherwise.
-
-   - The hash function returns a number that represents the
-     "distinctness" of the object.  In more precise terms, it means
-     that for any two objects that test "equal" under the test
-     function, the hash function MUST produce the same result.
-
-     This does not mean that each distinct object must produce a
-     distinct value, only that non-distinct objects must produce the
-     same values!  For instance, a hash function that returns 0 for
-     any given object is a perfectly valid (albeit extremely bad) hash
-     function.  A hash function that hashes a string by adding up all
-     its characters is another example of a valid (but quite bad) hash
-     function.
-
-     The above stated rule is quite easy to enforce.  For example, if
-     your testing function compares strings case-insensitively, all
-     your function needs to do is lower-case the string characters
-     before calculating a hash.  That way you have easily guaranteed
-     that case differences will not result in a different hash.
-
-   - If you care about performance, choose a hash function with as
-     good "spreading" as possible.  A good hash function will react to
-     even a small change in its input with a completely different
-     resulting hash.  Finally, don't make the hash function itself
-     overly slow, because you'll be incurring a non-negligible
-     overhead to reads and writes to the hash table.
+   By default, tables created by hash_table_new consider the keys to
+   be equal if their pointer values are the same.  You can use
+   make_string_hash_table to create tables whose keys are considered
+   equal if their string contents are the same.  In the general case,
+   the criterion of equality used to compare keys is specified at
+   table creation time with two callback functions, "hash" and "test".
+   The hash function transforms the key into an arbitrary number that
+   must be the same for two equal keys.  The test function accepts two
+   keys and returns non-zero if they are to be considered equal.
 
    Note that neither keys nor values are copied when inserted into the
    hash table, so they must exist for the lifetime of the table.  This
@@ -125,25 +100,32 @@ so, delete this exception statement from your version.  */
 
 /* IMPLEMENTATION:
 
-   All the hash mappings (key-value pairs of pointers) are stored in a
-   contiguous array.  The position of each mapping is determined by
-   the hash value of its key and the size of the table: location :=
-   hash(key) % size.  If two different keys end up on the same
-   position (hash collision), the one that came second is placed at
-   the next empty position following the occupied place.  This
-   collision resolution technique is called "linear probing".
+   The hash table is implemented as an open-addressed table with
+   linear probing collision resolution.
 
-   There are more advanced collision resolution mechanisms (quadratic
+   For those not up to CS parlance, it means that all the hash entries
+   (pairs of pointers key and value) are stored in a contiguous array.
+   The position of each mapping is determined by the hash value of its
+   key and the size of the table: location := hash(key) % size.  If
+   two different keys end up on the same position (collide), the one
+   that came second is placed at the next empty position following the
+   occupied place.  This collision resolution technique is called
+   "linear probing".
+
+   There are more advanced collision resolution methods (quadratic
    probing, double hashing), but we don't use them because they incur
-   more non-sequential access to the array, which results in worse
+   more non-sequential access to the array, which results in worse CPU
    cache behavior.  Linear probing works well as long as the
-   fullness/size ratio is kept below 75%.  We make sure to regrow or
-   rehash the hash table whenever this threshold is exceeded.
+   count/size ratio (fullness) is kept below 75%.  We make sure to
+   grow and rehash the table whenever this threshold is exceeded.
 
-   Collisions make deletion tricky because finding collisions again
-   relies on new empty spots not being created.  That's why
-   hash_table_remove is careful to rehash the mappings that follow the
-   deleted one.  */
+   Collisions make deletion tricky because clearing a position
+   followed by a colliding entry would make the position seem empty
+   and the colliding entry not found.  One solution is to leave a
+   "tombstone" instead of clearing the entry, and another is to
+   carefully rehash the entries immediately following the deleted one.
+   We use the latter method because it results in less bookkeeping and
+   faster retrieval at the (slight) expense of deletion.  */
 
 /* Maximum allowed fullness: when hash table's fullness exceeds this
    value, the table is resized.  */
@@ -163,9 +145,8 @@ struct hash_table {
   unsigned long (*hash_function) PARAMS ((const void *));
   int (*test_function) PARAMS ((const void *, const void *));
 
-  int size;			/* size of the array */
-  int count;			/* number of non-empty, non-deleted
-                                   fields. */
+  int size;			/* size of the array. */
+  int count;			/* number of non-empty entries. */
 
   int resize_threshold;		/* after size exceeds this number of
 				   entries, resize the table.  */
@@ -189,10 +170,10 @@ struct hash_table {
 #define LOOP_NON_EMPTY(mp, mappings, size)				\
   for (; NON_EMPTY (mp); mp = NEXT_MAPPING (mp, mappings, size))
 
-/* #### We might want to multiply with the "golden ratio" here to get
-   better randomness for keys that do not result from a good hash
-   function.  This is currently not a problem in Wget because we only
-   use the string hash tables.  */
+/* #### Some implementations multiply the hash with the "golden ratio"
+   of the table to get better spread for keys that do not come from a
+   good hashing source.  I'm not sure if that is necessary for the
+   hash functions we use.  */
 
 #define HASH_POSITION(ht, key) (ht->hash_function (key) % ht->size)
 
@@ -539,6 +520,38 @@ hash_table_count (const struct hash_table *ht)
 /* Functions from this point onward are meant for convenience and
    don't strictly belong to this file.  However, this is as good a
    place for them as any.  */
+
+/* Rules for creating custom hash and test functions:
+
+   - The test function returns non-zero for keys that are considered
+     "equal", zero otherwise.
+
+   - The hash function returns a number that represents the
+     "distinctness" of the object.  In more precise terms, it means
+     that for any two objects that test "equal" under the test
+     function, the hash function MUST produce the same result.
+
+     This does not mean that all different objects must produce
+     different values (that would be "perfect" hashing), only that
+     non-distinct objects must produce the same values!  For instance,
+     a hash function that returns 0 for any given object is a
+     perfectly valid (albeit extremely bad) hash function.  A hash
+     function that hashes a string by adding up all its characters is
+     another example of a valid (but quite bad) hash function.
+
+     It is not hard to make hash and test functions agree about
+     equality.  For example, if the test function compares strings
+     case-insensitively, the hash function can lower-case the
+     characters when calculating the hash value.  That ensures that
+     two strings differing only in case will hash the same.
+
+   - If you care about performance, choose a hash function with as
+     good "spreading" as possible.  A good hash function will use all
+     the bits of the input when calculating the hash, and will react
+     to even small changes in input with a completely different
+     output.  Finally, don't make the hash function itself overly
+     slow, because you'll be incurring a non-negligible overhead to
+     all hash table operations.  */
 
 /*
  * Support for hash tables whose keys are strings.
