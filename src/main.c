@@ -179,7 +179,7 @@ FTP options:\n\
 Recursive retrieval:\n\
   -r,  --recursive             recursive web-suck -- use with care!.\n\
   -l,  --level=NUMBER          maximum recursion depth (inf or 0 for infinite).\n\
-       --delete-after          delete downloaded files.\n\
+       --delete-after          delete files locally after downloading them.\n\
   -k,  --convert-links         convert non-relative links to relative.\n\
   -K,  --backup-converted      before converting file X, back up as X.orig.\n\
   -m,  --mirror                shortcut option equivalent to -r -N -l inf -nr.\n\

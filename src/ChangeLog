@@ -7,6 +7,7 @@
 		
 	* main.c (main): --delete-after didn't delete the root of the tree.
 	Ignore --convert-links if --delete-after was specified.
+	(print_help): Clarified that --delete-after deletes local files.
 		
 	* recur.c (recursive_retrieve): Improved comment; added DEBUGP().
 	Ignore --convert-links if --delete-after was specified.

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.5.2-b2\n"
-"POT-Creation-Date: 2000-10-23 20:39-0700\n"
+"POT-Creation-Date: 2000-10-23 20:49-0700\n"
 "PO-Revision-Date: 1998-02-29 21:05+01:00\n"
 "Last-Translator: Hrvoje Niksic <hniksic@srce.hr>\n"
 "Language-Team: Croatian <hr-translation@bagan.srce.hr>\n"
@@ -772,12 +772,13 @@ msgstr ""
 "\n"
 
 #: src/main.c:178
+#, fuzzy
 msgid ""
 "Recursive retrieval:\n"
 "  -r,  --recursive             recursive web-suck -- use with care!.\n"
 "  -l,  --level=NUMBER          maximum recursion depth (inf or 0 for "
 "infinite).\n"
-"       --delete-after          delete downloaded files.\n"
+"       --delete-after          delete files locally after downloading them.\n"
 "  -k,  --convert-links         convert non-relative links to relative.\n"
 "  -K,  --backup-converted      before converting file X, back up as X.orig.\n"
 "  -m,  --mirror                shortcut option equivalent to -r -N -l inf "
