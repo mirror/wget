@@ -243,4 +243,30 @@ void *memcpy ();
 int fnmatch ();
 #endif
 
+/* Provide 32-bit types for the code that really needs it.  */
+
+#ifndef HAVE_INT32_T
+# if SIZEOF_INT == 4
+typedef int int32_t;
+# else
+#  if SIZEOF_LONG == 4
+typedef long int32_t;
+#  else
+     "Cannot determine a 32-bit type"
+#  endif
+# endif
+#endif
+
+#ifndef HAVE_U_INT32_T
+# if SIZEOF_INT == 4
+typedef unsigned int u_int32_t;
+# else
+#  if SIZEOF_LONG == 4
+typedef unsigned long u_int32_t;
+#  else
+     "Cannot determine a 32-bit type"
+#  endif
+# endif
+#endif
+
 #endif /* SYSDEP_H */

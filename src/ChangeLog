@@ -1,5 +1,13 @@
 2003-10-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* host.c (lookup_host): Use u_int32_t to store the result of
+	inet_addr().  That removes the need for offset fiddling, caring
+	about endian-ness, etc.
+
+	* sysdep.h: Define int32_t and u_int32_t if not available.
+
+2003-10-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ftp-basic.c (ftp_epsv): Use socklen_t * as the third argument to
 	getpeername.
 

@@ -601,7 +601,7 @@ struct address_list *
 lookup_host (const char *host, int silent)
 {
   struct address_list *al = NULL;
-  unsigned long addr_ipv4;	/* #### use a 32-bit type here. */
+  u_int32_t addr_ipv4;
   ip_address addr;
 
   /* First, try to check whether the address is already a numeric
@@ -612,26 +612,18 @@ lookup_host (const char *host, int silent)
     return address_list_from_single (&addr);
 #endif
 
-  addr_ipv4 = (unsigned long)inet_addr (host);
-  if ((int)addr_ipv4 != -1)
+  addr_ipv4 = (u_int32_t)inet_addr (host);
+  if (addr_ipv4 != (u_int32_t)-1)
     {
       /* ADDR is defined to be in network byte order, which is what
-	 this returns, so we can just copy it to STORE_IP.  However,
-	 on big endian 64-bit architectures the value will be stored
-	 in the *last*, not first four bytes.  OFFSET makes sure that
-	 we copy the correct four bytes.  */
-      int offset = 0;
-#ifdef WORDS_BIGENDIAN
-      offset = sizeof (unsigned long) - sizeof (ip4_address);
-#endif
-      map_ipv4_to_ip ((ip4_address *)((char *)&addr_ipv4 + offset), &addr);
+	 this returns, so we can just copy it to STORE_IP.  */
+      map_ipv4_to_ip ((ip4_address *)&addr_ipv4, &addr);
       return address_list_from_single (&addr);
     }
 
   if (host_name_addresses_map)
     {
       al = hash_table_get (host_name_addresses_map, host);
-
       if (al)
 	{
 	  DEBUGP (("Found %s in host_name_addresses_map (%p)\n", host, al));

@@ -80,6 +80,9 @@ char *alloca ();
    significant byte first).  */
 #undef WORDS_BIGENDIAN
 
+/* Define to the length of int. */
+#undef SIZEOF_INT
+
 /* Define to the length of long. */
 #undef SIZEOF_LONG
 
@@ -271,8 +274,14 @@ char *alloca ();
 /* Define if you want to enable the IPv6 support.  */
 #undef ENABLE_IPV6
 
-/* Define if you don't have socklen_t.  */
+/* Defined to int or size_t on systems without socklen_t.  */
 #undef socklen_t
+
+/* Define if you have int32_t.  */
+#undef HAVE_INT32_T
+
+/* Define if you have u_int32_t.  */
+#undef HAVE_U_INT32_T
 
 /* First a gambit to see whether we're on Solaris.  We'll
    need it below.  */
