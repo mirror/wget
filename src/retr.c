@@ -67,15 +67,16 @@ int global_download_count;
 
 
 static struct {
-  long bytes;
-  double dltime;
+  long chunk_bytes;
+  double chunk_start;
+  double sleep_adjust;
 } limit_data;
 
 static void
 limit_bandwidth_reset (void)
 {
-  limit_data.bytes  = 0;
-  limit_data.dltime = 0;
+  limit_data.chunk_bytes = 0;
+  limit_data.chunk_start = 0;
 }
 
 /* Limit the bandwidth by pausing the download for an amount of time.
@@ -83,30 +84,48 @@ limit_bandwidth_reset (void)
    is the number of milliseconds it took to receive them.  */
 
 static void
-limit_bandwidth (long bytes, double delta)
+limit_bandwidth (long bytes, double *dltime, struct wget_timer *timer)
 {
+  double delta_t = *dltime - limit_data.chunk_start;
   double expected;
 
-  limit_data.bytes += bytes;
-  limit_data.dltime += delta;
+  limit_data.chunk_bytes += bytes;
 
-  expected = 1000.0 * limit_data.bytes / opt.limit_rate;
+  /* Calculate the amount of time we expect downloading the chunk
+     should take.  If in reality it took less time, sleep to
+     compensate for the difference.  */
+  expected = 1000.0 * limit_data.chunk_bytes / opt.limit_rate;
 
-  if (expected > limit_data.dltime)
+  if (expected > delta_t)
     {
-      double slp = expected - limit_data.dltime;
+      double slp = expected - delta_t + limit_data.sleep_adjust;
+      double t0, t1;
       if (slp < 200)
 	{
 	  DEBUGP (("deferring a %.2f ms sleep (%ld/%.2f).\n",
-		   slp, limit_data.bytes, limit_data.dltime));
+		   slp, limit_data.chunk_bytes, delta_t));
 	  return;
 	}
-      DEBUGP (("sleeping %.2f ms\n", slp));
+      DEBUGP (("\nsleeping %.2f ms for %ld bytes, adjust %.2f ms\n",
+	       slp, limit_data.chunk_bytes, limit_data.sleep_adjust));
+
+      t0 = *dltime;
       usleep ((unsigned long) (1000 * slp));
+      t1 = wtimer_elapsed (timer);
+
+      /* Due to scheduling, we probably slept slightly longer (or
+	 shorter) than desired.  Calculate the difference between the
+	 desired and the actual sleep, and adjust the next sleep by
+	 that amount.  */
+      limit_data.sleep_adjust = slp - (t1 - t0);
+
+      /* Since we've called wtimer_elapsed, we might as well update
+	 the caller's dltime. */
+      *dltime = t1;
     }
 
-  limit_data.bytes = 0;
-  limit_data.dltime = 0;
+  limit_data.chunk_bytes = 0;
+  limit_data.chunk_start = *dltime;
 }
 
 #define MIN(i, j) ((i) <= (j) ? (i) : (j))
@@ -143,7 +162,7 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 
   void *progress = NULL;
   struct wget_timer *timer = wtimer_allocate ();
-  double dltime = 0, last_dltime = 0;
+  double dltime = 0;
 
   *len = restval;
 
@@ -210,15 +229,9 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 	  goto out;
 	}
 
-      /* If bandwidth is not limited, one call to wtimer_elapsed is
-	 sufficient.  */
       dltime = wtimer_elapsed (timer);
       if (opt.limit_rate)
-	{
-	  limit_bandwidth (res, dltime - last_dltime);
-	  dltime = wtimer_elapsed (timer);
-	  last_dltime = dltime;
-	}
+	limit_bandwidth (res, &dltime, timer);
 
       if (progress)
 	progress_update (progress, res, dltime);

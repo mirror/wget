@@ -1,5 +1,15 @@
 2003-09-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* init.c (simple_atof): New function.
+	(cmd_time): Use it.
+	(cmd_bytes): Accept things like "1.5k" and such.  Use simple_atof
+	to parse decimals.
+
+	* retr.c (limit_bandwidth): Adjust each sleep by the error of the
+	previous one.
+
+2003-09-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (main): Use setoptval() for setting the options.  Use
 	run_command for `-e'.
 
