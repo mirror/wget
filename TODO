@@ -8,6 +8,9 @@ The items are not listed in any particular order (except that
 recently-added items may tend towards the top).  Not all of these
 represent user-visible changes.
 
+* Honor `Content-Disposition: XXX; filename="FILE"' when creating the
+  file name.
+
 * Should allow retries with multiple downloads when using -O on
   regular files.  As the source comment says: "A possible solution to
   [rewind not working with multiple downloads] would be to remember
