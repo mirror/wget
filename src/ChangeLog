@@ -1,3 +1,7 @@
+2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* getopt.c: Newer version, imported from Free libit.
+
 2003-10-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* cookies.c (struct cookie): Remove unused backpointer to cookie
