@@ -4,6 +4,8 @@
 	(grow_hash_table): Extract ht->hash_function outside the loop.
 	(hash_table_remove): Ditto.
 	(hash_table_clear): Fill entries with 0xff to clear them.
+	(hash_table_remove): Mark entries as deleted with the correct
+	marker.
 
 2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
 

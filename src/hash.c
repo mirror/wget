@@ -161,7 +161,9 @@ struct hash_table {
 /* We use all-bit-set marker to mean that a mapping is empty.  It is
    (hopefully) illegal as a pointer, and it allows the users to use
    NULL (as well as any non-negative integer) as key.  */
+
 #define NON_EMPTY(mp) (mp->key != (void *)~(unsigned long)0)
+#define MARK_AS_EMPTY(mp) (mp->key = (void *)~(unsigned long)0)
 
 /* "Next" mapping is the mapping after MP, but wrapping back to
    MAPPINGS when MP would reach MAPPINGS+SIZE.  */
@@ -438,7 +440,7 @@ hash_table_remove (struct hash_table *ht, const void *key)
       struct mapping *mappings = ht->mappings;
       hashfun_t hasher = ht->hash_function;
 
-      mp->key = NULL;
+      MARK_AS_EMPTY (mp);
       --ht->count;
 
       /* Rehash all the entries following MP.  The alternative
@@ -461,7 +463,7 @@ hash_table_remove (struct hash_table *ht, const void *key)
 	      goto next_rehash;
 
 	  *mp_new = *mp;
-	  mp->key = NULL;
+	  MARK_AS_EMPTY (mp);
 
 	next_rehash:
 	  ;
