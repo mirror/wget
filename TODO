@@ -10,7 +10,8 @@ changes.
 * It would be nice to have a simple man page for wget that refers you to the 
   .info files for more information.  It could be as simple as the output of wget
   --help plus some boilerplate.  This should stop wget re-packagers like RedHat
-  who include the out-of-date 1.4.5 man page in order to have one.
+  who include the out-of-date 1.4.5 man page in order to have one.  Perhaps we
+  can automatically generate a man page from the .texi file like gcc does?
 
 * Try to devise a scheme so that, when password is unknown, Wget asks
   the user for one.
