@@ -1,3 +1,8 @@
+2004-02-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Wgetrc Commands): Document --no-http-keep-alive and
+	the corresponding Wgetrc command.
+
 2003-12-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Download Options): Don't incorrectly claim that `-O'
