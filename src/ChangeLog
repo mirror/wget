@@ -1,5 +1,9 @@
 2001-12-09  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* main.c (main): Remove stray debugging message.
+
+2001-12-09  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* progress.c (create_image): Fix ETA padding when hours are prined.
 
 2001-12-09  Hrvoje Niksic  <hniksic@arsdigita.com>
