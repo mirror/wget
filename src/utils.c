@@ -1772,8 +1772,10 @@ determine_screen_width (void)
 #endif /* TIOCGWINSZ */
 }
 
-#if 0
+#if 1
 /* A debugging function for checking whether an MD5 library works. */
+
+#include "gen-md5.h"
 
 char *
 debug_test_md5 (char *buf)
@@ -1783,11 +1785,11 @@ debug_test_md5 (char *buf)
   unsigned char *p1;
   char *p2;
   int cnt;
-  MD5_CONTEXT_TYPE ctx;
+  ALLOCA_MD5_CONTEXT (ctx);
 
-  MD5_INIT (&ctx);
-  MD5_UPDATE (buf, strlen (buf), &ctx);
-  MD5_FINISH (&ctx, raw);
+  gen_md5_init (ctx);
+  gen_md5_update (buf, strlen (buf), ctx);
+  gen_md5_finish (ctx, raw);
 
   p1 = raw;
   p2 = res;

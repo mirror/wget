@@ -198,25 +198,4 @@ void *memcpy ();
 # define MAP_FAILED ((void *) -1)
 #endif
 
-/* Define wrapper macros for different MD5 routines. */
-#ifdef HAVE_MD5
-
-#ifdef HAVE_BUILTIN_MD5
-# include <gnu-md5.h>
-# define MD5_CONTEXT_TYPE struct md5_ctx
-# define MD5_INIT(ctx) md5_init_ctx (ctx)
-# define MD5_UPDATE(buffer, len, ctx) md5_process_bytes (buffer, len, ctx)
-# define MD5_FINISH(ctx, result) md5_finish_ctx (ctx, result)
-#endif
-
-#ifdef HAVE_SOLARIS_MD5
-# include <md5.h>
-# define MD5_CONTEXT_TYPE MD5_CTX
-# define MD5_INIT(ctx) MD5Init (ctx)
-# define MD5_UPDATE(buffer, len, ctx) MD5Update (ctx, (unsigned char *)(buffer), len)
-# define MD5_FINISH(ctx, result) MD5Final ((unsigned char *)(result), ctx)
-#endif
-
-#endif /* HAVE_MD5 */
-
 #endif /* SYSDEP_H */

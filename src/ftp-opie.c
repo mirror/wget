@@ -28,6 +28,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #endif
 
 #include "wget.h"
+#include "gen-md5.h"
 
 /* Dictionary for integer-word translations.  */
 static char Wp[2048][4] = {
@@ -2151,16 +2152,16 @@ calculate_skey_response (int sequence, const char *seed, const char *pass)
   char key[8];
   static char buf[33];
 
-  MD5_CONTEXT_TYPE ctx;
+  ALLOCA_MD5_CONTEXT (ctx);
   unsigned long results[4];	/* #### this looks 32-bit-minded */
   char *feed = (char *) alloca (strlen (seed) + strlen (pass) + 1);
 
   strcpy (feed, seed);
   strcat (feed, pass);
 
-  MD5_INIT (&ctx);
-  MD5_UPDATE (feed, strlen (feed), &ctx);
-  MD5_FINISH (&ctx, results);
+  gen_md5_init (ctx);
+  gen_md5_update (feed, strlen (feed), ctx);
+  gen_md5_finish (ctx, (unsigned char *)results);
 
   results[0] ^= results[2];
   results[1] ^= results[3];
@@ -2168,9 +2169,9 @@ calculate_skey_response (int sequence, const char *seed, const char *pass)
 
   while (0 < sequence--)
     {
-      MD5_INIT (&ctx);
-      MD5_UPDATE (key, 8, &ctx);
-      MD5_FINISH (&ctx, results);
+      gen_md5_init (ctx);
+      gen_md5_update (key, 8, ctx);
+      gen_md5_finish (ctx, (unsigned char *)results);
       results[0] ^= results[2];
       results[1] ^= results[3];
       memcpy (key, (char *) results, 8);

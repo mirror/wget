@@ -1,3 +1,7 @@
+2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* configure.in: Use SSL's MD5 if we're compiling with SSL anyway.
+
 2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* configure.in: Don't check for random.

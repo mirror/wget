@@ -189,23 +189,6 @@ dnl
 dnl Checks for libraries.
 dnl
 
-dnl
-dnl Use the md5 lib if available (Solaris).
-dnl
-
-if test x$wget_need_md5 = xyes
-then
-  AC_DEFINE(HAVE_MD5)
-  AC_CHECK_LIB(md5, MD5Update, [
-    AC_DEFINE(HAVE_SOLARIS_MD5)
-    LIBS="-lmd5 $LIBS"
-    ], [
-    MD5_OBJ='gnu-md5$o'
-    AC_DEFINE(HAVE_BUILTIN_MD5)
-  ])
-fi
-AC_SUBST(MD5_OBJ)
-
 dnl On Solaris, -lnsl is needed to use gethostbyname.  On "NCR MP-RAS
 dnl 3.0", however, gethostbyname is in libc, but -lnsl is still needed
 dnl to use -lsocket, as well as for functions such as inet_ntoa.  We
@@ -352,6 +335,47 @@ main(){return 0;}
 
   CC=$wget_save_CC
 fi
+
+dnl
+dnl Find an md5 implementation.
+dnl
+
+dnl On Solaris, we use libmd5.  If we're compiled with OpenSSL, use
+dnl OpenSSL's md5 support.  Otherwise, use our own md5.
+
+if test x$wget_need_md5 = xyes
+then
+  MD5_OBJ='gen-md5$o'
+
+  found_md5=no
+
+  dnl First check for Solaris md5.
+  if test x$found_md5 = xno; then
+    AC_CHECK_LIB(md5, MD5Update, [
+      AC_DEFINE(HAVE_SOLARIS_MD5)
+      LIBS="-lmd5 $LIBS"
+      found_md5=yes
+    ])
+  fi
+
+  dnl Then see if we're linking OpenSSL anyway; if yes, use its md5
+  dnl implementation.
+  if test x$found_md5 = xno; then
+    if test x$ssl_linked = xyes; then
+      AC_DEFINE(HAVE_OPENSSL_MD5)
+      found_md5=yes
+    fi
+  fi
+
+  dnl If none of the above worked, use the builtin one.
+  if test x$found_md5 = xno; then
+    AC_DEFINE(HAVE_BUILTIN_MD5)
+    found_md5=yes
+    MD5_OBJ="$MD5_OBJ gnu-md5\$o"
+  fi
+fi
+AC_DEFINE(HAVE_MD5)
+AC_SUBST(MD5_OBJ)
 
 dnl
 dnl Set of available languages.

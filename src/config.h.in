@@ -219,6 +219,9 @@ char *alloca ();
 /* Define if we're using Solaris libmd5.  */
 #undef HAVE_SOLARIS_MD5
 
+/* Define if we're using OpenSSL md5.  */
+#undef HAVE_OPENSSL_MD5
+
 /* Define if we're using builtin (GNU) md5.c.  */
 #undef HAVE_BUILTIN_MD5
 
