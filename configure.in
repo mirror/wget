@@ -46,7 +46,7 @@ AC_ARG_WITH(socks,
 [AC_DEFINE(HAVE_SOCKS)])
 
 AC_ARG_WITH(ssl,
-[  --with-ssl              use the openssl library])
+[  --with-ssl[=SSL_ROOT]   link with libssl [in SSL_ROOT/lib] for https: support])
 
 AC_ARG_ENABLE(opie,
 [  --disable-opie          disable support for opie or s/key FTP login],
@@ -82,6 +82,11 @@ dnl
 dnl Find a good install
 dnl
 AC_PROG_INSTALL
+
+dnl
+dnl Configure our included libtool
+dnl
+AM_PROG_LIBTOOL
 
 dnl
 dnl Find the compiler
@@ -186,14 +191,27 @@ then
   AC_CHECK_LIB(socks, Rconnect)
 fi
 
-dnl check for ssl libraries
-if test "x${with_ssl}" = xyes
-then
-  ssl_lose=no
-  AC_CHECK_LIB(ssl,SSL_new,,ssl_lose=yes,-lcrypto)
-  AC_CHECK_LIB(crypto,main,,ssl_lose=yes)
-  if test "$ssl_lose" = no
-  then
+dnl If --with-ssl was specified, make sure we can link with the OpenSSL libs.
+if test x"$with_ssl" != x -a x"$with_ssl" != x"no"; then
+  if test x"$with_ssl" = x"yes"; then
+    dnl OpenSSL's default install location:
+    with_ssl=/usr/local/ssl
+  fi
+  
+  SSL_INCLUDES=-I$with_ssl/include
+  AC_SUBST(SSL_INCLUDES)
+
+  LDFLAGS="-L$with_ssl/lib -R$with_ssl/lib $LDFLAGS"
+
+  ssl_link_failure=no
+  AC_CHECK_LIB(ssl,SSL_new,,ssl_link_failure=yes,-lcrypto)
+  AC_CHECK_LIB(crypto,RSA_new,,ssl_link_failure=yes)
+  if test x"$ssl_link_failure" = x"yes"; then
+    echo
+    echo "WARNING: Failed to link with OpenSSL libraries in $with_ssl/lib."
+    echo "         Wget will be built without support for https://... URLs."
+    echo
+  else
     AC_DEFINE(HAVE_SSL)
     SSL_OBJ='gen_sslfunc$o'
     AC_SUBST(SSL_OBJ)

@@ -40,6 +40,8 @@ mandir     = @mandir@
 manext     = 1
 sysconfdir = @sysconfdir@
 
+top_builddir = ..
+
 INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 RM = rm -f

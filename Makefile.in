@@ -41,6 +41,8 @@ mandir      = @mandir@
 manext      = 1
 localedir   = $(prefix)/share/locale
 
+top_builddir = .
+
 CC = @CC@
 CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@

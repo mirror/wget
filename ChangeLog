@@ -1,3 +1,23 @@
+2001-03-17  Dan Harkless  <wget@harkless.org>
+
+	* aclocal.m4: Appended libtool 1.3.5's libtool.m4 to it.
+
+	* configure.in: Use AM_PROG_LIBTOOL macro (now defined in our 
+	aclocal.m4) to create a libtool script from ltconfig and ltmain.sh.
+	If --with-ssl specified, look in /usr/local/ssl/lib by default for
+	OpenSSL libs.  Allow override with --with-ssl=<OpenSSL_root_dir>.
+	Set up -I<OpenSSL_root_dir>/include and -R<OpenSSL_root_dir>/lib
+	(possibly rewritten by libtool) as well.  Don't appear to be
+	looking for a function main() in -lcrypto.  If the OpenSSL lib
+	checks fail, don't just silently build a wget without https
+	support -- issue a warning.  Define top_builddir.
+
+	* ltconfig: New file from libtool 1.3.5 distribution.
+
+	* ltmain.sh: New file from libtool 1.3.5 distribution.
+
+	* {.,po,util,windows}/Makefile.in: Define top_builddir.
+
 2001-03-16  Dan Harkless  <wget@harkless.org>
 
 	* TODO: For some reason on 2000-11-19, Hrvoje removed the item

@@ -28,6 +28,8 @@ SHELL = /bin/sh
 srcdir = @srcdir@
 VPATH  = @srcdir@
 
+top_builddir = ..
+
 RM = rm -f
 
 all:

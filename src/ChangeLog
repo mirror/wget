@@ -1,3 +1,10 @@
+2001-03-17  Dan Harkless  <wget@harkless.org>
+
+	* Makefile.in: Include @SSL_INCLUDES@ substition in INCLUDES.
+	Define top_builddir.  Link wget with libtool so the user doesn't
+	have to supply a bunch of custom environment variables to 
+	correctly link with the OpenSSL shared libraries.
+
 2001-03-06  Hack Kampbjorn  <hack@hackdata.com>
 
 	* http.c (gethttp): skip :port in host header if it is the

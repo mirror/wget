@@ -33,6 +33,8 @@ bindir       = @bindir@
 sysconfdir   = @sysconfdir@
 localedir    = $(prefix)/share/locale
 
+top_builddir = ..
+
 CC       = @CC@
 CPPFLAGS = @CPPFLAGS@
 # The following line is losing on some versions of make!
@@ -42,10 +44,10 @@ LDFLAGS  = @LDFLAGS@
 LIBS     = @LIBS@
 exeext   = @exeext@
 
-INCLUDES = -I. -I$(srcdir)
+INCLUDES = -I. -I$(srcdir) @SSL_INCLUDES@
 
 COMPILE = $(CC) $(INCLUDES) $(CPPFLAGS)  $(DEFS) $(CFLAGS)
-LINK    = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
+LINK    = @LIBTOOL@ $(CC) $(CFLAGS) $(LDFLAGS) -o $@
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 RM = rm -f
