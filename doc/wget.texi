@@ -16,7 +16,7 @@
 
 @c This should really be generated automatically, possibly by including
 @c an auto-generated file.
-@set VERSION 1.8.1
+@set VERSION 1.8.1+cvs
 @set UPDATED December 2001
 
 @dircategory Net Utilities
