@@ -75,7 +75,7 @@ struct options opt;
 /* From log.c.  */
 void log_init PARAMS ((const char *, int));
 void log_close PARAMS ((void));
-void redirect_output PARAMS ((const char *));
+void log_request_redirect_output PARAMS ((const char *));
 
 static RETSIGTYPE redirect_output_signal PARAMS ((int));
 
@@ -679,11 +679,6 @@ GNU General Public License for more details.\n"));
 	}
     }
 
-  /* Initialize progress.  Have to do this after the options are
-     processed so we know where the log file is.  */
-  if (opt.verbose)
-    set_progress_implementation (opt.progress_type);
-
   /* All user options have now been processed, so it's now safe to do
      interoption dependency checks. */
 
@@ -730,6 +725,11 @@ Can't timestamp and not clobber old files at the same time.\n"));
 
   if (opt.background)
     fork_to_background ();
+
+  /* Initialize progress.  Have to do this after the options are
+     processed so we know where the log file is.  */
+  if (opt.verbose)
+    set_progress_implementation (opt.progress_type);
 
   /* Allocate basic pointer.  */
   url = ALLOCA_ARRAY (char *, nurl + 1);
@@ -886,15 +886,11 @@ Can't timestamp and not clobber old files at the same time.\n"));
 static RETSIGTYPE
 redirect_output_signal (int sig)
 {
-  char tmp[100];
-  signal (sig, redirect_output_signal);
-  /* Please note that the double `%' in `%%s' is intentional, because
-     redirect_output passes tmp through printf.  */
-  sprintf (tmp, _("%s received, redirecting output to `%%s'.\n"),
-	   (sig == SIGHUP ? "SIGHUP" :
-	    (sig == SIGUSR1 ? "SIGUSR1" :
-	     "WTF?!")));
-  redirect_output (tmp);
+  char *signal_name = (sig == SIGHUP ? "SIGHUP" :
+		       (sig == SIGUSR1 ? "SIGUSR1" :
+			"WTF?!"));
+  log_request_redirect_output (signal_name);
   progress_schedule_redirect ();
+  signal (sig, redirect_output_signal);
 }
 #endif /* HAVE_SIGNAL */

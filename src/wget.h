@@ -105,6 +105,7 @@ void debug_logprintf ();
 void logputs PARAMS ((enum log_options, const char *));
 void logflush PARAMS ((void));
 void log_set_flush PARAMS ((int));
+int log_set_save_context PARAMS ((int));
 
 /* Defined in `utils.c', but used literally everywhere.  */
 #ifndef DEBUG_MALLOC

@@ -1,5 +1,36 @@
 2001-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* main.c (main): Initialize progress after fork_to_background, so
+	that it knows when to use dots.
+
+	* mswindows.c (ws_hangup): Call log_request_redirect_output.
+
+	* utils.c (fork_to_background): Print the PID of the child
+	process.
+
+	* log.c (log_request_redirect_output): Set a flag that output
+	redirection has been requested.  Doing anything else in a signal
+	handler is unsafe.
+	(check_redirect_output): New function: check whether redirection
+	has been requested and, if so, call redirect_output().
+	(logputs): Call check_redirect_output.
+	(logprintf): Ditto.
+	(debug_logprintf): Ditto.
+	(redirect_output): Print clearer messages.
+
+	* main.c (redirect_output_signal): Don't call
+	redirect_output_signal directly.  Instead, call
+	log_request_redirect_output.
+
+	* utils.c (memfatal): Ditto.
+
+	* progress.c (display_image): Use it.
+
+	* log.c (log_set_save_context): New function: allow the caller to
+	turn off saving log context lines.
+
+2001-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* host.c (address_list_set_faulty): Uncomment a sanity check.
 
 2001-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>

@@ -36,7 +36,7 @@ extern int errno;
 #endif
 
 /* Defined in log.c.  */
-void redirect_output (const char *);
+void log_request_redirect_output PARAMS ((const char *));
 
 static int windows_nt_p;
 
@@ -103,10 +103,7 @@ ws_cleanup (void)
 static void
 ws_hangup (void)
 {
-  redirect_output (_("\n\
-CTRL+Break received, redirecting output to `%s'.\n\
-Execution continued in background.\n\
-You may stop Wget by pressing CTRL+ALT+DELETE.\n"));
+  log_request_redirect_output ("CTRL+Break");
 }
 
 void
