@@ -1,3 +1,8 @@
+2001-03-12  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
+
+	* TODO: Only normal recursion should respect -np -- page-requisite
+ 	recursion should not.
+
 2001-03-07  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
 	* TODO: Removed an obsolete item about adding VMS and MS FTP
