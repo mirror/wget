@@ -119,7 +119,7 @@ install.man: $(MAN)
 
 # install sample.wgetrc
 install.wgetrc: $(srcdir)/sample.wgetrc
-	$(top_srcdir)/mkinstalldirs $(sysconfdir)
+	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(sysconfdir)
 	@if test -f $(WGETRC); then \
 	  if cmp -s $(srcdir)/sample.wgetrc $(DESTDIR)$(WGETRC); then echo ""; \
 	     else \
