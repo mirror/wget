@@ -758,10 +758,12 @@ create_image (struct bar_progress *bp, double dl_total_time)
     {
       static char *short_units[] = { "B/s", "K/s", "M/s", "G/s" };
       int units = 0;
-      long bytes = hist->total_bytes + bp->recent_bytes;
-      double tm = hist->total_time + dl_total_time - bp->recent_start;
-      double dlrate = calc_rate (bytes, tm, &units);
-      sprintf (p, " %7.2f%s", dlrate, short_units[units]);
+      /* Calculate the download speed using the history ring and
+	 recent data that hasn't made it to the ring yet.  */
+      long dlquant = hist->total_bytes + bp->recent_bytes;
+      double dltime = hist->total_time + (dl_total_time - bp->recent_start);
+      double dlspeed = calc_rate (dlquant, dltime, &units);
+      sprintf (p, " %7.2f%s", dlspeed, short_units[units]);
       p += strlen (p);
     }
   else
