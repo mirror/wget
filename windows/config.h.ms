@@ -173,6 +173,15 @@ char *alloca ();
 /* Define to 1 if ANSI function prototypes are usable.  */
 #define PROTOTYPES 1
 
+/* Define if we're compiling in support for MD5.  */
+#define HAVE_MD5 1
+
+/* Define if we're using Solaris libmd5.  */
+#undef HAVE_SOLARIS_MD5
+
+/* Define if we're using builtin (GNU) md5.c.  */
+#define HAVE_BUILTIN_MD5 1
+
 /* Work around VC 6 issues */
 #define inline __inline
 #define ftruncate chsize

@@ -6,7 +6,7 @@ cookies$o: cookies.c wget.h cookies.h hash.h url.h utils.h
 fnmatch$o: fnmatch.c config.h wget.h sysdep.h options.h fnmatch.h
 ftp-basic$o: ftp-basic.c config.h wget.h sysdep.h options.h utils.h rbuf.h connect.h host.h
 ftp-ls$o: ftp-ls.c config.h wget.h sysdep.h options.h utils.h ftp.h url.h
-ftp-opie$o: ftp-opie.c config.h wget.h sysdep.h options.h md5.h
+ftp-opie$o: ftp-opie.c config.h wget.h sysdep.h options.h gnu-md5.h
 ftp$o: ftp.c config.h wget.h sysdep.h options.h utils.h url.h rbuf.h retr.h ftp.h connect.h host.h fnmatch.h netrc.h
 getopt$o: getopt.c wget.h sysdep.h options.h getopt.h
 hash$o: hash.c wget.h utils.h hash.h
@@ -15,11 +15,11 @@ host$o: host.c config.h wget.h sysdep.h options.h utils.h host.h url.h hash.h
 html-parse$o: wget.h html-parse.h
 html-url$o: wget.h html-parse.h url.h utils.h
 html$o: wget.h url.h utils.h ftp.h
-http$o: http.c config.h wget.h sysdep.h options.h utils.h url.h host.h rbuf.h retr.h headers.h connect.h fnmatch.h netrc.h md5.h
+http$o: http.c config.h wget.h sysdep.h options.h utils.h url.h host.h rbuf.h retr.h headers.h connect.h fnmatch.h netrc.h gnu-md5.h
 init$o: init.c config.h wget.h sysdep.h options.h utils.h init.h host.h recur.h netrc.h
 log$o: log.c config.h wget.h sysdep.h options.h utils.h
 main$o: main.c config.h wget.h sysdep.h options.h utils.h getopt.h init.h retr.h recur.h host.h
-md5$o: md5.c wget.h sysdep.h options.h md5.h
+gnu-md5$o: gnu-md5.c wget.h sysdep.h options.h gnu-md5.h
 mswindows$o: wget.h url.h
 netrc$o: netrc.c wget.h sysdep.h options.h utils.h netrc.h init.h
 rbuf$o: rbuf.c config.h wget.h sysdep.h options.h rbuf.h connect.h

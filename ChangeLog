@@ -1,3 +1,13 @@
+2001-05-14  Herold Heiko  <Heiko.Herold@previnet.it>
+
+	* windows/Makefile.src:
+	* windows/Makefile.src.bor:
+	* windows/Makefile.watcom:
+	* windows/config.h.bor:
+	* windows/config.h.ms:
+	* windows/wget.dep:
+	Windows update.
+
 2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* configure.in: Check for getopt_long in libc.

@@ -10,9 +10,9 @@ CFLAGS=-DWINDOWS -DHAVE_CONFIG_H -I. -H -H=wget.csm -w-
 ## variables
 OBJS=cmpt.obj connect.obj fnmatch.obj ftp.obj ftp-basic.obj  \
       ftp-ls.obj ftp-opie.obj getopt.obj headers.obj host.obj html.obj \
-      http.obj init.obj log.obj main.obj md5.obj netrc.obj rbuf.obj  \
+      http.obj init.obj log.obj main.obj gnu-md5.obj netrc.obj rbuf.obj  \
       alloca.obj \
-      recur.obj retr.obj url.obj utils.obj version.obj mswindows.obj
+      recur.obj res.obj retr.obj url.obj utils.obj version.obj mswindows.obj
 
 LIBDIR=$(MAKEDIR)\..\lib
 
@@ -25,11 +25,12 @@ version.obj+
 utils.obj+
 url.obj+
 retr.obj+
+res.obj+
 recur.obj+
 rbuf.obj+
 netrc.obj+
 mswindows.obj+
-md5.obj+
+gnu-md5.obj+
 main.obj+
 log.obj+
 init.obj+
