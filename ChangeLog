@@ -7,6 +7,10 @@
 
 	* README.branches: Explains the 1.6_branch.ChangeLog files.
 
+	* README.cvs: Falsely claimed you only needed GNU autoconf to
+ 	build from the CVS sources.  You also need GNU gettext and
+ 	texinfo.  I also did a bunch of general re-writing of this file.
+
 2001-01-03  Dan Harkless  <wget@harkless.org>
 
 	* TODO: We should make a simple man page referring to info doco.
@@ -46,6 +50,8 @@
 	* configure.in: Add windows/Makefile to the output block.
 
 	* windows/Makefile.in: New file.
+
+	* README.cvs: New file.
 
 2000-11-25  Karl Eichwalder  <ke@suse.de>
 

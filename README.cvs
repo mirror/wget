@@ -1,32 +1,28 @@
 Important note:
 
 To reduce bandwidth and needless updates, the CVS tree does not
-contain automatically generated files, even when those are normally
-present in the distribution tarballs.  All of these are recreated by
-the build process, except for `configure', which is needed to start
-the build in the first place.
+contain automatically-generated files, even when those files are
+normally present in the distribution tarballs.
 
-To build Wget from the CVS sources, all you need aside from the normal
-C development tools (make, cc) is Autoconf, which you can get from
-<http://www.gnu.org/software/autoconf/autoconf.html>.  Wget does not
-use Automake or Libtool, so you needn't worry about those.
+Therefore, if you're building from the CVS sources, you'll need to
+have GNU autoconf, gettext, and texinfo installed on your machine
+(these do the afore-mentioned automatic generation).  The three
+packages are available from <ftp://ftp.gnu.org/pub/gnu/<package>/> and
+its mirrors (please choose one close to you), listed at
+<http://www.gnu.org/order/ftp.html>.
 
-For your convenience, Makefile.cvs is a make file containing the
-necessary preparations, which currently amount to calling Autoconf.
-Invoke it with `make -f Makefile.cvs', and after that you're ready to
-build Wget in the normal fashion, e.g. with `./configure' followed by
-`make'.
+In case you aren't used to running autoconf manually to generate the
+necessary configure script, a file called Makefile.cvs has been
+provided, and may be called using `make -f Makefile.cvs'.  Once the
+Makefile has called autoconf to generate the configure script, you can
+build in the usual fashion.
 
-The simplest example of downloading and building Wget from CVS can
-look like this:
+To summarize, once you've checked out wget from the CVS archive
+(instructions for which can be found on the Development page of the
+Wget website), the commands you'll execute will be as follows (barring
+any extra options to `configure' or to the second `make'):
 
-    cvs -d :pserver:... checkout wget
     cd wget
     make -f Makefile.cvs
     ./configure
     make
-
-
-The instructions that explain how to check out Wget from CVS in the
-first place are available at <http://sunsite.dk/wget/> under
-"Development".
