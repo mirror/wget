@@ -506,7 +506,6 @@ accept_connection (int local_sock)
   struct sockaddr *sa = (struct sockaddr *)&ss;
   socklen_t addrlen = sizeof (ss);
 
-#ifdef HAVE_SELECT
   if (opt.connect_timeout)
     {
       int test = select_fd (local_sock, opt.connect_timeout, WAIT_FOR_READ);
@@ -515,7 +514,6 @@ accept_connection (int local_sock)
       if (test <= 0)
 	return -1;
     }
-#endif
   sock = accept (local_sock, sa, &addrlen);
   DEBUGP (("Accepted client at socket %d.\n", sock));
   return sock;
@@ -614,6 +612,13 @@ retryable_socket_connect_error (int err)
   return 1;
 }
 
+/* Return non-zero if the INET6 socket family is supported on the
+   system.
+
+   This doesn't guarantee that we're able to connect to IPv6 hosts,
+   but it's better than nothing.  It is only used on systems where
+   getaddrinfo doesn't support AI_ADDRCONFIG.  (See lookup_host.)  */
+
 int
 socket_has_inet6 (void)
 {
@@ -632,19 +637,19 @@ socket_has_inet6 (void)
   return supported;
 }
 
-#ifdef HAVE_SELECT
-
-/* Wait for file descriptor FD to be readable or writable or both,
-   timing out after MAXTIME seconds.  Returns 1 if FD is available, 0
-   for timeout and -1 for error.  The argument WAIT_FOR can be a
-   combination of WAIT_READ and WAIT_WRITE.
+/* Wait for a single descriptor to become available, timing out after
+   MAXTIME seconds.  Returns 1 if FD is available, 0 for timeout and
+   -1 for error.  The argument WAIT_FOR can be a combination of
+   WAIT_FOR_READ and WAIT_FOR_WRITE.
 
    This is a mere convenience wrapper around the select call, and
-   should be taken as such.  */
+   should be taken as such (for example, it doesn't implement Wget's
+   0-timeout-means-no-timeout semantics.)  */
 
 int
 select_fd (int fd, double maxtime, int wait_for)
 {
+#ifdef HAVE_SELECT
   fd_set fdset;
   fd_set *rd = NULL, *wr = NULL;
   struct timeval tmout;
@@ -665,9 +670,18 @@ select_fd (int fd, double maxtime, int wait_for)
   while (result < 0 && errno == EINTR);
 
   return result;
-}
 
-#endif /* HAVE_SELECT */
+#else  /* not HAVE_SELECT */
+
+  /* If select() unavailable, just return 1.  In most usages in Wget,
+     this is the appropriate response -- "if we can't poll, go ahead
+     with the blocking operation".  If a specific part of code needs
+     different behavior, it can use #ifdef HAVE_SELECT to test whether
+     polling really occurs.  */
+  return 1;
+
+#endif /* not HAVE_SELECT */
+}
 
 /* Basic socket operations, mostly EINTR wrappers.  */
 
@@ -705,11 +719,7 @@ sock_write (int fd, char *buf, int bufsize)
 static int
 sock_poll (int fd, double timeout, int wait_for)
 {
-#ifdef HAVE_SELECT
   return select_fd (fd, timeout, wait_for);
-#else
-  return 1;
-#endif
 }
 
 static void

@@ -295,11 +295,7 @@ ssl_poll (int fd, double timeout, int wait_for, void *ctx)
     return 1;
   if (SSL_pending (ssl))
     return 1;
-#ifdef HAVE_SELECT
   return select_fd (fd, timeout, wait_for);
-#else
-  return 1;
-#endif
 }
 
 static void

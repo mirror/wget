@@ -1,3 +1,7 @@
+2003-11-18  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c (select_fd): Return 1 if select is not available.
+
 2003-11-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* connect.c (connect_to_host): Don't reference address list after
