@@ -115,8 +115,8 @@ libtool: $(LIBTOOL_DEPS)
 # Create configure.bat from configure.bat.in by DOS-ifying the lines.
 # This is invoked by `make dist' and deleted by `make realclean' (not
 # `make distclean' because we want to preserve it for distribution).
-configure.bat: configure.bat.in
-	awk '{ print $$0 ($$0 ~ /\r$$/ ? "" : "\r") }' $@.in > $@
+configure.bat: $(srcdir)/configure.bat.in
+	awk '{ print $$0 ($$0 ~ /\r$$/ ? "" : "\r") }' $< > $@
 
 # create tag files for Emacs
 TAGS:
