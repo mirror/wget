@@ -1285,7 +1285,7 @@ ftp_retrieve_list (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	      if (local_size == f->size && tml >= f->tstamp)
 		{
 		  logprintf (LOG_VERBOSE, _("\
-Server file not newer than local file `%s' -- not retrieving.\n\n"), u->local);
+Server file no newer than local file `%s' -- not retrieving.\n\n"), u->local);
 		  dlthis = 0;
 		}
 	      else if (local_size != f->size)
