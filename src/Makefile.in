@@ -136,7 +136,7 @@ distclean: clean
 	$(RM) Makefile config.h
 
 realclean: distclean
-	$(RM) TAGS
+	$(RM) TAGS config.h.in
 
 #
 # Dependencies for maintenance
