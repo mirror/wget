@@ -1,5 +1,10 @@
 2001-06-18  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* cookies.c (ATTR_NAME_CHAR): Allow almost any character to be in
+	an attribute name.
+
+2001-06-18  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (url_filename): Make sure that slashes that sneak in to
 	u->file via query string get protected.
 	(file_name_protect_query_string): New function.

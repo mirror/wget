@@ -418,9 +418,16 @@ update_cookie_field (struct cookie *cookie,
 #undef NAME_IS
 
 /* Returns non-zero for characters that are legal in the name of an
-   attribute.  */
+   attribute.  This used to allow only alphanumerics, '-', and '_',
+   but we need to be more lenient because a number of sites wants to
+   use weirder attribute names.  rfc2965 "informally specifies"
+   attribute name (token) as "a sequence of non-special, non-white
+   space characters".  So we allow everything except the stuff we know
+   could harm us.  */
 
-#define ATTR_NAME_CHAR(c) (ISALNUM (c) || (c) == '-' || (c) == '_')
+#define ATTR_NAME_CHAR(c) ((c) > 32 && (c) < 127	\
+			   && (c) != '"' && (c) != '='	\
+			   && (c) != ';' && (c) != ',')
 
 /* Fetch the next character without doing anything special if CH gets
    set to 0.  (The code executed next is expected to handle it.)  */
