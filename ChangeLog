@@ -1,3 +1,7 @@
+2000-11-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* configure.in: Test for MMAP.
+
 2000-11-16  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* windows/config.h.ms: snprintf and vsnprintf exist under Windows.

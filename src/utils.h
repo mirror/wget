@@ -20,11 +20,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifndef UTILS_H
 #define UTILS_H
 
-/* Flags for slist.  */
-enum {
-   NOSORT     = 1
-};
-
 enum accd {
    ALLABS = 1
 };
@@ -35,6 +30,14 @@ typedef struct _slist
   char *string;
   struct _slist *next;
 } slist;
+
+struct hash_table;
+
+struct file_memory {
+  char *content;
+  long length;
+  int mmap_p;
+};
 
 char *time_str PARAMS ((time_t *));
 const char *uerrmsg PARAMS ((uerr_t));
@@ -58,13 +61,19 @@ int accdir PARAMS ((const char *s, enum accd));
 char *suffix PARAMS ((const char *s));
 
 char *read_whole_line PARAMS ((FILE *));
-void load_file PARAMS ((FILE *, char **, long *));
+struct file_memory *read_file PARAMS ((const char *));
+void read_file_free PARAMS ((struct file_memory *));
 
 void free_vec PARAMS ((char **));
 char **merge_vecs PARAMS ((char **, char **));
-slist *add_slist PARAMS ((slist *, const char *, int));
-int in_slist PARAMS ((slist *, const char *));
-void free_slist PARAMS ((slist *));
+slist *slist_append PARAMS ((slist *, const char *));
+int slist_contains PARAMS ((slist *, const char *));
+void slist_free PARAMS ((slist *));
+
+void string_set_add PARAMS ((struct hash_table *, const char *));
+int string_set_exists PARAMS ((struct hash_table *, const char *));
+void string_set_free PARAMS ((struct hash_table *));
+void free_keys_and_values PARAMS ((struct hash_table *));
 
 char *legible PARAMS ((long));
 char *legible_very_long PARAMS ((VERY_LONG_TYPE));

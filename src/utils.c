@@ -31,6 +31,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
+#ifdef HAVE_MMAP
+# include <sys/mman.h>
+#endif
 #ifdef HAVE_PWD_H
 # include <pwd.h>
 #endif
@@ -45,11 +48,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifdef NeXT
 # include <libc.h>		/* for access() */
 #endif
+#include <fcntl.h>
 #include <assert.h>
 
 #include "wget.h"
 #include "utils.h"
 #include "fnmatch.h"
+#include "hash.h"
 
 #ifndef errno
 extern int errno;
@@ -736,28 +741,149 @@ read_whole_line (FILE *fp)
     line = xrealloc (line, length + 1);
   return line;
 }
+
+/* Read FILE into memory.  A pointer to `struct file_memory' are
+   returned; use struct element `content' to access file contents, and
+   the element `length' to know the file length.  `content' is *not*
+   zero-terminated, and you should *not* read or write beyond the [0,
+   length) range of characters.
 
-/* Load file pointed to by FP to memory and return the malloc-ed
-   buffer with the contents.  *NREAD will contain the number of read
-   bytes.  The file is loaded in chunks, allocated exponentially,
-   starting with FILE_BUFFER_SIZE bytes.  */
-void
-load_file (FILE *fp, char **buf, long *nread)
+   After you are done with the file contents, call read_file_free to
+   release the memory.
+
+   Depending on the operating system and the type of file that is
+   being read, read_file() either mmap's the file into memory, or
+   reads the file into the core using read().
+
+   If file is named "-", fileno(stdin) is used for reading instead.
+   If you want to read from a real file named "-", use "./-" instead.  */
+
+struct file_memory *
+read_file (const char *file)
 {
-  long bufsize;
+  int fd;
+  struct file_memory *fm;
+  long size;
+  int inhibit_close = 0;
 
-  bufsize = 512;
-  *nread = 0;
-  *buf = NULL;
-  while (!feof (fp) && !ferror (fp))
+  /* Some magic in the finest tradition of Perl and its kin: if FILE
+     is "-", just use stdin.  */
+  if (HYPHENP (file))
     {
-      *buf = (char *)xrealloc (*buf, bufsize + *nread);
-      *nread += fread (*buf + *nread, sizeof (char), bufsize, fp);
-      bufsize <<= 1;
+      fd = fileno (stdin);
+      inhibit_close = 1;
+      /* Note that we don't inhibit mmap() in this case.  If stdin is
+         redirected from a regular file, mmap() will still work.  */
     }
-  /* #### No indication of encountered error??  */
+  else
+    fd = open (file, O_RDONLY);
+  if (fd < 0)
+    return NULL;
+  fm = xmalloc (sizeof (struct file_memory));
+
+#ifdef HAVE_MMAP
+  {
+    struct stat buf;
+    if (fstat (fd, &buf) < 0)
+      goto mmap_lose;
+    fm->length = buf.st_size;
+    /* NOTE: As far as I know, the callers of this function never
+       modify the file text.  Relying on this would enable us to
+       specify PROT_READ and MAP_SHARED for a marginal gain in
+       efficiency, but at some cost to generality.  */
+    fm->content = mmap (NULL, fm->length, PROT_READ | PROT_WRITE,
+			MAP_PRIVATE, fd, 0);
+    if (fm->content == MAP_FAILED)
+      goto mmap_lose;
+    if (!inhibit_close)
+      close (fd);
+
+    fm->mmap_p = 1;
+    return fm;
+  }
+
+ mmap_lose:
+  /* The most common reason why mmap() fails is that FD does not point
+     to a plain file.  However, it's also possible that mmap() doesn't
+     work for a particular type of file.  Therefore, whenever mmap()
+     fails, we just fall back to the regular method.  */
+#endif /* HAVE_MMAP */
+
+  fm->length = 0;
+  size = 512;			/* number of bytes fm->contents can
+                                   hold at any given time. */
+  fm->content = xmalloc (size);
+  while (1)
+    {
+      long nread;
+      if (fm->length > size / 2)
+	{
+	  /* #### I'm not sure whether the whole exponential-growth
+             thing makes sense with kernel read.  On Linux at least,
+             read() refuses to read more than 4K from a file at a
+             single chunk anyway.  But other Unixes might optimize it
+             better, and it doesn't *hurt* anything, so I'm leaving
+             it.  */
+
+	  /* Normally, we grow SIZE exponentially to make the number
+             of calls to read() and realloc() logarithmic in relation
+             to file size.  However, read() can read an amount of data
+             smaller than requested, and it would be unreasonably to
+             double SIZE every time *something* was read.  Therefore,
+             we double SIZE only when the length exceeds half of the
+             entire allocated size.  */
+	  size <<= 1;
+	  fm->content = xrealloc (fm->content, size);
+	}
+      nread = read (fd, fm->content + fm->length, size - fm->length);
+      if (nread > 0)
+	/* Successful read. */
+	fm->length += nread;
+      else if (nread < 0)
+	/* Error. */
+	goto lose;
+      else
+	/* EOF */
+	break;
+    }
+  if (!inhibit_close)
+    close (fd);
+  if (size > fm->length && fm->length != 0)
+    /* Due to exponential growth of fm->content, the allocated region
+       might be much larger than what is actually needed.  */
+    fm->content = xrealloc (fm->content, fm->length);
+  fm->mmap_p = 0;
+  return fm;
+
+ lose:
+  if (!inhibit_close)
+    close (fd);
+  free (fm->content);
+  free (fm);
+  return NULL;
 }
 
+/* Release the resources held by FM.  Specifically, this calls
+   munmap() or free() on fm->content, depending whether mmap or
+   malloc/read were used to read in the file.  It also frees the
+   memory needed to hold the FM structure itself.  */
+
+void
+read_file_free (struct file_memory *fm)
+{
+#ifdef HAVE_MMAP
+  if (fm->mmap_p)
+    {
+      munmap (fm->content, fm->length);
+    }
+  else
+#endif
+    {
+      free (fm->content);
+    }
+  free (fm);
+}
+
 /* Free the pointers in a NULL-terminated vector of pointers, then
    free the pointer itself.  */
 void
@@ -801,97 +927,42 @@ merge_vecs (char **v1, char **v2)
   return v1;
 }
 
-/* A set of simple-minded routines to store and search for strings in
-   a linked list.  You may add a string to the slist, and peek whether
-   it's still in there at any time later.  */
+/* A set of simple-minded routines to store strings in a linked list.
+   This used to also be used for searching, but now we have hash
+   tables for that.  */
 
-/* Add an element to the list.  If flags is NOSORT, the list will not
-   be sorted.  */
+/* Append an element to the list.  */
 slist *
-add_slist (slist *l, const char *s, int flags)
+slist_append (slist *l, const char *s)
 {
-  slist *t, *old, *beg;
-  int cmp;
+  slist *newel = (slist *)xmalloc (sizeof (slist));
+  slist *beg = l;
 
-  if (flags & NOSORT)
-    {
-      if (!l)
-	{
-	  t = (slist *)xmalloc (sizeof (slist));
-	  t->string = xstrdup (s);
-	  t->next = NULL;
-	  return t;
-	}
-      beg = l;
-      /* Find the last element.  */
-      while (l->next)
-	l = l->next;
-      t = (slist *)xmalloc (sizeof (slist));
-      l->next = t;
-      t->string = xstrdup (s);
-      t->next = NULL;
-      return beg;
-    }
-  /* Empty list or changing the first element.  */
-  if (!l || (cmp = strcmp (l->string, s)) > 0)
-    {
-      t = (slist *)xmalloc (sizeof (slist));
-      t->string = xstrdup (s);
-      t->next = l;
-      return t;
-    }
+  newel->string = xstrdup (s);
+  newel->next = NULL;
 
-  beg = l;
-  if (cmp == 0)
-    return beg;
-
-  /* Second two one-before-the-last element.  */
+  if (!l)
+    return newel;
+  /* Find the last element.  */
   while (l->next)
-    {
-      old = l;
-      l = l->next;
-      cmp = strcmp (s, l->string);
-      if (cmp == 0)             /* no repeating in the list */
-	return beg;
-      else if (cmp > 0)
-	continue;
-      /* If the next list element is greater than s, put s between the
-	 current and the next list element.  */
-      t = (slist *)xmalloc (sizeof (slist));
-      old->next = t;
-      t->next = l;
-      t->string = xstrdup (s);
-      return beg;
-    }
-  t = (slist *)xmalloc (sizeof (slist));
-  t->string = xstrdup (s);
-  /* Insert the new element after the last element.  */
-  l->next = t;
-  t->next = NULL;
+    l = l->next;
+  l->next = newel;
   return beg;
 }
 
 /* Is there a specific entry in the list?  */
 int
-in_slist (slist *l, const char *s)
+slist_contains (slist *l, const char *s)
 {
-  int cmp;
-
-  while (l)
-    {
-      cmp = strcmp (l->string, s);
-      if (cmp == 0)
-	return 1;
-      else if (cmp > 0)         /* the list is ordered!  */
-	return 0;
-      l = l->next;
-    }
+  for (; l; l = l->next)
+    if (!strcmp (l->string, s))
+      return 1;
   return 0;
 }
 
 /* Free the whole slist.  */
 void
-free_slist (slist *l)
+slist_free (slist *l)
 {
   slist *n;
 
@@ -903,6 +974,58 @@ free_slist (slist *l)
       l = n;
     }
 }
+
+/* Sometimes it's useful to create "sets" of strings, i.e. special
+   hash tables where you want to store strings as keys and merely
+   query for their existence.  Here is a set of utility routines that
+   makes that transparent.  */
+
+void
+string_set_add (struct hash_table *ht, const char *s)
+{
+  /* We use "1" as value.  It provides us a useful and clear arbitrary
+     value, and it consumes no memory -- the pointers to the same
+     string "1" will be shared by all the key-value pairs in the hash
+     table.  */
+  hash_table_put (ht, xstrdup (s), "1");
+}
+
+int
+string_set_exists (struct hash_table *ht, const char *s)
+{
+  return hash_table_exists (ht, s);
+}
+
+static int
+string_set_free_mapper (void *key, void *value_ignored, void *arg_ignored)
+{
+  free (key);
+  return 0;
+}
+
+void
+string_set_free (struct hash_table *ht)
+{
+  hash_table_map (ht, string_set_free_mapper, NULL);
+  hash_table_destroy (ht);
+}
+
+static int
+free_keys_and_values_mapper (void *key, void *value, void *arg_ignored)
+{
+  free (key);
+  free (value);
+  return 0;
+}
+
+/* Another utility function: call free() on all keys and values of HT.  */
+
+void
+free_keys_and_values (struct hash_table *ht)
+{
+  hash_table_map (ht, free_keys_and_values_mapper, NULL);
+}
+
 
 /* Engine for legible and legible_long_long; this function works on
    strings.  */

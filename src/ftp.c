@@ -40,7 +40,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "rbuf.h"
 #include "retr.h"
 #include "ftp.h"
-#include "html.h"
 #include "connect.h"
 #include "host.h"
 #include "fnmatch.h"
@@ -722,7 +721,7 @@ Error in server response, closing control connection.\n"));
     }
   reset_timer ();
   /* Get the contents of the document.  */
-  res = get_contents (dtsock, fp, len, restval, expected_bytes, &con->rbuf);
+  res = get_contents (dtsock, fp, len, restval, expected_bytes, &con->rbuf, 0);
   con->dltime = elapsed_time ();
   tms = time_str (NULL);
   tmrate = rate (*len - restval, con->dltime);

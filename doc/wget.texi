@@ -2548,8 +2548,8 @@ this:
 
 This is explained in some detail at
 @url{http://info.webcrawler.com/mak/projects/robots/meta-user.html}.
-Unfortunately, Wget does not support this method of robot exclusion yet,
-but it will be implemented in the next release.
+Wget supports this method of robot exclusion in addition to the usual
+@file{/robots.txt} exclusion.
 
 @node Security Considerations, Contributors, Robots, Appendices
 @section Security Considerations

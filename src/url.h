@@ -88,6 +88,7 @@ struct urlinfo *newurl PARAMS ((void));
 void freeurl PARAMS ((struct urlinfo *, int));
 uerr_t urlproto PARAMS ((const char *));
 int skip_proto PARAMS ((const char *));
+int has_proto PARAMS ((const char *));
 int skip_uname PARAMS ((const char *));
 
 uerr_t parseurl PARAMS ((const char *, struct urlinfo *, int));
@@ -95,7 +96,7 @@ char *str_url PARAMS ((const struct urlinfo *, int));
 int url_equal PARAMS ((const char *, const char *));
 
 urlpos *get_urls_file PARAMS ((const char *));
-urlpos *get_urls_html PARAMS ((const char *, const char *, int, int));
+urlpos *get_urls_html PARAMS ((const char *, const char *, int, int *));
 void free_urlpos PARAMS ((urlpos *));
 
 char *url_concat PARAMS ((const char *, const char *));

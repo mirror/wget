@@ -92,4 +92,6 @@ typedef struct
 struct fileinfo *ftp_parse_ls PARAMS ((const char *));
 uerr_t ftp_loop PARAMS ((struct urlinfo *, int *));
 
+uerr_t ftp_index (const char *, struct urlinfo *, struct fileinfo *);
+
 #endif /* FTP_H */

@@ -71,7 +71,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 /* Print X if debugging is enabled; a no-op otherwise.  */
 #ifdef DEBUG
-# define DEBUGP(x) do { debug_logprintf x; } while (0)
+# define DEBUGP(x) do { if (opt.debug) { debug_logprintf x; } } while (0)
 #else  /* not DEBUG */
 # define DEBUGP(x) DO_NOTHING
 #endif /* not DEBUG */

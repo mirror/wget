@@ -31,5 +31,6 @@ int header_process PARAMS ((const char *, const char *,
 
 int header_extract_number PARAMS ((const char *, void *));
 int header_strdup PARAMS ((const char *, void *));
+int header_exists PARAMS ((const char *, void *));
 
 int skip_lws PARAMS ((const char *));

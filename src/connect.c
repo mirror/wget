@@ -107,6 +107,37 @@ make_connection (int *sock, char *hostname, unsigned short port)
   return NOCONERROR;
 }
 
+int
+test_socket_open (int sock)
+{
+#ifdef HAVE_SELECT
+  fd_set check_set;
+  struct timeval to;
+
+  /* Check if we still have a valid (non-EOF) connection.  From Andrew
+   * Maholski's code in the Unix Socket FAQ.  */
+
+  FD_ZERO (&check_set);
+  FD_SET (sock, &check_set);
+
+  /* Wait one microsecond */
+  to.tv_sec = 0;
+  to.tv_usec = 1;
+
+  /* If we get a timeout, then that means still connected */
+  if (select (sock + 1, &check_set, NULL, NULL, &to) == 0)
+    {
+      /* Connection is valid (not EOF), so continue */
+      return 1;
+    }
+  else
+    return 0;
+#else
+  /* Without select, it's hard to know for sure. */
+  return 1;
+#endif
+}
+
 /* Bind the local port PORT.  This does all the necessary work, which
    is creating a socket, setting SO_REUSEADDR option on it, then
    calling bind() and listen().  If *PORT is 0, a random port is

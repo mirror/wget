@@ -1,3 +1,117 @@
+2000-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* retr.c (get_contents): If use_expected, make sure that the
+	appropriate amount of data is being read.
+
+	* http.c (gethttp): Check for both `Keep-Alive: ...' and
+	`Connection: Keep-Alive'.
+
+	* wget.h (DEBUGP): Call debug_logprintf only if opt.debug is
+	turned on.
+
+2000-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* http.c (connection_available_p): Use it.
+
+	* connect.c (test_socket_open): New function.
+
+	* http.c (gethttp): Support persistent connections.  Based on the
+	ideas, and partly on code, by Sam Horrocks <sam@daemoninc.com>.
+	(register_persistent): New function.
+	(connection_available_p): Ditto.
+	(invalidate_connection): Ditto.
+
+2000-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (convert_links): Handle UREL2ABS case.
+
+	* recur.c (recursive_retrieve): Instead of the list
+	urls_downloaded, use hash tables dl_file_url_map and
+	dl_url_file_map.
+	(convert_all_links): Use them to retrieve data.
+
+	* host.c (clean_hosts): Free the hash tables.
+
+	* main.c (private_initialize): Call host_init().
+
+	* host.c (store_hostaddress): Use a saner, hash table-based data
+	model.
+	(realhost): Ditto.
+	(host_init): Initialize the hash tables.
+
+2000-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* utils.c (slist_append): Eviscerate NOSORT.  Hash tables are now
+	used for what the sorted slists used to be used for.
+	(slist_contains): Don't rely on the list being sorted.
+	(slist_append): Simplify the code.
+
+	* recur.c (recursive_cleanup): Use free_string_set.
+
+	* utils.c (string_set_add, string_set_exists, string_set_free):
+	New functions for easier freeing of hash tables whose keys are
+	strdup'ed strings.
+
+	* recur.c (recursive_retrieve): Use the hash table functions for
+	storing undesirable URLs.
+
+	* hash.c: New file.
+
+2000-11-17  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* main.c (private_initialize): Call url_init.
+	(main): Call private_initialize.
+
+	* url.c (unsafe_char_table): New table.
+	(UNSAFE_CHAR): Use it.
+	(init_unsafe_char_table): New function.
+	(url_init): New function; call init_unsafe_char_table.
+
+2000-11-15  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* html-url.c (handle_link): Handle HTML fragment identifiers.
+
+	* recur.c (recursive_retrieve): If norobot info is respected and
+	the file is specified not to be followed by robots, respect that.
+
+	* html-url.c (collect_tags_mapper): Handle <meta name=robots
+	content=X>.  For us the important cases are where X is NONE or
+	where X contains NOFOLLOW.
+	(get_urls_html): Propagate that information to the caller.
+
+2000-11-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (convert_links): Unlink the file we might be reading from
+	before writing to it.
+	(convert_links): Use alloca instead of malloc for
+	filename_plus_orig_suffix.
+
+2000-11-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (get_urls_file): Ditto.
+	(convert_links): Ditto.
+
+	* html-url.c (get_urls_html): Use read_file() instead of
+	load_file().
+
+	* utils.c (read_file): New function, instead of the old
+	load_file().
+	(read_file_free): Ditto.
+
+	* url.c (findurl): Search only for the supported protocols.
+	(convert_links): Use fwrite() when writing out a region of
+	characters.
+
+2000-11-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* ftp-ls.c: Move html_quote_string and ftp_index here.
+
+	* url.c: Remove get_urls_html, since that's now in html-url.c.
+
+	* html-url.c: New file.
+
+	* html-parse.c: New file.
+
 2000-11-16  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* mswindows.h: Define snprintf and vsnprintf to _snprintf and

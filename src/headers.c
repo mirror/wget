@@ -165,6 +165,14 @@ header_strdup (const char *header, void *closure)
   return 1;
 }
 
+/* Write the value 1 into the integer pointed to by CLOSURE.  */
+int
+header_exists (const char *header, void *closure)
+{
+  *(int *)closure = 1;
+  return 1;
+}
+
 /* Skip LWS (linear white space), if present.  Returns number of
    characters to skip.  */
 int

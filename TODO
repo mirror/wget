@@ -49,15 +49,6 @@ changes.
 * Make `-k' check for files that were downloaded in the past and convert links 
   to them in newly-downloaded documents.
 
-* -k should convert relative references to absolute if not downloaded.
-
-* -k should convert "hostless absolute" URLs, like <A HREF="/index.html">.
-  However, Brian McMahon <bm@iucr.org> wants the old incorrect behavior to still
-  be available as an option, as he depends on it to allow mirrors of his site to
-  send CGI queries to his original site, but still get graphics off of the
-  mirror site.  Perhaps this would be better dealt with by adding an option to
-  tell -k not to convert certain URL patterns?
-
 * Add option to clobber existing file names (no `.N' suffixes).
 
 * Introduce a concept of "boolean" options.  For instance, every
@@ -84,9 +75,6 @@ changes.
 
 * Allow size limit to files (perhaps with an option to download oversize files 
   up through the limit or not at all, to get more functionality than [u]limit.
-
-* Recognize HTML comments correctly.  Add more options for handling
-  bogus HTML found all over the 'net.
 
 * Implement breadth-first retrieval.
 

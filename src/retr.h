@@ -22,7 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include "rbuf.h"
 
-int get_contents PARAMS ((int, FILE *, long *, long, long, struct rbuf *));
+int get_contents PARAMS ((int, FILE *, long *, long, long, struct rbuf *, int));
 
 uerr_t retrieve_url PARAMS ((const char *, char **, char **,
 			     const char *, int *));

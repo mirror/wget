@@ -101,6 +101,9 @@ char *alloca ();
 /* Define if you have the uname function.  */
 #undef HAVE_UNAME
 
+/* Define if you have a working version of mmap.  */
+#undef HAVE_MMAP
+
 /* Define if you have the gethostname function.  */
 #undef HAVE_GETHOSTNAME
 

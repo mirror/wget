@@ -38,7 +38,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "utils.h"
 #include "url.h"
 #include "host.h"
-#include "html.h"
 
 #ifndef errno
 extern int errno;
@@ -48,22 +47,12 @@ extern int errno;
 #define DEFAULT_HTTP_PORT 80
 #define DEFAULT_FTP_PORT 21
 
-/* URL separator (for findurl) */
-#define URL_SEPARATOR "!\"#'(),>`{}|<>"
+/* Table of Unsafe chars.  This is intialized in
+   init_unsafe_char_table.  */
 
-/* A list of unsafe characters for encoding, as per RFC1738.  '@' and
-   ':' (not listed in RFC) were added because of user/password
-   encoding.  */
+static char unsafe_char_table[256];
 
-#ifndef WINDOWS
-# define URL_UNSAFE_CHARS "<>\"#%{}|\\^~[]`@:"
-#else  /* WINDOWS */
-# define URL_UNSAFE_CHARS "<>\"%{}|\\^[]`"
-#endif /* WINDOWS */
-
-#define UNSAFE_CHAR(c) (   ((unsigned char)(c) <= ' ')  /* ASCII 32  */  \
-   			|| ((unsigned char)(c) >  '~')  /* ASCII 127 */  \
-			|| strchr (URL_UNSAFE_CHARS, c))
+#define UNSAFE_CHAR(c) (unsafe_char_table[(unsigned char)(c)])
 
 /* If S contains unsafe characters, free it and replace it with a
    version that doesn't.  */
@@ -174,6 +163,34 @@ skip_url (const char *url)
     }
   else
     return 0;
+}
+
+/* Unsafe chars:
+   - anything <= 32;
+   - stuff from rfc1738 ("<>\"#%{}|\\^~[]`");
+   - @ and :, for user/password encoding.
+   - everything over 127 (but we don't bother with recording those.  */
+void
+init_unsafe_char_table (void)
+{
+  int i;
+  for (i = 0; i < 256; i++)
+    if (i < 32 || i >= 127
+	|| i == '<'
+	|| i == '>'
+	|| i == '\"'
+	|| i == '#'
+	|| i == '%'
+	|| i == '{'
+	|| i == '}'
+	|| i == '|'
+	|| i == '\\'
+	|| i == '^'
+	|| i == '~'
+	|| i == '['
+	|| i == ']'
+	|| i == '`')
+      unsafe_char_table[i] = 1;
 }
 
 /* Returns 1 if the string contains unsafe characters, 0 otherwise.  */
@@ -296,7 +313,7 @@ skip_proto (const char *url)
 
 /* Returns 1 if the URL begins with a protocol (supported or
    unsupported), 0 otherwise.  */
-static int
+int
 has_proto (const char *url)
 {
   char **s;
@@ -765,297 +782,54 @@ url_equal (const char *url1, const char *url2)
   return res;
 }
 
-/* Find URL of format scheme:hostname[:port]/dir in a buffer.  The
-   buffer may contain pretty much anything; no errors are signaled.  */
-static const char *
-findurl (const char *buf, int howmuch, int *count)
-{
-  char **prot;
-  const char *s1, *s2;
-
-  for (s1 = buf; howmuch; s1++, howmuch--)
-    for (prot = protostrings; *prot; prot++)
-      if (howmuch <= strlen (*prot))
-	continue;
-      else if (!strncasecmp (*prot, s1, strlen (*prot)))
-	{
-	  for (s2 = s1, *count = 0;
-	       howmuch && *s2 && *s2 >= 32 && *s2 < 127 && !ISSPACE (*s2) &&
-		 !strchr (URL_SEPARATOR, *s2);
-	       s2++, (*count)++, howmuch--);
-	  return s1;
-	}
-  return NULL;
-}
-
-/* Scans the file for signs of URL-s.  Returns a vector of pointers,
-   each pointer representing a URL string.  The file is *not* assumed
-   to be HTML.  */
 urlpos *
 get_urls_file (const char *file)
 {
-  long nread;
-  FILE *fp;
-  char *buf;
-  const char *pbuf;
-  int size;
-  urlpos *first, *current, *old;
+  struct file_memory *fm;
+  urlpos *head, *tail;
+  const char *text, *text_end;
 
-  if (file && !HYPHENP (file))
-    {
-      fp = fopen (file, "rb");
-      if (!fp)
-	{
-	  logprintf (LOG_NOTQUIET, "%s: %s\n", file, strerror (errno));
-	  return NULL;
-	}
-    }
-  else
-    fp = stdin;
   /* Load the file.  */
-  load_file (fp, &buf, &nread);
-  if (file && !HYPHENP (file))
-    fclose (fp);
-  DEBUGP (("Loaded %s (size %ld).\n", file, nread));
-  first = current = NULL;
-  /* Fill the linked list with URLs.  */
-  for (pbuf = buf; (pbuf = findurl (pbuf, nread - (pbuf - buf), &size));
-       pbuf += size)
+  fm = read_file (file);
+  if (!fm)
     {
-      /* Allocate the space.  */
-      old = current;
-      current = (urlpos *)xmalloc (sizeof (urlpos));
-      if (old)
-	old->next = current;
-      memset (current, 0, sizeof (*current));
-      current->next = NULL;
-      current->url = (char *)xmalloc (size + 1);
-      memcpy (current->url, pbuf, size);
-      current->url[size] = '\0';
-      if (!first)
-	first = current;
+      logprintf (LOG_NOTQUIET, "%s: %s\n", file, strerror (errno));
+      return NULL;
     }
-  /* Free the buffer.  */
-  free (buf);
-
-  return first;
-}
-
-/* Similar to get_urls_file, but for HTML files.  FILE is scanned as
-   an HTML document using htmlfindurl(), which see.  get_urls_html()
-   constructs the HTML-s from the relative href-s.
-
-   If SILENT is non-zero, do not barf on baseless relative links.  */
-urlpos *
-get_urls_html (const char *file, const char *this_url, int silent,
-	       int dash_p_leaf_HTML)
-{
-  long nread;
-  FILE *fp;
-  char *orig_buf;
-  const char *buf;
-  int step, first_time;
-  urlpos *first, *current, *old;
-
-  if (file && !HYPHENP (file))
+  DEBUGP (("Loaded %s (size %ld).\n", file, fm->length));
+  head = tail = NULL;
+  text = fm->content;
+  text_end = fm->content + fm->length;
+  while (text < text_end)
     {
-      fp = fopen (file, "rb");
-      if (!fp)
-	{
-	  logprintf (LOG_NOTQUIET, "%s: %s\n", file, strerror (errno));
-	  return NULL;
-	}
-    }
-  else
-    fp = stdin;
-  /* Load the file.  */
-  load_file (fp, &orig_buf, &nread);
-  if (file && !HYPHENP (file))
-    fclose (fp);
-  DEBUGP (("Loaded HTML file %s (size %ld).\n", file, nread));
-  first = current = NULL;
-  first_time = 1;
-  /* Iterate over the URLs in BUF, picked by htmlfindurl().  */
-  for (buf = orig_buf;
-       (buf = htmlfindurl (buf, nread - (buf - orig_buf), &step, first_time,
-			   dash_p_leaf_HTML));
-       buf += step)
-    {
-      int i, no_proto;
-      int size = step;
-      const char *pbuf = buf;
-      char *constr, *base;
-      const char *cbase;
-      char *needs_freeing, *url_data;
-
-      first_time = 0;
-
-      /* A frequent phenomenon that needs to be handled are pages
-         generated by brain-damaged HTML generators, which refer to to
-         URI-s as <a href="<spaces>URI<spaces>">.  We simply ignore
-         any spaces at the beginning or at the end of the string.
-         This is probably not strictly correct, but that's what the
-         browsers do, so we may follow.  May the authors of "WYSIWYG"
-         HTML tools burn in hell for the damage they've inflicted!  */
-      while ((pbuf < buf + step) && ISSPACE (*pbuf))
-        {
-          ++pbuf;
-          --size;
-        }
-      while (size && ISSPACE (pbuf[size - 1]))
-	--size;
-      if (!size)
-	break;
-
-      /* It would be nice if we could avoid allocating memory in this
-         loop, but I don't see an easy way.  To process the entities,
-         we need to either copy the data, or change it destructively.
-         I choose the former.
-
-	 We have two pointers: needs_freeing and url_data, because the
-	 code below does thing like url_data += <something>, and we
-	 want to pass the original string to free(). */
-      needs_freeing = url_data = html_decode_entities (pbuf, pbuf + size);
-      size = strlen (url_data);
-
-      for (i = 0; protostrings[i]; i++)
-	{
-	  if (!strncasecmp (protostrings[i], url_data,
-			    MINVAL (strlen (protostrings[i]), size)))
-	    break;
-	}
-      /* Check for http:RELATIVE_URI.  See below for details.  */
-      if (protostrings[i]
-	  && !(strncasecmp (url_data, "http:", 5) == 0
-	       && strncasecmp (url_data, "http://", 7) != 0))
-	{
-	  no_proto = 0;
-	}
+      const char *line_beg = text;
+      const char *line_end = memchr (text, '\n', text_end - text);
+      if (!line_end)
+	line_end = text_end;
       else
+	++line_end;
+      text = line_end;
+      while (line_beg < line_end
+	     && ISSPACE (*line_beg))
+	++line_beg;
+      while (line_end > line_beg + 1
+	     && ISSPACE (*(line_end - 1)))
+	--line_end;
+      if (line_end > line_beg)
 	{
-	  no_proto = 1;
-	  /* This is for extremely brain-damaged pages that refer to
-	     relative URI-s as <a href="http:URL">.  Just strip off the
-	     silly leading "http:" (as well as any leading blanks
-	     before it).  */
-	  if ((size > 5) && !strncasecmp ("http:", url_data, 5))
-	    url_data += 5, size -= 5;
-	}
-      if (!no_proto)
-	{
-	  for (i = 0; i < ARRAY_SIZE (sup_protos); i++)
-	    {
-	      if (!strncasecmp (sup_protos[i].name, url_data,
-			       MINVAL (strlen (sup_protos[i].name), size)))
-		break;
-	    }
-	  /* Do *not* accept a non-supported protocol.  */
-	  if (i == ARRAY_SIZE (sup_protos))
-	    {
-	      free (needs_freeing);
-	      continue;
-	    }
-	}
-      if (no_proto)
-	{
-	  /* First, construct the base, which can be relative itself.
-
-	     Criteria for creating the base are:
-	     1) html_base created by <base href="...">
-	     2) current URL
-	     3) base provided from the command line */
-	  cbase = html_base ();
-	  if (!cbase)
-	    cbase = this_url;
-	  if (!cbase)
-	    cbase = opt.base_href;
-	  if (!cbase)             /* Error condition -- a baseless
-				     relative link.  */
-	    {
-	      if (!opt.quiet && !silent)
-		{
-		  /* Use malloc, not alloca because this is called in
-                     a loop. */
-		  char *temp = (char *)malloc (size + 1);
-		  strncpy (temp, url_data, size);
-		  temp[size] = '\0';
-		  logprintf (LOG_NOTQUIET,
-			     _("Error (%s): Link %s without a base provided.\n"),
-			     file, temp);
-		  free (temp);
-		}
-	      free (needs_freeing);
-	      continue;
-	    }
-	  if (this_url)
-	    base = construct (this_url, cbase, strlen (cbase),
-			      !has_proto (cbase));
+	  urlpos *entry = (urlpos *)xmalloc (sizeof (urlpos));
+	  memset (entry, 0, sizeof (*entry));
+	  entry->next = NULL;
+	  entry->url = strdupdelim (line_beg, line_end);
+	  if (!head)
+	    head = entry;
 	  else
-	    {
-	      /* Base must now be absolute, with host name and
-		 protocol.  */
-	      if (!has_proto (cbase))
-		{
-		  logprintf (LOG_NOTQUIET, _("\
-Error (%s): Base %s relative, without referer URL.\n"),
-			     file, cbase);
-		  free (needs_freeing);
-		  continue;
-		}
-	      base = xstrdup (cbase);
-	    }
-	  constr = construct (base, url_data, size, no_proto);
-	  free (base);
+	    tail->next = entry;
+	  tail = entry;
 	}
-      else /* has proto */
-	{
-	  constr = (char *)xmalloc (size + 1);
-	  strncpy (constr, url_data, size);
-	  constr[size] = '\0';
-	}
-#ifdef DEBUG
-      if (opt.debug)
-	{
-	  char *tmp;
-	  const char *tmp2;
-
-	  tmp2 = html_base ();
-	  /* Use malloc, not alloca because this is called in a loop. */
-	  tmp = (char *)xmalloc (size + 1);
-	  strncpy (tmp, url_data, size);
-	  tmp[size] = '\0';
-	  logprintf (LOG_ALWAYS,
-		     "file %s; this_url %s; base %s\nlink: %s; constr: %s\n",
-		     file, this_url ? this_url : "(null)",
-		     tmp2 ? tmp2 : "(null)", tmp, constr);
-	  free (tmp);
-	}
-#endif
-
-      /* Allocate the space.  */
-      old = current;
-      current = (urlpos *)xmalloc (sizeof (urlpos));
-      if (old)
-	old->next = current;
-      if (!first)
-	first = current;
-      /* Fill the values.  */
-      memset (current, 0, sizeof (*current));
-      current->next = NULL;
-      current->url = constr;
-      current->size = step;
-      current->pos = buf - orig_buf;
-      /* A URL is relative if the host and protocol are not named,
-	 and the name does not start with `/'.  */
-      if (no_proto && *url_data != '/')
-	current->flags |= (URELATIVE | UNOPROTO);
-      else if (no_proto)
-	current->flags |= UNOPROTO;
-      free (needs_freeing);
     }
-  free (orig_buf);
-
-  return first;
+  read_file_free (fm);
+  return head;
 }
 
 /* Free the linked list of urlpos.  */
@@ -1527,103 +1301,59 @@ no_proxy_match (const char *host, const char **no_proxy)
     return !sufmatch (no_proxy, host);
 }
 
+static void write_backup_file PARAMS ((const char *, downloaded_file_t));
+
 /* Change the links in an HTML document.  Accepts a structure that
    defines the positions of all the links.  */
 void
 convert_links (const char *file, urlpos *l)
 {
+  struct file_memory *fm;
   FILE               *fp;
-  char               *buf, *p, *p2;
+  char               *p;
   downloaded_file_t  downloaded_file_return;
-  long               size;
+
+  {
+    /* First we do a "dry run": go through the list L and see whether
+       any URL needs to be converted in the first place.  If not, just
+       leave the file alone.  */
+    int count = 0;
+    urlpos *dry = l;
+    for (dry = l; dry; dry = dry->next)
+      if (dry->flags & (UABS2REL | UREL2ABS))
+	++count;
+    if (!count)
+      {
+	logprintf (LOG_VERBOSE, _("Nothing to do while converting %s.\n"),
+		   file);
+	return;
+      }
+  }
 
   logprintf (LOG_VERBOSE, _("Converting %s... "), file);
-  /* Read from the file....  */
-  fp = fopen (file, "rb");
-  if (!fp)
+
+  fm = read_file (file);
+  if (!fm)
     {
       logprintf (LOG_NOTQUIET, _("Cannot convert links in %s: %s\n"),
 		 file, strerror (errno));
       return;
     }
-  /* ...to a buffer.  */
-  load_file (fp, &buf, &size);
-  fclose (fp);
 
-  downloaded_file_return = downloaded_file(CHECK_FOR_FILE, file);
-
+  downloaded_file_return = downloaded_file (CHECK_FOR_FILE, file);
   if (opt.backup_converted && downloaded_file_return)
-    /* Rather than just writing over the original .html file with the converted
-       version, save the former to *.orig.  Note we only do this for files we've
-       _successfully_ downloaded, so we don't clobber .orig files sitting around
-       from previous invocations. */
+    write_backup_file (file, downloaded_file_return);
+
+  /* Before opening the file for writing, unlink the file.  This is
+     important if the data in FM is mmaped.  In such case, nulling the
+     file, which is what fopen() below does, would make us read all
+     zeroes from the mmaped region.  */
+  if (unlink (file) < 0 && errno != ENOENT)
     {
-      /* Construct the backup filename as the original name plus ".orig". */
-      size_t         filename_len = strlen(file);
-      char*          filename_plus_orig_suffix;
-      boolean        already_wrote_backup_file = FALSE;
-      slist*         converted_file_ptr;
-      static slist*  converted_files = NULL;
-
-      if (downloaded_file_return == FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED)
-	{
-	  /* Just write "orig" over "html".  We need to do it this way because
-	     when we're checking to see if we've downloaded the file before (to
-	     see if we can skip downloading it), we don't know if it's a
-	     text/html file.  Therefore we don't know yet at that stage that -E
-	     is going to cause us to tack on ".html", so we need to compare
-	     vs. the original URL plus ".orig", not the original URL plus
-	     ".html.orig". */
-	  filename_plus_orig_suffix = xmalloc(filename_len + 1);
-	  strcpy(filename_plus_orig_suffix, file);
-	  strcpy((filename_plus_orig_suffix + filename_len) - 4, "orig");
-	}
-      else /* downloaded_file_return == FILE_DOWNLOADED_NORMALLY */
-	{
-	  /* Append ".orig" to the name. */
-	  filename_plus_orig_suffix = xmalloc(filename_len + sizeof(".orig"));
-	  strcpy(filename_plus_orig_suffix, file);
-	  strcpy(filename_plus_orig_suffix + filename_len, ".orig");
-	}
-
-      /* We can get called twice on the same URL thanks to the
-	 convert_all_links() call in main().  If we write the .orig file each
-	 time in such a case, it'll end up containing the first-pass conversion,
-	 not the original file.  So, see if we've already been called on this
-	 file. */
-      converted_file_ptr = converted_files;
-      while (converted_file_ptr != NULL)
-	if (strcmp(converted_file_ptr->string, file) == 0)
-	  {
-	    already_wrote_backup_file = TRUE;
-	    break;
-	  }
-	else
-	  converted_file_ptr = converted_file_ptr->next;
-
-      if (!already_wrote_backup_file)
-	{
-	  /* Rename <file> to <file>.orig before former gets written over. */
-	  if (rename(file, filename_plus_orig_suffix) != 0)
-	    logprintf (LOG_NOTQUIET, _("Cannot back up %s as %s: %s\n"),
-		       file, filename_plus_orig_suffix, strerror (errno));
-
-	  /* Remember that we've already written a .orig backup for this file.
-	     Note that we never free this memory since we need it till the
-	     convert_all_links() call, which is one of the last things the
-	     program does before terminating.  BTW, I'm not sure if it would be
-	     safe to just set 'converted_file_ptr->string' to 'file' below,
-	     rather than making a copy of the string...  Another note is that I
-	     thought I could just add a field to the urlpos structure saying
-	     that we'd written a .orig file for this URL, but that didn't work,
-	     so I had to make this separate list. */
-	  converted_file_ptr = xmalloc(sizeof(*converted_file_ptr));
-	  converted_file_ptr->string = xstrdup(file);  /* die on out-of-mem. */
-	  converted_file_ptr->next = converted_files;
-	  converted_files = converted_file_ptr;
-	}
-
-      free(filename_plus_orig_suffix);
+      logprintf (LOG_NOTQUIET, _("Unable to delete `%s': %s\n"),
+		 file, strerror (errno));
+      read_file_free (fm);
+      return;
     }
   /* Now open the file for writing.  */
   fp = fopen (file, "wb");
@@ -1631,50 +1361,63 @@ convert_links (const char *file, urlpos *l)
     {
       logprintf (LOG_NOTQUIET, _("Cannot convert links in %s: %s\n"),
 		 file, strerror (errno));
-      free (buf);
+      read_file_free (fm);
       return;
     }
-  /* Presumably we have to loop through multiple URLs here (even though we're
-     only talking about a single local file) because of the -O option. */
-  for (p = buf; l; l = l->next)
+  /* Here we loop through all the URLs in file, replacing those of
+     them that are downloaded with relative references.  */
+  p = fm->content;
+  for (; l; l = l->next)
     {
-      if (l->pos >= size)
+      char *url_start = fm->content + l->pos;
+      if (l->pos >= fm->length)
 	{
 	  DEBUGP (("Something strange is going on.  Please investigate."));
 	  break;
 	}
-      /* If the URL already is relative or it is not to be converted
-	 for some other reason (e.g. because of not having been
-	 downloaded in the first place), skip it.  */
-      if ((l->flags & URELATIVE) || !(l->flags & UABS2REL))
+      /* If the URL is not to be converted, skip it.  */
+      if (!(l->flags & (UABS2REL | UREL2ABS)))
 	{
 	  DEBUGP (("Skipping %s at position %d (flags %d).\n", l->url,
 		   l->pos, l->flags));
 	  continue;
 	}
-      /* Else, reach the position of the offending URL, echoing
-	 everything up to it to the outfile.  */
-      for (p2 = buf + l->pos; p < p2; p++)
-	putc (*p, fp);
+
+      /* Echo the file contents, up to the offending URL's opening
+         quote, to the outfile.  */
+      fwrite (p, 1, url_start - p, fp);
+      p = url_start;
       if (l->flags & UABS2REL)
-	/* Convert absolute URL to relative. */
 	{
+	  /* Convert absolute URL to relative. */
 	  char *newname = construct_relative (file, l->local_name);
-	  fprintf (fp, "%s", newname);
+	  putc (*p, fp);	/* quoting char */
+	  fputs (newname, fp);
+	  p += l->size - 1;
+	  putc (*p, fp);	/* close quote */
+	  ++p;
 	  DEBUGP (("ABS2REL: %s to %s at position %d in %s.\n",
 		   l->url, newname, l->pos, file));
 	  free (newname);
 	}
-      p += l->size;
+      else if (l->flags & UREL2ABS)
+	{
+	  /* Convert the link to absolute URL. */
+	  char *newlink = l->url;
+	  putc (*p, fp);	/* quoting char */
+	  fputs (newlink, fp);
+	  p += l->size - 1;
+	  putc (*p, fp);	/* close quote */
+	  ++p;
+	  DEBUGP (("REL2ABS: <something> to %s at position %d in %s.\n",
+		   newlink, l->pos, file));
+	}
     }
   /* Output the rest of the file. */
-  if (p - buf < size)
-    {
-      for (p2 = buf + size; p < p2; p++)
-	putc (*p, fp);
-    }
+  if (p - fm->content < fm->length)
+    fwrite (p, 1, fm->length - (p - fm->content), fp);
   fclose (fp);
-  free (buf);
+  read_file_free (fm);
   logputs (LOG_VERBOSE, _("done.\n"));
 }
 
@@ -1746,6 +1489,79 @@ add_url (urlpos *l, const char *url, const char *file)
   return t;
 }
 
+static void
+write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
+{
+  /* Rather than just writing over the original .html file with the
+     converted version, save the former to *.orig.  Note we only do
+     this for files we've _successfully_ downloaded, so we don't
+     clobber .orig files sitting around from previous invocations. */
+
+  /* Construct the backup filename as the original name plus ".orig". */
+  size_t         filename_len = strlen(file);
+  char*          filename_plus_orig_suffix;
+  boolean        already_wrote_backup_file = FALSE;
+  slist*         converted_file_ptr;
+  static slist*  converted_files = NULL;
+
+  if (downloaded_file_return == FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED)
+    {
+      /* Just write "orig" over "html".  We need to do it this way
+	 because when we're checking to see if we've downloaded the
+	 file before (to see if we can skip downloading it), we don't
+	 know if it's a text/html file.  Therefore we don't know yet
+	 at that stage that -E is going to cause us to tack on
+	 ".html", so we need to compare vs. the original URL plus
+	 ".orig", not the original URL plus ".html.orig". */
+      filename_plus_orig_suffix = alloca (filename_len + 1);
+      strcpy(filename_plus_orig_suffix, file);
+      strcpy((filename_plus_orig_suffix + filename_len) - 4, "orig");
+    }
+  else /* downloaded_file_return == FILE_DOWNLOADED_NORMALLY */
+    {
+      /* Append ".orig" to the name. */
+      filename_plus_orig_suffix = alloca (filename_len + sizeof(".orig"));
+      strcpy(filename_plus_orig_suffix, file);
+      strcpy(filename_plus_orig_suffix + filename_len, ".orig");
+    }
+
+  /* We can get called twice on the same URL thanks to the
+     convert_all_links() call in main().  If we write the .orig file
+     each time in such a case, it'll end up containing the first-pass
+     conversion, not the original file.  So, see if we've already been
+     called on this file. */
+  converted_file_ptr = converted_files;
+  while (converted_file_ptr != NULL)
+    if (strcmp(converted_file_ptr->string, file) == 0)
+      {
+	already_wrote_backup_file = TRUE;
+	break;
+      }
+    else
+      converted_file_ptr = converted_file_ptr->next;
+
+  if (!already_wrote_backup_file)
+    {
+      /* Rename <file> to <file>.orig before former gets written over. */
+      if (rename(file, filename_plus_orig_suffix) != 0)
+	logprintf (LOG_NOTQUIET, _("Cannot back up %s as %s: %s\n"),
+		   file, filename_plus_orig_suffix, strerror (errno));
+
+      /* Remember that we've already written a .orig backup for this file.
+	 Note that we never free this memory since we need it till the
+	 convert_all_links() call, which is one of the last things the
+	 program does before terminating.  BTW, I'm not sure if it would be
+	 safe to just set 'converted_file_ptr->string' to 'file' below,
+	 rather than making a copy of the string...  Another note is that I
+	 thought I could just add a field to the urlpos structure saying
+	 that we'd written a .orig file for this URL, but that didn't work,
+	 so I had to make this separate list. */
+      converted_file_ptr = xmalloc(sizeof(*converted_file_ptr));
+      converted_file_ptr->string = xstrdup(file);  /* die on out-of-mem. */
+      converted_file_ptr->next = converted_files;
+      converted_files = converted_file_ptr;
+    }
+}
 
 /* Remembers which files have been downloaded.  In the standard case, should be
    called with mode == FILE_DOWNLOADED_NORMALLY for each file we actually
@@ -1797,4 +1613,11 @@ downloaded_file (downloaded_file_t  mode, const char*  file)
 
       return FILE_NOT_ALREADY_DOWNLOADED;
     }
+}
+
+/* Initialization of static stuff. */
+void
+url_init (void)
+{
+  init_unsafe_char_table ();
 }

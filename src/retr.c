@@ -42,6 +42,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "ftp.h"
 #include "host.h"
 #include "connect.h"
+#include "hash.h"
 
 #ifdef WINDOWS
 LARGE_INTEGER internal_time;
@@ -59,6 +60,8 @@ uerr_t http_loop PARAMS ((struct urlinfo *, char **, int *));
 enum spflags { SP_NONE, SP_INIT, SP_FINISH };
 
 static int show_progress PARAMS ((long, long, enum spflags));
+
+#define MIN(i, j) ((i) <= (j) ? (i) : (j))
 
 /* Reads the contents of file descriptor FD, until it is closed, or a
    read error occurs.  The data is read in 8K chunks, and stored to
@@ -83,9 +86,9 @@ static int show_progress PARAMS ((long, long, enum spflags));
    from fd immediately, flush or discard the buffer.  */
 int
 get_contents (int fd, FILE *fp, long *len, long restval, long expected,
-	      struct rbuf *rbuf)
+	      struct rbuf *rbuf, int use_expected)
 {
-  int res;
+  int res = 0;
   static char c[8192];
 
   *len = restval;
@@ -105,10 +108,17 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 	  *len += res;
 	}
     }
-  /* Read from fd while there is available data.  */
-  do
+  /* Read from fd while there is available data.
+
+     Normally, if expected is 0, it means that it is not known how
+     much data is expected.  However, if use_expected is specified,
+     then expected being zero means exactly that.  */
+  while (!use_expected || (*len < expected))
     {
-      res = iread (fd, c, sizeof (c));
+      int amount_to_read = (use_expected
+			    ? MIN (expected - *len, sizeof (c))
+			    : sizeof (c));
+      res = iread (fd, c, amount_to_read);
       if (res > 0)
 	{
 	  if (fwrite (c, sizeof (char), res, fp) < res)
@@ -120,7 +130,9 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 	    }
 	  *len += res;
 	}
-    } while (res > 0);
+      else
+	break;
+    }
   if (res < -1)
     res = -1;
   if (opt.verbose)
@@ -323,7 +335,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   int local_use_proxy;
   char *mynewloc, *proxy;
   struct urlinfo *u;
-  slist *redirections;
+  struct hash_table *redirections = NULL;
 
   /* If dt is NULL, just ignore it.  */
   if (!dt)
@@ -334,8 +346,6 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   if (file)
     *file = NULL;
 
-  redirections = NULL;
-
   u = newurl ();
   /* Parse the URL. */
   result = parseurl (url, u, 0);
@@ -343,7 +353,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     {
       logprintf (LOG_NOTQUIET, "%s: %s.\n", url, uerrmsg (result));
       freeurl (u, 1);
-      free_slist (redirections);
+      if (redirections)
+	string_set_free (redirections);
       free (url);
       return result;
     }
@@ -379,7 +390,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	{
 	  logputs (LOG_NOTQUIET, _("Could not find proxy host.\n"));
 	  freeurl (u, 1);
-	  free_slist (redirections);
+	  if (redirections)
+	    string_set_free (redirections);
 	  free (url);
 	  return PROXERR;
 	}
@@ -392,7 +404,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  else
 	    logprintf (LOG_NOTQUIET, _("Proxy %s: Must be HTTP.\n"), proxy);
 	  freeurl (u, 1);
-	  free_slist (redirections);
+	  if (redirections)
+	    string_set_free (redirections);
 	  free (url);
 	  return PROXERR;
 	}
@@ -454,7 +467,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  logprintf (LOG_NOTQUIET, "%s: %s.\n", mynewloc, uerrmsg (newloc_result));
 	  freeurl (newloc_struct, 1);
 	  freeurl (u, 1);
-	  free_slist (redirections);
+	  if (redirections)
+	    string_set_free (redirections);
 	  free (url);
 	  free (mynewloc);
 	  return result;
@@ -466,34 +480,29 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       free (mynewloc);
       mynewloc = xstrdup (newloc_struct->url);
 
-      /* Check for redirection to back to itself.  */
-      if (!strcmp (u->url, newloc_struct->url))
+      if (!redirections)
 	{
-	  logprintf (LOG_NOTQUIET, _("%s: Redirection to itself.\n"),
-		     mynewloc);
-	  freeurl (newloc_struct, 1);
-	  freeurl (u, 1);
-	  free_slist (redirections);
-	  free (url);
-	  free (mynewloc);
-	  return WRONGCODE;
+	  redirections = make_string_hash_table (0);
+	  /* Add current URL immediately so we can detect it as soon
+             as possible in case of a cycle. */
+	  string_set_add (redirections, u->url);
 	}
 
       /* The new location is OK.  Let's check for redirection cycle by
          peeking through the history of redirections. */
-      if (in_slist (redirections, newloc_struct->url))
+      if (string_set_exists (redirections, newloc_struct->url))
 	{
 	  logprintf (LOG_NOTQUIET, _("%s: Redirection cycle detected.\n"),
 		     mynewloc);
 	  freeurl (newloc_struct, 1);
 	  freeurl (u, 1);
-	  free_slist (redirections);
+	  if (redirections)
+	    string_set_free (redirections);
 	  free (url);
 	  free (mynewloc);
 	  return WRONGCODE;
 	}
-
-      redirections = add_slist (redirections, newloc_struct->url, NOSORT);
+      string_set_add (redirections, newloc_struct->url);
 
       free (url);
       url = mynewloc;
@@ -510,7 +519,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	*file = NULL;
     }
   freeurl (u, 1);
-  free_slist (redirections);
+  if (redirections)
+    string_set_free (redirections);
 
   if (newloc)
     *newloc = url;
@@ -531,9 +541,7 @@ retrieve_from_file (const char *file, int html, int *count)
   uerr_t status;
   urlpos *url_list, *cur_url;
 
-  /* If spider-mode is on, we do not want get_urls_html barfing
-     errors on baseless links.  */
-  url_list = (html ? get_urls_html (file, NULL, opt.spider, FALSE)
+  url_list = (html ? get_urls_html (file, NULL, FALSE, NULL)
 	      : get_urls_file (file));
   status = RETROK;             /* Suppose everything is OK.  */
   *count = 0;                  /* Reset the URL count.  */

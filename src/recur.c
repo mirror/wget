@@ -42,21 +42,20 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "ftp.h"
 #include "fnmatch.h"
 #include "host.h"
+#include "hash.h"
 
 extern char *version_string;
 
 #define ROBOTS_FILENAME "robots.txt"
 
-/* #### Many of these lists should really be hashtables!  */
-
-/* List of downloaded URLs.  */
-static urlpos *urls_downloaded;
+static struct hash_table *dl_file_url_map;
+static struct hash_table *dl_url_file_map;
 
 /* List of HTML URLs.  */
 static slist *urls_html;
 
 /* List of undesirable-to-load URLs.  */
-static slist *ulist;
+static struct hash_table *undesirable_urls;
 
 /* List of forbidden locations.  */
 static char **forbidden = NULL;
@@ -84,14 +83,28 @@ static int robots_match PARAMS ((struct urlinfo *, char **));
 void
 recursive_cleanup (void)
 {
-  free_slist (ulist);
-  ulist = NULL;
+  if (undesirable_urls)
+    {
+      string_set_free (undesirable_urls);
+      undesirable_urls = NULL;
+    }
+  if (dl_file_url_map)
+    {
+      free_keys_and_values (dl_file_url_map);
+      hash_table_destroy (dl_file_url_map);
+      dl_file_url_map = NULL;
+    }
+  if (dl_url_file_map)
+    {
+      free_keys_and_values (dl_url_file_map);
+      hash_table_destroy (dl_url_file_map);
+      dl_url_file_map = NULL;
+    }
+  undesirable_urls = NULL;
   free_vec (forbidden);
   forbidden = NULL;
-  free_slist (urls_html);
+  slist_free (urls_html);
   urls_html = NULL;
-  free_urlpos (urls_downloaded);
-  urls_downloaded = NULL;
   FREE_MAYBE (base_dir);
   FREE_MAYBE (robots_host);
   first_time = 1;
@@ -117,6 +130,7 @@ recursive_retrieve (const char *file, const char *this_url)
   char *constr, *filename, *newloc;
   char *canon_this_url = NULL;
   int dt, inl, dash_p_leaf_HTML = FALSE;
+  int meta_disallow_follow;
   int this_url_ftp;            /* See below the explanation */
   uerr_t err;
   struct urlinfo *rurl;
@@ -132,17 +146,29 @@ recursive_retrieve (const char *file, const char *this_url)
   /* Cache the current URL in the list.  */
   if (first_time)
     {
-      ulist = add_slist (ulist, this_url, 0);
-      urls_downloaded = NULL;
+      /* These three operations need to be done only once per Wget
+         run.  They should probably be at a different location.  */
+      if (!undesirable_urls)
+	undesirable_urls = make_string_hash_table (0);
+      if (!dl_file_url_map)
+	dl_file_url_map = make_string_hash_table (0);
+      if (!dl_url_file_map)
+	dl_url_file_map = make_string_hash_table (0);
+
+      hash_table_clear (undesirable_urls);
+      string_set_add (undesirable_urls, this_url);
+      hash_table_clear (dl_file_url_map);
+      hash_table_clear (dl_url_file_map);
       urls_html = NULL;
-      /* Enter this_url to the slist, in original and "enhanced" form.  */
+      /* Enter this_url to the hash table, in original and "enhanced" form.  */
       u = newurl ();
       err = parseurl (this_url, u, 0);
       if (err == URLOK)
 	{
-	  ulist = add_slist (ulist, u->url, 0);
-	  urls_downloaded = add_url (urls_downloaded, u->url, file);
-	  urls_html = add_slist (urls_html, file, NOSORT);
+	  string_set_add (undesirable_urls, u->url);
+	  hash_table_put (dl_file_url_map, xstrdup (file), xstrdup (u->url));
+	  hash_table_put (dl_url_file_map, xstrdup (u->url), xstrdup (file));
+	  urls_html = slist_append (urls_html, file);
 	  if (opt.no_parent)
 	    base_dir = xstrdup (u->dir); /* Set the base dir.  */
 	  /* Set the canonical this_url to be sent as referer.  This
@@ -191,7 +217,15 @@ recursive_retrieve (const char *file, const char *this_url)
 
   /* Get the URL-s from an HTML file: */
   url_list = get_urls_html (file, canon_this_url ? canon_this_url : this_url,
-			    0, dash_p_leaf_HTML);
+			    dash_p_leaf_HTML, &meta_disallow_follow);
+
+  if (opt.use_robots && meta_disallow_follow)
+    {
+      /* The META tag says we are not to follow this file.  Respect
+         that.  */
+      free_urlpos (url_list);
+      url_list = NULL;
+    }
 
   /* Decide what to do with each of the URLs.  A URL will be loaded if
      it meets several requirements, discussed later.  */
@@ -240,16 +274,16 @@ recursive_retrieve (const char *file, const char *this_url)
 	 the list.  */
 
       /* inl is set if the URL we are working on (constr) is stored in
-	 ulist.  Using it is crucial to avoid the incessant calls to
-	 in_slist, which is quite slow.  */
-      inl = in_slist (ulist, constr);
+	 undesirable_urls.  Using it is crucial to avoid unnecessary
+	 repeated continuous hits to the hash table.  */
+      inl = string_set_exists (undesirable_urls, constr);
 
       /* If it is FTP, and FTP is not followed, chuck it out.  */
       if (!inl)
 	if (u->proto == URLFTP && !opt.follow_ftp && !this_url_ftp)
 	  {
 	    DEBUGP (("Uh, it is FTP but i'm not in the mood to follow FTP.\n"));
-	    ulist = add_slist (ulist, constr, 0);
+	    string_set_add (undesirable_urls, constr);
 	    inl = 1;
 	  }
       /* If it is absolute link and they are not followed, chuck it
@@ -258,7 +292,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	if (opt.relative_only && !(cur_url->flags & URELATIVE))
 	  {
 	    DEBUGP (("It doesn't really look like a relative link.\n"));
-	    ulist = add_slist (ulist, constr, 0);
+	    string_set_add (undesirable_urls, constr);
 	    inl = 1;
 	  }
       /* If its domain is not to be accepted/looked-up, chuck it out.  */
@@ -266,7 +300,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	if (!accept_domain (u))
 	  {
 	    DEBUGP (("I don't like the smell of that domain.\n"));
-	    ulist = add_slist (ulist, constr, 0);
+	    string_set_add (undesirable_urls, constr);
 	    inl = 1;
 	  }
       /* Check for parent directory.  */
@@ -286,7 +320,7 @@ recursive_retrieve (const char *file, const char *this_url)
 		{
 		  /* Failing that too, kill the URL.  */
 		  DEBUGP (("Trying to escape parental guidance with no_parent on.\n"));
-		  ulist = add_slist (ulist, constr, 0);
+		  string_set_add (undesirable_urls, constr);
 		  inl = 1;
 		}
 	      freeurl (ut, 1);
@@ -300,7 +334,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	  if (!accdir (u->dir, ALLABS))
 	    {
 	      DEBUGP (("%s (%s) is excluded/not-included.\n", constr, u->dir));
-	      ulist = add_slist (ulist, constr, 0);
+	      string_set_add (undesirable_urls, constr);
 	      inl = 1;
 	    }
 	}
@@ -330,7 +364,7 @@ recursive_retrieve (const char *file, const char *this_url)
 		{
 		  DEBUGP (("%s (%s) does not match acc/rej rules.\n",
 			  constr, u->file));
-		  ulist = add_slist (ulist, constr, 0);
+		  string_set_add (undesirable_urls, constr);
 		  inl = 1;
 		}
 	    }
@@ -353,12 +387,12 @@ recursive_retrieve (const char *file, const char *this_url)
 	    }
 	  free (constr);
 	  constr = xstrdup (u->url);
-	  inl = in_slist (ulist, constr);
+	  string_set_add (undesirable_urls, constr);
 	  if (!inl && !((u->proto == URLFTP) && !this_url_ftp))
 	    if (!opt.spanhost && this_url && !same_host (this_url, constr))
 	      {
 		DEBUGP (("This is not the same hostname as the parent's.\n"));
-		ulist = add_slist (ulist, constr, 0);
+		string_set_add (undesirable_urls, constr);
 		inl = 1;
 	      }
 	}
@@ -398,7 +432,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	    {
 	      DEBUGP (("Stuffing %s because %s forbids it.\n", this_url,
 		       ROBOTS_FILENAME));
-	      ulist = add_slist (ulist, constr, 0);
+	      string_set_add (undesirable_urls, constr);
 	      inl = 1;
 	    }
 	}
@@ -409,7 +443,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	{
 	  DEBUGP (("I've decided to load it -> "));
 	  /* Add it to the list of already-loaded URL-s.  */
-	  ulist = add_slist (ulist, constr, 0);
+	  string_set_add (undesirable_urls, constr);
 	  /* Automatically followed FTPs will *not* be downloaded
 	     recursively.  */
 	  if (u->proto == URLFTP)
@@ -439,10 +473,13 @@ recursive_retrieve (const char *file, const char *this_url)
 	    {
 	      if (dt & RETROKF)
 		{
-		  urls_downloaded = add_url (urls_downloaded, constr, filename);
+		  hash_table_put (dl_file_url_map,
+				  xstrdup (filename), xstrdup (constr));
+		  hash_table_put (dl_url_file_map,
+				  xstrdup (constr), xstrdup (filename));
 		  /* If the URL is HTML, note it.  */
 		  if (dt & TEXTHTML)
-		    urls_html = add_slist (urls_html, filename, NOSORT);
+		    urls_html = slist_append (urls_html, filename);
 		}
 	    }
 	  /* If there was no error, and the type is text/html, parse
@@ -489,6 +526,10 @@ recursive_retrieve (const char *file, const char *this_url)
       /* Increment the pbuf for the appropriate size.  */
     }
   if (opt.convert_links && !opt.delete_after)
+    /* This is merely the first pass: the links that have been
+       successfully downloaded are converted.  In the second pass,
+       convert_all_links() will also convert those links that have NOT
+       been downloaded to their canonical form.  */
     convert_links (file, url_list);
   /* Free the linked list of URL-s.  */
   free_urlpos (url_list);
@@ -531,30 +572,37 @@ void
 convert_all_links (void)
 {
   uerr_t res;
-  urlpos *l1, *l2, *urls;
+  urlpos *l1, *urls;
   struct urlinfo *u;
   slist *html;
-  urlpos *urlhtml;
 
   for (html = urls_html; html; html = html->next)
     {
+      int meta_disallow_follow;
+      char *url;
+
       DEBUGP (("Rescanning %s\n", html->string));
       /* Determine the URL of the HTML file.  get_urls_html will need
 	 it.  */
-      for (urlhtml = urls_downloaded; urlhtml; urlhtml = urlhtml->next)
-	if (!strcmp (urlhtml->local_name, html->string))
-	  break;
-      if (urlhtml)
-	DEBUGP (("It should correspond to %s.\n", urlhtml->url));
+      url = hash_table_get (dl_file_url_map, html->string);
+      if (url)
+	DEBUGP (("It should correspond to %s.\n", url));
       else
 	DEBUGP (("I cannot find the corresponding URL.\n"));
       /* Parse the HTML file...  */
-      urls = get_urls_html (html->string, urlhtml ? urlhtml->url : NULL, 1,
-			    FALSE);
+      urls = get_urls_html (html->string, url, FALSE, &meta_disallow_follow);
+      if (opt.use_robots && meta_disallow_follow)
+	{
+	  /* The META tag says we are not to follow this file.
+	     Respect that.  */
+	  free_urlpos (urls);
+	  urls = NULL;
+	}
       if (!urls)
 	continue;
       for (l1 = urls; l1; l1 = l1->next)
 	{
+	  char *local_name;
 	  /* The URL must be in canonical form to be compared.  */
 	  u = newurl ();
 	  res = parseurl (l1->url, u, 0);
@@ -565,22 +613,18 @@ convert_all_links (void)
 	    }
 	  /* We decide the direction of conversion according to whether
 	     a URL was downloaded.  Downloaded URLs will be converted
-	     ABS2REL, whereas non-downloaded will be converted REL2ABS.
-	     Note: not yet implemented; only ABS2REL works.  */
-	  for (l2 = urls_downloaded; l2; l2 = l2->next)
-	    if (!strcmp (l2->url, u->url))
-	      {
-		DEBUGP (("%s flagged for conversion, local %s\n",
-			 l2->url, l2->local_name));
-		break;
-	      }
+	     ABS2REL, whereas non-downloaded will be converted REL2ABS.  */
+	  local_name = hash_table_get (dl_url_file_map, u->url);
+	  if (local_name)
+	    DEBUGP (("%s flagged for conversion, local %s\n",
+		     u->url, local_name));
 	  /* Clear the flags.  */
 	  l1->flags &= ~ (UABS2REL | UREL2ABS);
 	  /* Decide on the conversion direction.  */
-	  if (l2)
+	  if (local_name)
 	    {
 	      l1->flags |= UABS2REL;
-	      l1->local_name = xstrdup (l2->local_name);
+	      l1->local_name = xstrdup (local_name);
 	    }
 	  else
 	    {

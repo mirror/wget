@@ -254,6 +254,85 @@ http_process_type (const char *hdr, void *arg)
   return 1;
 }
 
+/* Check whether the `Connection' header is set to "keep-alive". */
+static int
+http_process_connection (const char *hdr, void *arg)
+{
+  int *flag = (int *)arg;
+  if (!strcasecmp (hdr, "Keep-Alive"))
+    *flag = 1;
+  return 1;
+}
+
+/* Persistent connections (pc). */
+
+static unsigned char pc_last_host[4];
+static unsigned short pc_last_port;
+static int pc_last_fd;
+
+static void
+register_persistent (const char *host, unsigned short port, int fd)
+{
+  if (!store_hostaddress (pc_last_host, host))
+    return;
+  pc_last_port = port;
+  pc_last_fd = fd;
+}
+
+static void
+invalidate_persistent (void)
+{
+  pc_last_port = 0;
+}
+
+static int
+persistent_available_p (const char *host, unsigned short port)
+{
+  unsigned char this_host[4];
+  if (port != pc_last_port)
+    return 0;
+  if (!store_hostaddress (this_host, host))
+    return 0;
+  if (memcmp (pc_last_host, this_host, 4))
+    return 0;
+  if (!test_socket_open (pc_last_fd))
+    {
+      invalidate_persistent ();
+      return 0;
+    }
+  return 1;
+}
+
+/* The idea behind these two CLOSE macros is to distinguish between
+   two cases: one when the job we've been doing is finished, and we
+   want to close the connection and leave, and two when something is
+   seriously wrong and we're closing the connection as part of
+   cleanup.
+
+   In case of keep_alive, CLOSE_FINISH should leave the connection
+   open, while CLOSE_INVALIDATE should still close it.
+
+   The semantic difference between the flags `keep_alive' and
+   `reused_connection' is that keep_alive defines the state of HTTP:
+   whether the connection *will* be preservable.  reused_connection,
+   on the other hand, reflects the present: whether the *current*
+   connection is the result of preserving.  */
+
+#define CLOSE_FINISH(fd) do {			\
+  if (!keep_alive)				\
+    {						\
+      CLOSE (fd);				\
+      if (reused_connection)			\
+	invalidate_persistent ();		\
+    }						\
+} while (0)
+
+#define CLOSE_INVALIDATE(fd) do {		\
+  CLOSE (fd);					\
+  if (reused_connection)			\
+    invalidate_persistent ();			\
+} while (0)
+
 
 struct http_stat
 {
@@ -317,6 +396,8 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   FILE *fp;
   int auth_tried_already;
   struct rbuf rbuf;
+  int keep_alive, http_keep_alive_1, http_keep_alive_2;
+  int reused_connection;
 
   if (!(*dt & HEAD_ONLY))
     /* If we're doing a GET on the URL, as opposed to just a HEAD, we need to
@@ -329,6 +410,9 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
  again:
   /* We need to come back here when the initial attempt to retrieve
      without authorization header fails.  */
+  keep_alive = 0;
+  http_keep_alive_1 = http_keep_alive_2 = 0;
+  reused_connection = 0;
 
   /* Initialize certain elements of struct http_stat.  */
   hs->len = 0L;
@@ -345,40 +429,49 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
     ou = u;
 
   /* First: establish the connection.  */
-  logprintf (LOG_VERBOSE, _("Connecting to %s:%hu... "), u->host, u->port);
-  err = make_connection (&sock, u->host, u->port);
-  switch (err)
+  if (u->proxy || !persistent_available_p (u->host, u->port))
     {
-    case HOSTERR:
-      logputs (LOG_VERBOSE, "\n");
-      logprintf (LOG_NOTQUIET, "%s: %s.\n", u->host, herrmsg (h_errno));
-      return HOSTERR;
-      break;
-    case CONSOCKERR:
-      logputs (LOG_VERBOSE, "\n");
-      logprintf (LOG_NOTQUIET, "socket: %s\n", strerror (errno));
-      return CONSOCKERR;
-      break;
-    case CONREFUSED:
-      logputs (LOG_VERBOSE, "\n");
-      logprintf (LOG_NOTQUIET,
-		 _("Connection to %s:%hu refused.\n"), u->host, u->port);
-      CLOSE (sock);
-      return CONREFUSED;
-    case CONERROR:
-      logputs (LOG_VERBOSE, "\n");
-      logprintf (LOG_NOTQUIET, "connect: %s\n", strerror (errno));
-      CLOSE (sock);
-      return CONERROR;
-      break;
-    case NOCONERROR:
-      /* Everything is fine!  */
-      logputs (LOG_VERBOSE, _("connected!\n"));
-      break;
-    default:
-      abort ();
-      break;
-    } /* switch */
+      logprintf (LOG_VERBOSE, _("Connecting to %s:%hu... "), u->host, u->port);
+      err = make_connection (&sock, u->host, u->port);
+      switch (err)
+	{
+	case HOSTERR:
+	  logputs (LOG_VERBOSE, "\n");
+	  logprintf (LOG_NOTQUIET, "%s: %s.\n", u->host, herrmsg (h_errno));
+	  return HOSTERR;
+	  break;
+	case CONSOCKERR:
+	  logputs (LOG_VERBOSE, "\n");
+	  logprintf (LOG_NOTQUIET, "socket: %s\n", strerror (errno));
+	  return CONSOCKERR;
+	  break;
+	case CONREFUSED:
+	  logputs (LOG_VERBOSE, "\n");
+	  logprintf (LOG_NOTQUIET,
+		     _("Connection to %s:%hu refused.\n"), u->host, u->port);
+	  CLOSE (sock);
+	  return CONREFUSED;
+	case CONERROR:
+	  logputs (LOG_VERBOSE, "\n");
+	  logprintf (LOG_NOTQUIET, "connect: %s\n", strerror (errno));
+	  CLOSE (sock);
+	  return CONERROR;
+	  break;
+	case NOCONERROR:
+	  /* Everything is fine!  */
+	  logputs (LOG_VERBOSE, _("connected!\n"));
+	  break;
+	default:
+	  abort ();
+	  break;
+	}
+    }
+  else
+    {
+      logprintf (LOG_VERBOSE, _("Reusing connection to %s:%hu.\n"), u->host, u->port);
+      sock = pc_last_fd;
+      reused_connection = 1;
+    }
 
   if (u->proxy)
     path = u->proxy->url;
@@ -487,6 +580,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 User-Agent: %s\r\n\
 Host: %s%s\r\n\
 Accept: %s\r\n\
+Connection: Keep-Alive\r\n\
 %s%s%s%s%s%s\r\n",
 	   command, path, useragent, remhost,
 	   host_port ? host_port : "",
@@ -505,8 +599,9 @@ Accept: %s\r\n\
   num_written = iwrite (sock, request, strlen (request));
   if (num_written < 0)
     {
-      logputs (LOG_VERBOSE, _("Failed writing HTTP request.\n"));
-      CLOSE (sock);
+      logprintf (LOG_VERBOSE, _("Failed writing HTTP request: %s.\n"),
+		 strerror (errno));
+      CLOSE_INVALIDATE (sock);
       return WRITEFAILED;
     }
   logprintf (LOG_VERBOSE, _("%s request sent, awaiting response... "),
@@ -553,7 +648,7 @@ Accept: %s\r\n\
 	  FREE_MAYBE (type);
 	  FREE_MAYBE (hs->newloc);
 	  FREE_MAYBE (all_headers);
-	  CLOSE (sock);
+	  CLOSE_INVALIDATE (sock);
 	  return HEOF;
 	}
       else if (status == HG_ERROR)
@@ -565,7 +660,7 @@ Accept: %s\r\n\
 	  FREE_MAYBE (type);
 	  FREE_MAYBE (hs->newloc);
 	  FREE_MAYBE (all_headers);
-	  CLOSE (sock);
+	  CLOSE_INVALIDATE (sock);
 	  return HERR;
 	}
 
@@ -672,11 +767,31 @@ Accept: %s\r\n\
 	      goto done_header;
 	    }
 	}
+      /* Check for the `Keep-Alive' header. */
+      if (!http_keep_alive_1)
+	{
+	  if (header_process (hdr, "Keep-Alive", header_exists,
+			      &http_keep_alive_1))
+	    goto done_header;
+	}
+      /* Check for `Connection: Keep-Alive'. */
+      if (!http_keep_alive_2)
+	{
+	  if (header_process (hdr, "Connection", http_process_connection,
+			      &http_keep_alive_2))
+	    goto done_header;
+	}
     done_header:
       free (hdr);
     }
 
   logputs (LOG_VERBOSE, "\n");
+
+  if (contlen != -1
+      && (http_keep_alive_1 || http_keep_alive_2))
+    keep_alive = 1;
+  if (keep_alive && !reused_connection)
+    register_persistent (u->host, u->port, sock);
 
   if ((statcode == HTTP_STATUS_UNAUTHORIZED)
       && authenticate_h)
@@ -685,7 +800,7 @@ Accept: %s\r\n\
       FREE_MAYBE (type);
       type = NULL;
       FREEHSTAT (*hs);
-      CLOSE (sock);
+      CLOSE_FINISH (sock);
       if (auth_tried_already)
 	{
 	  /* If we have tried it already, then there is not point
@@ -753,7 +868,7 @@ Accept: %s\r\n\
       FREE_MAYBE (type);
       FREE_MAYBE (hs->newloc);
       FREE_MAYBE (all_headers);
-      CLOSE (sock);
+      CLOSE_INVALIDATE (sock);
       return RANGEERR;
     }
 
@@ -783,7 +898,7 @@ Accept: %s\r\n\
 		     _("Location: %s%s\n"),
 		     hs->newloc ? hs->newloc : _("unspecified"),
 		     hs->newloc ? _(" [following]") : "");
-	  CLOSE (sock);
+	  CLOSE_FINISH (sock);
 	  FREE_MAYBE (type);
 	  FREE_MAYBE (all_headers);
 	  return NEWLOCATION;
@@ -824,7 +939,7 @@ Accept: %s\r\n\
       hs->res = 0;
       FREE_MAYBE (type);
       FREE_MAYBE (all_headers);
-      CLOSE (sock);
+      CLOSE_FINISH (sock);
       return RETRFINISHED;
     }
 
@@ -838,7 +953,7 @@ Accept: %s\r\n\
       if (!fp)
 	{
 	  logprintf (LOG_NOTQUIET, "%s: %s\n", u->local, strerror (errno));
-	  CLOSE (sock);
+	  CLOSE_FINISH (sock);
 	  FREE_MAYBE (all_headers);
 	  return FOPENERR;
 	}
@@ -863,7 +978,7 @@ Accept: %s\r\n\
   /* Get the contents of the document.  */
   hs->res = get_contents (sock, fp, &hs->len, hs->restval,
 			  (contlen != -1 ? contlen : 0),
-			  &rbuf);
+			  &rbuf, keep_alive);
   hs->dltime = elapsed_time ();
   {
     /* Close or flush the file.  We have to be careful to check for
@@ -878,7 +993,7 @@ Accept: %s\r\n\
       hs->res = -2;
   }
   FREE_MAYBE (all_headers);
-  CLOSE (sock);
+  CLOSE_FINISH (sock);
   if (hs->res == -2)
     return FWRITEERR;
   return RETRFINISHED;

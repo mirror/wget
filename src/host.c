@@ -1,5 +1,5 @@
 /* Dealing with host names.
-   Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 2000 Free Software Foundation, Inc.
 
 This file is part of Wget.
 
@@ -48,35 +48,38 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "utils.h"
 #include "host.h"
 #include "url.h"
+#include "hash.h"
 
 #ifndef errno
 extern int errno;
 #endif
 
-/* Host list entry */
-struct host
+/* Mapping between all known hosts to their addresses (n.n.n.n). */
+struct hash_table *host_name_address_map;
+
+/* Mapping between all known addresses (n.n.n.n) to their hosts.  This
+   is the inverse of host_name_address_map.  These two tables share
+   the strdup'ed strings. */
+struct hash_table *host_address_name_map;
+
+/* Mapping between auxilliary (slave) and master host names. */
+struct hash_table *host_slave_master_map;
+
+/* Utility function: like xstrdup(), but also lowercases S.  */
+
+static char *
+xstrdup_lower (const char *s)
 {
-  /* Host's symbolical name, as encountered at the time of first
-     inclusion, e.g. "fly.cc.fer.hr".  */
-  char *hostname;
-  /* Host's "real" name, i.e. its IP address, written out in ASCII
-     form of N.N.N.N, e.g. "161.53.70.130".  */
-  char *realname;
-  /* More than one HOSTNAME can correspond to the same REALNAME.  For
-     our purposes, the canonical name of the host is its HOSTNAME when
-     it was first encountered.  This entry is said to have QUALITY.  */
-  int quality;
-  /* Next entry in the list.  */
-  struct host *next;
-};
-
-static struct host *hlist;
-
-static struct host *add_hlist PARAMS ((struct host *, const char *,
-				       const char *, int));
+  char *copy = xstrdup (s);
+  char *p = copy;
+  for (; *p; p++)
+    *p = TOLOWER (*p);
+  return copy;
+}
 
 /* The same as gethostbyname, but supports internet addresses of the
-   form `N.N.N.N'.  */
+   form `N.N.N.N'.  On some systems gethostbyname() knows how to do
+   this automatically.  */
 struct hostent *
 ngethostbyname (const char *name)
 {
@@ -91,42 +94,51 @@ ngethostbyname (const char *name)
   return hp;
 }
 
-/* Search for HOST in the linked list L, by hostname.  Return the
-   entry, if found, or NULL.  The search is case-insensitive.  */
-static struct host *
-search_host (struct host *l, const char *host)
-{
-  for (; l; l = l->next)
-    if (strcasecmp (l->hostname, host) == 0)
-      return l;
-  return NULL;
-}
+/* Add host name HOST with the address ADDR_TEXT to the cache.
+   Normally this means that the (HOST, ADDR_TEXT) pair will be to
+   host_name_address_map and to host_address_name_map.  (It is the
+   caller's responsibility to make sure that HOST is not already in
+   host_name_address_map.)
 
-/* Like search_host, but searches by address.  */
-static struct host *
-search_address (struct host *l, const char *address)
+   If the ADDR_TEXT has already been seen and belongs to another host,
+   HOST will be added to host_slave_master_map instead.  */
+
+static void
+add_host_to_cache (const char *host, const char *addr_text)
 {
-  for (; l; l = l->next)
+  char *canonical_name = hash_table_get (host_address_name_map, addr_text);
+  if (canonical_name)
     {
-      int cmp = strcmp (l->realname, address);
-      if (cmp == 0)
-	return l;
-      else if (cmp > 0)
-	return NULL;
+      DEBUGP (("Mapping %s to %s in host_slave_master_map.\n",
+	       host, canonical_name));
+      /* We've already dealt with that host under another name. */
+      hash_table_put (host_slave_master_map,
+		      xstrdup_lower (host),
+		      xstrdup_lower (canonical_name));
     }
-  return NULL;
+  else
+    {
+      /* This is really the first time we're dealing with that host.  */
+      char *h_copy = xstrdup_lower (host);
+      char *a_copy = xstrdup (addr_text);
+      DEBUGP (("Caching %s <-> %s\n", h_copy, a_copy));
+      hash_table_put (host_name_address_map, h_copy, a_copy);
+      hash_table_put (host_address_name_map, a_copy, h_copy);
+    }
 }
 
-/* Store the address of HOSTNAME, internet-style, to WHERE.  First
-   check for it in the host list, and (if not found), use
-   ngethostbyname to get it.
+/* Store the address of HOSTNAME, internet-style (four octets in
+   network order), to WHERE.  First try to get the address from the
+   cache; if it is not available, call the DNS functions and update
+   the cache.
 
    Return 1 on successful finding of the hostname, 0 otherwise.  */
 int
 store_hostaddress (unsigned char *where, const char *hostname)
 {
-  struct host *t;
   unsigned long addr;
+  char *addr_text;
+  char *canonical_name;
   struct hostent *hptr;
   struct in_addr in;
   char *inet_s;
@@ -134,178 +146,119 @@ store_hostaddress (unsigned char *where, const char *hostname)
   /* If the address is of the form d.d.d.d, there will be no trouble
      with it.  */
   addr = (unsigned long)inet_addr (hostname);
-  if ((int)addr == -1)
-    {
-      /* If it is not of that form, try to find it in the cache.  */
-      t = search_host (hlist, hostname);
-      if (t)
-	addr = (unsigned long)inet_addr (t->realname);
-    }
   /* If we have the numeric address, just store it.  */
   if ((int)addr != -1)
     {
-      /* ADDR is in network byte order, meaning the code works on
-         little and big endian 32-bit architectures without change.
-         On big endian 64-bit architectures we need to be careful to
-         copy the correct four bytes.  */
-      int offset = 0;
+      /* ADDR is defined to be in network byte order, meaning the code
+         works on little and big endian 32-bit architectures without
+         change.  On big endian 64-bit architectures we need to be
+         careful to copy the correct four bytes.  */
+      int offset;
+    have_addr:
 #ifdef WORDS_BIGENDIAN
       offset = sizeof (unsigned long) - 4;
+#else
+      offset = 0;
 #endif
       memcpy (where, (char *)&addr + offset, 4);
       return 1;
     }
+
+  /* By now we know that the address is not of the form d.d.d.d.  Try
+     to find it in our cache of host addresses.  */
+  addr_text = hash_table_get (host_name_address_map, hostname);
+  if (addr_text)
+    {
+      DEBUGP (("Found %s in host_name_address_map: %s\n",
+	       hostname, addr_text));
+      addr = (unsigned long)inet_addr (addr_text);
+      goto have_addr;
+    }
+
+  /* Maybe this host is known to us under another name.  If so, we'll
+     find it in host_slave_master_map, and use the master name to find
+     its address in host_name_address_map. */
+  canonical_name = hash_table_get (host_slave_master_map, hostname);
+  if (canonical_name)
+    {
+      addr_text = hash_table_get (host_name_address_map, canonical_name);
+      assert (addr_text != NULL);
+      DEBUGP (("Found %s as slave of %s -> %s\n",
+	       hostname, canonical_name, addr_text));
+      addr = (unsigned long)inet_addr (addr_text);
+      goto have_addr;
+    }
+
   /* Since all else has failed, let's try gethostbyname().  Note that
      we use gethostbyname() rather than ngethostbyname(), because we
-     *know* the address is not numerical.  */
+     already know that the address is not numerical.  */
   hptr = gethostbyname (hostname);
   if (!hptr)
     return 0;
   /* Copy the address of the host to socket description.  */
   memcpy (where, hptr->h_addr_list[0], hptr->h_length);
-  /* Now that we're here, we could as well cache the hostname for
-     future use, as in realhost().  First, we have to look for it by
-     address to know if it's already in the cache by another name.  */
+  assert (hptr->h_length == 4);
 
+  /* Now that we've gone through the truoble of calling
+     gethostbyname(), we can store this valuable information to the
+     cache.  First, we have to look for it by address to know if it's
+     already in the cache by another name.  */
   /* Originally, we copied to in.s_addr, but it appears to be missing
      on some systems.  */
   memcpy (&in, *hptr->h_addr_list, sizeof (in));
-  STRDUP_ALLOCA (inet_s, inet_ntoa (in));
-  t = search_address (hlist, inet_s);
-  if (t) /* Found in the list, as realname.  */
-    {
-      /* Set the default, 0 quality.  */
-      hlist = add_hlist (hlist, hostname, inet_s, 0);
-      return 1;
-    }
-  /* Since this is really the first time this host is encountered,
-     set quality to 1.  */
-  hlist = add_hlist (hlist, hostname, inet_s, 1);
+  inet_s = inet_ntoa (in);
+  add_host_to_cache (hostname, inet_s);
   return 1;
-}
-
-/* Add a host to the host list.  The list is sorted by addresses.  For
-   equal addresses, the entries with quality should bubble towards the
-   beginning of the list.  */
-static struct host *
-add_hlist (struct host *l, const char *nhost, const char *nreal, int quality)
-{
-  struct host *t, *old, *beg;
-
-  /* The entry goes to the beginning of the list if the list is empty
-     or the order requires it.  */
-  if (!l || (strcmp (nreal, l->realname) < 0))
-    {
-      t = (struct host *)xmalloc (sizeof (struct host));
-      t->hostname = xstrdup (nhost);
-      t->realname = xstrdup (nreal);
-      t->quality = quality;
-      t->next = l;
-      return t;
-    }
-
-  beg = l;
-  /* Second two one-before-the-last element.  */
-  while (l->next)
-    {
-      int cmp;
-      old = l;
-      l = l->next;
-      cmp = strcmp (nreal, l->realname);
-      if (cmp >= 0)
-	continue;
-      /* If the next list element is greater than s, put s between the
-	 current and the next list element.  */
-      t = (struct host *)xmalloc (sizeof (struct host));
-      old->next = t;
-      t->next = l;
-      t->hostname = xstrdup (nhost);
-      t->realname = xstrdup (nreal);
-      t->quality = quality;
-      return beg;
-    }
-  t = (struct host *)xmalloc (sizeof (struct host));
-  t->hostname = xstrdup (nhost);
-  t->realname = xstrdup (nreal);
-  t->quality = quality;
-  /* Insert the new element after the last element.  */
-  l->next = t;
-  t->next = NULL;
-  return beg;
 }
 
 /* Determine the "real" name of HOST, as perceived by Wget.  If HOST
    is referenced by more than one name, "real" name is considered to
-   be the first one encountered in the past.
-
-   If the host cannot be found in the list of already dealt-with
-   hosts, try with its INET address.  If this fails too, add it to the
-   list.  The routine does not call gethostbyname twice for the same
-   host if it can possibly avoid it.  */
+   be the first one encountered in the past.  */
 char *
 realhost (const char *host)
 {
-  struct host *l, *l_real;
   struct in_addr in;
   struct hostent *hptr;
-  char *inet_s;
+  char *master_name;
 
-  DEBUGP (("Checking for %s.\n", host));
-  /* Look for the host, looking by the host name.  */
-  l = search_host (hlist, host);
-  if (l && l->quality)		/* Found it with quality */
+  DEBUGP (("Checking for %s in host_name_address_map.\n", host));
+  if (hash_table_exists (host_name_address_map, host))
     {
-      DEBUGP (("%s was already used, by that name.\n", host));
-      /* Here we return l->hostname, not host, because of the possible
-         case differences (e.g. jaGOR.srce.hr and jagor.srce.hr are
-         the same, but we want the one that was first.  */
-      return xstrdup (l->hostname);
+      DEBUGP (("Found; %s was already used, by that name.\n", host));
+      return xstrdup_lower (host);
     }
-  else if (!l)			/* Not found, with or without quality */
-    {
-      /* The fact that gethostbyname will get called makes it
-	 necessary to store it to the list, to ensure that
-	 gethostbyname will not be called twice for the same string.
-	 However, the quality argument must be set appropriately.
 
-	 Note that add_hlist must be called *after* the realname
-	 search, or the quality would be always set to 0 */
-      DEBUGP (("This is the first time I hear about host %s by that name.\n",
-	       host));
-      hptr = ngethostbyname (host);
-      if (!hptr)
-	return xstrdup (host);
+  DEBUGP (("Checking for %s in host_slave_master_map.\n", host));
+  master_name = hash_table_get (host_slave_master_map, host);
+  if (master_name)
+    {
+    has_master:
+      DEBUGP (("Found; %s was already used, by the name %s.\n",
+	       host, master_name));
+      return xstrdup (master_name);
+    }
+
+  DEBUGP (("First time I hear about %s by that name; looking it up.\n",
+	   host));
+  hptr = ngethostbyname (host);
+  if (hptr)
+    {
+      char *inet_s;
       /* Originally, we copied to in.s_addr, but it appears to be
-         missing on some systems.  */
+	 missing on some systems.  */
       memcpy (&in, *hptr->h_addr_list, sizeof (in));
-      STRDUP_ALLOCA (inet_s, inet_ntoa (in));
-    }
-  else				/* Found, without quality */
-    {
-      /* This case happens when host is on the list,
-	 but not as first entry (the one with quality).
-	 Then we just get its INET address and pick
-	 up the first entry with quality.  */
-      DEBUGP (("We've dealt with host %s, but under the name %s.\n",
-	       host, l->realname));
-      STRDUP_ALLOCA (inet_s, l->realname);
+      inet_s = inet_ntoa (in);
+
+      add_host_to_cache (host, inet_s);
+
+      /* add_host_to_cache() can establish a slave-master mapping. */
+      DEBUGP (("Checking again for %s in host_slave_master_map.\n", host));
+      master_name = hash_table_get (host_slave_master_map, host);
+      if (master_name)
+	goto has_master;
     }
 
-  /* Now we certainly have the INET address.  The following loop is
-     guaranteed to pick either an entry with quality (because it is
-     the first one), or none at all.  */
-  l_real = search_address (hlist, inet_s);
-  if (l_real)			/* Found in the list, as realname.  */
-    {
-      if (!l)
-	/* Set the default, 0 quality.  */
-	hlist = add_hlist (hlist, host, inet_s, 0);
-      return xstrdup (l_real->hostname);
-    }
-  /* Since this is really the first time this host is encountered,
-     set quality to 1.  */
-  hlist = add_hlist (hlist, host, inet_s, 1);
-  return xstrdup (host);
+  return xstrdup_lower (host);
 }
 
 /* Compare two hostnames (out of URL-s if the arguments are URL-s),
@@ -547,20 +500,23 @@ herrmsg (int error)
     return _("Unknown error");
 }
 
-/* Clean the host list.  This is a separate function, so we needn't
-   export HLIST and its implementation.  Ha!  */
 void
 clean_hosts (void)
 {
-  struct host *l = hlist;
+  /* host_name_address_map and host_address_name_map share the
+     strings.  Because of that, calling free_keys_and_values once
+     suffices for both.  */
+  free_keys_and_values (host_name_address_map);
+  hash_table_destroy (host_name_address_map);
+  hash_table_destroy (host_address_name_map);
+  free_keys_and_values (host_slave_master_map);
+  hash_table_destroy (host_slave_master_map);
+}
 
-  while (l)
-    {
-      struct host *p = l->next;
-      free (l->hostname);
-      free (l->realname);
-      free (l);
-      l = p;
-    }
-  hlist = NULL;
+void
+host_init (void)
+{
+  host_name_address_map = make_string_hash_table (0);
+  host_address_name_map = make_string_hash_table (0);
+  host_slave_master_map = make_string_hash_table (0);
 }
