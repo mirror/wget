@@ -1898,8 +1898,8 @@ http_atotm (char *time_string)
   /* RFC1123: Thu, 29 Jan 1998 22:12:57 */
   if (check_end (strptime (time_string, "%a, %d %b %Y %T", &t)))
     return mktime_from_utc (&t);
-  /* RFC850:  Thu, 29-Jan-98 22:12:57 */
-  if (check_end (strptime (time_string, "%a, %d-%b-%y %T", &t)))
+  /* RFC850:  Thursday, 29-Jan-98 22:12:57 */
+  if (check_end (strptime (time_string, "%A, %d-%b-%y %T", &t)))
     return mktime_from_utc (&t);
   /* asctime: Thu Jan 29 22:12:57 1998 */
   if (check_end (strptime (time_string, "%a %b %d %T %Y", &t)))

@@ -1,3 +1,8 @@
+2001-04-03  KOJIMA Hajime  <kjm@rins.ryukoku.ac.jp>
+
+	* http.c (http_atotm): Use %A instead of %a to match full
+	weekday.  (On most systems there is no difference.)
+
 2001-04-03  Paul Bludov  <paul@ozero.net>
 
 	* mswindows.c (sleep): Use SleepEx() instead of Sleep().
