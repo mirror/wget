@@ -1708,7 +1708,9 @@ username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\"",
 static int
 known_authentication_scheme_p (const char *au)
 {
-  return HACK_O_MATIC (au, "Basic") || HACK_O_MATIC (au, "Digest");
+  return HACK_O_MATIC (au, "Basic")
+    || HACK_O_MATIC (au, "Digest")
+    || HACK_O_MATIC (au, "NTLM");
 }
 
 #undef HACK_O_MATIC
@@ -1726,6 +1728,8 @@ create_authorization_line (const char *au, const char *user,
   char *wwwauth = NULL;
 
   if (!strncasecmp (au, "Basic", 5))
+    wwwauth = basic_authentication_encode (user, passwd, "Authorization");
+  if (!strncasecmp (au, "NTLM", 4))
     wwwauth = basic_authentication_encode (user, passwd, "Authorization");
 #ifdef USE_DIGEST
   else if (!strncasecmp (au, "Digest", 6))
