@@ -1,5 +1,9 @@
 2001-12-12  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* url.c (get_urls_file): Cosmetic changes.
+
+2001-12-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* html-url.c (append_one_url): Resurrect warning when unable to
 	resolve a relative link.
 

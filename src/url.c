@@ -998,6 +998,7 @@ get_urls_file (const char *file)
       return NULL;
     }
   DEBUGP (("Loaded %s (size %ld).\n", file, fm->length));
+
   head = tail = NULL;
   text = fm->content;
   text_end = fm->content + fm->length;
@@ -1010,12 +1011,13 @@ get_urls_file (const char *file)
       else
 	++line_end;
       text = line_end;
-      while (line_beg < line_end
-	     && ISSPACE (*line_beg))
+
+      /* Strip whitespace from the beginning and end of line. */
+      while (line_beg < line_end && ISSPACE (*line_beg))
 	++line_beg;
-      while (line_end > line_beg + 1
-	     && ISSPACE (*(line_end - 1)))
+      while (line_end > line_beg && ISSPACE (*(line_end - 1)))
 	--line_end;
+
       if (line_end > line_beg)
 	{
 	  /* URL is in the [line_beg, line_end) region. */
