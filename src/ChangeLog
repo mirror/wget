@@ -1,3 +1,7 @@
+2001-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* ftp-ls.c (ftp_parse_vms_ls): Fix obvious memory leaks.
+
 2001-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* main.c (main): Initialize progress after fork_to_background, so

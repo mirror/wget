@@ -577,23 +577,31 @@ ftp_parse_vms_ls (const char *file)
     }
   dir = l = NULL;
 
-  /* #### The next three lines are a memory leak because they don't
-     bother to free the pointer that read_whole_line() returns!
-     FIXME! */
+  /* Skip empty line. */
+  line = read_whole_line (fp);
+  if (line)
+    xfree (line);
 
-  /* Empty line */
-  read_whole_line (fp);
-  /* "Directory PUB$DEVICE[PUB]" */
-  read_whole_line (fp);
-  /* Empty line */
-  read_whole_line (fp);
+  /* Skip "Directory PUB$DEVICE[PUB]" */
+  line = read_whole_line (fp);
+  if (line)
+    xfree (line);
+
+  /* Skip empty line. */
+  line = read_whole_line (fp);
+  if (line)
+    xfree (line);
 
   /* Line loop to end of file: */
   while ((line = read_whole_line (fp)))
     {
       char *p;
       i = clean_line (line);
-      if (!i) break;
+      if (!i)
+	{
+	  xfree (line);
+	  break;
+	}
 
       /* First column: Name. A bit of black magic again. The name my be
          either ABCD.EXT or ABCD.EXT;NUM and it might be on a separate
@@ -650,6 +658,7 @@ ftp_parse_vms_ls (const char *file)
         if (!i) 
         {
           DEBUGP(("confusing VMS listing item, leaving listing parser\n"));
+	  xfree (line);
           break;
         }
         tok = strtok(line, " ");
@@ -669,6 +678,7 @@ ftp_parse_vms_ls (const char *file)
            the first strtok(NULL, "-") will return everything until the end
            of the line and only the next strtok() call will return NULL. */
         DEBUGP(("nonsense in VMS listing, skipping this line\n"));
+	xfree (line);
         break;
       }
       for (i=0; i<12; i++) if (!strcmp(tok,months[i])) break;
@@ -718,6 +728,7 @@ ftp_parse_vms_ls (const char *file)
       if (tok == NULL)
         {
           DEBUGP(("confusing VMS permissions, skipping line\n"));
+	  xfree (line);
           continue;
         }
       /* Permissons have the format "RWED,RWED,RE" */
