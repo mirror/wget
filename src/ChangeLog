@@ -1,3 +1,7 @@
+2000-11-29  John Summerfield  <summer@OS2.ami.com.au>
+
+	* netrc.c (parse_netrc): Get rid of line ending.
+
 2000-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp.c (ftp_retrieve_list): Undo typo "fix" until resolution by

@@ -270,6 +270,13 @@ parse_netrc (const char *path)
   /* While there are lines in the file...  */
   while ((line = read_whole_line (fp)))
     {
+      /* Do away with line separators. */
+      int len = strlen (line);
+      if (len && line[len - 1] == '\n')
+	line[--len] = '\0';
+      if (len && line[len - 1] == '\r')
+	line[--len] = '\0';
+
       ln ++;
 
       /* Parse the line.  */
