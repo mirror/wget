@@ -158,19 +158,15 @@ fake_fork_child (void)
   HANDLE section, event;
   struct fake_fork_info *info;
   char *name;
-  DWORD le;
 
   name = make_section_name (GetCurrentProcessId ());
   section = OpenFileMapping (FILE_MAP_WRITE, FALSE, name);
-  le = GetLastError ();
   xfree (name);
+  /* It seems that Windows 9x and NT set last-error inconsistently when
+     OpenFileMapping() fails; so we assume it failed because the section
+     object does not exist.  */
   if (!section)
-    {
-      if (le == ERROR_FILE_NOT_FOUND)
-        return 0;   /* Section object does not exist; we are the parent.  */
-      else
-        return -1;
-    }
+    return 0;                   /* We are the parent.  */
 
   info = MapViewOfFile (section, FILE_MAP_WRITE, 0, 0, 0);
   if (!info)
@@ -258,7 +254,7 @@ fake_fork (void)
   if (!event)
     return;
 
-  /* Creat the child process detached form the current console and in a
+  /* Create the child process detached form the current console and in a
      suspended state.  */
   memset (&si, 0, sizeof (si));
   si.cb = sizeof (si);
