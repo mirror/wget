@@ -175,9 +175,7 @@ struct hash_table {
   for (; NON_EMPTY (mp); mp = NEXT_MAPPING (mp, mappings, size))
 
 /* Return the position of KEY in hash table SIZE large, hash function
-   being HASHFUN.  #### Some implementations multiply HASHFUN's output
-   with the table's "golden ratio" to get better spreading of keys.
-   I'm not sure if that is necessary with our hash functions.  */
+   being HASHFUN.  */
 #define HASH_POSITION(key, hashfun, size) ((hashfun) (key) % size)
 
 /* Find a prime near, but greather than or equal to SIZE.  Of course,
@@ -639,9 +637,14 @@ make_nocase_string_hash_table (int items)
   return hash_table_new (items, string_hash_nocase, string_cmp_nocase);
 }
 
-/* Hashing of pointers.  Used for hash tables that are keyed by
-   pointer identity.  (Common Lisp calls them EQ hash tables, and Java
-   calls them IdentityHashMaps.)  */
+/* Hashing of numeric values, such as pointers and integers.  Used for
+   hash tables that are keyed by pointer identity.  (Common Lisp calls
+   them EQ hash tables, and Java calls them IdentityHashMaps.)
+
+   This implementation is the Robert Jenkins' 32 bit Mix Function,
+   with a simple adaptation for 64-bit values.  It offers excellent
+   spreading of values and doesn't need to know the hash table size to
+   work (unlike the very popular Knuth's multiplication hash).  */
 
 static unsigned long
 ptrhash (const void *ptr)
