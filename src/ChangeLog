@@ -1,3 +1,8 @@
+2001-12-04  Ian Abbott <abbotti@mev.co.uk>
+
+	* snprintf.c (dopr): Use `unsigned int' as the second argument to
+	va_arg when casting to `unsigned short' is intended.
+
 2001-12-04  Herold Heiko  <Heiko.Herold@previnet.it>
 
 	* gen_sslfunc.c: on windows provide ssl crypto random 
