@@ -1669,7 +1669,7 @@ path_simplify (char *path)
 	     element -- but not past beggining of PATH.  */
 	  if (t > path)
 	    {
-	      /* Move backwards until B hits the beginning of the
+	      /* Move backwards until T hits the beginning of the
 		 previous path element or the beginning of path. */
 	      for (--t; t > path && t[-1] != '/'; t--)
 		;
