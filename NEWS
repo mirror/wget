@@ -7,23 +7,40 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.7-dev
 
-** It is now possible to recurse through FTP sites where logging in puts you in
-some directory other than '/'.
+** Wget can now recognize FTP directory listings from some non-Unix
+servers.  Currently Windows NT is supported.
+
+** It is now possible to recurse through FTP sites where logging in
+puts you in some directory other than '/'.
 
 ** "Keep-Alive" connections are now supported.
 
-** https URLs are now supported if you link wget with OpenSSL.
+** https URLs (SSL) are now supported if you link wget with OpenSSL.
+
+** The HTML parser has been rewritten.  The new one works more
+reliably, allows finer-grained control over which tags and attributes
+are detected, and has better support for some features like correctly
+skipping comments and declarations, decoding entities, etc.  It is
+also more general.
 
 ** <meta name="robots"> tags are now respected.
+
+** Wget's internal tables now use hash tables instead of linked lists
+where appropriate.  This results in huge speedups when retrieving
+large sites (thousands of documents).
+
+** Wget now mmaps the files it needs to read instead of allocating
+heap memory to read them.
+
 
 * Changes in Wget 1.6
 
 ** Administrative changes.
 
 *** Maintainership.  Due to Hrvoje being plagued with a "real job",
-Dan Harkless is the most active maintainer (not that he doesn't have a real job
-as well).  Hrvoje still participates occasionally, and both are being helped by
-many other people.
+Dan Harkless is the most active maintainer (not that he doesn't have a
+real job as well).  Hrvoje still participates occasionally, and both
+are being helped by many other people.
 
 *** Web page.  Thanks to Jan Prikryl, Wget has an "official" web page.
 Take a look at:
