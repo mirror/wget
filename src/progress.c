@@ -96,7 +96,7 @@ static int current_impl_locked;
 int
 valid_progress_implementation_p (const char *name)
 {
-  int i = 0;
+  int i;
   struct progress_implementation *pi = implementations;
   char *colon = strchr (name, ':');
   int namelen = colon ? colon - name : strlen (name);

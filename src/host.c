@@ -518,7 +518,7 @@ cache_remove (const char *host)
 struct address_list *
 lookup_host (const char *host, int flags)
 {
-  struct address_list *al = NULL;
+  struct address_list *al;
   int silent = flags & LH_SILENT;
   int use_cache;
 
