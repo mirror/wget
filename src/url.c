@@ -49,54 +49,6 @@ extern int errno;
 
 static int urlpath_length PARAMS ((const char *));
 
-/* A NULL-terminated list of strings to be recognized as protocol
-   types (URL schemes).  Note that recognized doesn't mean supported
-   -- only HTTP, HTTPS and FTP are currently supported.
-
-   However, a string that does not match anything in the list will be
-   considered a relative URL.  Thus it's important that this list has
-   anything anyone could think of being legal.
-
-   #### This is probably broken.  Wget should use other means to
-   distinguish between absolute and relative URIs in HTML links.
-
-   Take a look at <http://www.w3.org/pub/WWW/Addressing/schemes.html>
-   for more.  */
-static char *protostrings[] =
-{
-  "cid:",
-  "clsid:",
-  "file:",
-  "finger:",
-  "ftp:",
-  "gopher:",
-  "hdl:",
-  "http:",
-  "https:",
-  "ilu:",
-  "ior:",
-  "irc:",
-  "java:",
-  "javascript:",
-  "lifn:",
-  "mailto:",
-  "mid:",
-  "news:",
-  "nntp:",
-  "path:",
-  "prospero:",
-  "rlogin:",
-  "service:",
-  "shttp:",
-  "snews:",
-  "stanf:",
-  "telnet:",
-  "tn3270:",
-  "wais:",
-  "whois++:",
-  NULL
-};
-
 struct proto
 {
   char *name;
@@ -104,7 +56,7 @@ struct proto
   unsigned short port;
 };
 
-/* Similar to former, but for supported protocols: */
+/* Supported protocols: */
 static struct proto sup_protos[] =
 {
   { "http://", URLHTTP, DEFAULT_HTTP_PORT },
@@ -307,20 +259,22 @@ urlproto (const char *url)
 int
 skip_proto (const char *url)
 {
-  char **s;
-  int l;
+  const char *p = url;
 
-  for (s = protostrings; *s; s++)
-    if (!strncasecmp (*s, url, strlen (*s)))
-      break;
-  if (!*s)
+  /* Skip protocol name.  We allow `-' and `+' because of `whois++',
+     etc. */
+  while (ISALNUM (*p) || *p == '-' || *p == '+')
+    ++p;
+  if (*p != ':')
     return 0;
-  l = strlen (*s);
-  /* HTTP and FTP protocols are expected to yield exact host names
-     (i.e. the `//' part must be skipped, too).  */
-  if (!strcmp (*s, "http:") || !strcmp (*s, "ftp:"))
-    l += 2;
-  return l;
+  /* Skip ':'. */
+  ++p;
+
+  /* Skip "//" if found. */
+  if (*p == '/' && *(p + 1) == '/')
+    p += 2;
+
+  return p - url;
 }
 
 /* Returns 1 if the URL begins with a protocol (supported or
@@ -328,12 +282,10 @@ skip_proto (const char *url)
 int
 has_proto (const char *url)
 {
-  char **s;
-
-  for (s = protostrings; *s; s++)
-    if (strncasecmp (url, *s, strlen (*s)) == 0)
-      return 1;
-  return 0;
+  const char *p = url;
+  while (ISALNUM (*p) || *p == '-' || *p == '+')
+    ++p;
+  return *p == ':';
 }
 
 /* Skip the username and password, if present here.  The function
