@@ -1,5 +1,11 @@
 2003-10-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* config.h.in: Deploy preprocessor magic to avoid Ultrix's
+	<netdb.h> include <bitypes.h> which defines its own u_int32_t.
+	Reported by Bernhard Simon.
+
+2003-10-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* version.c: Bump version.
 
 2003-10-23  Hrvoje Niksic  <hniksic@xemacs.org>
