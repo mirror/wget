@@ -1,3 +1,11 @@
+2001-02-13  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
+
+	* windows/Makefile.src: Removed references to ftpparse sources.
+
+	* windows/wget.dep: Ditto.
+
+	* windows/Makefile.watcom: Ditto. 
+
 2001-01-23  Herold Heiko  <Heiko.Herold@previnet.it>
 
 	* windows/Makefile.src: Don't attempt to compile in alloca.c; it
