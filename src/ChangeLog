@@ -1,5 +1,13 @@
 2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* retr.c (get_contents): Pass the timer to limit_bandwidth().
+
+	* utils.c (wtimer_update): New function instead of wget_elapsed;
+	just update the timer, but don't return anything.
+	(wtimer_read): Read and return the last known value of the timer.
+
+2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (persistent_available_p): Instead of matching all the
 	addresses of HOST and last host, determine the peer's IP address
 	with socket_ip_address and see if that address is one of those

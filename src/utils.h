@@ -111,7 +111,8 @@ struct wget_timer *wtimer_allocate PARAMS ((void));
 struct wget_timer *wtimer_new PARAMS ((void));
 void wtimer_delete PARAMS ((struct wget_timer *));
 void wtimer_reset PARAMS ((struct wget_timer *));
-double wtimer_elapsed PARAMS ((struct wget_timer *));
+void wtimer_update PARAMS ((struct wget_timer *));
+double wtimer_read PARAMS ((const struct wget_timer *));
 double wtimer_granularity PARAMS ((void));
 
 char *html_quote_string PARAMS ((const char *));

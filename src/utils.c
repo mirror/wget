@@ -1395,8 +1395,11 @@ wtimer_sys_set (wget_sys_time *wst)
 }
 
 /* Reset timer WT.  This establishes the starting point from which
-   wtimer_elapsed() will return the number of elapsed
-   milliseconds.  It is allowed to reset a previously used timer.  */
+   wtimer_elapsed() will return the number of elapsed milliseconds.
+   It is allowed to reset a previously used timer.
+
+   If a non-zero value is used as START, the timer's values will be
+   offset by START.  */
 
 void
 wtimer_reset (struct wget_timer *wt)
@@ -1427,13 +1430,16 @@ wtimer_sys_diff (wget_sys_time *wst1, wget_sys_time *wst2)
 #endif
 }
 
-/* Return the number of milliseconds elapsed since the timer was last
-   reset.  It is allowed to call this function more than once to get
-   increasingly higher elapsed values.  These timers handle clock
-   skew.  */
+/* Update the timer's elapsed interval.  This function causes the
+   timer to call gettimeofday (or time(), etc.) to update its idea of
+   current time.  To get the elapsed interval in milliseconds, use
+   wtimer_read.
 
-double
-wtimer_elapsed (struct wget_timer *wt)
+   This function handles clock skew, i.e. time that moves backwards is
+   ignored.  */
+
+void
+wtimer_update (struct wget_timer *wt)
 {
   wget_sys_time now;
   double elapsed;
@@ -1462,7 +1468,22 @@ wtimer_elapsed (struct wget_timer *wt)
     }
 
   wt->elapsed_last = elapsed;
-  return elapsed;
+}
+
+/* Return the elapsed time in milliseconds between the last call to
+   wtimer_reset and the last call to wtimer_update.
+
+   A typical use of the timer interface would be:
+
+       struct wtimer *timer = wtimer_new ();
+       ... do something that takes a while ...
+       wtimer_update ();
+       double msecs = wtimer_read ();  */
+
+double
+wtimer_read (const struct wget_timer *wt)
+{
+  return wt->elapsed_last;
 }
 
 /* Return the assessed granularity of the timer implementation, in

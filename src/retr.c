@@ -84,13 +84,13 @@ limit_bandwidth_reset (void)
 }
 
 /* Limit the bandwidth by pausing the download for an amount of time.
-   BYTES is the number of bytes received from the network, and DELTA
-   is the number of milliseconds it took to receive them.  */
+   BYTES is the number of bytes received from the network, and TIMER
+   is the timer that started at the beginning of download.  */
 
 static void
-limit_bandwidth (long bytes, double *dltime, struct wget_timer *timer)
+limit_bandwidth (long bytes, struct wget_timer *timer)
 {
-  double delta_t = *dltime - limit_data.chunk_start;
+  double delta_t = wtimer_read (timer) - limit_data.chunk_start;
   double expected;
 
   limit_data.chunk_bytes += bytes;
@@ -113,23 +113,20 @@ limit_bandwidth (long bytes, double *dltime, struct wget_timer *timer)
       DEBUGP (("\nsleeping %.2f ms for %ld bytes, adjust %.2f ms\n",
 	       slp, limit_data.chunk_bytes, limit_data.sleep_adjust));
 
-      t0 = *dltime;
+      t0 = wtimer_read (timer);
       xsleep (slp / 1000);
-      t1 = wtimer_elapsed (timer);
+      wtimer_update (timer);
+      t1 = wtimer_read (timer);
 
       /* Due to scheduling, we probably slept slightly longer (or
 	 shorter) than desired.  Calculate the difference between the
 	 desired and the actual sleep, and adjust the next sleep by
 	 that amount.  */
       limit_data.sleep_adjust = slp - (t1 - t0);
-
-      /* Since we've called wtimer_elapsed, we might as well update
-	 the caller's dltime. */
-      *dltime = t1;
     }
 
   limit_data.chunk_bytes = 0;
-  limit_data.chunk_start = *dltime;
+  limit_data.chunk_start = wtimer_read (timer);
 }
 
 #define MIN(i, j) ((i) <= (j) ? (i) : (j))
@@ -166,7 +163,6 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 
   void *progress = NULL;
   struct wget_timer *timer = wtimer_allocate ();
-  double dltime = 0;
 
   *len = restval;
 
@@ -222,7 +218,7 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
       /* Always flush the contents of the network packet.  This should
 	 not hinder performance: fast downloads will be received in
 	 16K chunks (which stdio would write out anyway), and slow
-	 downloads won't be limited with disk performance.  */
+	 downloads won't be limited by disk performance.  */
       fflush (fp);
       if (ferror (fp))
 	{
@@ -230,13 +226,13 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 	  goto out;
 	}
 
-      dltime = wtimer_elapsed (timer);
+      wtimer_update (timer);
       if (opt.limit_rate)
-	limit_bandwidth (res, &dltime, timer);
+	limit_bandwidth (res, timer);
 
       *len += res;
       if (progress)
-	progress_update (progress, res, dltime);
+	progress_update (progress, res, wtimer_read (timer));
 #ifdef WINDOWS
       if (use_expected && expected > 0)
 	ws_percenttitle (100.0 * (double)(*len) / (double)expected);
@@ -247,9 +243,9 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 
  out:
   if (progress)
-    progress_finish (progress, dltime);
+    progress_finish (progress, wtimer_read (timer));
   if (elapsed)
-    *elapsed = dltime;
+    *elapsed = wtimer_read (timer);
   wtimer_delete (timer);
 
   return res;

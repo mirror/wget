@@ -166,7 +166,8 @@ convert_all_links (void)
       free_urlpos (urls);
     }
 
-  msecs = wtimer_elapsed (timer);
+  wtimer_update (timer);
+  msecs = wtimer_read (timer);
   wtimer_delete (timer);
   logprintf (LOG_VERBOSE, _("Converted %d files in %.2f seconds.\n"),
 	     file_count, (double)msecs / 1000);
