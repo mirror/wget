@@ -60,6 +60,7 @@ so, delete this exception statement from your version.  */
 #include "cookies.h"
 #include "url.h"
 #include "progress.h"		/* for progress_handle_sigwinch */
+#include "convert.h"
 
 #ifdef HAVE_SSL
 # include "gen_sslfunc.h"
