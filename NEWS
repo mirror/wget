@@ -33,6 +33,9 @@ have been downloaded.
 already resolves <base href="..."> when resolving handling URLs, link
 conversion now makes the BASE tags point to an empty string.
 
+** If a host has more than one IP address, Wget uses the other
+addresses when accessing the first one fails.
+
 ** Host directories now contain port information if the URL is at a
 non-standard port.
 
@@ -40,8 +43,8 @@ non-standard port.
 <http://info.webcrawler.com/mak/projects/robots/norobots-rfc.html>.
 
 ** URL parser has been fixed, especially the infamous overzealous
-quoting bug.  Wget no longer dequotes reserved characters, e.g. `%3F'
-is no longer translated to `?', nor `%2B' to `+'.  Unsafe characters
+quoting.  Wget no longer dequotes reserved characters, e.g. `%3F' is
+no longer translated to `?', nor `%2B' to `+'.  Unsafe characters
 which are not reserved are still escaped, of course.
 
 * Wget 1.7.1 is a bugfix release with no user-visible changes.
