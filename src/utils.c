@@ -511,13 +511,14 @@ unique_create (const char *name, int binary, char **opened_name)
 FILE *
 fopen_excl (const char *fname, int binary)
 {
+  int fd;
 #ifdef O_EXCL
   int flags = O_WRONLY | O_CREAT | O_EXCL;
 # ifdef O_BINARY
   if (binary)
-    flags |= O_BINARY
+    flags |= O_BINARY;
 # endif
-  int fd = open (fname, flags, 0666);
+  fd = open (fname, flags, 0666);
   if (fd < 0)
     return NULL;
   return fdopen (fd, binary ? "wb" : "w");

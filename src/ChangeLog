@@ -1,3 +1,8 @@
+2005-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (fopen_excl): Fix parse error when O_BINARY is
+	available.
+
 2005-03-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (url_file_name): Don't allow hosts named ".." to be
