@@ -999,6 +999,15 @@ url_parse (const char *url, int *error)
 
   host_modified = lowercase_str (u->host);
 
+  /* Decode %HH sequences in host name.  This is important not so much
+     to support %HH sequences, but to support binary characters (which
+     will have been converted to %HH by reencode_escapes).  */
+  if (strchr (u->host, '%'))
+    {
+      url_unescape (u->host);
+      host_modified = 1;
+    }
+
   if (params_b)
     u->params = strdupdelim (params_b, params_e);
   if (query_b)
