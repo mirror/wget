@@ -1,3 +1,8 @@
+2003-10-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (file_size): Return -1 if fopen() returns NULL.  Prior
+	to this patch, wget --post-file=nosuchfile dumped core.
+
 2003-10-04  Gisle Vanem  <giva@bgnett.no>
 
 	* mswindows.c (run_with_timeout): Use WaitForSingleObject to wait

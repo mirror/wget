@@ -574,6 +574,8 @@ file_size (const char *filename)
      that way we can also verify whether the file is readable.
      Inspired by the POST patch by Arnaud Wylie.  */
   FILE *fp = fopen (filename, "rb");
+  if (!fp)
+    return -1;
   fseek (fp, 0, SEEK_END);
   size = ftell (fp);
   fclose (fp);

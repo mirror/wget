@@ -1015,7 +1015,7 @@ Accept: %s\r\n\
 #endif
 	    write_error = iwrite (sock, opt.post_data, post_data_size);
 	}
-      else if (opt.post_file_name)
+      else if (opt.post_file_name && post_data_size != 0)
 	{
 #ifdef HAVE_SSL
 	  if (conn->scheme == SCHEME_HTTPS)
