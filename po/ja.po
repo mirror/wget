@@ -5,280 +5,333 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU Wget 1.6\n"
-"POT-Creation-Date: 2001-01-03 16:11+0900\n"
-"PO-Revision-Date: 2001-01-03 17:04+09:00\n"
+"Project-Id-Version: wget 1.7.1-pre1\n"
+"POT-Creation-Date: 2001-06-03 15:27+0200\n"
+"PO-Revision-Date: 2001-08-17 16:29+0900\n"
 "Last-Translator: Hiroshi Takekawa <takekawa@sr3.t.u-tokyo.ac.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=EUC-JP\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: src/cookies.c:588
+#, c-format
+msgid "Error in Set-Cookie, field `%s'"
+msgstr "Set-Cookieのフィールド `%s' に間違いがあります。"
+
+#: src/cookies.c:612
+#, c-format
+msgid "Syntax error in Set-Cookie at character `%c'.\n"
+msgstr "Set-Cookie の文字 `%c' の部分に文法エラーがあります。\n"
+
+#: src/cookies.c:620
+msgid "Syntax error in Set-Cookie: premature end of string.\n"
+msgstr "Set-Cookie:が途中で終ってしまっていて文法エラーになっています。\n"
+
+#: src/cookies.c:1352
+#, c-format
+msgid "Cannot open cookies file `%s': %s\n"
+msgstr "クッキーファイル `%s' を開けませんでした: %s\n"
+
+#: src/cookies.c:1364
+#, c-format
+msgid "Error writing to `%s': %s\n"
+msgstr "`%s' へ書き込めません: %s\n"
+
+#: src/cookies.c:1368
+#, c-format
+msgid "Error closing `%s': %s\n"
+msgstr "`%s' を閉じる際にエラーが発生しました: %s\n"
+
+#: src/ftp-ls.c:787
+msgid "Unsupported listing type, trying Unix listing parser.\n"
+msgstr "サポートしていないリスト形式です、UNIX形式と見て解釈してみます。\n"
+
+#: src/ftp-ls.c:832 src/ftp-ls.c:834
+#, c-format
+msgid "Index of /%s on %s:%d"
+msgstr "/%s (%s:%d 上)の見出し(index)です"
+
+#: src/ftp-ls.c:856
+msgid "time unknown       "
+msgstr "時間が不明です       "
+
+#: src/ftp-ls.c:860
+msgid "File        "
+msgstr "ファイル        "
+
+#: src/ftp-ls.c:863
+msgid "Directory   "
+msgstr "ディレクトリ   "
+
+#: src/ftp-ls.c:866
+msgid "Link        "
+msgstr "リンク        "
+
+#: src/ftp-ls.c:869
+msgid "Not sure    "
+msgstr "不確実    "
+
+#: src/ftp-ls.c:887
+#, c-format
+msgid " (%s bytes)"
+msgstr " (%s バイト)"
+
 #. Login to the server:
 #. First: Establish the control connection.
-#: src/ftp.c:152 src/http.c:352
+#: src/ftp.c:150 src/http.c:624
 #, c-format
 msgid "Connecting to %s:%hu... "
 msgstr "%s:%hu に接続しています... "
 
-#: src/ftp.c:174 src/ftp.c:416 src/http.c:369
+#: src/ftp.c:172 src/ftp.c:539 src/http.c:641
 #, c-format
 msgid "Connection to %s:%hu refused.\n"
 msgstr "%s:%hu への接続は拒否されました。\n"
 
 #. Second: Login with proper USER/PASS sequence.
-#: src/ftp.c:195 src/http.c:380
+#: src/ftp.c:193 src/http.c:652
 msgid "connected!\n"
 msgstr "接続しました!\n"
 
-#: src/ftp.c:196
+#: src/ftp.c:194
 #, c-format
 msgid "Logging in as %s ... "
 msgstr "%s としてログインしています... "
 
-#: src/ftp.c:205 src/ftp.c:258 src/ftp.c:306 src/ftp.c:358 src/ftp.c:452
-#: src/ftp.c:525 src/ftp.c:573 src/ftp.c:621
+#: src/ftp.c:203 src/ftp.c:256 src/ftp.c:288 src/ftp.c:336 src/ftp.c:429
+#: src/ftp.c:481 src/ftp.c:575 src/ftp.c:648 src/ftp.c:709 src/ftp.c:757
 msgid "Error in server response, closing control connection.\n"
 msgstr "サーバの応答にエラーがあるので、接続を終了します。\n"
 
-#: src/ftp.c:213
+#: src/ftp.c:211
 msgid "Error in server greeting.\n"
 msgstr "サーバの初期応答にエラーがあります。\n"
 
-#: src/ftp.c:221 src/ftp.c:267 src/ftp.c:315 src/ftp.c:367 src/ftp.c:462
-#: src/ftp.c:535 src/ftp.c:583 src/ftp.c:631
+#: src/ftp.c:219 src/ftp.c:345 src/ftp.c:438 src/ftp.c:490 src/ftp.c:585
+#: src/ftp.c:658 src/ftp.c:719 src/ftp.c:767
 msgid "Write failed, closing control connection.\n"
 msgstr "書き込みに失敗したので、接続を終了します。\n"
 
-#: src/ftp.c:228
+#: src/ftp.c:226
 msgid "The server refuses login.\n"
 msgstr "サーバがログインを拒否しました。\n"
 
-#: src/ftp.c:235
+#: src/ftp.c:233
 msgid "Login incorrect.\n"
 msgstr "ログインに失敗しました。\n"
 
-#: src/ftp.c:242
+#: src/ftp.c:240
 msgid "Logged in!\n"
 msgstr "ログインしました!\n"
 
-#: src/ftp.c:275
+#: src/ftp.c:265
+msgid "Server error, can't determine system type.\n"
+msgstr "サーバエラーで、システムがなにか判別できません。\n"
+
+#: src/ftp.c:275 src/ftp.c:560 src/ftp.c:632 src/ftp.c:689
+msgid "done.    "
+msgstr "完了しました。    "
+
+#: src/ftp.c:325 src/ftp.c:459 src/ftp.c:740 src/ftp.c:788 src/url.c:1429
+msgid "done.\n"
+msgstr "完了しました。\n"
+
+#: src/ftp.c:353
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
 msgstr "`%c' は不明な種類なので、接続を終了します。\n"
 
-#: src/ftp.c:288
+#: src/ftp.c:366
 msgid "done.  "
 msgstr "完了しました。  "
 
-#: src/ftp.c:294
+#: src/ftp.c:372
 msgid "==> CWD not needed.\n"
 msgstr "==> CWD は必要ありません。\n"
 
-#: src/ftp.c:322
+#: src/ftp.c:445
 #, c-format
-msgid ""
-"No such directory `%s'.\n"
-"\n"
-msgstr ""
-"`%s' というディレクトリはありません。\n"
-"\n"
-
-#: src/ftp.c:336 src/ftp.c:604 src/ftp.c:652 src/url.c:1678
-msgid "done.\n"
-msgstr "完了しました。\n"
+msgid "No such directory `%s'.\n\n"
+msgstr "`%s' というディレクトリはありません。\n\n"
 
 #. do not CWD
-#: src/ftp.c:340
+#: src/ftp.c:463
 msgid "==> CWD not required.\n"
 msgstr "==> CWD は必要ありません。\n"
 
-#: src/ftp.c:374
+#: src/ftp.c:497
 msgid "Cannot initiate PASV transfer.\n"
 msgstr "PASV転送の初期化ができません。\n"
 
-#: src/ftp.c:378
+#: src/ftp.c:501
 msgid "Cannot parse PASV response.\n"
 msgstr "PASVの応答を解析できません。\n"
 
-#: src/ftp.c:392
+#: src/ftp.c:515
 #, c-format
 msgid "Will try connecting to %s:%hu.\n"
 msgstr "%s:%hu への接続を試みます。\n"
 
-#: src/ftp.c:437 src/ftp.c:509 src/ftp.c:553
-msgid "done.    "
-msgstr "完了しました。    "
-
-#: src/ftp.c:479
+#: src/ftp.c:602
 #, c-format
 msgid "Bind error (%s).\n"
 msgstr "バインドエラーです (%s)。\n"
 
-#: src/ftp.c:495
+#: src/ftp.c:618
 msgid "Invalid PORT.\n"
 msgstr "無効なポート番号です。\n"
 
-#: src/ftp.c:542
-msgid ""
-"\n"
-"REST failed, starting from scratch.\n"
-msgstr ""
-"\n"
-"RESTに失敗しました、最初から始めます。\n"
-
-#: src/ftp.c:591
+#: src/ftp.c:671
 #, c-format
-msgid ""
-"No such file `%s'.\n"
-"\n"
-msgstr ""
-"`%s' というファイルはありません。\n"
-"\n"
+msgid "\nREST failed; will not truncate `%s'.\n"
+msgstr "\nREST が失敗しました。`%s' を切りつめはしません。\n"
 
-#: src/ftp.c:639
+#: src/ftp.c:678
+msgid "\nREST failed, starting from scratch.\n"
+msgstr "\nRESTに失敗しました、最初から始めます。\n"
+
+#: src/ftp.c:727
 #, c-format
-msgid ""
-"No such file or directory `%s'.\n"
-"\n"
-msgstr ""
-"`%s' というファイルまたはディレクトリはありません。\n"
-"\n"
+msgid "No such file `%s'.\n\n"
+msgstr "`%s' というファイルはありません。\n\n"
 
-#: src/ftp.c:715 src/ftp.c:722
+#: src/ftp.c:775
+#, c-format
+msgid "No such file or directory `%s'.\n\n"
+msgstr "`%s' というファイルまたはディレクトリはありません。\n\n"
+
+#: src/ftp.c:859 src/ftp.c:867
 #, c-format
 msgid "Length: %s"
 msgstr "長さ: %s"
 
-#: src/ftp.c:717 src/ftp.c:724
+#: src/ftp.c:861 src/ftp.c:869
 #, c-format
 msgid " [%s to go]"
 msgstr " [のこり %s]"
 
-#: src/ftp.c:726
+#: src/ftp.c:871
 msgid " (unauthoritative)\n"
 msgstr " (確証はありません)\n"
 
-#: src/ftp.c:752
+#: src/ftp.c:898
 #, c-format
 msgid "%s: %s, closing control connection.\n"
 msgstr "%s: %s、接続を終了します。\n"
 
-#: src/ftp.c:760
+#: src/ftp.c:906
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
 msgstr "%s (%s) - データ接続: %s; "
 
-#: src/ftp.c:777
+#: src/ftp.c:923
 msgid "Control connection closed.\n"
 msgstr "制御用の接続を切断します。\n"
 
-#: src/ftp.c:795
+#: src/ftp.c:941
 msgid "Data transfer aborted.\n"
 msgstr "データ転送を中断しました。\n"
 
-#: src/ftp.c:859
+#: src/ftp.c:1005
 #, c-format
 msgid "File `%s' already there, not retrieving.\n"
 msgstr "ファイル `%s' はすでに存在するので、取得しません。\n"
 
-#: src/ftp.c:920 src/http.c:1018
+#: src/ftp.c:1075 src/http.c:1502
 #, c-format
 msgid "(try:%2d)"
 msgstr "(試行:%2d)"
 
-#: src/ftp.c:984 src/http.c:1248
+#: src/ftp.c:1139 src/http.c:1753
 #, c-format
-msgid ""
-"%s (%s) - `%s' saved [%ld]\n"
-"\n"
-msgstr ""
-"%s (%s) - `%s' を保存しました [%ld]\n"
-"\n"
+msgid "%s (%s) - `%s' saved [%ld]\n\n"
+msgstr "%s (%s) - `%s' を保存しました [%ld]\n\n"
 
-#: src/ftp.c:1026 src/main.c:753 src/recur.c:472 src/retr.c:564
+#: src/ftp.c:1181 src/main.c:810 src/recur.c:483 src/retr.c:566
 #, c-format
 msgid "Removing %s.\n"
 msgstr "%s を削除しました。\n"
 
-#: src/ftp.c:1067
+#: src/ftp.c:1221
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
 msgstr "一時ファイルをリストするために `%s' を使用します。\n"
 
-#: src/ftp.c:1079
+#: src/ftp.c:1233
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr "`%s' を削除しました。\n"
 
-#: src/ftp.c:1115
+#: src/ftp.c:1269
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr "再帰する深さ %d が最大値を超過しています。深さは %d です。\n"
 
-#: src/ftp.c:1167 src/http.c:1165
+#. Remote file is older, file sizes can be compared and
+#. are both equal.
+#: src/ftp.c:1330
 #, c-format
-msgid ""
-"Server file no newer than local file `%s' -- not retrieving.\n"
-"\n"
-msgstr "サーバ側のファイルよりローカルのファイル `%s' の方が新しいので取得しません。\n\n"
+msgid "Remote file no newer than local file `%s' -- not retrieving.\n"
+msgstr "サーバ側のファイルよりローカルのファイル `%s' の方が新しいか同じなので取得しません。\n"
 
-#: src/ftp.c:1173 src/http.c:1173
+#. Remote file is newer or sizes cannot be matched
+#: src/ftp.c:1337
 #, c-format
-msgid "The sizes do not match (local %ld) -- retrieving.\n"
-msgstr "大きさが合わないので(ローカルは %ld)、転送します。\n"
+msgid "Remote file is newer than local file `%s' -- retrieving.\n\n"
+msgstr "サーバ側のファイルの方がローカルのファイル `%s' より新しいので取得します。\n\n"
 
-#: src/ftp.c:1190
+#. Sizes do not match
+#: src/ftp.c:1344
+#, c-format
+msgid "The sizes do not match (local %ld) -- retrieving.\n\n"
+msgstr "サイズが合わないので(ローカルは %ld)、取得します。\n\n"
+
+#: src/ftp.c:1361
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr "不正なシンボリックリンク名なので、とばします。\n"
 
-#: src/ftp.c:1207
+#: src/ftp.c:1378
 #, c-format
-msgid ""
-"Already have correct symlink %s -> %s\n"
-"\n"
-msgstr ""
-"すでに %s -> %s という正しいシンボリックリンクがあります\n"
-"\n"
+msgid "Already have correct symlink %s -> %s\n\n"
+msgstr "すでに %s -> %s という正しいシンボリックリンクがあります\n\n"
 
-#: src/ftp.c:1215
+#: src/ftp.c:1386
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr "%s -> %s というシンボリックリンクを作成しています\n"
 
-#: src/ftp.c:1226
+#: src/ftp.c:1397
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
-msgstr ""
-"シンボリックリンクに対応していないので、シンボリックリンク `%s' "
-"をとばします。\n"
+msgstr "シンボリックリンクに対応していないので、シンボリックリンク `%s' をとばします。\n"
 
-#: src/ftp.c:1238
+#: src/ftp.c:1409
 #, c-format
 msgid "Skipping directory `%s'.\n"
 msgstr "ディレクトリ `%s' をとばします。\n"
 
-#: src/ftp.c:1247
+#: src/ftp.c:1418
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr "%s: 不明なまたは対応していないファイルの種類です。\n"
 
-#: src/ftp.c:1274
+#: src/ftp.c:1445
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr "%s: 日付が壊れています。\n"
 
-#: src/ftp.c:1295
+#: src/ftp.c:1466
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr "深さが %d (最大 %d)なのでディレクトリを転送しません。\n"
 
-#: src/ftp.c:1334
+#: src/ftp.c:1512
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr "除外されているか含まれていないので `%s' に移動しません。\n"
 
-#: src/ftp.c:1379
+#: src/ftp.c:1559
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr "`%s' を除外します。\n"
@@ -286,17 +339,17 @@ msgstr "`%s' を除外します。\n"
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1426
+#: src/ftp.c:1606
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr "パターン `%s' に適合するものがありません。\n"
 
-#: src/ftp.c:1486
+#: src/ftp.c:1671
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
 msgstr "`%s' [%ld]に対するHTML化された見出し(index)を書きました。\n"
 
-#: src/ftp.c:1491
+#: src/ftp.c:1676
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr "`%s' に対するHTML化された見出し(index)を書きました。\n"
@@ -345,291 +398,267 @@ msgstr "%s: 不正なオプションです -- %c\n"
 msgid "%s: option requires an argument -- %c\n"
 msgstr "%s: オプションは引数を必要とします -- %c\n"
 
-#: src/host.c:438
-#, c-format
-msgid "%s: Cannot determine user-id.\n"
-msgstr "%s: user-idを決定できません。\n"
-
-#: src/host.c:450
-#, c-format
-msgid "%s: Warning: uname failed: %s\n"
-msgstr "%s: 警告: unameに失敗しました: %s\n"
-
-#: src/host.c:462
-#, c-format
-msgid "%s: Warning: gethostname failed\n"
-msgstr "%s: 警告: gethostnameに失敗しました\n"
-
-#: src/host.c:490
-#, c-format
-msgid "%s: Warning: cannot determine local IP address.\n"
-msgstr "%s: 警告: ローカルIPアドレスを決定できません。\n"
-
-#: src/host.c:504
-#, c-format
-msgid "%s: Warning: cannot reverse-lookup local IP address.\n"
-msgstr "%s: 警告: ローカルIPアドレスの逆引きができません。\n"
-
-#. This gets ticked pretty often.  Karl Berry reports
-#. that there can be valid reasons for the local host
-#. name not to be an FQDN, so I've decided to remove the
-#. annoying warning.
-#: src/host.c:517
-#, c-format
-msgid "%s: Warning: reverse-lookup of local address did not yield FQDN!\n"
-msgstr "%s: 警告: ローカルアドレスの逆引き結果がFQDNではありません!\n"
-
-#: src/host.c:545
+#: src/host.c:374
 msgid "Host not found"
 msgstr "ホストが見つかりません"
 
-#: src/host.c:547
+#: src/host.c:376
 msgid "Unknown error"
 msgstr "不明なエラーです"
 
-#: src/html.c:615 src/html.c:617
+#. this is fatal
+#: src/http.c:555
+msgid "Failed to set up an SSL context\n"
+msgstr "SSL contextの準備に失敗しました。\n"
+
+#: src/http.c:561
 #, c-format
-msgid "Index of /%s on %s:%d"
-msgstr "/%s (%s:%d 上)の見出し(index)です"
+msgid "Failed to load certificates from %s\n"
+msgstr "%s からの証明書を読み込みに失敗しました。\n"
 
-#: src/html.c:639
-msgid "time unknown       "
-msgstr "時間が不明です       "
+#: src/http.c:565 src/http.c:573
+msgid "Trying without the specified certificate\n"
+msgstr "指定された証明書なしで試みます。\n"
 
-#: src/html.c:643
-msgid "File        "
-msgstr "ファイル        "
-
-#: src/html.c:646
-msgid "Directory   "
-msgstr "ディレクトリ   "
-
-#: src/html.c:649
-msgid "Link        "
-msgstr "リンク        "
-
-#: src/html.c:652
-msgid "Not sure    "
-msgstr "不確実    "
-
-#: src/html.c:670
+#: src/http.c:569
 #, c-format
-msgid " (%s bytes)"
-msgstr " (%s バイト)"
+msgid "Failed to get certificate key from %s\n"
+msgstr "%s からの証明書の鍵の読み込みに失敗しました。\n"
 
-#: src/http.c:512
-msgid "Failed writing HTTP request.\n"
-msgstr "HTTP による接続要求の送信に失敗しました。\n"
+#: src/http.c:663 src/http.c:1593
+msgid "Unable to establish SSL connection.\n"
+msgstr "SSL による接続が確立できません。\n"
 
-#: src/http.c:516
+#: src/http.c:671
+#, c-format
+msgid "Reusing connection to %s:%hu.\n"
+msgstr "%s:%hu への接続を再利用します。\n"
+
+#: src/http.c:861
+#, c-format
+msgid "Failed writing HTTP request: %s.\n"
+msgstr "HTTP による接続要求の送信に失敗しました: %s\n"
+
+#: src/http.c:866
 #, c-format
 msgid "%s request sent, awaiting response... "
 msgstr "%s による接続要求を送信しました、応答を待っています... "
 
-#: src/http.c:555
+#: src/http.c:910
 msgid "End of file while parsing headers.\n"
 msgstr "ヘッダの解析中に終端まできてしまいました。\n"
 
-#: src/http.c:566
+#: src/http.c:920
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr "ヘッダ内で読み込みエラー(%s)です\n"
 
-#: src/http.c:606
+#: src/http.c:959
 msgid "No data received"
 msgstr "データが受信されませんでした"
 
-#: src/http.c:608
+#: src/http.c:961
 msgid "Malformed status line"
 msgstr "奇妙なステータス行です"
 
-#: src/http.c:613
+#: src/http.c:966
 msgid "(no description)"
 msgstr "(説明なし)"
 
-#. If we have tried it already, then there is not point
-#. retrying it.
-#: src/http.c:697
+#: src/http.c:1089
 msgid "Authorization failed.\n"
 msgstr "認証に失敗しました。\n"
 
-#: src/http.c:704
+#: src/http.c:1096
 msgid "Unknown authentication scheme.\n"
 msgstr "不明な認証形式です。\n"
 
-#: src/http.c:787
+#: src/http.c:1136
 #, c-format
 msgid "Location: %s%s\n"
 msgstr "場所: %s%s\n"
 
-#: src/http.c:788 src/http.c:813
+#: src/http.c:1137 src/http.c:1269
 msgid "unspecified"
 msgstr "特定できません"
 
-#: src/http.c:789
+#: src/http.c:1138
 msgid " [following]"
 msgstr " [続く]"
+
+#: src/http.c:1200
+msgid "\n    The file is already fully retrieved; nothing to do.\n\n"
+msgstr "\n    このファイルは既に全部取得しおわっています。何もすることはありません。\n\n"
+
+#: src/http.c:1216
+#, c-format
+msgid ""
+"\n"
+"Continued download failed on this file, which conflicts with `-c'.\n"
+"Refusing to truncate existing file `%s'.\n"
+"\n"
+msgstr ""
+"\n"
+"途中からのダウンロードに失敗しましたので、`-c'が有効に働きません。\n"
+"既に存在しているファイル `%s' を切りつめはしません。\n"
+"\n"
 
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
-#: src/http.c:803
+#: src/http.c:1259
 msgid "Length: "
 msgstr "長さ: "
 
-#: src/http.c:808
+#: src/http.c:1264
 #, c-format
 msgid " (%s to go)"
 msgstr " (のこり%s)"
 
-#: src/http.c:813
+#: src/http.c:1269
 msgid "ignored"
 msgstr "無視しました"
 
-#: src/http.c:914
+#: src/http.c:1399
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr "警告: HTTPはワイルドカードに対応していません。\n"
 
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:935
+#: src/http.c:1417
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
 msgstr "ファイル `%s' はすでに存在するので、転送しません。\n"
 
-#: src/http.c:1085
+#: src/http.c:1585
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr "`%s' (%s)へ書き込めません。\n"
 
-#: src/http.c:1096
+#: src/http.c:1602
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "エラー: 場所が存在しないリダイレクション(%d)です。\n"
 
-#: src/http.c:1121
+#: src/http.c:1630
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s エラー %d: %s。\n"
 
-#: src/http.c:1134
+#: src/http.c:1642
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr "Last-modified ヘッダがありません -- 日付を無効にします。\n"
 
-#: src/http.c:1142
+#: src/http.c:1650
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr "Last-modified ヘッダが無効です -- 日付を無視します。\n"
 
-#: src/http.c:1177
+#: src/http.c:1673
+#, c-format
+msgid "Server file no newer than local file `%s' -- not retrieving.\n\n"
+msgstr "サーバ側のファイルよりローカルのファイル `%s' の方が新しいので取得しません。\n\n"
+
+#: src/http.c:1680
+#, c-format
+msgid "The sizes do not match (local %ld) -- retrieving.\n"
+msgstr "大きさが合わないので(ローカルは %ld)、転送します。\n"
+
+#: src/http.c:1684
 msgid "Remote file is newer, retrieving.\n"
 msgstr "リモートファイルのほうが新しいので、転送します。\n"
 
-#: src/http.c:1222
+#: src/http.c:1728
 #, c-format
-msgid ""
-"%s (%s) - `%s' saved [%ld/%ld]\n"
-"\n"
-msgstr ""
-"%s (%s) - `%s' を保存しました [%ld/%ld]\n"
-"\n"
+msgid "%s (%s) - `%s' saved [%ld/%ld]\n\n"
+msgstr "%s (%s) - `%s' を保存しました [%ld/%ld]\n\n"
 
-#: src/http.c:1270
+#: src/http.c:1774
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld. "
 msgstr "%s (%s) - %ld バイトで接続が終了しました。 "
 
-#: src/http.c:1278
+#: src/http.c:1782
 #, c-format
-msgid ""
-"%s (%s) - `%s' saved [%ld/%ld])\n"
-"\n"
-msgstr ""
-"%s (%s) - `%s' を保存しました [%ld/%ld])\n"
-"\n"
+msgid "%s (%s) - `%s' saved [%ld/%ld])\n\n"
+msgstr "%s (%s) - `%s' を保存しました [%ld/%ld])\n\n"
 
-#: src/http.c:1298
+#: src/http.c:1801
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld/%ld. "
 msgstr "%s (%s) - %ld/%ld バイトで接続が終了しました。 "
 
-#: src/http.c:1309
+#: src/http.c:1812
 #, c-format
 msgid "%s (%s) - Read error at byte %ld (%s)."
 msgstr "%s (%s) - %ld バイトで読み込みエラーです (%s)。"
 
-#: src/http.c:1317
+#: src/http.c:1820
 #, c-format
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr "%s (%s) - %ld/%ld バイトで読み込みエラーです (%s)。 "
 
-#: src/init.c:329 src/netrc.c:260
+#: src/init.c:349 src/netrc.c:267
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: %s (%s)を読み込めません。\n"
 
-#: src/init.c:347 src/init.c:353
+#: src/init.c:367 src/init.c:373
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: %s 内の %d 行でエラーです\n"
 
-#: src/init.c:384
+#: src/init.c:405
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: 警告: システムとユーザのwgetrcの両方が `%s' を指定しています。\n"
 
-#: src/init.c:476
+#: src/init.c:497
 #, c-format
 msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr "%s: バグ: `%s' は不明な命令です、値は `%s' です。\n"
 
-#: src/init.c:497
+#: src/init.c:529
 #, c-format
 msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
 msgstr "%s: %s: `%s' をIPアドレスに変換できません。\n"
 
-#: src/init.c:525
+#: src/init.c:559
 #, c-format
 msgid "%s: %s: Please specify on or off.\n"
 msgstr "%s: %s: onかoffかを指定してください。\n"
 
-#: src/init.c:569
+#: src/init.c:603
 #, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr "%s: %s: always, on, offまたはneverのいずれかを指定してください。\n"
 
-#: src/init.c:588 src/init.c:845 src/init.c:867 src/init.c:931
+#: src/init.c:622 src/init.c:919 src/init.c:941 src/init.c:1005
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: 無効な指定 `%s' です。\n"
 
-#: src/init.c:701 src/init.c:723 src/init.c:745 src/init.c:771
+#: src/init.c:775 src/init.c:797 src/init.c:819 src/init.c:845
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: 無効な指定 `%s' です。\n"
 
-#: src/main.c:106
+#: src/main.c:120
 #, c-format
 msgid "Usage: %s [OPTION]... [URL]...\n"
 msgstr "使い方: %s [オプション]... [URL]...\n"
 
-#: src/main.c:114
+#: src/main.c:128
 #, c-format
 msgid "GNU Wget %s, a non-interactive network retriever.\n"
 msgstr "GNU Wget %s, 非対話的ネットワーク転送ソフト\n"
 
 #. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
 #. don't bitch.  Also, it makes translation much easier.
-#: src/main.c:119
-msgid ""
-"\n"
-"Mandatory arguments to long options are mandatory for short options too.\n"
-"\n"
-msgstr ""
-"\n"
-"長いオプションで不可欠な引数は短いオプションでも不可欠です。\n"
-"\n"
+#: src/main.c:133
+msgid "\nMandatory arguments to long options are mandatory for short options too.\n\n"
+msgstr "\n長いオプションで不可欠な引数は短いオプションでも不可欠です。\n\n"
 
-#: src/main.c:122
+#: src/main.c:137
 msgid ""
 "Startup:\n"
 "  -V,  --version           display the version of Wget and exit.\n"
@@ -645,7 +674,7 @@ msgstr ""
 "  -e,  --execute=COMMAND   `.wgetrc' コマンドを実行します。\n"
 "\n"
 
-#: src/main.c:128
+#: src/main.c:144
 msgid ""
 "Logging and input file:\n"
 "  -o,  --output-file=FILE     log messages to FILE.\n"
@@ -657,9 +686,11 @@ msgid ""
 "  -i,  --input-file=FILE      download URLs found in FILE.\n"
 "  -F,  --force-html           treat input file as HTML.\n"
 "  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
+"       --sslcertfile=FILE     optional client certificate.\n"
+"       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
 "\n"
 msgstr ""
-"ログインと入力ファイル:\n"
+"ログと入力ファイル:\n"
 "  -o,  --output-file=FILE     FILE にログメッセージを書き込みます。\n"
 "  -a,  --append-output=FILE   FILE にメッセージを追加します。\n"
 "  -d,  --debug                デバッグ情報を表示します。\n"
@@ -669,27 +700,25 @@ msgstr ""
 "  -i,  --input-file=FILE      URLをファイルから読み込みます。\n"
 "  -F,  --force-html           入力ファイルをHTMLとして扱います。\n"
 "  -B,  --base=URL             -iで読んだ相対URLの先頭にURLを追加します。\n"
+"       --sslcertfile=FILE     クライアント証明書を FILE に指定。\n"
+"       --sslcertkey=KEYFILE   クライアント証明書の鍵を KEYFILE に指定。\n"
 "\n"
 
-#: src/main.c:139
+#: src/main.c:158
 msgid ""
 "Download:\n"
-"       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local "
-"host.\n"
-"  -t,  --tries=NUMBER           set number of retries to NUMBER (0 "
-"unlimits).\n"
+"       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n"
+"  -t,  --tries=NUMBER           set number of retries to NUMBER (0 unlimits).\n"
 "  -O   --output-document=FILE   write documents to FILE.\n"
-"  -nc, --no-clobber             don't clobber existing files or use .# "
-"suffixes.\n"
-"  -c,  --continue               restart getting an existing file.\n"
+"  -nc, --no-clobber             don't clobber existing files or use .# suffixes.\n"
+"  -c,  --continue               resume getting a partially-downloaded file.\n"
 "       --dot-style=STYLE        set retrieval display style.\n"
-"  -N,  --timestamping           don't retrieve files if older than local.\n"
+"  -N,  --timestamping           don't re-retrieve files unless newer than local.\n"
 "  -S,  --server-response        print server response.\n"
 "       --spider                 don't download anything.\n"
 "  -T,  --timeout=SECONDS        set the read timeout to SECONDS.\n"
 "  -w,  --wait=SECONDS           wait SECONDS between retrievals.\n"
-"       --waitretry=SECONDS      wait 1...SECONDS between retries of a "
-"retrieval.\n"
+"       --waitretry=SECONDS      wait 1...SECONDS between retries of a retrieval.\n"
 "  -Y,  --proxy=on/off           turn proxy on or off.\n"
 "  -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n"
 "\n"
@@ -700,26 +729,25 @@ msgstr ""
 "  -O   --output-document=FILE   FILE に文書を出力します。\n"
 "  -nc, --no-clobber             既存のファイルを消去しません。\n"
 "  -c,  --continue               既にあるファイルの続きから転送を行います。\n"
-"       --dot-style=STYLE        ディスプレー形式を指定します。\n"
+"       --dot-style=STYLE        ダウンロードの経過表示形式を指定します。\n"
 "  -N,  --timestamping           ローカルより古いファイルは転送しません。\n"
 "  -S,  --server-response        サーバの応答を表示します。\n"
 "       --spider                 何もダウンロードしません。\n"
-"  -T,  --timeout=SECONDS        読み込みタイムアウト時間をSECONDSにします。\n"
-"  -w,  --wait=SECONDS           転送ごとに SECONDS 間待ちます。\n"
-"       --waitretry=SECONDS      試行ごとに 1...SECONDS 間待ちます。\n"
-"  -Y,  --proxy=on/off           代理サーバ(proxy)をon/offにします。\n"
+"  -T,  --timeout=SECONDS        読み込みタイムアウト時間を SECONDS 秒にします。\n"
+"  -w,  --wait=SECONDS           転送ごとに SECONDS 秒待ちます。\n"
+"       --waitretry=SECONDS      再試行ごとに 1...SECONDS 秒待ちます。\n"
+"  -Y,  --proxy=on/off           代理サーバ(proxy)をon/offします。\n"
 "  -Q,  --quota=NUMBER           容量制限(quota)を NUMBER にします。\n"
 "\n"
 
-#: src/main.c:155
+#: src/main.c:175
 msgid ""
 "Directories:\n"
 "  -nd  --no-directories            don't create directories.\n"
 "  -x,  --force-directories         force creation of directories.\n"
 "  -nH, --no-host-directories       don't create host directories.\n"
 "  -P,  --directory-prefix=PREFIX   save files to PREFIX/...\n"
-"       --cut-dirs=NUMBER           ignore NUMBER remote directory "
-"components.\n"
+"       --cut-dirs=NUMBER           ignore NUMBER remote directory components.\n"
 "\n"
 msgstr ""
 "ディレクトリ:\n"
@@ -731,15 +759,13 @@ msgstr ""
 "                                   コンポーネントを無視します。\n"
 "\n"
 
-#: src/main.c:162
+#: src/main.c:183
 msgid ""
 "HTTP options:\n"
 "       --http-user=USER      set http user to USER.\n"
 "       --http-passwd=PASS    set http password to PASS.\n"
-"  -C,  --cache=on/off        (dis)allow server-cached data (normally "
-"allowed).\n"
-"  -E,  --html-extension      save all text/html documents with .html "
-"extension.\n"
+"  -C,  --cache=on/off        (dis)allow server-cached data (normally allowed).\n"
+"  -E,  --html-extension      save all text/html documents with .html extension.\n"
 "       --ignore-length       ignore `Content-Length' header field.\n"
 "       --header=STRING       insert STRING among the headers.\n"
 "       --proxy-user=USER     set USER as proxy username.\n"
@@ -747,6 +773,10 @@ msgid ""
 "       --referer=URL         include `Referer: URL' header in HTTP request.\n"
 "  -s,  --save-headers        save the HTTP headers to file.\n"
 "  -U,  --user-agent=AGENT    identify as AGENT instead of Wget/VERSION.\n"
+"       --no-http-keep-alive  disable HTTP keep-alive (persistent connections).\n"
+"       --cookies=off         don't use cookies.\n"
+"       --load-cookies=FILE   load cookies from FILE before session.\n"
+"       --save-cookies=FILE   save cookies to FILE after session.\n"
 "\n"
 msgstr ""
 "HTTPオプション:\n"
@@ -763,68 +793,62 @@ msgstr ""
 "  -s,  --save-headers        HTTPヘッダをファイルに保存します。\n"
 "  -U,  --user-agent=AGENT    User Agentとして、`Wget/バージョン番号'の代りに\n"
 "                             AGENT を使用します。\n"
+"       --no-http-keep-alive  HTTPの keep-alive 機能を禁止します。\n"
+"       --cookies=off         クッキーを使用しません。\n"
+"       --load-cookies=FILE   セッション前にクッキーを FILE から読み込みます。\n"
+"       --save-cookies=FILE   セッション後にクッキーを FILE に書き込みます。\n"
 "\n"
 
-#: src/main.c:175
+#: src/main.c:201
 msgid ""
 "FTP options:\n"
-"       --retr-symlinks   when recursing, retrieve linked-to files (not "
-"dirs).\n"
-"  -g,  --glob=on/off     turn file name globbing on or off.\n"
-"       --passive-ftp     use the \"passive\" transfer mode.\n"
+"  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
+"  -g,  --glob=on/off           turn file name globbing on or off.\n"
+"       --passive-ftp           use the \"passive\" transfer mode.\n"
+"       --retr-symlinks         when recursing, get linked-to files (not dirs).\n"
 "\n"
 msgstr ""
 "FTPオプション:\n"
-"       --retr-symlinks   再帰転送時、FTPのシンボリックリンクを転送します。\n"
-"  -g,  --glob=on/off     ファイル名のglobbingをオンまたはオフにします。\n"
-"       --passive-ftp     \"passive\" 転送モードを使用します。\n"
+"  -nr, --dont-remove-listing   `.listing' を消さずに残します。\n"
+"  -g,  --glob=on/off           ファイル名のglobbingをオンまたはオフにします。\n"
+"       --passive-ftp           \"passive\" 転送モードを使用します。\n"
+"       --retr-symlinks         再帰転送時、FTPのシンボリックリンクを転送します。\n"
 "\n"
 
-#: src/main.c:180
+#: src/main.c:208
 msgid ""
 "Recursive retrieval:\n"
-"  -r,  --recursive             recursive web-suck -- use with care!.\n"
-"  -l,  --level=NUMBER          maximum recursion depth (inf or 0 for "
-"infinite).\n"
-"       --delete-after          delete files locally after downloading them.\n"
-"  -k,  --convert-links         convert non-relative links to relative.\n"
-"  -K,  --backup-converted      before converting file X, back up as X.orig.\n"
-"  -m,  --mirror                shortcut option equivalent to -r -N -l inf "
-"-nr.\n"
-"  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
-"  -p,  --page-requisites       get all images, etc. needed to display HTML "
-"page.\n"
+"  -r,  --recursive          recursive web-suck -- use with care!\n"
+"  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n"
+"       --delete-after       delete files locally after downloading them.\n"
+"  -k,  --convert-links      convert non-relative links to relative.\n"
+"  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
+"  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"
+"  -p,  --page-requisites    get all images, etc. needed to display HTML page.\n"
 "\n"
 msgstr ""
 "再帰的転送:\n"
 "  -r,  --recursive             ウェブを再帰的に転送します\n"
 "                               -- 注意して使用してください!\n"
 "  -l,  --level=NUMBER          再帰する深さを指定します(0は無制限)。\n"
-"       --delete-after          ダウンロードしたファイルを削除します。\n"
+"       --delete-after          ダウンロードしたファイルをダウンロード後、削除します。\n"
 "  -k,  --convert-links         非相対リンクを相対リンクに変換します。\n"
 "  -K,  --backup-converted      Xの変換前にX.origというバックアップを作ります。\n"
-"  -m,  --mirror                ミラーに適したオプションで動作します。\n"
-"  -nr, --dont-remove-listing   `.listing' ファイルを削除しません。\n"
+"  -m,  --mirror                ミラーに適したオプション(-r -N -l 0 -nr)で動作します。\n"
 "  -p,  --page-requisites       HTMLページを表示するのに必要な画像等、\n"
 "                               必要なものを一緒に取得します。\n"
 "\n"
 
-#: src/main.c:190
+#: src/main.c:218
 msgid ""
 "Recursive accept/reject:\n"
-"  -A,  --accept=LIST                comma-separated list of accepted "
-"extensions.\n"
-"  -R,  --reject=LIST                comma-separated list of rejected "
-"extensions.\n"
-"  -D,  --domains=LIST               comma-separated list of accepted "
-"domains.\n"
-"       --exclude-domains=LIST       comma-separated list of rejected "
-"domains.\n"
+"  -A,  --accept=LIST                comma-separated list of accepted extensions.\n"
+"  -R,  --reject=LIST                comma-separated list of rejected extensions.\n"
+"  -D,  --domains=LIST               comma-separated list of accepted domains.\n"
+"       --exclude-domains=LIST       comma-separated list of rejected domains.\n"
 "       --follow-ftp                 follow FTP links from HTML documents.\n"
-"       --follow-tags=LIST           comma-separated list of followed HTML "
-"tags.\n"
-"  -G,  --ignore-tags=LIST           comma-separated list of ignored HTML "
-"tags.\n"
+"       --follow-tags=LIST           comma-separated list of followed HTML tags.\n"
+"  -G,  --ignore-tags=LIST           comma-separated list of ignored HTML tags.\n"
 "  -H,  --span-hosts                 go to foreign hosts when recursive.\n"
 "  -L,  --relative                   follow relative links only.\n"
 "  -I,  --include-directories=LIST   list of allowed directories.\n"
@@ -849,24 +873,24 @@ msgstr ""
 "  -np, --no-parent                  親ディレクトリに移動しません。\n"
 "\n"
 
-#: src/main.c:205
+#: src/main.c:234
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr "バグ報告や提案は<bug-wget@gnu.org>へ\n"
 
-#: src/main.c:384
+#: src/main.c:420
 #, c-format
 msgid "%s: debug support not compiled in.\n"
 msgstr "%s: デバックに対応するようにコンパイルされていません。\n"
 
-#: src/main.c:436
+#: src/main.c:472
 msgid ""
-"Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.\n"
+"Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.\n"
 "This program is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 msgstr ""
-"Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.\n"
+"Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.\n"
 "This program is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
@@ -874,54 +898,52 @@ msgstr ""
 "\n"
 "以下は参考訳です。法的には上の英文に従います。\n"
 "\n"
-"Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.\n"
+"Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.\n"
 "このプログラムは有用と思われますが無保証です。\n"
 "商業性や特定の目的に合致するかの暗黙の保証もありません。\n"
 "詳細はGNU一般公用使用許諾をご覧下さい。\n"
 
-#: src/main.c:442
-msgid ""
-"\n"
-"Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
+#: src/main.c:478
+msgid "\nOriginally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
 msgstr "\nHrvoje Niksic <hniksic@arsdigita.com>によって書かれました。\n"
 
-#: src/main.c:516
+#: src/main.c:569
 #, c-format
 msgid "%s: %s: invalid command\n"
 msgstr "%s: %s: 無効なコマンドです\n"
 
-#: src/main.c:569
+#: src/main.c:625
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: `-n%c' は不正なオプション指定です\n"
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:572 src/main.c:614 src/main.c:672
+#: src/main.c:628 src/main.c:670 src/main.c:728
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "詳しいオプションは `%s --help' を実行してください。\n"
 
-#: src/main.c:652
+#: src/main.c:708
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "出力を詳細にするオプションと出力を抑制するオプションを同時には指定できません\n"
 
-#: src/main.c:658
+#: src/main.c:714
 msgid "Can't timestamp and not clobber old files at the same time.\n"
-msgstr "古いファイルに日付を付けなおすことと古いファイルを消去しないことを同時には行えません。\n"
+msgstr "-Nと-ncとを同時には指定できません。\n"
 
 #. No URL specified.
-#: src/main.c:667
+#: src/main.c:723
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: URLがありません\n"
 
-#: src/main.c:768
+#: src/main.c:825
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "%s にはURLがありません。\n"
 
-#: src/main.c:777
+#: src/main.c:834
 #, c-format
 msgid ""
 "\n"
@@ -932,18 +954,19 @@ msgstr ""
 "終了しました --%s--\n"
 "ダウンロード: %s バイト(ファイル数 %d)\n"
 
-#: src/main.c:785
+#: src/main.c:842
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "容量制限(%s バイトのquota)を超過します!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:812
+#: src/main.c:876
+#, c-format
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "%s を受信しました、`%%s' に出力をリダイレクトします。\n"
 
-#: src/mswindows.c:123
+#: src/mswindows.c:89
 #, c-format
 msgid ""
 "\n"
@@ -957,144 +980,123 @@ msgstr ""
 "CTRL+ALT+DELETE を押せば、Wget を停止できます。\n"
 
 #. parent, no error
-#: src/mswindows.c:140 src/utils.c:269
+#: src/mswindows.c:106 src/utils.c:458
 msgid "Continuing in background.\n"
 msgstr "バックグラウンドで継続します。\n"
 
-#: src/mswindows.c:142 src/utils.c:271
+#: src/mswindows.c:108 src/utils.c:460
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "出力を `%s' に書き込みます。\n"
 
-#: src/mswindows.c:232
+#: src/mswindows.c:188
 #, c-format
 msgid "Starting WinHelp %s\n"
 msgstr "WinHelp %s を開始します。\n"
 
-#: src/mswindows.c:259 src/mswindows.c:267
+#: src/mswindows.c:215 src/mswindows.c:222
 #, c-format
 msgid "%s: Couldn't find usable socket driver.\n"
 msgstr "%s: 使用可能なソケットドライバを見つけられません。\n"
 
-#: src/netrc.c:359
+#: src/netrc.c:367
 #, c-format
 msgid "%s: %s:%d: warning: \"%s\" token appears before any machine name\n"
-msgstr ""
-"%s: %s:%d: 警告: 区切り記号(token) \"%s\" "
-"はすべてのマシン名の前に現われます\n"
+msgstr "%s: %s:%d: 警告: 区切り記号(token) \"%s\" はすべてのマシン名の前に現われます\n"
 
-#: src/netrc.c:390
+#: src/netrc.c:398
 #, c-format
 msgid "%s: %s:%d: unknown token \"%s\"\n"
 msgstr "%s: %s:%d: \"%s\" は不明な区切り記号(token)です\n"
 
-#: src/netrc.c:454
+#: src/netrc.c:462
 #, c-format
 msgid "Usage: %s NETRC [HOSTNAME]\n"
 msgstr "使い方: %s NETRC [ホスト名]\n"
 
-#: src/netrc.c:464
+#: src/netrc.c:472
 #, c-format
 msgid "%s: cannot stat %s: %s\n"
 msgstr "%s: %sの情報を取得できません: %s\n"
 
-#: src/recur.c:473
+#: src/recur.c:484
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
 msgstr "拒否すべきなので、%s を削除しました。\n"
 
-#: src/recur.c:634
+#: src/recur.c:679
 msgid "Loading robots.txt; please ignore errors.\n"
 msgstr "robots.txtを読み込んでいます、エラーは無視してください。\n"
 
-#: src/retr.c:201
+#: src/retr.c:227
 #, c-format
-msgid ""
-"\n"
-"          [ skipping %dK ]"
-msgstr ""
-"\n"
-"          [ %dK とばします ]"
+msgid "\n          [ skipping %dK ]"
+msgstr "\n          [ %dK とばします ]"
 
-#: src/retr.c:384
+#: src/retr.c:373
 msgid "Could not find proxy host.\n"
 msgstr "代理ホスト(proxy host)が見つかりません。\n"
 
-#: src/retr.c:397
+#: src/retr.c:387
 #, c-format
 msgid "Proxy %s: Must be HTTP.\n"
 msgstr "代理サーバ(proxy) %s: HTTPである必要があります。\n"
 
-#: src/retr.c:476
-#, c-format
-msgid "%s: Redirection to itself.\n"
-msgstr "%s: 自分自身へのリダイレクションです。\n"
-
-#: src/retr.c:490
+#: src/retr.c:481
 #, c-format
 msgid "%s: Redirection cycle detected.\n"
 msgstr "%s: リダイレクションのサイクルが検出されました。\n"
 
-#: src/retr.c:585
-msgid ""
-"Giving up.\n"
-"\n"
-msgstr ""
-"中止しました。\n"
-"\n"
+#: src/retr.c:587
+msgid "Giving up.\n\n"
+msgstr "中止しました。\n\n"
 
-#: src/retr.c:585
-msgid ""
-"Retrying.\n"
-"\n"
-msgstr ""
-"再試行しています。\n"
-"\n"
+#: src/retr.c:587
+msgid "Retrying.\n\n"
+msgstr "再試行しています。\n\n"
 
-#: src/url.c:983
-#, c-format
-msgid "Error (%s): Link %s without a base provided.\n"
-msgstr "エラー (%s): %s というリンクに対するベースが与えられていません。\n"
-
-#: src/url.c:999
-#, c-format
-msgid "Error (%s): Base %s relative, without referer URL.\n"
-msgstr ""
-"エラー(%s): Base URL %s が相対指定で、参照するURL(Referer)が存在しません。\n"
-
-#: src/url.c:1540
+#: src/url.c:1329
 #, c-format
 msgid "Converting %s... "
 msgstr "%s を変換しています... "
 
-#: src/url.c:1545 src/url.c:1632
+#: src/url.c:1342
+msgid "nothing to do.\n"
+msgstr "なにもすることはありません。\n"
+
+#: src/url.c:1350 src/url.c:1374
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "%s 内のリンクを変換できません: %s\n"
 
-#: src/url.c:1608
+#: src/url.c:1365
+#, c-format
+msgid "Unable to delete `%s': %s\n"
+msgstr "`%s' の削除に失敗しました: %s\n"
+
+#: src/url.c:1555
 #, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "%s のバックアップ %s が作れません: %s\n"
 
-#: src/utils.c:72
+#: src/utils.c:94
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: 十分なメモリがありません。\n"
 
-#: src/utils.c:204
+#: src/utils.c:417
 msgid "Unknown/unsupported protocol"
 msgstr "不明な、または対応していないプロトコルです"
 
-#: src/utils.c:207
+#: src/utils.c:420
 msgid "Invalid port specification"
 msgstr "無効なポート番号です"
 
-#: src/utils.c:210
+#: src/utils.c:423
 msgid "Invalid host name"
 msgstr "無効なホスト名です"
 
-#: src/utils.c:431
+#: src/utils.c:620
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "シンボリックリンク `%s' の削除に失敗しました: %s\n"

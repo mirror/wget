@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU wget 1.7\n"
 "POT-Creation-Date: 2001-06-03 15:27+0200\n"
-"PO-Revision-Date: 2001-06-06 20:16+02:00\n"
+"PO-Revision-Date: 2001-06-19 10:01+02:00\n"
 "Last-Translator: Toomas Soome <tsoome@ut.ee>\n"
 "Language-Team: Estonian <et@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -546,11 +546,11 @@ msgstr "%s VIGA %d: %s.\n"
 
 #: src/http.c:1642
 msgid "Last-modified header missing -- time-stamps turned off.\n"
-msgstr "Last-modified päist pole -- ei kasuta aja-stampe.\n"
+msgstr "Last-modified päist pole -- ei kasuta ajatempleid.\n"
 
 #: src/http.c:1650
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
-msgstr "Last-modified päis on vigane -- ignoreerin aja-stampi.\n"
+msgstr "Last-modified päis on vigane -- ignoreerin ajatemplit.\n"
 
 #: src/http.c:1673
 #, c-format

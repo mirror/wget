@@ -2,11 +2,13 @@
 # Copyright (C) 1998 Free Software Foundation, Inc.
 # Keld Jørn Simonsen <keld@dkuug.dk>, 2000, 2001.
 #
+# Reviewed: 2001-10-20 Thorbjoern Ravn Andersen <ravn@unixsnedkeren.dk>
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.7\n"
+"Project-Id-Version: wget 1.7.1-pre1\n"
 "POT-Creation-Date: 2001-06-03 15:27+0200\n"
-"PO-Revision-Date: 2001-06-14 22:53-0200\n"
+"PO-Revision-Date: 2001-10-26 19:53-0200\n"
 "Last-Translator: Keld Jørn Simonsen <keld@dkuug.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
 "MIME-Version: 1.0\n"
@@ -25,12 +27,12 @@ msgstr "Syntaksfejl i Set-Cookie ved tegnet '%c'.\n"
 
 #: src/cookies.c:620
 msgid "Syntax error in Set-Cookie: premature end of string.\n"
-msgstr "Syntaksfejl i Set-Cookie: for tidlig slut på streng.\n"
+msgstr "Syntaksfejl i Set-Cookie: streng afsluttet for tidligt.\n"
 
 #: src/cookies.c:1352
 #, c-format
 msgid "Cannot open cookies file `%s': %s\n"
-msgstr "Kan ikke åbne infokagefil i %s: %s\n"
+msgstr "Kan ikke åbne infokagefil %s: %s\n"
 
 #: src/cookies.c:1364
 #, c-format
@@ -44,7 +46,7 @@ msgstr "Fejl ved lukning af '%s': %s\n"
 
 #: src/ftp-ls.c:787
 msgid "Unsupported listing type, trying Unix listing parser.\n"
-msgstr "Uunderstøttet listningstype, prøver Unix listningsfortolker.\n"
+msgstr "Ikke-understøttet listningstype, prøver Unix-listningsfortolker.\n"
 
 #: src/ftp-ls.c:832 src/ftp-ls.c:834
 #, c-format
@@ -101,11 +103,11 @@ msgstr "Logger ind som %s ... "
 #: src/ftp.c:203 src/ftp.c:256 src/ftp.c:288 src/ftp.c:336 src/ftp.c:429
 #: src/ftp.c:481 src/ftp.c:575 src/ftp.c:648 src/ftp.c:709 src/ftp.c:757
 msgid "Error in server response, closing control connection.\n"
-msgstr "Fejl i svar fra tjener, lukker kontrolforbindelsen.\n"
+msgstr "Fejl i svar fra server, lukker kontrolforbindelsen.\n"
 
 #: src/ftp.c:211
 msgid "Error in server greeting.\n"
-msgstr "Fejl i besked fra tjener.\n"
+msgstr "Fejl i velkomsthilsen fra server.\n"
 
 #: src/ftp.c:219 src/ftp.c:345 src/ftp.c:438 src/ftp.c:490 src/ftp.c:585
 #: src/ftp.c:658 src/ftp.c:719 src/ftp.c:767
@@ -114,7 +116,7 @@ msgstr "Fejl ved skrivning, lukker kontrolforbindelsen.\n"
 
 #: src/ftp.c:226
 msgid "The server refuses login.\n"
-msgstr "Tjeneren tillader ikke indlogging.\n"
+msgstr "Serveren tillader ikke indlogning.\n"
 
 #: src/ftp.c:233
 msgid "Login incorrect.\n"
@@ -161,7 +163,7 @@ msgstr "==> CWD ikke nødvendig.\n"
 
 #: src/ftp.c:497
 msgid "Cannot initiate PASV transfer.\n"
-msgstr "Kan ikke opsætte PASV-overføring.\n"
+msgstr "Kan ikke opsætte PASV-overførsel.\n"
 
 #: src/ftp.c:501
 msgid "Cannot parse PASV response.\n"
@@ -212,7 +214,7 @@ msgstr " [%s tilbage]"
 
 #: src/ftp.c:871
 msgid " (unauthoritative)\n"
-msgstr " (ubekræftet)\n"
+msgstr " (ikke endegyldigt)\n"
 
 #: src/ftp.c:898
 #, c-format
@@ -226,16 +228,16 @@ msgstr "%s (%s) - dataforbindelse: %s; "
 
 #: src/ftp.c:923
 msgid "Control connection closed.\n"
-msgstr "Forbindelsen brudt.\n"
+msgstr "Forbindelsen lukket.\n"
 
 #: src/ftp.c:941
 msgid "Data transfer aborted.\n"
-msgstr "Dataoverførsel brudt.\n"
+msgstr "Dataoverførsel afbrudt.\n"
 
 #: src/ftp.c:1005
 #, c-format
 msgid "File `%s' already there, not retrieving.\n"
-msgstr "File '%s' eksisterer allerede, ignoreres.\n"
+msgstr "File '%s' eksisterer allerede, hentes ikke.\n"
 
 #: src/ftp.c:1075 src/http.c:1502
 #, c-format
@@ -255,7 +257,7 @@ msgstr "Fjerner %s.\n"
 #: src/ftp.c:1221
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
-msgstr "Bruger '%s' som temporær katalogliste.\n"
+msgstr "Bruger '%s' som midlertidig katalogliste.\n"
 
 #: src/ftp.c:1233
 #, c-format
@@ -288,7 +290,7 @@ msgstr "Størrelserne er forskellige (lokal %ld) - hentes.\n"
 
 #: src/ftp.c:1361
 msgid "Invalid name of the symlink, skipping.\n"
-msgstr "Ugyldig navn for symbolsk lænke, ignoreres.\n"
+msgstr "Ugyldigt navn for symbolsk lænke, ignoreres.\n"
 
 #: src/ftp.c:1378
 #, c-format
@@ -346,12 +348,12 @@ msgstr "Ingenting passer med mønstret '%s'.\n"
 #: src/ftp.c:1671
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
-msgstr "Skrev HTML-formatteret indeks til '%s' [%ld].\n"
+msgstr "Skrev HTML-formateret indeks til '%s' [%ld].\n"
 
 #: src/ftp.c:1676
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
-msgstr "Skrev HTML-formatteret indeks til '%s'.\n"
+msgstr "Skrev HTML-formateret indeks til '%s'.\n"
 
 #: src/getopt.c:454
 #, c-format
@@ -389,7 +391,7 @@ msgstr "%s: ukendt flag '%c%s'\n"
 #: src/getopt.c:563
 #, c-format
 msgid "%s: illegal option -- %c\n"
-msgstr "%s: ugyldig flag -- %c\n"
+msgstr "%s: ugyldigt flag -- %c\n"
 
 #. 1003.2 specifies the format of this message.
 #: src/getopt.c:602
@@ -399,7 +401,7 @@ msgstr "%s: flaget kræver et argument -- %c\n"
 
 #: src/host.c:374
 msgid "Host not found"
-msgstr "Tjener ikke fundet"
+msgstr "Vært ikke fundet"
 
 #: src/host.c:376
 msgid "Unknown error"
@@ -408,7 +410,7 @@ msgstr "Ukendt fejl"
 #. this is fatal
 #: src/http.c:555
 msgid "Failed to set up an SSL context\n"
-msgstr "Kunne ikke opsætte en SSL-omgivelse\n"
+msgstr "Kunne ikke opsætte et SSL-miljø\n"
 
 #: src/http.c:561
 #, c-format
@@ -441,7 +443,7 @@ msgstr "Fejl ved skrivning af HTTP-forespørgsel: %s.\n"
 #: src/http.c:866
 #, c-format
 msgid "%s request sent, awaiting response... "
-msgstr "%s forespørgsel sendt, modtager toptekster... "
+msgstr "%s forespørgsel sendt, afventer svar... "
 
 #: src/http.c:910
 msgid "End of file while parsing headers.\n"
@@ -458,7 +460,7 @@ msgstr "Ingen data modtaget"
 
 #: src/http.c:961
 msgid "Malformed status line"
-msgstr "Fejl i statuslinje"
+msgstr "Forkert udformet statuslinje"
 
 #: src/http.c:966
 msgid "(no description)"
@@ -479,7 +481,7 @@ msgstr "Sted: %s%s\n"
 
 #: src/http.c:1137 src/http.c:1269
 msgid "unspecified"
-msgstr "uangivet"
+msgstr "uspecificeret"
 
 #: src/http.c:1138
 msgid " [following]"
@@ -487,7 +489,7 @@ msgstr " [omdirigeret]"
 
 #: src/http.c:1200
 msgid "\n    The file is already fully retrieved; nothing to do.\n\n"
-msgstr "\n    Filen er allerede fuldstændigt hentet; ingenting at gøre.\n\n"
+msgstr "\n    Filen er allerede fuldt overført; ingen handling nødvendig.\n\n"
 
 #: src/http.c:1216
 #, c-format
@@ -498,7 +500,7 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"Fortsat nedhentning mislykkedes for denne fil, hvilket er i modsætning til '-c'.\n"
+"Fortsat hentning mislykkedes for denne fil, hvilket er i modsætning til '-c'.\n"
 "Nægter at afkorte eksisterende fil '%s'.\n"
 "\n"
 
@@ -564,7 +566,7 @@ msgstr "Størrelserne er forskellige (lokal %ld) - hentes.\n"
 
 #: src/http.c:1684
 msgid "Remote file is newer, retrieving.\n"
-msgstr "Fil på tjener er nyere - hentes.\n"
+msgstr "Fil på server er nyere - hentes.\n"
 
 #: src/http.c:1728
 #, c-format
@@ -574,7 +576,7 @@ msgstr "%s (%s) - '%s' gemt [%ld/%ld]\n\n"
 #: src/http.c:1774
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld. "
-msgstr "%s (%s) - Forbindelse brudt ved byte %ld. "
+msgstr "%s (%s) - Forbindelse lukket ved byte %ld. "
 
 #: src/http.c:1782
 #, c-format
@@ -584,7 +586,7 @@ msgstr "%s (%s) - '%s' gemt [%ld/%ld]\n\n"
 #: src/http.c:1801
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld/%ld. "
-msgstr "%s (%s) - Forbindelse brudt ved byte %ld/%ld. "
+msgstr "%s (%s) - Forbindelse lukket ved byte %ld/%ld. "
 
 #: src/http.c:1812
 #, c-format
@@ -614,7 +616,7 @@ msgstr "%s: Advarsel: Både systemets og brugerens wgetrc peger på '%s'.\n"
 #: src/init.c:497
 #, c-format
 msgid "%s: BUG: unknown command `%s', value `%s'.\n"
-msgstr "%s: Ukendt kommando '%s', værdi '%s'.\n"
+msgstr "%s: FEJL: Ukendt kommando '%s', værdi '%s'.\n"
 
 #: src/init.c:529
 #, c-format
@@ -695,14 +697,14 @@ msgid ""
 msgstr ""
 "Udskrifter og indlæsning:\n"
 "  -o,  --output-file=FIL      skriv beskeder til FIL.\n"
-"  -a,  --append-output=FIL    skriv beskeder på slutningen af FIL.\n"
+"  -a,  --append-output=FIL    tilføj beskeder til slutningen af FIL.\n"
 "  -d,  --debug                skriv fejlfindingsinformation.\n"
 "  -q,  --quiet                stille (ingen udskrifter).\n"
 "  -v,  --verbose              vær udførlig (standard).\n"
 "  -nv, --non-verbose          mindre udførlig, men ikke stille.\n"
 "  -i,  --input-file=FIL       læs URLer fra FIL.\n"
 "  -F,  --force-html           læs inddatafil som HTML.\n"
-"  -B,  --base=URL             foranstiller URL til relative henvisninger i -F -i fil.\n"
+"  -B,  --base=URL             foranstiller URL til relative lænker i -F -i fil.\n"
 "       --sslcertfile=FIL      valgbart klient-certifikat.\n"
 "       --sslcertkey=NØGLEFIL  valgbar nøglefil for dette certifikat.\n"
 "\n"
@@ -726,12 +728,12 @@ msgid ""
 "  -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n"
 "\n"
 msgstr ""
-"Nedlasting:\n"
+"Hentning:\n"
 "       --bind-address=ADRESSE   bind til ADRESSE (værtsnavn eller IP) på lokal vært.\n"
 "  -t,  --tries=ANTAL            maksimalt antal forsøg (0 for uendelig).\n"
-"  -O   --output-document=FIL    skriv nedlastede filer til FIL.\n"
+"  -O   --output-document=FIL    skriv dokumenter til FIL.\n"
 "  -nc, --no-clobber             berør ikke eksisterende filer, eller brug .#-endelser.\n"
-"  -c,  --continue               fortsæt nedlasting af en eksisterende fil.\n"
+"  -c,  --continue               fortsæt hentning af en eksisterende fil.\n"
 "       --dot-style=TYPE         vælg format for nedlastings-status.\n"
 "  -N,  --timestamping           hent ikke filer igen som er ældre end eksisterende.\n"
 "  -S,  --server-response        vis svar fra serveren.\n"
@@ -740,7 +742,7 @@ msgstr ""
 "  -w,  --wait=SEKUNDER          sæt ventetid mellem filer til SEKUNDER.\n"
 "       --waitretry=SEKUNDER\twait 1...SEKUNDER mellem forsøg på gentagelse af en hentning.\n"
 "  -Y,  --proxy=on/off           slå brug af proxy til eller fra.\n"
-"  -Q,  --quota=ANTAL            sæt nedlastingskvote til ANTAL.\n"
+"  -Q,  --quota=ANTAL            sæt hente-kvote til ANTAL.\n"
 "\n"
 
 #: src/main.c:175
@@ -758,7 +760,7 @@ msgstr ""
 "  -x,  --force-directories          lav kataloger.\n"
 "  -nH, --no-host-directories        lav ikke ovenstående kataloger.\n"
 "  -P,  --directory-prefix=PRÆFIKS   skriv filer til PRÆFIKS/...\n"
-"       --cut-dirs=ANTAL             ignorér ANTAL komponenter af tjenerens\n"
+"       --cut-dirs=ANTAL             ignorér ANTAL komponenter af serverens\n"
 "                                    katalognavn.\n"
 "\n"
 
@@ -785,7 +787,7 @@ msgstr ""
 "HTTP-flag:\n"
 "       --http-user=BRUGER      sæt HTTP-bruger til BRUGER.\n"
 "       --http-passwd=PASSORD   sæt HTTP-adgangskode til PASSORD.\n"
-"  -C,  --cache=on/off          tillad (ikke) brug af hurtiglager på tjener.\n"
+"  -C,  --cache=on/off          tillad (ikke) brug af mellemlager på server.\n"
 "  -E,  --html-extension        gem alle tekst/html dokumenter med .html filkode.\n"
 "       --ignore-length         ignorer 'Content-Length' felt i toptekst.\n"
 "       --header=TEKST          sæt TEKST ind som en toptekst.\n"
@@ -813,8 +815,8 @@ msgstr ""
 "FTP-flag:\n"
 "  -nr, --dont-remove-listing   fjern ikke `.listing' filer.\n"
 "  -g,  --glob=on/off           tolk (ikke) brug af jokertegn i filnavn.\n"
-"       --passive-ftp           brug passiv overføringsmodus.\n"
-"       --retr-symlinks         hent filer (ikke kataloger) der er henvist til, ved rekursiv brug.\n"
+"       --passive-ftp           brug passiv overførselsmetode.\n"
+"       --retr-symlinks         hent filer (ikke kataloger) der er lænket til, ved rekursiv brug.\n"
 "\n"
 
 #: src/main.c:208
@@ -832,10 +834,10 @@ msgstr ""
 "Rekursiv nedlasting:\n"
 "  -r,  --recursive             tillad rekursiv nedlasting -- brug med omtanke!\n"
 "  -l,  --level=ANTAL           maksimalt antal rekursionsniveauer (0=uendelig).\n"
-"       --delete-after          slet nedlastede filer.\n"
+"       --delete-after          slet hentede filer.\n"
 "  -k,  --convert-links         konverter absolutte lænker til relative.\n"
 "  -K,  --backup-converted      før fil X konverteres, sikkerhedskopiér som X.orig.\n"
-"  -m,  --mirror                sæt passende flag for spejling af tjenere.\n"
+"  -m,  --mirror                sæt passende flag for spejling af servere.\n"
 "  -p,  --page-requisites       hent alle billeder osv. der er nødvendige for at vise HTML siden.\n"
 "\n"
 
@@ -866,11 +868,11 @@ msgstr ""
 "       --follow-tags=LIST           komma-separeret liste af fulgte HTML-mærker.\n"
 "  -G,  --ignore-tags=LIST           komma-separeret liste af ignorerede HTML-mærker.\n"
 "  -H,  --span-hosts                 følg lænker til andre værter.\n"
-"  -L,  --relative                   følg kun relative henvisninger.\n"
+"  -L,  --relative                   følg kun relative lænker.\n"
 "  -I,  --include-directories=LISTE  liste med tilladte katalognavne.\n"
 "  -X,  --exclude-directories=LISTE  liste med ikke-tilladte katalognavne.\n"
 "  -nh, --no-host-lookup             led ikke efter værtsnavn via DNS.\n"
-"  -np, --no-parent                  følg ikke lænker til ovenliggende katalog.\n"
+"  -np, --no-parent                  følg ikke lænke til ovenliggende katalog.\n"
 "\n"
 
 #: src/main.c:234
@@ -880,7 +882,7 @@ msgstr "Rapportér fejl og send forslag til <bug-wget@gnu.org>.\n"
 #: src/main.c:420
 #, c-format
 msgid "%s: debug support not compiled in.\n"
-msgstr "%s: støtte for aflusing ikke inkluderet ved kompilering.\n"
+msgstr "%s: understøttelse for fejlsøgning ikke inkluderet ved oversættelse.\n"
 
 #: src/main.c:472
 msgid ""
@@ -945,12 +947,12 @@ msgid ""
 msgstr ""
 "\n"
 "FÆRDIG --%s--\n"
-"Lastet ned %s byte i %d filer\n"
+"Nedhentede %s byte i %d filer\n"
 
 #: src/main.c:842
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
-msgstr "Nedlastingskvote (%s bytes) overskredet!\n"
+msgstr "Hente-kvote (%s byte) overskredet!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
@@ -981,7 +983,7 @@ msgstr "Fortsætter i baggrunden.\n"
 #: src/mswindows.c:108 src/utils.c:460
 #, c-format
 msgid "Output will be written to `%s'.\n"
-msgstr "Udskrifter vil blive skrevet til '%s'.\n"
+msgstr "Uddata vil blive skrevet til '%s'.\n"
 
 #: src/mswindows.c:188
 #, c-format
@@ -996,7 +998,7 @@ msgstr "%s: Fandt ingen brugbar sokkel-driver.\n"
 #: src/netrc.c:367
 #, c-format
 msgid "%s: %s:%d: warning: \"%s\" token appears before any machine name\n"
-msgstr "%s: %s:%d: Advarsel: symbolet '%s' fundet før tjener-navn\n"
+msgstr "%s: %s:%d: Advarsel: symbolet '%s' fundet før server-navn\n"
 
 #: src/netrc.c:398
 #, c-format
@@ -1006,7 +1008,7 @@ msgstr "%s: %s:%d: ukendt symbol '%s'\n"
 #: src/netrc.c:462
 #, c-format
 msgid "Usage: %s NETRC [HOSTNAME]\n"
-msgstr "Brug: %s NETRC [TJENERNAVN]\n"
+msgstr "Brug: %s NETRC [VÆRTSNAVN]\n"
 
 #: src/netrc.c:472
 #, c-format
@@ -1029,7 +1031,7 @@ msgstr "\n          [ hopper over %dK ]"
 
 #: src/retr.c:373
 msgid "Could not find proxy host.\n"
-msgstr "Fandt ikke proxy-tjener.\n"
+msgstr "Fandt ikke proxy-server.\n"
 
 #: src/retr.c:387
 #, c-format
@@ -1039,7 +1041,7 @@ msgstr "Proxy %s: Skal understøtte HTTP.\n"
 #: src/retr.c:481
 #, c-format
 msgid "%s: Redirection cycle detected.\n"
-msgstr "%s: Omdirigerer til sig selv.\n"
+msgstr "%s: Omdirigerer løber i ring.\n"
 
 #: src/retr.c:587
 msgid "Giving up.\n\n"
@@ -1076,7 +1078,7 @@ msgstr "Kan ikke sikkerhedskopiere %s som %s: %s\n"
 #: src/utils.c:94
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
-msgstr "%s: %s: Ikke nok hovedlager.\n"
+msgstr "%s: %s: Ikke nok hukommelse.\n"
 
 #: src/utils.c:417
 msgid "Unknown/unsupported protocol"
@@ -1088,42 +1090,9 @@ msgstr "Port-specifikationen er ugyldig"
 
 #: src/utils.c:423
 msgid "Invalid host name"
-msgstr "Tjenernavnet er ugyldigt"
+msgstr "Værtsnavnet er ugyldigt"
 
 #: src/utils.c:620
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Kan ikke slette den symbolske lænke '%s': %s\n"
-
-#~ msgid "%s: Cannot determine user-id.\n"
-#~ msgstr "%s: Fandt ikke bruger-ID.\n"
-
-#~ msgid "%s: Warning: uname failed: %s\n"
-#~ msgstr "%s: Advarsel: fejl fra 'uname':  %s\n"
-
-#~ msgid "%s: Warning: gethostname failed\n"
-#~ msgstr "%s: Advarsel: fejl fra 'gethostname'\n"
-
-#~ msgid "%s: Warning: cannot determine local IP address.\n"
-#~ msgstr "%s: Advarsel: fandt ikke lokal IP-adresse.\n"
-
-#~ msgid "%s: Warning: cannot reverse-lookup local IP address.\n"
-#~ msgstr "%s: Advarsel: fejl fra tilbage-opslag for lokal IP-adresse.\n"
-
-#~ msgid "%s: Warning: reverse-lookup of local address did not yield FQDN!\n"
-#~ msgstr "%s: Advarsel: fik ikke FQDN fra tilbage-opslag for lokal IP-adresse!\n"
-
-#~ msgid "%s: Out of memory.\n"
-#~ msgstr "%s: Ikke nok hovedlager.\n"
-
-#~ msgid "%s: Redirection to itself.\n"
-#~ msgstr "%s: Omdirigerer til sig selv.\n"
-
-#~ msgid "Error (%s): Link %s without a base provided.\n"
-#~ msgstr "Fejl (%s): Lænke %s givet uden udgangspunkt.\n"
-
-#~ msgid "Error (%s): Base %s relative, without referer URL.\n"
-#~ msgstr "Fejl (%s): Udgangspunktet %s er relativt, ukendt URL som referent.\n"
-
-#~ msgid "Local file `%s' is more recent, not retrieving.\n\n"
-#~ msgstr "Lokal fil '%s' er samme/nyere, ignoreres.\n\n"
