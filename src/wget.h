@@ -198,4 +198,12 @@ typedef enum
   ROBOTSOK, NOROBOTS, PROXERR, AUTHFAILED, QUOTEXC, WRITEFAILED
 } uerr_t;
 
+typedef unsigned char  boolean;
+#ifndef FALSE
+#define FALSE 0
+#endif
+#ifndef TRUE
+#define TRUE  1
+#endif
+
 #endif /* WGET_H */

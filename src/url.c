@@ -1366,10 +1366,9 @@ no_proxy_match (const char *host, const char **no_proxy)
 void
 convert_links (const char *file, urlpos *l)
 {
-  FILE           *fp;
-  char           *buf, *p, *p2;
-  long           size;
-  static slist*  converted_files = NULL;
+  FILE *fp;
+  char *buf, *p, *p2;
+  long size;
 
   logprintf (LOG_VERBOSE, _("Converting %s... "), file);
   /* Read from the file....  */
@@ -1383,28 +1382,34 @@ convert_links (const char *file, urlpos *l)
   /* ...to a buffer.  */
   load_file (fp, &buf, &size);
   fclose (fp);
-  if (opt.backup_converted)
+  if (opt.backup_converted && downloaded_file(CHECK_FOR_FILE, file))
     /* Rather than just writing over the original .html file with the converted
-       version, save the former to *.orig. */
+       version, save the former to *.orig.  Note we only do this for files we've
+       _successfully_ downloaded, so we don't clobber .orig files sitting around
+       from previous invocations. */
     {
       /* Construct the backup filename as the original name plus ".orig". */
-      size_t filename_len = strlen(file);
-      char*  filename_plus_orig_suffix = malloc(filename_len + sizeof(".orig"));
-      int    already_wrote_backup_file = 0;
-      slist* converted_file_ptr;
+      size_t         filename_len = strlen(file);
+      char*          filename_plus_orig_suffix = malloc(filename_len +
+							sizeof(".orig"));
+      boolean        already_wrote_backup_file = FALSE;
+      slist*         converted_file_ptr;
+      static slist*  converted_files = NULL;
 
+      /* Would a single s[n]printf() call be faster? */
       strcpy(filename_plus_orig_suffix, file);
       strcpy(filename_plus_orig_suffix + filename_len, ".orig");
 
       /* We can get called twice on the same URL thanks to the
 	 convert_all_links() call in main().  If we write the .orig file each
 	 time in such a case, it'll end up containing the first-pass conversion,
-	 not the original file. */
+	 not the original file.  So, see if we've already been called on this
+	 file. */
       converted_file_ptr = converted_files;
       while (converted_file_ptr != NULL)
 	if (strcmp(converted_file_ptr->string, file) == 0)
 	  {
-	    already_wrote_backup_file = 1;
+	    already_wrote_backup_file = TRUE;
 	    break;
 	  }
 	else
@@ -1421,10 +1426,13 @@ convert_links (const char *file, urlpos *l)
 	     Note that we never free this memory since we need it till the
 	     convert_all_links() call, which is one of the last things the
 	     program does before terminating.  BTW, I'm not sure if it would be
-	     safe to just set converted_file_ptr->string to file below, rather
-	     than making a copy of the string... */
+	     safe to just set 'converted_file_ptr->string' to 'file' below,
+	     rather than making a copy of the string...  Another note is that I
+	     thought I could just add a field to the urlpos structure saying
+	     that we'd written a .orig file for this URL, but that didn't work,
+	     so I had to make this separate list. */
 	  converted_file_ptr = malloc(sizeof(slist));
-	  converted_file_ptr->string = strdup(file);
+	  converted_file_ptr->string = xstrdup(file);  /* die on out-of-mem. */
 	  converted_file_ptr->next = converted_files;
 	  converted_files = converted_file_ptr;
 	}
@@ -1440,6 +1448,8 @@ convert_links (const char *file, urlpos *l)
       free (buf);
       return;
     }
+  /* [If someone understands why multiple URLs can correspond to one local file,
+     can they please add a comment here...?] */
   for (p = buf; l; l = l->next)
     {
       if (l->pos >= size)
@@ -1546,4 +1556,45 @@ add_url (urlpos *l, const char *url, const char *file)
   t->local_name = xstrdup (file);
   t->next = l;
   return t;
+}
+
+
+/* Remembers which files have been downloaded.  Should be called with
+   add_or_check == ADD_FILE for each file we actually download successfully
+   (i.e. not for ones we have failures on or that we skip due to -N).  If you
+   just want to check if a file has been previously added without adding it,
+   call with add_or_check == CHECK_FOR_FILE.  Please be sure to call this
+   function with local filenames, not remote URLs -- by some means that isn't
+   commented well enough for me understand, multiple remote URLs can apparently
+   correspond to a single local file. */
+boolean
+downloaded_file (downloaded_file_t  add_or_check, const char*  file)
+{
+  boolean        found_file = FALSE;
+  static slist*  downloaded_files = NULL;
+  slist*         rover = downloaded_files;
+
+  while (rover != NULL)
+    if (strcmp(rover->string, file) == 0)
+      {
+	found_file = TRUE;
+	break;
+      }
+    else
+      rover = rover->next;
+
+  if (found_file)
+    return TRUE;  /* file had already been downloaded */
+  else
+    {
+      if (add_or_check == ADD_FILE)
+	{
+	  rover = malloc(sizeof(slist));
+	  rover->string = xstrdup(file);  /* die on out-of-mem. */
+	  rover->next = downloaded_files;
+	  downloaded_files = rover;
+	}
+
+      return FALSE;  /* file had not already been downloaded */
+    }
 }

@@ -840,6 +840,7 @@ http_loop (struct urlinfo *u, char **newloc, int *dt)
   static int first_retrieval = 1;
 
   int count;
+  int local_dot_orig_file_exists = FALSE;
   int use_ts, got_head = 0;	/* time-stamping info */
   char *tms, *suf, *locf, *tmrate;
   uerr_t err;
@@ -851,7 +852,7 @@ http_loop (struct urlinfo *u, char **newloc, int *dt)
   *newloc = NULL;
 
   /* Warn on (likely bogus) wildcard usage in HTTP.  Don't use
-     has_wildcards_p because it would also warn on `?', and we that
+     has_wildcards_p because it would also warn on `?', and we know that
      shows up in CGI paths a *lot*.  */
   if (strchr (u->url, '*'))
     logputs (LOG_VERBOSE, _("Warning: wildcards not supported in HTTP.\n"));
@@ -888,7 +889,43 @@ File `%s' already there, will not retrieve.\n"), u->local);
   use_ts = 0;
   if (opt.timestamping)
     {
-      if (stat (u->local, &st) == 0)
+      boolean  local_file_exists = FALSE;
+
+      if (opt.backup_converted)
+	/* If -K is specified, we'll act on the assumption that it was specified
+	   last time these files were downloaded as well, and instead of just
+	   comparing local file X against server file X, we'll compare local
+	   file X.orig (if extant, else X) against server file X.  If -K
+	   _wasn't_ specified last time, or the server contains files called
+	   *.orig, -N will be back to not operating correctly with -k. */
+	{
+	  size_t filename_len = strlen(u->local);
+	  char*  filename_plus_orig_suffix = malloc(filename_len +
+						    sizeof(".orig"));
+
+	  /* Would a single s[n]printf() call be faster? */
+	  strcpy(filename_plus_orig_suffix, u->local);
+	  strcpy(filename_plus_orig_suffix + filename_len, ".orig");
+
+	  /* Try to stat() the .orig file. */
+	  if (stat(filename_plus_orig_suffix, &st) == 0)
+	    {
+	      local_file_exists = TRUE;
+	      local_dot_orig_file_exists = TRUE;
+	    }
+
+	  free(filename_plus_orig_suffix);
+	}      
+
+      if (!local_dot_orig_file_exists)
+	/* Couldn't stat() <file>.orig, so try to stat() <file>. */
+	if (stat (u->local, &st) == 0)
+	  local_file_exists = TRUE;
+
+      if (local_file_exists)
+	/* There was a local file, so we'll check later to see if the version
+	   the server has is the same version we already have, allowing us to
+	   skip a download. */
 	{
 	  use_ts = 1;
 	  tml = st.st_mtime;
@@ -1051,14 +1088,26 @@ Last-modified header invalid -- time-stamp ignored.\n"));
 	      if (tml >= tmr &&
 		  (hstat.contlen == -1 || local_size == hstat.contlen))
 		{
-		  logprintf (LOG_VERBOSE, _("\
-Local file `%s' is more recent, not retrieving.\n\n"), u->local);
+		  if (local_dot_orig_file_exists)
+		    /* We can't collapse this down into just one logprintf()
+		       call with a variable set to u->local or the .orig
+		       filename because we have to malloc() space for the
+		       latter, and because there are multiple returns above (a
+		       coding style no-no by many measures, for reasons such as
+		       this) we'd have to remember to free() the string at each
+		       one to avoid a memory leak. */
+		    logprintf (LOG_VERBOSE, _("\
+Server file no newer than local file `%s.orig' -- not retrieving.\n\n"),
+			       u->local);
+		  else
+		    logprintf (LOG_VERBOSE, _("\
+Server file no newer than local file `%s' -- not retrieving.\n\n"), u->local);
 		  FREEHSTAT (hstat);
 		  return RETROK;
 		}
 	      else if (tml >= tmr)
 		logprintf (LOG_VERBOSE, _("\
-The sizes do not match (local %ld), retrieving.\n"), local_size);
+The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	      else
 		logputs (LOG_VERBOSE,
 			 _("Remote file is newer, retrieving.\n"));
@@ -1103,12 +1152,13 @@ The sizes do not match (local %ld), retrieving.\n"), local_size);
 	    }
 	  ++opt.numurls;
 	  opt.downloaded += hstat.len;
+	  downloaded_file(ADD_FILE, locf);
 	  return RETROK;
 	}
       else if (hstat.res == 0) /* No read error */
 	{
-	  if (hstat.contlen == -1)  /* We don't know how much we were
-				       supposed to get, so...  */
+	  if (hstat.contlen == -1)  /* We don't know how much we were supposed
+				       to get, so assume we succeeded. */ 
 	    {
 	      if (*dt & RETROKF)
 		{
@@ -1121,6 +1171,7 @@ The sizes do not match (local %ld), retrieving.\n"), local_size);
 		}
 	      ++opt.numurls;
 	      opt.downloaded += hstat.len;
+	      downloaded_file(ADD_FILE, locf);
 	      return RETROK;
 	    }
 	  else if (hstat.len < hstat.contlen) /* meaning we lost the
@@ -1142,6 +1193,7 @@ The sizes do not match (local %ld), retrieving.\n"), local_size);
 			 tms, u->url, hstat.len, hstat.contlen, locf, count);
 	      ++opt.numurls;
 	      opt.downloaded += hstat.len;
+	      downloaded_file(ADD_FILE, locf);
 	      return RETROK;
 	    }
 	  else			/* the same, but not accepted */

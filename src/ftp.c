@@ -947,6 +947,11 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	  /* Not as great.  */
 	  abort ();
 	}
+
+      /* If we get out of the switch above without continue'ing, we've
+	 successfully downloaded a file.  Remember this fact. */
+      downloaded_file(ADD_FILE, locf);
+
       if (con->st & ON_YOUR_OWN)
 	{
 	  CLOSE (RBUF_FD (&con->rbuf));
@@ -1086,6 +1091,11 @@ ftp_retrieve_list (struct urlinfo *u, struct fileinfo *f, ccon *con)
       if (opt.timestamping && f->type == FT_PLAINFILE)
 	{
 	  struct stat st;
+	  /* If conversion of HTML files retrieved via FTP is ever implemented,
+	     we'll need to stat() <file>.orig here when -K has been specified.
+	     I'm not implementing it now since files on an FTP server are much
+	     more likely than files on an HTTP server to legitimately have a
+	     .orig suffix. */
 	  if (!stat (u->local, &st))
 	    {
 	      /* Else, get it from the file.  */
@@ -1094,13 +1104,13 @@ ftp_retrieve_list (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	      if (local_size == f->size && tml >= f->tstamp)
 		{
 		  logprintf (LOG_VERBOSE, _("\
-Local file `%s' is more recent, not retrieving.\n\n"), u->local);
+Server file no newer than local file `%s' -- not retrieving.\n\n"), u->local);
 		  dlthis = 0;
 		}
 	      else if (local_size != f->size)
 		{
 		  logprintf (LOG_VERBOSE, _("\
-The sizes do not match (local %ld), retrieving.\n"), local_size);
+The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 		}
 	    }
 	}	/* opt.timestamping && f->type == FT_PLAINFILE */

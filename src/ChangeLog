@@ -1,3 +1,35 @@
+2000-03-01  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* ftp.c (ftp_loop_internal): Call new downloaded_file() function,
+	even though we don't do conversion on HTML files retrieved via
+	FTP, so _current_ usage of downloaded_file() makes this call unneeded. 
+	(ftp_retrieve_list): Added a comment saying where we need to
+	stat() a .orig file if FTP'd HTML file conversion is ever implemented.
+	(ftp_retrieve_list): "Local file '%s' is more recent," is sometimes
+	a lie -- reworded as "Server file no newer than local file '%s' --".
+	
+	* http.c (http_loop): Fixed a typo and clarified a comment.
+	(http_loop): When -K and -N are specified together, compare size
+ 	and timestamp of server file X against local file X.orig (if
+ 	extant) rather than converted local file X.
+	(http_loop): "Local file '%s' is more recent," is sometimes a lie
+ 	-- reworded as "Server file no newer than local file '%s' --".
+	(http_loop): Call new downloaded_file() function to prevent
+	wrongful overwriting of .orig file when -N is specified.
+	
+	* url.c (convert_links): When -K specified, only rename X to
+ 	X.orig if downloaded_file() returns TRUE.  Otherwise when we skip
+ 	file X due to -N, we clobber an X.orig from a previous invocation.
+	(convert_links): Call the failsafe xstrdup(), not the real strdup().
+	(convert_links): Added a note asking anyone who understands how
+	multiple URLs can correspond to a single file to comment it.
+	(downloaded_file): Added this new function.
+	
+	* url.h (downloaded_file): Added prototype for this new function
+	as well as its downloaded_file_t enum type.
+
+	* wget.h (boolean): Added this new typedef and TRUE and FALSE #defines.
+
 2000-02-29  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* version.c: Upped version to developer-only "1.5.3+dev".

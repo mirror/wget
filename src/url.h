@@ -62,6 +62,12 @@ typedef struct _urlpos
   struct _urlpos *next;        /* Next struct in list */
 } urlpos;
 
+/* Controls how downloaded_file() behaves. */
+typedef enum
+{
+  ADD_FILE,
+  CHECK_FOR_FILE
+} downloaded_file_t;
 
 /* Function declarations */
 
@@ -94,5 +100,7 @@ int no_proxy_match PARAMS ((const char *, const char **));
 
 void convert_links PARAMS ((const char *, urlpos *));
 urlpos *add_url PARAMS ((urlpos *, const char *, const char *));
+
+boolean downloaded_file PARAMS ((downloaded_file_t, const char *));
 
 #endif /* URL_H */

@@ -350,7 +350,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       if (result != URLOK || u->proto != URLHTTP)
 	{
 	  if (u->proto == URLHTTP)
-	    logprintf (LOG_NOTQUIET, "Proxy %s: %s.\n", proxy, uerrmsg (result));
+	    logprintf (LOG_NOTQUIET, "Proxy %s: %s.\n", proxy, uerrmsg(result));
 	  else
 	    logprintf (LOG_NOTQUIET, _("Proxy %s: Must be HTTP.\n"), proxy);
 	  freeurl (u, 1);
@@ -455,7 +455,8 @@ retrieve_from_file (const char *file, int html, int *count)
 	}
       status = retrieve_url (cur_url->url, &filename, &new_file, NULL, &dt);
       if (opt.recursive && status == RETROK && (dt & TEXTHTML))
-	status = recursive_retrieve (filename, new_file ? new_file : cur_url->url);
+	status = recursive_retrieve (filename, new_file ? new_file
+				                        : cur_url->url);
 
       if (filename && opt.delete_after && file_exists_p (filename))
 	{
