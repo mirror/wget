@@ -41,6 +41,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "rbuf.h"
 #include "connect.h"
 #include "host.h"
+#include "ftp.h"
 
 #ifndef errno
 extern int errno;
@@ -533,6 +534,101 @@ ftp_list (struct rbuf *rbuf, const char *file)
       free (respline);
       return FTPRERR;
     }
+  free (respline);
+  /* All OK.  */
+  return FTPOK;
+}
+
+/* Sends the SYST command to the server. */
+uerr_t
+ftp_syst (struct rbuf *rbuf, enum stype *host_type)
+{
+  char *request, *respline;
+  int nwritten;
+  uerr_t err;
+
+  /* Send SYST request.  */
+  request = ftp_request ("SYST", NULL);
+  nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
+  if (nwritten < 0)
+    {
+      free (request);
+      return WRITEFAILED;
+    }
+  free (request);
+  /* Get appropriate response.  */
+  err = ftp_response (rbuf, &respline);
+  if (err != FTPOK)
+    {
+      free (respline);
+      return err;
+    }
+  if (*respline == '5')
+    {
+      free (respline);
+      return FTPSRVERR;
+    }
+
+  /* Skip the number (215, but 200 (!!!) in case of VMS) */
+  strtok (respline, " ");
+  
+  /* Which system type has been reported (we are interested just in the
+     first word of the server response)?  */
+  request = strtok (NULL, " ");
+
+  if (!strcasecmp (request, "VMS"))
+    *host_type = ST_VMS;
+  else
+    if (!strcasecmp (request, "UNIX"))
+      *host_type = ST_UNIX;
+    else
+      *host_type = ST_OTHER;
+
+  free (respline);
+  /* All OK.  */
+  return FTPOK;
+}
+
+/* Sends the PWD command to the server. */
+uerr_t
+ftp_pwd (struct rbuf *rbuf, char **pwd)
+{
+  char *request, *respline;
+  int nwritten;
+  uerr_t err;
+
+  /* Send PWD request.  */
+  request = ftp_request ("PWD", NULL);
+  nwritten = iwrite (RBUF_FD (rbuf), request, strlen (request));
+  if (nwritten < 0)
+    {
+      free (request);
+      return WRITEFAILED;
+    }
+  free (request);
+  /* Get appropriate response.  */
+  err = ftp_response (rbuf, &respline);
+  if (err != FTPOK)
+    {
+      free (respline);
+      return err;
+    }
+  if (*respline == '5')
+    {
+      free (respline);
+      return FTPSRVERR;
+    }
+
+  /* Skip the number (257), leading citation mark, trailing citation mark
+     and everything following it. */
+  strtok (respline, "\"");
+  request = strtok (NULL, "\"");
+  
+  /* Has the `pwd' been already allocated? Free! */
+  if (*pwd) free (*pwd);
+
+  *pwd = xstrdup (request);
+
   free (respline);
   /* All OK.  */
   return FTPOK;

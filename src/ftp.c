@@ -57,6 +57,10 @@ extern int h_errno;
 
 extern char ftp_last_respline[];
 
+static enum stype host_type=ST_UNIX;
+static char *pwd;
+static int  pwd_len;
+
 /* Look for regexp "( *[0-9]+ *byte" (literal parenthesis) anywhere in
    the string S, and return the number converted to long, if found, 0
    otherwise.  */
@@ -240,7 +244,64 @@ Error in server response, closing control connection.\n"));
 	  exit (1);
 	  break;
 	}
-      /* Third: Set type to Image (binary).  */
+      /* Third: Get the system type */
+      if (!opt.server_response)
+	logprintf (LOG_VERBOSE, "==> SYST ... ");
+      err = ftp_syst (&con->rbuf, &host_type);
+      /* FTPRERR */
+      switch (err)
+	{
+	case FTPRERR:
+	  logputs (LOG_VERBOSE, "\n");
+	  logputs (LOG_NOTQUIET, _("\
+Error in server response, closing control connection.\n"));
+	  CLOSE (csock);
+	  rbuf_uninitialize (&con->rbuf);
+	  return err;
+	  break;
+	case FTPSRVERR:
+	  logputs (LOG_VERBOSE, "\n");
+	  logputs (LOG_NOTQUIET,
+		   _("Server error, can't determine system type.\n"));
+	  break;
+	case FTPOK:
+	  /* Everything is OK.  */
+	  break;
+	default:
+	  abort ();
+	  break;
+	}
+      if (!opt.server_response)
+	logputs (LOG_VERBOSE, _("done.    "));
+
+      /* Fourth: Find the initial ftp directory */
+
+      if (!opt.server_response)
+	logprintf (LOG_VERBOSE, "==> PWD ... ");
+      err = ftp_pwd(&con->rbuf, &pwd);
+      pwd_len = strlen(pwd);
+      /* FTPRERR */
+      switch (err)
+      {
+	case FTPRERR || FTPSRVERR :
+	  logputs (LOG_VERBOSE, "\n");
+	  logputs (LOG_NOTQUIET, _("\
+Error in server response, closing control connection.\n"));
+	  CLOSE (csock);
+	  rbuf_uninitialize (&con->rbuf);
+	  return err;
+	  break;
+	case FTPOK:
+	  /* Everything is OK.  */
+	  break;
+	default:
+	  abort ();
+	  break;
+      }
+      if (!opt.server_response)
+	logputs (LOG_VERBOSE, _("done.\n"));
+
+      /* Fifth: Set the FTP type.  */
       if (!opt.server_response)
 	logprintf (LOG_VERBOSE, "==> TYPE %c ... ", TOUPPER (u->ftp_type));
       err = ftp_type (&con->rbuf, TOUPPER (u->ftp_type));
@@ -288,10 +349,55 @@ Error in server response, closing control connection.\n"));
 	logputs (LOG_VERBOSE, _("==> CWD not needed.\n"));
       else
 	{
-	  /* Change working directory.  */
-	  if (!opt.server_response)
-	    logprintf (LOG_VERBOSE, "==> CWD %s ... ", u->dir);
-	  err = ftp_cwd (&con->rbuf, u->dir);
+	  /* Change working directory. If the FTP host runs VMS and
+             the path specified is absolute, we will have to convert
+             it to VMS style as VMS does not like leading slashes */
+	  if (*(u->dir) == '/')
+	    {
+	      char *result = (char *)alloca (strlen (u->dir) + pwd_len + 10);
+	      *result = '\0';
+	      switch (host_type)
+		{
+		case ST_VMS:
+		  {
+		    char *tmp_dir, *tmpp;
+		    STRDUP_ALLOCA (tmp_dir, u->dir);
+		    for (tmpp = tmp_dir; *tmpp; tmpp++)
+		      if (*tmpp=='/')
+			*tmpp = '.';
+		    strcpy (result, pwd);
+		    /* pwd ends with ']', we have to get rid of it */
+		    result[pwd_len - 1]= '\0';
+		    strcat (result, tmp_dir);
+		    strcat (result, "]");
+		  }
+		  break;
+		case ST_UNIX:
+		  /* pwd_len == 1 means pwd = "/", but u->dir begins with '/'
+		     already */
+		  if (pwd_len > 1)
+		    strcpy (result, pwd);
+		  strcat (result, u->dir);
+		  /* These look like debugging messages to me.  */
+#if 0
+		  logprintf (LOG_VERBOSE, "\npwd=\"%s\"", pwd);
+		  logprintf (LOG_VERBOSE, "\nu->dir=\"%s\"", u->dir);
+#endif
+		  break;
+		default:
+		  abort ();
+		  break;
+		}
+	      if (!opt.server_response)
+		logprintf (LOG_VERBOSE, "==> CWD %s ... ", result);
+	      err = ftp_cwd (&con->rbuf, result);
+	    }
+	  else
+	    {
+	      if (!opt.server_response)
+		logprintf (LOG_VERBOSE, "==> CWD %s ... ", u->dir);
+	      err = ftp_cwd (&con->rbuf, u->dir);
+	    }
 	  /* FTPRERR, WRITEFAILED, FTPNSFOD */
 	  switch (err)
 	    {
@@ -1080,7 +1186,7 @@ ftp_get_listing (struct urlinfo *u, ccon *con)
   err = ftp_loop_internal (u, NULL, con);
   u->local = olocal;
   if (err == RETROK)
-    f = ftp_parse_ls (list_filename);
+    f = ftp_parse_ls (list_filename, host_type);
   else
     f = NULL;
   if (opt.remove_listing)
@@ -1177,13 +1283,22 @@ ftp_retrieve_list (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	      if (local_size == f->size && tml >= f->tstamp)
 		{
 		  logprintf (LOG_VERBOSE, _("\
-Server file no newer than local file `%s' -- not retrieving.\n\n"), u->local);
+Server file not newer than local file `%s' -- not retrieving.\n\n"), u->local);
 		  dlthis = 0;
 		}
 	      else if (local_size != f->size)
 		{
-		  logprintf (LOG_VERBOSE, _("\
+		  if (host_type == ST_VMS)
+		    {
+		      logprintf (LOG_VERBOSE, _("\
+Cannot compare sizes, remote system is VMS.\n"));
+		      dlthis = 0;
+		    }
+		  else
+		    {
+		      logprintf (LOG_VERBOSE, _("\
 The sizes do not match (local %ld) -- retrieving.\n"), local_size);
+		    }
 		}
 	    }
 	}	/* opt.timestamping && f->type == FT_PLAINFILE */

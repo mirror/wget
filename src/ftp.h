@@ -1,5 +1,5 @@
 /* Declarations for FTP support.
-   Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 2000 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,6 +21,14 @@
 /* Need it for struct rbuf.  */
 #include "rbuf.h"
 
+/* System types. */
+enum stype
+{
+  ST_UNIX,
+  ST_VMS,
+  ST_OTHER
+};
+  
 uerr_t ftp_response PARAMS ((struct rbuf *, char **));
 uerr_t ftp_login PARAMS ((struct rbuf *, const char *, const char *));
 uerr_t ftp_port PARAMS ((struct rbuf *));
@@ -30,6 +38,8 @@ uerr_t ftp_cwd PARAMS ((struct rbuf *, const char *));
 uerr_t ftp_retr PARAMS ((struct rbuf *, const char *));
 uerr_t ftp_rest PARAMS ((struct rbuf *, long));
 uerr_t ftp_list PARAMS ((struct rbuf *, const char *));
+uerr_t ftp_syst PARAMS ((struct rbuf *, enum stype *));
+uerr_t ftp_pwd PARAMS ((struct rbuf *, char **));
 
 struct urlinfo;
 
@@ -89,7 +99,7 @@ typedef struct
   long dltime;			/* time of the download */
 } ccon;
 
-struct fileinfo *ftp_parse_ls PARAMS ((const char *));
+struct fileinfo *ftp_parse_ls PARAMS ((const char *, enum stype));
 uerr_t ftp_loop PARAMS ((struct urlinfo *, int *));
 
 uerr_t ftp_index (const char *, struct urlinfo *, struct fileinfo *);
