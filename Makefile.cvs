@@ -1,0 +1,41 @@
+# Makefile for preparing the sources after CVS checkout.
+# Copyright (C) 2000 Karl Eichwalder.
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+#
+# Usage:
+#
+#     make -f Makefile.cvs
+#
+
+SHELL = /bin/sh
+
+prep:
+	autoconf
+
+# The following two targets are pretty lame because we don't know that
+# the user wants to configure in `.', just like we don't know whether
+# the `make' program is called `make'.  I'm keeping them for the sake
+# of the users who expect to find them.  I don't want to make this
+# file complicated by implementing smarter detections -- the user who
+# needs different behavior should simply run `make -f Makefile.cvs'
+# and proceed as he would have normally.
+
+configure: prep
+	./configure
+
+make: configure
+	make
