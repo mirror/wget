@@ -1,3 +1,9 @@
+2003-11-03  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c (select_fd): Generalize the third argument into WAIT,
+	so that the caller can request waiting for both read and write.
+	Updated callers.
+
 2003-11-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* html-url.c (cleanup_html_url): Destroy the hash tables, don't

@@ -37,6 +37,12 @@ enum {
   E_HOST = -100
 };
 
+/* Flags for select_fd's WAIT argument. */
+enum {
+  WAIT_READ = 1,
+  WAIT_WRITE = 2
+};
+
 /* bindport flags */
 #define BIND_ON_IPV4_ONLY LH_IPV4_ONLY
 #define BIND_ON_IPV6_ONLY LH_IPV6_ONLY

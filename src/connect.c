@@ -464,29 +464,34 @@ bindport (const ip_address *bind_address, int *port, int *local_sock)
 }
 
 #ifdef HAVE_SELECT
-/* Wait for file descriptor FD to be available, timing out after
-   MAXTIME seconds.  "Available" means readable if writep is 0,
-   writeable otherwise.
+/* Wait for file descriptor FD to be readable or writable or both,
+   timing out after MAXTIME seconds.  Returns 1 if FD is available, 0
+   for timeout and -1 for error.  The argument WHAT can be a
+   combination of WAIT_READ and WAIT_WRITE.
 
-   Returns 1 if FD is available, 0 for timeout and -1 for error.  */
+   This is a mere convenience wrapper around the select call, and
+   should be taken as such.  */
 
 int
-select_fd (int fd, double maxtime, int writep)
+select_fd (int fd, double maxtime, int wait)
 {
-  fd_set fds;
-  fd_set *rd = NULL, *wrt = NULL;
+  fd_set fdset;
+  fd_set *rd = NULL, *wr = NULL;
   struct timeval tmout;
   int result;
 
-  FD_ZERO (&fds);
-  FD_SET (fd, &fds);
-  *(writep ? &wrt : &rd) = &fds;
+  FD_ZERO (&fdset);
+  FD_SET (fd, &fdset);
+  if (wait & WAIT_READ)
+    rd = &fdset;
+  if (wait & WAIT_WRITE)
+    wr = &fdset;
 
   tmout.tv_sec = (long)maxtime;
   tmout.tv_usec = 1000000L * (maxtime - (long)maxtime);
 
   do
-    result = select (fd + 1, rd, wrt, NULL, &tmout);
+    result = select (fd + 1, rd, wr, NULL, &tmout);
   while (result < 0 && errno == EINTR);
 
   /* When we've timed out, set errno to ETIMEDOUT for the convenience
@@ -512,7 +517,7 @@ acceptport (int local_sock, int *sock)
 
 #ifdef HAVE_SELECT
   if (opt.connect_timeout)
-    if (select_fd (local_sock, opt.connect_timeout, 0) <= 0)
+    if (select_fd (local_sock, opt.connect_timeout, WAIT_READ) <= 0)
       return ACCEPTERR;
 #endif
   if ((*sock = accept (local_sock, sa, &addrlen)) < 0)
@@ -576,7 +581,7 @@ iread (int fd, char *buf, int len)
 
 #ifdef HAVE_SELECT
   if (opt.read_timeout)
-    if (select_fd (fd, opt.read_timeout, 0) <= 0)
+    if (select_fd (fd, opt.read_timeout, WAIT_READ) <= 0)
       return -1;
 #endif
   do
@@ -604,7 +609,7 @@ iwrite (int fd, char *buf, int len)
     {
 #ifdef HAVE_SELECT
       if (opt.read_timeout)
-	if (select_fd (fd, opt.read_timeout, 1) <= 0)
+	if (select_fd (fd, opt.read_timeout, WAIT_WRITE) <= 0)
 	  return -1;
 #endif
       do
