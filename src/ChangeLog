@@ -1,5 +1,9 @@
 2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (check_end): Constify.
+
+2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* http.c (http_loop): If username and password are known, try the
 	`Basic' authentication scheme by default.
 

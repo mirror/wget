@@ -1615,7 +1615,7 @@ mktime_from_utc (struct tm *t)
    "^ *(GMT|[+-][0-9]|$)", 0 otherwise.  P being NULL (a valid result of
    strptime()) is considered a failure and 0 is returned.  */
 static int
-check_end (char *p)
+check_end (const char *p)
 {
   if (!p)
     return 0;
