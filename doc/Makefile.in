@@ -48,7 +48,7 @@ INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 RM = rm -f
 
-TEXI2POD     = ./texi2pod.pl
+TEXI2POD     = $(srcdir)/texi2pod.pl
 POD2MAN      = @POD2MAN@
 MAN          = wget.$(manext)
 WGETRC       = $(sysconfdir)/wgetrc
@@ -63,23 +63,23 @@ all: wget.info @COMMENT_IF_NO_POD2MAN@$(MAN)
 everything: all wget_us.ps wget_a4.ps wget_toc.html
 
 $(SAMPLERCTEXI): $(srcdir)/sample.wgetrc
-	sed s/@/@@/g $< > $@
+	sed s/@/@@/g $? > $@
 
 wget.info: $(SAMPLERCTEXI) $(srcdir)/wget.texi
 	$(MAKEINFO) -I$(srcdir)
 
-$(TEXI2POD): $(srcdir)/$(TEXI2POD).in
-	sed s,/usr/bin/perl,@PERL@, $< > $@
+$(TEXI2POD): $(TEXI2POD).in
+	sed s,/usr/bin/perl,@PERL@, $? > $@
 	chmod u+x $@
 
-wget.pod: $(srcdir)/wget.texi texi2pod.pl
-	$(TEXI2POD) $< $@
+wget.pod: $(srcdir)/wget.texi $(TEXI2POD)
+	$(TEXI2POD) $(srcdir)/wget.texi $@
 
 $(MAN): wget.pod
-	$(POD2MAN) --center="GNU Wget" --release="GNU Wget @VERSION@" $< > $@
+	$(POD2MAN) --center="GNU Wget" --release="GNU Wget @VERSION@" $? > $@
 
 #wget.cat: $(MAN)
-#	nroff -man $< > $@
+#	nroff -man $? > $@
 
 dvi: wget.dvi
 

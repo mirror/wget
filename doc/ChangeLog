@@ -1,3 +1,8 @@
+2001-11-16  Peter Farmer  <peter.farmer@zveno.com>
+
+	* Makefile.in: Use $? instead of $<.  Use TEXI2POD more
+	consistently.
+
 2001-06-16  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi: Updated version to 1.7.1.
