@@ -1296,13 +1296,53 @@ legible (long l)
   return legible_1 (inbuf);
 }
 
+/* Write a string representation of NUMBER into the provided buffer.
+   We cannot use sprintf() because we cannot be sure whether the
+   platform supports printing of what we chose for VERY_LONG_TYPE.
+
+   Example: Gcc supports `long long' under many platforms, but on many
+   of those the native libc knows nothing of it and therefore cannot
+   print it.
+
+   How long BUFFER needs to be depends on the platform and the content
+   of NUMBER.  For 64-bit VERY_LONG_TYPE (the most common case), 24
+   bytes are sufficient.  Using more might be a good idea.
+
+   This function does not go through the hoops that long_to_string
+   goes to because it doesn't need to be fast.  (It's called perhaps
+   once in a Wget run.)  */
+
+static void
+very_long_to_string (char *buffer, VERY_LONG_TYPE number)
+{
+  int i = 0;
+  int j;
+
+  /* Print the number backwards... */
+  do
+    {
+      buffer[i++] = '0' + number % 10;
+      number /= 10;
+    }
+  while (number);
+
+  /* ...and reverse the order of the digits. */
+  for (j = 0; j < i / 2; j++)
+    {
+      char c = buffer[j];
+      buffer[j] = buffer[i - 1 - j];
+      buffer[i - 1 - j] = c;
+    }
+  buffer[i] = '\0';
+}
+
 /* The same as legible(), but works on VERY_LONG_TYPE.  See sysdep.h.  */
 char *
 legible_very_long (VERY_LONG_TYPE l)
 {
   char inbuf[128];
   /* Print the number into the buffer.  */
-  sprintf (inbuf, VERY_LONG_FORMAT, l);
+  very_long_to_string (inbuf, l);
   return legible_1 (inbuf);
 }
 
