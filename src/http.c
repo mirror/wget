@@ -303,7 +303,7 @@ static time_t http_atotm PARAMS ((char *));
 static uerr_t
 gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 {
-  char *request, *type, *command, *path;
+  char *request, *type, *command, *path, *qstring;
   char *user, *passwd;
   char *pragma_h, *referer, *useragent, *range, *wwwauth, *remhost;
   char *authenticate_h;
@@ -384,6 +384,9 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
     path = u->proxy->url;
   else
     path = u->path;
+  
+  qstring = u->qstring;
+
   command = (*dt & HEAD_ONLY) ? "HEAD" : "GET";
   referer = NULL;
   if (ou->referer)
@@ -467,6 +470,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 
   /* Allocate the memory for the request.  */
   request = (char *)alloca (strlen (command) + strlen (path)
+			    + (qstring ? strlen (qstring) : 0)
 			    + strlen (useragent)
 			    + strlen (remhost) + host_port_len
 			    + strlen (HTTP_ACCEPT)
@@ -479,12 +483,12 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 			    + 64);
   /* Construct the request.  */
   sprintf (request, "\
-%s %s HTTP/1.0\r\n\
+%s %s%s HTTP/1.0\r\n\
 User-Agent: %s\r\n\
 Host: %s%s\r\n\
 Accept: %s\r\n\
 %s%s%s%s%s%s\r\n",
-	  command, path, useragent, remhost, host_port ? host_port : "",
+	  command, path, qstring, useragent, remhost, host_port ? host_port : "",
 	  HTTP_ACCEPT, referer ? referer : "",
 	  wwwauth ? wwwauth : "", 
 	  proxyauth ? proxyauth : "", 

@@ -32,7 +32,8 @@ struct urlinfo
   char *host;			/* Extracted hostname */
   unsigned short port;
   char ftp_type;
-  char *path, *dir, *file;	/* Path, as well as dir and file
+  char *path, *dir, *file, *qstring;	
+                                /* Path, dir, file, and query string
 				   (properly decoded) */
   char *user, *passwd;		/* Username and password */
   struct urlinfo *proxy;	/* The exact string to pass to proxy

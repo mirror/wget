@@ -226,6 +226,16 @@ maybe_add_to_list (acc_t **newentry, acc_t **list)
   return;
 }
 
+/* Helper function for the parser, shifts contents of
+   null-terminated string once character to the left.
+   Used in processing \ and " constructs in the netrc file */
+static void
+shift_left(char *string){
+  char *p;
+  
+  for (p=string; *p; ++p)
+    *p = *(p+1);
+}
 
 /* Parse a .netrc file (as described in the ftp(1) manual page).  */
 static acc_t *
@@ -234,7 +244,7 @@ parse_netrc (const char *path)
   FILE *fp;
   char *line, *p, *tok, *premature_token;
   acc_t *current, *retval;
-  int ln;
+  int ln, quote;
 
   /* The latest token we've seen in the file.  */
   enum
@@ -263,6 +273,7 @@ parse_netrc (const char *path)
 
       /* Parse the line.  */
       p = line;
+      quote = 0;
 
       /* If the line is empty, then end any macro definition.  */
       if (last_token == tok_macdef && !*p)
@@ -280,11 +291,25 @@ parse_netrc (const char *path)
 	  if (*p == '#')
 	    break;
 
+	  /* If the token starts with quotation mark, note this fact,
+	     and squash the quotation character */
+	  if (*p == '"'){
+	    quote = 1;
+	    shift_left (p);
+	  }
+
 	  tok = p;
 
-	  /* Find the end of the token.  */
-	  while (*p && !ISSPACE (*p))
+	  /* Find the end of the token, handling quotes and escapes.  */
+	  while (*p && (quote ? *p != '"' : !ISSPACE (*p))){
+	    if (*p == '\\')
+	      shift_left (p);
 	    p ++;
+	  }
+
+	  /* if field was quoted, squash the trailing quotation mark */
+	  if (quote)
+	    shift_left(p);
 
 	  /* Null-terminate the token, if it isn't already.  */
 	  if (*p)

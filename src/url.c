@@ -458,8 +458,23 @@ parseurl (const char *url, struct urlinfo *u, int strict)
   if (type == URLHTTP)
     while (url[i] && url[i] == '/')
       ++i;
-  u->path = (char *)xmalloc (strlen (url + i) + 8);
-  strcpy (u->path, url + i);
+
+  /* dfb: break "path" into "path" and "qstring" if the URL is HTTP 
+     if it's not an HTTP url, set l to the last character, so the 
+     xmalloc and strncpy work as desired */
+  if (type == URLHTTP) {
+    for (l = i; url[l] && url[l] != '?'; l++);
+    if (l != strlen(url)) {
+      /* copy the query string, including the '?' into u->qstring */
+      u->qstring = (char *)xmalloc (strlen (url + l) + 8);
+      strcpy (u->qstring, url + l);
+    }
+  } else {
+    l = strlen(url);
+  }
+  
+
+  u->path = strdupdelim (url + i, url + l);
   if (type == URLFTP)
     {
       u->ftp_type = process_ftp_type (u->path);
@@ -480,6 +495,8 @@ parseurl (const char *url, struct urlinfo *u, int strict)
   /* Parse the directory.  */
   parse_dir (u->path, &u->dir, &u->file);
   DEBUGP (("dir %s -> file %s -> ", u->dir, u->file));
+  if (type == URLHTTP && u->qstring) 
+    DEBUGP (("query-string %s -> ", u->qstring));
   /* Simplify the directory.  */
   path_simplify (u->dir);
   /* Remove the leading `/' in HTTP.  */
@@ -626,7 +643,7 @@ char *
 str_url (const struct urlinfo *u, int hide)
 {
   char *res, *host, *user, *passwd, *proto_name, *dir, *file;
-  int i, l, ln, lu, lh, lp, lf, ld;
+  int i, l, ln, lu, lh, lp, lf, ld, lq;
 
   /* Look for the protocol name.  */
   for (i = 0; i < ARRAY_SIZE (sup_protos); i++)
@@ -667,7 +684,8 @@ str_url (const struct urlinfo *u, int hide)
   lh = strlen (host);
   ld = strlen (dir);
   lf = strlen (file);
-  res = (char *)xmalloc (ln + lu + lp + lh + ld + lf + 20); /* safe sex */
+  lq = (u->proto == URLHTTP && u->qstring) ? strlen (u->qstring) : 0;
+  res = (char *)xmalloc (ln + lu + lp + lh + ld + lf + lq + 20); /* safe sex */
   /* sprintf (res, "%s%s%s%s%s%s:%d/%s%s%s", proto_name,
      (user ? user : ""), (passwd ? ":" : ""),
      (passwd ? passwd : ""), (user ? "@" : ""),
@@ -698,9 +716,15 @@ str_url (const struct urlinfo *u, int hide)
   if (*dir)
     res[l++] = '/';
   strcpy (res + l, file);
+  l += lf;
   free (host);
   free (dir);
   free (file);
+  if (u->qstring)
+    {
+      /* copy in the raw query string to avoid munging arguments */
+      memcpy (res + l, u->qstring, lq);
+    }
   FREE_MAYBE (user);
   FREE_MAYBE (passwd);
   return res;

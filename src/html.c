@@ -77,6 +77,8 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init)
      follow -- feel free to edit to suit your needs: */
   static struct tag_attr html_allow[] = {
     { "a", "href" },
+    { "link", "href" },
+    { "script", "src" },
     { "img", "src" },
     { "img", "href" },
     { "body", "background" },
