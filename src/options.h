@@ -108,12 +108,11 @@ struct options
   char *proxy_user; /*oli*/
   char *proxy_passwd;
 #ifdef HAVE_SELECT
-  long timeout;			/* The value of read timeout in
-				   seconds. */
+  double timeout;		/* The read/connect/DNS timeout. */
 #endif
   int random_wait;		/* vary from 0 .. wait secs by random()? */
-  long wait;			/* The wait period between retrievals. */
-  long waitretry;		/* The wait period between retries. - HEH */
+  double wait;			/* The wait period between retrievals. */
+  double waitretry;		/* The wait period between retries. - HEH */
   int use_robots;		/* Do we heed robots.txt? */
 
   long limit_rate;		/* Limit the download rate to this

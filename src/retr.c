@@ -80,7 +80,7 @@ limit_bandwidth_reset (void)
 
 /* Limit the bandwidth by pausing the download for an amount of time.
    BYTES is the number of bytes received from the network, and DELTA
-   is how long it took to receive them.  */
+   is the number of milliseconds it took to receive them.  */
 
 static void
 limit_bandwidth (long bytes, double delta)
@@ -648,7 +648,7 @@ sleep_between_retrievals (int count)
       if (count <= opt.waitretry)
 	sleep (count - 1);
       else
-	sleep (opt.waitretry);
+	usleep (1000000L * opt.waitretry);
     }
   else if (opt.wait)
     {
@@ -656,19 +656,16 @@ sleep_between_retrievals (int count)
 	/* If random-wait is not specified, or if we are sleeping
 	   between retries of the same download, sleep the fixed
 	   interval.  */
-	sleep (opt.wait);
+	usleep (1000000L * opt.wait);
       else
 	{
 	  /* Sleep a random amount of time averaging in opt.wait
 	     seconds.  The sleeping amount ranges from 0 to
 	     opt.wait*2, inclusive.  */
-	  int waitsecs = random_number (opt.wait * 2 + 1);
-
-	  DEBUGP (("sleep_between_retrievals: norm=%ld,fuzz=%ld,sleep=%d\n",
-		   opt.wait, waitsecs - opt.wait, waitsecs));
-
-	  if (waitsecs)
-	    sleep (waitsecs);
+	  double waitsecs = 2 * opt.wait * random_float ();
+	  DEBUGP (("sleep_between_retrievals: avg=%f,sleep=%f\n",
+		   opt.wait, waitsecs));
+	  usleep (1000000L * waitsecs);
 	}
     }
 }

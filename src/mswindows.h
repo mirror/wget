@@ -133,5 +133,6 @@ void ws_changetitle (char*, int);
 char *ws_mypath (void);
 void ws_help (const char *);
 void windows_main_junk (int *, char **, char **);
+int usleep (unsigned long);
 
 #endif /* MSWINDOWS_H */

@@ -74,7 +74,8 @@ sleep (unsigned seconds)
 /* Emulation of Unix usleep().  This has a granularity of
    milliseconds, but that's ok because:
 
-   a) Wget is only using it with milliseconds;
+   a) Wget is only using it with milliseconds [not anymore, but b)
+      still applies];
 
    b) You can't rely on usleep's granularity anyway.  If a caller
    expects usleep to respect every microsecond, he's in for a

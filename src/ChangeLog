@@ -1,3 +1,20 @@
+2003-09-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c (select_fd): Change MAXTIME's type to double.  Handle
+	its decimal part.
+
+	* retr.c (sleep_between_retrievals): In the random-wait case, use
+	random_float() to wait between 0 and 2*opt.wait seconds.
+
+	* utils.c (run_with_timeout): Accept `double' timeouts.  Correctly
+	handle timeout values in (0, 1) range.
+	(random_float): New function.
+
+	* options.h (struct options): Change the types of wait, waitretry,
+	and timeout to double.
+
+	* init.c (cmd_time): Accept floating point time.
+
 2003-09-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* retr.c (get_contents): Cosmetic fixes.

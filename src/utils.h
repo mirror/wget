@@ -116,7 +116,8 @@ char *html_quote_string PARAMS ((const char *));
 
 int determine_screen_width PARAMS ((void));
 int random_number PARAMS ((int));
+double random_float PARAMS ((void));
 
-int run_with_timeout PARAMS ((long, void (*) (void *), void *));
+int run_with_timeout PARAMS ((double, void (*) (void *), void *));
 
 #endif /* UTILS_H */

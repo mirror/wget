@@ -494,7 +494,7 @@ gethostbyname_with_timeout_callback (void *arg)
    other than timeout, errno is reset.  */
 
 static struct hostent *
-gethostbyname_with_timeout (const char *host_name, int timeout)
+gethostbyname_with_timeout (const char *host_name, double timeout)
 {
   struct ghbnwt_context ctx;
   ctx.host_name = host_name;
@@ -533,7 +533,7 @@ getaddrinfo_with_timeout_callback (void *arg)
 static int
 getaddrinfo_with_timeout (const char *node, const char *service,
 			  const struct addrinfo *hints, struct addrinfo **res,
-			  int timeout)
+			  double timeout)
 {
   struct gaiwt_context ctx;
   ctx.node = node;
@@ -670,7 +670,8 @@ lookup_host (const char *host, int silent)
   }
 #else
   {
-    struct hostent *hptr = gethostbyname_with_timeout (host, opt.timeout);
+    struct hostent *hptr;
+    hptr = gethostbyname_with_timeout (host, opt.timeout);
     if (!hptr)
       {
 	if (!silent)

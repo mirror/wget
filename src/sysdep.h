@@ -154,7 +154,8 @@ do {						\
 # define VERY_LONG_TYPE   unsigned long long
 #endif /* use long long */
 
-/* Defined in cmpt.c: */
+/* These are defined in cmpt.c if missing, therefore it's generally
+   safe to declare their parameters.  */
 #ifndef HAVE_STRERROR
 char *strerror ();
 #endif
@@ -174,7 +175,7 @@ char *strptime ();
 int vsnprintf ();
 #endif
 #ifndef HAVE_USLEEP
-int usleep ();
+int usleep PARAMS ((unsigned long));
 #endif
 #ifndef HAVE_MEMMOVE
 void *memmove ();

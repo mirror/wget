@@ -355,7 +355,7 @@ bindport (unsigned short *port, int family)
    Returns 1 if FD is available, 0 for timeout and -1 for error.  */
 
 int
-select_fd (int fd, int maxtime, int writep)
+select_fd (int fd, double maxtime, int writep)
 {
   fd_set fds;
   fd_set *rd = NULL, *wrt = NULL;
@@ -366,8 +366,8 @@ select_fd (int fd, int maxtime, int writep)
   FD_SET (fd, &fds);
   *(writep ? &wrt : &rd) = &fds;
 
-  tmout.tv_sec = maxtime;
-  tmout.tv_usec = 0;
+  tmout.tv_sec = (long)maxtime;
+  tmout.tv_usec = 1000000L * (maxtime - (long)maxtime);
 
   do
     result = select (fd + 1, rd, wrt, NULL, &tmout);

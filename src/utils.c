@@ -1879,6 +1879,22 @@ random_number (int max)
   return (int)bounded;
 }
 
+/* Return a random uniformly distributed floating point number in the
+   [0, 1) range.  The precision of returned numbers is 9 digits.
+
+   Modify this to use erand48() where available!  */
+
+double
+random_float (void)
+{
+  /* We can't rely on any specific value of RAND_MAX, but I'm pretty
+     sure it's greater than 1000.  */
+  int rnd1 = random_number (1000);
+  int rnd2 = random_number (1000);
+  int rnd3 = random_number (1000);
+  return rnd1 / 1000.0 + rnd2 / 1000000.0 + rnd3 / 1000000000.0;
+}
+
 #if 0
 /* A debugging function for checking whether an MD5 library works. */
 
@@ -1950,7 +1966,7 @@ abort_run_with_timeout (int sig)
 #endif /* USE_SIGNAL_TIMEOUT */
 
 int
-run_with_timeout (long timeout, void (*fun) (void *), void *arg)
+run_with_timeout (double timeout, void (*fun) (void *), void *arg)
 {
 #ifndef USE_SIGNAL_TIMEOUT
   fun (arg);
@@ -1964,6 +1980,13 @@ run_with_timeout (long timeout, void (*fun) (void *), void *arg)
       return 0;
     }
 
+  /* Calling alarm() rounds TIMEOUT.  If it is smaller than 1, round
+     it to 1, not to 0, because alarm(0) means "never deliver the
+     alarm", i.e. "wait forever", which is not what someone who
+     specifies a 0.5s timeout would expect.  */
+  if (timeout < 1)
+    timeout = 1;
+
   signal (SIGALRM, abort_run_with_timeout);
   if (SETJMP (run_with_timeout_env) != 0)
     {
@@ -1971,7 +1994,7 @@ run_with_timeout (long timeout, void (*fun) (void *), void *arg)
       signal (SIGALRM, SIG_DFL);
       return 1;
     }
-  alarm (timeout);
+  alarm ((int) timeout);
   fun (arg);
 
   /* Preserve errno in case alarm() or signal() modifies it. */
@@ -1983,4 +2006,3 @@ run_with_timeout (long timeout, void (*fun) (void *), void *arg)
   return 0;
 #endif
 }
-
