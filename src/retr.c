@@ -344,6 +344,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       logprintf (LOG_NOTQUIET, "%s: %s.\n", url, uerrmsg (result));
       freeurl (u, 1);
       free_slist (redirections);
+      free (url);
       return result;
     }
 
@@ -379,6 +380,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  logputs (LOG_NOTQUIET, _("Could not find proxy host.\n"));
 	  freeurl (u, 1);
 	  free_slist (redirections);
+	  free (url);
 	  return PROXERR;
 	}
       /* Parse the proxy URL.  */
@@ -391,6 +393,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	    logprintf (LOG_NOTQUIET, _("Proxy %s: Must be HTTP.\n"), proxy);
 	  freeurl (u, 1);
 	  free_slist (redirections);
+	  free (url);
 	  return PROXERR;
 	}
       u->proto = URLHTTP;
@@ -452,6 +455,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  freeurl (newloc_struct, 1);
 	  freeurl (u, 1);
 	  free_slist (redirections);
+	  free (url);
+	  free (mynewloc);
 	  return result;
 	}
 
@@ -469,6 +474,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  freeurl (newloc_struct, 1);
 	  freeurl (u, 1);
 	  free_slist (redirections);
+	  free (url);
+	  free (mynewloc);
 	  return WRONGCODE;
 	}
 
@@ -481,6 +488,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  freeurl (newloc_struct, 1);
 	  freeurl (u, 1);
 	  free_slist (redirections);
+	  free (url);
+	  free (mynewloc);
 	  return WRONGCODE;
 	}
 
@@ -600,7 +609,7 @@ downloaded_exceeds_quota (void)
   if (!opt.quota)
     return 0;
   if (opt.downloaded_overflow)
-    /* We don't really no.  (Wildly) assume not. */
+    /* We don't really know.  (Wildly) assume not. */
     return 0;
 
   return opt.downloaded > opt.quota;

@@ -1,5 +1,11 @@
 2000-11-02  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* retr.c (retrieve_url): Free url before returning.
+	(retrieve_url): Free mynewloc before returning.
+	Spotted by Mark A. Mankins <Mankins_Mark@prc.com>.
+
+2000-11-02  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (parseurl): Remove possible reading past the end of
 	sup_protos[].  Spotted by Mark A. Mankins <Mankins_Mark@prc.com>.
 
