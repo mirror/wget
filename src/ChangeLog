@@ -1,3 +1,8 @@
+1999-05-02  andrew deryabin  <djsf@softhome.net>
+
+	* http.c (gethttp): Specify port in `Host' header only if it's
+	different from 80.
+
 1998-11-03  Edward J. Sabol  <sabol@alderaan.gsfc.nasa.gov>
 
 	* recur.c (recursive_retrieve): If a finite maximum depth is
