@@ -1,5 +1,12 @@
 2000-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* utils.c (xfree_real): Removed.
+	(xfree_debug): Just call free().
+
+	* wget.h (xfree): Make it an alias for free.
+
+2000-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* http.c (http_loop): Furthermore, touch output_document only if
 	it is known to be an existing regular file.
 

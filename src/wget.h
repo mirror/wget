@@ -101,12 +101,11 @@ void logputs PARAMS ((enum log_options, const char *));
 #ifndef DEBUG_MALLOC
 
 #define xmalloc  xmalloc_real
-#define xfree    xfree_real
 #define xrealloc xrealloc_real
 #define xstrdup  xstrdup_real
+#define xfree    free
 
 void *xmalloc_real PARAMS ((size_t));
-void xfree_real PARAMS ((void *));
 void *xrealloc_real PARAMS ((void *, size_t));
 char *xstrdup_real PARAMS ((const char *));
 

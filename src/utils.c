@@ -102,9 +102,9 @@ memfatal (const char *what)
    If memory debugging is not turned on, wget.h defines these:
 
      #define xmalloc xmalloc_real
-     #define xfree xfree_real
      #define xrealloc xrealloc_real
      #define xstrdup xstrdup_real
+     #define xfree free
 
    In case of memory debugging, the definitions are a bit more
    complex, because we want to provide more information, *and* we want
@@ -132,12 +132,6 @@ xmalloc_real (size_t size)
   if (!ptr)
     memfatal ("malloc");
   return ptr;
-}
-
-STATIC_IF_DEBUG void
-xfree_real (void *ptr)
-{
-  free (ptr);
 }
 
 STATIC_IF_DEBUG void *
@@ -279,7 +273,7 @@ xfree_debug (void *ptr, const char *source_file, int source_line)
   assert (ptr != NULL);
   ++free_count;
   unregister_ptr (ptr);
-  xfree_real (ptr);
+  free (ptr);
 }
 
 void *
