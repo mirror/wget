@@ -395,7 +395,7 @@ sufmatch (const char **list, const char *what)
   for (i = 0; list[i]; i++)
     {
       for (j = strlen (list[i]), k = lw; j >= 0 && k >= 0; j--, k--)
-	if (tolower (list[i][j]) != tolower (what[k]))
+	if (TOLOWER (list[i][j]) != TOLOWER (what[k]))
 	  break;
       /* The domain must be first to reach to beginning.  */
       if (j == -1)
