@@ -259,21 +259,24 @@ fd_read_body (int fd, FILE *out, long toread, long startpos,
       double tmout = opt.read_timeout;
       if (progress_interactive)
 	{
-	  double waittm;
 	  /* For interactive progress gauges, always specify a ~1s
 	     timeout, so that the gauge can be updated regularly even
 	     when the data arrives very slowly or stalls.  */
 	  tmout = 0.95;
-	  waittm = (wtimer_read (timer) - last_successful_read_tm) / 1000;
-	  if (waittm + tmout > opt.read_timeout)
+	  if (opt.read_timeout)
 	    {
-	      /* Don't let total idle time exceed read timeout. */
-	      tmout = opt.read_timeout - waittm;
-	      if (tmout < 0)
+	      double waittm;
+	      waittm = (wtimer_read (timer) - last_successful_read_tm) / 1000;
+	      if (waittm + tmout > opt.read_timeout)
 		{
-		  /* We've already exceeded the timeout. */
-		  ret = -1, errno = ETIMEDOUT;
-		  break;
+		  /* Don't let total idle time exceed read timeout. */
+		  tmout = opt.read_timeout - waittm;
+		  if (tmout < 0)
+		    {
+		      /* We've already exceeded the timeout. */
+		      ret = -1, errno = ETIMEDOUT;
+		      break;
+		    }
 		}
 	    }
 	}

@@ -1,5 +1,10 @@
 2003-12-12  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* retr.c (fd_read_body): Don't fiddle with "interactive timeout"
+	if read timeout is unset.
+
+2003-12-12  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c (bind_local): Don't set the IPV6_V6ONLY option on the
 	socket.
 
