@@ -814,8 +814,13 @@ Error in server response, closing control connection.\n"));
     }
   else
     {
+      extern int global_download_count;
       fp = opt.dfp;
-      if (!restval)
+
+      /* Rewind the output document if the download starts over and if
+	 this is the first download.  See gethttp() for a longer
+	 explanation.  */
+      if (!restval && global_download_count == 0)
 	{
 	  /* This will silently fail for streams that don't correspond
 	     to regular files, but that's OK.  */

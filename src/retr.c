@@ -54,6 +54,9 @@ LARGE_INTEGER internal_time;
 static long internal_secs, internal_msecs;
 #endif
 
+/* See the comment in gethttp() why this is needed. */
+int global_download_count;
+
 void logflush PARAMS ((void));
 
 /* From http.c.  */
@@ -571,6 +574,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     *newloc = url;
   else
     xfree (url);
+
+  ++global_download_count;
 
   return result;
 }

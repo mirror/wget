@@ -1285,8 +1285,22 @@ Accept: %s\r\n\
     }
   else				/* opt.dfp */
     {
+      extern int global_download_count;
       fp = opt.dfp;
-      if (!hs->restval)
+      /* To ensure that repeated "from scratch" downloads work for -O
+	 files, we rewind the file pointer, unless restval is
+	 non-zero.  (This works only when -O is used on regular files,
+	 but it's still a valuable feature.)
+
+	 However, this loses when more than one URL is specified on
+	 the command line the second rewinds eradicates the contents
+	 of the first download.  Thus we disable the above trick for
+	 all the downloads except the very first one.
+
+         #### A possible solution to this would be to remember the
+	 file position in the output document and to seek to that
+	 position, instead of rewinding.  */
+      if (!hs->restval && global_download_count == 0)
 	{
 	  /* This will silently fail for streams that don't correspond
 	     to regular files, but that's OK.  */
