@@ -70,9 +70,6 @@ extern int errno;
 /* Defined in log.c.  */
 void log_request_redirect_output PARAMS ((const char *));
 
-static DWORD set_sleep_mode (DWORD mode);
-
-static DWORD pwr_mode = 0;
 static int windows_nt_p;
 
 /* Windows version of xsleep in utils.c.  */
@@ -109,9 +106,6 @@ static void
 ws_cleanup (void)
 {
   WSACleanup ();
-  if (pwr_mode)
-     set_sleep_mode (pwr_mode);
-  pwr_mode = 0;
 }
 
 static void
@@ -233,6 +227,24 @@ ws_mypath (void)
   return wspathsave;
 }
 
+/* Prevent Windows entering sleep/hibernation-mode while Wget is doing
+   a lengthy transfer.  Windows does not, by default, consider network
+   activity in console-programs as activity!  Works on Win-98/ME/2K
+   and up.  */
+static void
+set_sleep_mode (void)
+{
+  typedef DWORD (WINAPI *func_t) (DWORD);
+  func_t set_exec_state;
+
+  set_exec_state =
+      (func_t) GetProcAddress (GetModuleHandle ("KERNEL32.DLL"),
+                               "SetThreadExecutionState");
+
+  if (set_exec_state)
+    set_exec_state (ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
+}
+
 /* Perform Windows specific initialization.  */
 void
 ws_startup (void)
@@ -264,7 +276,7 @@ ws_startup (void)
     }
 
   atexit (ws_cleanup);
-  pwr_mode = set_sleep_mode (0);
+  set_sleep_mode ();
   SetConsoleCtrlHandler (ws_handler, TRUE);
 }
 
@@ -295,33 +307,6 @@ borland_utime (const char *path, const struct utimbuf *times)
   return res;
 }
 #endif
-
-/* Prevent Windows entering sleep/hibernation-mode while Wget is doing
-   a lengthy transfer.  Windows does not, by default, consider network
-   activity in console-programs as activity!  Works on Win-98/ME/2K
-   and up.  */
-static DWORD
-set_sleep_mode (DWORD mode)
-{
-  HMODULE mod = LoadLibrary ("kernel32.dll");
-  DWORD (WINAPI *_SetThreadExecutionState) (DWORD) = NULL;
-  DWORD rc = (DWORD)-1;
-
-  if (mod)
-     (void *)_SetThreadExecutionState
-       = GetProcAddress ((HINSTANCE)mod, "SetThreadExecutionState");
-
-  if (_SetThreadExecutionState)
-    {
-      if (mode == 0)  /* first time */
-	mode = (ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
-      rc = (*_SetThreadExecutionState) (mode);
-    }
-  if (mod)
-    FreeLibrary (mod);
-  DEBUGP (("set_sleep_mode(): mode 0x%08lX, rc 0x%08lX\n", mode, rc));
-  return rc;
-}
 
 /* run_with_timeout Windows implementation.  */
 

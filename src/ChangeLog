@@ -1,3 +1,13 @@
+2004-02-25  David Fritz  <zeroxdf@att.net>
+
+	* mswindows.c (set_sleep_mode): Remove argument and return value.
+	Call GetModuleHandle() instead of LoadLibrary()/FreeLibrary() for
+	kernel32.dll.  Use typedef for function-pointer.  Don't cast
+	l-value.  Don't use dereference operator when calling through
+	function-pointer.
+	(ws_startup): Update call to set_sleep_mode().
+	(ws_cleanup): Remove call to set_sleep_mode().
+
 2004-02-23  David Fritz  <zeroxdf@att.net>
 
 	* http.c (http_loop): Ditto.
