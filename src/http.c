@@ -982,7 +982,8 @@ struct http_stat
   char *remote_time;		/* remote time-stamp string */
   char *error;			/* textual HTTP error */
   int statcode;			/* status code */
-  double dltime;		/* time of the download in msecs */
+  long rd_size;			/* amount of data read from socket */
+  double dltime;		/* time it took to download the data */
   const char *referer;		/* value of the referer header. */
   char **local_file;		/* local file. */
 };
@@ -1718,9 +1719,11 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     flags |= rb_read_exactly;
   if (hs->restval > 0 && contrange == 0)
     flags |= rb_skip_startpos;
+  hs->len = hs->restval;
+  hs->rd_size = 0;
   hs->res = fd_read_body (sock, fp, contlen != -1 ? contlen : 0,
-			  hs->restval, &hs->len, &hs->dltime, flags);
-  hs->len += hs->restval;
+			  hs->restval, &hs->rd_size, &hs->len, &hs->dltime,
+			  flags);
 
   if (hs->res >= 0)
     CLOSE_FINISH (sock);
@@ -2122,7 +2125,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	  return RETROK;
 	}
 
-      tmrate = retr_rate (hstat.len - hstat.restval, hstat.dltime, 0);
+      tmrate = retr_rate (hstat.rd_size, hstat.dltime, 0);
 
       if (hstat.len == hstat.contlen)
 	{

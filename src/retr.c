@@ -143,7 +143,7 @@ limit_bandwidth (long bytes, struct wget_timer *timer)
 
 static int
 write_data (FILE *out, const char *buf, int bufsize, long *skip,
-	    long *transferred)
+	    long *written)
 {
   if (!out)
     return 1;
@@ -160,8 +160,9 @@ write_data (FILE *out, const char *buf, int bufsize, long *skip,
       if (bufsize == 0)
 	return 1;
     }
-  *transferred += bufsize;
+
   fwrite (buf, 1, bufsize, out);
+  *written += bufsize;
 
   /* Immediately flush the downloaded data.  This should not hinder
      performance: fast downloads will arrive in large 16K chunks
@@ -180,9 +181,11 @@ write_data (FILE *out, const char *buf, int bufsize, long *skip,
    by the progress gauge.
 
    STARTPOS is the position from which the download starts, used by
-   the progress gauge.  The amount of data read gets stored to
-   *TRANSFERRED.  The time it took to download the data (in
-   milliseconds) is stored to *ELAPSED.
+   the progress gauge.  If QTYREAD is non-NULL, the value it points to
+   is incremented by the amount of data read from the network.  If
+   QTYWRITTEN is non-NULL, the value it points to is incremented by
+   the amount of data written to disk.  The time it took to download
+   the data (in milliseconds) is stored to ELAPSED.
 
    The function exits and returns the amount of data read.  In case of
    error while reading data, -1 is returned.  In case of error while
@@ -190,7 +193,7 @@ write_data (FILE *out, const char *buf, int bufsize, long *skip,
 
 int
 fd_read_body (int fd, FILE *out, long toread, long startpos,
-	      long *transferred, double *elapsed, int flags)
+	      long *qtyread, long *qtywritten, double *elapsed, int flags)
 {
   int ret = 0;
 
@@ -212,11 +215,10 @@ fd_read_body (int fd, FILE *out, long toread, long startpos,
   int exact = flags & rb_read_exactly;
   long skip = 0;
 
-  /* How much data we've read.  This is used internally and is
-     unaffected by skipping STARTPOS.  */
-  long total_read = 0;
+  /* How much data we've read/written.  */
+  long sum_read = 0;
+  long sum_written = 0;
 
-  *transferred = 0;
   if (flags & rb_skip_startpos)
     skip = startpos;
 
@@ -251,9 +253,9 @@ fd_read_body (int fd, FILE *out, long toread, long startpos,
      means that it is unknown how much data is to arrive.  However, if
      EXACT is set, then toread==0 means what it says: that no data
      should be read.  */
-  while (!exact || (total_read < toread))
+  while (!exact || (sum_read < toread))
     {
-      int rdsize = exact ? MIN (toread - total_read, dlbufsize) : dlbufsize;
+      int rdsize = exact ? MIN (toread - sum_read, dlbufsize) : dlbufsize;
       double tmout = opt.read_timeout;
       if (progress_interactive)
 	{
@@ -265,7 +267,7 @@ fd_read_body (int fd, FILE *out, long toread, long startpos,
 	  waittm = (wtimer_read (timer) - last_successful_read_tm) / 1000;
 	  if (waittm + tmout > opt.read_timeout)
 	    {
-	      /* Don't allow waiting time to exceed read timeout. */
+	      /* Don't let total idle time exceed read timeout. */
 	      tmout = opt.read_timeout - waittm;
 	      if (tmout < 0)
 		{
@@ -278,9 +280,9 @@ fd_read_body (int fd, FILE *out, long toread, long startpos,
       ret = fd_read (fd, dlbuf, rdsize, tmout);
 
       if (ret == 0 || (ret < 0 && errno != ETIMEDOUT))
-	break;
+	break;			/* read error */
       else if (ret < 0)
-	ret = 0;		/* timeout */
+	ret = 0;		/* read timeout */
 
       if (progress || opt.limit_rate)
 	{
@@ -291,8 +293,8 @@ fd_read_body (int fd, FILE *out, long toread, long startpos,
 
       if (ret > 0)
 	{
-	  total_read += ret;
-	  if (!write_data (out, dlbuf, ret, &skip, transferred))
+	  sum_read += ret;
+	  if (!write_data (out, dlbuf, ret, &skip, &sum_written))
 	    {
 	      ret = -2;
 	      goto out;
@@ -307,7 +309,7 @@ fd_read_body (int fd, FILE *out, long toread, long startpos,
 #ifdef WINDOWS
       if (toread > 0)
 	ws_percenttitle (100.0 *
-			 (startpos + total_read) / (startpos + toread));
+			 (startpos + sum_read) / (startpos + toread));
 #endif
     }
   if (ret < -1)
@@ -316,10 +318,16 @@ fd_read_body (int fd, FILE *out, long toread, long startpos,
  out:
   if (progress)
     progress_finish (progress, wtimer_read (timer));
+
   if (elapsed)
     *elapsed = wtimer_read (timer);
   if (timer)
     wtimer_delete (timer);
+
+  if (qtyread)
+    *qtyread += sum_read;
+  if (qtywritten)
+    *qtywritten += sum_written;
 
   return ret;
 }

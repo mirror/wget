@@ -246,6 +246,7 @@ getftp (struct url *u, long *len, long restval, ccon *con)
   long expected_bytes = 0L;
   int rest_failed = 0;
   int flags;
+  long rd_size;
 
   assert (con != NULL);
   assert (con->target != NULL);
@@ -1000,13 +1001,14 @@ Error in server response, closing control connection.\n"));
   flags = 0;
   if (restval && rest_failed)
     flags |= rb_skip_startpos;
+  *len = restval;
+  rd_size = 0;
   res = fd_read_body (dtsock, fp,
 		      expected_bytes ? expected_bytes - restval : 0,
-		      restval, len, &con->dltime, flags);
-  *len += restval;
+		      restval, &rd_size, len, &con->dltime, flags);
 
   tms = time_str (NULL);
-  tmrate = retr_rate (*len - restval, con->dltime, 0);
+  tmrate = retr_rate (rd_size, con->dltime, 0);
   /* Close data connection socket.  */
   fd_close (dtsock);
   fd_close (local_sock);
@@ -1247,7 +1249,6 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	  /* Not as great.  */
 	  abort ();
 	}
-      /* Time?  */
       tms = time_str (NULL);
       if (!opt.spider)
         tmrate = retr_rate (len - restval, con->dltime, 0);

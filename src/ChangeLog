@@ -1,3 +1,13 @@
+2003-12-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* ftp.c (getftp): Ditto.
+
+	* http.c (gethttp): Correctly calculate bandwidth as total data
+	read divided with download time.
+
+	* retr.c (fd_read_body): Separate the return values for data
+	written and read.
+
 2003-12-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (H_REDIRECTED): Respect the HTTP/1.1 "303 See Other"

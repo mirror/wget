@@ -36,7 +36,8 @@ enum {
   rb_skip_startpos = 2
 };
 
-int fd_read_body PARAMS ((int, FILE *, long, long, long *, double *, int));
+int fd_read_body PARAMS ((int, FILE *, long, long, long *, long *, double *,
+                          int));
 
 typedef const char *(*hunk_terminator_t) PARAMS ((const char *, int, int));
 
