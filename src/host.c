@@ -157,6 +157,21 @@ address_list_new (char **h_addr_list)
   return al;
 }
 
+/* Like address_list_new, but initialized with only one address. */
+
+static struct address_list *
+address_list_new_one (const char *addr)
+{
+  struct address_list *al = xmalloc (sizeof (struct address_list));
+  al->count    = 1;
+  al->faulty   = 0;
+  al->buffer   = xmalloc (IP4_ADDRESS_LENGTH);
+  al->refcount = 1;
+  memcpy (ADDR_LOCATION (al, 0), addr, IP4_ADDRESS_LENGTH);
+
+  return al;
+}
+
 static void
 address_list_delete (struct address_list *al)
 {
@@ -223,9 +238,6 @@ lookup_host (const char *host, int silent)
   addr = (unsigned long)inet_addr (host);
   if ((int)addr != -1)
     {
-      char tmpstore[IP4_ADDRESS_LENGTH];
-      char *lst[2];
-
       /* ADDR is defined to be in network byte order, which is what
 	 this returns, so we can just copy it to STORE_IP.  However,
 	 on big endian 64-bit architectures the value will be stored
@@ -237,10 +249,7 @@ lookup_host (const char *host, int silent)
 #else
       offset = 0;
 #endif
-      memcpy (tmpstore, (char *)&addr + offset, IP4_ADDRESS_LENGTH);
-      lst[0] = tmpstore;
-      lst[1] = NULL;
-      return address_list_new (lst);
+      return address_list_new_one ((char *)&addr + offset);
     }
 
   /* By now we know that the host name we got is not of the form
@@ -270,6 +279,8 @@ lookup_host (const char *host, int silent)
   if (!silent)
     logprintf (LOG_VERBOSE, _("done.\n"));
 
+  /* Do all systems have h_addr_list, or is it a newer thing?  If the
+     latter, use address_list_new_one.  */
   al = address_list_new (hptr->h_addr_list);
 
   /* Cache the lookup information. */
