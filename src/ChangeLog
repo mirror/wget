@@ -1,3 +1,7 @@
+2003-11-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c (sock_write): It's not necessary to initialize RES.
+
 2003-11-19  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* main.c (main): Don't reference opt.ipv4_only and opt.ipv6_only
