@@ -1,3 +1,8 @@
+2003-09-14  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Download Options): Document the new option
+	--restrict-file-names and the corresponding wgetrc command.
+
 2003-09-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Download Options): Documented new option --dns-cache.

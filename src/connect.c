@@ -30,6 +30,7 @@ so, delete this exception statement from your version.  */
 #include <config.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>

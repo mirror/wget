@@ -184,6 +184,12 @@ struct options
 
   char *post_data;		/* POST query string */
   char *post_file_name;		/* File to post */
+
+  enum {
+    restrict_none,
+    restrict_shell,
+    restrict_windows
+  } restrict_file_names;	/* whether we restrict file name chars. */
 };
 
 extern struct options opt;

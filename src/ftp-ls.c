@@ -842,8 +842,8 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
     {
       char *tmpu, *tmpp;        /* temporary, clean user and passwd */
 
-      tmpu = encode_string (u->user);
-      tmpp = u->passwd ? encode_string (u->passwd) : NULL;
+      tmpu = url_escape (u->user);
+      tmpp = u->passwd ? url_escape (u->passwd) : NULL;
       upwd = (char *)xmalloc (strlen (tmpu)
 			     + (tmpp ? (1 + strlen (tmpp)) : 0) + 2);
       sprintf (upwd, "%s%s%s@", tmpu, tmpp ? ":" : "", tmpp ? tmpp : "");
@@ -863,7 +863,8 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
       fprintf (fp, "  ");
       if (f->tstamp != -1)
 	{
-	  /* #### Should we translate the months? */
+	  /* #### Should we translate the months?  Or, even better, use
+	     ISO 8601 dates?  */
 	  static char *months[] = {
 	    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 	    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"

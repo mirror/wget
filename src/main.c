@@ -179,10 +179,11 @@ Download:\n\
        --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n\
        --limit-rate=RATE        limit download rate to RATE.\n\
        --dns-cache=off          disable caching DNS lookups.\n\
+       --restrict-file-names=MODE restrict chars in file names to MODE.\n\
 \n"), stdout);
   fputs (_("\
 Directories:\n\
-  -nd  --no-directories            don\'t create directories.\n\
+  -nd, --no-directories            don\'t create directories.\n\
   -x,  --force-directories         force creation of directories.\n\
   -nH, --no-host-directories       don\'t create host directories.\n\
   -P,  --directory-prefix=PREFIX   save files to PREFIX/...\n\
@@ -344,6 +345,7 @@ main (int argc, char *const *argv)
     { "proxy-user", required_argument, NULL, 143 },
     { "quota", required_argument, NULL, 'Q' },
     { "reject", required_argument, NULL, 'R' },
+    { "restrict-file-names", required_argument, NULL, 176 },
     { "save-cookies", required_argument, NULL, 162 },
     { "timeout", required_argument, NULL, 'T' },
     { "tries", required_argument, NULL, 't' },
@@ -609,6 +611,9 @@ GNU General Public License for more details.\n"));
 	  break;
 	case 175:
 	  setval ("dnscache", optarg);
+	  break;
+	case 176:
+	  setval ("restrictfilenames", optarg);
 	  break;
 	case 'A':
 	  setval ("accept", optarg);

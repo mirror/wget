@@ -130,7 +130,7 @@ typedef enum
 
 /* Function declarations */
 
-char *encode_string PARAMS ((const char *));
+char *url_escape PARAMS ((const char *));
 
 struct url *url_parse PARAMS ((const char *, int *));
 const char *url_error PARAMS ((int));
@@ -157,7 +157,7 @@ char *uri_merge PARAMS ((const char *, const char *));
 
 void rotate_backups PARAMS ((const char *));
 int mkalldirs PARAMS ((const char *));
-char *url_filename PARAMS ((const struct url *));
+char *url_file_name PARAMS ((const struct url *));
 
 char *getproxy PARAMS ((struct url *));
 int no_proxy_match PARAMS ((const char *, const char **));

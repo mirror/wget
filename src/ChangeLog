@@ -1,5 +1,33 @@
 2003-09-14  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c (append_uri_pathel): Use opt.restrict_file_names when
+	calling file_unsafe_char.
+
+	* init.c: New command restrict_file_names.
+
+	* main.c (main): New option --restrict-file-names[=windows,unix].
+
+	* url.c (url_file_name): Renamed from url_filename.
+	(url_file_name): Add directory and hostdir prefix here, not in
+	mkstruct.
+	(append_dir_structure): New function, does part of the work that
+	used to be in mkstruct.  Iterates over path elements in u->path,
+	calling append_uri_pathel on each one to append it to the file
+	name.
+	(append_uri_pathel): URL-unescape a path element and reencode it
+	with a different set of rules, more appropriate for handling of
+	files.
+	(file_unsafe_char): New function, uses a lookup table to decide
+	whether a character should be escaped for use in file name.
+	(append_string): New utility function.
+	(append_char): Ditto.
+	(file_unsafe_char): New argument restrict_for_windows, decide
+	whether Windows file names should be escaped in run-time.
+
+	* connect.c: Include <stdlib.h> to get prototype for abort().
+
+2003-09-14  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (wtimer_sys_set): Extracted the code that sets the
 	current time here.
 	(wtimer_reset): Call it.

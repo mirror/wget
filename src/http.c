@@ -1614,12 +1614,12 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
     hstat.local_file = local_file;
   else if (local_file)
     {
-      *local_file = url_filename (u);
+      *local_file = url_file_name (u);
       hstat.local_file = local_file;
     }
   else
     {
-      dummy = url_filename (u);
+      dummy = url_file_name (u);
       hstat.local_file = &dummy;
     }
 

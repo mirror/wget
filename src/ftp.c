@@ -1025,7 +1025,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
   struct stat st;
 
   if (!con->target)
-    con->target = url_filename (u);
+    con->target = url_file_name (u);
 
   if (opt.noclobber && file_exists_p (con->target))
     {
@@ -1245,7 +1245,7 @@ ftp_get_listing (struct url *u, ccon *con, struct fileinfo **f)
   /* Find the listing file name.  We do it by taking the file name of
      the URL and replacing the last component with the listing file
      name.  */
-  uf = url_filename (u);
+  uf = url_file_name (u);
   lf = file_merge (uf, LIST_FILENAME);
   xfree (uf);
   DEBUGP ((_("Using `%s' as listing tmp file.\n"), lf));
@@ -1335,7 +1335,7 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
       ofile = xstrdup (u->file);
       url_set_file (u, f->name);
 
-      con->target = url_filename (u);
+      con->target = url_file_name (u);
       err = RETROK;
 
       dlthis = 1;
@@ -1723,7 +1723,7 @@ ftp_loop (struct url *u, int *dt, struct url *proxy)
 	      char *filename = (opt.output_document
 				? xstrdup (opt.output_document)
 				: (con.target ? xstrdup (con.target)
-				   : url_filename (u)));
+				   : url_file_name (u)));
 	      res = ftp_index (filename, u, f);
 	      if (res == FTPOK && opt.verbose)
 		{

@@ -100,6 +100,7 @@ CMD_DECLARE (cmd_spec_htmlify);
 CMD_DECLARE (cmd_spec_mirror);
 CMD_DECLARE (cmd_spec_progress);
 CMD_DECLARE (cmd_spec_recursive);
+CMD_DECLARE (cmd_spec_restrict_file_names);
 CMD_DECLARE (cmd_spec_useragent);
 
 /* List of recognized commands, each consisting of name, closure and function.
@@ -188,6 +189,7 @@ static struct {
   { "reject",		&opt.rejects,		cmd_vector },
   { "relativeonly",	&opt.relative_only,	cmd_boolean },
   { "removelisting",	&opt.remove_listing,	cmd_boolean },
+  { "restrictfilenames", &opt.restrict_file_names, cmd_spec_restrict_file_names },
   { "retrsymlinks",	&opt.retr_symlinks,	cmd_boolean },
   { "retryconnrefused",	&opt.retry_connrefused,	cmd_boolean },
   { "robots",		&opt.use_robots,	cmd_boolean },
@@ -281,6 +283,13 @@ defaults (void)
   opt.dots_in_line = 50;
 
   opt.dns_cache = 1;
+
+  /* The default for file name restriction defaults to the OS type. */
+#if !defined(WINDOWS) && !defined(__CYGWIN__)
+  opt.restrict_file_names = restrict_shell;
+#else
+  opt.restrict_file_names = restrict_windows;
+#endif
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is
@@ -1004,6 +1013,26 @@ cmd_spec_recursive (const char *com, const char *val, void *closure)
     {
       if (opt.recursive && !opt.no_dirstruct)
 	opt.dirstruct = 1;
+    }
+  return 1;
+}
+
+static int
+cmd_spec_restrict_file_names (const char *com, const char *val, void *closure)
+{
+  /* The currently accepted values are `none', `unix', and
+     `windows'.  */
+  if (0 == strcasecmp (val, "none"))
+    opt.restrict_file_names = restrict_none;
+  else if (0 == strcasecmp (val, "unix"))
+    opt.restrict_file_names = restrict_shell;
+  else if (0 == strcasecmp (val, "windows"))
+    opt.restrict_file_names = restrict_windows;
+  else
+    {
+      fprintf (stderr, _("%s: %s: Invalid specification `%s'.\n"),
+	       exec_name, com, val);
+      return 0;
     }
   return 1;
 }

@@ -1,5 +1,6 @@
 /* URL handling.
-   Copyright (C) 1995, 1996, 1997, 2000, 2001 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 2000, 2001, 2003, 2003
+   Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -95,23 +96,21 @@ static int path_simplify PARAMS ((char *));
    code assumes ASCII character set and 8-bit chars.  */
 
 enum {
+  /* rfc1738 reserved chars, preserved from encoding.  */
   urlchr_reserved = 1,
+
+  /* rfc1738 unsafe chars, plus some more.  */
   urlchr_unsafe   = 2
 };
 
+#define urlchr_test(c, mask) (urlchr_table[(unsigned char)(c)] & (mask))
+#define URL_RESERVED_CHAR(c) urlchr_test(c, urlchr_reserved)
+#define URL_UNSAFE_CHAR(c) urlchr_test(c, urlchr_unsafe)
+
+/* Shorthands for the table: */
 #define R  urlchr_reserved
 #define U  urlchr_unsafe
 #define RU R|U
-
-#define urlchr_test(c, mask) (urlchr_table[(unsigned char)(c)] & (mask))
-
-/* rfc1738 reserved chars, preserved from encoding.  */
-
-#define RESERVED_CHAR(c) urlchr_test(c, urlchr_reserved)
-
-/* rfc1738 unsafe chars, plus some more.  */
-
-#define UNSAFE_CHAR(c) urlchr_test(c, urlchr_unsafe)
 
 const static unsigned char urlchr_table[256] =
 {
@@ -142,6 +141,9 @@ const static unsigned char urlchr_table[256] =
   U, U, U, U,  U, U, U, U,  U, U, U, U,  U, U, U, U,
   U, U, U, U,  U, U, U, U,  U, U, U, U,  U, U, U, U,
 };
+#undef R
+#undef U
+#undef RU
 
 /* Decodes the forms %xy in a URL to the character the hexadecimal
    code of which is xy.  xy are hexadecimal digits from
@@ -150,7 +152,7 @@ const static unsigned char urlchr_table[256] =
    literally.  */
 
 static void
-decode_string (char *s)
+url_unescape (char *s)
 {
   char *t = s;			/* t - tortoise */
   char *h = s;			/* h - hare     */
@@ -175,10 +177,10 @@ decode_string (char *s)
   *t = '\0';
 }
 
-/* Like encode_string, but return S if there are no unsafe chars.  */
+/* Like url_escape, but return S if there are no unsafe chars.  */
 
 static char *
-encode_string_maybe (const char *s)
+url_escape_allow_passthrough (const char *s)
 {
   const char *p1;
   char *p2, *newstr;
@@ -186,7 +188,7 @@ encode_string_maybe (const char *s)
   int addition = 0;
 
   for (p1 = s; *p1; p1++)
-    if (UNSAFE_CHAR (*p1))
+    if (URL_UNSAFE_CHAR (*p1))
       addition += 2;		/* Two more characters (hex digits) */
 
   if (!addition)
@@ -199,7 +201,7 @@ encode_string_maybe (const char *s)
   p2 = newstr;
   while (*p1)
     {
-      if (UNSAFE_CHAR (*p1))
+      if (URL_UNSAFE_CHAR (*p1))
 	{
 	  unsigned char c = *p1++;
 	  *p2++ = '%';
@@ -215,13 +217,13 @@ encode_string_maybe (const char *s)
   return newstr;
 }
 
-/* Encode the unsafe characters (as determined by UNSAFE_CHAR) in a
+/* Encode the unsafe characters (as determined by URL_UNSAFE_CHAR) in a
    given string, returning a malloc-ed %XX encoded string.  */
   
 char *
-encode_string (const char *s)
+url_escape (const char *s)
 {
-  char *encoded = encode_string_maybe (s);
+  char *encoded = url_escape_allow_passthrough (s);
   if (encoded != s)
     return encoded;
   else
@@ -232,13 +234,13 @@ encode_string (const char *s)
    the old value of PTR is freed and PTR is made to point to the newly
    allocated storage.  */
 
-#define ENCODE(ptr) do {			\
-  char *e_new = encode_string_maybe (ptr);	\
-  if (e_new != ptr)				\
-    {						\
-      xfree (ptr);				\
-      ptr = e_new;				\
-    }						\
+#define ENCODE(ptr) do {				\
+  char *e_new = url_escape_allow_passthrough (ptr);	\
+  if (e_new != ptr)					\
+    {							\
+      xfree (ptr);					\
+      ptr = e_new;					\
+    }							\
 } while (0)
 
 enum copy_method { CM_DECODE, CM_ENCODE, CM_PASSTHROUGH };
@@ -258,7 +260,7 @@ decide_copy_method (const char *p)
 	  char preempt = (XCHAR_TO_XDIGIT (*(p + 1)) << 4) +
 	    XCHAR_TO_XDIGIT (*(p + 2));
 
-	  if (UNSAFE_CHAR (preempt) || RESERVED_CHAR (preempt))
+	  if (URL_UNSAFE_CHAR (preempt) || URL_RESERVED_CHAR (preempt))
 	    return CM_PASSTHROUGH;
 	  else
 	    return CM_DECODE;
@@ -267,20 +269,20 @@ decide_copy_method (const char *p)
 	/* Garbled %.. sequence: encode `%'. */
 	return CM_ENCODE;
     }
-  else if (UNSAFE_CHAR (*p) && !RESERVED_CHAR (*p))
+  else if (URL_UNSAFE_CHAR (*p) && !URL_RESERVED_CHAR (*p))
     return CM_ENCODE;
   else
     return CM_PASSTHROUGH;
 }
 
-/* Translate a %-quoting (but possibly non-conformant) input string S
-   into a %-quoting (and conformant) output string.  If no characters
+/* Translate a %-escaped (but possibly non-conformant) input string S
+   into a %-escaped (and conformant) output string.  If no characters
    are encoded or decoded, return the same string S; otherwise, return
    a freshly allocated string with the new contents.
 
    After a URL has been run through this function, the protocols that
    use `%' as the quote character can use the resulting string as-is,
-   while those that don't call decode_string() to get to the intended
+   while those that don't call url_unescape() to get to the intended
    data.  This function is also stable: after an input string is
    transformed the first time, all further transformations of the
    result yield the same result string.
@@ -293,20 +295,21 @@ decide_copy_method (const char *p)
 
        GET /abc%20def HTTP/1.0
 
-   So it appears that the unsafe chars need to be quoted, as with
-   encode_string.  But what if we're requested to download
-   `abc%20def'?  Remember that %-encoding is valid URL syntax, so what
-   the user meant was a literal space, and he was kind enough to quote
-   it.  In that case, Wget should obviously leave the `%20' as is, and
-   send the same request as above.  So in this case we may not call
-   encode_string.
+   It appears that the unsafe chars need to be quoted, for example
+   with url_escape.  But what if we're requested to download
+   `abc%20def'?  url_escape transforms "%" to "%25", which would leave
+   us with `abc%2520def'.  This is incorrect -- since %-escapes are
+   part of URL syntax, "%20" is the correct way to denote a literal
+   space on the Wget command line.  This leaves us in the conclusion
+   that in that case Wget should not call url_escape, but leave the
+   `%20' as is.
 
-   But what if the requested URI is `abc%20 def'?  If we call
-   encode_string, we end up with `/abc%2520%20def', which is almost
-   certainly not intended.  If we don't call encode_string, we are
-   left with the embedded space and cannot send the request.  What the
+   And what if the requested URI is `abc%20 def'?  If we call
+   url_escape, we end up with `/abc%2520%20def', which is almost
+   certainly not intended.  If we don't call url_escape, we are left
+   with the embedded space and cannot complete the request.  What the
    user meant was for Wget to request `/abc%20%20def', and this is
-   where reencode_string kicks in.
+   where reencode_escapes kicks in.
 
    Wget used to solve this by first decoding %-quotes, and then
    encoding all the "unsafe" characters found in the resulting string.
@@ -317,7 +320,7 @@ decide_copy_method (const char *p)
    is inevitable because by the second step we would lose information
    on whether the `+' was originally encoded or not.  Both results
    were wrong because in CGI parameters + means space, while %2B means
-   literal plus.  reencode_string correctly translates the above to
+   literal plus.  reencode_escapes correctly translates the above to
    "a%2B+b", i.e. returns the original string.
 
    This function uses an algorithm proposed by Anon Sricharoenchai:
@@ -352,7 +355,7 @@ decide_copy_method (const char *p)
    "foo%2b+bar"      -> "foo%2b+bar"  */
 
 static char *
-reencode_string (const char *s)
+reencode_escapes (const char *s)
 {
   const char *p1;
   char *newstr, *p2;
@@ -417,12 +420,12 @@ reencode_string (const char *s)
   return newstr;
 }
 
-/* Run PTR_VAR through reencode_string.  If a new string is consed,
+/* Run PTR_VAR through reencode_escapes.  If a new string is consed,
    free PTR_VAR and make it point to the new storage.  Obviously,
    PTR_VAR needs to be an lvalue.  */
 
 #define REENCODE(ptr_var) do {			\
-  char *rf_new = reencode_string (ptr_var);	\
+  char *rf_new = reencode_escapes (ptr_var);	\
   if (rf_new != ptr_var)			\
     {						\
       xfree (ptr_var);				\
@@ -544,9 +547,9 @@ parse_uname (const char *str, int len, char **user, char **passwd)
   (*user)[len] = '\0';
 
   if (*user)
-    decode_string (*user);
+    url_unescape (*user);
   if (*passwd)
-    decode_string (*passwd);
+    url_unescape (*passwd);
 
   return 1;
 }
@@ -610,6 +613,10 @@ rewrite_shorthand_url (const char *url)
 }
 
 static void parse_path PARAMS ((const char *, char **, char **));
+
+/* Like strpbrk, with the exception that it returns the pointer to the
+   terminating zero (end-of-string aka "eos") if no matching character
+   is found.  */
 
 static char *
 strpbrk_or_eos (const char *s, const char *accept)
@@ -825,7 +832,7 @@ url_parse (const char *url, int *error)
       return NULL;
     }
 
-  url_encoded = reencode_string (url);
+  url_encoded = reencode_escapes (url);
   p = url_encoded;
 
   p += strlen (supported_schemes[scheme].leading_string);
@@ -1016,9 +1023,9 @@ url_parse (const char *url, int *error)
   else
     {
       if (url_encoded == url)
-	u->url    = xstrdup (url);
+	u->url = xstrdup (url);
       else
-	u->url    = url_encoded;
+	u->url = url_encoded;
     }
   url_encoded = NULL;
 
@@ -1032,13 +1039,13 @@ url_error (int error_code)
   return parse_errors[error_code];
 }
 
-static void
-parse_path (const char *quoted_path, char **dir, char **file)
-{
-  char *path, *last_slash;
+/* Parse PATH into dir and file.  PATH is extracted from the URL and
+   is URL-escaped.  The function returns unescaped DIR and FILE.  */
 
-  STRDUP_ALLOCA (path, quoted_path);
-  decode_string (path);
+static void
+parse_path (const char *path, char **dir, char **file)
+{
+  char *last_slash;
 
   last_slash = strrchr (path, '/');
   if (!last_slash)
@@ -1051,6 +1058,8 @@ parse_path (const char *quoted_path, char **dir, char **file)
       *dir = strdupdelim (path, last_slash);
       *file = xstrdup (last_slash + 1);
     }
+  url_unescape (*dir);
+  url_unescape (*file);
 }
 
 /* Note: URL's "full path" is the path with the query string and
@@ -1303,8 +1312,6 @@ rotate_backups(const char *fname)
     {
       sprintf (from, "%s.%d", fname, i - 1);
       sprintf (to, "%s.%d", fname, i);
-      /* #### This will fail on machines without the rename() system
-         call.  */
       rename (from, to);
     }
 
@@ -1323,11 +1330,14 @@ mkalldirs (const char *path)
   int res;
 
   p = path + strlen (path);
-  for (; *p != '/' && p != path; p--);
+  for (; *p != '/' && p != path; p--)
+    ;
+
   /* Don't create if it's just a file.  */
   if ((p == path) && (*p != '/'))
     return 0;
   t = strdupdelim (path, p);
+
   /* Check whether the directory exists.  */
   if ((stat (t, &st) == 0))
     {
@@ -1360,194 +1370,302 @@ mkalldirs (const char *path)
   xfree (t);
   return res;
 }
+
+/* Functions for constructing the file name out of URL components.  */
 
-static int
-count_slashes (const char *s)
+/* A growable string structure, used by url_file_name and friends.
+   This should perhaps be moved to utils.c.
+
+   The idea is to have an easy way to construct a string by having
+   various functions append data to it.  Instead of passing the
+   obligatory BASEVAR, SIZEVAR and TAILPOS to all the functions in
+   questions, we pass the pointer to this struct.  */
+
+struct growable {
+  char *base;
+  int size;
+  int tail;
+};
+
+/* Ensure that the string can accept APPEND_COUNT more characters past
+   the current TAIL position.  If necessary, this will grow the string
+   and update its allocated size.  If the string is already large
+   enough to take TAIL+APPEND_COUNT characters, this does nothing.  */
+#define GROW(g, append_size) do {					\
+  struct growable *G_ = g;						\
+  DO_REALLOC (G_->base, G_->size, G_->tail + append_size, char);	\
+} while (0)
+
+/* Return the tail position of the string. */
+#define TAIL(r) ((r)->base + (r)->tail)
+
+/* Move the tail position by APPEND_COUNT characters. */
+#define TAIL_INCR(r, append_count) ((r)->tail += append_count)
+
+/* Append the string STR to DEST.  NOTICE: the string in DEST is not
+   terminated.  */
+
+static void
+append_string (const char *str, struct growable *dest)
 {
-  int i = 0;
-  while (*s)
-    if (*s++ == '/')
-      ++i;
-  return i;
+  int l = strlen (str);
+  GROW (dest, l);
+  memcpy (TAIL (dest), str, l);
+  TAIL_INCR (dest, l);
 }
 
-/* Return the path name of the URL-equivalent file name, with a
-   remote-like structure of directories.  */
-static char *
-mkstruct (const struct url *u)
+/* Append CH to DEST.  For example, append_char (0, DEST)
+   zero-terminates DEST.  */
+
+static void
+append_char (char ch, struct growable *dest)
 {
-  char *dir, *file;
-  char *res, *dirpref;
-  int l;
-
-  if (opt.cut_dirs)
-    {
-      char *ptr = u->dir + (*u->dir == '/');
-      int slash_count = 1 + count_slashes (ptr);
-      int cut = MINVAL (opt.cut_dirs, slash_count);
-      for (; cut && *ptr; ptr++)
-	if (*ptr == '/')
-	  --cut;
-      STRDUP_ALLOCA (dir, ptr);
-    }
-  else
-    dir = u->dir + (*u->dir == '/');
-
-  /* Check for the true name (or at least a consistent name for saving
-     to directory) of HOST, reusing the hlist if possible.  */
-  if (opt.add_hostdir)
-    {
-      /* Add dir_prefix and hostname (if required) to the beginning of
-	 dir.  */
-      dirpref = (char *)alloca (strlen (opt.dir_prefix) + 1
-				+ strlen (u->host)
-				+ 1 + numdigit (u->port)
-				+ 1);
-      if (!DOTP (opt.dir_prefix))
-	sprintf (dirpref, "%s/%s", opt.dir_prefix, u->host);
-      else
-	strcpy (dirpref, u->host);
-
-      if (u->port != scheme_default_port (u->scheme))
-	{
-	  int len = strlen (dirpref);
-	  dirpref[len] = ':';
-	  number_to_string (dirpref + len + 1, u->port);
-	}
-    }
-  else				/* not add_hostdir */
-    {
-      if (!DOTP (opt.dir_prefix))
-	dirpref = opt.dir_prefix;
-      else
-	dirpref = "";
-    }
-
-  /* If there is a prefix, prepend it.  */
-  if (*dirpref)
-    {
-      char *newdir = (char *)alloca (strlen (dirpref) + 1 + strlen (dir) + 2);
-      sprintf (newdir, "%s%s%s", dirpref, *dir == '/' ? "" : "/", dir);
-      dir = newdir;
-    }
-
-  l = strlen (dir);
-  if (l && dir[l - 1] == '/')
-    dir[l - 1] = '\0';
-
-  if (!*u->file)
-    file = "index.html";
-  else
-    file = u->file;
-
-  /* Finally, construct the full name.  */
-  res = (char *)xmalloc (strlen (dir) + 1 + strlen (file)
-			 + 1);
-  sprintf (res, "%s%s%s", dir, *dir ? "/" : "", file);
-
-  return res;
+  GROW (dest, 1);
+  *TAIL (dest) = ch;
+  TAIL_INCR (dest, 1);
 }
 
-/* Compose a file name out of BASE, an unescaped file name, and QUERY,
-   an escaped query string.  The trick is to make sure that unsafe
-   characters in BASE are escaped, and that slashes in QUERY are also
-   escaped.  */
+enum {
+  filechr_unsafe_always  = 1,	/* always unsafe, e.g. / or \0 */
+  filechr_unsafe_shell   = 2,	/* unsafe for shell use, e.g. control chars */
+  filechr_unsafe_windows = 2,	/* disallowed on Windows file system */
+};
 
-static char *
-compose_file_name (char *base, char *query)
+#define FILE_CHAR_TEST(c, mask) (filechr_table[(unsigned char)(c)] & (mask))
+
+/* Shorthands for the table: */
+#define A filechr_unsafe_always
+#define S filechr_unsafe_shell
+#define W filechr_unsafe_windows
+
+/* Forbidden chars:
+
+   always: \0, /
+   Unix shell: 0-31, 128-159
+   Windows:    \, |, /, <, >, ?, :
+
+   Arguably we could also claim `%' to be unsafe, since we use it as
+   the escape character.  If we ever want to be able to reliably
+   translate file name back to URL, this would become important
+   crucial.  Right now, it's better to be minimal in escaping.  */
+
+const static unsigned char filechr_table[256] =
 {
-  char result[256];
-  char *from;
-  char *to = result;
+  A,  S,  S,  S,   S,  S,  S,  S,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
+  S,  S,  S,  S,   S,  S,  S,  S,   /* BS  HT  LF  VT   FF  CR  SO  SI  */
+  S,  S,  S,  S,   S,  S,  S,  S,   /* DLE DC1 DC2 DC3  DC4 NAK SYN ETB */
+  S,  S,  S,  S,   S,  S,  S,  S,   /* CAN EM  SUB ESC  FS  GS  RS  US  */
+  0,  0,  W,  0,   0,  0,  0,  0,   /* SP  !   "   #    $   %   &   '   */
+  0,  0,  W,  0,   0,  0,  0,  A,   /* (   )   *   +    ,   -   .   /   */
+  0,  0,  0,  0,   0,  0,  0,  0,   /* 0   1   2   3    4   5   6   7   */
+  0,  0,  W,  0,   W,  0,  W,  W,   /* 8   9   :   ;    <   =   >   ?   */
+  0,  0,  0,  0,   0,  0,  0,  0,   /* @   A   B   C    D   E   F   G   */
+  0,  0,  0,  0,   0,  0,  0,  0,   /* H   I   J   K    L   M   N   O   */
+  0,  0,  0,  0,   0,  0,  0,  0,   /* P   Q   R   S    T   U   V   W   */
+  0,  0,  0,  0,   W,  0,  0,  0,   /* X   Y   Z   [    \   ]   ^   _   */
+  0,  0,  0,  0,   0,  0,  0,  0,   /* `   a   b   c    d   e   f   g   */
+  0,  0,  0,  0,   0,  0,  0,  0,   /* h   i   j   k    l   m   n   o   */
+  0,  0,  0,  0,   0,  0,  0,  0,   /* p   q   r   s    t   u   v   w   */
+  0,  0,  0,  0,   0,  0,  0,  0,   /* x   y   z   {    |   }   ~   DEL */
 
-  /* Copy BASE to RESULT and encode all unsafe characters.  */
-  from = base;
-  while (*from && to - result < sizeof (result))
+  S, S, S, S,  S, S, S, S,  S, S, S, S,  S, S, S, S, /* 128-143 */
+  S, S, S, S,  S, S, S, S,  S, S, S, S,  S, S, S, S, /* 144-159 */
+  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
+  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
+
+  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
+  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
+  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
+  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
+};
+
+/* Return non-zero if character CH is unsafe for use in file or
+   directory name.  Called by append_uri_pathel. */
+
+static inline int
+file_unsafe_char (char ch, int restrict)
+{
+  int mask = filechr_unsafe_always;
+  if (restrict == restrict_shell)
+    mask |= filechr_unsafe_shell;
+  else if (restrict == restrict_windows)
+    mask |= (filechr_unsafe_shell | filechr_unsafe_windows);
+  return FILE_CHAR_TEST (ch, mask);
+}
+
+/* FN_PORT_SEP is the separator between host and port in file names
+   for non-standard port numbers.  On Unix this is normally ':', as in
+   "www.xemacs.org:4001/index.html".  Under Windows, we set it to +
+   because Windows can't handle ':' in file names.  */
+#define FN_PORT_SEP  (opt.restrict_file_names != restrict_windows ? ':' : '+')
+
+/* FN_QUERY_SEP is the separator between the file name and the URL
+   query, normally '?'.  Since Windows cannot handle '?' as part of
+   file name, we use '@' instead there.  */
+#define FN_QUERY_SEP (opt.restrict_file_names != restrict_windows ? '?' : '@')
+
+/* Quote path element, characters in [b, e), as file name, and append
+   the quoted string to DEST.  Each character is quoted as per
+   file_unsafe_char and the corresponding table.  */
+
+static void
+append_uri_pathel (const char *b, const char *e, struct growable *dest)
+{
+  char *pathel;
+  int pathlen;
+
+  const char *p;
+  int quoted, outlen;
+
+  /* Currently restrict_for_windows is determined at compile time
+     only.  But some users download files to Windows partitions; they
+     should be able to say --windows-file-names so Wget escapes
+     characters invalid on Windows.  Similar run-time restrictions for
+     other file systems can be implemented.  */
+  const int restrict = opt.restrict_file_names;
+
+  /* Copy [b, e) to PATHEL and URL-unescape it. */
+  BOUNDED_TO_ALLOCA (b, e, pathel);
+  url_unescape (pathel);
+  pathlen = strlen (pathel);
+
+  /* Go through PATHEL and check how many characters we'll need to
+     add for file quoting. */
+  quoted = 0;
+  for (p = pathel; *p; p++)
+    if (file_unsafe_char (*p, restrict))
+      ++quoted;
+
+  /* p - pathel is the string length.  Each quoted char means two
+     additional characters in the string, hence 2*quoted.  */
+  outlen = (p - pathel) + (2 * quoted);
+  GROW (dest, outlen);
+
+  if (!quoted)
     {
-      if (UNSAFE_CHAR (*from))
-	{
-	  unsigned char c = *from++;
-	  *to++ = '%';
-	  *to++ = XDIGIT_TO_XCHAR (c >> 4);
-	  *to++ = XDIGIT_TO_XCHAR (c & 0xf);
-	}
-      else
-	*to++ = *from++;
+      /* If there's nothing to quote, we don't need to go through the
+	 string the second time.  */
+      memcpy (TAIL (dest), pathel, outlen);
     }
-
-  if (query && to - result < sizeof (result))
+  else
     {
-      *to++ = '?';
-
-      /* Copy QUERY to RESULT and encode all '/' characters. */
-      from = query;
-      while (*from && to - result < sizeof (result))
+      char *q = TAIL (dest);
+      for (p = pathel; *p; p++)
 	{
-	  if (*from == '/')
-	    {
-	      *to++ = '%';
-	      *to++ = '2';
-	      *to++ = 'F';
-	      ++from;
-	    }
+	  if (!file_unsafe_char (*p, restrict))
+	    *q++ = *p;
 	  else
-	    *to++ = *from++;
+	    {
+	      unsigned char ch = *p;
+	      *q++ = '%';
+	      *q++ = XDIGIT_TO_XCHAR (ch >> 4);
+	      *q++ = XDIGIT_TO_XCHAR (ch & 0xf);
+	    }
 	}
+      assert (q - TAIL (dest) == outlen);
     }
-
-  if (to - result < sizeof (result))
-    *to = '\0';
-  else
-    /* Truncate input which is too long, presumably due to a huge
-       query string.  */
-    result[sizeof (result) - 1] = '\0';
-
-  return xstrdup (result);
+  TAIL_INCR (dest, outlen);
 }
 
-/* Create a unique filename, corresponding to a given URL.  Calls
-   mkstruct if necessary.  Does *not* actually create any directories.  */
-char *
-url_filename (const struct url *u)
+/* Append to DEST the directory structure that corresponds the
+   directory part of URL's path.  For example, if the URL is
+   http://server/dir1/dir2/file, this appends "/dir1/dir2".
+
+   Each path element ("dir1" and "dir2" in the above example) is
+   examined, url-unescaped, and re-escaped as file name element.
+
+   Additionally, it cuts as many directories from the path as
+   specified by opt.cut_dirs.  For example, if opt.cut_dirs is 1, it
+   will produce "bar" for the above example.  For 2 or more, it will
+   produce "".
+
+   Each component of the path is quoted for use as file name.  */
+
+static void
+append_dir_structure (const struct url *u, struct growable *dest)
 {
-  char *file, *name;
+  char *pathel, *next;
+  int cut = opt.cut_dirs;
 
-  char *query = u->query && *u->query ? u->query : NULL;
+  /* Go through the path components, de-URL-quote them, and quote them
+     (if necessary) as file names.  */
 
+  pathel = u->path;
+  for (; (next = strchr (pathel, '/')) != NULL; pathel = next + 1)
+    {
+      if (cut-- > 0)
+	continue;
+      if (pathel == next)
+	/* Ignore empty pathels.  path_simplify should remove
+	   occurrences of "//" from the path, but it has special cases
+	   for starting / which generates an empty pathel here.  */
+	continue;
+
+      if (dest->tail)
+	append_char ('/', dest);
+      append_uri_pathel (pathel, next, dest);
+    }
+}
+
+/* Return a unique file name that matches the given URL as good as
+   possible.  Does not create directories on the file system.  */
+
+char *
+url_file_name (const struct url *u)
+{
+  struct growable fnres;
+
+  char *u_file, *u_query;
+  char *fname, *unique;
+
+  fnres.base = NULL;
+  fnres.size = 0;
+  fnres.tail = 0;
+
+  /* Start with the directory prefix, if specified. */
+  if (!DOTP (opt.dir_prefix))
+    append_string (opt.dir_prefix, &fnres);
+
+  /* If "dirstruct" is turned on (typically the case with -r), add
+     the host and port (unless those have been turned off) and
+     directory structure.  */
   if (opt.dirstruct)
     {
-      char *base = mkstruct (u);
-      file = compose_file_name (base, query);
-      xfree (base);
-    }
-  else
-    {
-      char *base = *u->file ? u->file : "index.html";
-      file = compose_file_name (base, query);
-
-      /* Check whether the prefix directory is something other than "."
-	 before prepending it.  */
-      if (!DOTP (opt.dir_prefix))
+      if (opt.add_hostdir)
 	{
-	  /* #### should just realloc FILE and prepend dir_prefix. */
-	  char *nfile = (char *)xmalloc (strlen (opt.dir_prefix)
-					 + 1 + strlen (file) + 1);
-	  sprintf (nfile, "%s/%s", opt.dir_prefix, file);
-	  xfree (file);
-	  file = nfile;
+	  if (fnres.tail)
+	    append_char ('/', &fnres);
+	  append_string (u->host, &fnres);
+	  if (u->port != scheme_default_port (u->scheme))
+	    {
+	      char portstr[24];
+	      number_to_string (portstr, u->port);
+	      append_char (FN_PORT_SEP, &fnres);
+	      append_string (portstr, &fnres);
+	    }
 	}
+
+      append_dir_structure (u, &fnres);
     }
 
-  /* DOS-ish file systems don't like `%' signs in them; we change it
-     to `@'.  */
-#ifdef WINDOWS
-  {
-    char *p = file;
-    for (p = file; *p; p++)
-      if (*p == '%')
-	*p = '@';
-  }
-#endif /* WINDOWS */
+  /* Add the file name. */
+  if (fnres.tail)
+    append_char ('/', &fnres);
+  u_file = *u->file ? u->file : "index.html";
+  append_uri_pathel (u_file, u_file + strlen (u_file), &fnres);
+
+  /* Append "?query" to the file name. */
+  u_query = u->query && *u->query ? u->query : NULL;
+  if (u_query)
+    {
+      append_char (FN_QUERY_SEP, &fnres);
+      append_uri_pathel (u_query, u_query + strlen (u_query), &fnres);
+    }
+
+  /* Zero-terminate the file name. */
+  append_char ('\0', &fnres);
+
+  fname = fnres.base;
 
   /* Check the cases in which the unique extensions are not used:
      1) Clobbering is turned off (-nc).
@@ -1557,17 +1675,18 @@ url_filename (const struct url *u)
 
      The exception is the case when file does exist and is a
      directory (actually support for bad httpd-s).  */
+
   if ((opt.noclobber || opt.always_rest || opt.timestamping || opt.dirstruct)
-      && !(file_exists_p (file) && !file_non_directory_p (file)))
-    return file;
+      && !(file_exists_p (fname) && !file_non_directory_p (fname)))
+    return fnres.base;
 
   /* Find a unique name.  */
-  name = unique_name (file);
-  xfree (file);
-  return name;
+  unique = unique_name (fname);
+  xfree (fname);
+  return unique;
 }
 
-/* Return the langth of URL's path.  Path is considered to be
+/* Return the length of URL's path.  Path is considered to be
    terminated by one of '?', ';', '#', or by the end of the
    string.  */
 static int
@@ -1680,8 +1799,10 @@ path_simplify (char *path)
       else if (*p == '/')
 	{
 	  /* Remove empty path elements.  Not mandated by rfc1808 et
-	     al, but empty path elements are not all that useful, and
-	     the rest of Wget might not deal with them well. */
+	     al, but it seems like a good idea to get rid of them.
+	     Supporting them properly is hard (in which directory do
+	     you save http://x.com///y.html?) and they don't seem to
+	     bring much gain.  */
 	  char *q = p;
 	  while (*q == '/')
 	    ++q;
@@ -1964,13 +2085,13 @@ url_string (const struct url *url, int hide_password)
   /* Make sure the user name and password are quoted. */
   if (url->user)
     {
-      quoted_user = encode_string_maybe (url->user);
+      quoted_user = url_escape_allow_passthrough (url->user);
       if (url->passwd)
 	{
 	  if (hide_password)
 	    quoted_passwd = HIDDEN_PASSWORD;
 	  else
-	    quoted_passwd = encode_string_maybe (url->passwd);
+	    quoted_passwd = url_escape_allow_passthrough (url->passwd);
 	}
     }
 
