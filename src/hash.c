@@ -67,9 +67,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
    The hashing and equality functions are normally provided by the
    user.  For the special (and frequent) case of hashing strings, you
-   can use the pre-canned make_string_hash_table(), which provides the
-   string hashing function from the Dragon Book, and a string equality
-   wrapper around strcmp().
+   can use the pre-canned make_string_hash_table(), which provides an
+   efficient string hashing function, and a string equality wrapper
+   around strcmp().
 
    When specifying your own hash and test functions, make sure the
    following holds true:
@@ -143,6 +143,9 @@ struct hash_table {
   int count;			/* number of non-empty, non-deleted
                                    fields. */
 
+  int resize_threshold;		/* after size exceeds this number of
+				   entries, resize the table.  */
+
   struct mapping *mappings;
 };
 
@@ -157,7 +160,7 @@ struct hash_table {
 
 /* Find a prime near, but greather than or equal to SIZE. */
 
-int
+static int
 prime_size (int size)
 {
   static const unsigned long primes [] = {
@@ -180,9 +183,12 @@ prime_size (int size)
 }
 
 /* Create a hash table of INITIAL_SIZE with hash function
-   HASH_FUNCTION and test function TEST_FUNCTION.  If you wish to
-   start out with a "small" table which will be regrown as needed,
-   specify 0 as INITIAL_SIZE.  */
+   HASH_FUNCTION and test function TEST_FUNCTION.  INITIAL_SIZE will
+   be rounded to the next prime, so you don't have to worry about it
+   being a prime number.
+
+   Consequently, if you wish to start out with a "small" table which
+   will be regrown as needed, specify INITIAL_SIZE 0.  */
 
 struct hash_table *
 hash_table_new (int initial_size,
@@ -191,12 +197,18 @@ hash_table_new (int initial_size,
 {
   struct hash_table *ht
     = (struct hash_table *)xmalloc (sizeof (struct hash_table));
+
   ht->hash_function = hash_function;
   ht->test_function = test_function;
+
   ht->size = prime_size (initial_size);
+  ht->resize_threshold = ht->size * 3 / 4;
+
   ht->count    = 0;
+
   ht->mappings = xmalloc (ht->size * sizeof (struct mapping));
   memset (ht->mappings, '\0', ht->size * sizeof (struct mapping));
+
   return ht;
 }
 
@@ -210,8 +222,8 @@ hash_table_destroy (struct hash_table *ht)
 }
 
 /* The heart of almost all functions in this file -- find the mapping
-   whose KEY is equal to key, using a linear probing loop.  Returns
-   the offset of the mapping in ht->mappings.  */
+   whose KEY is equal to key, using linear probing.  Returns the
+   mapping that matches KEY, or NULL if none matches.  */
 
 static inline struct mapping *
 find_mapping (struct hash_table *ht, const void *key)
@@ -273,8 +285,6 @@ hash_table_exists (struct hash_table *ht, const void *key)
   return find_mapping (ht, key) != NULL;
 }
 
-#define MAX(i, j) (((i) >= (j)) ? (i) : (j))
-
 /* Grow hash table HT as necessary, and rehash all the key-value
    mappings.  */
 
@@ -283,26 +293,33 @@ grow_hash_table (struct hash_table *ht)
 {
   struct mapping *old_mappings = ht->mappings;
   struct mapping *old_end      = ht->mappings + ht->size;
-  struct mapping *mp;
-  int old_count = ht->count;	/* for assert() below */
+  struct mapping *mp, *mappings;
+  int newsize;
 
+  newsize = prime_size (ht->size * 2);
 #if 0
-  printf ("growing from %d to %d\n", ht->size, prime_size (ht->size * 2));
+  printf ("growing from %d to %d\n", ht->size, newsize);
 #endif
 
-  ht->size = prime_size (ht->size * 2);
+  ht->size = newsize;
+  ht->resize_threshold = newsize * 3 / 4;
 
-  ht->mappings = xmalloc (ht->size * sizeof (struct mapping));
-  memset (ht->mappings, '\0', ht->size * sizeof (struct mapping));
-
-  /* Need to reset this; hash_table_put will reinitialize it.  */
-  ht->count    = 0;
+  mappings = xmalloc (ht->size * sizeof (struct mapping));
+  memset (mappings, '\0', ht->size * sizeof (struct mapping));
+  ht->mappings = mappings;
 
   for (mp = old_mappings; mp < old_end; mp++)
     if (!EMPTY_MAPPING_P (mp))
-      hash_table_put (ht, mp->key, mp->value);
+      {
+	struct mapping *new_mp = mappings + HASH_POSITION (ht, mp->key);
+	/* We don't need to call test function and worry about
+	   collisions because all the keys come from the hash table
+	   and are therefore guaranteed to be unique.  */
+	LOOP_NON_EMPTY (new_mp, mappings, newsize)
+	  ;
+	*new_mp = *mp;
+      }
 
-  assert (ht->count == old_count);
   xfree (old_mappings);
 }
 
@@ -330,7 +347,7 @@ hash_table_put (struct hash_table *ht, const void *key, void *value)
   mp->key   = (void *)key;	/* const? */
   mp->value = value;
 
-  if (ht->count > ht->size * 3 / 4)
+  if (ht->count > ht->resize_threshold)
     /* When table is 75% full, regrow it. */
     grow_hash_table (ht);
 }
@@ -353,9 +370,9 @@ hash_table_remove (struct hash_table *ht, const void *key)
       --ht->count;
 
       /* Rehash all the entries following MP.  The alternative
-	 approach is to mark entry as deleted, but that leaves a lot
-	 of garbage.  More importantly, this method makes
-	 hash_table_get and hash_table_put measurably faster.  */
+	 approach is to mark the entry as deleted, i.e. create a
+	 "tombstone".  That makes remove faster, but leaves a lot of
+	 garbage and slows down hash_table_get and hash_table_put.  */
 
       mp = NEXT_MAPPING (mp, mappings, size);
       LOOP_NON_EMPTY (mp, mappings, size)
@@ -389,7 +406,7 @@ void
 hash_table_clear (struct hash_table *ht)
 {
   memset (ht->mappings, '\0', ht->size * sizeof (struct mapping));
-  ht->count    = 0;
+  ht->count = 0;
 }
 
 /* Map MAPFUN over all the mappings in hash table HT.  MAPFUN is
@@ -416,6 +433,8 @@ hash_table_map (struct hash_table *ht,
 	key = mp->key;
 	if (mapfun (key, mp->value, closure))
 	  return;
+	/* hash_table_remove might have moved the adjacent
+	   mappings. */
 	if (mp->key != key && !EMPTY_MAPPING_P (mp))
 	  goto repeat;
       }
@@ -424,6 +443,7 @@ hash_table_map (struct hash_table *ht,
 /* Return the number of elements in the hash table.  This is not the
    same as the physical size of the hash table, which is always
    greater than the number of elements.  */
+
 int
 hash_table_count (struct hash_table *ht)
 {
@@ -432,8 +452,12 @@ hash_table_count (struct hash_table *ht)
 
 /* Support for hash tables whose keys are strings.  */
 
-/* 31 bit hash function.  Taken from Gnome's glib.  This seems to
-   perform much better than the above.  */
+/* 31 bit hash function.  Taken from Gnome's glib, modified to use
+   standard C types.
+
+   We used to use the popular hash function from the Dragon Book, but
+   this one seems to perform much better.  */
+
 unsigned long
 string_hash (const void *key)
 {

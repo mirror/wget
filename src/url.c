@@ -131,7 +131,6 @@ static struct proto sup_protos[] =
 
 static void parse_dir PARAMS ((const char *, char **, char **));
 static uerr_t parse_uname PARAMS ((const char *, char **, char **));
-static char *construct PARAMS ((const char *, const char *, int , int));
 static char *construct_relative PARAMS ((const char *, const char *));
 static char process_ftp_type PARAMS ((char *));
 

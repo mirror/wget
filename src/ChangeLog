@@ -1,5 +1,17 @@
 2001-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* url.c: Don't declare `construct'.
+
+	* hash.c (grow_hash_table): Speed up rehashing; inline storing of
+	mappings to new locations.
+	(hash_table_new): Make resize_threshold a field in the hash table,
+	so we don't have to recalculate it in each hash_table_put.
+	(grow_hash_table): Update resize_threshold.
+	(MAX): Remove unused macro.
+	(prime_size): Made static.
+
+2001-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* retr.c (retrieve_url): Call uri_merge, not url_concat.
 
 	* html-url.c (collect_tags_mapper): Call uri_merge, not
