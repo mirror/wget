@@ -1,7 +1,8 @@
-* Guidelines for patch submissions
-==================================
+* Guidelines for patch submissions.
+===================================
 
 ** Where to send the patches.
+-----------------------------
 
 Patches intended to be applied to Wget should be mailed to
 <wget-patches@sunsite.auc.dk>.  Each patch will be reviewed by the
@@ -10,14 +11,22 @@ rejected with an explanation.
 
 If you want to discuss your patch with the community of Wget users and
 developers, it is OK to send it to the general list at
-<wget@sunsite.auc.dk>.  If the patch is really large (more than 100K),
-you may want to put it on the web and post the URL.
+<wget@sunsite.auc.dk>.  If the patch is really huge (more than 100K or
+so), you may want to put it on the web and post the URL.
 
-If your mail composer or gateway is inclined to munge patches, e.g. by
-line-wrapping them, send them out as a MIME attachment.  Otherwise,
-patches simply inserted into an email message are fine.
+EVERY patch should be accompanied by an explanation of what the patch
+changes, and why the change is necessary.  The explanation need not be
+long, but please don't just send a patch without any text.
+
+Normally, a patch can be just inserted into the message, after the
+explanation and the ChangeLog entry.  However, if your mail composer
+or gateway is inclined to munge patches, e.g. by line-wrapping them,
+please send them out as a MIME attachment.  It is important that the
+patch survives the travel so that we can feed it to the `patch'
+utility after reviewing it.
 
 ** How to create patches.
+-------------------------
 
 Patches are created using the `diff' utility.  When making patches,
 please use the `-u' option, or if your diff doesn't support it, `-c'.
@@ -29,16 +38,16 @@ An example of the `diff' usage:
 
     diff -u OLDFILE NEWFILE
 
--or-
+    -or-
 
     diff -c OLDFILE NEWFILE
 
 Also, it is helpful if you create the patch in the top level of
 the Wget source directory:
 
-$ cp -p src/http.c src/http.c.orig
-...hack, hack, hack....
-$ diff -u src/http.c.orig src/http.c
+    $ cp src/http.c src/http.c.orig
+    ...hack, hack, hack....
+    $ diff -u src/http.c.orig src/http.c
 
 If your patch changes more than one file, the output of all the diff
 invocations should be concatenated to form a single patch.
@@ -52,42 +61,57 @@ form of a patch.  If you really cannot use a variant of `diff', then
 mail us the whole new file and specify which version of Wget you
 changed; that way we will be able to generate the diff ourselves.
 
+Finally, if your changes introduce new files, or if they change the
+old files past all recognition (e.g. by completely reimplementing the
+old stuff), sending a patch obviously doesn't make sense.  In that
+case, just attach the files along with an explanation of what is being
+changed.
+
 ** Standards and coding style.
+------------------------------
 
 Wget abides by the GNU coding standards, available at:
 
     http://www.gnu.org/prep/standards.html
 
-The most important point in that entire document is "no arbitrary
-limits".  Even when Wget's coding is less than exemplary, it respects
-that rule.  There should be no exceptions.
+To me the most important single point in that entire document is "no
+arbitrary limits".  Even when Wget's coding is less than exemplary, it
+respects that rule.  There should be no exceptions.
 
-Here is a short recap of the indentation/naming rules, borrowed from
-XEmacs:
+Here is a short recap of the GNU formatting and naming conventions,
+borrowed from XEmacs:
 
--- Put a space after every comma.
--- Put a space before the parenthesis that begins a function call,
-   macro call, function declaration or definition, or control
-   statement (if, while, switch, for). (DO NOT do this for macro
-   definitions; this is invalid preprocessor syntax.)
--- The brace that begins a control statement (if, while, for, switch,
-   do) or a function definition should go on a line by itself.
--- In function definitions, put the return type and all other
-   qualifiers on a line before the function name.  Thus, the function
-   name is always at the beginning of a line.
--- Indentation level is two spaces.  (However, the first and following
-   statements of a while/for/if/etc. block are indented four spaces
-   from the while/for/if keyword.  The opening and closing braces are
-   indented two spaces.)
--- Variable and function names should be all lowercase, with
-   underscores separating words, except for a prefixing tag, which may
-   be in uppercase.  Do not use the mixed-case convention (e.g.
-   SetVariableToValue ()) and *especially* do not use Microsoft
-   Hungarian notation (char **rgszRedundantTag).
--- preprocessor and enum constants should be all uppercase, and should
-   be prefixed with a tag that groups related constants together.
+  * Put a space after every comma.
+
+  * Put a space before the parenthesis that begins a function call,
+    macro call, function declaration or definition, or control
+    statement (if, while, switch, for).  (DO NOT do this for macro
+    definitions; this is invalid preprocessor syntax.)
+
+  * The brace that begins a control statement (if, while, for, switch,
+    do) or a function definition should go on a line by itself.
+
+  * In function definitions, put the return type and all other
+    qualifiers on a line before the function name.  Thus, the function
+    name is always at the beginning of a line.
+
+  * Indentation level is two spaces.  (However, the first and
+    following statements of a while/for/if/etc. block are indented
+    four spaces from the while/for/if keyword.  The opening and
+    closing braces are indented two spaces.)
+
+  * Variable and function names should be all lowercase, with
+    underscores separating words, except for a prefixing tag, which may
+    be in uppercase.  Do not use the mixed-case convention (e.g.
+    SetVariableToValue ()) and *especially* do not use Microsoft
+    Hungarian notation (char **rgszRedundantTag).
+
+  * Preprocessor constants and enumerations should be all uppercase,
+    and should be prefixed with a tag that groups related constants
+    together.
 
 ** ChangeLog policy.
+--------------------
 
 Each patch should be accompanied by an update to the appropriate
 ChangeLog file.  Please don't mail patches to ChangeLog because they
