@@ -1,5 +1,9 @@
 2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* po/et.po: Update from the TP.
+
+2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* configure.in: Check for <termios.h>
 
 2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
