@@ -876,9 +876,9 @@ use cookies; however, @emph{storing} cookies is not on by default.
 @cindex loading cookies
 @cindex cookies, loading
 @item --load-cookies @var{file}
-Load cookies from @var{file} before the first HTTP retrieval.  The
-format of @var{file} is one used by Netscape and Mozilla, at least their
-Unix version.
+Load cookies from @var{file} before the first HTTP retrieval.
+@var{file} is a textual file in the format originally used by Netscape's
+@file{cookies.txt} file.
 
 You will typically use this option when mirroring sites that require
 that you be logged in to access some or all of their content.  The login
@@ -891,19 +891,35 @@ Mirroring such a site requires Wget to send the same cookies your
 browser sends when communicating with the site.  This is achieved by
 @samp{--load-cookies}---simply point Wget to the location of the
 @file{cookies.txt} file, and it will send the same cookies your browser
-would send in the same situation.  If you're using Netscape navigator,
-specify @samp{--load-cookies ~/.netscape/cookies.txt}.  Mozilla keeps
-the cookies file somewhere under @file{~/.mozilla}, in the profile
-directory, but it's also named @file{cookies.txt}, the full path usually
-being @file{~/.mozilla/default/@var{some-weird-string}/cookies.txt}.
+would send in the same situation.  Different browsers keep textual
+cookie files in different locations:
 
-If you're using Wget under a non-Unix OS, or if you are using a
-different browser, @samp{--load-cookies} will not work.
+@table @asis
+@item Netscape 4.x.
+The cookies are in @file{~/.netscape/cookies.txt}.
 
-In that case you can view the cookies using the cookie manager provided
-by your browser, and write down the name and value of the cookie needed
-for the site.  Then you can bypass the ``official'' cookie code and
-simply tell Wget to use that one cookie, like this:
+@item Mozilla and Netscape 6.x.
+Mozilla's cookie file is also named @file{cookies.txt}, located
+somewhere under @file{~/.mozilla}, in the directory of your profile.
+The full path usually ends up looking somewhat like
+@file{~/.mozilla/default/@var{some-weird-string}/cookies.txt}.
+
+@item Internet Explorer.
+You can produce a cookie file Wget can use by using the File menu,
+Import and Export, Export Cookies.  This has been tested with Internet
+Explorer 5; it is not guaranteed to work with earlier versions.
+
+@item Other browsers.
+If you are using a different browser to create your cookies,
+@samp{--load-cookies} will only work if you can locate or produce a
+cookie file in the Netscape format that Wget expects.
+@end table
+
+If you cannot use @samp{--load-cookies}, there might still be an
+alternative.  If your browser supports a ``cookie manager'', you can use
+it to view the cookies used when accessing the site you're mirroring.
+Write down the name and value of the cookie, and manually instruct Wget
+to send those cookies, bypassing the ``official'' cookie support:
 
 @example
 wget --cookies=off --header "Cookie: @var{name}=@var{value}"
