@@ -41,7 +41,7 @@ int fd_read_body PARAMS ((int, FILE *, wgint, wgint, wgint *, wgint *, double *,
 
 typedef const char *(*hunk_terminator_t) PARAMS ((const char *, int, int));
 
-char *fd_read_hunk PARAMS ((int, hunk_terminator_t, int));
+char *fd_read_hunk PARAMS ((int, hunk_terminator_t, long, long));
 char *fd_read_line PARAMS ((int));
 
 uerr_t retrieve_url PARAMS ((const char *, char **, char **,

@@ -1,3 +1,18 @@
+2005-03-17  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* ftp-basic.c (ftp_login): Don't free the string if ftp_response
+	returned an error status because the line didn't get allocated in
+	the first place.
+
+2005-03-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (read_http_response_head): Limit the response size to 64k
+	bytes.
+
+	* retr.c (fd_read_hunk): Accept a MAXSIZE argument that limits the
+	number of bytes the function is allowed to allocate.
+	(fd_read_line): Limit the line to 4096 bytes.
+
 2005-03-12  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.h: Include options.h after wgint has been defined.

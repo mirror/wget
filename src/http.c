@@ -432,6 +432,13 @@ response_head_terminator (const char *hunk, int oldlen, int peeklen)
   return NULL;
 }
 
+/* The maximum size of a single HTTP response we care to read.  This
+   is not meant to impose an arbitrary limit, but to protect the user
+   from Wget slurping up available memory upon encountering malicious
+   or buggy server output.  Define it to 0 to remove the limit.  */
+
+#define HTTP_RESPONSE_MAX_SIZE 65536
+
 /* Read the HTTP request head from FD and return it.  The error
    conditions are the same as with fd_read_hunk.
 
@@ -443,7 +450,8 @@ response_head_terminator (const char *hunk, int oldlen, int peeklen)
 static char *
 read_http_response_head (int fd)
 {
-  return fd_read_hunk (fd, response_head_terminator, 512);
+  return fd_read_hunk (fd, response_head_terminator, 512,
+		       HTTP_RESPONSE_MAX_SIZE);
 }
 
 struct response {

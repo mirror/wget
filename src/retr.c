@@ -375,17 +375,22 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
    a read.  If the read returns a different amount of data, the
    process is retried until all data arrives safely.
 
-   BUFSIZE is the size of the initial buffer expected to read all the
-   data in the typical case.
+   SIZEHINT is the buffer size sufficient to hold all the data in the
+   typical case (it is used as the initial buffer size).  MAXSIZE is
+   the maximum amount of memory this function is allowed to allocate,
+   or 0 if no upper limit is to be enforced.
 
    This function should be used as a building block for other
    functions -- see fd_read_line as a simple example.  */
 
 char *
-fd_read_hunk (int fd, hunk_terminator_t hunk_terminator, int bufsize)
+fd_read_hunk (int fd, hunk_terminator_t terminator, long sizehint, long maxsize)
 {
+  long bufsize = sizehint;
   char *hunk = xmalloc (bufsize);
   int tail = 0;			/* tail position in HUNK */
+
+  assert (maxsize >= bufsize);
 
   while (1)
     {
@@ -400,7 +405,7 @@ fd_read_hunk (int fd, hunk_terminator_t hunk_terminator, int bufsize)
 	  xfree (hunk);
 	  return NULL;
 	}
-      end = hunk_terminator (hunk, tail, pklen);
+      end = terminator (hunk, tail, pklen);
       if (end)
 	{
 	  /* The data contains the terminator: we'll drain the data up
@@ -458,7 +463,17 @@ fd_read_hunk (int fd, hunk_terminator_t hunk_terminator, int bufsize)
 
       if (tail == bufsize - 1)
 	{
+	  /* Double the buffer size, but refuse to allocate more than
+	     MAXSIZE bytes.  */
+	  if (maxsize && bufsize >= maxsize)
+	    {
+	      xfree (hunk);
+	      errno = ENOMEM;
+	      return NULL;
+	    }
 	  bufsize <<= 1;
+	  if (maxsize && bufsize > maxsize)
+	    bufsize = maxsize;
 	  hunk = xrealloc (hunk, bufsize);
 	}
     }
@@ -474,8 +489,14 @@ line_terminator (const char *hunk, int oldlen, int peeklen)
   return NULL;
 }
 
+/* The maximum size of the single line we agree to accept.  This is
+   not meant to impose an arbitrary limit, but to protect the user
+   from Wget slurping up available memory upon encountering malicious
+   or buggy server output.  Define it to 0 to remove the limit.  */
+#define FD_READ_LINE_MAX 4096
+
 /* Read one line from FD and return it.  The line is allocated using
-   malloc.
+   malloc, but is never larger than FD_READ_LINE_MAX.
 
    If an error occurs, or if no data can be read, NULL is returned.
    In the former case errno indicates the error condition, and in the
@@ -484,7 +505,7 @@ line_terminator (const char *hunk, int oldlen, int peeklen)
 char *
 fd_read_line (int fd)
 {
-  return fd_read_hunk (fd, line_terminator, 128);
+  return fd_read_hunk (fd, line_terminator, 128, FD_READ_LINE_MAX);
 }
 
 /* Return a printed representation of the download rate, as

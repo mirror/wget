@@ -123,10 +123,7 @@ ftp_login (int csock, const char *acc, const char *pass)
   /* Get greeting.  */
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
-    {
-      xfree (respline);
-      return err;
-    }
+    return err;
   if (*respline != '2')
     {
       xfree (respline);
