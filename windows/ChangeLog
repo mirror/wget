@@ -1,3 +1,11 @@
+2005-04-05  Mauro Tortonesi <mauro@ferrara.linux.it>
+
+	* Makefile.src.mingw: removed string_t.c from list of source files.
+	
+	* Makefile.watcom: removed string_t.c from list of source files.
+
+	* wget.dep: removed string_t.c from list of source files.
+
 2005-02-10  Mauro Tortonesi <mauro@ferrara.linux.it>
 
 	* Makefile.src: Renamed string.{c,h} to string_t.{c,h} to fix 

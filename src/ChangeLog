@@ -1,8 +1,12 @@
+2005-04-05  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* Makefile.in: removed string_t.c from list of source files.
+
 2005-04-04  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
-	* string.c: Removed.
+	* string_t.c: Removed.
 	
-	* string.h: Removed.
+	* string_t.h: Removed.
 
 2005-04-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
