@@ -5,123 +5,77 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU Wget 1.7-dev\n"
-"POT-Creation-Date: 2001-02-23 13:23-0800\n"
-"PO-Revision-Date: 2000-02-22 20:14+09:00\n"
+"Project-Id-Version: GNU Wget 1.6\n"
+"POT-Creation-Date: 2001-01-03 16:11+0900\n"
+"PO-Revision-Date: 2001-01-03 17:04+09:00\n"
 "Last-Translator: Hiroshi Takekawa <takekawa@sr3.t.u-tokyo.ac.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=EUC-JP\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ftp-ls.c:779
-msgid "Usupported listing type, trying Unix listing parser.\n"
-msgstr ""
-
-#: src/ftp-ls.c:824 src/ftp-ls.c:826
-#, c-format
-msgid "Index of /%s on %s:%d"
-msgstr "/%s (%s:%d ¾å)¤Î¸«½Ð¤·(index)¤Ç¤¹"
-
-#: src/ftp-ls.c:848
-msgid "time unknown       "
-msgstr "»þ´Ö¤¬ÉÔÌÀ¤Ç¤¹       "
-
-#: src/ftp-ls.c:852
-msgid "File        "
-msgstr "¥Õ¥¡¥¤¥ë        "
-
-#: src/ftp-ls.c:855
-msgid "Directory   "
-msgstr "¥Ç¥£¥ì¥¯¥È¥ê   "
-
-#: src/ftp-ls.c:858
-msgid "Link        "
-msgstr "¥ê¥ó¥¯        "
-
-#: src/ftp-ls.c:861
-msgid "Not sure    "
-msgstr "ÉÔ³Î¼Â    "
-
-#: src/ftp-ls.c:879
-#, c-format
-msgid " (%s bytes)"
-msgstr " (%s ¥Ð¥¤¥È)"
-
 #. Login to the server:
 #. First: Establish the control connection.
-#: src/ftp.c:151 src/http.c:618
+#: src/ftp.c:152 src/http.c:352
 #, c-format
 msgid "Connecting to %s:%hu... "
 msgstr "%s:%hu ¤ËÀÜÂ³¤·¤Æ¤¤¤Þ¤¹... "
 
-#: src/ftp.c:173 src/ftp.c:517 src/http.c:635
+#: src/ftp.c:174 src/ftp.c:416 src/http.c:369
 #, c-format
 msgid "Connection to %s:%hu refused.\n"
-msgstr "%s:%hu ¤Ø¤ÎÀÜÂ³¤Ë¼ºÇÔ¤·¤Þ¤·¤¿¡£\n"
+msgstr "%s:%hu ¤Ø¤ÎÀÜÂ³¤ÏµñÈÝ¤µ¤ì¤Þ¤·¤¿¡£\n"
 
 #. Second: Login with proper USER/PASS sequence.
-#: src/ftp.c:194 src/http.c:646
+#: src/ftp.c:195 src/http.c:380
 msgid "connected!\n"
 msgstr "ÀÜÂ³¤·¤Þ¤·¤¿!\n"
 
-#: src/ftp.c:195
+#: src/ftp.c:196
 #, c-format
 msgid "Logging in as %s ... "
 msgstr "%s ¤È¤·¤Æ¥í¥°¥¤¥ó¤·¤Æ¤¤¤Þ¤¹... "
 
-#: src/ftp.c:204 src/ftp.c:257 src/ftp.c:288 src/ftp.c:313 src/ftp.c:407
-#: src/ftp.c:459 src/ftp.c:553 src/ftp.c:626 src/ftp.c:674 src/ftp.c:722
+#: src/ftp.c:205 src/ftp.c:258 src/ftp.c:306 src/ftp.c:358 src/ftp.c:452
+#: src/ftp.c:525 src/ftp.c:573 src/ftp.c:621
 msgid "Error in server response, closing control connection.\n"
 msgstr "¥µ¡¼¥Ð¤Î±þÅú¤Ë¥¨¥é¡¼¤¬¤¢¤ë¤Î¤Ç¡¢ÀÜÂ³¤ò½ªÎ»¤·¤Þ¤¹¡£\n"
 
-#: src/ftp.c:212
+#: src/ftp.c:213
 msgid "Error in server greeting.\n"
 msgstr "¥µ¡¼¥Ð¤Î½é´ü±þÅú¤Ë¥¨¥é¡¼¤¬¤¢¤ê¤Þ¤¹¡£\n"
 
-#: src/ftp.c:220 src/ftp.c:322 src/ftp.c:416 src/ftp.c:468 src/ftp.c:563
-#: src/ftp.c:636 src/ftp.c:684 src/ftp.c:732
+#: src/ftp.c:221 src/ftp.c:267 src/ftp.c:315 src/ftp.c:367 src/ftp.c:462
+#: src/ftp.c:535 src/ftp.c:583 src/ftp.c:631
 msgid "Write failed, closing control connection.\n"
 msgstr "½ñ¤­¹þ¤ß¤Ë¼ºÇÔ¤·¤¿¤Î¤Ç¡¢ÀÜÂ³¤ò½ªÎ»¤·¤Þ¤¹¡£\n"
 
-#: src/ftp.c:227
+#: src/ftp.c:228
 msgid "The server refuses login.\n"
 msgstr "¥µ¡¼¥Ð¤¬¥í¥°¥¤¥ó¤òµñÈÝ¤·¤Þ¤·¤¿¡£\n"
 
-#: src/ftp.c:234
+#: src/ftp.c:235
 msgid "Login incorrect.\n"
 msgstr "¥í¥°¥¤¥ó¤Ë¼ºÇÔ¤·¤Þ¤·¤¿¡£\n"
 
-#: src/ftp.c:241
+#: src/ftp.c:242
 msgid "Logged in!\n"
 msgstr "¥í¥°¥¤¥ó¤·¤Þ¤·¤¿!\n"
 
-#: src/ftp.c:266
-msgid "Server error, can't determine system type.\n"
-msgstr ""
-
-#: src/ftp.c:276 src/ftp.c:538 src/ftp.c:610 src/ftp.c:654
-msgid "done.    "
-msgstr "´°Î»¤·¤Þ¤·¤¿¡£    "
-
-#: src/ftp.c:302 src/ftp.c:437 src/ftp.c:705 src/ftp.c:753 src/url.c:1432
-msgid "done.\n"
-msgstr "´°Î»¤·¤Þ¤·¤¿¡£\n"
-
-#: src/ftp.c:330
+#: src/ftp.c:275
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
 msgstr "`%c' ¤ÏÉÔÌÀ¤Ê¼ïÎà¤Ê¤Î¤Ç¡¢ÀÜÂ³¤ò½ªÎ»¤·¤Þ¤¹¡£\n"
 
-#: src/ftp.c:343
+#: src/ftp.c:288
 msgid "done.  "
 msgstr "´°Î»¤·¤Þ¤·¤¿¡£  "
 
-#: src/ftp.c:349
+#: src/ftp.c:294
 msgid "==> CWD not needed.\n"
 msgstr "==> CWD ¤ÏÉ¬Í×¤¢¤ê¤Þ¤»¤ó¡£\n"
 
-#: src/ftp.c:423
+#: src/ftp.c:322
 #, c-format
 msgid ""
 "No such directory `%s'.\n"
@@ -130,34 +84,42 @@ msgstr ""
 "`%s' ¤È¤¤¤¦¥Ç¥£¥ì¥¯¥È¥ê¤Ï¤¢¤ê¤Þ¤»¤ó¡£\n"
 "\n"
 
+#: src/ftp.c:336 src/ftp.c:604 src/ftp.c:652 src/url.c:1678
+msgid "done.\n"
+msgstr "´°Î»¤·¤Þ¤·¤¿¡£\n"
+
 #. do not CWD
-#: src/ftp.c:441
+#: src/ftp.c:340
 msgid "==> CWD not required.\n"
 msgstr "==> CWD ¤ÏÉ¬Í×¤¢¤ê¤Þ¤»¤ó¡£\n"
 
-#: src/ftp.c:475
+#: src/ftp.c:374
 msgid "Cannot initiate PASV transfer.\n"
 msgstr "PASVÅ¾Á÷¤Î½é´ü²½¤¬¤Ç¤­¤Þ¤»¤ó¡£\n"
 
-#: src/ftp.c:479
+#: src/ftp.c:378
 msgid "Cannot parse PASV response.\n"
 msgstr "PASV¤Î±þÅú¤ò²òÀÏ¤Ç¤­¤Þ¤»¤ó¡£\n"
 
-#: src/ftp.c:493
+#: src/ftp.c:392
 #, c-format
 msgid "Will try connecting to %s:%hu.\n"
-msgstr "%s:%hu ¤Ø¤ÎÀÜÂ³¤ò»î¤ß¤Æ¤¤¤Þ¤¹¡£\n"
+msgstr "%s:%hu ¤Ø¤ÎÀÜÂ³¤ò»î¤ß¤Þ¤¹¡£\n"
 
-#: src/ftp.c:580
+#: src/ftp.c:437 src/ftp.c:509 src/ftp.c:553
+msgid "done.    "
+msgstr "´°Î»¤·¤Þ¤·¤¿¡£    "
+
+#: src/ftp.c:479
 #, c-format
 msgid "Bind error (%s).\n"
 msgstr "¥Ð¥¤¥ó¥É¥¨¥é¡¼¤Ç¤¹ (%s)¡£\n"
 
-#: src/ftp.c:596
+#: src/ftp.c:495
 msgid "Invalid PORT.\n"
 msgstr "Ìµ¸ú¤Ê¥Ý¡¼¥ÈÈÖ¹æ¤Ç¤¹¡£\n"
 
-#: src/ftp.c:643
+#: src/ftp.c:542
 msgid ""
 "\n"
 "REST failed, starting from scratch.\n"
@@ -165,7 +127,7 @@ msgstr ""
 "\n"
 "REST¤Ë¼ºÇÔ¤·¤Þ¤·¤¿¡¢ºÇ½é¤«¤é»Ï¤á¤Þ¤¹¡£\n"
 
-#: src/ftp.c:692
+#: src/ftp.c:591
 #, c-format
 msgid ""
 "No such file `%s'.\n"
@@ -174,7 +136,7 @@ msgstr ""
 "`%s' ¤È¤¤¤¦¥Õ¥¡¥¤¥ë¤Ï¤¢¤ê¤Þ¤»¤ó¡£\n"
 "\n"
 
-#: src/ftp.c:740
+#: src/ftp.c:639
 #, c-format
 msgid ""
 "No such file or directory `%s'.\n"
@@ -183,49 +145,49 @@ msgstr ""
 "`%s' ¤È¤¤¤¦¥Õ¥¡¥¤¥ë¤Þ¤¿¤Ï¥Ç¥£¥ì¥¯¥È¥ê¤Ï¤¢¤ê¤Þ¤»¤ó¡£\n"
 "\n"
 
-#: src/ftp.c:816 src/ftp.c:823
+#: src/ftp.c:715 src/ftp.c:722
 #, c-format
 msgid "Length: %s"
 msgstr "Ä¹¤µ: %s"
 
-#: src/ftp.c:818 src/ftp.c:825
+#: src/ftp.c:717 src/ftp.c:724
 #, c-format
 msgid " [%s to go]"
 msgstr " [¤Î¤³¤ê %s]"
 
-#: src/ftp.c:827
+#: src/ftp.c:726
 msgid " (unauthoritative)\n"
-msgstr " (É¬¤º¤·¤âÀµ³Î¤Ç¤Ï¤¢¤ê¤Þ¤»¤ó)\n"
+msgstr " (³Î¾Ú¤Ï¤¢¤ê¤Þ¤»¤ó)\n"
 
-#: src/ftp.c:853
+#: src/ftp.c:752
 #, c-format
 msgid "%s: %s, closing control connection.\n"
 msgstr "%s: %s¡¢ÀÜÂ³¤ò½ªÎ»¤·¤Þ¤¹¡£\n"
 
-#: src/ftp.c:861
+#: src/ftp.c:760
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
 msgstr "%s (%s) - ¥Ç¡¼¥¿ÀÜÂ³: %s; "
 
-#: src/ftp.c:878
+#: src/ftp.c:777
 msgid "Control connection closed.\n"
-msgstr "ÀÜÂ³¤ò½ªÎ»¤·¤Þ¤¹¡£\n"
+msgstr "À©¸æÍÑ¤ÎÀÜÂ³¤òÀÚÃÇ¤·¤Þ¤¹¡£\n"
 
-#: src/ftp.c:896
+#: src/ftp.c:795
 msgid "Data transfer aborted.\n"
 msgstr "¥Ç¡¼¥¿Å¾Á÷¤òÃæÃÇ¤·¤Þ¤·¤¿¡£\n"
 
-#: src/ftp.c:960
+#: src/ftp.c:859
 #, c-format
 msgid "File `%s' already there, not retrieving.\n"
-msgstr "¥Õ¥¡¥¤¥ë `%s' ¤Ï¤¹¤Ç¤ËÂ¸ºß¤¹¤ë¤Î¤Ç¡¢Å¾Á÷¤·¤Þ¤»¤ó¡£\n"
+msgstr "¥Õ¥¡¥¤¥ë `%s' ¤Ï¤¹¤Ç¤ËÂ¸ºß¤¹¤ë¤Î¤Ç¡¢¼èÆÀ¤·¤Þ¤»¤ó¡£\n"
 
-#: src/ftp.c:1021 src/http.c:1394
+#: src/ftp.c:920 src/http.c:1018
 #, c-format
 msgid "(try:%2d)"
 msgstr "(»î¹Ô:%2d)"
 
-#: src/ftp.c:1085 src/http.c:1632
+#: src/ftp.c:984 src/http.c:1248
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld]\n"
@@ -234,54 +196,43 @@ msgstr ""
 "%s (%s) - `%s' ¤òÊÝÂ¸¤·¤Þ¤·¤¿ [%ld]\n"
 "\n"
 
-#: src/ftp.c:1127 src/main.c:789 src/recur.c:509 src/retr.c:602
+#: src/ftp.c:1026 src/main.c:753 src/recur.c:472 src/retr.c:564
 #, c-format
 msgid "Removing %s.\n"
 msgstr "%s ¤òºï½ü¤·¤Þ¤·¤¿¡£\n"
 
-#: src/ftp.c:1168
+#: src/ftp.c:1067
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
 msgstr "°ì»þ¥Õ¥¡¥¤¥ë¤ò¥ê¥¹¥È¤¹¤ë¤¿¤á¤Ë `%s' ¤ò»ÈÍÑ¤·¤Þ¤¹¡£\n"
 
-#: src/ftp.c:1180
+#: src/ftp.c:1079
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr "`%s' ¤òºï½ü¤·¤Þ¤·¤¿¡£\n"
 
-#: src/ftp.c:1216
+#: src/ftp.c:1115
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr "ºÆµ¢¤¹¤ë¿¼¤µ %d ¤¬ºÇÂçÃÍ¤òÄ¶²á¤·¤Æ¤¤¤Þ¤¹¡£¿¼¤µ¤Ï %d ¤Ç¤¹¡£\n"
 
-#. Remote file is older, file sizes can be compared and
-#. are both equal.
-#: src/ftp.c:1277
-#, fuzzy, c-format
-msgid "Remote file no newer than local file `%s' -- not retrieving.\n"
-msgstr "¥ê¥â¡¼¥È¥Õ¥¡¥¤¥ë¤Î¤Û¤¦¤¬¿·¤·¤¤¤Î¤Ç¡¢Å¾Á÷¤·¤Þ¤¹¡£\n"
-
-#. Remote file is newer or sizes cannot be matched
-#: src/ftp.c:1284
-#, fuzzy, c-format
+#: src/ftp.c:1167 src/http.c:1165
+#, c-format
 msgid ""
-"Remote file is newer than local file `%s' -- retrieving.\n"
+"Server file no newer than local file `%s' -- not retrieving.\n"
 "\n"
-msgstr "¥ê¥â¡¼¥È¥Õ¥¡¥¤¥ë¤Î¤Û¤¦¤¬¿·¤·¤¤¤Î¤Ç¡¢Å¾Á÷¤·¤Þ¤¹¡£\n"
+msgstr "¥µ¡¼¥ÐÂ¦¤Î¥Õ¥¡¥¤¥ë¤è¤ê¥í¡¼¥«¥ë¤Î¥Õ¥¡¥¤¥ë `%s' ¤ÎÊý¤¬¿·¤·¤¤¤Î¤Ç¼èÆÀ¤·¤Þ¤»¤ó¡£\n\n"
 
-#. Sizes do not match
-#: src/ftp.c:1291
-#, fuzzy, c-format
-msgid ""
-"The sizes do not match (local %ld) -- retrieving.\n"
-"\n"
+#: src/ftp.c:1173 src/http.c:1173
+#, c-format
+msgid "The sizes do not match (local %ld) -- retrieving.\n"
 msgstr "Âç¤­¤µ¤¬¹ç¤ï¤Ê¤¤¤Î¤Ç(¥í¡¼¥«¥ë¤Ï %ld)¡¢Å¾Á÷¤·¤Þ¤¹¡£\n"
 
-#: src/ftp.c:1308
+#: src/ftp.c:1190
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr "ÉÔÀµ¤Ê¥·¥ó¥Ü¥ê¥Ã¥¯¥ê¥ó¥¯Ì¾¤Ê¤Î¤Ç¡¢¤È¤Ð¤·¤Þ¤¹¡£\n"
 
-#: src/ftp.c:1325
+#: src/ftp.c:1207
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
@@ -290,44 +241,44 @@ msgstr ""
 "¤¹¤Ç¤Ë %s -> %s ¤È¤¤¤¦Àµ¤·¤¤¥·¥ó¥Ü¥ê¥Ã¥¯¥ê¥ó¥¯¤¬¤¢¤ê¤Þ¤¹\n"
 "\n"
 
-#: src/ftp.c:1333
+#: src/ftp.c:1215
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr "%s -> %s ¤È¤¤¤¦¥·¥ó¥Ü¥ê¥Ã¥¯¥ê¥ó¥¯¤òºîÀ®¤·¤Æ¤¤¤Þ¤¹\n"
 
-#: src/ftp.c:1344
+#: src/ftp.c:1226
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
 msgstr ""
 "¥·¥ó¥Ü¥ê¥Ã¥¯¥ê¥ó¥¯¤ËÂÐ±þ¤·¤Æ¤¤¤Ê¤¤¤Î¤Ç¡¢¥·¥ó¥Ü¥ê¥Ã¥¯¥ê¥ó¥¯ `%s' "
 "¤ò¤È¤Ð¤·¤Þ¤¹¡£\n"
 
-#: src/ftp.c:1356
+#: src/ftp.c:1238
 #, c-format
 msgid "Skipping directory `%s'.\n"
 msgstr "¥Ç¥£¥ì¥¯¥È¥ê `%s' ¤ò¤È¤Ð¤·¤Þ¤¹¡£\n"
 
-#: src/ftp.c:1365
+#: src/ftp.c:1247
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr "%s: ÉÔÌÀ¤Ê¤Þ¤¿¤ÏÂÐ±þ¤·¤Æ¤¤¤Ê¤¤¥Õ¥¡¥¤¥ë¤Î¼ïÎà¤Ç¤¹¡£\n"
 
-#: src/ftp.c:1392
+#: src/ftp.c:1274
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr "%s: ÆüÉÕ¤¬²õ¤ì¤Æ¤¤¤Þ¤¹¡£\n"
 
-#: src/ftp.c:1413
+#: src/ftp.c:1295
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr "¿¼¤µ¤¬ %d (ºÇÂç %d)¤Ê¤Î¤Ç¥Ç¥£¥ì¥¯¥È¥ê¤òÅ¾Á÷¤·¤Þ¤»¤ó¡£\n"
 
-#: src/ftp.c:1449
+#: src/ftp.c:1334
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr "½ü³°¤µ¤ì¤Æ¤¤¤ë¤«´Þ¤Þ¤ì¤Æ¤¤¤Ê¤¤¤Î¤Ç `%s' ¤Ë°ÜÆ°¤·¤Þ¤»¤ó¡£\n"
 
-#: src/ftp.c:1494
+#: src/ftp.c:1379
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr "`%s' ¤ò½ü³°¤·¤Þ¤¹¡£\n"
@@ -335,17 +286,17 @@ msgstr "`%s' ¤ò½ü³°¤·¤Þ¤¹¡£\n"
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1541
+#: src/ftp.c:1426
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr "¥Ñ¥¿¡¼¥ó `%s' ¤ËÅ¬¹ç¤¹¤ë¤â¤Î¤¬¤¢¤ê¤Þ¤»¤ó¡£\n"
 
-#: src/ftp.c:1605
+#: src/ftp.c:1486
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
 msgstr "`%s' [%ld]¤ËÂÐ¤¹¤ëHTML²½¤µ¤ì¤¿¸«½Ð¤·(index)¤ò½ñ¤­¤Þ¤·¤¿¡£\n"
 
-#: src/ftp.c:1610
+#: src/ftp.c:1491
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr "`%s' ¤ËÂÐ¤¹¤ëHTML²½¤µ¤ì¤¿¸«½Ð¤·(index)¤ò½ñ¤­¤Þ¤·¤¿¡£\n"
@@ -394,27 +345,27 @@ msgstr "%s: ÉÔÀµ¤Ê¥ª¥×¥·¥ç¥ó¤Ç¤¹ -- %c\n"
 msgid "%s: option requires an argument -- %c\n"
 msgstr "%s: ¥ª¥×¥·¥ç¥ó¤Ï°ú¿ô¤òÉ¬Í×¤È¤·¤Þ¤¹ -- %c\n"
 
-#: src/host.c:394
+#: src/host.c:438
 #, c-format
 msgid "%s: Cannot determine user-id.\n"
 msgstr "%s: user-id¤ò·èÄê¤Ç¤­¤Þ¤»¤ó¡£\n"
 
-#: src/host.c:406
+#: src/host.c:450
 #, c-format
 msgid "%s: Warning: uname failed: %s\n"
 msgstr "%s: ·Ù¹ð: uname¤Ë¼ºÇÔ¤·¤Þ¤·¤¿: %s\n"
 
-#: src/host.c:418
+#: src/host.c:462
 #, c-format
 msgid "%s: Warning: gethostname failed\n"
 msgstr "%s: ·Ù¹ð: gethostname¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
 
-#: src/host.c:446
+#: src/host.c:490
 #, c-format
 msgid "%s: Warning: cannot determine local IP address.\n"
 msgstr "%s: ·Ù¹ð: ¥í¡¼¥«¥ëIP¥¢¥É¥ì¥¹¤ò·èÄê¤Ç¤­¤Þ¤»¤ó¡£\n"
 
-#: src/host.c:460
+#: src/host.c:504
 #, c-format
 msgid "%s: Warning: cannot reverse-lookup local IP address.\n"
 msgstr "%s: ·Ù¹ð: ¥í¡¼¥«¥ëIP¥¢¥É¥ì¥¹¤ÎµÕ°ú¤­¤¬¤Ç¤­¤Þ¤»¤ó¡£\n"
@@ -423,166 +374,157 @@ msgstr "%s: ·Ù¹ð: ¥í¡¼¥«¥ëIP¥¢¥É¥ì¥¹¤ÎµÕ°ú¤­¤¬¤Ç¤­¤Þ¤»¤ó¡£\n"
 #. that there can be valid reasons for the local host
 #. name not to be an FQDN, so I've decided to remove the
 #. annoying warning.
-#: src/host.c:473
+#: src/host.c:517
 #, c-format
 msgid "%s: Warning: reverse-lookup of local address did not yield FQDN!\n"
 msgstr "%s: ·Ù¹ð: ¥í¡¼¥«¥ë¥¢¥É¥ì¥¹¤ÎµÕ°ú¤­·ë²Ì¤¬FQDN¤Ç¤Ï¤¢¤ê¤Þ¤»¤ó!\n"
 
-#: src/host.c:501
+#: src/host.c:545
 msgid "Host not found"
 msgstr "¥Û¥¹¥È¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó"
 
-#: src/host.c:503
+#: src/host.c:547
 msgid "Unknown error"
 msgstr "ÉÔÌÀ¤Ê¥¨¥é¡¼¤Ç¤¹"
 
-#. this is fatal
-#: src/http.c:549
-msgid "Failed to set up an SSL context\n"
-msgstr ""
-
-#: src/http.c:555
+#: src/html.c:615 src/html.c:617
 #, c-format
-msgid "Failed to load certificates from %s\n"
-msgstr ""
+msgid "Index of /%s on %s:%d"
+msgstr "/%s (%s:%d ¾å)¤Î¸«½Ð¤·(index)¤Ç¤¹"
 
-#: src/http.c:559 src/http.c:567
-msgid "Trying without the specified certificate\n"
-msgstr ""
+#: src/html.c:639
+msgid "time unknown       "
+msgstr "»þ´Ö¤¬ÉÔÌÀ¤Ç¤¹       "
 
-#: src/http.c:563
+#: src/html.c:643
+msgid "File        "
+msgstr "¥Õ¥¡¥¤¥ë        "
+
+#: src/html.c:646
+msgid "Directory   "
+msgstr "¥Ç¥£¥ì¥¯¥È¥ê   "
+
+#: src/html.c:649
+msgid "Link        "
+msgstr "¥ê¥ó¥¯        "
+
+#: src/html.c:652
+msgid "Not sure    "
+msgstr "ÉÔ³Î¼Â    "
+
+#: src/html.c:670
 #, c-format
-msgid "Failed to get certificate key from %s\n"
-msgstr ""
+msgid " (%s bytes)"
+msgstr " (%s ¥Ð¥¤¥È)"
 
-#: src/http.c:657 src/http.c:1470
-msgid "Unable to establish SSL connection.\n"
-msgstr ""
-
-#: src/http.c:665
-#, fuzzy, c-format
-msgid "Reusing connection to %s:%hu.\n"
-msgstr "%s:%hu ¤Ø¤ÎÀÜÂ³¤ò»î¤ß¤Æ¤¤¤Þ¤¹¡£\n"
-
-#: src/http.c:841
-#, fuzzy, c-format
-msgid "Failed writing HTTP request: %s.\n"
+#: src/http.c:512
+msgid "Failed writing HTTP request.\n"
 msgstr "HTTP ¤Ë¤è¤ëÀÜÂ³Í×µá¤ÎÁ÷¿®¤Ë¼ºÇÔ¤·¤Þ¤·¤¿¡£\n"
 
-#: src/http.c:846
+#: src/http.c:516
 #, c-format
 msgid "%s request sent, awaiting response... "
 msgstr "%s ¤Ë¤è¤ëÀÜÂ³Í×µá¤òÁ÷¿®¤·¤Þ¤·¤¿¡¢±þÅú¤òÂÔ¤Ã¤Æ¤¤¤Þ¤¹... "
 
-#: src/http.c:890
+#: src/http.c:555
 msgid "End of file while parsing headers.\n"
-msgstr "¥Ø¥Ã¥À¤Î²òÀÏÃæ¤Ë¥Õ¥¡¥¤¥ë¤Î½ªÃ¼¤Ë¤Ê¤ê¤Þ¤·¤¿¡£\n"
+msgstr "¥Ø¥Ã¥À¤Î²òÀÏÃæ¤Ë½ªÃ¼¤Þ¤Ç¤­¤Æ¤·¤Þ¤¤¤Þ¤·¤¿¡£\n"
 
-#: src/http.c:901
+#: src/http.c:566
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr "¥Ø¥Ã¥ÀÆâ¤ÇÆÉ¤ß¹þ¤ß¥¨¥é¡¼(%s)¤Ç¤¹\n"
 
-#: src/http.c:941
+#: src/http.c:606
 msgid "No data received"
 msgstr "¥Ç¡¼¥¿¤¬¼õ¿®¤µ¤ì¤Þ¤»¤ó¤Ç¤·¤¿"
 
-#: src/http.c:943
+#: src/http.c:608
 msgid "Malformed status line"
-msgstr "´ñÌ¯¤Ê¾õÂÖ¤Ç¤¹"
+msgstr "´ñÌ¯¤Ê¥¹¥Æ¡¼¥¿¥¹¹Ô¤Ç¤¹"
 
-#: src/http.c:948
+#: src/http.c:613
 msgid "(no description)"
 msgstr "(ÀâÌÀ¤Ê¤·)"
 
-#: src/http.c:1066
+#. If we have tried it already, then there is not point
+#. retrying it.
+#: src/http.c:697
 msgid "Authorization failed.\n"
 msgstr "Ç§¾Ú¤Ë¼ºÇÔ¤·¤Þ¤·¤¿¡£\n"
 
-#: src/http.c:1073
+#: src/http.c:704
 msgid "Unknown authentication scheme.\n"
 msgstr "ÉÔÌÀ¤ÊÇ§¾Ú·Á¼°¤Ç¤¹¡£\n"
 
-#: src/http.c:1163
+#: src/http.c:787
 #, c-format
 msgid "Location: %s%s\n"
 msgstr "¾ì½ê: %s%s\n"
 
-#: src/http.c:1164 src/http.c:1189
+#: src/http.c:788 src/http.c:813
 msgid "unspecified"
 msgstr "ÆÃÄê¤Ç¤­¤Þ¤»¤ó"
 
-#: src/http.c:1165
+#: src/http.c:789
 msgid " [following]"
 msgstr " [Â³¤¯]"
 
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
-#: src/http.c:1179
+#: src/http.c:803
 msgid "Length: "
 msgstr "Ä¹¤µ: "
 
-#: src/http.c:1184
+#: src/http.c:808
 #, c-format
 msgid " (%s to go)"
 msgstr " (¤Î¤³¤ê%s)"
 
-#: src/http.c:1189
+#: src/http.c:813
 msgid "ignored"
 msgstr "Ìµ»ë¤·¤Þ¤·¤¿"
 
-#: src/http.c:1290
+#: src/http.c:914
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr "·Ù¹ð: HTTP¤Ï¥ï¥¤¥ë¥É¥«¡¼¥É¤ËÂÐ±þ¤·¤Æ¤¤¤Þ¤»¤ó¡£\n"
 
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:1311
+#: src/http.c:935
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
 msgstr "¥Õ¥¡¥¤¥ë `%s' ¤Ï¤¹¤Ç¤ËÂ¸ºß¤¹¤ë¤Î¤Ç¡¢Å¾Á÷¤·¤Þ¤»¤ó¡£\n"
 
-#: src/http.c:1462
+#: src/http.c:1085
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr "`%s' (%s)¤Ø½ñ¤­¹þ¤á¤Þ¤»¤ó¡£\n"
 
-#: src/http.c:1480
+#: src/http.c:1096
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
-msgstr "¥¨¥é¡¼: ¾ì½ê¤¬Â¸ºß¤·¤Ê¤¤¥ê¥Ç¥£¥ì¥¯¥·¥ç¥ó(%d)¤Ç¤¹¡£\n"
+msgstr "¥¨¥é¡¼: ¾ì½ê¤¬Â¸ºß¤·¤Ê¤¤¥ê¥À¥¤¥ì¥¯¥·¥ç¥ó(%d)¤Ç¤¹¡£\n"
 
-#: src/http.c:1505
+#: src/http.c:1121
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s ¥¨¥é¡¼ %d: %s¡£\n"
 
-#: src/http.c:1518
+#: src/http.c:1134
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr "Last-modified ¥Ø¥Ã¥À¤¬¤¢¤ê¤Þ¤»¤ó -- ÆüÉÕ¤òÌµ¸ú¤Ë¤·¤Þ¤¹¡£\n"
 
-#: src/http.c:1526
+#: src/http.c:1142
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr "Last-modified ¥Ø¥Ã¥À¤¬Ìµ¸ú¤Ç¤¹ -- ÆüÉÕ¤òÌµ»ë¤·¤Þ¤¹¡£\n"
 
-#: src/http.c:1549
-#, c-format
-msgid ""
-"Server file no newer than local file `%s' -- not retrieving.\n"
-"\n"
-msgstr ""
-
-#: src/http.c:1557
-#, fuzzy, c-format
-msgid "The sizes do not match (local %ld) -- retrieving.\n"
-msgstr "Âç¤­¤µ¤¬¹ç¤ï¤Ê¤¤¤Î¤Ç(¥í¡¼¥«¥ë¤Ï %ld)¡¢Å¾Á÷¤·¤Þ¤¹¡£\n"
-
-#: src/http.c:1561
+#: src/http.c:1177
 msgid "Remote file is newer, retrieving.\n"
 msgstr "¥ê¥â¡¼¥È¥Õ¥¡¥¤¥ë¤Î¤Û¤¦¤¬¿·¤·¤¤¤Î¤Ç¡¢Å¾Á÷¤·¤Þ¤¹¡£\n"
 
-#: src/http.c:1606
+#: src/http.c:1222
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld]\n"
@@ -591,12 +533,12 @@ msgstr ""
 "%s (%s) - `%s' ¤òÊÝÂ¸¤·¤Þ¤·¤¿ [%ld/%ld]\n"
 "\n"
 
-#: src/http.c:1654
+#: src/http.c:1270
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld. "
 msgstr "%s (%s) - %ld ¥Ð¥¤¥È¤ÇÀÜÂ³¤¬½ªÎ»¤·¤Þ¤·¤¿¡£ "
 
-#: src/http.c:1662
+#: src/http.c:1278
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld])\n"
@@ -605,79 +547,79 @@ msgstr ""
 "%s (%s) - `%s' ¤òÊÝÂ¸¤·¤Þ¤·¤¿ [%ld/%ld])\n"
 "\n"
 
-#: src/http.c:1682
+#: src/http.c:1298
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld/%ld. "
 msgstr "%s (%s) - %ld/%ld ¥Ð¥¤¥È¤ÇÀÜÂ³¤¬½ªÎ»¤·¤Þ¤·¤¿¡£ "
 
-#: src/http.c:1693
+#: src/http.c:1309
 #, c-format
 msgid "%s (%s) - Read error at byte %ld (%s)."
 msgstr "%s (%s) - %ld ¥Ð¥¤¥È¤ÇÆÉ¤ß¹þ¤ß¥¨¥é¡¼¤Ç¤¹ (%s)¡£"
 
-#: src/http.c:1701
+#: src/http.c:1317
 #, c-format
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr "%s (%s) - %ld/%ld ¥Ð¥¤¥È¤ÇÆÉ¤ß¹þ¤ß¥¨¥é¡¼¤Ç¤¹ (%s)¡£ "
 
-#: src/init.c:336 src/netrc.c:261
+#: src/init.c:329 src/netrc.c:260
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: %s (%s)¤òÆÉ¤ß¹þ¤á¤Þ¤»¤ó¡£\n"
 
-#: src/init.c:354 src/init.c:360
+#: src/init.c:347 src/init.c:353
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: %s Æâ¤Î %d ¹Ô¤Ç¥¨¥é¡¼¤Ç¤¹\n"
 
-#: src/init.c:391
+#: src/init.c:384
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: ·Ù¹ð: ¥·¥¹¥Æ¥à¤È¥æ¡¼¥¶¤Îwgetrc¤ÎÎ¾Êý¤¬ `%s' ¤ò»ØÄê¤·¤Æ¤¤¤Þ¤¹¡£\n"
 
-#: src/init.c:483
+#: src/init.c:476
 #, c-format
 msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr "%s: ¥Ð¥°: `%s' ¤ÏÉÔÌÀ¤ÊÌ¿Îá¤Ç¤¹¡¢ÃÍ¤Ï `%s' ¤Ç¤¹¡£\n"
 
-#: src/init.c:504
-#, fuzzy, c-format
+#: src/init.c:497
+#, c-format
 msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
-msgstr "%s: ·Ù¹ð: ¥í¡¼¥«¥ëIP¥¢¥É¥ì¥¹¤ÎµÕ°ú¤­¤¬¤Ç¤­¤Þ¤»¤ó¡£\n"
+msgstr "%s: %s: `%s' ¤òIP¥¢¥É¥ì¥¹¤ËÊÑ´¹¤Ç¤­¤Þ¤»¤ó¡£\n"
 
-#: src/init.c:532
+#: src/init.c:525
 #, c-format
 msgid "%s: %s: Please specify on or off.\n"
-msgstr "%s: %s: on¤«off¤«¤òÆÃÄê¤·¤Æ¤¯¤À¤µ¤¤¡£\n"
+msgstr "%s: %s: on¤«off¤«¤ò»ØÄê¤·¤Æ¤¯¤À¤µ¤¤¡£\n"
 
-#: src/init.c:576
-#, fuzzy, c-format
+#: src/init.c:569
+#, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
-msgstr "%s: %s: on¤«off¤«¤òÆÃÄê¤·¤Æ¤¯¤À¤µ¤¤¡£\n"
+msgstr "%s: %s: always, on, off¤Þ¤¿¤Ïnever¤Î¤¤¤º¤ì¤«¤ò»ØÄê¤·¤Æ¤¯¤À¤µ¤¤¡£\n"
 
-#: src/init.c:595 src/init.c:852 src/init.c:874 src/init.c:938
+#: src/init.c:588 src/init.c:845 src/init.c:867 src/init.c:931
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: Ìµ¸ú¤Ê»ØÄê `%s' ¤Ç¤¹¡£\n"
 
-#: src/init.c:708 src/init.c:730 src/init.c:752 src/init.c:778
+#: src/init.c:701 src/init.c:723 src/init.c:745 src/init.c:771
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: Ìµ¸ú¤Ê»ØÄê `%s' ¤Ç¤¹¡£\n"
 
-#: src/main.c:120
+#: src/main.c:106
 #, c-format
 msgid "Usage: %s [OPTION]... [URL]...\n"
 msgstr "»È¤¤Êý: %s [¥ª¥×¥·¥ç¥ó]... [URL]...\n"
 
-#: src/main.c:128
+#: src/main.c:114
 #, c-format
 msgid "GNU Wget %s, a non-interactive network retriever.\n"
 msgstr "GNU Wget %s, ÈóÂÐÏÃÅª¥Í¥Ã¥È¥ï¡¼¥¯Å¾Á÷¥½¥Õ¥È\n"
 
 #. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
 #. don't bitch.  Also, it makes translation much easier.
-#: src/main.c:133
+#: src/main.c:119
 msgid ""
 "\n"
 "Mandatory arguments to long options are mandatory for short options too.\n"
@@ -687,8 +629,7 @@ msgstr ""
 "Ä¹¤¤¥ª¥×¥·¥ç¥ó¤ÇÉÔ²Ä·ç¤Ê°ú¿ô¤ÏÃ»¤¤¥ª¥×¥·¥ç¥ó¤Ç¤âÉÔ²Ä·ç¤Ç¤¹¡£\n"
 "\n"
 
-#: src/main.c:136
-#, fuzzy
+#: src/main.c:122
 msgid ""
 "Startup:\n"
 "  -V,  --version           display the version of Wget and exit.\n"
@@ -704,8 +645,7 @@ msgstr ""
 "  -e,  --execute=COMMAND   `.wgetrc' ¥³¥Þ¥ó¥É¤ò¼Â¹Ô¤·¤Þ¤¹¡£\n"
 "\n"
 
-#: src/main.c:142
-#, fuzzy
+#: src/main.c:128
 msgid ""
 "Logging and input file:\n"
 "  -o,  --output-file=FILE     log messages to FILE.\n"
@@ -717,8 +657,6 @@ msgid ""
 "  -i,  --input-file=FILE      download URLs found in FILE.\n"
 "  -F,  --force-html           treat input file as HTML.\n"
 "  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
-"       --sslcertfile=FILE     optional client certificate.\n"
-"       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
 "\n"
 msgstr ""
 "¥í¥°¥¤¥ó¤ÈÆþÎÏ¥Õ¥¡¥¤¥ë:\n"
@@ -726,14 +664,14 @@ msgstr ""
 "  -a,  --append-output=FILE   FILE ¤Ë¥á¥Ã¥»¡¼¥¸¤òÄÉ²Ã¤·¤Þ¤¹¡£\n"
 "  -d,  --debug                ¥Ç¥Ð¥Ã¥°¾ðÊó¤òÉ½¼¨¤·¤Þ¤¹¡£\n"
 "  -q,  --quiet                ½ÐÎÏ¤·¤Þ¤»¤ó¡£\n"
-"  -v,  --verbose              ¾Ü¤·¤¤½ÐÎÏ¤ò¤·¤Þ¤¹(É¸½à)¡£\n"
+"  -v,  --verbose              ¾Ü¤·¤¤½ÐÎÏ¤ò¤·¤Þ¤¹(¥Ç¥Õ¥©¥ë¥È)¡£\n"
 "  -nv, --non-verbose          ÍÞÀ©¤µ¤ì¤¿½ÐÎÏ¤ò¤·¤Þ¤¹¡£\n"
 "  -i,  --input-file=FILE      URL¤ò¥Õ¥¡¥¤¥ë¤«¤éÆÉ¤ß¹þ¤ß¤Þ¤¹¡£\n"
 "  -F,  --force-html           ÆþÎÏ¥Õ¥¡¥¤¥ë¤òHTML¤È¤·¤Æ°·¤¤¤Þ¤¹¡£\n"
+"  -B,  --base=URL             -i¤ÇÆÉ¤ó¤ÀÁêÂÐURL¤ÎÀèÆ¬¤ËURL¤òÄÉ²Ã¤·¤Þ¤¹¡£\n"
 "\n"
 
-#: src/main.c:155
-#, fuzzy
+#: src/main.c:139
 msgid ""
 "Download:\n"
 "       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local "
@@ -743,10 +681,9 @@ msgid ""
 "  -O   --output-document=FILE   write documents to FILE.\n"
 "  -nc, --no-clobber             don't clobber existing files or use .# "
 "suffixes.\n"
-"  -c,  --continue               resume getting a partially-downloaded file.\n"
+"  -c,  --continue               restart getting an existing file.\n"
 "       --dot-style=STYLE        set retrieval display style.\n"
-"  -N,  --timestamping           don't re-retrieve files unless newer than "
-"local.\n"
+"  -N,  --timestamping           don't retrieve files if older than local.\n"
 "  -S,  --server-response        print server response.\n"
 "       --spider                 don't download anything.\n"
 "  -T,  --timeout=SECONDS        set the read timeout to SECONDS.\n"
@@ -758,6 +695,7 @@ msgid ""
 "\n"
 msgstr ""
 "¥À¥¦¥ó¥í¡¼¥É:\n"
+"       --bind-address=ADDRESS   ADDRESS¤Ëbind¤·¤Þ¤¹¡£\n"
 "  -t,  --tries=NUMBER           ºÆ»î¹Ô¤¹¤ë²ó¿ô¤ò»ØÄê¤·¤Þ¤¹ (0¤ÏÌµÀ©¸Â)¡£\n"
 "  -O   --output-document=FILE   FILE ¤ËÊ¸½ñ¤ò½ÐÎÏ¤·¤Þ¤¹¡£\n"
 "  -nc, --no-clobber             ´ûÂ¸¤Î¥Õ¥¡¥¤¥ë¤ò¾Ãµî¤·¤Þ¤»¤ó¡£\n"
@@ -768,11 +706,12 @@ msgstr ""
 "       --spider                 ²¿¤â¥À¥¦¥ó¥í¡¼¥É¤·¤Þ¤»¤ó¡£\n"
 "  -T,  --timeout=SECONDS        ÆÉ¤ß¹þ¤ß¥¿¥¤¥à¥¢¥¦¥È»þ´Ö¤òSECONDS¤Ë¤·¤Þ¤¹¡£\n"
 "  -w,  --wait=SECONDS           Å¾Á÷¤´¤È¤Ë SECONDS ´ÖÂÔ¤Á¤Þ¤¹¡£\n"
+"       --waitretry=SECONDS      »î¹Ô¤´¤È¤Ë 1...SECONDS ´ÖÂÔ¤Á¤Þ¤¹¡£\n"
 "  -Y,  --proxy=on/off           ÂåÍý¥µ¡¼¥Ð(proxy)¤òon/off¤Ë¤·¤Þ¤¹¡£\n"
 "  -Q,  --quota=NUMBER           ÍÆÎÌÀ©¸Â(quota)¤ò NUMBER ¤Ë¤·¤Þ¤¹¡£\n"
 "\n"
 
-#: src/main.c:171
+#: src/main.c:155
 msgid ""
 "Directories:\n"
 "  -nd  --no-directories            don't create directories.\n"
@@ -792,8 +731,7 @@ msgstr ""
 "                                   ¥³¥ó¥Ý¡¼¥Í¥ó¥È¤òÌµ»ë¤·¤Þ¤¹¡£\n"
 "\n"
 
-#: src/main.c:178
-#, fuzzy
+#: src/main.c:162
 msgid ""
 "HTTP options:\n"
 "       --http-user=USER      set http user to USER.\n"
@@ -816,46 +754,45 @@ msgstr ""
 "       --http-passwd=PASS    http¥Ñ¥¹¥ï¡¼¥É¤ò PASS ¤Ë¤·¤Þ¤¹¡£\n"
 "  -C,  --cache=on/off        ¥µ¡¼¥Ð¤Î¥­¥ã¥Ã¥·¥å¥Ç¡¼¥¿¤ò on/off ¤Ë¤·¤Þ¤¹\n"
 "                             (ÄÌ¾ï¤Ïon¤Ë¤·¤Þ¤¹)¡£\n"
-"       --ignore-length       ¥Ø¥Ã¥À¥Õ¥¡¥¤¥ë¤Î `Content-Length' "
-"¤òÌµ»ë¤·¤Þ¤¹¡£\n"
+"  -E,  --html-extension      text/htmlÊ¸½ñ¤òÁ´¤Æ.html¤È¤¤¤¦³ÈÄ¥»Ò¤ÇÊÝÂ¸¤·¤Þ¤¹¡£\n"
+"       --ignore-length       `Content-Length'¥Ø¥Ã¥À ¤òÌµ»ë¤·¤Þ¤¹¡£\n"
 "       --header=STRING       ¥Ø¥Ã¥À¤Ë STRING ¤òÁÞÆþ¤·¤Þ¤¹¡£\n"
 "       --proxy-user=USER     USER ¤òÂåÍý¥µ¡¼¥Ð(proxy)¤Î¥æ¡¼¥¶Ì¾¤Ë¤·¤Þ¤¹¡£\n"
 "       --proxy-passwd=PASS   PASS ¤òÂåÍý¥µ¡¼¥Ð(proxy)¤Î¥Ñ¥¹¥ï¡¼¥É¤Ë¤·¤Þ¤¹¡£\n"
+"       --referer=URL         HTTP¥ê¥¯¥¨¥¹¥È¤Ë'Referer: URL'¥Ø¥Ã¥À¤òÁÞÆþ¤·¤Þ¤¹¡£\n"
 "  -s,  --save-headers        HTTP¥Ø¥Ã¥À¤ò¥Õ¥¡¥¤¥ë¤ËÊÝÂ¸¤·¤Þ¤¹¡£\n"
-"  -U,  --user-agent=AGENT    User "
-"Agent¤È¤·¤Æ¡¢`Wget/¥Ð¡¼¥¸¥ç¥óÈÖ¹æ'¤ÎÂå¤ê¤Ë\n"
+"  -U,  --user-agent=AGENT    User Agent¤È¤·¤Æ¡¢`Wget/¥Ð¡¼¥¸¥ç¥óÈÖ¹æ'¤ÎÂå¤ê¤Ë\n"
 "                             AGENT ¤ò»ÈÍÑ¤·¤Þ¤¹¡£\n"
 "\n"
 
-#: src/main.c:191
-#, fuzzy
+#: src/main.c:175
 msgid ""
 "FTP options:\n"
-"  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
-"  -g,  --glob=on/off           turn file name globbing on or off.\n"
-"       --passive-ftp           use the \"passive\" transfer mode.\n"
-"       --retr-symlinks         when recursing, get linked-to files (not "
+"       --retr-symlinks   when recursing, retrieve linked-to files (not "
 "dirs).\n"
+"  -g,  --glob=on/off     turn file name globbing on or off.\n"
+"       --passive-ftp     use the \"passive\" transfer mode.\n"
 "\n"
 msgstr ""
 "FTP¥ª¥×¥·¥ç¥ó:\n"
-"       --retr-symlinks   FTP¤Î¥·¥ó¥Ü¥ê¥Ã¥¯¥ê¥ó¥¯¤òÅ¾Á÷¤·¤Þ¤¹¡£\n"
+"       --retr-symlinks   ºÆµ¢Å¾Á÷»þ¡¢FTP¤Î¥·¥ó¥Ü¥ê¥Ã¥¯¥ê¥ó¥¯¤òÅ¾Á÷¤·¤Þ¤¹¡£\n"
 "  -g,  --glob=on/off     ¥Õ¥¡¥¤¥ëÌ¾¤Îglobbing¤ò¥ª¥ó¤Þ¤¿¤Ï¥ª¥Õ¤Ë¤·¤Þ¤¹¡£\n"
 "       --passive-ftp     \"passive\" Å¾Á÷¥â¡¼¥É¤ò»ÈÍÑ¤·¤Þ¤¹¡£\n"
 "\n"
 
-#: src/main.c:197
-#, fuzzy
+#: src/main.c:180
 msgid ""
 "Recursive retrieval:\n"
-"  -r,  --recursive          recursive web-suck -- use with care!\n"
-"  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for "
+"  -r,  --recursive             recursive web-suck -- use with care!.\n"
+"  -l,  --level=NUMBER          maximum recursion depth (inf or 0 for "
 "infinite).\n"
-"       --delete-after       delete files locally after downloading them.\n"
-"  -k,  --convert-links      convert non-relative links to relative.\n"
-"  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
-"  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"
-"  -p,  --page-requisites    get all images, etc. needed to display HTML "
+"       --delete-after          delete files locally after downloading them.\n"
+"  -k,  --convert-links         convert non-relative links to relative.\n"
+"  -K,  --backup-converted      before converting file X, back up as X.orig.\n"
+"  -m,  --mirror                shortcut option equivalent to -r -N -l inf "
+"-nr.\n"
+"  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
+"  -p,  --page-requisites       get all images, etc. needed to display HTML "
 "page.\n"
 "\n"
 msgstr ""
@@ -865,12 +802,14 @@ msgstr ""
 "  -l,  --level=NUMBER          ºÆµ¢¤¹¤ë¿¼¤µ¤ò»ØÄê¤·¤Þ¤¹(0¤ÏÌµÀ©¸Â)¡£\n"
 "       --delete-after          ¥À¥¦¥ó¥í¡¼¥É¤·¤¿¥Õ¥¡¥¤¥ë¤òºï½ü¤·¤Þ¤¹¡£\n"
 "  -k,  --convert-links         ÈóÁêÂÐ¥ê¥ó¥¯¤òÁêÂÐ¥ê¥ó¥¯¤ËÊÑ´¹¤·¤Þ¤¹¡£\n"
+"  -K,  --backup-converted      X¤ÎÊÑ´¹Á°¤ËX.orig¤È¤¤¤¦¥Ð¥Ã¥¯¥¢¥Ã¥×¤òºî¤ê¤Þ¤¹¡£\n"
 "  -m,  --mirror                ¥ß¥é¡¼¤ËÅ¬¤·¤¿¥ª¥×¥·¥ç¥ó¤ÇÆ°ºî¤·¤Þ¤¹¡£\n"
 "  -nr, --dont-remove-listing   `.listing' ¥Õ¥¡¥¤¥ë¤òºï½ü¤·¤Þ¤»¤ó¡£\n"
+"  -p,  --page-requisites       HTML¥Ú¡¼¥¸¤òÉ½¼¨¤¹¤ë¤Î¤ËÉ¬Í×¤Ê²èÁüÅù¡¢\n"
+"                               É¬Í×¤Ê¤â¤Î¤ò°ì½ï¤Ë¼èÆÀ¤·¤Þ¤¹¡£\n"
 "\n"
 
-#: src/main.c:206
-#, fuzzy
+#: src/main.c:190
 msgid ""
 "Recursive accept/reject:\n"
 "  -A,  --accept=LIST                comma-separated list of accepted "
@@ -895,31 +834,31 @@ msgid ""
 "\n"
 msgstr ""
 "ºÆµ¢Å¾Á÷»þ¤ËÅ¾Á÷¤¹¤ë¥Õ¥¡¥¤¥ë¤Îµö²Ä¡¦ÉÔµö²Ä\n"
-"  -A,  --accept=LIST                µö²Ä¤¹¤ë¥Õ¥¡¥¤¥ë¤Î¥ê¥¹¥È¤ò»ØÄê¤·¤Þ¤¹¡£\n"
-"  -R,  --reject=LIST                ½ü³°¤¹¤ë¥Õ¥¡¥¤¥ë¤Î¥ê¥¹¥È¤ò»ØÄê¤·¤Þ¤¹¡£\n"
+"  -A,  --accept=LIST                µö²Ä¤¹¤ë³ÈÄ¥»Ò¤ò¥³¥ó¥Þ¤Ç¶èÀÚ¤Ã¤Æ»ØÄê¤·¤Þ¤¹¡£\n"
+"  -R,  --reject=LIST                ½ü³°¤¹¤ë³ÈÄ¥»Ò¤Î¥ê¥¹¥È¤ò»ØÄê¤·¤Þ¤¹¡£\n"
 "  -D,  --domains=LIST               µö²Ä¤¹¤ë¥É¥á¥¤¥ó¤Î¥ê¥¹¥È¤ò»ØÄê¤·¤Þ¤¹¡£\n"
-"       --exclude-domains=LIST       ½ü³°¤¹¤ë¥É¥á¥¤¥ó¤Î¥ê¥¹¥È¤ò¥³¥ó¥Þ(,)\n"
-"                                    ¤Ç¶èÀÚ¤Ã¤Æ»ØÄê¤·¤Þ¤¹¡£\n"
-"  -L,  --relative                   ÁêÂÐ¥ê¥ó¥¯¤Î¤ßÂÐ±þ¤·¤Þ¤¹¡£\n"
+"       --exclude-domains=LIST       ½ü³°¤¹¤ë¥É¥á¥¤¥ó¤Î¥ê¥¹¥È¤ò»ØÄê¤·¤Þ¤¹¡£\n"
 "       --follow-ftp                 HTMLÊ¸½ñ¤«¤é¤ÎFTP¥ê¥ó¥¯¤ËÂÐ±þ¤·¤Þ¤¹¡£\n"
+"       --follow-tags=LIST           ¥ê¥ó¥¯¤ò¤¿¤É¤ë¥¿¥°¤Î¥ê¥¹¥È¤ò»ØÄê¤·¤Þ¤¹¡£\n"
+"  -G,  --ignore-tags=LIST           ¥ê¥ó¥¯¤ò¤¿¤É¤é¤Ê¤¤¥¿¥°¤Î¥ê¥¹¥È¤ò»ØÄê¤·¤Þ¤¹¡£\n"
 "  -H,  --span-hosts                 ºÆµ¢»þ¤ËÂ¾¤Î¥Û¥¹¥È¤Ø°ÜÆ°¤·¤Þ¤¹¡£\n"
+"  -L,  --relative                   ÁêÂÐ¥ê¥ó¥¯¤Î¤ßÂÐ±þ¤·¤Þ¤¹¡£\n"
 "  -I,  --include-directories=LIST   µö²Ä¤¹¤ë¥Ç¥£¥ì¥¯¥È¥ê¤Î¥ê¥¹¥È¤Ç¤¹¡£\n"
 "  -X,  --exclude-directories=LIST   ½ü³°¤¹¤ë¥Ç¥£¥ì¥¯¥È¥ê¤Î¥ê¥¹¥È¤Ç¤¹¡£\n"
 "  -nh, --no-host-lookup             ¥Û¥¹¥È¤ËÂÐ¤·¤ÆDNS¤ò¸«¤Þ¤»¤ó¡£\n"
 "  -np, --no-parent                  ¿Æ¥Ç¥£¥ì¥¯¥È¥ê¤Ë°ÜÆ°¤·¤Þ¤»¤ó¡£\n"
 "\n"
 
-#: src/main.c:221
+#: src/main.c:205
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr "¥Ð¥°Êó¹ð¤äÄó°Æ¤Ï<bug-wget@gnu.org>¤Ø\n"
 
-#: src/main.c:409
+#: src/main.c:384
 #, c-format
 msgid "%s: debug support not compiled in.\n"
 msgstr "%s: ¥Ç¥Ð¥Ã¥¯¤ËÂÐ±þ¤¹¤ë¤è¤¦¤Ë¥³¥ó¥Ñ¥¤¥ë¤µ¤ì¤Æ¤¤¤Þ¤»¤ó¡£\n"
 
-#: src/main.c:461
-#, fuzzy
+#: src/main.c:436
 msgid ""
 "Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.\n"
 "This program is distributed in the hope that it will be useful,\n"
@@ -927,7 +866,7 @@ msgid ""
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 msgstr ""
-"Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.\n"
+"Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.\n"
 "This program is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
@@ -935,61 +874,54 @@ msgstr ""
 "\n"
 "°Ê²¼¤Ï»²¹ÍÌõ¤Ç¤¹¡£Ë¡Åª¤Ë¤Ï¾å¤Î±ÑÊ¸¤Ë½¾¤¤¤Þ¤¹¡£\n"
 "\n"
-"Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.\n"
+"Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.\n"
 "¤³¤Î¥×¥í¥°¥é¥à¤ÏÍ­ÍÑ¤È»×¤ï¤ì¤Þ¤¹¤¬ÌµÊÝ¾Ú¤Ç¤¹¡£\n"
 "¾¦¶ÈÀ­¤äÆÃÄê¤ÎÌÜÅª¤Ë¹çÃ×¤¹¤ë¤«¤Î°ÅÌÛ¤ÎÊÝ¾Ú¤â¤¢¤ê¤Þ¤»¤ó¡£\n"
 "¾ÜºÙ¤ÏGNU°ìÈÌ¸øÍÑ»ÈÍÑµöÂú¤ò¤´Í÷²¼¤µ¤¤¡£\n"
 
-#: src/main.c:467
-#, fuzzy
+#: src/main.c:442
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
-msgstr ""
-"\n"
-"Hrvoje Niksic <hniksic@srce.hr>¤Ë¤è¤Ã¤Æ½ñ¤«¤ì¤Þ¤·¤¿¡£\n"
+msgstr "\nHrvoje Niksic <hniksic@arsdigita.com>¤Ë¤è¤Ã¤Æ½ñ¤«¤ì¤Þ¤·¤¿¡£\n"
 
-#: src/main.c:549
+#: src/main.c:516
 #, c-format
 msgid "%s: %s: invalid command\n"
 msgstr "%s: %s: Ìµ¸ú¤Ê¥³¥Þ¥ó¥É¤Ç¤¹\n"
 
-#: src/main.c:605
+#: src/main.c:569
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: `-n%c' ¤ÏÉÔÀµ¤Ê¥ª¥×¥·¥ç¥ó»ØÄê¤Ç¤¹\n"
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:608 src/main.c:650 src/main.c:708
+#: src/main.c:572 src/main.c:614 src/main.c:672
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "¾Ü¤·¤¤¥ª¥×¥·¥ç¥ó¤Ï `%s --help' ¤ò¼Â¹Ô¤·¤Æ¤¯¤À¤µ¤¤¡£\n"
 
-#: src/main.c:688
+#: src/main.c:652
 msgid "Can't be verbose and quiet at the same time.\n"
-msgstr ""
-"½ÐÎÏ¤ò¾ÜºÙ¤¹¤ë¥ª¥×¥·¥ç¥ó¤È½ÐÎÏ¤òÍÞÀ©¤µ¤ì¤ë¥ª¥×¥·¥ç¥ó¤òÆ±»þ¤Ë¤Ï»ØÄê¤Ç¤­¤Þ¤»¤ó"
-"\n"
+msgstr "½ÐÎÏ¤ò¾ÜºÙ¤Ë¤¹¤ë¥ª¥×¥·¥ç¥ó¤È½ÐÎÏ¤òÍÞÀ©¤¹¤ë¥ª¥×¥·¥ç¥ó¤òÆ±»þ¤Ë¤Ï»ØÄê¤Ç¤­¤Þ¤»¤ó\n"
 
-#: src/main.c:694
+#: src/main.c:658
 msgid "Can't timestamp and not clobber old files at the same time.\n"
-msgstr ""
-"¸Å¤¤¥Õ¥¡¥¤¥ë¤ËÆüÉÕ¤òÉÕ¤±¤Ê¤ª¤¹¤³¤È¤È¸Å¤¤¥Õ¥¡¥¤¥ë¤ò¾Ãµî¤·¤Ê¤¤¤³¤È¤òÆ±»þ¤Ë¤Ï¹Ô¤"
-"¨¤Þ¤»¤ó¡£\n"
+msgstr "¸Å¤¤¥Õ¥¡¥¤¥ë¤ËÆüÉÕ¤òÉÕ¤±¤Ê¤ª¤¹¤³¤È¤È¸Å¤¤¥Õ¥¡¥¤¥ë¤ò¾Ãµî¤·¤Ê¤¤¤³¤È¤òÆ±»þ¤Ë¤Ï¹Ô¤¨¤Þ¤»¤ó¡£\n"
 
 #. No URL specified.
-#: src/main.c:703
+#: src/main.c:667
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: URL¤¬¤¢¤ê¤Þ¤»¤ó\n"
 
-#: src/main.c:804
+#: src/main.c:768
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "%s ¤Ë¤ÏURL¤¬¤¢¤ê¤Þ¤»¤ó¡£\n"
 
-#: src/main.c:813
+#: src/main.c:777
 #, c-format
 msgid ""
 "\n"
@@ -1000,16 +932,16 @@ msgstr ""
 "½ªÎ»¤·¤Þ¤·¤¿ --%s--\n"
 "¥À¥¦¥ó¥í¡¼¥É: %s ¥Ð¥¤¥È(¥Õ¥¡¥¤¥ë¿ô %d)\n"
 
-#: src/main.c:821
+#: src/main.c:785
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "ÍÆÎÌÀ©¸Â(%s ¥Ð¥¤¥È¤Îquota)¤òÄ¶²á¤·¤Þ¤¹!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:851
+#: src/main.c:812
 msgid "%s received, redirecting output to `%%s'.\n"
-msgstr "%s ¤ò¼õ¿®¤·¤Þ¤·¤¿¡¢`%%s' ¤Ë½ÐÎÏ¤ò¥ê¥Ç¥£¥ì¥¯¥È¤·¤Þ¤¹¡£\n"
+msgstr "%s ¤ò¼õ¿®¤·¤Þ¤·¤¿¡¢`%%s' ¤Ë½ÐÎÏ¤ò¥ê¥À¥¤¥ì¥¯¥È¤·¤Þ¤¹¡£\n"
 
 #: src/mswindows.c:123
 #, c-format
@@ -1020,16 +952,16 @@ msgid ""
 "You may stop Wget by pressing CTRL+ALT+DELETE.\n"
 msgstr ""
 "\n"
-"CTRL+Break¤¬²¡¤µ¤ì¤Þ¤·¤¿¡¢`%s' ¤Ë½ÐÎÏ¤ò¥ê¥Ç¥£¥ì¥¯¥·¥ç¥ó¤·¤Þ¤¹¡£\n"
+"CTRL+Break¤¬²¡¤µ¤ì¤Þ¤·¤¿¡¢`%s' ¤Ë½ÐÎÏ¤ò¥ê¥À¥¤¥ì¥¯¥·¥ç¥ó¤·¤Þ¤¹¡£\n"
 "¼Â¹Ô¤Ï¥Ð¥Ã¥¯¥°¥é¥¦¥ó¥É¤Ç·ÑÂ³¤·¤Þ¤¹¡£\n"
 "CTRL+ALT+DELETE ¤ò²¡¤»¤Ð¡¢Wget ¤òÄä»ß¤Ç¤­¤Þ¤¹¡£\n"
 
 #. parent, no error
-#: src/mswindows.c:140 src/utils.c:451
+#: src/mswindows.c:140 src/utils.c:269
 msgid "Continuing in background.\n"
 msgstr "¥Ð¥Ã¥¯¥°¥é¥¦¥ó¥É¤Ç·ÑÂ³¤·¤Þ¤¹¡£\n"
 
-#: src/mswindows.c:142 src/utils.c:453
+#: src/mswindows.c:142 src/utils.c:271
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "½ÐÎÏ¤ò `%s' ¤Ë½ñ¤­¹þ¤ß¤Þ¤¹¡£\n"
@@ -1044,38 +976,38 @@ msgstr "WinHelp %s ¤ò³«»Ï¤·¤Þ¤¹¡£\n"
 msgid "%s: Couldn't find usable socket driver.\n"
 msgstr "%s: »ÈÍÑ²ÄÇ½¤Ê¥½¥±¥Ã¥È¥É¥é¥¤¥Ð¤ò¸«¤Ä¤±¤é¤ì¤Þ¤»¤ó¡£\n"
 
-#: src/netrc.c:367
+#: src/netrc.c:359
 #, c-format
 msgid "%s: %s:%d: warning: \"%s\" token appears before any machine name\n"
 msgstr ""
 "%s: %s:%d: ·Ù¹ð: ¶èÀÚ¤êµ­¹æ(token) \"%s\" "
 "¤Ï¤¹¤Ù¤Æ¤Î¥Þ¥·¥óÌ¾¤ÎÁ°¤Ë¸½¤ï¤ì¤Þ¤¹\n"
 
-#: src/netrc.c:398
+#: src/netrc.c:390
 #, c-format
 msgid "%s: %s:%d: unknown token \"%s\"\n"
 msgstr "%s: %s:%d: \"%s\" ¤ÏÉÔÌÀ¤Ê¶èÀÚ¤êµ­¹æ(token)¤Ç¤¹\n"
 
-#: src/netrc.c:462
+#: src/netrc.c:454
 #, c-format
 msgid "Usage: %s NETRC [HOSTNAME]\n"
 msgstr "»È¤¤Êý: %s NETRC [¥Û¥¹¥ÈÌ¾]\n"
 
-#: src/netrc.c:472
+#: src/netrc.c:464
 #, c-format
 msgid "%s: cannot stat %s: %s\n"
-msgstr "%s: %s¤Î¾ðÊó¤ò¼èÆÀ¤Ç¤­¤Þ¤»¤ó: %s \n"
+msgstr "%s: %s¤Î¾ðÊó¤ò¼èÆÀ¤Ç¤­¤Þ¤»¤ó: %s\n"
 
-#: src/recur.c:510
+#: src/recur.c:473
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
 msgstr "µñÈÝ¤¹¤Ù¤­¤Ê¤Î¤Ç¡¢%s ¤òºï½ü¤·¤Þ¤·¤¿¡£\n"
 
-#: src/recur.c:684
+#: src/recur.c:634
 msgid "Loading robots.txt; please ignore errors.\n"
 msgstr "robots.txt¤òÆÉ¤ß¹þ¤ó¤Ç¤¤¤Þ¤¹¡¢¥¨¥é¡¼¤ÏÌµ»ë¤·¤Æ¤¯¤À¤µ¤¤¡£\n"
 
-#: src/retr.c:229
+#: src/retr.c:201
 #, c-format
 msgid ""
 "\n"
@@ -1084,21 +1016,26 @@ msgstr ""
 "\n"
 "          [ %dK ¤È¤Ð¤·¤Þ¤¹ ]"
 
-#: src/retr.c:421
+#: src/retr.c:384
 msgid "Could not find proxy host.\n"
 msgstr "ÂåÍý¥Û¥¹¥È(proxy host)¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó¡£\n"
 
-#: src/retr.c:435
+#: src/retr.c:397
 #, c-format
 msgid "Proxy %s: Must be HTTP.\n"
 msgstr "ÂåÍý¥µ¡¼¥Ð(proxy) %s: HTTP¤Ç¤¢¤ëÉ¬Í×¤¬¤¢¤ê¤Þ¤¹¡£\n"
 
-#: src/retr.c:529
-#, fuzzy, c-format
-msgid "%s: Redirection cycle detected.\n"
-msgstr "%s ¤Ï¼«Ê¬¼«¿È¤Ø¤Î¥ê¥Ç¥£¥ì¥¯¥·¥ç¥ó¤Ç¤¹¡£\n"
+#: src/retr.c:476
+#, c-format
+msgid "%s: Redirection to itself.\n"
+msgstr "%s: ¼«Ê¬¼«¿È¤Ø¤Î¥ê¥À¥¤¥ì¥¯¥·¥ç¥ó¤Ç¤¹¡£\n"
 
-#: src/retr.c:623
+#: src/retr.c:490
+#, c-format
+msgid "%s: Redirection cycle detected.\n"
+msgstr "%s: ¥ê¥À¥¤¥ì¥¯¥·¥ç¥ó¤Î¥µ¥¤¥¯¥ë¤¬¸¡½Ð¤µ¤ì¤Þ¤·¤¿¡£\n"
+
+#: src/retr.c:585
 msgid ""
 "Giving up.\n"
 "\n"
@@ -1106,7 +1043,7 @@ msgstr ""
 "Ãæ»ß¤·¤Þ¤·¤¿¡£\n"
 "\n"
 
-#: src/retr.c:623
+#: src/retr.c:585
 msgid ""
 "Retrying.\n"
 "\n"
@@ -1114,66 +1051,50 @@ msgstr ""
 "ºÆ»î¹Ô¤·¤Æ¤¤¤Þ¤¹¡£\n"
 "\n"
 
-#: src/url.c:1332
+#: src/url.c:983
+#, c-format
+msgid "Error (%s): Link %s without a base provided.\n"
+msgstr "¥¨¥é¡¼ (%s): %s ¤È¤¤¤¦¥ê¥ó¥¯¤ËÂÐ¤¹¤ë¥Ù¡¼¥¹¤¬Í¿¤¨¤é¤ì¤Æ¤¤¤Þ¤»¤ó¡£\n"
+
+#: src/url.c:999
+#, c-format
+msgid "Error (%s): Base %s relative, without referer URL.\n"
+msgstr ""
+"¥¨¥é¡¼(%s): Base URL %s ¤¬ÁêÂÐ»ØÄê¤Ç¡¢»²¾È¤¹¤ëURL(Referer)¤¬Â¸ºß¤·¤Þ¤»¤ó¡£\n"
+
+#: src/url.c:1540
 #, c-format
 msgid "Converting %s... "
 msgstr "%s ¤òÊÑ´¹¤·¤Æ¤¤¤Þ¤¹... "
 
-#: src/url.c:1345
-msgid "nothing to do.\n"
-msgstr ""
-
-#: src/url.c:1353 src/url.c:1377
+#: src/url.c:1545 src/url.c:1632
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "%s Æâ¤Î¥ê¥ó¥¯¤òÊÑ´¹¤Ç¤­¤Þ¤»¤ó: %s\n"
 
-#: src/url.c:1368
-#, fuzzy, c-format
-msgid "Unable to delete `%s': %s\n"
-msgstr "¥·¥ó¥Ü¥ê¥Ã¥¯¥ê¥ó¥¯ `%s' ¤Îºï½ü¤Ë¼ºÇÔ¤·¤Þ¤·¤¿: %s\n"
-
-#: src/url.c:1558
-#, fuzzy, c-format
+#: src/url.c:1608
+#, c-format
 msgid "Cannot back up %s as %s: %s\n"
-msgstr "%s Æâ¤Î¥ê¥ó¥¯¤òÊÑ´¹¤Ç¤­¤Þ¤»¤ó: %s\n"
+msgstr "%s ¤Î¥Ð¥Ã¥¯¥¢¥Ã¥× %s ¤¬ºî¤ì¤Þ¤»¤ó: %s\n"
 
-#: src/utils.c:94
+#: src/utils.c:72
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: ½½Ê¬¤Ê¥á¥â¥ê¤¬¤¢¤ê¤Þ¤»¤ó¡£\n"
 
-#: src/utils.c:386
+#: src/utils.c:204
 msgid "Unknown/unsupported protocol"
 msgstr "ÉÔÌÀ¤Ê¡¢¤Þ¤¿¤ÏÂÐ±þ¤·¤Æ¤¤¤Ê¤¤¥×¥í¥È¥³¥ë¤Ç¤¹"
 
-#: src/utils.c:389
+#: src/utils.c:207
 msgid "Invalid port specification"
 msgstr "Ìµ¸ú¤Ê¥Ý¡¼¥ÈÈÖ¹æ¤Ç¤¹"
 
-#: src/utils.c:392
+#: src/utils.c:210
 msgid "Invalid host name"
 msgstr "Ìµ¸ú¤Ê¥Û¥¹¥ÈÌ¾¤Ç¤¹"
 
-#: src/utils.c:613
+#: src/utils.c:431
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "¥·¥ó¥Ü¥ê¥Ã¥¯¥ê¥ó¥¯ `%s' ¤Îºï½ü¤Ë¼ºÇÔ¤·¤Þ¤·¤¿: %s\n"
-
-#, fuzzy
-#~ msgid "%s: Out of memory.\n"
-#~ msgstr "%s: %s: ½½Ê¬¤Ê¥á¥â¥ê¤¬¤¢¤ê¤Þ¤»¤ó¡£\n"
-
-#~ msgid ""
-#~ "Local file `%s' is more recent, not retrieving.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "¥í¡¼¥«¥ë¥Õ¥¡¥¤¥ë `%s' ¤Î¤Û¤¦¤¬¿·¤·¤¤¤Î¤Ç¡¢Å¾Á÷¤·¤Þ¤»¤ó¡£\n"
-#~ "\n"
-
-#~ msgid "Error (%s): Link %s without a base provided.\n"
-#~ msgstr "¥¨¥é¡¼ (%s): %s ¤È¤¤¤¦¥ê¥ó¥¯¤ËÂÐ¤¹¤ë¥Ù¡¼¥¹¤¬Í¿¤¨¤é¤ì¤Æ¤¤¤Þ¤»¤ó¡£\n"
-
-#~ msgid "Error (%s): Base %s relative, without referer URL.\n"
-#~ msgstr ""
-#~ "¥¨¥é¡¼(%s): Base URL %s ¤¬ÁêÂÐ»ØÄê¤Ç¡¢»²¾È¤¹¤ëURL(Referer)¤¬Â¸ºß¤·¤Þ¤»¤ó¡£\n"
