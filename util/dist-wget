@@ -73,11 +73,11 @@ do
       ;;
     -D)
       shift
-      EXPORT_TAG="-D '$1'"
+      EXPORT_TAG="-D $1"
       ;;
     -r)
       shift
-      EXPORT_TAG="-r '$1'"
+      EXPORT_TAG="-r $1"
       ;;
     --force-version)
       shift
