@@ -579,14 +579,14 @@ msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr "%s: BUG: Nepoznata naredba `%s', vrijednost `%s'.\n"
 
 #: src/init.c:498
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Out of memory.\n"
-msgstr "%s: %s: Nema dovoljno memorije.\n"
+msgstr "%s: Nema dovoljno memorije.\n"
 
 #: src/init.c:504
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
-msgstr "%s: Upozorenje: ne mogu napraviti reverzni lookup lokalne IP adrese.\n"
+msgstr "%s: %s: Upozorenje: ne mogu pretvoriti `%s' u IP adresu.\n"
 
 #: src/init.c:532
 #, c-format
@@ -674,7 +674,6 @@ msgstr ""
 "\n"
 
 #: src/main.c:138
-#, fuzzy
 msgid ""
 "Download:\n"
 "       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local "
@@ -698,9 +697,10 @@ msgid ""
 "\n"
 msgstr ""
 "Download:\n"
+"       --bind-address=ADRESA        koristi ADRESU za bind.\n"
 "  -t,  --tries=BROJ                 broj poku¹aja na BROJ (0 je beskonaèno)\n"
 "  -O   --output-document=DATOTEKA   pi¹i dokumente u DATOTEKU.\n"
-"  -nc, --no-clobber                 nemoj prebrisati postojeæe datoteke.\n"
+"  -nc, --no-clobber                 ne bri¹i postojeæe datoteke; ne koristi .#\n"
 "  -c,  --continue                   restart getting an existing file.\n"
 "       --dot-style=STIL             postavi stil prikaza skidanja.\n"
 "  -N,  --timestamping               ne skidaj datoteke starije od lokalnih.\n"
@@ -708,8 +708,7 @@ msgstr ""
 "       --spider                     ni¹ta ne skidaj.\n"
 "  -T,  --timeout=SEKUNDE            postavi timeout èitanja na SEKUNDE.\n"
 "  -w,  --wait=SEKUNDE               èekaj SEKUNDE izmeðu skidanja.\n"
-"       --wait-retry=SEKUNDE         èekaj 1...SEKUNDI izmeðu ponovnih "
-"poku¹aja.\n"
+"       --wait-retry=SEKUNDE         èekaj 1...SEKUNDI izmeðu ponovnih poku¹aja.\n"
 "  -Y,  --proxy=on/off               ukljuèi ili iskljuèi proxy.\n"
 "  -Q,  --quota=BROJ                 postavi ogranièenje skidanja na BROJ.\n"
 "\n"
@@ -754,15 +753,15 @@ msgstr ""
 "HTTP options:\n"
 "       --http-user=KORISNIK     postavi HTTP korisnika na KORISNIK.\n"
 "       --http-passwd=ZAPORKA    postavi HTTP zaporku na ZAPORKA.\n"
-"  -C,  --cache=on/off           dozvoli ili zabrani ke¹iranje na "
-"poslu¾itelju\n"
+"  -C,  --cache=on/off           dozvoli ili zabrani ke¹iranje na poslu¾itelju\n"
 "                                  (obièno dozvoljeno).\n"
+"  -E,  --html-extension         snimaj sve dokumente tipa text/html s nastavkom\n"
+"                                  `.html'.\n"
 "       --ignore-length          ignoriraj `Content-Length' zaglavlje.\n"
 "       --header=STRING          umetni STRING meðu zaglavlja.\n"
 "       --proxy-user=KORISNIK    postavi KORISNIKA kao proxy korisnika\n"
 "       --proxy-passwd=ZAPORKA   postavi proxy zaporku na ZAPORKU.\n"
-"       --referer=URL            dodaj `Referer: URL' zaglavlje u HTTP "
-"zahtjev.\n"
+"       --referer=URL            dodaj `Referer: URL' zaglavlje u HTTP zahtjev.\n"
 "  -s,  --save-headers           snimaj HTTP zaglavlja na disk.\n"
 "  -U,  --user-agent=KLIJENT     identificiraj se kao KLIJENT umjesto\n"
 "                                  Wget/VERZIJA.\n"
@@ -785,7 +784,6 @@ msgstr ""
 "\n"
 
 #: src/main.c:179
-#, fuzzy
 msgid ""
 "Recursive retrieval:\n"
 "  -r,  --recursive             recursive web-suck -- use with care!.\n"
@@ -803,14 +801,12 @@ msgid ""
 msgstr ""
 "Rekurzivno skidanje:\n"
 "  -r,  --recursive             rekurzivno skidanje -- koristi pa¾ljivo!\n"
-"  -l,  --level=NUMBER          maksimalna dubina rekurzije (0 za "
-"beskonaènu).\n"
-"       --delete-after          bri¹i skinute datoteke.\n"
+"  -l,  --level=NUMBER          maksimalna dubina rekurzije (0 za beskonaènu).\n"
+"       --delete-after          loklano pobri¹i datoteke nakon downloada.\n"
 "  -k,  --convert-links         konvertiraj apsolutne linkove u relativne.\n"
-"  -m,  --mirror                ukljuèi opcije pogodne za \"mirror\".\n"
+"  -m,  --mirror                kratica za -r -N -l inf.\n"
 "  -nr, --dont-remove-listing   ne uklanjaj `.listing' datoteke.\n"
-"  -p,  --page-requisites       skupi slike i drugo potrebno za prikaz "
-"HTML-a.\n"
+"  -p,  --page-requisites       skupi slike i drugo potrebno za prikaz HTML-a.\n"
 "\n"
 
 #: src/main.c:189
@@ -885,9 +881,7 @@ msgstr ""
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
-msgstr ""
-"\n"
-"Izvorno napisao Hrvoje Nik¹iæ <hniksic@iskon.hr>.\n"
+msgstr "\nIzvorno napisao Hrvoje Nik¹iæ <hniksic@arsdigita.com>.\n"
 
 #: src/main.c:515
 #, c-format
