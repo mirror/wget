@@ -2907,28 +2907,31 @@ wget` core} and type @code{where} to get the backtrace.
 @cindex portability
 @cindex operating systems
 
-Since Wget uses GNU Autoconf for building and configuring, and avoids
-using ``special'' ultra--mega--cool features of any particular Unix, it
-should compile (and work) on all common Unix flavors.
+Like all GNU software, Wget works on the GNU system.  However, since it
+uses GNU Autoconf for building and configuring, and mostly avoids using
+``special'' features of any particular Unix, it should compile (and
+work) on all common Unix flavors.
 
 Various Wget versions have been compiled and tested under many kinds of
-Unix systems, including Solaris, Linux, SunOS, OSF (aka Digital Unix),
-Ultrix, *BSD, IRIX, and others; refer to the file @file{MACHINES} in the
-distribution directory for a comprehensive list.  If you compile it on
-an architecture not listed there, please let me know so I can update it.
+Unix systems, including Solaris, GNU/Linux, SunOS, OSF (aka Digital Unix
+or Tru64), Ultrix, *BSD, IRIX, AIX, and others; refer to the file
+@file{MACHINES} in the distribution directory for a comprehensive list.
+If you compile it on an architecture not listed there, please let me
+know so I can update it.
 
 Wget should also compile on the other Unix systems, not listed in
 @file{MACHINES}.  If it doesn't, please let me know.
 
 Thanks to kind contributors, this version of Wget compiles and works on
 Microsoft Windows 95 and Windows NT platforms.  It has been compiled
-successfully using MS Visual C++ 4.0, Watcom, and Borland C compilers,
+successfully using MS Visual C++ 6.0, Watcom, and Borland C compilers,
 with Winsock as networking software.  Naturally, it is crippled of some
 features available on Unix, but it should work as a substitute for
 people stuck with Windows.  Note that the Windows port is
 @strong{neither tested nor maintained} by me---all questions and
-problems should be reported to Wget mailing list at
-@email{wget@@sunsite.dk} where the maintainers will look at them.
+problems in Windows usage should be reported to Wget mailing list at
+@email{wget@@sunsite.dk} where the volunteers who maintain the
+Windows-related features might look at them.
 
 @node Signals
 @section Signals
