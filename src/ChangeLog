@@ -1,5 +1,23 @@
 2001-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* main.c (private_initialize): Removed.
+	(main): Don't call private_initialize.
+
+	* http.c: Call lookup_host.
+
+	* host.c (host_init): Removed.
+	(add_host_to_cache): Initialize host_name_address_map here, on
+	demand.
+	(ngethostbyname): Commented out.
+
+	* connect.c (make_connection): Remove dead code; use lookup_host.
+
+	* host.c (store_hostaddress): Renamed to lookup_host and reversed
+	the args.
+	Removed host_address_name_map and host_slave_master_map.
+
+2001-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* progress.c (dot_create): Align the "[ skipping ... ]" string
 	with the dots.
 

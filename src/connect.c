@@ -65,21 +65,9 @@ uerr_t
 make_connection (int *sock, char *hostname, unsigned short port)
 {
   struct sockaddr_in sock_name;
-  /* struct hostent *hptr; */
 
-  /* Get internet address of the host.  We can do it either by calling
-     ngethostbyname, or by calling store_hostaddress, from host.c.
-     storehostaddress is better since it caches calls to
-     gethostbyname.  */
-#if 1
-  if (!store_hostaddress ((unsigned char *)&sock_name.sin_addr, hostname))
+  if (!lookup_host (hostname, (unsigned char *)&sock_name.sin_addr))
     return HOSTERR;
-#else  /* never */
-  if (!(hptr = ngethostbyname (hostname)))
-    return HOSTERR;
-  /* Copy the address of the host to socket description.  */
-  memcpy (&sock_name.sin_addr, hptr->h_addr, hptr->h_length);
-#endif /* never */
 
   /* Set port and protocol */
   sock_name.sin_family = AF_INET;

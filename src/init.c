@@ -525,7 +525,7 @@ cmd_address (const char *com, const char *val, void *closure)
 
   memset (&sin, '\0', sizeof (sin));
 
-  if (!store_hostaddress ((unsigned char *)&sin.sin_addr, val))
+  if (!lookup_host (val, (unsigned char *)&sin.sin_addr))
     {
       fprintf (stderr, _("%s: %s: Cannot convert `%s' to an IP address.\n"),
 	       exec_name, com, val);

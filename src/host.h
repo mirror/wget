@@ -24,14 +24,12 @@ struct url;
 
 /* Function declarations */
 
-struct hostent *ngethostbyname PARAMS ((const char *));
-int store_hostaddress PARAMS ((unsigned char *, const char *));
-
-void host_cleanup PARAMS ((void));
+int lookup_host PARAMS ((const char *, unsigned char *));
+char *herrmsg PARAMS ((int));
 
 int accept_domain PARAMS ((struct url *));
 int sufmatch PARAMS ((const char **, const char *));
 
-char *herrmsg PARAMS ((int));
+void host_cleanup PARAMS ((void));
 
 #endif /* HOST_H */

@@ -104,18 +104,6 @@ i18n_initialize (void)
   textdomain ("wget");
 #endif /* HAVE_NLS */
 }
-
-/* It's kosher to declare these here because their interface _has_ to
-   be void foo(void).  */
-void host_init PARAMS ((void));
-
-/* This just calls the various initialization functions from the
-   modules that need one-time initialization. */
-static void
-private_initialize (void)
-{
-  host_init ();
-}
 
 /* Print the usage message.  */
 static void
@@ -335,7 +323,6 @@ main (int argc, char *const *argv)
   };
 
   i18n_initialize ();
-  private_initialize ();
 
   append_to_log = 0;
 

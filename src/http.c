@@ -276,7 +276,7 @@ http_process_connection (const char *hdr, void *arg)
 /* Whether a persistent connection is active. */
 static int pc_active_p;
 /* Host and port of currently active persistent connection. */
-static unsigned char pc_last_host[4];
+static unsigned char pc_last_host_ip[4];
 static unsigned short pc_last_port;
 
 /* File descriptor of the currently active persistent connection. */
@@ -347,9 +347,9 @@ register_persistent (const char *host, unsigned short port, int fd
 	}
     }
 
-  /* This store_hostaddress may not fail, because it has the results
-     in the cache.  */
-  success = store_hostaddress (pc_last_host, host);
+  /* This lookup_host cannot fail, because it has the results in the
+     cache.  */
+  success = lookup_host (host, pc_last_host_ip);
   assert (success);
   pc_last_port = port;
   pc_last_fd = fd;
@@ -371,7 +371,7 @@ persistent_available_p (const char *host, unsigned short port
 #endif
 			)
 {
-  unsigned char this_host[4];
+  unsigned char this_host_ip[4];
   /* First, check whether a persistent connection is active at all.  */
   if (!pc_active_p)
     return 0;
@@ -388,9 +388,9 @@ persistent_available_p (const char *host, unsigned short port
   if (ssl != pc_active_ssl)
     return 0;
 #endif /* HAVE_SSL */
-  if (!store_hostaddress (this_host, host))
+  if (!lookup_host (host, this_host_ip))
     return 0;
-  if (memcmp (pc_last_host, this_host, 4))
+  if (memcmp (pc_last_host_ip, this_host_ip, 4))
     return 0;
   /* Third: check whether the connection is still open.  This is
      important because most server implement a liberal (short) timeout
