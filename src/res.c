@@ -422,8 +422,7 @@ free_specs (struct robot_specs *specs)
 
 /* The inner matching engine: return non-zero if RECORD_PATH matches
    URL_PATH.  The rules for matching are described at
-   <http://info.webcrawler.com/mak/projects/robots/norobots-rfc.html>,
-   section 3.2.2.  */
+   <http://www.robotstxt.org/wc/norobots-rfc.txt>, section 3.2.2.  */
 
 static int
 matches (const char *record_path, const char *url_path)

@@ -1,3 +1,8 @@
+2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.texi (Robots): Fix broken URLs that point to the webcrawler
+	web site.
+
 2001-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi (HTTP Options): Explain how to make IE produce a

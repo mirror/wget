@@ -1,5 +1,9 @@
 2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* res.c (matches): Fix broken URL in the docstring.
+
+2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* html-url.c (tag_url_attributes): Mark <embed href=...> as
 	external.
 
