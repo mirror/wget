@@ -1,5 +1,9 @@
 2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c (print_help): Fix typo; stured -> stored.
+
+2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* getopt.c: Add definitions of getopt_long and getopt_long_only.
 
 2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
