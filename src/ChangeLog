@@ -1,5 +1,10 @@
 2003-11-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp-basic.c: Don't include <arpa/inet.h> and others because
+	they're no longer needed.
+
+2003-11-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (main): Don't allow setting of both opt.ipv4_only and
 	opt.ipv6_only.
 

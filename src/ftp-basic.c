@@ -44,17 +44,6 @@ so, delete this exception statement from your version.  */
 #endif
 #include <sys/types.h>
 
-/* For inet_ntop. */
-#ifndef WINDOWS
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#endif
-
-#ifdef WINDOWS
-# include <winsock.h>
-#endif
-
 #include "wget.h"
 #include "utils.h"
 #include "rbuf.h"
