@@ -1,5 +1,9 @@
 2001-12-09  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* version.c: Wget 1.8 is released.
+
+2001-12-09  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (reencode_string): Declare static.
 
 	* res.c (registered_specs): Declare static.
