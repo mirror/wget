@@ -1,5 +1,10 @@
 2003-11-30  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (skip_short_body): Renamed skip_body to skip_short_body;
+	don't bother calling fd_read_body.
+
+2003-11-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* retr.c (fd_read_body): Sanitize arguments and document them
 	better.  Make sure the timer is created and updated only if
 	necessary.  Updated callers.
