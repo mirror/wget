@@ -850,7 +850,7 @@ create_image (struct bar_progress *bp, double dl_total_time)
   /* " ETA xx:xx:xx"; wait for three seconds before displaying the ETA.
      That's because the ETA value needs a while to become
      reliable.  */
-  if (bp->total_length > 0 && dl_total_time > 3000)
+  if (bp->total_length > 0 && bp->count > 0 && dl_total_time > 3000)
     {
       long eta;
       int eta_hrs, eta_min, eta_sec;

@@ -1,5 +1,10 @@
 2003-11-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* progress.c (create_image): Don't calculate ETA if nothing has
+	been downloaded yet, because it causes division by zero.
+
+2003-11-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c (bind_local): Rename sa_len to addrlen because IRIX
 	headers define sa_len as a macro.
 
