@@ -233,13 +233,12 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 	  waittm = (wtimer_read (timer) - last_successful_read_tm) / 1000;
 	  if (waittm + tmout > opt.read_timeout)
 	    {
-	      /* Don't allow waiting for data to exceed read timeout. */
+	      /* Don't allow waiting time to exceed read timeout. */
 	      tmout = opt.read_timeout - waittm;
 	      if (tmout < 0)
 		{
 		  /* We've already exceeded the timeout. */
-		  res = -1;
-		  errno = ETIMEDOUT;
+		  res = -1, errno = ETIMEDOUT;
 		  break;
 		}
 	    }
