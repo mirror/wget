@@ -13,8 +13,9 @@ send a POST request with the specified contents.
 
 ** IPv6 is experimentally supported.
 
-** The `--timeout' option now affects the connect timeout as well.
-Previously it only affected reading and writing data.
+** The `--timeout' option now affects DNS lookup and establishing the
+connection as well.  Previously it only affected reading and writing
+data.
 
 ** Download speed shown by the progress bar is based on the data
 recently read, rather than the average speed of the entire download.
@@ -39,6 +40,8 @@ control characters or for '/', but no longer for frequent characters
 such as space.  You can use the new option --restrict-file-names to
 enforce even stricter rules, which is useful when downloading to
 Windows partitions.
+
+* Wget 1.8.2 is a bugfix release with no user-visible changes.
 
 * Wget 1.8.1 is a bugfix release with no user-visible changes.
 
