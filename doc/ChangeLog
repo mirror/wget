@@ -1,3 +1,7 @@
+2003-09-16  Noel Kothe  <noel@debian.org>
+
+	* wget.texi (Download Options): Fix misspelling.
+
 2003-09-15  Nicolas Schodet  <schodet@efrei.fr>
 
 	* wget.texi (Download Options): Add link to Proxies.

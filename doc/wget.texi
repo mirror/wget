@@ -695,17 +695,15 @@ Limit the download speed to @var{amount} bytes per second.  Amount may
 be expressed in bytes, kilobytes with the @samp{k} suffix, or megabytes
 with the @samp{m} suffix.  For example, @samp{--limit-rate=20k} will
 limit the retrieval rate to 20KB/s.  This kind of thing is useful when,
-for whatever reason, you don't want Wget to consume the entire evailable
+for whatever reason, you don't want Wget to consume the entire available
 bandwidth.
 
-Note that Wget implementeds the limiting by sleeping the appropriate
+Note that Wget implements the limiting by sleeping the appropriate
 amount of time after a network read that took less time than specified
 by the rate.  Eventually this strategy causes the TCP transfer to slow
 down to approximately the specified rate.  However, it takes some time
 for this balance to be achieved, so don't be surprised if limiting the
-rate doesn't work with very small files.  Also, the "sleeping" strategy
-will misfire when an extremely small bandwidth, say less than 1.5KB/s,
-is specified.
+rate doesn't work well with very small files.
 
 @cindex pause
 @cindex wait
