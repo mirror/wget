@@ -202,7 +202,7 @@ convert_links (const char *file, struct urlpos *links)
        any URL needs to be converted in the first place.  If not, just
        leave the file alone.  */
     int dry_count = 0;
-    struct urlpos *dry = links;
+    struct urlpos *dry;
     for (dry = links; dry; dry = dry->next)
       if (dry->convert != CO_NOCONVERT)
 	++dry_count;

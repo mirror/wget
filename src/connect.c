@@ -261,7 +261,7 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
 {
   struct sockaddr_storage ss;
   struct sockaddr *sa = (struct sockaddr *)&ss;
-  int sock = -1;
+  int sock;
 
   /* If PRINT is non-NULL, print the "Connecting to..." line, with
      PRINT being the host name we're connecting to.  */
