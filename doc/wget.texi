@@ -453,15 +453,42 @@ already exists, it will be overwritten.  If the @var{file} is @samp{-},
 the documents will be written to standard output.  Including this option
 automatically sets the number of tries to 1.
 
+@cindex clobbering, file
+@cindex downloading multiple times
 @cindex no-clobber
 @item -nc
 @itemx --no-clobber
-Do not clobber existing files when saving to directory hierarchy within
-recursive retrieval of several files. This option is @emph{extremely}
-useful when you wish to continue where you left off with retrieval of
-many files.  If the files have the @samp{.html} or (yuck) @samp{.htm}
-suffix, they will be loaded from the local disk, and parsed as if they
-have been retrieved from the Web.
+If a file is downloaded more than once in the same directory, wget's
+behavior depends on a few options, including @samp{-nc}.  In certain
+cases, the local file will be "clobbered", or overwritten, upon repeated
+download.  In other cases it will be preserved.
+
+When running wget without @samp{-N}, @samp{-nc}, or @samp{-r},
+downloading the same file in the same directory will result in the
+original copy of @samp{@var{file}} being preserved and the second copy
+being named @samp{@var{file}.1}.  If that file is downloaded yet again,
+the third copy will be named @samp{@var{file}.2}, and so on.  When
+@samp{-nc} is specified, this behavior is suppressed, and wget will
+refuse to download newer copies of @samp{@var{file}}.  Therefore,
+"no-clobber" is actually a misnomer in this mode -- it's not clobbering
+that's prevented (as the numeric suffixes were already preventing
+clobbering), but rather the multiple version saving that's prevented.
+
+When running wget with @samp{-r}, but without @samp{-N} or @samp{-nc},
+re-downloading a file will result in the new copy simply overwriting the
+old.  Adding @samp{-nc} will prevent this behavior, instead causing the
+original version to be preserved and any newer copies on the server to
+be ignored.
+
+When running wget with @samp{-N}, with or without @samp{-r}, the
+decision as to whether or not to download a newer copy of a file depends
+on the local and remote timestamp and size of the file
+(@xref{Time-Stamping}).  @samp{-nc} may not be specified at the same
+time as @samp{-N}.
+
+Note that when @samp{-nc} is specified, files with the suffixes
+@samp{.html} or (yuck) @samp{.htm} will be loaded from the local disk
+and parsed as if they had been retrieved from the Web.
 
 @cindex continue retrieval
 @item -c

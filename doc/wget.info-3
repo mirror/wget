@@ -408,6 +408,7 @@ Concept Index
 * bug reports:                           Reporting Bugs.
 * bugs:                                  Reporting Bugs.
 * cache:                                 HTTP Options.
+* clobbering, file:                      Download Options.
 * command line:                          Invoking.
 * Content-Length, ignore:                HTTP Options.
 * continue retrieval:                    Download Options.
@@ -424,6 +425,7 @@ Concept Index
 * directory prefix:                      Directory Options.
 * DNS lookup:                            Host Checking.
 * dot style:                             Download Options.
+* downloading multiple times:            Download Options.
 * examples:                              Examples.
 * exclude directories:                   Directory-Based Limits.
 * execute wgetrc command:                Basic Startup Options.

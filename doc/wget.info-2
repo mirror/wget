@@ -24,6 +24,40 @@ resulting derived work is distributed under the terms of a permission
 notice identical to this one.
 
 
+File: wget.info,  Node: HTTP Time-Stamping Internals,  Next: FTP Time-Stamping Internals,  Prev: Time-Stamping Usage,  Up: Time-Stamping
+
+HTTP Time-Stamping Internals
+============================
+
+   Time-stamping in HTTP is implemented by checking of the
+`Last-Modified' header.  If you wish to retrieve the file `foo.html'
+through HTTP, Wget will check whether `foo.html' exists locally.  If it
+doesn't, `foo.html' will be retrieved unconditionally.
+
+   If the file does exist locally, Wget will first check its local
+time-stamp (similar to the way `ls -l' checks it), and then send a
+`HEAD' request to the remote server, demanding the information on the
+remote file.
+
+   The `Last-Modified' header is examined to find which file was
+modified more recently (which makes it "newer").  If the remote file is
+newer, it will be downloaded; if it is older, Wget will give up.(1)
+
+   When `--backup-converted' (`-K') is specified in conjunction with
+`-N', server file `X' is compared to local file `X.orig', if extant,
+rather than being compared to local file `X', which will always differ
+if it's been converted by `--convert-links' (`-k').
+
+   Arguably, HTTP time-stamping should be implemented using the
+`If-Modified-Since' request.
+
+   ---------- Footnotes ----------
+
+   (1) As an additional check, Wget will look at the `Content-Length'
+header, and compare the sizes; if they are not the same, the remote
+file will be downloaded no matter what the time-stamp says.
+
+
 File: wget.info,  Node: FTP Time-Stamping Internals,  Prev: HTTP Time-Stamping Internals,  Up: Time-Stamping
 
 FTP Time-Stamping Internals

@@ -1,3 +1,13 @@
+2000-08-22  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* wget.texi (Download Options): --no-clobber's documentation was
+ 	severely lacking -- ameliorated the situation.  Some of the
+ 	previously-undocumented stuff (like the multiple-file-version
+ 	numeric-suffixing) that's now mentioned for the first (and only)
+ 	time in the -nc documentation should probably be mentioned
+ 	elsewhere, but due to the way that wget.texi's hierarchy is laid
+ 	out, I had a hard time finding anywhere else appropriate.
+
 2000-07-17  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (HTTP Options): Minor clarification in "download a

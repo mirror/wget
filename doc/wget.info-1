@@ -357,12 +357,37 @@ Download Options
 
 `-nc'
 `--no-clobber'
-     Do not clobber existing files when saving to directory hierarchy
-     within recursive retrieval of several files. This option is
-     *extremely* useful when you wish to continue where you left off
-     with retrieval of many files.  If the files have the `.html' or
-     (yuck) `.htm' suffix, they will be loaded from the local disk, and
-     parsed as if they have been retrieved from the Web.
+     If a file is downloaded more than once in the same directory,
+     wget's behavior depends on a few options, including `-nc'.  In
+     certain cases, the local file will be "clobbered", or overwritten,
+     upon repeated download.  In other cases it will be preserved.
+
+     When running wget without `-N', `-nc', or `-r', downloading the
+     same file in the same directory will result in the original copy
+     of `FILE' being preserved and the second copy being named
+     `FILE.1'.  If that file is downloaded yet again, the third copy
+     will be named `FILE.2', and so on.  When `-nc' is specified, this
+     behavior is suppressed, and wget will refuse to download newer
+     copies of `FILE'.  Therefore, "no-clobber" is actually a misnomer
+     in this mode - it's not clobbering that's prevented (as the
+     numeric suffixes were already preventing clobbering), but rather
+     the multiple version saving that's prevented.
+
+     When running wget with `-r', but without `-N' or `-nc',
+     re-downloading a file will result in the new copy simply
+     overwriting the old.  Adding `-nc' will prevent this behavior,
+     instead causing the original version to be preserved and any newer
+     copies on the server to be ignored.
+
+     When running wget with `-N', with or without `-r', the decision as
+     to whether or not to download a newer copy of a file depends on
+     the local and remote timestamp and size of the file (*Note
+     Time-Stamping::).  `-nc' may not be specified at the same time as
+     `-N'.
+
+     Note that when `-nc' is specified, files with the suffixes `.html'
+     or (yuck) `.htm' will be loaded from the local disk and parsed as
+     if they had been retrieved from the Web.
 
 `-c'
 `--continue'
@@ -1219,38 +1244,4 @@ directory listing for FTP or the `Last-Modified' header for HTTP.
 following command every week:
 
      wget --timestamping -r ftp://prep.ai.mit.edu/pub/gnu/
-
-
-File: wget.info,  Node: HTTP Time-Stamping Internals,  Next: FTP Time-Stamping Internals,  Prev: Time-Stamping Usage,  Up: Time-Stamping
-
-HTTP Time-Stamping Internals
-============================
-
-   Time-stamping in HTTP is implemented by checking of the
-`Last-Modified' header.  If you wish to retrieve the file `foo.html'
-through HTTP, Wget will check whether `foo.html' exists locally.  If it
-doesn't, `foo.html' will be retrieved unconditionally.
-
-   If the file does exist locally, Wget will first check its local
-time-stamp (similar to the way `ls -l' checks it), and then send a
-`HEAD' request to the remote server, demanding the information on the
-remote file.
-
-   The `Last-Modified' header is examined to find which file was
-modified more recently (which makes it "newer").  If the remote file is
-newer, it will be downloaded; if it is older, Wget will give up.(1)
-
-   When `--backup-converted' (`-K') is specified in conjunction with
-`-N', server file `X' is compared to local file `X.orig', if extant,
-rather than being compared to local file `X', which will always differ
-if it's been converted by `--convert-links' (`-k').
-
-   Arguably, HTTP time-stamping should be implemented using the
-`If-Modified-Since' request.
-
-   ---------- Footnotes ----------
-
-   (1) As an additional check, Wget will look at the `Content-Length'
-header, and compare the sizes; if they are not the same, the remote
-file will be downloaded no matter what the time-stamp says.
 
