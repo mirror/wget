@@ -39,6 +39,8 @@ struct file_memory {
   int mmap_p;
 };
 
+struct wget_timer;
+
 char *time_str PARAMS ((time_t *));
 char *datetime_str PARAMS ((time_t *));
 
@@ -87,6 +89,13 @@ char *legible PARAMS ((long));
 char *legible_very_long PARAMS ((VERY_LONG_TYPE));
 int numdigit PARAMS ((long));
 void long_to_string PARAMS ((char *, long));
+
+struct wget_timer *wtimer_allocate PARAMS ((void));
+struct wget_timer *wtimer_new PARAMS ((void));
+void wtimer_delete PARAMS ((struct wget_timer *));
+void wtimer_reset PARAMS ((struct wget_timer *));
+long wtimer_elapsed PARAMS ((struct wget_timer *));
+long wtimer_granularity PARAMS ((void));
 
 char *html_quote_string PARAMS ((const char *));
 

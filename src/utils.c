@@ -1532,6 +1532,160 @@ long_to_string (char *buffer, long number)
 #undef DIGITS_18
 #undef DIGITS_19
 
+/* Support for timers. */
+
+#undef TIMER_WINDOWS
+#undef TIMER_GETTIMEOFDAY
+#undef TIMER_TIME
+
+/* Depending on the OS and availability of gettimeofday(), one and
+   only one of the above constants will be defined.  Virtually all
+   modern Unix systems will define TIMER_GETTIMEOFDAY; Windows will
+   use TIMER_WINDOWS.  TIMER_TIME is a catch-all method for
+   non-Windows systems without gettimeofday.
+
+   #### Perhaps we should also support ftime(), which exists on old
+   BSD 4.2-influenced systems?  (It also existed under MS DOS Borland
+   C, if memory serves me.)  */
+
+#ifdef WINDOWS
+# define TIMER_WINDOWS
+#else  /* not WINDOWS */
+# ifdef HAVE_GETTIMEOFDAY
+#  define TIMER_GETTIMEOFDAY
+# else
+#  define TIMER_TIME
+# endif
+#endif /* not WINDOWS */
+
+struct wget_timer {
+#ifdef TIMER_GETTIMEOFDAY
+  long secs;
+  long usecs;
+#endif
+
+#ifdef TIMER_TIME
+  time_t secs;
+#endif
+
+#ifdef TIMER_WINDOWS
+  ULARGE_INTEGER wintime;
+#endif
+};
+
+/* Allocate a timer.  It is not legal to do anything with a freshly
+   allocated timer, except call wtimer_reset().  */
+
+struct wget_timer *
+wtimer_allocate (void)
+{
+  struct wget_timer *wt =
+    (struct wget_timer *)xmalloc (sizeof (struct wget_timer));
+  return wt;
+}
+
+/* Allocate a new timer and reset it.  Return the new timer. */
+
+struct wget_timer *
+wtimer_new (void)
+{
+  struct wget_timer *wt = wtimer_allocate ();
+  wtimer_reset (wt);
+  return wt;
+}
+
+/* Free the resources associated with the timer.  Its further use is
+   prohibited.  */
+
+void
+wtimer_delete (struct wget_timer *wt)
+{
+  xfree (wt);
+}
+
+/* Reset timer WT.  This establishes the starting point from which
+   wtimer_elapsed() will return the number of elapsed
+   milliseconds.  It is allowed to reset a previously used timer.  */
+
+void
+wtimer_reset (struct wget_timer *wt)
+{
+#ifdef TIMER_GETTIMEOFDAY
+  struct timeval t;
+  gettimeofday (&t, NULL);
+  wt->secs  = t.tv_sec;
+  wt->usecs = t.tv_usec;
+#endif
+
+#ifdef TIMER_TIME
+  wt->secs = time (NULL);
+#endif
+
+#ifdef TIMER_WINDOWS
+  FILETIME ft;
+  SYSTEMTIME st;
+  GetSystemTime (&st);
+  SystemTimeToFileTime (&st, &ft);
+  wt->wintime.HighPart = ft.dwHighDateTime;
+  wt->wintime.LowPart  = ft.dwLowDateTime;
+#endif
+}
+
+/* Return the number of milliseconds elapsed since the timer was last
+   reset.  It is allowed to call this function more than once to get
+   increasingly higher elapsed values.  */
+
+long
+wtimer_elapsed (struct wget_timer *wt)
+{
+#ifdef TIMER_GETTIMEOFDAY
+  struct timeval t;
+  gettimeofday (&t, NULL);
+  return (t.tv_sec - wt->secs) * 1000 + (t.tv_usec - wt->usecs) / 1000;
+#endif
+
+#ifdef TIMER_TIME
+  time_t now = time (NULL);
+  return 1000 * (now - wt->secs);
+#endif
+
+#ifdef WINDOWS
+  FILETIME ft;
+  SYSTEMTIME st;
+  ULARGE_INTEGER uli;
+  GetSystemTime (&st);
+  SystemTimeToFileTime (&st, &ft);
+  uli.HighPart = ft.dwHighDateTime;
+  uli.LowPart = ft.dwLowDateTime;
+  return (long)((uli.QuadPart - wt->wintime.QuadPart) / 10000);
+#endif
+}
+
+/* Return the assessed granularity of the timer implementation.  This
+   is important for certain code that tries to deal with "zero" time
+   intervals.  */
+
+long
+wtimer_granularity (void)
+{
+#ifdef TIMER_GETTIMEOFDAY
+  /* Granularity of gettimeofday is hugely architecture-dependent.
+     However, it appears that on modern machines it is better than
+     1ms.  */
+  return 1;
+#endif
+
+#ifdef TIMER_TIME
+  /* This is clear. */
+  return 1000;
+#endif
+
+#ifdef TIMER_WINDOWS
+  /* ? */
+  return 1;
+#endif
+}
+
 /* This should probably be at a better place, but it doesn't really
    fit into html-parse.c.  */
 

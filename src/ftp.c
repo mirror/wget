@@ -114,6 +114,7 @@ getftp (struct urlinfo *u, long *len, long restval, ccon *con)
   FILE *fp;
   char *user, *passwd, *respline;
   char *tms, *tmrate;
+  struct wget_timer *timer;
   unsigned char pasv_addr[6];
   int cmd = con->cmd;
   int passive_mode_open = 0;
@@ -870,10 +871,11 @@ Error in server response, closing control connection.\n"));
 		   legible (expected_bytes - restval));
       logputs (LOG_VERBOSE, _(" (unauthoritative)\n"));
     }
-  reset_timer ();
+  timer = wtimer_new ();
   /* Get the contents of the document.  */
   res = get_contents (dtsock, fp, len, restval, expected_bytes, &con->rbuf, 0);
-  con->dltime = elapsed_time ();
+  con->dltime = wtimer_elapsed (timer);
+  wtimer_delete (timer);
   tms = time_str (NULL);
   tmrate = rate (*len - restval, con->dltime, 0);
   /* Close data connection socket.  */

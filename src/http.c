@@ -526,6 +526,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   static SSL_CTX *ssl_ctx = NULL;
   SSL *ssl = NULL;
 #endif /* HAVE_SSL */
+  struct wget_timer *timer;
   char *cookies = NULL;
 
   /* Whether this connection will be kept alive after the HTTP request
@@ -1333,12 +1334,13 @@ Accept: %s\r\n\
      should be some overhead information.  */
   if (opt.save_headers)
     fwrite (all_headers, 1, all_length, fp);
-  reset_timer ();
+  timer = wtimer_new ();
   /* Get the contents of the document.  */
   hs->res = get_contents (sock, fp, &hs->len, hs->restval,
 			  (contlen != -1 ? contlen : 0),
 			  &rbuf, keep_alive);
-  hs->dltime = elapsed_time ();
+  hs->dltime = wtimer_elapsed (timer);
+  wtimer_delete (timer);
   {
     /* Close or flush the file.  We have to be careful to check for
        error here.  Checking the result of fwrite() is not enough --

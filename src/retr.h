@@ -28,10 +28,7 @@ uerr_t retrieve_url PARAMS ((const char *, char **, char **,
 			     const char *, int *));
 uerr_t retrieve_from_file PARAMS ((const char *, int, int *));
 
-void reset_timer PARAMS ((void));
-long elapsed_time PARAMS ((void));
 char *rate PARAMS ((long, long, int));
-
 void printwhat PARAMS ((int, int));
 
 void downloaded_increase PARAMS ((unsigned long));

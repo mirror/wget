@@ -1,3 +1,26 @@
+2001-04-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* utils.c: Document timer functions.
+
+	* retr.c (rate): Use it.
+	(rate): Print in GB/s if transfer rate exceeds 1 GB/s.
+
+	* utils.c (wtimer_granularity): New function.
+
+2001-04-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* retr.c (show_progress): Ditto.
+
+	* ftp.c (getftp): Ditto.
+
+	* http.c (gethttp): Use new timer functions.
+
+	* utils.c (wtimer_allocate): New function.
+	(wtimer_new): Ditto.
+	(wtimer_delete): Ditto.
+	(wtimer_reset): Ditto.
+	(wtimer_elapsed): Ditto.
+
 2001-04-24  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* utils.c (long_to_string): New, faster version.  Favors smaller

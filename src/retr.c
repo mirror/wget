@@ -47,13 +47,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 extern int errno;
 #endif
 
-#ifdef WINDOWS
-LARGE_INTEGER internal_time;
-#else
-/* Internal variables used by the timer.  */
-static long internal_secs, internal_msecs;
-#endif
-
 /* See the comment in gethttp() why this is needed. */
 int global_download_count;
 
@@ -175,10 +168,11 @@ print_percentage (long bytes, long expected)
 static int
 show_progress (long res, long expected, enum spflags flags)
 {
+  static struct wget_timer *timer;
   static long line_bytes;
   static long offs, initial_skip;
   static int ndot, nrow;
-  static long last_timer, time_offset;
+  static long last_timer_value, time_offset;
   int any_output = 0;
 
   if (flags == SP_FINISH)
@@ -186,7 +180,7 @@ show_progress (long res, long expected, enum spflags flags)
       int dot = ndot;
       char *tmpstr = (char *)alloca (2 * opt.dots_in_line + 1);
       char *tmpp = tmpstr;
-      time_offset = elapsed_time () - last_timer;
+      time_offset = wtimer_elapsed (timer) - last_timer_value;
       for (; dot < opt.dots_in_line; dot++)
 	{
 	  if (!(dot % opt.dot_spacing))
@@ -217,7 +211,10 @@ show_progress (long res, long expected, enum spflags flags)
       offs = 0L;
       ndot = nrow = 0;
       line_bytes = (long)opt.dots_in_line * opt.dot_bytes;
-      last_timer = elapsed_time ();
+      if (!timer)
+	timer = wtimer_allocate ();
+      wtimer_reset (timer);
+      last_timer_value = 0;
       time_offset = 0;
       initial_skip = res;
       if (res)
@@ -247,8 +244,8 @@ show_progress (long res, long expected, enum spflags flags)
       ++ndot;
       if (ndot == opt.dots_in_line)
 	{
-	  time_offset = elapsed_time () - last_timer;
-	  last_timer += time_offset;
+	  time_offset = wtimer_elapsed (timer) - last_timer_value;
+	  last_timer_value += time_offset;
 
 	  ndot = 0;
 	  ++nrow;
@@ -264,66 +261,11 @@ show_progress (long res, long expected, enum spflags flags)
   /* Reenable flushing.  */
   opt.no_flush = 0;
   if (any_output)
-    /* Force flush.  #### Oh, what a kludge!  */
+    /* Force flush.  */
     logflush ();
   return any_output;
 }
 
-/* Reset the internal timer.  */
-void
-reset_timer (void)
-{
-#ifndef WINDOWS
-  /* Under Unix, the preferred way to measure the passage of time is
-     through gettimeofday() because of its granularity.  However, on
-     some old or weird systems, gettimeofday() might not be available.
-     There we use the simple time().  */
-# ifdef HAVE_GETTIMEOFDAY
-  struct timeval t;
-  gettimeofday (&t, NULL);
-  internal_secs = t.tv_sec;
-  internal_msecs = t.tv_usec / 1000;
-# else  /* not HAVE_GETTIMEOFDAY */
-  internal_secs = time (NULL);
-  internal_msecs = 0;
-# endif /* not HAVE_GETTIMEOFDAY */
-#else  /* WINDOWS */
-  /* Under Windows, use Windows-specific APIs. */
-  FILETIME ft;
-  SYSTEMTIME st;
-  GetSystemTime(&st);
-  SystemTimeToFileTime(&st,&ft);
-  internal_time.HighPart = ft.dwHighDateTime;
-  internal_time.LowPart = ft.dwLowDateTime;
-#endif /* WINDOWS */
-}
-
-/* Return the time elapsed from the last call to reset_timer(), in
-   milliseconds.  */
-long
-elapsed_time (void)
-{
-#ifndef WINDOWS
-# ifdef HAVE_GETTIMEOFDAY
-  struct timeval t;
-  gettimeofday (&t, NULL);
-  return ((t.tv_sec - internal_secs) * 1000
-	  + (t.tv_usec / 1000 - internal_msecs));
-# else  /* not HAVE_GETTIMEOFDAY */
-  return 1000 * ((long)time (NULL) - internal_secs);
-# endif /* not HAVE_GETTIMEOFDAY */
-#else  /* WINDOWS */
-  FILETIME ft;
-  SYSTEMTIME st;
-  LARGE_INTEGER li;
-  GetSystemTime(&st);
-  SystemTimeToFileTime(&st,&ft);
-  li.HighPart = ft.dwHighDateTime;
-  li.LowPart = ft.dwLowDateTime;
-  return (long) ((li.QuadPart - internal_time.QuadPart) / 1e4);
-#endif /* WINDOWS */
-}
-
 /* Print out the appropriate download rate.  Appropriate means that if
    rate is > 1024 bytes per second, kilobytes are used, and if rate >
    1024 * 1024 bps, megabytes are used.
@@ -336,15 +278,25 @@ rate (long bytes, long msecs, int pad)
   static char res[15];
   double dlrate;
 
-  if (!msecs)
-    ++msecs;
+  if (msecs == 0)
+    /* If elapsed time is 0, it means we're under the granularity of
+       the timer.  This often happens on systems that use time() for
+       the timer.  */
+    msecs = wtimer_granularity ();
+
   dlrate = (double)1000 * bytes / msecs;
   if (dlrate < 1024.0)
     sprintf (res, pad ? "%7.2f B/s" : "%.2f B/s", dlrate);
   else if (dlrate < 1024.0 * 1024.0)
     sprintf (res, pad ? "%7.2f KB/s" : "%.2f KB/s", dlrate / 1024.0);
-  else
+  else if (dlrate < 1024.0 * 1024.0 * 1024.0)
     sprintf (res, pad ? "%7.2f MB/s" : "%.2f MB/s", dlrate / (1024.0 * 1024.0));
+  else
+    /* Maybe someone will need this one day.  More realistically, it
+       will get tickled by buggy timers. */
+    sprintf (res, pad ? "%7.2f GB/s" : "%.2f GB/s",
+	     dlrate / (1024.0 * 1024.0 * 1024.0));
+
   return res;
 }
 
