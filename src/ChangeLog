@@ -1,3 +1,26 @@
+2000-11-05  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* log.c (logvprintf): Use vsnprintf() in all cases.  If necessary,
+	resize the buffer to fit the formated message.  That way, messages
+	of arbitrary size may be printed.
+	(logvprintf): Use saved_append() to optionally log the last
+	several lines of output.
+	(logputs): Ditto.
+	(log_close): Adapt to new data structures.
+	(log_dump): Ditto.
+	(redirect_output): Print messages to stderr, not to stdout.
+
+	* log.c (saved_append_1): New function.  Replaces the old logging
+	system ("log all output until 10M characters") with a new, much
+	more reasonable one ("log last screenful of text").
+	(saved_append): New function; call saved_append_1.
+	(free_log_line): New function.
+
+2000-11-05  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (construct): Fix comment.
+	(find_last_char): Document.
+
 2000-11-04  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* snprintf.c: New file.

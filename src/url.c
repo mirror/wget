@@ -1311,6 +1311,10 @@ urlpath_length (const char *url)
   return strlen (url);
 }
 
+/* Find the last occurrence of character C in the range [b, e), or
+   NULL, if none are present.  This is almost completely equivalent to
+   { *e = '\0'; return strrchr(b); }, except that it doesn't change
+   the contents of the string.  */
 static const char *
 find_last_char (const char *b, const char *e, char c)
 {
@@ -1320,9 +1324,10 @@ find_last_char (const char *b, const char *e, char c)
   return NULL;
 }
 
-/* Construct an absolute URL, given a (possibly) relative one.  This
-   gets tricky if you want to cover all the "reasonable" cases, but
-   I'm satisfied with the result.  */
+/* Construct a URL by concatenating an absolute URL and a path, which
+   may or may not be absolute.  This tries to behave "reasonably" in
+   all foreseeable cases.  It employs little specific knowledge about
+   protocols or URL-specific stuff -- it just works on strings.  */
 static char *
 construct (const char *url, const char *sub, int subsize, int no_proto)
 {

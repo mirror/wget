@@ -162,7 +162,7 @@ dnl
 AC_FUNC_ALLOCA
 AC_CHECK_FUNCS(strdup strstr strcasecmp strncasecmp)
 AC_CHECK_FUNCS(gettimeofday mktime strptime)
-AC_CHECK_FUNCS(strerror vsnprintf select signal symlink access isatty)
+AC_CHECK_FUNCS(strerror snprintf vsnprintf select signal symlink access isatty)
 AC_CHECK_FUNCS(uname gethostname)
 
 AC_CHECK_FUNCS(gethostbyname, [], [
