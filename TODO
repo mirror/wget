@@ -27,8 +27,9 @@ user-visible changes.
 * Make `-k' check for files that were downloaded in the past and convert links 
   to them in newly-downloaded documents.
 
-* -k should convert convert relative references to absolute if not
-  downloaded.
+* -k should convert convert relative references to absolute if not downloaded.
+
+* -k should convert "hostless absolute" URLs, like <A HREF="/index.html">.
 
 * Add option to clobber existing file names (no `.N' suffixes).
 
