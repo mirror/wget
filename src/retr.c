@@ -634,3 +634,34 @@ downloaded_exceeds_quota (void)
 
   return opt.downloaded > opt.quota;
 }
+
+/* If opt.wait or opt.waitretry are specified, and if certain
+   conditions are met, sleep the appropriate number of seconds.  See
+   the documentation of --wait and --waitretry for more information.
+
+   COUNT is the count of current retrieval, beginning with 1. */
+
+void
+sleep_between_retrievals (int count)
+{
+  static int first_retrieval = 1;
+
+  if (!first_retrieval && (opt.wait || opt.waitretry))
+    {
+      if (opt.waitretry && count > 1)
+	{
+	  /* If opt.waitretry is specified and this is a retry, wait
+	     for COUNT-1 number of seconds, or for opt.waitretry
+	     seconds.  */
+	  if (count <= opt.waitretry)
+	    sleep (count - 1);
+	  else
+	    sleep (opt.waitretry);
+	}
+      else if (opt.wait)
+	/* Otherwise, check if opt.wait is specified.  If so, sleep.  */
+	sleep (opt.wait);
+    }
+  if (first_retrieval)
+    first_retrieval = 0;
+}

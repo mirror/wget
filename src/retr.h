@@ -37,4 +37,6 @@ void printwhat PARAMS ((int, int));
 void downloaded_increase PARAMS ((unsigned long));
 int downloaded_exceeds_quota PARAMS ((void));
 
+void sleep_between_retrievals PARAMS ((int));
+
 #endif /* RETR_H */

@@ -1234,8 +1234,6 @@ Accept: %s\r\n\
 uerr_t
 http_loop (struct urlinfo *u, char **newloc, int *dt)
 {
-  static int first_retrieval = 1;
-
   int count;
   int use_ts, got_head = 0;	/* time-stamping info */
   char *filename_plus_orig_suffix;
@@ -1348,23 +1346,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
     {
       /* Increment the pass counter.  */
       ++count;
-      /* Wait before the retrieval (unless this is the very first
-	 retrieval).
-	 Check if we are retrying or not, wait accordingly - HEH */
-      if (!first_retrieval && (opt.wait || (count && opt.waitretry)))
-	{
-	  if (count)
-	    {
-	      if (count<opt.waitretry)
-		sleep(count);
-	      else
-		sleep(opt.waitretry);
-	    }
-	  else
-	    sleep (opt.wait);
-	}
-      if (first_retrieval)
-	first_retrieval = 0;
+      sleep_between_retrievals (count);
       /* Get the current time string.  */
       tms = time_str (NULL);
       /* Print fetch message, if opt.verbose.  */

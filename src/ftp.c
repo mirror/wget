@@ -948,8 +948,6 @@ Error in server response, closing control connection.\n"));
 static uerr_t
 ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 {
-  static int first_retrieval = 1;
-
   int count, orig_lp;
   long restval, len;
   char *tms, *tmrate, *locf;
@@ -986,23 +984,7 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
     {
       /* Increment the pass counter.  */
       ++count;
-      /* Wait before the retrieval (unless this is the very first
-	 retrieval).
-	 Check if we are retrying or not, wait accordingly - HEH */
-      if (!first_retrieval && (opt.wait || (count && opt.waitretry)))
-	{
-	  if (count)
-	    {
-	      if (count<opt.waitretry)
-		sleep(count);
-	      else
-		sleep(opt.waitretry);
-	    }
-	  else
-	    sleep (opt.wait);
-	}
-      if (first_retrieval)
-	first_retrieval = 0;
+      sleep_between_retrievals (count);
       if (con->st & ON_YOUR_OWN)
 	{
 	  con->cmd = 0;

@@ -1,5 +1,14 @@
 2000-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* ftp.c (ftp_loop_internal): Ditto.
+
+	* http.c (http_loop): Use it.
+
+	* retr.c (sleep_between_retrievals): New function that handles the
+	logic of opt.wait and opt.waitretry.
+
+2000-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* rbuf.h: Implement only a single version of RBUF_READCHAR, using
 	rbuf_read_bufferful when the buffer is depleted.
 
