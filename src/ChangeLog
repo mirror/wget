@@ -1,3 +1,7 @@
+2001-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (parseurl): Don't depend on the now-obsolete TYPE.
+
 2001-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* url.c (getproxy): Handle URL shorthands.

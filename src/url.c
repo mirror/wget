@@ -423,7 +423,7 @@ parseurl (const char *url, struct urlinfo *u, int strict)
 				  the scheme was explicitly named,
 				  i.e. it wasn't deduced from the URL
 				  format.  */
-  uerr_t type;
+  uerr_t type = URLUNKNOWN;
 
   DEBUGP (("parseurl (\"%s\") -> ", url));
   recognizable = url_has_scheme (url);
@@ -442,7 +442,17 @@ parseurl (const char *url, struct urlinfo *u, int strict)
   else if (i == ARRAY_SIZE (supported_schemes))
     type = URLUNKNOWN;
   else
-    u->scheme = type = supported_schemes[i].scheme;
+    {
+      u->scheme = supported_schemes[i].scheme;
+      if (u->scheme == SCHEME_HTTP)
+	type = URLHTTP;
+#ifdef HAVE_SSL
+      if (u->scheme == SCHEME_HTTPS)
+	type = URLHTTPS;
+#endif
+      if (u->scheme == SCHEME_FTP)
+	type = URLFTP;
+    }
 
   if (type == URLUNKNOWN)
     l = 0;
@@ -505,12 +515,12 @@ parseurl (const char *url, struct urlinfo *u, int strict)
   /* Some delimiter troubles...  */
   if (url[i] == '/' && url[i - 1] != ':')
     ++i;
-  if (type == URLHTTP)
+  if (u->scheme == SCHEME_HTTP)
     while (url[i] && url[i] == '/')
       ++i;
   u->path = (char *)xmalloc (strlen (url + i) + 8);
   strcpy (u->path, url + i);
-  if (type == URLFTP)
+  if (u->scheme == SCHEME_FTP)
     {
       u->ftp_type = process_ftp_type (u->path);
       /* #### We don't handle type `d' correctly yet.  */
@@ -534,7 +544,7 @@ parseurl (const char *url, struct urlinfo *u, int strict)
   /* Simplify the directory.  */
   path_simplify (u->dir);
   /* Remove the leading `/' in HTTP.  */
-  if (type == URLHTTP && *u->dir == '/')
+  if (u->scheme == SCHEME_HTTP && *u->dir == '/')
     strcpy (u->dir, u->dir + 1);
   DEBUGP (("ndir %s\n", u->dir));
   /* Strip trailing `/'.  */
