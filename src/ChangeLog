@@ -1,5 +1,10 @@
 2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* cookies.c (cookie_handle_set_cookie): Specify exact match for
+	unspecified domains.
+
+2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (main): Removed one-letter options `-C', `-g', `-G', and
 	`-s'.
 

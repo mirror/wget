@@ -848,8 +848,13 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
   if (!cookie->domain)
     {
     copy_domain:
+      /* If the domain was not provided, we use the one we're talking
+	 to, and set exact match.  */
       cookie->domain = xstrdup (host);
-      cookie->port = port;
+      cookie->domain_exact = 1;
+      /* Set the port, but only if it's non-default. */
+      if (port != 80 && port != 443)
+	cookie->port = port;
     }
   else
     {
