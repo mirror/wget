@@ -1,3 +1,12 @@
+2003-09-29  Aaron Hawley <Aaron.Hawley@uvm.edu>
+
+	* ftp.c (getftp): --spider option should now work with FTP
+	downloads.
+	(ftp_loop_internal): quiet reports and calculations of downloads
+	when --spider option set, nor try deleting when --delete-after
+	also set.
+	(ftp_loop): --spider will skip HTML-ification of .listing file.
+
 2003-09-26  Gisle Vanem  <giva@bgnett.no>
 
 	* mswindows.c (read_registry): Removed.

@@ -827,6 +827,9 @@ Error in server response, closing control connection.\n"));
       expected_bytes = ftp_expected_bytes (ftp_last_respline);
     } /* cmd & DO_LIST */
 
+  if (!(cmd & (DO_LIST | DO_RETR)) || (opt.spider && !(cmd & DO_LIST)))
+    return RETRFINISHED;
+
   /* Some FTP servers return the total length of file after REST
      command, others just return the remaining size. */
   if (*len && restval && expected_bytes
@@ -837,9 +840,6 @@ Error in server response, closing control connection.\n"));
     }
 
   /* If no transmission was required, then everything is OK.  */
-  if (!(cmd & (DO_LIST | DO_RETR)))
-    return RETRFINISHED;
-
   if (!pasv_mode_open)  /* we are not using pasive mode so we need
 			      to accept */
     {
@@ -1162,7 +1162,8 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	}
       /* Time?  */
       tms = time_str (NULL);
-      tmrate = retr_rate (len - restval, con->dltime, 0);
+      if (!opt.spider)
+        tmrate = retr_rate (len - restval, con->dltime, 0);
 
       /* If we get out of the switch above without continue'ing, we've
 	 successfully downloaded a file.  Remember this fact. */
@@ -1173,8 +1174,9 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	  CLOSE (RBUF_FD (&con->rbuf));
 	  rbuf_uninitialize (&con->rbuf);
 	}
-      logprintf (LOG_VERBOSE, _("%s (%s) - `%s' saved [%ld]\n\n"),
-		 tms, tmrate, locf, len);
+      if (!opt.spider)
+        logprintf (LOG_VERBOSE, _("%s (%s) - `%s' saved [%ld]\n\n"),
+		   tms, tmrate, locf, len);
       if (!opt.verbose && !opt.quiet)
 	{
 	  /* Need to hide the password from the URL.  The `if' is here
@@ -1201,7 +1203,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	     by the more specific option --dont-remove-listing, and the code
 	     to do this deletion is in another function. */
 	}
-      else
+      else if (!opt.spider)
 	/* This is not a directory listing file. */
 	{
 	  /* Unlike directory listing files, don't pretend normal files weren't
@@ -1727,7 +1729,7 @@ ftp_loop (struct url *u, int *dt, struct url *proxy)
 
       if (res == RETROK)
 	{
-	  if (opt.htmlify)
+	  if (opt.htmlify && !opt.spider)
 	    {
 	      char *filename = (opt.output_document
 				? xstrdup (opt.output_document)
