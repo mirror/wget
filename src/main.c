@@ -752,7 +752,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
       else
 	{
 	  struct stat st;
-	  opt.dfp = fopen (opt.output_document, "wb");
+	  opt.dfp = fopen (opt.output_document, opt.always_rest ? "ab" : "wb");
 	  if (opt.dfp == NULL)
 	    {
 	      perror (opt.output_document);

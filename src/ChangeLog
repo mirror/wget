@@ -1,5 +1,12 @@
 2001-04-02  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (http_loop): Ditto.
+
+	* ftp.c (ftp_loop_internal): Made the check whether to continue
+	retrieval `-O'-friendly.
+
+2001-04-02  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* netrc.c (parse_netrc): Don't trim the line endings explicitly;
 	they will be handled as whitespace.
 	(parse_netrc): Correctly handle lines that end with whitespace.

@@ -1305,6 +1305,9 @@ Accept: %s\r\n\
 	  /* This will silently fail for streams that don't correspond
 	     to regular files, but that's OK.  */
 	  rewind (fp);
+	  /* ftruncate is needed because opt.dfp is opened in append
+	     mode if opt.always_rest is set.  */
+	  ftruncate (fileno (fp), 0);
 	  clearerr (fp);
 	}
     }
@@ -1487,8 +1490,8 @@ File `%s' already there, will not retrieve.\n"), u->local);
       hstat.restval = 0L;
       /* Decide whether or not to restart.  */
       if (((count > 1 && (*dt & ACCEPTRANGES)) || opt.always_rest)
-	  && file_exists_p (u->local))
-	if (stat (u->local, &st) == 0)
+	  && file_exists_p (locf))
+	if (stat (locf, &st) == 0 && S_ISREG (st.st_mode))
 	  hstat.restval = st.st_size;
       /* Decide whether to send the no-cache directive.  */
       if (u->proxy && (count > 1 || (opt.proxy_cache == 0)))

@@ -825,6 +825,9 @@ Error in server response, closing control connection.\n"));
 	  /* This will silently fail for streams that don't correspond
 	     to regular files, but that's OK.  */
 	  rewind (fp);
+	  /* ftruncate is needed because opt.dfp is opened in append
+	     mode if opt.always_rest is set.  */
+	  ftruncate (fileno (fp), 0);
 	  clearerr (fp);
 	}
     }
@@ -1033,8 +1036,8 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
       restval = 0L;
       if ((count > 1 || opt.always_rest)
 	  && !(con->cmd & DO_LIST)
-	  && file_exists_p (u->local))
-	if (stat (u->local, &st) == 0)
+	  && file_exists_p (locf))
+	if (stat (locf, &st) == 0 && S_ISREG (st.st_mode))
 	  restval = st.st_size;
       /* Get the current time string.  */
       tms = time_str (NULL);
