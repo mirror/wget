@@ -3,6 +3,12 @@
 	* wget.texi (Download Options): Using -c on a file that's already fully
 	downloaded results in an unchanged file and no second ".1" copy.
 
+	* wget.texi (Logging and Input File Options): -B / --base was not
+	documented as a separate item, and the .wgetrc version was misleading.
+
+	* wget.texi (Wgetrc Commands): Changed all instances of 
+	", the same as" to the more grammatical " -- the same as".
+
 2000-08-22  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (Download Options): --no-clobber's documentation was

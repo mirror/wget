@@ -178,19 +178,20 @@ add_hostdir = on/off
      Enable/disable host-prefixed file names.  `-nH' disables it.
 
 continue = on/off
-     Enable/disable continuation of the retrieval, the same as `-c'
+     Enable/disable continuation of the retrieval - the same as `-c'
      (which enables it).
 
 background = on/off
-     Enable/disable going to background, the same as `-b' (which enables
-     it).
+     Enable/disable going to background - the same as `-b' (which
+     enables it).
 
 backup_converted = on/off
      Enable/disable saving pre-converted files with the suffix `.orig'
      - the same as `-K' (which enables it).
 
 base = STRING
-     Set base for relative URLs, the same as `-B'.
+     Consider relative URLs in URL input files forced to be interpreted
+     as HTML as being relative to STRING - the same as `-B'.
 
 cache = on/off
      When set to off, disallow server-caching.  See the `-C' option.
@@ -205,13 +206,13 @@ debug = on/off
      Debug mode, same as `-d'.
 
 delete_after = on/off
-     Delete after download, the same as `--delete-after'.
+     Delete after download - the same as `--delete-after'.
 
 dir_prefix = STRING
-     Top of directory tree, the same as `-P'.
+     Top of directory tree - the same as `-P'.
 
 dirstruct = on/off
-     Turning dirstruct on or off, the same as `-x' or `-nd',
+     Turning dirstruct on or off - the same as `-x' or `-nd',
      respectively.
 
 domains = STRING
@@ -237,13 +238,13 @@ dot_style = STRING
 
 exclude_directories = STRING
      Specify a comma-separated list of directories you wish to exclude
-     from download, the same as `-X' (*Note Directory-Based Limits::).
+     from download - the same as `-X' (*Note Directory-Based Limits::).
 
 exclude_domains = STRING
      Same as `--exclude-domains' (*Note Domain Acceptance::).
 
 follow_ftp = on/off
-     Follow FTP links from HTML documents, the same as `-f'.
+     Follow FTP links from HTML documents - the same as `-f'.
 
 follow_tags = STRING
      Only follow certain HTML tags when doing a recursive retrieval,
@@ -251,14 +252,14 @@ follow_tags = STRING
 
 force_html = on/off
      If set to on, force the input filename to be regarded as an HTML
-     document, the same as `-F'.
+     document - the same as `-F'.
 
 ftp_proxy = STRING
      Use STRING as FTP proxy, instead of the one specified in
      environment.
 
 glob = on/off
-     Turn globbing on/off, the same as `-g'.
+     Turn globbing on/off - the same as `-g'.
 
 header = STRING
      Define an additional header, like `--header'.
@@ -283,7 +284,7 @@ ignore_tags = STRING
 
 include_directories = STRING
      Specify a comma-separated list of directories you wish to follow
-     when downloading, the same as `-I'.
+     when downloading - the same as `-I'.
 
 input = STRING
      Read the URLs from STRING, like `-i'.
@@ -295,7 +296,7 @@ kill_longer = on/off
      the value in `Content-Length'.
 
 logfile = STRING
-     Set logfile, the same as `-o'.
+     Set logfile - the same as `-o'.
 
 login = STRING
      Your user name on the remote machine, for FTP.  Defaults to
@@ -319,10 +320,10 @@ no_proxy = STRING
      proxy loading, instead of the one specified in environment.
 
 output_document = STRING
-     Set the output filename, the same as `-O'.
+     Set the output filename - the same as `-O'.
 
 passive_ftp = on/off
-     Set passive FTP, the same as `--passive-ftp'.
+     Set passive FTP - the same as `--passive-ftp'.
 
 passwd = STRING
      Set your FTP password to PASSWORD.  Without this setting, the
@@ -335,7 +336,7 @@ proxy_passwd = STRING
      Set proxy authentication password to STRING, like `--proxy-passwd'.
 
 quiet = on/off
-     Quiet mode, the same as `-q'.
+     Quiet mode - the same as `-q'.
 
 quota = QUOTA
      Specify the download quota, which is useful to put in the global
@@ -347,13 +348,13 @@ quota = QUOTA
      system settings.
 
 reclevel = N
-     Recursion level, the same as `-l'.
+     Recursion level - the same as `-l'.
 
 recursive = on/off
-     Recursive on/off, the same as `-r'.
+     Recursive on/off - the same as `-r'.
 
 relative_only = on/off
-     Follow only relative links, the same as `-L' (*Note Relative
+     Follow only relative links - the same as `-L' (*Note Relative
      Links::).
 
 remove_listing = on/off
@@ -369,7 +370,7 @@ robots = on/off
      what you are doing before changing the default (which is `on').
 
 server_response = on/off
-     Choose whether or not to print the HTTP and FTP server responses,
+     Choose whether or not to print the HTTP and FTP server responses -
      the same as `-S'.
 
 simple_host_check = on/off
@@ -379,22 +380,22 @@ span_hosts = on/off
      Same as `-H'.
 
 timeout = N
-     Set timeout value, the same as `-T'.
+     Set timeout value - the same as `-T'.
 
 timestamping = on/off
      Turn timestamping on/off. The same as `-N' (*Note Time-Stamping::).
 
 tries = N
-     Set number of retries per URL, the same as `-t'.
+     Set number of retries per URL - the same as `-t'.
 
 use_proxy = on/off
      Turn proxy support on/off. The same as `-Y'.
 
 verbose = on/off
-     Turn verbose on/off, the same as `-v'/`-nv'.
+     Turn verbose on/off - the same as `-v'/`-nv'.
 
 wait = N
-     Wait N seconds between retrievals, the same as `-w'.
+     Wait N seconds between retrievals - the same as `-w'.
 
 waitretry = N
      Wait up to N seconds between retries of failed retrievals only -

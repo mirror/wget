@@ -336,6 +336,11 @@ Logging and Input File Options
      HTML files on your local disk, by adding `<base href="URL">' to
      HTML, or using the `--base' command-line option.
 
+`-B URL'
+`--base=URL'
+     When used in conjunction with `-F', prepends URL to relative links
+     in the file specified by `-i'.
+
 
 File: wget.info,  Node: Download Options,  Next: Directory Options,  Prev: Logging and Input File Options,  Up: Invoking
 

@@ -405,6 +405,7 @@ Concept Index
 * arguments:                             Invoking.
 * authentication:                        HTTP Options.
 * backing up converted files:            Recursive Retrieval Options.
+* base for relative links in input file: Logging and Input File Options.
 * bug reports:                           Reporting Bugs.
 * bugs:                                  Reporting Bugs.
 * cache:                                 HTTP Options.

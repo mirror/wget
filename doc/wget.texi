@@ -431,6 +431,12 @@ file.  This enables you to retrieve relative links from existing
 @sc{html} files on your local disk, by adding @code{<base
 href="@var{url}">} to @sc{html}, or using the @samp{--base} command-line
 option.
+
+@cindex base for relative links in input file
+@item -B @var{URL}
+@itemx --base=@var{URL}
+When used in conjunction with @samp{-F}, prepends @var{URL} to relative
+links in the file specified by @samp{-i}.
 @end table
 
 @node Download Options, Directory Options, Logging and Input File Options, Invoking
@@ -1592,11 +1598,11 @@ Same as @samp{-A}/@samp{-R} (@xref{Types of Files}).
 Enable/disable host-prefixed file names.  @samp{-nH} disables it.
 
 @item continue = on/off
-Enable/disable continuation of the retrieval, the same as @samp{-c}
+Enable/disable continuation of the retrieval -- the same as @samp{-c}
 (which enables it).
 
 @item background = on/off
-Enable/disable going to background, the same as @samp{-b} (which enables
+Enable/disable going to background -- the same as @samp{-b} (which enables
 it).
 
 @item backup_converted = on/off
@@ -1605,8 +1611,11 @@ Enable/disable saving pre-converted files with the suffix @samp{.orig}
 
 @c @item backups = @var{number}
 @c #### Document me!
+@c
 @item base = @var{string}
-Set base for relative @sc{url}s, the same as @samp{-B}.
+Consider relative @sc{url}s in @sc{url} input files forced to be
+interpreted as @sc{html} as being relative to @var{string} -- the same
+as @samp{-B}.
 
 @item cache = on/off
 When set to off, disallow server-caching.  See the @samp{-C} option.
@@ -1621,13 +1630,13 @@ Ignore @var{n} remote directory components.
 Debug mode, same as @samp{-d}.
 
 @item delete_after = on/off
-Delete after download, the same as @samp{--delete-after}.
+Delete after download -- the same as @samp{--delete-after}.
 
 @item dir_prefix = @var{string}
-Top of directory tree, the same as @samp{-P}.
+Top of directory tree -- the same as @samp{-P}.
 
 @item dirstruct = on/off
-Turning dirstruct on or off, the same as @samp{-x} or @samp{-nd},
+Turning dirstruct on or off -- the same as @samp{-x} or @samp{-nd},
 respectively.
 
 @item domains = @var{string}
@@ -1653,13 +1662,13 @@ Specify the dot retrieval @dfn{style}, as with @samp{--dot-style}.
 
 @item exclude_directories = @var{string}
 Specify a comma-separated list of directories you wish to exclude from
-download, the same as @samp{-X} (@xref{Directory-Based Limits}).
+download -- the same as @samp{-X} (@xref{Directory-Based Limits}).
 
 @item exclude_domains = @var{string}
 Same as @samp{--exclude-domains} (@xref{Domain Acceptance}).
 
 @item follow_ftp = on/off
-Follow @sc{ftp} links from @sc{html} documents, the same as @samp{-f}.
+Follow @sc{ftp} links from @sc{html} documents -- the same as @samp{-f}.
 
 @item follow_tags = @var{string}
 Only follow certain HTML tags when doing a recursive retrieval, just like
@@ -1667,14 +1676,14 @@ Only follow certain HTML tags when doing a recursive retrieval, just like
 
 @item force_html = on/off
 If set to on, force the input filename to be regarded as an @sc{html}
-document, the same as @samp{-F}.
+document -- the same as @samp{-F}.
 
 @item ftp_proxy = @var{string}
 Use @var{string} as @sc{ftp} proxy, instead of the one specified in
 environment.
 
 @item glob = on/off
-Turn globbing on/off, the same as @samp{-g}.
+Turn globbing on/off -- the same as @samp{-g}.
 
 @item header = @var{string}
 Define an additional header, like @samp{--header}.
@@ -1699,7 +1708,7 @@ Ignore certain HTML tags when doing a recursive retrieval, just like
 
 @item include_directories = @var{string}
 Specify a comma-separated list of directories you wish to follow when
-downloading, the same as @samp{-I}.
+downloading -- the same as @samp{-I}.
 
 @item input = @var{string}
 Read the @sc{url}s from @var{string}, like @samp{-i}.
@@ -1711,7 +1720,7 @@ as much data as there is, provided there is more than or equal
 to the value in @code{Content-Length}.
 
 @item logfile = @var{string}
-Set logfile, the same as @samp{-o}.
+Set logfile -- the same as @samp{-o}.
 
 @item login = @var{string}
 Your user name on the remote machine, for @sc{ftp}.  Defaults to
@@ -1735,10 +1744,10 @@ Use @var{string} as the comma-separated list of domains to avoid in
 proxy loading, instead of the one specified in environment.
 
 @item output_document = @var{string}
-Set the output filename, the same as @samp{-O}.
+Set the output filename -- the same as @samp{-O}.
 
 @item passive_ftp = on/off
-Set passive @sc{ftp}, the same as @samp{--passive-ftp}.
+Set passive @sc{ftp} -- the same as @samp{--passive-ftp}.
 
 @item passwd = @var{string}
 Set your @sc{ftp} password to @var{password}.  Without this setting, the
@@ -1753,7 +1762,7 @@ Set proxy authentication password to @var{string}, like
 @samp{--proxy-passwd}.
 
 @item quiet = on/off
-Quiet mode, the same as @samp{-q}.
+Quiet mode -- the same as @samp{-q}.
 
 @item quota = @var{quota}
 Specify the download quota, which is useful to put in the global
@@ -1764,13 +1773,13 @@ specified in bytes (default), kbytes @samp{k} appended) or mbytes
 mbytes. Note that the user's startup file overrides system settings.
 
 @item reclevel = @var{n}
-Recursion level, the same as @samp{-l}.
+Recursion level -- the same as @samp{-l}.
 
 @item recursive = on/off
-Recursive on/off, the same as @samp{-r}.
+Recursive on/off -- the same as @samp{-r}.
 
 @item relative_only = on/off
-Follow only relative links, the same as @samp{-L} (@xref{Relative
+Follow only relative links -- the same as @samp{-L} (@xref{Relative
 Links}).
 
 @item remove_listing = on/off
@@ -1787,7 +1796,7 @@ what you are doing before changing the default (which is @samp{on}).
 
 @item server_response = on/off
 Choose whether or not to print the @sc{http} and @sc{ftp} server
-responses, the same as @samp{-S}.
+responses -- the same as @samp{-S}.
 
 @item simple_host_check = on/off
 Same as @samp{-nh} (@xref{Host Checking}).
@@ -1796,22 +1805,22 @@ Same as @samp{-nh} (@xref{Host Checking}).
 Same as @samp{-H}.
 
 @item timeout = @var{n}
-Set timeout value, the same as @samp{-T}.
+Set timeout value -- the same as @samp{-T}.
 
 @item timestamping = on/off
 Turn timestamping on/off. The same as @samp{-N} (@xref{Time-Stamping}).
 
 @item tries = @var{n}
-Set number of retries per @sc{url}, the same as @samp{-t}.
+Set number of retries per @sc{url} -- the same as @samp{-t}.
 
 @item use_proxy = on/off
 Turn proxy support on/off. The same as @samp{-Y}.
 
 @item verbose = on/off
-Turn verbose on/off, the same as @samp{-v}/@samp{-nv}.
+Turn verbose on/off -- the same as @samp{-v}/@samp{-nv}.
 
 @item wait = @var{n}
-Wait @var{n} seconds between retrievals, the same as @samp{-w}.
+Wait @var{n} seconds between retrievals -- the same as @samp{-w}.
 
 @item waitretry = @var{n}
 Wait up to @var{n} seconds between retries of failed retrievals only --
