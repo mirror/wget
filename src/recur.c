@@ -241,6 +241,10 @@ retrieve_tree (const char *start_url)
 		if (!descend_redirect_p (redirected, url, depth,
 					 start_url_parsed, blacklist))
 		  descend = 0;
+		else
+		  /* Make sure that the old pre-redirect form gets
+		     blacklisted. */
+		  string_set_add (blacklist, url);
 	      }
 
 	    xfree (url);

@@ -276,7 +276,7 @@ http_process_connection (const char *hdr, void *arg)
 /* Whether a persistent connection is active. */
 static int pc_active_p;
 /* Host and port of currently active persistent connection. */
-static unsigned char pc_last_host_ip[4];
+static struct address_list *pc_last_host_ip;
 static unsigned short pc_last_port;
 
 /* File descriptor of the currently active persistent connection. */
@@ -301,6 +301,11 @@ invalidate_persistent (void)
 #ifdef HAVE_SSL
   pc_active_ssl = 0;
 #endif /* HAVE_SSL */
+  if (pc_last_host_ip != NULL)
+    {
+      address_list_release (pc_last_host_ip);
+      pc_last_host_ip = NULL;
+    }
   DEBUGP (("Invalidating fd %d from further reuse.\n", pc_last_fd));
 }
 
@@ -319,8 +324,6 @@ register_persistent (const char *host, unsigned short port, int fd
 #endif
 		     )
 {
-  int success;
-
   if (pc_active_p)
     {
       if (pc_last_fd == fd)
@@ -347,10 +350,13 @@ register_persistent (const char *host, unsigned short port, int fd
 	}
     }
 
+  assert (pc_last_host_ip == NULL);
+
   /* This lookup_host cannot fail, because it has the results in the
      cache.  */
-  success = lookup_host (host, pc_last_host_ip);
-  assert (success);
+  pc_last_host_ip = lookup_host (host, 1);
+  assert (pc_last_host_ip != NULL);
+
   pc_last_port = port;
   pc_last_fd = fd;
   pc_active_p = 1;
@@ -371,7 +377,9 @@ persistent_available_p (const char *host, unsigned short port
 #endif
 			)
 {
-  unsigned char this_host_ip[4];
+  int success;
+  struct address_list *this_host_ip;
+
   /* First, check whether a persistent connection is active at all.  */
   if (!pc_active_p)
     return 0;
@@ -379,6 +387,7 @@ persistent_available_p (const char *host, unsigned short port
      (HOST, PORT) ordered pair.  */
   if (port != pc_last_port)
     return 0;
+
 #ifdef HAVE_SSL
   /* Second, a): check if current connection is (not) ssl, too.  This
      test is unlikely to fail because HTTP and HTTPS typicaly use
@@ -388,10 +397,19 @@ persistent_available_p (const char *host, unsigned short port
   if (ssl != pc_active_ssl)
     return 0;
 #endif /* HAVE_SSL */
-  if (!lookup_host (host, this_host_ip))
+
+  this_host_ip = lookup_host (host, 1);
+  if (!this_host_ip)
     return 0;
-  if (memcmp (pc_last_host_ip, this_host_ip, 4))
+
+  /* To equate the two host names for the purposes of persistent
+     connections, they need to share all the IP addresses in the
+     list.  */
+  success = address_list_match_all (pc_last_host_ip, this_host_ip);
+  address_list_release (this_host_ip);
+  if (!success)
     return 0;
+
   /* Third: check whether the connection is still open.  This is
      important because most server implement a liberal (short) timeout
      on persistent connections.  Wget can of course always reconnect
@@ -521,7 +539,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   int sock, hcount, num_written, all_length, statcode;
   long contlen, contrange;
   struct url *conn;
-  uerr_t err;
   FILE *fp;
   int auth_tried_already;
   struct rbuf rbuf;
@@ -622,42 +639,17 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 #endif /* HAVE_SSL */
       )
     {
-      logprintf (LOG_VERBOSE, _("Connecting to %s:%hu... "),
-		 conn->host, conn->port);
-      err = make_connection (&sock, conn->host, conn->port);
-      switch (err)
-	{
-	case HOSTERR:
-	  logputs (LOG_VERBOSE, "\n");
-	  logprintf (LOG_NOTQUIET, "%s: %s.\n", conn->host, herrmsg (h_errno));
-	  return HOSTERR;
-	  break;
-	case CONSOCKERR:
-	  logputs (LOG_VERBOSE, "\n");
-	  logprintf (LOG_NOTQUIET, "socket: %s\n", strerror (errno));
-	  return CONSOCKERR;
-	  break;
-	case CONREFUSED:
-	  logputs (LOG_VERBOSE, "\n");
-	  logprintf (LOG_NOTQUIET,
-		     _("Connection to %s:%hu refused.\n"), conn->host,
-		     conn->port);
-	  CLOSE (sock);
-	  return CONREFUSED;
-	case CONERROR:
-	  logputs (LOG_VERBOSE, "\n");
-	  logprintf (LOG_NOTQUIET, "connect: %s\n", strerror (errno));
-	  CLOSE (sock);
-	  return CONERROR;
-	  break;
-	case NOCONERROR:
-	  /* Everything is fine!  */
-	  logputs (LOG_VERBOSE, _("connected!\n"));
-	  break;
-	default:
-	  abort ();
-	  break;
-	}
+      struct address_list *al = lookup_host (conn->host, 0);
+      if (!al)
+	return HOSTERR;
+      set_connection_host_name (conn->host);
+      sock = connect_to_many (al, conn->port, 0);
+      set_connection_host_name (NULL);
+      address_list_release (al);
+
+      if (sock < 0)
+	return errno == ECONNREFUSED ? CONREFUSED : CONERROR;
+
 #ifdef HAVE_SSL
      if (conn->scheme == SCHEME_HTTPS)
        if (connect_ssl (&ssl, ssl_ctx,sock) != 0)
@@ -2333,4 +2325,11 @@ create_authorization_line (const char *au, const char *user,
     wwwauth = digest_authentication_encode (au, user, passwd, method, path);
 #endif /* USE_DIGEST */
   return wwwauth;
+}
+
+void
+http_cleanup (void)
+{
+  if (pc_last_host_ip)
+    address_list_release (pc_last_host_ip);
 }

@@ -427,13 +427,21 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     FREE_MAYBE (local_file);
 
   url_free (u);
-  if (redirections)
-    string_set_free (redirections);
 
-  if (newloc)
-    *newloc = url;
+  if (redirections)
+    {
+      string_set_free (redirections);
+      if (newloc)
+	*newloc = url;
+      else
+	xfree (url);
+    }
   else
-    xfree (url);
+    {
+      if (newloc)
+	*newloc = NULL;
+      xfree (url);
+    }
 
   ++global_download_count;
 

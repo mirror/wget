@@ -1,5 +1,36 @@
 2001-11-26  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (last_host_ip): Made into an address_list.
+	(invalidate_persistent): Release pc_last_host_ip.
+	(register_persistent): Use lookup_host.
+	(persistent_available_p): Check for equality of hosts using
+	address_list_match_all.  Call address_list_release.
+	(http_cleanup): New function.
+
+	* ftp.c (getftp): Use lookup_host and connect_to_many.
+
+	* http.c (gethttp): Use lookup_host and connect_to_many.
+
+	* connect.c (make_connection): Removed.
+	(connect_to_one): New function.
+	(connect_to_many): Ditto.
+	(set_connection_host_name): Ditto.
+
+	* host.c (lookup_host): New function; new return type.
+	(address_list_new): New function.
+	(address_list_count): Ditto.
+	(address_list_copy_one): Ditto.
+	(address_list_delete): Ditto.
+	(address_list_release): Ditto.
+	(pretty_print_address): Ditto.
+
+2001-11-26  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* recur.c (retrieve_tree): In case of followed redirection,
+	blacklist the pre-redirection URL.
+
+2001-11-26  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* recur.c (descend_redirect_p): New function.
 	(retrieve_tree): Make sure redirections are not blindly followed.
 

@@ -521,17 +521,22 @@ static int myatoi PARAMS ((const char *s));
 static int
 cmd_address (const char *com, const char *val, void *closure)
 {
+  struct address_list *al;
   struct sockaddr_in sin;
   struct sockaddr_in **target = (struct sockaddr_in **)closure;
 
   memset (&sin, '\0', sizeof (sin));
 
-  if (!lookup_host (val, (unsigned char *)&sin.sin_addr))
+  al = lookup_host (val, 1);
+  if (!al)
     {
       fprintf (stderr, _("%s: %s: Cannot convert `%s' to an IP address.\n"),
 	       exec_name, com, val);
       return 0;
     }
+  address_list_copy_one (al, 0, (unsigned char *)&sin.sin_addr);
+  address_list_release (al);
+
   sin.sin_family = AF_INET;
   sin.sin_port = 0;
 
@@ -1011,6 +1016,7 @@ check_user_specified_header (const char *s)
 void cleanup_html_url PARAMS ((void));
 void res_cleanup PARAMS ((void));
 void downloaded_files_free PARAMS ((void));
+void http_cleanup PARAMS ((void));
 
 
 /* Free the memory allocated by global variables.  */
@@ -1033,14 +1039,16 @@ cleanup (void)
 #ifdef DEBUG_MALLOC
   recursive_cleanup ();
   res_cleanup ();
+  http_cleanup ();
+  cleanup_html_url ();
+  downloaded_files_free ();
+  cookies_cleanup ();
   host_cleanup ();
+
   {
     extern acc_t *netrc_list;
     free_netrc (netrc_list);
   }
-  cleanup_html_url ();
-  downloaded_files_free ();
-  cookies_cleanup ();
   FREE_MAYBE (opt.lfilename);
   xfree (opt.dir_prefix);
   FREE_MAYBE (opt.input_filename);

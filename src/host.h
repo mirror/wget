@@ -1,5 +1,5 @@
 /* Declarations for host.c
-   Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 2001 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -21,11 +21,22 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define HOST_H
 
 struct url;
+struct address_list;
 
 /* Function declarations */
-
-int lookup_host PARAMS ((const char *, unsigned char *));
+struct address_list *lookup_host PARAMS ((const char *, int));
 char *herrmsg PARAMS ((int));
+
+int address_list_count PARAMS ((struct address_list *));
+void address_list_copy_one PARAMS ((struct address_list *, int,
+				    unsigned char *));
+void address_list_release PARAMS ((struct address_list *));
+int address_list_match_all PARAMS ((struct address_list *,
+				    struct address_list *));
+
+/* This was originally going to be a macro, but then every caller
+   would have to #include the netinet stuff.  */
+char *pretty_print_address PARAMS ((const unsigned char *));
 
 int accept_domain PARAMS ((struct url *));
 int sufmatch PARAMS ((const char **, const char *));

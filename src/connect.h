@@ -20,8 +20,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifndef CONNECT_H
 #define CONNECT_H
 
+struct address_list;
+
 /* Function declarations */
-uerr_t make_connection PARAMS ((int *, char *, unsigned short));
+
+int connect_to_many PARAMS ((struct address_list *, unsigned short, int));
+void set_connection_host_name PARAMS ((const char *));
+
 int test_socket_open PARAMS ((int));
 uerr_t bindport PARAMS ((unsigned short *));
 uerr_t acceptport PARAMS ((int *));
