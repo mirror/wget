@@ -873,8 +873,8 @@ fd_read (int fd, char *buf, int bufsize, double timeout)
     return sock_read (fd, buf, bufsize);
 }
 
-/* The same as xread, but don't actually read the data, just copy it
-   instead.  */
+/* The same as fd_read, but don't actually read the data, just find out
+   what's the number of bytes available for reading.  */
 
 int
 fd_peek (int fd, char *buf, int bufsize, double timeout)

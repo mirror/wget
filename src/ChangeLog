@@ -1,3 +1,15 @@
+2004-11-18  Mauro Tortonesi <mauro@deepspace6.net>
+
+	* connect.c: Minor correction to the comment in front of fd_peek.
+
+2004-11-18  Leonid Petrov <nouser@lpetrov.net>
+
+	* retr.c: Fix a timeout problem in fd_read_body when using http_proxy.
+
+2004-11-15  YAMAZAKI Makoto <Yamazaki.Makoto@fujixerox.co.jp>
+
+	* netrc.c: Fix termination by assertion bug in netrc parsing.
+
 2004-05-09  David Fritz  <zeroxdf@att.net>
 
 	* mswindows.c (fake_fork): Pass entire command line to the child

@@ -1,7 +1,3 @@
-2004-11-15  YAMAZAKI Makoto <Yamazaki.Makoto@fujixerox.co.jp>
-
-	* src/netrc.c: Fix termination by assertion bug in netrc parsing.
-
 2004-05-09  David Fritz  <zeroxdf@att.net>
 
 	* windows/Makefile.src.bor: Fix broken build rule.  Add clean target.
