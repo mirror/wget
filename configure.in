@@ -109,12 +109,16 @@ test -z "$CFLAGS"  && CFLAGS= auto_cflags=1
 test -z "$CC" && cc_specified=yes
 
 AC_PROG_CC
+AC_AIX
+AM_PROG_CC_STDC
 
+dnl Turn on optimization by default.  Specifically:
 dnl
 dnl if the user hasn't specified CFLAGS, then
-dnl   if compiler is gcc, then use -O2 and some warning flags
-dnl   else use os-specific flags or -O
-dnl
+dnl   if compiler is gcc, then
+dnl     use -O2 and some warning flags
+dnl   else
+dnl     use os-specific flags or -O
 if test -n "$auto_cflags"; then
   if test -n "$GCC"; then
     CFLAGS="$CFLAGS -O2 -Wall -Wno-implicit"
@@ -126,11 +130,6 @@ if test -n "$auto_cflags"; then
     esac
   fi
 fi
-
-dnl
-dnl Handle AIX
-dnl
-AC_AIX
 
 dnl
 dnl Configure our included libtool and make sure it's regenerated when needed
@@ -157,8 +156,17 @@ AC_C_VOLATILE
 AC_C_BIGENDIAN
 AC_C_PROTOTYPES
 
+if test x"$am_cv_prog_cc_stdc" != xno; then
+  true
+  AC_SUBST(U, [])
+  AC_SUBST(ANSI2KNR, [])
+else
+  AC_SUBST(U, [_])
+  AC_SUBST(ANSI2KNR, [./ansi2knr])
+fi
+
 dnl
-dnl Checks for headers that might be missing.
+dnl Checks for header files that might be missing.
 dnl
 
 dnl Check for basic headers, even those we assume the presence of.
