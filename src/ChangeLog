@@ -1,3 +1,9 @@
+2004-02-23  David Fritz  <zeroxdf@att.net>
+
+	* mswindows.h: Ditto.
+
+	* mswindows.c: Misc. formatting/comment tweaks throughout.
+
 2004-02-20  David Fritz  <zeroxdf@att.net>
 
 	* main.c (print_help): Remove call to ws_help().

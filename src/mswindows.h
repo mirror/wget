@@ -1,5 +1,6 @@
 /* Declarations for windows
-   Copyright (C) 1995, 1997, 1997, 1998 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1997, 1997, 1998, 2004
+   Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -34,16 +35,16 @@ so, delete this exception statement from your version.  */
 #error Include mswindows.h inside or after "wget.h"
 #endif
 
+/* Prevent inclusion of <winsock*.h> in <windows.h>.  */
 #ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN  /* Prevent inclusion of <winsock*.h> in <windows.h> */
+#define WIN32_LEAN_AND_MEAN
 #endif
 
 #include <windows.h>
 
-/* Use the correct winsock header; <ws2tcpip.h> includes <winsock2.h> only on
- * Watcom/MingW. We cannot use <winsock.h> for IPv6. Using getaddrinfo() requires
- * <ws2tcpip.h>
- */
+/* Use the correct winsock header; <ws2tcpip.h> includes <winsock2.h> only
+   on Watcom/MingW.  We cannot use <winsock.h> for IPv6.  Using
+   getaddrinfo() requires <ws2tcpip.h>.  */
 #if defined(ENABLE_IPV6) || defined(HAVE_GETADDRINFO)
 # include <winsock2.h>
 # include <ws2tcpip.h>
@@ -55,13 +56,13 @@ so, delete this exception statement from your version.  */
 # define EAI_SYSTEM -1   /* value doesn't matter */
 #endif
 
-/* Must include <sys/stat.h> because of 'stat' define below. */
+/* Must include <sys/stat.h> because of 'stat' define below.  */
 #include <sys/stat.h>
 
-/* Missing in several .c files. Include here. */
+/* Missing in several .c files.  Include here.  */
 #include <io.h>
 
-/* Apparently needed for alloca(). */
+/* Apparently needed for alloca().  */
 #include <malloc.h>
 
 #ifndef S_ISDIR
@@ -71,7 +72,7 @@ so, delete this exception statement from your version.  */
 # define S_ISLNK(a) 0
 #endif
 
-/* We have strcasecmp and strncasecmp, just under a different name. */
+/* We have strcasecmp and strncasecmp, just under a different name.  */
 #define strcasecmp stricmp
 #define strncasecmp strnicmp
 
@@ -84,13 +85,13 @@ so, delete this exception statement from your version.  */
 
 #define PATH_SEPARATOR '\\'
 
-/* Microsoft says stat is _stat, Borland doesn't */
+/* Microsoft says stat is _stat, Borland doesn't.  */
 #ifdef _MSC_VER
 # define stat _stat
 #endif
 
 #ifdef HAVE_ISATTY
-/* Microsoft VC supports _isatty; Borland ? */
+/* Microsoft VC supports _isatty; Borland?  */
 #ifdef _MSC_VER
 # define isatty _isatty
 #endif
@@ -101,14 +102,14 @@ so, delete this exception statement from your version.  */
 /* #### Do we need this?  */
 #include <direct.h>
 
-/* Windows compilers accept only one arg to mkdir. */
+/* Windows compilers accept only one arg to mkdir.  */
 #ifndef __BORLANDC__
 # define mkdir(a, b) _mkdir(a)
 #else  /* __BORLANDC__ */
 # define mkdir(a, b) mkdir(a)
 #endif /* __BORLANDC__ */
 
-/* Declarations of various socket errors: */
+/* Declarations of various socket errors:  */
 
 #define EWOULDBLOCK             WSAEWOULDBLOCK
 #define EINPROGRESS             WSAEINPROGRESS
@@ -161,7 +162,7 @@ void ws_percenttitle (double);
 char *ws_mypath (void);
 void windows_main_junk (int *, char **, char **);
 
-/* Things needed for IPv6; missing in <ws2tcpip.h>. */
+/* Things needed for IPv6; missing in <ws2tcpip.h>.  */
 #ifdef ENABLE_IPV6
 # ifndef HAVE_NTOP
   extern const char *inet_ntop (int af, const void *src, char *dst, size_t size);

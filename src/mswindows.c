@@ -1,5 +1,6 @@
 /* mswindows.c -- Windows-specific support
-   Copyright (C) 1995, 1996, 1997, 1998, 2004  Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 1998, 2004
+   Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -104,8 +105,6 @@ windows_main_junk (int *argc, char **argv, char **exec_name)
     *p = '\0';
 }
 
-/* Winsock stuff. */
-
 static void
 ws_cleanup (void)
 {
@@ -195,6 +194,9 @@ ws_percenttitle (double percent)
     }
 }
 
+/* Returns a pointer to the fully qualified name of the directory that
+   contains the Wget binary (wget.exe).  The returned path does not have a
+   trailing path separator.  Returns NULL on failure.  */
 char *
 ws_mypath (void)
 {
@@ -221,6 +223,7 @@ ws_mypath (void)
   return wspathsave;
 }
 
+/* Perform Windows specific initialization.  */
 void
 ws_startup (void)
 {
@@ -235,7 +238,6 @@ ws_startup (void)
 
   requested = MAKEWORD (1, 1);
   err = WSAStartup (requested, &data);
-
   if (err != 0)
     {
       fprintf (stderr, _("%s: Couldn't find usable socket driver.\n"),
@@ -250,6 +252,7 @@ ws_startup (void)
       WSACleanup ();
       exit (1);
     }
+
   atexit (ws_cleanup);
   pwr_mode = set_sleep_mode (0);
   SetConsoleCtrlHandler (ws_handler, TRUE);
@@ -283,12 +286,10 @@ borland_utime (const char *path, const struct utimbuf *times)
 }
 #endif
 
-/*
- * Prevent Windows entering sleep/hibernation-mode while wget is doing
- * a lengthy transfer.  Windows does by default not consider network
- * activity in console-programs as activity !  Works on Win-98/ME/2K
- * and up.
- */
+/* Prevent Windows entering sleep/hibernation-mode while Wget is doing
+   a lengthy transfer.  Windows does not, by default, consider network
+   activity in console-programs as activity!  Works on Win-98/ME/2K
+   and up.  */
 static DWORD
 set_sleep_mode (DWORD mode)
 {
@@ -312,17 +313,17 @@ set_sleep_mode (DWORD mode)
   return rc;
 }
 
-/* run_with_timeout Windows implementation. */
+/* run_with_timeout Windows implementation.  */
 
- /* Stack size 0 uses default thread stack-size (reserve+commit).
-  * Determined by what's in the PE header.
- */
+/* Stack size 0 uses default thread stack-size (reserve+commit).
+   Determined by what's in the PE header.  */
 #define THREAD_STACK_SIZE  0
 
-struct thread_data {
-   void (*fun) (void *);
-   void  *arg;
-   DWORD ws_error; 
+struct thread_data
+{
+  void (*fun) (void *);
+  void *arg;
+  DWORD ws_error;
 };
 
 /* The callback that runs FUN(ARG) in a separate thread.  This
@@ -334,7 +335,7 @@ struct thread_data {
    [1] MSVC can use __fastcall globally (cl /Gr) and on Watcom this is
    the default (wcc386 -3r).  */
 
-static DWORD WINAPI 
+static DWORD WINAPI
 thread_helper (void *arg)
 {
   struct thread_data *td = (struct thread_data *) arg;
@@ -349,7 +350,7 @@ thread_helper (void *arg)
   /* Return Winsock error to the caller, in case FUN ran Winsock
      code.  */
   td->ws_error = WSAGetLastError ();
-  return 0; 
+  return 0;
 }
 
 /* Call FUN(ARG), but don't allow it to run for more than TIMEOUT
@@ -364,11 +365,11 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
 {
   static HANDLE thread_hnd = NULL;
   struct thread_data thread_arg;
-  DWORD  thread_id;
-  int    rc = 0;
+  DWORD thread_id;
+  int rc = 0;
 
   DEBUGP (("seconds %.2f, ", seconds));
-  
+
   if (seconds == 0)
     {
     blocking_fallback:
@@ -376,14 +377,14 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
       return 0;
     }
 
-  /* Should never happen, but test for recursivety anyway */
-  assert (thread_hnd == NULL);  
+  /* Should never happen, but test for recursivety anyway.  */
+  assert (thread_hnd == NULL);
 
   thread_arg.fun = fun;
   thread_arg.arg = arg;
   thread_arg.ws_error = WSAGetLastError ();
   thread_hnd = CreateThread (NULL, THREAD_STACK_SIZE, thread_helper,
-			     &thread_arg, 0, &thread_id); 
+			     &thread_arg, 0, &thread_id);
   if (!thread_hnd)
     {
       DEBUGP (("CreateThread() failed; %s\n", strerror (GetLastError ())));
@@ -405,7 +406,7 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
       rc = 1;
     }
 
-  CloseHandle (thread_hnd); /* clear-up after TerminateThread() */
+  CloseHandle (thread_hnd);	/* Clear-up after TerminateThread().  */
   thread_hnd = NULL;
   return rc;
 }
