@@ -1057,7 +1057,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   int keep_alive;
 
   /* Whether keep-alive should be inhibited. */
-  int inhibit_keep_alive = !opt.http_keep_alive;
+  int inhibit_keep_alive = !opt.http_keep_alive || opt.ignore_length;
 
   /* Headers sent when using POST. */
   long post_data_size = 0;
@@ -1455,7 +1455,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       print_server_response (resp, "  ");
     }
 
-  if (response_header_copy (resp, "Content-Length", hdrval, sizeof (hdrval)))
+  if (!opt.ignore_length
+      && response_header_copy (resp, "Content-Length", hdrval, sizeof (hdrval)))
     contlen = strtol (hdrval, NULL, 10);
 
   /* Check for keep-alive related responses. */
