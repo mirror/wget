@@ -1,3 +1,8 @@
+2004-01-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (xsleep): Don't call usleep with values larger than
+	1,000,000.
+
 2003-12-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (gethttp): Fix generation of `Content-Length'.

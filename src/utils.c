@@ -1954,11 +1954,10 @@ xsleep (double seconds)
 #else  /* not HAVE_NANOSLEEP */
 #ifdef HAVE_USLEEP
   /* If usleep is available, use it in preference to select.  */
-  if (seconds > 1000)
+  if (seconds >= 1)
     {
-      /* usleep apparently accepts unsigned long, which means it can't
-	 sleep longer than ~70 min (35min if signed).  If the period
-	 is larger than what usleep can safely handle, use sleep
+      /* On some systems, usleep cannot handle values larger than
+	 1,000,000.  If the period is larger than that, use sleep
 	 first, then add usleep for subsecond accuracy.  */
       sleep (seconds);
       seconds -= (long) seconds;
