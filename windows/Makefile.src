@@ -1,4 +1,4 @@
-# Makefile for `wget' utility for MSVC 4.0
+# Makefile for `wget' utility for MSVC
 # Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
@@ -25,43 +25,48 @@
 # file, but you are not obligated to do so.  If you do not wish to do
 # so, delete this exception statement from your version.
 
-#
-# Version: 1.4.4
-#
 
-#Comment these if you don't have openssl available - however https
-#won't work.
-SSLDEFS	=	/DHAVE_SSL
-SSLLIBS	=	libeay32.lib ssleay32.lib
-SSLSRC	=	gen_sslfunc.c
-SSLOBJ	=	gen_sslfunc$o
+# SSL (https) support requires the OpenSSL library (see http://www.openssl.org/).
+# If you do not have OpenSSL installed or wish to build Wget without SSL
+# support, either comment-out the following lines or define NO_SSL.
+!ifndef NO_SSL
+SSLDEFS	= /DHAVE_SSL
+SSLLIBS	= libeay32.lib ssleay32.lib
+SSLSRC	= gen_sslfunc.c
+SSLOBJ	= gen_sslfunc$o
+!endif
 
-SHELL = command
+o = .obj
 
-VPATH       = .
-o           = .obj
-OUTDIR      = .
+CC	= cl
+LD	= link
+RM	= -del
 
-CC       = cl
-LD       = link
+DEFS	= /DWINDOWS /D_CONSOLE /DHAVE_CONFIG_H $(SSLDEFS)
+LIBS	= kernel32.lib advapi32.lib wsock32.lib user32.lib gdi32.lib $(SSLLIBS)
 
-CFLAGS   = /nologo /MT /W0 /O2
-#DEBUGCF  = /DENABLE_DEBUG /Zi /Od #/Fd /FR
-CPPFLAGS = 
-DEFS     = /DWINDOWS /D_CONSOLE /DHAVE_CONFIG_H /DSYSTEM_WGETRC=\"wgetrc\"
-LDFLAGS  = /subsystem:console /incremental:no /warn:3
-#DEBUGLF  = /pdb:wget.pdb /debug /debugtype:cv /map:wget.map /opt:noref
-LIBS     = kernel32.lib advapi32.lib wsock32.lib user32.lib
+!ifdef DEBUG
+CFLAGS	= /nologo /MTd /Od /Zi /I. $(DEFS)
+LDFLAGS	= /debug
+!else
+CFLAGS	= /nologo /MT /O2 /I. $(DEFS)
+LDFLAGS	= /opt:ref #/opt:nowin98
+!endif
 
-INCLUDES = /I.
 
-COMPILE = $(CC) $(INCLUDES) $(CPPFLAGS) $(DEBUGCF) $(DEFS) $(SSLDEFS) $(CFLAGS)
-LINK    = $(LD) $(LDFLAGS) $(DEBUGLF) /out:$@
+# The following enables security checks and is recommended if you are using
+# MSVC 7.0 (or later) for 80x86.
+!ifdef SECURITY_CHECKS
+CFLAGS	= $(CFLAGS) /GS
+!endif
 
-#INSTALL = @INSTALL@
-#INSTALL_PROGRAM = @INSTALL_PROGRAM@
+# The following enables link-time code generation (Cross-file
+# interprocedural optimizations).
+!ifdef LTCG
+CFLAGS	= $(CFLAGS) /GL
+LDFLAGS	= $(LDFLAGS) /ltcg:status
+!endif
 
-RM      = del
 
 SRC = cmpt.c safe-ctype.c convert.c connect.c host.c http.c netrc.c \
       ftp-basic.c ftp.c ftp-ls.c ftp-opie.c getopt.c hash.c \
@@ -77,17 +82,15 @@ OBJ = cmpt$o safe-ctype$o convert$o connect$o host$o http$o netrc$o \
 
 .SUFFIXES: .c .obj
 
-.c.obj:
-        $(COMPILE) /c $<
+# If this doesn't work for you, remove the second colon.
+.c.obj::
+	$(CC) $(CFLAGS) /c $<
 
 # Dependencies for building
 
-wget: wget.exe
-
 wget.exe: $(OBJ)
-         $(LD) @<< $(LDFLAGS) $(DEBUGLF) /out:$@ $(LIBS) $(SSLLIBS) $(OBJ)
+	$(LD) @<< $(LDFLAGS) /out:$@ $(OBJ) $(LIBS)
 <<
-        ren wget.exe WGET.EXE
 
 
 #
@@ -95,15 +98,16 @@ wget.exe: $(OBJ)
 #
 
 clean:
-        $(RM) *.obj
-        $(RM) *.exe
-        $(RM) *.bak
-        $(RM) *.pdb
-        $(RM) *.map
-        $(RM) config.h
+	$(RM) *.bak
+	$(RM) *.obj
+	$(RM) *.exe
+	$(RM) *.pdb
+	$(RM) *.map
+	$(RM) *.ilk
 
 distclean: clean
 	$(RM) Makefile
+	$(RM) config.h
 
 realclean: distclean
 	$(RM) TAGS
@@ -111,3 +115,4 @@ realclean: distclean
 # Dependencies:
 
 !include "..\windows\wget.dep"
+

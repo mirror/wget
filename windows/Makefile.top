@@ -25,7 +25,7 @@
 # file, but you are not obligated to do so.  If you do not wish to do
 # so, delete this exception statement from your version.
 
-RM = del
+RM = -del
 CP = copy
 
 # flags passed to recursive makes in subdirectories
@@ -37,41 +37,41 @@ SUBDIRS = src doc #util
 all: Makefile $(SUBDIRS)
 
 $(SUBDIRS): FORCE
-        cd $@
-        $(MAKE)
-        cd ..
+	cd $@
+	$(MAKE)
+	cd ..
 
 FORCE:
 
 # install everything
 install:
-        echo Just do it.
+	echo Just do it.
 
 clean:		clean-recursive		clean-top
 distclean:	distclean-recursive	distclean-top
 realclean:	realclean-recursive	realclean-top
 
 clean-top:
-        $(RM) *.bak
-        $(RM) *.zip
+	$(RM) *.bak
+	$(RM) *.zip
 
 distclean-top: clean-top
-        $(RM) Makefile
-        $(RM) config.h
+	$(RM) Makefile
+	$(RM) config.h
 
 realclean-top: distclean-top
 
 clean-recursive distclean-recursive realclean-recursive:
-        cd src
-        $(MAKE) $(@:-recursive=)
-        cd ..\\doc
-        $(MAKE) $(@:-recursive=)
-        cd ..
+	cd src
+	$(MAKE) $(@:-recursive=)
+	cd ..\\doc
+	$(MAKE) $(@:-recursive=)
+	cd ..
 
 bindist: wget.zip
 
 wget.zip: $(SUBDIRS)
-        $(RM) wget.zip
-        zip -Djl9 wget.zip AUTHORS COPYING INSTALL MACHINES MAILING-LIST NEWS README DOC\\sample.wgetrc
-        zip -Dj9 wget.zip SRC\\WGET.EXE DOC\\WGET.HLP
+	$(RM) wget.zip
+	zip -Djl9 wget.zip AUTHORS COPYING INSTALL MACHINES MAILING-LIST NEWS README doc/sample.wgetrc
+	zip -Dj9 wget.zip src/wget.exe doc/wget.hlp
 

@@ -28,22 +28,22 @@
 # You probably need makeinfo and perl, see the README in the main
 # windows directory.
 
-RM = del
-CP     = copy
-ATTRIB = attrib
+RM	= -del
+CP	= copy
+ATTRIB	= attrib
 
-MAKEINFO     = makeinfo.exe
-TEXI2POD     = texi2pod.pl
-POD2MAN      = pod2man
+MAKEINFO	= makeinfo.exe
+TEXI2POD	= texi2pod.pl
+POD2MAN	= pod2man
 
-SAMPLERCTEXI = sample.wgetrc.munged_for_texi_inclusion
-WGETHLP      = wget.hlp
-WGETINFO     = wget.info
-WGETTEXI     = wget.texi
-WGETHTML     = wget.html
-WGETPOD      = wget.pod
-manext       = 1
-MAN          = wget.$(manext)
+SAMPLERCTEXI	= sample.wgetrc.munged_for_texi_inclusion
+WGETHLP		= wget.hlp
+WGETINFO	= wget.info
+WGETTEXI	= wget.texi
+WGETHTML	= wget.html
+WGETPOD		= wget.pod
+manext		= 1
+MAN		= wget.$(manext)
 
 all: $(WGETHLP) $(WGETINFO) $(WGETHTML)
 
@@ -76,10 +76,10 @@ $(WGETHLP): $(WGETTEXI) $(SAMPLERCTEXI)
         hcrtf -xn wget.hpj
 
 clean:
-        $(RM) *.bak
-        $(RM) *.hpj
-        $(RM) *.rtf
-        $(RM) *.ph
+	$(RM) *.bak
+	$(RM) *.hpj
+	$(RM) *.rtf
+	$(RM) *.ph
 	$(RM) $(SAMPLERCTEXI)
 	$(RM) $(MAN)
 	$(RM) $(TEXI2POD)

@@ -1,3 +1,27 @@
+2004-02-09  David Fritz  <zeroxdf@att.net>
+
+	* configure.bat.in: Don't clear the screen.
+
+	* windows/README: Add introductory paragraph.  Re-word a few
+	sentences.  Correct minor typographical errors.  Use consistent
+	capitalization of Wget, SSL, and OpenSSL.  Refer to Microsoft
+	Visual C++ as MSVC instead of VC++.  Mention the --msvc option to
+	configure.bat.  Reflow paragraphs.
+
+	* windows/Makefile.top: Use tabs instead of spaces.  Ignore errors
+	in clean rules.  Use lowercase filenames when building distribution
+	.zip archive.
+
+	* windows/Makefile.doc: Use tabs instead of spaces.  Ignore errors
+	in clean rules.
+
+	* windows/Makefile.src: Clean-up clean rules.  Use tabs instead of
+	spaces.  Link against gdi32.lib.  Don't define SYSTEM_WGETRC.
+	Remove unused macros.  Remove anachronistic and superfluous linker
+	flags.  Don't rename wget.exe to all upper-case.  Add
+	`preprocessor' conditionals for SSL and newer MSVC options.  Use
+	batch rules.  Don't suppress all warnings.
+
 2003-11-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* aclocal.m4: Don't check for AI_V4MAPPED and for AI_ALL, since
