@@ -1,3 +1,10 @@
+2001-05-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* configure.in: Rewrote OpenSSL library detection.  Now the code
+	loops over system locations where libssl/libcrypto might be
+	located.  Aside from linking, it actually tries to run the
+	executable before concluding that the linking "worked".
+
 2001-05-16  Csaba Raduly  <csaba.raduly@sophos.com>
 
 	* windows/Makefile.watcom: Make linker accept space-separated list

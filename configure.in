@@ -193,41 +193,134 @@ then
   AC_CHECK_LIB(socks, Rconnect)
 fi
 
-dnl If --with-ssl was specified, make sure we can link with the OpenSSL libs.
+dnl OpenSSL is a third-party library, which makes checking for it a
+dnl pain.  Before proceeding, we need to figure out whether to use the
+dnl `-R' flag.
+
+dnl Try to autodetect runtime library flag (usually -R), and whether
+dnl it works (or at least does no harm).  Note that this is used
+dnl merely for the configure test below.  The actual linking is
+dnl performed by libtool.  Wouldn't it be nice if libtool also
+dnl provided "querying" that we need in configure?
+AC_MSG_CHECKING("for runtime libraries flag")
+case "$opsys" in
+  sol2 ) dash_r="-R" ;;
+  decosf* | linux* | irix*) dash_r="-rpath " ;;
+  *)
+    dash_r=""
+    for try_dash_r in "-R" "-R " "-rpath "; do
+      OLD_LDFLAGS=$LDFLAGS
+      LDFLAGS="${try_dash_r}/no/such/file-or-directory $LDFLAGS"
+      AC_TRY_LINK(, , dash_r="$try_dash_r")
+      LDFLAGS=$ODL_LDFLAGS
+      test -n "$dash_r" && break
+    done ;;
+esac
+if test -n "$dash_r";
+  then AC_MSG_RESULT("\"${dash_r}\"")
+  else AC_MSG_RESULT(NONE)
+fi
+
+dnl If --with-ssl was specified, make sure we can link with the
+dnl OpenSSL libs.  We should probably auto-detect this by default.
+
 if test x"$with_ssl" != x -a x"$with_ssl" != x"no"; then
   if test x"$with_ssl" = x"yes"; then
-    dnl OpenSSL's default install location:
-    with_ssl=/usr/local/ssl
+    dnl OpenSSL's default install location is "/usr/local/ssl".  We also
+    dnl allow /usr/local for regular-style install, and /usr for Linux
+    dnl stuff.
+    ssl_all_roots="default /usr/local/ssl /usr/local /opt"
+  else
+    dnl Root has been kindly provided by the user.
+    ssl_all_roots=$with_ssl
   fi
-  
-  SSL_INCLUDES=-I$with_ssl/include
-  AC_SUBST(SSL_INCLUDES)
 
-  LDFLAGS="-L$with_ssl/lib -R$with_ssl/lib $LDFLAGS"
+  OLD_LIBS=$LIBS
+  OLD_LDFLAGS=$LDFLAGS
 
-  ssl_link_failure=no
-
-  dnl Unfortunately, as of this writing (OpenSSL 0.9.6), the libcrypto shared
-  dnl library doesn't record its dependency on libdl, so we need to check for it
-  dnl ourselves so we won't fail to link due to a lack of -ldl.  Most OSes use
-  dnl dlopen(), but HP-UX uses shl_load().
+  dnl Unfortunately, as of this writing (OpenSSL 0.9.6), the libcrypto
+  dnl shared library doesn't record its dependency on libdl, so we
+  dnl need to check for it ourselves so we won't fail to link due to a
+  dnl lack of -ldl.  Most OSes use dlopen(), but HP-UX uses
+  dnl shl_load().
   AC_CHECK_LIB(dl,dlopen)
   AC_CHECK_LIB(dl,shl_load)
 
-  dnl These checks need to be in this order, or you'll get a link failure if you
-  dnl use a static libcrypto.a and libssl.a rather than shared libraries.
-  AC_CHECK_LIB(crypto,RSA_new,,ssl_link_failure=yes)
-  AC_CHECK_LIB(ssl,SSL_new,,ssl_link_failure=yes)
+  ssl_linked=no
 
-  if test x"$ssl_link_failure" = x"yes"; then
+  dnl Now try to find SSL libraries in each of the likely SSL roots.
+  for ssl_root in $ssl_all_roots
+  do
+    LIBS=$OLD_LIBS
+
+    if test x"$ssl_root" = xdefault; then
+      dnl Try the default library locations.
+      SSL_INCLUDES=
+      LDFLAGS=$OLD_LDFLAGS
+    else
+      dnl Try this specific root.
+      SSL_INCLUDES=-I$ssl_root/include
+      SSL_DASH_L="-L$ssl_root/lib"
+      SSL_DASH_R=
+      dnl Only use -R<foo> on systems which support a -R variant.
+      if test x"$dash_r" != x; then
+        SSL_DASH_R="${dash_r}$ssl_root/lib"
+      fi
+      LDFLAGS="$SSL_DASH_L $SSL_DASH_R $OLD_LDFLAGS"
+    fi
+
+    ssl_link_failure=no
+
+    AC_MSG_RESULT(["Looking for SSL libraries in $ssl_root"])
+
+    dnl Make sure that the checks don't run afoul of the cache.  It
+    dnl would be nicer to temporarily turn off the cache, but
+    dnl apparently Autoconf doesn't allow that.
+
+    unset ac_cv_lib_crypto_RSA_new
+    unset ac_cv_lib_ssl_SSL_new
+
+    dnl These checks need to be in this order, or you'll get a link
+    dnl failure if you use a static libcrypto.a and libssl.a rather
+    dnl than shared libraries.
+
+    AC_CHECK_LIB(crypto,RSA_new,,ssl_link_failure=yes)
+    AC_CHECK_LIB(ssl,SSL_new,,ssl_link_failure=yes)
+
+    dnl echo $LDFLAGS
+
+    if test x"$ssl_link_failure" = xno; then
+      dnl Now try to run the thing.
+      AC_MSG_CHECKING("whether runtime linking works")
+      AC_TRY_RUN([
+char RSA_new();
+char SSL_new();
+main(){return 0;}
+], AC_MSG_RESULT("yes"), AC_MSG_RESULT("no"); ssl_link_failure=yes)
+    fi
+
+    if test x"$ssl_link_failure" = xno; then
+      dnl This echo doesn't look right, but I'm not sure what to use
+      dnl instead.
+      AC_MSG_RESULT("Compiling in support for SSL in $ssl_root")
+      AC_DEFINE(HAVE_SSL)
+      AC_SUBST(SSL_INCLUDES)
+      SSL_OBJ='gen_sslfunc$o'
+      AC_SUBST(SSL_OBJ)
+      ssl_linked=yes
+      break
+    fi
+  done
+
+  if test x"$ssl_linked" = xno; then
+    LD_FLAGS=$OLD_LDFLAGS
+    LIBS=$OLD_LIBS
+    dnl Perhaps we should abort here.  Remember that the user
+    dnl explicitly requested linking with SSL.
     echo
-    echo "WARNING: Failed to link with OpenSSL libraries in $with_ssl/lib."
+    echo "WARNING: Failed to link with OpenSSL libraries in $ssl_root/lib."
     echo "         Wget will be built without support for https://... URLs."
     echo
-  else
-    AC_DEFINE(HAVE_SSL)
-    SSL_OBJ='gen_sslfunc$o'
-    AC_SUBST(SSL_OBJ)
   fi
 fi
 
@@ -236,8 +329,10 @@ dnl Set of available languages.
 dnl
 ALL_LINGUAS=`(cd ${srcdir}/po && ls *.po | sed -e 's/\.po$//')`
 
-dnl Original from autoconf, I think.
-dnl ALL_LINGUAS="cs de hr it no pl pt_BR ru"
+dnl Originally this used to be static, looking like this:
+dnl     ALL_LINGUAS="cs de hr it ..."
+dnl The downside was that configure needed to be rebuilt whenever a
+dnl new language was added.
 
 dnl internationalization macros
 WGET_WITH_NLS
