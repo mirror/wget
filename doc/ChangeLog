@@ -1,3 +1,7 @@
+2003-09-15  Nicolas Schodet  <schodet@efrei.fr>
+
+	* wget.texi (Download Options): Add link to Proxies.
+
 2003-09-14  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Download Options): Document the new option

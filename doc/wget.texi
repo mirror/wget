@@ -761,6 +761,8 @@ actions of one.
 Turn proxy support on or off.  The proxy is on by default if the
 appropriate environmental variable is defined.
 
+For more information about the use of proxies with Wget, @xref{Proxies}.
+
 @cindex quota
 @item -Q @var{quota}
 @itemx --quota=@var{quota}
