@@ -19,7 +19,7 @@ CFLAGS=/zp4 /d1 /w4 /fpd /5s /fp5 /bm /mf /os /bt=nt /DWINDOWS /DHAVE_CONFIG_H /
 # /bt = "build target" (nt)
 
 OBJS = FILE cmpt.obj,connect.obj,fnmatch.obj,ftp.obj,ftp-basic.obj, &
-      ftp-ls.obj,ftpparse.obj,ftp-opie.obj,getopt.obj,hash.obj,headers.obj,host.obj,html-parse.obj,html-url.obj, &
+      ftp-ls.obj,ftp-opie.obj,getopt.obj,hash.obj,headers.obj,host.obj,html-parse.obj,html-url.obj, &
       http.obj,init.obj,log.obj,main.obj,md5.obj,netrc.obj,rbuf.obj, &
       recur.obj,retr.obj,url.obj,utils.obj,version.obj,mswindows.obj
 #
@@ -27,7 +27,7 @@ OBJS = FILE cmpt.obj,connect.obj,fnmatch.obj,ftp.obj,ftp-basic.obj, &
 # alas, no text functions in Watcom make :-(
 #
 LINKOBJS = cmpt.obj connect.obj fnmatch.obj ftp.obj ftp-basic.obj &
-      ftp-ls.obj ftpparse.obj ftp-opie.obj getopt.obj hash.obj headers.obj host.obj html-parse.obj html-url.obj &
+      ftp-ls.obj ftp-opie.obj getopt.obj hash.obj headers.obj host.obj html-parse.obj html-url.obj &
       http.obj init.obj log.obj main.obj md5.obj netrc.obj rbuf.obj &
       recur.obj retr.obj url.obj utils.obj version.obj mswindows.obj
 
@@ -43,10 +43,9 @@ cmpt.obj: cmpt.c wget.h sysdep.h options.h
 connect.obj: connect.c wget.h sysdep.h options.h connect.h host.h
 fnmatch.obj: fnmatch.c wget.h sysdep.h options.h fnmatch.h
 ftp-basic.obj: ftp-basic.c wget.h sysdep.h options.h utils.h rbuf.h connect.h host.h ftp.h
-ftp-ls.obj: ftp-ls.c wget.h sysdep.h options.h utils.h ftp.h rbuf.h url.h ftpparse.h
+ftp-ls.obj: ftp-ls.c wget.h sysdep.h options.h utils.h ftp.h rbuf.h url.h
 ftp-opie.obj: ftp-opie.c wget.h sysdep.h options.h md5.h
 ftp.obj: ftp.c wget.h sysdep.h options.h utils.h url.h rbuf.h retr.h ftp.h connect.h host.h fnmatch.h netrc.h
-ftpparse.obj: ftpparse.c ftpparse.h
 getopt.obj: getopt.c wget.h sysdep.h options.h getopt.h
 hash.obj: hash.c wget.h sysdep.h options.h utils.h hash.h
 headers.obj: headers.c wget.h sysdep.h options.h connect.h rbuf.h headers.h

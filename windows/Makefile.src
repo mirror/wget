@@ -47,11 +47,11 @@ LINK    = $(LD) $(LDFLAGS) $(DEBUGLF) /out:$@
 RM      = del
 
 SRC = cmpt.c connect.c host.c http.c netrc.c ftp-basic.c ftp.c ftp-ls.c \
-      ftp-opie.c ftpparse.c getopt.c hash.c headers.c html-parse.c html-url.c retr.c recur.c url.c init.c utils.c main.c \
+      ftp-opie.c getopt.c hash.c headers.c html-parse.c html-url.c retr.c recur.c url.c init.c utils.c main.c \
       version.c mswindows.c fnmatch.c md5.c rbuf.c log.c
 
 OBJ = cmpt$o connect$o host$o http$o netrc$o ftp-basic$o ftp$o ftp-ls$o \
-      ftp-opie$o ftpparse$o getopt$o hash$o headers$o html-parse$o html-url$o retr$o recur$o url$o init$o utils$o main$o \
+      ftp-opie$o getopt$o hash$o headers$o html-parse$o html-url$o retr$o recur$o url$o init$o utils$o main$o \
       version$o mswindows$o fnmatch$o md5$o rbuf$o log$o
 
 .SUFFIXES: .c .obj

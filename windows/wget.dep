@@ -4,10 +4,9 @@ cmpt$o: cmpt.c config.h wget.h sysdep.h options.h
 connect$o: connect.c config.h wget.h sysdep.h options.h connect.h host.h
 fnmatch$o: fnmatch.c config.h wget.h sysdep.h options.h fnmatch.h
 ftp-basic$o: ftp-basic.c config.h wget.h sysdep.h options.h utils.h rbuf.h connect.h host.h
-ftp-ls$o: ftp-ls.c config.h wget.h sysdep.h options.h utils.h ftp.h url.h ftpparse.h
+ftp-ls$o: ftp-ls.c config.h wget.h sysdep.h options.h utils.h ftp.h url.h
 ftp-opie$o: ftp-opie.c config.h wget.h sysdep.h options.h md5.h
 ftp$o: ftp.c config.h wget.h sysdep.h options.h utils.h url.h rbuf.h retr.h ftp.h connect.h host.h fnmatch.h netrc.h
-ftpparse$o: ftpparse.h
 getopt$o: getopt.c wget.h sysdep.h options.h getopt.h
 hash$o: hash.c wget.h utils.h hash.h
 headers$o: headers.c config.h wget.h sysdep.h options.h connect.h rbuf.h headers.h

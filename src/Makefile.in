@@ -58,10 +58,10 @@ OPIE_OBJ = @OPIE_OBJ@
 SSL_OBJ = @SSL_OBJ@
 
 OBJ = $(ALLOCA) cmpt$o connect$o fnmatch$o ftp$o ftp-basic$o  \
-      ftp-ls$o $(OPIE_OBJ) ftpparse$o getopt$o hash$o         \
-      headers$o host$o html-parse$o html-url$o http$o init$o  \
-      log$o main$o $(MD5_OBJ) netrc$o rbuf$o recur$o retr$o   \
-      snprintf$o $(SSL_OBJ) url$o utils$o version$o
+      ftp-ls$o $(OPIE_OBJ) getopt$o hash$o headers$o host$o   \
+      html-parse$o html-url$o http$o init$o log$o main$o      \
+      $(MD5_OBJ) netrc$o rbuf$o recur$o retr$o snprintf$o     \
+      $(SSL_OBJ) url$o utils$o version$o
 
 .SUFFIXES:
 .SUFFIXES: .c .o ._c ._o
@@ -139,10 +139,9 @@ cmpt$o: wget.h
 connect$o: wget.h connect.h host.h
 fnmatch$o: wget.h fnmatch.h
 ftp-basic$o: wget.h utils.h rbuf.h connect.h host.h
-ftp-ls$o: wget.h utils.h ftp.h url.h ftpparse.h
+ftp-ls$o: wget.h utils.h ftp.h url.h
 ftp-opie$o: wget.h md5.h
 ftp$o: wget.h utils.h url.h rbuf.h retr.h ftp.h connect.h host.h fnmatch.h netrc.h
-ftpparse$o: ftpparse.h
 getopt$o: wget.h getopt.h
 hash$o: wget.h utils.h hash.h
 headers$o: wget.h connect.h rbuf.h headers.h
