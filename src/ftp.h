@@ -65,6 +65,10 @@ uerr_t ftp_syst PARAMS ((struct rbuf *, enum stype *));
 uerr_t ftp_pwd PARAMS ((struct rbuf *, char **));
 uerr_t ftp_size PARAMS ((struct rbuf *, const char *, long int *));
 
+#ifdef USE_OPIE
+const char *skey_response PARAMS ((int, const char *, const char *));
+#endif
+
 struct url;
 
 /* File types.  */

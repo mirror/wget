@@ -39,9 +39,11 @@ so, delete this exception statement from your version.  */
 
 #include "wget.h"
 #include "gen-md5.h"
+#include "ftp.h"
 
-/* Dictionary for integer-word translations.  */
-static char Wp[2048][4] = {
+/* Dictionary for integer-word translations.  Available in appendix D
+   of rfc2289.  */
+ static char Wp[2048][4] = {
   { 'A', '\0', '\0', '\0' },
   { 'A', 'B', 'E', '\0' },
   { 'A', 'C', 'E', '\0' },
@@ -2093,99 +2095,137 @@ static char Wp[2048][4] = {
 };
 
 /* Extract LENGTH bits from the char array S starting with bit number
-   START.  */
-static unsigned long
-extract (const char *s, int start, int length)
+   START.  It always reads three consecutive octects, which means it
+   can read past end of data when START is at the edge of the region. */
+
+static uint32_t
+extract (const unsigned char *s, int start, int length)
 {
   unsigned char cl = s[start / 8];
   unsigned char cc = s[start / 8 + 1];
   unsigned char cr = s[start / 8 + 2];
-  unsigned long x = ((long)(cl << 8 | cc) << 8 | cr);
-
-  x = x >> (24 - (length + (start % 8)));
-  x = (x & (0xffff >> (16 - length)));
+  uint32_t x;
+  x   = (uint32_t)(cl << 8 | cc) << 8 | cr;
+  x >>= 24 - (length + (start % 8));
+  x  &= (0xffff >> (16 - length));
   return x;
 }
 
-#define STRLEN4(s) (!*(s) ? 0 :			\
-		    (!*(s + 1) ? 1 :		\
-		     (!*(s + 2) ? 2 :		\
-		      (!*(s + 3) ? 3 : 4))))
+/* Length of a string known to be at least 1 and at most 4 chars
+   long.  */
+
+#define STRLEN_1_4(s) (!(s)[1] ? 1 : !(s)[2] ? 2 : !(s)[3] ? 3 : 4)
 
 /* Encode 8 bytes in C as a string of English words and store them to
    STORE.  Returns STORE.  */
+
 static char *
-btoe (char *store, const char *c)
+btoe (char *store, const unsigned char *c)
 {
-  char cp[10];			/* add in room for the parity 2 bits +
+  unsigned char cp[10];		/* add in room for the parity 2 bits +
 				   extract() slop.  */
   int p, i;
-  char *ostore = store;
+  char *store_beg = store;
 
   *store = '\0';
+
   /* Workaround for extract() reads beyond end of data */
   xzero (cp);
   memcpy (cp, c, 8);
-  /* Compute parity.  */
+
+  /* Compute parity and append it to CP.  */
   for (p = 0, i = 0; i < 64; i += 2)
     p += extract (cp, i, 2);
-
   cp[8] = (char)p << 6;
+
+  /* The 64 bits of input and the two parity bits comprise 66 bits of
+     data that are now in CP.  We convert that information, 11 bits at
+     a time, to English words indexed from Wp.  Since there are 2048
+     (2^11) words in Wp, every 11-bit combination corresponds to a
+     distinct word.  */
   memcpy (store, &Wp[extract (cp,  0, 11)][0], 4);
-  store += STRLEN4 (store);
+  store += STRLEN_1_4 (store);
   *store++ = ' ';
   memcpy (store, &Wp[extract (cp, 11, 11)][0], 4);
-  store += STRLEN4 (store);
+  store += STRLEN_1_4 (store);
   *store++ = ' ';
   memcpy (store, &Wp[extract (cp, 22, 11)][0], 4);
-  store += STRLEN4 (store);
+  store += STRLEN_1_4 (store);
   *store++ = ' ';
   memcpy (store, &Wp[extract (cp, 33, 11)][0], 4);
-  store += STRLEN4 (store);
+  store += STRLEN_1_4 (store);
   *store++ = ' ';
   memcpy (store, &Wp[extract (cp, 44, 11)][0], 4);
-  store += STRLEN4 (store);
+  store += STRLEN_1_4 (store);
   *store++ = ' ';
   memcpy (store, &Wp[extract (cp, 55, 11)][0], 4);
+  store[4] = '\0';		/* make sure the string is terminated */
 
-  store[4] = '\0';		/* make sure the string is zero-terminated */
-
-  DEBUGP (("store is `%s'\n", ostore));
-
-  return ostore;
+  DEBUGP (("wrote `%s' to STORE\n", store_beg));
+  return store_beg;
 }
 
-/* #### Document me!  */
+/* Calculate the MD5 checksum of SRC in one step.  The MD5 context
+   must be declared as md5_ctx.  */
+#define DO_MD5(src, len, dest) do {				\
+  gen_md5_init (md5_ctx);					\
+  gen_md5_update ((unsigned char *) (src), (len), md5_ctx);	\
+  gen_md5_finish (md5_ctx, (unsigned char *) (dest));		\
+} while (0)
+
+/* Calculate the SKEY response, based on the sequence, seed
+   (challenge), and the secret password.  The calculated response is
+   used instead of the real password when logging in to SKEY-enabled
+   servers.
+
+   The result is calculated like this:
+
+   + Concatenate SEED and PASS and calculate the 16-byte MD5 checksum.
+
+   + Shorten the checksum to eight bytes by folding the second eight
+     bytes onto the first eight using XOR.  The resulting eight-byte
+     sequence is the key.
+
+   + MD5-process the key, fold the checksum to eight bytes and store
+     it back to the key.  Repeat this crunching SEQUENCE times.
+     (Sequence is a number that gets decremented every time the user
+     logs in to the server.  Therefore an eavesdropper would have to
+     invert the hash function in order to guess the next one-time
+     password.)
+
+   + Convert the resulting 64-bit key to 6 English words separated by
+     spaces (see btoe for details) and return the resulting ASCII
+     string.
+
+   All this is described in section 6 of rfc2289 in more detail.  */
+
 const char *
-calculate_skey_response (int sequence, const char *seed, const char *pass)
+skey_response (int sequence, const char *seed, const char *pass)
 {
-  char key[8];
-  static char buf[33];
+  unsigned char key[8];
 
-  ALLOCA_MD5_CONTEXT (ctx);
-  unsigned long results[4];	/* #### this looks 32-bit-minded */
+  /* Room to hold 6 four-letter words (heh), 5 space separators, and
+     the terminating \0.  24+5+1 == 30  */
+  static char english[30];
+
+  ALLOCA_MD5_CONTEXT (md5_ctx);
+  uint32_t checksum[4];
+
   char *feed = (char *) alloca (strlen (seed) + strlen (pass) + 1);
-
   strcpy (feed, seed);
   strcat (feed, pass);
 
-  gen_md5_init (ctx);
-  gen_md5_update ((unsigned char *)feed, strlen (feed), ctx);
-  gen_md5_finish (ctx, (unsigned char *)results);
+  DO_MD5 (feed, strlen (feed), checksum);
+  checksum[0] ^= checksum[2];
+  checksum[1] ^= checksum[3];
+  memcpy (key, checksum, 8);
 
-  results[0] ^= results[2];
-  results[1] ^= results[3];
-  memcpy (key, (char *) results, 8);
-
-  while (0 < sequence--)
+  while (sequence-- > 0)
     {
-      gen_md5_init (ctx);
-      gen_md5_update ((unsigned char *)key, 8, ctx);
-      gen_md5_finish (ctx, (unsigned char *)results);
-      results[0] ^= results[2];
-      results[1] ^= results[3];
-      memcpy (key, (char *) results, 8);
+      DO_MD5 (key, 8, checksum);
+      checksum[0] ^= checksum[2];
+      checksum[1] ^= checksum[3];
+      memcpy (key, checksum, 8);
     }
-  btoe (buf, key);
-  return buf;
+  return btoe (english, key);
 }

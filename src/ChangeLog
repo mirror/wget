@@ -1,5 +1,10 @@
 2003-11-01  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp-opie.c (calculate_skey_response): Use uint32_t instead of
+	`unsigned long' for the cheksum array.  Document the function.
+
+2003-11-01  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c (acceptport): Don't call select_fd when timeout is not
 	requested.
 

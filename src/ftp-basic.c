@@ -134,10 +134,6 @@ ftp_request (const char *command, const char *value)
   return res;
 }
 
-#ifdef USE_OPIE
-const char *calculate_skey_response PARAMS ((int, const char *, const char *));
-#endif
-
 /* Sends the USER and PASS commands to the server, to control
    connection socket csock.  */
 uerr_t
@@ -195,34 +191,35 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
       "331 opiekey "
     };
     int i;
+    const char *seed = NULL;
 
     for (i = 0; i < countof (skey_head); i++)
       {
-        if (strncasecmp (skey_head[i], respline, strlen (skey_head[i])) == 0)
-          break;
+	int l = strlen (skey_head[i]);
+        if (0 == strncasecmp (skey_head[i], respline, l))
+	  {
+	    seed = respline + l;
+	    break;
+	  }
       }
-    if (i < countof (skey_head))
+    if (seed)
       {
-        const char *cp;
+        const char *seed;
         int skey_sequence = 0;
 
-        for (cp = respline + strlen (skey_head[i]);
-             '0' <= *cp && *cp <= '9';
-             cp++)
-          {
-            skey_sequence = skey_sequence * 10 + *cp - '0';
-          }
-        if (*cp == ' ')
-          cp++;
+	/* Extract the sequence from SEED.  */
+	for (; ISDIGIT (*seed); seed++)
+	  skey_sequence = 10 * skey_sequence + *seed - '0';
+	if (*seed == ' ')
+	  ++seed;
         else
           {
-          bad:
             xfree (respline);
             return FTPLOGREFUSED;
           }
-        if ((cp = calculate_skey_response (skey_sequence, cp, pass)) == 0)
-          goto bad;
-        pass = cp;
+	/* Replace the password with the SKEY response to the
+	   challenge.  */
+        pass = skey_response (skey_sequence, seed, pass);
       }
   }
 #endif /* USE_OPIE */
