@@ -1,5 +1,10 @@
 2003-11-18  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* host.c (address_list_contains): Renamed address_list_find to
+	address_list_contains because its result is boolean.
+
+2003-11-18  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c (select_fd): Return 1 if select is not available.
 
 2003-11-17  Hrvoje Niksic  <hniksic@xemacs.org>

@@ -101,7 +101,7 @@ void address_list_get_bounds PARAMS ((const struct address_list *,
 				      int *, int *));
 const ip_address *address_list_address_at PARAMS ((const struct address_list *,
 						   int));
-int address_list_find PARAMS ((const struct address_list *, const ip_address *));
+int address_list_contains PARAMS ((const struct address_list *, const ip_address *));
 void address_list_set_faulty PARAMS ((struct address_list *, int));
 void address_list_set_connected PARAMS ((struct address_list *));
 int address_list_connected_p PARAMS ((const struct address_list *));

@@ -474,7 +474,7 @@ persistent_available_p (const char *host, int port, int ssl,
 	  return 0;
 	}
 
-      found = address_list_find (al, &ip);
+      found = address_list_contains (al, &ip);
       address_list_release (al);
 
       if (!found)
@@ -586,9 +586,7 @@ time_t http_atotm PARAMS ((const char *));
    will print it if there is enough information to do so (almost
    always), returning the error to the caller (i.e. http_loop).
 
-   Various HTTP parameters are stored to hs.  Although it parses the
-   response code correctly, it is not used in a sane way.  The caller
-   can do that, though.
+   Various HTTP parameters are stored to hs.
 
    If PROXY is non-NULL, the connection will be made to the proxy
    server, and u->url will be requested.  */

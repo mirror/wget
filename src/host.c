@@ -113,10 +113,10 @@ address_list_address_at (const struct address_list *al, int pos)
   return al->addresses + pos;
 }
 
-/* Return 1 if IP is one of the addresses in AL. */
+/* Return non-zero if AL contains IP, zero otherwise.  */
 
 int
-address_list_find (const struct address_list *al, const ip_address *ip)
+address_list_contains (const struct address_list *al, const ip_address *ip)
 {
   int i;
   switch (ip->type)
@@ -149,7 +149,7 @@ address_list_find (const struct address_list *al, const ip_address *ip)
 #endif /* ENABLE_IPV6 */
     default:
       abort ();
-      return 1;
+      return 0;
     }
 }
 
