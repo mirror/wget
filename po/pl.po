@@ -1,11 +1,11 @@
 # Polish translation of wget
 # Copyright (C) 1998-2000 Free Software Foundation, Inc.
 # Arkadiusz Mi¶kiewicz <misiek@pld.ORG.PL>, 1998-2000.
-# $Id: pl.po 315 2001-02-23 20:43:35Z dan $
+# $Id: pl.po 319 2001-02-23 21:32:57Z dan $
 msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.6\n"
-"POT-Creation-Date: 2001-02-23 12:23-0800\n"
+"POT-Creation-Date: 2001-02-23 13:23-0800\n"
 "PO-Revision-Date: 1999-02-23 14:57+01:00\n"
 "Last-Translator: Arkadiusz Mi¶kiewicz <misiek@pld.ORG.PL>\n"
 "Language-Team: PL <pl@li.org>\n"
@@ -849,12 +849,14 @@ msgstr ""
 "\n"
 
 #: src/main.c:191
+#, fuzzy
 msgid ""
 "FTP options:\n"
-"       --retr-symlinks   when recursing, retrieve linked-to files (not "
+"  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
+"  -g,  --glob=on/off           turn file name globbing on or off.\n"
+"       --passive-ftp           use the \"passive\" transfer mode.\n"
+"       --retr-symlinks         when recursing, get linked-to files (not "
 "dirs).\n"
-"  -g,  --glob=on/off     turn file name globbing on or off.\n"
-"       --passive-ftp     use the \"passive\" transfer mode.\n"
 "\n"
 msgstr ""
 "Opcje FTP:\n"
@@ -864,19 +866,18 @@ msgstr ""
 "       --passive-ftp                 u¿yj \"pasywnego\" trybu ¶ci±gania.\n"
 "\n"
 
-#: src/main.c:196
+#: src/main.c:197
+#, fuzzy
 msgid ""
 "Recursive retrieval:\n"
-"  -r,  --recursive             recursive web-suck -- use with care!.\n"
-"  -l,  --level=NUMBER          maximum recursion depth (inf or 0 for "
+"  -r,  --recursive          recursive web-suck -- use with care!\n"
+"  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for "
 "infinite).\n"
-"       --delete-after          delete files locally after downloading them.\n"
-"  -k,  --convert-links         convert non-relative links to relative.\n"
-"  -K,  --backup-converted      before converting file X, back up as X.orig.\n"
-"  -m,  --mirror                shortcut option equivalent to -r -N -l inf "
-"-nr.\n"
-"  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
-"  -p,  --page-requisites       get all images, etc. needed to display HTML "
+"       --delete-after       delete files locally after downloading them.\n"
+"  -k,  --convert-links      convert non-relative links to relative.\n"
+"  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
+"  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"
+"  -p,  --page-requisites    get all images, etc. needed to display HTML "
 "page.\n"
 "\n"
 msgstr ""
