@@ -3085,12 +3085,12 @@ through the network, which may present a security problem.  Here are the
 main issues, and some solutions.
 
 @enumerate
-@item The passwords on the command line are visible using @code{ps}.
-The best way around it is to use @code{wget -i -} and feed the @sc{url}s
-to Wget's standard input, each on a separate line, terminated by
-@kbd{C-d}.  Another workaround is to use @file{.netrc} to store
-passwords; however, storing unencrypted passwords is also considered a
-security risk.
+@item
+The passwords on the command line are visible using @code{ps}.  The best
+way around it is to use @code{wget -i -} and feed the @sc{url}s to
+Wget's standard input, each on a separate line, terminated by @kbd{C-d}.
+Another workaround is to use @file{.netrc} to store passwords; however,
+storing unencrypted passwords is also considered a security risk.
 
 @item
 Using the insecure @dfn{basic} authentication scheme, unencrypted

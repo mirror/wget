@@ -1,3 +1,9 @@
+2004-02-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Security Considerations): Put @item contents on a
+	separate line.
+	Reported by Ted Rodriguez-Bell.
+
 2004-02-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Wgetrc Commands): Document --no-http-keep-alive and
