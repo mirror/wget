@@ -1,3 +1,10 @@
+2002-03-13  Ian Abbott  <abbotti@mev.co.uk>
+
+	* configure.bat: Removed (renamed to configure.bat.ini).
+	* configure.bat.in: New (renamed from configure.bat).
+	* Makefile.in: Add rule to copy configure.bat.in to configure.bat,
+	converting line endings to MS-DOS format in the process.
+
 2002-01-15  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* MACHINES: OS X entry by Jonathan Davis.

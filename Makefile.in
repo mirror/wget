@@ -75,7 +75,7 @@ infodir='$(infodir)' mandir='$(mandir)' manext='$(manext)'
 SUBDIRS = src doc po util windows
 
 # default target
-all: libtool src/config.h Makefile $(SUBDIRS)
+all: libtool src/config.h Makefile configure.bat $(SUBDIRS)
 
 check: all
 
@@ -101,6 +101,10 @@ install.mo:
 # Regenerate libtool if ltconfig and/or ltmain are updated
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
+
+# Create configure.bat from configure.bat.in by DOS-ifying the lines.
+configure.bat: configure.bat.in
+	awk '{ print $$0 ($$0 ~ /\r$$/ ? "" : "\r") }' $@.in > $@
 
 # create tag files for Emacs
 TAGS:
