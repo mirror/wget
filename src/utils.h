@@ -66,7 +66,6 @@ int count_char PARAMS ((const char *, char));
 char *strdupdelim PARAMS ((const char *, const char *));
 char **sepstring PARAMS ((const char *));
 int frontcmp PARAMS ((const char *, const char *));
-char *pwd_cuserid PARAMS ((char *));
 void fork_to_background PARAMS ((void));
 
 void touch PARAMS ((const char *, time_t));
