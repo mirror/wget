@@ -704,7 +704,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       if (sock == E_HOST)
 	return HOSTERR;
       else if (sock < 0)
-	return CONNECT_ERROR (errno);
+	return (retryable_socket_connect_error (errno)
+		? CONERROR : CONIMPOSSIBLE);
 
 #ifdef HAVE_SSL
      if (conn->scheme == SCHEME_HTTPS)

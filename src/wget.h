@@ -223,15 +223,4 @@ typedef enum
   SSLERRCERTFILE,SSLERRCERTKEY,SSLERRCTXCREATE
 } uerr_t;
 
-/* Whether the connection was unsuccessful or impossible.  If the
-   connection is considered impossible (e.g. for unsupported socket
-   family errors), there is no sense in retrying.  "Connection
-   refused" is normally not retried, except when opt.retry_connrefused
-   is specified.  */
-
-#define CONNECT_ERROR(err) ((unsupported_socket_family_error (err)	\
-			     || ((err) == ECONNREFUSED			\
-				 && !opt.retry_connrefused))		\
-			    ? CONIMPOSSIBLE : CONERROR)
-
 #endif /* WGET_H */

@@ -574,34 +574,43 @@ socket_ip_address (int sock, ip_address *ip, int endpoint)
   return 0;
 }
 
-/* Return non-zero of the errno code passed to the function is a
-   result of an attempt to create a socket of unsupported family.  */
+/* Return non-zero if the error from the connect code can be
+   considered retryable.  Wget normally retries after errors, but the
+   exception are the "unsupported protocol" type errors (possible on
+   IPv4/IPv6 dual family systems) and "connection refused".  */
 
 int
-unsupported_socket_family_error (int err)
+retryable_socket_connect_error (int err)
 {
   /* Have to guard against some of these values not being defined.
-     Cannot use switch because some of the values might be equal.  */
+     Cannot use a switch statement because some of the values might be
+     equal.  */
+  if (0
 #ifdef EAFNOSUPPORT
-  if (err == EAFNOSUPPORT) return 1;
+      || err == EAFNOSUPPORT
 #endif
 #ifdef EPFNOSUPPORT
-  if (err == EPFNOSUPPORT) return 1;
+      || err == EPFNOSUPPORT
 #endif
 #ifdef ESOCKTNOSUPPORT		/* no, "sockt" is not a typo! */
-  if (err == ESOCKTNOSUPPORT) return 1;
+      || err == ESOCKTNOSUPPORT
 #endif
 #ifdef EPROTONOSUPPORT
-  if (err == EPROTONOSUPPORT) return 1;
+      || err == EPROTONOSUPPORT
 #endif
 #ifdef ENOPROTOOPT
-  if (err == ENOPROTOOPT) return 1;
+      || err == ENOPROTOOPT
 #endif
-  /* Apparently, older versions of Linux used EINVAL instead of
-     EAFNOSUPPORT. */
-  if (err == EINVAL) return 1;
+      /* Apparently, older versions of Linux and BSD used EINVAL
+	 instead of EAFNOSUPPORT and such.  */
+      || err == EINVAL
+      )
+    return 0;
 
-  return 0;
+  if (err == ECONNREFUSED && !opt.retry_connrefused)
+    return 0;
+
+  return 1;
 }
 
 #ifdef HAVE_SELECT

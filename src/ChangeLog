@@ -1,5 +1,17 @@
 2003-11-13  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (gethttp): Ditto.
+
+	* ftp.c (getftp): Use retryable_socket_connect_error instead of
+	CONNECT_ERROR.
+
+	* wget.h (CONNECT_ERROR): Removed.
+
+	* connect.c (retryable_socket_connect_error): New function instead
+	of unsupported_socket_family_error.
+
+2003-11-13  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.h (CONNECT_ERROR): Use it.
 
 	* connect.c (unsupported_socket_family_error): New function.

@@ -291,7 +291,8 @@ getftp (struct url *u, long *len, long restval, ccon *con)
       if (csock == E_HOST)
 	return HOSTERR;
       else if (csock < 0)
-	return CONNECT_ERROR (errno);
+	return (retryable_socket_connect_error (errno)
+		? CONERROR : CONIMPOSSIBLE);
 
       if (cmd & LEAVE_PENDING)
 	rbuf_initialize (&con->rbuf, csock);
@@ -693,7 +694,8 @@ Error in server response, closing control connection.\n"));
 		  logprintf (LOG_VERBOSE, _("couldn't connect to %s port %hu: %s\n"),
 			     pretty_print_address (&passive_addr), passive_port,
 			     strerror (save_errno));
-		  return CONNECT_ERROR (save_errno);
+		  return (retryable_socket_connect_error (save_errno)
+			  ? CONERROR : CONIMPOSSIBLE);
 		}
 
 	      pasv_mode_open = 1;  /* Flag to avoid accept port */

@@ -56,7 +56,7 @@ enum {
 };
 int socket_ip_address PARAMS ((int, ip_address *, int));
 
-int unsupported_socket_family_error PARAMS ((int));
+int retryable_socket_connect_error PARAMS ((int));
 
 /* Flags for select_fd's WAIT_FOR argument. */
 enum {
