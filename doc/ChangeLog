@@ -1,7 +1,7 @@
 2001-02-23  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi: Corrections, clarifications, and English fixes to
-	time-stamping documentation and a couple other places.
+	time-stamping documentation.
 	
 2001-02-22  Dan Harkless  <wget@harkless.org>
 
