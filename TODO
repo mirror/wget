@@ -7,6 +7,14 @@ items are not listed in any particular order (except that recently-added items
 may tend towards the top).  Not all of these represent user-visible
 changes.
 
+* Be careful not to lose username/password information given for the
+  URL on the command line.
+
+* Support FWTK firewalls.  It should work like this: if ftp_proxy is
+  set to an ftp URL, Wget should assume the use of an FWTK firewall.
+  It should connect to the proxy URL, log in as username@target-site,
+  and continue as usual.
+
 * -p should probably go "_two_ more hops" on <FRAMESET> pages.
 
 * Only normal link-following recursion should respect -np.  Page-requisite
