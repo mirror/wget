@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.9-b5\n"
-"POT-Creation-Date: 2003-11-17 00:30+0100\n"
-"PO-Revision-Date: 2003-11-17 00:45+0100\n"
+"POT-Creation-Date: 2003-11-17 14:13+0100\n"
+"PO-Revision-Date: 2003-11-17 14:16+0100\n"
 "Last-Translator: Hrvoje Niksic <hniksic@xemacs.org>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
 "MIME-Version: 1.0\n"
@@ -299,7 +299,7 @@ msgstr ""
 "%s (%s) - `%s' snimljen [%ld]\n"
 "\n"
 
-#: src/ftp.c:1343 src/main.c:922 src/recur.c:376 src/retr.c:630
+#: src/ftp.c:1343 src/main.c:917 src/recur.c:376 src/retr.c:630
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Bri¹em %s.\n"
@@ -477,35 +477,35 @@ msgstr "%s: opcija `-W %s' je dvosmislena\n"
 msgid "%s: option `-W %s' doesn't allow an argument\n"
 msgstr "%s: uz opciju `-W %s' ne ide argument\n"
 
-#: src/host.c:345
+#: src/host.c:346
 msgid "Unknown host"
 msgstr "Nepoznat host"
 
 #. Message modeled after what gai_strerror returns in similar
 #. circumstances.
-#: src/host.c:349
+#: src/host.c:350
 msgid "Temporary failure in name resolution"
 msgstr "Privremena pogre¹ka pri pronala¾enju adrese"
 
-#: src/host.c:351
+#: src/host.c:352
 msgid "Unknown error"
 msgstr "Nepoznata gre¹ka"
 
-#: src/host.c:569
+#: src/host.c:570
 #, c-format
 msgid "Resolving %s... "
 msgstr "Tra¾im %s... "
 
-#: src/host.c:598 src/host.c:619
+#: src/host.c:602 src/host.c:623
 #, c-format
 msgid "failed: %s.\n"
 msgstr "nije uspjelo: %s.\n"
 
-#: src/host.c:607
+#: src/host.c:611
 msgid "failed: No IPv4/IPv6 addresses for host.\n"
 msgstr "neuspjeh: raèunalo nema IPv4/IPv6 adresa.\n"
 
-#: src/host.c:622
+#: src/host.c:626
 msgid "failed: timed out.\n"
 msgstr "neuspjeh: isteklo vrijeme.\n"
 
@@ -722,73 +722,73 @@ msgstr "%s (%s) - Gre¹ka pri èitanju na bajtu %ld (%s)."
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr "%s (%s) - Gre¹ka pri èitanju na bajtu %ld/%ld (%s). "
 
-#: src/init.c:376
+#: src/init.c:352
 #, c-format
 msgid "%s: WGETRC points to %s, which doesn't exist.\n"
 msgstr "%s: WGETRC pokazuje na %s, koji ne postoji.\n"
 
-#: src/init.c:432 src/netrc.c:276
+#: src/init.c:408 src/netrc.c:276
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Ne mogu proèitati %s (%s).\n"
 
-#: src/init.c:450 src/init.c:456
+#: src/init.c:426 src/init.c:432
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Gre¹ka u %s na liniji %d.\n"
 
-#: src/init.c:488
+#: src/init.c:464
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: Upozorenje: sistemski i korisnikov wgetrc su `%s'.\n"
 
-#: src/init.c:632
+#: src/init.c:608
 #, c-format
 msgid "%s: Invalid --execute command `%s'\n"
 msgstr "%s: Neispravna --execute naredba `%s'\n"
 
-#: src/init.c:668
+#: src/init.c:644
 #, c-format
 msgid "%s: %s: Invalid boolean `%s', use `on' or `off'.\n"
 msgstr "%s: %s: Neispravan boolean `%s', navedite `on' ili `off'.\n"
 
-#: src/init.c:711
+#: src/init.c:687
 #, c-format
 msgid "%s: %s: Invalid boolean `%s', use always, on, off, or never.\n"
 msgstr "%s: %s: Neispravan boolean `%s', navedite always, on, off ili never.\n"
 
-#: src/init.c:729
+#: src/init.c:705
 #, c-format
 msgid "%s: %s: Invalid number `%s'.\n"
 msgstr "%s: %s: Neispravan broj `%s'.\n"
 
-#: src/init.c:968 src/init.c:987
+#: src/init.c:944 src/init.c:963
 #, c-format
 msgid "%s: %s: Invalid byte value `%s'\n"
 msgstr "%s: %s: Neispravna bajtovna vrijednost `%s'\n"
 
-#: src/init.c:1012
+#: src/init.c:988
 #, c-format
 msgid "%s: %s: Invalid time period `%s'\n"
 msgstr "%s: %s: Neispravan vremenski period `%s'\n"
 
-#: src/init.c:1089
+#: src/init.c:1065
 #, c-format
 msgid "%s: %s: Invalid header `%s'.\n"
 msgstr "%s: %s: Neispravno zaglavlje `%s'.\n"
 
-#: src/init.c:1144
+#: src/init.c:1120
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: Neispravan indikator napretka `%s'.\n"
 
-#: src/init.c:1195
+#: src/init.c:1171
 #, c-format
 msgid "%s: %s: Invalid restriction `%s', use `unix' or `windows'.\n"
 msgstr ""
 "%s: %s: Neispravna restrikcija `%s', upotrijebite `unix' ili `windows'.\n"
 
-#: src/init.c:1236
+#: src/init.c:1212
 #, c-format
 msgid "%s: %s: Invalid value `%s'.\n"
 msgstr "%s: %s: Neispravna vrijednost `%s'.\n"
@@ -1203,7 +1203,9 @@ msgstr ""
 
 #: src/main.c:539
 msgid "       --sslcheckcert=0/1    Check the server cert against given CA.\n"
-msgstr "       --sslcheckcert=0/1    provjeri poslu¾iteljevu ovjeru spram zadanog CA.\n"
+msgstr ""
+"       --sslcheckcert=0/1    provjeri poslu¾iteljevu ovjeru spram zadanog "
+"CA.\n"
 
 #: src/main.c:541
 msgid ""
@@ -1218,31 +1220,28 @@ msgid "FTP options:\n"
 msgstr "Opcije FTP-a:\n"
 
 #: src/main.c:549
-msgid "  -nr, --no-remove-listing  don't remove `.listing' files.\n"
-msgstr "  -nr, --no-remove-listing  ne bri¹i ispise direktorija `.listing'.\n"
+msgid "       --no-remove-listing     don't remove `.listing' files.\n"
+msgstr "       --no-remove-listing     ne bri¹i ispise direktorija `.listing'.\n"
 
 #: src/main.c:551
-msgid "       --no-glob            turn off FTP file name globbing.\n"
-msgstr ""
-"       --no-glob            nemoj interpretirati * i ? u nazivu spisa.\n"
+msgid "       --no-glob               turn off FTP file name globbing.\n"
+msgstr "       --no-glob               nemoj interpretirati * i ? u nazivu spisa.\n"
 
 #: src/main.c:553
-msgid "       --passive-ftp        use the \"passive\" transfer mode.\n"
-msgstr "       --passive-ftp        prijeði na pasivni mod prijenosa.\n"
+msgid "       --passive-ftp           use the \"passive\" transfer mode.\n"
+msgstr "       --passive-ftp           prijeði na pasivni mod prijenosa.\n"
 
 #: src/main.c:555
 msgid ""
-"       --retr-symlinks      when recursing, get linked-to files (not dir).\n"
+"       --retr-symlinks         when recursing, get linked-to files (not "
+"dir).\n"
 msgstr ""
-"       --retr-symlinks      pri rekurziji, dohvaæaj datoteke na koje "
-"pokazuju\n"
-"                            linkovi (ne radi za direktorije).\n"
+"       --retr-symlinks         pri rekurziji, dohvaæaj datoteke na koje\n"
+"                               pokazuju linkovi (ne radi za direktorije).\n"
 
 #: src/main.c:557
 msgid "       --preserve-permissions  preserve remote file permissions.\n"
-msgstr ""
-"       --preserve-permissions  saèuvaj dozvole na datotekama skinutim FTP-"
-"om.\n"
+msgstr "       --preserve-permissions  saèuvaj dozvole na datotekama skinutim FTP-om.\n"
 
 #: src/main.c:561
 msgid "Recursive download:\n"
@@ -1425,7 +1424,7 @@ msgstr ""
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:678 src/main.c:749 src/main.c:831
+#: src/main.c:678 src/main.c:749 src/main.c:826
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Poku¹ajte `%s --help' za vi¹e opcija.\n"
@@ -1443,28 +1442,22 @@ msgstr "Ne mogu istovremeno biti rjeèit i tih.\n"
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr "Ne mogu istovremeno paziti na vrijeme i ne gaziti stare spise.\n"
 
-#. ipv4_only was set automatically because the system doesn't
-#. support IPv6.
-#: src/main.c:815
-msgid "Cannot use --inet6-only on a system without IPv6 support.\n"
-msgstr "Nije dopu¹tena upotreba --inet6-only na sistemu bez podr¹ke za IPv6.\n"
-
-#: src/main.c:817
+#: src/main.c:812
 msgid "Cannot specify both --inet4-only and --inet6-only.\n"
 msgstr "Nije dopu¹teno navesti i --inet4-only i --inet6-only.\n"
 
 #. No URL specified.
-#: src/main.c:826
+#: src/main.c:821
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: nedostaje URL\n"
 
-#: src/main.c:937
+#: src/main.c:932
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "Nijedan URL nije pronaðen u %s.\n"
 
-#: src/main.c:946
+#: src/main.c:941
 #, c-format
 msgid ""
 "\n"
@@ -1475,7 +1468,7 @@ msgstr ""
 "ZAVR©IO --%s--\n"
 "Dohvatio: %s bajtova u %d spisa\n"
 
-#: src/main.c:952
+#: src/main.c:947
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "Ogranièenje dohvata (%s bajtova) je PREKORAÈENO!\n"
@@ -1624,316 +1617,4 @@ msgstr "Ne mogu izbrisati link `%s': %s\n"
 #: src/xmalloc.c:71
 #, c-format
 msgid "%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"
-msgstr "%s: %s: Nije uspjela alokacija %ld bajtova; memorija je iscrpljena.\n"
-
-#~ msgid "Unable to convert `%s' to a bind address.  Reverting to ANY.\n"
-#~ msgstr "Ne mogu pretvoriti `%s' u bind adresu.  Pretpostavljam ANY.\n"
-
-#~ msgid "Host not found"
-#~ msgstr "Raèunalo nije pronaðeno"
-
-#~ msgid ""
-#~ "Startup:\n"
-#~ "  -V,  --version           display the version of Wget and exit.\n"
-#~ "  -h,  --help              print this help.\n"
-#~ "  -b,  --background        go to background after startup.\n"
-#~ "  -e,  --execute=COMMAND   execute a `.wgetrc'-style command.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Pokretanje:\n"
-#~ "  -V,  --version           prika¾i verziju Wgeta i izaði.\n"
-#~ "  -h,  --help              ispi¹i pomoæ.\n"
-#~ "  -b,  --background        radi u pozadini nakon pokretanja.\n"
-#~ "  -e,  --execute=NAREDBA   izvr¹i naredbu poput onih u `.wgetrc'-u.\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "Logging and input file:\n"
-#~ "  -o,  --output-file=FILE     log messages to FILE.\n"
-#~ "  -a,  --append-output=FILE   append messages to FILE.\n"
-#~ "  -d,  --debug                print debug output.\n"
-#~ "  -q,  --quiet                quiet (no output).\n"
-#~ "  -v,  --verbose              be verbose (this is the default).\n"
-#~ "  -nv, --non-verbose          turn off verboseness, without being quiet.\n"
-#~ "  -i,  --input-file=FILE      download URLs found in FILE.\n"
-#~ "  -F,  --force-html           treat input file as HTML.\n"
-#~ "  -B,  --base=URL             prepends URL to relative links in -F -i "
-#~ "file.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Logging and input file:\n"
-#~ "  -o,  --output-file=SPIS     spremaj poruke u SPIS.\n"
-#~ "  -a,  --append-output=SPIS   spremaj poruke na kraj SPISA.\n"
-#~ "  -d,  --debug                ispisuj poruke za debugiranje.\n"
-#~ "  -q,  --quiet                ti¹ina (bez ispisa).\n"
-#~ "  -v,  --verbose              budi rjeèit (podrazumijevano).\n"
-#~ "  -nv, --non-verbose          iskljuèi rjeèitost, ali ipak ne¹to "
-#~ "ispisuj.\n"
-#~ "  -i,  --input-file=SPIS      dohvati URL-ove navedene u SPISU.\n"
-#~ "  -F,  --force-html           tretiraj ulazni spis kao HTML.\n"
-#~ "  -B,  --base=URL             temeljni URL za relativne linkove kod -F -"
-#~ "i.\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "Download:\n"
-#~ "  -t,  --tries=NUMBER           set number of retries to NUMBER (0 "
-#~ "unlimits).\n"
-#~ "       --retry-connrefused      retry even if connection is refused.\n"
-#~ "  -O   --output-document=FILE   write documents to FILE.\n"
-#~ "  -nc, --no-clobber             don't clobber existing files or use .# "
-#~ "suffixes.\n"
-#~ "  -c,  --continue               resume getting a partially-downloaded "
-#~ "file.\n"
-#~ "       --progress=TYPE          select progress gauge type.\n"
-#~ "  -N,  --timestamping           don't re-retrieve files unless newer than "
-#~ "local.\n"
-#~ "  -S,  --server-response        print server response.\n"
-#~ "       --spider                 don't download anything.\n"
-#~ "  -T,  --timeout=SECONDS        set all timeout values to SECONDS.\n"
-#~ "       --dns-timeout=SECS       set the DNS lookup timeout to SECS.\n"
-#~ "       --connect-timeout=SECS   set the connect timeout to SECS.\n"
-#~ "       --read-timeout=SECS      set the read timeout to SECS.\n"
-#~ "  -w,  --wait=SECONDS           wait SECONDS between retrievals.\n"
-#~ "       --waitretry=SECONDS      wait 1...SECONDS between retries of a "
-#~ "retrieval.\n"
-#~ "       --random-wait            wait from 0...2*WAIT secs between "
-#~ "retrievals.\n"
-#~ "  -Y,  --proxy=on/off           turn proxy on or off.\n"
-#~ "  -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n"
-#~ "       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local "
-#~ "host.\n"
-#~ "       --limit-rate=RATE        limit download rate to RATE.\n"
-#~ "       --dns-cache=off          disable caching DNS lookups.\n"
-#~ "       --restrict-file-names=OS restrict chars in file names to ones OS "
-#~ "allows.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Dohvat:\n"
-#~ "       --bind-address=ADRESA    koristi ADRESU (ime ili IP) pri "
-#~ "bindanju.\n"
-#~ "  -t,  --tries=BROJ             postavi broj poku¹aja na BROJ (0 je "
-#~ "beskonaèno).\n"
-#~ "  -O   --output-document=SPIS   spremaj dohvaæene dokumente u SPIS.\n"
-#~ "  -nc, --no-clobber             ne dohvaæaj spise koji postoje lokalno.\n"
-#~ "  -c,  --continue               nastavi s dohvatom na pola skinutog "
-#~ "spisa.\n"
-#~ "       --progress=TIP           postavi vrstu pokazatelja dohvata.\n"
-#~ "  -N,  --timestamping           skini samo spise novije od lokalnih.\n"
-#~ "  -S,  --server-response        ispisuj poslu¾iteljeve odgovore.\n"
-#~ "       --spider                 ni¹ta ne dohvaæaj.\n"
-#~ "  -T,  --timeout=SEKUNDE        odustani od èitanja nakon SEKUNDE "
-#~ "sekunda.\n"
-#~ "  -w,  --wait=SEKUNDE           èekaj SEKUNDE izmeðu dohvata.\n"
-#~ "       --wait-retry=SEKUNDE     èekaj 1...SEKUNDI izmeðu ponovnih "
-#~ "poku¹aja.\n"
-#~ "  -Y,  --proxy=on/off           ukljuèi ili iskljuèi meðuserver (proxy).\n"
-#~ "  -Q,  --quota=BROJ             ogranièi kolièinu dohvaæenog na BROJ.\n"
-#~ "       --limit-rate=BRZINA      ne dohvaæaj podatke br¾e od BRZINE.\n"
-#~ "       --dns-cache=off          ne pamti DNS dohvate.\n"
-#~ "       --restrict-file-names=OS ogranièi znakove u nazivima spisa na one "
-#~ "koje\n"
-#~ "                                 OS podr¾ava.\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "Directories:\n"
-#~ "  -nd, --no-directories            don't create directories.\n"
-#~ "  -x,  --force-directories         force creation of directories.\n"
-#~ "  -nH, --no-host-directories       don't create host directories.\n"
-#~ "  -P,  --directory-prefix=PREFIX   save files to PREFIX/...\n"
-#~ "       --cut-dirs=NUMBER           ignore NUMBER remote directory "
-#~ "components.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Direktoriji:\n"
-#~ "  -nd  --no-directories             ne stvaraj direktorije.\n"
-#~ "  -x,  --force-directories          uvijek stvaraj direktorije.\n"
-#~ "  -nH, --no-host-directories        ne stvaraj direktorije po "
-#~ "raèunalima.\n"
-#~ "  -P,  --directory-prefix=PREFIKS   snimaj spise u PREFIKS/...\n"
-#~ "       --cut-dirs=BROJ              ignoriraj BROJ stranih direktorija.\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "HTTP options:\n"
-#~ "       --http-user=USER      set http user to USER.\n"
-#~ "       --http-passwd=PASS    set http password to PASS.\n"
-#~ "  -C,  --cache=on/off        (dis)allow server-cached data (normally "
-#~ "allowed).\n"
-#~ "  -E,  --html-extension      save all text/html documents with .html "
-#~ "extension.\n"
-#~ "       --ignore-length       ignore `Content-Length' header field.\n"
-#~ "       --header=STRING       insert STRING among the headers.\n"
-#~ "       --proxy-user=USER     set USER as proxy username.\n"
-#~ "       --proxy-passwd=PASS   set PASS as proxy password.\n"
-#~ "       --referer=URL         include `Referer: URL' header in HTTP "
-#~ "request.\n"
-#~ "  -s,  --save-headers        save the HTTP headers to file.\n"
-#~ "  -U,  --user-agent=AGENT    identify as AGENT instead of Wget/VERSION.\n"
-#~ "       --no-http-keep-alive  disable HTTP keep-alive (persistent "
-#~ "connections).\n"
-#~ "       --cookies=off         don't use cookies.\n"
-#~ "       --load-cookies=FILE   load cookies from FILE before session.\n"
-#~ "       --save-cookies=FILE   save cookies to FILE after session.\n"
-#~ "       --post-data=STRING    use the POST method; send STRING as the "
-#~ "data.\n"
-#~ "       --post-file=FILE      use the POST method; send contents of FILE.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "HTTP options:\n"
-#~ "       --http-user=KORISNIK     postavi HTTP korisnika na KORISNIK.\n"
-#~ "       --http-passwd=ZAPORKA    postavi HTTP zaporku na ZAPORKA.\n"
-#~ "  -C,  --cache=on/off           dopusti ili zabrani ke¹iranje na "
-#~ "poslu¾itelju\n"
-#~ "                                  (obièno dopu¹teno).\n"
-#~ "  -E,  --html-extension         snimaj sve dokumente tipa text/html s "
-#~ "nastavkom\n"
-#~ "                                  `.html'.\n"
-#~ "       --ignore-length          ignoriraj zaglavlje `Content-Length'.\n"
-#~ "       --header=STRING          umetni STRING kao jedno od zaglavlja.\n"
-#~ "       --proxy-user=KORISNIK    postavi KORISNIKA kao proxy korisnika\n"
-#~ "       --proxy-passwd=ZAPORKA   postavi proxy zaporku na ZAPORKU.\n"
-#~ "       --referer=URL            dodaj `Referer: URL' zaglavlje u HTTP "
-#~ "zahtjev.\n"
-#~ "  -s,  --save-headers           snimaj HTTP zaglavlja na disk.\n"
-#~ "  -U,  --user-agent=KLIJENT     identificiraj se kao KLIJENT umjesto\n"
-#~ "                                  Wget/VERZIJA.\n"
-#~ "       --no-http-keep-alive     ne koristi HTTP neprekinutu vezu (keep-"
-#~ "alive).\n"
-#~ "       --cookies=off            ne koristi cookieje.\n"
-#~ "       --load-cookies=SPIS      uèitaj cookieje iz SPISA na poèetku "
-#~ "rada.\n"
-#~ "       --save-cookies=SPIS      snimi cookieje u SPISA na kraju rada.\n"
-#~ "       --post-data=STRING       koristi metodu POST; ¹alji STRING kao "
-#~ "podatke.\n"
-#~ "       --post-file=SPIS         koristi metodu POST; ¹alji sadr¾aj "
-#~ "SPISA.\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "HTTPS (SSL) options:\n"
-#~ "       --sslcertfile=FILE     optional client certificate.\n"
-#~ "       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
-#~ "       --egd-file=FILE        file name of the EGD socket.\n"
-#~ "       --sslcadir=DIR         dir where hash list of CA's are stored.\n"
-#~ "       --sslcafile=FILE       file with bundle of CA's\n"
-#~ "       --sslcerttype=0/1      Client-Cert type 0=PEM (default) / 1=ASN1 "
-#~ "(DER)\n"
-#~ "       --sslcheckcert=0/1     Check the server cert agenst given CA\n"
-#~ "       --sslprotocol=0-3      choose SSL protocol; 0=automatic,\n"
-#~ "                              1=SSLv2 2=SSLv3 3=TLSv1\n"
-#~ "\n"
-#~ msgstr ""
-#~ "HTTPS (SSL) opcije:\n"
-#~ "       --sslcertfile=FILE     opcionalna ovjera klijenta.\n"
-#~ "       --sslcertkey=KEYFILE   opcionalni spis s kljuèem za ovu ovjeru.\n"
-#~ "       --egd-file=FILE        datoteka EGD socketa.\n"
-#~ "       --sslcadir=DIR         direktorij gdje je pohranjena lista CA-"
-#~ "ova.\n"
-#~ "       --sslcafile=FILE       spis s CA-ova na okupu.\n"
-#~ "       --sslcerttype=0/1      vrst Client-Certa, 0=PEM "
-#~ "(podrazumijevano) /\n"
-#~ "                               1=ASN1 (DER)\n"
-#~ "       --sslcheckcert=0/1     provjeri poslu¾iteljevu ovjeru spram "
-#~ "zadanog CA.\n"
-#~ "       --sslprotocol=0-3      izaberi SSL protokol; 0=automatski,\n"
-#~ "                               1=SSLv2 2=SSLv3 3=TLSv1\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "FTP options:\n"
-#~ "  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
-#~ "  -g,  --glob=on/off           turn file name globbing on or off.\n"
-#~ "       --passive-ftp           use the \"passive\" transfer mode.\n"
-#~ "       --retr-symlinks         when recursing, get linked-to files (not "
-#~ "dirs).\n"
-#~ "\n"
-#~ msgstr ""
-#~ "FTP opcije:\n"
-#~ "  -nr, --dont-remove-listing  ne bri¹i `.listing' spise.\n"
-#~ "  -g,  --glob=on/off          ukljuèi ili iskljuèi globbing.\n"
-#~ "       --passive-ftp          koristi \"pasivni\" mod prijenosa.\n"
-#~ "       --retr-symlinks        pri rekurziji dohvaæaj FTP simbolièke "
-#~ "linkove (ne\n"
-#~ "                                va¾i za direktorije).\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "Recursive retrieval:\n"
-#~ "  -r,  --recursive          recursive download.\n"
-#~ "  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for "
-#~ "infinite).\n"
-#~ "       --delete-after       delete files locally after downloading them.\n"
-#~ "  -k,  --convert-links      convert non-relative links to relative.\n"
-#~ "  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
-#~ "  -m,  --mirror             shortcut option equivalent to -r -N -l inf -"
-#~ "nr.\n"
-#~ "  -p,  --page-requisites    get all images, etc. needed to display HTML "
-#~ "page.\n"
-#~ "       --strict-comments    turn on strict (SGML) handling of HTML "
-#~ "comments.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Rekurzivni dohvat:\n"
-#~ "  -r,  --recursive         rekurzivni dohvat -- koristi pa¾ljivo!\n"
-#~ "  -l,  --level=NUMBER      maks. dubina rekurzije (inf ili 0 je "
-#~ "beskonaèno).\n"
-#~ "       --delete-after      pobri¹i lokalne spise nakon dohvata.\n"
-#~ "  -k,  --convert-links     pretvori ne-relativne linkove u relativne.\n"
-#~ "  -m,  --mirror            kratica za -r -N -l inf -nr.\n"
-#~ "  -p,  --page-requisites   skupi slike i drugo potrebno za prikaz HTML-"
-#~ "a.\n"
-#~ "       --strict-comments   strogo (po SGML-u) interpretiraj HTML "
-#~ "komentare.\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "Recursive accept/reject:\n"
-#~ "  -A,  --accept=LIST                comma-separated list of accepted "
-#~ "extensions.\n"
-#~ "  -R,  --reject=LIST                comma-separated list of rejected "
-#~ "extensions.\n"
-#~ "  -D,  --domains=LIST               comma-separated list of accepted "
-#~ "domains.\n"
-#~ "       --exclude-domains=LIST       comma-separated list of rejected "
-#~ "domains.\n"
-#~ "       --follow-ftp                 follow FTP links from HTML "
-#~ "documents.\n"
-#~ "       --follow-tags=LIST           comma-separated list of followed HTML "
-#~ "tags.\n"
-#~ "  -G,  --ignore-tags=LIST           comma-separated list of ignored HTML "
-#~ "tags.\n"
-#~ "  -H,  --span-hosts                 go to foreign hosts when recursive.\n"
-#~ "  -L,  --relative                   follow relative links only.\n"
-#~ "  -I,  --include-directories=LIST   list of allowed directories.\n"
-#~ "  -X,  --exclude-directories=LIST   list of excluded directories.\n"
-#~ "  -np, --no-parent                  don't ascend to the parent "
-#~ "directory.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Rekurzivno prihvaæanje/odbijanje:\n"
-#~ "  -A,  --accept=POPIS                popis prihvaæenih nastavaka.\n"
-#~ "  -R,  --reject=POPIS                popis odbijenih nastavaka.\n"
-#~ "  -D,  --domains=POPIS               popis prihvaæenih domena.\n"
-#~ "       --exclude-domains=POPIS       zarezom odvojen popis odbijenih "
-#~ "domena.\n"
-#~ "  -L,  --relative                    prati samo relativne linkove.\n"
-#~ "       --follow-ftp                  prati FTP linkove iz HTML "
-#~ "dokumenata.\n"
-#~ "       --follow-tags=LIST            zarezom odvojeni HTML tagovi koje\n"
-#~ "                                       treba pratiti.\n"
-#~ "  -G,  --ignore-tags=LIST            zarezom odvojeni ignorirani HTML "
-#~ "tagovi.\n"
-#~ "  -H,  --span-hosts                  idi na druga raèunala pri "
-#~ "rekurziji.\n"
-#~ "  -I,  --include-directories=POPIS   popis dopu¹tenih direktorija.\n"
-#~ "  -X,  --exclude-directories=POPIS   popis nedopu¹tenih direktorija.\n"
-#~ "  -np, --no-parent                   ne idi u direktorij iznad.\n"
-#~ "\n"
-
-#~ msgid "%s: debug support not compiled in.\n"
-#~ msgstr "%s: podr¹ka za debugiranje nije ugraðena.\n"
-
-#~ msgid "%s: %s: Not enough memory.\n"
-#~ msgstr "%s: %s: Nema dovoljno memorije.\n"
+msgstr "%s: %s: Nije uspjela alokacija %ld bajtova; memorija je potro¹ena.\n"
