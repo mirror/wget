@@ -6,6 +6,9 @@ Wget.  Patches to implement any of these items would be gladly accepted.  The
 items are not listed in any particular order.  Not all of them represent
 user-visible changes.
 
+* Lots of noncompliant webservers issue HTTP redirects to relative URLs, and
+  browsers follow them, so wget should too.
+
 * Make wget return non-zero status in more situations, like incorrect HTTP auth.
 
 * Timestamps are sometimes not copied over on files retrieved by FTP.
