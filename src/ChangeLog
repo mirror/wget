@@ -1,3 +1,12 @@
+2002-04-09  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* progress.c (bar_update): Maintain an array of the time it took
+	to perform previous 30 network reads.
+	(create_image): Calculate the download speed and ETA based on the
+	last 30 reads, not the entire download.
+	(create_image): Make sure that the ETA is not changed more than
+	once per second.
+
 2002-04-09  Ian Abbott  <abbotti@mev.co.uk>
 
 	* mswindows.c (borland_utime): New function conditionally defined

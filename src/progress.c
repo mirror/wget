@@ -401,6 +401,9 @@ dot_set_params (const char *params)
    create_image will overflow the buffer.  */
 #define MINIMUM_SCREEN_WIDTH 45
 
+/* Number of recent packets we keep the stats for. */
+#define RECENT_ARRAY_SIZE 30
+
 static int screen_width = DEFAULT_SCREEN_WIDTH;
 
 struct bar_progress {
@@ -410,7 +413,7 @@ struct bar_progress {
 				   download finishes */
   long count;			/* bytes downloaded so far */
 
-  long last_update;		/* time of the last screen update. */
+  long last_screen_update;	/* time of the last screen update. */
 
   int width;			/* screen width we're using at the
 				   time the progress gauge was
@@ -420,7 +423,27 @@ struct bar_progress {
 				   signal. */
   char *buffer;			/* buffer where the bar "image" is
 				   stored. */
-  int tick;
+  int tick;			/* counter used for drawing the
+				   progress bar where the total size
+				   is not known. */
+
+  /* The following variables (kept in a struct for namespace reasons)
+     keep track of how long it took to read recent packets.  See
+     bar_update() for explanation.  */
+  struct {
+    long previous_time;
+    long times[RECENT_ARRAY_SIZE];
+    long bytes[RECENT_ARRAY_SIZE];
+    int count;
+    long summed_times;
+    long summed_bytes;
+  } recent;
+
+  /* create_image() uses these to make sure that ETA information
+     doesn't flash. */
+  long last_eta_time;		/* time of the last update to download
+				   speed and ETA. */
+  long last_eta_value;
 };
 
 static void create_image PARAMS ((struct bar_progress *, long));
@@ -453,7 +476,8 @@ static void
 bar_update (void *progress, long howmuch, long dltime)
 {
   struct bar_progress *bp = progress;
-  int force_update = 0;
+  int force_screen_update = 0;
+  int rec_index;
 
   bp->count += howmuch;
   if (bp->total_length > 0
@@ -465,21 +489,75 @@ bar_update (void *progress, long howmuch, long dltime)
        equal to the expected size doesn't abort.  */
     bp->total_length = bp->count + bp->initial_length;
 
+  /* The progress bar is supposed to display the "current download
+     speed".  The first version of the progress bar calculated it by
+     dividing the total amount of data with the total time needed to
+     download it.  The problem with this was that stalled or suspended
+     download could unduly influence the "current" time.  Taking just
+     the time needed to download the current packet would not work
+     either because packets arrive too fast and the varitions would be
+     too jerky.
+
+     It would be preferrable to show the speed that pertains to a
+     recent period, say over the past several seconds.  But to do this
+     accurately, we would have to record all the packets received
+     during the last five seconds.
+
+     What we do instead is maintain a history of a fixed number of
+     packets.  It actually makes sense if you think about it -- faster
+     downloads will have a faster response to speed changes.  */
+
+  rec_index = bp->recent.count % RECENT_ARRAY_SIZE;
+  ++bp->recent.count;
+
+  /* Instead of calculating the sum of times[] and bytes[], we
+     maintain the summed quantities.  To maintain each sum, we must
+     make sure that it gets increased by the newly downloaded amount,
+     but also that it gets decreased by the amount we're overwriting
+     in (erasing from) the cyclical buffer.  */
+  bp->recent.summed_times -= bp->recent.times[rec_index];
+  bp->recent.summed_bytes -= bp->recent.bytes[rec_index];
+
+  bp->recent.times[rec_index] = dltime - bp->recent.previous_time;
+  bp->recent.bytes[rec_index] = howmuch;
+
+  bp->recent.summed_times += bp->recent.times[rec_index];
+  bp->recent.summed_bytes += bp->recent.bytes[rec_index];
+
+  bp->recent.previous_time = dltime;
+
+#if 0
+  /* Sledgehammer check that summed_times and summed_bytes are
+     accurate.  */
+  {
+    int num = bp->recent.count;
+    int i;
+    int upper = num < RECENT_ARRAY_SIZE ? num : RECENT_ARRAY_SIZE;
+    long sumt = 0, sumb = 0;
+    for (i = 0; i < upper; i++)
+      {
+	sumt += bp->recent.times[i];
+	sumb += bp->recent.bytes[i];
+      }
+    assert (sumt == bp->recent.summed_times);
+    assert (sumb == bp->recent.summed_bytes);
+  }
+#endif
+
   if (screen_width - 1 != bp->width)
     {
       bp->width = screen_width - 1;
       bp->buffer = xrealloc (bp->buffer, bp->width + 1);
-      force_update = 1;
+      force_screen_update = 1;
     }
 
-  if (dltime - bp->last_update < 200 && !force_update)
+  if (dltime - bp->last_screen_update < 200 && !force_screen_update)
     /* Don't update more often than five times per second. */
     return;
 
-  bp->last_update = dltime;
-
   create_image (bp, dltime);
   display_image (bp->buffer);
+  bp->last_screen_update = dltime;
 }
 
 static void
@@ -512,13 +590,16 @@ bar_finish (void *progress, long dltime)
 #endif
 
 static void
-create_image (struct bar_progress *bp, long dltime)
+create_image (struct bar_progress *bp, long dl_total_time)
 {
   char *p = bp->buffer;
   long size = bp->initial_length + bp->count;
 
   char *size_legible = legible (size);
   int size_legible_len = strlen (size_legible);
+
+  long recent_time = bp->recent.summed_times;
+  long recent_bytes = bp->recent.summed_bytes;
 
   /* The progress bar should look like this:
      xx% [=======>             ] nn,nnn 12.34K/s ETA 00:00
@@ -617,11 +698,11 @@ create_image (struct bar_progress *bp, long dltime)
   p += strlen (p);
 
   /* " 1012.45K/s" */
-  if (dltime && bp->count)
+  if (recent_time && recent_bytes)
     {
       static char *short_units[] = { "B/s", "K/s", "M/s", "G/s" };
       int units = 0;
-      double dlrate = calc_rate (bp->count, dltime, &units);
+      double dlrate = calc_rate (recent_bytes, recent_time, &units);
       sprintf (p, " %7.2f%s", dlrate, short_units[units]);
       p += strlen (p);
     }
@@ -629,13 +710,25 @@ create_image (struct bar_progress *bp, long dltime)
     APPEND_LITERAL ("   --.--K/s");
 
   /* " ETA xx:xx:xx" */
-  if (bp->total_length > 0 && bp->count > 0)
+  if (bp->total_length > 0 && recent_bytes > 0)
     {
-      int eta, eta_hrs, eta_min, eta_sec;
-      double tm_sofar = (double)dltime / 1000;
-      long bytes_remaining = bp->total_length - size;
+      long eta;
+      int eta_hrs, eta_min, eta_sec;
 
-      eta = (int) (tm_sofar * bytes_remaining / bp->count);
+      /* Don't change the value of ETA more than approximately once
+	 per second; doing so would cause flashing without providing
+	 any value to the user.  */
+      if (dl_total_time - bp->last_eta_time < 900
+	  && bp->last_eta_value != 0)
+	eta = bp->last_eta_value;
+      else
+	{
+	  double tm_sofar = (double)recent_time / 1000;
+	  long bytes_remaining = bp->total_length - size;
+	  eta = (long) (tm_sofar * bytes_remaining / recent_bytes);
+	  bp->last_eta_value = eta;
+	  bp->last_eta_time = dl_total_time;
+	}
 
       eta_hrs = eta / 3600, eta %= 3600;
       eta_min = eta / 60,   eta %= 60;
