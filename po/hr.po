@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.8\n"
 "POT-Creation-Date: 2002-04-15 18:01+0200\n"
-"PO-Revision-Date: 1998-02-29 21:05+01:00\n"
+"PO-Revision-Date: 2002-04-15 18:09+02:00\n"
 "Last-Translator: Hrvoje Niksic <hniksic@arsdigita.com>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 #: src/connect.c:79
 #, c-format
 msgid "Unable to convert `%s' to a bind address.  Reverting to ANY.\n"
-msgstr ""
+msgstr "Ne mogu pretvoriti `%s' u bind adresu.  Pretpostavljam ANY.\n"
 
 #: src/connect.c:156
 #, c-format
@@ -40,7 +40,7 @@ msgstr "Gre¹ka u zaglavlju Set-Cookie, polje `%s'"
 #: src/cookies.c:619
 #, c-format
 msgid "Syntax error in Set-Cookie at character `%c'.\n"
-msgstr "Gre¹ka u Set-Cookie na znaku `%c'.\n"
+msgstr "Gre¹ka u Set-Cookie kod znaka `%c'.\n"
 
 #: src/cookies.c:627
 msgid "Syntax error in Set-Cookie: premature end of string.\n"
@@ -449,9 +449,8 @@ msgid "failed: %s.\n"
 msgstr "nije uspjelo: %s.\n"
 
 #: src/host.c:668
-#, fuzzy
 msgid "failed: timed out.\n"
-msgstr "nije uspjelo: %s.\n"
+msgstr "nije uspjelo: time out.\n"
 
 #: src/host.c:740
 msgid "Host not found"
@@ -872,7 +871,6 @@ msgstr ""
 "\n"
 
 #: src/main.c:180
-#, fuzzy
 msgid ""
 "HTTP options:\n"
 "       --http-user=USER      set http user to USER.\n"
@@ -900,26 +898,24 @@ msgstr ""
 "HTTP options:\n"
 "       --http-user=KORISNIK     postavi HTTP korisnika na KORISNIK.\n"
 "       --http-passwd=ZAPORKA    postavi HTTP zaporku na ZAPORKA.\n"
-"  -C,  --cache=on/off           dozvoli ili zabrani ke¹iranje na "
-"poslu¾itelju\n"
+"  -C,  --cache=on/off           dozvoli ili zabrani ke¹iranje na poslu¾itelju\n"
 "                                  (obièno dozvoljeno).\n"
-"  -E,  --html-extension         snimaj sve dokumente tipa text/html s "
-"nastavkom\n"
+"  -E,  --html-extension         snimaj sve dokumente tipa text/html s nastavkom\n"
 "                                  `.html'.\n"
 "       --ignore-length          ignoriraj zaglavlje `Content-Length'.\n"
 "       --header=STRING          umetni STRING kao jedno od zaglavlja.\n"
 "       --proxy-user=KORISNIK    postavi KORISNIKA kao proxy korisnika\n"
 "       --proxy-passwd=ZAPORKA   postavi proxy zaporku na ZAPORKU.\n"
-"       --referer=URL            dodaj `Referer: URL' zaglavlje u HTTP "
-"zahtjev.\n"
+"       --referer=URL            dodaj `Referer: URL' zaglavlje u HTTP zahtjev.\n"
 "  -s,  --save-headers           snimaj HTTP zaglavlja na disk.\n"
 "  -U,  --user-agent=KLIJENT     identificiraj se kao KLIJENT umjesto\n"
 "                                  Wget/VERZIJA.\n"
-"       --no-http-keep-alive     ne koristi HTTP neprekinutu vezu (keep-"
-"alive).\n"
+"       --no-http-keep-alive     ne koristi HTTP neprekinutu vezu (keep-alive).\n"
 "       --cookies=off            ne koristi cookieje.\n"
 "       --load-cookies=SPIS      uèitaj cookieje iz SPISA na poèetku rada.\n"
 "       --save-cookies=SPIS      snimi cookieje u SPISA na kraju rada.\n"
+"       --post-data=STRING       koristi metodu POST; ¹alji STRING kao podatke.\n"
+"       --post-file=SPIS         koristi metodu POST; ¹alji sadr¾aj SPISA.\n"
 "\n"
 
 #: src/main.c:200
@@ -1251,4 +1247,4 @@ msgstr "Ne mogu izbrisati link `%s': %s\n"
 #~ msgstr "Ne mogu naæi proxy raèunalo.\n"
 
 #~ msgid "%s: Redirection cycle detected.\n"
-#~ msgstr "%s: Uoèena preusmjeravanje u krug.\n"
+#~ msgstr "%s: Uoèeno kru¾no preusmjeravanje.\n"
