@@ -1,5 +1,5 @@
-/* Dealing with host names.
-   Copyright (C) 1995, 1996, 1997, 2000 Free Software Foundation, Inc.
+/* Host name resolution and matching.
+   Copyright (C) 1995, 1996, 1997, 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
