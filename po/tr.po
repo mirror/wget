@@ -4,9 +4,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.8-pre1\n"
-"POT-Creation-Date: 2001-12-06 02:15+0100\n"
-"PO-Revision-Date: 2001-12-06 18:42+0200\n"
+"Project-Id-Version: wget 1.8\n"
+"POT-Creation-Date: 2001-12-08 23:28+0100\n"
+"PO-Revision-Date: 2001-12-10 18:08+0200\n"
 "Last-Translator: Nilgün Belma Bugüner <nilgun@fide.org>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -646,17 +646,17 @@ msgstr "%s: %s: Lütfen on ya da off olarak belirtin.\n"
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr "%s: %s: Lütfen always (her zaman), on, off veya never (asla) olarak belirtin.\n"
 
-#: src/init.c:632 src/init.c:896 src/init.c:975
+#: src/init.c:632 src/init.c:899 src/init.c:978
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: `%s' özelliği geçersiz.\n"
 
-#: src/init.c:785 src/init.c:807 src/init.c:829 src/init.c:855
+#: src/init.c:788 src/init.c:810 src/init.c:832 src/init.c:858
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: `%s' özelliği geçersiz.\n"
 
-#: src/init.c:946
+#: src/init.c:949
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: İşlem türü `%s' geçersiz.\n"
@@ -707,7 +707,7 @@ msgid ""
 "  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
 "       --sslcertfile=FILE     optional client certificate.\n"
 "       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
-"       --sslegdsock=FILE      socket to the egd daemon(random data source).\n"
+"       --egd-file=FILE        file name of the EGD socket.\n"
 "\n"
 msgstr ""
 "Oturum açma ve girdi dosyası:\n"
@@ -723,7 +723,7 @@ msgstr ""
 "                              önhazırlık olarak URL atar.\n"
 "  --sslcertfile=DOSYA         seçimlik istemci sertifikası.\n"
 "  --sslcertkey=ANAHTARDOSYASI istemci sertifikası için ANAHTAR DOSYASI.\n"
-"  --sslegdsock=DOSYA          egd süreci (rasgele veri kaynağı) için soket.\n"
+"  --egd-file=DOSYA            egd soketinin DOSYA ismi.\n"
 "\n"
 
 #: src/main.c:155
@@ -983,7 +983,7 @@ msgstr "İndirme kotası (%s bayt) AŞILDI! \n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:892
+#: src/main.c:896
 #, c-format
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "%s alındı, çıktı `%%s'e yönlendirildi. \n"
@@ -1002,11 +1002,11 @@ msgstr ""
 "CTRL+ALT+DELETE tuşlayarak Wget'i durdurabilirsiniz.\n"
 
 #. parent, no error
-#: src/mswindows.c:123 src/utils.c:462
+#: src/mswindows.c:123 src/utils.c:467
 msgid "Continuing in background.\n"
 msgstr "Ardalanda sürüyor.\n"
 
-#: src/mswindows.c:125 src/utils.c:464
+#: src/mswindows.c:125 src/utils.c:469
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "Çıktı `%s'e yazılmış olacak.\n"
@@ -1044,12 +1044,12 @@ msgstr "%s: %s durumlanamadı: %s\n"
 #. Align the [ skipping ... ] line with the dots.  To do
 #. that, insert the number of spaces equal to the number of
 #. digits in the skipped amount in K.
-#: src/progress.c:203
+#: src/progress.c:224
 #, c-format
 msgid "\n%*s[ skipping %dK ]"
 msgstr "\n%*s[ %dK atlanıyor ]"
 
-#: src/progress.c:370
+#: src/progress.c:391
 #, c-format
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
 msgstr "`%s' gösterge türü geçersiz; değiştirilmedi.\n"
@@ -1124,12 +1124,12 @@ msgstr "`%s' silinemiyor: %s\n"
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "%s, %s olarak yedeklenemiyor: %s\n"
 
-#: src/utils.c:97
+#: src/utils.c:102
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: Bellek yetersiz.\n"
 
-#: src/utils.c:662
+#: src/utils.c:667
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "`%s' sembolik bağ asıl dosyaya dönüştürülürken başarısız: %s\n"

@@ -6,9 +6,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.8-pre1\n"
-"POT-Creation-Date: 2001-12-06 02:15+0100\n"
-"PO-Revision-Date: 2001-12-06 18:40+0200\n"
+"Project-Id-Version: wget 1.8\n"
+"POT-Creation-Date: 2001-12-08 23:28+0100\n"
+"PO-Revision-Date: 2001-12-10 21:10+0200\n"
 "Last-Translator: Jochen Hein <jochen@jochen.org>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -660,17 +660,17 @@ msgstr "%s: %s: Bitte »on« oder »off« angeben.\n"
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr "%s: %s: Bitte »on«, »off« oder »never« angeben.\n"
 
-#: src/init.c:632 src/init.c:896 src/init.c:975
+#: src/init.c:632 src/init.c:899 src/init.c:978
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: Ungültige Angabe »%s«\n"
 
-#: src/init.c:785 src/init.c:807 src/init.c:829 src/init.c:855
+#: src/init.c:788 src/init.c:810 src/init.c:832 src/init.c:858
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: Ungültige Angabe »%s«\n"
 
-#: src/init.c:946
+#: src/init.c:949
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: Ungültiger Fortschrittstyp »%s.«\n"
@@ -721,7 +721,7 @@ msgid ""
 "  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
 "       --sslcertfile=FILE     optional client certificate.\n"
 "       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
-"       --sslegdsock=FILE      socket to the egd daemon(random data source).\n"
+"       --egd-file=FILE        file name of the EGD socket.\n"
 "\n"
 msgstr ""
 "Log-Datei schreiben und Eingabe-Datei:\n"
@@ -734,10 +734,10 @@ msgstr ""
 "  -i,  --input-file=DATEI     in DATEI gelistete URLs holen\n"
 "  -F,  --force-html           Eingabe-Datei als HTML behandeln\n"
 "  -B,  --base=URL             URL relativen Links in »-F -i DATEI« voranstellen\n"
-"       --sslcertfile=DATEI    optionales Client-Zertifikat.\\n\"\n"
+"       --sslcertfile=DATEI    optionales Client-Zertifikat.\n"
 "       --sslcertkey=SCHLÜSSEL_DATEI\n"
 "                              optionale SCHLÜSSEL_DATEI für dieses Zertifikat.\n"
-"       --sslegdsock=FILE      Socket zum egd Daemon (Quelle für Zufallszahlen).\\n\n"
+"       --egd-file=FILE        Dateiname des EGD Sockets.\n"
 
 #: src/main.c:155
 msgid ""
@@ -1019,7 +1019,7 @@ msgstr "Download-Kontingent (%s Bytes) ERSCHÖPFT!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:892
+#: src/main.c:896
 #, c-format
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "%s erhalten, Ausgabe nach »%%s« umleiten.\n"
@@ -1039,11 +1039,11 @@ msgstr ""
 "gestoppt werden.\n"
 
 #. parent, no error
-#: src/mswindows.c:123 src/utils.c:462
+#: src/mswindows.c:123 src/utils.c:467
 msgid "Continuing in background.\n"
 msgstr "Im Hintergrund geht's weiter.\n"
 
-#: src/mswindows.c:125 src/utils.c:464
+#: src/mswindows.c:125 src/utils.c:469
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "Ausgabe wird nach »%s« geschrieben.\n"
@@ -1082,12 +1082,12 @@ msgstr "%s: kann nicht finden %s: %s\n"
 #. Align the [ skipping ... ] line with the dots.  To do
 #. that, insert the number of spaces equal to the number of
 #. digits in the skipped amount in K.
-#: src/progress.c:203
+#: src/progress.c:224
 #, c-format
 msgid "\n%*s[ skipping %dK ]"
 msgstr "\n%*s[ überspringe %dK ]"
 
-#: src/progress.c:370
+#: src/progress.c:391
 #, c-format
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
 msgstr "Ungültiger Stil für den Fortschrittsindikator »%s«; keine Änderung.\n"
@@ -1162,12 +1162,12 @@ msgstr "Es ist nicht möglich, »%s« zu löschen: %s\n"
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Anlegen eines Backups von »%s« als »%s« nicht möglich: %s\n"
 
-#: src/utils.c:97
+#: src/utils.c:102
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: Nicht genügend Speicher.\n"
 
-#: src/utils.c:662
+#: src/utils.c:667
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Entfernen des symbolischen Verweises »%s« fehlgeschlagen: %s\n"

@@ -17,9 +17,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.8-pre1\n"
-"POT-Creation-Date: 2001-12-06 02:15+0100\n"
-"PO-Revision-Date: 2001-12-07 19:29GMT+0200\n"
+"Project-Id-Version: wget 1.8\n"
+"POT-Creation-Date: 2001-12-08 23:28+0100\n"
+"PO-Revision-Date: 2001-12-10 19:39GMT+0200\n"
 "Last-Translator: Salvador Gimeno Zanón <salgiza@jazzfree.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -30,6 +30,8 @@ msgstr ""
 # Me temo que nadie se "conecta a" sino que se "conecta con", ... ¿no te
 # suena mejor? - cll
 # sip - Salva
+#: src/connect.c:94
+#, c-format
 msgid "Connecting to %s[%s]:%hu... "
 msgstr "Conectando con %s[%s]:%hu... "
 
@@ -805,17 +807,17 @@ msgstr "%s: %s: por favor, especifique on u off.\n"
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr "%s: %s: por favor especifique siempre, on, off, o nunca.\n"
 
-#: src/init.c:632 src/init.c:896 src/init.c:975
+#: src/init.c:632 src/init.c:899 src/init.c:978
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: especificación inválida `%s'.\n"
 
-#: src/init.c:785 src/init.c:807 src/init.c:829 src/init.c:855
+#: src/init.c:788 src/init.c:810 src/init.c:832 src/init.c:858
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: especificación inválida `%s'\n"
 
-#: src/init.c:946
+#: src/init.c:949
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: tipo de progreso no válido `%s'.\n"
@@ -894,7 +896,7 @@ msgid ""
 "  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
 "       --sslcertfile=FILE     optional client certificate.\n"
 "       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
-"       --sslegdsock=FILE      socket to the egd daemon(random data source).\n"
+"       --egd-file=FILE        file name of the EGD socket.\n"
 "\n"
 msgstr ""
 "Fichero de entrada y registro:\n"
@@ -910,14 +912,14 @@ msgstr ""
 "                               en el fichero -F -i.\n"
 "       --sslcertfile=FICHERO   certificado opcional del cliente.\n"
 "       --sslcertkey=FICHERO    llave opcional para este certificado.\n"
-"       --sslegdsock=FICHERO    socket al demonio egd (fuente de datos \n"
-"                               aleatoria).\n"
+"       --egd-file=FICHERO     fichero del socket EGD.\n"
 "\n"
 
 # `pone' me parece demasiado coloquial. Prefiero la traducción textual
 # `establece''?. Te lo dejo como `recuperando'.ue me parece importante, porque harás seguro que la
 # salida no sea cómodamente legible para el usuario. Te la desdoblo en
 # dos líneas.
+#: src/main.c:155
 msgid ""
 "Download:\n"
 "       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n"
@@ -1083,6 +1085,7 @@ msgstr ""
 # En la opción --exclude-domains, date cuenta de que son los dominios
 # los que están separados por comas, no la lista, ... ;) sin
 # traducir. Te pongo `anfitriones' donde tenías `hosts'
+#: src/main.c:217
 msgid ""
 "Recursive accept/reject:\n"
 "  -A,  --accept=LIST                comma-separated list of accepted extensions.\n"
@@ -1212,7 +1215,7 @@ msgstr "¡Cuota de descarga (%s bytes) EXCEDIDA!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:892
+#: src/main.c:896
 #, c-format
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "%s recibido, redirigiendo la salida a `%%s'.\n"
@@ -1239,11 +1242,11 @@ msgstr ""
 # Lo mismo que antes, ... `background' es `segundo plano' - cll
 #
 #. parent, no error
-#: src/mswindows.c:123 src/utils.c:462
+#: src/mswindows.c:123 src/utils.c:467
 msgid "Continuing in background.\n"
 msgstr "Continuando en segundo plano.\n"
 
-#: src/mswindows.c:125 src/utils.c:464
+#: src/mswindows.c:125 src/utils.c:469
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "La salida será escrita en `%s'.\n"
@@ -1303,12 +1306,15 @@ msgstr "%s: no se pudo ejecutar `stat' sobre %s: %s\n"
 
 # Como en otros mensajes anteriores te recomiendo que emplees el término
 # `omitir' en vez de `saltar' para `skip' - clldigits in the skipped amount in K.
-#: src/progress.c:203
+#. Align the [ skipping ... ] line with the dots.  To do
+#. that, insert the number of spaces equal to the number of
+#. digits in the skipped amount in K.
+#: src/progress.c:224
 #, c-format
 msgid "\n%*s[ skipping %dK ]"
 msgstr "\n%*s[ omitiendo %dK ]"
 
-#: src/progress.c:370
+#: src/progress.c:391
 #, c-format
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
 msgstr "El estilo de la pantalla '%s' no es válido; se utilizará el predeterminado.\n"
@@ -1386,12 +1392,12 @@ msgstr "No se ha borrar `%s': %s\n"
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "No se pudo hacer una copia de seguridad de %s como %s: %s\n"
 
-#: src/utils.c:97
+#: src/utils.c:102
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: no hay suficiente memoria.\n"
 
-#: src/utils.c:662
+#: src/utils.c:667
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "No se ha podido deshacer el enlace simbólico `%s': %s\n"

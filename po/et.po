@@ -4,9 +4,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU wget 1.8-pre1\n"
-"POT-Creation-Date: 2001-12-06 02:15+0100\n"
-"PO-Revision-Date: 2001-12-06 13:21+0200\n"
+"Project-Id-Version: GNU wget 1.8\n"
+"POT-Creation-Date: 2001-12-08 23:28+0100\n"
+"PO-Revision-Date: 2001-12-10 18:52+02:00\n"
 "Last-Translator: Toomas Soome <tsoome@ut.ee>\n"
 "Language-Team: Estonian <et@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -645,17 +645,17 @@ msgstr "%s: %s: Palun kasuta `on' või `off'.\n"
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr "%s: %s: Palun kasuta `always', `on', `off' või `never'.\n"
 
-#: src/init.c:632 src/init.c:896 src/init.c:975
+#: src/init.c:632 src/init.c:899 src/init.c:978
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s %s: Vigane spetsifikatsioon `%s'.\n"
 
-#: src/init.c:785 src/init.c:807 src/init.c:829 src/init.c:855
+#: src/init.c:788 src/init.c:810 src/init.c:832 src/init.c:858
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: Vigane spetsifikatsioon `%s'\n"
 
-#: src/init.c:946
+#: src/init.c:949
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: Vigane edenemise tüüp `%s'.\n"
@@ -710,7 +710,7 @@ msgid ""
 "  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
 "       --sslcertfile=FILE     optional client certificate.\n"
 "       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
-"       --sslegdsock=FILE      socket to the egd daemon(random data source).\n"
+"       --egd-file=FILE        file name of the EGD socket.\n"
 "\n"
 msgstr ""
 "Logimine ja sisendfail:\n"
@@ -725,7 +725,7 @@ msgstr ""
 "  -B,  --base=URL             lisab URL suhtelistele viidetele -F -i failis.\n"
 "       --sslcertfile=FAIL     kliendi sertifikaat.\n"
 "       --sslcertkey=VÕTMEFAIL võtmefail sellele sertifikaadile.\n"
-"       --sslegdsock=FAIL      pistik egd deemonile (juhuarvude allikas).\n"
+"       --egd/file=FAIL        pistik egd deemonile.\n"
 "\n"
 
 #: src/main.c:155
@@ -980,7 +980,7 @@ msgstr "Allalaadimise kvoot  (%s baiti) ON ÜLETATUD!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:892
+#: src/main.c:896
 #, c-format
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "sain %s, suunan väljundi faili `%%s'.\n"
@@ -999,11 +999,11 @@ msgstr ""
 "Wgeti peatamiseks vajuta CTRL+ALT+DELETE.\n"
 
 #. parent, no error
-#: src/mswindows.c:123 src/utils.c:462
+#: src/mswindows.c:123 src/utils.c:467
 msgid "Continuing in background.\n"
 msgstr "Jätkan taustas.\n"
 
-#: src/mswindows.c:125 src/utils.c:464
+#: src/mswindows.c:125 src/utils.c:469
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "Väljund kirjutatakse faili `%s'.\n"
@@ -1041,12 +1041,12 @@ msgstr "%s: stat operatsioon ebaõnnestus %s: %s\n"
 #. Align the [ skipping ... ] line with the dots.  To do
 #. that, insert the number of spaces equal to the number of
 #. digits in the skipped amount in K.
-#: src/progress.c:203
+#: src/progress.c:224
 #, c-format
 msgid "\n%*s[ skipping %dK ]"
 msgstr "\n%*s[ hüppan üle %dK ]"
 
-#: src/progress.c:370
+#: src/progress.c:391
 #, c-format
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
 msgstr "Vigane punkt stiili spetsifikatsioon `%s'; jätan muutmata.\n"
@@ -1121,12 +1121,12 @@ msgstr "Ei õnnestu kustutada `%s': %s\n"
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Ei suuda luua %s varukoopiat %s: %s\n"
 
-#: src/utils.c:97
+#: src/utils.c:102
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: mälu ei jätku.\n"
 
-#: src/utils.c:662
+#: src/utils.c:667
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Ei õnnestu kustutada nimeviidet `%s': %s\n"

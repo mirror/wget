@@ -1,3 +1,21 @@
+2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* po/ja.po: Ditto.
+
+	* po/sv.po: Ditto.
+
+	* po/de.po: Ditto.
+
+	* po/es.po: Ditto.
+
+	* po/fr.po: Ditto.
+
+	* po/et.po: Ditto.
+
+	* po/tr.po: Ditto.
+
+	* po/ru.po: Update from TP.
+
 2001-12-12  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* configure.in: Autodetect SSL.  Check for SSL includes too.

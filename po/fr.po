@@ -4,9 +4,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU wget 1.8-pre1\n"
-"POT-Creation-Date: 2001-12-06 02:15+0100\n"
-"PO-Revision-Date: 2001-12-06 12:00 -0500\n"
+"Project-Id-Version: GNU wget 1.8\n"
+"POT-Creation-Date: 2001-12-08 23:28+0100\n"
+"PO-Revision-Date: 2001-12-10 12:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "MIME-Version: 1.0\n"
@@ -645,17 +645,17 @@ msgstr "%s: %s: SVP spécifier `on' ou `off'.\n"
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr "%s: %s: SVP toujours spécifier `on', `off' ou `never'.\n"
 
-#: src/init.c:632 src/init.c:896 src/init.c:975
+#: src/init.c:632 src/init.c:899 src/init.c:978
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: spécification erronnée `%s'.\n"
 
-#: src/init.c:785 src/init.c:807 src/init.c:829 src/init.c:855
+#: src/init.c:788 src/init.c:810 src/init.c:832 src/init.c:858
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: spécification erronnée `%s'\n"
 
-#: src/init.c:946
+#: src/init.c:949
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: type de progression invalide `%s'.\n"
@@ -710,7 +710,7 @@ msgid ""
 "  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
 "       --sslcertfile=FILE     optional client certificate.\n"
 "       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
-"       --sslegdsock=FILE      socket to the egd daemon(random data source).\n"
+"       --egd-file=FILE        file name of the EGD socket.\n"
 "\n"
 msgstr ""
 "Journalisation et fichier d'entrée:\n"
@@ -719,14 +719,15 @@ msgstr ""
 "  -d,  --debug                 afficher les informations de mise au point.\n"
 "  -q,  --quiet                 travailler silencieusement (sans sortie).\n"
 "  -v,  --verbose               travailler en mode bavard (par défaut).\n"
-"  -nv, --non-verbose           ne pas travailler en mode bavard, \n"
-"                               sans être silencieux.\n"
+"  -nv, --non-verbose           ne pas travailler en mode explicatif, \n"
+"                                mais garder un niveau informatif suffisant.\n"
 "  -i,  --input-file=FICHIER    lire les URL du FICHIER.\n"
 "  -F,  --force-html            traiter le fichier d'entrée comme du code HTML.\n"
 "  -B,  --base=URL              ajouter le URL aux liens relatifs de -F -i fichier.\n"
 "       --sslcertfile=FICHIER  certificat optionnel du client.\n"
-"       --sslcertkey=CLÉ       fichier optionnel de CLÉ pour ce certificat.\n"
-"       --sslegdsock=FICHIER   socket vers le démon egd (source de données aléatoires).\n"
+"       --sslcertkey=FICHIER-CLÉS\n"
+"                               FICHIER-CLÉS contenant les clés du certificat.\n"
+"       --egd-file=FICHIER      socket vers le démon egd (source de données aléatoires).\n"
 "\n"
 
 #: src/main.c:155
@@ -978,7 +979,7 @@ msgstr "Quota de téléchargement (%s octets) DÉPASSÉ!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:892
+#: src/main.c:896
 #, c-format
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "%s reçu, redirection de la sortie vers `%%s'.\n"
@@ -997,11 +998,11 @@ msgstr ""
 "Vous pouvez arrêter l'exécution de `wget' en appuyant CTRL+ALT+DELETE.\n"
 
 #. parent, no error
-#: src/mswindows.c:123 src/utils.c:462
+#: src/mswindows.c:123 src/utils.c:467
 msgid "Continuing in background.\n"
 msgstr "Poursuite à l'arrière plan.\n"
 
-#: src/mswindows.c:125 src/utils.c:464
+#: src/mswindows.c:125 src/utils.c:469
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "La sortie sera écrite vers `%s'.\n"
@@ -1039,12 +1040,12 @@ msgstr "%s: ne peut évaluer par `stat' le fichier %s: %s\n"
 #. Align the [ skipping ... ] line with the dots.  To do
 #. that, insert the number of spaces equal to the number of
 #. digits in the skipped amount in K.
-#: src/progress.c:203
+#: src/progress.c:224
 #, c-format
 msgid "\n%*s[ skipping %dK ]"
 msgstr "\n%*s[ escamotage %dK ]"
 
-#: src/progress.c:370
+#: src/progress.c:391
 #, c-format
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
 msgstr "Spécification du style '.' `%s' invalide; demeure inchangé.\n"
@@ -1119,12 +1120,12 @@ msgstr "ÉCHEC de destruction de `%s': %s\n"
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Ne peut archiver %s comme %s: %s\n"
 
-#: src/utils.c:97
+#: src/utils.c:102
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: mémoire épuisée.\n"
 
-#: src/utils.c:662
+#: src/utils.c:667
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "ÉCHEC de `unlink' sur le lien symbolique `%s': %s\n"
