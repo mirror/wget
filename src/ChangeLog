@@ -2,6 +2,9 @@
 
 	* main.c (print_help): --help documentation for -N said it would
  	re-download files if they had the _same_ timestamp on server.
+	(print_help): -nr belongs in "FTP options" section of --help
+	output, not "Recursive retrieval" section.  Alphabetized FTP
+	options by long option name.
 
 2001-02-16  Dan Harkless  <wget@harkless.org>
 

@@ -190,19 +190,19 @@ HTTP options:\n\
   -U,  --user-agent=AGENT    identify as AGENT instead of Wget/VERSION.\n\
 \n"), _("\
 FTP options:\n\
-       --retr-symlinks   when recursing, retrieve linked-to files (not dirs).\n\
-  -g,  --glob=on/off     turn file name globbing on or off.\n\
-       --passive-ftp     use the \"passive\" transfer mode.\n\
+  -nr, --dont-remove-listing   don\'t remove `.listing\' files.\n\
+  -g,  --glob=on/off           turn file name globbing on or off.\n\
+       --passive-ftp           use the \"passive\" transfer mode.\n\
+       --retr-symlinks         when recursing, get linked-to files (not dirs).\n\
 \n"), _("\
 Recursive retrieval:\n\
-  -r,  --recursive             recursive web-suck -- use with care!.\n\
-  -l,  --level=NUMBER          maximum recursion depth (inf or 0 for infinite).\n\
-       --delete-after          delete files locally after downloading them.\n\
-  -k,  --convert-links         convert non-relative links to relative.\n\
-  -K,  --backup-converted      before converting file X, back up as X.orig.\n\
-  -m,  --mirror                shortcut option equivalent to -r -N -l inf -nr.\n\
-  -nr, --dont-remove-listing   don\'t remove `.listing\' files.\n\
-  -p,  --page-requisites       get all images, etc. needed to display HTML page.\n\
+  -r,  --recursive          recursive web-suck -- use with care!\n\
+  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n\
+       --delete-after       delete files locally after downloading them.\n\
+  -k,  --convert-links      convert non-relative links to relative.\n\
+  -K,  --backup-converted   before converting file X, back up as X.orig.\n\
+  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n\
+  -p,  --page-requisites    get all images, etc. needed to display HTML page.\n\
 \n"), _("\
 Recursive accept/reject:\n\
   -A,  --accept=LIST                comma-separated list of accepted extensions.\n\
