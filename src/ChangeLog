@@ -1,3 +1,7 @@
+2000-11-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* init.c: commands[] need to be sorted!  ("base" wasn't.)
+
 2000-11-05  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.h (DO_REALLOC_FROM_ALLOCA): Use braces to disambiguate
