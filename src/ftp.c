@@ -1567,6 +1567,8 @@ ftp_loop (struct urlinfo *u, int *dt)
 
   *dt = 0;
 
+  memset (&con, 0, sizeof (con));
+
   rbuf_uninitialize (&con.rbuf);
   con.st = ON_YOUR_OWN;
   res = RETROK;			/* in case it's not used */

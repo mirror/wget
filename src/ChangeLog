@@ -1,10 +1,14 @@
+2001-02-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* ftp.c (ftp_loop): Reset con.
+
 2001-01-06  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
 	* url.c (parse_uname): Added support for passwords containing '@'
 	characters.
 	(skip_uname): Ditto.
 
-2001-02-11  Hack Kampbj-Aørn  <hack@hackdata.com>-B
+2001-02-11  Hack Kampbjørn  <hack@hackdata.com>
 
 	* url.c (parseurl): Debug-print u->ftp_type.
 
@@ -28,6 +32,7 @@
 
 	* retr.c (show_progress): Print the download rate along with the
 	percentages.
+	Along with Anders Thorsby <anders@thorsby.dk>.
 
 2001-02-10  Tim Mooney  <mooney@dogbert.cc.ndsu.NoDak.edu>
 
