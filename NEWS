@@ -5,6 +5,8 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Wget 1.8.1 is a bugfix release with no user-visible changes.
+
 * Changes in Wget 1.8.
 
 ** A new progress indicator is now available and used by default.
