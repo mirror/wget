@@ -2165,14 +2165,6 @@ btoe (char *store, const unsigned char *c)
   return store_beg;
 }
 
-/* Calculate the MD5 checksum of SRC in one step.  The MD5 context
-   must be declared as md5_ctx.  */
-#define DO_MD5(src, len, dest) do {				\
-  gen_md5_init (md5_ctx);					\
-  gen_md5_update ((unsigned char *) (src), (len), md5_ctx);	\
-  gen_md5_finish (md5_ctx, (unsigned char *) (dest));		\
-} while (0)
-
 /* Calculate the SKEY response, based on the sequence, seed
    (challenge), and the secret password.  The calculated response is
    used instead of the real password when logging in to SKEY-enabled
@@ -2211,18 +2203,19 @@ skey_response (int sequence, const char *seed, const char *pass)
   ALLOCA_MD5_CONTEXT (md5_ctx);
   uint32_t checksum[4];
 
-  char *feed = (char *) alloca (strlen (seed) + strlen (pass) + 1);
-  strcpy (feed, seed);
-  strcat (feed, pass);
-
-  DO_MD5 (feed, strlen (feed), checksum);
+  gen_md5_init (md5_ctx);
+  gen_md5_update ((const unsigned char *)seed, strlen(seed), md5_ctx);
+  gen_md5_update ((const unsigned char *)pass, strlen(pass), md5_ctx);
+  gen_md5_finish (md5_ctx, (unsigned char *)checksum);
   checksum[0] ^= checksum[2];
   checksum[1] ^= checksum[3];
   memcpy (key, checksum, 8);
 
   while (sequence-- > 0)
     {
-      DO_MD5 (key, 8, checksum);
+      gen_md5_init (md5_ctx);
+      gen_md5_update ((unsigned char *) key, 8, md5_ctx);
+      gen_md5_finish (md5_ctx, (unsigned char *) checksum);
       checksum[0] ^= checksum[2];
       checksum[1] ^= checksum[3];
       memcpy (key, checksum, 8);

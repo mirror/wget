@@ -1196,7 +1196,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
       if (opt.verbose)
 	{
 	  char *hurl = url_string (u, 1);
-	  char tmp[15];
+	  char tmp[256];
 	  strcpy (tmp, "        ");
 	  if (count > 1)
 	    sprintf (tmp, _("(try:%2d)"), count);

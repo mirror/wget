@@ -581,8 +581,8 @@ response_header_copy (const struct response *resp, const char *name,
     return 0;
   if (bufsize)
     {
-      int len = MIN (e - b, bufsize);
-      strncpy (buf, b, len);
+      int len = MIN (e - b, bufsize - 1);
+      memcpy (buf, b, len);
       buf[len] = '\0';
     }
   return 1;
@@ -1904,7 +1904,7 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
       if (opt.verbose)
 	{
 	  char *hurl = url_string (u, 1);
-	  char tmp[15];
+	  char tmp[256];
 	  strcpy (tmp, "        ");
 	  if (count > 1)
 	    sprintf (tmp, _("(try:%2d)"), count);

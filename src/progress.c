@@ -939,8 +939,6 @@ bar_set_params (const char *params)
 	  TTY -- when logging to file, it is better to review the
 	  dots.  */
        || !isatty (fileno (stderr))
-#else
-       1
 #endif
        /* Normally we don't depend on terminal type because the
 	  progress bar only uses ^M to move the cursor to the

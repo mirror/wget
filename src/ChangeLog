@@ -1,3 +1,17 @@
+2004-01-28  Christian Biere  <christianbiere@gmx.de>
+
+	* progress.c (bar_set_params): Fixed syntax error when HAVE_ISATTY
+	was undefined.
+
+	* ftp.c (ftp_loop_internal): Allocate a larger buffer in case
+	"try" gets translated to something large.  Ditto in http_loop in
+	http.c.
+
+	* http.c (response_header_copy): Don't write to buf[BUFSIZE].
+
+	* ftp-opie.c (skey_response): Eliminate unnecessary string
+	concatenation; just call gen_md5_update twice.
+
 2004-01-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (xsleep): Don't call usleep with values larger than
