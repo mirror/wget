@@ -587,7 +587,8 @@ AC_SUBST(COMMENT_IF_NO_POD2MAN)
 dnl
 dnl Create output
 dnl
-AC_OUTPUT([Makefile src/Makefile doc/Makefile util/Makefile po/Makefile.in
-           windows/Makefile],
-[WGET_PROCESS_PO
-test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h])
+AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile util/Makefile
+                 po/Makefile.in windows/Makefile])
+AC_CONFIG_FILES([stamp-h], [echo timestamp > stamp-h])
+AC_CONFIG_COMMANDS([default], [WGET_PROCESS_PO])
+AC_OUTPUT
