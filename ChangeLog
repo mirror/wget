@@ -1,3 +1,7 @@
+2000-11-25  Karl Eichwalder  <ke@suse.de>
+
+	* Makefile.in (SUBDIRS): Add 'windows'.
+
 2000-12-05  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* configure.in: Don't unconditionally define HAVE_SSL, even when

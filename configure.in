@@ -229,4 +229,5 @@ dnl Create output
 dnl
 AC_OUTPUT([Makefile src/Makefile doc/Makefile util/Makefile po/Makefile.in],
 [WGET_PROCESS_PO
+test -d windows || mkdir windows
 test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h])

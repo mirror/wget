@@ -3638,6 +3638,7 @@ srcdir=$ac_given_srcdir # Advanced autoconf hackery
    echo "creating po/Makefile"
    sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile
   
+test -d windows || mkdir windows
 test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h
 exit 0
 EOF
