@@ -15,7 +15,7 @@
 @end iftex
 
 @c This should really be auto-generated!
-@set VERSION 1.7.1-pre1
+@set VERSION 1.7.1
 @set UPDATED June 2001
 
 @dircategory Net Utilities
