@@ -16,6 +16,16 @@ rem You should have received a copy of the GNU General Public License
 rem along with this program; if not, write to the Free Software
 rem Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+rem In addition, as a special exception, the Free Software Foundation
+rem gives permission to link the code of its release of Wget with the
+rem OpenSSL project's "OpenSSL" library (or with modified versions of it
+rem that use the same license as the "OpenSSL" library), and distribute
+rem the linked executables.  You must obey the GNU General Public License
+rem in all respects for all of the code used other than "OpenSSL".  If you
+rem modify this file, you may extend this exception to your version of the
+rem file, but you are not obligated to do so.  If you do not wish to do
+rem so, delete this exception statement from your version.
+
 cls
 if .%1 == .--borland goto :borland
 if .%1 == .--msvc goto :msvc

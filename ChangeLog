@@ -1,3 +1,7 @@
+2002-05-18  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* ALL: Update the license to reflect the OpenSSL exception.
+
 2002-04-23  Ian Abbott  <abbotti@mev.co.uk>
 
 	* windows/config.h.ms: Accounted for MSVC not defining `__STDC__' when
