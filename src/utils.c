@@ -1659,9 +1659,7 @@ determine_screen_width (void)
 {
   /* If there's a way to get the terminal size using POSIX
      tcgetattr(), somebody please tell me.  */
-#ifndef TIOCGWINSZ
-  return 0;
-#else  /* TIOCGWINSZ */
+#ifdef TIOCGWINSZ
   int fd;
   struct winsize wsz;
 
@@ -1673,7 +1671,14 @@ determine_screen_width (void)
     return 0;			/* most likely ENOTTY */
 
   return wsz.ws_col;
-#endif /* TIOCGWINSZ */
+#else  /* not TIOCGWINSZ */
+# ifdef WINDOWS
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
+  if (!GetConsoleScreenBufferInfo (GetStdHandle (STD_OUTPUT_HANDLE), &csbi))
+    return 0;
+  return csbi.dwSize.X;
+# endif /* WINDOWS */
+#endif /* not TIOCGWINSZ */
 }
 
 /* Return a random number between 0 and MAX-1, inclusive.
