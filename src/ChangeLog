@@ -1,6 +1,10 @@
 2001-05-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
-	* http.c (gethttp): Use real URL data for cookies, not the cookie
+	* gen_sslfunc.c: Don't include <sys/time.h> directly.
+
+2001-05-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* http.c (gethttp): Use real URL data for cookies, not the proxy
 	stuff.
 
 2001-05-12  Hrvoje Niksic  <hniksic@arsdigita.com>
