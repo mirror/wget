@@ -95,7 +95,9 @@ ftp_parse_unix_ls (const char *file)
     {
       DEBUGP (("%s\n", line));
       len = strlen (line);
-      /* Destroy <CR> if there is one.  */
+      /* Destroy <CR><LF> if present.  */
+      if (len && line[len - 1] == '\n')
+	line[--len] = '\0';
       if (len && line[len - 1] == '\r')
 	line[--len] = '\0';
 

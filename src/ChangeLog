@@ -1,5 +1,21 @@
 2000-11-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* init.c (run_wgetrc): Don't bother killing off '\r' since
+	pars_line() skips whitespace at end of line anyway.
+	(parse_line): Oops, it didn't.  Now it does.
+
+	* recur.c (parse_robots): Ditto here.
+
+	* ftp-ls.c (ftp_parse_unix_ls): Kill off the newline character
+	manually because read_whole_line no longer does.
+
+	* utils.c (read_whole_line): Rewrite to: a) use less memory
+	(reallocates to needed size after work), b) work faster -->
+	fgets() instead of getc, c) be more correct --> doesn't kill the
+	newline character at the end of line.
+
+2000-11-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* init.c (comind): Initialize MAX to array size - 1.
 
 2000-11-08  Hrvoje Niksic  <hniksic@arsdigita.com>

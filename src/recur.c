@@ -702,9 +702,11 @@ parse_robots (const char *robots_filename)
   while ((line = read_whole_line (fp)))
     {
       len = strlen (line);
-      /* Destroy <CR> if there is one.  */
+      /* Destroy <CR><LF> if present.  */
+      if (len && line[len - 1] == '\n')
+	line[--len] = '\0';
       if (len && line[len - 1] == '\r')
-	line[len - 1] = '\0';
+	line[--len] = '\0';
       /* According to specifications, optional space may be at the
 	 end...  */
       DEBUGP (("Line: %s\n", line));

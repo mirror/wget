@@ -336,10 +336,7 @@ run_wgetrc (const char *file)
     {
       char *com, *val;
       int status;
-      int length = strlen (line);
 
-      if (length && line[length - 1] == '\r')
-	line[length - 1] = '\0';
       /* Parse the line.  */
       status = parse_line (line, &com, &val);
       free (line);
@@ -411,12 +408,12 @@ parse_line (const char *line, char **com, char **val)
   const char *orig_comptr, *end;
   char *new_comptr;
 
-  /* Skip spaces.  */
-  while (*p == ' ' || *p == '\t')
+  /* Skip whitespace.  */
+  while (*p && ISSPACE (*p))
     ++p;
 
   /* Don't process empty lines.  */
-  if (!*p || *p == '\n' || *p == '#')
+  if (!*p || *p == '#')
     return -1;
 
   for (orig_comptr = p; ISALPHA (*p) || *p == '_' || *p == '-'; p++)
@@ -424,6 +421,8 @@ parse_line (const char *line, char **com, char **val)
   /* The next char should be space or '='.  */
   if (!ISSPACE (*p) && (*p != '='))
     return 0;
+  /* Here we cannot use strdupdelim() as we normally would because we
+     want to skip the `-' and `_' characters in the input string.  */
   *com = (char *)xmalloc (p - orig_comptr + 1);
   for (new_comptr = *com; orig_comptr < p; orig_comptr++)
     {
@@ -449,10 +448,12 @@ parse_line (const char *line, char **com, char **val)
     }
   /* Skip spaces after '='.  */
   for (++p; ISSPACE (*p); p++);
-  /* Get the ending position.  */
-  for (end = p; *end && *end != '\n'; end++);
-  /* Allocate *val, and copy from line.  */
-  *val = strdupdelim (p, end);
+  /* Get the ending position for VAL by starting with the end of the
+     line and skipping whitespace.  */
+  end = line + strlen (line) - 1;
+  while (end > p && ISSPACE (*end))
+    --end;
+  *val = strdupdelim (p, end + 1);
   return 1;
 }
 

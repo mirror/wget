@@ -45,6 +45,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifdef NeXT
 # include <libc.h>		/* for access() */
 #endif
+#include <assert.h>
 
 #include "wget.h"
 #include "utils.h"
@@ -696,37 +697,43 @@ suffix (const char *str)
 /* Read a line from FP.  The function reallocs the storage as needed
    to accomodate for any length of the line.  Reallocs are done
    storage exponentially, doubling the storage after each overflow to
-   minimize the number of calls to realloc().
+   minimize the number of calls to realloc() and fgets().  The newline
+   character at the end of line is retained.
 
-   It is not an exemplary of correctness, since it kills off the
-   newline (and no, there is no way to know if there was a newline at
-   EOF).  */
+   After end-of-file is encountered without anything being read, NULL
+   is returned.  NULL is also returned on error.  To distinguish
+   between these two cases, use the stdio function ferror().  */
+
 char *
 read_whole_line (FILE *fp)
 {
-  char *line;
-  int i, bufsize, c;
+  int length = 0;
+  int bufsize = 81;
+  char *line = (char *)xmalloc (bufsize);
 
-  i = 0;
-  bufsize = 40;
-  line = (char *)xmalloc (bufsize);
-  /* Construct the line.  */
-  while ((c = getc (fp)) != EOF && c != '\n')
+  while (fgets (line + length, bufsize - length, fp))
     {
-      if (i > bufsize - 1)
-	line = (char *)xrealloc (line, (bufsize <<= 1));
-      line[i++] = c;
+      length += strlen (line + length);
+      assert (length > 0);
+      if (line[length - 1] == '\n')
+	break;
+      /* fgets() guarantees to read the whole line, or to use up the
+         space we've given it.  We can double the buffer
+         unconditionally.  */
+      bufsize <<= 1;
+      line = xrealloc (line, bufsize);
     }
-  if (c == EOF && !i)
+  if (length == 0 || ferror (fp))
     {
       free (line);
       return NULL;
     }
-  /* Check for overflow at zero-termination (no need to double the
-     buffer in this case.  */
-  if (i == bufsize)
-    line = (char *)xrealloc (line, i + 1);
-  line[i] = '\0';
+  if (length + 1 < bufsize)
+    /* Relieve the memory from our exponential greediness.  We say
+       `length + 1' because the terminating \0 is not included in
+       LENGTH.  We don't need to zero-terminate the string ourselves,
+       though, because fgets() does that.  */
+    line = xrealloc (line, length + 1);
   return line;
 }
 
