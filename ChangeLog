@@ -1,3 +1,9 @@
+2001-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* po/zh_TW.po: Reinstated, after an update by Abel Cheung.
+
+	* po/zh_TW.Big5.po: Removed.
+
 2001-04-28  Csaba Raduly  <csaba.raduly@sophos.com>
 
 	* windows/Makefile.watcom: Update.
