@@ -182,6 +182,7 @@ struct cmdline_option option_data[] =
     { "follow-tags", 0, OPT_VALUE, "followtags", -1 },
     { "force-directories", 'x', OPT_BOOLEAN, "dirstruct", -1 },
     { "force-html", 'F', OPT_BOOLEAN, "forcehtml", -1 },
+    { "ftp-passwd", 0, OPT_VALUE, "ftppasswd", -1 },
     { "glob", 0, OPT_BOOLEAN, "glob", -1 },
     { "header", 0, OPT_VALUE, "header", -1 },
     { "help", 'h', OPT_FUNCALL, (void *)print_help, no_argument },

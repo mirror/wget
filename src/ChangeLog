@@ -1,3 +1,9 @@
+2005-02-18  Mauro Tortonesi <mauro@ferrara.linux.it>
+
+	* main.c: Added the --ftp-passwd command line option.
+
+	* init.c: Renamed command passwd to ftppasswd.
+
 2005-02-11  Mauro Tortonesi <mauro@ferrara.linux.it>
 	
 	* string_t.c: Fixed a bug in do_escape and triggered escape of
