@@ -241,7 +241,10 @@ connect_with_timeout (int fd, const struct sockaddr *addr, socklen_t addrlen,
   return ctx.result;
 }
 
-/* Connect to a remote endpoint whose IP address is known.  */
+/* Connect via TCP to the specified address and port.
+
+   If PRINT is non-NULL, it is the host name to print that we're
+   connecting to.  */
 
 int
 connect_to_ip (const ip_address *ip, int port, const char *print)
@@ -326,7 +329,11 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
   }
 }
 
-/* Connect to a remote endpoint specified by host name.  */
+/* Connect via TCP to a remote host on the specified port.
+
+   HOST is resolved as an Internet host name.  If HOST resolves to
+   more than one IP address, they are tried in the order returned by
+   DNS until connecting to one of them succeeds.  */
 
 int
 connect_to_host (const char *host, int port)
@@ -373,38 +380,7 @@ connect_to_host (const char *host, int port)
 
   return -1;
 }
-
-int
-test_socket_open (int sock)
-{
-#ifdef HAVE_SELECT
-  fd_set check_set;
-  struct timeval to;
-
-  /* Check if we still have a valid (non-EOF) connection.  From Andrew
-   * Maholski's code in the Unix Socket FAQ.  */
-
-  FD_ZERO (&check_set);
-  FD_SET (sock, &check_set);
-
-  /* Wait one microsecond */
-  to.tv_sec = 0;
-  to.tv_usec = 1;
-
-  /* If we get a timeout, then that means still connected */
-  if (select (sock + 1, &check_set, NULL, NULL, &to) == 0)
-    {
-      /* Connection is valid (not EOF), so continue */
-      return 1;
-    }
-  else
-    return 0;
-#else
-  /* Without select, it's hard to know for sure. */
-  return 1;
-#endif
-}
-
+
 /* Create a socket, bind it to local interface BIND_ADDRESS on port
    *PORT, set up a listen backlog, and return the resulting socket, or
    -1 in case of error.
@@ -681,6 +657,37 @@ select_fd (int fd, double maxtime, int wait_for)
   return 1;
 
 #endif /* not HAVE_SELECT */
+}
+
+int
+test_socket_open (int sock)
+{
+#ifdef HAVE_SELECT
+  fd_set check_set;
+  struct timeval to;
+
+  /* Check if we still have a valid (non-EOF) connection.  From Andrew
+   * Maholski's code in the Unix Socket FAQ.  */
+
+  FD_ZERO (&check_set);
+  FD_SET (sock, &check_set);
+
+  /* Wait one microsecond */
+  to.tv_sec = 0;
+  to.tv_usec = 1;
+
+  /* If we get a timeout, then that means still connected */
+  if (select (sock + 1, &check_set, NULL, NULL, &to) == 0)
+    {
+      /* Connection is valid (not EOF), so continue */
+      return 1;
+    }
+  else
+    return 0;
+#else
+  /* Without select, it's hard to know for sure. */
+  return 1;
+#endif
 }
 
 /* Basic socket operations, mostly EINTR wrappers.  */
