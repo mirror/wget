@@ -1774,7 +1774,7 @@ determine_screen_width (void)
 #endif /* TIOCGWINSZ */
 }
 
-#if 1
+#if 0
 /* A debugging function for checking whether an MD5 library works. */
 
 #include "gen-md5.h"
