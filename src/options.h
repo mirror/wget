@@ -166,6 +166,4 @@ struct options
   char *cookies_output;
 };
 
-#ifndef OPTIONS_DEFINED_HERE
 extern struct options opt;
-#endif

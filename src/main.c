@@ -41,8 +41,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #endif /* HAVE_NLS */
 #include <errno.h>
 
-#define OPTIONS_DEFINED_HERE	/* for options.h */
-
 #include "wget.h"
 #include "utils.h"
 #include "init.h"

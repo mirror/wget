@@ -1,5 +1,15 @@
 2002-04-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* wget.h: Ditto for extern char *exec_name.
+
+	* options.h: Don't guard against OPTIONS_DEFINED_HERE -- it is
+	perfectly legal to follow an `extern' with a non-`extern' ones,
+	provided the types match.
+
+	* main.c: Don't define OPTIONS_DEFINED_HERE.
+
+2002-04-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* progress.c (create_image): Revert to calculating ETA based on
 	average download speed.
 	(create_image): Don't print ETA until the download has been active
