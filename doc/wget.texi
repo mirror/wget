@@ -42,10 +42,11 @@ notice identical to this one except for the removal of this paragraph
 @end ignore
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
-Texts.  A copy of the license is included in the section entitled ``GNU
-Free Documentation License''.
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``GNU General Public License'' and ``GNU Free
+Documentation License'', with no Front-Cover Texts, and with no
+Back-Cover Texts.  A copy of the license is included in the section
+entitled ``GNU Free Documentation License''.
 @end ifinfo
 
 @titlepage
@@ -60,10 +61,11 @@ Copyright @copyright{} 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
-Texts.  A copy of the license is included in the section entitled ``GNU
-Free Documentation License''.
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``GNU General Public License'' and ``GNU Free
+Documentation License'', with no Front-Cover Texts, and with no
+Back-Cover Texts.  A copy of the license is included in the section
+entitled ``GNU Free Documentation License''.
 @end titlepage
 
 @ifinfo
@@ -2485,10 +2487,26 @@ This chapter contains some references I consider useful.
 @cindex robots.txt
 @cindex server maintenance
 
-Since Wget is able to traverse the web, it counts as one of the Web
-@dfn{robots}.  Thus Wget understands @dfn{Robots Exclusion Standard}
-(@sc{res})---contents of @file{/robots.txt}, used by server
-administrators to shield parts of their systems from wanderings of Wget.
+It is extremely easy to make Wget wander aimlessly around a web site,
+sucking all the available data in progress.  @samp{wget -r @var{site}},
+and you're set.  Great?  Not for the server admin.
+
+While Wget is retrieving static pages, there's not much of a problem.
+But for Wget, there is no real difference between the smallest static
+page and the hardest, most demanding CGI or dynamic page.  For instance,
+a site I know has a section handled by an, uh, bitchin' CGI script that
+converts all the Info files to HTML.  The script can and does bring the
+machine to its knees without providing anything useful to the
+downloader.
+
+For such and similar cases various robot exclusion schemes have been
+devised as a means for the server administrators and document authors to
+protect chosen portions of their sites from the wandering of robots.
+
+The more popular mechanism is the @dfn{Robots Exclusion Standard}
+written by Martijn Koster et al. in 1994.  It is specified by placing a
+file named @file{/robots.txt} in the server root, which the robots are
+supposed to download and parse.  Wget supports this specification.
 
 Norobots support is turned on only when retrieving recursively, and
 @emph{never} for the first page.  Thus, you may issue:
@@ -2500,8 +2518,7 @@ wget -r http://fly.srk.fer.hr/
 First the index of fly.srk.fer.hr will be downloaded.  If Wget finds
 anything worth downloading on the same host, only @emph{then} will it
 load the robots, and decide whether or not to load the links after all.
-@file{/robots.txt} is loaded only once per host.  Wget does not support
-the robots @code{META} tag.
+@file{/robots.txt} is loaded only once per host.
 
 Note that the exlusion standard discussed here has undergone some
 revisions.  However, but Wget supports only the first version of
@@ -2516,6 +2533,20 @@ Wget does not yet support the new directives specified by this draft,
 but we plan to add them.
 
 This manual no longer includes the text of the old standard.
+
+The second, less known mechanism, enables the author of an individual
+document to specify whether they want the links from the file to be
+followed by a robot.  This is achieved using the @code{META} tag, like
+this:
+
+@example
+<meta name="robots" content="nofollow">
+@end example
+
+This is explained in some detail at
+@url{http://info.webcrawler.com/mak/projects/robots/meta-user.html}.
+Unfortunately, Wget does not support this method of robot exclusion yet,
+but it will be implemented in the next release.
 
 @node Security Considerations, Contributors, Robots, Appendices
 @section Security Considerations
@@ -2789,10 +2820,11 @@ In addition to this, this manual is free in the same sense:
 @quotation
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
-Texts.  A copy of the license is included in the section entitled ``GNU
-Free Documentation License''.
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``GNU General Public License'' and ``GNU Free
+Documentation License'', with no Front-Cover Texts, and with no
+Back-Cover Texts.  A copy of the license is included in the section
+entitled ``GNU Free Documentation License''.
 @end quotation
 
 @c #### Maybe we should wrap these licenses in ifinfo?  Stallman says

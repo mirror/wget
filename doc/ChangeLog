@@ -1,3 +1,7 @@
+2000-11-15  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.texi (Robots): Rearrange text.  Mention the meta tag.
+
 2000-11-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi: Add GFDL; remove norobots specification.

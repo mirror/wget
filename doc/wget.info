@@ -1,5 +1,4 @@
-This is Info file wget.info, produced by Makeinfo version 1.68 from the
-input file ./wget.texi.
+This is wget.info, produced by makeinfo version 4.0 from wget.texi.
 
 INFO-DIR-SECTION Net Utilities
 INFO-DIR-SECTION World Wide Web
@@ -16,73 +15,73 @@ data.
 manual provided the copyright notice and this permission notice are
 preserved on all copies.
 
-   Permission is granted to copy and distribute modified versions of
-this manual under the conditions for verbatim copying, provided also
-that the sections entitled "Copying" and "GNU General Public License"
-are included exactly as in the original, and provided that the entire
-resulting derived work is distributed under the terms of a permission
-notice identical to this one.
+   Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being "GNU General Public License" and "GNU Free
+Documentation License", with no Front-Cover Texts, and with no
+Back-Cover Texts.  A copy of the license is included in the section
+entitled "GNU Free Documentation License".
 
 
 Indirect:
-wget.info-1: 961
-wget.info-2: 48745
-wget.info-3: 97411
+wget.info-1: 1010
+wget.info-2: 48842
+wget.info-3: 94301
 
 Tag Table:
 (Indirect)
-Node: Top961
-Node: Overview1850
-Node: Invoking5024
-Node: URL Format5833
-Node: Option Syntax8163
-Node: Basic Startup Options9587
-Node: Logging and Input File Options10287
-Node: Download Options12812
-Node: Directory Options20910
-Node: HTTP Options23388
-Node: FTP Options28104
-Node: Recursive Retrieval Options30086
-Node: Recursive Accept/Reject Options35107
-Node: Recursive Retrieval38333
-Node: Following Links40631
-Node: Relative Links41659
-Node: Host Checking42173
-Node: Domain Acceptance44198
-Node: All Hosts45868
-Node: Types of Files46295
-Node: Directory-Based Limits48745
-Node: FTP Links51385
-Node: Time-Stamping52255
-Node: Time-Stamping Usage53892
-Node: HTTP Time-Stamping Internals55461
-Node: FTP Time-Stamping Internals56931
-Node: Startup File58139
-Node: Wgetrc Location59012
-Node: Wgetrc Syntax59827
-Node: Wgetrc Commands60542
-Node: Sample Wgetrc68941
-Node: Examples73960
-Node: Simple Usage74567
-Node: Advanced Usage76961
-Node: Guru Usage79712
-Node: Various81374
-Node: Proxies81898
-Node: Distribution84663
-Node: Mailing List85014
-Node: Reporting Bugs85713
-Node: Portability87498
-Node: Signals88873
-Node: Appendices89527
-Node: Robots89942
-Node: Introduction to RES91089
-Node: RES Format92982
-Node: User-Agent Field94086
-Node: Disallow Field94850
-Node: Norobots Examples95461
-Node: Security Considerations96415
-Node: Contributors97411
-Node: Copying100054
-Node: Concept Index119217
+Node: Top1010
+Node: Overview1924
+Node: Invoking5106
+Node: URL Format5915
+Ref: URL Format-Footnote-18143
+Node: Option Syntax8245
+Node: Basic Startup Options9670
+Node: Logging and Input File Options10370
+Node: Download Options12896
+Node: Directory Options20995
+Node: HTTP Options23477
+Node: FTP Options28194
+Node: Recursive Retrieval Options30177
+Node: Recursive Accept/Reject Options35199
+Node: Recursive Retrieval38426
+Node: Following Links40724
+Node: Relative Links41753
+Node: Host Checking42267
+Node: Domain Acceptance44293
+Node: All Hosts45965
+Node: Types of Files46392
+Node: Directory-Based Limits48842
+Node: FTP Links51482
+Node: Time-Stamping52352
+Node: Time-Stamping Usage53989
+Node: HTTP Time-Stamping Internals55558
+Ref: HTTP Time-Stamping Internals-Footnote-156829
+Node: FTP Time-Stamping Internals57028
+Node: Startup File58236
+Node: Wgetrc Location59109
+Node: Wgetrc Syntax59924
+Node: Wgetrc Commands60639
+Node: Sample Wgetrc69038
+Node: Examples69562
+Node: Simple Usage70169
+Node: Advanced Usage72571
+Node: Guru Usage75323
+Node: Various76985
+Node: Proxies77509
+Node: Distribution80274
+Node: Mailing List80625
+Node: Reporting Bugs81325
+Node: Portability83110
+Node: Signals84485
+Node: Appendices85139
+Node: Robots85457
+Node: Security Considerations88309
+Node: Contributors89305
+Node: Copying92189
+Node: GNU General Public License94301
+Node: GNU Free Documentation License113501
+Node: Concept Index133231
 
 End Tag Table

@@ -1,5 +1,4 @@
-This is Info file wget.info, produced by Makeinfo version 1.68 from the
-input file ./wget.texi.
+This is wget.info, produced by makeinfo version 4.0 from wget.texi.
 
 INFO-DIR-SECTION Net Utilities
 INFO-DIR-SECTION World Wide Web
@@ -16,12 +15,13 @@ data.
 manual provided the copyright notice and this permission notice are
 preserved on all copies.
 
-   Permission is granted to copy and distribute modified versions of
-this manual under the conditions for verbatim copying, provided also
-that the sections entitled "Copying" and "GNU General Public License"
-are included exactly as in the original, and provided that the entire
-resulting derived work is distributed under the terms of a permission
-notice identical to this one.
+   Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being "GNU General Public License" and "GNU Free
+Documentation License", with no Front-Cover Texts, and with no
+Back-Cover Texts.  A copy of the license is included in the section
+entitled "GNU Free Documentation License".
 
 
 File: wget.info,  Node: Directory-Based Limits,  Next: FTP Links,  Prev: Types of Files,  Up: Following Links
@@ -57,7 +57,7 @@ equivalent command in `.wgetrc'.
 `--exclude LIST'
 `exclude_directories = LIST'
      `-X' option is exactly the reverse of `-I'--this is a list of
-     directories *excluded* from the download.  E.g. if you do not want
+     directories _excluded_ from the download.  E.g. if you do not want
      Wget to download things from `/cgi-bin' directory, specify `-X
      /cgi-bin' on the command line.
 
@@ -184,7 +184,7 @@ remote file is more recent, Wget will proceed fetching it normally.
 
    `ls' will show that the timestamps are set according to the state on
 the remote server.  Reissuing the command with `-N' will make Wget
-re-fetch *only* the files that have been modified.
+re-fetch _only_ the files that have been modified.
 
    In both HTTP and FTP retrieval Wget will time-stamp the local file
 correctly (with or without `-N') if it gets the stamps, i.e. gets the
@@ -300,7 +300,7 @@ further attempts will be made.
    If `WGETRC' is not set, Wget will try to load `$HOME/.wgetrc'.
 
    The fact that user's settings are loaded after the system-wide ones
-means that in case of collision user's wgetrc *overrides* the
+means that in case of collision user's wgetrc _overrides_ the
 system-wide wgetrc (in `/usr/local/etc/wgetrc' by default).  Fascist
 admins, away!
 
@@ -346,11 +346,11 @@ hostnames or dotted-quad IP addresses.  N can be any positive integer,
 or `inf' for infinity, where appropriate.  STRING values can be any
 non-empty string.
 
-   Most of these commands have commandline equivalents (*Note
+   Most of these commands have commandline equivalents (*note
 Invoking::), though some of the more obscure or rarely used ones do not.
 
 accept/reject = STRING
-     Same as `-A'/`-R' (*Note Types of Files::).
+     Same as `-A'/`-R' (*note Types of Files::).
 
 add_hostdir = on/off
      Enable/disable host-prefixed file names.  `-nH' disables it.
@@ -397,14 +397,14 @@ dirstruct = on/off
      respectively.
 
 domains = STRING
-     Same as `-D' (*Note Domain Acceptance::).
+     Same as `-D' (*note Domain Acceptance::).
 
 dot_bytes = N
      Specify the number of bytes "contained" in a dot, as seen
      throughout the retrieval (1024 by default).  You can postfix the
      value with `k' or `m', representing kilobytes and megabytes,
      respectively.  With dot settings you can tailor the dot retrieval
-     to suit your needs, or you can use the predefined "styles" (*Note
+     to suit your needs, or you can use the predefined "styles" (*note
      Download Options::).
 
 dots_in_line = N
@@ -419,10 +419,10 @@ dot_style = STRING
 
 exclude_directories = STRING
      Specify a comma-separated list of directories you wish to exclude
-     from download - the same as `-X' (*Note Directory-Based Limits::).
+     from download - the same as `-X' (*note Directory-Based Limits::).
 
 exclude_domains = STRING
-     Same as `--exclude-domains' (*Note Domain Acceptance::).
+     Same as `--exclude-domains' (*note Domain Acceptance::).
 
 follow_ftp = on/off
      Follow FTP links from HTML documents - the same as `-f'.
@@ -497,7 +497,7 @@ noclobber = on/off
 
 no_parent = on/off
      Disallow retrieving outside the directory hierarchy, like
-     `--no-parent' (*Note Directory-Based Limits::).
+     `--no-parent' (*note Directory-Based Limits::).
 
 no_proxy = STRING
      Use STRING as the comma-separated list of domains to avoid in
@@ -550,7 +550,7 @@ recursive = on/off
      Recursive on/off - the same as `-r'.
 
 relative_only = on/off
-     Follow only relative links - the same as `-L' (*Note Relative
+     Follow only relative links - the same as `-L' (*note Relative
      Links::).
 
 remove_listing = on/off
@@ -562,7 +562,7 @@ retr_symlinks = on/off
      files; the same as `--retr-symlinks'.
 
 robots = on/off
-     Use (or not) `/robots.txt' file (*Note Robots::).  Be sure to know
+     Use (or not) `/robots.txt' file (*note Robots::).  Be sure to know
      what you are doing before changing the default (which is `on').
 
 server_response = on/off
@@ -570,7 +570,7 @@ server_response = on/off
      the same as `-S'.
 
 simple_host_check = on/off
-     Same as `-nh' (*Note Host Checking::).
+     Same as `-nh' (*note Host Checking::).
 
 span_hosts = on/off
      Same as `-H'.
@@ -579,7 +579,7 @@ timeout = N
      Set timeout value - the same as `-T'.
 
 timestamping = on/off
-     Turn timestamping on/off. The same as `-N' (*Note Time-Stamping::).
+     Turn timestamping on/off. The same as `-N' (*note Time-Stamping::).
 
 tries = N
      Set number of retries per URL - the same as `-t'.
@@ -613,114 +613,6 @@ Be careful about the things you change.
 have any effect, you must remove the `#' character at the beginning of
 its line.
 
-     ###
-     ### Sample Wget initialization file .wgetrc
-     ###
-     
-     ## You can use this file to change the default behaviour of wget or to
-     ## avoid having to type many many command-line options. This file does
-     ## not contain a comprehensive list of commands -- look at the manual
-     ## to find out what you can put into this file.
-     ##
-     ## Wget initialization file can reside in /usr/local/etc/wgetrc
-     ## (global, for all users) or $HOME/.wgetrc (for a single user).
-     ##
-     ## To use the settings in this file, you will have to uncomment them,
-     ## as well as change them, in most cases, as the values on the
-     ## commented-out lines are the default values (e.g. "off").
-     
-     
-     ##
-     ## Global settings (useful for setting up in /usr/local/etc/wgetrc).
-     ## Think well before you change them, since they may reduce wget's
-     ## functionality, and make it behave contrary to the documentation:
-     ##
-     
-     # You can set retrieve quota for beginners by specifying a value
-     # optionally followed by 'K' (kilobytes) or 'M' (megabytes).  The
-     # default quota is unlimited.
-     #quota = inf
-     
-     # You can lower (or raise) the default number of retries when
-     # downloading a file (default is 20).
-     #tries = 20
-     
-     # Lowering the maximum depth of the recursive retrieval is handy to
-     # prevent newbies from going too "deep" when they unwittingly start
-     # the recursive retrieval.  The default is 5.
-     #reclevel = 5
-     
-     # Many sites are behind firewalls that do not allow initiation of
-     # connections from the outside.  On these sites you have to use the
-     # `passive' feature of FTP.  If you are behind such a firewall, you
-     # can turn this on to make Wget use passive FTP by default.
-     #passive_ftp = off
-     
-     # The "wait" command below makes Wget wait between every connection.
-     # If, instead, you want Wget to wait only between retries of failed
-     # downloads, set waitretry to maximum number of seconds to wait (Wget
-     # will use "linear backoff", waiting 1 second after the first failure
-     # on a file, 2 seconds after the second failure, etc. up to this max).
-     waitretry = 10
-     
-     
-     ##
-     ## Local settings (for a user to set in his $HOME/.wgetrc).  It is
-     ## *highly* undesirable to put these settings in the global file, since
-     ## they are potentially dangerous to "normal" users.
-     ##
-     ## Even when setting up your own ~/.wgetrc, you should know what you
-     ## are doing before doing so.
-     ##
-     
-     # Set this to on to use timestamping by default:
-     #timestamping = off
-     
-     # It is a good idea to make Wget send your email address in a `From:'
-     # header with your request (so that server administrators can contact
-     # you in case of errors).  Wget does *not* send `From:' by default.
-     #header = From: Your Name <username@site.domain>
-     
-     # You can set up other headers, like Accept-Language.  Accept-Language
-     # is *not* sent by default.
-     #header = Accept-Language: en
-     
-     # You can set the default proxy for Wget to use.  It will override the
-     # value in the environment.
-     #http_proxy = http://proxy.yoyodyne.com:18023/
-     
-     # If you do not want to use proxy at all, set this to off.
-     #use_proxy = on
-     
-     # You can customize the retrieval outlook.  Valid options are default,
-     # binary, mega and micro.
-     #dot_style = default
-     
-     # Setting this to off makes Wget not download /robots.txt.  Be sure to
-     # know *exactly* what /robots.txt is and how it is used before changing
-     # the default!
-     #robots = on
-     
-     # It can be useful to make Wget wait between connections.  Set this to
-     # the number of seconds you want Wget to wait.
-     #wait = 0
-     
-     # You can force creating directory structure, even if a single is being
-     # retrieved, by setting this to on.
-     #dirstruct = off
-     
-     # You can turn on recursive retrieving by default (don't do this if
-     # you are not sure you know what it means) by setting this to on.
-     #recursive = off
-     
-     # To always back up file X as X.orig before converting its links (due
-     # to -k / --convert-links / convert_links = on having been specified),
-     # set this variable to on:
-     #backup_converted = off
-     
-     # To have Wget follow FTP links from HTML files by default, set this
-     # to on:
-     #follow_ftp = off
 
 
 File: wget.info,  Node: Examples,  Next: Various,  Prev: Startup File,  Up: Top
@@ -748,13 +640,13 @@ Simple Usage
 
    * Say you want to download a URL.  Just type:
 
-          wget http://fly.cc.fer.hr/
+          wget http://fly.srk.fer.hr/
 
      The response will be something like:
 
-          --13:30:45--  http://fly.cc.fer.hr:80/en/
+          --13:30:45--  http://fly.srk.fer.hr:80/en/
                      => `index.html'
-          Connecting to fly.cc.fer.hr:80... connected!
+          Connecting to fly.srk.fer.hr:80... connected!
           HTTP request sent, awaiting response... 200 OK
           Length: 4,694 [text/html]
           
@@ -770,13 +662,13 @@ Simple Usage
      the number of tries to 45, to insure that the whole file will
      arrive safely:
 
-          wget --tries=45 http://fly.cc.fer.hr/jpg/flyweb.jpg
+          wget --tries=45 http://fly.srk.fer.hr/jpg/flyweb.jpg
 
    * Now let's leave Wget to work in the background, and write its
      progress to log file `log'.  It is tiring to type `--tries', so we
      shall use `-t'.
 
-          wget -t 45 -o log http://fly.cc.fer.hr/jpg/flyweb.jpg &
+          wget -t 45 -o log http://fly.srk.fer.hr/jpg/flyweb.jpg &
 
      The ampersand at the end of the line makes sure that Wget works in
      the background.  To unlimit the number of retries, use `-t inf'.
@@ -784,10 +676,10 @@ Simple Usage
    * The usage of FTP is as simple.  Wget will take care of login and
      password.
 
-          $ wget ftp://gnjilux.cc.fer.hr/welcome.msg
-          --10:08:47--  ftp://gnjilux.cc.fer.hr:21/welcome.msg
+          $ wget ftp://gnjilux.srk.fer.hr/welcome.msg
+          --10:08:47--  ftp://gnjilux.srk.fer.hr:21/welcome.msg
                      => `welcome.msg'
-          Connecting to gnjilux.cc.fer.hr:21... connected!
+          Connecting to gnjilux.srk.fer.hr:21... connected!
           Logging in as anonymous ... Logged in!
           ==> TYPE I ... done.  ==> CWD not needed.
           ==> PORT ... done.    ==> RETR welcome.msg ... done.
@@ -848,9 +740,9 @@ Advanced Usage
           wget -r -l1 --no-parent -A.gif http://host/dir/
 
      It is a bit of a kludge, but it works.  `-r -l1' means to retrieve
-     recursively (*Note Recursive Retrieval::), with maximum depth of 1.
+     recursively (*note Recursive Retrieval::), with maximum depth of 1.
      `--no-parent' means that references to the parent directory are
-     ignored (*Note Directory-Based Limits::), and `-A.gif' means to
+     ignored (*note Directory-Based Limits::), and `-A.gif' means to
      download only the GIF files.  `-A "*.gif"' would have worked too.
 
    * Suppose you were in the middle of downloading, when Wget was
@@ -860,13 +752,13 @@ Advanced Usage
           wget -nc -r http://www.gnu.ai.mit.edu/
 
    * If you want to encode your own username and password to HTTP or
-     FTP, use the appropriate URL syntax (*Note URL Format::).
+     FTP, use the appropriate URL syntax (*note URL Format::).
 
           wget ftp://hniksic:mypassword@jagor.srce.hr/.emacs
 
    * If you do not like the default retrieval visualization (1K dots
      with 10 dots per cluster and 50 dots per line), you can customize
-     it through dot settings (*Note Wgetrc Commands::).  For example,
+     it through dot settings (*note Wgetrc Commands::).  For example,
      many people like the "binary" style of retrieval, with 8K dots and
      512K lines:
 
@@ -875,10 +767,10 @@ Advanced Usage
      You can experiment with other styles, like:
 
           wget --dot-style=mega ftp://ftp.xemacs.org/pub/xemacs/xemacs-20.4/xemacs-20.4.tar.gz
-          wget --dot-style=micro http://fly.cc.fer.hr/
+          wget --dot-style=micro http://fly.srk.fer.hr/
 
      To make these settings permanent, put them in your `.wgetrc', as
-     described before (*Note Sample Wgetrc::).
+     described before (*note Sample Wgetrc::).
 
 
 File: wget.info,  Node: Guru Usage,  Prev: Advanced Usage,  Up: Examples
@@ -902,7 +794,7 @@ Guru Usage
 
    * But what about mirroring the hosts networkologically close to you?
      It seems so awfully slow because of all that DNS resolving.  Just
-     use `-D' (*Note Domain Acceptance::).
+     use `-D' (*note Domain Acceptance::).
 
           wget -rN -Dsrce.hr http://www.srce.hr/
 
@@ -976,7 +868,7 @@ the following environment variables:
 
 `no_proxy'
      This variable should contain a comma-separated list of domain
-     extensions proxy should *not* be used for.  For instance, if the
+     extensions proxy should _not_ be used for.  For instance, if the
      value of `no_proxy' is `.mit.edu', proxy will not be used to
      retrieve documents from MIT.
 
@@ -1022,7 +914,7 @@ Distribution
    Like all GNU utilities, the latest version of Wget can be found at
 the master GNU archive site prep.ai.mit.edu, and its mirrors.  For
 example, Wget 1.5.3+dev can be found at
-`ftp://prep.ai.mit.edu/gnu/wget/wget-1.5.3+dev.tar.gz'
+<ftp://prep.ai.mit.edu/gnu/wget/wget-1.5.3+dev.tar.gz>
 
 
 File: wget.info,  Node: Mailing List,  Next: Reporting Bugs,  Prev: Distribution,  Up: Various
@@ -1040,7 +932,7 @@ subscribe.  The more people on the list, the better!
 magic word `subscribe' in the subject line.  Unsubscribe by mailing to
 <wget-unsubscribe@sunsite.auc.dk>.
 
-   The mailing list is archived at `http://fly.cc.fer.hr/archive/wget'.
+   The mailing list is archived at <http://fly.srk.fer.hr/archive/wget>.
 
 
 File: wget.info,  Node: Reporting Bugs,  Next: Portability,  Prev: Mailing List,  Up: Various
@@ -1076,7 +968,7 @@ simple guidelines.
 
   3. Please start Wget with `-d' option and send the log (or the
      relevant parts of it).  If Wget was compiled without debug support,
-     recompile it.  It is *much* easier to trace bugs with debug support
+     recompile it.  It is _much_ easier to trace bugs with debug support
      on.
 
   4. If Wget has crashed, try to run it in a debugger, e.g. `gdb `which
@@ -1138,9 +1030,7 @@ File: wget.info,  Node: Appendices,  Next: Copying,  Prev: Various,  Up: Top
 Appendices
 **********
 
-   This chapter contains some references I consider useful, like the
-Robots Exclusion Standard specification, as well as a list of
-contributors to GNU Wget.
+   This chapter contains some references I consider useful.
 
 * Menu:
 
@@ -1154,176 +1044,61 @@ File: wget.info,  Node: Robots,  Next: Security Considerations,  Prev: Appendice
 Robots
 ======
 
-   Since Wget is able to traverse the web, it counts as one of the Web
-"robots".  Thus Wget understands "Robots Exclusion Standard"
-(RES)--contents of `/robots.txt', used by server administrators to
-shield parts of their systems from wanderings of Wget.
+   It is extremely easy to make Wget wander aimlessly around a web site,
+sucking all the available data in progress.  `wget -r SITE', and you're
+set.  Great?  Not for the server admin.
+
+   While Wget is retrieving static pages, there's not much of a problem.
+But for Wget, there is no real difference between the smallest static
+page and the hardest, most demanding CGI or dynamic page.  For instance,
+a site I know has a section handled by an, uh, bitchin' CGI script that
+converts all the Info files to HTML.  The script can and does bring the
+machine to its knees without providing anything useful to the
+downloader.
+
+   For such and similar cases various robot exclusion schemes have been
+devised as a means for the server administrators and document authors to
+protect chosen portions of their sites from the wandering of robots.
+
+   The more popular mechanism is the "Robots Exclusion Standard"
+written by Martijn Koster et al. in 1994.  It is specified by placing a
+file named `/robots.txt' in the server root, which the robots are
+supposed to download and parse.  Wget supports this specification.
 
    Norobots support is turned on only when retrieving recursively, and
-*never* for the first page.  Thus, you may issue:
+_never_ for the first page.  Thus, you may issue:
 
-     wget -r http://fly.cc.fer.hr/
+     wget -r http://fly.srk.fer.hr/
 
-   First the index of fly.cc.fer.hr will be downloaded.  If Wget finds
-anything worth downloading on the same host, only *then* will it load
+   First the index of fly.srk.fer.hr will be downloaded.  If Wget finds
+anything worth downloading on the same host, only _then_ will it load
 the robots, and decide whether or not to load the links after all.
-`/robots.txt' is loaded only once per host.  Wget does not support the
-robots `META' tag.
+`/robots.txt' is loaded only once per host.
 
-   The description of the norobots standard was written, and is
-maintained by Martijn Koster <m.koster@webcrawler.com>.  With his
-permission, I contribute a (slightly modified) TeXified version of the
-RES.
+   Note that the exlusion standard discussed here has undergone some
+revisions.  However, but Wget supports only the first version of RES,
+the one written by Martijn Koster in 1994, available at
+<http://info.webcrawler.com/mak/projects/robots/norobots.html>.  A
+later version exists in the form of an internet draft
+<draft-koster-robots-00.txt> titled "A Method for Web Robots Control",
+which expired on June 4, 1997.  I am not aware if it ever made to an
+RFC.  The text of the draft is available at
+<http://info.webcrawler.com/mak/projects/robots/norobots-rfc.html>.
+Wget does not yet support the new directives specified by this draft,
+but we plan to add them.
 
-* Menu:
+   This manual no longer includes the text of the old standard.
 
-* Introduction to RES::
-* RES Format::
-* User-Agent Field::
-* Disallow Field::
-* Norobots Examples::
+   The second, less known mechanism, enables the author of an individual
+document to specify whether they want the links from the file to be
+followed by a robot.  This is achieved using the `META' tag, like this:
 
-
-File: wget.info,  Node: Introduction to RES,  Next: RES Format,  Prev: Robots,  Up: Robots
+     <meta name="robots" content="nofollow">
 
-Introduction to RES
--------------------
-
-   "WWW Robots" (also called "wanderers" or "spiders") are programs
-that traverse many pages in the World Wide Web by recursively
-retrieving linked pages. For more information see the robots page.
-
-   In 1993 and 1994 there have been occasions where robots have visited
-WWW servers where they weren't welcome for various reasons. Sometimes
-these reasons were robot specific, e.g. certain robots swamped servers
-with rapid-fire requests, or retrieved the same files repeatedly. In
-other situations robots traversed parts of WWW servers that weren't
-suitable, e.g. very deep virtual trees, duplicated information,
-temporary information, or cgi-scripts with side-effects (such as
-voting).
-
-   These incidents indicated the need for established mechanisms for
-WWW servers to indicate to robots which parts of their server should
-not be accessed. This standard addresses this need with an operational
-solution.
-
-   This document represents a consensus on 30 June 1994 on the robots
-mailing list (`robots@webcrawler.com'), between the majority of robot
-authors and other people with an interest in robots. It has also been
-open for discussion on the Technical World Wide Web mailing list
-(`www-talk@info.cern.ch'). This document is based on a previous working
-draft under the same title.
-
-   It is not an official standard backed by a standards body, or owned
-by any commercial organization. It is not enforced by anybody, and there
-no guarantee that all current and future robots will use it. Consider
-it a common facility the majority of robot authors offer the WWW
-community to protect WWW server against unwanted accesses by their
-robots.
-
-   The latest version of this document can be found at
-`http://info.webcrawler.com/mak/projects/robots/norobots.html'.
-
-
-File: wget.info,  Node: RES Format,  Next: User-Agent Field,  Prev: Introduction to RES,  Up: Robots
-
-RES Format
-----------
-
-   The format and semantics of the `/robots.txt' file are as follows:
-
-   The file consists of one or more records separated by one or more
-blank lines (terminated by `CR', `CR/NL', or `NL').  Each record
-contains lines of the form:
-
-     <field>:<optionalspace><value><optionalspace>
-
-   The field name is case insensitive.
-
-   Comments can be included in file using UNIX Bourne shell conventions:
-the `#' character is used to indicate that preceding space (if any) and
-the remainder of the line up to the line termination is discarded.
-Lines containing only a comment are discarded completely, and therefore
-do not indicate a record boundary.
-
-   The record starts with one or more User-agent lines, followed by one
-or more Disallow lines, as detailed below. Unrecognized headers are
-ignored.
-
-   The presence of an empty `/robots.txt' file has no explicit
-associated semantics, it will be treated as if it was not present, i.e.
-all robots will consider themselves welcome.
-
-
-File: wget.info,  Node: User-Agent Field,  Next: Disallow Field,  Prev: RES Format,  Up: Robots
-
-User-Agent Field
-----------------
-
-   The value of this field is the name of the robot the record is
-describing access policy for.
-
-   If more than one User-agent field is present the record describes an
-identical access policy for more than one robot.  At least one field
-needs to be present per record.
-
-   The robot should be liberal in interpreting this field. A case
-insensitive substring match of the name without version information is
-recommended.
-
-   If the value is `*', the record describes the default access policy
-for any robot that has not matched any of the other records. It is not
-allowed to have multiple such records in the `/robots.txt' file.
-
-
-File: wget.info,  Node: Disallow Field,  Next: Norobots Examples,  Prev: User-Agent Field,  Up: Robots
-
-Disallow Field
---------------
-
-   The value of this field specifies a partial URL that is not to be
-visited. This can be a full path, or a partial path; any URL that
-starts with this value will not be retrieved. For example,
-`Disallow: /help' disallows both `/help.html' and `/help/index.html',
-whereas `Disallow: /help/' would disallow `/help/index.html' but allow
-`/help.html'.
-
-   Any empty value, indicates that all URLs can be retrieved. At least
-one Disallow field needs to be present in a record.
-
-
-File: wget.info,  Node: Norobots Examples,  Prev: Disallow Field,  Up: Robots
-
-Norobots Examples
------------------
-
-   The following example `/robots.txt' file specifies that no robots
-should visit any URL starting with `/cyberworld/map/' or `/tmp/':
-
-     # robots.txt for http://www.site.com/
-     
-     User-agent: *
-     Disallow: /cyberworld/map/ # This is an infinite virtual URL space
-     Disallow: /tmp/ # these will soon disappear
-
-   This example `/robots.txt' file specifies that no robots should
-visit any URL starting with `/cyberworld/map/', except the robot called
-`cybermapper':
-
-     # robots.txt for http://www.site.com/
-     
-     User-agent: *
-     Disallow: /cyberworld/map/ # This is an infinite virtual URL space
-     
-     # Cybermapper knows where to go.
-     User-agent: cybermapper
-     Disallow:
-
-   This example indicates that no robots should visit this site further:
-
-     # go away
-     User-agent: *
-     Disallow: /
+   This is explained in some detail at
+<http://info.webcrawler.com/mak/projects/robots/meta-user.html>.
+Unfortunately, Wget does not support this method of robot exclusion yet,
+but it will be implemented in the next release.
 
 
 File: wget.info,  Node: Security Considerations,  Next: Contributors,  Prev: Robots,  Up: Appendices
@@ -1349,4 +1124,125 @@ Here are the main issues, and some solutions.
      debugging logs show them, in all forms.  This problem is avoided by
      being careful when you send debug logs (yes, even when you send
      them to me).
+
+
+File: wget.info,  Node: Contributors,  Prev: Security Considerations,  Up: Appendices
+
+Contributors
+============
+
+   GNU Wget was written by Hrvoje Niksic <hniksic@arsdigita.com>.
+However, its development could never have gone as far as it has, were it
+not for the help of many people, either with bug reports, feature
+proposals, patches, or letters saying "Thanks!".
+
+   Special thanks goes to the following people (no particular order):
+
+   * Karsten Thygesen--donated system resources such as the mailing
+     list, web space, and FTP space, along with a lot of time to make
+     these actually work.
+
+   * Shawn McHorse--bug reports and patches.
+
+   * Kaveh R. Ghazi--on-the-fly `ansi2knr'-ization.  Lots of
+     portability fixes.
+
+   * Gordon Matzigkeit--`.netrc' support.
+
+   * Zlatko Calusic, Tomislav Vujec and Drazen Kacar--feature
+     suggestions and "philosophical" discussions.
+
+   * Darko Budor--initial port to Windows.
+
+   * Antonio Rosella--help and suggestions, plus the Italian
+     translation.
+
+   * Tomislav Petrovic, Mario Mikocevic--many bug reports and
+     suggestions.
+
+   * Francois Pinard--many thorough bug reports and discussions.
+
+   * Karl Eichwalder--lots of help with internationalization and other
+     things.
+
+   * Junio Hamano--donated support for Opie and HTTP `Digest'
+     authentication.
+
+   * Brian Gough--a generous donation.
+
+   The following people have provided patches, bug/build reports, useful
+suggestions, beta testing services, fan mail and all the other things
+that make maintenance so much fun:
+
+   Tim Adam, Adrian Aichner, Martin Baehr, Dieter Baron, Roger Beeman
+and the Gurus at Cisco, Dan Berger, Mark Boyns, John Burden, Wanderlei
+Cavassin, Gilles Cedoc, Tim Charron, Noel Cragg, Kristijan Conkas, John
+Daily, Andrew Davison, Andrew Deryabin, Ulrich Drepper, Marc Duponcheel,
+Damir Dzeko, Aleksandar Erkalovic, Andy Eskilsson, Masashi Fujita,
+Howard Gayle, Marcel Gerrits, Hans Grobler, Mathieu Guillaume, Dan
+Harkless, Heiko Herold, Karl Heuer, HIROSE Masaaki, Gregor Hoffleit,
+Erik Magnus Hulthen, Richard Huveneers, Simon Josefsson, Mario Juric,
+Const Kaplinsky, Goran Kezunovic, Robert Kleine, Fila Kolodny,
+Alexander Kourakos, Martin Kraemer, Simos KSenitellis, Hrvoje Lacko,
+Daniel S. Lewart, Dave Love, Alexander V. Lukyanov, Jordan Mendelson,
+Lin Zhe Min, Simon Munton, Charlie Negyesi, R. K. Owen, Andrew Pollock,
+Steve Pothier, Jan Prikryl, Marin Purgar, Keith Refson, Tyler Riddle,
+Tobias Ringstrom, Juan Jose Rodrigues, Edward J. Sabol, Heinz Salzmann,
+Robert Schmidt, Andreas Schwab, Toomas Soome, Tage Stabell-Kulo, Sven
+Sternberger, Markus Strasser, Szakacsits Szabolcs, Mike Thomas, Russell
+Vincent, Charles G Waldman, Douglas E. Wegscheid, Jasmin Zainul, Bojan
+Zdrnja, Kristijan Zimmer.
+
+   Apologies to all who I accidentally left out, and many thanks to all
+the subscribers of the Wget mailing list.
+
+
+File: wget.info,  Node: Copying,  Next: Concept Index,  Prev: Appendices,  Up: Top
+
+Copying
+*******
+
+   Wget is "free software", where "free" refers to liberty, not price.
+The exact legal distribution terms follow below, but in short, it means
+that you have the right (freedom) to run and change and copy Wget, and
+even--if you want--charge money for any of those things.  The sole
+restriction is that you have to grant your recipients the same rights.
+
+   This method of licensing software is also known as "open-source",
+because it requires that the recipients always receive a program's
+source code along with the program.
+
+   More specifically:
+
+     This program is free software; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+     General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, write to the Free Software
+     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+   In addition to this, this manual is free in the same sense:
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.1 or any later version published by the Free Software
+     Foundation; with the Invariant Sections being "GNU General Public
+     License" and "GNU Free Documentation License", with no Front-Cover
+     Texts, and with no Back-Cover Texts.  A copy of the license is
+     included in the section entitled "GNU Free Documentation License".
+
+   The full texts of the GNU General Public License and of the GNU Free
+Documentation License are available below.
+
+* Menu:
+
+* GNU General Public License::
+* GNU Free Documentation License::
 

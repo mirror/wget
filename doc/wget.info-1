@@ -1,5 +1,4 @@
-This is Info file wget.info, produced by Makeinfo version 1.68 from the
-input file ./wget.texi.
+This is wget.info, produced by makeinfo version 4.0 from wget.texi.
 
 INFO-DIR-SECTION Net Utilities
 INFO-DIR-SECTION World Wide Web
@@ -16,12 +15,13 @@ data.
 manual provided the copyright notice and this permission notice are
 preserved on all copies.
 
-   Permission is granted to copy and distribute modified versions of
-this manual under the conditions for verbatim copying, provided also
-that the sections entitled "Copying" and "GNU General Public License"
-are included exactly as in the original, and provided that the entire
-resulting derived work is distributed under the terms of a permission
-notice identical to this one.
+   Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being "GNU General Public License" and "GNU Free
+Documentation License", with no Front-Cover Texts, and with no
+Back-Cover Texts.  A copy of the license is included in the section
+entitled "GNU Free Documentation License".
 
 
 File: wget.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
@@ -32,7 +32,7 @@ Wget 1.5.3+dev
    This manual documents version 1.5.3+dev of GNU Wget, the freely
 available utility for network download.
 
-   Copyright (C) 1996, 1997, 1998 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
 
 * Menu:
 
@@ -45,7 +45,7 @@ available utility for network download.
 * Examples::            Examples of usage.
 * Various::             The stuff that doesn't fit anywhere else.
 * Appendices::          Some useful references.
-* Copying::             You may give out copies of Wget.
+* Copying::             You may give out copies of Wget and of this manual.
 * Concept Index::       Topics covered by this manual.
 
 
@@ -67,12 +67,14 @@ being:
      constant user's presence, which can be a great hindrance when
      transferring a lot of data.
 
+
    * Wget is capable of descending recursively through the structure of
      HTML documents and FTP directory trees, making a local copy of the
      directory hierarchy similar to the one on the remote server.  This
      feature can be used to mirror archives and home pages, or traverse
-     the web in search of data, like a WWW robot (*Note Robots::).  In
+     the web in search of data, like a WWW robot (*note Robots::).  In
      that spirit, Wget understands the `norobots' convention.
+
 
    * File name wildcard matching and recursive mirroring of directories
      are available when retrieving via FTP.  Wget can read the
@@ -82,11 +84,13 @@ being:
      version if it has.  This makes Wget suitable for mirroring of FTP
      sites, as well as home pages.
 
+
    * Wget works exceedingly well on slow or unstable connections,
      retrying the document until it is fully retrieved, or until a
      user-specified retry count is surpassed.  It will try to resume the
      download from the point of interruption, using `REST' with FTP and
      `Range' with HTTP servers that support them.
+
 
    * By default, Wget supports proxy servers, which can lighten the
      network load, speed up retrieval and provide access behind
@@ -95,23 +99,27 @@ being:
      and build wget with support for socks.  Wget also supports the
      passive FTP downloading as an option.
 
+
    * Builtin features offer mechanisms to tune which links you wish to
-     follow (*Note Following Links::).
+     follow (*note Following Links::).
+
 
    * The retrieval is conveniently traced with printing dots, each dot
      representing a fixed amount of data received (1KB by default).
      These representations can be customized to your preferences.
 
+
    * Most of the features are fully configurable, either through
      command line options, or via the initialization file `.wgetrc'
-     (*Note Startup File::).  Wget allows you to define "global"
+     (*note Startup File::).  Wget allows you to define "global"
      startup files (`/usr/local/etc/wgetrc' by default) for site
      settings.
+
 
    * Finally, GNU Wget is free software.  This means that everyone may
      use it, redistribute it and/or modify it under the terms of the
      GNU General Public License, as published by the Free Software
-     Foundation (*Note Copying::).
+     Foundation (*note Copying::).
 
 
 File: wget.info,  Node: Invoking,  Next: Recursive Retrieval,  Prev: Overview,  Up: Top
@@ -128,7 +136,7 @@ line.  URL is a "Uniform Resource Locator", as defined below.
 
    However, you may wish to change some of the default parameters of
 Wget.  You can do it two ways: permanently, adding the appropriate
-command to `.wgetrc' (*Note Startup File::), or specifying it on the
+command to `.wgetrc' (*note Startup File::), or specifying it on the
 command line.
 
 * Menu:
@@ -218,7 +226,7 @@ remember, but take time to type.  You may freely mix different option
 styles, or specify options after the command-line arguments. Thus you
 may write:
 
-     wget -r --tries=10 http://fly.cc.fer.hr/ -o log
+     wget -r --tries=10 http://fly.srk.fer.hr/ -o log
 
    The space between the option accepting an argument and the argument
 may be omitted.  Instead `-o log' you can write `-olog'.
@@ -243,7 +251,7 @@ convention that specifying an empty list clears its value.  This can be
 useful to clear the `.wgetrc' settings.  For instance, if your `.wgetrc'
 sets `exclude_directories' to `/cgi-bin', the following example will
 first reset it, and then set it to exclude `/~nobody' and `/~somebody'.
-You can also clear the lists in `.wgetrc' (*Note Wgetrc Syntax::).
+You can also clear the lists in `.wgetrc' (*note Wgetrc Syntax::).
 
      wget -X '' -X /~nobody,/~somebody
 
@@ -268,8 +276,8 @@ Basic Startup Options
 
 `-e COMMAND'
 `--execute COMMAND'
-     Execute COMMAND as if it were a part of `.wgetrc' (*Note Startup
-     File::).  A command thus invoked will be executed *after* the
+     Execute COMMAND as if it were a part of `.wgetrc' (*note Startup
+     File::).  A command thus invoked will be executed _after_ the
      commands in `.wgetrc', thus taking precedence over them.
 
 
@@ -296,8 +304,8 @@ Logging and Input File Options
      administrator may have chosen to compile Wget without debug
      support, in which case `-d' will not work.  Please note that
      compiling with debug support is always safe--Wget compiled with
-     the debug support will *not* print any debug info unless requested
-     with `-d'.  *Note Reporting Bugs:: for more information on how to
+     the debug support will _not_ print any debug info unless requested
+     with `-d'.  *Note Reporting Bugs::, for more information on how to
      use `-d' for sending bug reports.
 
 `-q'
@@ -392,7 +400,7 @@ Download Options
 
      When running wget with `-N', with or without `-r', the decision as
      to whether or not to download a newer copy of a file depends on
-     the local and remote timestamp and size of the file (*Note
+     the local and remote timestamp and size of the file (*note
      Time-Stamping::).  `-nc' may not be specified at the same time as
      `-N'.
 
@@ -449,7 +457,7 @@ Download Options
 
 `-N'
 `--timestamping'
-     Turn on time-stamping.  *Note Time-Stamping:: for details.
+     Turn on time-stamping.  *Note Time-Stamping::, for details.
 
 `-S'
 `--server-response'
@@ -491,7 +499,7 @@ Download Options
      retry.
 
 `--waitretry=SECONDS'
-     If you don't want Wget to wait between *every* retrieval, but only
+     If you don't want Wget to wait between _every_ retrieval, but only
      between retries of failed downloads, you can use this option.
      Wget will use "linear backoff", waiting 1 second after the first
      failure on a given file, then waiting 2 seconds after the second
@@ -540,14 +548,14 @@ Directory Options
 `--force-directories'
      The opposite of `-nd'--create a hierarchy of directories, even if
      one would not have been created otherwise.  E.g. `wget -x
-     http://fly.cc.fer.hr/robots.txt' will save the downloaded file to
-     `fly.cc.fer.hr/robots.txt'.
+     http://fly.srk.fer.hr/robots.txt' will save the downloaded file to
+     `fly.srk.fer.hr/robots.txt'.
 
 `-nH'
 `--no-host-directories'
      Disable generation of host-prefixed directories.  By default,
-     invoking Wget with `-r http://fly.cc.fer.hr/' will create a
-     structure of directories beginning with `fly.cc.fer.hr/'.  This
+     invoking Wget with `-r http://fly.srk.fer.hr/' will create a
+     structure of directories beginning with `fly.srk.fer.hr/'.  This
      option disables such behavior.
 
 `--cut-dirs=NUMBER'
@@ -609,7 +617,7 @@ HTTP Options
      doesn't yet know that the URL produces output of type `text/html'.
      To prevent this re-downloading, you must use `-k' and `-K' so
      that the original version of the file will be saved as `X.orig'
-     (*Note Recursive Retrieval Options::).
+     (*note Recursive Retrieval Options::).
 
 `--http-user=USER'
 `--http-passwd=PASSWORD'
@@ -619,7 +627,7 @@ HTTP Options
      scheme.
 
      Another way to specify username and password is in the URL itself
-     (*Note URL Format::).  For more information about security issues
+     (*note URL Format::).  For more information about security issues
      with Wget, *Note Security Considerations::.
 
 `-C on/off'
@@ -653,7 +661,7 @@ HTTP Options
 
           wget --header='Accept-Charset: iso-8859-2' \
                --header='Accept-Language: hr'        \
-                 http://fly.cc.fer.hr/
+                 http://fly.srk.fer.hr/
 
      Specification of an empty string as the header value will clear all
      previous user-defined headers.
@@ -727,7 +735,7 @@ FTP Options
      and `]' to retrieve more than one file from the same directory at
      once, like:
 
-          wget ftp://gnjilux.cc.fer.hr/*.msg
+          wget ftp://gnjilux.srk.fer.hr/*.msg
 
      By default, globbing will be turned on if the URL contains a
      globbing character.  This option may be used to turn globbing on
@@ -751,17 +759,17 @@ Recursive Retrieval Options
 
 `-r'
 `--recursive'
-     Turn on recursive retrieving.  *Note Recursive Retrieval:: for more
-     details.
+     Turn on recursive retrieving.  *Note Recursive Retrieval::, for
+     more details.
 
 `-l DEPTH'
 `--level=DEPTH'
-     Specify recursion maximum depth level DEPTH (*Note Recursive
+     Specify recursion maximum depth level DEPTH (*note Recursive
      Retrieval::).  The default maximum depth is 5.
 
 `--delete-after'
      This option tells Wget to delete every single file it downloads,
-     *after* having done so.  It is useful for pre-fetching popular
+     _after_ having done so.  It is useful for pre-fetching popular
      pages through a proxy, e.g.:
 
           wget -r -nd --delete-after http://whatever.com/~popular/page/
@@ -788,7 +796,7 @@ Recursive Retrieval Options
 `-K'
 `--backup-converted'
      When converting a file, back up the original version with a `.orig'
-     suffix.  Affects the behavior of `-N' (*Note HTTP Time-Stamping
+     suffix.  Affects the behavior of `-N' (*note HTTP Time-Stamping
      Internals::).
 
 `-m'
@@ -837,7 +845,7 @@ Recursive Retrieval Options
 
           wget -r -l 2 -p http://SITE/1.html
 
-     all the above files *and* `3.html''s requisite `3.gif' will be
+     all the above files _and_ `3.html''s requisite `3.gif' will be
      downloaded.  Similarly,
 
           wget -r -l 1 -p http://SITE/1.html
@@ -879,18 +887,18 @@ Recursive Accept/Reject Options
 `-A ACCLIST --accept ACCLIST'
 `-R REJLIST --reject REJLIST'
      Specify comma-separated lists of file name suffixes or patterns to
-     accept or reject (*Note Types of Files:: for more details).
+     accept or reject (*note Types of Files:: for more details).
 
 `-D DOMAIN-LIST'
 `--domains=DOMAIN-LIST'
      Set domains to be accepted and DNS looked-up, where DOMAIN-LIST is
-     a comma-separated list.  Note that it does *not* turn on `-H'.
+     a comma-separated list.  Note that it does _not_ turn on `-H'.
      This option speeds things up, even if only one host is spanned
-     (*Note Domain Acceptance::).
+     (*note Domain Acceptance::).
 
 `--exclude-domains DOMAIN-LIST'
      Exclude the domains given in a comma-separated DOMAIN-LIST from
-     DNS-lookup (*Note Domain Acceptance::).
+     DNS-lookup (*note Domain Acceptance::).
 
 `--follow-ftp'
      Follow FTP links from HTML documents.  Without this option, Wget
@@ -924,29 +932,29 @@ Recursive Accept/Reject Options
 `-H'
 `--span-hosts'
      Enable spanning across hosts when doing recursive retrieving
-     (*Note All Hosts::).
+     (*note All Hosts::).
 
 `-L'
 `--relative'
      Follow relative links only.  Useful for retrieving a specific home
      page without any distractions, not even those from the same hosts
-     (*Note Relative Links::).
+     (*note Relative Links::).
 
 `-I LIST'
 `--include-directories=LIST'
      Specify a comma-separated list of directories you wish to follow
-     when downloading (*Note Directory-Based Limits:: for more
+     when downloading (*note Directory-Based Limits:: for more
      details.)  Elements of LIST may contain wildcards.
 
 `-X LIST'
 `--exclude-directories=LIST'
      Specify a comma-separated list of directories you wish to exclude
-     from download (*Note Directory-Based Limits:: for more details.)
+     from download (*note Directory-Based Limits:: for more details.)
      Elements of LIST may contain wildcards.
 
 `-nh'
 `--no-host-lookup'
-     Disable the time-consuming DNS lookup of almost all hosts (*Note
+     Disable the time-consuming DNS lookup of almost all hosts (*note
      Host Checking::).
 
 `-np'
@@ -954,8 +962,8 @@ Recursive Accept/Reject Options
 `--no-parent'
      Do not ever ascend to the parent directory when retrieving
      recursively.  This is a useful option, since it guarantees that
-     only the files *below* a certain hierarchy will be downloaded.
-     *Note Directory-Based Limits:: for more details.
+     only the files _below_ a certain hierarchy will be downloaded.
+     *Note Directory-Based Limits::, for more details.
 
 
 File: wget.info,  Node: Recursive Retrieval,  Next: Following Links,  Prev: Invoking,  Up: Top
@@ -1003,7 +1011,7 @@ which can grind the machine to a halt.
 (`-l') and/or by lowering the number of retries (`-t').  You may also
 consider using the `-w' option to slow down your requests to the remote
 servers, as well as the numerous options to narrow the number of
-followed links (*Note Following Links::).
+followed links (*note Following Links::).
 
    Recursive retrieval is a good thing when used properly.  Please take
 all precautions not to wreak havoc through carelessness.
@@ -1019,7 +1027,7 @@ unnecessary data.  Most of the time the users bear in mind exactly what
 they want to download, and want Wget to follow only specific links.
 
    For example, if you wish to download the music archive from
-`fly.cc.fer.hr', you will not want to download all the home pages that
+`fly.srk.fer.hr', you will not want to download all the home pages that
 happen to be referenced by an obscure part of the archive.
 
    Wget possesses several mechanisms that allows you to fine-tune which
@@ -1061,13 +1069,13 @@ following links) all URLs that refer to the same host will be retrieved.
 
    The problem with this option are the aliases of the hosts and
 domains.  Thus there is no way for Wget to know that `regoc.srce.hr' and
-`www.srce.hr' are the same host, or that `fly.cc.fer.hr' is the same as
-`fly.cc.etf.hr'.  Whenever an absolute link is encountered, the host is
-DNS-looked-up with `gethostbyname' to check whether we are maybe
+`www.srce.hr' are the same host, or that `fly.srk.fer.hr' is the same
+as `fly.cc.fer.hr'.  Whenever an absolute link is encountered, the host
+is DNS-looked-up with `gethostbyname' to check whether we are maybe
 dealing with the same hosts.  Although the results of `gethostbyname'
 are cached, it is still a great slowdown, e.g. when dealing with large
 indices of home pages on different hosts (because each of the hosts
-must be DNS-resolved to see whether it just *might* be an alias of the
+must be DNS-resolved to see whether it just _might_ be an alias of the
 starting host).
 
    To avoid the overhead you may use `-nh', which will turn off
@@ -1079,7 +1087,7 @@ and `regoc.srce.hr' will be flagged as different hosts).
 "virtual servers", each having its own directory hierarchy.  Such
 "servers" are distinguished by their hostnames (all of which point to
 the same IP address); for this to work, a client must send a `Host'
-header, which is what Wget does.  However, in that case Wget *must not*
+header, which is what Wget does.  However, in that case Wget _must not_
 try to divine a host's "real" address, nor try to use the same hostname
 for each access, i.e. `-nh' must be turned on.
 
@@ -1098,17 +1106,17 @@ Domain Acceptance
 followed.  The hosts the domain of which is not in this list will not be
 DNS-resolved.  Thus you can specify `-Dmit.edu' just to make sure that
 *nothing outside of MIT gets looked up*.  This is very important and
-useful.  It also means that `-D' does *not* imply `-H' (span all
+useful.  It also means that `-D' does _not_ imply `-H' (span all
 hosts), which must be specified explicitly.  Feel free to use this
 options since it will speed things up, with almost all the reliability
 of checking for all hosts.  Thus you could invoke
 
-     wget -r -D.hr http://fly.cc.fer.hr/
+     wget -r -D.hr http://fly.srk.fer.hr/
 
    to make sure that only the hosts in `.hr' domain get DNS-looked-up
-for being equal to `fly.cc.fer.hr'.  So `fly.cc.etf.hr' will be checked
-(only once!) and found equal, but `www.gnu.ai.mit.edu' will not even be
-checked.
+for being equal to `fly.srk.fer.hr'.  So `fly.cc.fer.hr' will be
+checked (only once!) and found equal, but `www.gnu.ai.mit.edu' will not
+even be checked.
 
    Of course, domain acceptance can be used to limit the retrieval to
 particular domains with spanning of hosts in them, but then you must
@@ -1121,7 +1129,7 @@ and Stanford.
 
    If there are domains you want to exclude specifically, you can do it
 with `--exclude-domains', which accepts the same type of arguments of
-`-D', but will *exclude* all the listed domains.  For example, if you
+`-D', but will _exclude_ all the listed domains.  For example, if you
 want to download all the hosts from `foo.edu' domain, with the
 exception of `sunsite.foo.edu', you can do it like this:
 
@@ -1177,7 +1185,7 @@ in `.wgetrc'.
 `--reject REJLIST'
 `reject = REJLIST'
      The `--reject' option works the same way as `--accept', only its
-     logic is the reverse; Wget will download all files *except* the
+     logic is the reverse; Wget will download all files _except_ the
      ones matching the suffixes (or patterns) in the list.
 
      So, if you want to download a whole page except for the cumbersome
@@ -1189,7 +1197,7 @@ in `.wgetrc'.
    The `-A' and `-R' options may be combined to achieve even better
 fine-tuning of which files to retrieve.  E.g. `wget -A "*zelazny*" -R
 .ps' will download all the files having `zelazny' as a part of their
-name, but *not* the PostScript files.
+name, but _not_ the PostScript files.
 
    Note that these two options do not affect the downloading of HTML
 files; Wget must load all the HTMLs to know where to go at
