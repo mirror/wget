@@ -201,16 +201,15 @@ init_interesting (void)
   /* If --follow-tags is specified, use only those tags.  */
   if (opt.follow_tags)
     {
-      /* Create a new hash table with the intersection of tags in
-	 --follow-tags and known_tags, and use that as
-	 interesting_tags.  */
+      /* Create a new table intersecting --follow-tags and known_tags,
+	 and use it as interesting_tags.  */
       struct hash_table *intersect = make_nocase_string_hash_table (0);
       char **followed;
       for (followed = opt.follow_tags; *followed; followed++)
 	{
 	  struct known_tag *t = hash_table_get (interesting_tags, *followed);
 	  if (!t)
-	    continue;		/* ignore unknown tags in --follow-tags. */
+	    continue;		/* ignore unknown --follow-tags entries. */
 	  hash_table_put (intersect, *followed, t);
 	}
       hash_table_destroy (interesting_tags);
@@ -218,7 +217,7 @@ init_interesting (void)
     }
 
   /* Add the attributes we care about. */
-  interesting_attributes = make_nocase_string_hash_table (17);
+  interesting_attributes = make_nocase_string_hash_table (10);
   for (i = 0; i < countof (additional_attributes); i++)
     string_set_add (interesting_attributes, additional_attributes[i]);
   for (i = 0; i < countof (tag_url_attributes); i++)

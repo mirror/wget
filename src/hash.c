@@ -145,6 +145,14 @@ so, delete this exception statement from your version.  */
    hash_table_remove is careful to rehash the mappings that follow the
    deleted one.  */
 
+/* When hash table's fullness exceeds this threshold, the hash table
+   is resized.  */
+#define HASH_FULLNESS_THRESHOLD 0.75
+
+/* The hash table size is multiplied by this factor with each resize.
+   This guarantees infrequent resizes.  */
+#define HASH_RESIZE_FACTOR 2
+
 struct mapping {
   void *key;
   void *value;
@@ -166,12 +174,18 @@ struct hash_table {
   struct mapping *mappings;	/* the array of mapping pairs. */
 };
 
-#define EMPTY_MAPPING_P(mp)  ((mp)->key == NULL)
-#define NEXT_MAPPING(mp, mappings, size) (mp == mappings + (size - 1)	\
-					  ? mappings : mp + 1)
+/* We use NULL key to mark a mapping as empty.  It is consequently
+   illegal to store NULL keys.  */
+#define NON_EMPTY(mp) (mp->key != NULL)
 
+/* "Next" mapping is the mapping after MP, but wrapping back to
+   MAPPINGS when MP would reach MAPPINGS+SIZE.  */
+#define NEXT_MAPPING(mp, mappings, size) (mp != mappings + (size - 1)	\
+					  ? mp + 1 : mappings)
+
+/* Loop over non-empty mappings starting at MP. */
 #define LOOP_NON_EMPTY(mp, mappings, size)				\
-  for (; !EMPTY_MAPPING_P (mp); mp = NEXT_MAPPING (mp, mappings, size))
+  for (; NON_EMPTY (mp); mp = NEXT_MAPPING (mp, mappings, size))
 
 /* #### We might want to multiply with the "golden ratio" here to get
    better randomness for keys that do not result from a good hash
@@ -185,7 +199,7 @@ struct hash_table {
    table does not contain all primes in range, just a selection useful
    for this purpose.
 
-   PRIME_OFFSET is a micro-optimization: if specified, it starts the
+   PRIME_OFFSET is a minor optimization: if specified, it starts the
    search for the prime number beginning with the specific offset in
    the prime number table.  The final offset is stored in the same
    variable.  */
@@ -223,23 +237,32 @@ prime_size (int size, int *prime_offset)
   return 0;
 }
 
-/* Create a hash table of INITIAL_SIZE with hash function
-   HASH_FUNCTION and test function TEST_FUNCTION.  INITIAL_SIZE will
-   be rounded to the next prime, so you don't have to worry about it
-   being a prime number.
+/* Create a hash table with hash function HASH_FUNCTION and test
+   function TEST_FUNCTION.  The table is empty (its count is 0), but
+   pre-allocated to store at least ITEMS items.
 
-   Consequently, if you wish to start out with a "small" table which
-   will be regrown as needed, specify INITIAL_SIZE 0.
+   ITEMS is the number of items that the table can accept without
+   needing to resize.  It is useful when creating a table that is to
+   be immediately filled with a known number of items.  In that case,
+   the regrows are a waste of time, and specifying ITEMS correctly
+   will avoid them altogether.
+
+   Note that hash tables grow dynamically regardless of ITEMS.  The
+   only use of ITEMS is to preallocate the table and avoid unnecessary
+   dynamic regrows.  Don't bother making ITEMS prime because it's not
+   used as size unchanged.  To start with a small table that grows as
+   needed, simply specify zero ITEMS.
 
    If HASH_FUNCTION is not provided, identity table is assumed,
    i.e. key pointers are compared as keys.  If you want strings with
    equal contents to hash the same, use make_string_hash_table.  */
 
 struct hash_table *
-hash_table_new (int initial_size,
+hash_table_new (int items,
 		unsigned long (*hash_function) (const void *),
 		int (*test_function) (const void *, const void *))
 {
+  int size;
   struct hash_table *ht
     = (struct hash_table *)xmalloc (sizeof (struct hash_table));
 
@@ -247,13 +270,19 @@ hash_table_new (int initial_size,
   ht->test_function = test_function ? test_function : ptrcmp;
 
   ht->prime_offset = 0;
-  ht->size = prime_size (initial_size, &ht->prime_offset);
-  ht->resize_threshold = ht->size * 3 / 4;
 
-  ht->count = 0;
+  /* Calculate the size that ensures that the table will store at
+     least ITEMS keys without the need to resize.  */
+  size = 1 + items / HASH_FULLNESS_THRESHOLD;
+  size = prime_size (size, &ht->prime_offset);
+  ht->size = size;
+  ht->resize_threshold = size * HASH_FULLNESS_THRESHOLD;
+  /*assert (ht->resize_threshold >= items);*/
 
   ht->mappings = xmalloc (ht->size * sizeof (struct mapping));
   memset (ht->mappings, '\0', ht->size * sizeof (struct mapping));
+
+  ht->count = 0;
 
   return ht;
 }
@@ -267,9 +296,9 @@ hash_table_destroy (struct hash_table *ht)
   xfree (ht);
 }
 
-/* The heart of almost all functions in this file -- find the mapping
-   whose KEY is equal to key, using linear probing.  Returns the
-   mapping that matches KEY, or NULL if none matches.  */
+/* The heart of most functions in this file -- find the mapping whose
+   KEY is equal to key, using linear probing.  Returns the mapping
+   that matches KEY, or the first empty mapping if none matches.  */
 
 static inline struct mapping *
 find_mapping (const struct hash_table *ht, const void *key)
@@ -281,8 +310,8 @@ find_mapping (const struct hash_table *ht, const void *key)
 
   LOOP_NON_EMPTY (mp, mappings, size)
     if (equals (key, mp->key))
-      return mp;
-  return NULL;
+      break;
+  return mp;
 }
 
 /* Get the value that corresponds to the key KEY in the hash table HT.
@@ -296,7 +325,7 @@ void *
 hash_table_get (const struct hash_table *ht, const void *key)
 {
   struct mapping *mp = find_mapping (ht, key);
-  if (mp)
+  if (NON_EMPTY (mp))
     return mp->value;
   else
     return NULL;
@@ -310,8 +339,7 @@ hash_table_get_pair (const struct hash_table *ht, const void *lookup_key,
 		     void *orig_key, void *value)
 {
   struct mapping *mp = find_mapping (ht, lookup_key);
-
-  if (mp)
+  if (NON_EMPTY (mp))
     {
       if (orig_key)
 	*(void **)orig_key = mp->key;
@@ -328,7 +356,8 @@ hash_table_get_pair (const struct hash_table *ht, const void *lookup_key,
 int
 hash_table_contains (const struct hash_table *ht, const void *key)
 {
-  return find_mapping (ht, key) != NULL;
+  struct mapping *mp = find_mapping (ht, key);
+  return NON_EMPTY (mp);
 }
 
 /* Grow hash table HT as necessary, and rehash all the key-value
@@ -342,28 +371,28 @@ grow_hash_table (struct hash_table *ht)
   struct mapping *mp, *mappings;
   int newsize;
 
-  newsize = prime_size (ht->size * 2, &ht->prime_offset);
+  newsize = prime_size (ht->size * HASH_RESIZE_FACTOR, &ht->prime_offset);
 #if 0
   printf ("growing from %d to %d; fullness %.2f%% to %.2f%%\n",
 	  ht->size, newsize,
-	  (double)100 * ht->count / ht->size,
-	  (double)100 * ht->count / newsize);
+	  100.0 * ht->count / ht->size,
+	  100.0 * ht->count / newsize);
 #endif
 
   ht->size = newsize;
-  ht->resize_threshold = newsize * 3 / 4;
+  ht->resize_threshold = newsize * HASH_FULLNESS_THRESHOLD;
 
   mappings = xmalloc (ht->size * sizeof (struct mapping));
   memset (mappings, '\0', ht->size * sizeof (struct mapping));
   ht->mappings = mappings;
 
   for (mp = old_mappings; mp < old_end; mp++)
-    if (!EMPTY_MAPPING_P (mp))
+    if (NON_EMPTY (mp))
       {
 	struct mapping *new_mp = mappings + HASH_POSITION (ht, mp->key);
-	/* We don't need to call test function and worry about
-	   collisions because all the keys come from the hash table
-	   and are therefore guaranteed to be unique.  */
+	/* We don't need to test for uniqueness of keys because all
+	   the keys come from the hash table and are therefore known
+	   to be unique.  */
 	LOOP_NON_EMPTY (new_mp, mappings, newsize)
 	  ;
 	*new_mp = *mp;
@@ -378,27 +407,27 @@ grow_hash_table (struct hash_table *ht)
 void
 hash_table_put (struct hash_table *ht, const void *key, void *value)
 {
-  struct mapping *mappings = ht->mappings;
-  int size = ht->size;
-  int (*equals) PARAMS ((const void *, const void *)) = ht->test_function;
+  struct mapping *mp = find_mapping (ht, key);
+  if (NON_EMPTY (mp))
+    {
+      /* update existing item */
+      mp->key   = (void *)key; /* const? */
+      mp->value = value;
+      return;
+    }
 
-  struct mapping *mp = mappings + HASH_POSITION (ht, key);
+  /* If adding the item would make the table exceed max. fullness,
+     grow the table first.  */
+  if (ht->count >= ht->resize_threshold)
+    {
+      grow_hash_table (ht);
+      mp = find_mapping (ht, key);
+    }
 
-  LOOP_NON_EMPTY (mp, mappings, size)
-    if (equals (key, mp->key))
-      {
-	mp->key   = (void *)key; /* const? */
-	mp->value = value;
-	return;
-      }
-
+  /* add new item */
   ++ht->count;
   mp->key   = (void *)key;	/* const? */
   mp->value = value;
-
-  if (ht->count > ht->resize_threshold)
-    /* When table is 75% full, regrow it. */
-    grow_hash_table (ht);
 }
 
 /* Remove a mapping that matches KEY from HT.  Return 0 if there was
@@ -408,7 +437,7 @@ int
 hash_table_remove (struct hash_table *ht, const void *key)
 {
   struct mapping *mp = find_mapping (ht, key);
-  if (!mp)
+  if (!NON_EMPTY (mp))
     return 0;
   else
     {
@@ -459,7 +488,7 @@ hash_table_clear (struct hash_table *ht)
 }
 
 /* Map MAPFUN over all the mappings in hash table HT.  MAPFUN is
-   called with three arguments: the key, the value, and the CLOSURE.
+   called with three arguments: the key, the value, and MAPARG.
 
    It is undefined what happens if you add or remove entries in the
    hash table while hash_table_map is running.  The exception is the
@@ -469,22 +498,22 @@ hash_table_clear (struct hash_table *ht)
 void
 hash_table_map (struct hash_table *ht,
 		int (*mapfun) (void *, void *, void *),
-		void *closure)
+		void *maparg)
 {
   struct mapping *mp  = ht->mappings;
   struct mapping *end = ht->mappings + ht->size;
 
   for (; mp < end; mp++)
-    if (!EMPTY_MAPPING_P (mp))
+    if (NON_EMPTY (mp))
       {
 	void *key;
       repeat:
 	key = mp->key;
-	if (mapfun (key, mp->value, closure))
+	if (mapfun (key, mp->value, maparg))
 	  return;
 	/* hash_table_remove might have moved the adjacent
 	   mappings. */
-	if (mp->key != key && !EMPTY_MAPPING_P (mp))
+	if (mp->key != key && NON_EMPTY (mp))
 	  goto repeat;
       }
 }
@@ -535,13 +564,13 @@ string_cmp (const void *s1, const void *s2)
   return !strcmp ((const char *)s1, (const char *)s2);
 }
 
-/* Return a hash table of initial size INITIAL_SIZE suitable to use
-   strings as keys.  */
+/* Return a hash table of preallocated to store at least ITEMS items
+   suitable to use strings as keys.  */
 
 struct hash_table *
-make_string_hash_table (int initial_size)
+make_string_hash_table (int items)
 {
-  return hash_table_new (initial_size, string_hash, string_cmp);
+  return hash_table_new (items, string_hash, string_cmp);
 }
 
 /*
@@ -577,9 +606,9 @@ string_cmp_nocase (const void *s1, const void *s2)
    string_cmp_nocase.  */
 
 struct hash_table *
-make_nocase_string_hash_table (int initial_size)
+make_nocase_string_hash_table (int items)
 {
-  return hash_table_new (initial_size, string_hash_nocase, string_cmp_nocase);
+  return hash_table_new (items, string_hash_nocase, string_cmp_nocase);
 }
 
 /* Hashing of pointers.  Used for hash tables that are keyed by

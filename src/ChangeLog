@@ -1,3 +1,19 @@
+2003-10-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* hash.c (find_mapping): Return the next available mapping when
+	the key is not found, not NULL.
+	(hash_table_put): Use find_mapping to find the storage for the new
+	data.
+	(hash_table_put): Grow the table before exceeding maximum
+	fullness, not afterwards.
+
+2003-10-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* hash.c (hash_table_new): Slightly change the meaning of the
+	first parameter.  Instead of being the minimum initial size, it is
+	now the minimum number of items that the hash table can take
+	without needing to resize.
+
 2003-10-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* html-url.c (init_interesting): Initialize interesting_tags and
