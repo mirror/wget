@@ -1,4 +1,9 @@
-2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+2001-04-15  Ian Abbott  <abbotti@mev.co.uk>
+
+	windows/wget.dep: The target `connect$o' (connect.obj) now depends on
+	`utils.h'.
+
+2001-04-15  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* po/da.po: Ditto.
 

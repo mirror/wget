@@ -1,7 +1,7 @@
 alloca$o: alloca.c config.h
 ansi2knr$o: ansi2knr.c config.h
 cmpt$o: cmpt.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h
-connect$o: connect.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h connect.h host.h
+connect$o: connect.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h utils.h connect.h host.h
 cookies$o: cookies.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h cookies.h hash.h url.h utils.h
 fnmatch$o: fnmatch.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h fnmatch.h
 ftp-basic$o: ftp-basic.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h utils.h rbuf.h connect.h host.h ftp.h

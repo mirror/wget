@@ -1,5 +1,10 @@
 2002-04-15  Ian Abbott  <abbotti@mev.co.uk>
 
+	Makefile.in: The target `connect$o' (connect.o) now depends on
+	`utils.h'
+
+2002-04-15  Ian Abbott  <abbotti@mev.co.uk>
+
 	* host.c (SET_H_ERRNO): New function-like macro to set `h_errno'.
 	(gethostbyname_with_timeout): Use it.
 

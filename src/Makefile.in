@@ -143,7 +143,7 @@ TAGS: *.c *.h
 
 alloca$o:
 cmpt$o: wget.h
-connect$o: wget.h connect.h host.h
+connect$o: wget.h utils.h connect.h host.h
 cookies$o: wget.h cookies.h hash.h url.h utils.h
 fnmatch$o: wget.h fnmatch.h
 ftp-basic$o: wget.h utils.h rbuf.h connect.h host.h ftp.h
