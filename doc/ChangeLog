@@ -1,3 +1,7 @@
+2000-10-23  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* wget.texi (Recursive Retrieval Options): Improved --delete-after docs.
+	
 2000-10-20  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (Recursive Retrieval Options): Sugg. -E on 1-page download.

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.5.2-b2\n"
-"POT-Creation-Date: 2000-10-20 00:29-0700\n"
+"POT-Creation-Date: 2000-10-23 20:39-0700\n"
 "PO-Revision-Date: 1998-02-29 21:05+01:00\n"
 "Last-Translator: Hrvoje Niksic <hniksic@srce.hr>\n"
 "Language-Team: Croatian <hr-translation@bagan.srce.hr>\n"
@@ -193,22 +193,27 @@ msgstr ""
 "%s (%s) - `%s' snimljen [%ld]\n"
 "\n"
 
-#: src/ftp.c:1034
+#: src/ftp.c:1022 src/main.c:744 src/recur.c:468 src/retr.c:470
+#, c-format
+msgid "Removing %s.\n"
+msgstr "Uklanjam %s.\n"
+
+#: src/ftp.c:1063
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
 msgstr "Koristim `%s' kao privremenu datoteku za listing.\n"
 
-#: src/ftp.c:1046
+#: src/ftp.c:1075
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr "Izbrisao `%s'.\n"
 
-#: src/ftp.c:1082
+#: src/ftp.c:1111
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr "Dubina rekurzije %d prelazi najveæu dozvoljenu %d.\n"
 
-#: src/ftp.c:1134 src/http.c:1163
+#: src/ftp.c:1163 src/http.c:1163
 #, c-format
 msgid ""
 "Server file no newer than local file `%s' -- not retrieving.\n"
@@ -216,16 +221,16 @@ msgid ""
 msgstr ""
 "Datoteka na poslu¾itelju nije novija od lokalne datoteke `%s' -- ne skidam.\n"
 
-#: src/ftp.c:1140 src/http.c:1171
+#: src/ftp.c:1169 src/http.c:1171
 #, c-format
 msgid "The sizes do not match (local %ld) -- retrieving.\n"
 msgstr "Velièine se ne sla¾u (lokalno %ld) -- skidam.\n"
 
-#: src/ftp.c:1157
+#: src/ftp.c:1186
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr "Pogre¹no ime simbolièkog linka, preskaèem.\n"
 
-#: src/ftp.c:1174
+#: src/ftp.c:1203
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
@@ -234,42 +239,42 @@ msgstr ""
 "Veæ postoji ispravan link %s -> %s\n"
 "\n"
 
-#: src/ftp.c:1182
+#: src/ftp.c:1211
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr "Stvaram simbolièki link %s -> %s\n"
 
-#: src/ftp.c:1193
+#: src/ftp.c:1222
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
 msgstr "Linkovi nisu podr¾ani, preskaèem link `%s'.\n"
 
-#: src/ftp.c:1205
+#: src/ftp.c:1234
 #, c-format
 msgid "Skipping directory `%s'.\n"
 msgstr "Preskaèem direktorij `%s'.\n"
 
-#: src/ftp.c:1214
+#: src/ftp.c:1243
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr "%s: nepoznata/nepodr¾ana vrsta datoteke.\n"
 
-#: src/ftp.c:1231
+#: src/ftp.c:1260
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr "%s: pogre¹no vrijeme.\n"
 
-#: src/ftp.c:1252
+#: src/ftp.c:1281
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr "Ne skidam direktorije jer je dubina %d (maksimalno %d).\n"
 
-#: src/ftp.c:1291
+#: src/ftp.c:1320
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr "Ne idem u `%s' jer je iskljuèen ili nije ukljuèen.\n"
 
-#: src/ftp.c:1336
+#: src/ftp.c:1365
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr "Odbijam `%s'.\n"
@@ -277,17 +282,17 @@ msgstr "Odbijam `%s'.\n"
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1383
+#: src/ftp.c:1412
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr "Ni¹ta ne ide uz `%s'.\n"
 
-#: src/ftp.c:1443
+#: src/ftp.c:1472
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
 msgstr "Snimio HTML-iziran indeks u `%s' [%ld].\n"
 
-#: src/ftp.c:1448
+#: src/ftp.c:1477
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr "Snimio HTML-iziran indeks u `%s'.\n"
@@ -654,7 +659,8 @@ msgstr ""
 "  -nv, --non-verbose              iskljuèi veæinu ispisa.\n"
 "  -i,  --input-file=DATOTEKA      èitaj URL-ove iz DATOTEKE.\n"
 "  -F,  --force-html               tretiraj ulaznu datoteku kao HTML.\n"
-"  -B,  --base=URL                 osnovni URL za relativne linkove kod -F -i.\n"
+"  -B,  --base=URL                 osnovni URL za relativne linkove kod -F "
+"-i.\n"
 "\n"
 
 #: src/main.c:138
@@ -689,7 +695,8 @@ msgstr ""
 "       --spider                     ni¹ta ne skidaj.\n"
 "  -T,  --timeout=SEKUNDE            postavi timeout èitanja na SEKUNDE.\n"
 "  -w,  --wait=SEKUNDE               èekaj SEKUNDE izmeðu skidanja.\n"
-"       --wait-retry=SEKUNDE         èekaj 1...SEKUNDI izmeðu ponovnih poku¹aja.\n"
+"       --wait-retry=SEKUNDE         èekaj 1...SEKUNDI izmeðu ponovnih "
+"poku¹aja.\n"
 "  -Y,  --proxy=on/off               ukljuèi ili iskljuèi proxy.\n"
 "  -Q,  --quota=BROJ                 postavi ogranièenje skidanja na BROJ.\n"
 "\n"
@@ -734,13 +741,15 @@ msgstr ""
 "HTTP options:\n"
 "       --http-user=KORISNIK     postavi HTTP korisnika na KORISNIK.\n"
 "       --http-passwd=ZAPORKA    postavi HTTP zaporku na ZAPORKA.\n"
-"  -C,  --cache=on/off           dozvoli ili zabrani ke¹iranje na poslu¾itelju\n"
+"  -C,  --cache=on/off           dozvoli ili zabrani ke¹iranje na "
+"poslu¾itelju\n"
 "                                  (obièno dozvoljeno).\n"
 "       --ignore-length          ignoriraj `Content-Length' zaglavlje.\n"
 "       --header=STRING          umetni STRING meðu zaglavlja.\n"
 "       --proxy-user=KORISNIK    postavi KORISNIKA kao proxy korisnika\n"
 "       --proxy-passwd=ZAPORKA   postavi proxy zaporku na ZAPORKU.\n"
-"       --referer=URL            dodaj `Referer: URL' zaglavlje u HTTP zahtjev.\n"
+"       --referer=URL            dodaj `Referer: URL' zaglavlje u HTTP "
+"zahtjev.\n"
 "  -s,  --save-headers           snimaj HTTP zaglavlja na disk.\n"
 "  -U,  --user-agent=KLIJENT     identificiraj se kao KLIJENT umjesto\n"
 "                                  Wget/VERZIJA.\n"
@@ -780,12 +789,14 @@ msgid ""
 msgstr ""
 "Rekurzivno skidanje:\n"
 "  -r,  --recursive             rekurzivno skidanje -- koristi pa¾ljivo!\n"
-"  -l,  --level=NUMBER          maksimalna dubina rekurzije (0 za beskonaènu).\n"
+"  -l,  --level=NUMBER          maksimalna dubina rekurzije (0 za "
+"beskonaènu).\n"
 "       --delete-after          bri¹i skinute datoteke.\n"
 "  -k,  --convert-links         konvertiraj apsolutne linkove u relativne.\n"
 "  -m,  --mirror                ukljuèi opcije pogodne za \"mirror\".\n"
 "  -nr, --dont-remove-listing   ne uklanjaj `.listing' datoteke.\n"
-"  -p,  --page-requisites       skupi slike i drugo potrebno za prikaz HTML-a.\n"
+"  -p,  --page-requisites       skupi slike i drugo potrebno za prikaz "
+"HTML-a.\n"
 "\n"
 
 #: src/main.c:188
@@ -816,7 +827,8 @@ msgstr ""
 "  -A,  --accept=POPIS                popis prihvaæenih nastavaka.\n"
 "  -R,  --reject=POPIS                popis odbijenih nastavaka.\n"
 "  -D,  --domains=POPIS               popis prihvaæenih domena.\n"
-"       --exclude-domains=POPIS       zarezom odvojen popis odbijenih domena.\n"
+"       --exclude-domains=POPIS       zarezom odvojen popis odbijenih "
+"domena.\n"
 "  -L,  --relative                    prati samo relativne linkove.\n"
 "       --follow-ftp                  prati FTP linkove iz HTML dokumenata.\n"
 "       --follow-tags=LIST            zarezom odvojen popis HTML tagova koje\n"
@@ -855,10 +867,13 @@ msgstr ""
 "General Public License za vi¹e detalja.\n"
 
 #: src/main.c:436
+#, fuzzy
 msgid ""
 "\n"
-"Originally written by Hrvoje Niksic <hniksic@iskon.hr>.\n"
-msgstr "\nIzvorno napisao Hrvoje Nik¹iæ <hniksic@iskon.hr>.\n"
+"Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
+msgstr ""
+"\n"
+"Izvorno napisao Hrvoje Nik¹iæ <hniksic@iskon.hr>.\n"
 
 #: src/main.c:510
 #, c-format
@@ -891,12 +906,12 @@ msgstr "Ne mogu istovremeno paziti na vrijeme i ne gaziti stare datoteke.\n"
 msgid "%s: missing URL\n"
 msgstr "%s: nedostaje URL\n"
 
-#: src/main.c:749
+#: src/main.c:759
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "Nijedan URL nije pronaðen u %s.\n"
 
-#: src/main.c:758
+#: src/main.c:768
 #, c-format
 msgid ""
 "\n"
@@ -907,14 +922,14 @@ msgstr ""
 "ZAVR©IO --%s--\n"
 "Skinuo: %s bajta u %d datoteka\n"
 
-#: src/main.c:763
+#: src/main.c:773
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "Kvota (%s bajtova) je PREKORAÈENA!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:790
+#: src/main.c:800
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "%s primljen, usmjeravam izlaz na `%%s'.\n"
 
@@ -972,17 +987,12 @@ msgstr "Uporaba: %s NETRC [RAÈUNALO]\n"
 msgid "%s: cannot stat %s: %s\n"
 msgstr "%s: ne mogu stat-irati %s: %s\n"
 
-#: src/recur.c:463 src/retr.c:468
-#, c-format
-msgid "Removing %s.\n"
-msgstr "Uklanjam %s.\n"
-
-#: src/recur.c:464
+#: src/recur.c:469
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
 msgstr "Uklanjam %s buduæi da bi ga trebalo odbiti.\n"
 
-#: src/recur.c:624
+#: src/recur.c:630
 msgid "Loading robots.txt; please ignore errors.\n"
 msgstr "Uèitavam robots.txt; molim ne obazirati se na gre¹ke.\n"
 
@@ -1009,7 +1019,7 @@ msgstr "Proxy %s: Mora biti HTTP.\n"
 msgid "%s: Redirection to itself.\n"
 msgstr "%s: Redirekcija na samog sebe.\n"
 
-#: src/retr.c:489
+#: src/retr.c:491
 msgid ""
 "Giving up.\n"
 "\n"
@@ -1017,7 +1027,7 @@ msgstr ""
 "Odustajem.\n"
 "\n"
 
-#: src/retr.c:489
+#: src/retr.c:491
 msgid ""
 "Retrying.\n"
 "\n"

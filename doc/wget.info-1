@@ -689,11 +689,6 @@ HTTP Options
      this option is discouraged, unless you really know what you are
      doing.
 
-     *NOTE* that Netscape Communications Corp. has claimed that false
-     transmissions of `Mozilla' as the `User-Agent' are a copyright
-     infringement, which will be prosecuted.  *DO NOT* misrepresent
-     Wget as Mozilla.
-
 
 File: wget.info,  Node: FTP Options,  Next: Recursive Retrieval Options,  Prev: HTTP Options,  Up: Invoking
 
@@ -761,12 +756,18 @@ Recursive Retrieval Options
 `--delete-after'
      This option tells Wget to delete every single file it downloads,
      *after* having done so.  It is useful for pre-fetching popular
-     pages through proxy, e.g.:
+     pages through a proxy, e.g.:
 
           wget -r -nd --delete-after http://whatever.com/~popular/page/
 
-     The `-r' option is to retrieve recursively, and `-nd' not to
+     The `-r' option is to retrieve recursively, and `-nd' to not
      create directories.
+
+     Note that `--delete-after' deletes files on the local machine.  It
+     does not issue the `DELE' command to remote FTP sites, for
+     instance.  Also note that when `--delete-after' is specified,
+     `--convert-links' is ignored, so `.orig' files are simply not
+     created in the first place.
 
 `-k'
 `--convert-links'

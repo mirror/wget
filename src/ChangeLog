@@ -1,3 +1,18 @@
+2000-10-23  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* ftp.c (ftp_loop_internal): --delete-after wasn't implemented for
+ 	files downloaded via FTP.  Per a comment, .listing files were not
+	counted towards number of bytes and files downloaded because they're 
+	deleted anyway.  Well, they aren't under -nr, so count them then.
+		
+	* main.c (main): --delete-after didn't delete the root of the tree.
+	Ignore --convert-links if --delete-after was specified.
+		
+	* recur.c (recursive_retrieve): Improved comment; added DEBUGP().
+	Ignore --convert-links if --delete-after was specified.
+		
+	* retr.c (retrieve_from_file): Just added a DEBUGP().
+		
 2000-10-19  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* ftp.c (ftp_loop_internal): downloaded_file() enumerators changed.

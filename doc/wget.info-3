@@ -29,10 +29,10 @@ File: wget.info,  Node: Contributors,  Prev: Security Considerations,  Up: Appen
 Contributors
 ============
 
-   GNU Wget was written by Hrvoje Niksic <hniksic@iskon.hr>.  However,
-its development could never have gone as far as it has, were it not for
-the help of many people, either with bug reports, feature proposals,
-patches, or letters saying "Thanks!".
+   GNU Wget was written by Hrvoje Niksic <hniksic@arsdigita.com>.
+However, its development could never have gone as far as it has, were it
+not for the help of many people, either with bug reports, feature
+proposals, patches, or letters saying "Thanks!".
 
    Special thanks goes to the following people (no particular order):
 

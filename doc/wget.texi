@@ -901,14 +901,20 @@ Retrieval}).  The default maximum depth is 5.
 @item --delete-after
 This option tells Wget to delete every single file it downloads,
 @emph{after} having done so.  It is useful for pre-fetching popular
-pages through proxy, e.g.:
+pages through a proxy, e.g.:
 
 @example
 wget -r -nd --delete-after http://whatever.com/~popular/page/
 @end example
 
-The @samp{-r} option is to retrieve recursively, and @samp{-nd} not to
-create directories.
+The @samp{-r} option is to retrieve recursively, and @samp{-nd} to not
+create directories.  
+
+Note that @samp{--delete-after} deletes files on the local machine.  It
+does not issue the @samp{DELE} command to remote FTP sites, for
+instance.  Also note that when @samp{--delete-after} is specified,
+@samp{--convert-links} is ignored, so @samp{.orig} files are simply not
+created in the first place.
 
 @cindex conversion of links
 @cindex link conversion
