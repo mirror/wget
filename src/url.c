@@ -688,11 +688,14 @@ str_url (const struct urlinfo *u, int hide)
     user = CLEANDUP (u->user);
   if (u->passwd)
     {
-      int j;
-      passwd = CLEANDUP (u->passwd);
       if (hide)
-	for (j = 0; passwd[j]; j++)
-	  passwd[j] = 'x';
+	/* Don't output the password, or someone might see it over the user's
+	   shoulder (or in saved wget output).  Don't give away the number of
+	   characters in the password, either, as we did when we replaced the
+	   password characters with 'x's. */
+	passwd = "<password>";
+      else
+	passwd = CLEANDUP (u->passwd);
     }
   if (u->proto == URLFTP && *dir == '/')
     {

@@ -5,6 +5,9 @@
  	it into this new file, to fix spelling mistakes, to clarify, etc.
 
 	* url.c (write_backup_file): Clarified a comment.
+	(str_url): Henrik van Ginhoven pointed out on the list that we
+	shouldn't give away the number of characters in the password by
+	replacing each character with a 'x'.  Use "<password>" instead.
 
 	* ftp.c (ftp_retrieve_dirs): I don't see a ChangeLog entry for
  	this, but the bug where recursion into FTP directories didn't work
