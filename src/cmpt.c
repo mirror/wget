@@ -1222,3 +1222,38 @@ usleep (unsigned long usec)
   return 0;
 }
 #endif /* not HAVE_USLEEP */
+
+
+#ifndef HAVE_RANDOM
+/* For the systems without random: a really simple congruential RNG,
+   only good enough for what Wget uses it for.  Before you panic: this
+   is not used for any kind of cryptography.  */
+
+static long random_seed;
+
+#define RANDOM_A 9301
+#define RANDOM_C 49297
+#define RANDOM_M 233280
+
+static int
+random_1 (void)
+{
+  if (!random_seed)
+    random_seed = time (NULL);
+  random_seed = (random_seed * RANDOM_A + RANDOM_C) % RANDOM_M;
+  return random_seed;
+}
+
+long
+random (void)
+{
+  /* Upper bits of random() are a bit more random.  Compose random()
+     from higher bits of three call to random().  */
+  unsigned r1 = random_1 () >> 8;
+  unsigned r2 = random_1 () >> 4;
+  unsigned r3 = random_1 ();
+  long result = r1 ^ r2 ^ r3;
+
+  return result;
+}
+#endif /* not HAVE_RANDOM */

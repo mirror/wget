@@ -1,3 +1,8 @@
+2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* cmpt.c (random): New function, a simple-minded replacement for
+	random() on systems that don't have it.
+
 2001-11-26  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* config.h.in: Put a HAVE_USLEEP stub.
