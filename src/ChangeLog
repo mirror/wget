@@ -1,5 +1,11 @@
 2003-09-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* safe-ctype.h (_sch_test): The cast of BIT to unsigned char was
+	broken -- _sch_istable bitmasks are 16-bit, not 8-bit!  Cast BIT
+	to unsigned short instead.
+
+2003-09-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (path_simplify): Instead of calls to memmove, handle "./"
 	and "../" by advancing pointers.
 
