@@ -40,6 +40,7 @@ so, delete this exception statement from your version.  */
 #define	FNM_NOMATCH	1
 
 int fnmatch PARAMS ((const char *, const char *, int));
+int has_insecure_name_p PARAMS ((const char *s));
 int has_wildcards_p PARAMS ((const char *));
 
 #endif /* FNMATCH_H */

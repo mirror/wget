@@ -35,6 +35,11 @@ so, delete this exception statement from your version.  */
 
 #include <errno.h>
 #include "wget.h"
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# include <strings.h>
+#endif /* HAVE_STRING_H */
 #include "fnmatch.h"
 
 /* Match STRING against the filename pattern PATTERN, returning zero
@@ -196,6 +201,19 @@ fnmatch (const char *pattern, const char *string, int flags)
     return (0);
 
   return (FNM_NOMATCH);
+}
+
+/* Return non-zero if S has a leading '/'  or contains '../' */
+int
+has_insecure_name_p (const char *s)
+{
+  if (*s == '/')
+    return 1;
+
+  if (strstr(s, "../") != 0)
+    return 1;
+
+  return 0;
 }
 
 /* Return non-zero if S contains globbing wildcards (`*', `?', `[' or

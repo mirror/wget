@@ -1593,7 +1593,7 @@ Not descending to `%s' as it is excluded/not-included.\n"), newdir);
 static uerr_t
 ftp_retrieve_glob (struct url *u, ccon *con, int action)
 {
-  struct fileinfo *orig, *start;
+  struct fileinfo *f, *orig, *start;
   uerr_t res;
 
   con->cmd |= LEAVE_PENDING;
@@ -1606,8 +1606,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
      opt.accepts and opt.rejects.  */
   if (opt.accepts || opt.rejects)
     {
-      struct fileinfo *f = orig;
-
+      f = orig;
       while (f)
 	{
 	  if (f->type != FT_DIRECTORY && !acceptable (f->name))
@@ -1619,13 +1618,25 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
 	    f = f->next;
 	}
     }
+  /* Remove all files with possible harmful names */
+  f = orig;
+  while (f)
+    {
+      if (has_insecure_name_p(f->name))
+	{
+	  logprintf (LOG_VERBOSE, _("Rejecting `%s'.\n"), f->name);
+	  f = delelement (f, &start);
+	}
+      else
+	f = f->next;
+    }
   /* Now weed out the files that do not match our globbing pattern.
      If we are dealing with a globbing pattern, that is.  */
   if (*u->file && (action == GLOBALL || action == GETONE))
     {
       int matchres = 0;
-      struct fileinfo *f = start;
 
+      f = start;
       while (f)
 	{
 	  matchres = fnmatch (u->file, f->name, 0);

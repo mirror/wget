@@ -1,3 +1,15 @@
+2003-01-11  Ian Abbott	<abbotti@mev.co.uk>
+
+	* ftp.c (ftp_retrieve_glob): Reject insecure filenames as determined
+	by calling new function has_insecure_name_p.  This is based on a
+	patch by Red Hat.
+
+	* fnmatch.c (has_insecure_name_p): New function: returns non-zero
+	if filename starts with `/' or contains `../' and is therefore
+	considered insecure.
+
+	* fnmatch.h: Declare has_insecure_name_p().
+
 2002-08-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* init.c (cmd_file): Allocate RESULT correctly.
