@@ -709,13 +709,13 @@ parse_robots (const char *robots_filename)
       *str++ = '\0';
       /* Look for the string beginning...  */
       for (; *str && ISSPACE (*str); str++);
-      /* Look for comments and kill them off.  */
+      /* Look for comments or trailing spaces and kill them off.  */
       for (p = str; *p; p++)
-	if (*p && ISSPACE (*p) && *(p + 1) == '#')
+	if (*p && ISSPACE (*p) && ((*(p + 1) == '#') || (*(p + 1) == '\0')))
 	  {
-	    /* We have found a shell-style comment `<sp>+ #'.  Now
-	       rewind to the beginning of the spaces and place '\0'
-	       there.  */
+	    /* We have found either a shell-style comment `<sp>+#' or some
+               trailing spaces.  Now rewind to the beginning of the spaces
+               and place '\0' there.  */
 	    while (p > str && ISSPACE (*p))
 	      --p;
 	    if (p == str)
