@@ -31,6 +31,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
+#include <openssl/rand.h>
 
 #include "wget.h"
 #include "connect.h"
@@ -40,6 +41,50 @@ extern int errno;
 #endif
 
 static int verify_callback PARAMS ((int, X509_STORE_CTX *));
+
+static void
+ssl_init_prng (void)
+{
+#if SSLEAY_VERSION_NUMBER >= 0x00905100
+  if (RAND_status () == 0)
+    {
+      char rand_file[256];
+      time_t t;
+      pid_t pid;
+      long l,seed;
+
+      t = time(NULL);
+      pid = getpid();
+      RAND_file_name(rand_file, 256);
+      if (rand_file != NULL)
+	{
+	  /* Seed as much as 1024 bytes from RAND_file_name */
+	  RAND_load_file(rand_file, 1024);
+	}
+      /* Seed in time (mod_ssl does this) */
+      RAND_seed((unsigned char *)&t, sizeof(time_t));
+      /* Seed in pid (mod_ssl does this) */
+      RAND_seed((unsigned char *)&pid, sizeof(pid_t));
+      /* Initialize system's random number generator */
+      RAND_bytes((unsigned char *)&seed, sizeof(long));
+      srand48(seed);
+      while (RAND_status () == 0)
+	{
+	  /* Repeatedly seed the PRNG using the system's random number
+	     generator until it has been seeded with enough data.  */
+	  l = lrand48();
+	  RAND_seed((unsigned char *)&l, sizeof(long));
+	}
+      if (rand_file != NULL)
+	{
+	  /* Write a rand_file */
+	  RAND_write_file(rand_file);
+	}
+    }
+#endif /* SSLEAY_VERSION_NUMBER >= 0x00905100 */
+  return;
+}
+
 
 /* Creates a SSL Context and sets some defaults for it */
 uerr_t
@@ -66,6 +111,7 @@ init_ssl (SSL_CTX **ctx)
 				       SSL_FILETYPE_PEM) <= 0)
 	return SSLERRCERTKEY;
   }
+  ssl_init_prng();
   return 0; /* Succeded */
 }
 
@@ -82,6 +128,9 @@ connect_ssl (SSL **con, SSL_CTX *ctx, int fd)
   SSL_connect (*con);  
   if ((*con)->state != SSL_ST_OK)
     return 1;
+  /*while((SSLerror=ERR_get_error())!=0)
+    printf("%s\n", ERR_error_string(SSLerror,NULL));*/
+
   return 0;
 }
 

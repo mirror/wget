@@ -1,3 +1,7 @@
+2001-11-23  Lemble Gregory  <gregory.lemble@st.com>
+
+	* gen_sslfunc.c (ssl_init_prng): New function; seed the SSL RNG.
+
 2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* progress.c: Renamed dp_* functions to dot_* for greater clarity
