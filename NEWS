@@ -15,7 +15,7 @@ puts you in some directory other than '/'.
 
 ** "Keep-Alive" connections are now supported.
 
-** https URLs (SSL) are now supported if you link wget with OpenSSL.
+** https (SSL) URLs are now supported if you link wget with OpenSSL.
 
 ** The HTML parser has been rewritten.  The new one works more
 reliably, allows finer-grained control over which tags and attributes
@@ -31,7 +31,6 @@ large sites (thousands of documents).
 
 ** Wget now mmaps the files it needs to read instead of allocating
 heap memory to read them.
-
 
 * Changes in Wget 1.6
 

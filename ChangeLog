@@ -1,3 +1,7 @@
+2001-01-16  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* NEWS: Added more NEWS items.
+
 2001-01-15  Dan Harkless  <wget@harkless.org>
 
 	* NEWS: Was not being maintained.  Added some significant 1.7-dev stuff.
