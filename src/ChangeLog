@@ -1,5 +1,10 @@
 2003-11-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* connect.c (connect_to_host): Don't reference address list after
+	releasing it.
+
+2003-11-17  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (print_help): Fix alignment of FTP options output.
 
 2003-11-17  Hrvoje Niksic  <hniksic@xemacs.org>

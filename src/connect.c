@@ -332,12 +332,11 @@ int
 connect_to_host (const char *host, int port)
 {
   int i, start, end;
-  struct address_list *al;
-  int lh_flags = 0;
-  int sock = -1;
+  int sock;
 
- again:
-  al = lookup_host (host, lh_flags);
+  struct address_list *al = lookup_host (host, 0);
+
+ retry:
   if (!al)
     return E_HOST;
 
@@ -347,31 +346,32 @@ connect_to_host (const char *host, int port)
       const ip_address *ip = address_list_address_at (al, i);
       sock = connect_to_ip (ip, port, host);
       if (sock >= 0)
-	/* Success. */
-	break;
-
-      address_list_set_faulty (al, i);
+	{
+	  /* Success. */
+	  address_list_set_connected (al);
+	  address_list_release (al);
+	  return sock;
+	}
 
       /* The attempt to connect has failed.  Continue with the loop
 	 and try next address. */
+
+      address_list_set_faulty (al, i);
+    }
+
+  /* Failed to connect to any of the addresses in AL. */
+
+  if (address_list_connected_p (al))
+    {
+      /* We connected to AL before, but cannot do so now.  That might
+	 indicate that our DNS cache entry for HOST has expired.  */
+      address_list_release (al);
+      al = lookup_host (host, LH_REFRESH);
+      goto retry;
     }
   address_list_release (al);
 
-  if (sock >= 0)
-    /* Mark a successful connection to one of the addresses. */
-    address_list_set_connected (al);
-
-  if (sock < 0 && address_list_connected_p (al))
-    {
-      /* We are unable to connect to any of HOST's addresses, although
-	 we were previously able to connect to HOST.  That might
-	 indicate that HOST is under dynamic DNS and the addresses
-	 we're connecting to have expired.  Resolve it again.  */
-      lh_flags |= LH_REFRESH;
-      goto again;
-    }
-
-  return sock;
+  return -1;
 }
 
 int
