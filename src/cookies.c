@@ -230,7 +230,7 @@ store_cookie (struct cookie_jar *jar, struct cookie *cookie)
 	   cookie->permanent ? "permanent" : "nonpermanent",
 	   cookie->secure,
 	   cookie->expiry_time
-	   ? asctime (localtime (&cookie->expiry_time)) : "<indefinitely>",
+	   ? asctime (localtime (&cookie->expiry_time)) : "<undefined>",
 	   cookie->attr, cookie->value));
 }
 
@@ -676,7 +676,7 @@ check_domain_match (const char *cookie_domain, const char *host)
   DEBUGP ((" 3"));
 
   /* HOST must match the tail of cookie_domain. */
-  if (!match_tail (host, cookie_domain))
+  if (!match_tail (host, cookie_domain, 1))
     return 0;
 
   /* We know that COOKIE_DOMAIN is a subset of HOST; however, we must
@@ -754,7 +754,7 @@ check_domain_match (const char *cookie_domain, const char *host)
 	  ".com", ".edu", ".net", ".org", ".gov", ".mil", ".int"
 	};
 	for (i = 0; i < ARRAY_SIZE (known_toplevel_domains); i++)
-	  if (match_tail (cookie_domain, known_toplevel_domains[i]))
+	  if (match_tail (cookie_domain, known_toplevel_domains[i], 1))
 	    {
 	      known_toplevel = 1;
 	      break;

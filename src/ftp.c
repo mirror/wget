@@ -698,6 +698,18 @@ Error in server response, closing control connection.\n"));
 
   if (cmd & DO_RETR)
     {
+      /* If we're in spider mode, don't really retrieve anything.  The
+	 fact that we got to this point should be proof enough that
+	 the file exists, vaguely akin to HTTP's concept of a "HEAD"
+	 request.  */
+      if (opt.spider)
+	{
+	  CLOSE (csock);
+	  closeport (dtsock);
+	  rbuf_uninitialize (&con->rbuf);
+	  return RETRFINISHED;
+	}
+
       if (opt.verbose)
 	{
 	  if (!opt.server_response)

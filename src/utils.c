@@ -755,20 +755,37 @@ accdir (const char *directory, enum accd flags)
   return 1;
 }
 
-/* Match the end of STRING against PATTERN.  For instance:
+/* Return non-zero if STRING ends with TAIL.  For instance:
 
-   match_backwards ("abc", "bc") -> 1
-   match_backwards ("abc", "ab") -> 0
-   match_backwards ("abc", "abc") -> 1 */
+   match_tail ("abc", "bc", 0)  -> 1
+   match_tail ("abc", "ab", 0)  -> 0
+   match_tail ("abc", "abc", 0) -> 1
+
+   If FOLD_CASE_P is non-zero, the comparison will be
+   case-insensitive.  */
+
 int
-match_tail (const char *string, const char *pattern)
+match_tail (const char *string, const char *tail, int fold_case_p)
 {
   int i, j;
 
-  for (i = strlen (string), j = strlen (pattern); i >= 0 && j >= 0; i--, j--)
-    if (string[i] != pattern[j])
-      break;
-  /* If the pattern was exhausted, the match was succesful.  */
+  /* We want this to be fast, so we code two loops, one with
+     case-folding, one without. */
+
+  if (!fold_case_p)
+    {
+      for (i = strlen (string), j = strlen (tail); i >= 0 && j >= 0; i--, j--)
+	if (string[i] != tail[j])
+	  break;
+    }
+  else
+    {
+      for (i = strlen (string), j = strlen (tail); i >= 0 && j >= 0; i--, j--)
+	if (TOLOWER (string[i]) != TOLOWER (tail[j]))
+	  break;
+    }
+
+  /* If the tail was exhausted, the match was succesful.  */
   if (j == -1)
     return 1;
   else
@@ -797,7 +814,7 @@ in_acclist (const char *const *accepts, const char *s, int backward)
 	{
 	  if (backward)
 	    {
-	      if (match_tail (s, *accepts))
+	      if (match_tail (s, *accepts, 0))
 		return 1;
 	    }
 	  else

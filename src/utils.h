@@ -69,7 +69,7 @@ char *file_merge PARAMS ((const char *, const char *));
 int acceptable PARAMS ((const char *));
 int accdir PARAMS ((const char *s, enum accd));
 char *suffix PARAMS ((const char *s));
-int match_tail PARAMS ((const char *, const char *));
+int match_tail PARAMS ((const char *, const char *, int));
 
 int has_html_suffix_p PARAMS ((const char *));
 

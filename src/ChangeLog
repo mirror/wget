@@ -1,3 +1,14 @@
+2002-05-08  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* cookies.c (check_domain_match): Use match_tail in case
+	insensitive mode.
+
+	* utils.c (match_tail): Allow the caller to specify case
+	insensitive mode.
+
+	* cookies.c (store_cookie): When expiry_time is 0, print it as
+	undefined, not indefinite.
+
 2002-05-07  Ian Abbott  <abbotti@mev.co.uk>
 
 	* cookies.c (cookie_jar_process_set_cookie): Do not store
