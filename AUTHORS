@@ -19,3 +19,8 @@ Dan Harkless.  Added --backup-converted, --follow-tags, --html-extension,
 --ignore-tags, and --page-requisites; improved documentation; etc.
 
 Christian Fraenkel.  Implemented SSL support.
+
+Thomas Lussnig.  Implemented IPv6 support.
+
+Ian Abbott.  Contributed bugfixes, Windows-related fixes, provided a
+prototype implementation of the new recursive code, and more.
