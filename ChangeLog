@@ -2,6 +2,12 @@
 
 	* INSTALL: Updated to reflect --with-ssl's new optional parameter.
 
+	* configure.in: Christian Fraenkel's tests for -lcrypto and -lssl
+	were in the wrong order, causing a link failure if you're using
+	libcrypto.a and libssl.a rather than shared libraries.  Also put
+	in checks for -ldl, necessary since the libcrypto shared library
+	doesn't record its dependency on libdl.
+
 2001-03-26  Dan Harkless  <wget@harkless.org>
 
 	* TODO: -p should probably go "_two_ more hops" on <FRAMESET> pages.

@@ -204,8 +204,19 @@ if test x"$with_ssl" != x -a x"$with_ssl" != x"no"; then
   LDFLAGS="-L$with_ssl/lib -R$with_ssl/lib $LDFLAGS"
 
   ssl_link_failure=no
-  AC_CHECK_LIB(ssl,SSL_new,,ssl_link_failure=yes,-lcrypto)
+
+  dnl Unfortunately, as of this writing (OpenSSL 0.9.6), the libcrypto shared
+  dnl library doesn't record its dependency on libdl, so we need to check for it
+  dnl ourselves so we won't fail to link due to a lack of -ldl.  Most OSes use
+  dnl dlopen(), but HP-UX uses shl_load().
+  AC_CHECK_LIB(dl,dlopen)
+  AC_CHECK_LIB(dl,shl_load)
+
+  dnl These checks need to be in this order, or you'll get a link failure if you
+  dnl use a static libcrypto.a and libssl.a rather than shared libraries.
   AC_CHECK_LIB(crypto,RSA_new,,ssl_link_failure=yes)
+  AC_CHECK_LIB(ssl,SSL_new,,ssl_link_failure=yes)
+
   if test x"$ssl_link_failure" = x"yes"; then
     echo
     echo "WARNING: Failed to link with OpenSSL libraries in $with_ssl/lib."
