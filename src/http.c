@@ -1453,7 +1453,6 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	  && (!strcmp (suf, "html") || !strcmp (suf, "htm")))
 	*dt |= TEXTHTML;
 
-      FREE_MAYBE (suf);
       FREE_MAYBE (dummy);
       return RETROK;
     }

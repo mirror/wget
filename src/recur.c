@@ -149,7 +149,7 @@ url_dequeue (struct url_queue *queue,
   xfree (qel);
   return 1;
 }
-
+
 static int descend_url_p PARAMS ((const struct urlpos *, struct url *, int,
 				  struct url *, struct hash_table *));
 
@@ -182,7 +182,8 @@ retrieve_tree (const char *start_url)
   /* The queue of URLs we need to load. */
   struct url_queue *queue = url_queue_new ();
 
-  /* The URLs we decided we don't want to load. */
+  /* The URLs we do not wish to enqueue, because they are already in
+     the queue, but haven't been downloaded yet.  */
   struct hash_table *blacklist = make_string_hash_table (0);
 
   /* We'll need various components of this, so better get it over with
@@ -242,9 +243,6 @@ retrieve_tree (const char *start_url)
 	       tree.  The recursion is partial in that we won't
 	       traverse any <A> or <AREA> tags, nor any <LINK> tags
 	       except for <LINK REL="stylesheet">. */
-	    /* #### This would be the place to implement the TODO
-	       entry saying that -p should do two more hops on
-	       framesets.  */
 	    dash_p_leaf_HTML = TRUE;
 	  else
 	    {
@@ -348,7 +346,11 @@ retrieve_tree (const char *start_url)
 
 /* Based on the context provided by retrieve_tree, decide whether a
    URL is to be descended to.  This is only ever called from
-   retrieve_tree, but is in a separate function for clarity.  */
+   retrieve_tree, but is in a separate function for clarity.
+
+   The most expensive checks (such as those for robots) are memoized
+   by storing these URLs to BLACKLIST.  This may or may not help.  It
+   will help if those URLs are encountered many times.  */
 
 static int
 descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
@@ -391,7 +393,7 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
       && !(u->scheme == SCHEME_FTP && opt.follow_ftp))
     {
       DEBUGP (("Not following non-HTTP schemes.\n"));
-      goto blacklist;
+      goto out;
     }
 
   /* 2. If it is an absolute link and they are not followed, throw it
@@ -400,7 +402,7 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
     if (opt.relative_only && !upos->link_relative_p)
       {
 	DEBUGP (("It doesn't really look like a relative link.\n"));
-	goto blacklist;
+	goto out;
       }
 
   /* 3. If its domain is not to be accepted/looked-up, chuck it
@@ -408,7 +410,7 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
   if (!accept_domain (u))
     {
       DEBUGP (("The domain was not accepted.\n"));
-      goto blacklist;
+      goto out;
     }
 
   /* 4. Check for parent directory.
@@ -423,7 +425,7 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
       if (!frontcmp (parent->dir, u->dir))
 	{
 	  DEBUGP (("Trying to escape the root directory with no_parent in effect.\n"));
-	  goto blacklist;
+	  goto out;
 	}
     }
 
@@ -435,13 +437,13 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
       if (!accdir (u->dir, ALLABS))
 	{
 	  DEBUGP (("%s (%s) is excluded/not-included.\n", url, u->dir));
-	  goto blacklist;
+	  goto out;
 	}
     }
 
   /* 6. */
   {
-    char *suf = NULL;
+    char *suf;
     /* Check for acceptance/rejection rules.  We ignore these rules
        for HTML documents because they might lead to other files which
        need to be downloaded.  Of course, we don't know which
@@ -466,11 +468,9 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
 	  {
 	    DEBUGP (("%s (%s) does not match acc/rej rules.\n",
 		     url, u->file));
-	    FREE_MAYBE (suf);
-	    goto blacklist;
+	    goto out;
 	  }
       }
-    FREE_MAYBE (suf);
   }
 
   /* 7. */
@@ -479,7 +479,7 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
       {
 	DEBUGP (("This is not the same hostname as the parent's (%s and %s).\n",
 		 u->host, parent->host));
-	goto blacklist;
+	goto out;
       }
 
   /* 8. */
@@ -509,7 +509,8 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
       if (!res_match_path (specs, u->path))
 	{
 	  DEBUGP (("Not following %s because robots.txt forbids it.\n", url));
-	  goto blacklist;
+	  string_set_add (blacklist, url);
+	  goto out;
 	}
     }
 
@@ -518,9 +519,6 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
   DEBUGP (("Decided to load it.\n"));
 
   return 1;
-
- blacklist:
-  string_set_add (blacklist, url);
 
  out:
   DEBUGP (("Decided NOT to load it.\n"));
@@ -604,6 +602,11 @@ void
 convert_all_links (void)
 {
   slist *html;
+  struct wget_timer *timer;
+  long msecs;
+  int file_count = 0;
+
+  timer = wtimer_new ();
 
   /* Destructively reverse downloaded_html_files to get it in the right order.
      recursive_retrieve() used slist_prepend() consistently.  */
@@ -675,11 +678,19 @@ convert_all_links (void)
 	      cur_url->local_name = NULL;
 	    }
 	}
+
       /* Convert the links in the file.  */
       convert_links (html->string, urls);
+      ++file_count;
+
       /* Free the data.  */
       free_urlpos (urls);
     }
+
+  msecs = wtimer_elapsed (timer);
+  wtimer_delete (timer);
+  logprintf (LOG_VERBOSE, _("Converted %d files in %.2f seconds.\n"),
+	     file_count, (double)msecs / 1000);
 }
 
 /* Cleanup the data structures associated with recursive retrieving

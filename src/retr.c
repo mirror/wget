@@ -336,7 +336,6 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  char *suf = suffix (u->local);
 	  if (suf && (!strcasecmp (suf, "html") || !strcasecmp (suf, "htm")))
 	    *dt |= TEXTHTML;
-	  FREE_MAYBE (suf);
 	}
 #endif
     }

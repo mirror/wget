@@ -477,24 +477,24 @@ create_image (struct bar_progress *bp, long dltime)
   long size = bp->initial_length + bp->count;
 
   /* The progress bar should look like this:
-     xx% [=======>             ] xx KB/s nnnnn ETA 00:00
+     xx% [=======>             ] nn.nnn rrK/s ETA 00:00
 
      Calculate its geometry:
 
-     "xx% " or "100%" - percentage                - 4 chars exactly
-     "[]"             - progress bar decorations  - 2 chars exactly
-     "1012.56K/s "    - dl rate                   - 11 chars exactly
-     "n,nnn,nnn,nnn " - downloaded bytes          - 14 or less chars
-     "ETA xx:xx:xx"   - ETA                       - 12 or less chars
+     "xx% " or "100%"  - percentage                - 4 chars exactly
+     "[]"              - progress bar decorations  - 2 chars exactly
+     " n,nnn,nnn,nnn"  - downloaded bytes          - 14 or less chars
+     " 1012.56K/s"     - dl rate                   - 11 chars exactly
+     " ETA xx:xx:xx"   - ETA                       - 13 or less chars
 
-     "=====>..."      - progress bar content      - the rest
+     "=====>..."       - progress bar content      - the rest
   */
-  int progress_size = screen_width - (4 + 2 + 11 + 14 + 12);
+  int progress_size = screen_width - (4 + 2 + 14 + 11 + 13);
 
   if (progress_size < 5)
     progress_size = 0;
 
-  /* "xxx%" */
+  /* "xx% " */
   if (bp->total_length > 0)
     {
       int percentage = (int)(100.0 * size / bp->total_length);
@@ -509,12 +509,13 @@ create_image (struct bar_progress *bp, long dltime)
     }
   else
     {
-      int i = 5;
-      while (i--)
-	*p++ = ' ';
+      *p++ = ' ';
+      *p++ = ' ';
+      *p++ = ' ';
+      *p++ = ' ';
     }
 
-  /* The progress bar: "|====>      |" */
+  /* The progress bar: "[====>      ]" */
   if (progress_size && bp->total_length > 0)
     {
       double fraction = (double)size / bp->total_length;
@@ -566,30 +567,30 @@ create_image (struct bar_progress *bp, long dltime)
       ++bp->tick;
     }
 
-  /* "1012.45K/s " */
+  /* " 1,234,567" */
+  /* If there are 7 or less digits (9 because of "legible" comas),
+     print the number in constant space.  This will prevent the rest
+     of the line jerking at the beginning of download, but without
+     assigning maximum width in all cases.  */
+  sprintf (p, " %9s", legible (size));
+  p += strlen (p);
+
+  /* " 1012.45K/s" */
   if (dltime && bp->count)
     {
       static char *short_units[] = { "B/s", "K/s", "M/s", "G/s" };
       int units = 0;
       double dlrate = calc_rate (bp->count, dltime, &units);
-      sprintf (p, "%7.2f%s ", dlrate, short_units[units]);
+      sprintf (p, " %7.2f%s", dlrate, short_units[units]);
       p += strlen (p);
     }
   else
     {
-      strcpy (p, "  --.-- K/s ");
-      p += 12;
+      strcpy (p, "   --.--K/s");
+      p += 11;
     }
 
-  /* "1,234,567 " */
-  /* If there are 7 or less digits (9 because of "legible" comas),
-     print the number in constant space.  This will prevent the "ETA"
-     string from jerking as the data begins to arrive.  */
-  sprintf (p, "%9s", legible (size));
-  p += strlen (p);
-  *p++ = ' ';
-
-  /* "ETA xx:xx:xx" */
+  /* " ETA xx:xx:xx" */
   if (bp->total_length > 0 && bp->count > 0)
     {
       int eta, eta_hrs, eta_min, eta_sec;
@@ -605,6 +606,7 @@ create_image (struct bar_progress *bp, long dltime)
       /*printf ("\neta: %d, %d %d %d\n", eta, eta_hrs, eta_min, eta_sec);*/
       /*printf ("\n%ld %f %ld %ld\n", dltime, tm_sofar, bytes_remaining, bp->count);*/
 
+      *p++ = ' ';
       *p++ = 'E';
       *p++ = 'T';
       *p++ = 'A';
@@ -621,8 +623,8 @@ create_image (struct bar_progress *bp, long dltime)
     }
   else if (bp->total_length > 0)
     {
-      strcpy (p, "ETA --:--");
-      p += 9;
+      strcpy (p, " ETA --:--");
+      p += 10;
     }
 
   assert (p - bp->buffer <= screen_width);

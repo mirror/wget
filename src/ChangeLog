@@ -1,5 +1,17 @@
 2001-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* recur.c (descend_url_p): Be more conservative with blacklisting
+	URLs.
+	(convert_all_links): Print how many files have been converted, and
+	how long it took.
+
+	* progress.c (create_image): Place the number of downloaded bytes
+	right after the progress bar.
+
+	* utils.c (suffix): Return a pointer into the string.
+
+2001-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (convert_links): Handle CO_NULLIFY_BASE.
 
 	* recur.c (retrieve_tree): Ignore download-ignorable children.

@@ -904,7 +904,7 @@ in_acclist (const char *const *accepts, const char *s, int backward)
   return 0;
 }
 
-/* Return the malloc-ed suffix of STR.  For instance:
+/* Return the location of STR's suffix (file extension).  Examples:
    suffix ("foo.bar")       -> "bar"
    suffix ("foo.bar.baz")   -> "baz"
    suffix ("/foo/bar")      -> NULL
@@ -914,9 +914,11 @@ suffix (const char *str)
 {
   int i;
 
-  for (i = strlen (str); i && str[i] != '/' && str[i] != '.'; i--);
+  for (i = strlen (str); i && str[i] != '/' && str[i] != '.'; i--)
+    ;
+
   if (str[i++] == '.')
-    return xstrdup (str + i);
+    return (char *)str + i;
   else
     return NULL;
 }
