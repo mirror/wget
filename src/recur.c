@@ -377,7 +377,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	      }
 	}
       /* What about robots.txt?  */
-      if (!inl && opt.use_robots && u->scheme == SCHEME_FTP)
+      if (!inl && opt.use_robots && u->scheme == SCHEME_HTTP)
 	{
 	  struct robot_specs *specs = res_get_specs (u->host, u->port);
 	  if (!specs)

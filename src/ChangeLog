@@ -1,3 +1,7 @@
+2001-11-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* recur.c (recursive_retrieve): Fix typo.
+
 2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* progress.c (create_image): Don't translate "%ld ".
