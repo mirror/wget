@@ -1,5 +1,10 @@
 2003-09-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi: Set the man page title to a string more descriptive
+	than "Wget manual".
+
+2003-09-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* Makefile.in ($(TEXI2POD)): Update only the #! line.
 
 	* texi2pod.pl: New version from Gcc.

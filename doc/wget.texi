@@ -14,6 +14,11 @@
 @afourpaper
 @end iftex
 
+@c Title for man page.  The weird way texi2pod.pl is written requires
+@c the preceding @set.
+@set Wget Wget
+@c man title Wget The non-interactive network downloader.
+
 @c This should really be generated automatically, possibly by including
 @c an auto-generated file.
 @set VERSION 1.9-cvs
