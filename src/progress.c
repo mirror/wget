@@ -527,7 +527,7 @@ create_image (struct bar_progress *bp, long dltime)
     }
 
   /* "12376 " */
-  sprintf (p, _("%ld "), size);
+  sprintf (p, "%ld ", size);
   p += strlen (p);
 
   /* "ETA: xx:xx:xx" */

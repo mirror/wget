@@ -1,5 +1,9 @@
 2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* progress.c (create_image): Don't translate "%ld ".
+
+2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* progress.c (bar_set_params): Allow the user to force the use of
 	the bar.
 
