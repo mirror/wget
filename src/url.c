@@ -296,6 +296,66 @@ url_skip_uname (const char *url)
   else
     return 0;
 }
+
+/* Used by main.c: detect URLs written using the "shorthand" URL forms
+   popularized by Netscape and NcFTP.  HTTP shorthands look like this:
+
+   www.foo.com[:port]/dir/file   -> http://www.foo.com[:port]/dir/file
+   www.foo.com[:port]            -> http://www.foo.com[:port]
+
+   FTP shorthands look like this:
+
+   foo.bar.com:dir/file          -> ftp://foo.bar.com/dir/file
+   foo.bar.com:/absdir/file      -> ftp://foo.bar.com//absdir/file
+
+   If the URL needs not or cannot be rewritten, return NULL.  */
+char *
+rewrite_url_maybe (const char *url)
+{
+  const char *p;
+
+  if (url_has_scheme (url))
+    return NULL;
+
+  /* Look for a ':' or '/'.  The former signifies NcFTP syntax, the
+     latter Netscape.  */
+  for (p = url; *p && *p != ':' && *p != '/'; p++)
+    ;
+
+  if (p == url)
+    return NULL;
+
+  if (*p == ':')
+    {
+      const char *pp, *path;
+      char *res;
+      /* If the characters after the colon and before the next slash
+	 or end of string are all digits, it's HTTP.  */
+      int digits = 0;
+      for (pp = p + 1; ISDIGIT (*pp); pp++)
+	++digits;
+      if (digits > 0
+	  && (*pp == '/' || *pp == '\0'))
+	goto http;
+
+      /* Prepend "ftp://" to the entire URL... */
+      path = p + 1;
+      res = xmalloc (6 + strlen (url) + 1);
+      sprintf (res, "ftp://%s", url);
+      /* ...and replace ':' with '/'. */
+      res[6 + (p - url)] = '/';
+      return res;
+    }
+  else
+    {
+      char *res;
+    http:
+      /* Just prepend "http://" to what we have. */
+      res = xmalloc (7 + strlen (url) + 1);
+      sprintf (res, "http://%s", url);
+      return res;
+    }
+}
 
 /* Allocate a new urlinfo structure, fill it with default values and
    return a pointer to it.  */

@@ -137,4 +137,6 @@ urlpos *add_url PARAMS ((urlpos *, const char *, const char *));
 
 downloaded_file_t downloaded_file PARAMS ((downloaded_file_t, const char *));
 
+char *rewrite_url_maybe PARAMS ((const char *));
+
 #endif /* URL_H */

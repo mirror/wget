@@ -1,5 +1,11 @@
 2001-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* main.c (main): Use it.
+
+	* url.c (rewrite_url_maybe): New function.
+
+2001-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c: Clean up handling of URL schemes.
 
 2001-05-13  Hrvoje Niksic  <hniksic@arsdigita.com>

@@ -50,6 +50,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "recur.h"
 #include "host.h"
 #include "cookies.h"
+#include "url.h"
 
 /* On GNU system this will include system-wide getopt.h. */
 #include "getopt.h"
@@ -739,9 +740,14 @@ Can't timestamp and not clobber old files at the same time.\n"));
   /* Fill in the arguments.  */
   for (i = 0; i < nurl; i++, optind++)
     {
-      char *irix4_cc_needs_this;
-      STRDUP_ALLOCA (irix4_cc_needs_this, argv[optind]);
-      url[i] = irix4_cc_needs_this;
+      char *rewritten = rewrite_url_maybe (argv[optind]);
+      if (rewritten)
+	{
+	  printf ("Converted %s to %s\n", argv[optind], rewritten);
+	  url[i] = rewritten;
+	}
+      else
+	url[i] = xstrdup (argv[optind]);
     }
   url[i] = NULL;
 
@@ -853,6 +859,8 @@ Can't timestamp and not clobber old files at the same time.\n"));
       convert_all_links ();
     }
   log_close ();
+  for (i = 0; i < nurl; i++)
+    free (url[i]);
   cleanup ();
 #ifdef DEBUG_MALLOC
   print_malloc_debug_stats ();
