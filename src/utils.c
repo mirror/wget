@@ -579,6 +579,7 @@ make_directory (const char *directory)
 {
   int quit = 0;
   int i;
+  int ret = 0;
   char *dir;
 
   /* Make a copy of dir, to be able to write to it.  Otherwise, the
@@ -594,18 +595,19 @@ make_directory (const char *directory)
       if (!dir[i])
 	quit = 1;
       dir[i] = '\0';
-      /* Check whether the directory already exists.  */
+      /* Check whether the directory already exists.  Allow creation of
+	 of intermediate directories to fail, as the initial path components
+	 are not necessarily directories!  */
       if (!file_exists_p (dir))
-	{
-	  if (mkdir (dir, 0777) < 0)
-	    return -1;
-	}
+	ret = mkdir (dir, 0777);
+      else
+	ret = 0;
       if (quit)
 	break;
       else
 	dir[i] = '/';
     }
-  return 0;
+  return ret;
 }
 
 /* Merge BASE with FILE.  BASE can be a directory or a file name, FILE

@@ -79,6 +79,7 @@ CMD_DECLARE (cmd_number);
 CMD_DECLARE (cmd_number_inf);
 CMD_DECLARE (cmd_string);
 CMD_DECLARE (cmd_file);
+CMD_DECLARE (cmd_directory);
 CMD_DECLARE (cmd_time);
 CMD_DECLARE (cmd_vector);
 
@@ -117,7 +118,7 @@ static struct {
   { "debug",		&opt.debug,		cmd_boolean },
 #endif
   { "deleteafter",	&opt.delete_after,	cmd_boolean },
-  { "dirprefix",	&opt.dir_prefix,	cmd_file },
+  { "dirprefix",	&opt.dir_prefix,	cmd_directory },
   { "dirstruct",	NULL,			cmd_spec_dirstruct },
   { "domains",		&opt.domains,		cmd_vector },
   { "dotbytes",		&opt.dot_bytes,		cmd_bytes },
@@ -674,7 +675,11 @@ cmd_file (const char *com, const char *val, void *closure)
 
   /* #### If VAL is empty, perhaps should set *CLOSURE to NULL.  */
 
-  if (!enable_tilde_expansion || !(*val == '~' && *(val + 1) == '/'))
+  if (!enable_tilde_expansion || !(*val == '~' && (*(val + 1) == '/'
+#ifdef WINDOWS
+	  || *(val + 1) == '\\'
+#endif
+	  )))
     {
     noexpand:
       *pstring = xstrdup (val);
@@ -688,12 +693,21 @@ cmd_file (const char *com, const char *val, void *closure)
 	goto noexpand;
 
       homelen = strlen (home);
-      while (homelen && home[homelen - 1] == '/')
+      while (homelen && (home[homelen - 1] == '/'
+#ifdef WINDOWS
+	    || home[homelen - 1] == '\\'
+#endif
+	    ))
 	home[--homelen] = '\0';
 
       /* Skip the leading "~/". */
+#ifdef WINDOWS
+      for (++val; *val == '/' || *val == '\\'; val++)
+	;
+#else
       for (++val; *val == '/'; val++)
 	;
+#endif
 
       result = xmalloc (homelen + 1 + strlen (val));
       memcpy (result, home, homelen);
@@ -702,6 +716,35 @@ cmd_file (const char *com, const char *val, void *closure)
 
       *pstring = result;
     }
+#ifdef WINDOWS
+  /* Convert "\" to "/". */
+  {
+    char *s;
+    for (s = *pstring; *s; s++)
+      if (*s == '\\')
+	*s = '/';
+  }
+#endif
+  return 1;
+}
+
+/* Like cmd_file, but strips trailing '/' characters.  */
+static int
+cmd_directory (const char *com, const char *val, void *closure)
+{
+  char *s, *t;
+
+  /* Call cmd_file() for tilde expansion and separator
+     canonicalization (backslash -> slash under Windows).  These
+     things should perhaps be in a separate function.  */
+  if (!cmd_file (com, val, closure))
+    return 0;
+
+  s = *(char **)closure;
+  t = s + strlen (s);
+  while (t > s && *--t == '/')
+    *t = '\0';
+
   return 1;
 }
 

@@ -1,3 +1,15 @@
+2002-01-15  Ian Abbott  <abbotti@mev.co.uk>
+
+	* init.c (cmd_file): Change `\' to `/' for Windows (yes, really!)
+	(cmd_directory): New function. Like cmd_file(), but strips
+	trailing directory separators.
+	(commands): Change action for "dirprefix" from `cmd_file' to
+	`cmd_directory'.
+
+	* utils.c (make_directory): Allow intermediate `mkdir' calls to
+	fail, as not all path components that do not exist should be
+	directory components, especially under Windows.
+
 2002-01-17  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* netrc.c (parse_netrc): Skip leading whitespace before testing
