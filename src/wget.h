@@ -101,6 +101,12 @@ so, delete this exception statement from your version.  */
 # define DEBUGP(x) DO_NOTHING
 #endif /* not ENABLE_DEBUG */
 
+#ifdef __GNUC__
+# define GCC_FORMAT_ATTR(a, b) __attribute__ ((format (printf, a, b)))
+#else  /* not __GNUC__ */
+# define GCC_FORMAT_ATTR(a, b)
+#endif /* not __GNUC__ */
+
 /* Everything uses this, so include them here directly.  */
 #include "xmalloc.h"
 

@@ -61,6 +61,11 @@ so, delete this exception statement from your version.  */
 #endif
 #include <fcntl.h>
 #include <assert.h>
+#ifdef WGET_USE_STDARG
+# include <stdarg.h>
+#else
+# include <varargs.h>
+#endif
 
 /* For TIOCGWINSZ and friends: */
 #ifdef HAVE_SYS_IOCTL_H
@@ -174,6 +179,52 @@ sepstring (const char *s)
   res[i] = strdupdelim (p, s);
   res[i + 1] = NULL;
   return res;
+}
+
+#ifdef WGET_USE_STDARG
+# define VA_START(args, arg1) va_start (args, arg1)
+#else
+# define VA_START(args, ignored) va_start (args)
+#endif
+
+/* Like sprintf, but allocates a string of sufficient size with malloc
+   and returns it.  GNU libc has a similar function named asprintf,
+   which requires the pointer to the string to be passed.  */
+
+char *
+aprintf (const char *fmt, ...)
+{
+  /* This function is implemented using vsnprintf, which we provide
+     for the systems that don't have it.  Therefore, it should be 100%
+     portable.  */
+
+  int size = 32;
+  char *str = xmalloc (size);
+
+  while (1)
+    {
+      int n;
+      va_list args;
+
+      /* See log_vprintf_internal for explanation why it's OK to rely
+	 on the return value of vsnprintf.  */
+
+      VA_START (args, fmt);
+      n = vsnprintf (str, size, fmt, args);
+      va_end (args);
+
+      /* If the printing worked, return the string. */
+      if (n > -1 && n < size)
+	return str;
+
+      /* Else try again with a larger buffer. */
+      if (n > -1)		/* C99 */
+	size = n + 1;		/* precisely what is needed */
+      else
+	size <<= 1;		/* twice the old size */
+      str = xrealloc (str, size);
+    }
+  return NULL;			/* unreached */
 }
 
 /* Return pointer to a static char[] buffer in which zero-terminated

@@ -14,6 +14,12 @@ use of IPv4 and IPv6 respectively.
 
 ** Talking to SSL servers over proxies now actually works.
 
+** The `--header' option can now be used to override generated
+headers.  For example, `wget --header="Host: foo.bar"
+http://127.0.0.1' tells Wget to connect to localhost, but to specify
+"foo.bar" in the `Host' header.  In previous versions such use of
+`--header' lead to duplicate headers in HTTP requests.
+
 ** The progress bar is now updated regularly even when the data does
 not arrive.
 

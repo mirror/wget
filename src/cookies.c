@@ -1192,16 +1192,12 @@ cookie_header (struct cookie_jar *jar, const char *host,
     }
 
   /* Allocate output buffer:
-     "Cookie: "       -- 8
      name=value pairs -- result_size
      "; " separators  -- (count - 1) * 2
-     \r\n line ending -- 2
      \0 terminator    -- 1 */
-  result_size = 8 + result_size + (count - 1) * 2 + 2 + 1;
+  result_size = result_size + (count - 1) * 2 + 1;
   result = xmalloc (result_size);
   pos = 0;
-  strcpy (result, "Cookie: ");
-  pos += 8;
   for (i = 0; i < count; i++)
     {
       struct cookie *c = outgoing[i].cookie;
@@ -1219,8 +1215,6 @@ cookie_header (struct cookie_jar *jar, const char *host,
 	  result[pos++] = ' ';
 	}
     }
-  result[pos++] = '\r';
-  result[pos++] = '\n';
   result[pos++] = '\0';
   assert (pos == result_size);
   return result;

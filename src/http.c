@@ -86,7 +86,6 @@ struct cookie_jar *wget_cookie_jar;
 
 #define TEXTHTML_S "text/html"
 #define TEXTXHTML_S "application/xhtml+xml"
-#define HTTP_ACCEPT "*/*"
 
 /* Some status code validation macros: */
 #define H_20X(x)        (((x) >= 200) && ((x) < 300))
@@ -121,7 +120,235 @@ struct cookie_jar *wget_cookie_jar;
 #define HTTP_STATUS_NOT_IMPLEMENTED	501
 #define HTTP_STATUS_BAD_GATEWAY		502
 #define HTTP_STATUS_UNAVAILABLE		503
+
+enum rp {
+  rel_none, rel_name, rel_value, rel_both
+};
 
+struct request {
+  const char *method;
+  char *arg;
+
+  struct request_header {
+    char *name, *value;
+    enum rp release_policy;
+  } *headers;
+  int hcount, hcapacity;
+};
+
+/* Create a new, empty request.  At least request_set_method must be
+   called before the request can be used.  */
+
+static struct request *
+request_new ()
+{
+  struct request *req = xnew0 (struct request);
+  req->hcapacity = 8;
+  req->headers = xnew_array (struct request_header, req->hcapacity);
+  return req;
+}
+
+/* Set the request's method and its arguments.  METH should be a
+   literal string (or it should outlive the request) because it will
+   not be freed.  ARG will be freed by request_free.  */
+
+static void
+request_set_method (struct request *req, const char *meth, char *arg)
+{
+  req->method = meth;
+  req->arg = arg;
+}
+
+/* Return the method string passed with the last call to
+   request_set_method.  */
+
+static const char *
+request_method (const struct request *req)
+{
+  return req->method;
+}
+
+/* Free one header according to the release policy specified with
+   request_set_header.  */
+
+static void
+release_header (struct request_header *hdr)
+{
+  switch (hdr->release_policy)
+    {
+    case rel_none:
+      break;
+    case rel_name:
+      xfree (hdr->name);
+      break;
+    case rel_value:
+      xfree (hdr->value);
+      break;
+    case rel_both:
+      xfree (hdr->name);
+      xfree (hdr->value);
+      break;
+    }
+}
+
+/* Set the request named NAME to VALUE.  Specifically, this means that
+   a "NAME: VALUE\r\n" header line will be used in the request.  If a
+   header with the same name previously existed in the request, its
+   value will be replaced by this one.
+
+   RELEASE_POLICY determines whether NAME and VALUE should be released
+   (freed) with request_free.  Allowed values are:
+
+    - rel_none     - don't free NAME or VALUE
+    - rel_name     - free NAME when done
+    - rel_value    - free VALUE when done
+    - rel_both     - free both NAME and VALUE when done
+
+   Setting release policy is useful when arguments come from different
+   sources.  For example:
+
+     // Don't free literal strings!
+     request_set_header (req, "Pragma", "no-cache", rel_none);
+
+     // Don't free a global variable, we'll need it later.
+     request_set_header (req, "Referer", opt.referer, rel_none);
+
+     // Value freshly allocated, free it when done.
+     request_set_header (req, "Range", aprintf ("bytes=%ld-", hs->restval),
+			 rel_value);
+   */
+
+static void
+request_set_header (struct request *req, char *name, char *value,
+		    enum rp release_policy)
+{
+  struct request_header *hdr;
+  int i;
+  if (!value)
+    return;
+  for (i = 0; i < req->hcount; i++)
+    {
+      hdr = &req->headers[i];
+      if (0 == strcasecmp (name, hdr->name))
+	{
+	  /* Replace existing header. */
+	  release_header (hdr);
+	  hdr->name = name;
+	  hdr->value = value;
+	  hdr->release_policy = release_policy;
+	  return;
+	}
+    }
+
+  /* Install new header. */
+
+  if (req->hcount >= req->hcount)
+    {
+      req->hcapacity <<= 1;
+      req->headers = xrealloc (req->headers,
+			       req->hcapacity * sizeof (struct request_header));
+    }
+  hdr = &req->headers[req->hcount++];
+  hdr->name = name;
+  hdr->value = value;
+  hdr->release_policy = release_policy;
+}
+
+/* Like request_set_header, but sets the whole header line, as
+   provided by the user using the `--header' option.  For example,
+   request_set_user_header (req, "Foo: bar") works just like
+   request_set_header (req, "Foo", "bar").  */
+
+static void
+request_set_user_header (struct request *req, const char *header)
+{
+  char *name;
+  const char *p = strchr (header, ':');
+  if (!p)
+    return;
+  BOUNDED_TO_ALLOCA (header, p, name);
+  ++p;
+  while (ISSPACE (*p))
+    ++p;
+  request_set_header (req, xstrdup (name), (char *) p, rel_name);
+}
+
+#define APPEND(p, str) do {			\
+  int A_len = strlen (str);			\
+  memcpy (p, str, A_len);			\
+  p += A_len;					\
+} while (0)
+
+/* Construct the request and write it to FD using fd_write.  */
+
+static int
+request_send (const struct request *req, int fd)
+{
+  char *request_string, *p;
+  int i, size, write_error;
+
+  /* Count the request size. */
+  size = 0;
+
+  /* METHOD " " ARG " " "HTTP/1.0" "\r\n" */
+  size += strlen (req->method) + 1 + strlen (req->arg) + 1 + 8 + 2;
+
+  for (i = 0; i < req->hcount; i++)
+    {
+      struct request_header *hdr = &req->headers[i];
+      /* NAME ": " VALUE "\r\n" */
+      size += strlen (hdr->name) + 2 + strlen (hdr->value) + 2;
+    }
+
+  /* "\r\n\0" */
+  size += 3;
+
+  p = request_string = alloca_array (char, size);
+
+  /* Generate the request. */
+
+  APPEND (p, req->method); *p++ = ' ';
+  APPEND (p, req->arg);    *p++ = ' ';
+  memcpy (p, "HTTP/1.0\r\n", 10); p += 10;
+
+  for (i = 0; i < req->hcount; i++)
+    {
+      struct request_header *hdr = &req->headers[i];
+      APPEND (p, hdr->name);
+      *p++ = ':', *p++ = ' ';
+      APPEND (p, hdr->value);
+      *p++ = '\r', *p++ = '\n';
+    }
+
+  *p++ = '\r', *p++ = '\n', *p++ = '\0';
+  assert (p - request_string == size);
+
+#undef APPEND
+
+  DEBUGP (("\n---request begin---\n%s---request end---\n", request_string));
+
+  /* Send the request to the server. */
+
+  write_error = fd_write (fd, request_string, size - 1, -1);
+  if (write_error < 0)
+    logprintf (LOG_VERBOSE, _("Failed writing HTTP request: %s.\n"),
+	       strerror (errno));
+  return write_error;
+}
+
+/* Release the resources used by REQ. */
+
+static void
+request_free (struct request *req)
+{
+  int i;
+  xfree_null (req->arg);
+  for (i = 0; i < req->hcount; i++)
+    release_header (&req->headers[i]);
+  xfree_null (req->headers);
+  xfree (req);
+}
+
 static const char *
 head_terminator (const char *hunk, int oldlen, int peeklen)
 {
@@ -171,13 +398,30 @@ struct response {
   const char *data;
 
   /* The array of pointers that indicate where each header starts.
-     For example, given three headers "foo", "bar", and "baz":
-       foo: value\r\nbar: value\r\nbaz: value\r\n\r\n
-       0             1             2             3
-     I.e. headers[0] points to the beginning of foo, headers[1] points
-     to the end of foo and the beginning of bar, etc.  */
+     For example, given this HTTP response:
+
+       HTTP/1.0 200 Ok
+       Description: some
+        text
+       Etag: x
+
+     The headers are located like this:
+
+     "HTTP/1.0 200 Ok\r\nDescription: some\r\n text\r\nEtag: x\r\n\r\n"
+     ^                   ^                             ^          ^
+     headers[0]          headers[1]                    headers[2] headers[3]
+
+     I.e. headers[0] points to the beginning of the request,
+     headers[1] points to the end of the first header and the
+     beginning of the second one, etc.  */
+
   const char **headers;
 };
+
+/* Create a new response object from the text of the HTTP response,
+   available in HEAD.  That text is automatically split into
+   constituent header lines for fast retrieval using
+   response_header_*.  */
 
 static struct response *
 response_new (const char *head)
@@ -227,6 +471,13 @@ response_new (const char *head)
   return resp;
 }
 
+/* Locate the header named NAME in the request data.  If found, set
+   *BEGPTR to its starting, and *ENDPTR to its ending position, and
+   return 1.  Otherwise return 0.
+
+   This function is used as a building block for response_header_copy
+   and response_header_strdup.  */
+
 static int
 response_header_bounds (const struct response *resp, const char *name,
 			const char **begptr, const char **endptr)
@@ -261,6 +512,14 @@ response_header_bounds (const struct response *resp, const char *name,
   return 0;
 }
 
+/* Copy the response header named NAME to buffer BUF, no longer than
+   BUFSIZE (BUFSIZE includes the terminating 0).  If the header
+   exists, 1 is returned, otherwise 0.  If there should be no limit on
+   the size of the header, use response_header_strdup instead.
+
+   If BUFSIZE is 0, no data is copied, but the boolean indication of
+   whether the header is present is still returned.  */
+
 static int
 response_header_copy (const struct response *resp, const char *name,
 		      char *buf, int bufsize)
@@ -276,6 +535,9 @@ response_header_copy (const struct response *resp, const char *name,
     }
   return 1;
 }
+
+/* Return the value of header named NAME in RESP, allocated with
+   malloc.  If such a header does not exist in RESP, return NULL.  */
 
 static char *
 response_header_strdup (const struct response *resp, const char *name)
@@ -304,7 +566,7 @@ response_status (const struct response *resp, char **message)
     {
       /* For a HTTP/0.9 response, always assume 200 response. */
       if (message)
-	*message = xstrdup ("OK");
+	*message = xstrdup (_("No headers, assuming HTTP/0.9"));
       return 200;
     }
 
@@ -352,6 +614,8 @@ response_status (const struct response *resp, char **message)
   return status;
 }
 
+/* Release the resources used by RESP.  */
+
 static void
 response_free (struct response *resp)
 {
@@ -359,8 +623,10 @@ response_free (struct response *resp)
   xfree (resp);
 }
 
+/* Print [b, e) to the log, omitting the trailing CRLF.  */
+
 static void
-print_server_response_1 (const char *b, const char *e)
+print_server_response_1 (const char *prefix, const char *b, const char *e)
 {
   char *ln;
   if (b < e && e[-1] == '\n')
@@ -368,17 +634,20 @@ print_server_response_1 (const char *b, const char *e)
   if (b < e && e[-1] == '\r')
     --e;
   BOUNDED_TO_ALLOCA (b, e, ln);
-  logprintf (LOG_VERBOSE, "  %s\n", ln);
+  logprintf (LOG_VERBOSE, "%s%s\n", prefix, ln);
 }
 
+/* Print the server response, line by line, omitting the trailing CR
+   characters, prefixed with PREFIX.  */
+
 static void
-print_server_response (const struct response *resp)
+print_server_response (const struct response *resp, const char *prefix)
 {
   int i;
   if (!resp->headers)
     return;
   for (i = 0; resp->headers[i + 1]; i++)
-    print_server_response_1 (resp->headers[i], resp->headers[i + 1]);
+    print_server_response_1 (prefix, resp->headers[i], resp->headers[i + 1]);
 }
 
 /* Parse the `Content-Range' header and extract the information it
@@ -665,6 +934,7 @@ persistent_available_p (const char *host, int port, int ssl,
     invalidate_persistent ();			\
   else						\
     fd_close (fd);				\
+  fd = -1;					\
 } while (0)
 
 struct http_stat
@@ -700,8 +970,7 @@ free_hstat (struct http_stat *hs)
 static char *create_authorization_line PARAMS ((const char *, const char *,
 						const char *, const char *,
 						const char *));
-static char *basic_authentication_encode PARAMS ((const char *, const char *,
-						  const char *));
+static char *basic_authentication_encode PARAMS ((const char *, const char *));
 static int known_authentication_scheme_p PARAMS ((const char *));
 
 time_t http_atotm PARAMS ((const char *));
@@ -724,27 +993,29 @@ time_t http_atotm PARAMS ((const char *));
 static uerr_t
 gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 {
-  char *request, *type, *command, *full_path;
+  struct request *req;
+
+  char *type;
   char *user, *passwd;
-  char *pragma_h, *referer, *useragent, *range, *wwwauth;
-  char *authenticate_h;
   char *proxyauth;
-  char *port_maybe;
-  char *request_keep_alive;
-  int sock, statcode;
+  int statcode;
   int write_error;
   long contlen, contrange;
   struct url *conn;
   FILE *fp;
-  int auth_tried_already;
+
+  int sock = -1;
+
+  /* Whether authorization has been already tried. */
+  int auth_tried_already = 0;
+
+  /* Whether our connection to the remote host is through SSL.  */
   int using_ssl = 0;
-  char *cookies = NULL;
 
   char *head;
   struct response *resp;
   char hdrval[256];
   char *message;
-  char *set_cookie;
 
   /* Whether this connection will be kept alive after the HTTP request
      is done. */
@@ -754,18 +1025,12 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   int keep_alive_confirmed;
 
   /* Whether keep-alive should be inhibited. */
-  int inhibit_keep_alive;
-
-  /* Whether we need to print the host header with braces around host,
-     e.g. "Host: [3ffe:8100:200:2::2]:1234" instead of the usual
-     "Host: symbolic-name:1234". */
-  int squares_around_host = 0;
+  int inhibit_keep_alive = !opt.http_keep_alive;
 
   /* Headers sent when using POST. */
-  char *post_content_type, *post_content_length;
   long post_data_size = 0;
 
-  int host_lookup_failed;
+  int host_lookup_failed = 0;
 
 #ifdef HAVE_SSL
   /* Initialize the SSL context.  After the first run, this is a
@@ -801,21 +1066,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
        know the local filename so we can save to it. */
     assert (*hs->local_file != NULL);
 
-  authenticate_h = NULL;
   auth_tried_already = 0;
-
-  inhibit_keep_alive = !opt.http_keep_alive;
-
- again:
-  /* We need to come back here when the initial attempt to retrieve
-     without authorization header fails.  (Expected to happen at least
-     for the Digest authorization scheme.)  */
-
-  keep_alive = 0;
-  keep_alive_confirmed = 0;
-
-  post_content_type = NULL;
-  post_content_length = NULL;
 
   /* Initialize certain elements of struct http_stat.  */
   hs->len = 0L;
@@ -849,18 +1100,145 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       /* #### This does not appear right.  Can't the proxy request,
 	 say, `Digest' authentication?  */
       if (proxy_user && proxy_passwd)
-	proxyauth = basic_authentication_encode (proxy_user, proxy_passwd,
-						 "Proxy-Authorization");
+	proxyauth = basic_authentication_encode (proxy_user, proxy_passwd);
 
       /* If we're using a proxy, we will be connecting to the proxy
 	 server.  */
       conn = proxy;
     }
 
-  host_lookup_failed = 0;
-  sock = -1;
+  /* Prepare the request to send. */
 
-  /* First: establish the connection.  */
+  req = request_new ();
+  {
+    const char *meth = "GET";
+    if (*dt & HEAD_ONLY)
+      meth = "HEAD";
+    else if (opt.post_file_name || opt.post_data)
+      meth = "POST";
+    /* Use the full path, i.e. one that includes the leading slash and
+       the query string.  E.g. if u->path is "foo/bar" and u->query is
+       "param=value", full_path will be "/foo/bar?param=value".  */
+    request_set_method (req, meth,
+			proxy ? xstrdup (u->url) : url_full_path (u));
+  }
+
+  request_set_header (req, "Referer", (char *) hs->referer, rel_none);
+  if (*dt & SEND_NOCACHE)
+    request_set_header (req, "Pragma", "no-cache", rel_none);
+  if (hs->restval)
+    request_set_header (req, "Range",
+			aprintf ("bytes=%ld-", hs->restval), rel_value);
+  if (opt.useragent)
+    request_set_header (req, "User-Agent", opt.useragent, rel_none);
+  else
+    request_set_header (req, "User-Agent",
+			aprintf ("Wget/%s", version_string), rel_value);
+  request_set_header (req, "Accept", "*/*", rel_none);
+
+  /* Find the username and password for authentication. */
+  user = u->user;
+  passwd = u->passwd;
+  search_netrc (u->host, (const char **)&user, (const char **)&passwd, 0);
+  user = user ? user : opt.http_user;
+  passwd = passwd ? passwd : opt.http_passwd;
+
+  if (user && passwd)
+    {
+      /* We have the username and the password, but haven't tried
+	 any authorization yet.  Let's see if the "Basic" method
+	 works.  If not, we'll come back here and construct a
+	 proper authorization method with the right challenges.
+
+	 If we didn't employ this kind of logic, every URL that
+	 requires authorization would have to be processed twice,
+	 which is very suboptimal and generates a bunch of false
+	 "unauthorized" errors in the server log.
+
+	 #### But this logic also has a serious problem when used
+	 with stronger authentications: we *first* transmit the
+	 username and the password in clear text, and *then* attempt a
+	 stronger authentication scheme.  That cannot be right!  We
+	 are only fortunate that almost everyone still uses the
+	 `Basic' scheme anyway.
+
+	 There should be an option to prevent this from happening, for
+	 those who use strong authentication schemes and value their
+	 passwords.  */
+      request_set_header (req, "Authorization",
+			  basic_authentication_encode (user, passwd),
+			  rel_value);
+    }
+
+  {
+    /* Whether we need to print the host header with braces around
+       host, e.g. "Host: [3ffe:8100:200:2::2]:1234" instead of the
+       usual "Host: symbolic-name:1234". */
+    int squares = strchr (u->host, ':') != NULL;
+    if (u->port == scheme_default_port (u->scheme))
+      request_set_header (req, "Host",
+			  aprintf (squares ? "[%s]" : "%s", u->host),
+			  rel_value);
+    else
+      request_set_header (req, "Host",
+			  aprintf (squares ? "[%s]:%d" : "%s:%d",
+				   u->host, u->port),
+			  rel_value);
+  }
+
+  if (!inhibit_keep_alive)
+    request_set_header (req, "Connection", "Keep-Alive", rel_none);
+
+  if (opt.cookies)
+    request_set_header (req, "Cookie",
+			cookie_header (wget_cookie_jar,
+				       u->host, u->port, u->path,
+#ifdef HAVE_SSL
+				       u->scheme == SCHEME_HTTPS
+#else
+				       0
+#endif
+				       ),
+			rel_value);
+
+  if (opt.post_data || opt.post_file_name)
+    {
+      request_set_header (req, "Content-Type",
+			  "application/x-www-form-urlencoded", rel_none);
+      if (opt.post_data)
+	post_data_size = strlen (opt.post_data);
+      else
+	{
+	  post_data_size = file_size (opt.post_file_name);
+	  if (post_data_size == -1)
+	    {
+	      logprintf (LOG_NOTQUIET, "POST data file missing: %s\n",
+			 opt.post_file_name);
+	      post_data_size = 0;
+	    }
+	}
+      request_set_header (req, "Content-Length",
+			  aprintf ("Content-Length: %ld", post_data_size),
+			  rel_value);
+    }
+
+  /* Add the user headers. */
+  if (opt.user_headers)
+    {
+      int i;
+      for (i = 0; opt.user_headers[i]; i++)
+	request_set_user_header (req, opt.user_headers[i]);
+    }
+
+ retry_with_auth:
+  /* We need to come back here when the initial attempt to retrieve
+     without authorization header fails.  (Expected to happen at least
+     for the Digest authorization scheme.)  */
+
+  keep_alive = 0;
+  keep_alive_confirmed = 0;
+
+  /* Establish the connection.  */
 
   if (!inhibit_keep_alive)
     {
@@ -910,19 +1288,21 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	{
 	  /* When requesting SSL URLs through proxies, use the
 	     CONNECT method to request passthrough.  */
-	  char *connect =
-	    (char *) alloca (64
-			     + strlen (u->host)
-			     + (proxyauth ? strlen (proxyauth) : 0));
-	  sprintf (connect, "CONNECT %s:%d HTTP/1.0\r\n%s\r\n",
-		   u->host, u->port, proxyauth ? proxyauth : "");
-	  /* Now that PROXYAUTH is part of the CONNECT request, zero
-	     it out so we don't send proxy authorization with the
-	     regular request below.  */
-	  proxyauth = NULL;
+	  struct request *connreq = request_new ();
+	  request_set_method (connreq, "CONNECT",
+			      aprintf ("%s:%d", u->host, u->port));
+	  if (proxyauth)
+	    {
+	      request_set_header (connreq, "Proxy-Authorization",
+				  proxyauth, rel_value);
+	      /* Now that PROXYAUTH is part of the CONNECT request,
+		 zero it out so we don't send proxy authorization with
+		 the regular request below.  */
+	      proxyauth = NULL;
+	    }
 
-	  DEBUGP (("Writing to proxy: [%s]\n", connect));
-	  write_error = fd_write (sock, connect, strlen (connect), -1);
+	  write_error = request_send (connreq, sock);
+	  request_free (connreq);
 	  if (write_error < 0)
 	    {
 	      logprintf (LOG_VERBOSE, _("Failed writing to proxy: %s.\n"),
@@ -978,198 +1358,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 #endif /* HAVE_SSL */
     }
 
-  if (*dt & HEAD_ONLY)
-    command = "HEAD";
-  else if (opt.post_file_name || opt.post_data)
-    command = "POST";
-  else
-    command = "GET";
-
-  referer = NULL;
-  if (hs->referer)
-    {
-      referer = (char *)alloca (9 + strlen (hs->referer) + 3);
-      sprintf (referer, "Referer: %s\r\n", hs->referer);
-    }
-
-  if (*dt & SEND_NOCACHE)
-    pragma_h = "Pragma: no-cache\r\n";
-  else
-    pragma_h = "";
-
-  if (hs->restval)
-    {
-      range = (char *)alloca (13 + numdigit (hs->restval) + 4);
-      /* Gag me!  Some servers (e.g. WebSitePro) have been known to
-         respond to the following `Range' format by generating a
-         multipart/x-byte-ranges MIME document!  This MIME type was
-         present in an old draft of the byteranges specification.
-         HTTP/1.1 specifies a multipart/byte-ranges MIME type, but
-         only if multiple non-overlapping ranges are requested --
-         which Wget never does.  */
-      sprintf (range, "Range: bytes=%ld-\r\n", hs->restval);
-    }
-  else
-    range = NULL;
-  if (opt.useragent)
-    STRDUP_ALLOCA (useragent, opt.useragent);
-  else
-    {
-      useragent = (char *)alloca (10 + strlen (version_string));
-      sprintf (useragent, "Wget/%s", version_string);
-    }
-  /* Construct the authentication, if userid is present.  */
-  user = u->user;
-  passwd = u->passwd;
-  search_netrc (u->host, (const char **)&user, (const char **)&passwd, 0);
-  user = user ? user : opt.http_user;
-  passwd = passwd ? passwd : opt.http_passwd;
-
-  wwwauth = NULL;
-  if (user && passwd)
-    {
-      if (!authenticate_h)
-	{
-	  /* We have the username and the password, but haven't tried
-	     any authorization yet.  Let's see if the "Basic" method
-	     works.  If not, we'll come back here and construct a
-	     proper authorization method with the right challenges.
-
-	     If we didn't employ this kind of logic, every URL that
-	     requires authorization would have to be processed twice,
-	     which is very suboptimal and generates a bunch of false
-	     "unauthorized" errors in the server log.
-
-	     #### But this logic also has a serious problem when used
-	     with stronger authentications: we *first* transmit the
-	     username and the password in clear text, and *then*
-	     attempt a stronger authentication scheme.  That cannot be
-	     right!  We are only fortunate that almost everyone still
-	     uses the `Basic' scheme anyway.
-
-	     There should be an option to prevent this from happening,
-	     for those who use strong authentication schemes and value
-	     their passwords.  */
-	  wwwauth = basic_authentication_encode (user, passwd, "Authorization");
-	}
-      else
-	{
-	  /* Use the full path, i.e. one that includes the leading
-	     slash and the query string, but is independent of proxy
-	     setting.  */
-	  char *pth = url_full_path (u);
-	  wwwauth = create_authorization_line (authenticate_h, user, passwd,
-					       command, pth);
-	  xfree (pth);
-	}
-    }
-
-  /* String of the form :PORT.  Used only for non-standard ports. */
-  port_maybe = NULL;
-  if (u->port != scheme_default_port (u->scheme))
-    {
-      port_maybe = (char *)alloca (numdigit (u->port) + 2);
-      sprintf (port_maybe, ":%d", u->port);
-    }
-
-  if (!inhibit_keep_alive)
-    request_keep_alive = "Connection: Keep-Alive\r\n";
-  else
-    request_keep_alive = NULL;
-
-  if (opt.cookies)
-    cookies = cookie_header (wget_cookie_jar, u->host, u->port, u->path,
-#ifdef HAVE_SSL
-			     u->scheme == SCHEME_HTTPS
-#else
-			     0
-#endif
-			     );
-
-  if (opt.post_data || opt.post_file_name)
-    {
-      post_content_type = "Content-Type: application/x-www-form-urlencoded\r\n";
-      if (opt.post_data)
-	post_data_size = strlen (opt.post_data);
-      else
-	{
-	  post_data_size = file_size (opt.post_file_name);
-	  if (post_data_size == -1)
-	    {
-	      logprintf (LOG_NOTQUIET, "POST data file missing: %s\n",
-			 opt.post_file_name);
-	      post_data_size = 0;
-	    }
-	}
-      post_content_length = xmalloc (16 + numdigit (post_data_size) + 2 + 1);
-      sprintf (post_content_length,
-	       "Content-Length: %ld\r\n", post_data_size);
-    }
-
-  if (proxy)
-    full_path = xstrdup (u->url);
-  else
-    /* Use the full path, i.e. one that includes the leading slash and
-       the query string.  E.g. if u->path is "foo/bar" and u->query is
-       "param=value", full_path will be "/foo/bar?param=value".  */
-    full_path = url_full_path (u);
-
-  if (strchr (u->host, ':'))
-    squares_around_host = 1;
-
-  /* Allocate the memory for the request.  */
-  request = (char *)alloca (strlen (command)
-			    + strlen (full_path)
-			    + strlen (useragent)
-			    + strlen (u->host)
-			    + (port_maybe ? strlen (port_maybe) : 0)
-			    + strlen (HTTP_ACCEPT)
-			    + (request_keep_alive
-			       ? strlen (request_keep_alive) : 0)
-			    + (referer ? strlen (referer) : 0)
-			    + (cookies ? strlen (cookies) : 0)
-			    + (wwwauth ? strlen (wwwauth) : 0)
-			    + (proxyauth ? strlen (proxyauth) : 0)
-			    + (range ? strlen (range) : 0)
-			    + strlen (pragma_h)
-			    + (post_content_type
-			       ? strlen (post_content_type) : 0)
-			    + (post_content_length
-			       ? strlen (post_content_length) : 0)
-			    + (opt.user_header ? strlen (opt.user_header) : 0)
-			    + 64);
-  /* Construct the request.  */
-  sprintf (request, "\
-%s %s HTTP/1.0\r\n\
-User-Agent: %s\r\n\
-Host: %s%s%s%s\r\n\
-Accept: %s\r\n\
-%s%s%s%s%s%s%s%s%s%s\r\n",
-	   command, full_path,
-	   useragent,
-	   squares_around_host ? "[" : "", u->host, squares_around_host ? "]" : "",
-	   port_maybe ? port_maybe : "",
-	   HTTP_ACCEPT,
-	   request_keep_alive ? request_keep_alive : "",
-	   referer ? referer : "",
-	   cookies ? cookies : "", 
-	   wwwauth ? wwwauth : "", 
-	   proxyauth ? proxyauth : "", 
-	   range ? range : "",
-	   pragma_h,
-	   post_content_type ? post_content_type : "",
-	   post_content_length ? post_content_length : "",
-	   opt.user_header ? opt.user_header : "");
-  DEBUGP (("\n---request begin---\n%s", request));
-
-  /* Free the temporary memory.  */
-  xfree_null (wwwauth);
-  xfree_null (proxyauth);
-  xfree_null (cookies);
-  xfree (full_path);
-
   /* Send the request to server.  */
-  write_error = fd_write (sock, request, strlen (request), -1);
+  write_error = request_send (req, sock);
 
   if (write_error >= 0)
     {
@@ -1188,6 +1378,7 @@ Accept: %s\r\n\
       logprintf (LOG_VERBOSE, _("Failed writing HTTP request: %s.\n"),
 		 strerror (errno));
       CLOSE_INVALIDATE (sock);
+      request_free (req);
       return WRITEFAILED;
     }
   logprintf (LOG_VERBOSE, _("%s request sent, awaiting response... "),
@@ -1200,11 +1391,11 @@ Accept: %s\r\n\
   head = fd_read_http_head (sock);
   if (!head)
     {
-      logputs (LOG_VERBOSE, "\n");
       if (errno == 0)
 	{
 	  logputs (LOG_NOTQUIET, _("No data received.\n"));
 	  CLOSE_INVALIDATE (sock);
+	  request_free (req);
 	  return HEOF;
 	}
       else
@@ -1212,6 +1403,7 @@ Accept: %s\r\n\
 	  logprintf (LOG_NOTQUIET, _("Read error (%s) in headers.\n"),
 		     strerror (errno));
 	  CLOSE_INVALIDATE (sock);
+	  request_free (req);
 	  return HERR;
 	}
     }
@@ -1227,8 +1419,54 @@ Accept: %s\r\n\
   else
     {
       logprintf (LOG_VERBOSE, "\n");
-      print_server_response (resp);
+      print_server_response (resp, "  ");
     }
+
+  if (statcode == HTTP_STATUS_UNAUTHORIZED)
+    {
+      /* Authorization is required.  */
+      CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
+				   might be more bytes in the body. */
+      if (auth_tried_already || !(user && passwd))
+	{
+	  /* If we have tried it already, then there is not point
+	     retrying it.  */
+	  logputs (LOG_NOTQUIET, _("Authorization failed.\n"));
+	}
+      else
+	{
+	  char *www_authenticate = response_header_strdup (resp,
+							   "WWW-Authenticate");
+	  /* If the authentication scheme is unknown or if it's the
+	     "Basic" authentication (which we try by default), there's
+	     no sense in retrying.  */
+	  if (!www_authenticate
+	      || !known_authentication_scheme_p (www_authenticate)
+	      || BEGINS_WITH (www_authenticate, "Basic"))
+	    {
+	      xfree_null (www_authenticate);
+	      logputs (LOG_NOTQUIET, _("Unknown authentication scheme.\n"));
+	    }
+	  else
+	    {
+	      char *pth;
+	      auth_tried_already = 1;
+	      pth = url_full_path (u);
+	      request_set_header (req, "Authorization",
+				  create_authorization_line (www_authenticate,
+							     user, passwd,
+							     request_method (req),
+							     pth),
+				  rel_value);
+	      xfree (pth);
+	      xfree (www_authenticate);
+	      goto retry_with_auth;
+	    }
+	}
+      request_free (req);
+      return AUTHFAILED;
+    }
+  request_free (req);
 
   hs->statcode = statcode;
   if (statcode == -1)
@@ -1253,16 +1491,17 @@ Accept: %s\r\n\
     }
   hs->newloc = response_header_strdup (resp, "Location");
   hs->remote_time = response_header_strdup (resp, "Last-Modified");
-  set_cookie = response_header_strdup (resp, "Set-Cookie");
-  if (set_cookie)
-    {
-      /* The jar should have been created by now. */
-      assert (wget_cookie_jar != NULL);
-      cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port, u->path,
-				set_cookie);
-      xfree (set_cookie);
-    }
-  authenticate_h = response_header_strdup (resp, "WWW-Authenticate");
+  {
+    char *set_cookie = response_header_strdup (resp, "Set-Cookie");
+    if (set_cookie)
+      {
+	/* The jar should have been created by now. */
+	assert (wget_cookie_jar != NULL);
+	cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port, u->path,
+				  set_cookie);
+	xfree (set_cookie);
+      }
+  }
   if (response_header_copy (resp, "Content-Range", hdrval, sizeof (hdrval)))
     {
       long first_byte_pos, last_byte_pos, entity_length;
@@ -1289,50 +1528,6 @@ Accept: %s\r\n\
     /* The server has promised that it will not close the connection
        when we're done.  This means that we can register it.  */
     register_persistent (conn->host, conn->port, sock, using_ssl);
-
-  if ((statcode == HTTP_STATUS_UNAUTHORIZED)
-      && authenticate_h)
-    {
-      /* Authorization is required.  */
-      xfree_null (type);
-      type = NULL;
-      free_hstat (hs);
-      CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
-				   might be more bytes in the body. */
-      if (auth_tried_already)
-	{
-	  /* If we have tried it already, then there is not point
-	     retrying it.  */
-	failed:
-	  logputs (LOG_NOTQUIET, _("Authorization failed.\n"));
-	  xfree (authenticate_h);
-	  return AUTHFAILED;
-	}
-      else if (!known_authentication_scheme_p (authenticate_h))
-	{
-	  xfree (authenticate_h);
-	  logputs (LOG_NOTQUIET, _("Unknown authentication scheme.\n"));
-	  return AUTHFAILED;
-	}
-      else if (BEGINS_WITH (authenticate_h, "Basic"))
-	{
-	  /* The authentication scheme is basic, the one we try by
-             default, and it failed.  There's no sense in trying
-             again.  */
-	  goto failed;
-	}
-      else
-	{
-	  auth_tried_already = 1;
-	  goto again;
-	}
-    }
-  /* We do not need this anymore.  */
-  if (authenticate_h)
-    {
-      xfree (authenticate_h);
-      authenticate_h = NULL;
-    }
 
   /* 20x responses are counted among successful by default.  */
   if (H_20X (statcode))
@@ -1472,7 +1667,7 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
 
   if (opt.verbose)
     {
-      if ((*dt & RETROKF) && !opt.server_response)
+      if (*dt & RETROKF)
 	{
 	  /* No need to print this output if the body won't be
 	     downloaded at all, or if the original server response is
@@ -2309,8 +2504,7 @@ base64_encode (const char *s, char *store, int length)
    This is done by encoding the string `USER:PASS' in base64 and
    prepending `HEADER: Basic ' to it.  */
 static char *
-basic_authentication_encode (const char *user, const char *passwd,
-			     const char *header)
+basic_authentication_encode (const char *user, const char *passwd)
 {
   char *t1, *t2, *res;
   int len1 = strlen (user) + 1 + strlen (passwd);
@@ -2318,10 +2512,12 @@ basic_authentication_encode (const char *user, const char *passwd,
 
   t1 = (char *)alloca (len1 + 1);
   sprintf (t1, "%s:%s", user, passwd);
-  t2 = (char *)alloca (1 + len2);
+
+  t2 = (char *)alloca (len2 + 1);
   base64_encode (t1, t2, len1);
-  res = (char *)xmalloc (len2 + 11 + strlen (header));
-  sprintf (res, "%s: Basic %s\r\n", header, t2);
+
+  res = (char *)xmalloc (6 + len2 + 1);
+  sprintf (res, "Basic %s", t2);
 
   return res;
 }
@@ -2505,7 +2701,7 @@ digest_authentication_encode (const char *au, const char *user,
 			   + 2 * MD5_HASHLEN /*strlen (response_digest)*/
 			   + (opaque ? strlen (opaque) : 0)
 			   + 128);
-    sprintf (res, "Authorization: Digest \
+    sprintf (res, "Digest \
 username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\"",
 	     user, realm, nonce, path, response_digest);
     if (opaque)
@@ -2515,7 +2711,6 @@ username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\"",
 	strcat (p, opaque);
 	strcat (p, "\"");
       }
-    strcat (res, "\r\n");
   }
   return res;
 }
@@ -2547,17 +2742,13 @@ create_authorization_line (const char *au, const char *user,
 			   const char *passwd, const char *method,
 			   const char *path)
 {
-  char *wwwauth = NULL;
-
-  if (!strncasecmp (au, "Basic", 5))
-    wwwauth = basic_authentication_encode (user, passwd, "Authorization");
-  if (!strncasecmp (au, "NTLM", 4))
-    wwwauth = basic_authentication_encode (user, passwd, "Authorization");
+  if (0 == strncasecmp (au, "Basic", 5))
+    return basic_authentication_encode (user, passwd);
 #ifdef USE_DIGEST
-  else if (!strncasecmp (au, "Digest", 6))
-    wwwauth = digest_authentication_encode (au, user, passwd, method, path);
+  if (0 == strncasecmp (au, "Digest", 6))
+    return digest_authentication_encode (au, user, passwd, method, path);
 #endif /* USE_DIGEST */
-  return wwwauth;
+  return NULL;
 }
 
 void
