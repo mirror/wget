@@ -1,5 +1,10 @@
 2001-12-19  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* log.c (logputs): Check for requested verbosity before printing
+	anything.
+
+2001-12-19  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* html-url.c (tag_handle_link): Treat the "shortcut icon" link as
 	inline.
 

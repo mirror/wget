@@ -307,6 +307,7 @@ logputs (enum log_options o, const char *s)
   check_redirect_output ();
   if (!(fp = get_log_fp ()))
     return;
+  CHECK_VERBOSE (o);
 
   fputs (s, fp);
   if (save_context_p)
