@@ -73,6 +73,9 @@ struct options
 				   FTP. */
   char *output_document;	/* The output file to which the
 				   documents will be printed.  */
+  int od_known_regular;		/* whether output_document is a
+                                   regular file we can manipulate,
+                                   i.e. not `-' or a device file. */
   FILE *dfp;			/* The file pointer to the output
 				   document. */
 

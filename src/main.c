@@ -726,12 +726,15 @@ Can't timestamp and not clobber old files at the same time.\n"));
 	opt.dfp = stdout;
       else
 	{
+	  struct stat st;
 	  opt.dfp = fopen (opt.output_document, "wb");
 	  if (opt.dfp == NULL)
 	    {
 	      perror (opt.output_document);
 	      exit (1);
 	    }
+	  if (fstat (fileno (opt.dfp), &st) == 0 && S_ISREG (st.st_mode))
+	    opt.od_known_regular = 1;
 	}
     }
 

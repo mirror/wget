@@ -1370,8 +1370,18 @@ Already have correct symlink %s -> %s\n\n"),
           && dlthis
 	  && file_exists_p (u->local))
 	{
-	  const char *fl = opt.output_document ? opt.output_document : u->local;
-	  touch (fl, f->tstamp);
+	  /* #### This code repeats in http.c and ftp.c.  Move it to a
+             function!  */
+	  const char *fl = NULL;
+	  if (opt.output_document)
+	    {
+	      if (opt.od_known_regular)
+		fl = opt.output_document;
+	    }
+	  else
+	    fl = u->local;
+	  if (fl)
+	    touch (fl, f->tstamp);
 	}
       else if (f->tstamp == -1)
 	logprintf (LOG_NOTQUIET, _("%s: corrupt time-stamp.\n"), u->local);
