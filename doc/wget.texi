@@ -3366,7 +3366,8 @@ YAMAZAKI Makoto,
 Leonid Petrov,
 Hans-Andreas Engel,
 Ulf Harnhammar,
-Jan Minar.
+Jan Minar,
+Simone Piunno.
 
 Apologies to all who I accidentally left out, and many thanks to all the
 subscribers of the Wget mailing list.

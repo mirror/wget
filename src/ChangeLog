@@ -1,3 +1,20 @@
+2005-02-11  Mauro Tortonesi <mauro@ferrara.linux.it>
+	
+	* string_t.c: Fixed a bug in do_escape and triggered escape of
+	backslashes in string_escape to avoid ambiguities in the result
+	string.
+	
+2005-02-10  Mauro Tortonesi <mauro@ferrara.linux.it>
+
+	* string.h: Renamed to string_t.h to fix a compilation conflict 
+	with the string.h header in the standard C library.
+	
+	* string.c: Renamed to string_t.c for consistency with string.h.
+	
+	* string_t.c: Ditto.
+
+	* string_t.h: Ditto.
+	
 2004-12-31  Mauro Tortonesi <mauro@ferrara.linux.it>
 
 	* string.c: New file.

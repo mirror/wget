@@ -26,7 +26,7 @@ OBJS=cmpt${OBJ_EXT} convert${OBJ_EXT} connect${OBJ_EXT} ftp${OBJ_EXT} ftp-basic$
       http${OBJ_EXT} init${OBJ_EXT} log${OBJ_EXT} main${OBJ_EXT} gnu-md5${OBJ_EXT} netrc${OBJ_EXT} \
       safe-ctype${OBJ_EXT} hash${OBJ_EXT} progress${OBJ_EXT} gen-md5${OBJ_EXT} cookies${OBJ_EXT} \
       recur${OBJ_EXT} res${OBJ_EXT} retr${OBJ_EXT} url${OBJ_EXT} utils${OBJ_EXT} \
-      version${OBJ_EXT} xmalloc${OBJ_EXT} mswindows${OBJ_EXT} string${OBJ_EXT}
+      version${OBJ_EXT} xmalloc${OBJ_EXT} mswindows${OBJ_EXT} string_t${OBJ_EXT}
 
 ifdef SSL
     ## OPENSSL_PATH is the OpenSSL installed directory
