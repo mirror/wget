@@ -46,13 +46,19 @@ struct address_list;
 
 extern int ip_default_family;	/* defined in host.c */
 
+/* This struct defines an IP address, tagged with family type.  */
+
 typedef struct {
+  /* Address type. */
   enum { 
-    IPv4_ADDRESS, 
+    IPV4_ADDRESS, 
 #ifdef ENABLE_IPV6
-    IPv6_ADDRESS 
+    IPV6_ADDRESS 
 #endif /* ENABLE_IPV6 */
   } type;
+
+  /* Address data union: ipv6 contains IPv6-related data (address and
+     scope), and ipv4 contains IPv4 address.  */
   union {
 #ifdef ENABLE_IPV6
     struct {
@@ -65,24 +71,30 @@ typedef struct {
     struct {
       struct in_addr addr;
     } ipv4;
-  } addr;
+  } u;
 } ip_address;
 
+/* Because C doesn't support anonymous unions, access to ip_address
+   elements is clunky.  Hence the accessors.  */
+
+#define ADDRESS_IPV6_IN6_ADDR(x) ((x)->u.ipv6.addr)
+#define ADDRESS_IPV6_DATA(x) ((void *)&(x)->u.ipv6.addr.s6_addr)
+#define ADDRESS_IPV6_SCOPE(x) ((x)->u.ipv6.scope_id)
+
+#define ADDRESS_IPV4_IN_ADDR(x) ((x)->u.ipv4.addr)
+#define ADDRESS_IPV4_DATA(x) ((void *)&(x)->u.ipv4.addr.s_addr)
+
 #ifndef ENABLE_IPV6
-
-#ifndef HAVE_SOCKADDR_STORAGE
-#define sockaddr_storage sockaddr_in
-#endif
-
+# ifndef HAVE_SOCKADDR_STORAGE
+#  define sockaddr_storage sockaddr_in
+# endif
 #endif /* ENABLE_IPV6 */
 
 /* Flags for lookup_host */
 #define LH_SILENT    0x0001
 #define LH_PASSIVE   0x0002
-#define LH_IPv4_ONLY 0x0004
-#ifdef ENABLE_IPV6
-#define LH_IPv6_ONLY 0x0008
-#endif /* ENABLE_IPV6 */
+#define LH_IPV4_ONLY 0x0004
+#define LH_IPV6_ONLY 0x0008
 
 /* Function declarations */
 struct address_list *lookup_host PARAMS ((const char *, int));

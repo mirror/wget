@@ -1242,7 +1242,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 
       switch (err)
 	{
-	case HOSTERR: case CONREFUSED: case FWRITEERR: case FOPENERR:
+	case HOSTERR: case CONIMPOSSIBLE: case FWRITEERR: case FOPENERR:
 	case FTPNSFOD: case FTPLOGINC: case FTPNOPASV: case CONTNOTSUPPORTED:
 	  /* Fatal errors, give up.  */
 	  return err;

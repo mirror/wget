@@ -1,3 +1,12 @@
+2003-10-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* host.h: Defined accessors for elements of ip_address.  Updated
+	all callers.
+	(address_list_match_all): Use memcmp in the non-IPv6 case.
+
+	* wget.h (CONNECT_ERROR): Don't retry connecting if connect()
+	returned EAFNOSUPPORT.
+
 2003-10-27  Mauro Tortonesi <mauro@deepspace6.net>
 
 	* host.c, connect.c, ftp.c, ...: Added support for dual-family

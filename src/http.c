@@ -1789,7 +1789,7 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	  printwhat (count, opt.ntry);
 	  continue;
 	  break;
-	case HOSTERR: case CONREFUSED: case PROXERR: case AUTHFAILED: 
+	case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED: 
 	case SSLERRCTXCREATE: case CONTNOTSUPPORTED:
 	  /* Fatal errors just return from the function.  */
 	  free_hstat (&hstat);

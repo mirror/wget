@@ -276,7 +276,7 @@ enum
 typedef enum
 {
   NOCONERROR, HOSTERR, CONSOCKERR, CONERROR, CONSSLERR,
-  CONREFUSED, NEWLOCATION, NOTENOUGHMEM, CONPORTERR,
+  CONIMPOSSIBLE, NEWLOCATION, NOTENOUGHMEM, CONPORTERR,
   BINDERR, BINDOK, LISTENERR, ACCEPTERR, ACCEPTOK,
   CONCLOSED, FTPOK, FTPLOGINC, FTPLOGREFUSED, FTPPORTERR,
   FTPNSFOD, FTPRETROK, FTPUNKNOWNTYPE, FTPRERR,
@@ -310,7 +310,15 @@ typedef unsigned char  boolean;
    retrieve the requisites of a single document. */
 #define INFINITE_RECURSION -1
 
-#define CONNECT_ERROR(x) ((x) == ECONNREFUSED && !opt.retry_connrefused	\
-			  ? CONREFUSED : CONERROR)
+/* In case old systems don't have EAFNOSUPPORT, which we use below. */
+#ifndef EAFNOSUPPORT
+# define EAFNOSUPPORT EINVAL
+#endif
+
+#define CONNECT_ERROR(err) ((   (err) == EAFNOSUPPORT		\
+			     || (err) == EINVAL			\
+			     || ((err) == ECONNREFUSED		\
+				 && !opt.retry_connrefused))	\
+			    ? CONIMPOSSIBLE : CONERROR)
 
 #endif /* WGET_H */

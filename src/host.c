@@ -114,7 +114,8 @@ address_list_get_bounds (const struct address_list *al, int *start, int *end)
 /* Copy address number INDEX to IP_STORE.  */
 
 void
-address_list_copy_one (const struct address_list *al, int index, ip_address *ip_store)
+address_list_copy_one (const struct address_list *al, int index,
+		       ip_address *ip_store)
 {
   assert (index >= al->faulty && index < al->count);
   memcpy (ip_store, al->addresses + index, sizeof (ip_address));
@@ -123,43 +124,57 @@ address_list_copy_one (const struct address_list *al, int index, ip_address *ip_
 /* Check whether two address lists have all their IPs in common.  */
 
 int
-address_list_match_all (const struct address_list *al1, const struct address_list *al2)
+address_list_match_all (const struct address_list *al1,
+			const struct address_list *al2)
 {
+#ifdef ENABLE_IPV6
   int i;
+#endif
   if (al1 == al2)
     return 1;
   if (al1->count != al2->count)
     return 0;
+
+  /* For the comparison to be complete, we'd need to sort the IP
+     addresses first.  But that's not necessary because this is only
+     used as an optimization.  */
+
+#ifndef ENABLE_IPV6
+  /* In the non-IPv6 case, there is only one address type, so we can
+     compare the whole array with memcmp.  */
+  return 0 == memcmp (al1->addresses, al2->addresses,
+		      al1->count * sizeof (ip_address));
+#else  /* ENABLE_IPV6 */
   for (i = 0; i < al1->count; ++i) 
     {
-#ifdef ENABLE_IPv6
-      if (al1->addresses[i].type != al2->addresses[i].type) 
-	return 0;
-      if (al1->addresses[i].type == IPv6_ADDRESS)
-	{
-	  const struct in6_addr *addr1 = &al1->addresses[i].addr.ipv6.addr;
-	  const struct in6_addr *addr2 = &al2->addresses[i].addr.ipv6.addr;
+      const ip_address *ip1 = &al1->addresses[i];
+      const ip_address *ip2 = &al2->addresses[i];
 
-#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	  if ((al1->addresses[i].address.scope_id
-	       != al2->addresses[i].address.scope_id)
-	      || !IN6_ARE_ADDR_EQUAL (addr1, addr2))
-#else
-	  if (!IN6_ARE_ADDR_EQUAL (addr1, addr2))
-#endif
-	    return 0;
-	}
-      else
-#endif
+      if (ip1->type != ip2->type)
+	return 0;
+
+      switch (ip1->type)
 	{
-	  const struct in_addr *addr1 = (const struct in_addr *)&al1->addresses[i].addr.ipv4.addr;
-	  const struct in_addr *addr2 = (const struct in_addr *)&al2->addresses[i].addr.ipv4.addr;
-	  
-	  if (addr1->s_addr != addr2->s_addr)
+	case IPV4_ADDRESS:
+	  if (ADDRESS_IPV4_IN_ADDR (ip1).s_addr
+	      != ADDRESS_IPV4_IN_ADDR (ip2).s_addr)
 	    return 0;
+	  break;
+	case IPV6_ADDRESS:
+#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+	  if (ADDRESS_IPV6_SCOPE (ip1) != ADDRESS_IPV6_SCOPE (ip2))
+	    return 0;
+#endif /* HAVE_SOCKADDR_IN6_SCOPE_ID */
+	  if (!IN6_ARE_ADDR_EQUAL (&ADDRESS_IPV6_IN6_ADDR (ip1),
+				   &ADDRESS_IPV6_IN6_ADDR (ip2)))
+	    return 0;
+	  break;
+	default:
+	  abort ();
 	}
     }
   return 1;
+#endif /* ENABLE_IPV6 */
 }
 
 /* Mark the INDEXth element of AL as faulty, so that the next time
@@ -199,9 +214,10 @@ address_list_from_addrinfo (const struct addrinfo *ai)
 {
   struct address_list *al;
   const struct addrinfo *ptr;
-  int cnt = 0;
-  int i;
+  int cnt;
+  ip_address *ip;
 
+  cnt = 0;
   for (ptr = ai; ptr != NULL ; ptr = ptr->ai_next)
     if (ptr->ai_family == AF_INET || ptr->ai_family == AF_INET6)
       ++cnt;
@@ -214,27 +230,28 @@ address_list_from_addrinfo (const struct addrinfo *ai)
   al->faulty    = 0;
   al->refcount  = 1;
 
-  for (i = 0, ptr = ai; ptr != NULL; ptr = ptr->ai_next)
+  ip = al->addresses;
+  for (ptr = ai; ptr != NULL; ptr = ptr->ai_next)
     if (ptr->ai_family == AF_INET6) 
       {
 	const struct sockaddr_in6 *sin6 =
 	  (const struct sockaddr_in6 *)ptr->ai_addr;
-	al->addresses[i].addr.ipv6.addr = sin6->sin6_addr;
-	al->addresses[i].type = IPv6_ADDRESS;
+	ip->type = IPV6_ADDRESS;
+	ADDRESS_IPV6_IN6_ADDR (ip) = sin6->sin6_addr;
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	al->addresses[i].addr.ipv6.scope_id = sin6->sin6_scope_id;
+	ADDRESS_IPV6_SCOPE (ip) = sin6->sin6_scope_id;
 #endif
-	++i;
+	++ip;
       } 
     else if (ptr->ai_family == AF_INET)
       {
 	const struct sockaddr_in *sin =
 	  (const struct sockaddr_in *)ptr->ai_addr;
-	al->addresses[i].addr.ipv4.addr = sin->sin_addr;
-	al->addresses[i].type = IPv4_ADDRESS;
-	++i;
+	ip->type = IPV4_ADDRESS;
+	ADDRESS_IPV4_IN_ADDR (ip) = sin->sin_addr;
+	++ip;
       }
-  assert (i == cnt);
+  assert (ip - al->addresses == cnt);
   return al;
 }
 #else
@@ -243,23 +260,25 @@ address_list_from_addrinfo (const struct addrinfo *ai)
 static struct address_list *
 address_list_from_vector (char **h_addr_list)
 {
-  int count = 0, i;
-
+  int count, i;
   struct address_list *al = xmalloc (sizeof (struct address_list));
 
+  count = 0;
   while (h_addr_list[count])
     ++count;
   assert (count > 0);
+
   al->count     = count;
   al->faulty    = 0;
   al->addresses = xmalloc (count * sizeof (ip_address));
   al->refcount  = 1;
 
-  for (i = 0; i < count; i++) {
-    /* Mauro Tortonesi: is this safe? */
-    memcpy (&((al->addresses + i)->addr.ipv4.addr.s_addr), h_addr_list[i], 4);
-    (al->addresses + i)->type = IPv4_ADDRESS;
-  }
+  for (i = 0; i < count; i++)
+    {
+      ip_address *ip = &al->addresses[i];
+      ip->type = IPV4_ADDRESS;
+      memcpy (ADDRESS_IPV4_DATA (ip), h_addr_list[i], 4);
+    }
 
   return al;
 }
@@ -323,31 +342,38 @@ void
 sockaddr_set_address (struct sockaddr *sa, unsigned short port, 
 		      const ip_address *addr)
 {
-  if (addr->type == IPv4_ADDRESS)
+  if (addr->type == IPV4_ADDRESS)
     {
       struct sockaddr_in *sin = (struct sockaddr_in *)sa;
 
       sin->sin_family = AF_INET;
       sin->sin_port = htons (port);
-      if (addr == NULL) 
+      if (addr == NULL)
 	sin->sin_addr.s_addr = INADDR_ANY;
       else
-	sin->sin_addr = addr->addr.ipv4.addr;
+	sin->sin_addr = ADDRESS_IPV4_IN_ADDR (addr);
     }
 #ifdef ENABLE_IPV6
-  else if (addr->type == IPv6_ADDRESS) 
+  else if (addr->type == IPV6_ADDRESS) 
     {
       struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
 
       sin6->sin6_family = AF_INET6;
       sin6->sin6_port = htons (port);
-      if (addr == NULL) 
-	sin6->sin6_addr = in6addr_any;
+      /* #### How can ADDR be NULL?  We have dereferenced it above by
+	 accessing addr->type!  */
+      if (addr == NULL)
+	{
+	  sin6->sin6_addr = in6addr_any;
+	  /* #### Should we set the scope_id here? */
+	}
       else
-	sin6->sin6_addr = addr->addr.ipv6.addr;
+	{
+	  sin6->sin6_addr = ADDRESS_IPV6_IN6_ADDR (addr);
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-      sin6->sin6_scope_id = addr->addr.ipv6.scope_id;
-#endif /* HAVE_SOCKADDR_IN6_SCOPE_ID */
+	  sin6->sin6_scope_id = ADDRESS_IPV6_SCOPE (addr);
+#endif
+	}
     }
 #endif /* ENABLE_IPV6 */
   else
@@ -362,8 +388,8 @@ sockaddr_get_address (const struct sockaddr *sa, unsigned short *port,
     {
       struct sockaddr_in *sin = (struct sockaddr_in *)sa;
 
-      addr->type = IPv4_ADDRESS;
-      addr->addr.ipv4.addr = sin->sin_addr;
+      addr->type = IPV4_ADDRESS;
+      ADDRESS_IPV4_IN_ADDR (addr) = sin->sin_addr;
       if (port != NULL) 
 	*port = ntohs (sin->sin_port);
     }
@@ -372,10 +398,10 @@ sockaddr_get_address (const struct sockaddr *sa, unsigned short *port,
     {
       struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
 
-      addr->type = IPv6_ADDRESS;
-      addr->addr.ipv6.addr = sin6->sin6_addr;
+      addr->type = IPV6_ADDRESS;
+      ADDRESS_IPV6_IN6_ADDR (addr) = sin6->sin6_addr;
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-      addr->addr.ipv6.scope_id = sin6->sin6_scope_id;
+      ADDRESS_IPV6_SCOPE (addr) = sin6->sin6_scope_id;
 #endif  
       if (port != NULL) 
 	*port = ntohs (sin6->sin6_port);
@@ -578,21 +604,23 @@ pretty_print_address (const ip_address *addr)
 {
   switch (addr->type) 
     {
-    case IPv4_ADDRESS:
-      return inet_ntoa (addr->addr.ipv4.addr);
+    case IPV4_ADDRESS:
+      return inet_ntoa (ADDRESS_IPV4_IN_ADDR (addr));
 #ifdef ENABLE_IPV6
-    case IPv6_ADDRESS:
+    case IPV6_ADDRESS:
       {
-        int len;
         static char buf[128];
-	inet_ntop (AF_INET6, &addr->addr.ipv6.addr, buf, sizeof (buf));
+	inet_ntop (AF_INET6, &ADDRESS_IPV6_IN6_ADDR (addr), buf, sizeof (buf));
 #if 0
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-        /* print also scope_id for all ?non-global? addresses */
-        snprintf (buf + len, sizeof (buf) - len, "%%%d", addr->addr.ipv6.scope_id);
+	{
+	  /* append "%SCOPE_ID" for all ?non-global? addresses */
+	  char *p = buf + strlen (buf);
+	  *p++ = '%';
+	  number_to_string (p, ADDRESS_IPV6_SCOPE (addr));
+	}
 #endif
 #endif
-        len = strlen (buf);
         buf[sizeof (buf) - 1] = '\0';
         return buf;
       }
@@ -636,20 +664,23 @@ lookup_host (const char *host, int flags)
   int err, family;
   struct addrinfo hints, *res;
 
-  /* This ip_default_family+flags business looks like bad design to
-     me.  This function should rather accept a FAMILY argument.  */
-  if (flags & LH_IPv4_ONLY)
+  /* Is this necessary?  Should this function be changed to accept a
+     FAMILY argument?  */
+  if (flags & LH_IPV4_ONLY)
     family = AF_INET;
-  else if (flags & LH_IPv6_ONLY)
+  else if (flags & LH_IPV6_ONLY)
     family = AF_INET6;
   else
     family = ip_default_family;
 #endif
 	  
   /* First, try to check whether the address is already a numeric
-     address.  Where getaddrinfo is available, we do it using the
-     AI_NUMERICHOST flag.  Without IPv6, we check whether inet_addr
-     succeeds.  */
+     address, in which case we don't need to cache it or bother with
+     setting up timeouts.  Plus, if memory serves me right, Ultrix's
+     gethostbyname can't handle numeric addresses (!).
+
+     Where getaddrinfo is available, we do it using the AI_NUMERICHOST
+     flag.  Without IPv6, we use inet_addr succeeds.  */
 
 #ifdef ENABLE_IPV6
   memset (&hints, 0, sizeof (hints));
@@ -675,14 +706,11 @@ lookup_host (const char *host, int flags)
     if (addr_ipv4 != (uint32_t) -1)
       {
 	/* The return value of inet_addr is in network byte order, so
-	   we can just copy it to ADDR.  */
-	ip_address addr;
-	/* This has a huge number of dereferences because C doesn't
-	   support anonymous unions and because struct in_addr adds a
-	   cast.  */
-	addr.addr.ipv4.addr.s_addr = addr_ipv4;
-	addr.type = IPv4_ADDRESS;
-	return address_list_from_single (&addr);
+	   we can just copy it to IP.  */
+	ip_address ip;
+	ip.type = IPV4_ADDRESS;
+	memcpy (ADDRESS_IPV4_DATA (&ip), &addr_ipv4, 4);
+	return address_list_from_single (&ip);
       }
   }
 #endif

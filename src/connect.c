@@ -73,12 +73,11 @@ static int
 resolve_bind_address (int flags, ip_address *addr)
 {
   struct address_list *al = NULL;
-  int bind_address_resolved = 0;
+  int resolved = 0;
 
   if (opt.bind_address != NULL)
     {
       al = lookup_host (opt.bind_address, flags | LH_SILENT | LH_PASSIVE);
-
       if (al == NULL)
         {
           logprintf (LOG_NOTQUIET,
@@ -86,11 +85,14 @@ resolve_bind_address (int flags, ip_address *addr)
 		     opt.bind_address);
 	}
       else 
-        bind_address_resolved = 1;
+        resolved = 1;
     }
 
   if (al == NULL)
     {
+      /* #### Is there really a need for this?  Shouldn't we simply
+	 return 0 and have the caller use sockaddr_set_address to
+	 specify INADDR_ANY/in6addr_any?  */
       const char *unspecified_address = "0.0.0.0";
 #ifdef ENABLE_IPV6
       if (flags & BIND_ON_IPV6_ONLY)
@@ -104,7 +106,7 @@ resolve_bind_address (int flags, ip_address *addr)
   address_list_copy_one (al, 0, addr);
   address_list_release (al);
 
-  return bind_address_resolved;
+  return resolved;
 }
 
 struct cwt_context {
@@ -182,7 +184,7 @@ connect_to_one (ip_address *addr, unsigned short port, int silent)
 		   pretty_addr, port);
     }
 
-  /* Make an internet socket, stream type.  */
+  /* Create the socket of the family appropriate for the address.  */
   sock = socket (sa->sa_family, SOCK_STREAM, 0);
   if (sock < 0)
     goto out;
@@ -327,7 +329,7 @@ bindport (const ip_address *bind_address, unsigned short *port)
   msock = -1;
 
 #ifdef ENABLE_IPV6
-  if (bind_address->type == IPv6_ADDRESS) 
+  if (bind_address->type == IPV6_ADDRESS) 
     family = AF_INET6;
 #endif
   
@@ -458,30 +460,36 @@ closeport (int sock)
 int
 conaddr (int fd, ip_address *ip)
 {
-  struct sockaddr_storage ss;
-  struct sockaddr *sa = (struct sockaddr *)&ss;
-  socklen_t addrlen = sizeof (ss);	
+  struct sockaddr_storage storage;
+  struct sockaddr *sockaddr = (struct sockaddr *)&storage;
+  socklen_t addrlen = sizeof (storage);
 
-  if (getsockname (fd, sa, &addrlen) < 0)
+  if (getsockname (fd, sockaddr, &addrlen) < 0)
     return 0;
 
-  switch (sa->sa_family)
+  switch (sockaddr->sa_family)
     {
 #ifdef ENABLE_IPV6
     case AF_INET6:
-      ip->type = IPv6_ADDRESS;
-      ip->addr.ipv6.addr = ((struct sockaddr_in6 *)sa)->sin6_addr;
+      {
+	struct sockaddr_in6 *sa6 = (struct sockaddr_in6 *)&storage;
+	ip->type = IPV6_ADDRESS;
+	ADDRESS_IPV6_IN6_ADDR (ip) = sa6->sin6_addr;
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-      ip->addr.ipv6.scope_id = ((struct sockaddr_in6 *)sa)->sin6_scope_id;
+	ADDRESS_IPV6_SCOPE (ip) = sa6->sin6_scope_id;
 #endif
-      DEBUGP (("conaddr is: %s\n", pretty_print_address (ip)));
-      return 1;
+	DEBUGP (("conaddr is: %s\n", pretty_print_address (ip)));
+	return 1;
+      }
 #endif
     case AF_INET:
-      ip->type = IPv4_ADDRESS;
-      ip->addr.ipv4.addr = ((struct sockaddr_in *)sa)->sin_addr;
-      DEBUGP (("conaddr is: %s\n", pretty_print_address (ip)));
-      return 1;
+      {
+	struct sockaddr_in *sa = (struct sockaddr_in *)&storage;
+	ip->type = IPV4_ADDRESS;
+	ADDRESS_IPV4_IN_ADDR (ip) = sa->sin_addr;
+	DEBUGP (("conaddr is: %s\n", pretty_print_address (ip)));
+	return 1;
+      }
     default:
       abort ();
     }

@@ -30,13 +30,11 @@ so, delete this exception statement from your version.  */
 #ifndef CONNECT_H
 #define CONNECT_H
 
-#include "host.h"
+#include "host.h"		/* for definition of ip_address */
 
 /* bindport flags */
-#define BIND_ON_IPV4_ONLY LH_IPv4_ONLY
-#ifdef ENABLE_IPV6
-#define BIND_ON_IPV6_ONLY LH_IPv6_ONLY
-#endif /* ENABLE_IPV6 */
+#define BIND_ON_IPV4_ONLY LH_IPV4_ONLY
+#define BIND_ON_IPV6_ONLY LH_IPV6_ONLY
 
 /* Function declarations */
 

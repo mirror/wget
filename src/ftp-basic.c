@@ -260,12 +260,12 @@ ip_address_to_port_repr (const ip_address *addr, unsigned short port, char *buf,
   unsigned char *ptr;
 
   assert (addr != NULL);
-  assert (addr->type == IPv4_ADDRESS);
+  assert (addr->type == IPV4_ADDRESS);
   assert (buf != NULL);
   /* buf must contain the argument of PORT (of the form a,b,c,d,e,f). */
   assert (buflen >= 6 * 4);
 
-  ptr = (unsigned char *)(&addr->addr.ipv4.addr.s_addr);
+  ptr = ADDRESS_IPV4_DATA (addr);
   snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d", ptr[0], ptr[1],
             ptr[2], ptr[3], (unsigned) (port & 0xff00) >> 8, port & 0xff);
   buf[buflen - 1] = '\0';
@@ -292,7 +292,7 @@ ftp_port (struct rbuf *rbuf)
   if (!conaddr (RBUF_FD (rbuf), &addr))
     return BINDERR;
 
-  assert (addr.type == IPv4_ADDRESS);
+  assert (addr.type == IPV4_ADDRESS);
 
   /* Setting port to 0 lets the system choose a free port.  */
   port = 0;
@@ -342,7 +342,7 @@ ip_address_to_lprt_repr (const ip_address *addr, unsigned short port, char *buf,
   unsigned char *ptr;
 
   assert (addr != NULL);
-  assert (addr->type == IPv4_ADDRESS || addr->type == IPv6_ADDRESS);
+  assert (addr->type == IPV4_ADDRESS || addr->type == IPV6_ADDRESS);
   assert (buf != NULL);
   /* buf must contain the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
   assert (buflen >= 21 * 4);
@@ -350,15 +350,15 @@ ip_address_to_lprt_repr (const ip_address *addr, unsigned short port, char *buf,
   /* Construct the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
   switch (addr->type) 
     {
-      case IPv4_ADDRESS: 
-	ptr = (unsigned char *)(&addr->addr.ipv4.addr);
+      case IPV4_ADDRESS: 
+	ptr = ADDRESS_IPV4_DATA (addr);
         snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d,%d,%d,%d", 4, 4, 
                   ptr[0], ptr[1], ptr[2], ptr[3], 2,
                   (unsigned) (port & 0xff00) >> 8, port & 0xff);
         buf[buflen - 1] = '\0';
         break;
-      case IPv6_ADDRESS: 
-	ptr = (unsigned char *)(&addr->addr.ipv6.addr);
+      case IPV6_ADDRESS: 
+	ptr = ADDRESS_IPV6_DATA (addr);
 	snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
 	          6, 16, ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7], 
 		  ptr[8], ptr[9], ptr[10], ptr[11], ptr[12], ptr[13], ptr[14], ptr[15], 2,
@@ -389,7 +389,7 @@ ftp_lprt (struct rbuf *rbuf)
   if (!conaddr (RBUF_FD (rbuf), &addr))
     return BINDERR;
 
-  assert (addr.type == IPv4_ADDRESS || addr.type == IPv6_ADDRESS);
+  assert (addr.type == IPV4_ADDRESS || addr.type == IPV6_ADDRESS);
 
   /* Setting port to 0 lets the system choose a free port.  */
   port = 0;
@@ -437,7 +437,7 @@ ip_address_to_eprt_repr (const ip_address *addr, unsigned short port, char *buf,
   int afnum;
 
   assert (addr != NULL);
-  assert (addr->type == IPv4_ADDRESS || addr->type == IPv6_ADDRESS);
+  assert (addr->type == IPV4_ADDRESS || addr->type == IPV6_ADDRESS);
   assert (buf != NULL);
   /* buf must contain the argument of EPRT (of the form |af|addr|port|). 
    * 4 chars for the | separators, INET6_ADDRSTRLEN chars for addr  
@@ -445,7 +445,7 @@ ip_address_to_eprt_repr (const ip_address *addr, unsigned short port, char *buf,
   assert (buflen >= 4 + INET6_ADDRSTRLEN + 1 + 5); 
 
   /* Construct the argument of EPRT (of the form |af|addr|port|). */
-  afnum = (addr->type == IPv4_ADDRESS ? 1 : 2);
+  afnum = (addr->type == IPV4_ADDRESS ? 1 : 2);
   snprintf (buf, buflen, "|%d|%s|%d|", afnum, pretty_print_address (addr), port);
   buf[buflen - 1] = '\0';
 }
@@ -473,7 +473,7 @@ ftp_eprt (struct rbuf *rbuf)
   if (!conaddr (RBUF_FD (rbuf), &addr))
     return BINDERR;
 
-  assert (addr.type == IPv4_ADDRESS || addr.type == IPv6_ADDRESS);
+  assert (addr.type == IPV4_ADDRESS || addr.type == IPV6_ADDRESS);
 
   /* Setting port to 0 lets the system choose a free port.  */
   port = 0;
@@ -527,7 +527,7 @@ ftp_pasv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
   unsigned char tmp[6];
 
   assert (rbuf != NULL);
-  assert (rbuf_initialized_p(rbuf));
+  assert (rbuf_initialized_p (rbuf));
   assert (addr != NULL);
   assert (port != NULL);
 
@@ -576,9 +576,8 @@ ftp_pasv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
     }
   xfree (respline);
 
-  addr->type = IPv4_ADDRESS;
-  /* Mauro Tortonesi: is this safe and/or elegant enough? */
-  memcpy (&addr->addr.ipv4.addr, tmp, 4);
+  addr->type = IPV4_ADDRESS;
+  memcpy (ADDRESS_IPV4_DATA (addr), tmp, 4);
   *port = ((tmp[4] << 8) & 0xff00) + tmp[5];
 
   return FTPOK;
@@ -727,8 +726,8 @@ ftp_lpsv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
 
   if (af == 4)
     {
-      addr->type = IPv4_ADDRESS;
-      memcpy (&addr->addr.ipv4.addr, tmp, 4);
+      addr->type = IPV4_ADDRESS;
+      memcpy (ADDRESS_IPV4_DATA (addr), tmp, 4);
       *port = ((tmpprt[0] << 8) & 0xff00) + tmpprt[1];
       DEBUGP (("lpsv addr is: %s\n", pretty_print_address(addr)));
       DEBUGP (("tmpprt[0] is: %d\n", tmpprt[0]));
@@ -738,8 +737,8 @@ ftp_lpsv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
   else
     {
       assert (af == 6);
-      addr->type = IPv6_ADDRESS;
-      memcpy (&addr->addr.ipv6.addr, tmp, 16);
+      addr->type = IPV6_ADDRESS;
+      memcpy (ADDRESS_IPV6_DATA (addr), tmp, 16);
       *port = ((tmpprt[0] << 8) & 0xff00) + tmpprt[1];
       DEBUGP (("lpsv addr is: %s\n", pretty_print_address(addr)));
       DEBUGP (("tmpprt[0] is: %d\n", tmpprt[0]));
