@@ -149,7 +149,7 @@ void rotate_backups PARAMS ((const char *));
 int mkalldirs PARAMS ((const char *));
 char *url_filename PARAMS ((const struct url *));
 
-char *getproxy PARAMS ((enum url_scheme));
+char *getproxy PARAMS ((struct url *));
 int no_proxy_match PARAMS ((const char *, const char **));
 
 void convert_links PARAMS ((const char *, struct urlpos *));

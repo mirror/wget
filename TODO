@@ -25,11 +25,6 @@ represent user-visible changes.
 * Be careful not to lose username/password information given for the
   URL on the command line.
 
-* Support FWTK firewalls.  It should work like this: if ftp_proxy is
-  set to an ftp URL, Wget should assume the use of an FWTK firewall.
-  It should connect to the proxy URL, log in as username@target-site,
-  and continue as usual.
-
 * Add a --range parameter allowing you to explicitly specify a range of bytes to
   get from a file over HTTP (FTP only supports ranges ending at the end of the
   file, though forcibly disconnecting from the server at the desired endpoint

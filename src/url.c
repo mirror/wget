@@ -1883,15 +1883,20 @@ url_string (const struct url *url, int hide_password)
   return result;
 }
 
-/* Returns proxy host address, in accordance with SCHEME.  */
+/* Return the URL of the proxy appropriate for url U.  */
 char *
-getproxy (enum url_scheme scheme)
+getproxy (struct url *u)
 {
   char *proxy = NULL;
   char *rewritten_url;
   static char rewritten_storage[1024];
 
-  switch (scheme)
+  if (!opt.use_proxy)
+    return NULL;
+  if (!no_proxy_match (u->host, (const char **)opt.no_proxy))
+    return NULL;
+
+  switch (u->scheme)
     {
     case SCHEME_HTTP:
       proxy = opt.http_proxy ? opt.http_proxy : getenv ("http_proxy");
@@ -1910,7 +1915,8 @@ getproxy (enum url_scheme scheme)
   if (!proxy || !*proxy)
     return NULL;
 
-  /* Handle shorthands. */
+  /* Handle shorthands.  `rewritten_storage' is a kludge to allow
+     getproxy() to return static storage. */
   rewritten_url = rewrite_shorthand_url (proxy);
   if (rewritten_url)
     {

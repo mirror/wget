@@ -1,3 +1,12 @@
+2002-04-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (getproxy): Accept a struct url argument.  This obviates
+	the need for USE_PROXY_P.
+
+	* retr.c (retrieve_url): Allow proxy to be a non-FTP URL.
+
+	* ftp.c (getftp): Recognize FWTK-style proxy.
+
 2002-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* config.h.in: Only define _VA_LIST when compiled with gcc.

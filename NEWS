@@ -15,6 +15,10 @@ Previously it only affected reading and writing data.
 ** Download speed shown by the progress bar is based on the data
 recently read, rather than the average speed of the entire download.
 The ETA is still based on the average speed, though.
+
+** It is now possible to connect to FTP servers through FWTK
+firewalls.  Set ftp_proxy to an FTP URL, and Wget will automatically
+log on to the proxy as "username@host".
 
 * Wget 1.8.1 is a bugfix release with no user-visible changes.
 

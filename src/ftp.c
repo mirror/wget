@@ -63,6 +63,7 @@ typedef struct
   enum stype rs;		/* remote system reported by ftp server */ 
   char *id;			/* initial directory */
   char *target;			/* target file name */
+  struct url *proxy;		/* FTWK-style proxy */
 } ccon;
 
 
@@ -150,15 +151,26 @@ getftp (struct url *u, long *len, long restval, ccon *con)
       char type_char;
       struct address_list *al;
 
+      char    *host = con->proxy ? con->proxy->host : u->host;
+      int      port = con->proxy ? con->proxy->port : u->port;
+      char *logname = user;
+
+      if (con->proxy)
+	{
+	  /* If proxy is in use, log in as username@target-site. */
+	  logname = xmalloc (strlen (user) + 1 + strlen (u->host) + 1);
+	  sprintf (logname, "%s@%s", user, u->host);
+	}
+
       /* Login to the server: */
 
       /* First: Establish the control connection.  */
 
-      al = lookup_host (u->host, 0);
+      al = lookup_host (host, 0);
       if (!al)
 	return HOSTERR;
-      set_connection_host_name (u->host);
-      csock = connect_to_many (al, u->port, 0);
+      set_connection_host_name (host);
+      csock = connect_to_many (al, port, 0);
       set_connection_host_name (NULL);
       address_list_release (al);
 
@@ -178,7 +190,11 @@ getftp (struct url *u, long *len, long restval, ccon *con)
       logprintf (LOG_VERBOSE, _("Logging in as %s ... "), user);
       if (opt.server_response)
 	logputs (LOG_ALWAYS, "\n");
-      err = ftp_login (&con->rbuf, user, passwd);
+      err = ftp_login (&con->rbuf, logname, passwd);
+
+      if (con->proxy)
+	xfree (logname);
+
       /* FTPRERR, FTPSRVERR, WRITEFAILED, FTPLOGREFUSED, FTPLOGINC */
       switch (err)
 	{
@@ -1629,7 +1645,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
    of URL.  Inherently, its capabilities are limited on what can be
    encoded into a URL.  */
 uerr_t
-ftp_loop (struct url *u, int *dt)
+ftp_loop (struct url *u, int *dt, struct url *proxy)
 {
   ccon con;			/* FTP connection */
   uerr_t res;
@@ -1642,6 +1658,7 @@ ftp_loop (struct url *u, int *dt)
   con.st = ON_YOUR_OWN;
   con.rs = ST_UNIX;
   con.id = NULL;
+  con.proxy = proxy;
   res = RETROK;			/* in case it's not used */
 
   /* If the file name is empty, the user probably wants a directory

@@ -274,10 +274,6 @@ calc_rate (long bytes, long msecs, int *units)
   return dlrate;
 }
 
-#define USE_PROXY_P(u) (opt.use_proxy && getproxy((u)->scheme)		\
-			&& no_proxy_match((u)->host,			\
-					  (const char **)opt.no_proxy))
-
 /* Maximum number of allowed redirections.  20 was chosen as a
    "reasonable" value, which is low enough to not cause havoc, yet
    high enough to guarantee that normal retrievals will not be hurt by
@@ -295,9 +291,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   uerr_t result;
   char *url;
   int location_changed, dummy;
-  int use_proxy;
   char *mynewloc, *proxy;
-  struct url *u;
+  struct url *u, *proxy_url;
   int up_error_code;		/* url parse error code */
   char *local_file;
   int redirection_count = 0;
@@ -327,22 +322,11 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   result = NOCONERROR;
   mynewloc = NULL;
   local_file = NULL;
+  proxy_url = NULL;
 
-  use_proxy = USE_PROXY_P (u);
-  if (use_proxy)
+  proxy = getproxy (u);
+  if (proxy)
     {
-      struct url *proxy_url;
-
-      /* Get the proxy server for the current scheme.  */
-      proxy = getproxy (u->scheme);
-      if (!proxy)
-	{
-	  logputs (LOG_NOTQUIET, _("Could not find proxy host.\n"));
-	  url_free (u);
-	  xfree (url);
-	  return PROXERR;
-	}
-
       /* Parse the proxy URL.  */
       proxy_url = url_parse (proxy, &up_error_code);
       if (!proxy_url)
@@ -352,24 +336,22 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  xfree (url);
 	  return PROXERR;
 	}
-      if (proxy_url->scheme != SCHEME_HTTP)
+      if (proxy_url->scheme != SCHEME_HTTP && proxy_url->scheme != u->scheme)
 	{
 	  logprintf (LOG_NOTQUIET, _("Error in proxy URL %s: Must be HTTP.\n"), proxy);
 	  url_free (proxy_url);
 	  xfree (url);
 	  return PROXERR;
 	}
-
-      result = http_loop (u, &mynewloc, &local_file, refurl, dt, proxy_url);
-      url_free (proxy_url);
     }
-  else if (u->scheme == SCHEME_HTTP
+
+  if (u->scheme == SCHEME_HTTP
 #ifdef HAVE_SSL
       || u->scheme == SCHEME_HTTPS
 #endif
-      )
+      || (proxy_url && proxy_url->scheme == SCHEME_HTTP))
     {
-      result = http_loop (u, &mynewloc, &local_file, refurl, dt, NULL);
+      result = http_loop (u, &mynewloc, &local_file, refurl, dt, proxy_url);
     }
   else if (u->scheme == SCHEME_FTP)
     {
@@ -379,7 +361,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       int oldrec = opt.recursive;
       if (redirection_count)
 	opt.recursive = 0;
-      result = ftp_loop (u, dt);
+      result = ftp_loop (u, dt, proxy_url);
       opt.recursive = oldrec;
 
       /* There is a possibility of having HTTP being redirected to
@@ -392,6 +374,13 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	    *dt |= TEXTHTML;
 	}
     }
+
+  if (proxy_url)
+    {
+      url_free (proxy_url);
+      proxy_url = NULL;
+    }
+
   location_changed = (result == NEWLOCATION);
   if (location_changed)
     {
