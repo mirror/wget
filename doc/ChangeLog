@@ -1,3 +1,8 @@
+2000-03-01  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* wget.texi (HTTP Time-Stamping Internals): Added a note about my
+ 	newly-implemented interaction between -K and -N.
+
 2000-02-29  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi: Updated version to 1.5.3+dev, updated copyrights to

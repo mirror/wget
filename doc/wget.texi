@@ -1382,6 +1382,12 @@ up.@footnote{As an additional check, Wget will look at the
 same, the remote file will be downloaded no matter what the time-stamp
 says.}
 
+When @samp{--backup-converted} (@samp{-K}) is specified in conjunction
+with @samp{-N}, server file @samp{@var{X}} is compared to local file
+@samp{@var{X}.orig}, if extant, rather than being compared to local file
+@samp{@var{X}}, which will always differ if it's been converted by
+@samp{--convert-links} (@samp{-k}).
+
 Arguably, @sc{http} time-stamping should be implemented using the
 @code{If-Modified-Since} request.
 

@@ -24,6 +24,28 @@ resulting derived work is distributed under the terms of a permission
 notice identical to this one.
 
 
+File: wget.info,  Node: Wgetrc Location,  Next: Wgetrc Syntax,  Prev: Startup File,  Up: Startup File
+
+Wgetrc Location
+===============
+
+   When initializing, Wget will look for a "global" startup file,
+`/usr/local/etc/wgetrc' by default (or some prefix other than
+`/usr/local', if Wget was not installed there) and read commands from
+there, if it exists.
+
+   Then it will look for the user's file.  If the environmental variable
+`WGETRC' is set, Wget will try to load that file.  Failing that, no
+further attempts will be made.
+
+   If `WGETRC' is not set, Wget will try to load `$HOME/.wgetrc'.
+
+   The fact that user's settings are loaded after the system-wide ones
+means that in case of collision user's wgetrc *overrides* the
+system-wide wgetrc (in `/usr/local/etc/wgetrc' by default).  Fascist
+admins, away!
+
+
 File: wget.info,  Node: Wgetrc Syntax,  Next: Wgetrc Commands,  Prev: Wgetrc Location,  Up: Startup File
 
 Wgetrc Syntax

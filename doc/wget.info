@@ -26,8 +26,8 @@ notice identical to this one.
 
 Indirect:
 wget.info-1: 961
-wget.info-2: 50948
-wget.info-3: 88756
+wget.info-2: 50395
+wget.info-3: 89018
 
 Tag Table:
 (Indirect)
@@ -56,33 +56,33 @@ Node: FTP Links42768
 Node: Time-Stamping43638
 Node: Time-Stamping Usage45275
 Node: HTTP Time-Stamping Internals46844
-Node: FTP Time-Stamping Internals48052
-Node: Startup File49260
-Node: Wgetrc Location50133
-Node: Wgetrc Syntax50948
-Node: Wgetrc Commands51663
-Node: Sample Wgetrc58501
-Node: Examples62793
-Node: Simple Usage63400
-Node: Advanced Usage65794
-Node: Guru Usage68545
-Node: Various70207
-Node: Proxies70731
-Node: Distribution73496
-Node: Mailing List73846
-Node: Reporting Bugs74545
-Node: Portability76330
-Node: Signals77705
-Node: Appendices78359
-Node: Robots78774
-Node: Introduction to RES79921
-Node: RES Format81814
-Node: User-Agent Field82918
-Node: Disallow Field83682
-Node: Norobots Examples84293
-Node: Security Considerations85247
-Node: Contributors86243
-Node: Copying88756
-Node: Concept Index107919
+Node: FTP Time-Stamping Internals48314
+Node: Startup File49522
+Node: Wgetrc Location50395
+Node: Wgetrc Syntax51210
+Node: Wgetrc Commands51925
+Node: Sample Wgetrc58763
+Node: Examples63055
+Node: Simple Usage63662
+Node: Advanced Usage66056
+Node: Guru Usage68807
+Node: Various70469
+Node: Proxies70993
+Node: Distribution73758
+Node: Mailing List74108
+Node: Reporting Bugs74807
+Node: Portability76592
+Node: Signals77967
+Node: Appendices78621
+Node: Robots79036
+Node: Introduction to RES80183
+Node: RES Format82076
+Node: User-Agent Field83180
+Node: Disallow Field83944
+Node: Norobots Examples84555
+Node: Security Considerations85509
+Node: Contributors86505
+Node: Copying89018
+Node: Concept Index108181
 
 End Tag Table
