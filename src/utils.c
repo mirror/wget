@@ -1771,3 +1771,35 @@ determine_screen_width (void)
   return wsz.ws_col;
 #endif /* TIOCGWINSZ */
 }
+
+#if 0
+/* A debugging function for checking whether an MD5 library works. */
+
+char *
+debug_test_md5 (char *buf)
+{
+  unsigned char raw[16];
+  static char res[33];
+  unsigned char *p1;
+  char *p2;
+  int cnt;
+  MD5_CONTEXT_TYPE ctx;
+
+  MD5_INIT (&ctx);
+  MD5_UPDATE (buf, strlen (buf), &ctx);
+  MD5_FINISH (&ctx, raw);
+
+  p1 = raw;
+  p2 = res;
+  cnt = 16;
+  while (cnt--)
+    {
+      *p2++ = XDIGIT_TO_xchar (*p1 >> 4);
+      *p2++ = XDIGIT_TO_xchar (*p1 & 0xf);
+      ++p1;
+    }
+  *p2 = '\0';
+
+  return res;
+}
+#endif
