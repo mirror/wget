@@ -9,8 +9,9 @@ Hrvoje Niksic.  Designed and implemented Wget.
 
 Gordon Matzigkeit.  Wrote netrc.c and netrc.h.
 
-Darko Budor.  Added Windows support, wrote wsstartup.c, wsstartup.h
-and windecl.h.
+Darko Budor.  Wrote initial support for Windows, wrote wsstartup.c,
+wsstartup.h and windecl.h.  (The files were later renamed, but his
+code and ideas remained present.)
 
 Junio Hamano.  Added support for FTP Opie and HTTP digest
 authentication.
@@ -25,5 +26,9 @@ Thomas Lussnig.  Implemented IPv6 support.
 Ian Abbott.  Contributed bugfixes, Windows-related fixes, provided a
 prototype implementation of the new recursive code, and more.
 
+Gisle Vanem.  Contributed Windows improvements, including a port of
+run_with_timeout to Windows, additions to Makefiles, and many bug
+reports and fixes.
+
 Mauro Tortonesi.  Improved IPv6 support, adding support for dual
-family systems.  Refactored FTP IPv6 code.
+family systems.  Refactored and enhanced FTP IPv6 code.
