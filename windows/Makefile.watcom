@@ -1,0 +1,101 @@
+## Compiler, linker, and lib stuff
+## Makefile for use with watcom win95/winnt executable.
+
+CC=wcc386
+LINK=wlink
+
+#disabled for faster compiler
+LFLAGS=sys nt op st=32767 op version=15013 op map
+CFLAGS=/zp4 /d1 /w4 /fpd /5s /fp5 /bm /mf /os /bt=nt /DWINDOWS /DHAVE_CONFIG_H /I=f:\lang\watcom\h;f:\lang\watcom\h\nt;f:\code\wgetb13\src
+
+## variables
+OBJS = FILE ALLOCA.obj,cmpt.obj,connect.obj,fnmatch.obj,ftp.obj,ftp-basic.obj, &
+      ftp-ls.obj,ftp-opie.obj,getopt.obj,headers.obj,host.obj,html.obj, &
+      http.obj,init.obj,log.obj,main.obj,md5.obj,netrc.obj,rbuf.obj, &
+      recur.obj,retr.obj,url.obj,utils.obj,version.obj,mswindows.obj
+LINKOBJS = ALLOCA.obj cmpt.obj connect.obj fnmatch.obj ftp.obj ftp-basic.obj &
+      ftp-ls.obj ftp-opie.obj getopt.obj headers.obj host.obj html.obj &
+      http.obj init.obj log.obj main.obj md5.obj netrc.obj rbuf.obj &
+      recur.obj retr.obj url.obj utils.obj version.obj mswindows.obj
+LIBFILES =
+
+BINNAME=wget.exe
+
+$(BINNAME): $(LINKOBJS)
+        $(LINK) $(LFLAGS) NAME $(BINNAME) $(OBJS) $(LIBPATH) $(LIBFILES)
+
+alloca.obj : alloca.c config.h
+        $(CC) $(CFLAGS) alloca.c
+
+cmpt.obj : cmpt.c cmpt.h wget.h config.h
+        $(CC) $(CFLAGS) cmpt.c
+
+connect.obj : connect.c wget.h connect.h host.h config.h
+        $(CC) $(CFLAGS) connect.c
+
+fnmatch.obj : fnmatch.c wget.h fnmatch.h config.h
+        $(CC) $(CFLAGS) fnmatch.c
+
+ftp.obj : ftp.c wget.h utils.h url.h rbuf.h retr.h ftp.h html.h connect.h host.h fnmatch.h netrc.h config.h
+        $(CC) $(CFLAGS) ftp.c
+
+ftp-basic.obj : ftp-basic.c wget.h utils.h rbuf.h connect.h host.h config.h
+        $(CC) $(CFLAGS) ftp-basic.c
+
+ftp-ls.obj : ftp-ls.c wget.h utils.h ftp.h config.h
+        $(CC) $(CFLAGS) ftp-ls.c
+
+ftp-opie.obj : ftp-opie.c wget.h md5.h config.h
+        $(CC) $(CFLAGS) ftp-opie.c
+
+getopt.obj : getopt.c wget.h getopt.h config.h
+        $(CC) $(CFLAGS) getopt.c
+
+headers.obj : headers.c headers.h wget.h rbuf.h connect.h config.h
+        $(CC) $(CFLAGS) headers.c
+
+host.obj : host.c wget.h host.h utils.h url.h config.h
+        $(CC) $(CFLAGS) host.c
+
+html.obj : html.c wget.h url.h utils.h ftp.h html.h config.h
+        $(CC) $(CFLAGS) html.c
+
+http.obj : http.c wget.h utils.h url.h host.h rbuf.h retr.h headers.h connect.h fnmatch.h netrc.h config.h
+        $(CC) $(CFLAGS) http.c
+
+init.obj : init.c wget.h utils.h init.h host.h recur.h netrc.h config.h
+        $(CC) $(CFLAGS) init.c
+
+log.obj : log.c wget.h utils.h config.h
+        $(CC) $(CFLAGS) log.c
+
+main.obj : main.c wget.h utils.h getopt.h init.h retr.h host.h recur.h config.h mswindows.h
+        $(CC) $(CFLAGS) main.c
+
+md5.obj : md5.c wget.h md5.h config.h
+        $(CC) $(CFLAGS) md5.c
+
+mswindows.obj : mswindows.c wget.h url.h config.h
+        $(CC) $(CFLAGS) mswindows.c
+
+netrc.obj : netrc.c wget.h utils.h netrc.h init.h config.h
+        $(CC) $(CFLAGS) netrc.c
+
+rbuf.obj : rbuf.c wget.h rbuf.h connect.h config.h
+        $(CC) $(CFLAGS) rbuf.c
+
+recur.obj : recur.c wget.h url.h recur.h utils.h retr.h ftp.h fnmatch.h host.h config.h
+        $(CC) $(CFLAGS) recur.c
+
+retr.obj : retr.c wget.h utils.h retr.h url.h recur.h ftp.h host.h connect.h config.h
+        $(CC) $(CFLAGS) retr.c
+
+url.obj : url.c wget.h url.h host.h html.h utils.h config.h
+        $(CC) $(CFLAGS) url.c
+
+utils.obj : utils.c wget.h fnmatch.h utils.h config.h
+        $(CC) $(CFLAGS) utils.c
+
+version.obj : version.c config.h
+        $(CC) $(CFLAGS) version.c
+

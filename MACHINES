@@ -1,0 +1,28 @@
+This files lists the architectures on which this version of GNU Wget
+was tried on.  If you compile Wget on a new architecture, please drop
+me a note, or send a patch to this file.
+
+
+Sun SunOS, Solaris (sparc-sun-solaris*, sparc-sun-sunos*)
+
+GNU/Linux (i[3456]86-*-linux*)
+
+DEC Ultrix, Digital Unix (mips-dec-ultrix*, alpha-dec-osf*)
+
+HP BSD (m68k-hp-bsd)
+
+HP HPUX (hppa1.0-hp-hpux7.00, hppa1.1-hp-hpux9.01 and others)
+
+IBM AIX (powerpc-ibm-aix4.1.4.0)
+
+Amiga NetBSD (m68k-cbm-netbsd1.2)
+
+SGI IRIX (mips-sgi-irix4.0.5, mips-sgi-irix5.3)
+
+SCO Unix (i586-pc-sco3.2v5.0.4)
+
+NeXTStep 3.3 Intel (i386-next-nextstep3)
+
+FreeBSD (i386-unknown-freebsd2.2.6)
+
+Windows 95/NT (i[3456]86)

@@ -1,0 +1,245 @@
+1998-09-10  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (HTTP Options): Warn against masquerading as Mozilla.
+
+1998-05-24  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* Makefile.in (clean): Remove HTML files.
+
+1998-05-13  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi: Various updates.
+	(Proxies): New node.
+
+1998-05-09  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* texinfo.tex: New file.
+
+1998-05-08  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* Makefile.in (dvi): New target.
+
+1998-05-02  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Recursive Retrieval): Fix typo.  Suggested by
+ 	Francois Pinard.
+
+1998-04-18  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi: Fixed @dircategory, courtesy Karl Eichwalder.
+
+1998-03-31  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* Makefile.in: Don't attempt to (un)install the man-page.
+
+1998-03-30  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.1: Removed it.
+
+1998-03-29  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Invoking): Split into more sections, analogous to
+ 	output of `wget --help'.
+	(HTTP Options): Document --user-agent.
+
+1998-03-16  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Contributors): Updated with oodles of new names.
+
+1998-02-22  Karl Eichwalder  <ke@suse.de>
+
+	* Makefile.in (install.info): only info files (no *info.orig,
+	etc.).
+
+1998-01-31  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* Makefile.in (install.wgetrc): Don't use `!'.
+
+1998-01-28  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Advanced Options): Expanded.
+
+1998-01-25  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Advanced Options): Document `--cache'.
+	(Contributors): Added Brian.
+
+1997-07-26  Francois Pinard  <pinard@iro.umontreal.ca>
+
+	* Makefile.in (install.wgetrc): Print the sample.wgetrc warning
+	only if the files actually differ.
+
+1998-01-23  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* Makefile.in: Use `test ...' rather than `[ ... ]'.
+
+	* wget.texi (Advanced Options): Explained suffices.
+
+1998-01-23  Karl Heuer  <kwzh@gnu.org>
+
+	* wget.texi (Advanced Options): Updated.
+
+1997-12-18  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Mailing List): Update.
+
+1997-04-23  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Advanced Options): Document `--follow-ftp'.
+
+1997-02-17  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Advanced Options): Document --proxy-user and
+ 	--proxy-passwd.
+
+1997-02-14  Karl Eichwalder  <ke@ke.Central.DE>
+
+	* Makefile.in (install.wgetrc): Never ever nuke an existing rc file.
+
+1997-02-02  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi: Updated and revised.
+
+	* wget.texi (Contributors): Update.
+	(Advanced Options): Removed bogus **/* example.
+
+	* wget.texi: Use ``...'' instead of "...".
+
+1997-02-01  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Domain Acceptance): Document --exclude-domains.
+
+1997-01-21  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Advanced Options): Document --ignore-length.
+
+1997-01-20  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Time-Stamping): New node.
+
+1997-01-12  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* Makefile.in (distclean): Don't remove wget.info*.
+
+1997-01-08  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Mailing List): Update archive.
+	(Portability): Update the Windows port by Budor.
+
+1996-12-21  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Security Considerations): New node.
+
+1996-12-19  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Advanced Options): Document --passive.
+
+1996-12-12  Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* wget.texi (Advanced Usage): Would reference prep instead of
+ 	wuarchive.
+
+1996-11-25  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Advanced Options): Documented --retr-symlinks.
+
+1996-11-23  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Advanced Options): Document --delete-after.
+
+1996-11-22  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Portability): Add IRIX and FreeBSD as the "regular"
+ 	platforms.
+
+1996-11-20  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Advanced Usage): Document dot-style.
+
+1996-11-18  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Advanced Usage): Dot customization example.
+	(Sample Wgetrc): Likewise.
+
+1996-11-16  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Wgetrc Syntax): Explained emptying lists.
+
+1996-11-13  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Advanced Options): Document includes/excludes.
+	(Wgetrc Commands): Likewise.
+
+1996-11-10  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Advanced Options): Document headers.
+
+1996-11-07  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* sample.wgetrc: Added header examples.
+
+1996-11-06  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* sample.wgetrc: Rewritten.
+
+	* Makefile.in (install.wgetrc): Install sample.wgetrc.
+	(uninstall.info): Use $(RM).
+
+1996-11-06  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi: Docfixes.
+
+1996-11-03  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi: Proofread; *many* docfixes.
+
+1996-11-02  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Introduction): Updated robots mailing list address.
+
+1996-11-01  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi: Minor docfixes.
+
+1996-10-26  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* wget.texi (Advanced Usage): Document passwords better.
+
+	* Makefile.in (distclean): Remove wget.1 on make distclean.
+
+	* wget.texi (Option Syntax): Explain --.
+
+1996-10-21  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* fetch.texi (No Parent): update.
+
+1996-10-18  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* fetch.texi (Advanced Options): Docfix.
+
+1996-10-17  Tage Stabell-Kulo <tage@acm.org>
+
+	* geturl.texi (Advanced Options): Sort alphabetically.
+
+1996-10-16  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* geturl.texi (Advanced Options): Describe -nr.
+	(Advanced Usage): Moved -O pipelines to Guru Usage.
+	(Simple Usage): Update.
+	(Advanced Options): Docfix.
+
+	* Makefile.in (RM): RM = rm -f.
+
+1996-10-15  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* geturl.texi (Guru Usage): Add proxy-filling example.
+
+1996-10-12  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* geturl.texi (Advanced Options): Added --spider.
+
+1996-10-08  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* geturl.texi (Advanced Options): Added -X.
+
+	* Makefile.in: Added $(srcdir) where appropriate (I hope).

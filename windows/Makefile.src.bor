@@ -1,0 +1,58 @@
+## Compiler, linker, and lib stuff
+## Makefile for use with watcom win95/winnt executable.
+
+CC=bcc32
+LINK=tlink32
+
+LFLAGS=
+CFLAGS=-DWINDOWS -DHAVE_CONFIG_H -I. -H -H=wget.csm -w-
+
+## variables
+OBJS=cmpt.obj connect.obj fnmatch.obj ftp.obj ftp-basic.obj  \
+      ftp-ls.obj ftp-opie.obj getopt.obj headers.obj host.obj html.obj \
+      http.obj init.obj log.obj main.obj md5.obj netrc.obj rbuf.obj  \
+      alloca.obj \
+      recur.obj retr.obj url.obj utils.obj version.obj mswindows.obj
+
+LIBDIR=$(MAKEDIR)\..\lib
+
+wget.exe: $(OBJS)
+  $(LINK) @&&|
+$(LFLAGS) -Tpe -ap -c +
+$(LIBDIR)\c0x32.obj+
+alloca.obj+
+version.obj+
+utils.obj+
+url.obj+
+retr.obj+
+recur.obj+
+rbuf.obj+
+netrc.obj+
+mswindows.obj+
+md5.obj+
+main.obj+
+log.obj+
+init.obj+
+http.obj+
+html.obj+
+host.obj+
+headers.obj+
+getopt.obj+
+ftp-opie.obj+
+ftp-ls.obj+
+ftp-basic.obj+
+ftp.obj+
+fnmatch.obj+
+connect.obj+
+cmpt.obj
+$<,$*
+$(LIBDIR)\import32.lib+
+$(LIBDIR)\cw32.lib
+
+
+
+|
+
+o = .obj
+
+!include "..\windows\wget.dep"

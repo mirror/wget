@@ -1,0 +1,78 @@
+                                 Hey Emacs, this is -*- outline -*- mode
+
+This is the todo list for Wget.  I don't have any time-table of when I
+plan to implement these features; this is just a list of things I'd
+like to see in Wget.  I'll work on some of them myself, and I will
+accept patches in their direction.  The items are not listed in any
+particular order.  Not all of them are user-visible changes.
+
+* Make `-k' convert <base href=...> too.
+
+* Add option to clobber existing file names (no `.N' suffixes).
+
+* Introduce a concept of "boolean" options.  For instance, every
+  boolean option `--foo' would have a `--no-foo' equivalent for
+  turning it off.  Get rid of `--foo=no' stuff.  Short options would
+  be handled as `-x' vs. `-nx'.
+
+* Implement "thermometer" display (not all that hard; use an
+  alternative show_progress() if the output goes to a terminal.)
+
+* Add option to only list wildcard matches without doing the download.
+
+* Add case-insensitivity as an option.
+
+* Add option to download all files needed to display a web page
+  (images, etc.)
+
+* Handle MIME types correctly.  There should be an option to (not)
+  retrieve files based on MIME types, e.g. `--accept-types=image/*'.
+
+* Implement "persistent" retrieving.  In "persistent" mode Wget should
+  treat most of the errors as transient.
+
+* Allow time-stamping by arbitrary date.
+
+* Fix Unix directory parser to allow for spaces in file names.
+
+* Allow size limit to files.
+
+* -k should convert convert relative references to absolute if not
+  downloaded.
+
+* Recognize HTML comments correctly.  Add more options for handling
+  bogus HTML found all over the 'net.
+
+* Implement breadth-first retrieval.
+
+* Download to .in* when mirroring.
+
+* Add an option to delete or move no-longer-existent files when
+  mirroring.
+
+* Implement a switch to avoid downloading multiple files (e.g. x and
+  x.gz).
+
+* Implement uploading (--upload URL?) in FTP and HTTP.
+
+* Rewrite FTP code to allow for easy addition of new commands.  It
+  should probably be coded as a simple DFA engine.
+
+* Recognize more FTP servers (VMS).
+
+* Make HTTP timestamping use If-Modified-Since facility.
+
+* Implement better spider options.
+
+* Add more protocols (e.g. gopher and news), implementing them in a
+  modular fashion.
+
+* Implement a concept of "packages" a la mirror.
+
+* Implement correct RFC1808 URL parsing.
+
+* Implement HTTP cookies.
+
+* Implement more HTTP/1.1 bells and whistles (ETag, Content-MD5 etc.)
+
+* Support SSL encryption through SSLeay.

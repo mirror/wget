@@ -1,0 +1,21 @@
+                                                           -*- text -*-
+
+To build Wget with VC++ 5.0 run configure.bat in the wget directory,
+and then run nmake.  If you want to build the help file you will need
+a copy of makinfo to convert wget.texi to rtf. I've made a copy
+available at <URL:http://www.sunsite.auc.dk/wget/makeinfo.zip>.  This
+copy of makeinfo is from the miktxt 1.10 archive available from ctan.
+
+Windows contributors:
+
+* Darko Budor <dbudor@zesoi.fer.hr> -- the initial work on the Windows
+  port;
+
+* Tim Charron <tcharron@interlog.com> -- additional cleanup and
+  contribution of the Watcom makefile;
+
+* John Burden <john@futuresguide.com> -- cleanup of the VC++ makefile
+  to get a clean build with VC++ 5.0 on Windows 95;
+
+* Douglas E. Wegscheid -- maintains configure.bat and various Windows
+  makefiles.

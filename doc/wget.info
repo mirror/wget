@@ -1,0 +1,88 @@
+This is Info file wget.info, produced by Makeinfo version 1.67 from the
+input file ./wget.texi.
+
+INFO-DIR-SECTION Net Utilities
+INFO-DIR-SECTION World Wide Web
+START-INFO-DIR-ENTRY
+* Wget: (wget).         The non-interactive network downloader.
+END-INFO-DIR-ENTRY
+
+   This file documents the the GNU Wget utility for downloading network
+data.
+
+   Copyright (C) 1996, 1997, 1998 Free Software Foundation, Inc.
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the sections entitled "Copying" and "GNU General Public License"
+are included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+
+Indirect:
+wget.info-1: 955
+wget.info-2: 50818
+wget.info-3: 88475
+
+Tag Table:
+(Indirect)
+Node: Top955
+Node: Overview1832
+Node: Invoking5006
+Node: URL Format5815
+Node: Option Syntax8147
+Node: Basic Startup Options9571
+Node: Logging and Input File Options10271
+Node: Download Options12665
+Node: Directory Options18450
+Node: HTTP Options20928
+Node: FTP Options24524
+Node: Recursive Retrieval Options25717
+Node: Recursive Accept/Reject Options27493
+Node: Recursive Retrieval29575
+Node: Following Links31871
+Node: Relative Links32903
+Node: Host Checking33417
+Node: Domain Acceptance35450
+Node: All Hosts37120
+Node: Types of Files37547
+Node: Directory-Based Limits39997
+Node: FTP Links42637
+Node: Time-Stamping43507
+Node: Time-Stamping Usage45144
+Node: HTTP Time-Stamping Internals46713
+Node: FTP Time-Stamping Internals47922
+Node: Startup File49130
+Node: Wgetrc Location50003
+Node: Wgetrc Syntax50818
+Node: Wgetrc Commands51533
+Node: Sample Wgetrc58229
+Node: Examples62521
+Node: Simple Usage63128
+Node: Advanced Usage65522
+Node: Guru Usage68273
+Node: Various69935
+Node: Proxies70459
+Node: Distribution73224
+Node: Mailing List73566
+Node: Reporting Bugs74265
+Node: Portability76050
+Node: Signals77425
+Node: Appendices78079
+Node: Robots78494
+Node: Introduction to RES79641
+Node: RES Format81534
+Node: User-Agent Field82638
+Node: Disallow Field83402
+Node: Norobots Examples84013
+Node: Security Considerations84967
+Node: Contributors85963
+Node: Copying88475
+Node: Concept Index107638
+
+End Tag Table

@@ -1,0 +1,211 @@
+1998-06-23  Dave Love  <d.love@dl.ac.uk>
+
+	* configure.in (exext): Define.
+
+1998-06-06  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* configure.in: Check for access().
+
+1998-05-20  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* po/hr.po: Some fixes, as per suggestions by Francois Pinard.
+
+1998-05-19  Dominique Delamarre  <dominique.delamarre@hol.fr>
+
+	* po/fr.po: New file.
+
+1998-05-19  Toomas Soome  <tsoome@ut.ee>
+
+	* po/et.po: Updated.
+
+1998-05-11  Simos KSenitellis  <simos@teiath.gr>
+
+	* po/el.po: New file.
+
+1998-05-09  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* aclocal.m4 (WGET_WITH_NLS): Print available catalogs.
+
+1998-05-09  Toomas Soome  <tsoome@ut.ee>
+
+	* po/et.po: New file.
+
+1998-05-06  Douglas E. Wegscheid  <wegscd@whirlpool.com>
+
+	* configure.bat: set up for either Borland or Visual C
+
+	* windows/wget.dep: new file
+
+	* windows/Makefile.*: use wget.dep
+
+	* rename windows/Makefile.bor to Makefile.src.bor
+
+1998-05-06  Douglas E. Wegscheid  <wegscd@whirlpool.com>
+
+	* windows/makefile.bor: Updated.
+
+	* windows/Makefile.src: Ditto.
+
+1998-04-30  Douglas E. Wegscheid  <wegscd@whirlpool.com>
+
+	* windows/config.h.bor: New file.
+
+	* windows/makefile.bor: New file.
+
+1998-04-27  John Burden  <john@futuresguide.com>
+
+	* windows/Makefile.*: Cleanup.
+
+1998-04-27  Gregor Hoffleit  <flight@mathi.uni-heidelberg.de>
+
+	* configure.in: Check for PID_T.
+
+1998-04-19  Giovanni Bortolozzo  <borto@dei.unipd.it>
+
+	* po/it.po: Updated.
+
+1998-04-19  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
+
+	* po/cs.po: Updated.
+
+1998-04-19  Wanderlei Cavassin  <cavassin@conectiva.com.br>
+
+	* po/pt_BR.po: Updated.
+
+1998-04-08  Stefan Hornburg  <racke@gundel.han.de>
+
+	* Makefile (dist): New target.
+
+1998-04-08  Wanderlei Cavassin  <cavassin@conectiva.com.br>
+
+	* po/pt_BR.po: Updated.
+
+1998-04-04  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* aclocal.m4 (WGET_WITH_NLS): Renamed USE_NLS to HAVE_NLS.
+
+	* ABOUT-NLS: Removed.
+
+	* Makefile.in (stamp-h): Clean up stamp-h-related dependencies.
+	Don't attempt to write to stamp-h.in.
+
+	* aclocal.m4 (WGET_PROCESS_PO): Reset srcdir to ac_given_srcdir.
+
+1998-04-03  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* Makefile.in (distclean-top): Remove stamp-h.
+
+1998-04-02  Robert Schmidt  <rsc@vingmed.no>
+
+	* po/no.po: New file.
+
+1998-04-01  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* configure.in: New option `--disable-debug'.
+
+1998-03-31  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* configure.in: Check for endianness.
+
+1998-03-29  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* aclocal.m4 (WGET_PROCESS_PO): Use echo instead of AC_MSG_RESULT.
+
+1998-03-28  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* aclocal.m4 (WGET_WITH_NLS): Disable USE_NLS if gettext is
+ 	unavailable.
+
+	* aclocal.m4: Renamed AM_STRUCT_UTIMBUF to WGET_STRUCT_UTIMBUF;
+	renamed AM_WITH_NLS to WGET_WITH_NLS.
+
+	* aclocal.m4: Eliminate POSUBS.
+
+1998-03-17  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* Makefile.in: config.h* -> src/config.h*
+
+	* configure.in: Check for vsnprintf().
+
+	* po/POTFILES.in: Updated.
+
+1998-03-16  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* po/POTFILES.in: Removed extraneous newline at end of line, which 
+	caused an error in `Makefile' which Sun make choked on.
+
+1998-03-16  Jan Prikryl <prikryl@cg.tuwien.ac.at>
+
+	* po/cs.po: New file.
+
+1998-03-12  Wanderlei Cavassin  <cavassin@conectiva.com.br>
+
+	* po/pt_BR.po: New file.
+
+1998-03-07  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* PROBLEMS: New file.
+
+1998-02-22  Karl Eichwalder  <ke@suse.de>
+
+	* po/Makefile.in.in (install-data-yes): Fix creation of
+	directories for LC_MESSAGE files.
+
+1998-02-22  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* configure.in: Removed `-Wno-switch' for gcc.
+
+	* po/Makefile.in.in (install-data-yes): Use mkinstalldirs to
+	create the directory first.
+
+1998-02-21  Karl Eichwalder  <karl@suse.de>
+
+	* po/de.po: Updated.
+
+1998-02-19  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* Makefile.in (check): New empty target.
+
+1998-02-11  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* po/it.po: New file, by Antonio Rosella.
+
+1998-02-08  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* aclocal.m4: Cleaned up.
+
+	* po/hr.po: Updated.
+
+	* configure.in: Removed check for POSIXized ISC.
+
+1998-02-08  Karl Eichwalder  <karl@suse.de>
+
+	* po/de.po: Updated.
+
+1998-02-07  Karl Eichwalder  <ke@suse.de>
+
+	* Makefile.in (install.info uninstall.info install.man
+	uninstall.man install.wgetrc): Use it.
+
+	* Makefile.in (install.mo): New target.
+
+1998-02-03  Karl Eichwalder  <ke@suse.de>
+
+	* po/POTFILES.in: Touch it (needed for NLS); add src/ftp.c,
+	src/getopt.c, src/host.c, src/html.c, src/http.c, src/init.c,
+	src/main.c, src/mswindows.c, src/netrc.c, src/recur.c, src/retr.c,
+	src/url.c, and src/utils.c.
+
+	* intl/po2tbl.sed.in: Add from gettext-0.10.32 (needed for NLS).
+
+	* po/Makefile.in.in: Add from gettext-0.10.32.
+
+	* Makefile.in (SUBDIRS): Add po/.
+
+	* configure.in (ALL_LINGUAS): New variable.  Add "de" and "hr".
+	(AM_GNU_GETTEXT): Add.
+	(AC_OUTPUT): Add po/Makefile.in; run the sed command.
+	
+	* aclocal.m4 (AM_WITH_NLS, AM_GNU_GETTEXT, AM_LC_MESSAGES,
+	AM_PATH_PROG_WITH_TEST): from gettext-0.10.32.
+	

@@ -1,0 +1,80 @@
+                                                          -*- text -*-
+                           GNU Wget README
+
+GNU Wget is a free network utility to retrieve files from the World
+Wide Web using HTTP and FTP, the two most widely used Internet
+protocols.  It works non-interactively, thus enabling work in the
+background, after having logged off.
+
+The recursive retrieval of HTML pages, as well as FTP sites is
+supported -- you can use Wget to make mirrors of archives and home
+pages, or traverse the web like a WWW robot (Wget understands
+/robots.txt).
+
+Wget works exceedingly well on slow or unstable connections, keeping
+getting the document until it is fully retrieved.  Re-getting files
+from where it left off works on servers (both HTTP and FTP) that
+support it.  Matching of wildcards and recursive mirroring of
+directories are available when retrieving via FTP.  Both HTTP and FTP
+retrievals can be time-stamped, thus Wget can see if the remote file
+has changed since last retrieval and automatically retrieve the new
+version if it has.
+
+Wget supports proxy servers, which can lighten the network load, speed
+up retrieval and provide access behind firewalls.  If you are behind a
+firewall that requires the use of a socks style gateway, you can get
+the socks library and compile wget with support for socks.
+
+Most of the features are configurable, either through command-line
+options, or via initialization file .wgetrc.  Wget allows you to
+install a global startup file (/usr/local/etc/wgetrc by default) for
+site settings.
+
+Wget works under almost all modern Unix variants and, unlike many
+other similar utilities, is written entirely in C, thus requiring no
+additional software (like perl).  As Wget uses the GNU Autoconf, it is
+easily built on and ported to other Unix's. Installation procedure is
+described in the INSTALL file.
+
+Like all GNU utilities, the latest version of Wget can be found at the
+master GNU archive site prep.ai.mit.edu, and its mirrors.  For
+example, Wget 1.5.2 is at:
+<URL:ftp://prep.ai.mit.edu/pub/gnu/wget-1.5.2.tar.gz>.
+
+The latest version is also available via FTP from the maintainer's
+machine, at:
+<URL:ftp://gnjilux.cc.fer.hr/pub/unix/util/wget/wget.tar.gz>.
+
+This location is mirrored at:
+<URL:ftp://sunsite.auc.dk/pub/infosystems/wget/> and
+<URL:http://sunsite.auc.dk/ftp/pub/infosystems/wget/>.
+
+Please report bugs in Wget to <bug-wget@prep.ai.mit.edu>.
+
+Wget has a own mailing list at <wget@sunsite.auc.dk>.  To subscribe,
+mail to <wget-subscribe@sunsite.auc.dk>.
+
+Wget is free in all senses -- it is freely redistributable, and no
+payment is required.  If you still wish to donate money to the author,
+or wish to sponsor implementation of specific features, please email
+me at <hniksic@srce.hr>.
+
+
+AUTHOR: Hrvoje Niksic <URL:mailto:hniksic@srce.hr>
+
+
+Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.

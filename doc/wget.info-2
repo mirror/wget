@@ -1,0 +1,1079 @@
+This is Info file wget.info, produced by Makeinfo version 1.67 from the
+input file ./wget.texi.
+
+INFO-DIR-SECTION Net Utilities
+INFO-DIR-SECTION World Wide Web
+START-INFO-DIR-ENTRY
+* Wget: (wget).         The non-interactive network downloader.
+END-INFO-DIR-ENTRY
+
+   This file documents the the GNU Wget utility for downloading network
+data.
+
+   Copyright (C) 1996, 1997, 1998 Free Software Foundation, Inc.
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the sections entitled "Copying" and "GNU General Public License"
+are included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+
+File: wget.info,  Node: Wgetrc Syntax,  Next: Wgetrc Commands,  Prev: Wgetrc Location,  Up: Startup File
+
+Wgetrc Syntax
+=============
+
+   The syntax of a wgetrc command is simple:
+
+     variable = value
+
+   The "variable" will also be called "command".  Valid "values" are
+different for different commands.
+
+   The commands are case-insensitive and underscore-insensitive.  Thus
+`DIr__PrefiX' is the same as `dirprefix'.  Empty lines, lines beginning
+with `#' and lines containing white-space only are discarded.
+
+   Commands that expect a comma-separated list will clear the list on an
+empty command.  So, if you wish to reset the rejection list specified in
+global `wgetrc', you can do it with:
+
+     reject =
+
+
+File: wget.info,  Node: Wgetrc Commands,  Next: Sample Wgetrc,  Prev: Wgetrc Syntax,  Up: Startup File
+
+Wgetrc Commands
+===============
+
+   The complete set of commands is listed below, the letter after `='
+denoting the value the command takes. It is `on/off' for `on' or `off'
+(which can also be `1' or `0'), STRING for any non-empty string or N
+for a positive integer.  For example, you may specify `use_proxy = off'
+to disable use of proxy servers by default. You may use `inf' for
+infinite values, where appropriate.
+
+   Most of the commands have their equivalent command-line option
+(*Note Invoking::), except some more obscure or rarely used ones.
+
+accept/reject = STRING
+     Same as `-A'/`-R' (*Note Types of Files::).
+
+add_hostdir = on/off
+     Enable/disable host-prefixed file names.  `-nH' disables it.
+
+continue = on/off
+     Enable/disable continuation of the retrieval, the same as `-c'
+     (which enables it).
+
+background = on/off
+     Enable/disable going to background, the same as `-b' (which enables
+     it).
+
+base = STRING
+     Set base for relative URLs, the same as `-B'.
+
+cache = on/off
+     When set to off, disallow server-caching.  See the `-C' option.
+
+convert links = on/off
+     Convert non-relative links locally.  The same as `-k'.
+
+cut_dirs = N
+     Ignore N remote directory components.
+
+debug = on/off
+     Debug mode, same as `-d'.
+
+delete_after = on/off
+     Delete after download, the same as `--delete-after'.
+
+dir_prefix = STRING
+     Top of directory tree, the same as `-P'.
+
+dirstruct = on/off
+     Turning dirstruct on or off, the same as `-x' or `-nd',
+     respectively.
+
+domains = STRING
+     Same as `-D' (*Note Domain Acceptance::).
+
+dot_bytes = N
+     Specify the number of bytes "contained" in a dot, as seen
+     throughout the retrieval (1024 by default).  You can postfix the
+     value with `k' or `m', representing kilobytes and megabytes,
+     respectively.  With dot settings you can tailor the dot retrieval
+     to suit your needs, or you can use the predefined "styles" (*Note
+     Download Options::).
+
+dots_in_line = N
+     Specify the number of dots that will be printed in each line
+     throughout the retrieval (50 by default).
+
+dot_spacing = N
+     Specify the number of dots in a single cluster (10 by default).
+
+dot_style = STRING
+     Specify the dot retrieval "style", as with `--dot-style'.
+
+exclude_directories = STRING
+     Specify a comma-separated list of directories you wish to exclude
+     from download, the same as `-X' (*Note Directory-Based Limits::).
+
+exclude_domains = STRING
+     Same as `--exclude-domains' (*Note Domain Acceptance::).
+
+follow_ftp = on/off
+     Follow FTP links from HTML documents, the same as `-f'.
+
+force_html = on/off
+     If set to on, force the input filename to be regarded as an HTML
+     document, the same as `-F'.
+
+ftp_proxy = STRING
+     Use STRING as FTP proxy, instead of the one specified in
+     environment.
+
+glob = on/off
+     Turn globbing on/off, the same as `-g'.
+
+header = STRING
+     Define an additional header, like `--header'.
+
+http_passwd = STRING
+     Set HTTP password.
+
+http_proxy = STRING
+     Use STRING as HTTP proxy, instead of the one specified in
+     environment.
+
+http_user = STRING
+     Set HTTP user to STRING.
+
+ignore_length = on/off
+     When set to on, ignore `Content-Length' header; the same as
+     `--ignore-length'.
+
+include_directories = STRING
+     Specify a comma-separated list of directories you wish to follow
+     when downloading, the same as `-I'.
+
+input = STRING
+     Read the URLs from STRING, like `-i'.
+
+kill_longer = on/off
+     Consider data longer than specified in content-length header as
+     invalid (and retry getting it). The default behaviour is to save
+     as much data as there is, provided there is more than or equal to
+     the value in `Content-Length'.
+
+logfile = STRING
+     Set logfile, the same as `-o'.
+
+login = STRING
+     Your user name on the remote machine, for FTP.  Defaults to
+     `anonymous'.
+
+mirror = on/off
+     Turn mirroring on/off.  The same as `-m'.
+
+netrc = on/off
+     Turn reading netrc on or off.
+
+noclobber = on/off
+     Same as `-nc'.
+
+no_parent = on/off
+     Disallow retrieving outside the directory hierarchy, like
+     `--no-parent' (*Note Directory-Based Limits::).
+
+no_proxy = STRING
+     Use STRING as the comma-separated list of domains to avoid in
+     proxy loading, instead of the one specified in environment.
+
+output_document = STRING
+     Set the output filename, the same as `-O'.
+
+passive_ftp = on/off
+     Set passive FTP, the same as `--passive-ftp'.
+
+passwd = STRING
+     Set your FTP password to PASSWORD.  Without this setting, the
+     password defaults to `username@hostname.domainname'.
+
+proxy_user = STRING
+     Set proxy authentication user name to STRING, like `--proxy-user'.
+
+proxy_passwd = STRING
+     Set proxy authentication password to STRING, like `--proxy-passwd'.
+
+quiet = on/off
+     Quiet mode, the same as `-q'.
+
+quota = QUOTA
+     Specify the download quota, which is useful to put in global
+     wgetrc. When download quota is specified, Wget will stop retrieving
+     after the download sum has become greater than quota.  The quota
+     can be specified in bytes (default), kbytes `k' appended) or mbytes
+     (`m' appended).  Thus `quota = 5m' will set the quota to 5 mbytes.
+     Note that the user's startup file overrides system settings.
+
+reclevel = N
+     Recursion level, the same as `-l'.
+
+recursive = on/off
+     Recursive on/off, the same as `-r'.
+
+relative_only = on/off
+     Follow only relative links, the same as `-L' (*Note Relative
+     Links::).
+
+remove_listing = on/off
+     If set to on, remove FTP listings downloaded by Wget.  Setting it
+     to off is the same as `-nr'.
+
+retr_symlinks = on/off
+     When set to on, retrieve symbolic links as if they were plain
+     files; the same as `--retr-symlinks'.
+
+robots = on/off
+     Use (or not) `/robots.txt' file (*Note Robots::).  Be sure to know
+     what you are doing before changing the default (which is `on').
+
+server_response = on/off
+     Choose whether or not to print the HTTP and FTP server responses,
+     the same as `-S'.
+
+simple_host_check = on/off
+     Same as `-nh' (*Note Host Checking::).
+
+span_hosts = on/off
+     Same as `-H'.
+
+timeout = N
+     Set timeout value, the same as `-T'.
+
+timestamping = on/off
+     Turn timestamping on/off. The same as `-N' (*Note Time-Stamping::).
+
+tries = N
+     Set number of retries per URL, the same as `-t'.
+
+use_proxy = on/off
+     Turn proxy support on/off. The same as `-Y'.
+
+verbose = on/off
+     Turn verbose on/off, the same as `-v'/`-nv'.
+
+wait = N
+     Wait N seconds between retrievals, the same as `-w'.
+
+
+File: wget.info,  Node: Sample Wgetrc,  Prev: Wgetrc Commands,  Up: Startup File
+
+Sample Wgetrc
+=============
+
+   This is the sample initialization file, as given in the distribution.
+It is divided in two section--one for global usage (suitable for global
+startup file), and one for local usage (suitable for `$HOME/.wgetrc').
+Be careful about the things you change.
+
+   Note that all the lines are commented out.  For any line to have
+effect, you must remove the `#' prefix at the beginning of line.
+
+     ###
+     ### Sample Wget initialization file .wgetrc
+     ###
+     
+     ## You can use this file to change the default behaviour of wget or to
+     ## avoid having to type many many command-line options. This file does
+     ## not contain a comprehensive list of commands -- look at the manual
+     ## to find out what you can put into this file.
+     ##
+     ## Wget initialization file can reside in /usr/local/etc/wgetrc
+     ## (global, for all users) or $HOME/.wgetrc (for a single user).
+     ##
+     ## To use any of the settings in this file, you will have to uncomment
+     ## them (and probably change them).
+     
+     
+     ##
+     ## Global settings (useful for setting up in /usr/local/etc/wgetrc).
+     ## Think well before you change them, since they may reduce wget's
+     ## functionality, and make it behave contrary to the documentation:
+     ##
+     
+     # You can set retrieve quota for beginners by specifying a value
+     # optionally followed by 'K' (kilobytes) or 'M' (megabytes).  The
+     # default quota is unlimited.
+     #quota = inf
+     
+     # You can lower (or raise) the default number of retries when
+     # downloading a file (default is 20).
+     #tries = 20
+     
+     # Lowering the maximum depth of the recursive retrieval is handy to
+     # prevent newbies from going too "deep" when they unwittingly start
+     # the recursive retrieval.  The default is 5.
+     #reclevel = 5
+     
+     # Many sites are behind firewalls that do not allow initiation of
+     # connections from the outside.  On these sites you have to use the
+     # `passive' feature of FTP.  If you are behind such a firewall, you
+     # can turn this on to make Wget use passive FTP by default.
+     #passive_ftp = off
+     
+     
+     ##
+     ## Local settings (for a user to set in his $HOME/.wgetrc).  It is
+     ## *highly* undesirable to put these settings in the global file, since
+     ## they are potentially dangerous to "normal" users.
+     ##
+     ## Even when setting up your own ~/.wgetrc, you should know what you
+     ## are doing before doing so.
+     ##
+     
+     # Set this to on to use timestamping by default:
+     #timestamping = off
+     
+     # It is a good idea to make Wget send your email address in a `From:'
+     # header with your request (so that server administrators can contact
+     # you in case of errors).  Wget does *not* send `From:' by default.
+     #header = From: Your Name <username@site.domain>
+     
+     # You can set up other headers, like Accept-Language.  Accept-Language
+     # is *not* sent by default.
+     #header = Accept-Language: en
+     
+     # You can set the default proxy for Wget to use.  It will override the
+     # value in the environment.
+     #http_proxy = http://proxy.yoyodyne.com:18023/
+     
+     # If you do not want to use proxy at all, set this to off.
+     #use_proxy = on
+     
+     # You can customize the retrieval outlook.  Valid options are default,
+     # binary, mega and micro.
+     #dot_style = default
+     
+     # Setting this to off makes Wget not download /robots.txt.  Be sure to
+     # know *exactly* what /robots.txt is and how it is used before changing
+     # the default!
+     #robots = on
+     
+     # It can be useful to make Wget wait between connections.  Set this to
+     # the number of seconds you want Wget to wait.
+     #wait = 0
+     
+     # You can force creating directory structure, even if a single is being
+     # retrieved, by setting this to on.
+     #dirstruct = off
+     
+     # You can turn on recursive retrieving by default (don't do this if
+     # you are not sure you know what it means) by setting this to on.
+     #recursive = off
+     
+     # To have Wget follow FTP links from HTML files by default, set this
+     # to on:
+     #follow_ftp = off
+
+
+File: wget.info,  Node: Examples,  Next: Various,  Prev: Startup File,  Up: Top
+
+Examples
+********
+
+   The examples are classified into three sections, because of clarity.
+The first section is a tutorial for beginners.  The second section
+explains some of the more complex program features.  The third section
+contains advice for mirror administrators, as well as even more complex
+features (that some would call perverted).
+
+* Menu:
+
+* Simple Usage::        Simple, basic usage of the program.
+* Advanced Usage::      Advanced techniques of usage.
+* Guru Usage::          Mirroring and the hairy stuff.
+
+
+File: wget.info,  Node: Simple Usage,  Next: Advanced Usage,  Prev: Examples,  Up: Examples
+
+Simple Usage
+============
+
+   * Say you want to download a URL.  Just type:
+
+          wget http://fly.cc.fer.hr/
+
+     The response will be something like:
+
+          --13:30:45--  http://fly.cc.fer.hr:80/en/
+                     => `index.html'
+          Connecting to fly.cc.fer.hr:80... connected!
+          HTTP request sent, awaiting response... 200 OK
+          Length: 4,694 [text/html]
+          
+              0K -> ....                                                   [100%]
+          
+          13:30:46 (23.75 KB/s) - `index.html' saved [4694/4694]
+
+   * But what will happen if the connection is slow, and the file is
+     lengthy?  The connection will probably fail before the whole file
+     is retrieved, more than once.  In this case, Wget will try getting
+     the file until it either gets the whole of it, or exceeds the
+     default number of retries (this being 20).  It is easy to change
+     the number of tries to 45, to insure that the whole file will
+     arrive safely:
+
+          wget --tries=45 http://fly.cc.fer.hr/jpg/flyweb.jpg
+
+   * Now let's leave Wget to work in the background, and write its
+     progress to log file `log'.  It is tiring to type `--tries', so we
+     shall use `-t'.
+
+          wget -t 45 -o log http://fly.cc.fer.hr/jpg/flyweb.jpg &
+
+     The ampersand at the end of the line makes sure that Wget works in
+     the background.  To unlimit the number of retries, use `-t inf'.
+
+   * The usage of FTP is as simple.  Wget will take care of login and
+     password.
+
+          $ wget ftp://gnjilux.cc.fer.hr/welcome.msg
+          --10:08:47--  ftp://gnjilux.cc.fer.hr:21/welcome.msg
+                     => `welcome.msg'
+          Connecting to gnjilux.cc.fer.hr:21... connected!
+          Logging in as anonymous ... Logged in!
+          ==> TYPE I ... done.  ==> CWD not needed.
+          ==> PORT ... done.    ==> RETR welcome.msg ... done.
+          Length: 1,340 (unauthoritative)
+          
+              0K -> .                                                      [100%]
+          
+          10:08:48 (1.28 MB/s) - `welcome.msg' saved [1340]
+
+   * If you specify a directory, Wget will retrieve the directory
+     listing, parse it and convert it to HTML.  Try:
+
+          wget ftp://prep.ai.mit.edu/pub/gnu/
+          lynx index.html
+
+
+File: wget.info,  Node: Advanced Usage,  Next: Guru Usage,  Prev: Simple Usage,  Up: Examples
+
+Advanced Usage
+==============
+
+   * You would like to read the list of URLs from a file?  Not a problem
+     with that:
+
+          wget -i file
+
+     If you specify `-' as file name, the URLs will be read from
+     standard input.
+
+   * Create a mirror image of GNU WWW site (with the same directory
+     structure the original has) with only one try per document, saving
+     the log of the activities to `gnulog':
+
+          wget -r -t1 http://www.gnu.ai.mit.edu/ -o gnulog
+
+   * Retrieve the first layer of yahoo links:
+
+          wget -r -l1 http://www.yahoo.com/
+
+   * Retrieve the index.html of `www.lycos.com', showing the original
+     server headers:
+
+          wget -S http://www.lycos.com/
+
+   * Save the server headers with the file:
+          wget -s http://www.lycos.com/
+          more index.html
+
+   * Retrieve the first two levels of `wuarchive.wustl.edu', saving them
+     to /tmp.
+
+          wget -P/tmp -l2 ftp://wuarchive.wustl.edu/
+
+   * You want to download all the GIFs from an HTTP directory.  `wget
+     http://host/dir/*.gif' doesn't work, since HTTP retrieval does not
+     support globbing.  In that case, use:
+
+          wget -r -l1 --no-parent -A.gif http://host/dir/
+
+     It is a bit of a kludge, but it works.  `-r -l1' means to retrieve
+     recursively (*Note Recursive Retrieval::), with maximum depth of 1.
+     `--no-parent' means that references to the parent directory are
+     ignored (*Note Directory-Based Limits::), and `-A.gif' means to
+     download only the GIF files.  `-A "*.gif"' would have worked too.
+
+   * Suppose you were in the middle of downloading, when Wget was
+     interrupted.  Now you do not want to clobber the files already
+     present.  It would be:
+
+          wget -nc -r http://www.gnu.ai.mit.edu/
+
+   * If you want to encode your own username and password to HTTP or
+     FTP, use the appropriate URL syntax (*Note URL Format::).
+
+          wget ftp://hniksic:mypassword@jagor.srce.hr/.emacs
+
+   * If you do not like the default retrieval visualization (1K dots
+     with 10 dots per cluster and 50 dots per line), you can customize
+     it through dot settings (*Note Wgetrc Commands::).  For example,
+     many people like the "binary" style of retrieval, with 8K dots and
+     512K lines:
+
+          wget --dot-style=binary ftp://prep.ai.mit.edu/pub/gnu/README
+
+     You can experiment with other styles, like:
+
+          wget --dot-style=mega ftp://ftp.xemacs.org/pub/xemacs/xemacs-20.4/xemacs-20.4.tar.gz
+          wget --dot-style=micro http://fly.cc.fer.hr/
+
+     To make these settings permanent, put them in your `.wgetrc', as
+     described before (*Note Sample Wgetrc::).
+
+
+File: wget.info,  Node: Guru Usage,  Prev: Advanced Usage,  Up: Examples
+
+Guru Usage
+==========
+
+   * If you wish Wget to keep a mirror of a page (or FTP
+     subdirectories), use `--mirror' (`-m'), which is the shorthand for
+     `-r -N'.  You can put Wget in the crontab file asking it to
+     recheck a site each Sunday:
+
+          crontab
+          0 0 * * 0 wget --mirror ftp://ftp.xemacs.org/pub/xemacs/ -o /home/me/weeklog
+
+   * You may wish to do the same with someone's home page.  But you do
+     not want to download all those images--you're only interested in
+     HTML.
+
+          wget --mirror -A.html http://www.w3.org/
+
+   * But what about mirroring the hosts networkologically close to you?
+     It seems so awfully slow because of all that DNS resolving.  Just
+     use `-D' (*Note Domain Acceptance::).
+
+          wget -rN -Dsrce.hr http://www.srce.hr/
+
+     Now Wget will correctly find out that `regoc.srce.hr' is the same
+     as `www.srce.hr', but will not even take into consideration the
+     link to `www.mit.edu'.
+
+   * You have a presentation and would like the dumb absolute links to
+     be converted to relative?  Use `-k':
+
+          wget -k -r URL
+
+   * You would like the output documents to go to standard output
+     instead of to files?  OK, but Wget will automatically shut up
+     (turn on `--quiet') to prevent mixing of Wget output and the
+     retrieved documents.
+
+          wget -O - http://jagor.srce.hr/ http://www.srce.hr/
+
+     You can also combine the two options and make weird pipelines to
+     retrieve the documents from remote hotlists:
+
+          wget -O - http://cool.list.com/ | wget --force-html -i -
+
+
+File: wget.info,  Node: Various,  Next: Appendices,  Prev: Examples,  Up: Top
+
+Various
+*******
+
+   This chapter contains all the stuff that could not fit anywhere else.
+
+* Menu:
+
+* Proxies::             Support for proxy servers
+* Distribution::        Getting the latest version.
+* Mailing List::        Wget mailing list for announcements and discussion.
+* Reporting Bugs::      How and where to report bugs.
+* Portability::         The systems Wget works on.
+* Signals::             Signal-handling performed by Wget.
+
+
+File: wget.info,  Node: Proxies,  Next: Distribution,  Prev: Various,  Up: Various
+
+Proxies
+=======
+
+   "Proxies" are special-purpose HTTP servers designed to transfer data
+from remote servers to local clients.  One typical use of proxies is
+lightening network load for users behind a slow connection.  This is
+achieved by channeling all HTTP and FTP requests through the proxy
+which caches the transferred data.  When a cached resource is requested
+again, proxy will return the data from cache.  Another use for proxies
+is for companies that separate (for security reasons) their internal
+networks from the rest of Internet.  In order to obtain information
+from the Web, their users connect and retrieve remote data using an
+authorized proxy.
+
+   Wget supports proxies for both HTTP and FTP retrievals.  The
+standard way to specify proxy location, which Wget recognizes, is using
+the following environment variables:
+
+`http_proxy'
+     This variable should contain the URL of the proxy for HTTP
+     connections.
+
+`ftp_proxy'
+     This variable should contain the URL of the proxy for HTTP
+     connections.  It is quite common that HTTP_PROXY and FTP_PROXY are
+     set to the same URL.
+
+`no_proxy'
+     This variable should contain a comma-separated list of domain
+     extensions proxy should *not* be used for.  For instance, if the
+     value of `no_proxy' is `.mit.edu', proxy will not be used to
+     retrieve documents from MIT.
+
+   In addition to the environment variables, proxy location and settings
+may be specified from within Wget itself.
+
+`-Y on/off'
+`--proxy=on/off'
+`proxy = on/off'
+     This option may be used to turn the proxy support on or off.  Proxy
+     support is on by default, provided that the appropriate environment
+     variables are set.
+
+`http_proxy = URL'
+`ftp_proxy = URL'
+`no_proxy = STRING'
+     These startup file variables allow you to override the proxy
+     settings specified by the environment.
+
+   Some proxy servers require authorization to enable you to use them.
+The authorization consists of "username" and "password", which must be
+sent by Wget.  As with HTTP authorization, several authentication
+schemes exist.  For proxy authorization only the `Basic' authentication
+scheme is currently implemented.
+
+   You may specify your username and password either through the proxy
+URL or through the command-line options.  Assuming that the company's
+proxy is located at `proxy.srce.hr' at port 8001, a proxy URL location
+containing authorization data might look like this:
+
+     http://hniksic:mypassword@proxy.company.com:8001/
+
+   Alternatively, you may use the `proxy-user' and `proxy-password'
+options, and the equivalent `.wgetrc' settings `proxy_user' and
+`proxy_passwd' to set the proxy username and password.
+
+
+File: wget.info,  Node: Distribution,  Next: Mailing List,  Prev: Proxies,  Up: Various
+
+Distribution
+============
+
+   Like all GNU utilities, the latest version of Wget can be found at
+the master GNU archive site prep.ai.mit.edu, and its mirrors.  For
+example, Wget 1.5.3 can be found at
+`ftp://prep.ai.mit.edu/pub/gnu/wget-1.5.3.tar.gz'
+
+
+File: wget.info,  Node: Mailing List,  Next: Reporting Bugs,  Prev: Distribution,  Up: Various
+
+Mailing List
+============
+
+   Wget has its own mailing list at <wget@sunsite.auc.dk>, thanks to
+Karsten Thygesen.  The mailing list is for discussion of Wget features
+and web, reporting Wget bugs (those that you think may be of interest
+to the public) and mailing announcements.  You are welcome to
+subscribe.  The more people on the list, the better!
+
+   To subscribe, send mail to <wget-subscribe@sunsite.auc.dk>.  the
+magic word `subscribe' in the subject line.  Unsubscribe by mailing to
+<wget-unsubscribe@sunsite.auc.dk>.
+
+   The mailing list is archived at `http://fly.cc.fer.hr/archive/wget'.
+
+
+File: wget.info,  Node: Reporting Bugs,  Next: Portability,  Prev: Mailing List,  Up: Various
+
+Reporting Bugs
+==============
+
+   You are welcome to send bug reports about GNU Wget to
+<bug-wget@gnu.org>.  The bugs that you think are of the interest to the
+public (i.e. more people should be informed about them) can be Cc-ed to
+the mailing list at <wget@sunsite.auc.dk>.
+
+   Before actually submitting a bug report, please try to follow a few
+simple guidelines.
+
+  1. Please try to ascertain that the behaviour you see really is a
+     bug.  If Wget crashes, it's a bug.  If Wget does not behave as
+     documented, it's a bug.  If things work strange, but you are not
+     sure about the way they are supposed to work, it might well be a
+     bug.
+
+  2. Try to repeat the bug in as simple circumstances as possible.
+     E.g. if Wget crashes on `wget -rLl0 -t5 -Y0 http://yoyodyne.com -o
+     /tmp/log', you should try to see if it will crash with a simpler
+     set of options.
+
+     Also, while I will probably be interested to know the contents of
+     your `.wgetrc' file, just dumping it into the debug message is
+     probably a bad idea.  Instead, you should first try to see if the
+     bug repeats with `.wgetrc' moved out of the way.  Only if it turns
+     out that `.wgetrc' settings affect the bug, should you mail me the
+     relevant parts of the file.
+
+  3. Please start Wget with `-d' option and send the log (or the
+     relevant parts of it).  If Wget was compiled without debug support,
+     recompile it.  It is *much* easier to trace bugs with debug support
+     on.
+
+  4. If Wget has crashed, try to run it in a debugger, e.g. `gdb `which
+     wget` core' and type `where' to get the backtrace.
+
+  5. Find where the bug is, fix it and send me the patches. :-)
+
+
+File: wget.info,  Node: Portability,  Next: Signals,  Prev: Reporting Bugs,  Up: Various
+
+Portability
+===========
+
+   Since Wget uses GNU Autoconf for building and configuring, and avoids
+using "special" ultra-mega-cool features of any particular Unix, it
+should compile (and work) on all common Unix flavors.
+
+   Various Wget versions have been compiled and tested under many kinds
+of Unix systems, including Solaris, Linux, SunOS, OSF (aka Digital
+Unix), Ultrix, *BSD, IRIX, and others; refer to the file `MACHINES' in
+the distribution directory for a comprehensive list.  If you compile it
+on an architecture not listed there, please let me know so I can update
+it.
+
+   Wget should also compile on the other Unix systems, not listed in
+`MACHINES'.  If it doesn't, please let me know.
+
+   Thanks to kind contributors, this version of Wget compiles and works
+on Microsoft Windows 95 and Windows NT platforms.  It has been compiled
+successfully using MS Visual C++ 4.0, Watcom, and Borland C compilers,
+with Winsock as networking software.  Naturally, it is crippled of some
+features available on Unix, but it should work as a substitute for
+people stuck with Windows.  Note that the Windows port is *neither
+tested nor maintained* by me--all questions and problems should be
+reported to Wget mailing list at <wget@sunsite.auc.dk> where the
+maintainers will look at them.
+
+
+File: wget.info,  Node: Signals,  Prev: Portability,  Up: Various
+
+Signals
+=======
+
+   Since the purpose of Wget is background work, it catches the hangup
+signal (`SIGHUP') and ignores it.  If the output was on standard
+output, it will be redirected to a file named `wget-log'.  Otherwise,
+`SIGHUP' is ignored.  This is convenient when you wish to redirect the
+output of Wget after having started it.
+
+     $ wget http://www.ifi.uio.no/~larsi/gnus.tar.gz &
+     $ kill -HUP %%     # Redirect the output to wget-log
+
+   Other than that, Wget will not try to interfere with signals in any
+way. `C-c', `kill -TERM' and `kill -KILL' should kill it alike.
+
+
+File: wget.info,  Node: Appendices,  Next: Copying,  Prev: Various,  Up: Top
+
+Appendices
+**********
+
+   This chapter contains some references I consider useful, like the
+Robots Exclusion Standard specification, as well as a list of
+contributors to GNU Wget.
+
+* Menu:
+
+* Robots::                  Wget as a WWW robot.
+* Security Considerations:: Security with Wget.
+* Contributors::            People who helped.
+
+
+File: wget.info,  Node: Robots,  Next: Security Considerations,  Prev: Appendices,  Up: Appendices
+
+Robots
+======
+
+   Since Wget is able to traverse the web, it counts as one of the Web
+"robots".  Thus Wget understands "Robots Exclusion Standard"
+(RES)--contents of `/robots.txt', used by server administrators to
+shield parts of their systems from wanderings of Wget.
+
+   Norobots support is turned on only when retrieving recursively, and
+*never* for the first page.  Thus, you may issue:
+
+     wget -r http://fly.cc.fer.hr/
+
+   First the index of fly.cc.fer.hr will be downloaded.  If Wget finds
+anything worth downloading on the same host, only *then* will it load
+the robots, and decide whether or not to load the links after all.
+`/robots.txt' is loaded only once per host.  Wget does not support the
+robots `META' tag.
+
+   The description of the norobots standard was written, and is
+maintained by Martijn Koster <m.koster@webcrawler.com>.  With his
+permission, I contribute a (slightly modified) texified version of the
+RES.
+
+* Menu:
+
+* Introduction to RES::
+* RES Format::
+* User-Agent Field::
+* Disallow Field::
+* Norobots Examples::
+
+
+File: wget.info,  Node: Introduction to RES,  Next: RES Format,  Prev: Robots,  Up: Robots
+
+Introduction to RES
+-------------------
+
+   "WWW Robots" (also called "wanderers" or "spiders") are programs
+that traverse many pages in the World Wide Web by recursively
+retrieving linked pages. For more information see the robots page.
+
+   In 1993 and 1994 there have been occasions where robots have visited
+WWW servers where they weren't welcome for various reasons. Sometimes
+these reasons were robot specific, e.g. certain robots swamped servers
+with rapid-fire requests, or retrieved the same files repeatedly. In
+other situations robots traversed parts of WWW servers that weren't
+suitable, e.g. very deep virtual trees, duplicated information,
+temporary information, or cgi-scripts with side-effects (such as
+voting).
+
+   These incidents indicated the need for established mechanisms for
+WWW servers to indicate to robots which parts of their server should
+not be accessed. This standard addresses this need with an operational
+solution.
+
+   This document represents a consensus on 30 June 1994 on the robots
+mailing list (`robots@webcrawler.com'), between the majority of robot
+authors and other people with an interest in robots. It has also been
+open for discussion on the Technical World Wide Web mailing list
+(`www-talk@info.cern.ch'). This document is based on a previous working
+draft under the same title.
+
+   It is not an official standard backed by a standards body, or owned
+by any commercial organization. It is not enforced by anybody, and there
+no guarantee that all current and future robots will use it. Consider
+it a common facility the majority of robot authors offer the WWW
+community to protect WWW server against unwanted accesses by their
+robots.
+
+   The latest version of this document can be found at
+`http://info.webcrawler.com/mak/projects/robots/norobots.html'.
+
+
+File: wget.info,  Node: RES Format,  Next: User-Agent Field,  Prev: Introduction to RES,  Up: Robots
+
+RES Format
+----------
+
+   The format and semantics of the `/robots.txt' file are as follows:
+
+   The file consists of one or more records separated by one or more
+blank lines (terminated by `CR', `CR/NL', or `NL').  Each record
+contains lines of the form:
+
+     <field>:<optionalspace><value><optionalspace>
+
+   The field name is case insensitive.
+
+   Comments can be included in file using UNIX bourne shell conventions:
+the `#' character is used to indicate that preceding space (if any) and
+the remainder of the line up to the line termination is discarded.
+Lines containing only a comment are discarded completely, and therefore
+do not indicate a record boundary.
+
+   The record starts with one or more User-agent lines, followed by one
+or more Disallow lines, as detailed below. Unrecognized headers are
+ignored.
+
+   The presence of an empty `/robots.txt' file has no explicit
+associated semantics, it will be treated as if it was not present, i.e.
+all robots will consider themselves welcome.
+
+
+File: wget.info,  Node: User-Agent Field,  Next: Disallow Field,  Prev: RES Format,  Up: Robots
+
+User-Agent Field
+----------------
+
+   The value of this field is the name of the robot the record is
+describing access policy for.
+
+   If more than one User-agent field is present the record describes an
+identical access policy for more than one robot.  At least one field
+needs to be present per record.
+
+   The robot should be liberal in interpreting this field. A case
+insensitive substring match of the name without version information is
+recommended.
+
+   If the value is `*', the record describes the default access policy
+for any robot that has not matched any of the other records. It is not
+allowed to have multiple such records in the `/robots.txt' file.
+
+
+File: wget.info,  Node: Disallow Field,  Next: Norobots Examples,  Prev: User-Agent Field,  Up: Robots
+
+Disallow Field
+--------------
+
+   The value of this field specifies a partial URL that is not to be
+visited. This can be a full path, or a partial path; any URL that
+starts with this value will not be retrieved. For example,
+`Disallow: /help' disallows both `/help.html' and `/help/index.html',
+whereas `Disallow: /help/' would disallow `/help/index.html' but allow
+`/help.html'.
+
+   Any empty value, indicates that all URLs can be retrieved. At least
+one Disallow field needs to be present in a record.
+
+
+File: wget.info,  Node: Norobots Examples,  Prev: Disallow Field,  Up: Robots
+
+Norobots Examples
+-----------------
+
+   The following example `/robots.txt' file specifies that no robots
+should visit any URL starting with `/cyberworld/map/' or `/tmp/':
+
+     # robots.txt for http://www.site.com/
+     
+     User-agent: *
+     Disallow: /cyberworld/map/ # This is an infinite virtual URL space
+     Disallow: /tmp/ # these will soon disappear
+
+   This example `/robots.txt' file specifies that no robots should
+visit any URL starting with `/cyberworld/map/', except the robot called
+`cybermapper':
+
+     # robots.txt for http://www.site.com/
+     
+     User-agent: *
+     Disallow: /cyberworld/map/ # This is an infinite virtual URL space
+     
+     # Cybermapper knows where to go.
+     User-agent: cybermapper
+     Disallow:
+
+   This example indicates that no robots should visit this site further:
+
+     # go away
+     User-agent: *
+     Disallow: /
+
+
+File: wget.info,  Node: Security Considerations,  Next: Contributors,  Prev: Robots,  Up: Appendices
+
+Security Considerations
+=======================
+
+   When using Wget, you must be aware that it sends unencrypted
+passwords through the network, which may present a security problem.
+Here are the main issues, and some solutions.
+
+  1. The passwords on the command line are visible using `ps'.  If this
+     is a problem, avoid putting passwords from the command line--e.g.
+     you can use `.netrc' for this.
+
+  2. Using the insecure "basic" authentication scheme, unencrypted
+     passwords are transmitted through the network routers and gateways.
+
+  3. The FTP passwords are also in no way encrypted.  There is no good
+     solution for this at the moment.
+
+  4. Although the "normal" output of Wget tries to hide the passwords,
+     debugging logs show them, in all forms.  This problem is avoided by
+     being careful when you send debug logs (yes, even when you send
+     them to me).
+
+
+File: wget.info,  Node: Contributors,  Prev: Security Considerations,  Up: Appendices
+
+Contributors
+============
+
+   GNU Wget was written by Hrvoje Niksic <hniksic@srce.hr>.  However,
+its development could never have gone as far as it has, were it not for
+the help of many people, either with bug reports, feature proposals,
+patches, or letters saying "Thanks!".
+
+   Special thanks goes to the following people (no particular order):
+
+   * Karsten Thygesen--donated the mailing list and the initial FTP
+     space.
+
+   * Shawn McHorse--bug reports and patches.
+
+   * Kaveh R. Ghazi--on-the-fly `ansi2knr'-ization.
+
+   * Gordon Matzigkeit--`.netrc' support.
+
+   * Zlatko Calusic, Tomislav Vujec and Drazen Kacar--feature
+     suggestions and "philosophical" discussions.
+
+   * Darko Budor--initial port to Windows.
+
+   * Antonio Rosella--help and suggestions, plust the Italian
+     translation.
+
+   * Tomislav Petrovic, Mario Mikocevic--many bug reports and
+     suggestions.
+
+   * Francois Pinard--many thorough bug reports and discussions.
+
+   * Karl Eichwalder--lots of help with internationalization and other
+     things.
+
+   * Junio Hamano--donated support for Opie and HTTP `Digest'
+     authentication.
+
+   * Brian Gough--a generous donation.
+
+   The following people have provided patches, bug/build reports, useful
+suggestions, beta testing services, fan mail and all the other things
+that make maintenance so much fun:
+
+   Tim Adam, Martin Baehr, Dieter Baron, Roger Beeman and the Gurus at
+Cisco, Mark Boyns, John Burden, Wanderlei Cavassin, Gilles Cedoc, Tim
+Charron, Noel Cragg, Kristijan Conkas, Damir Dzeko, Andrew Davison,
+Ulrich Drepper, Marc Duponcheel, Aleksandar Erkalovic, Andy Eskilsson,
+Masashi Fujita, Howard Gayle, Marcel Gerrits, Hans Grobler, Mathieu
+Guillaume, Karl Heuer, Gregor Hoffleit, Erik Magnus Hulthen, Richard
+Huveneers, Simon Josefsson, Mario Juric, Goran Kezunovic, Robert Kleine,
+Fila Kolodny, Alexander Kourakos, Martin Kraemer, Simos KSenitellis,
+Tage Stabell-Kulo, Hrvoje Lacko, Dave Love, Jordan Mendelson, Lin Zhe
+Min, Charlie Negyesi, Andrew Pollock, Steve Pothier, Marin Purgar, Jan
+Prikryl, Keith Refson, Tobias Ringstrom, Juan Jose Rodrigues, Heinz
+Salzmann, Robert Schmidt, Toomas Soome, Sven Sternberger, Markus
+Strasser, Szakacsits Szabolcs, Mike Thomas, Russell Vincent, Douglas E.
+Wegscheid, Jasmin Zainul, Bojan Zdrnja, Kristijan Zimmer.
+
+   Apologies to all who I accidentally left out, and many thanks to all
+the subscribers of the Wget mailing list.
+

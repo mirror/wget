@@ -1,0 +1,16 @@
+Authors of GNU Wget.
+
+[ Note that this file does not attempt to list all the contributors to
+  Wget; look at the ChangeLog for that.  This is a list of people who
+  contributed sizeable amounts of code and assigned the copyright to the
+  FSF. ]
+
+Hrvoje Niksic.  Designed and implemented Wget.
+
+Gordon Matzigkeit.  Wrote netrc.c and netrc.h.
+
+Darko Budor.  Added Windows support, wrote wsstartup.c, wsstartup.h
+and windecl.h.
+
+Junio Hamano.  Added support for FTP Opie and HTTP digest
+authentication.

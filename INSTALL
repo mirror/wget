@@ -1,0 +1,75 @@
+                                                                   -*- text -*-
+			Installation Procedure
+
+0) Preparation
+
+To build and install GNU Wget, you need to unpack the archive (which
+you have presumably done, since you are reading this), and read on.
+Like most GNU utilities, Wget uses the GNU Autoconf mechanism for
+build and installation; those of you familiar with compiling GNU
+software will feel at home.
+
+1) Configuration
+
+To configure Wget, run the configure script provided with the
+distribution.  You may use all the standard arguments configure
+scripts take.  The most important ones are:
+
+  --help                  print help message
+
+  --prefix=PREFIX         install architecture-independent files in PREFIX
+                          (/usr/local by default)
+  --bindir=DIR            user executables in DIR (PREFIX/bin)
+  --infodir=DIR           info documentation in DIR [PREFIX/info]
+  --mandir=DIR            man documentation in DIR [PREFIX/man]
+
+  --build=BUILD           configure for building on BUILD [BUILD=HOST]
+  --host=HOST             configure for HOST [guessed]
+  --target=TARGET         configure for TARGET [TARGET=HOST]
+
+--enable and --with options recognized (mostly Wget-specific):
+  --with-socks            use the socks library
+  --disable-opie          disable support for opie or s/key FTP login
+  --disable-digest        disable support for HTTP digest authorization
+  --disable-debug         disable support for debugging output
+  --disable-nls           do not use Native Language Support
+
+So, if you want to configure Wget for installation in your home
+directory, you can type:
+./configure --prefix=$HOME
+
+You can customize many default settings by editing Makefile and
+config.h.  The program will work very well without your touching these
+files, but it is useful to have a look at things you can change there.
+
+If you use socks, it is useful to add -L/usr/local/lib (or wherever
+the socks library is installed) to LDFLAGS in Makefile.
+
+To configure Wget on Windows, run configure.bat and follow the
+instructions in the windows/ directory.  If this doesn't work for any
+reason, talk to the Windows developers listed in `windows/README'; I
+do not maintain the port.
+
+2) Compilation
+
+To compile the program, type make and cross your fingers.  If you do
+not have an ANSI compiler, Wget will try to KNR-ize its sources "on
+the fly".  This should make GNU Wget compilable virtually anywhere.
+
+After the compilation a ready to use `wget' executable should reside
+in the src directory.  I do not have any kind of test-suite as of this
+moment, but it should be easy enough to test whether the basic stuff
+works.
+
+3) Installation
+
+Use `make install' to install GNU Wget to directories specified to
+configure (/usr/local/* by default).
+
+The standard installation process will copy the wget binary to
+/usr/local/bin, install the info pages (wget.info*) to
+/usr/local/info.  You can customize the directories either through the
+configuration process or making the necessary changes in the Makefile.
+
+To delete the files created by Wget installation, you can use make
+uninstall.

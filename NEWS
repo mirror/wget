@@ -1,0 +1,238 @@
+GNU Wget NEWS -- history of user-visible changes.
+
+Copyright (C) 1997, 1998 Free Software Foundation, Inc.
+See the end for copying conditions.
+
+Please send GNU Wget bug reports to <bug-wget@gnu.org>.
+
+* Wget 1.5.3 is a bugfix release with no user-visible changes.
+
+* Wget 1.5.2 is a bugfix release with no user-visible changes.
+
+* Wget 1.5.1 is a bugfix release with no user-visible changes.
+
+* Changes in Wget 1.5.0
+
+** Wget speaks many languages!
+
+On systems with gettext(), Wget will output messages in the language
+set by the current locale, if available.  At this time we support
+Czech, German, Croatian, Italian, Norwegian and Portuguese.
+
+** Opie (Skey) is now supported with FTP.
+
+** HTTP Digest Access Authentication (RFC2069) is now supported.
+
+** The new `-b' option makes Wget go to background automatically.
+
+** The `-I' and `-X' options now accept wildcard arguments.
+
+** The `-w' option now accepts suffixes `s' for seconds, `m' for
+minutes, `h' for hours, `d' for days and `w' for weeks.
+
+** Upon getting SIGHUP, the whole previous log is now copied to
+`wget-log'.
+
+** Wget now understands proxy settings with explicit usernames and
+passwords, e.g. `http://user:password@proxy.foo.com/'.
+
+** You can use the new `--cut-dirs' option to make Wget create less
+directories.
+
+** The `;type=a' appendix to FTP URLs is now recognized.  For
+instance, the following command will retrieve the welcoming message in
+ASCII type transfer:
+
+    wget "ftp://ftp.somewhere.com/welcome.msg;type=a"
+
+** `--help' and `--version' options have been redone to to conform to
+standards set by other GNU utilities.
+
+** Wget should now be compilable under MS Windows environment.  MS
+Visual C++ and Watcom C have been used successfully.
+
+** If the file length is known, percentages are displayed during
+download.
+
+** The manual page, now hopelessly out of date, is no longer
+distributed with Wget.
+
+* Wget 1.4.5 is a bugfix release with no user-visible changes.
+
+* Wget 1.4.4 is a bugfix release with no user-visible changes.
+
+* Changes in Wget 1.4.3
+
+** Wget is now a GNU utility.
+
+** Can do passive FTP.
+
+** Reads .netrc.
+
+** Info documentation expanded.
+
+** Compiles on pre-ANSI compilers.
+
+** Global wgetrc now goes to /usr/local/etc (i.e. $sysconfdir).
+
+** Lots of bugfixes.
+
+* Changes in Wget 1.4.2
+
+** New mirror site at ftp://sunsite.auc.dk/pub/infosystems/wget/,
+thanks to Karsten Thygesen.
+
+** Mailing list!  Mail to wget-request@sunsite.auc.dk to subscribe.
+
+** New option --delete-after for proxy prefetching.
+
+** New option --retr-symlinks to retrieve symbolic links like plain
+files.
+
+** rmold.pl -- script to remove files deleted on the remote server
+
+** --convert-links should work now.
+
+** Minor bugfixes.
+
+* Changes in Wget 1.4.1
+
+** Minor bugfixes.
+
+** Added -I (the opposite of -X).
+
+** Dot tracing is now customizable; try wget --dot-style=binary
+
+* Changes in Wget 1.4.0
+
+** Wget 1.4.0 [formerly known as Geturl] is an extensive rewrite of
+Geturl.  Although many things look suspiciously similar, most of the
+stuff was rewritten, like recursive retrieval, HTTP, FTP and mostly
+everything else.  Wget should be now easier to debug, maintain and,
+most importantly, use.
+
+** Recursive HTTP should now work without glitches, even with Location
+changes, server-generated directory listings and other naughty stuff.
+
+** HTTP regetting is supported on servers that support Range
+specification. WWW authorization is supported -- try
+wget http://user:password@hostname/
+
+** FTP support was rewritten and widely enhanced. Globbing should now
+work flawlessly. Symbolic links are created locally. All the
+information the Unix-style ls listing can give is now recognized.
+
+** Recursive FTP is supported, e.g.
+    wget -r ftp://gnjilux.cc.fer.hr/pub/unix/util/
+
+** You can specify "rejected" directories, to which you do not want to
+enter, e.g. with wget -X /pub
+
+** Time-stamping is supported, with both HTTP and FTP. Try wget -N URL.
+
+** A new texinfo reference manual is provided.  It can be read with
+Emacs, standalone info, or converted to HTML, dvi or postscript.
+
+** Fixed a long-standing bug, so that Wget now works over SLIP
+connections.
+
+** You can have a system-wide wgetrc (/usr/local/lib/wgetrc by
+default). Settings in $HOME/.wgetrc override the global ones, of
+course :-)
+
+** You can set up quota in .wgetrc to prevent sucking too much
+data. Try `quota = 5M' in .wgetrc (or quota = 100K if you want your
+sysadmin to like you).
+
+** Download rate is printed after retrieval.
+
+** Wget now sends the `Referer' header when retrieving
+recursively.
+
+** With the new --no-parent option Wget can retrieve FTP recursively
+through a proxy server.
+
+** HTML parser, as well as the whole of Wget was rewritten to be much
+faster and less memory-consuming (yes, both).
+
+** Absolute links can be converted to relative links locally. Check
+wget -k.
+
+** Wget catches hangup, filtering the output to a log file and
+resuming work. Try kill -HUP %?wget.
+
+** User-defined headers can be sent.  Try
+
+    wget http://fly.cc.her.hr/ --header='Accept-Charset: iso-8859-2'
+
+** Acceptance/Rejection lists may contain wildcards.
+
+** Wget can display HTTP headers and/or FTP server response with the
+new `-S' option.  It can save the original HTTP headers with `-s'.
+
+** socks library is now supported (thanks to Antonio Rosella
+<Antonio.Rosella@agip.it>). Configure with --with-socks.
+
+** There is a nicer display of REST-ed output.
+
+** Many new options (like -x to force directory hierarchy, or -m to
+turn on mirroring options).
+
+** Wget is now distributed under GNU General Public License (GPL).
+
+** Lots of small features I can't remember. :-)
+
+** A host of bugfixes.
+
+* Changes in Geturl 1.3
+
+** Added FTP globbing support (ftp://fly.cc.fer.hr/*)
+
+** Added support for no_proxy
+
+** Added support for ftp://user:password@host/
+
+** Added support for %xx in URL syntax
+
+** More natural command-line options
+
+** Added -e switch to execute .geturlrc commands from the command-line
+
+** Added support for robots.txt
+
+** Fixed some minor bugs
+
+* Geturl 1.2 is a bugfix release with no user-visible changes.
+
+* Changes in Geturl 1.1
+
+** REST supported in FTP
+
+** Proxy servers supported
+
+** GNU getopt used, which enables command-line arguments to be ordered
+as you wish, e.g.  geturl http://fly.cc.fer.hr/ -vo log is the same as
+geturl -vo log http://fly.cc.fer.hr/
+
+** Netscape-compatible URL syntax for HTTP supported: host[:port]/dir/file
+
+** NcFTP-compatible colon URL syntax for FTP supported: host:/dir/file
+
+** <base href="xxx"> supported
+
+** autoconf supported
+
+----------------------------------------------------------------------
+Copyright information:
+
+Copyright (C) 1997, 1998 Free Software Foundation, Inc.
+
+   Permission is granted to anyone to make or distribute verbatim
+   copies of this document as received, in any medium, provided that
+   the copyright notice and this permission notice are preserved, thus
+   giving the recipient permission to redistribute in turn.
+
+   Permission is granted to distribute modified versions of this
+   document, or of portions of it, under the above conditions,
+   provided also that they carry prominent notices stating who last
+   changed them.

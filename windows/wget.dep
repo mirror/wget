@@ -1,0 +1,25 @@
+alloca$o: alloca.c
+ansi2knr$o: ansi2knr.c 
+cmpt$o: cmpt.c config.h wget.h sysdep.h options.h
+connect$o: connect.c config.h wget.h sysdep.h options.h connect.h host.h
+fnmatch$o: fnmatch.c config.h wget.h sysdep.h options.h fnmatch.h
+ftp-basic$o: ftp-basic.c config.h wget.h sysdep.h options.h utils.h rbuf.h connect.h host.h
+ftp-ls$o: ftp-ls.c config.h wget.h sysdep.h options.h utils.h ftp.h rbuf.h
+ftp-opie$o: ftp-opie.c config.h wget.h sysdep.h options.h md5.h
+ftp$o: ftp.c config.h wget.h sysdep.h options.h utils.h url.h rbuf.h retr.h ftp.h html.h connect.h host.h fnmatch.h netrc.h
+getopt$o: getopt.c wget.h sysdep.h options.h getopt.h
+headers$o: headers.c config.h wget.h sysdep.h options.h connect.h rbuf.h headers.h
+host$o: host.c config.h wget.h sysdep.h options.h utils.h host.h url.h
+html$o: html.c config.h wget.h sysdep.h options.h url.h utils.h ftp.h rbuf.h html.h
+http$o: http.c config.h wget.h sysdep.h options.h utils.h url.h host.h rbuf.h retr.h headers.h connect.h fnmatch.h netrc.h md5.h
+init$o: init.c config.h wget.h sysdep.h options.h utils.h init.h host.h recur.h netrc.h
+log$o: log.c config.h wget.h sysdep.h options.h utils.h
+main$o: main.c config.h wget.h sysdep.h options.h utils.h getopt.h init.h retr.h rbuf.h recur.h host.h
+md5$o: md5.c wget.h sysdep.h options.h md5.h
+netrc$o: netrc.c wget.h sysdep.h options.h utils.h netrc.h init.h
+rbuf$o: rbuf.c config.h wget.h sysdep.h options.h rbuf.h connect.h
+recur$o: recur.c config.h wget.h sysdep.h options.h url.h recur.h utils.h retr.h rbuf.h ftp.h fnmatch.h host.h
+retr$o: retr.c config.h wget.h sysdep.h options.h utils.h retr.h rbuf.h url.h recur.h ftp.h host.h connect.h
+url$o: url.c config.h wget.h sysdep.h options.h utils.h url.h host.h html.h
+utils$o: utils.c config.h wget.h sysdep.h options.h utils.h fnmatch.h
+version$o: version.c

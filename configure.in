@@ -1,0 +1,209 @@
+dnl Template file for GNU Autoconf
+dnl Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
+
+dnl This program is free software; you can redistribute it and/or modify
+dnl it under the terms of the GNU General Public License as published by
+dnl the Free Software Foundation; either version 2 of the License, or
+dnl (at your option) any later version.
+
+dnl This program is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl GNU General Public License for more details.
+
+dnl You should have received a copy of the GNU General Public License
+dnl along with this program; if not, write to the Free Software
+dnl Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+dnl
+dnl Process this file with autoconf to produce a configure script.
+dnl
+
+AC_INIT(src/version.c)
+AC_PREREQ(2.12)
+AC_CONFIG_HEADER(src/config.h)
+
+dnl
+dnl What version of Wget are we building?
+dnl
+VERSION=`sed -e 's/^.*"\(.*\)";$/\1/' ${srcdir}/src/version.c`
+echo "configuring for GNU Wget $VERSION"
+AC_SUBST(VERSION)
+PACKAGE=wget
+AC_SUBST(PACKAGE)
+
+dnl
+dnl Get cannonical host
+dnl
+AC_CANONICAL_HOST
+AC_DEFINE_UNQUOTED(OS_TYPE, "$host_os")
+
+dnl
+dnl Process features.
+dnl
+AC_ARG_WITH(socks,
+[  --with-socks            use the socks library],
+[AC_DEFINE(HAVE_SOCKS)])
+
+AC_ARG_ENABLE(opie,
+[  --disable-opie          disable support for opie or s/key FTP login],
+USE_OPIE=$enableval, USE_OPIE=yes)
+test x"${USE_OPIE}" = xyes && AC_DEFINE(USE_OPIE)
+
+AC_ARG_ENABLE(digest,
+[  --disable-digest        disable support for HTTP digest authorization],
+USE_DIGEST=$enableval, USE_DIGEST=yes)
+test x"${USE_DIGEST}" = xyes && AC_DEFINE(USE_DIGEST)
+
+AC_ARG_ENABLE(debug,
+[  --disable-debug         disable support for debugging output],
+DEBUG=$enableval, DEBUG=yes)
+test x"${DEBUG}" = xyes && AC_DEFINE(DEBUG)
+
+case "${USE_OPIE}${USE_DIGEST}" in
+*yes*)
+	MD5_OBJ='md5$o'
+esac
+if test x"$USE_OPIE" = xyes; then
+  OPIE_OBJ='ftp-opie$o'
+fi
+AC_SUBST(MD5_OBJ)
+AC_SUBST(OPIE_OBJ)
+
+dnl
+dnl Whether make sets $(MAKE)...
+dnl
+AC_PROG_MAKE_SET
+
+dnl
+dnl Find a good install
+dnl
+AC_PROG_INSTALL
+
+dnl
+dnl Find the compiler
+dnl
+
+dnl We want these before the checks, so the checks can modify their values.
+test -z "$CFLAGS"  && CFLAGS= auto_cflags=1
+test -z "$CC" && cc_specified=yes
+
+AC_PROG_CC
+
+dnl
+dnl if the user hasn't specified CFLAGS, then
+dnl   if compiler is gcc, then use -O2 and some warning flags
+dnl   else use os-specific flags or -O
+dnl
+if test -n "$auto_cflags"; then
+  if test -n "$GCC"; then
+    CFLAGS="$CFLAGS -O2 -Wall -Wno-implicit"
+  else
+    case "$host_os" in
+      *hpux*)  CFLAGS="$CFLAGS +O3"                      ;;
+      *ultrix* | *osf*) CFLAGS="$CFLAGS -O -Olimit 2000" ;;
+      *)       CFLAGS="$CFLAGS -O" ;;
+    esac
+  fi
+fi
+
+dnl
+dnl Handle AIX
+dnl
+AC_AIX
+
+dnl
+dnl In case of {cyg,gnu}win32.  Should be a _target_ test.
+dnl Might also be erelevant for DJGPP.
+dnl
+case "$host_os" in
+  *win32) exeext='.exe';;
+  *) exeext='';;
+esac
+AC_SUBST(exeext)
+
+dnl
+dnl Check if we can handle prototypes.
+dnl
+AM_C_PROTOTYPES
+
+dnl
+dnl Checks for typedefs, structures, and compiler characteristics.
+dnl
+AC_C_CONST
+AC_TYPE_SIZE_T
+AC_TYPE_PID_T
+dnl #### This generates a warning.  What do I do to shut it up?
+AC_C_BIGENDIAN
+
+dnl
+dnl Checks for headers
+dnl
+AC_CHECK_HEADERS(string.h stdarg.h unistd.h sys/time.h utime.h sys/utime.h)
+AC_CHECK_HEADERS(sys/select.h sys/utsname.h pwd.h signal.h)
+AC_HEADER_TIME
+
+dnl
+dnl Return type of signal-handlers
+dnl
+AC_TYPE_SIGNAL
+
+dnl
+dnl Check for struct utimbuf
+WGET_STRUCT_UTIMBUF
+
+dnl
+dnl Checks for library functions.
+dnl
+AC_FUNC_ALLOCA
+AC_CHECK_FUNCS(strdup strstr strcasecmp strncasecmp)
+AC_CHECK_FUNCS(gettimeofday mktime strptime)
+AC_CHECK_FUNCS(strerror vsnprintf select signal symlink access isatty)
+AC_CHECK_FUNCS(uname gethostname)
+
+AC_CHECK_FUNCS(gethostbyname, [], [
+  AC_CHECK_LIB(nsl, gethostbyname)
+])
+
+dnl
+dnl Checks for libraries.
+dnl
+
+AC_CHECK_LIB(socket, socket)
+
+dnl #### This appears to be deficient with later versions of SOCKS.
+if test "x${with_socks}" = xyes
+then
+  AC_CHECK_LIB(resolv, main)
+  AC_CHECK_LIB(socks, Rconnect)
+fi
+
+dnl Set of available languages.
+dnl
+dnl #### This kind of sucks.  Shouldn't the configure process
+dnl determine this automagically by scanning `.po' files in `po/'
+dnl subdirectory?
+ALL_LINGUAS="cs de hr no it pt_BR"
+
+dnl internationalization macros
+WGET_WITH_NLS
+
+dnl
+dnl Find makeinfo.  If makeinfo is not found, look for Emacs.  If
+dnl Emacs cannot be found, look for XEmacs.
+dnl
+
+AC_CHECK_PROGS(MAKEINFO, makeinfo emacs xemacs)
+
+case "${MAKEINFO}" in
+   *makeinfo) MAKEINFO="${MAKEINFO} \$(srcdir)/wget.texi"  ;;
+   *emacs | *xemacs) MAKEINFO="${MAKEINFO} -batch -q -no-site-file -eval '(find-file \"\$(srcdir)/wget.texi\")' -l texinfmt -f texinfo-format-buffer -f save-buffer"  ;;
+   *) MAKEINFO="makeinfo \$(srcdir)/wget.texi"            ;;
+esac
+
+dnl
+dnl Create output
+dnl
+AC_OUTPUT([Makefile src/Makefile doc/Makefile util/Makefile po/Makefile.in],
+[WGET_PROCESS_PO
+test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h])
