@@ -1,5 +1,9 @@
 2003-09-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c: Undef U, W, C after use.
+
+2003-09-17  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c (cmd_spec_restrict_file_names): Allow the OS setting to
 	be augmented by ",nocontrol" which means don't escape the control
 	characters, but otherwise keep OS settings.

@@ -1530,6 +1530,11 @@ UWC,  C,  C,  C,   C,  C,  C,  C,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
   0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
   0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
 };
+#undef U
+#undef W
+#undef C
+#undef UW
+#undef UWC
 
 /* FN_PORT_SEP is the separator between host and port in file names
    for non-standard port numbers.  On Unix this is normally ':', as in
