@@ -22,6 +22,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <config.h>
 
 #include <stdio.h>
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# include <strings.h>
+#endif
 
 #include "wget.h"
 #include "rbuf.h"

@@ -487,15 +487,21 @@ ps (char *orig)
 	Non-leading `../'s and trailing `..'s are handled by removing
 	portions of the path.
 
-   E.g. "a/b/c/./../d/.." will yield "a/b".  This function originates
-   from GNU Bash.
+   E.g. "a/b/c/./../d/.." will yield "a/b/".  This function originates
+   from GNU Bash and has been mutilated to unrecognition for use in
+   Wget.
 
    Changes for Wget:
 	Always use '/' as stub_char.
 	Don't check for local things using canon_stat.
 	Change the original string instead of strdup-ing.
 	React correctly when beginning with `./' and `../'.
-	Don't zip out trailing slashes.  */
+	Don't zip out trailing slashes.
+	Return a value indicating whether any modifications took place.
+
+   If you dare change this function, take a careful look at the test
+   cases below, and make sure that they pass.  */
+
 int
 path_simplify (char *path)
 {
@@ -600,6 +606,28 @@ path_simplify (char *path)
 
   return changes;
 }
+
+/* Test cases:
+   ps("")                   -> ""
+   ps("/")                  -> "/"
+   ps(".")                  -> ""
+   ps("..")                 -> ""
+   ps("/.")                 -> "/"
+   ps("/..")                -> "/"
+   ps("foo")                -> "foo"
+   ps("foo/bar")            -> "foo/bar"
+   ps("foo//bar")           -> "foo/bar"             (possibly a bug)
+   ps("foo/../bar")         -> "bar"
+   ps("foo/bar/..")         -> "foo/"
+   ps("foo/bar/../x")       -> "foo/x"
+   ps("foo/bar/../x/")      -> "foo/x/"
+   ps("foo/..")             -> ""
+   ps("/foo/..")            -> "/"
+   ps("a/b/../../c")        -> "c"
+   ps("/a/b/../../c")       -> "/c"
+   ps("./a/../b")           -> "b"
+   ps("/./a/../b")          -> "/b"
+*/
 
 /* "Touch" FILE, i.e. make its atime and mtime equal to the time
    specified with TM.  */
