@@ -26,6 +26,29 @@
 # file, but you are not obligated to do so.  If you do not wish to do
 # so, delete this exception statement from your version.
 
+##
+#
+# This script creates a Wget distribution (wget-VERSION.tar.gz).
+# It uses `make dist' to do most of the work, but corrects some
+# things that `make dist' doesn't and can't do.  Specifically:
+#
+# * Checks out the clean CVS source from the repository to a temporary
+#   directory.
+# * Runs autoconf, configure and `make' in the doc and po subdirs to
+#   make sure that all the generated files, such as `confifure',
+#   `wget.info', and translated PO files, end up in the distribution.
+# * Optionally changes src/version.c and doc/version.texi to the
+#   version forced by `--force-version'.
+# * Runs `make dist' to produce the archive.
+# * Removes the checkout.
+#
+# For example, to produce a Wget beta based on the latest CVS sources,
+# with version "1.23-beta10", run `dist-wget --force-version 1.23-beta10'.
+# You can choose which sources will be used by specifying `-D DATE'
+# or `-r TAG'.
+#
+##
+
 set -e
 
 CVSROOT=:pserver:cvs@sunsite.dk:/pack/anoncvs
