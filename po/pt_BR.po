@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU Wget 1.7-dev\n"
-"POT-Creation-Date: 2001-01-09 22:12-0800\n"
+"POT-Creation-Date: 2001-01-31 13:17-0800\n"
 "PO-Revision-Date: 1999-07-29 10:45-03:00\n"
 "Last-Translator: Wanderlei Antonio Cavassin <cavassin@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese <ldp-br@bazar.conectiva.com.br>\n"
@@ -105,7 +105,7 @@ msgstr ""
 msgid "done.    "
 msgstr "feito.   "
 
-#: src/ftp.c:308 src/ftp.c:445 src/ftp.c:713 src/ftp.c:761 src/url.c:1429
+#: src/ftp.c:308 src/ftp.c:445 src/ftp.c:713 src/ftp.c:761 src/url.c:1430
 msgid "done.\n"
 msgstr "feito.\n"
 
@@ -1151,29 +1151,29 @@ msgstr ""
 "\n"
 
 # , c-format
-#: src/url.c:1329
+#: src/url.c:1330
 #, c-format
 msgid "Converting %s... "
 msgstr "Convertendo %s... "
 
-#: src/url.c:1342
+#: src/url.c:1343
 msgid "nothing to do.\n"
 msgstr ""
 
 # , c-format
-#: src/url.c:1350 src/url.c:1374
+#: src/url.c:1351 src/url.c:1375
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "Não foi possível converter links em %s: %s\n"
 
 # , c-format
-#: src/url.c:1365
+#: src/url.c:1366
 #, fuzzy, c-format
 msgid "Unable to delete `%s': %s\n"
 msgstr "Falha na remoção do link simbólico `%s': %s\n"
 
 # , c-format
-#: src/url.c:1555
+#: src/url.c:1556
 #, fuzzy, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Não foi possível converter links em %s: %s\n"

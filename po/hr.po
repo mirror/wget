@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU Wget 1.7-dev\n"
-"POT-Creation-Date: 2001-01-09 22:12-0800\n"
+"POT-Creation-Date: 2001-01-31 13:17-0800\n"
 "PO-Revision-Date: 1998-02-29 21:05+01:00\n"
 "Last-Translator: Hrvoje Niksic <hniksic@srce.hr>\n"
 "Language-Team: Croatian <hr-translation@bagan.srce.hr>\n"
@@ -99,7 +99,7 @@ msgstr "Gre¹ka na serveru, ne mogu utvrditi vrstu sustava.\n"
 msgid "done.    "
 msgstr "gotovo.  "
 
-#: src/ftp.c:308 src/ftp.c:445 src/ftp.c:713 src/ftp.c:761 src/url.c:1429
+#: src/ftp.c:308 src/ftp.c:445 src/ftp.c:713 src/ftp.c:761 src/url.c:1430
 msgid "done.\n"
 msgstr "gotovo.\n"
 
@@ -1064,26 +1064,26 @@ msgstr ""
 "Poku¹avam ponovo.\n"
 "\n"
 
-#: src/url.c:1329
+#: src/url.c:1330
 #, c-format
 msgid "Converting %s... "
 msgstr "Konvertiram %s... "
 
-#: src/url.c:1342
+#: src/url.c:1343
 msgid "nothing to do.\n"
 msgstr "nema posla.\n"
 
-#: src/url.c:1350 src/url.c:1374
+#: src/url.c:1351 src/url.c:1375
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "Ne mogu konvertirati linkove u %s: %s\n"
 
-#: src/url.c:1365
+#: src/url.c:1366
 #, c-format
 msgid "Unable to delete `%s': %s\n"
 msgstr "Ne mogu izbrisati `%s': %s\n"
 
-#: src/url.c:1555
+#: src/url.c:1556
 #, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Ne mogu snimiti backup iz %s u %s: %s\n"

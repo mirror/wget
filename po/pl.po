@@ -1,11 +1,11 @@
 # Polish translation of wget
 # Copyright (C) 1998-2000 Free Software Foundation, Inc.
 # Arkadiusz Mi¶kiewicz <misiek@pld.ORG.PL>, 1998-2000.
-# $Id: pl.po 270 2001-01-10 06:51:51Z dan $
+# $Id: pl.po 288 2001-01-31 21:21:06Z dan $
 msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.6\n"
-"POT-Creation-Date: 2001-01-09 22:12-0800\n"
+"POT-Creation-Date: 2001-01-31 13:17-0800\n"
 "PO-Revision-Date: 1999-02-23 14:57+01:00\n"
 "Last-Translator: Arkadiusz Mi¶kiewicz <misiek@pld.ORG.PL>\n"
 "Language-Team: PL <pl@li.org>\n"
@@ -99,7 +99,7 @@ msgstr ""
 msgid "done.    "
 msgstr "zrobiono.    "
 
-#: src/ftp.c:308 src/ftp.c:445 src/ftp.c:713 src/ftp.c:761 src/url.c:1429
+#: src/ftp.c:308 src/ftp.c:445 src/ftp.c:713 src/ftp.c:761 src/url.c:1430
 msgid "done.\n"
 msgstr "zrobiono.\n"
 
@@ -1089,26 +1089,26 @@ msgstr ""
 "Ponawianie próby.\n"
 "\n"
 
-#: src/url.c:1329
+#: src/url.c:1330
 #, c-format
 msgid "Converting %s... "
 msgstr "Konwertujê %s... "
 
-#: src/url.c:1342
+#: src/url.c:1343
 msgid "nothing to do.\n"
 msgstr ""
 
-#: src/url.c:1350 src/url.c:1374
+#: src/url.c:1351 src/url.c:1375
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "Nie mo¿na skonwertowaæ odno¶ników w %s: %s\n"
 
-#: src/url.c:1365
+#: src/url.c:1366
 #, c-format
 msgid "Unable to delete `%s': %s\n"
 msgstr ""
 
-#: src/url.c:1555
+#: src/url.c:1556
 #, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Nie mo¿na stworzyæ kopii zapasowej %s jako %s: %s\n"

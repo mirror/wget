@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU Wget 1.7-dev\n"
-"POT-Creation-Date: 2001-01-09 22:12-0800\n"
+"POT-Creation-Date: 2001-01-31 13:17-0800\n"
 "PO-Revision-Date: 2000-02-22 20:14+09:00\n"
 "Last-Translator: Hiroshi Takekawa <takekawa@sr3.t.u-tokyo.ac.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -100,7 +100,7 @@ msgstr ""
 msgid "done.    "
 msgstr "完了しました。    "
 
-#: src/ftp.c:308 src/ftp.c:445 src/ftp.c:713 src/ftp.c:761 src/url.c:1429
+#: src/ftp.c:308 src/ftp.c:445 src/ftp.c:713 src/ftp.c:761 src/url.c:1430
 msgid "done.\n"
 msgstr "完了しました。\n"
 
@@ -1070,26 +1070,26 @@ msgstr ""
 "再試行しています。\n"
 "\n"
 
-#: src/url.c:1329
+#: src/url.c:1330
 #, c-format
 msgid "Converting %s... "
 msgstr "%s を変換しています... "
 
-#: src/url.c:1342
+#: src/url.c:1343
 msgid "nothing to do.\n"
 msgstr ""
 
-#: src/url.c:1350 src/url.c:1374
+#: src/url.c:1351 src/url.c:1375
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "%s 内のリンクを変換できません: %s\n"
 
-#: src/url.c:1365
+#: src/url.c:1366
 #, fuzzy, c-format
 msgid "Unable to delete `%s': %s\n"
 msgstr "シンボリックリンク `%s' の削除に失敗しました: %s\n"
 
-#: src/url.c:1555
+#: src/url.c:1556
 #, fuzzy, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "%s 内のリンクを変換できません: %s\n"
