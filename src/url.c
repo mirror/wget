@@ -636,7 +636,7 @@ lowercase_str (char *str)
   return change;
 }
 
-static char *parse_errors[] = {
+static const char *parse_errors[] = {
 #define PE_NO_ERROR			0
   N_("No error"),
 #define PE_UNSUPPORTED_SCHEME		1
@@ -1563,7 +1563,7 @@ url_file_name (const struct url *u)
 {
   struct growable fnres;
 
-  char *u_file, *u_query;
+  const char *u_file, *u_query;
   char *fname, *unique;
 
   fnres.base = NULL;

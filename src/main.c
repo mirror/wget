@@ -145,7 +145,7 @@ struct cmdline_option {
     OPT__NO,
     OPT__PARENT,
   } type;
-  void *data;			/* for standard options */
+  const void *data;		/* for standard options */
   int argtype;			/* for non-standard options */
 };
 
@@ -992,9 +992,9 @@ Can't timestamp and not clobber old files at the same time.\n"));
 static RETSIGTYPE
 redirect_output_signal (int sig)
 {
-  char *signal_name = (sig == SIGHUP ? "SIGHUP" :
-		       (sig == SIGUSR1 ? "SIGUSR1" :
-			"WTF?!"));
+  const char *signal_name = (sig == SIGHUP ? "SIGHUP" :
+			     (sig == SIGUSR1 ? "SIGUSR1" :
+			      "WTF?!"));
   log_request_redirect_output (signal_name);
   progress_schedule_redirect ();
   signal (sig, redirect_output_signal);

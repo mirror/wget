@@ -258,7 +258,8 @@ static acc_t *
 parse_netrc (const char *path)
 {
   FILE *fp;
-  char *line, *p, *tok, *premature_token;
+  char *line, *p, *tok;
+  const char *premature_token;
   acc_t *current, *retval;
   int ln, quote;
 

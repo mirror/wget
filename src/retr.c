@@ -485,7 +485,7 @@ char *
 retr_rate (long bytes, double msecs, int pad)
 {
   static char res[20];
-  static char *rate_names[] = {"B/s", "KB/s", "MB/s", "GB/s" };
+  static const char *rate_names[] = {"B/s", "KB/s", "MB/s", "GB/s" };
   int units = 0;
 
   double dlrate = calc_rate (bytes, msecs, &units);

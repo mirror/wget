@@ -50,7 +50,7 @@ so, delete this exception statement from your version.  */
 #include "retr.h"
 
 struct progress_implementation {
-  char *name;
+  const char *name;
   int interactive;
   void *(*create) PARAMS ((long, long));
   void (*update) PARAMS ((void *, long, double));
@@ -834,7 +834,7 @@ create_image (struct bar_progress *bp, double dl_total_time)
   /* " 1012.45K/s" */
   if (hist->total_time && hist->total_bytes)
     {
-      static char *short_units[] = { "B/s", "K/s", "M/s", "G/s" };
+      static const char *short_units[] = { "B/s", "K/s", "M/s", "G/s" };
       int units = 0;
       /* Calculate the download speed using the history ring and
 	 recent data that hasn't made it to the ring yet.  */

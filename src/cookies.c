@@ -783,7 +783,7 @@ check_domain_match (const char *cookie_domain, const char *host)
       {
 	int i;
 	int known_toplevel = 0;
-	static char *known_toplevel_domains[] = {
+	static const char *known_toplevel_domains[] = {
 	  ".com", ".edu", ".net", ".org", ".gov", ".mil", ".int"
 	};
 	for (i = 0; i < countof (known_toplevel_domains); i++)

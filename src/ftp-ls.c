@@ -867,7 +867,7 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
 	{
 	  /* #### Should we translate the months?  Or, even better, use
 	     ISO 8601 dates?  */
-	  static char *months[] = {
+	  static const char *months[] = {
 	    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 	    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 	  };

@@ -1,3 +1,24 @@
+2003-12-14  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (url_file_name): Ditto.
+	(parse_errors): Ditto.
+
+	* retr.c (retr_rate): Ditto.
+
+	* progress.c (create_image): Ditto.
+
+	* netrc.c (parse_netrc): Ditto.
+
+	* main.c (struct cmdline_option): Ditto.
+	(redirect_output_signal): Ditto.
+
+	* init.c (commands): Ditto.
+
+	* ftp-ls.c (ftp_index): Ditto.
+
+	* cookies.c (check_domain_match): Declare the pointer to a literal
+	string as `const'.
+
 2003-12-12  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* retr.c (fd_read_body): Pass total size to progress_create, not

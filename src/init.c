@@ -104,7 +104,7 @@ CMD_DECLARE (cmd_spec_useragent);
    cleanup() function below. */
 
 static struct {
-  char *name;
+  const char *name;
   void *closure;
   int (*action) PARAMS ((const char *, const char *, void *));
 } commands[] = {
