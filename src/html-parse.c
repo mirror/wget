@@ -730,17 +730,15 @@ static int tag_backout_count;
    MAPFUN will be called with two arguments: pointer to an initialized
    struct taginfo, and MAPARG.
 
-   ALLOWED_TAG_NAMES should be a NULL-terminated array of tag names to
-   be processed by this function.  If it is NULL, all the tags are
-   allowed.  The same goes for attributes and ALLOWED_ATTRIBUTE_NAMES.
+   ALLOWED_TAGS and ALLOWED_ATTRIBUTES are hash tables the keys of
+   which are the tags and attribute names that this function should
+   use.  If ALLOWED_TAGS is NULL, all tags are processed; if
+   ALLOWED_ATTRIBUTES is NULL, all attributes are returned.
 
    (Obviously, the caller can filter out unwanted tags and attributes
    just as well, but this is just an optimization designed to avoid
-   unnecessary copying for tags/attributes which the caller doesn't
-   want to know about.  These lists are searched linearly; therefore,
-   if you're interested in a large number of tags or attributes, you'd
-   better set these to NULL and filter them out yourself with a
-   hashing process most appropriate for your application.)  */
+   unnecessary copying of tags/attributes which the caller doesn't
+   care about.)  */
 
 void
 map_html_tags (const char *text, int size,
