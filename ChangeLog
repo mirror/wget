@@ -1,3 +1,10 @@
+2001-12-19  Csaba Raduly  <csaba.raduly@sophos.com>
+
+	* windows/Makefile.watcom: add gen-md5.obj and progress.obj to the
+	list of "sources"
+
+	* configure.bat: add section for Watcom
+
 2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* po/ja.po: Ditto.

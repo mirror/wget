@@ -19,6 +19,7 @@ rem Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 cls
 if .%1 == .--borland goto :borland
 if .%1 == .--msvc goto :msvc
+if .%1 == .--watcom goto :watcom
 if not .%BORPATH% == . goto :borland
 if not .%1 == . goto :usage
 
@@ -42,6 +43,20 @@ copy windows\Makefile.doc doc\Makefile > nul
 echo Type MAKE to start compiling.
 goto :end
 
+:watcom
+copy windows\config.h.ms src\config.h > nul
+copy windows\Makefile.watcom src\Makefile > nul
+
+@echo Checking environment vars
+@set INCLUDE | find /I "WATCOM"
+@set LIB     | find /I "WATCOM"
+@echo If WATCOM directories were not displayed, you need to
+@echo SET INCLUDE and SET LIB to the Watcom directories
+@echo.
+cd src
+@echo Type WMAKE to build
+goto :end
+
 :usage
-echo Usage: Configure [--borland | --msvc]
+echo Usage: Configure [--borland | --msvc | --watcom]
 :end
