@@ -107,9 +107,11 @@ struct options
   char *progress_type;		/* progress indicator type. */
   char *proxy_user; /*oli*/
   char *proxy_passwd;
-#ifdef HAVE_SELECT
-  double timeout;		/* The read/connect/DNS timeout. */
-#endif
+
+  double read_timeout;		/* The read/write timeout. */
+  double dns_timeout;		/* The DNS timeout. */
+  double connect_timeout;	/* The connect timeout. */
+
   int random_wait;		/* vary from 0 .. wait secs by random()? */
   double wait;			/* The wait period between retrievals. */
   double waitretry;		/* The wait period between retries. - HEH */

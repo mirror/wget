@@ -656,7 +656,7 @@ lookup_host (const char *host, int silent)
     else
       hints.ai_family   = PF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
-    err = getaddrinfo_with_timeout (host, NULL, &hints, &ai, opt.timeout);
+    err = getaddrinfo_with_timeout (host, NULL, &hints, &ai, opt.dns_timeout);
 
     if (err != 0 || ai == NULL)
       {
@@ -671,7 +671,7 @@ lookup_host (const char *host, int silent)
 #else
   {
     struct hostent *hptr;
-    hptr = gethostbyname_with_timeout (host, opt.timeout);
+    hptr = gethostbyname_with_timeout (host, opt.dns_timeout);
     if (!hptr)
       {
 	if (!silent)

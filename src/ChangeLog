@@ -1,5 +1,13 @@
 2003-09-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* connect.c (connect_with_timeout): Made timeout type double.
+
+	* options.h (struct options): New members read_timeout,
+	dns_timeout, and connect_timeout.
+	Use them.
+
+2003-09-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c (simple_atof): New function.
 	(cmd_time): Use it.
 	(cmd_bytes): Accept things like "1.5k" and such.  Use simple_atof

@@ -102,6 +102,7 @@ CMD_DECLARE (cmd_spec_mirror);
 CMD_DECLARE (cmd_spec_progress);
 CMD_DECLARE (cmd_spec_recursive);
 CMD_DECLARE (cmd_spec_restrict_file_names);
+CMD_DECLARE (cmd_spec_timeout);
 CMD_DECLARE (cmd_spec_useragent);
 
 /* List of recognized commands, each consisting of name, closure and function.
@@ -123,6 +124,7 @@ static struct {
   { "base",		&opt.base_href,		cmd_string },
   { "bindaddress",	&opt.bind_address,	cmd_string },
   { "cache",		&opt.allow_cache,	cmd_boolean },
+  { "connecttimeout",	&opt.connect_timeout,	cmd_time },
   { "continue",		&opt.always_rest,	cmd_boolean },
   { "convertlinks",	&opt.convert_links,	cmd_boolean },
   { "cookies",		&opt.cookies,		cmd_boolean },
@@ -134,6 +136,7 @@ static struct {
   { "dirprefix",	&opt.dir_prefix,	cmd_directory },
   { "dirstruct",	NULL,			cmd_spec_dirstruct },
   { "dnscache",		&opt.dns_cache,		cmd_boolean },
+  { "dnstimeout",	&opt.dns_timeout,	cmd_time },
   { "domains",		&opt.domains,		cmd_vector },
   { "dotbytes",		&opt.dot_bytes,		cmd_bytes },
   { "dotsinline",	&opt.dots_in_line,	cmd_number },
@@ -184,6 +187,7 @@ static struct {
   { "quiet",		&opt.quiet,		cmd_boolean },
   { "quota",		&opt.quota,		cmd_bytes },
   { "randomwait",	&opt.random_wait,	cmd_boolean },
+  { "readtimeout",	&opt.read_timeout,	cmd_time },
   { "reclevel",		&opt.reclevel,		cmd_number_inf },
   { "recursive",	NULL,			cmd_spec_recursive },
   { "referer",		&opt.referer,		cmd_string },
@@ -209,7 +213,7 @@ static struct {
   { "sslprotocol",	&opt.sslprotocol,	cmd_number },
 #endif /* HAVE_SSL */
   { "strictcomments",	&opt.strict_comments,	cmd_boolean },
-  { "timeout",		&opt.timeout,		cmd_time },
+  { "timeout",		NULL,			cmd_spec_timeout },
   { "timestamping",	&opt.timestamping,	cmd_boolean },
   { "tries",		&opt.ntry,		cmd_number_inf },
   { "useproxy",		&opt.use_proxy,		cmd_boolean },
@@ -272,9 +276,7 @@ defaults (void)
     opt.no_proxy = sepstring (tmp);
   opt.allow_cache = 1;
 
-#ifdef HAVE_SELECT
-  opt.timeout = 900;
-#endif
+  opt.read_timeout = 900;
   opt.use_robots = 1;
 
   opt.remove_listing = 1;
@@ -1156,6 +1158,20 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *closure)
 
   opt.restrict_files_os = restrict_os;
   opt.restrict_files_ctrl = restrict_ctrl;
+  return 1;
+}
+
+/* Set all three timeout values. */
+
+static int
+cmd_spec_timeout (const char *com, const char *val, void *closure)
+{
+  double value;
+  if (!cmd_time (com, val, &value))
+    return 0;
+  opt.read_timeout = value;
+  opt.connect_timeout = value;
+  opt.dns_timeout = value;
   return 1;
 }
 

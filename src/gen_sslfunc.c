@@ -317,8 +317,8 @@ ssl_iread (SSL *con, char *buf, int len)
   int res, fd;
   BIO_get_fd (con->rbio, &fd);
 #ifdef HAVE_SELECT
-  if (opt.timeout && !SSL_pending (con))
-    if (select_fd (fd, opt.timeout, 0) <= 0)
+  if (opt.read_timeout && !SSL_pending (con))
+    if (select_fd (fd, opt.read_timeout, 0) <= 0)
       return -1;
 #endif
   do
@@ -343,8 +343,8 @@ ssl_iwrite (SSL *con, char *buf, int len)
   while (len > 0)
     {
 #ifdef HAVE_SELECT
-      if (opt.timeout)
-	if (select_fd (fd, opt.timeout, 1) <= 0)
+      if (opt.read_timeout)
+	if (select_fd (fd, opt.read_timeout, 1) <= 0)
 	  return -1;
 #endif
       do

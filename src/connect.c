@@ -117,7 +117,7 @@ connect_with_timeout_callback (void *arg)
 
 static int
 connect_with_timeout (int fd, const struct sockaddr *addr, int addrlen,
-		      int timeout)
+		      double timeout)
 {
   struct cwt_context ctx;
   ctx.fd = fd;
@@ -205,7 +205,8 @@ connect_to_one (ip_address *addr, unsigned short port, int silent)
     }
 
   /* Connect the socket to the remote host.  */
-  if (connect_with_timeout (sock, &sa.sa, sockaddr_len (), opt.timeout) < 0)
+  if (connect_with_timeout (sock, &sa.sa, sockaddr_len (),
+			    opt.connect_timeout) < 0)
     {
       close (sock);
       sock = -1;
@@ -385,15 +386,15 @@ select_fd (int fd, double maxtime, int writep)
 /* Call accept() on MSOCK and store the result to *SOCK.  This assumes
    that bindport() has been used to initialize MSOCK to a correct
    value.  It blocks the caller until a connection is established.  If
-   no connection is established for OPT.TIMEOUT seconds, the function
-   exits with an error status.  */
+   no connection is established for OPT.CONNECT_TIMEOUT seconds, the
+   function exits with an error status.  */
 uerr_t
 acceptport (int *sock)
 {
   int addrlen = sockaddr_len ();
 
 #ifdef HAVE_SELECT
-  if (select_fd (msock, opt.timeout, 0) <= 0)
+  if (select_fd (msock, opt.connect_timeout, 0) <= 0)
     return ACCEPTERR;
 #endif
   if ((*sock = accept (msock, addr, &addrlen)) < 0)
@@ -447,7 +448,7 @@ conaddr (int fd, ip_address *ip)
 /* Read at most LEN bytes from FD, storing them to BUF.  This is
    virtually the same as read(), but takes care of EINTR braindamage
    and uses select() to timeout the stale connections (a connection is
-   stale if more than OPT.TIMEOUT time is spent in select() or
+   stale if more than OPT.READ_TIMEOUT time is spent in select() or
    read()).  */
 
 int
@@ -456,8 +457,8 @@ iread (int fd, char *buf, int len)
   int res;
 
 #ifdef HAVE_SELECT
-  if (opt.timeout)
-    if (select_fd (fd, opt.timeout, 0) <= 0)
+  if (opt.read_timeout)
+    if (select_fd (fd, opt.read_timeout, 0) <= 0)
       return -1;
 #endif
   do
@@ -484,8 +485,8 @@ iwrite (int fd, char *buf, int len)
   while (len > 0)
     {
 #ifdef HAVE_SELECT
-      if (opt.timeout)
-	if (select_fd (fd, opt.timeout, 1) <= 0)
+      if (opt.read_timeout)
+	if (select_fd (fd, opt.read_timeout, 1) <= 0)
 	  return -1;
 #endif
       do

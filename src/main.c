@@ -170,7 +170,10 @@ Download:\n\
   -N,  --timestamping           don\'t re-retrieve files unless newer than local.\n\
   -S,  --server-response        print server response.\n\
        --spider                 don\'t download anything.\n\
-  -T,  --timeout=SECONDS        set the read timeout to SECONDS.\n\
+  -T,  --timeout=SECONDS        set all timeout values to SECONDS.\n\
+       --dns-timeout=SECS       set the DNS lookup timeout to SECS.\n\
+       --connect-timeout=SECS   set the connect timeout to SECS.\n\
+       --read-timeout=SECS      set the read timeout to SECS.\n\
   -w,  --wait=SECONDS           wait SECONDS between retrievals.\n\
        --waitretry=SECONDS      wait 1...SECONDS between retries of a retrieval.\n\
        --random-wait            wait from 0...2*WAIT secs between retrievals.\n\
@@ -315,8 +318,10 @@ main (int argc, char *const *argv)
     { "base", required_argument, NULL, 'B' },
     { "bind-address", required_argument, NULL, 155 },
     { "cache", required_argument, NULL, 'C' },
+    { "connect-timeout", required_argument, NULL, 180 },
     { "cookies", required_argument, NULL, 160 },
     { "cut-dirs", required_argument, NULL, 145 },
+    { "dns-timeout", required_argument, NULL, 178 },
     { "directory-prefix", required_argument, NULL, 'P' },
     { "dns-cache", required_argument, NULL, 175 },
     { "domains", required_argument, NULL, 'D' },
@@ -346,6 +351,7 @@ main (int argc, char *const *argv)
     { "proxy-passwd", required_argument, NULL, 144 },
     { "proxy-user", required_argument, NULL, 143 },
     { "quota", required_argument, NULL, 'Q' },
+    { "read-timeout", required_argument, NULL, 179 },
     { "reject", required_argument, NULL, 'R' },
     { "restrict-file-names", required_argument, NULL, 176 },
     { "save-cookies", required_argument, NULL, 162 },
@@ -619,6 +625,15 @@ GNU General Public License for more details.\n"));
 	  break;
 	case 176:
 	  setoptval ("restrictfilenames", optarg);
+	  break;
+	case 178:
+	  setoptval ("dnstimeout", optarg);
+	  break;
+	case 179:
+	  setoptval ("readtimeout", optarg);
+	  break;
+	case 180:
+	  setoptval ("connecttimeout", optarg);
 	  break;
 	case 'A':
 	  setoptval ("accept", optarg);

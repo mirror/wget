@@ -15,7 +15,9 @@ send a POST request with the specified contents.
 
 ** The `--timeout' option now affects DNS lookup and establishing the
 connection as well.  Previously it only affected reading and writing
-data.
+data.  Those three timeouts can be set separately using
+`--dns-timeout', `--connection-timeout', and `--read-timeout',
+respectively.
 
 ** Download speed shown by the progress bar is based on the data
 recently read, rather than the average speed of the entire download.
