@@ -1224,6 +1224,8 @@ Accept: %s\r\n\
 	      /* In case the caller inspects. */
 	      hs->len = contlen;
 	      hs->res = 0;
+	      /* Mark as successfully retrieved. */
+	      *dt |= RETROKF;
 	      FREE_MAYBE (type);
 	      FREE_MAYBE (all_headers);
 	      CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there

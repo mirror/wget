@@ -1,3 +1,8 @@
+2002-02-05  Ian Abbott  <abbotti@mev.co.uk>
+
+	* http.c (gethttp): when -c used, mark already fully retrieved
+	file as successfully retrieved.
+
 2002-02-19  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* url.c (url_parse): Don't treat '?' as query string separator
