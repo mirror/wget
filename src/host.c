@@ -211,9 +211,9 @@ address_list_from_addrinfo (const struct addrinfo *ai)
     return NULL;
 
   al = xnew0 (struct address_list);
-  al->addresses  = xnew_array (ip_address, cnt);
-  al->count      = cnt;
-  al->refcount   = 1;
+  al->addresses = xnew_array (ip_address, cnt);
+  al->count     = cnt;
+  al->refcount  = 1;
 
   ip = al->addresses;
   for (ptr = ai; ptr != NULL; ptr = ptr->ai_next)
