@@ -1,5 +1,10 @@
 2001-12-08  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* wget.texi (HTTP Options): Provide more specific information
+	about how --load-cookies is meant to be used.
+
+2001-12-08  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* texi2pod.pl: Include the EXAMPLES section.
 
 	* wget.texi (Overview): Shorten the man page DESCRIPTION.

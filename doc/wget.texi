@@ -880,6 +880,35 @@ Load cookies from @var{file} before the first HTTP retrieval.  The
 format of @var{file} is one used by Netscape and Mozilla, at least their
 Unix version.
 
+You will typically use this option when mirroring sites that require
+that you be logged in to access some or all of their content.  The login
+process typically works by the web server issuing an @sc{http} cookie
+upon receiving and verifying your credentials.  The cookie is then
+resent by the browser when accessing that part of the site, and so
+proves your identity.
+
+Mirroring such a site requires Wget to send the same cookies your
+browser sends when communicating with the site.  This is achieved by
+@samp{--load-cookies}---simply point Wget to the location of the
+@file{cookies.txt} file, and it will send the same cookies your browser
+would send in the same situation.  If you're using Netscape navigator,
+specify @samp{--load-cookies ~/.netscape/cookies.txt}.  Mozilla keeps
+the cookies file somewhere under @file{~/.mozilla}, in the profile
+directory, but it's also named @file{cookies.txt}, the full path usually
+being @file{~/.mozilla/default/@var{some-weird-string}/cookies.txt}.
+
+If you're using Wget under a non-Unix OS, or if you are using a
+different browser, @samp{--load-cookies} will not work.
+
+In that case you can view the cookies using the cookie manager provided
+by your browser, and write down the name and value of the cookie needed
+for the site.  Then you can bypass the ``official'' cookie code and
+simply tell Wget to use that one cookie, like this:
+
+@example
+wget --cookies=off --header "Cookie: @var{name}=@var{value}"
+@end example
+
 @cindex saving cookies
 @cindex cookies, saving
 @item --save-cookies @var{file}
@@ -2334,9 +2363,9 @@ wget -r -l2 -P/tmp ftp://wuarchive.wustl.edu/
 
 @item
 You want to download all the @sc{gif}s from a directory on an @sc{http}
-server.  @samp{wget http://www.server.com/dir/*.gif} doesn't work
-because @sc{http} retrieval does not support globbing.  In that case,
-use:
+server.  You tried @samp{wget http://www.server.com/dir/*.gif}, but that
+didn't work because @sc{http} retrieval does not support globbing.  In
+that case, use:
 
 @example
 wget -r -l1 --no-parent -A.gif http://www.server.com/dir/
@@ -2430,7 +2459,6 @@ Or, with less typing:
 wget -m -k -K -E http://www.gnu.org/ -o /home/me/weeklog
 @end example
 @end itemize
-
 @c man end
 
 @node Various, Appendices, Examples, Top
