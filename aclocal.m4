@@ -167,18 +167,18 @@ dnl START OF IPv6 AUTOCONFIGURATION SUPPORT MACROS
 dnl ************************************************************
 
 AC_DEFUN([TYPE_STRUCT_SOCKADDR_IN6],[
-  ds6_have_sockaddr_in6=
+  wget_have_sockaddr_in6=
   AC_CHECK_TYPES([struct sockaddr_in6],[
-    ds6_have_sockaddr_in6=yes
+    wget_have_sockaddr_in6=yes
   ],[
-    ds6_have_sockaddr_in6=no
+    wget_have_sockaddr_in6=no
   ],[
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
   ])
 
-  if test "X$ds6_have_sockaddr_in6" = "Xyes"; then :
+  if test "X$wget_have_sockaddr_in6" = "Xyes"; then :
     $1
   else :
     $2
@@ -189,12 +189,12 @@ AC_DEFUN([TYPE_STRUCT_SOCKADDR_IN6],[
 AC_DEFUN([MEMBER_SIN6_SCOPE_ID],[
   AC_REQUIRE([TYPE_STRUCT_SOCKADDR_IN6])
   
-  ds6_member_sin6_scope_id=
-  if test "X$ds6_have_sockaddr_in6" = "Xyes"; then
+  wget_member_sin6_scope_id=
+  if test "X$wget_have_sockaddr_in6" = "Xyes"; then
     AC_CHECK_MEMBER([struct sockaddr_in6.sin6_scope_id],[
-      ds6_member_sin6_scope_id=yes
+      wget_member_sin6_scope_id=yes
     ],[
-      ds6_member_sin6_scope_id=no
+      wget_member_sin6_scope_id=no
     ],[
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -202,7 +202,7 @@ AC_DEFUN([MEMBER_SIN6_SCOPE_ID],[
     ])
   fi
 
-  if test "X$ds6_member_sin6_scope_id" = "Xyes"; then
+  if test "X$wget_member_sin6_scope_id" = "Xyes"; then
     AC_DEFINE([HAVE_SOCKADDR_IN6_SCOPE_ID], 1,
       [Define if struct sockaddr_in6 has the sin6_scope_id member])
     $1
@@ -213,7 +213,7 @@ AC_DEFUN([MEMBER_SIN6_SCOPE_ID],[
 
 
 AC_DEFUN([PROTO_INET6],[
-  AC_CACHE_CHECK([for INET6 protocol support], [ds6_cv_proto_inet6],[
+  AC_CACHE_CHECK([for INET6 protocol support], [wget_cv_proto_inet6],[
     AC_TRY_CPP([
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -225,13 +225,13 @@ AC_DEFUN([PROTO_INET6],[
 #error Mlssing AF_INET6
 #endif
     ],[
-      ds6_cv_proto_inet6=yes
+      wget_cv_proto_inet6=yes
     ],[
-      ds6_cv_proto_inet6=no
+      wget_cv_proto_inet6=no
     ])
   ])
 
-  if test "X$ds6_cv_proto_inet6" = "Xyes"; then :
+  if test "X$wget_cv_proto_inet6" = "Xyes"; then :
     $1
   else :
     $2
@@ -241,7 +241,7 @@ AC_DEFUN([PROTO_INET6],[
 
 AC_DEFUN([GETADDRINFO_AI_ADDRCONFIG],[
   AC_CACHE_CHECK([if getaddrinfo supports AI_ADDRCONFIG],
-    [ds6_cv_gai_ai_addrconfig],[
+    [wget_cv_gai_ai_addrconfig],[
     AC_TRY_CPP([
 #include <netdb.h>
 
@@ -249,13 +249,13 @@ AC_DEFUN([GETADDRINFO_AI_ADDRCONFIG],[
 #error Missing AI_ADDRCONFIG
 #endif
     ],[
-      ds6_cv_gai_ai_addrconfig=yes
+      wget_cv_gai_ai_addrconfig=yes
     ],[
-      ds6_cv_gai_ai_addrconfig=no
+      wget_cv_gai_ai_addrconfig=no
     ])
   ])
 
-  if test "X$ds6_cv_gai_ai_addrconfig" = "Xyes"; then :
+  if test "X$wget_cv_gai_ai_addrconfig" = "Xyes"; then :
     $1
   else :
     $2
@@ -264,7 +264,7 @@ AC_DEFUN([GETADDRINFO_AI_ADDRCONFIG],[
 
 
 AC_DEFUN([GETADDRINFO_AI_ALL],[
-  AC_CACHE_CHECK([if getaddrinfo supports AI_ALL],[ds6_cv_gai_ai_all],[
+  AC_CACHE_CHECK([if getaddrinfo supports AI_ALL],[wget_cv_gai_ai_all],[
     AC_TRY_CPP([
 #include <netdb.h>
 
@@ -272,13 +272,13 @@ AC_DEFUN([GETADDRINFO_AI_ALL],[
 #error Missing AI_ALL
 #endif
     ],[
-      ds6_cv_gai_ai_all=yes
+      wget_cv_gai_ai_all=yes
     ],[
-      ds6_cv_gai_ai_all=no
+      wget_cv_gai_ai_all=no
     ])
   ])
 
-  if test "X$ds6_cv_gai_ai_all" = "Xyes"; then :
+  if test "X$wget_cv_gai_ai_all" = "Xyes"; then :
     $1
   else :
     $2
@@ -287,7 +287,7 @@ AC_DEFUN([GETADDRINFO_AI_ALL],[
 
 
 AC_DEFUN([GETADDRINFO_AI_V4MAPPED],[
-  AC_CACHE_CHECK([if getaddrinfo supports AI_V4MAPPED],[ds6_cv_gai_ai_v4mapped],[
+  AC_CACHE_CHECK([if getaddrinfo supports AI_V4MAPPED],[wget_cv_gai_ai_v4mapped],[
     AC_TRY_CPP([
 #include <netdb.h>
 
@@ -295,17 +295,24 @@ AC_DEFUN([GETADDRINFO_AI_V4MAPPED],[
 #error Missing AI_V4MAPPED
 #endif
     ],[
-      ds6_cv_gai_ai_v4mapped=yes
+      wget_cv_gai_ai_v4mapped=yes
     ],[
-      ds6_cv_gai_ai_v4mapped=no
+      wget_cv_gai_ai_v4mapped=no
     ])
   ])
 
-  if test "X$ds6_cv_gai_ai_v4mapped" = "Xyes"; then :
+  if test "X$wget_cv_gai_ai_v4mapped" = "Xyes"; then :
     $1
   else :
     $2
   fi
+])
+
+AC_DEFUN([WGET_STRUCT_SOCKADDR_STORAGE],[
+  AC_CHECK_TYPES([struct sockaddr_storage],[], [], [
+#include <sys/types.h>
+#include <sys/socket.h>
+  ])
 ])
 
 dnl ************************************************************

@@ -66,7 +66,15 @@ so, delete this exception statement from your version.  */
 extern int errno;
 #endif
 
-
+/* Define sockaddr_storage where unavailable (presumably on IPv4-only
+   hosts).  */
+
+#ifndef ENABLE_IPV6
+# ifndef HAVE_STRUCT_SOCKADDR_STORAGE
+#  define sockaddr_storage sockaddr_in
+# endif
+#endif /* ENABLE_IPV6 */
+
 /* Fill SA as per the data in IP and PORT.  SA shoult point to struct
    sockaddr_storage if ENABLE_IPV6 is defined, to struct sockaddr_in
    otherwise.  */

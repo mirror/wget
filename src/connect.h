@@ -32,12 +32,6 @@ so, delete this exception statement from your version.  */
 
 #include "host.h"		/* for definition of ip_address */
 
-#ifndef ENABLE_IPV6
-# ifndef HAVE_SOCKADDR_STORAGE
-#  define sockaddr_storage sockaddr_in
-# endif
-#endif /* ENABLE_IPV6 */
-
 /* Function declarations */
 
 /* Returned by connect_to_host when host name cannot be resolved.  */

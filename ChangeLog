@@ -1,3 +1,7 @@
+2003-11-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Check for struct sockaddr_storage.
+
 2003-11-12  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Use a more standard checking message when checking

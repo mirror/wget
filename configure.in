@@ -484,33 +484,33 @@ AC_ARG_ENABLE(ipv6,
 )
 
 if test "X$ipv6" = "Xyes" || test "X$check_for_ipv6" = "Xyes"; then
-  AC_CHECK_FUNCS(getaddrinfo,[
-    GETADDRINFO_AI_ADDRCONFIG(
+  AC_CHECK_FUNCS(getaddrinfo, [
+    GETADDRINFO_AI_ADDRCONFIG([
       AC_DEFINE(
         [HAVE_GETADDRINFO_AI_ADDRCONFIG], 1, 
         [Define if the system headers support the AI_ADDRCONFIG flag.]
       )
-    )
-    GETADDRINFO_AI_V4MAPPED(
+    ])
+    GETADDRINFO_AI_V4MAPPED([
       AC_DEFINE(
         [HAVE_GETADDRINFO_AI_V4MAPPED], 1, 
         [Define if the system headers support the AI_V4MAPPED flag.]
       )
-    )
-    GETADDRINFO_AI_ALL(
+    ])
+    GETADDRINFO_AI_ALL([
       AC_DEFINE(
         [HAVE_GETADDRINFO_AI_ALL], 1, 
         [Define if the system headers support the AI_ALL flag.]
       )
-    )
-  ],[
+    ])
+  ], [
     AC_MSG_NOTICE([Disabling IPv6 support: your system does not support getaddrinfo(3)])
     ipv6=no
   ])
 fi
 
 if test "X$ipv6" = "Xyes" || test "X$check_for_ipv6" = "Xyes"; then
-  PROTO_INET6(,[
+  PROTO_INET6([], [
     AC_MSG_NOTICE([Disabling IPv6 support: your system does not support the PF_INET6 protocol family])
     ipv6=no
   ])
@@ -524,6 +524,7 @@ if test "X$ipv6" = "Xyes" || test "X$check_for_ipv6" = "Xyes"; then
     ipv6=no
   ])
   if test "X$ipv6" = "Xyes"; then
+    WGET_STRUCT_SOCKADDR_STORAGE
     MEMBER_SIN6_SCOPE_ID
   fi
 fi
