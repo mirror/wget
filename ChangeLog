@@ -1,3 +1,8 @@
+2001-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* configure.in: Check for md5_calc rather than MD5Update when
+	looking for Solaris md5.
+
 2001-12-08  R.I.P. Deaddog  <maddog@linuxhall.org>
 
 	* po/zh_TW.po: Updated for 1.8.
