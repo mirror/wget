@@ -1369,7 +1369,7 @@ construct (const char *url, const char *sub, int subsize, int no_proto)
 	      start_insert = end + 1;
 	      need_explicit_slash = 1;
 	    }
-	  else if (last_slash && last_slash != url && last_slash[-1] == '/')
+	  else if (last_slash && last_slash != url && *(last_slash - 1) == '/')
 	    {
 	      /* example: http://host"  */
 	      /*                      ^ */

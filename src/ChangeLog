@@ -1,5 +1,10 @@
 2000-11-08  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* url.c (construct): Changed last_slash[-1] to *(last_slash - 1).
+	Suggested by Edward J. Sabol.
+
+2000-11-08  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (construct): Handle the case where host name is not
 	followed by a slash.
 
