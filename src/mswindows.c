@@ -29,6 +29,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <errno.h>
 
 #include "wget.h"
+#include "utils.h"
 #include "url.h"
 
 #ifndef errno

@@ -20,7 +20,7 @@ init$o: init.c config.h wget.h sysdep.h options.h utils.h init.h host.h recur.h 
 log$o: log.c config.h wget.h sysdep.h options.h utils.h
 main$o: main.c config.h wget.h sysdep.h options.h utils.h getopt.h init.h retr.h recur.h host.h
 gnu-md5$o: gnu-md5.c wget.h sysdep.h options.h gnu-md5.h
-mswindows$o: wget.h url.h
+mswindows$o: wget.h utils.h url.h
 netrc$o: netrc.c wget.h sysdep.h options.h utils.h netrc.h init.h
 rbuf$o: rbuf.c config.h wget.h sysdep.h options.h rbuf.h connect.h
 recur$o: recur.c config.h wget.h sysdep.h options.h url.h recur.h utils.h retr.h ftp.h fnmatch.h host.h hash.h

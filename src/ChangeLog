@@ -1,3 +1,7 @@
+2002-03-20  Ian Abbott  <abbotti@mev.co.uk>
+
+	* mswindows.c: Include "utils.h".
+
 2002-03-18  Ian Abbott  <abbotti@mev.co.uk>
 
 	* host.h: Don't include netdb.h on windows.
