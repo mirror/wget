@@ -1,3 +1,8 @@
+2001-06-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* configure.in: Check for both gethostbyname and inet_ntoa before
+	concluding that -lnsl is not needed.
+
 2001-06-14  Maciej W. Rozycki  <macro@ds2.pg.gda.pl>
 
 	* configure.in: Use `libtool' to test linking of external

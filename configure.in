@@ -176,13 +176,26 @@ AC_CHECK_FUNCS(gettimeofday mktime strptime)
 AC_CHECK_FUNCS(strerror snprintf vsnprintf select signal symlink access isatty)
 AC_CHECK_FUNCS(uname gethostname)
 
-AC_CHECK_FUNCS(gethostbyname, [], [
-  AC_CHECK_LIB(nsl, gethostbyname)
-])
-
 dnl
 dnl Checks for libraries.
 dnl
+
+dnl On Solaris, -lnsl is needed to use gethostbyname.  On "NCR MP-RAS
+dnl 3.0", however, gethostbyname is in libc, but -lnsl is still needed
+dnl to use -lsocket, as well as for functions such as inet_ntoa.  We
+dnl look for such known offenders and if one of them is not found, we
+dnl check if -lnsl is needed.
+
+wget_check_in_nsl=NONE
+AC_CHECK_FUNCS(gethostbyname, [], [
+  wget_check_in_nsl=gethostbyname
+])
+AC_CHECK_FUNCS(inet_ntoa, [], [
+  wget_check_in_nsl=inet_ntoa
+])
+if test $wget_check_in_nsl != NONE; then
+  AC_CHECK_LIB(nsl, $wget_check_in_nsl)
+fi
 
 AC_CHECK_LIB(socket, socket)
 
