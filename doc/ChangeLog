@@ -1,3 +1,8 @@
+2003-11-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi: Documented that --dont-remove-listing is now
+	--no-remove-listing.
+
 2003-11-14  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* fdl.texi: New file.
