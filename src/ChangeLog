@@ -1,5 +1,9 @@
 2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* cmpt.c (memmove): Include a simple memmove implementation.
+
+2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* headers: Guard against header files being included twice.
 
 2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>

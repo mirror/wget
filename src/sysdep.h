@@ -166,6 +166,9 @@ int vsnprintf ();
 #ifndef HAVE_USLEEP
 int usleep ();
 #endif
+#ifndef HAVE_MEMMOVE
+void *memmove ();
+#endif
 
 /* SunOS brain damage -- for some reason, SunOS header files fail to
    declare the functions below, which causes all kinds of problems

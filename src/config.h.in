@@ -144,6 +144,9 @@ char *alloca ();
 /* Define if you have the strpbrk function.  */
 #undef HAVE_STRPBRK
 
+/* Define if you have the memmove function.  */
+#undef HAVE_MEMMOVE
+
 /* Define if you have the strptime function.  */
 #undef HAVE_STRPTIME
 

@@ -1226,3 +1226,23 @@ usleep (unsigned long usec)
 
 #endif /* not WINDOWS */
 #endif /* not HAVE_USLEEP */
+
+
+#ifndef HAVE_MEMMOVE
+void *
+memmove (char *dest, const char *source, unsigned length)
+{
+  char *d0 = dest;
+  if (source < dest)
+    /* Moving from low mem to hi mem; start at end.  */
+    for (source += length, dest += length; length; --length)
+      *--dest = *--source;
+  else if (source != dest)
+    {
+      /* Moving from hi mem to low mem; start at beginning.  */
+      for (; length; --length)
+	*dest++ = *source++;
+    }
+  return (void *) d0;
+}
+#endif /* not HAVE_MEMMOVE */
