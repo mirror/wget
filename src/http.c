@@ -1508,8 +1508,12 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
 
          #### A possible solution to this would be to remember the
 	 file position in the output document and to seek to that
-	 position, instead of rewinding.  */
-      if (!hs->restval && global_download_count == 0)
+	 position, instead of rewinding.
+
+         We don't truncate stdout, since that breaks
+	 "wget -O - [...] >> foo".
+      */
+      if (!hs->restval && global_download_count == 0 && opt.dfp != stdout)
 	{
 	  /* This will silently fail for streams that don't correspond
 	     to regular files, but that's OK.  */

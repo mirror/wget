@@ -1,3 +1,9 @@
+2002-05-14  Bill Richardson  <bill@riverstonenet.com>
+
+	* ftp.c (getftp): Don't ftruncate stdout.
+
+	* http.c (gethttp): Don't ftruncate stdout.
+
 2002-05-09  Ian Abbott  <abbotti@mev.co.uk>
 
 	* cmpt.c (strptime_internal): Synched with glibc-2.1.3.
