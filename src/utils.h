@@ -67,6 +67,7 @@ int in_slist PARAMS ((slist *, const char *));
 void free_slist PARAMS ((slist *));
 
 char *legible PARAMS ((long));
+char *legible_very_long PARAMS ((VERY_LONG_TYPE));
 int numdigit PARAMS ((long));
 void long_to_string PARAMS ((char *, long));
 

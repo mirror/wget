@@ -104,7 +104,7 @@ struct options
 
   long quota;			/* Maximum number of bytes to
 				   retrieve. */
-  long downloaded;		/* How much we downloaded already. */
+  VERY_LONG_TYPE downloaded;	/* How much we downloaded already. */
   int numurls;			/* Number of successfully downloaded
 				   URLs */
 

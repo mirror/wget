@@ -1,3 +1,7 @@
+2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* configure.in: Check for size of long and long long.
+
 2000-10-30  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* NEWS: Hrvoje pointed out that relative URL grokking deserves mention.

@@ -896,21 +896,21 @@ free_slist (slist *l)
       l = n;
     }
 }
+
+/* Engine for legible and legible_long_long; this function works on
+   strings.  */
 
-/* Legible -- return a static pointer to the legibly printed long.  */
-char *
-legible (long l)
+static char *
+legible_1 (const char *repr)
 {
-  static char outbuf[20];
-  char inbuf[20];
+  static char outbuf[128];
   int i, i1, mod;
-  char *outptr, *inptr;
+  char *outptr;
+  const char *inptr;
 
-  /* Print the number into the buffer.  */
-  long_to_string (inbuf, l);
   /* Reset the pointers.  */
   outptr = outbuf;
-  inptr = inbuf;
+  inptr = repr;
   /* If the number is negative, shift the pointers.  */
   if (*inptr == '-')
     {
@@ -935,6 +935,26 @@ legible (long l)
   return outbuf;
 }
 
+/* Legible -- return a static pointer to the legibly printed long.  */
+char *
+legible (long l)
+{
+  char inbuf[24];
+  /* Print the number into the buffer.  */
+  long_to_string (inbuf, l);
+  return legible_1 (inbuf);
+}
+
+/* The same as legible(), but works on VERY_LONG_TYPE.  See sysdep.h.  */
+char *
+legible_very_long (VERY_LONG_TYPE l)
+{
+  char inbuf[128];
+  /* Print the number into the buffer.  */
+  sprintf (inbuf, VERY_LONG_FORMAT, l);
+  return legible_1 (inbuf);
+}
+
 /* Count the digits in a (long) integer.  */
 int
 numdigit (long a)
@@ -945,34 +965,54 @@ numdigit (long a)
   return res;
 }
 
-/* Print NUMBER to BUFFER.  The digits are first written in reverse
-   order (the least significant digit first), and are then reversed.  */
+/* Print NUMBER to BUFFER.  This is equivalent to sprintf(buffer,
+   "%ld", number), only much faster.
+
+   BUFFER should accept 24 bytes.  This should suffice for the longest
+   numbers on 64-bit machines, including the `-' sign and the trailing
+   \0.  */
 void
 long_to_string (char *buffer, long number)
 {
-  char *p;
-  int i, l;
+#if (SIZEOF_LONG != 4) && (SIZEOF_LONG != 8)
+  /* Huh? */
+  sprintf (buffer, "%ld", number);
+#else /* (SIZEOF_LONG == 4) || (SIZEOF_LONG == 8) */
+  char *p = buffer;
+  int force = 0;
 
   if (number < 0)
     {
-      *buffer++ = '-';
+      *p++ = '-';
       number = -number;
     }
-  p = buffer;
-  /* Print the digits to the string.  */
-  do
-    {
-      *p++ = number % 10 + '0';
-      number /= 10;
-    }
-  while (number);
-  /* And reverse them.  */
-  l = p - buffer - 1;
-  for (i = l/2; i >= 0; i--)
-    {
-      char c = buffer[i];
-      buffer[i] = buffer[l - i];
-      buffer[l - i] = c;
-    }
-  buffer[l + 1] = '\0';
+
+#define FROB(figure) do {						\
+    if (force || number >= figure)					\
+      *p++ = number / figure + '0', number %= figure, force = 1;	\
+    } while (0)
+#if SIZEOF_LONG == 8
+  FROB (1000000000000000000L);
+  FROB (100000000000000000L);
+  FROB (10000000000000000L);
+  FROB (1000000000000000L);
+  FROB (100000000000000L);
+  FROB (10000000000000L);
+  FROB (1000000000000L);
+  FROB (100000000000L);
+  FROB (10000000000L);
+#endif /* SIZEOF_LONG == 8 */
+  FROB (1000000000);
+  FROB (100000000);
+  FROB (10000000);
+  FROB (1000000);
+  FROB (100000);
+  FROB (10000);
+  FROB (1000);
+  FROB (100);
+  FROB (10);
+#undef FROB
+  *p++ = number + '0';
+  *p = '\0';
+#endif /* (SIZEOF_LONG == 4) || (SIZEOF_LONG == 8) */
 }
