@@ -1,3 +1,11 @@
+2000-03-12  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* sample.wgetrc: Added entries for backup_converted and waitretry.
+
+	* wget.texi (waitretry): Herold Heiko <Heiko.Herold@previnet.it>'s
+ 	new option was undocumented until now.  Reworded the suggested
+ 	documentation he sent to the list.
+
 2000-03-10  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (Recursive Retrieval Options): In -K description,

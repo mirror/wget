@@ -560,6 +560,15 @@ Specifying a large value for this option is useful if the network or the
 destination host is down, so that Wget can wait long enough to
 reasonably expect the network error to be fixed before the retry.
 
+@cindex retries, waiting between
+@cindex waiting between retries
+@item --waitretry=@var{seconds}
+If you don't want Wget to wait between @emph{every} retrieval, but only
+between retries of failed downloads, you can use this option.  If you
+want to make sure you never "hammer" remote sites with rapid retries,
+you can leave it set all the time to some non-zero value using the
+waitretry variable in your @file{.wgetrc} file.
+
 @cindex proxy
 @item -Y on/off
 @itemx --proxy=on/off
@@ -1758,6 +1767,10 @@ Turn verbose on/off, the same as @samp{-v}/@samp{-nv}.
 
 @item wait = @var{n}
 Wait @var{n} seconds between retrievals, the same as @samp{-w}.
+
+@item waitretry = @var{n}
+Wait @var{n} seconds between retries of failed retrievals only -- the same as
+@samp{--waitretry}.
 @end table
 
 @node Sample Wgetrc,  , Wgetrc Commands, Startup File
