@@ -42,6 +42,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # define xmalloc malloc
 # define xrealloc realloc
 # define xfree free
+
+# undef TOLOWER
+# define TOLOWER(x) ('A' <= (x) && (x) <= 'Z' ? (x) - 32 : (x))
 #endif
 
 /* INTERFACE:
@@ -145,8 +148,10 @@ struct hash_table {
 
   int resize_threshold;		/* after size exceeds this number of
 				   entries, resize the table.  */
+  int prime_offset;		/* the offset of the current prime in
+				   the prime table. */
 
-  struct mapping *mappings;
+  struct mapping *mappings;	/* the array of mapping pairs. */
 };
 
 #define EMPTY_MAPPING_P(mp)  ((mp)->key == NULL)
@@ -163,13 +168,21 @@ struct hash_table {
 
 #define HASH_POSITION(ht, key) (ht->hash_function (key) % ht->size)
 
-/* Find a prime near, but greather than or equal to SIZE. */
+/* Find a prime near, but greather than or equal to SIZE.  Of course,
+   the primes are not calculated, but looked up from a table.  The
+   table does not contain all primes in range, just a selection useful
+   for this purpose.
+
+   PRIME_OFFSET is a micro-optimization: if specified, it starts the
+   search for the prime number beginning with the specific offset in
+   the prime number table.  The final offset is stored in the same
+   variable.  */
 
 static int
-prime_size (int size)
+prime_size (int size, int *prime_offset)
 {
   static const unsigned long primes [] = {
-    19, 29, 41, 59, 79, 107, 149, 197, 263, 347, 457, 599, 787, 1031,
+    13, 19, 29, 41, 59, 79, 107, 149, 197, 263, 347, 457, 599, 787, 1031,
     1361, 1777, 2333, 3037, 3967, 5167, 6719, 8737, 11369, 14783,
     19219, 24989, 32491, 42257, 54941, 71429, 92861, 120721, 156941,
     204047, 265271, 344857, 448321, 582821, 757693, 985003, 1280519,
@@ -180,12 +193,22 @@ prime_size (int size)
     1174703521, 1527114613, 1985248999,
     (unsigned long)0x99d43ea5, (unsigned long)0xc7fa5177
   };
-  int i;
-  for (i = 0; i < ARRAY_SIZE (primes); i++)
+  int i = *prime_offset;
+
+  for (; i < ARRAY_SIZE (primes); i++)
     if (primes[i] >= size)
-      return primes[i];
-  /* huh? */
-  return size;
+      {
+	/* Set the offset to the next prime.  That is safe because,
+	   next time we are called, it will be with a larger SIZE,
+	   which means we could never return the same prime anyway.
+	   (If that is not the case, the caller can simply reset
+	   *prime_offset.)  */
+	*prime_offset = i + 1;
+	return primes[i];
+      }
+
+  abort ();
+  return 0;
 }
 
 /* Create a hash table of INITIAL_SIZE with hash function
@@ -207,10 +230,11 @@ hash_table_new (int initial_size,
   ht->hash_function = hash_function;
   ht->test_function = test_function;
 
-  ht->size = prime_size (initial_size);
+  ht->prime_offset = 0;
+  ht->size = prime_size (initial_size, &ht->prime_offset);
   ht->resize_threshold = ht->size * 3 / 4;
 
-  ht->count    = 0;
+  ht->count = 0;
 
   ht->mappings = xmalloc (ht->size * sizeof (struct mapping));
   memset (ht->mappings, '\0', ht->size * sizeof (struct mapping));
@@ -302,9 +326,12 @@ grow_hash_table (struct hash_table *ht)
   struct mapping *mp, *mappings;
   int newsize;
 
-  newsize = prime_size (ht->size * 2);
+  newsize = prime_size (ht->size * 2, &ht->prime_offset);
 #if 0
-  printf ("growing from %d to %d\n", ht->size, newsize);
+  printf ("growing from %d to %d; fullness %.2f%% to %.2f%%\n",
+	  ht->size, newsize,
+	  (double)100 * ht->count / ht->size,
+	  (double)100 * ht->count / newsize);
 #endif
 
   ht->size = newsize;

@@ -1,3 +1,13 @@
+2002-05-16  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* hash.c (prime_size): Store the offset of the prime number in the
+	prime table.  When searching, start with the given offset.
+	(hash_table_new): Pass the pointer to ht->prime_offset to
+	prime_size.
+	(grow_hash_table): Ditto.
+	(prime_size): Make 13 the first prime to make empty hash tables
+	slightly smaller.
+
 2002-05-16  Ian Abbott  <abbotti@mev.co.uk>
 
 	* recur.c (download_child_p): Minor optimization to avoid an
