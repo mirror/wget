@@ -1,5 +1,5 @@
 /* HTTP support.
-   Copyright (C) 2003 Free Software Foundation, Inc.
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -403,7 +403,7 @@ post_file (int sock, const char *file_name, wgint promised_size)
 }
 
 static const char *
-head_terminator (const char *hunk, int oldlen, int peeklen)
+response_head_terminator (const char *hunk, int oldlen, int peeklen)
 {
   const char *start, *end;
 
@@ -441,9 +441,9 @@ head_terminator (const char *hunk, int oldlen, int peeklen)
    data can be treated as body.  */
 
 static char *
-fd_read_http_head (int fd)
+read_http_response_head (int fd)
 {
-  return fd_read_hunk (fd, head_terminator, 512);
+  return fd_read_hunk (fd, response_head_terminator, 512);
 }
 
 struct response {
@@ -474,10 +474,10 @@ struct response {
 /* Create a new response object from the text of the HTTP response,
    available in HEAD.  That text is automatically split into
    constituent header lines for fast retrieval using
-   response_header_*.  */
+   resp_header_*.  */
 
 static struct response *
-response_new (const char *head)
+resp_new (const char *head)
 {
   const char *hdr;
   int count, size;
@@ -493,7 +493,7 @@ response_new (const char *head)
       return resp;
     }
 
-  /* Split HEAD into header lines, so that response_header_* functions
+  /* Split HEAD into header lines, so that resp_header_* functions
      don't need to do this over and over again.  */
 
   size = count = 0;
@@ -524,27 +524,36 @@ response_new (const char *head)
   return resp;
 }
 
-/* Locate the header named NAME in the request data.  If found, set
-   *BEGPTR to its starting, and *ENDPTR to its ending position, and
-   return 1.  Otherwise return 0.
+/* Locate the header named NAME in the request data, starting with
+   position START.  This allows the code to loop through the request
+   data, filtering for all requests of a given name.  Returns the
+   found position, or -1 for failure.  The code that uses this
+   function typically looks like this:
 
-   This function is used as a building block for response_header_copy
-   and response_header_strdup.  */
+     for (pos = 0; (pos = resp_header_locate (...)) != -1; pos++)
+       ... do something with header ...
+
+   If you only care about one header, use resp_header_get instead of
+   this function.  */
 
 static int
-response_header_bounds (const struct response *resp, const char *name,
-			const char **begptr, const char **endptr)
+resp_header_locate (const struct response *resp, const char *name, int start,
+		    const char **begptr, const char **endptr)
 {
   int i;
   const char **headers = resp->headers;
   int name_len;
 
   if (!headers || !headers[1])
-    return 0;
+    return -1;
 
   name_len = strlen (name);
+  if (start > 0)
+    i = start;
+  else
+    i = 1;
 
-  for (i = 1; headers[i + 1]; i++)
+  for (; headers[i + 1]; i++)
     {
       const char *b = headers[i];
       const char *e = headers[i + 1];
@@ -559,26 +568,41 @@ response_header_bounds (const struct response *resp, const char *name,
 	    --e;
 	  *begptr = b;
 	  *endptr = e;
-	  return 1;
+	  return i;
 	}
     }
-  return 0;
+  return -1;
+}
+
+/* Find and retrieve the header named NAME in the request data.  If
+   found, set *BEGPTR to its starting, and *ENDPTR to its ending
+   position, and return 1.  Otherwise return 0.
+
+   This function is used as a building block for resp_header_copy
+   and resp_header_strdup.  */
+
+static int
+resp_header_get (const struct response *resp, const char *name,
+		 const char **begptr, const char **endptr)
+{
+  int pos = resp_header_locate (resp, name, 0, begptr, endptr);
+  return pos != -1;
 }
 
 /* Copy the response header named NAME to buffer BUF, no longer than
    BUFSIZE (BUFSIZE includes the terminating 0).  If the header
    exists, 1 is returned, otherwise 0.  If there should be no limit on
-   the size of the header, use response_header_strdup instead.
+   the size of the header, use resp_header_strdup instead.
 
    If BUFSIZE is 0, no data is copied, but the boolean indication of
    whether the header is present is still returned.  */
 
 static int
-response_header_copy (const struct response *resp, const char *name,
-		      char *buf, int bufsize)
+resp_header_copy (const struct response *resp, const char *name,
+		  char *buf, int bufsize)
 {
   const char *b, *e;
-  if (!response_header_bounds (resp, name, &b, &e))
+  if (!resp_header_get (resp, name, &b, &e))
     return 0;
   if (bufsize)
     {
@@ -593,10 +617,10 @@ response_header_copy (const struct response *resp, const char *name,
    malloc.  If such a header does not exist in RESP, return NULL.  */
 
 static char *
-response_header_strdup (const struct response *resp, const char *name)
+resp_header_strdup (const struct response *resp, const char *name)
 {
   const char *b, *e;
-  if (!response_header_bounds (resp, name, &b, &e))
+  if (!resp_header_get (resp, name, &b, &e))
     return NULL;
   return strdupdelim (b, e);
 }
@@ -610,7 +634,7 @@ response_header_strdup (const struct response *resp, const char *name)
    returned in *MESSAGE.  */
 
 static int
-response_status (const struct response *resp, char **message)
+resp_status (const struct response *resp, char **message)
 {
   int status;
   const char *p, *end;
@@ -670,7 +694,7 @@ response_status (const struct response *resp, char **message)
 /* Release the resources used by RESP.  */
 
 static void
-response_free (struct response *resp)
+resp_free (struct response *resp)
 {
   xfree_null (resp->headers);
   xfree (resp);
@@ -1354,7 +1378,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	      return WRITEFAILED;
 	    }
 
-	  head = fd_read_http_head (sock);
+	  head = read_http_response_head (sock);
 	  if (!head)
 	    {
 	      logprintf (LOG_VERBOSE, _("Failed reading proxy response: %s\n"),
@@ -1370,9 +1394,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	    }
 	  DEBUGP (("proxy responded with: [%s]\n", head));
 
-	  resp = response_new (head);
-	  statcode = response_status (resp, &message);
-	  response_free (resp);
+	  resp = resp_new (head);
+	  statcode = resp_status (resp, &message);
+	  resp_free (resp);
 	  if (statcode != 200)
 	    {
 	    failed_tunnel:
@@ -1429,7 +1453,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   contrange = 0;
   *dt &= ~RETROKF;
 
-  head = fd_read_http_head (sock);
+  head = read_http_response_head (sock);
   if (!head)
     {
       if (errno == 0)
@@ -1450,11 +1474,11 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     }
   DEBUGP (("\n---response begin---\n%s---response end---\n", head));
 
-  resp = response_new (head);
+  resp = resp_new (head);
 
   /* Check for status line.  */
   message = NULL;
-  statcode = response_status (resp, &message);
+  statcode = resp_status (resp, &message);
   if (!opt.server_response)
     logprintf (LOG_VERBOSE, "%2d %s\n", statcode,
 	       message ? escnonprint (message) : "");
@@ -1465,7 +1489,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     }
 
   if (!opt.ignore_length
-      && response_header_copy (resp, "Content-Length", hdrval, sizeof (hdrval)))
+      && resp_header_copy (resp, "Content-Length", hdrval, sizeof (hdrval)))
     {
       wgint parsed;
       errno = 0;
@@ -1484,10 +1508,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   /* Check for keep-alive related responses. */
   if (!inhibit_keep_alive && contlen != -1)
     {
-      if (response_header_copy (resp, "Keep-Alive", NULL, 0))
+      if (resp_header_copy (resp, "Keep-Alive", NULL, 0))
 	keep_alive = 1;
-      else if (response_header_copy (resp, "Connection", hdrval,
-				     sizeof (hdrval)))
+      else if (resp_header_copy (resp, "Connection", hdrval, sizeof (hdrval)))
 	{
 	  if (0 == strcasecmp (hdrval, "Keep-Alive"))
 	    keep_alive = 1;
@@ -1511,8 +1534,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	}
       else
 	{
-	  char *www_authenticate = response_header_strdup (resp,
-							   "WWW-Authenticate");
+	  char *www_authenticate = resp_header_strdup (resp,
+						       "WWW-Authenticate");
 	  /* If the authentication scheme is unknown or if it's the
 	     "Basic" authentication (which we try by default), there's
 	     no sense in retrying.  */
@@ -1552,7 +1575,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   else
     hs->error = xstrdup (message);
 
-  type = response_header_strdup (resp, "Content-Type");
+  type = resp_header_strdup (resp, "Content-Type");
   if (type)
     {
       char *tmp = strchr (type, ';');
@@ -1563,27 +1586,35 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  *tmp = '\0';
 	}
     }
-  hs->newloc = response_header_strdup (resp, "Location");
-  hs->remote_time = response_header_strdup (resp, "Last-Modified");
+  hs->newloc = resp_header_strdup (resp, "Location");
+  hs->remote_time = resp_header_strdup (resp, "Last-Modified");
+
+  /* Handle (possibly multiple instances of) the Set-Cookie header. */
   {
-    char *set_cookie = response_header_strdup (resp, "Set-Cookie");
-    if (set_cookie)
+    int scpos;
+    const char *scbeg, *scend;
+    /* The jar should have been created by now. */
+    assert (wget_cookie_jar != NULL);
+    for (scpos = 0;
+	 (scpos = resp_header_locate (resp, "Set-Cookie", scpos,
+				      &scbeg, &scend)) != -1;
+	 ++scpos)
       {
-	/* The jar should have been created by now. */
-	assert (wget_cookie_jar != NULL);
+	char *set_cookie = strdupdelim (scbeg, scend);
 	cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port, u->path,
 				  set_cookie);
 	xfree (set_cookie);
       }
   }
-  if (response_header_copy (resp, "Content-Range", hdrval, sizeof (hdrval)))
+
+  if (resp_header_copy (resp, "Content-Range", hdrval, sizeof (hdrval)))
     {
       wgint first_byte_pos, last_byte_pos, entity_length;
       if (parse_content_range (hdrval, &first_byte_pos, &last_byte_pos,
 			       &entity_length))
 	contrange = first_byte_pos;
     }
-  response_free (resp);
+  resp_free (resp);
 
   /* 20x responses are counted among successful by default.  */
   if (H_20X (statcode))
