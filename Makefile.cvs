@@ -34,6 +34,7 @@
 SHELL = /bin/sh
 
 prep:
+	autoheader
 	autoconf
 
 # The following two targets are pretty lame because we don't know that
