@@ -91,6 +91,10 @@ struct urlpos {
   unsigned int link_base_p	:1; /* was the link <base href=...> */
   unsigned int link_inline_p	:1; /* needed to render the page. */
 
+  unsigned int link_refresh_p	:1; /* link was received from
+				       <meta http-equiv=refresh content=...> */
+  int refresh_timeout;		/* for reconstructing the refresh. */
+
   /* Conversion requirements: */
   enum convert_options convert;	/* is conversion required? */
 

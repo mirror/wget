@@ -1698,7 +1698,10 @@ no_proxy_match (const char *host, const char **no_proxy)
 }
 
 static void write_backup_file PARAMS ((const char *, downloaded_file_t));
-static const char *replace_attr PARAMS ((const char *, int, FILE *, const char *));
+static const char *replace_attr PARAMS ((const char *, int, FILE *,
+					 const char *));
+static const char *replace_attr_refresh_hack PARAMS ((const char *, int, FILE *,
+						      const char *, int));
 static char *local_quote_string PARAMS ((const char *));
 
 /* Change the links in one HTML file.  LINKS is a list of links in the
@@ -1797,7 +1800,13 @@ convert_links (const char *file, struct urlpos *links)
 	  {
 	    char *newname = construct_relative (file, link->local_name);
 	    char *quoted_newname = local_quote_string (newname);
-	    p = replace_attr (p, link->size, fp, quoted_newname);
+
+	    if (!link->link_refresh_p)
+	      p = replace_attr (p, link->size, fp, quoted_newname);
+	    else
+	      p = replace_attr_refresh_hack (p, link->size, fp, quoted_newname,
+					     link->refresh_timeout);
+
 	    DEBUGP (("TO_RELATIVE: %s to %s at position %d in %s.\n",
 		     link->url->url, newname, link->pos, file));
 	    xfree (newname);
@@ -1810,7 +1819,13 @@ convert_links (const char *file, struct urlpos *links)
 	  {
 	    char *newlink = link->url->url;
 	    char *quoted_newlink = html_quote_string (newlink);
-	    p = replace_attr (p, link->size, fp, quoted_newlink);
+
+	    if (!link->link_refresh_p)
+	      p = replace_attr (p, link->size, fp, quoted_newlink);
+	    else
+	      p = replace_attr_refresh_hack (p, link->size, fp, quoted_newlink,
+					     link->refresh_timeout);
+
 	    DEBUGP (("TO_COMPLETE: <something> to %s at position %d in %s.\n",
 		     newlink, link->pos, file));
 	    xfree (quoted_newlink);
@@ -2012,6 +2027,24 @@ replace_attr (const char *p, int size, FILE *fp, const char *new_text)
   putc (quote_char, fp);
 
   return p;
+}
+
+/* The same as REPLACE_ATTR, but used when replacing
+   <meta http-equiv=refresh content="new_text"> because we need to
+   append "timeout_value; URL=" before the next_text.  */
+
+static const char *
+replace_attr_refresh_hack (const char *p, int size, FILE *fp,
+			   const char *new_text, int timeout)
+{
+  /* "0; URL=..." */
+  char *new_with_timeout = (char *)alloca (numdigit (timeout)
+					   + 6 /* "; URL=" */
+					   + strlen (new_text)
+					   + 1);
+  sprintf (new_with_timeout, "%d; URL=%s", timeout, new_text);
+
+  return replace_attr (p, size, fp, new_with_timeout);
 }
 
 /* Find the first occurrence of '#' in [BEG, BEG+SIZE) that is not

@@ -482,18 +482,21 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 	     So we just need to skip past the "NUMBER; URL=" garbage
 	     to get to the URL.  */
 	  {
-	    int id;
 	    char *name = find_attr (tag, "name", NULL);
-	    char *http_equiv = find_attr (tag, "http-equiv", &id);
+	    char *http_equiv = find_attr (tag, "http-equiv", NULL);
 	    if (http_equiv && !strcasecmp (http_equiv, "refresh"))
 	      {
-		char *refresh = find_attr (tag, "content", NULL);
-		char *p = refresh;
-		int offset;
-		while (ISDIGIT (*p))
-		  ++p;
+		struct urlpos *entry;
+
+		int id;
+		char *p, *refresh = find_attr (tag, "content", &id);
+		int timeout = 0;
+
+		for (p = refresh; ISDIGIT (*p); p++)
+		  timeout = 10 * timeout + *p - '0';
 		if (*p++ != ';')
 		  return;
+
 		while (ISSPACE (*p))
 		  ++p;
 		if (!(TOUPPER (*p) == 'U'
@@ -504,10 +507,13 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 		p += 4;
 		while (ISSPACE (*p))
 		  ++p;
-		offset = p - refresh;
-		tag->attrs[id].value_raw_beginning += offset;
-		tag->attrs[id].value_raw_size -= offset;
-		handle_link (closure, p, tag, id);
+
+		entry = handle_link (closure, p, tag, id);
+		if (entry)
+		  {
+		    entry->link_refresh_p = 1;
+		    entry->refresh_timeout = timeout;
+		  }
 	      }
 	    else if (name && !strcasecmp (name, "robots"))
 	      {

@@ -1,5 +1,17 @@
 2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* url.c (replace_attr_refresh_hack): New function.
+	(convert_links): Call replace_attr_refresh_hack for Refresh
+	links.  It will add the "TMOUT; URL=" junk before the link.
+
+	* html-url.c (collect_tags_mapper): Set ID to the ID of the
+	"content" attribute, not "http-equiv".
+	(collect_tags_mapper): Don't use OFFSET to hack the raw_* values;
+	instead, store the information that this entry belongs to a
+	"refresh" link.
+
+2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* recur.c (retrieve_tree): Allow -p retrievals to exceed maximum
 	depth by more than one.
 
