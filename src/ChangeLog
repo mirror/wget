@@ -1,3 +1,13 @@
+2001-03-06  Hack Kampbjorn  <hack@hackdata.com>
+
+	* http.c (gethttp): skip :port in host header if it is the
+	DEFAULT_HTTPS_PORT when using SSL.
+
+	* url.c: move the #define of DEFAULT_HTTP_PORT, DEFAULT_FTP_PORT
+	and DEFAULT_HTTPS_PORT to the header file so it can be use in the
+	rest of the code. 
+	* url.h: Ditto
+
 2001-03-01  Jonas Jensen  <bones@huleboer.dk>
 
 	* retr.c (show_progress): Correctly calculate the number of bytes

@@ -43,11 +43,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 extern int errno;
 #endif
 
-/* Default port definitions */
-#define DEFAULT_HTTP_PORT 80
-#define DEFAULT_FTP_PORT 21
-#define DEFAULT_HTTPS_PORT 443
-
 /* Table of Unsafe chars.  This is intialized in
    init_unsafe_char_table.  */
 

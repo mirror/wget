@@ -617,7 +617,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
     {
       logprintf (LOG_VERBOSE, _("Connecting to %s:%hu... "), u->host, u->port);
       err = make_connection (&sock, u->host, u->port);
-		switch (err)
+      switch (err)
 	{
 	case HOSTERR:
 	  logputs (LOG_VERBOSE, "\n");
@@ -780,7 +780,11 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 
   /* String of the form :PORT.  Used only for non-standard ports. */
   port_maybe = NULL;
-  if (remport != 80)
+#ifdef HAVE_SSL
+  if (remport != (u->proto == URLHTTPS ? DEFAULT_HTTPS_PORT : DEFAULT_HTTP_PORT) )
+#else
+  if (remport != DEFAULT_HTTP_PORT)
+#endif
     {
       port_maybe = (char *)alloca (numdigit (remport) + 2);
       sprintf (port_maybe, ":%d", remport);

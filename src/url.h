@@ -20,6 +20,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifndef URL_H
 #define URL_H
 
+/* Default port definitions */
+#define DEFAULT_HTTP_PORT 80
+#define DEFAULT_FTP_PORT 21
+#define DEFAULT_HTTPS_PORT 443
+
+
 /* If the string contains unsafe characters, duplicate it with
    encode_string, otherwise just copy it with strdup.  */
 #define CLEANDUP(x) (contains_unsafe (x) ? encode_string (x) : xstrdup (x))
