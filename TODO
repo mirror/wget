@@ -1,11 +1,17 @@
                                  Hey Emacs, this is -*- outline -*- mode
 
-This is the to-do list for Wget.  There is no timetable of when we plan to
-implement these features -- this is just a list of things it'd be nice to see in
-Wget.  Patches to implement any of these items would be gladly accepted.  The
-items are not listed in any particular order (except that recently-added items
-may tend towards the top).  Not all of these represent user-visible
-changes.
+This is the to-do list for Wget.  There is no timetable of when we
+plan to implement these features -- this is just a list of features
+we'd like to see in Wget, as well as a list of problems that need
+fixing.  Patches to implement these items are likely to be accepted.
+The items are not listed in any particular order (except that
+recently-added items may tend towards the top).  Not all of these
+represent user-visible changes.
+
+* Wget shouldn't delete rejected files that were not downloaded, but
+  just found on disk because of `-nc'.  For example, `wget -r -nc
+  -A.gif URL' should allow the user to get all the GIFs without
+  removing any of the existing HTML files.
 
 * Be careful not to lose username/password information given for the
   URL on the command line.
