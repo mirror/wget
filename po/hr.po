@@ -187,7 +187,7 @@ msgstr "Gre¹ka pri bindu (%s).\n"
 
 #: src/ftp.c:611
 msgid "Invalid PORT.\n"
-msgstr "Nevaljan PORT.\n"
+msgstr "Neispravan PORT.\n"
 
 #: src/ftp.c:664
 #, c-format
@@ -321,7 +321,7 @@ msgstr "Velièine se ne sla¾u (lokalno %ld) -- dohvaæam.\n"
 
 #: src/ftp.c:1366
 msgid "Invalid name of the symlink, skipping.\n"
-msgstr "Pogre¹no ime simbolièkog linka, preskaèem.\n"
+msgstr "Neispravno ime simbolièkog linka, preskaèem.\n"
 
 #: src/ftp.c:1383
 #, c-format
@@ -706,17 +706,17 @@ msgstr "%s: %s: Molim postavite na on, off ili never.\n"
 #: src/init.c:595 src/init.c:904 src/init.c:985
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
-msgstr "%s: %s: Pogre¹na specifikacija `%s'\n"
+msgstr "%s: %s: Neispravna specifikacija `%s'\n"
 
 #: src/init.c:793 src/init.c:815 src/init.c:837 src/init.c:863
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
-msgstr "wget: %s: Pogre¹na specifikacija `%s'\n"
+msgstr "wget: %s: Neispravna specifikacija `%s'\n"
 
 #: src/init.c:953
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
-msgstr "%s: %s: Nepoznat indikator napretka `%s'.\n"
+msgstr "%s: %s: Neispravan indikator napretka `%s'.\n"
 
 #: src/log.c:651
 #, c-format
@@ -1150,8 +1150,7 @@ msgstr ""
 #: src/progress.c:391
 #, c-format
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
-msgstr ""
-"Pogre¹na specifikacija stila toèkica `%s': ostavljam prija¹nju vrijednost.\n"
+msgstr "Neispravna specifikacija stila toèkica `%s': ostavljam prija¹nju vrijednost.\n"
 
 #: src/recur.c:367
 #, c-format
