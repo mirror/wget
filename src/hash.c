@@ -156,6 +156,11 @@ struct hash_table {
 #define LOOP_NON_EMPTY(mp, mappings, size)				\
   for (; !EMPTY_MAPPING_P (mp); mp = NEXT_MAPPING (mp, mappings, size))
 
+/* #### We might want to multiply with the "golden ratio" here to get
+   better randomness for keys that do not result from a good hash
+   function.  This is currently not a problem in Wget because we only
+   use the string hash tables.  */
+
 #define HASH_POSITION(ht, key) (ht->hash_function (key) % ht->size)
 
 /* Find a prime near, but greather than or equal to SIZE. */
