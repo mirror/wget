@@ -84,7 +84,7 @@ entitled ``GNU Free Documentation License''.
 @end titlepage
 
 @ifnottex
-@node Top, Overview, (dir), (dir)
+@node Top
 @top Wget @value{VERSION}
 
 This manual documents version @value{VERSION} of GNU Wget, the freely
@@ -96,7 +96,7 @@ Foundation, Inc.
 @menu
 * Overview::            Features of Wget.
 * Invoking::            Wget command-line arguments.
-* Recursive Retrieval:: Description of recursive retrieval.
+* Recursive Download::  Downloading interlinked pages.
 * Following Links::     The available methods of chasing links.
 * Time-Stamping::       Mirroring according to time-stamps.
 * Startup File::        Wget's initialization file.
@@ -108,7 +108,7 @@ Foundation, Inc.
 @end menu
 @end ifnottex
 
-@node Overview, Invoking, Top, Top
+@node Overview
 @chapter Overview
 @cindex overview
 @cindex features
@@ -219,7 +219,7 @@ Public License, as published by the Free Software Foundation
 (@pxref{Copying}).
 @end itemize
 
-@node Invoking, Recursive Retrieval, Overview, Top
+@node Invoking
 @chapter Invoking
 @cindex invoking
 @cindex command line
@@ -255,7 +255,7 @@ the command line.
 * Recursive Accept/Reject Options::
 @end menu
 
-@node URL Format, Option Syntax, Invoking, Invoking
+@node URL Format
 @section URL Format
 @cindex URL
 @cindex URL syntax
@@ -331,7 +331,7 @@ If you do not understand the difference between these notations, or do
 not know which one to use, just use the plain ordinary format you use
 with your favorite browser, like @code{Lynx} or @code{Netscape}.
 
-@node Option Syntax, Basic Startup Options, URL Format, Invoking
+@node Option Syntax
 @section Option Syntax
 @cindex option syntax
 @cindex syntax of options
@@ -384,7 +384,7 @@ wget -X '' -X /~nobody,/~somebody
 
 @c man begin OPTIONS
 
-@node Basic Startup Options, Logging and Input File Options, Option Syntax, Invoking
+@node Basic Startup Options
 @section Basic Startup Options
 
 @table @samp
@@ -410,7 +410,7 @@ Execute @var{command} as if it were a part of @file{.wgetrc}
 them.
 @end table
 
-@node Logging and Input File Options, Download Options, Basic Startup Options, Invoking
+@node Logging and Input File Options
 @section Logging and Input File Options
 
 @table @samp
@@ -489,7 +489,7 @@ When used in conjunction with @samp{-F}, prepends @var{URL} to relative
 links in the file specified by @samp{-i}.
 @end table
 
-@node Download Options, Directory Options, Logging and Input File Options, Invoking
+@node Download Options
 @section Download Options
 
 @table @samp
@@ -866,7 +866,7 @@ turn off escaping of control characters without affecting the choice of
 the OS to use as file name restriction mode.
 @end table
 
-@node Directory Options, HTTP Options, Download Options, Invoking
+@node Directory Options
 @section Directory Options
 
 @table @samp
@@ -933,7 +933,7 @@ i.e. the top of the retrieval tree.  The default is @samp{.} (the
 current directory).
 @end table
 
-@node HTTP Options, FTP Options, Directory Options, Invoking
+@node HTTP Options
 @section HTTP Options
 
 @table @samp
@@ -1200,7 +1200,7 @@ wget --load-cookies cookies.txt \
 @end example
 @end table
 
-@node FTP Options, Recursive Retrieval Options, HTTP Options, Invoking
+@node FTP Options
 @section FTP Options
 
 @table @samp
@@ -1276,19 +1276,19 @@ this option has no effect.  Symbolic links are always traversed in this
 case.
 @end table
 
-@node Recursive Retrieval Options, Recursive Accept/Reject Options, FTP Options, Invoking
+@node Recursive Retrieval Options
 @section Recursive Retrieval Options
 
 @table @samp
 @item -r
 @itemx --recursive
-Turn on recursive retrieving.  @xref{Recursive Retrieval}, for more
+Turn on recursive retrieving.  @xref{Recursive Download}, for more
 details.
 
 @item -l @var{depth}
 @itemx --level=@var{depth}
 Specify recursion maximum depth level @var{depth} (@pxref{Recursive
-Retrieval}).  The default maximum depth is 5.
+Download}).  The default maximum depth is 5.
 
 @cindex proxy filling
 @cindex delete after retrieval
@@ -1481,7 +1481,7 @@ If, for whatever reason, you want strict comment parsing, use this
 option to turn it on.
 @end table
 
-@node Recursive Accept/Reject Options,  , Recursive Retrieval Options, Invoking
+@node Recursive Accept/Reject Options
 @section Recursive Accept/Reject Options
 
 @table @samp
@@ -1564,11 +1564,11 @@ This is a useful option, since it guarantees that only the files
 
 @c man end
 
-@node Recursive Retrieval, Following Links, Invoking, Top
-@chapter Recursive Retrieval
+@node Recursive Download
+@chapter Recursive Download
 @cindex recursion
 @cindex retrieving
-@cindex recursive retrieval
+@cindex recursive download
 
 GNU Wget is capable of traversing parts of the Web (or a single
 @sc{http} or @sc{ftp} server), following links and directory structure.
@@ -1631,7 +1631,7 @@ about this.
 Recursive retrieval should be used with care.  Don't say you were not
 warned.
 
-@node Following Links, Time-Stamping, Recursive Retrieval, Top
+@node Following Links
 @chapter Following Links
 @cindex links
 @cindex following links
@@ -1655,7 +1655,7 @@ links it will follow.
 * FTP Links::              Following FTP links.
 @end menu
 
-@node Spanning Hosts, Types of Files, Following Links, Following Links
+@node Spanning Hosts
 @section Spanning Hosts
 @cindex spanning hosts
 @cindex hosts, spanning
@@ -1712,7 +1712,7 @@ wget -rH -Dfoo.edu --exclude-domains sunsite.foo.edu \
 
 @end table
 
-@node Types of Files, Directory-Based Limits, Spanning Hosts, Following Links
+@node Types of Files
 @section Types of Files
 @cindex types of files
 
@@ -1776,7 +1776,7 @@ Note that these two options do not affect the downloading of @sc{html}
 files; Wget must load all the @sc{html}s to know where to go at
 all---recursive retrieval would make no sense otherwise.
 
-@node Directory-Based Limits, Relative Links, Types of Files, Following Links
+@node Directory-Based Limits
 @section Directory-Based Limits
 @cindex directories
 @cindex directory limits
@@ -1852,7 +1852,7 @@ Essentially, @samp{--no-parent} is similar to
 intelligent fashion.
 @end table
 
-@node Relative Links, FTP Links, Directory-Based Limits, Following Links
+@node Relative Links
 @section Relative Links
 @cindex relative links
 
@@ -1881,7 +1881,7 @@ to ``just work'' without having to convert links.
 This option is probably not very useful and might be removed in a future
 release.
 
-@node FTP Links,  , Relative Links, Following Links
+@node FTP Links
 @section Following FTP Links
 @cindex following ftp links
 
@@ -1901,7 +1901,7 @@ effect on such downloads.  On the other hand, domain acceptance
 Also note that followed links to @sc{ftp} directories will not be
 retrieved recursively further.
 
-@node Time-Stamping, Startup File, Following Links, Top
+@node Time-Stamping
 @chapter Time-Stamping
 @cindex time-stamping
 @cindex timestamping
@@ -1951,7 +1951,7 @@ say.
 * FTP Time-Stamping Internals::
 @end menu
 
-@node Time-Stamping Usage, HTTP Time-Stamping Internals, Time-Stamping, Time-Stamping
+@node Time-Stamping Usage
 @section Time-Stamping Usage
 @cindex time-stamping usage
 @cindex usage, time-stamping
@@ -2007,7 +2007,7 @@ gives a timestamp.  For @sc{http}, this depends on getting a
 directory listing with dates in a format that Wget can parse
 (@pxref{FTP Time-Stamping Internals}).
 
-@node HTTP Time-Stamping Internals, FTP Time-Stamping Internals, Time-Stamping Usage, Time-Stamping
+@node HTTP Time-Stamping Internals
 @section HTTP Time-Stamping Internals
 @cindex http time-stamping
 
@@ -2039,7 +2039,7 @@ with @samp{-N}, server file @samp{@var{X}} is compared to local file
 Arguably, @sc{http} time-stamping should be implemented using the
 @code{If-Modified-Since} request.
 
-@node FTP Time-Stamping Internals,  , HTTP Time-Stamping Internals, Time-Stamping
+@node FTP Time-Stamping Internals
 @section FTP Time-Stamping Internals
 @cindex ftp time-stamping
 
@@ -2068,7 +2068,7 @@ that is supported by some @sc{ftp} servers (including the popular
 @code{wu-ftpd}), which returns the exact time of the specified file.
 Wget may support this command in the future.
 
-@node Startup File, Examples, Time-Stamping, Top
+@node Startup File
 @chapter Startup File
 @cindex startup file
 @cindex wgetrc
@@ -2096,7 +2096,7 @@ commands.
 * Sample Wgetrc::     A wgetrc example.
 @end menu
 
-@node Wgetrc Location, Wgetrc Syntax, Startup File, Startup File
+@node Wgetrc Location
 @section Wgetrc Location
 @cindex wgetrc location
 @cindex location of wgetrc
@@ -2117,7 +2117,7 @@ means that in case of collision user's wgetrc @emph{overrides} the
 system-wide wgetrc (in @file{/usr/local/etc/wgetrc} by default).
 Fascist admins, away!
 
-@node Wgetrc Syntax, Wgetrc Commands, Wgetrc Location, Startup File
+@node Wgetrc Syntax
 @section Wgetrc Syntax
 @cindex wgetrc syntax
 @cindex syntax of wgetrc
@@ -2144,7 +2144,7 @@ global @file{wgetrc}, you can do it with:
 reject =
 @end example
 
-@node Wgetrc Commands, Sample Wgetrc, Wgetrc Syntax, Startup File
+@node Wgetrc Commands
 @section Wgetrc Commands
 @cindex wgetrc commands
 
@@ -2470,7 +2470,7 @@ Turn random between-request wait times on or off. The same as
 @samp{--random-wait}.
 @end table
 
-@node Sample Wgetrc,  , Wgetrc Commands, Startup File
+@node Sample Wgetrc
 @section Sample Wgetrc
 @cindex sample wgetrc
 
@@ -2487,7 +2487,7 @@ its line.
 @include sample.wgetrc.munged_for_texi_inclusion
 @end example
 
-@node Examples, Various, Startup File, Top
+@node Examples
 @chapter Examples
 @cindex examples
 
@@ -2501,7 +2501,7 @@ complexity.
 * Very Advanced Usage::  The hairy stuff.
 @end menu
 
-@node Simple Usage, Advanced Usage, Examples, Examples
+@node Simple Usage
 @section Simple Usage
 
 @itemize @bullet
@@ -2554,7 +2554,7 @@ links index.html
 @end example
 @end itemize
 
-@node Advanced Usage, Very Advanced Usage, Simple Usage, Examples
+@node Advanced Usage
 @section Advanced Usage
 
 @itemize @bullet
@@ -2646,7 +2646,7 @@ wget -r -l1 --no-parent -A.gif http://www.server.com/dir/
 @end example
 
 More verbose, but the effect is the same.  @samp{-r -l1} means to
-retrieve recursively (@pxref{Recursive Retrieval}), with maximum depth
+retrieve recursively (@pxref{Recursive Download}), with maximum depth
 of 1.  @samp{--no-parent} means that references to the parent directory
 are ignored (@pxref{Directory-Based Limits}), and @samp{-A.gif} means to
 download only the @sc{gif} files.  @samp{-A "*.gif"} would have worked
@@ -2690,7 +2690,7 @@ wget -O - http://cool.list.com/ | wget --force-html -i -
 @end example
 @end itemize
 
-@node Very Advanced Usage,  , Advanced Usage, Examples
+@node Very Advanced Usage
 @section Very Advanced Usage
 
 @cindex mirroring
@@ -2739,7 +2739,7 @@ wget -m -k -K -E http://www.gnu.org/ -o /home/me/weeklog
 @end itemize
 @c man end
 
-@node Various, Appendices, Examples, Top
+@node Various
 @chapter Various
 @cindex various
 
@@ -2754,7 +2754,7 @@ This chapter contains all the stuff that could not fit anywhere else.
 * Signals::             Signal-handling performed by Wget.
 @end menu
 
-@node Proxies, Distribution, Various, Various
+@node Proxies
 @section Proxies
 @cindex proxies
 
@@ -2829,7 +2829,7 @@ Alternatively, you may use the @samp{proxy-user} and
 settings @code{proxy_user} and @code{proxy_passwd} to set the proxy
 username and password.
 
-@node Distribution, Mailing List, Proxies, Various
+@node Distribution
 @section Distribution
 @cindex latest version
 
@@ -2838,7 +2838,7 @@ master GNU archive site ftp.gnu.org, and its mirrors.  For example,
 Wget @value{VERSION} can be found at
 @url{ftp://ftp.gnu.org/pub/gnu/wget/wget-@value{VERSION}.tar.gz}
 
-@node Mailing List, Reporting Bugs, Distribution, Various
+@node Mailing List
 @section Mailing List
 @cindex mailing list
 @cindex list
@@ -2856,7 +2856,7 @@ The mailing list is archived at @url{http://fly.srk.fer.hr/archive/wget}.
 Alternative archive is available at
 @url{http://www.mail-archive.com/wget%40sunsite.auc.dk/}.
  
-@node Reporting Bugs, Portability, Mailing List, Various
+@node Reporting Bugs
 @section Reporting Bugs
 @cindex bugs
 @cindex reporting bugs
@@ -2903,7 +2903,7 @@ wget` core} and type @code{where} to get the backtrace.
 @end enumerate
 @c man end
 
-@node Portability, Signals, Reporting Bugs, Various
+@node Portability
 @section Portability
 @cindex portability
 @cindex operating systems
@@ -2931,7 +2931,7 @@ people stuck with Windows.  Note that the Windows port is
 problems should be reported to Wget mailing list at
 @email{wget@@sunsite.dk} where the maintainers will look at them.
 
-@node Signals,  , Portability, Various
+@node Signals
 @section Signals
 @cindex signal handling
 @cindex hangup
@@ -2950,7 +2950,7 @@ $ kill -HUP %%     # Redirect the output to wget-log
 Other than that, Wget will not try to interfere with signals in any way.
 @kbd{C-c}, @code{kill -TERM} and @code{kill -KILL} should kill it alike.
 
-@node Appendices, Copying, Various, Top
+@node Appendices
 @chapter Appendices
 
 This chapter contains some references I consider useful.
@@ -2961,7 +2961,7 @@ This chapter contains some references I consider useful.
 * Contributors::            People who helped.
 @end menu
 
-@node Robot Exclusion, Security Considerations, Appendices, Appendices
+@node Robot Exclusion
 @section Robot Exclusion
 @cindex robot exclusion
 @cindex robots.txt
@@ -3044,7 +3044,7 @@ robot exclusion, set the @code{robots} variable to @samp{off} in your
 @file{.wgetrc}.  You can achieve the same effect from the command line
 using the @code{-e} switch, e.g. @samp{wget -e robots=off @var{url}...}.
 
-@node Security Considerations, Contributors, Robot Exclusion, Appendices
+@node Security Considerations
 @section Security Considerations
 @cindex security
 
@@ -3075,7 +3075,7 @@ being careful when you send debug logs (yes, even when you send them to
 me).
 @end enumerate
 
-@node Contributors,  , Security Considerations, Appendices
+@node Contributors
 @section Contributors
 @cindex contributors
 
@@ -3325,7 +3325,7 @@ Kristijan Zimmer.
 Apologies to all who I accidentally left out, and many thanks to all the
 subscribers of the Wget mailing list.
 
-@node Copying, Concept Index, Appendices, Top
+@node Copying
 @chapter Copying
 @cindex copying
 @cindex GPL
@@ -3395,7 +3395,7 @@ Documentation License are available below.
 * GNU Free Documentation License::
 @end menu
 
-@node GNU General Public License, GNU Free Documentation License, Copying, Copying
+@node GNU General Public License
 @section GNU General Public License
 @center Version 2, June 1991
 
@@ -3792,7 +3792,7 @@ consider it more useful to permit linking proprietary applications with the
 library.  If this is what you want to do, use the GNU Library General
 Public License instead of this License.
 
-@node GNU Free Documentation License,  , GNU General Public License, Copying
+@node GNU Free Documentation License
 @section GNU Free Documentation License
 @center Version 1.1, March 2000
 
@@ -4160,7 +4160,7 @@ free software license, such as the GNU General Public License,
 to permit their use in free software.
 
 
-@node Concept Index,  , Copying, Top
+@node Concept Index
 @unnumbered Concept Index
 @printindex cp
 

@@ -1,5 +1,10 @@
 2003-11-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi: Remove next/previous/up node links.  Makeinfo doesn't
+	require them, and they make the document harder to modify.
+
+2003-11-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi: No longer document options -s, -C, -g, and -G.
 	(Contributors): Update my email address.
 
