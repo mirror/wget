@@ -1,3 +1,7 @@
+2003-09-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.in (distclean-top): Remove autom4te.cache.
+
 2003-09-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* install-sh, mkinstalldirs: Updated from Autoconf 2.57.

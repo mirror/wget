@@ -158,6 +158,7 @@ clean-top:
 
 distclean-top: clean-top
 	$(RM) Makefile config.status config.log config.cache stamp-h
+	$(RM) -r autom4te.cache
 
 realclean-top: distclean-top
 	$(RM) configure
