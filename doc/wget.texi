@@ -177,9 +177,10 @@ download from where it left off.
 @item
 Wget supports proxy servers, which can lighten the network load, speed
 up retrieval and provide access behind firewalls.  However, if you are
-behind a firewall that requires that you use a socks style gateway, you
-can get the socks library and build Wget with support for socks.  Wget
-also supports the passive @sc{ftp} downloading as an option.
+behind a firewall that requires that you use a socks style gateway,
+you can get the socks library and build Wget with support for socks.
+Wget uses the passive @sc{ftp} downloading by default, active @sc{ftp}
+being an option.
 
 @sp 1
 @item
@@ -1264,10 +1265,17 @@ system-specific.  This is why it currently works only with Unix @sc{ftp}
 servers (and the ones emulating Unix @code{ls} output).
 
 @cindex passive ftp
-@item --passive-ftp
-Use the @dfn{passive} @sc{ftp} retrieval scheme, in which the client
-initiates the data connection.  This is sometimes required for @sc{ftp}
-to work behind firewalls.
+@item --no-passive-ftp
+Disable the use of the @dfn{passive} FTP transfer mode.  Passive FTP
+mandates that the client connect to the server to establish the data
+connection rather than the other way around.
+
+If the machine is connected to the Internet directly, both passive and
+active FTP should work equally well.  Behind most firewall and NAT
+configurations passive FTP has a better chance of working.  However,
+in some rare firewall configurations, active FTP actually works when
+passive FTP doesn't.  If you suspect this to be the case, use this
+option, or set @code{passive_ftp=off} in your init file.
 
 @cindex symbolic links, retrieving
 @item --retr-symlinks
@@ -2387,10 +2395,11 @@ Download all ancillary documents necessary for a single @sc{html} page to
 display properly---the same as @samp{-p}.
 
 @item passive_ftp = on/off/always/never
-Set passive @sc{ftp}---the same as @samp{--passive-ftp}.  Some scripts
-and @samp{.pm} (Perl module) files download files using @samp{wget
---passive-ftp}.  If your firewall does not allow this, you can set
-@samp{passive_ftp = never} to override the command-line.
+Change setting of passive @sc{ftp}, equivalent to the
+@samp{--passive-ftp} option.  Some scripts and @samp{.pm} (Perl
+module) files download files using @samp{wget --passive-ftp}.  If your
+firewall does not allow this, you can set @samp{passive_ftp = never}
+to override the command-line.
 
 @item passwd = @var{string}
 Set your @sc{ftp} password to @var{password}.  Without this setting, the

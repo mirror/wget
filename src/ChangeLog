@@ -1,5 +1,9 @@
 2005-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* init.c (defaults): Use passive FTP by default.
+
+2005-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* mswindows.c: Provide wrappers to Winsock functions that set
 	errno to WSAGetLastError() in case of failure.  Also provide a
 	Windows-specific version of strerror.

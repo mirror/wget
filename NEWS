@@ -25,6 +25,10 @@ where the last attempt left off, and only then continues appending to
 the file.  That way the downloaded file never shrinks, and "start
 over" retries work correctly even when downloading to stdout.
 
+** Passive FTP is now the default FTP transfer mode.  Use
+`--no-passive-ftp' or specify `passive_ftp = off' in your init file to
+revert to the old behavior.
+
 ** The `--header' option can now be used to override generated
 headers.  For example, `wget --header="Host: foo.bar"
 http://127.0.0.1' tells Wget to connect to localhost, but to specify
@@ -54,9 +58,9 @@ have also been changed this way, but they still accept the old syntax
 for backward compatibility.  For example, instead of `--glob=off' you
 can write `--no-glob'.
 
-Allowing `--no-OPTION' for every `--OPTION' is useful because it
-allows the user to override non-default behavior specified via
-`.wgetrc'.
+Allowing `--no-OPTION' for every `--OPTION' and the other way around
+is useful because it allows the user to override non-default behavior
+specified via `.wgetrc'.
 
 ** The new option `--keep-session-cookies' causes `--save-cookies' to
 save session cookies along with the permanent ones.  This is useful on

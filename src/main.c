@@ -555,7 +555,7 @@ FTP options:\n"),
     N_("\
        --no-glob               turn off FTP file name globbing.\n"),
     N_("\
-       --passive-ftp           use the \"passive\" transfer mode.\n"),
+       --no-passive-ftp        disable the \"passive\" transfer mode.\n"),
     N_("\
        --retr-symlinks         when recursing, get linked-to files (not dir).\n"),
     N_("\

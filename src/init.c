@@ -287,6 +287,7 @@ defaults (void)
   opt.dots_in_line = 50;
 
   opt.dns_cache = 1;
+  opt.ftp_pasv = 1;
 
   /* The default for file name restriction defaults to the OS type. */
 #if !defined(WINDOWS) && !defined(__CYGWIN__)
