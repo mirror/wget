@@ -320,7 +320,7 @@ dnl ************************************************************
 
 # This code originates from Ulrich Drepper's AM_WITH_NLS.
 
-AC_DEFUN(WGET_WITH_NLS,
+AC_DEFUN([WGET_WITH_NLS],
   [AC_MSG_CHECKING([whether NLS is requested])
     dnl Default is enabled NLS
     AC_ARG_ENABLE(nls,
@@ -333,7 +333,21 @@ AC_DEFUN(WGET_WITH_NLS,
     dnl last moment.
 
     if test x"$HAVE_NLS" = xyes; then
-      AC_MSG_RESULT([language catalogs: $ALL_LINGUAS])
+      dnl If LINGUAS is specified, use only those languages.  In fact,
+      dnl compute an intersection of languages in LINGUAS and
+      dnl ALL_LINGUAS, and use that.
+      if test x"$LINGUAS" != x; then
+        new_linguas=
+        for lang1 in $ALL_LINGUAS; do
+          for lang2 in $LINGUAS; do
+            if test "$lang1" = "$lang2"; then
+              new_linguas="$new_linguas $lang1"
+            fi
+          done
+        done
+        ALL_LINGUAS=$new_linguas
+      fi
+      AC_MSG_NOTICE([language catalogs: $ALL_LINGUAS])
       AM_PATH_PROG_WITH_TEST(MSGFMT, msgfmt,
 	[test -z "`$ac_dir/$ac_word -h 2>&1 | grep 'dv '`"], msgfmt)
       AM_PATH_PROG_WITH_TEST(XGETTEXT, xgettext,
@@ -377,9 +391,6 @@ AC_DEFUN(WGET_WITH_NLS,
         ])
       ])
 
-      dnl These rules are solely for the distribution goal.  While doing this
-      dnl we only have to keep exactly one list of the available catalogs
-      dnl in configure.in.
       for lang in $ALL_LINGUAS; do
 	GMOFILES="$GMOFILES $lang.gmo"
 	POFILES="$POFILES $lang.po"

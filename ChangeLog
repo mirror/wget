@@ -1,5 +1,10 @@
 2003-11-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* aclocal.m4 (WGET_WITH_NLS): Respect the user's setting of
+	LINGUAS, e.g. `LINGUAS="en bg ja" ./configure'.
+
+2003-11-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Don't attempt to use Emacs as a makeinfo
 	substitute.
 
