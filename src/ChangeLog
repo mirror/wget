@@ -1,5 +1,9 @@
 2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* version.c: Bump version to 1.7-dev.
+
+2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* http.c (gethttp): Don't use the return value of sprintf().
 	(gethttp): Inhibit keep-alive if opt.http_keep_alive is 0.
 
