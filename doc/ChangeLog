@@ -1,3 +1,7 @@
+2003-11-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (HTTP Options): Document `--keep-session-cookies'.
+
 2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Wgetrc Commands): Fixed typo.

@@ -1057,9 +1057,28 @@ wget --cookies=off --header "Cookie: @var{name}=@var{value}"
 @cindex saving cookies
 @cindex cookies, saving
 @item --save-cookies @var{file}
-Save cookies to @var{file} at the end of session.  Cookies whose expiry
-time is not specified, or those that have already expired, are not
-saved.
+Save cookies to @var{file} before exiting.  This will not save cookies
+that have expired or that have no expiry time (so-called ``session
+cookies''), but also see @samp{--keep-session-cookies}.
+
+@cindex cookies, session
+@cindex session cookies
+@item --keep-session-cookies
+
+When specified, causes @samp{--save-cookies} to also save session
+cookies.  Session cookies are normally not save because they are
+supposed to be forgotten when you exit the browser.  Saving them is
+useful on sites that require you to log in or to visit the home page
+before you can access some pages.  With this option, multiple Wget runs
+are considered a single browser session as far as the site is concerned.
+
+Since the cookie file format does not normally carry session cookies,
+Wget marks them with an expiry timestamp of 0.  Wget's
+@samp{--load-cookies} recognizes those as session cookies, but it might
+confuse other browsers.  Also note that cookies so loaded will be
+treated as other session cookies, which means that if you want
+@samp{--save-cookies} to preserve them again, you must use
+@samp{--keep-session-cookies} again.
 
 @cindex Content-Length, ignore
 @cindex ignore length

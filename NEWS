@@ -5,6 +5,14 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget 1.9+.
+
+** The new option `--keep-session-cookies' causes `--save-cookies' to
+save session cookies along with the permanent ones.  This is useful on
+sites that require you to log in before you can access some pages.
+With this option, multiple Wget runs will be treated as a single
+browser session.
+
 * Changes in Wget 1.9.
 
 ** It is now possible to specify that POST method be used for HTTP
@@ -436,7 +444,7 @@ geturl -vo log http://fly.cc.fer.hr/
 ----------------------------------------------------------------------
 Copyright information:
 
-Copyright (C) 1997, 1998, 2000, 2001 Free Software Foundation, Inc.
+Copyright (C) 1997, 1998, 2000, 2001, 2003 Free Software Foundation, Inc.
 
    Permission is granted to anyone to make or distribute verbatim
    copies of this document as received, in any medium, provided that
