@@ -1,3 +1,7 @@
+2004-03-04  Gisle Vanem  <giva@bgnett.no>
+
+	* retr.c (fd_read_body): Don't change console title if quiet.
+
 2004-02-25  David Fritz  <zeroxdf@att.net>
 
 	* mswindows.c (set_sleep_mode): Remove argument and return value.

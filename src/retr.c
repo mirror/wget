@@ -311,7 +311,7 @@ fd_read_body (int fd, FILE *out, long toread, long startpos,
       if (progress)
 	progress_update (progress, ret, wtimer_read (timer));
 #ifdef WINDOWS
-      if (toread > 0)
+      if (toread > 0 && !opt.quiet)
 	ws_percenttitle (100.0 *
 			 (startpos + sum_read) / (startpos + toread));
 #endif
