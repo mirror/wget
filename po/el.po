@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU Wget 1.7-dev\n"
-"POT-Creation-Date: 2000-12-10 03:30+0100\n"
+"POT-Creation-Date: 2001-01-09 22:12-0800\n"
 "PO-Revision-Date: 1999-02-09 02:00+0000\n"
 "Last-Translator: Simos KSenitellis <S.Xenitellis@rhbnc.ac.uk>\n"
 "Language-Team: Greek <S.Xenitellis@rhbnc.ac.uk>\n"
@@ -53,93 +53,93 @@ msgstr " (%s bytes)"
 #
 #. Login to the server:
 #. First: Establish the control connection.
-#: src/ftp.c:152 src/http.c:582
+#: src/ftp.c:157 src/http.c:586
 #, c-format
 msgid "Connecting to %s:%hu... "
 msgstr "Σύνδεση με %s:%hu... "
 
 #
-#: src/ftp.c:174 src/ftp.c:520 src/http.c:599
+#: src/ftp.c:179 src/ftp.c:525 src/http.c:603
 #, c-format
 msgid "Connection to %s:%hu refused.\n"
 msgstr "Σύνδεση με %s:%hu δεν επετράπει.\n"
 
 #
 #. Second: Login with proper USER/PASS sequence.
-#: src/ftp.c:195 src/http.c:610
+#: src/ftp.c:200 src/http.c:614
 msgid "connected!\n"
 msgstr "συνδέθηκε!\n"
 
 #
-#: src/ftp.c:196
+#: src/ftp.c:201
 #, c-format
 msgid "Logging in as %s ... "
 msgstr "Αυθεντικοποίηση σαν %s ... "
 
 #
-#: src/ftp.c:205 src/ftp.c:258 src/ftp.c:289 src/ftp.c:314 src/ftp.c:410
-#: src/ftp.c:462 src/ftp.c:556 src/ftp.c:629 src/ftp.c:677 src/ftp.c:725
+#: src/ftp.c:210 src/ftp.c:263 src/ftp.c:294 src/ftp.c:319 src/ftp.c:415
+#: src/ftp.c:467 src/ftp.c:561 src/ftp.c:634 src/ftp.c:682 src/ftp.c:730
 msgid "Error in server response, closing control connection.\n"
 msgstr "Σφάλμα στην απάντηση του εξυπηρετητή, κλείνει η σύνδεση ελέγχου.\n"
 
 #
-#: src/ftp.c:213
+#: src/ftp.c:218
 msgid "Error in server greeting.\n"
 msgstr "Σφάλμα στο μύνημα αποδοχής του εξυπηρετητή.\n"
 
 #
-#: src/ftp.c:221 src/ftp.c:323 src/ftp.c:419 src/ftp.c:471 src/ftp.c:566
-#: src/ftp.c:639 src/ftp.c:687 src/ftp.c:735
+#: src/ftp.c:226 src/ftp.c:328 src/ftp.c:424 src/ftp.c:476 src/ftp.c:571
+#: src/ftp.c:644 src/ftp.c:692 src/ftp.c:740
 msgid "Write failed, closing control connection.\n"
 msgstr "Αποτυχία στην εγγραφή δεδομένων, κλείνει η σύνδεση ελέγχου.\n"
 
 #
-#: src/ftp.c:228
+#: src/ftp.c:233
 msgid "The server refuses login.\n"
 msgstr "Ο εξυπηρετητής απαγορεύει τη σύνδεση.\n"
 
 #
-#: src/ftp.c:235
+#: src/ftp.c:240
 msgid "Login incorrect.\n"
 msgstr "Λάθος όνομα πρόσβασης.\n"
 
 #
-#: src/ftp.c:242
+#: src/ftp.c:247
 msgid "Logged in!\n"
 msgstr "Επιτυχής σύνδεση!\n"
 
-#: src/ftp.c:267
+#: src/ftp.c:272
 msgid "Server error, can't determine system type.\n"
 msgstr ""
 
 #
-#: src/ftp.c:277 src/ftp.c:541 src/ftp.c:613 src/ftp.c:657
+#: src/ftp.c:282 src/ftp.c:546 src/ftp.c:618 src/ftp.c:662
 msgid "done.    "
 msgstr "έγινε.    "
 
 #
-#: src/ftp.c:303 src/ftp.c:440 src/ftp.c:708 src/ftp.c:756 src/url.c:1432
+#: src/ftp.c:308 src/ftp.c:445 src/ftp.c:713 src/ftp.c:761 src/url.c:1429
 msgid "done.\n"
 msgstr "έγινε.\n"
 
 #
-#: src/ftp.c:331
+#: src/ftp.c:336
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
 msgstr "Άγνωστος τύπος `%c', διακοπή της σύνδεσης.\n"
 
 #
-#: src/ftp.c:344
+#: src/ftp.c:349
 msgid "done.  "
 msgstr "έγινε.  "
 
 #
-#: src/ftp.c:350
+#: src/ftp.c:355
 msgid "==> CWD not needed.\n"
 msgstr "==> CWD δεν απαιτήται.\n"
 
 #
-#: src/ftp.c:426
+#: src/ftp.c:431
 #, c-format
 msgid ""
 "No such directory `%s'.\n"
@@ -148,39 +148,39 @@ msgstr "Δεν υπάρχει τέτοιος κατάλογος `%s'.\n"
 
 #
 #. do not CWD
-#: src/ftp.c:444
+#: src/ftp.c:449
 msgid "==> CWD not required.\n"
 msgstr "==> CWD δεν απαιτείται.\n"
 
 #
-#: src/ftp.c:478
+#: src/ftp.c:483
 msgid "Cannot initiate PASV transfer.\n"
 msgstr "Δεν είναι δυνατή να ξεκινήσει μεταφορά τύπου PASV.\n"
 
 #
-#: src/ftp.c:482
+#: src/ftp.c:487
 msgid "Cannot parse PASV response.\n"
 msgstr "Δεν είναι δυνατή η μετάφραση της απάντησης PASV.\n"
 
 #
-#: src/ftp.c:496
+#: src/ftp.c:501
 #, c-format
 msgid "Will try connecting to %s:%hu.\n"
 msgstr "Θα επιχειρηθεί σύνδεση στο %s:%hu.\n"
 
 #
-#: src/ftp.c:583
+#: src/ftp.c:588
 #, c-format
 msgid "Bind error (%s).\n"
 msgstr "Σφάλμα στη σύνδεση (%s).\n"
 
 #
-#: src/ftp.c:599
+#: src/ftp.c:604
 msgid "Invalid PORT.\n"
 msgstr "Μη έγκυρο PORT.\n"
 
 #
-#: src/ftp.c:646
+#: src/ftp.c:651
 msgid ""
 "\n"
 "REST failed, starting from scratch.\n"
@@ -189,7 +189,7 @@ msgstr ""
 "Αποτυχία στην εντολή REST, εκκίνηση από το μηδέν.\n"
 
 #
-#: src/ftp.c:695
+#: src/ftp.c:700
 #, c-format
 msgid ""
 "No such file `%s'.\n"
@@ -199,7 +199,7 @@ msgstr ""
 "\n"
 
 #
-#: src/ftp.c:743
+#: src/ftp.c:748
 #, c-format
 msgid ""
 "No such file or directory `%s'.\n"
@@ -209,58 +209,58 @@ msgstr ""
 "\n"
 
 #
-#: src/ftp.c:819 src/ftp.c:826
+#: src/ftp.c:824 src/ftp.c:831
 #, c-format
 msgid "Length: %s"
 msgstr "Μήκος: %s"
 
 #
-#: src/ftp.c:821 src/ftp.c:828
+#: src/ftp.c:826 src/ftp.c:833
 #, c-format
 msgid " [%s to go]"
 msgstr " [%s για πέρας]"
 
 #
-#: src/ftp.c:830
+#: src/ftp.c:835
 msgid " (unauthoritative)\n"
 msgstr " (ανεπίσημο)\n"
 
 #
-#: src/ftp.c:856
+#: src/ftp.c:861
 #, c-format
 msgid "%s: %s, closing control connection.\n"
 msgstr "%s: %s, κλείσιμο σύνδεσης ελέγχου.\n"
 
 #
-#: src/ftp.c:864
+#: src/ftp.c:869
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
 msgstr "%s (%s) - Σύνδεση δεδομένων: %s; "
 
 #
-#: src/ftp.c:881
+#: src/ftp.c:886
 msgid "Control connection closed.\n"
 msgstr "Η σύνδεση ελέγχου έκλεισε.\n"
 
 #
-#: src/ftp.c:899
+#: src/ftp.c:904
 msgid "Data transfer aborted.\n"
 msgstr "Η μεταφορά δεδομένων διακόπηκε ανώμαλα.\n"
 
 #
-#: src/ftp.c:963
+#: src/ftp.c:968
 #, c-format
 msgid "File `%s' already there, not retrieving.\n"
 msgstr "Το αρχείο `%s' υπάρχει ήδη, δεν επανακτάται.\n"
 
 #
-#: src/ftp.c:1024 src/http.c:1358
-#, c-format, ycp-format
+#: src/ftp.c:1029 src/http.c:1362
+#, c-format
 msgid "(try:%2d)"
 msgstr "(προσπάθεια:%2d)"
 
 #
-#: src/ftp.c:1088 src/http.c:1585
+#: src/ftp.c:1093 src/http.c:1599
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld]\n"
@@ -270,53 +270,53 @@ msgstr ""
 "\n"
 
 #
-#: src/ftp.c:1130 src/main.c:771 src/recur.c:505 src/retr.c:580
+#: src/ftp.c:1135 src/main.c:775 src/recur.c:509 src/retr.c:584
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Διαγραφή του %s.\n"
 
 #
-#: src/ftp.c:1171
+#: src/ftp.c:1176
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
 msgstr "Χρήση του `%s' για προσωρινό αρχείο περιεχομένων καταλόγου.\n"
 
 #
-#: src/ftp.c:1183
+#: src/ftp.c:1188
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr "Διαγραφή του `%s'.\n"
 
 #
-#: src/ftp.c:1219
+#: src/ftp.c:1224
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr "Το επίπεδο αναδρομής %d ξεπέρασε το μέγιστο επίπεδο αναδρομής %d.\n"
 
-#: src/ftp.c:1271 src/http.c:1512
+#: src/ftp.c:1276 src/http.c:1516
 #, c-format
 msgid ""
 "Server file no newer than local file `%s' -- not retrieving.\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1279
+#: src/ftp.c:1284
 msgid "Cannot compare sizes, remote system is VMS.\n"
 msgstr ""
 
 #
-#: src/ftp.c:1285 src/http.c:1520
+#: src/ftp.c:1290 src/http.c:1524
 #, fuzzy, c-format
 msgid "The sizes do not match (local %ld) -- retrieving.\n"
 msgstr "Τα μεγέθη δεν είναι ίσα (τοπικό %ld), γίνεται ανάκτηση.\n"
 
 #
-#: src/ftp.c:1303
+#: src/ftp.c:1308
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr "Μη έγκυρο όνομα συμβολικού συνδέσμου, παρακάμπτεται.\n"
 
 #
-#: src/ftp.c:1320
+#: src/ftp.c:1325
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
@@ -326,50 +326,50 @@ msgstr ""
 "\n"
 
 #
-#: src/ftp.c:1328
+#: src/ftp.c:1333
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr "Δημιουργία αρχείου σύνδεσης %s -> %s\n"
 
 #
-#: src/ftp.c:1339
+#: src/ftp.c:1344
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
 msgstr "Αρχεία σύνδεσης δεν υποστηρίζονται, παράκαμψη αρχείου σύνδεσης `%s'.\n"
 
 #
-#: src/ftp.c:1351
+#: src/ftp.c:1356
 #, c-format
 msgid "Skipping directory `%s'.\n"
 msgstr "Παράκαμψη καταλόγου `%s'.\n"
 
 #
-#: src/ftp.c:1360
+#: src/ftp.c:1365
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr "%s: άγνωστο/μη υποστηριζόμενο είδος αρχείου.\n"
 
 #
-#: src/ftp.c:1377
+#: src/ftp.c:1392
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr "%s: εσφαλμένη ημερομηνία αρχείου.\n"
 
 #
-#: src/ftp.c:1398
+#: src/ftp.c:1413
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr "Δεν θα ανακτηθούν κατάλογοι διότι το βάθος είναι %d (μέγιστο %d).\n"
 
 #
-#: src/ftp.c:1437
+#: src/ftp.c:1449
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr ""
 "Δεν επεκτεινόμαστε στο `%s' διότι είναι εξαιρούμενο/μη-συμπεριλαμβανόμενο\n"
 
 #
-#: src/ftp.c:1482
+#: src/ftp.c:1494
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr "Απόρριψη του `%s'.\n"
@@ -378,19 +378,19 @@ msgstr "Απόρριψη του `%s'.\n"
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1529
+#: src/ftp.c:1541
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr "Δεν βρέθηκαν ταιριάσματα στη μορφή `%s'.\n"
 
 #
-#: src/ftp.c:1589
+#: src/ftp.c:1601
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
 msgstr "Γράφτηκε αρχείο καταλόγου σε HTML στο `%s' [%ld].\n"
 
 #
-#: src/ftp.c:1594
+#: src/ftp.c:1606
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr "Γράφτηκε αρχείο καταλόγου σε HTML στο `%s'.\n"
@@ -501,77 +501,77 @@ msgstr "Ο εξυπηρετητής δεν βρέθηκε"
 msgid "Unknown error"
 msgstr "Άγνωστο σφάλμα"
 
-#: src/http.c:621 src/http.c:1433
+#: src/http.c:625 src/http.c:1437
 msgid "Unable to establish SSL connection.\n"
 msgstr ""
 
 #
-#: src/http.c:629
+#: src/http.c:633
 #, fuzzy, c-format
 msgid "Reusing connection to %s:%hu.\n"
 msgstr "Θα επιχειρηθεί σύνδεση στο %s:%hu.\n"
 
 #
-#: src/http.c:805
+#: src/http.c:809
 #, fuzzy, c-format
 msgid "Failed writing HTTP request: %s.\n"
 msgstr "Σφάλμα στην καταγραφή της HTTP αίτησης.\n"
 
 #
-#: src/http.c:810
+#: src/http.c:814
 #, c-format
 msgid "%s request sent, awaiting response... "
 msgstr "Η αίτηση για %s στάλθηκε, αναμονή απάντησης... "
 
 #
-#: src/http.c:854
+#: src/http.c:858
 msgid "End of file while parsing headers.\n"
 msgstr "Τέλος αρχείου ενώ γινόταν επεξεργασία των κεφαλίδων.\n"
 
 #
-#: src/http.c:865
+#: src/http.c:869
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr "Σφάλμα ανάγνωσης (%s) στις κεφαλίδες.\n"
 
 #
-#: src/http.c:905
+#: src/http.c:909
 msgid "No data received"
 msgstr "Δεν ελήφθησαν δεδομένα"
 
 #
-#: src/http.c:907
+#: src/http.c:911
 msgid "Malformed status line"
 msgstr "Εσφαλμένη γραμμή κατάστασης"
 
 #
-#: src/http.c:912
+#: src/http.c:916
 msgid "(no description)"
 msgstr "(χωρίς περιγραφή)"
 
 #
-#: src/http.c:1030
+#: src/http.c:1034
 msgid "Authorization failed.\n"
 msgstr "Η αυθεντικοποίηση απέτυχε.\n"
 
 #
-#: src/http.c:1037
+#: src/http.c:1041
 msgid "Unknown authentication scheme.\n"
 msgstr "Άγνωστο σχήμα αυθεντικοποίησης.\n"
 
 #
-#: src/http.c:1127
+#: src/http.c:1131
 #, c-format
 msgid "Location: %s%s\n"
 msgstr "Τοποθεσία: %s%s\n"
 
 #
-#: src/http.c:1128 src/http.c:1153
+#: src/http.c:1132 src/http.c:1157
 msgid "unspecified"
 msgstr "μη ορισμένο"
 
 #
-#: src/http.c:1129
+#: src/http.c:1133
 msgid " [following]"
 msgstr " [ακολουθεί]"
 
@@ -579,23 +579,23 @@ msgstr " [ακολουθεί]"
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
-#: src/http.c:1143
+#: src/http.c:1147
 msgid "Length: "
 msgstr "Μήκος: "
 
 #
-#: src/http.c:1148
+#: src/http.c:1152
 #, c-format
 msgid " (%s to go)"
 msgstr " (%s μέχρι πέρας)"
 
 #
-#: src/http.c:1153
+#: src/http.c:1157
 msgid "ignored"
 msgstr "αγνοείται"
 
 #
-#: src/http.c:1254
+#: src/http.c:1258
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr ""
 "Προειδοποίηση: μεταχαρακτήρες (wildcards) δεν υποστηρίζονται στο HTTP.\n"
@@ -603,48 +603,48 @@ msgstr ""
 #
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:1275
+#: src/http.c:1279
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
 msgstr "Το αρχείο `%s' είναι ήδη εδώ, δεν θα ανακτηθεί.\n"
 
 #
-#: src/http.c:1425
+#: src/http.c:1429
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr "Αδυναμία στην εγγραφή στο `%s' (%s).\n"
 
 #
-#: src/http.c:1443
+#: src/http.c:1447
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "ΣΦΑΛΜΑ: Μετάσταση (%d) χωρίς τοποθεσία.\n"
 
 #
-#: src/http.c:1468
+#: src/http.c:1472
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s ΣΦΑΛΜΑ %d: %s.\n"
 
 #
-#: src/http.c:1481
+#: src/http.c:1485
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr ""
 "Κεφαλίδα Last-modified δεν υπάρχει -- χρονικές αναφορές απενεργοποιήθηκαν.\n"
 
 #
-#: src/http.c:1489
+#: src/http.c:1493
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr ""
 "Κεφαλίδα Last-modified δεν είναι έγκυρη -- χρονικές αναφορές αγνοούνται.\n"
 
 #
-#: src/http.c:1524
+#: src/http.c:1528
 msgid "Remote file is newer, retrieving.\n"
 msgstr "Απομακρυσμένο αρχείο είναι νεότερο, έναρξη ανάκτησης.\n"
 
 #
-#: src/http.c:1559
+#: src/http.c:1573
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld]\n"
@@ -654,13 +654,13 @@ msgstr ""
 "\n"
 
 #
-#: src/http.c:1607
+#: src/http.c:1621
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld. "
 msgstr "%s (%s) - Η σύνδεση διακόπηκε στο byte %ld. "
 
 #
-#: src/http.c:1615
+#: src/http.c:1629
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld])\n"
@@ -670,19 +670,19 @@ msgstr ""
 "\n"
 
 #
-#: src/http.c:1635
+#: src/http.c:1649
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld/%ld. "
 msgstr "%s (%s) - Η σύνδεση διακόπηκε στο byte %ld/%ld. "
 
 #
-#: src/http.c:1646
+#: src/http.c:1660
 #, c-format
 msgid "%s (%s) - Read error at byte %ld (%s)."
 msgstr "%s (%s) - Σφάλμα ανάγνωσης στο byte %ld (%s)."
 
 #
-#: src/http.c:1654
+#: src/http.c:1668
 #, c-format
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr "%s (%s) - Σφάλμα ανάγνωσης στο byte %ld/%ld (%s). "
@@ -714,50 +714,44 @@ msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr "%s: Άγνωστη εντολή `%s', τιμή `%s'.\n"
 
 #
-#: src/init.c:501
-#, fuzzy, c-format
-msgid "%s: Out of memory.\n"
-msgstr "%s: %s: Δεν υπάρχει αρκετή μνήμη.\n"
-
-#
-#: src/init.c:507
+#: src/init.c:500
 #, fuzzy, c-format
 msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
 msgstr ""
 "%s: Προειδοποίηση: δεν είναι δυνατή η ανάγνωση της τοπικής διεύθυνσης IP.\n"
 
 #
-#: src/init.c:535
+#: src/init.c:528
 #, c-format
 msgid "%s: %s: Please specify on or off.\n"
 msgstr "%s: %s: Παρακαλώ ορίστε on ή off.\n"
 
 #
-#: src/init.c:579
+#: src/init.c:572
 #, fuzzy, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr "%s: %s: Παρακαλώ ορίστε on ή off.\n"
 
 #
-#: src/init.c:598 src/init.c:855 src/init.c:877 src/init.c:941
+#: src/init.c:591 src/init.c:848 src/init.c:870 src/init.c:934
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: Μη έγκυρη ρύθμιση `%s'.\n"
 
 #
-#: src/init.c:711 src/init.c:733 src/init.c:755 src/init.c:781
+#: src/init.c:704 src/init.c:726 src/init.c:748 src/init.c:774
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: Μη έγκυρη ρύθμιση `%s'.\n"
 
 #
-#: src/main.c:119
+#: src/main.c:120
 #, c-format
 msgid "Usage: %s [OPTION]... [URL]...\n"
 msgstr "Χρήση: %s [ΕΠΙΛΟΓΗ]... [URL]...\n"
 
 #
-#: src/main.c:127
+#: src/main.c:128
 #, c-format
 msgid "GNU Wget %s, a non-interactive network retriever.\n"
 msgstr "GNU Wget %s, ένα μη-διαλογικό δικτυακό πρόγραμμα ανάκτησης αρχείων.\n"
@@ -765,7 +759,7 @@ msgstr "GNU Wget %s, ένα μη-διαλογικό δικτυακό πρόγραμμα ανάκτησης αρχείων.\n"
 #
 #. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
 #. don't bitch.  Also, it makes translation much easier.
-#: src/main.c:132
+#: src/main.c:133
 msgid ""
 "\n"
 "Mandatory arguments to long options are mandatory for short options too.\n"
@@ -777,7 +771,7 @@ msgstr ""
 "\n"
 
 #
-#: src/main.c:135
+#: src/main.c:136
 #, fuzzy
 msgid ""
 "Startup:\n"
@@ -795,7 +789,7 @@ msgstr ""
 "\n"
 
 #
-#: src/main.c:141
+#: src/main.c:142
 #, fuzzy
 msgid ""
 "Logging and input file:\n"
@@ -823,7 +817,7 @@ msgstr ""
 "\n"
 
 #
-#: src/main.c:152
+#: src/main.c:153
 #, fuzzy
 msgid ""
 "Download:\n"
@@ -834,7 +828,7 @@ msgid ""
 "  -O   --output-document=FILE   write documents to FILE.\n"
 "  -nc, --no-clobber             don't clobber existing files or use .# "
 "suffixes.\n"
-"  -c,  --continue               restart getting an existing file.\n"
+"  -c,  --continue               resume getting a partially-downloaded file.\n"
 "       --dot-style=STYLE        set retrieval display style.\n"
 "  -N,  --timestamping           don't retrieve files if older than local.\n"
 "  -S,  --server-response        print server response.\n"
@@ -868,7 +862,7 @@ msgstr ""
 "\n"
 
 #
-#: src/main.c:168
+#: src/main.c:169
 msgid ""
 "Directories:\n"
 "  -nd  --no-directories            don't create directories.\n"
@@ -889,7 +883,7 @@ msgstr ""
 "\n"
 
 #
-#: src/main.c:175
+#: src/main.c:176
 #, fuzzy
 msgid ""
 "HTTP options:\n"
@@ -923,7 +917,7 @@ msgstr ""
 "\n"
 
 #
-#: src/main.c:188
+#: src/main.c:189
 #, fuzzy
 msgid ""
 "FTP options:\n"
@@ -940,7 +934,7 @@ msgstr ""
 "\n"
 
 #
-#: src/main.c:193
+#: src/main.c:194
 #, fuzzy
 msgid ""
 "Recursive retrieval:\n"
@@ -969,7 +963,7 @@ msgstr ""
 "\n"
 
 #
-#: src/main.c:203
+#: src/main.c:204
 #, fuzzy
 msgid ""
 "Recursive accept/reject:\n"
@@ -1012,19 +1006,19 @@ msgstr ""
 "\n"
 
 #
-#: src/main.c:218
+#: src/main.c:219
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr "Στείλτε αναφορές σφαλμάτων και προτάσεις στο <bug-wget@gnu.org>.\n"
 
 #
-#: src/main.c:402
+#: src/main.c:403
 #, c-format
 msgid "%s: debug support not compiled in.\n"
 msgstr ""
 "%s: η υποστήριξη εκσφαλμάτωσης δεν έχει συμπεριληφθεί στη μεταγλώττιση.\n"
 
 #
-#: src/main.c:454
+#: src/main.c:455
 #, fuzzy
 msgid ""
 "Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.\n"
@@ -1040,7 +1034,7 @@ msgstr ""
 "Αναφερθείτε στο GNU General Public License για περισσότερες λεπτομέρειες.\n"
 
 #
-#: src/main.c:460
+#: src/main.c:461
 #, fuzzy
 msgid ""
 "\n"
@@ -1050,13 +1044,13 @@ msgstr ""
 "Γράφτηκε από τον Hrvoje Niksic <hniksic@srce.hr>.\n"
 
 #
-#: src/main.c:534
+#: src/main.c:535
 #, c-format
 msgid "%s: %s: invalid command\n"
 msgstr "%s: %s: μη έγκυρη εντολή\n"
 
 #
-#: src/main.c:590
+#: src/main.c:591
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: μη αποδεκτή επιλογή -- `-n%c'\n"
@@ -1064,18 +1058,18 @@ msgstr "%s: μη αποδεκτή επιλογή -- `-n%c'\n"
 #
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:593 src/main.c:635 src/main.c:693
+#: src/main.c:594 src/main.c:636 src/main.c:694
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Δοκιμάστε `%s --help' για περισσότερες επιλογές ρυθμίσεων.\n"
 
 #
-#: src/main.c:673
+#: src/main.c:674
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "Δεν μπορώ να είμαι επεξηγηματικός και ταυτόχρονα σιωπηλός.\n"
 
 #
-#: src/main.c:679
+#: src/main.c:680
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr ""
 "Δεν μπορώ να χρησιμοποιώ χρονικές αναφορές και ταυτόχρονα να μην υποκαθιστώ "
@@ -1083,19 +1077,19 @@ msgstr ""
 
 #
 #. No URL specified.
-#: src/main.c:688
+#: src/main.c:689
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: παραλήφθηκε το URL\n"
 
 #
-#: src/main.c:786
+#: src/main.c:790
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "Δεν βρέθηκαν URL στο %s.\n"
 
 #
-#: src/main.c:795
+#: src/main.c:799
 #, c-format
 msgid ""
 "\n"
@@ -1107,7 +1101,7 @@ msgstr ""
 "Κατέβηκαν: %s bytes σε %d αρχεία\n"
 
 #
-#: src/main.c:803
+#: src/main.c:807
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr ""
@@ -1117,12 +1111,12 @@ msgstr ""
 #
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:833
+#: src/main.c:837
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "%s λήφθηκε, ανακατεύθυνση εξόδου στο `%%s'.\n"
 
 #
-#: src/mswindows.c:118
+#: src/mswindows.c:123
 #, c-format
 msgid ""
 "\n"
@@ -1137,24 +1131,24 @@ msgstr ""
 
 #
 #. parent, no error
-#: src/mswindows.c:135 src/utils.c:457
+#: src/mswindows.c:140 src/utils.c:451
 msgid "Continuing in background.\n"
 msgstr "Εκτέλεση στο παρασκήνιο.\n"
 
 #
-#: src/mswindows.c:137 src/utils.c:459
+#: src/mswindows.c:142 src/utils.c:453
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "Η έξοδος θα γραφτεί στο `%s'.\n"
 
 #
-#: src/mswindows.c:227
+#: src/mswindows.c:232
 #, c-format
 msgid "Starting WinHelp %s\n"
 msgstr "Εκκίνηση του WinHelp %s\n"
 
 #
-#: src/mswindows.c:254 src/mswindows.c:262
+#: src/mswindows.c:259 src/mswindows.c:267
 #, c-format
 msgid "%s: Couldn't find usable socket driver.\n"
 msgstr "%s: Αδυναμία εύρεσης έγκυρου οδηγού δικτύου.\n"
@@ -1186,19 +1180,19 @@ msgid "%s: cannot stat %s: %s\n"
 msgstr "%s: αδυναμία πρόσβασης στο %s: %s\n"
 
 #
-#: src/recur.c:506
+#: src/recur.c:510
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
 msgstr "Διαγραφή του %s αφού θα πρέπει να απορριφθεί.\n"
 
 #
-#: src/recur.c:680
+#: src/recur.c:684
 msgid "Loading robots.txt; please ignore errors.\n"
 msgstr ""
 "Ανάγνωση του robots.txt; παρακαλώ αγνοείστε τυχόν μυνήματα σφαλμάτων.\n"
 
 #
-#: src/retr.c:217
+#: src/retr.c:221
 #, c-format
 msgid ""
 "\n"
@@ -1208,24 +1202,24 @@ msgstr ""
 "          [ παράκαμψη %dK ]"
 
 #
-#: src/retr.c:399
+#: src/retr.c:403
 msgid "Could not find proxy host.\n"
 msgstr "Αδυναμία εύρεσης εξυπηρετητή proxy.\n"
 
 #
-#: src/retr.c:413
+#: src/retr.c:417
 #, c-format
 msgid "Proxy %s: Must be HTTP.\n"
 msgstr "Proxy %s: Πρέπει να είναι HTTP.\n"
 
 #
-#: src/retr.c:507
+#: src/retr.c:511
 #, fuzzy, c-format
 msgid "%s: Redirection cycle detected.\n"
 msgstr "%s: Ανακατεύθυνση στον εαυτό του.\n"
 
 #
-#: src/retr.c:601
+#: src/retr.c:605
 msgid ""
 "Giving up.\n"
 "\n"
@@ -1234,7 +1228,7 @@ msgstr ""
 "\n"
 
 #
-#: src/retr.c:601
+#: src/retr.c:605
 msgid ""
 "Retrying.\n"
 "\n"
@@ -1243,29 +1237,29 @@ msgstr ""
 "\n"
 
 #
-#: src/url.c:1325
+#: src/url.c:1329
 #, c-format
 msgid "Converting %s... "
 msgstr "Μετατροπή του %s... "
 
-#: src/url.c:1338
+#: src/url.c:1342
 msgid "nothing to do.\n"
 msgstr ""
 
 #
-#: src/url.c:1346 src/url.c:1370
+#: src/url.c:1350 src/url.c:1374
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "Αδυναμία μετατροπής τοποθεσίας στο %s: %s\n"
 
 #
-#: src/url.c:1361
+#: src/url.c:1365
 #, fuzzy, c-format
 msgid "Unable to delete `%s': %s\n"
 msgstr "Αποτυχία διαγραφής συμβολικού συνδέσμου `%s': %s\n"
 
 #
-#: src/url.c:1558
+#: src/url.c:1555
 #, fuzzy, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Αδυναμία μετατροπής τοποθεσίας στο %s: %s\n"
@@ -1277,25 +1271,30 @@ msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: Δεν υπάρχει αρκετή μνήμη.\n"
 
 #
-#: src/utils.c:392
+#: src/utils.c:386
 msgid "Unknown/unsupported protocol"
 msgstr "Άγνωστο/μη υποστηριζόμενο πρωτόκολλο"
 
 #
-#: src/utils.c:395
+#: src/utils.c:389
 msgid "Invalid port specification"
 msgstr "Μη έγκυρη ρύθμιση θύρας (port)"
 
 #
-#: src/utils.c:398
+#: src/utils.c:392
 msgid "Invalid host name"
 msgstr "Μη έγκυρο όνομα εξυπηρετητή"
 
 #
-#: src/utils.c:619
+#: src/utils.c:613
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Αποτυχία διαγραφής συμβολικού συνδέσμου `%s': %s\n"
+
+#
+#, fuzzy
+#~ msgid "%s: Out of memory.\n"
+#~ msgstr "%s: %s: Δεν υπάρχει αρκετή μνήμη.\n"
 
 #
 #~ msgid ""

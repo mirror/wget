@@ -9,6 +9,8 @@
 	* TODO: Add a "rollback" option to have --continue throw away X
  	corrupted (e.g. by proxy) bytes from end of file before resuming.
 
+	* po/*.po*: Updated after changing --help's description of -c.
+
 2001-01-06  Dan Harkless  <wget@harkless.org>
 
 	* ChangeLog: The '[Not in 1.6 branch.]'s were decided not to be

@@ -500,34 +500,43 @@ Note that when @samp{-nc} is specified, files with the suffixes
 and parsed as if they had been retrieved from the Web.
 
 @cindex continue retrieval
+@cindex resume download
 @item -c
 @itemx --continue
-Continue getting an existing file.  This is useful when you want to
-finish up the download started by another program, or a previous
-instance of Wget.  Thus you can write:
+Continue getting a partially-downloaded file.  This is useful when you
+want to finish up a download started by a previous instance of Wget, or
+by another program.  For instance:
 
 @example
 wget -c ftp://sunsite.doc.ic.ac.uk/ls-lR.Z
 @end example
 
-If there is a file name @file{ls-lR.Z} in the current directory, Wget
+If there is a file named @file{ls-lR.Z} in the current directory, Wget
 will assume that it is the first portion of the remote file, and will
-require the server to continue the retrieval from an offset equal to the
+ask the server to continue the retrieval from an offset equal to the
 length of the local file.
 
-Note that you need not specify this option if all you want is Wget to
-continue retrieving where it left off when the connection is lost---Wget
-does this by default.  You need this option only when you want to
-continue retrieval of a file already halfway retrieved, saved by another
-@sc{ftp} client, or left by Wget being killed.
+Note that you don't need to specify this option if you just want the
+current invocation of Wget to retry downloading a file should the
+connection be lost midway through.  This is the default behavior.
+@samp{-c} only affects resumption of downloads started @emph{prior} to
+this invocation of Wget, and whose local files are still sitting around.
 
-Without @samp{-c}, the previous example would just begin to download the
-remote file to @file{ls-lR.Z.1}.  The @samp{-c} option is also
-applicable for @sc{http} servers that support the @code{Range} header.
+Without @samp{-c}, the previous example would just download the remote
+file to @file{ls-lR.Z.1}, leaving the truncated @file{ls-lR.Z} file
+alone.  
 
-Note that if you use @samp{-c} on a file that's already downloaded
-completely, @samp{@var{file}} will not be changed, nor will a second
-@samp{@var{file}.1} copy be created.
+Note that @samp{-c} only works with @sc{ftp} servers and with @sc{http}
+servers that support the @code{Range} header.  Also note that Wget has
+no way of verifying that the local file really is a valid prefix of the
+remote file.  If you use a lame @sc{http} proxy that inserts a ``transfer
+interrupted'' string, you'll get a corrupted file.  In the future a
+``rollback'' option may be added to deal with this case.
+
+Currently, if you use @samp{-c} on a @file{file} that's already
+completely downloaded, it will be re-downloaded from scratch (to the
+same name, not to @file{file.1}).  This will be fixed in a future
+version of Wget.
 
 @cindex dot style
 @cindex retrieval tracing style

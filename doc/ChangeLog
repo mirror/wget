@@ -1,3 +1,8 @@
+2001-01-09  Dan Harkless  <wget@harkless.org>
+
+	* wget.texi: Did a bunch of clarification and correction to the
+	description of --continue.
+
 2001-01-06  Dan Harkless  <wget@harkless.org>
 
 	* ChangeLog: The '[Not in 1.6 branch.]'s were decided not to be

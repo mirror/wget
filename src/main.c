@@ -156,7 +156,7 @@ Download:\n\
   -t,  --tries=NUMBER           set number of retries to NUMBER (0 unlimits).\n\
   -O   --output-document=FILE   write documents to FILE.\n\
   -nc, --no-clobber             don\'t clobber existing files or use .# suffixes.\n\
-  -c,  --continue               restart getting an existing file.\n\
+  -c,  --continue               resume getting a partially-downloaded file.\n\
        --dot-style=STYLE        set retrieval display style.\n\
   -N,  --timestamping           don\'t retrieve files if older than local.\n\
   -S,  --server-response        print server response.\n\
