@@ -638,6 +638,19 @@ map_html_tags (const char *text, int size,
 
 	SKIP_WS (p);
 
+	if (*p == '/')
+	  {
+	    /* A slash at this point means the tag is about to be
+	       closed.  This is legal in XML and has been popularized
+	       in HTML via XHTML.  */
+	    /* <foo a=b c=d /> */
+	    /*              ^  */
+	    ADVANCE (p);
+	    SKIP_WS (p);
+	    if (*p != '>')
+	      goto backout_tag;
+	  }
+
 	/* Check for end of tag definition. */
 	if (*p == '>')
 	  break;
@@ -654,7 +667,7 @@ map_html_tags (const char *text, int size,
 
 	/* Establish bounds of attribute value. */
 	SKIP_WS (p);
-	if (NAME_CHAR_P (*p) || *p == '>')
+	if (NAME_CHAR_P (*p) || *p == '/' || *p == '>')
 	  {
 	    /* Minimized attribute syntax allows `=' to be omitted.
                For example, <UL COMPACT> is a valid shorthand for <UL
@@ -735,7 +748,7 @@ map_html_tags (const char *text, int size,
 	    /* We skipped the whitespace and found something that is
 	       neither `=' nor the beginning of the next attribute's
 	       name.  Back out.  */
-	    goto backout_tag;	/* <foo bar /... */
+	    goto backout_tag;	/* <foo bar [... */
 				/*          ^    */
 	  }
 
