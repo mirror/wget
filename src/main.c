@@ -130,16 +130,18 @@ print_help (void)
   print_usage ();
   /* Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
      don't bitch.  Also, it makes translation much easier.  */
-  printf ("%s%s%s%s%s%s%s%s%s%s", _("\
+  fputs (_("\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
-\n"), _("\
+\n"), stdout);
+  fputs (_("\
 Startup:\n\
   -V,  --version           display the version of Wget and exit.\n\
   -h,  --help              print this help.\n\
   -b,  --background        go to background after startup.\n\
   -e,  --execute=COMMAND   execute a `.wgetrc\'-style command.\n\
-\n"), _("\
+\n"), stdout);
+  fputs (_("\
 Logging and input file:\n\
   -o,  --output-file=FILE     log messages to FILE.\n\
   -a,  --append-output=FILE   append messages to FILE.\n\
@@ -152,7 +154,8 @@ Logging and input file:\n\
   -B,  --base=URL             prepends URL to relative links in -F -i file.\n\
        --sslcertfile=FILE     optional client certificate.\n\
        --sslcertkey=KEYFILE   optional keyfile for this certificate.\n\
-\n"), _("\
+\n"), stdout);
+  fputs (_("\
 Download:\n\
        --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n\
   -t,  --tries=NUMBER           set number of retries to NUMBER (0 unlimits).\n\
@@ -168,14 +171,16 @@ Download:\n\
        --waitretry=SECONDS      wait 1...SECONDS between retries of a retrieval.\n\
   -Y,  --proxy=on/off           turn proxy on or off.\n\
   -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n\
-\n"),  _("\
+\n"), stdout);
+  fputs (_("\
 Directories:\n\
   -nd  --no-directories            don\'t create directories.\n\
   -x,  --force-directories         force creation of directories.\n\
   -nH, --no-host-directories       don\'t create host directories.\n\
   -P,  --directory-prefix=PREFIX   save files to PREFIX/...\n\
        --cut-dirs=NUMBER           ignore NUMBER remote directory components.\n\
-\n"), _("\
+\n"), stdout);
+  fputs (_("\
 HTTP options:\n\
        --http-user=USER      set http user to USER.\n\
        --http-passwd=PASS    set http password to PASS.\n\
@@ -188,13 +193,15 @@ HTTP options:\n\
        --referer=URL         include `Referer: URL\' header in HTTP request.\n\
   -s,  --save-headers        save the HTTP headers to file.\n\
   -U,  --user-agent=AGENT    identify as AGENT instead of Wget/VERSION.\n\
-\n"), _("\
+\n"), stdout);
+  fputs (_("\
 FTP options:\n\
   -nr, --dont-remove-listing   don\'t remove `.listing\' files.\n\
   -g,  --glob=on/off           turn file name globbing on or off.\n\
        --passive-ftp           use the \"passive\" transfer mode.\n\
        --retr-symlinks         when recursing, get linked-to files (not dirs).\n\
-\n"), _("\
+\n"), stdout);
+  fputs (_("\
 Recursive retrieval:\n\
   -r,  --recursive          recursive web-suck -- use with care!\n\
   -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n\
@@ -203,7 +210,8 @@ Recursive retrieval:\n\
   -K,  --backup-converted   before converting file X, back up as X.orig.\n\
   -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n\
   -p,  --page-requisites    get all images, etc. needed to display HTML page.\n\
-\n"), _("\
+\n"), stdout);
+  fputs (_("\
 Recursive accept/reject:\n\
   -A,  --accept=LIST                comma-separated list of accepted extensions.\n\
   -R,  --reject=LIST                comma-separated list of rejected extensions.\n\
@@ -218,7 +226,9 @@ Recursive accept/reject:\n\
   -X,  --exclude-directories=LIST   list of excluded directories.\n\
   -nh, --no-host-lookup             don\'t DNS-lookup hosts.\n\
   -np, --no-parent                  don\'t ascend to the parent directory.\n\
-\n"), _("Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"));
+\n"), stdout);
+  fputs (_("Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"),
+	 stdout);
 }
 
 int
@@ -236,33 +246,34 @@ main (int argc, char *const *argv)
     { "convert-links", no_argument, NULL, 'k' },
     { "backup-converted", no_argument, NULL, 'K' },
     { "debug", no_argument, NULL, 'd' },
-    { "dont-remove-listing", no_argument, NULL, 21 },
-    { "email-address", no_argument, NULL, 26 }, /* undocumented (debug) */
-    { "follow-ftp", no_argument, NULL, 14 },
+    { "delete-after", no_argument, NULL, 136 },
+    { "dont-remove-listing", no_argument, NULL, 149 },
+    { "email-address", no_argument, NULL, 154 }, /* undocumented (debug) */
+    { "follow-ftp", no_argument, NULL, 142 },
     { "force-directories", no_argument, NULL, 'x' },
     { "force-hier", no_argument, NULL, 'x' }, /* obsolete */
     { "force-html", no_argument, NULL, 'F'},
     { "help", no_argument, NULL, 'h' },
     { "html-extension", no_argument, NULL, 'E' },
-    { "ignore-length", no_argument, NULL, 10 },
+    { "ignore-length", no_argument, NULL, 138 },
     { "mirror", no_argument, NULL, 'm' },
-    { "no-clobber", no_argument, NULL, 13 },
-    { "no-directories", no_argument, NULL, 19 },
-    { "no-host-directories", no_argument, NULL, 20 },
-    { "no-host-lookup", no_argument, NULL, 22 },
-    { "no-http-keep-alive", no_argument, NULL, 28 },
-    { "no-parent", no_argument, NULL, 5 },
-    { "non-verbose", no_argument, NULL, 18 },
-    { "passive-ftp", no_argument, NULL, 11 },
+    { "no-clobber", no_argument, NULL, 141 },
+    { "no-directories", no_argument, NULL, 147 },
+    { "no-host-directories", no_argument, NULL, 148 },
+    { "no-host-lookup", no_argument, NULL, 150 },
+    { "no-http-keep-alive", no_argument, NULL, 156 },
+    { "no-parent", no_argument, NULL, 133 },
+    { "non-verbose", no_argument, NULL, 146 },
+    { "passive-ftp", no_argument, NULL, 139 },
     { "page-requisites", no_argument, NULL, 'p' },
     { "quiet", no_argument, NULL, 'q' },
     { "recursive", no_argument, NULL, 'r' },
     { "relative", no_argument, NULL, 'L' },
-    { "retr-symlinks", no_argument, NULL, 9 },
+    { "retr-symlinks", no_argument, NULL, 137 },
     { "save-headers", no_argument, NULL, 's' },
     { "server-response", no_argument, NULL, 'S' },
     { "span-hosts", no_argument, NULL, 'H' },
-    { "spider", no_argument, NULL, 4 },
+    { "spider", no_argument, NULL, 132 },
     { "timestamping", no_argument, NULL, 'N' },
     { "verbose", no_argument, NULL, 'v' },
     { "version", no_argument, NULL, 'V' },
@@ -270,24 +281,23 @@ main (int argc, char *const *argv)
     /* Options accepting an argument: */
     { "accept", required_argument, NULL, 'A' },
     { "append-output", required_argument, NULL, 'a' },
-    { "backups", required_argument, NULL, 23 }, /* undocumented */
+    { "backups", required_argument, NULL, 151 }, /* undocumented */
     { "base", required_argument, NULL, 'B' },
-    { "bind-address", required_argument, NULL, 27 },
+    { "bind-address", required_argument, NULL, 155 },
     { "cache", required_argument, NULL, 'C' },
-    { "cut-dirs", required_argument, NULL, 17 },
-    { "delete-after", no_argument, NULL, 8 },
+    { "cut-dirs", required_argument, NULL, 145 },
     { "directory-prefix", required_argument, NULL, 'P' },
     { "domains", required_argument, NULL, 'D' },
-    { "dot-style", required_argument, NULL, 6 },
+    { "dot-style", required_argument, NULL, 134 },
     { "execute", required_argument, NULL, 'e' },
     { "exclude-directories", required_argument, NULL, 'X' },
-    { "exclude-domains", required_argument, NULL, 12 },
-    { "follow-tags", required_argument, NULL, 25 },
+    { "exclude-domains", required_argument, NULL, 140 },
+    { "follow-tags", required_argument, NULL, 153 },
     { "glob", required_argument, NULL, 'g' },
-    { "header", required_argument, NULL, 3 },
-    { "htmlify", required_argument, NULL, 7 },
-    { "http-passwd", required_argument, NULL, 2 },
-    { "http-user", required_argument, NULL, 1 },
+    { "header", required_argument, NULL, 131 },
+    { "htmlify", required_argument, NULL, 135 },
+    { "http-passwd", required_argument, NULL, 130 },
+    { "http-user", required_argument, NULL, 129 },
     { "ignore-tags", required_argument, NULL, 'G' },
     { "include-directories", required_argument, NULL, 'I' },
     { "input-file", required_argument, NULL, 'i' },
@@ -296,21 +306,21 @@ main (int argc, char *const *argv)
     { "output-document", required_argument, NULL, 'O' },
     { "output-file", required_argument, NULL, 'o' },
     { "proxy", required_argument, NULL, 'Y' },
-    { "proxy-passwd", required_argument, NULL, 16 },
-    { "proxy-user", required_argument, NULL, 15 },
+    { "proxy-passwd", required_argument, NULL, 144 },
+    { "proxy-user", required_argument, NULL, 143 },
     { "quota", required_argument, NULL, 'Q' },
     { "reject", required_argument, NULL, 'R' },
     { "timeout", required_argument, NULL, 'T' },
     { "tries", required_argument, NULL, 't' },
     { "user-agent", required_argument, NULL, 'U' },
-    { "referer", required_argument, NULL, 129 },
+    { "referer", required_argument, NULL, 157 },
     { "use-proxy", required_argument, NULL, 'Y' },
 #ifdef HAVE_SSL
-    { "sslcertfile", required_argument, NULL, 132},
-    { "sslcertkey", required_argument, NULL, 133},
+    { "sslcertfile", required_argument, NULL, 158 },
+    { "sslcertkey", required_argument, NULL, 159 },
 #endif /* HAVE_SSL */
     { "wait", required_argument, NULL, 'w' },
-    { "waitretry", required_argument, NULL, 24 },
+    { "waitretry", required_argument, NULL, 152 },
     { 0, 0, 0, 0 }
   };
 
@@ -343,57 +353,57 @@ hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
       switch (c)
 	{
 	  /* Options without arguments: */
-	case 4:
+	case 132:
 	  setval ("spider", "on");
 	  break;
-	case 5:
+	case 133:
 	  setval ("noparent", "on");
 	  break;
-	case 8:
+	case 136:
 	  setval ("deleteafter", "on");
 	  break;
-	case 9:
+	case 137:
 	  setval ("retrsymlinks", "on");
 	  break;
-	case 10:
+	case 138:
 	  setval ("ignorelength", "on");
 	  break;
-	case 11:
+	case 139:
 	  setval ("passiveftp", "on");
 	  break;
-	case 13:
+	case 141:
 	  setval ("noclobber", "on");
 	  break;
-	case 14:
+	case 142:
 	  setval ("followftp", "on");
 	  break;
-	case 17:
+	case 145:
 	  setval ("cutdirs", optarg);
 	  break;
-	case 18:
+	case 146:
 	  setval ("verbose", "off");
 	  break;
-	case 19:
+	case 147:
 	  setval ("dirstruct", "off");
 	  break;
-	case 20:
+	case 148:
 	  setval ("addhostdir", "off");
 	  break;
-	case 21:
+	case 149:
 	  setval ("removelisting", "off");
 	  break;
-	case 22:
+	case 150:
 	  setval ("simplehostcheck", "on");
 	  break;
-	case 26:
+	case 154:
 	  /* For debugging purposes.  */
 	  printf ("%s\n", ftp_getaddress ());
 	  exit (0);
 	  break;
-	case 27:
+	case 155:
 	  setval ("bindaddress", optarg);
  	  break;
-	case 28:
+	case 156:
 	  setval ("httpkeepalive", "off");
 	  break;
 	case 'b':
@@ -475,48 +485,48 @@ GNU General Public License for more details.\n"));
 	  break;
 
 	  /* Options accepting an argument: */
-	case 1:
+	case 129:
 	  setval ("httpuser", optarg);
 	  break;
-	case 2:
+	case 130:
 	  setval ("httppasswd", optarg);
 	  break;
-	case 3:
+	case 131:
 	  setval ("header", optarg);
 	  break;
-	case 6:
+	case 134:
 	  setval ("dotstyle", optarg);
 	  break;
-	case 7:
+	case 135:
 	  setval ("htmlify", optarg);
 	  break;
-	case 12:
+	case 140:
 	  setval ("excludedomains", optarg);
 	  break;
-	case 15:
+	case 143:
 	  setval ("proxyuser", optarg);
 	  break;
-	case 16:
+	case 144:
 	  setval ("proxypasswd", optarg);
 	  break;
-	case 23:
+	case 151:
 	  setval ("backups", optarg);
 	  break;
-	case 24:
+	case 152:
 	  setval ("waitretry", optarg);
 	  wr = 1;
 	  break;
-	case 25:
+	case 153:
 	  setval ("followtags", optarg);
 	  break;
-	case 129:
+	case 157:
 	  setval ("referer", optarg);
 	  break;
 #ifdef HAVE_SSL
-	case 132:
+	case 158:
 	  setval ("sslcertfile", optarg);
 	  break;
-	case 133:
+	case 159:
 	  setval ("sslcertkey", optarg);
 	  break;
 #endif /* HAVE_SSL */
