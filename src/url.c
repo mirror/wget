@@ -691,8 +691,8 @@ str_url (const struct urlinfo *u, int hide)
       if (hide)
 	/* Don't output the password, or someone might see it over the user's
 	   shoulder (or in saved wget output).  Don't give away the number of
-	   characters in the password, either, as we did when we replaced the
-	   password characters with 'x's. */
+	   characters in the password, either, as we did in past versions of
+	   this code, when we replaced the password characters with 'x's. */
 	passwd = "<password>";
       else
 	passwd = CLEANDUP (u->passwd);
