@@ -873,8 +873,17 @@ fd_read (int fd, char *buf, int bufsize, double timeout)
     return sock_read (fd, buf, bufsize);
 }
 
-/* The same as fd_read, but don't actually read the data, just find out
-   what's the number of bytes available for reading.  */
+/* Like fd_read, except it provides a "preview" of the data that will
+   be read by subsequent calls to fd_read.  Specifically, it copies no
+   more than BUFSIZE bytes of the currently available data to BUF and
+   returns the number of bytes copied.  Return values and timeout
+   semantics are the same as those of fd_read.
+
+   CAVEAT: Do not assume that the first subsequent call to fd_read
+   will retrieve the same amount of data.  Reading can return more or
+   less data, depending on the TCP implementation and other
+   circumstances.  However, barring an error, it can be expected that
+   all the peeked data will eventually be read by fd_read.  */
 
 int
 fd_peek (int fd, char *buf, int bufsize, double timeout)
