@@ -444,9 +444,8 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   char *authenticate_h;
   char *proxyauth;
   char *all_headers;
-  char *host_port;
+  char *port_maybe;
   char *request_keep_alive;
-  int host_port_len;
   int sock, hcount, num_written, all_length, remport, statcode;
   long contlen, contrange;
   struct urlinfo *ou;
@@ -474,7 +473,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   authenticate_h = 0;
   auth_tried_already = 0;
 
-  inhibit_keep_alive = (u->proxy != NULL);
+  inhibit_keep_alive = (!opt.http_keep_alive || u->proxy != NULL);
 
  again:
   /* We need to come back here when the initial attempt to retrieve
@@ -623,15 +622,12 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   remhost = ou->host;
   remport = ou->port;
 
-  if (remport == 80)
+  /* String of the form :PORT.  Used only for non-standard ports. */
+  port_maybe = NULL;
+  if (remport != 80)
     {
-      host_port = NULL;
-      host_port_len = 0;
-    }
-  else
-    {
-      host_port = (char *)alloca (numdigit (remport) + 2);
-      host_port_len = sprintf (host_port, ":%d", remport);
+      port_maybe = (char *)alloca (numdigit (remport) + 2);
+      sprintf (port_maybe, ":%d", remport);
     }
 
   if (!inhibit_keep_alive)
@@ -642,7 +638,8 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   /* Allocate the memory for the request.  */
   request = (char *)alloca (strlen (command) + strlen (path)
 			    + strlen (useragent)
-			    + strlen (remhost) + host_port_len
+			    + strlen (remhost)
+			    + (port_maybe ? strlen (port_maybe) : 0)
 			    + strlen (HTTP_ACCEPT)
 			    + (request_keep_alive
 			       ? strlen (request_keep_alive) : 0)
@@ -661,7 +658,7 @@ Host: %s%s\r\n\
 Accept: %s\r\n\
 %s%s%s%s%s%s%s\r\n",
 	   command, path, useragent, remhost,
-	   host_port ? host_port : "",
+	   port_maybe ? port_maybe : "",
 	   HTTP_ACCEPT,
 	   request_keep_alive ? request_keep_alive : "",
 	   referer ? referer : "",

@@ -122,6 +122,7 @@ static struct {
   { "header",		NULL,			cmd_spec_header },
   { "htmlextension",	&opt.html_extension,	cmd_boolean },
   { "htmlify",		NULL,			cmd_spec_htmlify },
+  { "httpkeepalive",	&opt.http_keep_alive,	cmd_boolean },
   { "httppasswd",	&opt.http_passwd,	cmd_string },
   { "httpproxy",	&opt.http_proxy,	cmd_string },
   { "httpuser",		&opt.http_user,		cmd_string },
@@ -214,6 +215,7 @@ defaults (void)
   opt.netrc = 1;
   opt.ftp_glob = 1;
   opt.htmlify = 1;
+  opt.http_keep_alive = 1;
   opt.use_proxy = 1;
   tmp = getenv ("no_proxy");
   if (tmp)

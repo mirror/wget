@@ -247,6 +247,7 @@ main (int argc, char *const *argv)
     { "no-directories", no_argument, NULL, 19 },
     { "no-host-directories", no_argument, NULL, 20 },
     { "no-host-lookup", no_argument, NULL, 22 },
+    { "no-http-keep-alive", no_argument, NULL, 28 },
     { "no-parent", no_argument, NULL, 5 },
     { "non-verbose", no_argument, NULL, 18 },
     { "passive-ftp", no_argument, NULL, 11 },
@@ -385,6 +386,9 @@ hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
 	case 27:
 	  setval ("bindaddress", optarg);
  	  break;
+	case 28:
+	  setval ("httpkeepalive", "off");
+	  break;
 	case 'b':
 	  setval ("background", "on");
 	  break;
@@ -578,6 +582,9 @@ GNU General Public License for more details.\n"));
 		  break;
 		case 'p':
 		  setval ("noparent", "on");
+		  break;
+		case 'k':
+		  setval ("httpkeepalive", "off");
 		  break;
 		default:
 		  printf (_("%s: illegal option -- `-n%c'\n"), exec_name, *p);

@@ -86,6 +86,7 @@ struct options
   char *http_user;		/* HTTP user. */
   char *http_passwd;		/* HTTP password. */
   char *user_header;		/* User-defined header(s). */
+  int http_keep_alive;		/* whether we use keep-alive */
 
   int use_proxy;		/* Do we use proxy? */
   int proxy_cache;		/* Do we load from proxy cache? */

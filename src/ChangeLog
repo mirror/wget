@@ -1,5 +1,10 @@
 2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (gethttp): Don't use the return value of sprintf().
+	(gethttp): Inhibit keep-alive if opt.http_keep_alive is 0.
+
+2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* recur.c (recursive_retrieve): Print the "so we don't load"
 	debugging message only if we really don't load.
 
