@@ -334,7 +334,7 @@ decide_copy_method (const char *p)
    "foo+bar"         -> "foo+bar"            (plus is reserved!)
    "foo%2b+bar"      -> "foo%2b+bar"  */
 
-char *
+static char *
 reencode_string (const char *s)
 {
   const char *p1;
@@ -559,19 +559,17 @@ rewrite_shorthand_url (const char *url)
 
   if (*p == ':')
     {
-      const char *pp, *path;
+      const char *pp;
       char *res;
       /* If the characters after the colon and before the next slash
 	 or end of string are all digits, it's HTTP.  */
       int digits = 0;
       for (pp = p + 1; ISDIGIT (*pp); pp++)
 	++digits;
-      if (digits > 0
-	  && (*pp == '/' || *pp == '\0'))
+      if (digits > 0 && (*pp == '/' || *pp == '\0'))
 	goto http;
 
       /* Prepend "ftp://" to the entire URL... */
-      path = p + 1;
       res = xmalloc (6 + strlen (url) + 1);
       sprintf (res, "ftp://%s", url);
       /* ...and replace ':' with '/'. */

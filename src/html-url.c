@@ -140,7 +140,7 @@ static const char *additional_attributes[] = {
 static const char **interesting_tags;
 static const char **interesting_attributes;
 
-void
+static void
 init_interesting (void)
 {
   /* Init the variables interesting_tags and interesting_attributes

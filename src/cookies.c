@@ -825,7 +825,7 @@ set_cookie_header_cb (const char *hdr, void *closure)
    SIZE matches are written; if more matches are present, return the
    number of chains that would have been written.  */
 
-int
+static int
 find_matching_chains (const char *host, int port,
 		      struct cookie *store[], int size)
 {

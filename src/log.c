@@ -53,8 +53,8 @@ static FILE *logfp;
 int save_log_p;
 
 /* Whether the log is flushed after each command. */
-int flush_log_p = 1;
-int needs_flushing;
+static int flush_log_p = 1;
+static int needs_flushing;
 
 /* In the event of a hang-up, and if its output was on a TTY, Wget
    redirects its output to `wget-log'.

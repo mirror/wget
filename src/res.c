@@ -470,7 +470,7 @@ res_match_path (const struct robot_specs *specs, const char *path)
 
 /* Registering the specs. */
 
-struct hash_table *registered_specs;
+static struct hash_table *registered_specs;
 
 /* Stolen from cookies.c. */
 #define SET_HOSTPORT(host, port, result) do {		\

@@ -2164,7 +2164,7 @@ dump_hash (unsigned char *buf, const unsigned char *hash)
 
 /* Take the line apart to find the challenge, and compose a digest
    authorization header.  See RFC2069 section 2.1.2.  */
-char *
+static char *
 digest_authentication_encode (const char *au, const char *user,
 			      const char *passwd, const char *method,
 			      const char *path)

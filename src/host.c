@@ -69,7 +69,7 @@ extern int h_errno;
 
 /* Mapping between known hosts and to lists of their addresses. */
 
-struct hash_table *host_name_addresses_map;
+static struct hash_table *host_name_addresses_map;
 
 /* Lists of addresses.  This should eventually be extended to handle
    IPv6.  */
@@ -124,6 +124,13 @@ address_list_match_all (struct address_list *al1, struct address_list *al2)
 void
 address_list_set_faulty (struct address_list *al, int index)
 {
+#if 0
+  /* Warning: INDEX is unused, so this assumes that the address list
+     is traversed in order.  In the next release, either enable this
+     assert, or use INDEX.  */
+  assert (index == al->faulty);
+#endif
+
   ++al->faulty;
   if (al->faulty >= al->count)
     /* All addresses have been proven faulty.  Since there's not much

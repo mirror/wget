@@ -512,12 +512,9 @@ path_simplify (char *path)
 {
   register int i, start;
   int changes = 0;
-  char stub_char;
 
   if (!*path)
     return 0;
-
-  stub_char = '/';
 
   if (path[0] == '/')
     /* Preserve initial '/'. */

@@ -1,3 +1,32 @@
+2001-12-09  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (reencode_string): Declare static.
+
+	* res.c (registered_specs): Declare static.
+
+	* progress.c (current_impl_locked): Declare static.
+
+	* log.c (flush_log_p): Declare static.
+	(needs_flushing): Ditto.
+
+	* http.c (digest_authentication_encode): Declare static.
+
+	* html-url.c (init_interesting): Declare static.
+
+	* host.c (host_name_addresses_map): Declare static.
+
+	* cookies.c (find_matching_chains): Declare static.
+
+	* ftp-ls.c (ftp_parse_vms_ls): Warn about the memory leak
+	indicated by lint.
+
+	* utils.c (path_simplify): Remove unused variable STUB_CHAR.
+
+	* host.c (address_list_set_faulty): Document that INDEX is
+	currently unused.
+
+	* url.c (rewrite_shorthand_url): Remove unused variable PATH.
+
 2001-12-08  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* version.c: Wget 1.8-pre2 is released.

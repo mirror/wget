@@ -577,6 +577,10 @@ ftp_parse_vms_ls (const char *file)
     }
   dir = l = NULL;
 
+  /* #### The next three lines are a memory leak because they don't
+     bother to free the pointer that read_whole_line() returns!
+     FIXME! */
+
   /* Empty line */
   read_whole_line (fp);
   /* "Directory PUB$DEVICE[PUB]" */

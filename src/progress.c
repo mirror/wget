@@ -64,7 +64,7 @@ static struct progress_implementation implementations[] = {
   { "bar", bar_create, bar_update, bar_finish, bar_set_params }
 };
 static struct progress_implementation *current_impl;
-int current_impl_locked;
+static int current_impl_locked;
 
 /* Progress implementation used by default.  Can be overriden in
    wgetrc or by the fallback one.  */
