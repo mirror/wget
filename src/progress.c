@@ -647,7 +647,7 @@ create_image (struct bar_progress *bp, long dltime)
 	/* Hours not printed: pad with three spaces (two digits and
 	   colon). */
 	APPEND_LITERAL ("   ");
-      else if (eta_hrs >= 10)
+      else if (eta_hrs < 10)
 	/* Hours printed with one digit: pad with one space. */
 	*p++ = ' ';
       else
