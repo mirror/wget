@@ -1,3 +1,9 @@
+2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (construct): Rewritten for clarity.  Avoids the
+	unnecessary copying and stack-allocation the old version
+	performed.
+
 2000-10-31  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp.c (getftp): Ditto.

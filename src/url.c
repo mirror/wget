@@ -622,10 +622,10 @@ process_ftp_type (char *path)
     return '\0';
 }
 
-/* Return the URL as fine-formed string, with a proper protocol, port
-   number, directory and optional user/password.  If HIDE is non-zero,
-   password will be hidden.  The forbidden characters in the URL will
-   be cleansed.  */
+/* Return the URL as fine-formed string, with a proper protocol,
+   optional port number, directory and optional user/password.  If
+   HIDE is non-zero, password will be hidden.  The forbidden
+   characters in the URL will be cleansed.  */
 char *
 str_url (const struct urlinfo *u, int hide)
 {
@@ -659,7 +659,7 @@ str_url (const struct urlinfo *u, int hide)
     {
       char *tmp = (char *)xmalloc (strlen (dir) + 3);
       /*sprintf (tmp, "%%2F%s", dir + 1);*/
-      *tmp = '%';
+      tmp[0] = '%';
       tmp[1] = '2';
       tmp[2] = 'F';
       strcpy (tmp + 3, dir + 1);
@@ -1266,25 +1266,28 @@ url_filename (const struct urlinfo *u)
   return name;
 }
 
-/* Like strlen(), except if `?' is present in the URL and its protocol
-   is HTTP, act as if `?' is the end of the string.  Needed for the
-   correct implementation of `construct' below, at least until we code
-   up proper parsing of URLs.  */
+/* Like strlen(), but allow the URL to be ended with '?'.  */
 static int
-urllen_http_hack (const char *url)
+urlpath_length (const char *url)
 {
-  if ((!strncmp (url, "http://", 7)
-       || !strncmp (url, "https://", 7)))
-    {
-      const char *q = strchr (url, '?');
-      if (q)
-	return q - url;
-    }
+  const char *q = strchr (url, '?');
+  if (q)
+    return q - url;
   return strlen (url);
 }
 
+static const char *
+find_last_char (const char *b, const char *e, char c)
+{
+  for (; e > b; e--)
+    if (*e == c)
+      return e;
+  return NULL;
+}
+
 /* Construct an absolute URL, given a (possibly) relative one.  This
-   is more tricky than it might seem, but it works.  */
+   gets tricky if you want to cover all the "reasonable" cases, but
+   I'm satisfied with the result.  */
 static char *
 construct (const char *url, const char *sub, int subsize, int no_proto)
 {
@@ -1292,62 +1295,116 @@ construct (const char *url, const char *sub, int subsize, int no_proto)
 
   if (no_proto)
     {
-      int i;
+      const char *end = url + urlpath_length (url);
 
       if (*sub != '/')
 	{
-	  for (i = urllen_http_hack (url); i && url[i] != '/'; i--);
-	  if (!i || (url[i] == url[i - 1]))
+	  /* SUB is a relative URL: we need to replace everything
+	     after last slash (possibly empty) with SUB.
+
+	     So, if URL is "whatever/foo/bar", and SUB is "qux/xyzzy",
+	     our result should be "whatever/foo/qux/xyzzy".  */
+	  int need_explicit_slash = 0;
+	  int span;
+	  const char *start_insert;
+	  const char *last_slash = find_last_char (url, end, '/'); /* the last slash. */
+	  if (!last_slash)
 	    {
-	      int l = urllen_http_hack (url);
-	      char *t = (char *)alloca (l + 2);
-	      memcpy (t, url, l);
-	      t[l] = '/';
-	      t[l + 1] = '\0';
-	      url = t;
-	      i = l;
+	      /* No slash found at all.  Append SUB to what we have,
+		 but we'll need a slash as a separator.
+
+		 Example: if url == "foo" and sub == "qux/xyzzy", then
+		 we cannot just append sub to url, because we'd get
+		 "fooqux/xyzzy", whereas what we want is
+		 "foo/qux/xyzzy".
+
+		 To make sure the / gets inserted, we set
+		 need_explicit_slash to 1.  We also set start_insert
+		 to end + 1, so that the length calculations work out
+		 correctly for one more (slash) character.  Accessing
+		 that character is fine, since it will be the
+		 delimiter, '\0' or '?'.  */
+	      /* example: "foo?..." */
+	      /*               ^    ('?' gets changed to '/') */
+	      start_insert = end + 1;
+	      need_explicit_slash = 1;
 	    }
-	  constr = (char *)xmalloc (i + 1 + subsize + 1);
-	  strncpy (constr, url, i + 1);
-	  constr[i + 1] = '\0';
-	  strncat (constr, sub, subsize);
+	  else
+	    {
+	      /* example: "whatever/foo/bar" */
+	      /*                        ^    */
+	      start_insert = last_slash + 1;
+	    }
+
+	  span = start_insert - url;
+	  constr = (char *)xmalloc (span + subsize + 1);
+	  if (span)
+	    memcpy (constr, url, span);
+	  if (need_explicit_slash)
+	    constr[span - 1] = '/';
+	  if (subsize)
+	    memcpy (constr + span, sub, subsize);
+	  constr[span + subsize] = '\0';
 	}
       else /* *sub == `/' */
 	{
-	  int fl;
+	  /* SUB is an absolute path: we need to replace everything
+             after (and including) the FIRST slash with SUB.
 
-	  i = 0;
-	  do
-	    {
-	      for (; url[i] && url[i] != '/'; i++);
-	      if (!url[i])
-		break;
-	      fl = (url[i] == url[i + 1] && url[i + 1] == '/');
-	      if (fl)
-		i += 2;
-	    }
-	  while (fl);
-	  if (!url[i])
-	    {
-	      int l = urllen_http_hack (url);
-	      char *t = (char *)alloca (l + 2);
-	      strcpy (t, url);
-	      t[l] = '/';
-	      t[l + 1] = '\0';
-	      url = t;
-	    }
-	  constr = (char *)xmalloc (i + 1 + subsize + 1);
-	  strncpy (constr, url, i);
-	  constr[i] = '\0';
-	  strncat (constr + i, sub, subsize);
-	  constr[i + subsize] = '\0';
-	} /* *sub == `/' */
+	     So, if URL is "http://host/whatever/foo/bar", and SUB is
+	     "/qux/xyzzy", our result should be
+	     "http://host/qux/xyzzy".  */
+	  int span;
+	  const char *slash, *start_insert;
+	  const char *pos = url;
+	  int seen_slash_slash = 0;
+	  /* We're looking for the first slash, but want to ignore
+             double slash. */
+	again:
+	  slash = memchr (pos, '/', end - pos);
+	  if (slash && !seen_slash_slash)
+	    if (*(slash + 1) == '/')
+	      {
+		pos = slash + 2;
+		seen_slash_slash = 1;
+		goto again;
+	      }
+
+	  /* At this point, SLASH is the location of the first / after
+	     "//", or the first slash altogether.  START_INSERT is the
+	     pointer to the location where SUB will be inserted.  When
+	     examining the last two examples, keep in mind that SUB
+	     begins with '/'. */
+
+	  if (!slash && !seen_slash_slash)
+	    /* example: "foo" */
+	    /*           ^    */
+	    start_insert = url;
+	  else if (!slash && seen_slash_slash)
+	    /* example: "http://foo" */
+	    /*                     ^ */
+	    start_insert = end;
+	  else if (slash && !seen_slash_slash)
+	    /* example: "foo/bar" */
+	    /*           ^        */
+	    start_insert = url;
+	  else if (slash && seen_slash_slash)
+	    /* example: "http://something/" */
+	    /*                           ^  */
+	    start_insert = slash;
+
+	  span = start_insert - url;
+	  constr = (char *)xmalloc (span + subsize + 1);
+	  if (span)
+	    memcpy (constr, url, span);
+	  if (subsize)
+	    memcpy (constr + span, sub, subsize);
+	  constr[span + subsize] = '\0';
+	}
     }
   else /* !no_proto */
     {
-      constr = (char *)xmalloc (subsize + 1);
-      strncpy (constr, sub, subsize);
-      constr[subsize] = '\0';
+      constr = strdupdelim (sub, sub + subsize);
     }
   return constr;
 }
