@@ -1,3 +1,7 @@
+2003-12-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi: Document the new option `--protocol-directories'.
+
 2003-11-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Portability): Update slightly.

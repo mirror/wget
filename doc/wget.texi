@@ -891,6 +891,16 @@ Wget with @samp{-r http://fly.srk.fer.hr/} will create a structure of
 directories beginning with @file{fly.srk.fer.hr/}.  This option disables
 such behavior.
 
+@item --protocol-directories
+Use the protocol name as a directory component of local file names.  For
+example, with this option, @samp{wget -r http://@var{host}} will save to
+@samp{http/@var{host}/...} rather than just to @samp{@var{host}/...}.
+
+Disable generation of host-prefixed directories.  By default, invoking
+Wget with @samp{-r http://fly.srk.fer.hr/} will create a structure of
+directories beginning with @file{fly.srk.fer.hr/}.  This option disables
+such behavior.
+
 @cindex cut directories
 @item --cut-dirs=@var{number}
 Ignore @var{number} directory components.  This is useful for getting a
@@ -2375,6 +2385,10 @@ Use POST as the method for all HTTP requests and send the contents of
 @item progress = @var{string}
 Set the type of the progress indicator.  Legal types are ``dot'' and
 ``bar''.
+
+@item protocol_directories = on/off
+When set, use the protocol name as a directory component of local file
+names.  The same as @samp{--protocol-directories}.
 
 @item proxy_user = @var{string}
 Set proxy authentication user name to @var{string}, like @samp{--proxy-user}.
