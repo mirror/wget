@@ -32,14 +32,13 @@ considered a fatal error.
 ** The new option `--dns-cache=off' may be used to prevent Wget from
 caching DNS lookups.
 
-** The build process now requires Autoconf 2.5x.
-
-** Wget no longer quotes characters in local file names that would be
-considered "unsafe" as part of URL.  Quoting can still occur for
-control characters or for '/', but no longer for frequent characters
-such as space.  You can use the new option --restrict-file-names to
-enforce even stricter rules, which is useful when downloading to
-Windows partitions.
+** Wget no longer escapes characters in local file names based on
+whether they're appropriate in URLs.  Escaping can still occur for
+nonprintable characters or for '/', but no longer for frequent
+characters such as space.  You can use the new option
+--restrict-file-names to relax or strengthen these rules, which can be
+useful if you dislike the default or if you're downloading to
+non-native partitions.
 
 * Wget 1.8.2 is a bugfix release with no user-visible changes.
 
