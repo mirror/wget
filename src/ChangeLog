@@ -1,3 +1,9 @@
+2003-10-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* convert.c (construct_relative): Don't handle absolute files
+	specially -- for example, -P/tmp/foo shouldn't imply that
+	converted files must refer to "/tmp/foo/..."!
+
 2003-10-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c: Consider status 307 a valid redirect.

@@ -327,33 +327,27 @@ convert_links (const char *file, struct urlpos *links)
   logprintf (LOG_VERBOSE, "%d-%d\n", to_file_count, to_url_count);
 }
 
-/* Construct and return a malloced copy of the relative link from two
-   pieces of information: local name S1 of the referring file and
-   local name S2 of the referred file.
+/* Construct and return a link that points from S1's position to S2.
+   Both files should be local file names, S1 of the referrering file,
+   and S2 of the referred file.
 
-   So, if S1 is "jagor.srce.hr/index.html" and S2 is
-   "jagor.srce.hr/images/news.gif", the function will return
-   "images/news.gif".
-
-   Alternately, if S1 is "fly.cc.fer.hr/ioccc/index.html", and S2 is
-   "fly.cc.fer.hr/images/fly.gif", the function will return
-   "../images/fly.gif".
+   So, if S1 is "H/index.html" and S2 is "H/images/news.gif", this
+   function will return "images/news.gif".  On the other hand, if S1
+   is "H/ioccc/index.html", and S2 is "H/images/fly.gif", it will
+   return "../images/fly.gif".
 
    Caveats: S1 should not begin with `/', unless S2 also begins with
    '/'.  S1 should not contain things like ".." and such --
    construct_relative ("fly/ioccc/../index.html",
    "fly/images/fly.gif") will fail.  (A workaround is to call
    something like path_simplify() on S1).  */
+
 static char *
 construct_relative (const char *s1, const char *s2)
 {
   int i, cnt, sepdirs1;
   char *res;
 
-  if (*s2 == '/')
-    return xstrdup (s2);
-  /* S1 should *not* be absolute, if S2 wasn't.  */
-  assert (*s1 != '/');
   i = cnt = 0;
   /* Skip the directories common to both strings.  */
   while (1)
