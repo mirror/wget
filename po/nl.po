@@ -1,48 +1,47 @@
-# Dutch messages for GNU Wget.
-# Copyright © 1997, 1998 Free Software Foundation, Inc.
-# André van Dijk <ady@unseen.demon.nl>, 1998
-# Dennis Smit <ds@nerds-incorporated.org>, 2003
+# Dutch translation of wget
+# Copyright Â© 1997, 1998, 2004 Free Software Foundation, Inc.
+# AndrÃ© van Dijk <ady@unseen.demon.nl>, 1998
+# Elros Cyriatan <cyriatan@fastmail.fm>, 2004.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.9\n"
-"POT-Creation-Date: 2003-11-07 00:52+0100\n"
-"PO-Revision-Date: 2003-11-4 16:29+0200\n"
-"Last-Translator: Dennis Smit <ds@nerds-incorporated.org>\n"
-"Language-Team: Dutch <nl@li.org>\n"
+"Project-Id-Version: wget 1.9.1\n"
+"POT-Creation-Date: 2003-10-11 16:21+0200\n"
+"PO-Revision-Date: 2004-04-16 15:23+0200\n"
+"Last-Translator: Elros Cyriatan <cyriatan@fastmail.fm>\n"
+"Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: src/connect.c:181
+#: src/connect.c:88
 #, c-format
-msgid "%s: unable to resolve bind address `%s'; disabling bind.\n"
-msgstr ""
-"%s: gefaald in het oplossen van het bind adres `%s'; bind uitgeschakeld\n"
+msgid "Unable to convert `%s' to a bind address.  Reverting to ANY.\n"
+msgstr "Kan niet `%s' converteren naar een bind-adres, terugvallen op ANY.\n"
 
-#: src/connect.c:247
+#: src/connect.c:165
 #, c-format
-msgid "Connecting to %s|%s|:%d... "
-msgstr "Verbinden met %s|%s|:%d... "
+msgid "Connecting to %s[%s]:%hu... "
+msgstr "Bezig met verbinden met %s[%s]:%hu... "
 
-#: src/connect.c:249
+#: src/connect.c:168
 #, c-format
-msgid "Connecting to %s:%d... "
-msgstr "Verbinden met %s:%d... "
+msgid "Connecting to %s:%hu... "
+msgstr "Bezig met verbinden met %s:%hu... "
 
-#: src/connect.c:298
+#: src/connect.c:222
 msgid "connected.\n"
 msgstr "verbonden.\n"
 
 #: src/convert.c:171
 #, c-format
 msgid "Converted %d files in %.2f seconds.\n"
-msgstr "Heeft %d bestanden in %.2f seconden geconverteerd.\n"
+msgstr "%d bestanden geconverteerd in %.2f seconden.\n"
 
 #: src/convert.c:197
 #, c-format
 msgid "Converting %s... "
-msgstr "Omzetten %s... "
+msgstr "Bezig met converteren van %s... "
 
 #: src/convert.c:210
 msgid "nothing to do.\n"
@@ -51,46 +50,46 @@ msgstr "niets te doen.\n"
 #: src/convert.c:218 src/convert.c:242
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
-msgstr "Kan verwijzingen niet omzetten naar %s: %s\n"
+msgstr "Kan koppelingen niet converteren naar %s: %s\n"
 
 #: src/convert.c:233
 #, c-format
 msgid "Unable to delete `%s': %s\n"
-msgstr "Niet in staat `%s': %s te verwijderen\n"
+msgstr "Kan `%s' niet verwijderen: %s\n"
 
-#: src/convert.c:448
+#: src/convert.c:439
 #, c-format
 msgid "Cannot back up %s as %s: %s\n"
-msgstr "Kan %s niet backuppen als %s: %s\n"
+msgstr "Kan geen reservekopie maken van %s als %s: %s\n"
 
-#: src/cookies.c:619
+#: src/cookies.c:606
 #, c-format
 msgid "Error in Set-Cookie, field `%s'"
 msgstr "Fout in Set-Cookie, veld `%s'"
 
-#: src/cookies.c:642
+#: src/cookies.c:629
 #, c-format
 msgid "Syntax error in Set-Cookie: %s at position %d.\n"
-msgstr "Syntax fout in Set-Cookie: %s op plek %d.\n"
+msgstr "Syntaxisfout in Set-Cookie: %s op positie %d.\n"
 
-#: src/cookies.c:1443
+#: src/cookies.c:1426
 #, c-format
 msgid "Cannot open cookies file `%s': %s\n"
-msgstr "Kan cookiesbestand niet openen `%s': %s\n"
+msgstr "Kan cookiesbestand `%s' niet openen: %s\n"
 
-#: src/cookies.c:1455
+#: src/cookies.c:1438
 #, c-format
 msgid "Error writing to `%s': %s\n"
 msgstr "Fout bij schrijven naar `%s': %s\n"
 
-#: src/cookies.c:1458
+#: src/cookies.c:1442
 #, c-format
 msgid "Error closing `%s': %s\n"
 msgstr "Fout bij sluiten `%s': %s\n"
 
 #: src/ftp-ls.c:812
 msgid "Unsupported listing type, trying Unix listing parser.\n"
-msgstr "Niet ondersteund listingtype, probeer de Unix listing parser.\n"
+msgstr "Niet ondersteunde lijstsoort, probeer de Unix lijstverwerker.\n"
 
 #: src/ftp-ls.c:857 src/ftp-ls.c:859
 #, c-format
@@ -123,118 +122,118 @@ msgid " (%s bytes)"
 msgstr " (%s Bytes)"
 
 #. Second: Login with proper USER/PASS sequence.
-#: src/ftp.c:315
+#: src/ftp.c:202
 #, c-format
 msgid "Logging in as %s ... "
-msgstr "Inloggen als %s ... "
+msgstr "Bezig met inloggen als %s ... "
 
 # Ist das gemeint?
-#: src/ftp.c:328 src/ftp.c:381 src/ftp.c:412 src/ftp.c:466 src/ftp.c:581
-#: src/ftp.c:632 src/ftp.c:662 src/ftp.c:723 src/ftp.c:792 src/ftp.c:870
-#: src/ftp.c:921
+#: src/ftp.c:215 src/ftp.c:268 src/ftp.c:299 src/ftp.c:353 src/ftp.c:468
+#: src/ftp.c:519 src/ftp.c:551 src/ftp.c:611 src/ftp.c:675 src/ftp.c:748
+#: src/ftp.c:796
 msgid "Error in server response, closing control connection.\n"
-msgstr "Fout in antwoord server, verbreek besturingsverbinding.\n"
+msgstr "Fout in antwoord server, de besturingsverbinding wordt gesloten.\n"
 
-#: src/ftp.c:336
+#: src/ftp.c:223
 msgid "Error in server greeting.\n"
 msgstr "Fout in servergroet.\n"
 
-#: src/ftp.c:344 src/ftp.c:475 src/ftp.c:590 src/ftp.c:671 src/ftp.c:734
-#: src/ftp.c:803 src/ftp.c:881 src/ftp.c:932
+#: src/ftp.c:231 src/ftp.c:362 src/ftp.c:477 src/ftp.c:560 src/ftp.c:621
+#: src/ftp.c:685 src/ftp.c:758 src/ftp.c:806
 msgid "Write failed, closing control connection.\n"
 msgstr "Schrijffout, verbreek besturingsverbinding.\n"
 
-#: src/ftp.c:351
+#: src/ftp.c:238
 msgid "The server refuses login.\n"
 msgstr "De server weigert de login.\n"
 
-#: src/ftp.c:358
+#: src/ftp.c:245
 msgid "Login incorrect.\n"
 msgstr "Login onjuist.\n"
 
-#: src/ftp.c:365
+#: src/ftp.c:252
 msgid "Logged in!\n"
 msgstr "Ingelogd!\n"
 
-#: src/ftp.c:390
+#: src/ftp.c:277
 msgid "Server error, can't determine system type.\n"
-msgstr "Serverfout, kan systeemtype niet bepalen.\n"
+msgstr "Serverfout, kan systeemsoort niet bepalen.\n"
 
-#: src/ftp.c:400 src/ftp.c:710 src/ftp.c:776 src/ftp.c:836
+#: src/ftp.c:287 src/ftp.c:596 src/ftp.c:659 src/ftp.c:716
 msgid "done.    "
 msgstr "gereed.    "
 
-#: src/ftp.c:454 src/ftp.c:611 src/ftp.c:646 src/ftp.c:904 src/ftp.c:955
+#: src/ftp.c:341 src/ftp.c:498 src/ftp.c:533 src/ftp.c:779 src/ftp.c:827
 msgid "done.\n"
 msgstr "gereed.\n"
 
-#: src/ftp.c:483
+#: src/ftp.c:370
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
-msgstr "Onbekend type `%c', verbreek besturingsverbinding.\n"
+msgstr "Onbekend soort `%c', de besturingsverbinding wordt gesloten.\n"
 
-#: src/ftp.c:496
+#: src/ftp.c:383
 msgid "done.  "
 msgstr "gereed.  "
 
-#: src/ftp.c:502
+#: src/ftp.c:389
 msgid "==> CWD not needed.\n"
 msgstr "-=> CWD onnodig.\n"
 
-#: src/ftp.c:597
+#: src/ftp.c:484
 #, c-format
 msgid ""
 "No such directory `%s'.\n"
 "\n"
 msgstr ""
-"Onbekende directory `%s'.\n"
+"Onbekende map `%s'.\n"
 "\n"
 
 #. do not CWD
-#: src/ftp.c:615
+#: src/ftp.c:502
 msgid "==> CWD not required.\n"
-msgstr "==> CWD niet noodzakelijk.\n"
+msgstr "==> CWD niet vereist.\n"
 
-#: src/ftp.c:678
+#: src/ftp.c:567
 msgid "Cannot initiate PASV transfer.\n"
 msgstr "Kan PASV-overdracht niet beginnen.\n"
 
-#: src/ftp.c:682
+#: src/ftp.c:571
 msgid "Cannot parse PASV response.\n"
-msgstr "Kan PASV-antwoord niet ontleden.\n"
+msgstr "Kan PASV-antwoord niet verwerken.\n"
 
-#: src/ftp.c:702
+#: src/ftp.c:588
 #, c-format
-msgid "couldn't connect to %s port %hu: %s\n"
-msgstr "kan niet verbinden met %s poort %hu: %s\n"
+msgid "couldn't connect to %s:%hu: %s\n"
+msgstr "kan niet verbinden met %s:%hu: %s.\n"
 
-#: src/ftp.c:753
+#: src/ftp.c:638
 #, c-format
 msgid "Bind error (%s).\n"
 msgstr "Bindfout (%s).\n"
 
-#: src/ftp.c:761
+#: src/ftp.c:645
 msgid "Invalid PORT.\n"
 msgstr "Ongeldige POORT.\n"
 
-#: src/ftp.c:817
+#: src/ftp.c:698
 #, c-format
 msgid ""
 "\n"
 "REST failed; will not truncate `%s'.\n"
 msgstr ""
 "\n"
-"REST gefaald; zal niet afkappen `%s'.\n"
+"REST mislukt; zal niet afkappen `%s'.\n"
 
-#: src/ftp.c:825
+#: src/ftp.c:705
 msgid ""
 "\n"
 "REST failed, starting from scratch.\n"
 msgstr ""
 "\n"
-"REST gefaald, begin opnieuw.\n"
+"REST mislukt, begin opnieuw.\n"
 
-#: src/ftp.c:890
+#: src/ftp.c:766
 #, c-format
 msgid ""
 "No such file `%s'.\n"
@@ -243,96 +242,96 @@ msgstr ""
 "Onbekend bestand `%s'.\n"
 "\n"
 
-#: src/ftp.c:941
+#: src/ftp.c:814
 #, c-format
 msgid ""
 "No such file or directory `%s'.\n"
 "\n"
 msgstr ""
-"Onbekend bestand of directory `%s'.\n"
+"Onbekend bestand of map `%s'.\n"
 "\n"
 
-#: src/ftp.c:1027 src/ftp.c:1035
+#: src/ftp.c:898 src/ftp.c:906
 #, c-format
 msgid "Length: %s"
 msgstr "Lengte: %s"
 
-#: src/ftp.c:1029 src/ftp.c:1037
+#: src/ftp.c:900 src/ftp.c:908
 #, c-format
 msgid " [%s to go]"
 msgstr " [nog %s]"
 
 # Geen idee hoe dit correct te vertalen
-#: src/ftp.c:1039
+#: src/ftp.c:910
 msgid " (unauthoritative)\n"
 msgstr " (onauthoritatief)\n"
 
-#: src/ftp.c:1067
+#: src/ftp.c:936
 #, c-format
 msgid "%s: %s, closing control connection.\n"
-msgstr "%s: %s, verbreek besturingsverbinding.\n"
+msgstr "%s: %s, de besturingsverbinding wordt gesloten.\n"
 
-#: src/ftp.c:1075
+#: src/ftp.c:944
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
 msgstr "%s (%s) - Gegevensverbinding: %s; "
 
-#: src/ftp.c:1092
+#: src/ftp.c:961
 msgid "Control connection closed.\n"
 msgstr "Besturingsverbinding verbroken.\n"
 
-#: src/ftp.c:1110
+#: src/ftp.c:979
 msgid "Data transfer aborted.\n"
 msgstr "Gegevensoverdracht afgebroken.\n"
 
-#: src/ftp.c:1175
+#: src/ftp.c:1044
 #, c-format
 msgid "File `%s' already there, not retrieving.\n"
 msgstr "Bestand `%s' reeds aanwezig, niet ophalen.\n"
 
-#: src/ftp.c:1245 src/http.c:1618
+#: src/ftp.c:1114 src/http.c:1716
 #, c-format
 msgid "(try:%2d)"
 msgstr "(poging:%2d)"
 
-#: src/ftp.c:1311 src/http.c:1877
+#: src/ftp.c:1180 src/http.c:1975
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld]\n"
 "\n"
 msgstr ""
-"%s (%s) - `%s' bewaard [%ld]\n"
+"%s (%s) - `%s' opgeslagen [%ld]\n"
 "\n"
 
-#: src/ftp.c:1353 src/main.c:894 src/recur.c:376 src/retr.c:593
+#: src/ftp.c:1222 src/main.c:890 src/recur.c:377 src/retr.c:596
 #, c-format
 msgid "Removing %s.\n"
-msgstr "Verwijder `%s'.\n"
+msgstr "Bezig met verwijderen %s.\n"
 
-#: src/ftp.c:1395
+#: src/ftp.c:1264
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
-msgstr "Aanroep `%s' als tijdelijk lijstbestand.\n"
+msgstr "`%s' wordt gebruikt als tijdelijk lijstbestand.\n"
 
-#: src/ftp.c:1410
+#: src/ftp.c:1279
 #, c-format
 msgid "Removed `%s'.\n"
-msgstr "Verwijderd `%s'.\n"
+msgstr "`%s' verwijderd.\n"
 
-#: src/ftp.c:1445
+#: src/ftp.c:1314
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr "De recursiediepte %d overschreed de maximum diepte %d.\n"
 
 #. Remote file is older, file sizes can be compared and
 #. are both equal.
-#: src/ftp.c:1515
+#: src/ftp.c:1384
 #, c-format
 msgid "Remote file no newer than local file `%s' -- not retrieving.\n"
 msgstr "Serverbestand niet nieuwer dan lokaal bestand `%s' -- niet ophalen.\n"
 
 #. Remote file is newer or sizes cannot be matched
-#: src/ftp.c:1522
+#: src/ftp.c:1391
 #, c-format
 msgid ""
 "Remote file is newer than local file `%s' -- retrieving.\n"
@@ -342,7 +341,7 @@ msgstr ""
 "\n"
 
 #. Sizes do not match
-#: src/ftp.c:1529
+#: src/ftp.c:1398
 #, c-format
 msgid ""
 "The sizes do not match (local %ld) -- retrieving.\n"
@@ -351,80 +350,78 @@ msgstr ""
 "Groottes komen niet overeen (lokaal %ld) -- ophalen.\n"
 "\n"
 
-#: src/ftp.c:1546
+#: src/ftp.c:1415
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr "Ongeldige naam voor een symbolische koppeling, overslaan.\n"
 
-#: src/ftp.c:1563
+#: src/ftp.c:1432
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
 "\n"
 msgstr "Juiste symbolische koppeling bestaat reeds %s -> %s\n"
 
-#: src/ftp.c:1571
+#: src/ftp.c:1440
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr "Maak symbolische koppeling %s -> %s\n"
 
-#: src/ftp.c:1582
+#: src/ftp.c:1451
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
-msgstr ""
-"Symbolische koppelingen niet ondersteund, symbolische koppeling overslaan`%"
-"s'.\n"
+msgstr "Symbolische koppelingen niet ondersteund, symbolische koppeling overslaan `%s'.\n"
 
-#: src/ftp.c:1594
+#: src/ftp.c:1463
 #, c-format
 msgid "Skipping directory `%s'.\n"
-msgstr "Directory overslaan `%s'.\n"
+msgstr "Map `%s' wordt overgeslagen.\n"
 
-#: src/ftp.c:1603
+#: src/ftp.c:1472
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
-msgstr "%s: onbekend/niet-ondersteund bestandstype.\n"
+msgstr "%s: onbekende/niet-ondersteunde bestandssoort.\n"
 
-#: src/ftp.c:1630
+#: src/ftp.c:1499
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
-msgstr "%s: beschadigd tijdstempel.\n"
+msgstr "%s: beschadigde tijdstempel.\n"
 
-#: src/ftp.c:1658
+#: src/ftp.c:1524
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr "Mappen worden niet opgehaald, omdat diepte %d is (max %d).\n"
 
-#: src/ftp.c:1708
+#: src/ftp.c:1574
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr "Daal niet af naar `%s', omdat het uitgesloten/niet-ingesloten is.\n"
 
-#: src/ftp.c:1772 src/ftp.c:1785
+#: src/ftp.c:1639 src/ftp.c:1652
 #, c-format
 msgid "Rejecting `%s'.\n"
-msgstr "`%s' afgewezen.\n"
+msgstr "`%s' verworpen.\n"
 
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1831
+#: src/ftp.c:1698
 #, c-format
 msgid "No matches on pattern `%s'.\n"
-msgstr "Geen overeenstemmingen met patroon `%s'.\n"
+msgstr "Geen overeenkomsten met patroon `%s'.\n"
 
-#: src/ftp.c:1897
+#: src/ftp.c:1764
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
-msgstr "HTML-achtige index naar `%s' [%ld] geschreven.\n"
+msgstr "Ge-HTML-izeerde index naar `%s' [%ld] geschreven.\n"
 
-#: src/ftp.c:1902
+#: src/ftp.c:1769
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
-msgstr "HTML-achtige index naar `%s' geschreven.\n"
+msgstr "Ge-HTML-izeerde index naar `%s' geschreven.\n"
 
-#: src/gen_sslfunc.c:166
+#: src/gen_sslfunc.c:117
 msgid "Could not seed OpenSSL PRNG; disabling SSL.\n"
-msgstr "Kon geen zaad maken voor OpenSSL PRNG; SSL uitgeschakeld.\n"
+msgstr "Kan OpenSSL PRNG niet van seed voorzien; SSL uitgeschakeld.\n"
 
 #: src/getopt.c:675
 #, c-format
@@ -450,19 +447,19 @@ msgstr "%s: optie `%s' vereist een argument\n"
 #: src/getopt.c:752
 #, c-format
 msgid "%s: unrecognized option `--%s'\n"
-msgstr "%s: niet herkende optie `--%s'\n"
+msgstr "%s: niet-herkende optie `--%s'\n"
 
 #. +option or -option
 #: src/getopt.c:756
 #, c-format
 msgid "%s: unrecognized option `%c%s'\n"
-msgstr "%s: niet herkende optie `%c%s'\n"
+msgstr "%s: niet-herkende optie `%c%s'\n"
 
 #. 1003.2 specifies the format of this message.
 #: src/getopt.c:782
 #, c-format
 msgid "%s: illegal option -- %c\n"
-msgstr "%s: ongeldige optie -- %c\n"
+msgstr "%s: onjuiste optie -- %c\n"
 
 #: src/getopt.c:785
 #, c-format
@@ -485,114 +482,114 @@ msgstr "%s: optie `-W %s' is dubbelzinnig\n"
 msgid "%s: option `-W %s' doesn't allow an argument\n"
 msgstr "%s: optie `-W %s' staat geen argument toe\n"
 
-#: src/host.c:549
+#: src/host.c:636
 #, c-format
 msgid "Resolving %s... "
-msgstr "Oplossen %s..."
+msgstr "Bezig met oplossen van %s... "
 
-#: src/host.c:562 src/host.c:576
+#: src/host.c:656 src/host.c:672
 #, c-format
 msgid "failed: %s.\n"
-msgstr "gefaald: %s.\n"
+msgstr "mislukt: %s.\n"
 
-#: src/host.c:578
+#: src/host.c:674
 msgid "failed: timed out.\n"
-msgstr "gefaald: time out.\n"
+msgstr "mislukt: wachttijd verlopen.\n"
 
-#: src/host.c:666
+#: src/host.c:762
 msgid "Host not found"
 msgstr "Host niet gevonden"
 
-#: src/host.c:668
+#: src/host.c:764
 msgid "Unknown error"
 msgstr "Onbekende fout"
 
-#: src/html-url.c:294
+#: src/html-url.c:293
 #, c-format
 msgid "%s: Cannot resolve incomplete link %s.\n"
-msgstr "%s: Niet in staat om een niet complete link op te lossen %s.\n"
+msgstr "%s: Kan onvolledige koppeling %s niet oplossen.\n"
 
 #. this is fatal
-#: src/http.c:616
+#: src/http.c:674
 msgid "Failed to set up an SSL context\n"
-msgstr "SSL-omgeving opzetten is mislukt\n"
+msgstr "SSL-context opzetten is mislukt\n"
 
-#: src/http.c:621
+#: src/http.c:680
 #, c-format
 msgid "Failed to load certificates from %s\n"
 msgstr "Laden certificaten van %s mislukt\n"
 
-#: src/http.c:624 src/http.c:631
+#: src/http.c:684 src/http.c:692
 msgid "Trying without the specified certificate\n"
-msgstr "Pogen zonder gespecificeerde certificaat\n"
+msgstr "Pogen zonder het aangegeven certificaat\n"
 
-#: src/http.c:628
+#: src/http.c:688
 #, c-format
 msgid "Failed to get certificate key from %s\n"
 msgstr "Verkrijgen certificaatsleutel van %s mislukt\n"
 
-#: src/http.c:694 src/http.c:1711
+#: src/http.c:761 src/http.c:1809
 msgid "Unable to establish SSL connection.\n"
 msgstr "Niet in staat SSL-verbinding op te zetten\n"
 
-#: src/http.c:704
+#: src/http.c:770
 #, c-format
 msgid "Reusing connection to %s:%hu.\n"
-msgstr "Herbruik  verbinding met %s:%hu.\n"
+msgstr "Herbruiken verbinding met %s:%hu.\n"
 
-#: src/http.c:946
+#: src/http.c:1034
 #, c-format
 msgid "Failed writing HTTP request: %s.\n"
-msgstr "Schrijven HTTP-verzoek gefaald: %s.\n"
+msgstr "Schrijven HTTP-verzoek mislukt: %s.\n"
 
-#: src/http.c:951
+#: src/http.c:1039
 #, c-format
 msgid "%s request sent, awaiting response... "
 msgstr "%s verzoek verzonden, wacht op antwoord... "
 
-#: src/http.c:989
+#: src/http.c:1083
 msgid "End of file while parsing headers.\n"
 msgstr "Bestandseinde bij ontleden kopregels.\n"
 
-#: src/http.c:999
+#: src/http.c:1093
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr "Leesfout (%s) in kopregels.\n"
 
-#: src/http.c:1034
+#: src/http.c:1128
 msgid "No data received"
 msgstr "Geen gegevens ontvangen"
 
-#: src/http.c:1036
+#: src/http.c:1130
 msgid "Malformed status line"
 msgstr "Onjuiste statusregel"
 
-#: src/http.c:1041
+#: src/http.c:1135
 msgid "(no description)"
 msgstr "(geen beschrijving)"
 
-#: src/http.c:1169
+#: src/http.c:1267
 msgid "Authorization failed.\n"
-msgstr "Authorisatie gefaald.\n"
+msgstr "Authorisatie mislukt.\n"
 
-#: src/http.c:1176
+#: src/http.c:1274
 msgid "Unknown authentication scheme.\n"
 msgstr "Onbekend authenticatieschema.\n"
 
-#: src/http.c:1216
+#: src/http.c:1314
 #, c-format
 msgid "Location: %s%s\n"
 msgstr "Lokatie: %s%s\n"
 
-#: src/http.c:1217 src/http.c:1356
+#: src/http.c:1315 src/http.c:1454
 msgid "unspecified"
-msgstr "ongespecificeerd"
+msgstr "niet-opgegeven"
 
-#: src/http.c:1218
+#: src/http.c:1316
 msgid " [following]"
 msgstr "[volgt]"
 
-#: src/http.c:1285
+#: src/http.c:1383
 msgid ""
 "\n"
 "    The file is already fully retrieved; nothing to do.\n"
@@ -602,7 +599,7 @@ msgstr ""
 "    Het bestand is reeds volledig ontvangen; niets te doen.\n"
 "\n"
 
-#: src/http.c:1303
+#: src/http.c:1401
 #, c-format
 msgid ""
 "\n"
@@ -619,54 +616,54 @@ msgstr ""
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
-#: src/http.c:1346
+#: src/http.c:1444
 msgid "Length: "
 msgstr "Lengte: "
 
-#: src/http.c:1351
+#: src/http.c:1449
 #, c-format
 msgid " (%s to go)"
 msgstr " (nog %s)"
 
-#: src/http.c:1356
+#: src/http.c:1454
 msgid "ignored"
 msgstr "genegeerd"
 
-#: src/http.c:1500
+#: src/http.c:1598
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr "Waarschuwing: jokertekens niet ondersteund in HTTP.\n"
 
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:1530
+#: src/http.c:1628
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
 msgstr "Bestand `%s' reeds aanwezig, niet ophalen.\n"
 
-#: src/http.c:1702
+#: src/http.c:1800
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr "Kan niet schrijven naar `%s' (%s).\n"
 
-#: src/http.c:1721
+#: src/http.c:1819
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "FOUT: Omleiding (%d) zonder lokatie.\n"
 
-#: src/http.c:1753
+#: src/http.c:1851
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s FOUT %d: %s.\n"
 
-#: src/http.c:1766
+#: src/http.c:1864
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr "Laatste-aanpassingskopregel mist -- tijdstempels uitgeschakeld.\n"
 
-#: src/http.c:1774
+#: src/http.c:1872
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr "Laatst-aanpassingskopregel ongeldig -- tijdtstempels genegeerd.\n"
 
-#: src/http.c:1797
+#: src/http.c:1895
 #, c-format
 msgid ""
 "Server file no newer than local file `%s' -- not retrieving.\n"
@@ -675,16 +672,16 @@ msgstr ""
 "Serverbestand niet nieuwer dan lokaal bestand `%s' -- niet ophalen.\n"
 "\n"
 
-#: src/http.c:1805
+#: src/http.c:1903
 #, c-format
 msgid "The sizes do not match (local %ld) -- retrieving.\n"
 msgstr "Groottes komen niet overeen (lokaal %ld) -- ophalen.\n"
 
-#: src/http.c:1809
+#: src/http.c:1907
 msgid "Remote file is newer, retrieving.\n"
 msgstr "Verafgelegen bestand is nieuwer, ophalen.\n"
 
-#: src/http.c:1850
+#: src/http.c:1948
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld]\n"
@@ -693,12 +690,12 @@ msgstr ""
 "%s (%s) - `%s' bewaard [%ld/%ld]\n"
 "\n"
 
-#: src/http.c:1900
+#: src/http.c:1998
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld. "
 msgstr "%s (%s) - Verbinding verbroken bij byte %ld. "
 
-#: src/http.c:1909
+#: src/http.c:2007
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld])\n"
@@ -707,697 +704,414 @@ msgstr ""
 "%s (%s) - `%s' bewaard [%ld/%ld])\n"
 "\n"
 
-#: src/http.c:1930
+#: src/http.c:2028
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld/%ld. "
 msgstr "%s (%s) - Verbinding verbroken bij byte %ld/%ld. "
 
-#: src/http.c:1942
+#: src/http.c:2040
 #, c-format
 msgid "%s (%s) - Read error at byte %ld (%s)."
 msgstr "%s (%s) - Leesfout bij byte %ld (%s)."
 
-#: src/http.c:1951
+#: src/http.c:2049
 #, c-format
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr "%s (%s) - Leesfout bij byte %ld/%ld (%s). "
 
-#: src/init.c:348
+#: src/init.c:342
 #, c-format
 msgid "%s: WGETRC points to %s, which doesn't exist.\n"
-msgstr "%s: WGETRC wijst naar %s, wat niet bestaat.\n"
+msgstr "%s: WGETRC wijst naar %s, welke niet bestaat.\n"
 
-#: src/init.c:404 src/netrc.c:276
+#: src/init.c:398 src/netrc.c:276
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Kan `%s' niet lezen (%s).\n"
 
-#: src/init.c:422 src/init.c:428
+#: src/init.c:416 src/init.c:422
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Fout in `%s' bij regel %d.\n"
 
-#: src/init.c:460
+#: src/init.c:454
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
-msgstr ""
-"%s: Waarschuwing: Zowel systeem als gebruiker wgetrc verwijzen naar `%s'.\n"
+msgstr "%s: Waarschuwing: Zowel systeem- als gebruikers-wgetrc wijzen naar `%s'.\n"
 
-#: src/init.c:604
+#: src/init.c:594
 #, c-format
 msgid "%s: Invalid --execute command `%s'\n"
-msgstr "%s: Ongeldige --execute commando `%s'\n"
+msgstr "%s: Ongeldige --execute opdracht `%s'\n"
 
-#: src/init.c:640
+#: src/init.c:630
 #, c-format
 msgid "%s: %s: Invalid boolean `%s', use `on' or `off'.\n"
 msgstr "%s: %s: Ongeldige boolean `%s', gebruik `on' of `off'.\n"
 
-#: src/init.c:683
+#: src/init.c:673
 #, c-format
 msgid "%s: %s: Invalid boolean `%s', use always, on, off, or never.\n"
-msgstr "%s: %s: Ongeldige boolean `%s', gebruikt always, on, off, of never.\n"
+msgstr "%s: %s: Ongeldige boolean `%s', gebruik altijd 'on', 'off' of 'never'.\n"
 
-#: src/init.c:701
+#: src/init.c:691
 #, c-format
 msgid "%s: %s: Invalid number `%s'.\n"
-msgstr "%s: %s: Ongeldig nummer `%s'.\n"
+msgstr "%s: %s: Ongeldige aantal `%s'\n"
 
-#: src/init.c:940 src/init.c:959
+#: src/init.c:930 src/init.c:949
 #, c-format
 msgid "%s: %s: Invalid byte value `%s'\n"
-msgstr "%s: %s: Ongeldige byte waarde `%s'\n"
+msgstr "%s: %s: Ongeldige bytewaarde `%s'\n"
 
-#: src/init.c:984
+#: src/init.c:974
 #, c-format
 msgid "%s: %s: Invalid time period `%s'\n"
-msgstr "%s: %s: Ongeldige tijd periode `%s'\n"
+msgstr "%s: %s: Ongeldig tijdsinterval `%s'\n"
 
-#: src/init.c:1061
+#: src/init.c:1051
 #, c-format
 msgid "%s: %s: Invalid header `%s'.\n"
-msgstr "%s: %s: Ongeldige header `%s'.\n"
+msgstr "%s: %s: Ongeldige koptekst `%s'\n"
 
-#: src/init.c:1116
+#: src/init.c:1106
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
-msgstr "%s: %s: Ongeldige vooruitgang type `%s'.\n"
+msgstr "%s: %s: Ongeldige voortgangstype `%s'\n"
 
-#: src/init.c:1167
+#: src/init.c:1157
 #, c-format
 msgid "%s: %s: Invalid restriction `%s', use `unix' or `windows'.\n"
-msgstr "%s: %s: Ongeldige restrictie `%s'. gebruik `unix' of `windows'.\n"
+msgstr "%s: %s: Ongeldige restrictie `%s', gebruik 'unix' of 'windows'.\n"
 
-#: src/init.c:1208
+#: src/init.c:1198
 #, c-format
 msgid "%s: %s: Invalid value `%s'.\n"
-msgstr "%s: %s: Ongeldige waarde `%s'.\n"
+msgstr "%s: %s: Ongeldige waarde `%s'\n"
 
-#: src/log.c:642
+#: src/log.c:636
 #, c-format
 msgid ""
 "\n"
 "%s received, redirecting output to `%s'.\n"
 msgstr ""
 "\n"
-"%s ontvangen, stuurt de output door naar `%s'.\n"
+"%s ontvangen, uitvoer omgeleid naar `%s'.\n"
 
 #. Eek!  Opening the alternate log file has failed.  Nothing we
 #. can do but disable printing completely.
-#: src/log.c:649
+#: src/log.c:643
 #, c-format
 msgid "%s: %s; disabling logging.\n"
-msgstr "%s: %s; loggen uitgeschakeld.\n"
+msgstr "%s: %s; logboek bijhouden uitgeschakeld.\n"
 
-#: src/main.c:356
+#: src/main.c:127
 #, c-format
 msgid "Usage: %s [OPTION]... [URL]...\n"
-msgstr "Aanroep: %s [OPTIE]... [URL]...\n"
+msgstr "Gebruik: %s [OPTIE]... [URL]...\n"
 
-#: src/main.c:368
+#: src/main.c:135
+#, c-format
+msgid "GNU Wget %s, a non-interactive network retriever.\n"
+msgstr "GNU Wget %s, een niet-interactieve netwerkontvanger.\n"
+
+#. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
+#. don't bitch.  Also, it makes translation much easier.
+#: src/main.c:140
 msgid ""
+"\n"
 "Mandatory arguments to long options are mandatory for short options too.\n"
 "\n"
 msgstr ""
-"Verplichte argumenten voor lange opties zijn ook verplicht voor korte "
-"opties.\n"
+"\n"
+"Verplichte argumenten voor lange opties zijn ook verplicht voor korte opties.\n"
 "\n"
 
-#: src/main.c:370
-msgid "Startup:\n"
-msgstr "Opstarten:\n"
-
-#: src/main.c:372
-msgid "  -V,  --version           display the version of Wget and exit.\n"
-msgstr "  -V   --version           toon de versie van Wget en stop.\n"
-
-#: src/main.c:374
-msgid "  -h,  --help              print this help.\n"
-msgstr "  -h,  --help              deze help tonen.\n"
-
-#: src/main.c:376
-msgid "  -b,  --background        go to background after startup.\n"
-msgstr "  -b,  --background        draai op de achtergrond na opstarten.\n"
-
-#: src/main.c:378
-msgid "  -e,  --execute=COMMAND   execute a `.wgetrc'-style command.\n"
-msgstr "  -e,  --execute=COMMANDO  voer een `.wgetrc'-opdracht uit.\n"
-
-#: src/main.c:382
-msgid "Logging and input file:\n"
-msgstr "Loggen en invoerbestand:\n"
-
-#: src/main.c:384
-msgid "  -o,  --output-file=FILE    log messages to FILE.\n"
-msgstr "  -o,  --output-file=BESTAND   log meldingen in BESTAND.\n"
-
-#: src/main.c:386
-msgid "  -a,  --append-output=FILE  append messages to FILE.\n"
-msgstr "  -a,  --append-output=BESTAND meldingen toevoegen aan BESTAND.\n"
-
-#: src/main.c:389
-msgid "  -d,  --debug               print lots of debugging information.\n"
-msgstr "  -d,  --debug                 debug uitvoer tonen.\n"
-
-#: src/main.c:392
-msgid "  -q,  --quiet               quiet (no output).\n"
-msgstr "  -q,  --quiet                 stil (geen uitvoer).\n"
-
-#: src/main.c:394
-msgid "  -v,  --verbose             be verbose (this is the default).\n"
-msgstr "  -v,  --verbose               woordenrijk (dit is standaard).\n"
-
-#: src/main.c:396
+#: src/main.c:144
 msgid ""
-"  -nv, --non-verbose         turn off verboseness, without being quiet.\n"
+"Startup:\n"
+"  -V,  --version           display the version of Wget and exit.\n"
+"  -h,  --help              print this help.\n"
+"  -b,  --background        go to background after startup.\n"
+"  -e,  --execute=COMMAND   execute a `.wgetrc'-style command.\n"
+"\n"
 msgstr ""
+"Opstarten:\n"
+"  -V,  --version           toon de versie van wget en stop.\n"
+"  -h,  --help              deze hulp tonen.\n"
+"  -b,  --background        naar achtergrond gaan na opstarten.\n"
+"  -e,  --execute=OPDRACHT  een `.wgetrc'-stijl opdracht uitvoeren.\n"
+"\n"
+
+#: src/main.c:151
+msgid ""
+"Logging and input file:\n"
+"  -o,  --output-file=FILE     log messages to FILE.\n"
+"  -a,  --append-output=FILE   append messages to FILE.\n"
+"  -d,  --debug                print debug output.\n"
+"  -q,  --quiet                quiet (no output).\n"
+"  -v,  --verbose              be verbose (this is the default).\n"
+"  -nv, --non-verbose          turn off verboseness, without being quiet.\n"
+"  -i,  --input-file=FILE      download URLs found in FILE.\n"
+"  -F,  --force-html           treat input file as HTML.\n"
+"  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
+"\n"
+msgstr ""
+"Log bijhouden en invoerbestand:\n"
+"  -o,  --output-file=BESTAND   meldingen bijhouden in BESTAND.\n"
+"  -a,  --append-output=BESTAND meldingen toevoegen aan BESTAND.\n"
+"  -d,  --debug                 debug uitvoer tonen.\n"
+"  -q,  --quiet                 stil (geen uitvoer).\n"
+"  -v,  --verbose               woordenrijk (dit is standaard).\n"
 "  -nv, --non-verbose           beknopte uitvoer; niet geheel stil.\n"
-
-#: src/main.c:398
-msgid "  -i,  --input-file=FILE     download URLs found in FILE.\n"
-msgstr "  -i,  --input-file=BESTAND    URLs uit BESTAND lezen.\n"
-
-#: src/main.c:400
-msgid "  -F,  --force-html          treat input file as HTML.\n"
-msgstr "  -F,  --force-html            invoerbestand als HTML behandelen.\n"
-
-#: src/main.c:402
-msgid ""
-"  -B,  --base=URL            prepends URL to relative links in -F -i file.\n"
-msgstr ""
-"  -B,  --base=URL              voeg URL voor relatieve links in -F -i bestand."
+"  -i,  --input-file=BESTAND    URLs uit BESTAND lezen.\n"
+"  -F,  --force-html            invoerbestand als HTML behandelen.\n"
+"  -B,  --base=URL              voeg URL voor relatieve links in -F -i bestand.\n"
 "\n"
 
-#: src/main.c:406
-msgid "Download:\n"
-msgstr "Download:\n"
-
-#: src/main.c:408
+#: src/main.c:163
 msgid ""
-"  -t,  --tries=NUMBER            set number of retries to NUMBER (0 "
-"unlimits).\n"
+"Download:\n"
+"  -t,  --tries=NUMBER           set number of retries to NUMBER (0 unlimits).\n"
+"       --retry-connrefused      retry even if connection is refused.\n"
+"  -O   --output-document=FILE   write documents to FILE.\n"
+"  -nc, --no-clobber             don't clobber existing files or use .# suffixes.\n"
+"  -c,  --continue               resume getting a partially-downloaded file.\n"
+"       --progress=TYPE          select progress gauge type.\n"
+"  -N,  --timestamping           don't re-retrieve files unless newer than local.\n"
+"  -S,  --server-response        print server response.\n"
+"       --spider                 don't download anything.\n"
+"  -T,  --timeout=SECONDS        set all timeout values to SECONDS.\n"
+"       --dns-timeout=SECS       set the DNS lookup timeout to SECS.\n"
+"       --connect-timeout=SECS   set the connect timeout to SECS.\n"
+"       --read-timeout=SECS      set the read timeout to SECS.\n"
+"  -w,  --wait=SECONDS           wait SECONDS between retrievals.\n"
+"       --waitretry=SECONDS      wait 1...SECONDS between retries of a retrieval.\n"
+"       --random-wait            wait from 0...2*WAIT secs between retrievals.\n"
+"  -Y,  --proxy=on/off           turn proxy on or off.\n"
+"  -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n"
+"       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n"
+"       --limit-rate=RATE        limit download rate to RATE.\n"
+"       --dns-cache=off          disable caching DNS lookups.\n"
+"       --restrict-file-names=OS restrict chars in file names to ones OS allows.\n"
+"\n"
 msgstr ""
-"  -t,  --tries=AANTAL           zet herhalingspogingen op AANTAL (0\n"
-"                                is ongelimiteerd).\n"
-
-#: src/main.c:410
-msgid "       --retry-connrefused       retry even if connection is refused.\n"
-msgstr ""
-"       --retry-connrefused      ook blijven proberen als de connectie\n"
-"                                niet is toegestaan.\n"
-
-#: src/main.c:412
-msgid "  -O   --output-document=FILE    write documents to FILE.\n"
-msgstr "  -O   --output-document=BEST   schrijf documenten naar BEST.\n"
-
-#: src/main.c:414
-msgid ""
-"  -nc, --no-clobber              skip downloads that would download to\n"
-"                                 existing files.\n"
-msgstr ""
-"  -nc, --no-clobber             bestaande bestanden niet overschrijven.\n"
-
-#: src/main.c:417
-msgid ""
-"  -c,  --continue                resume getting a partially-downloaded "
-"file.\n"
-msgstr ""
-"  -c,  --continue               voortzetten gedeeltelijk opgehaald "
-"bestand\n"
-
-#: src/main.c:419
-msgid "       --progress=TYPE           select progress gauge type.\n"
-msgstr ""
-"       --progress=STIJL         zet ontvangst vooruitgang indicatie type.\n"
-
-
-#: src/main.c:421
-msgid ""
-"  -N,  --timestamping            don't re-retrieve files unless newer than\n"
-"                                 local.\n"
-msgstr ""
-"  -N,  --timestamping           haal geen bestanden die ouder zijn dan de\n"
-"                                lokalen.\n"
-
-
-#: src/main.c:424
-msgid "  -S,  --server-response         print server response.\n"
-msgstr "  -S,  --server-response        toon serverantwoord.\n"
-
-#: src/main.c:426
-msgid "       --spider                  don't download anything.\n"
-msgstr "       --spider                 niets ophalen.\n"
-
-#: src/main.c:428
-msgid "  -T,  --timeout=SECONDS         set all timeout values to SECONDS.\n"
-msgstr "  -T,  --timeout=SECONDEN       zet alle timeouts op SECONDEN.\n"
-
-#: src/main.c:430
-msgid "       --dns-timeout=SECS        set the DNS lookup timeout to SECS.\n"
-msgstr "       --dns-timeout=SECS       zet DNS lookup timeout op SECS.\n"
-
-#: src/main.c:432
-msgid "       --connect-timeout=SECS    set the connect timeout to SECS.\n"
-msgstr "       --connect-timeout=SECS   zet connectie timeout op SECS.\n"
-
-#: src/main.c:434
-msgid "       --read-timeout=SECS       set the read timeout to SECS.\n"
-msgstr "       --read-timeout=SECS      zet lees timeout op SECS.\n"
-
-#: src/main.c:436
-msgid "  -w,  --wait=SECONDS            wait SECONDS between retrievals.\n"
-msgstr "  -w,  --wait=SECONDEN          wacht SECONDEN tussen ontvangsten.\n"
-
-#: src/main.c:438
-msgid ""
-"       --waitretry=SECONDS       wait 1..SECONDS between retries of a "
-"retrieval.\n"
-msgstr ""
-"       --waitretry=SECONDEN     wacht 1...SECONDEN tussen opnieuw "
-"proberen.\n"
-
-#: src/main.c:440
-msgid ""
-"       --random-wait             wait from 0...2*WAIT secs between "
-"retrievals.\n"
-msgstr ""
-"       --random-wait            wacht tussen 0...2*WAIT seconden tussen "
-"de\n"
-"                                pogingen.\n"
-
-#: src/main.c:442
-msgid "  -Y,  --proxy=on/off            turn proxy on or off.\n"
-msgstr "  -Y,  --proxy=on/off           proxy aan (`on') of uit (`off').\n"
-
-#: src/main.c:444
-msgid "  -Q,  --quota=NUMBER            set retrieval quota to NUMBER.\n"
-msgstr "  -Q,  --quota=AANTAL           zet de ontvangstquota op AANTAL.\n"
-
-#: src/main.c:446
-msgid ""
-"       --bind-address=ADDRESS    bind to ADDRESS (hostname or IP) on local "
-"host.\n"
-msgstr ""
-"       --bind-address=ADRES     bind ADRES (hostnaam of IP) aan de lokale "
-"host.\n"
-
-#: src/main.c:448
-msgid "       --limit-rate=RATE         limit download rate to RATE.\n"
-msgstr "       --limit-rate=RATE        limiteer de download snelheid aan RATE."
+"Download:\n"
+"  -t,  --tries=AANTAL         zet herhalingspogingen op AANTAL \n"
+"                              (0 is ongelimiteerd).\n"
+"       --retry-connrefused    opnieuw proberen zelfs bij verbinding geweigerd\n"
+"  -O   --output-document=BESTAND schrijf dokumenten naar BESTAND.\n"
+"  -nc, --no-clobber           bestaande bestanden niet overschrijven of\n"
+"                              .# achtervoegsels gebruiken.\n"
+"  -c,  --continue             voortzetten gedeeltelijk opgehaald bestand\n"
+"       --progress=TYPE        voortgangsmeter-type selecteren.\n"
+"  -N,  --timestamping         bestanden niet opnieuw ophalen tenzij nieuwer\n"
+"                              dan lokale bestanden.\n"
+"  -S,  --server-response      serverantwoord tonen.\n"
+"       --spider               niets ophalen.\n"
+"  -T,  --timeout=SECONDEN     lees-wachttijd instellen op SECONDEN.\n"
+"       --dns-timeout=SECONDEN DNS-opzoekwachttijd instellen op SECONDEN.\n"
+"       --connect-timeout=SECS verbindingswachttijd instellen op SECS.\n"
+"       --read-timeout=SECS    leeswachttijd instellen op SECS.\n"
+"  -w,  --wait=SECONDEN        SECONDEN wachten tussen ontvangsten.\n"
+"       --waitretry=SECONDEN   1...SECONDEN wachten tussen opnieuw proberen.\n"
+"       --random-wait          0...2*WAIT seconden wachten tussen ontvangsten.\n"
+"  -Y,  --proxy=on/off         proxy aan (`on') of uit (`off').\n"
+"  -Q,  --quota=AANTAL         zet de ontvangstquota op AANTAL.\n"
+"       --bind-address=ADRES   binden aan ADRES (hostnaam of IP) op localhost.\n"
+"       --limit-rate=SNELHEID  downloadsnelheid begrenzen tot SNELHEID.\n"
+"       --dns-cache=off        bufferen van DNS-zoekacties uitschakelen.\n"
+"       --restrict-file-names=OS alleen tekens in bestandsnamen die het OS\n"
+"                              besturingssysteem.\n"
 "\n"
 
-#: src/main.c:450
-msgid "       --dns-cache=off           disable caching DNS lookups.\n"
-msgstr "       --dns-cache=off          schakel DNS lookup caching uit.\n"
-
-#: src/main.c:452
+#: src/main.c:188
 msgid ""
-"       --restrict-file-names=OS  restrict chars in file names to ones OS "
-"allows.\n"
+"Directories:\n"
+"  -nd, --no-directories            don't create directories.\n"
+"  -x,  --force-directories         force creation of directories.\n"
+"  -nH, --no-host-directories       don't create host directories.\n"
+"  -P,  --directory-prefix=PREFIX   save files to PREFIX/...\n"
+"       --cut-dirs=NUMBER           ignore NUMBER remote directory components.\n"
+"\n"
 msgstr ""
-"       --restrict-file-names=OS sta alleen door het OS ondersteunde "
-"karakters\n"
-"                                toe in bestanden.\n"
+"Mappen:\n"
+"  -nd  --no-directories            geen mappen aanmaken.\n"
+"  -x,  --force-directories         aanmaken van mappen afdwingen.\n"
+"  -nH, --no-host-directories       geen host-mappen maken.\n"
+"  -P,  --directory-prefix=VOORVOEGSEL bestanden in VOORVOEGSEL/... bewaren\n"
+"       --cut-dirs=AANTAL           AANTAL mapcomponenten-op-afstand negeren.\n"
+"\n"
 
-
-#: src/main.c:456
-msgid "Directories:\n"
-msgstr "Mappen:\n"
-
-#: src/main.c:458
-msgid "  -nd, --no-directories           don't create directories.\n"
-msgstr "  -nd  --no-directories            maak geen mappen.\n"
-#: src/main.c:460
-msgid "  -x,  --force-directories        force creation of directories.\n"
-msgstr "  -x,  --force-directories         dwing het maken van mappen af.\n"
-
-#: src/main.c:462
-msgid "  -nH, --no-host-directories      don't create host directories.\n"
-msgstr "  -nH, --no-host-directories       geen host-mappen maken.\n"
-
-#: src/main.c:464
-msgid "  -P,  --directory-prefix=PREFIX  save files to PREFIX/...\n"
-msgstr "  -P,  --directory-prefix=PREFIX   bestanden in PREFIX/... bewaren\n"
-
-#: src/main.c:466
+#: src/main.c:196
 msgid ""
-"       --cut-dirs=NUMBER          ignore NUMBER remote directory "
-"components.\n"
-msgstr ""
-"       --cut-dirs=AANTAL           negeer AANTAL remote\n"
-"                                   map componenten.\n"
-
-#: src/main.c:470
-msgid "HTTP options:\n"
-msgstr "HTTP-opties:\n"
-
-#: src/main.c:472
-msgid "       --http-user=USER        set http user to USER.\n"
-msgstr "       --http-user=GEBRUIKER  zet http-gebruiker op GEBRUIKER\n"
-
-#: src/main.c:474
-msgid "       --http-passwd=PASS      set http password to PASS.\n"
-msgstr "       --http-passwd=WACHTW   zet http-wachtwoord op WACHTW\n"
-
-#: src/main.c:476
-msgid "  -C,  --no-cache              disallow server-cached data.\n"
-msgstr ""
-"  -C,  --cache=on/off         sta toe/verbied server-cached data\n"
-"                              (normaal toegestaan).\n"
-
-#: src/main.c:478
-msgid ""
-"  -E,  --html-extension        save HTML documents with `.html' extension.\n"
-msgstr ""
-"  -E,  --html-extension       bewaar alle tekst/html documenten met ."
-"html\n"
-"                              extensie.\n"
-
-#: src/main.c:480
-msgid "       --ignore-length         ignore `Content-Length' header field.\n"
-msgstr "       --ignore-length        negeer de `Content-Length'-kopregel.\n"
-
-#: src/main.c:482
-msgid "       --header=STRING         insert STRING among the headers.\n"
-msgstr "       --header=TEKENREEKS    TEKENREEKS tussen kopregels invoegen.\n"
-
-#: src/main.c:484
-msgid "       --proxy-user=USER       set USER as proxy username.\n"
-msgstr "       --proxy-user=GEBRUIKER zet GEBRUIKER als proxy-gebruikersnaam.\n"
-
-#: src/main.c:486
-msgid "       --proxy-passwd=PASS     set PASS as proxy password.\n"
-msgstr "       --proxy-passwd=WACHTW  zet WACHTW als proxy-wachtwoord.\n"
-
-#: src/main.c:488
-msgid ""
-"       --referer=URL           include `Referer: URL' header in HTTP "
-"request.\n"
-msgstr ""
-"       --referer=URL          gebruik `Referer: URL' kopregel in HTTP "
-"verzoek.\n"
-
-#: src/main.c:490
-msgid "  -s,  --save-headers          save the HTTP headers to file.\n"
-msgstr "  -s,  --save-headers         bewaar de HTTP-kopregels in bestand.\n"
-
-#: src/main.c:492
-msgid ""
-"  -U,  --user-agent=AGENT      identify as AGENT instead of Wget/VERSION.\n"
-msgstr ""
-"  -U,  --user-agent=AGENT     als AGENT identificeren i.p.v Wget/VERSION.\n"
-
-
-#: src/main.c:494
-msgid ""
-"       --no-http-keep-alive    disable HTTP keep-alive (persistent "
-"connections).\n"
-msgstr ""
-"       --no-http-keep-alive   uitschakelen HTTP keep-alive\n"
-"                              (hergebruik verbindingen).\n"
-
-#: src/main.c:496
-msgid "       --cookies=off           don't use cookies.\n"
-msgstr "       --cookies=off          gebruik geen cookies.\n"
-
-#: src/main.c:498
-msgid "       --load-cookies=FILE     load cookies from FILE before session.\n"
-msgstr "       --load-cookies=BESTAND laad cookies uit BESTAND voor sessie.\n"
-
-#: src/main.c:500
-msgid "       --save-cookies=FILE     save cookies to FILE after session.\n"
-msgstr "       --save-cookies=BESTAND bewaar cookies in BESTAND na sessie.\n"
-
-#: src/main.c:502
-msgid ""
-"       --keep-session-cookies  load and save session (non-permanent) "
-"cookies.\n"
-msgstr ""
-"       --keep-session-cookies  laad en onthoud sessie (niet permanente) "
-"cookies.\n"
-
-#: src/main.c:504
-msgid ""
-"       --post-data=STRING      use the POST method; send STRING as the "
-"data.\n"
-msgstr ""
-"       --post-data=STRING    use the POST method; send STRING as the "
-"data.\n"
-
-#: src/main.c:506
-msgid ""
-"       --post-file=FILE        use the POST method; send contents of FILE.\n"
-msgstr ""
+"HTTP options:\n"
+"       --http-user=USER      set http user to USER.\n"
+"       --http-passwd=PASS    set http password to PASS.\n"
+"  -C,  --cache=on/off        (dis)allow server-cached data (normally allowed).\n"
+"  -E,  --html-extension      save all text/html documents with .html extension.\n"
+"       --ignore-length       ignore `Content-Length' header field.\n"
+"       --header=STRING       insert STRING among the headers.\n"
+"       --proxy-user=USER     set USER as proxy username.\n"
+"       --proxy-passwd=PASS   set PASS as proxy password.\n"
+"       --referer=URL         include `Referer: URL' header in HTTP request.\n"
+"  -s,  --save-headers        save the HTTP headers to file.\n"
+"  -U,  --user-agent=AGENT    identify as AGENT instead of Wget/VERSION.\n"
+"       --no-http-keep-alive  disable HTTP keep-alive (persistent connections).\n"
+"       --cookies=off         don't use cookies.\n"
+"       --load-cookies=FILE   load cookies from FILE before session.\n"
+"       --save-cookies=FILE   save cookies to FILE after session.\n"
+"       --post-data=STRING    use the POST method; send STRING as the data.\n"
 "       --post-file=FILE      use the POST method; send contents of FILE.\n"
-
-#: src/main.c:511
-msgid "HTTPS (SSL) options:\n"
-msgstr "HTTPS (SSL) opties:\n"
-
-#: src/main.c:513
-msgid "       --sslcertfile=FILE    optional client certificate.\n"
-msgstr "       --sslcertfile=BESTAND    optioneel client certificaat.\n"
-
-#: src/main.c:515
-msgid "       --sslcertkey=KEYFILE  optional keyfile for this certificate.\n"
+"\n"
 msgstr ""
-"       --sslcertkey=KEYBESTAND  optioneel key bestand voor dit "
-"certificaat.\n"
+"HTTP-opties:\n"
+"       --http-user=GEBRUIKER  zet http-gebruiker op GEBRUIKER\n"
+"       --http-passwd=WACHTW   zet http-wachtwoord op WACHTW\n"
+"  -C,  --cache=on/off         server-gebufferde data al dan niet toestaan\n"
+"                              (normaal toegestaan).\n"
+"  -E,  --html-extension       alle tekst/html documenten met .html\n"
+"                              achtervoegsel opslaan.\n"
+"       --ignore-length        negeer de `Content-Length'-kopregel.\n"
+"       --header=TEKENREEKS    TEKENREEKS tussen kopregels invoegen.\n"
+"       --proxy-user=GEBRUIKER GEBRUIKER als proxy-gebruikersnaam.\n"
+"       --proxy-passwd=WACHTW  WACHTW als proxy-wachtwoord.\n"
+"       --referer=URL          gebruik `Referer: URL' kopregel in HTTP-verzoek.\n"
+"  -s,  --save-headers         HTTP-kopregels in bestand opslaan.\n"
+"  -U,  --user-agent=AGENT     als AGENT identificeren i.p.v Wget/VERSION.\n"
+"       --no-http-keep-alive   uitschakelen HTTP keep-alive\n"
+"                               (verbindingen hergebruiken).\n"
+"       --cookies=off          geen cookies gebruiken.\n"
+"       --load-cookies=BESTAND cookies uit BESTAND laden voor sessie.\n"
+"       --save-cookies=BESTAND cookies in BESTAND opslaan na sessie.\n"
+"       --post-data=TEKENREEKS POST-methode gebruiken; TEKENREEKS als de\n"
+"                              data verzenden.\n"
+"       --post-file=BESTAND    POST-methode gebruiken; TEKENREEKS als inhoud\n"
+"                              van BESTAND verzenden.\n"
+"\n"
 
-
-#: src/main.c:517
-msgid "       --egd-file=FILE       file name of the EGD socket.\n"
-msgstr "       --egd-file=BESTAND       bestand naam voor het EGD socket.\n"
-
-#: src/main.c:519
-msgid "       --sslcadir=DIR        dir where hash list of CA's are stored.\n"
-msgstr "       --sslcadir=DIR           dir waar de hash lijst voor CA's "
-"opgeslagen is.\n"
-
-
-#: src/main.c:521
-msgid "       --sslcafile=FILE      file with bundle of CA's\n"
-msgstr "       --sslcafile=BESTAND      bestand met een verzameling van CA's\n"
-
-#: src/main.c:523
+#: src/main.c:217
 msgid ""
-"       --sslcerttype=0/1     Client-Cert type 0=PEM (default) / 1=ASN1 "
-"(DER)\n"
+"HTTPS (SSL) options:\n"
+"       --sslcertfile=FILE     optional client certificate.\n"
+"       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
+"       --egd-file=FILE        file name of the EGD socket.\n"
+"       --sslcadir=DIR         dir where hash list of CA's are stored.\n"
+"       --sslcafile=FILE       file with bundle of CA's\n"
+"       --sslcerttype=0/1      Client-Cert type 0=PEM (default) / 1=ASN1 (DER)\n"
+"       --sslcheckcert=0/1     Check the server cert agenst given CA\n"
+"       --sslprotocol=0-3      choose SSL protocol; 0=automatic,\n"
+"                              1=SSLv2 2=SSLv3 3=TLSv1\n"
+"\n"
 msgstr ""
-"       --sslcerttype=0/1        Client-Cert type 0=PEM (standaard) / "
-"1=ASN1 (DER)\n"
+"HTTPS (SSL) opties:\n"
+"       --sslcertfile=BESTAND  optioneel client-certificaat.\n"
+"       --sslcertkey=SLEUTELBESTAND optioneel sleutelbestand voor dit certificaat.\n"
+"       --egd-file=BESTAND     bestandsnaam van het EGD-socket.\n"
+"       --sslcadir=MAP         map waar hash-lijst van CA's opgeslagen is.\n"
+"       --sslcafile=BESTAND    bestand met CA-bundel\n"
+"       --sslcerttype=0/1      Client-Cert type 0=PEM (standaard) / 1=ASN1 (DER)\n"
+"       --sslcheckcert=0/1     Server controleren tegen gegeven CA\n"
+"       --sslprotocol=0-3      kies SSL protocol; 0=automatisch,\n"
+"                              1=SSLv2 2=SSLv3 3=TLSv1\n"
+"\n"
 
-#: src/main.c:525
-msgid "       --sslcheckcert=0/1    Check the server cert agenst given CA\n"
-msgstr "       --sslcheckcert=0/1       Controleer server certs met gegeven CA\n"
-
-#: src/main.c:527
-msgid "       --sslprotocol=0-3     choose SSL protocol; 0=automatic,\n"
-msgstr "       --sslprotocol=0-3        kies SSL protocol; 0=automatic,\n"
-"                                1=SSLv2 2=SSLv3 3=TLSv1\n"
-
-#: src/main.c:529
-msgid "                             1=SSLv2 2=SSLv3 3=TLSv1\n"
-msgstr "                                1=SSLv2 2=SSLv3 3=TLSv1\n"
-
-
-#: src/main.c:534
-msgid "FTP options:\n"
-msgstr "FTP-opties:\n"
-
-#: src/main.c:536
-msgid "  -nr, --no-remove-listing  don't remove `.listing' files.\n"
-msgstr "  -nr, --no-remove-listing   `.listing' bestanden niet verwijderen.\n"
-
-
-#: src/main.c:538
-msgid "  -g,  --glob=on/off        turn file name globbing on or off.\n"
+#: src/main.c:230
+msgid ""
+"FTP options:\n"
+"  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
+"  -g,  --glob=on/off           turn file name globbing on or off.\n"
+"       --passive-ftp           use the \"passive\" transfer mode.\n"
+"       --retr-symlinks         when recursing, get linked-to files (not dirs).\n"
+"\n"
 msgstr ""
+"FTP-opties:\n"
+"  -nr, --dont-remove-listing   `.listing' bestanden niet verwijderen.\n"
 "  -g,  --glob=on/off           bestandsnaam-`globbing' aan (`on') of uit\n"
 "                               (`off') zetten.\n"
-
-#: src/main.c:540
-msgid "       --passive-ftp        use the \"passive\" transfer mode.\n"
-msgstr ""
 "       --passive-ftp           gebruik \"passieve\" overdrachtsmodus.\n"
-
-#: src/main.c:542
-msgid ""
-"       --retr-symlinks      when recursing, get linked-to files (not dir).\n"
-msgstr ""
 "       --retr-symlinks         haal FTP symbolische koppelingen op.\n"
+"\n"
 
-#: src/main.c:544
-msgid "       --preserve-permissions  preserve remote file permissions.\n"
-msgstr ""
-"       --preserve-permissions  houd de remote bestand rechten.\n"
-
-#: src/main.c:548
-msgid "Recursive retrieval:\n"
-msgstr "Recursieve ontvangst:\n"
-
-#: src/main.c:550
-msgid "  -r,  --recursive             recursive download.\n"
-msgstr "  -r,  --recursive          recursief downloaden.\n"
-
-#: src/main.c:552
+#: src/main.c:237
 msgid ""
-"  -l,  --level=NUMBER          maximum recursion depth (inf or 0 for "
-"infinite).\n"
+"Recursive retrieval:\n"
+"  -r,  --recursive          recursive download.\n"
+"  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n"
+"       --delete-after       delete files locally after downloading them.\n"
+"  -k,  --convert-links      convert non-relative links to relative.\n"
+"  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
+"  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"
+"  -p,  --page-requisites    get all images, etc. needed to display HTML page.\n"
+"       --strict-comments    turn on strict (SGML) handling of HTML comments.\n"
+"\n"
 msgstr ""
-"  -l,  --level=Aantal       maximale recursiediepte (0 ongelimiteerd).\n"
-
-#: src/main.c:554
-msgid ""
-"       --delete-after          delete files locally after downloading them.\n"
-msgstr ""
-"       --delete-after       verwijder de bestanden lokaal na het "
-"downloaden.\n"
-
-#: src/main.c:556
-msgid ""
-"  -k,  --convert-links         convert non-relative links to relative.\n"
-msgstr ""
+"Recursieve ontvangst:\n"
+"  -r,  --recursive          recursief downloaden.\n"
+"  -l,  --level=AANTAL       maximale recursiediepte (inf of 0 voor ongelimiteerd).\n"
+"       --delete-after       wis bestanden lokaal na downloaden.\n"
 "  -k,  --convert-links      niet-relatieve verwijzingen naar relatieve\n"
-
-#: src/main.c:558
-msgid ""
-"  -K,  --backup-converted      before converting file X, back up as X.orig.\n"
-msgstr ""
-"  -K,  --backup-converted   voor omzetten bestand X, backuppen als X."
-"orig.\n"
-
-#: src/main.c:560
-msgid ""
-"  -m,  --mirror                shortcut option equivalent to -r -N -l inf -"
-"nr.\n"
-msgstr ""
+"  -K,  --backup-converted   voor omzetten bestand X, reservekopie als X.orig.\n"
 "  -m,  --mirror             gelijk aan de opties -r -N -l inf -nr.\n"
+"  -p,  --page-requisites    haal alle plaatjes, etc. nodig voor HTML-weergave op.\n"
+"       --strict-comments    strikte (SGML) afhandeling van HTML commentaar.\n"
+"\n"
 
-#: src/main.c:562
+#: src/main.c:248
 msgid ""
-"  -p,  --page-requisites       get all images, etc. needed to display HTML "
-"page.\n"
+"Recursive accept/reject:\n"
+"  -A,  --accept=LIST                comma-separated list of accepted extensions.\n"
+"  -R,  --reject=LIST                comma-separated list of rejected extensions.\n"
+"  -D,  --domains=LIST               comma-separated list of accepted domains.\n"
+"       --exclude-domains=LIST       comma-separated list of rejected domains.\n"
+"       --follow-ftp                 follow FTP links from HTML documents.\n"
+"       --follow-tags=LIST           comma-separated list of followed HTML tags.\n"
+"  -G,  --ignore-tags=LIST           comma-separated list of ignored HTML tags.\n"
+"  -H,  --span-hosts                 go to foreign hosts when recursive.\n"
+"  -L,  --relative                   follow relative links only.\n"
+"  -I,  --include-directories=LIST   list of allowed directories.\n"
+"  -X,  --exclude-directories=LIST   list of excluded directories.\n"
+"  -np, --no-parent                  don't ascend to the parent directory.\n"
+"\n"
 msgstr ""
-"  -p,  --page-requisites    haal alle plaatjes, etc. nodig voor HTML "
-"pagina.\n"
-
-#: src/main.c:564
-msgid ""
-"       --strict-comments       turn on strict (SGML) handling of HTML "
-"comments.\n"
-msgstr ""
-"       --strict-comments    zet strikt (SGML) afhandelen van HTML "
-"comments aan.\n"
-
-#: src/main.c:568
-msgid "Recursive accept/reject:\n"
-msgstr "Recursief accepteren/verwerpen:\n"
-
-#: src/main.c:570
-msgid ""
-"  -A,  --accept=LIST               comma-separated list of accepted "
-"extensions.\n"
-msgstr ""
-"  -A,  --accept=LIJST                komma-gescheiden lijst van "
-"geaccepteerde extensies.\n"
-
-#: src/main.c:572
-msgid ""
-"  -R,  --reject=LIST               comma-separated list of rejected "
-"extensions.\n"
-msgstr ""
-"  -R,  --reject=LIJST                komma-gescheiden lijst van verworpen "
-"extensies.\n"
-
-#: src/main.c:574
-msgid ""
-"  -D,  --domains=LIST              comma-separated list of accepted "
-"domains.\n"
-msgstr ""
-"  -D,  --domains=LIJST               komma-gescheiden lijst van "
-"geaccepteerde domeinen.\n"
-
-#: src/main.c:576
-msgid ""
-"       --exclude-domains=LIST      comma-separated list of rejected "
-"domains.\n"
-msgstr ""
-"       --exclude-domains=LIJST       komma-gescheiden lijst van "
-"verworpen\n"
+"Recursief accepteren/weigeren:\n"
+"  -A,  --accept=LIJST                kommagescheiden lijst van geaccepteerde\n"
+"                                     achtervoegsels.\n"
+"  -R,  --reject=LIJST                kommagescheiden lijst van geweigerde\n"
+"                                     achtervoegsels.\n"
+"  -D,  --domains=LIJST               kommagescheiden lijst van geaccepteerde\n"
 "                                     domeinen.\n"
-
-#: src/main.c:578
-msgid ""
-"       --follow-ftp                follow FTP links from HTML documents.\n"
-msgstr ""
-"       --follow-ftp                  volg FTP-verwijzingen van HTML-\n"
-"                                     documenten.\n"
-
-#: src/main.c:580
-msgid ""
-"       --follow-tags=LIST          comma-separated list of followed HTML "
-"tags.\n"
-msgstr ""
-"       --follow-tags=LIJST           komma-gescheiden lijst met te "
-"volgen\n"
-"                                     HTML tags\n"
-
-#: src/main.c:582
-msgid ""
-"  -G,  --ignore-tags=LIST          comma-separated list of ignored HTML "
-"tags.\n"
-msgstr ""
-"  -G,  --ignore-tags=LIJST           komma-gescheiden lijst van te "
-"negerern\n"
+"       --exclude-domains=LIJST       kommagescheiden lijst van geweigerde\n"
+"                                     domeinen.\n"
+"       --follow-ftp                  FTP-verwijzingen van HTML-\n"
+"                                     documenten volgen.\n"
+"       --follow-tags=LIJST           kommagescheiden lijst met te volgen HTML\n"
+"                                     tags.\n"
+"  -G,  --ignore-tags=LIJST           kommagescheiden lijst van te negeren\n"
 "                                     HTML tags.\n"
-
-#: src/main.c:584
-msgid ""
-"  -H,  --span-hosts                go to foreign hosts when recursive.\n"
-msgstr ""
-"  -H,  --span-hosts                  bij recursief ook naar vreemde "
-"hosts\n"
-"                                     gaan.\n"
-
-#: src/main.c:586
-msgid "  -L,  --relative                  follow relative links only.\n"
-msgstr ""
-"  -L,  --relative                    alleen relatieve verwijzingen "
-"volgen.\n"
-
-#: src/main.c:588
-msgid "  -I,  --include-directories=LIST  list of allowed directories.\n"
-msgstr "  -I,  --include-directories=LIJST   lijst van geaccepteerde mappen.\n"
-
-#: src/main.c:590
-msgid "  -X,  --exclude-directories=LIST  list of excluded directories.\n"
-msgstr ""
+"  -H,  --span-hosts                  bij `--recursive', ook naar vreemde hosts\n"
+"  -L,  --relative                    alleen relatieve verwijzingen volgen.\n"
+"  -I,  --include-directories=LIJST   lijst van geaccepteerde mappen.\n"
 "  -X,  --exclude-directories=LIJST   lijst van uitgesloten mappen.\n"
+"  -np, --no-parent                   hoger gelegen mappen negeren.\n"
+"\n"
 
-#: src/main.c:592
-msgid ""
-"  -np, --no-parent                 don't ascend to the parent directory.\n"
-msgstr ""
-"  -np, --no-parent                   negeer hoger gelegen mappen.\n"
-
-#: src/main.c:596
+#: src/main.c:263
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr ""
-"Email bug reports en suggesties aan <bug-wget@gnu.org>.\n"
-"\n"
-"Voor de Nederlandse vertaling is de mailinglist <nl@li.org> te bereiken.\n"
+"Stuur foutrapporten en suggesties naar <bug-wget@gnu.org>.\n"
+"Neem voor fouten in de Nederlandse vertaling contact op met <vertaling@nl.linux.org>.\n"
 
-#: src/main.c:601
+#: src/main.c:465
 #, c-format
-msgid "GNU Wget %s, a non-interactive network retriever.\n"
-msgstr "GNU Wget %s, een niet-interactieve netwerk ontvanger.\n"
+msgid "%s: debug support not compiled in.\n"
+msgstr "%s: Debug-ondersteuning niet meegecompileerd.\n"
 
-#: src/main.c:618
+#: src/main.c:517
 msgid "Copyright (C) 2003 Free Software Foundation, Inc.\n"
-msgstr "Copyright (C) 2003 Free Software Foundation, Inc.\n"
+msgstr "Copyright Â© 2003 Free Software Foundation, Inc.\n"
 
-#: src/main.c:620
+#: src/main.c:519
 msgid ""
 "This program is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -1405,53 +1119,50 @@ msgid ""
 "GNU General Public License for more details.\n"
 msgstr ""
 "Dit programma wordt verspreid in de hoop dat het nuttig zal zijn,\n"
-"maar ZONDER ENIGE GARANTIE; zelfs zonder de geïmpliceerde garantie\n"
-"van VERKOOPBAARHEID of geschiktheid voor een bepaald doel.  Zie de\n"
-"GNU Algemene Openbare Licentie (GNU General Public License) voor meer\n"
-"details.\n"
+"maar ZONDER ENIGE GARANTIE; zelfs zonder de geÃ¯mpliceerde garantie\n"
+"van VERKOOPBAARHEID of GESCHIKTHEID VOOR EEN BEPAALD DOEL.  Zie de\n"
+"GNU General Public License voor meer details.\n"
 
-#: src/main.c:625
+#: src/main.c:524
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"
 msgstr ""
 "\n"
-"Orgineel geschreven door Hrvoje Niksic <hniksic@xemacs.org>.\n"
+"Oorspronkelijk geschreven door Hrvoje Niksic <hniksic@xemacs.org>.\n"
 
-#. #### Something nicer should be printed here -- similar to the
-#. pre-1.5 `--help' page.
-#: src/main.c:665 src/main.c:736 src/main.c:803
-#, c-format
-msgid "Try `%s --help' for more options.\n"
-msgstr "Probeer `%s --help' voor meer opties.\n"
-
-#: src/main.c:733
+#: src/main.c:703
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: ongeldige optie -- `-n%c'\n"
 
-#: src/main.c:783
+#. #### Something nicer should be printed here -- similar to the
+#. pre-1.5 `--help' page.
+#: src/main.c:706 src/main.c:748 src/main.c:794
+#, c-format
+msgid "Try `%s --help' for more options.\n"
+msgstr "Probeer `%s --help' voor meer opties.\n"
+
+#: src/main.c:774
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "Kan niet gelijktijdig \"Woordenrijk\" en \"stil\" zijn.\n"
 
-#: src/main.c:789
+#: src/main.c:780
 msgid "Can't timestamp and not clobber old files at the same time.\n"
-msgstr ""
-"Tijdstempels en niet-overschrijven oude bestanden is gelijktijdig "
-"onmogelijk.\n"
+msgstr "Tijdstempels en niet-overschrijven oude bestanden is gelijktijdig onmogelijk.\n"
 
 #. No URL specified.
-#: src/main.c:798
+#: src/main.c:789
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: ontbrekende URL\n"
 
-#: src/main.c:909
+#: src/main.c:905
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "Geen URLs gevonden in %s.\n"
 
-#: src/main.c:918
+#: src/main.c:914
 #, c-format
 msgid ""
 "\n"
@@ -1462,101 +1173,102 @@ msgstr ""
 "KLAAR --%s--\n"
 "Opgehaald: %s bytes in %d bestanden\n"
 
-#: src/main.c:924
+#: src/main.c:920
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "Download quota (%s Bytes) OVERSCHREDEN!\n"
 
-#: src/mswindows.c:135
+#: src/mswindows.c:147
 msgid "Continuing in background.\n"
 msgstr "Voortzetting in de achtergrond.\n"
 
-#: src/mswindows.c:137 src/utils.c:252
+#: src/mswindows.c:149 src/utils.c:487
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "Uitvoer wordt naar `%s' geschreven.\n"
 
-#: src/mswindows.c:233
+#: src/mswindows.c:245
 #, c-format
 msgid "Starting WinHelp %s\n"
 msgstr "WinHelp %s wordt gestart\n"
 
-#: src/mswindows.c:260 src/mswindows.c:267
+#: src/mswindows.c:272 src/mswindows.c:279
 #, c-format
 msgid "%s: Couldn't find usable socket driver.\n"
 msgstr "%s: Kan geen bruikbare \"socket driver\" vinden.\n"
 
-#: src/netrc.c:384
+#: src/netrc.c:380
 #, c-format
 msgid "%s: %s:%d: warning: \"%s\" token appears before any machine name\n"
 msgstr "%s: %s:%d: Waarschuwing: `%s'-teken verschijnt voor een machinenaam\n"
 
-#: src/netrc.c:415
+#: src/netrc.c:411
 #, c-format
 msgid "%s: %s:%d: unknown token \"%s\"\n"
 msgstr "%s: %s:%d: onbekend teken `%s'\n"
 
-#: src/netrc.c:479
+#: src/netrc.c:475
 #, c-format
 msgid "Usage: %s NETRC [HOSTNAME]\n"
-msgstr "Aanroep: %s NETRC [HOSTNAME]\n"
+msgstr "Gebruik: %s NETRC [HOSTNAAM]\n"
 
 # stat
-#: src/netrc.c:489
+#: src/netrc.c:485
 #, c-format
 msgid "%s: cannot stat %s: %s\n"
 msgstr "%s: kan de status van bestand %s niet opvragen: %s\n"
 
+# I have no clue what this comment is about... RvS
 #. Align the [ skipping ... ] line with the dots.  To do
 #. that, insert the number of spaces equal to the number of
 #. digits in the skipped amount in K.
-#: src/progress.c:231
+#: src/progress.c:234
 #, c-format
 msgid ""
 "\n"
 "%*s[ skipping %dK ]"
 msgstr ""
 "\n"
-"%*s[ Overslaan %dK ]"
+"%*s[ overslaan %dK ]"
 
-#: src/progress.c:398
+#: src/progress.c:401
 #, c-format
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
-msgstr "Ongeldige dot stijl specificatie `%s'; laat onveranderd.\n"
+msgstr "Ongeldige puntjesstijl-specificatie `%s'; blijft onveranderd.\n"
 
-#: src/recur.c:377
+#: src/recur.c:378
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
 msgstr "Verwijder `%s' omdat het verworpen zal worden.\n"
 
-#: src/res.c:548
+#: src/res.c:549
 msgid "Loading robots.txt; please ignore errors.\n"
-msgstr "Laad `robots.txt'; gelieve fouten te negeren.\n"
+msgstr "Laden `robots.txt'; gelieve fouten te negeren.\n"
 
-#: src/retr.c:395
+#: src/retr.c:400
 #, c-format
 msgid "Error parsing proxy URL %s: %s.\n"
-msgstr "Fout bij het parsen van porxy URL %s: %s.\n"
+msgstr "Fout bij ontleden proxy-URL %s: %s\n"
 
-#: src/retr.c:403
+#: src/retr.c:408
 #, c-format
 msgid "Error in proxy URL %s: Must be HTTP.\n"
-msgstr "Fout in proxy URL %s: Zou HTTP moeten zijn.\n"
+msgstr "Fout in proxy-URL %s: Moet HTTP zijn.\n"
 
-#: src/retr.c:488
+#: src/retr.c:493
 #, c-format
 msgid "%d redirections exceeded.\n"
-msgstr "%d door verwijzingen overschreden.\n"
+msgstr "%d doorwijzingen overschreden.\n"
 
-#: src/retr.c:614
+#: src/retr.c:617
 msgid ""
 "Giving up.\n"
 "\n"
 msgstr ""
-"Geef op.\n"
+"Opgeven.\n"
 "\n"
 
-#: src/retr.c:614
+#: src/retr.c:617
 msgid ""
 "Retrying.\n"
 "\n"
@@ -1570,7 +1282,7 @@ msgstr "Geen fout"
 
 #: src/url.c:623
 msgid "Unsupported scheme"
-msgstr "Niet ondersteund schema"
+msgstr "Niet-ondersteund schema"
 
 #: src/url.c:625
 msgid "Empty host"
@@ -1578,37 +1290,36 @@ msgstr "Lege host"
 
 #: src/url.c:627
 msgid "Bad port number"
-msgstr "Verkeerd poort nummer"
+msgstr "Ongeldig poortnummer"
 
 #: src/url.c:629
 msgid "Invalid user name"
-msgstr "Ongeldige gebruikers naam"
+msgstr "Ongeldige gebruikersnaam"
 
 #: src/url.c:631
 msgid "Unterminated IPv6 numeric address"
-msgstr "Niet afgesloten IPv6 numeriek adres"
+msgstr "Ongetermineerd IPv6 numeriek adres"
 
 #: src/url.c:633
 msgid "IPv6 addresses not supported"
-msgstr "IPv6 adressen niet ondersteund"
+msgstr "IPv6-adressen niet ondersteund"
 
 #: src/url.c:635
 msgid "Invalid IPv6 numeric address"
 msgstr "Ongeldig IPv6 numeriek adres"
 
+#: src/utils.c:120
+#, c-format
+msgid "%s: %s: Not enough memory.\n"
+msgstr "%s: %s: Onvoldoende geheugen.\n"
+
 #. parent, no error
-#: src/utils.c:250
+#: src/utils.c:485
 #, c-format
 msgid "Continuing in background, pid %d.\n"
-msgstr "Gaat verder in de achtergrond, pid %d.\n"
+msgstr "Voortzetting in de achtergrond, proces-ID %d.\n"
 
-#: src/utils.c:294
+#: src/utils.c:529
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
-msgstr "Verwijderen symbolische koppeling `%s' gefaald: %s\n"
-
-#: src/xmalloc.c:71
-#, c-format
-msgid "%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"
-msgstr "%s: %s: Gefaald in het alloceren van %ld bytes; geheugen zit vol.\n"
-
+msgstr "Verwijderen symbolische koppeling `%s' mislukt: %s\n"
