@@ -75,8 +75,8 @@ set_connection_host_name (const char *host)
 }
 
 /* Connect to a remote host whose address has been resolved. */
-static int
-connect_to_one (unsigned char *addr, unsigned short port, int silent)
+int
+connect_to_one (const unsigned char *addr, unsigned short port, int silent)
 {
   struct sockaddr_in sock_name;
   int sock, save_errno;

@@ -24,6 +24,7 @@ struct address_list;
 
 /* Function declarations */
 
+int connect_to_one PARAMS ((const unsigned char *, unsigned short, int));
 int connect_to_many PARAMS ((struct address_list *, unsigned short, int));
 void set_connection_host_name PARAMS ((const char *));
 
