@@ -565,14 +565,6 @@ bar_finish (void *progress, long dltime)
 {
   struct bar_progress *bp = progress;
 
-  /* If the download was faster than the granularity of the timer,
-     fake some output so that we don't get the ugly "----.--" rate at
-     the download finish.  */
-  if (bp->hist.summed_times == 0)
-    bp->hist.summed_times = 1;
-  if (dltime == 0)
-    dltime = 1;
-
   create_image (bp, dltime);
   display_image (bp->buffer);
 
@@ -600,8 +592,7 @@ create_image (struct bar_progress *bp, long dl_total_time)
   char *size_legible = legible (size);
   int size_legible_len = strlen (size_legible);
 
-  long recent_time = bp->hist.summed_times;
-  long recent_bytes = bp->hist.summed_bytes;
+  struct bar_progress_hist *hist = &bp->hist;
 
   /* The progress bar should look like this:
      xx% [=======>             ] nn,nnn 12.34K/s ETA 00:00
@@ -700,11 +691,12 @@ create_image (struct bar_progress *bp, long dl_total_time)
   p += strlen (p);
 
   /* " 1012.45K/s" */
-  if (recent_time && recent_bytes)
+  if (hist->summed_times && hist->summed_bytes)
     {
       static char *short_units[] = { "B/s", "K/s", "M/s", "G/s" };
       int units = 0;
-      double dlrate = calc_rate (recent_bytes, recent_time, &units);
+      double dlrate;
+      dlrate = calc_rate (hist->summed_bytes, hist->summed_times, &units);
       sprintf (p, " %7.2f%s", dlrate, short_units[units]);
       p += strlen (p);
     }
@@ -712,22 +704,28 @@ create_image (struct bar_progress *bp, long dl_total_time)
     APPEND_LITERAL ("   --.--K/s");
 
   /* " ETA xx:xx:xx" */
-  if (bp->total_length > 0 && recent_bytes > 0)
+  if (bp->total_length > 0 && dl_total_time > 3000)
     {
       long eta;
       int eta_hrs, eta_min, eta_sec;
 
       /* Don't change the value of ETA more than approximately once
 	 per second; doing so would cause flashing without providing
-	 any value to the user.  */
+	 any value to the user. */
       if (dl_total_time - bp->last_eta_time < 900
 	  && bp->last_eta_value != 0)
 	eta = bp->last_eta_value;
       else
 	{
-	  double tm_sofar = (double)recent_time / 1000;
+	  /* Calculate ETA using the average download speed to predict
+	     the future speed.  If you want to use the current speed
+	     instead, replace dl_total_time with hist->summed_times
+	     and bp->count with hist->summed_bytes.  I found that
+	     doing that results in a very jerky and ultimately
+	     unreliable ETA.  */
+	  double time_sofar = (double)dl_total_time / 1000;
 	  long bytes_remaining = bp->total_length - size;
-	  eta = (long) (tm_sofar * bytes_remaining / recent_bytes);
+	  eta = (long) (time_sofar * bytes_remaining / bp->count);
 	  bp->last_eta_value = eta;
 	  bp->last_eta_time = dl_total_time;
 	}
@@ -736,34 +734,29 @@ create_image (struct bar_progress *bp, long dl_total_time)
       eta_min = eta / 60,   eta %= 60;
       eta_sec = eta;
 
-      /* Pad until the end of screen.  The padding is dependent on the
-	 hour value.  */
-      if (eta_hrs == 0 || eta_hrs > 99)
-	/* Hours not printed: pad with three spaces (two digits and
-	   colon). */
-	APPEND_LITERAL ("   ");
-      else if (eta_hrs < 10)
-	/* Hours printed with one digit: pad with one space. */
-	*p++ = ' ';
-      else
-	/* Hours printed with two digits: we're using maximum width,
-	   don't pad. */
-	;
-
-      APPEND_LITERAL (" ETA ");
-
       if (eta_hrs > 99)
-	/* Bogus value, probably due to a calculation overflow.  Print
-	   something safe to avoid overstepping the buffer bounds. */
-	sprintf (p, "--:--");
-      else if (eta_hrs > 0)
-	sprintf (p, "%d:%02d:%02d", eta_hrs, eta_min, eta_sec);
+	goto no_eta;
+
+      if (eta_hrs == 0)
+	{
+	  /* Hours not printed: pad with three spaces. */
+	  APPEND_LITERAL ("   ");
+	  sprintf (p, " ETA %02d:%02d", eta_min, eta_sec);
+	}
       else
-	sprintf (p, "%02d:%02d", eta_min, eta_sec);
+	{
+	  if (eta_hrs < 10)
+	    /* Hours printed with one digit: pad with one space. */
+	    *p++ = ' ';
+	  sprintf (p, " ETA %d:%02d:%02d", eta_hrs, eta_min, eta_sec);
+	}
       p += strlen (p);
     }
   else if (bp->total_length > 0)
-    APPEND_LITERAL ("    ETA --:--");
+    {
+    no_eta:
+      APPEND_LITERAL ("             ");
+    }
 
   assert (p - bp->buffer <= bp->width);
 

@@ -1,5 +1,14 @@
 2002-04-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* progress.c (create_image): Revert to calculating ETA based on
+	average download speed.
+	(create_image): Don't print ETA until the download has been active
+	for at least 3 seconds.
+	(create_image): When ETA is not available, don't print anything.
+	The previous version would print --:--.
+
+2002-04-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* progress.c (bar_update): Keep updating a subinterval until it
 	reaches or exceeds a watermark.  That way the measurement will be
 	guaranteed to span a configurable minimum of time.  The current
