@@ -684,15 +684,40 @@ functionality of real @sc{www} spiders.
 @cindex timeout
 @item -T seconds
 @itemx --timeout=@var{seconds}
-Set the network timeout to @var{seconds} seconds.  Whenever Wget
-connects to or reads from a remote host, it checks for a timeout and
-aborts the operation if the time expires.  This prevents anomalous
-occurrences such as hanging reads or infinite connects.  The default
-timeout is 900 seconds (fifteen minutes).  Setting timeout to 0 will
-disable checking for timeouts.
+Set the network timeouts to @var{seconds} seconds.  This is equivalent
+to specifying @samp{--dns-timeout}, @samp{--connect-timeout}, and
+@samp{--read-timeout}, all at the same time.
 
-Please do not lower the default timeout value with this option unless
-you know what you are doing.
+Whenever Wget connects to or reads from a remote host, it checks for a
+timeout and aborts the operation if the time expires.  This prevents
+anomalous occurrences such as hanging reads or infinite connects.  The
+only timeout enabled by default is a 900-second timeout for reading.
+Setting timeout to 0 disables checking for timeouts.
+
+Unless you know what you are doing, it is best not to set any of the
+timeout-related options.
+
+@cindex DNS timeout
+@cindex timeout, DNS
+@item --dns-timeout=@var{seconds}
+Set the DNS lookup timeout to @var{seconds} seconds.  DNS lookups that
+don't complete within the specified time will fail.  By default, there
+is no timeout on DNS lookups, other than that implemented by system
+libraries.
+
+@cindex connect timeout
+@cindex timeout, connect
+@item --connect-timeout=@var{seconds}
+Set the connect timeout to @var{seconds} seconds.  TCP connections that
+take longer to establish will be aborted.  By default, there is no
+connect timeout, other than that implemented by system libraries.
+
+@cindex read timeout
+@cindex timeout, read
+@item --read-timeout=@var{seconds}
+Set the read (and write) timeout to @var{seconds} seconds.  Reads that
+take longer will fail.  The default value for read timeout is 900
+seconds.
 
 @cindex bandwidth, limit
 @cindex rate, limit
@@ -708,9 +733,9 @@ bandwidth.
 Note that Wget implements the limiting by sleeping the appropriate
 amount of time after a network read that took less time than specified
 by the rate.  Eventually this strategy causes the TCP transfer to slow
-down to approximately the specified rate.  However, it takes some time
-for this balance to be achieved, so don't be surprised if limiting the
-rate doesn't work well with very small files.
+down to approximately the specified rate.  However, it may take some
+time for this balance to be achieved, so don't be surprised if limiting
+the rate doesn't work well with very small files.
 
 @cindex pause
 @cindex wait
@@ -2130,6 +2155,9 @@ Load cookies from @var{file}.  See @samp{--load-cookies}.
 @item save_cookies = @var{file}
 Save cookies to @var{file}.  See @samp{--save-cookies}.
 
+@item connect_timeout = @var{n}
+Set the connect timeout---the same as @samp{--connect-timeout}.
+
 @item cut_dirs = @var{n}
 Ignore @var{n} remote directory components.
 
@@ -2149,6 +2177,9 @@ respectively.
 @item dns_cache = on/off
 Turn DNS caching on/off.  Since DNS caching is on by default, this
 option is normally used to turn it off.  Same as @samp{--dns-cache}.
+
+@item dns_timeout = @var{n}
+Set the DNS timeout---the same as @samp{--dns-timeout}.
 
 @item domains = @var{string}
 Same as @samp{-D} (@pxref{Spanning Hosts}).
@@ -2303,6 +2334,9 @@ quota can be specified in bytes (default), kbytes @samp{k} appended) or
 mbytes (@samp{m} appended).  Thus @samp{quota = 5m} will set the quota
 to 5 mbytes.  Note that the user's startup file overrides system
 settings.
+
+@item read_timeout = @var{n}
+Set the read (and write) timeout---the same as @samp{--read-timeout}.
 
 @item reclevel = @var{n}
 Recursion level---the same as @samp{-l}.
