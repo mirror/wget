@@ -1,3 +1,18 @@
+2003-09-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (uri_merge): Get rid of uri_merge_1.
+	(uri_merge): Merge "foo//", "bar" as "foo//bar", not "foo///bar",
+	i.e. don't add an extra slash merely because BASE ends with two
+	slashes.
+	(parse_credentials): Renamed from parse_uname.  Rewrittern in
+	standard [beg, end) calling style.
+	(url_skip_credentials): Renamed from url_skip_uname.  Made static.
+	(url_skip_credentials): Include # and ; as terminators.  Old code
+	would mistakenly consider "http://foo.com#hniksic@iskon.hr" to
+	contain a username.
+	(url_skip_scheme): Removed because it was unused.
+	(url_has_scheme): Require "scheme" to be at least one char long.
+
 2003-09-19  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (url_file_name): Expect NULL dir_prefix.

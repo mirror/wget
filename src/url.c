@@ -409,6 +409,7 @@ reencode_escapes (const char *s)
 
 /* Returns the scheme type if the scheme is supported, or
    SCHEME_INVALID if not.  */
+
 enum url_scheme
 url_scheme (const char *url)
 {
@@ -427,37 +428,25 @@ url_scheme (const char *url)
   return SCHEME_INVALID;
 }
 
-/* Return the number of characters needed to skip the scheme part of
-   the URL, e.g. `http://'.  If no scheme is found, returns 0.  */
-int
-url_skip_scheme (const char *url)
-{
-  const char *p = url;
+#define SCHEME_CHAR(ch) (ISALNUM (ch) || (ch) == '-' || (ch) == '+')
 
-  /* Skip the scheme name.  We allow `-' and `+' because of `whois++',
-     etc. */
-  while (ISALNUM (*p) || *p == '-' || *p == '+')
-    ++p;
-  if (*p != ':')
-    return 0;
-  /* Skip ':'. */
-  ++p;
+/* Return 1 if the URL begins with any "scheme", 0 otherwise.  As
+   currently implemented, it returns true if URL begins with
+   [-+a-zA-Z0-9]+: .  */
 
-  /* Skip "//" if found. */
-  if (*p == '/' && *(p + 1) == '/')
-    p += 2;
-
-  return p - url;
-}
-
-/* Returns 1 if the URL begins with a scheme (supported or
-   unsupported), 0 otherwise.  */
 int
 url_has_scheme (const char *url)
 {
   const char *p = url;
-  while (ISALNUM (*p) || *p == '-' || *p == '+')
+
+  /* The first char must be a scheme char. */
+  if (!*p || !SCHEME_CHAR (*p))
+    return 0;
+  ++p;
+  /* Followed by 0 or more scheme chars. */
+  while (*p && SCHEME_CHAR (*p))
     ++p;
+  /* Terminated by ':'. */
   return *p == ':';
 }
 
@@ -474,57 +463,51 @@ scheme_disable (enum url_scheme scheme)
 }
 
 /* Skip the username and password, if present here.  The function
-   should be called *not* with the complete URL, but with the part
+   should *not* be called with the complete URL, but with the part
    right after the scheme.
 
    If no username and password are found, return 0.  */
-int
-url_skip_uname (const char *url)
-{
-  const char *p;
-
-  /* Look for '@' that comes before '/' or '?'. */
-  p = (const char *)strpbrk (url, "/?@");
-  if (!p || *p != '@')
-    return 0;
-
-  return p - url + 1;
-}
 
 static int
-parse_uname (const char *str, int len, char **user, char **passwd)
+url_skip_credentials (const char *url)
+{
+  /* Look for '@' that comes before terminators, such as '/', '?',
+     '#', or ';'.  */
+  const char *p = (const char *)strpbrk (url, "@/?#;");
+  if (!p || *p != '@')
+    return 0;
+  return p + 1 - url;
+}
+
+/* Parse credentials contained in [BEG, END).  The region is expected
+   to have come from a URL and is unescaped.  */
+
+static int
+parse_credentials (const char *beg, const char *end, char **user, char **passwd)
 {
   char *colon;
+  const char *userend;
 
-  if (len == 0)
-    /* Empty user name not allowed. */
-    return 0;
+  if (beg == end)
+    return 0;			/* empty user name */
 
-  colon = memchr (str, ':', len);
-  if (colon == str)
-    /* Empty user name again. */
-    return 0;
+  colon = memchr (beg, ':', end - beg);
+  if (colon == beg)
+    return 0;			/* again empty user name */
 
   if (colon)
     {
-      int pwlen = len - (colon + 1 - str);
-      *passwd = xmalloc (pwlen + 1);
-      memcpy (*passwd, colon + 1, pwlen);
-      (*passwd)[pwlen] = '\0';
-      len -= pwlen + 1;
+      *passwd = strdupdelim (colon + 1, end);
+      userend = colon;
+      url_unescape (*passwd);
     }
   else
-    *passwd = NULL;
-
-  *user = xmalloc (len + 1);
-  memcpy (*user, str, len);
-  (*user)[len] = '\0';
-
-  if (*user)
-    url_unescape (*user);
-  if (*passwd)
-    url_unescape (*passwd);
-
+    {
+      *passwd = NULL;
+      userend = end;
+    }
+  *user = strdupdelim (beg, userend);
+  url_unescape (*user);
   return 1;
 }
 
@@ -540,6 +523,7 @@ parse_uname (const char *str, int len, char **user, char **passwd)
    foo.bar.com:/absdir/file      -> ftp://foo.bar.com//absdir/file
 
    If the URL needs not or cannot be rewritten, return NULL.  */
+
 char *
 rewrite_shorthand_url (const char *url)
 {
@@ -586,7 +570,7 @@ rewrite_shorthand_url (const char *url)
     }
 }
 
-static void parse_path PARAMS ((const char *, char **, char **));
+static void split_path PARAMS ((const char *, char **, char **));
 
 /* Like strpbrk, with the exception that it returns the pointer to the
    terminating zero (end-of-string aka "eos") if no matching character
@@ -835,7 +819,7 @@ url_parse (const char *url, int *error)
 
   p += strlen (supported_schemes[scheme].leading_string);
   uname_b = p;
-  p += url_skip_uname (p);
+  p += url_skip_credentials (p);
   uname_e = p;
 
   /* scheme://user:pass@host[:port]... */
@@ -979,7 +963,7 @@ url_parse (const char *url, int *error)
       /* http://user:pass@host */
       /*        ^         ^    */
       /*     uname_b   uname_e */
-      if (!parse_uname (uname_b, uname_e - uname_b - 1, &user, &passwd))
+      if (!parse_credentials (uname_b, uname_e - 1, &user, &passwd))
 	{
 	  SETERR (error, PE_INVALID_USER_NAME);
 	  return NULL;
@@ -997,7 +981,7 @@ url_parse (const char *url, int *error)
 
   u->path = strdupdelim (path_b, path_e);
   path_modified = path_simplify (u->path);
-  parse_path (u->path, &u->dir, &u->file);
+  split_path (u->path, &u->dir, &u->file);
 
   host_modified = lowercase_str (u->host);
 
@@ -1037,15 +1021,25 @@ url_error (int error_code)
   return parse_errors[error_code];
 }
 
-/* Parse PATH into dir and file.  PATH is extracted from the URL and
-   is URL-escaped.  The function returns unescaped DIR and FILE.  */
+/* Split PATH into DIR and FILE.  PATH comes from the URL and is
+   expected to be URL-escaped.
+
+   The path is split into directory (the part up to the last slash)
+   and file (the part after the last slash), which are subsequently
+   unescaped.  Examples:
+
+   PATH                 DIR           FILE
+   "foo/bar/baz"        "foo/bar"     "baz"
+   "foo/bar/"           "foo/bar"     ""
+   "foo"                ""            "foo"
+   "foo/bar/baz%2fqux"  "foo/bar"     "baz/qux" (!)
+
+   DIR and FILE are freshly allocated.  */
 
 static void
-parse_path (const char *path, char **dir, char **file)
+split_path (const char *path, char **dir, char **file)
 {
-  char *last_slash;
-
-  last_slash = strrchr (path, '/');
+  char *last_slash = strrchr (path, '/');
   if (!last_slash)
     {
       *dir = xstrdup ("");
@@ -1865,221 +1859,209 @@ path_simplify (char *path)
   return change;
 }
 
-/* Resolve the result of "linking" a base URI (BASE) to a
-   link-specified URI (LINK).
+/* Merge BASE with LINK and return the resulting URI.
 
    Either of the URIs may be absolute or relative, complete with the
-   host name, or path only.  This tries to behave "reasonably" in all
-   foreseeable cases.  It employs little specific knowledge about
-   schemes or URL-specific stuff -- it just works on strings.
-
-   The parameters LINKLENGTH is useful if LINK is not zero-terminated.
-   See uri_merge for a gentler interface to this functionality.
+   host name, or path only.  This tries to reasonably handle all
+   foreseeable cases.  It only employs minimal URL parsing, without
+   knowledge of the specifics of schemes.
 
    Perhaps this function should call path_simplify so that the callers
    don't have to call url_parse unconditionally.  */
-static char *
-uri_merge_1 (const char *base, const char *link, int linklength, int no_scheme)
-{
-  char *constr;
 
-  if (no_scheme)
-    {
-      const char *end = base + path_length (base);
-
-      if (!*link)
-	{
-	  /* Empty LINK points back to BASE, query string and all. */
-	  constr = xstrdup (base);
-	}
-      else if (*link == '?')
-	{
-	  /* LINK points to the same location, but changes the query
-	     string.  Examples: */
-	  /* uri_merge("path",         "?new") -> "path?new"     */
-	  /* uri_merge("path?foo",     "?new") -> "path?new"     */
-	  /* uri_merge("path?foo#bar", "?new") -> "path?new"     */
-	  /* uri_merge("path#foo",     "?new") -> "path?new"     */
-	  int baselength = end - base;
-	  constr = xmalloc (baselength + linklength + 1);
-	  memcpy (constr, base, baselength);
-	  memcpy (constr + baselength, link, linklength);
-	  constr[baselength + linklength] = '\0';
-	}
-      else if (*link == '#')
-	{
-	  /* uri_merge("path",         "#new") -> "path#new"     */
-	  /* uri_merge("path#foo",     "#new") -> "path#new"     */
-	  /* uri_merge("path?foo",     "#new") -> "path?foo#new" */
-	  /* uri_merge("path?foo#bar", "#new") -> "path?foo#new" */
-	  int baselength;
-	  const char *end1 = strchr (base, '#');
-	  if (!end1)
-	    end1 = base + strlen (base);
-	  baselength = end1 - base;
-	  constr = xmalloc (baselength + linklength + 1);
-	  memcpy (constr, base, baselength);
-	  memcpy (constr + baselength, link, linklength);
-	  constr[baselength + linklength] = '\0';
-	}
-      else if (linklength > 1 && *link == '/' && *(link + 1) == '/')
-	{
-	  /* LINK begins with "//" and so is a net path: we need to
-	     replace everything after (and including) the double slash
-	     with LINK. */
-
-	  /* uri_merge("foo", "//new/bar")            -> "//new/bar"      */
-	  /* uri_merge("//old/foo", "//new/bar")      -> "//new/bar"      */
-	  /* uri_merge("http://old/foo", "//new/bar") -> "http://new/bar" */
-
-	  int span;
-	  const char *slash;
-	  const char *start_insert;
-
-	  /* Look for first slash. */
-	  slash = memchr (base, '/', end - base);
-	  /* If found slash and it is a double slash, then replace
-	     from this point, else default to replacing from the
-	     beginning.  */
-	  if (slash && *(slash + 1) == '/')
-	    start_insert = slash;
-	  else
-	    start_insert = base;
-
-	  span = start_insert - base;
-	  constr = (char *)xmalloc (span + linklength + 1);
-	  if (span)
-	    memcpy (constr, base, span);
-	  memcpy (constr + span, link, linklength);
-	  constr[span + linklength] = '\0';
-	}
-      else if (*link == '/')
-	{
-	  /* LINK is an absolute path: we need to replace everything
-             after (and including) the FIRST slash with LINK.
-
-	     So, if BASE is "http://host/whatever/foo/bar", and LINK is
-	     "/qux/xyzzy", our result should be
-	     "http://host/qux/xyzzy".  */
-	  int span;
-	  const char *slash;
-	  const char *start_insert = NULL; /* for gcc to shut up. */
-	  const char *pos = base;
-	  int seen_slash_slash = 0;
-	  /* We're looking for the first slash, but want to ignore
-             double slash. */
-	again:
-	  slash = memchr (pos, '/', end - pos);
-	  if (slash && !seen_slash_slash)
-	    if (*(slash + 1) == '/')
-	      {
-		pos = slash + 2;
-		seen_slash_slash = 1;
-		goto again;
-	      }
-
-	  /* At this point, SLASH is the location of the first / after
-	     "//", or the first slash altogether.  START_INSERT is the
-	     pointer to the location where LINK will be inserted.  When
-	     examining the last two examples, keep in mind that LINK
-	     begins with '/'. */
-
-	  if (!slash && !seen_slash_slash)
-	    /* example: "foo" */
-	    /*           ^    */
-	    start_insert = base;
-	  else if (!slash && seen_slash_slash)
-	    /* example: "http://foo" */
-	    /*                     ^ */
-	    start_insert = end;
-	  else if (slash && !seen_slash_slash)
-	    /* example: "foo/bar" */
-	    /*           ^        */
-	    start_insert = base;
-	  else if (slash && seen_slash_slash)
-	    /* example: "http://something/" */
-	    /*                           ^  */
-	    start_insert = slash;
-
-	  span = start_insert - base;
-	  constr = (char *)xmalloc (span + linklength + 1);
-	  if (span)
-	    memcpy (constr, base, span);
-	  if (linklength)
-	    memcpy (constr + span, link, linklength);
-	  constr[span + linklength] = '\0';
-	}
-      else
-	{
-	  /* LINK is a relative URL: we need to replace everything
-	     after last slash (possibly empty) with LINK.
-
-	     So, if BASE is "whatever/foo/bar", and LINK is "qux/xyzzy",
-	     our result should be "whatever/foo/qux/xyzzy".  */
-	  int need_explicit_slash = 0;
-	  int span;
-	  const char *start_insert;
-	  const char *last_slash = find_last_char (base, end, '/');
-	  if (!last_slash)
-	    {
-	      /* No slash found at all.  Append LINK to what we have,
-		 but we'll need a slash as a separator.
-
-		 Example: if base == "foo" and link == "qux/xyzzy", then
-		 we cannot just append link to base, because we'd get
-		 "fooqux/xyzzy", whereas what we want is
-		 "foo/qux/xyzzy".
-
-		 To make sure the / gets inserted, we set
-		 need_explicit_slash to 1.  We also set start_insert
-		 to end + 1, so that the length calculations work out
-		 correctly for one more (slash) character.  Accessing
-		 that character is fine, since it will be the
-		 delimiter, '\0' or '?'.  */
-	      /* example: "foo?..." */
-	      /*               ^    ('?' gets changed to '/') */
-	      start_insert = end + 1;
-	      need_explicit_slash = 1;
-	    }
-	  else if (last_slash && last_slash != base && *(last_slash - 1) == '/')
-	    {
-	      /* example: http://host"  */
-	      /*                      ^ */
-	      start_insert = end + 1;
-	      need_explicit_slash = 1;
-	    }
-	  else
-	    {
-	      /* example: "whatever/foo/bar" */
-	      /*                        ^    */
-	      start_insert = last_slash + 1;
-	    }
-
-	  span = start_insert - base;
-	  constr = (char *)xmalloc (span + linklength + 1);
-	  if (span)
-	    memcpy (constr, base, span);
-	  if (need_explicit_slash)
-	    constr[span - 1] = '/';
-	  if (linklength)
-	    memcpy (constr + span, link, linklength);
-	  constr[span + linklength] = '\0';
-	}
-    }
-  else /* !no_scheme */
-    {
-      constr = strdupdelim (link, link + linklength);
-    }
-  return constr;
-}
-
-/* Merge BASE with LINK and return the resulting URI.  This is an
-   interface to uri_merge_1 that assumes that LINK is a
-   zero-terminated string.  */
 char *
 uri_merge (const char *base, const char *link)
 {
-  return uri_merge_1 (base, link, strlen (link), !url_has_scheme (link));
+  int linklength;
+  const char *end;
+  char *merge;
+
+  if (url_has_scheme (link))
+    return xstrdup (link);
+
+  /* We may not examine BASE past END. */
+  end = base + path_length (base);
+  linklength = strlen (link);
+
+  if (!*link)
+    {
+      /* Empty LINK points back to BASE, query string and all. */
+      return xstrdup (base);
+    }
+  else if (*link == '?')
+    {
+      /* LINK points to the same location, but changes the query
+	 string.  Examples: */
+      /* uri_merge("path",         "?new") -> "path?new"     */
+      /* uri_merge("path?foo",     "?new") -> "path?new"     */
+      /* uri_merge("path?foo#bar", "?new") -> "path?new"     */
+      /* uri_merge("path#foo",     "?new") -> "path?new"     */
+      int baselength = end - base;
+      merge = xmalloc (baselength + linklength + 1);
+      memcpy (merge, base, baselength);
+      memcpy (merge + baselength, link, linklength);
+      merge[baselength + linklength] = '\0';
+    }
+  else if (*link == '#')
+    {
+      /* uri_merge("path",         "#new") -> "path#new"     */
+      /* uri_merge("path#foo",     "#new") -> "path#new"     */
+      /* uri_merge("path?foo",     "#new") -> "path?foo#new" */
+      /* uri_merge("path?foo#bar", "#new") -> "path?foo#new" */
+      int baselength;
+      const char *end1 = strchr (base, '#');
+      if (!end1)
+	end1 = base + strlen (base);
+      baselength = end1 - base;
+      merge = xmalloc (baselength + linklength + 1);
+      memcpy (merge, base, baselength);
+      memcpy (merge + baselength, link, linklength);
+      merge[baselength + linklength] = '\0';
+    }
+  else if (*link == '/' && *(link + 1) == '/')
+    {
+      /* LINK begins with "//" and so is a net path: we need to
+	 replace everything after (and including) the double slash
+	 with LINK. */
+
+      /* uri_merge("foo", "//new/bar")            -> "//new/bar"      */
+      /* uri_merge("//old/foo", "//new/bar")      -> "//new/bar"      */
+      /* uri_merge("http://old/foo", "//new/bar") -> "http://new/bar" */
+
+      int span;
+      const char *slash;
+      const char *start_insert;
+
+      /* Look for first slash. */
+      slash = memchr (base, '/', end - base);
+      /* If found slash and it is a double slash, then replace
+	 from this point, else default to replacing from the
+	 beginning.  */
+      if (slash && *(slash + 1) == '/')
+	start_insert = slash;
+      else
+	start_insert = base;
+
+      span = start_insert - base;
+      merge = (char *)xmalloc (span + linklength + 1);
+      if (span)
+	memcpy (merge, base, span);
+      memcpy (merge + span, link, linklength);
+      merge[span + linklength] = '\0';
+    }
+  else if (*link == '/')
+    {
+      /* LINK is an absolute path: we need to replace everything
+	 after (and including) the FIRST slash with LINK.
+
+	 So, if BASE is "http://host/whatever/foo/bar", and LINK is
+	 "/qux/xyzzy", our result should be
+	 "http://host/qux/xyzzy".  */
+      int span;
+      const char *slash;
+      const char *start_insert = NULL; /* for gcc to shut up. */
+      const char *pos = base;
+      int seen_slash_slash = 0;
+      /* We're looking for the first slash, but want to ignore
+	 double slash. */
+    again:
+      slash = memchr (pos, '/', end - pos);
+      if (slash && !seen_slash_slash)
+	if (*(slash + 1) == '/')
+	  {
+	    pos = slash + 2;
+	    seen_slash_slash = 1;
+	    goto again;
+	  }
+
+      /* At this point, SLASH is the location of the first / after
+	 "//", or the first slash altogether.  START_INSERT is the
+	 pointer to the location where LINK will be inserted.  When
+	 examining the last two examples, keep in mind that LINK
+	 begins with '/'. */
+
+      if (!slash && !seen_slash_slash)
+	/* example: "foo" */
+	/*           ^    */
+	start_insert = base;
+      else if (!slash && seen_slash_slash)
+	/* example: "http://foo" */
+	/*                     ^ */
+	start_insert = end;
+      else if (slash && !seen_slash_slash)
+	/* example: "foo/bar" */
+	/*           ^        */
+	start_insert = base;
+      else if (slash && seen_slash_slash)
+	/* example: "http://something/" */
+	/*                           ^  */
+	start_insert = slash;
+
+      span = start_insert - base;
+      merge = (char *)xmalloc (span + linklength + 1);
+      if (span)
+	memcpy (merge, base, span);
+      memcpy (merge + span, link, linklength);
+      merge[span + linklength] = '\0';
+    }
+  else
+    {
+      /* LINK is a relative URL: we need to replace everything
+	 after last slash (possibly empty) with LINK.
+
+	 So, if BASE is "whatever/foo/bar", and LINK is "qux/xyzzy",
+	 our result should be "whatever/foo/qux/xyzzy".  */
+      int need_explicit_slash = 0;
+      int span;
+      const char *start_insert;
+      const char *last_slash = find_last_char (base, end, '/');
+      if (!last_slash)
+	{
+	  /* No slash found at all.  Append LINK to what we have,
+	     but we'll need a slash as a separator.
+
+	     Example: if base == "foo" and link == "qux/xyzzy", then
+	     we cannot just append link to base, because we'd get
+	     "fooqux/xyzzy", whereas what we want is
+	     "foo/qux/xyzzy".
+
+	     To make sure the / gets inserted, we set
+	     need_explicit_slash to 1.  We also set start_insert
+	     to end + 1, so that the length calculations work out
+	     correctly for one more (slash) character.  Accessing
+	     that character is fine, since it will be the
+	     delimiter, '\0' or '?'.  */
+	  /* example: "foo?..." */
+	  /*               ^    ('?' gets changed to '/') */
+	  start_insert = end + 1;
+	  need_explicit_slash = 1;
+	}
+      else if (last_slash && last_slash >= base + 2
+	       && last_slash[-2] == ':' && last_slash[-1] == '/')
+	{
+	  /* example: http://host"  */
+	  /*                      ^ */
+	  start_insert = end + 1;
+	  need_explicit_slash = 1;
+	}
+      else
+	{
+	  /* example: "whatever/foo/bar" */
+	  /*                        ^    */
+	  start_insert = last_slash + 1;
+	}
+
+      span = start_insert - base;
+      merge = (char *)xmalloc (span + linklength + 1);
+      if (span)
+	memcpy (merge, base, span);
+      if (need_explicit_slash)
+	merge[span - 1] = '/';
+      memcpy (merge + span, link, linklength);
+      merge[span + linklength] = '\0';
+    }
+
+  return merge;
 }
 
 #define APPEND(p, s) do {			\
