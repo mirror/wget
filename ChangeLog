@@ -1,3 +1,7 @@
+2001-04-01  Nicolas Lichtmaier  <nick@debian.org>
+
+	* po/es.po: New file.
+
 2001-03-27  Dan Harkless  <wget@harkless.org>
 
 	* INSTALL: Updated to reflect --with-ssl's new optional parameter.
