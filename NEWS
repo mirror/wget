@@ -45,6 +45,10 @@ to display the page.
 `wget -p URL-THAT-USES-FRAMES' will now download the frame HTML files,
 and all the files that they need to be displayed properly.
 
+** `--base' now works conjunction with `--input-file', providing a
+base for each URL and thereby allowing the URLs in the file to be
+relative.
+
 ** If a host has more than one IP address, Wget uses the other
 addresses when accessing the first one fails.
 
