@@ -30,61 +30,71 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <sys/time.h>
 #include "wget.h"
 #include "connect.h"
-int verify_callback(int ok, X509_STORE_CTX *ctx);
+
+/* #### Shouldn't this be static?  --hniksic */
+int verify_callback PARAMS ((int, X509_STORE_CTX *));
 
 /* Creates a SSL Context and sets some defaults for it */
-int init_ssl(SSL_CTX **ctx)
+int
+init_ssl (SSL_CTX **ctx)
 {
-SSL_METHOD *meth=NULL;
-int verify=SSL_VERIFY_NONE;
-  SSL_library_init();
-  SSL_load_error_strings();
-  SSLeay_add_all_algorithms();
-  SSLeay_add_ssl_algorithms();
-  meth = SSLv23_client_method();
-  *ctx = SSL_CTX_new(meth);
-  SSL_CTX_set_verify(*ctx,verify,verify_callback);
-  if (*ctx==NULL) return SSL_ERR_CTX_CREATION;
-return 0; /* Succeded */
+  SSL_METHOD *meth = NULL;
+  int verify = SSL_VERIFY_NONE;
+  SSL_library_init ();
+  SSL_load_error_strings ();
+  SSLeay_add_all_algorithms ();
+  SSLeay_add_ssl_algorithms ();
+  meth = SSLv23_client_method ();
+  *ctx = SSL_CTX_new (meth);
+  SSL_CTX_set_verify (*ctx, verify, verify_callback);
+  if (*ctx == NULL) return SSL_ERR_CTX_CREATION;
+  return 0; /* Succeded */
 }
 
 /* Sets up a SSL structure and performs the handshake on fd 
    Returns 0 if everything went right
-	Returns 1 if something went wrong ----- TODO: More exit codes
+   Returns 1 if something went wrong ----- TODO: More exit codes
 */
-int connect_ssl (SSL **con, SSL_CTX *ctx, int fd) 
+int
+connect_ssl (SSL **con, SSL_CTX *ctx, int fd) 
 {
-  *con=(SSL *)SSL_new(ctx);
-  SSL_set_fd(*con,fd);
-  SSL_set_connect_state(*con); 
-  SSL_connect(*con);  
-  if ((*con)->state !=SSL_ST_OK)
+  *con = (SSL *)SSL_new (ctx);
+  SSL_set_fd (*con, fd);
+  SSL_set_connect_state (*con); 
+  SSL_connect (*con);  
+  if ((*con)->state != SSL_ST_OK)
     return 1;
-return 0;
+  return 0;
 }
 
-void shutdown_ssl (SSL* con)
+void
+shutdown_ssl (SSL* con)
 {
-  SSL_shutdown(con);
-  if (con != NULL) SSL_free(con);
+  SSL_shutdown (con);
+  if (con != NULL)
+    SSL_free (con);
 }
 
-void free_ssl_ctx (SSL_CTX * ctx) {
-  SSL_CTX_free(ctx);
+void
+free_ssl_ctx (SSL_CTX * ctx)
+{
+  SSL_CTX_free (ctx);
 }
 
-int verify_callback(int ok, X509_STORE_CTX *ctx){
-char *s,buf[256];
-  s=X509_NAME_oneline(X509_get_subject_name(ctx->current_cert),buf,256);
+int
+verify_callback (int ok, X509_STORE_CTX *ctx)
+{
+  char *s, buf[256];
+  s = X509_NAME_oneline (X509_get_subject_name (ctx->current_cert), buf, 256);
   if (ok == 0) {
     switch (ctx->error) {
-   	case X509_V_ERR_CERT_NOT_YET_VALID:
-   	case X509_V_ERR_CERT_HAS_EXPIRED:
-   	case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
-         	ok=1;
+    case X509_V_ERR_CERT_NOT_YET_VALID:
+    case X509_V_ERR_CERT_HAS_EXPIRED:
+    case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+      ok = 1;
     }
   }
-  return(ok);
+  return ok;
 }
 
 /* SSL version of iread. Only exchanged read for SSL_read 
@@ -98,7 +108,7 @@ ssl_iread (SSL *con, char *buf, int len)
 {
   int res;
   int fd;
-  BIO_get_fd(con->rbio,&fd);
+  BIO_get_fd (con->rbio, &fd);
   do
     {
 #ifdef HAVE_SELECT
@@ -138,7 +148,7 @@ ssl_iwrite (SSL *con, char *buf, int len)
 {
   int res = 0;
   int fd;
-  BIO_get_fd(con->rbio,&fd);
+  BIO_get_fd (con->rbio, &fd);
   /* `write' may write less than LEN bytes, thus the outward loop
      keeps trying it until all was written, or an error occurred.  The
      inner loop is reserved for the usual EINTR f*kage, and the

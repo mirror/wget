@@ -21,11 +21,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include <openssl/ssl.h>
 #endif
 
-int init_ssl(SSL_CTX **ctx);
-int connect_ssl (SSL **con, SSL_CTX *ctx, int fd);
-void shutdown_ssl (SSL* con);
-void free_ssl_ctx (SSL_CTX * ctx);
-int verify_callback(int ok, X509_STORE_CTX *ctx);
-int ssl_iread (SSL *con, char *buf, int len);
-int ssl_iwrite (SSL *con, char *buf, int len);
+int init_ssl PARAMS ((SSL_CTX **));
+int connect_ssl PARAMS ((SSL **, SSL_CTX *, int));
+void shutdown_ssl PARAMS ((SSL*));
+void free_ssl_ctx PARAMS ((SSL_CTX *));
+int verify_callback PARAMS ((int, X509_STORE_CTX *));
+int ssl_iread PARAMS ((SSL *, char *, int));
+int ssl_iwrite PARAMS ((SSL *, char *, int));
 

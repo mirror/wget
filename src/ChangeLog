@@ -1,3 +1,14 @@
+2000-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* gen_sslfunc.h: Use ansi2knr style function declarations.
+
+	* gen_sslfunc.c: Reformat according to the GNU coding standards.
+	More should be done.
+
+	* http.c (persistent_available_p): Place the cheap SSL test nearer
+	the top of the function.
+	(CLOSE_FINISH, CLOSE_INVALIDATE): Define only one version of each.
+
 2000-12-03  Christian Fraenkel <christian.fraenkel@gmx.net>
 
 	* Makefile.in: added gen_sslfunc object
