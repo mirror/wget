@@ -1,5 +1,10 @@
 2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* cookies.c (path_matches): Return 0 if PREFIX doesn't begin with
+	'/'.
+
+2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* cookies.c (path_matches): FULL_PATH doesn't begin with '/', but
 	PREFIX does.
 

@@ -871,12 +871,15 @@ path_matches (const char *full_path, const char *prefix)
 {
   int len;
 
-  if (*prefix == '/')
-    /* Our HTTP paths don't begin with /; do the same change to
-       PREFIX.  */
-    ++prefix;
+  if (*prefix != '/')
+    /* Wget's HTTP paths do not begin with '/' (the URL code treats it
+       as a separator), but the '/' is assumed when matching against
+       the cookie stuff.  */
+    return 0;
 
+  ++prefix;
   len = strlen (prefix);
+
   if (0 != strncmp (full_path, prefix, len))
     /* FULL_PATH doesn't begin with PREFIX. */
     return 0;
