@@ -690,7 +690,7 @@ update_speed_ring (struct bar_progress *bp, long howmuch, double dltime)
   if (++hist->pos == DLSPEED_HISTORY_SIZE)
     hist->pos = 0;
 
-#if 1
+#if 0
   /* Sledgehammer check to verify that the totals are accurate. */
   {
     int i;
