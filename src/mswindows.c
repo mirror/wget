@@ -383,11 +383,12 @@ thread_helper (void *arg)
   return 0; 
 }
 
-/*
- * Run FUN with timeout.  This is done by creating a thread for 'fun'
- * to run in and terminating the thread if it doesn't finish in
- * SECONDS time.
- */
+/* Call FUN(ARG), but don't allow it to run for more than TIMEOUT
+   seconds.  Returns non-zero if the function was interrupted with a
+   timeout, zero otherwise.
+
+   This works by running FUN in a separate thread and terminating the
+   thread if it doesn't finish in the specified time.  */
 
 int
 run_with_timeout (double seconds, void (*fun) (void *), void *arg)
