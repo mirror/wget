@@ -1,5 +1,10 @@
 2001-04-29  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* ftp.c (ftp_loop_internal): Don't set NO_TRUNCATE if the file is
+	empty.
+
+2001-04-29  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* main.c (main): Make `--cookies' respect its argument.
 
 2001-04-28  Hrvoje Niksic  <hniksic@arsdigita.com>

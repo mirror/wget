@@ -989,7 +989,7 @@ Error in server response, closing control connection.\n"));
 static uerr_t
 ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 {
-  int count, orig_lp, no_truncate;
+  int count, orig_lp;
   long restval, len;
   char *tms, *tmrate, *locf;
   uerr_t err;
@@ -1020,13 +1020,6 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 
   orig_lp = con->cmd & LEAVE_PENDING ? 1 : 0;
 
-  /* In `-c' is used, check whether the file we're writing to exists
-     before we've done anything.  If so, we'll refuse to truncate it
-     if the server doesn't support continued downloads.  */
-  no_truncate = 0;
-  if (opt.always_rest)
-    no_truncate = file_exists_p (locf);
-
   /* THE loop.  */
   do
     {
@@ -1053,8 +1046,7 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	  else
 	    con->cmd |= DO_CWD;
 	}
-      if (no_truncate)
-	con->cmd |= NO_TRUNCATE;
+
       /* Assume no restarting.  */
       restval = 0L;
       if ((count > 1 || opt.always_rest)
@@ -1062,6 +1054,14 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	  && file_exists_p (locf))
 	if (stat (locf, &st) == 0 && S_ISREG (st.st_mode))
 	  restval = st.st_size;
+
+      /* In `-c' is used, check whether the file we're writing to
+	 exists and is of non-zero length.  If so, we'll refuse to
+	 truncate it if the server doesn't support continued
+	 downloads.  */
+      if (opt.always_rest && restval > 0)
+	con->cmd |= NO_TRUNCATE;
+
       /* Get the current time string.  */
       tms = time_str (NULL);
       /* Print fetch message, if opt.verbose.  */
