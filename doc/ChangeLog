@@ -1,3 +1,7 @@
+2000-03-02  Daniel S. Lewart  <d-lewart@uiuc.edu>
+
+	* wget.texi: Fix spelling and grammatical mistakes.
+
 2000-03-02  Hrvoje Niksic  <hniksic@iskon.hr>
 
 	* wget.texi (Contributors): Update contributors list.

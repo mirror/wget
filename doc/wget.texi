@@ -139,7 +139,7 @@ pages.
 
 @sp 1
 @item
-Wget works exceedingly well on slow or unstable connections, 
+Wget works exceedingly well on slow or unstable connections,
 retrying the document until it is fully retrieved, or until a
 user-specified retry count is surpassed.  It will try to resume the
 download from the point of interruption, using @code{REST} with @sc{ftp}
@@ -264,7 +264,7 @@ ftp://host/directory/file;type=a
 @end example
 
 Two alternative variants of @sc{url} specification are also supported,
-because of historical (hysterical?) reasons and their wide-spreadedness.
+because of historical (hysterical?) reasons and their widespreaded use.
 
 @sc{ftp}-only syntax (supported by @code{NcFTP}):
 @example
@@ -956,7 +956,7 @@ network; all of this may hamper other users' work.  The same stands for
 the foreign server you are mirroring---the more requests it gets in a
 rows, the greater is its load.
 
-Careless retrieving can also fill your file system unctrollably, which
+Careless retrieving can also fill your file system uncontrollably, which
 can grind the machine to a halt.
 
 The load can be minimized by lowering the maximum recursion level
@@ -1014,7 +1014,7 @@ generally output relative links.
 The drawback of following the relative links solely is that humans often
 tend to mix them with absolute links to the very same host, and the very
 same page.  In this mode (which is the default mode for following links)
-all @sc{url}s the that refer to the same host will be retrieved.
+all @sc{url}s that refer to the same host will be retrieved.
 
 The problem with this option are the aliases of the hosts and domains.
 Thus there is no way for Wget to know that @samp{regoc.srce.hr} and
@@ -1024,8 +1024,8 @@ encountered, the host is @sc{dns}-looked-up with @code{gethostbyname} to
 check whether we are maybe dealing with the same hosts.  Although the
 results of @code{gethostbyname} are cached, it is still a great
 slowdown, e.g. when dealing with large indices of home pages on different
-hosts (because each of the hosts must be and @sc{dns}-resolved to see
-whether it just @emph{might} an alias of the starting host).
+hosts (because each of the hosts must be @sc{dns}-resolved to see
+whether it just @emph{might} be an alias of the starting host).
 
 To avoid the overhead you may use @samp{-nh}, which will turn off
 @sc{dns}-resolving and make Wget compare hosts literally.  This will
@@ -1033,15 +1033,15 @@ make things run much faster, but also much less reliable
 (e.g. @samp{www.srce.hr} and @samp{regoc.srce.hr} will be flagged as
 different hosts).
 
-Note that modern @sc{http} servers allows one IP address to host several
-@dfn{virtual servers}, each having its own directory hieratchy.  Such
+Note that modern @sc{http} servers allow one IP address to host several
+@dfn{virtual servers}, each having its own directory hierarchy.  Such
 ``servers'' are distinguished by their hostnames (all of which point to
 the same IP address); for this to work, a client must send a @code{Host}
 header, which is what Wget does.  However, in that case Wget @emph{must
 not} try to divine a host's ``real'' address, nor try to use the same
 hostname for each access, i.e. @samp{-nh} must be turned on.
 
-In other words, the @samp{-nh} option must be used to enabling the
+In other words, the @samp{-nh} option must be used to enable the
 retrieval from virtual servers distinguished by their hostnames.  As the
 number of such server setups grow, the behavior of @samp{-nh} may become
 the default in the future.
@@ -1106,8 +1106,8 @@ rarely useful for itself.
 
 When downloading material from the web, you will often want to restrict
 the retrieval to only certain file types.  For example, if you are
-interested in downloading @sc{gifs}, you will not be overjoyed to get
-loads of Postscript documents, and vice versa.
+interested in downloading @sc{gif}s, you will not be overjoyed to get
+loads of PostScript documents, and vice versa.
 
 Wget offers two options to deal with this problem.  Each option
 description lists a short name, a long name, and the equivalent command
@@ -1158,7 +1158,7 @@ expansion by the shell.
 The @samp{-A} and @samp{-R} options may be combined to achieve even
 better fine-tuning of which files to retrieve.  E.g. @samp{wget -A
 "*zelazny*" -R .ps} will download all the files having @samp{zelazny} as
-a part of their name, but @emph{not} the postscript files.
+a part of their name, but @emph{not} the PostScript files.
 
 Note that these two options do not affect the downloading of @sc{html}
 files; Wget must load all the @sc{html}s to know where to go at
@@ -1221,7 +1221,7 @@ want to load all the files from @file{/pub} hierarchy except for
 @itemx no_parent = on
 The simplest, and often very useful way of limiting directories is
 disallowing retrieval of the links that refer to the hierarchy
-@dfn{upper} than the beginning directory, i.e. disallowing ascent to the
+@dfn{above} than the beginning directory, i.e. disallowing ascent to the
 parent directory/directories.
 
 The @samp{--no-parent} option (short @samp{-np}) is useful in this case.
@@ -1520,7 +1520,7 @@ Enable/disable continuation of the retrieval, the same as @samp{-c}
 (which enables it).
 
 @item background = on/off
-Enable/disable going to background, the same as @samp{-b} (which enables 
+Enable/disable going to background, the same as @samp{-b} (which enables
 it).
 
 @item backup_converted = on/off
@@ -1751,7 +1751,7 @@ you must remove the @samp{#} prefix at the beginning of line.
 ## avoid having to type many many command-line options. This file does
 ## not contain a comprehensive list of commands -- look at the manual
 ## to find out what you can put into this file.
-## 
+##
 ## Wget initialization file can reside in /usr/local/etc/wgetrc
 ## (global, for all users) or $HOME/.wgetrc (for a single user).
 ##
@@ -2151,11 +2151,11 @@ connections.
 
 @item ftp_proxy
 This variable should contain the @sc{url} of the proxy for @sc{http}
-connections.  It is quite common that @sc{http_proxy} and @sc{ftp_proxy} 
+connections.  It is quite common that @sc{http_proxy} and @sc{ftp_proxy}
 are set to the same @sc{url}.
 
 @item no_proxy
-This variable should contain a comma-separated list of domain extensions 
+This variable should contain a comma-separated list of domain extensions
 proxy should @emph{not} be used for.  For instance, if the value of
 @code{no_proxy} is @samp{.mit.edu}, proxy will not be used to retrieve
 documents from MIT.
@@ -2206,7 +2206,7 @@ username and password.
 Like all GNU utilities, the latest version of Wget can be found at the
 master GNU archive site prep.ai.mit.edu, and its mirrors.  For example,
 Wget @value{VERSION} can be found at
-@url{ftp://prep.ai.mit.edu/pub/gnu/wget-@value{VERSION}.tar.gz}
+@url{ftp://prep.ai.mit.edu/gnu/wget/wget-@value{VERSION}.tar.gz}
 
 @node Mailing List, Reporting Bugs, Distribution, Various
 @section Mailing List
@@ -2360,7 +2360,7 @@ the robots @code{META} tag.
 
 The description of the norobots standard was written, and is maintained
 by Martijn Koster @email{m.koster@@webcrawler.com}.  With his
-permission, I contribute a (slightly modified) texified version of the
+permission, I contribute a (slightly modified) TeXified version of the
 @sc{res}.
 
 @menu
@@ -2425,8 +2425,8 @@ record contains lines of the form:
 @end example
 
 The field name is case insensitive.
-   
-Comments can be included in file using UNIX bourne shell conventions:
+
+Comments can be included in file using UNIX Bourne shell conventions:
 the @samp{#} character is used to indicate that preceding space (if any)
 and the remainder of the line up to the line termination is discarded.
 Lines containing only a comment are discarded completely, and therefore
@@ -2585,7 +2585,7 @@ and ``philosophical'' discussions.
 Darko Budor---initial port to Windows.
 
 @item
-Antonio Rosella---help and suggestions, plust the Italian translation.
+Antonio Rosella---help and suggestions, plus the Italian translation.
 
 @item
 @iftex
@@ -2688,16 +2688,16 @@ $\Sigma\acute{\iota}\mu o\varsigma\;
 @ifinfo
 Simos KSenitellis,
 @end ifinfo
-Tage Stabell-Kulo,
 Hrvoje Lacko,
+Daniel S. Lewart,
 Dave Love,
 Jordan Mendelson,
 Lin Zhe Min,
 Charlie Negyesi,
 Andrew Pollock,
 Steve Pothier,
-Marin Purgar,
 Jan Prikryl,
+Marin Purgar,
 Keith Refson,
 Tobias Ringstrom,
 @c Texinfo doesn't grok @'{@i}, so we have to use TeX itself.
@@ -2711,6 +2711,7 @@ Edward J. Sabol,
 Heinz Salzmann,
 Robert Schmidt,
 Toomas Soome,
+Tage Stabell-Kulo,
 Sven Sternberger,
 Markus Strasser,
 Szakacsits Szabolcs,
@@ -3096,7 +3097,7 @@ when it starts in an interactive mode:
 Gnomovision version 69, Copyright (C) 19@var{yy} @var{name of author}
 Gnomovision comes with ABSOLUTELY NO WARRANTY; for details
 type `show w'.  This is free software, and you are welcome
-to redistribute it under certain conditions; type `show c' 
+to redistribute it under certain conditions; type `show c'
 for details.
 @end smallexample
 
@@ -3114,7 +3115,7 @@ necessary.  Here is a sample; alter the names:
 @group
 Yoyodyne, Inc., hereby disclaims all copyright
 interest in the program `Gnomovision'
-(which makes passes at compilers) written 
+(which makes passes at compilers) written
 by James Hacker.
 
 @var{signature of Ty Coon}, 1 April 1989
