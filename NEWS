@@ -5,7 +5,7 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget 1.5.3+dev
+* Changes in Wget 1.6-pre
 
 ** Administrative changes.
 
@@ -26,28 +26,29 @@ the web page for downloading instructions.
 modified due to -k to be saved with a .orig prefix before being changed.  When
 using -N as well, it is these .orig files that are compared against the server.
 
-** New --follow-tags / follow_tags = ... option allows you to restrict wget to
-following only certain HTML tags when doing a recursive retrieval.  -G /
---ignore-tags / ignore_tags = ... is just the opposite -- all tags but the ones
-you specify will be followed.
+** New --follow-tags / follow_tags = ... option allows you to restrict
+Wget to following only certain HTML tags when doing a recursive
+retrieval.  -G / --ignore-tags / ignore_tags = ... is just the
+opposite -- all tags but the ones you specify will be followed.
 
 ** New --waitretry / waitretry = SECONDS option allows waiting between retries
 of failed downloads.  Wget will use "linear" backoff, waiting 1 second after the
 first failure, 2 after the second, up to SECONDS.  waitretry is set to 10 by
 default in the system wgetrc.
 
-** New -p / --page-requisites / page_requisites = on option causes wget to
-download all ancillary files necessary to display a given HTML page properly
-(e.g. inlined images).
+** New -p / --page-requisites / page_requisites = on option causes
+Wget to download all ancillary files necessary to display a given HTML
+page properly (e.g. inlined images).
 
-** New -E / --html-extension / html_extension = on option causes wget to append
-".html" to text/html filenames not ending in regexp "\.[Hh][Tt][Mm][Ll]?".
+** New -E / --html-extension / html_extension = on option causes Wget
+to append ".html" to text/html filenames not ending in regexp
+"\.[Hh][Tt][Mm][Ll]?".
 
 ** New type of .wgetrc command -- "lockable Boolean".  Can be set to on, off,
 always, or never.  This allows the .wgetrc to override the commandline.  So far,
 passive_ftp is the only .wgetrc command which takes a lockable Boolean.
 
-** Polish and Russian message translation files have been added.
+** A number of new translation files have been added.
 
 ** New --bind-address / bind_address = <address> option for people on hosts 
 bound to multiple IP addresses.
