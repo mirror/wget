@@ -10,6 +10,11 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** New -K / --backup-converted / backup_converted = on option causes files
 modified due to -k to be saved with a .orig prefix before being changed.  When
 using -N as well, it is these .orig files that are compared against the server.
+
+** New --follow-tags / follow_tags = ... option allows you to restrict wget to
+following only certain HTML tags when doing a recursive retrieval.  -G /
+--ignore-tags / ignore_tags = ... is just the opposite -- all tags but the ones
+you specify will be followed.
 
 * Wget 1.5.3 is a bugfix release with no user-visible changes.
 

@@ -1,3 +1,8 @@
+2000-04-04  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* NEWS (--follow-tags, -G / --ignore-tags): Forgot to mention
+	these new options when I added them.
+
 2000-03-10  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* TODO: Removed done item: we now have an option (-G) that makes
