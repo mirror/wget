@@ -1,5 +1,10 @@
 2003-10-31  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* various: Use new macros xnew, xnew0, xnew_array, and xnew0_array
+	in various places.
+
+2003-10-31  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.h: Move declarations of malloc and logging code to
 	xmalloc.h and log.h respectively to unclutter this file.
 	(STRDUP_ALLOCA): Made it side-effect free.

@@ -167,7 +167,7 @@ prune_non_exact (struct robot_specs *specs)
   for (i = 0; i < specs->count; i++)
     if (specs->paths[i].user_agent_exact_p)
       ++cnt;
-  newpaths = xmalloc (cnt * sizeof (struct path_info));
+  newpaths = xnew_array (struct path_info, cnt);
   for (i = 0, j = 0; i < specs->count; i++)
     if (specs->paths[i].user_agent_exact_p)
       newpaths[j++] = specs->paths[i];
@@ -240,8 +240,7 @@ res_parse (const char *source, int length)
      the last `user-agent' instructions.  */
   int record_count = 0;
 
-  struct robot_specs *specs = xmalloc (sizeof (struct robot_specs));
-  memset (specs, '\0', sizeof (struct robot_specs));
+  struct robot_specs *specs = xnew0 (struct robot_specs);
 
   while (1)
     {

@@ -149,8 +149,8 @@ ssl_printerrors (void)
   int ocerr = 0;
   unsigned long curerr = 0;
   char errbuff[1024];
-  memset(errbuff, 0, sizeof(errbuff));
-  while ( 0 != (curerr = ERR_get_error ()))
+  xzero (errbuff);
+  while ((curerr = ERR_get_error ()) != 0)
     {
       DEBUGP (("OpenSSL: %s\n", ERR_error_string (curerr, errbuff)));
       ++ocerr;

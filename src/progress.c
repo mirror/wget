@@ -206,10 +206,7 @@ struct dot_progress {
 static void *
 dot_create (long initial, long total)
 {
-  struct dot_progress *dp = xmalloc (sizeof (struct dot_progress));
-
-  memset (dp, 0, sizeof (*dp));
-
+  struct dot_progress *dp = xnew0 (struct dot_progress);
   dp->initial_length = initial;
   dp->total_length   = total;
 
@@ -477,9 +474,7 @@ static void display_image PARAMS ((char *));
 static void *
 bar_create (long initial, long total)
 {
-  struct bar_progress *bp = xmalloc (sizeof (struct bar_progress));
-
-  memset (bp, 0, sizeof (*bp));
+  struct bar_progress *bp = xnew0 (struct bar_progress);
 
   /* In theory, our callers should take care of this pathological
      case, but it can sometimes happen. */

@@ -256,10 +256,9 @@ defaults (void)
      NULL this way is technically illegal, but porting Wget to a
      machine where NULL is not all-zero bit pattern will be the least
      of the implementors' worries.  */
-  memset (&opt, 0, sizeof (opt));
+  xzero (opt);
 
   opt.cookies = 1;
-
   opt.verbose = -1;
   opt.ntry = 20;
   opt.reclevel = 5;

@@ -465,8 +465,8 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
          list.
 	 -- Hrvoje Niksic <hniksic@xemacs.org>
       */
-      converted_file_ptr = xmalloc(sizeof(*converted_file_ptr));
-      converted_file_ptr->string = xstrdup(file);  /* die on out-of-mem. */
+      converted_file_ptr = xmalloc (sizeof (*converted_file_ptr));
+      converted_file_ptr->string = xstrdup (file);
       converted_file_ptr->next = converted_files;
       converted_files = converted_file_ptr;
     }

@@ -971,9 +971,7 @@ url_parse (const char *url, int *error)
 	}
     }
 
-  u = (struct url *)xmalloc (sizeof (struct url));
-  memset (u, 0, sizeof (*u));
-
+  u = xnew0 (struct url);
   u->scheme = scheme;
   u->host   = strdupdelim (host_b, host_e);
   u->port   = port;

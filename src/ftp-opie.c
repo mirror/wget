@@ -2124,7 +2124,7 @@ btoe (char *store, const char *c)
 
   *store = '\0';
   /* Workaround for extract() reads beyond end of data */
-  memset (cp, 0, sizeof(cp));
+  xzero (cp);
   memcpy (cp, c, 8);
   /* Compute parity.  */
   for (p = 0, i = 0; i < 64; i += 2)

@@ -768,7 +768,7 @@ read_file (const char *file)
     fd = open (file, O_RDONLY);
   if (fd < 0)
     return NULL;
-  fm = xmalloc (sizeof (struct file_memory));
+  fm = xnew (struct file_memory);
 
 #ifdef HAVE_MMAP
   {
@@ -936,7 +936,7 @@ merge_vecs (char **v1, char **v2)
 slist *
 slist_append (slist *l, const char *s)
 {
-  slist *newel = (slist *)xmalloc (sizeof (slist));
+  slist *newel = xnew (slist);
   slist *beg = l;
 
   newel->string = xstrdup (s);
@@ -956,7 +956,7 @@ slist_append (slist *l, const char *s)
 slist *
 slist_prepend (slist *l, const char *s)
 {
-  slist *newel = (slist *)xmalloc (sizeof (slist));
+  slist *newel = xnew (slist);
   newel->string = xstrdup (s);
   newel->next = l;
   return newel;
@@ -1343,8 +1343,7 @@ struct wget_timer {
 struct wget_timer *
 wtimer_allocate (void)
 {
-  struct wget_timer *wt =
-    (struct wget_timer *)xmalloc (sizeof (struct wget_timer));
+  struct wget_timer *wt = xnew (struct wget_timer);
   return wt;
 }
 
@@ -1745,7 +1744,7 @@ alarm_set (double timeout)
 #ifdef ITIMER_REAL
   /* Use the modern itimer interface. */
   struct itimerval itv;
-  memset (&itv, 0, sizeof (itv));
+  xzero (itv);
   itv.it_value.tv_sec = (long) timeout;
   itv.it_value.tv_usec = 1000000L * (timeout - (long)timeout);
   if (itv.it_value.tv_sec == 0 && itv.it_value.tv_usec == 0)
@@ -1773,7 +1772,7 @@ alarm_cancel (void)
 {
 #ifdef ITIMER_REAL
   struct itimerval disable;
-  memset (&disable, 0, sizeof (disable));
+  xzero (disable);
   setitimer (ITIMER_REAL, &disable, NULL);
 #else  /* not ITIMER_REAL */
   alarm (0);

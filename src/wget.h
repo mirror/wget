@@ -118,7 +118,7 @@ so, delete this exception statement from your version.  */
 #define countof(array) (sizeof (array) / sizeof ((array)[0]))
 
 /* Zero out a value.  */
-#define xzero(x) memset (&(x), '\0', sizeof (x))
+#define xzero(x) memset (&(x), '\0', sizeof ((x)))
 
 /* Convert an ASCII hex digit to the corresponding number between 0
    and 15.  X should be a hexadecimal digit that satisfies isxdigit;

@@ -263,8 +263,7 @@ hash_table_new (int items,
 		int (*test_function) (const void *, const void *))
 {
   int size;
-  struct hash_table *ht
-    = (struct hash_table *)xmalloc (sizeof (struct hash_table));
+  struct hash_table *ht = xnew (struct hash_table);
 
   ht->hash_function = hash_function ? hash_function : ptrhash;
   ht->test_function = test_function ? test_function : ptrcmp;
@@ -279,9 +278,7 @@ hash_table_new (int items,
   ht->resize_threshold = size * HASH_FULLNESS_THRESHOLD;
   /*assert (ht->resize_threshold >= items);*/
 
-  ht->mappings = xmalloc (ht->size * sizeof (struct mapping));
-  memset (ht->mappings, '\0', ht->size * sizeof (struct mapping));
-
+  ht->mappings = xnew0_array (struct mapping, ht->size);
   ht->count = 0;
 
   return ht;
@@ -382,9 +379,7 @@ grow_hash_table (struct hash_table *ht)
   ht->size = newsize;
   ht->resize_threshold = newsize * HASH_FULLNESS_THRESHOLD;
 
-  mappings = xmalloc (ht->size * sizeof (struct mapping));
-  memset (mappings, '\0', ht->size * sizeof (struct mapping));
-  ht->mappings = mappings;
+  ht->mappings = mappings = xnew0_array (struct mapping, ht->size);
 
   for (mp = old_mappings; mp < old_end; mp++)
     if (NON_EMPTY (mp))

@@ -403,7 +403,7 @@ bindport (const ip_address *bind_address, int *port, int *local_sock)
   int optval;
   struct sockaddr_storage ss;
   struct sockaddr *sa = (struct sockaddr *)&ss;
-  memset (&ss, 0, sizeof (ss));
+  xzero (ss);
 
 #ifdef ENABLE_IPV6
   if (bind_address->type == IPV6_ADDRESS) 

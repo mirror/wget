@@ -87,8 +87,7 @@ struct url_queue {
 static struct url_queue *
 url_queue_new (void)
 {
-  struct url_queue *queue = xmalloc (sizeof (*queue));
-  memset (queue, '\0', sizeof (*queue));
+  struct url_queue *queue = xnew0 (struct url_queue);
   return queue;
 }
 
@@ -108,7 +107,7 @@ static void
 url_enqueue (struct url_queue *queue,
 	     const char *url, const char *referer, int depth, int html_allowed)
 {
-  struct queue_element *qel = xmalloc (sizeof (*qel));
+  struct queue_element *qel = xnew (struct queue_element);
   qel->url = url;
   qel->referer = referer;
   qel->depth = depth;
@@ -605,8 +604,7 @@ descend_redirect_p (const char *redirected, const char *original, int depth,
   new_parsed = url_parse (redirected, NULL);
   assert (new_parsed != NULL);
 
-  upos = xmalloc (sizeof (struct urlpos));
-  memset (upos, 0, sizeof (*upos));
+  upos = xnew0 (struct urlpos);
   upos->url = new_parsed;
 
   success = download_child_p (upos, orig_parsed, depth,

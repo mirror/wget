@@ -90,7 +90,7 @@ time_t cookies_now;
 struct cookie_jar *
 cookie_jar_new (void)
 {
-  struct cookie_jar *jar = xmalloc (sizeof (struct cookie_jar));
+  struct cookie_jar *jar = xnew (struct cookie_jar);
   jar->chains = make_nocase_string_hash_table (0);
   jar->cookie_count = 0;
   return jar;
@@ -130,8 +130,7 @@ struct cookie {
 static struct cookie *
 cookie_new (void)
 {
-  struct cookie *cookie = xmalloc (sizeof (struct cookie));
-  memset (cookie, '\0', sizeof (struct cookie));
+  struct cookie *cookie = xnew0 (struct cookie);
 
   /* Both cookie->permanent and cookie->expiry_time are now 0.  By
      default, we assume that the cookie is non-permanent and valid

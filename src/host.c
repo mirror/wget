@@ -236,11 +236,9 @@ address_list_from_addrinfo (const struct addrinfo *ai)
   if (cnt == 0)
     return NULL;
 
-  al = xmalloc (sizeof (struct address_list));
-  al->addresses  = xmalloc (cnt * sizeof (ip_address));
+  al = xnew0 (struct address_list);
+  al->addresses  = xnew_array (ip_address, cnt);
   al->count      = cnt;
-  al->faulty     = 0;
-  al->from_cache = 0;
   al->refcount   = 1;
 
   ip = al->addresses;
@@ -275,17 +273,15 @@ static struct address_list *
 address_list_from_ipv4_addresses (char **h_addr_list)
 {
   int count, i;
-  struct address_list *al = xmalloc (sizeof (struct address_list));
+  struct address_list *al = xnew0 (struct address_list);
 
   count = 0;
   while (h_addr_list[count])
     ++count;
   assert (count > 0);
 
+  al->addresses  = xnew_array (ip_address, count);
   al->count      = count;
-  al->faulty     = 0;
-  al->addresses  = xmalloc (count * sizeof (ip_address));
-  al->from_cache = 0;
   al->refcount   = 1;
 
   for (i = 0; i < count; i++)
@@ -496,7 +492,7 @@ lookup_host (const char *host, int flags)
      flag.  Without IPv6, we use inet_addr succeeds.  */
 
 #ifdef ENABLE_IPV6
-  memset (&hints, 0, sizeof (hints));
+  xzero (hints);
   hints.ai_family   = family;
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags    = AI_NUMERICHOST;
@@ -549,7 +545,7 @@ lookup_host (const char *host, int flags)
 
 #ifdef ENABLE_IPV6
   {
-    memset (&hints, 0, sizeof (hints));
+    xzero (hints);
     hints.ai_family   = family;
     hints.ai_socktype = SOCK_STREAM;
     if (flags & LH_PASSIVE) 

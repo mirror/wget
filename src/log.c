@@ -233,7 +233,7 @@ saved_append_1 (const char *start, const char *end)
 	    {
 	      /* Allocate memory and concatenate the old and the new
                  contents. */
-	      ln->malloced_line = xmalloc (old_len + len + 1);
+	      ln->malloced_line = (char *)xmalloc (old_len + len + 1);
 	      memcpy (ln->malloced_line, ln->static_line,
 		      old_len);
 	      memcpy (ln->malloced_line + old_len, start, len);
@@ -500,7 +500,7 @@ logprintf (enum log_options o, const char *fmt, ...)
     return;
   CHECK_VERBOSE (o);
 
-  memset (&lpstate, '\0', sizeof (lpstate));
+  xzero (lpstate);
   do
     {
       VA_START (args, fmt);
@@ -526,7 +526,7 @@ debug_logprintf (const char *fmt, ...)
       if (inhibit_logging)
 	return;
 
-      memset (&lpstate, '\0', sizeof (lpstate));
+      xzero (lpstate);
       do
 	{
 	  VA_START (args, fmt);
