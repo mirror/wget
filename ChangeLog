@@ -1,3 +1,19 @@
+2000-12-31  Dan Harkless  <wget@harkless.org>
+
+        * README: Changed 1.5.3 in the FTP URL to 1.6.
+
+        * NEWS: Released Wget version 1.6.
+	
+        * po/*.po: 'Project-Id-Version's were very haphazard, saying
+        either "wget" or "GNU wget", and with versions of 1.5.2-b[124],
+        1.5.3, the nonexistent 1.5.4, and 1.6-pre.  Standardized all to
+        "GNU Wget 1.7-dev".  Perhaps this is wrong to do because some of the
+        translations haven't been updated since the versions they state,
+        but I know some of the files were updated specifically for 1.6,
+        and none of them used this version.  In any case, the
+        'POT-Creation-Date's and 'PO-Revision-Date's remain the best
+        indicator of whether a translation's out of date.
+        
 2000-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* po/POTFILES.in: Updated.

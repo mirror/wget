@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.5.3\n"
+"Project-Id-Version: GNU Wget 1.7-dev\n"
 "POT-Creation-Date: 2000-12-10 03:30+0100\n"
 "PO-Revision-Date: 2000-09-15 23:44+0200\n"
 "Last-Translator: Grzegorz Kowal <g_kowal@poczta.onet.pl>\n"

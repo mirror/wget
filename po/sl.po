@@ -1,7 +1,7 @@
 # Slovenian messages for GNU Wget
 # Copyright (C) 1999 Free Software Foundation, Inc.
 # Roman Maurer <roman.maurer@fmf.uni-lj.si>, 1999.
-# $Id: sl.po 210 2000-12-10 02:38:18Z hniksic $
+# $Id: sl.po 246 2000-12-31 12:05:29Z dan $
 #
 # Spremembe:
 #
@@ -14,7 +14,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.5.3\n"
+"Project-Id-Version: GNU Wget 1.7-dev\n"
 "POT-Creation-Date: 2000-12-10 03:30+0100\n"
 "PO-Revision-Date: 1999-10-04 10:30+02:00\n"
 "Last-Translator: Roman Maurer <roman.maurer@hermes.si>\n"
