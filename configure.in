@@ -546,17 +546,14 @@ dnl internationalization macros
 WGET_WITH_NLS
 
 dnl
-dnl Find makeinfo.  If makeinfo is not found, look for Emacs.  If
-dnl Emacs cannot be found, look for XEmacs.
+dnl Find makeinfo.  We used to provide support for Emacs processing
+dnl Texinfo using `emacs -batch -eval ...' where makeinfo is
+dnl unavailable, but that broke with the addition of makeinfo-specific
+dnl command-line options, such as `-I'.  Now we depend on makeinfo to
+dnl build the Info documentation.
 dnl
 
-AC_CHECK_PROGS(MAKEINFO, makeinfo emacs xemacs)
-
-case "${MAKEINFO}" in
-   *makeinfo) MAKEINFO="${MAKEINFO} \$(srcdir)/wget.texi"  ;;
-   *emacs | *xemacs) MAKEINFO="${MAKEINFO} -batch -q -no-site-file -eval '(find-file \"\$(srcdir)/wget.texi\")' -l texinfmt -f texinfo-format-buffer -f save-buffer"  ;;
-   *) MAKEINFO="makeinfo \$(srcdir)/wget.texi"            ;;
-esac
+AC_CHECK_PROGS(MAKEINFO, makeinfo)
 
 dnl
 dnl Find perl and pod2man

@@ -65,8 +65,8 @@ everything: all wget_us.ps wget_a4.ps wget_toc.html
 $(SAMPLERCTEXI): $(srcdir)/sample.wgetrc
 	sed s/@/@@/g $? > $@
 
-wget.info: $(SAMPLERCTEXI) $(srcdir)/wget.texi
-	$(MAKEINFO) -I$(srcdir)
+wget.info: $(srcdir)/wget.texi $(SAMPLERCTEXI)
+	$(MAKEINFO) -I$(srcdir) $<
 
 $(TEXI2POD): $(TEXI2POD).in
 	sed 's,^#! /usr/bin/perl,#! @PERL@,' $? > $@

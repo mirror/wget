@@ -1,3 +1,8 @@
+2003-11-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Don't attempt to use Emacs as a makeinfo
+	substitute.
+
 2003-11-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* README: Remove explicit version reference, so that the file
