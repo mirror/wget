@@ -33,7 +33,7 @@ so, delete this exception statement from your version.  */
 /* Define this if you want primitive but extensive malloc debugging.
    It will make Wget extremely slow, so only do it in development
    builds.  */
-#define DEBUG_MALLOC
+#undef DEBUG_MALLOC
 
 /* When DEBUG_MALLOC is not defined (which is normally the case), the
    allocation functions directly map to *_real wrappers.  In the
