@@ -80,7 +80,8 @@ $(SUBDIRS): FORCE
 	cd $@ && $(MAKE) $(MAKEDEFS)
 
 # install everything
-install: install.bin install.info install.wgetrc install.mo # install.man
+install: install.bin install.info install.wgetrc \
+	 install.mo @COMMENT_IF_NO_POD2MAN@install.man
 
 # install/uninstall the binary
 install.bin uninstall.bin:

@@ -225,6 +225,20 @@ case "${MAKEINFO}" in
 esac
 
 dnl
+dnl Find perl and pod2man
+dnl
+
+AC_PATH_PROGS(PERL, perl5 perl, no)
+AC_PATH_PROG(POD2MAN, pod2man, no)
+
+if test "x${POD2MAN}" = xno; then
+  COMMENT_IF_NO_POD2MAN="# "
+else
+  COMMENT_IF_NO_POD2MAN=
+fi
+AC_SUBST(COMMENT_IF_NO_POD2MAN)
+
+dnl
 dnl Create output
 dnl
 AC_OUTPUT([Makefile src/Makefile doc/Makefile util/Makefile po/Makefile.in

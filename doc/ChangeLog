@@ -1,3 +1,21 @@
+2001-02-22  Dan Harkless  <wget@harkless.org>
+
+	* Makefile.in: Make wget man page and install it if we have
+ 	pod2man.  Added some missing '$(srcdir)/'s.  Added missing
+ 	dependencies on install targets (allowing you to just do `make
+ 	install' rather than forcing you to do `make && make install').
+  	Also, Makefile rules should always use output file parameters if
+ 	available rather than redirecting stdout with '>', or you falsely
+ 	satisfy dependencies if the tool you're running is missing or
+ 	fails -- fixed call of texi2pod.pl that did this wrong.
+
+	* texi2pod.pl: Removed from CVS.  Now automatically generated.
+		
+	* texi2pod.pl.in: This new file is processed into texi2pod.pl,
+ 	getting the appropriate path to the Perl 5+ executable on this
+ 	system and becoming executable (CVS files, by contrast, don't
+ 	arrive executable).
+	
 2001-02-19  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Download Options): Further improvement to --continue

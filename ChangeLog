@@ -2,6 +2,10 @@
 
 	* TODO: Remove empty directories created due to --accept/--reject.
 
+	* configure.in: Look for perl and pod2man and make substitutions.
+	
+	* Makefile.in (install): Do install.man if we have pod2man.
+
 2001-02-13  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
 	* windows/Makefile.src: Removed references to ftpparse sources.

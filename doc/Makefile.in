@@ -45,7 +45,7 @@ INSTALL_DATA = @INSTALL_DATA@
 RM = rm -f
 
 TEXI2POD     = ./texi2pod.pl
-POD2MAN      = pod2man
+POD2MAN      = @POD2MAN@
 MAN          = wget.$(manext)
 WGETRC       = $(sysconfdir)/wgetrc
 SAMPLERCTEXI = sample.wgetrc.munged_for_texi_inclusion
@@ -54,30 +54,32 @@ SAMPLERCTEXI = sample.wgetrc.munged_for_texi_inclusion
 # Dependencies for building
 #
 
-all: wget.info
+all: wget.info @COMMENT_IF_NO_POD2MAN@$(MAN)
 
 everything: all wget_us.ps wget_a4.ps wget_toc.html
 
 $(SAMPLERCTEXI): $(srcdir)/sample.wgetrc
 	sed s/@/@@/g $< > $@
 
-wget.info: $(SAMPLERCTEXI) wget.texi
+wget.info: $(SAMPLERCTEXI) $(srcdir)/wget.texi
 	-$(MAKEINFO)
 
-wget.pod: wget.texi
-	$(TEXI2POD) $< > $@
+$(TEXI2POD): $(srcdir)/$(TEXI2POD).in
+	sed s^/usr/bin/perl^@PERL@^ $< > $@
+	chmod u+x $@
+
+wget.pod: $(srcdir)/wget.texi texi2pod.pl
+	$(TEXI2POD) $< $@
 
 $(MAN): wget.pod
 	$(POD2MAN) --center="GNU Wget" --release="GNU Wget @VERSION@" $< > $@
-
-man: $(MAN)
 
 #wget.cat: $(MAN)
 #	nroff -man $< > $@
 
 dvi: wget.dvi
 
-wget.dvi: wget.texi
+wget.dvi: $(srcdir)/wget.texi
 	$(TEXI2DVI) $(srcdir)/wget.texi
 
 wget_us.ps: wget.dvi
@@ -86,7 +88,7 @@ wget_us.ps: wget.dvi
 wget_a4.ps: wget.dvi
 	$(DVIPS) -t a4 -o $@ wget.dvi
 
-wget_toc.html: wget.texi
+wget_toc.html: $(srcdir)/wget.texi
 	$(TEXI2HTML) $(srcdir)/wget.texi
 
 #
@@ -94,10 +96,10 @@ wget_toc.html: wget.texi
 #
 
 # install all the documentation
-install: install.info install.wgetrc # install.man
+install: install.info install.wgetrc @COMMENT_IF_NO_POD2MAN@install.man
 
 # uninstall all the documentation
-uninstall: uninstall.info # uninstall.man
+uninstall: uninstall.info @COMMENT_IF_NO_POD2MAN@uninstall.man
 
 # install info pages, creating install directory if necessary
 install.info: wget.info
@@ -107,12 +109,12 @@ install.info: wget.info
 	done
 
 # install man page, creating install directory if necessary
-install.man:
+install.man: $(MAN)
 	$(top_srcdir)/mkinstalldirs $(mandir)/man$(manext)
 	$(INSTALL_DATA) $(srcdir)/$(MAN) $(mandir)/man$(manext)/$(MAN)
 
 # install sample.wgetrc
-install.wgetrc:
+install.wgetrc: $(srcdir)/sample.wgetrc
 	$(top_srcdir)/mkinstalldirs $(sysconfdir)
 	@if test -f $(WGETRC); then \
 	  if cmp -s $(srcdir)/sample.wgetrc $(WGETRC); then echo ""; \
@@ -151,7 +153,7 @@ clean:
 
 distclean: clean
 	$(RM) Makefile
-	$(RM) $(MAN)
+	$(RM) $(MAN) $(TEXI2POD)
 
 realclean: distclean
 	$(RM) wget.info*
