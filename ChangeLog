@@ -1,3 +1,8 @@
+2001-05-16  Csaba Raduly  <csaba.raduly@sophos.com>
+
+	* windows/Makefile.watcom: Make linker accept space-separated list
+	of object files.
+
 2001-05-14  Herold Heiko  <Heiko.Herold@previnet.it>
 
 	* windows/Makefile.src: Update for SSL.

@@ -7,6 +7,9 @@
 CC=wcc386 /zq
 LINK=wlink
 
+#
+# Note: this will wipe anything in the env.var PATH !
+#
 .BEFORE
 	@SET INCLUDE=$(%WATCOM)\h;$(%WATCOM)\h\nt;.
 
@@ -27,7 +30,7 @@ CFLAGS=/zp4 /w4 /fpd /5s /fp5 /bm /mf /bt=nt /DWINDOWS /DHAVE_CONFIG_H
 # /zp4= pack structure members with this alignment
 # /d1 = line number debug info
 # /w4 = warning level
-# /fpd= ??? no such switch !
+# /fpd= Pentium floatingpoint bug workaround
 # /5s = Pentium stack-based calling
 # /fp5= Pentium floating point
 # /bm = build multi-threaded
@@ -48,42 +51,10 @@ CFLAGS+= /os /d2
 #CFLAGS+= /DDEBUG_MALLOC
 #       ^^-- mind the gap !!
 
-#
-# The trouble: dependencies need to be space-separated (exe : obj1 obj2)
-#              wlink wants them comma-separated ( wlink FILE obj1,obj2 )
-# The trick  : Use wmake's "immediate expansion" feautre ( $+ turns it on, 
-#              end-of-line and $_ turns it off ) to construct 
-# Background : wmake expands macros in macro definitions at the place of
-#              the macro call (GNU make's = behaviour)
-#              $+ changes this behaviour to expand the macros at the 
-#              place of the macro *definition* (kinda like gmake's := does)
-#
-# See the "Macros" topic in the Watcom Tools Guide
-#
-
-#
-# Add new object files to OBJS, with $_ appended
-# Note: There MUST NOT be a $_ on the last one !!
-#       & is the line continuation character (also shouldn't be present at the end)
-#
-OBJS = cmpt.obj$_ connect.obj$_ cookies.obj$_ fnmatch.obj$_ ftp.obj$_ ftp-basic.obj$_  &
-      ftp-ls.obj$_ ftp-opie.obj$_ getopt.obj$_ hash.obj$_ headers.obj$_ host.obj$_ html-parse.obj$_ html-url.obj$_  &
-      http.obj$_ init.obj$_ log.obj$_ main.obj$_ md5.obj$_ netrc.obj$_ rbuf.obj$_  &
-      recur.obj$_ retr.obj$_ safe-ctype.obj$_ url.obj$_ utils.obj$_ version.obj$_ mswindows.obj
-
-
-#
-# For LINKOBJS, $_ is defined as a comma
-#
-_=,
-LINKOBJS=FILE $+$(OBJS)$-
-
-#
-# Empty $_ again. OBJS can now be used as the dependency list for wget.exe
-#
-_=
-
-
+OBJS = cmpt.obj connect.obj cookies.obj fnmatch.obj ftp.obj ftp-basic.obj  &
+      ftp-ls.obj ftp-opie.obj getopt.obj hash.obj headers.obj host.obj html-parse.obj html-url.obj  &
+      http.obj init.obj log.obj main.obj md5.obj netrc.obj rbuf.obj  &
+      recur.obj retr.obj safe-ctype.obj url.obj utils.obj version.obj mswindows.obj
 
 LIBFILES = 
 #
@@ -100,8 +71,13 @@ all : config.h $(BINNAME) .SYMBOLIC
 config.h : ..\windows\config.h.ms
 	copy $[@ $^@
 
+#
+# Note: this will pass all the OBJ files to wlink,
+# resulting in a very long command line (410 chars, last I counted)
+# This might fail on Win9x (works with NT's cmd.exe)
+#
 $(BINNAME): $(OBJS) Makefile
-	$(LINK) $(LFLAGS) NAME $(BINNAME) $(LINKOBJS) $(LIBPATH) $(LIBFILES)
+	$(LINK) $(LFLAGS) NAME $(BINNAME) FILE { $(OBJS) } $(LIBPATH) $(LIBFILES)
 
 
 #
