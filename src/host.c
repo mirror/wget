@@ -145,8 +145,11 @@ store_hostaddress (unsigned char *where, const char *hostname)
   if ((int)addr != -1)
     {
       /* This works on both little and big endian architecture, as
-	 inet_addr returns the address in the proper order.  It
-	 appears to work on 64-bit machines too.  */
+	 inet_addr returns the address in the proper order.  */
+#ifdef WORDS_BIGENDIAN
+      if (sizeof (addr) == 8)
+	addr <<= 32;
+#endif
       memcpy (where, &addr, 4);
       return 1;
     }

@@ -1,3 +1,7 @@
+1998-12-01  "R. K. Owen"  <rkowen@Nersc.GOV>
+
+	* host.c (store_hostaddress): Fix for big endian 64-bit machines.
+
 1998-12-01  Hrvoje Niksic  <hniksic@srce.hr>
 
 	* url.c (UNSAFE_CHAR): New macro.
