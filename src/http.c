@@ -44,10 +44,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # endif
 #endif
 
-#ifdef HAVE_SSL
-#include "gen_sslfunc.h"
-#endif /* HAVE_SSL */
-
 #ifdef WINDOWS
 # include <winsock.h>
 #endif
@@ -65,6 +61,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #if USE_DIGEST
 # include "md5.h"
 #endif
+#ifdef HAVE_SSL
+# include "gen_sslfunc.h"
+#endif /* HAVE_SSL */
 
 extern char *version_string;
 
