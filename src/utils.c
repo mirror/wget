@@ -59,6 +59,27 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include <termios.h>
 #endif
 
+/* Needed for run_with_timeout. */
+#undef USE_SIGNAL_TIMEOUT
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+#ifdef HAVE_SETJMP_H
+# include <setjmp.h>
+#endif
+/* If sigsetjmp is a macro, configure won't pick it up. */
+#ifdef sigsetjmp
+# define HAVE_SIGSETJMP
+#endif
+#ifdef HAVE_SIGNAL
+# ifdef HAVE_SIGSETJMP
+#  define USE_SIGNAL_TIMEOUT
+# endif
+# ifdef HAVE_SIGBLOCK
+#  define USE_SIGNAL_TIMEOUT
+# endif
+#endif
+
 #include "wget.h"
 #include "utils.h"
 #include "fnmatch.h"
@@ -1757,3 +1778,73 @@ debug_test_md5 (char *buf)
   return res;
 }
 #endif
+
+/* Implementation of run_with_timeout, a generic timeout handler for
+   systems with Unix-like signal handling.  */
+#ifdef HAVE_SIGSETJMP
+#define SETJMP(env) sigsetjmp (env, 1)
+
+static sigjmp_buf run_with_timeout_env;
+
+static RETSIGTYPE
+abort_run_with_timeout (int sig)
+{
+  assert (sig == SIGALRM);
+  siglongjmp (run_with_timeout_env, -1);
+}
+#else  /* not HAVE_SIGSETJMP */
+#define SETJMP(env) setjmp (env)
+
+static jmp_buf run_with_timeout_env;
+
+static RETSIGTYPE
+abort_run_with_timeout (int sig)
+{
+  assert (sig == SIGALRM);
+  /* We don't have siglongjmp to preserve the set of blocked signals;
+     if we longjumped out of the handler at this point, SIGALRM would
+     remain blocked.  We must unblock it manually. */
+  int mask = siggetmask ();
+  mask &= ~sigmask(SIGALRM);
+  sigsetmask (mask);
+
+  /* Now it's safe to longjump. */
+  longjmp (run_with_timeout_env, -1);
+}
+#endif /* not HAVE_SIGSETJMP */
+
+int
+run_with_timeout (long timeout, void (*fun) (void *), void *arg)
+{
+#ifndef USE_SIGNAL_TIMEOUT
+  fun (arg);
+  return 0;
+#else
+  int saved_errno;
+
+  if (timeout == 0)
+    {
+      fun (arg);
+      return 0;
+    }
+
+  signal (SIGALRM, abort_run_with_timeout);
+  if (SETJMP (run_with_timeout_env) != 0)
+    {
+      /* Longjumped out of FUN with a timeout. */
+      signal (SIGALRM, SIG_DFL);
+      return 1;
+    }
+  alarm (timeout);
+  fun (arg);
+
+  /* Preserve errno in case alarm() or signal() modifies it. */
+  saved_errno = errno;
+  alarm (0);
+  signal (SIGALRM, SIG_DFL);
+  errno = saved_errno;
+
+  return 0;
+#endif
+}
+

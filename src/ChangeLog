@@ -1,3 +1,14 @@
+2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* connect.c (connect_with_timeout): Firing SIGALRM can result in
+	connect() exiting with EINTR.  Treat EINTR the same as ETIMEDOUT.
+
+2002-04-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* connect.c (connect_with_timeout): Use it.
+
+	* utils.c (run_with_timeout): New function.
+
 2002-04-13  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* url.c (getproxy): Accept a struct url argument.  This obviates

@@ -47,29 +47,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include <sys/select.h>
 #endif /* HAVE_SYS_SELECT_H */
 
-/* To implement connect with timeout, we need signal and either
-   sigsetjmp or sigblock. */
-#undef UNIX_CONNECT_TIMEOUT
-#ifdef HAVE_SIGNAL_H
-# include <signal.h>
-#endif
-#ifdef HAVE_SETJMP_H
-# include <setjmp.h>
-#endif
-/* If sigsetjmp is a macro, configure won't pick it up. */
-#ifdef sigsetjmp
-# define HAVE_SIGSETJMP
-#endif
-#ifdef HAVE_SIGNAL
-# ifdef HAVE_SIGSETJMP
-#  define UNIX_CONNECT_TIMEOUT
-# endif
-# ifdef HAVE_SIGBLOCK
-#  define UNIX_CONNECT_TIMEOUT
-# endif
-#endif
-
 #include "wget.h"
+#include "utils.h"
 #include "host.h"
 #include "connect.h"
 
@@ -107,45 +86,19 @@ resolve_bind_address (void)
   bind_address_resolved = 1;
 }
 
-#ifndef UNIX_CONNECT_TIMEOUT
-static int
-connect_with_timeout (int fd, const struct sockaddr *addr, int addrlen,
-		      int timeout)
+struct cwt_context {
+  int fd;
+  const struct sockaddr *addr;
+  int addrlen;
+  int result;
+};
+
+static void
+connect_with_timeout_callback (void *arg)
 {
-  return connect (fd, addr, addrlen);
+  struct cwt_context *ctx = (struct cwt_context *)arg;
+  ctx->result = connect (ctx->fd, ctx->addr, ctx->addrlen);
 }
-#else  /* UNIX_CONNECT_TIMEOUT */
-/* Implementation of connect with timeout. */
-
-#ifdef HAVE_SIGSETJMP
-#define SETJMP(env) sigsetjmp (env, 1)
-
-static sigjmp_buf abort_connect_env;
-
-RETSIGTYPE
-abort_connect (int ignored)
-{
-  siglongjmp (abort_connect_env, -1);
-}
-#else  /* not HAVE_SIGSETJMP */
-#define SETJMP(env) setjmp (env)
-
-static jmp_buf abort_connect_env;
-
-RETSIGTYPE
-abort_connect (int ignored)
-{
-  /* We don't have siglongjmp to preserve the set of blocked signals;
-     if we longjumped out of the handler at this point, SIGALRM would
-     remain blocked.  We must unblock it manually. */
-  int mask = siggetmask ();
-  mask &= ~sigmask(SIGALRM);
-  sigsetmask (mask);
-
-  /* Now it's safe to longjump. */
-  longjmp (abort_connect_env, -1);
-}
-#endif /* not HAVE_SIGSETJMP */
 
 /* Like connect, but specifies a timeout.  If connecting takes longer
    than TIMEOUT seconds, -1 is returned and errno is set to
@@ -155,32 +108,20 @@ static int
 connect_with_timeout (int fd, const struct sockaddr *addr, int addrlen,
 		      int timeout)
 {
-  int result, saved_errno;
+  struct cwt_context ctx;
+  ctx.fd = fd;
+  ctx.addr = addr;
+  ctx.addrlen = addrlen;
 
-  if (timeout == 0)
-    return connect (fd, addr, addrlen);
-
-  signal (SIGALRM, abort_connect);
-  if (SETJMP (abort_connect_env) != 0)
+  if (run_with_timeout (timeout, connect_with_timeout_callback, &ctx))
     {
-      /* Longjumped out of connect with a timeout. */
-      signal (SIGALRM, SIG_DFL);
       errno = ETIMEDOUT;
       return -1;
     }
-
-  alarm (timeout);
-  result = connect (fd, addr, addrlen);
-
-  saved_errno = errno;		/* In case alarm() or signal() change
-				   errno. */
-  alarm (0);
-  signal (SIGALRM, SIG_DFL);
-  errno = saved_errno;
-
-  return result;
+  if (ctx.result == -1 && errno == EINTR)
+    errno = ETIMEDOUT;
+  return ctx.result;
 }
-#endif /* UNIX_CONNECT_TIMEOUT */
 
 /* A kludge, but still better than passing the host name all the way
    to connect_to_one.  */

@@ -551,6 +551,10 @@ lookup_host (const char *host, int silent)
   if (!silent)
     logprintf (LOG_VERBOSE, _("Resolving %s... "), host);
 
+  /* Host name lookup goes on below.  #### We should implement
+     getaddrinfo_with_timeout and gethostbyname_with_timeout the same
+     way connect.c implements connect_with_timeout.  */
+
 #ifdef INET6
   {
     struct addrinfo hints, *ai;
