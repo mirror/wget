@@ -880,7 +880,11 @@ Can't timestamp and not clobber old files at the same time.\n"));
 #ifdef HAVE_SIGNAL
 /* Hangup signal handler.  When wget receives SIGHUP or SIGUSR1, it
    will proceed operation as usual, trying to write into a log file.
-   If that is impossible, the output will be turned off.  */
+   If that is impossible, the output will be turned off.
+
+   #### It is unsafe to do call libc functions from a signal handler.
+   What we should do is, set a global variable, and have the code in
+   log.c pick it up.  */
 
 static RETSIGTYPE
 redirect_output_signal (int sig)
@@ -894,5 +898,6 @@ redirect_output_signal (int sig)
 	    (sig == SIGUSR1 ? "SIGUSR1" :
 	     "WTF?!")));
   redirect_output (tmp);
+  progress_schedule_redirect ();
 }
 #endif /* HAVE_SIGNAL */

@@ -22,6 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 int valid_progress_implementation_p PARAMS ((const char *));
 void set_progress_implementation PARAMS ((const char *));
+void progress_schedule_redirect PARAMS ((void));
 
 void *progress_create PARAMS ((long, long));
 void progress_update PARAMS ((void *, long, long));

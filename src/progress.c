@@ -61,6 +61,7 @@ static struct progress_implementation implementations[] = {
   { "bar", bar_create, bar_update, bar_finish, bar_set_params }
 };
 static struct progress_implementation *current_impl;
+int current_impl_locked;
 
 /* Progress implementation used by default.  Can be overriden in
    wgetrc or by the fallback one.  */
@@ -111,6 +112,7 @@ set_progress_implementation (const char *name)
     if (!strncmp (pi->name, name, namelen))
       {
 	current_impl = pi;
+	current_impl_locked = 0;
 
 	if (colon)
 	  /* We call pi->set_params even if colon is NULL because we
@@ -125,6 +127,14 @@ set_progress_implementation (const char *name)
   abort ();
 }
 
+static int output_redirected;
+
+void
+progress_schedule_redirect (void)
+{
+  output_redirected = 1;
+}
+
 /* Create a progress gauge.  INITIAL is the number of bytes the
    download starts from (zero if the download starts from scratch).
    TOTAL is the expected total number of bytes in this download.  If
@@ -134,6 +144,14 @@ set_progress_implementation (const char *name)
 void *
 progress_create (long initial, long total)
 {
+  /* Check if the log status has changed under our feet. */
+  if (output_redirected)
+    {
+      if (!current_impl_locked)
+	set_progress_implementation (FALLBACK_PROGRESS_IMPLEMENTATION);
+      output_redirected = 0;
+    }
+
   return current_impl->create (initial, total);
 }
 
@@ -653,6 +671,10 @@ bar_set_params (const char *params)
 {
   int sw;
 
+  if (params
+      && 0 == strcmp (params, "force"))
+    current_impl_locked = 1;
+
   if ((opt.lfilename
 #ifdef HAVE_ISATTY
        || !isatty (fileno (stderr))
@@ -660,8 +682,7 @@ bar_set_params (const char *params)
        1
 #endif
        )
-      && !(params != NULL
-	   && 0 == strcmp (params, "force")))
+      && !current_impl_locked)
     {
       /* We're not printing to a TTY, so revert to the fallback
 	 display.  #### We're recursively calling

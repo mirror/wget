@@ -1,5 +1,20 @@
 2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* progress.c (progress_create): Make sure that, when the output is
+	redirected, the progress implementation gets changed to the
+	fallback one.
+	(bar_set_params): Set current_impl_locked to 1 when "force" is
+	specified.
+	(progress_create): Don't change the progress implementation if
+	current_impl_locked is non-zero.
+
+	* main.c (redirect_output_signal): Call
+	progress_schedule_redirect.
+
+	* progress.c (progress_schedule_redirect): New function.
+
+2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* log.c (logvprintf): Restructure to allow being called multiple
 	times.
 	(logprintf): Call logvprintf in a loop.
