@@ -1,3 +1,7 @@
+2002-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* config.h.in: Only define _VA_LIST when compiled with gcc.
+
 2002-04012  Ian Abbott  <abbotti@mev.co.uk>
 
 	* http.c (http_loop): Compensate for MS Windows two-second
@@ -18,6 +22,7 @@
 
 	* recur.c (download_child_p): Ditto.
 
+>>>>>>> 1.382
 2002-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* config.h.in: Define _VA_LIST on Solaris to prevent stdio.h from
