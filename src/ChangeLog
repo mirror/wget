@@ -1,5 +1,16 @@
 2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* progress.c: Renamed dp_* functions to dot_* for greater clarity
+	and consistency with bar_*.
+	(print_download_speed): Get rid of the unneeded '@' character.
+	(create_image): Fix download rate geometry.
+
+	* progress.c (print_elapsed): Remove spurious space.
+	(print_elapsed): Renamed to print_download_speed, since that's
+	what it does.
+
+2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* progress.c (bar_update): If the downloaded amount becomes larger
 	than the expected amount, adjust the expected amount accordingly.
 

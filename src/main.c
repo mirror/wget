@@ -686,6 +686,11 @@ GNU General Public License for more details.\n"));
 	}
     }
 
+  /* Initialize progress.  Have to do this after the options are
+     processed so we know where the log file is.  */
+  if (opt.verbose)
+    set_progress_implementation (opt.progress_type);
+
   /* All user options have now been processed, so it's now safe to do
      interoption dependency checks. */
 

@@ -85,7 +85,7 @@ CMD_DECLARE (cmd_spec_dirstruct);
 CMD_DECLARE (cmd_spec_header);
 CMD_DECLARE (cmd_spec_htmlify);
 CMD_DECLARE (cmd_spec_mirror);
-CMD_DECLARE (cmd_spec_progress);
+/*CMD_DECLARE (cmd_spec_progress);*/
 CMD_DECLARE (cmd_spec_recursive);
 CMD_DECLARE (cmd_spec_useragent);
 
@@ -155,7 +155,7 @@ static struct {
   { "pagerequisites",	&opt.page_requisites,	cmd_boolean },
   { "passiveftp",	&opt.ftp_pasv,		cmd_lockable_boolean },
   { "passwd",		&opt.ftp_pass,		cmd_string },
-  { "progress",		NULL,			cmd_spec_progress },
+  { "progress",		&opt.progress_type,	cmd_string },
   { "proxypasswd",	&opt.proxy_passwd,	cmd_string },
   { "proxyuser",	&opt.proxy_user,	cmd_string },
   { "quiet",		&opt.quiet,		cmd_boolean },
@@ -249,7 +249,6 @@ defaults (void)
 
   opt.remove_listing = 1;
 
-  set_progress_implementation ("dot");
   opt.dot_bytes = 1024;
   opt.dot_spacing = 10;
   opt.dots_in_line = 50;
@@ -930,6 +929,7 @@ cmd_spec_mirror (const char *com, const char *val, void *closure)
   return 1;
 }
 
+#if 0
 static int
 cmd_spec_progress (const char *com, const char *val, void *closure)
 {
@@ -942,6 +942,7 @@ cmd_spec_progress (const char *com, const char *val, void *closure)
   set_progress_implementation (val);
   return 1;
 }
+#endif
 
 static int
 cmd_spec_recursive (const char *com, const char *val, void *closure)

@@ -43,10 +43,10 @@ struct progress_implementation {
 
 /* Necessary forward declarations. */
 
-static void *dp_create PARAMS ((long, long));
-static void dp_update PARAMS ((void *, long));
-static void dp_finish PARAMS ((void *));
-static void dp_set_params PARAMS ((const char *));
+static void *dot_create PARAMS ((long, long));
+static void dot_update PARAMS ((void *, long));
+static void dot_finish PARAMS ((void *));
+static void dot_set_params PARAMS ((const char *));
 
 static void *bar_create PARAMS ((long, long));
 static void bar_update PARAMS ((void *, long));
@@ -54,10 +54,18 @@ static void bar_finish PARAMS ((void *));
 static void bar_set_params PARAMS ((const char *));
 
 static struct progress_implementation implementations[] = {
-  { "dot", dp_create, dp_update, dp_finish, dp_set_params },
+  { "dot", dot_create, dot_update, dot_finish, dot_set_params },
   { "bar", bar_create, bar_update, bar_finish, bar_set_params }
 };
 static struct progress_implementation *current_impl;
+
+/* Default progress implementation should be something that works
+   under all display types.  If you put something other than "dot"
+   here, remember that bar_set_params tries to switch to this if we're
+   not running on a TTY.  So changing this to "bar" could cause
+   infloop.  */
+
+#define DEFAULT_PROGRESS_IMPLEMENTATION "dot"
 
 /* Return non-zero if NAME names a valid progress bar implementation.
    The characters after the first : will be ignored.  */
@@ -81,10 +89,15 @@ valid_progress_implementation_p (const char *name)
 void
 set_progress_implementation (const char *name)
 {
-  int i = 0;
+  int i, namelen;
   struct progress_implementation *pi = implementations;
-  char *colon = strchr (name, ':');
-  int namelen = colon ? colon - name : strlen (name);
+  char *colon;
+
+  if (!name)
+    name = DEFAULT_PROGRESS_IMPLEMENTATION;
+
+  colon = strchr (name, ':');
+  namelen = colon ? colon - name : strlen (name);
 
   for (i = 0; i < ARRAY_SIZE (implementations); i++, pi++)
     if (!strncmp (pi->name, name, namelen))
@@ -154,7 +167,7 @@ struct dot_progress {
 /* Dot-progress backend for progress_create. */
 
 static void *
-dp_create (long initial, long total)
+dot_create (long initial, long total)
 {
   struct dot_progress *dp = xmalloc (sizeof (struct dot_progress));
 
@@ -204,10 +217,10 @@ print_percentage (long bytes, long expected)
 }
 
 static void
-print_elapsed (struct dot_progress *dp, long bytes)
+print_download_speed (struct dot_progress *dp, long bytes)
 {
   long timer_value = wtimer_elapsed (dp->timer);
-  logprintf (LOG_VERBOSE, " @ %s",
+  logprintf (LOG_VERBOSE, " %s",
 	     rate (bytes, timer_value - dp->last_timer_value, 1));
   dp->last_timer_value = timer_value;
 }
@@ -215,7 +228,7 @@ print_elapsed (struct dot_progress *dp, long bytes)
 /* Dot-progress backend for progress_update. */
 
 static void
-dp_update (void *progress, long howmuch)
+dot_update (void *progress, long howmuch)
 {
   struct dot_progress *dp = progress;
   int dot_bytes = opt.dot_bytes;
@@ -242,7 +255,8 @@ dp_update (void *progress, long howmuch)
 	  if (dp->total_length)
 	    print_percentage (dp->rows * row_bytes, dp->total_length);
 
-	  print_elapsed (dp, row_bytes - (dp->initial_length % row_bytes));
+	  print_download_speed (dp,
+				row_bytes - (dp->initial_length % row_bytes));
 	}
     }
 
@@ -252,7 +266,7 @@ dp_update (void *progress, long howmuch)
 /* Dot-progress backend for progress_finish. */
 
 static void
-dp_finish (void *progress)
+dot_finish (void *progress)
 {
   struct dot_progress *dp = progress;
   int dot_bytes = opt.dot_bytes;
@@ -275,9 +289,9 @@ dp_finish (void *progress)
 			dp->total_length);
     }
 
-  print_elapsed (dp, dp->dots * dot_bytes
-		 + dp->accumulated
-		 - dp->initial_length % row_bytes);
+  print_download_speed (dp, dp->dots * dot_bytes
+			+ dp->accumulated
+			- dp->initial_length % row_bytes);
   logputs (LOG_VERBOSE, "\n\n");
 
   log_set_flush (0);
@@ -292,7 +306,7 @@ dp_finish (void *progress)
    giga.  */
 
 static void
-dp_set_params (const char *params)
+dot_set_params (const char *params)
 {
   if (!params)
     return;
@@ -449,7 +463,7 @@ create_image (struct bar_progress *bp, long dltime)
 
      "xxx% "         - percentage                - 5 chars
      "| ... | "      - progress bar decorations  - 3 chars
-     "1234.56 K/s "  - dl rate                   - 12 chars
+     "1012.56 K/s "  - dl rate                   - 12 chars
      "nnnn "         - downloaded bytes          - 11 chars
      "ETA: xx:xx:xx" - ETA                       - 13 chars
 
@@ -498,7 +512,7 @@ create_image (struct bar_progress *bp, long dltime)
       *p++ = ' ';
     }
 
-  /* "2.3 KB/s " */
+  /* "1012.45 K/s " */
   if (dltime && bp->count)
     {
       char *rt = rate (bp->count, dltime, 1);
@@ -508,8 +522,8 @@ create_image (struct bar_progress *bp, long dltime)
     }
   else
     {
-      strcpy (p, "----.-- KB/s ");
-      p += 13;
+      strcpy (p, "----.-- K/s ");
+      p += 12;
     }
 
   /* "12376 " */
@@ -560,6 +574,9 @@ create_image (struct bar_progress *bp, long dltime)
   *p = '\0';
 }
 
+/* Print the contents of the buffer as a one-line ASCII "image" so
+   that it can be overwritten next time.  */
+
 static void
 display_image (char *buf)
 {
@@ -577,7 +594,23 @@ display_image (char *buf)
 static void
 bar_set_params (const char *ignored)
 {
-  int sw = determine_screen_width ();
+  int sw;
+
+  if (opt.lfilename
+#ifdef HAVE_ISATTY
+      || !isatty (fileno (stderr))
+#else
+      1
+#endif
+      )
+    {
+      /* We're not printing to a TTY.  Revert to the fallback
+	 display. */
+      set_progress_implementation (NULL);
+      return;
+    }
+
+  sw = determine_screen_width ();
   if (sw && sw >= MINIMUM_SCREEN_WIDTH)
     screen_width = sw;
 }
