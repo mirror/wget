@@ -437,13 +437,14 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
      If we descended to a different host or changed the scheme, ignore
      opt.no_parent.  Also ignore it for -p leaf retrievals.  */
   if (opt.no_parent
-      && u->scheme == parent->scheme
-      && 0 == strcasecmp (u->host, parent->host)
-      && u->port == parent->port)
+      && u->scheme == start_url_parsed->scheme
+      && 0 == strcasecmp (u->host, start_url_parsed->host)
+      && u->port == start_url_parsed->port)
     {
-      if (!frontcmp (parent->dir, u->dir))
+      if (!frontcmp (start_url_parsed->dir, u->dir))
 	{
-	  DEBUGP (("Trying to escape the root directory with no_parent in effect.\n"));
+	  DEBUGP (("Going to \"%s\" would escape \"%s\" with no_parent on.\n",
+		   u->dir, start_url_parsed->dir));
 	  goto out;
 	}
     }

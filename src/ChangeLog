@@ -1,3 +1,9 @@
+2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* recur.c (descend_url_p): When resolving no_parent, compare with
+	start_url, not parent url.  Otherwise link from /a/b/ to /a/c/
+	wouldn't be followed, although the download started from /a/.
+
 2001-01-23  Herold Heiko  <Heiko.Herold@previnet.it>
 
 	* config.h.ms, mswindows.h: defined HAVE_ISATTY, use _isatty for
