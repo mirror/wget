@@ -43,8 +43,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "host.h"
 #include "connect.h"
 
+#ifdef WINDOWS
+LARGE_INTEGER internal_time;
+#else
 /* Internal variables used by the timer.  */
 static long internal_secs, internal_msecs;
+#endif
 
 void logflush PARAMS ((void));
 
@@ -229,15 +233,29 @@ show_progress (long res, long expected, enum spflags flags)
 void
 reset_timer (void)
 {
-#ifdef HAVE_GETTIMEOFDAY
+#ifndef WINDOWS
+  /* Under Unix, the preferred way to measure the passage of time is
+     through gettimeofday() because of its granularity.  However, on
+     some old or weird systems, gettimeofday() might not be available.
+     There we use the simple time().  */
+# ifdef HAVE_GETTIMEOFDAY
   struct timeval t;
   gettimeofday (&t, NULL);
   internal_secs = t.tv_sec;
   internal_msecs = t.tv_usec / 1000;
-#else
+# else  /* not HAVE_GETTIMEOFDAY */
   internal_secs = time (NULL);
   internal_msecs = 0;
-#endif
+# endif /* not HAVE_GETTIMEOFDAY */
+#else  /* WINDOWS */
+  /* Under Windows, use Windows-specific APIs. */
+  FILETIME ft;
+  SYSTEMTIME st;
+  GetSystemTime(&st);
+  SystemTimeToFileTime(&st,&ft);
+  internal_time.HighPart = ft.dwHighDateTime;
+  internal_time.LowPart = ft.dwLowDateTime;
+#endif /* WINDOWS */
 }
 
 /* Return the time elapsed from the last call to reset_timer(), in
@@ -245,14 +263,25 @@ reset_timer (void)
 long
 elapsed_time (void)
 {
-#ifdef HAVE_GETTIMEOFDAY
+#ifndef WINDOWS
+# ifdef HAVE_GETTIMEOFDAY
   struct timeval t;
   gettimeofday (&t, NULL);
   return ((t.tv_sec - internal_secs) * 1000
 	  + (t.tv_usec / 1000 - internal_msecs));
-#else
+# else  /* not HAVE_GETTIMEOFDAY */
   return 1000 * ((long)time (NULL) - internal_secs);
-#endif
+# endif /* not HAVE_GETTIMEOFDAY */
+#else  /* WINDOWS */
+  FILETIME ft;
+  SYSTEMTIME st;
+  LARGE_INTEGER li;
+  GetSystemTime(&st);
+  SystemTimeToFileTime(&st,&ft);
+  li.HighPart = ft.dwHighDateTime;
+  li.LowPart = ft.dwLowDateTime;
+  return (long) ((li.QuadPart - internal_time.QuadPart) / 1e4);
+#endif /* WINDOWS */
 }
 
 /* Print out the appropriate download rate.  Appropriate means that if

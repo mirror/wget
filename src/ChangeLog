@@ -1,3 +1,9 @@
+2000-10-13  Adrian Aichner  <adrian@xemacs.org>
+
+	* retr.c: Add msec timing support for WINDOWS.
+	* retr.c (reset_timer): GetSystemTime() on WINDOWS.
+	* retr.c (elapsed_time): Calculate delta time to msec on WINDOWS.
+
 2000-10-27  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* retr.c (retrieve_url): Manually applied T. Bharath
