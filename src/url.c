@@ -54,19 +54,20 @@ struct scheme_data
 {
   char *leading_string;
   int default_port;
+  int enabled;
 };
 
 /* Supported schemes: */
 static struct scheme_data supported_schemes[] =
 {
-  { "http://",  DEFAULT_HTTP_PORT },
+  { "http://",  DEFAULT_HTTP_PORT,  1 },
 #ifdef HAVE_SSL
-  { "https://", DEFAULT_HTTPS_PORT },
+  { "https://", DEFAULT_HTTPS_PORT, 1 },
 #endif
-  { "ftp://",   DEFAULT_FTP_PORT },
+  { "ftp://",   DEFAULT_FTP_PORT,   1 },
 
   /* SCHEME_INVALID */
-  { NULL,       -1 }
+  { NULL,       -1,                 0 }
 };
 
 static char *construct_relative PARAMS ((const char *, const char *));
@@ -420,9 +421,15 @@ url_scheme (const char *url)
   int i;
 
   for (i = 0; supported_schemes[i].leading_string; i++)
-    if (!strncasecmp (url, supported_schemes[i].leading_string,
-		      strlen (supported_schemes[i].leading_string)))
-      return (enum url_scheme)i;
+    if (0 == strncasecmp (url, supported_schemes[i].leading_string,
+			  strlen (supported_schemes[i].leading_string)))
+      {
+	if (supported_schemes[i].enabled)
+	  return (enum url_scheme) i;
+	else
+	  return SCHEME_INVALID;
+      }
+
   return SCHEME_INVALID;
 }
 
@@ -464,6 +471,12 @@ int
 scheme_default_port (enum url_scheme scheme)
 {
   return supported_schemes[scheme].default_port;
+}
+
+void
+scheme_disable (enum url_scheme scheme)
+{
+  supported_schemes[scheme].enabled = 0;
 }
 
 /* Skip the username and password, if present here.  The function
@@ -606,8 +619,8 @@ lowercase_str (char *str)
 static char *parse_errors[] = {
 #define PE_NO_ERROR            0
   "No error",
-#define PE_UNRECOGNIZED_SCHEME 1
-  "Unrecognized scheme",
+#define PE_UNSUPPORTED_SCHEME 1
+  "Unsupported scheme",
 #define PE_EMPTY_HOST          2
   "Empty host",
 #define PE_BAD_PORT_NUMBER     3
@@ -650,7 +663,7 @@ url_parse (const char *url, int *error)
   scheme = url_scheme (url);
   if (scheme == SCHEME_INVALID)
     {
-      SETERR (error, PE_UNRECOGNIZED_SCHEME);
+      SETERR (error, PE_UNSUPPORTED_SCHEME);
       return NULL;
     }
 

@@ -25,7 +25,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include <openssl/ssl.h>
 #endif
 
+void ssl_init_prng PARAMS ((void));
 int init_ssl PARAMS ((SSL_CTX **));
+
 int connect_ssl PARAMS ((SSL **, SSL_CTX *, int));
 void shutdown_ssl PARAMS ((SSL*));
 void free_ssl_ctx PARAMS ((SSL_CTX *));

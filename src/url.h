@@ -133,6 +133,7 @@ enum url_scheme url_scheme PARAMS ((const char *));
 int url_skip_scheme PARAMS ((const char *));
 int url_has_scheme PARAMS ((const char *));
 int scheme_default_port PARAMS ((enum url_scheme));
+void scheme_disable PARAMS ((enum url_scheme));
 
 int url_skip_uname PARAMS ((const char *));
 

@@ -1,5 +1,18 @@
 2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* url.c (scheme_disable): New function.
+
+	* main.c (main): Call ssl_init_prng from here rather than from
+	init_ssl, so that it has a chance to disable support for https
+	before a URL has been resolved.
+
+	* gen_sslfunc.c (ssl_init_prng): Seed with rand() if all else
+	failed.
+	(ssl_init_prng): Disable support for https if seeding the PRNG
+	fails.
+
+2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* utils.c (read_whole_line): Handle lines beginning with \0.
 
 2001-12-05  Hrvoje Niksic  <hniksic@arsdigita.com>

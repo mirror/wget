@@ -53,6 +53,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "url.h"
 #include "progress.h"		/* for progress_handle_sigwinch */
 
+#ifdef HAVE_SSL
+# include "gen_sslfunc.h"
+#endif
+
 /* On GNU system this will include system-wide getopt.h. */
 #include "getopt.h"
 
@@ -794,8 +798,13 @@ Can't timestamp and not clobber old files at the same time.\n"));
 #endif
 #endif /* HAVE_SIGNAL */
 
+#ifdef HAVE_SSL
+  /* Must call this before resolving any URLs because it has the power
+     to disable `https'.  */
+  ssl_init_prng ();
+#endif
+
   status = RETROK;		/* initialize it, just-in-case */
-  /*recursive_reset ();*/
   /* Retrieve the URLs from argument list.  */
   for (t = url; *t; t++)
     {
