@@ -64,8 +64,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
    as much memory as necessary for it to fit.  It need not contain a
    `:', thus you can use it to retrieve, say, HTTP status line.
 
-   The trailing CRLF or LF are stripped from the header, and it is
-   zero-terminated.   #### Is this well-behaved?  */
+   All trailing whitespace is stripped from the header, and it is
+   zero-terminated.  */
 int
 header_get (struct rbuf *rbuf, char **hdr, enum header_get_flags flags)
 {
@@ -101,11 +101,13 @@ header_get (struct rbuf *rbuf, char **hdr, enum header_get_flags flags)
 		  if (next == '\t' || next == ' ')
 		    continue;
 		}
-	      /* The header ends.  */
+
+	      /* Strip trailing whitespace.  (*hdr)[i] is the newline;
+		 decrement I until it points to the last available
+		 whitespace.  */
+	      while (i > 0 && ISSPACE ((*hdr)[i - 1]))
+		--i;
 	      (*hdr)[i] = '\0';
-	      /* Get rid of '\r'.  */
-	      if (i > 0 && (*hdr)[i - 1] == '\r')
-		(*hdr)[i - 1] = '\0';
 	      break;
 	    }
 	}

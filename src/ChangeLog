@@ -1,5 +1,10 @@
 2002-01-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* headers.c (header_get): Strip trailing whitespace from the
+	header.
+
+2002-01-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (parse_uname): URL-decode *USER and *PASSWD.
 
 2002-01-07  Ian Abbott <abbotti@mev.co.uk>
