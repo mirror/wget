@@ -1402,11 +1402,8 @@ http_loop (struct urlinfo *u, char **newloc, int *dt)
   else
     locf = opt.output_document;
 
-  /* Yuck.  Multiple returns suck.  We need to remember to free() the space we
-     xmalloc() here before EACH return.  This is one reason it's better to set
-     flags that influence flow control and then return once at the end. */
-  filename_len = strlen(u->local);
-  filename_plus_orig_suffix = xmalloc(filename_len + sizeof(".orig"));
+  filename_len = strlen (u->local);
+  filename_plus_orig_suffix = alloca (filename_len + sizeof (".orig"));
 
   if (opt.noclobber && file_exists_p (u->local))
     {
@@ -1424,7 +1421,6 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	  && (!strcmp (suf, "html") || !strcmp (suf, "htm")))
 	*dt |= TEXTHTML;
       xfree (suf);
-      xfree (filename_plus_orig_suffix); /* must precede every return! */
       /* Another harmless lie: */
       return RETROK;
     }
@@ -1452,11 +1448,12 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	     in url.c.  Replacing sprintf with inline calls to
 	     strcpy() and long_to_string() made a difference.
 	     --hniksic */
-	  strcpy(filename_plus_orig_suffix, u->local);
-	  strcpy(filename_plus_orig_suffix + filename_len, ".orig");
+	  memcpy (filename_plus_orig_suffix, u->local, filename_len);
+	  memcpy (filename_plus_orig_suffix + filename_len,
+		  ".orig", sizeof (".orig"));
 
 	  /* Try to stat() the .orig file. */
-	  if (stat(filename_plus_orig_suffix, &st) == 0)
+	  if (stat (filename_plus_orig_suffix, &st) == 0)
 	    {
 	      local_dot_orig_file_exists = TRUE;
 	      local_filename = filename_plus_orig_suffix;
@@ -1573,7 +1570,6 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	case SSLERRCTXCREATE: case CONTNOTSUPPORTED:
 	  /* Fatal errors just return from the function.  */
 	  FREEHSTAT (hstat);
-	  xfree (filename_plus_orig_suffix); /* must precede every return! */
 	  return err;
 	  break;
 	case FWRITEERR: case FOPENERR:
@@ -1589,7 +1585,6 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET, _("Unable to establish SSL connection.\n"));
 	  FREEHSTAT (hstat);
-	  xfree (filename_plus_orig_suffix); /* must precede every return! */
 	  return err;
 	  break;
 	case NEWLOCATION:
@@ -1599,17 +1594,14 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	      logprintf (LOG_NOTQUIET,
 			 _("ERROR: Redirection (%d) without location.\n"),
 			 hstat.statcode);
-	      xfree (filename_plus_orig_suffix); /* must precede every return! */
 	      return WRONGCODE;
 	    }
 	  FREEHSTAT (hstat);
-	  xfree (filename_plus_orig_suffix); /* must precede every return! */
 	  return NEWLOCATION;
 	  break;
 	case RETRUNNEEDED:
 	  /* The file was already fully retrieved. */
 	  FREEHSTAT (hstat);
-	  xfree (filename_plus_orig_suffix); /* must precede every return! */
 	  return RETROK;
 	  break;
 	case RETRFINISHED:
@@ -1632,7 +1624,6 @@ File `%s' already there, will not retrieve.\n"), u->local);
 		     tms, hstat.statcode, hstat.error);
 	  logputs (LOG_VERBOSE, "\n");
 	  FREEHSTAT (hstat);
-	  xfree (filename_plus_orig_suffix); /* must precede every return! */
 	  return WRONGCODE;
 	}
 
@@ -1676,7 +1667,6 @@ Last-modified header invalid -- time-stamp ignored.\n"));
 Server file no newer than local file `%s' -- not retrieving.\n\n"),
 			     local_filename);
 		  FREEHSTAT (hstat);
-		  xfree (filename_plus_orig_suffix); /*must precede every return!*/
 		  return RETROK;
 		}
 	      else if (tml >= tmr)
@@ -1714,7 +1704,6 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
       if (opt.spider)
 	{
 	  logprintf (LOG_NOTQUIET, "%d %s\n\n", hstat.statcode, hstat.error);
-	  xfree (filename_plus_orig_suffix); /* must precede every return! */
 	  return RETROK;
 	}
 
@@ -1744,7 +1733,6 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	  else
 	    downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
 
-	  xfree(filename_plus_orig_suffix); /* must precede every return! */
 	  return RETROK;
 	}
       else if (hstat.res == 0) /* No read error */
@@ -1770,7 +1758,6 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	      else
 		downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
 	      
-	      xfree (filename_plus_orig_suffix); /* must precede every return! */
 	      return RETROK;
 	    }
 	  else if (hstat.len < hstat.contlen) /* meaning we lost the
@@ -1799,7 +1786,6 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	      else
 		downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
 	      
-	      xfree (filename_plus_orig_suffix); /* must precede every return! */
 	      return RETROK;
 	    }
 	  else			/* the same, but not accepted */
@@ -1835,7 +1821,6 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
       break;
     }
   while (!opt.ntry || (count < opt.ntry));
-  xfree (filename_plus_orig_suffix); /* must precede every return! */
   return TRYLIMEXC;
 }
 

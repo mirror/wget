@@ -1,5 +1,11 @@
 2001-04-28  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	(http_loop): Allocate space for filename_plus_orig_suffix with
+	alloca; this is more efficient and removes the need to free it
+	before each and every return.
+
+2001-04-28  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* http.c (gethttp): Return RETRUNNEEDED when the retrieval is
 	unneeded because the file is already there and fully downloaded,
 	and -c is specified.
