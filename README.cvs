@@ -1,0 +1,25 @@
+Important note:
+
+To reduce bandwidth and needless updates, the CVS tree does not
+contain automatically generated files, even when those are normally
+present in the distribution tarballs.  All of these are recreated by
+the build process, except for `configure', which is needed to start
+the build in the first place.
+
+To build Wget from the CVS sources, all you need aside from the normal
+development tools (make, cc) is Autoconf, which you can get from
+<http://www.gnu.org/software/autoconf/autoconf.html>.
+
+For your convenience, the file Makefile.cvs will do the necessary
+preparations, i.e. call autoconf.  Invoke it with `make -f
+Makefile.cvs'.  All in all, the checkout and build process will
+usually look like this:
+
+$ cvs -d ... checkout wget
+... CVS output ...
+$ cd wget
+$ make -f Makefile.cvs
+... autoconf creates configure ...
+$ ./configure
+... Makefiles and config.h get built ...
+$ make
