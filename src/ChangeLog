@@ -1,3 +1,11 @@
+2000-03-21  Hrvoje Niksic  <hniksic@iskon.hr>
+
+	* wget.h (DO_REALLOC_FROM_ALLOCA): Ditto.
+
+	* sysdep.h (ISALNUM): New macro.
+	(TOLOWER): Ditto.
+	(TOUPPER): Ditto.
+
 2000-03-10  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* html.c (idmatch): Implemented checking of my new --follow-tags

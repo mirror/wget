@@ -160,6 +160,35 @@ char *xstrdup PARAMS ((const char *));
     XREALLOC_ARRAY (basevar, type, do_realloc_newsize);		\
 } while (0)
 
+/* Use this for small stack-allocated memory chunks that might grow.
+   The initial array is created using alloca(), and this macro
+   requests it to grow.  If the needed size is larger than the array,
+   this macro will use malloc to allocate it to new size, and copy the
+   old contents.  After that, successive invocations behave just like
+   DO_REALLOC.  */
+#define DO_REALLOC_FROM_ALLOCA(basevar, sizevar, needed_size, allocap, type) do	\
+{										\
+  /* Avoid side-effectualness.  */				\
+  long do_realloc_needed_size = (needed_size);			\
+  long do_realloc_newsize = 0;					\
+  while ((sizevar) < (do_realloc_needed_size)) {		\
+    do_realloc_newsize = 2*(sizevar);				\
+    if (do_realloc_newsize < 16)				\
+      do_realloc_newsize = 16;					\
+    (sizevar) = do_realloc_newsize;				\
+  }								\
+  if (do_realloc_newsize)					\
+    if (!allocap)						\
+      XREALLOC_ARRAY (basevar, type, do_realloc_newsize);	\
+    else							\
+      {								\
+	void *drfa_new_basevar = xmalloc (do_realloc_newsize);	\
+	memcpy (drfa_new_basevar, basevar, sizevar);		\
+	(basevar) = drfa_new_basevar;				\
+	allocap = 0;						\
+      }								\
+} while (0)
+
 /* Free FOO if it is non-NULL.  */
 #define FREE_MAYBE(foo) do { if (foo) free (foo); } while (0)
 

@@ -110,9 +110,12 @@ do {						\
    versions are used consistently across the code.  */
 #define ISASCII(x)  isascii ((unsigned char)(x))
 #define ISALPHA(x)  isalpha ((unsigned char)(x))
+#define ISALNUM(x)  isalnum ((unsigned char)(x))
 #define ISSPACE(x)  isspace ((unsigned char)(x))
 #define ISDIGIT(x)  isdigit ((unsigned char)(x))
 #define ISXDIGIT(x) isxdigit ((unsigned char)(x))
+#define TOUPPER(x)  toupper ((unsigned char)(x))
+#define TOLOWER(x)  tolower ((unsigned char)(x))
 
 /* Defined in cmpt.c: */
 #ifndef HAVE_STRERROR
