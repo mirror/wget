@@ -7,6 +7,9 @@ items are not listed in any particular order (except that recently-added items
 may tend towards the top).  Not all of these represent user-visible
 changes.
 
+* If multiple FTP URLs are specified that are on the same host, Wget should
+  re-use the connection rather than opening a new one for each file.
+
 * Try to devise a scheme so that, when password is unknown, Wget asks
   the user for one.
 
