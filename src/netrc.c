@@ -215,9 +215,9 @@ maybe_add_to_list (acc_t **newentry, acc_t **list)
   if (a && ! a->acc)
     {
       /* Free any allocated space.  */
-      xfree (a->host);
-      xfree (a->acc);
-      xfree (a->passwd);
+      xfree_null (a->host);
+      xfree_null (a->acc);
+      xfree_null (a->passwd);
     }
   else
     {
