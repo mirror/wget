@@ -1,5 +1,10 @@
 2001-11-24  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* retr.c (retrieve_url): When the redirection URL doesn't parse,
+	print the correct error message rather than "UNKNOWN".
+
+2001-11-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* progress.c (bar_finish): If the timer didn't record any time
 	since the download beginning, fake 1ms.
 
