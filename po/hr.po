@@ -93,7 +93,7 @@ msgstr "Ulogiran!\n"
 
 #: src/ftp.c:267
 msgid "Server error, can't determine system type.\n"
-msgstr "Gre¹ka na serveru, ne mogu utvrditi vrstu sustava."
+msgstr "Gre¹ka na serveru, ne mogu utvrditi vrstu sustava.\n"
 
 #: src/ftp.c:277 src/ftp.c:541 src/ftp.c:613 src/ftp.c:657
 msgid "done.    "
