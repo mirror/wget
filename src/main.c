@@ -199,7 +199,7 @@ struct cmdline_option option_data[] =
     { "level", 'l', OPT_VALUE, "reclevel", -1 },
     { "limit-rate", 0, OPT_VALUE, "limitrate", -1 },
     { "load-cookies", 0, OPT_VALUE, "loadcookies", -1 },
-    { "mirror", 'm', OPT_BOOLEAN, NULL, -1 },
+    { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
     { "no", 'n', OPT__NO, NULL, required_argument },
     { "no-clobber", 0, OPT_BOOLEAN, "noclobber", -1 },
     { "no-parent", 0, OPT_BOOLEAN, "noparent", -1 },
