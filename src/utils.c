@@ -1279,7 +1279,7 @@ free_keys_and_values (struct hash_table *ht)
 }
 
 
-/* Engine for legible and legible_long_long; this function works on
+/* Engine for legible and legible_very_long; this function works on
    strings.  */
 
 static char *
@@ -1382,62 +1382,155 @@ int
 numdigit (long a)
 {
   int res = 1;
+  if (a < 0)
+    a = -a;
   while ((a /= 10) != 0)
     ++res;
   return res;
 }
 
-/* Print NUMBER to BUFFER.  This is equivalent to sprintf(buffer,
-   "%ld", number), only much faster.
+#define ONE_DIGIT(figure) *p++ = n / (figure) + '0'
 
-   BUFFER should accept 24 bytes.  This should suffice for the longest
-   numbers on 64-bit machines, including the `-' sign and the trailing
-   \0.  */
+#define DIGITS_1(figure)			\
+    ONE_DIGIT (figure)
+#define DIGITS_2(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_1 ((figure) / 10)
+#define DIGITS_3(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_2 ((figure) / 10)
+#define DIGITS_4(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_3 ((figure) / 10)
+#define DIGITS_5(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_4 ((figure) / 10)
+#define DIGITS_6(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_5 ((figure) / 10)
+#define DIGITS_7(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_6 ((figure) / 10)
+#define DIGITS_8(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_7 ((figure) / 10)
+#define DIGITS_9(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_8 ((figure) / 10)
+#define DIGITS_10(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_9 ((figure) / 10)
+
+/* DIGITS_<11-20> are only used on 64-bit machines. */
+
+#define DIGITS_11(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_10 ((figure) / 10)
+#define DIGITS_12(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_11 ((figure) / 10)
+#define DIGITS_13(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_12 ((figure) / 10)
+#define DIGITS_14(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_13 ((figure) / 10)
+#define DIGITS_15(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_14 ((figure) / 10)
+#define DIGITS_16(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_15 ((figure) / 10)
+#define DIGITS_17(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_16 ((figure) / 10)
+#define DIGITS_18(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_17 ((figure) / 10)
+#define DIGITS_19(figure)			\
+    (ONE_DIGIT (figure), n %= (figure));	\
+    DIGITS_18 ((figure) / 10)
+
+/* Print NUMBER to BUFFER in base 10.  This is completely equivalent
+   to `sprintf(buffer, "%ld", number)', only much faster.
+
+   The speedup may make a difference in programs that frequently
+   convert numbers to strings.  Some implementations of sprintf,
+   particularly the one in GNU libc, have been known to be extremely
+   slow compared to this function.
+
+   BUFFER should accept as many bytes as you expect the number to take
+   up.  On 64-bit machines, the maximum needed size is 24 bytes.  That
+   includes all the digits, as well as the `-' sign for negative
+   numbers and the trailing \0.  */
+
 void
 long_to_string (char *buffer, long number)
 {
-#if (SIZEOF_LONG != 4) && (SIZEOF_LONG != 8)
-  /* Huh? */
-  sprintf (buffer, "%ld", number);
-#else /* (SIZEOF_LONG == 4) || (SIZEOF_LONG == 8) */
   char *p = buffer;
-  int force = 0;
+  long n = number;
 
-  if (number < 0)
+#if (SIZEOF_LONG != 4) && (SIZEOF_LONG != 8)
+  /* We are running in a strange or misconfigured environment.  Let
+     sprintf cope with it.  */
+  sprintf (buffer, "%ld", n);
+#else  /* (SIZEOF_LONG == 4) || (SIZEOF_LONG == 8) */
+
+  if (n < 0)
     {
       *p++ = '-';
-      number = -number;
+      n = -n;
     }
 
-#define FROB(figure) do {						\
-    if (force || number >= figure)					\
-      *p++ = number / figure + '0', number %= figure, force = 1;	\
-    } while (0)
-#if SIZEOF_LONG == 8
-  FROB (1000000000000000000L);
-  FROB (100000000000000000L);
-  FROB (10000000000000000L);
-  FROB (1000000000000000L);
-  FROB (100000000000000L);
-  FROB (10000000000000L);
-  FROB (1000000000000L);
-  FROB (100000000000L);
-  FROB (10000000000L);
-#endif /* SIZEOF_LONG == 8 */
-  FROB (1000000000);
-  FROB (100000000);
-  FROB (10000000);
-  FROB (1000000);
-  FROB (100000);
-  FROB (10000);
-  FROB (1000);
-  FROB (100);
-  FROB (10);
-#undef FROB
-  *p++ = number + '0';
+  if      (n < 10)                   { DIGITS_1 (1); }
+  else if (n < 100)                  { DIGITS_2 (10); }
+  else if (n < 1000)                 { DIGITS_3 (100); }
+  else if (n < 10000)                { DIGITS_4 (1000); }
+  else if (n < 100000)               { DIGITS_5 (10000); }
+  else if (n < 1000000)              { DIGITS_6 (100000); }
+  else if (n < 10000000)             { DIGITS_7 (1000000); }
+  else if (n < 100000000)            { DIGITS_8 (10000000); }
+  else if (n < 1000000000)           { DIGITS_9 (100000000); }
+#if SIZEOF_LONG == 4
+  /* ``if (1)'' serves only to preserve editor indentation. */
+  else if (1)                        { DIGITS_10 (1000000000); }
+#else  /* SIZEOF_LONG != 4 */
+  else if (n < 10000000000L)         { DIGITS_10 (1000000000L); }
+  else if (n < 100000000000L)        { DIGITS_11 (10000000000L); }
+  else if (n < 1000000000000L)       { DIGITS_12 (100000000000L); }
+  else if (n < 10000000000000L)      { DIGITS_13 (1000000000000L); }
+  else if (n < 100000000000000L)     { DIGITS_14 (10000000000000L); }
+  else if (n < 1000000000000000L)    { DIGITS_15 (100000000000000L); }
+  else if (n < 10000000000000000L)   { DIGITS_16 (1000000000000000L); }
+  else if (n < 100000000000000000L)  { DIGITS_17 (10000000000000000L); }
+  else if (n < 1000000000000000000L) { DIGITS_18 (100000000000000000L); }
+  else                               { DIGITS_19 (1000000000000000000L); }
+#endif /* SIZEOF_LONG != 4 */
+
   *p = '\0';
 #endif /* (SIZEOF_LONG == 4) || (SIZEOF_LONG == 8) */
 }
+
+#undef ONE_DIGIT
+#undef DIGITS_1
+#undef DIGITS_2
+#undef DIGITS_3
+#undef DIGITS_4
+#undef DIGITS_5
+#undef DIGITS_6
+#undef DIGITS_7
+#undef DIGITS_8
+#undef DIGITS_9
+#undef DIGITS_10
+#undef DIGITS_11
+#undef DIGITS_12
+#undef DIGITS_13
+#undef DIGITS_14
+#undef DIGITS_15
+#undef DIGITS_16
+#undef DIGITS_17
+#undef DIGITS_18
+#undef DIGITS_19
 
 /* This should probably be at a better place, but it doesn't really
    fit into html-parse.c.  */

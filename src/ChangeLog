@@ -1,3 +1,12 @@
+2001-04-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* utils.c (long_to_string): New, faster version.  Favors smaller
+	numbers; much of the calculation is now done at compile-time.
+
+2001-04-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* utils.c (numdigit): Handle negative numbers.
+
 2001-04-23  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* retr.c (show_progress): Print the download rate even when the
