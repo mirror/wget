@@ -1065,7 +1065,7 @@ requisites.
 
 For instance, say document @file{1.html} contains an @code{<IMG>} tag
 referencing @file{1.gif} and an @code{<A>} tag pointing to external
-document @file{2.html}.  Say that @file{2.html} is the same but that its
+document @file{2.html}.  Say that @file{2.html} is similar but that its
 image is @file{2.gif} and it links to @file{3.html}.  Say this
 continues up to some arbitrarily high number.
 
@@ -1103,8 +1103,8 @@ would download just @file{1.html} and @file{1.gif}, but unfortunately
 this is not the case, because @samp{-l 0} is equivalent to
 @samp{-l inf}---that is, infinite recursion.  To download a single HTML
 page (or a handful of them, all specified on the commandline or in a
-@samp{-i} @sc{url} input file) and its requisites, simply leave off
-@samp{-p} and @samp{-l}:
+@samp{-i} @sc{url} input file) and its (or their) requisites, simply leave off
+@samp{-r} and @samp{-l}:
 
 @example
 wget -p http://@var{site}/1.html
@@ -1120,6 +1120,17 @@ likes to use a few options in addition to @samp{-p}:
 @example
 wget -E -H -k -K -nh -p http://@var{site}/@var{document}
 @end example
+
+In one case you'll need to add a couple more options.  If @var{document}
+is a @code{<FRAMESET>} page, the "one more hop" that @samp{-p} gives you
+won't be enough---you'll get the @code{<FRAME>} pages that are
+referenced, but you won't get @emph{their} requisites.  Therefore, in
+this case you'll need to add @samp{-r -l1} to the commandline.  The
+@samp{-r -l1} will recurse from the @code{<FRAMESET>} page to to the
+@code{<FRAME>} pages, and the @samp{-p} will get their requisites.  If
+you're already using a recursion level of 1 or more, you'll need to up
+it by one.  In the future, @samp{-p} may be made smarter so that it'll
+do "two more hops" in the case of a @code{<FRAMESET>} page.
 
 To finish off this topic, it's worth knowing that Wget's idea of an
 external document link is any URL specified in an @code{<A>} tag, an

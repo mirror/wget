@@ -1,3 +1,7 @@
+2001-03-26  Dan Harkless  <wget@harkless.org>
+
+	* TODO: -p should probably go "_two_ more hops" on <FRAMESET> pages.
+
 2001-03-22  Dan Harkless  <wget@harkless.org>
 
 	* MACHINES: Added rs6000-ibm-aix4.3.3.0.

@@ -1,3 +1,9 @@
+2001-03-26  Dan Harkless  <wget@harkless.org>
+
+	* wget.texi (Recursive Retrieval Options): Explained that you need
+	to use -r -l1 -p to get the two levels of requisites for a
+	<FRAMESET> page.  Also made a few other wording improvements.
+	
 2001-03-17  Dan Harkless  <wget@harkless.org>
 
 	* Makefile.in: Using '^' in the sed call caused a weird failure on 

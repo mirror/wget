@@ -7,6 +7,8 @@ items are not listed in any particular order (except that recently-added items
 may tend towards the top).  Not all of these represent user-visible
 changes.
 
+* -p should probably go "_two_ more hops" on <FRAMESET> pages.
+
 * Only normal link-following recursion should respect -np.  Page-requisite
   recursion should not.  When -np -p is specified, Wget should still retrieve
   requisite images and such on the server, even if they aren't in that directory
