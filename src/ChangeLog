@@ -1,5 +1,10 @@
 2003-09-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* init.c (cmd_boolean): Accept yes/no along with on/off.
+	(cmd_lockable_boolean): Ditto.
+
+2003-09-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c: New command dns_cache.
 
 	* main.c (main): New option --dns-cache[=off].

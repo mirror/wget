@@ -29,6 +29,9 @@ log on to the proxy as "username@host".
 ** The new option `--retry-connrefused' makes Wget retry downloads
 even in the face of refused connections, which are otherwise
 considered a fatal error.
+
+** The new option `--dns-cache=off' may be used to prevent Wget from
+caching DNS lookups.
 
 * Wget 1.8.1 is a bugfix release with no user-visible changes.
 

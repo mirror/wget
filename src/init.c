@@ -543,12 +543,22 @@ static int
 cmd_boolean (const char *com, const char *val, void *closure)
 {
   int bool_value;
+  const char *v = val;
+#define LC(x) TOLOWER(x)
 
-  if (!strcasecmp (val, "on")
-      || (*val == '1' && !*(val + 1)))
+  if ((LC(v[0]) == 'o' && LC(v[1]) == 'n' && !v[2])
+      ||
+      (LC(v[0]) == 'y' && LC(v[1]) == 'e' && LC(v[2]) == 's' && !v[3])
+      ||
+      (v[0] == '1' && !v[1]))
+    /* "on", "yes" and "1" mean true. */
     bool_value = 1;
-  else if (!strcasecmp (val, "off")
-	   || (*val == '0' && !*(val + 1)))
+  else if ((LC(v[0]) == 'o' && LC(v[1]) == 'f' && LC(v[2]) == 'f' && !v[3])
+	   ||
+	   (LC(v[0]) == 'n' && LC(v[1]) == 'o' && !v[2])
+	   ||
+	   (v[0] == '0' && !v[1]))
+    /* "off", "no" and "0" mean false. */
     bool_value = 0;
   else
     {
@@ -582,17 +592,17 @@ cmd_lockable_boolean (const char *com, const char *val, void *closure)
   if (*(int *)closure == -1 || *(int *)closure == 2)
     return 1;
 
-  if (!strcasecmp (val, "always")
-      || (*val == '2' && !*(val + 1)))
+  if (!strcasecmp (val, "always") || !strcmp (val, "2"))
     lockable_boolean_value = 2;
   else if (!strcasecmp (val, "on")
-      || (*val == '1' && !*(val + 1)))
+	   || !strcasecmp (val, "yes")
+	   || !strcmp (val, "1"))
     lockable_boolean_value = 1;
   else if (!strcasecmp (val, "off")
-          || (*val == '0' && !*(val + 1)))
+	   || !strcasecmp (val, "no")
+	   || !strcmp (val, "0"))
     lockable_boolean_value = 0;
-  else if (!strcasecmp (val, "never")
-      || (*val == '-' && *(val + 1) == '1' && !*(val + 2)))
+  else if (!strcasecmp (val, "never") || !strcmp (val, "-1"))
     lockable_boolean_value = -1;
   else
     {
