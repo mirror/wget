@@ -1,3 +1,10 @@
+2003-11-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* main.c (print_help): Break the help string into multiple chunks.
+	(cmdline_option): New option handler OPT_FUNCALL.  Generalized
+	HANDLE_CMD to generic DATA.
+	(option_data): Use the new OPT_FUNCALL feature.
+
 2003-11-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* log.h: Declare log_init, log_close, and
