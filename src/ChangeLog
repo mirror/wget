@@ -1,3 +1,9 @@
+2000-08-22  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* main.c (print_help): Modified -nc description to mention that it
+	also prevents the creation of multiple versions of the same file
+	with ".<number>" suffixes.
+
 2000-07-14  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
 	* retr.c (retrieve_url): Consistently strdup opt.referer when
