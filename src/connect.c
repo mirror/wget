@@ -588,6 +588,9 @@ retryable_socket_connect_error (int err)
   return 1;
 }
 
+#ifdef ENABLE_IPV6
+# ifndef HAVE_GETADDRINFO_AI_ADDRCONFIG
+
 /* Return non-zero if the INET6 socket family is supported on the
    system.
 
@@ -612,6 +615,9 @@ socket_has_inet6 (void)
     }
   return supported;
 }
+
+# endif/* not HAVE_GETADDRINFO_AI_ADDRCONFIG */
+#endif /* ENABLE_IPV6 */
 
 /* Wait for a single descriptor to become available, timing out after
    MAXTIME seconds.  Returns 1 if FD is available, 0 for timeout and

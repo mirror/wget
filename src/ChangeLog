@@ -1,3 +1,8 @@
+2003-11-19  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c (socket_has_inet6): Only compile it if IPv6 is enabled
+	and AI_ADDRCONFIG is missing.
+
 2003-11-18  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* gen_sslfunc.c (ssl_init_prng): Warn the user when using a weak
