@@ -152,6 +152,9 @@ url_dequeue (struct url_queue *queue,
 
 static int descend_url_p PARAMS ((const struct urlpos *, struct url *, int,
 				  struct url *, struct hash_table *));
+static int descend_redirect_p PARAMS ((const char *, const char *, int,
+				       struct url *, struct hash_table *));
+
 
 /* Retrieve a part of the web beginning with START_URL.  This used to
    be called "recursive retrieval", because the old function was
@@ -224,14 +227,25 @@ retrieve_tree (const char *start_url)
 	status = retrieve_url (url, &file, &redirected, NULL, &dt);
 	opt.recursive = oldrec;
 
-	if (redirected)
-	  {
-	    xfree (url);
-	    url = redirected;
-	  }
 	if (file && status == RETROK
 	    && (dt & RETROKF) && (dt & TEXTHTML))
 	  descend = 1;
+
+	if (redirected)
+	  {
+	    /* We have been redirected, possibly to another host, or
+	       different path, or wherever.  Check whether we really
+	       want to follow it.  */
+	    if (descend)
+	      {
+		if (!descend_redirect_p (redirected, url, depth,
+					 start_url_parsed, blacklist))
+		  descend = 0;
+	      }
+
+	    xfree (url);
+	    url = redirected;
+	  }
       }
 
       if (descend
@@ -307,7 +321,8 @@ retrieve_tree (const char *start_url)
 		   opt.delete_after ? "--delete-after" :
 		   "recursive rejection criteria"));
 	  logprintf (LOG_VERBOSE,
-		     (opt.delete_after ? _("Removing %s.\n")
+		     (opt.delete_after
+		      ? _("Removing %s.\n")
 		      : _("Removing %s since it should be rejected.\n")),
 		     file);
 	  if (unlink (file))
@@ -525,6 +540,43 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
 
   return 0;
 }
+
+/* This function determines whether we should descend the children of
+   the URL whose download resulted in a redirection, possibly to
+   another host, etc.  It is needed very rarely, and thus it is merely
+   a simple-minded wrapper around descend_url_p.  */
+
+static int
+descend_redirect_p (const char *redirected, const char *original, int depth,
+		    struct url *start_url_parsed, struct hash_table *blacklist)
+{
+  struct url *orig_parsed, *new_parsed;
+  struct urlpos *upos;
+  int success;
+
+  orig_parsed = url_parse (original, NULL);
+  assert (orig_parsed != NULL);
+
+  new_parsed = url_parse (redirected, NULL);
+  assert (new_parsed != NULL);
+
+  upos = xmalloc (sizeof (struct urlpos));
+  memset (upos, 0, sizeof (*upos));
+  upos->url = new_parsed;
+
+  success = descend_url_p (upos, orig_parsed, depth,
+			   start_url_parsed, blacklist);
+
+  url_free (orig_parsed);
+  url_free (new_parsed);
+  xfree (upos);
+
+  if (!success)
+    DEBUGP (("Redirection \"%s\" failed the test.\n", redirected));
+
+  return success;
+}
+
 
 /* Register that URL has been successfully downloaded to FILE. */
 
@@ -572,32 +624,21 @@ register_html (const char *url, const char *file)
   downloaded_html_files = slist_prepend (downloaded_html_files, file);
 }
 
-/* convert_links() is called from recursive_retrieve() after we're
-   done with an HTML file.  This call to convert_links is not complete
-   because it converts only the downloaded files, and Wget cannot know
-   which files will be downloaded afterwards.  So, if we have file
-   fileone.html with:
+/* This function is called when the retrieval is done to convert the
+   links that have been downloaded.  It has to be called at the end of
+   the retrieval, because only then does Wget know conclusively which
+   URLs have been downloaded, and which not, so it can tell which
+   direction to convert to.
 
-   <a href="/c/something.gif">
+   The "direction" means that the URLs to the files that have been
+   downloaded get converted to the relative URL which will point to
+   that file.  And the other URLs get converted to the remote URL on
+   the server.
 
-   and /c/something.gif was not downloaded because it exceeded the
-   recursion depth, the reference will *not* be changed.
+   All the downloaded HTMLs are kept in downloaded_html_files, and
+   downloaded URLs in urls_downloaded.  All the information is
+   extracted from these two lists.  */
 
-   However, later we can encounter /c/something.gif from an "upper"
-   level HTML (let's call it filetwo.html), and it gets downloaded.
-
-   But now we have a problem because /c/something.gif will be
-   correctly transformed in filetwo.html, but not in fileone.html,
-   since Wget could not have known that /c/something.gif will be
-   downloaded in the future.
-
-   This is why Wget must, after the whole retrieval, call
-   convert_all_links to go once more through the entire list of
-   retrieved HTMLs, and re-convert them.
-
-   All the downloaded HTMLs are kept in downloaded_html_files, and downloaded URLs
-   in urls_downloaded.  From these two lists information is
-   extracted.  */
 void
 convert_all_links (void)
 {
