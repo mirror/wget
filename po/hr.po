@@ -4,9 +4,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.9\n"
+"Project-Id-Version: wget 1.9-b3\n"
 "POT-Creation-Date: 2003-10-01 22:01+0200\n"
-"PO-Revision-Date: 2003-10-01 22:24+0200\n"
+"PO-Revision-Date: 2003-10-08 13:21+0200\n"
 "Last-Translator: Hrvoje Niksic <hniksic@xemacs.org>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
 "MIME-Version: 1.0\n"
