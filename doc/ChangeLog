@@ -1,3 +1,7 @@
+2004-02-12  Jens Roesner  <jens.roesner@gmx.de>
+
+	* wget.texi (Wgetrc Commands): Document `-e' here.
+
 2004-02-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Security Considerations): Put @item contents on a

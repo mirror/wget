@@ -407,7 +407,9 @@ specified via the @samp{-o}, output is redirected to @file{wget-log}.
 Execute @var{command} as if it were a part of @file{.wgetrc}
 (@pxref{Startup File}).  A command thus invoked will be executed
 @emph{after} the commands in @file{.wgetrc}, thus taking precedence over
-them.
+them.  If you need to specify more than one wgetrc command, use multiple
+instances of @samp{-e}.
+
 @end table
 
 @node Logging and Input File Options
@@ -2183,8 +2185,9 @@ hostnames or dotted-quad IP addresses.  @var{n} can be any positive
 integer, or @samp{inf} for infinity, where appropriate.  @var{string}
 values can be any non-empty string.
 
-Most of these commands have command-line equivalents (@pxref{Invoking}),
-though some of the more obscure or rarely used ones do not.
+Most of these commands have direct command-line equivalents.  Also, any
+wgetrc command can be specified on the command line using the
+@samp{--execute} switch (@pxref{Basic Startup Options}.)
 
 @table @asis
 @item accept/reject = @var{string}
