@@ -23,7 +23,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.5.2-b4\n"
-"POT-Creation-Date: 1998-09-21 19:08+0200\n"
+"POT-Creation-Date: 2000-03-02 01:13-0800\n"
 "PO-Revision-Date: 1998-06-15 19:25+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@suse.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -102,7 +102,7 @@ msgstr ""
 "Kein solches Verzeichnis »%s«.\n"
 "\n"
 
-#: src/ftp.c:331 src/ftp.c:599 src/ftp.c:647 src/url.c:1431
+#: src/ftp.c:331 src/ftp.c:599 src/ftp.c:647 src/url.c:1490
 msgid "done.\n"
 msgstr "fertig.\n"
 
@@ -201,13 +201,13 @@ msgstr "Daten-Übertragung abgeschlossen.\n"
 msgid "File `%s' already there, not retrieving.\n"
 msgstr "Datei »%s« ist schon vorhanden, kein Hol-Versuch.\n"
 
-#: src/ftp.c:896 src/http.c:922
+#: src/ftp.c:896 src/http.c:959
 #, c-format
 msgid "(try:%2d)"
 msgstr "(versuche:%2d)"
 
 # oder "gesichert"?
-#: src/ftp.c:955 src/http.c:1116
+#: src/ftp.c:960 src/http.c:1166
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld]\n"
@@ -216,85 +216,83 @@ msgstr ""
 "%s (%s) - »%s« gespeichert [%ld]\n"
 "\n"
 
-#: src/ftp.c:1001
+#: src/ftp.c:1006
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
 msgstr "Benutze »%s« als temporäre Auflistungsdatei.\n"
 
-#: src/ftp.c:1013
+#: src/ftp.c:1018
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr "Entfernt »%s«.\n"
 
-#: src/ftp.c:1049
+#: src/ftp.c:1054
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr "Die Rekursionstiefe %d übersteigt die max. Tiefe %d.\n"
 
-#: src/ftp.c:1096 src/http.c:1054
+#: src/ftp.c:1106 src/http.c:1103
 #, c-format
 msgid ""
-"Local file `%s' is more recent, not retrieving.\n"
+"Server file no newer than local file `%s' -- not retrieving.\n"
 "\n"
 msgstr ""
-"Lokale Datei »%s« ist neuer, kein Hol-Versuch.\n"
-"\n"
 
-#: src/ftp.c:1102 src/http.c:1060
-#, c-format
-msgid "The sizes do not match (local %ld), retrieving.\n"
+#: src/ftp.c:1112 src/http.c:1109
+#, fuzzy, c-format
+msgid "The sizes do not match (local %ld) -- retrieving.\n"
 msgstr "Größen stimmen nicht überein (lokal %ld), Hol-Versuch.\n"
 
-#: src/ftp.c:1119
+#: src/ftp.c:1129
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr "Ungültiger Name für einen symbolischen Verweis, überspringe.\n"
 
-#: src/ftp.c:1136
+#: src/ftp.c:1146
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
 "\n"
 msgstr "Der richtige symbolische Verweis %s -> %s ist schon vorhanden\n"
 
-#: src/ftp.c:1144
+#: src/ftp.c:1154
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr "Lege symbolischen Verweis %s -> %s an\n"
 
-#: src/ftp.c:1155
+#: src/ftp.c:1165
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
 msgstr ""
 "Symbolische Verweise nicht unterstützt, überspringe symbolischen Verweis "
 "»%s«.\n"
 
-#: src/ftp.c:1167
+#: src/ftp.c:1177
 #, c-format
 msgid "Skipping directory `%s'.\n"
 msgstr "Überspringe Verzeichnis »%s«.\n"
 
-#: src/ftp.c:1176
+#: src/ftp.c:1186
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr "%s: unbekannter/nicht unterstüzter Dateityp.\n"
 
-#: src/ftp.c:1193
+#: src/ftp.c:1203
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr "%s: beschädigter Zeitstempel.\n"
 
-#: src/ftp.c:1213
+#: src/ftp.c:1223
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr "Hole Verzeichnisse nicht, da die Tiefe %d ist (max %d).\n"
 
-#: src/ftp.c:1252
+#: src/ftp.c:1262
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr ""
 "Steige nicht zu »%s« hinab, da es ausgeschlossen/nicht eingeschlossen ist.\n"
 
-#: src/ftp.c:1297
+#: src/ftp.c:1307
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr "Weise zurück »%s«.\n"
@@ -302,17 +300,17 @@ msgstr "Weise zurück »%s«.\n"
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1344
+#: src/ftp.c:1354
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr "Keine Übereinstimmungen bei dem Muster »%s«.\n"
 
-#: src/ftp.c:1404
+#: src/ftp.c:1414
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
 msgstr "Schreibe HTML-artigen Index nach »%s« [%ld].\n"
 
-#: src/ftp.c:1409
+#: src/ftp.c:1419
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr "HTML-artiger Index nach »%s« geschrieben.\n"
@@ -504,46 +502,60 @@ msgstr " (noch %s)"
 msgid "ignored"
 msgstr "übergangen"
 
-#: src/http.c:857
+#: src/http.c:858
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr "Warnung: Joker-Zeichen werden bei HTTP nicht unterstützt.\n"
 
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:872
+#: src/http.c:873
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
 msgstr "Datei »%s« schon vorhanden, kein Hol-Versuch.\n"
 
-#: src/http.c:978
+#: src/http.c:1015
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr "Kann nicht nach »%s« schreiben (%s).\n"
 
 # Was meint hier location?
-#: src/http.c:988
+#: src/http.c:1025
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "FEHLER: Redirektion (%d) ohne Ziel(?).\n"
 
-#: src/http.c:1011
+#: src/http.c:1048
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s FEHLER %d: %s.\n"
 
-#: src/http.c:1023
+#: src/http.c:1060
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr "»Last-modified«-Kopfzeile fehlt -- Zeitstempel abgeschaltet.\n"
 
-#: src/http.c:1031
+#: src/http.c:1068
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr "»Last-modified«-Kopfzeile ungültig -- Zeitstempeln übergangen.\n"
 
-#: src/http.c:1064
+#. We can't collapse this down into just one logprintf()
+#. call with a variable set to u->local or the .orig
+#. filename because we have to malloc() space for the
+#. latter, and because there are multiple returns above (a
+#. coding style no-no by many measures, for reasons such as
+#. this) we'd have to remember to free() the string at each
+#. one to avoid a memory leak.
+#: src/http.c:1099
+#, c-format
+msgid ""
+"Server file no newer than local file `%s.orig' -- not retrieving.\n"
+"\n"
+msgstr ""
+
+#: src/http.c:1113
 msgid "Remote file is newer, retrieving.\n"
 msgstr "Entfernte Datei ist neuer, Hol-Versuch.\n"
 
-#: src/http.c:1098
+#: src/http.c:1147
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld]\n"
@@ -552,12 +564,12 @@ msgstr ""
 "%s (%s) - »%s« gesichert [%ld/%ld]\n"
 "\n"
 
-#: src/http.c:1130
+#: src/http.c:1181
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld. "
 msgstr "%s (%s) - Verbindung bei Byte %ld geschlossen. "
 
-#: src/http.c:1138
+#: src/http.c:1189
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld])\n"
@@ -566,52 +578,52 @@ msgstr ""
 "%s (%s) - »%s« gesichert [%ld/%ld])\n"
 "\n"
 
-#: src/http.c:1150
+#: src/http.c:1202
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld/%ld. "
 msgstr "%s (%s) - Verbindung bei Byte %ld/%ld geschlossen. "
 
-#: src/http.c:1161
+#: src/http.c:1213
 #, c-format
 msgid "%s (%s) - Read error at byte %ld (%s)."
 msgstr "%s (%s) - Lesefehler bei Byte %ld (%s)."
 
-#: src/http.c:1169
+#: src/http.c:1221
 #, c-format
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr "%s (%s) - Lesefehler bei Byte %ld/%ld (%s). "
 
-#: src/init.c:312 src/netrc.c:250
+#: src/init.c:313 src/netrc.c:250
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Kann »%s« nicht lesen (%s).\n"
 
-#: src/init.c:333 src/init.c:339
+#: src/init.c:334 src/init.c:340
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Fehler in »%s« bei Zeile %d.\n"
 
-#: src/init.c:370
+#: src/init.c:371
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: Warnung: wgetrc des Systems und des Benutzers zeigen nach »%s«.\n"
 
-#: src/init.c:458
+#: src/init.c:459
 #, c-format
 msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr "%s: Unbekannter Befehl »%s«, Wert »%s«.\n"
 
-#: src/init.c:485
+#: src/init.c:486
 #, c-format
 msgid "%s: %s: Please specify on or off.\n"
 msgstr "%s: %s: Bitte »on« oder »off« angeben.\n"
 
-#: src/init.c:503 src/init.c:760 src/init.c:782 src/init.c:855
+#: src/init.c:504 src/init.c:761 src/init.c:783 src/init.c:856
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: Ungültige Angabe »%s«\n"
 
-#: src/init.c:616 src/init.c:638 src/init.c:660 src/init.c:686
+#: src/init.c:617 src/init.c:639 src/init.c:661 src/init.c:687
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: Ungültige Angabe »%s«\n"
@@ -782,12 +794,14 @@ msgstr ""
 "\n"
 
 #: src/main.c:170
+#, fuzzy
 msgid ""
 "Recursive retrieval:\n"
 "  -r,  --recursive             recursive web-suck -- use with care!.\n"
 "  -l,  --level=NUMBER          maximum recursion depth (0 to unlimit).\n"
 "       --delete-after          delete downloaded files.\n"
 "  -k,  --convert-links         convert non-relative links to relative.\n"
+"  -K,  --backup-converted      before converting file X, back up as X.orig.\n"
 "  -m,  --mirror                turn on options suitable for mirroring.\n"
 "  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
 "\n"
@@ -804,7 +818,7 @@ msgstr ""
 "  -nr, --dont-remove-listing   ».listing«-Dateien nicht entfernen\n"
 "\n"
 
-#: src/main.c:178
+#: src/main.c:179
 msgid ""
 "Recursive accept/reject:\n"
 "  -A,  --accept=LIST                list of accepted extensions.\n"
@@ -842,7 +856,7 @@ msgstr ""
 "                                       hinaufsteigen\n"
 "\n"
 
-#: src/main.c:191
+#: src/main.c:192
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr ""
 "Fehlerberichte und Verbesserungsvorschläge bitte an <bug-wget@gnu.org>\n"
@@ -850,12 +864,12 @@ msgstr ""
 "\n"
 "Für die deutsche Übersetzung ist die Mailingliste <de@li.org> zuständig.\n"
 
-#: src/main.c:347
+#: src/main.c:349
 #, c-format
 msgid "%s: debug support not compiled in.\n"
 msgstr "%s: Debug-Unterstützung nicht hineinkompiliert.\n"
 
-#: src/main.c:395
+#: src/main.c:400
 msgid ""
 "Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.\n"
 "This program is distributed in the hope that it will be useful,\n"
@@ -870,7 +884,7 @@ msgstr ""
 "Lizenz- und Kopierbedingung; die Einzelheiten sind in der Datei COPYING\n"
 "(GNU General Public License) beschrieben.\n"
 
-#: src/main.c:401
+#: src/main.c:406
 msgid ""
 "\n"
 "Written by Hrvoje Niksic <hniksic@srce.hr>.\n"
@@ -878,45 +892,45 @@ msgstr ""
 "\n"
 "Geschrieben von Hrvoje Niksic <hniksic@srce.hr>.\n"
 
-#: src/main.c:465
+#: src/main.c:470
 #, c-format
 msgid "%s: %s: invalid command\n"
 msgstr "%s: %s: ungültiger Befehl\n"
 
-#: src/main.c:515
+#: src/main.c:520
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: ungültige Option -- »-n%c«\n"
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:518 src/main.c:560 src/main.c:591
+#: src/main.c:523 src/main.c:565 src/main.c:596
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "»%s --help« gibt weitere Informationen.\n"
 
-#: src/main.c:571
+#: src/main.c:576
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "\"Mitteilsam\" und \"still\" ist gleichzeitig unmöglich.\n"
 
-#: src/main.c:577
+#: src/main.c:582
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr ""
 "Zeitstempeln und nicht Überschreiben alter Dateien ist gleichzeitig "
 "unmöglich.\n"
 
 #. No URL specified.
-#: src/main.c:586
+#: src/main.c:591
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: URL fehlt\n"
 
-#: src/main.c:674
+#: src/main.c:679
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "Keine URLs in %s gefunden.\n"
 
-#: src/main.c:683
+#: src/main.c:688
 #, c-format
 msgid ""
 "\n"
@@ -927,14 +941,14 @@ msgstr ""
 "BEENDET --%s--\n"
 "Geholt: %s Bytes in %d Dateien\n"
 
-#: src/main.c:688
+#: src/main.c:693
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "Hol-Kontingent (%s Bytes) ERSCHÖPFT!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:715
+#: src/main.c:720
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "%s erhalten, weise Ausgabe nach »%%s« zurück.\n"
 
@@ -993,7 +1007,7 @@ msgstr "Syntax: %s NETRC [HOSTNAME]\n"
 msgid "%s: cannot stat %s: %s\n"
 msgstr "%s: kann nicht finden %s: %s\n"
 
-#: src/recur.c:449 src/retr.c:462
+#: src/recur.c:449 src/retr.c:463
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Entferne »%s«.\n"
@@ -1030,7 +1044,7 @@ msgstr "Proxy %s: Muss HTTP sein.\n"
 msgid "%s: Redirection to itself.\n"
 msgstr "%s: Redirektion auf sich selber.\n"
 
-#: src/retr.c:483
+#: src/retr.c:484
 msgid ""
 "Giving up.\n"
 "\n"
@@ -1038,7 +1052,7 @@ msgstr ""
 "Gebe auf.\n"
 "\n"
 
-#: src/retr.c:483
+#: src/retr.c:484
 msgid ""
 "Retrying.\n"
 "\n"
@@ -1062,9 +1076,14 @@ msgstr "Fehler (%s): »Base« %s relativ, ohne Bezugs-URL.\n"
 msgid "Converting %s... "
 msgstr "Wandle um %s... "
 
-#: src/url.c:1378 src/url.c:1389
+#: src/url.c:1378 src/url.c:1446
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
+msgstr "Kann Verweise nicht umwandeln zu %s: %s\n"
+
+#: src/url.c:1422
+#, fuzzy, c-format
+msgid "Cannot back up %s as %s: %s\n"
 msgstr "Kann Verweise nicht umwandeln zu %s: %s\n"
 
 #: src/utils.c:71
@@ -1088,3 +1107,10 @@ msgstr "Ungültiger Hostname"
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Entfernen des symbolischen Verweises »%s« schlug fehlt: %s\n"
+
+#~ msgid ""
+#~ "Local file `%s' is more recent, not retrieving.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Lokale Datei »%s« ist neuer, kein Hol-Versuch.\n"
+#~ "\n"

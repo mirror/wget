@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.5.2-b1\n"
-"POT-Creation-Date: 1998-09-21 19:08+0200\n"
+"POT-Creation-Date: 2000-03-02 01:13-0800\n"
 "PO-Revision-Date: 1998-05-22 09:00+0100\n"
 "Last-Translator: Robert Schmidt <rsc@vingmed.no>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -83,7 +83,7 @@ msgstr ""
 "Ingen katalog ved navn «%s».\n"
 "\n"
 
-#: src/ftp.c:331 src/ftp.c:599 src/ftp.c:647 src/url.c:1431
+#: src/ftp.c:331 src/ftp.c:599 src/ftp.c:647 src/url.c:1490
 msgid "done.\n"
 msgstr "OK.\n"
 
@@ -181,12 +181,12 @@ msgstr "Dataoverføring brutt.\n"
 msgid "File `%s' already there, not retrieving.\n"
 msgstr "File «%s» eksisterer allerede, ignoreres.\n"
 
-#: src/ftp.c:896 src/http.c:922
+#: src/ftp.c:896 src/http.c:959
 #, c-format
 msgid "(try:%2d)"
 msgstr "(forsøk:%2d)"
 
-#: src/ftp.c:955 src/http.c:1116
+#: src/ftp.c:960 src/http.c:1166
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld]\n"
@@ -195,40 +195,38 @@ msgstr ""
 "%s (%s) - «%s» lagret [%ld]\n"
 "\n"
 
-#: src/ftp.c:1001
+#: src/ftp.c:1006
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
 msgstr "Bruker «%s» som temporær katalogliste.\n"
 
-#: src/ftp.c:1013
+#: src/ftp.c:1018
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr "Slettet «%s».\n"
 
-#: src/ftp.c:1049
+#: src/ftp.c:1054
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr "Rekursjonsdybde %d overskred maksimal dybde %d.\n"
 
-#: src/ftp.c:1096 src/http.c:1054
+#: src/ftp.c:1106 src/http.c:1103
 #, c-format
 msgid ""
-"Local file `%s' is more recent, not retrieving.\n"
+"Server file no newer than local file `%s' -- not retrieving.\n"
 "\n"
 msgstr ""
-"Lokal fil «%s» er samme/nyere, ignoreres.\n"
-"\n"
 
-#: src/ftp.c:1102 src/http.c:1060
-#, c-format
-msgid "The sizes do not match (local %ld), retrieving.\n"
+#: src/ftp.c:1112 src/http.c:1109
+#, fuzzy, c-format
+msgid "The sizes do not match (local %ld) -- retrieving.\n"
 msgstr "Filstørrelsene er forskjellige (local %ld), hentes.\n"
 
-#: src/ftp.c:1119
+#: src/ftp.c:1129
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr "Ugyldig navn for symbolsk link, ignoreres.\n"
 
-#: src/ftp.c:1136
+#: src/ftp.c:1146
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
@@ -237,42 +235,42 @@ msgstr ""
 "Har allerede gyldig symbolsk link %s -> %s\n"
 "\n"
 
-#: src/ftp.c:1144
+#: src/ftp.c:1154
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr "Lager symbolsk link %s -> %s\n"
 
-#: src/ftp.c:1155
+#: src/ftp.c:1165
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
 msgstr "Symbolske linker ikke støttet, ignorerer «%s».\n"
 
-#: src/ftp.c:1167
+#: src/ftp.c:1177
 #, c-format
 msgid "Skipping directory `%s'.\n"
 msgstr "Ignorerer katalog «%s».\n"
 
-#: src/ftp.c:1176
+#: src/ftp.c:1186
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr "%s: filtypen er ukjent/ikke støttet.\n"
 
-#: src/ftp.c:1193
+#: src/ftp.c:1203
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr "%s: ugyldig tidsstempel.\n"
 
-#: src/ftp.c:1213
+#: src/ftp.c:1223
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr "Henter ikke kataloger på dybde %d (max %d).\n"
 
-#: src/ftp.c:1252
+#: src/ftp.c:1262
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr "Behandler ikke «%s» da det er ekskludert/ikke inkludert.\n"
 
-#: src/ftp.c:1297
+#: src/ftp.c:1307
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr "Ignorerer «%s».\n"
@@ -280,17 +278,17 @@ msgstr "Ignorerer «%s».\n"
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1344
+#: src/ftp.c:1354
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr "Ingenting passer med mønsteret «%s».\n"
 
-#: src/ftp.c:1404
+#: src/ftp.c:1414
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
 msgstr "Skrev HTML-formattert indeks til «%s» [%ld].\n"
 
-#: src/ftp.c:1409
+#: src/ftp.c:1419
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr "Skrev HTML-formattert indeks til «%s».\n"
@@ -481,45 +479,59 @@ msgstr " (%s igjen)"
 msgid "ignored"
 msgstr "ignoreres"
 
-#: src/http.c:857
+#: src/http.c:858
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr "Advarsel: jokertegn ikke støttet i HTTP.\n"
 
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:872
+#: src/http.c:873
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
 msgstr "Filen «%s» hentes ikke, fordi den allerede eksisterer.\n"
 
-#: src/http.c:978
+#: src/http.c:1015
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr "Kan ikke skrive til «%s» (%s).\n"
 
-#: src/http.c:988
+#: src/http.c:1025
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "FEIL: Omdirigering (%d) uten nytt sted.\n"
 
-#: src/http.c:1011
+#: src/http.c:1048
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s FEIL %d: %s.\n"
 
-#: src/http.c:1023
+#: src/http.c:1060
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr "Last-modified topptekst mangler -- tidsstempling slås av.\n"
 
-#: src/http.c:1031
+#: src/http.c:1068
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr "Last-modified topptekst ugyldig -- tidsstempel ignoreres.\n"
 
-#: src/http.c:1064
+#. We can't collapse this down into just one logprintf()
+#. call with a variable set to u->local or the .orig
+#. filename because we have to malloc() space for the
+#. latter, and because there are multiple returns above (a
+#. coding style no-no by many measures, for reasons such as
+#. this) we'd have to remember to free() the string at each
+#. one to avoid a memory leak.
+#: src/http.c:1099
+#, c-format
+msgid ""
+"Server file no newer than local file `%s.orig' -- not retrieving.\n"
+"\n"
+msgstr ""
+
+#: src/http.c:1113
 msgid "Remote file is newer, retrieving.\n"
 msgstr "Fil på tjener er nyere - hentes.\n"
 
-#: src/http.c:1098
+#: src/http.c:1147
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld]\n"
@@ -528,12 +540,12 @@ msgstr ""
 "%s (%s) - «%s» lagret [%ld/%ld]\n"
 "\n"
 
-#: src/http.c:1130
+#: src/http.c:1181
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld. "
 msgstr "%s (%s) - Forbindelse brutt ved byte %ld. "
 
-#: src/http.c:1138
+#: src/http.c:1189
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld])\n"
@@ -542,52 +554,52 @@ msgstr ""
 "%s (%s) - «%s» lagret [%ld/%ld]\n"
 "\n"
 
-#: src/http.c:1150
+#: src/http.c:1202
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld/%ld. "
 msgstr "%s (%s) - Forbindelse brutt ved byte %ld/%ld. "
 
-#: src/http.c:1161
+#: src/http.c:1213
 #, c-format
 msgid "%s (%s) - Read error at byte %ld (%s)."
 msgstr "%s (%s) - Lesefeil ved byte %ld (%s)."
 
-#: src/http.c:1169
+#: src/http.c:1221
 #, c-format
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr "%s (%s) - Lesefeil ved byte %ld/%ld (%s)."
 
-#: src/init.c:312 src/netrc.c:250
+#: src/init.c:313 src/netrc.c:250
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Kan ikke lese %s (%s).\n"
 
-#: src/init.c:333 src/init.c:339
+#: src/init.c:334 src/init.c:340
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Feil i %s på linje %d.\n"
 
-#: src/init.c:370
+#: src/init.c:371
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: Advarsel: Både systemets og brukerens wgetrc peker til «%s».\n"
 
-#: src/init.c:458
+#: src/init.c:459
 #, c-format
 msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr "%s: Ukjent kommando «%s», verdi «%s».\n"
 
-#: src/init.c:485
+#: src/init.c:486
 #, c-format
 msgid "%s: %s: Please specify on or off.\n"
 msgstr "%s: %s: Vennligst spesifiser «on» eller «off».\n"
 
-#: src/init.c:503 src/init.c:760 src/init.c:782 src/init.c:855
+#: src/init.c:504 src/init.c:761 src/init.c:783 src/init.c:856
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: Ugyldig spesifikasjon «%s»\n"
 
-#: src/init.c:616 src/init.c:638 src/init.c:660 src/init.c:686
+#: src/init.c:617 src/init.c:639 src/init.c:661 src/init.c:687
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: Ugyldig spesifikasjon «%s»\n"
@@ -752,12 +764,14 @@ msgstr ""
 "\n"
 
 #: src/main.c:170
+#, fuzzy
 msgid ""
 "Recursive retrieval:\n"
 "  -r,  --recursive             recursive web-suck -- use with care!.\n"
 "  -l,  --level=NUMBER          maximum recursion depth (0 to unlimit).\n"
 "       --delete-after          delete downloaded files.\n"
 "  -k,  --convert-links         convert non-relative links to relative.\n"
+"  -K,  --backup-converted      before converting file X, back up as X.orig.\n"
 "  -m,  --mirror                turn on options suitable for mirroring.\n"
 "  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
 "\n"
@@ -773,7 +787,7 @@ msgstr ""
 "  -nr, --dont-remove-listing   ikke slett «.listing»-filer.\n"
 "\n"
 
-#: src/main.c:178
+#: src/main.c:179
 msgid ""
 "Recursive accept/reject:\n"
 "  -A,  --accept=LIST                list of accepted extensions.\n"
@@ -805,16 +819,16 @@ msgstr ""
 "katalog.\n"
 "\n"
 
-#: src/main.c:191
+#: src/main.c:192
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr "Rapportér feil og send forslag til <bug-wget@gnu.org>.\n"
 
-#: src/main.c:347
+#: src/main.c:349
 #, c-format
 msgid "%s: debug support not compiled in.\n"
 msgstr "%s: støtte for avlusing ikke inkludert ved kompilering.\n"
 
-#: src/main.c:395
+#: src/main.c:400
 msgid ""
 "Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.\n"
 "This program is distributed in the hope that it will be useful,\n"
@@ -828,7 +842,7 @@ msgstr ""
 "EGNETHET TIL NOEN SPESIELL OPPGAVE.\n"
 "Se «GNU General Public License» for detaljer.\n"
 
-#: src/main.c:401
+#: src/main.c:406
 msgid ""
 "\n"
 "Written by Hrvoje Niksic <hniksic@srce.hr>.\n"
@@ -836,44 +850,44 @@ msgstr ""
 "\n"
 "Skrevet av Hrvoje Niksic <hniksic@srce.hr>.\n"
 
-#: src/main.c:465
+#: src/main.c:470
 #, c-format
 msgid "%s: %s: invalid command\n"
 msgstr "%s: %s: ugyldig kommando\n"
 
-#: src/main.c:515
+#: src/main.c:520
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: ugyldig flagg -- «-n%c»\n"
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:518 src/main.c:560 src/main.c:591
+#: src/main.c:523 src/main.c:565 src/main.c:596
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Prøv «%s --help» for flere flagg.\n"
 
-#: src/main.c:571
+#: src/main.c:576
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "Kan ikke være utførlig og stille på samme tid.\n"
 
-#: src/main.c:577
+#: src/main.c:582
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr ""
 "Kan ikke tidsstemple og la være å berøre eksisterende filer på samme tid.\n"
 
 #. No URL specified.
-#: src/main.c:586
+#: src/main.c:591
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: URL mangler.\n"
 
-#: src/main.c:674
+#: src/main.c:679
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "Fant ingen URLer i %s.\n"
 
-#: src/main.c:683
+#: src/main.c:688
 #, c-format
 msgid ""
 "\n"
@@ -884,14 +898,14 @@ msgstr ""
 "FERDIG --%s--\n"
 "Lastet ned %s bytes i %d filer\n"
 
-#: src/main.c:688
+#: src/main.c:693
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "Nedlastingskvote (%s bytes) overskredet!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:715
+#: src/main.c:720
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "%s mottatt, omdirigerer utskrifter til «%%s».\n"
 
@@ -949,7 +963,7 @@ msgstr "Bruk: %s NETRC [TJENERNAVN]\n"
 msgid "%s: cannot stat %s: %s\n"
 msgstr "%s: «stat» feilet for %s: %s\n"
 
-#: src/recur.c:449 src/retr.c:462
+#: src/recur.c:449 src/retr.c:463
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Fjerner %s.\n"
@@ -986,7 +1000,7 @@ msgstr "Proxy %s: Må støtte HTTP.\n"
 msgid "%s: Redirection to itself.\n"
 msgstr "%s: Omdirigerer til seg selv.\n"
 
-#: src/retr.c:483
+#: src/retr.c:484
 msgid ""
 "Giving up.\n"
 "\n"
@@ -994,7 +1008,7 @@ msgstr ""
 "Gir opp.\n"
 "\n"
 
-#: src/retr.c:483
+#: src/retr.c:484
 msgid ""
 "Retrying.\n"
 "\n"
@@ -1017,9 +1031,14 @@ msgstr "Feil (%s): Utgangspunktet %s er relativt, ukjent URL som referent.\n"
 msgid "Converting %s... "
 msgstr "Konverterer %s... "
 
-#: src/url.c:1378 src/url.c:1389
+#: src/url.c:1378 src/url.c:1446
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
+msgstr "Kan ikke konvertere linker i %s: %s\n"
+
+#: src/url.c:1422
+#, fuzzy, c-format
+msgid "Cannot back up %s as %s: %s\n"
 msgstr "Kan ikke konvertere linker i %s: %s\n"
 
 #: src/utils.c:71
@@ -1043,3 +1062,10 @@ msgstr "Tjenernavnet er ugyldig"
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Kan ikke slette den symbolske linken «%s»: %s\n"
+
+#~ msgid ""
+#~ "Local file `%s' is more recent, not retrieving.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Lokal fil «%s» er samme/nyere, ignoreres.\n"
+#~ "\n"
