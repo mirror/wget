@@ -1,5 +1,10 @@
 2003-11-13  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (persistent_available_p): Don't attempt to talk to two
+	different SSL sites over the same secure connection.
+
+2003-11-13  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (gethttp): Ditto.
 
 	* ftp.c (getftp): Use retryable_socket_connect_error instead of

@@ -438,18 +438,32 @@ persistent_available_p (const char *host, int port, int ssl,
      still hope -- read below.  */
   if (0 != strcasecmp (host, pconn.host))
     {
-      /* This is somewhat evil, but works in practice: if the address
-	 that pconn.socket is connected to is one of the IP addresses
-	 HOST resolves to, we don't need to reconnect.  #### Is it
-	 correct to do this by default?  */
+      /* If pconn.socket is already talking to HOST, we needn't
+	 reconnect.  This happens often when both sites are virtual
+	 hosts distinguished only by name and served by the same
+	 network interface, and hence the same web server (possibly
+	 set up by the ISP and serving many different web sites).
+	 This admittedly non-standard optimization does not contradict
+	 HTTP and works well with popular server software.  */
+
       int found;
       ip_address ip;
       struct address_list *al;
 
+      if (ssl)
+	/* Don't try to talk to two different SSL sites over the same
+	   secure connection!  (Besides, it's not clear if name-based
+	   virtual hosting is even possible with SSL.)  */
+	return 0;
+
+      /* If pconn.socket's peer is one of the IP addresses HOST
+	 resolves to, pconn.socket is for all intents and purposes
+	 already talking to HOST.  */
+
       if (!socket_ip_address (pconn.socket, &ip, 0))
 	{
-	  /* Can't get the peer's address -- something must be wrong
-	     with the connection.  */
+	  /* Can't get the peer's address -- something must be very
+	     wrong with the connection.  */
 	  invalidate_persistent ();
 	  return 0;
 	}
@@ -466,8 +480,9 @@ persistent_available_p (const char *host, int port, int ssl,
       if (!found)
 	return 0;
 
-      /* HOST resolves to an address pconn.sock is connected to -- no
-	 need to reconnect.  */
+      /* The persistent connection's peer address was found among the
+	 addresses HOST resolved to; therefore, pconn.sock is in fact
+	 already talking to HOST -- no need to reconnect.  */
     }
 
   /* Finally, check whether the connection is still open.  This is
