@@ -149,6 +149,15 @@ header_extract_number (const char *header, void *closure)
 
   for (result = 0; ISDIGIT (*p); p++)
     result = 10 * result + (*p - '0');
+
+  /* Failure if no number present. */
+  if (p == header)
+    return 0;
+
+  /* Skip trailing whitespace. */
+  p += skip_lws (p);
+
+  /* Indicate failure if trailing garbage is present. */
   if (*p)
     return 0;
 

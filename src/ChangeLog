@@ -1,3 +1,7 @@
+2001-11-16  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* headers.c (header_extract_number): Ignore trailing whitespace.
+
 2001-08-24  Ian Abbott  <abbotti@mev.co.uk>
 
 	* html-url.c (collect_tags_mapper): Fix bug converting links
