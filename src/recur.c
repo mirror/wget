@@ -222,7 +222,7 @@ retrieve_tree (const char *start_url)
       int descend = 0;
       char *url, *referer, *file = NULL;
       int depth, html_allowed;
-      boolean dash_p_leaf_HTML = FALSE;
+      int dash_p_leaf_HTML = 0;
 
       if (opt.quota && total_downloaded_bytes > opt.quota)
 	break;
@@ -304,7 +304,7 @@ retrieve_tree (const char *start_url)
 		 one, but we allow one more level so that the leaf
 		 pages that contain frames can be loaded
 		 correctly.  */
-	      dash_p_leaf_HTML = TRUE;
+	      dash_p_leaf_HTML = 1;
 	    }
 	  else
 	    {
@@ -382,8 +382,8 @@ retrieve_tree (const char *start_url)
 	}
 
       xfree (url);
-      FREE_MAYBE (referer);
-      FREE_MAYBE (file);
+      xfree_null (referer);
+      xfree_null (file);
     }
 
   /* If anything is left of the queue due to a premature exit, free it
@@ -395,7 +395,7 @@ retrieve_tree (const char *start_url)
 			(const char **)&d1, (const char **)&d2, &d3, &d4))
       {
 	xfree (d1);
-	FREE_MAYBE (d2);
+	xfree_null (d2);
       }
   }
   url_queue_delete (queue);

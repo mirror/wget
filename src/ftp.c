@@ -54,6 +54,7 @@ so, delete this exception statement from your version.  */
 #include "host.h"
 #include "netrc.h"
 #include "convert.h"		/* for downloaded_file */
+#include "recur.h"		/* for INFINITE_RECURSION */
 
 #ifndef errno
 extern int errno;
@@ -416,7 +417,7 @@ Error in server response, closing control connection.\n"));
 	  break;
 	case FTPSRVERR :
 	  /* PWD unsupported -- assume "/". */
-	  FREE_MAYBE (con->id);
+	  xfree_null (con->id);
 	  con->id = xstrdup ("/");
 	  break;
 	case FTPOK:
@@ -1924,9 +1925,9 @@ ftp_loop (struct url *u, int *dt, struct url *proxy)
   /* If a connection was left, quench it.  */
   if (rbuf_initialized_p (&con.rbuf))
     CLOSE (RBUF_FD (&con.rbuf));
-  FREE_MAYBE (con.id);
+  xfree_null (con.id);
   con.id = NULL;
-  FREE_MAYBE (con.target);
+  xfree_null (con.target);
   con.target = NULL;
   return res;
 }
@@ -1941,7 +1942,7 @@ delelement (struct fileinfo *f, struct fileinfo **start)
   struct fileinfo *next = f->next;
 
   xfree (f->name);
-  FREE_MAYBE (f->linkto);
+  xfree_null (f->linkto);
   xfree (f);
 
   if (next)

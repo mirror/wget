@@ -531,7 +531,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   if (file)
     *file = local_file ? local_file : NULL;
   else
-    FREE_MAYBE (local_file);
+    xfree_null (local_file);
 
   url_free (u);
 
@@ -601,8 +601,8 @@ retrieve_from_file (const char *file, int html, int *count)
 	  dt &= ~RETROKF;
 	}
 
-      FREE_MAYBE (new_file);
-      FREE_MAYBE (filename);
+      xfree_null (new_file);
+      xfree_null (filename);
     }
 
   /* Free the linked list of URL-s.  */
@@ -675,7 +675,7 @@ free_urlpos (struct urlpos *l)
       struct urlpos *next = l->next;
       if (l->url)
 	url_free (l->url);
-      FREE_MAYBE (l->local_name);
+      xfree_null (l->local_name);
       xfree (l);
       l = next;
     }

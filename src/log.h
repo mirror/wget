@@ -30,6 +30,9 @@ so, delete this exception statement from your version.  */
 #ifndef LOG_H
 #define LOG_H
 
+/* The log file to which Wget writes to after HUP.  */
+#define DEFAULT_LOGFILE "wget-log"
+
 /* Make gcc check for the format of logmsg() and debug_logmsg().  */
 #ifdef __GNUC__
 # define GCC_FORMAT_ATTR(a, b) __attribute__ ((format (printf, a, b)))

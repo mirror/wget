@@ -406,7 +406,7 @@ free_specs (struct robot_specs *specs)
   int i;
   for (i = 0; i < specs->count; i++)
     xfree (specs->paths[i].path);
-  FREE_MAYBE (specs->paths);
+  xfree_null (specs->paths);
   xfree (specs);
 }
 

@@ -145,10 +145,10 @@ cookie_new (void)
 static void
 delete_cookie (struct cookie *cookie)
 {
-  FREE_MAYBE (cookie->domain);
-  FREE_MAYBE (cookie->path);
-  FREE_MAYBE (cookie->attr);
-  FREE_MAYBE (cookie->value);
+  xfree_null (cookie->domain);
+  xfree_null (cookie->path);
+  xfree_null (cookie->attr);
+  xfree_null (cookie->value);
   xfree (cookie);
 }
 
@@ -352,7 +352,7 @@ update_cookie_field (struct cookie *cookie,
     {
       if (!VALUE_NON_EMPTY)
 	return 0;
-      FREE_MAYBE (cookie->domain);
+      xfree_null (cookie->domain);
       /* Strictly speaking, we should set cookie->domain_exact if the
 	 domain doesn't begin with a dot.  But many sites set the
 	 domain to "foo.com" and expect "subhost.foo.com" to get the
@@ -366,7 +366,7 @@ update_cookie_field (struct cookie *cookie,
     {
       if (!VALUE_NON_EMPTY)
 	return 0;
-      FREE_MAYBE (cookie->path);
+      xfree_null (cookie->path);
       cookie->path = strdupdelim (value_b, value_e);
       return 1;
     }

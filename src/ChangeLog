@@ -1,5 +1,13 @@
 2003-11-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.h: Retired the `boolean' type.  Moved the DEFAULT_LOGFILE
+	define to log.h.  Moved the INFINITE_RECURSION define to recur.h.
+
+	* xmalloc.h: Renamed FREE_MAYBE to xfree_null and moved the
+	definition from wget.h to xmalloc.h.
+
+2003-11-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* html-parse.c (decode_entity): New function; split the decoding
 	of entities here.
 	(convert_and_copy): Use it to decode entities.

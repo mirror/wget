@@ -1150,7 +1150,7 @@ ftp_pwd (struct rbuf *rbuf, char **pwd)
   request = strtok (NULL, "\"");
 
   /* Has the `pwd' been already allocated?  Free! */
-  FREE_MAYBE (*pwd);
+  xfree_null (*pwd);
 
   *pwd = xstrdup (request);
 

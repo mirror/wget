@@ -358,8 +358,8 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
       if (error || ignore)
 	{
 	  DEBUGP (("Skipping.\n"));
-	  FREE_MAYBE (cur.name);
-	  FREE_MAYBE (cur.linkto);
+	  xfree_null (cur.name);
+	  xfree_null (cur.linkto);
 	  xfree (line);
 	  continue;
 	}
@@ -783,7 +783,7 @@ ftp_parse_ls (const char *file, const enum stype system_type)
   switch (system_type)
     {
     case ST_UNIX:
-      return ftp_parse_unix_ls (file, FALSE);
+      return ftp_parse_unix_ls (file, 0);
     case ST_WINNT:
       {
 	/* Detect whether the listing is simulating the UNIX format */
@@ -802,16 +802,16 @@ ftp_parse_ls (const char *file, const enum stype system_type)
 	if (c >= '0' && c <='9')
 	  return ftp_parse_winnt_ls (file);
         else
-          return ftp_parse_unix_ls (file, TRUE);
+          return ftp_parse_unix_ls (file, 1);
       }
     case ST_VMS:
       return ftp_parse_vms_ls (file);
     case ST_MACOS:
-      return ftp_parse_unix_ls (file, TRUE);
+      return ftp_parse_unix_ls (file, 1);
     default:
       logprintf (LOG_NOTQUIET, _("\
 Unsupported listing type, trying Unix listing parser.\n"));
-      return ftp_parse_unix_ls (file, FALSE);
+      return ftp_parse_unix_ls (file, 0);
     }
 }
 
@@ -848,7 +848,7 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
 			     + (tmpp ? (1 + strlen (tmpp)) : 0) + 2);
       sprintf (upwd, "%s%s%s@", tmpu, tmpp ? ":" : "", tmpp ? tmpp : "");
       xfree (tmpu);
-      FREE_MAYBE (tmpp);
+      xfree_null (tmpp);
     }
   else
     upwd = xstrdup ("");

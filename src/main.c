@@ -895,8 +895,8 @@ Can't timestamp and not clobber old files at the same time.\n"));
 	    logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
 	}
 
-      FREE_MAYBE (redirected_URL);
-      FREE_MAYBE (filename);
+      xfree_null (redirected_URL);
+      xfree_null (filename);
     }
 
   /* And then from the input file, if any.  */

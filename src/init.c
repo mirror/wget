@@ -65,6 +65,7 @@ so, delete this exception statement from your version.  */
 #include "netrc.h"
 #include "cookies.h"		/* for cookie_jar_delete */
 #include "progress.h"
+#include "recur.h"		/* for INFINITE_RECURSION */
 
 #ifndef errno
 extern int errno;
@@ -353,7 +354,7 @@ wgetrc_file_name (void)
       file = (char *)xmalloc (strlen (home) + 1 + strlen (".wgetrc") + 1);
       sprintf (file, "%s/.wgetrc", home);
     }
-  FREE_MAYBE (home);
+  xfree_null (home);
 #else  /* WINDOWS */
   /* Under Windows, "home" is (for the purposes of this function) the
      directory where `wget.exe' resides, and `wget.ini' will be used
@@ -715,7 +716,7 @@ cmd_string (const char *com, const char *val, void *closure)
 {
   char **pstring = (char **)closure;
 
-  FREE_MAYBE (*pstring);
+  xfree_null (*pstring);
   *pstring = xstrdup (val);
   return 1;
 }
@@ -734,7 +735,7 @@ cmd_file (const char *com, const char *val, void *closure)
 {
   char **pstring = (char **)closure;
 
-  FREE_MAYBE (*pstring);
+  xfree_null (*pstring);
 
   /* #### If VAL is empty, perhaps should set *CLOSURE to NULL.  */
 
@@ -1040,7 +1041,7 @@ cmd_spec_header (const char *com, const char *val, void *closure)
   if (!*val)
     {
       /* Empty header means reset headers.  */
-      FREE_MAYBE (opt.user_header);
+      xfree_null (opt.user_header);
       opt.user_header = NULL;
     }
   else
@@ -1108,7 +1109,7 @@ cmd_spec_progress (const char *com, const char *val, void *closure)
 	       exec_name, com, val);
       return 0;
     }
-  FREE_MAYBE (opt.progress_type);
+  xfree_null (opt.progress_type);
 
   /* Don't call set_progress_implementation here.  It will be called
      in main() when it becomes clear what the log output is.  */
@@ -1324,10 +1325,10 @@ cleanup (void)
     extern acc_t *netrc_list;
     free_netrc (netrc_list);
   }
-  FREE_MAYBE (opt.lfilename);
-  FREE_MAYBE (opt.dir_prefix);
-  FREE_MAYBE (opt.input_filename);
-  FREE_MAYBE (opt.output_document);
+  xfree_null (opt.lfilename);
+  xfree_null (opt.dir_prefix);
+  xfree_null (opt.input_filename);
+  xfree_null (opt.output_document);
   free_vec (opt.accepts);
   free_vec (opt.rejects);
   free_vec (opt.excludes);
@@ -1335,24 +1336,24 @@ cleanup (void)
   free_vec (opt.domains);
   free_vec (opt.follow_tags);
   free_vec (opt.ignore_tags);
-  FREE_MAYBE (opt.progress_type);
+  xfree_null (opt.progress_type);
   xfree (opt.ftp_acc);
-  FREE_MAYBE (opt.ftp_pass);
-  FREE_MAYBE (opt.ftp_proxy);
-  FREE_MAYBE (opt.https_proxy);
-  FREE_MAYBE (opt.http_proxy);
+  xfree_null (opt.ftp_pass);
+  xfree_null (opt.ftp_proxy);
+  xfree_null (opt.https_proxy);
+  xfree_null (opt.http_proxy);
   free_vec (opt.no_proxy);
-  FREE_MAYBE (opt.useragent);
-  FREE_MAYBE (opt.referer);
-  FREE_MAYBE (opt.http_user);
-  FREE_MAYBE (opt.http_passwd);
-  FREE_MAYBE (opt.user_header);
+  xfree_null (opt.useragent);
+  xfree_null (opt.referer);
+  xfree_null (opt.http_user);
+  xfree_null (opt.http_passwd);
+  xfree_null (opt.user_header);
 #ifdef HAVE_SSL
-  FREE_MAYBE (opt.sslcertkey);
-  FREE_MAYBE (opt.sslcertfile);
+  xfree_null (opt.sslcertkey);
+  xfree_null (opt.sslcertfile);
 #endif /* HAVE_SSL */
-  FREE_MAYBE (opt.bind_address);
-  FREE_MAYBE (opt.cookies_input);
-  FREE_MAYBE (opt.cookies_output);
+  xfree_null (opt.bind_address);
+  xfree_null (opt.cookies_input);
+  xfree_null (opt.cookies_output);
 #endif
 }

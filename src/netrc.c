@@ -455,9 +455,9 @@ free_netrc(acc_t *l)
   while (l)
     {
       t = l->next;
-      FREE_MAYBE (l->acc);
-      FREE_MAYBE (l->passwd);
-      FREE_MAYBE (l->host);
+      xfree_null (l->acc);
+      xfree_null (l->passwd);
+      xfree_null (l->host);
       xfree (l);
       l = t;
     }

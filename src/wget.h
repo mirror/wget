@@ -1,5 +1,5 @@
 /* Miscellaneous declarations.
-   Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 1998, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -27,9 +27,10 @@ modify this file, you may extend this exception to your version of the
 file, but you are not obligated to do so.  If you do not wish to do
 so, delete this exception statement from your version.  */
 
-/* This file contains some declarations that don't fit anywhere else.
-   It also contains some useful includes, like the obnoxious TIME_H
-   inclusion.  */
+/* This file contains declarations that are universally useful and
+   those that don't fit elsewhere.  It also includes sysdep.h which
+   includes some often-needed system includes, like the obnoxious
+   <time.h> inclusion.  */
 
 #ifndef WGET_H
 #define WGET_H
@@ -60,7 +61,7 @@ so, delete this exception statement from your version.  */
 #  include <libintl.h>
 # endif /* HAVE_LIBINTL_H */
 #else  /* not HAVE_NLS */
-# define _(string) string
+# define _(string) (string)
 #endif /* not HAVE_NLS */
 
 /* No-op version of gettext, used for constant strings. */
@@ -102,15 +103,11 @@ so, delete this exception statement from your version.  */
 
 /* Likewise for logging functions.  */
 #include "log.h"
-
-/* #### Find a better place for this.  */
-/* The log file to which Wget writes to after HUP.  */
-#define DEFAULT_LOGFILE "wget-log"
 
 /* Useful macros used across the code: */
 
 /* The number of elements in an array.  For example:
-   static char a[] = "foo";     -- countof(a) == 4 (for terminating \0)
+   static char a[] = "foo";     -- countof(a) == 4 (note terminating \0)
    int a[5] = {1, 2};           -- countof(a) == 5
    char *a[] = {                -- countof(a) == 3
      "foo", "bar", "baz"
@@ -118,17 +115,17 @@ so, delete this exception statement from your version.  */
 #define countof(array) (sizeof (array) / sizeof ((array)[0]))
 
 /* Zero out a value.  */
-#define xzero(x) memset (&(x), '\0', sizeof ((x)))
+#define xzero(x) memset (&(x), '\0', sizeof (x))
 
 /* Convert an ASCII hex digit to the corresponding number between 0
-   and 15.  X should be a hexadecimal digit that satisfies isxdigit;
+   and 15.  H should be a hexadecimal digit that satisfies isxdigit;
    otherwise, the result is undefined.  */
 #define XDIGIT_TO_NUM(h) ((h) < 'A' ? (h) - '0' : TOUPPER (h) - 'A' + 10)
 #define X2DIGITS_TO_NUM(h1, h2) ((XDIGIT_TO_NUM (h1) << 4) + XDIGIT_TO_NUM (h2))
 
 /* The reverse of the above: convert a number in the [0, 16) range to
-   the ASCII representation of the corresponding hex digit.  The `+ 0'
-   is so you don't accidentally use it as an lvalue.  */
+   the ASCII representation of the corresponding hexadecimal digit.
+   `+ 0' is there so you can't accidentally use it as an lvalue.  */
 #define XNUM_TO_DIGIT(x) ("0123456789ABCDEF"[x] + 0)
 #define XNUM_TO_digit(x) ("0123456789abcdef"[x] + 0)
 
@@ -146,24 +143,20 @@ so, delete this exception statement from your version.  */
 
 /* Return non-zero if string bounded between BEG and END is equal to
    STRING_LITERAL.  The comparison is case-sensitive.  */
-#define BOUNDED_EQUAL(beg, end, string_literal)	\
-  ((end) - (beg) == sizeof (string_literal) - 1	\
-   && !memcmp ((beg), (string_literal),		\
-	       sizeof (string_literal) - 1))
+#define BOUNDED_EQUAL(beg, end, string_literal)				\
+  ((end) - (beg) == sizeof (string_literal) - 1				\
+   && !memcmp (beg, string_literal, sizeof (string_literal) - 1))
 
 /* The same as above, except the comparison is case-insensitive. */
-#define BOUNDED_EQUAL_NO_CASE(beg, end, string_literal)	\
-  ((end) - (beg) == sizeof (string_literal) - 1		\
-   && !strncasecmp ((beg), (string_literal),		\
-	            sizeof (string_literal) - 1))
+#define BOUNDED_EQUAL_NO_CASE(beg, end, string_literal)			\
+  ((end) - (beg) == sizeof (string_literal) - 1				\
+   && !strncasecmp (beg, string_literal, sizeof (string_literal) - 1))
 
-/* Note that this much more elegant definition cannot be used:
-
-   #define STRDUP_ALLOCA(str) (strcpy ((char *)alloca (strlen (str) + 1), str))
-
-   This is because some compilers don't handle alloca() as argument to
-   function correctly.  Gcc on Intel platforms has been reported to
-   offend in this case.  */
+/* Like ptr=strdup(str), but allocates the space for PTR on the stack.
+   This cannot be an expression because this is not portable:
+     #define STRDUP_ALLOCA(str) (strcpy (alloca (strlen (str) + 1), str))
+   The problem is that some compilers can't handle alloca() being an
+   argument to a function.  */
 
 #define STRDUP_ALLOCA(ptr, str) do {			\
   char **SA_dest = &(ptr);				\
@@ -179,22 +172,19 @@ so, delete this exception statement from your version.  */
    will realloc BASEVAR as necessary so that it can hold at least
    NEEDED_SIZE objects.  The reallocing is done by doubling, which
    ensures constant amortized time per element.  */
-#define DO_REALLOC(basevar, sizevar, needed_size, type)	do {			\
-  /* Avoid side effects by prefixing the local vars.  */			\
-  long do_realloc_needed_size = (needed_size);					\
-  long do_realloc_newsize = 0;							\
-  while ((sizevar) < (do_realloc_needed_size)) {				\
-    do_realloc_newsize = 2*(sizevar);						\
-    if (do_realloc_newsize < 32)						\
-      do_realloc_newsize = 32;							\
-    (sizevar) = do_realloc_newsize;						\
-  }										\
-  if (do_realloc_newsize)							\
-    basevar = (type *)xrealloc (basevar, do_realloc_newsize * sizeof (type));	\
-} while (0)
 
-/* Free FOO if it is non-NULL.  */
-#define FREE_MAYBE(foo) do { if (foo) xfree ((foo)); } while (0)
+#define DO_REALLOC(basevar, sizevar, needed_size, type)	do {		\
+  long DR_needed_size = (needed_size);					\
+  long DR_newsize = 0;							\
+  while ((sizevar) < (DR_needed_size)) {				\
+    DR_newsize = sizevar << 1;						\
+    if (DR_newsize < 16)						\
+      DR_newsize = 16;							\
+    (sizevar) = DR_newsize;						\
+  }									\
+  if (DR_newsize)							\
+    basevar = (type *)xrealloc (basevar, DR_newsize * sizeof (type));	\
+} while (0)
 
 extern const char *exec_name;
 
@@ -230,24 +220,6 @@ typedef enum
   QUOTEXC, WRITEFAILED,
   SSLERRCERTFILE,SSLERRCERTKEY,SSLERRCTXCREATE
 } uerr_t;
-
-/* These are not used widely.  They should either be removed or used
-   consistently.  */
-typedef unsigned char  boolean;
-#ifndef FALSE
-# define FALSE 0
-#endif
-#ifndef TRUE
-# define TRUE  1
-#endif
-
-/* For most options, 0 means no limits, but with -p in the picture,
-   that causes a problem on the maximum recursion depth variable.  To
-   retain backwards compatibility we allow users to consider "0" to be
-   synonymous with "inf" for -l, but internally infinite recursion is
-   specified by -1 and 0 means to only retrieve the requisites of a
-   single document. */
-#define INFINITE_RECURSION -1
 
 /* In case old systems don't have EAFNOSUPPORT, which we use below. */
 #ifndef EAFNOSUPPORT

@@ -582,9 +582,9 @@ struct http_stat
 static void
 free_hstat (struct http_stat *hs)
 {
-  FREE_MAYBE (hs->newloc);
-  FREE_MAYBE (hs->remote_time);
-  FREE_MAYBE (hs->error);
+  xfree_null (hs->newloc);
+  xfree_null (hs->remote_time);
+  xfree_null (hs->error);
 
   /* Guard against being called twice. */
   hs->newloc = NULL;
@@ -987,9 +987,9 @@ Accept: %s\r\n\
   DEBUGP (("---request begin---\n%s", request));
 
   /* Free the temporary memory.  */
-  FREE_MAYBE (wwwauth);
-  FREE_MAYBE (proxyauth);
-  FREE_MAYBE (cookies);
+  xfree_null (wwwauth);
+  xfree_null (proxyauth);
+  xfree_null (cookies);
   xfree (full_path);
 
   /* Send the request to server.  */
@@ -1079,8 +1079,8 @@ Accept: %s\r\n\
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("End of file while parsing headers.\n"));
 	  xfree (hdr);
-	  FREE_MAYBE (type);
-	  FREE_MAYBE (all_headers);
+	  xfree_null (type);
+	  xfree_null (all_headers);
 	  CLOSE_INVALIDATE (sock);
 	  return HEOF;
 	}
@@ -1090,8 +1090,8 @@ Accept: %s\r\n\
 	  logprintf (LOG_NOTQUIET, _("Read error (%s) in headers.\n"),
 		     strerror (errno));
 	  xfree (hdr);
-	  FREE_MAYBE (type);
-	  FREE_MAYBE (all_headers);
+	  xfree_null (type);
+	  xfree_null (all_headers);
 	  CLOSE_INVALIDATE (sock);
 	  return HERR;
 	}
@@ -1251,7 +1251,7 @@ Accept: %s\r\n\
       && authenticate_h)
     {
       /* Authorization is required.  */
-      FREE_MAYBE (type);
+      xfree_null (type);
       type = NULL;
       free_hstat (hs);
       CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
@@ -1313,8 +1313,8 @@ Accept: %s\r\n\
 		     hs->newloc ? _(" [following]") : "");
 	  CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
 					   might be more bytes in the body. */
-	  FREE_MAYBE (type);
-	  FREE_MAYBE (all_headers);
+	  xfree_null (type);
+	  xfree_null (all_headers);
 	  return NEWLOCATION;
 	}
     }
@@ -1384,8 +1384,8 @@ Accept: %s\r\n\
 	      hs->res = 0;
 	      /* Mark as successfully retrieved. */
 	      *dt |= RETROKF;
-	      FREE_MAYBE (type);
-	      FREE_MAYBE (all_headers);
+	      xfree_null (type);
+	      xfree_null (all_headers);
 	      CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
 					   might be more bytes in the body. */
 	      return RETRUNNEEDED;
@@ -1399,8 +1399,8 @@ Accept: %s\r\n\
 \n\
 Continued download failed on this file, which conflicts with `-c'.\n\
 Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
-	      FREE_MAYBE (type);
-	      FREE_MAYBE (all_headers);
+	      xfree_null (type);
+	      xfree_null (all_headers);
 	      CLOSE_INVALIDATE (sock);
 	      return CONTNOTSUPPORTED;
 	    }
@@ -1415,8 +1415,8 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
     {
       /* This means the whole request was somehow misunderstood by the
 	 server.  Bail out.  */
-      FREE_MAYBE (type);
-      FREE_MAYBE (all_headers);
+      xfree_null (type);
+      xfree_null (all_headers);
       CLOSE_INVALIDATE (sock);
       return RANGEERR;
     }
@@ -1455,7 +1455,7 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
 	    logputs (LOG_VERBOSE, "\n");
 	}
     }
-  FREE_MAYBE (type);
+  xfree_null (type);
   type = NULL;			/* We don't need it any more.  */
 
   /* Return if we have no intention of further downloading.  */
@@ -1464,8 +1464,8 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
       /* In case the caller cares to look...  */
       hs->len = 0L;
       hs->res = 0;
-      FREE_MAYBE (type);
-      FREE_MAYBE (all_headers);
+      xfree_null (type);
+      xfree_null (all_headers);
       CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
 				   might be more bytes in the body. */
       return RETRFINISHED;
@@ -1483,7 +1483,7 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
 	  logprintf (LOG_NOTQUIET, "%s: %s\n", *hs->local_file, strerror (errno));
 	  CLOSE_INVALIDATE (sock); /* would be CLOSE_FINISH, but there
 				      might be more bytes in the body. */
-	  FREE_MAYBE (all_headers);
+	  xfree_null (all_headers);
 	  return FOPENERR;
 	}
     }
@@ -1547,7 +1547,7 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
     if (flush_res == EOF)
       hs->res = -2;
   }
-  FREE_MAYBE (all_headers);
+  xfree_null (all_headers);
   if (hs->res == -2)
     return FWRITEERR;
   return RETRFINISHED;
@@ -1632,14 +1632,14 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
       if (has_html_suffix_p (*hstat.local_file))
 	*dt |= TEXTHTML;
 
-      FREE_MAYBE (dummy);
+      xfree_null (dummy);
       return RETROK;
     }
 
   use_ts = 0;
   if (opt.timestamping)
     {
-      boolean  local_dot_orig_file_exists = FALSE;
+      int local_dot_orig_file_exists = 0;
 
       if (opt.backup_converted)
 	/* If -K is specified, we'll act on the assumption that it was specified
@@ -1666,7 +1666,7 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	  /* Try to stat() the .orig file. */
 	  if (stat (filename_plus_orig_suffix, &st) == 0)
 	    {
-	      local_dot_orig_file_exists = TRUE;
+	      local_dot_orig_file_exists = 1;
 	      local_filename = filename_plus_orig_suffix;
 	    }
 	}      
@@ -1788,7 +1788,7 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	case SSLERRCTXCREATE: case CONTNOTSUPPORTED:
 	  /* Fatal errors just return from the function.  */
 	  free_hstat (&hstat);
-	  FREE_MAYBE (dummy);
+	  xfree_null (dummy);
 	  return err;
 	  break;
 	case FWRITEERR: case FOPENERR:
@@ -1797,7 +1797,7 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	  logprintf (LOG_NOTQUIET, _("Cannot write to `%s' (%s).\n"),
 		     *hstat.local_file, strerror (errno));
 	  free_hstat (&hstat);
-	  FREE_MAYBE (dummy);
+	  xfree_null (dummy);
 	  return err;
 	  break;
 	case CONSSLERR:
@@ -1805,7 +1805,7 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET, _("Unable to establish SSL connection.\n"));
 	  free_hstat (&hstat);
-	  FREE_MAYBE (dummy);
+	  xfree_null (dummy);
 	  return err;
 	  break;
 	case NEWLOCATION:
@@ -1816,17 +1816,17 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 			 _("ERROR: Redirection (%d) without location.\n"),
 			 hstat.statcode);
 	      free_hstat (&hstat);
-	      FREE_MAYBE (dummy);
+	      xfree_null (dummy);
 	      return WRONGCODE;
 	    }
 	  free_hstat (&hstat);
-	  FREE_MAYBE (dummy);
+	  xfree_null (dummy);
 	  return NEWLOCATION;
 	  break;
 	case RETRUNNEEDED:
 	  /* The file was already fully retrieved. */
 	  free_hstat (&hstat);
-	  FREE_MAYBE (dummy);
+	  xfree_null (dummy);
 	  return RETROK;
 	  break;
 	case RETRFINISHED:
@@ -1849,7 +1849,7 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 		     tms, hstat.statcode, hstat.error);
 	  logputs (LOG_VERBOSE, "\n");
 	  free_hstat (&hstat);
-	  FREE_MAYBE (dummy);
+	  xfree_null (dummy);
 	  return WRONGCODE;
 	}
 
@@ -1893,7 +1893,7 @@ Last-modified header invalid -- time-stamp ignored.\n"));
 Server file no newer than local file `%s' -- not retrieving.\n\n"),
 			     local_filename);
 		  free_hstat (&hstat);
-		  FREE_MAYBE (dummy);
+		  xfree_null (dummy);
 		  return RETROK;
 		}
 	      else if (tml >= tmr)
@@ -1931,7 +1931,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
       if (opt.spider)
 	{
 	  logprintf (LOG_NOTQUIET, "%d %s\n\n", hstat.statcode, hstat.error);
-	  FREE_MAYBE (dummy);
+	  xfree_null (dummy);
 	  return RETROK;
 	}
 
@@ -1958,7 +1958,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	    downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
 
 	  free_hstat (&hstat);
-	  FREE_MAYBE (dummy);
+	  xfree_null (dummy);
 	  return RETROK;
 	}
       else if (hstat.res == 0) /* No read error */
@@ -1985,7 +1985,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 		downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
 	      
 	      free_hstat (&hstat);
-	      FREE_MAYBE (dummy);
+	      xfree_null (dummy);
 	      return RETROK;
 	    }
 	  else if (hstat.len < hstat.contlen) /* meaning we lost the
@@ -2016,7 +2016,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 		downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
 	      
 	      free_hstat (&hstat);
-	      FREE_MAYBE (dummy);
+	      xfree_null (dummy);
 	      return RETROK;
 	    }
 	  else			/* the same, but not accepted */
@@ -2323,7 +2323,7 @@ extract_header_attr (const char *au, const char *attr_name, char **ret)
 	;
       if (!*ep)
 	return -1;
-      FREE_MAYBE (*ret);
+      xfree_null (*ret);
       *ret = strdupdelim (cp, ep);
       return ep - au + 1;
     }
@@ -2380,9 +2380,9 @@ digest_authentication_encode (const char *au, const char *user,
 					  options[i].variable);
 	  if (skip < 0)
 	    {
-	      FREE_MAYBE (realm);
-	      FREE_MAYBE (opaque);
-	      FREE_MAYBE (nonce);
+	      xfree_null (realm);
+	      xfree_null (opaque);
+	      xfree_null (nonce);
 	      return NULL;
 	    }
 	  else if (skip)
@@ -2415,9 +2415,9 @@ digest_authentication_encode (const char *au, const char *user,
     }
   if (!realm || !nonce || !user || !passwd || !path || !method)
     {
-      FREE_MAYBE (realm);
-      FREE_MAYBE (opaque);
-      FREE_MAYBE (nonce);
+      xfree_null (realm);
+      xfree_null (opaque);
+      xfree_null (nonce);
       return NULL;
     }
 

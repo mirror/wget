@@ -401,7 +401,7 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
   /* Construct the backup filename as the original name plus ".orig". */
   size_t         filename_len = strlen(file);
   char*          filename_plus_orig_suffix;
-  boolean        already_wrote_backup_file = FALSE;
+  int            already_wrote_backup_file = 0;
   slist*         converted_file_ptr;
   static slist*  converted_files = NULL;
 
@@ -435,7 +435,7 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
   while (converted_file_ptr != NULL)
     if (strcmp(converted_file_ptr->string, file) == 0)
       {
-	already_wrote_backup_file = TRUE;
+	already_wrote_backup_file = 1;
 	break;
       }
     else

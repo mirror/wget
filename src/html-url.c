@@ -623,7 +623,7 @@ get_urls_html (const char *file, const char *url, int *meta_disallow_follow)
   if (meta_disallow_follow)
     *meta_disallow_follow = ctx.nofollow;
 
-  FREE_MAYBE (ctx.base);
+  xfree_null (ctx.base);
   read_file_free (fm);
   return ctx.head;
 }
@@ -715,6 +715,6 @@ get_urls_file (const char *file)
 void
 cleanup_html_url (void)
 {
-  FREE_MAYBE (interesting_tags);
-  FREE_MAYBE (interesting_attributes);
+  xfree_null (interesting_tags);
+  xfree_null (interesting_attributes);
 }

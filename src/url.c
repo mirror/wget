@@ -1236,11 +1236,11 @@ url_free (struct url *url)
   xfree (url->path);
   xfree (url->url);
 
-  FREE_MAYBE (url->params);
-  FREE_MAYBE (url->query);
-  FREE_MAYBE (url->fragment);
-  FREE_MAYBE (url->user);
-  FREE_MAYBE (url->passwd);
+  xfree_null (url->params);
+  xfree_null (url->query);
+  xfree_null (url->fragment);
+  xfree_null (url->user);
+  xfree_null (url->passwd);
 
   xfree (url->dir);
   xfree (url->file);

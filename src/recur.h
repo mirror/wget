@@ -30,6 +30,14 @@ so, delete this exception statement from your version.  */
 #ifndef RECUR_H
 #define RECUR_H
 
+/* For most options, 0 means no limits, but with -p in the picture,
+   that causes a problem on the maximum recursion depth variable.  To
+   retain backwards compatibility we allow users to consider "0" to be
+   synonymous with "inf" for -l, but internally infinite recursion is
+   specified by -1 and 0 means to only retrieve the requisites of a
+   single document. */
+#define INFINITE_RECURSION -1
+
 struct urlpos;
 
 void recursive_cleanup PARAMS ((void));
