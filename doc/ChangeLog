@@ -1,5 +1,10 @@
 2003-12-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi (Download Options): Don't incorrectly claim that `-O'
+	sets the number of retries to 1.
+
+2003-12-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi: Document the new option `--protocol-directories'.
 
 2003-11-15  Hrvoje Niksic  <hniksic@xemacs.org>

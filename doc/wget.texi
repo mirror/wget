@@ -517,8 +517,7 @@ which are not retried.
 The documents will not be written to the appropriate files, but all will
 be concatenated together and written to @var{file}.  If @var{file}
 already exists, it will be overwritten.  If the @var{file} is @samp{-},
-the documents will be written to standard output.  Including this option
-automatically sets the number of tries to 1.
+the documents will be written to standard output.
 
 @cindex clobbering, file
 @cindex downloading multiple times
