@@ -183,9 +183,6 @@ int snprintf ();
 #ifndef HAVE_VSNPRINTF
 int vsnprintf ();
 #endif
-#ifndef HAVE_USLEEP
-int usleep PARAMS ((unsigned long));
-#endif
 #ifndef HAVE_MEMMOVE
 void *memmove ();
 #endif

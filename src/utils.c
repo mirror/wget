@@ -1851,3 +1851,55 @@ run_with_timeout (double timeout, void (*fun) (void *), void *arg)
 }
 #endif /* not WINDOWS */
 #endif /* not USE_SIGNAL_TIMEOUT */
+
+#ifndef WINDOWS
+
+/* Sleep the specified amount of seconds.  On machines without
+   nanosleep(), this may sleep shorter if interrupted by signals.  */
+
+void
+xsleep (double seconds)
+{
+#ifdef HAVE_NANOSLEEP
+  /* nanosleep is the preferred interface because it offers high
+     accuracy and, more importantly, because it allows us to reliably
+     restart after having been interrupted by a signal such as
+     SIGWINCH.  */
+  struct timespec sleep, remaining;
+  sleep.tv_sec = (long) seconds;
+  sleep.tv_nsec = 1000000000L * (seconds - (long) seconds);
+  while (nanosleep (&sleep, &remaining) < 0 && errno == EINTR)
+    /* If nanosleep has been interrupted by a signal, adjust the
+       sleeping period and return to sleep.  */
+    sleep = remaining;
+#else  /* not HAVE_NANOSLEEP */
+#ifdef HAVE_USLEEP
+  /* If usleep is available, use it in preference to select.  */
+  if (seconds > 1000)
+    {
+      /* usleep apparently accepts unsigned long, which means it can't
+	 sleep longer than ~70 min (35min if signed).  If the period
+	 is larger than what usleep can safely handle, use sleep
+	 first, then add usleep for subsecond accuracy.  */
+      sleep (seconds);
+      seconds -= (long) seconds;
+    }
+  usleep (seconds * 1000000L);
+#else  /* not HAVE_USLEEP */
+#ifdef HAVE_SELECT
+  struct timeval sleep;
+  sleep.tv_sec = (long) seconds;
+  sleep.tv_usec = 1000000L * (seconds - (long) seconds);
+  select (0, NULL, NULL, NULL, &sleep);
+  /* If select returns -1 and errno is EINTR, it means we were
+     interrupted by a signal.  But without knowing how long we've
+     actually slept, we can't return to sleep.  Using gettimeofday to
+     track sleeps is slow and unreliable due to clock skew.  */
+#else  /* not HAVE_SELECT */
+  sleep (seconds);
+#endif /* not HAVE_SELECT */
+#endif /* not HAVE_USLEEP */
+#endif /* not HAVE_NANOSLEEP */
+}
+
+#endif /* not WINDOWS */

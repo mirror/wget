@@ -194,7 +194,7 @@ AC_FUNC_MMAP
 AC_CHECK_FUNCS(strdup strstr strcasecmp strncasecmp strpbrk memmove)
 AC_CHECK_FUNCS(gettimeofday mktime strptime strerror snprintf vsnprintf)
 AC_CHECK_FUNCS(select sigblock sigsetjmp signal symlink access isatty)
-AC_CHECK_FUNCS(uname gethostname usleep)
+AC_CHECK_FUNCS(uname gethostname nanosleep usleep)
 
 dnl
 dnl Check if we need to compile in getopt.c.

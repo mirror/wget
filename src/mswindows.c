@@ -74,35 +74,23 @@ static DWORD set_sleep_mode (DWORD mode);
 static DWORD pwr_mode = 0;
 static int windows_nt_p;
 
-#ifndef HAVE_SLEEP
+/* Windows version of xsleep in utils.c.  */
 
-/* Emulation of Unix sleep.  */
-
-unsigned int
-sleep (unsigned seconds)
+void
+xsleep (double seconds)
 {
-  return SleepEx (1000 * seconds, TRUE) ? 0U : 1000 * seconds;
+#ifdef HAVE_USLEEP
+  if (seconds > 1000)
+    {
+      /* Explained in utils.c. */
+      sleep (seconds);
+      seconds -= (long) seconds;
+    }
+  usleep (seconds * 1000000L);
+#else  /* not HAVE_USLEEP */
+  SleepEx (seconds * 1000, FALSE);
+#endif /* not HAVE_USLEEP */
 }
-#endif
-
-#ifndef HAVE_USLEEP
-/* Emulation of Unix usleep().  This has a granularity of
-   milliseconds, but that's ok because:
-
-   a) Wget is only using it with milliseconds [not anymore, but b)
-      still applies];
-
-   b) You can't rely on usleep's granularity anyway.  If a caller
-   expects usleep to respect every microsecond, he's in for a
-   surprise.  */
-
-int
-usleep (unsigned long usec)
-{
-  SleepEx (usec / 1000, TRUE);
-  return 0;
-}
-#endif  /* HAVE_USLEEP */
 
 void
 windows_main_junk (int *argc, char **argv, char **exec_name)

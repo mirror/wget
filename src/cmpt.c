@@ -1431,26 +1431,6 @@ const unsigned short int __mon_yday[2][13] =
   };
 #endif
 
-#ifndef HAVE_USLEEP
-#ifndef WINDOWS
-
-/* A simple usleep implementation based on select().  For Unix and
-   Unix-like systems.  */
-
-int
-usleep (unsigned long usec)
-{
-  struct timeval tm;
-  tm.tv_sec = 0;
-  tm.tv_usec = usec;
-  select (0, NULL, NULL, NULL, &tm);
-  return 0;
-}
-
-#endif /* not WINDOWS */
-#endif /* not HAVE_USLEEP */
-
-
 /* Currently unused in Wget.  Uncomment if we start using memmove
    again. */
 #if 0

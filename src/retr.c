@@ -114,7 +114,7 @@ limit_bandwidth (long bytes, double *dltime, struct wget_timer *timer)
 	       slp, limit_data.chunk_bytes, limit_data.sleep_adjust));
 
       t0 = *dltime;
-      usleep ((unsigned long) (1000 * slp));
+      xsleep (slp / 1000);
       t1 = wtimer_elapsed (timer);
 
       /* Due to scheduling, we probably slept slightly longer (or
@@ -642,9 +642,9 @@ sleep_between_retrievals (int count)
       /* If opt.waitretry is specified and this is a retry, wait for
 	 COUNT-1 number of seconds, or for opt.waitretry seconds.  */
       if (count <= opt.waitretry)
-	sleep (count - 1);
+	xsleep (count - 1);
       else
-	usleep (1000000L * opt.waitretry);
+	xsleep (opt.waitretry);
     }
   else if (opt.wait)
     {
@@ -652,7 +652,7 @@ sleep_between_retrievals (int count)
 	/* If random-wait is not specified, or if we are sleeping
 	   between retries of the same download, sleep the fixed
 	   interval.  */
-	usleep (1000000L * opt.wait);
+	xsleep (opt.wait);
       else
 	{
 	  /* Sleep a random amount of time averaging in opt.wait
@@ -661,7 +661,7 @@ sleep_between_retrievals (int count)
 	  double waitsecs = 2 * opt.wait * random_float ();
 	  DEBUGP (("sleep_between_retrievals: avg=%f,sleep=%f\n",
 		   opt.wait, waitsecs));
-	  usleep (1000000L * waitsecs);
+	  xsleep (waitsecs);
 	}
     }
 }

@@ -121,5 +121,6 @@ int random_number PARAMS ((int));
 double random_float PARAMS ((void));
 
 int run_with_timeout PARAMS ((double, void (*) (void *), void *));
+void xsleep PARAMS ((double));
 
 #endif /* UTILS_H */
