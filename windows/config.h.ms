@@ -203,6 +203,6 @@
 #define HAVE_INT32_T 1
 
 /* Define if you have u_int32_t.  */
-#define HAVE_U_INT32_T 1
+#undef HAVE_U_INT32_T
 
 #endif /* CONFIG_H */
