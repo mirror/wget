@@ -1,3 +1,7 @@
+2001-04-28  Csaba Raduly  <csaba.raduly@sophos.com>
+
+	* windows/Makefile.watcom: Update.
+
 2001-04-28  Herold Heiko  <Heiko.Herold@previnet.it>
 
 	* windows/wget.dep: Update.

@@ -1,5 +1,9 @@
 ## Compiler, linker, and lib stuff
 ## Makefile for use with watcom win95/winnt executable.
+#
+# Copy this file to the ..\src directory (maybe rename to Makefile). Also:
+# copy config.h.ms ..\src\config.h
+#
 
 CC=wcc386 /zq
 LINK=wlink
@@ -18,18 +22,18 @@ CFLAGS=/zp4 /d1 /w4 /fpd /5s /fp5 /bm /mf /os /bt=nt /DWINDOWS /DHAVE_CONFIG_H /
 # /os = optimize for size
 # /bt = "build target" (nt)
 
-OBJS = FILE cmpt.obj,connect.obj,fnmatch.obj,ftp.obj,ftp-basic.obj, &
+OBJS = FILE cmpt.obj,connect.obj,cookies.obj,fnmatch.obj,ftp.obj,ftp-basic.obj, &
       ftp-ls.obj,ftp-opie.obj,getopt.obj,hash.obj,headers.obj,host.obj,html-parse.obj,html-url.obj, &
       http.obj,init.obj,log.obj,main.obj,md5.obj,netrc.obj,rbuf.obj, &
-      recur.obj,retr.obj,url.obj,utils.obj,version.obj,mswindows.obj
+      recur.obj,retr.obj,safe-ctype.obj,url.obj,utils.obj,version.obj,mswindows.obj
 #
 # NOTE: these two MUST be kept absolutely in sync
 # alas, no text functions in Watcom make :-(
 #
-LINKOBJS = cmpt.obj connect.obj fnmatch.obj ftp.obj ftp-basic.obj &
+LINKOBJS = cmpt.obj connect.obj cookies.obj fnmatch.obj ftp.obj ftp-basic.obj &
       ftp-ls.obj ftp-opie.obj getopt.obj hash.obj headers.obj host.obj html-parse.obj html-url.obj &
       http.obj init.obj log.obj main.obj md5.obj netrc.obj rbuf.obj &
-      recur.obj retr.obj url.obj utils.obj version.obj mswindows.obj
+      recur.obj retr.obj safe-ctype.obj url.obj utils.obj version.obj mswindows.obj
 
 
 LIBFILES =
@@ -39,32 +43,37 @@ BINNAME=wget.exe
 $(BINNAME): $(LINKOBJS)
         $(LINK) $(LFLAGS) NAME $(BINNAME) $(OBJS) $(LIBPATH) $(LIBFILES)
 
-cmpt.obj: cmpt.c wget.h sysdep.h options.h
-connect.obj: connect.c wget.h sysdep.h options.h connect.h host.h
-fnmatch.obj: fnmatch.c wget.h sysdep.h options.h fnmatch.h
-ftp-basic.obj: ftp-basic.c wget.h sysdep.h options.h utils.h rbuf.h connect.h host.h ftp.h
-ftp-ls.obj: ftp-ls.c wget.h sysdep.h options.h utils.h ftp.h rbuf.h url.h
-ftp-opie.obj: ftp-opie.c wget.h sysdep.h options.h md5.h
-ftp.obj: ftp.c wget.h sysdep.h options.h utils.h url.h rbuf.h retr.h ftp.h connect.h host.h fnmatch.h netrc.h
-getopt.obj: getopt.c wget.h sysdep.h options.h getopt.h
-hash.obj: hash.c wget.h sysdep.h options.h utils.h hash.h
-headers.obj: headers.c wget.h sysdep.h options.h connect.h rbuf.h headers.h
-host.obj: host.c wget.h sysdep.h options.h utils.h host.h url.h hash.h
-html-parse.obj: html-parse.c wget.h sysdep.h options.h html-parse.h
-html-url.obj: html-url.c wget.h sysdep.h options.h html-parse.h url.h utils.h
-http.obj: http.c wget.h sysdep.h options.h utils.h url.h host.h rbuf.h retr.h headers.h connect.h fnmatch.h netrc.h md5.h
-init.obj: init.c wget.h sysdep.h options.h utils.h init.h host.h recur.h netrc.h
-log.obj: log.c wget.h sysdep.h options.h utils.h
-main.obj: main.c wget.h sysdep.h options.h utils.h getopt.h init.h retr.h rbuf.h recur.h host.h
-md5.obj: md5.c wget.h sysdep.h options.h md5.h
-netrc.obj: netrc.c wget.h sysdep.h options.h utils.h netrc.h init.h
-rbuf.obj: rbuf.c wget.h sysdep.h options.h rbuf.h connect.h
-recur.obj: recur.c wget.h sysdep.h options.h url.h recur.h utils.h retr.h rbuf.h ftp.h fnmatch.h host.h hash.h
-retr.obj: retr.c wget.h sysdep.h options.h utils.h retr.h rbuf.h url.h recur.h ftp.h host.h connect.h hash.h
-snprintf.obj: snprintf.c
-url.obj: url.c wget.h sysdep.h options.h utils.h url.h host.h
-utils.obj: utils.c wget.h sysdep.h options.h utils.h fnmatch.h hash.h
-version.obj: version.c
+
+cmpt.obj : cmpt.c  wget.h sysdep.h options.h utils.h
+connect.obj   : connect.c    wget.h sysdep.h options.h utils.h  connect.h host.h
+cookies.obj   : cookies.c    wget.h sysdep.h options.h utils.h  cookies.h hash.h url.h utils.h
+fnmatch.obj   : fnmatch.c    wget.h sysdep.h options.h utils.h  fnmatch.h
+ftp-basic.obj : ftp-basic.c  wget.h sysdep.h options.h utils.h  utils.h rbuf.h connect.h host.h
+ftp-ls.obj    : ftp-ls.c     wget.h sysdep.h options.h utils.h  utils.h ftp.h url.h
+ftp-opie.obj  : ftp-opie.c   wget.h sysdep.h options.h utils.h  md5.h
+ftp.obj  : ftp.c   wget.h sysdep.h options.h utils.h  utils.h url.h rbuf.h retr.h ftp.h connect.h host.h fnmatch.h netrc.h
+getopt.obj    : getopt.c     wget.h sysdep.h options.h utils.h  getopt.h
+hash.obj : hash.c  wget.h sysdep.h options.h utils.h  utils.h hash.h
+headers.obj   : headers.c    wget.h sysdep.h options.h utils.h  connect.h rbuf.h headers.h
+host.obj : host.c  wget.h sysdep.h options.h utils.h  utils.h host.h url.h hash.h
+html-parse.obj     : html-parse.c wget.h sysdep.h options.h utils.h  html-parse.h
+html-url.obj  : html-url.c   wget.h sysdep.h options.h utils.h  html-parse.h url.h utils.h
+html.obj : html.c  wget.h sysdep.h options.h utils.h  url.h utils.h ftp.h
+http.obj : http.c  wget.h sysdep.h options.h utils.h  utils.h url.h host.h rbuf.h retr.h headers.h cookies.h connect.h fnmatch.h netrc.h md5.h
+init.obj : init.c  wget.h sysdep.h options.h utils.h  utils.h init.h host.h recur.h netrc.h
+log.obj  : log.c   wget.h sysdep.h options.h utils.h  utils.h
+main.obj : main.c  wget.h sysdep.h options.h utils.h  utils.h getopt.h init.h retr.h recur.h host.h cookies.h
+md5.obj  : md5.c   wget.h sysdep.h options.h utils.h  md5.h
+mswindows.obj : mswindows.c  wget.h sysdep.h options.h utils.h  url.h
+netrc.obj     : netrc.c wget.h sysdep.h options.h utils.h  utils.h netrc.h init.h
+rbuf.obj : rbuf.c  wget.h sysdep.h options.h utils.h  rbuf.h connect.h
+recur.obj     : recur.c wget.h sysdep.h options.h utils.h  url.h recur.h utils.h retr.h ftp.h fnmatch.h host.h hash.h
+retr.obj : retr.c  wget.h sysdep.h options.h utils.h  utils.h retr.h url.h recur.h ftp.h host.h connect.h hash.h
+snprintf.obj  : snprintf.c
+safe-ctype.obj     : safe-ctype.c safe-ctype.h
+url.obj  : url.c   wget.h sysdep.h options.h utils.h  utils.h url.h host.h
+utils.obj     : utils.c wget.h sysdep.h options.h utils.h  utils.h fnmatch.h hash.h
+version.obj   : version.c
 
 .c.obj:
 	$(CC) $(CFLAGS) $[@
