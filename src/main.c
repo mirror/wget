@@ -123,7 +123,7 @@ Startup:\n\
   -V,  --version           display the version of Wget and exit.\n\
   -h,  --help              print this help.\n\
   -b,  --background        go to background after startup.\n\
-  -e,  --execute=COMMAND   execute a `.wgetrc\' command.\n\
+  -e,  --execute=COMMAND   execute a `.wgetrc\'-style command.\n\
 \n"), _("\
 Logging and input file:\n\
   -o,  --output-file=FILE     log messages to FILE.\n\
@@ -165,6 +165,7 @@ HTTP options:\n\
        --header=STRING       insert STRING among the headers.\n\
        --proxy-user=USER     set USER as proxy username.\n\
        --proxy-passwd=PASS   set PASS as proxy password.\n\
+       --referer=URL         include `Referer: URL\' header in HTTP request.\n\
   -s,  --save-headers        save the HTTP headers to file.\n\
   -U,  --user-agent=AGENT    identify as AGENT instead of Wget/VERSION.\n\
 \n"), _("\
@@ -277,10 +278,10 @@ main (int argc, char *const *argv)
     { "timeout", required_argument, NULL, 'T' },
     { "tries", required_argument, NULL, 't' },
     { "user-agent", required_argument, NULL, 'U' },
-    { "referer", required_argument, NULL, 129 }, /* undocumented */
+    { "referer", required_argument, NULL, 129 },
     { "use-proxy", required_argument, NULL, 'Y' },
     { "wait", required_argument, NULL, 'w' },
-    { "waitretry", required_argument, NULL, 24 }, /* partially undocumented */
+    { "waitretry", required_argument, NULL, 24 },
     { 0, 0, 0, 0 }
   };
 

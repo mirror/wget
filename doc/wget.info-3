@@ -441,6 +441,7 @@ Concept Index
 * host checking:                         Host Checking.
 * host lookup:                           Host Checking.
 * http password:                         HTTP Options.
+* http referer:                          HTTP Options.
 * http time-stamping:                    HTTP Time-Stamping Internals.
 * http user:                             HTTP Options.
 * ignore length:                         HTTP Options.
@@ -485,6 +486,7 @@ Concept Index
 * recursion:                             Recursive Retrieval.
 * recursive retrieval:                   Recursive Retrieval.
 * redirecting output:                    Guru Usage.
+* referer, http:                         HTTP Options.
 * reject directories:                    Directory-Based Limits.
 * reject suffixes:                       Types of Files.
 * reject wildcards:                      Types of Files.

@@ -1,3 +1,8 @@
+2000-05-22  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* wget.texi (HTTP Options): Damir Dzeko <ddzeko@zesoi.fer.hr> did
+ 	not document his new --referer option.  Did so.
+
 2000-04-18  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* sample.wgetrc: Realized I put a global setting in the local section.
@@ -26,9 +31,10 @@
 	
 	* sample.wgetrc: Added entries for backup_converted and waitretry.
 
-	* wget.texi (waitretry): Herold Heiko <Heiko.Herold@previnet.it>'s
- 	new option was undocumented until now.  Reworded the suggested
- 	documentation he sent to the list.
+	* wget.texi (Download Options): Herold Heiko
+ 	<Heiko.Herold@previnet.it>'s new --waitretry option was
+ 	undocumented until now.  Reworded the suggested documentation he
+ 	sent to the list.
 
 2000-03-10  Dan Harkless  <dan-wget@dilvish.speed.net>
 

@@ -24,6 +24,33 @@ resulting derived work is distributed under the terms of a permission
 notice identical to this one.
 
 
+File: wget.info,  Node: FTP Time-Stamping Internals,  Prev: HTTP Time-Stamping Internals,  Up: Time-Stamping
+
+FTP Time-Stamping Internals
+===========================
+
+   In theory, FTP time-stamping works much the same as HTTP, only FTP
+has no headers--time-stamps must be received from the directory
+listings.
+
+   For each directory files must be retrieved from, Wget will use the
+`LIST' command to get the listing.  It will try to analyze the listing,
+assuming that it is a Unix `ls -l' listing, and extract the
+time-stamps.  The rest is exactly the same as for HTTP.
+
+   Assumption that every directory listing is a Unix-style listing may
+sound extremely constraining, but in practice it is not, as many
+non-Unix FTP servers use the Unixoid listing format because most (all?)
+of the clients understand it.  Bear in mind that RFC959 defines no
+standard way to get a file list, let alone the time-stamps.  We can
+only hope that a future standard will define this.
+
+   Another non-standard solution includes the use of `MDTM' command
+that is supported by some FTP servers (including the popular
+`wu-ftpd'), which returns the exact time of the specified file.  Wget
+may support this command in the future.
+
+
 File: wget.info,  Node: Startup File,  Next: Examples,  Prev: Time-Stamping,  Up: Top
 
 Startup File

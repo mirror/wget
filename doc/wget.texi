@@ -737,6 +737,14 @@ Specify the username @var{user} and password @var{password} for
 authentication on a proxy server.  Wget will encode them using the
 @code{basic} authentication scheme.
 
+@cindex http referer
+@cindex referer, http
+@item --referer=@var{url}
+Include `Referer: @var{url}' header in HTTP request.  Useful for
+retrieving documents with server-side processing that assume they are
+always being retrieved by interactive web browsers and only come out
+properly when Referer is set to one of the pages that point to them.
+
 @cindex server response, save
 @item -s
 @itemx --save-headers
