@@ -484,41 +484,6 @@ bind_local (const ip_address *bind_address, int *port)
   return sock;
 }
 
-#ifdef HAVE_SELECT
-/* Wait for file descriptor FD to be readable or writable or both,
-   timing out after MAXTIME seconds.  Returns 1 if FD is available, 0
-   for timeout and -1 for error.  The argument WAIT_FOR can be a
-   combination of WAIT_READ and WAIT_WRITE.
-
-   This is a mere convenience wrapper around the select call, and
-   should be taken as such.  */
-
-int
-select_fd (int fd, double maxtime, int wait_for)
-{
-  fd_set fdset;
-  fd_set *rd = NULL, *wr = NULL;
-  struct timeval tmout;
-  int result;
-
-  FD_ZERO (&fdset);
-  FD_SET (fd, &fdset);
-  if (wait_for & WAIT_FOR_READ)
-    rd = &fdset;
-  if (wait_for & WAIT_FOR_WRITE)
-    wr = &fdset;
-
-  tmout.tv_sec = (long) maxtime;
-  tmout.tv_usec = 1000000L * (maxtime - (long) maxtime);
-
-  do
-    result = select (fd + 1, rd, wr, NULL, &tmout);
-  while (result < 0 && errno == EINTR);
-
-  return result;
-}
-#endif /* HAVE_SELECT */
-
 /* Like a call to accept(), but with the added check for timeout.
 
    In other words, accept a client connection on LOCAL_SOCK, and
@@ -608,6 +573,73 @@ socket_ip_address (int sock, ip_address *ip, int endpoint)
 
   return 0;
 }
+
+/* Return non-zero of the errno code passed to the function is a
+   result of an attempt to create a socket of unsupported family.  */
+
+int
+unsupported_socket_family_error (int err)
+{
+  /* Have to guard against some of these values not being defined.
+     Cannot use switch because some of the values might be equal.  */
+#ifdef EAFNOSUPPORT
+  if (err == EAFNOSUPPORT) return 1;
+#endif
+#ifdef EPFNOSUPPORT
+  if (err == EPFNOSUPPORT) return 1;
+#endif
+#ifdef ESOCKTNOSUPPORT		/* no, "sockt" is not a typo! */
+  if (err == ESOCKTNOSUPPORT) return 1;
+#endif
+#ifdef EPROTONOSUPPORT
+  if (err == EPROTONOSUPPORT) return 1;
+#endif
+#ifdef ENOPROTOOPT
+  if (err == ENOPROTOOPT) return 1;
+#endif
+  /* Apparently, older versions of Linux used EINVAL instead of
+     EAFNOSUPPORT. */
+  if (err == EINVAL) return 1;
+
+  return 0;
+}
+
+#ifdef HAVE_SELECT
+
+/* Wait for file descriptor FD to be readable or writable or both,
+   timing out after MAXTIME seconds.  Returns 1 if FD is available, 0
+   for timeout and -1 for error.  The argument WAIT_FOR can be a
+   combination of WAIT_READ and WAIT_WRITE.
+
+   This is a mere convenience wrapper around the select call, and
+   should be taken as such.  */
+
+int
+select_fd (int fd, double maxtime, int wait_for)
+{
+  fd_set fdset;
+  fd_set *rd = NULL, *wr = NULL;
+  struct timeval tmout;
+  int result;
+
+  FD_ZERO (&fdset);
+  FD_SET (fd, &fdset);
+  if (wait_for & WAIT_FOR_READ)
+    rd = &fdset;
+  if (wait_for & WAIT_FOR_WRITE)
+    wr = &fdset;
+
+  tmout.tv_sec = (long) maxtime;
+  tmout.tv_usec = 1000000L * (maxtime - (long) maxtime);
+
+  do
+    result = select (fd + 1, rd, wr, NULL, &tmout);
+  while (result < 0 && errno == EINTR);
+
+  return result;
+}
+
+#endif /* HAVE_SELECT */
 
 /* Basic socket operations, mostly EINTR wrappers.  */
 

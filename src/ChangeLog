@@ -1,5 +1,11 @@
 2003-11-13  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.h (CONNECT_ERROR): Use it.
+
+	* connect.c (unsupported_socket_family_error): New function.
+
+2003-11-13  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c (bind_local): Renamed bindport to bind_local; return
 	the socket directly.  Updated callers.
 	(accept_connection): Renamed acceptport to accept_connection;
