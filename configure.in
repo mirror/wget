@@ -491,18 +491,6 @@ if test "X$ipv6" = "Xyes" || test "X$check_for_ipv6" = "Xyes"; then
         [Define if the system headers support the AI_ADDRCONFIG flag.]
       )
     ])
-    GETADDRINFO_AI_V4MAPPED([
-      AC_DEFINE(
-        [HAVE_GETADDRINFO_AI_V4MAPPED], 1, 
-        [Define if the system headers support the AI_V4MAPPED flag.]
-      )
-    ])
-    GETADDRINFO_AI_ALL([
-      AC_DEFINE(
-        [HAVE_GETADDRINFO_AI_ALL], 1, 
-        [Define if the system headers support the AI_ALL flag.]
-      )
-    ])
   ], [
     AC_MSG_NOTICE([Disabling IPv6 support: your system does not support getaddrinfo(3)])
     ipv6=no

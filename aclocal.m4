@@ -246,7 +246,7 @@ AC_DEFUN([GETADDRINFO_AI_ADDRCONFIG],[
 #include <netdb.h>
 
 #ifndef AI_ADDRCONFIG
-#error Missing AI_ADDRCONFIG
+ #error Missing AI_ADDRCONFIG
 #endif
     ],[
       wget_cv_gai_ai_addrconfig=yes
@@ -262,51 +262,6 @@ AC_DEFUN([GETADDRINFO_AI_ADDRCONFIG],[
   fi
 ])
 
-
-AC_DEFUN([GETADDRINFO_AI_ALL],[
-  AC_CACHE_CHECK([if getaddrinfo supports AI_ALL],[wget_cv_gai_ai_all],[
-    AC_TRY_CPP([
-#include <netdb.h>
-
-#ifndef AI_ALL
-#error Missing AI_ALL
-#endif
-    ],[
-      wget_cv_gai_ai_all=yes
-    ],[
-      wget_cv_gai_ai_all=no
-    ])
-  ])
-
-  if test "X$wget_cv_gai_ai_all" = "Xyes"; then :
-    $1
-  else :
-    $2
-  fi
-])
-
-
-AC_DEFUN([GETADDRINFO_AI_V4MAPPED],[
-  AC_CACHE_CHECK([if getaddrinfo supports AI_V4MAPPED],[wget_cv_gai_ai_v4mapped],[
-    AC_TRY_CPP([
-#include <netdb.h>
-
-#ifndef AI_V4MAPPED
-#error Missing AI_V4MAPPED
-#endif
-    ],[
-      wget_cv_gai_ai_v4mapped=yes
-    ],[
-      wget_cv_gai_ai_v4mapped=no
-    ])
-  ])
-
-  if test "X$wget_cv_gai_ai_v4mapped" = "Xyes"; then :
-    $1
-  else :
-    $2
-  fi
-])
 
 AC_DEFUN([WGET_STRUCT_SOCKADDR_STORAGE],[
   AC_CHECK_TYPES([struct sockaddr_storage],[], [], [

@@ -1,5 +1,8 @@
 2003-11-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* aclocal.m4: Don't check for AI_V4MAPPED and for AI_ALL, since
+	Wget doesn't need them.
+
 	* configure.in: Check for struct sockaddr_storage.
 
 2003-11-12  Hrvoje Niksic  <hniksic@xemacs.org>
