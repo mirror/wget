@@ -7,6 +7,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.7-dev
 
+** Wget now has a man page again (last version with one was 1.4.5).  It is
+automatically generated if you have pod2man installed (comes with Perl 5).
+
 ** Wget can now recognize FTP directory listings from some non-Unix
 servers.  Currently Windows NT is supported.
 

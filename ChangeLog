@@ -1,5 +1,7 @@
 2001-02-23  Dan Harkless  <wget@harkless.org>
 
+	* NEWS: Note that Wget now has a man page again.
+
 	* po/*.po*: Updated after changing --help's description of -N.
 
 2001-02-22  Dan Harkless  <wget@harkless.org>
