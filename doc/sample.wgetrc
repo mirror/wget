@@ -41,11 +41,11 @@
 # can turn this on to make Wget use passive FTP by default.
 #passive_ftp = off
 
-# The "wait" command above makes Wget wait between every connection.
+# The "wait" command below makes Wget wait between every connection.
 # If, instead, you want Wget to wait only between retries of failed
-# downloads, set this variable to maximum number of seconds to wait
-# (Wget will use "linear backoff", waiting 1 second after the first
-# failure on a file, up to this max).
+# downloads, set waitretry to maximum number of seconds to wait (Wget
+# will use "linear backoff", waiting 1 second after the first failure
+# on a file, 2 seconds after the second failure, etc. up to this max).
 waitretry = 10
 
 
