@@ -15,6 +15,16 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+dnl In addition, as a special exception, the Free Software Foundation
+dnl gives permission to link the code of its release of Wget with the
+dnl OpenSSL project's "OpenSSL" library (or with modified versions of it
+dnl that use the same license as the "OpenSSL" library), and distribute
+dnl the linked executables.  You must obey the GNU General Public License
+dnl in all respects for all of the code used other than "OpenSSL".  If you
+dnl modify this file, you may extend this exception to your version of the
+dnl file, but you are not obligated to do so.  If you do not wish to do
+dnl so, delete this exception statement from your version.
+
 dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl
