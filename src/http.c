@@ -264,27 +264,28 @@ http_process_connection (const char *hdr, void *arg)
   return 1;
 }
 
-/* Persistent connections (pc).  Currently, we cache the most recently
-   used connection as persistent, provided that the HTTP server agrees
-   to make it such.  The persistence data is stored in the variables
+/* Persistent connections.  Currently, we cache the most recently used
+   connection as persistent, provided that the HTTP server agrees to
+   make it such.  The persistence data is stored in the variables
    below.  Ideally, it would be in a structure, and it should be
    possible to cache an arbitrary fixed number of these connections.
 
    I think the code is quite easy to extend in that direction.  */
 
-/* Whether the persistent connection is active. */
+/* Whether a persistent connection is active. */
 static int pc_active_p;
 
-/* Host and port of the last persistent connection. */
+/* Host and port of currently active persistent connection. */
 static unsigned char pc_last_host[4];
 static unsigned short pc_last_port;
 
-/* File descriptor of the last persistent connection. */
+/* File descriptor of the currently active persistent connection. */
 static int pc_last_fd;
 
 /* Mark the persistent connection as invalid.  This is used by the
    CLOSE_* macros after they forcefully close a registered persistent
-   connection.  */
+   connection.  This does not close the file descriptor -- it is left
+   to the caller to do that.  (Maybe it should, though.)  */
 
 static void
 invalidate_persistent (void)
@@ -343,16 +344,28 @@ static int
 persistent_available_p (const char *host, unsigned short port)
 {
   unsigned char this_host[4];
+  /* First, check whether a persistent connection is active at all.  */
   if (!pc_active_p)
     return 0;
+  /* Second, check if the active connection pertains to the correct
+     (HOST, PORT) ordered pair.  */
   if (port != pc_last_port)
     return 0;
   if (!store_hostaddress (this_host, host))
     return 0;
   if (memcmp (pc_last_host, this_host, 4))
     return 0;
+  /* Third: check whether the connection is still open.  This is
+     important because most server implement a liberal (short) timeout
+     on persistent connections.  Wget can of course always reconnect
+     if the connection doesn't work out, but it's nicer to know in
+     advance.  This test is a logical followup of the first test, but
+     is "expensive" and therefore placed at the end of the list.  */
   if (!test_socket_open (pc_last_fd))
     {
+      /* Oops, the socket is no longer open.  Now that we know that,
+         let's invalidate the persistent connection before returning
+         0.  */
       CLOSE (pc_last_fd);
       invalidate_persistent ();
       return 0;
