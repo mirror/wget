@@ -1,3 +1,10 @@
+2001-04-27  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* safe-ctype.h: Instead of throwing #error when isalpha is
+	defined, redefine it to something that will throw a compile-time
+	error if actually *used*.  Do the same for the rest of the
+	standard C macros.
+
 2001-04-26  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* url.c (getproxy): Ignore empty proxy vars.

@@ -35,9 +35,38 @@ Boston, MA 02111-1307, USA.  */
 #ifndef SAFE_CTYPE_H
 #define SAFE_CTYPE_H
 
-#ifdef isalpha
- #error "safe-ctype.h and ctype.h may not be used simultaneously"
-#else
+/* Catch erroneous use of ctype macros.  Files that really know what
+   they're doing can disable this check by defining the
+   I_REALLY_WANT_CTYPE_MACROS preprocessor constant. */
+
+#ifndef I_REALLY_WANT_CTYPE_MACROS
+
+#undef isalpha
+#define isalpha *** Please use ISALPHA ***
+#undef isalnum
+#define isalnum *** Please use ISALNUM ***
+#undef isblank
+#define isblank *** Please use ISBLANK ***
+#undef iscntrl
+#define iscntrl *** Please use ISCNTRL ***
+#undef isdigit
+#define isdigit *** Please use ISDIGIT ***
+#undef isgraph
+#define isgraph *** Please use ISGRAPH ***
+#undef islower
+#define islower *** Please use ISLOWER ***
+#undef isprint
+#define isprint *** Please use ISPRINT ***
+#undef ispunct
+#define ispunct *** Please use ISPUNCT ***
+#undef isspace
+#define isspace *** Please use ISSPACE ***
+#undef isupper
+#define isupper *** Please use ISUPPER ***
+#undef isxdigit
+#define isxdigit *** Please use ISXDIGIT ***
+
+#endif /* I_REALLY_WANT_CTYPE_MACROS */
 
 /* Categories.  */
 
@@ -96,5 +125,4 @@ extern const unsigned char  _sch_tolower[256];
 #define TOUPPER(c) _sch_toupper[(c) & 0xff]
 #define TOLOWER(c) _sch_tolower[(c) & 0xff]
 
-#endif /* no ctype.h */
 #endif /* SAFE_CTYPE_H */
