@@ -464,16 +464,22 @@ struct http_stat
   long dltime;			/* time of the download */
   int no_truncate;		/* whether truncating the file is
 				   forbidden. */
+  const char *referer;		/* value of the referer header. */
+  char **local_file;		/* local file. */
 };
 
-/* Free the elements of hstat X.  */
-#define FREEHSTAT(x) do					\
-{							\
-  FREE_MAYBE ((x).newloc);				\
-  FREE_MAYBE ((x).remote_time);				\
-  FREE_MAYBE ((x).error);				\
-  (x).newloc = (x).remote_time = (x).error = NULL;	\
-} while (0)
+static void
+free_hstat (struct http_stat *hs)
+{
+  FREE_MAYBE (hs->newloc);
+  FREE_MAYBE (hs->remote_time);
+  FREE_MAYBE (hs->error);
+
+  /* Guard against being called twice. */
+  hs->newloc = NULL;
+  hs->remote_time = NULL;
+  hs->error = NULL;
+}
 
 static char *create_authorization_line PARAMS ((const char *, const char *,
 						const char *, const char *,
@@ -499,23 +505,22 @@ time_t http_atotm PARAMS ((char *));
    response code correctly, it is not used in a sane way.  The caller
    can do that, though.
 
-   If u->proxy is non-NULL, the URL u will be taken as a proxy URL,
-   and u->proxy->url will be given to the proxy server (bad naming,
-   I'm afraid).  */
+   If PROXY is non-NULL, the connection will be made to the proxy
+   server, and u->url will be requested.  */
 static uerr_t
-gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
+gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 {
-  char *request, *type, *command, *path;
+  char *request, *type, *command, *full_path;
   char *user, *passwd;
-  char *pragma_h, *referer, *useragent, *range, *wwwauth, *remhost;
+  char *pragma_h, *referer, *useragent, *range, *wwwauth;
   char *authenticate_h;
   char *proxyauth;
   char *all_headers;
   char *port_maybe;
   char *request_keep_alive;
-  int sock, hcount, num_written, all_length, remport, statcode;
+  int sock, hcount, num_written, all_length, statcode;
   long contlen, contrange;
-  struct urlinfo *ou;
+  struct url *conn;
   uerr_t err;
   FILE *fp;
   int auth_tried_already;
@@ -542,7 +547,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   /* initialize ssl_ctx on first run */
   if (!ssl_ctx)
     {
-      err=init_ssl (&ssl_ctx);
+      err = init_ssl (&ssl_ctx);
       if (err != 0)
 	{
 	  switch (err)
@@ -579,12 +584,12 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   if (!(*dt & HEAD_ONLY))
     /* If we're doing a GET on the URL, as opposed to just a HEAD, we need to
        know the local filename so we can save to it. */
-    assert (u->local != NULL);
+    assert (*hs->local_file != NULL);
 
   authenticate_h = 0;
   auth_tried_already = 0;
 
-  inhibit_keep_alive = (!opt.http_keep_alive || u->proxy != NULL);
+  inhibit_keep_alive = !opt.http_keep_alive || proxy != NULL;
 
  again:
   /* We need to come back here when the initial attempt to retrieve
@@ -602,29 +607,29 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   hs->remote_time = NULL;
   hs->error = NULL;
 
-  /* Which structure to use to retrieve the original URL data.  */
-  if (u->proxy)
-    ou = u->proxy;
-  else
-    ou = u;
+  /* If we're using a proxy, we will be connecting to the proxy
+     server. */
+  conn = proxy ? proxy : u;
 
   /* First: establish the connection.  */
   if (inhibit_keep_alive
       ||
 #ifndef HAVE_SSL
-      !persistent_available_p (u->host, u->port)
+      !persistent_available_p (conn->host, conn->port)
 #else
-      !persistent_available_p (u->host, u->port, u->scheme == SCHEME_HTTPS)
+      !persistent_available_p (conn->host, conn->port,
+			       u->scheme == SCHEME_HTTPS)
 #endif /* HAVE_SSL */
       )
     {
-      logprintf (LOG_VERBOSE, _("Connecting to %s:%hu... "), u->host, u->port);
-      err = make_connection (&sock, u->host, u->port);
+      logprintf (LOG_VERBOSE, _("Connecting to %s:%hu... "),
+		 conn->host, conn->port);
+      err = make_connection (&sock, conn->host, conn->port);
       switch (err)
 	{
 	case HOSTERR:
 	  logputs (LOG_VERBOSE, "\n");
-	  logprintf (LOG_NOTQUIET, "%s: %s.\n", u->host, herrmsg (h_errno));
+	  logprintf (LOG_NOTQUIET, "%s: %s.\n", conn->host, herrmsg (h_errno));
 	  return HOSTERR;
 	  break;
 	case CONSOCKERR:
@@ -635,7 +640,8 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 	case CONREFUSED:
 	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET,
-		     _("Connection to %s:%hu refused.\n"), u->host, u->port);
+		     _("Connection to %s:%hu refused.\n"), conn->host,
+		     conn->port);
 	  CLOSE (sock);
 	  return CONREFUSED;
 	case CONERROR:
@@ -653,7 +659,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 	  break;
 	}
 #ifdef HAVE_SSL
-     if (u->scheme == SCHEME_HTTPS)
+     if (conn->scheme == SCHEME_HTTPS)
        if (connect_ssl (&ssl, ssl_ctx,sock) != 0)
 	 {
 	   logputs (LOG_VERBOSE, "\n");
@@ -666,7 +672,8 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
     }
   else
     {
-      logprintf (LOG_VERBOSE, _("Reusing connection to %s:%hu.\n"), u->host, u->port);
+      logprintf (LOG_VERBOSE, _("Reusing connection to %s:%hu.\n"),
+		 conn->host, conn->port);
       /* #### pc_last_fd should be accessed through an accessor
          function.  */
       sock = pc_last_fd;
@@ -676,22 +683,20 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
       DEBUGP (("Reusing fd %d.\n", sock));
     }
 
-  if (u->proxy)
-    path = u->proxy->url;
-  else
-    path = u->path;
-  
   command = (*dt & HEAD_ONLY) ? "HEAD" : "GET";
+
   referer = NULL;
-  if (ou->referer)
+  if (hs->referer)
     {
-      referer = (char *)alloca (9 + strlen (ou->referer) + 3);
-      sprintf (referer, "Referer: %s\r\n", ou->referer);
+      referer = (char *)alloca (9 + strlen (hs->referer) + 3);
+      sprintf (referer, "Referer: %s\r\n", hs->referer);
     }
+
   if (*dt & SEND_NOCACHE)
     pragma_h = "Pragma: no-cache\r\n";
   else
     pragma_h = "";
+
   if (hs->restval)
     {
       range = (char *)alloca (13 + numdigit (hs->restval) + 4);
@@ -714,9 +719,9 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
       sprintf (useragent, "Wget/%s", version_string);
     }
   /* Construct the authentication, if userid is present.  */
-  user = ou->user;
-  passwd = ou->passwd;
-  search_netrc (ou->host, (const char **)&user, (const char **)&passwd, 0);
+  user = u->user;
+  passwd = u->passwd;
+  search_netrc (u->host, (const char **)&user, (const char **)&passwd, 0);
   user = user ? user : opt.http_user;
   passwd = passwd ? passwd : opt.http_passwd;
 
@@ -750,12 +755,12 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
       else
 	{
 	  wwwauth = create_authorization_line (authenticate_h, user, passwd,
-					       command, ou->path);
+					       command, u->path);
 	}
     }
 
   proxyauth = NULL;
-  if (u->proxy)
+  if (proxy)
     {
       char *proxy_user, *proxy_passwd;
       /* For normal username and password, URL components override
@@ -770,31 +775,22 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 	}
       else
 	{
-	  proxy_user = u->user;
-	  proxy_passwd = u->passwd;
+	  proxy_user = proxy->user;
+	  proxy_passwd = proxy->passwd;
 	}
-      /* #### This is junky.  Can't the proxy request, say, `Digest'
-         authentication?  */
+      /* #### This does not appear right.  Can't the proxy request,
+         say, `Digest' authentication?  */
       if (proxy_user && proxy_passwd)
 	proxyauth = basic_authentication_encode (proxy_user, proxy_passwd,
 						 "Proxy-Authorization");
     }
-  remhost = ou->host;
-  remport = ou->port;
 
   /* String of the form :PORT.  Used only for non-standard ports. */
   port_maybe = NULL;
-  if (1
-#ifdef HAVE_SSL
-      && remport != (u->scheme == SCHEME_HTTPS
-		     ? DEFAULT_HTTPS_PORT : DEFAULT_HTTP_PORT)
-#else
-      && remport != DEFAULT_HTTP_PORT
-#endif
-      )
+  if (u->port != scheme_default_port (u->scheme))
     {
-      port_maybe = (char *)alloca (numdigit (remport) + 2);
-      sprintf (port_maybe, ":%d", remport);
+      port_maybe = (char *)alloca (numdigit (u->port) + 2);
+      sprintf (port_maybe, ":%d", u->port);
     }
 
   if (!inhibit_keep_alive)
@@ -803,18 +799,24 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
     request_keep_alive = NULL;
 
   if (opt.cookies)
-    cookies = build_cookies_request (ou->host, ou->port, ou->path,
+    cookies = build_cookies_request (u->host, u->port, u->path,
 #ifdef HAVE_SSL
-				     ou->scheme == SCHEME_HTTPS
+				     u->scheme == SCHEME_HTTPS
 #else
 				     0
 #endif
 				     );
 
+  if (proxy)
+    full_path = xstrdup (u->url);
+  else
+    full_path = url_full_path (u);
+
   /* Allocate the memory for the request.  */
-  request = (char *)alloca (strlen (command) + strlen (path)
+  request = (char *)alloca (strlen (command)
+			    + strlen (full_path)
 			    + strlen (useragent)
-			    + strlen (remhost)
+			    + strlen (u->host)
 			    + (port_maybe ? strlen (port_maybe) : 0)
 			    + strlen (HTTP_ACCEPT)
 			    + (request_keep_alive
@@ -834,7 +836,8 @@ User-Agent: %s\r\n\
 Host: %s%s\r\n\
 Accept: %s\r\n\
 %s%s%s%s%s%s%s%s\r\n",
-	   command, path, useragent, remhost,
+	   command, full_path,
+	   useragent, u->host,
 	   port_maybe ? port_maybe : "",
 	   HTTP_ACCEPT,
 	   request_keep_alive ? request_keep_alive : "",
@@ -846,10 +849,12 @@ Accept: %s\r\n\
 	   pragma_h, 
 	   opt.user_header ? opt.user_header : "");
   DEBUGP (("---request begin---\n%s---request end---\n", request));
-   /* Free the temporary memory.  */
+
+  /* Free the temporary memory.  */
   FREE_MAYBE (wwwauth);
   FREE_MAYBE (proxyauth);
   FREE_MAYBE (cookies);
+  xfree (full_path);
 
   /* Send the request to server.  */
 #ifdef HAVE_SSL
@@ -867,7 +872,7 @@ Accept: %s\r\n\
       return WRITEFAILED;
     }
   logprintf (LOG_VERBOSE, _("%s request sent, awaiting response... "),
-	     u->proxy ? "Proxy" : "HTTP");
+	     proxy ? "Proxy" : "HTTP");
   contlen = contrange = -1;
   type = NULL;
   statcode = -1;
@@ -1075,9 +1080,9 @@ Accept: %s\r\n\
     /* The server has promised that it will not close the connection
        when we're done.  This means that we can register it.  */
 #ifndef HAVE_SSL
-    register_persistent (u->host, u->port, sock);
+    register_persistent (conn->host, conn->port, sock);
 #else
-    register_persistent (u->host, u->port, sock, ssl);
+    register_persistent (conn->host, conn->port, sock, ssl);
 #endif /* HAVE_SSL */
 
   if ((statcode == HTTP_STATUS_UNAUTHORIZED)
@@ -1086,7 +1091,7 @@ Accept: %s\r\n\
       /* Authorization is required.  */
       FREE_MAYBE (type);
       type = NULL;
-      FREEHSTAT (*hs);
+      free_hstat (hs);
       CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
 				   might be more bytes in the body. */
       if (auth_tried_already)
@@ -1163,16 +1168,17 @@ Accept: %s\r\n\
        text/html file.  If some case-insensitive variation on ".htm[l]" isn't
        already the file's suffix, tack on ".html". */
     {
-      char*  last_period_in_local_filename = strrchr(u->local, '.');
+      char*  last_period_in_local_filename = strrchr(*hs->local_file, '.');
 
       if (last_period_in_local_filename == NULL ||
 	  !(strcasecmp(last_period_in_local_filename, ".htm") == EQ ||
 	    strcasecmp(last_period_in_local_filename, ".html") == EQ))
 	{
-	  size_t  local_filename_len = strlen(u->local);
+	  size_t  local_filename_len = strlen(*hs->local_file);
 	  
-	  u->local = xrealloc(u->local, local_filename_len + sizeof(".html"));
-	  strcpy(u->local + local_filename_len, ".html");
+	  *hs->local_file = xrealloc(*hs->local_file,
+				     local_filename_len + sizeof(".html"));
+	  strcpy(*hs->local_file + local_filename_len, ".html");
 
 	  *dt |= ADDED_HTML_EXTENSION;
 	}
@@ -1224,7 +1230,7 @@ Accept: %s\r\n\
 			 _("\
 \n\
 Continued download failed on this file, which conflicts with `-c'.\n\
-Refusing to truncate existing file `%s'.\n\n"), u->local);
+Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
 	      FREE_MAYBE (type);
 	      FREE_MAYBE (all_headers);
 	      CLOSE_INVALIDATE (sock);
@@ -1300,13 +1306,13 @@ Refusing to truncate existing file `%s'.\n\n"), u->local);
   /* Open the local file.  */
   if (!opt.dfp)
     {
-      mkalldirs (u->local);
+      mkalldirs (*hs->local_file);
       if (opt.backups)
-	rotate_backups (u->local);
-      fp = fopen (u->local, hs->restval ? "ab" : "wb");
+	rotate_backups (*hs->local_file);
+      fp = fopen (*hs->local_file, hs->restval ? "ab" : "wb");
       if (!fp)
 	{
-	  logprintf (LOG_NOTQUIET, "%s: %s\n", u->local, strerror (errno));
+	  logprintf (LOG_NOTQUIET, "%s: %s\n", *hs->local_file, strerror (errno));
 	  CLOSE_INVALIDATE (sock); /* would be CLOSE_FINISH, but there
 				      might be more bytes in the body. */
 	  FREE_MAYBE (all_headers);
@@ -1375,7 +1381,8 @@ Refusing to truncate existing file `%s'.\n\n"), u->local);
 /* The genuine HTTP loop!  This is the part where the retrieval is
    retried, and retried, and retried, and...  */
 uerr_t
-http_loop (struct urlinfo *u, char **newloc, int *dt)
+http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
+	   int *dt, struct url *proxy)
 {
   int count;
   int use_ts, got_head = 0;	/* time-stamping info */
@@ -1388,6 +1395,7 @@ http_loop (struct urlinfo *u, char **newloc, int *dt)
   size_t filename_len;
   struct http_stat hstat;	/* HTTP status */
   struct stat st;
+  char *dummy = NULL;
 
   /* This used to be done in main(), but it's a better idea to do it
      here so that we don't go through the hoops if we're just using
@@ -1407,34 +1415,46 @@ http_loop (struct urlinfo *u, char **newloc, int *dt)
     logputs (LOG_VERBOSE, _("Warning: wildcards not supported in HTTP.\n"));
 
   /* Determine the local filename.  */
-  if (!u->local)
-    u->local = url_filename (u->proxy ? u->proxy : u);
+  if (local_file && *local_file)
+    hstat.local_file = local_file;
+  else if (local_file)
+    {
+      *local_file = url_filename (u);
+      hstat.local_file = local_file;
+    }
+  else
+    {
+      dummy = url_filename (u);
+      hstat.local_file = &dummy;
+    }
 
   if (!opt.output_document)
-    locf = u->local;
+    locf = *hstat.local_file;
   else
     locf = opt.output_document;
 
-  filename_len = strlen (u->local);
+  hstat.referer = referer;
+
+  filename_len = strlen (*hstat.local_file);
   filename_plus_orig_suffix = alloca (filename_len + sizeof (".orig"));
 
-  if (opt.noclobber && file_exists_p (u->local))
+  if (opt.noclobber && file_exists_p (*hstat.local_file))
     {
       /* If opt.noclobber is turned on and file already exists, do not
 	 retrieve the file */
       logprintf (LOG_VERBOSE, _("\
-File `%s' already there, will not retrieve.\n"), u->local);
+File `%s' already there, will not retrieve.\n"), *hstat.local_file);
       /* If the file is there, we suppose it's retrieved OK.  */
       *dt |= RETROKF;
 
       /* #### Bogusness alert.  */
-      /* If its suffix is "html" or (yuck!) "htm", we suppose it's
-	 text/html, a harmless lie.  */
-      if (((suf = suffix (u->local)) != NULL)
+      /* If its suffix is "html" or "htm", assume text/html.  */
+      if (((suf = suffix (*hstat.local_file)) != NULL)
 	  && (!strcmp (suf, "html") || !strcmp (suf, "htm")))
 	*dt |= TEXTHTML;
       xfree (suf);
-      /* Another harmless lie: */
+
+      FREE_MAYBE (dummy);
       return RETROK;
     }
 
@@ -1461,7 +1481,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	     in url.c.  Replacing sprintf with inline calls to
 	     strcpy() and long_to_string() made a difference.
 	     --hniksic */
-	  memcpy (filename_plus_orig_suffix, u->local, filename_len);
+	  memcpy (filename_plus_orig_suffix, *hstat.local_file, filename_len);
 	  memcpy (filename_plus_orig_suffix + filename_len,
 		  ".orig", sizeof (".orig"));
 
@@ -1475,8 +1495,8 @@ File `%s' already there, will not retrieve.\n"), u->local);
 
       if (!local_dot_orig_file_exists)
 	/* Couldn't stat() <file>.orig, so try to stat() <file>. */
-	if (stat (u->local, &st) == 0)
-	  local_filename = u->local;
+	if (stat (*hstat.local_file, &st) == 0)
+	  local_filename = *hstat.local_file;
 
       if (local_filename != NULL)
 	/* There was a local file, so we'll check later to see if the version
@@ -1503,7 +1523,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
       /* Print fetch message, if opt.verbose.  */
       if (opt.verbose)
 	{
-	  char *hurl = str_url (u->proxy ? u->proxy : u, 1);
+	  char *hurl = url_string (u, 1);
 	  char tmp[15];
 	  strcpy (tmp, "        ");
 	  if (count > 1)
@@ -1545,22 +1565,22 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	      Some proxies are notorious for caching incomplete data, so
 	      we require a fresh get.
 	   b) caching is explicitly inhibited. */
-      if ((u->proxy && count > 1) /* a */
-	  || !opt.allow_cache	  /* b */
+      if ((proxy && count > 1)	/* a */
+	  || !opt.allow_cache	/* b */
 	  )
 	*dt |= SEND_NOCACHE;
       else
 	*dt &= ~SEND_NOCACHE;
 
-      /* Try fetching the document, or at least its head.  :-) */
-      err = gethttp (u, &hstat, dt);
+      /* Try fetching the document, or at least its head.  */
+      err = gethttp (u, &hstat, dt, proxy);
 
       /* It's unfortunate that wget determines the local filename before finding
 	 out the Content-Type of the file.  Barring a major restructuring of the
 	 code, we need to re-set locf here, since gethttp() may have xrealloc()d
-	 u->local to tack on ".html". */
+	 *hstat.local_file to tack on ".html". */
       if (!opt.output_document)
-	locf = u->local;
+	locf = *hstat.local_file;
       else
 	locf = opt.output_document;
 
@@ -1577,29 +1597,32 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	  /* Non-fatal errors continue executing the loop, which will
 	     bring them to "while" statement at the end, to judge
 	     whether the number of tries was exceeded.  */
-	  FREEHSTAT (hstat);
+	  free_hstat (&hstat);
 	  printwhat (count, opt.ntry);
 	  continue;
 	  break;
 	case HOSTERR: case CONREFUSED: case PROXERR: case AUTHFAILED: 
 	case SSLERRCTXCREATE: case CONTNOTSUPPORTED:
 	  /* Fatal errors just return from the function.  */
-	  FREEHSTAT (hstat);
+	  free_hstat (&hstat);
+	  FREE_MAYBE (dummy);
 	  return err;
 	  break;
 	case FWRITEERR: case FOPENERR:
 	  /* Another fatal error.  */
 	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET, _("Cannot write to `%s' (%s).\n"),
-		     u->local, strerror (errno));
-	  FREEHSTAT (hstat);
+		     *hstat.local_file, strerror (errno));
+	  free_hstat (&hstat);
+	  FREE_MAYBE (dummy);
 	  return err;
 	  break;
 	case CONSSLERR:
 	  /* Another fatal error.  */
 	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET, _("Unable to establish SSL connection.\n"));
-	  FREEHSTAT (hstat);
+	  free_hstat (&hstat);
+	  FREE_MAYBE (dummy);
 	  return err;
 	  break;
 	case NEWLOCATION:
@@ -1609,14 +1632,18 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	      logprintf (LOG_NOTQUIET,
 			 _("ERROR: Redirection (%d) without location.\n"),
 			 hstat.statcode);
+	      free_hstat (&hstat);
+	      FREE_MAYBE (dummy);
 	      return WRONGCODE;
 	    }
-	  FREEHSTAT (hstat);
+	  free_hstat (&hstat);
+	  FREE_MAYBE (dummy);
 	  return NEWLOCATION;
 	  break;
 	case RETRUNNEEDED:
 	  /* The file was already fully retrieved. */
-	  FREEHSTAT (hstat);
+	  free_hstat (&hstat);
+	  FREE_MAYBE (dummy);
 	  return RETROK;
 	  break;
 	case RETRFINISHED:
@@ -1631,14 +1658,15 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	  if (!opt.verbose)
 	    {
 	      /* #### Ugly ugly ugly! */
-	      char *hurl = str_url (u->proxy ? u->proxy : u, 1);
+	      char *hurl = url_string (u, 1);
 	      logprintf (LOG_NONVERBOSE, "%s:\n", hurl);
 	      xfree (hurl);
 	    }
 	  logprintf (LOG_NOTQUIET, _("%s ERROR %d: %s.\n"),
 		     tms, hstat.statcode, hstat.error);
 	  logputs (LOG_VERBOSE, "\n");
-	  FREEHSTAT (hstat);
+	  free_hstat (&hstat);
+	  FREE_MAYBE (dummy);
 	  return WRONGCODE;
 	}
 
@@ -1681,7 +1709,8 @@ Last-modified header invalid -- time-stamp ignored.\n"));
 		  logprintf (LOG_VERBOSE, _("\
 Server file no newer than local file `%s' -- not retrieving.\n\n"),
 			     local_filename);
-		  FREEHSTAT (hstat);
+		  free_hstat (&hstat);
+		  FREE_MAYBE (dummy);
 		  return RETROK;
 		}
 	      else if (tml >= tmr)
@@ -1691,7 +1720,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 		logputs (LOG_VERBOSE,
 			 _("Remote file is newer, retrieving.\n"));
 	    }
-	  FREEHSTAT (hstat);
+	  free_hstat (&hstat);
 	  continue;
 	}
       if ((tmr != (time_t) (-1))
@@ -1710,7 +1739,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 		fl = opt.output_document;
 	    }
 	  else
-	    fl = u->local;
+	    fl = *hstat.local_file;
 	  if (fl)
 	    touch (fl, tmr);
 	}
@@ -1719,12 +1748,9 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
       if (opt.spider)
 	{
 	  logprintf (LOG_NOTQUIET, "%d %s\n\n", hstat.statcode, hstat.error);
+	  FREE_MAYBE (dummy);
 	  return RETROK;
 	}
-
-      /* It is now safe to free the remainder of hstat, since the
-	 strings within it will no longer be used.  */
-      FREEHSTAT (hstat);
 
       tmrate = rate (hstat.len - hstat.restval, hstat.dltime, 0);
 
@@ -1748,6 +1774,8 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	  else
 	    downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
 
+	  free_hstat (&hstat);
+	  FREE_MAYBE (dummy);
 	  return RETROK;
 	}
       else if (hstat.res == 0) /* No read error */
@@ -1773,6 +1801,8 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	      else
 		downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
 	      
+	      free_hstat (&hstat);
+	      FREE_MAYBE (dummy);
 	      return RETROK;
 	    }
 	  else if (hstat.len < hstat.contlen) /* meaning we lost the
@@ -1782,6 +1812,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 			 _("%s (%s) - Connection closed at byte %ld. "),
 			 tms, tmrate, hstat.len);
 	      printwhat (count, opt.ntry);
+	      free_hstat (&hstat);
 	      continue;
 	    }
 	  else if (!opt.kill_longer) /* meaning we got more than expected */
@@ -1801,6 +1832,8 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	      else
 		downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
 	      
+	      free_hstat (&hstat);
+	      FREE_MAYBE (dummy);
 	      return RETROK;
 	    }
 	  else			/* the same, but not accepted */
@@ -1809,6 +1842,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 			 _("%s (%s) - Connection closed at byte %ld/%ld. "),
 			 tms, tmrate, hstat.len, hstat.contlen);
 	      printwhat (count, opt.ntry);
+	      free_hstat (&hstat);
 	      continue;
 	    }
 	}
@@ -1820,6 +1854,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 			 _("%s (%s) - Read error at byte %ld (%s)."),
 			 tms, tmrate, hstat.len, strerror (errno));
 	      printwhat (count, opt.ntry);
+	      free_hstat (&hstat);
 	      continue;
 	    }
 	  else			/* hstat.res == -1 and contlen is given */
@@ -1829,6 +1864,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 			 tms, tmrate, hstat.len, hstat.contlen,
 			 strerror (errno));
 	      printwhat (count, opt.ntry);
+	      free_hstat (&hstat);
 	      continue;
 	    }
 	}

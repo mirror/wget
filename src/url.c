@@ -51,7 +51,6 @@ static int urlpath_length PARAMS ((const char *));
 
 struct scheme_data
 {
-  enum url_scheme scheme;
   char *leading_string;
   int default_port;
 };
@@ -59,17 +58,17 @@ struct scheme_data
 /* Supported schemes: */
 static struct scheme_data supported_schemes[] =
 {
-  { SCHEME_HTTP,  "http://",  DEFAULT_HTTP_PORT },
+  { "http://",  DEFAULT_HTTP_PORT },
 #ifdef HAVE_SSL
-  { SCHEME_HTTPS, "https://", DEFAULT_HTTPS_PORT },
+  { "https://", DEFAULT_HTTPS_PORT },
 #endif
-  { SCHEME_FTP,   "ftp://",   DEFAULT_FTP_PORT }
+  { "ftp://",   DEFAULT_FTP_PORT },
+
+  /* SCHEME_INVALID */
+  { NULL,       -1 }
 };
 
-static void parse_dir PARAMS ((const char *, char **, char **));
-static uerr_t parse_uname PARAMS ((const char *, char **, char **));
 static char *construct_relative PARAMS ((const char *, const char *));
-static char process_ftp_type PARAMS ((char *));
 
 
 /* Support for encoding and decoding of URL strings.  We determine
@@ -87,17 +86,11 @@ enum {
 
 #define urlchr_test(c, mask) (urlchr_table[(unsigned char)(c)] & (mask))
 
-/* rfc1738 reserved chars.  We don't use this yet; preservation of
-   reserved chars will be implemented when I integrate the new
-   `reencode_string' function.  */
+/* rfc1738 reserved chars, preserved from encoding.  */
 
 #define RESERVED_CHAR(c) urlchr_test(c, urlchr_reserved)
 
-/* Unsafe chars:
-   - anything <= 32;
-   - stuff from rfc1738 ("<>\"#%{}|\\^~[]`");
-   - '@' and ':'; needed for encoding URL username and password.
-   - anything >= 127. */
+/* rfc1738 unsafe chars, plus some more.  */
 
 #define UNSAFE_CHAR(c) urlchr_test(c, urlchr_unsafe)
 
@@ -107,10 +100,10 @@ const static unsigned char urlchr_table[256] =
   U,  U,  U,  U,   U,  U,  U,  U,   /* BS  HT  LF  VT   FF  CR  SO  SI  */
   U,  U,  U,  U,   U,  U,  U,  U,   /* DLE DC1 DC2 DC3  DC4 NAK SYN ETB */
   U,  U,  U,  U,   U,  U,  U,  U,   /* CAN EM  SUB ESC  FS  GS  RS  US  */
-  U,  0,  U,  U,   0,  U,  R,  0,   /* SP  !   "   #    $   %   &   '   */
+  U,  0,  U, RU,   0,  U,  R,  0,   /* SP  !   "   #    $   %   &   '   */
   0,  0,  0,  R,   0,  0,  0,  R,   /* (   )   *   +    ,   -   .   /   */
   0,  0,  0,  0,   0,  0,  0,  0,   /* 0   1   2   3    4   5   6   7   */
-  0,  0,  U,  R,   U,  R,  U,  R,   /* 8   9   :   ;    <   =   >   ?   */
+  0,  0, RU,  R,   U,  R,  U,  R,   /* 8   9   :   ;    <   =   >   ?   */
  RU,  0,  0,  0,   0,  0,  0,  0,   /* @   A   B   C    D   E   F   G   */
   0,  0,  0,  0,   0,  0,  0,  0,   /* H   I   J   K    L   M   N   O   */
   0,  0,  0,  0,   0,  0,  0,  0,   /* P   Q   R   S    T   U   V   W   */
@@ -229,6 +222,195 @@ encode_string (const char *s)
     }						\
 } while (0)
 
+enum copy_method { CM_DECODE, CM_ENCODE, CM_PASSTHROUGH };
+
+/* Decide whether to encode, decode, or pass through the char at P.
+   This used to be a macro, but it got a little too convoluted.  */
+static inline enum copy_method
+decide_copy_method (const char *p)
+{
+  if (*p == '%')
+    {
+      if (ISXDIGIT (*(p + 1)) && ISXDIGIT (*(p + 2)))
+	{
+	  /* %xx sequence: decode it, unless it would decode to an
+	     unsafe or a reserved char; in that case, leave it as
+	     is. */
+	  char preempt = (XCHAR_TO_XDIGIT (*(p + 1)) << 4) +
+	    XCHAR_TO_XDIGIT (*(p + 2));
+
+	  if (UNSAFE_CHAR (preempt) || RESERVED_CHAR (preempt))
+	    return CM_PASSTHROUGH;
+	  else
+	    return CM_DECODE;
+	}
+      else
+	/* Garbled %.. sequence: encode `%'. */
+	return CM_ENCODE;
+    }
+  else if (UNSAFE_CHAR (*p) && !RESERVED_CHAR (*p))
+    return CM_ENCODE;
+  else
+    return CM_PASSTHROUGH;
+}
+
+/* Translate a %-quoting (but possibly non-conformant) input string S
+   into a %-quoting (and conformant) output string.  If no characters
+   are encoded or decoded, return the same string S; otherwise, return
+   a freshly allocated string with the new contents.
+
+   After a URL has been run through this function, the protocols that
+   use `%' as the quote character can use the resulting string as-is,
+   while those that don't call decode_string() to get to the intended
+   data.  This function is also stable: after an input string is
+   transformed the first time, all further transformations of the
+   result yield the same result string.
+
+   Let's discuss why this function is needed.
+
+   Imagine Wget is to retrieve `http://abc.xyz/abc def'.  Since a raw
+   space character would mess up the HTTP request, it needs to be
+   quoted, like this:
+
+       GET /abc%20def HTTP/1.0
+
+   So it appears that the unsafe chars need to be quoted, as with
+   encode_string.  But what if we're requested to download
+   `abc%20def'?  Remember that %-encoding is valid URL syntax, so what
+   the user meant was a literal space, and he was kind enough to quote
+   it.  In that case, Wget should obviously leave the `%20' as is, and
+   send the same request as above.  So in this case we may not call
+   encode_string.
+
+   But what if the requested URI is `abc%20 def'?  If we call
+   encode_string, we end up with `/abc%2520%20def', which is almost
+   certainly not intended.  If we don't call encode_string, we are
+   left with the embedded space and cannot send the request.  What the
+   user meant was for Wget to request `/abc%20%20def', and this is
+   where reencode_string kicks in.
+
+   Wget used to solve this by first decoding %-quotes, and then
+   encoding all the "unsafe" characters found in the resulting string.
+   This was wrong because it didn't preserve certain URL special
+   (reserved) characters.  For instance, URI containing "a%2B+b" (0x2b
+   == '+') would get translated to "a%2B%2Bb" or "a++b" depending on
+   whether we considered `+' reserved (it is).  One of these results
+   is inevitable because by the second step we would lose information
+   on whether the `+' was originally encoded or not.  Both results
+   were wrong because in CGI parameters + means space, while %2B means
+   literal plus.  reencode_string correctly translates the above to
+   "a%2B+b", i.e. returns the original string.
+
+   This function uses an algorithm proposed by Anon Sricharoenchai:
+
+   1. Encode all URL_UNSAFE and the "%" that are not followed by 2
+      hexdigits.
+
+   2. Decode all "%XX" except URL_UNSAFE, URL_RESERVED (";/?:@=&") and
+      "+".
+
+   ...except that this code conflates the two steps, and decides
+   whether to encode, decode, or pass through each character in turn.
+   The function still uses two passes, but their logic is the same --
+   the first pass exists merely for the sake of allocation.  Another
+   small difference is that we include `+' to URL_RESERVED.
+
+   Anon's test case:
+
+   "http://abc.xyz/%20%3F%%36%31%25aa% a?a=%61+a%2Ba&b=b%26c%3Dc"
+   ->
+   "http://abc.xyz/%20%3F%2561%25aa%25%20a?a=a+a%2Ba&b=b%26c%3Dc"
+
+   Simpler test cases:
+
+   "foo bar"         -> "foo%20bar"
+   "foo%20bar"       -> "foo%20bar"
+   "foo %20bar"      -> "foo%20%20bar"
+   "foo%%20bar"      -> "foo%25%20bar"       (0x25 == '%')
+   "foo%25%20bar"    -> "foo%25%20bar"
+   "foo%2%20bar"     -> "foo%252%20bar"
+   "foo+bar"         -> "foo+bar"            (plus is reserved!)
+   "foo%2b+bar"      -> "foo%2b+bar"  */
+
+char *
+reencode_string (const char *s)
+{
+  const char *p1;
+  char *newstr, *p2;
+  int oldlen, newlen;
+
+  int encode_count = 0;
+  int decode_count = 0;
+
+  /* First, pass through the string to see if there's anything to do,
+     and to calculate the new length.  */
+  for (p1 = s; *p1; p1++)
+    {
+      switch (decide_copy_method (p1))
+	{
+	case CM_ENCODE:
+	  ++encode_count;
+	  break;
+	case CM_DECODE:
+	  ++decode_count;
+	  break;
+	case CM_PASSTHROUGH:
+	  break;
+	}
+    }
+
+  if (!encode_count && !decode_count)
+    /* The string is good as it is. */
+    return (char *)s;		/* C const model sucks. */
+
+  oldlen = p1 - s;
+  /* Each encoding adds two characters (hex digits), while each
+     decoding removes two characters.  */
+  newlen = oldlen + 2 * (encode_count - decode_count);
+  newstr = xmalloc (newlen + 1);
+
+  p1 = s;
+  p2 = newstr;
+
+  while (*p1)
+    {
+      switch (decide_copy_method (p1))
+	{
+	case CM_ENCODE:
+	  {
+	    char c = *p1++;
+	    *p2++ = '%';
+	    *p2++ = XDIGIT_TO_XCHAR (c >> 4);
+	    *p2++ = XDIGIT_TO_XCHAR (c & 0xf);
+	  }
+	  break;
+	case CM_DECODE:
+	  *p2++ = ((XCHAR_TO_XDIGIT (*(p1 + 1)) << 4)
+		   + (XCHAR_TO_XDIGIT (*(p1 + 2))));
+	  p1 += 3;		/* skip %xx */
+	  break;
+	case CM_PASSTHROUGH:
+	  *p2++ = *p1++;
+	}
+    }
+  *p2 = '\0';
+  assert (p2 - newstr == newlen);
+  return newstr;
+}
+
+/* Run PTR_VAR through reencode_string.  If a new string is consed,
+   free PTR_VAR and make it point to the new storage.  Obviously,
+   PTR_VAR needs to be an lvalue.  */
+
+#define REENCODE(ptr_var) do {			\
+  char *rf_new = reencode_string (ptr_var);	\
+  if (rf_new != ptr_var)			\
+    {						\
+      xfree (ptr_var);				\
+      ptr_var = rf_new;				\
+    }						\
+} while (0)
+
 /* Returns the scheme type if the scheme is supported, or
    SCHEME_INVALID if not.  */
 enum url_scheme
@@ -236,10 +418,10 @@ url_scheme (const char *url)
 {
   int i;
 
-  for (i = 0; i < ARRAY_SIZE (supported_schemes); i++)
+  for (i = 0; supported_schemes[i].leading_string; i++)
     if (!strncasecmp (url, supported_schemes[i].leading_string,
 		      strlen (supported_schemes[i].leading_string)))
-      return supported_schemes[i].scheme;
+      return (enum url_scheme)i;
   return SCHEME_INVALID;
 }
 
@@ -277,6 +459,12 @@ url_has_scheme (const char *url)
   return *p == ':';
 }
 
+int
+scheme_default_port (enum url_scheme scheme)
+{
+  return supported_schemes[scheme].default_port;
+}
+
 /* Skip the username and password, if present here.  The function
    should be called *not* with the complete URL, but with the part
    right after the scheme.
@@ -286,15 +474,45 @@ int
 url_skip_uname (const char *url)
 {
   const char *p;
-  const char *q = NULL;
-  for (p = url ; *p && *p != '/'; p++)
-    if (*p == '@') q = p;
-  /* If a `@' was found before the first occurrence of `/', skip
-     it.  */
-  if (q != NULL)
-    return q - url + 1;
-  else
+
+  /* Look for '@' that comes before '/' or '?'. */
+  p = (const char *)strpbrk (url, "/?@");
+  if (!p || *p != '@')
     return 0;
+
+  return p - url + 1;
+}
+
+static int
+parse_uname (const char *str, int len, char **user, char **passwd)
+{
+  char *colon;
+
+  if (len == 0)
+    /* Empty user name not allowed. */
+    return 0;
+
+  colon = memchr (str, ':', len);
+  if (colon == str)
+    /* Empty user name again. */
+    return 0;
+
+  if (colon)
+    {
+      int pwlen = len - (colon + 1 - str);
+      *passwd = xmalloc (pwlen + 1);
+      memcpy (*passwd, colon + 1, pwlen);
+      (*passwd)[pwlen] = '\0';
+      len -= pwlen + 1;
+    }
+  else
+    *passwd = NULL;
+
+  *user = xmalloc (len + 1);
+  memcpy (*user, str, len);
+  (*user)[len] = '\0';
+
+  return 1;
 }
 
 /* Used by main.c: detect URLs written using the "shorthand" URL forms
@@ -310,7 +528,7 @@ url_skip_uname (const char *url)
 
    If the URL needs not or cannot be rewritten, return NULL.  */
 char *
-rewrite_url_maybe (const char *url)
+rewrite_shorthand_url (const char *url)
 {
   const char *p;
 
@@ -357,477 +575,363 @@ rewrite_url_maybe (const char *url)
     }
 }
 
-/* Allocate a new urlinfo structure, fill it with default values and
-   return a pointer to it.  */
-struct urlinfo *
-newurl (void)
-{
-  struct urlinfo *u;
+static void parse_path PARAMS ((const char *, char **, char **));
 
-  u = (struct urlinfo *)xmalloc (sizeof (struct urlinfo));
+static char *
+strpbrk_or_eos (const char *s, const char *accept)
+{
+  char *p = strpbrk (s, accept);
+  if (!p)
+    p = (char *)s + strlen (s);
+  return p;
+}
+
+static char *parse_errors[] = {
+#define PE_NO_ERROR            0
+  "No error",
+#define PE_UNRECOGNIZED_SCHEME 1
+  "Unrecognized scheme",
+#define PE_EMPTY_HOST          2
+  "Empty host",
+#define PE_BAD_PORT_NUMBER     3
+  "Bad port number",
+#define PE_INVALID_USER_NAME   4
+  "Invalid user name"
+};
+
+#define SETERR(p, v) do {			\
+  if (p)					\
+    *(p) = (v);					\
+} while (0)
+
+/* Parse a URL.
+
+   Return a new struct url if successful, NULL on error.  In case of
+   error, and if ERROR is not NULL, also set *ERROR to the appropriate
+   error code. */
+struct url *
+url_parse (const char *url, int *error)
+{
+  struct url *u;
+  const char *p;
+
+  enum url_scheme scheme;
+
+  const char *uname_b,     *uname_e;
+  const char *host_b,      *host_e;
+  const char *path_b,      *path_e;
+  const char *params_b,    *params_e;
+  const char *query_b,     *query_e;
+  const char *fragment_b,  *fragment_e;
+
+  int port;
+  char *user = NULL, *passwd = NULL;
+
+  const char *url_orig = url;
+
+  p = url = reencode_string (url);
+
+  scheme = url_scheme (url);
+  if (scheme == SCHEME_INVALID)
+    {
+      SETERR (error, PE_UNRECOGNIZED_SCHEME);
+      return NULL;
+    }
+
+  p += strlen (supported_schemes[scheme].leading_string);
+  uname_b = p;
+  p += url_skip_uname (p);
+  uname_e = p;
+
+  /* scheme://user:pass@host[:port]... */
+  /*                    ^              */
+
+  /* We attempt to break down the URL into the components path,
+     params, query, and fragment.  They are ordered like this:
+
+       scheme://host[:port][/path][;params][?query][#fragment]  */
+
+  params_b   = params_e   = NULL;
+  query_b    = query_e    = NULL;
+  fragment_b = fragment_e = NULL;
+
+  host_b = p;
+  p = strpbrk_or_eos (p, ":/;?#");
+  host_e = p;
+
+  if (host_b == host_e)
+    {
+      SETERR (error, PE_EMPTY_HOST);
+      return NULL;
+    }
+
+  port = scheme_default_port (scheme);
+  if (*p == ':')
+    {
+      const char *port_b, *port_e, *pp;
+
+      /* scheme://host:port/tralala */
+      /*              ^             */
+      ++p;
+      port_b = p;
+      p = strpbrk_or_eos (p, "/;?#");
+      port_e = p;
+
+      if (port_b == port_e)
+	{
+	  /* http://host:/whatever */
+	  /*             ^         */
+	  SETERR (error, PE_BAD_PORT_NUMBER);
+	  return NULL;
+	}
+
+      for (port = 0, pp = port_b; pp < port_e; pp++)
+	{
+	  if (!ISDIGIT (*pp))
+	    {
+	      /* http://host:12randomgarbage/blah */
+	      /*               ^                  */
+	      SETERR (error, PE_BAD_PORT_NUMBER);
+	      return NULL;
+	    }
+	  port = 10 * port + (*pp - '0');
+	}
+    }
+
+  if (*p == '/')
+    {
+      ++p;
+      path_b = p;
+      p = strpbrk_or_eos (p, ";?#");
+      path_e = p;
+    }
+  else
+    {
+      /* Path is not allowed not to exist. */
+      path_b = path_e = p;
+    }
+
+  if (*p == ';')
+    {
+      ++p;
+      params_b = p;
+      p = strpbrk_or_eos (p, "?#");
+      params_e = p;
+    }
+  if (*p == '?')
+    {
+      ++p;
+      query_b = p;
+      p = strpbrk_or_eos (p, "#");
+      query_e = p;
+    }
+  if (*p == '#')
+    {
+      ++p;
+      fragment_b = p;
+      p += strlen (p);
+      fragment_e = p;
+    }
+  assert (*p == 0);
+
+  if (uname_b != uname_e)
+    {
+      /* http://user:pass@host */
+      /*        ^         ^    */
+      /*     uname_b   uname_e */
+      if (!parse_uname (uname_b, uname_e - uname_b - 1, &user, &passwd))
+	{
+	  SETERR (error, PE_INVALID_USER_NAME);
+	  return NULL;
+	}
+    }
+
+  u = (struct url *)xmalloc (sizeof (struct url));
   memset (u, 0, sizeof (*u));
-  u->scheme = SCHEME_INVALID;
+
+  if (url == url_orig)
+    u->url    = xstrdup (url);
+  else
+    u->url    = (char *)url;
+
+  u->scheme = scheme;
+  u->host   = strdupdelim (host_b, host_e);
+  u->port   = port;
+  u->user   = user;
+  u->passwd = passwd;
+
+  u->path = strdupdelim (path_b, path_e);
+  path_simplify (u->path);
+
+  if (params_b)
+    u->params = strdupdelim (params_b, params_e);
+  if (query_b)
+    u->query = strdupdelim (query_b, query_e);
+  if (fragment_b)
+    u->fragment = strdupdelim (fragment_b, fragment_e);
+
+  parse_path (u->path, &u->dir, &u->file);
+
   return u;
 }
 
-/* Perform a "deep" free of the urlinfo structure.  The structure
-   should have been created with newurl, but need not have been used.
-   If free_pointer is non-0, free the pointer itself.  */
-void
-freeurl (struct urlinfo *u, int complete)
+const char *
+url_error (int error_code)
 {
-  assert (u != NULL);
-  FREE_MAYBE (u->url);
-  FREE_MAYBE (u->host);
-  FREE_MAYBE (u->path);
-  FREE_MAYBE (u->file);
-  FREE_MAYBE (u->dir);
-  FREE_MAYBE (u->user);
-  FREE_MAYBE (u->passwd);
-  FREE_MAYBE (u->local);
-  FREE_MAYBE (u->referer);
-  if (u->proxy)
-    freeurl (u->proxy, 1);
-  if (complete)
-    xfree (u);
-  return;
+  assert (error_code >= 0 && error_code < ARRAY_SIZE (parse_errors));
+  return parse_errors[error_code];
 }
-
-enum url_parse_error {
-  PE_UNRECOGNIZED_SCHEME, PE_BAD_PORT
-};
 
-/* Extract the given URL of the form
-   (http:|ftp:)// (user (:password)?@)?hostname (:port)? (/path)?
-   1. hostname (terminated with `/' or `:')
-   2. port number (terminated with `/'), or chosen for the scheme
-   3. dirname (everything after hostname)
-   Most errors are handled.  No allocation is done, you must supply
-   pointers to allocated memory.
-   ...and a host of other stuff :-)
-
-   - Recognizes hostname:dir/file for FTP and
-     hostname (:portnum)?/dir/file for HTTP.
-   - Parses the path to yield directory and file
-   - Parses the URL to yield the username and passwd (if present)
-   - Decodes the strings, in case they contain "forbidden" characters
-   - Writes the result to struct urlinfo
-
-   If the argument STRICT is set, it recognizes only the canonical
-   form.  */
-uerr_t
-parseurl (const char *url, struct urlinfo *u, int strict)
-{
-  int i, l, abs_ftp;
-  int recognizable;            /* Recognizable URL is the one where
-				  the scheme was explicitly named,
-				  i.e. it wasn't deduced from the URL
-				  format.  */
-  uerr_t type = URLUNKNOWN;
-
-  DEBUGP (("parseurl (\"%s\") -> ", url));
-  recognizable = url_has_scheme (url);
-  if (strict && !recognizable)
-    return URLUNKNOWN;
-  for (i = 0, l = 0; i < ARRAY_SIZE (supported_schemes); i++)
-    {
-      l = strlen (supported_schemes[i].leading_string);
-      if (!strncasecmp (supported_schemes[i].leading_string, url, l))
-	break;
-    }
-  /* If scheme is recognizable, but unsupported, bail out, else
-     suppose unknown.  */
-  if (recognizable && i == ARRAY_SIZE (supported_schemes))
-    return URLUNKNOWN;
-  else if (i == ARRAY_SIZE (supported_schemes))
-    type = URLUNKNOWN;
-  else
-    {
-      u->scheme = supported_schemes[i].scheme;
-      if (u->scheme == SCHEME_HTTP)
-	type = URLHTTP;
-#ifdef HAVE_SSL
-      if (u->scheme == SCHEME_HTTPS)
-	type = URLHTTPS;
-#endif
-      if (u->scheme == SCHEME_FTP)
-	type = URLFTP;
-    }
-
-  if (type == URLUNKNOWN)
-    l = 0;
-  /* Allow a username and password to be specified (i.e. just skip
-     them for now).  */
-  if (recognizable)
-    l += url_skip_uname (url + l);
-  for (i = l; url[i] && url[i] != ':' && url[i] != '/'; i++);
-  if (i == l)
-    return URLBADHOST;
-  /* Get the hostname.  */
-  u->host = strdupdelim (url + l, url + i);
-  DEBUGP (("host %s -> ", u->host));
-
-  /* Assume no port has been given.  */
-  u->port = 0;
-  if (url[i] == ':')
-    {
-      /* We have a colon delimiting the hostname.  It could mean that
-	 a port number is following it, or a directory.  */
-      if (ISDIGIT (url[++i]))    /* A port number */
-	{
-	  if (type == URLUNKNOWN)
-	    {
-	      type = URLHTTP;
-	      u->scheme = SCHEME_HTTP;
-	    }
-	  for (; url[i] && url[i] != '/'; i++)
-	    if (ISDIGIT (url[i]))
-	      u->port = 10 * u->port + (url[i] - '0');
-	    else
-	      return URLBADPORT;
-	  if (!u->port)
-	    return URLBADPORT;
-	  DEBUGP (("port %hu -> ", u->port));
-	}
-      else if (type == URLUNKNOWN) /* or a directory */
-	{
-	  type = URLFTP;
-	  u->scheme = SCHEME_FTP;
-	}
-      else                      /* or just a misformed port number */
-	return URLBADPORT;
-    }
-  else if (type == URLUNKNOWN)
-    {
-      type = URLHTTP;
-      u->scheme = SCHEME_HTTP;
-    }
-  if (!u->port)
-    {
-      int ind;
-      for (ind = 0; ind < ARRAY_SIZE (supported_schemes); ind++)
-	if (supported_schemes[ind].scheme == u->scheme)
-	  break;
-      if (ind == ARRAY_SIZE (supported_schemes))
-	return URLUNKNOWN;
-      u->port = supported_schemes[ind].default_port;
-    }
-  /* Some delimiter troubles...  */
-  if (url[i] == '/' && url[i - 1] != ':')
-    ++i;
-  if (u->scheme == SCHEME_HTTP)
-    while (url[i] && url[i] == '/')
-      ++i;
-  u->path = (char *)xmalloc (strlen (url + i) + 8);
-  strcpy (u->path, url + i);
-  if (u->scheme == SCHEME_FTP)
-    {
-      u->ftp_type = process_ftp_type (u->path);
-      /* #### We don't handle type `d' correctly yet.  */
-      if (!u->ftp_type || TOUPPER (u->ftp_type) == 'D')
-	u->ftp_type = 'I';
-      DEBUGP (("ftp_type %c -> ", u->ftp_type));
-    }
-  DEBUGP (("opath %s -> ", u->path));
-  /* Parse the username and password (if existing).  */
-  parse_uname (url, &u->user, &u->passwd);
-  /* Decode the strings, as per RFC 1738.  */
-  decode_string (u->host);
-  decode_string (u->path);
-  if (u->user)
-    decode_string (u->user);
-  if (u->passwd)
-    decode_string (u->passwd);
-  /* Parse the directory.  */
-  parse_dir (u->path, &u->dir, &u->file);
-  DEBUGP (("dir %s -> file %s -> ", u->dir, u->file));
-  /* Simplify the directory.  */
-  path_simplify (u->dir);
-  /* Remove the leading `/' in HTTP.  */
-  if (u->scheme == SCHEME_HTTP && *u->dir == '/')
-    strcpy (u->dir, u->dir + 1);
-  DEBUGP (("ndir %s\n", u->dir));
-  /* Strip trailing `/'.  */
-  l = strlen (u->dir);
-  if (l > 1 && u->dir[l - 1] == '/')
-    u->dir[l - 1] = '\0';
-  /* Re-create the path: */
-  abs_ftp = (u->scheme == SCHEME_FTP && *u->dir == '/');
-  /*  sprintf (u->path, "%s%s%s%s", abs_ftp ? "%2F": "/",
-      abs_ftp ? (u->dir + 1) : u->dir, *u->dir ? "/" : "", u->file); */
-  strcpy (u->path, abs_ftp ? "%2F" : "/");
-  strcat (u->path, abs_ftp ? (u->dir + 1) : u->dir);
-  strcat (u->path, *u->dir ? "/" : "");
-  strcat (u->path, u->file);
-  ENCODE (u->path);
-  DEBUGP (("newpath: %s\n", u->path));
-  /* Create the clean URL.  */
-  u->url = str_url (u, 0);
-  return URLOK;
-}
-
-/* Special versions of DOTP and DDOTP for parse_dir().  They work like
-   DOTP and DDOTP, but they also recognize `?' as end-of-string
-   delimiter.  This is needed for correct handling of query
-   strings.  */
-
-#define PD_DOTP(x)  ((*(x) == '.') && (!*((x) + 1) || *((x) + 1) == '?'))
-#define PD_DDOTP(x) ((*(x) == '.') && (*(x) == '.')		\
-		     && (!*((x) + 2) || *((x) + 2) == '?'))
-
-/* Build the directory and filename components of the path.  Both
-   components are *separately* malloc-ed strings!  It does not change
-   the contents of path.
-
-   If the path ends with "." or "..", they are (correctly) counted as
-   directories.  */
 static void
-parse_dir (const char *path, char **dir, char **file)
+parse_path (const char *quoted_path, char **dir, char **file)
 {
-  int i, l;
+  char *path, *last_slash;
 
-  l = urlpath_length (path);
-  for (i = l; i && path[i] != '/'; i--);
+  STRDUP_ALLOCA (path, quoted_path);
+  decode_string (path);
 
-  if (!i && *path != '/')   /* Just filename */
+  last_slash = strrchr (path, '/');
+  if (!last_slash)
     {
-      if (PD_DOTP (path) || PD_DDOTP (path))
-	{
-	  *dir = strdupdelim (path, path + l);
-	  *file = xstrdup (path + l); /* normally empty, but could
-                                         contain ?... */
-	}
-      else
-	{
-	  *dir = xstrdup ("");     /* This is required because of FTP */
-	  *file = xstrdup (path);
-	}
-    }
-  else if (!i)                 /* /filename */
-    {
-      if (PD_DOTP (path + 1) || PD_DDOTP (path + 1))
-	{
-	  *dir = strdupdelim (path, path + l);
-	  *file = xstrdup (path + l); /* normally empty, but could
-                                         contain ?... */
-	}
-      else
-	{
-	  *dir = xstrdup ("/");
-	  *file = xstrdup (path + 1);
-	}
-    }
-  else /* Nonempty directory with or without a filename */
-    {
-      if (PD_DOTP (path + i + 1) || PD_DDOTP (path + i + 1))
-	{
-	  *dir = strdupdelim (path, path + l);
-	  *file = xstrdup (path + l); /* normally empty, but could
-                                         contain ?... */
-	}
-      else
-	{
-	  *dir = strdupdelim (path, path + i);
-	  *file = xstrdup (path + i + 1);
-	}
-    }
-}
-
-/* Find the optional username and password within the URL, as per
-   RFC1738.  The returned user and passwd char pointers are
-   malloc-ed.  */
-static uerr_t
-parse_uname (const char *url, char **user, char **passwd)
-{
-  int l;
-  const char *p, *q, *col;
-  char **where;
-
-  *user = NULL;
-  *passwd = NULL;
-
-  /* Look for the end of the scheme identifier.  */
-  l = url_skip_scheme (url);
-  if (!l)
-    return URLUNKNOWN;
-  url += l;
-  /* Is there an `@' character?  */
-  for (p = url; *p && *p != '/'; p++)
-    if (*p == '@')
-      break;
-  /* If not, return.  */
-  if (*p != '@')
-    return URLOK;
-  /* Else find the username and password.  */
-  for (p = q = col = url; *p && *p != '/'; p++)
-    {
-      if (*p == ':' && !*user)
-	{
-	  *user = (char *)xmalloc (p - url + 1);
-	  memcpy (*user, url, p - url);
-	  (*user)[p - url] = '\0';
-	  col = p + 1;
-	}
-      if (*p == '@') q = p;
-    }
-  /* Decide whether you have only the username or both.  */
-  where = *user ? passwd : user;
-  *where = (char *)xmalloc (q - col + 1);
-  memcpy (*where, col, q - col);
-  (*where)[q - col] = '\0';
-  return URLOK;
-}
-
-/* If PATH ends with `;type=X', return the character X.  */
-static char
-process_ftp_type (char *path)
-{
-  int len = strlen (path);
-
-  if (len >= 7
-      && !memcmp (path + len - 7, ";type=", 6))
-    {
-      path[len - 7] = '\0';
-      return path[len - 1];
+      *dir = xstrdup ("");
+      *file = xstrdup (path);
     }
   else
-    return '\0';
+    {
+      *dir = strdupdelim (path, last_slash);
+      *file = xstrdup (last_slash + 1);
+    }
 }
-
-/* Recreate the URL string from the data in urlinfo.  This can be used
-   to create a "canonical" representation of the URL.  If `hide' is
-   non-zero (as it is when we're calling this on a URL we plan to
-   print, but not when calling it to canonicalize a URL for use within
-   the program), password will be hidden.  The forbidden characters in
-   the URL will be cleansed.  */
+
+/* Note: URL's "full path" is the path with the query string and
+   params appended.  The "fragment" (#foo) is intentionally ignored,
+   but that might be changed.  For example, if the original URL was
+   "http://host:port/foo/bar/baz;bullshit?querystring#uselessfragment",
+   the full path will be "/foo/bar/baz;bullshit?querystring".  */
+
+/* Return the length of the full path, without the terminating
+   zero.  */
+
+static int
+full_path_length (const struct url *url)
+{
+  int len = 0;
+
+#define FROB(el) if (url->el) len += 1 + strlen (url->el)
+
+  FROB (path);
+  FROB (params);
+  FROB (query);
+
+#undef FROB
+
+  return len;
+}
+
+/* Write out the full path. */
+
+static void
+full_path_write (const struct url *url, char *where)
+{
+#define FROB(el, chr) do {			\
+  char *f_el = url->el;				\
+  if (f_el) {					\
+    int l = strlen (f_el);			\
+    *where++ = chr;				\
+    memcpy (where, f_el, l);			\
+    where += l;					\
+  }						\
+} while (0)
+
+  FROB (path, '/');
+  FROB (params, ';');
+  FROB (query, '?');
+
+#undef FROB
+}
+
+/* Public function for getting the "full path". */
 char *
-str_url (const struct urlinfo *u, int hide)
+url_full_path (const struct url *url)
 {
-  char *res, *host, *user, *passwd, *scheme_name, *dir, *file;
-  int i, l, ln, lu, lh, lp, lf, ld;
-  unsigned short default_port;
+  int length = full_path_length (url);
+  char *full_path = (char *)xmalloc(length + 1);
 
-  /* Look for the scheme.  */
-  for (i = 0; i < ARRAY_SIZE (supported_schemes); i++)
-    if (supported_schemes[i].scheme == u->scheme)
-      break;
-  if (i == ARRAY_SIZE (supported_schemes))
-    return NULL;
-  scheme_name = supported_schemes[i].leading_string;
-  default_port = supported_schemes[i].default_port;
-  host = encode_string (u->host);
-  dir = encode_string (u->dir);
-  file = encode_string (u->file);
-  user = passwd = NULL;
-  if (u->user)
-    user = encode_string (u->user);
-  if (u->passwd)
-    {
-      if (hide)
-	/* Don't output the password, or someone might see it over the user's
-	   shoulder (or in saved wget output).  Don't give away the number of
-	   characters in the password, either, as we did in past versions of
-	   this code, when we replaced the password characters with 'x's. */
-	passwd = xstrdup("<password>");
-      else
-	passwd = encode_string (u->passwd);
-    }
-  if (u->scheme == SCHEME_FTP && *dir == '/')
-    {
-      char *tmp = (char *)xmalloc (strlen (dir) + 3);
-      /*sprintf (tmp, "%%2F%s", dir + 1);*/
-      tmp[0] = '%';
-      tmp[1] = '2';
-      tmp[2] = 'F';
-      strcpy (tmp + 3, dir + 1);
-      xfree (dir);
-      dir = tmp;
-    }
+  full_path_write (url, full_path);
+  full_path[length] = '\0';
 
-  ln = strlen (scheme_name);
-  lu = user ? strlen (user) : 0;
-  lp = passwd ? strlen (passwd) : 0;
-  lh = strlen (host);
-  ld = strlen (dir);
-  lf = strlen (file);
-  res = (char *)xmalloc (ln + lu + lp + lh + ld + lf + 20); /* safe sex */
-  /* sprintf (res, "%s%s%s%s%s%s:%d/%s%s%s", scheme_name,
-     (user ? user : ""), (passwd ? ":" : ""),
-     (passwd ? passwd : ""), (user ? "@" : ""),
-     host, u->port, dir, *dir ? "/" : "", file); */
-  l = 0;
-  memcpy (res, scheme_name, ln);
-  l += ln;
-  if (user)
-    {
-      memcpy (res + l, user, lu);
-      l += lu;
-      if (passwd)
-	{
-	  res[l++] = ':';
-	  memcpy (res + l, passwd, lp);
-	  l += lp;
-	}
-      res[l++] = '@';
-    }
-  memcpy (res + l, host, lh);
-  l += lh;
-  if (u->port != default_port)
-    {
-      res[l++] = ':';
-      long_to_string (res + l, (long)u->port);
-      l += numdigit (u->port);
-    }
-  res[l++] = '/';
-  memcpy (res + l, dir, ld);
-  l += ld;
-  if (*dir)
-    res[l++] = '/';
-  strcpy (res + l, file);
-  xfree (host);
-  xfree (dir);
-  xfree (file);
-  FREE_MAYBE (user);
-  FREE_MAYBE (passwd);
-  return res;
+  return full_path;
 }
 
-/* Check whether two URL-s are equivalent, i.e. pointing to the same
-   location.  Uses parseurl to parse them, and compares the canonical
-   forms.
-
-   Returns 1 if the URL1 is equivalent to URL2, 0 otherwise.  Also
-   return 0 on error.  */
-/* Do not compile unused code. */
-#if 0
-int
-url_equal (const char *url1, const char *url2)
+/* Sync u->path and u->url with u->dir and u->file. */
+static void
+sync_path (struct url *url)
 {
-  struct urlinfo *u1, *u2;
-  uerr_t err;
-  int res;
+  char *newpath;
 
-  u1 = newurl ();
-  err = parseurl (url1, u1, 0);
-  if (err != URLOK)
+  xfree (url->path);
+
+  if (!*url->dir)
     {
-      freeurl (u1, 1);
-      return 0;
+      newpath = xstrdup (url->file);
+      REENCODE (newpath);
     }
-  u2 = newurl ();
-  err = parseurl (url2, u2, 0);
-  if (err != URLOK)
+  else
     {
-      freeurl (u1, 1);
-      freeurl (u2, 1);
-      return 0;
+      int dirlen = strlen (url->dir);
+      int filelen = strlen (url->file);
+
+      newpath = xmalloc (dirlen + 1 + filelen + 1);
+      memcpy (newpath, url->dir, dirlen);
+      newpath[dirlen] = '/';
+      memcpy (newpath + dirlen + 1, url->file, filelen);
+      newpath[dirlen + 1 + filelen] = '\0';
+      REENCODE (newpath);
     }
-  res = !strcmp (u1->url, u2->url);
-  freeurl (u1, 1);
-  freeurl (u2, 1);
-  return res;
+
+  url->path = newpath;
+
+  /* Synchronize u->url. */
+  xfree (url->url);
+  url->url = url_string (url, 0);
 }
-#endif /* 0 */
+
+/* Mutators.  Code in ftp.c insists on changing u->dir and u->file.
+   This way we can sync u->path and u->url when they get changed.  */
+
+void
+url_set_dir (struct url *url, const char *newdir)
+{
+  xfree (url->dir);
+  url->dir = xstrdup (newdir);
+  sync_path (url);
+}
+
+void
+url_set_file (struct url *url, const char *newfile)
+{
+  xfree (url->file);
+  url->file = xstrdup (newfile);
+  sync_path (url);
+}
+
+void
+url_free (struct url *url)
+{
+  xfree (url->host);
+  xfree (url->path);
+  xfree (url->url);
+
+  FREE_MAYBE (url->params);
+  FREE_MAYBE (url->query);
+  FREE_MAYBE (url->fragment);
+  FREE_MAYBE (url->user);
+  FREE_MAYBE (url->passwd);
+  FREE_MAYBE (url->dir);
+  FREE_MAYBE (url->file);
+
+  xfree (url);
+}
 
 urlpos *
 get_urls_file (const char *file)
@@ -982,13 +1086,10 @@ count_slashes (const char *s)
 /* Return the path name of the URL-equivalent file name, with a
    remote-like structure of directories.  */
 static char *
-mkstruct (const struct urlinfo *u)
+mkstruct (const struct url *u)
 {
   char *host, *dir, *file, *res, *dirpref;
   int l;
-
-  assert (u->dir != NULL);
-  assert (u->host != NULL);
 
   if (opt.cut_dirs)
     {
@@ -1058,42 +1159,67 @@ mkstruct (const struct urlinfo *u)
   return res;
 }
 
-/* Return a malloced copy of S, but protect any '/' characters. */
+/* Compose a file name out of BASE, an unescaped file name, and QUERY,
+   an escaped query string.  The trick is to make sure that unsafe
+   characters in BASE are escaped, and that slashes in QUERY are also
+   escaped.  */
 
 static char *
-file_name_protect_query_string (const char *s)
+compose_file_name (char *base, char *query)
 {
-  const char *from;
-  char *to, *dest;
-  int destlen = 0;
-  for (from = s; *from; from++)
+  char result[256];
+  char *from;
+  char *to = result;
+
+  /* Copy BASE to RESULT and encode all unsafe characters.  */
+  from = base;
+  while (*from && to - result < sizeof (result))
     {
-      ++destlen;
-      if (*from == '/')
-	destlen += 2;		/* each / gets replaced with %2F, so
-				   it adds two more chars.  */
-    }
-  dest = (char *)xmalloc (destlen + 1);
-  for (from = s, to = dest; *from; from++)
-    {
-      if (*from != '/')
-	*to++ = *from;
-      else
+      if (UNSAFE_CHAR (*from))
 	{
+	  const unsigned char c = *from++;
 	  *to++ = '%';
-	  *to++ = '2';
-	  *to++ = 'F';
+	  *to++ = XDIGIT_TO_XCHAR (c >> 4);
+	  *to++ = XDIGIT_TO_XCHAR (c & 0xf);
+	}
+      else
+	*to++ = *from++;
+    }
+
+  if (query && to - result < sizeof (result))
+    {
+      *to++ = '?';
+
+      /* Copy QUERY to RESULT and encode all '/' characters. */
+      from = query;
+      while (*from && to - result < sizeof (result))
+	{
+	  if (*from == '/')
+	    {
+	      *to++ = '%';
+	      *to++ = '2';
+	      *to++ = 'F';
+	      ++from;
+	    }
+	  else
+	    *to++ = *from++;
 	}
     }
-  assert (to - dest == destlen);
-  *to = '\0';
-  return dest;
+
+  if (to - result < sizeof (result))
+    *to = '\0';
+  else
+    /* Truncate input which is too long, presumably due to a huge
+       query string.  */
+    result[sizeof (result) - 1] = '\0';
+
+  return xstrdup (result);
 }
 
 /* Create a unique filename, corresponding to a given URL.  Calls
    mkstruct if necessary.  Does *not* actually create any directories.  */
 char *
-url_filename (const struct urlinfo *u)
+url_filename (const struct url *u)
 {
   char *file, *name;
   int have_prefix = 0;		/* whether we must prepend opt.dir_prefix */
@@ -1105,23 +1231,9 @@ url_filename (const struct urlinfo *u)
     }
   else
     {
-      if (!*u->file)
-	file = xstrdup ("index.html");
-      else
-	{
-	  /* If the URL came with a query string, u->file will contain
-	     a question mark followed by query string contents.  These
-	     contents can contain '/' which would make us create
-	     unwanted directories.  These slashes must be protected
-	     explicitly.  */
-	  if (!strchr (u->file, '/'))
-	    file = xstrdup (u->file);
-	  else
-	    {
-	      /*assert (strchr (u->file, '?') != NULL);*/
-	      file = file_name_protect_query_string (u->file);
-	    }
-	}
+      char *base = *u->file ? u->file : "index.html";
+      char *query = u->query && *u->query ? u->query : NULL;
+      file = compose_file_name (base, query);
     }
 
   if (!have_prefix)
@@ -1340,19 +1452,99 @@ uri_merge (const char *base, const char *link)
   return uri_merge_1 (base, link, strlen (link), !url_has_scheme (link));
 }
 
-/* Optimize URL by host, destructively replacing u->host with realhost
-   (u->host).  Do this regardless of opt.simple_check.  */
-void
-opt_url (struct urlinfo *u)
+#define APPEND(p, s) do {			\
+  int len = strlen (s);				\
+  memcpy (p, s, len);				\
+  p += len;					\
+} while (0)
+
+/* Use this instead of password when the actual password is supposed
+   to be hidden.  We intentionally use a generic string without giving
+   away the number of characters in the password, like previous
+   versions did.  */
+#define HIDDEN_PASSWORD "*password*"
+
+/* Recreate the URL string from the data in URL.
+
+   If HIDE is non-zero (as it is when we're calling this on a URL we
+   plan to print, but not when calling it to canonicalize a URL for
+   use within the program), password will be hidden.  Unsafe
+   characters in the URL will be quoted.  */
+
+char *
+url_string (const struct url *url, int hide_password)
 {
-  /* Find the "true" host.  */
-  char *host = realhost (u->host);
-  xfree (u->host);
-  u->host = host;
-  assert (u->dir != NULL);      /* the URL must have been parsed */
-  /* Refresh the printed representation.  */
-  xfree (u->url);
-  u->url = str_url (u, 0);
+  int size;
+  char *result, *p;
+  char *quoted_user = NULL, *quoted_passwd = NULL;
+
+  int scheme_port  = supported_schemes[url->scheme].default_port;
+  char *scheme_str = supported_schemes[url->scheme].leading_string;
+  int fplen = full_path_length (url);
+
+  assert (scheme_str != NULL);
+
+  /* Make sure the user name and password are quoted. */
+  if (url->user)
+    {
+      quoted_user = encode_string_maybe (url->user);
+      if (url->passwd)
+	{
+	  if (hide_password)
+	    quoted_passwd = HIDDEN_PASSWORD;
+	  else
+	    quoted_passwd = encode_string_maybe (url->passwd);
+	}
+    }
+
+  size = (strlen (scheme_str)
+	  + strlen (url->host)
+	  + fplen
+	  + 1);
+  if (url->port != scheme_port)
+    size += 1 + numdigit (url->port);
+  if (quoted_user)
+    {
+      size += 1 + strlen (quoted_user);
+      if (quoted_passwd)
+	size += 1 + strlen (quoted_passwd);
+    }
+
+  p = result = xmalloc (size);
+
+  APPEND (p, scheme_str);
+  if (quoted_user)
+    {
+      APPEND (p, quoted_user);
+      if (quoted_passwd)
+	{
+	  *p++ = ':';
+	  APPEND (p, quoted_passwd);
+	}
+      *p++ = '@';
+    }
+
+  APPEND (p, url->host);
+  if (url->port != scheme_port)
+    {
+      *p++ = ':';
+      long_to_string (p, url->port);
+      p += strlen (p);
+    }
+
+  full_path_write (url, p);
+  p += fplen;
+  *p++ = '\0';
+
+  assert (p - result == size);
+
+  if (quoted_user && quoted_user != url->user)
+    xfree (quoted_user);
+  if (quoted_passwd && !hide_password
+      && quoted_passwd != url->passwd)
+    xfree (quoted_passwd);
+
+  return result;
 }
 
 /* Returns proxy host address, in accordance with SCHEME.  */
@@ -1383,7 +1575,7 @@ getproxy (enum url_scheme scheme)
     return NULL;
 
   /* Handle shorthands. */
-  rewritten_url = rewrite_url_maybe (proxy);
+  rewritten_url = rewrite_shorthand_url (proxy);
   if (rewritten_url)
     {
       strncpy (rewritten_storage, rewritten_url, sizeof(rewritten_storage));

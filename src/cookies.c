@@ -780,7 +780,7 @@ check_path_match (const char *cookie_path, const char *path)
 int
 set_cookie_header_cb (const char *hdr, void *closure)
 {
-  struct urlinfo *u = (struct urlinfo *)closure;
+  struct url *u = (struct url *)closure;
   struct cookie *cookie;
 
   cookies_now = time (NULL);

@@ -51,9 +51,6 @@ extern int errno;
 int global_download_count;
 
 void logflush PARAMS ((void));
-
-/* From http.c.  */
-uerr_t http_loop PARAMS ((struct urlinfo *, char **, int *));
 
 /* Flags for show_progress().  */
 enum spflags { SP_NONE, SP_INIT, SP_FINISH };
@@ -314,9 +311,11 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   uerr_t result;
   char *url;
   int location_changed, dummy;
-  int local_use_proxy;
+  int use_proxy;
   char *mynewloc, *proxy;
-  struct urlinfo *u;
+  struct url *u;
+  int up_error_code;		/* url parse error code */
+  char *local_file;
   struct hash_table *redirections = NULL;
 
   /* If dt is NULL, just ignore it.  */
@@ -328,80 +327,74 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   if (file)
     *file = NULL;
 
-  u = newurl ();
-  /* Parse the URL. */
-  result = parseurl (url, u, 0);
-  if (result != URLOK)
+  u = url_parse (url, &up_error_code);
+  if (!u)
     {
-      logprintf (LOG_NOTQUIET, "%s: %s.\n", url, uerrmsg (result));
-      freeurl (u, 1);
+      logprintf (LOG_NOTQUIET, "%s: %s.\n", url, url_error (up_error_code));
       if (redirections)
 	string_set_free (redirections);
       xfree (url);
-      return result;
+      return URLERROR;
     }
+
+  if (!refurl)
+    refurl = opt.referer;
 
  redirected:
 
-  /* Set the referer.  */
-  if (refurl)
-    u->referer = xstrdup (refurl);
-  else
-    {
-      if (opt.referer)
-	u->referer = xstrdup (opt.referer);
-      else
-	u->referer = NULL;
-    }
+  result = NOCONERROR;
+  mynewloc = NULL;
+  local_file = NULL;
 
-  local_use_proxy = USE_PROXY_P (u);
-  if (local_use_proxy)
+  use_proxy = USE_PROXY_P (u);
+  if (use_proxy)
     {
-      struct urlinfo *pu = newurl ();
+      struct url *proxy_url;
 
-      /* Copy the original URL to new location.  */
-      memcpy (pu, u, sizeof (*u));
-      pu->proxy = NULL; /* A minor correction :) */
-      /* Initialize u to nil.  */
-      memset (u, 0, sizeof (*u));
-      u->proxy = pu;
-      /* Get the appropriate proxy server, appropriate for the
-	 current scheme.  */
-      proxy = getproxy (pu->scheme);
+      /* Get the proxy server for the current scheme.  */
+      proxy = getproxy (u->scheme);
       if (!proxy)
 	{
 	  logputs (LOG_NOTQUIET, _("Could not find proxy host.\n"));
-	  freeurl (u, 1);
+	  url_free (u);
 	  if (redirections)
 	    string_set_free (redirections);
 	  xfree (url);
 	  return PROXERR;
 	}
+
       /* Parse the proxy URL.  */
-      result = parseurl (proxy, u, 0);
-      if (result != URLOK || u->scheme != SCHEME_HTTP)
+      proxy_url = url_parse (proxy, &up_error_code);
+      if (!proxy_url)
 	{
-	  if (u->scheme == SCHEME_HTTP)
-	    logprintf (LOG_NOTQUIET, "Proxy %s: %s.\n", proxy, uerrmsg(result));
-	  else
-	    logprintf (LOG_NOTQUIET, _("Proxy %s: Must be HTTP.\n"), proxy);
-	  freeurl (u, 1);
+	  logprintf (LOG_NOTQUIET, "Error parsing proxy URL %s: %s.\n",
+		     proxy, url_error (up_error_code));
 	  if (redirections)
 	    string_set_free (redirections);
 	  xfree (url);
 	  return PROXERR;
 	}
-      u->scheme = SCHEME_HTTP;
+      if (proxy_url->scheme != SCHEME_HTTP)
+	{
+	  logprintf (LOG_NOTQUIET, _("Error in proxy URL %s: Must be HTTP.\n"), proxy);
+	  url_free (proxy_url);
+	  if (redirections)
+	    string_set_free (redirections);
+	  xfree (url);
+	  return PROXERR;
+	}
+
+      result = http_loop (u, &mynewloc, &local_file, refurl, dt, proxy_url);
+      url_free (proxy_url);
     }
-
-  mynewloc = NULL;
-
-  if (u->scheme == SCHEME_HTTP
+  else if (u->scheme == SCHEME_HTTP
 #ifdef HAVE_SSL
       || u->scheme == SCHEME_HTTPS
 #endif
       )
-    result = http_loop (u, &mynewloc, dt);
+    {
+      result = http_loop (u, &mynewloc, &local_file, refurl, dt, NULL);
+    }
   else if (u->scheme == SCHEME_FTP)
     {
       /* If this is a redirection, we must not allow recursive FTP
@@ -412,13 +405,11 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	opt.recursive = 0;
       result = ftp_loop (u, dt);
       opt.recursive = oldrec;
+#if 0
       /* There is a possibility of having HTTP being redirected to
 	 FTP.  In these cases we must decide whether the text is HTML
 	 according to the suffix.  The HTML suffixes are `.html' and
-	 `.htm', case-insensitive.
-
-	 #### All of this is, of course, crap.  These types should be
-	 determined through mailcap.  */
+	 `.htm', case-insensitive.  */
       if (redirections && u->local && (u->scheme == SCHEME_FTP))
 	{
 	  char *suf = suffix (u->local);
@@ -426,15 +417,18 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	    *dt |= TEXTHTML;
 	  FREE_MAYBE (suf);
 	}
+#endif
     }
   location_changed = (result == NEWLOCATION);
   if (location_changed)
     {
       char *construced_newloc;
-      uerr_t newloc_result;
-      struct urlinfo *newloc_struct;
+      struct url *newloc_struct;
 
       assert (mynewloc != NULL);
+
+      if (local_file)
+	xfree (local_file);
 
       /* The HTTP specs only allow absolute URLs to appear in
 	 redirects, but a ton of boneheaded webservers and CGIs out
@@ -445,13 +439,12 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       mynewloc = construced_newloc;
 
       /* Now, see if this new location makes sense. */
-      newloc_struct = newurl ();
-      newloc_result = parseurl (mynewloc, newloc_struct, 1);
-      if (newloc_result != URLOK)
+      newloc_struct = url_parse (mynewloc, NULL);
+      if (!newloc_struct)
 	{
-	  logprintf (LOG_NOTQUIET, "%s: %s.\n", mynewloc, uerrmsg (newloc_result));
-	  freeurl (newloc_struct, 1);
-	  freeurl (u, 1);
+	  logprintf (LOG_NOTQUIET, "%s: %s.\n", mynewloc, "UNKNOWN");
+	  url_free (newloc_struct);
+	  url_free (u);
 	  if (redirections)
 	    string_set_free (redirections);
 	  xfree (url);
@@ -473,14 +466,14 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  string_set_add (redirections, u->url);
 	}
 
-      /* The new location is OK.  Let's check for redirection cycle by
+      /* The new location is OK.  Check for redirection cycle by
          peeking through the history of redirections. */
       if (string_set_contains (redirections, newloc_struct->url))
 	{
 	  logprintf (LOG_NOTQUIET, _("%s: Redirection cycle detected.\n"),
 		     mynewloc);
-	  freeurl (newloc_struct, 1);
-	  freeurl (u, 1);
+	  url_free (newloc_struct);
+	  url_free (u);
 	  if (redirections)
 	    string_set_free (redirections);
 	  xfree (url);
@@ -491,29 +484,27 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 
       xfree (url);
       url = mynewloc;
-      freeurl (u, 1);
+      url_free (u);
       u = newloc_struct;
       goto redirected;
     }
 
-  if (u->local)
+  if (local_file)
     {
       if (*dt & RETROKF)
 	{
-	  register_download (url, u->local);
+	  register_download (url, local_file);
 	  if (*dt & TEXTHTML)
-	    register_html (url, u->local);
+	    register_html (url, local_file);
 	}
     }
 
   if (file)
-    {
-      if (u->local)
-	*file = xstrdup (u->local);
-      else
-	*file = NULL;
-    }
-  freeurl (u, 1);
+    *file = local_file ? local_file : NULL;
+  else
+    FREE_MAYBE (local_file);
+
+  url_free (u);
   if (redirections)
     string_set_free (redirections);
 

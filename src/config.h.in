@@ -141,6 +141,9 @@ char *alloca ();
 /* Define if you have the strncasecmp function.  */
 #undef HAVE_STRNCASECMP
 
+/* Define if you have the strpbrk function.  */
+#undef HAVE_STRPBRK
+
 /* Define if you have the strptime function.  */
 #undef HAVE_STRPTIME
 

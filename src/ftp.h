@@ -46,7 +46,7 @@ uerr_t ftp_syst PARAMS ((struct rbuf *, enum stype *));
 uerr_t ftp_pwd PARAMS ((struct rbuf *, char **));
 uerr_t ftp_size PARAMS ((struct rbuf *, const char *, long int *));
 
-struct urlinfo;
+struct url;
 
 /* File types.  */
 enum ftype
@@ -98,19 +98,12 @@ enum wget_ftp_fstatus
 				   correct.  */
 };
 
-typedef struct
-{
-  int st;			/* connection status */
-  int cmd;			/* command code */
-  struct rbuf rbuf;		/* control connection buffer */
-  long dltime;			/* time of the download */
-  enum stype rs;		/* remote system reported by ftp server */ 
-  char *id;			/* initial directory */
-} ccon;
-
 struct fileinfo *ftp_parse_ls PARAMS ((const char *, const enum stype));
-uerr_t ftp_loop PARAMS ((struct urlinfo *, int *));
+uerr_t ftp_loop PARAMS ((struct url *, int *));
 
-uerr_t ftp_index (const char *, struct urlinfo *, struct fileinfo *);
+uerr_t ftp_index (const char *, struct url *, struct fileinfo *);
+
+char ftp_process_type PARAMS ((const char *));
+
 
 #endif /* FTP_H */

@@ -25,6 +25,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define DEFAULT_FTP_PORT 21
 #define DEFAULT_HTTPS_PORT 443
 
+/* Note: the ordering here is related to the order of elements in
+   `supported_schemes' in url.c.  */
+
 enum url_scheme {
   SCHEME_HTTP,
 #ifdef HAVE_SSL
@@ -35,24 +38,27 @@ enum url_scheme {
 };
 
 /* Structure containing info on a URL.  */
-struct urlinfo
+struct url
 {
-  char *url;			/* Unchanged URL */
+  char *url;			/* Original URL */
   enum url_scheme scheme;	/* URL scheme */
 
   char *host;			/* Extracted hostname */
-  unsigned short port;
-  char ftp_type;
-  char *path, *dir, *file, *qstring;	
-                                /* Path, dir, file, and query string
-				   (properly decoded) */
-  char *user, *passwd;		/* Username and password */
-  struct urlinfo *proxy;	/* The exact string to pass to proxy
-				   server */
-  char *referer;		/* The source from which the request
-				   URI was obtained */
-  char *local;			/* The local filename of the URL
-				   document */
+  int port;			/* Port number */
+
+  /* URL components (URL-quoted). */
+  char *path;
+  char *params;
+  char *query;
+  char *fragment;
+
+  /* Extracted path info (unquoted). */
+  char *dir;
+  char *file;
+
+  /* Username and password (unquoted). */
+  char *user;
+  char *passwd;
 };
 
 enum convert_options {
@@ -104,19 +110,21 @@ typedef enum
 
 char *encode_string PARAMS ((const char *));
 
-struct urlinfo *newurl PARAMS ((void));
-void freeurl PARAMS ((struct urlinfo *, int));
-enum url_scheme url_detect_scheme PARAMS ((const char *));
+struct url *url_parse PARAMS ((const char *, int *));
+const char *url_error PARAMS ((int));
+char *url_full_path PARAMS ((const struct url *));
+void url_set_dir PARAMS ((struct url *, const char *));
+void url_set_file PARAMS ((struct url *, const char *));
+void url_free PARAMS ((struct url *));
+
+enum url_scheme url_scheme PARAMS ((const char *));
 int url_skip_scheme PARAMS ((const char *));
 int url_has_scheme PARAMS ((const char *));
+int scheme_default_port PARAMS ((enum url_scheme));
+
 int url_skip_uname PARAMS ((const char *));
 
-uerr_t parseurl PARAMS ((const char *, struct urlinfo *, int));
-char *str_url PARAMS ((const struct urlinfo *, int));
-/* url_equal is not currently used. */
-#if 0
-int url_equal PARAMS ((const char *, const char *));
-#endif /* 0 */
+char *url_string PARAMS ((const struct url *, int));
 
 urlpos *get_urls_file PARAMS ((const char *));
 urlpos *get_urls_html PARAMS ((const char *, const char *, int, int *));
@@ -126,8 +134,7 @@ char *uri_merge PARAMS ((const char *, const char *));
 
 void rotate_backups PARAMS ((const char *));
 int mkalldirs PARAMS ((const char *));
-char *url_filename PARAMS ((const struct urlinfo *));
-void opt_url PARAMS ((struct urlinfo *));
+char *url_filename PARAMS ((const struct url *));
 
 char *getproxy PARAMS ((uerr_t));
 int no_proxy_match PARAMS ((const char *, const char **));
@@ -137,6 +144,6 @@ urlpos *add_url PARAMS ((urlpos *, const char *, const char *));
 
 downloaded_file_t downloaded_file PARAMS ((downloaded_file_t, const char *));
 
-char *rewrite_url_maybe PARAMS ((const char *));
+char *rewrite_shorthand_url PARAMS ((const char *));
 
 #endif /* URL_H */

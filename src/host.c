@@ -327,7 +327,7 @@ same_host (const char *u1, const char *u2)
 /* Determine whether a URL is acceptable to be followed, according to
    a list of domains to accept.  */
 int
-accept_domain (struct urlinfo *u)
+accept_domain (struct url *u)
 {
   assert (u->host != NULL);
   if (opt.domains)

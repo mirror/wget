@@ -1,3 +1,53 @@
+2001-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* utils.c (path_simplify): Don't remove trailing slashes.
+
+	* ftp.c (ftp_get_listing): Use it.
+
+	* utils.c (file_merge): New function.
+
+	* url.c (opt_url): Removed.
+
+	* recur.c (recursive_retrieve): Inline "opt_url" logic.
+
+	* main.c (main): Use xfree(), not free().
+
+	* url.c (rewrite_url_maybe): Renamed to rewrite_shorthand_url.
+
+	* ftp.c (ccon): Move `ccon' typedef here, since it's only used
+	internally.
+
+	* config.h.in: Include a stub for HAVE_STRPBRK.
+
+	* cmpt.c (strpbrk): Include a replacement for systems without
+	strpbrk().
+
+	* ftp.c: Use url_set_dir and url_set_file when modifying the URL.
+
+	* url.c (url_set_dir): New function.
+	(url_set_file): Ditto.
+
+	* ftp-basic.c (ftp_process_type): Process FTP type here; the URL
+	parser makes the URL "params" available, so we can do that in this
+	function.
+
+	* retr.c: Ditto.
+
+	* ftp.c: Ditto; pass the local file information in `ccon'.
+
+	* http.c: Get rid of the ugly kludge that had URL being replaced
+	with the proxy URL when proxy retrieval was requested.  Use a
+	separate parameter to http_loop and gethttp for the proxy URL.
+
+	* http.c: Changed to reflect the fact that local file, proxy, and
+	referer information are no longer stored in struct url.  The local
+	file information is passed in `struct hstat' now.
+
+	* url.c: Reworked URL parsing to be more regular.  Reencode the
+	URL using reencode_string.
+	Removed non-URL-related information from struct url.  This
+	includes fields `proxy', `local', and `referer'.
+
 2001-11-22  Jochen Hein  <jochen@jochen.org>
 
 	* main.c (main): Split the copyright notice for easier

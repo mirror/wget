@@ -44,8 +44,6 @@ struct wget_timer;
 char *time_str PARAMS ((time_t *));
 char *datetime_str PARAMS ((time_t *));
 
-const char *uerrmsg PARAMS ((uerr_t));
-
 #ifdef DEBUG_MALLOC
 void print_malloc_debug_stats ();
 #endif
@@ -63,6 +61,7 @@ int file_exists_p PARAMS ((const char *));
 int file_non_directory_p PARAMS ((const char *));
 int make_directory PARAMS ((const char *));
 char *unique_name PARAMS ((const char *));
+char *file_merge PARAMS ((const char *, const char *));
 
 int acceptable PARAMS ((const char *));
 int accdir PARAMS ((const char *s, enum accd));

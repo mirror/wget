@@ -404,30 +404,6 @@ datetime_str (time_t *tm)
 	   ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
   return output;
 }
-
-/* Returns an error message for ERRNUM.  #### This requires more work.
-   This function, as well as the whole error system, is very
-   ill-conceived.  */
-const char *
-uerrmsg (uerr_t errnum)
-{
-  switch (errnum)
-    {
-    case URLUNKNOWN:
-      return _("Unknown/unsupported protocol");
-      break;
-    case URLBADPORT:
-      return _("Invalid port specification");
-      break;
-    case URLBADHOST:
-      return _("Invalid host name");
-      break;
-    default:
-      abort ();
-      /* $@#@#$ compiler.  */
-      return NULL;
-    }
-}
 
 /* The Windows versions of the following two functions are defined in
    mswindows.c.  */
@@ -464,6 +440,14 @@ fork_to_background (void)
 }
 #endif /* not WINDOWS */
 
+char *
+ps (char *orig)
+{
+  char *r = xstrdup (orig);
+  path_simplify (r);
+  return r;
+}
+
 /* Canonicalize PATH, and return a new path.  The new path differs from PATH
    in that:
 	Multple `/'s are collapsed to a single `/'.
@@ -479,7 +463,8 @@ fork_to_background (void)
 	Always use '/' as stub_char.
 	Don't check for local things using canon_stat.
 	Change the original string instead of strdup-ing.
-	React correctly when beginning with `./' and `../'.  */
+	React correctly when beginning with `./' and `../'.
+	Don't zip out trailing slashes.  */
 void
 path_simplify (char *path)
 {
@@ -545,20 +530,15 @@ path_simplify (char *path)
 	  i = start + 1;
 	}
 
-      /* Check for trailing `/'.  */
-      if (start && !path[i])
-	{
-	zero_last:
-	  path[--i] = '\0';
-	  break;
-	}
-
       /* Check for `../', `./' or trailing `.' by itself.  */
       if (path[i] == '.')
 	{
 	  /* Handle trailing `.' by itself.  */
 	  if (!path[i + 1])
-	    goto zero_last;
+	    {
+	      path[--i] = '\0';
+	      break;
+	    }
 
 	  /* Handle `./'.  */
 	  if (path[i + 1] == '/')
@@ -579,12 +559,6 @@ path_simplify (char *path)
 	    }
 	}	/* path == '.' */
     } /* while */
-
-  if (!*path)
-    {
-      *path = stub_char;
-      path[1] = '\0';
-    }
 }
 
 /* "Touch" FILE, i.e. make its atime and mtime equal to the time
@@ -727,6 +701,30 @@ make_directory (const char *directory)
 	dir[i] = '/';
     }
   return 0;
+}
+
+/* Merge BASE with FILE.  BASE can be a directory or a file name, FILE
+   should be a file name.  For example, file_merge("/foo/bar", "baz")
+   will return "/foo/baz".  file_merge("/foo/bar/", "baz") will return
+   "foo/bar/baz".
+
+   In other words, it's a simpler and gentler version of uri_merge_1.  */
+
+char *
+file_merge (const char *base, const char *file)
+{
+  char *result;
+  const char *cut = (const char *)strrchr (base, '/');
+
+  if (!cut)
+    cut = base + strlen (base);
+
+  result = (char *)xmalloc (cut - base + 1 + strlen (file) + 1);
+  memcpy (result, base, cut - base);
+  result[cut - base] = '/';
+  strcpy (result + (cut - base) + 1, file);
+
+  return result;
 }
 
 static int in_acclist PARAMS ((const char *const *, const char *, int));

@@ -633,6 +633,7 @@ ftp_pwd (struct rbuf *rbuf, char **pwd)
   /* All OK.  */
   return FTPOK;
 }
+
 /* Sends the SIZE command to the server, and returns the value in 'size'.
  * If an error occurs, size is set to zero. */
 uerr_t
@@ -689,4 +690,17 @@ ftp_size (struct rbuf *rbuf, const char *file, long int *size)
   xfree (respline);
   /* All OK.  */
   return FTPOK;
+}
+
+/* If URL's params are of the form "type=X", return character X.
+   Otherwise, return 'I' (the default type).  */
+char
+ftp_process_type (const char *params)
+{
+  if (params
+      && 0 == strncasecmp (params, "type=", 5)
+      && params[5] != '\0')
+    return TOUPPER (params[5]);
+  else
+    return 'I';
 }

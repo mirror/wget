@@ -205,6 +205,24 @@ ret0:
 }
 #endif /* not HAVE_STRSTR */
 
+#ifndef HAVE_STRPBRK
+/* Find the first ocurrence in S of any character in ACCEPT.  */
+char *
+strpbrk (const char *s, const char *accept)
+{
+  while (*s != '\0')
+    {
+      const char *a = accept;
+      while (*a != '\0')
+	if (*a++ == *s)
+	  return (char *) s;
+      ++s;
+    }
+
+  return 0;
+}
+#endif /* HAVE_STRPBRK */
+
 #ifndef HAVE_MKTIME
 /* From GNU libc 2.0.  */
 

@@ -36,4 +36,12 @@ int downloaded_exceeds_quota PARAMS ((void));
 
 void sleep_between_retrievals PARAMS ((int));
 
+/* Because there's no http.h. */
+
+struct url;
+
+uerr_t http_loop PARAMS ((struct url *, char **, char **, const char *,
+			  int *, struct url *));
+
+
 #endif /* RETR_H */

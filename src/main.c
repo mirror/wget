@@ -727,7 +727,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
   /* Fill in the arguments.  */
   for (i = 0; i < nurl; i++, optind++)
     {
-      char *rewritten = rewrite_url_maybe (argv[optind]);
+      char *rewritten = rewrite_shorthand_url (argv[optind]);
       if (rewritten)
 	{
 	  printf ("Converted %s to %s\n", argv[optind], rewritten);
@@ -845,10 +845,12 @@ Can't timestamp and not clobber old files at the same time.\n"));
     {
       convert_all_links ();
     }
+
   log_close ();
   for (i = 0; i < nurl; i++)
-    free (url[i]);
+    xfree (url[i]);
   cleanup ();
+
 #ifdef DEBUG_MALLOC
   print_malloc_debug_stats ();
 #endif

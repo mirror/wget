@@ -120,9 +120,8 @@ recursive_retrieve (const char *file, const char *this_url)
   int dt, inl, dash_p_leaf_HTML = FALSE;
   int meta_disallow_follow;
   int this_url_ftp;            /* See below the explanation */
-  uerr_t err;
   urlpos *url_list, *cur_url;
-  struct urlinfo *u;
+  struct url *u;
 
   assert (this_url != NULL);
   assert (file != NULL);
@@ -140,9 +139,8 @@ recursive_retrieve (const char *file, const char *this_url)
       hash_table_clear (undesirable_urls);
       string_set_add (undesirable_urls, this_url);
       /* Enter this_url to the hash table, in original and "enhanced" form.  */
-      u = newurl ();
-      err = parseurl (this_url, u, 0);
-      if (err == URLOK)
+      u = url_parse (this_url, NULL);
+      if (u)
 	{
 	  string_set_add (undesirable_urls, u->url);
 	  if (opt.no_parent)
@@ -156,7 +154,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	  DEBUGP (("Double yuck!  The *base* URL is broken.\n"));
 	  base_dir = NULL;
 	}
-      freeurl (u, 1);
+      url_free (u);
       depth = 1;
       first_time = 0;
     }
@@ -210,11 +208,10 @@ recursive_retrieve (const char *file, const char *this_url)
 	break;
       /* Parse the URL for convenient use in other functions, as well
 	 as to get the optimized form.  It also checks URL integrity.  */
-      u = newurl ();
-      if (parseurl (cur_url->url, u, 0) != URLOK)
+      u = url_parse (cur_url->url, NULL);
+      if (!u)
 	{
 	  DEBUGP (("Yuck!  A bad URL.\n"));
-	  freeurl (u, 1);
 	  continue;
 	}
       assert (u->url != NULL);
@@ -281,8 +278,8 @@ recursive_retrieve (const char *file, const char *this_url)
 	  if (!(base_dir && frontcmp (base_dir, u->dir)))
 	    {
 	      /* Failing that, check for parent dir.  */
-	      struct urlinfo *ut = newurl ();
-	      if (parseurl (this_url, ut, 0) != URLOK)
+	      struct url *ut = url_parse (this_url, NULL);
+	      if (!ut)
 		DEBUGP (("Double yuck!  The *base* URL is broken.\n"));
 	      else if (!frontcmp (ut->dir, u->dir))
 		{
@@ -291,7 +288,7 @@ recursive_retrieve (const char *file, const char *this_url)
 		  string_set_add (undesirable_urls, constr);
 		  inl = 1;
 		}
-	      freeurl (ut, 1);
+	      url_free (ut);
 	    }
 	}
       /* If the file does not match the acceptance list, or is on the
@@ -343,7 +340,16 @@ recursive_retrieve (const char *file, const char *this_url)
       if (!inl)
 	{
 	  if (!opt.simple_check)
-	    opt_url (u);
+	    {
+	      /* Find the "true" host.  */
+	      char *host = realhost (u->host);
+	      xfree (u->host);
+	      u->host = host;
+
+	      /* Refresh the printed representation of the URL.  */
+	      xfree (u->url);
+	      u->url = url_string (u, 0);
+	    }
 	  else
 	    {
 	      char *p;
@@ -351,7 +357,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	      for (p = u->host; *p; p++)
 		*p = TOLOWER (*p);
 	      xfree (u->url);
-	      u->url = str_url (u, 0);
+	      u->url = url_string (u, 0);
 	    }
 	  xfree (constr);
 	  constr = xstrdup (u->url);
@@ -473,7 +479,7 @@ recursive_retrieve (const char *file, const char *this_url)
       /* Free filename and constr.  */
       FREE_MAYBE (filename);
       FREE_MAYBE (constr);
-      freeurl (u, 1);
+      url_free (u);
       /* Increment the pbuf for the appropriate size.  */
     }
   if (opt.convert_links && !opt.delete_after)
@@ -573,13 +579,9 @@ convert_all_links (void)
 	  char *local_name;
 
 	  /* The URL must be in canonical form to be compared.  */
-	  struct urlinfo *u = newurl ();
-	  uerr_t res = parseurl (cur_url->url, u, 0);
-	  if (res != URLOK)
-	    {
-	      freeurl (u, 1);
-	      continue;
-	    }
+	  struct url *u = url_parse (cur_url->url, NULL);
+	  if (!u)
+	    continue;
 	  /* We decide the direction of conversion according to whether
 	     a URL was downloaded.  Downloaded URLs will be converted
 	     ABS2REL, whereas non-downloaded will be converted REL2ABS.  */
@@ -608,7 +610,7 @@ convert_all_links (void)
 		cur_url->convert = CO_CONVERT_TO_COMPLETE;
 	      cur_url->local_name = NULL;
 	    }
-	  freeurl (u, 1);
+	  url_free (u);
 	}
       /* Convert the links in the file.  */
       convert_links (html->string, urls);

@@ -62,6 +62,18 @@ extern int h_errno;
 
 extern char ftp_last_respline[];
 
+typedef struct
+{
+  int st;			/* connection status */
+  int cmd;			/* command code */
+  struct rbuf rbuf;		/* control connection buffer */
+  long dltime;			/* time of the download */
+  enum stype rs;		/* remote system reported by ftp server */ 
+  char *id;			/* initial directory */
+  char *target;			/* target file name */
+} ccon;
+
+
 /* Look for regexp "( *[0-9]+ *byte" (literal parenthesis) anywhere in
    the string S, and return the number converted to long, if found, 0
    otherwise.  */
@@ -108,7 +120,7 @@ ftp_expected_bytes (const char *s)
    connection to the server.  It always closes the data connection,
    and closes the control connection in case of error.  */
 static uerr_t
-getftp (struct urlinfo *u, long *len, long restval, ccon *con)
+getftp (struct url *u, long *len, long restval, ccon *con)
 {
   int csock, dtsock, res;
   uerr_t err;
@@ -122,7 +134,8 @@ getftp (struct urlinfo *u, long *len, long restval, ccon *con)
   long expected_bytes = 0L;
 
   assert (con != NULL);
-  assert (u->local != NULL);
+  assert (con->target != NULL);
+
   /* Debug-check of the sanity of the request by making sure that LIST
      and RETR are never both requested (since we can handle only one
      at a time.  */
@@ -144,6 +157,8 @@ getftp (struct urlinfo *u, long *len, long restval, ccon *con)
     csock = RBUF_FD (&con->rbuf);
   else				/* cmd & DO_LOGIN */
     {
+      char type_char;
+
       /* Login to the server: */
 
       /* First: Establish the control connection.  */
@@ -325,9 +340,10 @@ Error in server response, closing control connection.\n"));
 	logputs (LOG_VERBOSE, _("done.\n"));
 
       /* Fifth: Set the FTP type.  */
+      type_char = ftp_process_type (u->params);
       if (!opt.server_response)
-	logprintf (LOG_VERBOSE, "==> TYPE %c ... ", TOUPPER (u->ftp_type));
-      err = ftp_type (&con->rbuf, TOUPPER (u->ftp_type));
+	logprintf (LOG_VERBOSE, "==> TYPE %c ... ", type_char);
+      err = ftp_type (&con->rbuf, type_char);
       /* FTPRERR, WRITEFAILED, FTPUNKNOWNTYPE */
       switch (err)
 	{
@@ -351,7 +367,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET,
 		     _("Unknown type `%c', closing control connection.\n"),
-		     TOUPPER (u->ftp_type));
+		     type_char);
 	  CLOSE (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
@@ -701,7 +717,7 @@ Error in server response, closing control connection.\n"));
 	    {
 	      logprintf (LOG_NOTQUIET,
 			 _("\nREST failed; will not truncate `%s'.\n"),
-			 u->local);
+			 con->target);
 	      CLOSE (csock);
 	      closeport (dtsock);
 	      rbuf_uninitialize (&con->rbuf);
@@ -850,16 +866,16 @@ Error in server response, closing control connection.\n"));
   /* Open the file -- if opt.dfp is set, use it instead.  */
   if (!opt.dfp || con->cmd & DO_LIST)
     {
-      mkalldirs (u->local);
+      mkalldirs (con->target);
       if (opt.backups)
-	rotate_backups (u->local);
+	rotate_backups (con->target);
       /* #### Is this correct? */
-      chmod (u->local, 0600);
+      chmod (con->target, 0600);
 
-      fp = fopen (u->local, restval ? "ab" : "wb");
+      fp = fopen (con->target, restval ? "ab" : "wb");
       if (!fp)
 	{
-	  logprintf (LOG_NOTQUIET, "%s: %s\n", u->local, strerror (errno));
+	  logprintf (LOG_NOTQUIET, "%s: %s\n", con->target, strerror (errno));
 	  CLOSE (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  closeport (dtsock);
@@ -928,7 +944,7 @@ Error in server response, closing control connection.\n"));
   if (res == -2)
     {
       logprintf (LOG_NOTQUIET, _("%s: %s, closing control connection.\n"),
-		 u->local, strerror (errno));
+		 con->target, strerror (errno));
       CLOSE (csock);
       rbuf_uninitialize (&con->rbuf);
       return FWRITEERR;
@@ -993,10 +1009,10 @@ Error in server response, closing control connection.\n"));
      print it out.  */
   if (opt.server_response && (con->cmd & DO_LIST))
     {
-      mkalldirs (u->local);
-      fp = fopen (u->local, "r");
+      mkalldirs (con->target);
+      fp = fopen (con->target, "r");
       if (!fp)
-	logprintf (LOG_ALWAYS, "%s: %s\n", u->local, strerror (errno));
+	logprintf (LOG_ALWAYS, "%s: %s\n", con->target, strerror (errno));
       else
 	{
 	  char *line;
@@ -1020,7 +1036,7 @@ Error in server response, closing control connection.\n"));
    This loop either gets commands from con, or (if ON_YOUR_OWN is
    set), makes them up to retrieve the file given by the URL.  */
 static uerr_t
-ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
+ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 {
   int count, orig_lp;
   long restval, len;
@@ -1028,21 +1044,21 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
   uerr_t err;
   struct stat st;
 
-  if (!u->local)
-    u->local = url_filename (u);
+  if (!con->target)
+    con->target = url_filename (u);
 
-  if (opt.noclobber && file_exists_p (u->local))
+  if (opt.noclobber && file_exists_p (con->target))
     {
       logprintf (LOG_VERBOSE,
-		 _("File `%s' already there, not retrieving.\n"), u->local);
+		 _("File `%s' already there, not retrieving.\n"), con->target);
       /* If the file is there, we suppose it's retrieved OK.  */
       return RETROK;
     }
 
   /* Remove it if it's a link.  */
-  remove_link (u->local);
+  remove_link (con->target);
   if (!opt.output_document)
-    locf = u->local;
+    locf = con->target;
   else
     locf = opt.output_document;
 
@@ -1100,7 +1116,7 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
       /* Print fetch message, if opt.verbose.  */
       if (opt.verbose)
 	{
-	  char *hurl = str_url (u->proxy ? u->proxy : u, 1);
+	  char *hurl = url_string (u, 1);
 	  char tmp[15];
 	  strcpy (tmp, "        ");
 	  if (count > 1)
@@ -1175,7 +1191,7 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	  /* Need to hide the password from the URL.  The `if' is here
              so that we don't do the needless allocation every
              time. */
-	  char *hurl = str_url (u->proxy ? u->proxy : u, 1);
+	  char *hurl = url_string (u, 1);
 	  logprintf (LOG_NONVERBOSE, "%s URL: %s [%ld] -> \"%s\" [%d]\n",
 		     tms, hurl, len, locf, count);
 	  xfree (hurl);
@@ -1235,43 +1251,48 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 /* Return the directory listing in a reusable format.  The directory
    is specifed in u->dir.  */
 uerr_t
-ftp_get_listing (struct urlinfo *u, ccon *con, struct fileinfo **f)
+ftp_get_listing (struct url *u, ccon *con, struct fileinfo **f)
 {
   uerr_t err;
-  char *olocal = u->local;
-  char *list_filename, *ofile;
+  char *uf;			/* url file name */
+  char *lf;			/* list file name */
+  char *old_target = con->target;
 
   con->st &= ~ON_YOUR_OWN;
   con->cmd |= (DO_LIST | LEAVE_PENDING);
   con->cmd &= ~DO_RETR;
-  /* Get the listing filename.  */
-  ofile = u->file;
-  u->file = LIST_FILENAME;
-  list_filename = url_filename (u);
-  u->file = ofile;
-  u->local = list_filename;
-  DEBUGP ((_("Using `%s' as listing tmp file.\n"), list_filename));
+
+  /* Find the listing file name.  We do it by taking the file name of
+     the URL and replacing the last component with the listing file
+     name.  */
+  uf = url_filename (u);
+  lf = file_merge (uf, LIST_FILENAME);
+  xfree (uf);
+  DEBUGP ((_("Using `%s' as listing tmp file.\n"), lf));
+
+  con->target = lf;
   err = ftp_loop_internal (u, NULL, con);
-  u->local = olocal;
+  con->target = old_target;
+
   if (err == RETROK)
-    *f = ftp_parse_ls (list_filename, con->rs);
+    *f = ftp_parse_ls (lf, con->rs);
   else
     *f = NULL;
   if (opt.remove_listing)
     {
-      if (unlink (list_filename))
+      if (unlink (lf))
 	logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
       else
-	logprintf (LOG_VERBOSE, _("Removed `%s'.\n"), list_filename);
+	logprintf (LOG_VERBOSE, _("Removed `%s'.\n"), lf);
     }
-  xfree (list_filename);
+  xfree (lf);
   con->cmd &= ~DO_LIST;
   return err;
 }
 
-static uerr_t ftp_retrieve_dirs PARAMS ((struct urlinfo *, struct fileinfo *,
+static uerr_t ftp_retrieve_dirs PARAMS ((struct url *, struct fileinfo *,
 					 ccon *));
-static uerr_t ftp_retrieve_glob PARAMS ((struct urlinfo *, ccon *, int));
+static uerr_t ftp_retrieve_glob PARAMS ((struct url *, ccon *, int));
 static struct fileinfo *delelement PARAMS ((struct fileinfo *,
 					    struct fileinfo **));
 static void freefileinfo PARAMS ((struct fileinfo *f));
@@ -1284,11 +1305,10 @@ static void freefileinfo PARAMS ((struct fileinfo *f));
    If opt.recursive is set, after all files have been retrieved,
    ftp_retrieve_dirs will be called to retrieve the directories.  */
 static uerr_t
-ftp_retrieve_list (struct urlinfo *u, struct fileinfo *f, ccon *con)
+ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
 {
   static int depth = 0;
   uerr_t err;
-  char *olocal, *ofile;
   struct fileinfo *orig;
   long local_size;
   time_t tml;
@@ -1323,15 +1343,19 @@ ftp_retrieve_list (struct urlinfo *u, struct fileinfo *f, ccon *con)
 
   while (f)
     {
+      char *old_target, *ofile;
+
       if (downloaded_exceeds_quota ())
 	{
 	  --depth;
 	  return QUOTEXC;
 	}
-      olocal = u->local;
-      ofile = u->file;
-      u->file = f->name;
-      u->local = url_filename (u);
+      old_target = con->target;
+
+      ofile = xstrdup (u->file);
+      url_set_file (u, f->name);
+
+      con->target = url_filename (u);
       err = RETROK;
 
       dlthis = 1;
@@ -1343,7 +1367,7 @@ ftp_retrieve_list (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	     I'm not implementing it now since files on an FTP server are much
 	     more likely than files on an HTTP server to legitimately have a
 	     .orig suffix. */
-	  if (!stat (u->local, &st))
+	  if (!stat (con->target, &st))
 	    {
               int eq_size;
               int cor_val;
@@ -1360,7 +1384,7 @@ ftp_retrieve_list (struct urlinfo *u, struct fileinfo *f, ccon *con)
 		  /* Remote file is older, file sizes can be compared and
                      are both equal. */
                   logprintf (LOG_VERBOSE, _("\
-Remote file no newer than local file `%s' -- not retrieving.\n"), u->local);
+Remote file no newer than local file `%s' -- not retrieving.\n"), con->target);
 		  dlthis = 0;
 		}
 	      else if (eq_size)
@@ -1368,7 +1392,7 @@ Remote file no newer than local file `%s' -- not retrieving.\n"), u->local);
                   /* Remote file is newer or sizes cannot be matched */
                   logprintf (LOG_VERBOSE, _("\
 Remote file is newer than local file `%s' -- retrieving.\n\n"),
-                             u->local);
+                             con->target);
                 }
               else
                 {
@@ -1396,30 +1420,30 @@ The sizes do not match (local %ld) -- retrieving.\n\n"), local_size);
                   struct stat st;
 		  /* Check whether we already have the correct
                      symbolic link.  */
-                  int rc = lstat (u->local, &st);
+                  int rc = lstat (con->target, &st);
                   if (rc == 0)
 		    {
 		      size_t len = strlen (f->linkto) + 1;
 		      if (S_ISLNK (st.st_mode))
 			{
 			  char *link_target = (char *)alloca (len);
-			  size_t n = readlink (u->local, link_target, len);
+			  size_t n = readlink (con->target, link_target, len);
 			  if ((n == len - 1)
 			      && (memcmp (link_target, f->linkto, n) == 0))
 			    {
 			      logprintf (LOG_VERBOSE, _("\
 Already have correct symlink %s -> %s\n\n"),
-					 u->local, f->linkto);
+					 con->target, f->linkto);
                               dlthis = 0;
 			      break;
 			    }
 			}
 		    }
 		  logprintf (LOG_VERBOSE, _("Creating symlink %s -> %s\n"),
-			     u->local, f->linkto);
+			     con->target, f->linkto);
 		  /* Unlink before creating symlink!  */
-		  unlink (u->local);
-		  if (symlink (f->linkto, u->local) == -1)
+		  unlink (con->target);
+		  if (symlink (f->linkto, con->target) == -1)
 		    logprintf (LOG_NOTQUIET, "symlink: %s\n",
 			       strerror (errno));
 		  logputs (LOG_VERBOSE, "\n");
@@ -1427,7 +1451,7 @@ Already have correct symlink %s -> %s\n\n"),
 #else  /* not HAVE_SYMLINK */
 	      logprintf (LOG_NOTQUIET,
 			 _("Symlinks not supported, skipping symlink `%s'.\n"),
-			 u->local);
+			 con->target);
 #endif /* not HAVE_SYMLINK */
 	    }
 	  else                /* opt.retr_symlinks */
@@ -1458,7 +1482,7 @@ Already have correct symlink %s -> %s\n\n"),
       if (!(f->type == FT_SYMLINK && !opt.retr_symlinks)
 	  && f->tstamp != -1
           && dlthis
-	  && file_exists_p (u->local))
+	  && file_exists_p (con->target))
 	{
 	  /* #### This code repeats in http.c and ftp.c.  Move it to a
              function!  */
@@ -1469,27 +1493,31 @@ Already have correct symlink %s -> %s\n\n"),
 		fl = opt.output_document;
 	    }
 	  else
-	    fl = u->local;
+	    fl = con->target;
 	  if (fl)
 	    touch (fl, f->tstamp);
 	}
       else if (f->tstamp == -1)
-	logprintf (LOG_NOTQUIET, _("%s: corrupt time-stamp.\n"), u->local);
+	logprintf (LOG_NOTQUIET, _("%s: corrupt time-stamp.\n"), con->target);
 
       if (f->perms && f->type == FT_PLAINFILE && dlthis)
-	chmod (u->local, f->perms);
+	chmod (con->target, f->perms);
       else
-	DEBUGP (("Unrecognized permissions for %s.\n", u->local));
+	DEBUGP (("Unrecognized permissions for %s.\n", con->target));
 
-      xfree (u->local);
-      u->local = olocal;
-      u->file = ofile;
+      xfree (con->target);
+      con->target = old_target;
+
+      url_set_file (u, ofile);
+      xfree (ofile);
+
       /* Break on fatals.  */
       if (err == QUOTEXC || err == HOSTERR || err == FWRITEERR)
 	break;
       con->cmd &= ~ (DO_CWD | DO_LOGIN);
       f = f->next;
-    } /* while */
+    }
+
   /* We do not want to call ftp_retrieve_dirs here */
   if (opt.recursive &&
       !(opt.reclevel != INFINITE_RECURSION && depth >= opt.reclevel))
@@ -1506,51 +1534,62 @@ Already have correct symlink %s -> %s\n\n"),
    ftp_retrieve_glob on each directory entry.  The function knows
    about excluded directories.  */
 static uerr_t
-ftp_retrieve_dirs (struct urlinfo *u, struct fileinfo *f, ccon *con)
+ftp_retrieve_dirs (struct url *u, struct fileinfo *f, ccon *con)
 {
-  char *odir;
-  char *current_container = NULL;
-  int current_length = 0;
+  char *container = NULL;
+  int container_size = 0;
 
   for (; f; f = f->next)
     {
-      int len;
+      int size;
+      char *odir, *newdir;
 
       if (downloaded_exceeds_quota ())
 	break;
       if (f->type != FT_DIRECTORY)
 	continue;
-      odir = u->dir;
-      len = strlen (u->dir) + 1 + strlen (f->name) + 1;
+
       /* Allocate u->dir off stack, but reallocate only if a larger
-         string is needed.  */
-      if (len > current_length)
-	current_container = (char *)alloca (len);
-      u->dir = current_container;
+         string is needed.  It's a pity there's no "realloca" for an
+         item on the bottom of the stack.  */
+      size = strlen (u->dir) + 1 + strlen (f->name) + 1;
+      if (size > container_size)
+	container = (char *)alloca (size);
+      newdir = container;
+
+      odir = u->dir;
       if (*odir == '\0'
 	  || (*odir == '/' && *(odir + 1) == '\0'))
 	/* If ODIR is empty or just "/", simply append f->name to
 	   ODIR.  (In the former case, to preserve u->dir being
 	   relative; in the latter case, to avoid double slash.)  */
-	sprintf (u->dir, "%s%s", odir, f->name);
+	sprintf (newdir, "%s%s", odir, f->name);
       else
 	/* Else, use a separator. */
-	sprintf (u->dir, "%s/%s", odir, f->name);
+	sprintf (newdir, "%s/%s", odir, f->name);
+
       DEBUGP (("Composing new CWD relative to the initial directory.\n"));
-      DEBUGP (("  odir = '%s'\n  f->name = '%s'\n  u->dir = '%s'\n\n",
-	       odir, f->name, u->dir));
-      if (!accdir (u->dir, ALLABS))
+      DEBUGP (("  odir = '%s'\n  f->name = '%s'\n  newdir = '%s'\n\n",
+	       odir, f->name, newdir));
+      if (!accdir (newdir, ALLABS))
 	{
 	  logprintf (LOG_VERBOSE, _("\
-Not descending to `%s' as it is excluded/not-included.\n"), u->dir);
-	  u->dir = odir;
+Not descending to `%s' as it is excluded/not-included.\n"), newdir);
 	  continue;
 	}
+
       con->st &= ~DONE_CWD;
+
+      odir = xstrdup (u->dir);	/* because url_set_dir will free
+				   u->dir. */
+      url_set_dir (u, newdir);
       ftp_retrieve_glob (u, con, GETALL);
+      url_set_dir (u, odir);
+      xfree (odir);
+
       /* Set the time-stamp?  */
-      u->dir = odir;
     }
+
   if (opt.quota && opt.downloaded > opt.quota)
     return QUOTEXC;
   else
@@ -1567,7 +1606,7 @@ Not descending to `%s' as it is excluded/not-included.\n"), u->dir);
    get the listing, so that the time-stamp is heeded); if it's GLOBALL,
    use globbing; if it's GETALL, download the whole directory.  */
 static uerr_t
-ftp_retrieve_glob (struct urlinfo *u, ccon *con, int action)
+ftp_retrieve_glob (struct url *u, ccon *con, int action)
 {
   struct fileinfo *orig, *start;
   uerr_t res;
@@ -1607,7 +1646,7 @@ ftp_retrieve_glob (struct urlinfo *u, ccon *con, int action)
 	  matchres = fnmatch (u->file, f->name, 0);
 	  if (matchres == -1)
 	    {
-	      logprintf (LOG_NOTQUIET, "%s: %s\n", u->local,
+	      logprintf (LOG_NOTQUIET, "%s: %s\n", con->target,
 			 strerror (errno));
 	      break;
 	    }
@@ -1657,7 +1696,7 @@ ftp_retrieve_glob (struct urlinfo *u, ccon *con, int action)
    of URL.  Inherently, its capabilities are limited on what can be
    encoded into a URL.  */
 uerr_t
-ftp_loop (struct urlinfo *u, int *dt)
+ftp_loop (struct url *u, int *dt)
 {
   ccon con;			/* FTP connection */
   uerr_t res;
@@ -1686,7 +1725,7 @@ ftp_loop (struct urlinfo *u, int *dt)
 	    {
 	      char *filename = (opt.output_document
 				? xstrdup (opt.output_document)
-				: (u->local ? xstrdup (u->local)
+				: (con.target ? xstrdup (con.target)
 				   : url_filename (u)));
 	      res = ftp_index (filename, u, f);
 	      if (res == FTPOK && opt.verbose)
@@ -1736,6 +1775,8 @@ ftp_loop (struct urlinfo *u, int *dt)
     CLOSE (RBUF_FD (&con.rbuf));
   FREE_MAYBE (con.id);
   con.id = NULL;
+  FREE_MAYBE (con.target);
+  con.target = NULL;
   return res;
 }
 

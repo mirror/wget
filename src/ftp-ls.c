@@ -796,7 +796,7 @@ Unsupported listing type, trying Unix listing parser.\n"));
    directories and files on the appropriate host.  The references are
    FTP.  */
 uerr_t
-ftp_index (const char *file, struct urlinfo *u, struct fileinfo *f)
+ftp_index (const char *file, struct url *u, struct fileinfo *f)
 {
   FILE *fp;
   char *upwd;

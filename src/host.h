@@ -20,7 +20,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifndef HOST_H
 #define HOST_H
 
-struct urlinfo;
+struct url;
 
 /* Function declarations */
 
@@ -31,7 +31,7 @@ void clean_hosts PARAMS ((void));
 
 char *realhost PARAMS ((const char *));
 int same_host PARAMS ((const char *, const char *));
-int accept_domain PARAMS ((struct urlinfo *));
+int accept_domain PARAMS ((struct url *));
 int sufmatch PARAMS ((const char **, const char *));
 
 char *ftp_getaddress PARAMS ((void));
