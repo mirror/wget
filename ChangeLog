@@ -1,3 +1,11 @@
+2003-09-26  Gisle Vanem  <giva@bgnett.no>
+
+	* windows/config.h.ms: Don't declare alloca under compilers that
+	support it.
+
+	* windows/config.h.ms: Define HAVE_SNPRINTF, HAVE_VSNPRINTF, and
+	HAVE_MEMMOVE.
+
 2003-09-25  Herold Heiko  <Heiko.Herold@previnet.it>
 
 	* windows/Makefile.src: Updated OBJ list.

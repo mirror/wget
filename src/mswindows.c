@@ -63,6 +63,7 @@ void log_request_redirect_output PARAMS ((const char *));
 static int windows_nt_p;
 
 
+#ifndef HAVE_SLEEP
 /* Emulation of Unix sleep.  */
 
 unsigned int
@@ -70,7 +71,9 @@ sleep (unsigned seconds)
 {
   return SleepEx (1000 * seconds, TRUE) ? 0U : 1000 * seconds;
 }
+#endif
 
+#ifndef HAVE_USLEEP
 /* Emulation of Unix usleep().  This has a granularity of
    milliseconds, but that's ok because:
 
@@ -87,6 +90,7 @@ usleep (unsigned long usec)
   SleepEx (usec / 1000, TRUE);
   return 0;
 }
+#endif  /* HAVE_USLEEP */
 
 static char *
 read_registry (HKEY hkey, char *subkey, char *valuename, char *buf, int *len)
@@ -94,9 +98,9 @@ read_registry (HKEY hkey, char *subkey, char *valuename, char *buf, int *len)
   HKEY result;
   DWORD size = *len;
   DWORD type = REG_SZ;
-  if (RegOpenKeyEx (hkey, subkey, NULL, KEY_READ, &result) != ERROR_SUCCESS)
+  if (RegOpenKeyEx (hkey, subkey, 0, KEY_READ, &result) != ERROR_SUCCESS)
     return NULL;
-  if (RegQueryValueEx (result, valuename, NULL, &type, buf, &size) != ERROR_SUCCESS)
+  if (RegQueryValueEx (result, valuename, NULL, &type, (LPBYTE)buf, &size) != ERROR_SUCCESS)
     buf = NULL;
   *len = size;
   RegCloseKey (result);

@@ -125,14 +125,24 @@ so, delete this exception statement from your version.  */
 #define ESTALE                  WSAESTALE
 #define EREMOTE                 WSAEREMOTE
 
+#ifdef __DMC__
+# define HAVE_SLEEP 1
+# define HAVE_USLEEP 1
+#endif
+
 /* Public functions.  */
 
+#ifndef HAVE_SLEEP
 unsigned int sleep (unsigned);
+#endif
+#ifndef HAVE_USLEEP
+int usleep (unsigned long);
+#endif
+
 void ws_startup (void);
 void ws_changetitle (char*, int);
 char *ws_mypath (void);
 void ws_help (const char *);
 void windows_main_junk (int *, char **, char **);
-int usleep (unsigned long);
 
 #endif /* MSWINDOWS_H */

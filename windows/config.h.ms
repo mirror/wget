@@ -32,8 +32,10 @@
 /* Define if you have the <alloca.h> header file.  */
 #undef HAVE_ALLOCA_H
 
+#if !defined(__GNUC__) && !defined(__DMC__) && !defined(__WATCOMC__)
 /* Microsoft and Watcom libraries have an alloca function. */
 char *alloca ();
+#endif
 
 /* Define to empty if the keyword does not work.  */
 /* #undef const */
@@ -97,10 +99,10 @@ char *alloca ();
 #define HAVE_STRERROR 1
 
 /* Define if you have the snprintf function.  */
-#undef HAVE_SNPRINTF
+#define HAVE_SNPRINTF
 
 /* Define if you have the vsnprintf function.  */
-#undef HAVE_VSNPRINTF
+#define HAVE_VSNPRINTF
 
 /* Define if you have the strstr function. */
 #define HAVE_STRSTR 1
@@ -133,8 +135,14 @@ char *alloca ();
 #define HAVE_STRING_H 1
 
 /* Define if you have the <unistd.h> header file.  */
-/* #define HAVE_UNISTD_H 1 */
+#if !defined(_MSC_VER)
 #undef HAVE_UNISTD_H
+#endif
+
+/* None except Digital Mars have usleep function */
+#if defined(__DMC__)
+#define HAVE_USLEEP
+#endif
 
 /* Define if you have the <utime.h> header file.  */
 #undef HAVE_UTIME_H
@@ -149,7 +157,7 @@ char *alloca ();
 #undef HAVE_PWD_H
 
 /* Define if you have the <signal.h> header file.  */
-#undef HAVE_SIGNAL_H
+#define HAVE_SIGNAL_H
 
 /* Define to be the name of the operating system.  */
 #define OS_TYPE "Windows"
@@ -177,6 +185,9 @@ char *alloca ();
 
 /* Define if you have the isatty function.  */
 #define HAVE_ISATTY 1
+
+/* Define if you have the memmove function */
+#define HAVE_MEMMOVE 1
 
 #endif /* CONFIG_H */
 
