@@ -30,6 +30,11 @@ user-visible changes.
 * -k should convert convert relative references to absolute if not downloaded.
 
 * -k should convert "hostless absolute" URLs, like <A HREF="/index.html">.
+  However, Brian McMahon <bm@iucr.org> wants the old incorrect behavior to still
+  be available as an option, as he depends on it to allow mirrors of his site to
+  send CGI queries to his original site, but still get graphics off of the
+  mirror site.  Perhaps this would be better dealt with by adding an option to
+  tell -k not to convert certain URLs patterns?
 
 * Add option to clobber existing file names (no `.N' suffixes).
 
