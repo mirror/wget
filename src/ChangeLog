@@ -1,3 +1,8 @@
+2001-11-27  Ian Abbott <abbotti@mev.co.uk>
+
+	* retr.c (retrieve_from_file): Initialize `new_file' to NULL to
+	prevent seg fault.
+
 2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* connect.c (connect_to_many): Use address_list_set_faulty to

@@ -538,7 +538,7 @@ retrieve_from_file (const char *file, int html, int *count)
 
   for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
     {
-      char *filename = NULL, *new_file;
+      char *filename = NULL, *new_file = NULL;
       int dt;
 
       if (cur_url->ignore_when_downloading)
