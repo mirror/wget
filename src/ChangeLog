@@ -1,3 +1,8 @@
+2004-02-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* hash.c: Make the file compilable outside Wget source tree when
+	-DSTANDALONE is used.
+
 2004-01-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (determine_screen_width): Return 0 if not running on

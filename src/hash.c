@@ -27,38 +27,46 @@ modify this file, you may extend this exception to your version of the
 file, but you are not obligated to do so.  If you do not wish to do
 so, delete this exception statement from your version.  */
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+/* With -DSTANDALONE, this file can be compiled outside Wget source
+   tree.  To test, also use -DTEST.  */
 
-#ifdef HAVE_STRING_H
-# include <string.h>
+#ifndef STANDALONE
+# include <config.h>
+# ifdef HAVE_STRING_H
+#  include <string.h>
+# else
+#  include <strings.h>
+# endif
+# ifdef HAVE_LIMITS_H
+#  include <limits.h>
+# endif
 #else
-# include <strings.h>
-#endif
-#ifdef HAVE_LIMITS_H
+/* If running without Autoconf, go ahead and assume presence of
+   standard C89 headers.  */
+# include <string.h>
 # include <limits.h>
 #endif
+
 #include <stdlib.h>
 #include <assert.h>
 
-#include "wget.h"
-#include "utils.h"
+#ifndef STANDALONE
+/* Get Wget's utility headers. */
+# include "wget.h"
+# include "utils.h"
+#else
+/* Make do without them. */
+# define xnew(x) xmalloc (sizeof (x))
+# define xnew_array(type, x) xmalloc (sizeof (type) * (x))
+# define xmalloc malloc		/* or something that exits
+				   if not enough memory */
+# define xfree free
+# define countof(x) (sizeof (x) / sizeof ((x)[0]))
+# define TOLOWER(x) ('A' <= (x) && (x) <= 'Z' ? (x) - 32 : (x))
+# define PARAMS(x) x
+#endif
 
 #include "hash.h"
-
-#ifdef STANDALONE
-# undef xmalloc
-# undef xrealloc
-# undef xfree
-
-# define xmalloc malloc
-# define xrealloc realloc
-# define xfree free
-
-# undef TOLOWER
-# define TOLOWER(x) ('A' <= (x) && (x) <= 'Z' ? (x) - 32 : (x))
-#endif
 
 /* INTERFACE:
 
@@ -286,6 +294,7 @@ hash_table_new (int items,
   /*assert (ht->resize_threshold >= items);*/
 
   ht->mappings = xnew_array (struct mapping, ht->size);
+
   /* Mark mappings as empty.  We use 0xff rather than 0 to mark empty
      keys because it allows us to use NULL/0 as keys.  */
   memset (ht->mappings, INVALID_PTR_BYTE, size * sizeof (struct mapping));
@@ -692,7 +701,7 @@ ptrcmp (const void *ptr1, const void *ptr2)
   return ptr1 == ptr2;
 }
 
-#ifdef STANDALONE
+#ifdef TEST
 
 #include <stdio.h>
 #include <string.h>
@@ -746,4 +755,4 @@ main (void)
 #endif
   return 0;
 }
-#endif
+#endif /* TEST */
