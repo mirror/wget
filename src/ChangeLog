@@ -1,23 +1,12 @@
-2000-11-18  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
+2000-11-30  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
-	* ftpparse.c, ftpparse.h: New files.
-
-	* ftp-ls.c (ftp_parse_ls): Use ftp_parse_unix_ls for UNIX servers
-	only. Use ftp_parse_nonunix_ls otherwise.
-	(ftp_parse_nonunix_ls): Stub to the ftpparse library handling all
-	exotic FTP servers.
-
-	* ftp.h (stype): New enum, distinguishes UNIX, VMS, and "other"
-	FTP servers.
-
-	* ftp.c: New static wariables host_type, pwd, and pwd_len. 
-	(getftp): Support for VMS. Support for FTP servers that do not
-	place you in the root directory after login.
-	(ftp_retrieve_list): VMS is silent about the real file size, issue
-	a more appropriate message.
-	(ftp_get_listing): Pass host_type to ftp_parse_ls.
-
-	* ftp-basic.c (ftp_pwd, ftp_syst): New functions.
+        * ftp-ls.c (ftp_parse_unix_ls): Added second parameter
+        "ignore_perms" to ignore file and directory permissions for
+        Windows NT FTP server listings.
+        (ftp_parse_winnt_ls): New function.
+        (ftp_parse_ls): Parses UNIX and Windows NT listings
+        separately. Simple heuristics for distinguishing between UNIX
+        and MS-DOS-like FTP listing provided by Windows NT FTP service.
 
 2000-12-05  Hrvoje Niksic  <hniksic@arsdigita.com>
 
