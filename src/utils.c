@@ -1648,7 +1648,10 @@ wtimer_sys_diff (wget_sys_time *wst1, wget_sys_time *wst2)
 #endif
 
 #ifdef WINDOWS
-  return (double)(wst1->QuadPart - wst2->QuadPart) / 10000;
+  /* VC++ 6 doesn't support direct cast of uint64 to double.  To work
+     around this, we subtract, then convert to signed, then finally to
+     double.  */
+  return (double)(signed __int64)(wst1->QuadPart - wst2->QuadPart) / 10000;
 #endif
 }
 
