@@ -160,7 +160,7 @@ Download:\n\
   -nc, --no-clobber             don\'t clobber existing files or use .# suffixes.\n\
   -c,  --continue               resume getting a partially-downloaded file.\n\
        --dot-style=STYLE        set retrieval display style.\n\
-  -N,  --timestamping           don\'t retrieve files if older than local.\n\
+  -N,  --timestamping           don\'t re-retrieve files unless newer than local.\n\
   -S,  --server-response        print server response.\n\
        --spider                 don\'t download anything.\n\
   -T,  --timeout=SECONDS        set the read timeout to SECONDS.\n\

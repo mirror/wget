@@ -1,3 +1,8 @@
+2001-02-23  Dan Harkless  <wget@harkless.org>
+
+	* main.c (print_help): --help documentation for -N said it would
+ 	re-download files if they had the _same_ timestamp on server.
+
 2001-02-16  Dan Harkless  <wget@harkless.org>
 
 	* init.c (commands): Hack Kampbjørn <hack@hackdata.com> discovered
