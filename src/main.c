@@ -1,5 +1,5 @@
 /* Command line parsing.
-   Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
 
 This file is part of Wget.
 
@@ -433,7 +433,7 @@ hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
 	case 'V':
 	  printf ("GNU Wget %s\n\n", version_string);
 	  printf ("%s", _("\
-Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.\n\
+Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.\n\
 This program is distributed in the hope that it will be useful,\n\
 but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\

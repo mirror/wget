@@ -1,5 +1,5 @@
 /* Various functions of utilitarian nature.
-   Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
 
 This file is part of Wget.
 
