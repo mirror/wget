@@ -1,3 +1,7 @@
+2003-10-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* po/ft.po, po/sk.po, po/ja.po: Updated from the TP.
+
 2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* po/wget.pot: Recreated.
