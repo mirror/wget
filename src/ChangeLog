@@ -1,3 +1,8 @@
+2003-10-15  Philip Stadermann  <philip.stadermann@credativ.de>
+
+	* ftp.c (ftp_retrieve_glob): Correctly loop through the list whose
+	elements might have been deleted.
+
 2003-10-13  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* html-url.c (tag_handle_meta): Set the Refresh link to expect

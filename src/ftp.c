@@ -1618,20 +1618,19 @@ has_insecure_name_p (const char *s)
 static uerr_t
 ftp_retrieve_glob (struct url *u, ccon *con, int action)
 {
-  struct fileinfo *f, *orig, *start;
+  struct fileinfo *f, *start;
   uerr_t res;
 
   con->cmd |= LEAVE_PENDING;
 
-  res = ftp_get_listing (u, con, &orig);
+  res = ftp_get_listing (u, con, &start);
   if (res != RETROK)
     return res;
-  start = orig;
   /* First: weed out that do not conform the global rules given in
      opt.accepts and opt.rejects.  */
   if (opt.accepts || opt.rejects)
     {
-      f = orig;
+      f = start;
       while (f)
 	{
 	  if (f->type != FT_DIRECTORY && !acceptable (f->name))
@@ -1644,7 +1643,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
 	}
     }
   /* Remove all files with possible harmful names */
-  f = orig;
+  f = start;
   while (f)
     {
       if (has_insecure_name_p (f->name))
