@@ -1,5 +1,10 @@
 2003-09-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi (Download Options): Explain how --tries works by
+	default.
+
+2003-09-17  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi (Download Options): Explain new --restrict-file-names
 	semantics.
 
