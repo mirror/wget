@@ -329,8 +329,8 @@ grow_hash_table (struct hash_table *ht)
 void
 hash_table_put (struct hash_table *ht, const void *key, void *value)
 {
-  /* Cannot use find_mapping here because we treat deleted entries
-     specially.  */
+  /* Cannot use find_mapping here because we're actually looking for
+     an *empty* entry.  */
 
   struct mapping *mappings = ht->mappings;
   int size = ht->size;
@@ -349,23 +349,17 @@ hash_table_put (struct hash_table *ht, const void *key, void *value)
 	  mp->value = value;
 	  break;
 	}
-      else if (DELETED_ENTRY_P (mp_key))
+      else if (DELETED_ENTRY_P (mp_key)
+	       || !ht->test_function (key, mp_key))
 	{
-	  /* We're replacing a deleteed entry, so ht->count gets
-             increased, but ht->fullness remains unchanged.  */
-	  ++ht->count;
-	  goto just_insert;
+	  if (++location == size)
+	    location = 0;
 	}
-      else if (ht->test_function (key, mp_key))
+      else			/* equal to key and not deleted */
 	{
 	  /* We're replacing an existing entry, so ht->count and
              ht->fullness remain unchanged.  */
 	  goto just_insert;
-	}
-      else
-	{
-	  if (++location == size)
-	    location = 0;
 	}
     }
   if (ht->fullness * 4 > ht->size * 3)

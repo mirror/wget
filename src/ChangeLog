@@ -1,5 +1,9 @@
 2000-11-21  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* hash.c (hash_table_put): Don't overwrite deleted mappings.
+
+2000-11-21  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* hash.c (find_mapping): New function.
 	(hash_table_get): Use it.
 	(hash_table_get_pair): Ditto.
