@@ -53,13 +53,16 @@ extern int errno;
 
 /* A list of unsafe characters for encoding, as per RFC1738.  '@' and
    ':' (not listed in RFC) were added because of user/password
-   encoding, and \033 for safe printing.  */
+   encoding.  */
 
 #ifndef WINDOWS
-# define URL_UNSAFE " <>\"#%{}|\\^~[]`@:\033"
+# define URL_UNSAFE_CHARS "<>\"#%{}|\\^~[]`@:"
 #else  /* WINDOWS */
-# define URL_UNSAFE " <>\"%{}|\\^[]`\033"
+# define URL_UNSAFE_CHARS "<>\"%{}|\\^[]`"
 #endif /* WINDOWS */
+
+#define UNSAFE_CHAR(c) (((c) >= 0 && (c) <= 32)			\
+			|| strchr (URL_UNSAFE_CHARS, c))
 
 /* If S contains unsafe characters, free it and replace it with a
    version that doesn't.  */
@@ -154,9 +157,9 @@ skip_url (const char *url)
 {
   int i;
 
-  if (toupper (url[0]) == 'U'
-      && toupper (url[1]) == 'R'
-      && toupper (url[2]) == 'L'
+  if (TOUPPER (url[0]) == 'U'
+      && TOUPPER (url[1]) == 'R'
+      && TOUPPER (url[2]) == 'L'
       && url[3] == ':')
     {
       /* Skip blanks.  */
@@ -172,7 +175,7 @@ int
 contains_unsafe (const char *s)
 {
   for (; *s; s++)
-    if (strchr (URL_UNSAFE, *s))
+    if (UNSAFE_CHAR (*s))
       return 1;
   return 0;
 }
@@ -209,8 +212,8 @@ decode_string (char *s)
   *p = '\0';
 }
 
-/* Encodes the unsafe characters (listed in URL_UNSAFE) in a given
-   string, returning a malloc-ed %XX encoded string.  */
+/* Encodes the unsafe characters (listed in URL_UNSAFE_CHARS) in a
+   given string, returning a malloc-ed %XX encoded string.  */
 char *
 encode_string (const char *s)
 {
@@ -220,12 +223,12 @@ encode_string (const char *s)
 
   b = s;
   for (i = 0; *s; s++, i++)
-    if (strchr (URL_UNSAFE, *s))
+    if (UNSAFE_CHAR (*s))
       i += 2; /* Two more characters (hex digits) */
   res = (char *)xmalloc (i + 1);
   s = b;
   for (p = res; *s; s++)
-    if (strchr (URL_UNSAFE, *s))
+    if (UNSAFE_CHAR (*s))
       {
 	const unsigned char c = *s;
 	*p++ = '%';
@@ -464,7 +467,7 @@ parseurl (const char *url, struct urlinfo *u, int strict)
     {
       u->ftp_type = process_ftp_type (u->path);
       /* #### We don't handle type `d' correctly yet.  */
-      if (!u->ftp_type || toupper (u->ftp_type) == 'D')
+      if (!u->ftp_type || TOUPPER (u->ftp_type) == 'D')
 	u->ftp_type = 'I';
     }
   DEBUGP (("opath %s -> ", u->path));

@@ -1,3 +1,17 @@
+1998-12-01  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* url.c (UNSAFE_CHAR): New macro.
+	(contains_unsafe): Use it.
+	(encode_string): Ditto.
+
+1998-12-01  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* main.c (i18n_initialize): Use LC_MESSAGES only if available.
+
+2000-03-31  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* Use TOUPPER/TOLOWER.
+
 1998-12-22  Alexander V. Lukyanov  <lav@yars.free.net>
 
 	* ftp-opie.c (btoe): Zero-terminate OSTORE.
