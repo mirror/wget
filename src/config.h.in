@@ -204,10 +204,15 @@ char *alloca ();
    But I don't think that's right.  The __USE_XOPEN thing is an
    internal glibc2 thing that gets defined in features.h.  From
    reading that file carefully, I think we need something like this
-   incantation.  Without testing it, I can only hope that this won't
-   screw things up on other, non-glibc2 systems.  */
+   incantation to get the kind of features we use.
 
-#define _XOPEN_SOURCE 500
-#define _SVID_SOURCE
+   However, testing Wget under Solaris showed that compilation of
+   connect.c chokes because of the _XOPEN_SOURCE definition.  So I'm
+   disabling it.  If anyone understands this maze, please help!  */
+
+#ifdef __linux__
+# define _XOPEN_SOURCE 500
+# define _SVID_SOURCE
+#endif
 
 #endif /* CONFIG_H */

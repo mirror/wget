@@ -1,3 +1,8 @@
+2000-11-15  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* config.h.in: Do the _XOPEN_SOURCE and _SVID_SOURCE things only
+	on Linux.
+
 2000-11-12  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* host.c (realhost): Add HOST to the list with quality==0 only if
