@@ -6,13 +6,13 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.9\n"
+"Project-Id-Version: wget 1.9.1\n"
 "POT-Creation-Date: 2003-10-11 16:21+0200\n"
-"PO-Revision-Date: 2003-10-24 19:22+0200\n"
+"PO-Revision-Date: 2003-11-16 19:00+0200\n"
 "Last-Translator: Jochen Hein <jochen@jochen.org>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
 #: src/connect.c:88
@@ -1345,49 +1345,3 @@ msgstr "Im Hintergrund geht's weiter, die Prozeßnummer ist %d.\n"
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Entfernen des symbolischen Verweises »%s« fehlgeschlagen: %s\n"
-
-#~ msgid "Syntax error in Set-Cookie at character `%c'.\n"
-#~ msgstr "Syntaxfehler bei Set-Cookie, an der Stelle %d.\n"
-
-#~ msgid "%s: BUG: unknown command `%s', value `%s'.\n"
-#~ msgstr "%s: BUG: Unbekanntes Kommando »%s«, Wert »%s«.\n"
-
-#~ msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
-#~ msgstr "%s: %s: »%s« ist nicht in eine IP-Adresse umwandelbar.\n"
-
-#~ msgid "%s: %s: invalid command\n"
-#~ msgstr "%s: %s: Ungültiges Kommando\n"
-
-#~ msgid "Could not find proxy host.\n"
-#~ msgstr "Proxy-Host nicht auffindbar.\n"
-
-#~ msgid "%s: Redirection cycle detected.\n"
-#~ msgstr "%d: Die Anzahl der Verweise ist zu groß.\n"
-
-#~ msgid "Cannot initiate EPSV transfer.\n"
-#~ msgstr "Kann PASV-Übertragung nicht beginnen.\n"
-
-#~ msgid "Cannot parse EPSV response.\n"
-#~ msgstr "Kann PASV-Antwort nicht auswerten.\n"
-
-#~ msgid "Invalid EPRT.\n"
-#~ msgstr "Ungültiger EPRT.\n"
-
-#~ msgid ""
-#~ "--%s--  %s\n"
-#~ "  %s => `%s'\n"
-#~ msgstr ""
-#~ "--%s--  %s\n"
-#~ "  %s => »%s«\n"
-
-#~ msgid ""
-#~ "       --inet                   use IP version 4 socket.\n"
-#~ "       --inet6                  use IP version 6 socket.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "       --inet                   Verwende IP version 4.\n"
-#~ "       --inet6                  Verwende IP version 6.\n"
-#~ "\n"
-
-#~ msgid "Can't inet and inet6 be specified at the same time.\n"
-#~ msgstr "»inet« und »inet6« ist gleichzeitig unmöglich.\n"
