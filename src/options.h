@@ -177,9 +177,11 @@ struct options
   int   sslprotocol;		/* 0 = auto / 1 = v2 / 2 = v3 / 3 = TLSv1 */
 #endif /* HAVE_SSL */
 
-  int   cookies;
-  char *cookies_input;
-  char *cookies_output;
+  int   cookies;		/* whether cookies are used. */
+  char *cookies_input;		/* file we're loading the cookies from. */
+  char *cookies_output;		/* file we're saving the cookies to. */
+  int   keep_session_cookies;	/* whether session cookies should be
+				   saved and loaded. */
 
   char *post_data;		/* POST query string */
   char *post_file_name;		/* File to post */

@@ -210,6 +210,7 @@ HTTP options:\n\
        --cookies=off         don't use cookies.\n\
        --load-cookies=FILE   load cookies from FILE before session.\n\
        --save-cookies=FILE   save cookies to FILE after session.\n\
+       --keep-session-cookies  load and save session (non-permanent) cookies.\n\
        --post-data=STRING    use the POST method; send STRING as the data.\n\
        --post-file=FILE      use the POST method; send contents of FILE.\n\
 \n"), stdout);
@@ -287,6 +288,7 @@ main (int argc, char *const *argv)
     { "help", no_argument, NULL, 'h' },
     { "html-extension", no_argument, NULL, 'E' },
     { "ignore-length", no_argument, NULL, 138 },
+    { "keep-session-cookies", no_argument, NULL, 181 },
     { "mirror", no_argument, NULL, 'm' },
     { "no-clobber", no_argument, NULL, 141 },
     { "no-directories", no_argument, NULL, 147 },
@@ -535,6 +537,9 @@ GNU General Public License for more details.\n"));
 	  break;
 	case 177:
 	  setoptval ("strictcomments", "on");
+	  break;
+	case 181:
+	  setoptval ("keepsessioncookies", "on");
 	  break;
 
 	  /* Options accepting an argument: */

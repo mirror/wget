@@ -1,3 +1,15 @@
+2003-11-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* cookies.c (save_cookies_mapper): Respect the setting of
+	keep-session-cookies.
+	(cookie_jar_load): Import session cookies.
+	Based on code submitted by Nicolas Schodet.
+
+	* utils.c (datetime_str): Use information in TM when it's
+	non-NULL.
+
+	* main.c (main): New option `--keep-session-cookies'.
+
 2003-11-04  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* Makefile.in (realclean): Delete config.h.in.

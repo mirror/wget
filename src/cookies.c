@@ -108,12 +108,13 @@ struct cookie {
 				   whole. */
 
   int permanent;		/* whether the cookie should outlive
-				   the session */
-  time_t expiry_time;		/* time when the cookie expires */
+				   the session. */
+  time_t expiry_time;		/* time when the cookie expires, 0
+				   means undetermined. */
 
   int discard_requested;	/* whether cookie was created to
 				   request discarding another
-				   cookie */
+				   cookie. */
 
   char *attr;			/* cookie attribute name */
   char *value;			/* cookie attribute value */
@@ -123,7 +124,6 @@ struct cookie {
 };
 
 #define PORT_ANY (-1)
-#define COOKIE_EXPIRED_P(c) ((c)->expiry_time != 0 && (c)->expiry_time < cookies_now)
 
 /* Allocate and return a new, empty cookie structure. */
 
@@ -132,12 +132,21 @@ cookie_new (void)
 {
   struct cookie *cookie = xnew0 (struct cookie);
 
-  /* Both cookie->permanent and cookie->expiry_time are now 0.  By
-     default, we assume that the cookie is non-permanent and valid
-     until the end of the session.  */
+  /* Both cookie->permanent and cookie->expiry_time are now 0.  This
+     means that the cookie doesn't expire, but is only valid for this
+     session (i.e. not written out to disk).  */
 
   cookie->port = PORT_ANY;
   return cookie;
+}
+
+/* Non-zero if the cookie has expired.  Assumes cookies_now has been
+   set by one of the entry point functions.  */
+
+static int
+cookie_expired_p (const struct cookie *c)
+{
+  return c->expiry_time != 0 && c->expiry_time < cookies_now;
 }
 
 /* Deallocate COOKIE and its components. */
@@ -252,15 +261,20 @@ store_cookie (struct cookie_jar *jar, struct cookie *cookie)
   hash_table_put (jar->chains, chain_key, cookie);
   ++jar->cookie_count;
 
-  DEBUGP (("\nStored cookie %s %d%s %s %s %d %s %s %s\n",
-	   cookie->domain, cookie->port,
-	   cookie->port == PORT_ANY ? " (ANY)" : "",
-	   cookie->path,
-	   cookie->permanent ? "permanent" : "nonpermanent",
-	   cookie->secure,
-	   cookie->expiry_time
-	   ? asctime (localtime (&cookie->expiry_time)) : "<undefined>",
-	   cookie->attr, cookie->value));
+#ifdef ENABLE_DEBUG
+  if (opt.debug)
+    {
+      time_t exptime = (time_t) cookie->expiry_time;
+      DEBUGP (("\nStored cookie %s %d%s %s <%s> <%s> [expiry %s] %s %s\n",
+	       cookie->domain, cookie->port,
+	       cookie->port == PORT_ANY ? " (ANY)" : "",
+	       cookie->path,
+	       cookie->permanent ? "permanent" : "session",
+	       cookie->secure ? "secure" : "insecure",
+	       cookie->expiry_time ? datetime_str (&exptime) : "none",
+	       cookie->attr, cookie->value));
+    }
+#endif
 }
 
 /* Discard a cookie matching COOKIE's domain, port, path, and
@@ -386,8 +400,8 @@ update_cookie_field (struct cookie *cookie,
 	  cookie->expiry_time = (time_t)expires;
 	}
       else
-	/* Error in expiration spec.  Assume default (cookie valid for
-	   this session.)  */
+	/* Error in expiration spec.  Assume default (cookie doesn't
+	   expire, but valid only for this session.)  */
 	;
 
       /* According to netscape's specification, expiry time in the
@@ -649,9 +663,9 @@ parse_set_cookies (const char *sc,
 
 /* Check whether ADDR matches <digits>.<digits>.<digits>.<digits>.
 
-  We don't want to call network functions like inet_addr() because all
-  we need is a check, preferrably one that is small, fast, and
-  well-defined.  */
+   We don't want to call network functions like inet_addr() because
+   all we need is a check, preferrably one that is small, fast, and
+   well-defined.  */
 
 static int
 numeric_address_p (const char *addr)
@@ -818,9 +832,9 @@ check_path_match (const char *cookie_path, const char *path)
    depending on the contents.  */
 
 void
-cookie_jar_process_set_cookie (struct cookie_jar *jar,
-			       const char *host, int port,
-			       const char *path, const char *set_cookie)
+cookie_handle_set_cookie (struct cookie_jar *jar,
+			  const char *host, int port,
+			  const char *path, const char *set_cookie)
 {
   struct cookie *cookie;
   cookies_now = time (NULL);
@@ -969,7 +983,7 @@ cookie_matches_url (const struct cookie *cookie,
 {
   int pg;
 
-  if (COOKIE_EXPIRED_P (cookie))
+  if (cookie_expired_p (cookie))
     /* Ignore stale cookies.  Don't bother unchaining the cookie at
        this point -- Wget is a relatively short-lived application, and
        stale cookies will not be saved by `save_cookies'.  On the
@@ -1097,9 +1111,8 @@ goodness_comparator (const void *p1, const void *p2)
    generated, NULL is returned.  */
 
 char *
-cookie_jar_generate_cookie_header (struct cookie_jar *jar, const char *host,
-				   int port, const char *path,
-				   int connection_secure_p)
+cookie_header (struct cookie_jar *jar, const char *host,
+	       int port, const char *path, int secflag)
 {
   struct cookie **chains;
   int chain_count;
@@ -1132,8 +1145,7 @@ cookie_jar_generate_cookie_header (struct cookie_jar *jar, const char *host,
   count = 0;
   for (i = 0; i < chain_count; i++)
     for (cookie = chains[i]; cookie; cookie = cookie->next)
-      if (cookie_matches_url (cookie, host, port, path, connection_secure_p,
-			      NULL))
+      if (cookie_matches_url (cookie, host, port, path, secflag, NULL))
 	++count;
   if (!count)
     return NULL;		/* no cookies matched */
@@ -1148,8 +1160,7 @@ cookie_jar_generate_cookie_header (struct cookie_jar *jar, const char *host,
     for (cookie = chains[i]; cookie; cookie = cookie->next)
       {
 	int pg;
-	if (!cookie_matches_url (cookie, host, port, path,
-				 connection_secure_p, &pg))
+	if (!cookie_matches_url (cookie, host, port, path, secflag, &pg))
 	  continue;
 	outgoing[ocnt].cookie = cookie;
 	outgoing[ocnt].domain_goodness = strlen (cookie->domain);
@@ -1356,14 +1367,21 @@ cookie_jar_load (struct cookie_jar *jar, const char *file)
 	 malloced.)  */
       *expires_e = '\0';
       sscanf (expires_b, "%lf", &expiry);
-      if (expiry < cookies_now)
-	/* ignore stale cookie. */
-	goto abort;
-      cookie->expiry_time = expiry;
 
-      /* If the cookie has survived being saved into an external file,
-	 it is obviously permanent.  */
-      cookie->permanent = 1;
+      if (expiry == 0)
+	{
+	  /* EXPIRY can be 0 for session cookies saved because the
+	     user specified `--keep-session-cookies' in the past.
+	     They remain session cookies, and will be saved only if
+	     the user has specified `keep-session-cookies' again.  */
+	}
+      else
+	{
+	  if (expiry < cookies_now)
+	    goto abort;		/* ignore stale cookie. */
+	  cookie->expiry_time = expiry;
+	  cookie->permanent = 1;
+	}
 
       store_cookie (jar, cookie);
 
@@ -1388,9 +1406,9 @@ save_cookies_mapper (void *key, void *value, void *arg)
   struct cookie *cookie = (struct cookie *)value;
   for (; cookie; cookie = cookie->next)
     {
-      if (!cookie->permanent)
+      if (!cookie->permanent && !opt.keep_session_cookies)
 	continue;
-      if (COOKIE_EXPIRED_P (cookie))
+      if (cookie_expired_p (cookie))
 	continue;
       if (!cookie->domain_exact)
 	fputc ('.', fp);
@@ -1428,7 +1446,7 @@ cookie_jar_save (struct cookie_jar *jar, const char *file)
     }
 
   fputs ("# HTTP cookie file.\n", fp);
-  fprintf (fp, "# Generated by Wget on %s.\n", datetime_str (NULL));
+  fprintf (fp, "# Generated by Wget on %s.\n", datetime_str (&cookies_now));
   fputs ("# Edit at your own risk.\n\n", fp);
 
   hash_table_map (jar->chains, save_cookies_mapper, fp);
@@ -1436,7 +1454,6 @@ cookie_jar_save (struct cookie_jar *jar, const char *file)
   if (ferror (fp))
     logprintf (LOG_NOTQUIET, _("Error writing to `%s': %s\n"),
 	       file, strerror (errno));
-
   if (fclose (fp) < 0)
     logprintf (LOG_NOTQUIET, _("Error closing `%s': %s\n"),
 	       file, strerror (errno));

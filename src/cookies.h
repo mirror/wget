@@ -35,11 +35,10 @@ struct cookie_jar;
 struct cookie_jar *cookie_jar_new PARAMS ((void));
 void cookie_jar_delete PARAMS ((struct cookie_jar *));
 
-void cookie_jar_process_set_cookie PARAMS ((struct cookie_jar *, const char *,
-					    int, const char *, const char *));
-char *cookie_jar_generate_cookie_header PARAMS ((struct cookie_jar *,
-						 const char *, int,
-						 const char *, int));
+void cookie_handle_set_cookie PARAMS ((struct cookie_jar *, const char *,
+				       int, const char *, const char *));
+char *cookie_header PARAMS ((struct cookie_jar *,
+			     const char *, int, const char *, int));
 
 void cookie_jar_load PARAMS ((struct cookie_jar *, const char *));
 void cookie_jar_save PARAMS ((struct cookie_jar *, const char *));

@@ -344,8 +344,7 @@ http_process_set_cookie (const char *hdr, void *arg)
   /* The jar should have been created by now. */
   assert (wget_cookie_jar != NULL);
 
-  cookie_jar_process_set_cookie (wget_cookie_jar, u->host, u->port, u->path,
-				 hdr);
+  cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port, u->path, hdr);
   return 1;
 }
 
@@ -901,14 +900,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     request_keep_alive = NULL;
 
   if (opt.cookies)
-    cookies = cookie_jar_generate_cookie_header (wget_cookie_jar, u->host,
-						 u->port, u->path,
+    cookies = cookie_header (wget_cookie_jar, u->host, u->port, u->path,
 #ifdef HAVE_SSL
-						 u->scheme == SCHEME_HTTPS
+			     u->scheme == SCHEME_HTTPS
 #else
-						 0
+			     0
 #endif
-				 );
+			     );
 
   if (opt.post_data || opt.post_file_name)
     {

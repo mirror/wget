@@ -177,20 +177,14 @@ sepstring (const char *s)
 /* Return pointer to a static char[] buffer in which zero-terminated
    string-representation of TM (in form hh:mm:ss) is printed.
 
-   If TM is non-NULL, the current time-in-seconds will be stored
-   there.
-
-   (#### This is misleading: one would expect TM would be used instead
-   of the current time in that case.  This design was probably
-   influenced by the design time(2), and should be changed at some
-   points.  No callers use non-NULL TM anyway.)  */
+   If TM is NULL, the current time will be used.  */
 
 char *
 time_str (time_t *tm)
 {
   static char output[15];
   struct tm *ptm;
-  time_t secs = time (tm);
+  time_t secs = tm ? *tm : time (NULL);
 
   if (secs == -1)
     {
@@ -211,7 +205,7 @@ datetime_str (time_t *tm)
 {
   static char output[20];	/* "YYYY-MM-DD hh:mm:ss" + \0 */
   struct tm *ptm;
-  time_t secs = time (tm);
+  time_t secs = tm ? *tm : time (NULL);
 
   if (secs == -1)
     {
