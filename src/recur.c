@@ -6,7 +6,7 @@ This file is part of GNU Wget.
 GNU Wget is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ (at your option) any later version.
 
 GNU Wget is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -66,10 +66,13 @@ extern struct hash_table *downloaded_html_set;
 /* Functions for maintaining the URL queue.  */
 
 struct queue_element {
-  const char *url;
-  const char *referer;
-  int depth;
-  struct queue_element *next;
+  const char *url;		/* the URL to download */
+  const char *referer;		/* the referring document */
+  int depth;			/* the depth */
+  unsigned int html_allowed :1;	/* whether the document is allowed to
+				   be treated as HTML. */
+
+  struct queue_element *next;	/* next element in queue */
 };
 
 struct url_queue {
@@ -102,12 +105,13 @@ url_queue_delete (struct url_queue *queue)
 
 static void
 url_enqueue (struct url_queue *queue,
-	     const char *url, const char *referer, int depth)
+	     const char *url, const char *referer, int depth, int html_allowed)
 {
   struct queue_element *qel = xmalloc (sizeof (*qel));
   qel->url = url;
   qel->referer = referer;
   qel->depth = depth;
+  qel->html_allowed = html_allowed;
   qel->next = NULL;
 
   ++queue->count;
@@ -130,7 +134,8 @@ url_enqueue (struct url_queue *queue,
 
 static int
 url_dequeue (struct url_queue *queue,
-	     const char **url, const char **referer, int *depth)
+	     const char **url, const char **referer, int *depth,
+	     int *html_allowed)
 {
   struct queue_element *qel = queue->head;
 
@@ -144,6 +149,7 @@ url_dequeue (struct url_queue *queue,
   *url = qel->url;
   *referer = qel->referer;
   *depth = qel->depth;
+  *html_allowed = qel->html_allowed;
 
   --queue->count;
 
@@ -208,14 +214,14 @@ retrieve_tree (const char *start_url)
 
   /* Enqueue the starting URL.  Use start_url_parsed->url rather than
      just URL so we enqueue the canonical form of the URL.  */
-  url_enqueue (queue, xstrdup (start_url_parsed->url), NULL, 0);
+  url_enqueue (queue, xstrdup (start_url_parsed->url), NULL, 0, 1);
   string_set_add (blacklist, start_url_parsed->url);
 
   while (1)
     {
       int descend = 0;
       char *url, *referer, *file = NULL;
-      int depth;
+      int depth, html_allowed;
       boolean dash_p_leaf_HTML = FALSE;
 
       if (downloaded_exceeds_quota ())
@@ -227,7 +233,7 @@ retrieve_tree (const char *start_url)
 
       if (!url_dequeue (queue,
 			(const char **)&url, (const char **)&referer,
-			&depth))
+			&depth, &html_allowed))
 	break;
 
       /* ...and download it.  Note that this download is in most cases
@@ -245,7 +251,8 @@ retrieve_tree (const char *start_url)
 	  DEBUGP (("Already downloaded \"%s\", reusing it from \"%s\".\n",
 		   url, file));
 
-	  if (downloaded_html_set
+	  if (html_allowed
+	      && downloaded_html_set
 	      && string_set_contains (downloaded_html_set, file))
 	    descend = 1;
 	}
@@ -259,7 +266,7 @@ retrieve_tree (const char *start_url)
 	  status = retrieve_url (url, &file, &redirected, referer, &dt);
 	  opt.recursive = oldrec;
 
-	  if (file && status == RETROK
+	  if (html_allowed && file && status == RETROK
 	      && (dt & RETROKF) && (dt & TEXTHTML))
 	    descend = 1;
 
@@ -341,7 +348,8 @@ retrieve_tree (const char *start_url)
 					blacklist))
 		    {
 		      url_enqueue (queue, xstrdup (child->url->url),
-				   xstrdup (url), depth + 1);
+				   xstrdup (url), depth + 1,
+				   child->link_expect_html);
 		      /* We blacklist the URL we have enqueued, because we
 			 don't want to enqueue (and hence download) the
 			 same URL twice.  */
@@ -382,8 +390,9 @@ retrieve_tree (const char *start_url)
      now.  */
   {
     char *d1, *d2;
-    int d3;
-    while (url_dequeue (queue, (const char **)&d1, (const char **)&d2, &d3))
+    int d3, d4;
+    while (url_dequeue (queue,
+			(const char **)&d1, (const char **)&d2, &d3, &d4))
       {
 	xfree (d1);
 	FREE_MAYBE (d2);

@@ -1,5 +1,15 @@
 2003-10-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* recur.c (retrieve_tree): Don't descend into documents that are
+	not expected to contain HTML, regardless of their content-type.
+
+	* html-url.c (tag_url_attributes): Record which attributes are
+	supposed to yield HTML links that can be followed.
+	(tag_find_urls): Propagate that information to the caller through
+	struct urlpos.
+
+2003-10-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* hash.c (find_mapping): Return the next available mapping when
 	the key is not found, not NULL.
 	(hash_table_put): Use find_mapping to find the storage for the new

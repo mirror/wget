@@ -121,11 +121,19 @@ static struct known_tag {
 /* tag_url_attributes documents which attributes of which tags contain
    URLs to harvest.  It is used by tag_find_urls.  */
 
-/* Defines for the FLAGS field; currently only one flag is defined. */
+/* Defines for the FLAGS. */
 
-/* This tag points to an external document not necessary for rendering this 
-   document (i.e. it's not an inlined image, stylesheet, etc.). */
-#define TUA_EXTERNAL 1
+/* The link is "inline", i.e. needs to be retrieved for this document
+   to be correctly rendered.  Inline links include inlined images,
+   stylesheets, children frames, etc.  */
+#define ATTR_INLINE	1
+
+/* The link is expected to yield HTML contents.  It's important not to
+   try to follow HTML obtained by following e.g. <img src="...">
+   regardless of content-type.  Doing this causes infinite loops for
+   "images" that return non-404 error pages with links to the same
+   image.  */
+#define ATTR_HTML	2
 
 /* For tags handled by tag_find_urls: attributes that contain URLs to
    download. */
@@ -134,26 +142,26 @@ static struct {
   const char *attr_name;
   int flags;
 } tag_url_attributes[] = {
-  { TAG_A,		"href",		TUA_EXTERNAL },
-  { TAG_APPLET,		"code",		0 },
-  { TAG_AREA,		"href",		TUA_EXTERNAL },
-  { TAG_BGSOUND,	"src",		0 },
-  { TAG_BODY,		"background",	0 },
-  { TAG_EMBED,		"href",		TUA_EXTERNAL },
-  { TAG_EMBED,		"src",		0 },
-  { TAG_FIG,		"src",		0 },
-  { TAG_FRAME,		"src",		0 },
-  { TAG_IFRAME,		"src",		0 },
-  { TAG_IMG,		"href",		0 },
-  { TAG_IMG,		"lowsrc",	0 },
-  { TAG_IMG,		"src",		0 },
-  { TAG_INPUT,		"src",		0 },
-  { TAG_LAYER,		"src",		0 },
-  { TAG_OVERLAY,	"src",		0 },
-  { TAG_SCRIPT,		"src",		0 },
-  { TAG_TABLE,		"background",	0 },
-  { TAG_TD,		"background",	0 },
-  { TAG_TH,		"background",	0 }
+  { TAG_A,		"href",		ATTR_HTML },
+  { TAG_APPLET,		"code",		ATTR_INLINE },
+  { TAG_AREA,		"href",		ATTR_HTML },
+  { TAG_BGSOUND,	"src",		ATTR_INLINE },
+  { TAG_BODY,		"background",	ATTR_INLINE },
+  { TAG_EMBED,		"href",		ATTR_HTML },
+  { TAG_EMBED,		"src",		ATTR_INLINE | ATTR_HTML },
+  { TAG_FIG,		"src",		ATTR_INLINE },
+  { TAG_FRAME,		"src",		ATTR_INLINE | ATTR_HTML },
+  { TAG_IFRAME,		"src",		ATTR_INLINE | ATTR_HTML },
+  { TAG_IMG,		"href",		ATTR_INLINE },
+  { TAG_IMG,		"lowsrc",	ATTR_INLINE },
+  { TAG_IMG,		"src",		ATTR_INLINE },
+  { TAG_INPUT,		"src",		ATTR_INLINE },
+  { TAG_LAYER,		"src",		ATTR_INLINE | ATTR_HTML },
+  { TAG_OVERLAY,	"src",		ATTR_INLINE | ATTR_HTML },
+  { TAG_SCRIPT,		"src",		ATTR_INLINE },
+  { TAG_TABLE,		"background",	ATTR_INLINE },
+  { TAG_TD,		"background",	ATTR_INLINE },
+  { TAG_TH,		"background",	ATTR_INLINE }
 };
 
 /* The lists of interesting tags and attributes are built dynamically,
@@ -262,7 +270,7 @@ struct map_context {
    size.  */
 
 static struct urlpos *
-append_one_url (const char *link_uri, int inlinep,
+append_one_url (const char *link_uri,
 		struct taginfo *tag, int attrind, struct map_context *ctx)
 {
   int link_has_scheme = url_has_scheme (link_uri);
@@ -326,7 +334,6 @@ append_one_url (const char *link_uri, int inlinep,
   newel->url = url;
   newel->pos = tag->attrs[attrind].value_raw_beginning - ctx->text;
   newel->size = tag->attrs[attrind].value_raw_size;
-  newel->link_inline_p = inlinep;
 
   /* A URL is relative if the host is not named, and the name does not
      start with `/'.  */
@@ -393,8 +400,15 @@ tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
 	  if (0 == strcasecmp (tag->attrs[attrind].name,
 			       tag_url_attributes[i].attr_name))
 	    {
-	      int flags = tag_url_attributes[i].flags;
-	      append_one_url (link, !(flags & TUA_EXTERNAL), tag, attrind, ctx);
+	      struct urlpos *up = append_one_url (link, tag, attrind, ctx);
+	      if (up)
+		{
+		  int flags = tag_url_attributes[i].flags;
+		  if (flags & ATTR_INLINE)
+		    up->link_inline_p = 1;
+		  if (flags & ATTR_HTML)
+		    up->link_expect_html = 1;
+		}
 	    }
 	}
     }
@@ -411,7 +425,7 @@ tag_handle_base (int tagid, struct taginfo *tag, struct map_context *ctx)
   if (!newbase)
     return;
 
-  base_urlpos = append_one_url (newbase, 0, tag, attrind, ctx);
+  base_urlpos = append_one_url (newbase, tag, attrind, ctx);
   if (!base_urlpos)
     return;
   base_urlpos->ignore_when_downloading = 1;
@@ -434,10 +448,9 @@ tag_handle_form (int tagid, struct taginfo *tag, struct map_context *ctx)
   char *action = find_attr (tag, "action", &attrind);
   if (action)
     {
-      struct urlpos *action_urlpos = append_one_url (action, 0, tag,
-						     attrind, ctx);
-      if (action_urlpos)
-	action_urlpos->ignore_when_downloading = 1;
+      struct urlpos *up = append_one_url (action, tag, attrind, ctx);
+      if (up)
+	up->ignore_when_downloading = 1;
     }
 }
 
@@ -458,11 +471,15 @@ tag_handle_link (int tagid, struct taginfo *tag, struct map_context *ctx)
   */
   if (href)
     {
-      char *rel  = find_attr (tag, "rel", NULL);
-      int inlinep = (rel
-		     && (0 == strcasecmp (rel, "stylesheet")
-			 || 0 == strcasecmp (rel, "shortcut icon")));
-      append_one_url (href, inlinep, tag, attrind, ctx);
+      struct urlpos *up = append_one_url (href, tag, attrind, ctx);
+      if (up)
+	{
+	  char *rel = find_attr (tag, "rel", NULL);
+	  if (rel
+	      && (0 == strcasecmp (rel, "stylesheet")
+		  || 0 == strcasecmp (rel, "shortcut icon")))
+	    up->link_inline_p = 1;
+	}
     }
 }
 
@@ -511,7 +528,7 @@ tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
       while (ISSPACE (*p))
 	++p;
 
-      entry = append_one_url (p, 0, tag, attrind, ctx);
+      entry = append_one_url (p, tag, attrind, ctx);
       if (entry)
 	{
 	  entry->link_refresh_p = 1;

@@ -56,11 +56,11 @@ struct urlpos {
 
   /* Information about the original link: */
 
-  unsigned int link_relative_p	:1; /* was the link relative? */
-  unsigned int link_complete_p	:1; /* was the link complete (with the
-				       host name, etc.) */
-  unsigned int link_base_p	:1; /* was the link <base href=...> */
-  unsigned int link_inline_p	:1; /* needed to render the page. */
+  unsigned int link_relative_p	:1; /* the link was relative */
+  unsigned int link_complete_p	:1; /* the link was complete (had host name) */
+  unsigned int link_base_p	:1; /* the url came from <base href=...> */
+  unsigned int link_inline_p	:1; /* needed to render the page */
+  unsigned int link_expect_html	:1; /* expected to contain HTML */
 
   unsigned int link_refresh_p	:1; /* link was received from
 				       <meta http-equiv=refresh content=...> */
