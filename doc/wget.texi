@@ -295,7 +295,7 @@ styles, or specify options after the command-line arguments. Thus you
 may write:
 
 @example
-wget -r --tries=10 http://fly.cc.fer.hr/ -o log
+wget -r --tries=10 http://fly.srk.fer.hr/ -o log
 @end example
 
 The space between the option accepting an argument and the argument may
@@ -659,14 +659,14 @@ once, the filenames will get extensions @samp{.n}).
 @itemx --force-directories
 The opposite of @samp{-nd}---create a hierarchy of directories, even if
 one would not have been created otherwise.  E.g. @samp{wget -x
-http://fly.cc.fer.hr/robots.txt} will save the downloaded file to
-@file{fly.cc.fer.hr/robots.txt}.
+http://fly.srk.fer.hr/robots.txt} will save the downloaded file to
+@file{fly.srk.fer.hr/robots.txt}.
 
 @item -nH
 @itemx --no-host-directories
 Disable generation of host-prefixed directories.  By default, invoking
-Wget with @samp{-r http://fly.cc.fer.hr/} will create a structure of
-directories beginning with @file{fly.cc.fer.hr/}.  This option disables
+Wget with @samp{-r http://fly.srk.fer.hr/} will create a structure of
+directories beginning with @file{fly.srk.fer.hr/}.  This option disables
 such behavior.
 
 @cindex cut directories
@@ -788,7 +788,7 @@ You may define more than one additional header by specifying
 @group
 wget --header='Accept-Charset: iso-8859-2' \
      --header='Accept-Language: hr'        \
-       http://fly.cc.fer.hr/
+       http://fly.srk.fer.hr/
 @end group
 @end example
 
@@ -871,7 +871,7 @@ shell-like special characters (@dfn{wildcards}), like @samp{*},
 same directory at once, like:
 
 @example
-wget ftp://gnjilux.cc.fer.hr/*.msg
+wget ftp://gnjilux.srk.fer.hr/*.msg
 @end example
 
 By default, globbing will be turned on if the @sc{url} contains a
@@ -1188,7 +1188,7 @@ unnecessary data.  Most of the time the users bear in mind exactly what
 they want to download, and want Wget to follow only specific links.
 
 For example, if you wish to download the music archive from
-@samp{fly.cc.fer.hr}, you will not want to download all the home pages
+@samp{fly.srk.fer.hr}, you will not want to download all the home pages
 that happen to be referenced by an obscure part of the archive.
 
 Wget possesses several mechanisms that allows you to fine-tune which
@@ -1228,8 +1228,8 @@ all @sc{url}s that refer to the same host will be retrieved.
 
 The problem with this option are the aliases of the hosts and domains.
 Thus there is no way for Wget to know that @samp{regoc.srce.hr} and
-@samp{www.srce.hr} are the same host, or that @samp{fly.cc.fer.hr} is
-the same as @samp{fly.cc.etf.hr}.  Whenever an absolute link is
+@samp{www.srce.hr} are the same host, or that @samp{fly.srk.fer.hr} is
+the same as @samp{fly.cc.fer.hr}.  Whenever an absolute link is
 encountered, the host is @sc{dns}-looked-up with @code{gethostbyname} to
 check whether we are maybe dealing with the same hosts.  Although the
 results of @code{gethostbyname} are cached, it is still a great
@@ -1269,12 +1269,12 @@ Feel free to use this options since it will speed things up, with almost
 all the reliability of checking for all hosts.  Thus you could invoke
 
 @example
-wget -r -D.hr http://fly.cc.fer.hr/
+wget -r -D.hr http://fly.srk.fer.hr/
 @end example
 
 to make sure that only the hosts in @samp{.hr} domain get
-@sc{dns}-looked-up for being equal to @samp{fly.cc.fer.hr}.  So
-@samp{fly.cc.etf.hr} will be checked (only once!) and found equal, but
+@sc{dns}-looked-up for being equal to @samp{fly.srk.fer.hr}.  So
+@samp{fly.cc.fer.hr} will be checked (only once!) and found equal, but
 @samp{www.gnu.ai.mit.edu} will not even be checked.
 
 Of course, domain acceptance can be used to limit the retrieval to
@@ -2020,16 +2020,16 @@ features (that some would call perverted).
 Say you want to download a @sc{url}.  Just type:
 
 @example
-wget http://fly.cc.fer.hr/
+wget http://fly.srk.fer.hr/
 @end example
 
 The response will be something like:
 
 @example
 @group
---13:30:45--  http://fly.cc.fer.hr:80/en/
+--13:30:45--  http://fly.srk.fer.hr:80/en/
            => `index.html'
-Connecting to fly.cc.fer.hr:80... connected!
+Connecting to fly.srk.fer.hr:80... connected!
 HTTP request sent, awaiting response... 200 OK
 Length: 4,694 [text/html]
 
@@ -2048,7 +2048,7 @@ either gets the whole of it, or exceeds the default number of retries
 insure that the whole file will arrive safely:
 
 @example
-wget --tries=45 http://fly.cc.fer.hr/jpg/flyweb.jpg
+wget --tries=45 http://fly.srk.fer.hr/jpg/flyweb.jpg
 @end example
 
 @item
@@ -2057,7 +2057,7 @@ to log file @file{log}.  It is tiring to type @samp{--tries}, so we
 shall use @samp{-t}.
 
 @example
-wget -t 45 -o log http://fly.cc.fer.hr/jpg/flyweb.jpg &
+wget -t 45 -o log http://fly.srk.fer.hr/jpg/flyweb.jpg &
 @end example
 
 The ampersand at the end of the line makes sure that Wget works in the
@@ -2069,10 +2069,10 @@ password.
 
 @example
 @group
-$ wget ftp://gnjilux.cc.fer.hr/welcome.msg
---10:08:47--  ftp://gnjilux.cc.fer.hr:21/welcome.msg
+$ wget ftp://gnjilux.srk.fer.hr/welcome.msg
+--10:08:47--  ftp://gnjilux.srk.fer.hr:21/welcome.msg
            => `welcome.msg'
-Connecting to gnjilux.cc.fer.hr:21... connected!
+Connecting to gnjilux.srk.fer.hr:21... connected!
 Logging in as anonymous ... Logged in!
 ==> TYPE I ... done.  ==> CWD not needed.
 ==> PORT ... done.    ==> RETR welcome.msg ... done.
@@ -2195,7 +2195,7 @@ You can experiment with other styles, like:
 
 @example
 wget --dot-style=mega ftp://ftp.xemacs.org/pub/xemacs/xemacs-20.4/xemacs-20.4.tar.gz
-wget --dot-style=micro http://fly.cc.fer.hr/
+wget --dot-style=micro http://fly.srk.fer.hr/
 @end example
 
 To make these settings permanent, put them in your @file{.wgetrc}, as
@@ -2379,7 +2379,7 @@ To subscribe, send mail to @email{wget-subscribe@@sunsite.auc.dk}.
 the magic word @samp{subscribe} in the subject line.  Unsubscribe by
 mailing to @email{wget-unsubscribe@@sunsite.auc.dk}.
 
-The mailing list is archived at @url{http://fly.cc.fer.hr/archive/wget}.
+The mailing list is archived at @url{http://fly.srk.fer.hr/archive/wget}.
 
 @node Reporting Bugs, Portability, Mailing List, Various
 @section Reporting Bugs
@@ -2505,10 +2505,10 @@ Norobots support is turned on only when retrieving recursively, and
 @emph{never} for the first page.  Thus, you may issue:
 
 @example
-wget -r http://fly.cc.fer.hr/
+wget -r http://fly.srk.fer.hr/
 @end example
 
-First the index of fly.cc.fer.hr will be downloaded.  If Wget finds
+First the index of fly.srk.fer.hr will be downloaded.  If Wget finds
 anything worth downloading on the same host, only @emph{then} will it
 load the robots, and decide whether or not to load the links after all.
 @file{/robots.txt} is loaded only once per host.  Wget does not support
@@ -2723,7 +2723,8 @@ actually work.
 Shawn McHorse---bug reports and patches.
 
 @item
-Kaveh R. Ghazi---on-the-fly @code{ansi2knr}-ization.
+Kaveh R. Ghazi---on-the-fly @code{ansi2knr}-ization.  Lots of
+portability fixes.
 
 @item
 Gordon Matzigkeit---@file{.netrc} support.
