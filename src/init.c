@@ -185,8 +185,13 @@ static struct {
   { "spanhosts",	&opt.spanhost,		cmd_boolean },
   { "spider",		&opt.spider,		cmd_boolean },
 #ifdef HAVE_SSL
+  { "sslcadir",		&opt.sslcadir,		cmd_directory },
+  { "sslcafile",	&opt.sslcafile,		cmd_file },
   { "sslcertfile",	&opt.sslcertfile,	cmd_file },
   { "sslcertkey",	&opt.sslcertkey,	cmd_file },
+  { "sslcerttype",	&opt.sslcerttype,	cmd_number },
+  { "sslcheckcert",	&opt.sslcheckcert,	cmd_number },
+  { "sslprotocol",	&opt.sslprotocol,	cmd_number },
 #endif /* HAVE_SSL */
   { "timeout",		&opt.timeout,		cmd_time },
   { "timestamping",	&opt.timestamping,	cmd_boolean },

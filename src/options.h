@@ -154,11 +154,16 @@ struct options
 				   necessary to display a page properly. */
   char *bind_address;		/* What local IP address to bind to. */
 #ifdef HAVE_SSL
+  char *sslcadir;		/* CA directory (hash files) */
+  char *sslcafile;		/* CA File to use */
   char *sslcertfile;		/* external client cert to use. */
   char *sslcertkey;		/* the keyfile for this certificate
 				   (if not internal) included in the
 				   certfile. */
+  int   sslcerttype;		/* 0 = PEM / 1=ASN1 (DER) */
+  int   sslcheckcert;		/* 0 do not check / 1 check server cert */
   char *sslegdsock;             /* optional socket of the egd daemon */
+  int   sslprotocol;		/* 0 = auto / 1 = v2 / 2 = v3 / 3 = TLSv1 */
 #endif /* HAVE_SSL */
 
   int   cookies;

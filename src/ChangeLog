@@ -1,3 +1,12 @@
+2002-04-21  Thomas Lussnig  <thomas.lussnig@bewegungsmelder.de>
+
+	* gen_ssl.c:
+	- allow checking of server cert
+	- allow defining client cert type
+	- allow limit of ssl protocol
+	- check more return values
+	- added debug message on break
+
 2002-04-21  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* recur.c (download_child_p): Revert order of items in check

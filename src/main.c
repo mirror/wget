@@ -1,5 +1,5 @@
 /* Command line parsing.
-   Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001
+   Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -148,13 +148,9 @@ Logging and input file:\n\
   -i,  --input-file=FILE      download URLs found in FILE.\n\
   -F,  --force-html           treat input file as HTML.\n\
   -B,  --base=URL             prepends URL to relative links in -F -i file.\n\
-       --sslcertfile=FILE     optional client certificate.\n\
-       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n\
-       --egd-file=FILE        file name of the EGD socket.\n\
-\n"), stdout);
+\n"),stdout);
   fputs (_("\
 Download:\n\
-       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n\
   -t,  --tries=NUMBER           set number of retries to NUMBER (0 unlimits).\n\
   -O   --output-document=FILE   write documents to FILE.\n\
   -nc, --no-clobber             don\'t clobber existing files or use .# suffixes.\n\
@@ -169,6 +165,7 @@ Download:\n\
        --random-wait            wait from 0...2*WAIT secs between retrievals.\n\
   -Y,  --proxy=on/off           turn proxy on or off.\n\
   -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n\
+       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n\
        --limit-rate=RATE        limit download rate to RATE.\n\
 \n"), stdout);
   fputs (_("\
@@ -199,6 +196,20 @@ HTTP options:\n\
        --post-data=STRING    use the POST method; send STRING as the data.\n\
        --post-file=FILE      use the POST method; send contents of FILE.\n\
 \n"), stdout);
+#ifdef HAVE_SSL
+  fputs (_("\
+HTTPS (SSL) options:\n\
+       --sslcertfile=FILE     optional client certificate.\n\
+       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n\
+       --egd-file=FILE        file name of the EGD socket.\n\
+       --sslcadir=DIR         dir where hash list of CA's are stured.\n\
+       --sslcafile=FILE       file with bundle of CA's\n\
+       --sslcerttype=0/1      Client-Cert type 0=PEM (default) / 1=ASN1 (DER)\n\
+       --sslcheckcert=0/1     Check the server cert agenst given CA\n\
+       --sslprotocol=0-3      choose SSL protocol; 0=automatic,\n\
+                              1=SSLv2 2=SSLv3 3=TLSv1\n\
+\n"), stdout);
+#endif
   fputs (_("\
 FTP options:\n\
   -nr, --dont-remove-listing   don\'t remove `.listing\' files.\n\
@@ -208,7 +219,7 @@ FTP options:\n\
 \n"), stdout);
   fputs (_("\
 Recursive retrieval:\n\
-  -r,  --recursive          recursive web-suck -- use with care!\n\
+  -r,  --recursive          recursive download.\n\
   -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n\
        --delete-after       delete files locally after downloading them.\n\
   -k,  --convert-links      convert non-relative links to relative.\n\
@@ -329,6 +340,11 @@ main (int argc, char *const *argv)
     { "sslcertfile", required_argument, NULL, 158 },
     { "sslcertkey", required_argument, NULL, 159 },
     { "egd-file", required_argument, NULL, 166 },
+    { "sslcadir",         required_argument, NULL, 169},
+    { "sslcafile",        required_argument, NULL, 170},
+    { "sslcerttype",      required_argument, NULL, 171},
+    { "sslcheckcert",     required_argument, NULL, 172},
+    { "sslprotocol",      required_argument, NULL, 173},
 #endif /* HAVE_SSL */
     { "wait", required_argument, NULL, 'w' },
     { "waitretry", required_argument, NULL, 152 },
@@ -551,6 +567,21 @@ GNU General Public License for more details.\n"));
 	  break;
 	case 166:
 	  setval ("egdfile", optarg);
+	  break;
+	case 169:
+	  setval ("sslcadir", optarg);
+	  break;
+	case 170:
+	  setval ("sslcafile", optarg);
+	  break;
+	case 171:
+	  setval ("sslcerttype", optarg);
+	  break;
+	case 172:
+	  setval ("sslcheckcert", optarg);
+	  break;
+	case 173:
+	  setval ("sslprotocol", optarg);
 	  break;
 #endif /* HAVE_SSL */
 	case 167:
