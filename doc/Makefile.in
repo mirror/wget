@@ -55,7 +55,10 @@ all: wget.info # wget.cat
 
 everything: all wget_us.ps wget_a4.ps wget_toc.html
 
-wget.info: wget.texi
+sample.wgetrc.munged_for_texi_inclusion: sample.wgetrc
+	sed s/@/@@/g sample.wgetrc > sample.wgetrc.munged_for_texi_inclusion
+
+wget.info: sample.wgetrc.munged_for_texi_inclusion wget.texi
 	-$(MAKEINFO)
 
 #wget.cat: $(MAN)
@@ -136,7 +139,7 @@ clean:
 	$(RM) *.dvi *.aux *.cp *.cps *.fn *.toc *.tp *.vr *.ps *.ky *.pg *.log
 
 distclean: clean
-	$(RM) Makefile
+	$(RM) Makefile sample.wgetrc.munged_for_texi_inclusion
 
 realclean: distclean
 	$(RM) wget.info*

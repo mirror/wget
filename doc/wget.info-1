@@ -452,10 +452,15 @@ Download Options
 
 `--waitretry=SECONDS'
      If you don't want Wget to wait between *every* retrieval, but only
-     between retries of failed downloads, you can use this option.  If
-     you want to make sure you never "hammer" remote sites with rapid
-     retries, you can leave it set all the time to some non-zero value
-     using the waitretry variable in your `.wgetrc' file.
+     between retries of failed downloads, you can use this option.
+     Wget will use "linear backoff", waiting 1 second after the first
+     failure on a given file, then waiting 2 seconds after the second
+     failure on that file, up to the maximum number of SECONDS you
+     specify.  Therefore, a value of 10 will actually make Wget wait up
+     to (1 + 2 + ... + 10) = 55 seconds per file.
+
+     Note that this option is turned on by default in the global
+     `wgetrc' file.
 
 `-Y on/off'
 `--proxy=on/off'
