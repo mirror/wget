@@ -106,11 +106,19 @@ install: install.info install.wgetrc @COMMENT_IF_NO_POD2MAN@install.man
 uninstall: uninstall.info @COMMENT_IF_NO_POD2MAN@uninstall.man
 
 # install info pages, creating install directory if necessary
+# if the info pages are built in the build directory, they are used.
+# otherwise, the ones from the distribution are installed.
 install.info: wget.info
 	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(infodir)
-	-for file in wget.info wget.info-*[0-9]; do \
-	   test -f $$file && $(INSTALL_DATA) $$file $(DESTDIR)$(infodir)/$$file ; \
-	done
+	-if test -f wget.info; then \
+	  for file in wget.info wget.info-*[0-9]; do \
+	    $(INSTALL_DATA) $$file $(DESTDIR)$(infodir)/$$file ; \
+	  done; \
+	else \
+	  for file in $(srcdir)/wget.info $(srcdir)/wget.info-*[0-9]; do \
+	    $(INSTALL_DATA) $$file $(DESTDIR)$(infodir)/`basename $$file` ; \
+	  done; \
+	fi
 
 # install man page, creating install directory if necessary
 install.man: $(MAN)

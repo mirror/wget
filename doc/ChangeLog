@@ -1,3 +1,8 @@
+2001-11-17  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* Makefile.in (install.info): If info files from the build
+	directory are not available, use the ones from $(srcdir).
+
 2001-11-16  Peter Farmer  <peter.farmer@zveno.com>
 
 	* Makefile.in: Use $? instead of $<.  Use TEXI2POD more
