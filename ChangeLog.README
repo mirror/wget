@@ -1,3 +1,18 @@
+Please note that Wget has more than one ChangeLog file:
+
+    ./ChangeLog: documents changes to files in the top-level directory
+                 and to files in subdirectories like po/ that don't have
+                 their own ChangeLogs 
+
+    doc/ChangeLog: documents only changes to files in the doc directory
+
+    src/ChangeLog: documents only changes to files in the src directory
+
+When checking to see if a patch you sent in has been applied, please
+look in the appropriate ChangeLog(s).
+
+In addition, you'll notice the ChangeLog-branches directories.
+
 In late 2000, time constraints delayed the release of Wget 1.6.  While
 it was awaiting release, people had new features and other changes they
 wanted added to the CVS archive, but these were deemed not safe to
