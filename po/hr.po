@@ -539,7 +539,7 @@ msgstr "Polo¾aj: %s%s\n"
 
 #: src/http.c:1301 src/http.c:1436
 msgid "unspecified"
-msgstr "neodreðen"
+msgstr "nenaznaèen"
 
 #: src/http.c:1302
 msgid " [following]"
@@ -696,22 +696,22 @@ msgstr "%s: BUG: nepoznata naredba `%s', vrijednost `%s'.\n"
 #: src/init.c:532
 #, c-format
 msgid "%s: %s: Please specify on or off.\n"
-msgstr "%s: %s: Molim postavite na on ili off.\n"
+msgstr "%s: %s: Molim navedite on ili off.\n"
 
 #: src/init.c:576
 #, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
-msgstr "%s: %s: Molim postavite na on, off ili never.\n"
+msgstr "%s: %s: Molim navedite on, off ili never.\n"
 
 #: src/init.c:595 src/init.c:904 src/init.c:985
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
-msgstr "%s: %s: Neispravna specifikacija `%s'\n"
+msgstr "%s: %s: Neispravna naznaka `%s'\n"
 
 #: src/init.c:793 src/init.c:815 src/init.c:837 src/init.c:863
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
-msgstr "wget: %s: Neispravna specifikacija `%s'\n"
+msgstr "wget: %s: Neispravna naznaka `%s'\n"
 
 #: src/init.c:953
 #, c-format
@@ -1150,7 +1150,7 @@ msgstr ""
 #: src/progress.c:391
 #, c-format
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
-msgstr "Neispravna specifikacija stila toèkica `%s': ostavljam prija¹nju vrijednost.\n"
+msgstr "Neispravna naznaka stila toèkica `%s': ostavljam prija¹nju vrijednost.\n"
 
 #: src/recur.c:367
 #, c-format
