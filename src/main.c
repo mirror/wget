@@ -194,6 +194,8 @@ struct cmdline_option option_data[] =
     { "ignore-length", 0, OPT_BOOLEAN, "ignorelength", -1 },
     { "ignore-tags", 0, OPT_VALUE, "ignoretags", -1 },
     { "include-directories", 'I', OPT_VALUE, "includedirectories", -1 },
+    { "inet4-only", '4', OPT_BOOLEAN, "inet4only", -1 },
+    { "inet6-only", '6', OPT_BOOLEAN, "inet6only", -1 },
     { "input-file", 'i', OPT_VALUE, "input", -1 },
     { "keep-session-cookies", 0, OPT_BOOLEAN, "keepsessioncookies", -1 },
     { "level", 'l', OPT_VALUE, "reclevel", -1 },
@@ -396,7 +398,7 @@ Logging and input file:\n"),
     N_("\
   -v,  --verbose             be verbose (this is the default).\n"),
     N_("\
-  -nv, --non-verbose         turn off verboseness, without being quiet.\n"),
+  -nv, --no-verbose         turn off verboseness, without being quiet.\n"),
     N_("\
   -i,  --input-file=FILE     download URLs found in FILE.\n"),
     N_("\
@@ -453,6 +455,10 @@ Download:\n"),
        --dns-cache=off           disable caching DNS lookups.\n"),
     N_("\
        --restrict-file-names=OS  restrict chars in file names to ones OS allows.\n"),
+    N_("\
+  -4,  --inet4-only              connect only to IPv4 addresses.\n"),
+    N_("\
+  -6,  --inet6-only              connect only to IPv6 addresses.\n"),
     "\n",
 
     N_("\

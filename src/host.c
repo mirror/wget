@@ -81,13 +81,6 @@ extern int h_errno;
 /* Mapping between known hosts and to lists of their addresses. */
 
 static struct hash_table *host_name_addresses_map;
-
-#ifdef ENABLE_IPV6
-/* The IP family to request when connecting to remote hosts.  This
-   should be moved to an entry in struct options when we implement the
-   --inet4/--inet6 flags.  */
-static int requested_family = AF_UNSPEC;
-#endif
 
 /* Lists of addresses.  This should eventually be extended to handle
    IPv6.  */
@@ -537,7 +530,8 @@ lookup_host (const char *host, int silent)
 
     xzero (hints);
     hints.ai_socktype = SOCK_STREAM;
-    hints.ai_family = requested_family;
+    hints.ai_family = AF_UNSPEC; /* #### should look at opt.ipv4_only
+				    and opt.ipv6_only */
     hints.ai_flags = 0;
 
     err = getaddrinfo_with_timeout (host, NULL, &hints, &res, opt.dns_timeout);
@@ -550,6 +544,11 @@ lookup_host (const char *host, int silent)
       }
     al = address_list_from_addrinfo (res);
     freeaddrinfo (res);
+    if (!al)
+      {
+	logprintf (LOG_VERBOSE, _("failed: No IPv4/IPv6 addresses.\n"));
+	return NULL;
+      }
   }
 #else
   {
@@ -619,7 +618,8 @@ lookup_host_passive (const char *host)
 
   xzero (hints);
   hints.ai_socktype = SOCK_STREAM;
-  hints.ai_family = requested_family;
+  hints.ai_family = AF_UNSPEC;	/* #### should look at opt.ipv4_only
+				   and opt.ipv6_only */
   hints.ai_flags = AI_PASSIVE;
 
   err = getaddrinfo (host, NULL, &hints, &res);

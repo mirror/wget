@@ -199,6 +199,11 @@ struct options
 
   int preserve_perm;           /* whether remote permissions are used
 				  or that what is set by umask. */
+
+#ifdef ENABLE_IPV6
+  int ipv4_only;		/* IPv4 connections have been requested. */
+  int ipv6_only;		/* IPv4 connections have been requested. */
+#endif
 };
 
 extern struct options opt;

@@ -167,6 +167,10 @@ static struct {
   { "ignoretags",	&opt.ignore_tags,	cmd_vector },
   { "includedirectories", &opt.includes,	cmd_directory_vector },
   { "input",		&opt.input_filename,	cmd_file },
+#ifdef ENABLE_IPV6
+  { "inet4only",	&opt.ipv4_only,		cmd_boolean },
+  { "inet6only",	&opt.ipv6_only,		cmd_boolean },
+#endif
   { "keepsessioncookies", &opt.keep_session_cookies, cmd_boolean },
   { "killlonger",	&opt.kill_longer,	cmd_boolean },
   { "limitrate",	&opt.limit_rate,	cmd_bytes },
