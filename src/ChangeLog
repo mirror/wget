@@ -1,3 +1,7 @@
+1998-12-22  Alexander V. Lukyanov  <lav@yars.free.net>
+
+	* ftp-opie.c (btoe): Zero-terminate OSTORE.
+
 2000-03-21  Hrvoje Niksic  <hniksic@iskon.hr>
 
 	* wget.h (DO_REALLOC_FROM_ALLOCA): Ditto.
