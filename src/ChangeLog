@@ -1,5 +1,9 @@
 2003-11-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* connect.c (bindport): Fix compilation under pre-C99 compilers.
+
+2003-11-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c (connect_to_ip): More compact error checking.
 	(bindport): Don't treat failed setsockopt as a fatal error.
 

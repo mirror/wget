@@ -397,7 +397,6 @@ bindport (const ip_address *bind_address, int *port, int *local_sock)
   int family = AF_INET;
   struct sockaddr_storage ss;
   struct sockaddr *sa = (struct sockaddr *)&ss;
-  xzero (ss);
 
   /* For setting options with setsockopt. */
   int setopt_val = 1;
@@ -423,6 +422,7 @@ bindport (const ip_address *bind_address, int *port, int *local_sock)
 # endif
 #endif
 
+  xzero (ss);
   sockaddr_set_data (sa, bind_address, *port);
   if (bind (sock, sa, sockaddr_size (sa)) < 0)
     {
