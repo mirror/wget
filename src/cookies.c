@@ -466,15 +466,17 @@ parse_set_cookies (const char *sc)
   const char *name_b  = NULL, *name_e  = NULL;
   const char *value_b = NULL, *value_e = NULL;
 
-  FETCH (c, p);
-
   while (state != S_DONE && state != S_ERROR)
     {
       switch (state)
 	{
 	case S_NAME_PRE:
-	  if (ISSPACE (c))
-	    FETCH (c, p);
+	  /* Strip whitespace preceding the name. */
+	  do
+	    FETCH1 (c, p);
+	  while (c && ISSPACE (c));
+	  if (!c)
+	    state = S_DONE;
 	  else if (ATTR_NAME_CHAR (c))
 	    {
 	      name_b = p - 1;
@@ -589,13 +591,7 @@ parse_set_cookies (const char *sc)
 		state = S_ERROR;
 		break;
 	      }
-
-	    if (c)
-	      FETCH1 (c, p);
-	    if (!c)
-	      state = S_DONE;
-	    else
-	      state = S_NAME_PRE;
+	    state = S_NAME_PRE;
 	  }
 	  break;
 	case S_DONE:
