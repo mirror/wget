@@ -183,12 +183,13 @@ then
   AC_CHECK_LIB(socks, Rconnect)
 fi
 
+dnl
 dnl Set of available languages.
 dnl
-dnl #### This kind of sucks.  Shouldn't the configure process
-dnl determine this automagically by scanning `.po' files in `po/'
-dnl subdirectory?
-ALL_LINGUAS="cs de hr it no pl pt_BR ru"
+ALL_LINGUAS=`(cd ${srcdir}/po && ls *.po | sed -e 's/\.po$//')`
+
+dnl Original from autoconf, I think.
+dnl ALL_LINGUAS="cs de hr it no pl pt_BR ru"
 
 dnl internationalization macros
 WGET_WITH_NLS
