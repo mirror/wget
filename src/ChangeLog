@@ -1,3 +1,10 @@
+2003-11-01  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* host.c: Removed the ip_default_family global variable.
+
+	* host.c (lookup_host): Document the function.  Fixed declaration
+	of VEC.
+
 2003-10-31  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* various: Use new macros xnew, xnew0, xnew_array, and xnew0_array

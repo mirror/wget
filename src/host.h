@@ -44,8 +44,6 @@ so, delete this exception statement from your version.  */
 struct url;
 struct address_list;
 
-extern int ip_default_family;	/* defined in host.c */
-
 /* This struct defines an IP address, tagged with family type.  */
 
 typedef struct {

@@ -81,12 +81,6 @@ extern int h_errno;
 # endif
 #endif
 
-#ifdef ENABLE_IPV6
-int ip_default_family = AF_UNSPEC;
-#else
-int ip_default_family = AF_INET;
-#endif
-
 /* Mapping between known hosts and to lists of their addresses. */
 
 static struct hash_table *host_name_addresses_map;
@@ -270,13 +264,13 @@ address_list_from_addrinfo (const struct addrinfo *ai)
    addresses.  This kind of vector is returned by gethostbyname.  */
 
 static struct address_list *
-address_list_from_ipv4_addresses (char **h_addr_list)
+address_list_from_ipv4_addresses (char **vec)
 {
   int count, i;
   struct address_list *al = xnew0 (struct address_list);
 
   count = 0;
-  while (h_addr_list[count])
+  while (vec[count])
     ++count;
   assert (count > 0);
 
@@ -288,7 +282,7 @@ address_list_from_ipv4_addresses (char **h_addr_list)
     {
       ip_address *ip = &al->addresses[i];
       ip->type = IPV4_ADDRESS;
-      memcpy (ADDRESS_IPV4_DATA (ip), h_addr_list[i], 4);
+      memcpy (ADDRESS_IPV4_DATA (ip), vec[i], 4);
     }
 
   return al;
@@ -453,6 +447,9 @@ cache_host_lookup (const char *host, struct address_list *al)
 #endif
 }
 
+/* Remove HOST from Wget's DNS cache.  Does nothing is HOST is not in
+   the cache.  */
+
 void
 forget_host_lookup (const char *host)
 {
@@ -464,44 +461,56 @@ forget_host_lookup (const char *host)
     }
 }
 
+/* Look up HOST in DNS and return a list of IP addresses.
+
+   This function caches its result so that, if the same host is passed
+   the second time, the addresses are returned without the DNS lookup.
+   If you want to force lookup, call forget_host_lookup() prior to
+   this function, or set opt.dns_cache to 0 to globally disable
+   caching.
+
+   FLAGS can be a combination of:
+     LH_SILENT    - don't print the "resolving ... done" message.
+     LH_IPV4_ONLY - return only IPv4 addresses.
+     LH_IPV6_ONLY - return only IPv6 addresses.  */
+
 struct address_list *
 lookup_host (const char *host, int flags)
 {
   struct address_list *al = NULL;
 
 #ifdef ENABLE_IPV6
-  int err, family;
+  int err;
   struct addrinfo hints, *res;
 
-  /* Is this necessary?  Should this function be changed to accept a
-     FAMILY argument?  */
+  xzero (hints);
+  hints.ai_socktype = SOCK_STREAM;
+
+  /* Should we inspect opt.<something> directly?  */
   if (flags & LH_IPV4_ONLY)
-    family = AF_INET;
+    hints.ai_family = AF_INET;
   else if (flags & LH_IPV6_ONLY)
-    family = AF_INET6;
+    hints.ai_family = AF_INET6;
   else
-    family = ip_default_family;
+    hints.ai_family = AF_UNSPEC;
 #endif
-	  
+
   /* First, try to check whether the address is already a numeric
-     address, in which case we don't need to cache it or bother with
-     setting up timeouts.  Plus, if memory serves me right, Ultrix's
+     address, in which case we don't want to cache it or bother with
+     setting up timeouts.  Plus, old (e.g. Ultrix) implementations of
      gethostbyname can't handle numeric addresses (!).
 
      Where getaddrinfo is available, we do it using the AI_NUMERICHOST
-     flag.  Without IPv6, we use inet_addr succeeds.  */
+     flag.  Without IPv6, we use inet_addr.  */
 
 #ifdef ENABLE_IPV6
-  xzero (hints);
-  hints.ai_family   = family;
-  hints.ai_socktype = SOCK_STREAM;
-  hints.ai_flags    = AI_NUMERICHOST;
+  hints.ai_flags = AI_NUMERICHOST;
   if (flags & LH_PASSIVE)
-    hints.ai_flags = AI_PASSIVE;
+    hints.ai_flags |= AI_PASSIVE;
 
-  /* no need to call getaddrinfo_with_timeout here, as we're not
-   * relying on the DNS, but we're only doing an address translation
-   * from presentation (ASCII) to network format */
+  /* No need to call getaddrinfo_with_timeout here, as we're not
+     resolving anything, but merely translating the address from the
+     presentation (ASCII) to network format.  */
   err = getaddrinfo (host, NULL, &hints, &res);
   if (err == 0 && res != NULL)
     {
@@ -516,7 +525,7 @@ lookup_host (const char *host, int flags)
       {
 	/* The return value of inet_addr is in network byte order, so
 	   we can just copy it to IP.  */
-	char **vec[2];
+	char *vec[2];
 	vec[0] = (char *)&addr_ipv4;
 	vec[1] = NULL;
 	return address_list_from_ipv4_addresses (vec);
@@ -544,25 +553,20 @@ lookup_host (const char *host, int flags)
   /* Host name lookup goes on below. */
 
 #ifdef ENABLE_IPV6
-  {
-    xzero (hints);
-    hints.ai_family   = family;
-    hints.ai_socktype = SOCK_STREAM;
-    if (flags & LH_PASSIVE) 
-      hints.ai_flags = AI_PASSIVE;
+  hints.ai_flags = 0;
+  if (flags & LH_PASSIVE) 
+    hints.ai_flags |= AI_PASSIVE;
 
-    err = getaddrinfo_with_timeout (host, NULL, &hints, &res, opt.dns_timeout);
-
-    if (err != 0 || res == NULL)
-      {
-        if (!(flags & LH_SILENT))
-	  logprintf (LOG_VERBOSE, _("failed: %s.\n"),
-		     err != EAI_SYSTEM ? gai_strerror (err) : strerror (errno));
-        return NULL;
-      }
-    al = address_list_from_addrinfo (res);
-    freeaddrinfo (res);
-  }
+  err = getaddrinfo_with_timeout (host, NULL, &hints, &res, opt.dns_timeout);
+  if (err != 0 || res == NULL)
+    {
+      if (!(flags & LH_SILENT))
+	logprintf (LOG_VERBOSE, _("failed: %s.\n"),
+		   err != EAI_SYSTEM ? gai_strerror (err) : strerror (errno));
+      return NULL;
+    }
+  al = address_list_from_addrinfo (res);
+  freeaddrinfo (res);
 #else
   {
     struct hostent *hptr = gethostbyname_with_timeout (host, opt.dns_timeout);
