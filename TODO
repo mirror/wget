@@ -15,8 +15,6 @@ changes.
   It should connect to the proxy URL, log in as username@target-site,
   and continue as usual.
 
-* -p should probably go "_two_ more hops" on <FRAMESET> pages.
-
 * Add a --range parameter allowing you to explicitly specify a range of bytes to
   get from a file over HTTP (FTP only supports ranges ending at the end of the
   file, though forcibly disconnecting from the server at the desired endpoint

@@ -41,6 +41,10 @@ are now converted correctly.
 retrieving for inline images, stylesheets, and other documents needed
 to display the page.
 
+*** Page-requisites (-p) mode now works with frames.  In other words,
+`wget -p URL-THAT-USES-FRAMES' will now download the frame HTML files,
+and all the files that they need to be displayed properly.
+
 ** If a host has more than one IP address, Wget uses the other
 addresses when accessing the first one fails.
 

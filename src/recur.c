@@ -255,17 +255,22 @@ retrieve_tree (const char *start_url)
       if (descend
 	  && depth >= opt.reclevel && opt.reclevel != INFINITE_RECURSION)
 	{
-	  if (opt.page_requisites && depth == opt.reclevel)
-	    /* When -p is specified, we can do one more partial
-	       recursion from the "leaf nodes" on the HTML document
-	       tree.  The recursion is partial in that we won't
-	       traverse any <A> or <AREA> tags, nor any <LINK> tags
-	       except for <LINK REL="stylesheet">. */
-	    dash_p_leaf_HTML = TRUE;
+	  if (opt.page_requisites
+	      && (depth == opt.reclevel || depth == opt.reclevel + 1))
+	    {
+	      /* When -p is specified, we are allowed to exceed the
+		 maximum depth, but only for the "inline" links,
+		 i.e. those that are needed to display the page.
+		 Originally this could exceed the depth at most by
+		 one, but we allow one more level so that the leaf
+		 pages that contain frames can be loaded
+		 correctly.  */
+	      dash_p_leaf_HTML = TRUE;
+	    }
 	  else
 	    {
 	      /* Either -p wasn't specified or it was and we've
-		 already gone the one extra (pseudo-)level that it
+		 already spent the two extra (pseudo-)levels that it
 		 affords us, so we need to bail out. */
 	      DEBUGP (("Not descending further; at depth %d, max. %d.\n",
 		       depth, opt.reclevel));

@@ -1,3 +1,8 @@
+2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* recur.c (retrieve_tree): Allow -p retrievals to exceed maximum
+	depth by more than one.
+
 2001-11-30  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* retr.c (retrieve_url): Don't allow more than 20 redirections.
