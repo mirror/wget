@@ -815,8 +815,8 @@ ftp_index (const char *file, struct urlinfo *u, struct fileinfo *f)
     {
       char *tmpu, *tmpp;        /* temporary, clean user and passwd */
 
-      tmpu = CLEANDUP (u->user);
-      tmpp = u->passwd ? CLEANDUP (u->passwd) : NULL;
+      tmpu = encode_string (u->user);
+      tmpp = u->passwd ? encode_string (u->passwd) : NULL;
       upwd = (char *)xmalloc (strlen (tmpu)
 			     + (tmpp ? (1 + strlen (tmpp)) : 0) + 2);
       sprintf (upwd, "%s%s%s@", tmpu, tmpp ? ":" : "", tmpp ? tmpp : "");

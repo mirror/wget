@@ -335,7 +335,7 @@ handle_link (struct collect_urls_closure *closure, const char *link_uri,
 	complete_uri = xstrdup (link_uri);
     }
   else
-    complete_uri = url_concat (base, link_uri);
+    complete_uri = uri_merge (base, link_uri);
 
   DEBUGP (("%s: merge(\"%s\", \"%s\") -> %s\n",
 	   closure->document_file, base ? base : "(null)",
@@ -420,7 +420,7 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 	    if (closure->base)
 	      xfree (closure->base);
 	    if (closure->parent_base)
-	      closure->base = url_concat (closure->parent_base, newbase);
+	      closure->base = uri_merge (closure->parent_base, newbase);
 	    else
 	      closure->base = xstrdup (newbase);
 	  }

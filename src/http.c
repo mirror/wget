@@ -2046,10 +2046,6 @@ extract_header_attr (const char *au, const char *attr_name, char **ret)
     return 0;
 }
 
-/* Response value needs to be in lowercase, so we cannot use HEXD2ASC
-   from url.h.  See RFC 2069 2.1.2 for the syntax of response-digest.  */
-#define HEXD2asc(x) (((x) < 10) ? ((x) + '0') : ((x) - 10 + 'a'))
-
 /* Dump the hexadecimal representation of HASH to BUF.  HASH should be
    an array of 16 bytes containing the hash keys, and BUF should be a
    buffer of 33 writable characters (32 for hex digits plus one for
@@ -2061,8 +2057,8 @@ dump_hash (unsigned char *buf, const unsigned char *hash)
 
   for (i = 0; i < MD5_HASHLEN; i++, hash++)
     {
-      *buf++ = HEXD2asc (*hash >> 4);
-      *buf++ = HEXD2asc (*hash & 0xf);
+      *buf++ = XDIGIT_TO_xchar (*hash >> 4);
+      *buf++ = XDIGIT_TO_xchar (*hash & 0xf);
     }
   *buf = '\0';
 }

@@ -1,5 +1,5 @@
 /* URL handling.
-   Copyright (C) 1995, 1996, 1997, 2000 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of Wget.
 
@@ -49,39 +49,34 @@ static char unsafe_char_table[256];
 
 #define UNSAFE_CHAR(c) (unsafe_char_table[(unsigned char)(c)])
 
-/* If S contains unsafe characters, free it and replace it with a
-   version that doesn't.  */
-#define URL_CLEANSE(s) do			\
-{						\
-  if (contains_unsafe (s))			\
-    {						\
-      char *uc_tmp = encode_string (s);		\
-      xfree (s);				\
-      (s) = uc_tmp;				\
-    }						\
-} while (0)
+/* rfc1738 reserved chars.  This is too short to warrant a table.  We
+   don't use this yet; preservation of reserved chars will be
+   implemented when I integrate the new `reencode_string'
+   function.  */
+#define RESERVED_CHAR(c) (   (c) == ';' || (c) == '/' || (c) == '?'	\
+			  || (c) == '@' || (c) == '=' || (c) == '&'	\
+			  || (c) == '+')
 
-/* Is a directory "."?  */
+/* Is X "."?  */
 #define DOTP(x) ((*(x) == '.') && (!*(x + 1)))
-/* Is a directory ".."?  */
+/* Is X ".."?  */
 #define DDOTP(x) ((*(x) == '.') && (*(x + 1) == '.') && (!*(x + 2)))
 
-#if 0
-static void path_simplify_with_kludge PARAMS ((char *));
-#endif
 static int urlpath_length PARAMS ((const char *));
 
-/* A NULL-terminated list of strings to be recognized as prototypes
-   (URL schemes).  Note that recognized doesn't mean supported -- only
-   HTTP, HTTPS and FTP are currently supported .
+/* A NULL-terminated list of strings to be recognized as protocol
+   types (URL schemes).  Note that recognized doesn't mean supported
+   -- only HTTP, HTTPS and FTP are currently supported.
 
    However, a string that does not match anything in the list will be
    considered a relative URL.  Thus it's important that this list has
    anything anyone could think of being legal.
 
-   There are wild things here.  :-) Take a look at
-   <URL:http://www.w3.org/pub/WWW/Addressing/schemes.html> for more
-   fun.  */
+   #### This is probably broken.  Wget should use other means to
+   distinguish between absolute and relative URIs in HTML links.
+
+   Take a look at <http://www.w3.org/pub/WWW/Addressing/schemes.html>
+   for more.  */
 static char *protostrings[] =
 {
   "cid:",
@@ -170,16 +165,6 @@ init_unsafe_char_table (void)
       unsafe_char_table[i] = 1;
 }
 
-/* Returns 1 if the string contains unsafe characters, 0 otherwise.  */
-int
-contains_unsafe (const char *s)
-{
-  for (; *s; s++)
-    if (UNSAFE_CHAR (*s))
-      return 1;
-  return 0;
-}
-
 /* Decodes the forms %xy in a URL to the character the hexadecimal
    code of which is xy.  xy are hexadecimal digits from
    [0123456789ABCDEF] (case-insensitive).  If x or y are not
@@ -205,43 +190,80 @@ decode_string (char *s)
 	      *p = *s;
 	      continue;
 	    }
-	  *p = (ASC2HEXD (*(s + 1)) << 4) + ASC2HEXD (*(s + 2));
+	  *p = (XCHAR_TO_XDIGIT (*(s + 1)) << 4) + XCHAR_TO_XDIGIT (*(s + 2));
 	  s += 2;
 	}
     }
   *p = '\0';
 }
 
-/* Encode the unsafe characters (as determined by URL_UNSAFE) in a
+/* Like encode_string, but return S if there are no unsafe chars.  */
+
+static char *
+encode_string_maybe (const char *s)
+{
+  const char *p1;
+  char *p2, *newstr;
+  int newlen;
+  int addition = 0;
+
+  for (p1 = s; *p1; p1++)
+    if (UNSAFE_CHAR (*p1))
+      addition += 2;		/* Two more characters (hex digits) */
+
+  if (!addition)
+    return (char *)s;
+
+  newlen = (p1 - s) + addition;
+  newstr = (char *)xmalloc (newlen + 1);
+
+  p1 = s;
+  p2 = newstr;
+  while (*p1)
+    {
+      if (UNSAFE_CHAR (*p1))
+	{
+	  const unsigned char c = *p1++;
+	  *p2++ = '%';
+	  *p2++ = XDIGIT_TO_XCHAR (c >> 4);
+	  *p2++ = XDIGIT_TO_XCHAR (c & 0xf);
+	}
+      else
+	*p2++ = *p1++;
+    }
+  *p2 = '\0';
+  assert (p2 - newstr == newlen);
+
+  return newstr;
+}
+
+/* Encode the unsafe characters (as determined by UNSAFE_CHAR) in a
    given string, returning a malloc-ed %XX encoded string.  */
+  
 char *
 encode_string (const char *s)
 {
-  const char *b;
-  char *p, *res;
-  int i;
-
-  b = s;
-  for (i = 0; *s; s++, i++)
-    if (UNSAFE_CHAR (*s))
-      i += 2; /* Two more characters (hex digits) */
-  res = (char *)xmalloc (i + 1);
-  s = b;
-  for (p = res; *s; s++)
-    if (UNSAFE_CHAR (*s))
-      {
-	const unsigned char c = *s;
-	*p++ = '%';
-	*p++ = HEXD2ASC (c >> 4);
-	*p++ = HEXD2ASC (c & 0xf);
-      }
-    else
-      *p++ = *s;
-  *p = '\0';
-  return res;
+  char *encoded = encode_string_maybe (s);
+  if (encoded != s)
+    return encoded;
+  else
+    return xstrdup (s);
 }
+
+/* Encode unsafe characters in PTR to %xx.  If such encoding is done,
+   the old value of PTR is freed and PTR is made to point to the newly
+   allocated storage.  */
+
+#define ENCODE(ptr) do {			\
+  char *e_new = encode_string_maybe (ptr);	\
+  if (e_new != ptr)				\
+    {						\
+      xfree (ptr);				\
+      ptr = e_new;				\
+    }						\
+} while (0)
 
-/* Returns the proto-type if URL's protocol is supported, or
+/* Returns the protocol type if URL's protocol is supported, or
    URLUNKNOWN if not.  */
 uerr_t
 urlproto (const char *url)
@@ -499,14 +521,17 @@ parseurl (const char *url, struct urlinfo *u, int strict)
   strcat (u->path, abs_ftp ? (u->dir + 1) : u->dir);
   strcat (u->path, *u->dir ? "/" : "");
   strcat (u->path, u->file);
-  URL_CLEANSE (u->path);
+  ENCODE (u->path);
   DEBUGP (("newpath: %s\n", u->path));
   /* Create the clean URL.  */
   u->url = str_url (u, 0);
   return URLOK;
 }
 
-/* Special versions of DOTP and DDOTP for parse_dir(). */
+/* Special versions of DOTP and DDOTP for parse_dir().  They work like
+   DOTP and DDOTP, but they also recognize `?' as end-of-string
+   delimiter.  This is needed for correct handling of query
+   strings.  */
 
 #define PD_DOTP(x)  ((*(x) == '.') && (!*((x) + 1) || *((x) + 1) == '?'))
 #define PD_DDOTP(x) ((*(x) == '.') && (*(x) == '.')		\
@@ -652,12 +677,12 @@ str_url (const struct urlinfo *u, int hide)
     return NULL;
   proto_name = sup_protos[i].name;
   proto_default_port = sup_protos[i].port;
-  host = CLEANDUP (u->host);
-  dir = CLEANDUP (u->dir);
-  file = CLEANDUP (u->file);
+  host = encode_string (u->host);
+  dir = encode_string (u->dir);
+  file = encode_string (u->file);
   user = passwd = NULL;
   if (u->user)
-    user = CLEANDUP (u->user);
+    user = encode_string (u->user);
   if (u->passwd)
     {
       if (hide)
@@ -667,7 +692,7 @@ str_url (const struct urlinfo *u, int hide)
 	   this code, when we replaced the password characters with 'x's. */
 	passwd = xstrdup("<password>");
       else
-	passwd = CLEANDUP (u->passwd);
+	passwd = encode_string (u->passwd);
     }
   if (u->proto == URLFTP && *dir == '/')
     {
@@ -974,8 +999,7 @@ mkstruct (const struct urlinfo *u)
       sprintf (newdir, "%s%s%s", dirpref, *dir == '/' ? "" : "/", dir);
       dir = newdir;
     }
-  dir = xstrdup (dir);
-  URL_CLEANSE (dir);
+  dir = encode_string (dir);
   l = strlen (dir);
   if (l && dir[l - 1] == '/')
     dir[l - 1] = '\0';
@@ -1078,37 +1102,46 @@ find_last_char (const char *b, const char *e, char c)
   return NULL;
 }
 
-/* Construct a URL by concatenating an absolute URL and a path, which
-   may or may not be absolute.  This tries to behave "reasonably" in
-   all foreseeable cases.  It employs little specific knowledge about
-   protocols or URL-specific stuff -- it just works on strings.  */
+/* Resolve the result of "linking" a base URI (BASE) to a
+   link-specified URI (LINK).
+
+   Either of the URIs may be absolute or relative, complete with the
+   host name, or path only.  This tries to behave "reasonably" in all
+   foreseeable cases.  It employs little specific knowledge about
+   protocols or URL-specific stuff -- it just works on strings.
+
+   The parameters LINKLENGTH is useful if LINK is not zero-terminated.
+   See uri_merge for a gentler interface to this functionality.
+
+   #### This function should handle `./' and `../' so that the evil
+   path_simplify can go.  */
 static char *
-construct (const char *url, const char *sub, int subsize, int no_proto)
+uri_merge_1 (const char *base, const char *link, int linklength, int no_proto)
 {
   char *constr;
 
   if (no_proto)
     {
-      const char *end = url + urlpath_length (url);
+      const char *end = base + urlpath_length (base);
 
-      if (*sub != '/')
+      if (*link != '/')
 	{
-	  /* SUB is a relative URL: we need to replace everything
-	     after last slash (possibly empty) with SUB.
+	  /* LINK is a relative URL: we need to replace everything
+	     after last slash (possibly empty) with LINK.
 
-	     So, if URL is "whatever/foo/bar", and SUB is "qux/xyzzy",
+	     So, if BASE is "whatever/foo/bar", and LINK is "qux/xyzzy",
 	     our result should be "whatever/foo/qux/xyzzy".  */
 	  int need_explicit_slash = 0;
 	  int span;
 	  const char *start_insert;
-	  const char *last_slash = find_last_char (url, end, '/'); /* the last slash. */
+	  const char *last_slash = find_last_char (base, end, '/');
 	  if (!last_slash)
 	    {
-	      /* No slash found at all.  Append SUB to what we have,
+	      /* No slash found at all.  Append LINK to what we have,
 		 but we'll need a slash as a separator.
 
-		 Example: if url == "foo" and sub == "qux/xyzzy", then
-		 we cannot just append sub to url, because we'd get
+		 Example: if base == "foo" and link == "qux/xyzzy", then
+		 we cannot just append link to base, because we'd get
 		 "fooqux/xyzzy", whereas what we want is
 		 "foo/qux/xyzzy".
 
@@ -1123,7 +1156,7 @@ construct (const char *url, const char *sub, int subsize, int no_proto)
 	      start_insert = end + 1;
 	      need_explicit_slash = 1;
 	    }
-	  else if (last_slash && last_slash != url && *(last_slash - 1) == '/')
+	  else if (last_slash && last_slash != base && *(last_slash - 1) == '/')
 	    {
 	      /* example: http://host"  */
 	      /*                      ^ */
@@ -1137,28 +1170,28 @@ construct (const char *url, const char *sub, int subsize, int no_proto)
 	      start_insert = last_slash + 1;
 	    }
 
-	  span = start_insert - url;
-	  constr = (char *)xmalloc (span + subsize + 1);
+	  span = start_insert - base;
+	  constr = (char *)xmalloc (span + linklength + 1);
 	  if (span)
-	    memcpy (constr, url, span);
+	    memcpy (constr, base, span);
 	  if (need_explicit_slash)
 	    constr[span - 1] = '/';
-	  if (subsize)
-	    memcpy (constr + span, sub, subsize);
-	  constr[span + subsize] = '\0';
+	  if (linklength)
+	    memcpy (constr + span, link, linklength);
+	  constr[span + linklength] = '\0';
 	}
-      else /* *sub == `/' */
+      else /* *link == `/' */
 	{
-	  /* SUB is an absolute path: we need to replace everything
-             after (and including) the FIRST slash with SUB.
+	  /* LINK is an absolute path: we need to replace everything
+             after (and including) the FIRST slash with LINK.
 
-	     So, if URL is "http://host/whatever/foo/bar", and SUB is
+	     So, if BASE is "http://host/whatever/foo/bar", and LINK is
 	     "/qux/xyzzy", our result should be
 	     "http://host/qux/xyzzy".  */
 	  int span;
 	  const char *slash;
 	  const char *start_insert = NULL; /* for gcc to shut up. */
-	  const char *pos = url;
+	  const char *pos = base;
 	  int seen_slash_slash = 0;
 	  /* We're looking for the first slash, but want to ignore
              double slash. */
@@ -1174,14 +1207,14 @@ construct (const char *url, const char *sub, int subsize, int no_proto)
 
 	  /* At this point, SLASH is the location of the first / after
 	     "//", or the first slash altogether.  START_INSERT is the
-	     pointer to the location where SUB will be inserted.  When
-	     examining the last two examples, keep in mind that SUB
+	     pointer to the location where LINK will be inserted.  When
+	     examining the last two examples, keep in mind that LINK
 	     begins with '/'. */
 
 	  if (!slash && !seen_slash_slash)
 	    /* example: "foo" */
 	    /*           ^    */
-	    start_insert = url;
+	    start_insert = base;
 	  else if (!slash && seen_slash_slash)
 	    /* example: "http://foo" */
 	    /*                     ^ */
@@ -1189,33 +1222,35 @@ construct (const char *url, const char *sub, int subsize, int no_proto)
 	  else if (slash && !seen_slash_slash)
 	    /* example: "foo/bar" */
 	    /*           ^        */
-	    start_insert = url;
+	    start_insert = base;
 	  else if (slash && seen_slash_slash)
 	    /* example: "http://something/" */
 	    /*                           ^  */
 	    start_insert = slash;
 
-	  span = start_insert - url;
-	  constr = (char *)xmalloc (span + subsize + 1);
+	  span = start_insert - base;
+	  constr = (char *)xmalloc (span + linklength + 1);
 	  if (span)
-	    memcpy (constr, url, span);
-	  if (subsize)
-	    memcpy (constr + span, sub, subsize);
-	  constr[span + subsize] = '\0';
+	    memcpy (constr, base, span);
+	  if (linklength)
+	    memcpy (constr + span, link, linklength);
+	  constr[span + linklength] = '\0';
 	}
     }
   else /* !no_proto */
     {
-      constr = strdupdelim (sub, sub + subsize);
+      constr = strdupdelim (link, link + linklength);
     }
   return constr;
 }
 
-/* Like the function above, but with a saner caller interface. */
+/* Merge BASE with LINK and return the resulting URI.  This is an
+   interface to uri_merge_1 that assumes that LINK is a
+   zero-terminated string.  */
 char *
-url_concat (const char *base_url, const char *new_url)
+uri_merge (const char *base, const char *link)
 {
-  return construct (base_url, new_url, strlen (new_url), !has_proto (new_url));
+  return uri_merge_1 (base, link, strlen (link), !has_proto (link));
 }
 
 /* Optimize URL by host, destructively replacing u->host with realhost
@@ -1232,32 +1267,6 @@ opt_url (struct urlinfo *u)
   xfree (u->url);
   u->url = str_url (u, 0);
 }
-
-/* This beautiful kludge is fortunately not needed, as I've made
-   parse_dir do the (almost) right thing, so that a query can never
-   become a part of directory.  */
-#if 0
-/* Call path_simplify, but make sure that the part after the
-   question-mark, if any, is not destroyed by path_simplify's
-   "optimizations".  */
-void
-path_simplify_with_kludge (char *path)
-{
-  char *query = strchr (path, '?');
-  if (query)
-    /* path_simplify also works destructively, so we also have the
-       license to write. */
-    *query = '\0';
-  path_simplify (path);
-  if (query)
-    {
-      char *newend = path + strlen (path);
-      *query = '?';
-      if (newend != query)
-	memmove (newend, query, strlen (query) + 1);
-    }
-}
-#endif
 
 /* Returns proxy host address, in accordance with PROTO.  */
 char *

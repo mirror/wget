@@ -493,7 +493,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	 redirects, but a ton of boneheaded webservers and CGIs out
 	 there break the rules and use relative URLs, and popular
 	 browsers are lenient about this, so wget should be too. */
-      construced_newloc = url_concat (url, mynewloc);
+      construced_newloc = uri_merge (url, mynewloc);
       xfree (mynewloc);
       mynewloc = construced_newloc;
 

@@ -139,12 +139,21 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
 /* The smaller value of the two.  */
 #define MINVAL(x, y) ((x) < (y) ? (x) : (y))
 
-/* ASCII char -> HEX digit */
-#define ASC2HEXD(x) (((x) >= '0' && (x) <= '9') ?               \
-		     ((x) - '0') : (TOUPPER(x) - 'A' + 10))
+/* Convert the ASCII character X to a hex-digit.  X should be between
+   '0' and '9', or between 'A' and 'F', or between 'a' and 'f'.  The
+   result is a number between 0 and 15.  If X is not a hexadecimal
+   digit character, the result is undefined.  */
+#define XCHAR_TO_XDIGIT(x)			\
+  (((x) >= '0' && (x) <= '9') ?			\
+   ((x) - '0') : (TOUPPER(x) - 'A' + 10))
 
-/* HEX digit -> ASCII char */
-#define HEXD2ASC(x) (((x) < 10) ? ((x) + '0') : ((x) - 10 + 'A'))
+/* The reverse of the above: convert a HEX digit in the [0, 15] range
+   to an ASCII character representing it.  The A-F characters are
+   always in upper case.  */
+#define XDIGIT_TO_XCHAR(x) (((x) < 10) ? ((x) + '0') : ((x) - 10 + 'A'))
+
+/* Like XDIGIT_TO_XCHAR, but produce a lower-case char. */
+#define XDIGIT_TO_xchar(x) (((x) < 10) ? ((x) + '0') : ((x) - 10 + 'a'))
 
 #define ARRAY_SIZE(array) (sizeof (array) / sizeof (*(array)))
 

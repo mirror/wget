@@ -26,10 +26,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define DEFAULT_HTTPS_PORT 443
 
 
-/* If the string contains unsafe characters, duplicate it with
-   encode_string, otherwise just copy it with strdup.  */
-#define CLEANDUP(x) (contains_unsafe (x) ? encode_string (x) : xstrdup (x))
-
 /* Structure containing info on a URL.  */
 struct urlinfo
 {
@@ -97,7 +93,6 @@ typedef enum
 
 /* Function declarations */
 
-int contains_unsafe PARAMS ((const char *));
 char *encode_string PARAMS ((const char *));
 
 struct urlinfo *newurl PARAMS ((void));
@@ -115,7 +110,7 @@ urlpos *get_urls_file PARAMS ((const char *));
 urlpos *get_urls_html PARAMS ((const char *, const char *, int, int *));
 void free_urlpos PARAMS ((urlpos *));
 
-char *url_concat PARAMS ((const char *, const char *));
+char *uri_merge PARAMS ((const char *, const char *));
 
 void rotate_backups PARAMS ((const char *));
 int mkalldirs PARAMS ((const char *));

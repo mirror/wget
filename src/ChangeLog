@@ -1,3 +1,39 @@
+2001-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* retr.c (retrieve_url): Call uri_merge, not url_concat.
+
+	* html-url.c (collect_tags_mapper): Call uri_merge, not
+	url_concat.
+
+	* url.c (mkstruct): Use encode_string instead of xstrdup followed
+	by URL_CLEANSE.
+	(path_simplify_with_kludge): Deleted.
+	(contains_unsafe): Deleted.
+	(construct): Renamed to uri_merge_1.
+	(url_concat): Renamed to uri_merge.
+
+2001-04-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (str_url): Use encode_string instead of the unnecessary
+	CLEANDUP.
+	(encode_string_maybe): New function, returns input string if no
+	encoding is needed.
+	(encode_string): Call encode_string_maybe to do the dirty work,
+	xstrdup if no work needed.
+
+2001-04-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.h (XDIGIT_TO_xchar): Define here.
+
+	* url.c (decode_string): Use new name.
+	(encode_string): Ditto.
+
+	* http.c (XDIGIT_TO_xchar): Rename HEXD2asc to XDIGIT_TO_xchar.
+	(dump_hash): Use new name.
+
+	* wget.h: Rename ASC2HEXD and HEXD2ASC to XCHAR_TO_XDIGIT and
+	XDIGIT_TO_XCHAR respectively.
+
 2001-04-13  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* init.c: Include cookies.h.
