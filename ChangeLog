@@ -1,4 +1,4 @@
-2001-03-12  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
+2001-03-12  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Only normal recursion should respect -np -- page-requisite
  	recursion should not.
