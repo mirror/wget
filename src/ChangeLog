@@ -1,5 +1,16 @@
 2001-06-18  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* recur.c (convert_all_links): Make sure "../" stuff is properly
+	handled in cur_url->url before we hand it over to convert_links.
+	(register_download): Canonicalize URL before storing it.
+
+2001-06-26  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.h (DO_REALLOC_FROM_ALLOCA): Set SIZEVAR after the memcpy()
+	call because it needs the old value.
+
+2001-06-18  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* cookies.c (ATTR_NAME_CHAR): Allow almost any character to be in
 	an attribute name.
 

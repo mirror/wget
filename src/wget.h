@@ -236,7 +236,6 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
     do_realloc_newsize = 2*(sizevar);						\
     if (do_realloc_newsize < 16)						\
       do_realloc_newsize = 16;							\
-    (sizevar) = do_realloc_newsize;						\
   }										\
   if (do_realloc_newsize)							\
     {										\
@@ -249,6 +248,7 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
 	  (basevar) = drfa_new_basevar;						\
 	  allocap = 0;								\
 	}									\
+      (sizevar) = do_realloc_newsize;						\
     }										\
 } while (0)
 
