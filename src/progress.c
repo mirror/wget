@@ -411,7 +411,8 @@ bar_update (void *progress, long howmuch)
   long dltime = wtimer_elapsed (bp->timer);
 
   bp->count += howmuch;
-  if (bp->count + bp->initial_length > bp->total_length)
+  if (bp->total_length > 0
+      && bp->count + bp->initial_length > bp->total_length)
     /* We could be downloading more than total_length, e.g. when the
        server sends an incorrect Content-Length header.  In that case,
        adjust bp->total_length to the new reality, so that the code in

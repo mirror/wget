@@ -1,5 +1,10 @@
 2001-11-24  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* progress.c (bar_update): Don't modify bp->total_length if it is
+	zero.
+
+2001-11-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* retr.c (retrieve_url): When the redirection URL doesn't parse,
 	print the correct error message rather than "UNKNOWN".
 
