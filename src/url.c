@@ -1427,14 +1427,15 @@ UWC,  C,  C,  C,   C,  C,  C,  C,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
 
 /* Quote path element, characters in [b, e), as file name, and append
    the quoted string to DEST.  Each character is quoted as per
-   file_unsafe_char and the corresponding table.  */
+   file_unsafe_char and the corresponding table.
+
+   If ESCAPED_P is non-zero, the path element is considered to be
+   URL-escaped and will be unescaped prior to inspection.  */
 
 static void
-append_uri_pathel (const char *b, const char *e, struct growable *dest)
+append_uri_pathel (const char *b, const char *e, int escaped_p,
+		   struct growable *dest)
 {
-  char *pathel;
-  int pathlen;
-
   const char *p;
   int quoted, outlen;
 
@@ -1447,32 +1448,37 @@ append_uri_pathel (const char *b, const char *e, struct growable *dest)
     mask |= filechr_control;
 
   /* Copy [b, e) to PATHEL and URL-unescape it. */
-  BOUNDED_TO_ALLOCA (b, e, pathel);
-  url_unescape (pathel);
-  pathlen = strlen (pathel);
+  if (escaped_p)
+    {
+      char *unescaped;
+      BOUNDED_TO_ALLOCA (b, e, unescaped);
+      url_unescape (unescaped);
+      b = unescaped;
+      e = unescaped + strlen (unescaped);
+    }
 
-  /* Go through PATHEL and check how many characters we'll need to
-     add for file quoting. */
+  /* Walk the PATHEL string and check how many characters we'll need
+     to add for file quoting.  */
   quoted = 0;
-  for (p = pathel; *p; p++)
+  for (p = b; p < e; p++)
     if (FILE_CHAR_TEST (*p, mask))
       ++quoted;
 
-  /* p - pathel is the string length.  Each quoted char means two
-     additional characters in the string, hence 2*quoted.  */
-  outlen = (p - pathel) + (2 * quoted);
+  /* e-b is the string length.  Each quoted char means two additional
+     characters in the string, hence 2*quoted.  */
+  outlen = (e - b) + (2 * quoted);
   GROW (dest, outlen);
 
   if (!quoted)
     {
       /* If there's nothing to quote, we don't need to go through the
 	 string the second time.  */
-      memcpy (TAIL (dest), pathel, outlen);
+      memcpy (TAIL (dest), b, outlen);
     }
   else
     {
       char *q = TAIL (dest);
-      for (p = pathel; *p; p++)
+      for (p = b; p < e; p++)
 	{
 	  if (!FILE_CHAR_TEST (*p, mask))
 	    *q++ = *p;
@@ -1523,7 +1529,7 @@ append_dir_structure (const struct url *u, struct growable *dest)
 
       if (dest->tail)
 	append_char ('/', dest);
-      append_uri_pathel (pathel, next, dest);
+      append_uri_pathel (pathel, next, 1, dest);
     }
 }
 
@@ -1572,14 +1578,14 @@ url_file_name (const struct url *u)
   if (fnres.tail)
     append_char ('/', &fnres);
   u_file = *u->file ? u->file : "index.html";
-  append_uri_pathel (u_file, u_file + strlen (u_file), &fnres);
+  append_uri_pathel (u_file, u_file + strlen (u_file), 0, &fnres);
 
   /* Append "?query" to the file name. */
   u_query = u->query && *u->query ? u->query : NULL;
   if (u_query)
     {
       append_char (FN_QUERY_SEP, &fnres);
-      append_uri_pathel (u_query, u_query + strlen (u_query), &fnres);
+      append_uri_pathel (u_query, u_query + strlen (u_query), 1, &fnres);
     }
 
   /* Zero-terminate the file name. */
