@@ -704,20 +704,23 @@ url_parse (const char *url, int *error)
       int invalid = 0;
       ++p;
       while (1)
-	switch (*p++)
-	  {
-	  case ']':
-	    goto out;
-	  case '\0':
-	    SETERR (error, PE_UNTERMINATED_IPV6_ADDRESS);
-	    return NULL;
-	  case '0': case '1': case '2': case '3': case '4':
-	  case '5': case '6': case '7': case '8': case '9':
-	  case ':': case '.':
-	    break;
-	  default:
-	    invalid = 1;
-	  }
+	{
+	  char c = *p++;
+	  switch (c)
+	    {
+	    case ']':
+	      goto out;
+	    case '\0':
+	      SETERR (error, PE_UNTERMINATED_IPV6_ADDRESS);
+	      return NULL;
+	    case ':': case '.':
+	      break;
+	    default:
+	      if (ISXDIGIT (c))
+		break;
+	      invalid = 1;
+	    }
+	}
     out:
       if (invalid)
 	{
