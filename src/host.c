@@ -502,9 +502,9 @@ cache_remove (const char *host)
    gethostbyname/getaddrinfo returned them.
 
    This function caches its result so that, if the same host is passed
-   the second time, the addresses are returned without DNS lookup.  If
-   you want to force lookup, call forget_host_lookup() prior to this
-   function, or set opt.dns_cache to 0 to globally disable caching.
+   the second time, the addresses are returned without DNS lookup.
+   (Use LH_REFRESH to force lookup, or set opt.dns_cache to 0 to
+   globally disable caching.)
 
    FLAGS can be a combination of:
      LH_SILENT  - don't print the "resolving ... done" messages.

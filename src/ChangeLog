@@ -1,5 +1,10 @@
 2003-11-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* host.c: Don't refer to the now-removed function
+	forget_host_lookup in the documentation of lookup_host.
+
+2003-11-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (persistent_available_p): Correctly specify the endpoint
 	argument to socket_ip_address.
 	(gethttp): When printing the "reusing connection to..." message,
