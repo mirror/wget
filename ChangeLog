@@ -1,3 +1,9 @@
+2001-01-11  Adrian Aichner  <Adrian.Aichner@t-online.de>
+
+	* windows/Makefile.src: Updated.
+
+	* windows/wget.dep: Ditto.
+
 2001-01-09  Dan Harkless  <wget@harkless.org>
 
 	* TODO: If -c is on, don't re-download a 100%-downloaded file.
