@@ -287,7 +287,15 @@ if test x"$with_ssl" != x -a x"$with_ssl" != x"no"; then
     AC_CHECK_LIB(crypto,RSA_new,,ssl_link_failure=yes)
     AC_CHECK_LIB(ssl,SSL_new,,ssl_link_failure=yes)
 
-    dnl echo $LDFLAGS
+    dnl If ssl_link_failure is still no, the libraries link.  But we
+    dnl still need to check if the program linked with those libraries
+    dnl under these settings with run.  On some systems (Solaris), Gcc
+    dnl adds -L/usr/local/lib to the linking line, but fails to add
+    dnl -R/usr/local/lib, thus creating executables that link, but
+    dnl fail to run.
+
+    dnl If we are cross-compiling, just assume that working linkage
+    dnl implies working executable.
 
     if test x"$ssl_link_failure" = xno; then
       dnl Now try to run the thing.
@@ -296,7 +304,7 @@ if test x"$with_ssl" != x -a x"$with_ssl" != x"no"; then
 char RSA_new();
 char SSL_new();
 main(){return 0;}
-], AC_MSG_RESULT("yes"), AC_MSG_RESULT("no"); ssl_link_failure=yes)
+], AC_MSG_RESULT("yes"), AC_MSG_RESULT("no"); ssl_link_failure=yes, true)
     fi
 
     if test x"$ssl_link_failure" = xno; then

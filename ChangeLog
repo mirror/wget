@@ -1,3 +1,9 @@
+2001-05-26  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* configure.in: Provide a default for AC_TRY_RUN when
+	cross-compiling.  Effectively, assume that when cross-compiling,
+	working linkage implies working executable.
+
 2001-05-25  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* configure.in: Rewrote OpenSSL library detection.  Now the code
