@@ -1,3 +1,13 @@
+2001-01-15  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
+
+	* util/wget.spec: Updated to 1.7, merged with the spec file from
+	RedHat.
+
+	* po/Makefile.in.in: `make realclean' equal to `make
+	maintainer-clean'.
+
+	* Makefile.in (realclean-top): Remove 'configure' as well. 
+
 2001-01-11  Dan Harkless  <wget@harkless.org>
 
 	* TODO: If -c used with -N, check to make sure a file hasn't
