@@ -711,10 +711,10 @@ sock_close (int fd)
    That way the user code can call xread(fd, ...) and we'll run read
    or SSL_read or whatever is necessary.  */
 
-static struct hash_table *extended_map;
-static int extended_map_modified_tick;
+static struct hash_table *transport_map;
+static int transport_map_modified_tick;
 
-struct extended_info {
+struct transport_info {
   xreader_t reader;
   xwriter_t writer;
   xpoller_t poller;
@@ -722,55 +722,58 @@ struct extended_info {
   void *ctx;
 };
 
-/* Register the handlers for operations on FD.  This is meant
-   primarily for transport layers like SSL that piggyback on sockets,
-   but with their own readers, writers, etc.  */
+/* Register the transport layer operations that will be used when
+   reading, writing, and polling FD.
+
+   This should be used for transport layers like SSL that piggyback on
+   sockets.  FD should otherwise be a real socket, on which you can
+   call getpeername, etc.  */
 
 void
-register_extended (int fd, xreader_t reader, xwriter_t writer,
-		   xpoller_t poller, xcloser_t closer, void *ctx)
+register_transport (int fd, xreader_t reader, xwriter_t writer,
+		    xpoller_t poller, xcloser_t closer, void *ctx)
 {
-  struct extended_info *info;
+  struct transport_info *info;
 
   /* The file descriptor must be non-negative to be registered.
      Negative values are ignored by xclose(), and -1 cannot be used as
      hash key.  */
   assert (fd >= 0);
 
-  info = xnew (struct extended_info);
+  info = xnew (struct transport_info);
   info->reader = reader;
   info->writer = writer;
   info->poller = poller;
   info->closer = closer;
   info->ctx = ctx;
-  if (!extended_map)
-    extended_map = hash_table_new (0, NULL, NULL);
-  hash_table_put (extended_map, (void *) fd, info);
-  ++extended_map_modified_tick;
+  if (!transport_map)
+    transport_map = hash_table_new (0, NULL, NULL);
+  hash_table_put (transport_map, (void *) fd, info);
+  ++transport_map_modified_tick;
 }
 
 /* When xread/xwrite are called multiple times in a loop, they should
    remember the INFO pointer instead of fetching it every time.  It is
    not enough to compare FD to LAST_FD because FD might have been
    closed and reopened.  modified_tick ensures that changes to
-   extended_map will not be unnoticed.
+   transport_map will not be unnoticed.
 
    This is a macro because we want the static storage variables to be
    per-function.  */
 
 #define LAZY_RETRIEVE_INFO(info) do {					\
-  static struct extended_info *last_info;				\
+  static struct transport_info *last_info;				\
   static int last_fd = -1, last_tick;					\
-  if (!extended_map)							\
+  if (!transport_map)							\
     info = NULL;							\
-  else if (last_fd == fd && last_tick == extended_map_modified_tick)	\
+  else if (last_fd == fd && last_tick == transport_map_modified_tick)	\
     info = last_info;							\
   else									\
     {									\
-      info = hash_table_get (extended_map, (void *) fd);		\
+      info = hash_table_get (transport_map, (void *) fd);		\
       last_fd = fd;							\
       last_info = info;							\
-      last_tick = extended_map_modified_tick;				\
+      last_tick = transport_map_modified_tick;				\
     }									\
 } while (0)
 
@@ -782,7 +785,7 @@ register_extended (int fd, xreader_t reader, xwriter_t writer,
 int
 xread (int fd, char *buf, int bufsize, double timeout)
 {
-  struct extended_info *info;
+  struct transport_info *info;
   LAZY_RETRIEVE_INFO (info);
   if (timeout == -1)
     timeout = opt.read_timeout;
@@ -813,7 +816,7 @@ int
 xwrite (int fd, char *buf, int bufsize, double timeout)
 {
   int res;
-  struct extended_info *info;
+  struct transport_info *info;
   LAZY_RETRIEVE_INFO (info);
   if (timeout == -1)
     timeout = opt.read_timeout;
@@ -852,15 +855,15 @@ xwrite (int fd, char *buf, int bufsize, double timeout)
 void
 xclose (int fd)
 {
-  struct extended_info *info;
+  struct transport_info *info;
   if (fd < 0)
     return;
 
-  /* We don't need to be extra-fast here, so save some code by
-     avoiding LAZY_RETRIEVE_INFO. */
+  /* Don't use LAZY_RETRIEVE_INFO because xclose() is only called once
+     per socket, so that particular optimization wouldn't work.  */
   info = NULL;
-  if (extended_map)
-    info = hash_table_get (extended_map, (void *) fd);
+  if (transport_map)
+    info = hash_table_get (transport_map, (void *) fd);
 
   if (info && info->closer)
     info->closer (fd, info->ctx);
@@ -869,8 +872,8 @@ xclose (int fd)
 
   if (info)
     {
-      hash_table_remove (extended_map, (void *) fd);
+      hash_table_remove (transport_map, (void *) fd);
       xfree (info);
-      ++extended_map_modified_tick;
+      ++transport_map_modified_tick;
     }
 }

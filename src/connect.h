@@ -70,9 +70,9 @@ typedef int (*xreader_t) PARAMS ((int, char *, int, void *));
 typedef int (*xwriter_t) PARAMS ((int, char *, int, void *));
 typedef int (*xpoller_t) PARAMS ((int, double, int, void *));
 typedef void (*xcloser_t) PARAMS ((int, void *));
-void register_extended PARAMS ((int,
-				xreader_t, xwriter_t, xpoller_t, xcloser_t,
-				void *));
+void register_transport PARAMS ((int,
+				 xreader_t, xwriter_t, xpoller_t, xcloser_t,
+				 void *));
 
 int xread PARAMS ((int, char *, int, double));
 int xwrite PARAMS ((int, char *, int, double));

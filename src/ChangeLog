@@ -1,5 +1,10 @@
 2003-11-14  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* connect.c (register_transport): Renamed from register_extended.
+	Explain the intended usage.
+
+2003-11-14  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (uri_merge): Merging "foo" and "bar" should result in
 	"bar", not in "foo/bar".
 	(path_simplify): Don't remove empty path elements; don't
