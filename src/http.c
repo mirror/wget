@@ -1206,7 +1206,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
       /* Proxy authorization over SSL is handled below. */
 #ifdef HAVE_SSL
-      if (u->scheme != SCHEME_SSL)
+      if (u->scheme != SCHEME_HTTPS)
 #endif
 	request_set_header (req, "Proxy-Authorization", proxyauth, rel_value);
     }
