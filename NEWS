@@ -14,11 +14,11 @@ dotted indicator).  You can permanently revert to the old progress
 indicator by putting `progress = dot' in your `.wgetrc'.
 
 ** You can limit the download rate of the retrieval using the
-`--limit-rate' option.  For example, "wget --limit-rate=15k URL" will
+`--limit-rate' option.  For example, `wget --limit-rate=15k URL' will
 tell Wget not to download the body of the URL faster than 15 kilobytes
 per second.
 
-** "Recursive retrieval" has been revamped:
+** Recursive retrieval and link conversion have been revamped:
 
 *** Wget now traverses links breadth-first.  This makes the
 calculation of depth much more reliable than before.  Also, recursive
@@ -32,6 +32,10 @@ have been downloaded.
 *** BASE tags are handled correctly when converting links.  Since Wget
 already resolves <base href="..."> when resolving handling URLs, link
 conversion now makes the BASE tags point to an empty string.
+
+*** HTML anchors are now handled correctly.  Links to an anchor in the
+same document (<a href="#anchorname">), which used to confuse Wget,
+are now converted correctly.
 
 ** If a host has more than one IP address, Wget uses the other
 addresses when accessing the first one fails.
