@@ -1,3 +1,26 @@
+2000-12-17  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (parseurl): Rename inner loop var from i to ind to avoid
+	clash with the function top-level-declared variable i.
+	(str_url): Likewise, rename inner-loop i to j.
+
+	* recur.c (parse_robots): Don't declare LEN at top of function.
+	(robots_match): Renamed parameter FORBIDDEN to avoid hiding of
+	global variable.
+
+	* main.c (main): Change erroneous use of bitwise and to logical.
+
+	* init.c (cmd_address): Don't heap-allocate `sin'; it can be on
+	the stack because it will be copied to closure.
+
+	Thanks to Csaba Raduly's run of PC-LINT over the sources.
+
+2000-12-17  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* http.c (basic_authentication_encode): Use xmalloc(), not
+	malloc().  Thanks to Csaba Raduly's run of PC-LINT over the
+	sources.
+
 2000-12-17  Csaba Raduly  <csaba.raduly@sophos.com>
 
 	* sysdep.h: Test for __EMX__ rather than for EMXOS2 for OS/2

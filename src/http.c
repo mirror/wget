@@ -1851,7 +1851,7 @@ basic_authentication_encode (const char *user, const char *passwd,
   sprintf (t1, "%s:%s", user, passwd);
   t2 = (char *)alloca (1 + len2);
   base64_encode (t1, t2, len1);
-  res = (char *)malloc (len2 + 11 + strlen (header));
+  res = (char *)xmalloc (len2 + 11 + strlen (header));
   sprintf (res, "%s: Basic %s\r\n", header, t2);
 
   return res;

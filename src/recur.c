@@ -703,7 +703,7 @@ parse_robots (const char *robots_filename)
   char **entries;
   char *line, *cmd, *str, *p;
   char *base_version, *version;
-  int len, num, i;
+  int num, i;
   int wget_matched;		/* is the part meant for Wget?  */
 
   entries = NULL;
@@ -714,19 +714,19 @@ parse_robots (const char *robots_filename)
     return NULL;
 
   /* Kill version number.  */
-    if (opt.useragent)
-      {
-	STRDUP_ALLOCA (base_version, opt.useragent);
-	STRDUP_ALLOCA (version, opt.useragent);
-      }
-    else
-      {
-	int len = 10 + strlen (version_string);
-	base_version = (char *)alloca (len);
-	sprintf (base_version, "Wget/%s", version_string);
-	version = (char *)alloca (len);
-	sprintf (version, "Wget/%s", version_string);
-      }
+  if (opt.useragent)
+    {
+      STRDUP_ALLOCA (base_version, opt.useragent);
+      STRDUP_ALLOCA (version, opt.useragent);
+    }
+  else
+    {
+      int len = 10 + strlen (version_string);
+      base_version = (char *)alloca (len);
+      sprintf (base_version, "Wget/%s", version_string);
+      version = (char *)alloca (len);
+      sprintf (version, "Wget/%s", version_string);
+    }
   for (p = version; *p; p++)
     *p = TOLOWER (*p);
   for (p = base_version; *p && *p != '/'; p++)
@@ -755,7 +755,7 @@ parse_robots (const char *robots_filename)
   wget_matched = 1;
   while ((line = read_whole_line (fp)))
     {
-      len = strlen (line);
+      int len = strlen (line);
       /* Destroy <CR><LF> if present.  */
       if (len && line[len - 1] == '\n')
 	line[--len] = '\0';
@@ -874,19 +874,19 @@ parse_robots (const char *robots_filename)
 /* May the URL url be loaded according to disallowing rules stored in
    forbidden?  */
 static int
-robots_match (struct urlinfo *u, char **forbidden)
+robots_match (struct urlinfo *u, char **fb)
 {
   int l;
 
-  if (!forbidden)
+  if (!fb)
     return 1;
   DEBUGP (("Matching %s against: ", u->path));
-  for (; *forbidden; forbidden++)
+  for (; *fb; fb++)
     {
-      DEBUGP (("%s ", *forbidden));
-      l = strlen (*forbidden);
-      /* If dir is forbidden, we may not load the file.  */
-      if (strncmp (u->path, *forbidden, l) == 0)
+      DEBUGP (("%s ", *fb));
+      l = strlen (*fb);
+      /* If dir is fb, we may not load the file.  */
+      if (strncmp (u->path, *fb, l) == 0)
 	{
 	  DEBUGP (("matched.\n"));
 	  return 0; /* Matches, i.e. does not load...  */

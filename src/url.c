@@ -475,13 +475,13 @@ parseurl (const char *url, struct urlinfo *u, int strict)
     u->proto = type = URLHTTP;
   if (!u->port)
     {
-      int i;
-      for (i = 0; i < ARRAY_SIZE (sup_protos); i++)
-	if (sup_protos[i].ind == type)
+      int ind;
+      for (ind = 0; ind < ARRAY_SIZE (sup_protos); ind++)
+	if (sup_protos[ind].ind == type)
 	  break;
-      if (i == ARRAY_SIZE (sup_protos))
+      if (ind == ARRAY_SIZE (sup_protos))
 	return URLUNKNOWN;
-      u->port = sup_protos[i].port;
+      u->port = sup_protos[ind].port;
     }
   /* Some delimiter troubles...  */
   if (url[i] == '/' && url[i - 1] != ':')
@@ -688,11 +688,11 @@ str_url (const struct urlinfo *u, int hide)
     user = CLEANDUP (u->user);
   if (u->passwd)
     {
-      int i;
+      int j;
       passwd = CLEANDUP (u->passwd);
       if (hide)
-	for (i = 0; passwd[i]; i++)
-	  passwd[i] = 'x';
+	for (j = 0; passwd[j]; j++)
+	  passwd[j] = 'x';
     }
   if (u->proto == URLFTP && *dir == '/')
     {

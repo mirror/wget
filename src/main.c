@@ -807,7 +807,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
 		   _("Download quota (%s bytes) EXCEEDED!\n"),
 		   legible (opt.quota));
     }
-  if (opt.convert_links & !opt.delete_after)
+  if (opt.convert_links && !opt.delete_after)
     {
       convert_all_links ();
     }
