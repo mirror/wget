@@ -1,3 +1,9 @@
+2003-11-12  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c: Use limits.h only where available.
+
+	* hash.c: Use INVALID_PTR and INVALID_PTR_BYTE.  Include limits.h.
+
 2003-11-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* main.c: Added options --inet4-only and --inet6-only.

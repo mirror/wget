@@ -46,7 +46,9 @@ so, delete this exception statement from your version.  */
 #ifdef HAVE_PWD_H
 # include <pwd.h>
 #endif
-#include <limits.h>
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif
 #ifdef HAVE_UTIME_H
 # include <utime.h>
 #endif
@@ -1147,10 +1149,13 @@ numdigit (long number)
   return cnt;
 }
 
-/* A half-assed implementation of INT_MAX on machines that don't
-   bother to define one. */
+/* Attempt to calculate INT_MAX on machines that don't bother to
+   define it. */
 #ifndef INT_MAX
-# define INT_MAX ((int) ~((unsigned)1 << 8 * sizeof (int) - 1))
+# ifndef CHAR_BIT
+#  define CHAR_BIT 8
+# endif
+# define INT_MAX ((int) ~((unsigned)1 << CHAR_BIT * sizeof (int) - 1))
 #endif
 
 #define ONE_DIGIT(figure) *p++ = n / (figure) + '0'

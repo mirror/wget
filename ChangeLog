@@ -1,3 +1,7 @@
+2003-11-12  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Check for limits.h.
+
 2003-11-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* aclocal.m4 (WGET_SOCKLEN_T): Use AC_COMPILE_IFELSE instead of

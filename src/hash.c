@@ -35,7 +35,10 @@ so, delete this exception statement from your version.  */
 # include <string.h>
 #else
 # include <strings.h>
-#endif /* HAVE_STRING_H */
+#endif
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif
 #include <stdlib.h>
 #include <assert.h>
 
@@ -158,12 +161,25 @@ struct hash_table {
 				   the prime table. */
 };
 
-/* We use all-bit-set marker to mean that a mapping is empty.  It is
-   (hopefully) illegal as a pointer, and it allows the users to use
-   NULL (as well as any non-negative integer) as key.  */
+/* We use the all-bits-set constant (INVALID_PTR) marker to mean that
+   a mapping is empty.  It is unaligned and therefore illegal as a
+   pointer.  INVALID_PTR_BYTE (0xff) is the one-byte value used to
+   initialize the mappings array as empty.
 
-#define NON_EMPTY(mp) (mp->key != (void *)~(unsigned long)0)
-#define MARK_AS_EMPTY(mp) (mp->key = (void *)~(unsigned long)0)
+   The all-bits-set value is a better choice than NULL because it
+   allows the use of NULL/0 keys.  Since the keys are either integers
+   or pointers, the only key that cannot be used is the integer value
+   -1.  This is acceptable because it still allows the use of
+   nonnegative integer keys.  */
+
+#define INVALID_PTR ((void *) ~(unsigned long)0)
+#ifndef UCHAR_MAX
+# define UCHAR_MAX 0xff
+#endif
+#define INVALID_PTR_BYTE UCHAR_MAX
+
+#define NON_EMPTY(mp) ((mp)->key != INVALID_PTR)
+#define MARK_AS_EMPTY(mp) ((mp)->key = INVALID_PTR)
 
 /* "Next" mapping is the mapping after MP, but wrapping back to
    MAPPINGS when MP would reach MAPPINGS+SIZE.  */
@@ -178,9 +194,8 @@ struct hash_table {
    being HASHFUN.  */
 #define HASH_POSITION(key, hashfun, size) ((hashfun) (key) % size)
 
-/* Find a prime near, but greather than or equal to SIZE.  Of course,
-   the primes are not calculated, but looked up from a table.  The
-   table does not contain all primes in range, just a selection useful
+/* Find a prime near, but greather than or equal to SIZE.  The primes
+   are looked up from a table with a selection of primes convenient
    for this purpose.
 
    PRIME_OFFSET is a minor optimization: it specifies start position
@@ -273,8 +288,8 @@ hash_table_new (int items,
 
   ht->mappings = xnew_array (struct mapping, ht->size);
   /* Mark mappings as empty.  We use 0xff rather than 0 to mark empty
-     keys because it allows us to store NULL keys to the table.  */
-  memset (ht->mappings, 0xff, size * sizeof (struct mapping));
+     keys because it allows us to use NULL/0 as keys.  */
+  memset (ht->mappings, INVALID_PTR_BYTE, size * sizeof (struct mapping));
 
   ht->count = 0;
 
@@ -378,7 +393,7 @@ grow_hash_table (struct hash_table *ht)
   ht->resize_threshold = newsize * HASH_MAX_FULLNESS;
 
   mappings = xnew_array (struct mapping, newsize);
-  memset (mappings, 0xff, newsize * sizeof (struct mapping));
+  memset (mappings, INVALID_PTR_BYTE, newsize * sizeof (struct mapping));
   ht->mappings = mappings;
 
   for (mp = old_mappings; mp < old_end; mp++)
@@ -480,7 +495,7 @@ hash_table_remove (struct hash_table *ht, const void *key)
 void
 hash_table_clear (struct hash_table *ht)
 {
-  memset (ht->mappings, 0xff, ht->size * sizeof (struct mapping));
+  memset (ht->mappings, INVALID_PTR_BYTE, ht->size * sizeof (struct mapping));
   ht->count = 0;
 }
 

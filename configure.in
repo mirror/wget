@@ -170,7 +170,7 @@ dnl HAVE_SYS_TYPES_H, etc. before including them.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(sys/types.h sys/stat.h)
 dnl Now check for the others.
-AC_CHECK_HEADERS(string.h strings.h stdarg.h unistd.h sys/time.h)
+AC_CHECK_HEADERS(string.h strings.h stdarg.h limits.h unistd.h sys/time.h)
 AC_CHECK_HEADERS(termios.h sys/ioctl.h sys/select.h utime.h sys/utime.h)
 AC_CHECK_HEADERS(stdint.h inttypes.h signal.h setjmp.h pwd.h)
 AC_HEADER_TIME
@@ -314,13 +314,15 @@ if test x"$with_ssl" != x"no"; then
     CPPFLAGS="$SSL_INCLUDES $wget_save_CPPFLAGS"
 
     AC_MSG_CHECKING([for includes])
-
-    AC_TRY_CPP([#include <openssl/ssl.h>
+    AC_COMPILE_IFELSE([
+#include <openssl/ssl.h>
 #include <openssl/rsa.h>
-],
-      AC_MSG_RESULT(found); ssl_found_includes=yes,
+    ], [
+      AC_MSG_RESULT(found)
+      ssl_found_includes=yes
+    ], [
       AC_MSG_RESULT([not found])
-    )
+    ])
 
     if test x"$ssl_found_includes" = xno; then
       continue
