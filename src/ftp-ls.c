@@ -459,8 +459,8 @@ ftp_parse_winnt_ls (const char *file)
       /* Adjust hour from AM/PM. Just for the record, the sequence goes
          11:00AM, 12:00PM, 01:00PM ... 11:00PM, 12:00AM, 01:00AM . */
       tok+=2;
-      if      ((*tok == 'A') && (hour == 12)) hour  = 0;
-      else if ((*tok == 'P') && (hour <  12)) hour += 12;
+      if (hour == 12)  hour  = 0;
+      if (*tok == 'P') hour += 12;
 
       DEBUGP(("YYYY/MM/DD HH:MM - %d/%02d/%02d %02d:%02d\n", 
               year+1900, month, day, hour, min));
