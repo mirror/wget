@@ -1,5 +1,9 @@
 2001-04-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* hash.c: Include <string.h>.
+
+2001-04-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* config.h.in: Define "compilation environment" options that work
 	under Linux and Solaris.  To be reviewed on other OS'es.
 

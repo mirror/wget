@@ -21,6 +21,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include <config.h>
 #endif
 
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# include <strings.h>
+#endif /* HAVE_STRING_H */
 #include <stdlib.h>
 #include <assert.h>
 
