@@ -176,4 +176,8 @@ char *alloca ();
 /* Define if we're using builtin (GNU) md5.c.  */
 #define HAVE_BUILTIN_MD5 1
 
+/* Define if you have the isatty function.  */
+#undef HAVE_ISATTY
+
+
 #endif /* CONFIG_H */

@@ -48,6 +48,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # define stat _stat
 #endif
 
+#ifdef HAVE_ISATTY
+/* Microsoft VC supports _isatty; Borland ? */
+#ifdef _MSC_VER
+# define isatty _isatty
+#endif
+#endif
+
 #define REALCLOSE(x) closesocket (x)
 
 /* read & write don't work with sockets on Windows 95.  */

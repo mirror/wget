@@ -186,5 +186,8 @@ char *alloca ();
 #define inline __inline
 #define ftruncate chsize
 
+/* Define if you have the isatty function.  */
+#define HAVE_ISATTY 1
+
 #endif /* CONFIG_H */
 

@@ -42,10 +42,27 @@ static int windows_nt_p;
 
 
 /* Emulation of Unix sleep.  */
+
 unsigned int
 sleep (unsigned seconds)
 {
   return SleepEx (1000 * seconds, TRUE) ? 0U : 1000 * seconds;
+}
+
+/* Emulation of Unix usleep().  This has a granularity of
+   milliseconds, but that's ok because:
+
+   a) Wget is only using it with milliseconds;
+
+   b) You can't rely on usleep's granularity anyway.  If a caller
+   expects usleep to respect every microsecond, he's in for a
+   surprise.  */
+
+int
+usleep (unsigned long usec)
+{
+  SleepEx (usec / 1000, TRUE);
+  return 0;
 }
 
 static char *

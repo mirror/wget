@@ -28,6 +28,7 @@ retr.obj+
 res.obj+
 recur.obj+
 rbuf.obj+
+progress.obj+
 netrc.obj+
 mswindows.obj+
 gnu-md5.obj+

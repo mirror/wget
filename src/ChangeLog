@@ -1,3 +1,11 @@
+2001-01-23  Herold Heiko  <Heiko.Herold@previnet.it>
+
+	* config.h.ms, mswindows.h: defined HAVE_ISATTY, use _isatty for
+	MS VC; somebody with Borland compiler please check and provide
+	patch if possible;
+
+	* cmpt.c: provided a usleep emulation.
+
 2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* host.c (address_list_new): Initialize al->faulty.

@@ -1209,8 +1209,10 @@ strptime (buf, format, tm)
 
 
 #ifndef HAVE_USLEEP
-/* A simple usleep implementation based on select().  This will
-   probably not work on Windows.  */
+#ifndef WINDOWS
+
+/* A simple usleep implementation based on select().  For Unix and
+   Unix-like systems.  */
 
 int
 usleep (unsigned long usec)
@@ -1221,4 +1223,6 @@ usleep (unsigned long usec)
   select (0, NULL, NULL, NULL, &tm);
   return 0;
 }
+
+#endif /* not WINDOWS */
 #endif /* not HAVE_USLEEP */
