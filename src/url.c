@@ -1426,7 +1426,7 @@ append_dir_structure (const struct url *u, struct growable *dest)
 char *
 url_file_name (const struct url *u)
 {
-  struct growable fnres;
+  struct growable fnres;	/* stands for "file name result" */
 
   const char *u_file, *u_query;
   char *fname, *unique;
