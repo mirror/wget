@@ -40,11 +40,6 @@ so, delete this exception statement from your version.  */
 # define NDEBUG
 #endif
 
-/* Define this if you want primitive but extensive malloc debugging.
-   It will make Wget extremely slow, so only do it in development
-   builds.  */
-#undef DEBUG_MALLOC
-
 #ifndef PARAMS
 # if PROTOTYPES
 #  define PARAMS(args) args

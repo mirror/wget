@@ -227,9 +227,10 @@ init_interesting (void)
   /* Add the attributes we care about. */
   interesting_attributes = make_nocase_string_hash_table (10);
   for (i = 0; i < countof (additional_attributes); i++)
-    string_set_add (interesting_attributes, additional_attributes[i]);
+    hash_table_put (interesting_attributes, additional_attributes[i], "1");
   for (i = 0; i < countof (tag_url_attributes); i++)
-    string_set_add (interesting_attributes, tag_url_attributes[i].attr_name);
+    hash_table_put (interesting_attributes,
+		    tag_url_attributes[i].attr_name, "1");
 }
 
 /* Find the value of attribute named NAME in the taginfo TAG.  If the
@@ -715,6 +716,10 @@ get_urls_file (const char *file)
 void
 cleanup_html_url (void)
 {
-  xfree_null (interesting_tags);
-  xfree_null (interesting_attributes);
+  /* Destroy the hash tables.  The hash table keys and values are not
+     allocated by this code, so we don't need to free them here.  */
+  if (interesting_tags)
+    hash_table_destroy (interesting_tags);
+  if (interesting_attributes)
+    hash_table_destroy (interesting_attributes);
 }

@@ -1319,7 +1319,8 @@ cleanup (void)
   cleanup_html_url ();
   downloaded_files_free ();
   host_cleanup ();
-  cookie_jar_delete (wget_cookie_jar);
+  if (wget_cookie_jar)
+    cookie_jar_delete (wget_cookie_jar);
 
   {
     extern acc_t *netrc_list;

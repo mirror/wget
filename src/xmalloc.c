@@ -83,7 +83,7 @@ memfatal (const char *context, long attempted_size)
      #define xmalloc0 xmalloc0_real
      #define xrealloc xrealloc_real
      #define xstrdup xstrdup_real
-     #define xfree free
+     #define xfree xfree_real
 
    In case of memory debugging, the definitions are a bit more
    complex, because we want to provide more information, *and* we want
@@ -93,9 +93,9 @@ memfatal (const char *context, long attempted_size)
 
      #define xmalloc(a) xmalloc_debug (a, __FILE__, __LINE__)
      #define xmalloc0(a) xmalloc0_debug (a, __FILE__, __LINE__)
-     #define xfree(a)   xfree_debug (a, __FILE__, __LINE__)
      #define xrealloc(a, b) xrealloc_debug (a, b, __FILE__, __LINE__)
      #define xstrdup(a) xstrdup_debug (a, __FILE__, __LINE__)
+     #define xfree(a) xfree_debug (a, __FILE__, __LINE__)
 
    Each of the *_debug function does its magic and calls the real one.  */
 
@@ -161,6 +161,30 @@ xstrdup_real (const char *s)
 #endif /* HAVE_STRDUP */
 
   return copy;
+}
+
+STATIC_IF_DEBUG void
+xfree_real (void *ptr)
+{
+  /* Wget's xfree() must not be passed a NULL pointer.  This is for
+     historical reasons: many pre-C89 systems were known to bomb at
+     free(NULL), and Wget was careful to use xfree_null when there is
+     a possibility of PTR being NULL.  (It might have been better to
+     simply have xfree() do nothing if ptr==NULL.)
+
+     Since the code is already written that way, this assert simply
+     enforces that constraint.  Code that thinks it doesn't deal with
+     NULL, and it in fact does, aborts immediately.  If you trip on
+     this, either the code has a pointer handling bug or should have
+     called xfree_null instead of xfree.  Correctly written code
+     should never trigger this assertion.
+
+     If the assertion proves to be too much of a hassle, it can be
+     removed and a check that makes NULL a no-op placed in its stead.
+     If that is done, xfree_null is no longer needed and should be
+     removed.  */
+  assert (ptr != NULL);
+  free (ptr);
 }
 
 /* xfree_real is unnecessary because free doesn't require any special
@@ -300,10 +324,18 @@ xstrdup_debug (const char *s, const char *source_file, int source_line)
 void
 xfree_debug (void *ptr, const char *source_file, int source_line)
 {
-  assert (ptr != NULL);
+  /* See xfree_real for rationale of this abort.  We repeat it here
+     because we can print the file and the line where the offending
+     free occurred.  */
+  if (ptr == NULL)
+    {
+      fprintf ("%s: xfree(NULL) at %s:%d\n",
+	       exec_name, source_file, source_line);
+      abort ();
+    }
   ++free_count;
   unregister_ptr (ptr);
-  free (ptr);
+  xfree_real (ptr);
 }
 
 #endif /* DEBUG_MALLOC */

@@ -1,5 +1,19 @@
 2003-11-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* html-url.c (cleanup_html_url): Destroy the hash tables, don't
+	just call free on them.
+	(init_interesting): Use hash_table_put instead of string_set_add
+	because we don't need the strdup that the latter function
+	performs.
+
+	* init.c (cleanup): Don't pass NULL to cookie_jar_delete.
+
+	* xmalloc.c (xfree_real): Abort when passed a NULL pointer.
+	(xfree_debug): Print at the file and line of the offending call to
+	free.
+
+2003-11-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.h: Retired the `boolean' type.  Moved the DEFAULT_LOGFILE
 	define to log.h.  Moved the INFINITE_RECURSION define to recur.h.
 

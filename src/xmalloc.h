@@ -30,10 +30,18 @@ so, delete this exception statement from your version.  */
 #ifndef XMALLOC_H
 #define XMALLOC_H
 
+/* Define this if you want primitive but extensive malloc debugging.
+   It will make Wget extremely slow, so only do it in development
+   builds.  */
+#define DEBUG_MALLOC
+
 /* When DEBUG_MALLOC is not defined (which is normally the case), the
    allocation functions directly map to *_real wrappers.  In the
    DEBUG_MALLOC mode, they also record the file and line where the
-   offending malloc/free/... was invoked.  */
+   offending malloc/free/... was invoked.
+
+   *Note*: xfree(NULL) aborts.  If the pointer you're freeing can be
+   NULL, use xfree_null instead.  */
 
 #ifndef DEBUG_MALLOC
 
@@ -41,26 +49,27 @@ so, delete this exception statement from your version.  */
 #define xmalloc0 xmalloc0_real
 #define xrealloc xrealloc_real
 #define xstrdup  xstrdup_real
-#define xfree    free
+#define xfree    xfree_real
 
 void *xmalloc_real PARAMS ((size_t));
 void *xmalloc0_real PARAMS ((size_t));
 void *xrealloc_real PARAMS ((void *, size_t));
 char *xstrdup_real PARAMS ((const char *));
+void xfree_real PARAMS ((void *));
 
 #else  /* DEBUG_MALLOC */
 
 #define xmalloc(s)     xmalloc_debug (s, __FILE__, __LINE__)
 #define xmalloc0(s)    xmalloc0_debug (s, __FILE__, __LINE__)
-#define xfree(p)       xfree_debug (p, __FILE__, __LINE__)
 #define xrealloc(p, s) xrealloc_debug (p, s, __FILE__, __LINE__)
 #define xstrdup(p)     xstrdup_debug (p, __FILE__, __LINE__)
+#define xfree(p)       xfree_debug (p, __FILE__, __LINE__)
 
 void *xmalloc_debug PARAMS ((size_t, const char *, int));
 void *xmalloc0_debug PARAMS ((size_t, const char *, int));
-void xfree_debug PARAMS ((void *, const char *, int));
 void *xrealloc_debug PARAMS ((void *, size_t, const char *, int));
 char *xstrdup_debug PARAMS ((const char *, const char *, int));
+void xfree_debug PARAMS ((void *, const char *, int));
 
 #endif /* DEBUG_MALLOC */
 
