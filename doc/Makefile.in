@@ -105,9 +105,13 @@ install.wgetrc:
 	     else \
 	     echo ' $(INSTALL_DATA) $(srcdir)/sample.wgetrc $(WGETRC).new'; \
 	     $(INSTALL_DATA) $(srcdir)/sample.wgetrc $(WGETRC).new; \
-	     echo "WARNING: File \`$(WGETRC)' already exists and is spared."; \
-	     echo "         You might want to consider \`$(WGETRC).new',"; \
-	     echo "         and merge both into \`$(WGETRC)', for the best."; \
+	     echo; \
+	     echo "WARNING: Differing \`$(WGETRC)' already exists and"; \
+	     echo "         has been spared.  You might want to consider"; \
+	     echo "         merging in the new lines from \`$(WGETRC).new'."; \
+	     echo; \
+	     echo "<Hit RETURN to acknowledge>\c"; \
+	     read user_input; \
 	  fi; \
 	else \
 	  $(INSTALL_DATA) $(srcdir)/sample.wgetrc $(WGETRC); \

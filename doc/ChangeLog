@@ -1,5 +1,11 @@
 2000-04-12  Dan Harkless  <dan-wget@dilvish.speed.net>
 
+	* Makefile (install.wgetrc): I completely missed the message that
+ 	the new wgetrc wasn't being installed the first couple of times I
+ 	ran `make install' after changing sample.wgetrc.  Added blank
+ 	lines around the message and a "<Hit RETURN to acknowledge>", and
+ 	reworded the message to be a bit more clear.
+	
 	* sample.wgetrc: Added entries for backup_converted and waitretry.
 
 	* wget.texi (waitretry): Herold Heiko <Heiko.Herold@previnet.it>'s
