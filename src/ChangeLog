@@ -1,5 +1,11 @@
 2002-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* progress.c (bar_create): If INITIAL is larger than TOTAL, fix
+	TOTAL.
+	(bar_finish): Likewise.
+
+2002-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* html-url.c (tag_handle_form): New function.  Pick up form
 	actions and mark them for conversion only.
 

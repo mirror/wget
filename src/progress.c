@@ -461,6 +461,11 @@ bar_create (long initial, long total)
 
   memset (bp, 0, sizeof (*bp));
 
+  /* In theory, our callers should take care of this pathological
+     case, but it can sometimes happen. */
+  if (initial > total)
+    total = initial;
+
   bp->initial_length = initial;
   bp->total_length   = total;
 
@@ -493,7 +498,7 @@ bar_update (void *progress, long howmuch, long dltime)
        adjust bp->total_length to the new reality, so that the code in
        create_image() that depends on total size being smaller or
        equal to the expected size doesn't abort.  */
-    bp->total_length = bp->count + bp->initial_length;
+    bp->total_length = bp->initial_length + bp->count;
 
   /* This code attempts to determine the current download speed.  We
      measure the speed over the interval of approximately three
@@ -564,6 +569,11 @@ static void
 bar_finish (void *progress, long dltime)
 {
   struct bar_progress *bp = progress;
+
+  if (bp->total_length > 0
+      && bp->count + bp->initial_length > bp->total_length)
+    /* See bar_update() for explanation. */
+    bp->total_length = bp->initial_length + bp->count;
 
   create_image (bp, dltime);
   display_image (bp->buffer);
