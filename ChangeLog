@@ -2,7 +2,8 @@
 
 	* MACHINES: Alphabetized, changed "architectures" to "OSes and
  	architecures", added missing company names, removed needless ^L,
- 	made AIX entry more general to reflect my testing, removed the
+ 	made AIX and FreeBSD entries more general to reflect successful
+ 	use on those platforms by myself and others, removed the
  	non-factual "this version of", and fixed some grammatical errors.
 	
 2000-07-21  Dan Harkless  <dan-wget@dilvish.speed.net>
