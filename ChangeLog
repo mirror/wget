@@ -1,5 +1,9 @@
 2001-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* windows/Makefile.doc: Update docs generation.
+
+2001-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* configure.in: Check for strpbrk().
 
 2001-05-14  Herold Heiko  <Heiko.Herold@previnet.it>

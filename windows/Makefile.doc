@@ -15,17 +15,54 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+# You probably need a makeinfo utility
+# wget it from URL:ftp://ftp.sunsite.dk/projects/wget/windows/makeinfo.zip
+# You also probably need perl.
+
 RM = del
+CP     = copy
+ATTRIB = attrib
 
-all: wget.hlp
+MAKEINFO     = makeinfo.exe
+TEXI2POD     = texi2pod.pl
+POD2MAN      = pod2man
 
-# You probably need makeinfo utility
-# wget it from URL:http://www.sunsite.auc.dk/wget/makeinfo.zip
+SAMPLERCTEXI = sample.wgetrc.munged_for_texi_inclusion
+WGETHLP      = wget.hlp
+WGETINFO     = wget.info
+WGETTEXI     = wget.texi
+WGETHTML     = wget.html
+WGETPOD      = wget.pod
+manext       = 1
+MAN          = wget.$(manext)
+
+all: $(WGETHLP) $(WGETINFO) $(WGETHTML) $(MAN)
 
 .IGNORE:
-wget.hlp: wget.texi
-        makeinfo --no-validate --no-warn --force \
---hpj wget.hpj --output wget.rtf wget.texi
+$(SAMPLERCTEXI): sample.wgetrc
+	perl -pne "s/@/@@/g" < $? > $@
+
+$(WGETINFO): $(SAMPLERCTEXI) $(WGETTEXI)
+	$(MAKEINFO) --no-validate --no-warn --force \
+--no-split $(WGETTEXI)
+
+$(WGETHTML): $(SAMPLERCTEXI) $(WGETTEXI)
+	$(MAKEINFO) --no-validate --no-warn --force \
+--no-split --html -o $@ $(WGETTEXI)
+
+$(TEXI2POD): $(TEXI2POD).in
+	$(CP) $? $@
+
+$(WGETPOD): $(WGETTEXI) $(TEXI2POD)
+	$(TEXI2POD) $(WGETTEXI) $@
+
+$(MAN): $(WGETPOD)
+	$(POD2MAN) --center="GNU Wget" --release="GNU Wget @VERSION@" $? > $@
+
+
+$(WGETHLP): $(WGETTEXI) $(SAMPLERCTEXI)
+        $(MAKEINFO) --no-validate --no-warn --force \
+--hpj wget.hpj --output wget.rtf $(WGETTEXI)
         hcrtf -xn wget.hpj
 
 clean:
@@ -33,9 +70,18 @@ clean:
         $(RM) *.hpj
         $(RM) *.rtf
         $(RM) *.ph
+	$(RM) $(SAMPLERCTEXI)
+	$(RM) $(MAN)
+	$(RM) $(TEXI2POD)
+	$(ATTRIB) -h *.gid
+	$(RM) *.gid
 
 distclean: clean
-        $(RM) wget.hlp
+	$(RM) $(WGETHTML)
+	$(RM) $(WGETPOD)
+	$(RM) $(WGETHLP)
+	$(RM) $(WGETINFO)
+	$(RM) $(WGETHLP)
 	$(RM) Makefile
 
 realclean: distclean
