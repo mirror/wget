@@ -508,9 +508,9 @@ lookup_host (const char *host, int flags)
   if (flags & LH_PASSIVE)
     hints.ai_flags |= AI_PASSIVE;
 
-  /* No need to call getaddrinfo_with_timeout here, as we're not
-     resolving anything, but merely translating the address from the
-     presentation (ASCII) to network format.  */
+  /* No need to specify timeout, as we're not resolving HOST, but
+     merely translating it from the presentation (ASCII) to network
+     format.  */
   err = getaddrinfo (host, NULL, &hints, &res);
   if (err == 0 && res != NULL)
     {
