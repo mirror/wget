@@ -7,6 +7,21 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.5.3+dev
 
+** Administrative changes.
+
+*** Maintainership.  Due to Hrvoje being plagued with a "real job",
+Dan Harkless is the most active maintainer.  Hrvoje still participates
+occasionally, and both are being helped by many other people.
+
+*** Web page.  Thanks to Jan Prikryl, Wget has an "official" web page.
+Take a look at:
+
+    http://sunsite.dk/wget/    (#### Is this URL correct?)
+
+*** Anonymous CVS.  Thanks to ever-helpful Karsten Thygesen, Wget
+sources are now available at an anonymous CVS server.  Take a look at
+the web page for downloading instructions.
+
 ** New -K / --backup-converted / backup_converted = on option causes files
 modified due to -k to be saved with a .orig prefix before being changed.  When
 using -N as well, it is these .orig files that are compared against the server.
