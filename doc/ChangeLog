@@ -1,5 +1,9 @@
 2003-10-01  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi: Renamed prep.ai.mit.edu to ftp.gnu.org.
+
+2003-10-01  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi (Contributors): Updated from ChangeLog entries.
 
 2003-09-21  Aaron S. Hawley  <Aaron.Hawley@uvm.edu>

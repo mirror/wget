@@ -2483,7 +2483,7 @@ If you specify a directory, Wget will retrieve the directory listing,
 parse it and convert it to @sc{html}.  Try:
 
 @example
-wget ftp://prep.ai.mit.edu/pub/gnu/
+wget ftp://ftp.gnu.org/pub/gnu/
 links index.html
 @end example
 @end itemize
@@ -2768,9 +2768,9 @@ username and password.
 @cindex latest version
 
 Like all GNU utilities, the latest version of Wget can be found at the
-master GNU archive site prep.ai.mit.edu, and its mirrors.  For example,
+master GNU archive site ftp.gnu.org, and its mirrors.  For example,
 Wget @value{VERSION} can be found at
-@url{ftp://prep.ai.mit.edu/gnu/wget/wget-@value{VERSION}.tar.gz}
+@url{ftp://ftp.gnu.org/pub/gnu/wget/wget-@value{VERSION}.tar.gz}
 
 @node Mailing List, Reporting Bugs, Distribution, Various
 @section Mailing List
