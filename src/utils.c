@@ -1532,19 +1532,30 @@ number_to_string (char *buffer, long number)
 # endif
 #endif /* not WINDOWS */
 
-struct wget_timer {
 #ifdef TIMER_GETTIMEOFDAY
-  long secs;
-  long usecs;
+typedef struct timeval wget_sys_time;
 #endif
 
 #ifdef TIMER_TIME
-  time_t secs;
+typedef time_t wget_sys_time;
 #endif
 
 #ifdef TIMER_WINDOWS
-  ULARGE_INTEGER wintime;
+typedef ULARGE_INTEGER wget_sys_time;
 #endif
+
+struct wget_timer {
+  /* The starting point in time which, subtracted from the current
+     time, yields elapsed time. */
+  wget_sys_time start;
+
+  /* The most recent elapsed time, calculated by wtimer_elapsed().
+     Measured in milliseconds.  */
+  long elapsed_last;
+
+  /* Approximately, the time elapsed between the true start of the
+     measurement and the time represented by START.  */
+  long elapsed_pre_start;
 };
 
 /* Allocate a timer.  It is not legal to do anything with a freshly
@@ -1577,22 +1588,17 @@ wtimer_delete (struct wget_timer *wt)
   xfree (wt);
 }
 
-/* Reset timer WT.  This establishes the starting point from which
-   wtimer_elapsed() will return the number of elapsed
-   milliseconds.  It is allowed to reset a previously used timer.  */
+/* Store system time to WST.  */
 
-void
-wtimer_reset (struct wget_timer *wt)
+static void
+wtimer_sys_set (wget_sys_time *wst)
 {
 #ifdef TIMER_GETTIMEOFDAY
-  struct timeval t;
-  gettimeofday (&t, NULL);
-  wt->secs  = t.tv_sec;
-  wt->usecs = t.tv_usec;
+  gettimeofday (wst, NULL);
 #endif
 
 #ifdef TIMER_TIME
-  wt->secs = time (NULL);
+  time (wst);
 #endif
 
 #ifdef TIMER_WINDOWS
@@ -1600,8 +1606,38 @@ wtimer_reset (struct wget_timer *wt)
   SYSTEMTIME st;
   GetSystemTime (&st);
   SystemTimeToFileTime (&st, &ft);
-  wt->wintime.HighPart = ft.dwHighDateTime;
-  wt->wintime.LowPart  = ft.dwLowDateTime;
+  wst->HighPart = ft.dwHighDateTime;
+  wst->LowPart  = ft.dwLowDateTime;
+#endif
+}
+
+/* Reset timer WT.  This establishes the starting point from which
+   wtimer_elapsed() will return the number of elapsed
+   milliseconds.  It is allowed to reset a previously used timer.  */
+
+void
+wtimer_reset (struct wget_timer *wt)
+{
+  /* Set the start time to the current time. */
+  wtimer_sys_set (&wt->start);
+  wt->elapsed_last = 0;
+  wt->elapsed_pre_start = 0;
+}
+
+static long
+wtimer_sys_diff (wget_sys_time *wst1, wget_sys_time *wst2)
+{
+#ifdef TIMER_GETTIMEOFDAY
+  return ((wst1->tv_sec - wst2->tv_sec) * 1000
+	  + (wst1->tv_usec - wst2->tv_usec) / 1000);
+#endif
+
+#ifdef TIMER_TIME
+  return 1000 * (*wst1 - *wst2);
+#endif
+
+#ifdef WINDOWS
+  return (long)(wst1->QuadPart - wst2->QuadPart) / 10000;
 #endif
 }
 
@@ -1612,27 +1648,34 @@ wtimer_reset (struct wget_timer *wt)
 long
 wtimer_elapsed (struct wget_timer *wt)
 {
-#ifdef TIMER_GETTIMEOFDAY
-  struct timeval t;
-  gettimeofday (&t, NULL);
-  return (t.tv_sec - wt->secs) * 1000 + (t.tv_usec - wt->usecs) / 1000;
-#endif
+  wget_sys_time now;
+  long elapsed;
 
-#ifdef TIMER_TIME
-  time_t now = time (NULL);
-  return 1000 * (now - wt->secs);
-#endif
+  wtimer_sys_set (&now);
+  elapsed = wt->elapsed_pre_start + wtimer_sys_diff (&now, &wt->start);
 
-#ifdef WINDOWS
-  FILETIME ft;
-  SYSTEMTIME st;
-  ULARGE_INTEGER uli;
-  GetSystemTime (&st);
-  SystemTimeToFileTime (&st, &ft);
-  uli.HighPart = ft.dwHighDateTime;
-  uli.LowPart = ft.dwLowDateTime;
-  return (long)((uli.QuadPart - wt->wintime.QuadPart) / 10000);
-#endif
+  /* Ideally we'd just return the difference between NOW and
+     wt->start.  However, the system timer can be set back, and we
+     could return a value smaller than when we were last called, even
+     a negative value.  Both of these would confuse the callers, which
+     expect us to return monotonically nondecreasing values.
+
+     Therefore: if ELAPSED is smaller than its previous known value,
+     we reset wt->start to the current time and effectively start
+     measuring from this point.  But since we don't want the elapsed
+     value to start from zero, we set elapsed_pre_start to the last
+     elapsed time and increment all future calculations by that
+     amount.  */
+
+  if (elapsed < wt->elapsed_last)
+    {
+      wt->start = now;
+      wt->elapsed_pre_start = wt->elapsed_last;
+      elapsed = wt->elapsed_last;
+    }
+
+  wt->elapsed_last = elapsed;
+  return elapsed;
 }
 
 /* Return the assessed granularity of the timer implementation.  This

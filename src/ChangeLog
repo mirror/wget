@@ -1,3 +1,17 @@
+2003-09-14  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (wtimer_sys_set): Extracted the code that sets the
+	current time here.
+	(wtimer_reset): Call it.
+	(wtimer_sys_diff): Extracted the code that calculates the
+	difference between two system times here.
+	(wtimer_elapsed): Call it.
+	(wtimer_elapsed): Don't return a value smaller than the previous
+	one, which could previously happen when system time is set back.
+	Instead, reset start time to current time and note the elapsed
+	offset for future calculations.  The returned times are now
+	guaranteed to be monotonically nondecreasing.
+
 2003-09-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* host.c (lookup_host): Print the result of the DNS lookup.
