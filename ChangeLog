@@ -1,3 +1,8 @@
+2000-05-22  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* AUTHORS: Added myself to this file, as Hrvoje got confirmation
+ 	of my FSF copyright assignment.
+
 2000-05-17  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* TODO: Make `-k' check for files that were downloaded in the past
