@@ -753,12 +753,14 @@ xclose (int fd)
     info = hash_table_get (extended_map, (void *) fd);
 
   if (info && info->closer)
+    info->closer (fd, info->ctx);
+  else
+    sock_close (fd);
+
+  if (info)
     {
-      info->closer (fd, info->ctx);
       hash_table_remove (extended_map, (void *) fd);
       xfree (info);
       ++extended_map_modified_tick;
     }
-  else
-    sock_close (fd);
 }

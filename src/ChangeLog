@@ -1,5 +1,10 @@
 2003-11-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* connect.c (xclose): Free INFO even if it doesn't provide a
+	closer.
+
+2003-11-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c: Updated all callers of
 	iread/ssl_iread/iwrite/ssl_iwrite to use xread and xwrite instead.
 
