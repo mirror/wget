@@ -432,7 +432,9 @@ advance_declaration (const char *beg, const char *end)
 	    state = AC_S_DEFAULT;
 	  break;
 	case AC_S_QUOTE1:
-	  assert (ch == '\'' || ch == '"');
+	  /* We must use 0x22 because broken assert macros choke on
+	     '"' and '\"'.  */
+	  assert (ch == '\'' || ch == 0x22);
 	  quote_char = ch;	/* cheating -- I really don't feel like
 				   introducing more different states for
 				   different quote characters. */

@@ -1,3 +1,9 @@
+2001-11-16  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* html-parse.c (advance_declaration): Use 0x22 instead of '"' or
+	'\"'.  Different compilers' assert macros are broken in different
+	ways.
+
 2001-09-29  Christian Fraenkel  <c.fraenkel@gmx.net>
 
 	* http.c (gethttp): print debug output for errors occuring during
