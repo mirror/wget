@@ -1,3 +1,8 @@
+2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* html-url.c (tag_url_attributes): Mark <embed href=...> as
+	external.
+
 2001-12-12  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* url.c (get_urls_file): Cosmetic changes.

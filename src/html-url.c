@@ -120,7 +120,7 @@ static struct {
   { TAG_AREA,		"href",		TUA_EXTERNAL },
   { TAG_BGSOUND,	"src",		0 },
   { TAG_BODY,		"background",	0 },
-  { TAG_EMBED,		"href",		0 },
+  { TAG_EMBED,		"href",		TUA_EXTERNAL },
   { TAG_EMBED,		"src",		0 },
   { TAG_FIG,		"src",		0 },
   { TAG_FRAME,		"src",		0 },
