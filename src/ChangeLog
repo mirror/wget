@@ -1,3 +1,7 @@
+2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* utils.c (read_whole_line): Handle lines beginning with \0.
+
 2001-12-05  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* recur.c (convert_all_links): Guard against duplicates in

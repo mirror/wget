@@ -955,13 +955,17 @@ suffix (const char *str)
 
 /* Read a line from FP.  The function reallocs the storage as needed
    to accomodate for any length of the line.  Reallocs are done
-   storage exponentially, doubling the storage after each overflow to
-   minimize the number of calls to realloc() and fgets().  The newline
+   exponentially, doubling the storage after each overflow to minimize
+   the number of calls to realloc() and fgets().  The newline
    character at the end of line is retained.
 
    After end-of-file is encountered without anything being read, NULL
    is returned.  NULL is also returned on error.  To distinguish
-   between these two cases, use the stdio function ferror().  */
+   between these two cases, use the stdio function ferror().
+
+   A future version of this function will be rewritten to use fread()
+   instead of fgets(), and to return the length of the line, which
+   will make the function usable on files with binary content.  */
 
 char *
 read_whole_line (FILE *fp)
@@ -973,9 +977,14 @@ read_whole_line (FILE *fp)
   while (fgets (line + length, bufsize - length, fp))
     {
       length += strlen (line + length);
-      assert (length > 0);
+      if (length == 0)
+	/* Possible for example when reading from a binary file where
+	   a line begins with \0.  */
+	continue;
+
       if (line[length - 1] == '\n')
 	break;
+
       /* fgets() guarantees to read the whole line, or to use up the
          space we've given it.  We can double the buffer
          unconditionally.  */
