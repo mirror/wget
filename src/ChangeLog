@@ -1,3 +1,8 @@
+2001-04-21  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* ftp.c (getftp): Adjust expected_bytes if the length is
+	authoritative.
+
 2001-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* url.c: Don't declare `construct'.

@@ -860,6 +860,7 @@ Error in server response, closing control connection.\n"));
       if (restval)
 	logprintf (LOG_VERBOSE, _(" [%s to go]"), legible (*len - restval));
       logputs (LOG_VERBOSE, "\n");
+      expected_bytes = *len;	/* for get_contents/show_progress */
     }
   else if (expected_bytes)
     {
