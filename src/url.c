@@ -5,8 +5,8 @@ This file is part of Wget.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -81,6 +81,11 @@ extern int errno;
 #define DOTP(x) ((*(x) == '.') && (!*(x + 1)))
 /* Is a directory ".."?  */
 #define DDOTP(x) ((*(x) == '.') && (*(x + 1) == '.') && (!*(x + 2)))
+
+#if 0
+static void path_simplify_with_kludge PARAMS ((char *));
+#endif
+static int urlpath_length PARAMS ((const char *));
 
 /* NULL-terminated list of strings to be recognized as prototypes (URL
    schemes).  Note that recognized doesn't mean supported -- only HTTP
@@ -503,11 +508,18 @@ parseurl (const char *url, struct urlinfo *u, int strict)
   strcat (u->path, *u->dir ? "/" : "");
   strcat (u->path, u->file);
   URL_CLEANSE (u->path);
+  DEBUGP (("newpath: %s\n", u->path));
   /* Create the clean URL.  */
   u->url = str_url (u, 0);
   return URLOK;
 }
 
+/* Special versions of DOTP and DDOTP for parse_dir(). */
+
+#define PD_DOTP(x)  ((*(x) == '.') && (!*((x) + 1) || *((x) + 1) == '?'))
+#define PD_DDOTP(x) ((*(x) == '.') && (*(x) == '.')		\
+		     && (!*((x) + 2) || *((x) + 2) == '?'))
+
 /* Build the directory and filename components of the path.  Both
    components are *separately* malloc-ed strings!  It does not change
    the contents of path.
@@ -519,13 +531,16 @@ parse_dir (const char *path, char **dir, char **file)
 {
   int i, l;
 
-  for (i = l = strlen (path); i && path[i] != '/'; i--);
+  l = urlpath_length (path);
+  for (i = l; i && path[i] != '/'; i--);
+
   if (!i && *path != '/')   /* Just filename */
     {
-      if (DOTP (path) || DDOTP (path))
+      if (PD_DOTP (path) || PD_DDOTP (path))
 	{
-	  *dir = xstrdup (path);
-	  *file = xstrdup ("");
+	  *dir = strdupdelim (path, path + l);
+	  *file = xstrdup (path + l); /* normally empty, but could
+                                         contain ?... */
 	}
       else
 	{
@@ -535,10 +550,11 @@ parse_dir (const char *path, char **dir, char **file)
     }
   else if (!i)                 /* /filename */
     {
-      if (DOTP (path + 1) || DDOTP (path + 1))
+      if (PD_DOTP (path + 1) || PD_DDOTP (path + 1))
 	{
-	  *dir = xstrdup (path);
-	  *file = xstrdup ("");
+	  *dir = strdupdelim (path, path + l);
+	  *file = xstrdup (path + l); /* normally empty, but could
+                                         contain ?... */
 	}
       else
 	{
@@ -548,15 +564,16 @@ parse_dir (const char *path, char **dir, char **file)
     }
   else /* Nonempty directory with or without a filename */
     {
-      if (DOTP (path + i + 1) || DDOTP (path + i + 1))
+      if (PD_DOTP (path + i + 1) || PD_DDOTP (path + i + 1))
 	{
-	  *dir = xstrdup (path);
-	  *file = xstrdup ("");
+	  *dir = strdupdelim (path, path + l);
+	  *file = xstrdup (path + l); /* normally empty, but could
+                                         contain ?... */
 	}
       else
 	{
 	  *dir = strdupdelim (path, path + i);
-	  *file = strdupdelim (path + i + 1, path + l + 1);
+	  *file = xstrdup (path + i + 1);
 	}
     }
 }
@@ -1448,6 +1465,32 @@ opt_url (struct urlinfo *u)
   free (u->url);
   u->url = str_url (u, 0);
 }
+
+/* This beautiful kludge is fortunately not needed, as I've made
+   parse_dir do the (almost) right thing, so that a query can never
+   become a part of directory.  */
+#if 0
+/* Call path_simplify, but make sure that the part after the
+   question-mark, if any, is not destroyed by path_simplify's
+   "optimizations".  */
+void
+path_simplify_with_kludge (char *path)
+{
+  char *query = strchr (path, '?');
+  if (query)
+    /* path_simplify also works destructively, so we also have the
+       license to write. */
+    *query = '\0';
+  path_simplify (path);
+  if (query)
+    {
+      char *newend = path + strlen (path);
+      *query = '?';
+      if (newend != query)
+	memmove (newend, query, strlen (query) + 1);
+    }
+}
+#endif
 
 /* Returns proxy host address, in accordance with PROTO.  */
 char *

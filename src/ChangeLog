@@ -1,5 +1,13 @@
 2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* url.c (path_simplify_with_kludge): New function.
+	(path_simplify_with_kludge): Disable it.  Instead...
+	(parse_dir): ...make sure that at this point the right thing is
+	done, i.e. that "query" part of the URL (?...) is always assigned
+	to the file, never to the directory portion of the path.
+
+2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* retr.c (retrieve_url): Detect redirection cycles.
 
 2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
