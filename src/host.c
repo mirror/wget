@@ -268,10 +268,11 @@ address_list_from_addrinfo (const struct addrinfo *ai)
   return al;
 }
 #else
-/* Create an address_list out of a NULL-terminated vector of
-   addresses, as returned by gethostbyname.  */
+/* Create an address_list from a NULL-terminated vector of IPv4
+   addresses.  This kind of vector is returned by gethostbyname.  */
+
 static struct address_list *
-address_list_from_vector (char **h_addr_list)
+address_list_from_ipv4_addresses (char **h_addr_list)
 {
   int count, i;
   struct address_list *al = xmalloc (sizeof (struct address_list));
@@ -293,23 +294,6 @@ address_list_from_vector (char **h_addr_list)
       ip->type = IPV4_ADDRESS;
       memcpy (ADDRESS_IPV4_DATA (ip), h_addr_list[i], 4);
     }
-
-  return al;
-}
-
-/* Like address_list_from_vector, but initialized with a single
-   address. */
-
-static struct address_list *
-address_list_from_single (const ip_address *addr)
-{
-  struct address_list *al = xmalloc (sizeof (struct address_list));
-  al->count      = 1;
-  al->faulty     = 0;
-  al->addresses  = xmalloc (sizeof (ip_address));
-  al->from_cache = 0;
-  al->refcount   = 1;
-  memcpy (al->addresses, addr, sizeof (ip_address));
 
   return al;
 }
@@ -536,10 +520,10 @@ lookup_host (const char *host, int flags)
       {
 	/* The return value of inet_addr is in network byte order, so
 	   we can just copy it to IP.  */
-	ip_address ip;
-	ip.type = IPV4_ADDRESS;
-	memcpy (ADDRESS_IPV4_DATA (&ip), &addr_ipv4, 4);
-	return address_list_from_single (&ip);
+	char **vec[2];
+	vec[0] = (char *)&addr_ipv4;
+	vec[1] = NULL;
+	return address_list_from_ipv4_addresses (vec);
       }
   }
 #endif
@@ -598,9 +582,8 @@ lookup_host (const char *host, int flags)
 	return NULL;
       }
     assert (hptr->h_length == 4);
-    /* Do all systems have h_addr_list, or is it a newer thing?  If
-       the latter, use address_list_from_single.  */
-    al = address_list_from_vector (hptr->h_addr_list);
+    /* Do older systems have h_addr_list?  */
+    al = address_list_from_ipv4_addresses (hptr->h_addr_list);
   }
 #endif
 

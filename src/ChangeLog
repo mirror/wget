@@ -1,5 +1,11 @@
 2003-10-31  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* host.c (address_list_from_single): Removed.
+	(address_list_from_ipv4_addresses): Renamed from
+	address_list_from_vector.
+
+2003-10-31  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* sysdep.h (CLOSE): Don't call close on file descriptors less than
 	0, i.e. on uncreated sockets.
 
