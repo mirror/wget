@@ -1,3 +1,8 @@
+2001-09-29  Christian Fraenkel  <c.fraenkel@gmx.net>
+
+	* http.c (gethttp): print debug output for errors occuring during
+	the ssl handshake.
+
 2001-11-16  Chris Seawood  <cls@seawood.org>
 
 	* init.c: Ditto.

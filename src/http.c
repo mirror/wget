@@ -661,6 +661,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 	 {
 	   logputs (LOG_VERBOSE, "\n");
 	   logprintf (LOG_NOTQUIET, _("Unable to establish SSL connection.\n"));
+	   ssl_printerrors ();
 	   CLOSE (sock);
 	   return CONSSLERR;
 	 }
