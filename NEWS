@@ -22,12 +22,10 @@ http://127.0.0.1' tells Wget to connect to localhost, but to specify
 
 ** The responses without headers, aka "HTTP 0.9" responses, are
 detected and handled.  Although HTTP 0.9 has long been obsolete, it is
-still occasionally encountered.  (Popular browsers still support it,
-so clueless authors of dynamic pages who forget to emit headers don't
-notice anything wrong.)
+still occasionally used, sometimes by accident.
 
 ** The progress bar is now updated regularly even when the data does
-not arrive.
+not arrive from the network.
 
 ** Wget no longer preserves permissions of files retrieved by FTP by
 default.  Anonymous FTP servers frequently use permissions like "664",
