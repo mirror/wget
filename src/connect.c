@@ -179,7 +179,8 @@ connect_to_one (ip_address *addr, unsigned short port, int silent)
 #ifdef SO_RCVBUF
   /* For very small rate limits, set the buffer size (and hence,
      hopefully, the size of the kernel window) to the size of the
-     limit.  */
+     limit.  That way we don't sleep for more than 1s between network
+     reads.  */
   if (opt.limit_rate && opt.limit_rate < 8192)
     {
       int bufsize = opt.limit_rate;

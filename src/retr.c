@@ -194,8 +194,10 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
     limit_bandwidth_reset ();
   wtimer_reset (timer);
 
-  /* If we're limiting the download, set our buffer size to the
-     limit.  */
+  /* Use a smaller buffer for low requested bandwidths.  For example,
+     with --limit-rate=2k, it doesn't make sense to slurp in 16K of
+     data and then sleep for 8s.  With buffer size equal to the limit,
+     we never have to sleep for more than one second.  */
   if (opt.limit_rate && opt.limit_rate < dlbufsize)
     dlbufsize = opt.limit_rate;
 
