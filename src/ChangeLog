@@ -1,5 +1,9 @@
 2003-11-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* connect.c (LAZY_RETRIEVE_INFO): Set LAST_INFO.
+
+2003-11-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* hash.c (NON_EMPTY): Use the all-bit-set value as the marker that
 	the field is empty.  This allows NULL pointer and 0 value to be
 	used as keys, which is necessary for the connect.c code to work

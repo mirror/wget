@@ -660,6 +660,7 @@ register_extended (int fd, xreader_t reader, xwriter_t writer,
     {									\
       info = hash_table_get (extended_map, (void *) fd);		\
       last_fd = fd;							\
+      last_info = info;							\
       last_tick = extended_map_modified_tick;				\
     }									\
 } while (0)
