@@ -157,23 +157,42 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
 /* The smaller value of the two.  */
 #define MINVAL(x, y) ((x) < (y) ? (x) : (y))
 
-/* Convert the ASCII character X to a hex-digit.  X should be between
-   '0' and '9', or between 'A' and 'F', or between 'a' and 'f'.  The
-   result is a number between 0 and 15.  If X is not a hexadecimal
-   digit character, the result is undefined.  */
-#define XCHAR_TO_XDIGIT(x)			\
-  (((x) >= '0' && (x) <= '9') ?			\
-   ((x) - '0') : (TOUPPER(x) - 'A' + 10))
+/* Convert the ASCII character that represents a hexadecimal digit to
+   the number in range [0, 16) that corresponds to the digit.  X
+   should be between '0' and '9', or between 'A' and 'F', or between
+   'a' and 'f'.  If X is not a hexadecimal digit character, the result
+   is undefined.  */
+#define XCHAR_TO_XDIGIT(x)						\
+  (((x) >= '0' && (x) <= '9') ? ((x) - '0') : (TOUPPER(x) - 'A' + 10))
 
-/* The reverse of the above: convert a HEX digit in the [0, 15] range
-   to an ASCII character representing it.  The A-F characters are
-   always in upper case.  */
-#define XDIGIT_TO_XCHAR(x) (((x) < 10) ? ((x) + '0') : ((x) - 10 + 'A'))
+/* The reverse of the above: convert a digit number in the [0, 16)
+   range to an ASCII character.  The A-F characters are in upper
+   case.  */
+#define XDIGIT_TO_XCHAR(x) ("0123456789ABCDEF"[x])
 
-/* Like XDIGIT_TO_XCHAR, but produce a lower-case char. */
-#define XDIGIT_TO_xchar(x) (((x) < 10) ? ((x) + '0') : ((x) - 10 + 'a'))
+/* Like XDIGIT_TO_XCHAR, but generates lower-case characters. */
+#define XDIGIT_TO_xchar(x) ("0123456789abcdef"[x])
 
-#define ARRAY_SIZE(array) (sizeof (array) / sizeof (*(array)))
+/* Returns the number of elements in an array with fixed
+   initialization.  For example:
+
+   static char a[] = "foo";     -- countof(a) == 4 (for terminating \0)
+
+   int a[5] = {1, 2};           -- countof(a) == 5
+
+   char *a[3] = {               -- countof(a) == 3
+     "foo", "bar", "baz"
+   };
+
+   And, most importantly, it works when the compiler counts the array
+   elements for you:
+
+   char *a[] = {                -- countof(a) == 4
+     "foo", "bar", "baz", "qux"
+   }  */
+#define countof(array) (sizeof (array) / sizeof (*(array)))
+
+#define ARRAY_SIZE(array) countof (array)
 
 /* Copy the data delimited with BEG and END to alloca-allocated
    storage, and zero-terminate it.  BEG and END are evaluated only

@@ -1,5 +1,17 @@
 2003-09-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.h (XDIGIT_TO_XCHAR): Implement as index into a literal
+	string.
+	(XDIGIT_TO_xchar): Ditto.
+
+2003-09-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c: Change the type of timer-related functions from long to
+	double, for better precision.  On machines supporting gettimeofday
+	the timers now work with granularity of less than one millisecond.
+
+2003-09-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* cookies.c (parse_set_cookies): Fixed the parser to handle more
 	edge conditions.
 	(test_cookies): New function, contains a test suite for

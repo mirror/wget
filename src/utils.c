@@ -1551,11 +1551,11 @@ struct wget_timer {
 
   /* The most recent elapsed time, calculated by wtimer_elapsed().
      Measured in milliseconds.  */
-  long elapsed_last;
+  double elapsed_last;
 
   /* Approximately, the time elapsed between the true start of the
      measurement and the time represented by START.  */
-  long elapsed_pre_start;
+  double elapsed_pre_start;
 };
 
 /* Allocate a timer.  It is not legal to do anything with a freshly
@@ -1624,12 +1624,12 @@ wtimer_reset (struct wget_timer *wt)
   wt->elapsed_pre_start = 0;
 }
 
-static long
+static double
 wtimer_sys_diff (wget_sys_time *wst1, wget_sys_time *wst2)
 {
 #ifdef TIMER_GETTIMEOFDAY
-  return ((wst1->tv_sec - wst2->tv_sec) * 1000
-	  + (wst1->tv_usec - wst2->tv_usec) / 1000);
+  return ((double)(wst1->tv_sec - wst2->tv_sec) * 1000
+	  + (double)(wst1->tv_usec - wst2->tv_usec) / 1000);
 #endif
 
 #ifdef TIMER_TIME
@@ -1637,7 +1637,7 @@ wtimer_sys_diff (wget_sys_time *wst1, wget_sys_time *wst2)
 #endif
 
 #ifdef WINDOWS
-  return (long)(wst1->QuadPart - wst2->QuadPart) / 10000;
+  return (double)(wst1->QuadPart - wst2->QuadPart) / 10000;
 #endif
 }
 
@@ -1645,11 +1645,11 @@ wtimer_sys_diff (wget_sys_time *wst1, wget_sys_time *wst2)
    reset.  It is allowed to call this function more than once to get
    increasingly higher elapsed values.  */
 
-long
+double
 wtimer_elapsed (struct wget_timer *wt)
 {
   wget_sys_time now;
-  long elapsed;
+  double elapsed;
 
   wtimer_sys_set (&now);
   elapsed = wt->elapsed_pre_start + wtimer_sys_diff (&now, &wt->start);
@@ -1678,18 +1678,18 @@ wtimer_elapsed (struct wget_timer *wt)
   return elapsed;
 }
 
-/* Return the assessed granularity of the timer implementation.  This
-   is important for certain code that tries to deal with "zero" time
-   intervals.  */
+/* Return the assessed granularity of the timer implementation, in
+   milliseconds.  This is important for certain code that tries to
+   deal with "zero" time intervals.  */
 
-long
+double
 wtimer_granularity (void)
 {
 #ifdef TIMER_GETTIMEOFDAY
   /* Granularity of gettimeofday is hugely architecture-dependent.
      However, it appears that on modern machines it is better than
-     1ms.  */
-  return 1;
+     1ms.  Assume 100 usecs.  */
+  return 0.1;
 #endif
 
 #ifdef TIMER_TIME
@@ -1698,7 +1698,7 @@ wtimer_granularity (void)
 #endif
 
 #ifdef TIMER_WINDOWS
-  /* ? */
+  /* #### Fill this in! */
   return 1;
 #endif
 }
