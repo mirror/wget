@@ -25,7 +25,7 @@ msgstr "Syntaktická chyba v hlavièce Set-Cookie na znaku `%c'.\n"
 
 #: src/cookies.c:620
 msgid "Syntax error in Set-Cookie: premature end of string.\n"
-msgstr "Syntaktická chyba v hlavièce Set-Cookie: Pøedèasný konec øetìzce."
+msgstr "Syntaktická chyba v hlavièce Set-Cookie: Pøedèasný konec øetìzce.\n"
 
 # , c-format
 #: src/cookies.c:1352
@@ -204,7 +204,7 @@ msgstr "Neplatný PORT.\n"
 msgid ""
 "\n"
 "REST failed; will not truncate `%s'.\n"
-msgstr "Pøíkaz REST selhal, `%s' nebude zkráceno.\n"
+msgstr "\nPøíkaz REST selhal, `%s' nebude zkráceno.\n"
 
 #: src/ftp.c:678
 msgid ""
