@@ -5,6 +5,12 @@
 	* po/*.po*: Updated after changing --help's description of -N and
 	moving -nr to a different category.
 
+	* TODO: "Timestamps are sometimes not copied over on files
+ 	retrieved by FTP." removed.  Hopefully all the failures I was
+ 	seeing were due to the fact that it wasn't documented that
+ 	non-globbing, non-recursive FTP downloads need -N to get the
+ 	remote timestamp to be preserved.
+
 2001-02-22  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Remove empty directories created due to --accept/--reject.

@@ -43,8 +43,6 @@ changes.
 
 * Make wget return non-zero status in more situations, like incorrect HTTP auth.
 
-* Timestamps are sometimes not copied over on files retrieved by FTP.
-
 * Make -K compare X.orig to X and move the former on top of the latter if 
   they're the same, rather than leaving identical .orig files laying around.
 
