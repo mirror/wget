@@ -67,6 +67,7 @@ so, delete this exception statement from your version.  */
 #include "host.h"
 #include "url.h"
 #include "hash.h"
+#include "connect.h"		/* for socket_has_inet6 */
 
 #ifndef errno
 extern int errno;
@@ -575,17 +576,20 @@ lookup_host (const char *host, int flags)
 
     xzero (hints);
     hints.ai_socktype = SOCK_STREAM;
-    if (opt.ipv4_only && !opt.ipv6_only)
+    if (opt.ipv4_only)
       hints.ai_family = AF_INET;
-    else if (opt.ipv6_only && !opt.ipv4_only)
+    else if (opt.ipv6_only)
       hints.ai_family = AF_INET6;
     else
       {
 	hints.ai_family = AF_UNSPEC;
 #ifdef HAVE_GETADDRINFO_AI_ADDRCONFIG
-	/* Use AI_ADDRCONFIG if available and if specific family isn't
-	   explicitly requested.  See init.c:defaults().  */
 	hints.ai_flags |= AI_ADDRCONFIG;
+#else
+	/* On systems without AI_ADDRCONFIG, emulate it by manually
+	   checking whether the system supports IPv6 sockets and.  */
+	if (!socket_has_inet6 ())
+	  hints.ai_family = AF_INET;
 #endif
       }
     if (flags & LH_BIND)

@@ -614,6 +614,24 @@ retryable_socket_connect_error (int err)
   return 1;
 }
 
+int
+socket_has_inet6 (void)
+{
+  static int supported = -1;
+  if (supported == -1)
+    {
+      int sock = socket (AF_INET6, SOCK_STREAM, 0);
+      if (sock < 0)
+	supported = 0;
+      else
+	{
+	  xclose (sock);
+	  supported = 1;
+	}
+    }
+  return supported;
+}
+
 #ifdef HAVE_SELECT
 
 /* Wait for file descriptor FD to be readable or writable or both,

@@ -1,3 +1,11 @@
+2003-11-17  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* host.c (lookup_host): Check for the ability to create IPv6
+	sockets here.
+
+	* init.c (defaults): Don't auto-set --inet4-only on IPv6-less
+	systems.
+
 2003-11-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* main.c (print_help): Fix typo in `-O' help message.  Fix docs of

@@ -547,7 +547,7 @@ HTTPS (SSL) options:\n"),
     N_("\
 FTP options:\n"),
     N_("\
-  -nr, --no-remove-listing  don't remove `.listing' files.\n"),
+       --no-remove-listing  don't remove `.listing' files.\n"),
     N_("\
        --no-glob            turn off FTP file name globbing.\n"),
     N_("\
@@ -809,12 +809,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
     }
   if (opt.ipv4_only && opt.ipv6_only)
     {
-      if (opt.ipv4_only == -1)
-	/* ipv4_only was set automatically because the system doesn't
-	   support IPv6.  */
-	printf (_("Cannot use --inet6-only on a system without IPv6 support.\n"));
-      else
-	printf (_("Cannot specify both --inet4-only and --inet6-only.\n"));
+      printf (_("Cannot specify both --inet4-only and --inet6-only.\n"));
       print_usage ();
       exit (1);
     }
