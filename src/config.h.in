@@ -64,7 +64,7 @@ char *alloca ();
 /* Define to empty or __inline__ or __inline.  */
 #undef inline
 
-/* Define `volatile' to be empty if the compiler doesn't support it.  */
+/* Define to empty if the keyword does not work.  */
 #undef volatile
 
 /* Define to `unsigned' if <sys/types.h> doesn't define.  */
