@@ -1,5 +1,10 @@
 2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (gethttp): Check for conn->scheme, not u->scheme, before
+	calling ssl_iwrite.
+
+2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* version.c: Wget 1.8.1-pre1 is released.
 
 2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>

@@ -857,7 +857,7 @@ Accept: %s\r\n\
 
   /* Send the request to server.  */
 #ifdef HAVE_SSL
-  if (u->scheme == SCHEME_HTTPS)
+  if (conn->scheme == SCHEME_HTTPS)
     num_written = ssl_iwrite (ssl, request, strlen (request));
   else
 #endif /* HAVE_SSL */
@@ -880,7 +880,7 @@ Accept: %s\r\n\
   /* Before reading anything, initialize the rbuf.  */
   rbuf_initialize (&rbuf, sock);
 #ifdef HAVE_SSL
-  if (u->scheme == SCHEME_HTTPS)
+  if (conn->scheme == SCHEME_HTTPS)
     rbuf.ssl = ssl;
   else
     rbuf.ssl = NULL;
