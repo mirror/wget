@@ -62,7 +62,7 @@
  *    fixed return value to comply with C99
  *    fixed handling of snprintf(NULL, ...)
  *
- *  Hrvoje Niksic <hniksic@arsdigita.com> 2000-11-04
+ *  Hrvoje Niksic <hniksic@xemacs.org> 2000-11-04
  *    include <config.h> instead of "config.h".
  *    moved TEST_SNPRINTF stuff out of HAVE_SNPRINTF ifdef.
  *    include <stdio.h> for NULL.

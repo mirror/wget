@@ -454,7 +454,7 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
          because convert_file() is called from convert_all_links at
          the end of the retrieval with a freshly built new urlpos
          list.
-	 -- Hrvoje Niksic <hniksic@arsdigita.com>
+	 -- Hrvoje Niksic <hniksic@xemacs.org>
       */
       converted_file_ptr = xmalloc(sizeof(*converted_file_ptr));
       converted_file_ptr->string = xstrdup(file);  /* die on out-of-mem. */
