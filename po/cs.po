@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU wget 1.5.2-b1\n"
-"POT-Creation-Date: 2000-11-23 11:23+0100\n"
+"POT-Creation-Date: 2000-12-10 03:30+0100\n"
 "PO-Revision-Date: 1998-06-05 08:47\n"
 "Last-Translator: Jan Prikryl <prikryl@acm.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -14,72 +14,116 @@ msgstr ""
 "Content-Transfer-Encoding: 8-bit\n"
 
 # , c-format
+#: src/ftp-ls.c:698 src/ftp-ls.c:700
+#, c-format
+msgid "Index of /%s on %s:%d"
+msgstr "Obsah /%s na %s:%d"
+
+#: src/ftp-ls.c:722
+msgid "time unknown       "
+msgstr "èas neznámý        "
+
+#: src/ftp-ls.c:726
+msgid "File        "
+msgstr "Soubor      "
+
+#: src/ftp-ls.c:729
+msgid "Directory   "
+msgstr "Adresáø     "
+
+#: src/ftp-ls.c:732
+msgid "Link        "
+msgstr "Sym. odkaz  "
+
+#: src/ftp-ls.c:735
+msgid "Not sure    "
+msgstr "Neznámý typ "
+
+# , c-format
+#: src/ftp-ls.c:753
+#, c-format
+msgid " (%s bytes)"
+msgstr " (%s bajtù)"
+
+# , c-format
 #. Login to the server:
 #. First: Establish the control connection.
-#: src/ftp.c:147 src/http.c:348
+#: src/ftp.c:152 src/http.c:582
 #, c-format
 msgid "Connecting to %s:%hu... "
 msgstr "Navazuji spojení s %s:%hu... "
 
 # , c-format
-#: src/ftp.c:169 src/ftp.c:411 src/http.c:365
+#: src/ftp.c:174 src/ftp.c:520 src/http.c:599
 #, c-format
 msgid "Connection to %s:%hu refused.\n"
 msgstr "Spojení s %s:%hu odmítnuto.\n"
 
 #. Second: Login with proper USER/PASS sequence.
-#: src/ftp.c:190 src/http.c:376
+#: src/ftp.c:195 src/http.c:610
 msgid "connected!\n"
 msgstr "spojeno!\n"
 
 # , c-format
-#: src/ftp.c:191
+#: src/ftp.c:196
 #, c-format
 msgid "Logging in as %s ... "
 msgstr "Pøihla¹uji se jako %s ... "
 
-#: src/ftp.c:200 src/ftp.c:253 src/ftp.c:301 src/ftp.c:353 src/ftp.c:447
-#: src/ftp.c:520 src/ftp.c:568 src/ftp.c:616
+#: src/ftp.c:205 src/ftp.c:258 src/ftp.c:289 src/ftp.c:314 src/ftp.c:410
+#: src/ftp.c:462 src/ftp.c:556 src/ftp.c:629 src/ftp.c:677 src/ftp.c:725
 msgid "Error in server response, closing control connection.\n"
 msgstr "Server odpovìdìl chybnì, uzavírám øídicí spojení.\n"
 
-#: src/ftp.c:208
+#: src/ftp.c:213
 msgid "Error in server greeting.\n"
 msgstr "Úvodní odpovìï serveru je chybná.\n"
 
-#: src/ftp.c:216 src/ftp.c:262 src/ftp.c:310 src/ftp.c:362 src/ftp.c:457
-#: src/ftp.c:530 src/ftp.c:578 src/ftp.c:626
+#: src/ftp.c:221 src/ftp.c:323 src/ftp.c:419 src/ftp.c:471 src/ftp.c:566
+#: src/ftp.c:639 src/ftp.c:687 src/ftp.c:735
 msgid "Write failed, closing control connection.\n"
 msgstr "Nemohu zapsat data, uzavírám øídicí spojení.\n"
 
-#: src/ftp.c:223
+#: src/ftp.c:228
 msgid "The server refuses login.\n"
 msgstr "Server odmítá pøihlá¹ení.\n"
 
-#: src/ftp.c:230
+#: src/ftp.c:235
 msgid "Login incorrect.\n"
 msgstr "Chyba pøi pøihlá¹ení.\n"
 
-#: src/ftp.c:237
+#: src/ftp.c:242
 msgid "Logged in!\n"
 msgstr "Pøihlá¹en!\n"
 
+#: src/ftp.c:267
+msgid "Server error, can't determine system type.\n"
+msgstr ""
+
+#: src/ftp.c:277 src/ftp.c:541 src/ftp.c:613 src/ftp.c:657
+msgid "done.    "
+msgstr "hotovo.  "
+
+#: src/ftp.c:303 src/ftp.c:440 src/ftp.c:708 src/ftp.c:756 src/url.c:1432
+msgid "done.\n"
+msgstr "hotovo.\n"
+
 # , c-format
-#: src/ftp.c:270
+#: src/ftp.c:331
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
 msgstr "Neznámý typ `%c', uzavírám øídicí spojení.\n"
 
-#: src/ftp.c:283
+#: src/ftp.c:344
 msgid "done.  "
 msgstr "hotovo."
 
-#: src/ftp.c:289
+#: src/ftp.c:350
 msgid "==> CWD not needed.\n"
 msgstr "==> CWD není potøeba.\n"
 
 # , c-format
-#: src/ftp.c:317
+#: src/ftp.c:426
 #, c-format
 msgid ""
 "No such directory `%s'.\n"
@@ -88,44 +132,36 @@ msgstr ""
 "Adresáø `%s' neexistuje.\n"
 "\n"
 
-#: src/ftp.c:331 src/ftp.c:599 src/ftp.c:647 src/url.c:1678
-msgid "done.\n"
-msgstr "hotovo.\n"
-
 #. do not CWD
-#: src/ftp.c:335
+#: src/ftp.c:444
 msgid "==> CWD not required.\n"
 msgstr "==> CWD není potøeba.\n"
 
-#: src/ftp.c:369
+#: src/ftp.c:478
 msgid "Cannot initiate PASV transfer.\n"
 msgstr "Nemohu inicializovat pøenos pøíkazem PASV.\n"
 
-#: src/ftp.c:373
+#: src/ftp.c:482
 msgid "Cannot parse PASV response.\n"
 msgstr "Odpovìï na PASV není pochopitelná.\n"
 
 # , c-format
-#: src/ftp.c:387
+#: src/ftp.c:496
 #, c-format
 msgid "Will try connecting to %s:%hu.\n"
 msgstr "Pokusím se spojit s %s:%hu.\n"
 
-#: src/ftp.c:432 src/ftp.c:504 src/ftp.c:548
-msgid "done.    "
-msgstr "hotovo.  "
-
 # , c-format
-#: src/ftp.c:474
+#: src/ftp.c:583
 #, c-format
 msgid "Bind error (%s).\n"
 msgstr "Chyba pøi operaci \"bind\" (%s).\n"
 
-#: src/ftp.c:490
+#: src/ftp.c:599
 msgid "Invalid PORT.\n"
 msgstr "Neplatný PORT.\n"
 
-#: src/ftp.c:537
+#: src/ftp.c:646
 msgid ""
 "\n"
 "REST failed, starting from scratch.\n"
@@ -134,7 +170,7 @@ msgstr ""
 "Pøíkaz REST selhal, pøená¹ím soubor od zaèátku.\n"
 
 # , c-format
-#: src/ftp.c:586
+#: src/ftp.c:695
 #, c-format
 msgid ""
 "No such file `%s'.\n"
@@ -144,7 +180,7 @@ msgstr ""
 "\n"
 
 # , c-format
-#: src/ftp.c:634
+#: src/ftp.c:743
 #, c-format
 msgid ""
 "No such file or directory `%s'.\n"
@@ -154,55 +190,55 @@ msgstr ""
 "\n"
 
 # , c-format
-#: src/ftp.c:710 src/ftp.c:717
+#: src/ftp.c:819 src/ftp.c:826
 #, c-format
 msgid "Length: %s"
 msgstr "Délka: %s"
 
 # , c-format
-#: src/ftp.c:712 src/ftp.c:719
+#: src/ftp.c:821 src/ftp.c:828
 #, c-format
 msgid " [%s to go]"
 msgstr " [%s zbývá]"
 
-#: src/ftp.c:721
+#: src/ftp.c:830
 msgid " (unauthoritative)\n"
 msgstr " (není smìrodatné)\n"
 
 # , c-format
-#: src/ftp.c:747
+#: src/ftp.c:856
 #, c-format
 msgid "%s: %s, closing control connection.\n"
 msgstr "%s: %s, uzavírám øídicí spojení.\n"
 
 # , c-format
-#: src/ftp.c:755
+#: src/ftp.c:864
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
 msgstr "%s (%s) - Datové spojení: %s; "
 
-#: src/ftp.c:772
+#: src/ftp.c:881
 msgid "Control connection closed.\n"
 msgstr "Øídicí spojení uzavøeno.\n"
 
-#: src/ftp.c:790
+#: src/ftp.c:899
 msgid "Data transfer aborted.\n"
 msgstr "Pøenos dat byl pøedèasnì ukonèen.\n"
 
 # , c-format
-#: src/ftp.c:856
+#: src/ftp.c:963
 #, c-format
 msgid "File `%s' already there, not retrieving.\n"
 msgstr "Soubor `%s' je ji¾ zde, nebudu jej pøená¹et.\n"
 
 # , c-format
-#: src/ftp.c:933 src/http.c:1032
+#: src/ftp.c:1024 src/http.c:1358
 #, c-format, ycp-format
 msgid "(try:%2d)"
 msgstr "(pokus:%2d)"
 
 # , c-format
-#: src/ftp.c:997 src/http.c:1252
+#: src/ftp.c:1088 src/http.c:1585
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld]\n"
@@ -212,48 +248,52 @@ msgstr ""
 "\n"
 
 # , c-format
-#: src/ftp.c:1039 src/main.c:749 src/recur.c:468 src/retr.c:560
+#: src/ftp.c:1130 src/main.c:771 src/recur.c:505 src/retr.c:580
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Ma¾u %s.\n"
 
 # , c-format
-#: src/ftp.c:1080
+#: src/ftp.c:1171
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
 msgstr "Seznam souborù bude doèasnì ulo¾en v `%s'.\n"
 
 # , c-format
-#: src/ftp.c:1092
+#: src/ftp.c:1183
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr "Vymazal jsem `%s'.\n"
 
 # , c-format
-#: src/ftp.c:1128
+#: src/ftp.c:1219
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr "Hloubka rekurze %d pøekroèila maximální povolenou hloubku %d.\n"
 
-#: src/ftp.c:1180 src/http.c:1179
+#: src/ftp.c:1271 src/http.c:1512
 #, c-format
 msgid ""
 "Server file no newer than local file `%s' -- not retrieving.\n"
 "\n"
 msgstr ""
 
+#: src/ftp.c:1279
+msgid "Cannot compare sizes, remote system is VMS.\n"
+msgstr ""
+
 # , c-format
-#: src/ftp.c:1186 src/http.c:1187
+#: src/ftp.c:1285 src/http.c:1520
 #, fuzzy, c-format
 msgid "The sizes do not match (local %ld) -- retrieving.\n"
 msgstr "Velikosti se neshodují (lokálnì %ld), pøená¹ím.\n"
 
-#: src/ftp.c:1203
+#: src/ftp.c:1303
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr "Neplatný název symoblického odkazu, pøeskakuji.\n"
 
 # , c-format
-#: src/ftp.c:1220
+#: src/ftp.c:1320
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
@@ -263,13 +303,13 @@ msgstr ""
 "\n"
 
 # , c-format
-#: src/ftp.c:1228
+#: src/ftp.c:1328
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr "Vytváøím symbolický odkaz %s -> %s\n"
 
 # , c-format
-#: src/ftp.c:1239
+#: src/ftp.c:1339
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
 msgstr ""
@@ -277,32 +317,32 @@ msgstr ""
 "nepodporuje.\n"
 
 # , c-format
-#: src/ftp.c:1251
+#: src/ftp.c:1351
 #, c-format
 msgid "Skipping directory `%s'.\n"
 msgstr "Pøeskakuji adresáø `%s'.\n"
 
 # , c-format
-#: src/ftp.c:1260
+#: src/ftp.c:1360
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr "%s: neznámý/nepodporovaný typ souboru.\n"
 
 # , c-format
-#: src/ftp.c:1277
+#: src/ftp.c:1377
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr "%s: èasové razítko souboru je poru¹ené.\n"
 
 # , c-format
-#: src/ftp.c:1298
+#: src/ftp.c:1398
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr ""
 "Podadresáøe nebudu pøená¹et, proto¾e jsme ji¾ v hloubce %d (maximum je %d).\n"
 
 # , c-format
-#: src/ftp.c:1337
+#: src/ftp.c:1437
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr ""
@@ -310,7 +350,7 @@ msgstr ""
 "nebyl zadán k procházení.\n"
 
 # , c-format
-#: src/ftp.c:1382
+#: src/ftp.c:1482
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr "Odmítám `%s'.\n"
@@ -319,19 +359,19 @@ msgstr "Odmítám `%s'.\n"
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1429
+#: src/ftp.c:1529
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr "Vzorku `%s' nic neodpovídá.\n"
 
 # , c-format
-#: src/ftp.c:1489
+#: src/ftp.c:1589
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
 msgstr "Výpis adresáøe v HTML formátu byl zapsán do `%s' [%ld].\n"
 
 # , c-format
-#: src/ftp.c:1494
+#: src/ftp.c:1594
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr "Výpis adresáøe v HTML formátu byl zapsán do `%s'.\n"
@@ -388,28 +428,28 @@ msgstr "%s: nepøípustný pøepínaè -- %c\n"
 msgid "%s: option requires an argument -- %c\n"
 msgstr "%s: pøepínaè vy¾aduje argument -- %c\n"
 
-#: src/host.c:438
+#: src/host.c:394
 #, c-format
 msgid "%s: Cannot determine user-id.\n"
 msgstr "%s: Nemohu identifikovat u¾ivatele.\n"
 
 # , c-format
-#: src/host.c:450
+#: src/host.c:406
 #, c-format
 msgid "%s: Warning: uname failed: %s\n"
 msgstr "%s: Varování: volání \"uname\" skonèilo chybou %s\n"
 
-#: src/host.c:462
+#: src/host.c:418
 #, c-format
 msgid "%s: Warning: gethostname failed\n"
 msgstr "%s: Varování: volání \"gethostname\" skonèilo chybou\n"
 
-#: src/host.c:490
+#: src/host.c:446
 #, c-format
 msgid "%s: Warning: cannot determine local IP address.\n"
 msgstr "%s: Varování: nemohu urèit lokální IP adresu.\n"
 
-#: src/host.c:504
+#: src/host.c:460
 #, c-format
 msgid "%s: Warning: cannot reverse-lookup local IP address.\n"
 msgstr "%s: Varování: lokální IP adresa nemá reverzní DNS záznam.\n"
@@ -418,174 +458,151 @@ msgstr "%s: Varování: lokální IP adresa nemá reverzní DNS záznam.\n"
 #. that there can be valid reasons for the local host
 #. name not to be an FQDN, so I've decided to remove the
 #. annoying warning.
-#: src/host.c:517
+#: src/host.c:473
 #, c-format
 msgid "%s: Warning: reverse-lookup of local address did not yield FQDN!\n"
 msgstr ""
 "%s: Varování: reverzní vyhledání lokální adresy nenavrátilo plnì\n"
 "                kvalifikované jméno!\n"
 
-#: src/host.c:545
+#: src/host.c:501
 msgid "Host not found"
 msgstr "Poèítaè nebyl nalezen"
 
-#: src/host.c:547
+#: src/host.c:503
 msgid "Unknown error"
 msgstr "Neznámá chyba"
 
-# , c-format
-#: src/html.c:615 src/html.c:617
-#, c-format
-msgid "Index of /%s on %s:%d"
-msgstr "Obsah /%s na %s:%d"
-
-#: src/html.c:639
-msgid "time unknown       "
-msgstr "èas neznámý        "
-
-#: src/html.c:643
-msgid "File        "
-msgstr "Soubor      "
-
-#: src/html.c:646
-msgid "Directory   "
-msgstr "Adresáø     "
-
-#: src/html.c:649
-msgid "Link        "
-msgstr "Sym. odkaz  "
-
-#: src/html.c:652
-msgid "Not sure    "
-msgstr "Neznámý typ "
+#: src/http.c:621 src/http.c:1433
+msgid "Unable to establish SSL connection.\n"
+msgstr ""
 
 # , c-format
-#: src/html.c:670
-#, c-format
-msgid " (%s bytes)"
-msgstr " (%s bajtù)"
+#: src/http.c:629
+#, fuzzy, c-format
+msgid "Reusing connection to %s:%hu.\n"
+msgstr "Pokusím se spojit s %s:%hu.\n"
 
-#: src/http.c:508
-msgid "Failed writing HTTP request.\n"
+#: src/http.c:805
+#, fuzzy, c-format
+msgid "Failed writing HTTP request: %s.\n"
 msgstr "HTTP po¾adavek nebylo mo¾né odeslat.\n"
 
 # , c-format
-#: src/http.c:512
+#: src/http.c:810
 #, c-format
 msgid "%s request sent, awaiting response... "
 msgstr "%s po¾adavek odeslán, èekám na odpovìï ... "
 
-#: src/http.c:551
+#: src/http.c:854
 msgid "End of file while parsing headers.\n"
 msgstr "Hlavièka není úplná.\n"
 
 # , c-format
-#: src/http.c:562
+#: src/http.c:865
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr "Chyba (%s) pøi ètení hlavièek.\n"
 
-#: src/http.c:602
+#: src/http.c:905
 msgid "No data received"
 msgstr "Nepøi¹la ¾ádná data"
 
-#: src/http.c:604
+#: src/http.c:907
 msgid "Malformed status line"
 msgstr "Odpovìï serveru má zkomolený stavový øádek"
 
-#: src/http.c:609
+#: src/http.c:912
 msgid "(no description)"
 msgstr "(¾ádný popis)"
 
-#. If we have tried it already, then there is not point
-#. retrying it.
-#: src/http.c:693
+#: src/http.c:1030
 msgid "Authorization failed.\n"
 msgstr "Autorizace selhala.\n"
 
-#: src/http.c:700
+#: src/http.c:1037
 msgid "Unknown authentication scheme.\n"
 msgstr "Server po¾aduje neznámý zpùsob autentifikace.\n"
 
 # , c-format
-#: src/http.c:783
+#: src/http.c:1127
 #, c-format
 msgid "Location: %s%s\n"
 msgstr "Pøesmìrováno na: %s%s\n"
 
-#: src/http.c:784 src/http.c:809
+#: src/http.c:1128 src/http.c:1153
 msgid "unspecified"
 msgstr "neudáno"
 
-#: src/http.c:785
+#: src/http.c:1129
 msgid " [following]"
 msgstr " [následuji]"
 
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
-#: src/http.c:799
+#: src/http.c:1143
 msgid "Length: "
 msgstr "Délka: "
 
 # , c-format
-#: src/http.c:804
+#: src/http.c:1148
 #, c-format
 msgid " (%s to go)"
 msgstr " (%s zbývá)"
 
-#: src/http.c:809
+#: src/http.c:1153
 msgid "ignored"
 msgstr "je ignorována"
 
-#: src/http.c:912
+#: src/http.c:1254
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr "Varování: HTTP nepodporuje ¾olíkové znaky.\n"
 
 # , c-format
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:933
+#: src/http.c:1275
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
 msgstr "Soubor `%s' nebudu pøená¹et, je ji¾ zde.\n"
 
 # , c-format
-#: src/http.c:1099
+#: src/http.c:1425
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr "Nemohu zapsat do `%s' (%s).\n"
 
 # , c-format
-#: src/http.c:1110
+#: src/http.c:1443
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "CHYBA: Pøesmìrování (%d) bez udané nové adresy.\n"
 
 # , c-format
-#: src/http.c:1135
+#: src/http.c:1468
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s CHYBA %d: %s.\n"
 
-#: src/http.c:1148
+#: src/http.c:1481
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr ""
 "Nebudu pou¾ívat èasová razítka (`time-stamps'), proto¾e hlavièka\n"
 "\"Last-modified\" v odpovìdi serveru schází.\n"
 
-#: src/http.c:1156
+#: src/http.c:1489
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr ""
 "Ignoruji èasové razítko souboru (`time-stamp'), proto¾e hlavièka \n"
 "\"Last-modified\" obsahuje neplatné údaje.\n"
 
-#: src/http.c:1191
+#: src/http.c:1524
 msgid "Remote file is newer, retrieving.\n"
 msgstr "Vzdálený soubor je novìj¹ího data, pøená¹ím.\n"
 
 # , c-format
-#: src/http.c:1226
+#: src/http.c:1559
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld]\n"
@@ -595,13 +612,13 @@ msgstr ""
 "\n"
 
 # , c-format
-#: src/http.c:1274
+#: src/http.c:1607
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld. "
 msgstr "%s (%s) - Spojení uzavøeno na bajtu %ld. "
 
 # , c-format
-#: src/http.c:1282
+#: src/http.c:1615
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld])\n"
@@ -611,98 +628,98 @@ msgstr ""
 "\n"
 
 # , c-format
-#: src/http.c:1302
+#: src/http.c:1635
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld/%ld. "
 msgstr "%s (%s) - Spojení uzavøeno na bajtu %ld/%ld. "
 
 # , c-format
-#: src/http.c:1313
+#: src/http.c:1646
 #, c-format
 msgid "%s (%s) - Read error at byte %ld (%s)."
 msgstr "%s (%s) - Chyba pøi ètení dat na bajtu %ld (%s)."
 
 # , c-format
-#: src/http.c:1321
+#: src/http.c:1654
 #, c-format
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr "%s (%s) - Chyba pøi ètení dat na bajtu %ld/%ld (%s). "
 
 # , c-format
-#: src/init.c:329 src/netrc.c:260
+#: src/init.c:332 src/netrc.c:261
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Nemohu pøeèíst %s (%s).\n"
 
 # , c-format
-#: src/init.c:347 src/init.c:353
+#: src/init.c:350 src/init.c:356
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Chyba v %s na øádku %d.\n"
 
 # , c-format
-#: src/init.c:384
+#: src/init.c:387
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr ""
 "%s: Varování: Globální i u¾ivatelské wgetrc jsou shodnì ulo¾eny v `%s'.\n"
 
 # , c-format
-#: src/init.c:476
+#: src/init.c:479
 #, c-format
 msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr "%s: Chyba: Neznámý pøíkaz `%s', hodnota `%s'.\n"
 
 # , c-format
-#: src/init.c:498
+#: src/init.c:501
 #, fuzzy, c-format
 msgid "%s: Out of memory.\n"
 msgstr "%s: %s: Není dost pamìti.\n"
 
-#: src/init.c:504
+#: src/init.c:507
 #, fuzzy, c-format
 msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
 msgstr "%s: Varování: lokální IP adresa nemá reverzní DNS záznam.\n"
 
 # , c-format
-#: src/init.c:532
+#: src/init.c:535
 #, c-format
 msgid "%s: %s: Please specify on or off.\n"
 msgstr "%s: %s: Zadejte prosím `on' nebo `off'.\n"
 
 # , c-format
-#: src/init.c:576
+#: src/init.c:579
 #, fuzzy, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr "%s: %s: Zadejte prosím `on' nebo `off'.\n"
 
 # , c-format
-#: src/init.c:595 src/init.c:852 src/init.c:874 src/init.c:938
+#: src/init.c:598 src/init.c:855 src/init.c:877 src/init.c:941
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: Neplatná specifikace `%s'\n"
 
 # , c-format
-#: src/init.c:708 src/init.c:730 src/init.c:752 src/init.c:778
+#: src/init.c:711 src/init.c:733 src/init.c:755 src/init.c:781
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: Neplatná specifikace `%s'\n"
 
 # , c-format
-#: src/main.c:105
+#: src/main.c:119
 #, c-format
 msgid "Usage: %s [OPTION]... [URL]...\n"
 msgstr "Pou¾ití: %s [PØEPÍNAÈ]... [URL]...\n"
 
 # , c-format
-#: src/main.c:113
+#: src/main.c:127
 #, c-format
 msgid "GNU Wget %s, a non-interactive network retriever.\n"
 msgstr "GNU Wget %s, program pro neinteraktivní stahování souborù.\n"
 
 #. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
 #. don't bitch.  Also, it makes translation much easier.
-#: src/main.c:118
+#: src/main.c:132
 msgid ""
 "\n"
 "Mandatory arguments to long options are mandatory for short options too.\n"
@@ -713,7 +730,7 @@ msgstr ""
 "pøepínaèù.\n"
 "\n"
 
-#: src/main.c:121
+#: src/main.c:135
 #, fuzzy
 msgid ""
 "Startup:\n"
@@ -731,7 +748,7 @@ msgstr ""
 "\n"
 
 # , fuzzy
-#: src/main.c:127
+#: src/main.c:141
 #, fuzzy
 msgid ""
 "Logging and input file:\n"
@@ -758,7 +775,7 @@ msgstr ""
 "\n"
 
 # , fuzzy
-#: src/main.c:138
+#: src/main.c:152
 #, fuzzy
 msgid ""
 "Download:\n"
@@ -776,7 +793,7 @@ msgid ""
 "       --spider                 don't download anything.\n"
 "  -T,  --timeout=SECONDS        set the read timeout to SECONDS.\n"
 "  -w,  --wait=SECONDS           wait SECONDS between retrievals.\n"
-"       --waitretry=SECONDS\twait 1...SECONDS between retries of a "
+"       --waitretry=SECONDS      wait 1...SECONDS between retries of a "
 "retrieval.\n"
 "  -Y,  --proxy=on/off           turn proxy on or off.\n"
 "  -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n"
@@ -799,7 +816,7 @@ msgstr ""
 "\n"
 
 # , fuzzy
-#: src/main.c:154
+#: src/main.c:168
 msgid ""
 "Directories:\n"
 "  -nd  --no-directories            don't create directories.\n"
@@ -819,7 +836,7 @@ msgstr ""
 "\n"
 
 # , fuzzy
-#: src/main.c:161
+#: src/main.c:175
 #, fuzzy
 msgid ""
 "HTTP options:\n"
@@ -852,7 +869,7 @@ msgstr ""
 "                             v hlavièce identifikaèní øetìzec AGENT\n"
 
 # , fuzzy
-#: src/main.c:174
+#: src/main.c:188
 #, fuzzy
 msgid ""
 "FTP options:\n"
@@ -869,7 +886,7 @@ msgstr ""
 "       --passive-ftp     pou¾ij pasivní mód pøenosu dat\n"
 "\n"
 
-#: src/main.c:179
+#: src/main.c:193
 #, fuzzy
 msgid ""
 "Recursive retrieval:\n"
@@ -896,7 +913,7 @@ msgstr ""
 "\n"
 
 # , fuzzy
-#: src/main.c:189
+#: src/main.c:203
 #, fuzzy
 msgid ""
 "Recursive accept/reject:\n"
@@ -936,7 +953,7 @@ msgstr ""
 "\n"
 
 # , fuzzy
-#: src/main.c:204
+#: src/main.c:218
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr ""
 "Zprávy o chybách a návrhy na vylep¹ení programu zasílejte na adresu\n"
@@ -944,12 +961,12 @@ msgstr ""
 "Komentáøe k èeskému pøekladu zasílejte na adresu <cs@li.org>. \n"
 
 # , fuzzy
-#: src/main.c:383
+#: src/main.c:402
 #, c-format
 msgid "%s: debug support not compiled in.\n"
 msgstr "%s: program nebyl zkompilován s podporou pro ladìní.\n"
 
-#: src/main.c:435
+#: src/main.c:454
 #, fuzzy
 msgid ""
 "Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.\n"
@@ -964,7 +981,7 @@ msgstr ""
 "anebo VHODNOSTI PRO URÈITÝ ÚÈEL. Dal¹í podrobnosti hledejte \n"
 "v Obecné veøejné licenci GNU.\n"
 
-#: src/main.c:441
+#: src/main.c:460
 #, fuzzy
 msgid ""
 "\n"
@@ -974,13 +991,13 @@ msgstr ""
 "Autorem tohto programu je Hrvoje Nik¹iæ <hniksic@srce.hr>\n"
 
 # , c-format
-#: src/main.c:515
+#: src/main.c:534
 #, c-format
 msgid "%s: %s: invalid command\n"
 msgstr "%s: %s: neplatný pøíkaz\n"
 
 # , c-format
-#: src/main.c:568
+#: src/main.c:590
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: nepøípustný pøepínaè -- `-n%c'\n"
@@ -988,33 +1005,33 @@ msgstr "%s: nepøípustný pøepínaè -- `-n%c'\n"
 # , c-format
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:571 src/main.c:613 src/main.c:671
+#: src/main.c:593 src/main.c:635 src/main.c:693
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Pøíkaz `%s --help' vypí¹e význam platných pøepínaèù.\n"
 
-#: src/main.c:651
+#: src/main.c:673
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "Nedoká¾u být upovídaný a zitcha najednou.\n"
 
-#: src/main.c:657
+#: src/main.c:679
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr "Nedoká¾u pou¾ívat èasová razítka a nemazat pøitom staré soubory.\n"
 
 #. No URL specified.
-#: src/main.c:666
+#: src/main.c:688
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: postrádám URL\n"
 
 # , c-format
-#: src/main.c:764
+#: src/main.c:786
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "V souboru `%s' nebyla nalezena ¾ádná URL.\n"
 
 # , c-format
-#: src/main.c:773
+#: src/main.c:795
 #, c-format
 msgid ""
 "\n"
@@ -1026,14 +1043,14 @@ msgstr ""
 "Celkem naèteno %s bajtù v %d souborech\n"
 
 # , c-format
-#: src/main.c:781
+#: src/main.c:803
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "Pøekroèen limit objemu ulo¾ených dat (%s bajtù)!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:808
+#: src/main.c:833
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "Zachycen signál %s , výstup pøesmìrován do `%%s'.\n"
 
@@ -1052,12 +1069,12 @@ msgstr ""
 "Wget lze zastavit stiskem CTRL+ALT+DELETE.\n"
 
 #. parent, no error
-#: src/mswindows.c:135 src/utils.c:269
+#: src/mswindows.c:135 src/utils.c:457
 msgid "Continuing in background.\n"
 msgstr "Pokraèuji v bìhu na pozadí.\n"
 
 # , c-format
-#: src/mswindows.c:137 src/utils.c:271
+#: src/mswindows.c:137 src/utils.c:459
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "Výstup bude zapsán do `%s'.\n"
@@ -1074,7 +1091,7 @@ msgid "%s: Couldn't find usable socket driver.\n"
 msgstr "%s: Nemohu najít pou¾itelný ovladaè socketù.\n"
 
 # , c-format
-#: src/netrc.c:359
+#: src/netrc.c:367
 #, c-format
 msgid "%s: %s:%d: warning: \"%s\" token appears before any machine name\n"
 msgstr ""
@@ -1082,35 +1099,35 @@ msgstr ""
 "      názvem poèítaèe\n"
 
 # , c-format
-#: src/netrc.c:390
+#: src/netrc.c:398
 #, c-format
 msgid "%s: %s:%d: unknown token \"%s\"\n"
 msgstr "%s: %s:%d: neznámý token \"%s\"\n"
 
 # , c-format
-#: src/netrc.c:454
+#: src/netrc.c:462
 #, c-format
 msgid "Usage: %s NETRC [HOSTNAME]\n"
 msgstr "Pou¾ití: %s NETRC [NÁZEV POÈÍTAÈE]\n"
 
 # , c-format
-#: src/netrc.c:464
+#: src/netrc.c:472
 #, c-format
 msgid "%s: cannot stat %s: %s\n"
 msgstr "%s: volání `stat %s' skonèilo chybou: %s\n"
 
 # , c-format
-#: src/recur.c:469
+#: src/recur.c:506
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
 msgstr "Ma¾u %s, proto¾e tento soubor není po¾adován.\n"
 
-#: src/recur.c:630
+#: src/recur.c:680
 msgid "Loading robots.txt; please ignore errors.\n"
 msgstr "Naèítám `robots.txt'. Chybová hlá¹ení ignorujte, prosím.\n"
 
 # , c-format
-#: src/retr.c:197
+#: src/retr.c:217
 #, c-format
 msgid ""
 "\n"
@@ -1119,29 +1136,23 @@ msgstr ""
 "\n"
 "          [ pøeskakuji %dK ]"
 
-#: src/retr.c:380
+#: src/retr.c:399
 msgid "Could not find proxy host.\n"
 msgstr "Nemohu najít proxy server.\n"
 
 # , c-format
-#: src/retr.c:393
+#: src/retr.c:413
 #, c-format
 msgid "Proxy %s: Must be HTTP.\n"
 msgstr "Proxy %s: Musí být HTTP.\n"
 
 # , c-format
-#: src/retr.c:472
-#, c-format
-msgid "%s: Redirection to itself.\n"
-msgstr "%s: Pøesmìrování na sebe sama.\n"
-
-# , c-format
-#: src/retr.c:486
+#: src/retr.c:507
 #, fuzzy, c-format
 msgid "%s: Redirection cycle detected.\n"
 msgstr "%s: Pøesmìrování na sebe sama.\n"
 
-#: src/retr.c:581
+#: src/retr.c:601
 msgid ""
 "Giving up.\n"
 "\n"
@@ -1149,7 +1160,7 @@ msgstr ""
 "Vzdávám to.\n"
 "\n"
 
-#: src/retr.c:581
+#: src/retr.c:601
 msgid ""
 "Retrying.\n"
 "\n"
@@ -1158,58 +1169,68 @@ msgstr ""
 "\n"
 
 # , c-format
-#: src/url.c:983
-#, c-format
-msgid "Error (%s): Link %s without a base provided.\n"
-msgstr "Chyba (%s): K relativnímu odkazu %s nelze najít bázový odkaz.\n"
-
-# , c-format
-#: src/url.c:999
-#, c-format
-msgid "Error (%s): Base %s relative, without referer URL.\n"
-msgstr "Chyba (%s): Bázový odkaz %s nesmí být relativní.\n"
-
-# , c-format
-#: src/url.c:1540
+#: src/url.c:1325
 #, c-format
 msgid "Converting %s... "
 msgstr "Konvertuji %s... "
 
+#: src/url.c:1338
+msgid "nothing to do.\n"
+msgstr ""
+
 # , c-format
-#: src/url.c:1545 src/url.c:1632
+#: src/url.c:1346 src/url.c:1370
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "Nedoká¾u pøevést odkazy v %s: %s\n"
 
 # , c-format
-#: src/url.c:1608
+#: src/url.c:1361
+#, fuzzy, c-format
+msgid "Unable to delete `%s': %s\n"
+msgstr "Nebylo mo¾né odstranit symbolický odkaz `%s': %s\n"
+
+# , c-format
+#: src/url.c:1558
 #, fuzzy, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Nedoká¾u pøevést odkazy v %s: %s\n"
 
 # , c-format
-#: src/utils.c:72
+#: src/utils.c:94
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: Není dost pamìti.\n"
 
-#: src/utils.c:204
+#: src/utils.c:392
 msgid "Unknown/unsupported protocol"
 msgstr "Neznámý/nepodporovaný protokol"
 
-#: src/utils.c:207
+#: src/utils.c:395
 msgid "Invalid port specification"
 msgstr "Neplatná specifikace portu"
 
-#: src/utils.c:210
+#: src/utils.c:398
 msgid "Invalid host name"
 msgstr "Neplatné jméno stroje"
 
 # , c-format
-#: src/utils.c:431
+#: src/utils.c:619
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Nebylo mo¾né odstranit symbolický odkaz `%s': %s\n"
+
+# , c-format
+#~ msgid "%s: Redirection to itself.\n"
+#~ msgstr "%s: Pøesmìrování na sebe sama.\n"
+
+# , c-format
+#~ msgid "Error (%s): Link %s without a base provided.\n"
+#~ msgstr "Chyba (%s): K relativnímu odkazu %s nelze najít bázový odkaz.\n"
+
+# , c-format
+#~ msgid "Error (%s): Base %s relative, without referer URL.\n"
+#~ msgstr "Chyba (%s): Bázový odkaz %s nesmí být relativní.\n"
 
 # , c-format
 #~ msgid ""
