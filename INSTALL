@@ -53,10 +53,9 @@ you need to specify your alternate OpenSSL root directory.  For
 instance, if libcrypto.* and libssl.* are in /opt/openssl/lib, you
 need to `configure --with-ssl=/opt/openssl'.
 
-To configure Wget on Windows, run configure.bat and follow the
-instructions in the windows/ directory.  If this doesn't work for any
-reason, talk to the Windows developers listed in `windows/README'; I
-do not maintain the port.
+To configure Wget on Windows, read the instructions in `windows/Readme'. 
+If this doesn't work for any reason, talk to the Windows developers 
+listed there; I do not maintain the port.
 
 2) Compilation
 

@@ -19,11 +19,12 @@
 # Version: 1.4.4
 #
 
-#Uncomment these if you have openssl available
-#SSLDEFS	=	/DHAVE_SSL
-#SSLLIBS	=	libeay32.lib ssleay32.lib
-#SSLSRC	=	gen_sslfunc.c
-#SSLOBJ	=	gen_sslfunc$o
+#Comment these if you don't have openssl available - however https
+#won't work.
+SSLDEFS	=	/DHAVE_SSL
+SSLLIBS	=	libeay32.lib ssleay32.lib
+SSLSRC	=	gen_sslfunc.c
+SSLOBJ	=	gen_sslfunc$o
 
 SHELL = command
 
