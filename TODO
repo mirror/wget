@@ -6,6 +6,14 @@ Wget.  Patches to implement any of these items would be gladly accepted.  The
 items are not listed in any particular order (except that recently-added items
 may tend towards the top).  Not all of these represent user-visible changes.
 
+* Generalize --html-extension to something like --mime-extension and have it
+  look at mime.types/mimecap file for preferred extension.  Non-HTML files with
+  filenames changed this way would be re-downloaded each time despite -N unless
+  .orig files were saved for them.  Since .orig would contain the same data as
+  non-.orig, the latter could be just a link to the former.  Another possibility
+  would be to implement a per-directory database called something like
+  .wget_url_mapping containing URLs and their corresponding filenames.
+
 * When spanning hosts, there's no way to say that you are only interested in
   files in a certain directory on _one_ of the hosts (-I and -X apply to all).
   Perhaps -I and -X should take an optional hostname before the directory?

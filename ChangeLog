@@ -3,6 +3,7 @@
 	* TODO: -k needs to convert '?' to "%3F" in links to saved files
 	containing the '?' character (e.g. CGI output).  Also, we need to
 	check the HTTP spec w.r.t. simplification of absolute URLs.
+	Generalize --html-extension to something like --mime-extension.
 
 	* MAILING-LIST: I didn't realize <wget@sunsite.auc.dk> allowed posting
 	by non-subscribers.  <bug-wget@gnu.org> soon to be an alias for it.
