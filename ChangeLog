@@ -1,3 +1,7 @@
+2000-10-30  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* NEWS: Hrvoje pointed out that relative URL grokking deserves mention.
+
 2000-10-27  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* TODO: wget now groks illegal relative URL HTTP redirects.

@@ -36,6 +36,8 @@ passive_ftp is the only .wgetrc command which takes a lockable Boolean.
 
 ** New --bind-address / bind_address = <address> option for people on hosts 
 bound to multiple IP addresses.
+
+** wget now accepts (illegal per HTTP spec) relative URLs in HTTP redirects.
 
 * Wget 1.5.3 is a bugfix release with no user-visible changes.
 
