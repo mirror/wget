@@ -1,3 +1,12 @@
+2001-01-04  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (replace_attr): New function, to be used by both
+	TO_COMPLETE and TO_RELATIVE case in convert_links.
+	(find_fragment): New function for finding URL fragments.
+	(replace_attr): Better handle the case where the original string
+	is not quoted.  Use find_fragment.
+	(convert_links): Use replace_attr().
+
 2000-12-18  Csaba Raduly  <csaba.raduly@sophos.com>
 
 	* sysdep.h: Include <malloc.h> and <io.h> under Watcom.

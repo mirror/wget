@@ -1311,6 +1311,7 @@ no_proxy_match (const char *host, const char **no_proxy)
 }
 
 static void write_backup_file PARAMS ((const char *, downloaded_file_t));
+static void replace_attr PARAMS ((const char **, int, FILE *, const char *));
 
 /* Change the links in an HTML document.  Accepts a structure that
    defines the positions of all the links.  */
@@ -1319,7 +1320,7 @@ convert_links (const char *file, urlpos *l)
 {
   struct file_memory *fm;
   FILE               *fp;
-  char               *p;
+  const char         *p;
   downloaded_file_t  downloaded_file_return;
 
   logprintf (LOG_VERBOSE, _("Converting %s... "), file);
@@ -1378,6 +1379,7 @@ convert_links (const char *file, urlpos *l)
   for (; l; l = l->next)
     {
       char *url_start = fm->content + l->pos;
+
       if (l->pos >= fm->length)
 	{
 	  DEBUGP (("Something strange is going on.  Please investigate."));
@@ -1399,29 +1401,21 @@ convert_links (const char *file, urlpos *l)
 	  /* Convert absolute URL to relative. */
 	  char *newname = construct_relative (file, l->local_name);
 	  char *quoted_newname = html_quote_string (newname);
-	  putc (*p, fp);	/* quoting char */
-	  fputs (quoted_newname, fp);
-	  p += l->size - 1;
-	  putc (*p, fp);	/* close quote */
-	  ++p;
-	  xfree (newname);
-	  xfree (quoted_newname);
+	  replace_attr (&p, l->size, fp, quoted_newname);
 	  DEBUGP (("TO_RELATIVE: %s to %s at position %d in %s.\n",
 		   l->url, newname, l->pos, file));
+	  xfree (newname);
+	  xfree (quoted_newname);
 	}
       else if (l->convert == CO_CONVERT_TO_COMPLETE)
 	{
 	  /* Convert the link to absolute URL. */
 	  char *newlink = l->url;
 	  char *quoted_newlink = html_quote_string (newlink);
-	  putc (*p, fp);	/* quoting char */
-	  fputs (quoted_newlink, fp);
-	  p += l->size - 1;
-	  putc (*p, fp);	/* close quote */
-	  ++p;
-	  xfree (quoted_newlink);
+	  replace_attr (&p, l->size, fp, quoted_newlink);
 	  DEBUGP (("TO_COMPLETE: <something> to %s at position %d in %s.\n",
 		   newlink, l->pos, file));
+	  xfree (quoted_newlink);
 	}
     }
   /* Output the rest of the file. */
@@ -1584,6 +1578,79 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
       converted_file_ptr->next = converted_files;
       converted_files = converted_file_ptr;
     }
+}
+
+static int find_fragment PARAMS ((const char *, int, const char **,
+				  const char **));
+
+static void
+replace_attr (const char **pp, int raw_size, FILE *fp, const char *new_str)
+{
+  const char *p = *pp;
+  int quote_flag = 0;
+  int size = raw_size;
+  char quote_char = '\"';
+  const char *frag_beg, *frag_end;
+
+  /* Structure of our string is:
+       "...old-contents..."
+       <---  l->size   --->  (with quotes)
+     OR:
+       ...old-contents...
+       <---  l->size  -->    (no quotes)   */
+
+  if (*p == '\"' || *p == '\'')
+    {
+      quote_char = *p;
+      quote_flag = 1;
+      ++p;
+      size -= 2;		/* disregard opening and closing quote */
+    }
+  putc (quote_char, fp);
+  fputs (new_str, fp);
+
+  /* Look for fragment identifier, if any. */
+  if (find_fragment (p, size, &frag_beg, &frag_end))
+    fwrite (frag_beg, 1, frag_end - frag_beg, fp);
+  p += size;
+  if (quote_flag)
+    ++p;
+  putc (quote_char, fp);
+  *pp = p;
+}
+
+/* Find the first occurrence of '#' in [BEG, BEG+SIZE) that is not
+   preceded by '&'.  If the character is not found, return zero.  If
+   the character is found, return 1 and set BP and EP to point to the
+   beginning and end of the region.
+
+   This is used for finding the fragment indentifiers in URLs.  */
+
+static int
+find_fragment (const char *beg, int size, const char **bp, const char **ep)
+{
+  const char *end = beg + size;
+  int saw_amp = 0;
+  for (; beg < end; beg++)
+    {
+      switch (*beg)
+	{
+	case '&':
+	  saw_amp = 1;
+	  break;
+	case '#':
+	  if (!saw_amp)
+	    {
+	      *bp = beg;
+	      *ep = end;
+	      return 1;
+	    }
+	  /* fallthrough */
+	default:
+	  saw_amp = 0;
+	}
+    }
+  return 0;
 }
 
 typedef struct _downloaded_file_list {
