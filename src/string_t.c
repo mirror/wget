@@ -31,9 +31,13 @@
 
 #include "config.h"
 
+#define _GNU_SOURCE		/* to get iswblank */
+
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include <wchar.h>
+#include <wctype.h>
 
 #include "wget.h"
 
@@ -182,12 +186,14 @@ string_destroy (struct string_t *str)
   memset (str, 0, sizeof (*str));
 }
 
+#if 0				/* unused */
 static void
 string_append_delim (struct string_t *dst)
 {
   assert_valid_string (dst);
   string_cat (dst, line_delim, line_delim_len);
 }
+#endif
 
 static int 
 is_line_delim (const wchar_t *wsz)

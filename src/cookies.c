@@ -616,7 +616,8 @@ parse_set_cookies (const char *sc,
 		    char *name;
 		    BOUNDED_TO_ALLOCA (name_b, name_e, name);
 		    logprintf (LOG_NOTQUIET,
-			       _("Error in Set-Cookie, field `%s'"), name);
+			       _("Error in Set-Cookie, field `%s'"),
+			       escnonprint (name));
 		  }
 		state = S_ERROR;
 		break;
@@ -640,7 +641,7 @@ parse_set_cookies (const char *sc,
   if (!silent)
     logprintf (LOG_NOTQUIET,
 	       _("Syntax error in Set-Cookie: %s at position %d.\n"),
-	       sc, p - sc);
+	       escnonprint (sc), p - sc);
   return NULL;
 }
 
@@ -862,7 +863,7 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
 	{
 	  logprintf (LOG_NOTQUIET,
 		     "Cookie coming from %s attempted to set domain to %s\n",
-		     host, cookie->domain);
+		     escnonprint (host), escnonprint (cookie->domain));
 	  xfree (cookie->domain);
 	  goto copy_domain;
 	}

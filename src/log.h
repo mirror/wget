@@ -52,4 +52,7 @@ void log_init PARAMS ((const char *, int));
 void log_close PARAMS ((void));
 void log_request_redirect_output PARAMS ((const char *));
 
+const char *escnonprint PARAMS ((const char *));
+const char *escnonprint_uri PARAMS ((const char *));
+
 #endif /* LOG_H */

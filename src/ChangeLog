@@ -1,3 +1,35 @@
+2005-03-03  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* retr.c (retrieve_url): Escape location header.
+
+	* http.c (print_server_response_1): Escape server response when
+	printing it.
+	(gethttp): Escape host name, status message, location header, and
+	content type.
+	(http_loop): Escape error message from server.
+
+	* host.c (lookup_host): Escape host name when printing it.
+
+	* ftp.c (getftp): Escape user name when printing it.
+	(getftp): Escape remote file and directory for printing.
+	(getftp): Escape server listing when printing it.
+	(ftp_retrieve_list): Escape link name and file name.
+	(ftp_retrieve_glob): Escape file name.
+
+	* ftp-basic.c (ftp_response): Escape server response when printing
+	it.
+
+	* cookies.c (parse_set_cookies): Escape the cookie field when
+	printing it.
+	(parse_set_cookies): Escape contents of remote header.
+	(cookie_handle_set_cookie): Escape host name and cookie domain.
+
+	* connect.c (connect_to_ip): Escape the host name.
+
+	* log.c (escnonprint): New function, used for printing strings
+	coming from the server that possibly contain non-ASCII characters.
+	(escnonprint_uri): Ditto.
+
 2005-02-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ftp.c (getftp): Ditto.

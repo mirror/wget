@@ -687,7 +687,7 @@ print_server_response_1 (const char *prefix, const char *b, const char *e)
   if (b < e && e[-1] == '\r')
     --e;
   BOUNDED_TO_ALLOCA (b, e, ln);
-  logprintf (LOG_VERBOSE, "%s%s\n", prefix, ln);
+  logprintf (LOG_VERBOSE, "%s%s\n", prefix, escnonprint (ln));
 }
 
 /* Print the server response, line by line, omitting the trailing CR
@@ -1306,7 +1306,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  sock = pconn.socket;
 	  using_ssl = pconn.ssl;
 	  logprintf (LOG_VERBOSE, _("Reusing existing connection to %s:%d.\n"),
-		     pconn.host, pconn.port);
+		     escnonprint (pconn.host), pconn.port);
 	  DEBUGP (("Reusing fd %d.\n", sock));
 	}
     }
@@ -1377,11 +1377,11 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	    {
 	    failed_tunnel:
 	      logprintf (LOG_NOTQUIET, _("Proxy tunneling failed: %s"),
-			 message ? message : "?");
+			 message ? escnonprint (message) : "?");
 	      xfree_null (message);
 	      return CONSSLERR;
 	    }
-	  xfree (message);
+	  xfree_null (message);
 
 	  /* SOCK is now *really* connected to u->host, so update CONN
 	     to reflect this.  That way register_persistent will
@@ -1458,7 +1458,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   message = NULL;
   statcode = response_status (resp, &message);
   if (!opt.server_response)
-    logprintf (LOG_VERBOSE, "%2d %s\n", statcode, message ? message : "");
+    logprintf (LOG_VERBOSE, "%2d %s\n", statcode,
+	       message ? escnonprint (message) : "");
   else
     {
       logprintf (LOG_VERBOSE, "\n");
@@ -1604,7 +1605,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	{
 	  logprintf (LOG_VERBOSE,
 		     _("Location: %s%s\n"),
-		     hs->newloc ? hs->newloc : _("unspecified"),
+		     hs->newloc ? escnonprint_uri (hs->newloc) : _("unspecified"),
 		     hs->newloc ? _(" [following]") : "");
 	  if (keep_alive)
 	    skip_short_body (sock, contlen);
@@ -1691,7 +1692,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	    logputs (LOG_VERBOSE,
 		     opt.ignore_length ? _("ignored") : _("unspecified"));
 	  if (type)
-	    logprintf (LOG_VERBOSE, " [%s]\n", type);
+	    logprintf (LOG_VERBOSE, " [%s]\n", escnonprint (type));
 	  else
 	    logputs (LOG_VERBOSE, "\n");
 	}
@@ -2105,7 +2106,7 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	      xfree (hurl);
 	    }
 	  logprintf (LOG_NOTQUIET, _("%s ERROR %d: %s.\n"),
-		     tms, hstat.statcode, hstat.error);
+		     tms, hstat.statcode, escnonprint (hstat.error));
 	  logputs (LOG_VERBOSE, "\n");
 	  free_hstat (&hstat);
 	  xfree_null (dummy);
@@ -2190,7 +2191,8 @@ The sizes do not match (local %s) -- retrieving.\n"),
 
       if (opt.spider)
 	{
-	  logprintf (LOG_NOTQUIET, "%d %s\n\n", hstat.statcode, hstat.error);
+	  logprintf (LOG_NOTQUIET, "%d %s\n\n", hstat.statcode,
+		     escnonprint (hstat.error));
 	  xfree_null (dummy);
 	  return RETROK;
 	}

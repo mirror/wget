@@ -615,6 +615,140 @@ log_dump_context (void)
   fflush (fp);
 }
 
+/* String escape functions. */
+
+/* Return the number of non-printable characters in SOURCE.
+
+   Non-printable characters are determined as per safe-ctype.h,
+   i.e. the non-printable characters of the "C" locale.  This code is
+   meant to be used to protect the user from binary characters in
+   (normally ASCII) server messages. */
+
+static int
+count_nonprint (const char *source)
+{
+  const char *p;
+  int cnt;
+  for (p = source, cnt = 0; *p; p++)
+    if (!ISPRINT (*p))
+      ++cnt;
+  return cnt;
+}
+
+/* Copy SOURCE to DEST, escaping non-printable characters.  If FOR_URI
+   is 0, they are escaped as \ooo; otherwise, they are escaped as
+   %xx.
+
+   DEST must point to a location with sufficient room to store an
+   encoded version of SOURCE.  */
+
+static void
+copy_and_escape (const char *source, char *dest, int for_uri)
+{
+  const char *from;
+  char *to;
+
+  /* Copy the string, escaping non-printable chars. */
+  if (!for_uri)
+    {
+      for (from = source, to = dest; *from; from++)
+	if (ISPRINT (*from))
+	  *to++ = *from;
+	else
+	  {
+	    const unsigned char c = *from;
+	    *to++ = '\\';
+	    *to++ = '0' + (c >> 6);
+	    *to++ = '0' + ((c >> 3) & 7);
+	    *to++ = '0' + (c & 7);
+	  }
+    }
+  else
+    {
+      for (from = source, to = dest; *from; from++)
+	if (ISPRINT (*from))
+	  *to++ = *from;
+	else
+	  {
+	    const unsigned char c = *from;
+	    *to++ = '%';
+	    *to++ = XNUM_TO_DIGIT (c >> 4);
+	    *to++ = XNUM_TO_DIGIT (c & 0xf);
+	  }
+    }
+  *to = '\0';
+}
+
+#define RING_SIZE 3
+struct ringel {
+  char *buffer;
+  int size;
+};
+
+static const char *
+escnonprint_internal (const char *str, int for_uri)
+{
+  static struct ringel ring[RING_SIZE];	/* ring data */
+  static int ringpos;		        /* current ring position */
+
+  int nprcnt = count_nonprint (str);
+  if (nprcnt == 0)
+    /* If there are no non-printable chars in STR, don't bother
+       copying anything, just return STR.  */
+    return str;
+
+  {
+    /* Set up a pointer to the current ring position, so we can write
+       simply r->X instead of ring[ringpos].X. */
+    struct ringel *r = ring + ringpos;
+
+    /* Every non-printable character is replaced with "\ooo",
+       i.e. with three *additional* chars (two in URI-mode).  Size
+       must also include the length of the original string and an
+       additional char for the terminating \0. */
+    int needed_size = strlen (str) + 1 + for_uri ? (2 * nprcnt) : (3 * nprcnt);
+
+    /* If the current buffer is uninitialized or too small,
+       (re)allocate it.  */
+    if (r->buffer == NULL || r->size < needed_size)
+      r->buffer = xrealloc (r->buffer, needed_size);
+
+    copy_and_escape (str, r->buffer, for_uri);
+    ringpos = (ringpos + 1) % RING_SIZE;
+    return r->buffer;
+  }
+}
+
+/* Return a pointer to a static copy of STR with the non-printable
+   characters escaped as \ooo.  If there are no non-printable
+   characters in STR, STR is returned.
+
+   NOTE: since this function can return a pointer to static data, be
+   careful to copy its result before calling it again.  However, to be
+   more useful with printf, it maintains an internal ring of static
+   buffers to return.  Currently the ring size is 3, which means you
+   can print up to three values in the same printf; if more is needed,
+   bump RING_SIZE.  */
+
+const char *
+escnonprint (const char *str)
+{
+  return escnonprint_internal (str, 0);
+}
+
+/* Return a pointer to a static copy of STR with the non-printable
+   characters escaped as %XX.  If there are no non-printable
+   characters in STR, STR is returned.
+
+   This function returns a pointer to static data which will be
+   overwritten by subsequent calls -- see escnonprint for details.  */
+
+const char *
+escnonprint_uri (const char *str)
+{
+  return escnonprint_internal (str, 1);
+}
+
 /* When SIGHUP or SIGUSR1 are received, the output is redirected
    elsewhere.  Such redirection is only allowed once. */
 enum { RR_NONE, RR_REQUESTED, RR_DONE } redirect_request = RR_NONE;
