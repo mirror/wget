@@ -1,3 +1,8 @@
+2003-11-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* aclocal.m4 (WGET_STRUCT_UTIMBUF): Use AC_CHECK_TYPES instead of
+	AC_EGREP_CPP to check for struct utimbuf.
+
 2003-11-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* aclocal.m4 (WGET_WITH_NLS): Respect the user's setting of

@@ -3,19 +3,15 @@ dnl Check for `struct utimbuf'.
 dnl
 
 AC_DEFUN([WGET_STRUCT_UTIMBUF], [
-  AC_MSG_CHECKING([for struct utimbuf])
-  if test x"$ac_cv_header_utime_h" = xyes; then
-    AC_EGREP_CPP([struct[ 	]+utimbuf],
-      [#include <utime.h>
-      ], [
-	AC_DEFINE([HAVE_STRUCT_UTIMBUF], 1,
-		  [Define if you have struct utimbuf.])
-	AC_MSG_RESULT(yes)
-      ],
-      [AC_MSG_RESULT(no)])
-  else
-    AC_MSG_RESULT(no)
-  fi
+  AC_CHECK_TYPES([struct utimbuf], [], [], [
+#include <stdio.h>
+#if HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+#if HAVE_UTIME_H
+# include <utime.h>
+#endif
+  ])
 ])
 
 
