@@ -42,6 +42,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <openssl/rand.h>
 
 #include "wget.h"
+#include "utils.h"
 #include "connect.h"
 #include "url.h"
 
@@ -96,11 +97,10 @@ ssl_init_prng (void)
      security will use /dev/random or their own source of randomness
      anyway.  */
 
-  srand (time (NULL));
   while (RAND_status () == 0 && maxrand-- > 0)
     {
-      int rnd = rand ();
-      RAND_seed ((unsigned char *)&rnd, sizeof (rnd));
+      unsigned char rnd = random_number (256);
+      RAND_seed (&rnd, sizeof (rnd));
     }
 
   if (RAND_status () == 0)

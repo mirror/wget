@@ -102,5 +102,6 @@ long wtimer_granularity PARAMS ((void));
 char *html_quote_string PARAMS ((const char *));
 
 int determine_screen_width PARAMS ((void));
+int random_number PARAMS ((int));
 
 #endif /* UTILS_H */

@@ -1,3 +1,16 @@
+2001-12-17  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* gen_sslfunc.c (ssl_init_prng): Use random_number to get a byte
+	of "randomness" at a time.
+	(ssl_init_prng): Don't seed the PRNG; random_number will do that.
+
+	* retr.c (sleep_between_retrievals): Use it.  Make sure that the
+	random amount averages in opt.wait.
+	(sleep_between_retrievals): Don't seed the PRNG; random_number
+	will do that.
+
+	* utils.c (random_number): New function.
+
 2001-12-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* url.c (path_simplify): Move here from utils.c, and make static.

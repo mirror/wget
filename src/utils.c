@@ -1654,6 +1654,49 @@ determine_screen_width (void)
 #endif /* TIOCGWINSZ */
 }
 
+/* Return a random number between 0 and MAX-1, inclusive.
+
+   If MAX is greater than the value of RAND_MAX+1 on the system, the
+   returned value will be in the range [0, RAND_MAX].  This may be
+   fixed in a future release.
+
+   The random number generator is seeded automatically the first time
+   it is called.
+
+   This uses rand() for portability.  It has been suggested that
+   random() offers better randomness, but this is not required for
+   Wget, so I chose to go for simplicity and use rand
+   unconditionally.  */
+
+int
+random_number (int max)
+{
+  static int seeded;
+  double bounded;
+  int rnd;
+
+  if (!seeded)
+    {
+      srand (time (NULL));
+      seeded = 1;
+    }
+  rnd = rand ();
+
+  /* On systems that don't define RAND_MAX, assume it to be 2**15 - 1,
+     and enforce that assumption by masking other bits.  */
+#ifndef RAND_MAX
+# define RAND_MAX 32767
+  rnd &= RAND_MAX;
+#endif
+
+  /* This is equivalent to rand() % max, but uses the high-order bits
+     for better randomness on architecture where rand() is implemented
+     using a simple congruential generator.  */
+
+  bounded = (double)max * rnd / (RAND_MAX + 1.0);
+  return (int)bounded;
+}
+
 #if 0
 /* A debugging function for checking whether an MD5 library works. */
 
