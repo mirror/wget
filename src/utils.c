@@ -1390,66 +1390,30 @@ numdigit (long a)
 }
 
 #define ONE_DIGIT(figure) *p++ = n / (figure) + '0'
+#define ONE_DIGIT_ADVANCE(figure) (ONE_DIGIT (figure), n %= (figure))
 
-#define DIGITS_1(figure)			\
-    ONE_DIGIT (figure)
-#define DIGITS_2(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_1 ((figure) / 10)
-#define DIGITS_3(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_2 ((figure) / 10)
-#define DIGITS_4(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_3 ((figure) / 10)
-#define DIGITS_5(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_4 ((figure) / 10)
-#define DIGITS_6(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_5 ((figure) / 10)
-#define DIGITS_7(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_6 ((figure) / 10)
-#define DIGITS_8(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_7 ((figure) / 10)
-#define DIGITS_9(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_8 ((figure) / 10)
-#define DIGITS_10(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_9 ((figure) / 10)
+#define DIGITS_1(figure) ONE_DIGIT (figure)
+#define DIGITS_2(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_1 ((figure) / 10)
+#define DIGITS_3(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_2 ((figure) / 10)
+#define DIGITS_4(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_3 ((figure) / 10)
+#define DIGITS_5(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_4 ((figure) / 10)
+#define DIGITS_6(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_5 ((figure) / 10)
+#define DIGITS_7(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_6 ((figure) / 10)
+#define DIGITS_8(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_7 ((figure) / 10)
+#define DIGITS_9(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_8 ((figure) / 10)
+#define DIGITS_10(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_9 ((figure) / 10)
 
 /* DIGITS_<11-20> are only used on 64-bit machines. */
 
-#define DIGITS_11(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_10 ((figure) / 10)
-#define DIGITS_12(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_11 ((figure) / 10)
-#define DIGITS_13(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_12 ((figure) / 10)
-#define DIGITS_14(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_13 ((figure) / 10)
-#define DIGITS_15(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_14 ((figure) / 10)
-#define DIGITS_16(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_15 ((figure) / 10)
-#define DIGITS_17(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_16 ((figure) / 10)
-#define DIGITS_18(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_17 ((figure) / 10)
-#define DIGITS_19(figure)			\
-    (ONE_DIGIT (figure), n %= (figure));	\
-    DIGITS_18 ((figure) / 10)
+#define DIGITS_11(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_10 ((figure) / 10)
+#define DIGITS_12(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_11 ((figure) / 10)
+#define DIGITS_13(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_12 ((figure) / 10)
+#define DIGITS_14(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_13 ((figure) / 10)
+#define DIGITS_15(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_14 ((figure) / 10)
+#define DIGITS_16(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_15 ((figure) / 10)
+#define DIGITS_17(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_16 ((figure) / 10)
+#define DIGITS_18(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_17 ((figure) / 10)
+#define DIGITS_19(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_18 ((figure) / 10)
 
 /* Print NUMBER to BUFFER in base 10.  This is completely equivalent
    to `sprintf(buffer, "%ld", number)', only much faster.
@@ -1512,6 +1476,8 @@ long_to_string (char *buffer, long number)
 }
 
 #undef ONE_DIGIT
+#undef ONE_DIGIT_ADVANCE
+
 #undef DIGITS_1
 #undef DIGITS_2
 #undef DIGITS_3

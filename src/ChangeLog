@@ -1,3 +1,7 @@
+2001-04-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* utils.c: Define each DIGITS_* in one line.
+
 2001-04-25  Roger L. Beeman  <beeman@cisco.com>
 
 	* http.c (http_atotm): Initialize t.tm_isdst to 0.
