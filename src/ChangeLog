@@ -1,3 +1,8 @@
+2002-02-19  Andreas Damm  <andreas-sourceforge@radab.org>
+
+	* wget.h (DO_REALLOC_FROM_ALLOCA): Multiply with sizeof(type) when
+	calling xmalloc and memcpy.
+
 2002-02-19  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* host.h: Include Unix-specific includes #ifndef WINDOWS.

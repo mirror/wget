@@ -251,8 +251,9 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
 	XREALLOC_ARRAY (basevar, type, do_realloc_newsize);			\
       else									\
 	{									\
-	  void *drfa_new_basevar = xmalloc (do_realloc_newsize);		\
-	  memcpy (drfa_new_basevar, basevar, (sizevar));			\
+	  void *drfa_new_basevar =						\
+		xmalloc (do_realloc_newsize * sizeof (type));			\
+	  memcpy (drfa_new_basevar, basevar, (sizevar) * sizeof (type));	\
 	  (basevar) = drfa_new_basevar;						\
 	  allocap = 0;								\
 	}									\
