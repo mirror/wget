@@ -521,7 +521,7 @@ create_image (struct bar_progress *bp, long dltime)
   int size_legible_len = strlen (size_legible);
 
   /* The progress bar should look like this:
-     xx% [=======>             ] nn.nnn rrK/s ETA 00:00
+     xx% [=======>             ] nn,nnn 12.34K/s ETA 00:00
 
      Calculate the geometry.  The idea is to assign as much room as
      possible to the progress bar.  The other idea is to never let
