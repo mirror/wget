@@ -1,3 +1,9 @@
+2003-10-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* po/tr.po: Ditto.
+
+	* po/sv.po: Updated from TP.
+
 2003-10-09  Herold Heiko  <Heiko.Herold@previnet.it>
 
 	* windows/Makefile.watcom (OBJS): Ditto.
