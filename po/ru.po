@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.5.4\n"
 "POT-Creation-Date: 2000-11-05 08:08+0100\n"
-"PO-Revision-Date: 2000-09-18 01:16+08:00\n"
+"PO-Revision-Date: 2000-11-16 17:57+07:00\n"
 "Last-Translator: Const Kaplinsky <const@ce.cctpu.edu.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -584,15 +584,14 @@ msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr "%s: ОШИБКА В ПРОГРАММЕ: неизвестная команда `%s', значение `%s'.\n"
 
 #: src/init.c:497
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Out of memory.\n"
-msgstr "%s: %s: Недостаточно памяти.\n"
+msgstr "%s: Недостаточно памяти.\n"
 
 #: src/init.c:503
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
-msgstr ""
-"%s: Предупреждение: ошибка обратного преобразования локального IP-адреса.\n"
+msgstr "%s: %s: Ошибка определения IP-адреса для `%s'.\n"
 
 #: src/init.c:531
 #, c-format
@@ -600,9 +599,9 @@ msgid "%s: %s: Please specify on or off.\n"
 msgstr "%s: %s: Пожалуйста, укажите on или off.\n"
 
 #: src/init.c:575
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
-msgstr "%s: %s: Пожалуйста, укажите on или off.\n"
+msgstr "%s: %s: Пожалуйста, укажите always, on, off или never.\n"
 
 #: src/init.c:594 src/init.c:851 src/init.c:873 src/init.c:937
 #, c-format
@@ -680,7 +679,6 @@ msgstr ""
 "\n"
 
 #: src/main.c:138
-#, fuzzy
 msgid ""
 "Download:\n"
 "       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local "
@@ -704,7 +702,8 @@ msgid ""
 "\n"
 msgstr ""
 "Получение файлов:\n"
-"  -t,  --tries=ЧИСЛО            указать ЧИСЛО попыток (0 -- бесконечность).\n"
+"       --bind-address=АДРЕС     привязка к локальному АДРЕСУ, доменному или IP.\n"
+"  -t,  --tries=ЧИСЛО            указать ЧИСЛО попыток (0 -- неограниченное).\n"
 "  -O   --output-document=ФАЙЛ   записывать документы в ФАЙЛ.\n"
 "  -nc, --no-clobber             не получать существующие файлы повторно.\n"
 "  -c,  --continue               продолжать получение существующих файлов.\n"
@@ -712,14 +711,11 @@ msgstr ""
 "  -N,  --timestamping           не замещать имеющиеся файлы более ранними.\n"
 "  -S,  --server-response        выводить ответ сервера.\n"
 "       --spider                 не запрашивать реального получения файлов.\n"
-"  -T,  --timeout=СЕКУНДЫ        ограничить время ожидания при приеме "
-"данных.\n"
+"  -T,  --timeout=СЕКУНДЫ        ограничить время ожидания при приеме данных.\n"
 "  -w,  --wait=СЕКУНДЫ           установить паузу между получением файлов.\n"
-"       --waitretry=СЕКУНДЫ      пауза 0..СЕКУНДЫ между повторными "
-"попытками.\n"
+"       --waitretry=СЕКУНДЫ      пауза 1..СЕКУНДЫ между повторными попытками.\n"
 "  -Y,  --proxy=on/off           включить или выключить поддержку proxy.\n"
-"  -Q,  --quota=ЧИСЛО            ограничить суммарный объем получаемых "
-"файлов.\n"
+"  -Q,  --quota=ЧИСЛО            ограничить суммарный объем получаемых файлов.\n"
 "\n"
 
 #: src/main.c:154
@@ -742,7 +738,6 @@ msgstr ""
 "\n"
 
 #: src/main.c:161
-#, fuzzy
 msgid ""
 "HTTP options:\n"
 "       --http-user=USER      set http user to USER.\n"
@@ -761,23 +756,20 @@ msgid ""
 "\n"
 msgstr ""
 "Параметры HTTP:\n"
-"       --http-user=ИМЯ        установить ИМЯ пользователя для "
-"http-запросов.\n"
+"       --http-user=ИМЯ        установить ИМЯ пользователя для http-запросов.\n"
 "       --http-passwd=ПАРОЛЬ   установить ПАРОЛЬ для http-запросов.\n"
 "  -C,  --cache=on/off         включить/выключить кеширование на сервере.\n"
+"  -E,  --html-extension       сохранять все HTML-документы с расширением .html.\n"
 "       --ignore-length        игнорировать поле заголовка `Content-Length'.\n"
 "       --header=СТРОКА        вставить СТРОКУ в заголовки HTTP.\n"
-"       --proxy-user=ИМЯ       установить ИМЯ пользователя для "
-"прокси-сервера.\n"
+"       --proxy-user=ИМЯ       установить ИМЯ пользователя для прокси-сервера.\n"
 "       --proxy-passwd=ПАРОЛЬ  установить ПАРОЛЬ для прокси-сервера.\n"
-"       --referer=URL          включить заголовок `Referer: URL' в запрос "
-"HTTP.\n"
+"       --referer=URL          включить заголовок `Referer: URL' в запрос HTTP.\n"
 "  -s,  --save-headers         сохранять заголовки HTTP в файл.\n"
 "  -U,  --user-agent=СТРОКА    задать имя агента СТРОКА вместо Wget/ВЕРСИЯ.\n"
 "\n"
 
 #: src/main.c:174
-#, fuzzy
 msgid ""
 "FTP options:\n"
 "       --retr-symlinks   when recursing, retrieve linked-to files (not "
@@ -787,14 +779,13 @@ msgid ""
 "\n"
 msgstr ""
 "Параметры FTP:\n"
-"       --retr-symlinks   получать по FTP символьные ссылки.\n"
-"  -g,  --glob=on/off     включить или выключить работу с шаблонами в "
-"именах.\n"
+"       --retr-symlinks   получать по FTP целевые файлы вместо символьных ссылок\n"
+"                         при рекурсии (правило не применяется к каталогам).\n"
+"  -g,  --glob=on/off     включить или выключить работу с шаблонами в именах.\n"
 "       --passive-ftp     использовать \"пассивный\" режим передачи.\n"
 "\n"
 
 #: src/main.c:179
-#, fuzzy
 msgid ""
 "Recursive retrieval:\n"
 "  -r,  --recursive             recursive web-suck -- use with care!.\n"
@@ -812,13 +803,11 @@ msgid ""
 msgstr ""
 "Рекурсивное получение файлов:\n"
 "  -r,  --recursive             рекурсивный режим -- пользуйтесь осторожно!.\n"
-"  -l,  --level=ЧИСЛО           макс. глубина рекурсии (0 - бесконечность).\n"
-"       --delete-after          удалить полученные файлы.\n"
+"  -l,  --level=ЧИСЛО           макс. глубина рекурсии (0 - не ограничена).\n"
+"       --delete-after          локальное удаление файлов после их получения.\n"
 "  -k,  --convert-links         перевести абсолютные ссылки в относительные.\n"
-"  -K,  --backup-converted      скопировать X в X.orig перед изменением "
-"ссылок.\n"
-"  -m,  --mirror                включить режимы, полезные для "
-"\"зеркалирования\".\n"
+"  -K,  --backup-converted      скопировать X в X.orig перед изменением ссылок.\n"
+"  -m,  --mirror                краткий синоним для -r -N -l inf -nr.\n"
 "  -nr, --dont-remove-listing   не удалять файлы `.listing'.\n"
 "  -p,  --page-requisites       получать изображения и все прочие файлы,\n"
 "                               необходимые для отображения HTML-страницы.\n"
@@ -877,7 +866,6 @@ msgid "%s: debug support not compiled in.\n"
 msgstr "%s: поддержка отладки не была включена при компиляции.\n"
 
 #: src/main.c:435
-#, fuzzy
 msgid ""
 "Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.\n"
 "This program is distributed in the hope that it will be useful,\n"
@@ -885,20 +873,17 @@ msgid ""
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 msgstr ""
-"Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.\n"
+"Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.\n"
 "Данная программа распространяется в надежде, что она принесет пользу,\n"
 "но БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ; в том числе подразумеваемой гарантии\n"
 "ПОЛЕЗНОСТИ или ПРИГОДНОСТИ ДЛЯ ОПРЕДЕЛЕННОЙ ЦЕЛИ. Для получения более\n"
 "подробной информации смотрите GNU General Public License.\n"
 
 #: src/main.c:441
-#, fuzzy
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
-msgstr ""
-"\n"
-"Первоначально разработано автором: Hrvoje Niksic <hniksic@srce.hr>.\n"
+msgstr "\nПервоначальный разработчик: Hrvoje Niksic <hniksic@arsdigita.com>.\n"
 
 #: src/main.c:515
 #, c-format
@@ -1046,9 +1031,9 @@ msgid "%s: Redirection to itself.\n"
 msgstr "%s: Перенаправление на самого себя.\n"
 
 #: src/retr.c:486
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Redirection cycle detected.\n"
-msgstr "%s: Перенаправление на самого себя.\n"
+msgstr "%s: Замкнутый цикл перенаправлений.\n"
 
 #: src/retr.c:581
 msgid ""
@@ -1112,8 +1097,3 @@ msgstr "Недопустимое имя машины (hostname)"
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Ошибка удаления символьной ссылки `%s': %s\n"
-
-#~ msgid ""
-#~ "Server file no newer than local file `%s.orig' -- not retrieving.\n"
-#~ "\n"
-#~ msgstr "Файл на сервере не новее локального файла `%s.orig' -- пропуск.\n"
