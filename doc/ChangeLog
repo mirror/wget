@@ -1,3 +1,8 @@
+2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.texi (Download Options): Document the new `--progress'
+	option.
+
 2001-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi (Proxies): Fix typo.
