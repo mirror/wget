@@ -1,3 +1,39 @@
+2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* po/da.po: Ditto.
+
+	* po/de.po: Ditto.
+
+	* po/el.po: Ditto.
+
+	* po/es.po: Ditto.
+
+	* po/et.po: Ditto.
+
+	* po/fr.po: Ditto.
+
+	* po/gl.po: Ditto.
+
+	* po/he.po: Ditto.
+
+	* po/ja.po: Ditto.
+
+	* po/pl.po: Ditto.
+
+	* po/sk.po: Ditto.
+
+	* po/sl.po: Ditto.
+
+	* po/sv.po: Ditto.
+
+	* po/tr.po: Ditto.
+
+	* po/zh_TW.po: Update from TP.
+
+	* po/ca.po: Ditto.
+
+	* po/bg.po: New file from TP.
+
 2002-04-15  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* po/hr.po: Editing the Project-Id-Version to say "wget" rather

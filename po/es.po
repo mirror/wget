@@ -17,9 +17,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.8\n"
-"POT-Creation-Date: 2001-12-08 23:28+0100\n"
-"PO-Revision-Date: 2001-12-10 19:39GMT+0200\n"
+"Project-Id-Version: wget 1.8.1\n"
+"POT-Creation-Date: 2001-12-17 16:30+0100\n"
+"PO-Revision-Date: 2001-12-29 19:00GMT+0200\n"
 "Last-Translator: Salvador Gimeno Zanón <salgiza@jazzfree.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -77,37 +77,37 @@ msgstr "Error escribiendo a `%s': %s\n"
 msgid "Error closing `%s': %s\n"
 msgstr "Error cerrando `%s': %s\n"
 
-#: src/ftp-ls.c:787
+#: src/ftp-ls.c:802
 msgid "Unsupported listing type, trying Unix listing parser.\n"
 msgstr "Tipo de listado no soportado, se intentará con el parseador de listados de Unix.\n"
 
-#: src/ftp-ls.c:832 src/ftp-ls.c:834
+#: src/ftp-ls.c:847 src/ftp-ls.c:849
 #, c-format
 msgid "Index of /%s on %s:%d"
 msgstr "Índice de /%s en %s:%d"
 
-#: src/ftp-ls.c:856
+#: src/ftp-ls.c:871
 msgid "time unknown       "
 msgstr "hora desconocida   "
 
-#: src/ftp-ls.c:860
+#: src/ftp-ls.c:875
 msgid "File        "
 msgstr "Fichero     "
 
-#: src/ftp-ls.c:863
+#: src/ftp-ls.c:878
 msgid "Directory   "
 msgstr "Directorio  "
 
-#: src/ftp-ls.c:866
+#: src/ftp-ls.c:881
 msgid "Link        "
 msgstr "Enlace      "
 
 # creo que se refiere al tipo (fichero/directorio/enlace)
-#: src/ftp-ls.c:869
+#: src/ftp-ls.c:884
 msgid "Not sure    "
 msgstr "Ni idea     "
 
-#: src/ftp-ls.c:887
+#: src/ftp-ls.c:902
 #, c-format
 msgid " (%s bytes)"
 msgstr " (%s bytes)"
@@ -204,7 +204,7 @@ msgid "done.    "
 msgstr "hecho.   "
 
 #: src/ftp.c:314 src/ftp.c:449 src/ftp.c:484 src/ftp.c:720 src/ftp.c:768
-#: src/host.c:280
+#: src/host.c:283
 msgid "done.\n"
 msgstr "hecho.\n"
 
@@ -347,7 +347,7 @@ msgstr "(intento:%2d)"
 msgid "%s (%s) - `%s' saved [%ld]\n\n"
 msgstr "%s (%s) - `%s' guardado [%ld]\n\n"
 
-#: src/ftp.c:1160 src/main.c:822 src/recur.c:349 src/retr.c:587
+#: src/ftp.c:1160 src/main.c:819 src/recur.c:349 src/retr.c:587
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Eliminando %s.\n"
@@ -530,12 +530,12 @@ msgstr "%s: opción ilegal -- %c\n"
 msgid "%s: option requires an argument -- %c\n"
 msgstr "%s: la opción requiere un argumento -- %c\n"
 
-#: src/host.c:268
+#: src/host.c:271
 #, c-format
 msgid "Resolving %s... "
 msgstr "Resolviendo %s... "
 
-#: src/host.c:275
+#: src/host.c:278
 #, c-format
 msgid "failed: %s.\n"
 msgstr "falló: %s.\n"
@@ -551,13 +551,18 @@ msgstr "falló: %s.\n"
 # a ser habitual verlo en el software comercial traducido al español, y
 # si no, echa un ojo a los juegos de LucasArts, ... - cll
 #
-#: src/host.c:345
+#: src/host.c:348
 msgid "Host not found"
 msgstr "No se ha encontrado el anfitrión"
 
-#: src/host.c:347
+#: src/host.c:350
 msgid "Unknown error"
 msgstr "Error desconocido"
+
+#: src/html-url.c:336
+#, c-format
+msgid "%s: Cannot resolve incomplete link %s.\n"
+msgstr "%s: no se pudo resolver el enlace incompleto %s.\n"
 
 #. this is fatal
 #: src/http.c:573
@@ -767,52 +772,52 @@ msgstr "%s (%s) - Error de lectura en el byte %ld (%s)."
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr "%s (%s) - Error de lectura en el byte %ld/%ld (%s)."
 
-#: src/init.c:354 src/netrc.c:265
+#: src/init.c:355 src/netrc.c:265
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: No se pudo leer %s (%s).\n"
 
-#: src/init.c:372 src/init.c:378
+#: src/init.c:373 src/init.c:379
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Error en %s en la línea %d.\n"
 
-#: src/init.c:410
+#: src/init.c:411
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: Atención: tanto el fichero wgetrc de usuario como el del sistema apuntan a `%s'.\n"
 
-#: src/init.c:502
+#: src/init.c:503
 #, c-format
 msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr "%s: Error: orden desconocida `%s', valor `%s'.\n"
 
 # ¿No debiera ser la `dirección IP local'? - cll
 # uups - Salva
-#: src/init.c:536
+#: src/init.c:537
 #, c-format
 msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
 msgstr "%s: %s: no se pudo convertir `%s' en una dirección IP.\n"
 
 # Te cambio la `o' antes de `off' por `u' - cll
 #
-#: src/init.c:569
+#: src/init.c:570
 #, c-format
 msgid "%s: %s: Please specify on or off.\n"
 msgstr "%s: %s: por favor, especifique on u off.\n"
 
 # Te cambio la `o' antes de `off' por `u' - cll
-#: src/init.c:613
+#: src/init.c:614
 #, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr "%s: %s: por favor especifique siempre, on, off, o nunca.\n"
 
-#: src/init.c:632 src/init.c:899 src/init.c:978
+#: src/init.c:633 src/init.c:900 src/init.c:981
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: especificación inválida `%s'.\n"
 
-#: src/init.c:788 src/init.c:810 src/init.c:832 src/init.c:858
+#: src/init.c:789 src/init.c:811 src/init.c:833 src/init.c:859
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: especificación inválida `%s'\n"
@@ -821,6 +826,18 @@ msgstr "%s: especificación inválida `%s'\n"
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: tipo de progreso no válido `%s'.\n"
+
+#: src/log.c:641
+#, c-format
+msgid "\n%s received, redirecting output to `%s'.\n"
+msgstr "\n%s recibido, redirigiendo la salida a `%s'.\n"
+
+#. Eek!  Opening the alternate log file has failed.  Nothing we
+#. can do but disable printing completely.
+#: src/log.c:648
+#, c-format
+msgid "%s: %s; disabling logging.\n"
+msgstr "%s: %s; deshabilitando el registro.\n"
 
 #: src/main.c:116
 #, c-format
@@ -1163,7 +1180,7 @@ msgstr "%s: opción ilegal -- `-n%c'\n"
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:634 src/main.c:676 src/main.c:727
+#: src/main.c:634 src/main.c:676 src/main.c:722
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Ejecute `%s --help' para obtener la lista de opciones.\n"
@@ -1171,21 +1188,21 @@ msgstr "Ejecute `%s --help' para obtener la lista de opciones.\n"
 # Como otras veces, te propongo que sustituyas `sacar' por `ofrecer' -
 # cll
 #
-#: src/main.c:707
+#: src/main.c:702
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "No se puede ofrecer información y estar silencioso al mismo tiempo.\n"
 
-#: src/main.c:713
+#: src/main.c:708
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr "No se pueden usar marcas de tiempo y no sobreescribir ficheros al mismo tiempo.\n"
 
 #. No URL specified.
-#: src/main.c:722
+#: src/main.c:717
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: falta la URL\n"
 
-#: src/main.c:837
+#: src/main.c:834
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "No se han encontrado URLs en %s.\n"
@@ -1194,7 +1211,7 @@ msgstr "No se han encontrado URLs en %s.\n"
 # mensajes de ayuda que hay más arriba, y para ser coherente, con lo que
 # allí te sugiero, te propongo ahora también `descargados' - cll
 #
-#: src/main.c:846
+#: src/main.c:843
 #, c-format
 msgid ""
 "\n"
@@ -1208,45 +1225,18 @@ msgstr ""
 # ¡Efectivamente! Ahora lo has puesto tu, ...  `download'=`descarga' -
 # cll
 #
-#: src/main.c:854
+#: src/main.c:851
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "¡Cuota de descarga (%s bytes) EXCEDIDA!\n"
 
-#. Please note that the double `%' in `%%s' is intentional, because
-#. redirect_output passes tmp through printf.
-#: src/main.c:896
-#, c-format
-msgid "%s received, redirecting output to `%%s'.\n"
-msgstr "%s recibido, redirigiendo la salida a `%%s'.\n"
-
-# Nunca debes traducir `background' como `fondo'. Es un término
-# comúnmente aceptado y muy bien comprendido el de `segundo plano'
-#
-# Por otra parte, y simplemente porque me suena mejor, he cambiado
-# `parar' por `detener', ... ¡Es una pijada!, lo sé, lo sé, ... :) - cll
-#
-#: src/mswindows.c:106
-#, c-format
-msgid ""
-"\n"
-"CTRL+Break received, redirecting output to `%s'.\n"
-"Execution continued in background.\n"
-"You may stop Wget by pressing CTRL+ALT+DELETE.\n"
-msgstr ""
-"\n"
-"CTRL+Break recibido, redirigiendo la salida a `%s'.\n"
-"La ejecución continúa en segundo plano.\n"
-"Puede parar Wget presionando CTRL+ALT+Supr.\n"
-
 # Lo mismo que antes, ... `background' es `segundo plano' - cll
 #
-#. parent, no error
-#: src/mswindows.c:123 src/utils.c:467
+#: src/mswindows.c:120
 msgid "Continuing in background.\n"
 msgstr "Continuando en segundo plano.\n"
 
-#: src/mswindows.c:125 src/utils.c:469
+#: src/mswindows.c:122 src/utils.c:457
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "La salida será escrita en `%s'.\n"
@@ -1255,7 +1245,7 @@ msgstr "La salida será escrita en `%s'.\n"
 # parece `iniciando'? Es lo mismo pero es un término más común en
 # informática, ... - cll
 #
-#: src/mswindows.c:205
+#: src/mswindows.c:202
 #, c-format
 msgid "Starting WinHelp %s\n"
 msgstr "Iniciando WinHelp %s\n"
@@ -1265,7 +1255,7 @@ msgstr "Iniciando WinHelp %s\n"
 # Si, este es uno de esos casos que se dan por imposibles ya, ... Todo
 # el mundo utilizamos `socket' "asinque" nada, ... - cll
 #
-#: src/mswindows.c:232 src/mswindows.c:239
+#: src/mswindows.c:229 src/mswindows.c:236
 #, c-format
 msgid "%s: Couldn't find usable socket driver.\n"
 msgstr "%s: No se ha podido encontrar un controlador de `socket' utilizable\n"
@@ -1324,12 +1314,12 @@ msgstr "El estilo de la pantalla '%s' no es válido; se utilizará el predetermina
 msgid "Removing %s since it should be rejected.\n"
 msgstr "Eliminando %s puesto que debería ser rechazado.\n"
 
-#: src/recur.c:916
+#: src/recur.c:935
 #, c-format
 msgid "Converted %d files in %.2f seconds.\n"
 msgstr "%d ficheros convertidos en %.2f segundos.\n"
 
-#: src/res.c:541
+#: src/res.c:540
 msgid "Loading robots.txt; please ignore errors.\n"
 msgstr "Cargando robots.txt; por favor ignore los errores.\n"
 
@@ -1368,36 +1358,40 @@ msgstr "Abandonando.\n\n"
 msgid "Retrying.\n\n"
 msgstr "Reintentando.\n\n"
 
-#: src/url.c:1748
+#: src/url.c:1875
 #, c-format
 msgid "Converting %s... "
 msgstr "Convirtiendo %s... "
 
-#: src/url.c:1761
+#: src/url.c:1888
 msgid "nothing to do.\n"
 msgstr "no hay nada que hacer.\n"
 
-#: src/url.c:1769 src/url.c:1793
+#: src/url.c:1896 src/url.c:1920
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "No se han podido convertir los enlaces en %s: %s\n"
 
-#: src/url.c:1784
+#: src/url.c:1911
 #, c-format
 msgid "Unable to delete `%s': %s\n"
 msgstr "No se ha borrar `%s': %s\n"
 
-#: src/url.c:1990
+#: src/url.c:2117
 #, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "No se pudo hacer una copia de seguridad de %s como %s: %s\n"
 
-#: src/utils.c:102
+#: src/utils.c:90
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: no hay suficiente memoria.\n"
 
-#: src/utils.c:667
+# Lo mismo que antes, ... `background' es `segundo plano' - cll
+msgid "Continuing in background, pid %d.\n"
+msgstr "Continuando en segundo plano, pid %d.\n"
+
+#: src/utils.c:499
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "No se ha podido deshacer el enlace simbólico `%s': %s\n"
