@@ -43,16 +43,6 @@ so, delete this exception statement from your version.  */
 #endif
 #include <errno.h>
 
-#ifdef WINDOWS
-# include <winsock.h>
-#else
-# include <sys/socket.h>
-# include <netinet/in.h>
-#ifndef __BEOS__
-# include <arpa/inet.h>
-#endif
-#endif
-
 #ifdef HAVE_PWD_H
 # include <pwd.h>
 #endif
