@@ -1,5 +1,11 @@
 2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* ftp.c (getftp): When PWD fails, assume "/".
+
+	* ftp-basic.c (ftp_syst): Fix indentation.
+
+2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (get_urls_file): If opt.base_href is specified, merge each
 	URL with the base.
 

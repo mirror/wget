@@ -550,6 +550,7 @@ ftp_syst (struct rbuf *rbuf, enum stype *server_type)
       return WRITEFAILED;
     }
   xfree (request);
+
   /* Get appropriate response.  */
   err = ftp_response (rbuf, &respline);
   if (err != FTPOK)
@@ -572,17 +573,14 @@ ftp_syst (struct rbuf *rbuf, enum stype *server_type)
 
   if (!strcasecmp (request, "VMS"))
     *server_type = ST_VMS;
+  else if (!strcasecmp (request, "UNIX"))
+    *server_type = ST_UNIX;
+  else if (!strcasecmp (request, "WINDOWS_NT"))
+    *server_type = ST_WINNT;
+  else if (!strcasecmp (request, "MACOS"))
+    *server_type = ST_MACOS;
   else
-    if (!strcasecmp (request, "UNIX"))
-      *server_type = ST_UNIX;
-    else
-      if (!strcasecmp (request, "WINDOWS_NT"))
-        *server_type = ST_WINNT;
-      else
-        if (!strcasecmp (request, "MACOS"))
-          *server_type = ST_MACOS;
-        else
-          *server_type = ST_OTHER;
+    *server_type = ST_OTHER;
 
   xfree (respline);
   /* All OK.  */

@@ -264,7 +264,7 @@ Error in server response, closing control connection.\n"));
 	  abort ();
 	  break;
 	}
-      if (!opt.server_response)
+      if (!opt.server_response && err != FTPSRVERR)
 	logputs (LOG_VERBOSE, _("done.    "));
 
       /* Fourth: Find the initial ftp directory */
@@ -276,13 +276,17 @@ Error in server response, closing control connection.\n"));
       switch (err)
 	{
 	case FTPRERR:
-	case FTPSRVERR :
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
 	  CLOSE (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
+	  break;
+	case FTPSRVERR :
+	  /* PWD unsupported -- assume "/". */
+	  FREE_MAYBE (con->id);
+	  con->id = xstrdup ("/");
 	  break;
 	case FTPOK:
 	  /* Everything is OK.  */
