@@ -398,75 +398,75 @@ hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:C:",
 	{
 	  /* Options without arguments: */
 	case 132:
-	  setval ("spider", "on");
+	  setoptval ("spider", "on");
 	  break;
 	case 133:
-	  setval ("noparent", "on");
+	  setoptval ("noparent", "on");
 	  break;
 	case 136:
-	  setval ("deleteafter", "on");
+	  setoptval ("deleteafter", "on");
 	  break;
 	case 137:
-	  setval ("retrsymlinks", "on");
+	  setoptval ("retrsymlinks", "on");
 	  break;
 	case 138:
-	  setval ("ignorelength", "on");
+	  setoptval ("ignorelength", "on");
 	  break;
 	case 139:
-	  setval ("passiveftp", "on");
+	  setoptval ("passiveftp", "on");
 	  break;
 	case 141:
-	  setval ("noclobber", "on");
+	  setoptval ("noclobber", "on");
 	  break;
 	case 142:
-	  setval ("followftp", "on");
+	  setoptval ("followftp", "on");
 	  break;
 	case 145:
-	  setval ("cutdirs", optarg);
+	  setoptval ("cutdirs", optarg);
 	  break;
 	case 146:
-	  setval ("verbose", "off");
+	  setoptval ("verbose", "off");
 	  break;
 	case 147:
-	  setval ("dirstruct", "off");
+	  setoptval ("dirstruct", "off");
 	  break;
 	case 148:
-	  setval ("addhostdir", "off");
+	  setoptval ("addhostdir", "off");
 	  break;
 	case 149:
-	  setval ("removelisting", "off");
+	  setoptval ("removelisting", "off");
 	  break;
 	case 155:
-	  setval ("bindaddress", optarg);
+	  setoptval ("bindaddress", optarg);
  	  break;
 	case 156:
-	  setval ("httpkeepalive", "off");
+	  setoptval ("httpkeepalive", "off");
 	  break;
 	case 165:
-	  setval ("randomwait", "on");
+	  setoptval ("randomwait", "on");
 	  break;
 	case 'b':
-	  setval ("background", "on");
+	  setoptval ("background", "on");
 	  break;
 	case 'c':
-	  setval ("continue", "on");
+	  setoptval ("continue", "on");
 	  break;
 	case 'd':
 #ifdef DEBUG
-	  setval ("debug", "on");
+	  setoptval ("debug", "on");
 #else  /* not DEBUG */
 	  fprintf (stderr, _("%s: debug support not compiled in.\n"),
 		   exec_name);
 #endif /* not DEBUG */
 	  break;
 	case 'E':
-	  setval ("htmlextension", "on");
+	  setoptval ("htmlextension", "on");
 	  break;
 	case 'F':
-	  setval ("forcehtml", "on");
+	  setoptval ("forcehtml", "on");
 	  break;
 	case 'H':
-	  setval ("spanhosts", "on");
+	  setoptval ("spanhosts", "on");
 	  break;
 	case 'h':
 	  print_help ();
@@ -476,34 +476,34 @@ hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:C:",
 	  exit (0);
 	  break;
 	case 'K':
-	  setval ("backupconverted", "on");
+	  setoptval ("backupconverted", "on");
 	  break;
 	case 'k':
-	  setval ("convertlinks", "on");
+	  setoptval ("convertlinks", "on");
 	  break;
 	case 'L':
-	  setval ("relativeonly", "on");
+	  setoptval ("relativeonly", "on");
 	  break;
 	case 'm':
-	  setval ("mirror", "on");
+	  setoptval ("mirror", "on");
 	  break;
 	case 'N':
-	  setval ("timestamping", "on");
+	  setoptval ("timestamping", "on");
 	  break;
 	case 'p':
-	  setval ("pagerequisites", "on");
+	  setoptval ("pagerequisites", "on");
 	  break;
 	case 'S':
-	  setval ("serverresponse", "on");
+	  setoptval ("serverresponse", "on");
 	  break;
 	case 's':
-	  setval ("saveheaders", "on");
+	  setoptval ("saveheaders", "on");
 	  break;
 	case 'q':
-	  setval ("quiet", "on");
+	  setoptval ("quiet", "on");
 	  break;
 	case 'r':
-	  setval ("recursive", "on");
+	  setoptval ("recursive", "on");
 	  break;
 	case 'V':
 	  printf ("GNU Wget %s\n\n", version_string);
@@ -518,156 +518,141 @@ GNU General Public License for more details.\n"));
 	  exit (0);
 	  break;
 	case 'v':
-	  setval ("verbose", "on");
+	  setoptval ("verbose", "on");
 	  break;
 	case 'x':
-	  setval ("dirstruct", "on");
+	  setoptval ("dirstruct", "on");
 	  break;
 	case 174:
-	  setval ("retryconnrefused", "on");
+	  setoptval ("retryconnrefused", "on");
 	  break;
 	case 177:
-	  setval ("strictcomments", "on");
+	  setoptval ("strictcomments", "on");
 	  break;
 
 	  /* Options accepting an argument: */
 	case 129:
-	  setval ("httpuser", optarg);
+	  setoptval ("httpuser", optarg);
 	  break;
 	case 130:
-	  setval ("httppasswd", optarg);
+	  setoptval ("httppasswd", optarg);
 	  break;
 	case 131:
-	  setval ("header", optarg);
+	  setoptval ("header", optarg);
 	  break;
 	case 134:
-	  setval ("dotstyle", optarg);
+	  setoptval ("dotstyle", optarg);
 	  break;
 	case 135:
-	  setval ("htmlify", optarg);
+	  setoptval ("htmlify", optarg);
 	  break;
 	case 140:
-	  setval ("excludedomains", optarg);
+	  setoptval ("excludedomains", optarg);
 	  break;
 	case 143:
-	  setval ("proxyuser", optarg);
+	  setoptval ("proxyuser", optarg);
 	  break;
 	case 144:
-	  setval ("proxypasswd", optarg);
+	  setoptval ("proxypasswd", optarg);
 	  break;
 	case 151:
-	  setval ("backups", optarg);
+	  setoptval ("backups", optarg);
 	  break;
 	case 152:
-	  setval ("waitretry", optarg);
+	  setoptval ("waitretry", optarg);
 	  break;
 	case 153:
-	  setval ("followtags", optarg);
+	  setoptval ("followtags", optarg);
 	  break;
 	case 160:
-	  setval ("cookies", optarg);
+	  setoptval ("cookies", optarg);
 	  break;
 	case 161:
-	  setval ("loadcookies", optarg);
+	  setoptval ("loadcookies", optarg);
 	  break;
 	case 162:
-	  setval ("savecookies", optarg);
+	  setoptval ("savecookies", optarg);
 	  break;
 	case 163:
-	  setval ("progress", optarg);
+	  setoptval ("progress", optarg);
 	  break;
 	case 164:
-	  setval ("limitrate", optarg);
+	  setoptval ("limitrate", optarg);
 	  break;
 	case 157:
-	  setval ("referer", optarg);
+	  setoptval ("referer", optarg);
 	  break;
 #ifdef HAVE_SSL
 	case 158:
-	  setval ("sslcertfile", optarg);
+	  setoptval ("sslcertfile", optarg);
 	  break;
 	case 159:
-	  setval ("sslcertkey", optarg);
+	  setoptval ("sslcertkey", optarg);
 	  break;
 	case 166:
-	  setval ("egdfile", optarg);
+	  setoptval ("egdfile", optarg);
 	  break;
 	case 169:
-	  setval ("sslcadir", optarg);
+	  setoptval ("sslcadir", optarg);
 	  break;
 	case 170:
-	  setval ("sslcafile", optarg);
+	  setoptval ("sslcafile", optarg);
 	  break;
 	case 171:
-	  setval ("sslcerttype", optarg);
+	  setoptval ("sslcerttype", optarg);
 	  break;
 	case 172:
-	  setval ("sslcheckcert", optarg);
+	  setoptval ("sslcheckcert", optarg);
 	  break;
 	case 173:
-	  setval ("sslprotocol", optarg);
+	  setoptval ("sslprotocol", optarg);
 	  break;
 #endif /* HAVE_SSL */
 	case 167:
-	  setval ("postdata", optarg);
+	  setoptval ("postdata", optarg);
 	  break;
 	case 168:
-	  setval ("postfile", optarg);
+	  setoptval ("postfile", optarg);
 	  break;
 	case 175:
-	  setval ("dnscache", optarg);
+	  setoptval ("dnscache", optarg);
 	  break;
 	case 176:
-	  setval ("restrictfilenames", optarg);
+	  setoptval ("restrictfilenames", optarg);
 	  break;
 	case 'A':
-	  setval ("accept", optarg);
+	  setoptval ("accept", optarg);
 	  break;
 	case 'a':
-	  setval ("logfile", optarg);
+	  setoptval ("logfile", optarg);
 	  append_to_log = 1;
 	  break;
 	case 'B':
-	  setval ("base", optarg);
+	  setoptval ("base", optarg);
 	  break;
 	case 'C':
-	  setval ("cache", optarg);
+	  setoptval ("cache", optarg);
 	  break;
 	case 'D':
-	  setval ("domains", optarg);
+	  setoptval ("domains", optarg);
 	  break;
 	case 'e':
-	  {
-	    char *com, *val;
-	    if (parse_line (optarg, &com, &val))
-	      {
-		if (!setval (com, val))
-		  exit (1);
-	      }
-	    else
-	      {
-		fprintf (stderr, _("%s: %s: invalid command\n"), exec_name,
-			 optarg);
-		exit (1);
-	      }
-	    xfree (com);
-	    xfree (val);
-	  }
+	  run_command (optarg);
 	  break;
 	case 'G':
-	  setval ("ignoretags", optarg);
+	  setoptval ("ignoretags", optarg);
 	  break;
 	case 'g':
-	  setval ("glob", optarg);
+	  setoptval ("glob", optarg);
 	  break;
 	case 'I':
-	  setval ("includedirectories", optarg);
+	  setoptval ("includedirectories", optarg);
 	  break;
 	case 'i':
-	  setval ("input", optarg);
+	  setoptval ("input", optarg);
 	  break;
 	case 'l':
-	  setval ("reclevel", optarg);
+	  setoptval ("reclevel", optarg);
 	  break;
 	case 'n':
 	  {
@@ -678,25 +663,25 @@ GNU General Public License for more details.\n"));
 	      switch (*p)
 		{
 		case 'v':
-		  setval ("verbose", "off");
+		  setoptval ("verbose", "off");
 		  break;
 		case 'H':
-		  setval ("addhostdir", "off");
+		  setoptval ("addhostdir", "off");
 		  break;
 		case 'd':
-		  setval ("dirstruct", "off");
+		  setoptval ("dirstruct", "off");
 		  break;
 		case 'c':
-		  setval ("noclobber", "on");
+		  setoptval ("noclobber", "on");
 		  break;
 		case 'r':
-		  setval ("removelisting", "off");
+		  setoptval ("removelisting", "off");
 		  break;
 		case 'p':
-		  setval ("noparent", "on");
+		  setoptval ("noparent", "on");
 		  break;
 		case 'k':
-		  setval ("httpkeepalive", "off");
+		  setoptval ("httpkeepalive", "off");
 		  break;
 		default:
 		  printf (_("%s: illegal option -- `-n%c'\n"), exec_name, *p);
@@ -708,37 +693,37 @@ GNU General Public License for more details.\n"));
 	    break;
 	  }
 	case 'O':
-	  setval ("outputdocument", optarg);
+	  setoptval ("outputdocument", optarg);
 	  break;
 	case 'o':
-	  setval ("logfile", optarg);
+	  setoptval ("logfile", optarg);
 	  break;
 	case 'P':
-	  setval ("dirprefix", optarg);
+	  setoptval ("dirprefix", optarg);
 	  break;
 	case 'Q':
-	  setval ("quota", optarg);
+	  setoptval ("quota", optarg);
 	  break;
 	case 'R':
-	  setval ("reject", optarg);
+	  setoptval ("reject", optarg);
 	  break;
 	case 'T':
-	  setval ("timeout", optarg);
+	  setoptval ("timeout", optarg);
 	  break;
 	case 't':
-	  setval ("tries", optarg);
+	  setoptval ("tries", optarg);
 	  break;
 	case 'U':
-	  setval ("useragent", optarg);
+	  setoptval ("useragent", optarg);
 	  break;
 	case 'w':
-	  setval ("wait", optarg);
+	  setoptval ("wait", optarg);
 	  break;
 	case 'X':
-	  setval ("excludedirectories", optarg);
+	  setoptval ("excludedirectories", optarg);
 	  break;
 	case 'Y':
-	  setval ("useproxy", optarg);
+	  setoptval ("useproxy", optarg);
 	  break;
 
 	case '?':

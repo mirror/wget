@@ -54,8 +54,9 @@ so, delete this exception statement from your version.  */
 #endif
 
 #ifdef HAVE_PWD_H
-#include <pwd.h>
+# include <pwd.h>
 #endif
+#include <assert.h>
 
 #include "wget.h"
 #include "utils.h"
@@ -105,7 +106,7 @@ CMD_DECLARE (cmd_spec_useragent);
 
 /* List of recognized commands, each consisting of name, closure and function.
    When adding a new command, simply add it to the list, but be sure to keep the
-   list sorted alphabetically, as comind() depends on it.  Also, be sure to add
+   list sorted alphabetically, as findcmd() depends on it.  Also, be sure to add
    any entries that allocate memory (e.g. cmd_string and cmd_vector guys) to the
    cleanup() function below. */
 static struct {
@@ -222,7 +223,7 @@ static struct {
    is not found, -1 is returned.  This function uses binary search.  */
 
 static int
-comind (const char *com)
+findcmd (const char *com)
 {
   int lo = 0, hi = countof (commands) - 1;
 
@@ -376,7 +377,11 @@ wgetrc_file_name (void)
   return file;
 }
 
-/* Initialize variables from a wgetrc file */
+static int parse_line PARAMS ((const char *, char **, char **, int *));
+static int setval_internal PARAMS ((int, const char *, const char *));
+
+/* Initialize variables from a wgetrc file.  */
+
 static void
 run_wgetrc (const char *file)
 {
@@ -396,15 +401,15 @@ run_wgetrc (const char *file)
   while ((line = read_whole_line (fp)))
     {
       char *com, *val;
-      int status;
+      int comind, status;
 
       /* Parse the line.  */
-      status = parse_line (line, &com, &val);
+      status = parse_line (line, &com, &val, &comind);
       xfree (line);
       /* If everything is OK, set the value.  */
       if (status == 1)
 	{
-	  if (!setval (com, val))
+	  if (!setval_internal (comind, com, val))
 	    fprintf (stderr, _("%s: Error in %s at line %d.\n"), exec_name,
 		     file, ln);
 	  xfree (com);
@@ -438,8 +443,8 @@ initialize (void)
   file = wgetrc_file_name ();
   if (!file)
     return;
-  /* #### We should somehow canonicalize `file' and SYSTEM_WGETRC,
-     really.  */
+  /* #### We should canonicalize `file' and SYSTEM_WGETRC with
+     something like realpath() before comparing them with `strcmp'  */
 #ifdef SYSTEM_WGETRC
   if (!strcmp (file, SYSTEM_WGETRC))
     {
@@ -454,6 +459,22 @@ initialize (void)
   return;
 }
 
+/* Remove dashes and underscores from S, modifying S in the
+   process. */
+
+static void
+dehyphen (char *s)
+{
+  char *t = s;			/* t - tortoise */
+  char *h = s;			/* h - hare     */
+  while (*h)
+    if (*h == '_' || *h == '-')
+      ++h;
+    else
+      *t++ = *h++;
+  *t = '\0';
+}
+
 /* Parse the line pointed by line, with the syntax:
    <sp>* command <sp>* = <sp>* value <newline>
    Uses malloc to allocate space for command and value.
@@ -463,84 +484,107 @@ initialize (void)
     1 - success
     0 - failure
    -1 - empty */
-int
-parse_line (const char *line, char **com, char **val)
+
+static int
+parse_line (const char *line, char **com, char **val, int *comind)
 {
-  const char *p = line;
-  const char *orig_comptr, *end;
-  char *new_comptr;
+  const char *p;
+  const char *end = line + strlen (line);
+  const char *cmdstart, *cmdend;
+  const char *valstart, *valend;
 
-  /* Skip whitespace.  */
-  while (*p && ISSPACE (*p))
-    ++p;
+  char *cmdcopy;
+  int ind;
 
-  /* Don't process empty lines.  */
-  if (!*p || *p == '#')
+  /* Skip leading and trailing whitespace.  */
+  while (*line && ISSPACE (*line))
+    ++line;
+  while (end > line && ISSPACE (end[-1]))
+    --end;
+
+  /* Skip empty lines and comments.  */
+  if (!*line || *line == '#')
     return -1;
 
-  for (orig_comptr = p; ISALPHA (*p) || *p == '_' || *p == '-'; p++)
-    ;
-  /* The next char should be space or '='.  */
-  if (!ISSPACE (*p) && (*p != '='))
-    return 0;
-  /* Here we cannot use strdupdelim() as we normally would because we
-     want to skip the `-' and `_' characters in the input string.  */
-  *com = (char *)xmalloc (p - orig_comptr + 1);
-  for (new_comptr = *com; orig_comptr < p; orig_comptr++)
-    {
-      if (*orig_comptr == '_' || *orig_comptr == '-')
-	continue;
-      *new_comptr++ = *orig_comptr;
-    }
-  *new_comptr = '\0';
-  /* If the command is invalid, exit now.  */
-  if (comind (*com) == -1)
-    {
-      xfree (*com);
-      return 0;
-    }
+  p = line;
 
-  /* Skip spaces before '='.  */
-  for (; ISSPACE (*p); p++);
-  /* If '=' not found, bail out.  */
-  if (*p != '=')
-    {
-      xfree (*com);
-      return 0;
-    }
-  /* Skip spaces after '='.  */
-  for (++p; ISSPACE (*p); p++);
-  /* Get the ending position for VAL by starting with the end of the
-     line and skipping whitespace.  */
-  end = line + strlen (line) - 1;
-  while (end > p && ISSPACE (*end))
-    --end;
-  *val = strdupdelim (p, end + 1);
+  cmdstart = p;
+  while (p < end && (ISALPHA (*p) || *p == '_' || *p == '-'))
+    ++p;
+  cmdend = p;
+
+  /* Skip '=', as well as any space before or after it. */
+  while (p < end && ISSPACE (*p))
+    ++p;
+  if (p == end || *p != '=')
+    return 0;
+  ++p;
+  while (p < end && ISSPACE (*p))
+    ++p;
+
+  valstart = p;
+  valend   = end;
+
+  /* The line now known to be syntactically correct.  Check whether
+     the command is valid.  */
+  BOUNDED_TO_ALLOCA (cmdstart, cmdend, cmdcopy);
+  dehyphen (cmdcopy);
+  ind = findcmd (cmdcopy);
+  if (ind == -1)
+    return 0;
+
+  /* The command is valid.  Now fill in the values and report success
+     to the caller.  */
+  *comind = ind;
+  *com = strdupdelim (cmdstart, cmdend);
+  *val = strdupdelim (valstart, valend);
   return 1;
 }
 
-/* Set COM to VAL.  This is the meat behind processing `.wgetrc'.  No
-   fatals -- error signal prints a warning and resets to default
-   value.  All error messages are printed to stderr, *not* to
-   opt.lfile, since opt.lfile wasn't even generated yet.  */
-int
-setval (const char *com, const char *val)
-{
-  int ind;
+/* Run commands[comind].action. */
 
-  if (!com || !val)
-    return 0;
-  ind = comind (com);
-  if (ind == -1)
+static int
+setval_internal (int comind, const char *com, const char *val)
+{
+  assert (0 <= comind && comind < countof (commands));
+  return ((*commands[comind].action) (com, val, commands[comind].closure));
+}
+
+/* Run command COM with value VAL.  If running the command produces an
+   error, report the error and exit.
+
+   This is intended to be called from main() with commands not
+   provided by the user, therefore it aborts when an unknown command
+   is encountered.  Once the COMIND's are exported to init.h, this
+   function will be changed to accept COMIND directly.  */
+
+void
+setoptval (const char *com, const char *val)
+{
+  int comind = findcmd (com);
+  assert (comind != -1);
+  if (!setval_internal (comind, com, val))
+    exit (2);
+}
+
+void
+run_command (const char *opt)
+{
+  char *com, *val;
+  int comind;
+  int status = parse_line (opt, &com, &val, &comind);
+  if (status == 1)
     {
-      /* #### Should I just abort()?  */
-#ifdef DEBUG
-      fprintf (stderr, _("%s: BUG: unknown command `%s', value `%s'.\n"),
-	       exec_name, com, val);
-#endif
-      return 0;
+      if (!setval_internal (comind, com, val))
+	exit (2);
+      xfree (com);
+      xfree (val);
     }
-  return ((*commands[ind].action) (com, val, commands[ind].closure));
+  else if (status == 0)
+    {
+      fprintf (stderr, "Invalid command `%s'\n", opt);
+      exit (2);
+    }
 }
 
 /* Generic helper functions, for use with `commands'. */
@@ -857,7 +901,8 @@ cmd_bytes (const char *com, const char *val, void *closure)
 }
 
 /* Store the value of VAL to *OUT.  The value is a time period, by
-   default expressed in seconds.  */
+   default expressed in seconds, but also accepting suffixes "m", "h",
+   "d", and "w" for minutes, hours, days, and weeks respectively.  */
 
 static int
 cmd_time (const char *com, const char *val, void *closure)

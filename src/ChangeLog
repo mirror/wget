@@ -1,5 +1,20 @@
 2003-09-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c (main): Use setoptval() for setting the options.  Use
+	run_command for `-e'.
+
+	* init.c (parse_line): Rewritten to return COMIND right away.
+	Changed linkage to static.
+	(run_wgetrc): Use the available comind when calling setval, so it
+	doesn't have to be computed twice.
+	(setval_internal): New function, runs the command's action without
+	any error checking.
+	(setoptval): New function, does what setval used to do, but exits
+	in case of error.
+	(run_command): New function.
+
+2003-09-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c (select_fd): Change MAXTIME's type to double.  Handle
 	its decimal part.
 

@@ -31,8 +31,8 @@ so, delete this exception statement from your version.  */
 #define INIT_H
 
 void initialize PARAMS ((void));
-int parse_line PARAMS ((const char *, char **, char **));
-int setval PARAMS ((const char *, const char *));
+void run_command PARAMS ((const char *));
+void setoptval PARAMS ((const char *, const char *));
 char *home_dir PARAMS ((void));
 void cleanup PARAMS ((void));
 
