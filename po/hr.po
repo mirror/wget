@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU Wget 1.8\n"
-"POT-Creation-Date: 2001-12-12 19:32+0100\n"
+"POT-Creation-Date: 2001-12-17 16:30+0100\n"
 "PO-Revision-Date: 1998-02-29 21:05+01:00\n"
 "Last-Translator: Hrvoje Niksic <hniksic@arsdigita.com>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
@@ -1156,12 +1156,12 @@ msgstr ""
 msgid "Removing %s since it should be rejected.\n"
 msgstr "Uklanjam %s buduæi da bi ga trebalo odbiti.\n"
 
-#: src/recur.c:916
+#: src/recur.c:935
 #, c-format
 msgid "Converted %d files in %.2f seconds.\n"
 msgstr "Konvertirao %d spisa za %.2f sekundi.\n"
 
-#: src/res.c:541
+#: src/res.c:540
 msgid "Loading robots.txt; please ignore errors.\n"
 msgstr "Uèitavam robots.txt; molim ne obazirati se na gre¹ke.\n"
 
@@ -1205,26 +1205,26 @@ msgstr ""
 "Poku¹avam ponovo.\n"
 "\n"
 
-#: src/url.c:1745
+#: src/url.c:1875
 #, c-format
 msgid "Converting %s... "
 msgstr "Konvertiram %s... "
 
-#: src/url.c:1758
+#: src/url.c:1888
 msgid "nothing to do.\n"
 msgstr "nema posla.\n"
 
-#: src/url.c:1766 src/url.c:1790
+#: src/url.c:1896 src/url.c:1920
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "Ne mogu konvertirati linkove u %s: %s\n"
 
-#: src/url.c:1781
+#: src/url.c:1911
 #, c-format
 msgid "Unable to delete `%s': %s\n"
 msgstr "Ne mogu izbrisati `%s': %s\n"
 
-#: src/url.c:1987
+#: src/url.c:2117
 #, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Ne mogu snimiti backup iz %s u %s: %s\n"
@@ -1240,7 +1240,7 @@ msgstr "%s: %s: Nema dovoljno memorije.\n"
 msgid "Continuing in background, pid %d.\n"
 msgstr "Nastavljam u pozadini, s pid-jem %d.\n"
 
-#: src/utils.c:619
+#: src/utils.c:499
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Ne mogu izbrisati link `%s': %s\n"
