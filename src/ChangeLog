@@ -1,5 +1,9 @@
 2001-12-17  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* version.c: Wget 1.8.1-pre2 is released.
+
+2001-12-17  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* retr.c (sleep_between_retrievals): Simplify indentation.
 
 2001-12-17  Hrvoje Niksic  <hniksic@arsdigita.com>
