@@ -80,6 +80,9 @@ char *alloca ();
    significant byte first).  */
 #undef WORDS_BIGENDIAN
 
+/* Define to the length of short. */
+#undef SIZEOF_SHORT
+
 /* Define to the length of int. */
 #undef SIZEOF_INT
 
@@ -88,11 +91,6 @@ char *alloca ();
 
 /* Define to the length of long long. */
 #undef SIZEOF_LONG_LONG
-
-#undef HAVE_LONG_LONG
-#if SIZEOF_LONG_LONG != 0
-# define HAVE_LONG_LONG
-#endif
 
 /* Define this if you want the NLS support.  */
 #undef HAVE_NLS

@@ -187,6 +187,9 @@
 /* Define if you have the memmove function */
 #define HAVE_MEMMOVE 1
 
+/* Define to the length of short. */
+#define SIZEOF_SHORT 2
+
 /* Define to the length of int. */
 #define SIZEOF_INT 4
 
@@ -203,4 +206,3 @@
 #define HAVE_U_INT32_T 1
 
 #endif /* CONFIG_H */
-

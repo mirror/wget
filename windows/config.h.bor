@@ -183,6 +183,9 @@
 /* Define if you have the isatty function.  */
 #define HAVE_ISATTY
 
+/* Define to the length of short. */
+#define SIZEOF_SHORT 2
+
 /* Define to the length of int. */
 #define SIZEOF_INT 4
 

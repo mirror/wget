@@ -107,7 +107,7 @@
 #define LDOUBLE double
 #endif
 
-#ifdef HAVE_LONG_LONG
+#if SIZEOF_LONG_LONG != 0
 # define LLONG long long
 #else
 # define LLONG long
@@ -849,7 +849,7 @@ int main (void)
     NULL
   };
   long int_nums[] = { -1, 134, 91340, 341, 0203, 0};
-#ifdef HAVE_LONG_LONG
+#if SIZEOF_LONG_LONG != 0
   char *llong_fmt[] = {
     "%lld",		"%llu",
     "%-1.5lld",		"%-1.5llu",
@@ -905,7 +905,7 @@ int main (void)
       num++;
     }
 
-#ifdef HAVE_LONG_LONG
+#if SIZEOF_LONG_LONG != 0
   for (x = 0; llong_fmt[x] != NULL ; x++)
     for (y = 0; llong_nums[y] != 0 ; y++)
     {

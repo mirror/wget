@@ -129,23 +129,19 @@ do {						\
 } while (0)
 
 /* Define a large ("very long") type useful for storing large
-   non-negative quantities that exceed sizes of normal download, such
-   as the *total* number of bytes downloaded.  To fit today's needs,
-   this needs to be an integral type at least 64 bits wide.  On the
-   machines where `long' is 64-bit, we use long.  Otherwise, we check
-   whether `long long' is available and if yes, use that.  If long
-   long is unavailable, we give up and just use `long'.
+   non-negative quantities that exceed sizes of normal download.  Note
+   that this has nothing to do with large file support.  For example,
+   one should be able to say `--quota=10G', large files
+   notwithstanding.
 
-   This check could be smarter and moved to configure, which could
-   check for a bunch of non-standard types such as uint64_t.  But I
-   don't see the need for it -- the current test will work on all
-   modern architectures, and if it fails, nothing bad happens, we just
-   end up with long.
+   On the machines where `long' is 64-bit, we use long.  Otherwise, we
+   check whether `long long' is available and if yes, use that.  If
+   long long is unavailable, we give up and just use `long'.
 
    Note: you cannot use VERY_LONG_TYPE along with printf().  When you
    need to print it, use very_long_to_string().  */
 
-#if (SIZEOF_LONG >= 8) || !defined(HAVE_LONG_LONG)
+#if SIZEOF_LONG >= 8 || SIZEOF_LONG_LONG == 0
 /* either long is "big enough", or long long is unavailable which
    leaves long as the only choice. */ 
 # define VERY_LONG_TYPE   unsigned long
@@ -243,7 +239,10 @@ void *memcpy ();
 int fnmatch ();
 #endif
 
-/* Provide 32-bit types for the code that really needs it.  */
+/* Provide 32-bit types.  Most code shouldn't care, but there is code
+   that really needs a 32-bit integral type.  If int32_t and u_int32_t
+   are present, we use them, otherwise we pick one of int/short/long,
+   and throw an error if none of them works.  */
 
 #ifndef HAVE_INT32_T
 # if SIZEOF_INT == 4
@@ -252,7 +251,11 @@ typedef int int32_t;
 #  if SIZEOF_LONG == 4
 typedef long int32_t;
 #  else
-     "Cannot determine a 32-bit type"
+#   if SIZEOF_SHORT == 4
+typedef short int32_t;
+#   else
+ #error "Cannot determine a 32-bit type"
+#   endif
 #  endif
 # endif
 #endif
@@ -264,7 +267,11 @@ typedef unsigned int u_int32_t;
 #  if SIZEOF_LONG == 4
 typedef unsigned long u_int32_t;
 #  else
-     "Cannot determine a 32-bit type"
+#   if SIZEOF_SHORT == 4
+typedef unsigned short u_int32_t;
+#   else
+ #error "Cannot determine a 32-bit type"
+#   endif
 #  endif
 # endif
 #endif
