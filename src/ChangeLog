@@ -1,3 +1,8 @@
+2002-01-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* http.c (gethttp): Invalidate SOCK if get_contents encountered an
+	error.
+
 2001-12-24  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* version.c: Wget 1.8.1 is released.

@@ -1357,6 +1357,11 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
 			  (contlen != -1 ? contlen : 0),
 			  &rbuf, keep_alive, &hs->dltime);
 
+  if (hs->res >= 0)
+    CLOSE_FINISH (sock);
+  else
+    CLOSE_INVALIDATE (sock);
+
   {
     /* Close or flush the file.  We have to be careful to check for
        error here.  Checking the result of fwrite() is not enough --
@@ -1370,7 +1375,6 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
       hs->res = -2;
   }
   FREE_MAYBE (all_headers);
-  CLOSE_FINISH (sock);
   if (hs->res == -2)
     return FWRITEERR;
   return RETRFINISHED;
