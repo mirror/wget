@@ -746,13 +746,32 @@ register_download (const char *url, const char *file)
       dissociate_urls_from_file (file);
     }
 
+  hash_table_put (dl_file_url_map, xstrdup (file), xstrdup (url));
+
+ url_only:
   /* A URL->FILE mapping is not possible without a FILE->URL mapping.
      If the latter were present, it should have been removed by the
-     above `if'.  */
-  assert (!hash_table_contains (dl_url_file_map, url));
+     above `if'.  So we could write:
 
-  hash_table_put (dl_file_url_map, xstrdup (file), xstrdup (url));
- url_only:
+         assert (!hash_table_contains (dl_url_file_map, url));
+
+     The above is correct when running in recursive mode where the
+     same URL always resolves to the same file.  But if you do
+     something like:
+
+         wget URL URL
+
+     then the first URL will resolve to "FILE", and the other to
+     "FILE.1".  In that case, FILE.1 will not be found in
+     dl_file_url_map, but URL will still point to FILE in
+     dl_url_file_map.  */
+  if (hash_table_get_pair (dl_url_file_map, url, &old_url, &old_file))
+    {
+      hash_table_remove (dl_url_file_map, url);
+      xfree (old_url);
+      xfree (old_file);
+    }
+
   hash_table_put (dl_url_file_map, xstrdup (url), xstrdup (file));
 }
 

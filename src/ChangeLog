@@ -1,5 +1,10 @@
 2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* recur.c (register_download): Don't abort when one URL references
+	two different files.
+
+2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* http.c (gethttp): Check for conn->scheme, not u->scheme, before
 	calling ssl_iwrite.
 
