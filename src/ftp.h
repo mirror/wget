@@ -104,9 +104,7 @@ enum wget_ftp_command
   DO_CWD        = 0x0002,	/* Change current directory.  */
   DO_RETR       = 0x0004,	/* Retrieve the file.  */
   DO_LIST       = 0x0008,	/* Retrieve the directory list.  */
-  LEAVE_PENDING = 0x0010,	/* Do not close the socket.  */
-  NO_TRUNCATE	= 0x0020	/* Don't truncate the file if REST
-				   malfunctions. */
+  LEAVE_PENDING = 0x0010	/* Do not close the socket.  */
 };
 
 enum wget_ftp_fstatus

@@ -1,6 +1,5 @@
 /* HTTP support.
-   Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001, 2002
-   Free Software Foundation, Inc.
+   Copyright (C) 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -76,6 +75,9 @@ extern int errno;
 extern char *version_string;
 extern LARGE_INT total_downloaded_bytes;
 
+extern FILE *output_stream;
+extern int output_stream_regular;
+
 #ifndef MIN
 # define MIN(x, y) ((x) > (y) ? (y) : (x))
 #endif
@@ -114,6 +116,7 @@ struct cookie_jar *wget_cookie_jar;
 #define HTTP_STATUS_UNAUTHORIZED	401
 #define HTTP_STATUS_FORBIDDEN		403
 #define HTTP_STATUS_NOT_FOUND		404
+#define HTTP_STATUS_RANGE_NOT_SATISFIABLE 416
 
 /* Server errors 5xx.  */
 #define HTTP_STATUS_INTERNAL		500
@@ -978,8 +981,6 @@ struct http_stat
   char *error;			/* textual HTTP error */
   int statcode;			/* status code */
   double dltime;		/* time of the download in msecs */
-  int no_truncate;		/* whether truncating the file is
-				   forbidden. */
   const char *referer;		/* value of the referer header. */
   char **local_file;		/* local file. */
 };
@@ -1035,6 +1036,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   FILE *fp;
 
   int sock = -1;
+  int flags;
 
   /* Whether authorization has been already tried. */
   int auth_tried_already = 0;
@@ -1617,68 +1619,28 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	}
     }
 
-  if (contrange == 0 && hs->restval > 0)
+  if (statcode == HTTP_STATUS_RANGE_NOT_SATISFIABLE)
     {
-      /* The download starts from the beginning, presumably because
-	 the server did not honor our `Range' request.  Normally we'd
-	 just reset hs->restval and start the download from
-	 scratch.  */
-
-      /* However, if `-c' is used, we need to be a bit more careful:
-
-         1. If `-c' is specified and the file already existed when
-         Wget was started, it would be a bad idea to start downloading
-         it from scratch, effectively truncating the file.
-
-	 2. If `-c' is used on a file that is already fully
-	 downloaded, we're requesting bytes after the end of file,
-	 which can result in the server not honoring `Range'.  If this
-	 is the case, `Content-Length' will be equal to the length of
-	 the file.  */
-      if (opt.always_rest)
-	{
-	  /* Check for condition #2. */
-	  if (contlen != -1              /* we got content-length. */
-	      && hs->restval >= contlen  /* file fully downloaded
-					    or has shrunk.  */
-	      )
-	    {
-	      logputs (LOG_VERBOSE, _("\
+      /* If `-c' is in use and the file has been fully downloaded (or
+	 the remote file has shrunk), Wget effectively requests bytes
+	 after the end of file and the server response with 416.  */
+      logputs (LOG_VERBOSE, _("\
 \n    The file is already fully retrieved; nothing to do.\n\n"));
-	      /* In case the caller inspects. */
-	      hs->len = contlen;
-	      hs->res = 0;
-	      /* Mark as successfully retrieved. */
-	      *dt |= RETROKF;
-	      xfree_null (type);
-	      CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
-					   might be more bytes in the body. */
-	      return RETRUNNEEDED;
-	    }
-
-	  /* Check for condition #1. */
-	  if (hs->no_truncate)
-	    {
-	      logprintf (LOG_NOTQUIET,
-			 _("\
-\n\
-Continued download failed on this file, which conflicts with `-c'.\n\
-Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
-	      xfree_null (type);
-	      CLOSE_INVALIDATE (sock); /* see above */
-	      return CONTNOTSUPPORTED;
-	    }
-
-	  /* Fallthrough */
-	}
-
-      hs->restval = 0;
+      /* In case the caller inspects. */
+      hs->len = contlen;
+      hs->res = 0;
+      /* Mark as successfully retrieved. */
+      *dt |= RETROKF;
+      xfree_null (type);
+      CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
+				   might be more bytes in the body. */
+      return RETRUNNEEDED;
     }
-  else if (contrange != hs->restval ||
-	   (H_PARTIAL (statcode) && contrange == -1))
+  if ((contrange != 0 && contrange != hs->restval)
+      || (H_PARTIAL (statcode) && !contrange))
     {
-      /* This means the whole request was somehow misunderstood by the
-	 server.  Bail out.  */
+      /* The Range request was somehow misunderstood by the server.
+	 Bail out.  */
       xfree_null (type);
       CLOSE_INVALIDATE (sock);
       return RANGEERR;
@@ -1727,7 +1689,7 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
     }
 
   /* Open the local file.  */
-  if (!opt.dfp)
+  if (!output_stream)
     {
       mkalldirs (*hs->local_file);
       if (opt.backups)
@@ -1736,53 +1698,27 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
       if (!fp)
 	{
 	  logprintf (LOG_NOTQUIET, "%s: %s\n", *hs->local_file, strerror (errno));
-	  CLOSE_INVALIDATE (sock); /* would be CLOSE_FINISH, but there
-				      might be more bytes in the body. */
+	  CLOSE_INVALIDATE (sock);
 	  return FOPENERR;
 	}
     }
-  else				/* opt.dfp */
-    {
-      extern int global_download_count;
-      fp = opt.dfp;
-      /* To ensure that repeated "from scratch" downloads work for -O
-	 files, we rewind the file pointer, unless restval is
-	 non-zero.  (This works only when -O is used on regular files,
-	 but it's still a valuable feature.)
+  else
+    fp = output_stream;
 
-	 However, this loses when more than one URL is specified on
-	 the command line the second rewinds eradicates the contents
-	 of the first download.  Thus we disable the above trick for
-	 all the downloads except the very first one.
-
-         #### A possible solution to this would be to remember the
-	 file position in the output document and to seek to that
-	 position, instead of rewinding.
-
-         We don't truncate stdout, since that breaks
-	 "wget -O - [...] >> foo".
-      */
-      if (!hs->restval && global_download_count == 0 && opt.dfp != stdout)
-	{
-	  /* This will silently fail for streams that don't correspond
-	     to regular files, but that's OK.  */
-	  rewind (fp);
-	  /* ftruncate is needed because opt.dfp is opened in append
-	     mode if opt.always_rest is set.  */
-	  ftruncate (fileno (fp), 0);
-	  clearerr (fp);
-	}
-    }
-
-  /* #### This confuses the code that checks for file size.  There
-     should be some overhead information.  */
+  /* #### This confuses the timestamping code that checks for file
+     size.  Maybe we should save some additional information?  */
   if (opt.save_headers)
     fwrite (head, 1, strlen (head), fp);
 
   /* Download the request body.  */
-  hs->res = fd_read_body (sock, fp, contlen != -1 ? contlen : 0, keep_alive,
-			  hs->restval, &hs->len, &hs->dltime);
-  hs->len += contrange;
+  flags = 0;
+  if (keep_alive)
+    flags |= rb_read_exactly;
+  if (hs->restval > 0 && contrange == 0)
+    flags |= rb_skip_startpos;
+  hs->res = fd_read_body (sock, fp, contlen != -1 ? contlen : 0,
+			  hs->restval, &hs->len, &hs->dltime, flags);
+  hs->len += hs->restval;
 
   if (hs->res >= 0)
     CLOSE_FINISH (sock);
@@ -1794,7 +1730,7 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
        error here.  Checking the result of fwrite() is not enough --
        errors could go unnoticed!  */
     int flush_res;
-    if (!opt.dfp)
+    if (!output_stream)
       flush_res = fclose (fp);
     else
       flush_res = fflush (fp);
@@ -1846,6 +1782,8 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
      shows up in CGI paths a *lot*.  */
   if (strchr (u->url, '*'))
     logputs (LOG_VERBOSE, _("Warning: wildcards not supported in HTTP.\n"));
+
+  xzero (hstat);
 
   /* Determine the local filename.  */
   if (local_file && *local_file)
@@ -1947,7 +1885,7 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
     }
   /* Reset the counter.  */
   count = 0;
-  *dt = 0 | ACCEPTRANGES;
+  *dt = 0;
   /* THE loop */
   do
     {
@@ -1979,21 +1917,15 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	*dt |= HEAD_ONLY;
       else
 	*dt &= ~HEAD_ONLY;
-      /* Assume no restarting.  */
-      hstat.restval = 0L;
-      /* Decide whether or not to restart.  */
-      if (((count > 1 && (*dt & ACCEPTRANGES)) || opt.always_rest)
-	  /* #### this calls access() and then stat(); could be optimized. */
-	  && file_exists_p (locf))
-	if (stat (locf, &st) == 0 && S_ISREG (st.st_mode))
-	  hstat.restval = st.st_size;
 
-      /* In `-c' is used and the file is existing and non-empty,
-	 refuse to truncate it if the server doesn't support continued
-	 downloads.  */
-      hstat.no_truncate = 0;
-      if (opt.always_rest && hstat.restval)
-	hstat.no_truncate = 1;
+      /* Decide whether or not to restart.  */
+      hstat.restval = 0;
+      if (count > 1)
+	hstat.restval = hstat.len; /* continue where we left off */
+      else if (opt.always_rest
+	       && stat (locf, &st) == 0
+	       && S_ISREG (st.st_mode))
+	hstat.restval = st.st_size;
 
       /* Decide whether to send the no-cache directive.  We send it in
 	 two cases:
@@ -2171,7 +2103,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	  const char *fl = NULL;
 	  if (opt.output_document)
 	    {
-	      if (opt.od_known_regular)
+	      if (output_stream_regular)
 		fl = opt.output_document;
 	    }
 	  else

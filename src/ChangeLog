@@ -1,5 +1,25 @@
 2003-11-30  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* retr.c (fd_read_body): Report the amount of data *written* as
+	amount_read.  This is not entirely logical, but that's what the
+	callers expect, and it's not easy to change.
+
+	* ftp.c (ftp_loop_internal): Ditto.
+
+	* http.c (http_loop): Be smarter about assigning restval; if we're
+	in the nth pass of a download, simply use the information we have
+	about how much data has been retrieved as restval.
+
+	* ftp.c (getftp): Ditto for FTP "REST" command.
+
+	* http.c (gethttp): When the server doesn't respect range, skip
+	the first RESTVAL bytes of the read body.  Never truncate the
+	output file.
+
+	* retr.c (fd_read_body): Support skipping initial STARTPOS octets.
+
+2003-11-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (skip_short_body): Renamed skip_body to skip_short_body;
 	don't bother calling fd_read_body.
 

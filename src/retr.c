@@ -63,12 +63,16 @@ so, delete this exception statement from your version.  */
 extern int errno;
 #endif
 
-/* See the comment in gethttp() why this is needed. */
-int global_download_count;
-
 /* Total size of downloaded files.  Used to enforce quota.  */
 LARGE_INT total_downloaded_bytes;
 
+/* If non-NULL, the stream to which output should be written.  This
+   stream is initialized when `-O' is used.  */
+FILE *output_stream;
+
+/* Whether output_document is a regular file we can manipulate,
+   i.e. not `-' or a device file. */
+int output_stream_regular;
 
 static struct {
   long chunk_bytes;
@@ -133,18 +137,51 @@ limit_bandwidth (long bytes, struct wget_timer *timer)
 # define MIN(i, j) ((i) <= (j) ? (i) : (j))
 #endif
 
+/* Write data in BUF to OUT.  However, if *SKIP is non-zero, skip that
+   amount of data and decrease SKIP.  Increment *TOTAL by the amount
+   of data written.  */
+
+static int
+write_data (FILE *out, const char *buf, int bufsize, long *skip,
+	    long *transferred)
+{
+  if (!out)
+    return 1;
+  if (*skip > bufsize)
+    {
+      *skip -= bufsize;
+      return 1;
+    }
+  if (*skip)
+    {
+      buf += *skip;
+      bufsize -= *skip;
+      *skip = 0;
+      if (bufsize == 0)
+	return 1;
+    }
+  *transferred += bufsize;
+  fwrite (buf, 1, bufsize, out);
+
+  /* Immediately flush the downloaded data.  This should not hinder
+     performance: fast downloads will arrive in large 16K chunks
+     (which stdio would write out immediately anyway), and slow
+     downloads wouldn't be limited by disk speed.  */
+  fflush (out);
+  return !ferror (out);
+}
+
 /* Read the contents of file descriptor FD until it the connection
    terminates or a read error occurs.  The data is read in portions of
    up to 16K and written to OUT as it arrives.  If opt.verbose is set,
    the progress is shown.
 
    TOREAD is the amount of data expected to arrive, normally only used
-   by the progress gauge.  However, if EXACT is set, no more than
-   TOREAD octets will be read.
+   by the progress gauge.
 
    STARTPOS is the position from which the download starts, used by
    the progress gauge.  The amount of data read gets stored to
-   *AMOUNT_READ.  The time it took to download the data (in
+   *TRANSFERRED.  The time it took to download the data (in
    milliseconds) is stored to *ELAPSED.
 
    The function exits and returns the amount of data read.  In case of
@@ -152,8 +189,8 @@ limit_bandwidth (long bytes, struct wget_timer *timer)
    writing data, -2 is returned.  */
 
 int
-fd_read_body (int fd, FILE *out, long toread, int exact, long startpos,
-	      long *amount_read, double *elapsed)
+fd_read_body (int fd, FILE *out, long toread, long startpos,
+	      long *transferred, double *elapsed, int flags)
 {
   int ret = 0;
 
@@ -172,11 +209,22 @@ fd_read_body (int fd, FILE *out, long toread, int exact, long startpos,
      data arrives slowly. */
   int progress_interactive = 0;
 
-  *amount_read = 0;
+  int exact = flags & rb_read_exactly;
+  long skip = 0;
+
+  /* How much data we've read.  This is used internally and is
+     unaffected by skipping STARTPOS.  */
+  long total_read = 0;
+
+  *transferred = 0;
+  if (flags & rb_skip_startpos)
+    skip = startpos;
 
   if (opt.verbose)
     {
-      progress = progress_create (startpos, toread);
+      /* If we're skipping STARTPOS bytes, hide it from
+	 progress_create because the indicator can't deal with it.  */
+      progress = progress_create (skip ? 0 : startpos, toread);
       progress_interactive = progress_interactive_p (progress);
     }
 
@@ -203,9 +251,9 @@ fd_read_body (int fd, FILE *out, long toread, int exact, long startpos,
      means that it is unknown how much data is to arrive.  However, if
      EXACT is set, then toread==0 means what it says: that no data
      should be read.  */
-  while (!exact || (*amount_read < toread))
+  while (!exact || (total_read < toread))
     {
-      int rdsize = exact ? MIN (toread - *amount_read, dlbufsize) : dlbufsize;
+      int rdsize = exact ? MIN (toread - total_read, dlbufsize) : dlbufsize;
       double tmout = opt.read_timeout;
       if (progress_interactive)
 	{
@@ -241,15 +289,10 @@ fd_read_body (int fd, FILE *out, long toread, int exact, long startpos,
 	    last_successful_read_tm = wtimer_read (timer);
 	}
 
-      if (ret > 0 && out != NULL)
+      if (ret > 0)
 	{
-	  fwrite (dlbuf, 1, ret, out);
-	  /* Immediately flush the downloaded data.  This should not
-	     hinder performance: fast downloads will arrive in large
-	     16K chunks (which stdio would write out anyway), and slow
-	     downloads wouldn't be limited by disk speed.  */
-	  fflush (out);
-	  if (ferror (out))
+	  total_read += ret;
+	  if (!write_data (out, dlbuf, ret, &skip, transferred))
 	    {
 	      ret = -2;
 	      goto out;
@@ -259,13 +302,12 @@ fd_read_body (int fd, FILE *out, long toread, int exact, long startpos,
       if (opt.limit_rate)
 	limit_bandwidth (ret, timer);
 
-      *amount_read += ret;
       if (progress)
 	progress_update (progress, ret, wtimer_read (timer));
 #ifdef WINDOWS
       if (toread > 0)
 	ws_percenttitle (100.0 *
-			 (startpos + *amount_read) / (startpos + toread));
+			 (startpos + total_read) / (startpos + toread));
 #endif
     }
   if (ret < -1)
@@ -713,7 +755,6 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       xfree (url);
     }
 
-  ++global_download_count;
   RESTORE_POST_DATA;
 
   return result;

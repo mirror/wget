@@ -30,12 +30,18 @@ so, delete this exception statement from your version.  */
 #ifndef RETR_H
 #define RETR_H
 
+/* Flags for fd_read_body. */
+enum {
+  rb_read_exactly  = 1,
+  rb_skip_startpos = 2
+};
+
+int fd_read_body PARAMS ((int, FILE *, long, long, long *, double *, int));
+
 typedef const char *(*hunk_terminator_t) PARAMS ((const char *, int, int));
 
 char *fd_read_hunk PARAMS ((int, hunk_terminator_t, int));
 char *fd_read_line PARAMS ((int));
-
-int fd_read_body PARAMS ((int, FILE *, long, int, long, long *, double *));
 
 uerr_t retrieve_url PARAMS ((const char *, char **, char **,
 			     const char *, int *));

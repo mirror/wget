@@ -66,6 +66,9 @@ extern LARGE_INT total_downloaded_bytes;
 
 extern char ftp_last_respline[];
 
+extern FILE *output_stream;
+extern int output_stream_regular;
+
 typedef struct
 {
   int st;			/* connection status */
@@ -241,6 +244,8 @@ getftp (struct url *u, long *len, long restval, ccon *con)
   int cmd = con->cmd;
   int pasv_mode_open = 0;
   long expected_bytes = 0L;
+  int rest_failed = 0;
+  int flags;
 
   assert (con != NULL);
   assert (con->target != NULL);
@@ -791,22 +796,8 @@ Error in server response, closing control connection.\n"));
 	  return err;
 	  break;
 	case FTPRESTFAIL:
-	  /* If `-c' is specified and the file already existed when
-	     Wget was started, it would be a bad idea for us to start
-	     downloading it from scratch, effectively truncating it.  */
-	  if (opt.always_rest && (cmd & NO_TRUNCATE))
-	    {
-	      logprintf (LOG_NOTQUIET,
-			 _("\nREST failed; will not truncate `%s'.\n"),
-			 con->target);
-	      fd_close (csock);
-	      con->csock = -1;
-	      fd_close (dtsock);
-	      fd_close (local_sock);
-	      return CONTNOTSUPPORTED;
-	    }
 	  logputs (LOG_VERBOSE, _("\nREST failed, starting from scratch.\n"));
-	  restval = 0L;
+	  rest_failed = 1;
 	  break;
 	case FTPOK:
 	  /* fine and dandy */
@@ -965,8 +956,8 @@ Error in server response, closing control connection.\n"));
 	}
     }
 
-  /* Open the file -- if opt.dfp is set, use it instead.  */
-  if (!opt.dfp || con->cmd & DO_LIST)
+  /* Open the file -- if output_stream is set, use it instead.  */
+  if (!output_stream || con->cmd & DO_LIST)
     {
       mkalldirs (con->target);
       if (opt.backups)
@@ -986,24 +977,7 @@ Error in server response, closing control connection.\n"));
 	}
     }
   else
-    {
-      extern int global_download_count;
-      fp = opt.dfp;
-
-      /* Rewind the output document if the download starts over and if
-	 this is the first download.  See gethttp() for a longer
-	 explanation.  */
-      if (!restval && global_download_count == 0 && opt.dfp != stdout)
-	{
-	  /* This will silently fail for streams that don't correspond
-	     to regular files, but that's OK.  */
-	  rewind (fp);
-	  /* ftruncate is needed because opt.dfp is opened in append
-	     mode if opt.always_rest is set.  */
-	  ftruncate (fileno (fp), 0);
-	  clearerr (fp);
-	}
-    }
+    fp = output_stream;
 
   if (*len)
     {
@@ -1023,9 +997,12 @@ Error in server response, closing control connection.\n"));
     }
 
   /* Get the contents of the document.  */
+  flags = 0;
+  if (restval && rest_failed)
+    flags |= rb_skip_startpos;
   res = fd_read_body (dtsock, fp,
 		      expected_bytes ? expected_bytes - restval : 0,
-		      0, restval, len, &con->dltime);
+		      restval, len, &con->dltime, flags);
   *len += restval;
 
   tms = time_str (NULL);
@@ -1039,7 +1016,7 @@ Error in server response, closing control connection.\n"));
        error here.  Checking the result of fwrite() is not enough --
        errors could go unnoticed!  */
     int flush_res;
-    if (!opt.dfp || con->cmd & DO_LIST)
+    if (!output_stream || con->cmd & DO_LIST)
       flush_res = fclose (fp);
     else
       flush_res = fflush (fp);
@@ -1105,8 +1082,8 @@ Error in server response, closing control connection.\n"));
 
   if (!(cmd & LEAVE_PENDING))
     {
-      /* I should probably send 'QUIT' and check for a reply, but this
-	 is faster.  #### Is it OK, though?  */
+      /* Closing the socket is faster than sending 'QUIT' and the
+	 effect is the same.  */
       fd_close (csock);
       con->csock = -1;
     }
@@ -1144,7 +1121,7 @@ static uerr_t
 ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 {
   int count, orig_lp;
-  long restval, len;
+  long restval, len = 0;
   char *tms, *locf;
   char *tmrate = NULL;
   uerr_t err;
@@ -1202,20 +1179,14 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	    con->cmd |= DO_CWD;
 	}
 
-      /* Assume no restarting.  */
-      restval = 0L;
-      if ((count > 1 || opt.always_rest)
-	  && !(con->cmd & DO_LIST)
-	  && file_exists_p (locf))
-	if (stat (locf, &st) == 0 && S_ISREG (st.st_mode))
-	  restval = st.st_size;
-
-      /* In `-c' is used, check whether the file we're writing to
-	 exists and is of non-zero length.  If so, we'll refuse to
-	 truncate it if the server doesn't support continued
-	 downloads.  */
-      if (opt.always_rest && restval > 0)
-	con->cmd |= NO_TRUNCATE;
+      /* Decide whether or not to restart.  */
+      restval = 0;
+      if (count > 1)
+	restval = len;		/* start where the previous run left off */
+      else if (opt.always_rest
+	       && stat (locf, &st) == 0
+	       && S_ISREG (st.st_mode))
+	restval = st.st_size;
 
       /* Get the current time string.  */
       tms = time_str (NULL);
@@ -1601,7 +1572,7 @@ Already have correct symlink %s -> %s\n\n"),
 	  const char *fl = NULL;
 	  if (opt.output_document)
 	    {
-	      if (opt.od_known_regular)
+	      if (output_stream_regular)
 		fl = opt.output_document;
 	    }
 	  else

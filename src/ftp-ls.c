@@ -48,6 +48,8 @@ so, delete this exception statement from your version.  */
 #include "ftp.h"
 #include "url.h"
 
+extern FILE *output_stream;
+
 /* Converts symbolic permissions to number-style ones, e.g. string
    rwxr-xr-x to 755.  For now, it knows nothing of
    setuid/setgid/sticky.  ACLs are ignored.  */
@@ -827,7 +829,7 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
   char *upwd;
   char *htclfile;		/* HTML-clean file name */
 
-  if (!opt.dfp)
+  if (!output_stream)
     {
       fp = fopen (file, "wb");
       if (!fp)
@@ -837,7 +839,7 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
 	}
     }
   else
-    fp = opt.dfp;
+    fp = output_stream;
   if (u->user)
     {
       char *tmpu, *tmpp;        /* temporary, clean user and passwd */
@@ -919,7 +921,7 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
     }
   fprintf (fp, "</pre>\n</body>\n</html>\n");
   xfree (upwd);
-  if (!opt.dfp)
+  if (!output_stream)
     fclose (fp);
   else
     fflush (fp);

@@ -1284,8 +1284,13 @@ cleanup (void)
 {
   /* Free external resources, close files, etc. */
 
-  if (opt.dfp)
-    fclose (opt.dfp);
+  {
+    extern FILE *output_stream;
+    if (output_stream)
+      fclose (output_stream);
+    /* No need to check for error because Wget flushes its output (and
+       checks for errors) after any data arrives.  */
+  }
 
   /* We're exiting anyway so there's no real need to call free()
      hundreds of times.  Skipping the frees will make Wget exit

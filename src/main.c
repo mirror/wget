@@ -864,19 +864,23 @@ Can't timestamp and not clobber old files at the same time.\n"));
   /* Open the output filename if necessary.  */
   if (opt.output_document)
     {
+      extern FILE *output_stream;
+      extern int output_stream_regular;
+
       if (HYPHENP (opt.output_document))
-	opt.dfp = stdout;
+	output_stream = stdout;
       else
 	{
 	  struct stat st;
-	  opt.dfp = fopen (opt.output_document, opt.always_rest ? "ab" : "wb");
-	  if (opt.dfp == NULL)
+	  output_stream = fopen (opt.output_document,
+				 opt.always_rest ? "ab" : "wb");
+	  if (output_stream == NULL)
 	    {
 	      perror (opt.output_document);
 	      exit (1);
 	    }
-	  if (fstat (fileno (opt.dfp), &st) == 0 && S_ISREG (st.st_mode))
-	    opt.od_known_regular = 1;
+	  if (fstat (fileno (output_stream), &st) == 0 && S_ISREG (st.st_mode))
+	    output_stream_regular = 1;
 	}
     }
 
