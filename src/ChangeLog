@@ -1,3 +1,8 @@
+2005-03-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* retr.c (fd_read_body): Undo the 2004-11-18 change.  Instead,
+	always be "exact".
+
 2005-03-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ftp-basic.c (ftp_login): Don't free the string if ftp_response

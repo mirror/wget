@@ -214,7 +214,8 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
      data arrives slowly. */
   int progress_interactive = 0;
 
-  int exact = flags & rb_read_exactly;
+  /*int exact = flags & rb_read_exactly;*/
+  int exact = 1;
   wgint skip = 0;
 
   /* How much data we've read/written.  */
@@ -284,13 +285,6 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
 	    }
 	}
       ret = fd_read (fd, dlbuf, rdsize, tmout);
-
-      /* when retrieving from http-proxy wget sometimes does not trust the 
-       * file length reported by server.
-       * this check is to tell wget not to stubbornly try to read again and 
-       * again until another errno code was received. */
-      if ( ret == -1 && errno == ETIMEDOUT && sum_read == toread && toread > 0 )
-	break;
 
       if (ret == 0 || (ret < 0 && errno != ETIMEDOUT))
 	break;			/* read error */
