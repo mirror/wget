@@ -37,7 +37,7 @@ void address_list_release PARAMS ((struct address_list *));
 
 /* This was originally going to be a macro, but then every caller
    would have to #include the netinet stuff.  */
-char *pretty_print_address PARAMS ((const unsigned char *));
+char *pretty_print_address PARAMS ((const void *));
 
 int accept_domain PARAMS ((struct url *));
 int sufmatch PARAMS ((const char **, const char *));

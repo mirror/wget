@@ -65,7 +65,8 @@ extern int h_errno;
 # endif
 #endif
 
-#define IP4_ADDRESS_LENGTH 4
+/* An IPv4 address is simply a 4-byte quantity. */
+typedef unsigned char ipv4_address[4];
 
 /* Mapping between known hosts and to lists of their addresses. */
 
@@ -76,15 +77,13 @@ static struct hash_table *host_name_addresses_map;
 
 struct address_list {
   int count;			/* number of adrresses */
-  unsigned char *buffer;	/* buffer which holds all of them. */
+  ipv4_address *addresses;	/* pointer to the string of addresses */
 
   int faulty;			/* number of addresses known not to
 				   work. */
   int refcount;			/* so we know whether to free it or
 				   not. */
 };
-
-#define ADDR_LOCATION(al, index) ((al)->buffer + index * IP4_ADDRESS_LENGTH)
 
 /* Get the bounds of the address list.  */
 
@@ -102,7 +101,7 @@ address_list_copy_one (struct address_list *al, int index,
 		       unsigned char *ip_store)
 {
   assert (index >= al->faulty && index < al->count);
-  memcpy (ip_store, ADDR_LOCATION (al, index), IP4_ADDRESS_LENGTH);
+  memcpy (ip_store, al->addresses + index, sizeof (ipv4_address));
 }
 
 /* Check whether two address lists have all their IPs in common.  */
@@ -114,8 +113,8 @@ address_list_match_all (struct address_list *al1, struct address_list *al2)
     return 1;
   if (al1->count != al2->count)
     return 0;
-  return 0 == memcmp (al1->buffer, al2->buffer,
-		      al1->count * IP4_ADDRESS_LENGTH);
+  return 0 == memcmp (al1->addresses, al2->addresses,
+		      al1->count * sizeof (ipv4_address));
 }
 
 /* Mark the INDEXth element of AL as faulty, so that the next time
@@ -151,13 +150,13 @@ address_list_new (char **h_addr_list)
   while (h_addr_list[count])
     ++count;
   assert (count > 0);
-  al->count    = count;
-  al->faulty   = 0;
-  al->buffer   = xmalloc (count * IP4_ADDRESS_LENGTH);
-  al->refcount = 1;
+  al->count     = count;
+  al->faulty    = 0;
+  al->addresses = xmalloc (count * sizeof (ipv4_address));
+  al->refcount  = 1;
 
   for (i = 0; i < count; i++)
-    memcpy (ADDR_LOCATION (al, i), h_addr_list[i], IP4_ADDRESS_LENGTH);
+    memcpy (al->addresses + i, h_addr_list[i], sizeof (ipv4_address));
 
   return al;
 }
@@ -168,11 +167,11 @@ static struct address_list *
 address_list_new_one (const char *addr)
 {
   struct address_list *al = xmalloc (sizeof (struct address_list));
-  al->count    = 1;
-  al->faulty   = 0;
-  al->buffer   = xmalloc (IP4_ADDRESS_LENGTH);
-  al->refcount = 1;
-  memcpy (ADDR_LOCATION (al, 0), addr, IP4_ADDRESS_LENGTH);
+  al->count     = 1;
+  al->faulty    = 0;
+  al->addresses = xmalloc (sizeof (ipv4_address));
+  al->refcount  = 1;
+  memcpy (al->addresses, addr, sizeof (ipv4_address));
 
   return al;
 }
@@ -180,7 +179,7 @@ address_list_new_one (const char *addr)
 static void
 address_list_delete (struct address_list *al)
 {
-  xfree (al->buffer);
+  xfree (al->addresses);
   xfree (al);
 }
 
@@ -200,7 +199,7 @@ address_list_release (struct address_list *al)
    #including the netinet stuff.  */
 
 char *
-pretty_print_address (const unsigned char *addr)
+pretty_print_address (const void *addr)
 {
   return inet_ntoa (*(struct in_addr *)addr);
 }
@@ -224,8 +223,7 @@ cache_host_lookup (const char *host, struct address_list *al)
       int i;
       debug_logprintf ("Caching %s =>", host);
       for (i = 0; i < al->count; i++)
-	debug_logprintf (" %s",
-			 pretty_print_address (ADDR_LOCATION (al, i)));
+	debug_logprintf (" %s", pretty_print_address (al->addresses + i));
       debug_logprintf ("\n");
     }
 #endif
@@ -250,7 +248,7 @@ lookup_host (const char *host, int silent)
 	 we copy the correct four bytes.  */
       int offset;
 #ifdef WORDS_BIGENDIAN
-      offset = sizeof (unsigned long) - IP4_ADDRESS_LENGTH;
+      offset = sizeof (unsigned long) - sizeof (ipv4_address);
 #else
       offset = 0;
 #endif

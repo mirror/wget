@@ -1,5 +1,12 @@
 2001-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* host.c: New type ipv4_address.  Use it consistently instead of
+	`unsigned char[4]' and `unsigned char *'.
+	(pretty_print_address): Accept a `const void *', to require even
+	less casting.
+
+2001-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* ftp-ls.c (ftp_parse_vms_ls): Fix obvious memory leaks.
 
 2001-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
