@@ -1,3 +1,10 @@
+2001-03-20  Dan Harkless  <wget@harkless.org>
+
+	* TODO: Oops.  Hostless absolute link conversion _is_ working.  My
+ 	test that led me to believe it wasn't was exposing a different bug
+ 	-- URLs specified on the commandline as opposed to being recursed
+	to don't always get re-converted at the end of the Wget run.
+
 2001-03-17  Dan Harkless  <wget@harkless.org>
 
 	* aclocal.m4: Appended libtool 1.3.5's libtool.m4 to it.

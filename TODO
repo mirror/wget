@@ -78,11 +78,6 @@ changes.
 * Make `-k' check for files that were downloaded in the past and convert links 
   to them in newly-downloaded documents.
 
-* -k currently converts non-fully-qualified (i.e. relative or "hostless
-  absolute") links to files that weren't downloaded into fully-qualified URLs.
-  When files _are_ downloaded, though, absolute links to them (hostless or
-  with-host) should be converted to relative.
-
 * Add option to clobber existing file names (no `.N' suffixes).
 
 * Introduce a concept of "boolean" options.  For instance, every
