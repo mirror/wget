@@ -1,3 +1,8 @@
+2003-10-03  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* html-parse.c (convert_and_copy): Move variable declarations
+	before statements.
+
 2003-10-02  Gisle Vanem  <giva@bgnett.no>
         
         * mswindows.c (run_with_timeout): For Windows: Run the 'fun' in a

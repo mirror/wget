@@ -174,7 +174,7 @@ struct pool {
    already has room to accomodate SIZE bytes of data, this is a no-op.  */
 
 #define POOL_GROW(p, increase)					\
-  GROW_ARRAY ((p)->contents, (p)->size, (p)->tail + increase,	\
+  GROW_ARRAY ((p)->contents, (p)->size, (p)->tail + (increase),	\
 	      (p)->resized, char)
 
 /* Append text in the range [beg, end) to POOL.  No zero-termination
@@ -293,9 +293,11 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
 	 It's safe (and necessary) to grow the pool in advance because
 	 processing the entities can only *shorten* the string, it can
 	 never lengthen it.  */
-      POOL_GROW (pool, end - beg);
       const char *from = beg;
-      char *to = pool->contents + pool->tail;
+      char *to;
+
+      POOL_GROW (pool, end - beg);
+      to = pool->contents + pool->tail;
 
       while (from < end)
 	{
