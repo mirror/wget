@@ -631,6 +631,7 @@ str_url (const struct urlinfo *u, int hide)
 {
   char *res, *host, *user, *passwd, *proto_name, *dir, *file;
   int i, l, ln, lu, lh, lp, lf, ld;
+  unsigned short proto_default_port;
 
   /* Look for the protocol name.  */
   for (i = 0; i < ARRAY_SIZE (sup_protos); i++)
@@ -639,6 +640,7 @@ str_url (const struct urlinfo *u, int hide)
   if (i == ARRAY_SIZE (sup_protos))
     return NULL;
   proto_name = sup_protos[i].name;
+  proto_default_port = sup_protos[i].port;
   host = CLEANDUP (u->host);
   dir = CLEANDUP (u->dir);
   file = CLEANDUP (u->file);
@@ -693,9 +695,12 @@ str_url (const struct urlinfo *u, int hide)
     }
   memcpy (res + l, host, lh);
   l += lh;
-  res[l++] = ':';
-  long_to_string (res + l, (long)u->port);
-  l += numdigit (u->port);
+  if (u->port != proto_default_port)
+    {
+      res[l++] = ':';
+      long_to_string (res + l, (long)u->port);
+      l += numdigit (u->port);
+    }
   res[l++] = '/';
   memcpy (res + l, dir, ld);
   l += ld;

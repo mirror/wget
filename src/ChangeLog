@@ -1,3 +1,8 @@
+2000-06-01  Hrvoje Niksic  <hniksic@iskon.hr>
+
+	* url.c (str_url): Print the port number only if it's different
+	from the default port number for that protocol.
+
 2000-05-22  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* main.c (main): Added --help line for Damir Dzeko
