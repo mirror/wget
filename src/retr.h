@@ -35,7 +35,7 @@ typedef const char *(*hunk_terminator_t) PARAMS ((const char *, int, int));
 char *fd_read_hunk PARAMS ((int, hunk_terminator_t, int));
 char *fd_read_line PARAMS ((int));
 
-int fd_read_body PARAMS ((int, FILE *, long *, long, long, int, double *));
+int fd_read_body PARAMS ((int, FILE *, long, int, long, long *, double *));
 
 uerr_t retrieve_url PARAMS ((const char *, char **, char **,
 			     const char *, int *));

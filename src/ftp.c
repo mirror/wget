@@ -1023,8 +1023,11 @@ Error in server response, closing control connection.\n"));
     }
 
   /* Get the contents of the document.  */
-  res = fd_read_body (dtsock, fp, len, restval, expected_bytes, 0,
-		      &con->dltime);
+  res = fd_read_body (dtsock, fp,
+		      expected_bytes ? expected_bytes - restval : 0,
+		      0, restval, len, &con->dltime);
+  *len += restval;
+
   tms = time_str (NULL);
   tmrate = retr_rate (*len - restval, con->dltime, 0);
   /* Close data connection socket.  */

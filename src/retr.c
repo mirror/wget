@@ -133,32 +133,35 @@ limit_bandwidth (long bytes, struct wget_timer *timer)
 # define MIN(i, j) ((i) <= (j) ? (i) : (j))
 #endif
 
-/* Reads the contents of file descriptor FD, until it is closed, or a
-   read error occurs.  The data is read in 8K chunks, and stored to
-   stream fp, which should have been open for writing.
+/* Read the contents of file descriptor FD until it the connection
+   terminates or a read error occurs.  The data is read in portions of
+   up to 16K and written to OUT as it arrives.  If opt.verbose is set,
+   the progress is shown.
 
-   The EXPECTED argument is passed to show_progress() unchanged, but
-   otherwise ignored.
+   TOREAD is the amount of data expected to arrive, normally only used
+   by the progress gauge.  However, if EXACT is set, no more than
+   TOREAD octets will be read.
 
-   If opt.verbose is set, the progress is also shown.  RESTVAL
-   (RESTart VALue) is the position from which the download starts,
-   needed for progress display.
+   STARTPOS is the position from which the download starts, used by
+   the progress gauge.  The amount of data read gets stored to
+   *AMOUNT_READ.  The time it took to download the data (in
+   milliseconds) is stored to *ELAPSED.
 
-   The function exits and returns codes of 0, -1 and -2 if the
-   connection was closed, there was a read error, or if it could not
-   write to the output stream, respectively.  */
+   The function exits and returns the amount of data read.  In case of
+   error while reading data, -1 is returned.  In case of error while
+   writing data, -2 is returned.  */
 
 int
-fd_read_body (int fd, FILE *out, long *len, long restval, long expected,
-	      int use_expected, double *elapsed)
+fd_read_body (int fd, FILE *out, long toread, int exact, long startpos,
+	      long *amount_read, double *elapsed)
 {
-  int res = 0;
+  int ret = 0;
 
   static char dlbuf[16384];
   int dlbufsize = sizeof (dlbuf);
 
-  struct wget_timer *timer = wtimer_allocate ();
-  double last_successful_read_tm;
+  struct wget_timer *timer = NULL;
+  double last_successful_read_tm = 0;
 
   /* The progress gauge, set according to the user preferences. */
   void *progress = NULL;
@@ -169,18 +172,25 @@ fd_read_body (int fd, FILE *out, long *len, long restval, long expected,
      data arrives slowly. */
   int progress_interactive = 0;
 
-  *len = restval;
+  *amount_read = 0;
 
   if (opt.verbose)
     {
-      progress = progress_create (restval, expected);
+      progress = progress_create (startpos, toread);
       progress_interactive = progress_interactive_p (progress);
     }
 
   if (opt.limit_rate)
     limit_bandwidth_reset ();
-  wtimer_reset (timer);
-  last_successful_read_tm = 0;
+
+  /* A timer is needed for tracking progress, for throttling, and for
+     tracking elapsed time.  If either of these are requested, start
+     the timer.  */
+  if (progress || opt.limit_rate || elapsed)
+    {
+      timer = wtimer_new ();
+      last_successful_read_tm = 0;
+    }
 
   /* Use a smaller buffer for low requested bandwidths.  For example,
      with --limit-rate=2k, it doesn't make sense to slurp in 16K of
@@ -189,15 +199,13 @@ fd_read_body (int fd, FILE *out, long *len, long restval, long expected,
   if (opt.limit_rate && opt.limit_rate < dlbufsize)
     dlbufsize = opt.limit_rate;
 
-  /* Read from FD while there is available data.
-
-     Normally, if expected is 0, it means that it is not known how
-     much data is expected.  However, if use_expected is specified,
-     then expected being zero means exactly that.  */
-  while (!use_expected || (*len < expected))
+  /* Read from FD while there is data to read.  Normally toread==0
+     means that it is unknown how much data is to arrive.  However, if
+     EXACT is set, then toread==0 means what it says: that no data
+     should be read.  */
+  while (!exact || (*amount_read < toread))
     {
-      int amount_to_read = (use_expected
-			    ? MIN (expected - *len, dlbufsize) : dlbufsize);
+      int rdsize = exact ? MIN (toread - *amount_read, dlbufsize) : dlbufsize;
       double tmout = opt.read_timeout;
       if (progress_interactive)
 	{
@@ -214,61 +222,64 @@ fd_read_body (int fd, FILE *out, long *len, long restval, long expected,
 	      if (tmout < 0)
 		{
 		  /* We've already exceeded the timeout. */
-		  res = -1, errno = ETIMEDOUT;
+		  ret = -1, errno = ETIMEDOUT;
 		  break;
 		}
 	    }
 	}
-      res = fd_read (fd, dlbuf, amount_to_read, tmout);
+      ret = fd_read (fd, dlbuf, rdsize, tmout);
 
-      if (res == 0 || (res < 0 && errno != ETIMEDOUT))
+      if (ret == 0 || (ret < 0 && errno != ETIMEDOUT))
 	break;
-      else if (res < 0)
-	res = 0;		/* timeout */
+      else if (ret < 0)
+	ret = 0;		/* timeout */
 
-      wtimer_update (timer);
-      if (res > 0)
+      if (progress || opt.limit_rate)
 	{
-	  if (out)
+	  wtimer_update (timer);
+	  if (ret > 0)
+	    last_successful_read_tm = wtimer_read (timer);
+	}
+
+      if (ret > 0 && out != NULL)
+	{
+	  fwrite (dlbuf, 1, ret, out);
+	  /* Immediately flush the downloaded data.  This should not
+	     hinder performance: fast downloads will arrive in large
+	     16K chunks (which stdio would write out anyway), and slow
+	     downloads wouldn't be limited by disk speed.  */
+	  fflush (out);
+	  if (ferror (out))
 	    {
-	      fwrite (dlbuf, 1, res, out);
-	      /* Always flush the contents of the network packet.
-		 This should not hinder performance: fast downloads
-		 will be received in 16K chunks (which stdio would
-		 write out anyway), and slow downloads won't be
-		 limited by disk performance.  */
-	      fflush (out);
-	      if (ferror (out))
-		{
-		  res = -2;
-		  goto out;
-		}
+	      ret = -2;
+	      goto out;
 	    }
-	  last_successful_read_tm = wtimer_read (timer);
 	}
 
       if (opt.limit_rate)
-	limit_bandwidth (res, timer);
+	limit_bandwidth (ret, timer);
 
-      *len += res;
+      *amount_read += ret;
       if (progress)
-	progress_update (progress, res, wtimer_read (timer));
+	progress_update (progress, ret, wtimer_read (timer));
 #ifdef WINDOWS
-      if (use_expected && expected > 0)
-	ws_percenttitle (100.0 * (double)(*len) / (double)expected);
+      if (toread > 0)
+	ws_percenttitle (100.0 *
+			 (startpos + *amount_read) / (startpos + toread));
 #endif
     }
-  if (res < -1)
-    res = -1;
+  if (ret < -1)
+    ret = -1;
 
  out:
   if (progress)
     progress_finish (progress, wtimer_read (timer));
   if (elapsed)
     *elapsed = wtimer_read (timer);
-  wtimer_delete (timer);
+  if (timer)
+    wtimer_delete (timer);
 
-  return res;
+  return ret;
 }
 
 /* Read a hunk of data from FD, up until a terminator.  The terminator

@@ -759,7 +759,7 @@ skip_body (int fd, long contlen)
 
   oldverbose = opt.verbose;
   opt.verbose = 0;
-  fd_read_body (fd, NULL, &dummy, 0, contlen, 1, NULL);
+  fd_read_body (fd, NULL, contlen, 1, 0, &dummy, NULL);
   opt.verbose = oldverbose;
 }
 
@@ -1407,7 +1407,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     }
   logprintf (LOG_VERBOSE, _("%s request sent, awaiting response... "),
 	     proxy ? "Proxy" : "HTTP");
-  contlen = contrange = -1;
+  contlen = -1;
+  contrange = 0;
   type = NULL;
   statcode = -1;
   *dt &= ~RETROKF;
@@ -1612,31 +1613,30 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	}
     }
 
-  if (contrange == -1)
+  if (contrange == 0 && hs->restval > 0)
     {
-      /* We did not get a content-range header.  This means that the
-	 server did not honor our `Range' request.  Normally, this
-	 means we should reset hs->restval and continue normally.  */
+      /* The download starts from the beginning, presumably because
+	 the server did not honor our `Range' request.  Normally we'd
+	 just reset hs->restval and start the download from
+	 scratch.  */
 
       /* However, if `-c' is used, we need to be a bit more careful:
 
          1. If `-c' is specified and the file already existed when
-         Wget was started, it would be a bad idea for us to start
-         downloading it from scratch, effectively truncating it.  I
-         believe this cannot happen unless `-c' was specified.
+         Wget was started, it would be a bad idea to start downloading
+         it from scratch, effectively truncating the file.
 
 	 2. If `-c' is used on a file that is already fully
 	 downloaded, we're requesting bytes after the end of file,
-	 which can result in server not honoring `Range'.  If this is
-	 the case, `Content-Length' will be equal to the length of the
-	 file.  */
+	 which can result in the server not honoring `Range'.  If this
+	 is the case, `Content-Length' will be equal to the length of
+	 the file.  */
       if (opt.always_rest)
 	{
 	  /* Check for condition #2. */
-	  if (hs->restval > 0	            /* restart was requested. */
-	      && contlen != -1              /* we got content-length. */
-	      && hs->restval >= contlen     /* file fully downloaded
-					       or has shrunk.  */
+	  if (contlen != -1              /* we got content-length. */
+	      && hs->restval >= contlen  /* file fully downloaded
+					    or has shrunk.  */
 	      )
 	    {
 	      logputs (LOG_VERBOSE, _("\
@@ -1679,16 +1679,7 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
       CLOSE_INVALIDATE (sock);
       return RANGEERR;
     }
-
-  if (hs->restval)
-    {
-      if (contlen != -1)
-	contlen += contrange;
-      else
-	contrange = -1;        /* If conent-length was not sent,
-				  content-range will be ignored.  */
-    }
-  hs->contlen = contlen;
+  hs->contlen = contlen + contrange;
 
   if (opt.verbose)
     {
@@ -1700,10 +1691,9 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
 	  logputs (LOG_VERBOSE, _("Length: "));
 	  if (contlen != -1)
 	    {
-	      logputs (LOG_VERBOSE, legible (contlen));
-	      if (contrange != -1)
-		logprintf (LOG_VERBOSE, _(" (%s to go)"),
-			   legible (contlen - contrange));
+	      logputs (LOG_VERBOSE, legible (contlen + contrange));
+	      if (contrange)
+		logprintf (LOG_VERBOSE, _(" (%s to go)"), legible (contlen));
 	    }
 	  else
 	    logputs (LOG_VERBOSE,
@@ -1785,10 +1775,10 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
   if (opt.save_headers)
     fwrite (head, 1, strlen (head), fp);
 
-  /* Get the contents of the document.  */
-  hs->res = fd_read_body (sock, fp, &hs->len, hs->restval,
-			  (contlen != -1 ? contlen : 0),
-			  keep_alive, &hs->dltime);
+  /* Download the request body.  */
+  hs->res = fd_read_body (sock, fp, contlen != -1 ? contlen : 0, keep_alive,
+			  hs->restval, &hs->len, &hs->dltime);
+  hs->len += contrange;
 
   if (hs->res >= 0)
     CLOSE_FINISH (sock);
