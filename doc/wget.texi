@@ -1026,13 +1026,44 @@ created in the first place.
 @cindex link conversion
 @item -k
 @itemx --convert-links
-Convert the non-relative links to relative ones locally.  Only the
-references to the documents actually downloaded will be converted; the
-rest will be left unchanged.
+After the download is complete, convert the links in the document to
+make them suitable for local viewing.  This affects not only the visible
+hyperlinks, but any part of the document that links to external content,
+such as embedded images, links to style sheets, hyperlinks to non-HTML
+content, etc.
+
+Each link will be changed in one of the two ways:
+
+@itemize @bullet
+@item
+The links to files that have been downloaded by Wget will be changed to
+refer to the file they point to as a relative link.
+
+Example: if the downloaded file @file{/foo/doc.html} links to
+@file{/bar/img.gif}, also downloaded, then the link in @file{doc.html}
+will be modified to point to @samp{../bar/img.gif}.  This kind of
+transformation works reliably for arbitrary combinations of directories.
+
+@item
+The links to files that have not been downloaded by Wget will be changed
+to include host name and absolute path of the location they point to.
+
+Example: if the downloaded file @file{/foo/doc.html} links to
+@file{/bar/img.gif} (or to @file{../bar/img.gif}), then the link in
+@file{doc.html} will be modified to point to
+@file{http://@var{hostname}/bar/img.gif}.
+@end itemize
+
+Because of this, local browsing works reliably: if a linked file was
+downloaded, the link will refer to its local name; if it was not
+downloaded, the link will refer to its full Internet address rather than
+presenting a broken link.  The fact that the former links are converted
+to relative links ensures that you can move the downloaded hierarchy to
+another directory.
 
 Note that only at the end of the download can Wget know which links have
-been downloaded.  Because of that, much of the work done by @samp{-k}
-will be performed at the end of the downloads.
+been downloaded.  Because of that, the work done by @samp{-k} will be
+performed at the end of all the downloads.
 
 @cindex backing up converted files
 @item -K
