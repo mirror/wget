@@ -72,8 +72,8 @@ OPIE_OBJ   = @OPIE_OBJ@
 SSL_OBJ    = @SSL_OBJ@
 GETOPT_OBJ = @GETOPT_OBJ@
 
-OBJ = $(ALLOCA) cmpt$o connect$o cookies$o fnmatch$o ftp$o        \
-      ftp-basic$o ftp-ls$o $(OPIE_OBJ) $(GETOPT_OBJ) hash$o       \
+OBJ = $(ALLOCA) cmpt$o connect$o convert$o cookies$o fnmatch$o    \
+      ftp$o ftp-basic$o ftp-ls$o $(OPIE_OBJ) $(GETOPT_OBJ) hash$o \
       headers$o host$o html-parse$o html-url$o http$o init$o      \
       log$o main$o $(MD5_OBJ) netrc$o progress$o rbuf$o recur$o   \
       res$o retr$o safe-ctype$o snprintf$o $(SSL_OBJ) url$o       \
@@ -154,6 +154,7 @@ TAGS: *.c *.h
 alloca$o:
 cmpt$o: wget.h sysdep.h options.h safe-ctype.h
 connect$o: wget.h sysdep.h options.h safe-ctype.h utils.h connect.h host.h
+convert$o: wget.h convert.h url.h recur.h utils.h hash.h
 cookies$o: wget.h sysdep.h options.h safe-ctype.h cookies.h hash.h url.h utils.h
 fnmatch$o: wget.h sysdep.h options.h safe-ctype.h fnmatch.h
 ftp-basic$o: wget.h sysdep.h options.h safe-ctype.h utils.h rbuf.h connect.h \

@@ -53,6 +53,7 @@ so, delete this exception statement from your version.  */
 #include "host.h"
 #include "connect.h"
 #include "hash.h"
+#include "convert.h"
 
 #ifdef HAVE_SSL
 # include "gen_sslfunc.h"	/* for ssl_iread */
@@ -324,6 +325,8 @@ calc_rate (long bytes, double msecs, int *units)
       post_data_suspended = 0;				\
     }							\
 } while (0)
+
+static char *getproxy PARAMS ((struct url *));
 
 /* Retrieve the given URL.  Decides which loop to call -- HTTP, FTP,
    FTP, proxy, etc.  */
@@ -681,4 +684,102 @@ sleep_between_retrievals (int count)
 	  usleep (1000000L * waitsecs);
 	}
     }
+}
+
+/* Free the linked list of urlpos.  */
+void
+free_urlpos (struct urlpos *l)
+{
+  while (l)
+    {
+      struct urlpos *next = l->next;
+      if (l->url)
+	url_free (l->url);
+      FREE_MAYBE (l->local_name);
+      xfree (l);
+      l = next;
+    }
+}
+
+/* Rotate FNAME opt.backups times */
+void
+rotate_backups(const char *fname)
+{
+  int maxlen = strlen (fname) + 1 + numdigit (opt.backups) + 1;
+  char *from = (char *)alloca (maxlen);
+  char *to = (char *)alloca (maxlen);
+  struct stat sb;
+  int i;
+
+  if (stat (fname, &sb) == 0)
+    if (S_ISREG (sb.st_mode) == 0)
+      return;
+
+  for (i = opt.backups; i > 1; i--)
+    {
+      sprintf (from, "%s.%d", fname, i - 1);
+      sprintf (to, "%s.%d", fname, i);
+      rename (from, to);
+    }
+
+  sprintf (to, "%s.%d", fname, 1);
+  rename(fname, to);
+}
+
+static int no_proxy_match PARAMS ((const char *, const char **));
+
+/* Return the URL of the proxy appropriate for url U.  */
+
+static char *
+getproxy (struct url *u)
+{
+  char *proxy = NULL;
+  char *rewritten_url;
+  static char rewritten_storage[1024];
+
+  if (!opt.use_proxy)
+    return NULL;
+  if (!no_proxy_match (u->host, (const char **)opt.no_proxy))
+    return NULL;
+
+  switch (u->scheme)
+    {
+    case SCHEME_HTTP:
+      proxy = opt.http_proxy ? opt.http_proxy : getenv ("http_proxy");
+      break;
+#ifdef HAVE_SSL
+    case SCHEME_HTTPS:
+      proxy = opt.https_proxy ? opt.https_proxy : getenv ("https_proxy");
+      break;
+#endif
+    case SCHEME_FTP:
+      proxy = opt.ftp_proxy ? opt.ftp_proxy : getenv ("ftp_proxy");
+      break;
+    case SCHEME_INVALID:
+      break;
+    }
+  if (!proxy || !*proxy)
+    return NULL;
+
+  /* Handle shorthands.  `rewritten_storage' is a kludge to allow
+     getproxy() to return static storage. */
+  rewritten_url = rewrite_shorthand_url (proxy);
+  if (rewritten_url)
+    {
+      strncpy (rewritten_storage, rewritten_url, sizeof(rewritten_storage));
+      rewritten_storage[sizeof (rewritten_storage) - 1] = '\0';
+      proxy = rewritten_storage;
+    }
+
+  return proxy;
+}
+
+/* Should a host be accessed through proxy, concerning no_proxy?  */
+int
+no_proxy_match (const char *host, const char **no_proxy)
+{
+  if (!no_proxy)
+    return 1;
+  else
+    return !sufmatch (no_proxy, host);
 }

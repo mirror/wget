@@ -1,3 +1,10 @@
+2003-09-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* retr.c (getproxy): Moved from url.c.
+
+	* convert.c: Split off link conversion from url.c into separate
+	file.  Also included the book-keeping stuff from recur.c.
+
 2003-09-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* init.c: Improved documentation of functions.

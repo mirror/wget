@@ -62,7 +62,6 @@ so, delete this exception statement from your version.  */
 #include "utils.h"
 #include "init.h"
 #include "host.h"
-#include "recur.h"
 #include "netrc.h"
 #include "cookies.h"		/* for cookie_jar_delete */
 #include "progress.h"
@@ -1279,7 +1278,7 @@ cleanup (void)
      memory which grows with the size of the program.  */
 
 #ifdef DEBUG_MALLOC
-  recursive_cleanup ();
+  convert_cleanup ();
   res_cleanup ();
   http_cleanup ();
   cleanup_html_url ();

@@ -71,6 +71,7 @@ so, delete this exception statement from your version.  */
 #ifdef USE_DIGEST
 # include "gen-md5.h"
 #endif
+#include "convert.h"
 
 extern char *version_string;
 

@@ -30,12 +30,14 @@ so, delete this exception statement from your version.  */
 #ifndef RECUR_H
 #define RECUR_H
 
+struct urlpos;
+
 void recursive_cleanup PARAMS ((void));
 uerr_t retrieve_tree PARAMS ((const char *));
 
-void register_download PARAMS ((const char *, const char *));
-void register_redirection PARAMS ((const char *, const char *));
-void register_html PARAMS ((const char *, const char *));
-void convert_all_links PARAMS ((void));
+/* These are really in html-url.c. */
+struct urlpos *get_urls_file PARAMS ((const char *));
+struct urlpos *get_urls_html PARAMS ((const char *, const char *, int *));
+void free_urlpos PARAMS ((struct urlpos *));
 
 #endif /* RECUR_H */

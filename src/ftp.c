@@ -54,6 +54,7 @@ so, delete this exception statement from your version.  */
 #include "host.h"
 #include "fnmatch.h"
 #include "netrc.h"
+#include "convert.h"		/* for downloaded_file */
 
 #ifndef errno
 extern int errno;
@@ -1165,7 +1166,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 
       /* If we get out of the switch above without continue'ing, we've
 	 successfully downloaded a file.  Remember this fact. */
-      downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
+      downloaded_file (FILE_DOWNLOADED_NORMALLY, locf);
 
       if (con->st & ON_YOUR_OWN)
 	{

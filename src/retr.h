@@ -48,6 +48,8 @@ int downloaded_exceeds_quota PARAMS ((void));
 
 void sleep_between_retrievals PARAMS ((int));
 
+void rotate_backups PARAMS ((const char *));
+
 /* Because there's no http.h. */
 
 struct url;
