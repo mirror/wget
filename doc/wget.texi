@@ -1203,7 +1203,7 @@ websites), and make sure the lot displays properly locally, this author
 likes to use a few options in addition to @samp{-p}:
 
 @example
-wget -E -H -k -K -nh -p http://@var{site}/@var{document}
+wget -E -H -k -K -p http://@var{site}/@var{document}
 @end example
 
 In one case you'll need to add a couple more options.  If @var{document}
@@ -1234,14 +1234,12 @@ accept or reject (@pxref{Types of Files} for more details).
 
 @item -D @var{domain-list}
 @itemx --domains=@var{domain-list}
-Set domains to be accepted and @sc{dns} looked-up, where
-@var{domain-list} is a comma-separated list.  Note that it does
-@emph{not} turn on @samp{-H}.  This option speeds things up, even if
-only one host is spanned (@pxref{Domain Acceptance}).
+Set domains to be followed.  @var{domain-list} is a comma-separated list
+of domains.  Note that it does @emph{not} turn on @samp{-H}.
 
 @item --exclude-domains @var{domain-list}
-Exclude the domains given in a comma-separated @var{domain-list} from
-@sc{dns}-lookup (@pxref{Domain Acceptance}).
+Specify the domains that are @emph{not} to be followed.
+(@pxref{Spanning Hosts}).
 
 @cindex follow FTP links
 @item --follow-ftp
@@ -1266,7 +1264,7 @@ In the past, the @samp{-G} option was the best bet for downloading a
 single page and its requisites, using a commandline like:
 
 @example
-wget -Ga,area -H -k -K -nh -r http://@var{site}/@var{document}
+wget -Ga,area -H -k -K -r http://@var{site}/@var{document}
 @end example
 
 However, the author of this option came across a page with tags like
@@ -1278,8 +1276,8 @@ dedicated @samp{--page-requisites} option.
 
 @item -H
 @itemx --span-hosts
-Enable spanning across hosts when doing recursive retrieving (@pxref{All
-Hosts}).
+Enable spanning across hosts when doing recursive retrieving
+(@pxref{Spanning Hosts}).
 
 @item -L
 @itemx --relative
@@ -1299,11 +1297,6 @@ Specify a comma-separated list of directories you wish to exclude from
 download (@pxref{Directory-Based Limits} for more details.)  Elements of
 @var{list} may contain wildcards.
 
-@item -nh
-@itemx --no-host-lookup
-Disable the time-consuming @sc{dns} lookup of almost all hosts
-(@pxref{Host Checking}).
-
 @item -np
 @item --no-parent
 Do not ever ascend to the parent directory when retrieving recursively.
@@ -1321,9 +1314,8 @@ This is a useful option, since it guarantees that only the files
 @cindex recursive retrieval
 
 GNU Wget is capable of traversing parts of the Web (or a single
-@sc{http} or @sc{ftp} server), depth-first following links and directory
-structure.  This is called @dfn{recursive} retrieving, or
-@dfn{recursion}.
+@sc{http} or @sc{ftp} server), following links and directory structure.
+We refer to this as to @dfn{recursive retrieving}, or @dfn{recursion}.
 
 With @sc{http} @sc{url}s, Wget retrieves and parses the @sc{html} from
 the given @sc{url}, documents, retrieving the files the @sc{html}
@@ -1331,15 +1323,22 @@ document was referring to, through markups like @code{href}, or
 @code{src}.  If the freshly downloaded file is also of type
 @code{text/html}, it will be parsed and followed further.
 
+Recursive retrieval of @sc{http} and @sc{html} content is
+@dfn{breadth-first}.  This means that Wget first downloads the requested
+HTML document, then the documents linked from that document, then the
+documents linked by them, and so on.  In other words, Wget first
+downloads the documents at depth 1, then those at depth 2, and so on
+until the specified maximum depth.
+
 The maximum @dfn{depth} to which the retrieval may descend is specified
-with the @samp{-l} option (the default maximum depth is five layers).
-@xref{Recursive Retrieval}.
+with the @samp{-l} option.  The default maximum depth is five layers.
 
 When retrieving an @sc{ftp} @sc{url} recursively, Wget will retrieve all
 the data from the given directory tree (including the subdirectories up
 to the specified depth) on the remote server, creating its mirror image
 locally.  @sc{ftp} retrieval is also limited by the @code{depth}
-parameter.
+parameter.  Unlike @sc{http} recursion, @sc{ftp} recursion is performed
+depth-first.
 
 By default, Wget will create a local directory tree, corresponding to
 the one found on the remote server.
@@ -1349,23 +1348,30 @@ important of which is mirroring.  It is also useful for @sc{www}
 presentations, and any other opportunities where slow network
 connections should be bypassed by storing the files locally.
 
-You should be warned that invoking recursion may cause grave overloading
-on your system, because of the fast exchange of data through the
-network; all of this may hamper other users' work.  The same stands for
-the foreign server you are mirroring---the more requests it gets in a
-rows, the greater is its load.
+You should be warned that recursive downloads can overload the remote
+servers.  Because of that, many administrators frown upon them and may
+ban access from your site if they detect very fast downloads of big
+amounts of content.  When downloading from Internet servers, consider
+using the @samp{-w} option to introduce a delay between accesses to the
+server.  The download will take a while longer, but the server
+administrator will not be alarmed by your rudeness.
 
-Careless retrieving can also fill your file system uncontrollably, which
-can grind the machine to a halt.
+Of course, recursive download may cause problems on your machine.  If
+left to run unchecked, it can easily fill up the disk.  If downloading
+from local network, it can also take bandwidth on the system, as well as
+consume memory and CPU.
 
-The load can be minimized by lowering the maximum recursion level
-(@samp{-l}) and/or by lowering the number of retries (@samp{-t}).  You
-may also consider using the @samp{-w} option to slow down your requests
-to the remote servers, as well as the numerous options to narrow the
-number of followed links (@pxref{Following Links}).
+Try to specify the criteria that match the kind of download you are
+trying to achieve.  If you want to download only one page, use
+@samp{--page-requisites} without any additional recursion.  If you want
+to download things under one directory, use @samp{-np} to avoid
+downloading things from other directories.  If you want to download all
+the files from one directory, use @samp{-l 1} to make sure the recursion
+depth never exceeds one.  @xref{Following Links}, for more information
+about this.
 
-Recursive retrieval is a good thing when used properly.  Please take all
-precautions not to wreak havoc through carelessness.
+Recursive retrieval should be used with care.  Don't say you were not
+warned.
 
 @node Following Links, Time-Stamping, Recursive Retrieval, Top
 @chapter Following Links
@@ -1384,98 +1390,55 @@ Wget possesses several mechanisms that allows you to fine-tune which
 links it will follow.
 
 @menu
-* Relative Links::         Follow relative links only.
-* Host Checking::          Follow links on the same host.
-* Domain Acceptance::      Check on a list of domains.
-* All Hosts::              No host restrictions.
+* Spanning Hosts::         (Un)limiting retrieval based on host name.
 * Types of Files::         Getting only certain files.
 * Directory-Based Limits:: Getting only certain directories.
+* Relative Links::         Follow relative links only.
 * FTP Links::              Following FTP links.
 @end menu
 
-@node Relative Links, Host Checking, Following Links, Following Links
-@section Relative Links
-@cindex relative links
+@node Spanning Hosts, Types of Files, Following Links, Following Links
+@section Spanning Hosts
+@cindex spanning hosts
+@cindex hosts, spanning
 
-When only relative links are followed (option @samp{-L}), recursive
-retrieving will never span hosts.  No time-expensive @sc{dns}-lookups
-will be performed, and the process will be very fast, with the minimum
-strain of the network.  This will suit your needs often, especially when
-mirroring the output of various @code{x2html} converters, since they
-generally output relative links.
+Wget's recursive retrieval normally refuses to visit hosts different
+than the one you specified on the command line.  This is a reasonable
+default; without it, every retrieval would have the potential to turn
+your Wget into a small version of google.
 
-@node Host Checking, Domain Acceptance, Relative Links, Following Links
-@section Host Checking
-@cindex DNS lookup
-@cindex host lookup
-@cindex host checking
+However, visiting different hosts, or @dfn{host spanning,} is sometimes
+a useful option.  Maybe the images are served from a different server.
+Maybe you're mirroring a site that consists of pages interlinked between
+three servers.  Maybe the server has two equivalent names, and the HTML
+pages refer to both interchangeably.
 
-The drawback of following the relative links solely is that humans often
-tend to mix them with absolute links to the very same host, and the very
-same page.  In this mode (which is the default mode for following links)
-all @sc{url}s that refer to the same host will be retrieved.
+@table @asis
+@item Span to any host---@samp{-H}
 
-The problem with this option are the aliases of the hosts and domains.
-Thus there is no way for Wget to know that @samp{regoc.srce.hr} and
-@samp{www.srce.hr} are the same host, or that @samp{fly.srk.fer.hr} is
-the same as @samp{fly.cc.fer.hr}.  Whenever an absolute link is
-encountered, the host is @sc{dns}-looked-up with @code{gethostbyname} to
-check whether we are maybe dealing with the same hosts.  Although the
-results of @code{gethostbyname} are cached, it is still a great
-slowdown, e.g. when dealing with large indices of home pages on different
-hosts (because each of the hosts must be @sc{dns}-resolved to see
-whether it just @emph{might} be an alias of the starting host).
+The @samp{-H} option turns on host spanning, thus allowing Wget's
+recursive run to visit any host referenced by a link.  Unless sufficient
+recursion-limiting criteria are applied depth, these foreign hosts will
+typically link to yet more hosts, and so on until Wget ends up sucking
+up much more data than you have intended.
 
-To avoid the overhead you may use @samp{-nh}, which will turn off
-@sc{dns}-resolving and make Wget compare hosts literally.  This will
-make things run much faster, but also much less reliable
-(e.g. @samp{www.srce.hr} and @samp{regoc.srce.hr} will be flagged as
-different hosts).
+@item Limit spanning to certain domains---@samp{-D}
 
-Note that modern @sc{http} servers allow one IP address to host several
-@dfn{virtual servers}, each having its own directory hierarchy.  Such
-``servers'' are distinguished by their hostnames (all of which point to
-the same IP address); for this to work, a client must send a @code{Host}
-header, which is what Wget does.  However, in that case Wget @emph{must
-not} try to divine a host's ``real'' address, nor try to use the same
-hostname for each access, i.e. @samp{-nh} must be turned on.
-
-In other words, the @samp{-nh} option must be used to enable the
-retrieval from virtual servers distinguished by their hostnames.  As the
-number of such server setups grow, the behavior of @samp{-nh} may become
-the default in the future.
-
-@node Domain Acceptance, All Hosts, Host Checking, Following Links
-@section Domain Acceptance
-
-With the @samp{-D} option you may specify the domains that will be
-followed.  The hosts the domain of which is not in this list will not be
-@sc{dns}-resolved.  Thus you can specify @samp{-Dmit.edu} just to make
-sure that @strong{nothing outside of @sc{mit} gets looked up}.  This is
-very important and useful.  It also means that @samp{-D} does @emph{not}
-imply @samp{-H} (span all hosts), which must be specified explicitly.
-Feel free to use this options since it will speed things up, with almost
-all the reliability of checking for all hosts.  Thus you could invoke
+The @samp{-D} option allows you to specify the domains that will be
+followed, thus limiting the recursion only to the hosts that belong to
+these domains.  Obviously, this makes sense only in conjunction with
+@samp{-H}.  A typical example would be downloading the contents of
+@samp{www.server.com}, but allowing downloads from
+@samp{images.server.com}, etc.:
 
 @example
-wget -r -D.hr http://fly.srk.fer.hr/
+wget -rH -Dserver.com http://www.server.com/
 @end example
 
-to make sure that only the hosts in @samp{.hr} domain get
-@sc{dns}-looked-up for being equal to @samp{fly.srk.fer.hr}.  So
-@samp{fly.cc.fer.hr} will be checked (only once!) and found equal, but
-@samp{www.gnu.ai.mit.edu} will not even be checked.
+You can specify more than one address by separating them with a comma,
+e.g. @samp{-Ddomain1.com,domain2.com}.
 
-Of course, domain acceptance can be used to limit the retrieval to
-particular domains with spanning of hosts in them, but then you must
-specify @samp{-H} explicitly.  E.g.:
-
-@example
-wget -r -H -Dmit.edu,stanford.edu http://www.mit.edu/
-@end example
-
-will start with @samp{http://www.mit.edu/}, following links across
-@sc{mit} and Stanford.
+@item Keep download off certain domains---@samp{--exclude-domains}
 
 If there are domains you want to exclude specifically, you can do it
 with @samp{--exclude-domains}, which accepts the same type of arguments
@@ -1485,21 +1448,13 @@ domain, with the exception of @samp{sunsite.foo.edu}, you can do it like
 this:
 
 @example
-wget -rH -Dfoo.edu --exclude-domains sunsite.foo.edu http://www.foo.edu/
+wget -rH -Dfoo.edu --exclude-domains sunsite.foo.edu \
+    http://www.foo.edu/
 @end example
 
-@node All Hosts, Types of Files, Domain Acceptance, Following Links
-@section All Hosts
-@cindex all hosts
-@cindex span hosts
+@end table
 
-When @samp{-H} is specified without @samp{-D}, all hosts are freely
-spanned.  There are no restrictions whatsoever as to what part of the
-net Wget will go to fetch documents, other than maximum retrieval depth.
-If a page references @samp{www.yahoo.com}, so be it.  Such an option is
-rarely useful for itself.
-
-@node Types of Files, Directory-Based Limits, All Hosts, Following Links
+@node Types of Files, Directory-Based Limits, Spanning Hosts, Following Links
 @section Types of Files
 @cindex types of files
 
@@ -1563,7 +1518,7 @@ Note that these two options do not affect the downloading of @sc{html}
 files; Wget must load all the @sc{html}s to know where to go at
 all---recursive retrieval would make no sense otherwise.
 
-@node Directory-Based Limits, FTP Links, Types of Files, Following Links
+@node Directory-Based Limits, Relative Links, Types of Files, Following Links
 @section Directory-Based Limits
 @cindex directories
 @cindex directory limits
@@ -1639,7 +1594,36 @@ Essentially, @samp{--no-parent} is similar to
 intelligent fashion.
 @end table
 
-@node FTP Links,  , Directory-Based Limits, Following Links
+@node Relative Links, FTP Links, Directory-Based Limits, Following Links
+@section Relative Links
+@cindex relative links
+
+When @samp{-L} is turned on, only the relative links are ever followed.
+Relative links are here defined those that do not refer to the web
+server root.  For example, these links are relative:
+
+@example
+<a href="foo.gif">
+<a href="foo/bar.gif">
+<a href="../foo/bar.gif">
+@end example
+
+These links are not relative:
+
+@example
+<a href="/foo.gif">
+<a href="/foo/bar.gif">
+<a href="http://www.server.com/foo/bar.gif">
+@end example
+
+Using this option guarantees that recursive retrieval will not span
+hosts, even without @samp{-H}.  In simple cases it also allows downloads
+to ``just work'' without having to convert links.
+
+This option is probably not very useful and might be removed in a future
+release.
+
+@node FTP Links,  , Relative Links, Following Links
 @section Following FTP Links
 @cindex following ftp links
 
@@ -1985,7 +1969,7 @@ Turning dirstruct on or off---the same as @samp{-x} or @samp{-nd},
 respectively.
 
 @item domains = @var{string}
-Same as @samp{-D} (@pxref{Domain Acceptance}).
+Same as @samp{-D} (@pxref{Spanning Hosts}).
 
 @item dot_bytes = @var{n}
 Specify the number of bytes ``contained'' in a dot, as seen throughout
@@ -2007,7 +1991,7 @@ Specify a comma-separated list of directories you wish to exclude from
 download---the same as @samp{-X} (@pxref{Directory-Based Limits}).
 
 @item exclude_domains = @var{string}
-Same as @samp{--exclude-domains} (@pxref{Domain Acceptance}).
+Same as @samp{--exclude-domains} (@pxref{Spanning Hosts}).
 
 @item follow_ftp = on/off
 Follow @sc{ftp} links from @sc{html} documents---the same as
@@ -2161,7 +2145,7 @@ Choose whether or not to print the @sc{http} and @sc{ftp} server
 responses---the same as @samp{-S}.
 
 @item simple_host_check = on/off
-Same as @samp{-nh} (@pxref{Host Checking}).
+Same as @samp{-nh} (@pxref{Spanning Hosts}).
 
 @item span_hosts = on/off
 Same as @samp{-H}.
@@ -2442,19 +2426,6 @@ wget --mirror -A.html http://www.w3.org/
 @end example
 
 @item
-But what about mirroring the hosts networkologically close to you?  It
-seems so awfully slow because of all that @sc{dns} resolving.  Just use
-@samp{-D} (@pxref{Domain Acceptance}).
-
-@example
-wget -rN -Dsrce.hr http://www.srce.hr/
-@end example
-
-Now Wget will correctly find out that @samp{regoc.srce.hr} is the same
-as @samp{www.srce.hr}, but will not even take into consideration the
-link to @samp{www.mit.edu}.
-
-@item
 You have a presentation and would like the dumb absolute links to be
 converted to relative?  Use @samp{-k}:
 
@@ -2716,47 +2687,46 @@ sucking all the available data in progress.  @samp{wget -r @var{site}},
 and you're set.  Great?  Not for the server admin.
 
 While Wget is retrieving static pages, there's not much of a problem.
-But for Wget, there is no real difference between the smallest static
-page and the hardest, most demanding CGI or dynamic page.  For instance,
-a site I know has a section handled by an, uh, bitchin' CGI script that
-converts all the Info files to HTML.  The script can and does bring the
-machine to its knees without providing anything useful to the
-downloader.
+But for Wget, there is no real difference between a static page and the
+most demanding CGI.  For instance, a site I know has a section handled
+by an, uh, @dfn{bitchin'} CGI script that converts all the Info files to
+HTML.  The script can and does bring the machine to its knees without
+providing anything useful to the downloader.
 
 For such and similar cases various robot exclusion schemes have been
 devised as a means for the server administrators and document authors to
 protect chosen portions of their sites from the wandering of robots.
 
-The more popular mechanism is the @dfn{Robots Exclusion Standard}
-written by Martijn Koster et al. in 1994.  It is specified by placing a
-file named @file{/robots.txt} in the server root, which the robots are
-supposed to download and parse.  Wget supports this specification.
+The more popular mechanism is the @dfn{Robots Exclusion Standard}, or
+@sc{res}, written by Martijn Koster et al. in 1994.  It specifies the
+format of a text file containing directives that instruct the robots
+which URL paths to avoid.  To be found by the robots, the specifications
+must be placed in @file{/robots.txt} in the server root, which the
+robots are supposed to download and parse.
 
-Norobots support is turned on only when retrieving recursively, and
-@emph{never} for the first page.  Thus, you may issue:
+Wget supports @sc{res} when downloading recursively.  So, when you
+issue:
 
 @example
-wget -r http://fly.srk.fer.hr/
+wget -r http://www.server.com/
 @end example
 
-First the index of fly.srk.fer.hr will be downloaded.  If Wget finds
-anything worth downloading on the same host, only @emph{then} will it
-load the robots, and decide whether or not to load the links after all.
-@file{/robots.txt} is loaded only once per host.
+First the index of @samp{www.server.com} will be downloaded.  If Wget
+finds that it wants to download more documents from that server, it will
+request @samp{http://www.server.com/robots.txt} and, if found, use it
+for further downloads.  @file{robots.txt} is loaded only once per each
+server.
 
-Note that the exlusion standard discussed here has undergone some
-revisions.  However, but Wget supports only the first version of
-@sc{res}, the one written by Martijn Koster in 1994, available at
-@url{http://info.webcrawler.com/mak/projects/robots/norobots.html}.  A
-later version exists in the form of an internet draft
-<draft-koster-robots-00.txt> titled ``A Method for Web Robots Control'',
-which expired on June 4, 1997.  I am not aware if it ever made to an
-@sc{rfc}.  The text of the draft is available at
+Until version 1.8, Wget supported the first version of the standard,
+written by Martijn Koster in 1994 and available at
+@url{http://info.webcrawler.com/mak/projects/robots/norobots.html}.  As
+of version 1.8, Wget has supported the additional directives specified
+in the internet draft @samp{<draft-koster-robots-00.txt>} titled ``A
+Method for Web Robots Control''.  The draft, which has as far as I know
+never made to an @sc{rfc}, is available at
 @url{http://info.webcrawler.com/mak/projects/robots/norobots-rfc.html}.
-Wget does not yet support the new directives specified by this draft,
-but we plan to add them.
 
-This manual no longer includes the text of the old standard.
+This manual no longer includes the text of the Robot Exclusion Standard.
 
 The second, less known mechanism, enables the author of an individual
 document to specify whether they want the links from the file to be
@@ -2875,20 +2845,24 @@ Junio Hamano---donated support for Opie and @sc{http} @code{Digest}
 authentication.
 
 @item
-Brian Gough---a generous donation.
+The people who provided donations for development, including Brian
+Gough.
 @end itemize
 
 The following people have provided patches, bug/build reports, useful
 suggestions, beta testing services, fan mail and all the other things
 that make maintenance so much fun:
 
+Ian Abbott
 Tim Adam,
 Adrian Aichner,
 Martin Baehr,
 Dieter Baron,
-Roger Beeman and the Gurus at Cisco,
+Roger Beeman,
 Dan Berger,
+T. Bharath,
 Paul Bludov,
+Daniel Bodea,
 Mark Boyns,
 John Burden,
 Wanderlei Cavassin,
@@ -2912,6 +2886,7 @@ Damir D@v{z}eko,
 @ifinfo
 Damir Dzeko,
 @end ifinfo
+Alan Eldridge,
 @iftex
 Aleksandar Erkalovi@'{c},
 @end iftex
@@ -2923,10 +2898,12 @@ Christian Fraenkel,
 Masashi Fujita,
 Howard Gayle,
 Marcel Gerrits,
+Lemble Gregory,
 Hans Grobler,
 Mathieu Guillaume,
 Dan Harkless,
-Heiko Herold,
+Herold Heiko,
+Jochen Hein,
 Karl Heuer,
 HIROSE Masaaki,
 Gregor Hoffleit,
@@ -3011,6 +2988,7 @@ Edward J. Sabol,
 Heinz Salzmann,
 Robert Schmidt,
 Andreas Schwab,
+Chris Seawood,
 Toomas Soome,
 Tage Stabell-Kulo,
 Sven Sternberger,
@@ -3019,6 +2997,7 @@ John Summerfield,
 Szakacsits Szabolcs,
 Mike Thomas,
 Philipp Thomas,
+Dave Turner,
 Russell Vincent,
 Charles G Waldman,
 Douglas E. Wegscheid,

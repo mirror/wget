@@ -1,3 +1,8 @@
+2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.texi: Update the manual with the new recursive retrieval
+	stuff.
+
 2001-11-30  Ingo T. Storm  <tux-sparc@computerbild.de>
 
 	* sample.wgetrc: Document ftp_proxy, too.
