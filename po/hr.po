@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.5.2-b2\n"
-"POT-Creation-Date: 2000-11-05 08:08+0100\n"
+"POT-Creation-Date: 2000-11-23 11:23+0100\n"
 "PO-Revision-Date: 1998-02-29 21:05+01:00\n"
 "Last-Translator: Hrvoje Niksic <hniksic@srce.hr>\n"
 "Language-Team: Croatian <hr-translation@bagan.srce.hr>\n"
@@ -81,7 +81,7 @@ msgid ""
 "\n"
 msgstr "Nema direktorija `%s'.\n"
 
-#: src/ftp.c:331 src/ftp.c:599 src/ftp.c:647 src/url.c:1671
+#: src/ftp.c:331 src/ftp.c:599 src/ftp.c:647 src/url.c:1678
 msgid "done.\n"
 msgstr "gotovo.\n"
 
@@ -341,27 +341,27 @@ msgstr "%s: nedozvoljena opcija -- %c\n"
 msgid "%s: option requires an argument -- %c\n"
 msgstr "%s: opcija tra¾i argument -- %c\n"
 
-#: src/host.c:437
+#: src/host.c:438
 #, c-format
 msgid "%s: Cannot determine user-id.\n"
 msgstr "%s: Ne mogu utvrditi user-id.\n"
 
-#: src/host.c:449
+#: src/host.c:450
 #, c-format
 msgid "%s: Warning: uname failed: %s\n"
 msgstr "%s: Upozorenje: uname nije uspio: %s\n"
 
-#: src/host.c:461
+#: src/host.c:462
 #, c-format
 msgid "%s: Warning: gethostname failed\n"
 msgstr "%s: Upozorenje: gethostname nije uspio\n"
 
-#: src/host.c:489
+#: src/host.c:490
 #, c-format
 msgid "%s: Warning: cannot determine local IP address.\n"
 msgstr "%s: Upozorenje: ne mogu utvrditi lokalnu IP adresu.\n"
 
-#: src/host.c:503
+#: src/host.c:504
 #, c-format
 msgid "%s: Warning: cannot reverse-lookup local IP address.\n"
 msgstr "%s: Upozorenje: ne mogu napraviti reverzni lookup lokalne IP adrese.\n"
@@ -370,16 +370,16 @@ msgstr "%s: Upozorenje: ne mogu napraviti reverzni lookup lokalne IP adrese.\n"
 #. that there can be valid reasons for the local host
 #. name not to be an FQDN, so I've decided to remove the
 #. annoying warning.
-#: src/host.c:516
+#: src/host.c:517
 #, c-format
 msgid "%s: Warning: reverse-lookup of local address did not yield FQDN!\n"
 msgstr "%s: Upozorenje: reverzni lookup lokalne adrese ne daje FQDN!\n"
 
-#: src/host.c:544
+#: src/host.c:545
 msgid "Host not found"
 msgstr "Raèunalo nije pronaðeno"
 
-#: src/host.c:546
+#: src/host.c:547
 msgid "Unknown error"
 msgstr "Nepoznata gre¹ka"
 
@@ -563,47 +563,47 @@ msgstr "%s (%s) - Gre¹ka pri èitanju na bajtu %ld/%ld (%s). "
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Ne mogu proèitati %s (%s).\n"
 
-#: src/init.c:350 src/init.c:356
+#: src/init.c:347 src/init.c:353
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Gre¹ka u %s na liniji %d.\n"
 
-#: src/init.c:387
+#: src/init.c:384
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: Upozorenje: sistemski i korisnikov wgetrc su `%s'.\n"
 
-#: src/init.c:475
+#: src/init.c:476
 #, c-format
 msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr "%s: BUG: Nepoznata naredba `%s', vrijednost `%s'.\n"
 
-#: src/init.c:497
+#: src/init.c:498
 #, c-format
 msgid "%s: Out of memory.\n"
 msgstr "%s: Nema dovoljno memorije.\n"
 
-#: src/init.c:503
+#: src/init.c:504
 #, c-format
 msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
 msgstr "%s: %s: Upozorenje: ne mogu pretvoriti `%s' u IP adresu.\n"
 
-#: src/init.c:531
+#: src/init.c:532
 #, c-format
 msgid "%s: %s: Please specify on or off.\n"
 msgstr "%s: %s: Molim postavite na on ili off.\n"
 
-#: src/init.c:575
+#: src/init.c:576
 #, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr "%s: %s: Molim postavite na on, off ili never.\n"
 
-#: src/init.c:594 src/init.c:851 src/init.c:873 src/init.c:937
+#: src/init.c:595 src/init.c:852 src/init.c:874 src/init.c:938
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: Pogre¹na specifikacija `%s'\n"
 
-#: src/init.c:707 src/init.c:729 src/init.c:751 src/init.c:777
+#: src/init.c:708 src/init.c:730 src/init.c:752 src/init.c:778
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "wget: %s: Pogre¹na specifikacija `%s'\n"
@@ -963,11 +963,11 @@ msgstr ""
 "Mo¾ete prekinuti Wget pritiskom na CTRL+ALT+DELETE.\n"
 
 #. parent, no error
-#: src/mswindows.c:135 src/utils.c:268
+#: src/mswindows.c:135 src/utils.c:269
 msgid "Continuing in background.\n"
 msgstr "Nastavljam u pozadini.\n"
 
-#: src/mswindows.c:137 src/utils.c:270
+#: src/mswindows.c:137 src/utils.c:271
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "Izlaz se sprema u `%s'.\n"
@@ -1066,39 +1066,39 @@ msgstr "Gre¹ka (%s): Zadan je link %s bez osnove.\n"
 msgid "Error (%s): Base %s relative, without referer URL.\n"
 msgstr "Gre¹ka (%s): Baza %s je relativna, bez referirajuæeg URL-a.\n"
 
-#: src/url.c:1533
+#: src/url.c:1540
 #, c-format
 msgid "Converting %s... "
 msgstr "Konvertiram %s... "
 
-#: src/url.c:1538 src/url.c:1625
+#: src/url.c:1545 src/url.c:1632
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "Ne mogu konvertirati linkove u %s: %s\n"
 
-#: src/url.c:1601
+#: src/url.c:1608
 #, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Ne mogu snimiti backup iz %s u %s: %s\n"
 
-#: src/utils.c:71
+#: src/utils.c:72
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: Nema dovoljno memorije.\n"
 
-#: src/utils.c:203
+#: src/utils.c:204
 msgid "Unknown/unsupported protocol"
 msgstr "Nepoznat/nepodr¾an protokol"
 
-#: src/utils.c:206
+#: src/utils.c:207
 msgid "Invalid port specification"
 msgstr "Pogre¹na specifikacija porta"
 
-#: src/utils.c:209
+#: src/utils.c:210
 msgid "Invalid host name"
 msgstr "Pogre¹an naziv raèunala"
 
-#: src/utils.c:430
+#: src/utils.c:431
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Ne mogu izbrisati link `%s': %s\n"
