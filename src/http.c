@@ -1526,15 +1526,15 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	  FREEHSTAT (hstat);
 	  continue;
 	}
-      if (!opt.dfp
-	  && (tmr != (time_t) (-1))
+      if ((tmr != (time_t) (-1))
 	  && !opt.spider
 	  && ((hstat.len == hstat.contlen) ||
 	      ((hstat.res == 0) &&
 	       ((hstat.contlen == -1) ||
 		(hstat.len >= hstat.contlen && !opt.kill_longer)))))
 	{
-	  touch (u->local, tmr);
+	  const char *fl = opt.output_document ? opt.output_document : u->local;
+	  touch (fl, tmr);
 	}
       /* End of time-stamping section.  */
 

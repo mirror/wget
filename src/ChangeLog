@@ -1,3 +1,10 @@
+2000-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* ftp.c (ftp_retrieve_list): Ditto.
+
+	* http.c (http_loop): Touch output_document if that is used for
+	output.
+
 2000-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* http.c: Include gen_sslfunc.h after including Wget's headers.

@@ -1365,13 +1365,13 @@ Already have correct symlink %s -> %s\n\n"),
       /* Set the time-stamp information to the local file.  Symlinks
 	 are not to be stamped because it sets the stamp on the
 	 original.  :( */
-      if (!opt.dfp
-	  && !(f->type == FT_SYMLINK && !opt.retr_symlinks)
+      if (!(f->type == FT_SYMLINK && !opt.retr_symlinks)
 	  && f->tstamp != -1
           && dlthis
 	  && file_exists_p (u->local))
 	{
-	  touch (u->local, f->tstamp);
+	  const char *fl = opt.output_document ? opt.output_document : u->local;
+	  touch (fl, f->tstamp);
 	}
       else if (f->tstamp == -1)
 	logprintf (LOG_NOTQUIET, _("%s: corrupt time-stamp.\n"), u->local);
