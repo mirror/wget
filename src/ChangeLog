@@ -1,5 +1,10 @@
 2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* res.c (res_register_specs): Initialize OLD and HP_OLD to appease
+	the compiler.
+
+2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* http.c (gethttp): Print the whole response line when printing
 	headers is requested.
 
