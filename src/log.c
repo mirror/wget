@@ -19,6 +19,16 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include <config.h>
 
+/* Use stdarg only if the compiler supports ANSI C and stdarg.h is
+   present.  We check for both because there are configurations where
+   stdarg.h exists, but doesn't work. */
+#undef WGET_USE_STDARG
+#ifdef __STDC__
+# ifdef HAVE_STDARG_H
+#  define WGET_USE_STDARG
+# endif
+#endif
+
 #include <stdio.h>
 #ifdef HAVE_STRING_H
 # include <string.h>
@@ -26,8 +36,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include <strings.h>
 #endif
 #include <stdlib.h>
-#ifdef HAVE_STDARG_H
-# define WGET_USE_STDARG
+#ifdef WGET_USE_STDARG
 # include <stdarg.h>
 #else
 # include <varargs.h>

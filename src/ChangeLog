@@ -1,5 +1,10 @@
 2002-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* log.c: Set WGET_USE_STDARG if __STDC__ is defined and stdarg.h
+	is present.
+
+2002-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* progress.c (bar_create): If INITIAL is larger than TOTAL, fix
 	TOTAL.
 	(bar_finish): Likewise.
