@@ -1,3 +1,15 @@
+2002-05-16  Ian Abbott  <abbotti@mev.co.uk>
+
+	* url.c (schemes_are_similar_p): New function to test enumerated
+	scheme codes for similarity.
+
+	* url.h: Declare it.
+
+	* recur.c (download_child_p): Use it to compare schemes.  This
+	also fixes a bug that allows hosts to be spanned (without the
+	-H option) when the parent scheme is https and the child's is
+	http or vice versa.
+
 2002-05-14  Bill Richardson  <bill@riverstonenet.com>
 
 	* ftp.c (getftp): Don't ftruncate stdout.

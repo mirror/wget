@@ -158,4 +158,6 @@ downloaded_file_t downloaded_file PARAMS ((downloaded_file_t, const char *));
 
 char *rewrite_shorthand_url PARAMS ((const char *));
 
+int schemes_are_similar_p PARAMS ((enum url_scheme a, enum url_scheme b));
+
 #endif /* URL_H */

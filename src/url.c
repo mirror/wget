@@ -2472,6 +2472,24 @@ downloaded_files_free (void)
       downloaded_files_hash = NULL;
     }
 }
+
+/* Return non-zero if scheme a is similar to scheme b.
+ 
+   Schemes are similar if they are equal.  If SSL is supported, schemes
+   are also similar if one is http (SCHEME_HTTP) and the other is https
+   (SCHEME_HTTPS).  */
+int
+schemes_are_similar_p (enum url_scheme a, enum url_scheme b)
+{
+  if (a == b)
+    return 1;
+#ifdef HAVE_SSL
+  if ((a == SCHEME_HTTP && b == SCHEME_HTTPS)
+      || (a == SCHEME_HTTPS && b == SCHEME_HTTP))
+    return 1;
+#endif
+  return 0;
+}
 
 #if 0
 /* Debugging and testing support for path_simplify. */

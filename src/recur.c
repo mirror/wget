@@ -415,6 +415,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 {
   struct url *u = upos->url;
   const char *url = u->url;
+  int u_scheme_like_http;
 
   DEBUGP (("Deciding whether to enqueue \"%s\".\n", url));
 
@@ -445,12 +446,11 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
      More time- and memory- consuming tests should be put later on
      the list.  */
 
+  /* Determine whether URL under consideration has a HTTP-like scheme. */
+  u_scheme_like_http = schemes_are_similar_p (u->scheme, SCHEME_HTTP);
+
   /* 1. Schemes other than HTTP are normally not recursed into. */
-  if (u->scheme != SCHEME_HTTP
-#ifdef HAVE_SSL
-      && u->scheme != SCHEME_HTTPS
-#endif
-      && !(u->scheme == SCHEME_FTP && opt.follow_ftp))
+  if (!u_scheme_like_http && !(u->scheme == SCHEME_FTP && opt.follow_ftp))
     {
       DEBUGP (("Not following non-HTTP schemes.\n"));
       goto out;
@@ -458,11 +458,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 
   /* 2. If it is an absolute link and they are not followed, throw it
      out.  */
-  if (u->scheme == SCHEME_HTTP
-#ifdef HAVE_SSL
-      || u->scheme == SCHEME_HTTPS
-#endif
-      )
+  if (schemes_are_similar_p (u->scheme, SCHEME_HTTP))
     if (opt.relative_only && !upos->link_relative_p)
       {
 	DEBUGP (("It doesn't really look like a relative link.\n"));
@@ -483,7 +479,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
      opt.no_parent.  Also ignore it for documents needed to display
      the parent page when in -p mode.  */
   if (opt.no_parent
-      && u->scheme == start_url_parsed->scheme
+      && schemes_are_similar_p (u->scheme, start_url_parsed->scheme)
       && 0 == strcasecmp (u->host, start_url_parsed->host)
       && u->port == start_url_parsed->port
       && !(opt.page_requisites && upos->link_inline_p))
@@ -526,7 +522,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
     }
 
   /* 7. */
-  if (u->scheme == parent->scheme)
+  if (schemes_are_similar_p (u->scheme, parent->scheme))
     if (!opt.spanhost && 0 != strcasecmp (parent->host, u->host))
       {
 	DEBUGP (("This is not the same hostname as the parent's (%s and %s).\n",
@@ -535,13 +531,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
       }
 
   /* 8. */
-  if (opt.use_robots
-      && (u->scheme == SCHEME_HTTP
-#ifdef HAVE_SSL
-	  || u->scheme == SCHEME_HTTPS
-#endif
-	  )
-      )
+  if (opt.use_robots && u_scheme_like_http)
     {
       struct robot_specs *specs = res_get_specs (u->host, u->port);
       if (!specs)
