@@ -143,6 +143,7 @@ search_netrc (const char *host, const char **acc, const char **passwd,
 #ifdef STANDALONE
 /* Normally, these functions would be defined by your package.  */
 # define xmalloc malloc
+# define xfree free
 # define xstrdup strdup
 
 /* The function reads a whole line.  It reads the line realloc-ing the

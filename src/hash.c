@@ -32,6 +32,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifdef STANDALONE
 # define xmalloc malloc
 # define xrealloc realloc
+# define xfree free
 #endif
 
 /* INTERFACE:
