@@ -762,7 +762,7 @@ actions of one.
 @item -Y on/off
 @itemx --proxy=on/off
 Turn proxy support on or off.  The proxy is on by default if the
-appropriate environmental variable is defined.
+appropriate environment variable is defined.
 
 For more information about the use of proxies with Wget, @xref{Proxies}.
 
