@@ -689,7 +689,7 @@ cmd_file (const char *com, const char *val, void *closure)
 	;
 #endif
 
-      result = xmalloc (homelen + 1 + strlen (val));
+      result = xmalloc (homelen + 1 + strlen (val) + 1);
       memcpy (result, home, homelen);
       result[homelen] = '/';
       strcpy (result + homelen + 1, val);

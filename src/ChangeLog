@@ -1,3 +1,7 @@
+2002-08-03  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* init.c (cmd_file): Allocate RESULT correctly.
+
 2002-07-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* recur.c (retrieve_tree): Check whether downloaded_html_set is
