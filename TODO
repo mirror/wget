@@ -28,8 +28,6 @@ changes.
 * Try to devise a scheme so that, when password is unknown, Wget asks
   the user for one.
 
-* Limit the number of successive redirection to max. 20 or so.
-
 * If -c used with -N, check to make sure a file hasn't changed on the server
   before "continuing" to download it (preventing a bogus hybrid file).
 

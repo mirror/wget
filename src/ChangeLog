@@ -1,5 +1,9 @@
 2001-11-30  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* retr.c (retrieve_url): Don't allow more than 20 redirections.
+
+2001-11-30  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* recur.c (retrieve_tree): Skip the non-inline entries when
 	enqueuing the children of a leaf HTML node in -p mode.
 	(descend_url_p): Ignore opt.no_parent when in -p mode and UPOS is

@@ -37,6 +37,10 @@ conversion now makes the BASE tags point to an empty string.
 same document (<a href="#anchorname">), which used to confuse Wget,
 are now converted correctly.
 
+*** When in page-requisites (-p) mode, no-parent (-np) is ignored when
+retrieving for inline images, stylesheets, and other documents needed
+to display the page.
+
 ** If a host has more than one IP address, Wget uses the other
 addresses when accessing the first one fails.
 
@@ -50,6 +54,8 @@ non-standard port.
 quoting.  Wget no longer dequotes reserved characters, e.g. `%3F' is
 no longer translated to `?', nor `%2B' to `+'.  Unsafe characters
 which are not reserved are still escaped, of course.
+
+** No more than 20 successive redirections are allowed.
 
 * Wget 1.7.1 is a bugfix release with no user-visible changes.
 

@@ -298,9 +298,16 @@ register_all_redirections (struct hash_table *redirections, const char *final)
 			&& no_proxy_match((u)->host,			\
 					  (const char **)opt.no_proxy))
 
-/* Retrieve the given URL.  Decides which loop to call -- HTTP(S), FTP,
-   or simply copy it with file:// (#### the latter not yet
-   implemented!).  */
+/* Maximum number of allowed redirections.  20 was chosen as a
+   "reasonable" value, which is low enough to not cause havoc, yet
+   high enough to guarantee that normal retrievals will not be hurt by
+   the check.  */
+
+#define MAX_REDIRECTIONS 20
+
+/* Retrieve the given URL.  Decides which loop to call -- HTTP, FTP,
+   FTP, proxy, etc.  */
+
 uerr_t
 retrieve_url (const char *origurl, char **file, char **newloc,
 	      const char *refurl, int *dt)
@@ -314,6 +321,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   int up_error_code;		/* url parse error code */
   char *local_file;
   struct hash_table *redirections = NULL;
+  int redirection_count = 0;
 
   /* If dt is NULL, just ignore it.  */
   if (!dt)
@@ -402,18 +410,17 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	opt.recursive = 0;
       result = ftp_loop (u, dt);
       opt.recursive = oldrec;
-#if 0
+
       /* There is a possibility of having HTTP being redirected to
 	 FTP.  In these cases we must decide whether the text is HTML
 	 according to the suffix.  The HTML suffixes are `.html' and
 	 `.htm', case-insensitive.  */
-      if (redirections && u->local && (u->scheme == SCHEME_FTP))
+      if (redirections && local_file && u->scheme == SCHEME_FTP)
 	{
-	  char *suf = suffix (u->local);
+	  char *suf = suffix (local_file);
 	  if (suf && (!strcasecmp (suf, "html") || !strcasecmp (suf, "htm")))
 	    *dt |= TEXTHTML;
 	}
-#endif
     }
   location_changed = (result == NEWLOCATION);
   if (location_changed)
@@ -462,7 +469,22 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  string_set_add (redirections, u->url);
 	}
 
-      /* The new location is OK.  Check for redirection cycle by
+      /* The new location is OK.  Check for max. number of
+	 redirections.  */
+      if (++redirection_count > MAX_REDIRECTIONS)
+	{
+	  logprintf (LOG_NOTQUIET, _("%d redirections exceeded.\n"),
+		     MAX_REDIRECTIONS);
+	  url_free (newloc_parsed);
+	  url_free (u);
+	  if (redirections)
+	    string_set_free (redirections);
+	  xfree (url);
+	  xfree (mynewloc);
+	  return WRONGCODE;
+	}
+
+      /*Check for redirection cycle by
          peeking through the history of redirections. */
       if (string_set_contains (redirections, newloc_parsed->url))
 	{
