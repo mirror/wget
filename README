@@ -1,6 +1,6 @@
                                                           -*- text -*-
 GNU Wget
-========              (Temporary) home: http://sunsite.dk/wget/
+========              (Temporary) home: http://wget.sunsite.dk/
 
 GNU Wget is a free network utility to retrieve files from the World
 Wide Web using HTTP and FTP, the two most widely used Internet
@@ -9,7 +9,7 @@ background, after having logged off.
 
 The recursive retrieval of HTML pages, as well as FTP sites is
 supported -- you can use Wget to make mirrors of archives and home
-pages, or traverse the web like a WWW robot (Wget understands
+pages, or traverse a site like a WWW robot (Wget understands
 /robots.txt).
 
 Wget works exceedingly well on slow or unstable connections, keeping
@@ -39,28 +39,25 @@ described in the INSTALL file.
 
 Like all GNU utilities, the latest version of Wget can be found at the
 master GNU archive site ftp.gnu.org, and its mirrors.  For example,
-Wget 1.7 is at:
+Wget 1.7.1 is at:
 
-    <URL:ftp://ftp.gnu.org/pub/gnu/wget/wget-1.7.tar.gz>.
+    <URL:ftp://ftp.gnu.org/pub/gnu/wget/wget-1.7.1.tar.gz>.
 
 Please report bugs in Wget to <bug-wget@gnu.org>.
 
 Wget has a mailing list at <wget@sunsite.dk>.  To subscribe, mail to
 <wget-subscribe@sunsite.dk>.  Wget's home page is temporarily at
-<URL:http://sunsite.dk/wget/>.  It is being migrated to
+<URL:http://wget.sunsite.dk/>.  It is being migrated to
 <URL:http://www.gnu.org/software/wget/>, where will be its permanent
 home.
 
-Wget is free in all senses -- it is freely redistributable, and no
-payment is required.  If you still wish to donate money to the
-developers or fund the development for a specific purpose, please send
-mail to the development mailing list at <wget@sunsite.dk>.
 
+MAINTAINERS: Hrvoje Niksic <hniksic@arsdigita.com>
+             Dan Harkless <wget@harkless.org>
 
-MAINTAINERS: Dan Harkless <wget@harkless.org>
-             Hrvoje Niksic <hniksic@arsdigita.com>
-
-Wget was originally written by Hrvoje Niksic.
+Wget was originally written by Hrvoje Niksic.  Please see the file
+AUTHORS for a list of major contributors, and the ChangeLogs for a
+detailed listing of all contributions.
 
 
 Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software
