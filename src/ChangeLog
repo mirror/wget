@@ -1,3 +1,15 @@
+2003-09-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (is_valid_ipv6_address): Modified to not require
+	zero-terminated strings.
+	(is_valid_ipv4_address): Ditto.
+
+2003-09-05  Mauro Tortonesi <mauro@deepspace6.net>
+
+	src/url.c: added RFC 2732 compliance for URL parsing. The
+	functions is_*_address valid are a modified version of
+	glibc 2.3.2 inet_pton's code.
+
 2003-09-03  Ahmon Dancy  <dancy@dancysoft.com>
 
 	* main.c init.c options.h: Added --retry-connrefused option so

@@ -58,6 +58,11 @@ extern int errno;
 /* Is X ".."?  */
 #define DDOTP(x) ((*(x) == '.') && (*(x + 1) == '.') && (!*(x + 2)))
 
+static const int NS_INADDRSZ  = 4;
+static const int NS_IN6ADDRSZ = 16;
+static const int NS_INT16SZ = 2;
+
+
 struct scheme_data
 {
   char *leading_string;
@@ -645,13 +650,144 @@ static char *parse_errors[] = {
 #define PE_UNTERMINATED_IPV6_ADDRESS	5
   "Unterminated IPv6 numeric address",
 #define PE_INVALID_IPV6_ADDRESS		6
-  "Invalid char in IPv6 numeric address"
+  "Invalid IPv6 numeric address"
 };
 
 #define SETERR(p, v) do {			\
   if (p)					\
     *(p) = (v);					\
 } while (0)
+
+/* The following two functions were adapted from glibc. */
+
+static int
+is_valid_ipv4_address (const char *str, const char *end)
+{
+  int saw_digit, octets;
+  int val;
+
+  saw_digit = 0;
+  octets = 0;
+  val = 0;
+
+  while (str < end) {
+    int ch = *str++;
+
+    if (ch >= '0' && ch <= '9') {
+      val = val * 10 + (ch - '0');
+
+      if (val > 255)
+        return 0;
+      if (saw_digit == 0) {
+        if (++octets > 4)
+          return 0;
+        saw_digit = 1;
+      }
+    } else if (ch == '.' && saw_digit == 1) {
+      if (octets == 4)
+        return 0;
+      val = 0;
+      saw_digit = 0;
+    } else
+      return 0;
+  }
+  if (octets < 4)
+    return 0;
+  
+  return 1;
+}
+
+static int
+is_valid_ipv6_address (const char *str, const char *end)
+{
+  static const char xdigits[] = "0123456789abcdef";
+  const char *curtok;
+  int tp;
+  const char *colonp;
+  int saw_xdigit;
+  unsigned int val;
+
+  tp = 0;
+  colonp = NULL;
+
+  if (str == end)
+    return 0;
+  
+  /* Leading :: requires some special handling. */
+  if (*str == ':')
+    {
+      ++str;
+      if (str == end || *str != ':')
+	return 0;
+    }
+
+  curtok = str;
+  saw_xdigit = 0;
+  val = 0;
+
+  while (str < end) {
+    int ch = *str++;
+    const char *pch;
+
+    /* if ch is a number, add it to val. */
+    pch = strchr(xdigits, ch);
+    if (pch != NULL) {
+      val <<= 4;
+      val |= (pch - xdigits);
+      if (val > 0xffff)
+	return 0;
+      saw_xdigit = 1;
+      continue;
+    }
+
+    /* if ch is a colon ... */
+    if (ch == ':') {
+      curtok = str;
+      if (saw_xdigit == 0) {
+	if (colonp != NULL)
+	  return 0;
+	colonp = str + tp;
+	continue;
+      } else if (str == end) {
+	return 0;
+      }
+      if (tp > NS_IN6ADDRSZ - NS_INT16SZ)
+	return 0;
+      tp += NS_INT16SZ;
+      saw_xdigit = 0;
+      val = 0;
+      continue;
+    }
+
+    /* if ch is a dot ... */
+    if (ch == '.' && (tp <= NS_IN6ADDRSZ - NS_INADDRSZ) &&
+	is_valid_ipv4_address(curtok, end) == 1) {
+      tp += NS_INADDRSZ;
+      saw_xdigit = 0;
+      break;
+    }
+    
+    return 0;
+  }
+
+  if (saw_xdigit == 1) {
+    if (tp > NS_IN6ADDRSZ - NS_INT16SZ) 
+      return 0;
+    tp += NS_INT16SZ;
+  }
+
+  if (colonp != NULL) {
+    if (tp == NS_IN6ADDRSZ) 
+      return 0;
+    tp = NS_IN6ADDRSZ;
+  }
+
+  if (tp != NS_IN6ADDRSZ)
+    return 0;
+
+  return 1;
+}
+
 
 /* Parse a URL.
 
@@ -710,36 +846,29 @@ url_parse (const char *url, int *error)
 
   if (*p == '[')
     {
-      /* Support http://[::1]/ used by IPv6. */
-      int invalid = 0;
-      ++p;
-      while (1)
+      /* Handle IPv6 address inside square brackets.  Ideally we'd
+	 just look for the terminating ']', but rfc2732 mandates
+	 rejecting invalid IPv6 addresses.  */
+
+      /* The address begins after '['. */
+      host_b = p + 1;
+      host_e = strchr (host_b, ']');
+
+      if (!host_e)
 	{
-	  char c = *p++;
-	  switch (c)
-	    {
-	    case ']':
-	      goto out;
-	    case '\0':
-	      SETERR (error, PE_UNTERMINATED_IPV6_ADDRESS);
-	      return NULL;
-	    case ':': case '.':
-	      break;
-	    default:
-	      if (ISXDIGIT (c))
-		break;
-	      invalid = 1;
-	    }
+	  SETERR (error, PE_UNTERMINATED_IPV6_ADDRESS);
+	  return NULL;
 	}
-    out:
-      if (invalid)
+
+      /* Check if the IPv6 address is valid. */
+      if (!is_valid_ipv6_address(host_b, host_e))
 	{
 	  SETERR (error, PE_INVALID_IPV6_ADDRESS);
 	  return NULL;
 	}
-      /* Don't include brackets in [host_b, host_p). */
-      ++host_b;
-      host_e = p - 1;
+
+      /* Continue parsing after the closing ']'. */
+      p = host_e + 1;
     }
   else
     {
@@ -782,6 +911,7 @@ url_parse (const char *url, int *error)
 	      SETERR (error, PE_BAD_PORT_NUMBER);
 	      return NULL;
 	    }
+	  
 	  port = 10 * port + (*pp - '0');
 	}
     }
