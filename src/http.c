@@ -1381,7 +1381,10 @@ http_loop (struct urlinfo *u, char **newloc, int *dt)
      here so that we don't go through the hoops if we're just using
      FTP or whatever. */
   if (opt.cookies && opt.cookies_input && !cookies_loaded_p)
-    load_cookies (opt.cookies_input);
+    {
+      load_cookies (opt.cookies_input);
+      cookies_loaded_p = 1;
+    }
 
   *newloc = NULL;
 

@@ -1192,7 +1192,7 @@ domain_port (const char *domain_b, const char *domain_e,
     ++p;					\
 } while (0)
 
-#define MARK_WORD(p, b, e) do {			\
+#define SET_WORD_BOUNDARIES(p, b, e) do {			\
   SKIP_WS (p);					\
   b = p;					\
   /* skip non-ws */				\
@@ -1239,16 +1239,25 @@ load_cookies (const char *file)
 	/* empty line */
 	continue;
 
-      MARK_WORD (p, domain_b,  domain_e);
-      MARK_WORD (p, ignore_b,  ignore_e);
-      MARK_WORD (p, path_b,    path_e);
-      MARK_WORD (p, secure_b,  secure_e);
-      MARK_WORD (p, expires_b, expires_e);
-      MARK_WORD (p, name_b,    name_e);
+      SET_WORD_BOUNDARIES (p, domain_b,  domain_e);
+      SET_WORD_BOUNDARIES (p, ignore_b,  ignore_e);
+      SET_WORD_BOUNDARIES (p, path_b,    path_e);
+      SET_WORD_BOUNDARIES (p, secure_b,  secure_e);
+      SET_WORD_BOUNDARIES (p, expires_b, expires_e);
+      SET_WORD_BOUNDARIES (p, name_b,    name_e);
 
-      /* Don't use MARK_WORD for value because it may contain
-	 whitespace itself.  Instead, . */
-      MARK_WORD (p, value_b,   value_e);
+      /* Don't use SET_WORD_BOUNDARIES for value because it may
+	 contain whitespace.  Instead, set value_e to the end of line,
+	 modulo trailing space (this will skip the line separator.) */
+      SKIP_WS (p);
+      value_b = p;
+      value_e = p + strlen (p);
+      while (value_e > value_b && ISSPACE (*(value_e - 1)))
+	--value_e;
+      if (value_b == value_e)
+	/* Hmm, should we check for empty value?  I guess that's
+	   legal, so I leave it.  */
+	;
 
       cookie = cookie_new ();
 
@@ -1268,19 +1277,6 @@ load_cookies (const char *file)
 	cookie->port = cookie->secure ? DEFAULT_HTTPS_PORT : DEFAULT_HTTP_PORT;
 
       cookie->domain  = strdupdelim (domain_b, domain_e);
-
-      /* Don't use MARK_WORD for value because it may contain
-	 whitespace itself.  Instead, set name_e to the end of line,
-	 modulo trailing space (which includes the NL separator.) */
-      SKIP_WS (p);
-      name_b = p;
-      name_e = p + strlen (p);
-      while (name_e >= name_b && ISSPACE (*name_e))
-	--name_e;
-      if (name_b == name_e)
-	/* Hmm, should we check for empty value?  I guess that's
-	   legal, so I leave it.  */
-	;
 
       /* safe default in case EXPIRES field is garbled. */
       cookie->expiry_time = cookies_now - 1;

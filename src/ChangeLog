@@ -1,5 +1,12 @@
 2001-04-25  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (http_loop): Would load cookies every time.
+
+	* cookies.c (load_cookies): Handle cookies whose values contain
+	embedded spaces.
+
+2001-04-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* utils.c: Define each DIGITS_* in one line.
 
 2001-04-25  Roger L. Beeman  <beeman@cisco.com>
