@@ -99,6 +99,7 @@ struct options
   long timeout;			/* The value of read timeout in
 				   seconds. */
 #endif
+  int random_wait;		/* vary from 0 .. wait secs by random()? */
   long wait;			/* The wait period between retrievals. */
   long waitretry;		/* The wait period between retries. - HEH */
   int use_robots;		/* Do we heed robots.txt? */

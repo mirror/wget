@@ -701,6 +701,26 @@ seconds per file.
 Note that this option is turned on by default in the global
 @file{wgetrc} file.
 
+@cindex wait, random
+@cindex random wait
+@itemx --random-wait
+Some web sites may perform log analysis to identify retrieval programs
+such as Wget by looking for statistically significant similarities in
+the time between requests. This option causes the time between requests
+to vary between 0 and 2 * @var{wait} seconds, where @var{wait} was
+specified using the @samp{-w} or @samp{--wait} options, in order to mask
+Wget's presence from such analysis.
+
+A recent article in a publication devoted to development on a popular
+consumer platform provided code to perform this analysis on the fly.
+Its author suggested blocking at the class C address level to ensure
+automated retrieval programs were blocked despite changing DHCP-supplied
+addresses.
+
+The @samp{--random-wait} option was inspired by this ill-advised
+recommendation to block many unrelated users from a web site due to the
+actions of one.
+
 @cindex proxy
 @item -Y on/off
 @itemx --proxy=on/off
@@ -2168,6 +2188,10 @@ Wait @var{n} seconds between retrievals---the same as @samp{-w}.
 Wait up to @var{n} seconds between retries of failed retrievals
 only---the same as @samp{--waitretry}.  Note that this is turned on by
 default in the global @file{wgetrc}.
+
+@item randomwait = on/off
+Turn random between-request wait times on or off. The same as 
+@samp{--random-wait}.
 @end table
 
 @node Sample Wgetrc,  , Wgetrc Commands, Startup File

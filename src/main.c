@@ -161,9 +161,14 @@ Download:\n\
   -T,  --timeout=SECONDS        set the read timeout to SECONDS.\n\
   -w,  --wait=SECONDS           wait SECONDS between retrievals.\n\
        --waitretry=SECONDS      wait 1...SECONDS between retries of a retrieval.\n\
+       --random-wait            wait from 0...2*WAIT secs between retrievals.\n\
   -Y,  --proxy=on/off           turn proxy on or off.\n\
   -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n\
 \n"), stdout);
+#ifdef HAVE_RANDOM
+  fputs (_("\
+\n"), stdout);
+#endif
   fputs (_("\
 Directories:\n\
   -nd  --no-directories            don\'t create directories.\n\
@@ -261,6 +266,7 @@ main (int argc, char *const *argv)
     { "passive-ftp", no_argument, NULL, 139 },
     { "page-requisites", no_argument, NULL, 'p' },
     { "quiet", no_argument, NULL, 'q' },
+    { "random-wait", no_argument, NULL, 165 },
     { "recursive", no_argument, NULL, 'r' },
     { "relative", no_argument, NULL, 'L' },
     { "retr-symlinks", no_argument, NULL, 137 },
@@ -394,6 +400,9 @@ hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:C:",
  	  break;
 	case 156:
 	  setval ("httpkeepalive", "off");
+	  break;
+	case 165:
+	  setval ("randomwait", "on");
 	  break;
 	case 'b':
 	  setval ("background", "on");

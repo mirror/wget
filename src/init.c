@@ -160,6 +160,7 @@ static struct {
   { "proxyuser",	&opt.proxy_user,	cmd_string },
   { "quiet",		&opt.quiet,		cmd_boolean },
   { "quota",		&opt.quota,		cmd_bytes },
+  { "randomwait",	&opt.random_wait,	cmd_boolean },
   { "reclevel",		&opt.reclevel,		cmd_number_inf },
   { "recursive",	NULL,			cmd_spec_recursive },
   { "referer",		&opt.referer,		cmd_string },

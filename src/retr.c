@@ -560,8 +560,18 @@ sleep_between_retrievals (int count)
 	    sleep (opt.waitretry);
 	}
       else if (opt.wait)
-	/* Otherwise, check if opt.wait is specified.  If so, sleep.  */
-	sleep (opt.wait);
+	{
+	  /* Otherwise, check if opt.wait is specified.  If so, sleep.  */
+	  if (count > 1 || !opt.random_wait)
+	    sleep (opt.wait);
+	  else
+	    {
+	      int waitsecs = random() % (opt.wait * 2 + 1);
+	      DEBUGP(("sleep_between_retrievals: norm=%ld,random=%ld,sleep=%d\n",
+		      opt.wait, waitsecs - opt.wait, waitsecs));
+	      sleep(waitsecs);
+	    }
+	}
     }
   if (first_retrieval)
     first_retrieval = 0;

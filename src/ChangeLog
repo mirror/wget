@@ -1,3 +1,17 @@
+2001-11-04  Alan Eldridge  <alane@geeksrus.net>
+
+	* config.h.in: added HAVE_RANDOM.
+
+	* options.h: added random_wait to struct options.
+
+	* main.c (print_help [HAVE_RANDOM], main): added arg parsing, help
+	for --random-wait.
+
+	* retr.c (sleep_between_retrievals) [HAVE_RANDOM]: added
+	implementation of random wait times.
+
+	* init.c (commands): added "randomwait" keyword.
+
 2001-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* recur.c (descend_url_p): Be more conservative with blacklisting
