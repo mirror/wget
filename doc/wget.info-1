@@ -186,7 +186,7 @@ is an example:
      ftp://host/directory/file;type=a
 
    Two alternative variants of URL specification are also supported,
-because of historical (hysterical?) reasons and their wide-spreadedness.
+because of historical (hysterical?) reasons and their widespreaded use.
 
    FTP-only syntax (supported by `NcFTP'):
      host:/dir/file
@@ -811,7 +811,7 @@ through the network; all of this may hamper other users' work.  The
 same stands for the foreign server you are mirroring--the more requests
 it gets in a rows, the greater is its load.
 
-   Careless retrieving can also fill your file system unctrollably,
+   Careless retrieving can also fill your file system uncontrollably,
 which can grind the machine to a halt.
 
    The load can be minimized by lowering the maximum recursion level
@@ -872,8 +872,7 @@ Host Checking
    The drawback of following the relative links solely is that humans
 often tend to mix them with absolute links to the very same host, and
 the very same page.  In this mode (which is the default mode for
-following links) all URLs the that refer to the same host will be
-retrieved.
+following links) all URLs that refer to the same host will be retrieved.
 
    The problem with this option are the aliases of the hosts and
 domains.  Thus there is no way for Wget to know that `regoc.srce.hr' and
@@ -883,7 +882,7 @@ DNS-looked-up with `gethostbyname' to check whether we are maybe
 dealing with the same hosts.  Although the results of `gethostbyname'
 are cached, it is still a great slowdown, e.g. when dealing with large
 indices of home pages on different hosts (because each of the hosts
-must be and DNS-resolved to see whether it just *might* an alias of the
+must be DNS-resolved to see whether it just *might* be an alias of the
 starting host).
 
    To avoid the overhead you may use `-nh', which will turn off
@@ -891,15 +890,15 @@ DNS-resolving and make Wget compare hosts literally.  This will make
 things run much faster, but also much less reliable (e.g. `www.srce.hr'
 and `regoc.srce.hr' will be flagged as different hosts).
 
-   Note that modern HTTP servers allows one IP address to host several
-"virtual servers", each having its own directory hieratchy.  Such
+   Note that modern HTTP servers allow one IP address to host several
+"virtual servers", each having its own directory hierarchy.  Such
 "servers" are distinguished by their hostnames (all of which point to
 the same IP address); for this to work, a client must send a `Host'
 header, which is what Wget does.  However, in that case Wget *must not*
 try to divine a host's "real" address, nor try to use the same hostname
 for each access, i.e. `-nh' must be turned on.
 
-   In other words, the `-nh' option must be used to enabling the
+   In other words, the `-nh' option must be used to enable the
 retrieval from virtual servers distinguished by their hostnames.  As the
 number of such server setups grow, the behavior of `-nh' may become the
 default in the future.
@@ -963,8 +962,8 @@ Types of Files
 
    When downloading material from the web, you will often want to
 restrict the retrieval to only certain file types.  For example, if you
-are interested in downloading GIFS, you will not be overjoyed to get
-loads of Postscript documents, and vice versa.
+are interested in downloading GIFs, you will not be overjoyed to get
+loads of PostScript documents, and vice versa.
 
    Wget offers two options to deal with this problem.  Each option
 description lists a short name, a long name, and the equivalent command
@@ -1005,7 +1004,7 @@ in `.wgetrc'.
    The `-A' and `-R' options may be combined to achieve even better
 fine-tuning of which files to retrieve.  E.g. `wget -A "*zelazny*" -R
 .ps' will download all the files having `zelazny' as a part of their
-name, but *not* the postscript files.
+name, but *not* the PostScript files.
 
    Note that these two options do not affect the downloading of HTML
 files; Wget must load all the HTMLs to know where to go at
@@ -1059,7 +1058,7 @@ equivalent command in `.wgetrc'.
 `no_parent = on'
      The simplest, and often very useful way of limiting directories is
      disallowing retrieval of the links that refer to the hierarchy
-     "upper" than the beginning directory, i.e. disallowing ascent to
+     "above" than the beginning directory, i.e. disallowing ascent to
      the parent directory/directories.
 
      The `--no-parent' option (short `-np') is useful in this case.

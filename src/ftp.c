@@ -855,13 +855,17 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	 retrieval).
 	 Check if we are retrying or not, wait accordingly - HEH */
       if (!first_retrieval && (opt.wait || (count && opt.waitretry)))
-	if (count)
-	  if (count<opt.waitretry)
-	    sleep(count);
+	{
+	  if (count)
+	    {
+	      if (count<opt.waitretry)
+		sleep(count);
+	      else
+		sleep(opt.waitretry);
+	    }
 	  else
-	    sleep(opt.waitretry);
-	else
-	  sleep (opt.wait);
+	    sleep (opt.wait);
+	}
       if (first_retrieval)
 	first_retrieval = 0;
       if (con->st & ON_YOUR_OWN)

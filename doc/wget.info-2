@@ -710,7 +710,7 @@ Distribution
    Like all GNU utilities, the latest version of Wget can be found at
 the master GNU archive site prep.ai.mit.edu, and its mirrors.  For
 example, Wget 1.5.3+dev can be found at
-`ftp://prep.ai.mit.edu/pub/gnu/wget-1.5.3+dev.tar.gz'
+`ftp://prep.ai.mit.edu/gnu/wget/wget-1.5.3+dev.tar.gz'
 
 
 File: wget.info,  Node: Mailing List,  Next: Reporting Bugs,  Prev: Distribution,  Up: Various
@@ -860,7 +860,7 @@ robots `META' tag.
 
    The description of the norobots standard was written, and is
 maintained by Martijn Koster <m.koster@webcrawler.com>.  With his
-permission, I contribute a (slightly modified) texified version of the
+permission, I contribute a (slightly modified) TeXified version of the
 RES.
 
 * Menu:
@@ -928,7 +928,7 @@ contains lines of the form:
 
    The field name is case insensitive.
 
-   Comments can be included in file using UNIX bourne shell conventions:
+   Comments can be included in file using UNIX Bourne shell conventions:
 the `#' character is used to indicate that preceding space (if any) and
 the remainder of the line up to the line termination is discarded.
 Lines containing only a comment are discarded completely, and therefore
@@ -1065,7 +1065,7 @@ patches, or letters saying "Thanks!".
 
    * Darko Budor--initial port to Windows.
 
-   * Antonio Rosella--help and suggestions, plust the Italian
+   * Antonio Rosella--help and suggestions, plus the Italian
      translation.
 
    * Tomislav Petrovic, Mario Mikocevic--many bug reports and
@@ -1086,19 +1086,21 @@ suggestions, beta testing services, fan mail and all the other things
 that make maintenance so much fun:
 
    Tim Adam, Martin Baehr, Dieter Baron, Roger Beeman and the Gurus at
-Cisco, Mark Boyns, John Burden, Wanderlei Cavassin, Gilles Cedoc, Tim
-Charron, Noel Cragg, Kristijan Conkas, Damir Dzeko, Andrew Davison,
-Ulrich Drepper, Marc Duponcheel, Aleksandar Erkalovic, Andy Eskilsson,
-Masashi Fujita, Howard Gayle, Marcel Gerrits, Hans Grobler, Mathieu
-Guillaume, Karl Heuer, Gregor Hoffleit, Erik Magnus Hulthen, Richard
-Huveneers, Simon Josefsson, Mario Juric, Goran Kezunovic, Robert Kleine,
-Fila Kolodny, Alexander Kourakos, Martin Kraemer, Simos KSenitellis,
-Tage Stabell-Kulo, Hrvoje Lacko, Dave Love, Jordan Mendelson, Lin Zhe
-Min, Charlie Negyesi, Andrew Pollock, Steve Pothier, Marin Purgar, Jan
-Prikryl, Keith Refson, Tobias Ringstrom, Juan Jose Rodrigues, Heinz
-Salzmann, Robert Schmidt, Toomas Soome, Sven Sternberger, Markus
-Strasser, Szakacsits Szabolcs, Mike Thomas, Russell Vincent, Douglas E.
-Wegscheid, Jasmin Zainul, Bojan Zdrnja, Kristijan Zimmer.
+Cisco, Dan Berger, Mark Boyns, John Burden, Wanderlei Cavassin, Gilles
+Cedoc, Tim Charron, Noel Cragg, Kristijan Conkas, Andrew Deryabin,
+Damir Dzeko, Andrew Davison, Ulrich Drepper, Marc Duponcheel,
+Aleksandar Erkalovic, Andy Eskilsson, Masashi Fujita, Howard Gayle,
+Marcel Gerrits, Hans Grobler, Mathieu Guillaume, Dan Harkless, Heiko
+Herold, Karl Heuer, HIROSE Masaaki, Gregor Hoffleit, Erik Magnus
+Hulthen, Richard Huveneers, Simon Josefsson, Mario Juric, Goran
+Kezunovic, Robert Kleine, Fila Kolodny, Alexander Kourakos, Martin
+Kraemer, Simos KSenitellis, Hrvoje Lacko, Daniel S. Lewart, Dave Love,
+Jordan Mendelson, Lin Zhe Min, Charlie Negyesi, Andrew Pollock, Steve
+Pothier, Jan Prikryl, Marin Purgar, Keith Refson, Tobias Ringstrom,
+Juan Jose Rodrigues, Edward J. Sabol, Heinz Salzmann, Robert Schmidt,
+Toomas Soome, Tage Stabell-Kulo, Sven Sternberger, Markus Strasser,
+Szakacsits Szabolcs, Mike Thomas, Russell Vincent, Charles G Waldman,
+Douglas E. Wegscheid, Jasmin Zainul, Bojan Zdrnja, Kristijan Zimmer.
 
    Apologies to all who I accidentally left out, and many thanks to all
 the subscribers of the Wget mailing list.

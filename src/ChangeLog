@@ -1,3 +1,16 @@
+2000-03-02  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* ftp.c (ftp_loop_internal): Heiko introduced "suggest explicit
+	braces to avoid ambiguous `else'" warnings.  Eliminated them.
+	
+	* http.c (http_loop): Heiko introduced "suggest explicit
+	braces to avoid ambiguous `else'" warnings.  Eliminated them.
+	
+	* main.c: Heiko's --wait / --waitretry backwards compatibility
+	code looks to have been totally untested -- automatic variable
+	'wr' was used without being initialized, and a long int was passed
+	into setval()'s char* val parameter.
+	
 1999-08-25  Heiko Herold  <Heiko.Herold@previnet.it>
 
 	* ftp.c: Respect new option waitretry.
