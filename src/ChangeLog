@@ -1,5 +1,9 @@
 2001-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* host.c (address_list_set_faulty): Uncomment a sanity check.
+
+2001-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* utils.c (long_to_string): Return a pointer after where the
 	number ends.
 	(long_to_string): Rename to number_to_string.

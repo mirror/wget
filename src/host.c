@@ -124,12 +124,10 @@ address_list_match_all (struct address_list *al1, struct address_list *al2)
 void
 address_list_set_faulty (struct address_list *al, int index)
 {
-#if 0
-  /* Warning: INDEX is unused, so this assumes that the address list
-     is traversed in order.  In the next release, either enable this
-     assert, or use INDEX.  */
+  /* We assume that the address list is traversed in order, so that a
+     "faulty" attempt is always preceded with all-faulty addresses,
+     and this is how Wget uses it.  */
   assert (index == al->faulty);
-#endif
 
   ++al->faulty;
   if (al->faulty >= al->count)
