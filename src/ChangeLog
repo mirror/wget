@@ -1,5 +1,9 @@
 2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* html-url.c (find_tag): Switch to binary search.
+
+2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (print_help): Fix typo; stured -> stored.
 
 2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>

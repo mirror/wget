@@ -270,30 +270,36 @@ init_interesting (void)
   }
 }
 
+/* Find tag with name TAG_NAME in KNOWN_TAGS and return its index.  */
+
 static int
 find_tag (const char *tag_name)
 {
-  int i;
+  /* Originally implemented as linear search.  In Wget 1.9 known_tags
+     contains 21 elements, for which binary search requires max. 5
+     comparisons, whereas linear search performs 10 on average.  */
 
-  /* This is linear search; if the number of tags grow, we can switch
-     to binary search.  */
+  int lo = 0, hi = countof (known_tags) - 1;
 
-  for (i = 0; i < countof (known_tags); i++)
+  while (lo <= hi)
     {
-      int cmp = strcasecmp (known_tags[i].name, tag_name);
-      /* known_tags are sorted alphabetically, so we can
-         micro-optimize.  */
-      if (cmp > 0)
-	break;
-      else if (cmp == 0)
-	return i;
+      int mid = (lo + hi) >> 1;
+      int cmp = strcasecmp (tag_name, known_tags[mid].name);
+      if (cmp < 0)
+	hi = mid - 1;
+      else if (cmp > 0)
+	lo = mid + 1;
+      else
+	return mid;
     }
+
   return -1;
 }
 
 /* Find the value of attribute named NAME in the taginfo TAG.  If the
    attribute is not present, return NULL.  If ATTRIND is non-NULL, the
    index of the attribute in TAG will be stored there.  */
+
 static char *
 find_attr (struct taginfo *tag, const char *name, int *attrind)
 {
