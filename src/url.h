@@ -104,7 +104,10 @@ int skip_uname PARAMS ((const char *));
 
 uerr_t parseurl PARAMS ((const char *, struct urlinfo *, int));
 char *str_url PARAMS ((const struct urlinfo *, int));
+/* url_equal is not currently used. */
+#if 0
 int url_equal PARAMS ((const char *, const char *));
+#endif /* 0 */
 
 urlpos *get_urls_file PARAMS ((const char *));
 urlpos *get_urls_html PARAMS ((const char *, const char *, int, int *));

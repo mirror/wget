@@ -774,6 +774,8 @@ str_url (const struct urlinfo *u, int hide)
 
    Returns 1 if the URL1 is equivalent to URL2, 0 otherwise.  Also
    return 0 on error.  */
+/* Do not compile unused code. */
+#if 0
 int
 url_equal (const char *url1, const char *url2)
 {
@@ -792,6 +794,7 @@ url_equal (const char *url1, const char *url2)
   err = parseurl (url2, u2, 0);
   if (err != URLOK)
     {
+      freeurl (u1, 1);
       freeurl (u2, 1);
       return 0;
     }
@@ -800,6 +803,7 @@ url_equal (const char *url1, const char *url2)
   freeurl (u2, 1);
   return res;
 }
+#endif /* 0 */
 
 urlpos *
 get_urls_file (const char *file)

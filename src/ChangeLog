@@ -1,3 +1,11 @@
+2001-06-08  Edward J. Sabol  <sabol@alderaan.gsfc.nasa.gov>
+
+	* url.c (url_equal): Fix a memory leak when parseurl returns an
+	error on the second URL. Also, since url_equal is not used at the
+	moment, do not compile it.
+
+	* url.h: Ditto for the prototype of url_equal.
+
 2001-11-16  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* html-parse.c (map_html_tags): Support XML-style empty tags.
