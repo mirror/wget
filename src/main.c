@@ -171,7 +171,7 @@ HTTP options:\n\
   -U,  --user-agent=AGENT    identify as AGENT instead of Wget/VERSION.\n\
 \n"), _("\
 FTP options:\n\
-       --retr-symlinks   retrieve FTP symbolic links.\n\
+       --retr-symlinks   when recursing, retrieve linked-to files (not dirs).\n\
   -g,  --glob=on/off     turn file name globbing on or off.\n\
        --passive-ftp     use the \"passive\" transfer mode.\n\
 \n"), _("\

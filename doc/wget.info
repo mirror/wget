@@ -26,8 +26,8 @@ notice identical to this one.
 
 Indirect:
 wget.info-1: 961
-wget.info-2: 50095
-wget.info-3: 97019
+wget.info-2: 50884
+wget.info-3: 97808
 
 Tag Table:
 (Indirect)
@@ -42,47 +42,47 @@ Node: Download Options12812
 Node: Directory Options20659
 Node: HTTP Options23137
 Node: FTP Options27042
-Node: Recursive Retrieval Options28235
-Node: Recursive Accept/Reject Options32947
-Node: Recursive Retrieval36173
-Node: Following Links38471
-Node: Relative Links39499
-Node: Host Checking40013
-Node: Domain Acceptance42038
-Node: All Hosts43708
-Node: Types of Files44135
-Node: Directory-Based Limits46585
-Node: FTP Links49225
-Node: Time-Stamping50095
-Node: Time-Stamping Usage51732
-Node: HTTP Time-Stamping Internals53301
-Node: FTP Time-Stamping Internals54771
-Node: Startup File55979
-Node: Wgetrc Location56852
-Node: Wgetrc Syntax57667
-Node: Wgetrc Commands58382
-Node: Sample Wgetrc65910
-Node: Examples70929
-Node: Simple Usage71536
-Node: Advanced Usage73930
-Node: Guru Usage76681
-Node: Various78343
-Node: Proxies78867
-Node: Distribution81632
-Node: Mailing List81983
-Node: Reporting Bugs82682
-Node: Portability84467
-Node: Signals85842
-Node: Appendices86496
-Node: Robots86911
-Node: Introduction to RES88058
-Node: RES Format89951
-Node: User-Agent Field91055
-Node: Disallow Field91819
-Node: Norobots Examples92430
-Node: Security Considerations93384
-Node: Contributors94380
-Node: Copying97019
-Node: Concept Index116182
+Node: Recursive Retrieval Options29024
+Node: Recursive Accept/Reject Options33736
+Node: Recursive Retrieval36962
+Node: Following Links39260
+Node: Relative Links40288
+Node: Host Checking40802
+Node: Domain Acceptance42827
+Node: All Hosts44497
+Node: Types of Files44924
+Node: Directory-Based Limits47374
+Node: FTP Links50014
+Node: Time-Stamping50884
+Node: Time-Stamping Usage52521
+Node: HTTP Time-Stamping Internals54090
+Node: FTP Time-Stamping Internals55560
+Node: Startup File56768
+Node: Wgetrc Location57641
+Node: Wgetrc Syntax58456
+Node: Wgetrc Commands59171
+Node: Sample Wgetrc66699
+Node: Examples71718
+Node: Simple Usage72325
+Node: Advanced Usage74719
+Node: Guru Usage77470
+Node: Various79132
+Node: Proxies79656
+Node: Distribution82421
+Node: Mailing List82772
+Node: Reporting Bugs83471
+Node: Portability85256
+Node: Signals86631
+Node: Appendices87285
+Node: Robots87700
+Node: Introduction to RES88847
+Node: RES Format90740
+Node: User-Agent Field91844
+Node: Disallow Field92608
+Node: Norobots Examples93219
+Node: Security Considerations94173
+Node: Contributors95169
+Node: Copying97808
+Node: Concept Index116971
 
 End Tag Table

@@ -6,6 +6,8 @@ Wget.  Patches to implement any of these items would be gladly accepted.  The
 items are not listed in any particular order.  Not all of them represent
 user-visible changes.
 
+* --retr-symlinks should cause wget to traverse links to directories too.
+
 * Lots of noncompliant webservers issue HTTP redirects to relative URLs, and
   browsers follow them, so wget should too.
 

@@ -1,3 +1,7 @@
+2000-10-09  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* TODO: --retr-symlinks should cause wget to traverse links to dirs too.
+
 2000-09-25  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* TODO: Make wget return nonzero in situations like bad HTTP

@@ -1,3 +1,9 @@
+2000-10-09  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* html.c (htmlfindurl): Added unneeded initialization to quiet warning.
+		
+	* main.c (print_help): Clarified what --retr-symlinks does.
+	
 2000-08-30  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* ftp.c (ftp_retrieve_list): Use new INFINITE_RECURSION #define.

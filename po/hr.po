@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.5.2-b2\n"
-"POT-Creation-Date: 2000-08-30 03:32-0700\n"
+"POT-Creation-Date: 2000-10-09 15:38-0700\n"
 "PO-Revision-Date: 1998-02-29 21:05+01:00\n"
 "Last-Translator: Hrvoje Niksic <hniksic@srce.hr>\n"
 "Language-Team: Croatian <hr-translation@bagan.srce.hr>\n"
@@ -758,9 +758,11 @@ msgstr ""
 "\n"
 
 #: src/main.c:172
+#, fuzzy
 msgid ""
 "FTP options:\n"
-"       --retr-symlinks   retrieve FTP symbolic links.\n"
+"       --retr-symlinks   when recursing, retrieve linked-to files (not "
+"dirs).\n"
 "  -g,  --glob=on/off     turn file name globbing on or off.\n"
 "       --passive-ftp     use the \"passive\" transfer mode.\n"
 "\n"

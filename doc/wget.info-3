@@ -479,8 +479,8 @@ Concept Index
 * pause:                                 Download Options.
 * portability:                           Portability.
 * proxies:                               Proxies.
-* proxy <1>:                             Download Options.
-* proxy:                                 HTTP Options.
+* proxy <1>:                             HTTP Options.
+* proxy:                                 Download Options.
 * proxy authentication:                  HTTP Options.
 * proxy filling:                         Recursive Retrieval Options.
 * proxy password:                        HTTP Options.
@@ -500,7 +500,6 @@ Concept Index
 * retries:                               Download Options.
 * retries, waiting between:              Download Options.
 * retrieval tracing style:               Download Options.
-* retrieve symbolic links:               FTP Options.
 * retrieving:                            Recursive Retrieval.
 * robots:                                Robots.
 * robots.txt:                            Robots.
@@ -516,6 +515,7 @@ Concept Index
 * startup file:                          Startup File.
 * suffixes, accept:                      Types of Files.
 * suffixes, reject:                      Types of Files.
+* symbolic links, retrieving:            FTP Options.
 * syntax of options:                     Option Syntax.
 * syntax of wgetrc:                      Wgetrc Syntax.
 * tag-based recursive pruning:           Recursive Accept/Reject Options.

@@ -145,7 +145,7 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init,
     {
       const char*  link_href = NULL;
       const char*  link_rel = NULL;
-      int          link_href_saved_size;
+      int          link_href_saved_size = 0; /* init. just to shut up warning */
 
       if (!bufsize)
 	break;

@@ -681,8 +681,23 @@ FTP Options
 ===========
 
 `--retr-symlinks'
-     Retrieve symbolic links on FTP sites as if they were plain files,
-     i.e. don't just create links locally.
+     Usually, when retrieving FTP directories recursively and a symbolic
+     link is encountered, the linked-to file is not downloaded.
+     Instead, a matching symbolic link is created on the local
+     filesystem.  The pointed-to file will not be downloaded unless
+     this recursive retrieval would have encountered it separately and
+     downloaded it anyway.
+
+     When `--retr-symlinks' is specified, however, symbolic links are
+     traversed and the pointed-to files are retrieved.  At this time,
+     this option does not cause wget to traverse symlinks to
+     directories and recurse through them, but in the future it should
+     be enhanced to do this.
+
+     Note that when retrieving a file (not a directory) because it was
+     specified on the commandline, rather than because it was recursed
+     to, this option has no effect.  Symbolic links are always
+     traversed in this case.
 
 `-g on/off'
 `--glob=on/off'
