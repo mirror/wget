@@ -1,5 +1,16 @@
 2003-10-31  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.h: Move declarations of malloc and logging code to
+	xmalloc.h and log.h respectively to unclutter this file.
+	(STRDUP_ALLOCA): Made it side-effect free.
+
+	* xmalloc.h: New files.  Define macros xnew, xnew0, xnew_array,
+	and xnew0_array.
+
+	* xmalloc.c: New file.  Move the xmalloc routines here.
+
+2003-10-31  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c (sockaddr_set_data): Remove the broken code that
 	checked for NULL address.
 

@@ -123,6 +123,8 @@ rbuf_peek (struct rbuf *rbuf, char *store)
   return 1;
 }
 
+#define MIN(p,q) (((p) <= (q)) ? (p) : (q))
+
 /* Flush RBUF's buffer to WHERE.  Flush MAXSIZE bytes at most.
    Returns the number of bytes actually copied.  If the buffer is
    empty, 0 is returned.  */
@@ -133,7 +135,7 @@ rbuf_flush (struct rbuf *rbuf, char *where, int maxsize)
     return 0;
   else
     {
-      int howmuch = MINVAL (rbuf->buffer_left, maxsize);
+      int howmuch = MIN (rbuf->buffer_left, maxsize);
 
       if (where)
 	memcpy (where, rbuf->buffer_pos, howmuch);

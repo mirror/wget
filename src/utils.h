@@ -49,6 +49,8 @@ struct file_memory {
   int mmap_p;
 };
 
+#define HYPHENP(x) (*(x) == '-' && !*((x) + 1))
+
 struct wget_timer;
 
 char *time_str PARAMS ((time_t *));

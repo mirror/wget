@@ -32,3 +32,4 @@ snprintf$o: snprintf.c config.h safe-ctype.h
 url$o: url.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h utils.h url.h host.h hash.h
 utils$o: utils.c config.h wget.h sysdep.h mswindows.h options.h safe-ctype.h utils.h hash.h
 version$o: version.c
+xmalloc$o: wget.h xmalloc.h

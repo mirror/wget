@@ -46,3 +46,8 @@ Windows contributors:
 
 * Douglas E. Wegscheid -- maintains configure.bat and various Windows
   makefiles.
+
+* Herold Heiko -- numerous build reports and fixes.
+
+* Gisle Vanem -- many Windows-related improvements to the source and
+  the build system.

@@ -12,7 +12,8 @@ OBJS=cmpt.obj connect.obj convert.obj ftp.obj ftp-basic.obj  \
       ftp-ls.obj ftp-opie.obj getopt.obj headers.obj host.obj html-parse.obj html-url.obj \
       http.obj init.obj log.obj main.obj gnu-md5.obj netrc.obj rbuf.obj  \
       safe-ctype.obj hash.obj progress.obj gen-md5.obj cookies.obj \
-      recur.obj res.obj retr.obj url.obj utils.obj version.obj mswindows.obj
+      recur.obj res.obj retr.obj url.obj utils.obj version.obj xmalloc.obj \
+      mswindows.obj
 
 LIBDIR=$(MAKEDIR)\..\lib
 
@@ -20,37 +21,38 @@ wget.exe: $(OBJS)
   $(LINK) @&&|
 $(LFLAGS) -Tpe -ap -c +
 $(LIBDIR)\c0x32.obj+
+cmpt.obj
+connect.obj+
 convert.obj+
 cookies.obj+
-hash.obj+
-safe-ctype.obj+
-version.obj+
-utils.obj+
-url.obj+
-retr.obj+
-res.obj+
-recur.obj+
-rbuf.obj+
-progress.obj+
-netrc.obj+
-mswindows.obj+
-gnu-md5.obj+
+ftp-basic.obj+
+ftp-ls.obj+
+ftp-opie.obj+
+ftp.obj+
 gen-md5.obj+
-main.obj+
-log.obj+
-init.obj+
-http.obj+
+getopt.obj+
+gnu-md5.obj+
+hash.obj+
+headers.obj+
+host.obj+
 html-parse.obj+
 html-url.obj+
-host.obj+
-headers.obj+
-getopt.obj+
-ftp-opie.obj+
-ftp-ls.obj+
-ftp-basic.obj+
-ftp.obj+
-connect.obj+
-cmpt.obj
+http.obj+
+init.obj+
+log.obj+
+main.obj+
+mswindows.obj+
+netrc.obj+
+progress.obj+
+rbuf.obj+
+recur.obj+
+res.obj+
+retr.obj+
+safe-ctype.obj+
+url.obj+
+utils.obj+
+version.obj+
+xmalloc.obj+
 $<,$*
 $(LIBDIR)\import32.lib+
 $(LIBDIR)\cw32.lib

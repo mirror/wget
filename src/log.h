@@ -1,12 +1,12 @@
-/* General MD5 header file.
-   Copyright (C) 2001 Free Software Foundation, Inc.
+/* Declarations for log.c.
+   Copyright (C) 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
 GNU Wget is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ (at your option) any later version.
 
 GNU Wget is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,24 +27,29 @@ modify this file, you may extend this exception to your version of the
 file, but you are not obligated to do so.  If you do not wish to do
 so, delete this exception statement from your version.  */
 
-#ifndef GEN_MD5_H
-#define GEN_MD5_H
+#ifndef LOG_H
+#define LOG_H
 
-typedef struct gen_md5_context gen_md5_context;
+/* Make gcc check for the format of logmsg() and debug_logmsg().  */
+#ifdef __GNUC__
+# define GCC_FORMAT_ATTR(a, b) __attribute__ ((format (printf, a, b)))
+#else  /* not __GNUC__ */
+# define GCC_FORMAT_ATTR(a, b)
+#endif /* not __GNUC__ */
 
-/* Use a forward declaration so we don't have to include any of the
-   includes.  */
-struct gen_md5_context;
+enum log_options { LOG_VERBOSE, LOG_NOTQUIET, LOG_NONVERBOSE, LOG_ALWAYS };
 
-#define MD5_HASHLEN 16
+#ifdef HAVE_STDARG_H
+void logprintf PARAMS ((enum log_options, const char *, ...))
+     GCC_FORMAT_ATTR (2, 3);
+void debug_logprintf PARAMS ((const char *, ...)) GCC_FORMAT_ATTR (1, 2);
+#else  /* not HAVE_STDARG_H */
+void logprintf ();
+void debug_logprintf ();
+#endif /* not HAVE_STDARG_H */
+void logputs PARAMS ((enum log_options, const char *));
+void logflush PARAMS ((void));
+void log_set_flush PARAMS ((int));
+int log_set_save_context PARAMS ((int));
 
-#define ALLOCA_MD5_CONTEXT(var_name)			\
-  gen_md5_context *var_name =				\
-  (gen_md5_context *) alloca (gen_md5_context_size ())
-
-int gen_md5_context_size PARAMS ((void));
-void gen_md5_init PARAMS ((gen_md5_context *));
-void gen_md5_update PARAMS ((const unsigned char *, int, gen_md5_context *));
-void gen_md5_finish PARAMS ((gen_md5_context *, unsigned char *));
-
-#endif /* GEN_MD5_H */
+#endif /* LOG_H */

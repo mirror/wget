@@ -1336,9 +1336,9 @@ Accept: %s\r\n\
     {
       char*  last_period_in_local_filename = strrchr(*hs->local_file, '.');
 
-      if (last_period_in_local_filename == NULL ||
-	  !(strcasecmp(last_period_in_local_filename, ".htm") == EQ ||
-	    strcasecmp(last_period_in_local_filename, ".html") == EQ))
+      if (last_period_in_local_filename == NULL
+	  || !(0 == strcasecmp (last_period_in_local_filename, ".htm")
+	       || 0 == strcasecmp (last_period_in_local_filename, ".html")))
 	{
 	  size_t  local_filename_len = strlen(*hs->local_file);
 	  

@@ -62,6 +62,7 @@ so, delete this exception statement from your version.  */
 
 #include "wget.h"
 #include "utils.h"
+#include "log.h"
 
 #ifndef errno
 extern int errno;
