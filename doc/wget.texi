@@ -2856,6 +2856,7 @@ Martin Baehr,
 Dieter Baron,
 Roger Beeman and the Gurus at Cisco,
 Dan Berger,
+Paul Bludov,
 Mark Boyns,
 John Burden,
 Wanderlei Cavassin,
@@ -2886,6 +2887,7 @@ Aleksandar Erkalovi@'{c},
 Aleksandar Erkalovic,
 @end ifinfo
 Andy Eskilsson,
+Christian Fraenkel,
 Masashi Fujita,
 Howard Gayle,
 Marcel Gerrits,
@@ -2898,12 +2900,19 @@ HIROSE Masaaki,
 Gregor Hoffleit,
 Erik Magnus Hulthen,
 Richard Huveneers,
+Jonas Jensen,
 Simon Josefsson,
 @iftex
 Mario Juri@'{c},
 @end iftex
 @ifinfo
 Mario Juric,
+@end ifinfo
+@iftex
+Hack Kampbj@o rn,
+@end iftex
+@ifinfo
+Hack Kampbjorn,
 @end ifinfo
 Const Kaplinsky,
 @iftex
@@ -2913,6 +2922,7 @@ Goran Kezunovi@'{c},
 Goran Kezunovic,
 @end ifinfo
 Robert Kleine,
+KOJIMA Haime,
 Fila Kolodny,
 Alexander Kourakos,
 Martin Kraemer,
@@ -2926,10 +2936,17 @@ Simos KSenitellis,
 @end ifinfo
 Hrvoje Lacko,
 Daniel S. Lewart,
+@iftex
+Nicol@'{a}s Lichtmeier,
+@end iftex
+@ifinfo
+Nicolas Lichtmeier,
+@end ifinfo
 Dave Love,
 Alexander V. Lukyanov,
 Jordan Mendelson,
 Lin Zhe Min,
+Tim Mooney,
 Simon Munton,
 Charlie Negyesi,
 R. K. Owen,
@@ -2942,6 +2959,12 @@ Jan P@v{r}ikryl,
 Jan Prikryl,
 @end ifinfo
 Marin Purgar,
+@iftex
+Csaba R@'{a}duly,
+@end iftex
+@ifinfo
+Csaba Raduly,
+@end ifinfo
 Keith Refson,
 Tyler Riddle,
 Tobias Ringstrom,
@@ -2960,8 +2983,10 @@ Toomas Soome,
 Tage Stabell-Kulo,
 Sven Sternberger,
 Markus Strasser,
+John Summerfield,
 Szakacsits Szabolcs,
 Mike Thomas,
+Philipp Thomas,
 Russell Vincent,
 Charles G Waldman,
 Douglas E. Wegscheid,
