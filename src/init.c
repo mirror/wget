@@ -174,7 +174,7 @@ static struct {
 static int
 comind (const char *com)
 {
-  int min = 0, max = ARRAY_SIZE (commands);
+  int min = 0, max = ARRAY_SIZE (commands) - 1;
 
   do
     {

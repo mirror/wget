@@ -1,3 +1,7 @@
+2000-11-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* init.c (comind): Initialize MAX to array size - 1.
+
 2000-11-08  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* url.c (construct): Changed last_slash[-1] to *(last_slash - 1).
