@@ -2715,8 +2715,9 @@ Special thanks goes to the following people (no particular order):
 
 @itemize @bullet
 @item
-Karsten Thygesen---donated the mailing list and the initial @sc{ftp}
-space.
+Karsten Thygesen---donated system resources such as the mailing list,
+web space, and @sc{ftp} space, along with a lot of time to make these
+actually work.
 
 @item
 Shawn McHorse---bug reports and patches.
@@ -2777,6 +2778,7 @@ suggestions, beta testing services, fan mail and all the other things
 that make maintenance so much fun:
 
 Tim Adam,
+Adrian Aichner,
 Martin Baehr,
 Dieter Baron,
 Roger Beeman and the Gurus at Cisco,
@@ -2793,16 +2795,17 @@ Kristijan @v{C}onka@v{s},
 @ifinfo
 Kristijan Conkas,
 @end ifinfo
+John Daily,
+Andrew Davison,
 Andrew Deryabin,
+Ulrich Drepper,
+Marc Duponcheel,
 @iftex
 Damir D@v{z}eko,
 @end iftex
 @ifinfo
 Damir Dzeko,
 @end ifinfo
-Andrew Davison,
-Ulrich Drepper,
-Marc Duponcheel,
 @iftex
 Aleksandar Erkalovi@'{c},
 @end iftex
@@ -2829,6 +2832,7 @@ Mario Juri@'{c},
 @ifinfo
 Mario Juric,
 @end ifinfo
+Const Kaplinsky,
 @iftex
 Goran Kezunovi@'{c},
 @end iftex
@@ -2850,14 +2854,18 @@ Simos KSenitellis,
 Hrvoje Lacko,
 Daniel S. Lewart,
 Dave Love,
+Alexander V. Lukyanov,
 Jordan Mendelson,
 Lin Zhe Min,
+Simon Munton,
 Charlie Negyesi,
+R. K. Owen,
 Andrew Pollock,
 Steve Pothier,
 Jan Prikryl,
 Marin Purgar,
 Keith Refson,
+Tyler Riddle,
 Tobias Ringstrom,
 @c Texinfo doesn't grok @'{@i}, so we have to use TeX itself.
 @tex
@@ -2869,6 +2877,7 @@ Juan Jose Rodrigues,
 Edward J. Sabol,
 Heinz Salzmann,
 Robert Schmidt,
+Andreas Schwab,
 Toomas Soome,
 Tage Stabell-Kulo,
 Sven Sternberger,
