@@ -1,3 +1,12 @@
+2001-05-27  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* all: Update copyright information.
+
+2001-05-26  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* http.c (gethttp): Indicate that the continued download failed
+	for *this* file.
+
 2001-05-26  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* version.c: Wget 1.7-pre1 is released.
