@@ -1,5 +1,10 @@
 2000-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c: Include gen_sslfunc.h after including Wget's headers.
+	(persistent_available_p): Needed coma before `int ssl'.
+
+2000-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* ftp.c (ftp_loop_internal): Ditto.
 
 	* http.c (http_loop): Use it.

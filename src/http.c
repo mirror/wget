@@ -364,7 +364,7 @@ register_persistent (const char *host, unsigned short port, int fd
 static int
 persistent_available_p (const char *host, unsigned short port
 #ifdef HAVE_SSL
-			int ssl
+			, int ssl
 #endif
 			)
 {
