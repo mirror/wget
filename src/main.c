@@ -759,10 +759,12 @@ GNU General Public License for more details.\n"));
 
   if (opt.page_requisites && !opt.recursive)
     {
-      opt.recursive = TRUE;
+      /* Don't set opt.recursive here because it would confuse the FTP
+	 code.  Instead, call retrieve_tree below when either
+	 page_requisites or recursive is requested.  */
       opt.reclevel = 0;
       if (!opt.no_dirstruct)
-	opt.dirstruct = TRUE;  /* usually handled by cmd_spec_recursive() */
+	opt.dirstruct = 1;	/* normally handled by cmd_spec_recursive() */
     }
 
   if (opt.verbose == -1)
@@ -879,7 +881,8 @@ Can't timestamp and not clobber old files at the same time.\n"));
       char *filename = NULL, *redirected_URL = NULL;
       int dt;
 
-      if (opt.recursive && url_scheme (*t) != SCHEME_FTP)
+      if ((opt.recursive || opt.page_requisites)
+	  && url_scheme (*t) != SCHEME_FTP)
 	status = retrieve_tree (*t);
       else
 	status = retrieve_url (*t, &filename, &redirected_URL, NULL, &dt);
@@ -906,7 +909,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
 		   opt.input_filename);
     }
   /* Print the downloaded sum.  */
-  if (opt.recursive
+  if (opt.recursive || opt.page_requisites
       || nurl > 1
       || (opt.input_filename && total_downloaded_bytes != 0))
     {

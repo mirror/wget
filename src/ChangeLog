@@ -1,3 +1,11 @@
+2003-10-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* retr.c (retrieve_from_file): Use retrieve_tree for
+	page-requisites.
+
+	* main.c (main): Don't define opt.recursive when -p is used.
+	Instead, make sure that recursion is used for HTTP in that case.
+
 2003-10-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* host.h: Defined accessors for elements of ip_address.  Updated

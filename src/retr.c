@@ -559,7 +559,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
    them.  If HTML is non-zero, treat the file as HTML, and construct
    the URLs accordingly.
 
-   If opt.recursive is set, call recursive_retrieve() for each file.  */
+   If opt.recursive is set, call retrieve_tree() for each file.  */
+
 uerr_t
 retrieve_from_file (const char *file, int html, int *count)
 {
@@ -584,7 +585,8 @@ retrieve_from_file (const char *file, int html, int *count)
 	  status = QUOTEXC;
 	  break;
 	}
-      if (opt.recursive && cur_url->url->scheme != SCHEME_FTP)
+      if ((opt.recursive || opt.page_requisites)
+	  && cur_url->url->scheme != SCHEME_FTP)
 	status = retrieve_tree (cur_url->url->url);
       else
 	status = retrieve_url (cur_url->url->url, &filename, &new_file, NULL, &dt);
