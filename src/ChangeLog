@@ -1,5 +1,10 @@
 2003-09-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c (path_simplify): Instead of calls to memmove, handle "./"
+	and "../" by advancing pointers.
+
+2003-09-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* retr.c (getproxy): Moved from url.c.
 
 	* convert.c: Split off link conversion from url.c into separate

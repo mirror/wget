@@ -1612,8 +1612,8 @@ find_last_char (const char *b, const char *e, char c)
 
 /* Resolve "." and ".." elements of PATH by destructively modifying
    PATH.  "." is resolved by removing that path element, and ".." is
-   resolved by removing the preceding path element.  Leading and
-   trailing slashes are preserved.
+   resolved by removing the preceding path element.  Single leading
+   and trailing slashes are preserved.
 
    Return non-zero if any changes have been made.
 
@@ -1628,108 +1628,77 @@ find_last_char (const char *b, const char *e, char c)
 static int
 path_simplify (char *path)
 {
-  int change = 0;
-  char *p, *end;
+  char *h, *t, *end;
 
+  /* Preserve the leading '/'. */
   if (path[0] == '/')
-    ++path;			/* preserve the leading '/'. */
+    ++path;
 
-  p = path;
-  end = p + strlen (p) + 1;	/* position past the terminating zero. */
+  h = path;			/* hare */
+  t = path;			/* tortoise */
+  end = path + strlen (path);
 
-  while (1)
+  while (h < end)
     {
-    again:
-      /* P should point to the beginning of a path element. */
+      /* Hare should be at the beginning of a path element. */
 
-      if (*p == '.' && (*(p + 1) == '/' || *(p + 1) == '\0'))
+      if (h[0] == '.' && (h[1] == '/' || h[1] == '\0'))
 	{
-	  /* Handle "./foo" by moving "foo" two characters to the
-	     left. */
-	  if (*(p + 1) == '/')
-	    {
-	      change = 1;
-	      memmove (p, p + 2, end - (p + 2));
-	      end -= 2;
-	      goto again;
-	    }
-	  else
-	    {
-	      change = 1;
-	      *p = '\0';
-	      break;
-	    }
+	  /* Ignore "./". */
+	  h += 2;
 	}
-      else if (*p == '.' && *(p + 1) == '.'
-	       && (*(p + 2) == '/' || *(p + 2) == '\0'))
+      else if (h[0] == '.' && h[1] == '.' && (h[2] == '/' || h[2] == '\0'))
 	{
-	  /* Handle "../foo" by moving "foo" one path element to the
-	     left.  */
-	  char *b = p;		/* not p-1 because P can equal PATH */
+	  /* Handle "../" by retreating the tortoise by one path
+	     element -- but not past beggining of PATH.  */
 
-	  /* Backtrack by one path element, but not past the beginning
-	     of PATH. */
-
-	  /* foo/bar/../baz */
-	  /*         ^ p    */
-	  /*     ^ b        */
-
-	  if (b > path)
+	  if (t > path)
 	    {
 	      /* Move backwards until B hits the beginning of the
 		 previous path element or the beginning of path. */
-	      for (--b; b > path && *(b - 1) != '/'; b--)
+	      for (--t; t > path && t[-1] != '/'; t--)
 		;
 	    }
-
-	  change = 1;
-	  if (*(p + 2) == '/')
+	  h += 3;
+	}
+      else if (*h == '/')
+	{
+	  /* Ignore empty path elements.  Supporting them is hard (in
+	     which directory do you save http://x.com///y.html?), and
+	     they don't bring any practical gain.  Plus, they break
+	     our filesystem-influenced assumptions: allowing empty
+	     path elements means that "x/y/../z" simplifies to
+	     "x/y/z", whereas most people would expect "x/z".  */
+	  ++h;
+	}
+      else
+	{
+	  /* A regular path element.  If H hasn't advanced past T,
+	     simply skip to the next path element.  Otherwise, copy
+	     the path element until the next slash.  */
+	  if (t == h)
 	    {
-	      memmove (b, p + 3, end - (p + 3));
-	      end -= (p + 3) - b;
-	      p = b;
+	      /* Skip the path element, including the slash.  */
+	      while (h < end && *h != '/')
+		t++, h++;
+	      if (h < end)
+		t++, h++;
 	    }
 	  else
 	    {
-	      *b = '\0';
-	      break;
+	      /* Copy the path element, including the final slash.  */
+	      while (h < end && *h != '/')
+		*t++ = *h++;
+	      if (h < end)
+		*t++ = *h++;
 	    }
-
-	  goto again;
 	}
-      else if (*p == '/')
-	{
-	  /* Remove empty path elements.  Not mandated by rfc1808 et
-	     al, but it seems like a good idea to get rid of them.
-	     Supporting them properly is hard (in which directory do
-	     you save http://x.com///y.html?) and they don't seem to
-	     bring much gain.  */
-	  char *q = p;
-	  while (*q == '/')
-	    ++q;
-	  change = 1;
-	  if (*q == '\0')
-	    {
-	      *p = '\0';
-	      break;
-	    }
-	  memmove (p, q, end - q);
-	  end -= q - p;
-	  goto again;
-	}
-
-      /* Skip to the next path element. */
-      while (*p && *p != '/')
-	++p;
-      if (*p == '\0')
-	break;
-
-      /* Make sure P points to the beginning of the next path element,
-	 which is location after the slash. */
-      ++p;
     }
 
-  return change;
+  if (t != h)
+    *t = '\0';
+
+  return t != h;
 }
 
 /* Merge BASE with LINK and return the resulting URI.
