@@ -319,11 +319,11 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 {
   uerr_t result;
   char *url;
-  int location_changed, already_redirected, dummy;
+  int location_changed, dummy;
   int local_use_proxy;
   char *mynewloc, *proxy;
   struct urlinfo *u;
-
+  slist *redirections;
 
   /* If dt is NULL, just ignore it.  */
   if (!dt)
@@ -333,18 +333,21 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     *newloc = NULL;
   if (file)
     *file = NULL;
-  already_redirected = 0;
 
- again:
+  redirections = NULL;
+
   u = newurl ();
   /* Parse the URL. */
-  result = parseurl (url, u, already_redirected);
+  result = parseurl (url, u, 0);
   if (result != URLOK)
     {
-      freeurl (u, 1);
       logprintf (LOG_NOTQUIET, "%s: %s.\n", url, uerrmsg (result));
+      freeurl (u, 1);
+      free_slist (redirections);
       return result;
     }
+
+ redirected:
 
   /* Set the referer.  */
   if (refurl)
@@ -375,6 +378,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	{
 	  logputs (LOG_NOTQUIET, _("Could not find proxy host.\n"));
 	  freeurl (u, 1);
+	  free_slist (redirections);
 	  return PROXERR;
 	}
       /* Parse the proxy URL.  */
@@ -386,6 +390,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  else
 	    logprintf (LOG_NOTQUIET, _("Proxy %s: Must be HTTP.\n"), proxy);
 	  freeurl (u, 1);
+	  free_slist (redirections);
 	  return PROXERR;
 	}
       u->proto = URLHTTP;
@@ -402,7 +407,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	 retrieval, so we save recursion to oldrec, and restore it
 	 later.  */
       int oldrec = opt.recursive;
-      if (already_redirected)
+      if (redirections)
 	opt.recursive = 0;
       result = ftp_loop (u, dt);
       opt.recursive = oldrec;
@@ -413,7 +418,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 
 	 #### All of this is, of course, crap.  These types should be
 	 determined through mailcap.  */
-      if (already_redirected && u->local && (u->proto == URLFTP ))
+      if (redirections && u->local && (u->proto == URLFTP ))
 	{
 	  char *suf = suffix (u->local);
 	  if (suf && (!strcasecmp (suf, "html") || !strcasecmp (suf, "htm")))
@@ -424,30 +429,70 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   location_changed = (result == NEWLOCATION);
   if (location_changed)
     {
-      if (mynewloc)
+      char *construced_newloc;
+      uerr_t newloc_result;
+      struct urlinfo *newloc_struct;
+
+      assert (mynewloc != NULL);
+
+      /* The HTTP specs only allow absolute URLs to appear in
+	 redirects, but a ton of boneheaded webservers and CGIs out
+	 there break the rules and use relative URLs, and popular
+	 browsers are lenient about this, so wget should be too. */
+      construced_newloc = url_concat (url, mynewloc);
+      free (mynewloc);
+      mynewloc = construced_newloc;
+
+      /* Now, see if this new location makes sense. */
+      newloc_struct = newurl ();
+      newloc_result = parseurl (mynewloc, newloc_struct, 1);
+      if (newloc_result != URLOK)
 	{
-	  /* The HTTP specs only allow absolute URLs to appear in
-	     redirects, but a ton of boneheaded webservers and CGIs
-	     out there break the rules and use relative URLs, and
-	     popular browsers are lenient about this, so wget should
-	     be too. */
-	  char *construced_newloc = url_concat (url, mynewloc);
-	  free (mynewloc);
-	  mynewloc = construced_newloc;
+	  logprintf (LOG_NOTQUIET, "%s: %s.\n", mynewloc, uerrmsg (newloc_result));
+	  freeurl (newloc_struct, 1);
+	  freeurl (u, 1);
+	  free_slist (redirections);
+	  return result;
 	}
+
+      /* Now mynewloc will become newloc_struct->url, because if the
+         Location contained relative paths like .././something, we
+         don't want that propagating as url.  */
+      free (mynewloc);
+      mynewloc = xstrdup (newloc_struct->url);
+
       /* Check for redirection to back to itself.  */
-      if (url_equal (url, mynewloc))
+      if (!strcmp (u->url, newloc_struct->url))
 	{
 	  logprintf (LOG_NOTQUIET, _("%s: Redirection to itself.\n"),
 		     mynewloc);
+	  freeurl (newloc_struct, 1);
+	  freeurl (u, 1);
+	  free_slist (redirections);
 	  return WRONGCODE;
 	}
+
+      /* The new location is OK.  Let's check for redirection cycle by
+         peeking through the history of redirections. */
+      if (in_slist (redirections, newloc_struct->url))
+	{
+	  logprintf (LOG_NOTQUIET, _("%s: Redirection cycle detected.\n"),
+		     mynewloc);
+	  freeurl (newloc_struct, 1);
+	  freeurl (u, 1);
+	  free_slist (redirections);
+	  return WRONGCODE;
+	}
+
+      redirections = add_slist (redirections, newloc_struct->url, NOSORT);
+
       free (url);
       url = mynewloc;
       freeurl (u, 1);
-      already_redirected = 1;
-      goto again;
+      u = newloc_struct;
+      goto redirected;
     }
+
   if (file)
     {
       if (u->local)
@@ -456,6 +501,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	*file = NULL;
     }
   freeurl (u, 1);
+  free_slist (redirections);
 
   if (newloc)
     *newloc = url;

@@ -1,5 +1,9 @@
 2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* retr.c (retrieve_url): Detect redirection cycles.
+
+2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (get_urls_html): Decode HTML entities using
 	html_decode_entities.
 
