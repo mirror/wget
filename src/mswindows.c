@@ -209,7 +209,6 @@ fake_fork_child (void)
 static void
 fake_fork (void)
 {
-  char *cmdline, *args;
   char exe[MAX_PATH + 1];
   DWORD exe_len, le;
   SECURITY_ATTRIBUTES sa;
@@ -221,22 +220,6 @@ fake_fork (void)
   BOOL rv;
 
   event = section = pi.hProcess = pi.hThread = NULL;
-
-  /* Get command line arguments to pass to the child process.
-     We need to skip the name of the command (what amounts to argv[0]).  */
-  cmdline = GetCommandLine ();
-  if (*cmdline == '"')
-    {
-      args = strchr (cmdline + 1, '"');
-      if (args)
-        ++args;
-    }
-  else
-    args = strchr (cmdline, ' ');
-
-  /* It's ok if args is NULL, that would mean there were no arguments
-     after the command name.  As it is now though, we would never get here
-     if that were true.  */
 
   /* Get the fully qualified name of our executable.  This is more reliable
      than using argv[0].  */
@@ -258,8 +241,9 @@ fake_fork (void)
      suspended state.  */
   memset (&si, 0, sizeof (si));
   si.cb = sizeof (si);
-  rv = CreateProcess (exe, args, NULL, NULL, TRUE, CREATE_SUSPENDED |
-                      DETACHED_PROCESS, NULL, NULL, &si, &pi);
+  rv = CreateProcess (exe, GetCommandLine (), NULL, NULL, TRUE,
+                      CREATE_SUSPENDED | DETACHED_PROCESS,
+                      NULL, NULL, &si, &pi);
   if (!rv)
     goto cleanup;
 
