@@ -74,7 +74,7 @@ struct fileinfo
 };
 
 /* Commands for FTP functions.  */
-enum command
+enum wget_ftp_command
 {
   DO_LOGIN      = 0x0001,	/* Connect and login to the server.  */
   DO_CWD        = 0x0002,	/* Change current directory.  */
@@ -83,7 +83,7 @@ enum command
   LEAVE_PENDING = 0x0010	/* Do not close the socket.  */
 };
 
-enum fstatus
+enum wget_ftp_fstatus
 {
   NOTHING       = 0x0000,	/* Nothing done yet.  */
   ON_YOUR_OWN   = 0x0001,	/* The ftp_loop_internal sets the

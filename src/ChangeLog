@@ -1,3 +1,9 @@
+2001-02-10  Tim Mooney  <mooney@dogbert.cc.ndsu.NoDak.edu>
+
+	* ftp.h: Rename enums `command' to `wget_ftp_command' and
+	`fstatus' to `wget_ftp_status' because old names clash with Tru64
+	net/if.h.
+
 2001-02-08  Christian Fraenkel <christian.fraenkel@gmx.net>
 
         * gen_sslfunc.c: verify_callback is now static
