@@ -1454,7 +1454,13 @@ url_file_name (const struct url *u)
 	{
 	  if (fnres.tail)
 	    append_char ('/', &fnres);
-	  append_string (u->host, &fnres);
+	  if (0 != strcmp (u->host, ".."))
+	    append_string (u->host, &fnres);
+	  else
+	    /* Host name can come from the network; malicious DNS may
+	       allow ".." to be resolved, causing us to write to
+	       "../<file>".  Defang such host names.  */
+	    append_string ("%2E%2E", &fnres);
 	  if (u->port != scheme_default_port (u->scheme))
 	    {
 	      char portstr[24];

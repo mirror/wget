@@ -1,3 +1,8 @@
+2005-03-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (url_file_name): Don't allow hosts named ".." to be
+	appended as path elements.
+
 2005-03-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* retr.c (retrieve_url): Escape location header.
