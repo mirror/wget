@@ -34,7 +34,7 @@ user-visible changes.
   be available as an option, as he depends on it to allow mirrors of his site to
   send CGI queries to his original site, but still get graphics off of the
   mirror site.  Perhaps this would be better dealt with by adding an option to
-  tell -k not to convert certain URLs patterns?
+  tell -k not to convert certain URL patterns?
 
 * Add option to clobber existing file names (no `.N' suffixes).
 
