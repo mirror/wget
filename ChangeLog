@@ -1,3 +1,8 @@
+2002-04-09  Ian Abbott  <abbotti@mev.co.uk>
+
+	* windows/config.h.bor: define `HACK_BCC_UTIME_BUG'. Define `utime'
+	as `borland_utime' if `HACK_BCC_UTIME_BUG' is defined.
+
 2002-03-26  Ian Abbott  <abbotti@mev.co.uk>
 
 	* windows/wget.dep: Updated several dependencies for object files.

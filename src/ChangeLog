@@ -1,3 +1,10 @@
+2002-04-09  Ian Abbott  <abbotti@mev.co.uk>
+
+	* mswindows.c (borland_utime): New function conditionally defined
+	when `HACK_BCC_UTIME_BUG' is defined.  A reimplementation of
+	`utime()' as Borland's `utime()' function is broken on Windows 9x
+	systems.  (Original patch by Chin-yuan Kuo <sr1111111@yahoo.com.tw>.)
+
 2002-04-08  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp.c (ftp_loop): Propagate the result of ftp_retrieve_glob.

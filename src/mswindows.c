@@ -28,6 +28,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <assert.h>
 #include <errno.h>
 
+#ifdef HACK_BCC_UTIME_BUG
+# include <io.h>
+# include <fcntl.h>
+# ifdef HAVE_UTIME_H
+#  include <utime.h>
+# endif
+# ifdef HAVE_SYS_UTIME_H
+#  include <sys/utime.h>
+# endif
+#endif
+
 #include "wget.h"
 #include "utils.h"
 #include "url.h"
@@ -242,3 +253,30 @@ ws_startup (void)
   atexit (ws_cleanup);
   SetConsoleCtrlHandler (ws_handler, TRUE);
 }
+
+/* Replacement utime function for buggy Borland C++Builder 5.5 compiler.
+   (The Borland utime function only works on Windows NT.)  */
+
+#ifdef HACK_BCC_UTIME_BUG
+int borland_utime(const char *path, const struct utimbuf *times)
+{
+  int fd;
+  int res;
+  struct ftime ft;
+  struct tm *ptr_tm;
+
+  if ((fd = open (path, O_RDWR)) < 0)
+    return -1;
+
+  ptr_tm = localtime (&times->modtime);
+  ft.ft_tsec = ptr_tm->tm_sec >> 1;
+  ft.ft_min = ptr_tm->tm_min;
+  ft.ft_hour = ptr_tm->tm_hour;
+  ft.ft_day = ptr_tm->tm_mday;
+  ft.ft_month = ptr_tm->tm_mon + 1;
+  ft.ft_year = ptr_tm->tm_year - 80;
+  res = setftime (fd, &ft);
+  close (fd);
+  return res;
+}
+#endif

@@ -23,6 +23,14 @@
 #define ftruncate chsize
 #define inline __inline
 
+/* Define if the free Borland C++Builder 5.5 command-line compiler is used,
+   because its utime() has a bug. */
+#define HACK_BCC_UTIME_BUG
+
+#ifdef HACK_BCC_UTIME_BUG
+#define utime borland_utime
+#endif
+
 /* Define if you have the <alloca.h> header file.  */
 #undef HAVE_ALLOCA_H
 
