@@ -65,8 +65,9 @@ enum convert_options {
   CO_NOCONVERT = 0,		/* don't convert this URL */
   CO_CONVERT_TO_RELATIVE,	/* convert to relative, e.g. to
                                    "../../otherdir/foo.gif" */
-  CO_CONVERT_TO_COMPLETE	/* convert to absolute, e.g. to
+  CO_CONVERT_TO_COMPLETE,	/* convert to absolute, e.g. to
 				   "http://orighost/somedir/bar.jpg". */
+  CO_NULLIFY_BASE		/* change to empty string. */
 };
 
 /* A structure that defines the whereabouts of a URL, i.e. its
@@ -78,10 +79,16 @@ struct urlpos {
   char *local_name;		/* local file to which it was saved
 				   (used by convert_links) */
 
+  int ignore_when_downloading;	/* reserved for special links such as
+				   <base href="..."> which are used
+				   when converting links, but ignored
+				   when downloading.  */
+
   /* Information about the original link: */
   int link_relative_p;		/* was the link relative? */
   int link_complete_p;		/* was the link complete (with the
                                    host name, etc.) */
+  int link_base_p;		/* was the link <base href=...> */
 
   /* Conversion requirements: */
   enum convert_options convert;	/* is conversion required? */

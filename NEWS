@@ -7,12 +7,23 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.8.
 
-** "Recursive retrieval" now uses a breadth-first algorithm.
-Recursive downloads are faster and consume *significantly* less memory
-than before.
-
 ** A new progress indicator is now available.  Try it with
 --progress=bar or using `progress = bar' in `.wgetrc'.
+
+** "Recursive retrieval" has been revamped:
+
+*** Wget now traverses links breadth-first.  This makes the
+calculation of depth much more reliable than before.  Also, recursive
+downloads are faster and consume *significantly* less memory than
+before.
+
+*** Links are converted only when the entire retrieval is complete.
+This is the only safe thing to do, as only then is it known what URLs
+have been downloaded.
+
+*** BASE tags are handled correctly when converting links.  Since Wget
+already resolves <base href="..."> when resolving handling URLs, link
+conversion now makes the BASE tags point to an empty string.
 
 ** Host directories now contain port information if the URL is at a
 non-standard port.

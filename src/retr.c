@@ -462,6 +462,9 @@ retrieve_from_file (const char *file, int html, int *count)
       char *filename = NULL, *new_file;
       int dt;
 
+      if (cur_url->ignore_when_downloading)
+	continue;
+
       if (downloaded_exceeds_quota ())
 	{
 	  status = QUOTEXC;

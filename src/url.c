@@ -1698,7 +1698,7 @@ no_proxy_match (const char *host, const char **no_proxy)
 }
 
 static void write_backup_file PARAMS ((const char *, downloaded_file_t));
-static void replace_attr PARAMS ((const char **, int, FILE *, const char *));
+static const char *replace_attr PARAMS ((const char *, int, FILE *, const char *));
 static char *local_quote_string PARAMS ((const char *));
 
 /* Change the links in one HTML file.  LINKS is a list of links in the
@@ -1765,6 +1765,7 @@ convert_links (const char *file, struct urlpos *links)
       read_file_free (fm);
       return;
     }
+
   /* Here we loop through all the URLs in file, replacing those of
      them that are downloaded with relative references.  */
   p = fm->content;
@@ -1788,35 +1789,50 @@ convert_links (const char *file, struct urlpos *links)
          quote, to the outfile.  */
       fwrite (p, 1, url_start - p, fp);
       p = url_start;
-      if (link->convert == CO_CONVERT_TO_RELATIVE)
+
+      switch (link->convert)
 	{
+	case CO_CONVERT_TO_RELATIVE:
 	  /* Convert absolute URL to relative. */
-	  char *newname = construct_relative (file, link->local_name);
-	  char *quoted_newname = local_quote_string (newname);
-	  replace_attr (&p, link->size, fp, quoted_newname);
-	  DEBUGP (("TO_RELATIVE: %s to %s at position %d in %s.\n",
-		   link->url->url, newname, link->pos, file));
-	  xfree (newname);
-	  xfree (quoted_newname);
-	  ++to_file_count;
-	}
-      else if (link->convert == CO_CONVERT_TO_COMPLETE)
-	{
+	  {
+	    char *newname = construct_relative (file, link->local_name);
+	    char *quoted_newname = local_quote_string (newname);
+	    p = replace_attr (p, link->size, fp, quoted_newname);
+	    DEBUGP (("TO_RELATIVE: %s to %s at position %d in %s.\n",
+		     link->url->url, newname, link->pos, file));
+	    xfree (newname);
+	    xfree (quoted_newname);
+	    ++to_file_count;
+	    break;
+	  }
+	case CO_CONVERT_TO_COMPLETE:
 	  /* Convert the link to absolute URL. */
-	  char *newlink = link->url->url;
-	  char *quoted_newlink = html_quote_string (newlink);
-	  replace_attr (&p, link->size, fp, quoted_newlink);
-	  DEBUGP (("TO_COMPLETE: <something> to %s at position %d in %s.\n",
-		   newlink, link->pos, file));
-	  xfree (quoted_newlink);
-	  ++to_url_count;
+	  {
+	    char *newlink = link->url->url;
+	    char *quoted_newlink = html_quote_string (newlink);
+	    p = replace_attr (p, link->size, fp, quoted_newlink);
+	    DEBUGP (("TO_COMPLETE: <something> to %s at position %d in %s.\n",
+		     newlink, link->pos, file));
+	    xfree (quoted_newlink);
+	    ++to_url_count;
+	    break;
+	  }
+	case CO_NULLIFY_BASE:
+	  /* Change the base href to "". */
+	  p = replace_attr (p, link->size, fp, "");
+	  break;
+	case CO_NOCONVERT:
+	  abort ();
+	  break;
 	}
     }
+
   /* Output the rest of the file. */
   if (p - fm->content < fm->length)
     fwrite (p, 1, fm->length - (p - fm->content), fp);
   fclose (fp);
   read_file_free (fm);
+
   logprintf (LOG_VERBOSE,
 	     _("%d-%d\n"), to_file_count, to_url_count);
 }
@@ -1960,13 +1976,15 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
 static int find_fragment PARAMS ((const char *, int, const char **,
 				  const char **));
 
-static void
-replace_attr (const char **pp, int raw_size, FILE *fp, const char *new_str)
+/* Replace an attribute's original text with NEW_TEXT. */
+
+static const char *
+replace_attr (const char *p, int size, FILE *fp, const char *new_text)
 {
-  const char *p = *pp;
   int quote_flag = 0;
-  int size = raw_size;
-  char quote_char = '\"';
+  char quote_char = '\"';	/* use "..." for quoting, unless the
+				   original value is quoted, in which
+				   case reuse its quoting char. */
   const char *frag_beg, *frag_end;
 
   /* Structure of our string is:
@@ -1984,7 +2002,7 @@ replace_attr (const char **pp, int raw_size, FILE *fp, const char *new_str)
       size -= 2;		/* disregard opening and closing quote */
     }
   putc (quote_char, fp);
-  fputs (new_str, fp);
+  fputs (new_text, fp);
 
   /* Look for fragment identifier, if any. */
   if (find_fragment (p, size, &frag_beg, &frag_end))
@@ -1993,7 +2011,8 @@ replace_attr (const char **pp, int raw_size, FILE *fp, const char *new_str)
   if (quote_flag)
     ++p;
   putc (quote_char, fp);
-  *pp = p;
+
+  return p;
 }
 
 /* Find the first occurrence of '#' in [BEG, BEG+SIZE) that is not

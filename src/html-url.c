@@ -297,7 +297,7 @@ struct collect_urls_closure {
 /* Resolve LINK_URI and append it to closure->tail.  TAG and ATTRID
    are the necessary context to store the position and size.  */
 
-static void
+static struct urlpos *
 handle_link (struct collect_urls_closure *closure, const char *link_uri,
 	     struct taginfo *tag, int attrid)
 {
@@ -316,7 +316,7 @@ handle_link (struct collect_urls_closure *closure, const char *link_uri,
 	  /* We have no base, and the link does not have a host
 	     attached to it.  Nothing we can do.  */
 	  /* #### Should we print a warning here?  Wget 1.5.x used to.  */
-	  return;
+	  return NULL;
 	}
 
       url = url_parse (link_uri, NULL);
@@ -324,7 +324,7 @@ handle_link (struct collect_urls_closure *closure, const char *link_uri,
 	{
 	  DEBUGP (("%s: link \"%s\" doesn't parse.\n",
 		   closure->document_file, link_uri));
-	  return;
+	  return NULL;
 	}
     }
   else
@@ -344,7 +344,7 @@ handle_link (struct collect_urls_closure *closure, const char *link_uri,
 	  DEBUGP (("%s: merged link \"%s\" doesn't parse.\n",
 		   closure->document_file, complete_uri));
 	  xfree (complete_uri);
-	  return;
+	  return NULL;
 	}
       xfree (complete_uri);
     }
@@ -371,6 +371,8 @@ handle_link (struct collect_urls_closure *closure, const char *link_uri,
     }
   else
     closure->tail = closure->head = newel;
+
+  return newel;
 }
 
 /* Examine name and attributes of TAG and take appropriate action.
@@ -435,9 +437,18 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 	{
 	case TAG_BASE:
 	  {
-	    char *newbase = find_attr (tag, "href", NULL);
+	    struct urlpos *base_urlpos;
+	    int id;
+	    char *newbase = find_attr (tag, "href", &id);
 	    if (!newbase)
 	      break;
+
+	    base_urlpos = handle_link (closure, newbase, tag, id);
+	    if (!base_urlpos)
+	      break;
+	    base_urlpos->ignore_when_downloading = 1;
+	    base_urlpos->link_base_p = 1;
+
 	    if (closure->base)
 	      xfree (closure->base);
 	    if (closure->parent_base)
@@ -545,13 +556,13 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 }
 
 /* Analyze HTML tags FILE and construct a list of URLs referenced from
-   it.  It merges relative links in FILE with THIS_URL.  It is aware
-   of <base href=...> and does the right thing.
+   it.  It merges relative links in FILE with URL.  It is aware of
+   <base href=...> and does the right thing.
 
    If dash_p_leaf_HTML is non-zero, only the elements needed to render
    FILE ("non-external" links) will be returned.  */
 struct urlpos *
-get_urls_html (const char *file, const char *this_url, int dash_p_leaf_HTML,
+get_urls_html (const char *file, const char *url, int dash_p_leaf_HTML,
 	       int *meta_disallow_follow)
 {
   struct file_memory *fm;
@@ -569,7 +580,7 @@ get_urls_html (const char *file, const char *this_url, int dash_p_leaf_HTML,
   closure.text = fm->content;
   closure.head = closure.tail = NULL;
   closure.base = NULL;
-  closure.parent_base = this_url ? this_url : opt.base_href;
+  closure.parent_base = url ? url : opt.base_href;
   closure.document_file = file;
   closure.dash_p_leaf_HTML = dash_p_leaf_HTML;
   closure.nofollow = 0;

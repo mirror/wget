@@ -55,8 +55,6 @@ changes.
 * Make -K compare X.orig to X and move the former on top of the latter if 
   they're the same, rather than leaving identical .orig files laying around.
 
-* Make `-k' convert <base href=...> too.
-
 * Make `-k' check for files that were downloaded in the past and convert links 
   to them in newly-downloaded documents.
 

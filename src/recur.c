@@ -280,6 +280,8 @@ retrieve_tree (const char *start_url)
 
 	      for (; child; child = child->next)
 		{
+		  if (child->ignore_when_downloading)
+		    continue;
 		  if (descend_url_p (child, url_parsed, depth, start_url_parsed,
 				     blacklist))
 		    {
@@ -634,6 +636,15 @@ convert_all_links (void)
 	  char *local_name;
 	  struct url *u = cur_url->url;
 
+	  if (cur_url->link_base_p)
+	    {
+	      /* Base references have been resolved by our parser, so
+		 we turn the base URL into an empty string.  (Perhaps
+		 we should remove the tag entirely?)  */
+	      cur_url->convert = CO_NULLIFY_BASE;
+	      continue;
+	    }
+
 	  /* We decide the direction of conversion according to whether
 	     a URL was downloaded.  Downloaded URLs will be converted
 	     ABS2REL, whereas non-downloaded will be converted REL2ABS.  */
@@ -642,7 +653,7 @@ convert_all_links (void)
 	    DEBUGP (("%s marked for conversion, local %s\n",
 		     u->url, local_name));
 
-	  /* Decide on the conversion direction.  */
+	  /* Decide on the conversion type.  */
 	  if (local_name)
 	    {
 	      /* We've downloaded this URL.  Convert it to relative

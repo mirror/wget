@@ -1,5 +1,16 @@
 2001-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* url.c (convert_links): Handle CO_NULLIFY_BASE.
+
+	* recur.c (retrieve_tree): Ignore download-ignorable children.
+	(convert_all_links): Specify CO_NULLIFY_BASE when link_base_p.
+
+	* html-url.c (handle_link): Return the newly created urlpos.
+	(collect_tags_mapper): When dealing with BASE, store the base
+	reference and mark it as download-ignorable.
+
+2001-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (convert_links): Attempt to quote '?' as "%3F" when
 	linking to local files.  Given up on the attempt, as it breaks
 	local browsing.
