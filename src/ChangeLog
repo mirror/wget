@@ -1,5 +1,9 @@
 2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* main.c (print_help): Document `--post-data' and `--post-file'.
+
+2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* http.c (gethttp): Ditto.
 
 	* retr.c (retrieve_url): Initialize variables to appease the

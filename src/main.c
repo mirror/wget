@@ -194,6 +194,8 @@ HTTP options:\n\
        --cookies=off         don't use cookies.\n\
        --load-cookies=FILE   load cookies from FILE before session.\n\
        --save-cookies=FILE   save cookies to FILE after session.\n\
+       --post-data=STRING    use the POST method; send STRING as the data.\n\
+       --post-file=FILE      use the POST method; send contents of FILE.\n\
 \n"), stdout);
   fputs (_("\
 FTP options:\n\
