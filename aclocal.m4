@@ -1,3 +1,53 @@
+dnl
+dnl Check for `struct utimbuf'.
+dnl
+
+AC_DEFUN([WGET_STRUCT_UTIMBUF],
+[AC_MSG_CHECKING([for struct utimbuf])
+if test x"$ac_cv_header_utime_h" = xyes; then
+  AC_EGREP_CPP([struct[ 	]+utimbuf],
+    [#include <utime.h>],
+    [AC_DEFINE(HAVE_STRUCT_UTIMBUF)
+      AC_MSG_RESULT(yes)],
+    AC_MSG_RESULT(no))
+else
+  AC_MSG_RESULT(no)
+fi])
+
+
+dnl Check for socklen_t.  The third argument of accept, getsockname,
+dnl etc. is int * on some systems, but size_t * on others.  POSIX
+dnl finally standardized on socklen_t, but older systems don't have
+dnl it.  If socklen_t exists, we use it, else if accept() accepts
+dnl size_t *, we use that, else we use int.
+
+AC_DEFUN([WGET_SOCKLEN_T], [
+  AC_MSG_CHECKING(for socklen_t)
+  AC_TRY_COMPILE([
+#include <sys/types.h>
+#include <sys/socket.h>
+socklen_t x;
+],
+    [], [AC_MSG_RESULT(yes)], [
+      AC_TRY_COMPILE([
+#include <sys/types.h>
+#include <sys/socket.h>
+int accept (int, struct sockaddr *, size_t *);
+],
+      [], [
+      AC_MSG_RESULT(size_t)
+      AC_DEFINE(socklen_t, size_t)
+    ], [
+      AC_MSG_RESULT(int)
+      AC_DEFINE(socklen_t, int)
+    ])
+  ])
+])
+
+dnl
+dnl ansi2knr support: check whether C prototypes are available.
+dnl
+
 AC_DEFUN(AM_C_PROTOTYPES,
 [AC_REQUIRE([AM_PROG_CC_STDC])
 AC_BEFORE([$0], [AC_C_INLINE])
@@ -73,49 +123,6 @@ case "x$am_cv_prog_cc_stdc" in
   *) CC="$CC $am_cv_prog_cc_stdc" ;;
 esac
 ])
-
-AC_DEFUN([WGET_STRUCT_UTIMBUF],
-[AC_MSG_CHECKING([for struct utimbuf])
-if test x"$ac_cv_header_utime_h" = xyes; then
-  AC_EGREP_CPP([struct[ 	]+utimbuf],
-    [#include <utime.h>],
-    [AC_DEFINE(HAVE_STRUCT_UTIMBUF)
-      AC_MSG_RESULT(yes)],
-    AC_MSG_RESULT(no))
-else
-  AC_MSG_RESULT(no)
-fi])
-
-
-dnl Check for socklen_t.  The third argument of accept, getsockname,
-dnl etc. is int * on some systems, but size_t * on others.  POSIX
-dnl finally standardized on socklen_t, but older systems don't have
-dnl it.  If socklen_t exists, we use it, else if accept() accepts
-dnl size_t *, we use that, else we use int.
-
-AC_DEFUN([WGET_SOCKLEN_T], [
-  AC_MSG_CHECKING(for socklen_t)
-  AC_TRY_COMPILE([
-#include <sys/types.h>
-#include <sys/socket.h>
-socklen_t x;
-],
-    [], [AC_MSG_RESULT(yes)], [
-      AC_TRY_COMPILE([
-#include <sys/types.h>
-#include <sys/socket.h>
-int accept (int, struct sockaddr *, size_t *);
-],
-      [], [
-      AC_MSG_RESULT(size_t)
-      AC_DEFINE(socklen_t, size_t)
-    ], [
-      AC_MSG_RESULT(int)
-      AC_DEFINE(socklen_t, int)
-    ])
-  ])
-])
-
 
 
 dnl ************************************************************
