@@ -281,8 +281,9 @@ Error in server response, closing control connection.\n"));
       err = ftp_pwd(&con->rbuf, &con->id);
       /* FTPRERR */
       switch (err)
-      {
-	case FTPRERR || FTPSRVERR :
+	{
+	case FTPRERR:
+	case FTPSRVERR :
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
@@ -296,7 +297,7 @@ Error in server response, closing control connection.\n"));
 	default:
 	  abort ();
 	  break;
-      }
+	}
       if (!opt.server_response)
 	logputs (LOG_VERBOSE, _("done.\n"));
 
@@ -639,6 +640,19 @@ Error in server response, closing control connection.\n"));
 	  return err;
 	  break;
 	case FTPRESTFAIL:
+	  /* If `-c' is specified and the file already existed when
+	     Wget was started, it would be a bad idea for us to start
+	     downloading it from scratch, effectively truncating it.  */
+	  if (opt.always_rest && (cmd & NO_TRUNCATE))
+	    {
+	      logprintf (LOG_NOTQUIET,
+			 _("\nREST failed; will not truncate `%s'.\n"),
+			 u->local);
+	      CLOSE (csock);
+	      closeport (dtsock);
+	      rbuf_uninitialize (&con->rbuf);
+	      return CONTNOTSUPPORTED;
+	    }
 	  logputs (LOG_VERBOSE, _("\nREST failed, starting from scratch.\n"));
 	  restval = 0L;
 	  break;
@@ -944,7 +958,7 @@ Error in server response, closing control connection.\n"));
 static uerr_t
 ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 {
-  int count, orig_lp;
+  int count, orig_lp, no_truncate;
   long restval, len;
   char *tms, *tmrate, *locf;
   uerr_t err;
@@ -975,6 +989,13 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 
   orig_lp = con->cmd & LEAVE_PENDING ? 1 : 0;
 
+  /* In `-c' is used, check whether the file we're writing to exists
+     before we've done anything.  If so, we'll refuse to truncate it
+     if the server doesn't support continued downloads.  */
+  no_truncate = 0;
+  if (opt.always_rest)
+    no_truncate = file_exists_p (locf);
+
   /* THE loop.  */
   do
     {
@@ -1001,6 +1022,8 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	  else
 	    con->cmd |= DO_CWD;
 	}
+      if (no_truncate)
+	con->cmd |= NO_TRUNCATE;
       /* Assume no restarting.  */
       restval = 0L;
       if ((count > 1 || opt.always_rest)
@@ -1043,7 +1066,7 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
       switch (err)
 	{
 	case HOSTERR: case CONREFUSED: case FWRITEERR: case FOPENERR:
-	case FTPNSFOD: case FTPLOGINC: case FTPNOPASV:
+	case FTPNSFOD: case FTPLOGINC: case FTPNOPASV: case CONTNOTSUPPORTED:
 	  /* Fatal errors, give up.  */
 	  return err;
 	  break;

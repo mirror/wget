@@ -462,6 +462,8 @@ struct http_stat
   char *error;			/* textual HTTP error */
   int statcode;			/* status code */
   long dltime;			/* time of the download */
+  int no_truncate;		/* whether truncating the file is
+				   forbidden. */
 };
 
 /* Free the elements of hstat X.  */
@@ -1128,7 +1130,58 @@ Accept: %s\r\n\
     }
 
   if (contrange == -1)
-    hs->restval = 0;
+    {
+      /* We did not get a content-range header.  This means that the
+	 server did not honor our `Range' request.  Normally, this
+	 means we should reset hs->restval and continue normally.  */
+
+      /* However, if `-c' is used, we need to be a bit more careful:
+
+         1. If `-c' is specified and the file already existed when
+         Wget was started, it would be a bad idea for us to start
+         downloading it from scratch, effectively truncating it.  I
+         believe this cannot happen unless `-c' was specified.
+
+	 2. If `-c' is used on a file that is already fully
+	 downloaded, we're requesting bytes after the end of file,
+	 which can result in server not honoring `Range'.  If this is
+	 the case, `Content-Length' will be equal to the length of the
+	 file.  */
+      if (opt.always_rest)
+	{
+	  /* Check for condition #2. */
+	  if (hs->restval == contlen)
+	    {
+	      logputs (LOG_VERBOSE, _("\
+\n    The file is already fully retrieved; nothing to do.\n\n"));
+	      /* In case the caller inspects. */
+	      hs->len = contlen;
+	      hs->res = 0;
+	      FREE_MAYBE (type);
+	      FREE_MAYBE (hs->newloc);
+	      FREE_MAYBE (all_headers);
+	      CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
+					   might be more bytes in the body. */
+	      return RETRFINISHED;
+	    }
+
+	  /* Check for condition #1. */
+	  if (hs->no_truncate)
+	    {
+	      logprintf (LOG_NOTQUIET,
+			 _("\
+
+    The server does not support continued download;
+    refusing to truncate `%s'.\n\n"), u->local);
+	      return CONTNOTSUPPORTED;
+	    }
+
+	  /* Fallthrough */
+	}
+
+      hs->restval = 0;
+    }
+
   else if (contrange != hs->restval ||
 	   (H_PARTIAL (statcode) && contrange == -1))
     {
@@ -1204,7 +1257,7 @@ Accept: %s\r\n\
   /* Return if we have no intention of further downloading.  */
   if (!(*dt & RETROKF) || (*dt & HEAD_ONLY))
     {
-      /* In case someone cares to look...  */
+      /* In case the caller cares to look...  */
       hs->len = 0L;
       hs->res = 0;
       FREE_MAYBE (type);
@@ -1347,8 +1400,10 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	{
 	  /* Would a single s[n]printf() call be faster?  --dan
 
-	     It wouldn't.  sprintf() is horribly slow.  At one point I
-	     profiled Wget, and found that a measurable and
+	     Definitely not.  sprintf() is horribly slow.  It's a
+	     different question whether the difference between the two
+	     affects a program.  Usually I'd say "no", but at one
+	     point I profiled Wget, and found that a measurable and
 	     non-negligible amount of time was lost calling sprintf()
 	     in url.c.  Replacing sprintf with inline calls to
 	     strcpy() and long_to_string() made a difference.
@@ -1439,6 +1494,13 @@ File `%s' already there, will not retrieve.\n"), u->local);
       else
 	locf = opt.output_document;
 
+      /* In `-c' is used, check whether the file we're writing to
+	 exists before we've done anything.  If so, we'll refuse to
+	 truncate it if the server doesn't support continued
+	 downloads.  */
+      if (opt.always_rest)
+	hstat.no_truncate = file_exists_p (locf);
+
       /* Time?  */
       tms = time_str (NULL);
       /* Get the new location (with or without the redirection).  */
@@ -1457,7 +1519,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	  continue;
 	  break;
 	case HOSTERR: case CONREFUSED: case PROXERR: case AUTHFAILED: 
-	case SSLERRCTXCREATE:
+	case SSLERRCTXCREATE: case CONTNOTSUPPORTED:
 	  /* Fatal errors just return from the function.  */
 	  FREEHSTAT (hstat);
 	  xfree (filename_plus_orig_suffix); /* must precede every return! */
@@ -1471,7 +1533,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	  FREEHSTAT (hstat);
 	  return err;
 	  break;
-   case CONSSLERR:
+	case CONSSLERR:
 	  /* Another fatal error.  */
 	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET, _("Unable to establish SSL connection.\n"));

@@ -1,3 +1,13 @@
+2001-04-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* ftp.c (getftp): Don't start the download from scratch if `-c'
+	was specified, but the file is already fully downloaded.
+
+	* http.c (gethttp): Don't truncate a pre-existing file if `-c' was
+	specified and the server doesn't support continued download.
+	(gethttp): Don't start the download from scratch if `-c' was
+	specified, but the file is already fully downloaded.
+
 2001-03-31  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	(recursive_retrieve): Don't clear the hash tables at this point at
