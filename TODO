@@ -6,6 +6,9 @@ Wget.  Patches to implement any of these items would be gladly accepted.  The
 items are not listed in any particular order.  Not all of them represent
 user-visible changes.
 
+* Wget does not currently handle "fragment identifiers" (the part of a URL 
+  starting with the '#' character) properly.
+
 * Make -K compare X.orig to X and move the former on top of the latter if 
   they're the same, rather than leaving identical .orig files laying around.
 

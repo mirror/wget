@@ -3,6 +3,8 @@
 	* AUTHORS: Added myself to this file, as Hrvoje got confirmation
  	of my FSF copyright assignment.
 
+	* TODO: Added note that fragment identifiers don't work properly.
+	
 	* po/*.{gmo,po,pot}: Regenerated after modifying wget --help output.
 
 2000-05-17  Dan Harkless  <dan-wget@dilvish.speed.net>
