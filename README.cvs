@@ -7,19 +7,26 @@ the build process, except for `configure', which is needed to start
 the build in the first place.
 
 To build Wget from the CVS sources, all you need aside from the normal
-development tools (make, cc) is Autoconf, which you can get from
-<http://www.gnu.org/software/autoconf/autoconf.html>.
+C development tools (make, cc) is Autoconf, which you can get from
+<http://www.gnu.org/software/autoconf/autoconf.html>.  Wget does not
+use Automake or Libtool, so you needn't worry about those.
 
-For your convenience, the file Makefile.cvs will do the necessary
-preparations, i.e. call autoconf.  Invoke it with `make -f
-Makefile.cvs'.  All in all, the checkout and build process will
-usually look like this:
+For your convenience, Makefile.cvs is a make file containing the
+necessary preparations, which currently amount to calling Autoconf.
+Invoke it with `make -f Makefile.cvs', and after that you're ready to
+build Wget in the normal fashion, e.g. with `./configure' followed by
+`make'.
 
-$ cvs -d ... checkout wget
-... CVS output ...
-$ cd wget
-$ make -f Makefile.cvs
-... autoconf creates configure ...
-$ ./configure
-... Makefiles and config.h get built ...
-$ make
+The simplest example of downloading and building Wget from CVS can
+look like this:
+
+    cvs -d :pserver:... checkout wget
+    cd wget
+    make -f Makefile.cvs
+    ./configure
+    make
+
+
+The instructions that explain how to check out Wget from CVS in the
+first place are available at <http://sunsite.dk/wget/> under
+"Development".
