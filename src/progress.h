@@ -35,6 +35,7 @@ void set_progress_implementation PARAMS ((const char *));
 void progress_schedule_redirect PARAMS ((void));
 
 void *progress_create PARAMS ((long, long));
+int progress_interactive_p PARAMS ((void *));
 void progress_update PARAMS ((void *, long, double));
 void progress_finish PARAMS ((void *, double));
 

@@ -161,13 +161,25 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
   static char dlbuf[16384];
   int dlbufsize = sizeof (dlbuf);
 
-  void *progress = NULL;
   struct wget_timer *timer = wtimer_allocate ();
+  double last_successful_read_tm;
+
+  /* The progress gauge, set according to the user preferences. */
+  void *progress = NULL;
+
+  /* Non-zero if the progress gauge is interactive, i.e. if it can
+     continually update the display.  When true, smaller timeout
+     values are used so that the gauge can update the display when
+     data arrives slowly. */
+  int progress_interactive = 0;
 
   *len = restval;
 
   if (opt.verbose)
-    progress = progress_create (restval, expected);
+    {
+      progress = progress_create (restval, expected);
+      progress_interactive = progress_interactive_p (progress);
+    }
 
   if (rbuf && RBUF_FD (rbuf) == fd)
     {
@@ -192,6 +204,7 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
   if (opt.limit_rate)
     limit_bandwidth_reset ();
   wtimer_reset (timer);
+  last_successful_read_tm = 0;
 
   /* Use a smaller buffer for low requested bandwidths.  For example,
      with --limit-rate=2k, it doesn't make sense to slurp in 16K of
@@ -209,24 +222,53 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
     {
       int amount_to_read = (use_expected
 			    ? MIN (expected - *len, dlbufsize) : dlbufsize);
-      res = xread (fd, dlbuf, amount_to_read, -1);
-
-      if (res <= 0)
-	break;
-
-      fwrite (dlbuf, 1, res, fp);
-      /* Always flush the contents of the network packet.  This should
-	 not hinder performance: fast downloads will be received in
-	 16K chunks (which stdio would write out anyway), and slow
-	 downloads won't be limited by disk performance.  */
-      fflush (fp);
-      if (ferror (fp))
+      double tmout = opt.read_timeout;
+      if (progress_interactive)
 	{
-	  res = -2;
-	  goto out;
+	  double waittm;
+	  /* For interactive progress gauges, always specify a ~1s
+	     timeout, so that the gauge can be updated regularly even
+	     when the data arrives very slowly or stalls.  */
+	  tmout = 0.95;
+	  waittm = (wtimer_read (timer) - last_successful_read_tm) / 1000;
+	  if (waittm + tmout > opt.read_timeout)
+	    {
+	      /* Don't allow waiting for data to exceed read timeout. */
+	      tmout = opt.read_timeout - waittm;
+	      if (tmout < 0)
+		{
+		  /* We've already exceeded the timeout. */
+		  res = -1;
+		  errno = ETIMEDOUT;
+		  break;
+		}
+	    }
 	}
+      res = xread (fd, dlbuf, amount_to_read, tmout);
+
+      if (res == 0 || (res < 0 && errno != ETIMEDOUT))
+	break;
+      else if (res < 0)
+	res = 0;		/* timeout */
 
       wtimer_update (timer);
+      if (res > 0)
+	{
+	  fwrite (dlbuf, 1, res, fp);
+	  /* Always flush the contents of the network packet.  This
+	     should not hinder performance: fast downloads will be
+	     received in 16K chunks (which stdio would write out
+	     anyway), and slow downloads won't be limited by disk
+	     performance.  */
+	  fflush (fp);
+	  if (ferror (fp))
+	    {
+	      res = -2;
+	      goto out;
+	    }
+	  last_successful_read_tm = wtimer_read (timer);
+	}
+
       if (opt.limit_rate)
 	limit_bandwidth (res, timer);
 

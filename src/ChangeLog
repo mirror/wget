@@ -1,5 +1,14 @@
 2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* progress.c (update_speed_ring): Clear the speed ring when the
+	download stalls.
+
+	* retr.c (get_contents): Specify 0.95s read timeout, so that the
+	progress gauge can be updated even when data arrives very slowly
+	or stalls.
+
+2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (wtimer_allocate): Bless the use of wtimer_read on a
 	timer that has merely been allocated because get_contents() does
 	that.

@@ -51,6 +51,7 @@ so, delete this exception statement from your version.  */
 
 struct progress_implementation {
   char *name;
+  int interactive;
   void *(*create) PARAMS ((long, long));
   void (*update) PARAMS ((void *, long, double));
   void (*finish) PARAMS ((void *, double));
@@ -70,8 +71,8 @@ static void bar_finish PARAMS ((void *, double));
 static void bar_set_params PARAMS ((const char *));
 
 static struct progress_implementation implementations[] = {
-  { "dot", dot_create, dot_update, dot_finish, dot_set_params },
-  { "bar", bar_create, bar_update, bar_finish, bar_set_params }
+  { "dot", 0, dot_create, dot_update, dot_finish, dot_set_params },
+  { "bar", 1, bar_create, bar_update, bar_finish, bar_set_params }
 };
 static struct progress_implementation *current_impl;
 static int current_impl_locked;
@@ -166,6 +167,17 @@ progress_create (long initial, long total)
     }
 
   return current_impl->create (initial, total);
+}
+
+/* Return non-zero if the progress gauge is "interactive", i.e. if it
+   can profit from being called regularly even in absence of data.
+   The progress bar is interactive because it regularly updates the
+   ETA and current update.  */
+
+int
+progress_interactive_p (void *progress)
+{
+  return current_impl->interactive;
 }
 
 /* Inform the progress gauge of newly received bytes.  DLTIME is the
@@ -425,6 +437,11 @@ static volatile sig_atomic_t received_sigwinch;
    past.  */
 #define DLSPEED_SAMPLE_MIN 150
 
+/* The time after which the download starts to be considered
+   "stalled", i.e. the current bandwidth is not printed and the recent
+   download speeds are scratched.  */
+#define STALL_START_TIME 5000
+
 struct bar_progress {
   long initial_length;		/* how many bytes have been downloaded
 				   previously. */
@@ -466,8 +483,12 @@ struct bar_progress {
 				   position. */
   long recent_bytes;		/* bytes downloaded so far. */
 
+  int stalled;			/* set when no data arrives for longer
+				   than STALL_START_TIME, then reset
+				   when new data arrives. */
+
   /* create_image() uses these to make sure that ETA information
-     doesn't flash. */
+     doesn't flicker. */
   double last_eta_time;		/* time of the last update to download
 				   speed and ETA, measured since the
 				   beginning of download. */
@@ -615,6 +636,38 @@ update_speed_ring (struct bar_progress *bp, long howmuch, double dltime)
   if (recent_age < DLSPEED_SAMPLE_MIN)
     return;
 
+  if (howmuch == 0)
+    {
+      /* If we're not downloading anything, we might be stalling,
+	 i.e. not downloading anything for an extended period of time.
+	 Since 0-reads do not enter the history ring, recent_age
+	 effectively measures the time since last read.  */
+      if (recent_age >= STALL_START_TIME)
+	{
+	  /* If we're stalling, reset the ring contents because it's
+	     stale and because it will make bar_update stop printing
+	     the (bogus) current bandwidth.  */
+	  bp->stalled = 1;
+	  xzero (*hist);
+	  bp->recent_bytes = 0;
+	}
+      return;
+    }
+
+  /* We now have a non-zero amount of to store to the speed ring.  */
+
+  /* If the stall status was acquired, reset it. */
+  if (bp->stalled)
+    {
+      bp->stalled = 0;
+      /* "recent_age" includes the the entired stalled period, which
+	 could be very long.  Don't update the speed ring with that
+	 value because the current bandwidth would start too small.
+	 Start with an arbitrary (but more reasonable) time value and
+	 let it level out.  */
+      recent_age = 1000;
+    }
+
   /* Store "recent" bytes and download time to history ring at the
      position POS.  */
 
@@ -637,7 +690,7 @@ update_speed_ring (struct bar_progress *bp, long howmuch, double dltime)
   if (++hist->pos == DLSPEED_HISTORY_SIZE)
     hist->pos = 0;
 
-#if 0
+#if 1
   /* Sledgehammer check to verify that the totals are accurate. */
   {
     int i;
