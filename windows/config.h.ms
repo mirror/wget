@@ -1,5 +1,6 @@
 /* Configuration header file.
-   Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 1998, 2004
+   Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -55,7 +56,7 @@
 #define USE_DIGEST 1
 
 /* Define if you want the debug output support compiled in.  */
-#define ENABLE_DEBUG
+#define ENABLE_DEBUG 1
 
 /* Define if you have sys/time.h header. */
 #undef HAVE_SYS_TIME_H
@@ -91,10 +92,13 @@
 #define HAVE_STRERROR 1
 
 /* Define if you have the snprintf function.  */
-#define HAVE_SNPRINTF
+#define HAVE_SNPRINTF 1
 
 /* Define if you have the vsnprintf function.  */
-#define HAVE_VSNPRINTF
+#define HAVE_VSNPRINTF 1
+
+/* Define to 1 if you have the `strpbrk' function. */
+#define HAVE_STRPBRK 1
 
 /* Define if you have the strstr function. */
 #define HAVE_STRSTR 1
@@ -138,8 +142,8 @@
 
 /* None except Digital Mars have sleep/usleep functions */
 #if defined(__DMC__)
-#define HAVE_USLEEP
-#define HAVE_SLEEP
+#define HAVE_USLEEP 1
+#define HAVE_SLEEP 1
 #endif
 
 /* Define if you have the <utime.h> header file.  */
@@ -148,6 +152,12 @@
 /* Define if you have the <sys/utime.h> header file.  */
 #define HAVE_SYS_UTIME_H 1
 
+/* Define to 1 if you have the <limits.h> header file. */
+#define HAVE_LIMITS_H 1
+
+/* Define to 1 if you have the <locale.h> header file. */
+#define HAVE_LOCALE_H 1
+
 /* Define if you have the <sys/select.h> header file.  */
 #undef HAVE_SYS_SELECT_H
 
@@ -155,7 +165,7 @@
 #undef HAVE_PWD_H
 
 /* Define if you have the <signal.h> header file.  */
-#define HAVE_SIGNAL_H
+#define HAVE_SIGNAL_H 1
 
 /* Define to be the name of the operating system.  */
 #define OS_TYPE "Windows"

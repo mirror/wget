@@ -1,5 +1,6 @@
 /* Configuration header file.
-   Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 1998, 2004
+   Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,9 +30,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define HAVE_SNPRINTF
+#define HAVE_SNPRINTF 1
 
-#define HAVE_MEMMOVE
+#define HAVE_MEMMOVE 1
 #define ftruncate chsize
 #define inline __inline
 
@@ -78,7 +79,7 @@
 #define USE_DIGEST 1
 
 /* Define if you want the debug output support compiled in.  */
-#define ENABLE_DEBUG
+#define ENABLE_DEBUG 1
 
 /* Define if you have sys/time.h header. */
 #undef HAVE_SYS_TIME_H
@@ -183,7 +184,7 @@
 #define HAVE_BUILTIN_MD5 1
 
 /* Define if you have the isatty function.  */
-#define HAVE_ISATTY
+#define HAVE_ISATTY 1
 
 /* Define to the length of short. */
 #define SIZEOF_SHORT 2
@@ -198,6 +199,6 @@
 #define socklen_t int
 
 /* Define if you have uint32_t.  */
-#define HAVE_UINT32_T */
+/* #define HAVE_UINT32_T */
 
 #endif /* CONFIG_H */

@@ -1,3 +1,29 @@
+2004-05-09  David Fritz  <zeroxdf@att.net>
+
+	* windows/Makefile.src.bor: Fix broken build rule.  Add clean target.
+
+	* windows/Makefile.top.bor: Use tabs instead of spaces.  Ignore
+	errors in clean rules.  Use lowercase filenames when building
+	distribution .zip archive.
+
+	* windows/config.h.bor:  Don't define HAVE_UINT32_T.
+
+	* windows/Makefile.doc: Fix remaining instance of build rules
+	indented with spaces instead of tabs.
+
+	* windows/Makefile.src: Update copyright year.
+
+	* windows/Makefile.top: Update copyright year.
+
+	* windows/config.h.mingw (WGET_USE_STDARG, HAVE_SIG_ATOMIC_T): Define.
+
+	* windows/config.h.ms (HAVE_STRPBRK, HAVE_LIMITS_H)
+	(HAVE_LOCALE_H): Define.
+
+	* windows/Makefile.watcom: Add /I. to CFLAGS.  Remove reference to
+	specific Wget version from linker flags.  Add missing
+	dependencies.
+
 2004-02-09  David Fritz  <zeroxdf@att.net>
 
 	* configure.bat.in: Don't clear the screen.

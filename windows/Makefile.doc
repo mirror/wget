@@ -1,5 +1,5 @@
 # Makefile for `wget' utility
-# Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
+# Copyright (C) 1995, 1996, 1997, 2004 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -71,9 +71,9 @@ $(MAN): $(WGETPOD)
 	$(POD2MAN) --center="GNU Wget" --release="GNU Wget @VERSION@" $? > $@
 
 $(WGETHLP): $(WGETTEXI) $(SAMPLERCTEXI)
-        $(MAKEINFO) --no-validate --no-warn --force \
+	$(MAKEINFO) --no-validate --no-warn --force \
 --hpj wget.hpj --output wget.rtf $(WGETTEXI)
-        hcrtf -xn wget.hpj
+	hcrtf -xn wget.hpj
 
 clean:
 	$(RM) *.bak

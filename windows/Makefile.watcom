@@ -13,7 +13,7 @@ LINK=wlink
 .BEFORE
 	@SET INCLUDE=$(%WATCOM)\h;$(%WATCOM)\h\nt;.
 
-LFLAGS=op q sys nt op st=32767 op vers=1.7 op map op de 'GNU wget 1.7dev' de dw op symf
+LFLAGS=op q sys nt op st=32767 op map op de 'GNU Wget' de dw op symf
 #
 # op q              : quiet !
 # sys nt            : producing an NT app
@@ -25,7 +25,7 @@ LFLAGS=op q sys nt op st=32767 op vers=1.7 op map op de 'GNU wget 1.7dev' de dw 
 # op symf           : place debug info in a separate wget.sym
 #
 
-CFLAGS=/zp4 /w4 /fpd /5s /fp5 /bm /mf /bt=nt /DWINDOWS /DHAVE_CONFIG_H
+CFLAGS=/zp4 /w4 /fpd /5s /fp5 /bm /mf /bt=nt /I. /DWINDOWS /DHAVE_CONFIG_H
 #                    ^^^^^^^^ wget will run on NT. We can safely assume a Pentium :-)
 # /zp4= pack structure members with this alignment
 # /d1 = line number debug info
@@ -54,7 +54,8 @@ CFLAGS+= /os /d2
 OBJS = cmpt.obj convert.obj connect.obj cookies.obj ftp.obj ftp-basic.obj  &
       ftp-ls.obj ftp-opie.obj getopt.obj hash.obj host.obj html-parse.obj html-url.obj  &
       http.obj init.obj log.obj main.obj gen-md5.obj gnu-md5.obj netrc.obj progress.obj  &
-      recur.obj res.obj retr.obj safe-ctype.obj url.obj utils.obj version.obj mswindows.obj
+      recur.obj res.obj retr.obj safe-ctype.obj url.obj utils.obj version.obj mswindows.obj &
+      xmalloc.obj
 
 LIBFILES = 
 #

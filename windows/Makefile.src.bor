@@ -1,6 +1,7 @@
 ## Compiler, linker, and lib stuff
 ## Makefile for use with Borland C++ for Win32 executable.
 
+RM=-del
 CC=bcc32
 LINK=ilink32
 
@@ -21,7 +22,7 @@ wget.exe: $(OBJS)
   $(LINK) @&&|
 $(LFLAGS) -Tpe -ap -c +
 $(LIBDIR)\c0x32.obj+
-cmpt.obj
+cmpt.obj+
 connect.obj+
 convert.obj+
 cookies.obj+
@@ -50,14 +51,26 @@ safe-ctype.obj+
 url.obj+
 utils.obj+
 version.obj+
-xmalloc.obj+
-$<,$*
+xmalloc.obj,+
+$<,$*,+
 $(LIBDIR)\import32.lib+
 $(LIBDIR)\cw32.lib
 
 
 
 |
+
+
+#
+# Dependencies for cleanup
+#
+
+clean:
+	$(RM) *.bak
+	$(RM) *.obj
+	$(RM) *.exe
+	$(RM) *.map
+	$(RM) *.tds
 
 o = .obj
 
