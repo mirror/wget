@@ -1,5 +1,10 @@
 2005-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c (url_parse): Reject port numbers larger than 65535.  We
+	also check for overflow while parsing port numbers.
+
+2005-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (read_file): Don't use wgint for file size; LFS won't
 	work since the file is mmap'ed as a whole.
 

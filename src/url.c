@@ -781,6 +781,13 @@ url_parse (const char *url, int *error)
 		  goto error;
 		}
 	      port = 10 * port + (*pp - '0');
+	      /* Check for too large port numbers here, before we have
+		 a chance to overflow on bogus port values.  */
+	      if (port > 65535)
+		{
+		  error_code = PE_BAD_PORT_NUMBER;
+		  goto error;
+		}
 	    }
 	}
     }
