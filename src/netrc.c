@@ -280,6 +280,10 @@ parse_netrc (const char *path)
       p = line;
       quote = 0;
 
+      /* Skip leading whitespace.  */
+      while (*p && ISSPACE (*p))
+	p ++;
+
       /* If the line is empty, then end any macro definition.  */
       if (last_token == tok_macdef && !*p)
 	/* End of macro if the line is empty.  */
