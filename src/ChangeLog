@@ -1,5 +1,10 @@
 2001-12-03  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* snprintf.c (dopr): Replace `short int' and `unsigned short int'
+	with `int' when using it as the second argument to `va_arg'.
+
+2001-12-03  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* host.c (address_list_new_one): New function.
 	(lookup_host): Use it.
 
