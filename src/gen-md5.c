@@ -81,7 +81,7 @@ gen_md5_update (unsigned const char *buffer, int len, gen_md5_context *ctx)
 #endif
 
 #ifdef HAVE_SOLARIS_MD5
-  MD5Update (ctx_imp, buffer, len);
+  MD5Update (ctx_imp, (unsigned char *)buffer, len);
 #endif
 
 #ifdef HAVE_OPENSSL_MD5

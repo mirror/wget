@@ -217,7 +217,7 @@ lookup_host (const char *host, int silent)
   addr = (unsigned long)inet_addr (host);
   if ((int)addr != -1)
     {
-      unsigned char tmpstore[IP4_ADDRESS_LENGTH];
+      char tmpstore[IP4_ADDRESS_LENGTH];
       char *lst[] = { tmpstore, NULL };
 
       /* ADDR is defined to be in network byte order, which is what

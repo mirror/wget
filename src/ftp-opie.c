@@ -2160,7 +2160,7 @@ calculate_skey_response (int sequence, const char *seed, const char *pass)
   strcat (feed, pass);
 
   gen_md5_init (ctx);
-  gen_md5_update (feed, strlen (feed), ctx);
+  gen_md5_update ((unsigned char *)feed, strlen (feed), ctx);
   gen_md5_finish (ctx, (unsigned char *)results);
 
   results[0] ^= results[2];
@@ -2170,7 +2170,7 @@ calculate_skey_response (int sequence, const char *seed, const char *pass)
   while (0 < sequence--)
     {
       gen_md5_init (ctx);
-      gen_md5_update (key, 8, ctx);
+      gen_md5_update ((unsigned char *)key, 8, ctx);
       gen_md5_finish (ctx, (unsigned char *)results);
       results[0] ^= results[2];
       results[1] ^= results[3];

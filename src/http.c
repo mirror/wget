@@ -2243,28 +2243,28 @@ digest_authentication_encode (const char *au, const char *user,
 
     /* A1BUF = H(user ":" realm ":" password) */
     gen_md5_init (ctx);
-    gen_md5_update (user, strlen (user), ctx);
-    gen_md5_update (":", 1, ctx);
-    gen_md5_update (realm, strlen (realm), ctx);
-    gen_md5_update (":", 1, ctx);
-    gen_md5_update (passwd, strlen (passwd), ctx);
+    gen_md5_update ((unsigned char *)user, strlen (user), ctx);
+    gen_md5_update ((unsigned char *)":", 1, ctx);
+    gen_md5_update ((unsigned char *)realm, strlen (realm), ctx);
+    gen_md5_update ((unsigned char *)":", 1, ctx);
+    gen_md5_update ((unsigned char *)passwd, strlen (passwd), ctx);
     gen_md5_finish (ctx, hash);
     dump_hash (a1buf, hash);
 
     /* A2BUF = H(method ":" path) */
     gen_md5_init (ctx);
-    gen_md5_update (method, strlen (method), ctx);
-    gen_md5_update (":", 1, ctx);
-    gen_md5_update (path, strlen (path), ctx);
+    gen_md5_update ((unsigned char *)method, strlen (method), ctx);
+    gen_md5_update ((unsigned char *)":", 1, ctx);
+    gen_md5_update ((unsigned char *)path, strlen (path), ctx);
     gen_md5_finish (ctx, hash);
     dump_hash (a2buf, hash);
 
     /* RESPONSE_DIGEST = H(A1BUF ":" nonce ":" A2BUF) */
     gen_md5_init (ctx);
     gen_md5_update (a1buf, MD5_HASHLEN * 2, ctx);
-    gen_md5_update (":", 1, ctx);
-    gen_md5_update (nonce, strlen (nonce), ctx);
-    gen_md5_update (":", 1, ctx);
+    gen_md5_update ((unsigned char *)":", 1, ctx);
+    gen_md5_update ((unsigned char *)nonce, strlen (nonce), ctx);
+    gen_md5_update ((unsigned char *)":", 1, ctx);
     gen_md5_update (a2buf, MD5_HASHLEN * 2, ctx);
     gen_md5_finish (ctx, hash);
     dump_hash (response_digest, hash);

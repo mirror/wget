@@ -1,5 +1,10 @@
 2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* gen-md5.c: Use unsigned char * as the buffer argument to
+	gen_md5_update.
+
+2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* connect.h: Declare select_fd.
 
 2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>

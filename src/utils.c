@@ -1788,7 +1788,7 @@ debug_test_md5 (char *buf)
   ALLOCA_MD5_CONTEXT (ctx);
 
   gen_md5_init (ctx);
-  gen_md5_update (buf, strlen (buf), ctx);
+  gen_md5_update ((unsigned char *)buf, strlen (buf), ctx);
   gen_md5_finish (ctx, raw);
 
   p1 = raw;
