@@ -1,5 +1,9 @@
 2003-11-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Remove the broken check for socks.
+
+2003-11-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Substitute ANSI2KNR and U, so we can compile.
 
 2003-11-05  Hrvoje Niksic  <hniksic@xemacs.org>

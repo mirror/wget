@@ -51,11 +51,6 @@ AC_DEFINE_UNQUOTED([OS_TYPE], "$host_os",
 dnl
 dnl Process features.
 dnl
-AC_ARG_WITH(socks,
-  [  --with-socks            use the socks library],
-  [AC_DEFINE([HAVE_SOCKS], 1,
-             [Define if you wish to compile with socks support.])]
-)
 
 AC_ARG_WITH(ssl,
 [[  --with-ssl[=SSL-ROOT]   link with SSL support [default=auto]
@@ -235,13 +230,6 @@ AC_SUBST(GETOPT_OBJ)
 dnl
 dnl Checks for libraries.
 dnl
-
-dnl #### This appears to be deficient with later versions of SOCKS.
-if test "x${with_socks}" = xyes
-then
-  AC_CHECK_LIB(resolv, main)
-  AC_CHECK_LIB(socks, Rconnect)
-fi
 
 dnl $with_ssl can be one of:
 dnl  - empty string or "auto", meaning autodetect SSL and use it if found.
