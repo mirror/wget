@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-10-20 00:07-0700\n"
+"POT-Creation-Date: 2000-10-20 00:29-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -137,129 +137,129 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/ftp.c:692 src/ftp.c:699
+#: src/ftp.c:701 src/ftp.c:708
 #, c-format
 msgid "Length: %s"
 msgstr ""
 
-#: src/ftp.c:694 src/ftp.c:701
+#: src/ftp.c:703 src/ftp.c:710
 #, c-format
 msgid " [%s to go]"
 msgstr ""
 
-#: src/ftp.c:703
+#: src/ftp.c:712
 msgid " (unauthoritative)\n"
 msgstr ""
 
-#: src/ftp.c:729
+#: src/ftp.c:738
 #, c-format
 msgid "%s: %s, closing control connection.\n"
 msgstr ""
 
-#: src/ftp.c:737
+#: src/ftp.c:746
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
 msgstr ""
 
-#: src/ftp.c:754
+#: src/ftp.c:763
 msgid "Control connection closed.\n"
 msgstr ""
 
-#: src/ftp.c:772
+#: src/ftp.c:781
 msgid "Data transfer aborted.\n"
 msgstr ""
 
-#: src/ftp.c:838
+#: src/ftp.c:847
 #, c-format
 msgid "File `%s' already there, not retrieving.\n"
 msgstr ""
 
-#: src/ftp.c:915 src/http.c:1016
+#: src/ftp.c:924 src/http.c:1016
 #, c-format
 msgid "(try:%2d)"
 msgstr ""
 
-#: src/ftp.c:979 src/http.c:1236
+#: src/ftp.c:988 src/http.c:1236
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld]\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1025
+#: src/ftp.c:1034
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
 msgstr ""
 
-#: src/ftp.c:1037
+#: src/ftp.c:1046
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr ""
 
-#: src/ftp.c:1073
+#: src/ftp.c:1082
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr ""
 
-#: src/ftp.c:1125 src/http.c:1163
+#: src/ftp.c:1134 src/http.c:1163
 #, c-format
 msgid ""
 "Server file no newer than local file `%s' -- not retrieving.\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1131 src/http.c:1171
+#: src/ftp.c:1140 src/http.c:1171
 #, c-format
 msgid "The sizes do not match (local %ld) -- retrieving.\n"
 msgstr ""
 
-#: src/ftp.c:1148
+#: src/ftp.c:1157
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr ""
 
-#: src/ftp.c:1165
+#: src/ftp.c:1174
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1173
+#: src/ftp.c:1182
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr ""
 
-#: src/ftp.c:1184
+#: src/ftp.c:1193
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
 msgstr ""
 
-#: src/ftp.c:1196
+#: src/ftp.c:1205
 #, c-format
 msgid "Skipping directory `%s'.\n"
 msgstr ""
 
-#: src/ftp.c:1205
+#: src/ftp.c:1214
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr ""
 
-#: src/ftp.c:1222
+#: src/ftp.c:1231
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr ""
 
-#: src/ftp.c:1243
+#: src/ftp.c:1252
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr ""
 
-#: src/ftp.c:1282
+#: src/ftp.c:1291
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr ""
 
-#: src/ftp.c:1327
+#: src/ftp.c:1336
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr ""
@@ -267,17 +267,17 @@ msgstr ""
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1374
+#: src/ftp.c:1383
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr ""
 
-#: src/ftp.c:1434
+#: src/ftp.c:1443
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
 msgstr ""
 
-#: src/ftp.c:1439
+#: src/ftp.c:1448
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr ""
