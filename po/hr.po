@@ -877,7 +877,6 @@ msgstr ""
 "General Public License za vi¹e detalja.\n"
 
 #: src/main.c:441
-#, fuzzy
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
@@ -1089,17 +1088,3 @@ msgstr "Pogre¹an naziv raèunala"
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Ne mogu izbrisati link `%s': %s\n"
-
-#~ msgid ""
-#~ "Server file no newer than local file `%s.orig' -- not retrieving.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Datoteka na poslu¾itelju nije novija od lokalne datoteke `%s.orig' -- ne "
-#~ "skidam.\n"
-
-#~ msgid ""
-#~ "Local file `%s' is more recent, not retrieving.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Lokalna datoteka `%s' je novija, ne skidam.\n"
-#~ "\n"
