@@ -1,4 +1,4 @@
-This is Info file wget.info, produced by Makeinfo version 1.67 from the
+This is Info file wget.info, produced by Makeinfo version 1.68 from the
 input file ./wget.texi.
 
 INFO-DIR-SECTION Net Utilities
@@ -10,7 +10,7 @@ END-INFO-DIR-ENTRY
    This file documents the the GNU Wget utility for downloading network
 data.
 
-   Copyright (C) 1996, 1997, 1998 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
 
    Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -26,10 +26,10 @@ notice identical to this one.
 
 File: wget.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 
-Wget 1.5.3
-**********
+Wget 1.5.3+dev
+**************
 
-   This manual documents version 1.5.3 of GNU Wget, the freely
+   This manual documents version 1.5.3+dev of GNU Wget, the freely
 available utility for network download.
 
    Copyright (C) 1996, 1997, 1998 Free Software Foundation, Inc.
@@ -203,7 +203,7 @@ with your favorite browser, like `Lynx' or `Netscape'.
 
    ---------- Footnotes ----------
 
-   (1)  If you have a `.netrc' file in your home directory, password
+   (1) If you have a `.netrc' file in your home directory, password
 will also be searched for there.
 
 
@@ -690,6 +690,11 @@ Recursive Retrieval Options
      links have been downloaded.  Because of that, much of the work
      done by `-k' will be performed at the end of the downloads.
 
+`-K'
+`--backup-converted'
+     When converting a file, back up the original version with a
+     `.orig' suffix.
+
 `-m'
 `--mirror'
      Turn on options suitable for mirroring.  This option turns on
@@ -760,6 +765,7 @@ Recursive Accept/Reject Options
      Host Checking::).
 
 `-np'
+
 `--no-parent'
      Do not ever ascend to the parent directory when retrieving
      recursively.  This is a useful option, since it guarantees that
@@ -1202,7 +1208,7 @@ newer, it will be downloaded; if it is older, Wget will give up.(1)
 
    ---------- Footnotes ----------
 
-   (1)  As an additional check, Wget will look at the `Content-Length'
+   (1) As an additional check, Wget will look at the `Content-Length'
 header, and compare the sizes; if they are not the same, the remote
 file will be downloaded no matter what the time-stamp says.
 

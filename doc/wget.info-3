@@ -1,4 +1,4 @@
-This is Info file wget.info, produced by Makeinfo version 1.67 from the
+This is Info file wget.info, produced by Makeinfo version 1.68 from the
 input file ./wget.texi.
 
 INFO-DIR-SECTION Net Utilities
@@ -10,7 +10,7 @@ END-INFO-DIR-ENTRY
    This file documents the the GNU Wget utility for downloading network
 data.
 
-   Copyright (C) 1996, 1997, 1998 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
 
    Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -404,6 +404,7 @@ Concept Index
 * append to log:                         Logging and Input File Options.
 * arguments:                             Invoking.
 * authentication:                        HTTP Options.
+* backing up converted files:            Recursive Retrieval Options.
 * bug reports:                           Reporting Bugs.
 * bugs:                                  Reporting Bugs.
 * cache:                                 HTTP Options.
@@ -473,8 +474,8 @@ Concept Index
 * pause:                                 Download Options.
 * portability:                           Portability.
 * proxies:                               Proxies.
-* proxy <1>:                             Download Options.
-* proxy:                                 HTTP Options.
+* proxy <1>:                             HTTP Options.
+* proxy:                                 Download Options.
 * proxy authentication:                  HTTP Options.
 * proxy filling:                         Recursive Retrieval Options.
 * proxy password:                        HTTP Options.

@@ -1,4 +1,4 @@
-This is Info file wget.info, produced by Makeinfo version 1.67 from the
+This is Info file wget.info, produced by Makeinfo version 1.68 from the
 input file ./wget.texi.
 
 INFO-DIR-SECTION Net Utilities
@@ -10,7 +10,7 @@ END-INFO-DIR-ENTRY
    This file documents the the GNU Wget utility for downloading network
 data.
 
-   Copyright (C) 1996, 1997, 1998 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
 
    Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -75,6 +75,10 @@ continue = on/off
 background = on/off
      Enable/disable going to background, the same as `-b' (which enables
      it).
+
+backup_converted = on/off
+     Enable/disable saving pre-converted files with the suffix `.orig'
+     - the same as `-K' (which enables it).
 
 base = STRING
      Set base for relative URLs, the same as `-B'.
@@ -683,8 +687,8 @@ Distribution
 
    Like all GNU utilities, the latest version of Wget can be found at
 the master GNU archive site prep.ai.mit.edu, and its mirrors.  For
-example, Wget 1.5.3 can be found at
-`ftp://prep.ai.mit.edu/pub/gnu/wget-1.5.3.tar.gz'
+example, Wget 1.5.3+dev can be found at
+`ftp://prep.ai.mit.edu/pub/gnu/wget-1.5.3+dev.tar.gz'
 
 
 File: wget.info,  Node: Mailing List,  Next: Reporting Bugs,  Prev: Distribution,  Up: Various
@@ -1018,7 +1022,7 @@ File: wget.info,  Node: Contributors,  Prev: Security Considerations,  Up: Appen
 Contributors
 ============
 
-   GNU Wget was written by Hrvoje Niksic <hniksic@srce.hr>.  However,
+   GNU Wget was written by Hrvoje Niksic <hniksic@iskon.hr>.  However,
 its development could never have gone as far as it has, were it not for
 the help of many people, either with bug reports, feature proposals,
 patches, or letters saying "Thanks!".

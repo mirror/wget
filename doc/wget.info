@@ -1,4 +1,4 @@
-This is Info file wget.info, produced by Makeinfo version 1.67 from the
+This is Info file wget.info, produced by Makeinfo version 1.68 from the
 input file ./wget.texi.
 
 INFO-DIR-SECTION Net Utilities
@@ -10,7 +10,7 @@ END-INFO-DIR-ENTRY
    This file documents the the GNU Wget utility for downloading network
 data.
 
-   Copyright (C) 1996, 1997, 1998 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
 
    Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -25,64 +25,64 @@ notice identical to this one.
 
 
 Indirect:
-wget.info-1: 955
-wget.info-2: 50818
-wget.info-3: 88475
+wget.info-1: 961
+wget.info-2: 50948
+wget.info-3: 88756
 
 Tag Table:
 (Indirect)
-Node: Top955
-Node: Overview1832
-Node: Invoking5006
-Node: URL Format5815
-Node: Option Syntax8147
-Node: Basic Startup Options9571
-Node: Logging and Input File Options10271
-Node: Download Options12665
-Node: Directory Options18450
-Node: HTTP Options20928
-Node: FTP Options24524
-Node: Recursive Retrieval Options25717
-Node: Recursive Accept/Reject Options27493
-Node: Recursive Retrieval29575
-Node: Following Links31871
-Node: Relative Links32903
-Node: Host Checking33417
-Node: Domain Acceptance35450
-Node: All Hosts37120
-Node: Types of Files37547
-Node: Directory-Based Limits39997
-Node: FTP Links42637
-Node: Time-Stamping43507
-Node: Time-Stamping Usage45144
-Node: HTTP Time-Stamping Internals46713
-Node: FTP Time-Stamping Internals47922
-Node: Startup File49130
-Node: Wgetrc Location50003
-Node: Wgetrc Syntax50818
-Node: Wgetrc Commands51533
-Node: Sample Wgetrc58229
-Node: Examples62521
-Node: Simple Usage63128
-Node: Advanced Usage65522
-Node: Guru Usage68273
-Node: Various69935
-Node: Proxies70459
-Node: Distribution73224
-Node: Mailing List73566
-Node: Reporting Bugs74265
-Node: Portability76050
-Node: Signals77425
-Node: Appendices78079
-Node: Robots78494
-Node: Introduction to RES79641
-Node: RES Format81534
-Node: User-Agent Field82638
-Node: Disallow Field83402
-Node: Norobots Examples84013
-Node: Security Considerations84967
-Node: Contributors85963
-Node: Copying88475
-Node: Concept Index107638
+Node: Top961
+Node: Overview1850
+Node: Invoking5024
+Node: URL Format5833
+Node: Option Syntax8164
+Node: Basic Startup Options9588
+Node: Logging and Input File Options10288
+Node: Download Options12682
+Node: Directory Options18467
+Node: HTTP Options20945
+Node: FTP Options24541
+Node: Recursive Retrieval Options25734
+Node: Recursive Accept/Reject Options27623
+Node: Recursive Retrieval29706
+Node: Following Links32002
+Node: Relative Links33034
+Node: Host Checking33548
+Node: Domain Acceptance35581
+Node: All Hosts37251
+Node: Types of Files37678
+Node: Directory-Based Limits40128
+Node: FTP Links42768
+Node: Time-Stamping43638
+Node: Time-Stamping Usage45275
+Node: HTTP Time-Stamping Internals46844
+Node: FTP Time-Stamping Internals48052
+Node: Startup File49260
+Node: Wgetrc Location50133
+Node: Wgetrc Syntax50948
+Node: Wgetrc Commands51663
+Node: Sample Wgetrc58501
+Node: Examples62793
+Node: Simple Usage63400
+Node: Advanced Usage65794
+Node: Guru Usage68545
+Node: Various70207
+Node: Proxies70731
+Node: Distribution73496
+Node: Mailing List73846
+Node: Reporting Bugs74545
+Node: Portability76330
+Node: Signals77705
+Node: Appendices78359
+Node: Robots78774
+Node: Introduction to RES79921
+Node: RES Format81814
+Node: User-Agent Field82918
+Node: Disallow Field83682
+Node: Norobots Examples84293
+Node: Security Considerations85247
+Node: Contributors86243
+Node: Copying88756
+Node: Concept Index107919
 
 End Tag Table
