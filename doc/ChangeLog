@@ -1,3 +1,11 @@
+2000-11-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.texi: Add GFDL; remove norobots specification.
+
+	* wget.texi (Sample Wgetrc): Remove warnings with lateish
+	makeinfo, mostly by changing xref{} to pxref{} when inside
+	parentheses.
+
 2000-11-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi: cc.fer.hr -> srk.fer.hr.

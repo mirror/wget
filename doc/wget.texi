@@ -40,12 +40,12 @@ results, provided the printed document carries a copying permission
 notice identical to this one except for the removal of this paragraph
 (this paragraph not being relevant to the printed manual).
 @end ignore
-Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided also that the
-sections entitled ``Copying'' and ``GNU General Public License'' are
-included exactly as in the original, and provided that the entire
-resulting derived work is distributed under the terms of a permission
-notice identical to this one.
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+Texts.  A copy of the license is included in the section entitled ``GNU
+Free Documentation License''.
 @end ifinfo
 
 @titlepage
@@ -56,23 +56,14 @@ notice identical to this one.
 
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1996, 1997, 1998 Free Software Foundation, Inc.
+Copyright @copyright{} 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
 
-Permission is granted to make and distribute verbatim copies of this
-manual provided the copyright notice and this permission notice are
-preserved on all copies.
-
-Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided also that the
-sections entitled ``Copying'' and ``GNU General Public License'' are
-included exactly as in the original, and provided that the entire
-resulting derived work is distributed under the terms of a permission
-notice identical to this one.
-
-Permission is granted to copy and distribute translations of this manual
-into another language, under the above conditions for modified versions,
-except that this permission notice may be stated in a translation
-approved by the Free Software Foundation.
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+Texts.  A copy of the license is included in the section entitled ``GNU
+Free Documentation License''.
 @end titlepage
 
 @ifinfo
@@ -82,7 +73,7 @@ approved by the Free Software Foundation.
 This manual documents version @value{VERSION} of GNU Wget, the freely
 available utility for network download.
 
-Copyright @copyright{} 1996, 1997, 1998 Free Software Foundation, Inc.
+Copyright @copyright{} 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
 
 @menu
 * Overview::            Features of Wget.
@@ -94,7 +85,7 @@ Copyright @copyright{} 1996, 1997, 1998 Free Software Foundation, Inc.
 * Examples::            Examples of usage.
 * Various::             The stuff that doesn't fit anywhere else.
 * Appendices::          Some useful references.
-* Copying::             You may give out copies of Wget.
+* Copying::             You may give out copies of Wget and of this manual.
 * Concept Index::       Topics covered by this manual.
 @end menu
 @end ifinfo
@@ -124,7 +115,7 @@ Wget is capable of descending recursively through the structure of
 @sc{html} documents and @sc{ftp} directory trees, making a local copy of
 the directory hierarchy similar to the one on the remote server.  This
 feature can be used to mirror archives and home pages, or traverse the
-web in search of data, like a @sc{www} robot (@xref{Robots}).  In that
+web in search of data, like a @sc{www} robot (@pxref{Robots}).  In that
 spirit, Wget understands the @code{norobots} convention.
 
 @sp 1
@@ -157,7 +148,7 @@ option.
 @sp 1
 @item
 Builtin features offer mechanisms to tune which links you wish to follow
-(@xref{Following Links}).
+(@pxref{Following Links}).
 
 @sp 1
 @item
@@ -168,7 +159,7 @@ representations can be customized to your preferences.
 @sp 1
 @item
 Most of the features are fully configurable, either through command line
-options, or via the initialization file @file{.wgetrc} (@xref{Startup
+options, or via the initialization file @file{.wgetrc} (@pxref{Startup
 File}).  Wget allows you to define @dfn{global} startup files
 (@file{/usr/local/etc/wgetrc} by default) for site settings.
 
@@ -177,7 +168,7 @@ File}).  Wget allows you to define @dfn{global} startup files
 Finally, GNU Wget is free software.  This means that everyone may use
 it, redistribute it and/or modify it under the terms of the GNU General
 Public License, as published by the Free Software Foundation
-(@xref{Copying}).
+(@pxref{Copying}).
 @end itemize
 
 @node Invoking, Recursive Retrieval, Overview, Top
@@ -198,7 +189,7 @@ line.  @var{URL} is a @dfn{Uniform Resource Locator}, as defined below.
 
 However, you may wish to change some of the default parameters of
 Wget.  You can do it two ways: permanently, adding the appropriate
-command to @file{.wgetrc} (@xref{Startup File}), or specifying it on
+command to @file{.wgetrc} (@pxref{Startup File}), or specifying it on
 the command line.
 
 @menu
@@ -328,7 +319,7 @@ clear the @file{.wgetrc} settings.  For instance, if your @file{.wgetrc}
 sets @code{exclude_directories} to @file{/cgi-bin}, the following
 example will first reset it, and then set it to exclude @file{/~nobody}
 and @file{/~somebody}.  You can also clear the lists in @file{.wgetrc}
-(@xref{Wgetrc Syntax}).
+(@pxref{Wgetrc Syntax}).
 
 @example
 wget -X '' -X /~nobody,/~somebody
@@ -355,7 +346,7 @@ specified via the @samp{-o}, output is redirected to @file{wget-log}.
 @item -e @var{command}
 @itemx --execute @var{command}
 Execute @var{command} as if it were a part of @file{.wgetrc}
-(@xref{Startup File}).  A command thus invoked will be executed
+(@pxref{Startup File}).  A command thus invoked will be executed
 @emph{after} the commands in @file{.wgetrc}, thus taking precedence over
 them.
 @end table
@@ -387,7 +378,7 @@ administrator may have chosen to compile Wget without debug support, in
 which case @samp{-d} will not work.  Please note that compiling with
 debug support is always safe---Wget compiled with the debug support will
 @emph{not} print any debug info unless requested with @samp{-d}.
-@xref{Reporting Bugs} for more information on how to use @samp{-d} for
+@xref{Reporting Bugs}, for more information on how to use @samp{-d} for
 sending bug reports.
 
 @cindex quiet
@@ -498,7 +489,7 @@ be ignored.
 When running wget with @samp{-N}, with or without @samp{-r}, the
 decision as to whether or not to download a newer copy of a file depends
 on the local and remote timestamp and size of the file
-(@xref{Time-Stamping}).  @samp{-nc} may not be specified at the same
+(@pxref{Time-Stamping}).  @samp{-nc} may not be specified at the same
 time as @samp{-N}.
 
 Note that when @samp{-nc} is specified, files with the suffixes
@@ -558,7 +549,7 @@ reverse; it is suitable for downloading small files, with 128-byte dots,
 
 @item -N
 @itemx --timestamping
-Turn on time-stamping.  @xref{Time-Stamping} for details.
+Turn on time-stamping.  @xref{Time-Stamping}, for details.
 
 @cindex server response, print
 @item -S
@@ -734,7 +725,7 @@ you re-mirror a site, because wget can't tell that the local
 it doesn't yet know that the URL produces output of type
 @samp{text/html}.  To prevent this re-downloading, you must use
 @samp{-k} and @samp{-K} so that the original version of the file will be
-saved as @file{@var{X}.orig} (@xref{Recursive Retrieval Options}).
+saved as @file{@var{X}.orig} (@pxref{Recursive Retrieval Options}).
 
 @cindex http user
 @cindex http password
@@ -747,7 +738,7 @@ encode them using either the @code{basic} (insecure) or the
 @code{digest} authentication scheme.
 
 Another way to specify username and password is in the @sc{url} itself
-(@xref{URL Format}).  For more information about security issues with
+(@pxref{URL Format}).  For more information about security issues with
 Wget, @xref{Security Considerations}.
 
 @cindex proxy
@@ -896,12 +887,12 @@ to work behind firewalls.
 @table @samp
 @item -r
 @itemx --recursive
-Turn on recursive retrieving.  @xref{Recursive Retrieval} for more
+Turn on recursive retrieving.  @xref{Recursive Retrieval}, for more
 details.
 
 @item -l @var{depth}
 @itemx --level=@var{depth}
-Specify recursion maximum depth level @var{depth} (@xref{Recursive
+Specify recursion maximum depth level @var{depth} (@pxref{Recursive
 Retrieval}).  The default maximum depth is 5.
 
 @cindex proxy filling
@@ -941,7 +932,7 @@ will be performed at the end of the downloads.
 @item -K
 @itemx --backup-converted
 When converting a file, back up the original version with a @samp{.orig}
-suffix.  Affects the behavior of @samp{-N} (@xref{HTTP Time-Stamping
+suffix.  Affects the behavior of @samp{-N} (@pxref{HTTP Time-Stamping
 Internals}).
 
 @item -m
@@ -1043,18 +1034,18 @@ REL="stylesheet">}.
 @item -A @var{acclist} --accept @var{acclist}
 @itemx -R @var{rejlist} --reject @var{rejlist}
 Specify comma-separated lists of file name suffixes or patterns to
-accept or reject (@xref{Types of Files} for more details).
+accept or reject (@pxref{Types of Files} for more details).
 
 @item -D @var{domain-list}
 @itemx --domains=@var{domain-list}
 Set domains to be accepted and @sc{dns} looked-up, where
 @var{domain-list} is a comma-separated list.  Note that it does
 @emph{not} turn on @samp{-H}.  This option speeds things up, even if
-only one host is spanned (@xref{Domain Acceptance}).
+only one host is spanned (@pxref{Domain Acceptance}).
 
 @item --exclude-domains @var{domain-list}
 Exclude the domains given in a comma-separated @var{domain-list} from
-@sc{dns}-lookup (@xref{Domain Acceptance}).
+@sc{dns}-lookup (@pxref{Domain Acceptance}).
 
 @cindex follow FTP links
 @item --follow-ftp
@@ -1091,38 +1082,38 @@ dedicated @samp{--page-requisites} option.
 
 @item -H
 @itemx --span-hosts
-Enable spanning across hosts when doing recursive retrieving (@xref{All
+Enable spanning across hosts when doing recursive retrieving (@pxref{All
 Hosts}).
 
 @item -L
 @itemx --relative
 Follow relative links only.  Useful for retrieving a specific home page
 without any distractions, not even those from the same hosts
-(@xref{Relative Links}).
+(@pxref{Relative Links}).
 
 @item -I @var{list}
 @itemx --include-directories=@var{list}
 Specify a comma-separated list of directories you wish to follow when
-downloading (@xref{Directory-Based Limits} for more details.)  Elements
+downloading (@pxref{Directory-Based Limits} for more details.)  Elements
 of @var{list} may contain wildcards.
 
 @item -X @var{list}
 @itemx --exclude-directories=@var{list}
 Specify a comma-separated list of directories you wish to exclude from
-download (@xref{Directory-Based Limits} for more details.)  Elements of
+download (@pxref{Directory-Based Limits} for more details.)  Elements of
 @var{list} may contain wildcards.
 
 @item -nh
 @itemx --no-host-lookup
 Disable the time-consuming @sc{dns} lookup of almost all hosts
-(@xref{Host Checking}).
+(@pxref{Host Checking}).
 
 @item -np
 @item --no-parent
 Do not ever ascend to the parent directory when retrieving recursively.
 This is a useful option, since it guarantees that only the files
 @emph{below} a certain hierarchy will be downloaded.
-@xref{Directory-Based Limits} for more details.
+@xref{Directory-Based Limits}, for more details.
 @end table
 
 @node Recursive Retrieval, Following Links, Invoking, Top
@@ -1173,7 +1164,7 @@ The load can be minimized by lowering the maximum recursion level
 (@samp{-l}) and/or by lowering the number of retries (@samp{-t}).  You
 may also consider using the @samp{-w} option to slow down your requests
 to the remote servers, as well as the numerous options to narrow the
-number of followed links (@xref{Following Links}).
+number of followed links (@pxref{Following Links}).
 
 Recursive retrieval is a good thing when used properly.  Please take all
 precautions not to wreak havoc through carelessness.
@@ -1721,12 +1712,12 @@ hostnames or dotted-quad IP addresses.  @var{n} can be any positive
 integer, or @samp{inf} for infinity, where appropriate.  @var{string}
 values can be any non-empty string.
 
-Most of these commands have commandline equivalents (@xref{Invoking}),
+Most of these commands have commandline equivalents (@pxref{Invoking}),
 though some of the more obscure or rarely used ones do not.
 
 @table @asis
 @item accept/reject = @var{string}
-Same as @samp{-A}/@samp{-R} (@xref{Types of Files}).
+Same as @samp{-A}/@samp{-R} (@pxref{Types of Files}).
 
 @item add_hostdir = on/off
 Enable/disable host-prefixed file names.  @samp{-nH} disables it.
@@ -1777,7 +1768,7 @@ Turning dirstruct on or off -- the same as @samp{-x} or @samp{-nd},
 respectively.
 
 @item domains = @var{string}
-Same as @samp{-D} (@xref{Domain Acceptance}).
+Same as @samp{-D} (@pxref{Domain Acceptance}).
 
 @item dot_bytes = @var{n}
 Specify the number of bytes ``contained'' in a dot, as seen throughout
@@ -1785,7 +1776,7 @@ the retrieval (1024 by default).  You can postfix the value with
 @samp{k} or @samp{m}, representing kilobytes and megabytes,
 respectively.  With dot settings you can tailor the dot retrieval to
 suit your needs, or you can use the predefined @dfn{styles}
-(@xref{Download Options}).
+(@pxref{Download Options}).
 
 @item dots_in_line = @var{n}
 Specify the number of dots that will be printed in each line throughout
@@ -1799,10 +1790,10 @@ Specify the dot retrieval @dfn{style}, as with @samp{--dot-style}.
 
 @item exclude_directories = @var{string}
 Specify a comma-separated list of directories you wish to exclude from
-download -- the same as @samp{-X} (@xref{Directory-Based Limits}).
+download -- the same as @samp{-X} (@pxref{Directory-Based Limits}).
 
 @item exclude_domains = @var{string}
-Same as @samp{--exclude-domains} (@xref{Domain Acceptance}).
+Same as @samp{--exclude-domains} (@pxref{Domain Acceptance}).
 
 @item follow_ftp = on/off
 Follow @sc{ftp} links from @sc{html} documents -- the same as @samp{-f}.
@@ -1878,7 +1869,7 @@ Same as @samp{-nc}.
 
 @item no_parent = on/off
 Disallow retrieving outside the directory hierarchy, like
-@samp{--no-parent} (@xref{Directory-Based Limits}).
+@samp{--no-parent} (@pxref{Directory-Based Limits}).
 
 @item no_proxy = @var{string}
 Use @var{string} as the comma-separated list of domains to avoid in
@@ -1930,7 +1921,7 @@ Recursion level -- the same as @samp{-l}.
 Recursive on/off -- the same as @samp{-r}.
 
 @item relative_only = on/off
-Follow only relative links -- the same as @samp{-L} (@xref{Relative
+Follow only relative links -- the same as @samp{-L} (@pxref{Relative
 Links}).
 
 @item remove_listing = on/off
@@ -1942,7 +1933,7 @@ When set to on, retrieve symbolic links as if they were plain files; the
 same as @samp{--retr-symlinks}.
 
 @item robots = on/off
-Use (or not) @file{/robots.txt} file (@xref{Robots}).  Be sure to know
+Use (or not) @file{/robots.txt} file (@pxref{Robots}).  Be sure to know
 what you are doing before changing the default (which is @samp{on}).
 
 @item server_response = on/off
@@ -1950,7 +1941,7 @@ Choose whether or not to print the @sc{http} and @sc{ftp} server
 responses -- the same as @samp{-S}.
 
 @item simple_host_check = on/off
-Same as @samp{-nh} (@xref{Host Checking}).
+Same as @samp{-nh} (@pxref{Host Checking}).
 
 @item span_hosts = on/off
 Same as @samp{-H}.
@@ -1959,7 +1950,7 @@ Same as @samp{-H}.
 Set timeout value -- the same as @samp{-T}.
 
 @item timestamping = on/off
-Turn timestamping on/off. The same as @samp{-N} (@xref{Time-Stamping}).
+Turn timestamping on/off. The same as @samp{-N} (@pxref{Time-Stamping}).
 
 @item tries = @var{n}
 Set number of retries per @sc{url} -- the same as @samp{-t}.
@@ -2158,9 +2149,9 @@ wget -r -l1 --no-parent -A.gif http://host/dir/
 @end example
 
 It is a bit of a kludge, but it works.  @samp{-r -l1} means to retrieve
-recursively (@xref{Recursive Retrieval}), with maximum depth of 1.
+recursively (@pxref{Recursive Retrieval}), with maximum depth of 1.
 @samp{--no-parent} means that references to the parent directory are
-ignored (@xref{Directory-Based Limits}), and @samp{-A.gif} means to
+ignored (@pxref{Directory-Based Limits}), and @samp{-A.gif} means to
 download only the @sc{gif} files.  @samp{-A "*.gif"} would have worked
 too.
 
@@ -2175,7 +2166,7 @@ wget -nc -r http://www.gnu.ai.mit.edu/
 
 @item
 If you want to encode your own username and password to @sc{http} or
-@sc{ftp}, use the appropriate @sc{url} syntax (@xref{URL Format}).
+@sc{ftp}, use the appropriate @sc{url} syntax (@pxref{URL Format}).
 
 @example
 wget ftp://hniksic:mypassword@@jagor.srce.hr/.emacs
@@ -2184,7 +2175,7 @@ wget ftp://hniksic:mypassword@@jagor.srce.hr/.emacs
 @item
 If you do not like the default retrieval visualization (1K dots with 10
 dots per cluster and 50 dots per line), you can customize it through dot
-settings (@xref{Wgetrc Commands}).  For example, many people like the
+settings (@pxref{Wgetrc Commands}).  For example, many people like the
 ``binary'' style of retrieval, with 8K dots and 512K lines:
 
 @example
@@ -2199,7 +2190,7 @@ wget --dot-style=micro http://fly.srk.fer.hr/
 @end example
 
 To make these settings permanent, put them in your @file{.wgetrc}, as
-described before (@xref{Sample Wgetrc}).
+described before (@pxref{Sample Wgetrc}).
 @end itemize
 
 @node Guru Usage,  , Advanced Usage, Examples
@@ -2229,7 +2220,7 @@ wget --mirror -A.html http://www.w3.org/
 @item
 But what about mirroring the hosts networkologically close to you?  It
 seems so awfully slow because of all that @sc{dns} resolving.  Just use
-@samp{-D} (@xref{Domain Acceptance}).
+@samp{-D} (@pxref{Domain Acceptance}).
 
 @example
 wget -rN -Dsrce.hr http://www.srce.hr/
@@ -2480,9 +2471,7 @@ alike.
 @node Appendices, Copying, Various, Top
 @chapter Appendices
 
-This chapter contains some references I consider useful, like the Robots
-Exclusion Standard specification, as well as a list of contributors to
-GNU Wget.
+This chapter contains some references I consider useful.
 
 @menu
 * Robots::                  Wget as a WWW robot.
@@ -2514,159 +2503,19 @@ load the robots, and decide whether or not to load the links after all.
 @file{/robots.txt} is loaded only once per host.  Wget does not support
 the robots @code{META} tag.
 
-The description of the norobots standard was written, and is maintained
-by Martijn Koster @email{m.koster@@webcrawler.com}.  With his
-permission, I contribute a (slightly modified) TeXified version of the
-@sc{res}.
+Note that the exlusion standard discussed here has undergone some
+revisions.  However, but Wget supports only the first version of
+@sc{res}, the one written by Martijn Koster in 1994, available at
+@url{http://info.webcrawler.com/mak/projects/robots/norobots.html}.  A
+later version exists in the form of an internet draft
+<draft-koster-robots-00.txt> titled ``A Method for Web Robots Control'',
+which expired on June 4, 1997.  I am not aware if it ever made to an
+@sc{rfc}.  The text of the draft is available at
+@url{http://info.webcrawler.com/mak/projects/robots/norobots-rfc.html}.
+Wget does not yet support the new directives specified by this draft,
+but we plan to add them.
 
-@menu
-* Introduction to RES::
-* RES Format::
-* User-Agent Field::
-* Disallow Field::
-* Norobots Examples::
-@end menu
-
-@node Introduction to RES, RES Format, Robots, Robots
-@subsection Introduction to RES
-@cindex norobots introduction
-
-@dfn{WWW Robots} (also called @dfn{wanderers} or @dfn{spiders}) are
-programs that traverse many pages in the World Wide Web by recursively
-retrieving linked pages. For more information see the robots page.
-
-In 1993 and 1994 there have been occasions where robots have visited
-@sc{www} servers where they weren't welcome for various
-reasons. Sometimes these reasons were robot specific, e.g. certain
-robots swamped servers with rapid-fire requests, or retrieved the same
-files repeatedly. In other situations robots traversed parts of @sc{www}
-servers that weren't suitable, e.g. very deep virtual trees, duplicated
-information, temporary information, or cgi-scripts with side-effects
-(such as voting).
-
-These incidents indicated the need for established mechanisms for
-@sc{www} servers to indicate to robots which parts of their server
-should not be accessed. This standard addresses this need with an
-operational solution.
-
-This document represents a consensus on 30 June 1994 on the robots
-mailing list (@code{robots@@webcrawler.com}), between the majority of
-robot authors and other people with an interest in robots. It has also
-been open for discussion on the Technical World Wide Web mailing list
-(@code{www-talk@@info.cern.ch}). This document is based on a previous
-working draft under the same title.
-
-It is not an official standard backed by a standards body, or owned by
-any commercial organization. It is not enforced by anybody, and there
-no guarantee that all current and future robots will use it. Consider
-it a common facility the majority of robot authors offer the @sc{www}
-community to protect @sc{www} server against unwanted accesses by their
-robots.
-
-The latest version of this document can be found at
-@url{http://info.webcrawler.com/mak/projects/robots/norobots.html}.
-
-@node RES Format, User-Agent Field, Introduction to RES, Robots
-@subsection RES Format
-@cindex norobots format
-
-The format and semantics of the @file{/robots.txt} file are as follows:
-
-The file consists of one or more records separated by one or more blank
-lines (terminated by @code{CR}, @code{CR/NL}, or @code{NL}).  Each
-record contains lines of the form:
-
-@example
-<field>:<optionalspace><value><optionalspace>
-@end example
-
-The field name is case insensitive.
-
-Comments can be included in file using UNIX Bourne shell conventions:
-the @samp{#} character is used to indicate that preceding space (if any)
-and the remainder of the line up to the line termination is discarded.
-Lines containing only a comment are discarded completely, and therefore
-do not indicate a record boundary.
-
-The record starts with one or more User-agent lines, followed by one or
-more Disallow lines, as detailed below. Unrecognized headers are
-ignored.
-
-The presence of an empty @file{/robots.txt} file has no explicit
-associated semantics, it will be treated as if it was not present,
-i.e. all robots will consider themselves welcome.
-
-@node User-Agent Field, Disallow Field, RES Format, Robots
-@subsection User-Agent Field
-@cindex norobots user-agent
-
-The value of this field is the name of the robot the record is
-describing access policy for.
-
-If more than one User-agent field is present the record describes an
-identical access policy for more than one robot.  At least one field
-needs to be present per record.
-
-The robot should be liberal in interpreting this field. A case
-insensitive substring match of the name without version information is
-recommended.
-
-If the value is @samp{*}, the record describes the default access policy
-for any robot that has not matched any of the other records. It is not
-allowed to have multiple such records in the @file{/robots.txt} file.
-
-@node Disallow Field, Norobots Examples, User-Agent Field, Robots
-@subsection Disallow Field
-@cindex norobots disallow
-
-The value of this field specifies a partial @sc{url} that is not to be
-visited. This can be a full path, or a partial path; any @sc{url} that
-starts with this value will not be retrieved. For example,
-@w{@samp{Disallow: /help}} disallows both @samp{/help.html} and
-@samp{/help/index.html}, whereas @w{@samp{Disallow: /help/}} would
-disallow @samp{/help/index.html} but allow @samp{/help.html}.
-
-Any empty value, indicates that all @sc{url}s can be retrieved. At least
-one Disallow field needs to be present in a record.
-
-@node Norobots Examples,  , Disallow Field, Robots
-@subsection Norobots Examples
-@cindex norobots examples
-
-The following example @samp{/robots.txt} file specifies that no robots
-should visit any @sc{url} starting with @samp{/cyberworld/map/} or
-@samp{/tmp/}:
-
-@example
-# robots.txt for http://www.site.com/
-
-User-agent: *
-Disallow: /cyberworld/map/ # This is an infinite virtual URL space
-Disallow: /tmp/ # these will soon disappear
-@end example
-
-This example @samp{/robots.txt} file specifies that no robots should
-visit any @sc{url} starting with @samp{/cyberworld/map/}, except the
-robot called @samp{cybermapper}:
-
-@example
-# robots.txt for http://www.site.com/
-
-User-agent: *
-Disallow: /cyberworld/map/ # This is an infinite virtual URL space
-
-# Cybermapper knows where to go.
-User-agent: cybermapper
-Disallow:
-@end example
-
-This example indicates that no robots should visit this site further:
-
-@example
-# go away
-User-agent: *
-Disallow: /
-@end example
+This manual no longer includes the text of the old standard.
 
 @node Security Considerations, Contributors, Robots, Appendices
 @section Security Considerations
@@ -2901,9 +2750,66 @@ Apologies to all who I accidentally left out, and many thanks to all the
 subscribers of the Wget mailing list.
 
 @node Copying, Concept Index, Appendices, Top
-@unnumbered GNU GENERAL PUBLIC LICENSE
+@chapter Copying
 @cindex copying
 @cindex GPL
+@cindex GFDL
+
+Wget is @dfn{free software}, where ``free'' refers to liberty, not
+price.  The exact legal distribution terms follow below, but in short,
+it means that you have the right (freedom) to run and change and copy
+Wget, and even---if you want---charge money for any of those things.
+The sole restriction is that you have to grant your recipients the same
+rights.
+
+This method of licensing software is also known as @dfn{open-source},
+because it requires that the recipients always receive a program's
+source code along with the program.
+
+More specifically:
+
+@quotation
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+@end quotation
+
+In addition to this, this manual is free in the same sense:
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+Texts.  A copy of the license is included in the section entitled ``GNU
+Free Documentation License''.
+@end quotation
+
+@c #### Maybe we should wrap these licenses in ifinfo?  Stallman says
+@c that the GFDL needs to be present in the manual, and to me it would
+@c suck to include the license for the manual and not the license for
+@c the program.
+
+The full texts of the GNU General Public License and of the GNU Free
+Documentation License are available below.
+
+@menu
+* GNU General Public License::
+* GNU Free Documentation License::
+@end menu
+
+@node GNU General Public License, GNU Free Documentation License, Copying, Copying
+@section GNU General Public License
 @center Version 2, June 1991
 
 @display
@@ -3298,6 +3204,374 @@ proprietary programs.  If your program is a subroutine library, you may
 consider it more useful to permit linking proprietary applications with the
 library.  If this is what you want to do, use the GNU Library General
 Public License instead of this License.
+
+@node GNU Free Documentation License,  , GNU General Public License, Copying
+@section GNU Free Documentation License
+@center Version 1.1, March 2000
+
+@display
+Copyright (C) 2000  Free Software Foundation, Inc.
+59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.
+@end display
+@sp 1
+@enumerate 0
+@item
+PREAMBLE
+
+The purpose of this License is to make a manual, textbook, or other
+written document ``free'' in the sense of freedom: to assure everyone
+the effective freedom to copy and redistribute it, with or without
+modifying it, either commercially or noncommercially.  Secondarily,
+this License preserves for the author and publisher a way to get
+credit for their work, while not being considered responsible for
+modifications made by others.
+
+This License is a kind of ``copyleft'', which means that derivative
+works of the document must themselves be free in the same sense.  It
+complements the GNU General Public License, which is a copyleft
+license designed for free software.
+
+We have designed this License in order to use it for manuals for free
+software, because free software needs free documentation: a free
+program should come with manuals providing the same freedoms that the
+software does.  But this License is not limited to software manuals;
+it can be used for any textual work, regardless of subject matter or
+whether it is published as a printed book.  We recommend this License
+principally for works whose purpose is instruction or reference.
+
+@sp 1
+@item
+APPLICABILITY AND DEFINITIONS
+
+This License applies to any manual or other work that contains a
+notice placed by the copyright holder saying it can be distributed
+under the terms of this License.  The ``Document'', below, refers to any
+such manual or work.  Any member of the public is a licensee, and is
+addressed as ``you''.
+
+A ``Modified Version'' of the Document means any work containing the
+Document or a portion of it, either copied verbatim, or with
+modifications and/or translated into another language.
+
+A ``Secondary Section'' is a named appendix or a front-matter section of
+the Document that deals exclusively with the relationship of the
+publishers or authors of the Document to the Document's overall subject
+(or to related matters) and contains nothing that could fall directly
+within that overall subject.  (For example, if the Document is in part a
+textbook of mathematics, a Secondary Section may not explain any
+mathematics.)  The relationship could be a matter of historical
+connection with the subject or with related matters, or of legal,
+commercial, philosophical, ethical or political position regarding
+them.
+
+The ``Invariant Sections'' are certain Secondary Sections whose titles
+are designated, as being those of Invariant Sections, in the notice
+that says that the Document is released under this License.
+
+The ``Cover Texts'' are certain short passages of text that are listed,
+as Front-Cover Texts or Back-Cover Texts, in the notice that says that
+the Document is released under this License.
+
+A ``Transparent'' copy of the Document means a machine-readable copy,
+represented in a format whose specification is available to the
+general public, whose contents can be viewed and edited directly and
+straightforwardly with generic text editors or (for images composed of
+pixels) generic paint programs or (for drawings) some widely available
+drawing editor, and that is suitable for input to text formatters or
+for automatic translation to a variety of formats suitable for input
+to text formatters.  A copy made in an otherwise Transparent file
+format whose markup has been designed to thwart or discourage
+subsequent modification by readers is not Transparent.  A copy that is
+not ``Transparent'' is called ``Opaque''.
+
+Examples of suitable formats for Transparent copies include plain
+ASCII without markup, Texinfo input format, LaTeX input format, SGML
+or XML using a publicly available DTD, and standard-conforming simple
+HTML designed for human modification.  Opaque formats include
+PostScript, PDF, proprietary formats that can be read and edited only
+by proprietary word processors, SGML or XML for which the DTD and/or
+processing tools are not generally available, and the
+machine-generated HTML produced by some word processors for output
+purposes only.
+
+The ``Title Page'' means, for a printed book, the title page itself,
+plus such following pages as are needed to hold, legibly, the material
+this License requires to appear in the title page.  For works in
+formats which do not have any title page as such, ``Title Page'' means
+the text near the most prominent appearance of the work's title,
+preceding the beginning of the body of the text.
+@sp 1
+@item
+VERBATIM COPYING
+
+You may copy and distribute the Document in any medium, either
+commercially or noncommercially, provided that this License, the
+copyright notices, and the license notice saying this License applies
+to the Document are reproduced in all copies, and that you add no other
+conditions whatsoever to those of this License.  You may not use
+technical measures to obstruct or control the reading or further
+copying of the copies you make or distribute.  However, you may accept
+compensation in exchange for copies.  If you distribute a large enough
+number of copies you must also follow the conditions in section 3.
+
+You may also lend copies, under the same conditions stated above, and
+you may publicly display copies.
+@sp 1
+@item
+COPYING IN QUANTITY
+
+If you publish printed copies of the Document numbering more than 100,
+and the Document's license notice requires Cover Texts, you must enclose
+the copies in covers that carry, clearly and legibly, all these Cover
+Texts: Front-Cover Texts on the front cover, and Back-Cover Texts on
+the back cover.  Both covers must also clearly and legibly identify
+you as the publisher of these copies.  The front cover must present
+the full title with all words of the title equally prominent and
+visible.  You may add other material on the covers in addition.
+Copying with changes limited to the covers, as long as they preserve
+the title of the Document and satisfy these conditions, can be treated
+as verbatim copying in other respects.
+
+If the required texts for either cover are too voluminous to fit
+legibly, you should put the first ones listed (as many as fit
+reasonably) on the actual cover, and continue the rest onto adjacent
+pages.
+
+If you publish or distribute Opaque copies of the Document numbering
+more than 100, you must either include a machine-readable Transparent
+copy along with each Opaque copy, or state in or with each Opaque copy
+a publicly-accessible computer-network location containing a complete
+Transparent copy of the Document, free of added material, which the
+general network-using public has access to download anonymously at no
+charge using public-standard network protocols.  If you use the latter
+option, you must take reasonably prudent steps, when you begin
+distribution of Opaque copies in quantity, to ensure that this
+Transparent copy will remain thus accessible at the stated location
+until at least one year after the last time you distribute an Opaque
+copy (directly or through your agents or retailers) of that edition to
+the public.
+
+It is requested, but not required, that you contact the authors of the
+Document well before redistributing any large number of copies, to give
+them a chance to provide you with an updated version of the Document.
+@sp 1
+@item
+MODIFICATIONS
+
+You may copy and distribute a Modified Version of the Document under
+the conditions of sections 2 and 3 above, provided that you release
+the Modified Version under precisely this License, with the Modified
+Version filling the role of the Document, thus licensing distribution
+and modification of the Modified Version to whoever possesses a copy
+of it.  In addition, you must do these things in the Modified Version:
+
+A. Use in the Title Page (and on the covers, if any) a title distinct
+   from that of the Document, and from those of previous versions
+   (which should, if there were any, be listed in the History section
+   of the Document).  You may use the same title as a previous version
+   if the original publisher of that version gives permission.@*
+B. List on the Title Page, as authors, one or more persons or entities
+   responsible for authorship of the modifications in the Modified
+   Version, together with at least five of the principal authors of the
+   Document (all of its principal authors, if it has less than five).@*
+C. State on the Title page the name of the publisher of the
+   Modified Version, as the publisher.@*
+D. Preserve all the copyright notices of the Document.@*
+E. Add an appropriate copyright notice for your modifications
+   adjacent to the other copyright notices.@*
+F. Include, immediately after the copyright notices, a license notice
+   giving the public permission to use the Modified Version under the
+   terms of this License, in the form shown in the Addendum below.@*
+G. Preserve in that license notice the full lists of Invariant Sections
+   and required Cover Texts given in the Document's license notice.@*
+H. Include an unaltered copy of this License.@*
+I. Preserve the section entitled ``History'', and its title, and add to
+   it an item stating at least the title, year, new authors, and
+   publisher of the Modified Version as given on the Title Page.  If
+   there is no section entitled ``History'' in the Document, create one
+   stating the title, year, authors, and publisher of the Document as
+   given on its Title Page, then add an item describing the Modified
+   Version as stated in the previous sentence.@*
+J. Preserve the network location, if any, given in the Document for
+   public access to a Transparent copy of the Document, and likewise
+   the network locations given in the Document for previous versions
+   it was based on.  These may be placed in the ``History'' section.
+   You may omit a network location for a work that was published at
+   least four years before the Document itself, or if the original
+   publisher of the version it refers to gives permission.@*
+K. In any section entitled ``Acknowledgements'' or ``Dedications'',
+   preserve the section's title, and preserve in the section all the
+   substance and tone of each of the contributor acknowledgements
+   and/or dedications given therein.@*
+L. Preserve all the Invariant Sections of the Document,
+   unaltered in their text and in their titles.  Section numbers
+   or the equivalent are not considered part of the section titles.@*
+M. Delete any section entitled ``Endorsements''.  Such a section
+   may not be included in the Modified Version.@*
+N. Do not retitle any existing section as ``Endorsements''
+   or to conflict in title with any Invariant Section.@*
+@sp 1
+If the Modified Version includes new front-matter sections or
+appendices that qualify as Secondary Sections and contain no material
+copied from the Document, you may at your option designate some or all
+of these sections as invariant.  To do this, add their titles to the
+list of Invariant Sections in the Modified Version's license notice.
+These titles must be distinct from any other section titles.
+
+You may add a section entitled ``Endorsements'', provided it contains
+nothing but endorsements of your Modified Version by various
+parties--for example, statements of peer review or that the text has
+been approved by an organization as the authoritative definition of a
+standard.
+
+You may add a passage of up to five words as a Front-Cover Text, and a
+passage of up to 25 words as a Back-Cover Text, to the end of the list
+of Cover Texts in the Modified Version.  Only one passage of
+Front-Cover Text and one of Back-Cover Text may be added by (or
+through arrangements made by) any one entity.  If the Document already
+includes a cover text for the same cover, previously added by you or
+by arrangement made by the same entity you are acting on behalf of,
+you may not add another; but you may replace the old one, on explicit
+permission from the previous publisher that added the old one.
+
+The author(s) and publisher(s) of the Document do not by this License
+give permission to use their names for publicity for or to assert or
+imply endorsement of any Modified Version.
+@sp 1
+@item
+COMBINING DOCUMENTS
+
+You may combine the Document with other documents released under this
+License, under the terms defined in section 4 above for modified
+versions, provided that you include in the combination all of the
+Invariant Sections of all of the original documents, unmodified, and
+list them all as Invariant Sections of your combined work in its
+license notice.
+
+The combined work need only contain one copy of this License, and
+multiple identical Invariant Sections may be replaced with a single
+copy.  If there are multiple Invariant Sections with the same name but
+different contents, make the title of each such section unique by
+adding at the end of it, in parentheses, the name of the original
+author or publisher of that section if known, or else a unique number.
+Make the same adjustment to the section titles in the list of
+Invariant Sections in the license notice of the combined work.
+
+In the combination, you must combine any sections entitled ``History''
+in the various original documents, forming one section entitled
+``History''; likewise combine any sections entitled ``Acknowledgements'',
+and any sections entitled ``Dedications''.  You must delete all sections
+entitled ``Endorsements.''
+@sp 1
+@item
+COLLECTIONS OF DOCUMENTS
+
+You may make a collection consisting of the Document and other documents
+released under this License, and replace the individual copies of this
+License in the various documents with a single copy that is included in
+the collection, provided that you follow the rules of this License for
+verbatim copying of each of the documents in all other respects.
+
+You may extract a single document from such a collection, and distribute
+it individually under this License, provided you insert a copy of this
+License into the extracted document, and follow this License in all
+other respects regarding verbatim copying of that document.
+@sp 1
+@item
+AGGREGATION WITH INDEPENDENT WORKS
+
+A compilation of the Document or its derivatives with other separate
+and independent documents or works, in or on a volume of a storage or
+distribution medium, does not as a whole count as a Modified Version
+of the Document, provided no compilation copyright is claimed for the
+compilation.  Such a compilation is called an ``aggregate'', and this
+License does not apply to the other self-contained works thus compiled
+with the Document, on account of their being thus compiled, if they
+are not themselves derivative works of the Document.
+
+If the Cover Text requirement of section 3 is applicable to these
+copies of the Document, then if the Document is less than one quarter
+of the entire aggregate, the Document's Cover Texts may be placed on
+covers that surround only the Document within the aggregate.
+Otherwise they must appear on covers around the whole aggregate.
+@sp 1
+@item
+TRANSLATION
+
+Translation is considered a kind of modification, so you may
+distribute translations of the Document under the terms of section 4.
+Replacing Invariant Sections with translations requires special
+permission from their copyright holders, but you may include
+translations of some or all Invariant Sections in addition to the
+original versions of these Invariant Sections.  You may include a
+translation of this License provided that you also include the
+original English version of this License.  In case of a disagreement
+between the translation and the original English version of this
+License, the original English version will prevail.
+@sp 1
+@item
+TERMINATION
+
+You may not copy, modify, sublicense, or distribute the Document except
+as expressly provided for under this License.  Any other attempt to
+copy, modify, sublicense or distribute the Document is void, and will
+automatically terminate your rights under this License.  However,
+parties who have received copies, or rights, from you under this
+License will not have their licenses terminated so long as such
+parties remain in full compliance.
+@sp 1
+@item
+FUTURE REVISIONS OF THIS LICENSE
+
+The Free Software Foundation may publish new, revised versions
+of the GNU Free Documentation License from time to time.  Such new
+versions will be similar in spirit to the present version, but may
+differ in detail to address new problems or concerns.  See
+http://www.gnu.org/copyleft/.
+
+Each version of the License is given a distinguishing version number.
+If the Document specifies that a particular numbered version of this
+License ``or any later version'' applies to it, you have the option of
+following the terms and conditions either of that specified version or
+of any later version that has been published (not as a draft) by the
+Free Software Foundation.  If the Document does not specify a version
+number of this License, you may choose any version ever published (not
+as a draft) by the Free Software Foundation.
+
+@end enumerate
+
+@unnumberedsec ADDENDUM: How to use this License for your documents
+
+To use this License in a document you have written, include a copy of
+the License in the document and put the following copyright and
+license notices just after the title page:
+
+@smallexample
+@group
+
+  Copyright (C)  @var{year}  @var{your name}.
+  Permission is granted to copy, distribute and/or modify this document
+  under the terms of the GNU Free Documentation License, Version 1.1
+  or any later version published by the Free Software Foundation;
+  with the Invariant Sections being @var{list their titles}, with the
+  Front-Cover Texts being @var{list}, and with the Back-Cover Texts being @var{list}.
+  A copy of the license is included in the section entitled ``GNU
+  Free Documentation License''.
+@end group
+@end smallexample
+If you have no Invariant Sections, write ``with no Invariant Sections''
+instead of saying which ones are invariant.  If you have no
+Front-Cover Texts, write ``no Front-Cover Texts'' instead of
+``Front-Cover Texts being @var{list}''; likewise for Back-Cover Texts.
+
+If your document contains nontrivial examples of program code, we
+recommend releasing these examples in parallel under your choice of
+free software license, such as the GNU General Public License,
+to permit their use in free software.
+
 
 @node Concept Index,  , Copying, Top
 @unnumbered Concept Index
