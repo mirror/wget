@@ -1,5 +1,15 @@
 2003-11-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (persistent_available_p): Correctly specify the endpoint
+	argument to socket_ip_address.
+	(gethttp): When printing the "reusing connection to..." message,
+	specify the host name of the reused connection, not the current
+	host name.  That makes more sense because it provides a useful
+	piece of information -- we know to which host we're supposed to
+	connect anyway!
+
+2003-11-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c: Make sure the options are in alphabetic order!
 
 	* host.c (lookup_host): Merge lookup_host_passive and lookup_host
