@@ -1,3 +1,12 @@
+2000-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* utils.c (xrealloc_debug): Do the unregister/register thing only
+	if the pointer has actually changed.
+	(xmalloc_real): Declare `static' in DEBUG_MALLOC builds.
+	(xfree_real): Ditto.
+	(xrealloc_real): Ditto.
+	(xstrdup_real): Ditto.
+
 2000-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp.c (getftp): ftp_getaddress() returns a malloc'ed copy of the

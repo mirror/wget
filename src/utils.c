@@ -119,7 +119,13 @@ memfatal (const char *what)
 
    Each of the *_debug function does its magic and calls the real one.  */
 
-void *
+#ifdef DEBUG_MALLOC
+# define STATIC_IF_DEBUG static
+#else
+# define STATIC_IF_DEBUG
+#endif
+
+STATIC_IF_DEBUG void *
 xmalloc_real (size_t size)
 {
   void *ptr = malloc (size);
@@ -128,13 +134,13 @@ xmalloc_real (size_t size)
   return ptr;
 }
 
-void
+STATIC_IF_DEBUG void
 xfree_real (void *ptr)
 {
   free (ptr);
 }
 
-void *
+STATIC_IF_DEBUG void *
 xrealloc_real (void *ptr, size_t newsize)
 {
   void *newptr;
@@ -151,7 +157,7 @@ xrealloc_real (void *ptr, size_t newsize)
   return newptr;
 }
 
-char *
+STATIC_IF_DEBUG char *
 xstrdup_real (const char *s)
 {
   char *copy;
@@ -285,7 +291,7 @@ xrealloc_debug (void *ptr, size_t newsize, const char *source_file, int source_l
       ++malloc_count;
       register_ptr (newptr, source_file, source_line);
     }
-  else
+  else if (newptr != ptr)
     {
       unregister_ptr (ptr);
       register_ptr (newptr, source_file, source_line);
