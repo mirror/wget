@@ -839,7 +839,7 @@ Error in server response, closing control connection.\n"));
   res = get_contents (dtsock, fp, len, restval, expected_bytes, &con->rbuf, 0);
   con->dltime = elapsed_time ();
   tms = time_str (NULL);
-  tmrate = rate (*len - restval, con->dltime);
+  tmrate = rate (*len - restval, con->dltime, 0);
   /* Close data connection socket.  */
   closeport (dtsock);
   /* Close the local file.  */
@@ -1042,7 +1042,7 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
       err = getftp (u, &len, restval, con);
       /* Time?  */
       tms = time_str (NULL);
-      tmrate = rate (len - restval, con->dltime);
+      tmrate = rate (len - restval, con->dltime, 0);
 
       if (!rbuf_initialized_p (&con->rbuf))
 	con->st &= ~DONE_CWD;

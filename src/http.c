@@ -1596,7 +1596,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	 strings within it will no longer be used.  */
       FREEHSTAT (hstat);
 
-      tmrate = rate (hstat.len - hstat.restval, hstat.dltime);
+      tmrate = rate (hstat.len - hstat.restval, hstat.dltime, 0);
 
       if (hstat.len == hstat.contlen)
 	{

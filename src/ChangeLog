@@ -1,3 +1,24 @@
+2001-02-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* ftp.c (ftp_loop_internal): Disable padding.
+	(getftp): Ditto.
+
+	* http.c (http_loop): Disable padding.
+
+	* retr.c (show_progress): Use it to enable padding.
+
+	* retr.c (rate): Optional parameter PAD for padding the rate.
+
+2001-02-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* retr.c (show_progress): Make sure that the last output line
+	includes progress.
+
+2001-02-10  Jonas Jensen  <bones@huleboer.dk>
+
+	* retr.c (show_progress): Print the download rate along with the
+	percentages.
+
 2001-02-10  Tim Mooney  <mooney@dogbert.cc.ndsu.NoDak.edu>
 
 	* ftp.h: Rename enums `command' to `wget_ftp_command' and

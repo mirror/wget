@@ -1,5 +1,5 @@
 /* File retrieval.
-   Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of Wget.
 
@@ -156,7 +156,7 @@ static void
 print_percentage (long bytes, long expected)
 {
   int percentage = (int)(100.0 * bytes / expected);
-  logprintf (LOG_VERBOSE, " [%3d%%]", percentage);
+  logprintf (LOG_VERBOSE, "%3d%%", percentage);
 }
 
 /* Show the dotted progress report of file loading.  Called with
@@ -174,8 +174,9 @@ static int
 show_progress (long res, long expected, enum spflags flags)
 {
   static long line_bytes;
-  static long offs;
+  static long offs, initial_skip;
   static int ndot, nrow;
+  static long last_timer, time_offset;
   int any_output = 0;
 
   if (flags == SP_FINISH)
@@ -185,6 +186,7 @@ show_progress (long res, long expected, enum spflags flags)
 	  int dot = ndot;
 	  char *tmpstr = (char *)alloca (2 * opt.dots_in_line + 1);
 	  char *tmpp = tmpstr;
+	  time_offset = elapsed_time () - last_timer;
 	  for (; dot < opt.dots_in_line; dot++)
 	    {
 	      if (!(dot % opt.dot_spacing))
@@ -195,6 +197,9 @@ show_progress (long res, long expected, enum spflags flags)
 	  logputs (LOG_VERBOSE, tmpstr);
 	  print_percentage (nrow * line_bytes + ndot * opt.dot_bytes + offs,
 			    expected);
+	  logprintf (LOG_VERBOSE, " @%s",
+		     rate (ndot * opt.dot_bytes + offs - initial_skip,
+			   time_offset, 1));
 	}
       logputs (LOG_VERBOSE, "\n\n");
       return 0;
@@ -211,6 +216,9 @@ show_progress (long res, long expected, enum spflags flags)
       offs = 0L;
       ndot = nrow = 0;
       line_bytes = (long)opt.dots_in_line * opt.dot_bytes;
+      last_timer = elapsed_time ();
+      time_offset = 0;
+      initial_skip = res;
       if (res)
 	{
 	  if (res >= line_bytes)
@@ -223,7 +231,7 @@ show_progress (long res, long expected, enum spflags flags)
 	      ndot = 0;
 	    }
 	}
-      logprintf (LOG_VERBOSE, "\n%5ldK ->", nrow * line_bytes / 1024);
+      logprintf (LOG_VERBOSE, "\n%5ldK", nrow * line_bytes / 1024);
     }
   /* Offset gets incremented by current value.  */
   offs += res;
@@ -238,11 +246,19 @@ show_progress (long res, long expected, enum spflags flags)
       ++ndot;
       if (ndot == opt.dots_in_line)
 	{
+	  time_offset = elapsed_time () - last_timer;
+	  last_timer += time_offset;
+
 	  ndot = 0;
 	  ++nrow;
 	  if (expected)
-	    print_percentage (nrow * line_bytes, expected);
-	  logprintf (LOG_VERBOSE, "\n%5ldK ->", nrow * line_bytes / 1024);
+	    {
+	      print_percentage (nrow * line_bytes, expected);
+	      logprintf (LOG_VERBOSE, " @%s",
+			 rate (line_bytes - initial_skip, time_offset, 1));
+	    }
+	  initial_skip = 0;
+	  logprintf (LOG_VERBOSE, "\n%5ldK", nrow * line_bytes / 1024);
 	}
     }
   /* Reenable flushing.  */
@@ -310,9 +326,12 @@ elapsed_time (void)
 
 /* Print out the appropriate download rate.  Appropriate means that if
    rate is > 1024 bytes per second, kilobytes are used, and if rate >
-   1024 * 1024 bps, megabytes are used.  */
+   1024 * 1024 bps, megabytes are used.
+
+   If PAD is non-zero, strings will be padded to the width of 7
+   characters (xxxx.xx).  */
 char *
-rate (long bytes, long msecs)
+rate (long bytes, long msecs, int pad)
 {
   static char res[15];
   double dlrate;
@@ -320,13 +339,12 @@ rate (long bytes, long msecs)
   if (!msecs)
     ++msecs;
   dlrate = (double)1000 * bytes / msecs;
-  /* #### Should these strings be translatable?  */
   if (dlrate < 1024.0)
-    sprintf (res, "%.2f B/s", dlrate);
+    sprintf (res, pad ? "%7.2f B/s" : "%.2f B/s", dlrate);
   else if (dlrate < 1024.0 * 1024.0)
-    sprintf (res, "%.2f KB/s", dlrate / 1024.0);
+    sprintf (res, pad ? "%7.2f KB/s" : "%.2f KB/s", dlrate / 1024.0);
   else
-    sprintf (res, "%.2f MB/s", dlrate / (1024.0 * 1024.0));
+    sprintf (res, pad ? "%7.2f MB/s" : "%.2f MB/s", dlrate / (1024.0 * 1024.0));
   return res;
 }
 
