@@ -1,3 +1,15 @@
+2005-02-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* host.c (lookup_host): Test for AI_ADDRCONFIG directly, instead
+	of checking for HAVE_GETADDRINFO_AI_ADDRCONFIG.
+
+2005-02-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* host.c (is_valid_ipv6_address): Move here from url.c.
+	(lookup_host): If the address is numeric, don't print the
+	"resolving..." line, don't set up DNS timeouts, and set the
+	AI_NUMERICHOST hint, where available.
+
 2005-02-26  Gisle Vanem  <giva@bgnett.no>
 
 	* utils.c: Use the nnnLL syntax under GCC.  Define struct_stat to

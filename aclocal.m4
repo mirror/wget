@@ -239,30 +239,6 @@ AC_DEFUN([PROTO_INET6],[
 ])
 
 
-AC_DEFUN([GETADDRINFO_AI_ADDRCONFIG],[
-  AC_CACHE_CHECK([if getaddrinfo supports AI_ADDRCONFIG],
-    [wget_cv_gai_ai_addrconfig],[
-    AC_TRY_CPP([
-#include <netdb.h>
-
-#ifndef AI_ADDRCONFIG
- #error Missing AI_ADDRCONFIG
-#endif
-    ],[
-      wget_cv_gai_ai_addrconfig=yes
-    ],[
-      wget_cv_gai_ai_addrconfig=no
-    ])
-  ])
-
-  if test "X$wget_cv_gai_ai_addrconfig" = "Xyes"; then :
-    $1
-  else :
-    $2
-  fi
-])
-
-
 AC_DEFUN([WGET_STRUCT_SOCKADDR_STORAGE],[
   AC_CHECK_TYPES([struct sockaddr_storage],[], [], [
 #include <sys/types.h>

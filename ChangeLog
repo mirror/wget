@@ -1,3 +1,8 @@
+2003-02-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Don't check for AI_ADDRCONFIG here, it is checked
+	for in the source directly.
+
 2003-02-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* libtool.m4, ltmain.sh, config.sub, config.guess: Upgrade to

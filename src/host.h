@@ -108,6 +108,9 @@ int address_list_connected_p PARAMS ((const struct address_list *));
 void address_list_release PARAMS ((struct address_list *));
 
 const char *pretty_print_address PARAMS ((const ip_address *));
+#ifdef ENABLE_IPV6
+int is_valid_ipv6_address PARAMS ((const char *, const char *));
+#endif
 
 int accept_domain PARAMS ((struct url *));
 int sufmatch PARAMS ((const char **, const char *));

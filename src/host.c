@@ -428,6 +428,149 @@ pretty_print_address (const ip_address *addr)
   abort ();
   return NULL;
 }
+
+/* The following two functions were adapted from glibc. */
+
+static int
+is_valid_ipv4_address (const char *str, const char *end)
+{
+  int saw_digit = 0;
+  int octets = 0;
+  int val = 0;
+
+  while (str < end)
+    {
+      int ch = *str++;
+
+      if (ch >= '0' && ch <= '9')
+	{
+	  val = val * 10 + (ch - '0');
+
+	  if (val > 255)
+	    return 0;
+	  if (saw_digit == 0)
+	    {
+	      if (++octets > 4)
+		return 0;
+	      saw_digit = 1;
+	    }
+	}
+      else if (ch == '.' && saw_digit == 1)
+	{
+	  if (octets == 4)
+	    return 0;
+	  val = 0;
+	  saw_digit = 0;
+	}
+      else
+	return 0;
+    }
+  if (octets < 4)
+    return 0;
+  
+  return 1;
+}
+
+int
+is_valid_ipv6_address (const char *str, const char *end)
+{
+  enum {
+    NS_INADDRSZ  = 4,
+    NS_IN6ADDRSZ = 16,
+    NS_INT16SZ   = 2
+  };
+
+  const char *curtok;
+  int tp;
+  const char *colonp;
+  int saw_xdigit;
+  unsigned int val;
+
+  tp = 0;
+  colonp = NULL;
+
+  if (str == end)
+    return 0;
+  
+  /* Leading :: requires some special handling. */
+  if (*str == ':')
+    {
+      ++str;
+      if (str == end || *str != ':')
+	return 0;
+    }
+
+  curtok = str;
+  saw_xdigit = 0;
+  val = 0;
+
+  while (str < end)
+    {
+      int ch = *str++;
+
+      /* if ch is a number, add it to val. */
+      if (ISXDIGIT (ch))
+	{
+	  val <<= 4;
+	  val |= XDIGIT_TO_NUM (ch);
+	  if (val > 0xffff)
+	    return 0;
+	  saw_xdigit = 1;
+	  continue;
+	}
+
+      /* if ch is a colon ... */
+      if (ch == ':')
+	{
+	  curtok = str;
+	  if (saw_xdigit == 0)
+	    {
+	      if (colonp != NULL)
+		return 0;
+	      colonp = str + tp;
+	      continue;
+	    }
+	  else if (str == end)
+	    return 0;
+	  if (tp > NS_IN6ADDRSZ - NS_INT16SZ)
+	    return 0;
+	  tp += NS_INT16SZ;
+	  saw_xdigit = 0;
+	  val = 0;
+	  continue;
+	}
+
+      /* if ch is a dot ... */
+      if (ch == '.' && (tp <= NS_IN6ADDRSZ - NS_INADDRSZ)
+	  && is_valid_ipv4_address (curtok, end) == 1)
+	{
+	  tp += NS_INADDRSZ;
+	  saw_xdigit = 0;
+	  break;
+	}
+    
+      return 0;
+    }
+
+  if (saw_xdigit == 1)
+    {
+      if (tp > NS_IN6ADDRSZ - NS_INT16SZ) 
+	return 0;
+      tp += NS_INT16SZ;
+    }
+
+  if (colonp != NULL)
+    {
+      if (tp == NS_IN6ADDRSZ) 
+	return 0;
+      tp = NS_IN6ADDRSZ;
+    }
+
+  if (tp != NS_IN6ADDRSZ)
+    return 0;
+
+  return 1;
+}
 
 /* Simple host cache, used by lookup_host to speed up resolving.  The
    cache doesn't handle TTL because Wget is a fairly short-lived
@@ -521,12 +664,14 @@ lookup_host (const char *host, int flags)
   struct address_list *al;
   int silent = flags & LH_SILENT;
   int use_cache;
+  int numeric_address = 0;
+  double timeout = opt.dns_timeout;
 
 #ifndef ENABLE_IPV6
   /* If we're not using getaddrinfo, first check if HOST specifies a
-     numeric IPv4 address.  gethostbyname is not required to accept
-     dotted-decimal IPv4 addresses, and some implementations (e.g. the
-     Ultrix one and possibly Winsock) indeed don't.  */
+     numeric IPv4 address.  Some implementations of gethostbyname
+     (e.g. the Ultrix one and possibly Winsock) don't accept
+     dotted-decimal IPv4 addresses.  */
   {
     uint32_t addr_ipv4 = (uint32_t)inet_addr (host);
     if (addr_ipv4 != (uint32_t) -1)
@@ -539,13 +684,24 @@ lookup_host (const char *host, int flags)
 	return address_list_from_ipv4_addresses (vec);
       }
   }
+#else  /* ENABLE_IPV6 */
+  /* If we're using getaddrinfo, at least check whether the address is
+     already numeric, in which case there is no need to print the
+     "Resolving..." output.  (This comes at no additional cost since
+     the is_valid_ipv*_address are already required for
+     url_parse.)  */
+  {
+    const char *end = host + strlen (host);
+    if (is_valid_ipv4_address (host, end) || is_valid_ipv6_address (host, end))
+      numeric_address = 1;
+  }
 #endif
 
   /* Cache is normally on, but can be turned off with --no-dns-cache.
      Don't cache passive lookups under IPv6.  */
   use_cache = opt.dns_cache;
 #ifdef ENABLE_IPV6
-  if (flags & LH_BIND)
+  if ((flags & LH_BIND) || numeric_address)
     use_cache = 0;
 #endif
 
@@ -566,7 +722,7 @@ lookup_host (const char *host, int flags)
 
   /* No luck with the cache; resolve HOST. */
 
-  if (!silent)
+  if (!silent && !numeric_address)
     logprintf (LOG_VERBOSE, _("Resolving %s... "), host);
 
 #ifdef ENABLE_IPV6
@@ -583,7 +739,7 @@ lookup_host (const char *host, int flags)
     else
       {
 	hints.ai_family = AF_UNSPEC;
-#ifdef HAVE_GETADDRINFO_AI_ADDRCONFIG
+#ifdef AI_ADDRCONFIG
 	hints.ai_flags |= AI_ADDRCONFIG;
 #else
 	/* On systems without AI_ADDRCONFIG, emulate it by manually
@@ -595,7 +751,19 @@ lookup_host (const char *host, int flags)
     if (flags & LH_BIND)
       hints.ai_flags |= AI_PASSIVE;
 
-    err = getaddrinfo_with_timeout (host, NULL, &hints, &res, opt.dns_timeout);
+#ifdef AI_NUMERICHOST
+    if (numeric_address)
+      {
+	/* Where available, the AI_NUMERICHOST hint can prevent costly
+	   access to DNS servers.  */
+	hints.ai_flags |= AI_NUMERICHOST;
+	timeout = 0;		/* no timeout needed when "resolving"
+				   numeric hosts -- avoid setting up
+				   signal handlers and such. */
+      }
+#endif
+
+    err = getaddrinfo_with_timeout (host, NULL, &hints, &res, timeout);
     if (err != 0 || res == NULL)
       {
 	if (!silent)
@@ -612,9 +780,9 @@ lookup_host (const char *host, int flags)
 	return NULL;
       }
   }
-#else
+#else  /* not ENABLE_IPV6 */
   {
-    struct hostent *hptr = gethostbyname_with_timeout (host, opt.dns_timeout);
+    struct hostent *hptr = gethostbyname_with_timeout (host, timeout);
     if (!hptr)
       {
 	if (!silent)
@@ -630,11 +798,11 @@ lookup_host (const char *host, int flags)
     /* Do older systems have h_addr_list?  */
     al = address_list_from_ipv4_addresses (hptr->h_addr_list);
   }
-#endif
+#endif /* not ENABLE_IPV6 */
 
   /* Print the addresses determined by DNS lookup, but no more than
      three.  */
-  if (!silent)
+  if (!silent && !numeric_address)
     {
       int i;
       int printmax = al->count <= 3 ? al->count : 3;
