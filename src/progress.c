@@ -41,10 +41,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 struct progress_implementation {
   char *name;
-  void *(*create) (long, long);
-  void (*update) (void *, long, long);
-  void (*finish) (void *, long);
-  void (*set_params) (const char *);
+  void *(*create) PARAMS ((long, long));
+  void (*update) PARAMS ((void *, long, long));
+  void (*finish) PARAMS ((void *, long));
+  void (*set_params) PARAMS ((const char *));
 };
 
 /* Necessary forward declarations. */

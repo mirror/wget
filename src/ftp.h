@@ -107,7 +107,7 @@ enum wget_ftp_fstatus
 struct fileinfo *ftp_parse_ls PARAMS ((const char *, const enum stype));
 uerr_t ftp_loop PARAMS ((struct url *, int *));
 
-uerr_t ftp_index (const char *, struct url *, struct fileinfo *);
+uerr_t ftp_index PARAMS ((const char *, struct url *, struct fileinfo *));
 
 char ftp_process_type PARAMS ((const char *));
 

@@ -136,8 +136,8 @@ struct mapping {
 };
 
 struct hash_table {
-  unsigned long (*hash_function) (const void *);
-  int (*test_function) (const void *, const void *);
+  unsigned long (*hash_function) PARAMS ((const void *));
+  int (*test_function) PARAMS ((const void *, const void *));
 
   int size;			/* size of the array */
   int count;			/* number of non-empty, non-deleted
@@ -177,7 +177,8 @@ prime_size (int size)
     10445899, 13579681, 17653589, 22949669, 29834603, 38784989,
     50420551, 65546729, 85210757, 110774011, 144006217, 187208107,
     243370577, 316381771, 411296309, 534685237, 695090819, 903618083,
-    1174703521, 1527114613, 1985248999, 2580823717UL, 3355070839UL
+    1174703521, 1527114613, 1985248999,
+    (unsigned long)0x99d43ea5, (unsigned long)0xc7fa5177
   };
   int i;
   for (i = 0; i < ARRAY_SIZE (primes); i++)
@@ -236,7 +237,7 @@ find_mapping (struct hash_table *ht, const void *key)
   struct mapping *mappings = ht->mappings;
   int size = ht->size;
   struct mapping *mp = mappings + HASH_POSITION (ht, key);
-  int (*equals) (const void *, const void *) = ht->test_function;
+  int (*equals) PARAMS ((const void *, const void *)) = ht->test_function;
 
   LOOP_NON_EMPTY (mp, mappings, size)
     if (equals (key, mp->key))
@@ -336,7 +337,7 @@ hash_table_put (struct hash_table *ht, const void *key, void *value)
 {
   struct mapping *mappings = ht->mappings;
   int size = ht->size;
-  int (*equals) (const void *, const void *) = ht->test_function;
+  int (*equals) PARAMS ((const void *, const void *)) = ht->test_function;
 
   struct mapping *mp = mappings + HASH_POSITION (ht, key);
 

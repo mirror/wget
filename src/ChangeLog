@@ -1,5 +1,31 @@
 2002-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* progress.c (struct progress_implementation): Use PARAMS when
+	declaring the parameters of *create, *update, *finish, and
+	*set_params.
+
+	* netrc.c: Ditto.
+
+	* http.c: Reformat some function definitions so that ansi2knr can
+	read them.
+
+	* hash.c (struct hash_table): Use the PARAMS macro around
+	parameters in the declaration of hash_function and test_function.
+	(prime_size): Spell 2580823717UL and 3355070839UL as (unsigned
+	long)0x99d43ea5 and (unsigned long)0xc7fa5177 respectively, so
+	that pre-ANSI compilers can read them.
+	(find_mapping): Use PARAMS when declaring EQUALS.
+	(hash_table_put): Ditto.
+
+	* ftp.h: Wrap the parameters of ftp_index declaration in PARAMS.
+
+	* cookies.c (cookie_new): Use (unsigned long)0 instead of 0UL,
+	which was unsupported by pre-ANSI compilers.
+
+	From Nelson H. F. Beebe <beebe@math.utah.edu>, for the most part.
+
+2002-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (url_filename): Use compose_file_name regardless of
 	whether opt.dirstruct is set.
 	(mkstruct): Don't handle the query and the reencoding of DIR; that

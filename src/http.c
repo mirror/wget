@@ -313,13 +313,15 @@ invalidate_persistent (void)
 
    If a previous connection was persistent, it is closed. */
 
-static void
-register_persistent (const char *host, unsigned short port, int fd
 #ifdef HAVE_SSL
-		     , SSL *ssl
-#endif
-		     )
+static void
+register_persistent (const char *host, unsigned short port, int fd, SSL *ssl)
 {
+#else
+static void
+register_persistent (const char *host, unsigned short port, int fd)
+{
+#endif
   if (pc_active_p)
     {
       if (pc_last_fd == fd)
@@ -375,13 +377,15 @@ register_persistent (const char *host, unsigned short port, int fd
 /* Return non-zero if a persistent connection is available for
    connecting to HOST:PORT.  */
 
-static int
-persistent_available_p (const char *host, unsigned short port
 #ifdef HAVE_SSL
-			, int ssl
-#endif
-			)
+static int
+persistent_available_p (const char *host, unsigned short port, int ssl)
 {
+#else
+static int
+persistent_available_p (const char *host, unsigned short port)
+{
+#endif
   int success;
   struct address_list *this_host_ip;
 

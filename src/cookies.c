@@ -84,7 +84,7 @@ cookie_new (void)
 
   /* If we don't know better, assume cookie is non-permanent and valid
      for the entire session. */
-  cookie->expiry_time = ~0UL;
+  cookie->expiry_time = ~(unsigned long)0;
 
   /* Assume default port. */
   cookie->port = 80;

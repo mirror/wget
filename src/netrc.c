@@ -235,7 +235,8 @@ maybe_add_to_list (acc_t **newentry, acc_t **list)
    null-terminated string once character to the left.
    Used in processing \ and " constructs in the netrc file */
 static void
-shift_left(char *string){
+shift_left(char *string)
+{
   char *p;
   
   for (p=string; *p; ++p)
