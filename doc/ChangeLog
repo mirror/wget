@@ -3,7 +3,9 @@
 	* wget.texi: Corrections, clarifications, and English fixes to
 	time-stamping documentation.  Also moved -nr from "Recursive
 	Retrieval Options" to "FTP Options" and gave it a @cindex entry.
-	Alphabetized FTP options by long option name.
+	Alphabetized FTP options by long option name.  Mentioned that
+	.listing symlinked to /etc/passwd is not a security hole, but that
+	other files could be, so root shouldn't run wget in user dirs.
 	
 2001-02-22  Dan Harkless  <wget@harkless.org>
 
