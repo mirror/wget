@@ -26,6 +26,10 @@
 	
 	* NEWS: Released Wget version 1.6.
 
+2000-12-18  Csaba Raduly  <csaba.raduly@sophos.com>
+
+	* windows/Makefile.watcom: Updated.
+
 2000-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* po/POTFILES.in: Updated.  [Not in 1.6 branch.]

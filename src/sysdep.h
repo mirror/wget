@@ -45,6 +45,20 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <mswindows.h>
 #endif /* WINDOWS */
 
+/* Watcom-specific stuff.  In practice this is probably specific to
+   Windows, although Watcom exists under other OS's too.  For that
+   reason, we keep this here.  */
+
+#ifdef __WATCOMC__
+/* Watcom has its own alloca() defined in malloc.h malloc.h needs to
+   be included in the sources to prevent 'undefined external' errors
+   at the link phase. */
+# include <malloc.h>
+/* io.h defines unlink() and chmod().  We put this here because it's
+   way too obscure to require all the .c files to observe.  */
+# include <io.h>
+#endif /* __WATCOMC__ */
+
 /* Needed for compilation under OS/2: */
 #ifdef __EMX__
 #ifndef S_ISLNK

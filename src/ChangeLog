@@ -1,3 +1,7 @@
+2000-12-18  Csaba Raduly  <csaba.raduly@sophos.com>
+
+	* sysdep.h: Include <malloc.h> and <io.h> under Watcom.
+
 2000-12-31  Dan Harkless  <wget@harkless.org>
 
 	* ChangeLog: Since this flat file doesn't have multiple branches,
@@ -119,19 +123,22 @@
 	(CLOSE_FINISH, CLOSE_INVALIDATE): Define only one version of each.
 	[Not in 1.6 branch.]
 
-2000-12-03  Christian Fraenkel  <christian.fraenkel@gmx.net>
+2000-12-03  Christian Fraenkel <christian.fraenkel@gmx.net>
 
-	* Makefile.in: Added gen_sslfunc object.
-
-	* config.h.in: Added HAVE_SSL define.
-
-	* connect.c: Changed select_fd from static int to int.
-
-	* connect.h: Ditto.
-
-	* gen_sslfunc.h: New file.
-
-	* gen_sslfunc.c: Ditto.
+	* Makefile.in: added gen_sslfunc object
+	* config.h.in: added HAVE_SSL define
+	* connect.c: changed select_fd from static int to int
+	* connect.h: ditto
+	* gen_sslfunc.h: New file
+	* gen_sslfunc.c: ditto
+	* http.c: added HTTPS fuctionality
+	* retrc.c: ditto
+	* url.c: ditto
+	* init.c: added opt.httpsproxy
+	* options.h: ditto
+	* rbuf.h: added alternate rbuf struct
+	* wget.h: added CONSSLERR
+	* rbuf.c: ditto
 
 	* http.c: Added HTTPS fuctionality.
 
