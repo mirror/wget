@@ -1,3 +1,7 @@
+2000-05-24  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* TODO: Timestamps sometimes not copied over on files retrieved by FTP.
+	
 2000-05-22  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* AUTHORS: Added myself to this file, as Hrvoje got confirmation
