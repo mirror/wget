@@ -1,5 +1,10 @@
 2000-04-12  Hrvoje Niksic  <hniksic@iskon.hr>
 
+	* host.c (store_hostaddress): Instead of shifting ADDR, start
+	copying from the correct address.
+
+2000-04-12  Hrvoje Niksic  <hniksic@iskon.hr>
+
 	* http.c (gethttp): Don't free REQUEST -- it was allocated with
 	alloca().
 	Pointed out by Gisle Vanem <gvanem@eunet.no>.

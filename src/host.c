@@ -144,26 +144,15 @@ store_hostaddress (unsigned char *where, const char *hostname)
   /* If we have the numeric address, just store it.  */
   if ((int)addr != -1)
     {
-      /* This works on both little and big endian architecture, as
-	 inet_addr returns the address in the proper order.  */
+      /* ADDR is in network byte order, meaning the code works on
+         little and big endian 32-bit architectures without change.
+         On big endian 64-bit architectures we need to be careful to
+         copy the correct four bytes.  */
+      int offset = 0;
 #ifdef WORDS_BIGENDIAN
-      if (sizeof (addr) == 8)
-	{
-	  /* We put the shift amount in a variable because it quiets gcc -Wall's
-	     warning on 32-bit-address systems: "warning: left shift count >=
-	     width of type".  The optimizer should constant-fold away this
-	     variable (you'd think the warning would come back with maximum
-	     optimization turned on, but it doesn't, on gcc 2.8.1, at least).
-	     Not sure if there's a cleaner way to get rid of the warning -- can
-	     this code be surrounded by an #ifdef that's never active on 32-bit
-	     systems?  Is there no way to check at configure-time whether we'll
-	     ever potentially encounter a 64-bit address? */
-	  int  shift_amount = 32;
-
-	  addr <<= shift_amount;
-	}
+      offset = sizeof (unsigned long) - 4;
 #endif
-      memcpy (where, &addr, 4);
+      memcpy (where, (char *)&addr + offset, 4);
       return 1;
     }
   /* Since all else has failed, let's try gethostbyname().  Note that
