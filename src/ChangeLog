@@ -1,3 +1,7 @@
+2005-02-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* ftp.c (getftp): Initialize err to suppress compiler warning.
+
 2005-02-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ftp.c (ftp_expected_bytes): Fix bug that caused infloop because

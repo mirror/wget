@@ -227,7 +227,7 @@ static uerr_t
 getftp (struct url *u, wgint *len, wgint restval, ccon *con)
 {
   int csock, dtsock, local_sock, res;
-  uerr_t err;
+  uerr_t err = RETROK;		/* appease the compiler */
   FILE *fp;
   char *user, *passwd, *respline;
   char *tms, *tmrate;
