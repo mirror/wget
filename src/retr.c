@@ -322,10 +322,14 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   /* Set the referer.  */
   if (refurl)
     u->referer = xstrdup (refurl);
-  else {
-    u->referer = opt.referer;
-  }
-  
+  else
+    {
+      if (opt.referer)
+	u->referer = xstrdup (opt.referer);
+      else
+	u->referer = NULL;
+    }
+
   local_use_proxy = USE_PROXY_P (u);
   if (local_use_proxy)
     {
