@@ -70,6 +70,7 @@ ssl_init_prng (void)
       RAND_seed((unsigned char *)&t, sizeof(time_t));
       /* Initialize system's random number generator */
       RAND_bytes((unsigned char *)&seed, sizeof(long));
+#ifndef WINDOWS
       srand48(seed);
       while (RAND_status () == 0)
 	{
@@ -78,6 +79,12 @@ ssl_init_prng (void)
 	  l = lrand48();
 	  RAND_seed((unsigned char *)&l, sizeof(long));
 	}
+#else /* WINDOWS */
+      RAND_screen();
+      if (RAND_status() == 0)
+        /* Here we should probably disable the whole ssl protocol ? HEH */
+        DEBUGP (("SSL random data generator not seeded correctly, %i",RAND_status()));
+#endif /* WINDOWS */
       if (rand_file != NULL)
 	{
 	  /* Write a rand_file */

@@ -1,3 +1,10 @@
+2001-12-04  Herold Heiko  <Heiko.Herold@previnet.it>
+
+	* gen_sslfunc.c: on windows provide ssl crypto random 
+	  initialization through RAND_screen(); could possibly
+	  be not enough for strong ssl communication (see the 
+	  relevant manual page from the openssl package).
+
 2001-12-04  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* url.c (local_quote_string): Reenable quoting of question marks,

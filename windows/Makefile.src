@@ -55,12 +55,12 @@ RM      = del
 SRC = cmpt.c safe-ctype.c connect.c host.c http.c netrc.c ftp-basic.c ftp.c \
       ftp-ls.c ftp-opie.c getopt.c hash.c headers.c html-parse.c html-url.c \
       progress.c retr.c recur.c res.c url.c cookies.c init.c utils.c main.c \
-      version.c mswindows.c fnmatch.c gnu-md5.c rbuf.c log.c $(SSLSRC)
+      version.c mswindows.c fnmatch.c gen-md5.c gnu-md5.c rbuf.c log.c $(SSLSRC)
 
 OBJ = cmpt$o safe-ctype$o connect$o host$o http$o netrc$o ftp-basic$o ftp$o \
       ftp-ls$o ftp-opie$o getopt$o hash$o headers$o html-parse$o html-url$o \
       progress$o retr$o recur$o res$o url$o cookies$o init$o utils$o main$o \
-      version$o mswindows$o fnmatch$o gnu-md5$o rbuf$o log$o $(SSLOBJ)
+      version$o mswindows$o fnmatch$o gen-md5$o gnu-md5$o rbuf$o log$o $(SSLOBJ)
 
 .SUFFIXES: .c .obj
 

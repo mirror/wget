@@ -1,3 +1,9 @@
+2001-12-04  Herold Heiko  <Heiko.Herold@previnet.it>
+
+	* windows\Makefile.src: add gen_sslfunc.c
+
+	* windows\Makefile.src.bor: ditto.
+
 2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* po/hr.po: Updated Croatian translation.
