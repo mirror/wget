@@ -75,6 +75,10 @@
 
 2001-12-03  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* version.c: Wget 1.8-beta3 is released.
+
+2001-12-03  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* snprintf.c (dopr): Cast the result of va_arg to short int and
 	short unsigned int where these types are expected to be used.
 
@@ -108,6 +112,10 @@
 
 	* utils.c (file_merge): If BASE doesn't contain a slash, just
 	return a copy of FILE.
+
+2001-12-02  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* version.c: Wget 1.8-beta2 is released.
 
 2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
@@ -157,6 +165,10 @@
 	(collect_tags_mapper): Don't use OFFSET to hack the raw_* values;
 	instead, store the information that this entry belongs to a
 	"refresh" link.
+
+2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* version.c: Wget 1.8-beta1 is released.
 
 2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
