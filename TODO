@@ -6,7 +6,7 @@ Wget.  Patches to implement any of these items would be gladly accepted.  The
 items are not listed in any particular order (except that recently-added items
 may tend towards the top).  Not all of these represent user-visible changes.
 
-* Generalize --html-extension to something like --mime-extension and have it
+* Generalize --html-extension to something like --mime-extensions and have it
   look at mime.types/mimecap file for preferred extension.  Non-HTML files with
   filenames changed this way would be re-downloaded each time despite -N unless
   .orig files were saved for them.  Since .orig would contain the same data as
