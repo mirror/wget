@@ -787,11 +787,14 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 
   /* String of the form :PORT.  Used only for non-standard ports. */
   port_maybe = NULL;
+  if (1
 #ifdef HAVE_SSL
-  if (remport != (u->proto == URLHTTPS ? DEFAULT_HTTPS_PORT : DEFAULT_HTTP_PORT) )
+      && remport != (u->proto == URLHTTPS
+		     ? DEFAULT_HTTPS_PORT : DEFAULT_HTTP_PORT)
 #else
-  if (remport != DEFAULT_HTTP_PORT)
+      && remport != DEFAULT_HTTP_PORT
 #endif
+      )
     {
       port_maybe = (char *)alloca (numdigit (remport) + 2);
       sprintf (port_maybe, ":%d", remport);
