@@ -1,3 +1,8 @@
+2002-04-21  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* cookies.c (check_domain_match): Allow cookies to be set for
+	subdomains of unknown top-level domains under some circumstances.
+
 2002-04-21  Thomas Lussnig  <thomas.lussnig@bewegungsmelder.de>
 
 	* gen_ssl.c:

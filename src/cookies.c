@@ -660,14 +660,6 @@ numeric_address_p (const char *addr)
 static int
 check_domain_match (const char *cookie_domain, const char *host)
 {
-  static char *special_toplevel_domains[] = {
-    /* This is a total crock of shit, but we're living with it until
-       something better is devised. */
-    ".com", ".edu", ".net", ".org", ".gov", ".mil", ".int",
-    ".de", ".fr", ".hr"
-  };
-  int i, required_dots;
-
   DEBUGP (("cdm: 1"));
 
   /* Numeric address requires exact match.  It also requires HOST to
@@ -683,29 +675,96 @@ check_domain_match (const char *cookie_domain, const char *host)
 
   DEBUGP ((" 3"));
 
-  required_dots = 3;
-  for (i = 0; i < ARRAY_SIZE (special_toplevel_domains); i++)
-    if (match_tail (cookie_domain, special_toplevel_domains[i]))
-      {
-	required_dots = 2;
-	break;
-      }
-
-  /* If the domain does not start with '.', require one less dot.
-     This is so that domains like "altavista.com" (which should be
-     ".altavista.com") are accepted.  */
-  if (*cookie_domain != '.')
-    --required_dots;
-
-  if (count_char (cookie_domain, '.') < required_dots)
-    return 0;
-
-  DEBUGP ((" 4"));
-
+  /* HOST must match the tail of cookie_domain. */
   if (!match_tail (host, cookie_domain))
     return 0;
 
-  DEBUGP ((" 5"));
+  /* We know that COOKIE_DOMAIN is a subset of HOST; however, we must
+     make sure that somebody is not trying to set the cookie for a
+     subdomain shared by many entities.  For example, "company.co.uk"
+     must not be allowed to set a cookie for ".co.uk".  On the other
+     hand, "sso.redhat.de" should be able to set a cookie for
+     ".redhat.de".
+
+     The only marginally sane way to handle this I can think of is to
+     reject on the basis of the length of the second-level domain name
+     (but when the top-level domain is unknown), with the assumption
+     that those of three or less characters could be reserved.  For
+     example:
+
+          .co.org -> works because the TLD is known
+           .co.uk -> doesn't work because "co" is only two chars long
+          .com.au -> doesn't work because "com" is only 3 chars long
+          .cnn.uk -> doesn't work because "cnn" is also only 3 chars long (ugh)
+          .cnn.de -> doesn't work for the same reason (ugh!!)
+         .abcd.de -> works because "abcd" is 4 chars long
+      .img.cnn.de -> works because it's not trying to set the 2nd level domain
+       .cnn.co.uk -> works for the same reason
+
+    That should prevent misuse, while allowing reasonable usage.  If
+    someone knows of a better way to handle this, please let me
+    know.  */
+  {
+    const char *p = cookie_domain;
+    int dccount = 1;		/* number of domain components */
+    int ldcl  = 0;		/* last domain component length */
+    int nldcl = 0;		/* next to last domain component length */
+    int out;
+    if (*p == '.')
+      /* Ignore leading period in this calculation. */
+      ++p;
+    DEBUGP ((" 4"));
+    for (out = 0; !out; p++)
+      switch (*p)
+	{
+	case '\0':
+	  out = 1;
+	  break;
+	case '.':
+	  if (ldcl == 0)
+	    /* Empty domain component found -- the domain is invalid. */
+	    return 0;
+	  if (*(p + 1) == '\0')
+	    {
+	      /* Tolerate trailing '.' by not treating the domain as
+		 one ending with an empty domain component.  */
+	      out = 1;
+	      break;
+	    }
+	  nldcl = ldcl;
+	  ldcl  = 0;
+	  ++dccount;
+	  break;
+	default:
+	  ++ldcl;
+	}
+
+    DEBUGP ((" 5"));
+
+    if (dccount < 2)
+      return 0;
+
+    DEBUGP ((" 6"));
+
+    if (dccount == 2)
+      {
+	int i;
+	int known_toplevel = 0;
+	static char *known_toplevel_domains[] = {
+	  ".com", ".edu", ".net", ".org", ".gov", ".mil", ".int"
+	};
+	for (i = 0; i < ARRAY_SIZE (known_toplevel_domains); i++)
+	  if (match_tail (cookie_domain, known_toplevel_domains[i]))
+	    {
+	      known_toplevel = 1;
+	      break;
+	    }
+	if (!known_toplevel && nldcl <= 3)
+	  return 0;
+      }
+  }
+
+  DEBUGP ((" 7"));
 
   /* Don't allow domain "bar.com" to match host "foobar.com".  */
   if (*cookie_domain != '.')
@@ -719,7 +778,7 @@ check_domain_match (const char *cookie_domain, const char *host)
 	return 0;
     }
 
-  DEBUGP ((" 6"));
+  DEBUGP ((" 8"));
 
   return 1;
 }
