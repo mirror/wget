@@ -1,3 +1,7 @@
+2002-05-27  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* html-parse.c (NAME_CHAR_P): Allow almost any character here.
+
 2002-05-24  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* progress.c (bar_set_params): Fall back to dot progress if the

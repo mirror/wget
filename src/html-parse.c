@@ -344,10 +344,23 @@ array_allowed (const char **array, const char *beg, const char *end)
   return 1;
 }
 
-/* RFC1866: name [of attribute or tag] consists of letters, digits,
-   periods, or hyphens.  We also allow _, for compatibility with
-   brain-damaged generators.  */
-#define NAME_CHAR_P(x) (ISALNUM (x) || (x) == '.' || (x) == '-' || (x) == '_')
+/* Originally we used to adhere to RFC1866 here, and allowed only
+   letters, digits, periods, and hyphens as names (of tags or
+   attributes).  However, this broke too many pages which used
+   proprietary or strange attributes, e.g.  <img src="a.gif"
+   v:shapes="whatever">.
+
+   So now we allow any character except:
+     * whitespace
+     * 8-bit and control chars
+     * characters that clearly cannot be part of name:
+       '=', '>', '/'.
+
+   This only affects attribute and tag names; attribute values allow
+   an even greater variety of characters.  */
+
+#define NAME_CHAR_P(x) ((x) > 32 && (x) < 127				\
+			&& (x) != '=' && (x) != '>' && (x) != '/')
 
 /* States while advancing through comments. */
 #define AC_S_DONE	0
@@ -450,10 +463,10 @@ advance_declaration (const char *beg, const char *end)
 	    }
 	  break;
 	case AC_S_DCLNAME:
-	  if (NAME_CHAR_P (ch))
-	    ch = *p++;
-	  else if (ch == '-')
+	  if (ch == '-')
 	    state = AC_S_DASH1;
+	  else if (NAME_CHAR_P (ch))
+	    ch = *p++;
 	  else
 	    state = AC_S_DEFAULT;
 	  break;
