@@ -83,6 +83,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include <config.h>
 
+#ifdef STANDALONE
+# define I_REALLY_WANT_CTYPE_MACROS
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef HAVE_STRING_H
@@ -99,12 +103,24 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # define xmalloc malloc
 # define xrealloc realloc
 # define xfree free
+
+# define ISSPACE(x) isspace (x)
+# define ISDIGIT(x) isdigit (x)
+# define ISALPHA(x) isalpha (x)
+# define ISALNUM(x) isalnum (x)
+# define TOLOWER(x) tolower (x)
 #endif /* STANDALONE */
 
-/* Pool support.  For efficiency, map_html_tags() stores temporary
-   string data to a single stack-allocated pool.  If the pool proves
-   too small, additional memory is allocated/resized with
-   malloc()/realloc().  */
+/* Pool support.  A pool is a resizable chunk of memory.  It is first
+   allocated on the stack, and moved to the heap if it needs to be
+   larger than originally expected.  map_html_tags() uses it to store
+   the zero-terminated names and values of tags and attributes.
+
+   Thus taginfo->name, and attr->name and attr->value for each
+   attribute, do not point into separately allocated areas, but into
+   different parts of the pool, separated only by terminating zeros.
+   This ensures minimum amount of allocation and, for most tags, no
+   allocation because the entire pool is kept on the stack.  */
 
 struct pool {
   char *contents;		/* pointer to the contents. */
