@@ -832,6 +832,11 @@ Note that only at the end of the download can Wget know which links have
 been downloaded.  Because of that, much of the work done by @samp{-k}
 will be performed at the end of the downloads.
 
+@cindex backing up converted files
+@item -K
+@itemx --backup-converted
+When converting a file, back up the original version with a @samp{.orig} suffix.
+
 @item -m
 @itemx --mirror
 Turn on options suitable for mirroring.  This option turns on recursion
@@ -1510,6 +1515,10 @@ Enable/disable continuation of the retrieval, the same as @samp{-c}
 @item background = on/off
 Enable/disable going to background, the same as @samp{-b} (which enables 
 it).
+
+@item backup_converted = on/off
+Enable/disable saving pre-converted files with the suffix @samp{.orig}
+-- the same as @samp{-K} (which enables it).
 
 @c @item backups = @var{number}
 @c #### Document me!

@@ -1,3 +1,7 @@
+2000-02-18  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* wget.texi (-K / --backup-converted): Documented this new option.
+
 1998-09-10  Hrvoje Niksic  <hniksic@srce.hr>
 
 	* wget.texi (HTTP Options): Warn against masquerading as Mozilla.

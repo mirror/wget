@@ -84,6 +84,7 @@ static struct {
   { "addhostdir",	&opt.add_hostdir,	cmd_boolean },
   { "alwaysrest",	&opt.always_rest,	cmd_boolean }, /* deprecated */
   { "background",	&opt.background,	cmd_boolean },
+  { "backupconverted",	&opt.backup_converted,	cmd_boolean },
   { "backups",		&opt.backups,		cmd_number },
   { "base",		&opt.base_href,		cmd_string },
   { "cache",		&opt.proxy_cache,	cmd_boolean },

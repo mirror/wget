@@ -76,3 +76,6 @@ particular order.  Not all of them are user-visible changes.
 * Implement more HTTP/1.1 bells and whistles (ETag, Content-MD5 etc.)
 
 * Support SSL encryption through SSLeay or OpenSSL.
+
+* When -K is used with -N, check local file X.orig (if extant) against server 
+  file X.

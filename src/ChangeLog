@@ -1,3 +1,16 @@
+2000-02-18  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* init.c (backup_converted): Added this new option.
+
+	* main.c (-K / --backup-converted): Added this new option.
+
+	* options.h (backup_converted): Added this new option.
+
+	* url.c (convert_links): When backup_converted is specified, save
+	file X as X.orig before converting.
+
+	* url.h (urlpos): Fixed typo -- said "Rekative" instead of "Relative".
+
 1998-09-21  Hrvoje Niksic  <hniksic@srce.hr>
 
 	* version.c: Wget 1.5.3 is released.

@@ -113,7 +113,9 @@ struct options
 #endif /* DEBUG */
 
   int timestamping;		/* Whether to use time-stamping. */
-  int backups;			/* Are backups made? */
+
+  int backup_converted;		/* Do we save pre-converted files as *.orig? */
+  int backups;			/* Are numeric backups made? */
 
   char *useragent;		/* Naughty User-Agent, which can be
 				   set to something other than

@@ -173,6 +173,7 @@ Recursive retrieval:\n\
   -l,  --level=NUMBER          maximum recursion depth (0 to unlimit).\n\
        --delete-after          delete downloaded files.\n\
   -k,  --convert-links         convert non-relative links to relative.\n\
+  -K,  --backup-converted      before converting file X, back up as X.orig.\n\
   -m,  --mirror                turn on options suitable for mirroring.\n\
   -nr, --dont-remove-listing   don\'t remove `.listing\' files.\n\
 \n"), _("\
@@ -202,6 +203,7 @@ main (int argc, char *const *argv)
     { "background", no_argument, NULL, 'b' },
     { "continue", no_argument, NULL, 'c' },
     { "convert-links", no_argument, NULL, 'k' },
+    { "backup-converted", no_argument, NULL, 'K' },
     { "debug", no_argument, NULL, 'd' },
     { "dont-remove-listing", no_argument, NULL, 21 },
     { "email-address", no_argument, NULL, 'E' }, /* undocumented (debug) */
@@ -286,7 +288,7 @@ main (int argc, char *const *argv)
   initialize ();
 
   while ((c = getopt_long (argc, argv, "\
-hVqvdksxmNWrHSLcFbEY:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
+hVqvdkKsxmNWrHSLcFbEY:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
 			   long_options, (int *)0)) != EOF)
     {
       switch (c)
@@ -368,6 +370,9 @@ hVqvdksxmNWrHSLcFbEY:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
 	  break;
 	case 'k':
 	  setval ("convertlinks", "on");
+	  break;
+	case 'K':
+	  setval ("backupconverted", "on");
 	  break;
 	case 'L':
 	  setval ("relativeonly", "on");

@@ -58,7 +58,7 @@ typedef struct _urlpos
   char *url;                   /* URL */
   char *local_name;            /* Local file to which it was saved */
   enum uflags flags;           /* Various flags */
-  int pos, size;               /* Rekative position in the buffer */
+  int pos, size;               /* Relative position in the buffer */
   struct _urlpos *next;        /* Next struct in list */
 } urlpos;
 
