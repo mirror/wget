@@ -1,3 +1,7 @@
+2004-02-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Contributors): Updated.
+
 2004-02-12  Jens Roesner  <jens.roesner@gmx.de>
 
 	* wget.texi (Wgetrc Commands): Document `-e' here.
