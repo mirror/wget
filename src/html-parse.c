@@ -69,7 +69,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
    as a backend for one.
 
    Due to time and other constraints, this parser was not integrated
-   into Wget until the version ???. */
+   into Wget until the version 1.7. */
 
 /* DESCRIPTION:
 
