@@ -1520,6 +1520,11 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	{
 	  use_ts = 1;
 	  tml = st.st_mtime;
+#ifdef WINDOWS
+	  /* Modification time granularity is 2 seconds for Windows, so
+	     increase local time by 1 second for later comparison. */
+	  tml++;
+#endif
 	  local_size = st.st_size;
 	  got_head = 0;
 	}

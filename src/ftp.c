@@ -1302,6 +1302,11 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
 	      /* Else, get it from the file.  */
 	      local_size = st.st_size;
 	      tml = st.st_mtime;
+#ifdef WINDOWS
+	      /* Modification time granularity is 2 seconds for Windows, so
+		 increase local time by 1 second for later comparison. */
+	      tml++;
+#endif
               /* Compare file sizes only for servers that tell us correct
                  values. Assumme sizes being equal for servers that lie
                  about file size.  */

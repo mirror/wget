@@ -1,3 +1,10 @@
+2002-04012  Ian Abbott  <abbotti@mev.co.uk>
+
+	* http.c (http_loop): Compensate for MS Windows two-second
+	granularity of file modification time when comparing timestamps.
+
+	* ftp.c (ftp_retrieve_list): Ditto.
+
 2002-04-12  Ian Abbott  <abbotti@mev.co.uk>
 
 	* utils.c (has_html_suffix_p): New function to test filename for
