@@ -28,7 +28,7 @@ AC_DEFUN([WGET_SOCKLEN_T], [
 #include <sys/socket.h>
 socklen_t x;
 ],
-    [], [AC_MSG_RESULT(yes)], [
+    [], [AC_MSG_RESULT(socklen_t)], [
       AC_TRY_COMPILE([
 #include <sys/types.h>
 #include <sys/socket.h>
