@@ -82,8 +82,8 @@ extern int h_errno;
 
 static struct hash_table *host_name_addresses_map;
 
-/* Lists of addresses.  This should eventually be extended to handle
-   IPv6.  */
+/* Lists of IP addresses that result from running DNS queries.  See
+   lookup_host for details.  */
 
 struct address_list {
   int count;			/* number of adrresses */
@@ -471,13 +471,14 @@ forget_host_lookup (const char *host)
     }
 }
 
-/* Look up HOST in DNS and return a list of IP addresses.
+/* Look up HOST in DNS and return a list of IP addresses.  The
+   addresses in the list are in the same order in which
+   gethostbyname/getaddrinfo returned them.
 
    This function caches its result so that, if the same host is passed
-   the second time, the addresses are returned without the DNS lookup.
-   If you want to force lookup, call forget_host_lookup() prior to
-   this function, or set opt.dns_cache to 0 to globally disable
-   caching.
+   the second time, the addresses are returned without DNS lookup.  If
+   you want to force lookup, call forget_host_lookup() prior to this
+   function, or set opt.dns_cache to 0 to globally disable caching.
 
    If SILENT is non-zero, progress messages are not printed.  */
 

@@ -1,3 +1,8 @@
+2003-11-13  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* host.c (lookup_host): Document the fact that the addresses are
+	returned in order.
+
 2003-11-12  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c: Use limits.h only where available.
