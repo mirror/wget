@@ -4,11 +4,11 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU Wget 1.7-pre1\n"
-"POT-Creation-Date: 2001-12-06 02:15+0100\n"
+"Project-Id-Version: GNU Wget 1.8\n"
+"POT-Creation-Date: 2001-12-08 23:28+0100\n"
 "PO-Revision-Date: 1998-02-29 21:05+01:00\n"
 "Last-Translator: Hrvoje Niksic <hniksic@arsdigita.com>\n"
-"Language-Team: Croatian <hr-translation@bagan.srce.hr>\n"
+"Language-Team: Croatian <lokalizacija@linux.hr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -694,17 +694,17 @@ msgstr "%s: %s: Molim postavite na on ili off.\n"
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr "%s: %s: Molim postavite na on, off ili never.\n"
 
-#: src/init.c:632 src/init.c:896 src/init.c:975
+#: src/init.c:632 src/init.c:899 src/init.c:978
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: Pogre¹na specifikacija `%s'\n"
 
-#: src/init.c:785 src/init.c:807 src/init.c:829 src/init.c:855
+#: src/init.c:788 src/init.c:810 src/init.c:832 src/init.c:858
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "wget: %s: Pogre¹na specifikacija `%s'\n"
 
-#: src/init.c:946
+#: src/init.c:949
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: Nepoznat indikator napretka `%s'.\n"
@@ -761,7 +761,7 @@ msgid ""
 "  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
 "       --sslcertfile=FILE     optional client certificate.\n"
 "       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
-"       --sslegdsock=FILE      socket to the egd daemon(random data source).\n"
+"       --egd-file=FILE        file name of the EGD socket.\n"
 "\n"
 msgstr ""
 "Logging and input file:\n"
@@ -776,8 +776,7 @@ msgstr ""
 "  -B,  --base=URL             temeljni URL za relativne linkove kod -F -i.\n"
 "       --sslcertfile=SPIS     opcionalni certifikat klijenta.\n"
 "       --sslcertkey=SPIS      opcionalni spis s kljuèem certifikata.\n"
-"       --sslegdsock=FILE      spis vezan s EGD demonom (izvorom "
-"sluèajnosti).\n"
+"       --egd-file=SPIS        spisa vezan s EGD demonom (izvorom sluèajnosti).\n"
 "\n"
 
 #: src/main.c:155
@@ -964,12 +963,14 @@ msgstr ""
 "  -A,  --accept=POPIS                popis prihvaæenih nastavaka.\n"
 "  -R,  --reject=POPIS                popis odbijenih nastavaka.\n"
 "  -D,  --domains=POPIS               popis prihvaæenih domena.\n"
-"       --exclude-domains=POPIS       zarezom odvojen popis odbijenih domena.\n"
+"       --exclude-domains=POPIS       zarezom odvojen popis odbijenih "
+"domena.\n"
 "  -L,  --relative                    prati samo relativne linkove.\n"
 "       --follow-ftp                  prati FTP linkove iz HTML dokumenata.\n"
 "       --follow-tags=LIST            zarezom odvojeni HTML tagovi koje\n"
 "                                       treba pratiti.\n"
-"  -G,  --ignore-tags=LIST            zarezom odvojeni ignorirani HTML tagovi.\n"
+"  -G,  --ignore-tags=LIST            zarezom odvojeni ignorirani HTML "
+"tagovi.\n"
 "  -H,  --span-hosts                  idi na druga raèunala pri rekurziji.\n"
 "  -I,  --include-directories=POPIS   popis dozvoljenih direktorija.\n"
 "  -X,  --exclude-directories=POPIS   popis nedozvoljenih direktorija.\n"
@@ -1072,7 +1073,7 @@ msgstr "Ogranièenje dohvata (%s bajtova) je PREKORAÈENO!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:892
+#: src/main.c:896
 #, c-format
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "%s primljen, usmjeravam izlaz na `%%s'.\n"
@@ -1091,11 +1092,11 @@ msgstr ""
 "Mo¾ete prekinuti Wget pritiskom na CTRL+ALT+DELETE.\n"
 
 #. parent, no error
-#: src/mswindows.c:123 src/utils.c:462
+#: src/mswindows.c:123 src/utils.c:467
 msgid "Continuing in background.\n"
 msgstr "Nastavljam u pozadini.\n"
 
-#: src/mswindows.c:125 src/utils.c:464
+#: src/mswindows.c:125 src/utils.c:469
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "Izlaz se sprema u `%s'.\n"
@@ -1134,7 +1135,7 @@ msgstr "%s: ne mogu stat-irati %s: %s\n"
 #. Align the [ skipping ... ] line with the dots.  To do
 #. that, insert the number of spaces equal to the number of
 #. digits in the skipped amount in K.
-#: src/progress.c:203
+#: src/progress.c:224
 #, c-format
 msgid ""
 "\n"
@@ -1143,7 +1144,7 @@ msgstr ""
 "\n"
 "%*s[ preskaèem %dK ]"
 
-#: src/progress.c:370
+#: src/progress.c:391
 #, c-format
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
 msgstr ""
@@ -1227,12 +1228,12 @@ msgstr "Ne mogu izbrisati `%s': %s\n"
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Ne mogu snimiti backup iz %s u %s: %s\n"
 
-#: src/utils.c:97
+#: src/utils.c:102
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: Nema dovoljno memorije.\n"
 
-#: src/utils.c:662
+#: src/utils.c:667
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Ne mogu izbrisati link `%s': %s\n"
