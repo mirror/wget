@@ -45,12 +45,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include "wget.h"
 #include "utils.h"
-#include "getopt.h"
 #include "init.h"
 #include "retr.h"
 #include "recur.h"
 #include "host.h"
 #include "cookies.h"
+
+/* On GNU system this will include system-wide getopt.h. */
+#include "getopt.h"
 
 #ifndef PATH_SEPARATOR
 # define PATH_SEPARATOR '/'

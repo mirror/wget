@@ -1,5 +1,9 @@
 2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* configure.in: Check for getopt_long in libc.
+
+2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* configure.in: Check for Solaris libmd5.
 
 2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>

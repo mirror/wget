@@ -1,5 +1,9 @@
 2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* Makefile.in: Conditionally compile getopt.o.
+
+2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* md5.h: Renamed to gnu-md5.h.
 
 	* md5.c: Renamed to gnu-md5.c.

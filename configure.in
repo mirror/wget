@@ -178,6 +178,14 @@ AC_CHECK_FUNCS(strerror snprintf vsnprintf select signal symlink access isatty)
 AC_CHECK_FUNCS(uname gethostname)
 
 dnl
+dnl Check if we need to compile in getopt.c.
+dnl
+AC_CHECK_FUNC(getopt_long, [], [
+  GETOPT_OBJ='getopt$o'
+])
+AC_SUBST(GETOPT_OBJ)
+
+dnl
 dnl Checks for libraries.
 dnl
 

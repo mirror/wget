@@ -56,13 +56,14 @@ RM = rm -f
 ETAGS = etags
 
 # Conditional compiles
-ALLOCA = @ALLOCA@
-MD5_OBJ = @MD5_OBJ@
-OPIE_OBJ = @OPIE_OBJ@
-SSL_OBJ = @SSL_OBJ@
+ALLOCA     = @ALLOCA@
+MD5_OBJ    = @MD5_OBJ@
+OPIE_OBJ   = @OPIE_OBJ@
+SSL_OBJ    = @SSL_OBJ@
+GETOPT_OBJ = @GETOPT_OBJ@
 
 OBJ = $(ALLOCA) cmpt$o connect$o cookies$o fnmatch$o ftp$o        \
-      ftp-basic$o ftp-ls$o $(OPIE_OBJ) getopt$o hash$o            \
+      ftp-basic$o ftp-ls$o $(OPIE_OBJ) $(GETOPT_OBJ) hash$o       \
       headers$o host$o html-parse$o html-url$o http$o init$o      \
       log$o main$o $(MD5_OBJ) netrc$o rbuf$o recur$o res$o        \
       retr$o safe-ctype$o snprintf$o $(SSL_OBJ) url$o             \
@@ -148,7 +149,6 @@ ftp-basic$o: wget.h utils.h rbuf.h connect.h host.h
 ftp-ls$o: wget.h utils.h ftp.h url.h
 ftp-opie$o: wget.h
 ftp$o: wget.h utils.h url.h rbuf.h retr.h ftp.h connect.h host.h fnmatch.h netrc.h
-getopt$o: wget.h getopt.h
 hash$o: wget.h utils.h hash.h
 headers$o: wget.h connect.h rbuf.h headers.h
 host$o: wget.h utils.h host.h url.h hash.h
@@ -158,7 +158,7 @@ html$o: wget.h url.h utils.h ftp.h
 http$o: wget.h utils.h url.h host.h rbuf.h retr.h headers.h cookies.h connect.h fnmatch.h netrc.h
 init$o: wget.h utils.h init.h host.h recur.h netrc.h
 log$o: wget.h utils.h
-main$o: wget.h utils.h getopt.h init.h retr.h recur.h host.h cookies.h
+main$o: wget.h utils.h init.h retr.h recur.h host.h cookies.h
 gnu-md5$o: wget.h gnu-md5.h
 mswindows$o: wget.h url.h
 netrc$o: wget.h utils.h netrc.h init.h
