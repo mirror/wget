@@ -1,3 +1,16 @@
+2003-10-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* cmpt.c (memmove): Comment out, since it's no longer used.
+
+	* cookies.c (cookie_jar_generate_cookie_header): Allocate room for
+	chains in one pass.
+	(find_chains_of_host): Assume that the caller has allocated DEST
+	to be sufficiently large to take all the data.
+	(eliminate_dups): Run through the array and eliminate dups on the
+	fly instead of using memmove.
+	(cookie_jar_process_set_cookie): Free cookie->domain before
+	re-setting it.
+
 2003-10-05  Gisle Vanem  <giva@bgnett.no>
 
 	* mswindows.c (set_sleep_mode): Fix type of

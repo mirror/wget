@@ -1446,6 +1446,10 @@ usleep (unsigned long usec)
 #endif /* not HAVE_USLEEP */
 
 
+/* Currently unused in Wget.  Uncomment if we start using memmove
+   again. */
+#if 0
+
 #ifndef HAVE_MEMMOVE
 void *
 memmove (char *dest, const char *source, unsigned length)
@@ -1464,3 +1468,5 @@ memmove (char *dest, const char *source, unsigned length)
   return (void *) d0;
 }
 #endif /* not HAVE_MEMMOVE */
+
+#endif /* 0 */

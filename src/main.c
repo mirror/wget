@@ -803,9 +803,8 @@ Can't timestamp and not clobber old files at the same time.\n"));
   if (opt.verbose)
     set_progress_implementation (opt.progress_type);
 
-  /* Allocate basic pointer.  */
-  url = (char **) alloca ((nurl + 1) * sizeof (char *));
   /* Fill in the arguments.  */
+  url = alloca_array (char *, nurl + 1);
   for (i = 0; i < nurl; i++, optind++)
     {
       char *rewritten = rewrite_shorthand_url (argv[optind]);
@@ -928,9 +927,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
     cookie_jar_save (wget_cookie_jar, opt.cookies_output);
 
   if (opt.convert_links && !opt.delete_after)
-    {
-      convert_all_links ();
-    }
+    convert_all_links ();
 
   log_close ();
   for (i = 0; i < nurl; i++)

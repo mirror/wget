@@ -185,17 +185,12 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
 
    int a[5] = {1, 2};           -- countof(a) == 5
 
-   char *a[3] = {               -- countof(a) == 3
+   char *a[] = {                -- countof(a) == 3
      "foo", "bar", "baz"
-   };
-
-   And, most importantly, it works when the compiler counts the array
-   elements for you:
-
-   char *a[] = {                -- countof(a) == 4
-     "foo", "bar", "baz", "qux"
-   }  */
+   }; */
 #define countof(array) (sizeof (array) / sizeof (*(array)))
+
+#define alloca_array(type, size) ((type *) alloca ((size) * sizeof (type)))
 
 /* Copy the data delimited with BEG and END to alloca-allocated
    storage, and zero-terminate it.  Arguments are evaluated only once,
@@ -232,7 +227,7 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
 
 #define STRDUP_ALLOCA(ptr, str) do {		\
   (ptr) = (char *)alloca (strlen (str) + 1);	\
-  strcpy (ptr, str);				\
+  strcpy ((ptr), (str));			\
 } while (0)
 
 /* Generally useful if you want to avoid arbitrary size limits but

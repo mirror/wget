@@ -30,11 +30,17 @@ so, delete this exception statement from your version.  */
 /* Written by Hrvoje Niksic.  Parts are loosely inspired by cookie
    code submitted by Tomasz Wegrzanowski.
 
-   TODO: Implement limits on cookie-related sizes, such as max. cookie
-   size, max. number of cookies, etc.  Add more "cookie jar" methods,
-   such as methods to over stored cookies, to clear temporary cookies,
-   to perform intelligent auto-saving, etc.  Ultimately support
-   `Set-Cookie2' and `Cookie2' headers.  */
+   Ideas for future work:
+
+   * Implement limits on cookie-related sizes, such as max. cookie
+     size, max. number of cookies, etc.
+
+   * Add more "cookie jar" methods, such as methods to iterate over
+     stored cookies, to clear temporary cookies, to perform
+     intelligent auto-saving, etc.
+
+   * Support `Set-Cookie2' and `Cookie2' headers?  Does anyone really
+     use them?  */
 
 #include <config.h>
 
@@ -58,10 +64,20 @@ time_t http_atotm PARAMS ((const char *));
 
 /* Declarations of `struct cookie' and the most basic functions. */
 
+/* Cookie jar serves as cookie storage and a means of retrieving
+   cookies efficiently.  All cookies with the same domain are stored
+   in a linked list called "chain".  A cookie chain can be reached by
+   looking up the domain in the cookie jar's chains_by_domain table.
+
+   For example, to reach all the cookies under google.com, one must
+   execute hash_table_get(jar->chains_by_domain, "google.com").  Of
+   course, when sending a cookie to `www.google.com', one must search
+   for cookies that belong to either `www.google.com' or `google.com'
+   -- but the point is that the code doesn't need to go through *all*
+   the cookies.  */
+
 struct cookie_jar {
-  /* Hash table that maps domain names to cookie chains.  A "cookie
-     chain" is a linked list of cookies that belong to the same
-     domain.  */
+  /* Mapping between domains and their corresponding cookies.  */
   struct hash_table *chains_by_domain;
 
   int cookie_count;		/* number of cookies in the jar. */
@@ -227,10 +243,11 @@ store_cookie (struct cookie_jar *jar, struct cookie *cookie)
     }
   else
     {
-      /* We are now creating the chain.  Allocate the string that will
-	 be used as a key.  It is unsafe to use cookie->domain for
-	 that, because it might get deallocated by the above code at
-	 some point later.  */
+      /* We are now creating the chain.  Use a copy of cookie->domain
+	 as the key for the life-time of the chain.  Using
+	 cookie->domain would be unsafe because the life-time of the
+	 chain may exceed the life-time of the cookie.  (Cookies may
+	 be deleted from the chain by this very function.)  */
       cookie->next = NULL;
       chain_key = xstrdup (cookie->domain);
     }
@@ -297,7 +314,6 @@ discard_matching_cookie (struct cookie_jar *jar, struct cookie *cookie)
 
 /* Functions for parsing the `Set-Cookie' header, and creating new
    cookies from the wire.  */
-
 
 #define NAME_IS(string_literal)					\
   BOUNDED_EQUAL_NO_CASE (name_b, name_e, string_literal)
@@ -772,7 +788,8 @@ check_domain_match (const char *cookie_domain, const char *host)
 
   DEBUGP ((" 7"));
 
-  /* Don't allow domain "bar.com" to match host "foobar.com".  */
+  /* Don't allow the host "foobar.com" to set a cookie for domain
+     "bar.com".  */
   if (*cookie_domain != '.')
     {
       int dlen = strlen (cookie_domain);
@@ -830,9 +847,11 @@ cookie_jar_process_set_cookie (struct cookie_jar *jar,
 	  logprintf (LOG_NOTQUIET,
 		     "Cookie coming from %s attempted to set domain to %s\n",
 		     host, cookie->domain);
+	  xfree (cookie->domain);
 	  goto copy_domain;
 	}
     }
+
   if (!cookie->path)
     cookie->path = xstrdup (path);
   else
@@ -863,23 +882,26 @@ cookie_jar_process_set_cookie (struct cookie_jar *jar,
    previously stored cookies.  Entry point is
    `build_cookies_request'.  */
 
-/* Find the cookie chains that match HOST and store them to DEST.
+/* Find the cookie chains whose domains match HOST and store them to
+   DEST.
 
-   A cookie chain is the list of cookies declared under a domain.
-   Given HOST "img.search.xemacs.org", this function will store the
-   chains for "img.search.xemacs.org", "search.xemacs.org", and
-   "xemacs.org" -- those of them that exist (if any), that is.
+   A cookie chain is the head of a list of cookies that belong to a
+   host/domain.  Given HOST "img.search.xemacs.org", this function
+   will return the chains for "img.search.xemacs.org",
+   "search.xemacs.org", and "xemacs.org" -- those of them that exist
+   (if any), that is.
 
-   No more than SIZE matches are written; if more matches are present,
-   return the number of chains that would have been written.  */
+   DEST should be large enough to accept (in the worst case) as many
+   elements as there are domain components of HOST.  */
 
 static int
-find_matching_chains (struct cookie_jar *jar, const char *host,
-		      struct cookie *dest[], int dest_size)
+find_chains_of_host (struct cookie_jar *jar, const char *host,
+		     struct cookie *dest[])
 {
   int dest_count = 0;
   int passes, passcnt;
 
+  /* Bail out quickly if there are no cookies in the jar.  */
   if (!hash_table_count (jar->chains_by_domain))
     return 0;
 
@@ -902,11 +924,7 @@ find_matching_chains (struct cookie_jar *jar, const char *host,
     {
       struct cookie *chain = hash_table_get (jar->chains_by_domain, host);
       if (chain)
-	{
-	  if (dest_count < dest_size)
-	    dest[dest_count] = chain;
-	  ++dest_count;
-	}
+	dest[dest_count++] = chain;
       if (++passcnt >= passes)
 	break;
       host = strchr (host, '.') + 1;
@@ -925,8 +943,8 @@ path_matches (const char *full_path, const char *prefix)
 
   if (*prefix != '/')
     /* Wget's HTTP paths do not begin with '/' (the URL code treats it
-       as a separator), but the '/' is assumed when matching against
-       the cookie stuff.  */
+       as a mere separator, inspired by rfc1808), but the '/' is
+       assumed when matching against the cookie stuff.  */
     return 0;
 
   ++prefix;
@@ -940,17 +958,17 @@ path_matches (const char *full_path, const char *prefix)
   return len + 1;
 }
 
-/* Return non-zero iff COOKIE matches the given HOST, PORT, PATH, and
-   SECFLAG.
+/* Return non-zero iff COOKIE matches the provided parameters of the
+   URL being downloaded: HOST, PORT, PATH, and SECFLAG.
 
    If PATH_GOODNESS is non-NULL, store the "path goodness" value
-   there.  That value is a measure of how well COOKIE matches PATH,
+   there.  That value is a measure of how closely COOKIE matches PATH,
    used for ordering cookies.  */
 
 static int
-matching_cookie (const struct cookie *cookie,
-		 const char *host, int port, const char *path,
-		 int secure, int *path_goodness)
+cookie_matches_url (const struct cookie *cookie,
+		    const char *host, int port, const char *path,
+		    int secflag, int *path_goodness)
 {
   int pg;
 
@@ -962,7 +980,7 @@ matching_cookie (const struct cookie *cookie,
        possible.  */
     return 0;
 
-  if (cookie->secure && !secure)
+  if (cookie->secure && !secflag)
     /* Don't transmit secure cookies over insecure connections.  */
     return 0;
   if (cookie->port != PORT_ANY && cookie->port != port)
@@ -970,7 +988,7 @@ matching_cookie (const struct cookie *cookie,
 
   /* If exact domain match is required, verify that cookie's domain is
      equal to HOST.  If not, assume success on the grounds of the
-     cookie's chain having been found by find_matching_chains.  */
+     cookie's chain having been found by find_chains_of_host.  */
   if (cookie->domain_exact
       && 0 != strcasecmp (host, cookie->domain))
     return 0;
@@ -1015,40 +1033,45 @@ equality_comparator (const void *p1, const void *p2)
 }
 
 /* Eliminate duplicate cookies.  "Duplicate cookies" are any two
-   cookies whose name and value are the same.  Whenever a duplicate
+   cookies with the same attr name and value.  Whenever a duplicate
    pair is found, one of the cookies is removed.  */
 
 static int
 eliminate_dups (struct weighed_cookie *outgoing, int count)
 {
-  int i;
+  struct weighed_cookie *h;	/* hare */
+  struct weighed_cookie *t;	/* tortoise */
+  struct weighed_cookie *end = outgoing + count;
 
   /* We deploy a simple uniquify algorithm: first sort the array
-     according to our sort criteria, then uniquify it by comparing
-     each cookie with its neighbor.  */
+     according to our sort criteria, then copy it to itself, comparing
+     each cookie to its neighbor and ignoring the duplicates.  */
 
   qsort (outgoing, count, sizeof (struct weighed_cookie), equality_comparator);
 
-  for (i = 0; i < count - 1; i++)
+  /* "Hare" runs through all the entries in the array, followed by
+     "tortoise".  If a duplicate is found, the hare skips it.
+     Non-duplicate entries are copied to the tortoise ptr.  */
+
+  for (h = t = outgoing; h < end; h++)
     {
-      struct cookie *c1 = outgoing[i].cookie;
-      struct cookie *c2 = outgoing[i + 1].cookie;
-      if (!strcmp (c1->attr, c2->attr) && !strcmp (c1->value, c2->value))
+      if (h != end - 1)
 	{
-	  /* c1 and c2 are the same; get rid of c2. */
-	  if (count > i + 1)
-	    /* move all ptrs from positions [i + 1, count) to i. */
-	    memmove (outgoing + i, outgoing + i + 1,
-		     (count - (i + 1)) * sizeof (struct weighed_cookie));
-	  /* We decrement i to counter the ++i above.  Remember that
-	     we've just removed the element in front of us; we need to
-	     remain in place to check whether outgoing[i] matches what
-	     used to be outgoing[i + 2].  */
-	  --i;
-	  --count;
+	  struct cookie *c0 = h[0].cookie;
+	  struct cookie *c1 = h[1].cookie;
+	  if (!strcmp (c0->attr, c1->attr) && !strcmp (c0->value, c1->value))
+	    continue;		/* ignore the duplicate */
 	}
+
+      /* If the hare has advanced past the tortoise (because of
+	 previous dups), make sure the values get copied.  Otherwise,
+	 no copying is necessary.  */
+      if (h != t)
+	*t++ = *h;
+      else
+	t++;
     }
-  return count;
+  return t - outgoing;
 }
 
 /* Comparator used for sorting by quality. */
@@ -1081,9 +1104,7 @@ cookie_jar_generate_cookie_header (struct cookie_jar *jar, const char *host,
 				   int port, const char *path,
 				   int connection_secure_p)
 {
-  struct cookie *chain_default_store[5];
-  struct cookie **chains = chain_default_store;
-  int chain_store_size = countof (chain_default_store);
+  struct cookie **chains;
   int chain_count;
 
   struct cookie *cookie;
@@ -1092,19 +1113,15 @@ cookie_jar_generate_cookie_header (struct cookie_jar *jar, const char *host,
   char *result;
   int result_size, pos;
 
-  /* First, find the chains that match HOST. */
- again:
-  chain_count = find_matching_chains (jar, host, chains, chain_store_size);
-  if (chain_count > chain_store_size)
-    {
-      /* It's unlikely that more than 5 chains will ever match.  But
-	 since find_matching_chains reports the exact size it needs,
-	 it's easy to not have the limitation, so we don't.  */
-      chains = alloca (chain_count * sizeof (struct cookie *));
-      chain_store_size = chain_count;
-      goto again;
-    }
+  /* First, find the cookie chains whose domains match HOST. */
 
+  /* Allocate room for find_chains_of_host to write to.  The number of
+     chains can at most equal the number of subdomains, hence
+     1+<number of dots>.  */
+  chains = alloca_array (struct cookie *, 1 + count_char (host, '.'));
+  chain_count = find_chains_of_host (jar, host, chains);
+
+  /* No cookies for this host. */
   if (!chain_count)
     return NULL;
 
@@ -1118,13 +1135,14 @@ cookie_jar_generate_cookie_header (struct cookie_jar *jar, const char *host,
   count = 0;
   for (i = 0; i < chain_count; i++)
     for (cookie = chains[i]; cookie; cookie = cookie->next)
-      if (matching_cookie (cookie, host, port, path, connection_secure_p, NULL))
+      if (cookie_matches_url (cookie, host, port, path, connection_secure_p,
+			      NULL))
 	++count;
   if (!count)
     return NULL;		/* no cookies matched */
 
   /* Allocate the array. */
-  outgoing = alloca (count * sizeof (struct weighed_cookie));
+  outgoing = alloca_array (struct weighed_cookie, count);
 
   /* Fill the array with all the matching cookies from the chains that
      match HOST. */
@@ -1133,8 +1151,8 @@ cookie_jar_generate_cookie_header (struct cookie_jar *jar, const char *host,
     for (cookie = chains[i]; cookie; cookie = cookie->next)
       {
 	int pg;
-	if (!matching_cookie (cookie, host, port, path,
-			      connection_secure_p, &pg))
+	if (!cookie_matches_url (cookie, host, port, path,
+				 connection_secure_p, &pg))
 	  continue;
 	outgoing[ocnt].cookie = cookie;
 	outgoing[ocnt].domain_goodness = strlen (cookie->domain);
