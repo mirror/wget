@@ -648,7 +648,7 @@ select_fd (int fd, double maxtime, int wait_for)
     wr = &fdset;
 
   tmout.tv_sec = (long) maxtime;
-  tmout.tv_usec = 1000000L * (maxtime - (long) maxtime);
+  tmout.tv_usec = 1000000 * (maxtime - (long) maxtime);
 
   do
     result = select (fd + 1, rd, wr, NULL, &tmout);

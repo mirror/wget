@@ -1144,7 +1144,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   auth_tried_already = 0;
 
   /* Initialize certain elements of struct http_stat.  */
-  hs->len = 0L;
+  hs->len = 0;
   hs->contlen = -1;
   hs->res = -1;
   hs->newloc = NULL;
@@ -1771,7 +1771,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   if (!(*dt & RETROKF) || (*dt & HEAD_ONLY))
     {
       /* In case the caller cares to look...  */
-      hs->len = 0L;
+      hs->len = 0;
       hs->res = 0;
       xfree_null (type);
       /* Pre-1.10 Wget used CLOSE_INVALIDATE here.  Now we trust the

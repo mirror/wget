@@ -1313,89 +1313,56 @@ numdigit (wgint number)
   return cnt;
 }
 
-#define ONE_DIGIT(figure) *p++ = n / (figure) + '0'
-#define ONE_DIGIT_ADVANCE(figure) (ONE_DIGIT (figure), n %= (figure))
+#define PR(mask) *p++ = n / (mask) + '0'
 
-#define DIGITS_1(figure) ONE_DIGIT (figure)
-#define DIGITS_2(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_1 ((figure) / 10)
-#define DIGITS_3(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_2 ((figure) / 10)
-#define DIGITS_4(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_3 ((figure) / 10)
-#define DIGITS_5(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_4 ((figure) / 10)
-#define DIGITS_6(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_5 ((figure) / 10)
-#define DIGITS_7(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_6 ((figure) / 10)
-#define DIGITS_8(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_7 ((figure) / 10)
-#define DIGITS_9(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_8 ((figure) / 10)
-#define DIGITS_10(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_9 ((figure) / 10)
+/* DIGITS_<D> is used to print a D-digit number and should be called
+   with mask==10^(D-1).  It prints n/mask (the first digit), reducing
+   n to n%mask (the remaining digits), and calling DIGITS_<D-1>.
+   Recursively this continues until DIGITS_1 is invoked.  */
 
-/* DIGITS_<11-20> are only used on machines with 64-bit numbers. */
+#define DIGITS_1(mask) PR (mask)
+#define DIGITS_2(mask) PR (mask), n %= (mask), DIGITS_1 ((mask) / 10)
+#define DIGITS_3(mask) PR (mask), n %= (mask), DIGITS_2 ((mask) / 10)
+#define DIGITS_4(mask) PR (mask), n %= (mask), DIGITS_3 ((mask) / 10)
+#define DIGITS_5(mask) PR (mask), n %= (mask), DIGITS_4 ((mask) / 10)
+#define DIGITS_6(mask) PR (mask), n %= (mask), DIGITS_5 ((mask) / 10)
+#define DIGITS_7(mask) PR (mask), n %= (mask), DIGITS_6 ((mask) / 10)
+#define DIGITS_8(mask) PR (mask), n %= (mask), DIGITS_7 ((mask) / 10)
+#define DIGITS_9(mask) PR (mask), n %= (mask), DIGITS_8 ((mask) / 10)
+#define DIGITS_10(mask) PR (mask), n %= (mask), DIGITS_9 ((mask) / 10)
 
-#define DIGITS_11(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_10 ((figure) / 10)
-#define DIGITS_12(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_11 ((figure) / 10)
-#define DIGITS_13(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_12 ((figure) / 10)
-#define DIGITS_14(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_13 ((figure) / 10)
-#define DIGITS_15(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_14 ((figure) / 10)
-#define DIGITS_16(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_15 ((figure) / 10)
-#define DIGITS_17(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_16 ((figure) / 10)
-#define DIGITS_18(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_17 ((figure) / 10)
-#define DIGITS_19(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_18 ((figure) / 10)
+/* DIGITS_<11-20> are only used on machines with 64-bit wgints. */
 
-/* It is annoying that we have three different syntaxes for 64-bit constants:
-    - nnnL for 64-bit systems, where they are of type long;
-    - nnnLL for 32-bit systems that support long long;
-    - nnnI64 for MS compiler on Windows, which doesn't support long long. */
-
-#if SIZEOF_LONG > 4
-/* If long is large enough, use long constants. */
-# define C10000000000 10000000000L
-# define C100000000000 100000000000L
-# define C1000000000000 1000000000000L
-# define C10000000000000 10000000000000L
-# define C100000000000000 100000000000000L
-# define C1000000000000000 1000000000000000L
-# define C10000000000000000 10000000000000000L
-# define C100000000000000000 100000000000000000L
-# define C1000000000000000000 1000000000000000000L
-#else
-# if SIZEOF_LONG_LONG != 0
-/* Otherwise, if long long is available, use long long constants. */
-#  define C10000000000 10000000000LL
-#  define C100000000000 100000000000LL
-#  define C1000000000000 1000000000000LL
-#  define C10000000000000 10000000000000LL
-#  define C100000000000000 100000000000000LL
-#  define C1000000000000000 1000000000000000LL
-#  define C10000000000000000 10000000000000000LL
-#  define C100000000000000000 100000000000000000LL
-#  define C1000000000000000000 1000000000000000000LL
-# else
-#  if defined(WINDOWS)
-/* Use __int64 constants under Windows. */
-#   define C10000000000 10000000000I64
-#   define C100000000000 100000000000I64
-#   define C1000000000000 1000000000000I64
-#   define C10000000000000 10000000000000I64
-#   define C100000000000000 100000000000000I64
-#   define C1000000000000000 1000000000000000I64
-#   define C10000000000000000 10000000000000000I64
-#   define C100000000000000000 100000000000000000I64
-#   define C1000000000000000000 1000000000000000000I64
-#  endif
-# endif
-#endif
+#define DIGITS_11(mask) PR (mask), n %= (mask), DIGITS_10 ((mask) / 10)
+#define DIGITS_12(mask) PR (mask), n %= (mask), DIGITS_11 ((mask) / 10)
+#define DIGITS_13(mask) PR (mask), n %= (mask), DIGITS_12 ((mask) / 10)
+#define DIGITS_14(mask) PR (mask), n %= (mask), DIGITS_13 ((mask) / 10)
+#define DIGITS_15(mask) PR (mask), n %= (mask), DIGITS_14 ((mask) / 10)
+#define DIGITS_16(mask) PR (mask), n %= (mask), DIGITS_15 ((mask) / 10)
+#define DIGITS_17(mask) PR (mask), n %= (mask), DIGITS_16 ((mask) / 10)
+#define DIGITS_18(mask) PR (mask), n %= (mask), DIGITS_17 ((mask) / 10)
+#define DIGITS_19(mask) PR (mask), n %= (mask), DIGITS_18 ((mask) / 10)
 
 /* SPRINTF_WGINT is used by number_to_string to handle pathological
-   cases and to portably support strange sizes of wgint. */
+   cases and to portably support strange sizes of wgint.  Ideally this
+   would just use "%j" and intmax_t, but many systems don't support
+   it, so it's used only if nothing else works.  */
 #if SIZEOF_LONG >= SIZEOF_WGINT
-#  define SPRINTF_WGINT(buf, n) sprintf(buf, "%ld", (long) (n))
+#  define SPRINTF_WGINT(buf, n) sprintf (buf, "%ld", (long) (n))
 #else
 # if SIZEOF_LONG_LONG >= SIZEOF_WGINT
-#   define SPRINTF_WGINT(buf, n) sprintf(buf, "%lld", (long long) (n))
+#   define SPRINTF_WGINT(buf, n) sprintf (buf, "%lld", (long long) (n))
 # else
 #  ifdef WINDOWS
-#   define SPRINTF_WGINT(buf, n) sprintf(buf, "%I64", (__int64) (n))
+#   define SPRINTF_WGINT(buf, n) sprintf (buf, "%I64", (__int64) (n))
+#  else
+#   define SPRINTF_WGINT(buf, n) sprintf (buf, "%j", (intmax_t) (n))
 #  endif
 # endif
 #endif
+
+/* Shorthand for casting to wgint. */
+#define W wgint
 
 /* Print NUMBER to BUFFER in base 10.  This is equivalent to
    `sprintf(buffer, "%lld", (long long) number)', only typically much
@@ -1433,8 +1400,7 @@ number_to_string (char *buffer, wgint number)
     {
       if (n < -WGINT_MAX)
 	{
-	  /* We cannot print a '-' and assign -n to n because -n would
-	     overflow.  Let sprintf deal with this border case.  */
+	  /* -n would overflow.  Have sprintf deal with this.  */
 	  SPRINTF_WGINT (buffer, n);
 	  p += strlen (buffer);
 	  return p;
@@ -1444,31 +1410,37 @@ number_to_string (char *buffer, wgint number)
       n = -n;
     }
 
-  if      (n < 10)                   { DIGITS_1 (1); }
-  else if (n < 100)                  { DIGITS_2 (10); }
-  else if (n < 1000)                 { DIGITS_3 (100); }
-  else if (n < 10000)                { DIGITS_4 (1000); }
-  else if (n < 100000)               { DIGITS_5 (10000); }
-  else if (n < 1000000)              { DIGITS_6 (100000); }
-  else if (n < 10000000)             { DIGITS_7 (1000000); }
-  else if (n < 100000000)            { DIGITS_8 (10000000); }
-  else if (n < 1000000000)           { DIGITS_9 (100000000); }
+  /* Use the DIGITS_ macro appropriate for N's number of digits.  That
+     way printing any N is fully open-coded without a loop or jump.
+     (Also see description of DIGITS_*.)  */
+
+  if      (n < 10)                       DIGITS_1 (1);
+  else if (n < 100)                      DIGITS_2 (10);
+  else if (n < 1000)                     DIGITS_3 (100);
+  else if (n < 10000)                    DIGITS_4 (1000);
+  else if (n < 100000)                   DIGITS_5 (10000);
+  else if (n < 1000000)                  DIGITS_6 (100000);
+  else if (n < 10000000)                 DIGITS_7 (1000000);
+  else if (n < 100000000)                DIGITS_8 (10000000);
+  else if (n < 1000000000)               DIGITS_9 (100000000);
 #if SIZEOF_WGINT == 4
-  /* wgint is four bytes long: we're done. */
-  /* ``if (1)'' serves only to preserve editor indentation. */
-  else if (1)                        { DIGITS_10 (1000000000); }
+  /* wgint is 32 bits wide: no number has more than 10 digits. */
+  else                                   DIGITS_10 (1000000000);
 #else
-  /* wgint is 64 bits long -- make sure to process all the digits. */
-  else if (n < C10000000000)         { DIGITS_10 (1000000000); }
-  else if (n < C100000000000)        { DIGITS_11 (C10000000000); }
-  else if (n < C1000000000000)       { DIGITS_12 (C100000000000); }
-  else if (n < C10000000000000)      { DIGITS_13 (C1000000000000); }
-  else if (n < C100000000000000)     { DIGITS_14 (C10000000000000); }
-  else if (n < C1000000000000000)    { DIGITS_15 (C100000000000000); }
-  else if (n < C10000000000000000)   { DIGITS_16 (C1000000000000000); }
-  else if (n < C100000000000000000)  { DIGITS_17 (C10000000000000000); }
-  else if (n < C1000000000000000000) { DIGITS_18 (C100000000000000000); }
-  else                               { DIGITS_19 (C1000000000000000000); }
+  /* wgint is 64 bits wide: handle numbers with more than 9 decimal
+     digits.  Constants are constructed by compile-time multiplication
+     to avoid dealing with different notations for 64-bit constants
+     (nnnL, nnnLL, and nnnI64, depending on the compiler).  */
+  else if (n < 10*(W)1000000000)         DIGITS_10 (1000000000);
+  else if (n < 100*(W)1000000000)        DIGITS_11 (10*(W)1000000000);
+  else if (n < 1000*(W)1000000000)       DIGITS_12 (100*(W)1000000000);
+  else if (n < 10000*(W)1000000000)      DIGITS_13 (1000*(W)1000000000);
+  else if (n < 100000*(W)1000000000)     DIGITS_14 (10000*(W)1000000000);
+  else if (n < 1000000*(W)1000000000)    DIGITS_15 (100000*(W)1000000000);
+  else if (n < 10000000*(W)1000000000)   DIGITS_16 (1000000*(W)1000000000);
+  else if (n < 100000000*(W)1000000000)  DIGITS_17 (10000000*(W)1000000000);
+  else if (n < 1000000000*(W)1000000000) DIGITS_18 (100000000*(W)1000000000);
+  else                                   DIGITS_19 (1000000000*(W)1000000000);
 #endif
 
   *p = '\0';
@@ -1477,9 +1449,8 @@ number_to_string (char *buffer, wgint number)
   return p;
 }
 
-#undef ONE_DIGIT
-#undef ONE_DIGIT_ADVANCE
-
+#undef PR
+#undef W
 #undef DIGITS_1
 #undef DIGITS_2
 #undef DIGITS_3
@@ -1589,7 +1560,7 @@ struct wget_timer {
      time, yields elapsed time. */
   wget_sys_time start;
 
-  /* The most recent elapsed time, calculated by wtimer_elapsed().
+  /* The most recent elapsed time, calculated by wtimer_update().
      Measured in milliseconds.  */
   double elapsed_last;
 
@@ -1697,7 +1668,7 @@ wtimer_sys_set (wget_sys_time *wst)
 }
 
 /* Reset timer WT.  This establishes the starting point from which
-   wtimer_elapsed() will return the number of elapsed milliseconds.
+   wtimer_read() will return the number of elapsed milliseconds.
    It is allowed to reset a previously used timer.  */
 
 void
@@ -2037,7 +2008,7 @@ alarm_set (double timeout)
   struct itimerval itv;
   xzero (itv);
   itv.it_value.tv_sec = (long) timeout;
-  itv.it_value.tv_usec = 1000000L * (timeout - (long)timeout);
+  itv.it_value.tv_usec = 1000000 * (timeout - (long)timeout);
   if (itv.it_value.tv_sec == 0 && itv.it_value.tv_usec == 0)
     /* Ensure that we wait for at least the minimum interval.
        Specifying zero would mean "wait forever".  */
@@ -2089,8 +2060,8 @@ alarm_cancel (void)
      * It works with both SYSV and BSD signals because it doesn't
        depend on the default setting of SA_RESTART.
 
-     * It doesn't special handler setup beyond a simple call to
-       signal().  (It does use sigsetjmp/siglongjmp, but they're
+     * It doesn't require special handler setup beyond a simple call
+       to signal().  (It does use sigsetjmp/siglongjmp, but they're
        optional.)
 
    The only downside is that, if FUN allocates internal resources that
@@ -2159,7 +2130,7 @@ xsleep (double seconds)
      the terminal was being resized.)  */
   struct timespec sleep, remaining;
   sleep.tv_sec = (long) seconds;
-  sleep.tv_nsec = 1000000000L * (seconds - (long) seconds);
+  sleep.tv_nsec = 1000000000 * (seconds - (long) seconds);
   while (nanosleep (&sleep, &remaining) < 0 && errno == EINTR)
     /* If nanosleep has been interrupted by a signal, adjust the
        sleeping period and return to sleep.  */
@@ -2175,12 +2146,17 @@ xsleep (double seconds)
       sleep (seconds);
       seconds -= (long) seconds;
     }
-  usleep (seconds * 1000000L);
+  usleep (seconds * 1000000);
 #else  /* not HAVE_USLEEP */
 #ifdef HAVE_SELECT
+  /* Note that, although Windows supports select, this sleeping
+     strategy doesn't work there because Winsock's select doesn't
+     implement timeout when it is passed NULL pointers for all fd
+     sets.  (But it does work under Cygwin, which implements its own
+     select.)  */
   struct timeval sleep;
   sleep.tv_sec = (long) seconds;
-  sleep.tv_usec = 1000000L * (seconds - (long) seconds);
+  sleep.tv_usec = 1000000 * (seconds - (long) seconds);
   select (0, NULL, NULL, NULL, &sleep);
   /* If select returns -1 and errno is EINTR, it means we were
      interrupted by a signal.  But without knowing how long we've

@@ -1,3 +1,14 @@
+2005-03-31  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (number_to_string): Avoid explicit 64-bit constants;
+	construct them by multiplication at compile-time.
+
+	* utils.c, elsewhere: Don't append "L" to 32-bit integer
+	constants; we aren't really compilable on 16-bit systems anyway.
+
+	* hash.c (prime_size): Remove primes larger than 2^31, but include
+	2^31-1, which is prime.
+
 2005-03-30  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (string_set_to_array): New function.

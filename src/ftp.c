@@ -253,7 +253,7 @@ getftp (struct url *u, wgint *len, wgint restval, ccon *con)
   char *tms, *tmrate;
   int cmd = con->cmd;
   int pasv_mode_open = 0;
-  wgint expected_bytes = 0L;
+  wgint expected_bytes = 0;
   int rest_failed = 0;
   int flags;
   wgint rd_size;
