@@ -62,7 +62,7 @@ entitled ``GNU Free Documentation License''.
 
 @ignore
 @c man begin AUTHOR
-Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.
+Originally written by Hrvoje Niksic <hniksic@xemacs.org>.
 @c man end
 @c man begin SEEALSO
 GNU Info entry for @file{wget}.
@@ -555,8 +555,8 @@ on the local and remote timestamp and size of the file
 time as @samp{-N}.
 
 Note that when @samp{-nc} is specified, files with the suffixes
-@samp{.html} or (yuck) @samp{.htm} will be loaded from the local disk
-and parsed as if they had been retrieved from the Web.
+@samp{.html} or @samp{.htm} will be loaded from the local disk and
+parsed as if they had been retrieved from the Web.
 
 @cindex continue retrieval
 @cindex incomplete downloads
@@ -982,25 +982,24 @@ Considerations}.
 
 @cindex proxy
 @cindex cache
-@item -C on/off
-@itemx --cache=on/off
-When set to off, disable server-side cache.  In this case, Wget will
-send the remote server an appropriate directive (@samp{Pragma:
-no-cache}) to get the file from the remote service, rather than
-returning the cached version.  This is especially useful for retrieving
-and flushing out-of-date documents on proxy servers.
+@item --no-cache
+Disable server-side cache.  In this case, Wget will send the remote
+server an appropriate directive (@samp{Pragma: no-cache}) to get the
+file from the remote service, rather than returning the cached version.
+This is especially useful for retrieving and flushing out-of-date
+documents on proxy servers.
 
 Caching is allowed by default.
 
 @cindex cookies
-@item --cookies=on/off
-When set to off, disable the use of cookies.  Cookies are a mechanism
-for maintaining server-side state.  The server sends the client a cookie
-using the @code{Set-Cookie} header, and the client responds with the
-same cookie upon further requests.  Since cookies allow the server
-owners to keep track of visitors and for sites to exchange this
-information, some consider them a breach of privacy.  The default is to
-use cookies; however, @emph{storing} cookies is not on by default.
+@item --no-cookies
+Disable the use of cookies.  Cookies are a mechanism for maintaining
+server-side state.  The server sends the client a cookie using the
+@code{Set-Cookie} header, and the client responds with the same cookie
+upon further requests.  Since cookies allow the server owners to keep
+track of visitors and for sites to exchange this information, some
+consider them a breach of privacy.  The default is to use cookies;
+however, @emph{storing} cookies is not on by default.
 
 @cindex loading cookies
 @cindex cookies, loading
@@ -1134,8 +1133,7 @@ always being retrieved by interactive web browsers and only come out
 properly when Referer is set to one of the pages that point to them.
 
 @cindex server response, save
-@item -s
-@itemx --save-headers
+@item --save-headers
 Save the headers sent by the @sc{http} server to the file, preceding the
 actual contents, with an empty line as the separator.
 
@@ -1233,12 +1231,11 @@ and asking @code{root} to run Wget with @samp{-N} or @samp{-r} so the file
 will be overwritten.
 
 @cindex globbing, toggle
-@item -g on/off
-@itemx --glob=on/off
-Turn @sc{ftp} globbing on or off.  Globbing means you may use the
-shell-like special characters (@dfn{wildcards}), like @samp{*},
-@samp{?}, @samp{[} and @samp{]} to retrieve more than one file from the
-same directory at once, like:
+@item --no-glob
+Turn off @sc{ftp} globbing.  Globbing refers to the use of shell-like
+special characters (@dfn{wildcards}), like @samp{*}, @samp{?}, @samp{[}
+and @samp{]} to retrieve more than one file from the same directory at
+once, like:
 
 @example
 wget ftp://gnjilux.srk.fer.hr/*.msg
@@ -1515,24 +1512,23 @@ retrieval.  If a user wants only a subset of those tags to be
 considered, however, he or she should be specify such tags in a
 comma-separated @var{list} with this option.
 
-@item -G @var{list}
-@itemx --ignore-tags=@var{list}
+@item --ignore-tags=@var{list}
 This is the opposite of the @samp{--follow-tags} option.  To skip
 certain @sc{html} tags when recursively looking for documents to download,
 specify them in a comma-separated @var{list}.  
 
-In the past, the @samp{-G} option was the best bet for downloading a
-single page and its requisites, using a command-line like:
+In the past, this option was the best bet for downloading a single page
+and its requisites, using a command-line like:
 
 @example
-wget -Ga,area -H -k -K -r http://@var{site}/@var{document}
+wget --ignore-tags=a,area -H -k -K -r http://@var{site}/@var{document}
 @end example
 
 However, the author of this option came across a page with tags like
 @code{<LINK REL="home" HREF="/">} and came to the realization that
-@samp{-G} was not enough.  One can't just tell Wget to ignore
-@code{<LINK>}, because then stylesheets will not be downloaded.  Now the
-best bet for downloading a single page and its requisites is the
+specifying tags to ignore was not enough.  One can't just tell Wget to
+ignore @code{<LINK>}, because then stylesheets will not be downloaded.
+Now the best bet for downloading a single page and its requisites is the
 dedicated @samp{--page-requisites} option.
 
 @item -H
@@ -2200,7 +2196,8 @@ interpreted as @sc{html} as being relative to @var{string}---the same as
 Bind to @var{address}, like the @samp{--bind-address} option.
 
 @item cache = on/off
-When set to off, disallow server-caching.  See the @samp{-C} option.
+When set to off, disallow server-caching.  See the @samp{--no-cache}
+option.
 
 @item convert_links = on/off
 Convert non-relative links locally.  The same as @samp{-k}.
@@ -2282,7 +2279,7 @@ Use @var{string} as @sc{ftp} proxy, instead of the one specified in
 environment.
 
 @item glob = on/off
-Turn globbing on/off---the same as @samp{-g}.
+Turn globbing on/off---the same as @samp{--glob} and @samp{--no-glob}.
 
 @item header = @var{string}
 Define an additional header, like @samp{--header}.
@@ -2308,7 +2305,7 @@ When set to on, ignore @code{Content-Length} header; the same as
 
 @item ignore_tags = @var{string}
 Ignore certain @sc{html} tags when doing a recursive retrieval, just like
-@samp{-G} / @samp{--ignore-tags}.
+@samp{--ignore-tags}.
 
 @item include_directories = @var{string}
 Specify a comma-separated list of directories you wish to follow when
@@ -3083,10 +3080,10 @@ me).
 @cindex contributors
 
 @iftex
-GNU Wget was written by Hrvoje Nik@v{s}i@'{c} @email{hniksic@@arsdigita.com}.
+GNU Wget was written by Hrvoje Nik@v{s}i@'{c} @email{hniksic@@xemacs.org}.
 @end iftex
 @ifnottex
-GNU Wget was written by Hrvoje Niksic @email{hniksic@@arsdigita.com}.
+GNU Wget was written by Hrvoje Niksic @email{hniksic@@xemacs.org}.
 @end ifnottex
 However, its development could never have gone as far as it has, were it
 not for the help of many people, either with bug reports, feature
