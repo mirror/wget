@@ -98,6 +98,8 @@ urlpos *get_urls_file PARAMS ((const char *));
 urlpos *get_urls_html PARAMS ((const char *, const char *, int, int));
 void free_urlpos PARAMS ((urlpos *));
 
+char *url_concat PARAMS ((const char *, const char *));
+
 void rotate_backups PARAMS ((const char *));
 int mkalldirs PARAMS ((const char *));
 char *url_filename PARAMS ((const struct urlinfo *));

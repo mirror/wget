@@ -76,7 +76,6 @@ CMD_DECLARE (cmd_spec_dotstyle);
 CMD_DECLARE (cmd_spec_header);
 CMD_DECLARE (cmd_spec_htmlify);
 CMD_DECLARE (cmd_spec_mirror);
-CMD_DECLARE (cmd_spec_outputdocument);
 CMD_DECLARE (cmd_spec_recursive);
 CMD_DECLARE (cmd_spec_useragent);
 
@@ -139,7 +138,7 @@ static struct {
   { "noparent",		&opt.no_parent,		cmd_boolean },
   { "noproxy",		&opt.no_proxy,		cmd_vector },
   { "numtries",		&opt.ntry,		cmd_number_inf },/* deprecated*/
-  { "outputdocument",	NULL,			cmd_spec_outputdocument },
+  { "outputdocument",	&opt.output_document,	cmd_string },
   { "pagerequisites",	&opt.page_requisites,	cmd_boolean },
   { "passiveftp",	&opt.ftp_pasv,		cmd_lockable_boolean },
   { "passwd",		&opt.ftp_pass,		cmd_string },
@@ -912,15 +911,6 @@ cmd_spec_mirror (const char *com, const char *val, void *closure)
       opt.reclevel = INFINITE_RECURSION;
       opt.remove_listing = 0;
     }
-  return 1;
-}
-
-static int
-cmd_spec_outputdocument (const char *com, const char *val, void *closure)
-{
-  FREE_MAYBE (opt.output_document);
-  opt.output_document = xstrdup (val);
-  opt.ntry = 1;
   return 1;
 }
 

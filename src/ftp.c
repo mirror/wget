@@ -648,6 +648,15 @@ Error in server response, closing control connection.\n"));
       expected_bytes = ftp_expected_bytes (ftp_last_respline);
     } /* cmd & DO_LIST */
 
+  /* Some FTP servers return the total length of file after REST
+     command, others just return the remaining size. */
+  if (*len && restval && expected_bytes
+      && (expected_bytes == *len - restval))
+    {
+      DEBUGP (("Lying FTP server found, adjusting.\n"));
+      expected_bytes = *len;
+    }
+
   /* If no transmission was required, then everything is OK.  */
   if (!(cmd & (DO_LIST | DO_RETR)))
     return RETRFINISHED;
@@ -685,16 +694,16 @@ Error in server response, closing control connection.\n"));
 	}
     }
   else
-    fp = opt.dfp;
-  
-  /* Some FTP servers return the total length of file after REST command,
-     others just return the remaining size. */  
-  if (*len && restval && expected_bytes
-      && (expected_bytes == *len - restval))
-  {
-    DEBUGP (("Lying FTP server found, adjusting.\n"));
-    expected_bytes = *len;
-  }
+    {
+      fp = opt.dfp;
+      if (!restval)
+	{
+	  /* This will silently fail for streams that don't correspond
+	     to regular files, but that's OK.  */
+	  rewind (fp);
+	  clearerr (fp);
+	}
+    }
 
   if (*len)
     {

@@ -1266,6 +1266,23 @@ url_filename (const struct urlinfo *u)
   return name;
 }
 
+/* Like strlen(), except if `?' is present in the URL and its protocol
+   is HTTP, act as if `?' is the end of the string.  Needed for the
+   correct implementation of `construct' below, at least until we code
+   up proper parsing of URLs.  */
+static int
+urllen_http_hack (const char *url)
+{
+  if ((!strncmp (url, "http://", 7)
+       || !strncmp (url, "https://", 7)))
+    {
+      const char *q = strchr (url, '?');
+      if (q)
+	return q - url;
+    }
+  return strlen (url);
+}
+
 /* Construct an absolute URL, given a (possibly) relative one.  This
    is more tricky than it might seem, but it works.  */
 static char *
@@ -1279,12 +1296,12 @@ construct (const char *url, const char *sub, int subsize, int no_proto)
 
       if (*sub != '/')
 	{
-	  for (i = strlen (url); i && url[i] != '/'; i--);
+	  for (i = urllen_http_hack (url); i && url[i] != '/'; i--);
 	  if (!i || (url[i] == url[i - 1]))
 	    {
-	      int l = strlen (url);
+	      int l = urllen_http_hack (url);
 	      char *t = (char *)alloca (l + 2);
-	      strcpy (t, url);
+	      memcpy (t, url, l);
 	      t[l] = '/';
 	      t[l + 1] = '\0';
 	      url = t;
@@ -1312,7 +1329,7 @@ construct (const char *url, const char *sub, int subsize, int no_proto)
 	  while (fl);
 	  if (!url[i])
 	    {
-	      int l = strlen (url);
+	      int l = urllen_http_hack (url);
 	      char *t = (char *)alloca (l + 2);
 	      strcpy (t, url);
 	      t[l] = '/';
@@ -1333,6 +1350,13 @@ construct (const char *url, const char *sub, int subsize, int no_proto)
       constr[subsize] = '\0';
     }
   return constr;
+}
+
+/* Like the function above, but with a saner caller interface. */
+char *
+url_concat (const char *base_url, const char *new_url)
+{
+  return construct (base_url, new_url, strlen (new_url), !has_proto (new_url));
 }
 
 /* Optimize URL by host, destructively replacing u->host with realhost

@@ -337,9 +337,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 
  again:
   u = newurl ();
-  /* Parse the URL.  RFC2068 requires `Location' to contain an
-     absoluteURI, but many sites break this requirement.  #### We
-     should be liberal and accept a relative location, too.  */
+  /* Parse the URL. */
   result = parseurl (url, u, already_redirected);
   if (result != URLOK)
     {
@@ -426,40 +424,26 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   location_changed = (result == NEWLOCATION);
   if (location_changed)
     {
-      /* Check for redirection to oneself.  */
+      if (mynewloc)
+	{
+	  /* The HTTP specs only allow absolute URLs to appear in
+	     redirects, but a ton of boneheaded webservers and CGIs
+	     out there break the rules and use relative URLs, and
+	     popular browsers are lenient about this, so wget should
+	     be too. */
+	  char *construced_newloc = url_concat (url, mynewloc);
+	  free (mynewloc);
+	  mynewloc = construced_newloc;
+	}
+      /* Check for redirection to back to itself.  */
       if (url_equal (url, mynewloc))
 	{
 	  logprintf (LOG_NOTQUIET, _("%s: Redirection to itself.\n"),
 		     mynewloc);
 	  return WRONGCODE;
 	}
-      if (mynewloc)
-	{
-	  /* The HTTP specs only allow absolute URLs to appear in redirects, but
-	     a ton of boneheaded webservers and CGIs out there break the rules
-	     and use relative URLs, and popular browsers are lenient about this,
-	     so wget should be too. */
-	  if (strstr(mynewloc, "://") == NULL)
-	    /* Doesn't look like an absolute URL (this check will incorrectly
-	       think that rare relative URLs containing "://" later in the
-	       string are absolute). */
-	    {
-	      char *temp = malloc(strlen(url) + strlen(mynewloc) + 1);
-	      
-	      if (mynewloc[0] == '/')
-		/* "Hostless absolute" URL.  Convert to absolute. */
-		sprintf(temp,"%s%s", url, mynewloc);
-	      else
-		/* Relative URL.  Convert to absolute. */
-		sprintf(temp,"%s/%s", url, mynewloc);
-
-	      free(mynewloc);
-	      mynewloc = temp;
-	    }
-	  
-	  free (url);
-	  url = mynewloc;
-	}
+      free (url);
+      url = mynewloc;
       freeurl (u, 1);
       already_redirected = 1;
       goto again;

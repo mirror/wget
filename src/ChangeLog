@@ -1,3 +1,20 @@
+2000-10-31  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* ftp.c (getftp): Ditto.
+
+	* http.c (gethttp): Rewind the stream when retrying from scratch.
+
+2000-10-31  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* retr.c (retrieve_url): Use url_concat() to handle relative
+	redirections instead of /ad hoc/ code.
+
+	* url.c (url_concat): New function encapsulating weird
+	construct().
+	(urllen_http_hack): New function.
+	(construct): When constructing new URLs, recognize that `?' does
+	not form part of the file name in HTTP.
+
 2000-10-13  Adrian Aichner  <adrian@xemacs.org>
 
 	* retr.c: Add msec timing support for WINDOWS.

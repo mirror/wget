@@ -843,8 +843,17 @@ Accept: %s\r\n\
 	  return FOPENERR;
 	}
     }
-  else                      /* opt.dfp */
-    fp = opt.dfp;
+  else				/* opt.dfp */
+    {
+      fp = opt.dfp;
+      if (!hs->restval)
+	{
+	  /* This will silently fail for streams that don't correspond
+	     to regular files, but that's OK.  */
+	  rewind (fp);
+	  clearerr (fp);
+	}
+    }
 
   /* #### This confuses the code that checks for file size.  There
      should be some overhead information.  */
