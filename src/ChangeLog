@@ -1,5 +1,10 @@
 2001-03-31  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* recur.c (recursive_retrieve): Clear the hash tables only when
+	they are defined.
+
+2001-03-31  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* http.c (gethttp): Make sure the socket is closed with
 	CLOSE_INVALIDATE before we have drained the body.
 
