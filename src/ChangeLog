@@ -1,3 +1,8 @@
+2001-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* ftp-ls.c (ftp_parse_vms_ls): Make seconds optional in time
+	specification.
+
 2001-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* url.c (parseurl): Don't strip trailing slash when u->dir is "/"

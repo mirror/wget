@@ -584,6 +584,7 @@ ftp_parse_vms_ls (const char *file)
   /* Line loop to end of file: */
   while ((line = read_whole_line (fp)))
     {
+      char *p;
       i = clean_line (line);
       if (!i) break;
 
@@ -670,13 +671,17 @@ ftp_parse_vms_ls (const char *file)
       year = atoi(tok)-1900;
       DEBUGP(("date parsed\n"));
 
-      /* Fourth/Third column: Time hh:mm:ss */
-      tok = strtok(NULL,  ":");
-      hour = atoi(tok);
-      tok = strtok(NULL,  ":");
-      min = atoi(tok);
-      tok = strtok(NULL,  " ");
-      sec = atoi(tok);
+      /* Fourth/Third column: Time hh:mm[:ss] */
+      tok = strtok (NULL, " ");
+      hour = min = sec = 0;
+      p = tok;
+      hour = atoi (p);
+      for (; *p && *p != ':'; ++p);
+      if (*p)
+	min = atoi (++p);
+      for (; *p && *p != ':'; ++p);
+      if (*p)
+	sec = atoi (++p);
 
       DEBUGP(("YYYY/MM/DD HH:MM:SS - %d/%02d/%02d %02d:%02d:%02d\n", 
               year+1900, month, day, hour, min, sec));
