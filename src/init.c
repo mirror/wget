@@ -106,11 +106,13 @@ CMD_DECLARE (cmd_spec_restrict_file_names);
 CMD_DECLARE (cmd_spec_timeout);
 CMD_DECLARE (cmd_spec_useragent);
 
-/* List of recognized commands, each consisting of name, closure and function.
-   When adding a new command, simply add it to the list, but be sure to keep the
-   list sorted alphabetically, as findcmd() depends on it.  Also, be sure to add
-   any entries that allocate memory (e.g. cmd_string and cmd_vector guys) to the
+/* List of recognized commands, each consisting of name, closure and
+   function.  When adding a new command, simply add it to the list,
+   but be sure to keep the list sorted alphabetically, as
+   command_by_name depends on it.  Also, be sure to add any entries
+   that allocate memory (e.g. cmd_string and cmd_vector guys) to the
    cleanup() function below. */
+
 static struct {
   char *name;
   void *closure;
@@ -224,18 +226,20 @@ static struct {
   { "waitretry",	&opt.waitretry,		cmd_time }
 };
 
-/* Look up COM in the commands[] array and return its index.  If COM
-   is not found, -1 is returned.  This function uses binary search.  */
+/* Look up CMDNAME in the commands[] and return its position in the
+   array.  If CMDNAME is not found, return -1.  */
 
 static int
-findcmd (const char *com)
+command_by_name (const char *cmdname)
 {
+  /* Use binary search for speed.  Wget has ~100 commands, which
+     guarantees a worst case performance of 7 string comparisons.  */
   int lo = 0, hi = countof (commands) - 1;
 
   while (lo <= hi)
     {
       int mid = (lo + hi) >> 1;
-      int cmp = strcasecmp (com, commands[mid].name);
+      int cmp = strcasecmp (cmdname, commands[mid].name);
       if (cmp < 0)
 	hi = mid - 1;
       else if (cmp > 0)
@@ -536,7 +540,7 @@ parse_line (const char *line, char **com, char **val, int *comind)
      the command is valid.  */
   BOUNDED_TO_ALLOCA (cmdstart, cmdend, cmdcopy);
   dehyphen (cmdcopy);
-  ind = findcmd (cmdcopy);
+  ind = command_by_name (cmdcopy);
   if (ind == -1)
     return 0;
 
@@ -570,7 +574,7 @@ setval_internal (int comind, const char *com, const char *val)
 void
 setoptval (const char *com, const char *val)
 {
-  if (!setval_internal (findcmd (com), com, val))
+  if (!setval_internal (command_by_name (com), com, val))
     exit (2);
 }
 
