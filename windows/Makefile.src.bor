@@ -6,7 +6,8 @@ CC=bcc32
 LINK=ilink32
 
 LFLAGS=
-CFLAGS=-DWINDOWS -DHAVE_CONFIG_H -I. -w- -O2
+WARN=-w-8057 -w-8027 -w-8066 -w-8008 -w-8065
+CFLAGS=-DWINDOWS -DHAVE_CONFIG_H -I. -O2 -6 $(WARN)
 
 ## variables
 OBJS=cmpt.obj connect.obj convert.obj ftp.obj ftp-basic.obj  \

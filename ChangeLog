@@ -1,3 +1,9 @@
+2003-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* windows/Makefile.src.bor: Reenable warnings under Borland C,
+	disabling only specific warnings.  Generate Pentium Pro code by
+	default.
+
 2003-02-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Don't check for AI_ADDRCONFIG here, it is checked
