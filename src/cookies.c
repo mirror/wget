@@ -726,9 +726,9 @@ check_domain_match (const char *cookie_domain, const char *host)
     {
       int dlen = strlen (cookie_domain);
       int hlen = strlen (host);
-      /* hostname.foobar.com                   */
-      /*             bar.com                   */
-      /*            ^ <-- must be '.' for host */
+      /* cookie host:    hostname.foobar.com */
+      /* desired domain:             bar.com */
+      /* '.' must be here in host-> ^        */
       if (hlen > dlen && host[hlen - dlen - 1] != '.')
 	return 0;
     }
