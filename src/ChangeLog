@@ -1,5 +1,10 @@
 2003-11-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* host.c (lookup_host): Special-case the numeric addresses only in
+	the non-IPv6 case.
+
+2003-11-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c (resolve_bind_address): Call lookup_host_passive.
 	Make sure that opt.bind_address is resolved only once.
 

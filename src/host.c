@@ -83,10 +83,10 @@ extern int h_errno;
 static struct hash_table *host_name_addresses_map;
 
 #ifdef ENABLE_IPV6
-/* The default IP family for looking up host names.  This should be
-   moved to an entry in struct options when we implement the
+/* The IP family to request when connecting to remote hosts.  This
+   should be moved to an entry in struct options when we implement the
    --inet4/--inet6 flags.  */
-static int ip_default_family = AF_UNSPEC;
+static int requested_family = AF_UNSPEC;
 #endif
 
 /* Lists of addresses.  This should eventually be extended to handle
@@ -484,42 +484,18 @@ lookup_host (const char *host, int silent)
 {
   struct address_list *al = NULL;
 
-#ifdef ENABLE_IPV6
-  int err;
-  struct addrinfo hints, *res;
-  xzero (hints);
-  hints.ai_socktype = SOCK_STREAM;
-  hints.ai_family = ip_default_family;
-#endif
-
-  /* First, try to check whether the address is already a numeric
-     address, in which case we don't want to cache it or bother with
-     setting up timeouts.  Plus, old (e.g. Ultrix) implementations of
-     gethostbyname can't handle numeric addresses (!).
-
-     Where getaddrinfo is available, we do it using the AI_NUMERICHOST
-     flag.  Without IPv6, we use inet_addr.  */
-
-#ifdef ENABLE_IPV6
-  hints.ai_flags = AI_NUMERICHOST;
-
-  /* No need to specify timeout, as we're not resolving HOST, but
-     merely translating it from the presentation (ASCII) to network
-     format.  */
-  err = getaddrinfo (host, NULL, &hints, &res);
-  if (err == 0 && res != NULL)
-    {
-      al = address_list_from_addrinfo (res);
-      freeaddrinfo (res);
-      return al;
-    }
-#else
+  /* If we're not using getaddrinfo, first check if HOST names a
+     numeric IPv4 address.  This was necessary under old (e.g. Ultrix)
+     implementations of gethostbyname that couldn't handle numeric
+     addresses (!).  This is not done under IPv6 because getaddrinfo
+     always handles numeric addresses.  */
+#ifndef ENABLE_IPV6
   {
     uint32_t addr_ipv4 = (uint32_t)inet_addr (host);
     if (addr_ipv4 != (uint32_t) -1)
       {
-	/* The return value of inet_addr is in network byte order, so
-	   we can just copy it to IP.  */
+	/* No need to cache host->addr relation, just return the
+	   address.  */
 	char *vec[2];
 	vec[0] = (char *)&addr_ipv4;
 	vec[1] = NULL;
@@ -528,7 +504,7 @@ lookup_host (const char *host, int silent)
   }
 #endif
 
-  /* Then, try to find the host in the cache. */
+  /* Try to find the host in the cache. */
 
   if (host_name_addresses_map)
     {
@@ -548,18 +524,26 @@ lookup_host (const char *host, int silent)
     logprintf (LOG_VERBOSE, _("Resolving %s... "), host);
 
 #ifdef ENABLE_IPV6
-  hints.ai_flags = 0;
+  {
+    int err;
+    struct addrinfo hints, *res;
 
-  err = getaddrinfo_with_timeout (host, NULL, &hints, &res, opt.dns_timeout);
-  if (err != 0 || res == NULL)
-    {
-      if (!silent)
-	logprintf (LOG_VERBOSE, _("failed: %s.\n"),
-		   err != EAI_SYSTEM ? gai_strerror (err) : strerror (errno));
-      return NULL;
-    }
-  al = address_list_from_addrinfo (res);
-  freeaddrinfo (res);
+    xzero (hints);
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_family = requested_family;
+    hints.ai_flags = 0;
+
+    err = getaddrinfo_with_timeout (host, NULL, &hints, &res, opt.dns_timeout);
+    if (err != 0 || res == NULL)
+      {
+	if (!silent)
+	  logprintf (LOG_VERBOSE, _("failed: %s.\n"),
+		     err != EAI_SYSTEM ? gai_strerror (err) : strerror (errno));
+	return NULL;
+      }
+    al = address_list_from_addrinfo (res);
+    freeaddrinfo (res);
+  }
 #else
   {
     struct hostent *hptr = gethostbyname_with_timeout (host, opt.dns_timeout);
@@ -628,7 +612,7 @@ lookup_host_passive (const char *host)
 
   xzero (hints);
   hints.ai_socktype = SOCK_STREAM;
-  hints.ai_family = ip_default_family;
+  hints.ai_family = requested_family;
   hints.ai_flags = AI_PASSIVE;
 
   err = getaddrinfo (host, NULL, &hints, &res);
