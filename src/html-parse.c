@@ -433,7 +433,7 @@ advance_declaration (const char *beg, const char *end)
 	    state = AC_S_DEFAULT;
 	  break;
 	case AC_S_QUOTE1:
-	  assert (ch == '\'' || ch == '\"');
+	  assert (ch == '\'' || ch == '"');
 	  quote_char = ch;	/* cheating -- I really don't feel like
 				   introducing more different states for
 				   different quote characters. */

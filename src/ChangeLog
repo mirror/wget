@@ -1,3 +1,8 @@
+2000-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* html-parse.c (advance_declaration): MSVC assert() chokes on
+	'\"'.  Use '"' instead.
+
 2000-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* utils.c (xfree_real): Removed.
