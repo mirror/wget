@@ -32,3 +32,5 @@ reports and fixes.
 
 Mauro Tortonesi.  Improved IPv6 support, adding support for dual
 family systems.  Refactored and enhanced FTP IPv6 code.
+
+Nicolas Schodet.  Contributed to cookie code and documentation.
