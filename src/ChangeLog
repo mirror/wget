@@ -1,3 +1,8 @@
+2001-11-22  Jochen Hein  <jochen@jochen.org>
+
+	* main.c (main): Split the copyright notice for easier
+	translation.
+
 2001-08-21  Dave Turner <dct25@hermes.cam.ac.uk>
 
 	* ftp-basic.c (ftp_size): New function to send non-standard SIZE
