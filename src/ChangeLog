@@ -1,5 +1,10 @@
 2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c (main): Removed one-letter options `-C', `-g', `-G', and
+	`-s'.
+
+2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (main): Add --dont-remove-listing for backward
 	compatibility with previous versions.
 	(print_help): Fix typo, spotted by Dennis Smit.

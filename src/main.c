@@ -158,7 +158,7 @@ struct cmdline_option option_data[] =
     { "backups", 0, OPT_BOOLEAN, "backups", -1 },
     { "base", 'B', OPT_VALUE, "base", -1 },
     { "bind-address", 0, OPT_VALUE, "bindaddress", -1 },
-    { "cache", 'C', OPT_BOOLEAN, "cache", -1 },
+    { "cache", 0, OPT_BOOLEAN, "cache", -1 },
     { "clobber", 0, OPT__CLOBBER, NULL, optional_argument },
     { "connect-timeout", 0, OPT_VALUE, "connecttimeout", -1 },
     { "continue", 'c', OPT_BOOLEAN, "continue", -1 },
@@ -182,7 +182,7 @@ struct cmdline_option option_data[] =
     { "follow-tags", 0, OPT_VALUE, "followtags", -1 },
     { "force-directories", 'x', OPT_BOOLEAN, "dirstruct", -1 },
     { "force-html", 'F', OPT_BOOLEAN, "forcehtml", -1 },
-    { "glob", 'g', OPT_BOOLEAN, "glob", -1 },
+    { "glob", 0, OPT_BOOLEAN, "glob", -1 },
     { "header", 0, OPT_VALUE, "header", -1 },
     { "help", 'h', OPT_FUNCALL, (void *)print_help, no_argument },
     { "host-directories", 0, OPT_BOOLEAN, "addhostdir", -1 },
@@ -192,7 +192,7 @@ struct cmdline_option option_data[] =
     { "http-passwd", 0, OPT_VALUE, "httppasswd", -1 },
     { "http-user", 0, OPT_VALUE, "httpuser", -1 },
     { "ignore-length", 0, OPT_BOOLEAN, "ignorelength", -1 },
-    { "ignore-tags", 'G', OPT_VALUE, "ignoretags", -1 },
+    { "ignore-tags", 0, OPT_VALUE, "ignoretags", -1 },
     { "include-directories", 'I', OPT_VALUE, "includedirectories", -1 },
     { "input-file", 'i', OPT_VALUE, "input", -1 },
     { "keep-session-cookies", 0, OPT_BOOLEAN, "keepsessioncookies", -1 },
@@ -476,7 +476,7 @@ HTTP options:\n"),
     N_("\
        --http-passwd=PASS      set http password to PASS.\n"),
     N_("\
-  -C,  --no-cache              disallow server-cached data.\n"),
+       --no-cache              disallow server-cached data.\n"),
     N_("\
   -E,  --html-extension        save HTML documents with `.html' extension.\n"),
     N_("\
@@ -538,7 +538,7 @@ FTP options:\n"),
     N_("\
   -nr, --no-remove-listing  don't remove `.listing' files.\n"),
     N_("\
-  -g,  --glob=on/off        turn file name globbing on or off.\n"),
+       --glob=on/off        turn file name globbing on or off.\n"),
     N_("\
        --passive-ftp        use the \"passive\" transfer mode.\n"),
     N_("\
@@ -582,7 +582,7 @@ Recursive accept/reject:\n"),
     N_("\
        --follow-tags=LIST          comma-separated list of followed HTML tags.\n"),
     N_("\
-  -G,  --ignore-tags=LIST          comma-separated list of ignored HTML tags.\n"),
+       --ignore-tags=LIST          comma-separated list of ignored HTML tags.\n"),
     N_("\
   -H,  --span-hosts                go to foreign hosts when recursive.\n"),
     N_("\
