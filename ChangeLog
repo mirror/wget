@@ -1,5 +1,10 @@
 2003-11-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* libtool.m4, ltmain.sh, config.sub, config.guess: Upgrade to
+	libtool 1.5.
+
+2003-11-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* windows/config.h.ms: MSVC doesn't have uint32_t.
 
 2003-11-05  Hrvoje Niksic  <hniksic@xemacs.org>
