@@ -219,7 +219,8 @@ release_header (struct request_header *hdr)
      request_set_header (req, "Referer", opt.referer, rel_none);
 
      // Value freshly allocated, free it when done.
-     request_set_header (req, "Range", aprintf ("bytes=%ld-", hs->restval),
+     request_set_header (req, "Range",
+                         aprintf ("bytes=%s-", number_to_static_string (hs->restval)),
 			 rel_value);
    */
 
@@ -359,10 +360,10 @@ request_free (struct request *req)
    longer, read only that much; if the file is shorter, report an error.  */
 
 static int
-post_file (int sock, const char *file_name, long promised_size)
+post_file (int sock, const char *file_name, wgint promised_size)
 {
   static char chunk[8192];
-  long written = 0;
+  wgint written = 0;
   int write_error;
   FILE *fp;
 
@@ -705,10 +706,10 @@ print_server_response (const struct response *resp, const char *prefix)
 /* Parse the `Content-Range' header and extract the information it
    contains.  Returns 1 if successful, -1 otherwise.  */
 static int
-parse_content_range (const char *hdr, long *first_byte_ptr,
-		     long *last_byte_ptr, long *entity_length_ptr)
+parse_content_range (const char *hdr, wgint *first_byte_ptr,
+		     wgint *last_byte_ptr, wgint *entity_length_ptr)
 {
-  long num;
+  wgint num;
 
   /* Ancient versions of Netscape proxy server, presumably predating
      rfc2068, sent out `Content-Range' without the "bytes"
@@ -751,7 +752,7 @@ parse_content_range (const char *hdr, long *first_byte_ptr,
    which need to be read anyway.  */
 
 static void
-skip_short_body (int fd, long contlen)
+skip_short_body (int fd, wgint contlen)
 {
   /* Skipping the body doesn't make sense if the content length is
      unknown because, in that case, persistent connections cannot be
@@ -759,7 +760,7 @@ skip_short_body (int fd, long contlen)
      still be used with the magic of the "chunked" transfer!)  */
   if (contlen == -1)
     return;
-  DEBUGP (("Skipping %ld bytes of body data... ", contlen));
+  DEBUGP (("Skipping %s bytes of body data... ", number_to_static_string (contlen)));
 
   while (contlen > 0)
     {
@@ -974,15 +975,15 @@ persistent_available_p (const char *host, int port, int ssl,
 
 struct http_stat
 {
-  long len;			/* received length */
-  long contlen;			/* expected length */
-  long restval;			/* the restart value */
+  wgint len;			/* received length */
+  wgint contlen;			/* expected length */
+  wgint restval;			/* the restart value */
   int res;			/* the result of last read */
   char *newloc;			/* new location (redirection) */
   char *remote_time;		/* remote time-stamp string */
   char *error;			/* textual HTTP error */
   int statcode;			/* status code */
-  long rd_size;			/* amount of data read from socket */
+  wgint rd_size;			/* amount of data read from socket */
   double dltime;		/* time it took to download the data */
   const char *referer;		/* value of the referer header. */
   char **local_file;		/* local file. */
@@ -1034,7 +1035,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   char *proxyauth;
   int statcode;
   int write_error;
-  long contlen, contrange;
+  wgint contlen, contrange;
   struct url *conn;
   FILE *fp;
 
@@ -1060,7 +1061,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   int inhibit_keep_alive = !opt.http_keep_alive || opt.ignore_length;
 
   /* Headers sent when using POST. */
-  long post_data_size = 0;
+  wgint post_data_size = 0;
 
   int host_lookup_failed = 0;
 
@@ -1134,7 +1135,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     request_set_header (req, "Pragma", "no-cache", rel_none);
   if (hs->restval)
     request_set_header (req, "Range",
-			aprintf ("bytes=%ld-", hs->restval), rel_value);
+			aprintf ("bytes=%s-",
+				 number_to_static_string (hs->restval)),
+			rel_value);
   if (opt.useragent)
     request_set_header (req, "User-Agent", opt.useragent, rel_none);
   else
@@ -1259,7 +1262,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	    }
 	}
       request_set_header (req, "Content-Length",
-			  aprintf ("%ld", post_data_size), rel_value);
+			  xstrdup (number_to_static_string (post_data_size)),
+			  rel_value);
     }
 
   /* Add the user headers. */
@@ -1463,7 +1467,20 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
   if (!opt.ignore_length
       && response_header_copy (resp, "Content-Length", hdrval, sizeof (hdrval)))
-    contlen = strtol (hdrval, NULL, 10);
+    {
+      wgint parsed;
+      errno = 0;
+      parsed = str_to_wgint (hdrval, NULL, 10);
+      if (parsed == WGINT_MAX && errno == ERANGE)
+	/* Out of range.
+	   #### If Content-Length is out of range, it most likely
+	   means that the file is larger than 2G and that we're
+	   compiled without LFS.  In that case we should probably
+	   refuse to even attempt to download the file.  */
+	contlen = -1;
+      else
+	contlen = parsed;
+    }
 
   /* Check for keep-alive related responses. */
   if (!inhibit_keep_alive && contlen != -1)
@@ -1562,7 +1579,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   }
   if (response_header_copy (resp, "Content-Range", hdrval, sizeof (hdrval)))
     {
-      long first_byte_pos, last_byte_pos, entity_length;
+      wgint first_byte_pos, last_byte_pos, entity_length;
       if (parse_content_range (hdrval, &first_byte_pos, &last_byte_pos,
 			       &entity_length))
 	contrange = first_byte_pos;
@@ -1768,10 +1785,10 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   char *tms, *locf, *tmrate;
   uerr_t err;
   time_t tml = -1, tmr = -1;	/* local and remote time-stamps */
-  long local_size = 0;		/* the size of the local file */
+  wgint local_size = 0;		/* the size of the local file */
   size_t filename_len;
   struct http_stat hstat;	/* HTTP status */
-  struct stat st;
+  struct_stat st;
   char *dummy = NULL;
 
   /* This used to be done in main(), but it's a better idea to do it
@@ -1864,7 +1881,7 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	     point I profiled Wget, and found that a measurable and
 	     non-negligible amount of time was lost calling sprintf()
 	     in url.c.  Replacing sprintf with inline calls to
-	     strcpy() and long_to_string() made a difference.
+	     strcpy() and number_to_string() made a difference.
 	     --hniksic */
 	  memcpy (filename_plus_orig_suffix, *hstat.local_file, filename_len);
 	  memcpy (filename_plus_orig_suffix + filename_len,
@@ -2097,7 +2114,8 @@ Server file no newer than local file `%s' -- not retrieving.\n\n"),
 		}
 	      else if (tml >= tmr)
 		logprintf (LOG_VERBOSE, _("\
-The sizes do not match (local %ld) -- retrieving.\n"), local_size);
+The sizes do not match (local %s) -- retrieving.\n"),
+			   number_to_static_string (local_size));
 	      else
 		logputs (LOG_VERBOSE,
 			 _("Remote file is newer, retrieving.\n"));
@@ -2141,11 +2159,16 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	  if (*dt & RETROKF)
 	    {
 	      logprintf (LOG_VERBOSE,
-			 _("%s (%s) - `%s' saved [%ld/%ld]\n\n"),
-			 tms, tmrate, locf, hstat.len, hstat.contlen);
+			 _("%s (%s) - `%s' saved [%s/%s]\n\n"),
+			 tms, tmrate, locf,
+			 number_to_static_string (hstat.len),
+			 number_to_static_string (hstat.contlen));
 	      logprintf (LOG_NONVERBOSE,
-			 "%s URL:%s [%ld/%ld] -> \"%s\" [%d]\n",
-			 tms, u->url, hstat.len, hstat.contlen, locf, count);
+			 "%s URL:%s [%s/%s] -> \"%s\" [%d]\n",
+			 tms, u->url,
+			 number_to_static_string (hstat.len),
+			 number_to_static_string (hstat.contlen),
+			 locf, count);
 	    }
 	  ++opt.numurls;
 	  total_downloaded_bytes += hstat.len;
@@ -2168,11 +2191,13 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	      if (*dt & RETROKF)
 		{
 		  logprintf (LOG_VERBOSE,
-			     _("%s (%s) - `%s' saved [%ld]\n\n"),
-			     tms, tmrate, locf, hstat.len);
+			     _("%s (%s) - `%s' saved [%s]\n\n"),
+			     tms, tmrate, locf,
+			     number_to_static_string (hstat.len));
 		  logprintf (LOG_NONVERBOSE,
-			     "%s URL:%s [%ld] -> \"%s\" [%d]\n",
-			     tms, u->url, hstat.len, locf, count);
+			     "%s URL:%s [%s] -> \"%s\" [%d]\n",
+			     tms, u->url, number_to_static_string (hstat.len),
+			     locf, count);
 		}
 	      ++opt.numurls;
 	      total_downloaded_bytes += hstat.len;
@@ -2191,8 +2216,8 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 						 connection too soon */
 	    {
 	      logprintf (LOG_VERBOSE,
-			 _("%s (%s) - Connection closed at byte %ld. "),
-			 tms, tmrate, hstat.len);
+			 _("%s (%s) - Connection closed at byte %s. "),
+			 tms, tmrate, number_to_static_string (hstat.len));
 	      printwhat (count, opt.ntry);
 	      free_hstat (&hstat);
 	      continue;
@@ -2200,11 +2225,16 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	  else if (!opt.kill_longer) /* meaning we got more than expected */
 	    {
 	      logprintf (LOG_VERBOSE,
-			 _("%s (%s) - `%s' saved [%ld/%ld])\n\n"),
-			 tms, tmrate, locf, hstat.len, hstat.contlen);
+			 _("%s (%s) - `%s' saved [%s/%s])\n\n"),
+			 tms, tmrate, locf,
+			 number_to_static_string (hstat.len),
+			 number_to_static_string (hstat.contlen));
 	      logprintf (LOG_NONVERBOSE,
-			 "%s URL:%s [%ld/%ld] -> \"%s\" [%d]\n",
-			 tms, u->url, hstat.len, hstat.contlen, locf, count);
+			 "%s URL:%s [%s/%s] -> \"%s\" [%d]\n",
+			 tms, u->url,
+			 number_to_static_string (hstat.len),
+			 number_to_static_string (hstat.contlen),
+			 locf, count);
 	      ++opt.numurls;
 	      total_downloaded_bytes += hstat.len;
 
@@ -2221,8 +2251,10 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	  else			/* the same, but not accepted */
 	    {
 	      logprintf (LOG_VERBOSE,
-			 _("%s (%s) - Connection closed at byte %ld/%ld. "),
-			 tms, tmrate, hstat.len, hstat.contlen);
+			 _("%s (%s) - Connection closed at byte %s/%s. "),
+			 tms, tmrate,
+			 number_to_static_string (hstat.len),
+			 number_to_static_string (hstat.contlen));
 	      printwhat (count, opt.ntry);
 	      free_hstat (&hstat);
 	      continue;
@@ -2233,8 +2265,9 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	  if (hstat.contlen == -1)
 	    {
 	      logprintf (LOG_VERBOSE,
-			 _("%s (%s) - Read error at byte %ld (%s)."),
-			 tms, tmrate, hstat.len, strerror (errno));
+			 _("%s (%s) - Read error at byte %s (%s)."),
+			 tms, tmrate, number_to_static_string (hstat.len),
+			 strerror (errno));
 	      printwhat (count, opt.ntry);
 	      free_hstat (&hstat);
 	      continue;
@@ -2242,8 +2275,10 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	  else			/* hstat.res == -1 and contlen is given */
 	    {
 	      logprintf (LOG_VERBOSE,
-			 _("%s (%s) - Read error at byte %ld/%ld (%s). "),
-			 tms, tmrate, hstat.len, hstat.contlen,
+			 _("%s (%s) - Read error at byte %s/%s (%s). "),
+			 tms, tmrate,
+			 number_to_static_string (hstat.len),
+			 number_to_static_string (hstat.contlen),
 			 strerror (errno));
 	      printwhat (count, opt.ntry);
 	      free_hstat (&hstat);

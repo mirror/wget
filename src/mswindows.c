@@ -86,6 +86,146 @@ xsleep (double seconds)
 #endif /* not HAVE_USLEEP */
 }
 
+#if defined(_MSC_VER) && _MSC_VER < 1300
+
+static inline int
+char_value (char c, int base)
+{
+  int value;
+  if (c < '0')
+    return -1;
+  if ('0' <= c && c <= '9')
+    value = c - '0';
+  else if ('a' <= c && c <= 'z')
+    value = c - 'a' + 10;
+  else if ('A' <= c && c <= 'Z')
+    value = c - 'A' + 10;
+  else
+    return -1;
+  if (value >= base)
+    return -1;
+  return value;
+}
+
+/* A fairly simple strtoll replacement for MS VC versions that don't
+   supply _strtoi64.  */
+
+__int64
+str_to_int64 (const char *nptr, char **endptr, int base)
+{
+#define OVERFLOW 9223372036854775807I64
+#define UNDERFLOW (-OVERFLOW - 1)
+
+  __int64 result = 0;
+  int negative;
+
+  if (base != 0 && (base < 2 || base > 36))
+    {
+      errno = EINVAL;
+      return 0;
+    }
+
+  while (*nptr == ' ' || *nptr == '\t')
+    ++nptr;
+  if (*nptr == '-')
+    {
+      negative = 1;
+      ++nptr;
+    }
+  else if (*nptr == '+')
+    {
+      negative = 0;
+      ++nptr;
+    }
+  else
+    negative = 0;
+
+  /* If base is 0, determine the real base based on the beginning on
+     the number; octal numbers begin with "0", hexadecimal with "0x",
+     and the others are considered octal.  */
+  if (*nptr == '0')
+    {
+      if ((base == 0 || base == 16)
+	  &&
+	  (*(nptr + 1) == 'x' || *(nptr + 1) == 'X'))
+	{
+	  base = 16;
+	  nptr += 2;
+	}
+      else if (base == 0)
+	base = 8;
+    }
+  else if (base == 0)
+    base = 10;
+
+  if (!negative)
+    {
+      /* Parse positive number, checking for overflow. */
+      int val;
+      for (; (val = char_value (*nptr, base)) != -1; ++nptr)
+	{
+	  __int64 newresult = base * result + val;
+	  if (newresult < result)
+	    {
+	      result = OVERFLOW;
+	      errno = ERANGE;
+	      break;
+	    }
+	  result = newresult;
+	}
+    }
+  else
+    {
+      /* Parse negative number, checking for underflow. */
+      int val;
+      for (; (val = char_value (*nptr, base)) != -1; ++nptr)
+	{
+	  __int64 newresult = base * result - val;
+	  if (newresult > result)
+	    {
+	      result = UNDERFLOW;
+	      errno = ERANGE;
+	      break;
+	    }
+	  result = newresult;
+	}
+    }
+  if (endptr)
+    *endptr = (char *) nptr;
+  return result;
+}
+
+#else  /* !defined(_MSC_VER) || _MSC_VER >= 1300 */
+
+__int64
+str_to_int64 (const char *nptr, char **endptr, int base)
+{
+#ifdef _MSC_VER
+  return _strtoi64 (nptr, endptr, base);
+#else
+  return strtoll (nptr, endptr, base);
+#endif
+}
+
+#endif /* !defined(_MSC_VER) || _MSC_VER >= 1300 */
+
+/* A simple clone of ftello.  The normal ftell doesn't work for large
+   files, so this is needed, and used by file_size(), which is itself
+   used for the --post-file option.
+
+   This function uses fgetpos incorrectly and should be considered a
+   hack until a better way to tell the stream position is found.  */
+
+__int64
+wget_ftello (FILE *fp)
+{
+  fpos_t pos;
+  if (fgetpos (fp, &pos) != 0)
+    return -1;
+  else
+    return pos;
+}
+
 void
 windows_main_junk (int *argc, char **argv, char **exec_name)
 {

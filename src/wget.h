@@ -107,6 +107,24 @@ so, delete this exception statement from your version.  */
 # define GCC_FORMAT_ATTR(a, b)
 #endif /* not __GNUC__ */
 
+/* Define an integer type that works for LFS.  off_t would be perfect
+   for this, but off_t is always 32-bit under Windows.  */
+#ifndef WINDOWS
+typedef off_t wgint;
+# define SIZEOF_WGINT SIZEOF_OFF_T
+#endif
+
+/* Define a strtol/strtoll clone that works with wgint.  */
+#ifndef str_to_wgint		/* mswindows.h defines its own alias */
+# if SIZEOF_WGINT == SIZEOF_LONG
+#  define str_to_wgint strtol
+#  define WGINT_MAX LONG_MAX
+# else
+#  define str_to_wgint strtoll
+#  define WGINT_MAX LLONG_MAX
+# endif
+#endif
+
 /* Everything uses this, so include them here directly.  */
 #include "xmalloc.h"
 

@@ -80,8 +80,27 @@ so, delete this exception statement from your version.  */
 #define snprintf _snprintf
 #define vsnprintf _vsnprintf
 
-/* No stat on Windows.  */
+/* Define a wgint type under Windows. */
+typedef __int64 wgint;
+#define SIZEOF_WGINT 8
+
+#if defined(_MSC_VER) || defined (__WATCOMC__)
+# define WGINT_MAX 9223372036854775807I64
+#else
+# define WGINT_MAX 9223372036854775807LL
+#endif
+
+#define str_to_wgint str_to_int64
+__int64 str_to_int64 (const char *, char **, int);
+
+/* No lstat on Windows.  */
 #define lstat stat
+
+/* Transparently support large files, in spirit similar to the POSIX
+   LFS API.  */
+#define stat(fname, buf) _stati64 (fname, buf)
+#define fstat(fd, buf) _fstati64(fd, buf)
+#define struct_stat struct _stati64
 
 #define PATH_SEPARATOR '\\'
 
@@ -97,7 +116,12 @@ so, delete this exception statement from your version.  */
 #endif
 #endif
 
-#define REALCLOSE(x) closesocket (x)
+/* If ftello is unavailable, use an approximation. */
+#ifndef HAVE_FTELLO
+__int64 wget_ftello (FILE *);
+# define ftello wget_ftello
+# define HAVE_FTELLO
+#endif
 
 /* #### Do we need this?  */
 #include <direct.h>

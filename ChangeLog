@@ -1,3 +1,8 @@
+2005-02-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Check for LFS.  Determine SIZEOF_OFF_T.
+	Check for ftello.
+
 2005-02-18  Marco Colombo  <m.colombo@ed.ac.uk>
 
 	* po/it.po: Updated Italian translation.

@@ -52,21 +52,21 @@ so, delete this exception statement from your version.  */
 struct progress_implementation {
   const char *name;
   int interactive;
-  void *(*create) PARAMS ((long, long));
-  void (*update) PARAMS ((void *, long, double));
+  void *(*create) PARAMS ((wgint, wgint));
+  void (*update) PARAMS ((void *, wgint, double));
   void (*finish) PARAMS ((void *, double));
   void (*set_params) PARAMS ((const char *));
 };
 
 /* Necessary forward declarations. */
 
-static void *dot_create PARAMS ((long, long));
-static void dot_update PARAMS ((void *, long, double));
+static void *dot_create PARAMS ((wgint, wgint));
+static void dot_update PARAMS ((void *, wgint, double));
 static void dot_finish PARAMS ((void *, double));
 static void dot_set_params PARAMS ((const char *));
 
-static void *bar_create PARAMS ((long, long));
-static void bar_update PARAMS ((void *, long, double));
+static void *bar_create PARAMS ((wgint, wgint));
+static void bar_update PARAMS ((void *, wgint, double));
 static void bar_finish PARAMS ((void *, double));
 static void bar_set_params PARAMS ((const char *));
 
@@ -156,7 +156,7 @@ progress_schedule_redirect (void)
    advance.  */
 
 void *
-progress_create (long initial, long total)
+progress_create (wgint initial, wgint total)
 {
   /* Check if the log status has changed under our feet. */
   if (output_redirected)
@@ -184,7 +184,7 @@ progress_interactive_p (void *progress)
    time in milliseconds since the beginning of the download.  */
 
 void
-progress_update (void *progress, long howmuch, double dltime)
+progress_update (void *progress, wgint howmuch, double dltime)
 {
   current_impl->update (progress, howmuch, dltime);
 }
@@ -201,9 +201,9 @@ progress_finish (void *progress, double dltime)
 /* Dot-printing. */
 
 struct dot_progress {
-  long initial_length;		/* how many bytes have been downloaded
+  wgint initial_length;		/* how many bytes have been downloaded
 				   previously. */
-  long total_length;		/* expected total byte count when the
+  wgint total_length;		/* expected total byte count when the
 				   download finishes */
 
   int accumulated;
@@ -216,7 +216,7 @@ struct dot_progress {
 /* Dot-progress backend for progress_create. */
 
 static void *
-dot_create (long initial, long total)
+dot_create (wgint initial, wgint total)
 {
   struct dot_progress *dp = xnew0 (struct dot_progress);
   dp->initial_length = initial;
@@ -225,10 +225,10 @@ dot_create (long initial, long total)
   if (dp->initial_length)
     {
       int dot_bytes = opt.dot_bytes;
-      long row_bytes = opt.dot_bytes * opt.dots_in_line;
+      wgint row_bytes = opt.dot_bytes * opt.dots_in_line;
 
       int remainder = (int) (dp->initial_length % row_bytes);
-      long skipped = dp->initial_length - remainder;
+      wgint skipped = dp->initial_length - remainder;
 
       if (skipped)
 	{
@@ -244,7 +244,7 @@ dot_create (long initial, long total)
 		     2 + skipped_k_len, "", skipped_k);
 	}
 
-      logprintf (LOG_VERBOSE, "\n%5ldK", skipped / 1024);
+      logprintf (LOG_VERBOSE, "\n%5ldK", (long) (skipped / 1024));
       for (; remainder >= dot_bytes; remainder -= dot_bytes)
 	{
 	  if (dp->dots % opt.dot_spacing == 0)
@@ -262,14 +262,14 @@ dot_create (long initial, long total)
 }
 
 static void
-print_percentage (long bytes, long expected)
+print_percentage (wgint bytes, wgint expected)
 {
   int percentage = (int)(100.0 * bytes / expected);
   logprintf (LOG_VERBOSE, "%3d%%", percentage);
 }
 
 static void
-print_download_speed (struct dot_progress *dp, long bytes, double dltime)
+print_download_speed (struct dot_progress *dp, wgint bytes, double dltime)
 {
   logprintf (LOG_VERBOSE, " %s",
 	     retr_rate (bytes, dltime - dp->last_timer_value, 1));
@@ -279,11 +279,11 @@ print_download_speed (struct dot_progress *dp, long bytes, double dltime)
 /* Dot-progress backend for progress_update. */
 
 static void
-dot_update (void *progress, long howmuch, double dltime)
+dot_update (void *progress, wgint howmuch, double dltime)
 {
   struct dot_progress *dp = progress;
   int dot_bytes = opt.dot_bytes;
-  long row_bytes = opt.dot_bytes * opt.dots_in_line;
+  wgint row_bytes = opt.dot_bytes * opt.dots_in_line;
 
   log_set_flush (0);
 
@@ -291,7 +291,7 @@ dot_update (void *progress, long howmuch, double dltime)
   for (; dp->accumulated >= dot_bytes; dp->accumulated -= dot_bytes)
     {
       if (dp->dots == 0)
-	logprintf (LOG_VERBOSE, "\n%5ldK", dp->rows * row_bytes / 1024);
+	logprintf (LOG_VERBOSE, "\n%5ldK", (long) (dp->rows * row_bytes / 1024));
 
       if (dp->dots % opt.dot_spacing == 0)
 	logputs (LOG_VERBOSE, " ");
@@ -300,7 +300,7 @@ dot_update (void *progress, long howmuch, double dltime)
       ++dp->dots;
       if (dp->dots >= opt.dots_in_line)
 	{
-	  long row_qty = row_bytes;
+	  wgint row_qty = row_bytes;
 	  if (dp->rows == dp->initial_length / row_bytes)
 	    row_qty -= dp->initial_length % row_bytes;
 
@@ -323,13 +323,13 @@ dot_finish (void *progress, double dltime)
 {
   struct dot_progress *dp = progress;
   int dot_bytes = opt.dot_bytes;
-  long row_bytes = opt.dot_bytes * opt.dots_in_line;
+  wgint row_bytes = opt.dot_bytes * opt.dots_in_line;
   int i;
 
   log_set_flush (0);
 
   if (dp->dots == 0)
-    logprintf (LOG_VERBOSE, "\n%5ldK", dp->rows * row_bytes / 1024);
+    logprintf (LOG_VERBOSE, "\n%5ldK", (long) (dp->rows * row_bytes / 1024));
   for (i = dp->dots; i < opt.dots_in_line; i++)
     {
       if (i % opt.dot_spacing == 0)
@@ -345,7 +345,7 @@ dot_finish (void *progress, double dltime)
     }
 
   {
-    long row_qty = dp->dots * dot_bytes + dp->accumulated;
+    wgint row_qty = dp->dots * dot_bytes + dp->accumulated;
     if (dp->rows == dp->initial_length / row_bytes)
       row_qty -= dp->initial_length % row_bytes;
     print_download_speed (dp, row_qty, dltime);
@@ -443,11 +443,11 @@ static volatile sig_atomic_t received_sigwinch;
 #define STALL_START_TIME 5000
 
 struct bar_progress {
-  long initial_length;		/* how many bytes have been downloaded
+  wgint initial_length;		/* how many bytes have been downloaded
 				   previously. */
-  long total_length;		/* expected total byte count when the
+  wgint total_length;		/* expected total byte count when the
 				   download finishes */
-  long count;			/* bytes downloaded so far */
+  wgint count;			/* bytes downloaded so far */
 
   double last_screen_update;	/* time of the last screen update,
 				   measured since the beginning of
@@ -470,18 +470,18 @@ struct bar_progress {
      details.  */
   struct bar_progress_hist {
     int pos;
-    long times[DLSPEED_HISTORY_SIZE];
-    long bytes[DLSPEED_HISTORY_SIZE];
+    wgint times[DLSPEED_HISTORY_SIZE];
+    wgint bytes[DLSPEED_HISTORY_SIZE];
 
     /* The sum of times and bytes respectively, maintained for
        efficiency. */
-    long total_time;
-    long total_bytes;
+    wgint total_time;
+    wgint total_bytes;
   } hist;
 
   double recent_start;		/* timestamp of beginning of current
 				   position. */
-  long recent_bytes;		/* bytes downloaded so far. */
+  wgint recent_bytes;		/* bytes downloaded so far. */
 
   int stalled;			/* set when no data arrives for longer
 				   than STALL_START_TIME, then reset
@@ -492,14 +492,14 @@ struct bar_progress {
   double last_eta_time;		/* time of the last update to download
 				   speed and ETA, measured since the
 				   beginning of download. */
-  long last_eta_value;
+  wgint last_eta_value;
 };
 
 static void create_image PARAMS ((struct bar_progress *, double));
 static void display_image PARAMS ((char *));
 
 static void *
-bar_create (long initial, long total)
+bar_create (wgint initial, wgint total)
 {
   struct bar_progress *bp = xnew0 (struct bar_progress);
 
@@ -536,10 +536,10 @@ bar_create (long initial, long total)
   return bp;
 }
 
-static void update_speed_ring PARAMS ((struct bar_progress *, long, double));
+static void update_speed_ring PARAMS ((struct bar_progress *, wgint, double));
 
 static void
-bar_update (void *progress, long howmuch, double dltime)
+bar_update (void *progress, wgint howmuch, double dltime)
 {
   struct bar_progress *bp = progress;
   int force_screen_update = 0;
@@ -622,7 +622,7 @@ bar_finish (void *progress, double dltime)
    3-second average would be too erratic.  */
 
 static void
-update_speed_ring (struct bar_progress *bp, long howmuch, double dltime)
+update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 {
   struct bar_progress_hist *hist = &bp->hist;
   double recent_age = dltime - bp->recent_start;
@@ -719,7 +719,7 @@ static void
 create_image (struct bar_progress *bp, double dl_total_time)
 {
   char *p = bp->buffer;
-  long size = bp->initial_length + bp->count;
+  wgint size = bp->initial_length + bp->count;
 
   char *size_legible = legible (size);
   int size_legible_len = strlen (size_legible);
@@ -838,7 +838,7 @@ create_image (struct bar_progress *bp, double dl_total_time)
       int units = 0;
       /* Calculate the download speed using the history ring and
 	 recent data that hasn't made it to the ring yet.  */
-      long dlquant = hist->total_bytes + bp->recent_bytes;
+      wgint dlquant = hist->total_bytes + bp->recent_bytes;
       double dltime = hist->total_time + (dl_total_time - bp->recent_start);
       double dlspeed = calc_rate (dlquant, dltime, &units);
       sprintf (p, " %7.2f%s", dlspeed, short_units[units]);
@@ -852,7 +852,7 @@ create_image (struct bar_progress *bp, double dl_total_time)
      reliable.  */
   if (bp->total_length > 0 && bp->count > 0 && dl_total_time > 3000)
     {
-      long eta;
+      wgint eta;
       int eta_hrs, eta_min, eta_sec;
 
       /* Don't change the value of ETA more than approximately once
@@ -871,8 +871,8 @@ create_image (struct bar_progress *bp, double dl_total_time)
 	     I found that doing that results in a very jerky and
 	     ultimately unreliable ETA.  */
 	  double time_sofar = (double)dl_total_time / 1000;
-	  long bytes_remaining = bp->total_length - size;
-	  eta = (long) (time_sofar * bytes_remaining / bp->count);
+	  wgint bytes_remaining = bp->total_length - size;
+	  eta = (wgint) (time_sofar * bytes_remaining / bp->count);
 	  bp->last_eta_value = eta;
 	  bp->last_eta_time = dl_total_time;
 	}

@@ -1,11 +1,15 @@
 GNU Wget NEWS -- history of user-visible changes.
 
-Copyright (C) 1997, 1998, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright (C) 2005 Free Software Foundation, Inc.
 See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget 1.9+.
+* Changes in Wget 1.10.
+
+** Downloading files greater than 2GB, also known as "large files",
+now works on systems that support them.  This includes most modern
+Unix variants, as well as Windows.
 
 ** IPv6 is now supported by Wget.  Unlike the experimental code in
 1.9, this version has no problems with dual-family systems.  The new
@@ -495,7 +499,7 @@ geturl -vo log http://fly.cc.fer.hr/
 ----------------------------------------------------------------------
 Copyright information:
 
-Copyright (C) 1997, 1998, 2000, 2001, 2003 Free Software Foundation, Inc.
+Copyright (C) 2005 Free Software Foundation, Inc.
 
    Permission is granted to anyone to make or distribute verbatim
    copies of this document as received, in any medium, provided that

@@ -183,6 +183,14 @@ AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(long long)
 
 dnl
+dnl Check for large file support.  This check needs to come fairly
+dnl early because it could (in principle) affect whether functions and
+dnl headers are available, whether they work, etc.
+dnl
+AC_SYS_LARGEFILE
+AC_CHECK_SIZEOF(off_t)
+
+dnl
 dnl Checks for non-universal or system-specific types.
 dnl
 AC_TYPE_SIZE_T
@@ -205,9 +213,11 @@ dnl Checks for library functions.
 dnl
 AC_FUNC_ALLOCA
 AC_FUNC_MMAP
+AC_FUNC_FSEEKO
 AC_CHECK_FUNCS(strdup strstr strcasecmp strncasecmp strpbrk memmove)
 AC_CHECK_FUNCS(gettimeofday mktime strptime strerror snprintf vsnprintf)
-AC_CHECK_FUNCS(usleep select sigblock sigsetjmp signal symlink access isatty)
+AC_CHECK_FUNCS(usleep select ftello sigblock sigsetjmp signal)
+AC_CHECK_FUNCS(symlink access isatty)
 
 dnl
 dnl Call Wget's local macros defined in aclocal.

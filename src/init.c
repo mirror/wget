@@ -852,8 +852,8 @@ cmd_directory_vector (const char *com, const char *val, void *closure)
 
 static int simple_atof PARAMS ((const char *, const char *, double *));
 
-/* Enginge for cmd_bytes and cmd_bytes_large: converts a string such
-   as "100k" or "2.5G" to a floating point number.  */
+/* Engine for cmd_bytes and cmd_bytes_large: converts a string such as
+   "100k" or "2.5G" to a floating point number.  */
 
 static int
 parse_bytes_helper (const char *val, double *result)
@@ -910,7 +910,7 @@ parse_bytes_helper (const char *val, double *result)
 }
 
 /* Parse VAL as a number and set its value to CLOSURE (which should
-   point to a long int).
+   point to a wgint).
 
    By default, the value is assumed to be in bytes.  If "K", "M", or
    "G" are appended, the value is multiplied with 1<<10, 1<<20, or
@@ -933,7 +933,7 @@ cmd_bytes (const char *com, const char *val, void *closure)
 	       exec_name, com, val);
       return 0;
     }
-  *(long *)closure = (long)byte_value;
+  *(wgint *)closure = (wgint)byte_value;
   return 1;
 }
 

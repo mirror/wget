@@ -83,12 +83,12 @@ typedef struct
 
 
 /* Look for regexp "( *[0-9]+ *byte" (literal parenthesis) anywhere in
-   the string S, and return the number converted to long, if found, 0
+   the string S, and return the number converted to wgint, if found, 0
    otherwise.  */
-static long
+static wgint
 ftp_expected_bytes (const char *s)
 {
-  long res;
+  wgint res;
 
   while (1)
     {
@@ -96,18 +96,7 @@ ftp_expected_bytes (const char *s)
 	++s;
       if (!*s)
 	return 0;
-      for (++s; *s && ISSPACE (*s); s++);
-      if (!*s)
-	return 0;
-      if (!ISDIGIT (*s))
-	continue;
-      res = 0;
-      do
-	{
-	  res = (*s - '0') + 10 * res;
-	  ++s;
-	}
-      while (*s && ISDIGIT (*s));
+      res = str_to_wgint (s, (char **) &s, 10);
       if (!*s)
 	return 0;
       while (*s && ISSPACE (*s))
@@ -234,7 +223,7 @@ ftp_do_port (int csock, int *local_sock)
    connection to the server.  It always closes the data connection,
    and closes the control connection in case of error.  */
 static uerr_t
-getftp (struct url *u, long *len, long restval, ccon *con)
+getftp (struct url *u, wgint *len, wgint restval, ccon *con)
 {
   int csock, dtsock, local_sock, res;
   uerr_t err;
@@ -243,10 +232,10 @@ getftp (struct url *u, long *len, long restval, ccon *con)
   char *tms, *tmrate;
   int cmd = con->cmd;
   int pasv_mode_open = 0;
-  long expected_bytes = 0L;
+  wgint expected_bytes = 0L;
   int rest_failed = 0;
   int flags;
-  long rd_size;
+  wgint rd_size;
 
   assert (con != NULL);
   assert (con->target != NULL);
@@ -770,7 +759,7 @@ Error in server response, closing control connection.\n"));
   if (restval && (cmd & DO_RETR))
     {
       if (!opt.server_response)
-	logprintf (LOG_VERBOSE, "==> REST %ld ... ", restval);
+	logprintf (LOG_VERBOSE, "==> REST %s ... ", number_to_static_string (restval));
       err = ftp_rest (csock, restval);
 
       /* FTPRERR, WRITEFAILED, FTPRESTFAIL */
@@ -1123,11 +1112,11 @@ static uerr_t
 ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 {
   int count, orig_lp;
-  long restval, len = 0;
+  wgint restval, len = 0;
   char *tms, *locf;
   char *tmrate = NULL;
   uerr_t err;
-  struct stat st;
+  struct_stat st;
 
   if (!con->target)
     con->target = url_file_name (u);
@@ -1263,16 +1252,16 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	  con->csock = -1;
 	}
       if (!opt.spider)
-        logprintf (LOG_VERBOSE, _("%s (%s) - `%s' saved [%ld]\n\n"),
-		   tms, tmrate, locf, len);
+        logprintf (LOG_VERBOSE, _("%s (%s) - `%s' saved [%s]\n\n"),
+		   tms, tmrate, locf, number_to_static_string (len));
       if (!opt.verbose && !opt.quiet)
 	{
 	  /* Need to hide the password from the URL.  The `if' is here
              so that we don't do the needless allocation every
              time. */
 	  char *hurl = url_string (u, 1);
-	  logprintf (LOG_NONVERBOSE, "%s URL: %s [%ld] -> \"%s\" [%d]\n",
-		     tms, hurl, len, locf, count);
+	  logprintf (LOG_NONVERBOSE, "%s URL: %s [%s] -> \"%s\" [%d]\n",
+		     tms, hurl, number_to_static_string (len), locf, count);
 	  xfree (hurl);
 	}
 
@@ -1389,7 +1378,7 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
   static int depth = 0;
   uerr_t err;
   struct fileinfo *orig;
-  long local_size;
+  wgint local_size;
   time_t tml;
   int dlthis;
 
@@ -1440,7 +1429,7 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
       dlthis = 1;
       if (opt.timestamping && f->type == FT_PLAINFILE)
         {
-	  struct stat st;
+	  struct_stat st;
 	  /* If conversion of HTML files retrieved via FTP is ever implemented,
 	     we'll need to stat() <file>.orig here when -K has been specified.
 	     I'm not implementing it now since files on an FTP server are much
@@ -1482,7 +1471,8 @@ Remote file is newer than local file `%s' -- retrieving.\n\n"),
                 {
                   /* Sizes do not match */
                   logprintf (LOG_VERBOSE, _("\
-The sizes do not match (local %ld) -- retrieving.\n\n"), local_size);
+The sizes do not match (local %s) -- retrieving.\n\n"),
+			     number_to_static_string (local_size));
                 }
             }
 	}	/* opt.timestamping && f->type == FT_PLAINFILE */
@@ -1501,7 +1491,7 @@ The sizes do not match (local %ld) -- retrieving.\n\n"), local_size);
 			 _("Invalid name of the symlink, skipping.\n"));
 	      else
 		{
-                  struct stat st;
+                  struct_stat st;
 		  /* Check whether we already have the correct
                      symbolic link.  */
                   int rc = lstat (con->target, &st);
@@ -1842,15 +1832,15 @@ ftp_loop (struct url *u, int *dt, struct url *proxy)
 		{
 		  if (!opt.output_document)
 		    {
-		      struct stat st;
-		      long sz;
+		      struct_stat st;
+		      wgint sz;
 		      if (stat (filename, &st) == 0)
 			sz = st.st_size;
 		      else
 			sz = -1;
 		      logprintf (LOG_NOTQUIET,
-				 _("Wrote HTML-ized index to `%s' [%ld].\n"),
-				 filename, sz);
+				 _("Wrote HTML-ized index to `%s' [%s].\n"),
+				 filename, number_to_static_string (sz));
 		    }
 		  else
 		    logprintf (LOG_NOTQUIET,

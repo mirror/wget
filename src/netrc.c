@@ -84,7 +84,7 @@ search_netrc (const char *host, const char **acc, const char **passwd,
       if (home)
 	{
 	  int err;
-	  struct stat buf;
+	  struct_stat buf;
 	  char *path = (char *)alloca (strlen (home) + 1
 				       + strlen (NETRC_FILE_NAME) + 1);
 	  sprintf (path, "%s/%s", home, NETRC_FILE_NAME);
@@ -471,7 +471,7 @@ free_netrc(acc_t *l)
 int
 main (int argc, char **argv)
 {
-  struct stat sb;
+  struct_stat sb;
   char *program_name, *file, *target;
   acc_t *head, *a;
 

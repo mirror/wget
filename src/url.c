@@ -1279,7 +1279,7 @@ mkalldirs (const char *path)
 {
   const char *p;
   char *t;
-  struct stat st;
+  struct_stat st;
   int res;
 
   p = path + strlen (path);

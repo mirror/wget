@@ -897,15 +897,13 @@ ftp_cwd (int csock, const char *dir)
 
 /* Sends REST command to the FTP server.  */
 uerr_t
-ftp_rest (int csock, long offset)
+ftp_rest (int csock, wgint offset)
 {
   char *request, *respline;
   int nwritten;
   uerr_t err;
-  static char numbuf[24]; /* Buffer for the number */
 
-  number_to_string (numbuf, offset);
-  request = ftp_request ("REST", numbuf);
+  request = ftp_request ("REST", number_to_static_string (offset));
   nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
@@ -1114,7 +1112,7 @@ ftp_pwd (int csock, char **pwd)
 /* Sends the SIZE command to the server, and returns the value in 'size'.
  * If an error occurs, size is set to zero. */
 uerr_t
-ftp_size (int csock, const char *file, long int *size)
+ftp_size (int csock, const char *file, wgint *size)
 {
   char *request, *respline;
   int nwritten;
@@ -1150,8 +1148,8 @@ ftp_size (int csock, const char *file, long int *size)
     }
 
   errno = 0;
-  *size = strtol (respline + 4, NULL, 0);
-  if (errno) 
+  *size = str_to_wgint (respline + 4, NULL, 10);
+  if (errno)
     {
       /* 
        * Couldn't parse the response for some reason.  On the (few)

@@ -337,7 +337,7 @@ int
 remove_link (const char *file)
 {
   int err = 0;
-  struct stat st;
+  struct_stat st;
 
   if (lstat (file, &st) == 0 && S_ISLNK (st.st_mode))
     {
@@ -363,7 +363,7 @@ file_exists_p (const char *filename)
 #ifdef HAVE_ACCESS
   return access (filename, F_OK) >= 0;
 #else
-  struct stat buf;
+  struct_stat buf;
   return stat (filename, &buf) >= 0;
 #endif
 }
@@ -373,7 +373,7 @@ file_exists_p (const char *filename)
 int
 file_non_directory_p (const char *path)
 {
-  struct stat buf;
+  struct_stat buf;
   /* Use lstat() rather than stat() so that symbolic links pointing to
      directories can be identified correctly.  */
   if (lstat (path, &buf) != 0)
@@ -383,20 +383,28 @@ file_non_directory_p (const char *path)
 
 /* Return the size of file named by FILENAME, or -1 if it cannot be
    opened or seeked into. */
-long
+wgint
 file_size (const char *filename)
 {
-  long size;
+#if defined(HAVE_FSEEKO) && defined(HAVE_FTELLO)
+  wgint size;
   /* We use fseek rather than stat to determine the file size because
-     that way we can also verify whether the file is readable.
-     Inspired by the POST patch by Arnaud Wylie.  */
+     that way we can also verify that the file is readable without
+     explicitly checking for permissions.  Inspired by the POST patch
+     by Arnaud Wylie.  */
   FILE *fp = fopen (filename, "rb");
   if (!fp)
     return -1;
-  fseek (fp, 0, SEEK_END);
-  size = ftell (fp);
+  fseeko (fp, 0, SEEK_END);
+  size = ftello (fp);
   fclose (fp);
   return size;
+#else
+  struct_stat st;
+  if (stat (filename, &st) < 0)
+    return -1;
+  return st.st_size;
+#endif
 }
 
 /* stat file names named PREFIX.1, PREFIX.2, etc., until one that
@@ -799,7 +807,7 @@ read_file (const char *file)
 {
   int fd;
   struct file_memory *fm;
-  long size;
+  wgint size;
   int inhibit_close = 0;
 
   /* Some magic in the finest tradition of Perl and its kin: if FILE
@@ -819,7 +827,7 @@ read_file (const char *file)
 
 #ifdef HAVE_MMAP
   {
-    struct stat buf;
+    struct_stat buf;
     if (fstat (fd, &buf) < 0)
       goto mmap_lose;
     fm->length = buf.st_size;
@@ -851,7 +859,7 @@ read_file (const char *file)
   fm->content = xmalloc (size);
   while (1)
     {
-      long nread;
+      wgint nread;
       if (fm->length > size / 2)
 	{
 	  /* #### I'm not sure whether the whole exponential-growth
@@ -1148,10 +1156,10 @@ legible_1 (const char *repr)
   return outbuf;
 }
 
-/* Legible -- return a static pointer to the legibly printed long.  */
+/* Legible -- return a static pointer to the legibly printed wgint.  */
 
 char *
-legible (long l)
+legible (wgint l)
 {
   char inbuf[24];
   /* Print the number into the buffer.  */
@@ -1185,9 +1193,9 @@ legible_large_int (LARGE_INT l)
   return legible_1 (inbuf);
 }
 
-/* Count the digits in a (long) integer.  */
+/* Count the digits in an integer number.  */
 int
-numdigit (long number)
+numdigit (wgint number)
 {
   int cnt = 1;
   if (number < 0)
@@ -1199,15 +1207,6 @@ numdigit (long number)
     ++cnt;
   return cnt;
 }
-
-/* Attempt to calculate INT_MAX on machines that don't bother to
-   define it. */
-#ifndef INT_MAX
-# ifndef CHAR_BIT
-#  define CHAR_BIT 8
-# endif
-# define INT_MAX ((int) ~((unsigned)1 << CHAR_BIT * sizeof (int) - 1))
-#endif
 
 #define ONE_DIGIT(figure) *p++ = n / (figure) + '0'
 #define ONE_DIGIT_ADVANCE(figure) (ONE_DIGIT (figure), n %= (figure))
@@ -1223,7 +1222,7 @@ numdigit (long number)
 #define DIGITS_9(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_8 ((figure) / 10)
 #define DIGITS_10(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_9 ((figure) / 10)
 
-/* DIGITS_<11-20> are only used on machines with 64-bit longs. */
+/* DIGITS_<11-20> are only used on machines with 64-bit numbers. */
 
 #define DIGITS_11(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_10 ((figure) / 10)
 #define DIGITS_12(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_11 ((figure) / 10)
@@ -1235,13 +1234,73 @@ numdigit (long number)
 #define DIGITS_18(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_17 ((figure) / 10)
 #define DIGITS_19(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_18 ((figure) / 10)
 
-/* Print NUMBER to BUFFER in base 10.  This should be completely
-   equivalent to `sprintf(buffer, "%ld", number)', only much faster.
+/* It is annoying that we have three different syntaxes for 64-bit constants:
+    - nnnL for 64-bit systems, where they are of type long;
+    - nnnLL for 32-bit systems that support long long;
+    - nnnI64 for MS compiler on Windows, which doesn't support long long. */
+
+#if SIZEOF_LONG > 4
+/* If long is large enough, use long constants. */
+# define C10000000000 10000000000L
+# define C100000000000 100000000000L
+# define C1000000000000 1000000000000L
+# define C10000000000000 10000000000000L
+# define C100000000000000 100000000000000L
+# define C1000000000000000 1000000000000000L
+# define C10000000000000000 10000000000000000L
+# define C100000000000000000 100000000000000000L
+# define C1000000000000000000 1000000000000000000L
+#else
+# if SIZEOF_LONG_LONG != 0
+/* Otherwise, if long long is available, use long long constants. */
+#  define C10000000000 10000000000LL
+#  define C100000000000 100000000000LL
+#  define C1000000000000 1000000000000LL
+#  define C10000000000000 10000000000000LL
+#  define C100000000000000 100000000000000LL
+#  define C1000000000000000 1000000000000000LL
+#  define C10000000000000000 10000000000000000LL
+#  define C100000000000000000 100000000000000000LL
+#  define C1000000000000000000 1000000000000000000LL
+# else
+#  if defined(_MSC_VER) || defined(__WATCOM__)
+/* Otherwise, if __int64 is available (under Windows), use __int64
+   constants. */
+#   define C10000000000 10000000000I64
+#   define C100000000000 100000000000I64
+#   define C1000000000000 1000000000000I64
+#   define C10000000000000 10000000000000I64
+#   define C100000000000000 100000000000000I64
+#   define C1000000000000000 1000000000000000I64
+#   define C10000000000000000 10000000000000000I64
+#   define C100000000000000000 100000000000000000I64
+#   define C1000000000000000000 1000000000000000000I64
+#  endif
+# endif
+#endif
+
+/* SPRINTF_WGINT is used by number_to_string to handle pathological
+   cases and to portably support strange sizes of wgint. */
+#if SIZEOF_LONG >= SIZEOF_WGINT
+#  define SPRINTF_WGINT(buf, n) sprintf(buf, "%ld", (long) (n))
+#else
+# if SIZEOF_LONG_LONG >= SIZEOF_WGINT
+#   define SPRINTF_WGINT(buf, n) sprintf(buf, "%lld", (long long) (n))
+# else
+#  ifdef _MSC_VER
+#   define SPRINTF_WGINT(buf, n) sprintf(buf, "%I64", (__int64) (n))
+#  endif
+# endif
+#endif
+
+/* Print NUMBER to BUFFER in base 10.  This is equivalent to
+   `sprintf(buffer, "%lld", (long long) number)', only much faster and
+   portable to machines without long long.
 
    The speedup may make a difference in programs that frequently
    convert numbers to strings.  Some implementations of sprintf,
    particularly the one in GNU libc, have been known to be extremely
-   slow compared to this function.
+   slow when converting integers to strings.
 
    Return the pointer to the location where the terminating zero was
    printed.  (Equivalent to calling buffer+strlen(buffer) after the
@@ -1254,25 +1313,25 @@ numdigit (long number)
    terminating '\0'.  */
 
 char *
-number_to_string (char *buffer, long number)
+number_to_string (char *buffer, wgint number)
 {
   char *p = buffer;
-  long n = number;
+  wgint n = number;
 
-#if (SIZEOF_LONG != 4) && (SIZEOF_LONG != 8)
+#if (SIZEOF_WGINT != 4) && (SIZEOF_WGINT != 8)
   /* We are running in a strange or misconfigured environment.  Let
      sprintf cope with it.  */
-  sprintf (buffer, "%ld", n);
+  SPRINTF_WGINT (buffer, n);
   p += strlen (buffer);
-#else  /* (SIZEOF_LONG == 4) || (SIZEOF_LONG == 8) */
+#else  /* (SIZEOF_WGINT == 4) || (SIZEOF_WGINT == 8) */
 
   if (n < 0)
     {
-      if (n < -INT_MAX)
+      if (n < -WGINT_MAX)
 	{
 	  /* We cannot print a '-' and assign -n to n because -n would
 	     overflow.  Let sprintf deal with this border case.  */
-	  sprintf (buffer, "%ld", n);
+	  SPRINTF_WGINT (buffer, n);
 	  p += strlen (buffer);
 	  return p;
 	}
@@ -1290,24 +1349,26 @@ number_to_string (char *buffer, long number)
   else if (n < 10000000)             { DIGITS_7 (1000000); }
   else if (n < 100000000)            { DIGITS_8 (10000000); }
   else if (n < 1000000000)           { DIGITS_9 (100000000); }
-#if SIZEOF_LONG == 4
+#if SIZEOF_WGINT == 4
+  /* wgint is four bytes long: we're done. */
   /* ``if (1)'' serves only to preserve editor indentation. */
   else if (1)                        { DIGITS_10 (1000000000); }
-#else  /* SIZEOF_LONG != 4 */
-  else if (n < 10000000000L)         { DIGITS_10 (1000000000L); }
-  else if (n < 100000000000L)        { DIGITS_11 (10000000000L); }
-  else if (n < 1000000000000L)       { DIGITS_12 (100000000000L); }
-  else if (n < 10000000000000L)      { DIGITS_13 (1000000000000L); }
-  else if (n < 100000000000000L)     { DIGITS_14 (10000000000000L); }
-  else if (n < 1000000000000000L)    { DIGITS_15 (100000000000000L); }
-  else if (n < 10000000000000000L)   { DIGITS_16 (1000000000000000L); }
-  else if (n < 100000000000000000L)  { DIGITS_17 (10000000000000000L); }
-  else if (n < 1000000000000000000L) { DIGITS_18 (100000000000000000L); }
-  else                               { DIGITS_19 (1000000000000000000L); }
-#endif /* SIZEOF_LONG != 4 */
+#else
+  /* wgint is 64 bits long -- make sure to process all the digits. */
+  else if (n < C10000000000)         { DIGITS_10 (1000000000); }
+  else if (n < C100000000000)        { DIGITS_11 (C10000000000); }
+  else if (n < C1000000000000)       { DIGITS_12 (C100000000000); }
+  else if (n < C10000000000000)      { DIGITS_13 (C1000000000000); }
+  else if (n < C100000000000000)     { DIGITS_14 (C10000000000000); }
+  else if (n < C1000000000000000)    { DIGITS_15 (C100000000000000); }
+  else if (n < C10000000000000000)   { DIGITS_16 (C1000000000000000); }
+  else if (n < C100000000000000000)  { DIGITS_17 (C10000000000000000); }
+  else if (n < C1000000000000000000) { DIGITS_18 (C100000000000000000); }
+  else                               { DIGITS_19 (C1000000000000000000); }
+#endif
 
   *p = '\0';
-#endif /* (SIZEOF_LONG == 4) || (SIZEOF_LONG == 8) */
+#endif /* (SIZEOF_WGINT == 4) || (SIZEOF_WGINT == 8) */
 
   return p;
 }
@@ -1334,6 +1395,50 @@ number_to_string (char *buffer, long number)
 #undef DIGITS_17
 #undef DIGITS_18
 #undef DIGITS_19
+
+#define RING_SIZE 3
+
+/* Print NUMBER to a statically allocated string and return a pointer
+   to the printed representation.
+
+   This function is intended to be used in conjunction with printf.
+   It is hard to portably print wgint values:
+    a) you cannot use printf("%ld", number) because wgint can be long
+       long on 32-bit machines with LFS.
+    b) you cannot use printf("%lld", number) because NUMBER could be
+       long on 32-bit machines without LFS, or on 64-bit machines,
+       which do not require LFS.  Also, Windows doesn't support %lld.
+    c) you cannot use printf("%j", (int_max_t) number) because not all
+       versions of printf support "%j", the most notable being the one
+       on Windows.
+    d) you cannot #define WGINT_FMT to the appropriate format and use
+       printf(WGINT_FMT, number) because that would break translations
+       for user-visible messages, such as printf("Downloaded: %d
+       bytes\n", number).
+
+   What you should use instead is printf("%s", number_to_static_string
+   (number)).
+
+   CAVEAT: since the function returns pointers to static data, you
+   must be careful to copy its result before calling it again.
+   However, to make it more useful with printf, the function maintains
+   an internal ring of static buffers to return.  That way things like
+   printf("%s %s", number_to_static_string (num1),
+   number_to_static_string (num2)) work as expected.  Three buffers
+   are currently used, which means that "%s %s %s" will work, but "%s
+   %s %s %s" won't.  If you need to print more than three wgints,
+   bump the RING_SIZE (or rethink your message.)  */
+
+char *
+number_to_static_string (wgint number)
+{
+  static char ring[RING_SIZE][24];
+  static int ringpos;
+  char *buf = ring[ringpos];
+  number_to_string (buf, number);
+  ringpos = (ringpos + 1) % RING_SIZE;
+  return buf;
+}
 
 /* Support for timers. */
 

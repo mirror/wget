@@ -36,7 +36,7 @@ enum {
   rb_skip_startpos = 2
 };
 
-int fd_read_body PARAMS ((int, FILE *, long, long, long *, long *, double *,
+int fd_read_body PARAMS ((int, FILE *, wgint, wgint, wgint *, wgint *, double *,
                           int));
 
 typedef const char *(*hunk_terminator_t) PARAMS ((const char *, int, int));
@@ -48,8 +48,8 @@ uerr_t retrieve_url PARAMS ((const char *, char **, char **,
 			     const char *, int *));
 uerr_t retrieve_from_file PARAMS ((const char *, int, int *));
 
-char *retr_rate PARAMS ((long, double, int));
-double calc_rate PARAMS ((long, double, int *));
+char *retr_rate PARAMS ((wgint, double, int));
+double calc_rate PARAMS ((wgint, double, int *));
 void printwhat PARAMS ((int, int));
 
 void sleep_between_retrievals PARAMS ((int));

@@ -56,11 +56,11 @@ uerr_t ftp_epsv PARAMS ((int, ip_address *, int *));
 uerr_t ftp_type PARAMS ((int, int));
 uerr_t ftp_cwd PARAMS ((int, const char *));
 uerr_t ftp_retr PARAMS ((int, const char *));
-uerr_t ftp_rest PARAMS ((int, long));
+uerr_t ftp_rest PARAMS ((int, wgint));
 uerr_t ftp_list PARAMS ((int, const char *));
 uerr_t ftp_syst PARAMS ((int, enum stype *));
 uerr_t ftp_pwd PARAMS ((int, char **));
-uerr_t ftp_size PARAMS ((int, const char *, long int *));
+uerr_t ftp_size PARAMS ((int, const char *, wgint *));
 
 #ifdef USE_OPIE
 const char *skey_response PARAMS ((int, const char *, const char *));
@@ -89,7 +89,7 @@ struct fileinfo
 {
   enum ftype type;		/* file type */
   char *name;			/* file name */
-  long size;			/* file size */
+  wgint size;			/* file size */
   long tstamp;			/* time-stamp */
   int perms;			/* file permissions */
   char *linkto;			/* link to which file points */

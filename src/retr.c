@@ -75,7 +75,7 @@ FILE *output_stream;
 int output_stream_regular;
 
 static struct {
-  long chunk_bytes;
+  wgint chunk_bytes;
   double chunk_start;
   double sleep_adjust;
 } limit_data;
@@ -92,7 +92,7 @@ limit_bandwidth_reset (void)
    is the timer that started at the beginning of download.  */
 
 static void
-limit_bandwidth (long bytes, struct wget_timer *timer)
+limit_bandwidth (wgint bytes, struct wget_timer *timer)
 {
   double delta_t = wtimer_read (timer) - limit_data.chunk_start;
   double expected;
@@ -110,12 +110,14 @@ limit_bandwidth (long bytes, struct wget_timer *timer)
       double t0, t1;
       if (slp < 200)
 	{
-	  DEBUGP (("deferring a %.2f ms sleep (%ld/%.2f).\n",
-		   slp, limit_data.chunk_bytes, delta_t));
+	  DEBUGP (("deferring a %.2f ms sleep (%s/%.2f).\n",
+		   slp, number_to_static_string (limit_data.chunk_bytes),
+		   delta_t));
 	  return;
 	}
-      DEBUGP (("\nsleeping %.2f ms for %ld bytes, adjust %.2f ms\n",
-	       slp, limit_data.chunk_bytes, limit_data.sleep_adjust));
+      DEBUGP (("\nsleeping %.2f ms for %s bytes, adjust %.2f ms\n",
+	       slp, number_to_static_string (limit_data.chunk_bytes),
+	       limit_data.sleep_adjust));
 
       t0 = wtimer_read (timer);
       xsleep (slp / 1000);
@@ -142,8 +144,8 @@ limit_bandwidth (long bytes, struct wget_timer *timer)
    of data written.  */
 
 static int
-write_data (FILE *out, const char *buf, int bufsize, long *skip,
-	    long *written)
+write_data (FILE *out, const char *buf, int bufsize, wgint *skip,
+	    wgint *written)
 {
   if (!out)
     return 1;
@@ -192,8 +194,8 @@ write_data (FILE *out, const char *buf, int bufsize, long *skip,
    writing data, -2 is returned.  */
 
 int
-fd_read_body (int fd, FILE *out, long toread, long startpos,
-	      long *qtyread, long *qtywritten, double *elapsed, int flags)
+fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
+	      wgint *qtyread, wgint *qtywritten, double *elapsed, int flags)
 {
   int ret = 0;
 
@@ -213,11 +215,11 @@ fd_read_body (int fd, FILE *out, long toread, long startpos,
   int progress_interactive = 0;
 
   int exact = flags & rb_read_exactly;
-  long skip = 0;
+  wgint skip = 0;
 
   /* How much data we've read/written.  */
-  long sum_read = 0;
-  long sum_written = 0;
+  wgint sum_read = 0;
+  wgint sum_written = 0;
 
   if (flags & rb_skip_startpos)
     skip = startpos;
@@ -489,7 +491,7 @@ fd_read_line (int fd)
    appropriate for the speed.  If PAD is non-zero, strings will be
    padded to the width of 7 characters (xxxx.xx).  */
 char *
-retr_rate (long bytes, double msecs, int pad)
+retr_rate (wgint bytes, double msecs, int pad)
 {
   static char res[20];
   static const char *rate_names[] = {"B/s", "KB/s", "MB/s", "GB/s" };
@@ -509,7 +511,7 @@ retr_rate (long bytes, double msecs, int pad)
    UNITS is zero for B/s, one for KB/s, two for MB/s, and three for
    GB/s.  */
 double
-calc_rate (long bytes, double msecs, int *units)
+calc_rate (wgint bytes, double msecs, int *units)
 {
   double dlrate;
 
@@ -912,7 +914,7 @@ rotate_backups(const char *fname)
   int maxlen = strlen (fname) + 1 + numdigit (opt.backups) + 1;
   char *from = (char *)alloca (maxlen);
   char *to = (char *)alloca (maxlen);
-  struct stat sb;
+  struct_stat sb;
   int i;
 
   if (stat (fname, &sb) == 0)

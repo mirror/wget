@@ -212,17 +212,28 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
 		 size, and the filename is three tokens away.  */
 	      if (i != 12)
 		{
-		  char *t = tok - 2;
-		  long mul = 1;
+		  wgint size;
 
-		  for (cur.size = 0; t > line && ISDIGIT (*t); mul *= 10, t--)
-		    cur.size += mul * (*t - '0');
+		  /* Back up to the beginning of the previous token
+		     and parse it with str_to_wgint.  */
+		  char *t = tok - 2;
+		  while (t > line && ISDIGIT (*t))
+		    --t;
 		  if (t == line)
 		    {
-		      /* Something is seriously wrong.  */
+		      /* Something has gone wrong during parsing. */
 		      error = 1;
 		      break;
 		    }
+		  errno = 0;
+		  size = str_to_wgint (t, NULL, 10);
+		  if (size == WGINT_MAX && errno == ERANGE)
+		    /* Out of range -- ignore the size.  #### Should
+		       we refuse to start the download.  */
+		    cur.size = 0;
+		  else
+		    cur.size = size;
+
 		  month = i;
 		  next = 5;
 		  DEBUGP (("month: %s; ", months[month]));
@@ -368,14 +379,14 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
 
       if (!dir)
 	{
-	  l = dir = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
+	  l = dir = xnew (struct fileinfo);
 	  memcpy (l, &cur, sizeof (cur));
 	  l->prev = l->next = NULL;
 	}
       else
 	{
 	  cur.prev = l;
-	  l->next = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
+	  l->next = xnew (struct fileinfo);
 	  l = l->next;
 	  memcpy (l, &cur, sizeof (cur));
 	  l->next = NULL;
@@ -516,10 +527,16 @@ ftp_parse_winnt_ls (const char *file)
 	}
       else
 	{
+	  wgint size;
 	  cur.type  = FT_PLAINFILE;
-	  cur.size  = atoi(tok);
+	  errno = 0;
+	  size = str_to_wgint (tok, NULL, 10);
+	  if (size == WGINT_MAX && errno == ERANGE)
+	    cur.size = 0;	/* overflow */
+	  else
+	    cur.size = size;
 	  cur.perms = 0644;
-	  DEBUGP(("File, size %ld bytes\n", cur.size));
+	  DEBUGP(("File, size %s bytes\n", number_to_static_string (cur.size)));
 	}
 
       cur.linkto = NULL;
@@ -527,14 +544,14 @@ ftp_parse_winnt_ls (const char *file)
       /* And put everything into the linked list */
       if (!dir)
 	{
-	  l = dir = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
+	  l = dir = xnew (struct fileinfo);
 	  memcpy (l, &cur, sizeof (cur));
 	  l->prev = l->next = NULL;
 	}
       else
 	{
 	  cur.prev = l;
-	  l->next = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
+	  l->next = xnew (struct fileinfo);
 	  l = l->next;
 	  memcpy (l, &cur, sizeof (cur));
 	  l->next = NULL;

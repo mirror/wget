@@ -45,7 +45,7 @@ struct hash_table;
 
 struct file_memory {
   char *content;
-  long length;
+  wgint length;
   int mmap_p;
 };
 
@@ -79,7 +79,7 @@ void touch PARAMS ((const char *, time_t));
 int remove_link PARAMS ((const char *));
 int file_exists_p PARAMS ((const char *));
 int file_non_directory_p PARAMS ((const char *));
-long file_size PARAMS ((const char *));
+wgint file_size PARAMS ((const char *));
 int make_directory PARAMS ((const char *));
 char *unique_name PARAMS ((const char *, int));
 char *file_merge PARAMS ((const char *, const char *));
@@ -109,10 +109,11 @@ int string_set_contains PARAMS ((struct hash_table *, const char *));
 void string_set_free PARAMS ((struct hash_table *));
 void free_keys_and_values PARAMS ((struct hash_table *));
 
-char *legible PARAMS ((long));
+char *legible PARAMS ((wgint));
 char *legible_large_int PARAMS ((LARGE_INT));
-int numdigit PARAMS ((long));
-char *number_to_string PARAMS ((char *, long));
+int numdigit PARAMS ((wgint));
+char *number_to_string PARAMS ((char *, wgint));
+char *number_to_static_string PARAMS ((wgint));
 
 struct wget_timer *wtimer_allocate PARAMS ((void));
 struct wget_timer *wtimer_new PARAMS ((void));

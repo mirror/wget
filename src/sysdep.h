@@ -111,7 +111,7 @@ so, delete this exception statement from your version.  */
 /* Define a large integral type useful for storing large sizes that
    exceed sizes of one download, such as when printing the sum of all
    downloads.  Note that this has nothing to do with large file
-   support, yet.
+   support, which determines the wgint type.
 
    We use a 64-bit integral type where available, `double' otherwise.
    It's hard to print LARGE_INT's portably, but fortunately it's
@@ -127,10 +127,36 @@ typedef long LARGE_INT;
 typedef long long LARGE_INT;
 #  define LARGE_INT_FMT "%lld"
 # else
+#  if _MSC_VER
+/* Use __int64 under Windows. */
+typedef __int64 LARGE_INT;
+#   define LARGE_INT_FMT "%I64"
+#  else
 /* Large integer type unavailable; use `double' instead.  */
 typedef double LARGE_INT;
-#  define LARGE_INT_FMT "%.0f"
+#   define LARGE_INT_FMT "%.0f"
+#  endif
 # endif
+#endif
+
+/* Under Windows we #define struct_stat to struct _stati64. */
+#ifndef struct_stat
+# define struct_stat struct stat
+#endif
+
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif
+
+#ifndef CHAR_BIT
+# define CHAR_BIT 8
+#endif
+
+#ifndef LONG_MAX
+# define LONG_MAX ((long) ~((unsigned long)1 << (CHAR_BIT * sizeof (long) - 1)))
+#endif
+#ifndef LLONG_MAX
+# define LLONG_MAX ((long long) ~((unsigned long long)1 << (CHAR_BIT * sizeof (long long) - 1)))
 #endif
 
 /* These are defined in cmpt.c if missing, therefore it's generally
