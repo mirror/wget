@@ -138,6 +138,7 @@ distclean-top: clean-top
 	$(RM) Makefile config.status config.log config.cache stamp-h
 
 realclean-top: distclean-top
+	$(RM) configure
 
 clean-recursive distclean-recursive realclean-recursive:
 	for subdir in $(SUBDIRS); do \
