@@ -231,20 +231,20 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
 {										\
   /* Avoid side-effectualness.  */						\
   long do_realloc_needed_size = (needed_size);					\
-  long do_realloc_newsize = 0;							\
-  while ((sizevar) < (do_realloc_needed_size)) {				\
-    do_realloc_newsize = 2*(sizevar);						\
+  long do_realloc_newsize = (sizevar);						\
+  while (do_realloc_newsize < do_realloc_needed_size) {				\
+    do_realloc_newsize <<= 1;							\
     if (do_realloc_newsize < 16)						\
       do_realloc_newsize = 16;							\
   }										\
-  if (do_realloc_newsize)							\
+  if (do_realloc_newsize != (sizevar))						\
     {										\
       if (!allocap)								\
 	XREALLOC_ARRAY (basevar, type, do_realloc_newsize);			\
       else									\
 	{									\
 	  void *drfa_new_basevar = xmalloc (do_realloc_newsize);		\
-	  memcpy (drfa_new_basevar, basevar, sizevar);				\
+	  memcpy (drfa_new_basevar, basevar, (sizevar));			\
 	  (basevar) = drfa_new_basevar;						\
 	  allocap = 0;								\
 	}									\
