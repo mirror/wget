@@ -1190,7 +1190,11 @@ Accept: %s\r\n\
       if (opt.always_rest)
 	{
 	  /* Check for condition #2. */
-	  if (hs->restval >= contlen)
+	  if (hs->restval > 0	            /* restart was requested. */
+	      && contlen != -1              /* we got content-length. */
+	      && hs->restval >= contlen     /* file fully downloaded
+					       or has shrunk.  */
+	      )
 	    {
 	      logputs (LOG_VERBOSE, _("\
 \n    The file is already fully retrieved; nothing to do.\n\n"));

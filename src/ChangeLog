@@ -1,5 +1,11 @@
 2001-05-09  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (gethttp): Before concluding that the file is already
+	fully retrieved, make sure that the file existed and `Range' was
+	actually requested.
+
+2001-05-09  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* cookies.c (eliminate_dups): New function.
 	(build_cookies_request): Use it.
 	(build_cookies_request): Set chain_store_size after reallocating
