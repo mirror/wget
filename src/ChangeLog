@@ -1,3 +1,13 @@
+2000-04-04  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* host.c (store_hostaddress): R. K. Owen's patch introduces a
+	"left shift count >= width of type" warning on 32-bit
+	architectures.  Got rid of it by tricking the compiler w/ a variable.
+	
+	* url.c (UNSAFE_CHAR): The macro didn't include all the illegal
+	characters per RFC1738, namely everything above '~'.  It also
+	generated a warning on OSes where char =~ unsigned char.  Fixed.
+	
 1998-10-17  Hrvoje Niksic  <hniksic@srce.hr>
 
 	* http.c (http_process_type): Removed needless strdup(), a memory

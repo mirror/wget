@@ -148,7 +148,20 @@ store_hostaddress (unsigned char *where, const char *hostname)
 	 inet_addr returns the address in the proper order.  */
 #ifdef WORDS_BIGENDIAN
       if (sizeof (addr) == 8)
-	addr <<= 32;
+	{
+	  /* We put the shift amount in a variable because it quiets gcc -Wall's
+	     warning on 32-bit-address systems: "warning: left shift count >=
+	     width of type".  The optimizer should constant-fold away this
+	     variable (you'd think the warning would come back with maximum
+	     optimization turned on, but it doesn't, on gcc 2.8.1, at least).
+	     Not sure if there's a cleaner way to get rid of the warning -- can
+	     this code be surrounded by an #ifdef that's never active on 32-bit
+	     systems?  Is there no way to check at configure-time whether we'll
+	     ever potentially encounter a 64-bit address? */
+	  int  shift_amount = 32;
+
+	  addr <<= shift_amount;
+	}
 #endif
       memcpy (where, &addr, 4);
       return 1;

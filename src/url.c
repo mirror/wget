@@ -61,7 +61,8 @@ extern int errno;
 # define URL_UNSAFE_CHARS "<>\"%{}|\\^[]`"
 #endif /* WINDOWS */
 
-#define UNSAFE_CHAR(c) (((c) >= 0 && (c) <= 32)			\
+#define UNSAFE_CHAR(c) (   ((unsigned char)(c) <= ' ')  /* ASCII 32  */  \
+   			|| ((unsigned char)(c) >  '~')  /* ASCII 127 */  \
 			|| strchr (URL_UNSAFE_CHARS, c))
 
 /* If S contains unsafe characters, free it and replace it with a
