@@ -178,4 +178,14 @@ void *memcpy ();
 #endif /* sun */
 #endif /* STDC_HEADERS */
 
+/* Some systems don't provide MAP_FAILED, a symbolic constant for the
+   value returned by mmap() when it doesn't work.  Usually, this
+   constant should be -1.  This only makes sense for files that use
+   mmap() and include sys/mman.h *before* sysdep.h, but doesn't hurt
+   others.  */
+
+#ifndef MAP_FAILED
+# define MAP_FAILED ((void *) -1)
+#endif
+
 #endif /* SYSDEP_H */

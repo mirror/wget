@@ -1,3 +1,8 @@
+2001-06-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* sysdep.h (MAP_FAILED): Provide MAP_FAILED for systems that don't
+	define it.
+
 2001-06-09  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
 	* ftp.h: Provide correct prototype for ftp_parse_ls().
