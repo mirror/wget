@@ -686,6 +686,15 @@ Error in server response, closing control connection.\n"));
     }
   else
     fp = opt.dfp;
+  
+  /* Some FTP servers return the total length of file after REST command,
+     others just return the remaining size. */  
+  if (*len && restval && expected_bytes
+      && (expected_bytes == *len - restval))
+  {
+    DEBUGP (("Lying FTP server found, adjusting.\n"));
+    expected_bytes = *len;
+  }
 
   if (*len)
     {

@@ -1,6 +1,9 @@
 2000-10-19  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* ftp.c (ftp_loop_internal): downloaded_file() enumerators changed.
+	(getftp): Applied Piotr Sulecki <Piotr.Sulecki@ios.krakow.pl>'s
+	patch to work around FTP servers that incorrectly respond to the
+	"REST" command with the remaining size rather than the total file size.
 		
 	* http.c (gethttp): Improved a comment and added code to tack on
 	".html" to text/html files without that extension when -E specified.
