@@ -143,7 +143,7 @@ and @code{Range} with @sc{http} servers that support them.
 By default, Wget supports proxy servers, which can lighten the network
 load, speed up retrieval and provide access behind firewalls.  However,
 if you are behind a firewall that requires that you use a socks style
-gateway, you can get the socks library and build wget with support for
+gateway, you can get the socks library and build Wget with support for
 socks.  Wget also supports the passive @sc{ftp} downloading as an
 option.
 
@@ -284,7 +284,7 @@ with your favorite browser, like @code{Lynx} or @code{Netscape}.
 Since Wget uses GNU getopts to process its arguments, every option has a
 short form and a long form.  Long options are more convenient to
 remember, but take time to type.  You may freely mix different option
-styles, or specify options after the command-line arguments. Thus you
+styles, or specify options after the command-line arguments.  Thus you
 may write:
 
 @example
@@ -466,29 +466,30 @@ automatically sets the number of tries to 1.
 @cindex no-clobber
 @item -nc
 @itemx --no-clobber
-If a file is downloaded more than once in the same directory, wget's
+If a file is downloaded more than once in the same directory, Wget's
 behavior depends on a few options, including @samp{-nc}.  In certain
-cases, the local file will be "clobbered", or overwritten, upon repeated
-download.  In other cases it will be preserved.
+cases, the local file will be @dfn{clobbered}, or overwritten, upon
+repeated download.  In other cases it will be preserved.
 
-When running wget without @samp{-N}, @samp{-nc}, or @samp{-r},
+When running Wget without @samp{-N}, @samp{-nc}, or @samp{-r},
 downloading the same file in the same directory will result in the
-original copy of @samp{@var{file}} being preserved and the second copy
-being named @samp{@var{file}.1}.  If that file is downloaded yet again,
-the third copy will be named @samp{@var{file}.2}, and so on.  When
-@samp{-nc} is specified, this behavior is suppressed, and wget will
+original copy of @var{file} being preserved and the second copy being
+named @samp{@var{file}.1}.  If that file is downloaded yet again, the
+third copy will be named @samp{@var{file}.2}, and so on.  When
+@samp{-nc} is specified, this behavior is suppressed, and Wget will
 refuse to download newer copies of @samp{@var{file}}.  Therefore,
-"no-clobber" is actually a misnomer in this mode -- it's not clobbering
-that's prevented (as the numeric suffixes were already preventing
-clobbering), but rather the multiple version saving that's prevented.
+``@code{no-clobber}'' is actually a misnomer in this mode---it's not
+clobbering that's prevented (as the numeric suffixes were already
+preventing clobbering), but rather the multiple version saving that's
+prevented.
 
-When running wget with @samp{-r}, but without @samp{-N} or @samp{-nc},
+When running Wget with @samp{-r}, but without @samp{-N} or @samp{-nc},
 re-downloading a file will result in the new copy simply overwriting the
 old.  Adding @samp{-nc} will prevent this behavior, instead causing the
 original version to be preserved and any newer copies on the server to
 be ignored.
 
-When running wget with @samp{-N}, with or without @samp{-r}, the
+When running Wget with @samp{-N}, with or without @samp{-r}, the
 decision as to whether or not to download a newer copy of a file depends
 on the local and remote timestamp and size of the file
 (@pxref{Time-Stamping}).  @samp{-nc} may not be specified at the same
@@ -604,7 +605,7 @@ reasonably expect the network error to be fixed before the retry.
 @item --waitretry=@var{seconds}
 If you don't want Wget to wait between @emph{every} retrieval, but only
 between retries of failed downloads, you can use this option.  Wget will
-use "linear backoff", waiting 1 second after the first failure on a
+use @dfn{linear backoff}, waiting 1 second after the first failure on a
 given file, then waiting 2 seconds after the second failure on that
 file, up to the maximum number of @var{seconds} you specify.  Therefore,
 a value of 10 will actually make Wget wait up to (1 + 2 + ... + 10) = 55
@@ -616,7 +617,7 @@ Note that this option is turned on by default in the global
 @cindex proxy
 @item -Y on/off
 @itemx --proxy=on/off
-Turn proxy support on or off. The proxy is on by default if the
+Turn proxy support on or off.  The proxy is on by default if the
 appropriate environmental variable is defined.
 
 @cindex quota
@@ -643,10 +644,10 @@ Setting quota to 0 or to @samp{inf} unlimits the download quota.
 @table @samp
 @item -nd
 @itemx --no-directories
-Do not create a hierarchy of directories when retrieving
-recursively. With this option turned on, all files will get saved to the
-current directory, without clobbering (if a name shows up more than
-once, the filenames will get extensions @samp{.n}).
+Do not create a hierarchy of directories when retrieving recursively.
+With this option turned on, all files will get saved to the current
+directory, without clobbering (if a name shows up more than once, the
+filenames will get extensions @samp{.n}).
 
 @item -x
 @itemx --force-directories
@@ -712,8 +713,8 @@ current directory).
 @item -E
 @itemx --html-extension
 If a file of type @samp{text/html} is downloaded and the URL does not
-end with the regexp "\.[Hh][Tt][Mm][Ll]?", this option will cause the
-suffix @samp{.html} to be appended to the local filename.  This is
+end with the regexp @samp{\.[Hh][Tt][Mm][Ll]?}, this option will cause
+the suffix @samp{.html} to be appended to the local filename.  This is
 useful, for instance, when you're mirroring a remote site that uses
 @samp{.asp} pages, but you want the mirrored pages to be viewable on
 your stock Apache server.  Another good use for this is when you're
@@ -722,7 +723,7 @@ downloading the output of CGIs.  A URL like
 @file{article.cgi?25.html}.
 
 Note that filenames changed in this way will be re-downloaded every time
-you re-mirror a site, because wget can't tell that the local
+you re-mirror a site, because Wget can't tell that the local
 @file{@var{X}.html} file corresponds to remote URL @samp{@var{X}} (since
 it doesn't yet know that the URL produces output of type
 @samp{text/html}.  To prevent this re-downloading, you must use
@@ -846,7 +847,7 @@ would have encountered it separately and downloaded it anyway.
 
 When @samp{--retr-symlinks} is specified, however, symbolic links are
 traversed and the pointed-to files are retrieved.  At this time, this
-option does not cause wget to traverse symlinks to directories and
+option does not cause Wget to traverse symlinks to directories and
 recurse through them, but in the future it should be enhanced to do
 this.
 
@@ -956,15 +957,16 @@ purposes.
 @cindex required images, downloading
 @item -p
 @itemx --page-requisites
-This option causes wget to download all the files that are necessary to
+This option causes Wget to download all the files that are necessary to
 properly display a given HTML page.  This includes such things as
 inlined images, sounds, and referenced stylesheets.
 
 Ordinarily, when downloading a single HTML page, any requisite documents
 that may be needed to display it properly are not downloaded.  Using
-@samp{-r} together with @samp{-l} can help, but since wget does not
+@samp{-r} together with @samp{-l} can help, but since Wget does not
 ordinarily distinguish between external and inlined documents, one is
-generally left with "leaf documents" that are missing their requisites.
+generally left with ``leaf documents'' that are missing their
+requisites.
 
 For instance, say document @file{1.html} contains an @code{<IMG>} tag
 referencing @file{1.gif} and an @code{<A>} tag pointing to external
@@ -980,7 +982,7 @@ wget -r -l 2 http://@var{site}/1.html
 
 then @file{1.html}, @file{1.gif}, @file{2.html}, @file{2.gif}, and
 @file{3.html} will be downloaded.  As you can see, @file{3.html} is
-without its requisite @file{3.gif} because wget is simply counting the
+without its requisite @file{3.gif} because Wget is simply counting the
 number of hops (up to 2) away from @file{1.html} in order to determine
 where to stop the recursion.  However, with this command:
 
@@ -1003,16 +1005,17 @@ wget -r -l 0 -p http://@var{site}/1.html
 @end example
 
 would download just @file{1.html} and @file{1.gif}, but unfortunately
-this is not the case, because @samp{-l 0} is equivalent to @samp{-l inf}
--- that is, infinite recursion.  To download a single HTML page (or a
-handful of them, all specified on the commandline or in a @samp{-i} @sc{url}
-input file) and its requisites, simply leave off @samp{-p} and @samp{-l}:
+this is not the case, because @samp{-l 0} is equivalent to
+@samp{-l inf}---that is, infinite recursion.  To download a single HTML
+page (or a handful of them, all specified on the commandline or in a
+@samp{-i} @sc{url} input file) and its requisites, simply leave off
+@samp{-p} and @samp{-l}:
 
 @example
 wget -p http://@var{site}/1.html
 @end example
 
-Note that wget will behave as if @samp{-r} had been specified, but only
+Note that Wget will behave as if @samp{-r} had been specified, but only
 that single page and its requisites will be downloaded.  Links from that
 page to external documents will not be followed.  Actually, to download
 a single page and all its requisites (even if they exist on separate
@@ -1077,7 +1080,7 @@ wget -Ga,area -H -k -K -nh -r http://@var{site}/@var{document}
 
 However, the author of this option came across a page with tags like
 @code{<LINK REL="home" HREF="/">} and came to the realization that
-@samp{-G} was not enough.  One can't just tell wget to ignore
+@samp{-G} was not enough.  One can't just tell Wget to ignore
 @code{<LINK>}, because then stylesheets will not be downloaded.  Now the
 best bet for downloading a single page and its requisites is the
 dedicated @samp{--page-requisites} option.
@@ -1703,10 +1706,10 @@ reject =
 The complete set of commands is listed below.  Legal values are listed
 after the @samp{=}.  Simple Boolean values can be set or unset using
 @samp{on} and @samp{off} or @samp{1} and @samp{0}.  A fancier kind of
-Boolean allowed in some cases is the "lockable" Boolean, which may be
-set to @samp{on}, @samp{off}, @samp{always}, or @samp{never}.  If an
+Boolean allowed in some cases is the @dfn{lockable Boolean}, which may
+be set to @samp{on}, @samp{off}, @samp{always}, or @samp{never}.  If an
 option is set to @samp{always} or @samp{never}, that value will be
-locked in for the duration of the wget invocation -- commandline options
+locked in for the duration of the Wget invocation---commandline options
 will not override.
 
 Some commands take pseudo-arbitrary values.  @var{address} values can be
@@ -1725,24 +1728,24 @@ Same as @samp{-A}/@samp{-R} (@pxref{Types of Files}).
 Enable/disable host-prefixed file names.  @samp{-nH} disables it.
 
 @item continue = on/off
-Enable/disable continuation of the retrieval -- the same as @samp{-c}
+Enable/disable continuation of the retrieval---the same as @samp{-c}
 (which enables it).
 
 @item background = on/off
-Enable/disable going to background -- the same as @samp{-b} (which enables
-it).
+Enable/disable going to background---the same as @samp{-b} (which
+enables it).
 
 @item backup_converted = on/off
-Enable/disable saving pre-converted files with the suffix @samp{.orig}
--- the same as @samp{-K} (which enables it).
+Enable/disable saving pre-converted files with the suffix
+@samp{.orig}---the same as @samp{-K} (which enables it).
 
 @c @item backups = @var{number}
 @c #### Document me!
 @c
 @item base = @var{string}
 Consider relative @sc{url}s in @sc{url} input files forced to be
-interpreted as @sc{html} as being relative to @var{string} -- the same
-as @samp{-B}.
+interpreted as @sc{html} as being relative to @var{string}---the same as
+@samp{-B}.
 
 @item bind_address = @var{address}
 Bind to @var{address}, like the @samp{--bind-address} option.
@@ -1760,13 +1763,13 @@ Ignore @var{n} remote directory components.
 Debug mode, same as @samp{-d}.
 
 @item delete_after = on/off
-Delete after download -- the same as @samp{--delete-after}.
+Delete after download---the same as @samp{--delete-after}.
 
 @item dir_prefix = @var{string}
-Top of directory tree -- the same as @samp{-P}.
+Top of directory tree---the same as @samp{-P}.
 
 @item dirstruct = on/off
-Turning dirstruct on or off -- the same as @samp{-x} or @samp{-nd},
+Turning dirstruct on or off---the same as @samp{-x} or @samp{-nd},
 respectively.
 
 @item domains = @var{string}
@@ -1792,28 +1795,28 @@ Specify the dot retrieval @dfn{style}, as with @samp{--dot-style}.
 
 @item exclude_directories = @var{string}
 Specify a comma-separated list of directories you wish to exclude from
-download -- the same as @samp{-X} (@pxref{Directory-Based Limits}).
+download---the same as @samp{-X} (@pxref{Directory-Based Limits}).
 
 @item exclude_domains = @var{string}
 Same as @samp{--exclude-domains} (@pxref{Domain Acceptance}).
 
 @item follow_ftp = on/off
-Follow @sc{ftp} links from @sc{html} documents -- the same as @samp{-f}.
+Follow @sc{ftp} links from @sc{html} documents---the same as @samp{-f}.
 
 @item follow_tags = @var{string}
 Only follow certain HTML tags when doing a recursive retrieval, just like
-@samp{--follow-tags}. 
+@samp{--follow-tags}.
 
 @item force_html = on/off
 If set to on, force the input filename to be regarded as an @sc{html}
-document -- the same as @samp{-F}.
+document---the same as @samp{-F}.
 
 @item ftp_proxy = @var{string}
 Use @var{string} as @sc{ftp} proxy, instead of the one specified in
 environment.
 
 @item glob = on/off
-Turn globbing on/off -- the same as @samp{-g}.
+Turn globbing on/off---the same as @samp{-g}.
 
 @item header = @var{string}
 Define an additional header, like @samp{--header}.
@@ -1838,23 +1841,23 @@ When set to on, ignore @code{Content-Length} header; the same as
 
 @item ignore_tags = @var{string}
 Ignore certain HTML tags when doing a recursive retrieval, just like
-@samp{-G} / @samp{--ignore-tags}. 
+@samp{-G} / @samp{--ignore-tags}.
 
 @item include_directories = @var{string}
 Specify a comma-separated list of directories you wish to follow when
-downloading -- the same as @samp{-I}.
+downloading---the same as @samp{-I}.
 
 @item input = @var{string}
 Read the @sc{url}s from @var{string}, like @samp{-i}.
 
 @item kill_longer = on/off
-Consider data longer than specified in content-length header
-as invalid (and retry getting it). The default behaviour is to save
-as much data as there is, provided there is more than or equal
-to the value in @code{Content-Length}.
+Consider data longer than specified in content-length header as invalid
+(and retry getting it).  The default behaviour is to save as much data
+as there is, provided there is more than or equal to the value in
+@code{Content-Length}.
 
 @item logfile = @var{string}
-Set logfile -- the same as @samp{-o}.
+Set logfile---the same as @samp{-o}.
 
 @item login = @var{string}
 Your user name on the remote machine, for @sc{ftp}.  Defaults to
@@ -1878,14 +1881,14 @@ Use @var{string} as the comma-separated list of domains to avoid in
 proxy loading, instead of the one specified in environment.
 
 @item output_document = @var{string}
-Set the output filename -- the same as @samp{-O}.
+Set the output filename---the same as @samp{-O}.
 
 @item page_requisites = on/off
 Download all ancillary documents necessary for a single HTML page to
-display properly -- the same as @samp{-p}.
+display properly---the same as @samp{-p}.
 
 @item passive_ftp = on/off/always/never
-Set passive @sc{ftp} -- the same as @samp{--passive-ftp}.  Some scripts
+Set passive @sc{ftp}---the same as @samp{--passive-ftp}.  Some scripts
 and @samp{.pm} (Perl module) files download files using @samp{wget
 --passive-ftp}.  If your firewall does not allow this, you can set
 @samp{passive_ftp = never} to override the commandline.
@@ -1903,27 +1906,28 @@ Set proxy authentication password to @var{string}, like @samp{--proxy-passwd}.
 @item referer = @var{string}
 Set HTTP @samp{Referer:} header just like @samp{--referer}.  (Note it
 was the folks who wrote the @sc{http} spec who got the spelling of
-"referrer" wrong.)
+``referrer'' wrong.)
 
 @item quiet = on/off
-Quiet mode -- the same as @samp{-q}.
+Quiet mode---the same as @samp{-q}.
 
 @item quota = @var{quota}
 Specify the download quota, which is useful to put in the global
-@file{wgetrc}. When download quota is specified, Wget will stop retrieving
-after the download sum has become greater than quota.  The quota can be
-specified in bytes (default), kbytes @samp{k} appended) or mbytes
-(@samp{m} appended).  Thus @samp{quota = 5m} will set the quota to 5
-mbytes. Note that the user's startup file overrides system settings.
+@file{wgetrc}.  When download quota is specified, Wget will stop
+retrieving after the download sum has become greater than quota.  The
+quota can be specified in bytes (default), kbytes @samp{k} appended) or
+mbytes (@samp{m} appended).  Thus @samp{quota = 5m} will set the quota
+to 5 mbytes.  Note that the user's startup file overrides system
+settings.
 
 @item reclevel = @var{n}
-Recursion level -- the same as @samp{-l}.
+Recursion level---the same as @samp{-l}.
 
 @item recursive = on/off
-Recursive on/off -- the same as @samp{-r}.
+Recursive on/off---the same as @samp{-r}.
 
 @item relative_only = on/off
-Follow only relative links -- the same as @samp{-L} (@pxref{Relative
+Follow only relative links---the same as @samp{-L} (@pxref{Relative
 Links}).
 
 @item remove_listing = on/off
@@ -1940,7 +1944,7 @@ what you are doing before changing the default (which is @samp{on}).
 
 @item server_response = on/off
 Choose whether or not to print the @sc{http} and @sc{ftp} server
-responses -- the same as @samp{-S}.
+responses---the same as @samp{-S}.
 
 @item simple_host_check = on/off
 Same as @samp{-nh} (@pxref{Host Checking}).
@@ -1949,27 +1953,27 @@ Same as @samp{-nh} (@pxref{Host Checking}).
 Same as @samp{-H}.
 
 @item timeout = @var{n}
-Set timeout value -- the same as @samp{-T}.
+Set timeout value---the same as @samp{-T}.
 
 @item timestamping = on/off
-Turn timestamping on/off. The same as @samp{-N} (@pxref{Time-Stamping}).
+Turn timestamping on/off.  The same as @samp{-N} (@pxref{Time-Stamping}).
 
 @item tries = @var{n}
-Set number of retries per @sc{url} -- the same as @samp{-t}.
+Set number of retries per @sc{url}---the same as @samp{-t}.
 
 @item use_proxy = on/off
-Turn proxy support on/off. The same as @samp{-Y}.
+Turn proxy support on/off.  The same as @samp{-Y}.
 
 @item verbose = on/off
-Turn verbose on/off -- the same as @samp{-v}/@samp{-nv}.
+Turn verbose on/off---the same as @samp{-v}/@samp{-nv}.
 
 @item wait = @var{n}
-Wait @var{n} seconds between retrievals -- the same as @samp{-w}.
+Wait @var{n} seconds between retrievals---the same as @samp{-w}.
 
 @item waitretry = @var{n}
-Wait up to @var{n} seconds between retries of failed retrievals only --
-the same as @samp{--waitretry}.  Note that this is turned on by default
-in the global @file{wgetrc}.
+Wait up to @var{n} seconds between retries of failed retrievals
+only---the same as @samp{--waitretry}.  Note that this is turned on by
+default in the global @file{wgetrc}.
 @end table
 
 @node Sample Wgetrc,  , Wgetrc Commands, Startup File
@@ -2466,9 +2470,8 @@ $ wget http://www.ifi.uio.no/~larsi/gnus.tar.gz &
 $ kill -HUP %%     # Redirect the output to wget-log
 @end example
 
-Other than that, Wget will not try to interfere with signals in any
-way. @kbd{C-c}, @code{kill -TERM} and @code{kill -KILL} should kill it
-alike.
+Other than that, Wget will not try to interfere with signals in any way.
+@kbd{C-c}, @code{kill -TERM} and @code{kill -KILL} should kill it alike.
 
 @node Appendices, Copying, Various, Top
 @chapter Appendices
@@ -2787,11 +2790,12 @@ subscribers of the Wget mailing list.
 @cindex GFDL
 
 Wget is @dfn{free software}, where ``free'' refers to liberty, not
-price.  The exact legal distribution terms follow below, but in short,
-it means that you have the right (freedom) to run and change and copy
-Wget, and even---if you want---charge money for any of those things.
-The sole restriction is that you have to grant your recipients the same
-rights.
+price.  As the GNU people like to say, think of ``free speech'' rather
+than ``free beer''.  The exact legal distribution terms follow below,
+but in short, you have the right (freedom) to run and change Wget and
+distribute it to other people, and even---if you want---charge money for
+any of these things.  The sole restriction is that you have to grant
+your recipients the same rights.
 
 This method of licensing software is also known as @dfn{open-source},
 because it requires that the recipients always receive a program's

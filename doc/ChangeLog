@@ -1,3 +1,11 @@
+2000-11-16  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.texi: Use --- consistently.
+	Spell "Wget" with starting capital letter consistently.
+	Use ``...'' or @dfn{} instead of simple double quotes where
+	appropriate.
+	Use double space as separator between sentences consistently.
+
 2000-11-15  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi (Robots): Rearrange text.  Mention the meta tag.
