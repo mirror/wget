@@ -64,8 +64,9 @@ SSL_OBJ = @SSL_OBJ@
 OBJ = $(ALLOCA) cmpt$o connect$o cookies$o fnmatch$o ftp$o        \
       ftp-basic$o ftp-ls$o $(OPIE_OBJ) getopt$o hash$o            \
       headers$o host$o html-parse$o html-url$o http$o init$o      \
-      log$o main$o $(MD5_OBJ) netrc$o rbuf$o recur$o retr$o       \
-      snprintf$o $(SSL_OBJ) url$o utils$o version$o safe-ctype$o
+      log$o main$o $(MD5_OBJ) netrc$o rbuf$o recur$o res$o        \
+      retr$o safe-ctype$o snprintf$o $(SSL_OBJ) url$o             \
+      utils$o version$o
 
 .SUFFIXES:
 .SUFFIXES: .c .o ._c ._o

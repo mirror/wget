@@ -1,3 +1,7 @@
+2001-05-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* res.c: New file.  Implement all RES-related code here.
+
 2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* version.c: Wget 1.7.1 is released.
