@@ -564,7 +564,7 @@ response_status (const struct response *resp, char **message)
 
   if (!resp->headers)
     {
-      /* For a HTTP/0.9 response, always assume 200 response. */
+      /* For a HTTP/0.9 response, assume status 200. */
       if (message)
 	*message = xstrdup (_("No headers, assuming HTTP/0.9"));
       return 200;
@@ -581,8 +581,8 @@ response_status (const struct response *resp, char **message)
     return -1;
   p += 4;
 
-  /* "/x.x" (optional because some Gnutella servers have been reported
-     as not sending the "/x.x" part.  */
+  /* Match the HTTP version.  This is optional because Gnutella
+     servers have been reported to not specify HTTP version.  */
   if (p < end && *p == '/')
     {
       ++p;
