@@ -80,10 +80,15 @@ so, delete this exception statement from your version.  */
 /* #undef HAVE_NLS */
 
 /* Define if you want the FTP support for Opie compiled in.  */
-#define USE_OPIE 1
+#define ENABLE_OPIE 1
+
+/* Define if you want the NTLM authorization support compiled in. */
+#ifdef HAVE_SSL
+# define ENABLE_NTLM
+#endif
 
 /* Define if you want the HTTP Digest Authorization compiled in.  */
-#define USE_DIGEST 1
+#define ENABLE_DIGEST 1
 
 /* Define if you want the debug output support compiled in.  */
 #define ENABLE_DEBUG 1
