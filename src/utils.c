@@ -792,6 +792,31 @@ suffix (const char *str)
     return NULL;
 }
 
+/* Return non-zero if FNAME ends with a typical HTML suffix.  The
+   following (case-insensitive) suffixes are presumed to be HTML files:
+   
+     html
+     htm
+     ?html (`?' matches one character)
+
+   #### CAVEAT.  This is not necessarily a good indication that FNAME
+   refers to a file that contains HTML!  */
+int
+has_html_suffix_p (const char *fname)
+{
+  char *suf;
+
+  if ((suf = suffix (fname)) == NULL)
+    return 0;
+  if (!strcasecmp (suf, "html"))
+    return 1;
+  if (!strcasecmp (suf, "htm"))
+    return 1;
+  if (suf[0] && !strcasecmp (suf + 1, "html"))
+    return 1;
+  return 0;
+}
+
 /* Read a line from FP and return the pointer to freshly allocated
    storage.  The stoarage space is obtained through malloc() and
    should be freed with free() when it is no longer needed.

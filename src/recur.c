@@ -510,7 +510,6 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 
   /* 6. */
   {
-    char *suf;
     /* Check for acceptance/rejection rules.  We ignore these rules
        for HTML documents because they might lead to other files which
        need to be downloaded.  Of course, we don't know which
@@ -521,14 +520,13 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
        * u->file is not "" (i.e. it is not a directory)
        and either:
          + there is no file suffix,
-	 + or there is a suffix, but is not "html" or "htm",
+	 + or there is a suffix, but is not "html" or "htm" or similar,
 	 + both:
 	   - recursion is not infinite,
 	   - and we are at its very end. */
 
     if (u->file[0] != '\0'
-	&& ((suf = suffix (url)) == NULL
-	    || (0 != strcmp (suf, "html") && 0 != strcmp (suf, "htm"))
+	&& (!has_html_suffix_p (url)
 	    || (opt.reclevel != INFINITE_RECURSION && depth >= opt.reclevel)))
       {
 	if (!acceptable (u->file))

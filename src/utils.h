@@ -70,6 +70,8 @@ int accdir PARAMS ((const char *s, enum accd));
 char *suffix PARAMS ((const char *s));
 int match_tail PARAMS ((const char *, const char *));
 
+int has_html_suffix_p PARAMS ((const char *));
+
 char *read_whole_line PARAMS ((FILE *));
 struct file_memory *read_file PARAMS ((const char *));
 void read_file_free PARAMS ((struct file_memory *));

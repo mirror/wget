@@ -1405,7 +1405,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   int use_ts, got_head = 0;	/* time-stamping info */
   char *filename_plus_orig_suffix;
   char *local_filename = NULL;
-  char *tms, *suf, *locf, *tmrate;
+  char *tms, *locf, *tmrate;
   uerr_t err;
   time_t tml = -1, tmr = -1;	/* local and remote time-stamps */
   long local_size = 0;		/* the size of the local file */
@@ -1465,9 +1465,8 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
       *dt |= RETROKF;
 
       /* #### Bogusness alert.  */
-      /* If its suffix is "html" or "htm", assume text/html.  */
-      if (((suf = suffix (*hstat.local_file)) != NULL)
-	  && (!strcmp (suf, "html") || !strcmp (suf, "htm")))
+      /* If its suffix is "html" or "htm" or similar, assume text/html.  */
+      if (has_html_suffix_p (*hstat.local_file))
 	*dt |= TEXTHTML;
 
       FREE_MAYBE (dummy);

@@ -384,12 +384,11 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 
       /* There is a possibility of having HTTP being redirected to
 	 FTP.  In these cases we must decide whether the text is HTML
-	 according to the suffix.  The HTML suffixes are `.html' and
-	 `.htm', case-insensitive.  */
+	 according to the suffix.  The HTML suffixes are `.html',
+	 `.htm' and a few others, case-insensitive.  */
       if (redirection_count && local_file && u->scheme == SCHEME_FTP)
 	{
-	  char *suf = suffix (local_file);
-	  if (suf && (!strcasecmp (suf, "html") || !strcasecmp (suf, "htm")))
+	  if (has_html_suffix_p (local_file))
 	    *dt |= TEXTHTML;
 	}
     }

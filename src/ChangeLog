@@ -1,3 +1,16 @@
+2002-04-12  Ian Abbott  <abbotti@mev.co.uk>
+
+	* utils.c (has_html_suffix_p): New function to test filename for
+	common html extensions.
+
+	* utils.h: Declare it.
+
+	* http.c (http_loop): Use it instead of previous test.
+
+	* retr.c (retrieve_url): Ditto.
+
+	* recur.c (download_child_p): Ditto.
+
 2002-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* config.h.in: Define _VA_LIST on Solaris to prevent stdio.h from
