@@ -1,3 +1,13 @@
+2004-03-19  David Fritz  <zeroxdf@att.net>
+
+	* mswindows.c (ws_hangup): Incorporate old fork_to_background()
+	code.  Add event name argument.
+	(fork_to_backgorund): Now a simple wrapper around ws_hangup().
+	(ws_handler): Correctly handle the case when neither CTRLC_BACKGND
+	nor CTRLBREAK_BACKGND are defined.  Don't bother handling close,
+	logoff, or shutdown events.  Call ws_hangup() with the correct
+	event name; don't assume it was CTRL+Break.
+
 2004-03-19  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (url_parse): Decode %HH sequences in host name.

@@ -70,8 +70,6 @@ extern int errno;
 /* Defined in log.c.  */
 void log_request_redirect_output PARAMS ((const char *));
 
-static int windows_nt_p;
-
 /* Windows version of xsleep in utils.c.  */
 
 void
@@ -109,13 +107,7 @@ ws_cleanup (void)
 }
 
 static void
-ws_hangup (void)
-{
-  log_request_redirect_output ("CTRL+Break");
-}
-
-void
-fork_to_background (void)
+ws_hangup (const char *reason)
 {
   /* Whether we arrange our own version of opt.lfilename here.  */
   int changedp = 0;
@@ -129,9 +121,20 @@ fork_to_background (void)
   if (changedp)
     printf (_("Output will be written to `%s'.\n"), opt.lfilename);
 
-  ws_hangup ();
-  if (!windows_nt_p)
-    FreeConsole ();
+  log_request_redirect_output (reason);
+
+  /* Detach process from the current console.  Under Windows 9x, if we
+     were launched from a 16-bit process (which is usually the case;
+     command.com is 16-bit) the parent process should resume right away.
+     Under NT or if launched from a 32-process under 9x, this is a futile
+     gesture as the parent will wait for us to terminate before resuming.  */
+  FreeConsole ();
+}
+
+void
+fork_to_background (void)
+{
+  ws_hangup ("fork");
 }
 
 static BOOL WINAPI
@@ -141,20 +144,17 @@ ws_handler (DWORD dwEvent)
     {
 #ifdef CTRLC_BACKGND
     case CTRL_C_EVENT:
+      ws_hangup ("CTRL+C");
+      return TRUE;
 #endif
 #ifdef CTRLBREAK_BACKGND
     case CTRL_BREAK_EVENT:
+      ws_hangup ("CTRL+Break");
+      return TRUE;
 #endif
-      fork_to_background ();
-      break;
-    case CTRL_SHUTDOWN_EVENT:
-    case CTRL_CLOSE_EVENT:
-    case CTRL_LOGOFF_EVENT:
     default:
-      ws_cleanup ();
       return FALSE;
     }
-  return TRUE;
 }
 
 static char *title_buf = NULL;
@@ -257,11 +257,6 @@ ws_startup (void)
   WORD requested;
   WSADATA data;
   int err;
-  OSVERSIONINFO os;
-
-  if (GetVersionEx (&os) == TRUE
-      && os.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
-    windows_nt_p = 1;
 
   requested = MAKEWORD (1, 1);
   err = WSAStartup (requested, &data);
