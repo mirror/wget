@@ -341,9 +341,10 @@ some cases is the "lockable" Boolean, which may be set to `on', `off',
 value will be locked in for the duration of the wget invocation -
 commandline options will not override.
 
-   Some commands take pseudo-arbitrary values.  STRING values can be
-any non-empty string.  N can be any positive integer, or `inf' for
-infinity, where appropriate.
+   Some commands take pseudo-arbitrary values.  ADDRESS values can be
+hostnames or dotted-quad IP addresses.  N can be any positive integer,
+or `inf' for infinity, where appropriate.  STRING values can be any
+non-empty string.
 
    Most of these commands have commandline equivalents (*Note
 Invoking::), though some of the more obscure or rarely used ones do not.
@@ -369,6 +370,9 @@ backup_converted = on/off
 base = STRING
      Consider relative URLs in URL input files forced to be interpreted
      as HTML as being relative to STRING - the same as `-B'.
+
+bind_address = ADDRESS
+     Bind to ADDRESS, like the `--bind-address' option.
 
 cache = on/off
      When set to off, disallow server-caching.  See the `-C' option.

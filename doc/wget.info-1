@@ -347,6 +347,12 @@ File: wget.info,  Node: Download Options,  Next: Directory Options,  Prev: Loggi
 Download Options
 ================
 
+`--bind-address=ADDRESS'
+     When making client TCP/IP connections, `bind()' to ADDRESS on the
+     local machine.  ADDRESS may be specified as a hostname or IP
+     address.  This option can be useful if your machine is bound to
+     multiple IPs.
+
 `-t NUMBER'
 `--tries=NUMBER'
      Set number of retries to NUMBER.  Specify 0 or `inf' for infinite

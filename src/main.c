@@ -137,6 +137,7 @@ Logging and input file:\n\
   -B,  --base=URL             prepends URL to relative links in -F -i file.\n\
 \n"), _("\
 Download:\n\
+       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n\
   -t,  --tries=NUMBER           set number of retries to NUMBER (0 unlimits).\n\
   -O   --output-document=FILE   write documents to FILE.\n\
   -nc, --no-clobber             don\'t clobber existing files or use .# suffixes.\n\
@@ -253,6 +254,7 @@ main (int argc, char *const *argv)
     { "append-output", required_argument, NULL, 'a' },
     { "backups", required_argument, NULL, 23 }, /* undocumented */
     { "base", required_argument, NULL, 'B' },
+    { "bind-address", required_argument, NULL, 27 },
     { "cache", required_argument, NULL, 'C' },
     { "cut-dirs", required_argument, NULL, 17 },
     { "delete-after", no_argument, NULL, 8 },
@@ -365,6 +367,9 @@ hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
 	  printf ("%s\n", ftp_getaddress ());
 	  exit (0);
 	  break;
+	case 27:
+	  setval ("bindaddress", optarg);
+ 	  break;
 	case 'b':
 	  setval ("background", "on");
 	  break;

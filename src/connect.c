@@ -87,6 +87,14 @@ make_connection (int *sock, char *hostname, unsigned short port)
   if ((*sock = socket (AF_INET, SOCK_STREAM, 0)) == -1)
     return CONSOCKERR;
 
+  if (opt.bind_address != NULL)
+    {
+      /* Bind the client side to the requested address. */
+      if (bind (*sock, (struct sockaddr *) opt.bind_address,
+		sizeof (*opt.bind_address)))
+	return CONSOCKERR;
+    }
+
   /* Connect the socket to the remote host.  */
   if (connect (*sock, (struct sockaddr *) &sock_name, sizeof (sock_name)))
     {
@@ -118,8 +126,15 @@ bindport (unsigned short *port)
   if (setsockopt (msock, SOL_SOCKET, SO_REUSEADDR,
 		  (char *)&optval, sizeof (optval)) < 0)
     return CONSOCKERR;
-  srv.sin_family = AF_INET;
-  srv.sin_addr.s_addr = htonl (INADDR_ANY);
+
+  if (opt.bind_address == NULL)
+    {
+      srv.sin_family = AF_INET;
+      srv.sin_addr.s_addr = htonl (INADDR_ANY);
+    }
+  else
+    srv = *opt.bind_address;
+
   srv.sin_port = htons (*port);
   if (bind (msock, addr, sizeof (struct sockaddr_in)) < 0)
     {

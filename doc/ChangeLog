@@ -1,6 +1,7 @@
 2000-10-23  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (Recursive Retrieval Options): Improved --delete-after docs.
+	(Download Options): Documented Rob Mayoff's new --bind-address option.
 	
 2000-10-20  Dan Harkless  <dan-wget@dilvish.speed.net>
 

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.5.2-b1\n"
-"POT-Creation-Date: 2000-10-23 20:49-0700\n"
+"POT-Creation-Date: 2000-10-23 23:14-0700\n"
 "PO-Revision-Date: 1998-06-13 15:22+02:00\n"
 "Last-Translator: Giovanni Bortolozzo <borto@dei.unipd.it>\n"
 "Language-Team: Italian <it@li.org>\n"
@@ -196,7 +196,7 @@ msgstr ""
 "%s (%s) - `%s' salvato [%ld]\n"
 "\n"
 
-#: src/ftp.c:1022 src/main.c:744 src/recur.c:468 src/retr.c:470
+#: src/ftp.c:1022 src/main.c:749 src/recur.c:468 src/retr.c:470
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Rimuovo %s.\n"
@@ -564,44 +564,56 @@ msgstr "%s (%s) - Errore di lettura al byte %ld (%s). "
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr "%s (%s) - Errore di lettura al %ld/%ld (%s). "
 
-#: src/init.c:320 src/netrc.c:260
+#: src/init.c:330 src/netrc.c:260
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Impossibile leggere %s (%s).\n"
 
-#: src/init.c:341 src/init.c:347
+#: src/init.c:351 src/init.c:357
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Errore in %s alla linea %d.\n"
 
-#: src/init.c:378
+#: src/init.c:388
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr ""
 "%s: Attenzione: Sia il wgetrc di sistema che quello personale puntano\n"
 "                  a `%s'.\n"
 
-#: src/init.c:466
+#: src/init.c:476
 #, c-format
 msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr "%s: BUG: comando `%s' sconosciuto, valore `%s'.\n"
 
-#: src/init.c:493
+#: src/init.c:498
+#, fuzzy, c-format
+msgid "%s: Out of memory.\n"
+msgstr "%s: %s: Memoria insufficiente.\n"
+
+#: src/init.c:504
+#, fuzzy, c-format
+msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
+msgstr ""
+"%s: Attenzione: impossibile fare la risoluzione inversa dell'indirizzo\n"
+"      IP locale.\n"
+
+#: src/init.c:532
 #, c-format
 msgid "%s: %s: Please specify on or off.\n"
 msgstr "%s: %s: Specificare on oppure off.\n"
 
-#: src/init.c:537
+#: src/init.c:576
 #, fuzzy, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr "%s: %s: Specificare on oppure off.\n"
 
-#: src/init.c:556 src/init.c:813 src/init.c:835 src/init.c:908
+#: src/init.c:595 src/init.c:852 src/init.c:874 src/init.c:947
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: Specificazione non valida `%s'\n"
 
-#: src/init.c:669 src/init.c:691 src/init.c:713 src/init.c:739
+#: src/init.c:708 src/init.c:730 src/init.c:752 src/init.c:778
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "wget: %s: Specificazione non valida `%s'\n"
@@ -677,6 +689,8 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Download:\n"
+"       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local "
+"host.\n"
 "  -t,  --tries=NUMBER           set number of retries to NUMBER (0 "
 "unlimits).\n"
 "  -O   --output-document=FILE   write documents to FILE.\n"
@@ -713,7 +727,7 @@ msgstr ""
 "  -Q,  --quota=NUMERO           imposta la quota di scarico a NUMERO.\n"
 "\n"
 
-#: src/main.c:153
+#: src/main.c:154
 msgid ""
 "Directories:\n"
 "  -nd  --no-directories            don't create directories.\n"
@@ -733,7 +747,7 @@ msgstr ""
 "                                    directory remote.\n"
 "\n"
 
-#: src/main.c:160
+#: src/main.c:161
 #, fuzzy
 msgid ""
 "HTTP options:\n"
@@ -766,7 +780,7 @@ msgstr ""
 "                             Wget/VERSIONE.\n"
 "\n"
 
-#: src/main.c:173
+#: src/main.c:174
 #, fuzzy
 msgid ""
 "FTP options:\n"
@@ -782,7 +796,7 @@ msgstr ""
 "       --passive-ftp     usa il modo di trasferimento \"passivo\".\n"
 "\n"
 
-#: src/main.c:178
+#: src/main.c:179
 #, fuzzy
 msgid ""
 "Recursive retrieval:\n"
@@ -810,7 +824,7 @@ msgstr ""
 "  -nr, --dont-remove-listing   non rimuove i file `.listing'.\n"
 "\n"
 
-#: src/main.c:188
+#: src/main.c:189
 #, fuzzy
 msgid ""
 "Recursive accept/reject:\n"
@@ -852,17 +866,17 @@ msgstr ""
 "  -np, --no-parent                   non risale alla directory genitrice.\n"
 "\n"
 
-#: src/main.c:203
+#: src/main.c:204
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr "Inviare segnalazioni di bug e suggerimenti a <bug-wget@gnu.org>.\n"
 
-#: src/main.c:378
+#: src/main.c:383
 #, c-format
 msgid "%s: debug support not compiled in.\n"
 msgstr ""
 "wget: %s: supporto per il debug non attivato in fase di compilazione.\n"
 
-#: src/main.c:430
+#: src/main.c:435
 msgid ""
 "Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.\n"
 "This program is distributed in the hope that it will be useful,\n"
@@ -876,7 +890,7 @@ msgstr ""
 "COMMERCIABILITA` o di ADEGUATEZZA AD UN PARTICOLARE SCOPO. Si consulti\n"
 "la GNU General Public License per maggiori dettagli.\n"
 
-#: src/main.c:436
+#: src/main.c:441
 #, fuzzy
 msgid ""
 "\n"
@@ -885,45 +899,45 @@ msgstr ""
 "\n"
 "Scritto da Hrvoje Niksic <hniksic@srce.hr>.\n"
 
-#: src/main.c:510
+#: src/main.c:515
 #, c-format
 msgid "%s: %s: invalid command\n"
 msgstr "%s: %s: comando non valido\n"
 
-#: src/main.c:563
+#: src/main.c:568
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: opzione illegale -- `-n%c'\n"
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:566 src/main.c:608 src/main.c:666
+#: src/main.c:571 src/main.c:613 src/main.c:671
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Usare `%s --help' per ulteriori opzioni.\n"
 
-#: src/main.c:646
+#: src/main.c:651
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "Non posso essere prolisso e silenzioso allo stesso tempo.\n"
 
-#: src/main.c:652
+#: src/main.c:657
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr ""
 "Non posso impostare le date e contemporaneamente non modificare\n"
 "i vecchi file.\n"
 
 #. No URL specified.
-#: src/main.c:661
+#: src/main.c:666
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: manca l'URL\n"
 
-#: src/main.c:759
+#: src/main.c:764
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "Non ci sono URL in %s.\n"
 
-#: src/main.c:768
+#: src/main.c:773
 #, c-format
 msgid ""
 "\n"
@@ -934,14 +948,14 @@ msgstr ""
 "FINITO --%s--\n"
 "Scaricati: %s byte in %d file\n"
 
-#: src/main.c:773
+#: src/main.c:778
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "Quota per lo scarico (%s byte) SUPERATA!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:800
+#: src/main.c:805
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "%s ricevuti, redirigo l'output su `%%s'.\n"
 

@@ -26,8 +26,8 @@ notice identical to this one.
 
 Indirect:
 wget.info-1: 961
-wget.info-2: 48494
-wget.info-3: 97018
+wget.info-2: 48745
+wget.info-3: 97411
 
 Tag Table:
 (Indirect)
@@ -39,50 +39,50 @@ Node: Option Syntax8163
 Node: Basic Startup Options9587
 Node: Logging and Input File Options10287
 Node: Download Options12812
-Node: Directory Options20659
-Node: HTTP Options23137
-Node: FTP Options27853
-Node: Recursive Retrieval Options29835
-Node: Recursive Accept/Reject Options34856
-Node: Recursive Retrieval38082
-Node: Following Links40380
-Node: Relative Links41408
-Node: Host Checking41922
-Node: Domain Acceptance43947
-Node: All Hosts45617
-Node: Types of Files46044
-Node: Directory-Based Limits48494
-Node: FTP Links51134
-Node: Time-Stamping52004
-Node: Time-Stamping Usage53641
-Node: HTTP Time-Stamping Internals55210
-Node: FTP Time-Stamping Internals56680
-Node: Startup File57888
-Node: Wgetrc Location58761
-Node: Wgetrc Syntax59576
-Node: Wgetrc Commands60291
-Node: Sample Wgetrc68548
-Node: Examples73567
-Node: Simple Usage74174
-Node: Advanced Usage76568
-Node: Guru Usage79319
-Node: Various80981
-Node: Proxies81505
-Node: Distribution84270
-Node: Mailing List84621
-Node: Reporting Bugs85320
-Node: Portability87105
-Node: Signals88480
-Node: Appendices89134
-Node: Robots89549
-Node: Introduction to RES90696
-Node: RES Format92589
-Node: User-Agent Field93693
-Node: Disallow Field94457
-Node: Norobots Examples95068
-Node: Security Considerations96022
-Node: Contributors97018
-Node: Copying99661
-Node: Concept Index118824
+Node: Directory Options20910
+Node: HTTP Options23388
+Node: FTP Options28104
+Node: Recursive Retrieval Options30086
+Node: Recursive Accept/Reject Options35107
+Node: Recursive Retrieval38333
+Node: Following Links40631
+Node: Relative Links41659
+Node: Host Checking42173
+Node: Domain Acceptance44198
+Node: All Hosts45868
+Node: Types of Files46295
+Node: Directory-Based Limits48745
+Node: FTP Links51385
+Node: Time-Stamping52255
+Node: Time-Stamping Usage53892
+Node: HTTP Time-Stamping Internals55461
+Node: FTP Time-Stamping Internals56931
+Node: Startup File58139
+Node: Wgetrc Location59012
+Node: Wgetrc Syntax59827
+Node: Wgetrc Commands60542
+Node: Sample Wgetrc68941
+Node: Examples73960
+Node: Simple Usage74567
+Node: Advanced Usage76961
+Node: Guru Usage79712
+Node: Various81374
+Node: Proxies81898
+Node: Distribution84663
+Node: Mailing List85014
+Node: Reporting Bugs85713
+Node: Portability87498
+Node: Signals88873
+Node: Appendices89527
+Node: Robots89942
+Node: Introduction to RES91089
+Node: RES Format92982
+Node: User-Agent Field94086
+Node: Disallow Field94850
+Node: Norobots Examples95461
+Node: Security Considerations96415
+Node: Contributors97411
+Node: Copying100054
+Node: Concept Index119217
 
 End Tag Table

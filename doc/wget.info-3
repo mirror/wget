@@ -474,9 +474,11 @@ Concept Index
 * authentication:                        HTTP Options.
 * backing up converted files:            Recursive Retrieval Options.
 * base for relative links in input file: Logging and Input File Options.
+* bind() address:                        Download Options.
 * bug reports:                           Reporting Bugs.
 * bugs:                                  Reporting Bugs.
 * cache:                                 HTTP Options.
+* client IP address:                     Download Options.
 * clobbering, file:                      Download Options.
 * command line:                          Invoking.
 * Content-Length, ignore:                HTTP Options.
@@ -520,6 +522,7 @@ Concept Index
 * incremental updating:                  Time-Stamping.
 * input-file:                            Logging and Input File Options.
 * invoking:                              Invoking.
+* IP address, client:                    Download Options.
 * latest version:                        Distribution.
 * link conversion:                       Recursive Retrieval Options.
 * links:                                 Following Links.
@@ -547,8 +550,8 @@ Concept Index
 * pause:                                 Download Options.
 * portability:                           Portability.
 * proxies:                               Proxies.
-* proxy <1>:                             HTTP Options.
-* proxy:                                 Download Options.
+* proxy <1>:                             Download Options.
+* proxy:                                 HTTP Options.
 * proxy authentication:                  HTTP Options.
 * proxy filling:                         Recursive Retrieval Options.
 * proxy password:                        HTTP Options.

@@ -1,13 +1,28 @@
 2000-10-23  Dan Harkless  <dan-wget@dilvish.speed.net>
 
+	* connect.c (make_connection and bindport): Manually applied Rob
+ 	Mayoff <mayoff@dqd.com>'s 1.5.3 patch to add --bind-address,
+ 	changing coding style to GNU's.
+
 	* ftp.c (ftp_loop_internal): --delete-after wasn't implemented for
  	files downloaded via FTP.  Per a comment, .listing files were not
 	counted towards number of bytes and files downloaded because they're 
 	deleted anyway.  Well, they aren't under -nr, so count them then.
+
+	* init.c: Manually applied Rob Mayoff's 1.5.3 patch to add
+ 	--bind-address, alphabetizing, changing coding style to GNU's,
+ 	commenting, and renaming cmd_ip_address() to cmd_address() to
+ 	imply hostnames also okay.
 		
-	* main.c (main): --delete-after didn't delete the root of the tree.
-	Ignore --convert-links if --delete-after was specified.
+	* main.c (main): --delete-after didn't delete the root of the
+ 	tree.  Ignore --convert-links if --delete-after was specified.
+  	Manually applied Rob Mayoff's 1.5.3 patch to add --bind-address,
+ 	fixing duplicate use of added-since-1.5.3 case value.
 	(print_help): Clarified that --delete-after deletes local files.
+	Rob forgot to add a line for his new --bind-address option.
+		
+	* options.h (struct options): Manually applied Rob Mayoff's patch
+	to add --bind-address (bind_address structure member).
 		
 	* recur.c (recursive_retrieve): Improved comment; added DEBUGP().
 	Ignore --convert-links if --delete-after was specified.

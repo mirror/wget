@@ -146,6 +146,8 @@ struct options
 
   int page_requisites;		/* Whether we need to download all files
 				   necessary to display a page properly. */
+
+  struct sockaddr_in *bind_address; /* What local IP address to bind to. */
 };
 
 #ifndef OPTIONS_DEFINED_HERE
