@@ -328,9 +328,13 @@ parse_netrc (const char *path)
 	    p ++;
 	  }
 
-	  /* if field was quoted, squash the trailing quotation mark */
+	  /* If field was quoted, squash the trailing quotation mark
+	     and reset quote flag.  */
 	  if (quote)
-	    shift_left(p);
+	    {
+	      shift_left (p);
+	      quote = 0;
+	    }
 
 	  /* Null-terminate the token, if it isn't already.  */
 	  if (*p)

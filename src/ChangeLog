@@ -1,3 +1,8 @@
+2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* netrc.c (parse_netrc): Reset the QUOTE flag after the closing
+	quote.
+
 2003-10-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (is_valid_ipv6_address): Reformat to GNU coding style.
