@@ -200,6 +200,6 @@
 #define socklen_t int
 
 /* Define if you have uint32_t.  */
-#define HAVE_UINT32_T
+#undef HAVE_UINT32_T
 
 #endif /* CONFIG_H */
