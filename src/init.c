@@ -560,10 +560,12 @@ setval_internal (int comind, const char *com, const char *val)
 /* Run command COM with value VAL.  If running the command produces an
    error, report the error and exit.
 
-   This is intended to be called from main() with commands not
-   provided by the user, therefore it aborts when an unknown command
-   is encountered.  Once the COMIND's are exported to init.h, this
-   function will be changed to accept COMIND directly.  */
+   This is intended to be called from main() to modify Wget's behavior
+   through command-line switches.  Since COM is hard-coded in main(),
+   it is not canonicalized, and this aborts when COM is not found.
+
+   If COMIND's are exported to init.h, this function will be changed
+   to accept COMIND directly.  */
 
 void
 setoptval (const char *com, const char *val)
