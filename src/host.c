@@ -173,7 +173,7 @@ address_list_from_addrinfo (struct addrinfo *ai)
   for (i = 0, ai = ai_head; ai; ai = ai->ai_next)
     if (ai->ai_family == AF_INET6) 
       {
-	struct sockaddr_in6 *sin6 = (struct sockaddr_in6*)ai->ai_addr;
+	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)ai->ai_addr;
 	memcpy (al->addresses + i, &sin6->sin6_addr, 16);
 	++i;
       } 
