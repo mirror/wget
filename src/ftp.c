@@ -69,7 +69,7 @@ typedef struct
   int st;			/* connection status */
   int cmd;			/* command code */
   struct rbuf rbuf;		/* control connection buffer */
-  long dltime;			/* time of the download */
+  double dltime;		/* time of the download in msecs */
   enum stype rs;		/* remote system reported by ftp server */ 
   char *id;			/* initial directory */
   char *target;			/* target file name */

@@ -33,14 +33,14 @@ so, delete this exception statement from your version.  */
 #include "rbuf.h"
 
 int get_contents PARAMS ((int, FILE *, long *, long, long, struct rbuf *,
-			  int, long *));
+			  int, double *));
 
 uerr_t retrieve_url PARAMS ((const char *, char **, char **,
 			     const char *, int *));
 uerr_t retrieve_from_file PARAMS ((const char *, int, int *));
 
-char *retr_rate PARAMS ((long, long, int));
-double calc_rate PARAMS ((long, long, int *));
+char *retr_rate PARAMS ((long, double, int));
+double calc_rate PARAMS ((long, double, int *));
 void printwhat PARAMS ((int, int));
 
 void downloaded_increase PARAMS ((unsigned long));

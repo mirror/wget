@@ -584,7 +584,7 @@ struct http_stat
   char *remote_time;		/* remote time-stamp string */
   char *error;			/* textual HTTP error */
   int statcode;			/* status code */
-  long dltime;			/* time of the download */
+  double dltime;		/* time of the download in msecs */
   int no_truncate;		/* whether truncating the file is
 				   forbidden. */
   const char *referer;		/* value of the referer header. */

@@ -1602,9 +1602,20 @@ wtimer_sys_set (wget_sys_time *wst)
 #endif
 
 #ifdef TIMER_WINDOWS
+  /* We use GetSystemTime to get the elapsed time.  MSDN warns that
+     system clock adjustments can skew the output of GetSystemTime
+     when used as a timer and gives preference to GetTickCount and
+     high-resolution timers.  But GetTickCount can overflow, and hires
+     timers are typically used for profiling, not for regular time
+     measurement.  Since we handle clock skew anyway, we just use
+     GetSystemTime.  */
   FILETIME ft;
   SYSTEMTIME st;
   GetSystemTime (&st);
+
+  /* As recommended by MSDN, we convert SYSTEMTIME to FILETIME, copy
+     FILETIME to ULARGE_INTEGER, and use regular 64-bit integer
+     arithmetic on that.  */
   SystemTimeToFileTime (&st, &ft);
   wst->HighPart = ft.dwHighDateTime;
   wst->LowPart  = ft.dwLowDateTime;
@@ -1643,7 +1654,8 @@ wtimer_sys_diff (wget_sys_time *wst1, wget_sys_time *wst2)
 
 /* Return the number of milliseconds elapsed since the timer was last
    reset.  It is allowed to call this function more than once to get
-   increasingly higher elapsed values.  */
+   increasingly higher elapsed values.  These timers handle clock
+   skew.  */
 
 double
 wtimer_elapsed (struct wget_timer *wt)
@@ -1679,16 +1691,17 @@ wtimer_elapsed (struct wget_timer *wt)
 }
 
 /* Return the assessed granularity of the timer implementation, in
-   milliseconds.  This is important for certain code that tries to
-   deal with "zero" time intervals.  */
+   milliseconds.  This is used by code that tries to substitute a
+   better value for timers that have returned zero.  */
 
 double
 wtimer_granularity (void)
 {
 #ifdef TIMER_GETTIMEOFDAY
-  /* Granularity of gettimeofday is hugely architecture-dependent.
-     However, it appears that on modern machines it is better than
-     1ms.  Assume 100 usecs.  */
+  /* Granularity of gettimeofday varies wildly between architectures.
+     However, it appears that on modern machines it tends to be better
+     than 1ms.  Assume 100 usecs.  (Perhaps the configure process
+     could actually measure this?)  */
   return 0.1;
 #endif
 
@@ -1698,7 +1711,8 @@ wtimer_granularity (void)
 #endif
 
 #ifdef TIMER_WINDOWS
-  /* #### Fill this in! */
+  /* According to MSDN, GetSystemTime returns a broken-down time
+     structure the smallest member of which are milliseconds.  */
   return 1;
 #endif
 }

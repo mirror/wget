@@ -35,8 +35,8 @@ void set_progress_implementation PARAMS ((const char *));
 void progress_schedule_redirect PARAMS ((void));
 
 void *progress_create PARAMS ((long, long));
-void progress_update PARAMS ((void *, long, long));
-void progress_finish PARAMS ((void *, long));
+void progress_update PARAMS ((void *, long, double));
+void progress_finish PARAMS ((void *, double));
 
 RETSIGTYPE progress_handle_sigwinch PARAMS ((int));
 

@@ -5,8 +5,8 @@ This file is part of GNU Wget.
 
 GNU Wget is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
 
 GNU Wget is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -68,7 +68,7 @@ int global_download_count;
 
 static struct {
   long bytes;
-  long dltime;
+  double dltime;
 } limit_data;
 
 static void
@@ -84,26 +84,26 @@ limit_bandwidth_reset (void)
    TIMER the timer, and ADJUSTMENT the previous.  */
 
 static void
-limit_bandwidth (long bytes, long delta)
+limit_bandwidth (long bytes, double delta)
 {
-  long expected;
+  double expected;
 
   limit_data.bytes += bytes;
   limit_data.dltime += delta;
 
-  expected = (long)(1000.0 * limit_data.bytes / opt.limit_rate);
+  expected = 1000.0 * limit_data.bytes / opt.limit_rate;
 
   if (expected > limit_data.dltime)
     {
-      long slp = expected - limit_data.dltime;
+      double slp = expected - limit_data.dltime;
       if (slp < 200)
 	{
-	  DEBUGP (("deferring a %ld ms sleep (%ld/%ld) until later.\n",
+	  DEBUGP (("deferring a %.2f ms sleep (%ld/%.2f).\n",
 		   slp, limit_data.bytes, limit_data.dltime));
 	  return;
 	}
-      DEBUGP (("sleeping %ld ms\n", slp));
-      usleep (1000 * slp);
+      DEBUGP (("sleeping %.2f ms\n", slp));
+      usleep ((unsigned long) (1000 * slp));
     }
 
   limit_data.bytes = 0;
@@ -135,13 +135,13 @@ limit_bandwidth (long bytes, long delta)
    from fd immediately, flush or discard the buffer.  */
 int
 get_contents (int fd, FILE *fp, long *len, long restval, long expected,
-	      struct rbuf *rbuf, int use_expected, long *elapsed)
+	      struct rbuf *rbuf, int use_expected, double *elapsed)
 {
   int res = 0;
-  static char c[8192];
+  static char c[16384];
   void *progress = NULL;
   struct wget_timer *timer = wtimer_allocate ();
-  long dltime = 0, last_dltime = 0;
+  double dltime = 0, last_dltime = 0;
 
   *len = restval;
 
@@ -236,7 +236,7 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
    appropriate for the speed.  If PAD is non-zero, strings will be
    padded to the width of 7 characters (xxxx.xx).  */
 char *
-retr_rate (long bytes, long msecs, int pad)
+retr_rate (long bytes, double msecs, int pad)
 {
   static char res[20];
   static char *rate_names[] = {"B/s", "KB/s", "MB/s", "GB/s" };
@@ -256,7 +256,7 @@ retr_rate (long bytes, long msecs, int pad)
    UNITS is zero for B/s, one for KB/s, two for MB/s, and three for
    GB/s.  */
 double
-calc_rate (long bytes, long msecs, int *units)
+calc_rate (long bytes, double msecs, int *units)
 {
   double dlrate;
 
@@ -264,9 +264,9 @@ calc_rate (long bytes, long msecs, int *units)
   assert (bytes >= 0);
 
   if (msecs == 0)
-    /* If elapsed time is 0, it means we're under the granularity of
-       the timer.  This often happens on systems that use time() for
-       the timer.  */
+    /* If elapsed time is exactly zero, it means we're under the
+       granularity of the timer.  This often happens on systems that
+       use time() for the timer.  */
     msecs = wtimer_granularity ();
 
   dlrate = (double)1000 * bytes / msecs;

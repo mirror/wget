@@ -1,5 +1,13 @@
 2003-09-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* progress.c (update_speed_ring): Moved the speed ring update to a
+	separate function and documented it better.
+
+	* progress.c: Use `double' for most timers to support granularity
+	smaller than 1ms.
+
+2003-09-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.h (XDIGIT_TO_XCHAR): Implement as index into a literal
 	string.
 	(XDIGIT_TO_xchar): Ditto.
