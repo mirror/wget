@@ -1,5 +1,10 @@
 2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* gen_sslfunc.c (ssl_init_prng): Make the printed message
+	translatable.
+
+2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (scheme_disable): New function.
 
 	* main.c (main): Call ssl_init_prng from here rather than from
