@@ -1,9 +1,9 @@
 Authors of GNU Wget.
 
 [ Note that this file does not attempt to list all the contributors to
-  Wget; look at the ChangeLog for that.  This is a list of people who
-  contributed sizeable amounts of code and assigned the copyright to the
-  FSF. ]
+  Wget; look at the ChangeLogs for that.  This is a list of people who
+  contributed sizeable amounts of code and assigned the copyright to
+  the FSF. ]
 
 Hrvoje Niksic.  Designed and implemented Wget.
 
@@ -24,3 +24,6 @@ Thomas Lussnig.  Implemented IPv6 support.
 
 Ian Abbott.  Contributed bugfixes, Windows-related fixes, provided a
 prototype implementation of the new recursive code, and more.
+
+Mauro Tortonesi.  Improved IPv6 support, adding support for dual
+family systems.  Refactored FTP IPv6 code.
