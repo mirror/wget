@@ -4,124 +4,77 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU Wget 1.7-dev\n"
-"POT-Creation-Date: 2001-02-23 13:23-0800\n"
-"PO-Revision-Date: 1998-12-07 22:18 +0200\n"
+"Project-Id-Version: GNU Wget 1.6\n"
+"POT-Creation-Date: 2000-11-23 11:23+0100\n"
+"PO-Revision-Date: 2001-02-05 21:53+02:00\n"
 "Last-Translator: Toomas Soome <tsoome@ut.ee>\n"
 "Language-Team: Estonian <linux-ee@eenet.ee>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: src/ftp-ls.c:779
-msgid "Usupported listing type, trying Unix listing parser.\n"
-msgstr ""
-
-#: src/ftp-ls.c:824 src/ftp-ls.c:826
-#, c-format
-msgid "Index of /%s on %s:%d"
-msgstr "/%s indeks serveris %s:%d"
-
-#: src/ftp-ls.c:848
-msgid "time unknown       "
-msgstr "tundmatu aeg       "
-
-#: src/ftp-ls.c:852
-#, fuzzy
-msgid "File        "
-msgstr "Fail        "
-
-#: src/ftp-ls.c:855
-msgid "Directory   "
-msgstr "Kataloog    "
-
-#: src/ftp-ls.c:858
-msgid "Link        "
-msgstr "Viide       "
-
-#: src/ftp-ls.c:861
-msgid "Not sure    "
-msgstr "Pole kindel "
-
-#: src/ftp-ls.c:879
-#, c-format
-msgid " (%s bytes)"
-msgstr " (%s baiti)"
-
 #. Login to the server:
 #. First: Establish the control connection.
-#: src/ftp.c:151 src/http.c:618
+#: src/ftp.c:147 src/http.c:348
 #, c-format
 msgid "Connecting to %s:%hu... "
 msgstr "Võtan ühendust serveriga %s:%hu... "
 
-#: src/ftp.c:173 src/ftp.c:517 src/http.c:635
+#: src/ftp.c:169 src/ftp.c:411 src/http.c:365
 #, c-format
 msgid "Connection to %s:%hu refused.\n"
 msgstr "Ei saa ühendust serveriga %s:%hu.\n"
 
 #. Second: Login with proper USER/PASS sequence.
-#: src/ftp.c:194 src/http.c:646
+#: src/ftp.c:190 src/http.c:376
 msgid "connected!\n"
 msgstr "ühendus loodud!\n"
 
-#: src/ftp.c:195
+#: src/ftp.c:191
 #, c-format
 msgid "Logging in as %s ... "
 msgstr "Meldin serverisse kasutajana %s ... "
 
-#: src/ftp.c:204 src/ftp.c:257 src/ftp.c:288 src/ftp.c:313 src/ftp.c:407
-#: src/ftp.c:459 src/ftp.c:553 src/ftp.c:626 src/ftp.c:674 src/ftp.c:722
+#: src/ftp.c:200 src/ftp.c:253 src/ftp.c:301 src/ftp.c:353 src/ftp.c:447
+#: src/ftp.c:520 src/ftp.c:568 src/ftp.c:616
 msgid "Error in server response, closing control connection.\n"
 msgstr "Vigane serveri vastus, sulgen juhtühenduse.\n"
 
-#: src/ftp.c:212
+#: src/ftp.c:208
 msgid "Error in server greeting.\n"
 msgstr "Vigane serveri tervitus.\n"
 
-#: src/ftp.c:220 src/ftp.c:322 src/ftp.c:416 src/ftp.c:468 src/ftp.c:563
-#: src/ftp.c:636 src/ftp.c:684 src/ftp.c:732
+#: src/ftp.c:216 src/ftp.c:262 src/ftp.c:310 src/ftp.c:362 src/ftp.c:457
+#: src/ftp.c:530 src/ftp.c:578 src/ftp.c:626
 msgid "Write failed, closing control connection.\n"
 msgstr "Kirjutamine ebaõnnestus, sulgen juhtühenduse.\n"
 
-#: src/ftp.c:227
+#: src/ftp.c:223
 msgid "The server refuses login.\n"
 msgstr "Server ei luba meldida.\n"
 
-#: src/ftp.c:234
+#: src/ftp.c:230
 msgid "Login incorrect.\n"
 msgstr "Vigane meldimine.\n"
 
-#: src/ftp.c:241
+#: src/ftp.c:237
 msgid "Logged in!\n"
 msgstr "Melditud!\n"
 
-#: src/ftp.c:266
-msgid "Server error, can't determine system type.\n"
-msgstr ""
-
-#: src/ftp.c:276 src/ftp.c:538 src/ftp.c:610 src/ftp.c:654
-msgid "done.    "
-msgstr "tehtud.  "
-
-#: src/ftp.c:302 src/ftp.c:437 src/ftp.c:705 src/ftp.c:753 src/url.c:1432
-msgid "done.\n"
-msgstr "tehtud.\n"
-
-#: src/ftp.c:330
+#: src/ftp.c:270
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
 msgstr "Tundmatu tüüp `%c', sulgen juhtühenduse.\n"
 
-#: src/ftp.c:343
+#: src/ftp.c:283
 msgid "done.  "
 msgstr "tehtud.  "
 
-#: src/ftp.c:349
+#: src/ftp.c:289
 msgid "==> CWD not needed.\n"
 msgstr "==> CWD pole vajalik.\n"
 
-#: src/ftp.c:423
+#: src/ftp.c:317
 #, c-format
 msgid ""
 "No such directory `%s'.\n"
@@ -130,34 +83,42 @@ msgstr ""
 "Kataloogi `%s' pole.\n"
 "\n"
 
+#: src/ftp.c:331 src/ftp.c:599 src/ftp.c:647 src/url.c:1678
+msgid "done.\n"
+msgstr "tehtud.\n"
+
 #. do not CWD
-#: src/ftp.c:441
+#: src/ftp.c:335
 msgid "==> CWD not required.\n"
 msgstr "==> CWD ei ole kohustuslik.\n"
 
-#: src/ftp.c:475
+#: src/ftp.c:369
 msgid "Cannot initiate PASV transfer.\n"
 msgstr "Ei saa algatada PASV ülekannet.\n"
 
-#: src/ftp.c:479
+#: src/ftp.c:373
 msgid "Cannot parse PASV response.\n"
 msgstr "Ei suuda analüüsida PASV vastust.\n"
 
-#: src/ftp.c:493
+#: src/ftp.c:387
 #, c-format
 msgid "Will try connecting to %s:%hu.\n"
 msgstr "Üritan ühenduda serveriga %s:%hu.\n"
 
-#: src/ftp.c:580
+#: src/ftp.c:432 src/ftp.c:504 src/ftp.c:548
+msgid "done.    "
+msgstr "tehtud.  "
+
+#: src/ftp.c:474
 #, c-format
 msgid "Bind error (%s).\n"
 msgstr "Bind operatsiooni viga (%s).\n"
 
-#: src/ftp.c:596
+#: src/ftp.c:490
 msgid "Invalid PORT.\n"
 msgstr "Vale PORT.\n"
 
-#: src/ftp.c:643
+#: src/ftp.c:537
 msgid ""
 "\n"
 "REST failed, starting from scratch.\n"
@@ -165,7 +126,7 @@ msgstr ""
 "\n"
 "REST ebaõnnestus, alustan algusest.\n"
 
-#: src/ftp.c:692
+#: src/ftp.c:586
 #, c-format
 msgid ""
 "No such file `%s'.\n"
@@ -174,7 +135,7 @@ msgstr ""
 "Faili `%s' pole.\n"
 "\n"
 
-#: src/ftp.c:740
+#: src/ftp.c:634
 #, c-format
 msgid ""
 "No such file or directory `%s'.\n"
@@ -183,49 +144,49 @@ msgstr ""
 "Faili või kataloogi `%s' pole.\n"
 "\n"
 
-#: src/ftp.c:816 src/ftp.c:823
+#: src/ftp.c:710 src/ftp.c:717
 #, c-format
 msgid "Length: %s"
 msgstr "Pikkus: %s"
 
-#: src/ftp.c:818 src/ftp.c:825
+#: src/ftp.c:712 src/ftp.c:719
 #, c-format
 msgid " [%s to go]"
 msgstr " [%s on veel]"
 
-#: src/ftp.c:827
+#: src/ftp.c:721
 msgid " (unauthoritative)\n"
 msgstr " (autoriseerimata)\n"
 
-#: src/ftp.c:853
+#: src/ftp.c:747
 #, c-format
 msgid "%s: %s, closing control connection.\n"
 msgstr "%s: %s, sulgen juhtühenduse.\n"
 
-#: src/ftp.c:861
+#: src/ftp.c:755
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
 msgstr "%s (%s) - andme ühendus: %s; "
 
-#: src/ftp.c:878
+#: src/ftp.c:772
 msgid "Control connection closed.\n"
 msgstr "Juhtühendus suletud.\n"
 
-#: src/ftp.c:896
+#: src/ftp.c:790
 msgid "Data transfer aborted.\n"
 msgstr "Andmete ülekanne katkestatud.\n"
 
-#: src/ftp.c:960
+#: src/ftp.c:856
 #, c-format
 msgid "File `%s' already there, not retrieving.\n"
 msgstr "Fail `%s' on juba olemas, ei tõmba.\n"
 
-#: src/ftp.c:1021 src/http.c:1394
+#: src/ftp.c:933 src/http.c:1032
 #, c-format
 msgid "(try:%2d)"
 msgstr "(katse:%2d)"
 
-#: src/ftp.c:1085 src/http.c:1632
+#: src/ftp.c:997 src/http.c:1252
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld]\n"
@@ -234,54 +195,43 @@ msgstr ""
 "%s (%s) - `%s' salvestatud [%ld]\n"
 "\n"
 
-#: src/ftp.c:1127 src/main.c:789 src/recur.c:509 src/retr.c:602
+#: src/ftp.c:1039 src/main.c:749 src/recur.c:468 src/retr.c:560
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Kustutan %s.\n"
 
-#: src/ftp.c:1168
+#: src/ftp.c:1080
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
 msgstr "Kasutan `%s' ajutise listingu failina.\n"
 
-#: src/ftp.c:1180
+#: src/ftp.c:1092
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr "Kustutatud `%s'.\n"
 
-#: src/ftp.c:1216
+#: src/ftp.c:1128
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr "Rekursiooni sügavus %d ületab maksimum sügavust %d.\n"
 
-#. Remote file is older, file sizes can be compared and
-#. are both equal.
-#: src/ftp.c:1277
-#, fuzzy, c-format
-msgid "Remote file no newer than local file `%s' -- not retrieving.\n"
-msgstr "Kauge fail on uuem, laen alla.\n"
-
-#. Remote file is newer or sizes cannot be matched
-#: src/ftp.c:1284
-#, fuzzy, c-format
+#: src/ftp.c:1180 src/http.c:1179
+#, c-format
 msgid ""
-"Remote file is newer than local file `%s' -- retrieving.\n"
+"Server file no newer than local file `%s' -- not retrieving.\n"
 "\n"
-msgstr "Kauge fail on uuem, laen alla.\n"
+msgstr "Fail `%s' serveril ei ole uuem, kui lokaalne -- ei lae.\n\n"
 
-#. Sizes do not match
-#: src/ftp.c:1291
-#, fuzzy, c-format
-msgid ""
-"The sizes do not match (local %ld) -- retrieving.\n"
-"\n"
-msgstr "Suurused ei klapi (lokaalne %ld), uuendan.\n"
+#: src/ftp.c:1186 src/http.c:1187
+#, c-format
+msgid "The sizes do not match (local %ld) -- retrieving.\n"
+msgstr "Suurused ei klapi (lokaalne %ld) -- uuendan.\n"
 
-#: src/ftp.c:1308
+#: src/ftp.c:1203
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr "Vigane sümbol viite nimi, jätan vahele.\n"
 
-#: src/ftp.c:1325
+#: src/ftp.c:1220
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
@@ -290,42 +240,42 @@ msgstr ""
 "Korrektne sümbol viide on juba olemas %s -> %s\n"
 "\n"
 
-#: src/ftp.c:1333
+#: src/ftp.c:1228
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr "Loon sümbol viite %s -> %s\n"
 
-#: src/ftp.c:1344
+#: src/ftp.c:1239
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
 msgstr "Ei toeta sümbol viiteid, jätan `%s' vahele.\n"
 
-#: src/ftp.c:1356
+#: src/ftp.c:1251
 #, c-format
 msgid "Skipping directory `%s'.\n"
 msgstr "Jätan kataloogi `%s' vahele.\n"
 
-#: src/ftp.c:1365
+#: src/ftp.c:1260
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr "%s: tundmatu faili tüüp.\n"
 
-#: src/ftp.c:1392
+#: src/ftp.c:1277
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr "%s: vigane aeg.\n"
 
-#: src/ftp.c:1413
+#: src/ftp.c:1298
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr "Ei tõmba katalooge, kuna sügavus on %d (maks. %d).\n"
 
-#: src/ftp.c:1449
+#: src/ftp.c:1337
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr "Jätame `%s' vahele, ta on välistatud või pole kaasatud.\n"
 
-#: src/ftp.c:1494
+#: src/ftp.c:1382
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr "Keelame `%s'.\n"
@@ -333,17 +283,17 @@ msgstr "Keelame `%s'.\n"
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1541
+#: src/ftp.c:1429
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr "Jokker `%s' ei anna midagi.\n"
 
-#: src/ftp.c:1605
+#: src/ftp.c:1489
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
 msgstr "Kirjutasin HTML-iseeritud indeksi faili `%s' [%ld].\n"
 
-#: src/ftp.c:1610
+#: src/ftp.c:1494
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr "Kirjutasin HTML-iseeritud indeksi faili `%s'.\n"
@@ -392,27 +342,27 @@ msgstr "%s: illegaalne võti -- %c\n"
 msgid "%s: option requires an argument -- %c\n"
 msgstr "%s: võti nõuab argumenti -- %c\n"
 
-#: src/host.c:394
+#: src/host.c:438
 #, c-format
 msgid "%s: Cannot determine user-id.\n"
 msgstr "%s: Ei suuda tuvastada kasutaja id'd.\n"
 
-#: src/host.c:406
+#: src/host.c:450
 #, c-format
 msgid "%s: Warning: uname failed: %s\n"
 msgstr "%s: Hoiatus: uname ebaõnnestus %s\n"
 
-#: src/host.c:418
+#: src/host.c:462
 #, c-format
 msgid "%s: Warning: gethostname failed\n"
 msgstr "%s: Hoiatus: gethostname ebaõnnestus\n"
 
-#: src/host.c:446
+#: src/host.c:490
 #, c-format
 msgid "%s: Warning: cannot determine local IP address.\n"
 msgstr "%s: Hoiatus: ei suuda tuvastada lokaalset IP aadressi.\n"
 
-#: src/host.c:460
+#: src/host.c:504
 #, c-format
 msgid "%s: Warning: cannot reverse-lookup local IP address.\n"
 msgstr "%s: Hoiatus: ei saa lokaalse IP aadressi reversit.\n"
@@ -421,166 +371,157 @@ msgstr "%s: Hoiatus: ei saa lokaalse IP aadressi reversit.\n"
 #. that there can be valid reasons for the local host
 #. name not to be an FQDN, so I've decided to remove the
 #. annoying warning.
-#: src/host.c:473
+#: src/host.c:517
 #, c-format
 msgid "%s: Warning: reverse-lookup of local address did not yield FQDN!\n"
 msgstr "%s: Hoiatus: lokaalse aadressi revers ei anna FQDN!\n"
 
-#: src/host.c:501
+#: src/host.c:545
 msgid "Host not found"
 msgstr "Hosti ei leitud"
 
-#: src/host.c:503
+#: src/host.c:547
 msgid "Unknown error"
 msgstr "Tundmatu viga"
 
-#. this is fatal
-#: src/http.c:549
-msgid "Failed to set up an SSL context\n"
-msgstr ""
-
-#: src/http.c:555
+#: src/html.c:615 src/html.c:617
 #, c-format
-msgid "Failed to load certificates from %s\n"
-msgstr ""
+msgid "Index of /%s on %s:%d"
+msgstr "/%s indeks serveris %s:%d"
 
-#: src/http.c:559 src/http.c:567
-msgid "Trying without the specified certificate\n"
-msgstr ""
+#: src/html.c:639
+msgid "time unknown       "
+msgstr "tundmatu aeg       "
 
-#: src/http.c:563
+#: src/html.c:643
+msgid "File        "
+msgstr "Fail        "
+
+#: src/html.c:646
+msgid "Directory   "
+msgstr "Kataloog    "
+
+#: src/html.c:649
+msgid "Link        "
+msgstr "Viide       "
+
+#: src/html.c:652
+msgid "Not sure    "
+msgstr "Pole kindel "
+
+#: src/html.c:670
 #, c-format
-msgid "Failed to get certificate key from %s\n"
-msgstr ""
+msgid " (%s bytes)"
+msgstr " (%s baiti)"
 
-#: src/http.c:657 src/http.c:1470
-msgid "Unable to establish SSL connection.\n"
-msgstr ""
-
-#: src/http.c:665
-#, fuzzy, c-format
-msgid "Reusing connection to %s:%hu.\n"
-msgstr "Üritan ühenduda serveriga %s:%hu.\n"
-
-#: src/http.c:841
-#, fuzzy, c-format
-msgid "Failed writing HTTP request: %s.\n"
+#: src/http.c:508
+msgid "Failed writing HTTP request.\n"
 msgstr "HTTP päringu kirjutamine ebaõnnestus.\n"
 
-#: src/http.c:846
+#: src/http.c:512
 #, c-format
 msgid "%s request sent, awaiting response... "
 msgstr "%s päring saadetud, ootan vastust... "
 
-#: src/http.c:890
+#: src/http.c:551
 msgid "End of file while parsing headers.\n"
 msgstr "Päiste analüüsil sain faili lõpu teate.\n"
 
-#: src/http.c:901
+#: src/http.c:562
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr "Päiste lugemise viga (%s).\n"
 
-#: src/http.c:941
+#: src/http.c:602
 msgid "No data received"
 msgstr "Andmeid ei saanudki"
 
-#: src/http.c:943
+#: src/http.c:604
 msgid "Malformed status line"
 msgstr "Katkine staatuse rida"
 
-#: src/http.c:948
+#: src/http.c:609
 msgid "(no description)"
 msgstr "(kirjeldus puudub)"
 
-#: src/http.c:1066
+#. If we have tried it already, then there is not point
+#. retrying it.
+#: src/http.c:693
 msgid "Authorization failed.\n"
 msgstr "Autoriseerimine ebaõnnestus.\n"
 
-#: src/http.c:1073
+#: src/http.c:700
 msgid "Unknown authentication scheme.\n"
 msgstr "Tundmatu autentimis skeem.\n"
 
-#: src/http.c:1163
+#: src/http.c:783
 #, c-format
 msgid "Location: %s%s\n"
 msgstr "Asukoht: %s%s\n"
 
-#: src/http.c:1164 src/http.c:1189
+#: src/http.c:784 src/http.c:809
 msgid "unspecified"
 msgstr "määramata"
 
-#: src/http.c:1165
+#: src/http.c:785
 msgid " [following]"
 msgstr " [järgnev]"
 
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
-#: src/http.c:1179
+#: src/http.c:799
 msgid "Length: "
 msgstr "Pikkus: "
 
-#: src/http.c:1184
+#: src/http.c:804
 #, c-format
 msgid " (%s to go)"
 msgstr " (%s veel)"
 
-#: src/http.c:1189
+#: src/http.c:809
 msgid "ignored"
 msgstr "ignoreerin"
 
-#: src/http.c:1290
+#: src/http.c:912
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr "Hoiatus: HTTP ei toeta jokkereid.\n"
 
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:1311
+#: src/http.c:933
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
 msgstr "Fail `%s' on juba olemas, ei tõmba.\n"
 
-#: src/http.c:1462
+#: src/http.c:1099
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr "Ei saa kirjutada faili `%s' (%s).\n"
 
-#: src/http.c:1480
+#: src/http.c:1110
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "VIGA: Ümbersuunamine (%d) ilma asukohata.\n"
 
-#: src/http.c:1505
+#: src/http.c:1135
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s VIGA %d: %s.\n"
 
-#: src/http.c:1518
+#: src/http.c:1148
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr "Last-modified päist pole -- ei kasuta aja-stampe.\n"
 
-#: src/http.c:1526
+#: src/http.c:1156
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr "Last-modified päis on vigane -- ignoreerin aja-stampi.\n"
 
-#: src/http.c:1549
-#, c-format
-msgid ""
-"Server file no newer than local file `%s' -- not retrieving.\n"
-"\n"
-msgstr ""
-
-#: src/http.c:1557
-#, fuzzy, c-format
-msgid "The sizes do not match (local %ld) -- retrieving.\n"
-msgstr "Suurused ei klapi (lokaalne %ld), uuendan.\n"
-
-#: src/http.c:1561
+#: src/http.c:1191
 msgid "Remote file is newer, retrieving.\n"
 msgstr "Kauge fail on uuem, laen alla.\n"
 
-#: src/http.c:1606
+#: src/http.c:1226
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld]\n"
@@ -589,12 +530,12 @@ msgstr ""
 "%s (%s) - `%s' salvestatud [%ld/%ld]\n"
 "\n"
 
-#: src/http.c:1654
+#: src/http.c:1274
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld. "
 msgstr "%s (%s) - Ühendus suletud baidil %ld. "
 
-#: src/http.c:1662
+#: src/http.c:1282
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld])\n"
@@ -603,45 +544,50 @@ msgstr ""
 "%s (%s) - `%s' salvestatud [%ld/%ld])\n"
 "\n"
 
-#: src/http.c:1682
+#: src/http.c:1302
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld/%ld. "
 msgstr "%s (%s) - Ühendus suletud baidil %ld/%ld. "
 
-#: src/http.c:1693
+#: src/http.c:1313
 #, c-format
 msgid "%s (%s) - Read error at byte %ld (%s)."
 msgstr "%s (%s) - Lugemise viga baidil %ld (%s)."
 
-#: src/http.c:1701
+#: src/http.c:1321
 #, c-format
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr "%s (%s) - Lugemise viga baidil %ld/%ld (%s). "
 
-#: src/init.c:336 src/netrc.c:261
+#: src/init.c:329 src/netrc.c:260
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: %s ei saa lugeda (%s).\n"
 
-#: src/init.c:354 src/init.c:360
+#: src/init.c:347 src/init.c:353
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Viga %s's real %d.\n"
 
-#: src/init.c:391
+#: src/init.c:384
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: Hoiatus: Nii süsteemne kui kasutaja wgetrc on `%s'.\n"
 
-#: src/init.c:483
+#: src/init.c:476
 #, c-format
 msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr "%s: BUG: tundmatu käsklus`%s', väärtus `%s'.\n"
 
+#: src/init.c:498
+#, c-format
+msgid "%s: Out of memory.\n"
+msgstr "%s: Mälu ei jätku.\n"
+
 #: src/init.c:504
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
-msgstr "%s: Hoiatus: ei saa lokaalse IP aadressi reversit.\n"
+msgstr "%s: %s: `%s' ei õnnestu teisendada IP aadressiks.\n"
 
 #: src/init.c:532
 #, c-format
@@ -649,9 +595,9 @@ msgid "%s: %s: Please specify on or off.\n"
 msgstr "%s: %s: Palun kasuta `on' või `off'.\n"
 
 #: src/init.c:576
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
-msgstr "%s: %s: Palun kasuta `on' või `off'.\n"
+msgstr "%s: %s: Palun kasuta `always', `on', `off' või `never'.\n"
 
 #: src/init.c:595 src/init.c:852 src/init.c:874 src/init.c:938
 #, c-format
@@ -663,19 +609,19 @@ msgstr "%s %s: Vigane spetsifikatsioon `%s'.\n"
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: Vigane spetsifikatsioon `%s'\n"
 
-#: src/main.c:120
+#: src/main.c:105
 #, c-format
 msgid "Usage: %s [OPTION]... [URL]...\n"
 msgstr "Kasuta: %s [VÕTI]... [URL]...\n"
 
-#: src/main.c:128
+#: src/main.c:113
 #, c-format
 msgid "GNU Wget %s, a non-interactive network retriever.\n"
 msgstr "GNU Wget %s, mitte-interaktiivne võrgu imeja.\n"
 
 #. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
 #. don't bitch.  Also, it makes translation much easier.
-#: src/main.c:133
+#: src/main.c:118
 msgid ""
 "\n"
 "Mandatory arguments to long options are mandatory for short options too.\n"
@@ -686,8 +632,7 @@ msgstr ""
 "on kohustuslikud ka lühikestele võtmetele.\n"
 "\n"
 
-#: src/main.c:136
-#, fuzzy
+#: src/main.c:121
 msgid ""
 "Startup:\n"
 "  -V,  --version           display the version of Wget and exit.\n"
@@ -697,14 +642,13 @@ msgid ""
 "\n"
 msgstr ""
 "Start:\n"
-"  -V,  --version           anna Wget versioon ja lõpeta töö.\n"
-"  -h,  --help              anna abi.\n"
-"  -b,  --background        mine tausta.\n"
+"  -V,  --version           esita Wget versioon ja lõpeta töö.\n"
+"  -h,  --help              esita see abiinfo.\n"
+"  -b,  --background        tööta taustal.\n"
 "  -e,  --execute=COMMAND   käivita `.wgetrc' käsk.\n"
 "\n"
 
-#: src/main.c:142
-#, fuzzy
+#: src/main.c:127
 msgid ""
 "Logging and input file:\n"
 "  -o,  --output-file=FILE     log messages to FILE.\n"
@@ -716,8 +660,6 @@ msgid ""
 "  -i,  --input-file=FILE      download URLs found in FILE.\n"
 "  -F,  --force-html           treat input file as HTML.\n"
 "  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
-"       --sslcertfile=FILE     optional client certificate.\n"
-"       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
 "\n"
 msgstr ""
 "Logimine ja sisendfail:\n"
@@ -729,10 +671,10 @@ msgstr ""
 "  -nv, --non-verbose          keela lobisemine, luba asjalikud teated.\n"
 "  -i,  --input-file=FAIL      loe URLid failist FAIL.\n"
 "  -F,  --force-html           käsitle sisendfaili HTMLina.\n"
+"  -B,  --base=URL             liida URL -F -i failis suhtelistele viidetele.\n"
 "\n"
 
-#: src/main.c:155
-#, fuzzy
+#: src/main.c:138
 msgid ""
 "Download:\n"
 "       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local "
@@ -742,10 +684,9 @@ msgid ""
 "  -O   --output-document=FILE   write documents to FILE.\n"
 "  -nc, --no-clobber             don't clobber existing files or use .# "
 "suffixes.\n"
-"  -c,  --continue               resume getting a partially-downloaded file.\n"
+"  -c,  --continue               restart getting an existing file.\n"
 "       --dot-style=STYLE        set retrieval display style.\n"
-"  -N,  --timestamping           don't re-retrieve files unless newer than "
-"local.\n"
+"  -N,  --timestamping           don't retrieve files if older than local.\n"
 "  -S,  --server-response        print server response.\n"
 "       --spider                 don't download anything.\n"
 "  -T,  --timeout=SECONDS        set the read timeout to SECONDS.\n"
@@ -757,6 +698,7 @@ msgid ""
 "\n"
 msgstr ""
 "Allalaadimine:\n"
+"       --bind-address=AADRESS   kasuta lokaalse masina aadressi (nimi või IP).\n"
 "  -t,  --tries=NUMBER           katsete arvuks NUMBER (0 piiramata).\n"
 "  -O   --output-document=FAIL   kirjuta dokumendid faili FAIL.\n"
 "  -nc, --no-clobber             ära riku olemasolevaid faile.\n"
@@ -765,13 +707,14 @@ msgstr ""
 "  -N,  --timestamping           ära tõmba vanemaid faile kui lokaalsed.\n"
 "  -S,  --server-response        trüki serveri vastused.\n"
 "       --spider                 ara tõmba midagi.\n"
-"  -T,  --timeout=SEKUNDEID        kasuta lugemise timeoutina SEKUNDEID.\n"
-"  -w,  --wait=SEKUNDEID           oota SEKUNDEID päringute vahel.\n"
+"  -T,  --timeout=SEKUNDEID      kasuta lugemise timeoutina SEKUNDEID.\n"
+"  -w,  --wait=SEKUNDEID         oota SEKUNDEID päringute vahel.\n"
+"       --waitretry=SEKUNDIT     oota katsete vahel 1..SEKUNDIT.\n"
 "  -Y,  --proxy=on/off           proxy kasutamine.\n"
 "  -Q,  --quota=NUMBER           kasuta kvooti NUMBER.\n"
 "\n"
 
-#: src/main.c:171
+#: src/main.c:154
 msgid ""
 "Directories:\n"
 "  -nd  --no-directories            don't create directories.\n"
@@ -790,8 +733,7 @@ msgstr ""
 "       --cut-dirs=NUMBER           ignoreeri kataloogi komponente > NUMBER.\n"
 "\n"
 
-#: src/main.c:178
-#, fuzzy
+#: src/main.c:161
 msgid ""
 "HTTP options:\n"
 "       --http-user=USER      set http user to USER.\n"
@@ -812,62 +754,59 @@ msgstr ""
 "HTTP võtmed:\n"
 "       --http-user=USER      kasuta http kasutajat USER.\n"
 "       --http-passwd=PASS    kasuta http parooli PASS.\n"
-"  -C,  --cache=on/off        cache kasutamine (tavaliselt lubatud "
-"kasutada).\n"
-"       --ignore-length       inoreeri `Content-Length' päise välja.\n"
+"  -C,  --cache=on/off        vahemälu kasutamine (tavaliselt lubatud).\n"
+"  -E,  --html-extension      salvesta kõik text/html dokumendid .html lõpuga.\n"
+"       --ignore-length       ignoreeri `Content-Length' päist.\n"
 "       --header=STRING       lisa STRING päisesse.\n"
 "       --proxy-user=USER     USER proxy kasutajanimeks.\n"
 "       --proxy-passwd=PASS   PASS proxy parooliks.\n"
 "  -s,  --save-headers        salvesta HTTP päised.\n"
-"  -U,  --user-agent=AGENT    identifitseeri kui AGENT, mitte kui "
-"Wget/VERSION.\n"
+"  -U,  --user-agent=AGENT    identifitseeri kui AGENT, mitte kui Wget/VERSION.\n"
 "\n"
 
-#: src/main.c:191
-#, fuzzy
+#: src/main.c:174
 msgid ""
 "FTP options:\n"
-"  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
-"  -g,  --glob=on/off           turn file name globbing on or off.\n"
-"       --passive-ftp           use the \"passive\" transfer mode.\n"
-"       --retr-symlinks         when recursing, get linked-to files (not "
+"       --retr-symlinks   when recursing, retrieve linked-to files (not "
 "dirs).\n"
+"  -g,  --glob=on/off     turn file name globbing on or off.\n"
+"       --passive-ftp     use the \"passive\" transfer mode.\n"
 "\n"
 msgstr ""
 "FTP võtmed:\n"
-"       --retr-symlinks   tõmba ka FTP sümbol lingid.\n"
+"       --retr-symlinks   tõmba ka FTP nimeviited (aga mitte kataloogidele).\n"
 "  -g,  --glob=on/off     lülita faili nime täiendamine sisse või välja.\n"
 "       --passive-ftp     kasuta \"passive\" ülekande moodi.\n"
 "\n"
 
-#: src/main.c:197
-#, fuzzy
+#: src/main.c:179
 msgid ""
 "Recursive retrieval:\n"
-"  -r,  --recursive          recursive web-suck -- use with care!\n"
-"  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for "
+"  -r,  --recursive             recursive web-suck -- use with care!.\n"
+"  -l,  --level=NUMBER          maximum recursion depth (inf or 0 for "
 "infinite).\n"
-"       --delete-after       delete files locally after downloading them.\n"
-"  -k,  --convert-links      convert non-relative links to relative.\n"
-"  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
-"  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"
-"  -p,  --page-requisites    get all images, etc. needed to display HTML "
+"       --delete-after          delete files locally after downloading them.\n"
+"  -k,  --convert-links         convert non-relative links to relative.\n"
+"  -K,  --backup-converted      before converting file X, back up as X.orig.\n"
+"  -m,  --mirror                shortcut option equivalent to -r -N -l inf "
+"-nr.\n"
+"  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
+"  -p,  --page-requisites       get all images, etc. needed to display HTML "
 "page.\n"
 "\n"
 msgstr ""
 "Rekursiivne pärimine:\n"
-"  -r,  --recursive            rekursiivne imemine -- kasuta "
-"ettevaatlikult!.\n"
-"  -l,  --level=NUMBER         maksimaalne rekursiooni sügavus (0 - "
-"piiramata).\n"
+"  -r,  --recursive            rekursiivne imemine -- kasuta ettevaatlikult!.\n"
+"  -l,  --level=NUMBER         rekursiooni sügavus (inf, 0 - piiramata).\n"
 "       --delete-after         kustuta allalaetud failid.\n"
 "  -k,  --convert-links        teisenda lingid suhtelisteks.\n"
-"  -m,  --mirror               kasuta peegeldamiseks kasulikke vötmeid.\n"
+"  -K,  --backup-converted     enne faili X teisendamist salvesta X.orig.\n"
+"  -m,  --mirror               lühikuju võtmetest -r -N -l inf -nr.\n"
 "  -nr, --dont-remove-listing  ära kustuta `.listing' faile.\n"
+"  -p,  --page-requisites      lae kõik HTML lehe esitamiseks vajalikud failid.\n"
 "\n"
 
-#: src/main.c:206
-#, fuzzy
+#: src/main.c:189
 msgid ""
 "Recursive accept/reject:\n"
 "  -A,  --accept=LIST                comma-separated list of accepted "
@@ -892,31 +831,31 @@ msgid ""
 "\n"
 msgstr ""
 "Rekursiivne accept/reject:\n"
-"  -A,  --accept=LIST                lubatud laienduste list.\n"
-"  -R,  --reject=LIST                keelatud laienduste list.\n"
-"  -D,  --domains=LIST               lubatud doomenite list.\n"
-"       --exclude-domains=LIST       komadega eraldatud keelatud doomenite "
-"list.\n"
-"  -L,  --relative                   järgne ainult suhtelisi viiteid.\n"
+"  -A,  --accept=LIST                komadega eraldatud lubatud laiendite list.\n"
+"  -R,  --reject=LIST                komadega eraldatud keelatud laiendite list.\n"
+"  -D,  --domains=LIST               komadega eraldatud lubatud doomenite list.\n"
+"       --exclude-domains=LIST       komadega eraldatud keelatud doomenite list.\n"
 "       --follow-ftp                 järgne HTML dokumentides FTP linkidele.\n"
+"       --follow-tags=LIST           komadega eraldatud järgitavad HTML lipikud.\n"
+"  -G,  --ignore-tags=LIST           komadega eraldatud keelatud HTML lipikud.\n"
 "  -H,  --span-hosts                 mine ka teistesse serveritesse.\n"
+"  -L,  --relative                   järgne ainult suhtelisi viiteid.\n"
 "  -I,  --include-directories=LIST   lubatud kataloogide list.\n"
 "  -X,  --exclude-directories=LIST   välistatud kataloogide list.\n"
 "  -nh, --no-host-lookup             ära lahenda hostide nimesid.\n"
 "  -np, --no-parent                  ära tõuse vanem kataloogini.\n"
 "\n"
 
-#: src/main.c:221
+#: src/main.c:204
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr "Saada soovitused ja vigade kirjeldused aadressil <bug-wget@gnu.org>.\n"
 
-#: src/main.c:409
+#: src/main.c:383
 #, c-format
 msgid "%s: debug support not compiled in.\n"
 msgstr "%s: silumise tugi pole sisse kompileeritud.\n"
 
-#: src/main.c:461
-#, fuzzy
+#: src/main.c:435
 msgid ""
 "Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.\n"
 "This program is distributed in the hope that it will be useful,\n"
@@ -924,14 +863,12 @@ msgid ""
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 msgstr ""
-"Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
+"Autoriõigus (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.\n"
+"Seda programmi levitatakse lootuses, et see on kasutatav, aga ILMA\n"
+"GARANTIITA; ka garantiita müügil või mingil eesmärgil kasutamisel.\n"
+"Täpsemat infot leiate GNU üldisest avalikust litsentsist.\n"
 
-#: src/main.c:467
-#, fuzzy
+#: src/main.c:441
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
@@ -939,43 +876,43 @@ msgstr ""
 "\n"
 "Selle programmi kirjutas Hrvoje Niksic <hniksic@srce.hr>.\n"
 
-#: src/main.c:549
+#: src/main.c:515
 #, c-format
 msgid "%s: %s: invalid command\n"
 msgstr "%s: %s: vigane käsklus\n"
 
-#: src/main.c:605
+#: src/main.c:568
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: illegaalne võti -- `-n%c'\n"
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:608 src/main.c:650 src/main.c:708
+#: src/main.c:571 src/main.c:613 src/main.c:671
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Proovi `%s --help' lisa võtmete saamiseks.\n"
 
-#: src/main.c:688
+#: src/main.c:651
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "Ei saa korraga lobiseda ja vait olla.\n"
 
-#: src/main.c:694
+#: src/main.c:657
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr "Ei saa samaaegselt muuta failide aegu ja mitte puutuda vanu faile.\n"
 
 #. No URL specified.
-#: src/main.c:703
+#: src/main.c:666
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: puudub URL\n"
 
-#: src/main.c:804
+#: src/main.c:764
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "%s ei sisalda URLe.\n"
 
-#: src/main.c:813
+#: src/main.c:773
 #, c-format
 msgid ""
 "\n"
@@ -986,18 +923,18 @@ msgstr ""
 "LÕPETATUD --%s--\n"
 "Alla laetud: %s baiti kokku %d failis\n"
 
-#: src/main.c:821
+#: src/main.c:781
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "Allalaadimise kvoot  (%s baiti) ON ÜLETATUD!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:851
+#: src/main.c:808
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "sain %s, suunan väljundi faili `%%s'.\n"
 
-#: src/mswindows.c:123
+#: src/mswindows.c:118
 #, c-format
 msgid ""
 "\n"
@@ -1011,55 +948,55 @@ msgstr ""
 "Wgeti peatamiseks vajuta CTRL+ALT+DELETE.\n"
 
 #. parent, no error
-#: src/mswindows.c:140 src/utils.c:451
+#: src/mswindows.c:135 src/utils.c:269
 msgid "Continuing in background.\n"
 msgstr "Jätkan taustas.\n"
 
-#: src/mswindows.c:142 src/utils.c:453
+#: src/mswindows.c:137 src/utils.c:271
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "Väljund kirjutatakse faili `%s'.\n"
 
-#: src/mswindows.c:232
+#: src/mswindows.c:227
 #, c-format
 msgid "Starting WinHelp %s\n"
 msgstr "Stardin WinHelp %s\n"
 
-#: src/mswindows.c:259 src/mswindows.c:267
+#: src/mswindows.c:254 src/mswindows.c:262
 #, c-format
 msgid "%s: Couldn't find usable socket driver.\n"
 msgstr "%s: Ei leia kasutuskõlblikku pistiku programmi.\n"
 
-#: src/netrc.c:367
+#: src/netrc.c:359
 #, c-format
 msgid "%s: %s:%d: warning: \"%s\" token appears before any machine name\n"
 msgstr "%s: %s:%d: hoiatus: \"%s\" identifikaator on enne masina nime\n"
 
-#: src/netrc.c:398
+#: src/netrc.c:390
 #, c-format
 msgid "%s: %s:%d: unknown token \"%s\"\n"
 msgstr "%s: %s:%d: tundmatu lekseem \"%s\"\n"
 
-#: src/netrc.c:462
+#: src/netrc.c:454
 #, c-format
 msgid "Usage: %s NETRC [HOSTNAME]\n"
 msgstr "Kasuta: %s NETRC [HOSTINIMI]\n"
 
-#: src/netrc.c:472
+#: src/netrc.c:464
 #, c-format
 msgid "%s: cannot stat %s: %s\n"
 msgstr "%s: stat operatsioon ebaõnnestus %s: %s\n"
 
-#: src/recur.c:510
+#: src/recur.c:469
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
 msgstr "Kustutan %s, kuna see peaks olema tagasi lükatud.\n"
 
-#: src/recur.c:684
+#: src/recur.c:630
 msgid "Loading robots.txt; please ignore errors.\n"
 msgstr "Laen robots.txti faili; palun ignoreerige võimalikk vigu.\n"
 
-#: src/retr.c:229
+#: src/retr.c:197
 #, c-format
 msgid ""
 "\n"
@@ -1068,27 +1005,32 @@ msgstr ""
 "\n"
 "          [ hüppan üle %dK ]"
 
-#: src/retr.c:421
+#: src/retr.c:380
 msgid "Could not find proxy host.\n"
 msgstr "Ei leia proxy serverit.\n"
 
-#: src/retr.c:435
+#: src/retr.c:393
 #, c-format
 msgid "Proxy %s: Must be HTTP.\n"
 msgstr "Proxy: %s: Peab olema HTTP.\n"
 
-#: src/retr.c:529
-#, fuzzy, c-format
+#: src/retr.c:472
+#, c-format
+msgid "%s: Redirection to itself.\n"
+msgstr "%s: Ümbersuunamine iseendale.\n"
+
+#: src/retr.c:486
+#, c-format
 msgid "%s: Redirection cycle detected.\n"
 msgstr "%s: Ümbersuunamine iseendale.\n"
 
-#: src/retr.c:623
+#: src/retr.c:581
 msgid ""
 "Giving up.\n"
 "\n"
 msgstr "Annan alla.\n"
 
-#: src/retr.c:623
+#: src/retr.c:581
 msgid ""
 "Retrying.\n"
 "\n"
@@ -1096,55 +1038,52 @@ msgstr ""
 "Proovin uuesti.\n"
 "\n"
 
-#: src/url.c:1332
+#: src/url.c:983
+#, c-format
+msgid "Error (%s): Link %s without a base provided.\n"
+msgstr "Viga (%s): Viide %s on ilma baasita.\n"
+
+#: src/url.c:999
+#, c-format
+msgid "Error (%s): Base %s relative, without referer URL.\n"
+msgstr "Viga(%s): Baas %s on suhteline, puudub viitav URL.\n"
+
+#: src/url.c:1540
 #, c-format
 msgid "Converting %s... "
 msgstr "Teisendan %s... "
 
-#: src/url.c:1345
-msgid "nothing to do.\n"
-msgstr ""
-
-#: src/url.c:1353 src/url.c:1377
+#: src/url.c:1545 src/url.c:1632
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "Ei suuda teisendada linke %s: %s\n"
 
-#: src/url.c:1368
-#, fuzzy, c-format
-msgid "Unable to delete `%s': %s\n"
-msgstr "Ei õnnestu kustutada sümbol viidet `%s': %s\n"
-
-#: src/url.c:1558
-#, fuzzy, c-format
+#: src/url.c:1608
+#, c-format
 msgid "Cannot back up %s as %s: %s\n"
-msgstr "Ei suuda teisendada linke %s: %s\n"
+msgstr "Ei saa luua %s varukoopiat %s: %s\n"
 
-#: src/utils.c:94
+#: src/utils.c:72
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: mälu ei jätku.\n"
 
-#: src/utils.c:386
+#: src/utils.c:204
 msgid "Unknown/unsupported protocol"
 msgstr "Tundmatu/mittetoetatav protokoll"
 
-#: src/utils.c:389
+#: src/utils.c:207
 msgid "Invalid port specification"
 msgstr "Vigane pordi spetsifikatsioon"
 
-#: src/utils.c:392
+#: src/utils.c:210
 msgid "Invalid host name"
 msgstr "Vigane hosti nimi"
 
-#: src/utils.c:613
+#: src/utils.c:431
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Ei õnnestu kustutada sümbol viidet `%s': %s\n"
-
-#, fuzzy
-#~ msgid "%s: Out of memory.\n"
-#~ msgstr "%s: %s: mälu ei jätku.\n"
 
 #~ msgid ""
 #~ "Local file `%s' is more recent, not retrieving.\n"
@@ -1152,9 +1091,3 @@ msgstr "Ei õnnestu kustutada sümbol viidet `%s': %s\n"
 #~ msgstr ""
 #~ "Lokaalne fail `%s' on uuem, ei tõmba.\n"
 #~ "\n"
-
-#~ msgid "Error (%s): Link %s without a base provided.\n"
-#~ msgstr "Viga (%s): Viide %s on ilma baasita.\n"
-
-#~ msgid "Error (%s): Base %s relative, without referer URL.\n"
-#~ msgstr "Viga(%s): Baas %s on suhteline, puudub viitav URL.\n"
