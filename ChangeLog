@@ -1,3 +1,8 @@
+2003-10-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.in (dist): Depend on configure.bat.
+	(realclean-top): Delete configure.bat.
+
 2003-10-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* Makefile.in (distclean-top): Remove the libtool script, because

@@ -113,6 +113,8 @@ libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
 # Create configure.bat from configure.bat.in by DOS-ifying the lines.
+# This is invoked by `make dist' and deleted by `make realclean' (not
+# `make distclean' because we want to preserve it for distribution).
 configure.bat: configure.bat.in
 	awk '{ print $$0 ($$0 ~ /\r$$/ ? "" : "\r") }' $@.in > $@
 
@@ -120,7 +122,7 @@ configure.bat: configure.bat.in
 TAGS:
 	cd src && $(MAKE) $@
 
-dist: $(srcdir)/configure DISTFILES
+dist: $(srcdir)/configure $(srcdir)/configure.bat DISTFILES
 	mkdir $(DISTNAME)
 	for d in `$(FIND) . -type d ! -name CVS -a ! -name RCS -print`; do \
 		if [ "$$d" != "." -a "$$d" != "./$(DISTNAME)" ]; then \
@@ -162,7 +164,7 @@ distclean-top: clean-top
 	$(RM) -r autom4te.cache
 
 realclean-top: distclean-top
-	$(RM) configure
+	$(RM) configure configure.bat
 
 clean-recursive distclean-recursive realclean-recursive:
 	for subdir in $(SUBDIRS); do \
