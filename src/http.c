@@ -7,7 +7,7 @@ This file is part of GNU Wget.
 GNU Wget is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ (at your option) any later version.
 
 GNU Wget is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -89,8 +89,9 @@ struct cookie_jar *wget_cookie_jar;
 /* Some status code validation macros: */
 #define H_20X(x)        (((x) >= 200) && ((x) < 300))
 #define H_PARTIAL(x)    ((x) == HTTP_STATUS_PARTIAL_CONTENTS)
-#define H_REDIRECTED(x) (((x) == HTTP_STATUS_MOVED_PERMANENTLY)	\
-			 || ((x) == HTTP_STATUS_MOVED_TEMPORARILY))
+#define H_REDIRECTED(x) ((x) == HTTP_STATUS_MOVED_PERMANENTLY	\
+                         || (x) == HTTP_STATUS_MOVED_TEMPORARILY \
+			 || (x) == HTTP_STATUS_TEMPORARY_REDIRECT)
 
 /* HTTP/1.0 status codes from RFC1945, provided for reference.  */
 /* Successful 2xx.  */
@@ -105,6 +106,7 @@ struct cookie_jar *wget_cookie_jar;
 #define HTTP_STATUS_MOVED_PERMANENTLY	301
 #define HTTP_STATUS_MOVED_TEMPORARILY	302
 #define HTTP_STATUS_NOT_MODIFIED	304
+#define HTTP_STATUS_TEMPORARY_REDIRECT  307
 
 /* Client error 4xx.  */
 #define HTTP_STATUS_BAD_REQUEST		400
