@@ -1,3 +1,8 @@
+2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* progress.c (bar_set_params): Allow the user to force the use of
+	the bar.
+
 2001-11-23  Lemble Gregory  <gregory.lemble@st.com>
 
 	* gen_sslfunc.c (ssl_init_prng): New function; seed the SSL RNG.

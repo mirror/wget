@@ -592,20 +592,25 @@ display_image (char *buf)
 }
 
 static void
-bar_set_params (const char *ignored)
+bar_set_params (const char *params)
 {
   int sw;
 
-  if (opt.lfilename
+  if ((opt.lfilename
 #ifdef HAVE_ISATTY
-      || !isatty (fileno (stderr))
+       || !isatty (fileno (stderr))
 #else
-      1
+       1
 #endif
-      )
+       )
+      && !(params != NULL
+	   && 0 == strcmp (params, "force")))
     {
-      /* We're not printing to a TTY.  Revert to the fallback
-	 display. */
+      /* We're not printing to a TTY, so revert to the fallback
+	 display.  #### We're recursively calling
+	 set_progress_implementation here, which is slightly kludgy.
+	 It would be nicer if that function could resolve this problem
+	 itself.  */
       set_progress_implementation (NULL);
       return;
     }
