@@ -1,6 +1,8 @@
 2001-01-09  Dan Harkless  <wget@harkless.org>
 
-	* html-url.c: Addition and clarification of comments related to -p.
+	* html-url.c: A bunch of fixup of `--page-requisites'-related
+ 	comments to reflect Hrvoje's changes to my code when transplanting
+ 	it into this new file, to fix spelling mistakes, to clarify, etc.
 
 	* url.c (write_backup_file): Clarified a comment.
 

@@ -165,7 +165,7 @@ init_interesting (void)
 	/* Normally here we could say:
 	   interesting_tags[i] = name;
 	   But we need to respect the settings of --ignore-tags and
-	   --follow-tags, so the code gets a bit harier.  */
+	   --follow-tags, so the code gets a bit hairier.  */
 
 	if (opt.ignore_tags)
 	  {
@@ -175,8 +175,7 @@ init_interesting (void)
 	       through if there's no match. */
 	    int j, lose = 0;
 	    for (j = 0; opt.ignore_tags[j] != NULL; j++)
-	      /* Loop through all the tags this user doesn't care
-                 about. */
+	      /* Loop through all the tags this user doesn't care about. */
 	      if (strcasecmp(opt.ignore_tags[j], name) == EQ)
 		{
 		  lose = 1;
@@ -188,8 +187,8 @@ init_interesting (void)
 
 	if (opt.follow_tags)
 	  {
-	    /* --follow-tags was specified.  Only match these specific
-	       tags, so return FALSE if we don't match one of them. */
+	    /* --follow-tags was specified.  Only match these specific tags, so
+	       continue back to top of for if we don't match one of them. */
 	    int j, win = 0;
 	    for (j = 0; opt.follow_tags[j] != NULL; j++)
 	      /* Loop through all the tags this user cares about. */
@@ -199,12 +198,11 @@ init_interesting (void)
 		  break;
 		}
 	    if (!win)
-	      continue;		/* wasn't one of the explicitly
-                                   desired tags */
+	      continue;  /* wasn't one of the explicitly desired tags */
 	  }
 
 	/* If we get to here, --follow-tags isn't being used or the
-	   tag is among the ones that are follwed, and --ignore-tags,
+	   tag is among the ones that are followed, and --ignore-tags,
 	   if specified, didn't include this tag, so it's an
 	   "interesting" one. */
 	interesting_tags[ind++] = name;
