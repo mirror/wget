@@ -32,17 +32,6 @@ so, delete this exception statement from your version.  */
 
 #include "host.h"		/* for definition of ip_address */
 
-/* Returned by connect_to_host when host name cannot be resolved.  */
-enum {
-  E_HOST = -100
-};
-
-/* Flags for select_fd's WAIT argument. */
-enum {
-  WAIT_READ = 1,
-  WAIT_WRITE = 2
-};
-
 /* bindport flags */
 #define BIND_ON_IPV4_ONLY LH_IPV4_ONLY
 #define BIND_ON_IPV6_ONLY LH_IPV6_ONLY
@@ -55,18 +44,35 @@ enum {
 
 /* Function declarations */
 
-int connect_to_ip PARAMS ((const ip_address *, int, const char *));
+/* Returned by connect_to_host when host name cannot be resolved.  */
+enum {
+  E_HOST = -100
+};
 int connect_to_host PARAMS ((const char *, int));
+int connect_to_ip PARAMS ((const ip_address *, int, const char *));
 
 void sockaddr_get_data PARAMS ((const struct sockaddr *, ip_address *, int *));
-
-int test_socket_open PARAMS ((int));
-int select_fd PARAMS ((int, double, int));
 uerr_t bindport PARAMS ((const ip_address *, int *, int *));
 uerr_t acceptport PARAMS ((int, int *));
 int conaddr PARAMS ((int, ip_address *));
 
-int iread PARAMS ((int, char *, int));
-int iwrite PARAMS ((int, char *, int));
+/* Flags for select_fd's WAIT_FOR argument. */
+enum {
+  WAIT_FOR_READ = 1,
+  WAIT_FOR_WRITE = 2
+};
+int select_fd PARAMS ((int, double, int));
+int test_socket_open PARAMS ((int));
 
+typedef int (*xreader_t) PARAMS ((int, char *, int, void *));
+typedef int (*xwriter_t) PARAMS ((int, char *, int, void *));
+typedef int (*xpoller_t) PARAMS ((int, double, int, void *));
+typedef void (*xcloser_t) PARAMS ((int, void *));
+void register_extended PARAMS ((int,
+				xreader_t, xwriter_t, xpoller_t, xcloser_t,
+				void *));
+
+int xread PARAMS ((int, char *, int, double));
+int xwrite PARAMS ((int, char *, int, double));
+void xclose PARAMS ((int));
 #endif /* CONNECT_H */

@@ -60,6 +60,7 @@ so, delete this exception statement from your version.  */
 #include "utils.h"
 #include "host.h"
 #include "connect.h"
+#include "hash.h"
 
 #ifndef errno
 extern int errno;
@@ -304,7 +305,7 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
        logprintf.  */
     int save_errno = errno;
     if (sock >= 0)
-      CLOSE (sock);
+      xclose (sock);
     if (print)
       logprintf (LOG_VERBOSE, "failed: %s.\n", strerror (errno));
     errno = save_errno;
@@ -426,7 +427,7 @@ bindport (const ip_address *bind_address, int *port, int *local_sock)
   sockaddr_set_data (sa, bind_address, *port);
   if (bind (sock, sa, sockaddr_size (sa)) < 0)
     {
-      CLOSE (sock);
+      xclose (sock);
       return BINDERR;
     }
   DEBUGP (("Local socket fd %d bound.\n", sock));
@@ -435,7 +436,7 @@ bindport (const ip_address *bind_address, int *port, int *local_sock)
       socklen_t sa_len = sockaddr_size (sa);
       if (getsockname (sock, sa, &sa_len) < 0)
 	{
-	  CLOSE (sock);
+	  xclose (sock);
 	  return CONPORTERR;
 	}
       sockaddr_get_data (sa, NULL, port);
@@ -444,7 +445,7 @@ bindport (const ip_address *bind_address, int *port, int *local_sock)
     }
   if (listen (sock, 1) < 0)
     {
-      CLOSE (sock);
+      xclose (sock);
       return LISTENERR;
     }
   *local_sock = sock;
@@ -454,14 +455,14 @@ bindport (const ip_address *bind_address, int *port, int *local_sock)
 #ifdef HAVE_SELECT
 /* Wait for file descriptor FD to be readable or writable or both,
    timing out after MAXTIME seconds.  Returns 1 if FD is available, 0
-   for timeout and -1 for error.  The argument WHAT can be a
+   for timeout and -1 for error.  The argument WAIT_FOR can be a
    combination of WAIT_READ and WAIT_WRITE.
 
    This is a mere convenience wrapper around the select call, and
    should be taken as such.  */
 
 int
-select_fd (int fd, double maxtime, int wait)
+select_fd (int fd, double maxtime, int wait_for)
 {
   fd_set fdset;
   fd_set *rd = NULL, *wr = NULL;
@@ -470,22 +471,17 @@ select_fd (int fd, double maxtime, int wait)
 
   FD_ZERO (&fdset);
   FD_SET (fd, &fdset);
-  if (wait & WAIT_READ)
+  if (wait_for & WAIT_FOR_READ)
     rd = &fdset;
-  if (wait & WAIT_WRITE)
+  if (wait_for & WAIT_FOR_WRITE)
     wr = &fdset;
 
-  tmout.tv_sec = (long)maxtime;
-  tmout.tv_usec = 1000000L * (maxtime - (long)maxtime);
+  tmout.tv_sec = (long) maxtime;
+  tmout.tv_usec = 1000000L * (maxtime - (long) maxtime);
 
   do
     result = select (fd + 1, rd, wr, NULL, &tmout);
   while (result < 0 && errno == EINTR);
-
-  /* When we've timed out, set errno to ETIMEDOUT for the convenience
-     of the caller. */
-  if (result == 0)
-    errno = ETIMEDOUT;
 
   return result;
 }
@@ -505,7 +501,7 @@ acceptport (int local_sock, int *sock)
 
 #ifdef HAVE_SELECT
   if (opt.connect_timeout)
-    if (select_fd (local_sock, opt.connect_timeout, WAIT_READ) <= 0)
+    if (select_fd (local_sock, opt.connect_timeout, WAIT_FOR_READ) <= 0)
       return ACCEPTERR;
 #endif
   if ((*sock = accept (local_sock, sa, &addrlen)) < 0)
@@ -555,58 +551,214 @@ conaddr (int fd, ip_address *ip)
 
   return 0;
 }
+
+/* Basic socket operations, mostly EINTR wrappers.  */
 
-/* Read at most LEN bytes from FD, storing them to BUF.  This is
-   virtually the same as read(), but takes care of EINTR braindamage
-   and uses select() to timeout the stale connections (a connection is
-   stale if more than OPT.READ_TIMEOUT time is spent in select() or
-   read()).  */
+#ifdef WINDOWS
+# define read(fd, buf, cnt) recv (fd, buf, cnt, 0)
+# define write(fd, buf, cnt) send (fd, buf, cnt, 0)
+# define close(fd) closesocket (fd)
+#endif
 
-int
-iread (int fd, char *buf, int len)
+#ifdef __BEOS__
+# define read(fd, buf, cnt) recv (fd, buf, cnt, 0)
+# define write(fd, buf, cnt) send (fd, buf, cnt, 0)
+#endif
+
+static int
+sock_read (int fd, char *buf, int bufsize)
 {
   int res;
-
-#ifdef HAVE_SELECT
-  if (opt.read_timeout)
-    if (select_fd (fd, opt.read_timeout, WAIT_READ) <= 0)
-      return -1;
-#endif
   do
-    res = READ (fd, buf, len);
+    res = read (fd, buf, bufsize);
   while (res == -1 && errno == EINTR);
-
   return res;
 }
 
-/* Write LEN bytes from BUF to FD.  This is similar to iread(), but
-   unlike iread(), it makes sure that all of BUF is actually written
-   to FD, so callers needn't bother with checking that the return
-   value equals to LEN.  Instead, you should simply check for -1.  */
-
-int
-iwrite (int fd, char *buf, int len)
+static int
+sock_write (int fd, char *buf, int bufsize)
 {
   int res = 0;
+  do
+    res = write (fd, buf, bufsize);
+  while (res == -1 && errno == EINTR);
+  return res;
+}
 
-  /* `write' may write less than LEN bytes, thus the outward loop
-     keeps trying it until all was written, or an error occurred.  The
-     inner loop is reserved for the usual EINTR f*kage, and the
-     innermost loop deals with the same during select().  */
-  while (len > 0)
-    {
+static int
+sock_poll (int fd, double timeout, int wait_for)
+{
 #ifdef HAVE_SELECT
-      if (opt.read_timeout)
-	if (select_fd (fd, opt.read_timeout, WAIT_WRITE) <= 0)
-	  return -1;
+  return select_fd (fd, timeout, wait_for);
+#else
+  return 1;
 #endif
-      do
-	res = WRITE (fd, buf, len);
-      while (res == -1 && errno == EINTR);
+}
+
+static void
+sock_close (int fd)
+{
+  close (fd);
+  DEBUGP (("Closed fd %d\n", fd));
+}
+#undef read
+#undef write
+#undef close
+
+/* Reading and writing from the network.  We build around the socket
+   (file descriptor) API, but support "extended" operations for things
+   that are not mere file descriptors under the hood, such as SSL
+   sockets.
+
+   That way the user code can call xread(fd, ...) and we'll run read
+   or SSL_read or whatever is necessary.  */
+
+static struct hash_table *extended_map;
+static long extended_map_modified_tick;
+
+struct extended_info {
+  xreader_t reader;
+  xwriter_t writer;
+  xpoller_t poller;
+  xcloser_t closer;
+  void *ctx;
+};
+
+void
+register_extended (int fd, xreader_t reader, xwriter_t writer,
+		   xpoller_t poller, xcloser_t closer, void *ctx)
+{
+  struct extended_info *info = xnew (struct extended_info);
+  info->reader = reader;
+  info->writer = writer;
+  info->poller = poller;
+  info->closer = closer;
+  info->ctx = ctx;
+  if (!extended_map)
+    extended_map = hash_table_new (0, NULL, NULL);
+  hash_table_put (extended_map, (void *) fd, info);
+  ++extended_map_modified_tick;
+}
+
+/* When xread/xwrite are called multiple times in a loop, they should
+   remember the INFO pointer instead of fetching it every time.  It is
+   not enough to compare FD to LAST_FD because FD might have been
+   closed and reopened.  modified_tick ensures that changes to
+   extended_map will not be unnoticed.
+
+   This is a macro because we want the static storage variables to be
+   per-function.  */
+
+#define LAZY_RETRIEVE_INFO(info) do {					\
+  static struct extended_info *last_info;				\
+  static int last_fd = -1, last_tick;					\
+  if (!extended_map)							\
+    info = NULL;							\
+  else if (last_fd == fd && last_tick == extended_map_modified_tick)	\
+    info = last_info;							\
+  else									\
+    {									\
+      info = hash_table_get (extended_map, (void *) fd);		\
+      last_fd = fd;							\
+      last_tick = extended_map_modified_tick;				\
+    }									\
+} while (0)
+
+/* Read no more than BUFSIZE bytes of data from FD, storing them to
+   BUF.  If TIMEOUT is non-zero, the operation aborts if no data is
+   received after that many seconds.  If TIMEOUT is -1, the value of
+   opt.timeout is used for TIMEOUT.  */
+
+int
+xread (int fd, char *buf, int bufsize, double timeout)
+{
+  struct extended_info *info;
+  LAZY_RETRIEVE_INFO (info);
+  if (timeout == -1)
+    timeout = opt.read_timeout;
+  if (timeout)
+    {
+      int test;
+      if (info && info->poller)
+	test = info->poller (fd, timeout, WAIT_FOR_READ, info->ctx);
+      else
+	test = sock_poll (fd, timeout, WAIT_FOR_READ);
+      if (test == 0)
+	errno = ETIMEDOUT;
+      if (test <= 0)
+	return -1;
+    }
+  if (info && info->reader)
+    return info->reader (fd, buf, bufsize, info->ctx);
+  else
+    return sock_read (fd, buf, bufsize);
+}
+
+/* Write the entire contents of BUF to FD.  If TIMEOUT is non-zero,
+   the operation aborts if no data is received after that many
+   seconds.  If TIMEOUT is -1, the value of opt.timeout is used for
+   TIMEOUT.  */
+
+int
+xwrite (int fd, char *buf, int bufsize, double timeout)
+{
+  int res;
+  struct extended_info *info;
+  LAZY_RETRIEVE_INFO (info);
+  if (timeout == -1)
+    timeout = opt.read_timeout;
+
+  /* `write' may write less than LEN bytes, thus the loop keeps trying
+     it until all was written, or an error occurred.  */
+  res = 0;
+  while (bufsize > 0)
+    {
+      if (timeout)
+	{
+	  int test;
+	  if (info && info->poller)
+	    test = info->poller (fd, timeout, WAIT_FOR_WRITE, info->ctx);
+	  else
+	    test = sock_poll (fd, timeout, WAIT_FOR_WRITE);
+	  if (test == 0)
+	    errno = ETIMEDOUT;
+	  if (test <= 0)
+	    return -1;
+	}
+      if (info && info->writer)
+	res = info->writer (fd, buf, bufsize, info->ctx);
+      else
+	res = sock_write (fd, buf, bufsize);
       if (res <= 0)
 	break;
       buf += res;
-      len -= res;
+      bufsize -= res;
     }
   return res;
+}
+
+/* Close the file descriptor FD.  */
+
+void
+xclose (int fd)
+{
+  struct extended_info *info;
+  if (fd < 0)
+    return;
+
+  /* We don't need to be extra-fast here, so save some code by
+     avoiding LAZY_RETRIEVE_INFO. */
+  info = NULL;
+  if (extended_map)
+    info = hash_table_get (extended_map, (void *) fd);
+
+  if (info && info->closer)
+    {
+      info->closer (fd, info->ctx);
+      hash_table_remove (extended_map, (void *) fd);
+      xfree (info);
+      ++extended_map_modified_tick;
+    }
+  else
+    sock_close (fd);
 }

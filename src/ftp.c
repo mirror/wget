@@ -327,14 +327,14 @@ getftp (struct url *u, long *len, long restval, ccon *con)
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
-	  CLOSE (csock);
+	  xclose (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
 	case FTPSRVERR:
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("Error in server greeting.\n"));
-	  CLOSE (csock);
+	  xclose (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -342,21 +342,21 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET,
 		   _("Write failed, closing control connection.\n"));
-	  CLOSE (csock);
+	  xclose (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
 	case FTPLOGREFUSED:
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("The server refuses login.\n"));
-	  CLOSE (csock);
+	  xclose (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return FTPLOGREFUSED;
 	  break;
 	case FTPLOGINC:
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("Login incorrect.\n"));
-	  CLOSE (csock);
+	  xclose (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return FTPLOGINC;
 	  break;
@@ -380,7 +380,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
-	  CLOSE (csock);
+	  xclose (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -411,7 +411,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
-	  CLOSE (csock);
+	  xclose (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -465,7 +465,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
-	  CLOSE (csock);
+	  xclose (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -473,7 +473,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET,
 		   _("Write failed, closing control connection.\n"));
-	  CLOSE (csock);
+	  xclose (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -482,7 +482,7 @@ Error in server response, closing control connection.\n"));
 	  logprintf (LOG_NOTQUIET,
 		     _("Unknown type `%c', closing control connection.\n"),
 		     type_char);
-	  CLOSE (csock);
+	  xclose (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	case FTPOK:
@@ -580,7 +580,7 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_VERBOSE, "\n");
 	      logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
-	      CLOSE (csock);
+	      xclose (csock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
@@ -588,7 +588,7 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_VERBOSE, "\n");
 	      logputs (LOG_NOTQUIET,
 		       _("Write failed, closing control connection.\n"));
-	      CLOSE (csock);
+	      xclose (csock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
@@ -596,7 +596,7 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_VERBOSE, "\n");
 	      logprintf (LOG_NOTQUIET, _("No such directory `%s'.\n\n"),
 			 u->dir);
-	      CLOSE (csock);
+	      xclose (csock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
@@ -631,7 +631,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
-	  CLOSE (csock);
+	  xclose (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -661,7 +661,7 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_VERBOSE, "\n");
 	      logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
-	      CLOSE (csock);
+	      xclose (csock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
@@ -669,7 +669,7 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_VERBOSE, "\n");
 	      logputs (LOG_NOTQUIET,
 		       _("Write failed, closing control connection.\n"));
-	      CLOSE (csock);
+	      xclose (csock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
@@ -697,7 +697,7 @@ Error in server response, closing control connection.\n"));
 	      if (dtsock < 0)
 		{
 		  int save_errno = errno;
-		  CLOSE (csock);
+		  xclose (csock);
 		  rbuf_uninitialize (&con->rbuf);
 		  logprintf (LOG_VERBOSE, _("couldn't connect to %s port %hu: %s\n"),
 			     pretty_print_address (&passive_addr), passive_port,
@@ -722,9 +722,9 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_VERBOSE, "\n");
 	      logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
-	      CLOSE (csock);
-	      CLOSE (dtsock);
-	      CLOSE (local_sock);
+	      xclose (csock);
+	      xclose (dtsock);
+	      xclose (local_sock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
@@ -732,18 +732,18 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_VERBOSE, "\n");
 	      logputs (LOG_NOTQUIET,
 		       _("Write failed, closing control connection.\n"));
-	      CLOSE (csock);
-	      CLOSE (dtsock);
-	      CLOSE (local_sock);
+	      xclose (csock);
+	      xclose (dtsock);
+	      xclose (local_sock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
 	    case CONSOCKERR:
 	      logputs (LOG_VERBOSE, "\n");
 	      logprintf (LOG_NOTQUIET, "socket: %s\n", strerror (errno));
-	      CLOSE (csock);
-	      CLOSE (dtsock);
-	      CLOSE (local_sock);
+	      xclose (csock);
+	      xclose (dtsock);
+	      xclose (local_sock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
@@ -752,16 +752,16 @@ Error in server response, closing control connection.\n"));
 	      logputs (LOG_VERBOSE, "\n");
 	      logprintf (LOG_NOTQUIET, _("Bind error (%s).\n"),
 			 strerror (errno));
-	      CLOSE (dtsock);
-	      CLOSE (local_sock);
+	      xclose (dtsock);
+	      xclose (local_sock);
 	      return err;
 	      break;
 	    case FTPPORTERR:
 	      logputs (LOG_VERBOSE, "\n");
 	      logputs (LOG_NOTQUIET, _("Invalid PORT.\n"));
-	      CLOSE (csock);
-	      CLOSE (dtsock);
-	      CLOSE (local_sock);
+	      xclose (csock);
+	      xclose (dtsock);
+	      xclose (local_sock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
@@ -791,9 +791,9 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
-	  CLOSE (csock);
-	  CLOSE (dtsock);
-	  CLOSE (local_sock);
+	  xclose (csock);
+	  xclose (dtsock);
+	  xclose (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -801,9 +801,9 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET,
 		   _("Write failed, closing control connection.\n"));
-	  CLOSE (csock);
-	  CLOSE (dtsock);
-	  CLOSE (local_sock);
+	  xclose (csock);
+	  xclose (dtsock);
+	  xclose (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -816,9 +816,9 @@ Error in server response, closing control connection.\n"));
 	      logprintf (LOG_NOTQUIET,
 			 _("\nREST failed; will not truncate `%s'.\n"),
 			 con->target);
-	      CLOSE (csock);
-	      CLOSE (dtsock);
-	      CLOSE (local_sock);
+	      xclose (csock);
+	      xclose (dtsock);
+	      xclose (local_sock);
 	      rbuf_uninitialize (&con->rbuf);
 	      return CONTNOTSUPPORTED;
 	    }
@@ -844,9 +844,9 @@ Error in server response, closing control connection.\n"));
 	 request.  */
       if (opt.spider)
 	{
-	  CLOSE (csock);
-	  CLOSE (dtsock);
-	  CLOSE (local_sock);
+	  xclose (csock);
+	  xclose (dtsock);
+	  xclose (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return RETRFINISHED;
 	}
@@ -869,9 +869,9 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
-	  CLOSE (csock);
-	  CLOSE (dtsock);
-	  CLOSE (local_sock);
+	  xclose (csock);
+	  xclose (dtsock);
+	  xclose (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -879,17 +879,17 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET,
 		   _("Write failed, closing control connection.\n"));
-	  CLOSE (csock);
-	  CLOSE (dtsock);
-	  CLOSE (local_sock);
+	  xclose (csock);
+	  xclose (dtsock);
+	  xclose (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
 	case FTPNSFOD:
 	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET, _("No such file `%s'.\n\n"), u->file);
-	  CLOSE (dtsock);
-	  CLOSE (local_sock);
+	  xclose (dtsock);
+	  xclose (local_sock);
 	  return err;
 	  break;
 	case FTPOK:
@@ -920,9 +920,9 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
-	  CLOSE (csock);
-	  CLOSE (dtsock);
-	  CLOSE (local_sock);
+	  xclose (csock);
+	  xclose (dtsock);
+	  xclose (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -930,9 +930,9 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET,
 		   _("Write failed, closing control connection.\n"));
-	  CLOSE (csock);
-	  CLOSE (dtsock);
-	  CLOSE (local_sock);
+	  xclose (csock);
+	  xclose (dtsock);
+	  xclose (local_sock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;
 	  break;
@@ -940,8 +940,8 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET, _("No such file or directory `%s'.\n\n"),
 		     ".");
-	  CLOSE (dtsock);
-	  CLOSE (local_sock);
+	  xclose (dtsock);
+	  xclose (local_sock);
 	  return err;
 	  break;
 	case FTPOK:
@@ -995,10 +995,10 @@ Error in server response, closing control connection.\n"));
       if (!fp)
 	{
 	  logprintf (LOG_NOTQUIET, "%s: %s\n", con->target, strerror (errno));
-	  CLOSE (csock);
+	  xclose (csock);
 	  rbuf_uninitialize (&con->rbuf);
-	  CLOSE (dtsock);
-	  CLOSE (local_sock);
+	  xclose (dtsock);
+	  xclose (local_sock);
 	  return FOPENERR;
 	}
     }
@@ -1045,8 +1045,8 @@ Error in server response, closing control connection.\n"));
   tms = time_str (NULL);
   tmrate = retr_rate (*len - restval, con->dltime, 0);
   /* Close data connection socket.  */
-  CLOSE (dtsock);
-  CLOSE (local_sock);
+  xclose (dtsock);
+  xclose (local_sock);
   /* Close the local file.  */
   {
     /* Close or flush the file.  We have to be careful to check for
@@ -1066,7 +1066,7 @@ Error in server response, closing control connection.\n"));
     {
       logprintf (LOG_NOTQUIET, _("%s: %s, closing control connection.\n"),
 		 con->target, strerror (errno));
-      CLOSE (csock);
+      xclose (csock);
       rbuf_uninitialize (&con->rbuf);
       return FWRITEERR;
     }
@@ -1094,7 +1094,7 @@ Error in server response, closing control connection.\n"));
 	 return FTPRETRINT, since there is a possibility that the
 	 whole file was retrieved nevertheless (but that is for
 	 ftp_loop_internal to decide).  */
-      CLOSE (csock);
+      xclose (csock);
       rbuf_uninitialize (&con->rbuf);
       return FTPRETRINT;
     } /* err != FTPOK */
@@ -1123,7 +1123,7 @@ Error in server response, closing control connection.\n"));
     {
       /* I should probably send 'QUIT' and check for a reply, but this
 	 is faster.  #### Is it OK, though?  */
-      CLOSE (csock);
+      xclose (csock);
       rbuf_uninitialize (&con->rbuf);
     }
   /* If it was a listing, and opt.server_response is true,
@@ -1304,7 +1304,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 
       if (con->st & ON_YOUR_OWN)
 	{
-	  CLOSE (RBUF_FD (&con->rbuf));
+	  xclose (RBUF_FD (&con->rbuf));
 	  rbuf_uninitialize (&con->rbuf);
 	}
       if (!opt.spider)
@@ -1366,7 +1366,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 
   if (rbuf_initialized_p (&con->rbuf) && (con->st & ON_YOUR_OWN))
     {
-      CLOSE (RBUF_FD (&con->rbuf));
+      xclose (RBUF_FD (&con->rbuf));
       rbuf_uninitialize (&con->rbuf);
     }
   return TRYLIMEXC;
@@ -1924,7 +1924,7 @@ ftp_loop (struct url *u, int *dt, struct url *proxy)
     *dt |= RETROKF;
   /* If a connection was left, quench it.  */
   if (rbuf_initialized_p (&con.rbuf))
-    CLOSE (RBUF_FD (&con.rbuf));
+    xclose (RBUF_FD (&con.rbuf));
   xfree_null (con.id);
   con.id = NULL;
   xfree_null (con.target);

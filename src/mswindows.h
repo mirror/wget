@@ -98,10 +98,6 @@ so, delete this exception statement from your version.  */
 
 #define REALCLOSE(x) closesocket (x)
 
-/* read & write don't work with sockets on Windows 95.  */
-#define READ(fd, buf, cnt) recv ((fd), (buf), (cnt), 0)
-#define WRITE(fd, buf, cnt) send ((fd), (buf), (cnt), 0)
-
 /* #### Do we need this?  */
 #include <direct.h>
 

@@ -192,16 +192,12 @@ parse_http_status_line (const char *line, const char **reason_phrase_ptr)
    longer, read only that much; if the file is shorter, report an error.  */
 
 static int
-post_file (int sock, void *ssl, const char *file_name, long promised_size)
+post_file (int sock, const char *file_name, long promised_size)
 {
   static char chunk[8192];
   long written = 0;
   int write_error;
   FILE *fp;
-
-  /* Only one of SOCK and SSL may be active at the same time. */
-  assert (sock > -1 || ssl != NULL);
-  assert (sock == -1 || ssl == NULL);
 
   DEBUGP (("[writing POST file %s ... ", file_name));
 
@@ -215,12 +211,7 @@ post_file (int sock, void *ssl, const char *file_name, long promised_size)
       if (length == 0)
 	break;
       towrite = WMIN (promised_size - written, length);
-#ifdef HAVE_SSL
-      if (ssl)
-	write_error = ssl_iwrite (ssl, chunk, towrite);
-      else
-#endif
-	write_error = iwrite (sock, chunk, towrite);
+      write_error = xwrite (sock, chunk, towrite, -1);
       if (write_error < 0)
 	{
 	  fclose (fp);
@@ -359,6 +350,7 @@ http_process_set_cookie (const char *hdr, void *arg)
 
 /* Whether a persistent connection is active. */
 static int pc_active_p;
+
 /* Host and port of currently active persistent connection. */
 static struct address_list *pc_last_host_ip;
 static unsigned short pc_last_port;
@@ -366,12 +358,8 @@ static unsigned short pc_last_port;
 /* File descriptor of the currently active persistent connection. */
 static int pc_last_fd;
 
-#ifdef HAVE_SSL
 /* Whether a ssl handshake has occoured on this connection */
-static int pc_active_ssl;
-/* SSL connection of the currently active persistent connection. */
-static SSL *pc_last_ssl;
-#endif /* HAVE_SSL */
+static int pc_last_ssl_p;
 
 /* Mark the persistent connection as invalid.  This is used by the
    CLOSE_* macros after they forcefully close a registered persistent
@@ -382,9 +370,7 @@ static void
 invalidate_persistent (void)
 {
   pc_active_p = 0;
-#ifdef HAVE_SSL
-  pc_active_ssl = 0;
-#endif /* HAVE_SSL */
+  pc_last_ssl_p = 0;
   if (pc_last_host_ip != NULL)
     {
       address_list_release (pc_last_host_ip);
@@ -401,15 +387,9 @@ invalidate_persistent (void)
 
    If a previous connection was persistent, it is closed. */
 
-#ifdef HAVE_SSL
 static void
-register_persistent (const char *host, unsigned short port, int fd, SSL *ssl)
+register_persistent (const char *host, unsigned short port, int fd, int ssl)
 {
-#else
-static void
-register_persistent (const char *host, unsigned short port, int fd)
-{
-#endif
   if (pc_active_p)
     {
       if (pc_last_fd == fd)
@@ -425,13 +405,7 @@ register_persistent (const char *host, unsigned short port, int fd)
 	     persistent connection exists, but we then connect to a
 	     different host, and try to register a persistent
 	     connection to that one.  */
-#ifdef HAVE_SSL
-	  /* The ssl disconnect has to take place before the closing
-             of pc_last_fd.  */
-	  if (pc_last_ssl)
-	    shutdown_ssl(pc_last_ssl);
-#endif
-	  CLOSE (pc_last_fd);
+	  xclose (pc_last_fd);
 	  invalidate_persistent ();
 	}
     }
@@ -446,34 +420,16 @@ register_persistent (const char *host, unsigned short port, int fd)
   pc_last_port = port;
   pc_last_fd = fd;
   pc_active_p = 1;
-#ifdef HAVE_SSL
-  pc_last_ssl = ssl;
-  pc_active_ssl = ssl ? 1 : 0;
-#endif
+  pc_last_ssl_p = ssl;
   DEBUGP (("Registered fd %d for persistent reuse.\n", fd));
 }
-
-#ifdef HAVE_SSL
-# define SHUTDOWN_SSL(ssl) do {		\
-  if (ssl)				\
-    shutdown_ssl (ssl);			\
-} while (0)
-#else
-# define SHUTDOWN_SSL(ssl) 
-#endif
 
 /* Return non-zero if a persistent connection is available for
    connecting to HOST:PORT.  */
 
-#ifdef HAVE_SSL
 static int
 persistent_available_p (const char *host, unsigned short port, int ssl)
 {
-#else
-static int
-persistent_available_p (const char *host, unsigned short port)
-{
-#endif
   int success;
   struct address_list *this_host_ip;
 
@@ -485,15 +441,13 @@ persistent_available_p (const char *host, unsigned short port)
   if (port != pc_last_port)
     return 0;
 
-#ifdef HAVE_SSL
   /* Second, a): check if current connection is (not) ssl, too.  This
      test is unlikely to fail because HTTP and HTTPS typicaly use
      different ports.  Yet it is possible, or so I [Christian
      Fraenkel] have been told, to run HTTPS and HTTP simultaneus on
      the same port.  */
-  if (ssl != pc_active_ssl)
+  if (ssl != pc_last_ssl_p)
     return 0;
-#endif /* HAVE_SSL */
 
   this_host_ip = lookup_host (host, LH_SILENT);
   if (!this_host_ip)
@@ -518,11 +472,7 @@ persistent_available_p (const char *host, unsigned short port)
       /* Oops, the socket is no longer open.  Now that we know that,
          let's invalidate the persistent connection before returning
          0.  */
-      CLOSE (pc_last_fd);
-#ifdef HAVE_SSL
-      SHUTDOWN_SSL (pc_last_ssl);
-      pc_last_ssl = NULL;
-#endif
+      xclose (pc_last_fd);
       invalidate_persistent ();
       return 0;
     }
@@ -547,16 +497,14 @@ persistent_available_p (const char *host, unsigned short port)
 #define CLOSE_FINISH(fd) do {			\
   if (!keep_alive)				\
     {						\
-      SHUTDOWN_SSL (ssl);			\
-      CLOSE (fd);				\
+      xclose (fd);				\
       if (pc_active_p && (fd) == pc_last_fd)	\
 	invalidate_persistent ();		\
     }						\
 } while (0)
 
 #define CLOSE_INVALIDATE(fd) do {		\
-  SHUTDOWN_SSL (ssl);				\
-  CLOSE (fd);					\
+  xclose (fd);					\
   if (pc_active_p && (fd) == pc_last_fd)	\
     invalidate_persistent ();			\
 } while (0)
@@ -637,8 +585,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   struct rbuf rbuf;
 #ifdef HAVE_SSL
   static SSL_CTX *ssl_ctx = NULL;
-  SSL *ssl = NULL;
 #endif
+  int using_ssl = 0;
   char *cookies = NULL;
 
   /* Whether this connection will be kept alive after the HTTP request
@@ -734,14 +682,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
   /* First: establish the connection.  */
   if (inhibit_keep_alive
-      ||
-#ifndef HAVE_SSL
-      !persistent_available_p (conn->host, conn->port)
+      || !persistent_available_p (conn->host, conn->port,
+#ifdef HAVE_SSL
+				  u->scheme == SCHEME_HTTPS
 #else
-      !persistent_available_p (conn->host, conn->port,
-			       u->scheme == SCHEME_HTTPS)
-#endif /* HAVE_SSL */
-      )
+				  0
+#endif
+				  ))
     {
       sock = connect_to_host (conn->host, conn->port);
       if (sock == E_HOST)
@@ -751,14 +698,17 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
 #ifdef HAVE_SSL
      if (conn->scheme == SCHEME_HTTPS)
-       if (connect_ssl (&ssl, ssl_ctx,sock) != 0)
-	 {
-	   logputs (LOG_VERBOSE, "\n");
-	   logprintf (LOG_NOTQUIET, _("Unable to establish SSL connection.\n"));
-	   ssl_printerrors ();
-	   CLOSE (sock);
-	   return CONSSLERR;
-	 }
+       {
+	 if (!connect_ssl (sock, ssl_ctx))
+	   {
+	     logputs (LOG_VERBOSE, "\n");
+	     logprintf (LOG_NOTQUIET,
+			_("Unable to establish SSL connection.\n"));
+	     xclose (sock);
+	     return CONSSLERR;
+	   }
+	 using_ssl = 1;
+       }
 #endif /* HAVE_SSL */
     }
   else
@@ -768,9 +718,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       /* #### pc_last_fd should be accessed through an accessor
          function.  */
       sock = pc_last_fd;
-#ifdef HAVE_SSL
-      ssl = pc_last_ssl;
-#endif /* HAVE_SSL */
+      using_ssl = pc_last_ssl_p;
       DEBUGP (("Reusing fd %d.\n", sock));
     }
 
@@ -991,36 +939,17 @@ Accept: %s\r\n\
   xfree (full_path);
 
   /* Send the request to server.  */
-#ifdef HAVE_SSL
-  if (conn->scheme == SCHEME_HTTPS)
-    write_error = ssl_iwrite (ssl, request, strlen (request));
-  else
-#endif
-    write_error = iwrite (sock, request, strlen (request));
+  write_error = xwrite (sock, request, strlen (request), -1);
 
   if (write_error >= 0)
     {
       if (opt.post_data)
 	{
 	  DEBUGP (("[POST data: %s]\n", opt.post_data));
-#ifdef HAVE_SSL
-	  if (conn->scheme == SCHEME_HTTPS)
-	    write_error = ssl_iwrite (ssl, opt.post_data, post_data_size);
-	  else
-#endif
-	    write_error = iwrite (sock, opt.post_data, post_data_size);
+	  write_error = xwrite (sock, opt.post_data, post_data_size, -1);
 	}
       else if (opt.post_file_name && post_data_size != 0)
-	{
-#ifdef HAVE_SSL
-	  if (conn->scheme == SCHEME_HTTPS)
-	    write_error = post_file (-1, ssl, opt.post_file_name,
-				     post_data_size);
-	  else
-#endif
-	    write_error = post_file (sock, NULL, opt.post_file_name,
-				     post_data_size);
-	}
+	write_error = post_file (sock, opt.post_file_name, post_data_size);
     }
   DEBUGP (("---request end---\n"));
 
@@ -1040,12 +969,6 @@ Accept: %s\r\n\
 
   /* Before reading anything, initialize the rbuf.  */
   rbuf_initialize (&rbuf, sock);
-#ifdef HAVE_SSL
-  if (conn->scheme == SCHEME_HTTPS)
-    rbuf.ssl = ssl;
-  else
-    rbuf.ssl = NULL;
-#endif /* HAVE_SSL */
   all_headers = NULL;
   all_length = 0;
   /* Header-fetching loop.  */
@@ -1239,11 +1162,7 @@ Accept: %s\r\n\
   if (keep_alive)
     /* The server has promised that it will not close the connection
        when we're done.  This means that we can register it.  */
-#ifndef HAVE_SSL
-    register_persistent (conn->host, conn->port, sock);
-#else
-    register_persistent (conn->host, conn->port, sock, ssl);
-#endif /* HAVE_SSL */
+    register_persistent (conn->host, conn->port, sock, using_ssl);
 
   if ((statcode == HTTP_STATUS_UNAUTHORIZED)
       && authenticate_h)

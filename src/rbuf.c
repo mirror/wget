@@ -42,24 +42,10 @@ so, delete this exception statement from your version.  */
 #include "rbuf.h"
 #include "connect.h"
 
-#ifdef HAVE_SSL
-#include <openssl/bio.h>
-#include <openssl/crypto.h>
-#include <openssl/x509.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <openssl/pem.h>
-#include "gen_sslfunc.h"	/* for ssl_iread */
-#endif /* HAVE_SSL */
-
 void
 rbuf_initialize (struct rbuf *rbuf, int fd)
 {
   rbuf->fd = fd;
-#ifdef HAVE_SSL
-/* pointing ssl to NULL results in an unchanged behaviour */
-  rbuf->ssl = NULL;
-#endif /* HAVE_SSL */
   rbuf->buffer_pos = rbuf->buffer;
   rbuf->buffer_left = 0;
 }
@@ -79,12 +65,7 @@ rbuf_uninitialize (struct rbuf *rbuf)
 int
 rbuf_read_bufferful (struct rbuf *rbuf)
 {
-#ifdef HAVE_SSL
-  if (rbuf->ssl)
-    return ssl_iread (rbuf->ssl, rbuf->buffer, sizeof (rbuf->buffer));
-  else
-#endif
-    return iread (rbuf->fd, rbuf->buffer, sizeof (rbuf->buffer));
+  return xread (rbuf->fd, rbuf->buffer, sizeof (rbuf->buffer), -1);
 }
 
 /* Currently unused -- see RBUF_READCHAR.  */
@@ -106,15 +87,7 @@ rbuf_peek (struct rbuf *rbuf, char *store)
       int res;
       rbuf->buffer_pos = rbuf->buffer;
       rbuf->buffer_left = 0;
-#ifdef HAVE_SSL
-		if (rbuf->ssl != NULL) {
-		res = ssl_iread (rbuf->ssl, rbuf->buffer, sizeof (rbuf->buffer));
-		} else {
-#endif /* HAVE_SSL */
-		res = iread (rbuf->fd, rbuf->buffer, sizeof (rbuf->buffer));
-#ifdef HAVE_SSL
-      }
-#endif /* HAVE_SSL */
+      res = xread (rbuf->fd, rbuf->buffer, sizeof (rbuf->buffer), -1);
       if (res <= 0)
 	return res;
       rbuf->buffer_left = res;

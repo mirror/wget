@@ -213,12 +213,7 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
     {
       int amount_to_read = (use_expected
 			    ? MIN (expected - *len, dlbufsize) : dlbufsize);
-#ifdef HAVE_SSL
-      if (rbuf->ssl!=NULL)
-	res = ssl_iread (rbuf->ssl, dlbuf, amount_to_read);
-      else
-#endif /* HAVE_SSL */
-	res = iread (fd, dlbuf, amount_to_read);
+      res = xread (fd, dlbuf, amount_to_read, -1);
 
       if (res <= 0)
 	break;

@@ -108,33 +108,6 @@ so, delete this exception statement from your version.  */
 #endif
 #endif
 
-#ifdef __BEOS__
-# undef READ
-# undef WRITE
-# define READ(fd, buf, cnt) recv ((fd), (buf), (cnt), 0)
-# define WRITE(fd, buf, cnt) send ((fd), (buf), (cnt), 0)
-#endif
-
-/* mswindows.h defines these.  */
-#ifndef READ
-# define READ(fd, buf, cnt) read ((fd), (buf), (cnt))
-#endif
-#ifndef WRITE
-# define WRITE(fd, buf, cnt) write ((fd), (buf), (cnt))
-#endif
-#ifndef REALCLOSE
-# define REALCLOSE(x) close (x)
-#endif
-
-#define CLOSE(x) do {				\
-  int C_sock = (x);				\
-  if (C_sock >= 0)				\
-    {						\
-      REALCLOSE (C_sock);			\
-      DEBUGP (("Closing fd %d\n", C_sock));	\
-    }						\
-} while (0)
-
 /* Define a large integral type useful for storing large sizes that
    exceed sizes of one download, such as when printing the sum of all
    downloads.  Note that this has nothing to do with large file

@@ -30,8 +30,6 @@ so, delete this exception statement from your version.  */
 
 #include <config.h>
 
-#ifdef HAVE_SSL
-
 #include <assert.h>
 #include <errno.h>
 #ifdef HAVE_UNISTD_H
@@ -256,50 +254,87 @@ init_ssl (SSL_CTX **ctx)
   return 0; /* Succeded */
 }
 
-void
-shutdown_ssl (SSL* con)
+static
+int ssl_read (int fd, char *buf, int bufsize, void *ctx)
 {
-  if (con == NULL)
-    return;
-  if (0==SSL_shutdown (con))
-    SSL_shutdown (con);
-  SSL_free (con);
+  int res;
+  SSL *ssl = (SSL *) ctx;
+  /* #### Does SSL_read actually set EINTR? */
+  do
+    res = SSL_read (ssl, buf, bufsize);
+  while (res == -1 && errno == EINTR);
+  return res;
 }
 
-/* Sets up a SSL structure and performs the handshake on fd 
-   Returns 0 if everything went right
-   Returns 1 if something went wrong ----- TODO: More exit codes
-*/
-int
-connect_ssl (SSL **con, SSL_CTX *ctx, int fd) 
+static int
+ssl_write (int fd, char *buf, int bufsize, void *ctx)
 {
-  if (NULL == (*con = SSL_new (ctx)))
-    {
-      ssl_printerrors ();
-      return 1;
-    }
-  if (!SSL_set_fd (*con, fd))
-    {
-      ssl_printerrors ();
-      return 1;
-    }
-  SSL_set_connect_state (*con);
-  switch (SSL_connect (*con))
-    {
-      case 1 : 
-	return (*con)->state != SSL_ST_OK;
-      default:
-        ssl_printerrors ();
-	shutdown_ssl (*con);
-	*con = NULL;
-	return 1;
-      case 0 :
-        ssl_printerrors ();
-	SSL_free (*con);
-       	*con = NULL;
- 	return 1;
-    }
-  return 0;
+  int res = 0;
+  SSL *ssl = (SSL *) ctx;
+  /* #### Does SSL_write actually set EINTR? */
+  do
+    res = SSL_write (ssl, buf, bufsize);
+  while (res == -1 && errno == EINTR);
+  return res;
+}
+
+static int
+ssl_poll (int fd, double timeout, int wait_for, void *ctx)
+{
+  SSL *ssl = (SSL *) ctx;
+  if (timeout == 0)
+    return 1;
+  if (SSL_pending (ssl))
+    return 1;
+#ifdef HAVE_SELECT
+  return select_fd (fd, timeout, wait_for);
+#else
+  return 1;
+#endif
+}
+
+static void
+ssl_close (int fd, void *ctx)
+{
+  SSL *ssl = (SSL *) ctx;
+  SSL_shutdown (ssl);
+  SSL_free (ssl);
+
+#ifdef WINDOWS
+  closesocket (fd);
+#else
+  close (fd);
+#endif
+
+  DEBUGP (("Closed %d/SSL 0x%0lx\n", fd, (unsigned long) ssl));
+}
+
+/* Sets up a SSL structure and performs the handshake on fd. */
+
+SSL *
+connect_ssl (int fd, SSL_CTX *ctx) 
+{
+  SSL *ssl = SSL_new (ctx);
+  if (!ssl)
+    goto err;
+  if (!SSL_set_fd (ssl, fd))
+    goto err;
+  SSL_set_connect_state (ssl);
+  if (SSL_connect (ssl) <= 0 || ssl->state != SSL_ST_OK)
+    goto err;
+
+  /* Register the FD to use our functions for read, write, etc.  That
+     way the rest of Wget can keep using xread, xwrite, and
+     friends.  */
+  register_extended (fd, ssl_read, ssl_write, ssl_poll, ssl_close, ssl);
+  DEBUGP (("Connected %d to SSL 0x%0lx\n", fd, (unsigned long) ssl));
+  return ssl;
+
+ err:
+  ssl_printerrors ();
+  if (ssl)
+    SSL_free (ssl);
+  return NULL;
 }
 
 void
@@ -307,54 +342,3 @@ free_ssl_ctx (SSL_CTX * ctx)
 {
   SSL_CTX_free (ctx);
 }
-
-/* SSL version of iread.  Only exchanged read for SSL_read Read at
-   most LEN bytes from FD, storing them to BUF. */
-
-int
-ssl_iread (SSL *con, char *buf, int len)
-{
-  int res, fd;
-  BIO_get_fd (con->rbio, &fd);
-#ifdef HAVE_SELECT
-  if (opt.read_timeout && !SSL_pending (con))
-    if (select_fd (fd, opt.read_timeout, WAIT_READ) <= 0)
-      return -1;
-#endif
-  do
-    res = SSL_read (con, buf, len);
-  while (res == -1 && errno == EINTR);
-
-  return res;
-}
-
-/* SSL version of iwrite.  Only exchanged write for SSL_write Write
-   LEN bytes from BUF to FD.  */
-
-int
-ssl_iwrite (SSL *con, char *buf, int len)
-{
-  int res = 0, fd;
-  BIO_get_fd (con->rbio, &fd);
-  /* `write' may write less than LEN bytes, thus the outward loop
-     keeps trying it until all was written, or an error occurred.  The
-     inner loop is reserved for the usual EINTR f*kage, and the
-     innermost loop deals with the same during select().  */
-  while (len > 0)
-    {
-#ifdef HAVE_SELECT
-      if (opt.read_timeout)
-	if (select_fd (fd, opt.read_timeout, WAIT_WRITE) <= 0)
-	  return -1;
-#endif
-      do
-	res = SSL_write (con, buf, len);
-      while (res == -1 && errno == EINTR);
-      if (res <= 0)
-	break;
-      buf += res;
-      len -= res;
-    }
-  return res;
-}
-#endif /* HAVE_SSL */

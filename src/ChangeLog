@@ -1,3 +1,34 @@
+2003-11-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c: Updated all callers of
+	iread/ssl_iread/iwrite/ssl_iwrite to use xread and xwrite instead.
+
+	* rbuf.h (struct rbuf): Removed the SSL member because SSL is
+	handled automatically by xread.
+
+	* hash.c (ptrhash): Made private.
+	(ptrcmp): Ditto.
+	(inthash): Removed.
+
+	* connect.c (select_fd): Don't set errno, leave it to the caller.
+
+	* gen_sslfunc.c (connect_ssl): Use register_extended to register
+	SSL callbacks for communication with SSL-enabled endpoints.
+	(ssl_read): New function.
+	(ssl_write): Ditto.
+	(ssl_poll): Ditto.
+	(ssl_close): Ditto.
+
+	* connect.c (register_extended): New function -- register
+	callbacks for basic socket operations.
+	(xread): Ditto.
+	(xwrite): Ditto.
+	(xclose): Ditto.
+	(sock_read): New function, default implementation for reading.
+	(sock_write): Ditto for writing.
+	(sock_poll): Ditto for polling.
+	(sock_close): Ditto for closing.
+
 2003-11-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* connect.c (bindport): Fix compilation under pre-C99 compilers.

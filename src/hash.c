@@ -238,6 +238,9 @@ prime_size (int size, int *prime_offset)
   return 0;
 }
 
+static unsigned long ptrhash PARAMS ((const void *));
+static int ptrcmp PARAMS ((const void *, const void *));
+
 /* Create a hash table with hash function HASH_FUNCTION and test
    function TEST_FUNCTION.  The table is empty (its count is 0), but
    pre-allocated to store at least ITEMS items.
@@ -612,7 +615,7 @@ make_nocase_string_hash_table (int items)
    pointer identity.  (Common Lisp calls them EQ hash tables, and Java
    calls them IdentityHashMaps.)  */
 
-unsigned long
+static unsigned long
 ptrhash (const void *ptr)
 {
   unsigned long key = (unsigned long)ptr;
@@ -637,29 +640,11 @@ ptrhash (const void *ptr)
   return key;
 }
 
-int
+static int
 ptrcmp (const void *ptr1, const void *ptr2)
 {
   return ptr1 == ptr2;
 }
-
-#if 0
-/* Currently unused: hashing of integers. */
-
-unsigned long
-inthash (unsigned int key)
-{
-  key += (key << 12);
-  key ^= (key >> 22);
-  key += (key << 4);
-  key ^= (key >> 9);
-  key += (key << 10);
-  key ^= (key >> 2);
-  key += (key << 7);
-  key ^= (key >> 12);
-  return key;
-}
-#endif
 
 #ifdef STANDALONE
 

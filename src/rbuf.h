@@ -30,17 +30,10 @@ so, delete this exception statement from your version.  */
 #ifndef RBUF_H
 #define RBUF_H
 
-#ifdef HAVE_SSL
-# include <openssl/ssl.h>
-#endif
-
 /* Retrieval stream */
 struct rbuf
 {
   int fd;
-#ifdef HAVE_SSL
-  SSL *ssl;		/* the ssl structure -- replaces fd for ssl connections */
-#endif /* HAVE_SSL */
   char buffer[4096];		/* the input buffer */
   char *buffer_pos;		/* current position in the buffer */
   size_t buffer_left;		/* number of bytes left in the buffer:
@@ -74,9 +67,6 @@ struct rbuf
 
 /* Return the file descriptor of RBUF.  */
 #define RBUF_FD(rbuf) ((rbuf)->fd)
-
-/* Return the file descriptor of RBUF.  */
-#define RBUF_SSL(rbuf) ((rbuf)->ssl)
 
 /* Function declarations */
 void rbuf_initialize PARAMS ((struct rbuf *, int));
