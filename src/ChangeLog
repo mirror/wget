@@ -1,3 +1,13 @@
+2002-05-09  Ian Abbott  <abbotti@mev.co.uk>
+
+	* cmpt.c (strptime_internal): Synched with glibc-2.1.3.
+	(get_number): Ditto.
+	(get_alt_number): Ditto.
+	(__isleap): New function-like macro used by strptime.
+	(day_of_the_week): New function used by strptime.
+	(day_of_the_year): Ditto.
+	(__mon_yday): Now shared by mktime and strptime implementations.
+
 2002-05-08  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* cookies.c (check_domain_match): Use match_tail in case
