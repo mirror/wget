@@ -672,14 +672,35 @@ functionality of real @sc{www} spiders.
 @cindex timeout
 @item -T seconds
 @itemx --timeout=@var{seconds}
-Set the read timeout to @var{seconds} seconds.  Whenever a network read
-is issued, the file descriptor is checked for a timeout, which could
-otherwise leave a pending connection (uninterrupted read).  The default
+Set the network timeout to @var{seconds} seconds.  Whenever Wget
+connects to or reads from a remote host, it checks for a timeout and
+aborts the operation if the time expires.  This prevents anomalous
+occurrences such as hanging reads or infinite connects.  The default
 timeout is 900 seconds (fifteen minutes).  Setting timeout to 0 will
 disable checking for timeouts.
 
 Please do not lower the default timeout value with this option unless
 you know what you are doing.
+
+@cindex bandwidth, limit
+@cindex rate, limit
+@cindex limit bandwidth
+@item --limit-rate=@var{amount}
+Limit the download speed to @var{amount} bytes per second.  Amount may
+be expressed in bytes, kilobytes with the @samp{k} suffix, or megabytes
+with the @samp{m} suffix.  For example, @samp{--limit-rate=20k} will
+limit the retrieval rate to 20KB/s.  This kind of thing is useful when,
+for whatever reason, you don't want Wget to consume the entire evailable
+bandwidth.
+
+Note that Wget implementeds the limiting by sleeping the appropriate
+amount of time after a network read that took less time than specified
+by the rate.  Eventually this strategy causes the TCP transfer to slow
+down to approximately the specified rate.  However, it takes some time
+for this balance to be achieved, so don't be surprised if limiting the
+rate doesn't work with very small files.  Also, the "sleeping" strategy
+will misfire when an extremely small bandwidth, say less than 1.5KB/s,
+is specified.
 
 @cindex pause
 @cindex wait
@@ -2101,6 +2122,10 @@ Consider data longer than specified in content-length header as invalid
 (and retry getting it).  The default behaviour is to save as much data
 as there is, provided there is more than or equal to the value in
 @code{Content-Length}.
+
+@item limit_rate = @var{rate}
+Limit the download speed to no more than @var{rate} bytes per second.
+The same as @samp{--limit-rate}.
 
 @item logfile = @var{string}
 Set logfile---the same as @samp{-o}.
