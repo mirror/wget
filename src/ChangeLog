@@ -1,5 +1,9 @@
 2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* html.c (htmlfindurl): Fix recognition of # HTML fragments.
+
+2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (construct): Rewritten for clarity.  Avoids the
 	unnecessary copying and stack-allocation the old version
 	performed.
