@@ -92,8 +92,9 @@ struct cookie_jar *wget_cookie_jar;
 /* Some status code validation macros: */
 #define H_20X(x)        (((x) >= 200) && ((x) < 300))
 #define H_PARTIAL(x)    ((x) == HTTP_STATUS_PARTIAL_CONTENTS)
-#define H_REDIRECTED(x) ((x) == HTTP_STATUS_MOVED_PERMANENTLY	\
-                         || (x) == HTTP_STATUS_MOVED_TEMPORARILY \
+#define H_REDIRECTED(x) ((x) == HTTP_STATUS_MOVED_PERMANENTLY		\
+                         || (x) == HTTP_STATUS_MOVED_TEMPORARILY	\
+			 || (x) == HTTP_STATUS_SEE_OTHER		\
 			 || (x) == HTTP_STATUS_TEMPORARY_REDIRECT)
 
 /* HTTP/1.0 status codes from RFC1945, provided for reference.  */
@@ -108,8 +109,9 @@ struct cookie_jar *wget_cookie_jar;
 #define HTTP_STATUS_MULTIPLE_CHOICES	300
 #define HTTP_STATUS_MOVED_PERMANENTLY	301
 #define HTTP_STATUS_MOVED_TEMPORARILY	302
+#define HTTP_STATUS_SEE_OTHER           303 /* from HTTP/1.1 */
 #define HTTP_STATUS_NOT_MODIFIED	304
-#define HTTP_STATUS_TEMPORARY_REDIRECT  307
+#define HTTP_STATUS_TEMPORARY_REDIRECT  307 /* from HTTP/1.1 */
 
 /* Client error 4xx.  */
 #define HTTP_STATUS_BAD_REQUEST		400
