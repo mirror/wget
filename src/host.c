@@ -587,7 +587,7 @@ lookup_host (const char *host, int flags)
 	hints.ai_flags |= AI_ADDRCONFIG;
 #else
 	/* On systems without AI_ADDRCONFIG, emulate it by manually
-	   checking whether the system supports IPv6 sockets and.  */
+	   checking whether the system supports IPv6 sockets.  */
 	if (!socket_has_inet6 ())
 	  hints.ai_family = AF_INET;
 #endif
