@@ -1,3 +1,7 @@
+2003-09-05  Maciej W. Rozycki  <macro@ds2.pg.gda.pl>
+
+	* configure.in: Additional M4 quoting.
+
 2003-09-04  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* aclocal.m4, configure.in: Made them work under Autoconf 2.5x.
