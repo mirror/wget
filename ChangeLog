@@ -1,4 +1,8 @@
-2003-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
+2005-03-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* po/POTFILES.in: Removed headers.c and rbuf.c.
+
+2005-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* windows/Makefile.src.bor: Reenable warnings under Borland C,
 	disabling only specific warnings.  Generate Pentium Pro code by
