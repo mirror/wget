@@ -1,3 +1,9 @@
+2001-01-06  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
+
+	* url.c (parse_uname): Added support for passwords containing '@'
+	characters.
+	(skip_uname): Ditto.
+
 2001-02-11  Hack Kampbj-Aørn  <hack@hackdata.com>-B
 
 	* url.c (parseurl): Debug-print u->ftp_type.

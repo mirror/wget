@@ -339,13 +339,13 @@ int
 skip_uname (const char *url)
 {
   const char *p;
-  for (p = url; *p && *p != '/'; p++)
-    if (*p == '@')
-      break;
+  const char *q = NULL;
+  for (p = url ; *p && *p != '/'; p++)
+    if (*p == '@') q = p;
   /* If a `@' was found before the first occurrence of `/', skip
      it.  */
-  if (*p == '@')
-    return p - url + 1;
+  if (q != NULL)
+    return q - url + 1;
   else
     return 0;
 }
@@ -608,7 +608,7 @@ static uerr_t
 parse_uname (const char *url, char **user, char **passwd)
 {
   int l;
-  const char *p, *col;
+  const char *p, *q, *col;
   char **where;
 
   *user = NULL;
@@ -628,7 +628,7 @@ parse_uname (const char *url, char **user, char **passwd)
   if (*p != '@')
     return URLOK;
   /* Else find the username and password.  */
-  for (p = col = url; *p != '@'; p++)
+  for (p = q = col = url; *p != '/'; p++)
     {
       if (*p == ':' && !*user)
 	{
@@ -637,12 +637,13 @@ parse_uname (const char *url, char **user, char **passwd)
 	  (*user)[p - url] = '\0';
 	  col = p + 1;
 	}
+      if (*p == '@') q = p;
     }
   /* Decide whether you have only the username or both.  */
   where = *user ? passwd : user;
-  *where = (char *)xmalloc (p - col + 1);
-  memcpy (*where, col, p - col);
-  (*where)[p - col] = '\0';
+  *where = (char *)xmalloc (q - col + 1);
+  memcpy (*where, col, q - col);
+  (*where)[q - col] = '\0';
   return URLOK;
 }
 
