@@ -112,11 +112,13 @@ install.info: wget.info
 	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(infodir)
 	-if test -f wget.info; then \
 	  for file in wget.info wget.info-*[0-9]; do \
-	    $(INSTALL_DATA) $$file $(DESTDIR)$(infodir)/$$file ; \
+	    test -f "$$file" && \
+	      $(INSTALL_DATA) "$$file" "$(DESTDIR)$(infodir)/$$file" ; \
 	  done; \
 	else \
 	  for file in $(srcdir)/wget.info $(srcdir)/wget.info-*[0-9]; do \
-	    $(INSTALL_DATA) $$file $(DESTDIR)$(infodir)/`basename $$file` ; \
+	    test -f "$$file" && \
+	      $(INSTALL_DATA) "$$file" "$(DESTDIR)$(infodir)/`basename $$file`" ; \
 	  done; \
 	fi
 

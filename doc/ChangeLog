@@ -1,3 +1,11 @@
+2003-10-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.in (install.info): Handle the case when only wget.info
+	is generated from wget.texi.  In that case, wget.info-*[0-9]
+	doesn't match anything and therefore ends up as a bogus value of
+	FILE in the loop.  Fix this by not calling INSTALL_DATA on
+	nonexistent files.
+
 2003-10-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (HTTP Options): Documented --post-file and
