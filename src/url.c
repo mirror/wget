@@ -528,6 +528,11 @@ parse_uname (const char *str, int len, char **user, char **passwd)
   memcpy (*user, str, len);
   (*user)[len] = '\0';
 
+  if (*user)
+    decode_string (*user);
+  if (*passwd)
+    decode_string (*passwd);
+
   return 1;
 }
 
