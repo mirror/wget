@@ -576,49 +576,52 @@ find_fragment (const char *beg, int size, const char **bp, const char **ep)
    "index.html%3Ffoo=bar" would break local browsing, as the latter
    isn't even recognized as an HTML file!  However, converting
    "index.html?foo=bar.html" to "index.html%3Ffoo=bar.html" should be
-   safe for both local and HTTP-served browsing.  */
+   safe for both local and HTTP-served browsing.
+
+   We always quote "#" as "%23" and "%" as "%25" because those
+   characters have special meanings in URLs.  */
 
 static char *
 local_quote_string (const char *file)
 {
-  const char *file_sans_qmark;
-  int qm;
+  const char *from;
+  char *newname, *to;
 
-  if (!opt.html_extension)
+  char *any = strpbrk (file, "?#%");
+  if (!any)
     return html_quote_string (file);
 
-  qm = count_char (file, '?');
+  /* Allocate space assuming the worst-case scenario, each character
+     having to be quoted.  */
+  to = newname = (char *)alloca (3 * strlen (file) + 1);
+  for (from = file; *from; from++)
+    switch (*from)
+      {
+      case '%':
+	*to++ = '%';
+	*to++ = '2';
+	*to++ = '5';
+	break;
+      case '#':
+	*to++ = '%';
+	*to++ = '2';
+	*to++ = '3';
+	break;
+      case '?':
+	if (opt.html_extension)
+	  {
+	    *to++ = '%';
+	    *to++ = '3';
+	    *to++ = 'F';
+	    break;
+	  }
+	/* fallthrough */
+      default:
+	*to++ = *from;
+      }
+  *to = '\0';
 
-  if (qm)
-    {
-      const char *from = file;
-      char *to, *newname;
-
-      /* qm * 2 because we replace each question mark with "%3F",
-	 i.e. replace one char with three, hence two more.  */
-      int fsqlen = strlen (file) + qm * 2;
-
-      to = newname = (char *)alloca (fsqlen + 1);
-      for (; *from; from++)
-	{
-	  if (*from != '?')
-	    *to++ = *from;
-	  else
-	    {
-	      *to++ = '%';
-	      *to++ = '3';
-	      *to++ = 'F';
-	    }
-	}
-      assert (to - newname == fsqlen);
-      *to = '\0';
-
-      file_sans_qmark = newname;
-    }
-  else
-    file_sans_qmark = file;
-
-  return html_quote_string (file_sans_qmark);
+  return html_quote_string (newname);
 }
 
 /* Book-keeping code for dl_file_url_map, dl_url_file_map,
