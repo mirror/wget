@@ -792,7 +792,9 @@ strptime_internal (rp, fmt, tm, decided)
      struct tm *tm;
      enum locale_status *decided;
 {
+#ifdef _NL_CURRENT
   const char *rp_backup;
+#endif
   int cnt;
   size_t val;
   int have_I, is_pm;
@@ -832,8 +834,10 @@ strptime_internal (rp, fmt, tm, decided)
     start_over:
 #endif
 
+#ifdef _NL_CURRENT
       /* Make back up of current processing pointer.  */
       rp_backup = rp;
+#endif
 
       switch (*fmt++)
 	{

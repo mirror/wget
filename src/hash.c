@@ -47,6 +47,7 @@ so, delete this exception statement from your version.  */
 # include <limits.h>
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 

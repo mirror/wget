@@ -536,9 +536,7 @@ fopen_excl (const char *fname, int binary)
 int
 make_directory (const char *directory)
 {
-  int quit = 0;
-  int i;
-  int ret = 0;
+  int i, ret, quit = 0;
   char *dir;
 
   /* Make a copy of dir, to be able to write to it.  Otherwise, the
@@ -876,7 +874,7 @@ read_file (const char *file)
 {
   int fd;
   struct file_memory *fm;
-  wgint size;
+  long size;
   int inhibit_close = 0;
 
   /* Some magic in the finest tradition of Perl and its kin: if FILE

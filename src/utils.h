@@ -45,7 +45,7 @@ struct hash_table;
 
 struct file_memory {
   char *content;
-  wgint length;
+  long length;
   int mmap_p;
 };
 

@@ -660,7 +660,7 @@ main (int argc, char *const *argv)
 
 #ifdef WINDOWS
   /* Drop extension (typically .EXE) from executable filename. */
-  windows_main_junk (&argc, (char **) argv, (char **) &exec_name);
+  windows_main (&argc, (char **) argv, (char **) &exec_name);
 #endif
 
   /* Set option defaults; read the system wgetrc and ~/.wgetrc.  */
@@ -712,7 +712,7 @@ main (int argc, char *const *argv)
 	  break;
 	case OPT_FUNCALL:
 	  {
-	    void (*func) PARAMS ((void)) = opt->data;
+	    void (*func) PARAMS ((void)) = (void (*) PARAMS ((void))) opt->data;
 	    func ();
 	  }
 	  break;

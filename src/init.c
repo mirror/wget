@@ -399,7 +399,7 @@ run_wgetrc (const char *file)
     }
   enable_tilde_expansion = 1;
   ln = 1;
-  while ((line = read_whole_line (fp)))
+  while ((line = read_whole_line (fp)) != NULL)
     {
       char *com, *val;
       int comind, status;

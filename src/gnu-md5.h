@@ -21,8 +21,6 @@
 #ifndef _MD5_H
 #define _MD5_H 1
 
-#include <stdio.h>
-
 #if defined HAVE_LIMITS_H || _LIBC
 # include <limits.h>
 #endif
@@ -125,10 +123,12 @@ extern void *md5_finish_ctx PARAMS ((struct md5_ctx *ctx, void *resbuf));
 extern void *md5_read_ctx PARAMS ((const struct md5_ctx *ctx, void *resbuf));
 
 
+#if 0 /* Unused in Wget */
 /* Compute MD5 message digest for bytes read from STREAM.  The
    resulting message digest number will be written into the 16 bytes
    beginning at RESBLOCK.  */
 extern int md5_stream PARAMS ((FILE *stream, void *resblock));
+#endif
 
 /* Compute MD5 message digest for LEN bytes beginning at BUFFER.  The
    result is always in little endian byte order, so that a byte-wise

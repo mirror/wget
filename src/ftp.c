@@ -1114,7 +1114,7 @@ Error in server response, closing control connection.\n"));
 	  char *line;
 	  /* The lines are being read with read_whole_line because of
 	     no-buffering on opt.lfile.  */
-	  while ((line = read_whole_line (fp)))
+	  while ((line = read_whole_line (fp)) != NULL)
 	    {
 	      logprintf (LOG_ALWAYS, "%s\n", escnonprint (line));
 	      xfree (line);
@@ -1793,7 +1793,6 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
 	  return RETRBADPATTERN;
 	}
     }
-  res = RETROK;
   if (start)
     {
       /* Just get everything.  */
@@ -1843,7 +1842,6 @@ ftp_loop (struct url *u, int *dt, struct url *proxy)
   con.rs = ST_UNIX;
   con.id = NULL;
   con.proxy = proxy;
-  res = RETROK;			/* in case it's not used */
 
   /* If the file name is empty, the user probably wants a directory
      index.  We'll provide one, properly HTML-ized.  Unless

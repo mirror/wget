@@ -1,5 +1,34 @@
 2005-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (read_file): Don't use wgint for file size; LFS won't
+	work since the file is mmap'ed as a whole.
+
+	* options.h: Don't include stdio.h.
+
+	* log.c: Ditto.
+
+	* init.c: Disambiguate assignment from non-zero test to avoid
+	Borland C warning.
+
+	* http.c (response_new): Don't needlessly post-increment count.
+
+	* hash.c: Include stdio.h.
+
+	* gnu-md5.h: Don't include stdio.h.
+
+	* getopt.h (struct option): Always use const.
+
+	* ftp.c (getftp): Avoid unnecessary assignment to RES to avoid
+	Borland C warning.
+
+	* ftp-ls.c: Disambiguate assignment from non-zero test to avoid
+	Borland C warning.
+
+	* cmpt.c (strptime_internal): Don't initialize rp_backup when
+	!_NL_CURRENT to avoid Borland C warning.
+
+2005-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (fopen_excl): Fix parse error when O_BINARY is
 	available.
 

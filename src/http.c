@@ -519,7 +519,7 @@ response_new (const char *head)
       while (*hdr == ' ' || *hdr == '\t');
     }
   DO_REALLOC (resp->headers, size, count + 1, const char *);
-  resp->headers[count++] = NULL;
+  resp->headers[count] = NULL;
 
   return resp;
 }
@@ -1043,7 +1043,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   int flags;
 
   /* Whether authorization has been already tried. */
-  int auth_tried_already = 0;
+  int auth_tried_already;
 
   /* Whether our connection to the remote host is through SSL.  */
   int using_ssl = 0;
@@ -1427,8 +1427,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	     proxy ? "Proxy" : "HTTP");
   contlen = -1;
   contrange = 0;
-  type = NULL;
-  statcode = -1;
   *dt &= ~RETROKF;
 
   head = fd_read_http_head (sock);
@@ -2585,9 +2583,8 @@ basic_authentication_encode (const char *user, const char *passwd)
 static int
 extract_header_attr (const char *au, const char *attr_name, char **ret)
 {
-  const char *cp, *ep;
-
-  ep = cp = au;
+  const char *ep;
+  const char *cp = au;
 
   if (strncmp (cp, attr_name, strlen (attr_name)) == 0)
     {

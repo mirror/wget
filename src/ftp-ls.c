@@ -121,7 +121,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
   dir = l = NULL;
 
   /* Line loop to end of file: */
-  while ((line = read_whole_line (fp)))
+  while ((line = read_whole_line (fp)) != NULL)
     {
       len = clean_line (line);
       /* Skip if total...  */
@@ -200,7 +200,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
 	 This tactic is quite dubious when it comes to
 	 internationalization issues (non-English month names), but it
 	 works for now.  */
-      while ((tok = strtok (NULL, " ")))
+      while ((tok = strtok (NULL, " ")) != NULL)
 	{
 	  --next;
 	  if (next < 0)		/* a month name was not encountered */
@@ -449,7 +449,7 @@ ftp_parse_winnt_ls (const char *file)
   dir = l = NULL;
 
   /* Line loop to end of file: */
-  while ((line = read_whole_line (fp)))
+  while ((line = read_whole_line (fp)) != NULL)
     {
       len = clean_line (line);
 
@@ -557,7 +557,7 @@ ftp_parse_winnt_ls (const char *file)
 	  l->next = NULL;
 	}
 
-      xfree(line);
+      xfree (line);
     }
 
   fclose(fp);
@@ -615,21 +615,18 @@ ftp_parse_vms_ls (const char *file)
 
   /* Skip empty line. */
   line = read_whole_line (fp);
-  if (line)
-    xfree (line);
+  xfree_null (line);
 
   /* Skip "Directory PUB$DEVICE[PUB]" */
   line = read_whole_line (fp);
-  if (line)
-    xfree (line);
+  xfree_null (line);
 
   /* Skip empty line. */
   line = read_whole_line (fp);
-  if (line)
-    xfree (line);
+  xfree_null (line);
 
   /* Line loop to end of file: */
-  while ((line = read_whole_line (fp)))
+  while ((line = read_whole_line (fp)) != NULL)
     {
       char *p;
       i = clean_line (line);
@@ -729,7 +726,7 @@ ftp_parse_vms_ls (const char *file)
       /* Fourth/Third column: Time hh:mm[:ss] */
       tok = strtok (NULL, " ");
       if (tok == NULL) continue;
-      hour = min = sec = 0;
+      min = sec = 0;
       p = tok;
       hour = atoi (p);
       for (; *p && *p != ':'; ++p);
