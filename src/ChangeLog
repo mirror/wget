@@ -1,3 +1,7 @@
+2003-11-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* sysdep.h: Define SYSTEM_FNMATCH only if HAVE_FNMATCH_H is true.
+
 2003-11-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (xsleep): New function.  Uses nanosleep where available,

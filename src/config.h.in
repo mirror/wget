@@ -233,6 +233,9 @@ char *alloca ();
 /* Define if you have the <locale.h> header file.  */
 #undef HAVE_LOCALE_H
 
+/* Define if you have the <fnmatch.h> header file.  */
+#undef HAVE_FNMATCH_H
+
 /* Define to be the name of the operating system.  */
 #undef OS_TYPE
 
