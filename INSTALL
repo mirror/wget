@@ -46,12 +46,12 @@ files, but it is useful to have a look at things you can change there.
 If you use socks, it is useful to add -L/usr/local/lib (or wherever
 the socks library is installed) to LDFLAGS in Makefile.
 
-If you have OpenSSL installed in its default /usr/local/ssl directory
-(i.e. libraries are in /usr/local/ssl/lib), you can simply 
-`configure --with-ssl'.  If you have it installed elsewhere, you need
-to specify your alternate OpenSSL root directory.  For instance, if
-libcrypto.* and libssl.* are in /usr/local/lib, you need to 
-`configure --with-ssl=/usr/local'.
+If you have OpenSSL libraries installed in one of the default
+directories, such as /usr/local/lib or /usr/local/ssl/lib, you can
+simply `configure --with-ssl'.  If you have it installed elsewhere,
+you need to specify your alternate OpenSSL root directory.  For
+instance, if libcrypto.* and libssl.* are in /opt/openssl/lib, you
+need to `configure --with-ssl=/opt/openssl'.
 
 To configure Wget on Windows, run configure.bat and follow the
 instructions in the windows/ directory.  If this doesn't work for any

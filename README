@@ -1,6 +1,6 @@
                                                           -*- text -*-
 GNU Wget
-========                          Home: http://sunsite.dk/wget/
+========              (Temporary) home: http://sunsite.dk/wget/
 
 GNU Wget is a free network utility to retrieve files from the World
 Wide Web using HTTP and FTP, the two most widely used Internet
@@ -45,9 +45,9 @@ Wget 1.6 is at:
 
 Please report bugs in Wget to <bug-wget@gnu.org>.
 
-Wget has a mailing list at <wget@sunsite.dk>.  To subscribe, mail
-to <wget-subscribe@sunsite.dk>.  Wget's home page is at
-<URL:http://sunsite.dk/wget/>.
+Wget has a mailing list at <wget@sunsite.dk>.  To subscribe, mail to
+<wget-subscribe@sunsite.dk>.  Wget's home page is temporarily at
+<URL:http://sunsite.dk/wget/>.  It will soon be moved to www.gnu.org.
 
 Wget is free in all senses -- it is freely redistributable, and no
 payment is required.  If you still wish to donate money to the
@@ -61,7 +61,8 @@ MAINTAINERS: Dan Harkless <wget@harkless.org>
 Wget was originally written by Hrvoje Niksic.
 
 
-Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
+Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software
+Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

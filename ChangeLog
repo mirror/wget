@@ -1,5 +1,15 @@
 2001-05-26  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* po/hr.po: Updated.
+
+	* po/wget.pot: Regenerated from sources.
+
+	* README: Updated copyright statement.
+
+	* INSTALL: Document the new OpenSSL autodetector.
+
+2001-05-26  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* configure.in: Provide a default for AC_TRY_RUN when
 	cross-compiling.  Effectively, assume that when cross-compiling,
 	working linkage implies working executable.

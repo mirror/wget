@@ -1,3 +1,7 @@
+2001-05-26  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.texi: Updated version to 1.7-pre1.
+
 2001-04-28  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi (Wgetrc Commands): Update docs for `continue'.

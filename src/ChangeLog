@@ -1,3 +1,7 @@
+2001-05-26  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* version.c: Updated version to 1.7-pre1.
+
 2001-05-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* gen_sslfunc.c: Don't include <sys/time.h> directly.

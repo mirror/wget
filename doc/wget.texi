@@ -15,8 +15,8 @@
 @end iftex
 
 @c This should really be auto-generated!
-@set VERSION 1.7-dev
-@set UPDATED Jan 2001
+@set VERSION 1.7-pre1
+@set UPDATED May 2001
 
 @dircategory Net Utilities
 @dircategory World Wide Web
@@ -88,7 +88,8 @@ entitled ``GNU Free Documentation License''.
 This manual documents version @value{VERSION} of GNU Wget, the freely
 available utility for network download.
 
-Copyright @copyright{} 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
+Copyright @copyright{} 1996, 1997, 1998, 2000, 2001 Free Software
+Foundation, Inc.
 
 @menu
 * Overview::            Features of Wget.
