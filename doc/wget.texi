@@ -285,6 +285,13 @@ address will be supplied as a default password.@footnote{If you have a
 @file{.netrc} file in your home directory, password will also be
 searched for there.}
 
+@strong{Important Note}: if you specify a password-containing @sc{url}
+on the command line, the username and password will be plainly visible
+to all users on the system, by way of @code{ps}.  On multi-user systems,
+this is a big security risk.  To work around it, use @code{wget -i -}
+and feed the @sc{url}s to Wget's standard input, each on a separate
+line, terminated by @kbd{C-d}.
+
 You can encode unsafe characters in a @sc{url} as @samp{%xy}, @code{xy}
 being the hexadecimal representation of the character's @sc{ascii}
 value.  Some common unsafe characters include @samp{%} (quoted as
@@ -849,8 +856,15 @@ encode them using either the @code{basic} (insecure) or the
 @code{digest} authentication scheme.
 
 Another way to specify username and password is in the @sc{url} itself
-(@pxref{URL Format}).  For more information about security issues with
-Wget, @xref{Security Considerations}.
+(@pxref{URL Format}).  Either method reveals your password to anyone who
+bothers to run @code{ps}.  To prevent the passwords from being seen,
+store them in @file{.wgetrc} or @file{.netrc}, and make sure to protect
+those files from other users with @code{chmod}.  If the passwords are
+really important, do not leave them lying in those files either---edit
+the files and delete them after Wget has started the download.
+
+For more information about security issues with Wget, @xref{Security
+Considerations}.
 
 @cindex proxy
 @cindex cache
@@ -974,6 +988,9 @@ previous user-defined headers.
 Specify the username @var{user} and password @var{password} for
 authentication on a proxy server.  Wget will encode them using the
 @code{basic} authentication scheme.
+
+Security considerations similar to those with @samp{--http-passwd}
+pertain here as well.
 
 @cindex http referer
 @cindex referer, http
@@ -2409,6 +2426,10 @@ If you want to encode your own username and password to @sc{http} or
 wget ftp://hniksic:mypassword@@unix.server.com/.emacs
 @end example
 
+Note, however, that this usage is not advisable on multi-user systems
+because it reveals your password to anyone who looks at the output of
+@code{ps}.
+
 @cindex redirecting output
 @item
 You would like the output documents to go to standard output instead of
@@ -2773,10 +2794,12 @@ through the network, which may present a security problem.  Here are the
 main issues, and some solutions.
 
 @enumerate
-@item
-The passwords on the command line are visible using @code{ps}.  If this
-is a problem, avoid putting passwords from the command line---e.g. you
-can use @file{.netrc} for this.
+@item The passwords on the command line are visible using @code{ps}.
+The best way around it is to use @code{wget -i -} and feed the @sc{url}s
+to Wget's standard input, each on a separate line, terminated by
+@kbd{C-d}.  Another workaround is to use @file{.netrc} to store
+passwords; however, storing unencrypted passwords is also considered a
+security risk.
 
 @item
 Using the insecure @dfn{basic} authentication scheme, unencrypted
