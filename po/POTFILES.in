@@ -16,7 +16,6 @@ src/headers.c
 src/host.c
 src/html-parse.c
 src/html-url.c
-src/html.c
 src/http.c
 src/init.c
 src/log.c
