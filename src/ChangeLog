@@ -1,3 +1,8 @@
+2001-04-01  Nicolas Lichtmaier <nick@debian.org>
+
+	* main.c (main): Add -C to the string that is the third arg to
+	getopt_long().
+
 2001-04-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp.c (getftp): Don't start the download from scratch if `-c'

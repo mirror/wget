@@ -347,7 +347,7 @@ main (int argc, char *const *argv)
       that the options with required arguments must be followed by a ':'.
       -- Dan Harkless <wget@harkless.org>] */
   while ((c = getopt_long (argc, argv, "\
-hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
+hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:C:",
 			   long_options, (int *)0)) != EOF)
     {
       switch (c)
