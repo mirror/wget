@@ -1,3 +1,7 @@
+2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* version.c: Wget 1.7.1 is released.
+
 2001-11-16  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* headers.c (header_extract_number): Ignore trailing whitespace.
