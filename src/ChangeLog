@@ -1,3 +1,13 @@
+2003-11-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c (resolve_bind_address): Call lookup_host_passive.
+	Make sure that opt.bind_address is resolved only once.
+
+	* host.c (lookup_host_passive): New function, handles "passive"
+	lookups.
+	(lookup_host): Remove the passive flags.  Remove the
+	family-related flags -- use ip_default_family instead.
+
 2003-11-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* html-url.c: Get URLs from <object data="...">.

@@ -81,6 +81,13 @@ extern int h_errno;
 /* Mapping between known hosts and to lists of their addresses. */
 
 static struct hash_table *host_name_addresses_map;
+
+#ifdef ENABLE_IPV6
+/* The default IP family for looking up host names.  This should be
+   moved to an entry in struct options when we implement the
+   --inet4/--inet6 flags.  */
+static int ip_default_family = AF_UNSPEC;
+#endif
 
 /* Lists of addresses.  This should eventually be extended to handle
    IPv6.  */
@@ -326,6 +333,26 @@ gethostbyname_with_timeout (const char *host_name, double timeout)
   return ctx.hptr;
 }
 
+/* Print error messages for host errors.  */
+static char *
+host_errstr (int error)
+{
+  /* Can't use switch since some of these constants can be equal,
+     which makes the compiler complain about duplicate case
+     values.  */
+  if (error == HOST_NOT_FOUND
+      || error == NO_RECOVERY
+      || error == NO_DATA
+      || error == NO_ADDRESS)
+    return _("Host not found");
+  else if (error == TRY_AGAIN)
+    /* Message modeled after what gai_strerror returns in similar
+       circumstances.  */
+    return _("Temporary failure in name resolution");
+  else
+    return _("Unknown error");
+}
+
 #else  /* ENABLE_IPV6 */
 
 struct gaiwt_context {
@@ -450,30 +477,19 @@ forget_host_lookup (const char *host)
    this function, or set opt.dns_cache to 0 to globally disable
    caching.
 
-   FLAGS can be a combination of:
-     LH_SILENT    - don't print the "resolving ... done" message.
-     LH_IPV4_ONLY - return only IPv4 addresses.
-     LH_IPV6_ONLY - return only IPv6 addresses.  */
+   If SILENT is non-zero, progress messages are not printed.  */
 
 struct address_list *
-lookup_host (const char *host, int flags)
+lookup_host (const char *host, int silent)
 {
   struct address_list *al = NULL;
 
 #ifdef ENABLE_IPV6
   int err;
   struct addrinfo hints, *res;
-
   xzero (hints);
   hints.ai_socktype = SOCK_STREAM;
-
-  /* Should we inspect opt.<something> directly?  */
-  if (flags & LH_IPV4_ONLY)
-    hints.ai_family = AF_INET;
-  else if (flags & LH_IPV6_ONLY)
-    hints.ai_family = AF_INET6;
-  else
-    hints.ai_family = AF_UNSPEC;
+  hints.ai_family = ip_default_family;
 #endif
 
   /* First, try to check whether the address is already a numeric
@@ -486,8 +502,6 @@ lookup_host (const char *host, int flags)
 
 #ifdef ENABLE_IPV6
   hints.ai_flags = AI_NUMERICHOST;
-  if (flags & LH_PASSIVE)
-    hints.ai_flags |= AI_PASSIVE;
 
   /* No need to specify timeout, as we're not resolving HOST, but
      merely translating it from the presentation (ASCII) to network
@@ -528,20 +542,18 @@ lookup_host (const char *host, int flags)
 	}
     }
 
-  if (!(flags & LH_SILENT))
-    logprintf (LOG_VERBOSE, _("Resolving %s... "), host);
+  /* No luck with the cache; resolve the host name. */
 
-  /* Host name lookup goes on below. */
+  if (!silent)
+    logprintf (LOG_VERBOSE, _("Resolving %s... "), host);
 
 #ifdef ENABLE_IPV6
   hints.ai_flags = 0;
-  if (flags & LH_PASSIVE) 
-    hints.ai_flags |= AI_PASSIVE;
 
   err = getaddrinfo_with_timeout (host, NULL, &hints, &res, opt.dns_timeout);
   if (err != 0 || res == NULL)
     {
-      if (!(flags & LH_SILENT))
+      if (!silent)
 	logprintf (LOG_VERBOSE, _("failed: %s.\n"),
 		   err != EAI_SYSTEM ? gai_strerror (err) : strerror (errno));
       return NULL;
@@ -553,16 +565,16 @@ lookup_host (const char *host, int flags)
     struct hostent *hptr = gethostbyname_with_timeout (host, opt.dns_timeout);
     if (!hptr)
       {
-	if (!(flags & LH_SILENT))
+	if (!silent)
 	  {
 	    if (errno != ETIMEDOUT)
-	      logprintf (LOG_VERBOSE, _("failed: %s.\n"), herrmsg (h_errno));
+	      logprintf (LOG_VERBOSE, _("failed: %s.\n"),
+			 host_errstr (h_errno));
 	    else
 	      logputs (LOG_VERBOSE, _("failed: timed out.\n"));
 	  }
 	return NULL;
       }
-    assert (hptr->h_length == 4);
     /* Do older systems have h_addr_list?  */
     al = address_list_from_ipv4_addresses (hptr->h_addr_list);
   }
@@ -570,7 +582,7 @@ lookup_host (const char *host, int flags)
 
   /* Print the addresses determined by DNS lookup, but no more than
      three.  */
-  if (!(flags & LH_SILENT))
+  if (!silent)
     {
       int i;
       int printmax = al->count <= 3 ? al->count : 3;
@@ -591,6 +603,43 @@ lookup_host (const char *host, int flags)
     cache_host_lookup (host, al);
 
   return al;
+}
+
+/* Resolve HOST to get an address for use with bind(2).  Do *not* use
+   this for sockets to be used with connect(2).
+
+   This is a function separate from lookup_host because the results it
+   returns are different -- it uses the AI_PASSIVE flag to
+   getaddrinfo.  Because of this distinction, it doesn't store the
+   results in the cache.  It prints nothing and implements no timeouts
+   because it should normally only be used with local addresses
+   (typically "localhost" or numeric addresses of different local
+   interfaces.)
+
+   Without IPv6, this function just calls lookup_host.  */
+
+struct address_list *
+lookup_host_passive (const char *host)
+{
+#ifdef ENABLE_IPV6
+  struct address_list *al = NULL;
+  int err;
+  struct addrinfo hints, *res;
+
+  xzero (hints);
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_family = ip_default_family;
+  hints.ai_flags = AI_PASSIVE;
+
+  err = getaddrinfo (host, NULL, &hints, &res);
+  if (err != 0 || res == NULL)
+    return NULL;
+  al = address_list_from_addrinfo (res);
+  freeaddrinfo (res);
+  return al;
+#else
+  return lookup_host (host, 1);
+#endif
 }
 
 /* Determine whether a URL is acceptable to be followed, according to
@@ -633,22 +682,6 @@ sufmatch (const char **list, const char *what)
 	return 1;
     }
   return 0;
-}
-
-/* Print error messages for host errors.  */
-char *
-herrmsg (int error)
-{
-  /* Can't use switch since some constants are equal (at least on my
-     system), and the compiler signals "duplicate case value".  */
-  if (error == HOST_NOT_FOUND
-      || error == NO_RECOVERY
-      || error == NO_DATA
-      || error == NO_ADDRESS
-      || error == TRY_AGAIN)
-    return _("Host not found");
-  else
-    return _("Unknown error");
 }
 
 static int

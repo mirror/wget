@@ -90,16 +90,9 @@ typedef struct {
 #define ADDRESS_IPV6_DATA(x) ((void *)&(x)->u.ipv6.addr)
 #define ADDRESS_IPV6_SCOPE(x) ((x)->u.ipv6.scope_id)
 
-
-/* Flags for lookup_host */
-#define LH_SILENT    0x0001
-#define LH_PASSIVE   0x0002
-#define LH_IPV4_ONLY 0x0004
-#define LH_IPV6_ONLY 0x0008
-
 /* Function declarations */
 struct address_list *lookup_host PARAMS ((const char *, int));
-char *herrmsg PARAMS ((int));
+struct address_list *lookup_host_passive PARAMS ((const char *));
 
 void forget_host_lookup PARAMS ((const char *));
 

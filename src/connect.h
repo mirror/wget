@@ -32,10 +32,6 @@ so, delete this exception statement from your version.  */
 
 #include "host.h"		/* for definition of ip_address */
 
-/* bindport flags */
-#define BIND_ON_IPV4_ONLY LH_IPV4_ONLY
-#define BIND_ON_IPV6_ONLY LH_IPV6_ONLY
-
 #ifndef ENABLE_IPV6
 # ifndef HAVE_SOCKADDR_STORAGE
 #  define sockaddr_storage sockaddr_in
