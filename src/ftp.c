@@ -33,9 +33,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <sys/types.h>
 #include <assert.h>
 #include <errno.h>
-#ifndef WINDOWS
-# include <netdb.h>		/* for h_errno */
-#endif
 
 #include "wget.h"
 #include "utils.h"
@@ -50,11 +47,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #ifndef errno
 extern int errno;
-#endif
-#ifndef h_errno
-# ifndef __CYGWIN__
-extern int h_errno;
-# endif
 #endif
 
 /* File where the "ls -al" listing will be saved.  */
@@ -600,15 +592,6 @@ Error in server response, closing control connection.\n"));
 			 strerror (errno));
 	      closeport (dtsock);
 	      return err;
-	      break;
-	    case HOSTERR:
-	      logputs (LOG_VERBOSE, "\n");
-	      logprintf (LOG_NOTQUIET, "%s: %s\n", u->host,
-			 herrmsg (h_errno));
-	      CLOSE (csock);
-	      closeport (dtsock);
-	      rbuf_uninitialize (&con->rbuf);
-	      return HOSTERR;
 	      break;
 	    case FTPPORTERR:
 	      logputs (LOG_VERBOSE, "\n");

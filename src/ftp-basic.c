@@ -255,7 +255,7 @@ ftp_port (struct rbuf *rbuf)
     return err;
   /* Get the address of this side of the connection.  */
   if (!(in_addr = conaddr (RBUF_FD (rbuf))))
-    return HOSTERR;
+    return BINDERR;
   /* Construct the argument of PORT (of the form a,b,c,d,e,f).  */
   bytes = (char *)alloca (6 * 4 + 1);
   sprintf (bytes, "%d,%d,%d,%d,%d,%d", in_addr[0], in_addr[1],

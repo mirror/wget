@@ -44,12 +44,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # endif
 #endif
 
-#ifdef WINDOWS
-# include <winsock.h>
-#else
-# include <netdb.h>		/* for h_errno */
-#endif
-
 #include "wget.h"
 #include "utils.h"
 #include "url.h"
@@ -72,11 +66,6 @@ extern char *version_string;
 
 #ifndef errno
 extern int errno;
-#endif
-#ifndef h_errno
-# ifndef __CYGWIN__
-extern int h_errno;
-# endif
 #endif
 
 static int cookies_loaded_p;

@@ -1,3 +1,14 @@
+2001-12-03  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* ftp-basic.c (ftp_port): Don't return HOSTERR if we fail getting
+	the socket data.
+
+	* ftp.c: Ditto.
+
+	* http.c: No need to declare h_errno.
+
+	* host.c: Declare h_errno.
+
 2001-12-02  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* utils.c (file_merge): If BASE doesn't contain a slash, just
