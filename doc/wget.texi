@@ -516,6 +516,10 @@ Without @samp{-c}, the previous example would just begin to download the
 remote file to @file{ls-lR.Z.1}.  The @samp{-c} option is also
 applicable for @sc{http} servers that support the @code{Range} header.
 
+Note that if you use @samp{-c} on a file that's already downloaded
+completely, @samp{@var{file}} will not be changed, nor will a second
+@samp{@var{file}.1} copy be created.
+
 @cindex dot style
 @cindex retrieval tracing style
 @item --dot-style=@var{style}

@@ -1,3 +1,8 @@
+2000-08-23  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* wget.texi (Download Options): Using -c on a file that's already fully
+	downloaded results in an unchanged file and no second ".1" copy.
+
 2000-08-22  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (Download Options): --no-clobber's documentation was

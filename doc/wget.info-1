@@ -413,6 +413,10 @@ Download Options
      remote file to `ls-lR.Z.1'.  The `-c' option is also applicable
      for HTTP servers that support the `Range' header.
 
+     Note that if you use `-c' on a file that's already downloaded
+     completely, `FILE' will not be changed, nor will a second `FILE.1'
+     copy be created.
+
 `--dot-style=STYLE'
      Set the retrieval style to STYLE.  Wget traces the retrieval of
      each document by printing dots on the screen, each dot
