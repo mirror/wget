@@ -209,23 +209,6 @@ str_to_int64 (const char *nptr, char **endptr, int base)
 
 #endif /* !defined(_MSC_VER) || _MSC_VER >= 1300 */
 
-/* A simple clone of ftello.  The normal ftell doesn't work for large
-   files, so this is needed, and used by file_size(), which is itself
-   used for the --post-file option.
-
-   This function uses fgetpos incorrectly and should be considered a
-   hack until a better way to tell the stream position is found.  */
-
-__int64
-wget_ftello (FILE *fp)
-{
-  fpos_t pos;
-  if (fgetpos (fp, &pos) != 0)
-    return -1;
-  else
-    return pos;
-}
-
 void
 windows_main_junk (int *argc, char **argv, char **exec_name)
 {

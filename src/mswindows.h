@@ -99,28 +99,16 @@ __int64 str_to_int64 (const char *, char **, int);
 /* Transparently support large files, in spirit similar to the POSIX
    LFS API.  */
 #define stat(fname, buf) _stati64 (fname, buf)
-#define fstat(fd, buf) _fstati64(fd, buf)
+#define fstat(fd, buf) _fstati64 (fd, buf)
 #define struct_stat struct _stati64
 
 #define PATH_SEPARATOR '\\'
-
-/* Microsoft says stat is _stat, Borland doesn't.  */
-#ifdef _MSC_VER
-# define stat _stat
-#endif
 
 #ifdef HAVE_ISATTY
 /* Microsoft VC supports _isatty; Borland?  */
 #ifdef _MSC_VER
 # define isatty _isatty
 #endif
-#endif
-
-/* If ftello is unavailable, use an approximation. */
-#ifndef HAVE_FTELLO
-__int64 wget_ftello (FILE *);
-# define ftello wget_ftello
-# define HAVE_FTELLO
 #endif
 
 /* #### Do we need this?  */

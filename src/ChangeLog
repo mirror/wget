@@ -1,3 +1,10 @@
+2005-02-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* mswindows.c (wget_ftello): Removed.
+
+	* mswindows.h: Remove bogus definition of stat.
+	(wget_ftello): Remove the leftover ftello replacement.
+
 2005-02-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* mswindows.c (wget_ftello): Wget's replacement for ftello.
