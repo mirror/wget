@@ -1,3 +1,8 @@
+2000-06-09  Hrvoje Niksic  <hniksic@iskon.hr>
+
+	* url.c (encode_string): Fix comment.
+	Suggested by Herold Heiko <Heiko.Herold@previnet.it>.
+
 2000-06-01  Const Kaplinsky  <const@ce.cctpu.edu.ru>
 
 	* ftp.c (ftp_retrieve_list): Change permissions only on plain

@@ -213,7 +213,7 @@ decode_string (char *s)
   *p = '\0';
 }
 
-/* Encodes the unsafe characters (listed in URL_UNSAFE_CHARS) in a
+/* Encode the unsafe characters (as determined by URL_UNSAFE) in a
    given string, returning a malloc-ed %XX encoded string.  */
 char *
 encode_string (const char *s)
