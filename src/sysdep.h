@@ -146,12 +146,12 @@ do {						\
 typedef long LARGE_INT;
 # define LARGE_INT_FMT "%ld"
 #else
-# if SIZEOF_LONG_LONG == 8
+# if SIZEOF_LONG_LONG >= 8
 /* Long long is large enough: use it.  */
 typedef long long LARGE_INT;
 #  define LARGE_INT_FMT "%lld"
 # else
-/* Use `double'. */
+/* Large integer type unavailable; use `double' instead.  */
 typedef double LARGE_INT;
 #  define LARGE_INT_FMT "%.0f"
 # endif

@@ -1,5 +1,10 @@
 2003-10-30  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* sysdep.h: Use `S >= 8' rather than `S == 8' when looking for
+	large integers.
+
+2003-10-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (append_uri_pathel): New argument ESCAPED_P that says
 	whether [B, E) is to be treated as URL-escaped or not.  If
 	ESCAPED_P is false, don't unescape the region.
