@@ -29,15 +29,18 @@ so, delete this exception statement from your version.  */
 
 #include <config.h>
 
+/* This allows the architecture-specific .h files to specify the use
+   of stdargs regardless of __STDC__.  */
+#ifndef WGET_USE_STDARG
 /* Use stdarg only if the compiler supports ANSI C and stdarg.h is
    present.  We check for both because there are configurations where
    stdarg.h exists, but doesn't work. */
-#undef WGET_USE_STDARG
-#ifdef __STDC__
-# ifdef HAVE_STDARG_H
-#  define WGET_USE_STDARG
+# ifdef __STDC__
+#  ifdef HAVE_STDARG_H
+#   define WGET_USE_STDARG
+#  endif
 # endif
-#endif
+#endif /* not WGET_USE_STDARG */
 
 #include <stdio.h>
 #ifdef HAVE_STRING_H

@@ -65,6 +65,10 @@ so, delete this exception statement from your version.  */
 #endif
 #endif
 
+/* Use ANSI-style stdargs regardless of whether the compiler bothers
+   to define __STDC__.  (Many don't when extensions are enabled.)  */
+#define WGET_USE_STDARG
+
 #define REALCLOSE(x) closesocket (x)
 
 /* read & write don't work with sockets on Windows 95.  */

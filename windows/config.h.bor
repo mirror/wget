@@ -29,12 +29,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-/* Borland C does not define __STDC__ when the Borland extensions are
-   enabled, but you need those extensions to compile <windows.h>.  */
-#if !defined(__STDC__) && defined(__BORLANDC__)
-# define __STDC__ 1
-#endif
-
 #define HAVE_MEMMOVE
 #define ftruncate chsize
 #define inline __inline

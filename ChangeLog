@@ -1,3 +1,9 @@
+2002-05-20  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* windows/config.h.ms: Ditto.
+
+	* windows/config.h.bor: Don't #define __STDC__.
+
 2002-05-18  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ALL: Update the license to reflect the OpenSSL exception.

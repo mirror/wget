@@ -1,3 +1,7 @@
+2002-05-20  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* log.c: Don't #undef WGET_USE_STDARG.
+
 2002-05-16  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* hash.c (prime_size): Store the offset of the prime number in the
