@@ -1,5 +1,9 @@
 2001-06-15  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* po/da.po: New version from TP.
+
+2001-06-15  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* config.sub: New version from libtool 1.4.
 
 	* config.guess: New version from libtool 1.4.
