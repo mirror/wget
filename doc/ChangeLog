@@ -1,3 +1,8 @@
+2001-01-20  Karl Eichwalder  <ke@suse.de>
+
+	* Makefile.in: Provide and use DESTDIR according to the Coding
+	Standards.
+
 2001-04-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi (Recursive Retrieval Options): Document more

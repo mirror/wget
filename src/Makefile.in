@@ -35,6 +35,8 @@ bindir       = @bindir@
 sysconfdir   = @sysconfdir@
 localedir    = $(prefix)/share/locale
 
+DESTDIR      =
+
 CC       = @CC@
 CPPFLAGS = @CPPFLAGS@
 # The following line is losing on some versions of make!
@@ -104,11 +106,11 @@ install: install.bin
 uninstall: uninstall.bin
 
 install.bin: wget$(exeext)
-	$(top_srcdir)/mkinstalldirs $(bindir)
-	$(INSTALL_PROGRAM) wget$(exeext) $(bindir)/wget$(exeext)
+	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(bindir)
+	$(INSTALL_PROGRAM) wget$(exeext) $(DESTDIR)$(bindir)/wget$(exeext)
 
 uninstall.bin:
-	$(RM) $(bindir)/wget$(exeext)
+	$(RM) $(DESTDIR)$(bindir)/wget$(exeext)
 
 #
 # Dependencies for cleanup

@@ -42,6 +42,8 @@ mandir     = @mandir@
 manext     = 1
 sysconfdir = @sysconfdir@
 
+DESTDIR    =
+
 INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 RM = rm -f
@@ -105,45 +107,45 @@ uninstall: uninstall.info @COMMENT_IF_NO_POD2MAN@uninstall.man
 
 # install info pages, creating install directory if necessary
 install.info: wget.info
-	$(top_srcdir)/mkinstalldirs $(infodir)
+	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(infodir)
 	-for file in wget.info wget.info-*[0-9]; do \
-	   test -f $$file && $(INSTALL_DATA) $$file $(infodir)/$$file ; \
+	   test -f $$file && $(INSTALL_DATA) $$file $(DESTDIR)$(infodir)/$$file ; \
 	done
 
 # install man page, creating install directory if necessary
 install.man: $(MAN)
-	$(top_srcdir)/mkinstalldirs $(mandir)/man$(manext)
-	$(INSTALL_DATA) $(srcdir)/$(MAN) $(mandir)/man$(manext)/$(MAN)
+	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(mandir)/man$(manext)
+	$(INSTALL_DATA) $(srcdir)/$(MAN) $(DESTDIR)$(mandir)/man$(manext)/$(MAN)
 
 # install sample.wgetrc
 install.wgetrc: $(srcdir)/sample.wgetrc
 	$(top_srcdir)/mkinstalldirs $(sysconfdir)
 	@if test -f $(WGETRC); then \
-	  if cmp -s $(srcdir)/sample.wgetrc $(WGETRC); then echo ""; \
+	  if cmp -s $(srcdir)/sample.wgetrc $(DESTDIR)$(WGETRC); then echo ""; \
 	     else \
-	     echo ' $(INSTALL_DATA) $(srcdir)/sample.wgetrc $(WGETRC).new'; \
-	     $(INSTALL_DATA) $(srcdir)/sample.wgetrc $(WGETRC).new; \
+	     echo ' $(INSTALL_DATA) $(srcdir)/sample.wgetrc $(DESTDIR)$(WGETRC).new'; \
+	     $(INSTALL_DATA) $(srcdir)/sample.wgetrc $(DESTDIR)$(WGETRC).new; \
 	     echo; \
-	     echo "WARNING: Differing \`$(WGETRC)'"; \
+	     echo "WARNING: Differing \`$(DESTDIR)$(WGETRC)'"; \
 	     echo "         exists and has been spared.  You might want to"; \
 	     echo "         consider merging in the new lines from"; \
-	     echo "         \`$(WGETRC).new'."; \
+	     echo "         \`$(DESTDIR)$(WGETRC).new'."; \
 	     echo; \
 	     echo "<Hit RETURN to acknowledge>\c"; \
 	     read user_input; \
 	     echo; \
 	  fi; \
 	else \
-	  $(INSTALL_DATA) $(srcdir)/sample.wgetrc $(WGETRC); \
+	  $(INSTALL_DATA) $(srcdir)/sample.wgetrc $(DESTDIR)$(WGETRC); \
 	fi
 
 # uninstall info pages
 uninstall.info:
-	$(RM) $(infodir)/wget.info*
+	$(RM) $(DESTDIR)$(infodir)/wget.info*
 
 # uninstall man page
 uninstall.man:
-	$(RM) $(mandir)/man$(manext)/$(MAN)
+	$(RM) $(DESTDIR)$(mandir)/man$(manext)/$(MAN)
 
 #
 # Dependencies for cleanup
