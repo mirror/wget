@@ -28,6 +28,12 @@ utility after reviewing it.
 ** How to create patches.
 -------------------------
 
+First, make sure you get the latest version of the source.  This is
+normally the latest release.  If you're adding a new feature, or
+changing the code in some major way, you might want to download the
+latest sources from the CVS server.  This procedure is described at
+<http://sunsite.dk/wget/>.
+
 Patches are created using the `diff' utility.  When making patches,
 please use the `-u' option, or if your diff doesn't support it, `-c'.
 Using ordinary (context-free) diffs are notoriously prone to error,
