@@ -59,8 +59,16 @@ so, delete this exception statement from your version.  */
 # define _(string) (string)
 #endif /* not HAVE_NLS */
 
-/* No-op version of gettext, used for constant strings. */
-#define N_(string) (string)
+/* A pseudo function call that serves as a marker for the automated
+   extraction of messages, but does not call gettext().  The run-time
+   translation is done at a different place in the code.  The purpose
+   of the N_("...") call is to make the message snarfer aware that the
+   "..." string needs to be translated.  STRING should be a string
+   literal.  Concatenated strings and other string expressions won't
+   work.  The macro's expansion is not parenthesized, so that it is
+   suitable as initializer for static 'char[]' or 'const char[]'
+   variables.  -- explanation partly taken from GNU make.  */
+#define N_(string) string
 
 /* I18N NOTE: You will notice that none of the DEBUGP messages are
    marked as translatable.  This is intentional, for a few reasons:

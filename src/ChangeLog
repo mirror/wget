@@ -1,5 +1,9 @@
 2003-11-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.h (N_): Don't parenthesize argument.
+
+2003-11-03  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* host.h (ADDRESS_IPV4_DATA): Don't take the address of in.s_addr,
 	because that doesn't work on some machines.
 
