@@ -1,3 +1,7 @@
+2001-03-05  Dan Harkless  <wget@harkless.org>
+
+	* TODO: Add a --range option to download only a given byte range.
+
 2001-03-01  Dan Harkless  <wget@harkless.org>
 
 	* ChangeLog.README: Renamed from README.branches and added a note

@@ -7,6 +7,11 @@ items are not listed in any particular order (except that recently-added items
 may tend towards the top).  Not all of these represent user-visible
 changes.
 
+* Add a --range parameter allowing you to explicitly specify a range of bytes to
+  get from a file over HTTP (FTP only supports ranges ending at the end of the
+  file, though forcibly disconnecting from the server at the desired endpoint
+  might be workable).
+
 * RFC 1738 says that if logging on to an FTP server puts you in a directory
   other than '/', the way to specify a file relative to '/' in a URL (let's use
   "/bin/ls" in this example) is "ftp://host/%2Fbin/ls".  Wget needs to support
