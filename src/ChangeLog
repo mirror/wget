@@ -1,3 +1,11 @@
+2003-10-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* hash.c (hash_table_get): Declare hash-table argument as const.
+	(find_mapping): Ditto.
+	(hash_table_get_pair): Ditto.
+	(hash_table_contains): Ditto.
+	(hash_table_count): Ditto.
+
 2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* html-url.c (get_urls_html): Parse the appropriate flags to

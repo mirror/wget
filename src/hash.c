@@ -272,7 +272,7 @@ hash_table_destroy (struct hash_table *ht)
    mapping that matches KEY, or NULL if none matches.  */
 
 static inline struct mapping *
-find_mapping (struct hash_table *ht, const void *key)
+find_mapping (const struct hash_table *ht, const void *key)
 {
   struct mapping *mappings = ht->mappings;
   int size = ht->size;
@@ -293,7 +293,7 @@ find_mapping (struct hash_table *ht, const void *key)
    function.  */
 
 void *
-hash_table_get (struct hash_table *ht, const void *key)
+hash_table_get (const struct hash_table *ht, const void *key)
 {
   struct mapping *mp = find_mapping (ht, key);
   if (mp)
@@ -306,7 +306,7 @@ hash_table_get (struct hash_table *ht, const void *key)
    value.  Returns non-zero on success.  */
 
 int
-hash_table_get_pair (struct hash_table *ht, const void *lookup_key,
+hash_table_get_pair (const struct hash_table *ht, const void *lookup_key,
 		     void *orig_key, void *value)
 {
   struct mapping *mp = find_mapping (ht, lookup_key);
@@ -326,7 +326,7 @@ hash_table_get_pair (struct hash_table *ht, const void *lookup_key,
 /* Return 1 if HT contains KEY, 0 otherwise. */
 
 int
-hash_table_contains (struct hash_table *ht, const void *key)
+hash_table_contains (const struct hash_table *ht, const void *key)
 {
   return find_mapping (ht, key) != NULL;
 }
@@ -494,7 +494,7 @@ hash_table_map (struct hash_table *ht,
    greater than the number of elements.  */
 
 int
-hash_table_count (struct hash_table *ht)
+hash_table_count (const struct hash_table *ht)
 {
   return ht->count;
 }
