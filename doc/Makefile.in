@@ -120,7 +120,7 @@ install.man: $(MAN)
 # install sample.wgetrc
 install.wgetrc: $(srcdir)/sample.wgetrc
 	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(sysconfdir)
-	@if test -f $(WGETRC); then \
+	@if test -f $(DESTDIR)$(WGETRC); then \
 	  if cmp -s $(srcdir)/sample.wgetrc $(DESTDIR)$(WGETRC); then echo ""; \
 	     else \
 	     echo ' $(INSTALL_DATA) $(srcdir)/sample.wgetrc $(DESTDIR)$(WGETRC).new'; \
@@ -130,9 +130,6 @@ install.wgetrc: $(srcdir)/sample.wgetrc
 	     echo "         exists and has been spared.  You might want to"; \
 	     echo "         consider merging in the new lines from"; \
 	     echo "         \`$(DESTDIR)$(WGETRC).new'."; \
-	     echo; \
-	     echo "<Hit RETURN to acknowledge>\c"; \
-	     read user_input; \
 	     echo; \
 	  fi; \
 	else \

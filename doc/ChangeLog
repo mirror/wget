@@ -1,5 +1,15 @@
 2001-06-15  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* Makefile.in (install.wgetrc): Use $(DESTDIR) when testing
+	whether $(WGETRC) exists.
+
+2001-06-15  Adam J. Richter  <adam@yggdrasil.com>
+
+	* Makefile.in (install.wgetrc): Make `make install'
+	non-interactive in all cases.
+
+2001-06-15  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* Makefile.in (install.wgetrc): Take $(DESTDIR) into account when
 	running mkinstalldirs.
 
