@@ -24,6 +24,93 @@ resulting derived work is distributed under the terms of a permission
 notice identical to this one.
 
 
+File: wget.info,  Node: Time-Stamping,  Next: Startup File,  Prev: Following Links,  Up: Top
+
+Time-Stamping
+*************
+
+   One of the most important aspects of mirroring information from the
+Internet is updating your archives.
+
+   Downloading the whole archive again and again, just to replace a few
+changed files is expensive, both in terms of wasted bandwidth and money,
+and the time to do the update.  This is why all the mirroring tools
+offer the option of incremental updating.
+
+   Such an updating mechanism means that the remote server is scanned in
+search of "new" files.  Only those new files will be downloaded in the
+place of the old ones.
+
+   A file is considered new if one of these two conditions are met:
+
+  1. A file of that name does not already exist locally.
+
+  2. A file of that name does exist, but the remote file was modified
+     more recently than the local file.
+
+   To implement this, the program needs to be aware of the time of last
+modification of both remote and local files.  Such information are
+called the "time-stamps".
+
+   The time-stamping in GNU Wget is turned on using `--timestamping'
+(`-N') option, or through `timestamping = on' directive in `.wgetrc'.
+With this option, for each file it intends to download, Wget will check
+whether a local file of the same name exists.  If it does, and the
+remote file is older, Wget will not download it.
+
+   If the local file does not exist, or the sizes of the files do not
+match, Wget will download the remote file no matter what the time-stamps
+say.
+
+* Menu:
+
+* Time-Stamping Usage::
+* HTTP Time-Stamping Internals::
+* FTP Time-Stamping Internals::
+
+
+File: wget.info,  Node: Time-Stamping Usage,  Next: HTTP Time-Stamping Internals,  Prev: Time-Stamping,  Up: Time-Stamping
+
+Time-Stamping Usage
+===================
+
+   The usage of time-stamping is simple.  Say you would like to
+download a file so that it keeps its date of modification.
+
+     wget -S http://www.gnu.ai.mit.edu/
+
+   A simple `ls -l' shows that the time stamp on the local file equals
+the state of the `Last-Modified' header, as returned by the server.  As
+you can see, the time-stamping info is preserved locally, even without
+`-N'.
+
+   Several days later, you would like Wget to check if the remote file
+has changed, and download it if it has.
+
+     wget -N http://www.gnu.ai.mit.edu/
+
+   Wget will ask the server for the last-modified date.  If the local
+file is newer, the remote file will not be re-fetched.  However, if the
+remote file is more recent, Wget will proceed fetching it normally.
+
+   The same goes for FTP.  For example:
+
+     wget ftp://ftp.ifi.uio.no/pub/emacs/gnus/*
+
+   `ls' will show that the timestamps are set according to the state on
+the remote server.  Reissuing the command with `-N' will make Wget
+re-fetch *only* the files that have been modified.
+
+   In both HTTP and FTP retrieval Wget will time-stamp the local file
+correctly (with or without `-N') if it gets the stamps, i.e. gets the
+directory listing for FTP or the `Last-Modified' header for HTTP.
+
+   If you wished to mirror the GNU archive every week, you would use the
+following command every week:
+
+     wget --timestamping -r ftp://prep.ai.mit.edu/pub/gnu/
+
+
 File: wget.info,  Node: HTTP Time-Stamping Internals,  Next: FTP Time-Stamping Internals,  Prev: Time-Stamping Usage,  Up: Time-Stamping
 
 HTTP Time-Stamping Internals
@@ -321,6 +408,10 @@ no_proxy = STRING
 
 output_document = STRING
      Set the output filename - the same as `-O'.
+
+page_requisites = on/off
+     Download all ancillary documents necessary for a single HTML page
+     to display properly - the same as `-p'.
 
 passive_ftp = on/off
      Set passive FTP - the same as `--passive-ftp'.

@@ -764,6 +764,70 @@ Recursive Retrieval Options
      useful to access the full remote file list when running a mirror,
      or for debugging purposes.
 
+`-p'
+`--page-requisites'
+     This option causes wget to download all the files that are
+     necessary to properly display a given HTML page.  This includes
+     such things as inlined images, sounds, and referenced stylesheets.
+
+     Ordinarily, when downloading a single HTML page, any requisite
+     documents that may be needed to display it properly are not
+     downloaded.  Using `-r' together with `-l' can help, but since
+     wget does not ordinarily distinguish between external and inlined
+     documents, one is generally left with "leaf documents" that are
+     missing their requisites.
+
+     For instance, say document `1.html' contains an `<IMG>' tag
+     referencing `1.gif' and an `<A>' tag pointing to external document
+     `2.html'.  Say that `2.html' is the same but that its image is
+     `2.gif' and it links to `3.html'.  Say this continues up to some
+     arbitrarily high number.
+
+     If one executes the command:
+
+          wget -r -l 2 http://SITE/1.html
+
+     then `1.html', `1.gif', `2.html', `2.gif', and `3.html' will be
+     downloaded.  As you can see, `3.html' is without its requisite
+     `3.gif' because wget is simply counting the number of hops (up to
+     2) away from `1.html' in order to determine where to stop the
+     recursion.  However, with this command:
+
+          wget -r -l 2 -p http://SITE/1.html
+
+     all the above files *and* `3.html''s requisite `3.gif' will be
+     downloaded.  Similarly,
+
+          wget -r -l 1 -p http://SITE/1.html
+
+     will cause `1.html', `1.gif', `2.html', and `2.gif' to be
+     downloaded.  One might think that:
+
+          wget -r -l 0 -p http://SITE/1.html
+
+     would download just `1.html' and `1.gif', but unfortunately this
+     is not the case, because `-l 0' is equivalent to `-l inf' - that
+     is, infinite recursion.  To download a single HTML page (or a
+     handful of them, all specified on the commandline or in a `-i' URL
+     input file) and its requisites, simply leave off `-p' and `-l':
+
+          wget -p http://SITE/1.html
+
+     Note that wget will behave as if `-r' had been specified, but only
+     that single page and its requisites will be downloaded.  Links
+     from that page to external documents will not be followed.
+     Actually, to download a single page and all its requisites (even
+     if they exist on separate websites), and make sure the lot
+     displays properly locally, this author likes to use a few options
+     in addition to `-p':
+
+          wget -H -k -K -nh -p http://SITE/DOCUMENT
+
+     To finish off this topic, it's worth knowing that wget's idea of an
+     external document link is any URL specified in an `<A>' tag, an
+     `<AREA>' tag, or a `<LINK>' tag other than `<LINK
+     REL="stylesheet">'.
+
 
 File: wget.info,  Node: Recursive Accept/Reject Options,  Prev: Recursive Retrieval Options,  Up: Invoking
 
@@ -801,12 +865,19 @@ Recursive Accept/Reject Options
 `--ignore-tags=LIST'
      This is the opposite of the `--follow-tags' option.  To skip
      certain HTML tags when recursively looking for documents to
-     download, specify them in a comma-separated LIST.  The author of
-     this option likes to use the following command to download a
-     single HTML page and all files (e.g. images, sounds, and
-     stylesheets) necessary to display it properly:
+     download, specify them in a comma-separated LIST.
+
+     In the past, the `-G' option was the best bet for downloading a
+     single page and its requisites, using a commandline like:
 
           wget -Ga,area -H -k -K -nh -r http://SITE/DOCUMENT
+
+     However, the author of this option came across a page with tags
+     like `<LINK REL="home" HREF="/">' and came to the realization that
+     `-G' was not enough.  One can't just tell wget to ignore `<LINK>',
+     because then stylesheets will not be downloaded.  Now the best bet
+     for downloading a single page and its requisites is the dedicated
+     `--page-requisites' option.
 
 `-H'
 `--span-hosts'
@@ -1166,91 +1237,4 @@ normally.
 
    Also note that followed links to FTP directories will not be
 retrieved recursively further.
-
-
-File: wget.info,  Node: Time-Stamping,  Next: Startup File,  Prev: Following Links,  Up: Top
-
-Time-Stamping
-*************
-
-   One of the most important aspects of mirroring information from the
-Internet is updating your archives.
-
-   Downloading the whole archive again and again, just to replace a few
-changed files is expensive, both in terms of wasted bandwidth and money,
-and the time to do the update.  This is why all the mirroring tools
-offer the option of incremental updating.
-
-   Such an updating mechanism means that the remote server is scanned in
-search of "new" files.  Only those new files will be downloaded in the
-place of the old ones.
-
-   A file is considered new if one of these two conditions are met:
-
-  1. A file of that name does not already exist locally.
-
-  2. A file of that name does exist, but the remote file was modified
-     more recently than the local file.
-
-   To implement this, the program needs to be aware of the time of last
-modification of both remote and local files.  Such information are
-called the "time-stamps".
-
-   The time-stamping in GNU Wget is turned on using `--timestamping'
-(`-N') option, or through `timestamping = on' directive in `.wgetrc'.
-With this option, for each file it intends to download, Wget will check
-whether a local file of the same name exists.  If it does, and the
-remote file is older, Wget will not download it.
-
-   If the local file does not exist, or the sizes of the files do not
-match, Wget will download the remote file no matter what the time-stamps
-say.
-
-* Menu:
-
-* Time-Stamping Usage::
-* HTTP Time-Stamping Internals::
-* FTP Time-Stamping Internals::
-
-
-File: wget.info,  Node: Time-Stamping Usage,  Next: HTTP Time-Stamping Internals,  Prev: Time-Stamping,  Up: Time-Stamping
-
-Time-Stamping Usage
-===================
-
-   The usage of time-stamping is simple.  Say you would like to
-download a file so that it keeps its date of modification.
-
-     wget -S http://www.gnu.ai.mit.edu/
-
-   A simple `ls -l' shows that the time stamp on the local file equals
-the state of the `Last-Modified' header, as returned by the server.  As
-you can see, the time-stamping info is preserved locally, even without
-`-N'.
-
-   Several days later, you would like Wget to check if the remote file
-has changed, and download it if it has.
-
-     wget -N http://www.gnu.ai.mit.edu/
-
-   Wget will ask the server for the last-modified date.  If the local
-file is newer, the remote file will not be re-fetched.  However, if the
-remote file is more recent, Wget will proceed fetching it normally.
-
-   The same goes for FTP.  For example:
-
-     wget ftp://ftp.ifi.uio.no/pub/emacs/gnus/*
-
-   `ls' will show that the timestamps are set according to the state on
-the remote server.  Reissuing the command with `-N' will make Wget
-re-fetch *only* the files that have been modified.
-
-   In both HTTP and FTP retrieval Wget will time-stamp the local file
-correctly (with or without `-N') if it gets the stamps, i.e. gets the
-directory listing for FTP or the `Last-Modified' header for HTTP.
-
-   If you wished to mirror the GNU archive every week, you would use the
-following command every week:
-
-     wget --timestamping -r ftp://prep.ai.mit.edu/pub/gnu/
 

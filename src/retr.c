@@ -430,9 +430,9 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   return result;
 }
 
-/* Find the URL-s in the file and call retrieve_url() for each of
+/* Find the URLs in the file and call retrieve_url() for each of
    them.  If HTML is non-zero, treat the file as HTML, and construct
-   the URL-s accordingly.
+   the URLs accordingly.
 
    If opt.recursive is set, call recursive_retrieve() for each file.  */
 uerr_t
@@ -443,7 +443,7 @@ retrieve_from_file (const char *file, int html, int *count)
 
   /* If spider-mode is on, we do not want get_urls_html barfing
      errors on baseless links.  */
-  url_list = (html ? get_urls_html (file, NULL, opt.spider)
+  url_list = (html ? get_urls_html (file, NULL, opt.spider, FALSE)
 	      : get_urls_file (file));
   status = RETROK;             /* Suppose everything is OK.  */
   *count = 0;                  /* Reset the URL count.  */

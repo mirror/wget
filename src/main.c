@@ -177,12 +177,13 @@ FTP options:\n\
 \n"), _("\
 Recursive retrieval:\n\
   -r,  --recursive             recursive web-suck -- use with care!.\n\
-  -l,  --level=NUMBER          maximum recursion depth (0 to unlimit).\n\
+  -l,  --level=NUMBER          maximum recursion depth (inf or 0 for infinite).\n\
        --delete-after          delete downloaded files.\n\
   -k,  --convert-links         convert non-relative links to relative.\n\
   -K,  --backup-converted      before converting file X, back up as X.orig.\n\
-  -m,  --mirror                turn on options suitable for mirroring.\n\
+  -m,  --mirror                shortcut option equivalent to -r -N -l inf -nr.\n\
   -nr, --dont-remove-listing   don\'t remove `.listing\' files.\n\
+  -p,  --page-requisites       get all images, etc. needed to display HTML page.\n\
 \n"), _("\
 Recursive accept/reject:\n\
   -A,  --accept=LIST                comma-separated list of accepted extensions.\n\
@@ -232,6 +233,7 @@ main (int argc, char *const *argv)
     { "no-parent", no_argument, NULL, 5 },
     { "non-verbose", no_argument, NULL, 18 },
     { "passive-ftp", no_argument, NULL, 11 },
+    { "page-requisites", no_argument, NULL, 'p' },
     { "quiet", no_argument, NULL, 'q' },
     { "recursive", no_argument, NULL, 'r' },
     { "relative", no_argument, NULL, 'L' },
@@ -301,10 +303,14 @@ main (int argc, char *const *argv)
   windows_main_junk (&argc, (char **) argv, (char **) &exec_name);
 #endif
 
-  initialize ();
+  initialize (); /* sets option defaults; reads the system.wgetrc and .wgetrc */
 
+  /* [Is the order of the option letters significant?  If not, they should be
+      alphabetized, like the long_options.  The only thing I know for sure is
+      that the options with required arguments must be followed by a ':'.
+      -- Dan Harkless <dan-wget@dilvish.speed.net>] */
   while ((c = getopt_long (argc, argv, "\
-hVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
+hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
 			   long_options, (int *)0)) != EOF)
     {
       switch (c)
@@ -398,6 +404,9 @@ hVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
 	  break;
 	case 'N':
 	  setval ("timestamping", "on");
+	  break;
+	case 'p':
+	  setval ("pagerequisites", "on");
 	  break;
 	case 'S':
 	  setval ("serverresponse", "on");
@@ -596,6 +605,21 @@ GNU General Public License for more details.\n"));
 	  break;
 	}
     }
+
+  /* All user options have now been processed, so it's now safe to do
+     interoption dependency checks. */
+
+  if (opt.reclevel == 0)
+    opt.reclevel = INFINITE_RECURSION;  /* see wget.h for commentary on this */
+
+  if (opt.page_requisites && !opt.recursive)
+    {
+      opt.recursive = TRUE;
+      opt.reclevel = 0;
+      if (!opt.no_dirstruct)
+	opt.dirstruct = TRUE;  /* usually handled by cmd_spec_recursive() */
+    }
+
   if (opt.verbose == -1)
     opt.verbose = !opt.quiet;
 

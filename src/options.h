@@ -141,6 +141,9 @@ struct options
 
   int delete_after;		/* Whether the files will be deleted
 				   after download. */
+
+  int page_requisites;		/* Whether we need to download all files
+				   necessary to display a page properly. */
 };
 
 #ifndef OPTIONS_DEFINED_HERE

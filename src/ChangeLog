@@ -1,3 +1,37 @@
+2000-08-30  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* ftp.c (ftp_retrieve_list): Use new INFINITE_RECURSION #define.
+	
+	* html.c: htmlfindurl() now takes final `dash_p_leaf_HTML' parameter.
+ 	Wrapped some > 80-column lines.  When -p is specified and we're at a 
+	leaf node, do not traverse <A>, <AREA>, or <LINK> tags other than 
+	<LINK REL="stylesheet">.
+	
+	* html.h (htmlfindurl): Now takes final `dash_p_leaf_HTML' parameter.
+	
+	* init.c: Added new -p / --page-requisites / page_requisites option.
+
+	* main.c (print_help): Clarified that -l inf and -l 0 both allow
+	infinite recursion.  Changed the unhelpful --mirrior description
+	to simply give the options it's equivalent to.  Added new -p option.
+	(main): Added some comments; handle new -p / --page-requisites.
+	
+	* options.h (struct options): Added new page_requisites field.
+
+	* recur.c: Changed "URL-s" to "URLs" and "HTML-s" to "HTMLs".
+  	Calculate and pass down new `dash_p_leaf_HTML' parameter to
+ 	get_urls_html().  Use new INFINITE_RECURSION #define.
+
+	* retr.c: Changed "URL-s" to "URLs".  get_urls_html() now takes
+	final `dash_p_leaf_HTML' parameter.
+
+	* url.c: get_urls_html() and htmlfindurl() now take final
+	`dash_p_leaf_HTML' parameter.
+
+	* url.h (get_urls_html): Now takes final `dash_p_leaf_HTML' parameter.
+
+	* wget.h: Added some comments and new INFINITE_RECURSION #define.
+	
 2000-08-23  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* main.c (print_help): -B / --base was not mentioned.

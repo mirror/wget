@@ -913,6 +913,82 @@ retrievals.  Normally, these files contain the raw directory listings
 received from @sc{ftp} servers.  Not removing them can be useful to
 access the full remote file list when running a mirror, or for debugging
 purposes.
+
+@cindex page requisites
+@cindex required images, downloading
+@item -p
+@itemx --page-requisites
+This option causes wget to download all the files that are necessary to
+properly display a given HTML page.  This includes such things as
+inlined images, sounds, and referenced stylesheets.
+
+Ordinarily, when downloading a single HTML page, any requisite documents
+that may be needed to display it properly are not downloaded.  Using
+@samp{-r} together with @samp{-l} can help, but since wget does not
+ordinarily distinguish between external and inlined documents, one is
+generally left with "leaf documents" that are missing their requisites.
+
+For instance, say document @file{1.html} contains an @code{<IMG>} tag
+referencing @file{1.gif} and an @code{<A>} tag pointing to external
+document @file{2.html}.  Say that @file{2.html} is the same but that its
+image is @file{2.gif} and it links to @file{3.html}.  Say this
+continues up to some arbitrarily high number.
+
+If one executes the command:
+
+@example
+wget -r -l 2 http://@var{site}/1.html
+@end example
+
+then @file{1.html}, @file{1.gif}, @file{2.html}, @file{2.gif}, and
+@file{3.html} will be downloaded.  As you can see, @file{3.html} is
+without its requisite @file{3.gif} because wget is simply counting the
+number of hops (up to 2) away from @file{1.html} in order to determine
+where to stop the recursion.  However, with this command:
+
+@example
+wget -r -l 2 -p http://@var{site}/1.html
+@end example
+
+all the above files @emph{and} @file{3.html}'s requisite @file{3.gif}
+will be downloaded.  Similarly,
+
+@example
+wget -r -l 1 -p http://@var{site}/1.html
+@end example
+
+will cause @file{1.html}, @file{1.gif}, @file{2.html}, and @file{2.gif}
+to be downloaded.  One might think that:
+
+@example
+wget -r -l 0 -p http://@var{site}/1.html
+@end example
+
+would download just @file{1.html} and @file{1.gif}, but unfortunately
+this is not the case, because @samp{-l 0} is equivalent to @samp{-l inf}
+-- that is, infinite recursion.  To download a single HTML page (or a
+handful of them, all specified on the commandline or in a @samp{-i} @sc{url}
+input file) and its requisites, simply leave off @samp{-p} and @samp{-l}:
+
+@example
+wget -p http://@var{site}/1.html
+@end example
+
+Note that wget will behave as if @samp{-r} had been specified, but only
+that single page and its requisites will be downloaded.  Links from that
+page to external documents will not be followed.  Actually, to download
+a single page and all its requisites (even if they exist on separate
+websites), and make sure the lot displays properly locally, this author
+likes to use a few options in addition to @samp{-p}:
+
+@example
+wget -H -k -K -nh -p http://@var{site}/@var{document}
+@end example
+
+To finish off this topic, it's worth knowing that wget's idea of an
+external document link is any URL specified in an @code{<A>} tag, an
+@code{<AREA>} tag, or a @code{<LINK>} tag other than @code{<LINK
+REL="stylesheet">}.
 @end table
 
 @node Recursive Accept/Reject Options,  , Recursive Retrieval Options, Invoking
@@ -952,14 +1028,21 @@ comma-separated @var{list} with this option.
 @itemx --ignore-tags=@var{list}
 This is the opposite of the @samp{--follow-tags} option.  To skip
 certain HTML tags when recursively looking for documents to download,
-specify them in a comma-separated @var{list}.  The author of this option
-likes to use the following command to download a single HTML page and
-all files (e.g. images, sounds, and stylesheets) necessary to display it
-properly:
+specify them in a comma-separated @var{list}.  
+
+In the past, the @samp{-G} option was the best bet for downloading a
+single page and its requisites, using a commandline like:
 
 @example
 wget -Ga,area -H -k -K -nh -r http://@var{site}/@var{document}
 @end example
+
+However, the author of this option came across a page with tags like
+@code{<LINK REL="home" HREF="/">} and came to the realization that
+@samp{-G} was not enough.  One can't just tell wget to ignore
+@code{<LINK>}, because then stylesheets will not be downloaded.  Now the
+best bet for downloading a single page and its requisites is the
+dedicated @samp{--page-requisites} option.
 
 @item -H
 @itemx --span-hosts
@@ -1745,6 +1828,10 @@ proxy loading, instead of the one specified in environment.
 
 @item output_document = @var{string}
 Set the output filename -- the same as @samp{-O}.
+
+@item page_requisites = on/off
+Download all ancillary documents necessary for a single HTML page to
+display properly -- the same as @samp{-p}.
 
 @item passive_ftp = on/off
 Set passive @sc{ftp} -- the same as @samp{--passive-ftp}.

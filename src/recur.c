@@ -106,7 +106,7 @@ recursive_reset (void)
 }
 
 /* The core of recursive retrieving.  Endless recursion is avoided by
-   having all URL-s stored to a linked list of URL-s, which is checked
+   having all URLs stored to a linked list of URLs, which is checked
    before loading any URL.  That way no URL can get loaded twice.
 
    The function also supports specification of maximum recursion depth
@@ -116,7 +116,7 @@ recursive_retrieve (const char *file, const char *this_url)
 {
   char *constr, *filename, *newloc;
   char *canon_this_url = NULL;
-  int dt, inl;
+  int dt, inl, dash_p_leaf_HTML = FALSE;
   int this_url_ftp;            /* See below the explanation */
   uerr_t err;
   struct urlinfo *rurl;
@@ -163,13 +163,24 @@ recursive_retrieve (const char *file, const char *this_url)
   else
     ++depth;
 
-  /* Bail out if opt.reclevel is exceeded.  */
-  if ((opt.reclevel != 0) && (depth > opt.reclevel))
+  if (opt.reclevel != INFINITE_RECURSION && depth > opt.reclevel)
+    /* We've exceeded the maximum recursion depth specified by the user. */
     {
-      DEBUGP (("Recursion depth %d exceeded max. depth %d.\n",
-	       depth, opt.reclevel));
-      --depth;
-      return RECLEVELEXC;
+      if (opt.page_requisites && depth <= opt.reclevel + 1)
+	/* When -p is specified, we can do one more partial recursion from the
+	   "leaf nodes" on the HTML document tree.  The recursion is partial in
+	   that we won't traverse any <A> or <AREA> tags, nor any <LINK> tags
+	   except for <LINK REL="stylesheet">. */
+	dash_p_leaf_HTML = TRUE;
+      else
+	/* Either -p wasn't specified or it was and we've already gone the one
+	   extra (pseudo-)level that it affords us, so we need to bail out. */
+	{
+	  DEBUGP (("Recursion depth %d exceeded max. depth %d.\n",
+		   depth, opt.reclevel));
+	  --depth;
+	  return RECLEVELEXC;
+	}
     }
 
   /* Determine whether this_url is an FTP URL.  If it is, it means
@@ -179,8 +190,8 @@ recursive_retrieve (const char *file, const char *this_url)
   this_url_ftp = (urlproto (this_url) == URLFTP);
 
   /* Get the URL-s from an HTML file: */
-  url_list = get_urls_html (file,
-			    canon_this_url ? canon_this_url : this_url, 0);
+  url_list = get_urls_html (file, canon_this_url ? canon_this_url : this_url,
+			    0, dash_p_leaf_HTML);
 
   /* Decide what to do with each of the URLs.  A URL will be loaded if
      it meets several requirements, discussed later.  */
@@ -312,7 +323,8 @@ recursive_retrieve (const char *file, const char *this_url)
 	      (!*u->file
 	       || (((suf = suffix (constr)) != NULL)
                   && ((!strcmp (suf, "html") || !strcmp (suf, "htm"))
-                      && ((opt.reclevel != 0) && (depth != opt.reclevel))))))
+                      && ((opt.reclevel != INFINITE_RECURSION) &&
+			  (depth != opt.reclevel))))))
 	    {
 	      if (!acceptable (u->file))
 		{
@@ -504,7 +516,7 @@ recursive_retrieve (const char *file, const char *this_url)
 
    This is why Wget must, after the whole retrieval, call
    convert_all_links to go once more through the entire list of
-   retrieved HTML-s, and re-convert them.
+   retrieved HTMLs, and re-convert them.
 
    All the downloaded HTMLs are kept in urls_html, and downloaded URLs
    in urls_downloaded.  From these two lists information is
@@ -531,7 +543,8 @@ convert_all_links (void)
       else
 	DEBUGP (("I cannot find the corresponding URL.\n"));
       /* Parse the HTML file...  */
-      urls = get_urls_html (html->string, urlhtml ? urlhtml->url : NULL, 1);
+      urls = get_urls_html (html->string, urlhtml ? urlhtml->url : NULL, 1,
+			    FALSE);
       if (!urls)
 	continue;
       for (l1 = urls; l1; l1 = l1->next)

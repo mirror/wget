@@ -129,6 +129,7 @@ static struct {
   { "noproxy",		&opt.no_proxy,		cmd_vector },
   { "numtries",		&opt.ntry,		cmd_number_inf },/* deprecated*/
   { "outputdocument",	NULL,			cmd_spec_outputdocument },
+  { "pagerequisites",	&opt.page_requisites,	cmd_boolean },
   { "passiveftp",	&opt.ftp_pasv,		cmd_boolean },
   { "passwd",		&opt.ftp_pass,		cmd_string },
   { "proxypasswd",	&opt.proxy_passwd,	cmd_string },
@@ -823,7 +824,7 @@ cmd_spec_mirror (const char *com, const char *val, void *closure)
       if (!opt.no_dirstruct)
 	opt.dirstruct = 1;
       opt.timestamping = 1;
-      opt.reclevel = 0;
+      opt.reclevel = INFINITE_RECURSION;
       opt.remove_listing = 0;
     }
   return 1;

@@ -1068,7 +1068,7 @@ ftp_retrieve_list (struct urlinfo *u, struct fileinfo *f, ccon *con)
 
   /* Increase the depth.  */
   ++depth;
-  if (opt.reclevel && depth > opt.reclevel)
+  if (opt.reclevel != INFINITE_RECURSION && depth > opt.reclevel)
     {
       DEBUGP ((_("Recursion depth %d exceeded max. depth %d.\n"),
 	       depth, opt.reclevel));
@@ -1236,7 +1236,8 @@ Already have correct symlink %s -> %s\n\n"),
       f = f->next;
     } /* while */
   /* We do not want to call ftp_retrieve_dirs here */
-  if (opt.recursive && !(opt.reclevel && depth >= opt.reclevel))
+  if (opt.recursive &&
+      !(opt.reclevel != INFINITE_RECURSION && depth >= opt.reclevel))
     err = ftp_retrieve_dirs (u, orig, con);
   else if (opt.recursive)
     DEBUGP ((_("Will not retrieve dirs since depth is %d (max %d).\n"),

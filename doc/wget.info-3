@@ -474,6 +474,7 @@ Concept Index
 * option syntax:                         Option Syntax.
 * output file:                           Logging and Input File Options.
 * overview:                              Overview.
+* page requisites:                       Recursive Retrieval Options.
 * passive ftp:                           FTP Options.
 * pause:                                 Download Options.
 * portability:                           Portability.
@@ -495,6 +496,7 @@ Concept Index
 * reject wildcards:                      Types of Files.
 * relative links:                        Relative Links.
 * reporting bugs:                        Reporting Bugs.
+* required images, downloading:          Recursive Retrieval Options.
 * retries:                               Download Options.
 * retries, waiting between:              Download Options.
 * retrieval tracing style:               Download Options.

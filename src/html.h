@@ -32,7 +32,7 @@ typedef struct
 struct fileinfo;
 
 /* Function declarations */
-const char *htmlfindurl PARAMS ((const char *, int, int *, int));
+const char *htmlfindurl PARAMS ((const char *, int, int *, int, int));
 const char *html_base PARAMS ((void));
 uerr_t ftp_index PARAMS ((const char *, struct urlinfo *, struct fileinfo *));
 

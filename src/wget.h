@@ -193,6 +193,10 @@ char *xstrdup PARAMS ((const char *));
 #define FREE_MAYBE(foo) do { if (foo) free (foo); } while (0)
 
 /* #### Hack: OPTIONS_DEFINED_HERE is defined in main.c.  */
+/* [Is this weird hack really necessary on any compilers?  No ANSI C compiler
+    should complain about "extern const char *exec_name;" followed by
+    "const char *exec_name;".  Are we doing this for K&R compilers, or...??
+    -- Dan Harkless <dan-wget@dilvish.speed.net>] */
 #ifndef OPTIONS_DEFINED_HERE
 extern const char *exec_name;
 #endif
@@ -238,5 +242,12 @@ typedef unsigned char  boolean;
 /* So we can say strcmp(a, b) == EQ rather than strcmp(a, b) == 0 or
    the really awful !strcmp(a, b). */
 #define EQ 0
+
+/* For most options, 0 means no limits, but with -p in the picture, that causes
+   a problem on the maximum recursion depth variable.  To retain backwards
+   compatibility we allow users to consider "0" to be synonymous with "inf" for
+   -l, but internally infinite recursion is specified by -1 and 0 means to only
+   retrieve the requisites of a single document. */
+#define INFINITE_RECURSION -1
 
 #endif /* WGET_H */

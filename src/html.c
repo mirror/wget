@@ -98,15 +98,15 @@ idmatch (struct tag_attr *tags, const char *tag, const char *attr)
    address and the length of the string.  Return NULL if no URL is
    found.  */
 const char *
-htmlfindurl (const char *buf, int bufsize, int *size, int init)
+htmlfindurl (const char *buf, int bufsize, int *size, int init,
+	     int dash_p_leaf_HTML)
 {
   const char *p, *ph;
-  state_t *s;
+  state_t    *s = &global_state;
+
   /* NULL-terminated list of tags and modifiers someone would want to
      follow -- feel free to edit to suit your needs: */
   static struct tag_attr html_allow[] = {
-    { "a", "href" },
-    { "link", "href" },
     { "script", "src" },
     { "img", "src" },
     { "img", "href" },
@@ -119,7 +119,6 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init)
     { "script", "src" },
     { "embed", "src" },
     { "bgsound", "src" },
-    { "area", "href" },
     { "img", "lowsrc" },
     { "input", "src" },
     { "layer", "src" },
@@ -127,12 +126,14 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init)
     { "th", "background"},
     { "td", "background"},
     /* Tags below this line are treated specially.  */
+    { "a", "href" },
+    { "area", "href" },
     { "base", "href" },
+    { "link", "href" },
+    { "link", "rel" },
     { "meta", "content" },
     { NULL, NULL }
   };
-
-  s = &global_state;
 
   if (init)
     {
@@ -142,6 +143,10 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init)
 
   while (1)
     {
+      const char*  link_href = NULL;
+      const char*  link_rel = NULL;
+      int          link_href_saved_size;
+
       if (!bufsize)
 	break;
       /* Let's look for a tag, if we are not already in one.  */
@@ -240,7 +245,8 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init)
 	  /* Now we must skip the spaces to find '='.  */
 	  if (*buf != '=')
 	    {
-	      for (; bufsize && ISSPACE (*buf) && *buf != '>'; ++buf, --bufsize);
+	      for (; bufsize && ISSPACE (*buf) && *buf != '>';
+		   ++buf, --bufsize);
 	      if (!bufsize || *buf == '>')
 		break;
 	    }
@@ -286,7 +292,8 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init)
 	  else
 	    {
 	      p = buf;
-	      for (; bufsize && !ISSPACE (*buf) && *buf != '>'; ++buf, --bufsize)
+	      for (; bufsize && !ISSPACE (*buf) && *buf != '>';
+		   ++buf, --bufsize)
 		if (ph && *buf == '#')
 		  ph = buf;
 	      if (!bufsize)
@@ -300,12 +307,72 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init)
 	     2) its tag and attribute are found in html_allow.  */
 	  if (*size && idmatch (html_allow, s->tag, s->attr))
 	    {
-	      if (!strcasecmp (s->tag, "base") && !strcasecmp (s->attr, "href"))
+	      if (strcasecmp(s->tag, "a") == EQ ||
+		  strcasecmp(s->tag, "area") == EQ)
+		{
+		  /* Only follow these if we're not at a -p leaf node, as they
+		     always link to external documents. */
+		  if (!dash_p_leaf_HTML)
+		    {
+		      s->at_value = 1;
+		      return p;
+		    }
+		}
+	      else if (!strcasecmp (s->tag, "base") &&
+		       !strcasecmp (s->attr, "href"))
 		{
 		  FREE_MAYBE (s->base);
 		  s->base = strdupdelim (p, buf);
 		}
-	      else if (!strcasecmp (s->tag, "meta") && !strcasecmp (s->attr, "content"))
+	      else if (strcasecmp(s->tag, "link") == EQ)
+		{
+		  if (strcasecmp(s->attr, "href") == EQ)
+		    {
+		      link_href = p;
+		      link_href_saved_size = *size;  /* for restoration below */
+		    }
+		  else if (strcasecmp(s->attr, "rel") == EQ)
+		    link_rel = p;
+
+		  if (link_href != NULL && link_rel != NULL)
+		    /* Okay, we've now seen this <LINK> tag's HREF and REL
+		       attributes (they may be in either order), so it's now
+		       possible to decide if we want to traverse it. */
+		    if (!dash_p_leaf_HTML ||
+			strncasecmp(link_rel, "stylesheet",
+				    sizeof("stylesheet") - 1) == EQ)
+		      /* In the normal case, all <LINK> tags are fair game.
+			 
+			 In the special case of when -p is active, however, and
+			 we're at a leaf node (relative to the -l max. depth) in
+			 the HTML document tree, the only <LINK> tag we'll
+			 follow is a <LINK REL="stylesheet">, as it's necessary
+			 for displaying this document properly.  We won't follow
+			 other <LINK> tags, like <LINK REL="home">, for
+			 instance, as they refer to external documents.
+			 
+			 Note that the above strncasecmp() will incorrectly
+			 consider something like '<LINK REL="stylesheet.old"' as
+			 equivalent to '<LINK REL="stylesheet"'.  Not really
+			 worth the trouble to explicitly check for such cases --
+			 if time is spent, it should be spent ripping out wget's
+			 somewhat kludgy HTML parser and hooking in a real,
+			 componentized one. */
+		      {
+			/* When we return, the 'size' IN/OUT parameter
+			   determines where in the buffer the end of the current
+			   attribute value is.  If REL came after HREF in this
+			   <LINK> tag, size is currently set to the size for
+			   REL's value -- set it to what it was when we were
+			   looking at HREF's value. */
+			*size = link_href_saved_size;
+			
+			s->at_value = 1;
+			return link_href;
+		      }
+		}
+	      else if (!strcasecmp (s->tag, "meta") &&
+		       !strcasecmp (s->attr, "content"))
 		{
 		  /* Some pages use a META tag to specify that the page
 		     be refreshed by a new page after a given number of
@@ -323,7 +390,9 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init)
 		  for (; *size && ISDIGIT (*p); p++, *size -= 1);
 		  if (*p == ';')
 		    {
-		      for (p++, *size -= 1; *size && ISSPACE (*p); p++, *size -= 1) ;
+		      for (p++, *size -= 1;
+			   *size && ISSPACE (*p);
+			   p++, *size -= 1) ;
 		      if (!strncasecmp (p, "URL=", 4))
 			{
 			  p += 4, *size -= 4;

@@ -88,7 +88,7 @@ char *str_url PARAMS ((const struct urlinfo *, int));
 int url_equal PARAMS ((const char *, const char *));
 
 urlpos *get_urls_file PARAMS ((const char *));
-urlpos *get_urls_html PARAMS ((const char *, const char *, int));
+urlpos *get_urls_html PARAMS ((const char *, const char *, int, int));
 void free_urlpos PARAMS ((urlpos *));
 
 void rotate_backups PARAMS ((const char *));

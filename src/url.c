@@ -830,7 +830,8 @@ get_urls_file (const char *file)
 
    If SILENT is non-zero, do not barf on baseless relative links.  */
 urlpos *
-get_urls_html (const char *file, const char *this_url, int silent)
+get_urls_html (const char *file, const char *this_url, int silent,
+	       int dash_p_leaf_HTML)
 {
   long nread;
   FILE *fp;
@@ -859,7 +860,8 @@ get_urls_html (const char *file, const char *this_url, int silent)
   first_time = 1;
   /* Iterate over the URLs in BUF, picked by htmlfindurl().  */
   for (buf = orig_buf;
-       (buf = htmlfindurl (buf, nread - (buf - orig_buf), &step, first_time));
+       (buf = htmlfindurl (buf, nread - (buf - orig_buf), &step, first_time,
+			   dash_p_leaf_HTML));
        buf += step)
     {
       int i, no_proto;
