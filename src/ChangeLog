@@ -1,3 +1,8 @@
+2001-12-19  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* html-url.c (tag_handle_link): Treat the "shortcut icon" link as
+	inline.
+
 2001-12-18  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* recur.c (retrieve_tree): Make a copy of file obtained from

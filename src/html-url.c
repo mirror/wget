@@ -484,12 +484,18 @@ tag_handle_link (int tagid, struct taginfo *tag, struct map_context *ctx)
   int attrind;
   char *href = find_attr (tag, "href", &attrind);
 
-  /* All <link href="..."> link references are external,
-     except for <link rel="stylesheet" href="...">.  */
+  /* All <link href="..."> link references are external, except those
+     known not to be, such as style sheet and shortcut icon:
+
+       <link rel="stylesheet" href="...">
+       <link rel="shortcut icon" href="...">
+  */
   if (href)
     {
       char *rel  = find_attr (tag, "rel", NULL);
-      int inlinep = (rel && 0 == strcasecmp (rel, "stylesheet"));
+      int inlinep = (rel
+		     && (0 == strcasecmp (rel, "stylesheet")
+			 || 0 == strcasecmp (rel, "shortcut icon")));
       append_one_url (href, inlinep, tag, attrind, ctx);
     }
 }
