@@ -70,6 +70,8 @@ extern int errno;
 
 struct options opt;
 
+extern struct cookie_jar *wget_cookie_jar;
+
 /* From log.c.  */
 void log_init PARAMS ((const char *, int));
 void log_close PARAMS ((void));
@@ -860,8 +862,8 @@ Can't timestamp and not clobber old files at the same time.\n"));
 		   legible (opt.quota));
     }
 
-  if (opt.cookies_output)
-    save_cookies (opt.cookies_output);
+  if (opt.cookies_output && wget_cookie_jar)
+    cookie_jar_save (wget_cookie_jar, opt.cookies_output);
 
   if (opt.convert_links && !opt.delete_after)
     {

@@ -1,3 +1,31 @@
+2002-04-20  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* init.c: Ditto.
+
+	* main.c: Ditto.
+
+	* http.c: Use the new interface.
+
+	* cookies.c: Provide an OO-style "cookie jar" interface to enable
+	separate cookie jars.
+
+	* http.c (http_atotm): Declare argument as const.
+
+2002-04-20  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* cookies.c (cookie_new): Default to PORT_ANY.
+	(find_cookie_chain_exact): Only search by DOMAIN.
+	(find_matching_cookie): Also check that PORT matches.
+	(store_cookie): Only match the domain.
+	(set_cookie_header_cb): When a cookie "fakes" a domain, assume it
+	is valid for that host rather than discarding it completely.
+	(find_matching_chains): Don't search by PORT.
+	(matching_cookie): Also match PORT.
+	(load_cookies): Set the port if specified, otherwise leave it as
+	ANY.
+	(save_cookies_mapper): Save the port if specified, otherwise leave
+	it empty.
+
 2002-04-19  Thomas Lussnig  <thomas.lussnig@bewegungsmelder.de>
 
 	* init.c: The option `egdfile' was not in sort order.

@@ -53,12 +53,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "host.h"
 #include "recur.h"
 #include "netrc.h"
-#include "cookies.h"		/* for cookies_cleanup */
+#include "cookies.h"		/* for cookie_jar_delete */
 #include "progress.h"
 
 #ifndef errno
 extern int errno;
 #endif
+
+extern struct cookie_jar *wget_cookie_jar;
 
 /* We want tilde expansion enabled only when reading `.wgetrc' lines;
    otherwise, it will be performed by the shell.  This variable will
@@ -1057,8 +1059,8 @@ cleanup (void)
   http_cleanup ();
   cleanup_html_url ();
   downloaded_files_free ();
-  cookies_cleanup ();
   host_cleanup ();
+  cookie_jar_delete (wget_cookie_jar);
 
   {
     extern acc_t *netrc_list;

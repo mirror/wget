@@ -69,6 +69,7 @@ extern int errno;
 #endif
 
 static int cookies_loaded_p;
+struct cookie_jar *wget_cookie_jar;
 
 #define TEXTHTML_S "text/html"
 #define HTTP_ACCEPT "*/*"
@@ -334,6 +335,22 @@ http_process_connection (const char *hdr, void *arg)
     *flag = 1;
   return 1;
 }
+
+/* Commit the cookie to the cookie jar. */
+
+int
+http_process_set_cookie (const char *hdr, void *arg)
+{
+  struct url *u = (struct url *)arg;
+
+  /* The jar should have been created by now. */
+  assert (wget_cookie_jar != NULL);
+
+  cookie_jar_process_set_cookie (wget_cookie_jar, u->host, u->port, u->path,
+				 hdr);
+  return 1;
+}
+
 
 /* Persistent connections.  Currently, we cache the most recently used
    connection as persistent, provided that the HTTP server agrees to
@@ -584,7 +601,7 @@ static char *basic_authentication_encode PARAMS ((const char *, const char *,
 						  const char *));
 static int known_authentication_scheme_p PARAMS ((const char *));
 
-time_t http_atotm PARAMS ((char *));
+time_t http_atotm PARAMS ((const char *));
 
 #define BEGINS_WITH(line, string_constant)				\
   (!strncasecmp (line, string_constant, sizeof (string_constant) - 1)	\
@@ -891,13 +908,14 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     request_keep_alive = NULL;
 
   if (opt.cookies)
-    cookies = build_cookies_request (u->host, u->port, u->path,
+    cookies = cookie_jar_generate_cookie_header (wget_cookie_jar, u->host,
+						 u->port, u->path,
 #ifdef HAVE_SSL
-				     u->scheme == SCHEME_HTTPS
+						 u->scheme == SCHEME_HTTPS
 #else
-				     0
+						 0
 #endif
-				     );
+				 );
 
   if (opt.post_data || opt.post_file_name)
     {
@@ -1168,7 +1186,7 @@ Accept: %s\r\n\
 	  goto done_header;
       /* Try getting cookies. */
       if (opt.cookies)
-	if (header_process (hdr, "Set-Cookie", set_cookie_header_cb, u))
+	if (header_process (hdr, "Set-Cookie", http_process_set_cookie, u))
 	  goto done_header;
       /* Try getting www-authentication.  */
       if (!authenticate_h)
@@ -1558,10 +1576,15 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   /* This used to be done in main(), but it's a better idea to do it
      here so that we don't go through the hoops if we're just using
      FTP or whatever. */
-  if (opt.cookies && opt.cookies_input && !cookies_loaded_p)
+  if (opt.cookies)
     {
-      load_cookies (opt.cookies_input);
-      cookies_loaded_p = 1;
+      if (!wget_cookie_jar)
+	wget_cookie_jar = cookie_jar_new ();
+      if (opt.cookies_input && !cookies_loaded_p)
+	{
+	  cookie_jar_load (wget_cookie_jar, opt.cookies_input);
+	  cookies_loaded_p = 1;
+	}
     }
 
   *newloc = NULL;
@@ -2155,7 +2178,7 @@ check_end (const char *p)
    it is not assigned to the FSF.  So I stuck it with strptime.  */
 
 time_t
-http_atotm (char *time_string)
+http_atotm (const char *time_string)
 {
   /* NOTE: Solaris strptime man page claims that %n and %t match white
      space, but that's not universally available.  Instead, we simply
