@@ -123,22 +123,6 @@ ftp_expected_bytes (const char *s)
 }
 
 #ifdef ENABLE_IPV6
-static int
-getfamily (int fd)
-{
-  struct sockaddr_storage ss;
-  struct sockaddr *sa = (struct sockaddr *)&ss;
-  socklen_t len = sizeof (ss);
-
-  assert (fd >= 0);
-
-  if (getpeername (fd, sa, &len) < 0)
-    /* Mauro Tortonesi: HOW DO WE HANDLE THIS ERROR? */
-    abort ();
-
-  return sa->sa_family;
-}
-
 /* 
  * This function sets up a passive data connection with the FTP server.
  * It is merely a wrapper around ftp_epsv, ftp_lpsv and ftp_pasv.
@@ -147,16 +131,24 @@ static uerr_t
 ftp_do_pasv (struct rbuf *rbuf, ip_address *addr, int *port)
 {
   uerr_t err;
-  int family;
 
-  family = getfamily (rbuf->fd);
-  assert (family == AF_INET || family == AF_INET6);
+  /* We need to determine the address family and need to call
+     getpeername, so while we're at it, store the address to ADDR.
+     ftp_pasv and ftp_lpsv can simply override it.  */
+  if (!socket_ip_address (RBUF_FD (rbuf), addr, ENDPOINT_PEER))
+    abort ();
 
   /* If our control connection is over IPv6, then we first try EPSV and then 
    * LPSV if the former is not supported. If the control connection is over 
    * IPv4, we simply issue the good old PASV request. */
-  if (family == AF_INET6)
+  switch (addr->type)
     {
+    case IPV4_ADDRESS:
+      if (!opt.server_response)
+        logputs (LOG_VERBOSE, "==> PASV ... ");
+      err = ftp_pasv (rbuf, addr, port);
+      break;
+    case IPV6_ADDRESS:
       if (!opt.server_response)
         logputs (LOG_VERBOSE, "==> EPSV ... ");
       err = ftp_epsv (rbuf, addr, port);
@@ -168,12 +160,9 @@ ftp_do_pasv (struct rbuf *rbuf, ip_address *addr, int *port)
             logputs (LOG_VERBOSE, "==> LPSV ... ");
           err = ftp_lpsv (rbuf, addr, port);
         }
-    }
-  else 
-    {
-      if (!opt.server_response)
-        logputs (LOG_VERBOSE, "==> PASV ... ");
-      err = ftp_pasv (rbuf, addr, port);
+      break;
+    default:
+      abort ();
     }
 
   return err;
@@ -187,19 +176,25 @@ static uerr_t
 ftp_do_port (struct rbuf *rbuf, int *local_sock)
 {
   uerr_t err;
-  int family;
+  ip_address cip;
 
   assert (rbuf != NULL);
   assert (rbuf_initialized_p (rbuf));
 
-  family = getfamily (rbuf->fd);
-  assert (family == AF_INET || family == AF_INET6);
+  if (!socket_ip_address (RBUF_FD (rbuf), &cip, ENDPOINT_PEER))
+    abort ();
 
   /* If our control connection is over IPv6, then we first try EPRT and then 
    * LPRT if the former is not supported. If the control connection is over 
    * IPv4, we simply issue the good old PORT request. */
-  if (family == AF_INET6)
+  switch (cip.type)
     {
+    case IPV4_ADDRESS:
+      if (!opt.server_response)
+        logputs (LOG_VERBOSE, "==> PORT ... ");
+      err = ftp_port (rbuf, local_sock);
+      break;
+    case IPV6_ADDRESS:
       if (!opt.server_response)
         logputs (LOG_VERBOSE, "==> EPRT ... ");
       err = ftp_eprt (rbuf, local_sock);
@@ -211,14 +206,10 @@ ftp_do_port (struct rbuf *rbuf, int *local_sock)
             logputs (LOG_VERBOSE, "==> LPRT ... ");
           err = ftp_lprt (rbuf, local_sock);
         }
+      break;
+    default:
+      abort ();
     }
-  else 
-    {
-      if (!opt.server_response)
-        logputs (LOG_VERBOSE, "==> PORT ... ");
-      err = ftp_port (rbuf, local_sock);
-    }
-
   return err;
 }
 #else

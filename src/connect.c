@@ -106,7 +106,7 @@ sockaddr_set_data (struct sockaddr *sa, const ip_address *ip, int port)
    you're not interested in one or the other information, pass NULL as
    the pointer.  */
 
-void
+static void
 sockaddr_get_data (const struct sockaddr *sa, ip_address *ip, int *port)
 {
   switch (sa->sa_family)
@@ -510,16 +510,28 @@ acceptport (int local_sock, int *sock)
   return ACCEPTOK;
 }
 
-/* Return the local IP address associated with the connection on FD.  */
+/* Get the IP address associated with the connection on FD and store
+   it to IP.  Return 1 on success, 0 otherwise.
+
+   If ENDPOINT is ENDPOINT_LOCAL, it returns the address of the local
+   (client) side of the socket.  Else if ENDPOINT is ENDPOINT_PEER, it
+   returns the address of the remote (peer's) side of the socket.  */
 
 int
-conaddr (int fd, ip_address *ip)
+socket_ip_address (int sock, ip_address *ip, int endpoint)
 {
   struct sockaddr_storage storage;
   struct sockaddr *sockaddr = (struct sockaddr *)&storage;
   socklen_t addrlen = sizeof (storage);
+  int ret;
 
-  if (getsockname (fd, sockaddr, &addrlen) < 0)
+  if (endpoint == ENDPOINT_LOCAL)
+    ret = getsockname (sock, sockaddr, &addrlen);
+  else if (endpoint == ENDPOINT_PEER)
+    ret = getpeername (sock, sockaddr, &addrlen);
+  else
+    abort ();
+  if (ret < 0)
     return 0;
 
   switch (sockaddr->sa_family)

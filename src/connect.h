@@ -51,10 +51,14 @@ enum {
 int connect_to_host PARAMS ((const char *, int));
 int connect_to_ip PARAMS ((const ip_address *, int, const char *));
 
-void sockaddr_get_data PARAMS ((const struct sockaddr *, ip_address *, int *));
 uerr_t bindport PARAMS ((const ip_address *, int *, int *));
 uerr_t acceptport PARAMS ((int, int *));
-int conaddr PARAMS ((int, ip_address *));
+
+enum {
+  ENDPOINT_LOCAL,
+  ENDPOINT_PEER
+};
+int socket_ip_address PARAMS ((int, ip_address *, int));
 
 /* Flags for select_fd's WAIT_FOR argument. */
 enum {

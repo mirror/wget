@@ -343,40 +343,36 @@ http_process_set_cookie (const char *hdr, void *arg)
 /* Persistent connections.  Currently, we cache the most recently used
    connection as persistent, provided that the HTTP server agrees to
    make it such.  The persistence data is stored in the variables
-   below.  Ideally, it would be in a structure, and it should be
-   possible to cache an arbitrary fixed number of these connections.
-
-   I think the code is quite easy to extend in that direction.  */
+   below.  Ideally, it should be possible to cache an arbitrary fixed
+   number of these connections.  */
 
 /* Whether a persistent connection is active. */
-static int pc_active_p;
+static int pconn_active;
 
-/* Host and port of currently active persistent connection. */
-static struct address_list *pc_last_host_ip;
-static unsigned short pc_last_port;
+static struct {
+  /* The socket of the connection.  */
+  int socket;
 
-/* File descriptor of the currently active persistent connection. */
-static int pc_last_fd;
+  /* Host and port of the currently active persistent connection. */
+  char *host;
+  int port;
 
-/* Whether a ssl handshake has occoured on this connection */
-static int pc_last_ssl_p;
+  /* Whether a ssl handshake has occoured on this connection.  */
+  int ssl;
+} pconn;
 
-/* Mark the persistent connection as invalid.  This is used by the
-   CLOSE_* macros after they forcefully close a registered persistent
-   connection.  This does not close the file descriptor -- it is left
-   to the caller to do that.  (Maybe it should, though.)  */
+/* Mark the persistent connection as invalid and free the resources it
+   uses.  This is used by the CLOSE_* macros after they forcefully
+   close a registered persistent connection.  */
 
 static void
 invalidate_persistent (void)
 {
-  pc_active_p = 0;
-  pc_last_ssl_p = 0;
-  if (pc_last_host_ip != NULL)
-    {
-      address_list_release (pc_last_host_ip);
-      pc_last_host_ip = NULL;
-    }
-  DEBUGP (("Invalidating fd %d from further reuse.\n", pc_last_fd));
+  DEBUGP (("Disabling further reuse of socket %d.\n", pconn.socket));
+  pconn_active = 0;
+  xclose (pconn.socket);
+  xfree (pconn.host);
+  xzero (pconn);
 }
 
 /* Register FD, which should be a TCP/IP connection to HOST:PORT, as
@@ -388,94 +384,108 @@ invalidate_persistent (void)
    If a previous connection was persistent, it is closed. */
 
 static void
-register_persistent (const char *host, unsigned short port, int fd, int ssl)
+register_persistent (const char *host, int port, int fd, int ssl)
 {
-  if (pc_active_p)
+  if (pconn_active)
     {
-      if (pc_last_fd == fd)
+      if (pconn.socket == fd)
 	{
-	  /* The connection FD is already registered.  Nothing to
-	     do. */
+	  /* The connection FD is already registered. */
 	  return;
 	}
       else
 	{
-	  /* The old persistent connection is still active; let's
-	     close it first.  This situation arises whenever a
-	     persistent connection exists, but we then connect to a
-	     different host, and try to register a persistent
-	     connection to that one.  */
-	  xclose (pc_last_fd);
+	  /* The old persistent connection is still active; close it
+	     first.  This situation arises whenever a persistent
+	     connection exists, but we then connect to a different
+	     host, and try to register a persistent connection to that
+	     one.  */
 	  invalidate_persistent ();
 	}
     }
 
-  assert (pc_last_host_ip == NULL);
+  pconn_active = 1;
+  pconn.socket = fd;
+  pconn.host = xstrdup (host);
+  pconn.port = port;
+  pconn.ssl = ssl;
 
-  /* This lookup_host cannot fail, because it has the results in the
-     cache.  */
-  pc_last_host_ip = lookup_host (host, LH_SILENT);
-  assert (pc_last_host_ip != NULL);
-
-  pc_last_port = port;
-  pc_last_fd = fd;
-  pc_active_p = 1;
-  pc_last_ssl_p = ssl;
-  DEBUGP (("Registered fd %d for persistent reuse.\n", fd));
+  DEBUGP (("Registered socket %d for persistent reuse.\n", fd));
 }
 
 /* Return non-zero if a persistent connection is available for
    connecting to HOST:PORT.  */
 
 static int
-persistent_available_p (const char *host, unsigned short port, int ssl)
+persistent_available_p (const char *host, int port, int ssl,
+			int *host_lookup_failed)
 {
-  int success;
-  struct address_list *this_host_ip;
-
   /* First, check whether a persistent connection is active at all.  */
-  if (!pc_active_p)
-    return 0;
-  /* Second, check if the active connection pertains to the correct
-     (HOST, PORT) ordered pair.  */
-  if (port != pc_last_port)
+  if (!pconn_active)
     return 0;
 
-  /* Second, a): check if current connection is (not) ssl, too.  This
-     test is unlikely to fail because HTTP and HTTPS typicaly use
-     different ports.  Yet it is possible, or so I [Christian
-     Fraenkel] have been told, to run HTTPS and HTTP simultaneus on
-     the same port.  */
-  if (ssl != pc_last_ssl_p)
+  /* If we want SSL and the last connection wasn't or vice versa,
+     don't use it.  Checking for host and port is not enough because
+     HTTP and HTTPS can apparently coexist on the same port.  */
+  if (ssl != pconn.ssl)
     return 0;
 
-  this_host_ip = lookup_host (host, 0);
-  if (!this_host_ip)
+  /* If we're not connecting to the same port, we're not interested. */
+  if (port != pconn.port)
     return 0;
 
-  /* To equate the two host names for the purposes of persistent
-     connections, they need to share all the IP addresses in the
-     list.  */
-  success = address_list_match_all (pc_last_host_ip, this_host_ip);
-  address_list_release (this_host_ip);
-  if (!success)
-    return 0;
+  /* If the host is the same, we're in business.  If not, there is
+     still hope -- read below.  */
+  if (0 != strcasecmp (host, pconn.host))
+    {
+      /* This is somewhat evil, but works in practice: if the address
+	 that pconn.socket is connected to is one of the IP addresses
+	 HOST resolves to, we don't need to reconnect.  #### Is it
+	 correct to do this by default?  */
+      int found;
+      ip_address ip;
+      struct address_list *al;
 
-  /* Third: check whether the connection is still open.  This is
+      if (!socket_ip_address (pconn.socket, &ip, 0))
+	{
+	  /* Can't get the peer's address -- something must be wrong
+	     with the connection.  */
+	  invalidate_persistent ();
+	  return 0;
+	}
+      al = lookup_host (host, 0);
+      if (!al)
+	{
+	  *host_lookup_failed = 1;
+	  return 0;
+	}
+
+      found = address_list_find (al, &ip);
+      address_list_release (al);
+
+      if (!found)
+	return 0;
+
+      /* HOST resolves to an address pconn.sock is connected to -- no
+	 need to reconnect.  */
+    }
+
+  /* Finally, check whether the connection is still open.  This is
      important because most server implement a liberal (short) timeout
      on persistent connections.  Wget can of course always reconnect
      if the connection doesn't work out, but it's nicer to know in
      advance.  This test is a logical followup of the first test, but
      is "expensive" and therefore placed at the end of the list.  */
-  if (!test_socket_open (pc_last_fd))
+
+  if (!test_socket_open (pconn.socket))
     {
       /* Oops, the socket is no longer open.  Now that we know that,
          let's invalidate the persistent connection before returning
          0.  */
-      xclose (pc_last_fd);
       invalidate_persistent ();
       return 0;
     }
+
   return 1;
 }
 
@@ -497,16 +507,18 @@ persistent_available_p (const char *host, unsigned short port, int ssl)
 #define CLOSE_FINISH(fd) do {			\
   if (!keep_alive)				\
     {						\
-      xclose (fd);				\
-      if (pc_active_p && (fd) == pc_last_fd)	\
+      if (pconn_active && (fd) == pconn.socket)	\
 	invalidate_persistent ();		\
+      else					\
+	xclose (fd);				\
     }						\
 } while (0)
 
 #define CLOSE_INVALIDATE(fd) do {		\
-  xclose (fd);					\
-  if (pc_active_p && (fd) == pc_last_fd)	\
+  if (pconn_active && (fd) == pconn.socket)	\
     invalidate_persistent ();			\
+  else						\
+    xclose (fd);				\
 } while (0)
 
 struct http_stat
@@ -606,6 +618,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   char *post_content_type, *post_content_length;
   long post_data_size = 0;
 
+  int host_lookup_failed;
+
 #ifdef HAVE_SSL
   /* Initialize the SSL context.  After the first run, this is a
      no-op.  */
@@ -668,6 +682,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
      server. */
   conn = proxy ? proxy : u;
 
+  host_lookup_failed = 0;
+
   /* First: establish the connection.  */
   if (inhibit_keep_alive
       || !persistent_available_p (conn->host, conn->port,
@@ -676,8 +692,14 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 #else
 				  0
 #endif
-				  ))
+				  , &host_lookup_failed))
     {
+      /* In its current implementation, persistent_available_p will
+	 look up conn->host in some cases.  If that lookup failed, we
+	 don't need to bother with connect_to_host.  */
+      if (host_lookup_failed)
+	return HOSTERR;
+
       sock = connect_to_host (conn->host, conn->port);
       if (sock == E_HOST)
 	return HOSTERR;
@@ -705,8 +727,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 		 conn->host, conn->port);
       /* #### pc_last_fd should be accessed through an accessor
          function.  */
-      sock = pc_last_fd;
-      using_ssl = pc_last_ssl_p;
+      sock = pconn.socket;
+      using_ssl = pconn.ssl;
       DEBUGP (("Reusing fd %d.\n", sock));
     }
 
@@ -2427,6 +2449,4 @@ create_authorization_line (const char *au, const char *user,
 void
 http_cleanup (void)
 {
-  if (pc_last_host_ip)
-    address_list_release (pc_last_host_ip);
 }

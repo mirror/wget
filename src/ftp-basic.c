@@ -285,7 +285,7 @@ ftp_port (struct rbuf *rbuf, int *local_sock)
   assert (rbuf_initialized_p (rbuf));
 
   /* Get the address of this side of the connection. */
-  if (!conaddr (RBUF_FD (rbuf), &addr))
+  if (!socket_ip_address (RBUF_FD (rbuf), &addr, ENDPOINT_LOCAL))
     return BINDERR;
 
   assert (addr.type == IPV4_ADDRESS);
@@ -382,7 +382,7 @@ ftp_lprt (struct rbuf *rbuf, int *local_sock)
   assert (rbuf_initialized_p (rbuf));
 
   /* Get the address of this side of the connection. */
-  if (!conaddr (RBUF_FD (rbuf), &addr))
+  if (!socket_ip_address (RBUF_FD (rbuf), &addr, ENDPOINT_LOCAL))
     return BINDERR;
 
   assert (addr.type == IPV4_ADDRESS || addr.type == IPV6_ADDRESS);
@@ -466,7 +466,7 @@ ftp_eprt (struct rbuf *rbuf, int *local_sock)
   assert (rbuf_initialized_p(rbuf));
 
   /* Get the address of this side of the connection. */
-  if (!conaddr (RBUF_FD (rbuf), &addr))
+  if (!socket_ip_address (RBUF_FD (rbuf), &addr, ENDPOINT_LOCAL))
     return BINDERR;
 
   assert (addr.type == IPV4_ADDRESS || addr.type == IPV6_ADDRESS);
@@ -756,27 +756,18 @@ ftp_epsv (struct rbuf *rbuf, ip_address *ip, int *port)
   int nwritten, i;
   uerr_t err;
   int tport;
-  socklen_t addrlen;
-  struct sockaddr_storage ss;
-  struct sockaddr *sa = (struct sockaddr *)&ss;
 
   assert (rbuf != NULL);
   assert (rbuf_initialized_p(rbuf));
   assert (ip != NULL);
   assert (port != NULL);
 
-  addrlen = sizeof (ss);
-  if (getpeername (rbuf->fd, sa, &addrlen) < 0)
-    /* Mauro Tortonesi: HOW DO WE HANDLE THIS ERROR? */
-    return CONPORTERR;
-
-  assert (sa->sa_family == AF_INET || sa->sa_family == AF_INET6);
-
-  sockaddr_get_data (sa, ip, NULL);
+  /* IP already contains the IP address of the control connection's
+     peer, so we don't need to call socket_ip_address here.  */
 
   /* Form the request.  */
   /* EPSV 1 means that we ask for IPv4 and EPSV 2 means that we ask for IPv6. */
-  request = ftp_request ("EPSV", (sa->sa_family == AF_INET ? "1" : "2"));
+  request = ftp_request ("EPSV", (ip->type == IPV4_ADDRESS ? "1" : "2"));
 
   /* And send it.  */
   nwritten = xwrite (RBUF_FD (rbuf), request, strlen (request), -1);

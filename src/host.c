@@ -124,61 +124,44 @@ address_list_address_at (const struct address_list *al, int pos)
   return al->addresses + pos;
 }
 
-/* Check whether two address lists have all their IPs in common.  */
+/* Return 1 if IP is one of the addresses in AL. */
 
 int
-address_list_match_all (const struct address_list *al1,
-			const struct address_list *al2)
+address_list_find (const struct address_list *al, const ip_address *ip)
 {
-#ifdef ENABLE_IPV6
   int i;
-#endif
-  if (al1 == al2)
-    return 1;
-  if (al1->count != al2->count)
-    return 0;
-
-  /* For the comparison to be complete, we'd need to sort the IP
-     addresses first.  But that's not necessary because this is only
-     used as an optimization.  */
-
-#ifndef ENABLE_IPV6
-  /* In the non-IPv6 case, there is only one address type, so we can
-     compare the whole array with memcmp.  */
-  return 0 == memcmp (al1->addresses, al2->addresses,
-		      al1->count * sizeof (ip_address));
-#else  /* ENABLE_IPV6 */
-  for (i = 0; i < al1->count; ++i) 
+  switch (ip->type)
     {
-      const ip_address *ip1 = &al1->addresses[i];
-      const ip_address *ip2 = &al2->addresses[i];
-
-      if (ip1->type != ip2->type)
-	return 0;
-
-      switch (ip1->type)
+    case IPV4_ADDRESS:
+      for (i = 0; i < al->count; i++)
 	{
-	case IPV4_ADDRESS:
-	  if (ADDRESS_IPV4_IN_ADDR (ip1).s_addr
-	      !=
-	      ADDRESS_IPV4_IN_ADDR (ip2).s_addr)
-	    return 0;
-	  break;
-	case IPV6_ADDRESS:
-#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	  if (ADDRESS_IPV6_SCOPE (ip1) != ADDRESS_IPV6_SCOPE (ip2))
-	    return 0;
-#endif /* HAVE_SOCKADDR_IN6_SCOPE_ID */
-	  if (!IN6_ARE_ADDR_EQUAL (&ADDRESS_IPV6_IN6_ADDR (ip1),
-				   &ADDRESS_IPV6_IN6_ADDR (ip2)))
-	    return 0;
-	  break;
-	default:
-	  abort ();
+	  ip_address *cur = al->addresses + i;
+	  if (cur->type == IPV4_ADDRESS
+	      && (ADDRESS_IPV4_IN_ADDR (cur).s_addr
+		  ==
+		  ADDRESS_IPV4_IN_ADDR (ip).s_addr))
+	    return 1;
 	}
-    }
-  return 1;
+      return 0;
+#ifdef ENABLE_IPV6
+    case IPV6_ADDRESS:
+      for (i = 0; i < al->count; i++)
+	{
+	  ip_address *cur = al->addresses + i;
+	  if (cur->type == IPV6_ADDRESS
+#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+	      && ADDRESS_IPV6_SCOPE (cur) == ADDRESS_IPV6_SCOPE (ip)
+#endif
+	      && IN6_ARE_ADDR_EQUAL (&ADDRESS_IPV6_IN6_ADDR (cur),
+				     &ADDRESS_IPV6_IN6_ADDR (ip)))
+	    return 1;
+	}
+      return 0;
 #endif /* ENABLE_IPV6 */
+    default:
+      abort ();
+      return 1;
+    }
 }
 
 /* Mark the INDEXth element of AL as faulty, so that the next time
