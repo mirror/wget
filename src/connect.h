@@ -47,8 +47,8 @@ enum {
 int connect_to_host PARAMS ((const char *, int));
 int connect_to_ip PARAMS ((const ip_address *, int, const char *));
 
-uerr_t bindport PARAMS ((const ip_address *, int *, int *));
-uerr_t acceptport PARAMS ((int, int *));
+int bind_local PARAMS ((const ip_address *, int *));
+int accept_connection PARAMS ((int));
 
 enum {
   ENDPOINT_LOCAL,

@@ -286,7 +286,7 @@ ftp_port (struct rbuf *rbuf, int *local_sock)
 
   /* Get the address of this side of the connection. */
   if (!socket_ip_address (RBUF_FD (rbuf), &addr, ENDPOINT_LOCAL))
-    return BINDERR;
+    return FTPSYSERR;
 
   assert (addr.type == IPV4_ADDRESS);
 
@@ -294,9 +294,9 @@ ftp_port (struct rbuf *rbuf, int *local_sock)
   port = 0;
 
   /* Bind the port.  */
-  err = bindport (&addr, &port, local_sock);
-  if (err != BINDOK)
-    return err;
+  *local_sock = bind_local (&addr, &port);
+  if (*local_sock < 0)
+    return FTPSYSERR;
 
   /* Construct the argument of PORT (of the form a,b,c,d,e,f). */
   ip_address_to_port_repr (&addr, port, bytes, sizeof (bytes));
@@ -383,7 +383,7 @@ ftp_lprt (struct rbuf *rbuf, int *local_sock)
 
   /* Get the address of this side of the connection. */
   if (!socket_ip_address (RBUF_FD (rbuf), &addr, ENDPOINT_LOCAL))
-    return BINDERR;
+    return FTPSYSERR;
 
   assert (addr.type == IPV4_ADDRESS || addr.type == IPV6_ADDRESS);
 
@@ -391,9 +391,9 @@ ftp_lprt (struct rbuf *rbuf, int *local_sock)
   port = 0;
 
   /* Bind the port.  */
-  err = bindport (&addr, &port, local_sock);
-  if (err != BINDOK)
-    return err;
+  *local_sock = bind_local (&addr, &port);
+  if (*local_sock < 0)
+    return FTPSYSERR;
 
   /* Construct the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
   ip_address_to_lprt_repr (&addr, port, bytes, sizeof (bytes));
@@ -467,7 +467,7 @@ ftp_eprt (struct rbuf *rbuf, int *local_sock)
 
   /* Get the address of this side of the connection. */
   if (!socket_ip_address (RBUF_FD (rbuf), &addr, ENDPOINT_LOCAL))
-    return BINDERR;
+    return FTPSYSERR;
 
   assert (addr.type == IPV4_ADDRESS || addr.type == IPV6_ADDRESS);
 
@@ -475,9 +475,9 @@ ftp_eprt (struct rbuf *rbuf, int *local_sock)
   port = 0;
 
   /* Bind the port.  */
-  err = bindport (&addr, &port, local_sock);
-  if (err != BINDOK)
-    return err;
+  *local_sock = bind_local (&addr, &port);
+  if (*local_sock < 0)
+    return FTPSYSERR;
 
   /* Construct the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
   ip_address_to_eprt_repr (&addr, port, bytes, sizeof (bytes));

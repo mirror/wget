@@ -705,8 +705,8 @@ Error in server response, closing control connection.\n"));
       if (!pasv_mode_open)   /* Try to use a port command if PASV failed */
 	{
 	  err = ftp_do_port (&con->rbuf, &local_sock);
-	  /* FTPRERR, WRITEFAILED, bindport (CONSOCKERR, CONPORTERR, BINDERR,
-	     LISTENERR), HOSTERR, FTPPORTERR */
+	  /* FTPRERR, WRITEFAILED, bindport (FTPSYSERR), HOSTERR,
+	     FTPPORTERR */
 	  switch (err)
 	    {
 	    case FTPRERR:
@@ -738,13 +738,11 @@ Error in server response, closing control connection.\n"));
 	      rbuf_uninitialize (&con->rbuf);
 	      return err;
 	      break;
-	    case CONPORTERR: case BINDERR: case LISTENERR:
-	      /* What now?  These problems are local...  */
+	    case FTPSYSERR:
 	      logputs (LOG_VERBOSE, "\n");
 	      logprintf (LOG_NOTQUIET, _("Bind error (%s).\n"),
 			 strerror (errno));
 	      xclose (dtsock);
-	      xclose (local_sock);
 	      return err;
 	      break;
 	    case FTPPORTERR:
@@ -963,10 +961,10 @@ Error in server response, closing control connection.\n"));
   if (!pasv_mode_open)  /* we are not using pasive mode so we need
 			      to accept */
     {
-      /* Open the data transmission socket by calling acceptport().  */
-      err = acceptport (local_sock, &dtsock);
-      /* Possible errors: ACCEPTERR.  */
-      if (err == ACCEPTERR)
+      /* Wait for the server to connect to the address we're waiting
+	 at.  */
+      dtsock = accept_connection (local_sock);
+      if (dtsock < 0)
 	{
 	  logprintf (LOG_NOTQUIET, "accept: %s\n", strerror (errno));
 	  return err;
@@ -1261,8 +1259,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	  return err;
 	  break;
 	case CONSOCKERR: case CONERROR: case FTPSRVERR: case FTPRERR:
-	case WRITEFAILED: case FTPUNKNOWNTYPE: case CONPORTERR:
-	case BINDERR: case LISTENERR: case ACCEPTERR:
+	case WRITEFAILED: case FTPUNKNOWNTYPE: case FTPSYSERR:
 	case FTPPORTERR: case FTPLOGREFUSED: case FTPINVPASV:
 	  printwhat (count, opt.ntry);
 	  /* non-fatal errors */

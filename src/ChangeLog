@@ -1,5 +1,12 @@
 2003-11-13  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* connect.c (bind_local): Renamed bindport to bind_local; return
+	the socket directly.  Updated callers.
+	(accept_connection): Renamed acceptport to accept_connection;
+	return the created socket directly.  Updated callers.
+
+2003-11-13  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c (defaults): Turn on opt.ipv4_only if we're compiling with
 	IPv6, and AI_ADDRINFO is not available, and AF_INET6 sockets can't
 	be created.

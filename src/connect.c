@@ -404,12 +404,21 @@ test_socket_open (int sock)
 #endif
 }
 
-/* Create a socket and bind it to PORT locally.  Calling accept() on
-   such a socket waits for and accepts incoming TCP connections.  The
-   resulting socket is stored to LOCAL_SOCK.  */
+/* Create a socket, bind it to local interface BIND_ADDRESS on port
+   *PORT, set up a listen backlog, and return the resulting socket, or
+   -1 in case of error.
 
-uerr_t
-bindport (const ip_address *bind_address, int *port, int *local_sock)
+   BIND_ADDRESS is the address of the interface to bind to.  If it is
+   NULL, the socket is bound to the default address.  PORT should
+   point to the port number that will be used for the binding.  If
+   that number is 0, the system will choose a suitable port, and the
+   chosen value will be written to *PORT.
+
+   Calling accept() on such a socket waits for and accepts incoming
+   TCP connections.  */
+
+int
+bind_local (const ip_address *bind_address, int *port)
 {
   int sock;
   int family = AF_INET;
@@ -426,8 +435,9 @@ bindport (const ip_address *bind_address, int *port, int *local_sock)
     family = AF_INET6;
 #endif
 
-  if ((sock = socket (family, SOCK_STREAM, 0)) < 0)
-    return CONSOCKERR;
+  sock = socket (family, SOCK_STREAM, 0);
+  if (sock < 0)
+    return -1;
 
 #ifdef SO_REUSEADDR
   setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, setopt_ptr, setopt_size);
@@ -445,16 +455,22 @@ bindport (const ip_address *bind_address, int *port, int *local_sock)
   if (bind (sock, sa, sockaddr_size (sa)) < 0)
     {
       xclose (sock);
-      return BINDERR;
+      return -1;
     }
   DEBUGP (("Local socket fd %d bound.\n", sock));
-  if (!*port)
+
+  /* If *PORT is 0, find out which port we've bound to.  */
+  if (*port == 0)
     {
       socklen_t sa_len = sockaddr_size (sa);
       if (getsockname (sock, sa, &sa_len) < 0)
 	{
+	  /* If we can't find out the socket's local address ("name"),
+	     something is seriously wrong with the socket, and it's
+	     unusable for us anyway because we must know the chosen
+	     port.  */
 	  xclose (sock);
-	  return CONPORTERR;
+	  return -1;
 	}
       sockaddr_get_data (sa, NULL, port);
       DEBUGP (("binding to address %s using port %i.\n", 
@@ -463,10 +479,9 @@ bindport (const ip_address *bind_address, int *port, int *local_sock)
   if (listen (sock, 1) < 0)
     {
       xclose (sock);
-      return LISTENERR;
+      return -1;
     }
-  *local_sock = sock;
-  return BINDOK;
+  return sock;
 }
 
 #ifdef HAVE_SELECT
@@ -504,27 +519,40 @@ select_fd (int fd, double maxtime, int wait_for)
 }
 #endif /* HAVE_SELECT */
 
-/* Accept a connection on LOCAL_SOCK, and store the new socket to
-   *SOCK.  It blocks the caller until a connection is established.  If
-   no connection is established for opt.connect_timeout seconds, the
+/* Like a call to accept(), but with the added check for timeout.
+
+   In other words, accept a client connection on LOCAL_SOCK, and
+   return the new socket used for communication with the client.
+   LOCAL_SOCK should have been bound, e.g. using bind_local().
+
+   The caller is blocked until a connection is established.  If no
+   connection is established for opt.connect_timeout seconds, the
    function exits with an error status.  */
 
-uerr_t
-acceptport (int local_sock, int *sock)
+int
+accept_connection (int local_sock)
 {
+  int sock;
+
+  /* We don't need the values provided by accept, but accept
+     apparently requires them to be present.  */
   struct sockaddr_storage ss;
   struct sockaddr *sa = (struct sockaddr *)&ss;
   socklen_t addrlen = sizeof (ss);
 
 #ifdef HAVE_SELECT
   if (opt.connect_timeout)
-    if (select_fd (local_sock, opt.connect_timeout, WAIT_FOR_READ) <= 0)
-      return ACCEPTERR;
+    {
+      int test = select_fd (local_sock, opt.connect_timeout, WAIT_FOR_READ);
+      if (test == 0)
+	errno = ETIMEDOUT;
+      if (test <= 0)
+	return -1;
+    }
 #endif
-  if ((*sock = accept (local_sock, sa, &addrlen)) < 0)
-    return ACCEPTERR;
-  DEBUGP (("Created socket fd %d.\n", *sock));
-  return ACCEPTOK;
+  sock = accept (local_sock, sa, &addrlen);
+  DEBUGP (("Accepted client at socket %d.\n", sock));
+  return sock;
 }
 
 /* Get the IP address associated with the connection on FD and store
