@@ -1,3 +1,27 @@
+2000-03-10  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* html.c (idmatch): Implemented checking of my new --follow-tags
+	and --ignore-tags options.
+	
+	* init.c (commands): Added comment reminding people adding new
+	entries doing allocation to add corresponding freeing in cleanup().
+	(commands): Added new followtags and ignoretags commands.
+	(cleanup): Free storage for new followtags and ignoretags.
+	
+	* main.c: Use of "comma-separated list" was random -- normalized
+	it.  Did some alphabetization.  Added comments pointing out
+	"Options without arguments" and "Options accepting an argument"
+	sections of long_options[].  Added new options --follow-tags and
+	-G / --ignore-tags.  Added comment that Damir's --referer is
+	currently undocumented.  Added comment that Heiko's --waitretry is
+	partially undocumented (mentioned in --help but not in
+	wget.texi).  Moved improperly sorted 24, 129, and 'G' cases.
+	
+	* options.h (struct options): Added new fields follow_tags and
+	ignore_tags. 
+	
+	* wget.h: Added "#define EQ 0" so we can say "strcmp(a, b) == EQ".
+	
 2000-03-02  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* ftp.c (ftp_loop_internal): Heiko introduced "suggest explicit

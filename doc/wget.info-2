@@ -24,6 +24,32 @@ resulting derived work is distributed under the terms of a permission
 notice identical to this one.
 
 
+File: wget.info,  Node: Startup File,  Next: Examples,  Prev: Time-Stamping,  Up: Top
+
+Startup File
+************
+
+   Once you know how to change default settings of Wget through command
+line arguments, you may wish to make some of those settings permanent.
+You can do that in a convenient way by creating the Wget startup
+file--`.wgetrc'.
+
+   Besides `.wgetrc' is the "main" initialization file, it is
+convenient to have a special facility for storing passwords.  Thus Wget
+reads and interprets the contents of `$HOME/.netrc', if it finds it.
+You can find `.netrc' format in your system manuals.
+
+   Wget reads `.wgetrc' upon startup, recognizing a limited set of
+commands.
+
+* Menu:
+
+* Wgetrc Location::   Location of various wgetrc files.
+* Wgetrc Syntax::     Syntax of wgetrc.
+* Wgetrc Commands::   List of available commands.
+* Sample Wgetrc::     A wgetrc example.
+
+
 File: wget.info,  Node: Wgetrc Location,  Next: Wgetrc Syntax,  Prev: Startup File,  Up: Startup File
 
 Wgetrc Location
@@ -158,6 +184,10 @@ exclude_domains = STRING
 follow_ftp = on/off
      Follow FTP links from HTML documents, the same as `-f'.
 
+follow_tags = STRING
+     Only follow certain HTML tags when doing a recursive retrieval,
+     just like `--follow-tags'.
+
 force_html = on/off
      If set to on, force the input filename to be regarded as an HTML
      document, the same as `-F'.
@@ -185,6 +215,10 @@ http_user = STRING
 ignore_length = on/off
      When set to on, ignore `Content-Length' header; the same as
      `--ignore-length'.
+
+ignore_tags = STRING
+     Ignore certain HTML tags when doing a recursive retrieval, just
+     like `-G' / `--ignore-tags'.
 
 include_directories = STRING
      Specify a comma-separated list of directories you wish to follow

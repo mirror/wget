@@ -1,3 +1,13 @@
+2000-03-10  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* TODO: Removed done item: we now have an option (-G) that makes
+ 	it easy to download a single HTML document and all its constituents.
+	
+	* po/*.{gmo,po,pot}: Regenerated after adding new options.
+
+	* po/hr.po: Hrvoje forgot '\n's on his translations of my altered
+	messages, causing msgfmt to balk and `make install' to fail.
+
 2000-03-01  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* NEWS (-K): Now possible to use -N with -k thanks to this option.

@@ -71,10 +71,11 @@ CMD_DECLARE (cmd_spec_outputdocument);
 CMD_DECLARE (cmd_spec_recursive);
 CMD_DECLARE (cmd_spec_useragent);
 
-/* List of recognized commands, each consisting of name, closure and
-   function.  When adding a new command, simply add it to the list,
-   but be sure to keep the list sorted alphabetically, as comind()
-   depends on it.  */
+/* List of recognized commands, each consisting of name, closure and function.
+   When adding a new command, simply add it to the list, but be sure to keep the
+   list sorted alphabetically, as comind() depends on it.  Also, be sure to add
+   any entries that allocate memory (e.g. cmd_string and cmd_vector guys) to the
+   cleanup() function below. */
 static struct {
   char *name;
   void *closure;
@@ -105,6 +106,7 @@ static struct {
   { "excludedirectories", &opt.excludes,	cmd_directory_vector },
   { "excludedomains",	&opt.exclude_domains,	cmd_vector },
   { "followftp",	&opt.follow_ftp,	cmd_boolean },
+  { "followtags",	&opt.follow_tags,	cmd_vector },
   { "forcehtml",	&opt.force_html,	cmd_boolean },
   { "ftpproxy",		&opt.ftp_proxy,		cmd_string },
   { "glob",		&opt.ftp_glob,		cmd_boolean },
@@ -114,6 +116,7 @@ static struct {
   { "httpproxy",	&opt.http_proxy,	cmd_string },
   { "httpuser",		&opt.http_user,		cmd_string },
   { "ignorelength",	&opt.ignore_length,	cmd_boolean },
+  { "ignoretags",	&opt.ignore_tags,	cmd_vector },
   { "includedirectories", &opt.includes,	cmd_directory_vector },
   { "input",		&opt.input_filename,	cmd_string },
   { "killlonger",	&opt.kill_longer,	cmd_boolean },
@@ -124,7 +127,7 @@ static struct {
   { "noclobber",	&opt.noclobber,		cmd_boolean },
   { "noparent",		&opt.no_parent,		cmd_boolean },
   { "noproxy",		&opt.no_proxy,		cmd_vector },
-  { "numtries",		&opt.ntry,		cmd_number_inf }, /* deprecated */
+  { "numtries",		&opt.ntry,		cmd_number_inf },/* deprecated*/
   { "outputdocument",	NULL,			cmd_spec_outputdocument },
   { "passiveftp",	&opt.ftp_pasv,		cmd_boolean },
   { "passwd",		&opt.ftp_pass,		cmd_string },
@@ -919,6 +922,8 @@ cleanup (void)
   free_vec (opt.excludes);
   free_vec (opt.includes);
   free_vec (opt.domains);
+  free_vec (opt.follow_tags);
+  free_vec (opt.ignore_tags);
   free (opt.ftp_acc);
   free (opt.ftp_pass);
   FREE_MAYBE (opt.ftp_proxy);

@@ -822,7 +822,7 @@ The @samp{-r} option is to retrieve recursively, and @samp{-nd} not to
 create directories.
 
 @cindex conversion of links
-@cindex links conversion
+@cindex link conversion
 @item -k
 @itemx --convert-links
 Convert the non-relative links to relative ones locally.  Only the
@@ -836,7 +836,9 @@ will be performed at the end of the downloads.
 @cindex backing up converted files
 @item -K
 @itemx --backup-converted
-When converting a file, back up the original version with a @samp{.orig} suffix.
+When converting a file, back up the original version with a @samp{.orig}
+suffix.  Affects the behavior of @samp{-N} (@xref{HTTP Time-Stamping
+Internals}).
 
 @item -m
 @itemx --mirror
@@ -874,21 +876,41 @@ only one host is spanned (@xref{Domain Acceptance}).
 Exclude the domains given in a comma-separated @var{domain-list} from
 @sc{dns}-lookup (@xref{Domain Acceptance}).
 
-@item -L
-@itemx --relative
-Follow relative links only.  Useful for retrieving a specific home page
-without any distractions, not even those from the same hosts
-(@xref{Relative Links}).
-
 @cindex follow FTP links
 @item --follow-ftp
 Follow @sc{ftp} links from @sc{html} documents.  Without this option,
 Wget will ignore all the @sc{ftp} links.
 
+@cindex tag-based recursive pruning
+@item --follow-tags=@var{list}
+Wget has an internal table of HTML tag / attribute pairs that it
+considers when looking for linked documents during a recursive
+retrieval.  If a user wants only a subset of those tags to be
+considered, however, he or she should be specify such tags in a
+comma-separated @var{list} with this option.
+
+@item -G @var{list}
+@itemx --ignore-tags=@var{list}
+This is the opposite of the @samp{--follow-tags} option.  To skip
+certain HTML tags when recursively looking for documents to download,
+specify them in a comma-separated @var{list}.  The author of this option
+likes to use the following command to download a single HTML page and
+all documents necessary to display it properly:
+
+@example
+wget -Ga,area -H -k -K -nh -r http://@var{site}/@var{document}
+@end example
+
 @item -H
 @itemx --span-hosts
 Enable spanning across hosts when doing recursive retrieving (@xref{All
 Hosts}).
+
+@item -L
+@itemx --relative
+Follow relative links only.  Useful for retrieving a specific home page
+without any distractions, not even those from the same hosts
+(@xref{Relative Links}).
 
 @item -I @var{list}
 @itemx --include-directories=@var{list}
@@ -973,7 +995,7 @@ precautions not to wreak havoc through carelessness.
 @cindex links
 @cindex following links
 
-When retrieving recursively, one does not wish to retrieve the loads of
+When retrieving recursively, one does not wish to retrieve loads of
 unnecessary data.  Most of the time the users bear in mind exactly what
 they want to download, and want Wget to follow only specific links.
 
@@ -1585,6 +1607,10 @@ Same as @samp{--exclude-domains} (@xref{Domain Acceptance}).
 @item follow_ftp = on/off
 Follow @sc{ftp} links from @sc{html} documents, the same as @samp{-f}.
 
+@item follow_tags = @var{string}
+Only follow certain HTML tags when doing a recursive retrieval, just like
+@samp{--follow-tags}. 
+
 @item force_html = on/off
 If set to on, force the input filename to be regarded as an @sc{html}
 document, the same as @samp{-F}.
@@ -1612,6 +1638,10 @@ Set @sc{http} user to @var{string}.
 @item ignore_length = on/off
 When set to on, ignore @code{Content-Length} header; the same as
 @samp{--ignore-length}.
+
+@item ignore_tags = @var{string}
+Ignore certain HTML tags when doing a recursive retrieval, just like
+@samp{-G} / @samp{--ignore-tags}. 
 
 @item include_directories = @var{string}
 Specify a comma-separated list of directories you wish to follow when

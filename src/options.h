@@ -64,6 +64,9 @@ struct options
   char **domains;		/* See host.c */
   char **exclude_domains;
 
+  char **follow_tags;           /* List of HTML tags to recursively follow. */
+  char **ignore_tags;           /* List of HTML tags to ignore if recursing. */
+
   int follow_ftp;		/* Are FTP URL-s followed in recursive
 				   retrieving? */
   int retr_symlinks;		/* Whether we retrieve symlinks in

@@ -449,8 +449,8 @@ Concept Index
 * input-file:                            Logging and Input File Options.
 * invoking:                              Invoking.
 * latest version:                        Distribution.
+* link conversion:                       Recursive Retrieval Options.
 * links:                                 Following Links.
-* links conversion:                      Recursive Retrieval Options.
 * list:                                  Mailing List.
 * location of wgetrc:                    Wgetrc Location.
 * log file:                              Logging and Input File Options.
@@ -474,8 +474,8 @@ Concept Index
 * pause:                                 Download Options.
 * portability:                           Portability.
 * proxies:                               Proxies.
-* proxy <1>:                             HTTP Options.
-* proxy:                                 Download Options.
+* proxy <1>:                             Download Options.
+* proxy:                                 HTTP Options.
 * proxy authentication:                  HTTP Options.
 * proxy filling:                         Recursive Retrieval Options.
 * proxy password:                        HTTP Options.
@@ -510,6 +510,7 @@ Concept Index
 * suffixes, reject:                      Types of Files.
 * syntax of options:                     Option Syntax.
 * syntax of wgetrc:                      Wgetrc Syntax.
+* tag-based recursive pruning:           Recursive Accept/Reject Options.
 * time-stamping:                         Time-Stamping.
 * time-stamping usage:                   Time-Stamping Usage.
 * timeout:                               Download Options.

@@ -206,4 +206,8 @@ typedef unsigned char  boolean;
 #define TRUE  1
 #endif
 
+/* So we can say strcmp(a, b) == EQ rather than strcmp(a, b) == 0 or
+   the really awful !strcmp(a, b). */
+#define EQ 0
+
 #endif /* WGET_H */

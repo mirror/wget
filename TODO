@@ -22,9 +22,6 @@ particular order.  Not all of them are user-visible changes.
 
 * Add case-insensitivity as an option.
 
-* Add option to download all files needed to display a web page
-  (images, etc.)
-
 * Handle MIME types correctly.  There should be an option to (not)
   retrieve files based on MIME types, e.g. `--accept-types=image/*'.
 

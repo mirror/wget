@@ -179,13 +179,15 @@ Recursive retrieval:\n\
   -nr, --dont-remove-listing   don\'t remove `.listing\' files.\n\
 \n"), _("\
 Recursive accept/reject:\n\
-  -A,  --accept=LIST                list of accepted extensions.\n\
-  -R,  --reject=LIST                list of rejected extensions.\n\
-  -D,  --domains=LIST               list of accepted domains.\n\
+  -A,  --accept=LIST                comma-separated list of accepted extensions.\n\
+  -R,  --reject=LIST                comma-separated list of rejected extensions.\n\
+  -D,  --domains=LIST               comma-separated list of accepted domains.\n\
        --exclude-domains=LIST       comma-separated list of rejected domains.\n\
-  -L,  --relative                   follow relative links only.\n\
        --follow-ftp                 follow FTP links from HTML documents.\n\
+       --follow-tags=LIST           comma-separated list of followed HTML tags.\n\
+  -G,  --ignore-tags=LIST           comma-separated list of ignored HTML tags.\n\
   -H,  --span-hosts                 go to foreign hosts when recursive.\n\
+  -L,  --relative                   follow relative links only.\n\
   -I,  --include-directories=LIST   list of allowed directories.\n\
   -X,  --exclude-directories=LIST   list of excluded directories.\n\
   -nh, --no-host-lookup             don\'t DNS-lookup hosts.\n\
@@ -202,6 +204,7 @@ main (int argc, char *const *argv)
 
   static struct option long_options[] =
   {
+    /* Options without arguments: */
     { "background", no_argument, NULL, 'b' },
     { "continue", no_argument, NULL, 'c' },
     { "convert-links", no_argument, NULL, 'k' },
@@ -235,6 +238,7 @@ main (int argc, char *const *argv)
     { "verbose", no_argument, NULL, 'v' },
     { "version", no_argument, NULL, 'V' },
 
+    /* Options accepting an argument: */
     { "accept", required_argument, NULL, 'A' },
     { "append-output", required_argument, NULL, 'a' },
     { "backups", required_argument, NULL, 23 }, /* undocumented */
@@ -248,11 +252,13 @@ main (int argc, char *const *argv)
     { "execute", required_argument, NULL, 'e' },
     { "exclude-directories", required_argument, NULL, 'X' },
     { "exclude-domains", required_argument, NULL, 12 },
+    { "follow-tags", required_argument, NULL, 25 },
     { "glob", required_argument, NULL, 'g' },
     { "header", required_argument, NULL, 3 },
     { "htmlify", required_argument, NULL, 7 },
     { "http-passwd", required_argument, NULL, 2 },
     { "http-user", required_argument, NULL, 1 },
+    { "ignore-tags", required_argument, NULL, 'G' },
     { "include-directories", required_argument, NULL, 'I' },
     { "input-file", required_argument, NULL, 'i' },
     { "level", required_argument, NULL, 'l' },
@@ -267,10 +273,10 @@ main (int argc, char *const *argv)
     { "timeout", required_argument, NULL, 'T' },
     { "tries", required_argument, NULL, 't' },
     { "user-agent", required_argument, NULL, 'U' },
-    { "referer", required_argument, NULL, 129 },
+    { "referer", required_argument, NULL, 129 }, /* undocumented */
     { "use-proxy", required_argument, NULL, 'Y' },
     { "wait", required_argument, NULL, 'w' },
-    { "waitretry", required_argument, NULL, 24 },
+    { "waitretry", required_argument, NULL, 24 }, /* partially undocumented */
     { 0, 0, 0, 0 }
   };
 
@@ -292,7 +298,7 @@ main (int argc, char *const *argv)
   initialize ();
 
   while ((c = getopt_long (argc, argv, "\
-hVqvdkKsxmNWrHSLcFbEY:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
+hVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
 			   long_options, (int *)0)) != EOF)
     {
       switch (c)
@@ -372,11 +378,11 @@ hVqvdkKsxmNWrHSLcFbEY:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
 #endif
 	  exit (0);
 	  break;
-	case 'k':
-	  setval ("convertlinks", "on");
-	  break;
 	case 'K':
 	  setval ("backupconverted", "on");
+	  break;
+	case 'k':
+	  setval ("convertlinks", "on");
 	  break;
 	case 'L':
 	  setval ("relativeonly", "on");
@@ -445,6 +451,16 @@ GNU General Public License for more details.\n"));
 	case 23:
 	  setval ("backups", optarg);
 	  break;
+	case 24:
+	  setval ("waitretry", optarg);
+	  wr = 1;
+	  break;
+	case 25:
+	  setval ("followtags", optarg);
+	  break;
+	case 129:
+	  setval ("referer", optarg);
+	  break;
 	case 'A':
 	  setval ("accept", optarg);
 	  break;
@@ -478,6 +494,9 @@ GNU General Public License for more details.\n"));
 	    free (com);
 	    free (val);
 	  }
+	  break;
+	case 'G':
+	  setval ("ignoretags", optarg);
 	  break;
 	case 'g':
 	  setval ("glob", optarg);
@@ -553,15 +572,8 @@ GNU General Public License for more details.\n"));
 	case 'U':
 	  setval ("useragent", optarg);
 	  break;
-	case 129:
-	  setval ("referer", optarg);
-	  break;
 	case 'w':
 	  setval ("wait", optarg);
-	  break;
-	case 24:
-	  setval ("waitretry", optarg);
-	  wr = 1;
 	  break;
 	case 'X':
 	  setval ("excludedirectories", optarg);

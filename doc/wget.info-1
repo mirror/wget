@@ -692,8 +692,9 @@ Recursive Retrieval Options
 
 `-K'
 `--backup-converted'
-     When converting a file, back up the original version with a
-     `.orig' suffix.
+     When converting a file, back up the original version with a `.orig'
+     suffix.  Affects the behavior of `-N' (*Note HTTP Time-Stamping
+     Internals::).
 
 `-m'
 `--mirror'
@@ -732,20 +733,38 @@ Recursive Accept/Reject Options
      Exclude the domains given in a comma-separated DOMAIN-LIST from
      DNS-lookup (*Note Domain Acceptance::).
 
-`-L'
-`--relative'
-     Follow relative links only.  Useful for retrieving a specific home
-     page without any distractions, not even those from the same hosts
-     (*Note Relative Links::).
-
 `--follow-ftp'
      Follow FTP links from HTML documents.  Without this option, Wget
      will ignore all the FTP links.
+
+`--follow-tags=LIST'
+     Wget has an internal table of HTML tag / attribute pairs that it
+     considers when looking for linked documents during a recursive
+     retrieval.  If a user wants only a subset of those tags to be
+     considered, however, he or she should be specify such tags in a
+     comma-separated LIST with this option.
+
+`-G LIST'
+`--ignore-tags=LIST'
+     This is the opposite of the `--follow-tags' option.  To skip
+     certain HTML tags when recursively looking for documents to
+     download, specify them in a comma-separated LIST.  The author of
+     this option likes to use the following command to download a
+     single HTML page and all documents necessary to display it
+     properly:
+
+          wget -Ga,area -H -k -K -nh -r http://SITE/DOCUMENT
 
 `-H'
 `--span-hosts'
      Enable spanning across hosts when doing recursive retrieving
      (*Note All Hosts::).
+
+`-L'
+`--relative'
+     Follow relative links only.  Useful for retrieving a specific home
+     page without any distractions, not even those from the same hosts
+     (*Note Relative Links::).
 
 `-I LIST'
 `--include-directories=LIST'
@@ -829,9 +848,9 @@ File: wget.info,  Node: Following Links,  Next: Time-Stamping,  Prev: Recursive 
 Following Links
 ***************
 
-   When retrieving recursively, one does not wish to retrieve the loads
-of unnecessary data.  Most of the time the users bear in mind exactly
-what they want to download, and want Wget to follow only specific links.
+   When retrieving recursively, one does not wish to retrieve loads of
+unnecessary data.  Most of the time the users bear in mind exactly what
+they want to download, and want Wget to follow only specific links.
 
    For example, if you wish to download the music archive from
 `fly.cc.fer.hr', you will not want to download all the home pages that
@@ -1242,30 +1261,4 @@ only hope that a future standard will define this.
 that is supported by some FTP servers (including the popular
 `wu-ftpd'), which returns the exact time of the specified file.  Wget
 may support this command in the future.
-
-
-File: wget.info,  Node: Startup File,  Next: Examples,  Prev: Time-Stamping,  Up: Top
-
-Startup File
-************
-
-   Once you know how to change default settings of Wget through command
-line arguments, you may wish to make some of those settings permanent.
-You can do that in a convenient way by creating the Wget startup
-file--`.wgetrc'.
-
-   Besides `.wgetrc' is the "main" initialization file, it is
-convenient to have a special facility for storing passwords.  Thus Wget
-reads and interprets the contents of `$HOME/.netrc', if it finds it.
-You can find `.netrc' format in your system manuals.
-
-   Wget reads `.wgetrc' upon startup, recognizing a limited set of
-commands.
-
-* Menu:
-
-* Wgetrc Location::   Location of various wgetrc files.
-* Wgetrc Syntax::     Syntax of wgetrc.
-* Wgetrc Commands::   List of available commands.
-* Sample Wgetrc::     A wgetrc example.
 

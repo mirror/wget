@@ -52,16 +52,45 @@ struct tag_attr {
 static int
 idmatch (struct tag_attr *tags, const char *tag, const char *attr)
 {
-  int i;
-
-  if (!tag || !attr)
-    return 0;
-
+  int  i, j;
+  
+  if (tag == NULL || attr == NULL)
+    return FALSE;
+  
   for (i = 0; tags[i].tag; i++)
+    /* Loop through all the tags wget ever cares about. */
     if (!strcasecmp (tags[i].tag, tag) && !strcasecmp (tags[i].attr, attr))
-      return 1;
-  return 0;
+      /* The tag and attribute matched one of the ones wget cares about. */
+      {
+	if (opt.ignore_tags)
+	  /* --ignore-tags was specified.  Do not match these specific tags.
+	     --ignore-tags takes precedence over --follow-tags, so we process
+	     --ignore first and fall through if there's no match. */
+	  for (j = 0; opt.ignore_tags[j] != NULL; j++)
+	    /* Loop through all the tags this user doesn't care about. */
+	    if (strcasecmp(opt.ignore_tags[j], tag) == EQ)
+	      return FALSE;
+	
+	if (opt.follow_tags)
+	  /* --follow-tags was specified.  Only match these specific tags, so
+	     return FALSE if we don't match one of them. */
+	  {
+	    for (j = 0; opt.follow_tags[j] != NULL; j++)
+	      /* Loop through all the tags this user cares about. */
+	      if (strcasecmp(opt.follow_tags[j], tag) == EQ)
+		return TRUE;
+	    
+	    return FALSE;  /* wasn't one of the explicitly desired tags */
+	  }
+	
+	/* If we get to here, --follow-tags isn't being used, and --ignore-tags,
+	   if specified, didn't include this tag, so it's okay to follow. */
+	return TRUE;
+      }
+
+  return FALSE;  /* not one of the tag/attribute pairs wget ever cares about */
 }
+
 
 /* Parse BUF (a buffer of BUFSIZE characters) searching for HTML tags
    describing URLs to follow.  When a tag is encountered, extract its
