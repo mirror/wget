@@ -84,12 +84,6 @@ dnl
 AC_PROG_INSTALL
 
 dnl
-dnl Configure our included libtool and make sure it's regenerated when needed
-dnl
-AM_PROG_LIBTOOL
-AC_SUBST(LIBTOOL_DEPS)
-
-dnl
 dnl Find the compiler
 dnl
 
@@ -120,6 +114,12 @@ dnl
 dnl Handle AIX
 dnl
 AC_AIX
+
+dnl
+dnl Configure our included libtool and make sure it's regenerated when needed
+dnl
+AC_PROG_LIBTOOL
+AC_SUBST(LIBTOOL_DEPS)
 
 dnl
 dnl In case of {cyg,gnu}win32.  Should be a _target_ test.

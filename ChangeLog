@@ -1,3 +1,17 @@
+2001-06-15  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* config.sub: New version from libtool 1.4.
+
+	* config.guess: New version from libtool 1.4.
+
+	* ltmain.sh: New version from libtool 1.4.
+
+	* aclocal.m4: Imported `libtool.m4' from libtool 1.4.
+
+	* ltconfig: Removed.
+
+	* configure.in: First check the compiler, then invoke libtool.
+
 2001-06-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* po/: Install new files from the TP: sv.po, cs.po, et.po, tr.po,
