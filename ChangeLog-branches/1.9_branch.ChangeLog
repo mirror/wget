@@ -1,3 +1,56 @@
+2003-11-12  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Use a more standard checking message when checking
+	for md5.h.
+
+2003-11-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* aclocal.m4 (WGET_FNMATCH): Check whether fnmatch.h is
+	includable.
+
+2003-11-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* README: Remove explicit version reference, so that the file
+	doesn't have to be updated for each new release.
+
+2003-11-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* windows/config.h.ms: MSVC doesn't have uint32_t.
+
+2003-11-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Also check whether #include <md5.h> works before
+	deciding to use Solaris libmd5.
+
+2003-03-09  Nicolas Schodet  <contact@ni.fr.eu.org>
+
+	* Makefile.in: Fixed bad configure.bat scrdir.
+
+2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Switch from u_int32_t to uint32_t.  Check for
+	inttypes.h so it's used to get the definition of uint32_t where
+	available.
+
+2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* windows/Makefile.src.watcom (OBJS): Use convert.c.
+	From Chin-yuan Kuo.
+
+2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* windows/config.h.bor: DEBUG is now ENABLE_DEBUG.  Borland has
+	snprintf, but not u_int32_t.
+
+	* windows/Makefile.src.bor (OBJS): Use convert.c.
+
+	From Chin-yuan Kuo.
+
+2003-10-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.in (dist): Depend on configure.bat.
+	(realclean-top): Delete configure.bat.
+
 2003-10-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* Makefile.in (distclean-top): Remove the libtool script, because

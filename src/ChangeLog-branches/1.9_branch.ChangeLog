@@ -1,3 +1,67 @@
+2003-10-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* version.c: Wget 1.9.1 is released.
+
+2003-11-08  Gisle Vanem  <giva@bgnett.no>
+
+	* ftp-basic.c: Support Windows-2000 ftp servers. Win-2000 *is*
+	Win-NT 5.0 so calling it ST_WINNT is okay I guess.
+
+2003-11-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* sysdep.h: Define SYSTEM_FNMATCH only if HAVE_FNMATCH_H is true.
+
+2003-11-01  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c (acceptport): Don't call select_fd when timeout is not
+	requested.
+
+2003-10-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* sysdep.h: Use `S >= 8' rather than `S == 8' when looking for
+	large integers.
+
+2003-10-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (append_uri_pathel): New argument ESCAPED_P that says
+	whether [B, E) is to be treated as URL-escaped or not.  If
+	ESCAPED_P is false, don't unescape the region.
+	(url_file_name): u->file is not URL-escaped.
+
+2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* sysdep.h: Include inttypes.h where available.
+
+	* host.c: Switch from u_int32_t to uint32_t.
+
+2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* netrc.c (parse_netrc): Reset the QUOTE flag after the closing
+	quote.
+
+2003-10-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* config.h.in: Deploy preprocessor magic to avoid Ultrix's
+	<netdb.h> include <bitypes.h> which defines its own u_int32_t.
+	Reported by Bernhard Simon.
+
+2003-10-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c: Ditto.
+
+	* html-parse.c (advance_declaration): Don't use trailing comma in
+	enum because older compilers don't support it.
+
+	* utils.c: Don't redefine HAVE_SIGSETJMP.
+
+2003-10-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* version.c: Bump the version ID.
+
+2003-10-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* version.c: Wget 1.9 is released.
+
 2003-10-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c: Consider status 307 a valid redirect.
