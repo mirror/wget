@@ -191,7 +191,7 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 			    ? MIN (expected - *len, dlbufsize) : dlbufsize);
 #ifdef HAVE_SSL
       if (rbuf->ssl!=NULL)
-	res = ssl_iread (rbuf->ssl, dlbufsize, amount_to_read);
+	res = ssl_iread (rbuf->ssl, dlbuf, amount_to_read);
       else
 #endif /* HAVE_SSL */
 	res = iread (fd, dlbuf, amount_to_read);
