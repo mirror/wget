@@ -508,25 +508,22 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 	}
     }
 
-  /* 6. */
-  {
-    /* Check for acceptance/rejection rules.  We ignore these rules
-       for directories (no file name to match) and for HTML documents,
-       which might lead to other files that do need to be downloaded.
-       That is, unless we've exhausted the recursion depth anyway.  */
-    if (u->file[0] != '\0'
-	&& !(has_html_suffix_p (u->file)
-	     && depth < opt.reclevel - 1
-	     && depth != INFINITE_RECURSION))
-      {
-	if (!acceptable (u->file))
-	  {
-	    DEBUGP (("%s (%s) does not match acc/rej rules.\n",
-		     url, u->file));
-	    goto out;
-	  }
-      }
-  }
+  /* 6. Check for acceptance/rejection rules.  We ignore these rules
+     for directories (no file name to match) and for HTML documents,
+     which might lead to other files that do need to be downloaded.
+     That is, unless we've exhausted the recursion depth anyway.  */
+  if (u->file[0] != '\0'
+      && !(has_html_suffix_p (u->file)
+	   && depth < opt.reclevel - 1
+	   && depth != INFINITE_RECURSION))
+    {
+      if (!acceptable (u->file))
+	{
+	  DEBUGP (("%s (%s) does not match acc/rej rules.\n",
+		   url, u->file));
+	  goto out;
+	}
+    }
 
   /* 7. */
   if (u->scheme == parent->scheme)
