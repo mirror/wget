@@ -854,8 +854,8 @@ accdir (const char *directory, enum accd flags)
    match_backwards ("abc", "bc") -> 1
    match_backwards ("abc", "ab") -> 0
    match_backwards ("abc", "abc") -> 1 */
-static int
-match_backwards (const char *string, const char *pattern)
+int
+match_tail (const char *string, const char *pattern)
 {
   int i, j;
 
@@ -870,7 +870,7 @@ match_backwards (const char *string, const char *pattern)
 }
 
 /* Checks whether string S matches each element of ACCEPTS.  A list
-   element are matched either with fnmatch() or match_backwards(),
+   element are matched either with fnmatch() or match_tail(),
    according to whether the element contains wildcards or not.
 
    If the BACKWARD is 0, don't do backward comparison -- just compare
@@ -891,7 +891,7 @@ in_acclist (const char *const *accepts, const char *s, int backward)
 	{
 	  if (backward)
 	    {
-	      if (match_backwards (s, *accepts))
+	      if (match_tail (s, *accepts))
 		return 1;
 	    }
 	  else

@@ -1,5 +1,10 @@
 2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* cookies.c (check_domain_match): Reimplement to match Netscape's
+	"preliminary specification" for cookies.
+
+2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (replace_attr_refresh_hack): New function.
 	(convert_links): Call replace_attr_refresh_hack for Refresh
 	links.  It will add the "TMOUT; URL=" junk before the link.

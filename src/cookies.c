@@ -670,96 +670,70 @@ numeric_address_p (const char *addr)
 }
 
 /* Check whether COOKIE_DOMAIN is an appropriate domain for HOST.
-   This check is compliant with rfc2109.  */
+   Originally I tried to make the check compliant with rfc2109, but
+   the sites deviated too often, so I had to fall back to "tail
+   matching", as defined by the original Netscape's cookie spec.  */
 
 static int
 check_domain_match (const char *cookie_domain, const char *host)
 {
-  int headlen;
-  const char *tail;
+  static char *special_toplevel_domains[] = {
+    ".com", ".edu", ".net", ".org", ".gov", ".mil", ".int"
+  };
+  int i, required_dots;
 
   DEBUGP (("cdm: 1"));
 
   /* Numeric address requires exact match.  It also requires HOST to
-     be an IP address.  I suppose we *could* resolve HOST with
-     store_hostaddress (it would hit the hash table), but rfc2109
-     doesn't require it, and it doesn't seem very useful, so we
-     don't.  */
+     be an IP address.  */
   if (numeric_address_p (cookie_domain))
-    return !strcmp (cookie_domain, host);
+    return 0 == strcmp (cookie_domain, host);
 
   DEBUGP ((" 2"));
-
-  /* The domain must contain at least one embedded dot. */
-  {
-    const char *rest = cookie_domain;
-    int len = strlen (rest);
-    if (*rest == '.')
-      ++rest, --len;		/* ignore first dot */
-    if (len <= 0)
-      return 0;
-    if (rest[len - 1] == '.')
-      --len;			/* ignore last dot */
-
-    if (!memchr (rest, '.', len))
-      /* No dots. */
-      return 0;
-  }
-
-  DEBUGP ((" 3"));
 
   /* For the sake of efficiency, check for exact match first. */
   if (!strcasecmp (cookie_domain, host))
     return 1;
 
+  DEBUGP ((" 3"));
+
+  required_dots = 3;
+  for (i = 0; i < ARRAY_SIZE (special_toplevel_domains); i++)
+    if (match_tail (cookie_domain, special_toplevel_domains[i]))
+      {
+	required_dots = 2;
+	break;
+      }
+
+  /* If the domain does not start with '.', require one less dot.
+     This is so that domains like "altavista.com" (which should be
+     ".altavista.com") are accepted.  */
+  if (*cookie_domain != '.')
+    --required_dots;
+
+  if (count_char (cookie_domain, '.') < required_dots)
+    return 0;
+
   DEBUGP ((" 4"));
 
-  /* In rfc2109 terminology, HOST needs domain-match COOKIE_DOMAIN.
-     This means that COOKIE_DOMAIN needs to start with `.' and be an
-     FQDN, and that HOST must end with COOKIE_DOMAIN.  */
-  if (*cookie_domain != '.')
+  if (!match_tail (host, cookie_domain))
     return 0;
 
   DEBUGP ((" 5"));
 
-  /* Two proceed, we need to examine two parts of HOST: its head and
-     its tail.  Head and tail are defined in terms of the length of
-     the domain, like this:
-
-       HHHHTTTTTTTTTTTTTTT  <- host
-           DDDDDDDDDDDDDDD  <- domain
-
-     That is, "head" is the part of the host before (dlen - hlen), and
-     "tail" is what follows.
-
-     For the domain to match, two conditions need to be true:
-
-     1. Tail must equal DOMAIN.
-     2. Head must not contain an embedded dot.  */
-
-  headlen = strlen (host) - strlen (cookie_domain);
-
-  if (headlen <= 0)
-    /* DOMAIN must be a proper subset of HOST. */
-    return 0;
-  tail = host + headlen;
+  /* Don't allow domain "bar.com" to match host "foobar.com".  */
+  if (*cookie_domain != '.')
+    {
+      int dlen = strlen (cookie_domain);
+      int hlen = strlen (host);
+      /* hostname.foobar.com                   */
+      /*             bar.com                   */
+      /*            ^ <-- must be '.' for host */
+      if (hlen > dlen && host[hlen - dlen - 1] != '.')
+	return 0;
+    }
 
   DEBUGP ((" 6"));
-
-  /* (1) */
-  if (strcasecmp (tail, cookie_domain))
-    return 0;
-
-  DEBUGP ((" 7"));
-
-  /* Test (2) is not part of the "domain-match" itself, but is
-     recommended by rfc2109 for reasons of privacy.  */
-
-  /* (2) */
-  if (memchr (host, '.', headlen))
-    return 0;
-
-  DEBUGP ((" 8"));
 
   return 1;
 }

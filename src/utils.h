@@ -69,6 +69,7 @@ char *file_merge PARAMS ((const char *, const char *));
 int acceptable PARAMS ((const char *));
 int accdir PARAMS ((const char *s, enum accd));
 char *suffix PARAMS ((const char *s));
+int match_tail PARAMS ((const char *, const char *));
 
 char *read_whole_line PARAMS ((FILE *));
 struct file_memory *read_file PARAMS ((const char *));
