@@ -1,3 +1,9 @@
+2000-02-29  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* wget.texi: Updated version to 1.5.3+dev, updated copyrights to
+	2000, changed Hrvoje's old, invalid email address to his new one,
+	and added " and the developers" to the .texi file's byline.
+
 2000-02-18  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (-K / --backup-converted): Documented this new option.

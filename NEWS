@@ -1,9 +1,14 @@
 GNU Wget NEWS -- history of user-visible changes.
 
-Copyright (C) 1997, 1998 Free Software Foundation, Inc.
+Copyright (C) 1997, 1998, 2000 Free Software Foundation, Inc.
 See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
+
+* Changes in Wget 1.5.3+dev
+
+** New -K / --backup-converted / backup_converted = on option causes files
+modified due to -k to be saved with a .orig prefix before being changed.
 
 * Wget 1.5.3 is a bugfix release with no user-visible changes.
 
@@ -225,7 +230,7 @@ geturl -vo log http://fly.cc.fer.hr/
 ----------------------------------------------------------------------
 Copyright information:
 
-Copyright (C) 1997, 1998 Free Software Foundation, Inc.
+Copyright (C) 1997, 1998, 2000 Free Software Foundation, Inc.
 
    Permission is granted to anyone to make or distribute verbatim
    copies of this document as received, in any medium, provided that

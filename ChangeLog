@@ -1,3 +1,7 @@
+2000-02-29  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* NEWS (-K / --backup-converted): Mentioned this new option.
+
 2000-02-18  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* TODO: When -K is used with -N, check local X.orig against server X.

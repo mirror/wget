@@ -14,8 +14,8 @@
 @afourpaper
 @end iftex
 
-@set VERSION 1.5.3
-@set UPDATED Sep 1998
+@set VERSION 1.5.3+dev
+@set UPDATED Feb 2000
 
 @dircategory Net Utilities
 @dircategory World Wide Web
@@ -27,7 +27,7 @@
 This file documents the the GNU Wget utility for downloading network
 data.
 
-Copyright (C) 1996, 1997, 1998 Free Software Foundation, Inc.
+Copyright (C) 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -51,7 +51,7 @@ notice identical to this one.
 @title GNU Wget
 @subtitle The noninteractive downloading utility
 @subtitle Updated for Wget @value{VERSION}, @value{UPDATED}
-@author by Hrvoje Nik@v{s}i@'{c}
+@author by Hrvoje Nik@v{s}i@'{c} and the developers
 
 @page
 @vskip 0pt plus 1filll
@@ -2539,10 +2539,10 @@ me).
 @cindex contributors
 
 @iftex
-GNU Wget was written by Hrvoje Nik@v{s}i@'{c} @email{hniksic@@srce.hr}.
+GNU Wget was written by Hrvoje Nik@v{s}i@'{c} @email{hniksic@@iskon.hr}.
 @end iftex
 @ifinfo
-GNU Wget was written by Hrvoje Niksic @email{hniksic@@srce.hr}.
+GNU Wget was written by Hrvoje Niksic @email{hniksic@@iskon.hr}.
 @end ifinfo
 However, its development could never have gone as far as it has, were it
 not for the help of many people, either with bug reports, feature

@@ -1,3 +1,7 @@
+2000-02-29  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* version.c: Upped version to developer-only "1.5.3+dev".
+
 2000-02-18  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* init.c (backup_converted): Added this new option.
