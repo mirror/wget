@@ -558,9 +558,9 @@ FTP options:\n"),
     "\n",
 
     N_("\
-Recursive retrieval:\n"),
+Recursive download:\n"),
     N_("\
-  -r,  --recursive             recursive download.\n"),
+  -r,  --recursive             specify recursive download.\n"),
     N_("\
   -l,  --level=NUMBER          maximum recursion depth (inf or 0 for infinite).\n"),
     N_("\
