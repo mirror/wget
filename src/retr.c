@@ -269,8 +269,6 @@ fd_read_body (int fd, FILE *out, long *len, long restval, long expected,
   return res;
 }
 
-typedef const char *(*finder_t) PARAMS ((const char *, int, int));
-
 /* Read a hunk of data from FD, up until a terminator.  The terminator
    is whatever the TERMINATOR function determines it to be; for
    example, it can be a line of data, or the head of an HTTP response.
