@@ -1113,35 +1113,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
   conn = u;
 
-  proxyauth = NULL;
-  if (proxy)
-    {
-      char *proxy_user, *proxy_passwd;
-      /* For normal username and password, URL components override
-	 command-line/wgetrc parameters.  With proxy
-	 authentication, it's the reverse, because proxy URLs are
-	 normally the "permanent" ones, so command-line args
-	 should take precedence.  */
-      if (opt.proxy_user && opt.proxy_passwd)
-	{
-	  proxy_user = opt.proxy_user;
-	  proxy_passwd = opt.proxy_passwd;
-	}
-      else
-	{
-	  proxy_user = proxy->user;
-	  proxy_passwd = proxy->passwd;
-	}
-      /* #### This does not appear right.  Can't the proxy request,
-	 say, `Digest' authentication?  */
-      if (proxy_user && proxy_passwd)
-	proxyauth = basic_authentication_encode (proxy_user, proxy_passwd);
-
-      /* If we're using a proxy, we will be connecting to the proxy
-	 server.  */
-      conn = proxy;
-    }
-
   /* Prepare the request to send. */
 
   req = request_new ();
@@ -1203,6 +1174,41 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       request_set_header (req, "Authorization",
 			  basic_authentication_encode (user, passwd),
 			  rel_value);
+    }
+
+  proxyauth = NULL;
+  if (proxy)
+    {
+      char *proxy_user, *proxy_passwd;
+      /* For normal username and password, URL components override
+	 command-line/wgetrc parameters.  With proxy
+	 authentication, it's the reverse, because proxy URLs are
+	 normally the "permanent" ones, so command-line args
+	 should take precedence.  */
+      if (opt.proxy_user && opt.proxy_passwd)
+	{
+	  proxy_user = opt.proxy_user;
+	  proxy_passwd = opt.proxy_passwd;
+	}
+      else
+	{
+	  proxy_user = proxy->user;
+	  proxy_passwd = proxy->passwd;
+	}
+      /* #### This does not appear right.  Can't the proxy request,
+	 say, `Digest' authentication?  */
+      if (proxy_user && proxy_passwd)
+	proxyauth = basic_authentication_encode (proxy_user, proxy_passwd);
+
+      /* If we're using a proxy, we will be connecting to the proxy
+	 server.  */
+      conn = proxy;
+
+      /* Proxy authorization over SSL is handled below. */
+#ifdef HAVE_SSL
+      if (u->scheme != SCHEME_SSL)
+#endif
+	request_set_header (req, "Proxy-Authorization", proxyauth, rel_value);
     }
 
   {
