@@ -20,6 +20,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifndef MSWINDOWS_H
 #define MSWINDOWS_H
 
+/* Apparently needed for alloca(). */
+#include <malloc.h>
+
 #ifndef S_ISDIR
 # define S_ISDIR(m) (((m) & (_S_IFMT)) == (_S_IFDIR))
 #endif

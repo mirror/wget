@@ -1,3 +1,7 @@
+2001-01-23  Herold Heiko  <Heiko.Herold@previnet.it>
+
+	* mswindows.h: Include <malloc.h>; it's needed for alloca().
+
 2001-01-10  Dan Harkless  <wget@harkless.org>
 
 	* url.c (str_url): Clarified this function's comment header after
