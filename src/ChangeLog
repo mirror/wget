@@ -1,3 +1,18 @@
+2000-12-17  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* mswindows.c: Include <errno.h>.
+
+	* gen_sslfunc.c: Include <errno.h>.
+
+	* ftp-basic.c: Don't attempt to declare errno or h_errno because
+	they're not used.
+
+	* main.c: Include <errno.h> because errno is used.
+
+	* ftp.c: Ditto.
+
+	* http.c: Include <netdb.h> for h_errno.
+
 2000-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* html-parse.c (advance_declaration): MSVC assert() chokes on

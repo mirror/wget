@@ -39,6 +39,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include <locale.h>
 #endif /* HAVE_LOCALE_H */
 #endif /* HAVE_NLS */
+#include <errno.h>
 
 #define OPTIONS_DEFINED_HERE	/* for options.h */
 

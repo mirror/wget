@@ -46,6 +46,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #ifdef WINDOWS
 # include <winsock.h>
+#else
+# include <netdb.h>		/* for h_errno */
 #endif
 
 #include "wget.h"

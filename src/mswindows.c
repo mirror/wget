@@ -26,9 +26,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <winsock.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 #include "wget.h"
 #include "url.h"
+
+#ifndef errno
+extern int errno;
+#endif
 
 char *argv0;
 

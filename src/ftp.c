@@ -33,6 +33,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <sys/types.h>
 #include <assert.h>
 #include <errno.h>
+#ifndef WINDOWS
+# include <netdb.h>		/* for h_errno */
+#endif
 
 #include "wget.h"
 #include "utils.h"

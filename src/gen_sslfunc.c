@@ -18,18 +18,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include <config.h>
+
 #ifdef HAVE_SSL
+
+#include <assert.h>
+#include <sys/time.h>
+#include <errno.h>
+
 #include <openssl/bio.h>
 #include <openssl/crypto.h>
 #include <openssl/x509.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
-#include <assert.h>
+
 #define SSL_ERR_CTX_CREATION -2
-#include <sys/time.h>
+
 #include "wget.h"
 #include "connect.h"
+
+#ifndef errno
+extern int errno;
+#endif
 
 /* #### Shouldn't this be static?  --hniksic */
 int verify_callback PARAMS ((int, X509_STORE_CTX *));

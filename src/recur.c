@@ -44,6 +44,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "host.h"
 #include "hash.h"
 
+#ifndef errno
+extern int errno;
+#endif
+
 extern char *version_string;
 
 #define ROBOTS_FILENAME "robots.txt"

@@ -43,13 +43,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "host.h"
 #include "ftp.h"
 
-#ifndef errno
-extern int errno;
-#endif
-#ifndef h_errno
-extern int h_errno;
-#endif
-
 char ftp_last_respline[128];
 
 

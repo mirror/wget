@@ -44,6 +44,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "connect.h"
 #include "hash.h"
 
+#ifndef errno
+extern int errno;
+#endif
+
 #ifdef WINDOWS
 LARGE_INTEGER internal_time;
 #else
