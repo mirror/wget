@@ -1,3 +1,7 @@
+2005-02-18  Marco Colombo  <m.colombo@ed.ac.uk>
+
+	* po/it.po: Updated Italian translation.
+
 2004-05-09  David Fritz  <zeroxdf@att.net>
 
 	* windows/Makefile.src.bor: Fix broken build rule.  Add clean target.
