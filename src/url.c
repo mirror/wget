@@ -54,16 +54,6 @@ so, delete this exception statement from your version.  */
 extern int errno;
 #endif
 
-/* Is X "."?  */
-#define DOTP(x) ((*(x) == '.') && (!*(x + 1)))
-/* Is X ".."?  */
-#define DDOTP(x) ((*(x) == '.') && (*(x + 1) == '.') && (!*(x + 2)))
-
-static const int NS_INADDRSZ  = 4;
-static const int NS_IN6ADDRSZ = 16;
-static const int NS_INT16SZ = 2;
-
-
 struct scheme_data
 {
   char *leading_string;
@@ -710,6 +700,10 @@ is_valid_ipv4_address (const char *str, const char *end)
   
   return 1;
 }
+
+static const int NS_INADDRSZ  = 4;
+static const int NS_IN6ADDRSZ = 16;
+static const int NS_INT16SZ   = 2;
 
 static int
 is_valid_ipv6_address (const char *str, const char *end)
@@ -1663,7 +1657,7 @@ url_file_name (const struct url *u)
   fnres.tail = 0;
 
   /* Start with the directory prefix, if specified. */
-  if (!DOTP (opt.dir_prefix))
+  if (opt.dir_prefix)
     append_string (opt.dir_prefix, &fnres);
 
   /* If "dirstruct" is turned on (typically the case with -r), add

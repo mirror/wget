@@ -256,7 +256,6 @@ defaults (void)
   opt.cookies = 1;
 
   opt.verbose = -1;
-  opt.dir_prefix = xstrdup (".");
   opt.ntry = 20;
   opt.reclevel = 5;
   opt.add_hostdir = 1;
@@ -668,6 +667,12 @@ cmd_string (const char *com, const char *val, void *closure)
   return 1;
 }
 
+#ifndef WINDOWS
+# define ISSEP(c) ((c) == '/')
+#else
+# define ISSEP(c) ((c) == '/' || (c) == '\\')
+#endif
+
 /* Like the above, but handles tilde-expansion when reading a user's
    `.wgetrc'.  In that case, and if VAL begins with `~', the tilde
    gets expanded to the user's home directory.  */
@@ -680,11 +685,7 @@ cmd_file (const char *com, const char *val, void *closure)
 
   /* #### If VAL is empty, perhaps should set *CLOSURE to NULL.  */
 
-  if (!enable_tilde_expansion || !(*val == '~' && (*(val + 1) == '/'
-#ifdef WINDOWS
-	  || *(val + 1) == '\\'
-#endif
-	  )))
+  if (!enable_tilde_expansion || !(*val == '~' && ISSEP (val[1])))
     {
     noexpand:
       *pstring = xstrdup (val);
@@ -698,21 +699,12 @@ cmd_file (const char *com, const char *val, void *closure)
 	goto noexpand;
 
       homelen = strlen (home);
-      while (homelen && (home[homelen - 1] == '/'
-#ifdef WINDOWS
-	    || home[homelen - 1] == '\\'
-#endif
-	    ))
+      while (homelen && ISSEP (home[homelen - 1]))
 	home[--homelen] = '\0';
 
       /* Skip the leading "~/". */
-#ifdef WINDOWS
-      for (++val; *val == '/' || *val == '\\'; val++)
+      for (++val; ISSEP (*val); val++)
 	;
-#else
-      for (++val; *val == '/'; val++)
-	;
-#endif
 
       result = xmalloc (homelen + 1 + strlen (val) + 1);
       memcpy (result, home, homelen);
@@ -721,6 +713,7 @@ cmd_file (const char *com, const char *val, void *closure)
 
       *pstring = result;
     }
+
 #ifdef WINDOWS
   /* Convert "\" to "/". */
   {
@@ -1146,7 +1139,7 @@ cleanup (void)
     free_netrc (netrc_list);
   }
   FREE_MAYBE (opt.lfilename);
-  xfree (opt.dir_prefix);
+  FREE_MAYBE (opt.dir_prefix);
   FREE_MAYBE (opt.input_filename);
   FREE_MAYBE (opt.output_document);
   free_vec (opt.accepts);
