@@ -27,3 +27,5 @@ SCO Unix (i586-pc-sco3.2v5.0.4)
 SGI IRIX (mips-sgi-irix4.0.5, mips-sgi-irix5.3, mips-sgi-irix6.5)
 
 Sun SunOS, Solaris (sparc-sun-solaris*, sparc-sun-sunos*)
+
+Mac OS X (powerpc-apple-darwin5.2)

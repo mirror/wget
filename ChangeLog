@@ -1,3 +1,7 @@
+2002-01-15  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* MACHINES: OS X entry by Jonathan Davis.
+
 2001-12-19  Csaba Raduly  <csaba.raduly@sophos.com>
 
 	* windows/Makefile.watcom: add gen-md5.obj and progress.obj to the
