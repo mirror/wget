@@ -559,6 +559,7 @@ static int
 setval_internal (int comind, const char *com, const char *val)
 {
   assert (0 <= comind && comind < countof (commands));
+  DEBUGP (("Setting %s (%d) to %s\n", com, comind, val));
   return ((*commands[comind].action) (com, val, commands[comind].closure));
 }
 
@@ -575,6 +576,7 @@ setval_internal (int comind, const char *com, const char *val)
 void
 setoptval (const char *com, const char *val)
 {
+  assert (val != NULL);
   if (!setval_internal (command_by_name (com), com, val))
     exit (2);
 }

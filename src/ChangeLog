@@ -1,5 +1,11 @@
 2003-11-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c (init_switches): New function.  Convert option_data to
+	long_options and short_options, which can be fed to getopt_long.
+	(main): Execute command-line options by consulting option_data.
+
+2003-11-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* gen_sslfunc.c (ssl_read): Implement a more correct check for
 	EINTR.
 	(ssl_write): Ditto.
