@@ -488,10 +488,10 @@ lookup_host (const char *host, int silent)
   struct address_list *al = NULL;
 
 #ifndef ENABLE_IPV6
-  /* If we're not using getaddrinfo, first check if HOST names a
+  /* If we're not using getaddrinfo, first check if HOST specifies a
      numeric IPv4 address.  gethostbyname is not required to accept
-     dotted-decimal IPv4 addresses, and some older implementations
-     (e.g. the Ultrix one) indeed didn't.  */
+     dotted-decimal IPv4 addresses, and some implementations (e.g. the
+     Ultrix one and possibly Winsock) indeed don't.  */
   {
     uint32_t addr_ipv4 = (uint32_t)inet_addr (host);
     if (addr_ipv4 != (uint32_t) -1)
