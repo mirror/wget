@@ -1,3 +1,8 @@
+2001-12-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* html-url.c (collect_tags_mapper): Break into several functions.
+	(tag_url_attributes): Collect <embed href=...>.
+
 2001-12-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* host.c: New type ipv4_address.  Use it consistently instead of

@@ -38,79 +38,89 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 extern int errno;
 #endif
 
-enum tag_category { TC_LINK, TC_SPEC };
+struct map_context;
 
-/* Here we try to categorize the known tags.  Each tag has its ID and
-   cetegory.  Category TC_LINK means that one or more of its
-   attributes contain links that should be retrieved.  TC_SPEC means
-   that the tag is specific in some way, and has to be handled
-   specially. */
+typedef void (*tag_handler_t) PARAMS ((int, struct taginfo *,
+				       struct map_context *));
+
+#define DECLARE_TAG_HANDLER(fun)					\
+  static void fun PARAMS ((int, struct taginfo *, struct map_context *))
+
+DECLARE_TAG_HANDLER (tag_find_urls);
+DECLARE_TAG_HANDLER (tag_handle_base);
+DECLARE_TAG_HANDLER (tag_handle_link);
+DECLARE_TAG_HANDLER (tag_handle_meta);
+
+/* The list of known tags and functions used for handling them.  Most
+   tags are simply harvested for URLs. */
 static struct {
   const char *name;
-  enum tag_category category;
+  tag_handler_t handler;
 } known_tags[] = {
 #define TAG_A		0
-  { "a",	TC_LINK },
+  { "a",	tag_find_urls },
 #define TAG_APPLET	1
-  { "applet",	TC_LINK },
+  { "applet",	tag_find_urls },
 #define TAG_AREA	2
-  { "area",	TC_LINK },
+  { "area",	tag_find_urls },
 #define TAG_BASE	3
-  { "base",	TC_SPEC },
+  { "base",	tag_handle_base },
 #define TAG_BGSOUND	4
-  { "bgsound",	TC_LINK },
+  { "bgsound",	tag_find_urls },
 #define TAG_BODY	5
-  { "body",	TC_LINK },
+  { "body",	tag_find_urls },
 #define TAG_EMBED	6
-  { "embed",	TC_LINK },
+  { "embed",	tag_find_urls },
 #define TAG_FIG		7
-  { "fig",	TC_LINK },
+  { "fig",	tag_find_urls },
 #define TAG_FRAME	8
-  { "frame",	TC_LINK },
+  { "frame",	tag_find_urls },
 #define TAG_IFRAME	9
-  { "iframe",	TC_LINK },
+  { "iframe",	tag_find_urls },
 #define TAG_IMG		10
-  { "img",	TC_LINK },
+  { "img",	tag_find_urls },
 #define TAG_INPUT	11
-  { "input",	TC_LINK },
+  { "input",	tag_find_urls },
 #define TAG_LAYER	12
-  { "layer",	TC_LINK },
+  { "layer",	tag_find_urls },
 #define TAG_LINK	13
-  { "link",	TC_SPEC },
+  { "link",	tag_handle_link },
 #define TAG_META	14
-  { "meta",	TC_SPEC },
+  { "meta",	tag_handle_meta },
 #define TAG_OVERLAY	15
-  { "overlay",	TC_LINK },
+  { "overlay",	tag_find_urls },
 #define TAG_SCRIPT	16
-  { "script",	TC_LINK },
+  { "script",	tag_find_urls },
 #define TAG_TABLE	17
-  { "table",	TC_LINK },
+  { "table",	tag_find_urls },
 #define TAG_TD		18
-  { "td",	TC_LINK },
+  { "td",	tag_find_urls },
 #define TAG_TH		19
-  { "th",	TC_LINK }
+  { "th",	tag_find_urls }
 };
 
+/* tag_url_attributes documents which attributes of which tags contain
+   URLs to harvest.  It is used by tag_find_urls.  */
 
-/* Flags for specific url-attr pairs handled through TC_LINK: */
+/* Defines for the FLAGS field; currently only one flag is defined. */
 
 /* This tag points to an external document not necessary for rendering this 
    document (i.e. it's not an inlined image, stylesheet, etc.). */
-#define AF_EXTERNAL 1
+#define TUA_EXTERNAL 1
 
-
-/* For tags handled by TC_LINK: attributes that contain URLs to
+/* For tags handled by tag_find_urls: attributes that contain URLs to
    download. */
 static struct {
   int tagid;
   const char *attr_name;
   int flags;
-} url_tag_attr_map[] = {
-  { TAG_A,		"href",		AF_EXTERNAL },
+} tag_url_attributes[] = {
+  { TAG_A,		"href",		TUA_EXTERNAL },
   { TAG_APPLET,		"code",		0 },
-  { TAG_AREA,		"href",		AF_EXTERNAL },
+  { TAG_AREA,		"href",		TUA_EXTERNAL },
   { TAG_BGSOUND,	"src",		0 },
   { TAG_BODY,		"background",	0 },
+  { TAG_EMBED,		"href",		0 },
   { TAG_EMBED,		"src",		0 },
   { TAG_FIG,		"src",		0 },
   { TAG_FRAME,		"src",		0 },
@@ -150,7 +160,10 @@ init_interesting (void)
 
      Here we also make sure that what we put in interesting_tags
      matches the user's preferences as specified through --ignore-tags
-     and --follow-tags.  */
+     and --follow-tags.
+
+     This function is as large as this only because of the glorious
+     expressivity of the C programming language.  */
 
   {
     int i, ind = 0;
@@ -209,7 +222,7 @@ init_interesting (void)
     interesting_tags[ind] = NULL;
   }
 
-  /* The same for attributes, except we loop through url_tag_attr_map.
+  /* The same for attributes, except we loop through tag_url_attributes.
      Here we also need to make sure that the list of attributes is
      unique, and to include the attributes from additional_attributes.  */
   {
@@ -221,10 +234,10 @@ init_interesting (void)
       att[i] = additional_attributes[i];
     ind = i;
     att[ind] = NULL;
-    for (i = 0; i < ARRAY_SIZE (url_tag_attr_map); i++)
+    for (i = 0; i < ARRAY_SIZE (tag_url_attributes); i++)
       {
 	int j, seen = 0;
-	const char *look_for = url_tag_attr_map[i].attr_name;
+	const char *look_for = tag_url_attributes[i].attr_name;
 	for (j = 0; j < ind - 1; j++)
 	  if (!strcmp (att[j], look_for))
 	    {
@@ -264,49 +277,54 @@ find_tag (const char *tag_name)
 }
 
 /* Find the value of attribute named NAME in the taginfo TAG.  If the
-   attribute is not present, return NULL.  If ATTRID is non-NULL, the
-   exact identity of the attribute will be returned.  */
+   attribute is not present, return NULL.  If ATTRIND is non-NULL, the
+   index of the attribute in TAG will be stored there.  */
 static char *
-find_attr (struct taginfo *tag, const char *name, int *attrid)
+find_attr (struct taginfo *tag, const char *name, int *attrind)
 {
   int i;
   for (i = 0; i < tag->nattrs; i++)
     if (!strcasecmp (tag->attrs[i].name, name))
       {
-	if (attrid)
-	  *attrid = i;
+	if (attrind)
+	  *attrind = i;
 	return tag->attrs[i].value;
       }
   return NULL;
 }
 
-struct collect_urls_closure {
+struct map_context {
   char *text;			/* HTML text. */
   char *base;			/* Base URI of the document, possibly
 				   changed through <base href=...>. */
-  struct urlpos *head, *tail;	/* List of URLs */
   const char *parent_base;	/* Base of the current document. */
   const char *document_file;	/* File name of this document. */
   int nofollow;			/* whether NOFOLLOW was specified in a
                                    <meta name=robots> tag. */
+
+  struct urlpos *head, *tail;	/* List of URLs that is being
+				   built. */
 };
 
-/* Resolve LINK_URI and append it to closure->tail.  TAG and ATTRID
-   are the necessary context to store the position and size.  */
+/* Append LINK_URI to the urlpos structure that is being built.
+
+   LINK_URI will be merged with the current document base.  TAG and
+   ATTRIND are the necessary context to store the position and
+   size.  */
 
 static struct urlpos *
-handle_link (struct collect_urls_closure *closure, const char *link_uri,
-	     struct taginfo *tag, int attrid)
+append_one_url (const char *link_uri, int inlinep,
+		struct taginfo *tag, int attrind, struct map_context *ctx)
 {
   int link_has_scheme = url_has_scheme (link_uri);
   struct urlpos *newel;
-  const char *base = closure->base ? closure->base : closure->parent_base;
+  const char *base = ctx->base ? ctx->base : ctx->parent_base;
   struct url *url;
 
   if (!base)
     {
       DEBUGP (("%s: no base, merge will use \"%s\".\n",
-	       closure->document_file, link_uri));
+	       ctx->document_file, link_uri));
 
       if (!link_has_scheme)
 	{
@@ -320,7 +338,7 @@ handle_link (struct collect_urls_closure *closure, const char *link_uri,
       if (!url)
 	{
 	  DEBUGP (("%s: link \"%s\" doesn't parse.\n",
-		   closure->document_file, link_uri));
+		   ctx->document_file, link_uri));
 	  return NULL;
 	}
     }
@@ -333,13 +351,13 @@ handle_link (struct collect_urls_closure *closure, const char *link_uri,
       char *complete_uri = uri_merge (base, link_uri);
 
       DEBUGP (("%s: merge(\"%s\", \"%s\") -> %s\n",
-	       closure->document_file, base, link_uri, complete_uri));
+	       ctx->document_file, base, link_uri, complete_uri));
 
       url = url_parse (complete_uri, NULL);
       if (!url)
 	{
 	  DEBUGP (("%s: merged link \"%s\" doesn't parse.\n",
-		   closure->document_file, complete_uri));
+		   ctx->document_file, complete_uri));
 	  xfree (complete_uri);
 	  return NULL;
 	}
@@ -347,12 +365,13 @@ handle_link (struct collect_urls_closure *closure, const char *link_uri,
     }
 
   newel = (struct urlpos *)xmalloc (sizeof (struct urlpos));
-
   memset (newel, 0, sizeof (*newel));
+
   newel->next = NULL;
   newel->url = url;
-  newel->pos = tag->attrs[attrid].value_raw_beginning - closure->text;
-  newel->size = tag->attrs[attrid].value_raw_size;
+  newel->pos = tag->attrs[attrind].value_raw_beginning - ctx->text;
+  newel->size = tag->attrs[attrind].value_raw_size;
+  newel->link_inline_p = inlinep;
 
   /* A URL is relative if the host is not named, and the name does not
      start with `/'.  */
@@ -361,197 +380,201 @@ handle_link (struct collect_urls_closure *closure, const char *link_uri,
   else if (link_has_scheme)
     newel->link_complete_p = 1;
 
-  if (closure->tail)
+  if (ctx->tail)
     {
-      closure->tail->next = newel;
-      closure->tail = newel;
+      ctx->tail->next = newel;
+      ctx->tail = newel;
     }
   else
-    closure->tail = closure->head = newel;
+    ctx->tail = ctx->head = newel;
 
   return newel;
 }
+
+/* All the tag_* functions are called from collect_tags_mapper, as
+   specified by KNOWN_TAGS.  */
 
-/* Examine name and attributes of TAG and take appropriate action.
-   What will be done depends on TAG's category and attribute values.
-   Tags of TC_LINK category have attributes that contain links to
-   follow; tags of TC_SPEC category need to be handled specially.
+/* For most tags, all we want to do is harvest URLs from their
+   attributes.  */
 
-   #### It would be nice to split this into several functions.  */
+static void
+tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
+{
+  int i, attrind, first = -1;
+  int size = ARRAY_SIZE (tag_url_attributes);
+
+  for (i = 0; i < size; i++)
+    if (tag_url_attributes[i].tagid == tagid)
+      {
+	/* We've found the index of tag_url_attributes where the
+	   attributes of our tags begin.  */
+	first = i;
+	break;
+      }
+  assert (first != -1);
+
+  /* Loop over the "interesting" attributes of this tag.  In this
+     example, it will loop over "src" and "lowsrc".
+
+       <img src="foo.png" lowsrc="bar.png">
+
+     This has to be done in the outer loop so that the attributes are
+     processed in the same order in which they appear in the page.
+     This is required when converting links.  */
+
+  for (attrind = 0; attrind < tag->nattrs; attrind++)
+    {
+      /* Find whether TAG/ATTRIND is a combination that contains a
+	 URL. */
+      char *attrvalue = tag->attrs[attrind].value;
+
+      /* If you're cringing at the inefficiency of the nested loops,
+	 remember that the number of attributes the inner loop
+	 iterates over is laughably small -- three in the worst case
+	 (IMG).  */
+      for (i = first; i < size && tag_url_attributes[i].tagid == tagid; i++)
+	{
+	  if (0 == strcasecmp (tag->attrs[attrind].name,
+			       tag_url_attributes[i].attr_name))
+	    {
+	      int flags = tag_url_attributes[i].flags;
+	      append_one_url (attrvalue, !(flags & TUA_EXTERNAL),
+			      tag, attrind, ctx);
+	    }
+	}
+    }
+}
+
+static void
+tag_handle_base (int tagid, struct taginfo *tag, struct map_context *ctx)
+{
+  struct urlpos *base_urlpos;
+  int attrind;
+  char *newbase = find_attr (tag, "href", &attrind);
+  if (!newbase)
+    return;
+
+  base_urlpos = append_one_url (newbase, 0, tag, attrind, ctx);
+  if (!base_urlpos)
+    return;
+  base_urlpos->ignore_when_downloading = 1;
+  base_urlpos->link_base_p = 1;
+
+  if (ctx->base)
+    xfree (ctx->base);
+  if (ctx->parent_base)
+    ctx->base = uri_merge (ctx->parent_base, newbase);
+  else
+    ctx->base = xstrdup (newbase);
+}
+
+static void
+tag_handle_link (int tagid, struct taginfo *tag, struct map_context *ctx)
+{
+  int attrind;
+  char *href = find_attr (tag, "href", &attrind);
+
+  /* All <link href="..."> link references are external,
+     except for <link rel="stylesheet" href="...">.  */
+  if (href)
+    {
+      char *rel  = find_attr (tag, "rel", NULL);
+      int inlinep = (rel && 0 == strcasecmp (rel, "stylesheet"));
+      append_one_url (href, inlinep, tag, attrind, ctx);
+    }
+}
+
+/* Some pages use a META tag to specify that the page be refreshed by
+   a new page after a given number of seconds.  The general format for
+   this is:
+
+   <meta http-equiv=Refresh content="NUMBER; URL=index2.html">
+
+   So we just need to skip past the "NUMBER; URL=" garbage to get to
+   the URL.  */
+
+static void
+tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
+{
+  char *name = find_attr (tag, "name", NULL);
+  char *http_equiv = find_attr (tag, "http-equiv", NULL);
+
+  if (http_equiv && 0 == strcasecmp (http_equiv, "refresh"))
+    {
+      struct urlpos *entry;
+
+      int attrind;
+      char *p, *refresh = find_attr (tag, "content", &attrind);
+      int timeout = 0;
+
+      for (p = refresh; ISDIGIT (*p); p++)
+	timeout = 10 * timeout + *p - '0';
+      if (*p++ != ';')
+	return;
+
+      while (ISSPACE (*p))
+	++p;
+      if (!(   TOUPPER (*p)       == 'U'
+	    && TOUPPER (*(p + 1)) == 'R'
+	    && TOUPPER (*(p + 2)) == 'L'
+	    &&          *(p + 3)  == '='))
+	return;
+      p += 4;
+      while (ISSPACE (*p))
+	++p;
+
+      entry = append_one_url (p, 0, tag, attrind, ctx);
+      if (entry)
+	{
+	  entry->link_refresh_p = 1;
+	  entry->refresh_timeout = timeout;
+	}
+    }
+  else if (name && 0 == strcasecmp (name, "robots"))
+    {
+      /* Handle stuff like:
+	 <meta name="robots" content="index,nofollow"> */
+      char *content = find_attr (tag, "content", NULL);
+      if (!content)
+	return;
+      if (!strcasecmp (content, "none"))
+	ctx->nofollow = 1;
+      else
+	{
+	  while (*content)
+	    {
+	      /* Find the next occurrence of ',' or the end of
+		 the string.  */
+	      char *end = strchr (content, ',');
+	      if (end)
+		++end;
+	      else
+		end = content + strlen (content);
+	      if (!strncasecmp (content, "nofollow", end - content))
+		ctx->nofollow = 1;
+	      content = end;
+	    }
+	}
+    }
+}
+
+/* Examine name and attributes of TAG and take appropriate action
+   according to the tag.  */
 
 static void
 collect_tags_mapper (struct taginfo *tag, void *arg)
 {
-  struct collect_urls_closure *closure = (struct collect_urls_closure *)arg;
-  int tagid = find_tag (tag->name);
+  struct map_context *ctx = (struct map_context *)arg;
+  int tagid;
+  tag_handler_t handler;
+
+  tagid = find_tag (tag->name);
   assert (tagid != -1);
+  handler = known_tags[tagid].handler;
 
-  switch (known_tags[tagid].category)
-    {
-    case TC_LINK:
-      {
-	int i, id, first;
-	int size = ARRAY_SIZE (url_tag_attr_map);
-	for (i = 0; i < size; i++)
-	  if (url_tag_attr_map[i].tagid == tagid)
-	    break;
-	/* We've found the index of url_tag_attr_map where the
-           attributes of our tags begin.  Now, look for every one of
-           them, and handle it.  */
-	/* Need to process the attributes in the order they appear in
-	   the tag, as this is required if we convert links.  */
-	first = i;
-	for (id = 0; id < tag->nattrs; id++)
-	  {
-	    /* This nested loop may seem inefficient (O(n^2)), but it's
-	       not, since the number of attributes (n) we loop over is
-	       extremely small.  In the worst case of IMG with all its
-	       possible attributes, n^2 will be only 9.  */
-	    for (i = first; (i < size && url_tag_attr_map[i].tagid == tagid);
-		 i++)
-	      {
-		if (0 == strcasecmp (tag->attrs[id].name,
-				     url_tag_attr_map[i].attr_name))
-		  {
-		    char *attr_value = tag->attrs[id].value;
-		    if (attr_value)
-		      {
-			struct urlpos *entry;
-			entry = handle_link (closure, attr_value, tag, id);
-			if (entry != NULL
-			    && !(url_tag_attr_map[i].flags & AF_EXTERNAL))
-			  entry->link_inline_p = 1;
-		      }
-		  }
-	      }
-	  }
-      }
-      break;
-    case TC_SPEC:
-      switch (tagid)
-	{
-	case TAG_BASE:
-	  {
-	    struct urlpos *base_urlpos;
-	    int id;
-	    char *newbase = find_attr (tag, "href", &id);
-	    if (!newbase)
-	      break;
-
-	    base_urlpos = handle_link (closure, newbase, tag, id);
-	    if (!base_urlpos)
-	      break;
-	    base_urlpos->ignore_when_downloading = 1;
-	    base_urlpos->link_base_p = 1;
-
-	    if (closure->base)
-	      xfree (closure->base);
-	    if (closure->parent_base)
-	      closure->base = uri_merge (closure->parent_base, newbase);
-	    else
-	      closure->base = xstrdup (newbase);
-	  }
-	  break;
-	case TAG_LINK:
-	  {
-	    int id;
-	    char *href = find_attr (tag, "href", &id);
-
-	    /* All <link href="..."> link references are external,
-	       except for <link rel="stylesheet" href="...">.  */
-	    if (href)
-	      {
-		struct urlpos *entry;
-		entry = handle_link (closure, href, tag, id);
-		if (entry != NULL)
-		  {
-		    char *rel  = find_attr (tag, "rel", NULL);
-		    if (rel && 0 == strcasecmp (rel, "stylesheet"))
-		      entry->link_inline_p = 1;
-		  }
-	      }
-	  }
-	  break;
-	case TAG_META:
-	  /* Some pages use a META tag to specify that the page be
-	     refreshed by a new page after a given number of seconds.
-	     The general format for this is:
-
-	     <meta http-equiv=Refresh content="NUMBER; URL=index2.html">
-
-	     So we just need to skip past the "NUMBER; URL=" garbage
-	     to get to the URL.  */
-	  {
-	    char *name = find_attr (tag, "name", NULL);
-	    char *http_equiv = find_attr (tag, "http-equiv", NULL);
-	    if (http_equiv && !strcasecmp (http_equiv, "refresh"))
-	      {
-		struct urlpos *entry;
-
-		int id;
-		char *p, *refresh = find_attr (tag, "content", &id);
-		int timeout = 0;
-
-		for (p = refresh; ISDIGIT (*p); p++)
-		  timeout = 10 * timeout + *p - '0';
-		if (*p++ != ';')
-		  return;
-
-		while (ISSPACE (*p))
-		  ++p;
-		if (!(TOUPPER (*p) == 'U'
-		      && TOUPPER (*(p + 1)) == 'R'
-		      && TOUPPER (*(p + 2)) == 'L'
-		      && *(p + 3) == '='))
-		  return;
-		p += 4;
-		while (ISSPACE (*p))
-		  ++p;
-
-		entry = handle_link (closure, p, tag, id);
-		if (entry)
-		  {
-		    entry->link_refresh_p = 1;
-		    entry->refresh_timeout = timeout;
-		  }
-	      }
-	    else if (name && !strcasecmp (name, "robots"))
-	      {
-		/* Handle stuff like:
-		   <meta name="robots" content="index,nofollow"> */
-		char *content = find_attr (tag, "content", NULL);
-		if (!content)
-		  return;
-		if (!strcasecmp (content, "none"))
-		  closure->nofollow = 1;
-		else
-		  {
-		    while (*content)
-		      {
-			/* Find the next occurrence of ',' or the end of
-			   the string.  */
-			char *end = strchr (content, ',');
-			if (end)
-			  ++end;
-			else
-			  end = content + strlen (content);
-			if (!strncasecmp (content, "nofollow", end - content))
-			  closure->nofollow = 1;
-			content = end;
-		      }
-		  }
-	      }
-	  }
-	  break;
-	default:
-	  /* Category is TC_SPEC, but tag name is unhandled.  This
-             must not be.  */
-	  abort ();
-	}
-      break;
-    }
+  handler (tagid, tag, ctx);
 }
-
+
 /* Analyze HTML tags FILE and construct a list of URLs referenced from
    it.  It merges relative links in FILE with URL.  It is aware of
    <base href=...> and does the right thing.  */
@@ -559,7 +582,7 @@ struct urlpos *
 get_urls_html (const char *file, const char *url, int *meta_disallow_follow)
 {
   struct file_memory *fm;
-  struct collect_urls_closure closure;
+  struct map_context ctx;
 
   /* Load the file. */
   fm = read_file (file);
@@ -570,26 +593,26 @@ get_urls_html (const char *file, const char *url, int *meta_disallow_follow)
     }
   DEBUGP (("Loaded %s (size %ld).\n", file, fm->length));
 
-  closure.text = fm->content;
-  closure.head = closure.tail = NULL;
-  closure.base = NULL;
-  closure.parent_base = url ? url : opt.base_href;
-  closure.document_file = file;
-  closure.nofollow = 0;
+  ctx.text = fm->content;
+  ctx.head = ctx.tail = NULL;
+  ctx.base = NULL;
+  ctx.parent_base = url ? url : opt.base_href;
+  ctx.document_file = file;
+  ctx.nofollow = 0;
 
   if (!interesting_tags)
     init_interesting ();
 
   map_html_tags (fm->content, fm->length, interesting_tags,
-		 interesting_attributes, collect_tags_mapper, &closure);
+		 interesting_attributes, collect_tags_mapper, &ctx);
 
-  DEBUGP (("no-follow in %s: %d\n", file, closure.nofollow));
+  DEBUGP (("no-follow in %s: %d\n", file, ctx.nofollow));
   if (meta_disallow_follow)
-    *meta_disallow_follow = closure.nofollow;
+    *meta_disallow_follow = ctx.nofollow;
 
-  FREE_MAYBE (closure.base);
+  FREE_MAYBE (ctx.base);
   read_file_free (fm);
-  return closure.head;
+  return ctx.head;
 }
 
 void
