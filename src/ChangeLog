@@ -1,3 +1,8 @@
+2002-04-16  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* http.c (gethttp): If Content-Type is not given, assume
+	text/html.
+
 2002-04-15  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* recur.c (download_child_p): Don't ignore rejection of HTML

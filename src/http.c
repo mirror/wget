@@ -1308,10 +1308,12 @@ Accept: %s\r\n\
 	}
     }
 
-  if (type && !strncasecmp (type, TEXTHTML_S, strlen (TEXTHTML_S)))
+  /* If content-type is not given, assume text/html.  This is because
+     of the multitude of broken CGI's that "forget" to generate the
+     content-type.  */
+  if (!type || 0 == strncasecmp (type, TEXTHTML_S, strlen (TEXTHTML_S)))
     *dt |= TEXTHTML;
   else
-    /* We don't assume text/html by default.  */
     *dt &= ~TEXTHTML;
 
   if (opt.html_extension && (*dt & TEXTHTML))
