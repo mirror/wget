@@ -14,6 +14,13 @@ use of IPv4 and IPv6 respectively.
 
 ** Talking to SSL servers over proxies now actually works.
 
+** Wget no longer truncates partially downloaded files when download
+has to start over because the server doesn't support Range.  Instead,
+with such servers Wget now simply ignores the data up to the byte
+where the last attempt left off, and only then continues appending to
+the file.  That way the downloaded file never shrinks, and "start
+over" retries work correctly even when downloading to stdout.
+
 ** The `--header' option can now be used to override generated
 headers.  For example, `wget --header="Host: foo.bar"
 http://127.0.0.1' tells Wget to connect to localhost, but to specify
