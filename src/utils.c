@@ -528,7 +528,7 @@ path_simplify (char *path)
 	{
 	  /* Handle "../foo" by moving "foo" one path element to the
 	     left.  */
-	  char *b = p;
+	  char *b = p;		/* not p-1 because P can equal PATH */
 
 	  /* Backtrack by one path element, but not past the beginning
 	     of PATH. */
@@ -537,10 +537,10 @@ path_simplify (char *path)
 	  /*         ^ p    */
 	  /*     ^ b        */
 
-	  if (b > path + 1)
+	  if (b > path)
 	    {
-	      /* Find the character preceded by slash or by the
-		 beginning of path. */
+	      /* Move backwards until B hits the beginning of the
+		 previous path element or the beginning of path. */
 	      for (--b; b > path && *(b - 1) != '/'; b--)
 		;
 	    }

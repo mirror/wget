@@ -1,5 +1,10 @@
 2001-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* utils.c (path_simplify): Correctly handle the unlikely case that
+	b starts out as path + 1.
+
+2001-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* utils.c (path_simplify): Rewrite, with better comments, and
 	without the use of strcpy to move overlapping blocks.
 
