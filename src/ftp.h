@@ -81,7 +81,7 @@ enum ftype
 /* Globbing (used by ftp_retrieve_glob).  */
 enum
 {
-  GLOBALL, GETALL, GETONE
+  GLOB_GLOBALL, GLOB_GETALL, GLOB_GETONE
 };
 
 /* Information about one filename in a linked list.  */

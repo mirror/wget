@@ -1,5 +1,11 @@
 2005-03-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp.h (enum): Rename GLOBALL, GETALL, and GETONE to
+	GLOB_GLOBALL, GLOB_GETALL, and GLOB_GETONE to avoid conflict with
+	Linux headers.
+
+2005-03-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (numdigit): More correct handling of negative numbers.
 
 2005-03-21  Hrvoje Niksic  <hniksic@xemacs.org>

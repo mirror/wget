@@ -1701,7 +1701,7 @@ Not descending to `%s' as it is excluded/not-included.\n"),
       odir = xstrdup (u->dir);	/* because url_set_dir will free
 				   u->dir. */
       url_set_dir (u, newdir);
-      ftp_retrieve_glob (u, con, GETALL);
+      ftp_retrieve_glob (u, con, GLOB_GETALL);
       url_set_dir (u, odir);
       xfree (odir);
 
@@ -1732,9 +1732,10 @@ has_insecure_name_p (const char *s)
    Then it weeds out the file names that do not match the pattern.
    ftp_retrieve_list is called with this updated list as an argument.
 
-   If the argument ACTION is GETONE, just download the file (but first
-   get the listing, so that the time-stamp is heeded); if it's GLOBALL,
-   use globbing; if it's GETALL, download the whole directory.  */
+   If the argument ACTION is GLOB_GETONE, just download the file (but
+   first get the listing, so that the time-stamp is heeded); if it's
+   GLOB_GLOBALL, use globbing; if it's GLOB_GETALL, download the whole
+   directory.  */
 static uerr_t
 ftp_retrieve_glob (struct url *u, ccon *con, int action)
 {
@@ -1778,7 +1779,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
     }
   /* Now weed out the files that do not match our globbing pattern.
      If we are dealing with a globbing pattern, that is.  */
-  if (*u->file && (action == GLOBALL || action == GETONE))
+  if (*u->file && (action == GLOB_GLOBALL || action == GLOB_GETONE))
     {
       int matchres = 0;
 
@@ -1810,7 +1811,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
     }
   else if (!start)
     {
-      if (action == GLOBALL)
+      if (action == GLOB_GLOBALL)
 	{
 	  /* No luck.  */
 	  /* #### This message SUCKS.  We should see what was the
@@ -1818,7 +1819,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
 	  logprintf (LOG_VERBOSE, _("No matches on pattern `%s'.\n"),
 		     escnonprint (u->file));
 	}
-      else /* GETONE or GETALL */
+      else /* GLOB_GETONE or GLOB_GETALL */
 	{
 	  /* Let's try retrieving it anyway.  */
 	  con->st |= ON_YOUR_OWN;
@@ -1903,7 +1904,8 @@ ftp_loop (struct url *u, int *dt, struct url *proxy)
 	     if we need globbing, time-stamping or recursion.  Its
 	     third argument is just what we really need.  */
 	  res = ftp_retrieve_glob (u, &con,
-				   (opt.ftp_glob && wild) ? GLOBALL : GETONE);
+				   (opt.ftp_glob && wild)
+				   ? GLOB_GLOBALL : GLOB_GETONE);
 	}
       else
 	res = ftp_loop_internal (u, NULL, &con);
