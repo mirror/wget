@@ -2211,7 +2211,7 @@ http_atotm (const char *time_string)
      GNU strptime does not have this problem because it recognizes
      both international and local dates.  */
 
-  for (i = 0; i < ARRAY_SIZE (time_formats); i++)
+  for (i = 0; i < countof (time_formats); i++)
     if (check_end (strptime (time_string, time_formats[i], &t)))
       return mktime_from_utc (&t);
 
@@ -2341,8 +2341,8 @@ dump_hash (unsigned char *buf, const unsigned char *hash)
 
   for (i = 0; i < MD5_HASHLEN; i++, hash++)
     {
-      *buf++ = XDIGIT_TO_xchar (*hash >> 4);
-      *buf++ = XDIGIT_TO_xchar (*hash & 0xf);
+      *buf++ = XNUM_TO_digit (*hash >> 4);
+      *buf++ = XNUM_TO_digit (*hash & 0xf);
     }
   *buf = '\0';
 }
@@ -2373,7 +2373,7 @@ digest_authentication_encode (const char *au, const char *user,
       int i;
 
       au += skip_lws (au);
-      for (i = 0; i < ARRAY_SIZE (options); i++)
+      for (i = 0; i < countof (options); i++)
 	{
 	  int skip = extract_header_attr (au, options[i].name,
 					  options[i].variable);
@@ -2390,7 +2390,7 @@ digest_authentication_encode (const char *au, const char *user,
 	      break;
 	    }
 	}
-      if (i == ARRAY_SIZE (options))
+      if (i == countof (options))
 	{
 	  while (*au && *au != '=')
 	    au++;

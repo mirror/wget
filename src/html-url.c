@@ -181,7 +181,7 @@ init_interesting (void)
 
   {
     int i, ind = 0;
-    int size = ARRAY_SIZE (known_tags);
+    int size = countof (known_tags);
     interesting_tags = (const char **)xmalloc ((size + 1) * sizeof (char *));
 
     for (i = 0; i < size; i++)
@@ -241,14 +241,14 @@ init_interesting (void)
      unique, and to include the attributes from additional_attributes.  */
   {
     int i, ind;
-    const char **att = xmalloc ((ARRAY_SIZE (additional_attributes) + 1)
+    const char **att = xmalloc ((countof (additional_attributes) + 1)
 				* sizeof (char *));
     /* First copy the "additional" attributes. */
-    for (i = 0; i < ARRAY_SIZE (additional_attributes); i++)
+    for (i = 0; i < countof (additional_attributes); i++)
       att[i] = additional_attributes[i];
     ind = i;
     att[ind] = NULL;
-    for (i = 0; i < ARRAY_SIZE (tag_url_attributes); i++)
+    for (i = 0; i < countof (tag_url_attributes); i++)
       {
 	int j, seen = 0;
 	const char *look_for = tag_url_attributes[i].attr_name;
@@ -277,7 +277,7 @@ find_tag (const char *tag_name)
   /* This is linear search; if the number of tags grow, we can switch
      to binary search.  */
 
-  for (i = 0; i < ARRAY_SIZE (known_tags); i++)
+  for (i = 0; i < countof (known_tags); i++)
     {
       int cmp = strcasecmp (known_tags[i].name, tag_name);
       /* known_tags are sorted alphabetically, so we can
@@ -421,7 +421,7 @@ static void
 tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
 {
   int i, attrind, first = -1;
-  int size = ARRAY_SIZE (tag_url_attributes);
+  int size = countof (tag_url_attributes);
 
   for (i = 0; i < size; i++)
     if (tag_url_attributes[i].tagid == tagid)

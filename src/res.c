@@ -417,17 +417,16 @@ free_specs (struct robot_specs *specs)
    that number is not a numerical representation of '/', decode C and
    advance the pointer.  */
 
-#define DECODE_MAYBE(c, ptr) do {					\
-  if (c == '%' && ISXDIGIT (ptr[1]) && ISXDIGIT (ptr[2]))		\
-    {									\
-      char decoded							\
-	= (XCHAR_TO_XDIGIT (ptr[1]) << 4) + XCHAR_TO_XDIGIT (ptr[2]);	\
-      if (decoded != '/')						\
-	{								\
-	  c = decoded;							\
-	  ptr += 2;							\
-	}								\
-    }									\
+#define DECODE_MAYBE(c, ptr) do {				\
+  if (c == '%' && ISXDIGIT (ptr[1]) && ISXDIGIT (ptr[2]))	\
+    {								\
+      char decoded = X2DIGITS_TO_NUM (ptr[1], ptr[2]);		\
+      if (decoded != '/')					\
+	{							\
+	  c = decoded;						\
+	  ptr += 2;						\
+	}							\
+    }								\
 } while (0)
 
 /* The inner matching engine: return non-zero if RECORD_PATH matches

@@ -748,7 +748,7 @@ check_domain_match (const char *cookie_domain, const char *host)
 	static char *known_toplevel_domains[] = {
 	  ".com", ".edu", ".net", ".org", ".gov", ".mil", ".int"
 	};
-	for (i = 0; i < ARRAY_SIZE (known_toplevel_domains); i++)
+	for (i = 0; i < countof (known_toplevel_domains); i++)
 	  if (match_tail (cookie_domain, known_toplevel_domains[i], 1))
 	    {
 	      known_toplevel = 1;
@@ -1060,7 +1060,7 @@ cookie_jar_generate_cookie_header (struct cookie_jar *jar, const char *host,
 {
   struct cookie *chain_default_store[20];
   struct cookie **all_chains = chain_default_store;
-  int chain_store_size = ARRAY_SIZE (chain_default_store);
+  int chain_store_size = countof (chain_default_store);
   int chain_count;
 
   struct cookie *cookie;
@@ -1488,7 +1488,7 @@ test_cookies (void)
   };
   int i;
 
-  for (i = 0; i < ARRAY_SIZE (tests_succ); i++)
+  for (i = 0; i < countof (tests_succ); i++)
     {
       int ind;
       char *data = tests_succ[i].data;
@@ -1518,7 +1518,7 @@ test_cookies (void)
 	printf ("Unmatched number of results: %s\n", data);
     }
 
-  for (i = 0; i < ARRAY_SIZE (tests_fail); i++)
+  for (i = 0; i < countof (tests_fail); i++)
     {
       struct cookie *c;
       char *data = tests_fail[i];

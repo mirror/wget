@@ -170,10 +170,9 @@ url_unescape (char *s)
       else
 	{
 	  /* Do nothing if '%' is not followed by two hex digits. */
-	  if (!*(h + 1) || !*(h + 2)
-	      || !(ISXDIGIT (*(h + 1)) && ISXDIGIT (*(h + 2))))
+	  if (!h[1] || !h[2] || !(ISXDIGIT (h[1]) && ISXDIGIT (h[2])))
 	    goto copychar;
-	  *t = (XCHAR_TO_XDIGIT (*(h + 1)) << 4) + XCHAR_TO_XDIGIT (*(h + 2));
+	  *t = X2DIGITS_TO_NUM (h[1], h[2]);
 	  h += 2;
 	}
     }
@@ -214,8 +213,8 @@ url_escape_1 (const char *s, unsigned char mask, int allow_passthrough)
 	{
 	  unsigned char c = *p1++;
 	  *p2++ = '%';
-	  *p2++ = XDIGIT_TO_XCHAR (c >> 4);
-	  *p2++ = XDIGIT_TO_XCHAR (c & 0xf);
+	  *p2++ = XNUM_TO_digit (c >> 4);
+	  *p2++ = XNUM_TO_digit (c & 0xf);
 	}
       else
 	*p2++ = *p1++;
@@ -258,9 +257,7 @@ decide_copy_method (const char *p)
 	  /* %xx sequence: decode it, unless it would decode to an
 	     unsafe or a reserved char; in that case, leave it as
 	     is. */
-	  char preempt = (XCHAR_TO_XDIGIT (*(p + 1)) << 4) +
-	    XCHAR_TO_XDIGIT (*(p + 2));
-
+	  char preempt = X2DIGITS_TO_NUM (*(p + 1), *(p + 2));
 	  if (URL_UNSAFE_CHAR (preempt) || URL_RESERVED_CHAR (preempt))
 	    return CM_PASSTHROUGH;
 	  else
@@ -403,13 +400,12 @@ reencode_escapes (const char *s)
 	  {
 	    unsigned char c = *p1++;
 	    *p2++ = '%';
-	    *p2++ = XDIGIT_TO_XCHAR (c >> 4);
-	    *p2++ = XDIGIT_TO_XCHAR (c & 0xf);
+	    *p2++ = XNUM_TO_DIGIT (c >> 4);
+	    *p2++ = XNUM_TO_DIGIT (c & 0xf);
 	  }
 	  break;
 	case CM_DECODE:
-	  *p2++ = ((XCHAR_TO_XDIGIT (*(p1 + 1)) << 4)
-		   + (XCHAR_TO_XDIGIT (*(p1 + 2))));
+	  *p2++ = X2DIGITS_TO_NUM (p1[1], p1[2]);
 	  p1 += 3;		/* skip %xx */
 	  break;
 	case CM_PASSTHROUGH:
@@ -1043,7 +1039,7 @@ url_parse (const char *url, int *error)
 const char *
 url_error (int error_code)
 {
-  assert (error_code >= 0 && error_code < ARRAY_SIZE (parse_errors));
+  assert (error_code >= 0 && error_code < countof (parse_errors));
   return parse_errors[error_code];
 }
 
@@ -1602,8 +1598,8 @@ append_uri_pathel (const char *b, const char *e, struct growable *dest)
 	    {
 	      unsigned char ch = *p;
 	      *q++ = '%';
-	      *q++ = XDIGIT_TO_XCHAR (ch >> 4);
-	      *q++ = XDIGIT_TO_XCHAR (ch & 0xf);
+	      *q++ = XNUM_TO_DIGIT (ch >> 4);
+	      *q++ = XNUM_TO_DIGIT (ch & 0xf);
 	    }
 	}
       assert (q - TAIL (dest) == outlen);
@@ -2868,7 +2864,7 @@ test_path_simplify (void)
   };
   int i;
 
-  for (i = 0; i < ARRAY_SIZE (tests); i++)
+  for (i = 0; i < countof (tests); i++)
     {
       char *test = tests[i].test;
       char *expected_result = tests[i].result;
@@ -2878,7 +2874,7 @@ test_path_simplify (void)
 
   /* Now run all the tests with a leading slash before the test case,
      to prove that the slash is being preserved.  */
-  for (i = 0; i < ARRAY_SIZE (tests); i++)
+  for (i = 0; i < countof (tests); i++)
     {
       char *test, *expected_result;
       int expected_change = tests[i].should_modify;

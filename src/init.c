@@ -224,7 +224,7 @@ static struct {
 static int
 comind (const char *com)
 {
-  int lo = 0, hi = ARRAY_SIZE (commands) - 1;
+  int lo = 0, hi = countof (commands) - 1;
 
   while (lo <= hi)
     {

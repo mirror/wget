@@ -100,7 +100,7 @@ valid_progress_implementation_p (const char *name)
   char *colon = strchr (name, ':');
   int namelen = colon ? colon - name : strlen (name);
 
-  for (i = 0; i < ARRAY_SIZE (implementations); i++, pi++)
+  for (i = 0; i < countof (implementations); i++, pi++)
     if (!strncmp (pi->name, name, namelen))
       return 1;
   return 0;
@@ -121,7 +121,7 @@ set_progress_implementation (const char *name)
   colon = strchr (name, ':');
   namelen = colon ? colon - name : strlen (name);
 
-  for (i = 0; i < ARRAY_SIZE (implementations); i++, pi++)
+  for (i = 0; i < countof (implementations); i++, pi++)
     if (!strncmp (pi->name, name, namelen))
       {
 	current_impl = pi;

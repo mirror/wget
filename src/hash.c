@@ -205,7 +205,7 @@ prime_size (int size, int *prime_offset)
   };
   int i = *prime_offset;
 
-  for (; i < ARRAY_SIZE (primes); i++)
+  for (; i < countof (primes); i++)
     if (primes[i] >= size)
       {
 	/* Set the offset to the next prime.  That is safe because,

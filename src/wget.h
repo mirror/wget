@@ -157,21 +157,23 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
 /* The smaller value of the two.  */
 #define MINVAL(x, y) ((x) < (y) ? (x) : (y))
 
-/* Convert the ASCII character that represents a hexadecimal digit to
-   the number in range [0, 16) that corresponds to the digit.  X
-   should be between '0' and '9', or between 'A' and 'F', or between
-   'a' and 'f'.  If X is not a hexadecimal digit character, the result
-   is undefined.  */
-#define XCHAR_TO_XDIGIT(x)						\
-  (((x) >= '0' && (x) <= '9') ? ((x) - '0') : (TOUPPER(x) - 'A' + 10))
+/* Convert an ASCII hex digit to the corresponding number between 0
+   and 15.  X should be a hexadecimal digit that satisfies isxdigit;
+   otherwise, the result is undefined.  */
+#define XDIGIT_TO_NUM(x) ((x) < 'A' ? (x) - '0' : TOUPPER (x) - 'A' + 10)
 
-/* The reverse of the above: convert a digit number in the [0, 16)
-   range to an ASCII character.  The A-F characters are in upper
+/* Convert a sequence of ASCII hex digits X and Y to a number betewen
+   0 and 255.  Uses XDIGIT_TO_NUM for conversion of individual
+   digits.  */
+#define X2DIGITS_TO_NUM(h1, h2) ((XDIGIT_TO_NUM (h1) << 4) + XDIGIT_TO_NUM (h2))
+
+/* The reverse of the above: convert a number in the [0, 16) range to
+   its ASCII representation in hex.  The A-F characters are in upper
    case.  */
-#define XDIGIT_TO_XCHAR(x) ("0123456789ABCDEF"[x])
+#define XNUM_TO_DIGIT(x) ("0123456789ABCDEF"[x])
 
-/* Like XDIGIT_TO_XCHAR, but generates lower-case characters. */
-#define XDIGIT_TO_xchar(x) ("0123456789abcdef"[x])
+/* Like XNUM_TO_DIGIT, but generates lower-case characters. */
+#define XNUM_TO_digit(x) ("0123456789abcdef"[x])
 
 /* Returns the number of elements in an array with fixed
    initialization.  For example:
@@ -192,17 +194,16 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
    }  */
 #define countof(array) (sizeof (array) / sizeof (*(array)))
 
-#define ARRAY_SIZE(array) countof (array)
-
 /* Copy the data delimited with BEG and END to alloca-allocated
-   storage, and zero-terminate it.  BEG and END are evaluated only
-   once, in that order.  */
+   storage, and zero-terminate it.  Arguments are evaluated only once,
+   in the order BEG, END, PLACE.  */
 #define BOUNDED_TO_ALLOCA(beg, end, place) do {	\
-  const char *DTA_beg = (beg);			\
-  int DTA_len = (end) - DTA_beg;		\
-  place = alloca (DTA_len + 1);			\
-  memcpy (place, DTA_beg, DTA_len);		\
-  place[DTA_len] = '\0';			\
+  const char *BTA_beg = (beg);			\
+  int BTA_len = (end) - BTA_beg;		\
+  char **BTA_dest = &(place);			\
+  *BTA_dest = alloca (BTA_len + 1);		\
+  memcpy (*BTA_dest, BTA_beg, BTA_len);		\
+  (*BTA_dest)[BTA_len] = '\0';			\
 } while (0)
 
 /* Return non-zero if string bounded between BEG and END is equal to
@@ -306,8 +307,9 @@ enum
   ADDED_HTML_EXTENSION = 0x0020         /* added ".html" extension due to -E */
 };
 
-/* Universal error type -- used almost everywhere.
-   This is, of course, utter crock.  */
+/* Universal error type -- used almost everywhere.  Error reporting of
+   this detail is not generally used or needed and should be
+   simplified.  */
 typedef enum
 {
   NOCONERROR, HOSTERR, CONSOCKERR, CONERROR, CONSSLERR,

@@ -195,12 +195,12 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
     };
     int i;
 
-    for (i = 0; i < ARRAY_SIZE (skey_head); i++)
+    for (i = 0; i < countof (skey_head); i++)
       {
         if (strncasecmp (skey_head[i], respline, strlen (skey_head[i])) == 0)
           break;
       }
-    if (i < ARRAY_SIZE (skey_head))
+    if (i < countof (skey_head))
       {
         const char *cp;
         int skey_sequence = 0;

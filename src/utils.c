@@ -241,7 +241,7 @@ static void
 register_ptr (void *ptr, const char *file, int line)
 {
   int i;
-  for (i = 0; i < ARRAY_SIZE (malloc_debug); i++)
+  for (i = 0; i < countof (malloc_debug); i++)
     if (malloc_debug[i].ptr == NULL)
       {
 	malloc_debug[i].ptr = ptr;
@@ -259,7 +259,7 @@ static void
 unregister_ptr (void *ptr)
 {
   int i;
-  for (i = 0; i < ARRAY_SIZE (malloc_debug); i++)
+  for (i = 0; i < countof (malloc_debug); i++)
     if (malloc_debug[i].ptr == ptr)
       {
 	malloc_debug[i].ptr = NULL;
@@ -279,7 +279,7 @@ print_malloc_debug_stats (void)
   int i;
   printf ("\nMalloc:  %d\nFree:    %d\nBalance: %d\n\n",
 	  malloc_count, free_count, malloc_count - free_count);
-  for (i = 0; i < ARRAY_SIZE (malloc_debug); i++)
+  for (i = 0; i < countof (malloc_debug); i++)
     if (malloc_debug[i].ptr != NULL)
       printf ("0x%08ld: %s:%d\n", (long)malloc_debug[i].ptr,
 	      malloc_debug[i].file, malloc_debug[i].line);
@@ -1903,8 +1903,8 @@ debug_test_md5 (char *buf)
   cnt = 16;
   while (cnt--)
     {
-      *p2++ = XDIGIT_TO_xchar (*p1 >> 4);
-      *p2++ = XDIGIT_TO_xchar (*p1 & 0xf);
+      *p2++ = XNUM_TO_digit (*p1 >> 4);
+      *p2++ = XNUM_TO_digit (*p1 & 0xf);
       ++p1;
     }
   *p2 = '\0';
