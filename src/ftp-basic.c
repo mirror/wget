@@ -490,7 +490,7 @@ ftp_pasv (int csock, ip_address *addr, int *port)
   assert (addr != NULL);
   assert (port != NULL);
 
-  memset (addr, 0, sizeof (ip_address));
+  xzero (*addr);
 
   /* Form the request.  */
   request = ftp_request ("PASV", NULL);
@@ -558,7 +558,7 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
   assert (addr != NULL);
   assert (port != NULL);
 
-  memset (addr, 0, sizeof (ip_address));
+  xzero (*addr);
 
   /* Form the request.  */
   request = ftp_request ("LPSV", NULL);

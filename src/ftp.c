@@ -1846,7 +1846,7 @@ ftp_loop (struct url *u, int *dt, struct url *proxy)
 
   *dt = 0;
 
-  memset (&con, 0, sizeof (con));
+  xzero (con);
 
   con.csock = -1;
   con.st = ON_YOUR_OWN;
