@@ -1,5 +1,11 @@
 2001-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* retr.c (show_progress): Use it.
+
+	* log.c (log_set_flush): New function.
+
+2001-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* utils.c (path_simplify): Don't remove trailing slashes.
 
 	* ftp.c (ftp_get_listing): Use it.

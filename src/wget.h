@@ -98,6 +98,8 @@ void logprintf ();
 void debug_logprintf ();
 #endif /* not HAVE_STDARG_H */
 void logputs PARAMS ((enum log_options, const char *));
+void logflush PARAMS ((void));
+void log_set_flush PARAMS ((int));
 
 /* Defined in `utils.c', but used literally everywhere.  */
 #ifndef DEBUG_MALLOC

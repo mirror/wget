@@ -50,7 +50,6 @@ extern int errno;
 /* See the comment in gethttp() why this is needed. */
 int global_download_count;
 
-void logflush PARAMS ((void));
 
 /* Flags for show_progress().  */
 enum spflags { SP_NONE, SP_INIT, SP_FINISH };
@@ -198,7 +197,8 @@ show_progress (long res, long expected, enum spflags flags)
     }
 
   /* Temporarily disable flushing.  */
-  opt.no_flush = 1;
+  log_set_flush (0);
+
   /* init set means initialization.  If res is set, it also means that
      the retrieval is *not* done from the beginning.  The part that
      was already retrieved is not shown again.  */
@@ -255,11 +255,10 @@ show_progress (long res, long expected, enum spflags flags)
 	  logprintf (LOG_VERBOSE, "\n%5ldK", nrow * line_bytes / 1024);
 	}
     }
+
   /* Reenable flushing.  */
-  opt.no_flush = 0;
-  if (any_output)
-    /* Force flush.  */
-    logflush ();
+  log_set_flush (1);
+
   return any_output;
 }
 

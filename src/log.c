@@ -52,6 +52,10 @@ static FILE *logfp;
 /* Whether logging is saved at all.  */
 int save_log_p;
 
+/* Whether the log is flushed after each command. */
+int flush_log_p = 1;
+int needs_flushing;
+
 /* In the event of a hang-up, and if its output was on a TTY, Wget
    redirects its output to `wget-log'.
 
@@ -268,10 +272,13 @@ logputs (enum log_options o, const char *s)
   CANONICALIZE_LOGFP_OR_RETURN;
 
   fputs (s, logfp);
-  if (!opt.no_flush)
-    fflush (logfp);
   if (save_log_p)
     saved_append (s);
+
+  if (flush_log_p)
+    logflush ();
+  else
+    needs_flushing = 1;
 }
 
 /* Print a message to the log.  A copy of message will be saved to
@@ -348,16 +355,41 @@ logvprintf (enum log_options o, const char *fmt, va_list args)
       if (bigmsg)
 	xfree (bigmsg);
     }
-  if (!opt.no_flush)
-    fflush (logfp);
+  if (flush_log_p)
+    logflush ();
+  else
+    needs_flushing = 1;
 }
 
-/* Flush LOGFP.  */
+/* Flush LOGFP.  Useful while flushing is disabled.  */
 void
 logflush (void)
 {
   CANONICALIZE_LOGFP_OR_RETURN;
   fflush (logfp);
+  needs_flushing = 0;
+}
+
+/* Enable or disable log flushing. */
+void
+log_set_flush (int flush)
+{
+  if (flush == flush_log_p)
+    return;
+
+  if (flush == 0)
+    {
+      /* Disable flushing by setting flush_log_p to 0. */
+      flush_log_p = 0;
+    }
+  else
+    {
+      /* Reenable flushing.  If anything was printed in no-flush mode,
+	 flush the log now.  */
+      if (needs_flushing)
+	logflush ();
+      flush_log_p = 1;
+    }
 }
 
 /* Portability with pre-ANSI compilers makes these two functions look

@@ -49,7 +49,6 @@ struct options
 				   data. */
   char *dir_prefix;		/* The top of directory tree */
   char *lfilename;		/* Log filename */
-  int no_flush;			/* If non-zero, inhibit flushing log. */
   char *input_filename;		/* Input filename */
   int force_html;		/* Is the input file an HTML file? */
 
