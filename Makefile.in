@@ -158,7 +158,7 @@ clean-top:
 	$(RM) -r .libs
 
 distclean-top: clean-top
-	$(RM) Makefile config.status config.log config.cache stamp-h
+	$(RM) Makefile config.status config.log config.cache libtool stamp-h
 	$(RM) -r autom4te.cache
 
 realclean-top: distclean-top
