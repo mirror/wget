@@ -1,3 +1,7 @@
+2002-02-11  Christian Lackas  <delta@lackas.net>
+
+	* recur.c: recurive downloading for https fixed.
+
 2002-02-19  Alan Eldridge  <alane@geeksrus.net>
 
 	* host.h: Also include <netinet/in.h> and <sys/socket.h>.

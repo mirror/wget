@@ -438,6 +438,9 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 
   /* 1. Schemes other than HTTP are normally not recursed into. */
   if (u->scheme != SCHEME_HTTP
+#ifdef HAVE_SSL
+		&& u->scheme != SCHEME_HTTPS
+#endif
       && !(u->scheme == SCHEME_FTP && opt.follow_ftp))
     {
       DEBUGP (("Not following non-HTTP schemes.\n"));
@@ -446,7 +449,11 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 
   /* 2. If it is an absolute link and they are not followed, throw it
      out.  */
-  if (u->scheme == SCHEME_HTTP)
+  if (u->scheme == SCHEME_HTTP
+#ifdef HAVE_SSL
+		  || u->scheme == SCHEME_HTTPS
+#endif
+	 )
     if (opt.relative_only && !upos->link_relative_p)
       {
 	DEBUGP (("It doesn't really look like a relative link.\n"));
@@ -534,7 +541,12 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
       }
 
   /* 8. */
-  if (opt.use_robots && u->scheme == SCHEME_HTTP)
+  if (opt.use_robots && (u->scheme == SCHEME_HTTP
+#ifdef HAVE_SSL
+			  || u->scheme == SCHEME_HTTPS
+#endif
+			  )
+	 )
     {
       struct robot_specs *specs = res_get_specs (u->host, u->port);
       if (!specs)
