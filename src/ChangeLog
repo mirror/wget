@@ -1,5 +1,13 @@
 2002-01-24  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* host.c (lookup_host): Use sizeof(ip4_address) to calculate the
+	offset.
+	(address_list_new): Use map_ipv4_to_ip.
+	(wget_sockaddr_set_address): Convert ADDR to IPv4 before using it
+	in IPv4 context.
+
+2002-01-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* source: Integrated IPv6 support by Thomas Lussnig.
 
 2002-01-15  Ian Abbott  <abbotti@mev.co.uk>

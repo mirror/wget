@@ -205,7 +205,7 @@ address_list_new (char **h_addr_list)
   al->refcount  = 1;
 
   for (i = 0; i < count; i++)
-    memcpy (al->addresses + i, h_addr_list[i], sizeof (ip_address));
+    map_ipv4_to_ip ((ip4_address *)h_addr_list[i], al->addresses + i);
 
   return al;
 }
@@ -267,12 +267,16 @@ wget_sockaddr_set_address (wget_sockaddr *sa,
 {
   if (ip_family == AF_INET) 
     {
+      ip4_address addr4;
+      if (!map_ip_to_ipv4 (addr, &addr4))
+	/* should the callers have prevented this? */
+	abort ();
       sa->sin.sin_family = ip_family;
       sa->sin.sin_port = htons (port);
       if (addr == NULL) 
-	memset ((unsigned char*)&sa->sin.sin_addr, 0,    sizeof(ip_address));
+	memset (&sa->sin.sin_addr, 0,      sizeof(ip4_address));
       else	 
-	memcpy ((unsigned char*)&sa->sin.sin_addr, addr, sizeof(ip_address));
+	memcpy (&sa->sin.sin_addr, &addr4, sizeof(ip4_address));
       return;
     }
 #ifdef INET6
@@ -281,9 +285,9 @@ wget_sockaddr_set_address (wget_sockaddr *sa,
       sa->sin6.sin6_family = ip_family;
       sa->sin6.sin6_port = htons (port);
       if (addr == NULL) 
-	memset (&sa->sin6.sin6_addr, 0   , sizeof(ip_address));
+	memset (&sa->sin6.sin6_addr, 0   , 16);
       else	     
-	memcpy (&sa->sin6.sin6_addr, addr, sizeof(ip_address));
+	memcpy (&sa->sin6.sin6_addr, addr, 16);
       return;
     }
 #endif  
@@ -521,7 +525,7 @@ lookup_host (const char *host, int silent)
 	 we copy the correct four bytes.  */
       int offset = 0;
 #ifdef WORDS_BIGENDIAN
-      offset = sizeof (unsigned long) - sizeof (ip_address);
+      offset = sizeof (unsigned long) - sizeof (ip4_address);
 #endif
       map_ipv4_to_ip ((ip4_address *)((char *)&addr_ipv4 + offset), &addr);
       return address_list_new_one (&addr);
@@ -548,7 +552,10 @@ lookup_host (const char *host, int silent)
     int err;
 
     memset (&hints, 0, sizeof (hints));
-    hints.ai_family   = PF_UNSPEC;
+    if (ip_default_family == AF_INET)
+      hints.ai_family   = AF_INET;
+    else
+      hints.ai_family   = PF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     err = getaddrinfo (host, NULL, &hints, &ai);
 
