@@ -66,7 +66,7 @@ $(SAMPLERCTEXI): $(srcdir)/sample.wgetrc
 	sed s/@/@@/g $< > $@
 
 wget.info: $(SAMPLERCTEXI) $(srcdir)/wget.texi
-	-$(MAKEINFO)
+	$(MAKEINFO) -I$(srcdir)
 
 $(TEXI2POD): $(srcdir)/$(TEXI2POD).in
 	sed s,/usr/bin/perl,@PERL@, $< > $@
@@ -115,7 +115,7 @@ install.info: wget.info
 # install man page, creating install directory if necessary
 install.man: $(MAN)
 	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(mandir)/man$(manext)
-	$(INSTALL_DATA) $(srcdir)/$(MAN) $(DESTDIR)$(mandir)/man$(manext)/$(MAN)
+	$(INSTALL_DATA) $(MAN) $(DESTDIR)$(mandir)/man$(manext)/$(MAN)
 
 # install sample.wgetrc
 install.wgetrc: $(srcdir)/sample.wgetrc
