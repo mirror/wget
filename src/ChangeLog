@@ -1,3 +1,8 @@
+2004-11-18  Hans-Andreas Engel <engel@node.ch>
+
+	* http.c: Enable --convert-links (-k) when a single page is downloaded
+	via --output-document (-O).
+
 2004-11-18  Mauro Tortonesi <mauro@deepspace6.net>
 
 	* connect.c: Minor correction to the comment in front of fd_peek.

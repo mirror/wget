@@ -1801,7 +1801,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   /* Determine the local filename.  */
   if (local_file && *local_file)
     hstat.local_file = local_file;
-  else if (local_file)
+  else if (local_file && !opt.output_document)
     {
       *local_file = url_file_name (u);
       hstat.local_file = local_file;
@@ -1810,6 +1810,9 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
     {
       dummy = url_file_name (u);
       hstat.local_file = &dummy;
+      /* be honest about where we will save the file */
+      if (local_file && opt.output_document)
+        *local_file = HYPHENP (opt.output_document) ? NULL : xstrdup (opt.output_document);
     }
 
   if (!opt.output_document)
@@ -1962,8 +1965,6 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	 *hstat.local_file to tack on ".html". */
       if (!opt.output_document)
 	locf = *hstat.local_file;
-      else
-	locf = opt.output_document;
 
       /* Time?  */
       tms = time_str (NULL);
