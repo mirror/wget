@@ -141,6 +141,7 @@ address_list_new (char **h_addr_list)
     ++count;
   assert (count > 0);
   al->count    = count;
+  al->faulty   = 0;
   al->buffer   = xmalloc (count * IP4_ADDRESS_LENGTH);
   al->refcount = 1;
 

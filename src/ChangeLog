@@ -1,5 +1,9 @@
 2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* host.c (address_list_new): Initialize al->faulty.
+
+2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* http.c (http_process_range): Accept the broken output of
 	"JavaWebServer/1.1.1".
 
