@@ -2553,15 +2553,15 @@ Wget @value{VERSION} can be found at
 @cindex mailing list
 @cindex list
 
-Wget has its own mailing list at @email{wget@@sunsite.auc.dk}, thanks
+Wget has its own mailing list at @email{wget@@sunsite.dk}, thanks
 to Karsten Thygesen.  The mailing list is for discussion of Wget
 features and web, reporting Wget bugs (those that you think may be of
 interest to the public) and mailing announcements.  You are welcome to
 subscribe.  The more people on the list, the better!
 
-To subscribe, send mail to @email{wget-subscribe@@sunsite.auc.dk}.
+To subscribe, send mail to @email{wget-subscribe@@sunsite.dk}.
 the magic word @samp{subscribe} in the subject line.  Unsubscribe by
-mailing to @email{wget-unsubscribe@@sunsite.auc.dk}.
+mailing to @email{wget-unsubscribe@@sunsite.dk}.
 
 The mailing list is archived at @url{http://fly.srk.fer.hr/archive/wget}.
 Alternative archive is available at
@@ -2641,7 +2641,7 @@ features available on Unix, but it should work as a substitute for
 people stuck with Windows.  Note that the Windows port is
 @strong{neither tested nor maintained} by me---all questions and
 problems should be reported to Wget mailing list at
-@email{wget@@sunsite.auc.dk} where the maintainers will look at them.
+@email{wget@@sunsite.dk} where the maintainers will look at them.
 
 @node Signals,  , Portability, Various
 @section Signals
