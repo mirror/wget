@@ -19,6 +19,19 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+/* MS Visual C does not define __STDC__ when the MSC extensions are
+   enabled, but you need those extensions to compile <windows.h>.  */
+#if !defined(__STDC__) && defined(_MSC_EXTENSIONS)
+# define __STDC__ 1
+#endif
+
+/* Setting __STDC__ causes MSVC to break other stuff... */
+#if __STDC__ && defined(_MSC_VER)
+# define utimbuf _utimbuf
+# define O_RDONLY _O_RDONLY
+# define alloca _alloca
+#endif
+
 /* Define if you have the <alloca.h> header file.  */
 #undef HAVE_ALLOCA_H
 

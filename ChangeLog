@@ -1,3 +1,9 @@
+2002-04-23  Ian Abbott  <abbotti@mev.co.uk>
+
+	* windows/config.h.ms: Accounted for MSVC not defining `__STDC__' when
+	Microsoft's extensions are enabled and define it anyway (set to `1').
+	Defined some things that broke as a result of this.
+
 2002-04-20  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* po/de.po: Updated from the TP.
