@@ -83,7 +83,12 @@ so, delete this exception statement from your version.  */
 /* Define a wgint type under Windows. */
 typedef __int64 wgint;
 #define SIZEOF_WGINT 8
+
+#ifdef __GNUC__
+#define WGINT_MAX 9223372036854775807LL
+#else
 #define WGINT_MAX 9223372036854775807I64
+#endif
 
 #define str_to_wgint str_to_int64
 __int64 str_to_int64 (const char *, char **, int);
@@ -99,7 +104,7 @@ __int64 str_to_int64 (const char *, char **, int);
 # define fstat(fd, buf) _fstati64 (fd, buf)
 #endif
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || defined(__MINGW32__)
 # define struct_stat struct _stati64
 #elif defined(__BORLANDC__)
 # define struct_stat struct stati64

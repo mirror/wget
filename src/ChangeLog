@@ -1,3 +1,8 @@
+2005-02-26  Gisle Vanem  <giva@bgnett.no>
+
+	* utils.c: Use the nnnLL syntax under GCC.  Define struct_stat to
+	struct _stati64 under __MINGW32__ as well as under MS VC.
+
 2005-02-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c: Use the nnnI64 syntax for __int64 constants under all
