@@ -1,3 +1,9 @@
+2001-08-24  Ian Abbott  <abbotti@mev.co.uk>
+
+	* html-url.c (collect_tags_mapper): Fix bug converting links
+	with -k option for tags with multiple link attributes by
+	handling links in the order they appear.
+
 2001-08-15  Ian Abbott  <abbotti@mev.co.uk>
 
 	* ftp.c (ftp_loop_internal): Avoid a potential buffer overflow in

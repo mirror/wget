@@ -383,7 +383,7 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
     {
     case TC_LINK:
       {
-	int i;
+	int i, id, first;
 	int size = ARRAY_SIZE (url_tag_attr_map);
 	for (i = 0; i < size; i++)
 	  if (url_tag_attr_map[i].tagid == tagid)
@@ -391,25 +391,34 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 	/* We've found the index of url_tag_attr_map where the
            attributes of our tags begin.  Now, look for every one of
            them, and handle it.  */
-	for (; (i < size && url_tag_attr_map[i].tagid == tagid); i++)
+	/* Need to process the attributes in the order they appear in
+	   the tag, as this is required if we convert links.  */
+	first = i;
+	for (id = 0; id < tag->nattrs; id++)
 	  {
-	    char *attr_value;
-	    int id;
-	    if (closure->dash_p_leaf_HTML
-		&& (url_tag_attr_map[i].flags & AF_EXTERNAL))
-	      /* If we're at a -p leaf node, we don't want to retrieve
-                 links to references we know are external to this document,
-		 such as <a href=...>.  */
-	      continue;
+	    /* This nested loop may seem inefficient (O(n^2)), but it's
+	       not, since the number of attributes (n) we loop over is
+	       extremely small.  In the worst case of IMG with all its
+	       possible attributes, n^2 will be only 9.  */
+	    for (i = first; (i < size && url_tag_attr_map[i].tagid == tagid);
+		 i++)
+	      {
+		char *attr_value;
+		if (closure->dash_p_leaf_HTML
+		    && (url_tag_attr_map[i].flags & AF_EXTERNAL))
+		  /* If we're at a -p leaf node, we don't want to retrieve
+		     links to references we know are external to this document,
+		     such as <a href=...>.  */
+		  continue;
 
-	    /* This find_attr() buried in a loop may seem inefficient
-               (O(n^2)), but it's not, since the number of attributes
-               (n) we loop over is extremely small.  In the worst case
-               of IMG with all its possible attributes, n^2 will be
-               only 9.  */
-	    attr_value = find_attr (tag, url_tag_attr_map[i].attr_name, &id);
-	    if (attr_value)
-	      handle_link (closure, attr_value, tag, id);
+		if (!strcasecmp (tag->attrs[id].name,
+				 url_tag_attr_map[i].attr_name))
+		  {
+		    attr_value = tag->attrs[id].value;
+		    if (attr_value)
+		      handle_link (closure, attr_value, tag, id);
+		  }
+	      }
 	  }
       }
       break;
