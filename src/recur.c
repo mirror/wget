@@ -511,23 +511,13 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
   /* 6. */
   {
     /* Check for acceptance/rejection rules.  We ignore these rules
-       for HTML documents because they might lead to other files which
-       need to be downloaded.  Of course, we don't know which
-       documents are HTML before downloading them, so we guess.
-
-       A file is subject to acceptance/rejection rules if:
-
-       * u->file is not "" (i.e. it is not a directory)
-       and either:
-         + there is no file suffix,
-	 + or there is a suffix, but is not "html" or "htm" or similar,
-	 + both:
-	   - recursion is not infinite,
-	   - and we are at its very end. */
-
+       for directories (no file name to match) and for HTML documents,
+       which might lead to other files that do need to be downloaded.
+       That is, unless we've exhausted the recursion depth anyway.  */
     if (u->file[0] != '\0'
-	&& (!has_html_suffix_p (url)
-	    || (opt.reclevel != INFINITE_RECURSION && depth >= opt.reclevel)))
+	&& !(has_html_suffix_p (u->file)
+	     && depth < opt.reclevel - 1
+	     && depth != INFINITE_RECURSION))
       {
 	if (!acceptable (u->file))
 	  {

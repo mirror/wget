@@ -1,3 +1,8 @@
+2002-04-15  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* recur.c (download_child_p): Don't ignore rejection of HTML
+	documents that are themselves leaves of recursion.
+
 2002-04-15  Ian Abbott  <abbotti@mev.co.uk>
 
 	Makefile.in: Updated several dependencies for object files to take
@@ -16,6 +21,7 @@
 	* utils.c: Don't define `SETJMP()', `run_with_timeout_env' or
 	`abort_run_with_timeout()' when `USE_SIGNAL_TIMEOUT' is undefined.
 
+>>>>>>> 1.395
 2002-04-15  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* host.c (getaddrinfo_with_timeout): New function.
