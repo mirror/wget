@@ -1,3 +1,7 @@
+2003-09-25  Herold Heiko  <Heiko.Herold@previnet.it>
+
+	* windows/Makefile.src: Updated OBJ list.
+
 2003-09-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* Makefile.in (clean-top): Remove .libs.
