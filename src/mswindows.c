@@ -1,5 +1,5 @@
 /* mswindows.c -- Windows-specific support
-   Copyright (C) 1995, 1996, 1997, 1998  Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 1998, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -199,22 +199,25 @@ char *
 ws_mypath (void)
 {
   static char *wspathsave = NULL;
-  char buffer[MAX_PATH];
-  char *ptr;
 
-  if (wspathsave)
+  if (!wspathsave)
     {
-      return wspathsave;
+      char buf[MAX_PATH + 1];
+      char *p;
+      DWORD len;
+
+      len = GetModuleFileName (GetModuleHandle (NULL), buf, sizeof (buf));
+      if (!len || (len >= sizeof (buf)))
+        return NULL;
+
+      p = strrchr (buf, PATH_SEPARATOR);
+      if (!p)
+        return NULL;
+
+      *p = '\0';
+      wspathsave = xstrdup (buf);
     }
 
-  if (GetModuleFileName (NULL, buffer, MAX_PATH) &&
-      (ptr = strrchr (buffer, PATH_SEPARATOR)) != NULL)
-    {
-      *(ptr + 1) = '\0';
-      wspathsave = xstrdup (buffer);
-    }
-  else
-    wspathsave = NULL;
   return wspathsave;
 }
 
