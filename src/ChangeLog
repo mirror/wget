@@ -1,5 +1,10 @@
 2001-12-12  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* html-url.c (append_one_url): Resurrect warning when unable to
+	resolve a relative link.
+
+2001-12-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* html-url.c (collect_tags_mapper): Break into several functions.
 	(tag_url_attributes): Collect <embed href=...>.
 

@@ -328,9 +328,13 @@ append_one_url (const char *link_uri, int inlinep,
 
       if (!link_has_scheme)
 	{
-	  /* We have no base, and the link does not have a host
-	     attached to it.  Nothing we can do.  */
-	  /* #### Should we print a warning here?  Wget 1.5.x used to.  */
+	  /* Base URL is unavailable, and the link does not have a
+	     location attached to it -- we have to give up.  Since
+	     this can only happen when using `--force-html -i', print
+	     a warning.  */
+	  logprintf (LOG_NOTQUIET,
+		     _("%s: Cannot resolve relative link %s.\n"),
+		     ctx->document_file, link_uri);
 	  return NULL;
 	}
 
@@ -364,6 +368,8 @@ append_one_url (const char *link_uri, int inlinep,
       xfree (complete_uri);
     }
 
+  DEBUGP (("appending \"%s\" to urlpos.\n", url->url));
+
   newel = (struct urlpos *)xmalloc (sizeof (struct urlpos));
   memset (newel, 0, sizeof (*newel));
 
@@ -394,8 +400,8 @@ append_one_url (const char *link_uri, int inlinep,
 /* All the tag_* functions are called from collect_tags_mapper, as
    specified by KNOWN_TAGS.  */
 
-/* For most tags, all we want to do is harvest URLs from their
-   attributes.  */
+/* Default tag handler: collect URLs from attributes specified for
+   this tag by tag_url_attributes.  */
 
 static void
 tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
@@ -407,7 +413,7 @@ tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
     if (tag_url_attributes[i].tagid == tagid)
       {
 	/* We've found the index of tag_url_attributes where the
-	   attributes of our tags begin.  */
+	   attributes of our tag begin.  */
 	first = i;
 	break;
       }
@@ -426,24 +432,25 @@ tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
     {
       /* Find whether TAG/ATTRIND is a combination that contains a
 	 URL. */
-      char *attrvalue = tag->attrs[attrind].value;
+      char *link = tag->attrs[attrind].value;
 
       /* If you're cringing at the inefficiency of the nested loops,
-	 remember that the number of attributes the inner loop
-	 iterates over is laughably small -- three in the worst case
-	 (IMG).  */
+	 remember that they both iterate over a laughably small
+	 quantity of items.  The worst-case inner loop is for the IMG
+	 tag, which has three attributes.  */
       for (i = first; i < size && tag_url_attributes[i].tagid == tagid; i++)
 	{
 	  if (0 == strcasecmp (tag->attrs[attrind].name,
 			       tag_url_attributes[i].attr_name))
 	    {
 	      int flags = tag_url_attributes[i].flags;
-	      append_one_url (attrvalue, !(flags & TUA_EXTERNAL),
-			      tag, attrind, ctx);
+	      append_one_url (link, !(flags & TUA_EXTERNAL), tag, attrind, ctx);
 	    }
 	}
     }
 }
+
+/* Handle the BASE tag, for <base href=...>. */
 
 static void
 tag_handle_base (int tagid, struct taginfo *tag, struct map_context *ctx)
@@ -468,6 +475,9 @@ tag_handle_base (int tagid, struct taginfo *tag, struct map_context *ctx)
     ctx->base = xstrdup (newbase);
 }
 
+/* Handle the LINK tag.  It requires special handling because how its
+   links will be followed in -p mode depends on the REL attribute.  */
+
 static void
 tag_handle_link (int tagid, struct taginfo *tag, struct map_context *ctx)
 {
@@ -484,14 +494,8 @@ tag_handle_link (int tagid, struct taginfo *tag, struct map_context *ctx)
     }
 }
 
-/* Some pages use a META tag to specify that the page be refreshed by
-   a new page after a given number of seconds.  The general format for
-   this is:
-
-   <meta http-equiv=Refresh content="NUMBER; URL=index2.html">
-
-   So we just need to skip past the "NUMBER; URL=" garbage to get to
-   the URL.  */
+/* Handle the META tag.  This requires special handling because of the
+   refresh feature and because of robot exclusion.  */
 
 static void
 tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
@@ -501,6 +505,15 @@ tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
 
   if (http_equiv && 0 == strcasecmp (http_equiv, "refresh"))
     {
+      /* Some pages use a META tag to specify that the page be
+	 refreshed by a new page after a given number of seconds.  The
+	 general format for this is:
+
+	   <meta http-equiv=Refresh content="NUMBER; URL=index2.html">
+
+	 So we just need to skip past the "NUMBER; URL=" garbage to
+	 get to the URL.  */
+
       struct urlpos *entry;
 
       int attrind;
