@@ -32,11 +32,6 @@ dnl
 AC_INIT([src/version.c])
 AC_PREREQ(2.57)
 
-AC_CONFIG_HEADERS([src/config.h])
-AH_BOTTOM([
-#include "config-post.h"
-])
-
 dnl
 dnl What version of Wget are we building?
 dnl
@@ -589,6 +584,10 @@ dnl Create output
 dnl
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile util/Makefile
                  po/Makefile.in windows/Makefile])
+AC_CONFIG_HEADERS([src/config.h])
+AH_BOTTOM([
+#include "config-post.h"
+])
 AC_CONFIG_FILES([stamp-h], [echo timestamp > stamp-h])
 AC_CONFIG_COMMANDS([default], [WGET_PROCESS_PO])
 AC_OUTPUT
