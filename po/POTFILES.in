@@ -6,7 +6,6 @@ src/cmpt.c
 src/connect.c
 src/convert.c
 src/cookies.c
-src/fnmatch.c
 src/ftp-basic.c
 src/ftp-ls.c
 src/ftp-opie.c
