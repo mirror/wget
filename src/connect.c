@@ -511,8 +511,9 @@ acceptport (int local_sock, int *sock)
   socklen_t addrlen = sizeof (ss);
 
 #ifdef HAVE_SELECT
-  if (select_fd (local_sock, opt.connect_timeout, 0) <= 0)
-    return ACCEPTERR;
+  if (opt.connect_timeout)
+    if (select_fd (local_sock, opt.connect_timeout, 0) <= 0)
+      return ACCEPTERR;
 #endif
   if ((*sock = accept (local_sock, sa, &addrlen)) < 0)
     return ACCEPTERR;

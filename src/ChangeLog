@@ -1,5 +1,10 @@
 2003-11-01  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* connect.c (acceptport): Don't call select_fd when timeout is not
+	requested.
+
+2003-11-01  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* host.c: Removed the ip_default_family global variable.
 
 	* host.c (lookup_host): Document the function.  Fixed declaration
