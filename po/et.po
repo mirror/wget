@@ -1,13 +1,13 @@
 # Estonian translations for GNU wget.
 # Copyright (C) 1998 Free Software Foundation, Inc.
-# Toomas Soome <tsoome@ut.ee>, 2001.
+# Toomas Soome <Toomas.Soome@microlink.ee>, 2003.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU wget 1.8.1\n"
+"Project-Id-Version: GNU wget 1.8.2\n"
 "POT-Creation-Date: 2001-12-17 16:30+0100\n"
-"PO-Revision-Date: 2001-12-29 23:22+0200\n"
-"Last-Translator: Toomas Soome <tsoome@ut.ee>\n"
+"PO-Revision-Date: 2003-08-31 00:03+0300\n"
+"Last-Translator: Toomas Soome <Toomas.Soome@microlink.ee>\n"
 "Language-Team: Estonian <et@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-15\n"
@@ -151,8 +151,12 @@ msgstr "==> CWD pole vajalik.\n"
 
 #: src/ftp.c:435
 #, c-format
-msgid "No such directory `%s'.\n\n"
-msgstr "Kataloogi `%s' pole.\n\n"
+msgid ""
+"No such directory `%s'.\n"
+"\n"
+msgstr ""
+"Kataloogi `%s' pole.\n"
+"\n"
 
 #. do not CWD
 #: src/ftp.c:453
@@ -183,22 +187,38 @@ msgstr "Vale PORT.\n"
 
 #: src/ftp.c:651
 #, c-format
-msgid "\nREST failed; will not truncate `%s'.\n"
-msgstr "\nREST ebaõnnestus; ei lühenda faili `%s'.\n"
+msgid ""
+"\n"
+"REST failed; will not truncate `%s'.\n"
+msgstr ""
+"\n"
+"REST ebaõnnestus; ei lühenda faili `%s'.\n"
 
 #: src/ftp.c:658
-msgid "\nREST failed, starting from scratch.\n"
-msgstr "\nREST ebaõnnestus, alustan algusest.\n"
+msgid ""
+"\n"
+"REST failed, starting from scratch.\n"
+msgstr ""
+"\n"
+"REST ebaõnnestus, alustan algusest.\n"
 
 #: src/ftp.c:707
 #, c-format
-msgid "No such file `%s'.\n\n"
-msgstr "Faili `%s' pole.\n\n"
+msgid ""
+"No such file `%s'.\n"
+"\n"
+msgstr ""
+"Faili `%s' pole.\n"
+"\n"
 
 #: src/ftp.c:755
 #, c-format
-msgid "No such file or directory `%s'.\n\n"
-msgstr "Faili või kataloogi `%s' pole.\n\n"
+msgid ""
+"No such file or directory `%s'.\n"
+"\n"
+msgstr ""
+"Faili või kataloogi `%s' pole.\n"
+"\n"
 
 #: src/ftp.c:839 src/ftp.c:847
 #, c-format
@@ -244,8 +264,12 @@ msgstr "(katse:%2d)"
 
 #: src/ftp.c:1118 src/http.c:1786
 #, c-format
-msgid "%s (%s) - `%s' saved [%ld]\n\n"
-msgstr "%s (%s) - `%s' salvestatud [%ld]\n\n"
+msgid ""
+"%s (%s) - `%s' saved [%ld]\n"
+"\n"
+msgstr ""
+"%s (%s) - `%s' salvestatud [%ld]\n"
+"\n"
 
 #: src/ftp.c:1160 src/main.c:819 src/recur.c:349 src/retr.c:587
 #, c-format
@@ -277,13 +301,19 @@ msgstr "Kauge fail ei ole uuem, kui lokaalne fail `%s' -- ei lae.\n"
 #. Remote file is newer or sizes cannot be matched
 #: src/ftp.c:1324
 #, c-format
-msgid "Remote file is newer than local file `%s' -- retrieving.\n\n"
-msgstr "Kauge fail on uuem kui lokaalne fail `%s' -- laen uuesti.\n\n"
+msgid ""
+"Remote file is newer than local file `%s' -- retrieving.\n"
+"\n"
+msgstr ""
+"Kauge fail on uuem kui lokaalne fail `%s' -- laen uuesti.\n"
+"\n"
 
 #. Sizes do not match
 #: src/ftp.c:1331
 #, c-format
-msgid "The sizes do not match (local %ld) -- retrieving.\n\n"
+msgid ""
+"The sizes do not match (local %ld) -- retrieving.\n"
+"\n"
 msgstr "Suurused ei klapi (lokaalne %ld) -- laen uuesti.\n"
 
 #: src/ftp.c:1348
@@ -292,8 +322,12 @@ msgstr "Vigane nimeviide, jätan vahele.\n"
 
 #: src/ftp.c:1365
 #, c-format
-msgid "Already have correct symlink %s -> %s\n\n"
-msgstr "Korrektne nimeviide on juba olemas %s -> %s\n\n"
+msgid ""
+"Already have correct symlink %s -> %s\n"
+"\n"
+msgstr ""
+"Korrektne nimeviide on juba olemas %s -> %s\n"
+"\n"
 
 #: src/ftp.c:1373
 #, c-format
@@ -505,8 +539,14 @@ msgid " [following]"
 msgstr " [järgnev]"
 
 #: src/http.c:1213
-msgid "\n    The file is already fully retrieved; nothing to do.\n\n"
-msgstr "\n    Fail on juba täielikult kohal; rohkem ei saa midagi teha.\n\n"
+msgid ""
+"\n"
+"    The file is already fully retrieved; nothing to do.\n"
+"\n"
+msgstr ""
+"\n"
+"    Fail on juba täielikult kohal; rohkem ei saa midagi teha.\n"
+"\n"
 
 #: src/http.c:1229
 #, c-format
@@ -573,8 +613,12 @@ msgstr "Last-modified päis on vigane -- ignoreerin ajatemplit.\n"
 
 #: src/http.c:1706
 #, c-format
-msgid "Server file no newer than local file `%s' -- not retrieving.\n\n"
-msgstr "Fail serveril ei ole uuem lokaalsest failist `%s' -- ei lae.\n\n"
+msgid ""
+"Server file no newer than local file `%s' -- not retrieving.\n"
+"\n"
+msgstr ""
+"Fail serveril ei ole uuem lokaalsest failist `%s' -- ei lae.\n"
+"\n"
 
 #: src/http.c:1714
 #, c-format
@@ -587,8 +631,12 @@ msgstr "Kauge fail on uuem, laen alla.\n"
 
 #: src/http.c:1759
 #, c-format
-msgid "%s (%s) - `%s' saved [%ld/%ld]\n\n"
-msgstr "%s (%s) - `%s' salvestatud [%ld/%ld]\n\n"
+msgid ""
+"%s (%s) - `%s' saved [%ld/%ld]\n"
+"\n"
+msgstr ""
+"%s (%s) - `%s' salvestatud [%ld/%ld]\n"
+"\n"
 
 #: src/http.c:1809
 #, c-format
@@ -597,8 +645,12 @@ msgstr "%s (%s) - Ühendus suletud baidil %ld. "
 
 #: src/http.c:1818
 #, c-format
-msgid "%s (%s) - `%s' saved [%ld/%ld])\n\n"
-msgstr "%s (%s) - `%s' salvestatud [%ld/%ld])\n\n"
+msgid ""
+"%s (%s) - `%s' saved [%ld/%ld])\n"
+"\n"
+msgstr ""
+"%s (%s) - `%s' salvestatud [%ld/%ld])\n"
+"\n"
 
 #: src/http.c:1839
 #, c-format
@@ -667,8 +719,12 @@ msgstr "%s: %s: Vigane edenemise tüüp `%s'.\n"
 
 #: src/log.c:641
 #, c-format
-msgid "\n%s received, redirecting output to `%s'.\n"
-msgstr "\nsain %s, suunan väljundi faili `%s'.\n"
+msgid ""
+"\n"
+"%s received, redirecting output to `%s'.\n"
+msgstr ""
+"\n"
+"sain %s, suunan väljundi faili `%s'.\n"
 
 #. Eek!  Opening the alternate log file has failed.  Nothing we
 #. can do but disable printing completely.
@@ -690,7 +746,10 @@ msgstr "GNU Wget %s, mitte-interaktiivne võrgu imeja.\n"
 #. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
 #. don't bitch.  Also, it makes translation much easier.
 #: src/main.c:129
-msgid "\nMandatory arguments to long options are mandatory for short options too.\n\n"
+msgid ""
+"\n"
+"Mandatory arguments to long options are mandatory for short options too.\n"
+"\n"
 msgstr ""
 "\n"
 "Kohustuslikud argumendid pikkadele võtmetele\n"
@@ -940,8 +999,12 @@ msgstr ""
 "suhtes vaadake GNU üldist avalikku litsentsi.\n"
 
 #: src/main.c:479
-msgid "\nOriginally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
-msgstr "\nSelle programmi kirjutas Hrvoje Niksic <hniksic@arsdigita.com>.\n"
+msgid ""
+"\n"
+"Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
+msgstr ""
+"\n"
+"Selle programmi kirjutas Hrvoje Niksic <hniksic@arsdigita.com>.\n"
 
 #: src/main.c:578
 #, c-format
@@ -958,7 +1021,7 @@ msgstr "%s: illegaalne võti -- `-n%c'\n"
 #: src/main.c:634 src/main.c:676 src/main.c:722
 #, c-format
 msgid "Try `%s --help' for more options.\n"
-msgstr "Proovi `%s --help' lisa võtmete saamiseks.\n"
+msgstr "Täiendava info saamiseks proovige `%s --help'.\n"
 
 #: src/main.c:702
 msgid "Can't be verbose and quiet at the same time.\n"
@@ -1039,8 +1102,12 @@ msgstr "%s: stat operatsioon ebaõnnestus %s: %s\n"
 #. digits in the skipped amount in K.
 #: src/progress.c:224
 #, c-format
-msgid "\n%*s[ skipping %dK ]"
-msgstr "\n%*s[ hüppan üle %dK ]"
+msgid ""
+"\n"
+"%*s[ skipping %dK ]"
+msgstr ""
+"\n"
+"%*s[ hüppan üle %dK ]"
 
 #: src/progress.c:391
 #, c-format
@@ -1086,12 +1153,18 @@ msgid "%s: Redirection cycle detected.\n"
 msgstr "%s: Tuvastasin ümbersuunamise tsükli.\n"
 
 #: src/retr.c:608
-msgid "Giving up.\n\n"
+msgid ""
+"Giving up.\n"
+"\n"
 msgstr "Annan alla.\n"
 
 #: src/retr.c:608
-msgid "Retrying.\n\n"
-msgstr "Proovin uuesti.\n\n"
+msgid ""
+"Retrying.\n"
+"\n"
+msgstr ""
+"Proovin uuesti.\n"
+"\n"
 
 #: src/url.c:1875
 #, c-format
