@@ -22,29 +22,8 @@
 /* Define if you have the <alloca.h> header file.  */
 #undef HAVE_ALLOCA_H
 
-/* AIX requires this to be the first thing in the file.  */
-#ifdef __GNUC__
-# define alloca __builtin_alloca
-#else
-# if HAVE_ALLOCA_H
-#  include <alloca.h>
-# else
-#  ifdef _AIX
- #pragma alloca
-#  else
-#   ifndef alloca /* predefined by HP cc +Olibcalls */
+/* Microsoft and Watcom libraries have an alloca function. */
 char *alloca ();
-#   endif
-#  endif
-# endif
-#endif
-
-/* Define if on AIX 3.
-   System headers sometimes define this.
-   We just want to avoid a redefinition error message.  */
-#ifndef _ALL_SOURCE
-/* #undef _ALL_SOURCE */
-#endif
 
 /* Define to empty if the keyword does not work.  */
 /* #undef const */

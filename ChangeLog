@@ -1,5 +1,11 @@
 2002-03-20  Ian Abbott  <abbotti@mev.co.uk>
 
+	* windows/config.h.bor:
+	* windows/config.h.ms:
+	Removed conditional cruft that was there for Unix-like systems.
+
+2002-03-20  Ian Abbott  <abbotti@mev.co.uk>
+
 	* * windows/wget.dep: Fix dependencies for target mswindows$o
 	(mswindows.obj)
 
