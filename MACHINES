@@ -10,7 +10,7 @@ DEC Ultrix, Digital Unix (mips-dec-ultrix*, alpha-dec-osf*)
 
 FreeBSD (i386-unknown-freebsd*)
 
-GNU/Linux (i[3456]86-*-linux*)
+GNU/Linux (armv4l-unknown-linux-gnu, i[3456]86-*-linux*)
 
 HP BSD (m68k-hp-bsd)
 

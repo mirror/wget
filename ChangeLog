@@ -1,3 +1,7 @@
+2001-03-21  Dan Harkless  <wget@harkless.org>
+
+	* MACHINES: Added armv4l-unknown-linux-gnu.
+
 2001-03-20  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Oops.  Hostless absolute link conversion _is_ working.  My
