@@ -159,7 +159,6 @@ void ws_startup (void);
 void ws_changetitle (const char*, int);
 void ws_percenttitle (double);
 char *ws_mypath (void);
-void ws_help (const char *);
 void windows_main_junk (int *, char **, char **);
 
 /* Things needed for IPv6; missing in <ws2tcpip.h>. */
