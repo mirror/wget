@@ -450,6 +450,13 @@ Download Options
      to reasonably expect the network error to be fixed before the
      retry.
 
+`--waitretry=SECONDS'
+     If you don't want Wget to wait between *every* retrieval, but only
+     between retries of failed downloads, you can use this option.  If
+     you want to make sure you never "hammer" remote sites with rapid
+     retries, you can leave it set all the time to some non-zero value
+     using the waitretry variable in your `.wgetrc' file.
+
 `-Y on/off'
 `--proxy=on/off'
      Turn proxy support on or off. The proxy is on by default if the

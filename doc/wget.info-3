@@ -491,6 +491,7 @@ Concept Index
 * relative links:                        Relative Links.
 * reporting bugs:                        Reporting Bugs.
 * retries:                               Download Options.
+* retries, waiting between:              Download Options.
 * retrieval tracing style:               Download Options.
 * retrieve symbolic links:               FTP Options.
 * retrieving:                            Recursive Retrieval.
@@ -525,6 +526,7 @@ Concept Index
 * various:                               Various.
 * verbose:                               Logging and Input File Options.
 * wait:                                  Download Options.
+* waiting between retries:               Download Options.
 * Wget as spider:                        Download Options.
 * wgetrc:                                Startup File.
 * wgetrc commands:                       Wgetrc Commands.

@@ -334,6 +334,10 @@ verbose = on/off
 wait = N
      Wait N seconds between retrievals, the same as `-w'.
 
+waitretry = N
+     Wait N seconds between retries of failed retrievals only - the
+     same as `--waitretry'.
+
 
 File: wget.info,  Node: Sample Wgetrc,  Prev: Wgetrc Commands,  Up: Startup File
 
