@@ -142,6 +142,8 @@ struct options
   int delete_after;		/* Whether the files will be deleted
 				   after download. */
 
+  int html_extension;		/* Use ".html" extension on all text/html? */
+
   int page_requisites;		/* Whether we need to download all files
 				   necessary to display a page properly. */
 };

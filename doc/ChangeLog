@@ -1,3 +1,7 @@
+2000-10-19  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* wget.texi (HTTP Options): Documented my new -E / --html-extension.
+
 2000-10-09  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (FTP Options): --retr-symlinks wasn't documented properly.

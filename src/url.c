@@ -1377,9 +1377,10 @@ no_proxy_match (const char *host, const char **no_proxy)
 void
 convert_links (const char *file, urlpos *l)
 {
-  FILE *fp;
-  char *buf, *p, *p2;
-  long size;
+  FILE               *fp;
+  char               *buf, *p, *p2;
+  downloaded_file_t  downloaded_file_return;
+  long               size;
 
   logprintf (LOG_VERBOSE, _("Converting %s... "), file);
   /* Read from the file....  */
@@ -1393,7 +1394,10 @@ convert_links (const char *file, urlpos *l)
   /* ...to a buffer.  */
   load_file (fp, &buf, &size);
   fclose (fp);
-  if (opt.backup_converted && downloaded_file(CHECK_FOR_FILE, file))
+
+  downloaded_file_return = downloaded_file(CHECK_FOR_FILE, file);
+
+  if (opt.backup_converted && downloaded_file_return)
     /* Rather than just writing over the original .html file with the converted
        version, save the former to *.orig.  Note we only do this for files we've
        _successfully_ downloaded, so we don't clobber .orig files sitting around
@@ -1401,15 +1405,31 @@ convert_links (const char *file, urlpos *l)
     {
       /* Construct the backup filename as the original name plus ".orig". */
       size_t         filename_len = strlen(file);
-      char*          filename_plus_orig_suffix = malloc(filename_len +
-							sizeof(".orig"));
+      char*          filename_plus_orig_suffix;
       boolean        already_wrote_backup_file = FALSE;
       slist*         converted_file_ptr;
       static slist*  converted_files = NULL;
 
-      /* Would a single s[n]printf() call be faster? */
-      strcpy(filename_plus_orig_suffix, file);
-      strcpy(filename_plus_orig_suffix + filename_len, ".orig");
+      if (downloaded_file_return == FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED)
+	{
+	  /* Just write "orig" over "html".  We need to do it this way because
+	     when we're checking to see if we've downloaded the file before (to
+	     see if we can skip downloading it), we don't know if it's a
+	     text/html file.  Therefore we don't know yet at that stage that -E
+	     is going to cause us to tack on ".html", so we need to compare
+	     vs. the original URL plus ".orig", not the original URL plus
+	     ".html.orig". */
+	  filename_plus_orig_suffix = xmalloc(filename_len + 1);
+	  strcpy(filename_plus_orig_suffix, file);
+	  strcpy((filename_plus_orig_suffix + filename_len) - 4, "orig");
+	}
+      else /* downloaded_file_return == FILE_DOWNLOADED_NORMALLY */
+	{
+	  /* Append ".orig" to the name. */
+	  filename_plus_orig_suffix = xmalloc(filename_len + sizeof(".orig"));
+	  strcpy(filename_plus_orig_suffix, file);
+	  strcpy(filename_plus_orig_suffix + filename_len, ".orig");
+	}
 
       /* We can get called twice on the same URL thanks to the
 	 convert_all_links() call in main().  If we write the .orig file each
@@ -1442,7 +1462,7 @@ convert_links (const char *file, urlpos *l)
 	     thought I could just add a field to the urlpos structure saying
 	     that we'd written a .orig file for this URL, but that didn't work,
 	     so I had to make this separate list. */
-	  converted_file_ptr = malloc(sizeof(slist));
+	  converted_file_ptr = xmalloc(sizeof(*converted_file_ptr));
 	  converted_file_ptr->string = xstrdup(file);  /* die on out-of-mem. */
 	  converted_file_ptr->next = converted_files;
 	  converted_files = converted_file_ptr;
@@ -1459,8 +1479,8 @@ convert_links (const char *file, urlpos *l)
       free (buf);
       return;
     }
-  /* [If someone understands why multiple URLs can correspond to one local file,
-     can they please add a comment here...?] */
+  /* Presumably we have to loop through multiple URLs here (even though we're
+     only talking about a single local file) because of the -O option. */
   for (p = buf; l; l = l->next)
     {
       if (l->pos >= size)
@@ -1482,6 +1502,7 @@ convert_links (const char *file, urlpos *l)
       for (p2 = buf + l->pos; p < p2; p++)
 	putc (*p, fp);
       if (l->flags & UABS2REL)
+	/* Convert absolute URL to relative. */
 	{
 	  char *newname = construct_relative (file, l->local_name);
 	  fprintf (fp, "%s", newname);
@@ -1491,6 +1512,7 @@ convert_links (const char *file, urlpos *l)
 	}
       p += l->size;
     }
+  /* Output the rest of the file. */
   if (p - buf < size)
     {
       for (p2 = buf + size; p < p2; p++)
@@ -1570,23 +1592,34 @@ add_url (urlpos *l, const char *url, const char *file)
 }
 
 
-/* Remembers which files have been downloaded.  Should be called with
-   add_or_check == ADD_FILE for each file we actually download successfully
-   (i.e. not for ones we have failures on or that we skip due to -N).  If you
-   just want to check if a file has been previously added without adding it,
-   call with add_or_check == CHECK_FOR_FILE.  Please be sure to call this
-   function with local filenames, not remote URLs -- by some means that isn't
-   commented well enough for me understand, multiple remote URLs can apparently
-   correspond to a single local file. */
-boolean
-downloaded_file (downloaded_file_t  add_or_check, const char*  file)
+/* Remembers which files have been downloaded.  In the standard case, should be
+   called with mode == FILE_DOWNLOADED_NORMALLY for each file we actually
+   download successfully (i.e. not for ones we have failures on or that we skip
+   due to -N).
+
+   When we've downloaded a file and tacked on a ".html" extension due to -E,
+   call this function with FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED rather than
+   FILE_DOWNLOADED_NORMALLY.
+
+   If you just want to check if a file has been previously added without adding
+   it, call with mode == CHECK_FOR_FILE.  Please be sure to call this function
+   with local filenames, not remote URLs. */
+downloaded_file_t
+downloaded_file (downloaded_file_t  mode, const char*  file)
 {
-  boolean        found_file = FALSE;
-  static slist*  downloaded_files = NULL;
-  slist*         rover = downloaded_files;
+  typedef struct _downloaded_file_list
+  {
+    char*                          file;
+    downloaded_file_t              download_type;
+    struct _downloaded_file_list*  next;
+  } downloaded_file_list;
+  
+  boolean                       found_file = FALSE;
+  static downloaded_file_list*  downloaded_files = NULL;
+  downloaded_file_list*         rover = downloaded_files;
 
   while (rover != NULL)
-    if (strcmp(rover->string, file) == 0)
+    if (strcmp(rover->file, file) == 0)
       {
 	found_file = TRUE;
 	break;
@@ -1595,17 +1628,18 @@ downloaded_file (downloaded_file_t  add_or_check, const char*  file)
       rover = rover->next;
 
   if (found_file)
-    return TRUE;  /* file had already been downloaded */
+    return rover->download_type;  /* file had already been downloaded */
   else
     {
-      if (add_or_check == ADD_FILE)
+      if (mode != CHECK_FOR_FILE)
 	{
-	  rover = malloc(sizeof(slist));
-	  rover->string = xstrdup(file);  /* die on out-of-mem. */
+	  rover = xmalloc(sizeof(*rover));
+	  rover->file = xstrdup(file); /* use xstrdup() so die on out-of-mem. */
+	  rover->download_type = mode;
 	  rover->next = downloaded_files;
 	  downloaded_files = rover;
 	}
 
-      return FALSE;  /* file had not already been downloaded */
+      return FILE_NOT_ALREADY_DOWNLOADED;
     }
 }

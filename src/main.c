@@ -162,6 +162,7 @@ HTTP options:\n\
        --http-user=USER      set http user to USER.\n\
        --http-passwd=PASS    set http password to PASS.\n\
   -C,  --cache=on/off        (dis)allow server-cached data (normally allowed).\n\
+  -E,  --html-extension      save all text/html documents with .html extension.\n\
        --ignore-length       ignore `Content-Length\' header field.\n\
        --header=STRING       insert STRING among the headers.\n\
        --proxy-user=USER     set USER as proxy username.\n\
@@ -218,12 +219,13 @@ main (int argc, char *const *argv)
     { "backup-converted", no_argument, NULL, 'K' },
     { "debug", no_argument, NULL, 'd' },
     { "dont-remove-listing", no_argument, NULL, 21 },
-    { "email-address", no_argument, NULL, 'E' }, /* undocumented (debug) */
+    { "email-address", no_argument, NULL, 26 }, /* undocumented (debug) */
     { "follow-ftp", no_argument, NULL, 14 },
     { "force-directories", no_argument, NULL, 'x' },
     { "force-hier", no_argument, NULL, 'x' }, /* obsolete */
     { "force-html", no_argument, NULL, 'F'},
     { "help", no_argument, NULL, 'h' },
+    { "html-extension", no_argument, NULL, 'E' },
     { "ignore-length", no_argument, NULL, 10 },
     { "mirror", no_argument, NULL, 'm' },
     { "no-clobber", no_argument, NULL, 13 },
@@ -358,6 +360,11 @@ hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
 	case 22:
 	  setval ("simplehostcheck", "on");
 	  break;
+	case 26:
+	  /* For debugging purposes.  */
+	  printf ("%s\n", ftp_getaddress ());
+	  exit (0);
+	  break;
 	case 'b':
 	  setval ("background", "on");
 	  break;
@@ -373,9 +380,7 @@ hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:",
 #endif /* not DEBUG */
 	  break;
 	case 'E':
-	  /* For debugging purposes.  */
-	  printf ("%s\n", ftp_getaddress ());
-	  exit (0);
+	  setval ("htmlextension", "on");
 	  break;
 	case 'F':
 	  setval ("forcehtml", "on");

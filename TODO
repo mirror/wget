@@ -26,11 +26,6 @@ user-visible changes.
 * Make -K compare X.orig to X and move the former on top of the latter if 
   they're the same, rather than leaving identical .orig files laying around.
 
-* Add an option to save all text/html files with a .html extension so that when
-  grabbing the output of a dynamically-generated remote page, you'll end up with
-  a filename that will cause _your_ webserver to realize the saved static HTML
-  file isn't text/plain (or an illegal CGI script in the case of *.cgi).
-
 * Allow mirroring of FTP URLs where logging in puts you somewhere else besides 
   '/'. 
 

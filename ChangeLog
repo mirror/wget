@@ -1,3 +1,7 @@
+2000-10-19  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* TODO: -E / --html-extension / html_extension has been implemented.
+
 2000-10-16  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* TODO: Add option to save local filenames without extra %-encoding.

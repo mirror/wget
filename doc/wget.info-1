@@ -585,6 +585,26 @@ File: wget.info,  Node: HTTP Options,  Next: FTP Options,  Prev: Directory Optio
 HTTP Options
 ============
 
+`-E'
+`--html-extension'
+     If a file of type `text/html' is downloaded and the URL does not
+     end with the regexp "\.[Hh][Tt][Mm][Ll]?", this option will cause
+     the suffix `.html' to be appended to the local filename.  This is
+     useful, for instance, when you're you're mirroring a remote site
+     that uses `.asp' pages, but you want the mirrored pages to be
+     viewable on your stock Apache server.  Another good use for this
+     is when you're downloading the output of CGIs.  A URL like
+     `http://site.com/article.cgi?25' will be saved as
+     `article.cgi?25.html'.
+
+     Note that filenames changed in this way will be re-downloaded
+     every time you re-mirror a site, because wget can't tell that the
+     local `X.html' file corresponds to remote URL `X' (since it
+     doesn't yet know that the URL produces output of type `text/html'.
+     To prevent this re-downloading, you must use `-k' and `-K' so
+     that the original version of the file will be saved as `X.orig'
+     (*Note Recursive Retrieval Options::).
+
 `--http-user=USER'
 `--http-passwd=PASSWORD'
      Specify the username USER and password PASSWORD on an HTTP server.
@@ -1167,89 +1187,4 @@ name, but *not* the PostScript files.
    Note that these two options do not affect the downloading of HTML
 files; Wget must load all the HTMLs to know where to go at
 all--recursive retrieval would make no sense otherwise.
-
-
-File: wget.info,  Node: Directory-Based Limits,  Next: FTP Links,  Prev: Types of Files,  Up: Following Links
-
-Directory-Based Limits
-======================
-
-   Regardless of other link-following facilities, it is often useful to
-place the restriction of what files to retrieve based on the directories
-those files are placed in.  There can be many reasons for this--the
-home pages may be organized in a reasonable directory structure; or some
-directories may contain useless information, e.g. `/cgi-bin' or `/dev'
-directories.
-
-   Wget offers three different options to deal with this requirement.
-Each option description lists a short name, a long name, and the
-equivalent command in `.wgetrc'.
-
-`-I LIST'
-`--include LIST'
-`include_directories = LIST'
-     `-I' option accepts a comma-separated list of directories included
-     in the retrieval.  Any other directories will simply be ignored.
-     The directories are absolute paths.
-
-     So, if you wish to download from `http://host/people/bozo/'
-     following only links to bozo's colleagues in the `/people'
-     directory and the bogus scripts in `/cgi-bin', you can specify:
-
-          wget -I /people,/cgi-bin http://host/people/bozo/
-
-`-X LIST'
-`--exclude LIST'
-`exclude_directories = LIST'
-     `-X' option is exactly the reverse of `-I'--this is a list of
-     directories *excluded* from the download.  E.g. if you do not want
-     Wget to download things from `/cgi-bin' directory, specify `-X
-     /cgi-bin' on the command line.
-
-     The same as with `-A'/`-R', these two options can be combined to
-     get a better fine-tuning of downloading subdirectories.  E.g. if
-     you want to load all the files from `/pub' hierarchy except for
-     `/pub/worthless', specify `-I/pub -X/pub/worthless'.
-
-`-np'
-`--no-parent'
-`no_parent = on'
-     The simplest, and often very useful way of limiting directories is
-     disallowing retrieval of the links that refer to the hierarchy
-     "above" than the beginning directory, i.e. disallowing ascent to
-     the parent directory/directories.
-
-     The `--no-parent' option (short `-np') is useful in this case.
-     Using it guarantees that you will never leave the existing
-     hierarchy.  Supposing you issue Wget with:
-
-          wget -r --no-parent http://somehost/~luzer/my-archive/
-
-     You may rest assured that none of the references to
-     `/~his-girls-homepage/' or `/~luzer/all-my-mpegs/' will be
-     followed.  Only the archive you are interested in will be
-     downloaded.  Essentially, `--no-parent' is similar to
-     `-I/~luzer/my-archive', only it handles redirections in a more
-     intelligent fashion.
-
-
-File: wget.info,  Node: FTP Links,  Prev: Directory-Based Limits,  Up: Following Links
-
-Following FTP Links
-===================
-
-   The rules for FTP are somewhat specific, as it is necessary for them
-to be.  FTP links in HTML documents are often included for purposes of
-reference, and it is often inconvenient to download them by default.
-
-   To have FTP links followed from HTML documents, you need to specify
-the `--follow-ftp' option.  Having done that, FTP links will span hosts
-regardless of `-H' setting.  This is logical, as FTP links rarely point
-to the same host where the HTTP server resides.  For similar reasons,
-the `-L' options has no effect on such downloads.  On the other hand,
-domain acceptance (`-D') and suffix rules (`-A' and `-R') apply
-normally.
-
-   Also note that followed links to FTP directories will not be
-retrieved recursively further.
 

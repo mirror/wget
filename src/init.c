@@ -111,6 +111,7 @@ static struct {
   { "ftpproxy",		&opt.ftp_proxy,		cmd_string },
   { "glob",		&opt.ftp_glob,		cmd_boolean },
   { "header",		NULL,			cmd_spec_header },
+  { "htmlextension",	&opt.html_extension,	cmd_boolean },
   { "htmlify",		NULL,			cmd_spec_htmlify },
   { "httppasswd",	&opt.http_passwd,	cmd_string },
   { "httpproxy",	&opt.http_proxy,	cmd_string },

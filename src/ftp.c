@@ -969,7 +969,7 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 
       /* If we get out of the switch above without continue'ing, we've
 	 successfully downloaded a file.  Remember this fact. */
-      downloaded_file(ADD_FILE, locf);
+      downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
 
       if (con->st & ON_YOUR_OWN)
 	{

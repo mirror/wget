@@ -24,6 +24,91 @@ resulting derived work is distributed under the terms of a permission
 notice identical to this one.
 
 
+File: wget.info,  Node: Directory-Based Limits,  Next: FTP Links,  Prev: Types of Files,  Up: Following Links
+
+Directory-Based Limits
+======================
+
+   Regardless of other link-following facilities, it is often useful to
+place the restriction of what files to retrieve based on the directories
+those files are placed in.  There can be many reasons for this--the
+home pages may be organized in a reasonable directory structure; or some
+directories may contain useless information, e.g. `/cgi-bin' or `/dev'
+directories.
+
+   Wget offers three different options to deal with this requirement.
+Each option description lists a short name, a long name, and the
+equivalent command in `.wgetrc'.
+
+`-I LIST'
+`--include LIST'
+`include_directories = LIST'
+     `-I' option accepts a comma-separated list of directories included
+     in the retrieval.  Any other directories will simply be ignored.
+     The directories are absolute paths.
+
+     So, if you wish to download from `http://host/people/bozo/'
+     following only links to bozo's colleagues in the `/people'
+     directory and the bogus scripts in `/cgi-bin', you can specify:
+
+          wget -I /people,/cgi-bin http://host/people/bozo/
+
+`-X LIST'
+`--exclude LIST'
+`exclude_directories = LIST'
+     `-X' option is exactly the reverse of `-I'--this is a list of
+     directories *excluded* from the download.  E.g. if you do not want
+     Wget to download things from `/cgi-bin' directory, specify `-X
+     /cgi-bin' on the command line.
+
+     The same as with `-A'/`-R', these two options can be combined to
+     get a better fine-tuning of downloading subdirectories.  E.g. if
+     you want to load all the files from `/pub' hierarchy except for
+     `/pub/worthless', specify `-I/pub -X/pub/worthless'.
+
+`-np'
+`--no-parent'
+`no_parent = on'
+     The simplest, and often very useful way of limiting directories is
+     disallowing retrieval of the links that refer to the hierarchy
+     "above" than the beginning directory, i.e. disallowing ascent to
+     the parent directory/directories.
+
+     The `--no-parent' option (short `-np') is useful in this case.
+     Using it guarantees that you will never leave the existing
+     hierarchy.  Supposing you issue Wget with:
+
+          wget -r --no-parent http://somehost/~luzer/my-archive/
+
+     You may rest assured that none of the references to
+     `/~his-girls-homepage/' or `/~luzer/all-my-mpegs/' will be
+     followed.  Only the archive you are interested in will be
+     downloaded.  Essentially, `--no-parent' is similar to
+     `-I/~luzer/my-archive', only it handles redirections in a more
+     intelligent fashion.
+
+
+File: wget.info,  Node: FTP Links,  Prev: Directory-Based Limits,  Up: Following Links
+
+Following FTP Links
+===================
+
+   The rules for FTP are somewhat specific, as it is necessary for them
+to be.  FTP links in HTML documents are often included for purposes of
+reference, and it is often inconvenient to download them by default.
+
+   To have FTP links followed from HTML documents, you need to specify
+the `--follow-ftp' option.  Having done that, FTP links will span hosts
+regardless of `-H' setting.  This is logical, as FTP links rarely point
+to the same host where the HTTP server resides.  For similar reasons,
+the `-L' options has no effect on such downloads.  On the other hand,
+domain acceptance (`-D') and suffix rules (`-A' and `-R') apply
+normally.
+
+   Also note that followed links to FTP directories will not be
+retrieved recursively further.
+
+
 File: wget.info,  Node: Time-Stamping,  Next: Startup File,  Prev: Following Links,  Up: Top
 
 Time-Stamping
@@ -350,6 +435,9 @@ glob = on/off
 
 header = STRING
      Define an additional header, like `--header'.
+
+html_extension = on/off
+     Add a `.html' extension to `text/html' files without it, like `-E'.
 
 http_passwd = STRING
      Set HTTP password.
@@ -1244,71 +1332,4 @@ Here are the main issues, and some solutions.
      debugging logs show them, in all forms.  This problem is avoided by
      being careful when you send debug logs (yes, even when you send
      them to me).
-
-
-File: wget.info,  Node: Contributors,  Prev: Security Considerations,  Up: Appendices
-
-Contributors
-============
-
-   GNU Wget was written by Hrvoje Niksic <hniksic@iskon.hr>.  However,
-its development could never have gone as far as it has, were it not for
-the help of many people, either with bug reports, feature proposals,
-patches, or letters saying "Thanks!".
-
-   Special thanks goes to the following people (no particular order):
-
-   * Karsten Thygesen--donated the mailing list and the initial FTP
-     space.
-
-   * Shawn McHorse--bug reports and patches.
-
-   * Kaveh R. Ghazi--on-the-fly `ansi2knr'-ization.
-
-   * Gordon Matzigkeit--`.netrc' support.
-
-   * Zlatko Calusic, Tomislav Vujec and Drazen Kacar--feature
-     suggestions and "philosophical" discussions.
-
-   * Darko Budor--initial port to Windows.
-
-   * Antonio Rosella--help and suggestions, plus the Italian
-     translation.
-
-   * Tomislav Petrovic, Mario Mikocevic--many bug reports and
-     suggestions.
-
-   * Francois Pinard--many thorough bug reports and discussions.
-
-   * Karl Eichwalder--lots of help with internationalization and other
-     things.
-
-   * Junio Hamano--donated support for Opie and HTTP `Digest'
-     authentication.
-
-   * Brian Gough--a generous donation.
-
-   The following people have provided patches, bug/build reports, useful
-suggestions, beta testing services, fan mail and all the other things
-that make maintenance so much fun:
-
-   Tim Adam, Martin Baehr, Dieter Baron, Roger Beeman and the Gurus at
-Cisco, Dan Berger, Mark Boyns, John Burden, Wanderlei Cavassin, Gilles
-Cedoc, Tim Charron, Noel Cragg, Kristijan Conkas, Andrew Deryabin,
-Damir Dzeko, Andrew Davison, Ulrich Drepper, Marc Duponcheel,
-Aleksandar Erkalovic, Andy Eskilsson, Masashi Fujita, Howard Gayle,
-Marcel Gerrits, Hans Grobler, Mathieu Guillaume, Dan Harkless, Heiko
-Herold, Karl Heuer, HIROSE Masaaki, Gregor Hoffleit, Erik Magnus
-Hulthen, Richard Huveneers, Simon Josefsson, Mario Juric, Goran
-Kezunovic, Robert Kleine, Fila Kolodny, Alexander Kourakos, Martin
-Kraemer, Simos KSenitellis, Hrvoje Lacko, Daniel S. Lewart, Dave Love,
-Jordan Mendelson, Lin Zhe Min, Charlie Negyesi, Andrew Pollock, Steve
-Pothier, Jan Prikryl, Marin Purgar, Keith Refson, Tobias Ringstrom,
-Juan Jose Rodrigues, Edward J. Sabol, Heinz Salzmann, Robert Schmidt,
-Toomas Soome, Tage Stabell-Kulo, Sven Sternberger, Markus Strasser,
-Szakacsits Szabolcs, Mike Thomas, Russell Vincent, Charles G Waldman,
-Douglas E. Wegscheid, Jasmin Zainul, Bojan Zdrnja, Kristijan Zimmer.
-
-   Apologies to all who I accidentally left out, and many thanks to all
-the subscribers of the Wget mailing list.
 

@@ -318,8 +318,9 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   int auth_tried_already;
   struct rbuf rbuf;
 
-  /* Let the others worry about local filename...  */
   if (!(*dt & HEAD_ONLY))
+    /* If we're doing a GET on the URL, as opposed to just a HEAD, we need to
+       know the local filename so we can save to it. */
     assert (u->local != NULL);
 
   authenticate_h = 0;
@@ -329,7 +330,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   /* We need to come back here when the initial attempt to retrieve
      without authorization header fails.  */
 
-  /* Initialize certain elements of struct hstat.  */
+  /* Initialize certain elements of struct http_stat.  */
   hs->len = 0L;
   hs->contlen = -1;
   hs->res = -1;
@@ -722,6 +723,26 @@ Accept: %s\r\n\
     /* We don't assume text/html by default.  */
     *dt &= ~TEXTHTML;
 
+  if (opt.html_extension && (*dt & TEXTHTML))
+    /* -E / --html-extension / html_extension = on was specified, and this is a
+       text/html file.  If some case-insensitive variation on ".htm[l]" isn't
+       already the file's suffix, tack on ".html". */
+    {
+      char*  last_period_in_local_filename = strrchr(u->local, '.');
+
+      if (last_period_in_local_filename == NULL ||
+	  !(strcasecmp(last_period_in_local_filename, ".htm") == EQ ||
+	    strcasecmp(last_period_in_local_filename, ".html") == EQ))
+	{
+	  size_t  local_filename_len = strlen(u->local);
+	  
+	  u->local = xrealloc(u->local, local_filename_len + sizeof(".html"));
+	  strcpy(u->local + local_filename_len, ".html");
+
+	  *dt |= ADDED_HTML_EXTENSION;
+	}
+    }
+
   if (contrange == -1)
     hs->restval = 0;
   else if (contrange != hs->restval ||
@@ -862,12 +883,14 @@ http_loop (struct urlinfo *u, char **newloc, int *dt)
   static int first_retrieval = 1;
 
   int count;
-  int local_dot_orig_file_exists = FALSE;
   int use_ts, got_head = 0;	/* time-stamping info */
+  char *filename_plus_orig_suffix;
+  char *local_filename = NULL;
   char *tms, *suf, *locf, *tmrate;
   uerr_t err;
   time_t tml = -1, tmr = -1;	/* local and remote time-stamps */
   long local_size = 0;		/* the size of the local file */
+  size_t filename_len;
   struct http_stat hstat;	/* HTTP status */
   struct stat st;
 
@@ -888,6 +911,12 @@ http_loop (struct urlinfo *u, char **newloc, int *dt)
   else
     locf = opt.output_document;
 
+  /* Yuck.  Multiple returns suck.  We need to remember to free() the space we
+     xmalloc() here before EACH return.  This is one reason it's better to set
+     flags that influence flow control and then return once at the end. */
+  filename_len = strlen(u->local);
+  filename_plus_orig_suffix = xmalloc(filename_len + sizeof(".orig"));
+
   if (opt.noclobber && file_exists_p (u->local))
     {
       /* If opt.noclobber is turned on and file already exists, do not
@@ -904,6 +933,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	  && (!strcmp (suf, "html") || !strcmp (suf, "htm")))
 	*dt |= TEXTHTML;
       free (suf);
+      free(filename_plus_orig_suffix);  /* must precede every return! */
       /* Another harmless lie: */
       return RETROK;
     }
@@ -911,7 +941,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
   use_ts = 0;
   if (opt.timestamping)
     {
-      boolean  local_file_exists = FALSE;
+      boolean  local_dot_orig_file_exists = FALSE;
 
       if (opt.backup_converted)
 	/* If -K is specified, we'll act on the assumption that it was specified
@@ -921,10 +951,6 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	   _wasn't_ specified last time, or the server contains files called
 	   *.orig, -N will be back to not operating correctly with -k. */
 	{
-	  size_t filename_len = strlen(u->local);
-	  char*  filename_plus_orig_suffix = malloc(filename_len +
-						    sizeof(".orig"));
-
 	  /* Would a single s[n]printf() call be faster? */
 	  strcpy(filename_plus_orig_suffix, u->local);
 	  strcpy(filename_plus_orig_suffix + filename_len, ".orig");
@@ -932,19 +958,17 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	  /* Try to stat() the .orig file. */
 	  if (stat(filename_plus_orig_suffix, &st) == 0)
 	    {
-	      local_file_exists = TRUE;
 	      local_dot_orig_file_exists = TRUE;
+	      local_filename = filename_plus_orig_suffix;
 	    }
-
-	  free(filename_plus_orig_suffix);
 	}      
 
       if (!local_dot_orig_file_exists)
 	/* Couldn't stat() <file>.orig, so try to stat() <file>. */
 	if (stat (u->local, &st) == 0)
-	  local_file_exists = TRUE;
+	  local_filename = u->local;
 
-      if (local_file_exists)
+      if (local_filename != NULL)
 	/* There was a local file, so we'll check later to see if the version
 	   the server has is the same version we already have, allowing us to
 	   skip a download. */
@@ -1020,6 +1044,16 @@ File `%s' already there, will not retrieve.\n"), u->local);
 
       /* Try fetching the document, or at least its head.  :-) */
       err = gethttp (u, &hstat, dt);
+
+      /* It's unfortunate that wget determines the local filename before finding
+	 out the Content-Type of the file.  Barring a major restructuring of the
+	 code, we need to re-set locf here, since gethttp() may have xrealloc()d
+	 u->local to tack on ".html". */
+      if (!opt.output_document)
+	locf = u->local;
+      else
+	locf = opt.output_document;
+
       /* Time?  */
       tms = time_str (NULL);
       /* Get the new location (with or without the redirection).  */
@@ -1040,6 +1074,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	case HOSTERR: case CONREFUSED: case PROXERR: case AUTHFAILED:
 	  /* Fatal errors just return from the function.  */
 	  FREEHSTAT (hstat);
+	  free(filename_plus_orig_suffix);  /* must precede every return! */
 	  return err;
 	  break;
 	case FWRITEERR: case FOPENERR:
@@ -1048,6 +1083,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	  logprintf (LOG_NOTQUIET, _("Cannot write to `%s' (%s).\n"),
 		     u->local, strerror (errno));
 	  FREEHSTAT (hstat);
+	  free(filename_plus_orig_suffix);  /* must precede every return! */
 	  return err;
 	  break;
 	case NEWLOCATION:
@@ -1057,9 +1093,11 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	      logprintf (LOG_NOTQUIET,
 			 _("ERROR: Redirection (%d) without location.\n"),
 			 hstat.statcode);
+	      free(filename_plus_orig_suffix);  /* must precede every return! */
 	      return WRONGCODE;
 	    }
 	  FREEHSTAT (hstat);
+	  free(filename_plus_orig_suffix);  /* must precede every return! */
 	  return NEWLOCATION;
 	  break;
 	case RETRFINISHED:
@@ -1082,6 +1120,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
 		     tms, hstat.statcode, hstat.error);
 	  logputs (LOG_VERBOSE, "\n");
 	  FREEHSTAT (hstat);
+	  free(filename_plus_orig_suffix);  /* must precede every return! */
 	  return WRONGCODE;
 	}
 
@@ -1121,21 +1160,11 @@ Last-modified header invalid -- time-stamp ignored.\n"));
 	      if (tml >= tmr &&
 		  (hstat.contlen == -1 || local_size == hstat.contlen))
 		{
-		  if (local_dot_orig_file_exists)
-		    /* We can't collapse this down into just one logprintf()
-		       call with a variable set to u->local or the .orig
-		       filename because we have to malloc() space for the
-		       latter, and because there are multiple returns above (a
-		       coding style no-no by many measures, for reasons such as
-		       this) we'd have to remember to free() the string at each
-		       one to avoid a memory leak. */
-		    logprintf (LOG_VERBOSE, _("\
-Server file no newer than local file `%s.orig' -- not retrieving.\n\n"),
-			       u->local);
-		  else
-		    logprintf (LOG_VERBOSE, _("\
-Server file no newer than local file `%s' -- not retrieving.\n\n"), u->local);
+		  logprintf (LOG_VERBOSE, _("\
+Server file no newer than local file `%s' -- not retrieving.\n\n"),
+			     local_filename);
 		  FREEHSTAT (hstat);
+		  free(filename_plus_orig_suffix);/*must precede every return!*/
 		  return RETROK;
 		}
 	      else if (tml >= tmr)
@@ -1163,6 +1192,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
       if (opt.spider)
 	{
 	  logprintf (LOG_NOTQUIET, "%d %s\n\n", hstat.statcode, hstat.error);
+	  free(filename_plus_orig_suffix);  /* must precede every return! */
 	  return RETROK;
 	}
 
@@ -1185,7 +1215,14 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 	    }
 	  ++opt.numurls;
 	  opt.downloaded += hstat.len;
-	  downloaded_file(ADD_FILE, locf);
+
+	  /* Remember that we downloaded the file for later ".orig" code. */
+	  if (*dt & ADDED_HTML_EXTENSION)
+	    downloaded_file(FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED, locf);
+	  else
+	    downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
+
+	  free(filename_plus_orig_suffix);  /* must precede every return! */
 	  return RETROK;
 	}
       else if (hstat.res == 0) /* No read error */
@@ -1204,7 +1241,14 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 		}
 	      ++opt.numurls;
 	      opt.downloaded += hstat.len;
-	      downloaded_file(ADD_FILE, locf);
+
+	      /* Remember that we downloaded the file for later ".orig" code. */
+	      if (*dt & ADDED_HTML_EXTENSION)
+		downloaded_file(FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED, locf);
+	      else
+		downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
+	      
+	      free(filename_plus_orig_suffix);  /* must precede every return! */
 	      return RETROK;
 	    }
 	  else if (hstat.len < hstat.contlen) /* meaning we lost the
@@ -1226,7 +1270,14 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 			 tms, u->url, hstat.len, hstat.contlen, locf, count);
 	      ++opt.numurls;
 	      opt.downloaded += hstat.len;
-	      downloaded_file(ADD_FILE, locf);
+
+	      /* Remember that we downloaded the file for later ".orig" code. */
+	      if (*dt & ADDED_HTML_EXTENSION)
+		downloaded_file(FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED, locf);
+	      else
+		downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
+	      
+	      free(filename_plus_orig_suffix);  /* must precede every return! */
 	      return RETROK;
 	    }
 	  else			/* the same, but not accepted */
@@ -1262,6 +1313,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
       break;
     }
   while (!opt.ntry || (count < opt.ntry));
+  free(filename_plus_orig_suffix);  /* must precede every return! */
   return TRYLIMEXC;
 }
 

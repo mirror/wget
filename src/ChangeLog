@@ -1,3 +1,29 @@
+2000-10-19  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* ftp.c (ftp_loop_internal): downloaded_file() enumerators changed.
+		
+	* http.c (gethttp): Improved a comment and added code to tack on
+	".html" to text/html files without that extension when -E specified.
+	(http_loop): Use new downloaded_file() enumerators and deal with
+	the case of gethttp() called xrealloc() on u->local.
+
+	* init.c (commands): Added new "htmlextension" command.
+
+	* main.c (print_help): Added my new -E / --html-extension option.
+	(main): Undocumented --email-address option previously used -E synonym.
+	Stole it away for the much more deserving --html-extension's use.
+
+	* options.h (struct options): Added html_extension field.
+
+	* url.c (convert_links): URL X that we saved as X.html locally due
+	to -E needs to be backed up as X.orig, not X.html.orig.  Added comments.
+	(downloaded_file): Now remembers if we added .html extension to a file.
+
+	* url.h (downloaded_file_t): Added extra enumerators to support above.
+	(downloaded_file): Now takes and returns a downloaded_file_t.
+
+	* wget.h (unnamed "dt" enum): Added ADDED_HTML_EXTENSION enumerator.
+	
 2000-10-09  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* html.c (htmlfindurl): Added unneeded initialization to quiet warning.

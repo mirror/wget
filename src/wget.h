@@ -202,14 +202,15 @@ extern const char *exec_name;
 #endif
 
 
-/* Document-type flags */
+/* Document type ("dt") flags */
 enum
 {
-  TEXTHTML      = 0x0001,	/* document is of type text/html */
-  RETROKF       = 0x0002,	/* retrieval was OK */
-  HEAD_ONLY     = 0x0004,	/* only send the HEAD request */
-  SEND_NOCACHE  = 0x0008,	/* send Pragma: no-cache directive */
-  ACCEPTRANGES  = 0x0010	/* Accept-ranges header was found */
+  TEXTHTML             = 0x0001,	/* document is of type text/html */
+  RETROKF              = 0x0002,	/* retrieval was OK */
+  HEAD_ONLY            = 0x0004,	/* only send the HEAD request */
+  SEND_NOCACHE         = 0x0008,	/* send Pragma: no-cache directive */
+  ACCEPTRANGES         = 0x0010,	/* Accept-ranges header was found */
+  ADDED_HTML_EXTENSION = 0x0020,        /* added ".html" extension due to -E */
 };
 
 /* Universal error type -- used almost everywhere.

@@ -24,6 +24,73 @@ resulting derived work is distributed under the terms of a permission
 notice identical to this one.
 
 
+File: wget.info,  Node: Contributors,  Prev: Security Considerations,  Up: Appendices
+
+Contributors
+============
+
+   GNU Wget was written by Hrvoje Niksic <hniksic@iskon.hr>.  However,
+its development could never have gone as far as it has, were it not for
+the help of many people, either with bug reports, feature proposals,
+patches, or letters saying "Thanks!".
+
+   Special thanks goes to the following people (no particular order):
+
+   * Karsten Thygesen--donated the mailing list and the initial FTP
+     space.
+
+   * Shawn McHorse--bug reports and patches.
+
+   * Kaveh R. Ghazi--on-the-fly `ansi2knr'-ization.
+
+   * Gordon Matzigkeit--`.netrc' support.
+
+   * Zlatko Calusic, Tomislav Vujec and Drazen Kacar--feature
+     suggestions and "philosophical" discussions.
+
+   * Darko Budor--initial port to Windows.
+
+   * Antonio Rosella--help and suggestions, plus the Italian
+     translation.
+
+   * Tomislav Petrovic, Mario Mikocevic--many bug reports and
+     suggestions.
+
+   * Francois Pinard--many thorough bug reports and discussions.
+
+   * Karl Eichwalder--lots of help with internationalization and other
+     things.
+
+   * Junio Hamano--donated support for Opie and HTTP `Digest'
+     authentication.
+
+   * Brian Gough--a generous donation.
+
+   The following people have provided patches, bug/build reports, useful
+suggestions, beta testing services, fan mail and all the other things
+that make maintenance so much fun:
+
+   Tim Adam, Martin Baehr, Dieter Baron, Roger Beeman and the Gurus at
+Cisco, Dan Berger, Mark Boyns, John Burden, Wanderlei Cavassin, Gilles
+Cedoc, Tim Charron, Noel Cragg, Kristijan Conkas, Andrew Deryabin,
+Damir Dzeko, Andrew Davison, Ulrich Drepper, Marc Duponcheel,
+Aleksandar Erkalovic, Andy Eskilsson, Masashi Fujita, Howard Gayle,
+Marcel Gerrits, Hans Grobler, Mathieu Guillaume, Dan Harkless, Heiko
+Herold, Karl Heuer, HIROSE Masaaki, Gregor Hoffleit, Erik Magnus
+Hulthen, Richard Huveneers, Simon Josefsson, Mario Juric, Goran
+Kezunovic, Robert Kleine, Fila Kolodny, Alexander Kourakos, Martin
+Kraemer, Simos KSenitellis, Hrvoje Lacko, Daniel S. Lewart, Dave Love,
+Jordan Mendelson, Lin Zhe Min, Charlie Negyesi, Andrew Pollock, Steve
+Pothier, Jan Prikryl, Marin Purgar, Keith Refson, Tobias Ringstrom,
+Juan Jose Rodrigues, Edward J. Sabol, Heinz Salzmann, Robert Schmidt,
+Toomas Soome, Tage Stabell-Kulo, Sven Sternberger, Markus Strasser,
+Szakacsits Szabolcs, Mike Thomas, Russell Vincent, Charles G Waldman,
+Douglas E. Wegscheid, Jasmin Zainul, Bojan Zdrnja, Kristijan Zimmer.
+
+   Apologies to all who I accidentally left out, and many thanks to all
+the subscribers of the Wget mailing list.
+
+
 File: wget.info,  Node: Copying,  Next: Concept Index,  Prev: Appendices,  Up: Top
 
 GNU GENERAL PUBLIC LICENSE
@@ -395,6 +462,7 @@ Concept Index
 
 * Menu:
 
+* .html extension:                       HTTP Options.
 * .netrc:                                Startup File.
 * .wgetrc:                               Startup File.
 * accept directories:                    Directory-Based Limits.
