@@ -38,7 +38,7 @@ all: Makefile $(SUBDIRS)
 
 $(SUBDIRS): 
 	cd $@
-	$(MAKE)
+	$(MAKEDIR)\$(MAKE)
 	cd ..
 
 # install everything

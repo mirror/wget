@@ -1,3 +1,17 @@
+2005-02-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c: Use the nnnI64 syntax for __int64 constants under all
+	Windows compilers.
+	(SPRINTF_WGINT): Use "%I64" under all Windows compilers.
+
+	* mswindows.h (WGINT_MAX): Use the nnnI64 syntax for
+	__int64 constants under all Windows compilers.
+	(struct_stat): Use `struct stati64' under Borland C.
+	(fstat): Don't redefine to _fstati64 under Borland.
+
+	* mswindows.c: Define str_to_int64 under Borland C as well as
+	under (older) Visual C.
+
 2005-02-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ftp.c (getftp): Initialize err to suppress compiler warning.

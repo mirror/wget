@@ -86,7 +86,7 @@ xsleep (double seconds)
 #endif /* not HAVE_USLEEP */
 }
 
-#if defined(_MSC_VER) && _MSC_VER < 1300
+#if defined(__BORLANDC__) || (defined(_MSC_VER) && _MSC_VER < 1300)
 
 static inline int
 char_value (char c, int base)
@@ -195,7 +195,7 @@ str_to_int64 (const char *nptr, char **endptr, int base)
   return result;
 }
 
-#else  /* !defined(_MSC_VER) || _MSC_VER >= 1300 */
+#else  /* !defined(__BORLANDC__) && (!defined(_MSC_VER) || _MSC_VER >= 1300) */
 
 __int64
 str_to_int64 (const char *nptr, char **endptr, int base)
@@ -207,7 +207,7 @@ str_to_int64 (const char *nptr, char **endptr, int base)
 #endif
 }
 
-#endif /* !defined(_MSC_VER) || _MSC_VER >= 1300 */
+#endif /* !defined(__BORLANDC__) && (!defined(_MSC_VER) || _MSC_VER >= 1300) */
 
 void
 windows_main_junk (int *argc, char **argv, char **exec_name)

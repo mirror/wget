@@ -1263,9 +1263,8 @@ numdigit (wgint number)
 #  define C100000000000000000 100000000000000000LL
 #  define C1000000000000000000 1000000000000000000LL
 # else
-#  if defined(_MSC_VER) || defined(__WATCOM__)
-/* Otherwise, if __int64 is available (under Windows), use __int64
-   constants. */
+#  if defined(WINDOWS)
+/* Use __int64 constants under Windows. */
 #   define C10000000000 10000000000I64
 #   define C100000000000 100000000000I64
 #   define C1000000000000 1000000000000I64
@@ -1287,7 +1286,7 @@ numdigit (wgint number)
 # if SIZEOF_LONG_LONG >= SIZEOF_WGINT
 #   define SPRINTF_WGINT(buf, n) sprintf(buf, "%lld", (long long) (n))
 # else
-#  ifdef _MSC_VER
+#  ifdef WINDOWS
 #   define SPRINTF_WGINT(buf, n) sprintf(buf, "%I64", (__int64) (n))
 #  endif
 # endif

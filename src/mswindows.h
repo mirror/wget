@@ -83,12 +83,7 @@ so, delete this exception statement from your version.  */
 /* Define a wgint type under Windows. */
 typedef __int64 wgint;
 #define SIZEOF_WGINT 8
-
-#if defined(_MSC_VER) || defined (__WATCOMC__)
-# define WGINT_MAX 9223372036854775807I64
-#else
-# define WGINT_MAX 9223372036854775807LL
-#endif
+#define WGINT_MAX 9223372036854775807I64
 
 #define str_to_wgint str_to_int64
 __int64 str_to_int64 (const char *, char **, int);
@@ -99,13 +94,22 @@ __int64 str_to_int64 (const char *, char **, int);
 /* Transparently support large files, in spirit similar to the POSIX
    LFS API.  */
 #define stat(fname, buf) _stati64 (fname, buf)
-#define fstat(fd, buf) _fstati64 (fd, buf)
-#define struct_stat struct _stati64
+
+#ifndef __BORLANDC__
+# define fstat(fd, buf) _fstati64 (fd, buf)
+#endif
+
+#if defined(_MSC_VER)
+# define struct_stat struct _stati64
+#elif defined(__BORLANDC__)
+# define struct_stat struct stati64
+#else
+# define struct_stat struct stat
+#endif
 
 #define PATH_SEPARATOR '\\'
 
 #ifdef HAVE_ISATTY
-/* Microsoft VC supports _isatty; Borland?  */
 #ifdef _MSC_VER
 # define isatty _isatty
 #endif
