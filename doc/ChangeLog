@@ -1,4 +1,4 @@
-2000-03-12  Dan Harkless  <dan-wget@dilvish.speed.net>
+2000-04-12  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* sample.wgetrc: Added entries for backup_converted and waitretry.
 
