@@ -1,3 +1,10 @@
+2005-03-12  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.h: Include options.h after wgint has been defined.
+
+	* options.h (struct options): Declare options processed with
+	cmd_bytes as wgint, not long.
+
 2005-03-18  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* init.c (cmd_file): Use concat_strings.

@@ -110,7 +110,7 @@ struct options
   double waitretry;		/* The wait period between retries. - HEH */
   int use_robots;		/* Do we heed robots.txt? */
 
-  long limit_rate;		/* Limit the download rate to this
+  wgint limit_rate;		/* Limit the download rate to this
 				   many bps. */
   LARGE_INT quota;		/* Maximum file size to download and
 				   store. */
@@ -144,7 +144,7 @@ struct options
 				   listings? */
 
   char *dot_style;
-  long dot_bytes;		/* How many bytes in a printing
+  wgint dot_bytes;		/* How many bytes in a printing
 				   dot. */
   int dots_in_line;		/* How many dots in one line. */
   int dot_spacing;		/* How many dots between spacings. */

@@ -88,7 +88,6 @@ so, delete this exception statement from your version.  */
 
 /* Include these, so random files need not include them.  */
 #include "sysdep.h"
-#include "options.h"
 /* locale independent replacement for ctype.h */
 #include "safe-ctype.h"
 
@@ -124,6 +123,8 @@ typedef off_t wgint;
 #  define WGINT_MAX LLONG_MAX
 # endif
 #endif
+
+#include "options.h"
 
 /* Everything uses this, so include them here directly.  */
 #include "xmalloc.h"
