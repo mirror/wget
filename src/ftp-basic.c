@@ -185,7 +185,7 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
 
     for (i = 0; i < ARRAY_SIZE (skey_head); i++)
       {
-	if (strncmp (skey_head[i], respline, strlen (skey_head[i])) == 0)
+	if (strncasecmp (skey_head[i], respline, strlen (skey_head[i])) == 0)
 	  break;
       }
     if (i < ARRAY_SIZE (skey_head))

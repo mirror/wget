@@ -1,3 +1,13 @@
+2000-11-02  Junio Hamano  <junio@twinsun.com>
+
+	* ftp-basic.c (ftp_login): Make comparison case-insensitive.
+
+2000-11-02  Tyler Riddle  <triddle@liquidmarket.com>
+
+	* http.c (known_authentication_scheme_p): Recognize NTML
+	authentication.
+	(create_authorization_line): Treat NTML the same as `Basic'.
+
 2000-11-02  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* retr.c (retrieve_url): Free url before returning.
