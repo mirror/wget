@@ -1,3 +1,8 @@
+2001-11-29  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* http.c (http_process_range): Accept the broken output of
+	"JavaWebServer/1.1.1".
+
 2001-11-28  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* progress.c (dot_set_params): If PARAMS is unspecified, use

@@ -202,6 +202,10 @@ http_process_range (const char *hdr, void *arg)
   if (!strncasecmp (hdr, "bytes", 5))
     {
       hdr += 5;
+      /* "JavaWebServer/1.1.1" sends "bytes: x-y/z", contrary to the
+	 HTTP spec. */
+      if (*hdr == ':')
+	++hdr;
       hdr += skip_lws (hdr);
       if (!*hdr)
 	return 0;
