@@ -224,7 +224,7 @@ lookup_host (const char *host, int silent)
   if ((int)addr != -1)
     {
       char tmpstore[IP4_ADDRESS_LENGTH];
-      char *lst[] = { tmpstore, NULL };
+      char *lst[2];
 
       /* ADDR is defined to be in network byte order, which is what
 	 this returns, so we can just copy it to STORE_IP.  However,
@@ -238,6 +238,8 @@ lookup_host (const char *host, int silent)
       offset = 0;
 #endif
       memcpy (tmpstore, (char *)&addr + offset, IP4_ADDRESS_LENGTH);
+      lst[0] = tmpstore;
+      lst[1] = NULL;
       return address_list_new (lst);
     }
 

@@ -1,3 +1,8 @@
+2001-12-03  Andre Majorel  <amajorel@teaser.fr>
+
+	* host.c (lookup_host): Don't initialize TMPSTORE directly because
+	it's not legal C.
+
 2001-12-03  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp-basic.c (ftp_port): Don't return HOSTERR if we fail getting
