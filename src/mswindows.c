@@ -315,9 +315,10 @@ borland_utime (const char *path, const struct utimbuf *times)
 #endif
 
 /*
- * Prevent Windows entering sleep/hibernation-mode while wget is doing a lengthy transfer.
- * Windows does by default not consider network activity in console-programs as activity !
- * Works on Win-98/ME/2K and up.
+ * Prevent Windows entering sleep/hibernation-mode while wget is doing
+ * a lengthy transfer.  Windows does by default not consider network
+ * activity in console-programs as activity !  Works on Win-98/ME/2K
+ * and up.
  */
 static DWORD
 set_sleep_mode (DWORD mode)
@@ -327,7 +328,8 @@ set_sleep_mode (DWORD mode)
   DWORD rc = (DWORD)-1;
 
   if (mod)
-     (void*)_SetThreadExecutionState = GetProcAddress ((HINSTANCE)mod, "SetThreadExecutionState");
+     (void *)_SetThreadExecutionState
+       = GetProcAddress ((HINSTANCE)mod, "SetThreadExecutionState");
 
   if (_SetThreadExecutionState)
     {
@@ -377,7 +379,7 @@ thread_helper (void *arg)
 
   /* Return Winsock error to the caller, in case FUN ran Winsock
      code.  */
-  td->ws_error = WSAGetLastError();
+  td->ws_error = WSAGetLastError ();
   return 0; 
 }
 
@@ -414,16 +416,17 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
 			     &thread_arg, 0, &thread_id); 
   if (!thread_hnd)
     {
-      DEBUGP (("CreateThread() failed; %s\n", strerror(GetLastError())));
+      DEBUGP (("CreateThread() failed; %s\n", strerror (GetLastError ())));
       goto blocking_fallback;
     }
 
-  if (WaitForSingleObject(thread_hnd, (DWORD)(1000*seconds)) == WAIT_OBJECT_0)
+  if (WaitForSingleObject (thread_hnd, (DWORD)(1000 * seconds))
+      == WAIT_OBJECT_0)
     {
       /* Propagate error state (which is per-thread) to this thread,
 	 so the caller can inspect it.  */
       WSASetLastError (thread_arg.ws_error);
-      DEBUGP (("Winsock error: %d\n", WSAGetLastError()));
+      DEBUGP (("Winsock error: %d\n", WSAGetLastError ()));
       rc = 0;
     }
   else
