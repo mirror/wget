@@ -1,3 +1,8 @@
+2001-04-30  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* init.c (cmd_address): Zero SIN before using it; apparently
+	needed on *BSD.
+
 2001-04-29  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp.c (ftp_loop_internal): Don't set NO_TRUNCATE if the file is
