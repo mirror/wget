@@ -1,3 +1,7 @@
+2000-11-24  Karl Eichwalder  <ke@suse.de>
+
+	* main.c (print_help): Untabify.
+
 2000-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* utils.c (xrealloc_debug): Do the unregister/register thing only
