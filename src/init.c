@@ -748,7 +748,6 @@ cmd_file (const char *com, const char *val, void *closure)
     }
   else
     {
-      char *result;
       int homelen;
       char *home = home_dir ();
       if (!home)
@@ -762,12 +761,7 @@ cmd_file (const char *com, const char *val, void *closure)
       for (++val; ISSEP (*val); val++)
 	;
 
-      result = xmalloc (homelen + 1 + strlen (val) + 1);
-      memcpy (result, home, homelen);
-      result[homelen] = '/';
-      strcpy (result + homelen + 1, val);
-
-      *pstring = result;
+      *pstring = concat_strings (home, "/", val, (char *) 0);
     }
 
 #ifdef WINDOWS

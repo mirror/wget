@@ -2583,7 +2583,7 @@ base64_encode (const char *s, char *store, int length)
 static char *
 basic_authentication_encode (const char *user, const char *passwd)
 {
-  char *t1, *t2, *res;
+  char *t1, *t2;
   int len1 = strlen (user) + 1 + strlen (passwd);
   int len2 = BASE64_LENGTH (len1);
 
@@ -2593,10 +2593,7 @@ basic_authentication_encode (const char *user, const char *passwd)
   t2 = (char *)alloca (len2 + 1);
   base64_encode (t1, t2, len1);
 
-  res = (char *)xmalloc (6 + len2 + 1);
-  sprintf (res, "Basic %s", t2);
-
-  return res;
+  return concat_strings ("Basic ", t2, (char *) 0);
 }
 
 #define SKIP_WS(x) do {				\

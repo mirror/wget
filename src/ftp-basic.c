@@ -93,10 +93,11 @@ ftp_response (int fd, char **ret_line)
 static char *
 ftp_request (const char *command, const char *value)
 {
-  char *res = (char *)xmalloc (strlen (command)
-                               + (value ? (1 + strlen (value)) : 0)
-                               + 2 + 1);
-  sprintf (res, "%s%s%s\r\n", command, value ? " " : "", value ? value : "");
+  char *res;
+  if (value)
+    res = concat_strings (command, " ", value, "\r\n", (char *) 0);
+  else
+    res = concat_strings (command, "\r\n", (char *) 0);
   if (opt.server_response)
     {
       /* Hack: don't print out password.  */

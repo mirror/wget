@@ -271,8 +271,7 @@ getftp (struct url *u, wgint *len, wgint restval, ccon *con)
       if (con->proxy)
 	{
 	  /* If proxy is in use, log in as username@target-site. */
-	  logname = xmalloc (strlen (user) + 1 + strlen (u->host) + 1);
-	  sprintf (logname, "%s@%s", user, u->host);
+	  logname = concat_strings (user, "@", u->host, (char *) 0);
 	}
 
       /* Login to the server: */

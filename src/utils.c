@@ -226,6 +226,54 @@ aprintf (const char *fmt, ...)
     }
   return NULL;			/* unreached */
 }
+
+/* Concatenate the NULL-terminated list of string arguments into
+   freshly allocated space.  */
+
+char *
+concat_strings (const char *str0, ...)
+{
+  va_list args;
+  int saved_lengths[5];		/* inspired by Apache's apr_pstrcat */
+  char *ret, *p;
+
+  const char *next_str;
+  int total_length = 0;
+  int argcount;
+
+  /* Calculate the length of and allocate the resulting string. */
+
+  argcount = 0;
+  VA_START (args, str0);
+  for (next_str = str0; next_str != NULL; next_str = va_arg (args, char *))
+    {
+      int len = strlen (next_str);
+      if (argcount < countof (saved_lengths))
+	saved_lengths[argcount++] = len;
+      total_length += len;
+    }
+  va_end (args);
+  p = ret = xmalloc (total_length + 1);
+
+  /* Copy the strings into the allocated space. */
+
+  argcount = 0;
+  VA_START (args, str0);
+  for (next_str = str0; next_str != NULL; next_str = va_arg (args, char *))
+    {
+      int len;
+      if (argcount < countof (saved_lengths))
+	len = saved_lengths[argcount++];
+      else
+	len = strlen (next_str);
+      memcpy (p, next_str, len);
+      p += len;
+    }
+  va_end (args);
+  *p = '\0';
+
+  return ret;
+}
 
 /* Return pointer to a static char[] buffer in which zero-terminated
    string-representation of TM (in form hh:mm:ss) is printed.

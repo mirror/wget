@@ -1,3 +1,15 @@
+2005-03-18  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* init.c (cmd_file): Use concat_strings.
+
+	* http.c (basic_authentication_encode): Use concat_strings.
+
+	* ftp-ls.c (ftp_index): Use concat_strings.
+
+	* ftp-basic.c (ftp_request): Use concat_strings.
+
+	* utils.c (concat_strings): New function.
+
 2005-03-12  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* init.c (simple_atof): Handle negative numbers; skip whitespace

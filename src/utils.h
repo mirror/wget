@@ -68,12 +68,14 @@ char **sepstring PARAMS ((const char *));
 int frontcmp PARAMS ((const char *, const char *));
 void fork_to_background PARAMS ((void));
 
-#ifdef HAVE_STDARG_H
+#ifdef WGET_USE_STDARG
 char *aprintf PARAMS ((const char *, ...))
      GCC_FORMAT_ATTR (1, 2);
-#else  /* not HAVE_STDARG_H */
+char *concat_strings PARAMS ((const char *, ...));
+#else  /* not WGET_USE_STDARG */
 char *aprintf ();
-#endif /* not HAVE_STDARG_H */
+char *concat_strings ();
+#endif /* not WGET_USE_STDARG */
 
 void touch PARAMS ((const char *, time_t));
 int remove_link PARAMS ((const char *));

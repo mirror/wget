@@ -872,9 +872,10 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
 
       tmpu = url_escape (u->user);
       tmpp = u->passwd ? url_escape (u->passwd) : NULL;
-      upwd = (char *)xmalloc (strlen (tmpu)
-			     + (tmpp ? (1 + strlen (tmpp)) : 0) + 2);
-      sprintf (upwd, "%s%s%s@", tmpu, tmpp ? ":" : "", tmpp ? tmpp : "");
+      if (tmpp)
+	upwd = concat_strings (tmpu, ":", tmpp, "@", (char *) 0);
+      else
+	upwd = concat_strings (tmpu, "@", (char *) 0);
       xfree (tmpu);
       xfree_null (tmpp);
     }
