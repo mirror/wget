@@ -195,9 +195,6 @@ AC_CHECK_FUNCS(strdup strstr strcasecmp strncasecmp strpbrk memmove)
 AC_CHECK_FUNCS(gettimeofday mktime strptime strerror snprintf vsnprintf)
 AC_CHECK_FUNCS(select sigblock sigsetjmp signal symlink access isatty)
 AC_CHECK_FUNCS(uname gethostname usleep)
-AC_CHECK_FUNCS(nanosleep,,[
-  AC_CHECK_LIB(rt,nanosleep,[AC_DEFINE(HAVE_NANOSLEEP)],[
-    AC_CHECK_LIB(posix4,nanosleep,[AC_DEFINE(HAVE_NANOSLEEP)])])])
 
 dnl
 dnl Check if we need to compile in getopt.c.
@@ -229,6 +226,20 @@ if test $wget_check_in_nsl != NONE; then
 fi
 
 AC_CHECK_LIB(socket, socket)
+
+dnl nanosleep on Solaris requires -lrt (more recently) or -lposix4
+dnl (older versions).
+
+AC_CHECK_FUNCS(nanosleep, [], [
+  AC_CHECK_LIB(rt, nanosleep, [
+    AC_DEFINE(HAVE_NANOSLEEP)
+    LIBS="-lrt $LIBS"
+  ], [
+    AC_CHECK_LIB(posix4, nanosleep, [
+      AC_DEFINE(HAVE_NANOSLEEP)
+      LIBS="-lposix4 $LIBS"
+    ])
+  ])])
 
 dnl #### This appears to be deficient with later versions of SOCKS.
 if test "x${with_socks}" = xyes
