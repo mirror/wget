@@ -458,7 +458,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 
   /* 2. If it is an absolute link and they are not followed, throw it
      out.  */
-  if (schemes_are_similar_p (u->scheme, SCHEME_HTTP))
+  if (u_scheme_like_http)
     if (opt.relative_only && !upos->link_relative_p)
       {
 	DEBUGP (("It doesn't really look like a relative link.\n"));

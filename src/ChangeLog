@@ -1,5 +1,10 @@
 2002-05-16  Ian Abbott  <abbotti@mev.co.uk>
 
+	* recur.c (download_child_p): Minor optimization to avoid an
+	unnecessary additional call to schemes_are_similar_p function.
+
+2002-05-16  Ian Abbott  <abbotti@mev.co.uk>
+
 	* url.c (schemes_are_similar_p): New function to test enumerated
 	scheme codes for similarity.
 
