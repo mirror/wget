@@ -6,6 +6,11 @@ Wget.  Patches to implement any of these items would be gladly accepted.  The
 items are not listed in any particular order.  Not all of them represent
 user-visible changes.
 
+* Add an option to not encode special characters like ' ' and '~' when saving
+  local files.  Would be good to have a mode that encodes all special characters
+  (as now), one that encodes none (as above), and one that only encodes a
+  character if it was encoded in the original URL (e.g. %20 but not %7E).
+
 * --retr-symlinks should cause wget to traverse links to directories too.
 
 * Lots of noncompliant webservers issue HTTP redirects to relative URLs, and
