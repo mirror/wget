@@ -1026,7 +1026,7 @@ likes to use a few options in addition to @samp{-p}:
 wget -E -H -k -K -nh -p http://@var{site}/@var{document}
 @end example
 
-To finish off this topic, it's worth knowing that wget's idea of an
+To finish off this topic, it's worth knowing that Wget's idea of an
 external document link is any URL specified in an @code{<A>} tag, an
 @code{<AREA>} tag, or a @code{<LINK>} tag other than @code{<LINK
 REL="stylesheet">}.
