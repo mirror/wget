@@ -58,7 +58,9 @@ so, delete this exception statement from your version.  */
 extern int errno;
 #endif
 
-void
+SSL_CTX *ssl_ctx;
+
+static void
 ssl_init_prng (void)
 {
   /* It is likely that older versions of OpenSSL will fail on
@@ -108,17 +110,10 @@ ssl_init_prng (void)
       unsigned char rnd = random_number (256);
       RAND_seed (&rnd, sizeof (rnd));
     }
-
-  if (RAND_status () == 0)
-    {
-      logprintf (LOG_NOTQUIET,
-		 _("Could not seed OpenSSL PRNG; disabling SSL.\n"));
-      scheme_disable (SCHEME_HTTPS);
-    }
 #endif /* SSLEAY_VERSION_NUMBER >= 0x00905100 */
 }
 
-int
+static int
 verify_callback (int ok, X509_STORE_CTX *ctx)
 {
   char *s, buf[256];
@@ -139,30 +134,40 @@ verify_callback (int ok, X509_STORE_CTX *ctx)
   return ok;
 }
 
-/* pass all ssl errors to DEBUGP
-   returns the number of printed errors */
-int
-ssl_printerrors (void) 
+/* Print SSL errors. */
+
+void
+ssl_print_errors (void) 
 {
-  int ocerr = 0;
   unsigned long curerr = 0;
   char errbuff[1024];
   xzero (errbuff);
   while ((curerr = ERR_get_error ()) != 0)
-    {
-      DEBUGP (("OpenSSL: %s\n", ERR_error_string (curerr, errbuff)));
-      ++ocerr;
-    }
-  return ocerr;
+    logprintf (LOG_NOTQUIET, "OpenSSL: %s\n",
+	       ERR_error_string (curerr, errbuff));
 }
 
 /* Creates a SSL Context and sets some defaults for it */
 uerr_t
-init_ssl (SSL_CTX **ctx)
+ssl_init ()
 {
   SSL_METHOD *meth = NULL;
   int verify;
   int can_validate;
+
+  if (ssl_ctx)
+    return 0;
+
+  /* Init the PRNG.  If that fails, bail out.  */
+  ssl_init_prng ();
+  if (RAND_status () == 0)
+    {
+      logprintf (LOG_NOTQUIET,
+		 _("Could not seed OpenSSL PRNG; disabling SSL.\n"));
+      scheme_disable (SCHEME_HTTPS);
+      return SSLERRCTXCREATE;
+    }
+
   SSL_library_init ();
   SSL_load_error_strings ();
   SSLeay_add_all_algorithms ();
@@ -184,20 +189,20 @@ init_ssl (SSL_CTX **ctx)
     }
   if (meth == NULL)
     {
-      ssl_printerrors ();
+      ssl_print_errors ();
       return SSLERRCTXCREATE;
     }
 
-  *ctx = SSL_CTX_new (meth);
+  ssl_ctx = SSL_CTX_new (meth);
   if (meth == NULL)
     {
-      ssl_printerrors ();
+      ssl_print_errors ();
       return SSLERRCTXCREATE;
     }
   /* Can we validate the server Cert ? */
   if (opt.sslcadir != NULL || opt.sslcafile != NULL)
     {
-      SSL_CTX_load_verify_locations (*ctx, opt.sslcafile, opt.sslcadir);
+      SSL_CTX_load_verify_locations (ssl_ctx, opt.sslcafile, opt.sslcadir);
       can_validate = 1;
     }
   else
@@ -224,7 +229,7 @@ init_ssl (SSL_CTX **ctx)
 	}
     }
 
-  SSL_CTX_set_verify (*ctx, verify, verify_callback);
+  SSL_CTX_set_verify (ssl_ctx, verify, verify_callback);
 
   if (opt.sslcertfile != NULL || opt.sslcertkey != NULL)
     {
@@ -239,14 +244,16 @@ init_ssl (SSL_CTX **ctx)
       if (opt.sslcertfile == NULL)
 	opt.sslcertfile = opt.sslcertkey; 
 
-      if (SSL_CTX_use_certificate_file (*ctx, opt.sslcertfile, ssl_cert_type) <= 0)
+      if (SSL_CTX_use_certificate_file (ssl_ctx, opt.sslcertfile,
+					ssl_cert_type) <= 0)
 	{
-	  ssl_printerrors ();
+	  ssl_print_errors ();
   	  return SSLERRCERTFILE;
 	}
-      if (SSL_CTX_use_PrivateKey_file  (*ctx, opt.sslcertkey , ssl_cert_type) <= 0)
+      if (SSL_CTX_use_PrivateKey_file  (ssl_ctx, opt.sslcertkey,
+					ssl_cert_type) <= 0)
 	{
-	  ssl_printerrors ();
+	  ssl_print_errors ();
 	  return SSLERRCERTKEY;
 	}
     }
@@ -254,28 +261,30 @@ init_ssl (SSL_CTX **ctx)
   return 0; /* Succeded */
 }
 
-static
-int ssl_read (int fd, char *buf, int bufsize, void *ctx)
+static int
+ssl_read (int fd, char *buf, int bufsize, void *ctx)
 {
-  int res;
+  int ret;
   SSL *ssl = (SSL *) ctx;
-  /* #### Does SSL_read actually set EINTR? */
   do
-    res = SSL_read (ssl, buf, bufsize);
-  while (res == -1 && errno == EINTR);
-  return res;
+    ret = SSL_read (ssl, buf, bufsize);
+  while (ret == -1
+	 && SSL_get_error (ssl, ret) == SSL_ERROR_SYSCALL
+	 && errno == EINTR);
+  return ret;
 }
 
 static int
 ssl_write (int fd, char *buf, int bufsize, void *ctx)
 {
-  int res = 0;
+  int ret = 0;
   SSL *ssl = (SSL *) ctx;
-  /* #### Does SSL_write actually set EINTR? */
   do
-    res = SSL_write (ssl, buf, bufsize);
-  while (res == -1 && errno == EINTR);
-  return res;
+    ret = SSL_write (ssl, buf, bufsize);
+  while (ret == -1
+	 && SSL_get_error (ssl, ret) == SSL_ERROR_SYSCALL
+	 && errno == EINTR);
+  return ret;
 }
 
 static int
@@ -312,9 +321,12 @@ ssl_close (int fd, void *ctx)
 /* Sets up a SSL structure and performs the handshake on fd. */
 
 SSL *
-connect_ssl (int fd, SSL_CTX *ctx) 
+ssl_connect (int fd) 
 {
-  SSL *ssl = SSL_new (ctx);
+  SSL *ssl;
+
+  assert (ssl_ctx != NULL);
+  ssl = SSL_new (ssl_ctx);
   if (!ssl)
     goto err;
   if (!SSL_set_fd (ssl, fd))
@@ -331,14 +343,8 @@ connect_ssl (int fd, SSL_CTX *ctx)
   return ssl;
 
  err:
-  ssl_printerrors ();
+  ssl_print_errors ();
   if (ssl)
     SSL_free (ssl);
   return NULL;
-}
-
-void
-free_ssl_ctx (SSL_CTX * ctx)
-{
-  SSL_CTX_free (ctx);
 }

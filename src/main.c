@@ -65,10 +65,6 @@ extern int errno;
 #include "progress.h"		/* for progress_handle_sigwinch */
 #include "convert.h"
 
-#ifdef HAVE_SSL
-# include "gen_sslfunc.h"
-#endif
-
 /* On GNU system this will include system-wide getopt.h. */
 #include "getopt.h"
 
@@ -872,12 +868,6 @@ Can't timestamp and not clobber old files at the same time.\n"));
   signal (SIGWINCH, progress_handle_sigwinch);
 #endif
 #endif /* HAVE_SIGNAL */
-
-#ifdef HAVE_SSL
-  /* Must call this before resolving any URLs because it has the power
-     to disable `https'.  */
-  ssl_init_prng ();
-#endif
 
   status = RETROK;		/* initialize it, just-in-case */
   /* Retrieve the URLs from argument list.  */
