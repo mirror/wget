@@ -1,3 +1,7 @@
+2001-04-29  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* main.c (main): Make `--cookies' respect its argument.
+
 2001-04-28  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* main.c (main): Removed undocumented option `--email-address'.

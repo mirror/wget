@@ -247,7 +247,6 @@ main (int argc, char *const *argv)
     { "backup-converted", no_argument, NULL, 'K' },
     { "continue", no_argument, NULL, 'c' },
     { "convert-links", no_argument, NULL, 'k' },
-    { "cookies", no_argument, NULL, 160 },
     { "debug", no_argument, NULL, 'd' },
     { "delete-after", no_argument, NULL, 136 },
     { "dont-remove-listing", no_argument, NULL, 149 },
@@ -287,6 +286,7 @@ main (int argc, char *const *argv)
     { "base", required_argument, NULL, 'B' },
     { "bind-address", required_argument, NULL, 155 },
     { "cache", required_argument, NULL, 'C' },
+    { "cookies", required_argument, NULL, 160 },
     { "cut-dirs", required_argument, NULL, 145 },
     { "directory-prefix", required_argument, NULL, 'P' },
     { "domains", required_argument, NULL, 'D' },
@@ -519,7 +519,7 @@ GNU General Public License for more details.\n"));
 	  setval ("followtags", optarg);
 	  break;
 	case 160:
-	  setval ("cookies", "on");
+	  setval ("cookies", optarg);
 	  break;
 	case 161:
 	  setval ("loadcookies", optarg);
