@@ -53,11 +53,12 @@ extern char *version_string;
 static struct hash_table *dl_file_url_map;
 static struct hash_table *dl_url_file_map;
 
-/* List of HTML files downloaded in this Wget run.  Used for link
-   conversion after Wget is done.  This list should only be traversed
-   in order.  If you need to check whether a file has been downloaded,
-   use a hash table, e.g. dl_file_url_map.  */
-static slist *downloaded_html_files;
+/* List of HTML files downloaded in this Wget run, used for link
+   conversion after Wget is done.  The list and the set contain the
+   same information, except the list maintains the order.  Perhaps I
+   should get rid of the list, it's there for historical reasons.  */
+static slist *downloaded_html_list;
+static struct hash_table *downloaded_html_set;
 
 static void register_delete_file PARAMS ((const char *));
 
@@ -227,8 +228,18 @@ retrieve_tree (const char *start_url)
 	 the second time.  */
       if (dl_url_file_map && hash_table_contains (dl_url_file_map, url))
 	{
+	  file = hash_table_get (dl_url_file_map, url);
+
 	  DEBUGP (("Already downloaded \"%s\", reusing it from \"%s\".\n",
-		   url, (char *)hash_table_get (dl_url_file_map, url)));
+		   url, file));
+
+	  /* #### This check might be horribly slow when downloading
+	     sites with a huge number of HTML docs.  Use a hash table
+	     instead!  Thankfully, it gets tripped only when you use
+	     `wget -r URL1 URL2 ...', as explained above.  */
+
+	  if (string_set_contains (downloaded_html_set, file))
+	    descend = 1;
 	}
       else
 	{
@@ -815,9 +826,16 @@ register_delete_file (const char *file)
 void
 register_html (const char *url, const char *file)
 {
-  if (!opt.convert_links)
+  if (!downloaded_html_set)
+    downloaded_html_set = make_string_hash_table (0);
+  else if (hash_table_contains (downloaded_html_set, file))
     return;
-  downloaded_html_files = slist_prepend (downloaded_html_files, file);
+
+  /* The set and the list should use the same copy of FILE, but the
+     slist interface insists on strduping the string it gets.  Oh
+     well. */
+  string_set_add (downloaded_html_set, file);
+  downloaded_html_list = slist_prepend (downloaded_html_list, file);
 }
 
 /* This function is called when the retrieval is done to convert the
@@ -843,22 +861,16 @@ convert_all_links (void)
   int file_count = 0;
 
   struct wget_timer *timer = wtimer_new ();
-  struct hash_table *seen = make_string_hash_table (0);
 
   /* Destructively reverse downloaded_html_files to get it in the right order.
      recursive_retrieve() used slist_prepend() consistently.  */
-  downloaded_html_files = slist_nreverse (downloaded_html_files);
+  downloaded_html_list = slist_nreverse (downloaded_html_list);
 
-  for (html = downloaded_html_files; html; html = html->next)
+  for (html = downloaded_html_list; html; html = html->next)
     {
       struct urlpos *urls, *cur_url;
       char *url;
       char *file = html->string;
-
-      /* Guard against duplicates. */
-      if (string_set_contains (seen, file))
-	continue;
-      string_set_add (seen, file);
 
       /* Determine the URL of the HTML file.  get_urls_html will need
 	 it.  */
@@ -934,8 +946,6 @@ convert_all_links (void)
   wtimer_delete (timer);
   logprintf (LOG_VERBOSE, _("Converted %d files in %.2f seconds.\n"),
 	     file_count, (double)msecs / 1000);
-
-  string_set_free (seen);
 }
 
 /* Cleanup the data structures associated with recursive retrieving
@@ -955,6 +965,8 @@ recursive_cleanup (void)
       hash_table_destroy (dl_url_file_map);
       dl_url_file_map = NULL;
     }
-  slist_free (downloaded_html_files);
-  downloaded_html_files = NULL;
+  if (downloaded_html_set)
+    string_set_free (downloaded_html_set);
+  slist_free (downloaded_html_list);
+  downloaded_html_list = NULL;
 }

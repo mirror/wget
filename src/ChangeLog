@@ -1,3 +1,13 @@
+2001-12-18  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* recur.c (register_html): Maintain a hash table of HTML files
+	along with the list.  Disallow duplicates.
+	(retrieve_tree): Use downloaded_html_set to check whether the file
+	found in dl_url_file_map is an HTML file, and descend into it if
+	so.
+	(convert_all_links): Don't guard against duplicates in
+	downloaded_html_list, since they are no longer possible.
+
 2001-12-18  Ian Abbott  <abbotti@mev.co.uk>
 
 	* recur.c (retrieve_tree): Pass on referring URL when retrieving
