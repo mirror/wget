@@ -449,7 +449,7 @@ persistent_available_p (const char *host, unsigned short port, int ssl)
   if (ssl != pc_last_ssl_p)
     return 0;
 
-  this_host_ip = lookup_host (host, LH_SILENT);
+  this_host_ip = lookup_host (host, 0);
   if (!this_host_ip)
     return 0;
 
