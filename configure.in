@@ -151,8 +151,7 @@ AC_C_VOLATILE
 AC_C_BIGENDIAN
 AC_C_PROTOTYPES
 
-if test x"$am_cv_prog_cc_stdc" != xno; then
-  true
+if test x"$am_cv_prog_cc_stdc" != xno; then :
   AC_SUBST(U, [])
   AC_SUBST(ANSI2KNR, [])
 else

@@ -1,5 +1,9 @@
 2003-11-12  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Tweak ansi2knr test, use : instead of true.
+
+2003-11-12  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Check for limits.h.
 
 2003-11-10  Hrvoje Niksic  <hniksic@xemacs.org>
