@@ -1,5 +1,9 @@
 2003-11-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* html-url.c: Get URLs from <object data="...">.
+
+2003-11-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (option_data): Specify the command to use for --mirror.
 
 2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
