@@ -1,3 +1,7 @@
+2001-01-15  Dan Harkless  <wget@harkless.org>
+
+	* NEWS: Was not being maintained.  Added some significant 1.7-dev stuff.
+
 2001-01-15  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
 	* util/wget.spec: Updated to 1.7, merged with the spec file from
