@@ -46,6 +46,10 @@ static struct hash_table *cookies_hash_table;
    functions don't need to call time() all the time.  */
 
 static time_t cookies_now;
+
+/* This should *really* be in a .h file!  */
+time_t http_atotm PARAMS ((char *));
+
 
 /* Definition of `struct cookie' and the most basic functions. */
 
