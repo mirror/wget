@@ -453,6 +453,12 @@ dnl **********************************************************************
 dnl Checks for IPv6
 dnl **********************************************************************
 
+dnl
+dnl If --enable-ipv6 is specified, we try to use IPv6 (as long as
+dnl getaddrinfo is also present).  If --disable-ipv6 is specified, we
+dnl don't use IPv6 or getaddrinfo.
+dnl
+
 ipv6=
 check_for_ipv6=no
 AC_ARG_ENABLE(ipv6,
@@ -466,7 +472,8 @@ AC_ARG_ENABLE(ipv6,
     ipv6=yes
     ;;
   esac],
-  [check_for_ipv6=no]
+  dnl If unspecified, check for IPv6 and use it where available.
+  [check_for_ipv6=yes]
 )
 
 if test "X$ipv6" = "Xyes" || test "X$check_for_ipv6" = "Xyes"; then
@@ -494,7 +501,7 @@ if test "X$ipv6" = "Xyes" || test "X$check_for_ipv6" = "Xyes"; then
     ipv6=no
   ])
 fi
-  
+
 if test "X$ipv6" = "Xyes" || test "X$check_for_ipv6" = "Xyes"; then
   PROTO_INET6(,[
     AC_MSG_NOTICE([Disabling IPv6 support: your system does not support the PF_INET6 protocol family])
