@@ -547,13 +547,13 @@ HTTPS (SSL) options:\n"),
     N_("\
 FTP options:\n"),
     N_("\
-       --no-remove-listing  don't remove `.listing' files.\n"),
+       --no-remove-listing     don't remove `.listing' files.\n"),
     N_("\
-       --no-glob            turn off FTP file name globbing.\n"),
+       --no-glob               turn off FTP file name globbing.\n"),
     N_("\
-       --passive-ftp        use the \"passive\" transfer mode.\n"),
+       --passive-ftp           use the \"passive\" transfer mode.\n"),
     N_("\
-       --retr-symlinks      when recursing, get linked-to files (not dir).\n"),
+       --retr-symlinks         when recursing, get linked-to files (not dir).\n"),
     N_("\
        --preserve-permissions  preserve remote file permissions.\n"),
     "\n",
