@@ -227,7 +227,7 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
       }
       break;
     case DP_S_MIN:
-      if (ISDIGIT(ch)) 
+      if ('0' <= ch && ch <= '9')
       {
 	min = 10*min + char_to_int (ch);
 	ch = *format++;
@@ -251,7 +251,7 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
 	state = DP_S_MOD;
       break;
     case DP_S_MAX:
-      if (ISDIGIT(ch)) 
+      if ('0' <= ch && ch <= '9')
       {
 	if (max < 0)
 	  max = 0;

@@ -102,7 +102,6 @@ i18n_initialize (void)
 
 /* It's kosher to declare these here because their interface _has_ to
    be void foo(void).  */
-void url_init PARAMS ((void));
 void host_init PARAMS ((void));
 
 /* This just calls the various initialization functions from the
@@ -110,7 +109,6 @@ void host_init PARAMS ((void));
 static void
 private_initialize (void)
 {
-  url_init ();
   host_init ();
 }
 

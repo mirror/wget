@@ -42,21 +42,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 extern int errno;
 #endif
 
-/* Table of Unsafe chars.  This is intialized in
-   init_unsafe_char_table.  */
-
-static char unsafe_char_table[256];
-
-#define UNSAFE_CHAR(c) (unsafe_char_table[(unsigned char)(c)])
-
-/* rfc1738 reserved chars.  This is too short to warrant a table.  We
-   don't use this yet; preservation of reserved chars will be
-   implemented when I integrate the new `reencode_string'
-   function.  */
-#define RESERVED_CHAR(c) (   (c) == ';' || (c) == '/' || (c) == '?'	\
-			  || (c) == '@' || (c) == '=' || (c) == '&'	\
-			  || (c) == '+')
-
 /* Is X "."?  */
 #define DOTP(x) ((*(x) == '.') && (!*(x + 1)))
 /* Is X ".."?  */
@@ -135,34 +120,64 @@ static char *construct_relative PARAMS ((const char *, const char *));
 static char process_ftp_type PARAMS ((char *));
 
 
+/* Support for encoding and decoding of URL strings.  We determine
+   whether a character is unsafe through static table lookup.  This
+   code assumes ASCII character set and 8-bit chars.  */
+
+enum {
+  urlchr_reserved = 1,
+  urlchr_unsafe   = 2
+};
+
+#define R  urlchr_reserved
+#define U  urlchr_unsafe
+#define RU R|U
+
+#define urlchr_test(c, mask) (urlchr_table[(unsigned char)(c)] & (mask))
+
+/* rfc1738 reserved chars.  We don't use this yet; preservation of
+   reserved chars will be implemented when I integrate the new
+   `reencode_string' function.  */
+
+#define RESERVED_CHAR(c) urlchr_test(c, urlchr_reserved)
+
 /* Unsafe chars:
    - anything <= 32;
    - stuff from rfc1738 ("<>\"#%{}|\\^~[]`");
-   - @ and :, for user/password encoding.
-   - everything over 127 (but we don't bother with recording those.  */
-void
-init_unsafe_char_table (void)
+   - '@' and ':'; needed for encoding URL username and password.
+   - anything >= 127. */
+
+#define UNSAFE_CHAR(c) urlchr_test(c, urlchr_unsafe)
+
+const static unsigned char urlchr_table[256] =
 {
-  int i;
-  for (i = 0; i < 256; i++)
-    if (i < 32 || i >= 127
-	|| i == ' '
-	|| i == '<'
-	|| i == '>'
-	|| i == '\"'
-	|| i == '#'
-	|| i == '%'
-	|| i == '{'
-	|| i == '}'
-	|| i == '|'
-	|| i == '\\'
-	|| i == '^'
-	|| i == '~'
-	|| i == '['
-	|| i == ']'
-	|| i == '`')
-      unsafe_char_table[i] = 1;
-}
+  U,  U,  U,  U,   U,  U,  U,  U,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
+  U,  U,  U,  U,   U,  U,  U,  U,   /* BS  HT  LF  VT   FF  CR  SO  SI  */
+  U,  U,  U,  U,   U,  U,  U,  U,   /* DLE DC1 DC2 DC3  DC4 NAK SYN ETB */
+  U,  U,  U,  U,   U,  U,  U,  U,   /* CAN EM  SUB ESC  FS  GS  RS  US  */
+  U,  0,  U,  U,   0,  U,  R,  0,   /* SP  !   "   #    $   %   &   '   */
+  0,  0,  0,  R,   0,  0,  0,  R,   /* (   )   *   +    ,   -   .   /   */
+  0,  0,  0,  0,   0,  0,  0,  0,   /* 0   1   2   3    4   5   6   7   */
+  0,  0,  U,  R,   U,  R,  U,  R,   /* 8   9   :   ;    <   =   >   ?   */
+ RU,  0,  0,  0,   0,  0,  0,  0,   /* @   A   B   C    D   E   F   G   */
+  0,  0,  0,  0,   0,  0,  0,  0,   /* H   I   J   K    L   M   N   O   */
+  0,  0,  0,  0,   0,  0,  0,  0,   /* P   Q   R   S    T   U   V   W   */
+  0,  0,  0,  U,   U,  U,  U,  0,   /* X   Y   Z   [    \   ]   ^   _   */
+  U,  0,  0,  0,   0,  0,  0,  0,   /* `   a   b   c    d   e   f   g   */
+  0,  0,  0,  0,   0,  0,  0,  0,   /* h   i   j   k    l   m   n   o   */
+  0,  0,  0,  0,   0,  0,  0,  0,   /* p   q   r   s    t   u   v   w   */
+  0,  0,  0,  U,   U,  U,  U,  U,   /* x   y   z   {    |   }   ~   DEL */
+
+  U, U, U, U,  U, U, U, U,  U, U, U, U,  U, U, U, U,
+  U, U, U, U,  U, U, U, U,  U, U, U, U,  U, U, U, U,
+  U, U, U, U,  U, U, U, U,  U, U, U, U,  U, U, U, U,
+  U, U, U, U,  U, U, U, U,  U, U, U, U,  U, U, U, U,
+
+  U, U, U, U,  U, U, U, U,  U, U, U, U,  U, U, U, U,
+  U, U, U, U,  U, U, U, U,  U, U, U, U,  U, U, U, U,
+  U, U, U, U,  U, U, U, U,  U, U, U, U,  U, U, U, U,
+  U, U, U, U,  U, U, U, U,  U, U, U, U,  U, U, U, U,
+};
 
 /* Decodes the forms %xy in a URL to the character the hexadecimal
    code of which is xy.  xy are hexadecimal digits from
@@ -173,27 +188,27 @@ init_unsafe_char_table (void)
 static void
 decode_string (char *s)
 {
-  char *p = s;
+  char *t = s;			/* t - tortoise */
+  char *h = s;			/* h - hare     */
 
-  for (; *s; s++, p++)
+  for (; *h; h++, t++)
     {
-      if (*s != '%')
-	*p = *s;
+      if (*h != '%')
+	{
+	copychar:
+	  *t = *h;
+	}
       else
 	{
-	  /* Do nothing if at the end of the string, or if the chars
-	     are not hex-digits.  */
-	  if (!*(s + 1) || !*(s + 2)
-	      || !(ISXDIGIT (*(s + 1)) && ISXDIGIT (*(s + 2))))
-	    {
-	      *p = *s;
-	      continue;
-	    }
-	  *p = (XCHAR_TO_XDIGIT (*(s + 1)) << 4) + XCHAR_TO_XDIGIT (*(s + 2));
-	  s += 2;
+	  /* Do nothing if '%' is not followed by two hex digits. */
+	  if (!*(h + 1) || !*(h + 2)
+	      || !(ISXDIGIT (*(h + 1)) && ISXDIGIT (*(h + 2))))
+	    goto copychar;
+	  *t = (XCHAR_TO_XDIGIT (*(h + 1)) << 4) + XCHAR_TO_XDIGIT (*(h + 2));
+	  h += 2;
 	}
     }
-  *p = '\0';
+  *t = '\0';
 }
 
 /* Like encode_string, but return S if there are no unsafe chars.  */
@@ -1701,11 +1716,4 @@ downloaded_files_free (void)
       xfree (rover);
       rover = next;
     }
-}
-
-/* Initialization of static stuff. */
-void
-url_init (void)
-{
-  init_unsafe_char_table ();
 }

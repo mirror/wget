@@ -1,5 +1,15 @@
 2001-04-25  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* url.c (UNSAFE_CHAR): Reimplement using a static table.
+	(url_init): Removed.
+	(init_unsafe_char_table): Removed.
+
+2001-04-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* snprintf.c (dopr): Replace ISDIGIT with '0' <= ch && ch <= '9'.
+
+2001-04-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* utils.c: Document timer functions.
 
 	* retr.c (rate): Use it.
