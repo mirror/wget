@@ -1,5 +1,10 @@
 2003-10-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* retr.c (retrieve_url): Initialize DUMMY storage for DT.  Caught
+	by valgrind.
+
+2003-10-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* html-parse.c (convert_and_copy): Handle numeric entities in
 	hexadecimal, &#xHH.
 	(convert_and_copy): Copy the contents directly to the pool without

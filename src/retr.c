@@ -357,9 +357,12 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   char *saved_post_data = NULL;
   char *saved_post_file_name = NULL;
 
-  /* If dt is NULL, just ignore it.  */
+  /* If dt is NULL, use local storage.  */
   if (!dt)
-    dt = &dummy;
+    {
+      dt = &dummy;
+      dummy = 0;
+    }
   url = xstrdup (origurl);
   if (newloc)
     *newloc = NULL;
