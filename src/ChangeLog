@@ -1,5 +1,10 @@
 2001-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* main.c: Remove --wait / --waitretry backwards compatibility
+	code.
+	
+2001-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* main.c (main): Use it.
 
 	* url.c (rewrite_url_maybe): New function.

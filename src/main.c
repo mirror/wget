@@ -243,7 +243,6 @@ main (int argc, char *const *argv)
 {
   char **url, **t;
   int i, c, nurl, status, append_to_log;
-  int wr = 0;
 
   static struct option long_options[] =
   {
@@ -518,7 +517,6 @@ GNU General Public License for more details.\n"));
 	  break;
 	case 152:
 	  setval ("waitretry", optarg);
-	  wr = 1;
 	  break;
 	case 153:
 	  setval ("followtags", optarg);
@@ -693,18 +691,6 @@ GNU General Public License for more details.\n"));
   if (opt.verbose == -1)
     opt.verbose = !opt.quiet;
 
-  /* Retain compatibility with previous scripts.
-     if wait has been set, but waitretry has not, give it the wait value.
-     A simple check on the values is not enough, I could have set
-     wait to n>0 and waitretry to 0 - HEH */
-  if (opt.wait && !wr)
-    {
-      char  opt_wait_str[256];  /* bigger than needed buf to prevent overflow */
-
-      sprintf(opt_wait_str, "%ld", opt.wait);
-      setval ("waitretry", opt_wait_str);
-    }
-    
   /* Sanity checks.  */
   if (opt.verbose && opt.quiet)
     {
