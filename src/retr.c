@@ -300,7 +300,7 @@ rate (long bytes, long msecs, int pad)
   return res;
 }
 
-#define USE_PROXY_P(u) (opt.use_proxy && getproxy((u)->proto)		\
+#define USE_PROXY_P(u) (opt.use_proxy && getproxy((u)->scheme)		\
 			&& no_proxy_match((u)->host,			\
 					  (const char **)opt.no_proxy))
 
@@ -366,8 +366,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       memset (u, 0, sizeof (*u));
       u->proxy = pu;
       /* Get the appropriate proxy server, appropriate for the
-	 current protocol.  */
-      proxy = getproxy (pu->proto);
+	 current scheme.  */
+      proxy = getproxy (pu->scheme);
       if (!proxy)
 	{
 	  logputs (LOG_NOTQUIET, _("Could not find proxy host.\n"));
@@ -379,9 +379,9 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	}
       /* Parse the proxy URL.  */
       result = parseurl (proxy, u, 0);
-      if (result != URLOK || u->proto != URLHTTP)
+      if (result != URLOK || u->scheme != SCHEME_HTTP)
 	{
-	  if (u->proto == URLHTTP)
+	  if (u->scheme == SCHEME_HTTP)
 	    logprintf (LOG_NOTQUIET, "Proxy %s: %s.\n", proxy, uerrmsg(result));
 	  else
 	    logprintf (LOG_NOTQUIET, _("Proxy %s: Must be HTTP.\n"), proxy);
@@ -391,19 +391,18 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  xfree (url);
 	  return PROXERR;
 	}
-      u->proto = URLHTTP;
+      u->scheme = SCHEME_HTTP;
     }
 
-  assert (u->proto != URLFILE);	/* #### Implement me!  */
   mynewloc = NULL;
 
-  if (u->proto == URLHTTP
+  if (u->scheme == SCHEME_HTTP
 #ifdef HAVE_SSL
-      || u->proto == URLHTTPS
+      || u->scheme == SCHEME_HTTPS
 #endif
       )
     result = http_loop (u, &mynewloc, dt);
-  else if (u->proto == URLFTP)
+  else if (u->scheme == SCHEME_FTP)
     {
       /* If this is a redirection, we must not allow recursive FTP
 	 retrieval, so we save recursion to oldrec, and restore it
@@ -420,7 +419,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 
 	 #### All of this is, of course, crap.  These types should be
 	 determined through mailcap.  */
-      if (redirections && u->local && (u->proto == URLFTP ))
+      if (redirections && u->local && (u->scheme == SCHEME_FTP))
 	{
 	  char *suf = suffix (u->local);
 	  if (suf && (!strcasecmp (suf, "html") || !strcasecmp (suf, "htm")))

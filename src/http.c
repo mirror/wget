@@ -614,7 +614,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 #ifndef HAVE_SSL
       !persistent_available_p (u->host, u->port)
 #else
-      !persistent_available_p (u->host, u->port, (u->proto==URLHTTPS ? 1 : 0))
+      !persistent_available_p (u->host, u->port, u->scheme == SCHEME_HTTPS)
 #endif /* HAVE_SSL */
       )
     {
@@ -653,7 +653,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 	  break;
 	}
 #ifdef HAVE_SSL
-     if (u->proto == URLHTTPS)
+     if (u->scheme == SCHEME_HTTPS)
        if (connect_ssl (&ssl, ssl_ctx,sock) != 0)
 	 {
 	   logputs (LOG_VERBOSE, "\n");
@@ -786,7 +786,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   port_maybe = NULL;
   if (1
 #ifdef HAVE_SSL
-      && remport != (u->proto == URLHTTPS
+      && remport != (u->scheme == SCHEME_HTTPS
 		     ? DEFAULT_HTTPS_PORT : DEFAULT_HTTP_PORT)
 #else
       && remport != DEFAULT_HTTP_PORT
@@ -804,7 +804,12 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 
   if (opt.cookies)
     cookies = build_cookies_request (ou->host, ou->port, ou->path,
-				     ou->proto == URLHTTPS);
+#ifdef HAVE_SSL
+				     ou->scheme == SCHEME_HTTPS
+#else
+				     0
+#endif
+				     );
 
   /* Allocate the memory for the request.  */
   request = (char *)alloca (strlen (command) + strlen (path)
@@ -848,7 +853,7 @@ Accept: %s\r\n\
 
   /* Send the request to server.  */
 #ifdef HAVE_SSL
-  if (u->proto == URLHTTPS)
+  if (u->scheme == SCHEME_HTTPS)
     num_written = ssl_iwrite (ssl, request, strlen (request));
   else
 #endif /* HAVE_SSL */
@@ -871,7 +876,7 @@ Accept: %s\r\n\
   /* Before reading anything, initialize the rbuf.  */
   rbuf_initialize (&rbuf, sock);
 #ifdef HAVE_SSL
-  if (u->proto == URLHTTPS)
+  if (u->scheme == SCHEME_HTTPS)
     rbuf.ssl = ssl;
   else
     rbuf.ssl = NULL;

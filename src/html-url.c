@@ -301,7 +301,7 @@ static void
 handle_link (struct collect_urls_closure *closure, const char *link_uri,
 	     struct taginfo *tag, int attrid)
 {
-  int no_proto = !has_proto (link_uri);
+  int no_scheme = !url_has_scheme (link_uri);
   urlpos *newel;
 
   const char *base = closure->base ? closure->base : closure->parent_base;
@@ -324,10 +324,10 @@ handle_link (struct collect_urls_closure *closure, const char *link_uri,
 
   if (!base)
     {
-      if (no_proto)
+      if (no_scheme)
 	{
-	  /* We have no base, and the link does not have a protocol or
-             a host attached to it.  Nothing we can do.  */
+	  /* We have no base, and the link does not have a host
+	     attached to it.  Nothing we can do.  */
 	  /* #### Should we print a warning here?  Wget 1.5.x used to.  */
 	  return;
 	}
@@ -349,11 +349,11 @@ handle_link (struct collect_urls_closure *closure, const char *link_uri,
   newel->pos = tag->attrs[attrid].value_raw_beginning - closure->text;
   newel->size = tag->attrs[attrid].value_raw_size;
 
-  /* A URL is relative if the host and protocol are not named, and the
-     name does not start with `/'.  */
-  if (no_proto && *link_uri != '/')
+  /* A URL is relative if the host is not named, and the name does not
+     start with `/'.  */
+  if (no_scheme && *link_uri != '/')
     newel->link_relative_p = 1;
-  else if (!no_proto)
+  else if (!no_scheme)
     newel->link_complete_p = 1;
 
   if (closure->tail)

@@ -187,7 +187,7 @@ recursive_retrieve (const char *file, const char *this_url)
      that the retrieval is done through proxy.  In that case, FTP
      links will be followed by default and recursion will not be
      turned off when following them.  */
-  this_url_ftp = (urlproto (this_url) == URLFTP);
+  this_url_ftp = (url_scheme (this_url) == SCHEME_FTP);
 
   /* Get the URL-s from an HTML file: */
   url_list = get_urls_html (file, canon_this_url ? canon_this_url : this_url,
@@ -214,12 +214,6 @@ recursive_retrieve (const char *file, const char *this_url)
       if (parseurl (cur_url->url, u, 0) != URLOK)
 	{
 	  DEBUGP (("Yuck!  A bad URL.\n"));
-	  freeurl (u, 1);
-	  continue;
-	}
-      if (u->proto == URLFILE)
-	{
-	  DEBUGP (("Nothing to do with file:// around here.\n"));
 	  freeurl (u, 1);
 	  continue;
 	}
@@ -254,7 +248,7 @@ recursive_retrieve (const char *file, const char *this_url)
 
       /* If it is FTP, and FTP is not followed, chuck it out.  */
       if (!inl)
-	if (u->proto == URLFTP && !opt.follow_ftp && !this_url_ftp)
+	if (u->scheme == SCHEME_FTP && !opt.follow_ftp && !this_url_ftp)
 	  {
 	    DEBUGP (("Uh, it is FTP but i'm not in the mood to follow FTP.\n"));
 	    string_set_add (undesirable_urls, constr);
@@ -262,7 +256,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	  }
       /* If it is absolute link and they are not followed, chuck it
 	 out.  */
-      if (!inl && u->proto != URLFTP)
+      if (!inl && u->scheme != SCHEME_FTP)
 	if (opt.relative_only && !cur_url->link_relative_p)
 	  {
 	    DEBUGP (("It doesn't really look like a relative link.\n"));
@@ -281,7 +275,7 @@ recursive_retrieve (const char *file, const char *this_url)
       if (!inl && opt.no_parent
 	  /* If the new URL is FTP and the old was not, ignore
              opt.no_parent.  */
-	  && !(!this_url_ftp && u->proto == URLFTP))
+	  && !(!this_url_ftp && u->scheme == SCHEME_FTP))
 	{
 	  /* Check for base_dir first.  */
 	  if (!(base_dir && frontcmp (base_dir, u->dir)))
@@ -368,7 +362,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	  /* This line is bogus. */
 	  /*string_set_add (undesirable_urls, constr);*/
 
-	  if (!inl && !((u->proto == URLFTP) && !this_url_ftp))
+	  if (!inl && !((u->scheme == SCHEME_FTP) && !this_url_ftp))
 	    if (!opt.spanhost && this_url && !same_host (this_url, constr))
 	      {
 		DEBUGP (("This is not the same hostname as the parent's.\n"));
@@ -377,7 +371,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	      }
 	}
       /* What about robots.txt?  */
-      if (!inl && opt.use_robots && u->proto == URLHTTP)
+      if (!inl && opt.use_robots && u->scheme == SCHEME_FTP)
 	{
 	  struct robot_specs *specs = res_get_specs (u->host, u->port);
 	  if (!specs)
@@ -418,7 +412,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	  string_set_add (undesirable_urls, constr);
 	  /* Automatically followed FTPs will *not* be downloaded
 	     recursively.  */
-	  if (u->proto == URLFTP)
+	  if (u->scheme == SCHEME_FTP)
 	    {
 	      /* Don't you adore side-effects?  */
 	      opt.recursive = 0;
@@ -428,7 +422,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	  /* Retrieve it.  */
 	  retrieve_url (constr, &filename, &newloc,
 		       canon_this_url ? canon_this_url : this_url, &dt);
-	  if (u->proto == URLFTP)
+	  if (u->scheme == SCHEME_FTP)
 	    {
 	      /* Restore...  */
 	      opt.recursive = 1;

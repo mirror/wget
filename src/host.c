@@ -278,12 +278,12 @@ same_host (const char *u1, const char *u2)
   char *real1, *real2;
 
   /* Skip protocol, if present.  */
-  u1 += skip_proto (u1);
-  u2 += skip_proto (u2);
+  u1 += url_skip_scheme (u1);
+  u2 += url_skip_scheme (u2);
 
   /* Skip username ans password, if present.  */
-  u1 += skip_uname (u1);
-  u2 += skip_uname (u2);
+  u1 += url_skip_uname (u1);
+  u2 += url_skip_uname (u2);
 
   for (s = u1; *u1 && *u1 != '/' && *u1 != ':'; u1++);
   p1 = strdupdelim (s, u1);

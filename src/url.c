@@ -49,21 +49,21 @@ extern int errno;
 
 static int urlpath_length PARAMS ((const char *));
 
-struct proto
+struct scheme_data
 {
-  char *name;
-  uerr_t ind;
-  unsigned short port;
+  enum url_scheme scheme;
+  char *leading_string;
+  int default_port;
 };
 
-/* Supported protocols: */
-static struct proto sup_protos[] =
+/* Supported schemes: */
+static struct scheme_data supported_schemes[] =
 {
-  { "http://", URLHTTP, DEFAULT_HTTP_PORT },
+  { SCHEME_HTTP,  "http://",  DEFAULT_HTTP_PORT },
 #ifdef HAVE_SSL
-  { "https://",URLHTTPS, DEFAULT_HTTPS_PORT},
+  { SCHEME_HTTPS, "https://", DEFAULT_HTTPS_PORT },
 #endif
-  { "ftp://", URLFTP, DEFAULT_FTP_PORT }
+  { SCHEME_FTP,   "ftp://",   DEFAULT_FTP_PORT }
 };
 
 static void parse_dir PARAMS ((const char *, char **, char **));
@@ -229,39 +229,28 @@ encode_string (const char *s)
     }						\
 } while (0)
 
-/* Returns the protocol type if URL's protocol is supported, or
-   URLUNKNOWN if not.  */
-uerr_t
-urlproto (const char *url)
+/* Returns the scheme type if the scheme is supported, or
+   SCHEME_INVALID if not.  */
+enum url_scheme
+url_scheme (const char *url)
 {
   int i;
 
-  for (i = 0; i < ARRAY_SIZE (sup_protos); i++)
-    if (!strncasecmp (url, sup_protos[i].name, strlen (sup_protos[i].name)))
-      return sup_protos[i].ind;
-  for (i = 0; url[i] && url[i] != ':' && url[i] != '/'; i++);
-  if (url[i] == ':')
-    {
-      for (++i; url[i] && url[i] != '/'; i++)
-	if (!ISDIGIT (url[i]))
-	  return URLBADPORT;
-      if (url[i - 1] == ':')
-	return URLFTP;
-      else
-	return URLHTTP;
-    }
-  else
-    return URLHTTP;
+  for (i = 0; i < ARRAY_SIZE (supported_schemes); i++)
+    if (!strncasecmp (url, supported_schemes[i].leading_string,
+		      strlen (supported_schemes[i].leading_string)))
+      return supported_schemes[i].scheme;
+  return SCHEME_INVALID;
 }
 
-/* Skip the protocol part of the URL, e.g. `http://'.  If no protocol
-   part is found, returns 0.  */
+/* Return the number of characters needed to skip the scheme part of
+   the URL, e.g. `http://'.  If no scheme is found, returns 0.  */
 int
-skip_proto (const char *url)
+url_skip_scheme (const char *url)
 {
   const char *p = url;
 
-  /* Skip protocol name.  We allow `-' and `+' because of `whois++',
+  /* Skip the scheme name.  We allow `-' and `+' because of `whois++',
      etc. */
   while (ISALNUM (*p) || *p == '-' || *p == '+')
     ++p;
@@ -277,10 +266,10 @@ skip_proto (const char *url)
   return p - url;
 }
 
-/* Returns 1 if the URL begins with a protocol (supported or
+/* Returns 1 if the URL begins with a scheme (supported or
    unsupported), 0 otherwise.  */
 int
-has_proto (const char *url)
+url_has_scheme (const char *url)
 {
   const char *p = url;
   while (ISALNUM (*p) || *p == '-' || *p == '+')
@@ -290,11 +279,11 @@ has_proto (const char *url)
 
 /* Skip the username and password, if present here.  The function
    should be called *not* with the complete URL, but with the part
-   right after the protocol.
+   right after the scheme.
 
    If no username and password are found, return 0.  */
 int
-skip_uname (const char *url)
+url_skip_uname (const char *url)
 {
   const char *p;
   const char *q = NULL;
@@ -317,7 +306,7 @@ newurl (void)
 
   u = (struct urlinfo *)xmalloc (sizeof (struct urlinfo));
   memset (u, 0, sizeof (*u));
-  u->proto = URLUNKNOWN;
+  u->scheme = SCHEME_INVALID;
   return u;
 }
 
@@ -344,10 +333,14 @@ freeurl (struct urlinfo *u, int complete)
   return;
 }
 
+enum url_parse_error {
+  PE_UNRECOGNIZED_SCHEME, PE_BAD_PORT
+};
+
 /* Extract the given URL of the form
    (http:|ftp:)// (user (:password)?@)?hostname (:port)? (/path)?
    1. hostname (terminated with `/' or `:')
-   2. port number (terminated with `/'), or chosen for the protocol
+   2. port number (terminated with `/'), or chosen for the scheme
    3. dirname (everything after hostname)
    Most errors are handled.  No allocation is done, you must supply
    pointers to allocated memory.
@@ -367,36 +360,36 @@ parseurl (const char *url, struct urlinfo *u, int strict)
 {
   int i, l, abs_ftp;
   int recognizable;            /* Recognizable URL is the one where
-				  the protocol name was explicitly
-				  named, i.e. it wasn't deduced from
-				  the URL format.  */
+				  the scheme was explicitly named,
+				  i.e. it wasn't deduced from the URL
+				  format.  */
   uerr_t type;
 
   DEBUGP (("parseurl (\"%s\") -> ", url));
-  recognizable = has_proto (url);
+  recognizable = url_has_scheme (url);
   if (strict && !recognizable)
     return URLUNKNOWN;
-  for (i = 0, l = 0; i < ARRAY_SIZE (sup_protos); i++)
+  for (i = 0, l = 0; i < ARRAY_SIZE (supported_schemes); i++)
     {
-      l = strlen (sup_protos[i].name);
-      if (!strncasecmp (sup_protos[i].name, url, l))
+      l = strlen (supported_schemes[i].leading_string);
+      if (!strncasecmp (supported_schemes[i].leading_string, url, l))
 	break;
     }
-  /* If protocol is recognizable, but unsupported, bail out, else
+  /* If scheme is recognizable, but unsupported, bail out, else
      suppose unknown.  */
-  if (recognizable && i == ARRAY_SIZE (sup_protos))
+  if (recognizable && i == ARRAY_SIZE (supported_schemes))
     return URLUNKNOWN;
-  else if (i == ARRAY_SIZE (sup_protos))
+  else if (i == ARRAY_SIZE (supported_schemes))
     type = URLUNKNOWN;
   else
-    u->proto = type = sup_protos[i].ind;
+    u->scheme = type = supported_schemes[i].scheme;
 
   if (type == URLUNKNOWN)
     l = 0;
   /* Allow a username and password to be specified (i.e. just skip
      them for now).  */
   if (recognizable)
-    l += skip_uname (url + l);
+    l += url_skip_uname (url + l);
   for (i = l; url[i] && url[i] != ':' && url[i] != '/'; i++);
   if (i == l)
     return URLBADHOST;
@@ -413,7 +406,10 @@ parseurl (const char *url, struct urlinfo *u, int strict)
       if (ISDIGIT (url[++i]))    /* A port number */
 	{
 	  if (type == URLUNKNOWN)
-	    u->proto = type = URLHTTP;
+	    {
+	      type = URLHTTP;
+	      u->scheme = SCHEME_HTTP;
+	    }
 	  for (; url[i] && url[i] != '/'; i++)
 	    if (ISDIGIT (url[i]))
 	      u->port = 10 * u->port + (url[i] - '0');
@@ -424,21 +420,27 @@ parseurl (const char *url, struct urlinfo *u, int strict)
 	  DEBUGP (("port %hu -> ", u->port));
 	}
       else if (type == URLUNKNOWN) /* or a directory */
-	u->proto = type = URLFTP;
+	{
+	  type = URLFTP;
+	  u->scheme = SCHEME_FTP;
+	}
       else                      /* or just a misformed port number */
 	return URLBADPORT;
     }
   else if (type == URLUNKNOWN)
-    u->proto = type = URLHTTP;
+    {
+      type = URLHTTP;
+      u->scheme = SCHEME_HTTP;
+    }
   if (!u->port)
     {
       int ind;
-      for (ind = 0; ind < ARRAY_SIZE (sup_protos); ind++)
-	if (sup_protos[ind].ind == type)
+      for (ind = 0; ind < ARRAY_SIZE (supported_schemes); ind++)
+	if (supported_schemes[ind].scheme == u->scheme)
 	  break;
-      if (ind == ARRAY_SIZE (sup_protos))
+      if (ind == ARRAY_SIZE (supported_schemes))
 	return URLUNKNOWN;
-      u->port = sup_protos[ind].port;
+      u->port = supported_schemes[ind].default_port;
     }
   /* Some delimiter troubles...  */
   if (url[i] == '/' && url[i - 1] != ':')
@@ -480,7 +482,7 @@ parseurl (const char *url, struct urlinfo *u, int strict)
   if (l > 1 && u->dir[l - 1] == '/')
     u->dir[l - 1] = '\0';
   /* Re-create the path: */
-  abs_ftp = (u->proto == URLFTP && *u->dir == '/');
+  abs_ftp = (u->scheme == SCHEME_FTP && *u->dir == '/');
   /*  sprintf (u->path, "%s%s%s%s", abs_ftp ? "%2F": "/",
       abs_ftp ? (u->dir + 1) : u->dir, *u->dir ? "/" : "", u->file); */
   strcpy (u->path, abs_ftp ? "%2F" : "/");
@@ -574,11 +576,10 @@ parse_uname (const char *url, char **user, char **passwd)
   *user = NULL;
   *passwd = NULL;
 
-  /* Look for the end of the protocol string.  */
-  l = skip_proto (url);
+  /* Look for the end of the scheme identifier.  */
+  l = url_skip_scheme (url);
   if (!l)
     return URLUNKNOWN;
-  /* Add protocol offset.  */
   url += l;
   /* Is there an `@' character?  */
   for (p = url; *p && *p != '/'; p++)
@@ -623,26 +624,27 @@ process_ftp_type (char *path)
     return '\0';
 }
 
-/* Return the URL as fine-formed string, with a proper protocol, optional port
-   number, directory and optional user/password.  If `hide' is non-zero (as it
-   is when we're calling this on a URL we plan to print, but not when calling it
-   to canonicalize a URL for use within the program), password will be hidden.
-   The forbidden characters in the URL will be cleansed.  */
+/* Recreate the URL string from the data in urlinfo.  This can be used
+   to create a "canonical" representation of the URL.  If `hide' is
+   non-zero (as it is when we're calling this on a URL we plan to
+   print, but not when calling it to canonicalize a URL for use within
+   the program), password will be hidden.  The forbidden characters in
+   the URL will be cleansed.  */
 char *
 str_url (const struct urlinfo *u, int hide)
 {
-  char *res, *host, *user, *passwd, *proto_name, *dir, *file;
+  char *res, *host, *user, *passwd, *scheme_name, *dir, *file;
   int i, l, ln, lu, lh, lp, lf, ld;
-  unsigned short proto_default_port;
+  unsigned short default_port;
 
-  /* Look for the protocol name.  */
-  for (i = 0; i < ARRAY_SIZE (sup_protos); i++)
-    if (sup_protos[i].ind == u->proto)
+  /* Look for the scheme.  */
+  for (i = 0; i < ARRAY_SIZE (supported_schemes); i++)
+    if (supported_schemes[i].scheme == u->scheme)
       break;
-  if (i == ARRAY_SIZE (sup_protos))
+  if (i == ARRAY_SIZE (supported_schemes))
     return NULL;
-  proto_name = sup_protos[i].name;
-  proto_default_port = sup_protos[i].port;
+  scheme_name = supported_schemes[i].leading_string;
+  default_port = supported_schemes[i].default_port;
   host = encode_string (u->host);
   dir = encode_string (u->dir);
   file = encode_string (u->file);
@@ -660,7 +662,7 @@ str_url (const struct urlinfo *u, int hide)
       else
 	passwd = encode_string (u->passwd);
     }
-  if (u->proto == URLFTP && *dir == '/')
+  if (u->scheme == SCHEME_FTP && *dir == '/')
     {
       char *tmp = (char *)xmalloc (strlen (dir) + 3);
       /*sprintf (tmp, "%%2F%s", dir + 1);*/
@@ -672,19 +674,19 @@ str_url (const struct urlinfo *u, int hide)
       dir = tmp;
     }
 
-  ln = strlen (proto_name);
+  ln = strlen (scheme_name);
   lu = user ? strlen (user) : 0;
   lp = passwd ? strlen (passwd) : 0;
   lh = strlen (host);
   ld = strlen (dir);
   lf = strlen (file);
   res = (char *)xmalloc (ln + lu + lp + lh + ld + lf + 20); /* safe sex */
-  /* sprintf (res, "%s%s%s%s%s%s:%d/%s%s%s", proto_name,
+  /* sprintf (res, "%s%s%s%s%s%s:%d/%s%s%s", scheme_name,
      (user ? user : ""), (passwd ? ":" : ""),
      (passwd ? passwd : ""), (user ? "@" : ""),
      host, u->port, dir, *dir ? "/" : "", file); */
   l = 0;
-  memcpy (res, proto_name, ln);
+  memcpy (res, scheme_name, ln);
   l += ln;
   if (user)
     {
@@ -700,7 +702,7 @@ str_url (const struct urlinfo *u, int hide)
     }
   memcpy (res + l, host, lh);
   l += lh;
-  if (u->port != proto_default_port)
+  if (u->port != default_port)
     {
       res[l++] = ':';
       long_to_string (res + l, (long)u->port);
@@ -1123,7 +1125,7 @@ find_last_char (const char *b, const char *e, char c)
    Either of the URIs may be absolute or relative, complete with the
    host name, or path only.  This tries to behave "reasonably" in all
    foreseeable cases.  It employs little specific knowledge about
-   protocols or URL-specific stuff -- it just works on strings.
+   schemes or URL-specific stuff -- it just works on strings.
 
    The parameters LINKLENGTH is useful if LINK is not zero-terminated.
    See uri_merge for a gentler interface to this functionality.
@@ -1131,11 +1133,11 @@ find_last_char (const char *b, const char *e, char c)
    #### This function should handle `./' and `../' so that the evil
    path_simplify can go.  */
 static char *
-uri_merge_1 (const char *base, const char *link, int linklength, int no_proto)
+uri_merge_1 (const char *base, const char *link, int linklength, int no_scheme)
 {
   char *constr;
 
-  if (no_proto)
+  if (no_scheme)
     {
       const char *end = base + urlpath_length (base);
 
@@ -1252,7 +1254,7 @@ uri_merge_1 (const char *base, const char *link, int linklength, int no_proto)
 	  constr[span + linklength] = '\0';
 	}
     }
-  else /* !no_proto */
+  else /* !no_scheme */
     {
       constr = strdupdelim (link, link + linklength);
     }
@@ -1265,7 +1267,7 @@ uri_merge_1 (const char *base, const char *link, int linklength, int no_proto)
 char *
 uri_merge (const char *base, const char *link)
 {
-  return uri_merge_1 (base, link, strlen (link), !has_proto (link));
+  return uri_merge_1 (base, link, strlen (link), !url_has_scheme (link));
 }
 
 /* Optimize URL by host, destructively replacing u->host with realhost
@@ -1283,22 +1285,28 @@ opt_url (struct urlinfo *u)
   u->url = str_url (u, 0);
 }
 
-/* Returns proxy host address, in accordance with PROTO.  */
+/* Returns proxy host address, in accordance with SCHEME.  */
 char *
-getproxy (uerr_t proto)
+getproxy (enum url_scheme scheme)
 {
-  char *proxy;
+  char *proxy = NULL;
 
-  if (proto == URLHTTP)
-    proxy = opt.http_proxy ? opt.http_proxy : getenv ("http_proxy");
-  else if (proto == URLFTP)
-    proxy = opt.ftp_proxy ? opt.ftp_proxy : getenv ("ftp_proxy");
+  switch (scheme)
+    {
+    case SCHEME_HTTP:
+      proxy = opt.http_proxy ? opt.http_proxy : getenv ("http_proxy");
+      break;
 #ifdef HAVE_SSL
-  else if (proto == URLHTTPS)
-    proxy = opt.https_proxy ? opt.https_proxy : getenv ("https_proxy");
-#endif /* HAVE_SSL */
-  else
-    proxy = NULL;
+    case SCHEME_HTTPS:
+      proxy = opt.https_proxy ? opt.https_proxy : getenv ("https_proxy");
+      break;
+#endif
+    case SCHEME_FTP:
+      proxy = opt.ftp_proxy ? opt.ftp_proxy : getenv ("ftp_proxy");
+      break;
+    case SCHEME_INVALID:
+      break;
+    }
   if (!proxy || !*proxy)
     return NULL;
   return proxy;

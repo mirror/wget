@@ -25,12 +25,21 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define DEFAULT_FTP_PORT 21
 #define DEFAULT_HTTPS_PORT 443
 
+enum url_scheme {
+  SCHEME_HTTP,
+#ifdef HAVE_SSL
+  SCHEME_HTTPS,
+#endif
+  SCHEME_FTP,
+  SCHEME_INVALID
+};
 
 /* Structure containing info on a URL.  */
 struct urlinfo
 {
   char *url;			/* Unchanged URL */
-  uerr_t proto;			/* URL protocol */
+  enum url_scheme scheme;	/* URL scheme */
+
   char *host;			/* Extracted hostname */
   unsigned short port;
   char ftp_type;
@@ -97,10 +106,10 @@ char *encode_string PARAMS ((const char *));
 
 struct urlinfo *newurl PARAMS ((void));
 void freeurl PARAMS ((struct urlinfo *, int));
-uerr_t urlproto PARAMS ((const char *));
-int skip_proto PARAMS ((const char *));
-int has_proto PARAMS ((const char *));
-int skip_uname PARAMS ((const char *));
+enum url_scheme url_detect_scheme PARAMS ((const char *));
+int url_skip_scheme PARAMS ((const char *));
+int url_has_scheme PARAMS ((const char *));
+int url_skip_uname PARAMS ((const char *));
 
 uerr_t parseurl PARAMS ((const char *, struct urlinfo *, int));
 char *str_url PARAMS ((const struct urlinfo *, int));
