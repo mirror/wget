@@ -1368,17 +1368,16 @@ human_readable (wgint n)
   return NULL;			/* unreached */
 }
 
-/* Count the digits in an integer number.  */
+/* Count the digits in the provided number.  Used to allocate space
+   when printing numbers.  */
+
 int
 numdigit (wgint number)
 {
   int cnt = 1;
   if (number < 0)
-    {
-      number = -number;
-      ++cnt;
-    }
-  while ((number /= 10) > 0)
+    ++cnt;			/* accomodate '-' */
+  while ((number /= 10) != 0)
     ++cnt;
   return cnt;
 }
@@ -1468,8 +1467,8 @@ numdigit (wgint number)
 #endif
 
 /* Print NUMBER to BUFFER in base 10.  This is equivalent to
-   `sprintf(buffer, "%lld", (long long) number)', only much faster and
-   portable to machines without long long.
+   `sprintf(buffer, "%lld", (long long) number)', only typically much
+   faster and portable to machines without long long.
 
    The speedup may make a difference in programs that frequently
    convert numbers to strings.  Some implementations of sprintf,

@@ -1,3 +1,7 @@
+2005-03-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (numdigit): More correct handling of negative numbers.
+
 2005-03-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (gethttp): Print the human-readable size.
