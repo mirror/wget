@@ -1,5 +1,9 @@
 2003-09-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c (strpbrk_or_eos): Implement as a macro under Gcc.
+
+2003-09-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* cookies.c (parse_set_cookies): Allow trailing space in
 	set-cookies header.  Also, allow any amount of whitespace, not
 	only one character.  Allow empty set-cookies header without

@@ -616,7 +616,26 @@ static void parse_path PARAMS ((const char *, char **, char **));
 
 /* Like strpbrk, with the exception that it returns the pointer to the
    terminating zero (end-of-string aka "eos") if no matching character
-   is found.  */
+   is found.
+
+   Although I normally balk at Gcc-specific optimizations, it probably
+   makes sense here: glibc has optimizations that detect strpbrk being
+   called with literal string as ACCEPT and inline the search.  That
+   optimization is defeated if strpbrk is hidden within the call to
+   another function.  (And no, making strpbrk_or_eos inline doesn't
+   help because the check for literal accept is in the
+   preprocessor.)  */
+
+#ifdef __GNUC__
+
+#define strpbrk_or_eos(s, accept) ({		\
+  char *SOE_p = strpbrk (s, accept);		\
+  if (!SOE_p)					\
+    SOE_p = (char *)s + strlen (s);		\
+  SOE_p;					\
+})
+
+#else  /* not __GNUC__ */
 
 static char *
 strpbrk_or_eos (const char *s, const char *accept)
@@ -626,6 +645,7 @@ strpbrk_or_eos (const char *s, const char *accept)
     p = (char *)s + strlen (s);
   return p;
 }
+#endif
 
 /* Turn STR into lowercase; return non-zero if a character was
    actually changed. */
