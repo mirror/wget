@@ -1,3 +1,9 @@
+2001-06-02  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* po/pl.po: Use iso-8859-1 as charset.
+
+	* po/hr.po: Update.
+
 2001-05-28  Maciej W. Rozycki  <macro@ds2.pg.gda.pl>
 
 	* configure.in: Use $host_os instead of non-existent "$opsys" when
