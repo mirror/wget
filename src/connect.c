@@ -182,7 +182,7 @@ resolve_bind_address (struct sockaddr *sa)
     }
   called = 1;
 
-  al = lookup_host_passive (opt.bind_address);
+  al = lookup_host (opt.bind_address, LH_BIND | LH_SILENT);
   if (!al)
     {
       /* #### We should be able to print the error message here. */
@@ -333,10 +333,11 @@ connect_to_host (const char *host, int port)
 {
   int i, start, end;
   struct address_list *al;
+  int lh_flags = 0;
   int sock = -1;
 
  again:
-  al = lookup_host (host, 0);
+  al = lookup_host (host, lh_flags);
   if (!al)
     return E_HOST;
 
@@ -366,7 +367,7 @@ connect_to_host (const char *host, int port)
 	 we were previously able to connect to HOST.  That might
 	 indicate that HOST is under dynamic DNS and the addresses
 	 we're connecting to have expired.  Resolve it again.  */
-      forget_host_lookup (host);
+      lh_flags |= LH_REFRESH;
       goto again;
     }
 

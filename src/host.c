@@ -78,10 +78,6 @@ extern int h_errno;
 # endif
 #endif
 
-/* Mapping between known hosts and to lists of their addresses. */
-
-static struct hash_table *host_name_addresses_map;
-
 /* Lists of IP addresses that result from running DNS queries.  See
    lookup_host for details.  */
 
@@ -431,13 +427,40 @@ pretty_print_address (const ip_address *addr)
   abort ();
   return NULL;
 }
+
+/* Simple host cache, used by lookup_host to speed up resolving.  The
+   cache doesn't handle TTL because Wget is a fairly short-lived
+   application.  Refreshing is attempted when connect fails, though --
+   see connect_to_host.  */
 
-/* Add host name HOST with the address ADDR_TEXT to the cache.
-   ADDR_LIST is a NULL-terminated list of addresses, as in struct
-   hostent.  */
+/* Mapping between known hosts and to lists of their addresses. */
+static struct hash_table *host_name_addresses_map;
+
+
+/* Return the host's resolved addresses from the cache, if
+   available.  */
+
+static struct address_list *
+cache_query (const char *host)
+{
+  struct address_list *al;
+  if (!host_name_addresses_map)
+    return NULL;
+  al = hash_table_get (host_name_addresses_map, host);
+  if (al)
+    {
+      DEBUGP (("Found %s in host_name_addresses_map (%p)\n", host, al));
+      ++al->refcount;
+      return al;
+    }
+  return NULL;
+}
+
+/* Cache the DNS lookup of HOST.  Subsequent invocations of
+   lookup_host will return the cached value.  */
 
 static void
-cache_host_lookup (const char *host, struct address_list *al)
+cache_store (const char *host, struct address_list *al)
 {
   if (!host_name_addresses_map)
     host_name_addresses_map = make_nocase_string_hash_table (0);
@@ -457,20 +480,23 @@ cache_host_lookup (const char *host, struct address_list *al)
 #endif
 }
 
-/* Remove HOST from Wget's DNS cache.  Does nothing is HOST is not in
+/* Remove HOST from the DNS cache.  Does nothing is HOST is not in
    the cache.  */
 
-void
-forget_host_lookup (const char *host)
+static void
+cache_remove (const char *host)
 {
-  struct address_list *al = hash_table_get (host_name_addresses_map, host);
+  struct address_list *al;
+  if (!host_name_addresses_map)
+    return;
+  al = hash_table_get (host_name_addresses_map, host);
   if (al)
     {
       address_list_release (al);
       hash_table_remove (host_name_addresses_map, host);
     }
 }
-
+
 /* Look up HOST in DNS and return a list of IP addresses.  The
    addresses in the list are in the same order in which
    gethostbyname/getaddrinfo returned them.
@@ -480,12 +506,20 @@ forget_host_lookup (const char *host)
    you want to force lookup, call forget_host_lookup() prior to this
    function, or set opt.dns_cache to 0 to globally disable caching.
 
-   If SILENT is non-zero, progress messages are not printed.  */
+   FLAGS can be a combination of:
+     LH_SILENT  - don't print the "resolving ... done" messages.
+     LH_BIND    - resolve addresses for use with bind, which under
+                  IPv6 means to use AI_PASSIVE flag to getaddrinfo.
+		  Passive lookups are not cached under IPv6.
+     LH_REFRESH - if HOST is cached, remove the entry from the cache
+                  and resolve it anew.  */
 
 struct address_list *
-lookup_host (const char *host, int silent)
+lookup_host (const char *host, int flags)
 {
   struct address_list *al = NULL;
+  int silent = flags & LH_SILENT;
+  int use_cache;
 
 #ifndef ENABLE_IPV6
   /* If we're not using getaddrinfo, first check if HOST specifies a
@@ -506,20 +540,30 @@ lookup_host (const char *host, int silent)
   }
 #endif
 
-  /* Try to find the host in the cache. */
+  /* Cache is normally on, but can be turned off with --no-dns-cache.
+     Don't cache passive lookups under IPv6.  */
+  use_cache = opt.dns_cache;
+#ifdef ENABLE_IPV6
+  if (flags & LH_BIND)
+    use_cache = 0;
+#endif
 
-  if (host_name_addresses_map)
+  /* Try to find the host in the cache so we don't need to talk to the
+     resolver.  If LH_REFRESH is requested, remove HOST from the cache
+     instead.  */
+  if (use_cache)
     {
-      al = hash_table_get (host_name_addresses_map, host);
-      if (al)
+      if (!(flags & LH_REFRESH))
 	{
-	  DEBUGP (("Found %s in host_name_addresses_map (%p)\n", host, al));
-	  ++al->refcount;
-	  return al;
+	  al = cache_query (host);
+	  if (al)
+	    return al;
 	}
+      else
+	cache_remove (host);
     }
 
-  /* No luck with the cache; resolve the host name. */
+  /* No luck with the cache; resolve HOST. */
 
   if (!silent)
     logprintf (LOG_VERBOSE, _("Resolving %s... "), host);
@@ -531,9 +575,18 @@ lookup_host (const char *host, int silent)
 
     xzero (hints);
     hints.ai_socktype = SOCK_STREAM;
-    hints.ai_family = AF_UNSPEC; /* #### should look at opt.ipv4_only
-				    and opt.ipv6_only */
-    hints.ai_flags = 0;
+    hints.ai_family = AF_UNSPEC;
+    if (opt.ipv4_only && !opt.ipv6_only)
+      hints.ai_family = AF_INET;
+    else if (opt.ipv6_only && !opt.ipv4_only)
+      hints.ai_family = AF_INET6;
+
+#ifdef HAVE_GETADDRINFO_AI_ADDRCONFIG
+    /* Use AI_ADDRCONFIG where available.  See init.c:defaults().  */
+    hints.ai_flags |= AI_ADDRCONFIG;
+#endif
+    if (flags & LH_BIND)
+      hints.ai_flags |= AI_PASSIVE;
 
     err = getaddrinfo_with_timeout (host, NULL, &hints, &res, opt.dns_timeout);
     if (err != 0 || res == NULL)
@@ -547,7 +600,8 @@ lookup_host (const char *host, int silent)
     freeaddrinfo (res);
     if (!al)
       {
-	logprintf (LOG_VERBOSE, _("failed: No IPv4/IPv6 addresses.\n"));
+	logprintf (LOG_VERBOSE,
+		   _("failed: No IPv4/IPv6 addresses for host.\n"));
 	return NULL;
       }
   }
@@ -590,48 +644,10 @@ lookup_host (const char *host, int silent)
     }
 
   /* Cache the lookup information. */
-  if (opt.dns_cache)
-    cache_host_lookup (host, al);
+  if (use_cache)
+    cache_store (host, al);
 
   return al;
-}
-
-/* Resolve HOST to get an address for use with bind(2).  Do *not* use
-   this for sockets to be used with connect(2).
-
-   This is a function separate from lookup_host because the results it
-   returns are different -- it uses the AI_PASSIVE flag to
-   getaddrinfo.  Because of this distinction, it doesn't store the
-   results in the cache.  It prints nothing and implements no timeouts
-   because it should normally only be used with local addresses
-   (typically "localhost" or numeric addresses of different local
-   interfaces.)
-
-   Without IPv6, this function just calls lookup_host.  */
-
-struct address_list *
-lookup_host_passive (const char *host)
-{
-#ifdef ENABLE_IPV6
-  struct address_list *al = NULL;
-  int err;
-  struct addrinfo hints, *res;
-
-  xzero (hints);
-  hints.ai_socktype = SOCK_STREAM;
-  hints.ai_family = AF_UNSPEC;	/* #### should look at opt.ipv4_only
-				   and opt.ipv6_only */
-  hints.ai_flags = AI_PASSIVE;
-
-  err = getaddrinfo (host, NULL, &hints, &res);
-  if (err != 0 || res == NULL)
-    return NULL;
-  al = address_list_from_addrinfo (res);
-  freeaddrinfo (res);
-  return al;
-#else
-  return lookup_host (host, 1);
-#endif
 }
 
 /* Determine whether a URL is acceptable to be followed, according to

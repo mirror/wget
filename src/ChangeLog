@@ -1,3 +1,20 @@
+2003-11-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* init.c: Make sure the options are in alphabetic order!
+
+	* host.c (lookup_host): Merge lookup_host_passive and lookup_host
+	after all -- having both would result in some code duplication.
+	(lookup_host): Set hints.ai_family to AF_INET if ipv4_only is
+	requested.  Likewise, set it to AF_INET6 for ipv6_only.  Specify
+	AI_ADDRCONFIG where available.
+	(lookup_host): New flag LH_REFRESH that specifies that a cached
+	entry for HOST should be refreshed.
+	(cache_query): New function.
+	(cache_store): Ditto.
+	(cache_remove): Ditto.
+	(forget_host_lookup): No longer necessary, replaced with static
+	function cache_remove.
+
 2003-11-14  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* main.c: Enable -4 and -6 only if IPv6 is enabled.
