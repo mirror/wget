@@ -497,6 +497,7 @@ parseurl (const char *url, struct urlinfo *u, int strict)
       /* #### We don't handle type `d' correctly yet.  */
       if (!u->ftp_type || TOUPPER (u->ftp_type) == 'D')
 	u->ftp_type = 'I';
+      DEBUGP (("ftp_type %c -> ", u->ftp_type));
     }
   DEBUGP (("opath %s -> ", u->path));
   /* Parse the username and password (if existing).  */
