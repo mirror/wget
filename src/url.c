@@ -1009,13 +1009,25 @@ get_urls_file (const char *file)
 	--line_end;
       if (line_end > line_beg)
 	{
+	  /* URL is in the [line_beg, line_end) region. */
+
 	  int up_error_code;
 	  char *url_text;
 	  struct urlpos *entry;
 	  struct url *url;
 
-	  /* We must copy the URL to a zero-terminated string.  *sigh*.  */
+	  /* We must copy the URL to a zero-terminated string, and we
+	     can't use alloca because we're in a loop.  *sigh*.  */
 	  url_text = strdupdelim (line_beg, line_end);
+
+	  if (opt.base_href)
+	    {
+	      /* Merge opt.base_href with URL. */
+	      char *merged = uri_merge (opt.base_href, url_text);
+	      xfree (url_text);
+	      url_text = merged;
+	    }
+
 	  url = url_parse (url_text, &up_error_code);
 	  if (!url)
 	    {
@@ -1382,7 +1394,7 @@ find_last_char (const char *b, const char *e, char c)
    The parameters LINKLENGTH is useful if LINK is not zero-terminated.
    See uri_merge for a gentler interface to this functionality.
 
-   #### This function should handle `./' and `../' so that the evil
+   Perhaps this function should handle `./' and `../' so that the evil
    path_simplify can go.  */
 static char *
 uri_merge_1 (const char *base, const char *link, int linklength, int no_scheme)
