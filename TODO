@@ -7,6 +7,11 @@ items are not listed in any particular order (except that recently-added items
 may tend towards the top).  Not all of these represent user-visible
 changes.
 
+* Try to devise a scheme so that, when password is unknown, Wget asks
+  the user for one.
+
+* Limit the number of successive redirection to max. 20 or so.
+
 * Take a look at
   <http://info.webcrawler.com/mak/projects/robots/norobots-rfc.html>
   and support the new directives.
