@@ -1,5 +1,9 @@
 2003-11-14  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c: Enable -4 and -6 only if IPv6 is enabled.
+
+2003-11-14  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c (register_transport): Renamed from register_extended.
 	Explain the intended usage.
 
