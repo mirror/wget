@@ -1,3 +1,7 @@
+2000-11-16  Herold Heiko  <Heiko.Herold@previnet.it>
+
+	* windows/Makefile.src: Compile in vsnprintf.c.
+
 2000-11-02  Matthew Seaman  <m.seaman@inpharmatica.co.uk>
 
 	* util/rmold.pl: Various fixes.

@@ -48,11 +48,11 @@ RM      = del
 
 SRC = alloca.c cmpt.c connect.c host.c http.c netrc.c ftp-basic.c ftp.c ftp-ls.c \
       ftp-opie.c getopt.c headers.c html.c retr.c recur.c url.c init.c utils.c main.c \
-      version.c mswindows.c fnmatch.c md5.c rbuf.c log.c
+      version.c mswindows.c fnmatch.c md5.c rbuf.c log.c snprintf.c
 
 OBJ = alloca$o cmpt$o connect$o host$o http$o netrc$o ftp-basic$o ftp$o ftp-ls$o \
       ftp-opie$o headers$o html$o retr$o recur$o url$o init$o utils$o main$o \
-      getopt$o version$o mswindows$o fnmatch$o md5$o rbuf$o log$o
+      getopt$o version$o mswindows$o fnmatch$o md5$o rbuf$o log$o snprintf$o
 
 .SUFFIXES: .c .obj
 
