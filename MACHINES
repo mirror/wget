@@ -16,7 +16,7 @@ HP BSD (m68k-hp-bsd)
 
 HP HP-UX (hppa1.0-hp-hpux7.00, hppa1.1-hp-hpux9.01 and others)
 
-IBM AIX (powerpc-ibm-aix4.1*)
+IBM AIX (powerpc-ibm-aix4.1*, rs6000-ibm-aix4.3.3.0)
 
 Microsoft Windows 95/NT (i[3456]86)
 
