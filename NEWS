@@ -1,9 +1,20 @@
 GNU Wget NEWS -- history of user-visible changes.
 
-Copyright (C) 1997, 1998, 2000, 2001 Free Software Foundation, Inc.
+Copyright (C) 1997, 1998, 2000, 2001, 2002 Free Software Foundation, Inc.
 See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
+
+* Changes in Wget 1.9.
+
+** IPv6 is experimentally supported.
+
+** The `--timeout' option now affects the connect timeout as well.
+Previously it only affected reading and writing data.
+
+** Download speed shown by the progress bar is based on the data
+recently read, rather than the average speed of the entire download.
+The ETA is still based on the average speed, though.
 
 * Wget 1.8.1 is a bugfix release with no user-visible changes.
 
