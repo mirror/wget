@@ -547,6 +547,7 @@ Note that when @samp{-nc} is specified, files with the suffixes
 and parsed as if they had been retrieved from the Web.
 
 @cindex continue retrieval
+@cindex incomplete downloads
 @cindex resume download
 @item -c
 @itemx --continue
@@ -573,17 +574,37 @@ Without @samp{-c}, the previous example would just download the remote
 file to @file{ls-lR.Z.1}, leaving the truncated @file{ls-lR.Z} file
 alone.  
 
-Note that @samp{-c} only works with @sc{ftp} servers and with @sc{http}
-servers that support the @code{Range} header.  Also note that Wget has
-no way of verifying that the local file really is a valid prefix of the
-remote file.  If you use a lame @sc{http} proxy that inserts a ``transfer
-interrupted'' string, you'll get a corrupted file.  In the future a
+If you use @samp{-c} on a file which is now smaller on the server than
+locally (presumably because it was changed on the server since your last
+download attempt), the file will be re-downloaded from scratch.
+Unfortunately this also happens if the local file is the same length as
+the server file---this will be fixed in a future version of Wget, but in
+the meantime you can use @samp{--timestamping} to prevent this on files
+for which the server gives timestamps (e.g. static files but not CGI
+output or directory listings).
+
+On the other side of the coin, while using @samp{-c}, any file that's
+bigger on the server than locally will be considered an incomplete
+download and only @code{(length(server) - length(local))} bytes will
+be downloaded and tacked onto the end of the local file.  This behavior
+can be desirable in certain cases---for instance, you can use @samp{wget
+-c} to download just the new portion that's been appended to a data
+collection or log file.
+
+However, if the file is bigger on the server because it's been
+@emph{changed}, as opposed to just @emph{appended} to, you'll end up
+with a garbled file.  Wget has no way of verifying that the local file
+is really a valid prefix of the remote file.  You need to be especially
+careful of this when using @samp{-c} in conjunction with @samp{-r},
+since every file will be considered as an "incomplete download" candidate.
+
+Another instance where you'll get a garbled file if you try to use
+@samp{-c} is if you have a lame @sc{http} proxy that inserts a
+``transfer interrupted'' string into the local file.  In the future a
 ``rollback'' option may be added to deal with this case.
 
-Currently, if you use @samp{-c} on a @file{file} that's already
-completely downloaded, it will be re-downloaded from scratch (to the
-same name, not to @file{file.1}).  This will be fixed in a future
-version of Wget.
+Note that @samp{-c} only works with @sc{ftp} servers and with @sc{http}
+servers that support the @code{Range} header.
 
 @cindex dot style
 @cindex retrieval tracing style
