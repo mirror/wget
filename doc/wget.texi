@@ -2,7 +2,9 @@
 
 @c %**start of header
 @setfilename wget.info
-@settitle GNU Wget Manual
+@include version.texi
+@set UPDATED May 2003
+@settitle GNU Wget @value{VERSION} Manual
 @c Disable the monstrous rectangles beside overfull hbox-es.
 @finalout
 @c Use `odd' to print double-sided.
@@ -19,18 +21,12 @@
 @set Wget Wget
 @c man title Wget The non-interactive network downloader.
 
-@c This should really be generated automatically, possibly by including
-@c an auto-generated file.
-@set VERSION 1.9-cvs
-@set UPDATED September 2003
-
-@dircategory Net Utilities
-@dircategory World Wide Web
+@dircategory Network Applications
 @direntry
 * Wget: (wget).         The non-interactive network downloader.
 @end direntry
 
-@ifinfo
+@ifnottex
 This file documents the the GNU Wget utility for downloading network
 data.
 
@@ -56,11 +52,11 @@ Documentation License'', with no Front-Cover Texts, and with no
 Back-Cover Texts.  A copy of the license is included in the section
 entitled ``GNU Free Documentation License''.
 @c man end
-@end ifinfo
+@end ifnottex
 
 @titlepage
-@title GNU Wget
-@subtitle The noninteractive downloading utility
+@title GNU Wget @value{VERSION}
+@subtitle The non-interactive download utility
 @subtitle Updated for Wget @value{VERSION}, @value{UPDATED}
 @author by Hrvoje Nik@v{s}i@'{c} and the developers
 
@@ -75,7 +71,7 @@ GNU Info entry for @file{wget}.
 
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1996, 1997, 1998, 2000, 2001 Free Software
+Copyright @copyright{} 1996, 1997, 1998, 2000, 2001, 2003 Free Software
 Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
@@ -87,14 +83,14 @@ Back-Cover Texts.  A copy of the license is included in the section
 entitled ``GNU Free Documentation License''.
 @end titlepage
 
-@ifinfo
+@ifnottex
 @node Top, Overview, (dir), (dir)
 @top Wget @value{VERSION}
 
 This manual documents version @value{VERSION} of GNU Wget, the freely
-available utility for network download.
+available utility for network downloads.
 
-Copyright @copyright{} 1996, 1997, 1998, 2000, 2001 Free Software
+Copyright @copyright{} 1996, 1997, 1998, 2000, 2001, 2003 Free Software
 Foundation, Inc.
 
 @menu
@@ -110,7 +106,7 @@ Foundation, Inc.
 * Copying::             You may give out copies of Wget and of this manual.
 * Concept Index::       Topics covered by this manual.
 @end menu
-@end ifinfo
+@end ifnottex
 
 @node Overview, Invoking, Top, Top
 @chapter Overview
@@ -187,7 +183,7 @@ also supports the passive @sc{ftp} downloading as an option.
 
 @sp 1
 @item
-Builtin features offer mechanisms to tune which links you wish to follow
+Built-in features offer mechanisms to tune which links you wish to follow
 (@pxref{Following Links}).
 
 @sp 1
@@ -632,7 +628,7 @@ servers that support the @code{Range} header.
 Select the type of the progress indicator you wish to use.  Legal
 indicators are ``dot'' and ``bar''.
 
-The ``bar'' indicator is used by default.  It draws an ASCII progress
+The ``bar'' indicator is used by default.  It draws an @sc{ascii} progress
 bar graphics (a.k.a ``thermometer'' display) indicating the status of
 retrieval.  If the output is not a TTY, the ``dot'' bar will be used by
 default.
@@ -672,19 +668,19 @@ Print the headers sent by @sc{http} servers and responses sent by
 @item --spider
 When invoked with this option, Wget will behave as a Web @dfn{spider},
 which means that it will not download the pages, just check that they
-are there.  You can use it to check your bookmarks, e.g. with:
+are there.  For example, you can use Wget to check your bookmarks:
 
 @example
 wget --spider --force-html -i bookmarks.html
 @end example
 
 This feature needs much more work for Wget to get close to the
-functionality of real @sc{www} spiders.
+functionality of real web spiders.
 
 @cindex timeout
 @item -T seconds
 @itemx --timeout=@var{seconds}
-Set the network timeouts to @var{seconds} seconds.  This is equivalent
+Set the network timeout to @var{seconds} seconds.  This is equivalent
 to specifying @samp{--dns-timeout}, @samp{--connect-timeout}, and
 @samp{--read-timeout}, all at the same time.
 
@@ -950,7 +946,7 @@ downloaded and the URL does not end with the regexp
 to be appended to the local filename.  This is useful, for instance, when 
 you're mirroring a remote site that uses @samp{.asp} pages, but you want 
 the mirrored pages to be viewable on your stock Apache server.  Another 
-good use for this is when you're downloading the output of CGIs.  A URL 
+good use for this is when you're downloading CGI-generated materials.  A URL 
 like @samp{http://site.com/article.cgi?25} will be saved as
 @file{article.cgi?25.html}.
 
@@ -1217,7 +1213,7 @@ recurse through them, but in the future it should be enhanced to do
 this.
 
 Note that when retrieving a file (not a directory) because it was
-specified on the commandline, rather than because it was recursed to,
+specified on the command-line, rather than because it was recursed to,
 this option has no effect.  Symbolic links are always traversed in this
 case.
 @end table
@@ -1264,7 +1260,7 @@ created in the first place.
 After the download is complete, convert the links in the document to
 make them suitable for local viewing.  This affects not only the visible
 hyperlinks, but any part of the document that links to external content,
-such as embedded images, links to style sheets, hyperlinks to non-HTML
+such as embedded images, links to style sheets, hyperlinks to non-@sc{html}
 content, etc.
 
 Each link will be changed in one of the two ways:
@@ -1319,10 +1315,10 @@ directory listings.  It is currently equivalent to
 @item -p
 @itemx --page-requisites
 This option causes Wget to download all the files that are necessary to
-properly display a given HTML page.  This includes such things as
+properly display a given @sc{html} page.  This includes such things as
 inlined images, sounds, and referenced stylesheets.
 
-Ordinarily, when downloading a single HTML page, any requisite documents
+Ordinarily, when downloading a single @sc{html} page, any requisite documents
 that may be needed to display it properly are not downloaded.  Using
 @samp{-r} together with @samp{-l} can help, but since Wget does not
 ordinarily distinguish between external and inlined documents, one is
@@ -1367,8 +1363,8 @@ wget -r -l 0 -p http://@var{site}/1.html
 
 would download just @file{1.html} and @file{1.gif}, but unfortunately
 this is not the case, because @samp{-l 0} is equivalent to
-@samp{-l inf}---that is, infinite recursion.  To download a single HTML
-page (or a handful of them, all specified on the commandline or in a
+@samp{-l inf}---that is, infinite recursion.  To download a single @sc{html}
+page (or a handful of them, all specified on the command-line or in a
 @samp{-i} @sc{url} input file) and its (or their) requisites, simply leave off
 @samp{-r} and @samp{-l}:
 
@@ -1392,21 +1388,21 @@ external document link is any URL specified in an @code{<A>} tag, an
 @code{<AREA>} tag, or a @code{<LINK>} tag other than @code{<LINK
 REL="stylesheet">}.
 
-@cindex HTML comments
-@cindex comments, HTML
+@cindex @sc{html} comments
+@cindex comments, @sc{html}
 @item --strict-comments
-Turn on strict parsing of HTML comments.  The default is to terminate
+Turn on strict parsing of @sc{html} comments.  The default is to terminate
 comments at the first occurrence of @samp{-->}.
 
-According to specifications, HTML comments are expressed as SGML
+According to specifications, @sc{html} comments are expressed as @sc{sgml}
 @dfn{declarations}.  Declaration is special markup that begins with
 @samp{<!} and ends with @samp{>}, such as @samp{<!DOCTYPE ...>}, that
-may contain comments between a pair of @samp{--} delimiters.  HTML
-comments are ``empty declarations'', SGML declarations without any
+may contain comments between a pair of @samp{--} delimiters.  @sc{html}
+comments are ``empty declarations'', @sc{sgml} declarations without any
 non-comment text.  Therefore, @samp{<!--foo-->} is a valid comment, and
 so is @samp{<!--one-- --two-->}, but @samp{<!--1--2-->} is not.
 
-On the other hand, most HTML writers don't perceive comments as anything
+On the other hand, most @sc{html} writers don't perceive comments as anything
 other than text delimited with @samp{<!--} and @samp{-->}, which is not
 quite the same.  For example, something like @samp{<!------------>}
 works as a valid comment as long as the number of dashes is a multiple
@@ -1452,7 +1448,7 @@ Wget will ignore all the @sc{ftp} links.
 
 @cindex tag-based recursive pruning
 @item --follow-tags=@var{list}
-Wget has an internal table of HTML tag / attribute pairs that it
+Wget has an internal table of @sc{html} tag / attribute pairs that it
 considers when looking for linked documents during a recursive
 retrieval.  If a user wants only a subset of those tags to be
 considered, however, he or she should be specify such tags in a
@@ -1461,11 +1457,11 @@ comma-separated @var{list} with this option.
 @item -G @var{list}
 @itemx --ignore-tags=@var{list}
 This is the opposite of the @samp{--follow-tags} option.  To skip
-certain HTML tags when recursively looking for documents to download,
+certain @sc{html} tags when recursively looking for documents to download,
 specify them in a comma-separated @var{list}.  
 
 In the past, the @samp{-G} option was the best bet for downloading a
-single page and its requisites, using a commandline like:
+single page and its requisites, using a command-line like:
 
 @example
 wget -Ga,area -H -k -K -r http://@var{site}/@var{document}
@@ -1519,18 +1515,18 @@ This is a useful option, since it guarantees that only the files
 
 GNU Wget is capable of traversing parts of the Web (or a single
 @sc{http} or @sc{ftp} server), following links and directory structure.
-We refer to this as to @dfn{recursive retrieving}, or @dfn{recursion}.
+We refer to this as to @dfn{recursive retrieval}, or @dfn{recursion}.
 
 With @sc{http} @sc{url}s, Wget retrieves and parses the @sc{html} from
 the given @sc{url}, documents, retrieving the files the @sc{html}
-document was referring to, through markups like @code{href}, or
+document was referring to, through markup like @code{href}, or
 @code{src}.  If the freshly downloaded file is also of type
 @code{text/html} or @code{application/xhtml+xml}, it will be parsed and 
 followed further.
 
 Recursive retrieval of @sc{http} and @sc{html} content is
 @dfn{breadth-first}.  This means that Wget first downloads the requested
-HTML document, then the documents linked from that document, then the
+@sc{html} document, then the documents linked from that document, then the
 documents linked by them, and so on.  In other words, Wget first
 downloads the documents at depth 1, then those at depth 2, and so on
 until the specified maximum depth.
@@ -1615,7 +1611,7 @@ your Wget into a small version of google.
 However, visiting different hosts, or @dfn{host spanning,} is sometimes
 a useful option.  Maybe the images are served from a different server.
 Maybe you're mirroring a site that consists of pages interlinked between
-three servers.  Maybe the server has two equivalent names, and the HTML
+three servers.  Maybe the server has two equivalent names, and the @sc{html}
 pages refer to both interchangeably.
 
 @table @asis
@@ -2101,7 +2097,7 @@ after the @samp{=}.  Simple Boolean values can be set or unset using
 Boolean allowed in some cases is the @dfn{lockable Boolean}, which may
 be set to @samp{on}, @samp{off}, @samp{always}, or @samp{never}.  If an
 option is set to @samp{always} or @samp{never}, that value will be
-locked in for the duration of the Wget invocation---commandline options
+locked in for the duration of the Wget invocation---command-line options
 will not override.
 
 Some commands take pseudo-arbitrary values.  @var{address} values can be
@@ -2109,7 +2105,7 @@ hostnames or dotted-quad IP addresses.  @var{n} can be any positive
 integer, or @samp{inf} for infinity, where appropriate.  @var{string}
 values can be any non-empty string.
 
-Most of these commands have commandline equivalents (@pxref{Invoking}),
+Most of these commands have command-line equivalents (@pxref{Invoking}),
 though some of the more obscure or rarely used ones do not.
 
 @table @asis
@@ -2213,7 +2209,7 @@ Follow @sc{ftp} links from @sc{html} documents---the same as
 @samp{--follow-ftp}.
 
 @item follow_tags = @var{string}
-Only follow certain HTML tags when doing a recursive retrieval, just like
+Only follow certain @sc{html} tags when doing a recursive retrieval, just like
 @samp{--follow-tags}.
 
 @item force_html = on/off
@@ -2250,7 +2246,7 @@ When set to on, ignore @code{Content-Length} header; the same as
 @samp{--ignore-length}.
 
 @item ignore_tags = @var{string}
-Ignore certain HTML tags when doing a recursive retrieval, just like
+Ignore certain @sc{html} tags when doing a recursive retrieval, just like
 @samp{-G} / @samp{--ignore-tags}.
 
 @item include_directories = @var{string}
@@ -2262,7 +2258,7 @@ Read the @sc{url}s from @var{string}, like @samp{-i}.
 
 @item kill_longer = on/off
 Consider data longer than specified in content-length header as invalid
-(and retry getting it).  The default behaviour is to save as much data
+(and retry getting it).  The default behavior is to save as much data
 as there is, provided there is more than or equal to the value in
 @code{Content-Length}.
 
@@ -2298,14 +2294,14 @@ proxy loading, instead of the one specified in environment.
 Set the output filename---the same as @samp{-O}.
 
 @item page_requisites = on/off
-Download all ancillary documents necessary for a single HTML page to
+Download all ancillary documents necessary for a single @sc{html} page to
 display properly---the same as @samp{-p}.
 
 @item passive_ftp = on/off/always/never
 Set passive @sc{ftp}---the same as @samp{--passive-ftp}.  Some scripts
 and @samp{.pm} (Perl module) files download files using @samp{wget
 --passive-ftp}.  If your firewall does not allow this, you can set
-@samp{passive_ftp = never} to override the commandline.
+@samp{passive_ftp = never} to override the command-line.
 
 @item passwd = @var{string}
 Set your @sc{ftp} password to @var{password}.  Without this setting, the
@@ -2525,7 +2521,7 @@ wget --convert-links -r http://www.gnu.org/ -o gnulog
 @end example
 
 @item
-Retrieve only one HTML page, but make sure that all the elements needed
+Retrieve only one @sc{html} page, but make sure that all the elements needed
 for the page to be displayed, such as inline images and external style
 sheets, are also downloaded.  Also make sure the downloaded page
 references the downloaded links.
@@ -2534,7 +2530,7 @@ references the downloaded links.
 wget -p --convert-links http://www.server.com/dir/page.html
 @end example
 
-The HTML page will be saved to @file{www.server.com/dir/page.html}, and
+The @sc{html} page will be saved to @file{www.server.com/dir/page.html}, and
 the images, stylesheets, etc., somewhere under @file{www.server.com/},
 depending on where they were on the remote server.
 
@@ -2648,7 +2644,7 @@ crontab
 In addition to the above, you want the links to be converted for local
 viewing.  But, after having read this manual, you know that link
 conversion doesn't play well with timestamping, so you also want Wget to
-back up the original HTML files before the conversion.  Wget invocation
+back up the original @sc{html} files before the conversion.  Wget invocation
 would look like this:
 
 @example
@@ -2658,7 +2654,7 @@ wget --mirror --convert-links --backup-converted  \
 
 @item
 But you've also noticed that local viewing doesn't work all that well
-when HTML files are saved under extensions other than @samp{.html},
+when @sc{html} files are saved under extensions other than @samp{.html},
 perhaps because they were served as @file{index.cgi}.  So you'd like
 Wget to rename all the files served with content-type @samp{text/html}
 or @samp{application/xhtml+xml} to @file{@var{name}.html}.
@@ -2787,9 +2783,8 @@ features and web, reporting Wget bugs (those that you think may be of
 interest to the public) and mailing announcements.  You are welcome to
 subscribe.  The more people on the list, the better!
 
-To subscribe, send mail to @email{wget-subscribe@@sunsite.dk}.
-the magic word @samp{subscribe} in the subject line.  Unsubscribe by
-mailing to @email{wget-unsubscribe@@sunsite.dk}.
+To subscribe, simply send mail to @email{wget-subscribe@@sunsite.dk}.
+Unsubscribe by mailing to @email{wget-unsubscribe@@sunsite.dk}.
 
 The mailing list is archived at @url{http://fly.srk.fer.hr/archive/wget}.
 Alternative archive is available at
@@ -2810,7 +2805,7 @@ simple guidelines.
 
 @enumerate
 @item
-Please try to ascertain that the behaviour you see really is a bug.  If
+Please try to ascertain that the behavior you see really is a bug.  If
 Wget crashes, it's a bug.  If Wget does not behave as documented,
 it's a bug.  If things work strange, but you are not sure about the way
 they are supposed to work, it might well be a bug.
@@ -2914,25 +2909,28 @@ As long as Wget is only retrieving static pages, and doing it at a
 reasonable rate (see the @samp{--wait} option), there's not much of a
 problem.  The trouble is that Wget can't tell the difference between the
 smallest static page and the most demanding CGI.  A site I know has a
-section handled by an, uh, @dfn{bitchin'} CGI Perl script that converts
-Info files to HTML on the fly.  The script is slow, but works well
-enough for human users viewing an occasional Info file.  However, when
-someone's recursive Wget download stumbles upon the index page that
-links to all the Info files through the script, the system is brought to
-its knees without providing anything useful to the downloader.
+section handled by a CGI Perl script that converts Info files to @sc{html} on
+the fly.  The script is slow, but works well enough for human users
+viewing an occasional Info file.  However, when someone's recursive Wget
+download stumbles upon the index page that links to all the Info files
+through the script, the system is brought to its knees without providing
+anything useful to the user (This task of converting Info files could be
+done locally and access to Info documentation for all installed GNU
+software on a system is available from the @code{info} command).
 
 To avoid this kind of accident, as well as to preserve privacy for
 documents that need to be protected from well-behaved robots, the
-concept of @dfn{robot exclusion} has been invented.  The idea is that
+concept of @dfn{robot exclusion} was invented.  The idea is that
 the server administrators and document authors can specify which
-portions of the site they wish to protect from the robots.
+portions of the site they wish to protect from robots and those
+they will permit access.
 
-The most popular mechanism, and the de facto standard supported by all
-the major robots, is the ``Robots Exclusion Standard'' (RES) written by
-Martijn Koster et al. in 1994.  It specifies the format of a text file
-containing directives that instruct the robots which URL paths to avoid.
-To be found by the robots, the specifications must be placed in
-@file{/robots.txt} in the server root, which the robots are supposed to
+The most popular mechanism, and the @i{de facto} standard supported by
+all the major robots, is the ``Robots Exclusion Standard'' (RES) written
+by Martijn Koster et al. in 1994.  It specifies the format of a text
+file containing directives that instruct the robots which URL paths to
+avoid.  To be found by the robots, the specifications must be placed in
+@file{/robots.txt} in the server root, which the robots are expected to
 download and parse.
 
 Although Wget is not a web robot in the strictest sense of the word, it
@@ -3018,9 +3016,9 @@ me).
 @iftex
 GNU Wget was written by Hrvoje Nik@v{s}i@'{c} @email{hniksic@@arsdigita.com}.
 @end iftex
-@ifinfo
+@ifnottex
 GNU Wget was written by Hrvoje Niksic @email{hniksic@@arsdigita.com}.
-@end ifinfo
+@end ifnottex
 However, its development could never have gone as far as it has, were it
 not for the help of many people, either with bug reports, feature
 proposals, patches, or letters saying ``Thanks!''.
@@ -3048,10 +3046,10 @@ Gordon Matzigkeit---@file{.netrc} support.
 Zlatko @v{C}alu@v{s}i@'{c}, Tomislav Vujec and Dra@v{z}en
 Ka@v{c}ar---feature suggestions and ``philosophical'' discussions.
 @end iftex
-@ifinfo
+@ifnottex
 Zlatko Calusic, Tomislav Vujec and Drazen Kacar---feature suggestions
 and ``philosophical'' discussions.
-@end ifinfo
+@end ifnottex
 
 @item
 Darko Budor---initial port to Windows.
@@ -3064,17 +3062,17 @@ Antonio Rosella---help and suggestions, plus the Italian translation.
 Tomislav Petrovi@'{c}, Mario Miko@v{c}evi@'{c}---many bug reports and
 suggestions.
 @end iftex
-@ifinfo
+@ifnottex
 Tomislav Petrovic, Mario Mikocevic---many bug reports and suggestions.
-@end ifinfo
+@end ifnottex
 
 @item
 @iftex
 Fran@,{c}ois Pinard---many thorough bug reports and discussions.
 @end iftex
-@ifinfo
+@ifnottex
 Francois Pinard---many thorough bug reports and discussions.
-@end ifinfo
+@end ifnottex
 
 @item
 Karl Eichwalder---lots of help with internationalization and other
@@ -3112,9 +3110,9 @@ Noel Cragg,
 @iftex
 Kristijan @v{C}onka@v{s},
 @end iftex
-@ifinfo
+@ifnottex
 Kristijan Conkas,
-@end ifinfo
+@end ifnottex
 John Daily,
 Andrew Davison,
 Andrew Deryabin,
@@ -3123,16 +3121,16 @@ Marc Duponcheel,
 @iftex
 Damir D@v{z}eko,
 @end iftex
-@ifinfo
+@ifnottex
 Damir Dzeko,
-@end ifinfo
+@end ifnottex
 Alan Eldridge,
 @iftex
 Aleksandar Erkalovi@'{c},
 @end iftex
-@ifinfo
+@ifnottex
 Aleksandar Erkalovic,
-@end ifinfo
+@end ifnottex
 Andy Eskilsson,
 Christian Fraenkel,
 Masashi Fujita,
@@ -3154,22 +3152,22 @@ Simon Josefsson,
 @iftex
 Mario Juri@'{c},
 @end iftex
-@ifinfo
+@ifnottex
 Mario Juric,
-@end ifinfo
+@end ifnottex
 @iftex
 Hack Kampbj@o rn,
 @end iftex
-@ifinfo
+@ifnottex
 Hack Kampbjorn,
-@end ifinfo
+@end ifnottex
 Const Kaplinsky,
 @iftex
 Goran Kezunovi@'{c},
 @end iftex
-@ifinfo
+@ifnottex
 Goran Kezunovic,
-@end ifinfo
+@end ifnottex
 Robert Kleine,
 KOJIMA Haime,
 Fila Kolodny,
@@ -3180,17 +3178,17 @@ $\Sigma\acute{\iota}\mu o\varsigma\;
 \Xi\varepsilon\nu\iota\tau\acute{\epsilon}\lambda\lambda\eta\varsigma$
 (Simos KSenitellis),
 @end tex
-@ifinfo
+@ifnottex
 Simos KSenitellis,
-@end ifinfo
+@end ifnottex
 Hrvoje Lacko,
 Daniel S. Lewart,
 @iftex
 Nicol@'{a}s Lichtmeier,
 @end iftex
-@ifinfo
+@ifnottex
 Nicolas Lichtmeier,
-@end ifinfo
+@end ifnottex
 Dave Love,
 Alexander V. Lukyanov,
 Jordan Mendelson,
@@ -3204,16 +3202,16 @@ Steve Pothier,
 @iftex
 Jan P@v{r}ikryl,
 @end iftex
-@ifinfo
+@ifnottex
 Jan Prikryl,
-@end ifinfo
+@end ifnottex
 Marin Purgar,
 @iftex
 Csaba R@'{a}duly,
 @end iftex
-@ifinfo
+@ifnottex
 Csaba Raduly,
-@end ifinfo
+@end ifnottex
 Keith Refson,
 Tyler Riddle,
 Tobias Ringstrom,
@@ -3221,9 +3219,9 @@ Tobias Ringstrom,
 @tex
 Juan Jos\'{e} Rodr\'{\i}gues,
 @end tex
-@ifinfo
+@ifnottex
 Juan Jose Rodrigues,
-@end ifinfo
+@end ifnottex
 Edward J. Sabol,
 Heinz Salzmann,
 Robert Schmidt,
@@ -3245,9 +3243,9 @@ Jasmin Zainul,
 @iftex
 Bojan @v{Z}drnja,
 @end iftex
-@ifinfo
+@ifnottex
 Bojan Zdrnja,
-@end ifinfo
+@end ifnottex
 Kristijan Zimmer.
 
 Apologies to all who I accidentally left out, and many thanks to all the
@@ -3388,9 +3386,9 @@ modification follow.
 @iftex
 @unnumberedsec TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 @end iftex
-@ifinfo
+@ifnottex
 @center TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-@end ifinfo
+@end ifnottex
 
 @enumerate
 @item
@@ -3613,9 +3611,9 @@ of promoting the sharing and reuse of software generally.
 @iftex
 @heading NO WARRANTY
 @end iftex
-@ifinfo
+@ifnottex
 @center NO WARRANTY
-@end ifinfo
+@end ifnottex
 @cindex no warranty
 
 @item
@@ -3644,9 +3642,9 @@ POSSIBILITY OF SUCH DAMAGES.
 @iftex
 @heading END OF TERMS AND CONDITIONS
 @end iftex
-@ifinfo
+@ifnottex
 @center END OF TERMS AND CONDITIONS
-@end ifinfo
+@end ifnottex
 
 @page
 @unnumberedsec How to Apply These Terms to Your New Programs
@@ -3803,13 +3801,13 @@ subsequent modification by readers is not Transparent.  A copy that is
 not ``Transparent'' is called ``Opaque''.
 
 Examples of suitable formats for Transparent copies include plain
-ASCII without markup, Texinfo input format, LaTeX input format, SGML
-or XML using a publicly available DTD, and standard-conforming simple
-HTML designed for human modification.  Opaque formats include
-PostScript, PDF, proprietary formats that can be read and edited only
-by proprietary word processors, SGML or XML for which the DTD and/or
+@sc{ascii} without markup, Texinfo input format, LaTeX input format, @sc{sgml}
+or @sc{xml} using a publicly available @sc{dtd}, and standard-conforming simple
+@sc{html} designed for human modification.  Opaque formats include
+PostScript, @sc{pdf}, proprietary formats that can be read and edited only
+by proprietary word processors, @sc{sgml} or @sc{xml} for which the @sc{dtd} and/or
 processing tools are not generally available, and the
-machine-generated HTML produced by some word processors for output
+machine-generated @sc{html} produced by some word processors for output
 purposes only.
 
 The ``Title Page'' means, for a printed book, the title page itself,
