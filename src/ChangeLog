@@ -1,5 +1,10 @@
 2003-09-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* Makefile.in (clean): Also remove the core.<number> files
+	produced by recent Linux systems.
+
+2003-09-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (post_file): Don't pad the file if it's not large
 	enough.  Bail out instead.
 
