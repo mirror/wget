@@ -1619,6 +1619,11 @@ find_last_char (const char *b, const char *e, char c)
    "back up one element".  Single leading and trailing slashes are
    preserved.
 
+   This function does not handle URL escapes explicitly.  If you're
+   passing paths from URLs, make sure to unquote "%2e" and "%2E" to
+   ".", so that this function can find the dots.  (Wget's URL parser
+   calls reencode_escapes, which see.)
+
    For example, "a/b/c/./../d/.." will yield "a/b/".  More exhaustive
    test examples are provided below.  If you change anything in this
    function, run test_path_simplify to make sure you haven't broken a
