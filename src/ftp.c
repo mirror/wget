@@ -383,17 +383,31 @@ Error in server response, closing control connection.\n"));
 
 	  /* Change working directory.  To change to a non-absolute
 	     Unix directory, we need to prepend initial directory
-	     (con->id) to it.  Absolute directories "just work".  */
+	     (con->id) to it.  Absolute directories "just work".
 
-	  if (*target != '/')
+	     A relative directory is one that does not begin with '/'
+	     and, on non-Unix OS'es, one that doesn't begin with
+	     "<letter>:".  */
+
+	  if (target[0] != '/'
+	      && !(con->rs != ST_UNIX
+		   && ISALPHA (target[0]) && target[1] == ':'))
 	    {
 	      int idlen = strlen (con->id);
-	      char *ntarget = (char *)alloca (idlen + 1 + strlen (u->dir) + 1);
-	      /* idlen == 1 means con->id = "/" */
-	      sprintf (ntarget, "%s%s%s", con->id, idlen == 1 ? "" : "/",
-		       target);
+	      char *ntarget, *p;
+
+	      /* Strip trailing slash(es) from con->id. */
+	      while (idlen > 0 && con->id[idlen - 1] == '/')
+		--idlen;
+	      p = ntarget = (char *)alloca (idlen + 1 + strlen (u->dir) + 1);
+	      memcpy (p, con->id, idlen);
+	      p += idlen;
+	      *p++ = '/';
+	      strcpy (p, target);
+
               DEBUGP (("Prepended initial PWD to relative path:\n"));
-              DEBUGP (("  old: '%s'\n  new: '%s'\n", target, ntarget));
+              DEBUGP (("   pwd: '%s'\n   old: '%s'\n  new: '%s'\n",
+		       con->id, target, ntarget));
 	      target = ntarget;
 	    }
 

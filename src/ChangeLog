@@ -1,5 +1,12 @@
 2002-04-16  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* ftp.c (getftp): Treat directories that begin with <letter>: as
+	absolute.
+	(getftp): Strip trailing slashes from con->id before merging it
+	with TARGET.
+
+2002-04-16  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* http.c (gethttp): If Content-Type is not given, assume
 	text/html.
 
