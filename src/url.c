@@ -649,7 +649,9 @@ static char *parse_errors[] = {
   "Invalid user name",
 #define PE_UNTERMINATED_IPV6_ADDRESS	5
   "Unterminated IPv6 numeric address",
-#define PE_INVALID_IPV6_ADDRESS		6
+#define PE_IPV6_NOT_SUPPORTED		6
+  "IPv6 addresses not supported",
+#define PE_INVALID_IPV6_ADDRESS		7
   "Invalid IPv6 numeric address"
 };
 
@@ -658,6 +660,7 @@ static char *parse_errors[] = {
     *(p) = (v);					\
 } while (0)
 
+#ifdef INET6
 /* The following two functions were adapted from glibc. */
 
 static int
@@ -787,7 +790,7 @@ is_valid_ipv6_address (const char *str, const char *end)
 
   return 1;
 }
-
+#endif
 
 /* Parse a URL.
 
@@ -860,6 +863,7 @@ url_parse (const char *url, int *error)
 	  return NULL;
 	}
 
+#ifdef INET6
       /* Check if the IPv6 address is valid. */
       if (!is_valid_ipv6_address(host_b, host_e))
 	{
@@ -869,6 +873,10 @@ url_parse (const char *url, int *error)
 
       /* Continue parsing after the closing ']'. */
       p = host_e + 1;
+#else
+      SETERR (error, PE_IPV6_NOT_SUPPORTED);
+      return NULL;
+#endif
     }
   else
     {

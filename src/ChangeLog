@@ -1,3 +1,8 @@
+2003-09-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (url_parse): Return an error if the URL contains a [...]
+	IPv6 numeric address and we don't support IPv6.
+
 2003-09-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (is_valid_ipv6_address): Modified to not require
