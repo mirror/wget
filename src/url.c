@@ -1509,9 +1509,7 @@ append_dir_structure (const struct url *u, struct growable *dest)
       if (cut-- > 0)
 	continue;
       if (pathel == next)
-	/* Ignore empty pathels.  path_simplify should remove
-	   occurrences of "//" from the path, but it has special cases
-	   for starting / which generates an empty pathel here.  */
+	/* Ignore empty pathels.  */
 	continue;
 
       if (dest->tail)
