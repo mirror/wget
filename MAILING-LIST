@@ -1,23 +1,47 @@
                                                                 -*- text -*-
 
-                          Mailing List Info
+		      WGET-RELATED MAILING LISTS
 
-Thanks to Karsten Thygesen from Sunsite Denmark, Wget has a mailing
-list for discussion and announcements.  The list address is
-<wget@sunsite.dk>.  To subscribe, send mail to
-<wget-subscribe@sunsite.dk>.
+Wget has several mailing lists, all hosted by SunSITE.dk.
 
-The list is fairly low-volume -- one or two messages per day and with
-sporadic periods of intensive activity.  If you are interested in
-using or hacking Wget, or wish to read the important announcements,
-you are very welcome to subscribe.
+wget@sunsite.dk:
 
-The list is archived at <URL:http://fly.srk.fer.hr/archive/wget>.
+    The mailing list for users and developers.  This is the preferred
+    place to post bug reports and suggestions, as well as discuss
+    development-related matters.
 
-NOTE: The list allows posts from non-subscribers.  This is
-intentional; I hate having to subscribe to a list if I only want to
-ask a single question.  If you're not subscribed to the list and ask
-something, don't forget to request that the responses be Cc'ed to you.
+    To post to the list, send mail to <wget@sunsite.dk>.  To
+    subscribe, send mail to <wget-subscribe@sunsite.dk>.
 
-As of this writing, the address <bug-wget@gnu.org> is an alias for
+    NOTE: The list allows posts from non-subscribers.  This is
+    intentional; I hate having to subscribe to a list if I only want
+    to ask a single question.  If you're not subscribed to the list
+    and ask something, don't forget to request that the responses be
+    Cc'ed to you.
+
+    This mailing list is archived at:
+
+	http://www.mail-archive.com/wget%40sunsite.dk/
+
+wget-patches@sunsite.dk:
+
+    The mailing list for patch submission.  Please see the PATCHES
+    file for a detailed description of how to send patches to this
+    list.
+
+    This is list is also open to non-subscribers, but it is *not* a
+    discussion list.  It only ever distribute patches and immediate
+    responses to a patch.  If you wish to take very active part in
+    development, you might wish to subscribe to it anyway, and receive
+    the new patches.  To do that, send mail to
+    <wget-patches-subscribe@sunsite.dk>.
+
+wget-cvs@sunsite.dk:
+
+    This list just distributes notices about commits to the Wget CVS
+    tree.  It has no discussions, and it is not interesting unless you
+    wish to take part in development.  If so, send mail to
+    <wget-cvs-subscribe@sunsite.dk> to subscribe.
+
+As of this writing, the mail alias <bug-wget@gnu.org> is an alias for
 <wget@sunsite.dk>.
