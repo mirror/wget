@@ -405,7 +405,7 @@ parseurl (const char *url, struct urlinfo *u, int strict)
     }
   /* If protocol is recognizable, but unsupported, bail out, else
      suppose unknown.  */
-  if (recognizable && !sup_protos[i].name)
+  if (recognizable && i == ARRAY_SIZE (sup_protos))
     return URLUNKNOWN;
   else if (i == ARRAY_SIZE (sup_protos))
     type = URLUNKNOWN;
