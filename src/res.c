@@ -125,6 +125,10 @@ add_path (struct robot_specs *specs, const char *path_b, const char *path_e,
 	  int allowedp, int exactp)
 {
   struct path_info pp;
+  if (path_b < path_e && *path_b == '/')
+    /* Our path representation doesn't use a leading slash, so remove
+       one from theirs. */
+    ++path_b;
   pp.path     = strdupdelim (path_b, path_e);
   pp.allowedp = allowedp;
   pp.user_agent_exact_p = exactp;
@@ -390,6 +394,9 @@ res_parse_from_file (const char *filename)
 static void
 free_specs (struct robot_specs *specs)
 {
+  int i;
+  for (i = 0; i < specs->count; i++)
+    xfree (specs->paths[i].path);
   FREE_MAYBE (specs->paths);
   xfree (specs);
 }
@@ -545,4 +552,23 @@ res_retrieve_file (const char *url, char **file)
       *file = NULL;
     }
   return err == RETROK;
+}
+
+static int
+cleanup_hash_table_mapper (void *key, void *value, void *arg_ignored)
+{
+  xfree (key);
+  free_specs (value);
+  return 0;
+}
+
+void
+res_cleanup (void)
+{
+  if (registered_specs)
+    {
+      hash_table_map (registered_specs, cleanup_hash_table_mapper, NULL);
+      hash_table_destroy (registered_specs);
+      registered_specs = NULL;
+    }
 }

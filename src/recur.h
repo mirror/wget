@@ -21,10 +21,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define RECUR_H
 
 void recursive_cleanup PARAMS ((void));
-void recursive_reset PARAMS ((void));
-uerr_t recursive_retrieve PARAMS ((const char *, const char *));
+uerr_t retrieve_tree PARAMS ((const char *));
 
 void register_download PARAMS ((const char *, const char *));
+void register_redirection PARAMS ((const char *, const char *));
 void register_html PARAMS ((const char *, const char *));
 void convert_all_links PARAMS ((void));
 

@@ -1452,8 +1452,8 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
       if (((suf = suffix (*hstat.local_file)) != NULL)
 	  && (!strcmp (suf, "html") || !strcmp (suf, "htm")))
 	*dt |= TEXTHTML;
-      xfree (suf);
 
+      FREE_MAYBE (suf);
       FREE_MAYBE (dummy);
       return RETROK;
     }

@@ -171,7 +171,6 @@ static struct {
   { "savecookies",	&opt.cookies_output,	cmd_file },
   { "saveheaders",	&opt.save_headers,	cmd_boolean },
   { "serverresponse",	&opt.server_response,	cmd_boolean },
-  { "simplehostcheck",	&opt.simple_check,	cmd_boolean },
   { "spanhosts",	&opt.spanhost,		cmd_boolean },
   { "spider",		&opt.spider,		cmd_boolean },
 #ifdef HAVE_SSL
@@ -1009,6 +1008,7 @@ check_user_specified_header (const char *s)
 }
 
 void cleanup_html_url PARAMS ((void));
+void res_cleanup PARAMS ((void));
 void downloaded_files_free PARAMS ((void));
 
 
@@ -1016,13 +1016,27 @@ void downloaded_files_free PARAMS ((void));
 void
 cleanup (void)
 {
-  extern acc_t *netrc_list;
+  /* Free external resources, close files, etc. */
 
-  recursive_cleanup ();
-  clean_hosts ();
-  free_netrc (netrc_list);
   if (opt.dfp)
     fclose (opt.dfp);
+
+  /* We're exiting anyway so there's no real need to call free()
+     hundreds of times.  Skipping the frees will make Wget exit
+     faster.
+
+     However, when detecting leaks, it's crucial to free() everything
+     because then you can find the real leaks, i.e. the allocated
+     memory which grows with the size of the program.  */
+
+#ifdef DEBUG_MALLOC
+  recursive_cleanup ();
+  res_cleanup ();
+  host_cleanup ();
+  {
+    extern acc_t *netrc_list;
+    free_netrc (netrc_list);
+  }
   cleanup_html_url ();
   downloaded_files_free ();
   cookies_cleanup ();
@@ -1037,6 +1051,7 @@ cleanup (void)
   free_vec (opt.domains);
   free_vec (opt.follow_tags);
   free_vec (opt.ignore_tags);
+  FREE_MAYBE (opt.progress_type);
   xfree (opt.ftp_acc);
   FREE_MAYBE (opt.ftp_pass);
   FREE_MAYBE (opt.ftp_proxy);
@@ -1055,4 +1070,5 @@ cleanup (void)
   FREE_MAYBE (opt.bind_address);
   FREE_MAYBE (opt.cookies_input);
   FREE_MAYBE (opt.cookies_output);
+#endif
 }

@@ -48,12 +48,13 @@ char *datetime_str PARAMS ((time_t *));
 void print_malloc_debug_stats ();
 #endif
 
+char *xstrdup_lower PARAMS ((const char *));
 char *strdupdelim PARAMS ((const char *, const char *));
 char **sepstring PARAMS ((const char *));
 int frontcmp PARAMS ((const char *, const char *));
 char *pwd_cuserid PARAMS ((char *));
 void fork_to_background PARAMS ((void));
-void path_simplify PARAMS ((char *));
+int path_simplify PARAMS ((char *));
 
 void touch PARAMS ((const char *, time_t));
 int remove_link PARAMS ((const char *));
@@ -97,5 +98,7 @@ long wtimer_elapsed PARAMS ((struct wget_timer *));
 long wtimer_granularity PARAMS ((void));
 
 char *html_quote_string PARAMS ((const char *));
+
+int determine_screen_width PARAMS ((void));
 
 #endif /* UTILS_H */

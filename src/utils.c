@@ -307,6 +307,18 @@ xstrdup_debug (const char *s, const char *source_file, int source_line)
 
 #endif /* DEBUG_MALLOC */
 
+/* Utility function: like xstrdup(), but also lowercases S.  */
+
+char *
+xstrdup_lower (const char *s)
+{
+  char *copy = xstrdup (s);
+  char *p = copy;
+  for (; *p; p++)
+    *p = TOLOWER (*p);
+  return copy;
+}
+
 /* Copy the string formed by two pointers (one on the beginning, other
    on the char after the last char) to a new, malloc-ed location.
    0-terminate it.  */
@@ -443,6 +455,8 @@ fork_to_background (void)
 }
 #endif /* not WINDOWS */
 
+#if 0
+/* debug */
 char *
 ps (char *orig)
 {
@@ -450,6 +464,7 @@ ps (char *orig)
   path_simplify (r);
   return r;
 }
+#endif
 
 /* Canonicalize PATH, and return a new path.  The new path differs from PATH
    in that:
@@ -468,45 +483,31 @@ ps (char *orig)
 	Change the original string instead of strdup-ing.
 	React correctly when beginning with `./' and `../'.
 	Don't zip out trailing slashes.  */
-void
+int
 path_simplify (char *path)
 {
-  register int i, start, ddot;
+  register int i, start;
+  int changes = 0;
   char stub_char;
 
   if (!*path)
-    return;
+    return 0;
 
-  /*stub_char = (*path == '/') ? '/' : '.';*/
   stub_char = '/';
 
-  /* Addition: Remove all `./'-s preceding the string.  If `../'-s
-     precede, put `/' in front and remove them too.  */
-  i = 0;
-  ddot = 0;
-  while (1)
-    {
-      if (path[i] == '.' && path[i + 1] == '/')
-	i += 2;
-      else if (path[i] == '.' && path[i + 1] == '.' && path[i + 2] == '/')
-	{
-	  i += 3;
-	  ddot = 1;
-	}
-      else
-	break;
-    }
-  if (i)
-    strcpy (path, path + i - ddot);
+  if (path[0] == '/')
+    /* Preserve initial '/'. */
+    ++path;
 
-  /* Replace single `.' or `..' with `/'.  */
+  /* Nix out leading `.' or `..' with.  */
   if ((path[0] == '.' && path[1] == '\0')
       || (path[0] == '.' && path[1] == '.' && path[2] == '\0'))
     {
-      path[0] = stub_char;
-      path[1] = '\0';
-      return;
+      path[0] = '\0';
+      changes = 1;
+      return changes;
     }
+
   /* Walk along PATH looking for things to compact.  */
   i = 0;
   while (1)
@@ -531,6 +532,7 @@ path_simplify (char *path)
 	{
 	  strcpy (path + start + 1, path + i);
 	  i = start + 1;
+	  changes = 1;
 	}
 
       /* Check for `../', `./' or trailing `.' by itself.  */
@@ -540,6 +542,7 @@ path_simplify (char *path)
 	  if (!path[i + 1])
 	    {
 	      path[--i] = '\0';
+	      changes = 1;
 	      break;
 	    }
 
@@ -548,6 +551,7 @@ path_simplify (char *path)
 	    {
 	      strcpy (path + i, path + i + 1);
 	      i = (start < 0) ? 0 : start;
+	      changes = 1;
 	      continue;
 	    }
 
@@ -556,12 +560,32 @@ path_simplify (char *path)
 	      (path[i + 2] == '/' || !path[i + 2]))
 	    {
 	      while (--start > -1 && path[start] != '/');
-	      strcpy (path + start + 1, path + i + 2);
+	      strcpy (path + start + 1, path + i + 2 + (start == -1 && path[i + 2]));
 	      i = (start < 0) ? 0 : start;
+	      changes = 1;
 	      continue;
 	    }
 	}	/* path == '.' */
     } /* while */
+
+  /* Addition: Remove all `./'-s and `../'-s preceding the string.  */
+  i = 0;
+  while (1)
+    {
+      if (path[i] == '.' && path[i + 1] == '/')
+	i += 2;
+      else if (path[i] == '.' && path[i + 1] == '.' && path[i + 2] == '/')
+	i += 3;
+      else
+	break;
+    }
+  if (i)
+    {
+      strcpy (path, path + i - 0);
+      changes = 1;
+    }
+
+  return changes;
 }
 
 /* "Touch" FILE, i.e. make its atime and mtime equal to the time

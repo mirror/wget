@@ -162,8 +162,10 @@ main$o: wget.h utils.h init.h retr.h recur.h host.h cookies.h
 gnu-md5$o: wget.h gnu-md5.h
 mswindows$o: wget.h url.h
 netrc$o: wget.h utils.h netrc.h init.h
+progress$o: wget.h progress.h utils.h retr.h
 rbuf$o: wget.h rbuf.h connect.h
 recur$o: wget.h url.h recur.h utils.h retr.h ftp.h fnmatch.h host.h hash.h
+res$o: wget.h utils.h hash.h url.h retr.h res.h
 retr$o: wget.h utils.h retr.h url.h recur.h ftp.h host.h connect.h hash.h
 snprintf$o:
 safe-ctype$o: safe-ctype.h

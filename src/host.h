@@ -27,14 +27,10 @@ struct url;
 struct hostent *ngethostbyname PARAMS ((const char *));
 int store_hostaddress PARAMS ((unsigned char *, const char *));
 
-void clean_hosts PARAMS ((void));
+void host_cleanup PARAMS ((void));
 
-char *realhost PARAMS ((const char *));
-int same_host PARAMS ((const char *, const char *));
 int accept_domain PARAMS ((struct url *));
 int sufmatch PARAMS ((const char **, const char *));
-
-char *ftp_getaddress PARAMS ((void));
 
 char *herrmsg PARAMS ((int));
 

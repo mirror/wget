@@ -184,6 +184,26 @@ rate (long bytes, long msecs, int pad)
   return res;
 }
 
+static int
+register_redirections_mapper (void *key, void *value, void *arg)
+{
+  const char *redirected_from = (const char *)key;
+  const char *redirected_to   = (const char *)arg;
+  if (0 != strcmp (redirected_from, redirected_to))
+    register_redirection (redirected_from, redirected_to);
+  return 0;
+}
+
+/* Register the redirections that lead to the successful download of
+   this URL.  This is necessary so that the link converter can convert
+   redirected URLs to the local file.  */
+
+static void
+register_all_redirections (struct hash_table *redirections, const char *final)
+{
+  hash_table_map (redirections, register_redirections_mapper, (void *)final);
+}
+
 #define USE_PROXY_P(u) (opt.use_proxy && getproxy((u)->scheme)		\
 			&& no_proxy_match((u)->host,			\
 					  (const char **)opt.no_proxy))
@@ -254,7 +274,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       proxy_url = url_parse (proxy, &up_error_code);
       if (!proxy_url)
 	{
-	  logprintf (LOG_NOTQUIET, "Error parsing proxy URL %s: %s.\n",
+	  logprintf (LOG_NOTQUIET, _("Error parsing proxy URL %s: %s.\n"),
 		     proxy, url_error (up_error_code));
 	  if (redirections)
 	    string_set_free (redirections);
@@ -310,7 +330,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   if (location_changed)
     {
       char *construced_newloc;
-      struct url *newloc_struct;
+      struct url *newloc_parsed;
 
       assert (mynewloc != NULL);
 
@@ -326,12 +346,11 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       mynewloc = construced_newloc;
 
       /* Now, see if this new location makes sense. */
-      newloc_struct = url_parse (mynewloc, &up_error_code);
-      if (!newloc_struct)
+      newloc_parsed = url_parse (mynewloc, &up_error_code);
+      if (!newloc_parsed)
 	{
 	  logprintf (LOG_NOTQUIET, "%s: %s.\n", mynewloc,
 		     url_error (up_error_code));
-	  url_free (newloc_struct);
 	  url_free (u);
 	  if (redirections)
 	    string_set_free (redirections);
@@ -340,11 +359,11 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  return result;
 	}
 
-      /* Now mynewloc will become newloc_struct->url, because if the
+      /* Now mynewloc will become newloc_parsed->url, because if the
          Location contained relative paths like .././something, we
          don't want that propagating as url.  */
       xfree (mynewloc);
-      mynewloc = xstrdup (newloc_struct->url);
+      mynewloc = xstrdup (newloc_parsed->url);
 
       if (!redirections)
 	{
@@ -356,11 +375,11 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 
       /* The new location is OK.  Check for redirection cycle by
          peeking through the history of redirections. */
-      if (string_set_contains (redirections, newloc_struct->url))
+      if (string_set_contains (redirections, newloc_parsed->url))
 	{
 	  logprintf (LOG_NOTQUIET, _("%s: Redirection cycle detected.\n"),
 		     mynewloc);
-	  url_free (newloc_struct);
+	  url_free (newloc_parsed);
 	  url_free (u);
 	  if (redirections)
 	    string_set_free (redirections);
@@ -368,12 +387,12 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  xfree (mynewloc);
 	  return WRONGCODE;
 	}
-      string_set_add (redirections, newloc_struct->url);
+      string_set_add (redirections, newloc_parsed->url);
 
       xfree (url);
       url = mynewloc;
       url_free (u);
-      u = newloc_struct;
+      u = newloc_parsed;
       goto redirected;
     }
 
@@ -382,6 +401,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       if (*dt & RETROKF)
 	{
 	  register_download (url, local_file);
+	  if (redirections)
+	    register_all_redirections (redirections, url);
 	  if (*dt & TEXTHTML)
 	    register_html (url, local_file);
 	}
@@ -415,16 +436,16 @@ uerr_t
 retrieve_from_file (const char *file, int html, int *count)
 {
   uerr_t status;
-  urlpos *url_list, *cur_url;
+  struct urlpos *url_list, *cur_url;
 
   url_list = (html ? get_urls_html (file, NULL, FALSE, NULL)
 	      : get_urls_file (file));
   status = RETROK;             /* Suppose everything is OK.  */
   *count = 0;                  /* Reset the URL count.  */
-  recursive_reset ();
+
   for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
     {
-      char *filename, *new_file;
+      char *filename = NULL, *new_file;
       int dt;
 
       if (downloaded_exceeds_quota ())
@@ -432,10 +453,10 @@ retrieve_from_file (const char *file, int html, int *count)
 	  status = QUOTEXC;
 	  break;
 	}
-      status = retrieve_url (cur_url->url, &filename, &new_file, NULL, &dt);
-      if (opt.recursive && status == RETROK && (dt & TEXTHTML))
-	status = recursive_retrieve (filename, new_file ? new_file
-				                        : cur_url->url);
+      if (opt.recursive && cur_url->url->scheme != SCHEME_FTP)
+	status = retrieve_tree (cur_url->url->url);
+      else
+	status = retrieve_url (cur_url->url->url, &filename, &new_file, NULL, &dt);
 
       if (filename && opt.delete_after && file_exists_p (filename))
 	{

@@ -28,6 +28,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # define NDEBUG /* To kill off assertions */
 #endif /* not DEBUG */
 
+/* Define this if you want primitive but extensive malloc debugging.
+   It will make Wget extremely slow, so only do it in development
+   builds.  */
+#undef DEBUG_MALLOC
+
 #ifndef PARAMS
 # if PROTOTYPES
 #  define PARAMS(args) args
@@ -60,7 +65,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
    3) Finally, the debug messages are meant to be a clue for me to
    debug problems with Wget.  If I get them in a language I don't
-   understand, debugging will become a new challenge of its own!  :-) */
+   understand, debugging will become a new challenge of its own!  */
 
 
 /* Include these, so random files need not include them.  */

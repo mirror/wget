@@ -20,15 +20,6 @@ changes.
   file, though forcibly disconnecting from the server at the desired endpoint
   might be workable).
 
-* RFC 1738 says that if logging on to an FTP server puts you in a directory
-  other than '/', the way to specify a file relative to '/' in a URL (let's use
-  "/bin/ls" in this example) is "ftp://host/%2Fbin/ls".  Wget needs to support
-  this (and ideally not consider "ftp://host//bin/ls" to be equivalent, as that
-  would equate to the command "CWD " rather than "CWD /").  To accomodate people
-  used to broken FTP clients like Internet Explorer and Netscape, if
-  "ftp://host/bin/ls" doesn't exist, Wget should try again (perhaps under
-  control of an option), acting as if the user had typed "ftp://host/%2Fbin/ls".
-
 * If multiple FTP URLs are specified that are on the same host, Wget should
   re-use the connection rather than opening a new one for each file.
 
@@ -37,15 +28,8 @@ changes.
 
 * Limit the number of successive redirection to max. 20 or so.
 
-* If -c used on a file that's already completely downloaded, don't re-download
-  it (unless normal --timestamping processing would cause you to do so).
-
 * If -c used with -N, check to make sure a file hasn't changed on the server
   before "continuing" to download it (preventing a bogus hybrid file).
-
-* Take a look at
-  <http://info.webcrawler.com/mak/projects/robots/norobots-rfc.html>
-  and support the new directives.
 
 * Generalize --html-extension to something like --mime-extensions and have it
   look at mime.types/mimecap file for preferred extension.  Non-HTML files with
@@ -87,9 +71,6 @@ changes.
   turning it off.  Get rid of `--foo=no' stuff.  Short options would
   be handled as `-x' vs. `-nx'.
 
-* Implement "thermometer" display (not all that hard; use an
-  alternative show_progress() if the output goes to a terminal.)
-
 * Add option to only list wildcard matches without doing the download.
 
 * Add case-insensitivity as an option.
@@ -102,18 +83,12 @@ changes.
 
 * Allow time-stamping by arbitrary date.
 
-* Fix Unix directory parser to allow for spaces in file names.
-
 * Allow size limit to files (perhaps with an option to download oversize files 
   up through the limit or not at all, to get more functionality than [u]limit.
-
-* Implement breadth-first retrieval.
 
 * Download to .in* when mirroring.
 
 * Add an option to delete or move no-longer-existent files when mirroring.
-
-* Implement a switch to avoid downloading multiple files (e.g. x and x.gz).
 
 * Implement uploading (--upload URL?) in FTP and HTTP.
 
@@ -129,13 +104,10 @@ changes.
 
 * Implement a concept of "packages" a la mirror.
 
-* Implement correct RFC1808 URL parsing.
-
-* Implement more HTTP/1.1 bells and whistles (ETag, Content-MD5 etc.)
-
-* Add a "rollback" option to have --continue throw away a configurable number of
-  bytes at the end of a file before resuming download.  Apparently, some stupid
-  proxies insert a "transfer interrupted" string we need to get rid of.
+* Add a "rollback" option to have continued retrieval throw away a
+  configurable number of bytes at the end of a file before resuming
+  download.  Apparently, some stupid proxies insert a "transfer
+  interrupted" string we need to get rid of.
 
 * When using --accept and --reject, you can end up with empty directories.  Have
   Wget any such at the end.

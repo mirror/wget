@@ -29,3 +29,4 @@ struct robot_specs *res_get_specs PARAMS ((const char *, int));
 
 int res_retrieve_file PARAMS ((const char *, char **));
 
+void res_cleanup PARAMS ((void));

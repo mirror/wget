@@ -1,3 +1,68 @@
+2001-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (reencode_string): Use unsigned char, not char --
+	otherwise the hex digits come out wrong for 8-bit chars such as
+	nbsp.
+	(lowercase_str): New function.
+	(url_parse): Canonicalize u->url if needed.
+	(get_urls_file): Parse each URL, and return only the valid ones.
+	(free_urlpos): Call url_free.
+	(mkstruct): Add :port if the port is non-standard.
+	(mkstruct): Append the query string to the file name, if any.
+	(urlpath_length): Use strpbrk_or_eos.
+	(uri_merge_1): Handle the cases where LINK is an empty string,
+	where LINK consists only of query, and where LINK consists only of
+	fragment.
+	(convert_links): Count and report both kinds of conversion.
+	(downloaded_file): Use a hash table, not a list.
+	(downloaded_files_free): Free the hash table.
+
+	* retr.c (retrieve_from_file): Ditto.
+
+	* main.c (main): Call either retrieve_url or retrieve_tree
+	for each URL, not both.
+
+	* retr.c (register_all_redirections): New function.
+	(register_redirections_mapper): Ditto.
+	(retrieve_url): Register the redirections.
+	(retrieve_url): Make the string "Error parsing proxy ..." 
+	translatable.
+
+	* res.c (add_path): Strip leading slash from robots.txt paths so
+	that the path representations are "compatible".
+	(free_specs): Free each individual path, too.
+	(res_cleanup): New function.
+	(cleanup_hash_table_mapper): Ditto.
+
+	* recur.c (url_queue_new): New function.
+	(url_queue_delete): Ditto.
+	(url_enqueue): Ditto.
+	(url_dequeue): Ditto.
+	(retrieve_tree): New function, replacement for recursive_retrieve.
+	(descend_url_p): New function.
+	(register_redirection): New function.
+
+	* progress.c (create_image): Cosmetic changes.
+
+	* init.c (cleanup): Do all those complex cleanups only if
+	DEBUG_MALLOC is defined.
+
+	* main.c: Removed --simple-check and the corresponding
+	simple_host_check in init.c.
+
+	* html-url.c (handle_link): Parse the URL here, and propagate the
+	parsed URL to the caller, who would otherwise have to parse it
+	again.
+
+	* host.c (xstrdup_lower): Moved to utils.c.
+	(realhost): Removed.
+	(same_host): Ditto.
+
+2001-11-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* utils.c (path_simplify): Preserver the (non-)existence of
+	leading slash.  Return non-zero if changes were made.
+
 2001-11-24  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* progress.c (bar_update): Don't modify bp->total_length if it is

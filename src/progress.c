@@ -27,6 +27,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include <strings.h>
 #endif /* HAVE_STRING_H */
 #include <assert.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 
 #include "wget.h"
 #include "progress.h"
@@ -470,14 +473,14 @@ create_image (struct bar_progress *bp, long dltime)
      Calculate its geometry:
 
      "xxx% "         - percentage                - 5 chars
-     "| ... | "      - progress bar decorations  - 3 chars
+     "| ... |"       - progress bar decorations  - 2 chars
      "1012.56 K/s "  - dl rate                   - 12 chars
      "nnnn "         - downloaded bytes          - 11 chars
      "ETA: xx:xx:xx" - ETA                       - 13 chars
 
      "=====>..."     - progress bar content      - the rest
   */
-  int progress_len = screen_width - (5 + 3 + 12 + 11 + 13);
+  int progress_len = screen_width - (5 + 2 + 12 + 11 + 13);
 
   if (progress_len < 7)
     progress_len = 0;
@@ -530,7 +533,7 @@ create_image (struct bar_progress *bp, long dltime)
     }
   else
     {
-      strcpy (p, "----.-- K/s ");
+      strcpy (p, "  --.-- K/s ");
       p += 12;
     }
 

@@ -72,11 +72,11 @@ enum convert_options {
 /* A structure that defines the whereabouts of a URL, i.e. its
    position in an HTML document, etc.  */
 
-typedef struct _urlpos
-{
-  char *url;			/* linked URL, after it has been
-				   merged with the base */
-  char *local_name;		/* Local file to which it was saved */
+struct urlpos {
+  struct url *url;		/* the URL of the link, after it has
+				   been merged with the base */
+  char *local_name;		/* local file to which it was saved
+				   (used by convert_links) */
 
   /* Information about the original link: */
   int link_relative_p;		/* was the link relative? */
@@ -89,8 +89,8 @@ typedef struct _urlpos
   /* URL's position in the buffer. */
   int pos, size;
 
-  struct _urlpos *next;		/* Next struct in list */
-} urlpos;
+  struct urlpos *next;		/* next list element */
+};
 
 /* downloaded_file() takes a parameter of this type and returns this type. */
 typedef enum
@@ -126,9 +126,9 @@ int url_skip_uname PARAMS ((const char *));
 
 char *url_string PARAMS ((const struct url *, int));
 
-urlpos *get_urls_file PARAMS ((const char *));
-urlpos *get_urls_html PARAMS ((const char *, const char *, int, int *));
-void free_urlpos PARAMS ((urlpos *));
+struct urlpos *get_urls_file PARAMS ((const char *));
+struct urlpos *get_urls_html PARAMS ((const char *, const char *, int, int *));
+void free_urlpos PARAMS ((struct urlpos *));
 
 char *uri_merge PARAMS ((const char *, const char *));
 
@@ -136,11 +136,10 @@ void rotate_backups PARAMS ((const char *));
 int mkalldirs PARAMS ((const char *));
 char *url_filename PARAMS ((const struct url *));
 
-char *getproxy PARAMS ((uerr_t));
+char *getproxy PARAMS ((enum url_scheme));
 int no_proxy_match PARAMS ((const char *, const char **));
 
-void convert_links PARAMS ((const char *, urlpos *));
-urlpos *add_url PARAMS ((urlpos *, const char *, const char *));
+void convert_links PARAMS ((const char *, struct urlpos *));
 
 downloaded_file_t downloaded_file PARAMS ((downloaded_file_t, const char *));
 

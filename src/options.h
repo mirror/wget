@@ -36,9 +36,6 @@ struct options
   int relative_only;		/* Follow only relative links. */
   int no_parent;		/* Restrict access to the parent
 				   directory.  */
-  int simple_check;		/* Should we use simple checking
-				   (strcmp) or do we create a host
-				   hash and call gethostbyname? */
   int reclevel;			/* Maximum level of recursion */
   int dirstruct;		/* Do we build the directory structure
 				  as we go along? */

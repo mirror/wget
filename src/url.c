@@ -37,6 +37,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "utils.h"
 #include "url.h"
 #include "host.h"
+#include "hash.h"
 
 #ifndef errno
 extern int errno;
@@ -182,7 +183,7 @@ encode_string_maybe (const char *s)
     {
       if (UNSAFE_CHAR (*p1))
 	{
-	  const unsigned char c = *p1++;
+	  unsigned char c = *p1++;
 	  *p2++ = '%';
 	  *p2++ = XDIGIT_TO_XCHAR (c >> 4);
 	  *p2++ = XDIGIT_TO_XCHAR (c & 0xf);
@@ -378,7 +379,7 @@ reencode_string (const char *s)
 	{
 	case CM_ENCODE:
 	  {
-	    char c = *p1++;
+	    unsigned char c = *p1++;
 	    *p2++ = '%';
 	    *p2++ = XDIGIT_TO_XCHAR (c >> 4);
 	    *p2++ = XDIGIT_TO_XCHAR (c & 0xf);
@@ -586,6 +587,22 @@ strpbrk_or_eos (const char *s, const char *accept)
   return p;
 }
 
+/* Turn STR into lowercase; return non-zero if a character was
+   actually changed. */
+
+static int
+lowercase_str (char *str)
+{
+  int change = 0;
+  for (; *str; str++)
+    if (!ISLOWER (*str))
+      {
+	change = 1;
+	*str = TOLOWER (*str);
+      }
+  return change;
+}
+
 static char *parse_errors[] = {
 #define PE_NO_ERROR            0
   "No error",
@@ -614,6 +631,7 @@ url_parse (const char *url, int *error)
 {
   struct url *u;
   const char *p;
+  int path_modified, host_modified;
 
   enum url_scheme scheme;
 
@@ -627,9 +645,7 @@ url_parse (const char *url, int *error)
   int port;
   char *user = NULL, *passwd = NULL;
 
-  const char *url_orig = url;
-
-  p = url = reencode_string (url);
+  char *url_encoded;
 
   scheme = url_scheme (url);
   if (scheme == SCHEME_INVALID)
@@ -637,6 +653,9 @@ url_parse (const char *url, int *error)
       SETERR (error, PE_UNRECOGNIZED_SCHEME);
       return NULL;
     }
+
+  url_encoded = reencode_string (url);
+  p = url_encoded;
 
   p += strlen (supported_schemes[scheme].leading_string);
   uname_b = p;
@@ -749,11 +768,6 @@ url_parse (const char *url, int *error)
   u = (struct url *)xmalloc (sizeof (struct url));
   memset (u, 0, sizeof (*u));
 
-  if (url == url_orig)
-    u->url    = xstrdup (url);
-  else
-    u->url    = (char *)url;
-
   u->scheme = scheme;
   u->host   = strdupdelim (host_b, host_e);
   u->port   = port;
@@ -761,7 +775,10 @@ url_parse (const char *url, int *error)
   u->passwd = passwd;
 
   u->path = strdupdelim (path_b, path_e);
-  path_simplify (u->path);
+  path_modified = path_simplify (u->path);
+  parse_path (u->path, &u->dir, &u->file);
+
+  host_modified = lowercase_str (u->host);
 
   if (params_b)
     u->params = strdupdelim (params_b, params_e);
@@ -770,7 +787,26 @@ url_parse (const char *url, int *error)
   if (fragment_b)
     u->fragment = strdupdelim (fragment_b, fragment_e);
 
-  parse_path (u->path, &u->dir, &u->file);
+
+  if (path_modified || u->fragment || host_modified)
+    {
+      /* If path_simplify modified the path, or if a fragment is
+	 present, or if the original host name had caps in it, make
+	 sure that u->url is equivalent to what would be printed by
+	 url_string.  */
+      u->url = url_string (u, 0);
+
+      if (url_encoded != url)
+	xfree ((char *) url_encoded);
+    }
+  else
+    {
+      if (url_encoded == url)
+	u->url    = xstrdup (url);
+      else
+	u->url    = url_encoded;
+    }
+  url_encoded = NULL;
 
   return u;
 }
@@ -927,17 +963,18 @@ url_free (struct url *url)
   FREE_MAYBE (url->fragment);
   FREE_MAYBE (url->user);
   FREE_MAYBE (url->passwd);
-  FREE_MAYBE (url->dir);
-  FREE_MAYBE (url->file);
+
+  xfree (url->dir);
+  xfree (url->file);
 
   xfree (url);
 }
 
-urlpos *
+struct urlpos *
 get_urls_file (const char *file)
 {
   struct file_memory *fm;
-  urlpos *head, *tail;
+  struct urlpos *head, *tail;
   const char *text, *text_end;
 
   /* Load the file.  */
@@ -968,10 +1005,28 @@ get_urls_file (const char *file)
 	--line_end;
       if (line_end > line_beg)
 	{
-	  urlpos *entry = (urlpos *)xmalloc (sizeof (urlpos));
+	  int up_error_code;
+	  char *url_text;
+	  struct urlpos *entry;
+	  struct url *url;
+
+	  /* We must copy the URL to a zero-terminated string.  *sigh*.  */
+	  url_text = strdupdelim (line_beg, line_end);
+	  url = url_parse (url_text, &up_error_code);
+	  if (!url)
+	    {
+	      logprintf (LOG_NOTQUIET, "%s: Invalid URL %s: %s\n",
+			 file, url_text, url_error (up_error_code));
+	      xfree (url_text);
+	      continue;
+	    }
+	  xfree (url_text);
+
+	  entry = (struct urlpos *)xmalloc (sizeof (struct urlpos));
 	  memset (entry, 0, sizeof (*entry));
 	  entry->next = NULL;
-	  entry->url = strdupdelim (line_beg, line_end);
+	  entry->url = url;
+
 	  if (!head)
 	    head = entry;
 	  else
@@ -985,12 +1040,13 @@ get_urls_file (const char *file)
 
 /* Free the linked list of urlpos.  */
 void
-free_urlpos (urlpos *l)
+free_urlpos (struct urlpos *l)
 {
   while (l)
     {
-      urlpos *next = l->next;
-      xfree (l->url);
+      struct urlpos *next = l->next;
+      if (l->url)
+	url_free (l->url);
       FREE_MAYBE (l->local_name);
       xfree (l);
       l = next;
@@ -1088,7 +1144,9 @@ count_slashes (const char *s)
 static char *
 mkstruct (const struct url *u)
 {
-  char *host, *dir, *file, *res, *dirpref;
+  char *dir, *dir_preencoding;
+  char *file, *res, *dirpref;
+  char *query = u->query && *u->query ? u->query : NULL;
   int l;
 
   if (opt.cut_dirs)
@@ -1104,36 +1162,35 @@ mkstruct (const struct url *u)
   else
     dir = u->dir + (*u->dir == '/');
 
-  host = xstrdup (u->host);
   /* Check for the true name (or at least a consistent name for saving
      to directory) of HOST, reusing the hlist if possible.  */
-  if (opt.add_hostdir && !opt.simple_check)
-    {
-      char *nhost = realhost (host);
-      xfree (host);
-      host = nhost;
-    }
-  /* Add dir_prefix and hostname (if required) to the beginning of
-     dir.  */
   if (opt.add_hostdir)
     {
+      /* Add dir_prefix and hostname (if required) to the beginning of
+	 dir.  */
+      dirpref = (char *)alloca (strlen (opt.dir_prefix) + 1
+				+ strlen (u->host)
+				+ 1 + numdigit (u->port)
+				+ 1);
       if (!DOTP (opt.dir_prefix))
-	{
-	  dirpref = (char *)alloca (strlen (opt.dir_prefix) + 1
-				    + strlen (host) + 1);
-	  sprintf (dirpref, "%s/%s", opt.dir_prefix, host);
-	}
+	sprintf (dirpref, "%s/%s", opt.dir_prefix, u->host);
       else
-	STRDUP_ALLOCA (dirpref, host);
+	strcpy (dirpref, u->host);
+
+      if (u->port != scheme_default_port (u->scheme))
+	{
+	  int len = strlen (dirpref);
+	  dirpref[len] = ':';
+	  long_to_string (dirpref + len + 1, u->port);
+	}
     }
-  else                         /* not add_hostdir */
+  else				/* not add_hostdir */
     {
       if (!DOTP (opt.dir_prefix))
 	dirpref = opt.dir_prefix;
       else
 	dirpref = "";
     }
-  xfree (host);
 
   /* If there is a prefix, prepend it.  */
   if (*dirpref)
@@ -1142,7 +1199,10 @@ mkstruct (const struct url *u)
       sprintf (newdir, "%s%s%s", dirpref, *dir == '/' ? "" : "/", dir);
       dir = newdir;
     }
-  dir = encode_string (dir);
+
+  dir_preencoding = dir;
+  dir = reencode_string (dir_preencoding);
+
   l = strlen (dir);
   if (l && dir[l - 1] == '/')
     dir[l - 1] = '\0';
@@ -1153,9 +1213,17 @@ mkstruct (const struct url *u)
     file = u->file;
 
   /* Finally, construct the full name.  */
-  res = (char *)xmalloc (strlen (dir) + 1 + strlen (file) + 1);
+  res = (char *)xmalloc (strlen (dir) + 1 + strlen (file)
+			 + (query ? (1 + strlen (query)) : 0)
+			 + 1);
   sprintf (res, "%s%s%s", dir, *dir ? "/" : "", file);
-  xfree (dir);
+  if (query)
+    {
+      strcat (res, "?");
+      strcat (res, query);
+    }
+  if (dir != dir_preencoding)
+    xfree (dir);
   return res;
 }
 
@@ -1177,7 +1245,7 @@ compose_file_name (char *base, char *query)
     {
       if (UNSAFE_CHAR (*from))
 	{
-	  const unsigned char c = *from++;
+	  unsigned char c = *from++;
 	  *to++ = '%';
 	  *to++ = XDIGIT_TO_XCHAR (c >> 4);
 	  *to++ = XDIGIT_TO_XCHAR (c & 0xf);
@@ -1282,10 +1350,8 @@ url_filename (const struct url *u)
 static int
 urlpath_length (const char *url)
 {
-  const char *q = strchr (url, '?');
-  if (q)
-    return q - url;
-  return strlen (url);
+  const char *q = strpbrk_or_eos (url, "?;#");
+  return q - url;
 }
 
 /* Find the last occurrence of character C in the range [b, e), or
@@ -1323,63 +1389,42 @@ uri_merge_1 (const char *base, const char *link, int linklength, int no_scheme)
     {
       const char *end = base + urlpath_length (base);
 
-      if (*link != '/')
+      if (!*link)
 	{
-	  /* LINK is a relative URL: we need to replace everything
-	     after last slash (possibly empty) with LINK.
-
-	     So, if BASE is "whatever/foo/bar", and LINK is "qux/xyzzy",
-	     our result should be "whatever/foo/qux/xyzzy".  */
-	  int need_explicit_slash = 0;
-	  int span;
-	  const char *start_insert;
-	  const char *last_slash = find_last_char (base, end, '/');
-	  if (!last_slash)
-	    {
-	      /* No slash found at all.  Append LINK to what we have,
-		 but we'll need a slash as a separator.
-
-		 Example: if base == "foo" and link == "qux/xyzzy", then
-		 we cannot just append link to base, because we'd get
-		 "fooqux/xyzzy", whereas what we want is
-		 "foo/qux/xyzzy".
-
-		 To make sure the / gets inserted, we set
-		 need_explicit_slash to 1.  We also set start_insert
-		 to end + 1, so that the length calculations work out
-		 correctly for one more (slash) character.  Accessing
-		 that character is fine, since it will be the
-		 delimiter, '\0' or '?'.  */
-	      /* example: "foo?..." */
-	      /*               ^    ('?' gets changed to '/') */
-	      start_insert = end + 1;
-	      need_explicit_slash = 1;
-	    }
-	  else if (last_slash && last_slash != base && *(last_slash - 1) == '/')
-	    {
-	      /* example: http://host"  */
-	      /*                      ^ */
-	      start_insert = end + 1;
-	      need_explicit_slash = 1;
-	    }
-	  else
-	    {
-	      /* example: "whatever/foo/bar" */
-	      /*                        ^    */
-	      start_insert = last_slash + 1;
-	    }
-
-	  span = start_insert - base;
-	  constr = (char *)xmalloc (span + linklength + 1);
-	  if (span)
-	    memcpy (constr, base, span);
-	  if (need_explicit_slash)
-	    constr[span - 1] = '/';
-	  if (linklength)
-	    memcpy (constr + span, link, linklength);
-	  constr[span + linklength] = '\0';
+	  /* Empty LINK points back to BASE, query string and all. */
+	  constr = xstrdup (base);
 	}
-      else /* *link == `/' */
+      else if (*link == '?')
+	{
+	  /* LINK points to the same location, but changes the query
+	     string.  Examples: */
+	  /* uri_merge("path",         "?new") -> "path?new"     */
+	  /* uri_merge("path?foo",     "?new") -> "path?new"     */
+	  /* uri_merge("path?foo#bar", "?new") -> "path?new"     */
+	  /* uri_merge("path#foo",     "?new") -> "path?new"     */
+	  int baselength = end - base;
+	  constr = xmalloc (baselength + linklength + 1);
+	  memcpy (constr, base, baselength);
+	  memcpy (constr + baselength, link, linklength);
+	  constr[baselength + linklength] = '\0';
+	}
+      else if (*link == '#')
+	{
+	  /* uri_merge("path",         "#new") -> "path#new"     */
+	  /* uri_merge("path#foo",     "#new") -> "path#new"     */
+	  /* uri_merge("path?foo",     "#new") -> "path?foo#new" */
+	  /* uri_merge("path?foo#bar", "#new") -> "path?foo#new" */
+	  int baselength;
+	  const char *end1 = strchr (base, '#');
+	  if (!end1)
+	    end1 = base + strlen (base);
+	  baselength = end1 - base;
+	  constr = xmalloc (baselength + linklength + 1);
+	  memcpy (constr, base, baselength);
+	  memcpy (constr + baselength, link, linklength);
+	  constr[baselength + linklength] = '\0';
+	}
+      else if (*link == '/')
 	{
 	  /* LINK is an absolute path: we need to replace everything
              after (and including) the FIRST slash with LINK.
@@ -1431,6 +1476,62 @@ uri_merge_1 (const char *base, const char *link, int linklength, int no_scheme)
 	  constr = (char *)xmalloc (span + linklength + 1);
 	  if (span)
 	    memcpy (constr, base, span);
+	  if (linklength)
+	    memcpy (constr + span, link, linklength);
+	  constr[span + linklength] = '\0';
+	}
+      else
+	{
+	  /* LINK is a relative URL: we need to replace everything
+	     after last slash (possibly empty) with LINK.
+
+	     So, if BASE is "whatever/foo/bar", and LINK is "qux/xyzzy",
+	     our result should be "whatever/foo/qux/xyzzy".  */
+	  int need_explicit_slash = 0;
+	  int span;
+	  const char *start_insert;
+	  const char *last_slash = find_last_char (base, end, '/');
+	  if (!last_slash)
+	    {
+	      /* No slash found at all.  Append LINK to what we have,
+		 but we'll need a slash as a separator.
+
+		 Example: if base == "foo" and link == "qux/xyzzy", then
+		 we cannot just append link to base, because we'd get
+		 "fooqux/xyzzy", whereas what we want is
+		 "foo/qux/xyzzy".
+
+		 To make sure the / gets inserted, we set
+		 need_explicit_slash to 1.  We also set start_insert
+		 to end + 1, so that the length calculations work out
+		 correctly for one more (slash) character.  Accessing
+		 that character is fine, since it will be the
+		 delimiter, '\0' or '?'.  */
+	      /* example: "foo?..." */
+	      /*               ^    ('?' gets changed to '/') */
+	      start_insert = end + 1;
+	      need_explicit_slash = 1;
+	    }
+	  else if (last_slash && last_slash != base && *(last_slash - 1) == '/')
+	    {
+	      /* example: http://host"  */
+	      /*                      ^ */
+	      start_insert = end + 1;
+	      need_explicit_slash = 1;
+	    }
+	  else
+	    {
+	      /* example: "whatever/foo/bar" */
+	      /*                        ^    */
+	      start_insert = last_slash + 1;
+	    }
+
+	  span = start_insert - base;
+	  constr = (char *)xmalloc (span + linklength + 1);
+	  if (span)
+	    memcpy (constr, base, span);
+	  if (need_explicit_slash)
+	    constr[span - 1] = '/';
 	  if (linklength)
 	    memcpy (constr + span, link, linklength);
 	  constr[span + linklength] = '\0';
@@ -1602,12 +1703,13 @@ static void replace_attr PARAMS ((const char **, int, FILE *, const char *));
 /* Change the links in an HTML document.  Accepts a structure that
    defines the positions of all the links.  */
 void
-convert_links (const char *file, urlpos *l)
+convert_links (const char *file, struct urlpos *l)
 {
   struct file_memory *fm;
   FILE               *fp;
   const char         *p;
   downloaded_file_t  downloaded_file_return;
+  int to_url_count = 0, to_file_count = 0;
 
   logprintf (LOG_VERBOSE, _("Converting %s... "), file);
 
@@ -1615,12 +1717,12 @@ convert_links (const char *file, urlpos *l)
     /* First we do a "dry run": go through the list L and see whether
        any URL needs to be converted in the first place.  If not, just
        leave the file alone.  */
-    int count = 0;
-    urlpos *dry = l;
+    int dry_count = 0;
+    struct urlpos *dry = l;
     for (dry = l; dry; dry = dry->next)
       if (dry->convert != CO_NOCONVERT)
-	++count;
-    if (!count)
+	++dry_count;
+    if (!dry_count)
       {
 	logputs (LOG_VERBOSE, _("nothing to do.\n"));
 	return;
@@ -1674,7 +1776,7 @@ convert_links (const char *file, urlpos *l)
       /* If the URL is not to be converted, skip it.  */
       if (l->convert == CO_NOCONVERT)
 	{
-	  DEBUGP (("Skipping %s at position %d.\n", l->url, l->pos));
+	  DEBUGP (("Skipping %s at position %d.\n", l->url->url, l->pos));
 	  continue;
 	}
 
@@ -1689,19 +1791,21 @@ convert_links (const char *file, urlpos *l)
 	  char *quoted_newname = html_quote_string (newname);
 	  replace_attr (&p, l->size, fp, quoted_newname);
 	  DEBUGP (("TO_RELATIVE: %s to %s at position %d in %s.\n",
-		   l->url, newname, l->pos, file));
+		   l->url->url, newname, l->pos, file));
 	  xfree (newname);
 	  xfree (quoted_newname);
+	  ++to_file_count;
 	}
       else if (l->convert == CO_CONVERT_TO_COMPLETE)
 	{
 	  /* Convert the link to absolute URL. */
-	  char *newlink = l->url;
+	  char *newlink = l->url->url;
 	  char *quoted_newlink = html_quote_string (newlink);
 	  replace_attr (&p, l->size, fp, quoted_newlink);
 	  DEBUGP (("TO_COMPLETE: <something> to %s at position %d in %s.\n",
 		   newlink, l->pos, file));
 	  xfree (quoted_newlink);
+	  ++to_url_count;
 	}
     }
   /* Output the rest of the file. */
@@ -1709,7 +1813,8 @@ convert_links (const char *file, urlpos *l)
     fwrite (p, 1, fm->length - (p - fm->content), fp);
   fclose (fp);
   read_file_free (fm);
-  logputs (LOG_VERBOSE, _("done.\n"));
+  logprintf (LOG_VERBOSE,
+	     _("%d-%d\n"), to_file_count, to_url_count);
 }
 
 /* Construct and return a malloced copy of the relative link from two
@@ -1766,20 +1871,6 @@ construct_relative (const char *s1, const char *s2)
   return res;
 }
 
-/* Add URL to the head of the list L.  */
-urlpos *
-add_url (urlpos *l, const char *url, const char *file)
-{
-  urlpos *t;
-
-  t = (urlpos *)xmalloc (sizeof (urlpos));
-  memset (t, 0, sizeof (*t));
-  t->url = xstrdup (url);
-  t->local_name = xstrdup (file);
-  t->next = l;
-  return t;
-}
-
 static void
 write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
 {
@@ -1850,15 +1941,9 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
 	 -- Dan Harkless <wget@harkless.org>
 
          This [adding a field to the urlpos structure] didn't work
-         because convert_file() is called twice: once after all its
-         sublinks have been retrieved in recursive_retrieve(), and
-         once at the end of the day in convert_all_links().  The
-         original linked list collected in recursive_retrieve() is
-         lost after the first invocation of convert_links(), and
-         convert_all_links() makes a new one (it calls get_urls_html()
-         for each file it covers.)  That's why your first approach didn't
-         work.  The way to make it work is perhaps to make this flag a
-         field in the `urls_html' list.
+         because convert_file() is called from convert_all_links at
+         the end of the retrieval with a freshly built new urlpos
+         list.
 	 -- Hrvoje Niksic <hniksic@arsdigita.com>
       */
       converted_file_ptr = xmalloc(sizeof(*converted_file_ptr));
@@ -1941,13 +2026,40 @@ find_fragment (const char *beg, int size, const char **bp, const char **ep)
   return 0;
 }
 
-typedef struct _downloaded_file_list {
-  char*                          file;
-  downloaded_file_t              download_type;
-  struct _downloaded_file_list*  next;
-} downloaded_file_list;
+/* We're storing "modes" of type downloaded_file_t in the hash table.
+   However, our hash tables only accept pointers for keys and values.
+   So when we need a pointer, we use the address of a
+   downloaded_file_t variable of static storage.  */
+   
+static downloaded_file_t *
+downloaded_mode_to_ptr (downloaded_file_t mode)
+{
+  static downloaded_file_t
+    v1 = FILE_NOT_ALREADY_DOWNLOADED,
+    v2 = FILE_DOWNLOADED_NORMALLY,
+    v3 = FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED,
+    v4 = CHECK_FOR_FILE;
 
-static downloaded_file_list *downloaded_files;
+  switch (mode)
+    {
+    case FILE_NOT_ALREADY_DOWNLOADED:
+      return &v1;
+    case FILE_DOWNLOADED_NORMALLY:
+      return &v2;
+    case FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED:
+      return &v3;
+    case CHECK_FOR_FILE:
+      return &v4;
+    }
+  return NULL;
+}
+
+/* This should really be merged with dl_file_url_map and
+   downloaded_html_files in recur.c.  This was originally a list, but
+   I changed it to a hash table beause it was actually taking a lot of
+   time to find things in it.  */
+
+static struct hash_table *downloaded_files_hash;
 
 /* Remembers which files have been downloaded.  In the standard case, should be
    called with mode == FILE_DOWNLOADED_NORMALLY for each file we actually
@@ -1962,46 +2074,47 @@ static downloaded_file_list *downloaded_files;
    it, call with mode == CHECK_FOR_FILE.  Please be sure to call this function
    with local filenames, not remote URLs. */
 downloaded_file_t
-downloaded_file (downloaded_file_t  mode, const char*  file)
+downloaded_file (downloaded_file_t mode, const char *file)
 {
-  boolean                       found_file = FALSE;
-  downloaded_file_list*         rover = downloaded_files;
+  downloaded_file_t *ptr;
 
-  while (rover != NULL)
-    if (strcmp(rover->file, file) == 0)
-      {
-	found_file = TRUE;
-	break;
-      }
-    else
-      rover = rover->next;
-
-  if (found_file)
-    return rover->download_type;  /* file had already been downloaded */
-  else
+  if (mode == CHECK_FOR_FILE)
     {
-      if (mode != CHECK_FOR_FILE)
-	{
-	  rover = xmalloc(sizeof(*rover));
-	  rover->file = xstrdup(file); /* use xstrdup() so die on out-of-mem. */
-	  rover->download_type = mode;
-	  rover->next = downloaded_files;
-	  downloaded_files = rover;
-	}
-
-      return FILE_NOT_ALREADY_DOWNLOADED;
+      if (!downloaded_files_hash)
+	return FILE_NOT_ALREADY_DOWNLOADED;
+      ptr = hash_table_get (downloaded_files_hash, file);
+      if (!ptr)
+	return FILE_NOT_ALREADY_DOWNLOADED;
+      return *ptr;
     }
+
+  if (!downloaded_files_hash)
+    downloaded_files_hash = make_string_hash_table (0);
+
+  ptr = hash_table_get (downloaded_files_hash, file);
+  if (ptr)
+    return *ptr;
+
+  ptr = downloaded_mode_to_ptr (mode);
+  hash_table_put (downloaded_files_hash, xstrdup (file), &ptr);
+
+  return FILE_NOT_ALREADY_DOWNLOADED;
+}
+
+static int
+df_free_mapper (void *key, void *value, void *ignored)
+{
+  xfree (key);
+  return 0;
 }
 
 void
 downloaded_files_free (void)
 {
-  downloaded_file_list*         rover = downloaded_files;
-  while (rover)
+  if (downloaded_files_hash)
     {
-      downloaded_file_list *next = rover->next;
-      xfree (rover->file);
-      xfree (rover);
-      rover = next;
+      hash_table_map (downloaded_files_hash, df_free_mapper, NULL);
+      hash_table_destroy (downloaded_files_hash);
+      downloaded_files_hash = NULL;
     }
 }

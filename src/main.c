@@ -402,9 +402,6 @@ hpVqvdkKsxmNWrHSLcFbEY:G:g:T:U:O:l:n:i:o:a:t:D:A:R:P:B:e:Q:X:I:w:C:",
 	case 149:
 	  setval ("removelisting", "off");
 	  break;
-	case 150:
-	  setval ("simplehostcheck", "on");
-	  break;
 	case 155:
 	  setval ("bindaddress", optarg);
  	  break;
@@ -604,7 +601,7 @@ GNU General Public License for more details.\n"));
 	  break;
 	case 'n':
 	  {
-	    /* #### The n? options are utter crock!  */
+	    /* #### What we really want here is --no-foo. */
 	    char *p;
 
 	    for (p = optarg; *p; p++)
@@ -612,9 +609,6 @@ GNU General Public License for more details.\n"));
 		{
 		case 'v':
 		  setval ("verbose", "off");
-		  break;
-		case 'h':
-		  setval ("simplehostcheck", "on");
 		  break;
 		case 'H':
 		  setval ("addhostdir", "off");
@@ -806,17 +800,17 @@ Can't timestamp and not clobber old files at the same time.\n"));
 #endif /* HAVE_SIGNAL */
 
   status = RETROK;		/* initialize it, just-in-case */
-  recursive_reset ();
+  /*recursive_reset ();*/
   /* Retrieve the URLs from argument list.  */
   for (t = url; *t; t++)
     {
-      char *filename, *redirected_URL;
+      char *filename = NULL, *redirected_URL = NULL;
       int dt;
 
-      status = retrieve_url (*t, &filename, &redirected_URL, NULL, &dt);
-      if (opt.recursive && status == RETROK && (dt & TEXTHTML))
-	status = recursive_retrieve (filename,
-				     redirected_URL ? redirected_URL : *t);
+      if (opt.recursive && url_scheme (*t) != SCHEME_FTP)
+	status = retrieve_tree (*t);
+      else
+	status = retrieve_url (*t, &filename, &redirected_URL, NULL, &dt);
 
       if (opt.delete_after && file_exists_p(filename))
 	{

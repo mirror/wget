@@ -284,7 +284,7 @@ struct collect_urls_closure {
   char *text;			/* HTML text. */
   char *base;			/* Base URI of the document, possibly
 				   changed through <base href=...>. */
-  urlpos *head, *tail;		/* List of URLs */
+  struct urlpos *head, *tail;	/* List of URLs */
   const char *parent_base;	/* Base of the current document. */
   const char *document_file;	/* File name of this document. */
   int dash_p_leaf_HTML;		/* Whether -p is specified, and this
@@ -301,59 +301,67 @@ static void
 handle_link (struct collect_urls_closure *closure, const char *link_uri,
 	     struct taginfo *tag, int attrid)
 {
-  int no_scheme = !url_has_scheme (link_uri);
-  urlpos *newel;
-
+  int link_has_scheme = url_has_scheme (link_uri);
+  struct urlpos *newel;
   const char *base = closure->base ? closure->base : closure->parent_base;
-  char *complete_uri;
-
-  char *fragment = strrchr (link_uri, '#');
-
-  if (fragment)
-    {
-      /* Nullify the fragment identifier, i.e. everything after the
-         last occurrence of `#', inclusive.  This copying is
-         relatively inefficient, but it doesn't matter because
-         fragment identifiers don't come up all that often.  */
-      int hashlen = fragment - link_uri;
-      char *p = alloca (hashlen + 1);
-      memcpy (p, link_uri, hashlen);
-      p[hashlen] = '\0';
-      link_uri = p;
-    }
+  struct url *url;
 
   if (!base)
     {
-      if (no_scheme)
+      DEBUGP (("%s: no base, merge will use \"%s\".\n",
+	       closure->document_file, link_uri));
+
+      if (!link_has_scheme)
 	{
 	  /* We have no base, and the link does not have a host
 	     attached to it.  Nothing we can do.  */
 	  /* #### Should we print a warning here?  Wget 1.5.x used to.  */
 	  return;
 	}
-      else
-	complete_uri = xstrdup (link_uri);
+
+      url = url_parse (link_uri, NULL);
+      if (!url)
+	{
+	  DEBUGP (("%s: link \"%s\" doesn't parse.\n",
+		   closure->document_file, link_uri));
+	  return;
+	}
     }
   else
-    complete_uri = uri_merge (base, link_uri);
+    {
+      /* Merge BASE with LINK_URI, but also make sure the result is
+	 canonicalized, i.e. that "../" have been resolved.
+	 (parse_url will do that for us.) */
 
-  DEBUGP (("%s: merge(\"%s\", \"%s\") -> %s\n",
-	   closure->document_file, base ? base : "(null)",
-	   link_uri, complete_uri));
+      char *complete_uri = uri_merge (base, link_uri);
 
-  newel = (urlpos *)xmalloc (sizeof (urlpos));
+      DEBUGP (("%s: merge(\"%s\", \"%s\") -> %s\n",
+	       closure->document_file, base, link_uri, complete_uri));
+
+      url = url_parse (complete_uri, NULL);
+      if (!url)
+	{
+	  DEBUGP (("%s: merged link \"%s\" doesn't parse.\n",
+		   closure->document_file, complete_uri));
+	  xfree (complete_uri);
+	  return;
+	}
+      xfree (complete_uri);
+    }
+
+  newel = (struct urlpos *)xmalloc (sizeof (struct urlpos));
 
   memset (newel, 0, sizeof (*newel));
   newel->next = NULL;
-  newel->url = complete_uri;
+  newel->url = url;
   newel->pos = tag->attrs[attrid].value_raw_beginning - closure->text;
   newel->size = tag->attrs[attrid].value_raw_size;
 
   /* A URL is relative if the host is not named, and the name does not
      start with `/'.  */
-  if (no_scheme && *link_uri != '/')
+  if (!link_has_scheme && *link_uri != '/')
     newel->link_relative_p = 1;
-  else if (!no_scheme)
+  else if (link_has_scheme)
     newel->link_complete_p = 1;
 
   if (closure->tail)
@@ -542,7 +550,7 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 
    If dash_p_leaf_HTML is non-zero, only the elements needed to render
    FILE ("non-external" links) will be returned.  */
-urlpos *
+struct urlpos *
 get_urls_html (const char *file, const char *this_url, int dash_p_leaf_HTML,
 	       int *meta_disallow_follow)
 {

@@ -60,7 +60,13 @@ extern int errno;
 #endif
 
 /* Mapping between all known hosts to their addresses (n.n.n.n). */
+
+/* #### We should map to *lists* of IP addresses. */
+
 struct hash_table *host_name_address_map;
+
+/* The following two tables are obsolete, since we no longer do host
+   canonicalization.  */
 
 /* Mapping between all known addresses (n.n.n.n) to their hosts.  This
    is the inverse of host_name_address_map.  These two tables share
@@ -69,18 +75,6 @@ struct hash_table *host_address_name_map;
 
 /* Mapping between auxilliary (slave) and master host names. */
 struct hash_table *host_slave_master_map;
-
-/* Utility function: like xstrdup(), but also lowercases S.  */
-
-static char *
-xstrdup_lower (const char *s)
-{
-  char *copy = xstrdup (s);
-  char *p = copy;
-  for (; *p; p++)
-    *p = TOLOWER (*p);
-  return copy;
-}
 
 /* The same as gethostbyname, but supports internet addresses of the
    form `N.N.N.N'.  On some systems gethostbyname() knows how to do
@@ -216,114 +210,6 @@ store_hostaddress (unsigned char *where, const char *hostname)
   return 1;
 }
 
-/* Determine the "real" name of HOST, as perceived by Wget.  If HOST
-   is referenced by more than one name, "real" name is considered to
-   be the first one encountered in the past.  */
-char *
-realhost (const char *host)
-{
-  struct in_addr in;
-  struct hostent *hptr;
-  char *master_name;
-
-  DEBUGP (("Checking for %s in host_name_address_map.\n", host));
-  if (hash_table_contains (host_name_address_map, host))
-    {
-      DEBUGP (("Found; %s was already used, by that name.\n", host));
-      return xstrdup_lower (host);
-    }
-
-  DEBUGP (("Checking for %s in host_slave_master_map.\n", host));
-  master_name = hash_table_get (host_slave_master_map, host);
-  if (master_name)
-    {
-    has_master:
-      DEBUGP (("Found; %s was already used, by the name %s.\n",
-	       host, master_name));
-      return xstrdup (master_name);
-    }
-
-  DEBUGP (("First time I hear about %s by that name; looking it up.\n",
-	   host));
-  hptr = ngethostbyname (host);
-  if (hptr)
-    {
-      char *inet_s;
-      /* Originally, we copied to in.s_addr, but it appears to be
-	 missing on some systems.  */
-      memcpy (&in, *hptr->h_addr_list, sizeof (in));
-      inet_s = inet_ntoa (in);
-
-      add_host_to_cache (host, inet_s);
-
-      /* add_host_to_cache() can establish a slave-master mapping. */
-      DEBUGP (("Checking again for %s in host_slave_master_map.\n", host));
-      master_name = hash_table_get (host_slave_master_map, host);
-      if (master_name)
-	goto has_master;
-    }
-
-  return xstrdup_lower (host);
-}
-
-/* Compare two hostnames (out of URL-s if the arguments are URL-s),
-   taking care of aliases.  It uses realhost() to determine a unique
-   hostname for each of two hosts.  If simple_check is non-zero, only
-   strcmp() is used for comparison.  */
-int
-same_host (const char *u1, const char *u2)
-{
-  const char *s;
-  char *p1, *p2;
-  char *real1, *real2;
-
-  /* Skip protocol, if present.  */
-  u1 += url_skip_scheme (u1);
-  u2 += url_skip_scheme (u2);
-
-  /* Skip username ans password, if present.  */
-  u1 += url_skip_uname (u1);
-  u2 += url_skip_uname (u2);
-
-  for (s = u1; *u1 && *u1 != '/' && *u1 != ':'; u1++);
-  p1 = strdupdelim (s, u1);
-  for (s = u2; *u2 && *u2 != '/' && *u2 != ':'; u2++);
-  p2 = strdupdelim (s, u2);
-  DEBUGP (("Comparing hosts %s and %s...\n", p1, p2));
-  if (strcasecmp (p1, p2) == 0)
-    {
-      xfree (p1);
-      xfree (p2);
-      DEBUGP (("They are quite alike.\n"));
-      return 1;
-    }
-  else if (opt.simple_check)
-    {
-      xfree (p1);
-      xfree (p2);
-      DEBUGP (("Since checking is simple, I'd say they are not the same.\n"));
-      return 0;
-    }
-  real1 = realhost (p1);
-  real2 = realhost (p2);
-  xfree (p1);
-  xfree (p2);
-  if (strcasecmp (real1, real2) == 0)
-    {
-      DEBUGP (("They are alike, after realhost()->%s.\n", real1));
-      xfree (real1);
-      xfree (real2);
-      return 1;
-    }
-  else
-    {
-      DEBUGP (("They are not the same (%s, %s).\n", real1, real2));
-      xfree (real1);
-      xfree (real2);
-      return 0;
-    }
-}
-
 /* Determine whether a URL is acceptable to be followed, according to
    a list of domains to accept.  */
 int
@@ -383,7 +269,7 @@ herrmsg (int error)
 }
 
 void
-clean_hosts (void)
+host_cleanup (void)
 {
   /* host_name_address_map and host_address_name_map share the
      strings.  Because of that, calling free_keys_and_values once
