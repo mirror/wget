@@ -176,6 +176,20 @@ connect_to_one (ip_address *addr, unsigned short port, int silent)
   if (sock < 0)
     goto out;
 
+#ifdef SO_RCVBUF
+  /* For very small rate limits, set the buffer size (and hence,
+     hopefully, the size of the kernel window) to the size of the
+     limit.  */
+  if (opt.limit_rate && opt.limit_rate < 8192)
+    {
+      int bufsize = opt.limit_rate;
+      if (bufsize < 512)
+	bufsize = 512;
+      setsockopt (sock, SOL_SOCKET, SO_RCVBUF,
+		  (char *)&bufsize, sizeof (bufsize));
+    }
+#endif
+
   resolve_bind_address ();
   if (bind_address_resolved)
     {
@@ -292,9 +306,12 @@ bindport (unsigned short *port, int family)
 
   if ((msock = socket (family, SOCK_STREAM, 0)) < 0)
     return CONSOCKERR;
+
+#ifdef SO_REUSEADDR
   if (setsockopt (msock, SOL_SOCKET, SO_REUSEADDR,
 		  (char *)&optval, sizeof (optval)) < 0)
     return CONSOCKERR;
+#endif
 
   resolve_bind_address ();
   wget_sockaddr_set_address (&srv, ip_default_family, htons (*port),

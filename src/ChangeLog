@@ -1,5 +1,14 @@
 2003-09-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* retr.c (get_contents): Reduce the buffer size to the amount of
+	data that may pass through for one second.  This prevents long
+	sleeps when limiting bandwidth.
+
+	* connect.c (connect_to_one): Reduce the socket's RCVBUF when
+	bandwidth limitation to small values is requested.
+
+2003-09-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* progress.c (update_speed_ring): Moved the speed ring update to a
 	separate function and documented it better.
 

@@ -138,7 +138,10 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 	      struct rbuf *rbuf, int use_expected, double *elapsed)
 {
   int res = 0;
-  static char c[16384];
+
+  static char dlbuf[16384];
+  int dlbufsize = sizeof (dlbuf);
+
   void *progress = NULL;
   struct wget_timer *timer = wtimer_allocate ();
   double dltime = 0, last_dltime = 0;
@@ -151,9 +154,9 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
   if (rbuf && RBUF_FD (rbuf) == fd)
     {
       int sz = 0;
-      while ((res = rbuf_flush (rbuf, c, sizeof (c))) != 0)
+      while ((res = rbuf_flush (rbuf, dlbuf, sizeof (dlbuf))) != 0)
 	{
-	  fwrite (c, sizeof (char), res, fp);
+	  fwrite (dlbuf, 1, res, fp);
 	  *len += res;
 	  sz += res;
 	}
@@ -172,6 +175,11 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
     limit_bandwidth_reset ();
   wtimer_reset (timer);
 
+  /* If we're limiting the download, set our buffer size to the
+     limit.  */
+  if (opt.limit_rate && opt.limit_rate < dlbufsize)
+    dlbufsize = opt.limit_rate;
+
   /* Read from fd while there is available data.
 
      Normally, if expected is 0, it means that it is not known how
@@ -180,18 +188,17 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
   while (!use_expected || (*len < expected))
     {
       int amount_to_read = (use_expected
-			    ? MIN (expected - *len, sizeof (c))
-			    : sizeof (c));
+			    ? MIN (expected - *len, dlbufsize) : dlbufsize);
 #ifdef HAVE_SSL
       if (rbuf->ssl!=NULL)
-	res = ssl_iread (rbuf->ssl, c, amount_to_read);
+	res = ssl_iread (rbuf->ssl, dlbufsize, amount_to_read);
       else
 #endif /* HAVE_SSL */
-	res = iread (fd, c, amount_to_read);
+	res = iread (fd, dlbuf, amount_to_read);
 
       if (res > 0)
 	{
-	  fwrite (c, sizeof (char), res, fp);
+	  fwrite (dlbuf, 1, res, fp);
 	  /* Always flush the contents of the network packet.  This
 	     should not be adverse to performance, as the network
 	     packets typically won't be too tiny anyway.  */
