@@ -456,11 +456,14 @@ ftp_parse_winnt_ls (const char *file)
       /* First column: mm-dd-yy. Should atoi() on the month fail, january
 	 will be assumed.  */
       tok = strtok(line, "-");
+      if (tok == NULL) continue;
       month = atoi(tok) - 1;
       if (month < 0) month = 0;
       tok = strtok(NULL, "-");
+      if (tok == NULL) continue;
       day = atoi(tok);
       tok = strtok(NULL, " ");
+      if (tok == NULL) continue;
       year = atoi(tok);
       /* Assuming the epoch starting at 1.1.1970 */
       if (year <= 70) year += 100;
@@ -468,8 +471,10 @@ ftp_parse_winnt_ls (const char *file)
       /* Second column: hh:mm[AP]M, listing does not contain value for
          seconds */
       tok = strtok(NULL,  ":");
+      if (tok == NULL) continue;
       hour = atoi(tok);
       tok = strtok(NULL,  "M");
+      if (tok == NULL) continue;
       min = atoi(tok);
       /* Adjust hour from AM/PM. Just for the record, the sequence goes
          11:00AM, 12:00PM, 01:00PM ... 11:00PM, 12:00AM, 01:00AM . */
@@ -499,7 +504,9 @@ ftp_parse_winnt_ls (const char *file)
          directories as the listing does not give us a clue) and filetype
          here. */
       tok = strtok(NULL, " ");
-      while (*tok == '\0')  tok = strtok(NULL, " ");
+      if (tok == NULL) continue;
+      while ((tok != NULL) && (*tok == '\0'))  tok = strtok(NULL, " ");
+      if (tok == NULL) continue;
       if (*tok == '<')
 	{
 	  cur.type  = FT_DIRECTORY;
@@ -680,6 +687,7 @@ ftp_parse_vms_ls (const char *file)
       /* Third/Second column: Date DD-MMM-YYYY. */
 
       tok = strtok(NULL, "-");
+      if (tok == NULL) continue;
       DEBUGP(("day: '%s'\n",tok));
       day = atoi(tok);
       tok = strtok(NULL, "-");
@@ -697,11 +705,13 @@ ftp_parse_vms_ls (const char *file)
       /* Uknown months are mapped to January */
       month = i % 12 ; 
       tok = strtok (NULL, " ");
+      if (tok == NULL) continue;
       year = atoi (tok) - 1900;
       DEBUGP(("date parsed\n"));
 
       /* Fourth/Third column: Time hh:mm[:ss] */
       tok = strtok (NULL, " ");
+      if (tok == NULL) continue;
       hour = min = sec = 0;
       p = tok;
       hour = atoi (p);
@@ -732,10 +742,12 @@ ftp_parse_vms_ls (const char *file)
       /* Skip the fifth column */
 
       tok = strtok(NULL, " ");
+      if (tok == NULL) continue;
 
       /* Sixth column: Permissions */
 
       tok = strtok(NULL, ","); /* Skip the VMS-specific SYSTEM permissons */
+      if (tok == NULL) continue;
       tok = strtok(NULL, ")");
       if (tok == NULL)
         {

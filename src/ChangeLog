@@ -1,3 +1,8 @@
+2004-11-18  Ulf Harnhammar <ulf.harnhammar.9485@student.uu.se>
+
+	* ftp-ls.c: Fixed a problem in ftp_parse_winnt_ls that could allow a
+	malicious remote FTP server to crash wget.
+
 2004-11-18  Hans-Andreas Engel <engel@node.ch>
 
 	* http.c: Enable --convert-links (-k) when a single page is downloaded
