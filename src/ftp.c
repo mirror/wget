@@ -1086,9 +1086,6 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
       else
 	len = 0;
       err = getftp (u, &len, restval, con);
-      /* Time?  */
-      tms = time_str (NULL);
-      tmrate = rate (len - restval, con->dltime, 0);
 
       if (!rbuf_initialized_p (&con->rbuf))
 	con->st &= ~DONE_CWD;
@@ -1126,6 +1123,9 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	  /* Not as great.  */
 	  abort ();
 	}
+      /* Time?  */
+      tms = time_str (NULL);
+      tmrate = rate (len - restval, con->dltime, 0);
 
       /* If we get out of the switch above without continue'ing, we've
 	 successfully downloaded a file.  Remember this fact. */
