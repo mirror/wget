@@ -1,5 +1,9 @@
 2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* main.c (print_help): Remove stray HAVE_RANDOM code.
+
+2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* ftp.c (getftp): Improve output after sending PASV.  Don't
 	attempt to "look up" the IP address we already know; call
 	connect_to_one directly.
