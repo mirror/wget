@@ -2183,7 +2183,7 @@ Bind to @var{address}, like the @samp{--bind-address} option.
 @item cache = on/off
 When set to off, disallow server-caching.  See the @samp{-C} option.
 
-@item convert links = on/off
+@item convert_links = on/off
 Convert non-relative links locally.  The same as @samp{-k}.
 
 @item cookies = on/off

@@ -1,3 +1,8 @@
+2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Wgetrc Commands): Fixed typo.
+	From DervishD <raul@pleyades.net>.
+
 2003-10-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* Makefile.in (install.info): Handle the case when only wget.info
