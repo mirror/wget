@@ -785,7 +785,7 @@ ftp_parse_ls (const char *file, const enum stype system_type)
       return ftp_parse_unix_ls (file, TRUE);
     default:
       logprintf (LOG_NOTQUIET, _("\
-Usupported listing type, trying Unix listing parser.\n"));
+Unsupported listing type, trying Unix listing parser.\n"));
       return ftp_parse_unix_ls (file, FALSE);
     }
 }
