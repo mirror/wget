@@ -1,3 +1,16 @@
+2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* windows/config.h.mingw: Ditto.
+
+	* windows/Makefile.top.mingw: Ditto.
+
+	* windows/Makefile.src.mingw: New file.
+
+	* windows/wget.dep: Support convert.o.
+
+	* configure.bat.in: New option `--mingw'.
+	From Chin-yuan Kuo.
+
 2003-10-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* Makefile.in (dist): Depend on configure.bat.
