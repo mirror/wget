@@ -1,5 +1,14 @@
 2003-11-04  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* aclocal.m4: Ditto.
+
+	* configure.in: Add description annotations to AC_DEFINE.
+
+	* Makefile.in: Update maintenance targets, preparing them for the
+	use of `autoheader'.
+
+2003-11-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Don't misuse AC_MSG_RESULT.  Use AC_MSG_NOTICE
 	where appropriate.
 

@@ -57,12 +57,9 @@ so, delete this exception statement from your version.  */
 #endif /* WINDOWS */
 
 #ifndef NO_ADDRESS
-#define NO_ADDRESS NO_DATA
+# define NO_ADDRESS NO_DATA
 #endif
 
-#ifdef HAVE_SYS_UTSNAME_H
-# include <sys/utsname.h>
-#endif
 #include <errno.h>
 
 #include "wget.h"

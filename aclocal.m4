@@ -8,7 +8,7 @@ AC_DEFUN([WGET_STRUCT_UTIMBUF], [
     AC_EGREP_CPP([struct[ 	]+utimbuf],
       [#include <utime.h>
       ], [
-	AC_DEFINE([HAVE_STRUCT_UTIMBUF], [],
+	AC_DEFINE([HAVE_STRUCT_UTIMBUF], 1,
 		  [Define if you have struct utimbuf.])
 	AC_MSG_RESULT(yes)
       ],
@@ -61,7 +61,7 @@ AC_DEFUN([WGET_FNMATCH], [
   AC_COMPILE_IFELSE([#include <fnmatch.h>
                     ], [
     AC_MSG_RESULT(yes)
-    AC_DEFINE([HAVE_WORKING_FNMATCH_H], [],
+    AC_DEFINE([HAVE_WORKING_FNMATCH_H], 1,
               [Define if fnmatch.h can be included.])
   ], [
     AC_MSG_RESULT(no)
@@ -74,12 +74,12 @@ dnl link with -lt (recently) or with -lposix (older releases).
 AC_DEFUN([WGET_NANOSLEEP], [
   AC_CHECK_FUNCS(nanosleep, [], [
     AC_CHECK_LIB(rt, nanosleep, [
-      AC_DEFINE([HAVE_NANOSLEEP], [],
+      AC_DEFINE([HAVE_NANOSLEEP], 1,
                 [Define if you have the nanosleep function.])
       LIBS="-lrt $LIBS"
     ], [
       AC_CHECK_LIB(posix4, nanosleep, [
-	AC_DEFINE([HAVE_NANOSLEEP], [],
+	AC_DEFINE([HAVE_NANOSLEEP], 1,
 		  [Define if you have the nanosleep function.])
 	LIBS="-lposix4 $LIBS"
       ])
@@ -121,7 +121,7 @@ AC_BEFORE([$0], [AC_C_INLINE])
 AC_MSG_CHECKING([for function prototypes])
 if test "$am_cv_prog_cc_stdc" != no; then
   AC_MSG_RESULT(yes)
-  AC_DEFINE([PROTOTYPES], [],
+  AC_DEFINE([PROTOTYPES], 1,
             [Define if ANSI function prototypes are available.])
   U= ANSI2KNR=
 else
@@ -393,7 +393,7 @@ AC_DEFUN(WGET_WITH_NLS,
       AC_CHECK_LIB(intl, gettext, [
         dnl gettext is in libintl; announce the fact manually.
         LIBS="-lintl $LIBS"
-	AC_DEFINE([HAVE_GETTEXT], [],
+	AC_DEFINE([HAVE_GETTEXT], 1,
                   [Define if you have the gettext function.])
       ], [
         AC_CHECK_FUNCS(gettext, [], [
@@ -429,7 +429,7 @@ AC_DEFUN(WGET_WITH_NLS,
     USE_NLS=$HAVE_NLS
     AC_SUBST(USE_NLS)
     if test "x$HAVE_NLS" = xyes; then
-      AC_DEFINE([HAVE_NLS], [], [Define this if you want the NLS support.])
+      AC_DEFINE([HAVE_NLS], 1, [Define this if you want the NLS support.])
     fi
   ])
 
