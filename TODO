@@ -21,6 +21,9 @@ changes.
 * If -c used on a file that's already completely downloaded, don't re-download
   it (unless normal --timestamping processing would cause you to do so).
 
+* If -c used with -N, check to make sure a file hasn't changed on the server
+  before "continuing" to download it (preventing a bogus hybrid file).
+
 * Take a look at
   <http://info.webcrawler.com/mak/projects/robots/norobots-rfc.html>
   and support the new directives.

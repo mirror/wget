@@ -1,3 +1,8 @@
+2001-01-11  Dan Harkless  <wget@harkless.org>
+
+	* TODO: If -c used with -N, check to make sure a file hasn't
+ 	changed on the server before "continuing" to download it.
+	
 2001-01-11  Adrian Aichner  <Adrian.Aichner@t-online.de>
 
 	* windows/Makefile.src: Updated.
