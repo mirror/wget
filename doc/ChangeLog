@@ -1,3 +1,16 @@
+2000-12-31  Dan Harkless  <wget@harkless.org>
+
+        * Makefile.in (distclean): sample.wgetrc.munged_for_texi_inclusion
+        needs to be included in the distribution or it'll get regenerated
+        due to the wget.info dependency, and then that file will get
+        regenerated, forcing people to have makeinfo installed
+        unnecessarily.  We could use a kludge of a 0-length file in the
+        distro, but the file isn't that big and should compress very well.
+        
+        * wget.texi: Changed "VERSION 1.5.3+dev" to "VERSION 1.7-dev" and
+        "UPDATED Feb 2000" to "UPDATED Dec 2000".  Like the comment in the
+        file says, it'd be nice if these were handled automatically...
+        
 2000-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* Makefile.in (install.info): Info files are *not* in $(srcdir),

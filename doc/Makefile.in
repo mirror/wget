@@ -139,7 +139,7 @@ clean:
 	$(RM) *.dvi *.aux *.cp *.cps *.fn *.toc *.tp *.vr *.ps *.ky *.pg *.log
 
 distclean: clean
-	$(RM) Makefile sample.wgetrc.munged_for_texi_inclusion
+	$(RM) Makefile
 
 realclean: distclean
 	$(RM) wget.info*
