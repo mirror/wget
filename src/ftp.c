@@ -90,7 +90,7 @@ ftp_expected_bytes (const char *s)
 	++s;
       if (!*s)
 	return 0;
-      if (tolower (*s) != 'b')
+      if (TOLOWER (*s) != 'b')
 	continue;
       if (strncasecmp (s, "byte", 4))
 	continue;
@@ -243,8 +243,8 @@ Error in server response, closing control connection.\n"));
 	}
       /* Third: Set type to Image (binary).  */
       if (!opt.server_response)
-	logprintf (LOG_VERBOSE, "==> TYPE %c ... ", toupper (u->ftp_type));
-      err = ftp_type (&con->rbuf, toupper (u->ftp_type));
+	logprintf (LOG_VERBOSE, "==> TYPE %c ... ", TOUPPER (u->ftp_type));
+      err = ftp_type (&con->rbuf, TOUPPER (u->ftp_type));
       /* FTPRERR, WRITEFAILED, FTPUNKNOWNTYPE */
       switch (err)
 	{
@@ -268,7 +268,7 @@ Error in server response, closing control connection.\n"));
 	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET,
 		     _("Unknown type `%c', closing control connection.\n"),
-		     toupper (u->ftp_type));
+		     TOUPPER (u->ftp_type));
 	  CLOSE (csock);
 	  rbuf_uninitialize (&con->rbuf);
 	  return err;

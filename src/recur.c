@@ -335,7 +335,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	      char *p;
 	      /* Just lowercase the hostname.  */
 	      for (p = u->host; *p; p++)
-		*p = tolower (*p);
+		*p = TOLOWER (*p);
 	      free (u->url);
 	      u->url = str_url (u, 0);
 	    }
@@ -655,9 +655,9 @@ parse_robots (const char *robots_filename)
 	sprintf (version, "Wget/%s", version_string);
       }
   for (p = version; *p; p++)
-    *p = tolower (*p);
+    *p = TOLOWER (*p);
   for (p = base_version; *p && *p != '/'; p++)
-    *p = tolower (*p);
+    *p = TOLOWER (*p);
   *p = '\0';
 
   /* Setting this to 1 means that Wget considers itself under
@@ -729,7 +729,7 @@ parse_robots (const char *robots_filename)
 	  int match = 0;
 	  /* Lowercase the agent string.  */
 	  for (p = str; *p; p++)
-	    *p = tolower (*p);
+	    *p = TOLOWER (*p);
 	  /* If the string is `*', it matches.  */
 	  if (*str == '*' && !*(str + 1))
 	    match = 1;

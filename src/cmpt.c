@@ -67,8 +67,8 @@ strcasecmp (const char *s1, const char *s2)
 
   do
     {
-      c1 = tolower (*p1++);
-      c2 = tolower (*p2++);
+      c1 = TOLOWER (*p1++);
+      c2 = TOLOWER (*p2++);
       if (c1 == '\0')
 	break;
     }
@@ -96,8 +96,8 @@ strncasecmp (const char *s1, const char *s2, size_t n)
 
   do
     {
-      c1 = tolower (*p1++);
-      c2 = tolower (*p2++);
+      c1 = TOLOWER (*p1++);
+      c2 = TOLOWER (*p2++);
       if (c1 == '\0' || c1 != c2)
 	return c1 - c2;
     } while (--n > 0);

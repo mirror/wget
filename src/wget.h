@@ -113,7 +113,7 @@ char *xstrdup PARAMS ((const char *));
 
 /* ASCII char -> HEX digit */
 #define ASC2HEXD(x) (((x) >= '0' && (x) <= '9') ?               \
-		     ((x) - '0') : (toupper(x) - 'A' + 10))
+		     ((x) - '0') : (TOUPPER(x) - 'A' + 10))
 
 /* HEX digit -> ASCII char */
 #define HEXD2ASC(x) (((x) < 10) ? ((x) + '0') : ((x) - 10 + 'A'))

@@ -128,7 +128,7 @@ header_process (const char *header, const char *name,
 		void *arg)
 {
   /* Check whether HEADER matches NAME.  */
-  while (*name && (tolower (*name) == tolower (*header)))
+  while (*name && (TOLOWER (*name) == TOLOWER (*header)))
     ++name, ++header;
   if (*name || *header++ != ':')
     return 0;

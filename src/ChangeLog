@@ -1,3 +1,9 @@
+2000-04-12  Hrvoje Niksic  <hniksic@iskon.hr>
+
+	* http.c (gethttp): Don't free REQUEST -- it was allocated with
+	alloca().
+	Pointed out by Gisle Vanem <gvanem@eunet.no>.
+
 2000-04-04  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* host.c (store_hostaddress): R. K. Owen's patch introduces a

@@ -87,7 +87,11 @@ i18n_initialize (void)
      things up.  For example, when in a foreign locale, Solaris
      strptime() fails to handle international dates correctly, which
      makes http_atotm() malfunction.  */
+#ifdef LC_MESSAGES
   setlocale (LC_MESSAGES, "");
+#else
+  setlocale (LC_ALL, "");
+#endif
   /* Set the text message domain.  */
   bindtextdomain ("wget", LOCALEDIR);
   textdomain ("wget");
