@@ -1,0 +1,14 @@
+2004-12-31  Mauro Tortonesi <mauro@ferrara.linux.it>
+
+	* Makefile.src: Added string.c to the list of modules to compile.
+
+	* Makefile.src.bor: Added string.c to the list of modules to compile.
+
+	* Makefile.src.mingw: Added string.c to the list of modules to compile.
+
+	* Makefile.src.watcom: Added string.c to the list of modules to compile.
+
+	* wget.dep: Added dependencied for the string.c module.
+
+	* ChangeLog: New file.
+

@@ -14,7 +14,7 @@ OBJS=cmpt.obj connect.obj convert.obj ftp.obj ftp-basic.obj  \
       http.obj init.obj log.obj main.obj gnu-md5.obj netrc.obj  \
       safe-ctype.obj hash.obj progress.obj gen-md5.obj cookies.obj \
       recur.obj res.obj retr.obj url.obj utils.obj version.obj xmalloc.obj \
-      mswindows.obj
+      mswindows.obj string.obj
 
 LIBDIR=$(MAKEDIR)\..\lib
 
@@ -48,6 +48,7 @@ recur.obj+
 res.obj+
 retr.obj+
 safe-ctype.obj+
+string.obj+
 url.obj+
 utils.obj+
 version.obj+

@@ -3,7 +3,7 @@
 @c %**start of header
 @setfilename wget.info
 @include version.texi
-@set UPDATED May 2003
+@set UPDATED Jan 2005
 @settitle GNU Wget @value{VERSION} Manual
 @c Disable the monstrous rectangles beside overfull hbox-es.
 @finalout
@@ -31,8 +31,8 @@ This file documents the the GNU Wget utility for downloading network
 data.
 
 @c man begin COPYRIGHT
-Copyright @copyright{} 1996, 1997, 1998, 2000, 2001, 2002, 2003 Free
-Software Foundation, Inc.
+Copyright @copyright{} 1996, 1997, 1998, 2000, 2001, 2002, 2003, 2004, 2005
+Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -71,8 +71,8 @@ GNU Info entry for @file{wget}.
 
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1996, 1997, 1998, 2000, 2001, 2003 Free Software
-Foundation, Inc.
+Copyright @copyright{} 1996, 1997, 1998, 2000, 2001, 2003, 2004, 2005,
+Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.2 or
@@ -90,8 +90,8 @@ entitled ``GNU Free Documentation License''.
 This manual documents version @value{VERSION} of GNU Wget, the freely
 available utility for network downloads.
 
-Copyright @copyright{} 1996, 1997, 1998, 2000, 2001, 2003 Free Software
-Foundation, Inc.
+Copyright @copyright{} 1996, 1997, 1998, 2000, 2001, 2003, 2004, 2005
+Free Software Foundation, Inc.
 
 @menu
 * Overview::            Features of Wget.
@@ -3361,7 +3361,12 @@ Bojan @v{Z}drnja,
 @ifnottex
 Bojan Zdrnja,
 @end ifnottex
-Kristijan Zimmer.
+Kristijan Zimmer,
+YAMAZAKI Makoto,
+Leonid Petrov,
+Hans-Andreas Engel,
+Ulf Harnhammar,
+Jan Minar.
 
 Apologies to all who I accidentally left out, and many thanks to all the
 subscribers of the Wget mailing list.
@@ -3775,7 +3780,7 @@ the ``copyright'' line and a pointer to where the full notice is found.
 
 @smallexample
 @var{one line to give the program's name and an idea of what it does.}
-Copyright (C) 19@var{yy}  @var{name of author}
+Copyright (C) 20@var{yy}  @var{name of author}
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -3798,7 +3803,7 @@ If the program is interactive, make it output a short notice like this
 when it starts in an interactive mode:
 
 @smallexample
-Gnomovision version 69, Copyright (C) 19@var{yy} @var{name of author}
+Gnomovision version 69, Copyright (C) 20@var{yy} @var{name of author}
 Gnomovision comes with ABSOLUTELY NO WARRANTY; for details
 type `show w'.  This is free software, and you are welcome
 to redistribute it under certain conditions; type `show c'

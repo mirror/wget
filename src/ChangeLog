@@ -1,3 +1,13 @@
+2004-12-31  Mauro Tortonesi <mauro@ferrara.linux.it>
+
+	* string.c: New file.
+
+	* string.h: New file.
+
+	* Makefile.in: Added string.c to the list of modules to compile.
+
+	* main.c: Updated copyright.
+
 2004-11-18  Ulf Harnhammar <ulf.harnhammar.9485@student.uu.se>
 
 	* ftp-ls.c: Fixed a problem in ftp_parse_winnt_ls that could allow a

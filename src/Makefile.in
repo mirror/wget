@@ -77,7 +77,7 @@ OBJ = $(ALLOCA) cmpt$o connect$o convert$o cookies$o              \
       host$o html-parse$o html-url$o http$o init$o      \
       log$o main$o $(MD5_OBJ) netrc$o progress$o recur$o   \
       res$o retr$o safe-ctype$o snprintf$o $(SSL_OBJ) url$o       \
-      utils$o version$o xmalloc$o
+      utils$o version$o xmalloc$o string$o
 
 .SUFFIXES:
 .SUFFIXES: .c .o ._c ._o
@@ -190,8 +190,9 @@ recur$o: wget.h sysdep.h options.h safe-ctype.h url.h recur.h utils.h retr.h \
 res$o: wget.h sysdep.h options.h safe-ctype.h utils.h hash.h url.h retr.h res.h
 retr$o: wget.h sysdep.h options.h safe-ctype.h utils.h retr.h url.h \
 	recur.h ftp.h host.h connect.h hash.h
-snprintf$o: safe-ctype.h
 safe-ctype$o: safe-ctype.h
+snprintf$o: safe-ctype.h
+string$o: wget.h xmalloc.h
 url$o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h host.h hash.h
 utils$o: wget.h sysdep.h options.h safe-ctype.h utils.h hash.h
 version$o:

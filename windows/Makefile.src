@@ -72,13 +72,13 @@ SRC = cmpt.c safe-ctype.c convert.c connect.c host.c http.c netrc.c \
       ftp-basic.c ftp.c ftp-ls.c ftp-opie.c getopt.c hash.c \
       html-parse.c html-url.c progress.c retr.c recur.c res.c url.c cookies.c \
       init.c utils.c main.c version.c xmalloc.c mswindows.c \
-      gen-md5.c gnu-md5.c log.c $(SSLSRC)
+      gen-md5.c gnu-md5.c log.c string.c $(SSLSRC)
 
 OBJ = cmpt$o safe-ctype$o convert$o connect$o host$o http$o netrc$o \
       ftp-basic$o ftp$o ftp-ls$o ftp-opie$o getopt$o hash$o \
       html-parse$o html-url$o progress$o retr$o recur$o res$o url$o cookies$o \
       init$o utils$o main$o version$o xmalloc$o mswindows$o \
-      gen-md5$o gnu-md5$o log$o $(SSLOBJ)
+      gen-md5$o gnu-md5$o log$o string$o $(SSLOBJ)
 
 .SUFFIXES: .c .obj
 
