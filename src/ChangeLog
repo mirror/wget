@@ -1,3 +1,41 @@
+2001-02-13  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
+
+	* ftp-ls.c (ftp_parse_ls): Added support of ST_MACOS (Unix-like
+	listing without correct permissons).
+
+	* ftp.h (stype): Added ST_MACOS to identify the NetPresenz MacOS
+	FTP server. 
+
+	* ftp.c (ftp_retrieve_list): New mirroring logic: A remote file
+	shall be donwloaded only when it's newer than the local copy or
+	when it has the same timeestamp but its size is different. ST_VMS
+	and ST_MACOS as special cases that lie about file size. 
+
+	* ftp-ls.c (ftp_parse_ls): Support for ST_MACOS.
+
+	* Makefile.in: Removed dependency on ftpparse library due to unclear
+	copyright issues and absence of any feedback to our queries. 
+
+	* ftp-ls.c: Removed dependency on ftpparse library due to unclear
+	copyright issues and absence of any feedback to our queries.   
+	(ftp_parse_ls): Added a warning message when remote server system
+	does not seem to be suported by wget. 
+	(ftp_parse_vms_ls): New function for parsing VMS ftp
+	server listing output.
+	(clean_line): New function responsible for removing
+	end-of-line characters from FTP listing texts.
+
+	* ftp.c (getftp): Global variables pwd and host_type are now
+	member of the ccon structure under names ccon.id and ccon.rs. 
+
+	* ftp.h (struct ccon): Added formed global variables from ftp.c,
+	enum stype rs (remote system identification) and char *id (initial
+	working directory), as suggested by Hrvoje.
+
+	* url.c (parse_uname): Added support for passwords containing '@'
+	characters.
+	(skip_uname): Ditto.
+
 2001-02-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp.c (ftp_loop): Reset con.
@@ -107,10 +145,6 @@
 	is not quoted.  Use find_fragment.
 	(convert_links): Use replace_attr().
 
-2000-12-18  Csaba Raduly  <csaba.raduly@sophos.com>
-
-	* sysdep.h: Include <malloc.h> and <io.h> under Watcom.
-
 2000-12-31  Dan Harkless  <wget@harkless.org>
 
 	* ChangeLog: Since this flat file doesn't have multiple branches,
@@ -122,6 +156,10 @@
 
 	* ftp.c, http.c:  Applied Hack Kampbjørn <hack@hackdata.com>'s
 	patch to deal with h_errno not being defined in netdb.h under Cygwin.
+
+2000-12-18  Csaba Raduly  <csaba.raduly@sophos.com>
+
+	* sysdep.h: Include <malloc.h> and <io.h> under Watcom.
 
 2000-12-17  Igor Khristophorov  <igor@atdot.org>
 
@@ -226,6 +264,11 @@
 	the top of the function.
 	(CLOSE_FINISH, CLOSE_INVALIDATE): Define only one version of each.
 
+2000-12-05  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (init_unsafe_char_table): Reinstate space as an unsafe
+	char.
+
 2000-12-03  Christian Fraenkel <christian.fraenkel@gmx.net>
 
 	* Makefile.in: added gen_sslfunc object
@@ -261,6 +304,37 @@
 
 2000-11-30  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
+	* ftp-ls.c (ftp_parse_unix_ls): Added second parameter
+	"ignore_perms" to ignore file and directory permissions for
+	Windows NT FTP server listings.
+	(ftp_parse_winnt_ls): New function.
+	(ftp_parse_ls): Parses UNIX and Windows NT listings
+	separately. Simple heuristics for distinguishing between UNIX and
+	MS-DOS-like FTP listing provided by Windows NT FTP service.
+
+2000-11-18  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
+
+	* ftpparse.c, ftpparse.h: New files.
+
+	* ftp-ls.c (ftp_parse_ls): Use ftp_parse_unix_ls for UNIX servers
+	only. Use ftp_parse_nonunix_ls otherwise.
+	(ftp_parse_nonunix_ls): Stub to the ftpparse library handling all
+	exotic FTP servers.
+
+	* ftp.h (stype): New enum, distinguishes UNIX, VMS, and "other"
+	FTP servers.
+
+	* ftp.c: New static wariables host_type, pwd, and pwd_len. 
+	(getftp): Support for VMS. Support for FTP servers that do not
+	place you in the root directory after login.
+	(ftp_retrieve_list): VMS is silent about the real file size, issue
+	a more appropriate message.
+	(ftp_get_listing): Pass host_type to ftp_parse_ls.
+
+	* ftp-basic.c (ftp_pwd, ftp_syst): New functions.
+
+2000-11-30  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
+
         * ftp-ls.c (ftp_parse_unix_ls): Added second parameter
         "ignore_perms" to ignore file and directory permissions for
         Windows NT FTP server listings.
@@ -268,11 +342,6 @@
         (ftp_parse_ls): Parses UNIX and Windows NT listings
         separately. Simple heuristics for distinguishing between UNIX
         and MS-DOS-like FTP listing provided by Windows NT FTP service.
-
-2000-12-05  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* url.c (init_unsafe_char_table): Reinstate space as an unsafe
-	char.
 
 2000-11-29  John Summerfield  <summer@OS2.ami.com.au>
 
@@ -490,6 +559,16 @@
 	(init_unsafe_char_table): New function.
 	(url_init): New function; call init_unsafe_char_table.
 
+2000-11-16  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* mswindows.h: Define snprintf and vsnprintf to _snprintf and
+	_vsnprintf respectively.
+
+2000-11-15  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* config.h.in: Do the _XOPEN_SOURCE and _SVID_SOURCE things only
+	on Linux.
+
 2000-11-15  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* html-url.c (handle_link): Handle HTML fragment identifiers.
@@ -508,6 +587,12 @@
 	before writing to it.
 	(convert_links): Use alloca instead of malloc for
 	filename_plus_orig_suffix.
+
+2000-11-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* host.c (realhost): Add HOST to the list with quality==0 only if
+	it wasn't already there.
+	Based on analysis by Lu Guohan <feng@public.bjnet.edu.cn>.
 
 2000-11-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
@@ -534,22 +619,6 @@
 	* html-url.c: New file.
 
 	* html-parse.c: New file.
-
-2000-11-16  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* mswindows.h: Define snprintf and vsnprintf to _snprintf and
-	_vsnprintf respectively.
-
-2000-11-15  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* config.h.in: Do the _XOPEN_SOURCE and _SVID_SOURCE things only
-	on Linux.
-
-2000-11-12  Hrvoje Niksic  <hniksic@arsdigita.com>
-
-	* host.c (realhost): Add HOST to the list with quality==0 only if
-	it wasn't already there.
-	Based on analysis by Lu Guohan <feng@public.bjnet.edu.cn>.
 
 2000-11-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
