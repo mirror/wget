@@ -1,3 +1,9 @@
+2001-03-01  Jonas Jensen  <bones@huleboer.dk>
+
+	* retr.c (show_progress): Correctly calculate the number of bytes
+	in the first line of the download that have been actually
+	downloaded in this run.
+
 2001-02-23  Dan Harkless  <wget@harkless.org>
 
 	* main.c (print_help): --help documentation for -N said it would
@@ -50,6 +56,7 @@
 	characters.
 	(skip_uname): Ditto.
 
+>>>>>>> 1.123
 2001-02-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp.c (ftp_loop): Reset con.

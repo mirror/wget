@@ -198,7 +198,8 @@ show_progress (long res, long expected, enum spflags flags)
 	  print_percentage (nrow * line_bytes + ndot * opt.dot_bytes + offs,
 			    expected);
 	  logprintf (LOG_VERBOSE, " @%s",
-		     rate (ndot * opt.dot_bytes + offs - initial_skip,
+		     rate (ndot * opt.dot_bytes
+			   + offs - (initial_skip % line_bytes),
 			   time_offset, 1));
 	}
       logputs (LOG_VERBOSE, "\n\n");
@@ -255,7 +256,8 @@ show_progress (long res, long expected, enum spflags flags)
 	    {
 	      print_percentage (nrow * line_bytes, expected);
 	      logprintf (LOG_VERBOSE, " @%s",
-			 rate (line_bytes - initial_skip, time_offset, 1));
+			 rate (line_bytes - (initial_skip % line_bytes),
+			       time_offset, 1));
 	    }
 	  initial_skip = 0;
 	  logprintf (LOG_VERBOSE, "\n%5ldK", nrow * line_bytes / 1024);
