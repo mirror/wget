@@ -274,6 +274,7 @@ while(<$inf>) {
 	$ic =~ s/\@(?:code|kbd)/C/;
 	$ic =~ s/\@(?:dfn|var|emph|cite|i)/I/;
 	$ic =~ s/\@(?:file)/F/;
+	$ic =~ s/\@(?:asis)/S/; # punt
 	$_ = "\n=over 4\n";
     };
 

@@ -1,3 +1,9 @@
+2005-03-22  Joseph Caretto  <jcaretto@pitt.edu>
+
+	* texi2pod.pl.in: Handle asis again.  It used to work (see the
+	2001-12-11 entry), but the local change was lost in the upgrade
+	to 1.4.
+
 2005-02-11  Mauro Tortonesi  <mauro@ferrara.linux.it>
 	
 	* wget.texi: Added Simone Piunno as new contributor.
