@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU Wget 1.7-pre1\n"
-"POT-Creation-Date: 2001-05-31 15:52+0200\n"
+"POT-Creation-Date: 2001-06-03 15:27+0200\n"
 "PO-Revision-Date: 1998-02-29 21:05+01:00\n"
 "Last-Translator: Hrvoje Niksic <hniksic@arsdigita.com>\n"
 "Language-Team: Croatian <hr-translation@bagan.srce.hr>\n"
@@ -43,8 +43,8 @@ msgid "Error closing `%s': %s\n"
 msgstr "Gre¹ka pri zatvaranju `%s': %s\n"
 
 #: src/ftp-ls.c:787
-msgid "Usupported listing type, trying Unix listing parser.\n"
-msgstr "Nepodr¾an tip ispisa, poku¹avam s Unixovim parserom ispisa.\n"
+msgid "Unsupported listing type, trying Unix listing parser.\n"
+msgstr "Tip ispisa nije podr¾an, poku¹avam s Unixovim parserom ispisa.\n"
 
 #: src/ftp-ls.c:832 src/ftp-ls.c:834
 #, c-format
@@ -981,7 +981,8 @@ msgid ""
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 msgstr ""
-"Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.\n"
+"Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, "
+"Inc.\n"
 "Sva prava zadr¾ana.  Ovaj program distribuira se u nadi da æe biti\n"
 "koristan, ali BEZ IKAKVOG JAMSTVA; bez èak i impliciranog jamstva\n"
 "PROIZVODNOSTI ili UPOTREBLJIVOSTI ZA ODREÐENU SVRHU.  Pogledajte GNU\n"
