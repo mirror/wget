@@ -1,5 +1,14 @@
 2003-11-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* hash.c (NON_EMPTY): Use the all-bit-set value as the marker that
+	the field is empty.  This allows NULL pointer and 0 value to be
+	used as keys, which is necessary for the connect.c code to work
+	when fd==0.
+	(hash_table_new): Fill mappings with 0xff.
+	(grow_hash_table): Ditto.
+
+2003-11-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (url_parse): Allow empty ports.
 
 2003-11-07  Hrvoje Niksic  <hniksic@xemacs.org>

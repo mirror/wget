@@ -175,9 +175,10 @@ struct hash_table {
   struct mapping *mappings;	/* the array of mapping pairs. */
 };
 
-/* We use NULL key to mark a mapping as empty.  It is consequently
-   illegal to store NULL keys.  */
-#define NON_EMPTY(mp) (mp->key != NULL)
+/* We use all-bit-set marker to mean that a mapping is empty.  It is
+   (hopefully) illegal as a pointer, and it allows the users to use
+   NULL (as well as any non-negative integer) as key.  */
+#define NON_EMPTY(mp) (mp->key != (void *)~(unsigned long)0)
 
 /* "Next" mapping is the mapping after MP, but wrapping back to
    MAPPINGS when MP would reach MAPPINGS+SIZE.  */
@@ -284,7 +285,11 @@ hash_table_new (int items,
   ht->resize_threshold = size * HASH_MAX_FULLNESS;
   /*assert (ht->resize_threshold >= items);*/
 
-  ht->mappings = xnew0_array (struct mapping, ht->size);
+  ht->mappings = xnew_array (struct mapping, ht->size);
+  /* Mark mappings as empty.  We use 0xff rather than 0 to mark empty
+     keys because it allows us to store NULL keys to the table.  */
+  memset (ht->mappings, 255, size * sizeof (struct mapping));
+
   ht->count = 0;
 
   return ht;
@@ -384,7 +389,10 @@ grow_hash_table (struct hash_table *ht)
 
   ht->size = newsize;
   ht->resize_threshold = newsize * HASH_MAX_FULLNESS;
-  ht->mappings = mappings = xnew0_array (struct mapping, ht->size);
+
+  mappings = xnew_array (struct mapping, newsize);
+  memset (mappings, 255, newsize * sizeof (struct mapping));
+  ht->mappings = mappings;
 
   for (mp = old_mappings; mp < old_end; mp++)
     if (NON_EMPTY (mp))
