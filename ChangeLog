@@ -1,3 +1,7 @@
+2003-09-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* aclocal.m4, configure.in: Made them work under Autoconf 2.5x.
+
 2002-05-27  Ian Abbott  <abbotti@mev.co.uk>
 
 	* windows/config.h.bor: Do #define WGET_USE_STDARG.
