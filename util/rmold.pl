@@ -31,10 +31,8 @@ if (@ARGV && ($ARGV[0] eq '-v')) {
     $verbose = 1;
 }
 
-defined($dirs[0] = shift) || ($dirs[0] = '.');
-while (defined($_ = shift)) {
-    @dirs = (@dirs, $_);
-}
+(@dirs = @ARGV) || push (@dirs,'.');
+
 
 foreach $_ (@dirs) {
     &procdir($_);
@@ -44,7 +42,7 @@ foreach $_ (@dirs) {
 
 sub procdir
 {
-    local($dir = $_[0]);
+    local $dir = shift;
     local(@lcfiles, @lcdirs, %files, @fl);
 
     print STDERR "Processing directory '$dir':\n" if $verbose;
@@ -55,17 +53,17 @@ sub procdir
     # Read local files and directories.
     foreach $_ (readdir(DH)) {
         /^(\.listing|\.\.?)$/ && next;
-        if (-d "$dir/$_" || -l "$dir/$_") {
-            @lcdirs = (@lcdirs, $_);
+        lstat ("$dir/$_");
+        if (-d _) {
+            push (@lcdirs, $_);
         }
         else {
-            @lcfiles = (@lcfiles, $_);
+            push (@lcfiles, $_);
         }
     }
     closedir(DH);
     # Parse .listing
     if (open(FD, "<$dir/.listing")) {
-        @files = ();
         while (<FD>)
         {
             # Weed out the line beginning with 'total'
