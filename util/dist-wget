@@ -98,8 +98,9 @@ rm -rf Branches 1>>$O 2>&1
 # Force the version if required.
 if test x"$VERSION" != x
 then
-  echo "char *version_string = \"$VERSION\";" > src/version.c
   echo "Forcing version to $VERSION."
+  echo "char *version_string = \"$VERSION\";" > src/version.c
+  echo "@set VERSION $VERSION" > doc/version.texi
 fi
 
 # Create configure and friends.
