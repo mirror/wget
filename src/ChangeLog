@@ -1,3 +1,11 @@
+2005-03-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (string_set_to_array): New function.
+
+	* convert.c: Replace the use of "slists" with sets/hash-tables,
+	which in fact suit the intended purpose much better.
+	downloaded_html_list is removed altogether.
+
 2005-03-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ftp.h (enum): Rename GLOBALL, GETALL, and GETONE to

@@ -1,5 +1,5 @@
 /* Conversion of links to local files.
-   Copyright (C) 1996, 1997, 2000, 2001 Free Software Foundation, Inc.
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -53,11 +53,8 @@ so, delete this exception statement from your version.  */
 static struct hash_table *dl_file_url_map;
 struct hash_table *dl_url_file_map;
 
-/* List of HTML files downloaded in this Wget run, used for link
-   conversion after Wget is done.  The list and the set contain the
-   same information, except the list maintains the order.  Perhaps I
-   should get rid of the list, it's there for historical reasons.  */
-static slist *downloaded_html_list;
+/* Set of HTML files downloaded in this Wget run, used for link
+   conversion after Wget is done.  */
 struct hash_table *downloaded_html_set;
 
 static void convert_links PARAMS ((const char *, struct urlpos *));
@@ -80,21 +77,28 @@ static void convert_links PARAMS ((const char *, struct urlpos *));
 void
 convert_all_links (void)
 {
-  slist *html;
-  long msecs;
+  int i;
+  double secs;
   int file_count = 0;
 
   struct wget_timer *timer = wtimer_new ();
 
-  /* Destructively reverse downloaded_html_files to get it in the right order.
-     recursive_retrieve() used slist_prepend() consistently.  */
-  downloaded_html_list = slist_nreverse (downloaded_html_list);
+  int cnt;
+  char **file_array;
 
-  for (html = downloaded_html_list; html; html = html->next)
+  cnt = 0;
+  if (downloaded_html_set)
+    cnt = hash_table_count (downloaded_html_set);
+  if (cnt == 0)
+    return;
+  file_array = alloca_array (char *, cnt);
+  string_set_to_array (downloaded_html_set, file_array);
+
+  for (i = 0; i < cnt; i++)
     {
       struct urlpos *urls, *cur_url;
       char *url;
-      char *file = html->string;
+      char *file = file_array[i];
 
       /* Determine the URL of the HTML file.  get_urls_html will need
 	 it.  */
@@ -167,10 +171,10 @@ convert_all_links (void)
     }
 
   wtimer_update (timer);
-  msecs = wtimer_read (timer);
+  secs = wtimer_read (timer) / 1000;
   wtimer_delete (timer);
-  logprintf (LOG_VERBOSE, _("Converted %d files in %.2f seconds.\n"),
-	     file_count, (double)msecs / 1000);
+  logprintf (LOG_VERBOSE, _("Converted %d files in %.*f seconds.\n"),
+	     file_count, secs < 10 ? 3 : 1, secs);
 }
 
 static void write_backup_file PARAMS ((const char *, downloaded_file_t));
@@ -400,11 +404,9 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
      clobber .orig files sitting around from previous invocations. */
 
   /* Construct the backup filename as the original name plus ".orig". */
-  size_t         filename_len = strlen(file);
+  size_t         filename_len = strlen (file);
   char*          filename_plus_orig_suffix;
-  int            already_wrote_backup_file = 0;
-  slist*         converted_file_ptr;
-  static slist*  converted_files = NULL;
+  static struct hash_table *converted_files;
 
   if (downloaded_file_return == FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED)
     {
@@ -416,36 +418,29 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
 	 ".html", so we need to compare vs. the original URL plus
 	 ".orig", not the original URL plus ".html.orig". */
       filename_plus_orig_suffix = alloca (filename_len + 1);
-      strcpy(filename_plus_orig_suffix, file);
-      strcpy((filename_plus_orig_suffix + filename_len) - 4, "orig");
+      strcpy (filename_plus_orig_suffix, file);
+      strcpy ((filename_plus_orig_suffix + filename_len) - 4, "orig");
     }
   else /* downloaded_file_return == FILE_DOWNLOADED_NORMALLY */
     {
       /* Append ".orig" to the name. */
-      filename_plus_orig_suffix = alloca (filename_len + sizeof(".orig"));
-      strcpy(filename_plus_orig_suffix, file);
-      strcpy(filename_plus_orig_suffix + filename_len, ".orig");
+      filename_plus_orig_suffix = alloca (filename_len + sizeof (".orig"));
+      strcpy (filename_plus_orig_suffix, file);
+      strcpy (filename_plus_orig_suffix + filename_len, ".orig");
     }
+
+  if (!converted_files)
+    converted_files = make_string_hash_table (0);
 
   /* We can get called twice on the same URL thanks to the
      convert_all_links() call in main().  If we write the .orig file
      each time in such a case, it'll end up containing the first-pass
      conversion, not the original file.  So, see if we've already been
      called on this file. */
-  converted_file_ptr = converted_files;
-  while (converted_file_ptr != NULL)
-    if (strcmp(converted_file_ptr->string, file) == 0)
-      {
-	already_wrote_backup_file = 1;
-	break;
-      }
-    else
-      converted_file_ptr = converted_file_ptr->next;
-
-  if (!already_wrote_backup_file)
+  if (!string_set_contains (converted_files, file))
     {
       /* Rename <file> to <file>.orig before former gets written over. */
-      if (rename(file, filename_plus_orig_suffix) != 0)
+      if (rename (file, filename_plus_orig_suffix) != 0)
 	logprintf (LOG_NOTQUIET, _("Cannot back up %s as %s: %s\n"),
 		   file, filename_plus_orig_suffix, strerror (errno));
 
@@ -466,10 +461,7 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
          list.
 	 -- Hrvoje Niksic <hniksic@xemacs.org>
       */
-      converted_file_ptr = xmalloc (sizeof (*converted_file_ptr));
-      converted_file_ptr->string = xstrdup (file);
-      converted_file_ptr->next = converted_files;
-      converted_files = converted_file_ptr;
+      string_set_add (converted_files, file);
     }
 }
 
@@ -839,14 +831,7 @@ register_html (const char *url, const char *file)
 {
   if (!downloaded_html_set)
     downloaded_html_set = make_string_hash_table (0);
-  else if (hash_table_contains (downloaded_html_set, file))
-    return;
-
-  /* The set and the list should use the same copy of FILE, but the
-     slist interface insists on strduping the string it gets.  Oh
-     well. */
   string_set_add (downloaded_html_set, file);
-  downloaded_html_list = slist_prepend (downloaded_html_list, file);
 }
 
 /* Cleanup the data structures associated with recursive retrieving
@@ -868,8 +853,6 @@ convert_cleanup (void)
     }
   if (downloaded_html_set)
     string_set_free (downloaded_html_set);
-  slist_free (downloaded_html_list);
-  downloaded_html_list = NULL;
 }
 
 /* Book-keeping code for downloaded files that enables extension

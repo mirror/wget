@@ -30,6 +30,9 @@ so, delete this exception statement from your version.  */
 #ifndef CONVERT_H
 #define CONVERT_H
 
+struct hash_table;		/* forward decl */
+extern struct hash_table *downloaded_html_set;
+
 enum convert_options {
   CO_NOCONVERT = 0,		/* don't convert this URL */
   CO_CONVERT_TO_RELATIVE,	/* convert to relative, e.g. to

@@ -1,5 +1,5 @@
 /* Declarations for utils.c.
-   Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -33,13 +33,6 @@ so, delete this exception statement from your version.  */
 enum accd {
    ALLABS = 1
 };
-
-/* A linked list of strings.  The list is ordered alphabetically.  */
-typedef struct _slist
-{
-  char *string;
-  struct _slist *next;
-} slist;
 
 struct hash_table;
 
@@ -101,14 +94,10 @@ void read_file_free PARAMS ((struct file_memory *));
 
 void free_vec PARAMS ((char **));
 char **merge_vecs PARAMS ((char **, char **));
-slist *slist_append PARAMS ((slist *, const char *));
-slist *slist_prepend PARAMS ((slist *, const char *));
-slist *slist_nreverse PARAMS ((slist *));
-int slist_contains PARAMS ((slist *, const char *));
-void slist_free PARAMS ((slist *));
 
 void string_set_add PARAMS ((struct hash_table *, const char *));
 int string_set_contains PARAMS ((struct hash_table *, const char *));
+void string_set_to_array PARAMS ((struct hash_table *, char **));
 void string_set_free PARAMS ((struct hash_table *));
 void free_keys_and_values PARAMS ((struct hash_table *));
 
