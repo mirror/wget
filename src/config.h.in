@@ -253,6 +253,21 @@ char *alloca ();
 /* Define if you have the getaddrinfo function.  */
 #undef HAVE_GETADDRINFO
 
+/* Define if the system headers support the AI_ADDRCONFIG flag. */
+#undef HAVE_GETADDRINFO_AI_ADDRCONFIG
+
+/* Define if the system headers support the AI_V4MAPPED flag. */
+#undef HAVE_GETADDRINFO_AI_V4MAPPED
+
+/* Define if the system headers support the AI_ALL flag. */
+#undef HAVE_GETADDRINFO_AI_ALL
+
+/* Define if the system supports struct sockaddr_in6 */
+#undef HAVE_HAVE_STRUCT_SOCKADDR_IN6
+
+/* Define if struct sockaddr_in6 has the sin6_scope_id member */
+#undef HAVE_SOCKADDR_IN6_SCOPE_ID
+
 /* Define if you want to enable the IPv6 support.  */
 #undef ENABLE_IPV6
 

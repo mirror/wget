@@ -453,42 +453,72 @@ dnl whether it's possible to create an AF_INET6 socket and if yes, use
 dnl IPv6.
 dnl
 
-AC_MSG_CHECKING([whether to enable ipv6])
+ipv6=
+check_for_ipv6=no
 AC_ARG_ENABLE(ipv6,
-AC_HELP_STRING([--enable-ipv6],[Enable ipv6 support])
-AC_HELP_STRING([--disable-ipv6],[Disable ipv6 support]),
-[ case "$enableval" in
+  AC_HELP_STRING([--disable-ipv6],[disable IPv6 support]),
+  [case "${enable_ipv6}" in
   no)
-       AC_MSG_RESULT(no)
-       ipv6=no
-       ;;
-  *)   AC_MSG_RESULT(yes)
-       ipv6=yes
-       ;;
-  esac ],
+    AC_MSG_NOTICE([Disabling IPv6 at user request])
+    ipv6=no
+    ;;
+  *)
+    ipv6=yes
+    ;;
+  esac],
+  [check_for_ipv6=yes]
+)
 
-  AC_TRY_RUN([ /* is AF_INET6 available? */
-#include <sys/types.h>
-#include <sys/socket.h>
-main()
-{
- if (socket(AF_INET6, SOCK_STREAM, 0) < 0)
-   exit(1);
- else
-   exit(0);
-}
-],
-  AC_MSG_RESULT(yes)
-  ipv6=yes,
-  AC_MSG_RESULT(no)
-  ipv6=no,
-  AC_MSG_RESULT(no)
-  ipv6=no
-))
-
-if test x"$ipv6" = xyes; then
-  WGET_CHECK_WORKING_GETADDRINFO
+if test "X$ipv6" = "Xyes" -o "X$check_for_ipv6" = "Xyes"; then
+  AC_CHECK_FUNC(getaddrinfo,[
+    AC_DEFINE([HAVE_GETADDRINFO], 1)
+    GETADDRINFO_AI_ADDRCONFIG(
+      AC_DEFINE(
+        [HAVE_GETADDRINFO_AI_ADDRCONFIG], 1, 
+        [Define if the system headers support the AI_ADDRCONFIG flag.]
+      )
+    )
+    GETADDRINFO_AI_V4MAPPED(
+      AC_DEFINE(
+        [HAVE_GETADDRINFO_AI_V4MAPPED], 1, 
+        [Define if the system headers support the AI_V4MAPPED flag.]
+      )
+    )
+    GETADDRINFO_AI_ALL(
+      AC_DEFINE(
+        [HAVE_GETADDRINFO_AI_ALL], 1, 
+        [Define if the system headers support the AI_ALL flag.]
+      )
+    )
+  ],[
+    AC_MSG_NOTICE([Disabling IPv6 support: your system does not support getaddrinfo(3)])
+    ipv6=no
+  ])
 fi
+  
+if test "X$ipv6" = "Xyes" -o "X$check_for_ipv6" = "Xyes"; then
+  PROTO_INET6(,[
+    AC_MSG_NOTICE([Disabling IPv6 support: your system does not support the PF_INET6 protocol family])
+    ipv6=no
+  ])
+fi
+
+if test "X$ipv6" = "Xyes" -o "X$check_for_ipv6" = "Xyes"; then
+  TYPE_STRUCT_SOCKADDR_IN6([
+    ipv6=yes
+  ],[
+    AC_MSG_NOTICE([Disabling IPv6 support: your system does not support 'struct sockaddr_in6'])
+    ipv6=no
+  ])
+  if test "X$ipv6" = "Xyes"; then
+    MEMBER_SIN6_SCOPE_ID
+  fi
+fi
+
+if test "X$ipv6" = "Xyes"; then
+  AC_DEFINE([ENABLE_IPV6], 1, [Define if IPv6 support is enabled.])
+fi
+
 
 dnl
 dnl Set of available languages.

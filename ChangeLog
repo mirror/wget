@@ -1,3 +1,7 @@
+2003-09-16  Mauro Tortonesi <mauro@deepspace6.net>
+
+	* configure.in, aclocal.m4: Added proper IPv6 detection.
+
 2003-09-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* Makefile.in (all): Don't build configure.bat by default.
