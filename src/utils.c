@@ -50,8 +50,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #endif
 #include <fcntl.h>
 #include <assert.h>
+
+/* For TIOCGWINSZ and friends: */
 #ifdef HAVE_SYS_IOCTL_H
 # include <sys/ioctl.h>
+#endif
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
 #endif
 
 #include "wget.h"

@@ -186,6 +186,9 @@ char *alloca ();
 /* Define if you have the <sys/utime.h> header file.  */
 #undef HAVE_SYS_UTIME_H
 
+/* Define if you have the <termios.h> header file.  */
+#undef HAVE_TERMIOS_H
+
 /* Define if you have the <sys/ioctl.h> header file.  */
 #undef HAVE_SYS_IOCTL_H
 

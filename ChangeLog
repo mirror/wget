@@ -1,5 +1,9 @@
 2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* configure.in: Check for <termios.h>
+
+2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* po/de.po: Ditto.
 
 	* po/fr.po: Ditto.

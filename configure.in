@@ -154,8 +154,8 @@ AC_CHECK_SIZEOF(long long)
 dnl
 dnl Checks for headers
 dnl
-AC_CHECK_HEADERS(string.h stdarg.h unistd.h sys/time.h utime.h sys/utime.h)
-AC_CHECK_HEADERS(sys/ioctl.h sys/select.h sys/utsname.h pwd.h signal.h)
+AC_CHECK_HEADERS(string.h stdarg.h unistd.h sys/time.h utime.h sys/utime.h pwd.h)
+AC_CHECK_HEADERS(termios.h sys/ioctl.h sys/select.h sys/utsname.h signal.h)
 AC_HEADER_TIME
 
 dnl

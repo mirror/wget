@@ -1,5 +1,16 @@
 2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* progress.c (progress_handle_sigwinch): Set up the signal again.
+
+	* utils.c: Include <sys/termios.h>, where Solaris defines
+	TIOCGWINSZ.
+
+	* progress.c (bar_create): Don't use the last column on the screen.
+	(create_image): Pad ETA to constant size.  Pad SIZE to nine digits
+	only until it exceeded them.
+
+2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* version.c: Wget 1.8-pre1 is released.
 
 2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>

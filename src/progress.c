@@ -30,6 +30,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
 
 #include "wget.h"
 #include "progress.h"
@@ -409,11 +412,14 @@ struct bar_progress {
 
   long last_update;		/* time of the last screen update. */
 
-  int width;			/* screen width at the time the
-				   progress gauge was created. */
+  int width;			/* screen width we're using at the
+				   time the progress gauge was
+				   created.  this is different from
+				   the screen_width global variable in
+				   that the latter can be changed by a
+				   signal. */
   char *buffer;			/* buffer where the bar "image" is
 				   stored. */
-
   int tick;
 };
 
@@ -429,7 +435,10 @@ bar_create (long initial, long total)
 
   bp->initial_length = initial;
   bp->total_length   = total;
-  bp->width = screen_width;
+
+  /* - 1 because we don't want to use the last screen column. */
+  bp->width = screen_width - 1;
+  /* + 1 for the terminating zero. */
   bp->buffer = xmalloc (bp->width + 1);
 
   logputs (LOG_VERBOSE, "\n");
@@ -456,14 +465,15 @@ bar_update (void *progress, long howmuch, long dltime)
        equal to the expected size doesn't abort.  */
     bp->total_length = bp->count + bp->initial_length;
 
-  if (screen_width != bp->width)
+  if (screen_width - 1 != bp->width)
     {
-      bp->width = screen_width;
+      bp->width = screen_width - 1;
       bp->buffer = xrealloc (bp->buffer, bp->width + 1);
+      force_update = 1;
     }
 
   if (dltime - bp->last_update < 200 && !force_update)
-    /* Don't update more often than every half a second. */
+    /* Don't update more often than five times per second. */
     return;
 
   bp->last_update = dltime;
@@ -492,26 +502,44 @@ bar_finish (void *progress, long dltime)
   xfree (bp);
 }
 
+#define APPEND_LITERAL(s) do {			\
+  memcpy (p, s, sizeof (s) - 1);		\
+  p += sizeof (s) - 1;				\
+} while (0)
+
+#ifndef MAX
+# define MAX(a, b) ((a) >= (b) ? (a) : (b))
+#endif
+
 static void
 create_image (struct bar_progress *bp, long dltime)
 {
   char *p = bp->buffer;
   long size = bp->initial_length + bp->count;
 
+  char *size_legible = legible (size);
+  int size_legible_len = strlen (size_legible);
+
   /* The progress bar should look like this:
      xx% [=======>             ] nn.nnn rrK/s ETA 00:00
 
-     Calculate its geometry:
+     Calculate the geometry.  The idea is to assign as much room as
+     possible to the progress bar.  The other idea is to never let
+     things "jitter", i.e. pad elements that vary in size so that
+     their variance does not affect the placement of other elements.
+     It would be especially bad for the progress bar to be resized
+     randomly.
 
-     "xx% " or "100%"  - percentage                - 4 chars exactly
-     "[]"              - progress bar decorations  - 2 chars exactly
-     " n,nnn,nnn,nnn"  - downloaded bytes          - 14 or less chars
-     " 1012.56K/s"     - dl rate                   - 11 chars exactly
-     " ETA xx:xx:xx"   - ETA                       - 13 or less chars
+     "xx% " or "100%"  - percentage               - 4 chars
+     "[]"              - progress bar decorations - 2 chars
+     " nnn,nnn,nnn"    - downloaded bytes         - 12 chars or very rarely more
+     " 1012.56K/s"     - dl rate                  - 11 chars
+     " ETA xx:xx:xx"   - ETA                      - 13 chars
 
-     "=====>..."       - progress bar content      - the rest
+     "=====>..."       - progress bar             - the rest
   */
-  int progress_size = screen_width - (4 + 2 + 14 + 11 + 13);
+  int dlbytes_size = 1 + MAX (size_legible_len, 11);
+  int progress_size = bp->width - (4 + 2 + dlbytes_size + 11 + 13);
 
   if (progress_size < 5)
     progress_size = 0;
@@ -530,12 +558,7 @@ create_image (struct bar_progress *bp, long dltime)
       p += 4;
     }
   else
-    {
-      *p++ = ' ';
-      *p++ = ' ';
-      *p++ = ' ';
-      *p++ = ' ';
-    }
+    APPEND_LITERAL ("    ");
 
   /* The progress bar: "[====>      ]" */
   if (progress_size && bp->total_length > 0)
@@ -589,12 +612,8 @@ create_image (struct bar_progress *bp, long dltime)
       ++bp->tick;
     }
 
-  /* " 1,234,567" */
-  /* If there are 7 or less digits (9 because of "legible" comas),
-     print the number in constant space.  This will prevent the rest
-     of the line jerking at the beginning of download, but without
-     assigning maximum width in all cases.  */
-  sprintf (p, " %9s", legible (size));
+  /* " 234,567,890" */
+  sprintf (p, " %-11s", legible (size));
   p += strlen (p);
 
   /* " 1012.45K/s" */
@@ -607,10 +626,7 @@ create_image (struct bar_progress *bp, long dltime)
       p += strlen (p);
     }
   else
-    {
-      strcpy (p, "   --.--K/s");
-      p += 11;
-    }
+    APPEND_LITERAL ("   --.--K/s");
 
   /* " ETA xx:xx:xx" */
   if (bp->total_length > 0 && bp->count > 0)
@@ -625,17 +641,25 @@ create_image (struct bar_progress *bp, long dltime)
       eta_min = eta / 60,   eta %= 60;
       eta_sec = eta;
 
-      /*printf ("\neta: %d, %d %d %d\n", eta, eta_hrs, eta_min, eta_sec);*/
-      /*printf ("\n%ld %f %ld %ld\n", dltime, tm_sofar, bytes_remaining, bp->count);*/
+      /* Pad until the end of screen.  The padding is dependent on the
+	 hour value.  */
+      if (eta_hrs == 0 || eta_hrs > 99)
+	/* Hours not printed: pad with three spaces (two digits and
+	   colon). */
+	APPEND_LITERAL ("   ");
+      else if (eta_hrs >= 10)
+	/* Hours printed with one digit: pad with one space. */
+	*p++ = ' ';
+      else
+	/* Hours printed with two digits: we're using maximum width,
+	   don't pad. */
+	;
 
-      *p++ = ' ';
-      *p++ = 'E';
-      *p++ = 'T';
-      *p++ = 'A';
-      *p++ = ' ';
+      APPEND_LITERAL (" ETA ");
 
       if (eta_hrs > 99)
-	/* Bogus value, for whatever reason.  We must avoid overflow. */
+	/* Bogus value, probably due to a calculation overflow.  Print
+	   something safe to avoid overstepping the buffer bounds. */
 	sprintf (p, "--:--");
       else if (eta_hrs > 0)
 	sprintf (p, "%d:%02d:%02d", eta_hrs, eta_min, eta_sec);
@@ -644,14 +668,11 @@ create_image (struct bar_progress *bp, long dltime)
       p += strlen (p);
     }
   else if (bp->total_length > 0)
-    {
-      strcpy (p, " ETA --:--");
-      p += 10;
-    }
+    APPEND_LITERAL ("    ETA --:--");
 
-  assert (p - bp->buffer <= screen_width);
+  assert (p - bp->buffer <= bp->width);
 
-  while (p < bp->buffer + screen_width)
+  while (p < bp->buffer + bp->width)
     *p++ = ' ';
   *p = '\0';
 }
@@ -698,10 +719,13 @@ bar_set_params (const char *params)
     screen_width = sw;
 }
 
+#ifdef SIGWINCH
 RETSIGTYPE
 progress_handle_sigwinch (int sig)
 {
   int sw = determine_screen_width ();
   if (sw && sw >= MINIMUM_SCREEN_WIDTH)
     screen_width = sw;
+  signal (SIGWINCH, progress_handle_sigwinch);
 }
+#endif
