@@ -1,3 +1,17 @@
+2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* po/de.po: Ditto.
+
+	* po/fr.po: Ditto.
+
+	* po/tr.po: Ditto.
+
+	* po/sv.po: Ditto.
+
+	* po/et.po: Update from TP.
+
+	* po/hu.po: New file from TP.
+
 2001-12-04  Herold Heiko  <Heiko.Herold@previnet.it>
 
 	* windows\Makefile.src: add gen_sslfunc.c
