@@ -8,7 +8,7 @@ LFLAGS=
 CFLAGS=-DWINDOWS -DHAVE_CONFIG_H -I. -w- -O2
 
 ## variables
-OBJS=cmpt.obj connect.obj fnmatch.obj ftp.obj ftp-basic.obj  \
+OBJS=cmpt.obj connect.obj ftp.obj ftp-basic.obj  \
       ftp-ls.obj ftp-opie.obj getopt.obj headers.obj host.obj html-parse.obj html-url.obj \
       http.obj init.obj log.obj main.obj gnu-md5.obj netrc.obj rbuf.obj  \
       safe-ctype.obj hash.obj progress.obj gen-md5.obj cookies.obj \
@@ -48,7 +48,6 @@ ftp-opie.obj+
 ftp-ls.obj+
 ftp-basic.obj+
 ftp.obj+
-fnmatch.obj+
 connect.obj+
 cmpt.obj
 $<,$*

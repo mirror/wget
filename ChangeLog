@@ -1,3 +1,14 @@
+2003-10-09  Herold Heiko  <Heiko.Herold@previnet.it>
+
+	* windows/Makefile.watcom (OBJS): Ditto.
+
+	* windows/Makefile.src.bor: Ditto.
+
+	* windows/wget.dep: Ditto.
+
+	* windows/Makefile.src: Removed references to fnmatch.c and
+	fnmatch.o.
+
 2003-10-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* po/ft.po, po/sk.po, po/ja.po: Updated from the TP.

@@ -51,7 +51,7 @@ CFLAGS+= /os /d2
 #CFLAGS+= /DDEBUG_MALLOC
 #       ^^-- mind the gap !!
 
-OBJS = cmpt.obj connect.obj cookies.obj fnmatch.obj ftp.obj ftp-basic.obj  &
+OBJS = cmpt.obj connect.obj cookies.obj ftp.obj ftp-basic.obj  &
       ftp-ls.obj ftp-opie.obj getopt.obj hash.obj headers.obj host.obj html-parse.obj html-url.obj  &
       http.obj init.obj log.obj main.obj gen-md5.obj gnu-md5.obj netrc.obj progress.obj rbuf.obj  &
       recur.obj res.obj retr.obj safe-ctype.obj url.obj utils.obj version.obj mswindows.obj
