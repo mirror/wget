@@ -423,7 +423,7 @@ then
     AC_CHECK_LIB(md5, md5_calc, [
       dnl Some installations have bogus <md5.h> in the compiler's
       dnl include path, making the system md5 library useless.
-      AC_MSG_CHECKING([whether md5.h can be included])
+      AC_MSG_CHECKING([for working md5.h])
       AC_COMPILE_IFELSE([#include <md5.h>
                         ], [
         AC_MSG_RESULT(yes)
