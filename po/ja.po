@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.9-b3\n"
 "POT-Creation-Date: 2003-10-01 22:01+0200\n"
-"PO-Revision-Date: 2003-10-09 02:56+0900\n"
+"PO-Revision-Date: 2003-10-11 00:24+0900\n"
 "Last-Translator: Hiroshi Takekawa <sian@big.or.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 #: src/connect.c:90
 #, c-format
 msgid "Unable to convert `%s' to a bind address.  Reverting to ANY.\n"
-msgstr ""
+msgstr "`%s' をローカルアドレスとして使えません。利用可能なアドレスを利用します。\n"
 
 #: src/connect.c:167
 #, c-format
@@ -41,7 +41,7 @@ msgstr "%d 個のファイルを %.2f 秒で変換しました。\n"
 #: src/convert.c:197
 #, c-format
 msgid "Converting %s... "
-msgstr "%s に変換しています... "
+msgstr "%s を変換しています... "
 
 #: src/convert.c:210
 msgid "nothing to do.\n"
@@ -50,7 +50,7 @@ msgstr "なにもすることがありません。\n"
 #: src/convert.c:218 src/convert.c:242
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
-msgstr "`%s' 中のリンクの変換ができませんでした: %s\n"
+msgstr "`%s' 中のリンクを変換できません: %s\n"
 
 #: src/convert.c:233
 #, c-format
@@ -60,7 +60,7 @@ msgstr "`%s' の削除に失敗しました: %s\n"
 #: src/convert.c:439
 #, c-format
 msgid "Cannot back up %s as %s: %s\n"
-msgstr "%s を %s という名前でバックアップしようとして失敗しました: %s\n"
+msgstr "%s を %s としてバックアップできません: %s\n"
 
 #: src/cookies.c:592
 #, c-format
@@ -68,9 +68,9 @@ msgid "Error in Set-Cookie, field `%s'"
 msgstr "Set-Cookieのフィールド `%s' に間違いがあります。"
 
 #: src/cookies.c:615
-#, fuzzy, c-format
+#, c-format
 msgid "Syntax error in Set-Cookie: %s at position %d.\n"
-msgstr "Set-Cookie: が途中で終ってしまっています。\n"
+msgstr "Set-Cookie: %s の位置 %d には文法エラーがあります。\n"
 
 #: src/cookies.c:1411
 #, c-format
@@ -478,9 +478,8 @@ msgid "failed: %s.\n"
 msgstr "失敗しました: %s.\n"
 
 #: src/host.c:682
-#, fuzzy
 msgid "failed: timed out.\n"
-msgstr "失敗しました: %s.\n"
+msgstr "失敗しました: タイムアウト.\n"
 
 #: src/host.c:770
 msgid "Host not found"
@@ -707,7 +706,7 @@ msgstr "%s (%s) - %ld/%ld バイトで読み込みエラーです (%s)。 "
 #: src/init.c:341
 #, c-format
 msgid "%s: WGETRC points to %s, which doesn't exist.\n"
-msgstr ""
+msgstr "%s: WGETRC が %s を指していますが, 存在しません。\n"
 
 #: src/init.c:397 src/netrc.c:276
 #, c-format
@@ -725,39 +724,39 @@ msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: 警告: システムとユーザのwgetrcの両方が `%s' を指定しています。\n"
 
 #: src/init.c:593
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Invalid --execute command `%s'\n"
-msgstr "%s: `%s' は無効な指定です。\n"
+msgstr "%s: 無効な --execute 指定 `%s' です。\n"
 
 #: src/init.c:629
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid boolean `%s', use `on' or `off'.\n"
-msgstr "%s: %s: on か off かを指定してください。\n"
+msgstr "%s: %s: `%s'は無効です。on か off かを指定してください。\n"
 
 #: src/init.c:672
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid boolean `%s', use always, on, off, or never.\n"
-msgstr "%s: %s: always, on, off または never のいずれかを指定してください。\n"
+msgstr "%s: %s: `%s'は無効です。always, on, off または never のいずれかを指定してください。\n"
 
 #: src/init.c:690
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid number `%s'.\n"
-msgstr "%s: %s: `%s' は無効な指定です。\n"
+msgstr "%s: %s: `%s'は無効な数です。\n"
 
 #: src/init.c:887
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid byte value `%s'\n"
-msgstr "%s: %s: `%s' は無効な経過表示形式です。\n"
+msgstr "%s: %s: `%s' はバイト値です。\n"
 
 #: src/init.c:941
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid time period `%s'\n"
-msgstr "%s: %s: `%s' は無効な指定です。\n"
+msgstr "%s: %s: `%s' は無効な時間間隔です。\n"
 
 #: src/init.c:1018
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid header `%s'.\n"
-msgstr "%s: %s: `%s' は無効な指定です。\n"
+msgstr "%s: %s: `%s' は無効なヘッダです。\n"
 
 #: src/init.c:1073
 #, c-format
@@ -765,14 +764,14 @@ msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: `%s' は無効な経過表示形式です。\n"
 
 #: src/init.c:1124
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid restriction `%s', use `unix' or `windows'.\n"
-msgstr "%s: %s: `%s' は無効な指定です。\n"
+msgstr "%s: %s: `%s'は無効です。unix か windows を指定してください。\n"
 
 #: src/init.c:1165
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Invalid value `%s'.\n"
-msgstr "%s: %s: `%s' は無効な指定です。\n"
+msgstr "%s: %s: `%s'は無効な値です。\n"
 
 #: src/log.c:664
 #, c-format
@@ -829,7 +828,6 @@ msgstr ""
 "\n"
 
 #: src/main.c:151
-#, fuzzy
 msgid ""
 "Logging and input file:\n"
 "  -o,  --output-file=FILE     log messages to FILE.\n"
@@ -853,13 +851,9 @@ msgstr ""
 "  -i,  --input-file=FILE      URL をファイルから読み込みます。\n"
 "  -F,  --force-html           入力ファイルを HTML として扱います。\n"
 "  -B,  --base=URL             -i で読んだ相対 URL の先頭に URL を追加します。\n"
-"       --sslcertfile=FILE     クライアントの証明書ファイルを指定。\n"
-"       --sslcertkey=KEYFILE   証明書に対する鍵ファイルを指定。\n"
-"       --egd-file=FILE        EGD ソケットのファイルを指定。\n"
 "\n"
 
 #: src/main.c:163
-#, fuzzy
 msgid ""
 "Download:\n"
 "  -t,  --tries=NUMBER           set number of retries to NUMBER (0 unlimits).\n"
@@ -887,8 +881,8 @@ msgid ""
 "\n"
 msgstr ""
 "ダウンロード:\n"
-"       --bind-address=ADDRESS   ローカルのアドレスとして ADDRESS を用います。\n"
 "  -t,  --tries=NUMBER           再試行する回数を指定します (0は無制限)。\n"
+"       --retry-connrefused      接続が拒否されてもリトライする。\n"
 "  -O   --output-document=FILE   FILE に文書を出力します。\n"
 "  -nc, --no-clobber             既存のファイルを消去しません。\n"
 "  -c,  --continue               既にあるファイルの続きから転送を行います。\n"
@@ -897,16 +891,21 @@ msgstr ""
 "  -S,  --server-response        サーバの応答を表示します。\n"
 "       --spider                 何もダウンロードしません。\n"
 "  -T,  --timeout=SECONDS        読み込みタイムアウト時間を SECONDS 秒にします。\n"
+"       --dns-timeout=SECS       DNS タイムアウトまでの時間を SECS 秒にする。\n"
+"       --connect-timeout=SECS   接続タイムアウトまでの時間を SECS 秒にする。\n"
+"       --read-timeout=SECS      読みこみタイムアウトまでの時間を SECS 秒にする。\n"
 "  -w,  --wait=SECONDS           転送ごとに SECONDS 秒待ちます。\n"
 "       --waitretry=SECONDS      再試行ごとに 1...SECONDS 秒待ちます。\n"
 "       --random-wait            転送ごとに 0...2*WAIT 秒待ちます。\n"
 "  -Y,  --proxy=on/off           代理サーバ(proxy)を on/off します。\n"
 "  -Q,  --quota=NUMBER           容量制限(quota)を NUMBER にします。\n"
+"       --bind-address=ADDRESS   ローカルのアドレスとして ADDRESS を用います。\n"
 "       --limit-rate=RATE        ダウンロード速度を RATE に制限します。\n"
+"       --dns-cache=off          DNS のキャッシュを無効にする。\n"
+"       --restrict-file-names=OS ファイル名を OS 上で利用可能な文字に制限する。\n"
 "\n"
 
 #: src/main.c:188
-#, fuzzy
 msgid ""
 "Directories:\n"
 "  -nd, --no-directories            don't create directories.\n"
@@ -926,7 +925,6 @@ msgstr ""
 "\n"
 
 #: src/main.c:196
-#, fuzzy
 msgid ""
 "HTTP options:\n"
 "       --http-user=USER      set http user to USER.\n"
@@ -966,6 +964,8 @@ msgstr ""
 "       --cookies=off         クッキーを使用しません。\n"
 "       --load-cookies=FILE   セッション前にクッキーを FILE から読み込みます。\n"
 "       --save-cookies=FILE   セッション後にクッキーを FILE に書き込みます。\n"
+"       --post-data=STRING    POST メソッドで、STRING を送る。\\n\"\n"
+"       --post-file=FILE      POST メソッドで、FILE の中身を送る。\\n\"\n"
 "\n"
 
 #: src/main.c:217
@@ -982,6 +982,17 @@ msgid ""
 "                              1=SSLv2 2=SSLv3 3=TLSv1\n"
 "\n"
 msgstr ""
+"HTTPS (SSL) options:\n"
+"       --sslcertfile=FILE     クライアント証明書の指定(オプション)。\n"
+"       --sslcertkey=KEYFILE   クライアント証明書の鍵指定(オプション)。\n"
+"       --egd-file=FILE        EGD socket のファイル名。\n"
+"       --sslcadir=DIR         CA のハッシュリストが格納されるディレクトリ。\n"
+"       --sslcafile=FILE       CA のファイル。\n"
+"       --sslcerttype=0/1      クライアント証明書のタイプ 0=PEM (デフォルト) / 1=ASN1 (DER)\n"
+"       --sslcheckcert=0/1     サーバ証明書を検証する。\n"
+"       --sslprotocol=0-3      SSL プロトコルを選択。; 0=自動,\n"
+"                              1=SSLv2 2=SSLv3 3=TLSv1\n"
+"\n"
 
 #: src/main.c:230
 msgid ""
@@ -1000,7 +1011,6 @@ msgstr ""
 "\n"
 
 #: src/main.c:237
-#, fuzzy
 msgid ""
 "Recursive retrieval:\n"
 "  -r,  --recursive          recursive download.\n"
@@ -1021,6 +1031,7 @@ msgstr ""
 "  -K,  --backup-converted   X の変換前に X.orig というバックアップを作ります。\n"
 "  -m,  --mirror             ラーに適したオプション(-r -N -l 0 -nr)で動作します。\n"
 "  -p,  --page-requisites    HTML ページの表示に必要な画像等を取得します。\n"
+"       --strict-comments    HTML のコメントを厳格に (SGML) 扱います。\n"
 "\n"
 
 #: src/main.c:248
@@ -1065,9 +1076,8 @@ msgid "%s: debug support not compiled in.\n"
 msgstr "%s: デバックに対応するようにコンパイルされていません。\n"
 
 #: src/main.c:517
-#, fuzzy
 msgid "Copyright (C) 2003 Free Software Foundation, Inc.\n"
-msgstr "Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.\n"
+msgstr "Copyright (C) 2003 Free Software Foundation, Inc.\n"
 
 #: src/main.c:519
 msgid ""
@@ -1088,13 +1098,12 @@ msgstr ""
 "詳細はGNU一般公用使用許諾をご覧下さい。\n"
 
 #: src/main.c:524
-#, fuzzy
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"
 msgstr ""
 "\n"
-"Hrvoje Niksic <hniksic@arsdigita.com>によって書かれました。\n"
+"Hrvoje Niksic <hniksic@xemacs.org> によって書かれました。\n"
 
 #: src/main.c:703
 #, c-format
@@ -1240,37 +1249,36 @@ msgstr ""
 "\n"
 
 #: src/url.c:621
-#, fuzzy
 msgid "No error"
-msgstr "不明なエラーです"
+msgstr "エラーなし"
 
 #: src/url.c:623
 msgid "Unsupported scheme"
-msgstr ""
+msgstr "サポートされていないスキーム"
 
 #: src/url.c:625
 msgid "Empty host"
-msgstr ""
+msgstr "ホストが空です"
 
 #: src/url.c:627
 msgid "Bad port number"
-msgstr ""
+msgstr "ポート番号が不正です"
 
 #: src/url.c:629
 msgid "Invalid user name"
-msgstr ""
+msgstr "ユーザ名が不正です"
 
 #: src/url.c:631
 msgid "Unterminated IPv6 numeric address"
-msgstr ""
+msgstr "IPv6 アドレスの記述が終了していません"
 
 #: src/url.c:633
 msgid "IPv6 addresses not supported"
-msgstr ""
+msgstr "IPv6 アドレスはサポートされていません"
 
 #: src/url.c:635
 msgid "Invalid IPv6 numeric address"
-msgstr ""
+msgstr "IPv6 アドレスが不正です"
 
 #: src/utils.c:121
 #, c-format
@@ -1287,21 +1295,3 @@ msgstr "バックグラウンドで継続します、pidは %d。\n"
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "シンボリックリンク `%s' の削除に失敗しました: %s\n"
-
-#~ msgid "Syntax error in Set-Cookie at character `%c'.\n"
-#~ msgstr "Set-Cookie: 中の文字 '%c' の位置に文法エラーがあります。\n"
-
-#~ msgid "%s: BUG: unknown command `%s', value `%s'.\n"
-#~ msgstr "%s: BUG: コマンド `%s'、値 `%s' は無効です。\n"
-
-#~ msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
-#~ msgstr "%s: %s: `%s' を IP アドレスに変換できません。\n"
-
-#~ msgid "%s: %s: invalid command\n"
-#~ msgstr "%s: %s: 無効なコマンドです。\n"
-
-#~ msgid "Could not find proxy host.\n"
-#~ msgstr "代理ホスト(proxy host)が見つかりませんでした。\n"
-
-#~ msgid "%s: Redirection cycle detected.\n"
-#~ msgstr "%s リダイレクトのループを検出しました。\n"
