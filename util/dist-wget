@@ -31,7 +31,7 @@ CVSROOT=:pserver:cvs@sunsite.dk:/pack/anoncvs
 SUBDIR=wget.cvs.$$
 DEBUG=no
 
-EXPORT_TAG='-D now'
+EXPORT_TAG='-r HEAD'
 VERSION=
 
 if test x"$TMPDIR" = x
