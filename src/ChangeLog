@@ -1,3 +1,9 @@
+2005-04-04  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* string.c: Removed.
+	
+	* string.h: Removed.
+
 2005-04-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (rewrite_shorthand_url): Only accept recognized schemes.
