@@ -521,10 +521,13 @@ tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
 	 get to the URL.  */
 
       struct urlpos *entry;
-
       int attrind;
-      char *p, *refresh = find_attr (tag, "content", &attrind);
       int timeout = 0;
+      char *p;
+
+      char *refresh = find_attr (tag, "content", &attrind);
+      if (!refresh)
+	return;
 
       for (p = refresh; ISDIGIT (*p); p++)
 	timeout = 10 * timeout + *p - '0';
