@@ -7,17 +7,27 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.9+.
 
-** Wget no longer preserves permissions of files on FTP servers by
+** IPv6 is now supported by Wget.  Unlike the experimental code in
+1.9, this version has no problems with dual-family systems.  The new
+flags `--inet4' and `--inet6' (or `-4' and `-6' for short) force the
+use of IPv4 and IPv6 respectively.
+
+** Wget no longer preserves permissions of files retrieved by FTP by
 default.  Anonymous FTP servers frequently use permissions like "664",
 which might not be what the user wants.  The new option
 `--preserve-permissions' and the corresponding `.wgetrc' variable can
 be used to revert to the old behavior.
 
-** Many options that previously unconditionally set or unset features
-are now boolean options that can be invoked as `--OPTION[=yes/no]' or
-with `--no-OPTION'.  This is useful because it allows you to specify
-non-default behavior via `.wgetrc' and then revert it again on the
-command-line.
+** Many options that previously unconditionally set or unset various
+flags are now boolean options that can be invoked as either `--OPTION'
+or `--no-OPTION'.  Options that required an argument "on" or "off"
+have also been changed this way, but they still accept the old syntax
+for backward compatibility.  For example, instead of `--glob=off' you
+can write `--no-glob'.
+
+Allowing `--no-OPTION' for every `--OPTION' is useful because it
+allows the user to override non-default behavior specified via
+`.wgetrc'.
 
 ** The new option `--keep-session-cookies' causes `--save-cookies' to
 save session cookies along with the permanent ones.  This is useful on
