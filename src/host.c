@@ -34,9 +34,15 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #else
 # include <sys/socket.h>
 # include <netinet/in.h>
+#ifndef __BEOS__
 # include <arpa/inet.h>
+#endif
 # include <netdb.h>
 #endif /* WINDOWS */
+
+#ifndef NO_ADDRESS
+#define NO_ADDRESS NO_DATA
+#endif
 
 #ifdef HAVE_SYS_UTSNAME_H
 # include <sys/utsname.h>

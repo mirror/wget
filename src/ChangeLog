@@ -1,3 +1,13 @@
+2001-11-16  Chris Seawood  <cls@seawood.org>
+
+	* init.c: Ditto.
+
+	* host.c: Ditto.
+
+	* connect.c: Ditto.
+
+	* sysdep.h: Support compilation under BEOS.
+
 2001-06-08  Edward J. Sabol  <sabol@alderaan.gsfc.nasa.gov>
 
 	* url.c (url_equal): Fix a memory leak when parseurl returns an

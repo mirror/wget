@@ -94,6 +94,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #endif
 #endif
 
+#ifdef __BEOS__
+# undef READ
+# undef WRITE
+# define READ(fd, buf, cnt) recv((fd), (buf), (cnt), 0)
+# define WRITE(fd, buf, cnt) send((fd), (buf), (cnt), 0)
+#endif
+
 /* mswindows.h defines these.  */
 #ifndef READ
 # define READ(fd, buf, cnt) read ((fd), (buf), (cnt))

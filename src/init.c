@@ -38,7 +38,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #else
 # include <sys/socket.h>
 # include <netinet/in.h>
+#ifndef __BEOS__
 # include <arpa/inet.h>
+#endif
 #endif
 
 #ifdef HAVE_PWD_H
