@@ -1,5 +1,12 @@
 2003-11-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* host.c (lookup_host): Use AI_ADDRCONFIG only if the family is
+	unspecified.  This ensures that specifying `--no-inet4' on systems
+	where IPv6 resolves, but doesn't work behaves the same regardless
+	of the availability of AI_ADDRCONFIG.
+
+2003-11-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* host.c: Don't refer to the now-removed function
 	forget_host_lookup in the documentation of lookup_host.
 

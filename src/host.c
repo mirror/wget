@@ -575,16 +575,19 @@ lookup_host (const char *host, int flags)
 
     xzero (hints);
     hints.ai_socktype = SOCK_STREAM;
-    hints.ai_family = AF_UNSPEC;
     if (opt.ipv4_only && !opt.ipv6_only)
       hints.ai_family = AF_INET;
     else if (opt.ipv6_only && !opt.ipv4_only)
       hints.ai_family = AF_INET6;
-
+    else
+      {
+	hints.ai_family = AF_UNSPEC;
 #ifdef HAVE_GETADDRINFO_AI_ADDRCONFIG
-    /* Use AI_ADDRCONFIG where available.  See init.c:defaults().  */
-    hints.ai_flags |= AI_ADDRCONFIG;
+	/* Use AI_ADDRCONFIG if available and if specific family isn't
+	   explicitly requested.  See init.c:defaults().  */
+	hints.ai_flags |= AI_ADDRCONFIG;
 #endif
+      }
     if (flags & LH_BIND)
       hints.ai_flags |= AI_PASSIVE;
 
