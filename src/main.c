@@ -179,7 +179,7 @@ Download:\n\
        --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n\
        --limit-rate=RATE        limit download rate to RATE.\n\
        --dns-cache=off          disable caching DNS lookups.\n\
-       --restrict-file-names=MODE restrict chars in file names to MODE.\n\
+       --restrict-file-names=OS restrict chars in file names to ones OS allows.\n\
 \n"), stdout);
   fputs (_("\
 Directories:\n\

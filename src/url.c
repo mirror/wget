@@ -1479,23 +1479,22 @@ append_char (char ch, struct growable *dest)
 }
 
 enum {
-  filechr_unsafe_always  = 1,	/* always unsafe, e.g. / or \0 */
-  filechr_unsafe_shell   = 2,	/* unsafe for shell use, e.g. control chars */
-  filechr_unsafe_windows = 2,	/* disallowed on Windows file system */
+  filechr_not_unix    = 1,	/* unusable on Unix, / and \0 */
+  filechr_not_windows = 2,	/* unusable on Windows, one of \|/<>?:*" */
+  filechr_control     = 4,	/* a control character, e.g. 0-31 */
 };
 
 #define FILE_CHAR_TEST(c, mask) (filechr_table[(unsigned char)(c)] & (mask))
 
 /* Shorthands for the table: */
-#define A filechr_unsafe_always
-#define S filechr_unsafe_shell
-#define W filechr_unsafe_windows
+#define U filechr_not_unix
+#define W filechr_not_windows
+#define C filechr_control
 
-/* Forbidden chars:
+#define UW U|W
+#define UWC U|W|C
 
-   always: \0, /
-   Unix shell: 0-31, 128-159
-   Windows:    \, |, /, <, >, ?, :
+/* Table of characters unsafe under various conditions (see above).
 
    Arguably we could also claim `%' to be unsafe, since we use it as
    the escape character.  If we ever want to be able to reliably
@@ -1504,12 +1503,12 @@ enum {
 
 const static unsigned char filechr_table[256] =
 {
-  A,  S,  S,  S,   S,  S,  S,  S,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
-  S,  S,  S,  S,   S,  S,  S,  S,   /* BS  HT  LF  VT   FF  CR  SO  SI  */
-  S,  S,  S,  S,   S,  S,  S,  S,   /* DLE DC1 DC2 DC3  DC4 NAK SYN ETB */
-  S,  S,  S,  S,   S,  S,  S,  S,   /* CAN EM  SUB ESC  FS  GS  RS  US  */
+UWC,  C,  C,  C,   C,  C,  C,  C,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
+  C,  C,  C,  C,   C,  C,  C,  C,   /* BS  HT  LF  VT   FF  CR  SO  SI  */
+  C,  C,  C,  C,   C,  C,  C,  C,   /* DLE DC1 DC2 DC3  DC4 NAK SYN ETB */
+  C,  C,  C,  C,   C,  C,  C,  C,   /* CAN EM  SUB ESC  FS  GS  RS  US  */
   0,  0,  W,  0,   0,  0,  0,  0,   /* SP  !   "   #    $   %   &   '   */
-  0,  0,  W,  0,   0,  0,  0,  A,   /* (   )   *   +    ,   -   .   /   */
+  0,  0,  W,  0,   0,  0,  0, UW,   /* (   )   *   +    ,   -   .   /   */
   0,  0,  0,  0,   0,  0,  0,  0,   /* 0   1   2   3    4   5   6   7   */
   0,  0,  W,  0,   W,  0,  W,  W,   /* 8   9   :   ;    <   =   >   ?   */
   0,  0,  0,  0,   0,  0,  0,  0,   /* @   A   B   C    D   E   F   G   */
@@ -1521,8 +1520,8 @@ const static unsigned char filechr_table[256] =
   0,  0,  0,  0,   0,  0,  0,  0,   /* p   q   r   s    t   u   v   w   */
   0,  0,  0,  0,   0,  0,  0,  0,   /* x   y   z   {    |   }   ~   DEL */
 
-  S, S, S, S,  S, S, S, S,  S, S, S, S,  S, S, S, S, /* 128-143 */
-  S, S, S, S,  S, S, S, S,  S, S, S, S,  S, S, S, S, /* 144-159 */
+  C, C, C, C,  C, C, C, C,  C, C, C, C,  C, C, C, C, /* 128-143 */
+  C, C, C, C,  C, C, C, C,  C, C, C, C,  C, C, C, C, /* 144-159 */
   0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
   0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
 
@@ -1532,30 +1531,16 @@ const static unsigned char filechr_table[256] =
   0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
 };
 
-/* Return non-zero if character CH is unsafe for use in file or
-   directory name.  Called by append_uri_pathel. */
-
-static inline int
-file_unsafe_char (char ch, int restrict)
-{
-  int mask = filechr_unsafe_always;
-  if (restrict == restrict_shell)
-    mask |= filechr_unsafe_shell;
-  else if (restrict == restrict_windows)
-    mask |= (filechr_unsafe_shell | filechr_unsafe_windows);
-  return FILE_CHAR_TEST (ch, mask);
-}
-
 /* FN_PORT_SEP is the separator between host and port in file names
    for non-standard port numbers.  On Unix this is normally ':', as in
    "www.xemacs.org:4001/index.html".  Under Windows, we set it to +
    because Windows can't handle ':' in file names.  */
-#define FN_PORT_SEP  (opt.restrict_file_names != restrict_windows ? ':' : '+')
+#define FN_PORT_SEP  (opt.restrict_files_os != restrict_windows ? ':' : '+')
 
 /* FN_QUERY_SEP is the separator between the file name and the URL
    query, normally '?'.  Since Windows cannot handle '?' as part of
    file name, we use '@' instead there.  */
-#define FN_QUERY_SEP (opt.restrict_file_names != restrict_windows ? '?' : '@')
+#define FN_QUERY_SEP (opt.restrict_files_os != restrict_windows ? '?' : '@')
 
 /* Quote path element, characters in [b, e), as file name, and append
    the quoted string to DEST.  Each character is quoted as per
@@ -1570,12 +1555,13 @@ append_uri_pathel (const char *b, const char *e, struct growable *dest)
   const char *p;
   int quoted, outlen;
 
-  /* Currently restrict_for_windows is determined at compile time
-     only.  But some users download files to Windows partitions; they
-     should be able to say --windows-file-names so Wget escapes
-     characters invalid on Windows.  Similar run-time restrictions for
-     other file systems can be implemented.  */
-  const int restrict = opt.restrict_file_names;
+  int mask;
+  if (opt.restrict_files_os == restrict_unix)
+    mask = filechr_not_unix;
+  else
+    mask = filechr_not_windows;
+  if (opt.restrict_files_ctrl)
+    mask |= filechr_control;
 
   /* Copy [b, e) to PATHEL and URL-unescape it. */
   BOUNDED_TO_ALLOCA (b, e, pathel);
@@ -1586,7 +1572,7 @@ append_uri_pathel (const char *b, const char *e, struct growable *dest)
      add for file quoting. */
   quoted = 0;
   for (p = pathel; *p; p++)
-    if (file_unsafe_char (*p, restrict))
+    if (FILE_CHAR_TEST (*p, mask))
       ++quoted;
 
   /* p - pathel is the string length.  Each quoted char means two
@@ -1605,7 +1591,7 @@ append_uri_pathel (const char *b, const char *e, struct growable *dest)
       char *q = TAIL (dest);
       for (p = pathel; *p; p++)
 	{
-	  if (!file_unsafe_char (*p, restrict))
+	  if (!FILE_CHAR_TEST (*p, mask))
 	    *q++ = *p;
 	  else
 	    {

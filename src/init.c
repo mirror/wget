@@ -189,7 +189,7 @@ static struct {
   { "reject",		&opt.rejects,		cmd_vector },
   { "relativeonly",	&opt.relative_only,	cmd_boolean },
   { "removelisting",	&opt.remove_listing,	cmd_boolean },
-  { "restrictfilenames", &opt.restrict_file_names, cmd_spec_restrict_file_names },
+  { "restrictfilenames", NULL,			cmd_spec_restrict_file_names },
   { "retrsymlinks",	&opt.retr_symlinks,	cmd_boolean },
   { "retryconnrefused",	&opt.retry_connrefused,	cmd_boolean },
   { "robots",		&opt.use_robots,	cmd_boolean },
@@ -286,10 +286,11 @@ defaults (void)
 
   /* The default for file name restriction defaults to the OS type. */
 #if !defined(WINDOWS) && !defined(__CYGWIN__)
-  opt.restrict_file_names = restrict_shell;
+  opt.restrict_files_os = restrict_unix;
 #else
-  opt.restrict_file_names = restrict_windows;
+  opt.restrict_files_os = restrict_windows;
 #endif
+  opt.restrict_files_ctrl = 1;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is
@@ -1020,20 +1021,41 @@ cmd_spec_recursive (const char *com, const char *val, void *closure)
 static int
 cmd_spec_restrict_file_names (const char *com, const char *val, void *closure)
 {
-  /* The currently accepted values are `none', `unix', and
-     `windows'.  */
-  if (0 == strcasecmp (val, "none"))
-    opt.restrict_file_names = restrict_none;
-  else if (0 == strcasecmp (val, "unix"))
-    opt.restrict_file_names = restrict_shell;
-  else if (0 == strcasecmp (val, "windows"))
-    opt.restrict_file_names = restrict_windows;
+  int restrict_os = opt.restrict_files_os;
+  int restrict_ctrl = opt.restrict_files_ctrl;
+
+  const char *end = strchr (val, ',');
+  if (!end)
+    end = val + strlen (val);
+
+#define VAL_IS(string_literal) BOUNDED_EQUAL (val, end, string_literal)
+
+  if (VAL_IS ("unix"))
+    restrict_os = restrict_unix;
+  else if (VAL_IS ("windows"))
+    restrict_os = restrict_windows;
+  else if (VAL_IS ("nocontrol"))
+    restrict_ctrl = 0;
   else
     {
+    err:
       fprintf (stderr, _("%s: %s: Invalid specification `%s'.\n"),
 	       exec_name, com, val);
       return 0;
     }
+
+#undef VAL_IS
+
+  if (*end)
+    {
+      if (!strcmp (end + 1, "nocontrol"))
+	restrict_ctrl = 0;
+      else
+	goto err;
+    }
+
+  opt.restrict_files_os = restrict_os;
+  opt.restrict_files_ctrl = restrict_ctrl;
   return 1;
 }
 

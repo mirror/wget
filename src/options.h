@@ -186,10 +186,12 @@ struct options
   char *post_file_name;		/* File to post */
 
   enum {
-    restrict_none,
-    restrict_shell,
+    restrict_unix,
     restrict_windows
-  } restrict_file_names;	/* whether we restrict file name chars. */
+  } restrict_files_os;		/* file name restriction ruleset. */
+  int restrict_files_ctrl;	/* non-zero if control chars in URLs
+				   are restricted from appearing in
+				   generated file names. */
 };
 
 extern struct options opt;
