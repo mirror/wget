@@ -689,7 +689,8 @@ static int simple_atoi PARAMS ((const char *, const char *, int *));
 static int
 cmd_number (const char *com, const char *val, void *closure)
 {
-  if (!simple_atoi (val, val + strlen (val), closure))
+  if (!simple_atoi (val, val + strlen (val), closure)
+      || *(int *) closure < 0)
     {
       fprintf (stderr, _("%s: %s: Invalid number `%s'.\n"),
 	       exec_name, com, val);
@@ -903,7 +904,7 @@ parse_bytes_helper (const char *val, double *result)
   if (val == end)
     return 0;
 
-  if (!simple_atof (val, end, &number))
+  if (!simple_atof (val, end, &number) || number < 0)
     return 0;
 
   *result = number * mult;
@@ -1189,21 +1190,46 @@ cmd_spec_useragent (const char *com, const char *val, void *closure)
 
 /* Miscellaneous useful routines.  */
 
-/* A very simple atoi clone, more portable than strtol and friends,
-   but reports errors, unlike atoi.  Returns 1 on success, 0 on
-   failure.  In case of success, stores result to *DEST.  */
+/* A very simple atoi clone, more useful than atoi because it works on
+   delimited strings, and has error reportage.  Returns 1 on success,
+   0 on failure.  If successful, stores result to *DEST.  */
 
 static int
 simple_atoi (const char *beg, const char *end, int *dest)
 {
   int result = 0;
-  const char *p;
+  int negative = 0;
+  const char *p = beg;
 
-  if (beg == end)
+  while (p < end && ISSPACE (*p))
+    ++p;
+  if (p < end && (*p == '-' || *p == '+'))
+    {
+      negative = (*p == '-');
+      ++p;
+    }
+  if (p == end)
     return 0;
 
-  for (p = beg; p < end && ISDIGIT (*p); p++)
-    result = (10 * result) + (*p - '0');
+  /* Read negative numbers in a separate loop because the most
+     negative integer cannot be represented as a positive number.  */
+
+  if (!negative)
+    for (; p < end && ISDIGIT (*p); p++)
+      {
+	int next = (10 * result) + (*p - '0');
+	if (next < result)
+	  return 0;		/* overflow */
+	result = next;
+      }
+  else
+    for (; p < end && ISDIGIT (*p); p++)
+      {
+	int next = (10 * result) - (*p - '0');
+	if (next > result)
+	  return 0;		/* underflow */
+	result = next;
+      }
 
   if (p != end)
     return 0;
@@ -1221,13 +1247,22 @@ simple_atof (const char *beg, const char *end, double *dest)
 {
   double result = 0;
 
+  int negative = 0;
   int seen_dot = 0;
   int seen_digit = 0;
   double divider = 1;
 
-  const char *p;
+  const char *p = beg;
 
-  for (p = beg; p < end; p++)
+  while (p < end && ISSPACE (*p))
+    ++p;
+  if (p < end && (*p == '-' || *p == '+'))
+    {
+      negative = (*p == '-');
+      ++p;
+    }
+
+  for (; p < end; p++)
     {
       char ch = *p;
       if (ISDIGIT (ch))
@@ -1250,6 +1285,8 @@ simple_atof (const char *beg, const char *end, double *dest)
     }
   if (!seen_digit)
     return 0;
+  if (negative)
+    result = -result;
 
   *dest = result;
   return 1;

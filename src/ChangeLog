@@ -1,3 +1,11 @@
+2005-03-12  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* init.c (simple_atof): Handle negative numbers; skip whitespace
+	before the number.
+	(simple_atoi): Ditto.  Also, check for overflow and underflow.
+	(cmd_number): Bail out on negative numbers.
+	(parse_bytes_helper): Ditto.
+
 2005-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (gethttp): Handle multiple Set-Cookie headers sent by
