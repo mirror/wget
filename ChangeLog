@@ -1,5 +1,9 @@
 2000-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* po/POTFILES.in: Updated.
+
+2000-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* configure.in: Add windows/Makefile to the output block.
 
 	* windows/Makefile.in: New file.
