@@ -6,7 +6,7 @@ This file is part of GNU Wget.
 GNU Wget is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ (at your option) any later version.
 
 GNU Wget is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -53,7 +53,13 @@ struct taginfo {
   const char *end_position;	/* end position of tag */
 };
 
-void map_html_tags PARAMS ((const char *, int, const char **, const char **,
-			    void (*) (struct taginfo *, void *), void *));
+/* Flags for map_html_tags: */
+#define MHT_STRICT_COMMENTS  1  /* use strict comment interpretation */
+#define MHT_TRIM_VALUES      2  /* trim attribute values, e.g. interpret
+                                   <a href=" foo "> as "foo" */
+
+void map_html_tags PARAMS ((const char *, int,
+			    void (*) (struct taginfo *, void *), void *,
+			    int, const char **, const char **));
 
 #endif /* HTML_PARSE_H */

@@ -643,6 +643,7 @@ get_urls_html (const char *file, const char *url, int *meta_disallow_follow)
 {
   struct file_memory *fm;
   struct map_context ctx;
+  int flags;
 
   /* Load the file. */
   fm = read_file (file);
@@ -663,8 +664,16 @@ get_urls_html (const char *file, const char *url, int *meta_disallow_follow)
   if (!interesting_tags)
     init_interesting ();
 
-  map_html_tags (fm->content, fm->length, interesting_tags,
-		 interesting_attributes, collect_tags_mapper, &ctx);
+  /* Specify MHT_TRIM_VALUES because of buggy HTML generators that
+     generate <a href=" foo"> instead of <a href="foo"> (Netscape
+     ignores spaces as well.)  If you really mean space, use &32; or
+     %20.  */
+  flags = MHT_TRIM_VALUES;
+  if (opt.strict_comments)
+    flags |= MHT_STRICT_COMMENTS;
+
+  map_html_tags (fm->content, fm->length, collect_tags_mapper, &ctx, flags,
+		 interesting_tags, interesting_attributes);
 
   DEBUGP (("no-follow in %s: %d\n", file, ctx.nofollow));
   if (meta_disallow_follow)

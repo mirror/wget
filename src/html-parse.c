@@ -129,8 +129,6 @@ so, delete this exception statement from your version.  */
 # define ISALNUM(x) isalnum (x)
 # define TOLOWER(x) tolower (x)
 # define TOUPPER(x) toupper (x)
-
-static struct options opt;
 #endif /* STANDALONE */
 
 /* Pool support.  A pool is a resizable chunk of memory.  It is first
@@ -692,7 +690,7 @@ static int tag_backout_count;
 
 /* Map MAPFUN over HTML tags in TEXT, which is SIZE characters long.
    MAPFUN will be called with two arguments: pointer to an initialized
-   struct taginfo, and CLOSURE.
+   struct taginfo, and MAPARG.
 
    ALLOWED_TAG_NAMES should be a NULL-terminated array of tag names to
    be processed by this function.  If it is NULL, all the tags are
@@ -708,10 +706,10 @@ static int tag_backout_count;
 
 void
 map_html_tags (const char *text, int size,
+	       void (*mapfun) (struct taginfo *, void *), void *maparg,
+	       int flags,
 	       const char **allowed_tag_names,
-	       const char **allowed_attribute_names,
-	       void (*mapfun) (struct taginfo *, void *),
-	       void *closure)
+	       const char **allowed_attribute_names)
 {
   /* storage for strings passed to MAPFUN callback; if 256 bytes is
      too little, POOL_APPEND allocates more with malloc. */
@@ -756,7 +754,7 @@ map_html_tags (const char *text, int size,
        declaration).  */
     if (*p == '!')
       {
-	if (!opt.strict_comments
+	if (!(flags & MHT_STRICT_COMMENTS)
 	    && p < end + 3 && p[1] == '-' && p[2] == '-')
 	  {
 	    /* If strict comments are not enforced and if we know
@@ -893,11 +891,9 @@ map_html_tags (const char *text, int size,
 		  goto look_for_tag;
 		attr_raw_value_end = p;	/* <foo bar="baz"> */
 					/*               ^ */
-		/* The AP_TRIM_BLANKS is there for buggy HTML
-		   generators that generate <a href=" foo"> instead of
-		   <a href="foo"> (Netscape ignores spaces as well.)
-		   If you really mean space, use &32; or %20.  */
-		operation = AP_PROCESS_ENTITIES | AP_TRIM_BLANKS;
+		operation = AP_PROCESS_ENTITIES;
+		if (flags & MHT_TRIM_VALUES)
+		  operation |= AP_TRIM_BLANKS;
 	      }
 	    else
 	      {
@@ -985,7 +981,7 @@ map_html_tags (const char *text, int size,
       taginfo.start_position = tag_start_position;
       taginfo.end_position   = p + 1;
       /* Ta-dam! */
-      (*mapfun) (&taginfo, closure);
+      (*mapfun) (&taginfo, maparg);
       ADVANCE (p);
     }
     goto look_for_tag;

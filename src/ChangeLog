@@ -1,5 +1,13 @@
 2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* html-url.c (get_urls_html): Parse the appropriate flags to
+	html-parse.c.
+
+	* html-parse.c (map_html_tags): Accept FLAGS from the caller
+	instead of examining OPT.
+
+2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* html-url.c (find_tag): Switch to binary search.
 
 2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
