@@ -1,3 +1,10 @@
+2001-04-09  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* init.c (cmd_file): New function.
+	(enable_tilde_expansion): New variable.
+	(run_wgetrc): Use it.
+	(cmd_file): Use it.
+
 2001-04-08  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* init.c: Include cookie-related options.

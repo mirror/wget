@@ -26,6 +26,10 @@ servers.
 ** It is now possible to recurse through FTP sites where logging in
 puts you in some directory other than '/'.
 
+** You may now use `~' to mean home directory in `.wgetrc'.  For
+example, `load_cookies = ~/.netscape/cookies.txt' works as you would
+expect.
+
 ** The HTML parser has been rewritten.  The new one works more
 reliably, allows finer-grained control over which tags and attributes
 are detected, and has better support for some features like correctly

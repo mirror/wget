@@ -55,6 +55,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 extern int errno;
 #endif
 
+/* We want tilde expansion enabled only when reading `.wgetrc' lines;
+   otherwise, it will be performed by the shell.  This variable will
+   be set by the wgetrc-reading function.  */
+
+static int enable_tilde_expansion;
+
 
 #define CMD_DECLARE(func) static int func \
   PARAMS ((const char *, const char *, void *))
@@ -67,6 +73,7 @@ CMD_DECLARE (cmd_lockable_boolean);
 CMD_DECLARE (cmd_number);
 CMD_DECLARE (cmd_number_inf);
 CMD_DECLARE (cmd_string);
+CMD_DECLARE (cmd_file);
 CMD_DECLARE (cmd_time);
 CMD_DECLARE (cmd_vector);
 
@@ -105,7 +112,7 @@ static struct {
   { "debug",		&opt.debug,		cmd_boolean },
 #endif
   { "deleteafter",	&opt.delete_after,	cmd_boolean },
-  { "dirprefix",	&opt.dir_prefix,	cmd_string },
+  { "dirprefix",	&opt.dir_prefix,	cmd_file },
   { "dirstruct",	NULL,			cmd_spec_dirstruct },
   { "domains",		&opt.domains,		cmd_vector },
   { "dotbytes",		&opt.dot_bytes,		cmd_bytes },
@@ -130,10 +137,10 @@ static struct {
   { "ignorelength",	&opt.ignore_length,	cmd_boolean },
   { "ignoretags",	&opt.ignore_tags,	cmd_vector },
   { "includedirectories", &opt.includes,	cmd_directory_vector },
-  { "input",		&opt.input_filename,	cmd_string },
+  { "input",		&opt.input_filename,	cmd_file },
   { "killlonger",	&opt.kill_longer,	cmd_boolean },
-  { "loadcookies",	&opt.cookies_input,	cmd_string },
-  { "logfile",		&opt.lfilename,		cmd_string },
+  { "loadcookies",	&opt.cookies_input,	cmd_file },
+  { "logfile",		&opt.lfilename,		cmd_file },
   { "login",		&opt.ftp_acc,		cmd_string },
   { "mirror",		NULL,			cmd_spec_mirror },
   { "netrc",		&opt.netrc,		cmd_boolean },
@@ -141,7 +148,7 @@ static struct {
   { "noparent",		&opt.no_parent,		cmd_boolean },
   { "noproxy",		&opt.no_proxy,		cmd_vector },
   { "numtries",		&opt.ntry,		cmd_number_inf },/* deprecated*/
-  { "outputdocument",	&opt.output_document,	cmd_string },
+  { "outputdocument",	&opt.output_document,	cmd_file },
   { "pagerequisites",	&opt.page_requisites,	cmd_boolean },
   { "passiveftp",	&opt.ftp_pasv,		cmd_lockable_boolean },
   { "passwd",		&opt.ftp_pass,		cmd_string },
@@ -157,15 +164,15 @@ static struct {
   { "removelisting",	&opt.remove_listing,	cmd_boolean },
   { "retrsymlinks",	&opt.retr_symlinks,	cmd_boolean },
   { "robots",		&opt.use_robots,	cmd_boolean },
-  { "savecookies",	&opt.cookies_output,	cmd_string },
+  { "savecookies",	&opt.cookies_output,	cmd_file },
   { "saveheaders",	&opt.save_headers,	cmd_boolean },
   { "serverresponse",	&opt.server_response,	cmd_boolean },
   { "simplehostcheck",	&opt.simple_check,	cmd_boolean },
   { "spanhosts",	&opt.spanhost,		cmd_boolean },
   { "spider",		&opt.spider,		cmd_boolean },
 #ifdef HAVE_SSL
-  { "sslcertfile",	&opt.sslcertfile,	cmd_string },
-  { "sslcertkey",	&opt.sslcertkey,	cmd_string },
+  { "sslcertfile",	&opt.sslcertfile,	cmd_file },
+  { "sslcertkey",	&opt.sslcertkey,	cmd_file },
 #endif /* HAVE_SSL */
   { "timeout",		&opt.timeout,		cmd_time },
   { "timestamping",	&opt.timestamping,	cmd_boolean },
@@ -341,7 +348,7 @@ run_wgetrc (const char *file)
 	       file, strerror (errno));
       return;
     }
-  /* Reset line number.  */
+  enable_tilde_expansion = 1;
   ln = 1;
   while ((line = read_whole_line (fp)))
     {
@@ -365,6 +372,7 @@ run_wgetrc (const char *file)
 		 file, ln);
       ++ln;
     }
+  enable_tilde_expansion = 0;
   fclose (fp);
 }
 
@@ -637,6 +645,46 @@ cmd_string (const char *com, const char *val, void *closure)
 
   FREE_MAYBE (*pstring);
   *pstring = xstrdup (val);
+  return 1;
+}
+
+/* Like the above, but handles tilde-expansion when reading a user's
+   `.wgetrc'.  In that case, and if VAL begins with `~', the tilde
+   gets expanded to the user's home directory.  */
+static int
+cmd_file (const char *com, const char *val, void *closure)
+{
+  char **pstring = (char **)closure;
+
+  FREE_MAYBE (*pstring);
+  if (!enable_tilde_expansion || !(*val == '~' && *(val + 1) == '/'))
+    {
+    noexpand:
+      *pstring = xstrdup (val);
+    }
+  else
+    {
+      char *result;
+      int homelen;
+      char *home = home_dir ();
+      if (!home)
+	goto noexpand;
+
+      homelen = strlen (home);
+      while (homelen && home[homelen - 1] == '/')
+	home[--homelen] = '\0';
+
+      /* Skip the leading "~/". */
+      for (++val; *val == '/'; val++)
+	;
+
+      result = xmalloc (homelen + 1 + strlen (val));
+      memcpy (result, home, homelen);
+      result[homelen] = '/';
+      strcpy (result + homelen + 1, val);
+
+      *pstring = result;
+    }
   return 1;
 }
 
