@@ -559,6 +559,11 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   /* Whether keep-alive should be inhibited. */
   int inhibit_keep_alive;
 
+  /* Whether we need to print the host header with braces around host,
+     e.g. "Host: [3ffe:8100:200:2::2]:1234" instead of the usual
+     "Host: symbolic-name:1234". */
+  int squares_around_host = 0;
+
 #ifdef HAVE_SSL
   /* initialize ssl_ctx on first run */
   if (!ssl_ctx)
@@ -811,6 +816,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
        "param=value", full_path will be "/foo/bar?param=value".  */
     full_path = url_full_path (u);
 
+  if (strchr (u->host, ':'))
+    squares_around_host = 1;
+
   /* Allocate the memory for the request.  */
   request = (char *)alloca (strlen (command)
 			    + strlen (full_path)
@@ -832,11 +840,12 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   sprintf (request, "\
 %s %s HTTP/1.0\r\n\
 User-Agent: %s\r\n\
-Host: %s%s\r\n\
+Host: %s%s%s%s\r\n\
 Accept: %s\r\n\
 %s%s%s%s%s%s%s%s\r\n",
 	   command, full_path,
-	   useragent, u->host,
+	   useragent,
+	   squares_around_host ? "[" : "", u->host, squares_around_host ? "]" : "",
 	   port_maybe ? port_maybe : "",
 	   HTTP_ACCEPT,
 	   request_keep_alive ? request_keep_alive : "",

@@ -1,5 +1,10 @@
 2002-01-26  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (gethttp): Wrap host name in square brackets if it
+	contains a colon.
+
+2002-01-26  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (url_parse): Allow all hex digits, not only decimal ones,
 	to form an IP address.
 
