@@ -26,9 +26,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include <strings.h>
 #endif
 #include <stdlib.h>
-#if defined(__STDC__) && defined(HAVE_STDARG_H)
-/* If we have __STDC__ and stdarg.h, we'll assume it's an ANSI system.  */
-# define USE_STDARG
+#ifdef HAVE_STDARG_H
+# define WGET_USE_STDARG
 # include <stdarg.h>
 #else
 # include <varargs.h>
@@ -144,11 +143,7 @@ logvprintf (enum log_options o, const char *fmt, va_list args)
       DO_REALLOC (saved_log, saved_log_size,
 		  saved_log_offset + SAVED_LOG_MAXMSG, char);
       /* Print the message to the log saver...  */
-#ifdef HAVE_VSNPRINTF
       vsnprintf (saved_log + saved_log_offset, SAVED_LOG_MAXMSG, fmt, args);
-#else  /* not HAVE_VSNPRINTF */
-      vsprintf (saved_log + saved_log_offset, fmt, args);
-#endif /* not HAVE_VSNPRINTF */
       /* ...and then dump it to LOGFP.  */
       len = strlen (saved_log + saved_log_offset);
       fwrite (saved_log + saved_log_offset, len, 1, logfp);
@@ -174,22 +169,22 @@ logflush (void)
 
 /* Portability makes these two functions look like @#%#@$@#$.  */
 
-#ifdef USE_STDARG
+#ifdef WGET_USE_STDARG
 void
 logprintf (enum log_options o, const char *fmt, ...)
-#else  /* not USE_STDARG */
+#else  /* not WGET_USE_STDARG */
 void
 logprintf (va_alist)
      va_dcl
-#endif /* not USE_STDARG */
+#endif /* not WGET_USE_STDARG */
 {
   va_list args;
-#ifndef USE_STDARG
+#ifndef WGET_USE_STDARG
   enum log_options o;
   const char *fmt;
 #endif
 
-#ifdef USE_STDARG
+#ifdef WGET_USE_STDARG
   va_start (args, fmt);
 #else
   va_start (args);
@@ -203,23 +198,23 @@ logprintf (va_alist)
 #ifdef DEBUG
 /* The same as logprintf(), but does anything only if opt.debug is
    non-zero.  */
-#ifdef USE_STDARG
+#ifdef WGET_USE_STDARG
 void
 debug_logprintf (const char *fmt, ...)
-#else  /* not USE_STDARG */
+#else  /* not WGET_USE_STDARG */
 void
 debug_logprintf (va_alist)
      va_dcl
-#endif /* not USE_STDARG */
+#endif /* not WGET_USE_STDARG */
 {
   if (opt.debug)
     {
       va_list args;
-#ifndef USE_STDARG
+#ifndef WGET_USE_STDARG
       const char *fmt;
 #endif
 
-#ifdef USE_STDARG
+#ifdef WGET_USE_STDARG
       va_start (args, fmt);
 #else
       va_start (args);

@@ -147,6 +147,9 @@ char *strstr ();
 #ifndef HAVE_STRPTIME
 char *strptime ();
 #endif
+#ifndef HAVE_VSNPRINTF
+int vsnprintf ();
+#endif
 
 /* SunOS brain damage -- for some reason, SunOS header files fail to
    declare the functions below, which causes all kinds of problems
