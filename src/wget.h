@@ -28,8 +28,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # define NDEBUG /* To kill off assertions */
 #endif /* not DEBUG */
 
-#define DEBUG_MALLOC
-
 #ifndef PARAMS
 # if PROTOTYPES
 #  define PARAMS(args) args
