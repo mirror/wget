@@ -47,7 +47,9 @@ Please report bugs in Wget to <bug-wget@gnu.org>.
 
 Wget has a mailing list at <wget@sunsite.dk>.  To subscribe, mail to
 <wget-subscribe@sunsite.dk>.  Wget's home page is temporarily at
-<URL:http://sunsite.dk/wget/>.  It will soon be moved to www.gnu.org.
+<URL:http://sunsite.dk/wget/>.  It is being migrated to
+<URL:http://www.gnu.org/software/wget/>, where will be its permanent
+home.
 
 Wget is free in all senses -- it is freely redistributable, and no
 payment is required.  If you still wish to donate money to the
