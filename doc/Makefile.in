@@ -65,7 +65,7 @@ wget.info: $(SAMPLERCTEXI) $(srcdir)/wget.texi
 	-$(MAKEINFO)
 
 $(TEXI2POD): $(srcdir)/$(TEXI2POD).in
-	sed s^/usr/bin/perl^@PERL@^ $< > $@
+	sed s,/usr/bin/perl,@PERL@, $< > $@
 	chmod u+x $@
 
 wget.pod: $(srcdir)/wget.texi texi2pod.pl

@@ -1,3 +1,8 @@
+2001-03-17  Dan Harkless  <wget@harkless.org>
+
+	* Makefile.in: Using '^' in the sed call caused a weird failure on 
+	Solaris 2.6.  Changed it to a ','.
+	
 2001-02-23  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi: Corrections, clarifications, and English fixes to
