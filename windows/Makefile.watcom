@@ -9,7 +9,7 @@ CC=wcc386 /zq
 LINK=wlink
 
 #disabled for faster compiler
-LFLAGS=sys nt op st=32767 op vers=1.7 op map op q op de 'GNU wget 1.7dev'
+LFLAGS=sys nt op st=32767 op vers=1.7 op map op q op de 'GNU wget 1.7dev' de all
 CFLAGS=/zp4 /d1 /w4 /fpd /5s /fp5 /bm /mf /os /bt=nt /DWINDOWS /DHAVE_CONFIG_H /I=$(%WATCOM)\h;$(%WATCOM)\h\nt;.
 # /zp4= pack structure members with this alignment
 # /d1 = line number debug info
@@ -22,58 +22,59 @@ CFLAGS=/zp4 /d1 /w4 /fpd /5s /fp5 /bm /mf /os /bt=nt /DWINDOWS /DHAVE_CONFIG_H /
 # /os = optimize for size
 # /bt = "build target" (nt)
 
-OBJS = FILE cmpt.obj,connect.obj,cookies.obj,fnmatch.obj,ftp.obj,ftp-basic.obj, &
-      ftp-ls.obj,ftp-opie.obj,getopt.obj,hash.obj,headers.obj,host.obj,html-parse.obj,html-url.obj, &
-      http.obj,init.obj,log.obj,main.obj,md5.obj,netrc.obj,rbuf.obj, &
-      recur.obj,retr.obj,safe-ctype.obj,url.obj,utils.obj,version.obj,mswindows.obj
 #
-# NOTE: these two MUST be kept absolutely in sync
-# alas, no text functions in Watcom make :-(
+# The trouble: dependencies need to be space-separated (exe : obj1 obj2)
+#              wlink wants them comma-separated ( wlink FILE obj1,obj2 )
+# The trick  : Use wmake's "immediate expansion" feautre ( $+ turns it on, 
+#              end-of-line and $_ turns it off ) to construct 
+# Background : wmake expands macros in macro definitions at the place of
+#              the macro call (GNU make's = behaviour)
+#              $+ changes this behaviour to expand the macros at the 
+#              place of the macro *definition* (kinda like gmake's := does)
 #
-LINKOBJS = cmpt.obj connect.obj cookies.obj fnmatch.obj ftp.obj ftp-basic.obj &
-      ftp-ls.obj ftp-opie.obj getopt.obj hash.obj headers.obj host.obj html-parse.obj html-url.obj &
-      http.obj init.obj log.obj main.obj md5.obj netrc.obj rbuf.obj &
-      recur.obj retr.obj safe-ctype.obj url.obj utils.obj version.obj mswindows.obj
+# See the "Macros" topic in the Watcom Tools Guide
+#
+
+#
+# Add new object files to OBJS, with $_ appended
+# Note: There MUST NOT be a $_ on the last one !!
+#       & is the line continuation character (also shouldn't be present at the end)
+#
+OBJS = cmpt.obj$_ connect.obj$_ cookies.obj$_ fnmatch.obj$_ ftp.obj$_ ftp-basic.obj$_  &
+      ftp-ls.obj$_ ftp-opie.obj$_ getopt.obj$_ hash.obj$_ headers.obj$_ host.obj$_ html-parse.obj$_ html-url.obj$_  &
+      http.obj$_ init.obj$_ log.obj$_ main.obj$_ md5.obj$_ netrc.obj$_ rbuf.obj$_  &
+      recur.obj$_ retr.obj$_ safe-ctype.obj$_ url.obj$_ utils.obj$_ version.obj$_ mswindows.obj
 
 
-LIBFILES =
+#
+# For LINKOBJS, $_ is defined as a comma
+#
+_=,
+LINKOBJS=FILE $+$(OBJS)$-
+
+#
+# Empty $_ again. OBJS now can be used as the dependency list for wget.exe
+#
+_=
+
+
+
+LIBFILES = 
+#
+# Add extra libs like this :
+#LIBFILES = LIBF lz32.lib,gdi32.lib
 
 BINNAME=wget.exe
 
-$(BINNAME): $(LINKOBJS)
-        $(LINK) $(LFLAGS) NAME $(BINNAME) $(OBJS) $(LIBPATH) $(LIBFILES)
+$(BINNAME): $(OBJS) Makefile
+        $(LINK) $(LFLAGS) NAME $(BINNAME) $(LINKOBJS) $(LIBPATH) $(LIBFILES)
 
 
-cmpt.obj : cmpt.c  wget.h sysdep.h options.h utils.h
-connect.obj   : connect.c    wget.h sysdep.h options.h utils.h  connect.h host.h
-cookies.obj   : cookies.c    wget.h sysdep.h options.h utils.h  cookies.h hash.h url.h utils.h
-fnmatch.obj   : fnmatch.c    wget.h sysdep.h options.h utils.h  fnmatch.h
-ftp-basic.obj : ftp-basic.c  wget.h sysdep.h options.h utils.h  utils.h rbuf.h connect.h host.h
-ftp-ls.obj    : ftp-ls.c     wget.h sysdep.h options.h utils.h  utils.h ftp.h url.h
-ftp-opie.obj  : ftp-opie.c   wget.h sysdep.h options.h utils.h  md5.h
-ftp.obj  : ftp.c   wget.h sysdep.h options.h utils.h  utils.h url.h rbuf.h retr.h ftp.h connect.h host.h fnmatch.h netrc.h
-getopt.obj    : getopt.c     wget.h sysdep.h options.h utils.h  getopt.h
-hash.obj : hash.c  wget.h sysdep.h options.h utils.h  utils.h hash.h
-headers.obj   : headers.c    wget.h sysdep.h options.h utils.h  connect.h rbuf.h headers.h
-host.obj : host.c  wget.h sysdep.h options.h utils.h  utils.h host.h url.h hash.h
-html-parse.obj     : html-parse.c wget.h sysdep.h options.h utils.h  html-parse.h
-html-url.obj  : html-url.c   wget.h sysdep.h options.h utils.h  html-parse.h url.h utils.h
-html.obj : html.c  wget.h sysdep.h options.h utils.h  url.h utils.h ftp.h
-http.obj : http.c  wget.h sysdep.h options.h utils.h  utils.h url.h host.h rbuf.h retr.h headers.h cookies.h connect.h fnmatch.h netrc.h md5.h
-init.obj : init.c  wget.h sysdep.h options.h utils.h  utils.h init.h host.h recur.h netrc.h
-log.obj  : log.c   wget.h sysdep.h options.h utils.h  utils.h
-main.obj : main.c  wget.h sysdep.h options.h utils.h  utils.h getopt.h init.h retr.h recur.h host.h cookies.h
-md5.obj  : md5.c   wget.h sysdep.h options.h utils.h  md5.h
-mswindows.obj : mswindows.c  wget.h sysdep.h options.h utils.h  url.h
-netrc.obj     : netrc.c wget.h sysdep.h options.h utils.h  utils.h netrc.h init.h
-rbuf.obj : rbuf.c  wget.h sysdep.h options.h utils.h  rbuf.h connect.h
-recur.obj     : recur.c wget.h sysdep.h options.h utils.h  url.h recur.h utils.h retr.h ftp.h fnmatch.h host.h hash.h
-retr.obj : retr.c  wget.h sysdep.h options.h utils.h  utils.h retr.h url.h recur.h ftp.h host.h connect.h hash.h
-snprintf.obj  : snprintf.c
-safe-ctype.obj     : safe-ctype.c safe-ctype.h
-url.obj  : url.c   wget.h sysdep.h options.h utils.h  utils.h url.h host.h
-utils.obj     : utils.c wget.h sysdep.h options.h utils.h  utils.h fnmatch.h hash.h
-version.obj   : version.c
+#
+# Explicit dependencies not needed because Watcom C stores
+# dependency information in the object file. Wmake can read this information
+# if prompted by .AUTODEPEND
+#
 
-.c.obj:
-	$(CC) $(CFLAGS) $[@
+.c.obj: .AUTODEPEND
+        $(CC) $(CFLAGS) $[@

@@ -1,3 +1,7 @@
+2001-05-14  Csaba Raduly  <csaba.raduly@sophos.com>
+
+	* windows/Makefile.watcom: Rewritten.
+
 2001-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* po/zh_TW.po: Reinstated, after an update by Abel Cheung.
