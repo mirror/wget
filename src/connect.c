@@ -614,7 +614,7 @@ sock_close (int fd)
    or SSL_read or whatever is necessary.  */
 
 static struct hash_table *extended_map;
-static long extended_map_modified_tick;
+static int extended_map_modified_tick;
 
 struct extended_info {
   xreader_t reader;
