@@ -73,7 +73,7 @@ ssl_init_prng (void)
     return;
 
   /* Get random data from EGD if opt.sslegdsock was set.  */
-  if (opt.sslegdsock)
+  if (opt.sslegdsock && *opt.sslegdsock)
     RAND_egd (opt.sslegdsock);
 
   if (RAND_status ())

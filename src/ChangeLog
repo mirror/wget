@@ -1,5 +1,13 @@
 2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* gen_sslfunc.c (ssl_init_prng): Allow the user to disable EGD by
+	setting egd_file it to empty string.
+
+	* main.c (main): Change the option name from --sslegdsock to
+	--egd-file.
+
+2001-12-06  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* gen_sslfunc.c (ssl_init_prng): Make the printed message
 	translatable.
 

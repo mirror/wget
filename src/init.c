@@ -179,7 +179,7 @@ static struct {
 #ifdef HAVE_SSL
   { "sslcertfile",	&opt.sslcertfile,	cmd_file },
   { "sslcertkey",	&opt.sslcertkey,	cmd_file },
-  { "sslegdsock",	&opt.sslegdsock,	cmd_file },
+  { "egdfile",		&opt.sslegdsock,	cmd_file },
 #endif /* HAVE_SSL */
   { "timeout",		&opt.timeout,		cmd_time },
   { "timestamping",	&opt.timestamping,	cmd_boolean },
@@ -670,6 +670,9 @@ cmd_file (const char *com, const char *val, void *closure)
   char **pstring = (char **)closure;
 
   FREE_MAYBE (*pstring);
+
+  /* #### If VAL is empty, perhaps should set *CLOSURE to NULL.  */
+
   if (!enable_tilde_expansion || !(*val == '~' && *(val + 1) == '/'))
     {
     noexpand:

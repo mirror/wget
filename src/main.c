@@ -150,7 +150,7 @@ Logging and input file:\n\
   -B,  --base=URL             prepends URL to relative links in -F -i file.\n\
        --sslcertfile=FILE     optional client certificate.\n\
        --sslcertkey=KEYFILE   optional keyfile for this certificate.\n\
-       --sslegdsock=FILE      socket to the egd daemon(random data source).\n\
+       --egd-file=FILE        file name of the EGD socket.\n\
 \n"), stdout);
   fputs (_("\
 Download:\n\
@@ -324,7 +324,7 @@ main (int argc, char *const *argv)
 #ifdef HAVE_SSL
     { "sslcertfile", required_argument, NULL, 158 },
     { "sslcertkey", required_argument, NULL, 159 },
-    { "sslegdsock", required_argument, NULL, 166 },
+    { "egd-file", required_argument, NULL, 166 },
 #endif /* HAVE_SSL */
     { "wait", required_argument, NULL, 'w' },
     { "waitretry", required_argument, NULL, 152 },
@@ -546,7 +546,7 @@ GNU General Public License for more details.\n"));
 	  setval ("sslcertkey", optarg);
 	  break;
 	case 166:
-	  setval ("sslegdsock", optarg);
+	  setval ("egdfile", optarg);
 	  break;
 #endif /* HAVE_SSL */
 	case 'A':
