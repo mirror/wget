@@ -164,6 +164,7 @@ Download:\n\
        --random-wait            wait from 0...2*WAIT secs between retrievals.\n\
   -Y,  --proxy=on/off           turn proxy on or off.\n\
   -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n\
+       --limit-rate=RATE        limit download rate to RATE.\n\
 \n"), stdout);
 #ifdef HAVE_RANDOM
   fputs (_("\
@@ -303,6 +304,7 @@ main (int argc, char *const *argv)
     { "include-directories", required_argument, NULL, 'I' },
     { "input-file", required_argument, NULL, 'i' },
     { "level", required_argument, NULL, 'l' },
+    { "limit-rate", required_argument, NULL, 164 },
     { "load-cookies", required_argument, NULL, 161 },
     { "no", required_argument, NULL, 'n' },
     { "output-document", required_argument, NULL, 'O' },
@@ -534,6 +536,9 @@ GNU General Public License for more details.\n"));
 	  break;
 	case 163:
 	  setval ("progress", optarg);
+	  break;
+	case 164:
+	  setval ("limitrate", optarg);
 	  break;
 	case 157:
 	  setval ("referer", optarg);

@@ -1,3 +1,22 @@
+2001-11-26  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* config.h.in: Put a HAVE_USLEEP stub.
+
+	* cmpt.c (usleep): Replacement implementation of usleep using
+	select.
+
+	* init.c: New option init_rate.
+
+	* main.c (main): New option --limit-rate.
+
+	* retr.c (limit_bandwidth): New function.
+	(get_contents): Call it to limit the bandwidth used when
+	downloading.
+
+	* progress.c (dot_update): Would print the wrong download speed on
+	rows other than the first one when the download was continued.
+	(dot_finish): Ditto.
+
 2001-11-26  Ian Abbott <abbotti@mev.co.uk>
 
 	* http.c (gethttp): fix undeclared variable 'err' when compiled

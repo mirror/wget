@@ -52,6 +52,50 @@ extern int errno;
 int global_download_count;
 
 
+static struct {
+  long bytes;
+  long dltime;
+} limit_data;
+
+static void
+limit_bandwidth_reset (void)
+{
+  limit_data.bytes  = 0;
+  limit_data.dltime = 0;
+}
+
+/* Limit the bandwidth by pausing the download for an amount of time.
+   BYTES is the number of bytes received from the network, DELTA is
+   how long it took to receive them, DLTIME the current download time,
+   TIMER the timer, and ADJUSTMENT the previous.  */
+
+static void
+limit_bandwidth (long bytes, long delta)
+{
+  long expected;
+
+  limit_data.bytes += bytes;
+  limit_data.dltime += delta;
+
+  expected = (long)(1000.0 * limit_data.bytes / opt.limit_rate);
+
+  if (expected > limit_data.dltime)
+    {
+      long slp = expected - limit_data.dltime;
+      if (slp < 200)
+	{
+	  DEBUGP (("deferring a %ld ms sleep (%ld/%ld) until later.\n",
+		   slp, limit_data.bytes, limit_data.dltime));
+	  return;
+	}
+      DEBUGP (("sleeping %ld ms\n", slp));
+      usleep (1000 * slp);
+    }
+
+  limit_data.bytes = 0;
+  limit_data.dltime = 0;
+}
+
 #define MIN(i, j) ((i) <= (j) ? (i) : (j))
 
 /* Reads the contents of file descriptor FD, until it is closed, or a
@@ -82,14 +126,13 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
   int res = 0;
   static char c[8192];
   void *progress = NULL;
-  struct wget_timer *timer = NULL;
+  struct wget_timer *timer = wtimer_allocate ();
+  long dltime = 0, last_dltime = 0;
 
   *len = restval;
 
   if (opt.verbose)
     progress = progress_create (restval, expected);
-  if (opt.verbose || elapsed != NULL)
-    timer = wtimer_new ();
 
   if (rbuf && RBUF_FD (rbuf) == fd)
     {
@@ -108,8 +151,13 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 	  goto out;
 	}
       if (opt.verbose)
-	progress_update (progress, sz, wtimer_elapsed (timer));
+	progress_update (progress, sz, 0);
     }
+
+  if (opt.limit_rate)
+    limit_bandwidth_reset ();
+  wtimer_reset (timer);
+
   /* Read from fd while there is available data.
 
      Normally, if expected is 0, it means that it is not known how
@@ -121,14 +169,12 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 			    ? MIN (expected - *len, sizeof (c))
 			    : sizeof (c));
 #ifdef HAVE_SSL
-		if (rbuf->ssl!=NULL) {
-		  res = ssl_iread (rbuf->ssl, c, amount_to_read);
-		} else {
+      if (rbuf->ssl!=NULL)
+	res = ssl_iread (rbuf->ssl, c, amount_to_read);
+      else
 #endif /* HAVE_SSL */
-		  res = iread (fd, c, amount_to_read);
-#ifdef HAVE_SSL
-		}
-#endif /* HAVE_SSL */
+	res = iread (fd, c, amount_to_read);
+
       if (res > 0)
 	{
 	  fwrite (c, sizeof (char), res, fp);
@@ -141,8 +187,19 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 	      res = -2;
 	      goto out;
 	    }
+
+	  /* If bandwidth is not limited, one call to wtimer_elapsed
+	     is sufficient.  */
+	  dltime = wtimer_elapsed (timer);
+	  if (opt.limit_rate)
+	    {
+	      limit_bandwidth (res, dltime - last_dltime);
+	      dltime = wtimer_elapsed (timer);
+	      last_dltime = dltime;
+	    }
+
 	  if (opt.verbose)
-	    progress_update (progress, res, wtimer_elapsed (timer));
+	    progress_update (progress, res, dltime);
 	  *len += res;
 	}
       else
@@ -152,15 +209,12 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
     res = -1;
 
  out:
-  if (timer)
-    {
-      long dltime = wtimer_elapsed (timer);
-      if (opt.verbose)
-	progress_finish (progress, dltime);
-      if (elapsed)
-	*elapsed = dltime;
-      wtimer_delete (timer);
-    }
+  if (opt.verbose)
+    progress_finish (progress, dltime);
+  if (elapsed)
+    *elapsed = dltime;
+  wtimer_delete (timer);
+
   return res;
 }
 

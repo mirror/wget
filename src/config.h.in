@@ -165,6 +165,9 @@ char *alloca ();
 /* Define if you have the gettext function.  */
 #undef HAVE_GETTEXT
 
+/* Define if you have the usleep function.  */
+#undef HAVE_USLEEP
+
 /* Define if you have the <string.h> header file.  */
 #undef HAVE_STRING_H
 

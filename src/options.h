@@ -104,6 +104,8 @@ struct options
   long waitretry;		/* The wait period between retries. - HEH */
   int use_robots;		/* Do we heed robots.txt? */
 
+  long limit_rate;		/* Limit the download rate to this
+				   many bps. */
   long quota;			/* Maximum number of bytes to
 				   retrieve. */
   VERY_LONG_TYPE downloaded;	/* How much we downloaded already. */

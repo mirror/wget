@@ -195,8 +195,8 @@ dot_create (long initial, long total)
 	  /* Align the [ skipping ... ] line with the dots.  To do
 	     that, insert the number of spaces equal to the number of
 	     digits in the skipped amount in K.  */
-	  logprintf (LOG_VERBOSE, "\n%*s%s",
-		     2 + skipped_k_len, "", _("[ skipping %dK ]"));
+	  logprintf (LOG_VERBOSE, _("\n%*s[ skipping %dK ]"),
+		     2 + skipped_k_len, "", skipped_k);
 	}
 
       logprintf (LOG_VERBOSE, "\n%5ldK", skipped / 1024);
@@ -255,15 +255,16 @@ dot_update (void *progress, long howmuch, long dltime)
       ++dp->dots;
       if (dp->dots >= opt.dots_in_line)
 	{
+	  long row_qty = row_bytes;
+	  if (dp->rows == dp->initial_length / row_bytes)
+	    row_qty -= dp->initial_length % row_bytes;
+
 	  ++dp->rows;
 	  dp->dots = 0;
 
 	  if (dp->total_length)
 	    print_percentage (dp->rows * row_bytes, dp->total_length);
-
-	  print_download_speed (dp,
-				row_bytes - (dp->initial_length % row_bytes),
-				dltime);
+	  print_download_speed (dp, row_qty, dltime);
 	}
     }
 
@@ -296,12 +297,14 @@ dot_finish (void *progress, long dltime)
 			dp->total_length);
     }
 
-  print_download_speed (dp, dp->dots * dot_bytes
-			+ dp->accumulated
-			- dp->initial_length % row_bytes,
-			dltime);
-  logputs (LOG_VERBOSE, "\n\n");
+  {
+    long row_qty = dp->dots * dot_bytes + dp->accumulated;
+    if (dp->rows == dp->initial_length / row_bytes)
+      row_qty -= dp->initial_length % row_bytes;
+    print_download_speed (dp, row_qty, dltime);
+  }
 
+  logputs (LOG_VERBOSE, "\n\n");
   log_set_flush (0);
 
   xfree (dp);
@@ -401,7 +404,7 @@ bar_create (long initial, long total)
   bp->width = screen_width;
   bp->buffer = xmalloc (bp->width + 1);
 
-  logputs (LOG_VERBOSE, "\n\n");
+  logputs (LOG_VERBOSE, "\n");
 
   create_image (bp, 0);
   display_image (bp->buffer);

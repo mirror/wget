@@ -142,6 +142,7 @@ static struct {
   { "includedirectories", &opt.includes,	cmd_directory_vector },
   { "input",		&opt.input_filename,	cmd_file },
   { "killlonger",	&opt.kill_longer,	cmd_boolean },
+  { "limitrate",	&opt.limit_rate,	cmd_bytes },
   { "loadcookies",	&opt.cookies_input,	cmd_file },
   { "logfile",		&opt.lfilename,		cmd_file },
   { "login",		&opt.ftp_acc,		cmd_string },

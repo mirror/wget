@@ -1206,3 +1206,19 @@ strptime (buf, format, tm)
   return strptime_internal (buf, format, tm, &decided);
 }
 #endif /* not HAVE_STRPTIME */
+
+
+#ifndef HAVE_USLEEP
+/* A simple usleep implementation based on select().  This will
+   probably not work on Windows.  */
+
+int
+usleep (unsigned long usec)
+{
+  struct timeval tm;
+  tm.tv_sec = 0;
+  tm.tv_usec = usec;
+  select (0, NULL, NULL, NULL, &tm);
+  return 0;
+}
+#endif /* not HAVE_USLEEP */
