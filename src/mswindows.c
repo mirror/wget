@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-/* #### Someone document these functions!  */
+/* #### Someone please document what these functions do!  */
 
 #include <config.h>
 
@@ -35,8 +35,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 extern int errno;
 #endif
 
-char *argv0;
-
 /* Defined in log.c.  */
 void redirect_output (const char *);
 
@@ -47,11 +45,7 @@ static int windows_nt_p;
 unsigned int
 sleep (unsigned seconds)
 {
-  Sleep (1000 * seconds);
-  /* Unix sleep() is interruptible.  To make it semi-usable, it
-     returns a value that says how much it "really" slept, or some
-     junk like that.  Ignore it.  */
-  return 0U;
+  return SleepEx (1000 * seconds, TRUE) ? 0U : 1000 * seconds;
 }
 
 static char *
@@ -99,8 +93,6 @@ void
 windows_main_junk (int *argc, char **argv, char **exec_name)
 {
   char *p;
-
-  argv0 = argv[0];
 
   /* Remove .EXE from filename if it has one.  */
   *exec_name = xstrdup (*exec_name);
@@ -176,10 +168,8 @@ ws_changetitle (char *url, int nurl)
   if (!nurl)
     return;
 
-  title_buf = (char *)xmalloc (strlen (url) + 20);
+  title_buf = (char *)alloca (strlen (url) + 20);
   sprintf (title_buf, "Wget %s%s", url, nurl == 1 ? "" : " ...");
-  /* #### What are the semantics of SetConsoleTitle?  Will it free the
-     given memory later?  */
   SetConsoleTitle (title_buf);
 }
 
@@ -187,34 +177,26 @@ char *
 ws_mypath (void)
 {
   static char *wspathsave;
-  char *buffer;
-  int rrr;
+  char buffer[MAX_PATH];
   char *ptr;
 
   if (wspathsave)
     {
       return wspathsave;
     }
-  ptr = strrchr (argv0, '\\');
+
+  GetModuleFileName (NULL, buffer, MAX_PATH);
+
+  ptr = strrchr (buffer, '\\');
   if (ptr)
     {
       *(ptr + 1) = '\0';
-      wspathsave = (char*) xmalloc (strlen(argv0)+1);
-      strcpy (wspathsave, argv0);
-      return wspathsave;
-    }
-  buffer = (char*) xmalloc (256);
-  rrr = SearchPath (NULL, argv0, strchr (argv0, '.') ? NULL : ".EXE",
-		    256, buffer, &ptr);
-  if (rrr && rrr <= 256)
-    {
-      *ptr = '\0';
-      wspathsave = (char*) xmalloc (strlen(buffer)+1);
+      wspathsave = (char*) xmalloc (strlen (buffer) + 1);
       strcpy (wspathsave, buffer);
-      return wspathsave;
     }
-  xfree (buffer);
-  return NULL;
+  else
+    wspathsave = NULL;
+  return wspathsave;
 }
 
 void
@@ -261,8 +243,7 @@ ws_startup (void)
       exit (1);
     }
 
-  if (LOBYTE (requested) < 1 || (LOBYTE (requested) == 1 &&
-				HIBYTE (requested) < 1))
+  if (data.wVersion < requested)
     {
       fprintf (stderr, _("%s: Couldn't find usable socket driver.\n"),
 	       exec_name);
