@@ -1514,6 +1514,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
       hstat.restval = 0L;
       /* Decide whether or not to restart.  */
       if (((count > 1 && (*dt & ACCEPTRANGES)) || opt.always_rest)
+	  /* #### this calls access() and then stat(); could be optimized. */
 	  && file_exists_p (locf))
 	if (stat (locf, &st) == 0 && S_ISREG (st.st_mode))
 	  hstat.restval = st.st_size;
@@ -1522,7 +1523,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	 refuse to truncate it if the server doesn't support continued
 	 downloads.  */
       if (opt.always_rest && hstat.restval)
-	hstat.no_truncate = file_exists_p (locf);
+	hstat.no_truncate = 1;
 
       /* Decide whether to send the no-cache directive.  We send it in
 	 two cases:

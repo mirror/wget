@@ -1,3 +1,8 @@
+2001-05-07  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* http.c (http_loop): If restval is set, set no_truncate to 1
+	unconditionally.
+
 2001-05-02  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
 	* ftp-ls.c (ftp_parse_winnt_ls): Assure months are being correctly
