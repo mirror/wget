@@ -422,21 +422,6 @@ update_cookie_field (struct cookie *cookie,
 			   && (c) != '"' && (c) != '='	\
 			   && (c) != ';' && (c) != ',')
 
-/* Fetch the next character without doing anything special if CH gets
-   set to 0.  (The code executed next is expected to handle it.)  */
-
-#define FETCH1(ch, ptr) do {			\
-  ch = *ptr++;					\
-} while (0)
-
-/* Like FETCH1, but jumps to `eof' label if CH gets set to 0.  */
-
-#define FETCH(ch, ptr) do {		\
-  FETCH1 (ch, ptr);			\
-  if (!ch)				\
-    goto eof;				\
-} while (0)
-
 /* Parse the contents of the `Set-Cookie' header.  The header looks
    like this:
 
@@ -446,19 +431,25 @@ update_cookie_field (struct cookie *cookie,
    tokens.  Additionally, values may be quoted.
 
    A new cookie is returned upon success, NULL otherwise.  The
-   function `update_cookie_field' is used to update the fields of the
-   newly created cookie structure.  */
+   specified CALLBACK function (normally `update_cookie_field' is used
+   to update the fields of the newly created cookie structure.  */
 
 static struct cookie *
-parse_set_cookies (const char *sc)
+parse_set_cookies (const char *sc,
+		   int (*callback) (struct cookie *,
+				    const char *, const char *,
+				    const char *, const char *),
+		   int silent)
 {
   struct cookie *cookie = cookie_new ();
 
-  enum { S_NAME_PRE, S_NAME, S_NAME_POST,
-	 S_VALUE_PRE, S_VALUE, S_VALUE_TRAILSPACE_MAYBE,
-	 S_QUOTED_VALUE, S_QUOTED_VALUE_POST,
-	 S_ATTR_ACTION,
-	 S_DONE, S_ERROR } state = S_NAME_PRE;
+  /* #### Hand-written DFAs are no fun to debug.  We'de be better off
+     to rewrite this as an inline parser.  */
+
+  enum { S_START, S_NAME, S_NAME_POST,
+	 S_VALUE_PRE, S_VALUE, S_QUOTED_VALUE, S_VALUE_TRAILSPACE,
+	 S_ATTR_ACTION, S_DONE, S_ERROR
+  } state = S_START;
 
   const char *p = sc;
   char c;
@@ -466,21 +457,21 @@ parse_set_cookies (const char *sc)
   const char *name_b  = NULL, *name_e  = NULL;
   const char *value_b = NULL, *value_e = NULL;
 
+  c = *p;
+
   while (state != S_DONE && state != S_ERROR)
     {
       switch (state)
 	{
-	case S_NAME_PRE:
-	  /* Strip whitespace preceding the name. */
-	  do
-	    FETCH1 (c, p);
-	  while (c && ISSPACE (c));
+	case S_START:
 	  if (!c)
 	    state = S_DONE;
+	  else if (ISSPACE (c))
+	    /* Strip all whitespace preceding the name. */
+	    c = *++p;
 	  else if (ATTR_NAME_CHAR (c))
 	    {
-	      name_b = p - 1;
-	      FETCH1 (c, p);
+	      name_b = p;
 	      state = S_NAME;
 	    }
 	  else
@@ -488,110 +479,111 @@ parse_set_cookies (const char *sc)
 	    state = S_ERROR;
 	  break;
 	case S_NAME:
-	  if (ATTR_NAME_CHAR (c))
-	    FETCH1 (c, p);
-	  else if (!c || c == ';' || c == '=' || ISSPACE (c))
+	  if (!c || c == ';' || c == '=' || ISSPACE (c))
 	    {
-	      name_e = p - 1;
+	      name_e = p;
 	      state = S_NAME_POST;
 	    }
+	  else if (ATTR_NAME_CHAR (c))
+	    c = *++p;
 	  else
 	    state = S_ERROR;
 	  break;
 	case S_NAME_POST:
-	  if (ISSPACE (c))
-	    FETCH1 (c, p);
-	  else if (!c || c == ';')
+	  if (!c || c == ';')
 	    {
 	      value_b = value_e = NULL;
+	      if (c == ';')
+		c = *++p;
 	      state = S_ATTR_ACTION;
 	    }
 	  else if (c == '=')
 	    {
-	      FETCH1 (c, p);
+	      c = *++p;
 	      state = S_VALUE_PRE;
 	    }
+	  else if (ISSPACE (c))
+	    /* Ignore space and keep the state. */
+	    c = *++p;
 	  else
 	    state = S_ERROR;
 	  break;
 	case S_VALUE_PRE:
-	  if (ISSPACE (c))
-	    FETCH1 (c, p);
-	  else if (c == '"')
+	  if (!c || c == ';')
 	    {
-	      value_b = p;
-	      FETCH (c, p);
-	      state = S_QUOTED_VALUE;
-	    }
-	  else if (c == ';' || c == '\0')
-	    {
-	      value_b = value_e = p - 1;
+	      value_b = value_e = p;
+	      if (c == ';')
+		c = *++p;
 	      state = S_ATTR_ACTION;
 	    }
+	  else if (c == '"')
+	    {
+	      c = *++p;
+	      value_b = p;
+	      state = S_QUOTED_VALUE;
+	    }
+	  else if (ISSPACE (c))
+	    c = *++p;
 	  else
 	    {
-	      value_b = p - 1;
+	      value_b = p;
 	      value_e = NULL;
 	      state = S_VALUE;
 	    }
 	  break;
 	case S_VALUE:
-	  if (c == ';' || c == '\0')
+	  if (!c || c == ';' || ISSPACE (c))
 	    {
-	      if (!value_e)
-		value_e = p - 1;
-	      state = S_ATTR_ACTION;
-	    }
-	  else if (ISSPACE (c))
-	    {
-	      value_e = p - 1;
-	      FETCH1 (c, p);
-	      state = S_VALUE_TRAILSPACE_MAYBE;
+	      value_e = p;
+	      state = S_VALUE_TRAILSPACE;
 	    }
 	  else
 	    {
 	      value_e = NULL;	/* no trailing space */
-	      FETCH1 (c, p);
+	      c = *++p;
 	    }
-	  break;
-	case S_VALUE_TRAILSPACE_MAYBE:
-	  if (ISSPACE (c))
-	    FETCH1 (c, p);
-	  else
-	    state = S_VALUE;
 	  break;
 	case S_QUOTED_VALUE:
 	  if (c == '"')
 	    {
-	      value_e = p - 1;
-	      FETCH1 (c, p);
-	      state = S_QUOTED_VALUE_POST;
+	      value_e = p;
+	      c = *++p;
+	      state = S_VALUE_TRAILSPACE;
 	    }
+	  else if (!c)
+	    state = S_ERROR;
 	  else
-	    FETCH (c, p);
+	    c = *++p;
 	  break;
-	case S_QUOTED_VALUE_POST:
-	  if (c == ';' || !c)
+	case S_VALUE_TRAILSPACE:
+	  if (c == ';')
+	    {
+	      c = *++p;
+	      state = S_ATTR_ACTION;
+	    }
+	  else if (!c)
 	    state = S_ATTR_ACTION;
 	  else if (ISSPACE (c))
-	    FETCH1 (c, p);
+	    c = *++p;
 	  else
-	    state = S_ERROR;
+	    state = S_VALUE;
 	  break;
 	case S_ATTR_ACTION:
 	  {
-	    int legal = update_cookie_field (cookie, name_b, name_e,
-					     value_b, value_e);
+	    int legal = callback (cookie, name_b, name_e, value_b, value_e);
 	    if (!legal)
 	      {
-		char *name;
-		BOUNDED_TO_ALLOCA (name_b, name_e, name);
-		logprintf (LOG_NOTQUIET,
-			   _("Error in Set-Cookie, field `%s'"), name);
+		if (!silent)
+		  {
+		    char *name;
+		    BOUNDED_TO_ALLOCA (name_b, name_e, name);
+		    logprintf (LOG_NOTQUIET,
+			       _("Error in Set-Cookie, field `%s'"), name);
+		  }
 		state = S_ERROR;
 		break;
 	      }
-	    state = S_NAME_PRE;
+	    state = S_START;
 	  }
 	  break;
 	case S_DONE:
@@ -604,16 +596,13 @@ parse_set_cookies (const char *sc)
     return cookie;
 
   delete_cookie (cookie);
-  if (state == S_ERROR)
-    logprintf (LOG_NOTQUIET, _("Syntax error in Set-Cookie at character `%c'.\n"), c);
-  else
+  if (state != S_ERROR)
     abort ();
-  return NULL;
 
- eof:
-  delete_cookie (cookie);
-  logprintf (LOG_NOTQUIET,
-	     _("Syntax error in Set-Cookie: premature end of string.\n"));
+  if (!silent)
+    logprintf (LOG_NOTQUIET,
+	       _("Syntax error in Set-Cookie: %s at position %d.\n"),
+	       sc, p - sc);
   return NULL;
 }
 
@@ -811,7 +800,7 @@ cookie_jar_process_set_cookie (struct cookie_jar *jar,
   struct cookie *cookie;
   cookies_now = time (NULL);
 
-  cookie = parse_set_cookies (set_cookie);
+  cookie = parse_set_cookies (set_cookie, update_cookie_field, 0);
   if (!cookie)
     goto out;
 
@@ -1452,3 +1441,91 @@ cookie_jar_delete (struct cookie_jar *jar)
   hash_table_destroy (jar->chains_by_domain);
   xfree (jar);
 }
+
+/* Test cases.  Currently this is only tests parse_set_cookies.  To
+   use, recompile Wget with -DTEST_COOKIES and call test_cookies()
+   from main.  */
+
+#ifdef TEST_COOKIES
+int test_count;
+char *test_results[10];
+
+static int test_parse_cookies_callback (struct cookie *ignored,
+					const char *nb, const char *ne,
+					const char *vb, const char *ve)
+{
+  test_results[test_count++] = strdupdelim (nb, ne);
+  test_results[test_count++] = strdupdelim (vb, ve);
+  return 1;
+}
+
+void
+test_cookies (void)
+{
+  /* Tests expected to succeed: */
+  static struct {
+    char *data;
+    char *results[10];
+  } tests_succ[] = {
+    { "", {NULL} },
+    { "arg=value", {"arg", "value", NULL} },
+    { "arg1=value1;arg2=value2", {"arg1", "value1", "arg2", "value2", NULL} },
+    { "arg1=value1; arg2=value2", {"arg1", "value1", "arg2", "value2", NULL} },
+    { "arg1=value1;  arg2=value2;", {"arg1", "value1", "arg2", "value2", NULL} },
+    { "arg1=value1;  arg2=value2;  ", {"arg1", "value1", "arg2", "value2", NULL} },
+    { "arg1=\"value1\"; arg2=\"\"", {"arg1", "value1", "arg2", "", NULL} },
+    { "arg=", {"arg", "", NULL} },
+    { "arg1=; arg2=", {"arg1", "", "arg2", "", NULL} },
+    { "arg1 = ; arg2= ", {"arg1", "", "arg2", "", NULL} },
+  };
+
+  /* Tests expected to fail: */
+  static char *tests_fail[] = {
+    ";",
+    "arg=\"unterminated",
+    "=empty-name",
+    "arg1=;=another-empty-name",
+  };
+  int i;
+
+  for (i = 0; i < ARRAY_SIZE (tests_succ); i++)
+    {
+      int ind;
+      char *data = tests_succ[i].data;
+      char **expected = tests_succ[i].results;
+      struct cookie *c;
+
+      test_count = 0;
+      c = parse_set_cookies (data, test_parse_cookies_callback, 1);
+      if (!c)
+	{
+	  printf ("NULL cookie returned for valid data: %s\n", data);
+	  continue;
+	}
+
+      for (ind = 0; ind < test_count; ind += 2)
+	{
+	  if (!expected[ind])
+	    break;
+	  if (0 != strcmp (expected[ind], test_results[ind]))
+	    printf ("Invalid name %d for '%s' (expected '%s', got '%s')\n",
+		    ind / 2 + 1, data, expected[ind], test_results[ind]);
+	  if (0 != strcmp (expected[ind + 1], test_results[ind + 1]))
+	    printf ("Invalid value %d for '%s' (expected '%s', got '%s')\n",
+		    ind / 2 + 1, data, expected[ind + 1], test_results[ind + 1]);
+	}
+      if (ind < test_count || expected[ind])
+	printf ("Unmatched number of results: %s\n", data);
+    }
+
+  for (i = 0; i < ARRAY_SIZE (tests_fail); i++)
+    {
+      struct cookie *c;
+      char *data = tests_fail[i];
+      test_count = 0;
+      c = parse_set_cookies (data, test_parse_cookies_callback, 1);
+      if (c)
+	printf ("Failed to report error on invalid data: %s\n", data);
+    }
+}
+#endif /* TEST_COOKIES */
