@@ -168,7 +168,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	  string_set_add (undesirable_urls, u->url);
 	  hash_table_put (dl_file_url_map, xstrdup (file), xstrdup (u->url));
 	  hash_table_put (dl_url_file_map, xstrdup (u->url), xstrdup (file));
-	  urls_html = slist_append (urls_html, file);
+	  urls_html = slist_prepend (urls_html, file);
 	  if (opt.no_parent)
 	    base_dir = xstrdup (u->dir); /* Set the base dir.  */
 	  /* Set the canonical this_url to be sent as referer.  This
@@ -289,7 +289,7 @@ recursive_retrieve (const char *file, const char *this_url)
       /* If it is absolute link and they are not followed, chuck it
 	 out.  */
       if (!inl && u->proto != URLFTP)
-	if (opt.relative_only && !(cur_url->flags & URELATIVE))
+	if (opt.relative_only && !cur_url->link_relative_p)
 	  {
 	    DEBUGP (("It doesn't really look like a relative link.\n"));
 	    string_set_add (undesirable_urls, constr);
@@ -479,7 +479,7 @@ recursive_retrieve (const char *file, const char *this_url)
 				  xstrdup (constr), xstrdup (filename));
 		  /* If the URL is HTML, note it.  */
 		  if (dt & TEXTHTML)
-		    urls_html = slist_append (urls_html, filename);
+		    urls_html = slist_prepend (urls_html, filename);
 		}
 	    }
 	  /* If there was no error, and the type is text/html, parse
@@ -514,7 +514,7 @@ recursive_retrieve (const char *file, const char *this_url)
 	     store the local filename.  */
 	  if (opt.convert_links && (dt & RETROKF) && (filename != NULL))
 	    {
-	      cur_url->flags |= UABS2REL;
+	      cur_url->convert = CO_CONVERT_TO_RELATIVE;
 	      cur_url->local_name = xstrdup (filename);
 	    }
 	}
@@ -544,12 +544,13 @@ recursive_retrieve (const char *file, const char *this_url)
     return RETROK;
 }
 
-/* Simple calls to convert_links will often fail because only the
-   downloaded files are converted, and Wget cannot know which files
-   will be converted in the future.  So, if we have file fileone.html
-   with:
+/* convert_links() is called from recursive_retrieve() after we're
+   done with an HTML file.  This call to convert_links is not complete
+   because it converts only the downloaded files, and Wget cannot know
+   which files will be downloaded afterwards.  So, if we have file
+   fileone.html with:
 
-   <a href=/c/something.gif>
+   <a href="/c/something.gif">
 
    and /c/something.gif was not downloaded because it exceeded the
    recursion depth, the reference will *not* be changed.
@@ -572,14 +573,15 @@ recursive_retrieve (const char *file, const char *this_url)
 void
 convert_all_links (void)
 {
-  uerr_t res;
-  urlpos *l1, *urls;
-  struct urlinfo *u;
   slist *html;
+
+  /* Destructively reverse urls_html to get it in the right order.
+     recursive_retrieve() used slist_prepend() consistently.  */
+  urls_html = slist_nreverse (urls_html);
 
   for (html = urls_html; html; html = html->next)
     {
-      int meta_disallow_follow;
+      urlpos *urls, *cur_url;
       char *url;
 
       DEBUGP (("Rescanning %s\n", html->string));
@@ -591,22 +593,17 @@ convert_all_links (void)
       else
 	DEBUGP (("I cannot find the corresponding URL.\n"));
       /* Parse the HTML file...  */
-      urls = get_urls_html (html->string, url, FALSE, &meta_disallow_follow);
-      if (opt.use_robots && meta_disallow_follow)
-	{
-	  /* The META tag says we are not to follow this file.
-	     Respect that.  */
-	  free_urlpos (urls);
-	  urls = NULL;
-	}
-      if (!urls)
-	continue;
-      for (l1 = urls; l1; l1 = l1->next)
+      urls = get_urls_html (html->string, url, FALSE, NULL);
+      /* We don't respect meta_disallow_follow here because, even if
+         the file is not followed, we might still want to convert the
+         links that have been followed from other files.  */
+      for (cur_url = urls; cur_url; cur_url = cur_url->next)
 	{
 	  char *local_name;
+
 	  /* The URL must be in canonical form to be compared.  */
-	  u = newurl ();
-	  res = parseurl (l1->url, u, 0);
+	  struct urlinfo *u = newurl ();
+	  uerr_t res = parseurl (cur_url->url, u, 0);
 	  if (res != URLOK)
 	    {
 	      freeurl (u, 1);
@@ -617,20 +614,28 @@ convert_all_links (void)
 	     ABS2REL, whereas non-downloaded will be converted REL2ABS.  */
 	  local_name = hash_table_get (dl_url_file_map, u->url);
 	  if (local_name)
-	    DEBUGP (("%s flagged for conversion, local %s\n",
+	    DEBUGP (("%s marked for conversion, local %s\n",
 		     u->url, local_name));
-	  /* Clear the flags.  */
-	  l1->flags &= ~ (UABS2REL | UREL2ABS);
 	  /* Decide on the conversion direction.  */
 	  if (local_name)
 	    {
-	      l1->flags |= UABS2REL;
-	      l1->local_name = xstrdup (local_name);
+	      /* We've downloaded this URL.  Convert it to relative
+                 form.  We do this even if the URL already is in
+                 relative form, because our directory structure may
+                 not be identical to that on the server (think `-nd',
+                 `--cut-dirs', etc.)  */
+	      cur_url->convert = CO_CONVERT_TO_RELATIVE;
+	      cur_url->local_name = xstrdup (local_name);
 	    }
 	  else
 	    {
-	      l1->flags |= UREL2ABS;
-	      l1->local_name = NULL;
+	      /* We haven't downloaded this URL.  If it's not already
+                 complete (including a full host name), convert it to
+                 that form, so it can be reached while browsing this
+                 HTML locally.  */
+	      if (!cur_url->link_complete_p)
+		cur_url->convert = CO_CONVERT_TO_COMPLETE;
+	      cur_url->local_name = NULL;
 	    }
 	  freeurl (u, 1);
 	}

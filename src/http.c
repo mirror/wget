@@ -239,18 +239,13 @@ static int
 http_process_type (const char *hdr, void *arg)
 {
   char **result = (char **)arg;
-  char *p;
-
-  p = strrchr (hdr, ';');
-  if (p)
-    {
-      int len = p - hdr;
-      *result = (char *)xmalloc (len + 1);
-      memcpy (*result, hdr, len);
-      (*result)[len] = '\0';
-    }
-  else
-    *result = xstrdup (hdr);
+  /* Locate P on `;' or the terminating zero, whichever comes first. */
+  const char *p = strchr (hdr, ';');
+  if (!p)
+    p = hdr + strlen (hdr);
+  while (p > hdr && ISSPACE (*(p - 1)))
+    --p;
+  *result = strdupdelim (hdr, p);
   return 1;
 }
 

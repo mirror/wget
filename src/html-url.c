@@ -348,12 +348,11 @@ handle_link (struct collect_urls_closure *closure, const char *link_uri,
   newel->size = tag->attrs[attrid].value_raw_size;
 
   /* A URL is relative if the host and protocol are not named, and the
-     name does not start with `/'.
-     #### This logic might need some rethinking.  */
+     name does not start with `/'.  */
   if (no_proto && *link_uri != '/')
-    newel->flags |= (URELATIVE | UNOPROTO);
-  else if (no_proto)
-    newel->flags |= UNOPROTO;
+    newel->link_relative_p = 1;
+  else if (!no_proto)
+    newel->link_complete_p = 1;
 
   if (closure->tail)
     {

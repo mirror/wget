@@ -1,3 +1,40 @@
+2000-11-21  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* hash.c (find_mapping): New function.
+	(hash_table_get): Use it.
+	(hash_table_get_pair): Ditto.
+	(hash_table_exists): Ditto.
+	(hash_table_remove): Ditto.
+	(hash_table_remove): Really delete the entry if the mapping
+	following LOCATION is empty.
+
+	* utils.c (string_set_add): Check whether the element has existed
+	before.
+
+	* hash.c (hash_table_get_pair): New function.
+
+2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* http.c (http_process_type): Ignore trailing whitespace; use
+	strdupdelim().
+
+	* recur.c (recursive_retrieve): Use the new `convert' field.
+	(convert_all_links): Ditto.
+	(convert_all_links): Don't respect meta_disallow_follow.
+
+	* html-url.c (handle_link): Fill out link_relative_p and
+	link_complete_p.
+
+	* url.h (struct _urlpos): Make elements more readable.
+
+	* recur.c (recursive_retrieve): Call slist_prepend instead of
+	slist_append.
+	(convert_all_links): Call slist_nreverse before iterating through
+	urls_html.
+
+	* utils.c (slist_prepend): New function.
+	(slist_nreverse): Ditto.
+
 2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* http.c (check_end): Constify.

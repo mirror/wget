@@ -44,23 +44,35 @@ struct urlinfo
 				   document */
 };
 
-enum uflags
-{
-  URELATIVE     = 0x0001,      /* Is URL relative? */
-  UNOPROTO      = 0x0002,      /* Is URL without a protocol? */
-  UABS2REL      = 0x0004,      /* Convert absolute to relative? */
-  UREL2ABS      = 0x0008       /* Convert relative to absolute? */
+enum convert_options {
+  CO_NOCONVERT = 0,		/* don't convert this URL */
+  CO_CONVERT_TO_RELATIVE,	/* convert to relative, e.g. to
+                                   "../../otherdir/foo.gif" */
+  CO_CONVERT_TO_COMPLETE	/* convert to absolute, e.g. to
+				   "http://orighost/somedir/bar.jpg". */
 };
 
 /* A structure that defines the whereabouts of a URL, i.e. its
    position in an HTML document, etc.  */
+
 typedef struct _urlpos
 {
-  char *url;                   /* URL */
-  char *local_name;            /* Local file to which it was saved */
-  enum uflags flags;           /* Various flags */
-  int pos, size;               /* Relative position in the buffer */
-  struct _urlpos *next;        /* Next struct in list */
+  char *url;			/* linked URL, after it has been
+				   merged with the base */
+  char *local_name;		/* Local file to which it was saved */
+
+  /* Information about the original link: */
+  int link_relative_p;		/* was the link relative? */
+  int link_complete_p;		/* was the link complete (with the
+                                   host name, etc.) */
+
+  /* Conversion requirements: */
+  enum convert_options convert;	/* is conversion required? */
+
+  /* URL's position in the buffer. */
+  int pos, size;
+
+  struct _urlpos *next;		/* Next struct in list */
 } urlpos;
 
 /* downloaded_file() takes a parameter of this type and returns this type. */

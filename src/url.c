@@ -1313,6 +1313,8 @@ convert_links (const char *file, urlpos *l)
   char               *p;
   downloaded_file_t  downloaded_file_return;
 
+  logprintf (LOG_VERBOSE, _("Converting %s... "), file);
+
   {
     /* First we do a "dry run": go through the list L and see whether
        any URL needs to be converted in the first place.  If not, just
@@ -1320,17 +1322,14 @@ convert_links (const char *file, urlpos *l)
     int count = 0;
     urlpos *dry = l;
     for (dry = l; dry; dry = dry->next)
-      if (dry->flags & (UABS2REL | UREL2ABS))
+      if (dry->convert != CO_NOCONVERT)
 	++count;
     if (!count)
       {
-	logprintf (LOG_VERBOSE, _("Nothing to do while converting %s.\n"),
-		   file);
+	logputs (LOG_VERBOSE, _("nothing to do.\n"));
 	return;
       }
   }
-
-  logprintf (LOG_VERBOSE, _("Converting %s... "), file);
 
   fm = read_file (file);
   if (!fm)
@@ -1376,10 +1375,9 @@ convert_links (const char *file, urlpos *l)
 	  break;
 	}
       /* If the URL is not to be converted, skip it.  */
-      if (!(l->flags & (UABS2REL | UREL2ABS)))
+      if (l->convert == CO_NOCONVERT)
 	{
-	  DEBUGP (("Skipping %s at position %d (flags %d).\n", l->url,
-		   l->pos, l->flags));
+	  DEBUGP (("Skipping %s at position %d.\n", l->url, l->pos));
 	  continue;
 	}
 
@@ -1387,7 +1385,7 @@ convert_links (const char *file, urlpos *l)
          quote, to the outfile.  */
       fwrite (p, 1, url_start - p, fp);
       p = url_start;
-      if (l->flags & UABS2REL)
+      if (l->convert == CO_CONVERT_TO_RELATIVE)
 	{
 	  /* Convert absolute URL to relative. */
 	  char *newname = construct_relative (file, l->local_name);
@@ -1396,11 +1394,11 @@ convert_links (const char *file, urlpos *l)
 	  p += l->size - 1;
 	  putc (*p, fp);	/* close quote */
 	  ++p;
-	  DEBUGP (("ABS2REL: %s to %s at position %d in %s.\n",
+	  DEBUGP (("TO_RELATIVE: %s to %s at position %d in %s.\n",
 		   l->url, newname, l->pos, file));
 	  free (newname);
 	}
-      else if (l->flags & UREL2ABS)
+      else if (l->convert == CO_CONVERT_TO_COMPLETE)
 	{
 	  /* Convert the link to absolute URL. */
 	  char *newlink = l->url;
@@ -1409,7 +1407,7 @@ convert_links (const char *file, urlpos *l)
 	  p += l->size - 1;
 	  putc (*p, fp);	/* close quote */
 	  ++p;
-	  DEBUGP (("REL2ABS: <something> to %s at position %d in %s.\n",
+	  DEBUGP (("TO_COMPLETE: <something> to %s at position %d in %s.\n",
 		   newlink, l->pos, file));
 	}
     }

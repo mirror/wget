@@ -67,6 +67,8 @@ void read_file_free PARAMS ((struct file_memory *));
 void free_vec PARAMS ((char **));
 char **merge_vecs PARAMS ((char **, char **));
 slist *slist_append PARAMS ((slist *, const char *));
+slist *slist_prepend PARAMS ((slist *, const char *));
+slist *slist_nreverse PARAMS ((slist *));
 int slist_contains PARAMS ((slist *, const char *));
 void slist_free PARAMS ((slist *));
 

@@ -931,7 +931,19 @@ merge_vecs (char **v1, char **v2)
    This used to also be used for searching, but now we have hash
    tables for that.  */
 
-/* Append an element to the list.  */
+/* It's a shame that these simple things like linked lists and hash
+   tables (see hash.c) need to be implemented over and over again.  It
+   would be nice to be able to use the routines from glib -- see
+   www.gtk.org for details.  However, that would make Wget depend on
+   glib, and I want to avoid dependencies to external libraries for
+   reasons of convenience and portability (I suspect Wget is more
+   portable than anything ever written for Gnome).  */
+
+/* Append an element to the list.  If the list has a huge number of
+   elements, this can get slow because it has to find the list's
+   ending.  If you think you have to call slist_append in a loop,
+   think about calling slist_prepend() followed by slist_nreverse().  */
+
 slist *
 slist_append (slist *l, const char *s)
 {
@@ -950,6 +962,33 @@ slist_append (slist *l, const char *s)
   return beg;
 }
 
+/* Prepend S to the list.  Unlike slist_append(), this is O(1).  */
+
+slist *
+slist_prepend (slist *l, const char *s)
+{
+  slist *newel = (slist *)xmalloc (sizeof (slist));
+  newel->string = xstrdup (s);
+  newel->next = l;
+  return newel;
+}
+
+/* Destructively reverse L. */
+
+slist *
+slist_nreverse (slist *l)
+{
+  slist *prev = NULL;
+  while (l)
+    {
+      slist *next = l->next;
+      l->next = prev;
+      prev = l;
+      l = next;
+    }
+  return prev;
+}
+
 /* Is there a specific entry in the list?  */
 int
 slist_contains (slist *l, const char *s)
@@ -964,11 +1003,9 @@ slist_contains (slist *l, const char *s)
 void
 slist_free (slist *l)
 {
-  slist *n;
-
   while (l)
     {
-      n = l->next;
+      slist *n = l->next;
       free (l->string);
       free (l);
       l = n;
@@ -983,12 +1020,20 @@ slist_free (slist *l)
 void
 string_set_add (struct hash_table *ht, const char *s)
 {
+  /* First check whether the set element already exists.  If it does,
+     do nothing so that we don't have to free() the old element and
+     then strdup() a new one.  */
+  if (hash_table_exists (ht, s))
+    return;
+
   /* We use "1" as value.  It provides us a useful and clear arbitrary
      value, and it consumes no memory -- the pointers to the same
-     string "1" will be shared by all the key-value pairs in the hash
-     table.  */
+     string "1" will be shared by all the key-value pairs in all `set'
+     hash tables.  */
   hash_table_put (ht, xstrdup (s), "1");
 }
+
+/* Synonym for hash_table_exists... */
 
 int
 string_set_exists (struct hash_table *ht, const char *s)
