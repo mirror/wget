@@ -1674,10 +1674,12 @@ determine_screen_width (void)
 #else  /* not TIOCGWINSZ */
 # ifdef WINDOWS
   CONSOLE_SCREEN_BUFFER_INFO csbi;
-  if (!GetConsoleScreenBufferInfo (GetStdHandle (STD_OUTPUT_HANDLE), &csbi))
+  if (!GetConsoleScreenBufferInfo (GetStdHandle (STD_ERROR_HANDLE), &csbi))
     return 0;
   return csbi.dwSize.X;
-# endif /* WINDOWS */
+# else /* neither WINDOWS nor TIOCGWINSZ */
+  return 0;
+#endif /* neither WINDOWS nor TIOCGWINSZ */
 #endif /* not TIOCGWINSZ */
 }
 

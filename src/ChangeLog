@@ -1,3 +1,8 @@
+2004-01-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (determine_screen_width): Return 0 if not running on
+	Windows or on a TIOCGWINSZ-capable system.
+
 2004-01-28  David Fritz  <zeroxdf@att.net>
 
 	* utils.c (determine_screen_width): Correctly determine console
