@@ -1,3 +1,9 @@
+2002-01-15  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* gen_sslfunc.c (ssl_iread): Call select on the file descriptor
+	only if no data is pending in SSL buffers.
+	From tony@bluetail.com.
+
 2002-01-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* headers.c (header_get): Strip trailing whitespace from the

@@ -221,9 +221,8 @@ ssl_iread (SSL *con, char *buf, int len)
   do
     {
 #ifdef HAVE_SELECT
-      if (opt.timeout)
+      if (opt.timeout && !SSL_pending (con))
 	{
-	  
 	  do
 	    {
 	      res = select_fd (fd, opt.timeout, 0);
