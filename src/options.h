@@ -92,7 +92,7 @@ struct options
   int http_keep_alive;		/* whether we use keep-alive */
 
   int use_proxy;		/* Do we use proxy? */
-  int proxy_cache;		/* Do we load from proxy cache? */
+  int allow_cache;		/* Do we allow server-side caching? */
   char *http_proxy, *ftp_proxy, *https_proxy;
   char **no_proxy;
   char *base_href;

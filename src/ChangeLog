@@ -1,5 +1,14 @@
 2001-04-27  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (http_loop): If allow_cache is zero, always disable
+	caching, not only when retrieving through proxy.
+
+	* init.c: Ditto.
+
+	* options.h (struct options): Rename proxy_cache to allow_cache.
+
+2001-04-27  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* http.c (mktime_from_utc): Improve documentation.
 	(http_atotm): Put format strings into a separate array.
 

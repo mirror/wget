@@ -104,7 +104,7 @@ static struct {
   { "backups",		&opt.backups,		cmd_number },
   { "base",		&opt.base_href,		cmd_string },
   { "bindaddress",	&opt.bind_address,	cmd_address },
-  { "cache",		&opt.proxy_cache,	cmd_boolean },
+  { "cache",		&opt.allow_cache,	cmd_boolean },
   { "continue",		&opt.always_rest,	cmd_boolean },
   { "convertlinks",	&opt.convert_links,	cmd_boolean },
   { "cookies",		&opt.cookies,		cmd_boolean },
@@ -237,7 +237,7 @@ defaults (void)
   tmp = getenv ("no_proxy");
   if (tmp)
     opt.no_proxy = sepstring (tmp);
-  opt.proxy_cache = 1;
+  opt.allow_cache = 1;
 
 #ifdef HAVE_SELECT
   opt.timeout = 900;

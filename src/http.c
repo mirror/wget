@@ -1521,8 +1521,16 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	  && file_exists_p (locf))
 	if (stat (locf, &st) == 0 && S_ISREG (st.st_mode))
 	  hstat.restval = st.st_size;
-      /* Decide whether to send the no-cache directive.  */
-      if (u->proxy && (count > 1 || (opt.proxy_cache == 0)))
+
+      /* Decide whether to send the no-cache directive.  We send it in
+	 two cases:
+	   a) we're using a proxy, and we're past our first retrieval.
+	      Some proxies are notorious for caching incomplete data, so
+	      we require a fresh get.
+	   b) caching is explicitly inhibited. */
+      if ((u->proxy && count > 1) /* a */
+	  || !opt.allow_cache	  /* b */
+	  )
 	*dt |= SEND_NOCACHE;
       else
 	*dt &= ~SEND_NOCACHE;
