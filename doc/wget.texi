@@ -1988,7 +1988,8 @@ download---the same as @samp{-X} (@pxref{Directory-Based Limits}).
 Same as @samp{--exclude-domains} (@pxref{Domain Acceptance}).
 
 @item follow_ftp = on/off
-Follow @sc{ftp} links from @sc{html} documents---the same as @samp{-f}.
+Follow @sc{ftp} links from @sc{html} documents---the same as
+@samp{--follow-ftp}.
 
 @item follow_tags = @var{string}
 Only follow certain HTML tags when doing a recursive retrieval, just like
@@ -2490,7 +2491,7 @@ This variable should contain the @sc{url} of the proxy for @sc{http}
 connections.
 
 @item ftp_proxy
-This variable should contain the @sc{url} of the proxy for @sc{http}
+This variable should contain the @sc{url} of the proxy for @sc{ftp}
 connections.  It is quite common that @sc{http_proxy} and @sc{ftp_proxy}
 are set to the same @sc{url}.
 
@@ -2527,8 +2528,9 @@ authentication schemes exist.  For proxy authorization only the
 
 You may specify your username and password either through the proxy
 @sc{url} or through the command-line options.  Assuming that the
-company's proxy is located at @samp{proxy.srce.hr} at port 8001, a proxy
-@sc{url} location containing authorization data might look like this:
+company's proxy is located at @samp{proxy.company.com} at port 8001, a
+proxy @sc{url} location containing authorization data might look like
+this:
 
 @example
 http://hniksic:mypassword@@proxy.company.com:8001/

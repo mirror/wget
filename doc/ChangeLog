@@ -1,3 +1,10 @@
+2001-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.texi (Proxies): Fix typo.
+	(Proxies): Sync the text with the example.
+	(Wgetrc Commands): There is no -f option.  It's --follow-ftp.
+	Reported by Wojtek Kotwica.
+
 2001-11-17  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* Makefile.in (install.info): If info files from the build
