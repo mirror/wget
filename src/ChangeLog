@@ -1,3 +1,10 @@
+2005-04-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (rewrite_shorthand_url): Only accept recognized schemes.
+	That way "foo:80" will correctly be rewritten to "http://foo:80"
+	instead of left unchanged and ultimately rejected because of
+	"unsupported scheme foo".
+
 2005-03-31  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (number_to_string): Avoid explicit 64-bit constants;

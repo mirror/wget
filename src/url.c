@@ -544,7 +544,7 @@ rewrite_shorthand_url (const char *url)
 {
   const char *p;
 
-  if (url_has_scheme (url))
+  if (url_scheme (url) != SCHEME_INVALID)
     return NULL;
 
   /* Look for a ':' or '/'.  The former signifies NcFTP syntax, the
