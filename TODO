@@ -8,6 +8,12 @@ The items are not listed in any particular order (except that
 recently-added items may tend towards the top).  Not all of these
 represent user-visible changes.
 
+* Should allow retries with multiple downloads when using -O on
+  regular files.  As the source comment says: "A possible solution to
+  [rewind not working with multiple downloads] would be to remember
+  the file position in the output document and to seek to that
+  position, instead of rewinding."
+
 * Wget shouldn't delete rejected files that were not downloaded, but
   just found on disk because of `-nc'.  For example, `wget -r -nc
   -A.gif URL' should allow the user to get all the GIFs without
