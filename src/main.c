@@ -140,6 +140,7 @@ struct cmdline_option {
        main().  */
     OPT__APPEND_OUTPUT,
     OPT__CLOBBER,
+    OPT__DONT_REMOVE_LISTING,
     OPT__EXECUTE,
     OPT__NO,
     OPT__PARENT,
@@ -171,6 +172,7 @@ struct cmdline_option option_data[] =
     { "dns-cache", 0, OPT_BOOLEAN, "dnscache", -1 },
     { "dns-timeout", 0, OPT_VALUE, "dnstimeout", -1 },
     { "domains", 'D', OPT_VALUE, "domains", -1 },
+    { "dont-remove-listing", 0, OPT__DONT_REMOVE_LISTING, NULL, no_argument },
     { "dot-style", 0, OPT_VALUE, "dotstyle", -1 },
     { "egd-file", 0, OPT_VALUE, "egdfile", -1 },
     { "exclude-directories", 'X', OPT_VALUE, "excludedirectories", -1 },
@@ -488,7 +490,7 @@ HTTP options:\n"),
     N_("\
        --referer=URL           include `Referer: URL' header in HTTP request.\n"),
     N_("\
-  -s,  --save-headers          save the HTTP headers to file.\n"),
+       --save-headers          save the HTTP headers to file.\n"),
     N_("\
   -U,  --user-agent=AGENT      identify as AGENT instead of Wget/VERSION.\n"),
     N_("\
@@ -523,7 +525,7 @@ HTTPS (SSL) options:\n"),
     N_("\
        --sslcerttype=0/1     Client-Cert type 0=PEM (default) / 1=ASN1 (DER)\n"),
     N_("\
-       --sslcheckcert=0/1    Check the server cert agenst given CA\n"),
+       --sslcheckcert=0/1    Check the server cert against given CA\n"),
     N_("\
        --sslprotocol=0-3     choose SSL protocol; 0=automatic,\n"),
     N_("\
@@ -753,6 +755,9 @@ main (int argc, char *const *argv)
 		       flag ? "0" : "1");
 	    break;
 	  }
+	case OPT__DONT_REMOVE_LISTING:
+	  setoptval ("removelisting", "0");
+	  break;
 	}
 
       longindex = -1;

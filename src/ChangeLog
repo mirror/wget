@@ -1,3 +1,9 @@
+2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* main.c (main): Add --dont-remove-listing for backward
+	compatibility with previous versions.
+	(print_help): Fix typo, spotted by Dennis Smit.
+
 2003-11-08  Gisle Vanem  <giva@bgnett.no>
 
 	* ftp-basic.c: Support Windows-2000 ftp servers. Win-2000 *is*
