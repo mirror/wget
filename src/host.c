@@ -245,7 +245,7 @@ add_hlist (struct host *l, const char *nhost, const char *nreal, int quality)
 char *
 realhost (const char *host)
 {
-  struct host *l;
+  struct host *l, *l_real;
   struct in_addr in;
   struct hostent *hptr;
   char *inet_s;
@@ -253,7 +253,7 @@ realhost (const char *host)
   DEBUGP (("Checking for %s.\n", host));
   /* Look for the host, looking by the host name.  */
   l = search_host (hlist, host);
-  if (l && l->quality)              /* Found it with quality */
+  if (l && l->quality)		/* Found it with quality */
     {
       DEBUGP (("%s was already used, by that name.\n", host));
       /* Here we return l->hostname, not host, because of the possible
@@ -261,7 +261,7 @@ realhost (const char *host)
          the same, but we want the one that was first.  */
       return xstrdup (l->hostname);
     }
-  else if (!l)                      /* Not found, with or without quality */
+  else if (!l)			/* Not found, with or without quality */
     {
       /* The fact that gethostbyname will get called makes it
 	 necessary to store it to the list, to ensure that
@@ -280,7 +280,7 @@ realhost (const char *host)
       memcpy (&in, *hptr->h_addr_list, sizeof (in));
       STRDUP_ALLOCA (inet_s, inet_ntoa (in));
     }
-  else /* Found, without quality */
+  else				/* Found, without quality */
     {
       /* This case happens when host is on the list,
 	 but not as first entry (the one with quality).
@@ -294,12 +294,13 @@ realhost (const char *host)
   /* Now we certainly have the INET address.  The following loop is
      guaranteed to pick either an entry with quality (because it is
      the first one), or none at all.  */
-  l = search_address (hlist, inet_s);
-  if (l) /* Found in the list, as realname.  */
+  l_real = search_address (hlist, inet_s);
+  if (l_real)			/* Found in the list, as realname.  */
     {
-      /* Set the default, 0 quality.  */
-      hlist = add_hlist (hlist, host, inet_s, 0);
-      return xstrdup (l->hostname);
+      if (!l)
+	/* Set the default, 0 quality.  */
+	hlist = add_hlist (hlist, host, inet_s, 0);
+      return xstrdup (l_real->hostname);
     }
   /* Since this is really the first time this host is encountered,
      set quality to 1.  */

@@ -1,3 +1,9 @@
+2000-11-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* host.c (realhost): Add HOST to the list with quality==0 only if
+	it wasn't already there.
+	Based on analysis by Lu Guohan <feng@public.bjnet.edu.cn>.
+
 2000-11-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* init.c (run_wgetrc): Don't bother killing off '\r' since
