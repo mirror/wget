@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
+#ifndef RES_H
+#define RES_H
+
 struct robot_specs;
 
 struct robot_specs *res_parse PARAMS ((const char *, int));
@@ -30,3 +33,5 @@ struct robot_specs *res_get_specs PARAMS ((const char *, int));
 int res_retrieve_file PARAMS ((const char *, char **));
 
 void res_cleanup PARAMS ((void));
+
+#endif /* RES_H */

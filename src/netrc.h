@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Wget; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
+#ifndef NETRC_H
+#define NETRC_H
+
 typedef struct _acc_t
 {
   char *host;			/* NULL if this is the default machine
@@ -28,3 +31,5 @@ typedef struct _acc_t
 
 void search_netrc PARAMS((const char *, const char **, const char **, int));
 void free_netrc PARAMS((acc_t *l));
+
+#endif /* NETRC_H */

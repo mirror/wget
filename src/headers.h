@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Wget; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
+#ifndef HEADERS_H
+#define HEADERS_H
+
 enum {
   HG_OK, HG_ERROR, HG_EOF
 };
@@ -34,3 +37,5 @@ int header_strdup PARAMS ((const char *, void *));
 int header_exists PARAMS ((const char *, void *));
 
 int skip_lws PARAMS ((const char *));
+
+#endif /* HEADERS_H */

@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Wget; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
+#ifndef HASH_H
+#define HASH_H
+
 /* From XEmacs, and hence from Dragon book. */
 
 #define GOOD_HASH 65599 /* prime number just over 2^16; Dragon book, p. 435 */
@@ -55,3 +58,5 @@ unsigned long string_hash PARAMS ((const void *));
 int string_cmp PARAMS ((const void *, const void *));
 struct hash_table *make_string_hash_table PARAMS ((int));
 struct hash_table *make_nocase_string_hash_table PARAMS ((int));
+
+#endif /* HASH_H */

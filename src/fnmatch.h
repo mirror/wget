@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with Wget; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-#ifndef MTCH_H
-#define MTCH_H
+#ifndef FNMATCH_H
+#define FNMATCH_H
 
 /* Bits set in the FLAGS argument to `fnmatch'.  */
 #define	FNM_PATHNAME	(1 << 0) /* No wildcard can ever match `/'.  */
@@ -32,4 +32,4 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 int fnmatch PARAMS ((const char *, const char *, int));
 int has_wildcards_p PARAMS ((const char *));
 
-#endif /* MTCH_H */
+#endif /* FNMATCH_H */

@@ -18,6 +18,9 @@ You should have received a copy of the GNU General Public License
 along with Wget; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
+#ifndef GEN_SSLFUNC_H
+#define GEN_SSLFUNC_H
+
 #ifdef HAVE_SSL
 # include <openssl/ssl.h>
 #endif
@@ -31,3 +34,4 @@ int ssl_iread PARAMS ((SSL *, char *, int));
 int ssl_iwrite PARAMS ((SSL *, char *, int));
 int ssl_printerrors PARAMS ((void)); 
 
+#endif /* GEN_SSLFUNC_H */

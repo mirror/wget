@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Wget; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
+#ifndef COOKIES_H
+#define COOKIES_H
+
 /* struct cookie is not exported; this file only exports functions for
    manipulating cookie contents.  */
 
@@ -28,3 +31,5 @@ void load_cookies PARAMS ((const char *));
 void save_cookies PARAMS ((const char *));
 
 void cookies_cleanup PARAMS ((void));
+
+#endif /* COOKIES_H */

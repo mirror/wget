@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Wget; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
+#ifndef GEN_MD5_H
+#define GEN_MD5_H
+
 typedef struct gen_md5_context gen_md5_context;
 
 /* Use a forward declaration so we don't have to include any of the
@@ -30,3 +33,5 @@ int gen_md5_context_size PARAMS ((void));
 void gen_md5_init PARAMS ((gen_md5_context *));
 void gen_md5_update PARAMS ((const unsigned char *, int, gen_md5_context *));
 void gen_md5_finish PARAMS ((gen_md5_context *, unsigned char *));
+
+#endif /* GEN_MD5_H */

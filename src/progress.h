@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Wget; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
+#ifndef PROGRESS_H
+#define PROGRESS_H
+
 int valid_progress_implementation_p PARAMS ((const char *));
 void set_progress_implementation PARAMS ((const char *));
 
@@ -25,3 +28,5 @@ void progress_update PARAMS ((void *, long, long));
 void progress_finish PARAMS ((void *, long));
 
 RETSIGTYPE progress_handle_sigwinch PARAMS ((int));
+
+#endif /* PROGRESS_H */

@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Wget; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
+#ifndef HTML_PARSE_H
+#define HTML_PARSE_H
+
 struct attr_pair {
   char *name;			/* attribute name */
   char *value;			/* attribute value */
@@ -42,3 +45,5 @@ struct taginfo {
 
 void map_html_tags PARAMS ((const char *, int, const char **, const char **,
 			    void (*) (struct taginfo *, void *), void *));
+
+#endif /* HTML_PARSE_H */
