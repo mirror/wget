@@ -1211,7 +1211,7 @@ Accept: %s\r\n\
 			 _("\
 \n\
 The server does not support continued downloads, which conflicts with `-c'.\n\
-Refusing to truncate `%s'.\n\n"), u->local);
+Refusing to truncate existing file `%s'.\n\n"), u->local);
 	      FREE_MAYBE (type);
 	      FREE_MAYBE (all_headers);
 	      CLOSE_INVALIDATE (sock);
@@ -1522,6 +1522,7 @@ File `%s' already there, will not retrieve.\n"), u->local);
       /* In `-c' is used and the file is existing and non-empty,
 	 refuse to truncate it if the server doesn't support continued
 	 downloads.  */
+      hstat.no_truncate = 0;
       if (opt.always_rest && hstat.restval)
 	hstat.no_truncate = 1;
 
