@@ -54,6 +54,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "recur.h"
 #include "netrc.h"
 #include "cookies.h"		/* for cookies_cleanup */
+#include "progress.h"
 
 #ifndef errno
 extern int errno;
@@ -85,7 +86,7 @@ CMD_DECLARE (cmd_spec_dirstruct);
 CMD_DECLARE (cmd_spec_header);
 CMD_DECLARE (cmd_spec_htmlify);
 CMD_DECLARE (cmd_spec_mirror);
-/*CMD_DECLARE (cmd_spec_progress);*/
+CMD_DECLARE (cmd_spec_progress);
 CMD_DECLARE (cmd_spec_recursive);
 CMD_DECLARE (cmd_spec_useragent);
 
@@ -157,7 +158,7 @@ static struct {
   { "pagerequisites",	&opt.page_requisites,	cmd_boolean },
   { "passiveftp",	&opt.ftp_pasv,		cmd_lockable_boolean },
   { "passwd",		&opt.ftp_pass,		cmd_string },
-  { "progress",		&opt.progress_type,	cmd_string },
+  { "progress",		&opt.progress_type,	cmd_spec_progress },
   { "proxypasswd",	&opt.proxy_passwd,	cmd_string },
   { "proxyuser",	&opt.proxy_user,	cmd_string },
   { "quiet",		&opt.quiet,		cmd_boolean },
@@ -940,7 +941,6 @@ cmd_spec_mirror (const char *com, const char *val, void *closure)
   return 1;
 }
 
-#if 0
 static int
 cmd_spec_progress (const char *com, const char *val, void *closure)
 {
@@ -950,10 +950,13 @@ cmd_spec_progress (const char *com, const char *val, void *closure)
 	       exec_name, com, val);
       return 0;
     }
-  set_progress_implementation (val);
+  FREE_MAYBE (opt.progress_type);
+
+  /* Don't call set_progress_implementation here.  It will be called
+     in main() when it becomes clear what the log output is.  */
+  opt.progress_type = xstrdup (val);
   return 1;
 }
-#endif
 
 static int
 cmd_spec_recursive (const char *com, const char *val, void *closure)

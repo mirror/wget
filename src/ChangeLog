@@ -1,5 +1,10 @@
 2001-12-09  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* init.c (cmd_spec_progress): Resurrect.  Check whether VAL is a
+	valid progress type before setting it.
+
+2001-12-09  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* main.c (main): Remove stray debugging message.
 
 2001-12-09  Hrvoje Niksic  <hniksic@arsdigita.com>
