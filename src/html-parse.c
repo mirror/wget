@@ -257,23 +257,108 @@ struct pool {
     }										\
 } while (0)
 
-#define AP_DOWNCASE		1
-#define AP_PROCESS_ENTITIES	2
-#define AP_TRIM_BLANKS		4
+/* Test whether n+1-sized entity name fits in P.  We don't support
+   IE-style non-terminated entities, e.g. "&ltfoo" -> "<foo".
+   However, "&lt;foo" will work, as will "&lt!foo", "&lt", etc.  In
+   other words an entity needs to be terminated by either a
+   non-alphanumeric or the end of string.  */
+#define FITS(p, n) (p + n == end || (p + n < end && !ISALNUM (p[n])))
+
+/* Macros that test entity names by returning true if P is followed by
+   the specified characters.  */
+#define ENT1(p, c0) (FITS (p, 1) && p[0] == c0)
+#define ENT2(p, c0, c1) (FITS (p, 2) && p[0] == c0 && p[1] == c1)
+#define ENT3(p, c0, c1, c2) (FITS (p, 3) && p[0]==c0 && p[1]==c1 && p[2]==c2)
+
+/* Increment P by INC chars.  If P lands at a semicolon, increment it
+   past the semicolon.  This ensures that e.g. "&lt;foo" is converted
+   to "<foo", but "&lt,foo" to "<,foo".  */
+#define SKIP_SEMI(p, inc) (p += inc, p < end && *p == ';' ? ++p : p)
+
+/* Decode the HTML character entity at *PTR, considering END to be end
+   of buffer.  It is assumed that the "&" character that marks the
+   beginning of the entity has been seen at *PTR-1.  If a recognized
+   ASCII entity is seen, it is returned, and *PTR is moved to the end
+   of the entity.  Otherwise, -1 is returned and *PTR left unmodified.
+
+   The recognized entities are: &lt, &gt, &amp, &apos, and &quot.  */
+
+static int
+decode_entity (const char **ptr, const char *end)
+{
+  const char *p = *ptr;
+  int value = -1;
+
+  if (++p == end)
+    return -1;
+
+  switch (*p++)
+    {
+    case '#':
+      /* Process numeric entities "&#DDD;" and "&#xHH;".  */
+      {
+	int digits = 0;
+	value = 0;
+	if (*p == 'x')
+	  for (++p; value < 256 && p < end && ISXDIGIT (*p); p++, digits++)
+	    value = (value << 4) + XDIGIT_TO_NUM (*p);
+	else
+	  for (; value < 256 && p < end && ISDIGIT (*p); p++, digits++)
+	    value = (value * 10) + (*p - '0');
+	if (!digits)
+	  return -1;
+	/* Don't interpret 128+ codes and NUL because we cannot
+	   portably reinserted them into HTML.  */
+	if (!value || (value & ~0x7f))
+	  return -1;
+	*ptr = SKIP_SEMI (p, 0);
+	return value;
+      }
+    /* Process named ASCII entities.  */
+    case 'g':
+      if (ENT1 (p, 't'))
+	value = '>', *ptr = SKIP_SEMI (p, 1);
+      break;
+    case 'l':
+      if (ENT1 (p, 't'))
+	value = '<', *ptr = SKIP_SEMI (p, 1);
+      break;
+    case 'a':
+      if (ENT2 (p, 'm', 'p'))
+	value = '&', *ptr = SKIP_SEMI (p, 2);
+      else if (ENT3 (p, 'p', 'o', 's'))
+	/* handle &apos for the sake of the XML/XHTML crowd. */
+	value = '\'', *ptr = SKIP_SEMI (p, 3);
+      break;
+    case 'q':
+      if (ENT3 (p, 'u', 'o', 't'))
+	value = '\"', *ptr = SKIP_SEMI (p, 3);
+      break;
+    }
+  return value;
+}
+#undef ENT1
+#undef ENT2
+#undef ENT3
+
+enum {
+  AP_DOWNCASE		= 1,
+  AP_DECODE_ENTITIES	= 2,
+  AP_TRIM_BLANKS	= 4
+};
 
 /* Copy the text in the range [BEG, END) to POOL, optionally
    performing operations specified by FLAGS.  FLAGS may be any
-   combination of AP_DOWNCASE, AP_PROCESS_ENTITIES and AP_TRIM_BLANKS
+   combination of AP_DOWNCASE, AP_DECODE_ENTITIES and AP_TRIM_BLANKS
    with the following meaning:
 
    * AP_DOWNCASE -- downcase all the letters;
 
-   * AP_PROCESS_ENTITIES -- process the SGML entities and write out
-   the decoded string.  Recognized entities are &lt, &gt, &amp, &quot,
-   &nbsp and the numerical entities.
+   * AP_DECODE_ENTITIES -- decode the named and numeric entities in
+     the ASCII range when copying the string.
 
    * AP_TRIM_BLANKS -- ignore blanks at the beginning and at the end
-   of text.  */
+     of text.  */
 
 static void
 convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags)
@@ -293,7 +378,7 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
     }
   size = end - beg;
 
-  if (flags & AP_PROCESS_ENTITIES)
+  if (flags & AP_DECODE_ENTITIES)
     {
       /* Grow the pool, then copy the text to the pool character by
 	 character, processing the encountered entities as we go
@@ -314,67 +399,11 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
 	    *to++ = *from++;
 	  else
 	    {
-	      const char *save = from;
-	      int remain;
-
-	      if (++from == end)
-		goto lose;
-	      remain = end - from;
-
-	      /* Process numeric entities "&#DDD;" and "&#xHH;".  */
-	      if (*from == '#')
-		{
-		  int numeric = 0, digits = 0;
-		  ++from;
-		  if (*from == 'x')
-		    {
-		      ++from;
-		      for (; from < end && ISXDIGIT (*from); from++, digits++)
-			numeric = (numeric << 4) + XDIGIT_TO_NUM (*from);
-		    }
-		  else
-		    {
-		      for (; from < end && ISDIGIT (*from); from++, digits++)
-			numeric = (numeric * 10) + (*from - '0');
-		    }
-		  if (!digits)
-		    goto lose;
-		  numeric &= 0xff;
-		  *to++ = numeric;
-		}
-#define FROB(x) (remain >= (sizeof (x) - 1)			\
-		 && 0 == memcmp (from, x, sizeof (x) - 1)	\
-		 && (*(from + sizeof (x) - 1) == ';'		\
-		     || remain == sizeof (x) - 1		\
-		     || !ISALNUM (*(from + sizeof (x) - 1))))
-	      else if (FROB ("lt"))
-		*to++ = '<', from += 2;
-	      else if (FROB ("gt"))
-		*to++ = '>', from += 2;
-	      else if (FROB ("amp"))
-		*to++ = '&', from += 3;
-	      else if (FROB ("quot"))
-		*to++ = '\"', from += 4;
-	      /* We don't implement the proposed "Added Latin 1"
-		 entities (except for nbsp), because it is unnecessary
-		 in the context of Wget, and would require hashing to
-		 work efficiently.  */
-	      else if (FROB ("nbsp"))
-		*to++ = 160, from += 4;
+	      int entity = decode_entity (&from, end);
+	      if (entity != -1)
+		*to++ = entity;
 	      else
-		goto lose;
-#undef FROB
-	      /* If the entity was followed by `;', we step over the
-		 `;'.  Otherwise, it was followed by either a
-		 non-alphanumeric or EOB, in which case we do nothing.	*/
-	      if (from < end && *from == ';')
-		++from;
-	      continue;
-
-	    lose:
-	      /* This was not an entity after all.  Back out.  */
-	      from = save;
-	      *to++ = *from++;
+		*to++ = *from++;
 	    }
 	}
       /* Verify that we haven't exceeded the original size.  (It
@@ -897,7 +926,7 @@ map_html_tags (const char *text, int size,
 		  goto look_for_tag;
 		attr_raw_value_end = p;	/* <foo bar="baz"> */
 					/*               ^ */
-		operation = AP_PROCESS_ENTITIES;
+		operation = AP_DECODE_ENTITIES;
 		if (flags & MHT_TRIM_VALUES)
 		  operation |= AP_TRIM_BLANKS;
 	      }
@@ -920,7 +949,7 @@ map_html_tags (const char *text, int size,
 		  goto backout_tag;
 		attr_raw_value_begin = attr_value_begin;
 		attr_raw_value_end = attr_value_end;
-		operation = AP_PROCESS_ENTITIES;
+		operation = AP_DECODE_ENTITIES;
 	      }
 	  }
 	else

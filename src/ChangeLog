@@ -1,3 +1,12 @@
+2003-11-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* html-parse.c (decode_entity): New function; split the decoding
+	of entities here.
+	(convert_and_copy): Use it to decode entities.
+	(decode_entity): Handle the &apos entity.
+	(decode_entity): Don't decode Latin 1 numeric entities.  Don't
+	decode &#0.
+
 2003-11-01  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ftp-opie.c (calculate_skey_response): Use uint32_t instead of
