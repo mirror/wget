@@ -1,5 +1,11 @@
 2001-04-01  Nicolas Lichtmaier <nick@debian.org>
 
+	* ftp.c (ftp_get_listing): Propagate error status.
+	(ftp_retrieve_glob): Use it.
+	(ftp_loop): Ditto.
+
+2001-04-01  Nicolas Lichtmaier <nick@debian.org>
+
 	* main.c (main): Add -C to the string that is the third arg to
 	getopt_long().
 

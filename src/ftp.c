@@ -1170,10 +1170,9 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 
 /* Return the directory listing in a reusable format.  The directory
    is specifed in u->dir.  */
-static struct fileinfo *
-ftp_get_listing (struct urlinfo *u, ccon *con)
+uerr_t
+ftp_get_listing (struct urlinfo *u, ccon *con, struct fileinfo **f)
 {
-  struct fileinfo *f;
   uerr_t err;
   char *olocal = u->local;
   char *list_filename, *ofile;
@@ -1191,9 +1190,9 @@ ftp_get_listing (struct urlinfo *u, ccon *con)
   err = ftp_loop_internal (u, NULL, con);
   u->local = olocal;
   if (err == RETROK)
-    f = ftp_parse_ls (list_filename, con->rs);
+    *f = ftp_parse_ls (list_filename, con->rs);
   else
-    f = NULL;
+    *f = NULL;
   if (opt.remove_listing)
     {
       if (unlink (list_filename))
@@ -1203,7 +1202,7 @@ ftp_get_listing (struct urlinfo *u, ccon *con)
     }
   xfree (list_filename);
   con->cmd &= ~DO_LIST;
-  return f;
+  return err;
 }
 
 static uerr_t ftp_retrieve_dirs PARAMS ((struct urlinfo *, struct fileinfo *,
@@ -1501,7 +1500,9 @@ ftp_retrieve_glob (struct urlinfo *u, ccon *con, int action)
 
   con->cmd |= LEAVE_PENDING;
 
-  orig = ftp_get_listing (u, con);
+  res = ftp_get_listing (u, con, &orig);
+  if (res != RETROK)
+    return res;
   start = orig;
   /* First: weed out that do not conform the global rules given in
      opt.accepts and opt.rejects.  */
@@ -1602,9 +1603,10 @@ ftp_loop (struct urlinfo *u, int *dt)
      opt.htmlify is 0, of course.  :-) */
   if (!*u->file && !opt.recursive)
     {
-      struct fileinfo *f = ftp_get_listing (u, &con);
+      struct fileinfo *f;
+      res = ftp_get_listing (u, &con, &f);
 
-      if (f)
+      if (res == RETROK)
 	{
 	  if (opt.htmlify)
 	    {
