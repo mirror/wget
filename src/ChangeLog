@@ -188,7 +188,6 @@
 	characters.
 	(skip_uname): Ditto.
 
->>>>>>> 1.123
 2001-02-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp.c (ftp_loop): Reset con.
