@@ -1,3 +1,9 @@
+2001-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* po/zh_TW.Big5.po: New file, submitted by Abel Cheung.
+
+	* po/zh.po: Removed outdated file.
+
 2001-04-06  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* aclocal.m4 (AM_PROG_CC_STDC): Don't use -Xc under SYSV.  It
