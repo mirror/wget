@@ -179,8 +179,35 @@
 
 2003-10-27  Mauro Tortonesi <mauro@deepspace6.net>
 
-	* host.c, connect.c, ftp.c, ...: Added support for dual-family
-	IPv6.  Reworked FTP code.  [More complete description to come.]
+	* connect.h: changed bindport prototype and added the related
+	BIND_ON_IPV4_ONLY and BIND_ON_IPV6_ONLY flags.
+
+	* connect.c: changed bindport and resolve_bind_address to allow
+	protocol-version specific DNS resolution. modified conaddr,
+	acceptport and connect_to_one to make use of struct
+	sockaddr_storage and of the new ip_address structure.
+
+	* ftp-basic.c: added LPRT/LPSV (RFC1639) support, refactored
+	PORT/PASV (RFC959) and EPRT/EPSV (RFC2428) support code.
+
+	* ftp.c: added the ftp_do_port and ftp_do_pasv functions to
+	handle FTP over IPv6.
+
+	* ftp.h: changed prototype of ftp_epsv and added prototypes for
+	ftp_lpsv, ftp_lprt and ftp_eprt.
+
+	* host.c: renamed the
+	wget_sockaddr_set_address and wget_sockaddr_get_addr, and
+	wget_sockaddr_{s,g}et_port couples to sockaddr_{s,g}et_address and
+	sockaddr_{g,s}et_port respectively.  changed
+	address_list_match_all, address_list_from_addrinfo sockaddr_len,
+	pretty_print_address, lookup_host, sockaddr_{s,g}et_address and
+	sockaddr_{g,s}et_port to make use of struct sockaddr_storage and
+	of the new ip_address structure.  removed map_ipv4_to_ip and
+	map_ip_to_ipv4.
+
+	* host.h: redefined structure ip_address and removed structure
+	wget_sockaddr.
 
 2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
