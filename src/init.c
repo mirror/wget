@@ -194,25 +194,25 @@ static struct {
   { "waitretry",	&opt.waitretry,		cmd_time }
 };
 
-/* Return index of COM if it is a valid command, or -1 otherwise.  COM
-   is looked up in `commands' using binary search algorithm.  */
+/* Look up COM in the commands[] array and return its index.  If COM
+   is not found, -1 is returned.  This function uses binary search.  */
+
 static int
 comind (const char *com)
 {
-  int min = 0, max = ARRAY_SIZE (commands) - 1;
+  int lo = 0, hi = ARRAY_SIZE (commands) - 1;
 
-  do
+  while (lo <= hi)
     {
-      int i = (min + max) / 2;
-      int cmp = strcasecmp (com, commands[i].name);
-      if (cmp == 0)
-	return i;
-      else if (cmp < 0)
-	max = i - 1;
+      int mid = (lo + hi) >> 1;
+      int cmp = strcasecmp (com, commands[mid].name);
+      if (cmp < 0)
+	hi = mid - 1;
+      else if (cmp > 0)
+	lo = mid + 1;
       else
-	min = i + 1;
+	return mid;
     }
-  while (min <= max);
   return -1;
 }
 

@@ -1,5 +1,11 @@
 2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* init.c (comind): Use a marginally faster implementation of
+	binary search.  To quote Martin Buchholz, "a nanosecond saved is a
+	nanosecond earned."
+
+2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* main.c (print_help): Document `--post-data' and `--post-file'.
 
 2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
