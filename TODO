@@ -12,12 +12,18 @@ user-visible changes.
 * Add an option to save all text/html files with a .html extension so that when
   grabbing the output of a dynamically-generated remote page, you'll end up with
   a filename that will cause _your_ webserver to realize the saved static HTML
-  file isn't text/plain.
+  file isn't text/plain (or an illegal CGI script in the case of *.cgi).
 
 * Allow mirroring of FTP URLs where logging in puts you somewhere else besides 
   '/'. 
 
 * Make `-k' convert <base href=...> too.
+
+* Make `-k' check for files that were downloaded in the past and convert links 
+  to them in newly-downloaded documents.
+
+* -k should convert convert relative references to absolute if not
+  downloaded.
 
 * Add option to clobber existing file names (no `.N' suffixes).
 
@@ -44,9 +50,6 @@ user-visible changes.
 * Fix Unix directory parser to allow for spaces in file names.
 
 * Allow size limit to files.
-
-* -k should convert convert relative references to absolute if not
-  downloaded.
 
 * Recognize HTML comments correctly.  Add more options for handling
   bogus HTML found all over the 'net.
