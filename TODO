@@ -17,12 +17,6 @@ changes.
 
 * -p should probably go "_two_ more hops" on <FRAMESET> pages.
 
-* Only normal link-following recursion should respect -np.  Page-requisite
-  recursion should not.  When -np -p is specified, Wget should still retrieve
-  requisite images and such on the server, even if they aren't in that directory
-  or a subdirectory of it.  Likewise, -H -np -p should retrieve requisite files
-  from other hosts. 
-
 * Add a --range parameter allowing you to explicitly specify a range of bytes to
   get from a file over HTTP (FTP only supports ranges ending at the end of the
   file, though forcibly disconnecting from the server at the desired endpoint

@@ -279,8 +279,8 @@ retrieve_tree (const char *start_url)
       if (descend)
 	{
 	  int meta_disallow_follow = 0;
-	  struct urlpos *children = get_urls_html (file, url, dash_p_leaf_HTML,
-						   &meta_disallow_follow);
+	  struct urlpos *children
+	    = get_urls_html (file, url, &meta_disallow_follow);
 
 	  if (opt.use_robots && meta_disallow_follow)
 	    {
@@ -297,6 +297,8 @@ retrieve_tree (const char *start_url)
 	      for (; child; child = child->next)
 		{
 		  if (child->ignore_when_downloading)
+		    continue;
+		  if (dash_p_leaf_HTML && !child->link_inline_p)
 		    continue;
 		  if (descend_url_p (child, url_parsed, depth, start_url_parsed,
 				     blacklist))
@@ -435,11 +437,13 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
   /* 4. Check for parent directory.
 
      If we descended to a different host or changed the scheme, ignore
-     opt.no_parent.  Also ignore it for -p leaf retrievals.  */
+     opt.no_parent.  Also ignore it for documents needed to display
+     the parent page when in -p mode.  */
   if (opt.no_parent
       && u->scheme == start_url_parsed->scheme
       && 0 == strcasecmp (u->host, start_url_parsed->host)
-      && u->port == start_url_parsed->port)
+      && u->port == start_url_parsed->port
+      && !(opt.page_requisites && upos->link_inline_p))
     {
       if (!frontcmp (start_url_parsed->dir, u->dir))
 	{
@@ -482,7 +486,7 @@ descend_url_p (const struct urlpos *upos, struct url *parent, int depth,
     if (u->file[0] != '\0'
 	&& ((suf = suffix (url)) == NULL
 	    || (0 != strcmp (suf, "html") && 0 != strcmp (suf, "htm"))
-	    || (opt.reclevel == INFINITE_RECURSION && depth >= opt.reclevel)))
+	    || (opt.reclevel != INFINITE_RECURSION && depth >= opt.reclevel)))
       {
 	if (!acceptable (u->file))
 	  {
@@ -674,7 +678,7 @@ convert_all_links (void)
 	DEBUGP (("I cannot find the corresponding URL.\n"));
 
       /* Parse the HTML file...  */
-      urls = get_urls_html (html->string, url, FALSE, NULL);
+      urls = get_urls_html (html->string, url, NULL);
 
       /* We don't respect meta_disallow_follow here because, even if
          the file is not followed, we might still want to convert the

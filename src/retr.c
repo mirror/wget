@@ -535,7 +535,7 @@ retrieve_from_file (const char *file, int html, int *count)
   uerr_t status;
   struct urlpos *url_list, *cur_url;
 
-  url_list = (html ? get_urls_html (file, NULL, FALSE, NULL)
+  url_list = (html ? get_urls_html (file, NULL, NULL)
 	      : get_urls_file (file));
   status = RETROK;             /* Suppose everything is OK.  */
   *count = 0;                  /* Reset the URL count.  */

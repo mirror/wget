@@ -79,16 +79,17 @@ struct urlpos {
   char *local_name;		/* local file to which it was saved
 				   (used by convert_links) */
 
-  int ignore_when_downloading;	/* reserved for special links such as
-				   <base href="..."> which are used
-				   when converting links, but ignored
-				   when downloading.  */
+  /* reserved for special links such as <base href="..."> which are
+     used when converting links, but ignored when downloading.  */
+  unsigned int ignore_when_downloading	:1;
 
   /* Information about the original link: */
-  int link_relative_p;		/* was the link relative? */
-  int link_complete_p;		/* was the link complete (with the
-                                   host name, etc.) */
-  int link_base_p;		/* was the link <base href=...> */
+
+  unsigned int link_relative_p	:1; /* was the link relative? */
+  unsigned int link_complete_p	:1; /* was the link complete (with the
+				       host name, etc.) */
+  unsigned int link_base_p	:1; /* was the link <base href=...> */
+  unsigned int link_inline_p	:1; /* needed to render the page. */
 
   /* Conversion requirements: */
   enum convert_options convert;	/* is conversion required? */
@@ -134,7 +135,7 @@ int url_skip_uname PARAMS ((const char *));
 char *url_string PARAMS ((const struct url *, int));
 
 struct urlpos *get_urls_file PARAMS ((const char *));
-struct urlpos *get_urls_html PARAMS ((const char *, const char *, int, int *));
+struct urlpos *get_urls_html PARAMS ((const char *, const char *, int *));
 void free_urlpos PARAMS ((struct urlpos *));
 
 char *uri_merge PARAMS ((const char *, const char *));

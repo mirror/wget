@@ -1,3 +1,16 @@
+2001-11-30  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* recur.c (retrieve_tree): Skip the non-inline entries when
+	enqueuing the children of a leaf HTML node in -p mode.
+	(descend_url_p): Ignore opt.no_parent when in -p mode and UPOS is
+	"inline".
+
+	* html-url.c (get_urls_html): Don't accept dash_p_leaf_HTML.
+	(collect_tags_mapper): When an entry is "inline", mark it as such.
+
+	* recur.c (descend_url_p): Fix test when checking for
+	acceptance/rejection rules.
+
 2001-10-31 Daniel BODEA <dali@dali-designs.com>
 
 	* netrc.c (search_netrc): When slack_default is 0, still look for

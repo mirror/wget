@@ -287,9 +287,6 @@ struct collect_urls_closure {
   struct urlpos *head, *tail;	/* List of URLs */
   const char *parent_base;	/* Base of the current document. */
   const char *document_file;	/* File name of this document. */
-  int dash_p_leaf_HTML;		/* Whether -p is specified, and this
-                                   document is the "leaf" node of the
-                                   HTML tree. */
   int nofollow;			/* whether NOFOLLOW was specified in a
                                    <meta name=robots> tag. */
 };
@@ -413,20 +410,18 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 	    for (i = first; (i < size && url_tag_attr_map[i].tagid == tagid);
 		 i++)
 	      {
-		char *attr_value;
-		if (closure->dash_p_leaf_HTML
-		    && (url_tag_attr_map[i].flags & AF_EXTERNAL))
-		  /* If we're at a -p leaf node, we don't want to retrieve
-		     links to references we know are external to this document,
-		     such as <a href=...>.  */
-		  continue;
-
-		if (!strcasecmp (tag->attrs[id].name,
-				 url_tag_attr_map[i].attr_name))
+		if (0 == strcasecmp (tag->attrs[id].name,
+				     url_tag_attr_map[i].attr_name))
 		  {
-		    attr_value = tag->attrs[id].value;
+		    char *attr_value = tag->attrs[id].value;
 		    if (attr_value)
-		      handle_link (closure, attr_value, tag, id);
+		      {
+			struct urlpos *entry;
+			entry = handle_link (closure, attr_value, tag, id);
+			if (entry != NULL
+			    && !(url_tag_attr_map[i].flags & AF_EXTERNAL))
+			  entry->link_inline_p = 1;
+		      }
 		  }
 	      }
 	  }
@@ -460,24 +455,20 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 	case TAG_LINK:
 	  {
 	    int id;
-	    char *rel  = find_attr (tag, "rel", NULL);
 	    char *href = find_attr (tag, "href", &id);
+
+	    /* All <link href="..."> link references are external,
+	       except for <link rel="stylesheet" href="...">.  */
 	    if (href)
 	      {
-		/* In the normal case, all <link href=...> tags are
-		   fair game.
-
-		   In the special case of when -p is active, however,
-		   and we're at a leaf node (relative to the -l
-		   max. depth) in the HTML document tree, the only
-		   <LINK> tag we'll follow is a <LINK REL=
-		   "stylesheet">, as it'll be necessary for displaying
-		   this document properly.  We won't follow other
-		   <LINK> tags, like <LINK REL="home">, for instance,
-		   as they refer to external documents.  */
-		if (!closure->dash_p_leaf_HTML
-		    || (rel && !strcasecmp (rel, "stylesheet")))
-		  handle_link (closure, href, tag, id);
+		struct urlpos *entry;
+		entry = handle_link (closure, href, tag, id);
+		if (entry != NULL)
+		  {
+		    char *rel  = find_attr (tag, "rel", NULL);
+		    if (rel && 0 == strcasecmp (rel, "stylesheet"))
+		      entry->link_inline_p = 1;
+		  }
 	      }
 	  }
 	  break;
@@ -557,13 +548,9 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 
 /* Analyze HTML tags FILE and construct a list of URLs referenced from
    it.  It merges relative links in FILE with URL.  It is aware of
-   <base href=...> and does the right thing.
-
-   If dash_p_leaf_HTML is non-zero, only the elements needed to render
-   FILE ("non-external" links) will be returned.  */
+   <base href=...> and does the right thing.  */
 struct urlpos *
-get_urls_html (const char *file, const char *url, int dash_p_leaf_HTML,
-	       int *meta_disallow_follow)
+get_urls_html (const char *file, const char *url, int *meta_disallow_follow)
 {
   struct file_memory *fm;
   struct collect_urls_closure closure;
@@ -582,7 +569,6 @@ get_urls_html (const char *file, const char *url, int dash_p_leaf_HTML,
   closure.base = NULL;
   closure.parent_base = url ? url : opt.base_href;
   closure.document_file = file;
-  closure.dash_p_leaf_HTML = dash_p_leaf_HTML;
   closure.nofollow = 0;
 
   if (!interesting_tags)
