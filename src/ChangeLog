@@ -1,3 +1,10 @@
+2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* cmpt.c (random): Removed.
+
+	* retr.c (sleep_between_retrievals): Use the more portable rand()
+	instead of random().
+
 2001-11-27  Ian Abbott <abbotti@mev.co.uk>
 
 	* retr.c (retrieve_from_file): Initialize `new_file' to NULL to

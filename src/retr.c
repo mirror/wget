@@ -627,6 +627,10 @@ sleep_between_retrievals (int count)
 {
   static int first_retrieval = 1;
 
+  if (first_retrieval && opt.random_wait)
+    /* --random-wait uses the RNG, so seed it. */
+    srand (time (NULL));
+
   if (!first_retrieval && (opt.wait || opt.waitretry))
     {
       if (opt.waitretry && count > 1)
@@ -646,10 +650,16 @@ sleep_between_retrievals (int count)
 	    sleep (opt.wait);
 	  else
 	    {
-	      int waitsecs = random() % (opt.wait * 2 + 1);
-	      DEBUGP(("sleep_between_retrievals: norm=%ld,random=%ld,sleep=%d\n",
-		      opt.wait, waitsecs - opt.wait, waitsecs));
-	      sleep(waitsecs);
+	      int waitmax = 2 * opt.wait;
+	      /* This is equivalent to rand() % waitmax, but uses the
+		 high-order bits for better randomness.  */
+	      int waitsecs = (double)waitmax * rand () / (RAND_MAX + 1.0);
+
+	      DEBUGP (("sleep_between_retrievals: norm=%ld,fuzz=%ld,sleep=%d\n",
+		       opt.wait, waitsecs - opt.wait, waitsecs));
+
+	      if (waitsecs)
+		sleep (waitsecs);
 	    }
 	}
     }

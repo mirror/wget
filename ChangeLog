@@ -1,5 +1,9 @@
 2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* configure.in: Don't check for random.
+
+2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* po/hr.po: Updated.
 
 2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
