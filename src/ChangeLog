@@ -19,7 +19,7 @@
 
 2000-05-22  Dan Harkless  <dan-wget@dilvish.speed.net>
 
-	* main.c (main): Added --help line for Damir Dzeko
+	* main.c (print_help): Added --help line for Damir Dzeko
  	<ddzeko@zesoi.fer.hr>'s until-now-undocumented --referer option.
   	Removed comments that --referer and --waitretry were undocumented.
   	Changed "`.wgetrc' command" to "`.wgetrc'-style command" on --help
