@@ -51,6 +51,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "host.h"
 #include "cookies.h"
 #include "url.h"
+#include "progress.h"		/* for progress_handle_sigwinch */
 
 /* On GNU system this will include system-wide getopt.h. */
 #include "getopt.h"
@@ -165,7 +166,7 @@ Download:\n\
   -O   --output-document=FILE   write documents to FILE.\n\
   -nc, --no-clobber             don\'t clobber existing files or use .# suffixes.\n\
   -c,  --continue               resume getting a partially-downloaded file.\n\
-       --dot-style=STYLE        set retrieval display style.\n\
+       --progress=TYPE          select progress gauge type.\n\
   -N,  --timestamping           don\'t re-retrieve files unless newer than local.\n\
   -S,  --server-response        print server response.\n\
        --spider                 don\'t download anything.\n\
@@ -312,6 +313,7 @@ main (int argc, char *const *argv)
     { "no", required_argument, NULL, 'n' },
     { "output-document", required_argument, NULL, 'O' },
     { "output-file", required_argument, NULL, 'o' },
+    { "progress", required_argument, NULL, 163 },
     { "proxy", required_argument, NULL, 'Y' },
     { "proxy-passwd", required_argument, NULL, 144 },
     { "proxy-user", required_argument, NULL, 143 },
@@ -499,7 +501,13 @@ GNU General Public License for more details.\n"));
 	  setval ("header", optarg);
 	  break;
 	case 134:
-	  setval ("dotstyle", optarg);
+	  /* Supported for compatibility; --dot-style=foo equivalent
+	     to --progress=dot:foo.  */
+	  {
+	    char *tmp = alloca (3 + 1 + strlen (optarg));
+	    sprintf (tmp, "dot:%s", optarg);
+	    setval ("progress", tmp);
+	  }
 	  break;
 	case 135:
 	  setval ("htmlify", optarg);
@@ -530,6 +538,9 @@ GNU General Public License for more details.\n"));
 	  break;
 	case 162:
 	  setval ("savecookies", optarg);
+	  break;
+	case 163:
+	  setval ("progress", optarg);
 	  break;
 	case 157:
 	  setval ("referer", optarg);
@@ -784,6 +795,9 @@ Can't timestamp and not clobber old files at the same time.\n"));
      process exits.  What we want is to ignore SIGPIPE and just check
      for the return value of write().  */
   signal (SIGPIPE, SIG_IGN);
+#ifdef SIGWINCH
+  signal (SIGWINCH, progress_handle_sigwinch);
+#endif
 #endif /* HAVE_SIGNAL */
 
   status = RETROK;		/* initialize it, just-in-case */
@@ -860,11 +874,11 @@ Can't timestamp and not clobber old files at the same time.\n"));
     return 1;
 }
 
+#ifdef HAVE_SIGNAL
 /* Hangup signal handler.  When wget receives SIGHUP or SIGUSR1, it
    will proceed operation as usual, trying to write into a log file.
    If that is impossible, the output will be turned off.  */
 
-#ifdef HAVE_SIGNAL
 static RETSIGTYPE
 redirect_output_signal (int sig)
 {

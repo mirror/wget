@@ -1,3 +1,7 @@
+2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* configure.in: Check for sys/ioctl.h.
+
 2001-11-22  Herold Heiko  <Heiko.Herold@previnet.it>
 
 	* windows/Readme

@@ -65,8 +65,8 @@ GETOPT_OBJ = @GETOPT_OBJ@
 OBJ = $(ALLOCA) cmpt$o connect$o cookies$o fnmatch$o ftp$o        \
       ftp-basic$o ftp-ls$o $(OPIE_OBJ) $(GETOPT_OBJ) hash$o       \
       headers$o host$o html-parse$o html-url$o http$o init$o      \
-      log$o main$o $(MD5_OBJ) netrc$o rbuf$o recur$o res$o        \
-      retr$o safe-ctype$o snprintf$o $(SSL_OBJ) url$o             \
+      log$o main$o $(MD5_OBJ) netrc$o progress$o rbuf$o recur$o   \
+      res$o retr$o safe-ctype$o snprintf$o $(SSL_OBJ) url$o       \
       utils$o version$o
 
 .SUFFIXES:

@@ -82,10 +82,10 @@ CMD_DECLARE (cmd_time);
 CMD_DECLARE (cmd_vector);
 
 CMD_DECLARE (cmd_spec_dirstruct);
-CMD_DECLARE (cmd_spec_dotstyle);
 CMD_DECLARE (cmd_spec_header);
 CMD_DECLARE (cmd_spec_htmlify);
 CMD_DECLARE (cmd_spec_mirror);
+CMD_DECLARE (cmd_spec_progress);
 CMD_DECLARE (cmd_spec_recursive);
 CMD_DECLARE (cmd_spec_useragent);
 
@@ -122,7 +122,6 @@ static struct {
   { "dotbytes",		&opt.dot_bytes,		cmd_bytes },
   { "dotsinline",	&opt.dots_in_line,	cmd_number },
   { "dotspacing",	&opt.dot_spacing,	cmd_number },
-  { "dotstyle",		NULL,			cmd_spec_dotstyle },
   { "excludedirectories", &opt.excludes,	cmd_directory_vector },
   { "excludedomains",	&opt.exclude_domains,	cmd_vector },
   { "followftp",	&opt.follow_ftp,	cmd_boolean },
@@ -156,6 +155,7 @@ static struct {
   { "pagerequisites",	&opt.page_requisites,	cmd_boolean },
   { "passiveftp",	&opt.ftp_pasv,		cmd_lockable_boolean },
   { "passwd",		&opt.ftp_pass,		cmd_string },
+  { "progress",		NULL,			cmd_spec_progress },
   { "proxypasswd",	&opt.proxy_passwd,	cmd_string },
   { "proxyuser",	&opt.proxy_user,	cmd_string },
   { "quiet",		&opt.quiet,		cmd_boolean },
@@ -249,6 +249,7 @@ defaults (void)
 
   opt.remove_listing = 1;
 
+  set_progress_implementation ("dot");
   opt.dot_bytes = 1024;
   opt.dot_spacing = 10;
   opt.dots_in_line = 50;
@@ -871,61 +872,6 @@ cmd_spec_dirstruct (const char *com, const char *val, void *closure)
 }
 
 static int
-cmd_spec_dotstyle (const char *com, const char *val, void *closure)
-{
-  /* Retrieval styles.  */
-  if (!strcasecmp (val, "default"))
-    {
-      /* Default style: 1K dots, 10 dots in a cluster, 50 dots in a
-	 line.  */
-      opt.dot_bytes = 1024;
-      opt.dot_spacing = 10;
-      opt.dots_in_line = 50;
-    }
-  else if (!strcasecmp (val, "binary"))
-    {
-      /* "Binary" retrieval: 8K dots, 16 dots in a cluster, 48 dots
-	 (384K) in a line.  */
-      opt.dot_bytes = 8192;
-      opt.dot_spacing = 16;
-      opt.dots_in_line = 48;
-    }
-  else if (!strcasecmp (val, "mega"))
-    {
-      /* "Mega" retrieval, for retrieving very long files; each dot is
-	 64K, 8 dots in a cluster, 6 clusters (3M) in a line.  */
-      opt.dot_bytes = 65536L;
-      opt.dot_spacing = 8;
-      opt.dots_in_line = 48;
-    }
-  else if (!strcasecmp (val, "giga"))
-    {
-      /* "Giga" retrieval, for retrieving very very *very* long files;
-	 each dot is 1M, 8 dots in a cluster, 4 clusters (32M) in a
-	 line.  */
-      opt.dot_bytes = (1L << 20);
-      opt.dot_spacing = 8;
-      opt.dots_in_line = 32;
-    }
-  else if (!strcasecmp (val, "micro"))
-    {
-      /* "Micro" retrieval, for retrieving very small files (and/or
-	 slow connections); each dot is 128 bytes, 8 dots in a
-	 cluster, 6 clusters (6K) in a line.  */
-      opt.dot_bytes = 128;
-      opt.dot_spacing = 8;
-      opt.dots_in_line = 48;
-    }
-  else
-    {
-      fprintf (stderr, _("%s: %s: Invalid specification `%s'.\n"),
-	       exec_name, com, val);
-      return 0;
-    }
-  return 1;
-}
-
-static int
 cmd_spec_header (const char *com, const char *val, void *closure)
 {
   if (!*val)
@@ -981,6 +927,19 @@ cmd_spec_mirror (const char *com, const char *val, void *closure)
       opt.reclevel = INFINITE_RECURSION;
       opt.remove_listing = 0;
     }
+  return 1;
+}
+
+static int
+cmd_spec_progress (const char *com, const char *val, void *closure)
+{
+  if (!valid_progress_implementation_p (val))
+    {
+      fprintf (stderr, _("%s: %s: Invalid progress type `%s'.\n"),
+	       exec_name, com, val);
+      return 0;
+    }
+  set_progress_implementation (val);
   return 1;
 }
 

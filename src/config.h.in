@@ -180,6 +180,9 @@ char *alloca ();
 /* Define if you have the <sys/utime.h> header file.  */
 #undef HAVE_SYS_UTIME_H
 
+/* Define if you have the <sys/ioctl.h> header file.  */
+#undef HAVE_SYS_IOCTL_H
+
 /* Define if you have the <sys/select.h> header file.  */
 #undef HAVE_SYS_SELECT_H
 

@@ -50,6 +50,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #endif
 #include <fcntl.h>
 #include <assert.h>
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>
+#endif
 
 #include "wget.h"
 #include "utils.h"
@@ -1703,4 +1706,29 @@ html_quote_string (const char *s)
     }
   *p = '\0';
   return res;
+}
+
+/* Determine the width of the terminal we're running on.  If that's
+   not possible, return 0.  */
+
+int
+determine_screen_width (void)
+{
+  /* If there's a way to get the terminal size using POSIX
+     tcgetattr(), somebody please tell me.  */
+#ifndef TIOCGWINSZ
+  return 0;
+#else  /* TIOCGWINSZ */
+  int fd;
+  struct winsize wsz;
+
+  if (opt.lfilename != NULL)
+    return 0;
+
+  fd = fileno (stderr);
+  if (ioctl (fd, TIOCGWINSZ, &wsz) < 0)
+    return 0;			/* most likely ENOTTY */
+
+  return wsz.ws_col;
+#endif /* TIOCGWINSZ */
 }

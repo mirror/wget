@@ -1,3 +1,31 @@
+2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* utils.c (determine_screen_width): New function.
+
+	* main.c (main): New option `--progress=TYPE'.
+	(main): Implement compatibility with the old option `--dot-style'.
+
+	* init.c: Removed cmd_spec_dotstyle -- that logic is now in
+	dp_set_params.
+	(cmd_spec_progress): New function.
+
+	* retr.c (get_contents): Use the progress_* functions instead of
+	the old show_progress().
+	(show_progress): Removed.
+	(rate): Print "xxxx.xx K/s" instead of "KB/s".  Ditto for MB/s,
+	etc.
+
+	* progress.c (set_progress_implementation): New function.
+	(valid_progress_implementation_p): Ditto.
+	(progress_create): Ditto.
+	(progress_update): Ditto.
+	(progress_finish): Ditto.
+	(dp_create): Ditto.
+	(dp_update): Ditto.
+	(dp_finish): Ditto.
+	(dp_set_params): Ditto.
+	(print_elapsed): Ditto.
+
 2001-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* retr.c (show_progress): Use it.
