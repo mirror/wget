@@ -82,6 +82,7 @@ static int cookies_loaded_p;
 struct cookie_jar *wget_cookie_jar;
 
 #define TEXTHTML_S "text/html"
+#define TEXTXHTML_S "application/xhtml+xml"
 #define HTTP_ACCEPT "*/*"
 
 /* Some status code validation macros: */
@@ -1323,7 +1324,9 @@ Accept: %s\r\n\
   /* If content-type is not given, assume text/html.  This is because
      of the multitude of broken CGI's that "forget" to generate the
      content-type.  */
-  if (!type || 0 == strncasecmp (type, TEXTHTML_S, strlen (TEXTHTML_S)))
+  if (!type ||
+        0 == strncasecmp (type, TEXTHTML_S, strlen (TEXTHTML_S)) ||
+        0 == strncasecmp (type, TEXTXHTML_S, strlen (TEXTXHTML_S)))
     *dt |= TEXTHTML;
   else
     *dt &= ~TEXTHTML;

@@ -299,7 +299,8 @@ extern const char *exec_name;
 /* Document type ("dt") flags */
 enum
 {
-  TEXTHTML             = 0x0001,	/* document is of type text/html */
+  TEXTHTML             = 0x0001,	/* document is of type text/html
+                                           or application/xhtml+xml */
   RETROKF              = 0x0002,	/* retrieval was OK */
   HEAD_ONLY            = 0x0004,	/* only send the HEAD request */
   SEND_NOCACHE         = 0x0008,	/* send Pragma: no-cache directive */

@@ -1,3 +1,8 @@
+2003-09-21  Matthew J. Mellon  <mellon@tymenet.com>
+
+	* http.c (gethttp): Recognize content-type "application/xhtml+xml"
+	as what Wget considers "text/html".
+
 2003-09-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* connect.c (connect_with_timeout): Made timeout type double.

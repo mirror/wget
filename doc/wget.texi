@@ -143,9 +143,9 @@ which can be a great hindrance when transferring a lot of data.
 @c man end
 @end ignore
 @c man begin DESCRIPTION
-Wget can follow links in @sc{html} pages and create local versions of
-remote web sites, fully recreating the directory structure of the
-original site.  This is sometimes referred to as ``recursive
+Wget can follow links in @sc{html} and @sc{xhtml} pages and create local 
+versions of remote web sites, fully recreating the directory structure of 
+the original site.  This is sometimes referred to as ``recursive
 downloading.''  While doing that, Wget respects the Robot Exclusion
 Standard (@file{/robots.txt}).  Wget can be instructed to convert the
 links in downloaded @sc{html} files to the local files for offline
@@ -944,23 +944,24 @@ current directory).
 @cindex .html extension
 @item -E
 @itemx --html-extension
-If a file of type @samp{text/html} is downloaded and the URL does not
-end with the regexp @samp{\.[Hh][Tt][Mm][Ll]?}, this option will cause
-the suffix @samp{.html} to be appended to the local filename.  This is
-useful, for instance, when you're mirroring a remote site that uses
-@samp{.asp} pages, but you want the mirrored pages to be viewable on
-your stock Apache server.  Another good use for this is when you're
-downloading the output of CGIs.  A URL like
-@samp{http://site.com/article.cgi?25} will be saved as
+If a file of type @samp{application/xhtml+xml} or @samp{text/html} is 
+downloaded and the URL does not end with the regexp 
+@samp{\.[Hh][Tt][Mm][Ll]?}, this option will cause the suffix @samp{.html} 
+to be appended to the local filename.  This is useful, for instance, when 
+you're mirroring a remote site that uses @samp{.asp} pages, but you want 
+the mirrored pages to be viewable on your stock Apache server.  Another 
+good use for this is when you're downloading the output of CGIs.  A URL 
+like @samp{http://site.com/article.cgi?25} will be saved as
 @file{article.cgi?25.html}.
 
 Note that filenames changed in this way will be re-downloaded every time
 you re-mirror a site, because Wget can't tell that the local
 @file{@var{X}.html} file corresponds to remote URL @samp{@var{X}} (since
 it doesn't yet know that the URL produces output of type
-@samp{text/html}.  To prevent this re-downloading, you must use
-@samp{-k} and @samp{-K} so that the original version of the file will be
-saved as @file{@var{X}.orig} (@pxref{Recursive Retrieval Options}).
+@samp{text/html} or @samp{application/xhtml+xml}.  To prevent this 
+re-downloading, you must use @samp{-k} and @samp{-K} so that the original 
+version of the file will be saved as @file{@var{X}.orig} (@pxref{Recursive 
+Retrieval Options}).
 
 @cindex http user
 @cindex http password
@@ -1524,7 +1525,8 @@ With @sc{http} @sc{url}s, Wget retrieves and parses the @sc{html} from
 the given @sc{url}, documents, retrieving the files the @sc{html}
 document was referring to, through markups like @code{href}, or
 @code{src}.  If the freshly downloaded file is also of type
-@code{text/html}, it will be parsed and followed further.
+@code{text/html} or @code{application/xhtml+xml}, it will be parsed and 
+followed further.
 
 Recursive retrieval of @sc{http} and @sc{html} content is
 @dfn{breadth-first}.  This means that Wget first downloads the requested
@@ -2229,7 +2231,8 @@ Turn globbing on/off---the same as @samp{-g}.
 Define an additional header, like @samp{--header}.
 
 @item html_extension = on/off
-Add a @samp{.html} extension to @samp{text/html} files without it, like
+Add a @samp{.html} extension to @samp{text/html} or 
+@samp{application/xhtml+xml} files without it, like
 @samp{-E}.
 
 @item http_passwd = @var{string}
@@ -2658,7 +2661,7 @@ But you've also noticed that local viewing doesn't work all that well
 when HTML files are saved under extensions other than @samp{.html},
 perhaps because they were served as @file{index.cgi}.  So you'd like
 Wget to rename all the files served with content-type @samp{text/html}
-to @file{@var{name}.html}.
+or @samp{application/xhtml+xml} to @file{@var{name}.html}.
 
 @example
 wget --mirror --convert-links --backup-converted \
