@@ -1,3 +1,8 @@
+2003-11-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.in (http$o): Added the trailing backslash that was
+	missing.
+
 2003-11-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* headers.c: Removed.  The file is no longer relevant, now that no
