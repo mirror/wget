@@ -118,8 +118,6 @@ struct cookie {
   char *attr;			/* cookie attribute name */
   char *value;			/* cookie attribute value */
 
-  struct cookie_jar *jar;	/* pointer back to the cookie jar, for
-				   convenience. */
   struct cookie *next;		/* used for chaining of cookies in the
 				   same domain. */
 };

@@ -1,5 +1,10 @@
 2003-10-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* cookies.c (struct cookie): Remove unused backpointer to cookie
+	jar.
+
+2003-10-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* cmpt.c (memmove): Comment out, since it's no longer used.
 
 	* cookies.c (cookie_jar_generate_cookie_header): Allocate room for
