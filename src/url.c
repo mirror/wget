@@ -145,11 +145,14 @@ const static unsigned char urlchr_table[256] =
 #undef U
 #undef RU
 
-/* Decodes the forms %xy in a URL to the character the hexadecimal
-   code of which is xy.  xy are hexadecimal digits from
-   [0123456789ABCDEF] (case-insensitive).  If x or y are not
-   hex-digits or `%' precedes `\0', the sequence is inserted
-   literally.  */
+/* URL-unescape the string S.
+
+   This is done by transforming the sequences "%HH" to the character
+   represented by the hexadecimal digits HH.  If % is not followed by
+   two hexadecimal digits, it is inserted literally.
+
+   The transformation is done in place.  If you need the original
+   string intact, make a copy before calling this function.  */
 
 static void
 url_unescape (char *s)
@@ -177,10 +180,15 @@ url_unescape (char *s)
   *t = '\0';
 }
 
-/* Like url_escape, but return S if there are no unsafe chars.  */
+/* The core of url_escape_* functions.  Escapes the characters that
+   match the provided mask in urlchr_table.
+
+   If ALLOW_PASSTHROUGH is non-zero, a string with no unsafe chars
+   will be returned unchanged.  If ALLOW_PASSTHROUGH is zero, a
+   freshly allocated string will be returned in all cases.  */
 
 static char *
-url_escape_allow_passthrough (const char *s)
+url_escape_1 (const char *s, unsigned char mask, int allow_passthrough)
 {
   const char *p1;
   char *p2, *newstr;
@@ -188,11 +196,11 @@ url_escape_allow_passthrough (const char *s)
   int addition = 0;
 
   for (p1 = s; *p1; p1++)
-    if (URL_UNSAFE_CHAR (*p1))
+    if (urlchr_test (*p1, mask))
       addition += 2;		/* Two more characters (hex digits) */
 
   if (!addition)
-    return (char *)s;
+    return allow_passthrough ? (char *)s : xstrdup (s);
 
   newlen = (p1 - s) + addition;
   newstr = (char *)xmalloc (newlen + 1);
@@ -201,7 +209,8 @@ url_escape_allow_passthrough (const char *s)
   p2 = newstr;
   while (*p1)
     {
-      if (URL_UNSAFE_CHAR (*p1))
+      /* Quote the characters that match the test mask. */
+      if (urlchr_test (*p1, mask))
 	{
 	  unsigned char c = *p1++;
 	  *p2++ = '%';
@@ -211,37 +220,29 @@ url_escape_allow_passthrough (const char *s)
       else
 	*p2++ = *p1++;
     }
-  *p2 = '\0';
   assert (p2 - newstr == newlen);
+  *p2 = '\0';
 
   return newstr;
 }
 
-/* Encode the unsafe characters (as determined by URL_UNSAFE_CHAR) in a
-   given string, returning a malloc-ed %XX encoded string.  */
-  
+/* URL-escape the unsafe characters (see urlchr_table) in a given
+   string, returning a freshly allocated string.  */
+
 char *
 url_escape (const char *s)
 {
-  char *encoded = url_escape_allow_passthrough (s);
-  if (encoded != s)
-    return encoded;
-  else
-    return xstrdup (s);
+  return url_escape_1 (s, urlchr_unsafe, 0);
 }
 
-/* Encode unsafe characters in PTR to %xx.  If such encoding is done,
-   the old value of PTR is freed and PTR is made to point to the newly
-   allocated storage.  */
+/* URL-escape the unsafe characters (see urlchr_table) in a given
+   string.  If no characters are unsafe, S is returned.  */
 
-#define ENCODE(ptr) do {				\
-  char *e_new = url_escape_allow_passthrough (ptr);	\
-  if (e_new != ptr)					\
-    {							\
-      xfree (ptr);					\
-      ptr = e_new;					\
-    }							\
-} while (0)
+static char *
+url_escape_allow_passthrough (const char *s)
+{
+  return url_escape_1 (s, urlchr_unsafe, 1);
+}
 
 enum copy_method { CM_DECODE, CM_ENCODE, CM_PASSTHROUGH };
 
@@ -419,19 +420,6 @@ reencode_escapes (const char *s)
   assert (p2 - newstr == newlen);
   return newstr;
 }
-
-/* Run PTR_VAR through reencode_escapes.  If a new string is consed,
-   free PTR_VAR and make it point to the new storage.  Obviously,
-   PTR_VAR needs to be an lvalue.  */
-
-#define REENCODE(ptr_var) do {			\
-  char *rf_new = reencode_escapes (ptr_var);	\
-  if (rf_new != ptr_var)			\
-    {						\
-      xfree (ptr_var);				\
-      ptr_var = rf_new;				\
-    }						\
-} while (0)
 
 /* Returns the scheme type if the scheme is supported, or
    SCHEME_INVALID if not.  */
@@ -1145,38 +1133,83 @@ url_full_path (const struct url *url)
   return full_path;
 }
 
-/* Sync u->path and u->url with u->dir and u->file. */
+/* Escape unsafe and reserved characters, except for the slash
+   characters.  */
+
+static char *
+url_escape_dir (const char *dir)
+{
+  char *newdir = url_escape_1 (dir, urlchr_unsafe | urlchr_reserved, 1);
+  char *h, *t;
+  if (newdir == dir)
+    return (char *)dir;
+
+  /* Unescape slashes in NEWDIR. */
+
+  h = newdir;			/* hare */
+  t = newdir;			/* tortoise */
+
+  for (; *h; h++, t++)
+    {
+      if (*h == '%' && h[1] == '2' && h[2] == 'F')
+	{
+	  *t = '/';
+	  h += 2;
+	}
+      else
+	*t = *h;
+    }
+  *t = '\0';
+
+  return newdir;
+}
+
+/* Sync u->path and u->url with u->dir and u->file.  Called after
+   u->file or u->dir have been changed, typically by the FTP code.  */
 
 static void
-sync_path (struct url *url)
+sync_path (struct url *u)
 {
-  char *newpath;
+  char *newpath, *efile, *edir;
 
-  xfree (url->path);
+  xfree (u->path);
 
-  if (!*url->dir)
-    {
-      newpath = xstrdup (url->file);
-      REENCODE (newpath);
-    }
+  /* u->dir and u->file are not escaped.  URL-escape them before
+     reassembling them into u->path.  That way, if they contain
+     separators like '?' or even if u->file contains slashes, the
+     path will be correctly assembled.  (u->file can contain slashes
+     if the URL specifies it with %2f, or if an FTP server returns
+     it.)  */
+  edir = url_escape_dir (u->dir);
+  efile = url_escape_1 (u->file, urlchr_unsafe | urlchr_reserved, 1);
+
+  if (!*edir)
+    newpath = xstrdup (efile);
   else
     {
-      int dirlen = strlen (url->dir);
-      int filelen = strlen (url->file);
+      int dirlen = strlen (edir);
+      int filelen = strlen (efile);
 
-      newpath = xmalloc (dirlen + 1 + filelen + 1);
-      memcpy (newpath, url->dir, dirlen);
-      newpath[dirlen] = '/';
-      memcpy (newpath + dirlen + 1, url->file, filelen);
-      newpath[dirlen + 1 + filelen] = '\0';
-      REENCODE (newpath);
+      /* Copy "DIR/FILE" to newpath. */
+      char *p = newpath = xmalloc (dirlen + 1 + filelen + 1);
+      memcpy (p, edir, dirlen);
+      p += dirlen;
+      *p++ = '/';
+      memcpy (p, efile, filelen);
+      p += filelen;
+      *p++ = '\0';
     }
 
-  url->path = newpath;
+  u->path = newpath;
 
-  /* Synchronize u->url. */
-  xfree (url->url);
-  url->url = url_string (url, 0);
+  if (edir != u->dir)
+    xfree (edir);
+  if (efile != u->file)
+    xfree (efile);
+
+  /* Regenerate u->url as well.  */
+  xfree (u->url);
+  u->url = url_string (u, 0);
 }
 
 /* Mutators.  Code in ftp.c insists on changing u->dir and u->file.
@@ -1396,10 +1429,10 @@ mkalldirs (const char *path)
 /* A growable string structure, used by url_file_name and friends.
    This should perhaps be moved to utils.c.
 
-   The idea is to have an easy way to construct a string by having
-   various functions append data to it.  Instead of passing the
-   obligatory BASEVAR, SIZEVAR and TAILPOS to all the functions in
-   questions, we pass the pointer to this struct.  */
+   The idea is to have a convenient and efficient way to construct a
+   string by having various functions append data to it.  Instead of
+   passing the obligatory BASEVAR, SIZEVAR and TAILPOS to all the
+   functions in questions, we pass the pointer to this struct.  */
 
 struct growable {
   char *base;

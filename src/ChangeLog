@@ -1,3 +1,12 @@
+2003-09-17  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (url_escape_1): New function.
+	(url_escape): Use it.
+	(sync_path): Handle pathological cases where u->file and u->dir
+	contain really strange characters.
+	(ENCODE): Deleted.
+	(REENCODE): Deleted.
+
 2003-09-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (url_file_name): Don't reallocate FNAME if the file
