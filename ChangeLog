@@ -1,3 +1,7 @@
+2002-05-27  Ian Abbott  <abbotti@mev.co.uk>
+
+	* windows/config.h.bor: Do #define WGET_USE_STDARG.
+
 2002-05-20  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* windows/config.h.ms: Ditto.

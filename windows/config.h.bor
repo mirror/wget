@@ -33,6 +33,9 @@
 #define ftruncate chsize
 #define inline __inline
 
+/* Flag that C files should include <stdarg.h>, not <varargs.h>.  */
+#define WGET_USE_STDARG
+
 /* Define if the free Borland C++Builder 5.5 command-line compiler is used,
    because its utime() has a bug. */
 #define HACK_BCC_UTIME_BUG
