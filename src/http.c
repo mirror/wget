@@ -940,7 +940,7 @@ Accept: %s\r\n\
 	   post_content_type ? post_content_type : "",
 	   post_content_length ? post_content_length : "",
 	   opt.user_header ? opt.user_header : "");
-  DEBUGP (("---request begin---\n%s", request));
+  DEBUGP (("\n---request begin---\n%s", request));
 
   /* Free the temporary memory.  */
   xfree_null (wwwauth);
@@ -981,6 +981,9 @@ Accept: %s\r\n\
   rbuf_initialize (&rbuf, sock);
   all_headers = NULL;
   all_length = 0;
+
+  DEBUGP (("\n---response begin---\n"));
+
   /* Header-fetching loop.  */
   hcount = 0;
   while (1)
@@ -1160,6 +1163,7 @@ Accept: %s\r\n\
     done_header:
       xfree (hdr);
     }
+  DEBUGP (("---response end---\n"));
 
   logputs (LOG_VERBOSE, "\n");
 
