@@ -54,8 +54,9 @@ extern char *version_string;
 static struct hash_table *dl_file_url_map;
 static struct hash_table *dl_url_file_map;
 
-/* List of HTML URLs.  */
-static slist *urls_html;
+/* List of HTML files downloaded in this Wget run.  Used for link
+   conversion after Wget is done.  */
+static slist *downloaded_html_files;
 
 /* List of undesirable-to-load URLs.  */
 static struct hash_table *undesirable_urls;
@@ -106,8 +107,8 @@ recursive_cleanup (void)
   undesirable_urls = NULL;
   free_vec (forbidden);
   forbidden = NULL;
-  slist_free (urls_html);
-  urls_html = NULL;
+  slist_free (downloaded_html_files);
+  downloaded_html_files = NULL;
   FREE_MAYBE (base_dir);
   FREE_MAYBE (robots_host);
   first_time = 1;
@@ -153,25 +154,17 @@ recursive_retrieve (const char *file, const char *this_url)
          run.  They should probably be at a different location.  */
       if (!undesirable_urls)
 	undesirable_urls = make_string_hash_table (0);
-      if (!dl_file_url_map)
-	dl_file_url_map = make_string_hash_table (0);
-      if (!dl_url_file_map)
-	dl_url_file_map = make_string_hash_table (0);
 
       hash_table_clear (undesirable_urls);
       string_set_add (undesirable_urls, this_url);
       hash_table_clear (dl_file_url_map);
       hash_table_clear (dl_url_file_map);
-      urls_html = NULL;
       /* Enter this_url to the hash table, in original and "enhanced" form.  */
       u = newurl ();
       err = parseurl (this_url, u, 0);
       if (err == URLOK)
 	{
 	  string_set_add (undesirable_urls, u->url);
-	  hash_table_put (dl_file_url_map, xstrdup (file), xstrdup (u->url));
-	  hash_table_put (dl_url_file_map, xstrdup (u->url), xstrdup (file));
-	  urls_html = slist_prepend (urls_html, file);
 	  if (opt.no_parent)
 	    base_dir = xstrdup (u->dir); /* Set the base dir.  */
 	  /* Set the canonical this_url to be sent as referer.  This
@@ -469,22 +462,6 @@ recursive_retrieve (const char *file, const char *this_url)
 	      xfree (constr);
 	      constr = newloc;
 	    }
-	  /* In case of convert_links: If there was no error, add it to
-	     the list of downloaded URLs.  We might need it for
-	     conversion.  */
-	  if (opt.convert_links && filename)
-	    {
-	      if (dt & RETROKF)
-		{
-		  hash_table_put (dl_file_url_map,
-				  xstrdup (filename), xstrdup (constr));
-		  hash_table_put (dl_url_file_map,
-				  xstrdup (constr), xstrdup (filename));
-		  /* If the URL is HTML, note it.  */
-		  if (dt & TEXTHTML)
-		    urls_html = slist_prepend (urls_html, filename);
-		}
-	    }
 	  /* If there was no error, and the type is text/html, parse
 	     it recursively.  */
 	  if (dt & TEXTHTML)
@@ -547,6 +524,27 @@ recursive_retrieve (const char *file, const char *this_url)
     return RETROK;
 }
 
+void
+register_download (const char *url, const char *file)
+{
+  if (!opt.convert_links)
+    return;
+  if (!dl_file_url_map)
+    dl_file_url_map = make_string_hash_table (0);
+  hash_table_put (dl_file_url_map, xstrdup (file), xstrdup (url));
+  if (!dl_url_file_map)
+    dl_url_file_map = make_string_hash_table (0);
+  hash_table_put (dl_url_file_map, xstrdup (url), xstrdup (file));
+}
+
+void
+register_html (const char *url, const char *file)
+{
+  if (!opt.convert_links)
+    return;
+  downloaded_html_files = slist_prepend (downloaded_html_files, file);
+}
+
 /* convert_links() is called from recursive_retrieve() after we're
    done with an HTML file.  This call to convert_links is not complete
    because it converts only the downloaded files, and Wget cannot know
@@ -570,7 +568,7 @@ recursive_retrieve (const char *file, const char *this_url)
    convert_all_links to go once more through the entire list of
    retrieved HTMLs, and re-convert them.
 
-   All the downloaded HTMLs are kept in urls_html, and downloaded URLs
+   All the downloaded HTMLs are kept in downloaded_html_files, and downloaded URLs
    in urls_downloaded.  From these two lists information is
    extracted.  */
 void
@@ -578,11 +576,11 @@ convert_all_links (void)
 {
   slist *html;
 
-  /* Destructively reverse urls_html to get it in the right order.
+  /* Destructively reverse downloaded_html_files to get it in the right order.
      recursive_retrieve() used slist_prepend() consistently.  */
-  urls_html = slist_nreverse (urls_html);
+  downloaded_html_files = slist_nreverse (downloaded_html_files);
 
-  for (html = urls_html; html; html = html->next)
+  for (html = downloaded_html_files; html; html = html->next)
     {
       urlpos *urls, *cur_url;
       char *url;

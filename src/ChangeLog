@@ -1,5 +1,15 @@
 2001-03-31  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* retr.c (retrieve_url): Call register_download() for downloaded
+	files and register_html() for downloaded HTML files.
+
+	* recur.c (register_download): New function; register here that a
+	file has been downloaded, rather than in recursive_retrieve().
+	(register_html): New function; enqueue the location of HTML files
+	here rather than in recursive_retrieve().
+
+2001-03-31  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* main.c (print_help): Use multiple fputs instead of a single ugly
 	printf().
 	(main): Consistently assign numbers >128 to options without a

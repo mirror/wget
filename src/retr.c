@@ -446,11 +446,11 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   assert (u->proto != URLFILE);	/* #### Implement me!  */
   mynewloc = NULL;
 
+  if (u->proto == URLHTTP
 #ifdef HAVE_SSL
-  if (u->proto == URLHTTP || u->proto == URLHTTPS )
-#else
-  if (u->proto == URLHTTP)
-#endif /* HAVE_SSL */
+      || u->proto == URLHTTPS
+#endif
+      )
     result = http_loop (u, &mynewloc, dt);
   else if (u->proto == URLFTP)
     {
@@ -544,6 +544,16 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       freeurl (u, 1);
       u = newloc_struct;
       goto redirected;
+    }
+
+  if (u->local)
+    {
+      if (*dt & RETROKF)
+	{
+	  register_download (url, u->local);
+	  if (*dt & TEXTHTML)
+	    register_html (url, u->local);
+	}
     }
 
   if (file)
