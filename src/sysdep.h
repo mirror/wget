@@ -224,14 +224,14 @@ void *memcpy ();
    Currently those include glibc-based systems and Solaris.  One could
    add more, but fnmatch is not that large, so it might be better to
    play it safe.  */
-#ifdef HAVE_FNMATCH_H
+#ifdef HAVE_WORKING_FNMATCH_H
 # if defined __GLIBC__ && __GLIBC__ >= 2
 #  define SYSTEM_FNMATCH
 # endif
 # ifdef solaris
 #  define SYSTEM_FNMATCH
 # endif
-#endif /* HAVE_FNMATCH_H */
+#endif /* HAVE_WORKING_FNMATCH_H */
 
 #ifdef SYSTEM_FNMATCH
 # include <fnmatch.h>
