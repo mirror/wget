@@ -1,3 +1,10 @@
+2000-04-05  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* TODO: Make -K only leave .orig files around when different.  Add
+	an option to save all text/html files with .html extension.  Allow
+	mirroring of FTP URLs where logging in puts you somewhere else
+	besides '/'.
+
 2000-04-04  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* NEWS (--follow-tags, -G / --ignore-tags): Forgot to mention
