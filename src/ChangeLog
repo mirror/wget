@@ -1,3 +1,7 @@
+2002-04-19  Thomas Lussnig  <thomas.lussnig@bewegungsmelder.de>
+
+	* init.c: The option `egdfile' was not in sort order.
+
 2002-04-16  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp.c (getftp): Treat directories that begin with <letter>: as

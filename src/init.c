@@ -124,6 +124,9 @@ static struct {
   { "dotsinline",	&opt.dots_in_line,	cmd_number },
   { "dotspacing",	&opt.dot_spacing,	cmd_number },
   { "dotstyle",		&opt.dot_style,		cmd_string },
+#ifdef HAVE_SSL
+  { "egdfile",		&opt.sslegdsock,	cmd_file },
+#endif
   { "excludedirectories", &opt.excludes,	cmd_directory_vector },
   { "excludedomains",	&opt.exclude_domains,	cmd_vector },
   { "followftp",	&opt.follow_ftp,	cmd_boolean },
@@ -182,7 +185,6 @@ static struct {
 #ifdef HAVE_SSL
   { "sslcertfile",	&opt.sslcertfile,	cmd_file },
   { "sslcertkey",	&opt.sslcertkey,	cmd_file },
-  { "egdfile",		&opt.sslegdsock,	cmd_file },
 #endif /* HAVE_SSL */
   { "timeout",		&opt.timeout,		cmd_time },
   { "timestamping",	&opt.timestamping,	cmd_boolean },
