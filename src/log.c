@@ -350,15 +350,20 @@ struct logvprintf_state {
 /* Print a message to the log.  A copy of message will be saved to
    saved_log, for later reusal by log_dump_context().
 
-   It is not possible to code this function in a "natural" way, using
-   a loop, because of the braindeadness of the varargs API.
-   Specifically, each call to vsnprintf() must be preceded by va_start
-   and followed by va_end.  And this is possible only in the function
-   that contains the `...' declaration.  The alternative would be to
-   use va_copy, but that's not portable.  */
+   Normally we'd want this function to loop around vsnprintf until
+   sufficient room is allocated, as the Linux man page recommends.
+   However each call to vsnprintf() must be preceded by va_start and
+   followed by va_end.  Since calling va_start/va_end is possible only
+   in the function that contains the `...' declaration, we cannot call
+   vsnprintf more than once.  Therefore this function saves its state
+   to logvprintf_state and signals the parent to call it again.
+
+   (An alternative approach would be to use va_copy, but that's not
+   portable.)  */
 
 static int
-logvprintf (struct logvprintf_state *state, const char *fmt, va_list args)
+log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
+		      va_list args)
 {
   char smallmsg[128];
   char *write_ptr = smallmsg;
@@ -504,7 +509,7 @@ logprintf (enum log_options o, const char *fmt, ...)
   do
     {
       VA_START (args, fmt);
-      done = logvprintf (&lpstate, fmt, args);
+      done = log_vprintf_internal (&lpstate, fmt, args);
       va_end (args);
     }
   while (!done);
@@ -530,7 +535,7 @@ debug_logprintf (const char *fmt, ...)
       do
 	{
 	  VA_START (args, fmt);
-	  done = logvprintf (&lpstate, fmt, args);
+	  done = log_vprintf_internal (&lpstate, fmt, args);
 	  va_end (args);
 	}
       while (!done);

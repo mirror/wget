@@ -1,5 +1,11 @@
 2003-11-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* log.c (logvprintf): Documented better.  Renamed to
+	log_vprintf_internal to avoid confusion with the public API
+	functions logprintf and logputs.
+
+2003-11-03  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.h (N_): Don't parenthesize argument.
 
 2003-11-03  Hrvoje Niksic  <hniksic@xemacs.org>
