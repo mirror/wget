@@ -17,9 +17,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.7\n"
-"POT-Creation-Date: 2001-06-03 15:27+0200\n"
-"PO-Revision-Date: 2001-10-23 20:21GMT+0200\n"
+"Project-Id-Version: wget 1.8-pre1\n"
+"POT-Creation-Date: 2001-12-06 02:15+0100\n"
+"PO-Revision-Date: 2001-12-07 19:29GMT+0200\n"
 "Last-Translator: Salvador Gimeno Zanón <salgiza@jazzfree.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -27,31 +27,50 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 0.9.5\n"
 
-#: src/cookies.c:588
+# Me temo que nadie se "conecta a" sino que se "conecta con", ... ¿no te
+# suena mejor? - cll
+# sip - Salva
+msgid "Connecting to %s[%s]:%hu... "
+msgstr "Conectando con %s[%s]:%hu... "
+
+# Me temo que nadie se "conecta a" sino que se "conecta con", ... ¿no te
+# suena mejor? - cll
+# sip - Salva
+#
+#: src/connect.c:97
+#, c-format
+msgid "Connecting to %s:%hu... "
+msgstr "Conectando con %s:%hu... "
+
+#: src/connect.c:131
+msgid "connected.\n"
+msgstr "conectado.\n"
+
+#: src/cookies.c:595
 #, c-format
 msgid "Error in Set-Cookie, field `%s'"
 msgstr "Error al asignar cookie, en el campo `%s'"
 
-#: src/cookies.c:612
+#: src/cookies.c:619
 #, c-format
 msgid "Syntax error in Set-Cookie at character `%c'.\n"
 msgstr "Error de sintaxis al asignar cookie, en el carácter `%c'.\n"
 
-#: src/cookies.c:620
+#: src/cookies.c:627
 msgid "Syntax error in Set-Cookie: premature end of string.\n"
 msgstr "Error de sintaxis al asignar cookie: fin de cadena inesperado.\n"
 
-#: src/cookies.c:1352
+#: src/cookies.c:1329
 #, c-format
 msgid "Cannot open cookies file `%s': %s\n"
 msgstr "No se pudo abrir el fichero de cookies `%s': %s\n"
 
-#: src/cookies.c:1364
+#: src/cookies.c:1341
 #, c-format
 msgid "Error writing to `%s': %s\n"
 msgstr "Error escribiendo a `%s': %s\n"
 
-#: src/cookies.c:1368
+#: src/cookies.c:1345
 #, c-format
 msgid "Error closing `%s': %s\n"
 msgstr "Error cerrando `%s': %s\n"
@@ -91,30 +110,10 @@ msgstr "Ni idea     "
 msgid " (%s bytes)"
 msgstr " (%s bytes)"
 
-# Me temo que nadie se "conecta a" sino que se "conecta con", ... ¿no te
-# suena mejor? - cll
-# sip - Salva
-#
-#. Login to the server:
-#. First: Establish the control connection.
-#: src/ftp.c:150 src/http.c:624
-#, c-format
-msgid "Connecting to %s:%hu... "
-msgstr "Conectando con %s:%hu... "
-
-#: src/ftp.c:172 src/ftp.c:539 src/http.c:641
-#, c-format
-msgid "Connection to %s:%hu refused.\n"
-msgstr "Conexión con %s:%hu rechazada.\n"
-
-#. Second: Login with proper USER/PASS sequence.
-#: src/ftp.c:193 src/http.c:652
-msgid "connected!\n"
-msgstr "¡Conectado!\n"
-
 # mmmm... no estoy seguro de esto...
 # ¿Así no es mejor? (nl)
-#: src/ftp.c:194
+#. Second: Login with proper USER/PASS sequence.
+#: src/ftp.c:179
 #, c-format
 msgid "Logging in as %s ... "
 msgstr "Identificándose como %s ... "
@@ -125,8 +124,9 @@ msgstr "Identificándose como %s ... "
 # a nuestra costumbre - cll
 # einch! que tengo familiares güiris ;-) , pero tienes razón -Salva
 #
-#: src/ftp.c:203 src/ftp.c:256 src/ftp.c:288 src/ftp.c:336 src/ftp.c:429
-#: src/ftp.c:481 src/ftp.c:575 src/ftp.c:648 src/ftp.c:709 src/ftp.c:757
+#: src/ftp.c:188 src/ftp.c:241 src/ftp.c:272 src/ftp.c:326 src/ftp.c:419
+#: src/ftp.c:470 src/ftp.c:500 src/ftp.c:564 src/ftp.c:628 src/ftp.c:689
+#: src/ftp.c:737
 msgid "Error in server response, closing control connection.\n"
 msgstr "Error en la respuesta del servidor, cerrando la conexión de control.\n"
 
@@ -135,7 +135,7 @@ msgstr "Error en la respuesta del servidor, cerrando la conexión de control.\n"
 # bien - Salva
 # No está bien, es confuso. Recepción suena a recibir... (nl)
 #
-#: src/ftp.c:211
+#: src/ftp.c:196
 msgid "Error in server greeting.\n"
 msgstr "Error en el saludo del servidor.\n"
 
@@ -148,8 +148,8 @@ msgstr "Error en el saludo del servidor.\n"
 #
 # Además, he añadido el artículo a `conexión' - cll
 #
-#: src/ftp.c:219 src/ftp.c:345 src/ftp.c:438 src/ftp.c:490 src/ftp.c:585
-#: src/ftp.c:658 src/ftp.c:719 src/ftp.c:767
+#: src/ftp.c:204 src/ftp.c:335 src/ftp.c:428 src/ftp.c:509 src/ftp.c:574
+#: src/ftp.c:638 src/ftp.c:699 src/ftp.c:747
 msgid "Write failed, closing control connection.\n"
 msgstr "Fallo de escritura, cerrando la conexión de control.\n"
 
@@ -173,7 +173,7 @@ msgstr "Fallo de escritura, cerrando la conexión de control.\n"
 # equivalente, en todos los mensajes del fichero. Espero que te parezca
 # oportuno - cll
 #
-#: src/ftp.c:226
+#: src/ftp.c:211
 msgid "The server refuses login.\n"
 msgstr "El servidor ha rechazado el acceso.\n"
 
@@ -181,7 +181,7 @@ msgstr "El servidor ha rechazado el acceso.\n"
 # usuario, ¿verdad? - cll
 # sí -Salva
 #
-#: src/ftp.c:233
+#: src/ftp.c:218
 msgid "Login incorrect.\n"
 msgstr "Nombre de usuario incorrecto.\n"
 
@@ -189,59 +189,60 @@ msgstr "Nombre de usuario incorrecto.\n"
 # gracias! :) -Salva
 #
 # Preferiría algo como "Conectado" o algo así. sv
-#: src/ftp.c:240
+#: src/ftp.c:225
 msgid "Logged in!\n"
 msgstr "¡Dentro!\n"
 
-#: src/ftp.c:265
+#: src/ftp.c:250
 msgid "Server error, can't determine system type.\n"
 msgstr "Error del servidor, no se pudo determinar el tipo de sistema.\n"
 
-#: src/ftp.c:275 src/ftp.c:560 src/ftp.c:632 src/ftp.c:689
+#: src/ftp.c:260 src/ftp.c:549 src/ftp.c:612 src/ftp.c:669
 msgid "done.    "
 msgstr "hecho.   "
 
-#: src/ftp.c:325 src/ftp.c:459 src/ftp.c:740 src/ftp.c:788 src/url.c:1429
+#: src/ftp.c:314 src/ftp.c:449 src/ftp.c:484 src/ftp.c:720 src/ftp.c:768
+#: src/host.c:280
 msgid "done.\n"
 msgstr "hecho.\n"
 
 # He añadido el artículo a `conexión' - cll
 #
-#: src/ftp.c:353
+#: src/ftp.c:343
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
 msgstr "Tipo desconocido `%c', cerrando la conexión de control.\n"
 
-#: src/ftp.c:366
+#: src/ftp.c:356
 msgid "done.  "
 msgstr "hecho.  "
 
-#: src/ftp.c:372
+#: src/ftp.c:362
 msgid "==> CWD not needed.\n"
 msgstr "==> no se necesita CWD.\n"
 
-#: src/ftp.c:445
+#: src/ftp.c:435
 #, c-format
 msgid "No such directory `%s'.\n\n"
 msgstr "No existe el directorio `%s'.\n\n"
 
 #. do not CWD
-#: src/ftp.c:463
+#: src/ftp.c:453
 msgid "==> CWD not required.\n"
 msgstr "==> no se requiere CWD.\n"
 
-#: src/ftp.c:497
+#: src/ftp.c:516
 msgid "Cannot initiate PASV transfer.\n"
 msgstr "No se pudo iniciar la trasferencia PASV.\n"
 
-#: src/ftp.c:501
+#: src/ftp.c:520
 msgid "Cannot parse PASV response.\n"
 msgstr "No se pudo analizar la respuesta PASV.\n"
 
-#: src/ftp.c:515
+#: src/ftp.c:541
 #, c-format
-msgid "Will try connecting to %s:%hu.\n"
-msgstr "Se intentará conectar con %s:%hu.\n"
+msgid "couldn't connect to %s:%hu: %s\n"
+msgstr "no se pudo conectar con %s:%hu: %s\n"
 
 # Duda: no estoy muy seguro, pero ... ¿y `error de enlace' o algo
 # parecido? Probablemente, este sea uno de los casos en los que debas
@@ -253,41 +254,41 @@ msgstr "Se intentará conectar con %s:%hu.\n"
 # Es la función bind(2), que asigna una dirección a un socket.
 # Me parece que decir lo de la función es mejor. (nl)
 #
-#: src/ftp.c:602
+#: src/ftp.c:591
 #, c-format
 msgid "Bind error (%s).\n"
 msgstr "Error en la llamada `bind' (%s).\n"
 
 # Ya no está "prohibido" usar esta palabra. sv
-#: src/ftp.c:618
+#: src/ftp.c:598
 msgid "Invalid PORT.\n"
 msgstr "PUERTO inválido.\n"
 
-#: src/ftp.c:671
+#: src/ftp.c:651
 #, c-format
 msgid "\nREST failed; will not truncate `%s'.\n"
 msgstr "\nEl comando REST no funcionó, no se truncará `%s'.\n"
 
-#: src/ftp.c:678
+#: src/ftp.c:658
 msgid "\nREST failed, starting from scratch.\n"
 msgstr "\nEl comando REST no funcionó, se empezará desde el principio\n"
 
-#: src/ftp.c:727
+#: src/ftp.c:707
 #, c-format
 msgid "No such file `%s'.\n\n"
 msgstr "No existe el fichero `%s'.\n\n"
 
-#: src/ftp.c:775
+#: src/ftp.c:755
 #, c-format
 msgid "No such file or directory `%s'.\n\n"
 msgstr "No existe el fichero o directorio `%s'.\n\n"
 
-#: src/ftp.c:859 src/ftp.c:867
+#: src/ftp.c:839 src/ftp.c:847
 #, c-format
 msgid "Length: %s"
 msgstr "Longitud: %s"
 
-#: src/ftp.c:861 src/ftp.c:869
+#: src/ftp.c:841 src/ftp.c:849
 #, c-format
 msgid " [%s to go]"
 msgstr " [%s para acabar]"
@@ -299,34 +300,34 @@ msgstr " [%s para acabar]"
 # ¡Dabuti! Si no lo llegas a decir, ... ¡Lo estaba flipando! :) Pero
 # vamos, siendo como dices, a mí me suena perfectísimamente - cll
 #
-#: src/ftp.c:871
+#: src/ftp.c:851
 msgid " (unauthoritative)\n"
 msgstr " (probablemente)\n"
 
 # He añadido el artículo a `conexión' - cll
 #
-#: src/ftp.c:898
+#: src/ftp.c:877
 #, c-format
 msgid "%s: %s, closing control connection.\n"
 msgstr "%s: %s, cerrando la conexión de control.\n"
 
-#: src/ftp.c:906
+#: src/ftp.c:885
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
 msgstr "%s (%s) - Conexión de datos: %s; "
 
-#: src/ftp.c:923
+#: src/ftp.c:902
 msgid "Control connection closed.\n"
 msgstr "Conexión de control cerrada.\n"
 
-#: src/ftp.c:941
+#: src/ftp.c:920
 msgid "Data transfer aborted.\n"
 msgstr "Trasferencia de datos abortada.\n"
 
 # `no recuperando' no me suena muy español, te propongo la alternativa
 # más "humanizada", `no se recupera' - cll
 #
-#: src/ftp.c:1005
+#: src/ftp.c:984
 #, c-format
 msgid "File `%s' already there, not retrieving.\n"
 msgstr "El fichero `%s' ya está ahí, no se recupera.\n"
@@ -334,22 +335,22 @@ msgstr "El fichero `%s' ya está ahí, no se recupera.\n"
 # nota jjrs: no sería mejor intento?
 # pues sí - Salva
 # decididamente si - cll
-#: src/ftp.c:1075 src/http.c:1502
+#: src/ftp.c:1054 src/http.c:1527
 #, c-format
 msgid "(try:%2d)"
 msgstr "(intento:%2d)"
 
-#: src/ftp.c:1139 src/http.c:1753
+#: src/ftp.c:1118 src/http.c:1786
 #, c-format
 msgid "%s (%s) - `%s' saved [%ld]\n\n"
 msgstr "%s (%s) - `%s' guardado [%ld]\n\n"
 
-#: src/ftp.c:1181 src/main.c:810 src/recur.c:483 src/retr.c:566
+#: src/ftp.c:1160 src/main.c:822 src/recur.c:349 src/retr.c:587
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Eliminando %s.\n"
 
-#: src/ftp.c:1221
+#: src/ftp.c:1202
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
 msgstr "Usando `%s' como fichero temporal de listado.\n"
@@ -359,31 +360,31 @@ msgstr "Usando `%s' como fichero temporal de listado.\n"
 # español sirven para hacer referencia a una acción. Esto es, deben ir
 # después del sustantivo - cll
 #
-#: src/ftp.c:1233
+#: src/ftp.c:1217
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr "`%s' eliminado.\n"
 
-#: src/ftp.c:1269
+#: src/ftp.c:1252
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr "La profundidad de recursión %d excede la máxima de %d.\n"
 
 #. Remote file is older, file sizes can be compared and
 #. are both equal.
-#: src/ftp.c:1330
+#: src/ftp.c:1317
 #, c-format
 msgid "Remote file no newer than local file `%s' -- not retrieving.\n"
 msgstr "El fichero remoto no es más moderno que el fichero local `%s' -- no se descargará.\n"
 
 #. Remote file is newer or sizes cannot be matched
-#: src/ftp.c:1337
+#: src/ftp.c:1324
 #, c-format
 msgid "Remote file is newer than local file `%s' -- retrieving.\n\n"
 msgstr "El fichero remoto es más moderno que el fichero local `%s' -- descargando.\n\n"
 
 #. Sizes do not match
-#: src/ftp.c:1344
+#: src/ftp.c:1331
 #, c-format
 msgid "The sizes do not match (local %ld) -- retrieving.\n\n"
 msgstr "Los tamaños no concuerdan (%ld local) -- recuperando.\n\n"
@@ -392,44 +393,44 @@ msgstr "Los tamaños no concuerdan (%ld local) -- recuperando.\n\n"
 # expresadas en gerundio, ..., prefiero una forma impersonal como `se
 # omite' - cll
 #
-#: src/ftp.c:1361
+#: src/ftp.c:1348
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr "El nombre del enlace simbólico no es válido, se omite.\n"
 
-#: src/ftp.c:1378
+#: src/ftp.c:1365
 #, c-format
 msgid "Already have correct symlink %s -> %s\n\n"
 msgstr "Ya se tiene el enlace simbólico correcto %s -> %s\n\n"
 
-#: src/ftp.c:1386
+#: src/ftp.c:1373
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr "Creando enlace simbólico %s -> %s\n"
 
 # Lo dicho de los gerundios por formas impersonales - cll
 #
-#: src/ftp.c:1397
+#: src/ftp.c:1384
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
 msgstr "No se admiten enlaces simbólicos, se omite el enlace simbólico `%s'.\n"
 
-#: src/ftp.c:1409
+#: src/ftp.c:1396
 #, c-format
 msgid "Skipping directory `%s'.\n"
 msgstr "Omitiendo el directorio `%s'.\n"
 
-#: src/ftp.c:1418
+#: src/ftp.c:1405
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr "%s: tipo de fichero desconocido/no soportado.\n"
 
 # sigo las indicaciones del texto "pifias" para time-stamp.
-#: src/ftp.c:1445
+#: src/ftp.c:1432
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr "%s: marca de tiempo corrupta.\n"
 
-#: src/ftp.c:1466
+#: src/ftp.c:1457
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr "No se recuperarán directorios puesto que la profundidad es %d (máx %d).\n"
@@ -438,12 +439,12 @@ msgstr "No se recuperarán directorios puesto que la profundidad es %d (máx %d).\
 # normales y corrientes como intentas en este mensaje. En su lugar, te
 # propongo la forma alternativa `se desciende' - cll
 #
-#: src/ftp.c:1512
+#: src/ftp.c:1507
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr "No se desciende hasta `%s' por estar excluido/no incluido.\n"
 
-#: src/ftp.c:1559
+#: src/ftp.c:1561
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr "Rechazando `%s'.\n"
@@ -462,20 +463,24 @@ msgstr "Rechazando `%s'.\n"
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1606
+#: src/ftp.c:1608
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr "No hay nada que se ajuste al patrón `%s'.\n"
 
-#: src/ftp.c:1671
+#: src/ftp.c:1673
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
 msgstr "Se escribió un índice en HTML a `%s' [%ld].\n"
 
-#: src/ftp.c:1676
+#: src/ftp.c:1678
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr "Se escribió un índice en HTML a `%s'.\n"
+
+#: src/gen_sslfunc.c:109
+msgid "Could not seed OpenSSL PRNG; disabling SSL.\n"
+msgstr "No se pudo alimentar el PRNG de OpenSSL; deshabilitando SSL.\n"
 
 #: src/getopt.c:454
 #, c-format
@@ -523,6 +528,16 @@ msgstr "%s: opción ilegal -- %c\n"
 msgid "%s: option requires an argument -- %c\n"
 msgstr "%s: la opción requiere un argumento -- %c\n"
 
+#: src/host.c:268
+#, c-format
+msgid "Resolving %s... "
+msgstr "Resolviendo %s... "
+
+#: src/host.c:275
+#, c-format
+msgid "failed: %s.\n"
+msgstr "falló: %s.\n"
+
 # ¡Con la Iglesia y el Ejército hemos ido a topar! :)
 #
 # Lo de `host' puede dar lugar a una auténtica discusión, ... Te ruego
@@ -534,62 +549,62 @@ msgstr "%s: la opción requiere un argumento -- %c\n"
 # a ser habitual verlo en el software comercial traducido al español, y
 # si no, echa un ojo a los juegos de LucasArts, ... - cll
 #
-#: src/host.c:374
+#: src/host.c:345
 msgid "Host not found"
 msgstr "No se ha encontrado el anfitrión"
 
-#: src/host.c:376
+#: src/host.c:347
 msgid "Unknown error"
 msgstr "Error desconocido"
 
 #. this is fatal
-#: src/http.c:555
+#: src/http.c:573
 msgid "Failed to set up an SSL context\n"
 msgstr "No se pudo configurar un contexto SSL\n"
 
-#: src/http.c:561
+#: src/http.c:579
 #, c-format
 msgid "Failed to load certificates from %s\n"
 msgstr "No se pudo descargar los certificados desde %s\n"
 
-#: src/http.c:565 src/http.c:573
+#: src/http.c:583 src/http.c:591
 msgid "Trying without the specified certificate\n"
 msgstr "Intentándolo sin el certificado especificado\n"
 
-#: src/http.c:569
+#: src/http.c:587
 #, c-format
 msgid "Failed to get certificate key from %s\n"
 msgstr "No se pudo obtener la clave certificadora desde %s\n"
 
-#: src/http.c:663 src/http.c:1593
+#: src/http.c:657 src/http.c:1620
 msgid "Unable to establish SSL connection.\n"
 msgstr "No se pudo establecer la conexión SSL.\n"
 
-#: src/http.c:671
+#: src/http.c:666
 #, c-format
 msgid "Reusing connection to %s:%hu.\n"
 msgstr "Reutilizando la conexión con %s:%hu.\n"
 
-#: src/http.c:861
+#: src/http.c:868
 #, c-format
 msgid "Failed writing HTTP request: %s.\n"
 msgstr "Fallo escribiendo petición HTTP: %s.\n"
 
-#: src/http.c:866
+#: src/http.c:873
 #, c-format
 msgid "%s request sent, awaiting response... "
 msgstr "Petición %s enviada, esperando respuesta... "
 
-#: src/http.c:910
+#: src/http.c:917
 msgid "End of file while parsing headers.\n"
 msgstr "Fin de fichero mientras se analizaban las cabeceras.\n"
 
-#: src/http.c:920
+#: src/http.c:927
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr "Error de lectura (%s) en las cabeceras.\n"
 
-#: src/http.c:959
+#: src/http.c:962
 msgid "No data received"
 msgstr "No se han recibido datos"
 
@@ -598,46 +613,46 @@ msgstr "No se han recibido datos"
 # Como no existe el verbo "malformar" en español, el participio
 # `malformado' es incorrecto. El único término parecido a éste que
 # existe en español es `malformación'. - cll
-#: src/http.c:961
+#: src/http.c:964
 msgid "Malformed status line"
 msgstr "Línea de estado mal formada"
 
-#: src/http.c:966
+#: src/http.c:969
 msgid "(no description)"
 msgstr "(sin descripción)"
 
 # En vez de `falló la autorización' me parece más apropiado
 # `Autorización denegada' - cll
 #
-#: src/http.c:1089
+#: src/http.c:1101
 msgid "Authorization failed.\n"
 msgstr "Autorización denegada.\n"
 
-#: src/http.c:1096
+#: src/http.c:1108
 msgid "Unknown authentication scheme.\n"
 msgstr "Método de autentificación desconocido.\n"
 
-#: src/http.c:1136
+#: src/http.c:1148
 #, c-format
 msgid "Location: %s%s\n"
 msgstr "Localización: %s%s\n"
 
-#: src/http.c:1137 src/http.c:1269
+#: src/http.c:1149 src/http.c:1282
 msgid "unspecified"
 msgstr "no especificado"
 
 # Duda: Hmmm, ... ¿`siguiendo' o `siguiente'? - cll
 # siguiendo - Salva
 #
-#: src/http.c:1138
+#: src/http.c:1150
 msgid " [following]"
 msgstr " [siguiendo]"
 
-#: src/http.c:1200
+#: src/http.c:1213
 msgid "\n    The file is already fully retrieved; nothing to do.\n\n"
 msgstr "\n    El fichero ya ha sido totalmente recuperado, no hay nada que hacer.\n\n"
 
-#: src/http.c:1216
+#: src/http.c:1229
 #, c-format
 msgid ""
 "\n"
@@ -653,20 +668,20 @@ msgstr ""
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
-#: src/http.c:1259
+#: src/http.c:1272
 msgid "Length: "
 msgstr "Longitud: "
 
-#: src/http.c:1264
+#: src/http.c:1277
 #, c-format
 msgid " (%s to go)"
 msgstr " (%s para acabar)"
 
-#: src/http.c:1269
+#: src/http.c:1282
 msgid "ignored"
 msgstr "descartado"
 
-#: src/http.c:1399
+#: src/http.c:1413
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr "Atención: no se admiten comodines en HTTP.\n"
 
@@ -677,135 +692,140 @@ msgstr "Atención: no se admiten comodines en HTTP.\n"
 #
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:1417
+#: src/http.c:1443
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
 msgstr "El fichero '%s' ya existe, no se recuperará.\n"
 
-#: src/http.c:1585
+#: src/http.c:1611
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr "No se puede escribir a `%s' (%s).\n"
 
-#: src/http.c:1602
+#: src/http.c:1630
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "ERROR: redirección (%d) sin localización.\n"
 
-#: src/http.c:1630
+#: src/http.c:1662
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s ERROR %d: %s.\n"
 
 # así se entiende mejor -Salva
-#: src/http.c:1642
+#: src/http.c:1675
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr "Falta la fecha de la última modificación -- marcas de tiempo apagadas.\n"
 
-#: src/http.c:1650
+#: src/http.c:1683
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr "La fecha de última modificación es inválida -- marca de tiempo descartada.\n"
 
-#: src/http.c:1673
+#: src/http.c:1706
 #, c-format
 msgid "Server file no newer than local file `%s' -- not retrieving.\n\n"
 msgstr "El fichero del servidor no es más moderno que el fichero local `%s' -- no se descargará.\n\n"
 
-#: src/http.c:1680
+#: src/http.c:1714
 #, c-format
 msgid "The sizes do not match (local %ld) -- retrieving.\n"
 msgstr "Los tamaños no concuerdan (%ld local), recuperando.\n"
 
-#: src/http.c:1684
+#: src/http.c:1718
 msgid "Remote file is newer, retrieving.\n"
 msgstr "El fichero remoto es nuevo, recuperando.\n"
 
-#: src/http.c:1728
+#: src/http.c:1759
 #, c-format
 msgid "%s (%s) - `%s' saved [%ld/%ld]\n\n"
 msgstr "%s (%s) - `%s' guardado [%ld/%ld]\n\n"
 
-#: src/http.c:1774
+#: src/http.c:1809
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld. "
 msgstr "%s (%s) - Conexión cerrada en el byte %ld. "
 
-#: src/http.c:1782
+#: src/http.c:1818
 #, c-format
 msgid "%s (%s) - `%s' saved [%ld/%ld])\n\n"
 msgstr "%s (%s) - `%s' guardado [%ld/%ld])\n\n"
 
-#: src/http.c:1801
+#: src/http.c:1839
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld/%ld. "
 msgstr "%s (%s) - Conexión cerrada en el byte %ld/%ld. "
 
-#: src/http.c:1812
+#: src/http.c:1851
 #, c-format
 msgid "%s (%s) - Read error at byte %ld (%s)."
 msgstr "%s (%s) - Error de lectura en el byte %ld (%s)."
 
-#: src/http.c:1820
+#: src/http.c:1860
 #, c-format
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr "%s (%s) - Error de lectura en el byte %ld/%ld (%s)."
 
-#: src/init.c:349 src/netrc.c:267
+#: src/init.c:354 src/netrc.c:265
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: No se pudo leer %s (%s).\n"
 
-#: src/init.c:367 src/init.c:373
+#: src/init.c:372 src/init.c:378
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Error en %s en la línea %d.\n"
 
-#: src/init.c:405
+#: src/init.c:410
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: Atención: tanto el fichero wgetrc de usuario como el del sistema apuntan a `%s'.\n"
 
-#: src/init.c:497
+#: src/init.c:502
 #, c-format
 msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr "%s: Error: orden desconocida `%s', valor `%s'.\n"
 
 # ¿No debiera ser la `dirección IP local'? - cll
 # uups - Salva
-#: src/init.c:529
+#: src/init.c:536
 #, c-format
 msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
 msgstr "%s: %s: no se pudo convertir `%s' en una dirección IP.\n"
 
 # Te cambio la `o' antes de `off' por `u' - cll
 #
-#: src/init.c:559
+#: src/init.c:569
 #, c-format
 msgid "%s: %s: Please specify on or off.\n"
 msgstr "%s: %s: por favor, especifique on u off.\n"
 
 # Te cambio la `o' antes de `off' por `u' - cll
-#: src/init.c:603
+#: src/init.c:613
 #, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr "%s: %s: por favor especifique siempre, on, off, o nunca.\n"
 
-#: src/init.c:622 src/init.c:919 src/init.c:941 src/init.c:1005
+#: src/init.c:632 src/init.c:896 src/init.c:975
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr "%s: %s: especificación inválida `%s'.\n"
 
-#: src/init.c:775 src/init.c:797 src/init.c:819 src/init.c:845
+#: src/init.c:785 src/init.c:807 src/init.c:829 src/init.c:855
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr "%s: especificación inválida `%s'\n"
 
-#: src/main.c:120
+#: src/init.c:946
+#, c-format
+msgid "%s: %s: Invalid progress type `%s'.\n"
+msgstr "%s: %s: tipo de progreso no válido `%s'.\n"
+
+#: src/main.c:116
 #, c-format
 msgid "Usage: %s [OPTION]... [URL]...\n"
 msgstr "Modo de empleo: %s [OPCIÓN]... [URL]...\n"
 
-#: src/main.c:128
+#: src/main.c:124
 #, c-format
 msgid "GNU Wget %s, a non-interactive network retriever.\n"
 msgstr "GNU Wget %s, un recuperador por red no interactivo.\n"
@@ -818,7 +838,7 @@ msgstr "GNU Wget %s, un recuperador por red no interactivo.\n"
 #
 #. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
 #. don't bitch.  Also, it makes translation much easier.
-#: src/main.c:133
+#: src/main.c:129
 msgid "\nMandatory arguments to long options are mandatory for short options too.\n\n"
 msgstr ""
 "\n"
@@ -839,7 +859,7 @@ msgstr ""
 # --execute ejecuta una orden `del estilo de las incluidas en .wgetrc'
 # (nl)
 #
-#: src/main.c:137
+#: src/main.c:133
 msgid ""
 "Startup:\n"
 "  -V,  --version           display the version of Wget and exit.\n"
@@ -860,7 +880,7 @@ msgstr ""
 # déjala tal cual, ... solo que lo de ¡¡CALLADITO!! :) :) Me parece
 # exagerado, ... como bien dices, ¡¡¡seguro que estabas fumado!!! :) :)
 # (ni se entiende, ni leches, seguro que estabas literalmente fumado ;)
-#: src/main.c:144
+#: src/main.c:140
 msgid ""
 "Logging and input file:\n"
 "  -o,  --output-file=FILE     log messages to FILE.\n"
@@ -874,6 +894,7 @@ msgid ""
 "  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
 "       --sslcertfile=FILE     optional client certificate.\n"
 "       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
+"       --sslegdsock=FILE      socket to the egd daemon(random data source).\n"
 "\n"
 msgstr ""
 "Fichero de entrada y registro:\n"
@@ -889,17 +910,14 @@ msgstr ""
 "                               en el fichero -F -i.\n"
 "       --sslcertfile=FICHERO   certificado opcional del cliente.\n"
 "       --sslcertkey=FICHERO    llave opcional para este certificado.\n"
+"       --sslegdsock=FICHERO    socket al demonio egd (fuente de datos \n"
+"                               aleatoria).\n"
 "\n"
 
 # `pone' me parece demasiado coloquial. Prefiero la traducción textual
 # `establece''?. Te lo dejo como `recuperando'.ue me parece importante, porque harás seguro que la
 # salida no sea cómodamente legible para el usuario. Te la desdoblo en
 # dos líneas.
-#
-# En `spider': primero, dices `descargar' y yo insisto ecorresponda, ...
-#
-# Por último, en el último de los mensaj
-#: src/main.c:158
 msgid ""
 "Download:\n"
 "       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n"
@@ -907,15 +925,17 @@ msgid ""
 "  -O   --output-document=FILE   write documents to FILE.\n"
 "  -nc, --no-clobber             don't clobber existing files or use .# suffixes.\n"
 "  -c,  --continue               resume getting a partially-downloaded file.\n"
-"       --dot-style=STYLE        set retrieval display style.\n"
+"       --progress=TYPE          select progress gauge type.\n"
 "  -N,  --timestamping           don't re-retrieve files unless newer than local.\n"
 "  -S,  --server-response        print server response.\n"
 "       --spider                 don't download anything.\n"
 "  -T,  --timeout=SECONDS        set the read timeout to SECONDS.\n"
 "  -w,  --wait=SECONDS           wait SECONDS between retrievals.\n"
 "       --waitretry=SECONDS      wait 1...SECONDS between retries of a retrieval.\n"
+"       --random-wait            wait from 0...2*WAIT secs between retrievals.\n"
 "  -Y,  --proxy=on/off           turn proxy on or off.\n"
 "  -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n"
+"       --limit-rate=RATE        limit download rate to RATE.\n"
 "\n"
 msgstr ""
 "Descarga:\n"
@@ -924,7 +944,8 @@ msgstr ""
 "  -t,  --tries=NÚMERO             establece en NÚMERO el número de reintentos\n"
 "                                  (0 no pone límite).\n"
 "  -O,  --output-document=FICHERO  escribe los documentos en FICHERO.\n"
-"  -nc, --no-clobber               no sobreescribe ficheros existentes.\n"
+"  -nc, --no-clobber               no sobreescribir ficheros existentes. o \n"
+"                                  utilizar sufijos .#\n"
 "  -c,  --continue                 continuar recuperando un fichero existente.\n"
 "       --dot-style=ESTILO         establece el estilo de la pantalla de\n"
 "                                  recuperación.\n"
@@ -936,8 +957,10 @@ msgstr ""
 "                                  en SEGUNDOS.\n"
 "  -w,  --wait=SEGUNDOS            espera SEGUNDOS entre recuperaciones.\n"
 "       --waitretry=SEGUNDOS       espera 1...SEGUNDOS entre reintentos.\n"
+"       --random-wait            espera de 0 a 2*WAIT segundos entre reintentos.\n"
 "  -Y,  --proxy=on/off             habilita/deshabilita el uso de proxies.\n"
 "  -Q,  --quota=NÚMERO             establece la cuota de recuperación en NÚMERO.\n"
+"       --limit-rate=TASA        limita la tasa de descarga a TASA.\n"
 "\n"
 
 # Te he cambiado lo de `host' por el término apropiado (que tu ya venías
@@ -949,7 +972,7 @@ msgstr ""
 # "en el anfitrión", sino que se crean directorios cuyo nombre
 # coincide con el anfitrión. Ya lo he cambiado. sv
 #
-#: src/main.c:175
+#: src/main.c:174
 msgid ""
 "Directories:\n"
 "  -nd  --no-directories            don't create directories.\n"
@@ -971,7 +994,7 @@ msgstr ""
 # Como en otros mensajes, sustituyo `poner' por `establecer' u otro
 # sinónimo parecido.es español, ... sino spanglish. Este es, precisamente,
 # el tipo de términos que debieran evitarse en la medida de lo posible.
-#: src/main.c:183
+#: src/main.c:182
 msgid ""
 "HTTP options:\n"
 "       --http-user=USER      set http user to USER.\n"
@@ -1014,7 +1037,7 @@ msgstr ""
 # `turn on/off' significa `encender' o `apagar', por supuesto, ..., pero
 # en estos casos resulta mucho más apropiado `habilitar', `deshabilitar'
 # o, si quieres, `activar' y `desactivar' - cll
-#: src/main.c:201
+#: src/main.c:200
 msgid ""
 "FTP options:\n"
 "  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
@@ -1033,7 +1056,7 @@ msgstr ""
 "                               directorios).\n"
 "\n"
 
-#: src/main.c:208
+#: src/main.c:207
 msgid ""
 "Recursive retrieval:\n"
 "  -r,  --recursive          recursive web-suck -- use with care!\n"
@@ -1060,12 +1083,6 @@ msgstr ""
 # En la opción --exclude-domains, date cuenta de que son los dominios
 # los que están separados por comas, no la lista, ... ;) sin
 # traducir. Te pongo `anfitriones' donde tenías `hosts'
-#
-# - cll
-#
-# Uno no busca el DNS de un host. DNS es el nombre del sistema (nl).
-#
-#: src/main.c:218
 msgid ""
 "Recursive accept/reject:\n"
 "  -A,  --accept=LIST                comma-separated list of accepted extensions.\n"
@@ -1079,7 +1096,6 @@ msgid ""
 "  -L,  --relative                   follow relative links only.\n"
 "  -I,  --include-directories=LIST   list of allowed directories.\n"
 "  -X,  --exclude-directories=LIST   list of excluded directories.\n"
-"  -nh, --no-host-lookup             don't DNS-lookup hosts.\n"
 "  -np, --no-parent                  don't ascend to the parent directory.\n"
 "\n"
 msgstr ""
@@ -1099,11 +1115,10 @@ msgstr ""
 "  -L,  --relative                    sigue sólo enlaces relativos.\n"
 "  -I,  --include-directories=LISTA   lista de directorios permitidos.\n"
 "  -X,  --exclude-directories=LISTA   lista de directorios excluidos.\n"
-"  -nh, --no-host-lookup              no busca el nombre DNS de los anfitriones.\n"
 "  -np, --no-parent                   no asciende al directorio padre.\n"
 "\n"
 
-#: src/main.c:234
+#: src/main.c:232
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr "Envíe información sobre errores y sugerencias a <bug-wget@gnu.org>.\n"
 
@@ -1112,38 +1127,40 @@ msgstr "Envíe información sobre errores y sugerencias a <bug-wget@gnu.org>.\n"
 msgid "%s: debug support not compiled in.\n"
 msgstr "%s: el soporte para la depuración no ha sido compilado.\n"
 
-# Pongo el texto "estándar", extraido de recode, por ejemplo. sv
 #: src/main.c:472
+msgid "Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.\n"
+msgstr "Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.\n"
+
+# Pongo el texto "estándar", extraido de recode, por ejemplo. sv
+#: src/main.c:474
 msgid ""
-"Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.\n"
 "This program is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 msgstr ""
-"Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.\n"
 "Este programa se distribuye con la esperanza de que sea útil,\n"
 "pero SIN NINGUNA GARANTÍA; ni siquiera la garantía implícita de\n"
 "COMERCIABILIDAD o IDONEIDAD PARA UN FIN DETERMINADO. Véase la\n"
 "Licencia Pública General de GNU para obtener más detalles.\n"
 
-#: src/main.c:478
+#: src/main.c:479
 msgid "\nOriginally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
 msgstr "\nEscrito originalmente por Hrvoje Niksic <hniksic@arsdigita.com>.\n"
 
-#: src/main.c:569
+#: src/main.c:578
 #, c-format
 msgid "%s: %s: invalid command\n"
 msgstr "%s: %s: orden no válida\n"
 
-#: src/main.c:625
+#: src/main.c:631
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: opción ilegal -- `-n%c'\n"
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:628 src/main.c:670 src/main.c:728
+#: src/main.c:634 src/main.c:676 src/main.c:727
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Ejecute `%s --help' para obtener la lista de opciones.\n"
@@ -1151,21 +1168,21 @@ msgstr "Ejecute `%s --help' para obtener la lista de opciones.\n"
 # Como otras veces, te propongo que sustituyas `sacar' por `ofrecer' -
 # cll
 #
-#: src/main.c:708
+#: src/main.c:707
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "No se puede ofrecer información y estar silencioso al mismo tiempo.\n"
 
-#: src/main.c:714
+#: src/main.c:713
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr "No se pueden usar marcas de tiempo y no sobreescribir ficheros al mismo tiempo.\n"
 
 #. No URL specified.
-#: src/main.c:723
+#: src/main.c:722
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: falta la URL\n"
 
-#: src/main.c:825
+#: src/main.c:837
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "No se han encontrado URLs en %s.\n"
@@ -1174,7 +1191,7 @@ msgstr "No se han encontrado URLs en %s.\n"
 # mensajes de ayuda que hay más arriba, y para ser coherente, con lo que
 # allí te sugiero, te propongo ahora también `descargados' - cll
 #
-#: src/main.c:834
+#: src/main.c:846
 #, c-format
 msgid ""
 "\n"
@@ -1188,14 +1205,14 @@ msgstr ""
 # ¡Efectivamente! Ahora lo has puesto tu, ...  `download'=`descarga' -
 # cll
 #
-#: src/main.c:842
+#: src/main.c:854
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "¡Cuota de descarga (%s bytes) EXCEDIDA!\n"
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:876
+#: src/main.c:892
 #, c-format
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr "%s recibido, redirigiendo la salida a `%%s'.\n"
@@ -1206,7 +1223,7 @@ msgstr "%s recibido, redirigiendo la salida a `%%s'.\n"
 # Por otra parte, y simplemente porque me suena mejor, he cambiado
 # `parar' por `detener', ... ¡Es una pijada!, lo sé, lo sé, ... :) - cll
 #
-#: src/mswindows.c:89
+#: src/mswindows.c:106
 #, c-format
 msgid ""
 "\n"
@@ -1222,11 +1239,11 @@ msgstr ""
 # Lo mismo que antes, ... `background' es `segundo plano' - cll
 #
 #. parent, no error
-#: src/mswindows.c:106 src/utils.c:458
+#: src/mswindows.c:123 src/utils.c:462
 msgid "Continuing in background.\n"
 msgstr "Continuando en segundo plano.\n"
 
-#: src/mswindows.c:108 src/utils.c:460
+#: src/mswindows.c:125 src/utils.c:464
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "La salida será escrita en `%s'.\n"
@@ -1235,7 +1252,7 @@ msgstr "La salida será escrita en `%s'.\n"
 # parece `iniciando'? Es lo mismo pero es un término más común en
 # informática, ... - cll
 #
-#: src/mswindows.c:188
+#: src/mswindows.c:205
 #, c-format
 msgid "Starting WinHelp %s\n"
 msgstr "Iniciando WinHelp %s\n"
@@ -1245,7 +1262,7 @@ msgstr "Iniciando WinHelp %s\n"
 # Si, este es uno de esos casos que se dan por imposibles ya, ... Todo
 # el mundo utilizamos `socket' "asinque" nada, ... - cll
 #
-#: src/mswindows.c:215 src/mswindows.c:222
+#: src/mswindows.c:232 src/mswindows.c:239
 #, c-format
 msgid "%s: Couldn't find usable socket driver.\n"
 msgstr "%s: No se ha podido encontrar un controlador de `socket' utilizable\n"
@@ -1253,7 +1270,7 @@ msgstr "%s: No se ha podido encontrar un controlador de `socket' utilizable\n"
 # Simplemente, te cambio un par de palabras de sitio, a ver si así te
 # gusta más, ... - cll
 #
-#: src/netrc.c:367
+#: src/netrc.c:365
 #, c-format
 msgid "%s: %s:%d: warning: \"%s\" token appears before any machine name\n"
 msgstr "%s: %s:%d: atención: no aparece ningún nombre de máquina antes del símbolo \"%s\"\n"
@@ -1265,12 +1282,12 @@ msgstr "%s: %s:%d: atención: no aparece ningún nombre de máquina antes del símbo
 # traducido en informática como `símbolo'. La traducción, por lo tanto,
 # es correcta - cll
 #
-#: src/netrc.c:398
+#: src/netrc.c:396
 #, c-format
 msgid "%s: %s:%d: unknown token \"%s\"\n"
 msgstr "%s: %s:%d: símbolo desconocido \"%s\"\n"
 
-#: src/netrc.c:462
+#: src/netrc.c:460
 #, c-format
 msgid "Usage: %s NETRC [HOSTNAME]\n"
 msgstr "Modo de empleo: %s NETRC [NOMBREDEMÁQUINA]\n"
@@ -1279,97 +1296,102 @@ msgstr "Modo de empleo: %s NETRC [NOMBREDEMÁQUINA]\n"
 # nota jjrs: stat es una función de C que obtiene datos de un archivo
 #   y en esta parte solamente lo usa para checar si existe el archivo
 #   pero el wget no utiliza esta función.
-#: src/netrc.c:472
+#: src/netrc.c:470
 #, c-format
 msgid "%s: cannot stat %s: %s\n"
 msgstr "%s: no se pudo ejecutar `stat' sobre %s: %s\n"
 
-#: src/recur.c:484
+# Como en otros mensajes anteriores te recomiendo que emplees el término
+# `omitir' en vez de `saltar' para `skip' - clldigits in the skipped amount in K.
+#: src/progress.c:203
+#, c-format
+msgid "\n%*s[ skipping %dK ]"
+msgstr "\n%*s[ omitiendo %dK ]"
+
+#: src/progress.c:370
+#, c-format
+msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
+msgstr "El estilo de la pantalla '%s' no es válido; se utilizará el predeterminado.\n"
+
+#: src/recur.c:350
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
 msgstr "Eliminando %s puesto que debería ser rechazado.\n"
 
-#: src/recur.c:679
+#: src/recur.c:916
+#, c-format
+msgid "Converted %d files in %.2f seconds.\n"
+msgstr "%d ficheros convertidos en %.2f segundos.\n"
+
+#: src/res.c:541
 msgid "Loading robots.txt; please ignore errors.\n"
 msgstr "Cargando robots.txt; por favor ignore los errores.\n"
-
-# Como en otros mensajes anteriores te recomiendo que emplees el término
-# `omitir' en vez de `saltar' para `skip' - cll
-#
-#: src/retr.c:227
-#, c-format
-msgid "\n          [ skipping %dK ]"
-msgstr "\n          [ omitiendo %dK ]"
 
 # `host' es traducido como `anfitrión'. Debes evitar los términos en
 # inglés tanto como puedas, ... - cll
 #
-#: src/retr.c:373
+#: src/retr.c:363
 msgid "Could not find proxy host.\n"
 msgstr "No se pudo encontrar el anfitrión de proxy.\n"
 
-#: src/retr.c:387
+#: src/retr.c:375
 #, c-format
-msgid "Proxy %s: Must be HTTP.\n"
-msgstr "Proxy %s: debe ser HTTP.\n"
+msgid "Error parsing proxy URL %s: %s.\n"
+msgstr "Error parseando la URL del proxy `%s': %s\n"
 
-#: src/retr.c:481
+#: src/retr.c:384
+#, c-format
+msgid "Error in proxy URL %s: Must be HTTP.\n"
+msgstr "Error en la URL del proxy %s: debe ser HTTP.\n"
+
+#: src/retr.c:476
+#, c-format
+msgid "%d redirections exceeded.\n"
+msgstr "Sobrepasadas las %d redirecciones.\n"
+
+#: src/retr.c:491
 #, c-format
 msgid "%s: Redirection cycle detected.\n"
 msgstr "%s: redirección cíclica detectada.\n"
 
-#: src/retr.c:587
+#: src/retr.c:608
 msgid "Giving up.\n\n"
 msgstr "Abandonando.\n\n"
 
-#: src/retr.c:587
+#: src/retr.c:608
 msgid "Retrying.\n\n"
 msgstr "Reintentando.\n\n"
 
-#: src/url.c:1329
+#: src/url.c:1748
 #, c-format
 msgid "Converting %s... "
 msgstr "Convirtiendo %s... "
 
-#: src/url.c:1342
+#: src/url.c:1761
 msgid "nothing to do.\n"
 msgstr "no hay nada que hacer.\n"
 
-#: src/url.c:1350 src/url.c:1374
+#: src/url.c:1769 src/url.c:1793
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "No se han podido convertir los enlaces en %s: %s\n"
 
-#: src/url.c:1365
+#: src/url.c:1784
 #, c-format
 msgid "Unable to delete `%s': %s\n"
 msgstr "No se ha borrar `%s': %s\n"
 
-#: src/url.c:1555
+#: src/url.c:1990
 #, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "No se pudo hacer una copia de seguridad de %s como %s: %s\n"
 
-#: src/utils.c:94
+#: src/utils.c:97
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr "%s: %s: no hay suficiente memoria.\n"
 
-#: src/utils.c:417
-msgid "Unknown/unsupported protocol"
-msgstr "Protocolo desconocido/no soportado"
-
-#: src/utils.c:420
-msgid "Invalid port specification"
-msgstr "El puerto especificado no es válido"
-
-# `anfitrión' en vez de `host' - cll
-#
-#: src/utils.c:423
-msgid "Invalid host name"
-msgstr "El nombre del anfitrión no es válido"
-
-#: src/utils.c:620
+#: src/utils.c:662
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "No se ha podido deshacer el enlace simbólico `%s': %s\n"
