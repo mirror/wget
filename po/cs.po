@@ -108,8 +108,7 @@ msgstr "Probíhá pøihla¹ování jako %s ... "
 #: src/ftp.c:203 src/ftp.c:256 src/ftp.c:288 src/ftp.c:336 src/ftp.c:429
 #: src/ftp.c:481 src/ftp.c:575 src/ftp.c:648 src/ftp.c:709 src/ftp.c:757
 msgid "Error in server response, closing control connection.\n"
-msgstr ""
-"Øídicí spojení bude ukonèeno, proto¾e server odpovìdìl chybovým hlá¹ením.\n"
+msgstr "Øídicí spojení bude ukonèeno, proto¾e server odpovìdìl chybovým hlá¹ením.\n"
 
 #: src/ftp.c:211
 msgid "Error in server greeting.\n"
@@ -148,9 +147,7 @@ msgstr "hotovo.\n"
 #: src/ftp.c:353
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
-msgstr ""
-"Rídicí spojení bude ukonèeno, proto¾e je po¾adován neznámý typ pøenosu "
-"`%c'.\n"
+msgstr "Rídicí spojení bude ukonèeno, proto¾e je po¾adován neznámý typ pøenosu `%c'.\n"
 
 #: src/ftp.c:366
 msgid "done.  "
@@ -163,12 +160,8 @@ msgstr "==> CWD není potøeba.\n"
 # , c-format
 #: src/ftp.c:445
 #, c-format
-msgid ""
-"No such directory `%s'.\n"
-"\n"
-msgstr ""
-"Adresáø `%s' neexistuje.\n"
-"\n"
+msgid "No such directory `%s'.\n\n"
+msgstr "Adresáø `%s' neexistuje.\n\n"
 
 #. do not CWD
 #: src/ftp.c:463
@@ -201,38 +194,24 @@ msgstr "Neplatný PORT.\n"
 
 #: src/ftp.c:671
 #, c-format
-msgid ""
-"\n"
-"REST failed; will not truncate `%s'.\n"
+msgid "\nREST failed; will not truncate `%s'.\n"
 msgstr "\nPøíkaz REST selhal, `%s' nebude zkráceno.\n"
 
 #: src/ftp.c:678
-msgid ""
-"\n"
-"REST failed, starting from scratch.\n"
-msgstr ""
-"\n"
-"Pøíkaz REST selhal, pøenos zaène od zaèátku souboru.\n"
+msgid "\nREST failed, starting from scratch.\n"
+msgstr "\nPøíkaz REST selhal, pøenos zaène od zaèátku souboru.\n"
 
 # , c-format
 #: src/ftp.c:727
 #, c-format
-msgid ""
-"No such file `%s'.\n"
-"\n"
-msgstr ""
-"Soubor `%s' neexistuje.\n"
-"\n"
+msgid "No such file `%s'.\n\n"
+msgstr "Soubor `%s' neexistuje.\n\n"
 
 # , c-format
 #: src/ftp.c:775
 #, c-format
-msgid ""
-"No such file or directory `%s'.\n"
-"\n"
-msgstr ""
-"Soubor èi adresáø `%s' neexistuje.\n"
-"\n"
+msgid "No such file or directory `%s'.\n\n"
+msgstr "Soubor èi adresáø `%s' neexistuje.\n\n"
 
 # , c-format
 #: src/ftp.c:859 src/ftp.c:867
@@ -285,12 +264,8 @@ msgstr "(pokus:%2d)"
 # , c-format
 #: src/ftp.c:1139 src/http.c:1753
 #, c-format
-msgid ""
-"%s (%s) - `%s' saved [%ld]\n"
-"\n"
-msgstr ""
-"%s (%s) - `%s' ulo¾en [%ld]\n"
-"\n"
+msgid "%s (%s) - `%s' saved [%ld]\n\n"
+msgstr "%s (%s) - `%s' ulo¾en [%ld]\n\n"
 
 # , c-format
 #: src/ftp.c:1181 src/main.c:810 src/recur.c:483 src/retr.c:566
@@ -326,18 +301,14 @@ msgstr "Vzdálený soubor není novìj¹í, ne¾ lokální soubor `%s', a není jej tøeba 
 #. Remote file is newer or sizes cannot be matched
 #: src/ftp.c:1337
 #, c-format
-msgid ""
-"Remote file is newer than local file `%s' -- retrieving.\n"
-"\n"
+msgid "Remote file is newer than local file `%s' -- retrieving.\n\n"
 msgstr "Vzdálený soubor je novìj¹í, ne¾ lokální soubor `%s', a je jej tøeba stáhnout.\n\n"
 
 # , c-format
 #. Sizes do not match
 #: src/ftp.c:1344
 #, c-format
-msgid ""
-"The sizes do not match (local %ld) -- retrieving.\n"
-"\n"
+msgid "The sizes do not match (local %ld) -- retrieving.\n\n"
 msgstr "Velikosti se neshodují (lokálnì %ld), soubor je tøeba stáhnout.\n\n"
 
 #: src/ftp.c:1361
@@ -347,12 +318,8 @@ msgstr "Pøeskakuje se symbolický odkaz, nebo» název odkazu není platný.\n"
 # , c-format
 #: src/ftp.c:1378
 #, c-format
-msgid ""
-"Already have correct symlink %s -> %s\n"
-"\n"
-msgstr ""
-"Korektní symbolický odkaz %s -> %s ji¾ existuje.\n"
-"\n"
+msgid "Already have correct symlink %s -> %s\n\n"
+msgstr "Korektní symbolický odkaz %s -> %s ji¾ existuje.\n\n"
 
 # , c-format
 #: src/ftp.c:1386
@@ -364,9 +331,7 @@ msgstr "Vytváøí se symbolický odkaz %s -> %s\n"
 #: src/ftp.c:1397
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
-msgstr ""
-"Symbolický odkaz `%s' bude vynechán, proto¾e systém symbolické odkazy "
-"nepodporuje.\n"
+msgstr "Symbolický odkaz `%s' bude vynechán, proto¾e systém symbolické odkazy nepodporuje.\n"
 
 # , c-format
 #: src/ftp.c:1409
@@ -390,17 +355,14 @@ msgstr "%s: èasové razítko souboru je poru¹ené.\n"
 #: src/ftp.c:1466
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
-msgstr ""
-"Podadresáøe se nebudou pøená¹et, proto¾e ji¾ bylo dosa¾eno hloubky %d "
-"(maximum je %d).\n"
+msgstr "Podadresáøe se nebudou pøená¹et, proto¾e ji¾ bylo dosa¾eno hloubky %d (maximum je %d).\n"
 
 # , c-format
 #: src/ftp.c:1512
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr ""
-"Do adresáøe `%s' se nesetupuje, proto¾e tento adresáø se buï má vynechat "
-"nebo\n"
+"Do adresáøe `%s' se nesetupuje, proto¾e tento adresáø se buï má vynechat nebo\n"
 "nebyl zadán k procházení.\n"
 
 # , c-format
@@ -575,10 +537,7 @@ msgid " [following]"
 msgstr " [následuji]"
 
 #: src/http.c:1200
-msgid ""
-"\n"
-"    The file is already fully retrieved; nothing to do.\n"
-"\n"
+msgid "\n    The file is already fully retrieved; nothing to do.\n\n"
 msgstr "\n    Soubor je ji¾ plnì pøenesen, nebude se nic dìlat.\n\n"
 
 #: src/http.c:1216
@@ -655,13 +614,8 @@ msgstr ""
 
 #: src/http.c:1673
 #, c-format
-msgid ""
-"Server file no newer than local file `%s' -- not retrieving.\n"
-"\n"
-msgstr ""
-"Lokální soubor `%s' není star¹í, ne¾ vzdálený soubor, a není jej tøeba "
-"stahovat.\n"
-"\n"
+msgid "Server file no newer than local file `%s' -- not retrieving.\n\n"
+msgstr "Lokální soubor `%s' není star¹í, ne¾ vzdálený soubor, a není jej tøeba stahovat.\n\n"
 
 # , c-format
 #: src/http.c:1680
@@ -676,12 +630,8 @@ msgstr "Lokální soubor je star¹í a vzdálený soubor se proto bude pøená¹et.\n"
 # , c-format
 #: src/http.c:1728
 #, c-format
-msgid ""
-"%s (%s) - `%s' saved [%ld/%ld]\n"
-"\n"
-msgstr ""
-"%s (%s) - `%s' ulo¾eno [%ld/%ld]\n"
-"\n"
+msgid "%s (%s) - `%s' saved [%ld/%ld]\n\n"
+msgstr "%s (%s) - `%s' ulo¾eno [%ld/%ld]\n\n"
 
 # , c-format
 #: src/http.c:1774
@@ -692,12 +642,8 @@ msgstr "%s (%s) - Spojení ukonèeno na bajtu %ld. "
 # , c-format
 #: src/http.c:1782
 #, c-format
-msgid ""
-"%s (%s) - `%s' saved [%ld/%ld])\n"
-"\n"
-msgstr ""
-"%s (%s) - `%s' ulo¾eno [%ld/%ld])\n"
-"\n"
+msgid "%s (%s) - `%s' saved [%ld/%ld])\n\n"
+msgstr "%s (%s) - `%s' ulo¾eno [%ld/%ld])\n\n"
 
 # , c-format
 #: src/http.c:1801
@@ -733,8 +679,7 @@ msgstr "%s: Chyba v %s na øádku %d.\n"
 #: src/init.c:405
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
-msgstr ""
-"%s: Varování: Globální i u¾ivatelské wgetrc jsou shodnì ulo¾eny v `%s'.\n"
+msgstr "%s: Varování: Globální i u¾ivatelské wgetrc jsou shodnì ulo¾eny v `%s'.\n"
 
 # , c-format
 #: src/init.c:497
@@ -757,9 +702,7 @@ msgstr "%s: %s: Zadejte prosím `on' (zapnuto) nebo `off' (vypnuto).\n"
 #: src/init.c:603
 #, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
-msgstr ""
-"%s: %s: Zadejte prosím `always' (v¾dy), `on' (zapnuto), `off' (vypnuto), "
-"nebo `never' (nikdy).\n"
+msgstr "%s: %s: Zadejte prosím `always' (v¾dy), `on' (zapnuto), `off' (vypnuto), nebo `never' (nikdy).\n"
 
 # , c-format
 #: src/init.c:622 src/init.c:919 src/init.c:941 src/init.c:1005
@@ -788,10 +731,7 @@ msgstr "GNU Wget %s, program pro neinteraktivní stahování souborù.\n"
 #. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
 #. don't bitch.  Also, it makes translation much easier.
 #: src/main.c:133
-msgid ""
-"\n"
-"Mandatory arguments to long options are mandatory for short options too.\n"
-"\n"
+msgid "\nMandatory arguments to long options are mandatory for short options too.\n\n"
 msgstr ""
 "\n"
 "Argumenty, povinné u dlouhých pøepínaèù, jsou povinné i pro krátké verze\n"
@@ -849,44 +789,35 @@ msgstr ""
 #: src/main.c:158
 msgid ""
 "Download:\n"
-"       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local "
-"host.\n"
-"  -t,  --tries=NUMBER           set number of retries to NUMBER (0 "
-"unlimits).\n"
+"       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n"
+"  -t,  --tries=NUMBER           set number of retries to NUMBER (0 unlimits).\n"
 "  -O   --output-document=FILE   write documents to FILE.\n"
-"  -nc, --no-clobber             don't clobber existing files or use .# "
-"suffixes.\n"
+"  -nc, --no-clobber             don't clobber existing files or use .# suffixes.\n"
 "  -c,  --continue               resume getting a partially-downloaded file.\n"
 "       --dot-style=STYLE        set retrieval display style.\n"
-"  -N,  --timestamping           don't re-retrieve files unless newer than "
-"local.\n"
+"  -N,  --timestamping           don't re-retrieve files unless newer than local.\n"
 "  -S,  --server-response        print server response.\n"
 "       --spider                 don't download anything.\n"
 "  -T,  --timeout=SECONDS        set the read timeout to SECONDS.\n"
 "  -w,  --wait=SECONDS           wait SECONDS between retrievals.\n"
-"       --waitretry=SECONDS      wait 1...SECONDS between retries of a "
-"retrieval.\n"
+"       --waitretry=SECONDS      wait 1...SECONDS between retries of a retrieval.\n"
 "  -Y,  --proxy=on/off           turn proxy on or off.\n"
 "  -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n"
 "\n"
 msgstr ""
 "Stahování:\n"
-"       --bind-address=ADRESA    pou¾ij lokální rozhraní s danou adresou (IP "
-"nebo jméno)\n"
+"       --bind-address=ADRESA    pou¾ij lokální rozhraní s danou adresou (IP nebo jméno)\n"
 "  -t,  --tries=ÈÍSLO            poèet pokusù stáhnout URL (0 donekoneèna)\n"
 "  -O   --output-document=SOUBOR sta¾ené dokumenty ukládá do tohoto souboru\n"
 "  -nc, --no-clobber             nepøepisuje existující soubory\n"
-"  -c,  --continue               pokraèuje ve stahování èásteènì pøenesených "
-"dat\n"
+"  -c,  --continue               pokraèuje ve stahování èásteènì pøenesených dat\n"
 "       --dot-style=STYL         nastaví zpùsob zobrazení pøi stahování dat\n"
-"  -N,  --timestamping           nestahuje star¹í soubory (zapne èasová "
-"razítka)\n"
+"  -N,  --timestamping           nestahuje star¹í soubory (zapne èasová razítka)\n"
 "  -S,  --server-response        vypisuje odpovìdi serveru\n"
 "       --spider                 nic nestahuje\n"
 "  -T,  --timeout=SEKUNDY        nastaví timeout pøi ètení na tuto hodnotu\n"
 "  -w,  --wait=POÈET             pøed ka¾dým stahováním poèká POÈET sekund\n"
-"       --waitretry=POÈET        èeká 1...POÈET sec pøed novým pokusem o "
-"sta¾ení\n"
+"       --waitretry=POÈET        èeká 1...POÈET sec pøed novým pokusem o sta¾ení\n"
 "  -Y,  --proxy=on/off           zapne pøenos pøes proxy (standardnì `off')\n"
 "  -Q,  --quota=BAJTÙ            nastaví limit objemu ulo¾ených dat\n"
 "\n"
@@ -899,8 +830,7 @@ msgid ""
 "  -x,  --force-directories         force creation of directories.\n"
 "  -nH, --no-host-directories       don't create host directories.\n"
 "  -P,  --directory-prefix=PREFIX   save files to PREFIX/...\n"
-"       --cut-dirs=NUMBER           ignore NUMBER remote directory "
-"components.\n"
+"       --cut-dirs=NUMBER           ignore NUMBER remote directory components.\n"
 "\n"
 msgstr ""
 "Adresáøe:\n"
@@ -917,10 +847,8 @@ msgid ""
 "HTTP options:\n"
 "       --http-user=USER      set http user to USER.\n"
 "       --http-passwd=PASS    set http password to PASS.\n"
-"  -C,  --cache=on/off        (dis)allow server-cached data (normally "
-"allowed).\n"
-"  -E,  --html-extension      save all text/html documents with .html "
-"extension.\n"
+"  -C,  --cache=on/off        (dis)allow server-cached data (normally allowed).\n"
+"  -E,  --html-extension      save all text/html documents with .html extension.\n"
 "       --ignore-length       ignore `Content-Length' header field.\n"
 "       --header=STRING       insert STRING among the headers.\n"
 "       --proxy-user=USER     set USER as proxy username.\n"
@@ -928,8 +856,7 @@ msgid ""
 "       --referer=URL         include `Referer: URL' header in HTTP request.\n"
 "  -s,  --save-headers        save the HTTP headers to file.\n"
 "  -U,  --user-agent=AGENT    identify as AGENT instead of Wget/VERSION.\n"
-"       --no-http-keep-alive  disable HTTP keep-alive (persistent "
-"connections).\n"
+"       --no-http-keep-alive  disable HTTP keep-alive (persistent connections).\n"
 "       --cookies=off         don't use cookies.\n"
 "       --load-cookies=FILE   load cookies from FILE before session.\n"
 "       --save-cookies=FILE   save cookies to FILE after session.\n"
@@ -962,8 +889,7 @@ msgid ""
 "  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
 "  -g,  --glob=on/off           turn file name globbing on or off.\n"
 "       --passive-ftp           use the \"passive\" transfer mode.\n"
-"       --retr-symlinks         when recursing, get linked-to files (not "
-"dirs).\n"
+"       --retr-symlinks         when recursing, get linked-to files (not dirs).\n"
 "\n"
 msgstr ""
 "Pøepínaèe pro FTP protokol:\n"
@@ -977,14 +903,12 @@ msgstr ""
 msgid ""
 "Recursive retrieval:\n"
 "  -r,  --recursive          recursive web-suck -- use with care!\n"
-"  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for "
-"infinite).\n"
+"  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n"
 "       --delete-after       delete files locally after downloading them.\n"
 "  -k,  --convert-links      convert non-relative links to relative.\n"
 "  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
 "  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"
-"  -p,  --page-requisites    get all images, etc. needed to display HTML "
-"page.\n"
+"  -p,  --page-requisites    get all images, etc. needed to display HTML page.\n"
 "\n"
 msgstr ""
 "Rekurzivní stahování:\n"
@@ -1000,19 +924,13 @@ msgstr ""
 #: src/main.c:218
 msgid ""
 "Recursive accept/reject:\n"
-"  -A,  --accept=LIST                comma-separated list of accepted "
-"extensions.\n"
-"  -R,  --reject=LIST                comma-separated list of rejected "
-"extensions.\n"
-"  -D,  --domains=LIST               comma-separated list of accepted "
-"domains.\n"
-"       --exclude-domains=LIST       comma-separated list of rejected "
-"domains.\n"
+"  -A,  --accept=LIST                comma-separated list of accepted extensions.\n"
+"  -R,  --reject=LIST                comma-separated list of rejected extensions.\n"
+"  -D,  --domains=LIST               comma-separated list of accepted domains.\n"
+"       --exclude-domains=LIST       comma-separated list of rejected domains.\n"
 "       --follow-ftp                 follow FTP links from HTML documents.\n"
-"       --follow-tags=LIST           comma-separated list of followed HTML "
-"tags.\n"
-"  -G,  --ignore-tags=LIST           comma-separated list of ignored HTML "
-"tags.\n"
+"       --follow-tags=LIST           comma-separated list of followed HTML tags.\n"
+"  -G,  --ignore-tags=LIST           comma-separated list of ignored HTML tags.\n"
 "  -H,  --span-hosts                 go to foreign hosts when recursive.\n"
 "  -L,  --relative                   follow relative links only.\n"
 "  -I,  --include-directories=LIST   list of allowed directories.\n"
@@ -1053,8 +971,7 @@ msgstr "%s: program nebyl zkompilován s podporou pro ladìní.\n"
 
 #: src/main.c:472
 msgid ""
-"Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, "
-"Inc.\n"
+"Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.\n"
 "This program is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
@@ -1067,12 +984,8 @@ msgstr ""
 "v Obecné veøejné licenci GNU.\n"
 
 #: src/main.c:478
-msgid ""
-"\n"
-"Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
-msgstr ""
-"\n"
-"Pùvodním autorem tohto programu je Hrvoje Nik¹iæ <hniksic@arsdigita.com>.\n"
+msgid "\nOriginally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
+msgstr "\nPùvodním autorem tohto programu je Hrvoje Nik¹iæ <hniksic@arsdigita.com>.\n"
 
 # , c-format
 #: src/main.c:569
@@ -1213,12 +1126,8 @@ msgstr "Naèítá se `robots.txt'. Chybová hlá¹ení ignorujte, prosím.\n"
 # , c-format
 #: src/retr.c:227
 #, c-format
-msgid ""
-"\n"
-"          [ skipping %dK ]"
-msgstr ""
-"\n"
-"          [ pøeskakuje se %dK ]"
+msgid "\n          [ skipping %dK ]"
+msgstr "\n          [ pøeskakuje se %dK ]"
 
 #: src/retr.c:373
 msgid "Could not find proxy host.\n"
@@ -1237,20 +1146,12 @@ msgid "%s: Redirection cycle detected.\n"
 msgstr "%s: Detekováno zacyklené pøesmìrování.\n"
 
 #: src/retr.c:587
-msgid ""
-"Giving up.\n"
-"\n"
-msgstr ""
-"Ani poslední pokus nebyl úspì¹ný.\n"
-"\n"
+msgid "Giving up.\n\n"
+msgstr "Ani poslední pokus nebyl úspì¹ný.\n\n"
 
 #: src/retr.c:587
-msgid ""
-"Retrying.\n"
-"\n"
-msgstr ""
-"Zkusí se to znovu.\n"
-"\n"
+msgid "Retrying.\n\n"
+msgstr "Zkusí se to znovu.\n\n"
 
 # , c-format
 #: src/url.c:1329
@@ -1307,7 +1208,7 @@ msgstr "Nebylo mo¾né odstranit symbolický odkaz `%s': %s\n"
 #~ msgid "%s: Cannot determine user-id.\n"
 #~ msgstr "%s: Nelze zjistit ID u¾ivatele.\n"
 
-# , c-format
+#~ # , c-format
 #~ msgid "%s: Warning: uname failed: %s\n"
 #~ msgstr "%s: Varování: Volání funkce \"uname\" skonèilo chybou %s\n"
 
@@ -1325,22 +1226,18 @@ msgstr "Nebylo mo¾né odstranit symbolický odkaz `%s': %s\n"
 #~ "%s: Varování: Zpìtné vyhledání lokální adresy nenavrátilo plnì \n"
 #~ "kvalifikované jméno domény!\n"
 
-# , c-format
+#~ # , c-format
 #~ msgid "%s: Redirection to itself.\n"
 #~ msgstr "%s: Pøesmìrování na sebe sama.\n"
 
-# , c-format
+#~ # , c-format
 #~ msgid "Error (%s): Link %s without a base provided.\n"
 #~ msgstr "Chyba (%s): K relativnímu odkazu %s nelze najít bázový odkaz.\n"
 
-# , c-format
+#~ # , c-format
 #~ msgid "Error (%s): Base %s relative, without referer URL.\n"
 #~ msgstr "Chyba (%s): Bázový odkaz %s nesmí být relativní.\n"
 
-# , c-format
-#~ msgid ""
-#~ "Local file `%s' is more recent, not retrieving.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Soubor `%s' nebudu pøená¹et, proto¾e lokální verze je novìj¹í.\n"
-#~ "\n"
+#~ # , c-format
+#~ msgid "Local file `%s' is more recent, not retrieving.\n\n"
+#~ msgstr "Soubor `%s' nebudu pøená¹et, proto¾e lokální verze je novìj¹í.\n\n"

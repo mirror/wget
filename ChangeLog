@@ -1,5 +1,10 @@
 2001-06-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* po/: Install new files from the TP: sv.po, cs.po, et.po, tr.po,
+	es.po, de.po, gl.po, sk.po, ru.po, fr.po.
+
+2001-06-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* configure.in: Check for both gethostbyname and inet_ntoa before
 	concluding that -lnsl is not needed.
 
