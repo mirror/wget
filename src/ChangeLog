@@ -1,5 +1,13 @@
 2003-10-01  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c (url_parse): Don't leak memory when a reencoded URL turns
+	out to be invalid.
+
+	* url.c (parse_errors): Mark error messages for translation.
+	(url_error): Translate error messages returned to the caller.
+
+2003-10-01  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ftp.c (ftp_loop_internal): Initialize TMRATE to NULL to shut up
 	the compiler.
 

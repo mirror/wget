@@ -62,6 +62,9 @@ so, delete this exception statement from your version.  */
 # define _(string) string
 #endif /* not HAVE_NLS */
 
+/* No-op version of gettext, used for constant strings. */
+#define N_(string) (string)
+
 /* I18N NOTE: You will notice that none of the DEBUG messages are
    marked as translatable.  This is intentional, for a few reasons:
 

@@ -618,27 +618,22 @@ lowercase_str (char *str)
 
 static char *parse_errors[] = {
 #define PE_NO_ERROR			0
-  "No error",
+  N_("No error"),
 #define PE_UNSUPPORTED_SCHEME		1
-  "Unsupported scheme",
+  N_("Unsupported scheme"),
 #define PE_EMPTY_HOST			2
-  "Empty host",
+  N_("Empty host"),
 #define PE_BAD_PORT_NUMBER		3
-  "Bad port number",
+  N_("Bad port number"),
 #define PE_INVALID_USER_NAME		4
-  "Invalid user name",
+  N_("Invalid user name"),
 #define PE_UNTERMINATED_IPV6_ADDRESS	5
-  "Unterminated IPv6 numeric address",
+  N_("Unterminated IPv6 numeric address"),
 #define PE_IPV6_NOT_SUPPORTED		6
-  "IPv6 addresses not supported",
+  N_("IPv6 addresses not supported"),
 #define PE_INVALID_IPV6_ADDRESS		7
-  "Invalid IPv6 numeric address"
+  N_("Invalid IPv6 numeric address")
 };
-
-#define SETERR(p, v) do {			\
-  if (p)					\
-    *(p) = (v);					\
-} while (0)
 
 #ifdef ENABLE_IPV6
 /* The following two functions were adapted from glibc. */
@@ -800,13 +795,15 @@ url_parse (const char *url, int *error)
   int port;
   char *user = NULL, *passwd = NULL;
 
-  char *url_encoded;
+  char *url_encoded = NULL;
+
+  int error_code;
 
   scheme = url_scheme (url);
   if (scheme == SCHEME_INVALID)
     {
-      SETERR (error, PE_UNSUPPORTED_SCHEME);
-      return NULL;
+      error_code = PE_UNSUPPORTED_SCHEME;
+      goto error;
     }
 
   url_encoded = reencode_escapes (url);
@@ -843,23 +840,23 @@ url_parse (const char *url, int *error)
 
       if (!host_e)
 	{
-	  SETERR (error, PE_UNTERMINATED_IPV6_ADDRESS);
-	  return NULL;
+	  error_code = PE_UNTERMINATED_IPV6_ADDRESS;
+	  goto error;
 	}
 
 #ifdef ENABLE_IPV6
       /* Check if the IPv6 address is valid. */
       if (!is_valid_ipv6_address(host_b, host_e))
 	{
-	  SETERR (error, PE_INVALID_IPV6_ADDRESS);
-	  return NULL;
+	  error_code = PE_INVALID_IPV6_ADDRESS;
+	  goto error;
 	}
 
       /* Continue parsing after the closing ']'. */
       p = host_e + 1;
 #else
-      SETERR (error, PE_IPV6_NOT_SUPPORTED);
-      return NULL;
+      error_code = PE_IPV6_NOT_SUPPORTED;
+      goto error;
 #endif
     }
   else
@@ -870,8 +867,8 @@ url_parse (const char *url, int *error)
 
   if (host_b == host_e)
     {
-      SETERR (error, PE_EMPTY_HOST);
-      return NULL;
+      error_code = PE_EMPTY_HOST;
+      goto error;
     }
 
   port = scheme_default_port (scheme);
@@ -890,8 +887,8 @@ url_parse (const char *url, int *error)
 	{
 	  /* http://host:/whatever */
 	  /*             ^         */
-	  SETERR (error, PE_BAD_PORT_NUMBER);
-	  return NULL;
+          error_code = PE_BAD_PORT_NUMBER;
+	  goto error;
 	}
 
       for (port = 0, pp = port_b; pp < port_e; pp++)
@@ -900,8 +897,8 @@ url_parse (const char *url, int *error)
 	    {
 	      /* http://host:12randomgarbage/blah */
 	      /*               ^                  */
-	      SETERR (error, PE_BAD_PORT_NUMBER);
-	      return NULL;
+              error_code = PE_BAD_PORT_NUMBER;
+              goto error;
 	    }
 	  
 	  port = 10 * port + (*pp - '0');
@@ -960,8 +957,8 @@ url_parse (const char *url, int *error)
       /*     uname_b   uname_e */
       if (!parse_credentials (uname_b, uname_e - 1, &user, &passwd))
 	{
-	  SETERR (error, PE_INVALID_USER_NAME);
-	  return NULL;
+	  error_code = PE_INVALID_USER_NAME;
+	  goto error;
 	}
     }
 
@@ -1007,13 +1004,27 @@ url_parse (const char *url, int *error)
   url_encoded = NULL;
 
   return u;
+
+ error:
+  /* Cleanup in case of error: */
+  if (url_encoded && url_encoded != url)
+    xfree (url_encoded);
+
+  /* Transmit the error code to the caller, if the caller wants to
+     know.  */
+  if (error)
+    *error = error_code;
+  return NULL;
 }
+
+/* Return the error message string from ERROR_CODE, which should have
+   been retrieved from url_parse.  The error message is translated.  */
 
 const char *
 url_error (int error_code)
 {
   assert (error_code >= 0 && error_code < countof (parse_errors));
-  return parse_errors[error_code];
+  return _(parse_errors[error_code]);
 }
 
 /* Split PATH into DIR and FILE.  PATH comes from the URL and is
