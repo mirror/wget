@@ -221,9 +221,9 @@ recursive_retrieve (const char *file, const char *this_url)
 	 Addendum: If the URL is FTP, and it is to be loaded, only the
 	 domain and suffix settings are "stronger".
 
-	 Note that .html and (yuck) .htm will get loaded
-	 regardless of suffix rules (but that is remedied later with
-	 unlink).
+	 Note that .html and (yuck) .htm will get loaded regardless of
+	 suffix rules (but that is remedied later with unlink) unless
+	 the depth equals the maximum depth.
 
 	 More time- and memory- consuming tests should be put later on
 	 the list.  */
@@ -306,11 +306,13 @@ recursive_retrieve (const char *file, const char *this_url)
 	     b) it is "htm"
 
 	     If the file *is* supposed to be HTML, it will *not* be
-	     subject to acc/rej rules.  That's why the `!'.  */
+            subject to acc/rej rules, unless a finite maximum depth has
+            been specified and the current depth is the maximum depth. */
 	  if (!
 	      (!*u->file
 	       || (((suf = suffix (constr)) != NULL)
-		   && (!strcmp (suf, "html") || !strcmp (suf, "htm")))))
+                  && ((!strcmp (suf, "html") || !strcmp (suf, "htm"))
+                      && ((opt.reclevel != 0) && (depth != opt.reclevel))))))
 	    {
 	      if (!acceptable (u->file))
 		{

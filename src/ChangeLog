@@ -1,3 +1,9 @@
+1998-11-03  Edward J. Sabol  <sabol@alderaan.gsfc.nasa.gov>
+
+	* recur.c (recursive_retrieve): If a finite maximum depth is
+	specified, and we're are already at that depth, don't download the
+	HTML file for parsing.
+
 2000-03-01  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* ftp.c (ftp_loop_internal): Call new downloaded_file() function,
