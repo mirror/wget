@@ -1,5 +1,10 @@
 2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* init.c (wgetrc_file_name): Print correct message when loading
+	getenv("WGETRC") fails.
+
+2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* recur.c (register_download): Don't abort when one URL references
 	two different files.
 
