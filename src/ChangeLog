@@ -1,3 +1,15 @@
+2001-04-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* cookies.c (build_cookies_request): Use and sort cookies from all
+	matching domains.
+	(build_cookies_request): Check for duplicates before generating
+	the `Cookies' header.
+
+	* main.c (main): Don't load cookies here.
+	(main): Make loadcookies and savecookies call the correct command.
+
+	* http.c (http_loop): Load cookies on-demand.
+
 2001-04-09  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* http.c (gethttp): Fix indentation of SSL ifdef.

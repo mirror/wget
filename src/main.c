@@ -290,7 +290,6 @@ main (int argc, char *const *argv)
     { "base", required_argument, NULL, 'B' },
     { "bind-address", required_argument, NULL, 155 },
     { "cache", required_argument, NULL, 'C' },
-    { "cookie-file", required_argument, NULL, 161 },
     { "cut-dirs", required_argument, NULL, 145 },
     { "directory-prefix", required_argument, NULL, 'P' },
     { "domains", required_argument, NULL, 'D' },
@@ -308,7 +307,7 @@ main (int argc, char *const *argv)
     { "include-directories", required_argument, NULL, 'I' },
     { "input-file", required_argument, NULL, 'i' },
     { "level", required_argument, NULL, 'l' },
-    { "load-cookies", required_argument, NULL, 162 },
+    { "load-cookies", required_argument, NULL, 161 },
     { "no", required_argument, NULL, 'n' },
     { "output-document", required_argument, NULL, 'O' },
     { "output-file", required_argument, NULL, 'o' },
@@ -317,7 +316,7 @@ main (int argc, char *const *argv)
     { "proxy-user", required_argument, NULL, 143 },
     { "quota", required_argument, NULL, 'Q' },
     { "reject", required_argument, NULL, 'R' },
-    { "save-cookies", required_argument, NULL, 163 },
+    { "save-cookies", required_argument, NULL, 162 },
     { "timeout", required_argument, NULL, 'T' },
     { "tries", required_argument, NULL, 't' },
     { "user-agent", required_argument, NULL, 'U' },
@@ -531,17 +530,10 @@ GNU General Public License for more details.\n"));
 	  setval ("cookies", "on");
 	  break;
 	case 161:
-	  setval ("cookies", "on");
-	  setval ("cookiein", optarg);
-	  setval ("cookieout", optarg);
+	  setval ("loadcookies", optarg);
 	  break;
 	case 162:
-	  setval ("cookies", "on");
-	  setval ("cookiein", optarg);
-	  break;
-	case 163:
-	  setval ("cookies", "on");
-	  setval ("cookieout", optarg);
+	  setval ("savecookies", optarg);
 	  break;
 	case 157:
 	  setval ("referer", optarg);
@@ -791,9 +783,6 @@ Can't timestamp and not clobber old files at the same time.\n"));
 #ifdef WINDOWS
   ws_startup ();
 #endif
-
-  if (opt.cookies_input)
-      load_cookies (opt.cookies_input);
 
   /* Setup the signal handler to redirect output when hangup is
      received.  */

@@ -646,7 +646,7 @@ parse_set_cookies (const char *sc)
 
   delete_cookie (cookie);
   if (state == S_ERROR)
-    logprintf (LOG_NOTQUIET, _("Error in Set-Cookie, at character `%c'.\n"), c);
+    logprintf (LOG_NOTQUIET, _("Syntax error in Set-Cookie at character `%c'.\n"), c);
   else
     abort ();
   return NULL;
@@ -654,7 +654,7 @@ parse_set_cookies (const char *sc)
  eof:
   delete_cookie (cookie);
   logprintf (LOG_NOTQUIET,
-	     _("Error in Set-Cookie: premature end of string.\n"));
+	     _("Syntax error in Set-Cookie: premature end of string.\n"));
   return NULL;
 }
 
@@ -864,24 +864,39 @@ count_char (const char *string, char chr)
   return count;
 }
 
-/* Return the head of the cookie chain that matches HOST.  */
+/* Store CHAIN to STORE if there is room in STORE.  If not, inrecement
+   COUNT anyway, so that when the function is done, we end up with the
+   exact count of how much place we actually need.  */
 
-static struct cookie *
-find_cookie_chain (const char *host, int port)
+#define STORE_CHAIN(st_chain, st_store, st_size, st_count) do {	\
+  if (st_count < st_size)					\
+    store[st_count] = st_chain;					\
+  ++st_count;							\
+} while (0)
+
+/* Store cookie chains that match HOST, PORT.  Since more than one
+   chain can match, the matches are written to STORE.  No more than
+   SIZE matches are written; if more matches are present, return the
+   number of chains that would have been written.  */
+
+int
+find_matching_chains (const char *host, int port,
+		      struct cookie *store[], int size)
 {
+  struct cookie *chain;
   int dot_count;
   char *hash_key;
-  struct cookie *chain = NULL;
+  int count = 0;
 
   if (!cookies_hash_table)
-    return NULL;
+    return 0;
 
   SET_HOSTPORT (host, port, hash_key);
 
   /* Exact match. */
   chain = hash_table_get (cookies_hash_table, hash_key);
   if (chain)
-    return chain;
+    STORE_CHAIN (chain, store, size, count);
 
   dot_count = count_char (host, '.');
 
@@ -896,10 +911,10 @@ find_cookie_chain (const char *host, int port)
       assert (p != NULL);
       chain = hash_table_get (cookies_hash_table, p);
       if (chain)
-	return chain;
+	STORE_CHAIN (chain, store, size, count);
       hash_key = p + 1;
     }
-  return NULL;
+  return count;
 }
 
 /* If FULL_PATH begins with PREFIX, return the length of PREFIX, zero
@@ -917,19 +932,71 @@ path_matches (const char *full_path, const char *prefix)
   return len;
 }
 
+static int
+matching_cookie (const struct cookie *cookie, const char *path,
+		 int connection_secure_p, int *path_goodness)
+{
+  int pg;
+
+  if (cookie->expiry_time < cookies_now)
+    /* Ignore stale cookies.  There is no need to unchain the cookie
+       at this point -- Wget is a relatively short-lived application,
+       and stale cookies will not be saved by `save_cookies'.  */
+    return 0;
+  if (cookie->secure && !connection_secure_p)
+    /* Don't transmit secure cookies over an insecure connection.  */
+    return 0;
+  pg = path_matches (path, cookie->path);
+  if (!pg)
+    return 0;
+
+  if (path_goodness)
+    /* If the caller requested path_goodness, we return it.  This is
+       an optimization, so that the caller doesn't need to call
+       path_matches() again.  */
+    *path_goodness = pg;
+  return 1;
+}
+
 struct weighed_cookie {
   struct cookie *cookie;
+  int domain_goodness;
   int path_goodness;
 };
+
+/* Comparator used for uniquifying the list. */
+
+static int
+equality_comparator (const void *p1, const void *p2)
+{
+  struct weighed_cookie *wc1 = (struct weighed_cookie *)p1;
+  struct weighed_cookie *wc2 = (struct weighed_cookie *)p2;
+
+  int namecmp  = strcmp (wc1->cookie->attr, wc2->cookie->attr);
+  int valuecmp = strcmp (wc1->cookie->value, wc2->cookie->value);
+
+  /* We only really care whether both name and value are equal.  We
+     return them in this order only for consistency...  */
+  return namecmp ? namecmp : valuecmp;
+}
+
+/* Comparator used for sorting by quality. */
 
 static int
 goodness_comparator (const void *p1, const void *p2)
 {
   struct weighed_cookie *wc1 = (struct weighed_cookie *)p1;
   struct weighed_cookie *wc2 = (struct weighed_cookie *)p2;
-  /* It's goodness2-goodness1 because we want a sort in *decreasing*
-     order of goodness. */
-  return wc2->path_goodness - wc1->path_goodness;
+
+  /* Subtractions take `wc2' as the first argument becauase we want a
+     sort in *decreasing* order of goodness.  */
+  int dgdiff = wc2->domain_goodness - wc1->domain_goodness;
+  int pgdiff = wc2->path_goodness - wc1->path_goodness;
+
+  /* Sort by domain goodness; if these are the same, sort by path
+     goodness.  (The sorting order isn't really specified; maybe it
+     should be the other way around.)  */
+  return dgdiff ? dgdiff : pgdiff;
 }
 
 /* Build a `Cookies' header for a request that goes to HOST:PORT and
@@ -942,69 +1009,96 @@ char *
 build_cookies_request (const char *host, int port, const char *path,
 		       int connection_secure_p)
 {
-  struct cookie *chain = find_cookie_chain (host, port);
+  struct cookie *chain_default_store[20];
+  struct cookie **all_chains = chain_default_store;
+  int chain_store_size = ARRAY_SIZE (chain_default_store);
+  int chain_count;
+
   struct cookie *cookie;
   struct weighed_cookie *outgoing;
-  int count, i;
+  int count, i, ocnt;
   char *result;
   int result_size, pos;
 
-  if (!chain)
+ again:
+  chain_count = find_matching_chains (host, port, all_chains, chain_store_size);
+  if (chain_count > chain_store_size)
+    {
+      /* It's extremely unlikely that more than 20 chains will ever
+	 match.  But in this case it's easy to not have the
+	 limitation, so we don't.  */
+      all_chains = alloca (chain_count * sizeof (struct cookie *));
+      goto again;
+    }
+
+  if (!chain_count)
     return NULL;
 
   cookies_now = time (NULL);
 
   /* Count the number of cookies whose path matches. */
   count = 0;
-  result_size = 0;
-  for (cookie = chain; cookie; cookie = cookie->next)
-    {
-      if (cookie->expiry_time < cookies_now)
-	/* Ignore stale cookies.  There is no need to unchain the
-	   cookie at this point -- Wget is a relatively short-lived
-	   application, and stale cookies will not be saved by
-	   `save_cookies'.  */
-	continue;
-      if (cookie->secure && !connection_secure_p)
-	/* Don't transmit secure cookies over an insecure
-	   connection.  */
-	continue;
-      if (path_matches (path, cookie->path))
-	{
-	  ++count;
-	  /* name=value */
-	  result_size += strlen (cookie->attr) + 1 + strlen (cookie->value);
-	}
-    }
+  for (i = 0; i < chain_count; i++)
+    for (cookie = all_chains[i]; cookie; cookie = cookie->next)
+      if (matching_cookie (cookie, path, connection_secure_p, NULL))
+	++count;
   if (!count)
+    /* No matching cookies. */
     return NULL;
 
   /* Allocate the array. */
   outgoing = alloca (count * sizeof (struct weighed_cookie));
-  i = 0;
-  for (cookie = chain; cookie; cookie = cookie->next)
-    {
-      int goodness;
-      /* #### These two if's are repeated verbatim from the loop
-	 above.  Should I put them in a separate function?  */
-      if (cookie->expiry_time < cookies_now)
-	continue;
-      if (cookie->secure && !connection_secure_p)
-	/* Don't transmit secure cookies over an insecure
-	   connection.  */
-	continue;
-      goodness = path_matches (path, cookie->path);
-      if (!goodness)
-	continue;
-      outgoing[i].cookie = cookie;
-      outgoing[i].path_goodness = goodness;
-      ++i;
-    }
-  assert (i == count);
 
-  /* Sort the array so that paths that match our path better come
-     first. */
+  ocnt = 0;
+  for (i = 0; i < chain_count; i++)
+    for (cookie = all_chains[i]; cookie; cookie = cookie->next)
+      {
+	int pg;
+	if (!matching_cookie (cookie, path, connection_secure_p, &pg))
+	  continue;
+	outgoing[ocnt].cookie = cookie;
+	outgoing[ocnt].domain_goodness = strlen (cookie->domain);
+	outgoing[ocnt].path_goodness   = pg;
+	++ocnt;
+      }
+  assert (ocnt == count);
+
+  /* Eliminate duplicate cookies; that is, those whose name and value
+     are the same.  We do it by first sorting the array, and then
+     uniq'ing it.  */
+  qsort (outgoing, count, sizeof (struct weighed_cookie), equality_comparator);
+  for (i = 0; i < count - 1; i++)
+    {
+      struct cookie *c1 = outgoing[i].cookie;
+      struct cookie *c2 = outgoing[i + 1].cookie;
+      if (!strcmp (c1->attr, c2->attr) && !strcmp (c1->value, c2->value))
+	{
+	  /* c1 and c2 are the same; get rid of c2. */
+	  if (count > i + 1)
+	    /* move all ptrs from positions [i + 1, count) to i. */
+	    memmove (outgoing + i, outgoing + i + 1,
+		     (count - (i + 1)) * sizeof (struct weighed_cookie));
+	  /* We decrement i to counter the ++i above.  Remember that
+	     we've just removed the element in front of us; we need to
+	     remain in place to check whether outgoing[i] what used to
+	     be outgoing[i + 2].  */
+	  --i;
+	  --count;
+	}
+    }
+
+  /* Sort the array so that best-matching domains come first, and
+     that, within one domain, best-matching paths come first. */
   qsort (outgoing, count, sizeof (struct weighed_cookie), goodness_comparator);
+
+  /* Count the space the name=value pairs will take. */
+  result_size = 0;
+  for (i = 0; i < count; i++)
+    {
+      struct cookie *c = outgoing[i].cookie;
+      /* name=value */
+      result_size += strlen (c->attr) + 1 + strlen (c->value);
+    }
 
   /* Allocate output buffer:
      "Cookie: "       -- 8
@@ -1252,6 +1346,8 @@ save_cookies (const char *file)
     /* no cookies stored; nothing to do. */
     return;
 
+  DEBUGP (("Saving cookies to %s.\n", file));
+
   cookies_now = time (NULL);
 
   fp = fopen (file, "w");
@@ -1275,6 +1371,8 @@ save_cookies (const char *file)
   if (fclose (fp) < 0)
     logprintf (LOG_NOTQUIET, _("Error closing `%s': %s\n"),
 	       file, strerror (errno));
+
+  DEBUGP (("Done saving cookies.\n", file));
 }
 
 static int

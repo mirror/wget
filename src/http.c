@@ -78,6 +78,7 @@ extern int h_errno;
 # endif
 #endif
 
+static int cookies_loaded_p;
 
 #define TEXTHTML_S "text/html"
 #define HTTP_ACCEPT "*/*"
@@ -1373,6 +1374,12 @@ http_loop (struct urlinfo *u, char **newloc, int *dt)
   size_t filename_len;
   struct http_stat hstat;	/* HTTP status */
   struct stat st;
+
+  /* This used to be done in main(), but it's a better idea to do it
+     here so that we don't go through the hoops if we're just using
+     FTP or whatever. */
+  if (opt.cookies && opt.cookies_input && !cookies_loaded_p)
+    load_cookies (opt.cookies_input);
 
   *newloc = NULL;
 
