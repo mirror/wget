@@ -856,7 +856,7 @@ Recursive Retrieval Options
      displays properly locally, this author likes to use a few options
      in addition to `-p':
 
-          wget -H -k -K -nh -p http://SITE/DOCUMENT
+          wget -E -H -k -K -nh -p http://SITE/DOCUMENT
 
      To finish off this topic, it's worth knowing that wget's idea of an
      external document link is any URL specified in an `<A>' tag, an

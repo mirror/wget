@@ -1017,7 +1017,7 @@ websites), and make sure the lot displays properly locally, this author
 likes to use a few options in addition to @samp{-p}:
 
 @example
-wget -H -k -K -nh -p http://@var{site}/@var{document}
+wget -E -H -k -K -nh -p http://@var{site}/@var{document}
 @end example
 
 To finish off this topic, it's worth knowing that wget's idea of an

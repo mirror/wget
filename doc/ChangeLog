@@ -1,3 +1,7 @@
+2000-10-20  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* wget.texi (Recursive Retrieval Options): Sugg. -E on 1-page download.
+	
 2000-10-19  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* wget.texi (HTTP Options): Documented my new -E / --html-extension.
