@@ -718,7 +718,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   /* Construct the authentication, if userid is present.  */
   user = ou->user;
   passwd = ou->passwd;
-  search_netrc (u->host, (const char **)&user, (const char **)&passwd, 0);
+  search_netrc (ou->host, (const char **)&user, (const char **)&passwd, 0);
   user = user ? user : opt.http_user;
   passwd = passwd ? passwd : opt.http_passwd;
 

@@ -1,5 +1,10 @@
 2001-06-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (gethttp): Search `.netrc' with real host, not the proxy
+	one.
+
+2001-06-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* sysdep.h (MAP_FAILED): Provide MAP_FAILED for systems that don't
 	define it.
 
