@@ -340,6 +340,8 @@ decode_entity (const char **ptr, const char *end)
 #undef ENT1
 #undef ENT2
 #undef ENT3
+#undef FITS
+#undef SKIP_SEMI
 
 enum {
   AP_DOWNCASE		= 1,
