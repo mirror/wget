@@ -1,5 +1,10 @@
 2003-11-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (gethttp): Use the CONNECT handle to establish SSL
+	passthrough through non-SSL proxies.
+
+2003-11-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c: Don't #include netinet/Winsock stuff.
 
 2003-11-28  Hrvoje Niksic  <hniksic@xemacs.org>

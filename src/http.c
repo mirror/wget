@@ -804,7 +804,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   authenticate_h = NULL;
   auth_tried_already = 0;
 
-  inhibit_keep_alive = !opt.http_keep_alive || proxy != NULL;
+  inhibit_keep_alive = !opt.http_keep_alive;
 
  again:
   /* We need to come back here when the initial attempt to retrieve
@@ -825,21 +825,72 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   hs->remote_time = NULL;
   hs->error = NULL;
 
-  /* If we're using a proxy, we will be connecting to the proxy
-     server. */
-  conn = proxy ? proxy : u;
+  conn = u;
+
+  proxyauth = NULL;
+  if (proxy)
+    {
+      char *proxy_user, *proxy_passwd;
+      /* For normal username and password, URL components override
+	 command-line/wgetrc parameters.  With proxy
+	 authentication, it's the reverse, because proxy URLs are
+	 normally the "permanent" ones, so command-line args
+	 should take precedence.  */
+      if (opt.proxy_user && opt.proxy_passwd)
+	{
+	  proxy_user = opt.proxy_user;
+	  proxy_passwd = opt.proxy_passwd;
+	}
+      else
+	{
+	  proxy_user = proxy->user;
+	  proxy_passwd = proxy->passwd;
+	}
+      /* #### This does not appear right.  Can't the proxy request,
+	 say, `Digest' authentication?  */
+      if (proxy_user && proxy_passwd)
+	proxyauth = basic_authentication_encode (proxy_user, proxy_passwd,
+						 "Proxy-Authorization");
+
+      /* If we're using a proxy, we will be connecting to the proxy
+	 server.  */
+      conn = proxy;
+    }
 
   host_lookup_failed = 0;
+  sock = -1;
 
   /* First: establish the connection.  */
-  if (inhibit_keep_alive
-      || !persistent_available_p (conn->host, conn->port,
+
+  if (!inhibit_keep_alive)
+    {
+      /* Look for a persistent connection to target host, unless a
+	 proxy is used.  The exception is when SSL is in use, in which
+	 case the proxy is nothing but a passthrough to the target
+	 host, registered as a connection to the latter.  */
+      struct url *relevant = conn;
 #ifdef HAVE_SSL
-				  u->scheme == SCHEME_HTTPS
-#else
-				  0
+      if (u->scheme == SCHEME_HTTPS)
+	relevant = u;
 #endif
-				  , &host_lookup_failed))
+
+      if (persistent_available_p (relevant->host, relevant->port,
+#ifdef HAVE_SSL
+				  relevant->scheme == SCHEME_HTTPS,
+#else
+				  0,
+#endif
+				  &host_lookup_failed))
+	{
+	  sock = pconn.socket;
+	  using_ssl = pconn.ssl;
+	  logprintf (LOG_VERBOSE, _("Reusing existing connection to %s:%d.\n"),
+		     pconn.host, pconn.port);
+	  DEBUGP (("Reusing fd %d.\n", sock));
+	}
+    }
+
+  if (sock < 0)
     {
       /* In its current implementation, persistent_available_p will
 	 look up conn->host in some cases.  If that lookup failed, we
@@ -855,27 +906,74 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 		? CONERROR : CONIMPOSSIBLE);
 
 #ifdef HAVE_SSL
-     if (conn->scheme == SCHEME_HTTPS)
-       {
-	 if (!ssl_connect (sock))
-	   {
-	     logputs (LOG_VERBOSE, "\n");
-	     logprintf (LOG_NOTQUIET,
-			_("Unable to establish SSL connection.\n"));
-	     fd_close (sock);
-	     return CONSSLERR;
-	   }
-	 using_ssl = 1;
-       }
+      if (proxy && u->scheme == SCHEME_HTTPS)
+	{
+	  /* When requesting SSL URLs through proxies, use the
+	     CONNECT method to request passthrough.  */
+	  char *connect =
+	    (char *) alloca (64
+			     + strlen (u->host)
+			     + (proxyauth ? strlen (proxyauth) : 0));
+	  sprintf (connect, "CONNECT %s:%d HTTP/1.0\r\n%s\r\n",
+		   u->host, u->port, proxyauth ? proxyauth : "");
+	  DEBUGP (("Writing to proxy: [%s]\n", connect));
+	  write_error = fd_write (sock, connect, strlen (connect), -1);
+	  if (write_error < 0)
+	    {
+	      xfree_null (proxyauth);
+	      logprintf (LOG_VERBOSE, _("Failed writing to proxy: %s.\n"),
+			 strerror (errno));
+	      CLOSE_INVALIDATE (sock);
+	      return WRITEFAILED;
+	    }
+
+	  head = fd_read_http_head (sock);
+	  if (!head)
+	    {
+	      xfree_null (proxyauth);
+	      logprintf (LOG_VERBOSE, _("Failed reading proxy response: %s\n"),
+			 strerror (errno));
+	      CLOSE_INVALIDATE (sock);
+	      return HERR;
+	    }
+	  message = NULL;
+	  if (!*head)
+	    {
+	      xfree (head);
+	      goto failed_tunnel;
+	    }
+	  DEBUGP (("proxy responded with: [%s]\n", head));
+
+	  resp = response_new (head);
+	  statcode = response_status (resp, &message);
+	  response_free (resp);
+	  if (statcode != 200)
+	    {
+	    failed_tunnel:
+	      xfree_null (proxyauth);
+	      logprintf (LOG_NOTQUIET, _("Proxy tunneling failed: %s"),
+			 message ? message : "?");
+	      xfree_null (message);
+	      return CONSSLERR;
+	    }
+	  xfree (message);
+
+	  /* SOCK is now *really* connected to u->host, so update CONN
+	     to reflect this.  That way register_persistent will
+	     register SOCK as being connected to u->host:u->port.  */
+	  conn = u;
+	}
+
+      if (conn->scheme == SCHEME_HTTPS)
+	{
+	  if (!ssl_connect (sock))
+	    {
+	      fd_close (sock);
+	      return CONSSLERR;
+	    }
+	  using_ssl = 1;
+	}
 #endif /* HAVE_SSL */
-    }
-  else
-    {
-      logprintf (LOG_VERBOSE, _("Reusing existing connection to %s:%d.\n"),
-		 pconn.host, pconn.port);
-      sock = pconn.socket;
-      using_ssl = pconn.ssl;
-      DEBUGP (("Reusing fd %d.\n", sock));
     }
 
   if (*dt & HEAD_ONLY)
@@ -962,32 +1060,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 					       command, pth);
 	  xfree (pth);
 	}
-    }
-
-  proxyauth = NULL;
-  if (proxy)
-    {
-      char *proxy_user, *proxy_passwd;
-      /* For normal username and password, URL components override
-	 command-line/wgetrc parameters.  With proxy authentication,
-	 it's the reverse, because proxy URLs are normally the
-	 "permanent" ones, so command-line args should take
-	 precedence.  */
-      if (opt.proxy_user && opt.proxy_passwd)
-	{
-	  proxy_user = opt.proxy_user;
-	  proxy_passwd = opt.proxy_passwd;
-	}
-      else
-	{
-	  proxy_user = proxy->user;
-	  proxy_passwd = proxy->passwd;
-	}
-      /* #### This does not appear right.  Can't the proxy request,
-         say, `Digest' authentication?  */
-      if (proxy_user && proxy_passwd)
-	proxyauth = basic_authentication_encode (proxy_user, proxy_passwd,
-						 "Proxy-Authorization");
     }
 
   /* String of the form :PORT.  Used only for non-standard ports. */
@@ -1141,10 +1213,7 @@ Accept: %s\r\n\
 	  return HERR;
 	}
     }
-
-  DEBUGP (("\n---response begin---\n"));
-  DEBUGP (("%s", head));
-  DEBUGP (("---response end---\n"));
+  DEBUGP (("\n---response begin---\n%s---response end---\n", head));
 
   resp = response_new (head);
 
