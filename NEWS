@@ -38,6 +38,8 @@ sites that require you to log in before you can access some pages.
 With this option, multiple Wget runs will be treated as a single
 browser session.
 
+* Wget 1.9.1 is a bugfix release with no user-visible changes.
+
 * Changes in Wget 1.9.
 
 ** It is now possible to specify that POST method be used for HTTP
