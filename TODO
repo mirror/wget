@@ -47,7 +47,7 @@ may tend towards the top).  Not all of these represent user-visible changes.
 * Make `-k' check for files that were downloaded in the past and convert links 
   to them in newly-downloaded documents.
 
-* -k should convert convert relative references to absolute if not downloaded.
+* -k should convert relative references to absolute if not downloaded.
 
 * -k should convert "hostless absolute" URLs, like <A HREF="/index.html">.
   However, Brian McMahon <bm@iucr.org> wants the old incorrect behavior to still
