@@ -202,7 +202,14 @@ fake_fork_child (void)
   return 1;                     /* We are the child.  */
 }
 
-
+/* Windows doesn't support the fork() call; so we fake it by invoking
+   another copy of Wget with the same arguments with which we were
+   invoked.  The child copy of Wget should perform the same initialization
+   sequence as the parent; so we should have two processes that are
+   essentially identical.  We create a specially named section object that
+   allows the child to distinguish itself from the parent and is used to
+   exchange information between the two processes.  We use an event object
+   for synchronization.  */
 static void
 fake_fork (void)
 {
@@ -343,6 +350,8 @@ cleanup:
   /* We failed, return.  */
 }
 
+/* This is the corresponding Windows implementation of the
+   fork_to_background() function in utils.c.  */
 void
 fork_to_background (void)
 {
