@@ -909,7 +909,6 @@ Accept: %s\r\n\
 	  logputs (LOG_NOTQUIET, _("End of file while parsing headers.\n"));
 	  xfree (hdr);
 	  FREE_MAYBE (type);
-	  FREE_MAYBE (hs->newloc);
 	  FREE_MAYBE (all_headers);
 	  CLOSE_INVALIDATE (sock);
 	  return HEOF;
@@ -921,7 +920,6 @@ Accept: %s\r\n\
 		     strerror (errno));
 	  xfree (hdr);
 	  FREE_MAYBE (type);
-	  FREE_MAYBE (hs->newloc);
 	  FREE_MAYBE (all_headers);
 	  CLOSE_INVALIDATE (sock);
 	  return HERR;
@@ -1121,6 +1119,30 @@ Accept: %s\r\n\
   if (H_20X (statcode))
     *dt |= RETROKF;
 
+  /* Return if redirected.  */
+  if (H_REDIRECTED (statcode) || statcode == HTTP_STATUS_MULTIPLE_CHOICES)
+    {
+      /* RFC2068 says that in case of the 300 (multiple choices)
+	 response, the server can output a preferred URL through
+	 `Location' header; otherwise, the request should be treated
+	 like GET.  So, if the location is set, it will be a
+	 redirection; otherwise, just proceed normally.  */
+      if (statcode == HTTP_STATUS_MULTIPLE_CHOICES && !hs->newloc)
+	*dt |= RETROKF;
+      else
+	{
+	  logprintf (LOG_VERBOSE,
+		     _("Location: %s%s\n"),
+		     hs->newloc ? hs->newloc : _("unspecified"),
+		     hs->newloc ? _(" [following]") : "");
+	  CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
+					   might be more bytes in the body. */
+	  FREE_MAYBE (type);
+	  FREE_MAYBE (all_headers);
+	  return NEWLOCATION;
+	}
+    }
+
   if (type && !strncasecmp (type, TEXTHTML_S, strlen (TEXTHTML_S)))
     *dt |= TEXTHTML;
   else
@@ -1168,7 +1190,7 @@ Accept: %s\r\n\
       if (opt.always_rest)
 	{
 	  /* Check for condition #2. */
-	  if (hs->restval == contlen)
+	  if (hs->restval >= contlen)
 	    {
 	      logputs (LOG_VERBOSE, _("\
 \n    The file is already fully retrieved; nothing to do.\n\n"));
@@ -1176,11 +1198,10 @@ Accept: %s\r\n\
 	      hs->len = contlen;
 	      hs->res = 0;
 	      FREE_MAYBE (type);
-	      FREE_MAYBE (hs->newloc);
 	      FREE_MAYBE (all_headers);
 	      CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
 					   might be more bytes in the body. */
-	      return RETRFINISHED;
+	      return RETRUNNEEDED;
 	    }
 
 	  /* Check for condition #1. */
@@ -1189,8 +1210,11 @@ Accept: %s\r\n\
 	      logprintf (LOG_NOTQUIET,
 			 _("\
 \n\
-    The server does not support continued download;\n\
-    refusing to truncate `%s'.\n\n"), u->local);
+The server does not support continued downloads, which conflicts with `-c'.\n\
+Refusing to truncate `%s'.\n\n"), u->local);
+	      FREE_MAYBE (type);
+	      FREE_MAYBE (all_headers);
+	      CLOSE_INVALIDATE (sock);
 	      return CONTNOTSUPPORTED;
 	    }
 
@@ -1199,14 +1223,12 @@ Accept: %s\r\n\
 
       hs->restval = 0;
     }
-
   else if (contrange != hs->restval ||
 	   (H_PARTIAL (statcode) && contrange == -1))
     {
       /* This means the whole request was somehow misunderstood by the
 	 server.  Bail out.  */
       FREE_MAYBE (type);
-      FREE_MAYBE (hs->newloc);
       FREE_MAYBE (all_headers);
       CLOSE_INVALIDATE (sock);
       return RANGEERR;
@@ -1222,29 +1244,6 @@ Accept: %s\r\n\
     }
   hs->contlen = contlen;
 
-  /* Return if redirected.  */
-  if (H_REDIRECTED (statcode) || statcode == HTTP_STATUS_MULTIPLE_CHOICES)
-    {
-      /* RFC2068 says that in case of the 300 (multiple choices)
-	 response, the server can output a preferred URL through
-	 `Location' header; otherwise, the request should be treated
-	 like GET.  So, if the location is set, it will be a
-	 redirection; otherwise, just proceed normally.  */
-      if (statcode == HTTP_STATUS_MULTIPLE_CHOICES && !hs->newloc)
-	*dt |= RETROKF;
-      else
-	{
-	  logprintf (LOG_VERBOSE,
-		     _("Location: %s%s\n"),
-		     hs->newloc ? hs->newloc : _("unspecified"),
-		     hs->newloc ? _(" [following]") : "");
-	  CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
-					   might be more bytes in the body. */
-	  FREE_MAYBE (type);
-	  FREE_MAYBE (all_headers);
-	  return NEWLOCATION;
-	}
-    }
   if (opt.verbose)
     {
       if ((*dt & RETROKF) && !opt.server_response)
@@ -1522,6 +1521,12 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	if (stat (locf, &st) == 0 && S_ISREG (st.st_mode))
 	  hstat.restval = st.st_size;
 
+      /* In `-c' is used and the file is existing and non-empty,
+	 refuse to truncate it if the server doesn't support continued
+	 downloads.  */
+      if (opt.always_rest && hstat.restval)
+	hstat.no_truncate = file_exists_p (locf);
+
       /* Decide whether to send the no-cache directive.  We send it in
 	 two cases:
 	   a) we're using a proxy, and we're past our first retrieval.
@@ -1546,13 +1551,6 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	locf = u->local;
       else
 	locf = opt.output_document;
-
-      /* In `-c' is used, check whether the file we're writing to
-	 exists before we've done anything.  If so, we'll refuse to
-	 truncate it if the server doesn't support continued
-	 downloads.  */
-      if (opt.always_rest)
-	hstat.no_truncate = file_exists_p (locf);
 
       /* Time?  */
       tms = time_str (NULL);
@@ -1607,6 +1605,12 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	  FREEHSTAT (hstat);
 	  xfree (filename_plus_orig_suffix); /* must precede every return! */
 	  return NEWLOCATION;
+	  break;
+	case RETRUNNEEDED:
+	  /* The file was already fully retrieved. */
+	  FREEHSTAT (hstat);
+	  xfree (filename_plus_orig_suffix); /* must precede every return! */
+	  return RETROK;
 	  break;
 	case RETRFINISHED:
 	  /* Deal with you later.  */

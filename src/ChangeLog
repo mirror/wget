@@ -1,3 +1,26 @@
+2001-04-28  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* http.c (gethttp): Return RETRUNNEEDED when the retrieval is
+	unneeded because the file is already there and fully downloaded,
+	and -c is specified.
+	(http_loop): Handle RETRUNNEEDED.
+
+	* wget.h (uerr_t): New value RETRUNNEEDED.
+
+	* http.c (http_loop): Set no_truncate for files that both exist
+	and are non-empty.
+	(gethttp): Consider the download finished when restval >= contlen,
+	not only when restval==contlen.
+	(gethttp): Handle redirection before giving up due to -c.
+	(gethttp): Clarify error message which explains that -c will not
+	truncate the file.
+	(gethttp): When returning CONTNOTSUPPORTED, don't forget to free
+	the stuff that needs freeing and release the socket.
+
+2001-04-27  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* main.c (print_help): Wget booleans accept "off", not "no".
+
 2001-04-27  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* http.c (http_loop): If allow_cache is zero, always disable
