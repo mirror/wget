@@ -1347,6 +1347,12 @@ numdigit (long number)
   return cnt;
 }
 
+/* A half-assed implementation of INT_MAX on machines that don't
+   bother to define one. */
+#ifndef INT_MAX
+# define INT_MAX ((int) ~((unsigned)1 << 8 * sizeof (int) - 1))
+#endif
+
 #define ONE_DIGIT(figure) *p++ = n / (figure) + '0'
 #define ONE_DIGIT_ADVANCE(figure) (ONE_DIGIT (figure), n %= (figure))
 
@@ -1406,6 +1412,15 @@ number_to_string (char *buffer, long number)
 
   if (n < 0)
     {
+      if (n < -INT_MAX)
+	{
+	  /* We cannot print a '-' and assign -n to n because -n would
+	     overflow.  Let sprintf deal with this border case.  */
+	  sprintf (buffer, "%ld", n);
+	  p += strlen (buffer);
+	  return p;
+	}
+
       *p++ = '-';
       n = -n;
     }

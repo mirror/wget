@@ -1,5 +1,9 @@
 2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* utils.c (number_to_string): Handle the case when n < -INT_MAX.
+
+2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* init.c (comind): Use a marginally faster implementation of
 	binary search.  To quote Martin Buchholz, "a nanosecond saved is a
 	nanosecond earned."
