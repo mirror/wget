@@ -56,7 +56,6 @@ char **sepstring PARAMS ((const char *));
 int frontcmp PARAMS ((const char *, const char *));
 char *pwd_cuserid PARAMS ((char *));
 void fork_to_background PARAMS ((void));
-int path_simplify PARAMS ((char *));
 
 void touch PARAMS ((const char *, time_t));
 int remove_link PARAMS ((const char *));

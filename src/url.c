@@ -48,8 +48,6 @@ extern int errno;
 /* Is X ".."?  */
 #define DDOTP(x) ((*(x) == '.') && (*(x + 1) == '.') && (!*(x + 2)))
 
-static int urlpath_length PARAMS ((const char *));
-
 struct scheme_data
 {
   char *leading_string;
@@ -70,7 +68,11 @@ static struct scheme_data supported_schemes[] =
   { NULL,       -1,                 0 }
 };
 
+/* Forward declarations: */
+
 static char *construct_relative PARAMS ((const char *, const char *));
+static int path_simplify PARAMS ((char *));
+
 
 
 /* Support for encoding and decoding of URL strings.  We determine
@@ -1373,18 +1375,20 @@ url_filename (const struct url *u)
   return name;
 }
 
-/* Like strlen(), but allow the URL to be ended with '?'.  */
+/* Return the langth of URL's path.  Path is considered to be
+   terminated by one of '?', ';', '#', or by the end of the
+   string.  */
 static int
-urlpath_length (const char *url)
+path_length (const char *url)
 {
   const char *q = strpbrk_or_eos (url, "?;#");
   return q - url;
 }
 
 /* Find the last occurrence of character C in the range [b, e), or
-   NULL, if none are present.  This is almost completely equivalent to
-   { *e = '\0'; return strrchr(b); }, except that it doesn't change
-   the contents of the string.  */
+   NULL, if none are present.  This is equivalent to strrchr(b, c),
+   except that it accepts an END argument instead of requiring the
+   string to be zero-terminated.  Why is there no memrchr()?  */
 static const char *
 find_last_char (const char *b, const char *e, char c)
 {
@@ -1393,7 +1397,127 @@ find_last_char (const char *b, const char *e, char c)
       return e;
   return NULL;
 }
+
+/* Resolve "." and ".." elements of PATH by destructively modifying
+   PATH.  "." is resolved by removing that path element, and ".." is
+   resolved by removing the preceding path element.  Leading and
+   trailing slashes are preserved.
 
+   Return non-zero if any changes have been made.
+
+   For example, "a/b/c/./../d/.." will yield "a/b/".  More exhaustive
+   test examples are provided below.  If you change anything in this
+   function, run test_path_simplify to make sure you haven't broken a
+   test case.
+
+   A previous version of this function was based on path_simplify()
+   from GNU Bash, but it has been rewritten for Wget 1.8.1.  */
+
+static int
+path_simplify (char *path)
+{
+  int change = 0;
+  char *p, *end;
+
+  if (path[0] == '/')
+    ++path;			/* preserve the leading '/'. */
+
+  p = path;
+  end = p + strlen (p) + 1;	/* position past the terminating zero. */
+
+  while (1)
+    {
+    again:
+      /* P should point to the beginning of a path element. */
+
+      if (*p == '.' && (*(p + 1) == '/' || *(p + 1) == '\0'))
+	{
+	  /* Handle "./foo" by moving "foo" two characters to the
+	     left. */
+	  if (*(p + 1) == '/')
+	    {
+	      change = 1;
+	      memmove (p, p + 2, end - p);
+	      end -= 2;
+	      goto again;
+	    }
+	  else
+	    {
+	      change = 1;
+	      *p = '\0';
+	      break;
+	    }
+	}
+      else if (*p == '.' && *(p + 1) == '.'
+	       && (*(p + 2) == '/' || *(p + 2) == '\0'))
+	{
+	  /* Handle "../foo" by moving "foo" one path element to the
+	     left.  */
+	  char *b = p;		/* not p-1 because P can equal PATH */
+
+	  /* Backtrack by one path element, but not past the beginning
+	     of PATH. */
+
+	  /* foo/bar/../baz */
+	  /*         ^ p    */
+	  /*     ^ b        */
+
+	  if (b > path)
+	    {
+	      /* Move backwards until B hits the beginning of the
+		 previous path element or the beginning of path. */
+	      for (--b; b > path && *(b - 1) != '/'; b--)
+		;
+	    }
+
+	  change = 1;
+	  if (*(p + 2) == '/')
+	    {
+	      memmove (b, p + 3, end - (p + 3));
+	      end -= (p + 3) - b;
+	      p = b;
+	    }
+	  else
+	    {
+	      *b = '\0';
+	      break;
+	    }
+
+	  goto again;
+	}
+      else if (*p == '/')
+	{
+	  /* Remove empty path elements.  Not mandated by rfc1808 et
+	     al, but empty path elements are not all that useful, and
+	     the rest of Wget might not deal with them well. */
+	  char *q = p;
+	  while (*q == '/')
+	    ++q;
+	  change = 1;
+	  if (*q == '\0')
+	    {
+	      *p = '\0';
+	      break;
+	    }
+	  memmove (p, q, end - q);
+	  end -= q - p;
+	  goto again;
+	}
+
+      /* Skip to the next path element. */
+      while (*p && *p != '/')
+	++p;
+      if (*p == '\0')
+	break;
+
+      /* Make sure P points to the beginning of the next path element,
+	 which is location after the slash. */
+      ++p;
+    }
+
+  return change;
+}
+
 /* Resolve the result of "linking" a base URI (BASE) to a
    link-specified URI (LINK).
 
@@ -1405,8 +1529,8 @@ find_last_char (const char *b, const char *e, char c)
    The parameters LINKLENGTH is useful if LINK is not zero-terminated.
    See uri_merge for a gentler interface to this functionality.
 
-   Perhaps this function should handle `./' and `../' so that the evil
-   path_simplify can go.  */
+   Perhaps this function should call path_simplify so that the callers
+   don't have to call url_parse unconditionally.  */
 static char *
 uri_merge_1 (const char *base, const char *link, int linklength, int no_scheme)
 {
@@ -1414,7 +1538,7 @@ uri_merge_1 (const char *base, const char *link, int linklength, int no_scheme)
 
   if (no_scheme)
     {
-      const char *end = base + urlpath_length (base);
+      const char *end = base + path_length (base);
 
       if (!*link)
 	{
@@ -1723,6 +1847,10 @@ no_proxy_match (const char *host, const char **no_proxy)
     return !sufmatch (no_proxy, host);
 }
 
+/* Support for converting links for local viewing in downloaded HTML
+   files.  This should be moved to another file, because it has
+   nothing to do with processing URLs.  */
+
 static void write_backup_file PARAMS ((const char *, downloaded_file_t));
 static const char *replace_attr PARAMS ((const char *, int, FILE *,
 					 const char *));
@@ -2253,3 +2381,96 @@ downloaded_files_free (void)
       downloaded_files_hash = NULL;
     }
 }
+
+#if 0
+/* Debugging and testing support for path_simplify. */
+
+/* Debug: run path_simplify on PATH and return the result in a new
+   string.  Useful for calling from the debugger.  */
+static char *
+ps (char *path)
+{
+  char *copy = xstrdup (path);
+  path_simplify (copy);
+  return copy;
+}
+
+static void
+run_test (char *test, char *expected_result, int expected_change)
+{
+  char *test_copy = xstrdup (test);
+  int modified = path_simplify (test_copy);
+
+  if (0 != strcmp (test_copy, expected_result))
+    {
+      printf ("Failed path_simplify(\"%s\"): expected \"%s\", got \"%s\".\n",
+	      test, expected_result, test_copy);
+    }
+  if (modified != expected_change)
+    {
+      if (expected_change == 1)
+	printf ("Expected no modification with path_simplify(\"%s\").\n",
+		test);
+      else
+	printf ("Expected modification with path_simplify(\"%s\").\n",
+		test);
+    }
+  xfree (test_copy);
+}
+
+static void
+test_path_simplify (void)
+{
+  static struct {
+    char *test, *result;
+    int should_modify;
+  } tests[] = {
+    { "",		"",		0 },
+    { ".",		"",		1 },
+    { "..",		"",		1 },
+    { "foo",		"foo",		0 },
+    { "foo/bar",	"foo/bar",	0 },
+    { "foo///bar",	"foo/bar",	1 },
+    { "foo/.",		"foo/",		1 },
+    { "foo/./",		"foo/",		1 },
+    { "foo./",		"foo./",	0 },
+    { "foo/../bar",	"bar",		1 },
+    { "foo/../bar/",	"bar/",		1 },
+    { "foo/bar/..",	"foo/",		1 },
+    { "foo/bar/../x",	"foo/x",	1 },
+    { "foo/bar/../x/",	"foo/x/",	1 },
+    { "foo/..",		"",		1 },
+    { "foo/../..",	"",		1 },
+    { "a/b/../../c",	"c",		1 },
+    { "./a/../b",	"b",		1 }
+  };
+  int i;
+
+  for (i = 0; i < ARRAY_SIZE (tests); i++)
+    {
+      char *test = tests[i].test;
+      char *expected_result = tests[i].result;
+      int   expected_change = tests[i].should_modify;
+      run_test (test, expected_result, expected_change);
+    }
+
+  /* Now run all the tests with a leading slash before the test case,
+     to prove that the slash is being preserved.  */
+  for (i = 0; i < ARRAY_SIZE (tests); i++)
+    {
+      char *test, *expected_result;
+      int expected_change = tests[i].should_modify;
+
+      test = xmalloc (1 + strlen (tests[i].test) + 1);
+      sprintf (test, "/%s", tests[i].test);
+
+      expected_result = xmalloc (1 + strlen (tests[i].result) + 1);
+      sprintf (expected_result, "/%s", tests[i].result);
+
+      run_test (test, expected_result, expected_change);
+
+      xfree (test);
+      xfree (expected_result);
+    }
+}
+#endif

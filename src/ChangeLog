@@ -1,3 +1,7 @@
+2001-12-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (path_simplify): Move here from utils.c, and make static.
+
 2001-12-13  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* init.c (wgetrc_file_name): Print correct message when loading
