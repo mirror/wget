@@ -265,6 +265,7 @@ main (int argc, char *const *argv)
     { "timeout", required_argument, NULL, 'T' },
     { "tries", required_argument, NULL, 't' },
     { "user-agent", required_argument, NULL, 'U' },
+    { "referer", required_argument, NULL, 129 },
     { "use-proxy", required_argument, NULL, 'Y' },
     { "wait", required_argument, NULL, 'w' },
     { 0, 0, 0, 0 }
@@ -548,6 +549,9 @@ GNU General Public License for more details.\n"));
 	  break;
 	case 'U':
 	  setval ("useragent", optarg);
+	  break;
+	case 129:
+	  setval ("referer", optarg);
 	  break;
 	case 'w':
 	  setval ("wait", optarg);

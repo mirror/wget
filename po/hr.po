@@ -213,7 +213,7 @@ msgstr "Dubina rekurzije %d prelazi najveæu dozvoljenu %d.\n"
 msgid ""
 "Server file no newer than local file `%s' -- not retrieving.\n"
 "\n"
-msgstr ""
+msgstr "Datoteka na poslu¾itelju nije novija od lokalne datoteke `%s' -- ne skidam."
 
 #: src/ftp.c:1112 src/http.c:1109
 #, fuzzy, c-format
@@ -522,7 +522,7 @@ msgstr "Nevaljan Last-Modified header -- ignoriram vremensku oznaku.\n"
 msgid ""
 "Server file no newer than local file `%s.orig' -- not retrieving.\n"
 "\n"
-msgstr ""
+msgstr "Datoteka na poslu¾itelju nije novija od lokalne datoteke `%s.orig' -- ne skidam."
 
 #: src/http.c:1113
 msgid "Remote file is newer, retrieving.\n"

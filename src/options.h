@@ -120,6 +120,9 @@ struct options
   char *useragent;		/* Naughty User-Agent, which can be
 				   set to something other than
 				   Wget. */
+  char *referer;		/* Naughty Referer, which can be
+				   set to something other than
+				   NULL. */
   int convert_links;		/* Will the links be converted
 				   locally? */
   int remove_listing;		/* Do we remove .listing files

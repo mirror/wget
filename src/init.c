@@ -134,6 +134,7 @@ static struct {
   { "quota",		&opt.quota,		cmd_bytes },
   { "reclevel",		&opt.reclevel,		cmd_number_inf },
   { "recursive",	NULL,			cmd_spec_recursive },
+  { "referer",		&opt.referer,		cmd_string },
   { "reject",		&opt.rejects,		cmd_vector },
   { "relativeonly",	&opt.relative_only,	cmd_boolean },
   { "removelisting",	&opt.remove_listing,	cmd_boolean },
@@ -923,6 +924,7 @@ cleanup (void)
   FREE_MAYBE (opt.http_proxy);
   free_vec (opt.no_proxy);
   FREE_MAYBE (opt.useragent);
+  FREE_MAYBE (opt.referer);
   FREE_MAYBE (opt.http_user);
   FREE_MAYBE (opt.http_passwd);
   FREE_MAYBE (opt.user_header);

@@ -1,3 +1,7 @@
+2000-01-30  Damir Dzeko  <ddzeko@zesoi.fer.hr>
+
+	* http.c (gethttp): Send custom Referer, if required.
+
 1999-09-24  Charles G Waldman  <cgw@fnal.gov>
 
 	* netrc.c (parse_netrc): Allow passwords to contain spaces.
