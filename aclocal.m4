@@ -44,6 +44,64 @@ int accept (int, struct sockaddr *, size_t *);
   ])
 ])
 
+dnl Check whether fnmatch.h can be included.  This doesn't use
+dnl AC_FUNC_FNMATCH because Wget is already careful to only use
+dnl fnmatch on certain OS'es.  However, fnmatch.h is sometimes broken
+dnl even on those because Apache installs its own fnmatch.h to
+dnl /usr/local/include (!), which GCC uses before /usr/include.
+
+AC_DEFUN([WGET_FNMATCH], [
+  AC_MSG_CHECKING([whether fnmatch.h can be included])
+  AC_COMPILE_IFELSE([#include <fnmatch.h>
+                    ], [
+    AC_MSG_RESULT(yes)
+    AC_DEFINE(HAVE_FNMATCH_H)
+  ], [
+    AC_MSG_RESULT(no)
+  ])
+])
+
+dnl Check for nanosleep.  For nanosleep to work on Solaris, we must
+dnl link with -lt (recently) or with -lposix (older releases).
+
+AC_DEFUN([WGET_NANOSLEEP], [
+  AC_CHECK_FUNCS(nanosleep, [], [
+    AC_CHECK_LIB(rt, nanosleep, [
+      AC_DEFINE(HAVE_NANOSLEEP)
+      LIBS="-lrt $LIBS"
+    ], [
+      AC_CHECK_LIB(posix4, nanosleep, [
+	AC_DEFINE(HAVE_NANOSLEEP)
+	LIBS="-lposix4 $LIBS"
+      ])
+    ])
+  ])
+])
+
+dnl Check whether we need to link with -lnsl and -lsocket, as is the
+dnl case on e.g. Solaris.
+
+AC_DEFUN([WGET_NSL_SOCKET], [
+  dnl On Solaris, -lnsl is needed to use gethostbyname.  But checking
+  dnl for gethostbyname is not enough because on "NCR MP-RAS 3.0"
+  dnl gethostbyname is in libc, but -lnsl is still needed to use
+  dnl -lsocket, as well as for functions such as inet_ntoa.  We look
+  dnl for such known offenders and if one of them is not found, we
+  dnl check if -lnsl is needed.
+  wget_check_in_nsl=NONE
+  AC_CHECK_FUNCS(gethostbyname, [], [
+    wget_check_in_nsl=gethostbyname
+  ])
+  AC_CHECK_FUNCS(inet_ntoa, [], [
+    wget_check_in_nsl=inet_ntoa
+  ])
+  if test $wget_check_in_nsl != NONE; then
+    AC_CHECK_LIB(nsl, $wget_check_in_nsl)
+  fi
+  AC_CHECK_LIB(socket, socket)
+])
+
+
 dnl
 dnl ansi2knr support: check whether C prototypes are available.
 dnl

@@ -181,12 +181,6 @@ dnl
 AC_TYPE_SIGNAL
 
 dnl
-dnl Call several of Wget's macros.
-dnl
-WGET_STRUCT_UTIMBUF
-WGET_SOCKLEN_T
-
-dnl
 dnl Checks for library functions.
 dnl
 AC_FUNC_ALLOCA
@@ -195,6 +189,15 @@ AC_CHECK_FUNCS(strdup strstr strcasecmp strncasecmp strpbrk memmove)
 AC_CHECK_FUNCS(gettimeofday mktime strptime strerror snprintf vsnprintf)
 AC_CHECK_FUNCS(select sigblock sigsetjmp signal symlink access isatty)
 AC_CHECK_FUNCS(uname gethostname usleep)
+
+dnl
+dnl Call Wget's local macros defined in aclocal.
+dnl
+WGET_STRUCT_UTIMBUF
+WGET_SOCKLEN_T
+WGET_FNMATCH
+WGET_NANOSLEEP
+WGET_NSL_SOCKET
 
 dnl
 dnl Check if we need to compile in getopt.c.
@@ -207,39 +210,6 @@ AC_SUBST(GETOPT_OBJ)
 dnl
 dnl Checks for libraries.
 dnl
-
-dnl On Solaris, -lnsl is needed to use gethostbyname.  On "NCR MP-RAS
-dnl 3.0", however, gethostbyname is in libc, but -lnsl is still needed
-dnl to use -lsocket, as well as for functions such as inet_ntoa.  We
-dnl look for such known offenders and if one of them is not found, we
-dnl check if -lnsl is needed.
-
-wget_check_in_nsl=NONE
-AC_CHECK_FUNCS(gethostbyname, [], [
-  wget_check_in_nsl=gethostbyname
-])
-AC_CHECK_FUNCS(inet_ntoa, [], [
-  wget_check_in_nsl=inet_ntoa
-])
-if test $wget_check_in_nsl != NONE; then
-  AC_CHECK_LIB(nsl, $wget_check_in_nsl)
-fi
-
-AC_CHECK_LIB(socket, socket)
-
-dnl nanosleep on Solaris requires -lrt (more recently) or -lposix4
-dnl (older versions).
-
-AC_CHECK_FUNCS(nanosleep, [], [
-  AC_CHECK_LIB(rt, nanosleep, [
-    AC_DEFINE(HAVE_NANOSLEEP)
-    LIBS="-lrt $LIBS"
-  ], [
-    AC_CHECK_LIB(posix4, nanosleep, [
-      AC_DEFINE(HAVE_NANOSLEEP)
-      LIBS="-lposix4 $LIBS"
-    ])
-  ])])
 
 dnl #### This appears to be deficient with later versions of SOCKS.
 if test "x${with_socks}" = xyes
@@ -426,8 +396,10 @@ dnl
 
 if test x"$wget_need_md5" = xyes
 then
-  MD5_OBJ='gen-md5$o'
+  dnl This should be moved to an AC_DEFUN, but I'm not sure how to
+  dnl manipulate MD5_OBJ from the defun.
 
+  MD5_OBJ='gen-md5$o'
   found_md5=no
 
   dnl Check for the system MD5 library on Solaris.  We don't check for
