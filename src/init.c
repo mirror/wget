@@ -99,6 +99,7 @@ static struct {
   { "cache",		&opt.proxy_cache,	cmd_boolean },
   { "continue",		&opt.always_rest,	cmd_boolean },
   { "convertlinks",	&opt.convert_links,	cmd_boolean },
+  { "cookies",		&opt.cookies,		cmd_boolean },
   { "cutdirs",		&opt.cut_dirs,		cmd_number },
 #ifdef DEBUG
   { "debug",		&opt.debug,		cmd_boolean },
@@ -131,6 +132,7 @@ static struct {
   { "includedirectories", &opt.includes,	cmd_directory_vector },
   { "input",		&opt.input_filename,	cmd_string },
   { "killlonger",	&opt.kill_longer,	cmd_boolean },
+  { "loadcookies",	&opt.cookies_input,	cmd_string },
   { "logfile",		&opt.lfilename,		cmd_string },
   { "login",		&opt.ftp_acc,		cmd_string },
   { "mirror",		NULL,			cmd_spec_mirror },
@@ -155,6 +157,7 @@ static struct {
   { "removelisting",	&opt.remove_listing,	cmd_boolean },
   { "retrsymlinks",	&opt.retr_symlinks,	cmd_boolean },
   { "robots",		&opt.use_robots,	cmd_boolean },
+  { "savecookies",	&opt.cookies_output,	cmd_string },
   { "saveheaders",	&opt.save_headers,	cmd_boolean },
   { "serverresponse",	&opt.server_response,	cmd_boolean },
   { "simplehostcheck",	&opt.simple_check,	cmd_boolean },
@@ -208,6 +211,8 @@ defaults (void)
      machine where NULL is not all-zero bit pattern will be the least
      of the implementors' worries.  */
   memset (&opt, 0, sizeof (opt));
+
+  opt.cookies = 1;
 
   opt.verbose = -1;
   opt.dir_prefix = xstrdup (".");
@@ -1007,6 +1012,7 @@ cleanup (void)
     fclose (opt.dfp);
   cleanup_html_url ();
   downloaded_files_free ();
+  cookies_cleanup ();
   FREE_MAYBE (opt.lfilename);
   xfree (opt.dir_prefix);
   FREE_MAYBE (opt.input_filename);
@@ -1034,4 +1040,6 @@ cleanup (void)
   FREE_MAYBE (opt.sslcertfile);
 #endif /* HAVE_SSL */
   FREE_MAYBE (opt.bind_address);
+  FREE_MAYBE (opt.cookies_input);
+  FREE_MAYBE (opt.cookies_output);
 }

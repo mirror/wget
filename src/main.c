@@ -49,6 +49,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "retr.h"
 #include "recur.h"
 #include "host.h"
+#include "cookies.h"
 
 #ifndef PATH_SEPARATOR
 # define PATH_SEPARATOR '/'
@@ -193,6 +194,9 @@ HTTP options:\n\
        --referer=URL         include `Referer: URL\' header in HTTP request.\n\
   -s,  --save-headers        save the HTTP headers to file.\n\
   -U,  --user-agent=AGENT    identify as AGENT instead of Wget/VERSION.\n\
+       --cookies=no	     don't use cookies.\n\
+       --load-cookies=FILE   load cookies from FILE before session.\n\
+       --save-cookies=FILE   save cookies to FILE after session.\n\
 \n"), stdout);
   fputs (_("\
 FTP options:\n\
@@ -242,9 +246,10 @@ main (int argc, char *const *argv)
   {
     /* Options without arguments: */
     { "background", no_argument, NULL, 'b' },
+    { "backup-converted", no_argument, NULL, 'K' },
     { "continue", no_argument, NULL, 'c' },
     { "convert-links", no_argument, NULL, 'k' },
-    { "backup-converted", no_argument, NULL, 'K' },
+    { "cookies", no_argument, NULL, 160 },
     { "debug", no_argument, NULL, 'd' },
     { "delete-after", no_argument, NULL, 136 },
     { "dont-remove-listing", no_argument, NULL, 149 },
@@ -285,6 +290,7 @@ main (int argc, char *const *argv)
     { "base", required_argument, NULL, 'B' },
     { "bind-address", required_argument, NULL, 155 },
     { "cache", required_argument, NULL, 'C' },
+    { "cookie-file", required_argument, NULL, 161 },
     { "cut-dirs", required_argument, NULL, 145 },
     { "directory-prefix", required_argument, NULL, 'P' },
     { "domains", required_argument, NULL, 'D' },
@@ -302,6 +308,7 @@ main (int argc, char *const *argv)
     { "include-directories", required_argument, NULL, 'I' },
     { "input-file", required_argument, NULL, 'i' },
     { "level", required_argument, NULL, 'l' },
+    { "load-cookies", required_argument, NULL, 162 },
     { "no", required_argument, NULL, 'n' },
     { "output-document", required_argument, NULL, 'O' },
     { "output-file", required_argument, NULL, 'o' },
@@ -310,6 +317,7 @@ main (int argc, char *const *argv)
     { "proxy-user", required_argument, NULL, 143 },
     { "quota", required_argument, NULL, 'Q' },
     { "reject", required_argument, NULL, 'R' },
+    { "save-cookies", required_argument, NULL, 163 },
     { "timeout", required_argument, NULL, 'T' },
     { "tries", required_argument, NULL, 't' },
     { "user-agent", required_argument, NULL, 'U' },
@@ -518,6 +526,22 @@ GNU General Public License for more details.\n"));
 	  break;
 	case 153:
 	  setval ("followtags", optarg);
+	  break;
+	case 160:
+	  setval ("cookies", "on");
+	  break;
+	case 161:
+	  setval ("cookies", "on");
+	  setval ("cookiein", optarg);
+	  setval ("cookieout", optarg);
+	  break;
+	case 162:
+	  setval ("cookies", "on");
+	  setval ("cookiein", optarg);
+	  break;
+	case 163:
+	  setval ("cookies", "on");
+	  setval ("cookieout", optarg);
 	  break;
 	case 157:
 	  setval ("referer", optarg);
@@ -744,6 +768,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
 
   DEBUGP (("DEBUG output created by Wget %s on %s.\n\n", version_string,
 	   OS_TYPE));
+
   /* Open the output filename if necessary.  */
   if (opt.output_document)
     {
@@ -766,6 +791,9 @@ Can't timestamp and not clobber old files at the same time.\n"));
 #ifdef WINDOWS
   ws_startup ();
 #endif
+
+  if (opt.cookies_input)
+      load_cookies (opt.cookies_input);
 
   /* Setup the signal handler to redirect output when hangup is
      received.  */
@@ -831,6 +859,10 @@ Can't timestamp and not clobber old files at the same time.\n"));
 		   _("Download quota (%s bytes) EXCEEDED!\n"),
 		   legible (opt.quota));
     }
+
+  if (opt.cookies_output)
+    save_cookies (opt.cookies_output);
+
   if (opt.convert_links && !opt.delete_after)
     {
       convert_all_links ();

@@ -40,6 +40,8 @@ struct file_memory {
 };
 
 char *time_str PARAMS ((time_t *));
+char *datetime_str PARAMS ((time_t *));
+
 const char *uerrmsg PARAMS ((uerr_t));
 
 #ifdef DEBUG_MALLOC

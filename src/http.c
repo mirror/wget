@@ -65,6 +65,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifdef HAVE_SSL
 # include "gen_sslfunc.h"
 #endif /* HAVE_SSL */
+#include "cookies.h"
 
 extern char *version_string;
 
@@ -482,7 +483,7 @@ static char *basic_authentication_encode PARAMS ((const char *, const char *,
 						  const char *));
 static int known_authentication_scheme_p PARAMS ((const char *));
 
-static time_t http_atotm PARAMS ((char *));
+time_t http_atotm PARAMS ((char *));
 
 #define BEGINS_WITH(line, string_constant)				\
   (!strncasecmp (line, string_constant, sizeof (string_constant) - 1)	\
@@ -524,6 +525,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   static SSL_CTX *ssl_ctx = NULL;
   SSL *ssl = NULL;
 #endif /* HAVE_SSL */
+  char *cookies = NULL;
 
   /* Whether this connection will be kept alive after the HTTP request
      is done. */
@@ -591,6 +593,10 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 
   keep_alive = 0;
   http_keep_alive_1 = http_keep_alive_2 = 0;
+
+  if (opt.cookies)
+    cookies = build_cookies_request (u->host, u->port, u->path,
+				     u->proto == URLHTTPS);
 
   /* Initialize certain elements of struct http_stat.  */
   hs->len = 0L;
@@ -805,6 +811,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 			    + (request_keep_alive
 			       ? strlen (request_keep_alive) : 0)
 			    + (referer ? strlen (referer) : 0)
+			    + (cookies ? strlen (cookies) : 0)
 			    + (wwwauth ? strlen (wwwauth) : 0)
 			    + (proxyauth ? strlen (proxyauth) : 0)
 			    + (range ? strlen (range) : 0)
@@ -817,12 +824,13 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 User-Agent: %s\r\n\
 Host: %s%s\r\n\
 Accept: %s\r\n\
-%s%s%s%s%s%s%s\r\n",
+%s%s%s%s%s%s%s%s\r\n",
 	   command, path, useragent, remhost,
 	   port_maybe ? port_maybe : "",
 	   HTTP_ACCEPT,
 	   request_keep_alive ? request_keep_alive : "",
 	   referer ? referer : "",
+	   cookies ? cookies : "", 
 	   wwwauth ? wwwauth : "", 
 	   proxyauth ? proxyauth : "", 
 	   range ? range : "",
@@ -832,6 +840,7 @@ Accept: %s\r\n\
    /* Free the temporary memory.  */
   FREE_MAYBE (wwwauth);
   FREE_MAYBE (proxyauth);
+  FREE_MAYBE (cookies);
 
   /* Send the request to server.  */
 #ifdef HAVE_SSL
@@ -988,6 +997,10 @@ Accept: %s\r\n\
       if (!hs->remote_time)
 	if (header_process (hdr, "Last-Modified", header_strdup,
 			    &hs->remote_time))
+	  goto done_header;
+      /* Try getting cookies. */
+      if (opt.cookies)
+	if (header_process (hdr, "Set-Cookie", set_cookie_header_cb, u))
 	  goto done_header;
       /* Try getting www-authentication.  */
       if (!authenticate_h)
@@ -1858,7 +1871,7 @@ check_end (const char *p)
    Marcus Hennecke's atotm(), which is forgiving, fast, to-the-point,
    and does not use strptime().  atotm() is to be found in the sources
    of `phttpd', a little-known HTTP server written by Peter Erikson.  */
-static time_t
+time_t
 http_atotm (char *time_string)
 {
   struct tm t;
@@ -1900,6 +1913,10 @@ http_atotm (char *time_string)
     return mktime_from_utc (&t);
   /* RFC850:  Thursday, 29-Jan-98 22:12:57 */
   if (check_end (strptime (time_string, "%A, %d-%b-%y %T", &t)))
+    return mktime_from_utc (&t);
+  /* pseudo-RFC850:  Thu, 29-Jan-1998 22:12:57
+     (google.com uses this for their cookies.)*/
+  if (check_end (strptime (time_string, "%a, %d-%b-%Y %T", &t)))
     return mktime_from_utc (&t);
   /* asctime: Thu Jan 29 22:12:57 1998 */
   if (check_end (strptime (time_string, "%a %b %d %T %Y", &t)))

@@ -148,6 +148,30 @@ char *xstrdup_debug PARAMS ((const char *, const char *, int));
 
 #define ARRAY_SIZE(array) (sizeof (array) / sizeof (*(array)))
 
+/* Copy the data delimited with BEG and END to alloca-allocated
+   storage, and zero-terminate it.  BEG and END are evaluated only
+   once, in that order.  */
+#define BOUNDED_TO_ALLOCA(beg, end, place) do {	\
+  const char *DTA_beg = (beg);			\
+  int DTA_len = (end) - DTA_beg;		\
+  place = alloca (DTA_len + 1);			\
+  memcpy (place, DTA_beg, DTA_len);		\
+  place[DTA_len] = '\0';			\
+} while (0)
+
+/* Return non-zero if string bounded between BEG and END is equal to
+   STRING_LITERAL.  The comparison is case-sensitive.  */
+#define BOUNDED_EQUAL(beg, end, string_literal)	\
+  ((end) - (beg) == sizeof (string_literal) - 1	\
+   && !memcmp ((beg), (string_literal),		\
+	       sizeof (string_literal) - 1))
+
+/* The same as above, except the comparison is case-insensitive. */
+#define BOUNDED_EQUAL_NO_CASE(beg, end, string_literal)	\
+  ((end) - (beg) == sizeof (string_literal) - 1		\
+   && !strncasecmp ((beg), (string_literal),		\
+	            sizeof (string_literal) - 1))
+
 /* Note that this much more elegant definition cannot be used:
 
    #define STRDUP_ALLOCA(str) (strcpy ((char *)alloca (strlen (str) + 1), str))

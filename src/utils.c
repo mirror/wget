@@ -352,25 +352,56 @@ sepstring (const char *s)
 }
 
 /* Return pointer to a static char[] buffer in which zero-terminated
-   string-representation of TM (in form hh:mm:ss) is printed.  It is
-   shamelessly non-reentrant, but it doesn't matter, really.
+   string-representation of TM (in form hh:mm:ss) is printed.
 
-   If TM is non-NULL, the time_t of the current time will be stored
-   there.  */
+   If TM is non-NULL, the current time-in-seconds will be stored
+   there.
+
+   (#### This is misleading: one would expect TM would be used instead
+   of the current time in that case.  This design was probably
+   influenced by the design time(2), and should be changed at some
+   points.  No callers use non-NULL TM anyway.)  */
+
 char *
 time_str (time_t *tm)
 {
-  static char tms[15];
+  static char output[15];
   struct tm *ptm;
-  time_t tim;
+  time_t secs = time (tm);
 
-  *tms = '\0';
-  tim = time (tm);
-  if (tim == -1)
-    return tms;
-  ptm = localtime (&tim);
-  sprintf (tms, "%02d:%02d:%02d", ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
-  return tms;
+  if (secs == -1)
+    {
+      /* In case of error, return the empty string.  Maybe we should
+	 just abort if this happens?  */
+      *output = '\0';
+      return output;
+    }
+  ptm = localtime (&secs);
+  sprintf (output, "%02d:%02d:%02d", ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
+  return output;
+}
+
+/* Like the above, but include the date: YYYY-MM-DD hh:mm:ss.  */
+
+char *
+datetime_str (time_t *tm)
+{
+  static char output[20];	/* "YYYY-MM-DD hh:mm:ss" + \0 */
+  struct tm *ptm;
+  time_t secs = time (tm);
+
+  if (secs == -1)
+    {
+      /* In case of error, return the empty string.  Maybe we should
+	 just abort if this happens?  */
+      *output = '\0';
+      return output;
+    }
+  ptm = localtime (&secs);
+  sprintf (output, "%04d-%02d-%02d %02d:%02d:%02d",
+	   ptm->tm_year + 1900, ptm->tm_mon + 1, ptm->tm_mday,
+	   ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
+  return output;
 }
 
 /* Returns an error message for ERRNUM.  #### This requires more work.

@@ -160,6 +160,10 @@ struct options
 				   (if not internal) included in the
 				   certfile. */
 #endif /* HAVE_SSL */
+
+  int   cookies;
+  char *cookies_input;
+  char *cookies_output;
 };
 
 #ifndef OPTIONS_DEFINED_HERE

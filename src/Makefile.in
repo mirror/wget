@@ -59,11 +59,11 @@ MD5_OBJ = @MD5_OBJ@
 OPIE_OBJ = @OPIE_OBJ@
 SSL_OBJ = @SSL_OBJ@
 
-OBJ = $(ALLOCA) cmpt$o connect$o fnmatch$o ftp$o ftp-basic$o  \
-      ftp-ls$o $(OPIE_OBJ) getopt$o hash$o headers$o host$o   \
-      html-parse$o html-url$o http$o init$o log$o main$o      \
-      $(MD5_OBJ) netrc$o rbuf$o recur$o retr$o snprintf$o     \
-      $(SSL_OBJ) url$o utils$o version$o safe-ctype$o
+OBJ = $(ALLOCA) cmpt$o connect$o cookies$o fnmatch$o ftp$o        \
+      ftp-basic$o ftp-ls$o $(OPIE_OBJ) getopt$o hash$o            \
+      headers$o host$o html-parse$o html-url$o http$o init$o      \
+      log$o main$o $(MD5_OBJ) netrc$o rbuf$o recur$o retr$o       \
+      snprintf$o $(SSL_OBJ) url$o utils$o version$o safe-ctype$o
 
 .SUFFIXES:
 .SUFFIXES: .c .o ._c ._o
@@ -139,6 +139,7 @@ TAGS: *.c *.h
 
 cmpt$o: wget.h
 connect$o: wget.h connect.h host.h
+cookies$o: wget.h cookies.h hash.h url.h utils.h
 fnmatch$o: wget.h fnmatch.h
 ftp-basic$o: wget.h utils.h rbuf.h connect.h host.h
 ftp-ls$o: wget.h utils.h ftp.h url.h
@@ -151,10 +152,10 @@ host$o: wget.h utils.h host.h url.h hash.h
 html-parse$o: wget.h html-parse.h
 html-url$o: wget.h html-parse.h url.h utils.h
 html$o: wget.h url.h utils.h ftp.h
-http$o: wget.h utils.h url.h host.h rbuf.h retr.h headers.h connect.h fnmatch.h netrc.h md5.h
+http$o: wget.h utils.h url.h host.h rbuf.h retr.h headers.h cookies.h connect.h fnmatch.h netrc.h md5.h
 init$o: wget.h utils.h init.h host.h recur.h netrc.h
 log$o: wget.h utils.h
-main$o: wget.h utils.h getopt.h init.h retr.h recur.h host.h
+main$o: wget.h utils.h getopt.h init.h retr.h recur.h host.h cookies.h
 md5$o: wget.h md5.h
 mswindows$o: wget.h url.h
 netrc$o: wget.h utils.h netrc.h init.h

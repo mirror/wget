@@ -131,8 +131,6 @@ changes.
 
 * Implement correct RFC1808 URL parsing.
 
-* Implement HTTP cookies.
-
 * Implement more HTTP/1.1 bells and whistles (ETag, Content-MD5 etc.)
 
 * Add a "rollback" option to have --continue throw away a configurable number of

@@ -1,3 +1,20 @@
+2001-04-08  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* init.c: Include cookie-related options.
+
+	* main.c (main): Include cookie-specific options.
+	(main): Load cookies before download is finished.
+	(main): Save cookies when done.
+
+	* http.c (gethttp): Process the `Set-Cookie' header.
+	(gethttp): Include cookies in the response.
+
+	* cookies.c: New file.
+
+2001-04-08  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* utils.c (datetime_str): New function.
+
 2001-04-08  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
 	* ftp-ls.c (ftp_parse_winnt_ls): The AM/PM change did assume
