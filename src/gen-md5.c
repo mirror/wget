@@ -116,3 +116,37 @@ gen_md5_finish (gen_md5_context *ctx, unsigned char *result)
   MD5_Final (result, ctx_imp);
 #endif
 }
+
+#if 0
+/* A debugging function for checking whether an MD5 library works. */
+
+#include "gen-md5.h"
+
+char *
+debug_test_md5 (char *buf)
+{
+  unsigned char raw[16];
+  static char res[33];
+  unsigned char *p1;
+  char *p2;
+  int cnt;
+  ALLOCA_MD5_CONTEXT (ctx);
+
+  gen_md5_init (ctx);
+  gen_md5_update ((unsigned char *)buf, strlen (buf), ctx);
+  gen_md5_finish (ctx, raw);
+
+  p1 = raw;
+  p2 = res;
+  cnt = 16;
+  while (cnt--)
+    {
+      *p2++ = XNUM_TO_digit (*p1 >> 4);
+      *p2++ = XNUM_TO_digit (*p1 & 0xf);
+      ++p1;
+    }
+  *p2 = '\0';
+
+  return res;
+}
+#endif

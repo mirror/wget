@@ -43,10 +43,7 @@ so, delete this exception statement from your version.  */
 #include <assert.h>
 #include <sys/types.h>
 
-#ifdef WINDOWS
-# include <winsock.h>
-# define SET_H_ERRNO(err) WSASetLastError (err)
-#else
+#ifndef WINDOWS
 # include <sys/socket.h>
 # include <netinet/in.h>
 # ifndef __BEOS__
@@ -54,6 +51,8 @@ so, delete this exception statement from your version.  */
 # endif
 # include <netdb.h>
 # define SET_H_ERRNO(err) ((void)(h_errno = (err)))
+#else  /* WINDOWS */
+# define SET_H_ERRNO(err) WSASetLastError (err)
 #endif /* WINDOWS */
 
 #ifndef NO_ADDRESS

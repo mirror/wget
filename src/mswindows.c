@@ -84,7 +84,7 @@ xsleep (double seconds)
     }
   usleep (seconds * 1000000L);
 #else  /* not HAVE_USLEEP */
-  SleepEx (seconds * 1000, FALSE);
+  SleepEx ((DWORD) (seconds * 1000 + .5), FALSE);
 #endif /* not HAVE_USLEEP */
 }
 
@@ -589,12 +589,9 @@ set_sleep_mode (void)
 void
 ws_startup (void)
 {
-  WORD requested;
   WSADATA data;
-  int err;
-
-  requested = MAKEWORD (1, 1);
-  err = WSAStartup (requested, &data);
+  WORD requested = MAKEWORD (1, 1);
+  int err = WSAStartup (requested, &data);
   if (err != 0)
     {
       fprintf (stderr, _("%s: Couldn't find usable socket driver.\n"),
@@ -741,16 +738,16 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
   return rc;
 }
 
-/* Wget expects network calls such as bind, connect, etc., to set errno.
-   To achieve that, we place Winsock calls in wrapper functions that, in
-   case of error, sets errno to the value of GetLastError().  In addition,
-   we provide a wrapper around strerror, which recognizes Winsock errors
-   and prints the appropriate error message. */
+/* Wget expects network calls such as connect, recv, send, etc., to set
+   errno on failure.  To achieve that, Winsock calls are wrapped with code
+   that, in case of error, sets errno to the value of WSAGetLastError().
+   In addition, we provide a wrapper around strerror, which recognizes
+   Winsock errors and prints the appropriate error message. */
 
 /* Define a macro that creates a function definition that wraps FUN into
    a function that sets errno the way the rest of the code expects. */
 
-#define WRAP(fun, decl, call) int wrap_##fun decl {	\
+#define WRAP(fun, decl, call) int wrapped_##fun decl {	\
   int retval = fun call;				\
   if (retval < 0)					\
     errno = WSAGetLastError ();				\
@@ -768,6 +765,7 @@ WRAP (getsockname, (int s, struct sockaddr *n, int *nlen), (s, n, nlen))
 WRAP (getpeername, (int s, struct sockaddr *n, int *nlen), (s, n, nlen))
 WRAP (setsockopt, (int s, int level, int opt, const void *val, int len),
                   (s, level, opt, val, len))
+WRAP (closesocket, (int s), (s))
 
 /* Return the text of the error message for Winsock error WSERR. */
 

@@ -124,38 +124,36 @@ __int64 str_to_int64 (const char *, char **, int);
 #include <direct.h>
 
 /* Windows compilers accept only one arg to mkdir.  */
-#ifndef __BORLANDC__
-# define mkdir(a, b) _mkdir(a)
-#else  /* __BORLANDC__ */
-# define mkdir(a, b) mkdir(a)
-#endif /* __BORLANDC__ */
+#define mkdir(a, b) _mkdir(a)
 
 #ifndef INHIBIT_WRAP
 
 /* Winsock functions don't set errno, so we provide wrappers
    that do. */
 
-#define socket wrap_socket
-#define bind wrap_bind
-#define connect wrap_connect
-#define recv wrap_recv
-#define send wrap_send
-#define select wrap_select
-#define getsockname wrap_getsockname
-#define getpeername wrap_getpeername
-#define setsockopt wrap_setsockopt
+#define socket wrapped_socket
+#define bind wrapped_bind
+#define connect wrapped_connect
+#define recv wrapped_recv
+#define send wrapped_send
+#define select wrapped_select
+#define getsockname wrapped_getsockname
+#define getpeername wrapped_getpeername
+#define setsockopt wrapped_setsockopt
+#define closesocket wrapped_closesocket
 
 #endif /* not INHIBIT_WRAP */
 
-int wrap_socket (int, int, int);
-int wrap_bind (int, struct sockaddr *, int);
-int wrap_connect (int, const struct sockaddr *, int);
-int wrap_recv (int, void *, int, int);
-int wrap_send (int, const void *, int, int);
-int wrap_select (int, fd_set *, fd_set *, fd_set *, const struct timeval *);
-int wrap_getsockname (int, struct sockaddr *, int *);
-int wrap_getpeername (int, struct sockaddr *, int *);
-int wrap_setsockopt (int, int, int, const void *, int);
+int wrapped_socket (int, int, int);
+int wrapped_bind (int, struct sockaddr *, int);
+int wrapped_connect (int, const struct sockaddr *, int);
+int wrapped_recv (int, void *, int, int);
+int wrapped_send (int, const void *, int, int);
+int wrapped_select (int, fd_set *, fd_set *, fd_set *, const struct timeval *);
+int wrapped_getsockname (int, struct sockaddr *, int *);
+int wrapped_getpeername (int, struct sockaddr *, int *);
+int wrapped_setsockopt (int, int, int, const void *, int);
+int wrapped_closesocket (int);
 
 /* Finally, provide a private version of strerror that does the
    right thing with Winsock errors. */
@@ -204,13 +202,6 @@ const char *windows_strerror (int);
 
 /* Public functions.  */
 
-#ifndef HAVE_SLEEP
-unsigned int sleep (unsigned);
-#endif
-#ifndef HAVE_USLEEP
-int usleep (unsigned long);
-#endif
-
 void ws_startup (void);
 void ws_changetitle (const char *);
 void ws_percenttitle (double);
@@ -219,11 +210,8 @@ void windows_main (int *, char **, char **);
 
 /* Things needed for IPv6; missing in <ws2tcpip.h>.  */
 #ifdef ENABLE_IPV6
-# ifndef HAVE_NTOP
-  extern const char *inet_ntop (int af, const void *src, char *dst, size_t size);
-# endif
-# ifndef HAVE_PTON
-  extern int inet_pton (int af, const char *src, void *dst);
+# ifndef HAVE_INET_NTOP
+extern const char *inet_ntop (int af, const void *src, char *dst, size_t size);
 # endif
 #endif /* ENABLE_IPV6 */
 

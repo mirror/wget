@@ -898,6 +898,19 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
 /* Support for sending out cookies in HTTP requests, based on
    previously stored cookies.  Entry point is
    `build_cookies_request'.  */
+   
+/* Return a count of how many times CHR occurs in STRING. */
+
+static int
+count_char (const char *string, char chr)
+{
+  const char *p;
+  int count = 0;
+  for (p = string; *p; p++)
+    if (*p == chr)
+      ++count;
+  return count;
+}
 
 /* Find the cookie chains whose domains match HOST and store them to
    DEST.

@@ -1,5 +1,5 @@
 /* Various utility functions.
-   Copyright (C) 2003 Free Software Foundation, Inc.
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -118,19 +118,6 @@ xstrdup_lower (const char *s)
   for (; *p; p++)
     *p = TOLOWER (*p);
   return copy;
-}
-
-/* Return a count of how many times CHR occurs in STRING. */
-
-int
-count_char (const char *string, char chr)
-{
-  const char *p;
-  int count = 0;
-  for (p = string; *p; p++)
-    if (*p == chr)
-      ++count;
-  return count;
 }
 
 /* Copy the string formed by two pointers (one on the beginning, other
@@ -1564,11 +1551,7 @@ number_to_static_string (wgint number)
    only one of the above constants will be defined.  Virtually all
    modern Unix systems will define TIMER_GETTIMEOFDAY; Windows will
    use TIMER_WINDOWS.  TIMER_TIME is a catch-all method for
-   non-Windows systems without gettimeofday.
-
-   #### Perhaps we should also support ftime(), which exists on old
-   BSD 4.2-influenced systems?  (It also existed under MS DOS Borland
-   C, if memory serves me.)  */
+   non-Windows systems without gettimeofday.  */
 
 #ifdef WINDOWS
 # define TIMER_WINDOWS
@@ -1589,7 +1572,10 @@ typedef time_t wget_sys_time;
 #endif
 
 #ifdef TIMER_WINDOWS
-typedef ULARGE_INTEGER wget_sys_time;
+typedef union {
+  DWORD lores;          /* In case GetTickCount is used */
+  LARGE_INTEGER hires;  /* In case high-resolution timer is used */
+} wget_sys_time;
 #endif
 
 struct wget_timer {
@@ -1609,6 +1595,39 @@ struct wget_timer {
   double elapsed_pre_start;
 };
 
+#ifdef TIMER_WINDOWS
+
+/* Whether high-resolution timers are used.  Set by wtimer_initialize_once
+   the first time wtimer_allocate is called. */
+static int using_hires_timers;
+
+/* Frequency of high-resolution timers -- number of updates per
+   millisecond.  Calculated the first time wtimer_allocate is called
+   provided that high-resolution timers are available. */
+static double hires_millisec_freq;
+
+/* The first time a timer is created, determine whether to use
+   high-resolution timers. */
+
+static void
+wtimer_initialize_once (void)
+{
+  static int init_done;
+  if (!init_done)
+    {
+      LARGE_INTEGER freq;
+      init_done = 1;
+      freq.QuadPart = 0;
+      QueryPerformanceFrequency (&freq);
+      if (freq.QuadPart != 0)
+        {
+          using_hires_timers = 1;
+          hires_millisec_freq = (double) freq.QuadPart / 1000.0;
+        }
+     }
+}
+#endif /* TIMER_WINDOWS */
+
 /* Allocate a timer.  Calling wtimer_read on the timer will return
    zero.  It is not legal to call wtimer_update with a freshly
    allocated timer -- use wtimer_reset first.  */
@@ -1618,6 +1637,11 @@ wtimer_allocate (void)
 {
   struct wget_timer *wt = xnew (struct wget_timer);
   xzero (*wt);
+
+#ifdef TIMER_WINDOWS
+  wtimer_initialize_once ();
+#endif
+
   return wt;
 }
 
@@ -1654,32 +1678,24 @@ wtimer_sys_set (wget_sys_time *wst)
 #endif
 
 #ifdef TIMER_WINDOWS
-  /* We use GetSystemTime to get the elapsed time.  MSDN warns that
-     system clock adjustments can skew the output of GetSystemTime
-     when used as a timer and gives preference to GetTickCount and
-     high-resolution timers.  But GetTickCount can overflow, and hires
-     timers are typically used for profiling, not for regular time
-     measurement.  Since we handle clock skew anyway, we just use
-     GetSystemTime.  */
-  FILETIME ft;
-  SYSTEMTIME st;
-  GetSystemTime (&st);
-
-  /* As recommended by MSDN, we convert SYSTEMTIME to FILETIME, copy
-     FILETIME to ULARGE_INTEGER, and use regular 64-bit integer
-     arithmetic on that.  */
-  SystemTimeToFileTime (&st, &ft);
-  wst->HighPart = ft.dwHighDateTime;
-  wst->LowPart  = ft.dwLowDateTime;
+  if (using_hires_timers)
+    {
+      QueryPerformanceCounter (&wst->hires);
+    }
+  else
+    {
+      /* Where hires counters are not available, use GetTickCount rather
+         GetSystemTime, because it is unaffected by clock skew and simpler
+         to use.  Note that overflows don't affect us because we never use
+         absolute values of the ticker, only the differences.  */
+      wst->lores = GetTickCount ();
+    }
 #endif
 }
 
 /* Reset timer WT.  This establishes the starting point from which
    wtimer_elapsed() will return the number of elapsed milliseconds.
-   It is allowed to reset a previously used timer.
-
-   If a non-zero value is used as START, the timer's values will be
-   offset by START.  */
+   It is allowed to reset a previously used timer.  */
 
 void
 wtimer_reset (struct wget_timer *wt)
@@ -1704,10 +1720,10 @@ wtimer_sys_diff (wget_sys_time *wst1, wget_sys_time *wst2)
 #endif
 
 #ifdef WINDOWS
-  /* VC++ 6 doesn't support direct cast of uint64 to double.  To work
-     around this, we subtract, then convert to signed, then finally to
-     double.  */
-  return (double)(signed __int64)(wst1->QuadPart - wst2->QuadPart) / 10000;
+  if (using_hires_timers)
+    return (wst1->hires.QuadPart - wst2->hires.QuadPart) / hires_millisec_freq;
+  else
+    return wst1->lores - wst2->lores;
 #endif
 }
 
@@ -1789,9 +1805,10 @@ wtimer_granularity (void)
 #endif
 
 #ifdef TIMER_WINDOWS
-  /* According to MSDN, GetSystemTime returns a broken-down time
-     structure the smallest member of which are milliseconds.  */
-  return 1;
+  if (using_hires_timers)
+    return 1.0 / hires_millisec_freq;
+  else
+    return 10;  /* according to MSDN */
 #endif
 }
 
@@ -1964,40 +1981,6 @@ random_float (void)
   int rnd3 = random_number (1000);
   return rnd1 / 1000.0 + rnd2 / 1000000.0 + rnd3 / 1000000000.0;
 }
-
-#if 0
-/* A debugging function for checking whether an MD5 library works. */
-
-#include "gen-md5.h"
-
-char *
-debug_test_md5 (char *buf)
-{
-  unsigned char raw[16];
-  static char res[33];
-  unsigned char *p1;
-  char *p2;
-  int cnt;
-  ALLOCA_MD5_CONTEXT (ctx);
-
-  gen_md5_init (ctx);
-  gen_md5_update ((unsigned char *)buf, strlen (buf), ctx);
-  gen_md5_finish (ctx, raw);
-
-  p1 = raw;
-  p2 = res;
-  cnt = 16;
-  while (cnt--)
-    {
-      *p2++ = XNUM_TO_digit (*p1 >> 4);
-      *p2++ = XNUM_TO_digit (*p1 & 0xf);
-      ++p1;
-    }
-  *p2 = '\0';
-
-  return res;
-}
-#endif
 
 /* Implementation of run_with_timeout, a generic timeout-forcing
    routine for systems with Unix-like signal handling.  */
@@ -2168,8 +2151,9 @@ xsleep (double seconds)
 #ifdef HAVE_NANOSLEEP
   /* nanosleep is the preferred interface because it offers high
      accuracy and, more importantly, because it allows us to reliably
-     restart after having been interrupted by a signal such as
-     SIGWINCH.  */
+     restart receiving a signal such as SIGWINCH.  (There was an
+     actual Debian bug report about --limit-rate malfunctioning while
+     the terminal was being resized.)  */
   struct timespec sleep, remaining;
   sleep.tv_sec = (long) seconds;
   sleep.tv_nsec = 1000000000L * (seconds - (long) seconds);

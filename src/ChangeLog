@@ -1,3 +1,34 @@
+2005-03-12  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (debug_test_md5): Moved to gen-md5.c.
+
+	* mswindows.h: Don't declare inet_ntop, since we don't use it.
+
+	* mswindows.h: For consistency, also wrap closesocket, it being
+	a Winsock call.
+
+	* mswindows.h: Don't declare sleep and usleep; we're defining
+	xsleep now.
+
+	* mswindows.h (mkdir): Don't special-case Borland C, _mkdir
+	works there as well.
+
+	* host.c: Don't include winsock header files; the correct ones
+	are already included by mswindows.h.
+
+	* mswindows.c (xsleep): Round toward the nearest millisecond
+	in an attempt to avoid average short sleeps.
+
+	* utils.c (wtimer_granularity): Report correct values for
+	Windows timers and for high-resolution timers.
+
+	* utils.c (wtimer_initialize_once): New function, called to
+	initialize the timer frequency.
+
+	* utils.c: Replace the use of GetSystemTime with high-resolution
+	counters under Windows.  When high-resolution counters are
+	unavailable, use GetTickCount().
+
 2005-03-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* retr.c (fd_read_body): Undo the 2004-11-18 change.  Instead,
