@@ -182,8 +182,9 @@ void *memmove ();
 #endif
 
 /* SunOS brain damage -- for some reason, SunOS header files fail to
-   declare the functions below, which causes all kinds of problems
-   (compiling errors) with pointer arithmetic and similar.
+   declare the functions below, which causes all kinds of problems,
+   most notably compilation errors when using pointer arithmetic on
+   their return values.
 
    This used to be only within `#ifdef STDC_HEADERS', but it got
    tripped on other systems (AIX), thus causing havoc.  Fortunately,
@@ -191,16 +192,16 @@ void *memmove ();
    added an extra `#ifdef sun' guard.  */
 #ifndef STDC_HEADERS
 #ifdef sun
-#ifndef __cplusplus
+#ifndef __SVR4			/* exclude Solaris */
 char *strstr ();
 char *strchr ();
 char *strrchr ();
 char *strtok ();
 char *strdup ();
 void *memcpy ();
-#endif /* not __cplusplus */
+#endif /* not __SVR4 */
 #endif /* sun */
-#endif /* STDC_HEADERS */
+#endif /* not STDC_HEADERS */
 
 /* Some systems (Linux libc5, "NCR MP-RAS 3.0", and others) don't
    provide MAP_FAILED, a symbolic constant for the value returned by
@@ -210,6 +211,36 @@ void *memcpy ();
 
 #ifndef MAP_FAILED
 # define MAP_FAILED ((void *) -1)
+#endif
+
+/* Enable system fnmatch only on systems where we know it works:
+   currently glibc-based systems and Solaris.  One could add more, but
+   fnmatch is not that large, so it might be better to play it
+   safe.  */
+#if defined __GLIBC__ && __GLIBC__ >= 2
+# define SYSTEM_FNMATCH
+#endif
+#ifdef solaris
+# define SYSTEM_FNMATCH
+#endif
+
+#ifdef SYSTEM_FNMATCH
+# include <fnmatch.h>
+#else  /* not SYSTEM_FNMATCH */
+/* Define fnmatch flags.  Undef them first to avoid warnings in case
+   an evil library include chose to include system fnmatch.h.  */
+# undef FNM_PATHNAME
+# undef FNM_NOESCAPE
+# undef FNM_PERIOD
+# undef FNM_NOMATCH
+
+# define FNM_PATHNAME	(1 << 0) /* No wildcard can ever match `/'.  */
+# define FNM_NOESCAPE	(1 << 1) /* Backslashes don't quote special chars.  */
+# define FNM_PERIOD	(1 << 2) /* Leading `.' is matched only explicitly.  */
+# define FNM_NOMATCH	1
+
+/* Declare the function minimally. */
+int fnmatch ();
 #endif
 
 #endif /* SYSDEP_H */

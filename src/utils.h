@@ -80,6 +80,7 @@ int acceptable PARAMS ((const char *));
 int accdir PARAMS ((const char *s, enum accd));
 char *suffix PARAMS ((const char *s));
 int match_tail PARAMS ((const char *, const char *, int));
+int has_wildcards_p PARAMS ((const char *));
 
 int has_html_suffix_p PARAMS ((const char *));
 

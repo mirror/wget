@@ -52,7 +52,6 @@ so, delete this exception statement from your version.  */
 #include "ftp.h"
 #include "connect.h"
 #include "host.h"
-#include "fnmatch.h"
 #include "netrc.h"
 #include "convert.h"		/* for downloaded_file */
 
@@ -1593,6 +1592,18 @@ Not descending to `%s' as it is excluded/not-included.\n"), newdir);
     return RETROK;
 }
 
+/* Return non-zero if S has a leading '/'  or contains '../' */
+static int
+has_insecure_name_p (const char *s)
+{
+  if (*s == '/')
+    return 1;
+
+  if (strstr(s, "../") != 0)
+    return 1;
+
+  return 0;
+}
 
 /* A near-top-level function to retrieve the files in a directory.
    The function calls ftp_get_listing, to get a linked list of files.
@@ -1634,7 +1645,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
   f = orig;
   while (f)
     {
-      if (has_insecure_name_p(f->name))
+      if (has_insecure_name_p (f->name))
 	{
 	  logprintf (LOG_VERBOSE, _("Rejecting `%s'.\n"), f->name);
 	  f = delelement (f, &start);

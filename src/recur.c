@@ -49,7 +49,6 @@ so, delete this exception statement from your version.  */
 #include "utils.h"
 #include "retr.h"
 #include "ftp.h"
-#include "fnmatch.h"
 #include "host.h"
 #include "hash.h"
 #include "res.h"

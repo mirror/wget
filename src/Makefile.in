@@ -72,7 +72,7 @@ OPIE_OBJ   = @OPIE_OBJ@
 SSL_OBJ    = @SSL_OBJ@
 GETOPT_OBJ = @GETOPT_OBJ@
 
-OBJ = $(ALLOCA) cmpt$o connect$o convert$o cookies$o fnmatch$o    \
+OBJ = $(ALLOCA) cmpt$o connect$o convert$o cookies$o              \
       ftp$o ftp-basic$o ftp-ls$o $(OPIE_OBJ) $(GETOPT_OBJ) hash$o \
       headers$o host$o html-parse$o html-url$o http$o init$o      \
       log$o main$o $(MD5_OBJ) netrc$o progress$o rbuf$o recur$o   \
@@ -157,14 +157,13 @@ cmpt$o: wget.h sysdep.h options.h safe-ctype.h
 connect$o: wget.h sysdep.h options.h safe-ctype.h utils.h connect.h host.h
 convert$o: wget.h convert.h url.h recur.h utils.h hash.h
 cookies$o: wget.h sysdep.h options.h safe-ctype.h cookies.h hash.h url.h utils.h
-fnmatch$o: wget.h sysdep.h options.h safe-ctype.h fnmatch.h
 ftp-basic$o: wget.h sysdep.h options.h safe-ctype.h utils.h rbuf.h connect.h \
 	host.h ftp.h
 ftp-ls$o: wget.h sysdep.h options.h safe-ctype.h utils.h ftp.h rbuf.h host.h \
 	url.h
 ftp-opie$o: wget.h sysdep.h options.h safe-ctype.h gen-md5.h
 ftp$o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h rbuf.h retr.h \
-	ftp.h host.h connect.h fnmatch.h netrc.h
+	ftp.h host.h connect.h netrc.h
 gen-md5$o: wget.h sysdep.h options.h safe-ctype.h gen-md5.h
 gen_sslfunc$o: wget.h sysdep.h options.h safe-ctype.h utils.h connect.h host.h \
 	url.h
@@ -177,7 +176,7 @@ host$o: wget.h sysdep.h options.h safe-ctype.h utils.h host.h url.h hash.h
 html-parse$o: wget.h sysdep.h options.h safe-ctype.h html-parse.h
 html-url$o: wget.h sysdep.h options.h safe-ctype.h html-parse.h url.h utils.h
 http$o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h host.h rbuf.h \
-	retr.h headers.h connect.h host.h fnmatch.h netrc.h gen_sslfunc.h \
+	retr.h headers.h connect.h host.h netrc.h gen_sslfunc.h \
 	cookies.h gen-md5.h
 init$o: wget.h sysdep.h options.h safe-ctype.h utils.h init.h host.h recur.h \
 	netrc.h cookies.h progress.h
@@ -192,12 +191,12 @@ progress$o: wget.h sysdep.h options.h safe-ctype.h progress.h utils.h retr.h \
 rbuf$o: wget.h sysdep.h options.h safe-ctype.h rbuf.h connect.h host.h \
 	gen_sslfunc.h
 recur$o: wget.h sysdep.h options.h safe-ctype.h url.h recur.h utils.h retr.h \
-	rbuf.h ftp.h host.h fnmatch.h hash.h
+	rbuf.h ftp.h host.h hash.h
 res$o: wget.h sysdep.h options.h safe-ctype.h utils.h hash.h url.h retr.h res.h
 retr$o: wget.h sysdep.h options.h safe-ctype.h utils.h retr.h rbuf.h url.h \
 	recur.h ftp.h host.h connect.h hash.h
 snprintf$o: safe-ctype.h
 safe-ctype$o: safe-ctype.h
 url$o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h host.h hash.h
-utils$o: wget.h sysdep.h options.h safe-ctype.h utils.h fnmatch.h hash.h
+utils$o: wget.h sysdep.h options.h safe-ctype.h utils.h hash.h
 version$o:

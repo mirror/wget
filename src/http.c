@@ -62,7 +62,6 @@ so, delete this exception statement from your version.  */
 #include "retr.h"
 #include "headers.h"
 #include "connect.h"
-#include "fnmatch.h"
 #include "netrc.h"
 #ifdef HAVE_SSL
 # include "gen_sslfunc.h"

@@ -92,7 +92,6 @@ so, delete this exception statement from your version.  */
 
 #include "wget.h"
 #include "utils.h"
-#include "fnmatch.h"
 #include "hash.h"
 
 #ifndef errno
@@ -872,6 +871,18 @@ suffix (const char *str)
     return (char *)str + i;
   else
     return NULL;
+}
+
+/* Return non-zero if S contains globbing wildcards (`*', `?', `[' or
+   `]').  */
+
+int
+has_wildcards_p (const char *s)
+{
+  for (; *s; s++)
+    if (*s == '*' || *s == '?' || *s == '[' || *s == ']')
+      return 1;
+  return 0;
 }
 
 /* Return non-zero if FNAME ends with a typical HTML suffix.  The
