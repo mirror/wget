@@ -1,3 +1,10 @@
+2002-01-26  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (urlchr_table): Make square braces reserved, so we can
+	parse http://[::1]/.
+	(url_parse): Handle host in braces.
+	(url_string): If url->host contains colons, wrap it in braces.
+
 2002-01-24  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* connect.c (resolve_bind_address): New function.

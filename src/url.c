@@ -111,7 +111,7 @@ const static unsigned char urlchr_table[256] =
  RU,  0,  0,  0,   0,  0,  0,  0,   /* @   A   B   C    D   E   F   G   */
   0,  0,  0,  0,   0,  0,  0,  0,   /* H   I   J   K    L   M   N   O   */
   0,  0,  0,  0,   0,  0,  0,  0,   /* P   Q   R   S    T   U   V   W   */
-  0,  0,  0,  U,   U,  U,  U,  0,   /* X   Y   Z   [    \   ]   ^   _   */
+  0,  0,  0, RU,   U, RU,  U,  0,   /* X   Y   Z   [    \   ]   ^   _   */
   U,  0,  0,  0,   0,  0,  0,  0,   /* `   a   b   c    d   e   f   g   */
   0,  0,  0,  0,   0,  0,  0,  0,   /* h   i   j   k    l   m   n   o   */
   0,  0,  0,  0,   0,  0,  0,  0,   /* p   q   r   s    t   u   v   w   */
@@ -622,16 +622,20 @@ lowercase_str (char *str)
 }
 
 static char *parse_errors[] = {
-#define PE_NO_ERROR            0
+#define PE_NO_ERROR			0
   "No error",
-#define PE_UNSUPPORTED_SCHEME 1
+#define PE_UNSUPPORTED_SCHEME		1
   "Unsupported scheme",
-#define PE_EMPTY_HOST          2
+#define PE_EMPTY_HOST			2
   "Empty host",
-#define PE_BAD_PORT_NUMBER     3
+#define PE_BAD_PORT_NUMBER		3
   "Bad port number",
-#define PE_INVALID_USER_NAME   4
-  "Invalid user name"
+#define PE_INVALID_USER_NAME		4
+  "Invalid user name",
+#define PE_UNTERMINATED_IPV6_ADDRESS	5
+  "Unterminated IPv6 numeric address",
+#define PE_INVALID_IPV6_ADDRESS		6
+  "Invalid char in IPv6 numeric address"
 };
 
 #define SETERR(p, v) do {			\
@@ -693,8 +697,42 @@ url_parse (const char *url, int *error)
   fragment_b = fragment_e = NULL;
 
   host_b = p;
-  p = strpbrk_or_eos (p, ":/;?#");
-  host_e = p;
+
+  if (*p == '[')
+    {
+      /* Support http://[::1]/ used by IPv6. */
+      int invalid = 0;
+      ++p;
+      while (1)
+	switch (*p++)
+	  {
+	  case ']':
+	    goto out;
+	  case '\0':
+	    SETERR (error, PE_UNTERMINATED_IPV6_ADDRESS);
+	    return NULL;
+	  case '0': case '1': case '2': case '3': case '4':
+	  case '5': case '6': case '7': case '8': case '9':
+	  case ':': case '.':
+	    break;
+	  default:
+	    invalid = 1;
+	  }
+    out:
+      if (invalid)
+	{
+	  SETERR (error, PE_INVALID_IPV6_ADDRESS);
+	  return NULL;
+	}
+      /* Don't include brackets in [host_b, host_p). */
+      ++host_b;
+      host_e = p - 1;
+    }
+  else
+    {
+      p = strpbrk_or_eos (p, ":/;?#");
+      host_e = p;
+    }
 
   if (host_b == host_e)
     {
@@ -1770,6 +1808,8 @@ url_string (const struct url *url, int hide_password)
   char *scheme_str = supported_schemes[url->scheme].leading_string;
   int fplen = full_path_length (url);
 
+  int brackets_around_host = 0;
+
   assert (scheme_str != NULL);
 
   /* Make sure the user name and password are quoted. */
@@ -1785,8 +1825,12 @@ url_string (const struct url *url, int hide_password)
 	}
     }
 
+  if (strchr (url->host, ':'))
+    brackets_around_host = 1;
+
   size = (strlen (scheme_str)
 	  + strlen (url->host)
+	  + (brackets_around_host ? 2 : 0)
 	  + fplen
 	  + 1);
   if (url->port != scheme_port)
@@ -1812,7 +1856,11 @@ url_string (const struct url *url, int hide_password)
       *p++ = '@';
     }
 
+  if (brackets_around_host)
+    *p++ = '[';
   APPEND (p, url->host);
+  if (brackets_around_host)
+    *p++ = ']';
   if (url->port != scheme_port)
     {
       *p++ = ':';
