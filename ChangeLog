@@ -1,3 +1,10 @@
+2001-05-28  Maciej W. Rozycki  <macro@ds2.pg.gda.pl>
+
+	* configure.in: Use $host_os instead of non-existent "$opsys" when
+	deciding based on host type.
+
+	* configure.in: Print "cross" when cross-compiling.
+
 2001-05-26  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* po/hr.po: Updated.

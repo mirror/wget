@@ -1,5 +1,5 @@
 dnl Template file for GNU Autoconf
-dnl Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
+dnl Copyright (C) 1995, 1996, 1997, 2001 Free Software Foundation, Inc.
 
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -203,7 +203,7 @@ dnl merely for the configure test below.  The actual linking is
 dnl performed by libtool.  Wouldn't it be nice if libtool also
 dnl provided "querying" that we need in configure?
 AC_MSG_CHECKING("for runtime libraries flag")
-case "$opsys" in
+case "$host_os" in
   sol2 ) dash_r="-R" ;;
   decosf* | linux* | irix*) dash_r="-rpath " ;;
   *)
@@ -299,12 +299,15 @@ if test x"$with_ssl" != x -a x"$with_ssl" != x"no"; then
 
     if test x"$ssl_link_failure" = xno; then
       dnl Now try to run the thing.
-      AC_MSG_CHECKING("whether runtime linking works")
+      AC_MSG_CHECKING("whether SSL libs are resolved at runtime")
       AC_TRY_RUN([
-char RSA_new();
-char SSL_new();
+int RSA_new();
+int SSL_new();
 main(){return 0;}
-], AC_MSG_RESULT("yes"), AC_MSG_RESULT("no"); ssl_link_failure=yes, true)
+],
+	AC_MSG_RESULT("yes"),
+	AC_MSG_RESULT("no"); ssl_link_failure=yes,
+	AC_MSG_RESULT("cross"))
     fi
 
     if test x"$ssl_link_failure" = xno; then
