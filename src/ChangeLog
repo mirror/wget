@@ -1,3 +1,8 @@
+2003-10-05  Gisle Vanem  <giva@bgnett.no>
+
+	* mswindows.c (set_sleep_mode): Fix type of
+	_SetThreadExecutionState.
+
 2003-10-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (file_size): Return -1 if fopen() returns NULL.  Prior

@@ -290,7 +290,8 @@ ws_startup (void)
    (The Borland utime function only works on Windows NT.)  */
 
 #ifdef HACK_BCC_UTIME_BUG
-int borland_utime(const char *path, const struct utimbuf *times)
+int
+borland_utime (const char *path, const struct utimbuf *times)
 {
   int fd;
   int res;
@@ -318,11 +319,11 @@ int borland_utime(const char *path, const struct utimbuf *times)
  * Windows does by default not consider network activity in console-programs as activity !
  * Works on Win-98/ME/2K and up.
  */
-static
-DWORD set_sleep_mode (DWORD mode)
+static DWORD
+set_sleep_mode (DWORD mode)
 {
   HMODULE mod = LoadLibrary ("kernel32.dll");
-  DWORD (*_SetThreadExecutionState) (DWORD) = NULL;
+  DWORD (WINAPI *_SetThreadExecutionState) (DWORD) = NULL;
   DWORD rc = (DWORD)-1;
 
   if (mod)
@@ -331,13 +332,13 @@ DWORD set_sleep_mode (DWORD mode)
   if (_SetThreadExecutionState)
     {
       if (mode == 0)  /* first time */
-         mode = (ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
+	mode = (ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
       rc = (*_SetThreadExecutionState) (mode);
     }
   if (mod)
-     FreeLibrary (mod);
+    FreeLibrary (mod);
   DEBUGP (("set_sleep_mode(): mode 0x%08lX, rc 0x%08lX\n", mode, rc));
-  return (rc);
+  return rc;
 }
 
 /* run_with_timeout Windows implementation. */
