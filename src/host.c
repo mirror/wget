@@ -72,18 +72,21 @@ struct address_list {
   int count;			/* number of adrresses */
   unsigned char *buffer;	/* buffer which holds all of them. */
 
+  int faulty;			/* number of addresses known not to
+				   work. */
   int refcount;			/* so we know whether to free it or
 				   not. */
 };
 
 #define ADDR_LOCATION(al, index) ((al)->buffer + index * IP4_ADDRESS_LENGTH)
 
-/* Return the number of addresses in the list. */
+/* Get the bounds of the address list.  */
 
-int
-address_list_count (struct address_list *al)
+void
+address_list_get_bounds (struct address_list *al, int *start, int *end)
 {
-  return al->count;
+  *start = al->faulty;
+  *end   = al->count;
 }
 
 /* Copy address number INDEX to IP_STORE.  */
@@ -92,6 +95,7 @@ void
 address_list_copy_one (struct address_list *al, int index,
 		       unsigned char *ip_store)
 {
+  assert (index >= al->faulty && index < al->count);
   memcpy (ip_store, ADDR_LOCATION (al, index), IP4_ADDRESS_LENGTH);
 }
 
@@ -106,6 +110,21 @@ address_list_match_all (struct address_list *al1, struct address_list *al2)
     return 0;
   return 0 == memcmp (al1->buffer, al2->buffer,
 		      al1->count * IP4_ADDRESS_LENGTH);
+}
+
+/* Mark the INDEXth element of AL as faulty, so that the next time
+   this address list is used, the faulty element will be skipped.  */
+
+void
+address_list_set_faulty (struct address_list *al, int index)
+{
+  ++al->faulty;
+  if (al->faulty >= al->count)
+    /* All addresses have been proven faulty.  Since there's not much
+       sense in returning the user an empty address list the next
+       time, we'll rather make them all clean, so that they can be
+       retried anew.  */
+    al->faulty = 0;
 }
 
 /* Create an address_list out of a NULL-terminated list of addresses,

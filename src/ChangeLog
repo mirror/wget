@@ -1,5 +1,14 @@
 2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* connect.c (connect_to_many): Use address_list_set_faulty to
+	prevent the faulty address from being reused.
+
+	* host.c (address_list_set_faulty): New function.
+	(address_list_get_bounds): New function, instead of
+	address_list_count.
+
+2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* url.c (convert_links): Don't translate %d-%d.
 
 	* main.c (print_help): Remove stray HAVE_RANDOM code.

@@ -146,9 +146,10 @@ connect_to_one (const unsigned char *addr, unsigned short port, int silent)
 int
 connect_to_many (struct address_list *al, unsigned short port, int silent)
 {
-  int i;
+  int i, start, end;
 
-  for (i = 0; i < address_list_count (al); i++)
+  address_list_get_bounds (al, &start, &end);
+  for (i = start; i < end; i++)
     {
       unsigned char addr[4];
       int sock;
@@ -156,10 +157,10 @@ connect_to_many (struct address_list *al, unsigned short port, int silent)
 
       sock = connect_to_one (addr, port, silent);
       if (sock >= 0)
+	/* Success. */
 	return sock;
 
-      /* Perhaps we should have a way of removing the failing entry
-	 from the address list?  */
+      address_list_set_faulty (al, i);
 
       /* The attempt to connect has failed.  Continue with the loop
 	 and try next address. */

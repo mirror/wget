@@ -27,12 +27,13 @@ struct address_list;
 struct address_list *lookup_host PARAMS ((const char *, int));
 char *herrmsg PARAMS ((int));
 
-int address_list_count PARAMS ((struct address_list *));
+void address_list_get_bounds PARAMS ((struct address_list *, int *, int *));
 void address_list_copy_one PARAMS ((struct address_list *, int,
 				    unsigned char *));
-void address_list_release PARAMS ((struct address_list *));
 int address_list_match_all PARAMS ((struct address_list *,
 				    struct address_list *));
+void address_list_set_faulty PARAMS ((struct address_list *, int));
+void address_list_release PARAMS ((struct address_list *));
 
 /* This was originally going to be a macro, but then every caller
    would have to #include the netinet stuff.  */
