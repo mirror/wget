@@ -101,7 +101,7 @@ then
 fi
 
 # Create configure and friends.
-if ! test -f configure; then
+if test ! -f configure; then
   echo $e_n "Creating \`configure' from \`configure.in'... $e_c"
   make -f Makefile.cvs 1>>$O 2>&1
   echo "done."
