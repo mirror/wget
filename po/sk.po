@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU wget 1.9\n"
+"Project-Id-Version: GNU wget 1.9.1\n"
 "POT-Creation-Date: 2003-10-11 16:21+0200\n"
-"PO-Revision-Date: 2003-10-25 17:25+0200\n"
+"PO-Revision-Date: 2003-12-04 22:01+0100\n"
 "Last-Translator: Marcel Telka <marcel@telka.sk>\n"
 "Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"
 "MIME-Version: 1.0\n"
@@ -1409,24 +1409,3 @@ msgstr "Pokračujem v behu na pozadí, pid %d.\n"
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Nebolo možné odstrániť symbolický odkaz `%s': %s\n"
-
-#~ msgid "Syntax error in Set-Cookie at character `%c'.\n"
-#~ msgstr "Chyba syntaxe v Set-Cookie na znaku `%c'.\n"
-
-# , c-format
-#~ msgid "%s: BUG: unknown command `%s', value `%s'.\n"
-#~ msgstr "%s: CHYBA: Neznámy príkaz `%s', hodnota `%s'.\n"
-
-#~ msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
-#~ msgstr "%s: %s: Nie je možné konvertovať `%s' na IP adresu.\n"
-
-# , c-format
-#~ msgid "%s: %s: invalid command\n"
-#~ msgstr "%s: %s: neplatný príkaz\n"
-
-#~ msgid "Could not find proxy host.\n"
-#~ msgstr "Nemôžem nájsť proxy server.\n"
-
-# , c-format
-#~ msgid "%s: Redirection cycle detected.\n"
-#~ msgstr "%s: V presmerovaniach bol zistený cyklus.\n"
