@@ -1,5 +1,9 @@
 2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* po/wget.pot: Recreated.
+
+2003-10-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Renamed DEBUG to ENABLE_DEBUG.
 
 2003-10-04  Hrvoje Niksic  <hniksic@xemacs.org>
