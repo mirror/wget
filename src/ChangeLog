@@ -1,5 +1,12 @@
 2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* hash.c (HASH_POSITION): Explicitly accept the hash function.
+	(grow_hash_table): Extract ht->hash_function outside the loop.
+	(hash_table_remove): Ditto.
+	(hash_table_clear): Fill entries with 0xff to clear them.
+
+2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (persistent_available_p): No reason for the host lookup
 	to be silent -- it's a lookup like any other.
 

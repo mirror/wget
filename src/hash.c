@@ -141,19 +141,21 @@ struct mapping {
   void *value;
 };
 
+typedef unsigned long (*hashfun_t) PARAMS ((const void *));
+typedef int (*testfun_t) PARAMS ((const void *, const void *));
+
 struct hash_table {
-  unsigned long (*hash_function) PARAMS ((const void *));
-  int (*test_function) PARAMS ((const void *, const void *));
+  hashfun_t hash_function;
+  testfun_t test_function;
 
+  struct mapping *mappings;	/* pointer to the table entries. */
   int size;			/* size of the array. */
-  int count;			/* number of non-empty entries. */
 
+  int count;			/* number of non-empty entries. */
   int resize_threshold;		/* after size exceeds this number of
 				   entries, resize the table.  */
   int prime_offset;		/* the offset of the current prime in
 				   the prime table. */
-
-  struct mapping *mappings;	/* the array of mapping pairs. */
 };
 
 /* We use all-bit-set marker to mean that a mapping is empty.  It is
@@ -170,22 +172,21 @@ struct hash_table {
 #define LOOP_NON_EMPTY(mp, mappings, size)				\
   for (; NON_EMPTY (mp); mp = NEXT_MAPPING (mp, mappings, size))
 
-/* #### Some implementations multiply the hash with the "golden ratio"
-   of the table to get better spread for keys that do not come from a
-   good hashing source.  I'm not sure if that is necessary for the
-   hash functions we use.  */
-
-#define HASH_POSITION(ht, key) (ht->hash_function (key) % ht->size)
+/* Return the position of KEY in hash table SIZE large, hash function
+   being HASHFUN.  #### Some implementations multiply HASHFUN's output
+   with the table's "golden ratio" to get better spreading of keys.
+   I'm not sure if that is necessary with our hash functions.  */
+#define HASH_POSITION(key, hashfun, size) ((hashfun) (key) % size)
 
 /* Find a prime near, but greather than or equal to SIZE.  Of course,
    the primes are not calculated, but looked up from a table.  The
    table does not contain all primes in range, just a selection useful
    for this purpose.
 
-   PRIME_OFFSET is a minor optimization: if specified, it starts the
-   search for the prime number beginning with the specific offset in
-   the prime number table.  The final offset is stored in the same
-   variable.  */
+   PRIME_OFFSET is a minor optimization: it specifies start position
+   for the search for the large enough prime.  The final offset is
+   stored in the same variable.  That way the list of primes does not
+   have to be scanned from the beginning each time around.  */
 
 static int
 prime_size (int size, int *prime_offset)
@@ -202,9 +203,9 @@ prime_size (int size, int *prime_offset)
     1174703521, 1527114613, 1985248999,
     (unsigned long)0x99d43ea5, (unsigned long)0xc7fa5177
   };
-  int i = *prime_offset;
+  int i;
 
-  for (; i < countof (primes); i++)
+  for (i = *prime_offset; i < countof (primes); i++)
     if (primes[i] >= size)
       {
 	/* Set the offset to the next prime.  That is safe because,
@@ -239,9 +240,10 @@ static int ptrcmp PARAMS ((const void *, const void *));
    used as size unchanged.  To start with a small table that grows as
    needed, simply specify zero ITEMS.
 
-   If HASH_FUNCTION is not provided, identity table is assumed,
-   i.e. key pointers are compared as keys.  If you want strings with
-   equal contents to hash the same, use make_string_hash_table.  */
+   If hash and test callbacks are not specified, identity mapping is
+   assumed, i.e. pointer values are used for key comparison.  If,
+   instead of that, you want strings with equal contents to hash the
+   same, use make_string_hash_table.  */
 
 struct hash_table *
 hash_table_new (int items,
@@ -269,7 +271,7 @@ hash_table_new (int items,
   ht->mappings = xnew_array (struct mapping, ht->size);
   /* Mark mappings as empty.  We use 0xff rather than 0 to mark empty
      keys because it allows us to store NULL keys to the table.  */
-  memset (ht->mappings, 255, size * sizeof (struct mapping));
+  memset (ht->mappings, 0xff, size * sizeof (struct mapping));
 
   ht->count = 0;
 
@@ -294,8 +296,8 @@ find_mapping (const struct hash_table *ht, const void *key)
 {
   struct mapping *mappings = ht->mappings;
   int size = ht->size;
-  struct mapping *mp = mappings + HASH_POSITION (ht, key);
-  int (*equals) PARAMS ((const void *, const void *)) = ht->test_function;
+  struct mapping *mp = mappings + HASH_POSITION (key, ht->hash_function, size);
+  testfun_t equals = ht->test_function;
 
   LOOP_NON_EMPTY (mp, mappings, size)
     if (equals (key, mp->key))
@@ -355,6 +357,7 @@ hash_table_contains (const struct hash_table *ht, const void *key)
 static void
 grow_hash_table (struct hash_table *ht)
 {
+  hashfun_t hasher = ht->hash_function;
   struct mapping *old_mappings = ht->mappings;
   struct mapping *old_end      = ht->mappings + ht->size;
   struct mapping *mp, *mappings;
@@ -372,16 +375,17 @@ grow_hash_table (struct hash_table *ht)
   ht->resize_threshold = newsize * HASH_MAX_FULLNESS;
 
   mappings = xnew_array (struct mapping, newsize);
-  memset (mappings, 255, newsize * sizeof (struct mapping));
+  memset (mappings, 0xff, newsize * sizeof (struct mapping));
   ht->mappings = mappings;
 
   for (mp = old_mappings; mp < old_end; mp++)
     if (NON_EMPTY (mp))
       {
-	struct mapping *new_mp = mappings + HASH_POSITION (ht, mp->key);
+	struct mapping *new_mp;
 	/* We don't need to test for uniqueness of keys because they
 	   come from the hash table and are therefore known to be
 	   unique.  */
+	new_mp = mappings + HASH_POSITION (mp->key, hasher, newsize);
 	LOOP_NON_EMPTY (new_mp, mappings, newsize)
 	  ;
 	*new_mp = *mp;
@@ -432,23 +436,24 @@ hash_table_remove (struct hash_table *ht, const void *key)
     {
       int size = ht->size;
       struct mapping *mappings = ht->mappings;
+      hashfun_t hasher = ht->hash_function;
 
       mp->key = NULL;
       --ht->count;
 
       /* Rehash all the entries following MP.  The alternative
 	 approach is to mark the entry as deleted, i.e. create a
-	 "tombstone".  That makes remove faster, but leaves a lot of
+	 "tombstone".  That speeds up removal, but leaves a lot of
 	 garbage and slows down hash_table_get and hash_table_put.  */
 
       mp = NEXT_MAPPING (mp, mappings, size);
       LOOP_NON_EMPTY (mp, mappings, size)
 	{
 	  const void *key2 = mp->key;
-	  struct mapping *mp_new = mappings + HASH_POSITION (ht, key2);
+	  struct mapping *mp_new;
 
 	  /* Find the new location for the key. */
-
+	  mp_new = mappings + HASH_POSITION (key2, hasher, size);
 	  LOOP_NON_EMPTY (mp_new, mappings, size)
 	    if (key2 == mp_new->key)
 	      /* The mapping MP (key2) is already where we want it (in
@@ -472,7 +477,7 @@ hash_table_remove (struct hash_table *ht, const void *key)
 void
 hash_table_clear (struct hash_table *ht)
 {
-  memset (ht->mappings, '\0', ht->size * sizeof (struct mapping));
+  memset (ht->mappings, 0xff, ht->size * sizeof (struct mapping));
   ht->count = 0;
 }
 
