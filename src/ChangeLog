@@ -1,5 +1,11 @@
 2001-04-09  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* ftp.c (ftp_retrieve_dirs): Don't forcibly prepend "/" to u->dir;
+	that hack is no longer necessary.
+	(getftp): Prepend initial directory to *non*-absolute u->dir's.
+
+2001-04-09  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* init.c (cmd_file): New function.
 	(enable_tilde_expansion): New variable.
 	(run_wgetrc): Use it.
