@@ -1,5 +1,9 @@
 2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* progress.c (bar_create): Print two newlines.
+
+2001-11-27  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* cmpt.c (random): New function, a simple-minded replacement for
 	random() on systems that don't have it.
 
