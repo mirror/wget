@@ -35,6 +35,10 @@ may tend towards the top).  Not all of these represent user-visible changes.
 * Allow mirroring of FTP URLs where logging in puts you somewhere else besides 
   '/'. 
 
+* If CGI output is saved to a file, e.g. cow.cgi?param, -k needs to change the
+  '?' to a "%3F" in links to that file to avoid passing part of the filename as
+  a parameter.
+
 * Make `-k' convert <base href=...> too.
 
 * Make `-k' check for files that were downloaded in the past and convert links 

@@ -1,3 +1,8 @@
+2000-10-20  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* TODO: -k needs to convert '?' to "%3F" in links to saved files
+	containing the '?' character (e.g. CGI output).
+
 2000-10-19  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* TODO: -E / --html-extension / html_extension has been implemented.
