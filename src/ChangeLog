@@ -1,5 +1,12 @@
 2001-12-05  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* recur.c (convert_all_links): Guard against duplicates in
+	downloaded_html_files.
+	(register_download): Don't invalidate similar-looking URLs.
+	(match_except_index): New function.
+
+2001-12-05  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* utils.c (path_simplify): Document with test cases.
 
 2001-12-04  Hrvoje Niksic  <hniksic@arsdigita.com>

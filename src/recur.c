@@ -613,6 +613,60 @@ descend_redirect_p (const char *redirected, const char *original, int depth,
     dl_url_file_map = make_string_hash_table (0);	\
 } while (0)
 
+/* Return 1 if S1 and S2 are the same, except for "/index.html".  The
+   three cases in which it returns one are (substitute any substring
+   for "foo"):
+
+   m("foo/index.html", "foo/")  ==> 1
+   m("foo/", "foo/index.html")  ==> 1
+   m("foo", "foo/index.html")   ==> 1
+   m("foo", "foo/"              ==> 1
+   m("foo", "foo")              ==> 1  */
+
+static int
+match_except_index (const char *s1, const char *s2)
+{
+  int i;
+  const char *lng;
+
+  /* Skip common substring. */
+  for (i = 0; *s1 && *s2 && *s1 == *s2; s1++, s2++, i++)
+    ;
+  if (i == 0)
+    /* Strings differ at the very beginning -- bail out.  We need to
+       check this explicitly to avoid `lng - 1' reading outside the
+       array.  */
+    return 0;
+
+  if (!*s1 && !*s2)
+    /* Both strings hit EOF -- strings are equal. */
+    return 1;
+  else if (*s1 && *s2)
+    /* Strings are randomly different, e.g. "/foo/bar" and "/foo/qux". */
+    return 0;
+  else if (*s1)
+    /* S1 is the longer one. */
+    lng = s1;
+  else
+    /* S2 is the longer one. */
+    lng = s2;
+
+  /* foo            */            /* foo/           */
+  /* foo/index.html */  /* or */  /* foo/index.html */
+  /*    ^           */            /*     ^          */
+
+  if (*lng != '/')
+    /* The right-hand case. */
+    --lng;
+
+  if (*lng == '/' && *(lng + 1) == '\0')
+    /* foo  */
+    /* foo/ */
+    return 1;
+
+  return 0 == strcmp (lng, "/index.html");
+}
+
 static int
 dissociate_urls_from_file_mapper (void *key, void *value, void *arg)
 {
@@ -652,14 +706,10 @@ register_download (const char *url, const char *file)
 
   ENSURE_TABLES_EXIST;
 
-  /* With some forms of retrieval, it is possible, although not
-     likely, for different URLs to resolve to the same file name.  For
-     example, "http://www.server.com/" and
-     "http://www.server.com/index.html" will both resolve to the same
-     file, "index.html".  If both are downloaded, the second download
-     will override the first one.
-
-     If that happens, dissociate the old file name from the URL.  */
+  /* With some forms of retrieval, it is possible, although not likely
+     or particularly desirable.  If both are downloaded, the second
+     download will override the first one.  When that happens,
+     dissociate the old file name from the URL.  */
 
   if (hash_table_get_pair (dl_file_url_map, file, &old_file, &old_url))
     {
@@ -667,6 +717,14 @@ register_download (const char *url, const char *file)
 	/* We have somehow managed to download the same URL twice.
 	   Nothing to do.  */
 	return;
+
+      if (match_except_index (url, old_url)
+	  && !hash_table_contains (dl_url_file_map, url))
+	/* The two URLs differ only in the "index.html" ending.  For
+	   example, one is "http://www.server.com/", and the other is
+	   "http://www.server.com/index.html".  Don't remove the old
+	   one, just add the new one as a non-canonical entry.  */
+	goto url_only;
 
       hash_table_remove (dl_file_url_map, file);
       xfree (old_file);
@@ -694,6 +752,7 @@ register_download (const char *url, const char *file)
   assert (!hash_table_contains (dl_url_file_map, url));
 
   hash_table_put (dl_file_url_map, xstrdup (file), xstrdup (url));
+ url_only:
   hash_table_put (dl_url_file_map, xstrdup (url), xstrdup (file));
 }
 
@@ -761,11 +820,11 @@ void
 convert_all_links (void)
 {
   slist *html;
-  struct wget_timer *timer;
   long msecs;
   int file_count = 0;
 
-  timer = wtimer_new ();
+  struct wget_timer *timer = wtimer_new ();
+  struct hash_table *seen = make_string_hash_table (0);
 
   /* Destructively reverse downloaded_html_files to get it in the right order.
      recursive_retrieve() used slist_prepend() consistently.  */
@@ -775,20 +834,26 @@ convert_all_links (void)
     {
       struct urlpos *urls, *cur_url;
       char *url;
+      char *file = html->string;
+
+      /* Guard against duplicates. */
+      if (string_set_contains (seen, file))
+	continue;
+      string_set_add (seen, file);
 
       /* Determine the URL of the HTML file.  get_urls_html will need
 	 it.  */
-      url = hash_table_get (dl_file_url_map, html->string);
+      url = hash_table_get (dl_file_url_map, file);
       if (!url)
 	{
-	  DEBUGP (("Apparently %s has been removed.\n", html->string));
+	  DEBUGP (("Apparently %s has been removed.\n", file));
 	  continue;
 	}
 
-      DEBUGP (("Rescanning %s (from %s)\n", html->string, url));
+      DEBUGP (("Scanning %s (from %s)\n", file, url));
 
       /* Parse the HTML file...  */
-      urls = get_urls_html (html->string, url, NULL);
+      urls = get_urls_html (file, url, NULL);
 
       /* We don't respect meta_disallow_follow here because, even if
          the file is not followed, we might still want to convert the
@@ -812,9 +877,6 @@ convert_all_links (void)
 	     a URL was downloaded.  Downloaded URLs will be converted
 	     ABS2REL, whereas non-downloaded will be converted REL2ABS.  */
 	  local_name = hash_table_get (dl_url_file_map, u->url);
-	  if (local_name)
-	    DEBUGP (("%s marked for conversion, local %s\n",
-		     u->url, local_name));
 
 	  /* Decide on the conversion type.  */
 	  if (local_name)
@@ -826,6 +888,7 @@ convert_all_links (void)
                  `--cut-dirs', etc.)  */
 	      cur_url->convert = CO_CONVERT_TO_RELATIVE;
 	      cur_url->local_name = xstrdup (local_name);
+	      DEBUGP (("will convert url %s to local %s\n", u->url, local_name));
 	    }
 	  else
 	    {
@@ -836,11 +899,12 @@ convert_all_links (void)
 	      if (!cur_url->link_complete_p)
 		cur_url->convert = CO_CONVERT_TO_COMPLETE;
 	      cur_url->local_name = NULL;
+	      DEBUGP (("will convert url %s to complete\n", u->url));
 	    }
 	}
 
       /* Convert the links in the file.  */
-      convert_links (html->string, urls);
+      convert_links (file, urls);
       ++file_count;
 
       /* Free the data.  */
@@ -851,6 +915,8 @@ convert_all_links (void)
   wtimer_delete (timer);
   logprintf (LOG_VERBOSE, _("Converted %d files in %.2f seconds.\n"),
 	     file_count, (double)msecs / 1000);
+
+  string_set_free (seen);
 }
 
 /* Cleanup the data structures associated with recursive retrieving
