@@ -1,3 +1,13 @@
+2001-04-25  Roger L. Beeman  <beeman@cisco.com>
+
+	* http.c (http_atotm): Initialize t.tm_isdst to 0.
+	(mktime_from_utc): Prevent mktime() from having discontinuities at
+	DST transition points.
+
+2001-04-25  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* html-url.c (get_urls_html): Fix documentation.
+
 2001-04-25  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* url.c (UNSAFE_CHAR): Reimplement using a static table.

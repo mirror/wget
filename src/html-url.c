@@ -365,7 +365,11 @@ handle_link (struct collect_urls_closure *closure, const char *link_uri,
     closure->tail = closure->head = newel;
 }
 
-/* #### Document what this does.
+/* Examine name and attributes of TAG and take appropriate action.
+   What will be done depends on TAG's category and attribute values.
+   Tags of TC_LINK category have attributes that contain links to
+   follow; tags of TC_SPEC category need to be handled specially.
+
    #### It would be nice to split this into several functions.  */
 
 static void
@@ -523,13 +527,12 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
     }
 }
 
-/* Scan FILE, retrieving links to HTML documents from it.  Each link is 
+/* Analyze HTML tags FILE and construct a list of URLs referenced from
+   it.  It merges relative links in FILE with THIS_URL.  It is aware
+   of <base href=...> and does the right thing.
 
-  Similar to get_urls_file, but for HTML files.  FILE is scanned as
-   an HTML document.  get_urls_html() constructs the URLs from the
-   relative href-s.
-
-   If SILENT is non-zero, do not barf on baseless relative links.  */
+   If dash_p_leaf_HTML is non-zero, only the elements needed to render
+   FILE ("non-external" links) will be returned.  */
 urlpos *
 get_urls_html (const char *file, const char *this_url, int dash_p_leaf_HTML,
 	       int *meta_disallow_follow)

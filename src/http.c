@@ -1828,17 +1828,37 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
    than local timezone (mktime assumes the latter).
 
    Contributed by Roger Beeman <beeman@cisco.com>, with the help of
-   Mark Baushke <mdb@cisco.com> and the rest of the Gurus at CISCO.  */
+   Mark Baushke <mdb@cisco.com> and the rest of the Gurus at CISCO.
+   Further improved by Roger with assistance from Edward J. Sabol
+   based on input by Jamie Zawinski.  */
+
 static time_t
 mktime_from_utc (struct tm *t)
 {
   time_t tl, tb;
+  struct tm *tg;
 
   tl = mktime (t);
   if (tl == -1)
-    return -1;
-  tb = mktime (gmtime (&tl));
-  return (tl <= tb ? (tl + (tl - tb)) : (tl - (tb - tl)));
+    {
+      t->tm_hour--;
+      tl = mktime (t);
+      if (tl == -1)
+	return -1; /* can't deal with output from strptime */
+      tl += 3600;
+    }
+  tg = gmtime (&tl);
+  tg->tm_isdst = 0;
+  tb = mktime (tg);
+  if (tb == -1)
+    {
+      tg->tm_hour--;
+      tb = mktime (tg);
+      if (tb == -1)
+	return -1; /* can't deal with output from gmtime */
+      tb += 3600;
+    }
+  return (tl - (tb - tl));
 }
 
 /* Check whether the result of strptime() indicates success.
@@ -1888,15 +1908,9 @@ http_atotm (char *time_string)
 {
   struct tm t;
 
-  /* Roger Beeman says: "This function dynamically allocates struct tm
-     t, but does no initialization.  The only field that actually
-     needs initialization is tm_isdst, since the others will be set by
-     strptime.  Since strptime does not set tm_isdst, it will return
-     the data structure with whatever data was in tm_isdst to begin
-     with.  For those of us in timezones where DST can occur, there
-     can be a one hour shift depending on the previous contents of the
-     data area where the data structure is allocated."  */
-  t.tm_isdst = -1;
+  /* According to Roger Beeman, we need to initialize tm_isdst, since
+     strptime won't do it.  */
+  t.tm_isdst = 0;
 
   /* Note that under foreign locales Solaris strptime() fails to
      recognize English dates, which renders this function useless.  I
