@@ -39,7 +39,7 @@
 /*#endif*/
 
 #include "wget.h"
-#include "md5.h"
+#include "gnu-md5.h"
 
 #ifdef _LIBC
 # include <endian.h>

@@ -63,14 +63,15 @@ AC_ARG_ENABLE(debug,
 DEBUG=$enableval, DEBUG=yes)
 test x"${DEBUG}" = xyes && AC_DEFINE(DEBUG)
 
+wget_need_md5=no
+
 case "${USE_OPIE}${USE_DIGEST}" in
 *yes*)
-	MD5_OBJ='md5$o'
+	wget_need_md5=yes
 esac
 if test x"$USE_OPIE" = xyes; then
   OPIE_OBJ='ftp-opie$o'
 fi
-AC_SUBST(MD5_OBJ)
 AC_SUBST(OPIE_OBJ)
 
 dnl
@@ -179,6 +180,23 @@ AC_CHECK_FUNCS(uname gethostname)
 dnl
 dnl Checks for libraries.
 dnl
+
+dnl
+dnl Use the md5 lib if available (Solaris).
+dnl
+
+if test x$wget_need_md5 = xyes
+then
+  AC_DEFINE(HAVE_MD5)
+  AC_CHECK_LIB(md5, MD5Update, [
+    AC_DEFINE(HAVE_SOLARIS_MD5)
+    LIBS="-lmd5 $LIBS"
+    ], [
+    MD5_OBJ='gnu-md5$o'
+    AC_DEFINE(HAVE_BUILTIN_MD5)
+  ])
+fi
+AC_SUBST(MD5_OBJ)
 
 dnl On Solaris, -lnsl is needed to use gethostbyname.  On "NCR MP-RAS
 dnl 3.0", however, gethostbyname is in libc, but -lnsl is still needed

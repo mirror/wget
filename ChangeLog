@@ -1,5 +1,9 @@
 2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* configure.in: Check for Solaris libmd5.
+
+2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* po/: Installed ja.po, et.po, he.po, fr.po, da.po, uk.po, es.po,
 	sl.po, nl.po from the Translation Project.
 

@@ -204,6 +204,15 @@ char *alloca ();
 /* Define if all libs needed for ssl support are existing */
 #undef HAVE_SSL
 
+/* Define if we're compiling in support for MD5.  */
+#undef HAVE_MD5
+
+/* Define if we're using Solaris libmd5.  */
+#undef HAVE_SOLARIS_MD5
+
+/* Define if we're using builtin (GNU) md5.c.  */
+#undef HAVE_BUILTIN_MD5
+
 /* First a gambit to see whether we're on Solaris.  We'll
    need it below.  */
 #ifdef __sun

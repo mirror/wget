@@ -146,7 +146,7 @@ cookies$o: wget.h cookies.h hash.h url.h utils.h
 fnmatch$o: wget.h fnmatch.h
 ftp-basic$o: wget.h utils.h rbuf.h connect.h host.h
 ftp-ls$o: wget.h utils.h ftp.h url.h
-ftp-opie$o: wget.h md5.h
+ftp-opie$o: wget.h
 ftp$o: wget.h utils.h url.h rbuf.h retr.h ftp.h connect.h host.h fnmatch.h netrc.h
 getopt$o: wget.h getopt.h
 hash$o: wget.h utils.h hash.h
@@ -155,11 +155,11 @@ host$o: wget.h utils.h host.h url.h hash.h
 html-parse$o: wget.h html-parse.h
 html-url$o: wget.h html-parse.h url.h utils.h
 html$o: wget.h url.h utils.h ftp.h
-http$o: wget.h utils.h url.h host.h rbuf.h retr.h headers.h cookies.h connect.h fnmatch.h netrc.h md5.h
+http$o: wget.h utils.h url.h host.h rbuf.h retr.h headers.h cookies.h connect.h fnmatch.h netrc.h
 init$o: wget.h utils.h init.h host.h recur.h netrc.h
 log$o: wget.h utils.h
 main$o: wget.h utils.h getopt.h init.h retr.h recur.h host.h cookies.h
-md5$o: wget.h md5.h
+gnu-md5$o: wget.h gnu-md5.h
 mswindows$o: wget.h url.h
 netrc$o: wget.h utils.h netrc.h init.h
 rbuf$o: wget.h rbuf.h connect.h

@@ -60,9 +60,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "connect.h"
 #include "fnmatch.h"
 #include "netrc.h"
-#if USE_DIGEST
-# include "md5.h"
-#endif
 #ifdef HAVE_SSL
 # include "gen_sslfunc.h"
 #endif /* HAVE_SSL */
@@ -2202,37 +2199,37 @@ digest_authentication_encode (const char *au, const char *user,
 
   /* Calculate the digest value.  */
   {
-    struct md5_ctx ctx;
+    MD5_CONTEXT_TYPE ctx;
     unsigned char hash[MD5_HASHLEN];
     unsigned char a1buf[MD5_HASHLEN * 2 + 1], a2buf[MD5_HASHLEN * 2 + 1];
     unsigned char response_digest[MD5_HASHLEN * 2 + 1];
 
     /* A1BUF = H(user ":" realm ":" password) */
-    md5_init_ctx (&ctx);
-    md5_process_bytes (user, strlen (user), &ctx);
-    md5_process_bytes (":", 1, &ctx);
-    md5_process_bytes (realm, strlen (realm), &ctx);
-    md5_process_bytes (":", 1, &ctx);
-    md5_process_bytes (passwd, strlen (passwd), &ctx);
-    md5_finish_ctx (&ctx, hash);
+    MD5_INIT (&ctx);
+    MD5_UPDATE (user, strlen (user), &ctx);
+    MD5_UPDATE (":", 1, &ctx);
+    MD5_UPDATE (realm, strlen (realm), &ctx);
+    MD5_UPDATE (":", 1, &ctx);
+    MD5_UPDATE (passwd, strlen (passwd), &ctx);
+    MD5_FINISH (&ctx, hash);
     dump_hash (a1buf, hash);
 
     /* A2BUF = H(method ":" path) */
-    md5_init_ctx (&ctx);
-    md5_process_bytes (method, strlen (method), &ctx);
-    md5_process_bytes (":", 1, &ctx);
-    md5_process_bytes (path, strlen (path), &ctx);
-    md5_finish_ctx (&ctx, hash);
+    MD5_INIT (&ctx);
+    MD5_UPDATE (method, strlen (method), &ctx);
+    MD5_UPDATE (":", 1, &ctx);
+    MD5_UPDATE (path, strlen (path), &ctx);
+    MD5_FINISH (&ctx, hash);
     dump_hash (a2buf, hash);
 
     /* RESPONSE_DIGEST = H(A1BUF ":" nonce ":" A2BUF) */
-    md5_init_ctx (&ctx);
-    md5_process_bytes (a1buf, MD5_HASHLEN * 2, &ctx);
-    md5_process_bytes (":", 1, &ctx);
-    md5_process_bytes (nonce, strlen (nonce), &ctx);
-    md5_process_bytes (":", 1, &ctx);
-    md5_process_bytes (a2buf, MD5_HASHLEN * 2, &ctx);
-    md5_finish_ctx (&ctx, hash);
+    MD5_INIT (&ctx);
+    MD5_UPDATE (a1buf, MD5_HASHLEN * 2, &ctx);
+    MD5_UPDATE (":", 1, &ctx);
+    MD5_UPDATE (nonce, strlen (nonce), &ctx);
+    MD5_UPDATE (":", 1, &ctx);
+    MD5_UPDATE (a2buf, MD5_HASHLEN * 2, &ctx);
+    MD5_FINISH (&ctx, hash);
     dump_hash (response_digest, hash);
 
     res = (char*) xmalloc (strlen (user)

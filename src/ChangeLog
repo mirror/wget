@@ -1,5 +1,20 @@
 2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* md5.h: Renamed to gnu-md5.h.
+
+	* md5.c: Renamed to gnu-md5.c.
+
+	* http.c: Ditto.
+
+	* ftp-opie.c: Use the new macros.
+
+	* sysdep.h: Define md5-related macros.
+
+	* config.h.in: Define HAVE_SOLARIS_MD5 or HAVE_BUILTIN_MD5
+	depending on which md5 implementation is used.
+
+2001-11-18  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* res.c (res_register_specs): Initialize OLD and HP_OLD to appease
 	the compiler.
 
