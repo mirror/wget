@@ -40,7 +40,7 @@ void hash_table_destroy PARAMS ((struct hash_table *));
 void *hash_table_get PARAMS ((struct hash_table *, const void *));
 int hash_table_get_pair PARAMS ((struct hash_table *, const void *,
 				 void *, void *));
-int hash_table_exists PARAMS ((struct hash_table *, const void *));
+int hash_table_contains PARAMS ((struct hash_table *, const void *));
 
 void hash_table_put PARAMS ((struct hash_table *, const void *, void *));
 int hash_table_remove PARAMS ((struct hash_table *, const void *));
@@ -54,3 +54,4 @@ int hash_table_count PARAMS ((struct hash_table *));
 unsigned long string_hash PARAMS ((const void *));
 int string_cmp PARAMS ((const void *, const void *));
 struct hash_table *make_string_hash_table PARAMS ((int));
+struct hash_table *make_nocase_string_hash_table PARAMS ((int));

@@ -104,45 +104,15 @@ delete_cookie (struct cookie *cookie)
   xfree (cookie);
 }
 
-/* Functions for cookie-specific hash tables.  These are regular hash
-   tables, but with case-insensitive test and hash functions.  */
+/* Functions for storing cookies.
 
-/* Like string_hash, but produces the same results regardless of the
-   case.  */
+   All cookies can be referenced through cookies_hash_table.  The key
+   in that table is the domain name, and the value is a linked list of
+   all cookies from that domain.  Every new cookie is placed on the
+   head of the list.  */
 
-static unsigned long
-unsigned_string_hash (const void *key)
-{
-  const char *p = key;
-  unsigned int h = TOLOWER (*p);
-  
-  if (h)
-    for (p += 1; *p != '\0'; p++)
-      h = (h << 5) - h + TOLOWER (*p);
-  
-  return h;
-}
-
-/* Front-end to strcasecmp. */
-
-static int
-unsigned_string_cmp (const void *s1, const void *s2)
-{
-  return !strcasecmp ((const char *)s1, (const char *)s2);
-}
-
-/* Like make_string_hash_table, but uses unsigned_string_hash and
-   unsigned_string_cmp.  */
-
-static struct hash_table *
-make_unsigned_string_hash_table (int initial_size)
-{
-  return hash_table_new (initial_size,
-			 unsigned_string_hash, unsigned_string_cmp);
-}
-
-/* Write "HOST:PORT" to RESULT.  RESULT should be a pointer, and the
-  memory for the contents is allocated on the stack.  Useful for
+/* Write "HOST:PORT" to a stack-allocated area and make RESULT point
+  to that area.  RESULT should be a character pointer.  Useful for
   creating HOST:PORT strings, which are the keys in the hash
   table.  */
 
@@ -165,13 +135,6 @@ find_cookie_chain_exact (const char *domain, int port)
   SET_HOSTPORT (domain, port, key);
   return hash_table_get (cookies_hash_table, key);
 }
-
-/* Functions for storing cookies.
-
-   All cookies can be referenced through cookies_hash_table.  The key
-   in that table is the domain name, and the value is a linked list of
-   all cookies from that domain.  Every new cookie is placed on the
-   head of the list.  */
 
 /* Find and return the cookie whose domain, path, and attribute name
    correspond to COOKIE.  If found, PREVPTR will point to the location
@@ -225,7 +188,7 @@ store_cookie (struct cookie *cookie)
   if (!cookies_hash_table)
     /* If the hash table is not initialized, do so now, because we'll
        need to store things.  */
-    cookies_hash_table = make_unsigned_string_hash_table (0);
+    cookies_hash_table = make_nocase_string_hash_table (0);
 
   /* Initialize hash table key.  */
   SET_HOSTPORT (cookie->domain, cookie->port, hostport);

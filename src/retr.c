@@ -476,7 +476,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 
       /* The new location is OK.  Let's check for redirection cycle by
          peeking through the history of redirections. */
-      if (string_set_exists (redirections, newloc_struct->url))
+      if (string_set_contains (redirections, newloc_struct->url))
 	{
 	  logprintf (LOG_NOTQUIET, _("%s: Redirection cycle detected.\n"),
 		     mynewloc);

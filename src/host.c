@@ -221,7 +221,7 @@ realhost (const char *host)
   char *master_name;
 
   DEBUGP (("Checking for %s in host_name_address_map.\n", host));
-  if (hash_table_exists (host_name_address_map, host))
+  if (hash_table_contains (host_name_address_map, host))
     {
       DEBUGP (("Found; %s was already used, by that name.\n", host));
       return xstrdup_lower (host);

@@ -1206,7 +1206,7 @@ string_set_add (struct hash_table *ht, const char *s)
   /* First check whether the set element already exists.  If it does,
      do nothing so that we don't have to free() the old element and
      then strdup() a new one.  */
-  if (hash_table_exists (ht, s))
+  if (hash_table_contains (ht, s))
     return;
 
   /* We use "1" as value.  It provides us a useful and clear arbitrary
@@ -1216,12 +1216,12 @@ string_set_add (struct hash_table *ht, const char *s)
   hash_table_put (ht, xstrdup (s), "1");
 }
 
-/* Synonym for hash_table_exists... */
+/* Synonym for hash_table_contains... */
 
 int
-string_set_exists (struct hash_table *ht, const char *s)
+string_set_contains (struct hash_table *ht, const char *s)
 {
-  return hash_table_exists (ht, s);
+  return hash_table_contains (ht, s);
 }
 
 static int
@@ -1316,7 +1316,7 @@ legible (long l)
    bytes are sufficient.  Using more might be a good idea.
 
    This function does not go through the hoops that long_to_string
-   goes to because it doesn't need to be fast.  (It's called perhaps
+   goes to because it doesn't aspire to be fast.  (It's called perhaps
    once in a Wget run.)  */
 
 static void
@@ -1359,7 +1359,10 @@ numdigit (long a)
 {
   int res = 1;
   if (a < 0)
-    a = -a;
+    {
+      a = -a;
+      ++res;
+    }
   while ((a /= 10) != 0)
     ++res;
   return res;
@@ -1379,7 +1382,7 @@ numdigit (long a)
 #define DIGITS_9(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_8 ((figure) / 10)
 #define DIGITS_10(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_9 ((figure) / 10)
 
-/* DIGITS_<11-20> are only used on 64-bit machines. */
+/* DIGITS_<11-20> are only used on machines with 64-bit longs. */
 
 #define DIGITS_11(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_10 ((figure) / 10)
 #define DIGITS_12(figure) ONE_DIGIT_ADVANCE (figure); DIGITS_11 ((figure) / 10)
@@ -1400,9 +1403,9 @@ numdigit (long a)
    slow compared to this function.
 
    BUFFER should accept as many bytes as you expect the number to take
-   up.  On 64-bit machines, the maximum needed size is 24 bytes.  That
-   includes all the digits, as well as the `-' sign for negative
-   numbers and the trailing \0.  */
+   up.  On machines with 64-bit longs the maximum needed size is 24
+   bytes.  That includes the worst-case digits, the optional `-' sign,
+   and the trailing \0.  */
 
 void
 long_to_string (char *buffer, long number)
@@ -1516,7 +1519,7 @@ struct wget_timer {
 };
 
 /* Allocate a timer.  It is not legal to do anything with a freshly
-   allocated timer, except call wtimer_reset().  */
+   allocated timer, except call wtimer_reset() or wtimer_delete().  */
 
 struct wget_timer *
 wtimer_allocate (void)

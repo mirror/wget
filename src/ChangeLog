@@ -1,3 +1,18 @@
+2001-05-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* main.c (print_help): Document `--no-http-keep-alive'.
+
+	* utils.c (numdigit): Handle negative numbers *correctly*.
+
+	* hash.c (make_nocase_string_hash_table): Use term "nocase" rather
+	than the confusing "unsigned".
+
+	* utils.c (string_set_contains): Renamed from string_set_exists.
+
+	* hash.c (hash_table_contains): Renamed from hash_table_exists.
+
+	* cookies.c: Move case-insensitive hash tables to hash.c.
+
 2001-05-09  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* http.c (gethttp): Before concluding that the file is already

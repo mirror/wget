@@ -54,11 +54,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
    The basics are all covered.  hash_table_new creates a hash table,
    and hash_table_destroy deletes it.  hash_table_put establishes a
    mapping between a key and a value.  hash_table_get retrieves the
-   value that corresponds to a key.  hash_table_exists queries whether
-   a key is stored in a table at all.  hash_table_remove removes a
-   mapping that corresponds to a key.  hash_table_map allows you to
-   map through all the entries in a hash table.  hash_table_clear
-   clears all the entries from the hash table.
+   value that corresponds to a key.  hash_table_contains queries
+   whether a key is stored in a table at all.  hash_table_remove
+   removes a mapping that corresponds to a key.  hash_table_map allows
+   you to map through all the entries in a hash table.
+   hash_table_clear clears all the entries from the hash table.
 
    The number of mappings in a table is not limited, except by the
    amount of memory.  As you add new elements to a table, it regrows
@@ -242,8 +242,8 @@ find_mapping (struct hash_table *ht, const void *key)
 /* Get the value that corresponds to the key KEY in the hash table HT.
    If no value is found, return NULL.  Note that NULL is a legal value
    for value; if you are storing NULLs in your hash table, you can use
-   hash_table_exists to be sure that a (possibly NULL) value exists in
-   the table.  Or, you can use hash_table_get_pair instead of this
+   hash_table_contains to be sure that a (possibly NULL) value exists
+   in the table.  Or, you can use hash_table_get_pair instead of this
    function.  */
 
 void *
@@ -277,10 +277,10 @@ hash_table_get_pair (struct hash_table *ht, const void *lookup_key,
     return 0;
 }
 
-/* Return 1 if KEY exists in HT, 0 otherwise. */
+/* Return 1 if HT contains KEY, 0 otherwise. */
 
 int
-hash_table_exists (struct hash_table *ht, const void *key)
+hash_table_contains (struct hash_table *ht, const void *key)
 {
   return find_mapping (ht, key) != NULL;
 }
@@ -450,7 +450,13 @@ hash_table_count (struct hash_table *ht)
   return ht->count;
 }
 
-/* Support for hash tables whose keys are strings.  */
+/* Functions from this point onward are meant for convenience and
+   don't strictly belong to this file.  However, this is as good a
+   place for them as any.  */
+
+/* ========
+   Support for hash tables whose keys are strings.
+   ======== */
 
 /* 31 bit hash function.  Taken from Gnome's glib, modified to use
    standard C types.
@@ -471,6 +477,60 @@ string_hash (const void *key)
   return h;
 }
 
+/* Frontend for strcmp usable for hash tables. */
+
+int
+string_cmp (const void *s1, const void *s2)
+{
+  return !strcmp ((const char *)s1, (const char *)s2);
+}
+
+/* Return a hash table of initial size INITIAL_SIZE suitable to use
+   strings as keys.  */
+
+struct hash_table *
+make_string_hash_table (int initial_size)
+{
+  return hash_table_new (initial_size, string_hash, string_cmp);
+}
+
+/* ========
+   Support for hash tables whose keys are strings, but which are
+   compared case-insensitively.
+   ======== */
+
+/* Like string_hash, but produce the same hash regardless of the case. */
+
+static unsigned long
+string_hash_nocase (const void *key)
+{
+  const char *p = key;
+  unsigned int h = TOLOWER (*p);
+  
+  if (h)
+    for (p += 1; *p != '\0'; p++)
+      h = (h << 5) - h + TOLOWER (*p);
+  
+  return h;
+}
+
+/* Like string_cmp, but doing case-insensitive compareison. */
+
+static int
+string_cmp_nocase (const void *s1, const void *s2)
+{
+  return !strcasecmp ((const char *)s1, (const char *)s2);
+}
+
+/* Like make_string_hash_table, but uses string_hash_nocase and
+   string_cmp_nocase.  */
+
+struct hash_table *
+make_nocase_string_hash_table (int initial_size)
+{
+  return hash_table_new (initial_size, string_hash_nocase, string_cmp_nocase);
+}
+
 #if 0
 /* If I ever need it: hashing of integers. */
 
@@ -488,22 +548,6 @@ inthash (unsigned int key)
   return key;
 }
 #endif
-
-int
-string_cmp (const void *s1, const void *s2)
-{
-  return !strcmp ((const char *)s1, (const char *)s2);
-}
-
-/* Return a hash table of initial size INITIAL_SIZE suitable to use
-   strings as keys.  */
-
-struct hash_table *
-make_string_hash_table (int initial_size)
-{
-  return hash_table_new (initial_size, string_hash, string_cmp);
-}
-
 
 #ifdef STANDALONE
 
@@ -537,7 +581,7 @@ main (void)
       if (len <= 1)
 	continue;
       line[--len] = '\0';
-      if (!hash_table_exists (ht, line))
+      if (!hash_table_contains (ht, line))
 	hash_table_put (ht, strdup (line), "here I am!");
 #if 1
       if (len % 5 == 0)

@@ -81,7 +81,7 @@ int slist_contains PARAMS ((slist *, const char *));
 void slist_free PARAMS ((slist *));
 
 void string_set_add PARAMS ((struct hash_table *, const char *));
-int string_set_exists PARAMS ((struct hash_table *, const char *));
+int string_set_contains PARAMS ((struct hash_table *, const char *));
 void string_set_free PARAMS ((struct hash_table *));
 void free_keys_and_values PARAMS ((struct hash_table *));
 

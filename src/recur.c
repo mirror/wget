@@ -270,7 +270,7 @@ recursive_retrieve (const char *file, const char *this_url)
       /* inl is set if the URL we are working on (constr) is stored in
 	 undesirable_urls.  Using it is crucial to avoid unnecessary
 	 repeated continuous hits to the hash table.  */
-      inl = string_set_exists (undesirable_urls, constr);
+      inl = string_set_contains (undesirable_urls, constr);
 
       /* If it is FTP, and FTP is not followed, chuck it out.  */
       if (!inl)
