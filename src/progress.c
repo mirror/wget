@@ -6,7 +6,7 @@ This file is part of GNU Wget.
 GNU Wget is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-\(at your option) any later version.
+(at your option) any later version.
 
 GNU Wget is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -316,7 +316,7 @@ dot_finish (void *progress, long dltime)
 }
 
 /* This function interprets the progress "parameters".  For example,
-   if Wget is invoked with --progress=bar:mega, it will set the
+   if Wget is invoked with --progress=dot:mega, it will set the
    "dot-style" to "mega".  Valid styles are default, binary, mega, and
    giga.  */
 
