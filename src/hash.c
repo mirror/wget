@@ -60,31 +60,32 @@ so, delete this exception statement from your version.  */
 /* INTERFACE:
 
    Hash tables are an implementation technique used to implement
-   mapping between objects.  Provided a good hashing function is used,
-   they guarantee constant-time access and storing of information.
+   mapping between objects.  Assuming a good hashing function is used,
+   they provide near-constant-time access and storing of information.
    Duplicate keys are not allowed.
 
-   The basics are all covered.  hash_table_new creates a hash table,
-   and hash_table_destroy deletes it.  hash_table_put establishes a
-   mapping between a key and a value.  hash_table_get retrieves the
-   value that corresponds to a key.  hash_table_contains queries
-   whether a key is stored in a table at all.  hash_table_remove
-   removes a mapping that corresponds to a key.  hash_table_map allows
-   you to map through all the entries in a hash table.
-   hash_table_clear clears all the entries from the hash table.
+   This file defines the following entry points: hash_table_new
+   creates a hash table, and hash_table_destroy deletes it.
+   hash_table_put establishes a mapping between a key and a value.
+   hash_table_get retrieves the value that corresponds to a key.
+   hash_table_contains queries whether a key is stored in a table at
+   all.  hash_table_remove removes a mapping that corresponds to a
+   key.  hash_table_map allows you to map through all the entries in a
+   hash table.  hash_table_clear clears all the entries from the hash
+   table.
 
    The number of mappings in a table is not limited, except by the
    amount of memory.  As you add new elements to a table, it regrows
    as necessary.  If you have an idea about how many elements you will
    store, you can provide a hint to hash_table_new().
 
-   The hashing and equality functions are normally provided by the
-   user.  For the special (and frequent) case of hashing strings, you
-   can use the pre-canned make_string_hash_table(), which provides an
-   efficient string hashing function, and a string equality wrapper
-   around strcmp().
+   The hashing and equality functions depend on the type of key and
+   are normally provided by the user.  For the special (and frequent)
+   case of using string keys, you can use the pre-canned
+   make_string_hash_table(), which provides an efficient string
+   hashing function, and a string equality wrapper around strcmp().
 
-   When specifying your own hash and test functions, make sure the
+   When specifying your hash and test functions, make sure the
    following holds true:
 
    - The test function returns non-zero for keys that are considered
@@ -109,11 +110,12 @@ so, delete this exception statement from your version.  */
      before calculating a hash.  That way you have easily guaranteed
      that case differences will not result in a different hash.
 
-   - (optional) Choose the hash function to get as good "spreading" as
-     possible.  A good hash function will react to even a small change
-     in its input with a completely different resulting hash.
-     Finally, don't make your hash function extremely slow, because
-     you're then defeating the purpose of hashing.
+   - If you care about performance, choose a hash function with as
+     good "spreading" as possible.  A good hash function will react to
+     even a small change in its input with a completely different
+     resulting hash.  Finally, don't make the hash function itself
+     overly slow, because you'll be incurring a non-negligible
+     overhead to reads and writes to the hash table.
 
    Note that neither keys nor values are copied when inserted into the
    hash table, so they must exist for the lifetime of the table.  This
@@ -125,16 +127,16 @@ so, delete this exception statement from your version.  */
 
    All the hash mappings (key-value pairs of pointers) are stored in a
    contiguous array.  The position of each mapping is determined by
-   applying the hash function to the key: location = hash(key) % size.
-   If two different keys end up on the same position, the collision is
-   resolved by placing the second mapping at the next empty place in
-   the array following the occupied place.  This method of collision
-   resolution is called "linear probing".
+   the hash value of its key and the size of the table: location :=
+   hash(key) % size.  If two different keys end up on the same
+   position (hash collision), the one that came second is placed at
+   the next empty position following the occupied place.  This
+   collision resolution technique is called "linear probing".
 
    There are more advanced collision resolution mechanisms (quadratic
-   probing, double hashing), but we don't use them because they
-   involve more non-sequential access to the array, and therefore
-   worse cache behavior.  Linear probing works well as long as the
+   probing, double hashing), but we don't use them because they incur
+   more non-sequential access to the array, which results in worse
+   cache behavior.  Linear probing works well as long as the
    fullness/size ratio is kept below 75%.  We make sure to regrow or
    rehash the hash table whenever this threshold is exceeded.
 
@@ -227,7 +229,11 @@ prime_size (int size, int *prime_offset)
    being a prime number.
 
    Consequently, if you wish to start out with a "small" table which
-   will be regrown as needed, specify INITIAL_SIZE 0.  */
+   will be regrown as needed, specify INITIAL_SIZE 0.
+
+   If HASH_FUNCTION is not provided, identity table is assumed,
+   i.e. key pointers are compared as keys.  If you want strings with
+   equal contents to hash the same, use make_string_hash_table.  */
 
 struct hash_table *
 hash_table_new (int initial_size,
@@ -237,8 +243,8 @@ hash_table_new (int initial_size,
   struct hash_table *ht
     = (struct hash_table *)xmalloc (sizeof (struct hash_table));
 
-  ht->hash_function = hash_function;
-  ht->test_function = test_function;
+  ht->hash_function = hash_function ? hash_function : ptrhash;
+  ht->test_function = test_function ? test_function : ptrcmp;
 
   ht->prime_offset = 0;
   ht->size = prime_size (initial_size, &ht->prime_offset);
@@ -497,10 +503,11 @@ hash_table_count (struct hash_table *ht)
    don't strictly belong to this file.  However, this is as good a
    place for them as any.  */
 
-/* ========
-   Support for hash tables whose keys are strings.
-   ======== */
-
+/*
+ * Support for hash tables whose keys are strings.
+ *
+ */
+   
 /* 31 bit hash function.  Taken from Gnome's glib, modified to use
    standard C types.
 
@@ -537,10 +544,11 @@ make_string_hash_table (int initial_size)
   return hash_table_new (initial_size, string_hash, string_cmp);
 }
 
-/* ========
-   Support for hash tables whose keys are strings, but which are
-   compared case-insensitively.
-   ======== */
+/*
+ * Support for hash tables whose keys are strings, but which are
+ * compared case-insensitively.
+ *
+ */
 
 /* Like string_hash, but produce the same hash regardless of the case. */
 
@@ -574,10 +582,45 @@ make_nocase_string_hash_table (int initial_size)
   return hash_table_new (initial_size, string_hash_nocase, string_cmp_nocase);
 }
 
-#if 0
-/* If I ever need it: hashing of integers. */
+/* Hashing of pointers.  Used for hash tables that are keyed by
+   pointer identity.  (Common Lisp calls them EQ hash tables, and Java
+   calls them IdentityHashMaps.)  */
 
-unsigned int
+unsigned long
+ptrhash (const void *ptr)
+{
+  unsigned long key = (unsigned long)ptr;
+  key += (key << 12);
+  key ^= (key >> 22);
+  key += (key << 4);
+  key ^= (key >> 9);
+  key += (key << 10);
+  key ^= (key >> 2);
+  key += (key << 7);
+  key ^= (key >> 12);
+#if SIZEOF_LONG > 4
+  key += (key << 44);
+  key ^= (key >> 54);
+  key += (key << 36);
+  key ^= (key >> 41);
+  key += (key << 42);
+  key ^= (key >> 34);
+  key += (key << 39);
+  key ^= (key >> 44);
+#endif
+  return key;
+}
+
+int
+ptrcmp (const void *ptr1, const void *ptr2)
+{
+  return ptr1 == ptr2;
+}
+
+#if 0
+/* Currently unused: hashing of integers. */
+
+unsigned long
 inthash (unsigned int key)
 {
   key += (key << 12);

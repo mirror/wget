@@ -69,4 +69,7 @@ int string_cmp PARAMS ((const void *, const void *));
 struct hash_table *make_string_hash_table PARAMS ((int));
 struct hash_table *make_nocase_string_hash_table PARAMS ((int));
 
+unsigned long ptrhash PARAMS ((const void *));
+int ptrcmp PARAMS ((const void *, const void *));
+
 #endif /* HASH_H */
