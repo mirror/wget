@@ -1,8 +1,6 @@
 2001-11-25  Hrvoje Niksic  <hniksic@arsdigita.com>
 
-	* TODO: Ditto.
-
-	* NEWS: Updated with the latest stuff.
+	* util/dist-wget: New file: the script used for building Wget.
 
 2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
 

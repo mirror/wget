@@ -1,0 +1,112 @@
+#!/bin/sh -e
+
+# Copyright (C) 2001 Free Software Foundation, Inc.
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+CVSROOT=:pserver:cvs@sunsite.dk:/pack/anoncvs
+DIR=$HOME/work/tmp
+DEBUG=no
+CHECKOUT=yes
+
+for arg; do
+  case "$arg" in
+    -d)
+      DEBUG=yes
+      ;;
+    --no-checkout)
+      CHECKOUT=no
+      ;;
+    *)
+      echo "Usage: $0 [-d] [--no-checkout]" >&2
+      exit 1
+  esac
+done
+
+# Resolve echo -n incompatibilities.
+e_n=-n
+e_c=
+if test "`(echo foo; echo -n bar) | tr '[\012]' x`" != fooxbar; then
+  e_n=
+  e_c='\c'
+fi
+
+# File for output/errors redirection.
+O=$DIR/dist-output
+
+cd $DIR
+
+echo "Building wget dist in $DIR."
+echo "Output from commands is in $DIR/dist-output."
+
+echo "-----------" >$O
+
+if test $CHECKOUT = yes; then
+  # Checkout clean sources from the repository.
+  echo $e_n "Checking out CVS sources from the repository... $e_c"
+  rm -rf wget 1>>$O 2>&1
+  cvs -d $CVSROOT checkout wget 1>>$O 2>&1
+  echo "done."
+fi
+
+cd wget
+
+# Remove the dummy `Branches' directory.
+rm -rf Branches 1>>$O 2>&1
+
+# Create configure and friends.
+if ! test -f configure; then
+  echo $e_n "Creating \`configure' from \`configure.in'... $e_c"
+  make -f Makefile.cvs 1>>$O 2>&1
+  echo "done."
+fi
+
+# Remove `Makefile' if it already exists.
+if test -f Makefile; then
+  echo $e_n "Cleaning old Makefiles with \`make distclean'... $e_c"
+  make distclean 1>>$O 2>&1
+  echo "done."
+fi
+
+# Create a new `Makefile'.
+echo $e_n "Running configure... $e_c"
+CFLAGS=-g ./configure 1>>$O 2>&1
+echo "done."
+
+# Now build the MO files.
+echo $e_n "Building MO files out of PO files... $e_c"
+cd po
+make 1>>$O 2>&1
+cd ..
+echo "done."
+
+# Now build the Info documentation and the man page.
+echo $e_n "Building Info and man documentation... $e_c"
+cd doc
+make 1>>$O 2>&1
+cd ..
+echo "done."
+
+# Create the distribution file.
+echo $e_n "Creating distribution tarball... $e_c"
+make dist 1>>$O 2>&1
+mv wget-*.tar.gz ../
+echo "done."
+
+cd ..
+
+if test $DEBUG = no && test $CHECKOUT = yes; then
+  rm -rf wget 1>>$O 2>&1
+fi
