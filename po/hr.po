@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU Wget 1.8\n"
-"POT-Creation-Date: 2001-12-10 10:41+0100\n"
+"POT-Creation-Date: 2001-12-12 19:32+0100\n"
 "PO-Revision-Date: 1998-02-29 21:05+01:00\n"
 "Last-Translator: Hrvoje Niksic <hniksic@arsdigita.com>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
@@ -56,37 +56,37 @@ msgstr "Gre¹ka pri pisanju u `%s': %s\n"
 msgid "Error closing `%s': %s\n"
 msgstr "Gre¹ka pri zatvaranju `%s': %s\n"
 
-#: src/ftp-ls.c:791
+#: src/ftp-ls.c:802
 msgid "Unsupported listing type, trying Unix listing parser.\n"
 msgstr ""
 "Nepodr¾ana vrsta ispisa, poku¹avat æu s Unixovim razluèiteljem ispisa.\n"
 
-#: src/ftp-ls.c:836 src/ftp-ls.c:838
+#: src/ftp-ls.c:847 src/ftp-ls.c:849
 #, c-format
 msgid "Index of /%s on %s:%d"
 msgstr "Indeks direktorija /%s na %s:%d"
 
-#: src/ftp-ls.c:860
+#: src/ftp-ls.c:871
 msgid "time unknown       "
 msgstr "nepoznato vrijeme    "
 
-#: src/ftp-ls.c:864
+#: src/ftp-ls.c:875
 msgid "File        "
 msgstr "Spis        "
 
-#: src/ftp-ls.c:867
+#: src/ftp-ls.c:878
 msgid "Directory   "
 msgstr "Direktorij  "
 
-#: src/ftp-ls.c:870
+#: src/ftp-ls.c:881
 msgid "Link        "
 msgstr "Link        "
 
-#: src/ftp-ls.c:873
+#: src/ftp-ls.c:884
 msgid "Not sure    "
 msgstr "Ne znam     "
 
-#: src/ftp-ls.c:891
+#: src/ftp-ls.c:902
 #, c-format
 msgid " (%s bytes)"
 msgstr " (%s bajtova)"
@@ -133,7 +133,7 @@ msgid "done.    "
 msgstr "gotovo.  "
 
 #: src/ftp.c:314 src/ftp.c:449 src/ftp.c:484 src/ftp.c:720 src/ftp.c:768
-#: src/host.c:285
+#: src/host.c:283
 msgid "done.\n"
 msgstr "gotovo.\n"
 
@@ -433,23 +433,28 @@ msgstr "%s: nedopu¹tena opcija -- %c\n"
 msgid "%s: option requires an argument -- %c\n"
 msgstr "%s: opcija tra¾i argument -- %c\n"
 
-#: src/host.c:273
+#: src/host.c:271
 #, c-format
 msgid "Resolving %s... "
 msgstr "Tra¾im %s... "
 
-#: src/host.c:280
+#: src/host.c:278
 #, c-format
 msgid "failed: %s.\n"
 msgstr "nije uspjelo: %s.\n"
 
-#: src/host.c:350
+#: src/host.c:348
 msgid "Host not found"
 msgstr "Raèunalo nije pronaðeno"
 
-#: src/host.c:352
+#: src/host.c:350
 msgid "Unknown error"
 msgstr "Nepoznata gre¹ka"
+
+#: src/html-url.c:336
+#, c-format
+msgid "%s: Cannot resolve incomplete link %s.\n"
+msgstr "%s: Ne mogu sastaviti nepotpun link %s.\n"
 
 #. this is fatal
 #: src/http.c:573
@@ -714,7 +719,9 @@ msgstr "%s: %s: Nepoznat indikator napretka `%s'.\n"
 msgid ""
 "\n"
 "%s received, redirecting output to `%s'.\n"
-msgstr "\n%s primljen, preusmjeravam izlaz u `%s'.\n"
+msgstr ""
+"\n"
+"%s primljen, preusmjeravam izlaz u `%s'.\n"
 
 #. Eek!  Opening the alternate log file has failed.  Nothing we
 #. can do but disable printing completely.
