@@ -1,3 +1,7 @@
+2003-11-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c (register_extended): Check that fd >= 0.
+
 2003-11-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* connect.c (LAZY_RETRIEVE_INFO): Set LAST_INFO.

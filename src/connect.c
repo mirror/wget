@@ -628,7 +628,14 @@ void
 register_extended (int fd, xreader_t reader, xwriter_t writer,
 		   xpoller_t poller, xcloser_t closer, void *ctx)
 {
-  struct extended_info *info = xnew (struct extended_info);
+  struct extended_info *info;
+
+  /* The file descriptor must be non-negative to be registered.
+     Negative values are ignored by xclose(), and -1 cannot be used as
+     hash key.  */
+  assert (fd >= 0);
+
+  info = xnew (struct extended_info);
   info->reader = reader;
   info->writer = writer;
   info->poller = poller;
