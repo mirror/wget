@@ -12,6 +12,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 flags `--inet4' and `--inet6' (or `-4' and `-6' for short) force the
 use of IPv4 and IPv6 respectively.
 
+** Talking to SSL servers over proxies now actually works.
+
 ** The progress bar is now updated regularly even when the data does
 not arrive.
 
