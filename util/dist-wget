@@ -26,13 +26,19 @@
 # file, but you are not obligated to do so.  If you do not wish to do
 # so, delete this exception statement from your version.
 
+
 CVSROOT=:pserver:cvs@sunsite.dk:/pack/anoncvs
-DIR=$HOME/work/tmp
 SUBDIR=wget.cvs.$$
 DEBUG=no
 
 EXPORT_TAG='-D now'
 VERSION=
+
+if test x"$TMPDIR" = x
+then
+  TMPDIR=/tmp
+fi
+DEST_DIR=`pwd`
 
 while test x"$*" != x
 do
@@ -68,12 +74,12 @@ if test "`(echo foo; echo -n bar) | tr '[\012]' x`" != fooxbar; then
 fi
 
 # File for output/errors redirection.
-O=$DIR/dist-output
+O=$DEST_DIR/dist-output
 
-cd $DIR
+cd $TMPDIR
 
-echo "Building wget dist in $DIR."
-echo "Output from commands is in $DIR/dist-output."
+echo "Building wget dist in $TMPDIR/$SUBDIR."
+echo "Output from commands is in $O."
 
 echo "-----------" >$O
 
@@ -130,7 +136,7 @@ echo "done."
 # Create the distribution file.
 echo $e_n "Creating distribution tarball... $e_c"
 make dist 1>>$O 2>&1
-mv wget-*.tar.gz ../
+mv wget-*.tar.gz $DEST_DIR
 echo "done."
 
 cd ..
