@@ -1,7 +1,7 @@
 This file lists the OSes and architectures on which GNU Wget has been
 successfully compiled and used in the past.  If you compile Wget on a
-new OS or architecture, please send a note to bug-wget@gnu.org or to
-the Wget mailing list so this file can be updated.
+new OS or architecture, please send a note to bug-wget@gnu.org with
+the output of the ./config.guess script so this file can be updated.
 
 
 Amiga NetBSD (m68k-cbm-netbsd1.2)

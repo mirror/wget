@@ -1,3 +1,7 @@
+2001-02-28  Dan Harkless  <wget@harkless.org>
+
+	* MACHINES: Explicitly tell people to send us config.guess output.
+
 2001-02-27  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Re-use FTP connection if multiple URLs on one host
