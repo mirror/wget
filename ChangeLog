@@ -1,5 +1,9 @@
 2003-09-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* install-sh, mkinstalldirs: Updated from Autoconf 2.57.
+
+2003-09-17  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ltmain.sh, aclocal.m4: Upgrade to libtool 1.4.3.  Libtool 1.5
 	has been out for a while now, but it can wait until after Wget 1.9
 	is released.
