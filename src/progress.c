@@ -401,10 +401,15 @@ dot_set_params (const char *params)
    create_image will overflow the buffer.  */
 #define MINIMUM_SCREEN_WIDTH 45
 
-/* Number of recent packets we keep the stats for. */
-#define RECENT_ARRAY_SIZE 30
-
 static int screen_width = DEFAULT_SCREEN_WIDTH;
+
+/* Size of the history table for download speeds. */
+#define DLSPEED_HISTORY_SIZE 30
+
+/* The time interval in milliseconds below which we increase old
+   history entries rather than overwriting them.  That interval
+   represents the scope of the download speed history. */
+#define DLSPEED_HISTORY_MAX_INTERVAL 3000
 
 struct bar_progress {
   long initial_length;		/* how many bytes have been downloaded
@@ -428,16 +433,16 @@ struct bar_progress {
 				   is not known. */
 
   /* The following variables (kept in a struct for namespace reasons)
-     keep track of how long it took to read recent packets.  See
-     bar_update() for explanation.  */
-  struct {
-    long previous_time;
-    long times[RECENT_ARRAY_SIZE];
-    long bytes[RECENT_ARRAY_SIZE];
-    int count;
+     keep track of recent download speeds.  See bar_update() for
+     details.  */
+  struct bar_progress_hist {
+    int pos;
+    long times[DLSPEED_HISTORY_SIZE];
+    long bytes[DLSPEED_HISTORY_SIZE];
     long summed_times;
     long summed_bytes;
-  } recent;
+    long previous_time;
+  } hist;
 
   /* create_image() uses these to make sure that ETA information
      doesn't flash. */
@@ -476,8 +481,9 @@ static void
 bar_update (void *progress, long howmuch, long dltime)
 {
   struct bar_progress *bp = progress;
+  struct bar_progress_hist *hist = &bp->hist;
   int force_screen_update = 0;
-  int rec_index;
+  long delta_time = dltime - hist->previous_time;
 
   bp->count += howmuch;
   if (bp->total_length > 0
@@ -489,58 +495,52 @@ bar_update (void *progress, long howmuch, long dltime)
        equal to the expected size doesn't abort.  */
     bp->total_length = bp->count + bp->initial_length;
 
-  /* The progress bar is supposed to display the "current download
-     speed".  The first version of the progress bar calculated it by
-     dividing the total amount of data with the total time needed to
-     download it.  The problem with this was that stalled or suspended
-     download could unduly influence the "current" time.  Taking just
-     the time needed to download the current packet would not work
-     either because packets arrive too fast and the varitions would be
-     too jerky.
+  /* This code attempts to determine the current download speed.  We
+     measure the speed over the interval of approximately three
+     seconds, in subintervals no smaller than 0.1s.  In other words,
+     we maintain and use the history of 30 most recent reads, where a
+     "read" consists of one or more network reads, up until the point
+     where a subinterval is filled. */
 
-     It would be preferrable to show the speed that pertains to a
-     recent period, say over the past several seconds.  But to do this
-     accurately, we would have to record all the packets received
-     during the last five seconds.
+  if (hist->times[hist->pos]
+      >= DLSPEED_HISTORY_MAX_INTERVAL / DLSPEED_HISTORY_SIZE)
+    {
+      /* The subinterval at POS has been used up.  Move on to the next
+	 position. */
+      if (++hist->pos == DLSPEED_HISTORY_SIZE)
+	hist->pos = 0;
 
-     What we do instead is maintain a history of a fixed number of
-     packets.  It actually makes sense if you think about it -- faster
-     downloads will have a faster response to speed changes.  */
+      /* Invalidate old data (from the previous cycle) at this
+	 position. */
+      hist->summed_times -= hist->times[hist->pos];
+      hist->summed_bytes -= hist->bytes[hist->pos];
+      hist->times[hist->pos] = delta_time;
+      hist->bytes[hist->pos] = howmuch;
+    }
+  else
+    {
+      /* Increment the data at POS. */
+      hist->times[hist->pos] += delta_time;
+      hist->bytes[hist->pos] += howmuch;
+    }
 
-  rec_index = bp->recent.count % RECENT_ARRAY_SIZE;
-  ++bp->recent.count;
-
-  /* Instead of calculating the sum of times[] and bytes[], we
-     maintain the summed quantities.  To maintain each sum, we must
-     make sure that it gets increased by the newly downloaded amount,
-     but also that it gets decreased by the amount we're overwriting
-     in (erasing from) the cyclical buffer.  */
-  bp->recent.summed_times -= bp->recent.times[rec_index];
-  bp->recent.summed_bytes -= bp->recent.bytes[rec_index];
-
-  bp->recent.times[rec_index] = dltime - bp->recent.previous_time;
-  bp->recent.bytes[rec_index] = howmuch;
-
-  bp->recent.summed_times += bp->recent.times[rec_index];
-  bp->recent.summed_bytes += bp->recent.bytes[rec_index];
-
-  bp->recent.previous_time = dltime;
+  hist->summed_times += delta_time;
+  hist->summed_bytes += howmuch;
+  hist->previous_time = dltime;
 
 #if 0
   /* Sledgehammer check that summed_times and summed_bytes are
      accurate.  */
   {
-    int num = bp->recent.count;
     int i;
-    int upper = num < RECENT_ARRAY_SIZE ? num : RECENT_ARRAY_SIZE;
     long sumt = 0, sumb = 0;
-    for (i = 0; i < upper; i++)
+    for (i = 0; i < DLSPEED_HISTORY_SIZE; i++)
       {
-	sumt += bp->recent.times[i];
-	sumb += bp->recent.bytes[i];
+	sumt += hist->times[i];
+	sumb += hist->bytes[i];
       }
-    assert (sumt == bp->recent.summed_times);
-    assert (sumb == bp->recent.summed_bytes);
+    assert (sumt == hist->summed_times);
+    assert (sumb == hist->summed_bytes);
   }
 #endif
 
@@ -565,10 +565,12 @@ bar_finish (void *progress, long dltime)
 {
   struct bar_progress *bp = progress;
 
+  /* If the download was faster than the granularity of the timer,
+     fake some output so that we don't get the ugly "----.--" rate at
+     the download finish.  */
+  if (bp->hist.summed_times == 0)
+    bp->hist.summed_times = 1;
   if (dltime == 0)
-    /* If the download was faster than the granularity of the timer,
-       fake some output so that we don't get the ugly "----.--" rate
-       at the download finish.  */
     dltime = 1;
 
   create_image (bp, dltime);
@@ -598,8 +600,8 @@ create_image (struct bar_progress *bp, long dl_total_time)
   char *size_legible = legible (size);
   int size_legible_len = strlen (size_legible);
 
-  long recent_time = bp->recent.summed_times;
-  long recent_bytes = bp->recent.summed_bytes;
+  long recent_time = bp->hist.summed_times;
+  long recent_bytes = bp->hist.summed_bytes;
 
   /* The progress bar should look like this:
      xx% [=======>             ] nn,nnn 12.34K/s ETA 00:00

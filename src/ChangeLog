@@ -1,3 +1,10 @@
+2002-04-10  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* progress.c (bar_update): Keep updating a subinterval until it
+	reaches or exceeds a watermark.  That way the measurement will be
+	guaranteed to span a configurable minimum of time.  The current
+	default is 3s in 30 100ms intervals.
+
 2002-04-09  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* progress.c (bar_update): Maintain an array of the time it took
