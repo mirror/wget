@@ -103,12 +103,12 @@ so, delete this exception statement from your version.  */
    The hash table is implemented as an open-addressed table with
    linear probing collision resolution.
 
-   For those not up to CS parlance, it means that all the hash entries
-   (pairs of pointers key and value) are stored in a contiguous array.
-   The position of each mapping is determined by the hash value of its
-   key and the size of the table: location := hash(key) % size.  If
-   two different keys end up on the same position (collide), the one
-   that came second is placed at the next empty position following the
+   In regular language, it means that all the hash entries (pairs of
+   pointers key and value) are stored in a contiguous array.  The
+   position of each mapping is determined by the hash value of its key
+   and the size of the table: location := hash(key) % size.  If two
+   different keys end up on the same position (collide), the one that
+   came second is placed at the next empty position following the
    occupied place.  This collision resolution technique is called
    "linear probing".
 
