@@ -1350,6 +1350,8 @@ char *
 getproxy (enum url_scheme scheme)
 {
   char *proxy = NULL;
+  char *rewritten_url;
+  static char rewritten_storage[1024];
 
   switch (scheme)
     {
@@ -1369,6 +1371,16 @@ getproxy (enum url_scheme scheme)
     }
   if (!proxy || !*proxy)
     return NULL;
+
+  /* Handle shorthands. */
+  rewritten_url = rewrite_url_maybe (proxy);
+  if (rewritten_url)
+    {
+      strncpy (rewritten_storage, rewritten_url, sizeof(rewritten_storage));
+      rewritten_storage[sizeof (rewritten_storage) - 1] = '\0';
+      proxy = rewritten_storage;
+    }
+
   return proxy;
 }
 

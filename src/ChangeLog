@@ -1,5 +1,9 @@
 2001-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* url.c (getproxy): Handle URL shorthands.
+
+2001-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* main.c: Remove --wait / --waitretry backwards compatibility
 	code.
 	
