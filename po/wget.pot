@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-05-31 15:52+0200\n"
+"POT-Creation-Date: 2001-06-03 15:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,7 +44,7 @@ msgid "Error closing `%s': %s\n"
 msgstr ""
 
 #: src/ftp-ls.c:787
-msgid "Usupported listing type, trying Unix listing parser.\n"
+msgid "Unsupported listing type, trying Unix listing parser.\n"
 msgstr ""
 
 #: src/ftp-ls.c:832 src/ftp-ls.c:834
