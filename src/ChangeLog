@@ -1,3 +1,8 @@
+2001-12-02  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* utils.c (file_merge): If BASE doesn't contain a slash, just
+	return a copy of FILE.
+
 2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* ftp.c (getftp): When PWD fails, assume "/".

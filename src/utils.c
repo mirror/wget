@@ -744,9 +744,11 @@ make_directory (const char *directory)
 }
 
 /* Merge BASE with FILE.  BASE can be a directory or a file name, FILE
-   should be a file name.  For example, file_merge("/foo/bar", "baz")
-   will return "/foo/baz".  file_merge("/foo/bar/", "baz") will return
-   "foo/bar/baz".
+   should be a file name.
+
+   file_merge("/foo/bar", "baz")  => "/foo/baz"
+   file_merge("/foo/bar/", "baz") => "/foo/bar/baz"
+   file_merge("foo", "bar")       => "bar"
 
    In other words, it's a simpler and gentler version of uri_merge_1.  */
 
@@ -757,7 +759,7 @@ file_merge (const char *base, const char *file)
   const char *cut = (const char *)strrchr (base, '/');
 
   if (!cut)
-    cut = base + strlen (base);
+    return xstrdup (file);
 
   result = (char *)xmalloc (cut - base + 1 + strlen (file) + 1);
   memcpy (result, base, cut - base);
