@@ -1,5 +1,11 @@
 2003-11-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c (print_help): Fix typo in `-O' help message.  Fix docs of
+	-Y/--proxy.  Fix docs of `--cookies' and `--glob'.  Improve docs
+	of --convert-links.  Fix docs of SSL options.
+
+2003-11-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ftp-basic.c: Don't include <arpa/inet.h> and others because
 	they're no longer needed.
 

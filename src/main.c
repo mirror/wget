@@ -400,7 +400,7 @@ Logging and input file:\n"),
     N_("\
   -v,  --verbose             be verbose (this is the default).\n"),
     N_("\
-  -nv, --no-verbose         turn off verboseness, without being quiet.\n"),
+  -nv, --no-verbose          turn off verboseness, without being quiet.\n"),
     N_("\
   -i,  --input-file=FILE     download URLs found in FILE.\n"),
     N_("\
@@ -416,7 +416,7 @@ Download:\n"),
     N_("\
        --retry-connrefused       retry even if connection is refused.\n"),
     N_("\
-  -O   --output-document=FILE    write documents to FILE.\n"),
+  -O,  --output-document=FILE    write documents to FILE.\n"),
     N_("\
   -nc, --no-clobber              skip downloads that would download to\n\
                                  existing files.\n"),
@@ -446,7 +446,9 @@ Download:\n"),
     N_("\
        --random-wait             wait from 0...2*WAIT secs between retrievals.\n"),
     N_("\
-  -Y,  --proxy=on/off            turn proxy on or off.\n"),
+  -Y,  --proxy                   explicitly turn on proxy.\n"),
+    N_("\
+       --no-proxy                explicitly turn off proxy.\n"),
     N_("\
   -Q,  --quota=NUMBER            set retrieval quota to NUMBER.\n"),
     N_("\
@@ -454,7 +456,7 @@ Download:\n"),
     N_("\
        --limit-rate=RATE         limit download rate to RATE.\n"),
     N_("\
-       --dns-cache=off           disable caching DNS lookups.\n"),
+       --no-dns-cache            disable caching DNS lookups.\n"),
     N_("\
        --restrict-file-names=OS  restrict chars in file names to ones OS allows.\n"),
 #ifdef ENABLE_IPV6
@@ -506,7 +508,7 @@ HTTP options:\n"),
     N_("\
        --no-http-keep-alive    disable HTTP keep-alive (persistent connections).\n"),
     N_("\
-       --cookies=off           don't use cookies.\n"),
+       --no-cookies            don't use cookies.\n"),
     N_("\
        --load-cookies=FILE     load cookies from FILE before session.\n"),
     N_("\
@@ -531,15 +533,14 @@ HTTPS (SSL) options:\n"),
     N_("\
        --sslcadir=DIR        dir where hash list of CA's are stored.\n"),
     N_("\
-       --sslcafile=FILE      file with bundle of CA's\n"),
+       --sslcafile=FILE      file with bundle of CA's.\n"),
     N_("\
-       --sslcerttype=0/1     Client-Cert type 0=PEM (default) / 1=ASN1 (DER)\n"),
+       --sslcerttype=0/1     Client-Cert type 0=PEM (default) / 1=ASN1 (DER).\n"),
     N_("\
-       --sslcheckcert=0/1    Check the server cert against given CA\n"),
+       --sslcheckcert=0/1    Check the server cert against given CA.\n"),
     N_("\
-       --sslprotocol=0-3     choose SSL protocol; 0=automatic,\n"),
-    N_("\
-                             1=SSLv2 2=SSLv3 3=TLSv1\n"),
+       --sslprotocol=0-3     choose SSL protocol; 0=automatic,\n\
+                             1=SSLv2 2=SSLv3 3=TLSv1.\n"),
     "\n",
 #endif /* HAVE_SSL */
 
@@ -548,7 +549,7 @@ FTP options:\n"),
     N_("\
   -nr, --no-remove-listing  don't remove `.listing' files.\n"),
     N_("\
-       --glob=on/off        turn file name globbing on or off.\n"),
+       --no-glob            turn off FTP file name globbing.\n"),
     N_("\
        --passive-ftp        use the \"passive\" transfer mode.\n"),
     N_("\
@@ -560,21 +561,21 @@ FTP options:\n"),
     N_("\
 Recursive download:\n"),
     N_("\
-  -r,  --recursive             specify recursive download.\n"),
+  -r,  --recursive          specify recursive download.\n"),
     N_("\
-  -l,  --level=NUMBER          maximum recursion depth (inf or 0 for infinite).\n"),
+  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n"),
     N_("\
-       --delete-after          delete files locally after downloading them.\n"),
+       --delete-after       delete files locally after downloading them.\n"),
     N_("\
-  -k,  --convert-links         convert non-relative links to relative.\n"),
+  -k,  --convert-links      make links in downloaded HTML point to local files.\n"),
     N_("\
-  -K,  --backup-converted      before converting file X, back up as X.orig.\n"),
+  -K,  --backup-converted   before converting file X, back up as X.orig.\n"),
     N_("\
-  -m,  --mirror                shortcut option equivalent to -r -N -l inf -nr.\n"),
+  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"),
     N_("\
-  -p,  --page-requisites       get all images, etc. needed to display HTML page.\n"),
+  -p,  --page-requisites    get all images, etc. needed to display HTML page.\n"),
     N_("\
-       --strict-comments       turn on strict (SGML) handling of HTML comments.\n"),
+       --strict-comments    turn on strict (SGML) handling of HTML comments.\n"),
     "\n",
 
     N_("\
