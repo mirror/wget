@@ -1,3 +1,8 @@
+2003-09-18  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* safe-ctype.h: Don't #define ctype.h macros to errors because
+	that loses when someone #include's ctype.h after safe-ctype.h.
+
 2003-09-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c: Undef U, W, C after use.

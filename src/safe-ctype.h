@@ -51,30 +51,22 @@ so, delete this exception statement from your version.  */
 
 #ifndef I_REALLY_WANT_CTYPE_MACROS
 
+/* We used to #define these to errors, but that loses when real
+   ctype.h is included, usually by a library's (OpenSSL's) header
+   which gets #included after wget.h.  */
+
 #undef isalpha
-#define isalpha *** Please use ISALPHA ***
 #undef isalnum
-#define isalnum *** Please use ISALNUM ***
 #undef isblank
-#define isblank *** Please use ISBLANK ***
 #undef iscntrl
-#define iscntrl *** Please use ISCNTRL ***
 #undef isdigit
-#define isdigit *** Please use ISDIGIT ***
 #undef isgraph
-#define isgraph *** Please use ISGRAPH ***
 #undef islower
-#define islower *** Please use ISLOWER ***
 #undef isprint
-#define isprint *** Please use ISPRINT ***
 #undef ispunct
-#define ispunct *** Please use ISPUNCT ***
 #undef isspace
-#define isspace *** Please use ISSPACE ***
 #undef isupper
-#define isupper *** Please use ISUPPER ***
 #undef isxdigit
-#define isxdigit *** Please use ISXDIGIT ***
 
 #endif /* I_REALLY_WANT_CTYPE_MACROS */
 
