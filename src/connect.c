@@ -234,7 +234,7 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
 {
   struct sockaddr_storage ss;
   struct sockaddr *sa = (struct sockaddr *)&ss;
-  int sock, save_errno;
+  int sock = -1;
 
   /* If PRINT is non-NULL, print the "Connecting to..." line, with
      PRINT being the host name we're connecting to.  */
@@ -254,7 +254,7 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
   /* Create the socket of the family appropriate for the address.  */
   sock = socket (sa->sa_family, SOCK_STREAM, 0);
   if (sock < 0)
-    goto out;
+    goto err;
 
   /* For very small rate limits, set the buffer size (and hence,
      hopefully, the kernel's TCP window size) to the per-second limit.
@@ -282,40 +282,34 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
       if (resolve_bind_address (opt.bind_address, bind_sa, 0))
 	{
           if (bind (sock, bind_sa, sockaddr_size (bind_sa)) < 0)
-	    {
-	      CLOSE (sock);
-	      sock = -1;
-	      goto out;
-	    }
+	    goto err;
 	}
     }
 
   /* Connect the socket to the remote endpoint.  */
   if (connect_with_timeout (sock, sa, sockaddr_size (sa),
 			    opt.connect_timeout) < 0)
-    {
-      CLOSE (sock);
-      sock = -1;
-      goto out;
-    }
+    goto err;
 
- out:
-  if (sock >= 0)
-    {
-      /* Success. */
-      if (print)
-	logprintf (LOG_VERBOSE, _("connected.\n"));
-      DEBUGP (("Created socket %d.\n", sock));
-    }
-  else
-    {
-      save_errno = errno;
-      if (print)
-	logprintf (LOG_VERBOSE, "failed: %s.\n", strerror (errno));
-      errno = save_errno;
-    }
-
+  /* Success. */
+  assert (sock >= 0);
+  if (print)
+    logprintf (LOG_VERBOSE, _("connected.\n"));
+  DEBUGP (("Created socket %d.\n", sock));
   return sock;
+
+ err:
+  {
+    /* Protect errno from possible modifications by close and
+       logprintf.  */
+    int save_errno = errno;
+    if (sock >= 0)
+      CLOSE (sock);
+    if (print)
+      logprintf (LOG_VERBOSE, "failed: %s.\n", strerror (errno));
+    errno = save_errno;
+    return -1;
+  }
 }
 
 /* Connect to a remote endpoint specified by host name.  */
@@ -399,68 +393,61 @@ test_socket_open (int sock)
 uerr_t
 bindport (const ip_address *bind_address, int *port, int *local_sock)
 {
-  int msock;
+  int sock;
   int family = AF_INET;
-  int optval;
   struct sockaddr_storage ss;
   struct sockaddr *sa = (struct sockaddr *)&ss;
   xzero (ss);
+
+  /* For setting options with setsockopt. */
+  int setopt_val = 1;
+  void *setopt_ptr = (void *)&setopt_val;
+  socklen_t setopt_size = sizeof (setopt_val);
 
 #ifdef ENABLE_IPV6
   if (bind_address->type == IPV6_ADDRESS) 
     family = AF_INET6;
 #endif
 
-  if ((msock = socket (family, SOCK_STREAM, 0)) < 0)
+  if ((sock = socket (family, SOCK_STREAM, 0)) < 0)
     return CONSOCKERR;
 
 #ifdef SO_REUSEADDR
-  optval = 1;
-  if (setsockopt (msock, SOL_SOCKET, SO_REUSEADDR,
-		  (void *)&optval, (socklen_t)sizeof (optval)) < 0)
-    {
-      CLOSE (msock);
-      return CONSOCKERR;
-    }
+  setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, setopt_ptr, setopt_size);
 #endif
 
 #ifdef ENABLE_IPV6
 # ifdef HAVE_IPV6_V6ONLY
   if (family == AF_INET6)
-    {
-      optval = 1;
-      /* if setsockopt fails, go on anyway */
-      setsockopt (msock, IPPROTO_IPV6, IPV6_V6ONLY,
-                  (void *)&optval, (socklen_t)sizeof (optval));
-    }
+    setsockopt (sock, IPPROTO_IPV6, IPV6_V6ONLY, setopt_ptr, setopt_size);
 # endif
 #endif
 
   sockaddr_set_data (sa, bind_address, *port);
-  if (bind (msock, sa, sockaddr_size (sa)) < 0)
+  if (bind (sock, sa, sockaddr_size (sa)) < 0)
     {
-      CLOSE (msock);
+      CLOSE (sock);
       return BINDERR;
     }
-  DEBUGP (("Local socket fd %d bound.\n", msock));
+  DEBUGP (("Local socket fd %d bound.\n", sock));
   if (!*port)
     {
       socklen_t sa_len = sockaddr_size (sa);
-      if (getsockname (msock, sa, &sa_len) < 0)
+      if (getsockname (sock, sa, &sa_len) < 0)
 	{
-	  CLOSE (msock);
+	  CLOSE (sock);
 	  return CONPORTERR;
 	}
       sockaddr_get_data (sa, NULL, port);
       DEBUGP (("binding to address %s using port %i.\n", 
 	       pretty_print_address (bind_address), *port));
     }
-  if (listen (msock, 1) < 0)
+  if (listen (sock, 1) < 0)
     {
-      CLOSE (msock);
+      CLOSE (sock);
       return LISTENERR;
     }
-  *local_sock = msock;
+  *local_sock = sock;
   return BINDOK;
 }
 
