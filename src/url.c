@@ -54,7 +54,8 @@ extern int errno;
 
 struct scheme_data
 {
-  char *leading_string;
+  const char *name;
+  const char *leading_string;
   int default_port;
   int enabled;
 };
@@ -62,14 +63,14 @@ struct scheme_data
 /* Supported schemes: */
 static struct scheme_data supported_schemes[] =
 {
-  { "http://",  DEFAULT_HTTP_PORT,  1 },
+  { "http",	"http://",  DEFAULT_HTTP_PORT,  1 },
 #ifdef HAVE_SSL
-  { "https://", DEFAULT_HTTPS_PORT, 1 },
+  { "https",	"https://", DEFAULT_HTTPS_PORT, 1 },
 #endif
-  { "ftp://",   DEFAULT_FTP_PORT,   1 },
+  { "ftp",	"ftp://",   DEFAULT_FTP_PORT,   1 },
 
   /* SCHEME_INVALID */
-  { NULL,       -1,                 0 }
+  { NULL,	NULL,       -1,                 0 }
 };
 
 /* Forward declarations: */
@@ -1578,6 +1579,12 @@ url_file_name (const struct url *u)
      directory structure.  */
   if (opt.dirstruct)
     {
+      if (opt.protocol_directories)
+	{
+	  if (fnres.tail)
+	    append_char ('/', &fnres);
+	  append_string (supported_schemes[u->scheme].name, &fnres);
+	}
       if (opt.add_hostdir)
 	{
 	  if (fnres.tail)
@@ -1963,10 +1970,10 @@ url_string (const struct url *url, int hide_password)
   char *quoted_user = NULL, *quoted_passwd = NULL;
 
   int scheme_port  = supported_schemes[url->scheme].default_port;
-  char *scheme_str = supported_schemes[url->scheme].leading_string;
+  const char *scheme_str = supported_schemes[url->scheme].leading_string;
   int fplen = full_path_length (url);
 
-  int brackets_around_host = 0;
+  int brackets_around_host;
 
   assert (scheme_str != NULL);
 
@@ -1983,8 +1990,9 @@ url_string (const struct url *url, int hide_password)
 	}
     }
 
-  if (strchr (url->host, ':'))
-    brackets_around_host = 1;
+  /* Numeric IPv6 addresses can contain ':' and need to be quoted with
+     brackets.  */
+  brackets_around_host = strchr (url->host, ':') != NULL;
 
   size = (strlen (scheme_str)
 	  + strlen (url->host)

@@ -53,6 +53,7 @@ struct options
   int no_dirstruct;		/* Do we hate dirstruct? */
   int cut_dirs;			/* Number of directory components to cut. */
   int add_hostdir;		/* Do we add hostname directory? */
+  int protocol_directories;	/* Whether to prepend "http"/"ftp" to dirs. */
   int noclobber;		/* Disables clobbering of existing
 				   data. */
   char *dir_prefix;		/* The top of directory tree */

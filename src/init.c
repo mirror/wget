@@ -181,6 +181,7 @@ static struct {
   { "postfile",		&opt.post_file_name,	cmd_file },
   { "preservepermissions", &opt.preserve_perm,	cmd_boolean },
   { "progress",		&opt.progress_type,	cmd_spec_progress },
+  { "protocoldirectories", &opt.protocol_directories, cmd_boolean },
   { "proxypasswd",	&opt.proxy_passwd,	cmd_string },
   { "proxyuser",	&opt.proxy_user,	cmd_string },
   { "quiet",		&opt.quiet,		cmd_boolean },

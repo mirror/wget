@@ -33,6 +33,9 @@ which might not be what the user wants.  The new option
 `--preserve-permissions' and the corresponding `.wgetrc' variable can
 be used to revert to the old behavior.
 
+** The new option `--protocol-directories' instructs Wget to also use
+the protocol name as a directory component of local file names.
+
 ** Many options that previously unconditionally set or unset various
 flags are now boolean options that can be invoked as either `--OPTION'
 or `--no-OPTION'.  Options that required an argument "on" or "off"

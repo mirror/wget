@@ -216,6 +216,7 @@ struct cmdline_option option_data[] =
     { "post-file", 0, OPT_VALUE, "postfile", -1 },
     { "preserve-permissions", 0, OPT_BOOLEAN, "preservepermissions", -1 },
     { "progress", 0, OPT_VALUE, "progress", -1 },
+    { "protocol-directories", 0, OPT_BOOLEAN, "protocoldirectories", -1 },
     { "proxy", 'Y', OPT_BOOLEAN, "useproxy", -1 },
     { "proxy-passwd", 0, OPT_VALUE, "proxypasswd", -1 },
     { "proxy-user", 0, OPT_VALUE, "proxyuser", -1 },
@@ -476,6 +477,8 @@ Directories:\n"),
     N_("\
   -nH, --no-host-directories      don't create host directories.\n"),
     N_("\
+       --protocol-directories     use protocol name in directories.\n"),
+    N_("\
   -P,  --directory-prefix=PREFIX  save files to PREFIX/...\n"),
     N_("\
        --cut-dirs=NUMBER          ignore NUMBER remote directory components.\n"),
@@ -671,18 +674,21 @@ main (int argc, char *const *argv)
     {
       int val;
       struct cmdline_option *opt;
-      if (ret == '?')
-	{
-	  print_usage ();
-	  printf ("\n");
-	  printf (_("Try `%s --help' for more options.\n"), exec_name);
-	  exit (2);
-	}
 
       /* If LONGINDEX is unchanged, it means RET is referring a short
-	 option.  Look it up in the mapping table.  */
+	 option.  */
       if (longindex == -1)
-	longindex = optmap[ret - 32];
+	{
+	  if (ret == '?')
+	    {
+	      print_usage ();
+	      printf ("\n");
+	      printf (_("Try `%s --help' for more options.\n"), exec_name);
+	      exit (2);
+	    }
+	  /* Find the short option character in the mapping.  */
+	  longindex = optmap[ret - 32];
+	}
       val = long_options[longindex].val;
 
       /* Use the retrieved value to locate the option in the

@@ -1,5 +1,13 @@
 2003-12-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c (url_file_name): Respect the setting of
+	opt.protocol_directories.
+
+	* main.c (main): Only check for ret=='?' when longindex is unset.
+	(option_data): New option --protocol-directories.
+
+2003-12-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ftp.c (getftp): Ditto.
 
 	* http.c (gethttp): Correctly calculate bandwidth as total data
