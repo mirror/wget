@@ -1,7 +1,13 @@
 2000-10-20  Dan Harkless  <dan-wget@dilvish.speed.net>
 
 	* TODO: -k needs to convert '?' to "%3F" in links to saved files
-	containing the '?' character (e.g. CGI output).
+	containing the '?' character (e.g. CGI output).  Also, we need to
+	check the HTTP spec w.r.t. simplification of absolute URLs.
+
+	* MAILING-LIST: I didn't realize <wget@sunsite.auc.dk> allowed posting
+	by non-subscribers.  <bug-wget@gnu.org> soon to be an alias for it.
+
+	* NEWS: Always forget to update this file when making user-vis. changes.
 
 2000-10-19  Dan Harkless  <dan-wget@dilvish.speed.net>
 

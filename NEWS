@@ -24,6 +24,15 @@ default in the system wgetrc.
 ** New -p / --page-requisites / page_requisites = on option causes wget to
 download all ancillary files necessary to display a given HTML page properly
 (e.g. inlined images).
+
+** New -E / --html-extension / html_extension = on option causes wget to append
+".html" to text/html filenames not ending in regexp "\.[Hh][Tt][Mm][Ll]?".
+
+** New type of .wgetrc command -- "lockable Boolean".  Can be set to on, off,
+always, or never.  This allows the .wgetrc to override the commandline.  So far,
+passive_ftp is the only .wgetrc command which takes a lockable Boolean.
+
+** Polish and Russian message translation files have been added.
 
 * Wget 1.5.3 is a bugfix release with no user-visible changes.
 

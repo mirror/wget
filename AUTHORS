@@ -15,5 +15,5 @@ and windecl.h.
 Junio Hamano.  Added support for FTP Opie and HTTP digest
 authentication.
 
-Dan Harkless.  Added --backup-converted, --follow-tags, --ignore-tags, and
---page-requisites; improved documentation, etc.
+Dan Harkless.  Added --backup-converted, --follow-tags, --html-extension,
+--ignore-tags, and --page-requisites; improved documentation; etc.
