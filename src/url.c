@@ -869,6 +869,7 @@ get_urls_html (const char *file, const char *this_url, int silent,
       const char *pbuf = buf;
       char *constr, *base;
       const char *cbase;
+      char *needs_freeing, *url_data;
 
       first_time = 0;
 
@@ -889,16 +890,27 @@ get_urls_html (const char *file, const char *this_url, int silent,
       if (!size)
 	break;
 
+      /* It would be nice if we could avoid allocating memory in this
+         loop, but I don't see an easy way.  To process the entities,
+         we need to either copy the data, or change it destructively.
+         I choose the former.
+
+	 We have two pointers: needs_freeing and url_data, because the
+	 code below does thing like url_data += <something>, and we
+	 want to pass the original string to free(). */
+      needs_freeing = url_data = html_decode_entities (pbuf, pbuf + size);
+      size = strlen (url_data);
+
       for (i = 0; protostrings[i]; i++)
 	{
-	  if (!strncasecmp (protostrings[i], pbuf,
+	  if (!strncasecmp (protostrings[i], url_data,
 			    MINVAL (strlen (protostrings[i]), size)))
 	    break;
 	}
       /* Check for http:RELATIVE_URI.  See below for details.  */
       if (protostrings[i]
-	  && !(strncasecmp (pbuf, "http:", 5) == 0
-	       && strncasecmp (pbuf, "http://", 7) != 0))
+	  && !(strncasecmp (url_data, "http:", 5) == 0
+	       && strncasecmp (url_data, "http://", 7) != 0))
 	{
 	  no_proto = 0;
 	}
@@ -909,20 +921,23 @@ get_urls_html (const char *file, const char *this_url, int silent,
 	     relative URI-s as <a href="http:URL">.  Just strip off the
 	     silly leading "http:" (as well as any leading blanks
 	     before it).  */
-	  if ((size > 5) && !strncasecmp ("http:", pbuf, 5))
-	    pbuf += 5, size -= 5;
+	  if ((size > 5) && !strncasecmp ("http:", url_data, 5))
+	    url_data += 5, size -= 5;
 	}
       if (!no_proto)
 	{
 	  for (i = 0; i < ARRAY_SIZE (sup_protos); i++)
 	    {
-	      if (!strncasecmp (sup_protos[i].name, pbuf,
+	      if (!strncasecmp (sup_protos[i].name, url_data,
 			       MINVAL (strlen (sup_protos[i].name), size)))
 		break;
 	    }
 	  /* Do *not* accept a non-supported protocol.  */
 	  if (i == ARRAY_SIZE (sup_protos))
-	    continue;
+	    {
+	      free (needs_freeing);
+	      continue;
+	    }
 	}
       if (no_proto)
 	{
@@ -945,13 +960,14 @@ get_urls_html (const char *file, const char *this_url, int silent,
 		  /* Use malloc, not alloca because this is called in
                      a loop. */
 		  char *temp = (char *)malloc (size + 1);
-		  strncpy (temp, pbuf, size);
+		  strncpy (temp, url_data, size);
 		  temp[size] = '\0';
 		  logprintf (LOG_NOTQUIET,
 			     _("Error (%s): Link %s without a base provided.\n"),
 			     file, temp);
 		  free (temp);
 		}
+	      free (needs_freeing);
 	      continue;
 	    }
 	  if (this_url)
@@ -966,17 +982,18 @@ get_urls_html (const char *file, const char *this_url, int silent,
 		  logprintf (LOG_NOTQUIET, _("\
 Error (%s): Base %s relative, without referer URL.\n"),
 			     file, cbase);
+		  free (needs_freeing);
 		  continue;
 		}
 	      base = xstrdup (cbase);
 	    }
-	  constr = construct (base, pbuf, size, no_proto);
+	  constr = construct (base, url_data, size, no_proto);
 	  free (base);
 	}
       else /* has proto */
 	{
 	  constr = (char *)xmalloc (size + 1);
-	  strncpy (constr, pbuf, size);
+	  strncpy (constr, url_data, size);
 	  constr[size] = '\0';
 	}
 #ifdef DEBUG
@@ -988,7 +1005,7 @@ Error (%s): Base %s relative, without referer URL.\n"),
 	  tmp2 = html_base ();
 	  /* Use malloc, not alloca because this is called in a loop. */
 	  tmp = (char *)xmalloc (size + 1);
-	  strncpy (tmp, pbuf, size);
+	  strncpy (tmp, url_data, size);
 	  tmp[size] = '\0';
 	  logprintf (LOG_ALWAYS,
 		     "file %s; this_url %s; base %s\nlink: %s; constr: %s\n",
@@ -1009,14 +1026,15 @@ Error (%s): Base %s relative, without referer URL.\n"),
       memset (current, 0, sizeof (*current));
       current->next = NULL;
       current->url = constr;
-      current->size = size;
-      current->pos = pbuf - orig_buf;
+      current->size = step;
+      current->pos = buf - orig_buf;
       /* A URL is relative if the host and protocol are not named,
 	 and the name does not start with `/'.  */
-      if (no_proto && *pbuf != '/')
+      if (no_proto && *url_data != '/')
 	current->flags |= (URELATIVE | UNOPROTO);
       else if (no_proto)
 	current->flags |= UNOPROTO;
+      free (needs_freeing);
     }
   free (orig_buf);
 

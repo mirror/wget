@@ -34,6 +34,7 @@ struct fileinfo;
 /* Function declarations */
 const char *htmlfindurl PARAMS ((const char *, int, int *, int, int));
 const char *html_base PARAMS ((void));
+char *html_decode_entities PARAMS ((const char *, const char *));
 uerr_t ftp_index PARAMS ((const char *, struct urlinfo *, struct fileinfo *));
 
 #endif /* HTML_H */

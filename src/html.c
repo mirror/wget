@@ -91,7 +91,6 @@ idmatch (struct tag_attr *tags, const char *tag, const char *attr)
   return FALSE;  /* not one of the tag/attribute pairs wget ever cares about */
 }
 
-
 /* Parse BUF (a buffer of BUFSIZE characters) searching for HTML tags
    describing URLs to follow.  When a tag is encountered, extract its
    components (as described by html_allow[] array), and return the
@@ -270,7 +269,7 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init,
 	      for (++buf, --bufsize;
 		   bufsize && *buf != s->quote_char && *buf != '\n';
 		   ++buf, --bufsize)
-		if (!ph && *buf == '#')
+		if (!ph && *buf == '#' && *(buf - 1) != '&')
 		  ph = buf;
 	      if (!bufsize)
 		{
@@ -294,7 +293,7 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init,
 	      p = buf;
 	      for (; bufsize && !ISSPACE (*buf) && *buf != '>';
 		   ++buf, --bufsize)
-		if (!ph && *buf == '#')
+		if (!ph && *buf == '#' && *(buf - 1) != '&')
 		  ph = buf;
 	      if (!bufsize)
 		break;
@@ -435,6 +434,83 @@ const char *
 html_base (void)
 {
   return global_state.base;
+}
+
+/* Create a malloc'ed copy of text in the range [beg, end), but with
+   the HTML entities processed.  Recognized entities are &lt, &gt,
+   &amp, &quot, &nbsp and the numerical entities.  */
+
+char *
+html_decode_entities (const char *beg, const char *end)
+{
+  char *newstr = (char *)xmalloc (end - beg + 1); /* assume worst-case. */
+  const char *from = beg;
+  char *to = newstr;
+
+  while (from < end)
+    {
+      if (*from != '&')
+	*to++ = *from++;
+      else
+	{
+	  const char *save = from;
+	  int remain;
+
+	  if (++from == end) goto lose;
+	  remain = end - from;
+
+	  if (*from == '#')
+	    {
+	      int numeric;
+	      ++from;
+	      if (from == end || !ISDIGIT (*from)) goto lose;
+	      for (numeric = 0; from < end && ISDIGIT (*from); from++)
+		numeric = 10 * numeric + (*from) - '0';
+	      if (from < end && ISALPHA (*from)) goto lose;
+	      numeric &= 0xff;
+	      *to++ = numeric;
+	    }
+#define FROB(literal) (remain >= (sizeof (literal) - 1)			\
+		 && !memcmp (from, literal, sizeof (literal) - 1)	\
+		 && (*(from + sizeof (literal) - 1) == ';'		\
+		     || remain == sizeof (literal) - 1			\
+		     || !ISALNUM (*(from + sizeof (literal) - 1))))
+	  else if (FROB ("lt"))
+	    *to++ = '<', from += 2;
+	  else if (FROB ("gt"))
+	    *to++ = '>', from += 2;
+	  else if (FROB ("amp"))
+	    *to++ = '&', from += 3;
+	  else if (FROB ("quot"))
+	    *to++ = '\"', from += 4;
+	  /* We don't implement the "Added Latin 1" entities proposed
+	     by rfc1866 (except for nbsp), because it is unnecessary
+	     in the context of Wget, and would require hashing to work
+	     efficiently.  */
+	  else if (FROB ("nbsp"))
+	    *to++ = 160, from += 4;
+	  else
+	    goto lose;
+#undef FROB
+	  /* If the entity was followed by `;', we step over the `;'.
+	     Otherwise, it was followed by either a non-alphanumeric
+	     or EOB, in which case we do nothing.  */
+	  if (from < end && *from == ';')
+	    ++from;
+	  continue;
+
+	lose:
+	  /* This was not an entity after all.  Back out.  */
+	  from = save;
+	  *to++ = *from++;
+	}
+    }
+  *to++ = '\0';
+  /* #### Should we try to do this: */
+#if 0
+  newstr = xrealloc (newstr, to - newstr);
+#endif
+  return newstr;
 }
 
 /* The function returns the pointer to the malloc-ed quoted version of

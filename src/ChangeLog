@@ -1,5 +1,14 @@
 2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* url.c (get_urls_html): Decode HTML entities using
+	html_decode_entities.
+
+	* html.c (htmlfindurl): Don't count the `#' in numeric entities
+	(&#NNN;) as an HTML fragemnt.
+	(html_decode_entities): New function.
+
+2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* html.c (htmlfindurl): Fix recognition of # HTML fragments.
 
 2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
