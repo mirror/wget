@@ -1,5 +1,10 @@
 2001-12-03  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* snprintf.c (dopr): Cast the result of va_arg to short int and
+	short unsigned int where these types are expected to be used.
+
+2001-12-03  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* snprintf.c (dopr): Replace `short int' and `unsigned short int'
 	with `int' when using it as the second argument to `va_arg'.
 
