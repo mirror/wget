@@ -237,7 +237,7 @@ retrieve_tree (const char *start_url)
 	  int oldrec = opt.recursive;
 
 	  opt.recursive = 0;
-	  status = retrieve_url (url, &file, &redirected, NULL, &dt);
+	  status = retrieve_url (url, &file, &redirected, referer, &dt);
 	  opt.recursive = oldrec;
 
 	  if (file && status == RETROK

@@ -1,3 +1,8 @@
+2001-12-18  Ian Abbott  <abbotti@mev.co.uk>
+
+	* recur.c (retrieve_tree): Pass on referring URL when retrieving
+	recursed URL.
+
 2001-12-17  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* version.c: Wget 1.8.1-pre2 is released.
