@@ -217,9 +217,9 @@ msgstr ""
 "Datoteka na poslu¾itelju nije novija od lokalne datoteke `%s' -- ne skidam.\n"
 
 #: src/ftp.c:1140 src/http.c:1171
-#, fuzzy, c-format
+#, c-format
 msgid "The sizes do not match (local %ld) -- retrieving.\n"
-msgstr "Velièine se ne sla¾u (lokalno %ld), skidam.\n"
+msgstr "Velièine se ne sla¾u (lokalno %ld) -- skidam.\n"
 
 #: src/ftp.c:1157
 msgid "Invalid name of the symlink, skipping.\n"
@@ -579,9 +579,9 @@ msgid "%s: %s: Please specify on or off.\n"
 msgstr "%s: %s: Molim postavite na on ili off.\n"
 
 #: src/init.c:537
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
-msgstr "%s: %s: Molim postavite na on ili off.\n"
+msgstr "%s: %s: Molim postavite na on, off ili never.\n"
 
 #: src/init.c:556 src/init.c:813 src/init.c:835 src/init.c:908
 #, c-format
@@ -616,7 +616,6 @@ msgstr ""
 "\n"
 
 #: src/main.c:121
-#, fuzzy
 msgid ""
 "Startup:\n"
 "  -V,  --version           display the version of Wget and exit.\n"
@@ -626,14 +625,13 @@ msgid ""
 "\n"
 msgstr ""
 "Pokretanje:\n"
-"  -V,  --version           prika¾i verziju Wget-a i izaði.\n"
+"  -V,  --version           prika¾i verziju Wgeta i izaði.\n"
 "  -h,  --help              ispi¹i pomoæ.\n"
 "  -b,  --background        radi u pozadini nakon pokretanja.\n"
-"  -e,  --execute=NAREDBA   izvr¹i naredbu `.wgetrc'-a.\n"
+"  -e,  --execute=NAREDBA   izvr¹i naredbu poput onih u `.wgetrc'-u.\n"
 "\n"
 
 #: src/main.c:127
-#, fuzzy
 msgid ""
 "Logging and input file:\n"
 "  -o,  --output-file=FILE     log messages to FILE.\n"
@@ -656,10 +654,10 @@ msgstr ""
 "  -nv, --non-verbose              iskljuèi veæinu ispisa.\n"
 "  -i,  --input-file=DATOTEKA      èitaj URL-ove iz DATOTEKE.\n"
 "  -F,  --force-html               tretiraj ulaznu datoteku kao HTML.\n"
+"  -B,  --base=URL                 osnovni URL za relativne linkove kod -F -i.\n"
 "\n"
 
 #: src/main.c:138
-#, fuzzy
 msgid ""
 "Download:\n"
 "  -t,  --tries=NUMBER           set number of retries to NUMBER (0 "
@@ -691,6 +689,7 @@ msgstr ""
 "       --spider                     ni¹ta ne skidaj.\n"
 "  -T,  --timeout=SEKUNDE            postavi timeout èitanja na SEKUNDE.\n"
 "  -w,  --wait=SEKUNDE               èekaj SEKUNDE izmeðu skidanja.\n"
+"       --wait-retry=SEKUNDE         èekaj 1...SEKUNDI izmeðu ponovnih poku¹aja.\n"
 "  -Y,  --proxy=on/off               ukljuèi ili iskljuèi proxy.\n"
 "  -Q,  --quota=BROJ                 postavi ogranièenje skidanja na BROJ.\n"
 "\n"
@@ -715,7 +714,6 @@ msgstr ""
 "\n"
 
 #: src/main.c:160
-#, fuzzy
 msgid ""
 "HTTP options:\n"
 "       --http-user=USER      set http user to USER.\n"
@@ -736,20 +734,19 @@ msgstr ""
 "HTTP options:\n"
 "       --http-user=KORISNIK     postavi HTTP korisnika na KORISNIK.\n"
 "       --http-passwd=ZAPORKA    postavi HTTP zaporku na ZAPORKA.\n"
-"  -C,  --cache=on/off           dozvoli ili zabrani ke¹iranje na "
-"poslu¾itelju\n"
+"  -C,  --cache=on/off           dozvoli ili zabrani ke¹iranje na poslu¾itelju\n"
 "                                  (obièno dozvoljeno).\n"
 "       --ignore-length          ignoriraj `Content-Length' zaglavlje.\n"
 "       --header=STRING          umetni STRING meðu zaglavlja.\n"
 "       --proxy-user=KORISNIK    postavi KORISNIKA kao proxy korisnika\n"
 "       --proxy-passwd=ZAPORKA   postavi proxy zaporku na ZAPORKU.\n"
+"       --referer=URL            dodaj `Referer: URL' zaglavlje u HTTP zahtjev.\n"
 "  -s,  --save-headers           snimaj HTTP zaglavlja na disk.\n"
 "  -U,  --user-agent=KLIJENT     identificiraj se kao KLIJENT umjesto\n"
 "                                  Wget/VERZIJA.\n"
 "\n"
 
 #: src/main.c:173
-#, fuzzy
 msgid ""
 "FTP options:\n"
 "       --retr-symlinks   when recursing, retrieve linked-to files (not "
@@ -759,13 +756,13 @@ msgid ""
 "\n"
 msgstr ""
 "FTP options:\n"
-"       --retr-symlinks   skidaj FTP simbolièke linkove.\n"
+"       --retr-symlinks   pri rekurziji, skidaj FTP simbolièke linkove (ne\n"
+"                           i direktorije).\n"
 "  -g,  --glob=on/off     ukljuèi ili iskljuèi globbing.\n"
 "       --passive-ftp     koristi \"pasivni\" mod prijenosa.\n"
 "\n"
 
 #: src/main.c:178
-#, fuzzy
 msgid ""
 "Recursive retrieval:\n"
 "  -r,  --recursive             recursive web-suck -- use with care!.\n"
@@ -783,16 +780,15 @@ msgid ""
 msgstr ""
 "Rekurzivno skidanje:\n"
 "  -r,  --recursive             rekurzivno skidanje -- koristi pa¾ljivo!\n"
-"  -l,  --level=NUMBER          maksimalna dubina rekurzije (0 za "
-"beskonaènu).\n"
+"  -l,  --level=NUMBER          maksimalna dubina rekurzije (0 za beskonaènu).\n"
 "       --delete-after          bri¹i skinute datoteke.\n"
 "  -k,  --convert-links         konvertiraj apsolutne linkove u relativne.\n"
 "  -m,  --mirror                ukljuèi opcije pogodne za \"mirror\".\n"
 "  -nr, --dont-remove-listing   ne uklanjaj `.listing' datoteke.\n"
+"  -p,  --page-requisites       skupi slike i drugo potrebno za prikaz HTML-a.\n"
 "\n"
 
 #: src/main.c:188
-#, fuzzy
 msgid ""
 "Recursive accept/reject:\n"
 "  -A,  --accept=LIST                comma-separated list of accepted "
@@ -820,16 +816,19 @@ msgstr ""
 "  -A,  --accept=POPIS                popis prihvaæenih nastavaka.\n"
 "  -R,  --reject=POPIS                popis odbijenih nastavaka.\n"
 "  -D,  --domains=POPIS               popis prihvaæenih domena.\n"
-"       --exclude-domains=POPIS       zarezom odvojen popis odbijenih "
-"domena.\n"
+"       --exclude-domains=POPIS       zarezom odvojen popis odbijenih domena.\n"
 "  -L,  --relative                    prati samo relativne linkove.\n"
 "       --follow-ftp                  prati FTP linkove iz HTML dokumenata.\n"
+"       --follow-tags=LIST            zarezom odvojen popis HTML tagova koje\n"
+"                                       treba pratiti.\n"
+"  -G,  --ignore-tags=LIST            zarezom odvojen popis HTML tagova koji\n"
+"                                       se ignoriraju.\n"
 "  -H,  --span-hosts                  idi na strana raèunala pri rekurzivnom\n"
 "                                       skidanju.\n"
 "  -I,  --include-directories=POPIS   popis dozvoljenih direktorija.\n"
 "  -X,  --exclude-directories=POPIS   popis nedozvoljenih direktorija.\n"
 "  -nh, --no-host-lookup              nemoj pregledavati hostove DNS-om.\n"
-"  -np, --no-parent                   ne idi u direktorij vi¹e.\n"
+"  -np, --no-parent                   ne idi u direktorij iznad.\n"
 "\n"
 
 #: src/main.c:203
@@ -856,13 +855,10 @@ msgstr ""
 "General Public License za vi¹e detalja.\n"
 
 #: src/main.c:436
-#, fuzzy
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@iskon.hr>.\n"
-msgstr ""
-"\n"
-"Napisao Hrvoje Nik¹iæ <hniksic@srce.hr>.\n"
+msgstr "\nIzvorno napisao Hrvoje Nik¹iæ <hniksic@iskon.hr>.\n"
 
 #: src/main.c:510
 #, c-format
@@ -1050,9 +1046,9 @@ msgid "Cannot convert links in %s: %s\n"
 msgstr "Ne mogu konvertirati linkove u %s: %s\n"
 
 #: src/url.c:1453
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot back up %s as %s: %s\n"
-msgstr "Ne mogu konvertirati linkove u %s: %s\n"
+msgstr "Ne mogu snimiti backup iz %s u %s: %s\n"
 
 #: src/utils.c:71
 #, c-format
