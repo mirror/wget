@@ -56,19 +56,20 @@ extern int errno;
 
    The second reason why these are useful is that, if DEBUG_MALLOC is
    defined, they also provide a handy (if crude) malloc debugging
-   interface that checks memory leaks.  */
+   interface that checks for memory leaks.  */
 
 /* Croak the fatal memory error and bail out with non-zero exit
    status.  */
 
 static void
-memfatal (const char *context, long size)
+memfatal (const char *context, long attempted_size)
 {
   /* Make sure we don't try to store part of the log line, and thus
      call malloc.  */
   log_set_save_context (0);
-  logprintf (LOG_ALWAYS, _("%s: %s: Cannot allocate %ld bytes.\n"),
-	     exec_name, context, size);
+  logprintf (LOG_ALWAYS,
+	     _("%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"),
+	     exec_name, context, attempted_size);
   exit (1);
 }
 
@@ -76,7 +77,7 @@ memfatal (const char *context, long size)
    distinguished from the debugging functions, and from the macros.
    Explanation follows:
 
-   If memory debugging is not turned on, wget.h defines these:
+   If memory debugging is not turned on, xmalloc.h defines these:
 
      #define xmalloc xmalloc_real
      #define xmalloc0 xmalloc0_real
@@ -162,6 +163,9 @@ xstrdup_real (const char *s)
   return copy;
 }
 
+/* xfree_real is unnecessary because free doesn't require any special
+   functionality.  */
+
 #ifdef DEBUG_MALLOC
 
 /* Crude home-grown routines for debugging some malloc-related
