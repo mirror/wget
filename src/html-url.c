@@ -333,7 +333,7 @@ append_one_url (const char *link_uri, int inlinep,
 	     this can only happen when using `--force-html -i', print
 	     a warning.  */
 	  logprintf (LOG_NOTQUIET,
-		     _("%s: Cannot resolve relative link %s.\n"),
+		     _("%s: Cannot resolve incomplete link %s.\n"),
 		     ctx->document_file, link_uri);
 	  return NULL;
 	}
