@@ -1561,6 +1561,7 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
 	 thought I could just add a field to the urlpos structure saying
 	 that we'd written a .orig file for this URL, but that didn't work,
 	 so I had to make this separate list.
+	 -- Dan Harkless <wget@harkless.org>
 
          This [adding a field to the urlpos structure] didn't work
          because convert_file() is called twice: once after all its
@@ -1569,10 +1570,11 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
          original linked list collected in recursive_retrieve() is
          lost after the first invocation of convert_links(), and
          convert_all_links() makes a new one (it calls get_urls_html()
-         for each file it covers.)  That's why your approach didn't
+         for each file it covers.)  That's why your first approach didn't
          work.  The way to make it work is perhaps to make this flag a
-         field in the `urls_html' list.  */
-
+         field in the `urls_html' list.
+	 -- Hrvoje Niksic <hniksic@arsdigita.com>
+      */
       converted_file_ptr = xmalloc(sizeof(*converted_file_ptr));
       converted_file_ptr->string = xstrdup(file);  /* die on out-of-mem. */
       converted_file_ptr->next = converted_files;
