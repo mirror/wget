@@ -1,3 +1,24 @@
+2005-04-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (pconn): Include NTLM data, which is per-connection.
+	(known_authentication_scheme_p): Recognize NTLM authorization.
+	(create_authorization_line): Call ntlm_input and ntlm_output.
+
+	* http-ntlm.c: New file, donated by Daniel Stenberg and originally
+	written for curl, heavily modified for Wget.
+
+	* utils.c (base64_encode): Relocated from http.c, since it is now
+	used by http-ntlm.c, and will possibly be used elsewhere.
+	(base64_decode): New function, originally based on code from GNU
+	recode.
+
+2005-04-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* ftp.c (ftp_loop): Ditto.
+
+	* ftp-basic.c (ftp_pasv): Use the xzero shorthand for memset(0).
+	(ftp_lpsv): Ditto.
+
 2005-04-05  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* Makefile.in: removed string_t.c from list of source files.

@@ -158,7 +158,7 @@ ftp_login (int csock, const char *acc, const char *pass)
       xfree (respline);
       return FTPLOGREFUSED;
     }
-#ifdef USE_OPIE
+#ifdef ENABLE_OPIE
   {
     static const char *skey_head[] = {
       "331 s/key ",
@@ -195,7 +195,7 @@ ftp_login (int csock, const char *acc, const char *pass)
         pass = skey_response (skey_sequence, seed, pass);
       }
   }
-#endif /* USE_OPIE */
+#endif /* ENABLE_OPIE */
   xfree (respline);
   /* Send PASS password.  */
   request = ftp_request ("PASS", pass);

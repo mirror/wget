@@ -62,7 +62,7 @@ uerr_t ftp_syst PARAMS ((int, enum stype *));
 uerr_t ftp_pwd PARAMS ((int, char **));
 uerr_t ftp_size PARAMS ((int, const char *, wgint *));
 
-#ifdef USE_OPIE
+#ifdef ENABLE_OPIE
 const char *skey_response PARAMS ((int, const char *, const char *));
 #endif
 

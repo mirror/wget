@@ -65,9 +65,12 @@ extern int errno;
 #include "netrc.h"
 #ifdef HAVE_SSL
 # include "gen_sslfunc.h"
-#endif /* HAVE_SSL */
+#endif
+#ifdef ENABLE_NTLM
+# include "http-ntlm.h"
+#endif
 #include "cookies.h"
-#ifdef USE_DIGEST
+#ifdef ENABLE_DIGEST
 # include "gen-md5.h"
 #endif
 #include "convert.h"
@@ -824,6 +827,11 @@ static struct {
 
   /* Whether a ssl handshake has occoured on this connection.  */
   int ssl;
+
+#ifdef ENABLE_NTLM
+  /* NTLM data of the current connection.  */
+  struct ntlmdata ntlm;
+#endif
 } pconn;
 
 /* Mark the persistent connection as invalid and free the resources it
@@ -2574,47 +2582,6 @@ http_atotm (const char *time_string)
    consisting of answering to the server's challenge with the proper
    MD5 digests.  */
 
-/* How many bytes it will take to store LEN bytes in base64.  */
-#define BASE64_LENGTH(len) (4 * (((len) + 2) / 3))
-
-/* Encode the string S of length LENGTH to base64 format and place it
-   to STORE.  STORE will be 0-terminated, and must point to a writable
-   buffer of at least 1+BASE64_LENGTH(length) bytes.  */
-static void
-base64_encode (const char *s, char *store, int length)
-{
-  /* Conversion table.  */
-  static char tbl[64] = {
-    'A','B','C','D','E','F','G','H',
-    'I','J','K','L','M','N','O','P',
-    'Q','R','S','T','U','V','W','X',
-    'Y','Z','a','b','c','d','e','f',
-    'g','h','i','j','k','l','m','n',
-    'o','p','q','r','s','t','u','v',
-    'w','x','y','z','0','1','2','3',
-    '4','5','6','7','8','9','+','/'
-  };
-  int i;
-  unsigned char *p = (unsigned char *)store;
-
-  /* Transform the 3x8 bits to 4x6 bits, as required by base64.  */
-  for (i = 0; i < length; i += 3)
-    {
-      *p++ = tbl[s[0] >> 2];
-      *p++ = tbl[((s[0] & 3) << 4) + (s[1] >> 4)];
-      *p++ = tbl[((s[1] & 0xf) << 2) + (s[2] >> 6)];
-      *p++ = tbl[s[2] & 0x3f];
-      s += 3;
-    }
-  /* Pad the result if necessary...  */
-  if (i == length + 1)
-    *(p - 1) = '=';
-  else if (i == length + 2)
-    *(p - 1) = *(p - 2) = '=';
-  /* ...and zero-terminate it.  */
-  *p = '\0';
-}
-
 /* Create the authentication header contents for the `Basic' scheme.
    This is done by encoding the string `USER:PASS' in base64 and
    prepending `HEADER: Basic ' to it.  */
@@ -2639,7 +2606,7 @@ basic_authentication_encode (const char *user, const char *passwd)
     ++(x);					\
 } while (0)
 
-#ifdef USE_DIGEST
+#ifdef ENABLE_DIGEST
 /* Parse HTTP `WWW-Authenticate:' header.  AU points to the beginning
    of a field in such a header.  If the field is the one specified by
    ATTR_NAME ("realm", "opaque", and "nonce" are used by the current
@@ -2825,7 +2792,7 @@ username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\"",
   }
   return res;
 }
-#endif /* USE_DIGEST */
+#endif /* ENABLE_DIGEST */
 
 
 #define BEGINS_WITH(line, string_constant)				\
@@ -2837,8 +2804,13 @@ static int
 known_authentication_scheme_p (const char *au)
 {
   return BEGINS_WITH (au, "Basic")
+#ifdef ENABLE_DIGEST
     || BEGINS_WITH (au, "Digest")
-    || BEGINS_WITH (au, "NTLM");
+#endif
+#ifdef ENABLE_NTLM
+    || BEGINS_WITH (au, "NTLM")
+#endif
+    ;
 }
 
 #undef BEGINS_WITH
@@ -2855,10 +2827,20 @@ create_authorization_line (const char *au, const char *user,
 {
   if (0 == strncasecmp (au, "Basic", 5))
     return basic_authentication_encode (user, passwd);
-#ifdef USE_DIGEST
+#ifdef ENABLE_DIGEST
   if (0 == strncasecmp (au, "Digest", 6))
     return digest_authentication_encode (au, user, passwd, method, path);
-#endif /* USE_DIGEST */
+#endif
+#ifdef ENABLE_NTLM
+  if (0 == strncasecmp (au, "NTLM", 4))
+    {
+      int ok = ntlm_input (&pconn.ntlm, au);
+      if (!ok)
+	return NULL;
+      /* #### we shouldn't ignore the OK that ntlm_output returns. */
+      return ntlm_output (&pconn.ntlm, user, passwd, &ok);
+    }
+#endif
   return NULL;
 }
 

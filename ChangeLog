@@ -1,3 +1,11 @@
+2005-04-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Allow the user to disable NTLM authorization.
+	Make sure NTLM is disabled if OpenSSL is unavailable.  If NTLM is
+	*explicitly* requested and OpenSSL is unavailable, abort.
+
+	* configure.in: Renamed USE_* to ENABLE_*.
+
 2005-03-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* po/POTFILES.in: Removed headers.c and rbuf.c.

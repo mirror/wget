@@ -357,7 +357,7 @@ fake_fork (void)
 
   /* Create the child process detached form the current console and in a
      suspended state.  */
-  memset (&si, 0, sizeof (si));
+  xzero (si);
   si.cb = sizeof (si);
   rv = CreateProcess (exe, GetCommandLine (), NULL, NULL, TRUE,
                       CREATE_SUSPENDED | DETACHED_PROCESS,

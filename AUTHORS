@@ -34,3 +34,6 @@ Mauro Tortonesi.  Improved IPv6 support, adding support for dual
 family systems.  Refactored and enhanced FTP IPv6 code.
 
 Nicolas Schodet.  Contributed to cookie code and documentation.
+
+Daniel Stenberg.  NTLM authentication in http-ntlm.c and http-ntlm.h
+originally written curl donated for use in GNU Wget.
