@@ -473,163 +473,125 @@ fork_to_background (void)
 }
 #endif /* not WINDOWS */
 
-#if 0
-/* debug */
-char *
-ps (char *orig)
-{
-  char *r = xstrdup (orig);
-  path_simplify (r);
-  return r;
-}
-#endif
+/* Resolve "." and ".." elements of PATH by destructively modifying
+   PATH.  "." is resolved by removing that path element, and ".." is
+   resolved by removing the preceding path element.  Leading and
+   trailing slashes are preserved.
 
-/* Canonicalize PATH, and return a new path.  The new path differs from PATH
-   in that:
-	Multple `/'s are collapsed to a single `/'.
-	Leading `./'s and trailing `/.'s are removed.
-	Trailing `/'s are removed.
-	Non-leading `../'s and trailing `..'s are handled by removing
-	portions of the path.
+   Return non-zero if any changes have been made.
 
-   E.g. "a/b/c/./../d/.." will yield "a/b/".  This function originates
-   from GNU Bash and has been mutilated to unrecognition for use in
-   Wget.
+   For example, "a/b/c/./../d/.." will yield "a/b/".  More exhaustive
+   test examples are provided below.  If you change anything in this
+   function, run test_path_simplify to make sure you haven't broken a
+   test case.
 
-   Changes for Wget:
-	Always use '/' as stub_char.
-	Don't check for local things using canon_stat.
-	Change the original string instead of strdup-ing.
-	React correctly when beginning with `./' and `../'.
-	Don't zip out trailing slashes.
-	Return a value indicating whether any modifications took place.
-
-   If you dare change this function, take a careful look at the test
-   cases below, and make sure that they pass.  */
+   A previous version of this function was based on path_simplify()
+   from GNU Bash, but it has been rewritten for Wget 1.8.1.  */
 
 int
 path_simplify (char *path)
 {
-  register int i, start;
-  int changes = 0;
-
-  if (!*path)
-    return 0;
+  int change = 0;
+  char *p, *end;
 
   if (path[0] == '/')
-    /* Preserve initial '/'. */
-    ++path;
+    ++path;			/* preserve the leading '/'. */
 
-  /* Nix out leading `.' or `..' with.  */
-  if ((path[0] == '.' && path[1] == '\0')
-      || (path[0] == '.' && path[1] == '.' && path[2] == '\0'))
-    {
-      path[0] = '\0';
-      changes = 1;
-      return changes;
-    }
+  p = path;
+  end = p + strlen (p) + 1;	/* position past the terminating zero. */
 
-  /* Walk along PATH looking for things to compact.  */
-  i = 0;
   while (1)
     {
-      if (!path[i])
-	break;
+    again:
+      /* P should point to the beginning of a path element. */
 
-      while (path[i] && path[i] != '/')
-	i++;
-
-      start = i++;
-
-      /* If we didn't find any slashes, then there is nothing left to do.  */
-      if (!path[start])
-	break;
-
-      /* Handle multiple `/'s in a row.  */
-      while (path[i] == '/')
-	i++;
-
-      if ((start + 1) != i)
+      if (*p == '.' && (*(p + 1) == '/' || *(p + 1) == '\0'))
 	{
-	  strcpy (path + start + 1, path + i);
-	  i = start + 1;
-	  changes = 1;
-	}
-
-      /* Check for `../', `./' or trailing `.' by itself.  */
-      if (path[i] == '.')
-	{
-	  /* Handle trailing `.' by itself.  */
-	  if (!path[i + 1])
+	  /* Handle "./foo" by moving "foo" two characters to the
+	     left. */
+	  if (*(p + 1) == '/')
 	    {
-	      path[--i] = '\0';
-	      changes = 1;
+	      change = 1;
+	      memmove (p, p + 2, end - p);
+	      end -= 2;
+	      goto again;
+	    }
+	  else
+	    {
+	      change = 1;
+	      *p = '\0';
+	      break;
+	    }
+	}
+      else if (*p == '.' && *(p + 1) == '.'
+	       && (*(p + 2) == '/' || *(p + 2) == '\0'))
+	{
+	  /* Handle "../foo" by moving "foo" one path element to the
+	     left.  */
+	  char *b = p;
+
+	  /* Backtrack by one path element, but not past the beginning
+	     of PATH. */
+
+	  /* foo/bar/../baz */
+	  /*         ^ p    */
+	  /*     ^ b        */
+
+	  if (b > path + 1)
+	    {
+	      /* Find the character preceded by slash or by the
+		 beginning of path. */
+	      for (--b; b > path && *(b - 1) != '/'; b--)
+		;
+	    }
+
+	  change = 1;
+	  if (*(p + 2) == '/')
+	    {
+	      memmove (b, p + 3, end - (p + 3));
+	      end -= (p + 3) - b;
+	      p = b;
+	    }
+	  else
+	    {
+	      *b = '\0';
 	      break;
 	    }
 
-	  /* Handle `./'.  */
-	  if (path[i + 1] == '/')
+	  goto again;
+	}
+      else if (*p == '/')
+	{
+	  /* Remove empty path elements.  Not mandated by rfc1808 et
+	     al, but empty path elements are not all that useful, and
+	     the rest of Wget might not deal with them well. */
+	  char *q = p;
+	  while (*q == '/')
+	    ++q;
+	  change = 1;
+	  if (*q == '\0')
 	    {
-	      strcpy (path + i, path + i + 1);
-	      i = (start < 0) ? 0 : start;
-	      changes = 1;
-	      continue;
+	      *p = '\0';
+	      break;
 	    }
+	  memmove (p, q, end - q);
+	  end -= q - p;
+	  goto again;
+	}
 
-	  /* Handle `../' or trailing `..' by itself.  */
-	  if (path[i + 1] == '.' &&
-	      (path[i + 2] == '/' || !path[i + 2]))
-	    {
-	      while (--start > -1 && path[start] != '/');
-	      strcpy (path + start + 1, path + i + 2 + (start == -1 && path[i + 2]));
-	      i = (start < 0) ? 0 : start;
-	      changes = 1;
-	      continue;
-	    }
-	}	/* path == '.' */
-    } /* while */
-
-  /* Addition: Remove all `./'-s and `../'-s preceding the string.  */
-  i = 0;
-  while (1)
-    {
-      if (path[i] == '.' && path[i + 1] == '/')
-	i += 2;
-      else if (path[i] == '.' && path[i + 1] == '.' && path[i + 2] == '/')
-	i += 3;
-      else
+      /* Skip to the next path element. */
+      while (*p && *p != '/')
+	++p;
+      if (*p == '\0')
 	break;
-    }
-  if (i)
-    {
-      strcpy (path, path + i - 0);
-      changes = 1;
+
+      /* Make sure P points to the beginning of the next path element,
+	 which is location after the slash. */
+      ++p;
     }
 
-  return changes;
+  return change;
 }
-
-/* Test cases:
-   ps("")                   -> ""
-   ps("/")                  -> "/"
-   ps(".")                  -> ""
-   ps("..")                 -> ""
-   ps("/.")                 -> "/"
-   ps("/..")                -> "/"
-   ps("foo")                -> "foo"
-   ps("foo/bar")            -> "foo/bar"
-   ps("foo//bar")           -> "foo/bar"             (possibly a bug)
-   ps("foo/../bar")         -> "bar"
-   ps("foo/bar/..")         -> "foo/"
-   ps("foo/bar/../x")       -> "foo/x"
-   ps("foo/bar/../x/")      -> "foo/x/"
-   ps("foo/..")             -> ""
-   ps("/foo/..")            -> "/"
-   ps("a/b/../../c")        -> "c"
-   ps("/a/b/../../c")       -> "/c"
-   ps("./a/../b")           -> "b"
-   ps("/./a/../b")          -> "/b"
-*/
 
 /* "Touch" FILE, i.e. make its atime and mtime equal to the time
    specified with TM.  */
@@ -1844,5 +1806,98 @@ debug_test_md5 (char *buf)
   *p2 = '\0';
 
   return res;
+}
+#endif
+
+#if 0
+/* Debugging and testing support for path_simplify. */
+
+/* Debug: run path_simplify on PATH and return the result in a new
+   string.  Useful for calling from the debugger.  */
+static char *
+ps (char *path)
+{
+  char *copy = xstrdup (path);
+  path_simplify (copy);
+  return copy;
+}
+
+static void
+run_test (char *test, char *expected_result, int expected_change)
+{
+  char *test_copy = xstrdup (test);
+  int modified = path_simplify (test_copy);
+
+  if (0 != strcmp (test_copy, expected_result))
+    {
+      printf ("Failed path_simplify(\"%s\"): expected \"%s\", got \"%s\".\n",
+	      test, expected_result, test_copy);
+    }
+  if (modified != expected_change)
+    {
+      if (expected_change == 1)
+	printf ("Expected no modification with path_simplify(\"%s\").\n",
+		test);
+      else
+	printf ("Expected modification with path_simplify(\"%s\").\n",
+		test);
+    }
+  xfree (test_copy);
+}
+
+static void
+test_path_simplify (void)
+{
+  static struct {
+    char *test, *result;
+    int should_modify;
+  } tests[] = {
+    { "",		"",		0 },
+    { ".",		"",		1 },
+    { "..",		"",		1 },
+    { "foo",		"foo",		0 },
+    { "foo/bar",	"foo/bar",	0 },
+    { "foo///bar",	"foo/bar",	1 },
+    { "foo/.",		"foo/",		1 },
+    { "foo/./",		"foo/",		1 },
+    { "foo./",		"foo./",	0 },
+    { "foo/../bar",	"bar",		1 },
+    { "foo/../bar/",	"bar/",		1 },
+    { "foo/bar/..",	"foo/",		1 },
+    { "foo/bar/../x",	"foo/x",	1 },
+    { "foo/bar/../x/",	"foo/x/",	1 },
+    { "foo/..",		"",		1 },
+    { "foo/../..",	"",		1 },
+    { "a/b/../../c",	"c",		1 },
+    { "./a/../b",	"b",		1 }
+  };
+  int i;
+
+  for (i = 0; i < ARRAY_SIZE (tests); i++)
+    {
+      char *test = tests[i].test;
+      char *expected_result = tests[i].result;
+      int   expected_change = tests[i].should_modify;
+      run_test (test, expected_result, expected_change);
+    }
+
+  /* Now run all the tests with a leading slash before the test case,
+     to prove that the slash is being preserved.  */
+  for (i = 0; i < ARRAY_SIZE (tests); i++)
+    {
+      char *test, *expected_result;
+      int expected_change = tests[i].should_modify;
+
+      test = xmalloc (1 + strlen (tests[i].test) + 1);
+      sprintf (test, "/%s", tests[i].test);
+
+      expected_result = xmalloc (1 + strlen (tests[i].result) + 1);
+      sprintf (expected_result, "/%s", tests[i].result);
+
+      run_test (test, expected_result, expected_change);
+
+      xfree (test);
+      xfree (expected_result);
+    }
 }
 #endif
