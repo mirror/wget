@@ -1081,7 +1081,7 @@ cookie_jar_generate_cookie_header (struct cookie_jar *jar, const char *host,
 				   int port, const char *path,
 				   int connection_secure_p)
 {
-  struct cookie *chain_default_store[20];
+  struct cookie *chain_default_store[5];
   struct cookie **chains = chain_default_store;
   int chain_store_size = countof (chain_default_store);
   int chain_count;
@@ -1097,10 +1097,9 @@ cookie_jar_generate_cookie_header (struct cookie_jar *jar, const char *host,
   chain_count = find_matching_chains (jar, host, chains, chain_store_size);
   if (chain_count > chain_store_size)
     {
-      /* It's extremely unlikely that more than 20 chains will ever
-	 match.  But since find_matching_chains reports the exact size
-	 it needs, it's easy to not have the limitation, so we
-	 don't.  */
+      /* It's unlikely that more than 5 chains will ever match.  But
+	 since find_matching_chains reports the exact size it needs,
+	 it's easy to not have the limitation, so we don't.  */
       chains = alloca (chain_count * sizeof (struct cookie *));
       chain_store_size = chain_count;
       goto again;
