@@ -1,3 +1,11 @@
+2001-11-22  Herold Heiko  <Heiko.Herold@previnet.it>
+
+	* windows/Readme
+	* windows/Makefile.doc
+	Windows documentation update.
+	* windows/Makefile.src
+	Cleanup config.h
+
 2001-11-22  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* windows/Makefile.doc: Update docs generation.

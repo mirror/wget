@@ -15,9 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-# You probably need a makeinfo utility
-# wget it from URL:ftp://ftp.sunsite.dk/projects/wget/windows/makeinfo.zip
-# You also probably need perl.
+# You probably need makeinfo and perl, see the README in the main
+# windows directory.
 
 RM = del
 CP     = copy
@@ -36,7 +35,7 @@ WGETPOD      = wget.pod
 manext       = 1
 MAN          = wget.$(manext)
 
-all: $(WGETHLP) $(WGETINFO) $(WGETHTML) $(MAN)
+all: $(WGETHLP) $(WGETINFO) $(WGETHTML)
 
 .IGNORE:
 $(SAMPLERCTEXI): sample.wgetrc
@@ -56,9 +55,10 @@ $(TEXI2POD): $(TEXI2POD).in
 $(WGETPOD): $(WGETTEXI) $(TEXI2POD)
 	$(TEXI2POD) $(WGETTEXI) $@
 
+man:	$(MAN)
+
 $(MAN): $(WGETPOD)
 	$(POD2MAN) --center="GNU Wget" --release="GNU Wget @VERSION@" $? > $@
-
 
 $(WGETHLP): $(WGETTEXI) $(SAMPLERCTEXI)
         $(MAKEINFO) --no-validate --no-warn --force \

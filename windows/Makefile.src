@@ -87,6 +87,7 @@ clean:
         $(RM) *.bak
         $(RM) *.pdb
         $(RM) *.map
+        $(RM) config.h
 
 distclean: clean
 	$(RM) Makefile
