@@ -1,3 +1,14 @@
+2003-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* main.c: (main): added --preserve-permissions option.
+
+	* ftp.c (ftp_retrieve_list): added support for
+	--preserve-permissions option.
+
+	* init.c: added support for --preserve-permission option.
+
+	* option.h: added support for --preserve-permission option.
+
 2003-11-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* main.c (init_switches): New function.  Convert option_data to

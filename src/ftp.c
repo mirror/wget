@@ -1630,7 +1630,10 @@ Already have correct symlink %s -> %s\n\n"),
 	logprintf (LOG_NOTQUIET, _("%s: corrupt time-stamp.\n"), con->target);
 
       if (f->perms && f->type == FT_PLAINFILE && dlthis)
-	chmod (con->target, f->perms);
+        {
+	  if (opt.preserve_perm)
+	    chmod (con->target, f->perms);
+        }
       else
 	DEBUGP (("Unrecognized permissions for %s.\n", con->target));
 

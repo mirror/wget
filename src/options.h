@@ -196,6 +196,9 @@ struct options
 
   int strict_comments;		/* whether strict SGML comments are
 				   enforced.  */
+
+  int preserve_perm;           /* whether remote permissions are used
+				  or that what is set by umask. */
 };
 
 extern struct options opt;

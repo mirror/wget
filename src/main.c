@@ -212,6 +212,7 @@ struct cmdline_option option_data[] =
     { "passive-ftp", 0, OPT_BOOLEAN, "passiveftp", -1 },
     { "post-data", 0, OPT_VALUE, "postdata", -1 },
     { "post-file", 0, OPT_VALUE, "postfile", -1 },
+    { "preserve-permissions", 0, OPT_BOOLEAN, "preservepermissions", -1 },
     { "progress", 0, OPT_VALUE, "progress", -1 },
     { "proxy", 'Y', OPT_BOOLEAN, "useproxy", -1 },
     { "proxy-passwd", 0, OPT_VALUE, "proxypasswd", -1 },
@@ -462,14 +463,15 @@ FTP options:\n\
 \n"), stdout);
   fputs (_("\
 Recursive retrieval:\n\
-  -r,  --recursive          recursive download.\n\
-  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n\
-       --delete-after       delete files locally after downloading them.\n\
-  -k,  --convert-links      convert non-relative links to relative.\n\
-  -K,  --backup-converted   before converting file X, back up as X.orig.\n\
-  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n\
-  -p,  --page-requisites    get all images, etc. needed to display HTML page.\n\
-       --strict-comments    turn on strict (SGML) handling of HTML comments.\n\
+  -r,  --recursive             recursive download.\n\
+  -l,  --level=NUMBER          maximum recursion depth (inf or 0 for infinite).\n\
+       --delete-after          delete files locally after downloading them.\n\
+  -k,  --convert-links         convert non-relative links to relative.\n\
+  -K,  --backup-converted      before converting file X, back up as X.orig.\n\
+  -m,  --mirror                shortcut option equivalent to -r -N -l inf -nr.\n\
+  -p,  --page-requisites       get all images, etc. needed to display HTML page.\n\
+       --strict-comments       turn on strict (SGML) handling of HTML comments.\n\
+       --preserve-permissions  preserve remote file permissions.\n\
 \n"), stdout);
   fputs (_("\
 Recursive accept/reject:\n\
