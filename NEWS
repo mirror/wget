@@ -7,6 +7,12 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.9+.
 
+** Wget no longer preserves permissions of files on FTP servers by
+default.  Anonymous FTP servers frequently use permissions like "664",
+which might not be what the user wants.  The new option
+`--preserve-permissions' and the corresponding `.wgetrc' variable can
+be used to revert to the old behavior.
+
 ** Many options that previously unconditionally set or unset features
 are now boolean options that can be invoked as `--OPTION[=yes/no]' or
 with `--no-OPTION'.  This is useful because it allows you to specify

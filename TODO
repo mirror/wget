@@ -11,13 +11,6 @@ The items are not listed in any particular order (except that
 recently-added items may tend towards the top).  Not all of these
 represent user-visible changes.
 
-* Currently Wget mirrors remote FTP permissions whenever it retrieves
-  the directory listing.  This is undesirable for most users, as
-  permissions like "664" are frequently used on the servers, which
-  might not be what the user wants.  Wget should be changed not to
-  mirror remote FTP permissions by default.  There should be a new
-  option add an option that enables this back on.
-
 * Honor `Content-Disposition: XXX; filename="FILE"' when creating the
   file name.  If possible, try not to break `-nc' and friends when
   doing that.
