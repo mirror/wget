@@ -1,3 +1,9 @@
+2001-03-16  Dan Harkless  <wget@harkless.org>
+
+	* TODO: For some reason on 2000-11-19, Hrvoje removed the item
+	about converting hostless absolute links.  That isn't working yet,
+	so I've put the item back, with a modified wording.
+
 2001-03-12  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Only normal recursion should respect -np -- page-requisite
