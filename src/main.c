@@ -146,7 +146,7 @@ Download:\n\
        --spider                 don\'t download anything.\n\
   -T,  --timeout=SECONDS        set the read timeout to SECONDS.\n\
   -w,  --wait=SECONDS           wait SECONDS between retrievals.\n\
-       --waitretry=SECONDS	wait 0..max SECONDS between retries of a retrieval.\n\
+       --waitretry=SECONDS	wait 1...SECONDS between retries of a retrieval.\n\
   -Y,  --proxy=on/off           turn proxy on or off.\n\
   -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n\
 \n"),  _("\

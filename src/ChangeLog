@@ -1,3 +1,7 @@
+2000-06-09  Dan Harkless  <dan-wget@dilvish.speed.net>
+
+	* main.c (print_help): --help output for --waitretry was over 80 cols.
+
 2000-06-09  Hrvoje Niksic  <hniksic@iskon.hr>
 
 	* url.c (encode_string): Fix comment.
