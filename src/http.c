@@ -488,13 +488,14 @@ User-Agent: %s\r\n\
 Host: %s%s\r\n\
 Accept: %s\r\n\
 %s%s%s%s%s%s\r\n",
-	  command, path, qstring, useragent, remhost, host_port ? host_port : "",
-	  HTTP_ACCEPT, referer ? referer : "",
-	  wwwauth ? wwwauth : "", 
-	  proxyauth ? proxyauth : "", 
-	  range ? range : "",
-	  pragma_h, 
-	  opt.user_header ? opt.user_header : "");
+	   command, path, qstring ? qstring : "", useragent, remhost,
+	   host_port ? host_port : "",
+	   HTTP_ACCEPT, referer ? referer : "",
+	   wwwauth ? wwwauth : "", 
+	   proxyauth ? proxyauth : "", 
+	   range ? range : "",
+	   pragma_h, 
+	   opt.user_header ? opt.user_header : "");
   DEBUGP (("---request begin---\n%s---request end---\n", request));
    /* Free the temporary memory.  */
   FREE_MAYBE (wwwauth);
@@ -957,9 +958,16 @@ File `%s' already there, will not retrieve.\n"), u->local);
       /* Increment the pass counter.  */
       ++count;
       /* Wait before the retrieval (unless this is the very first
-	 retrieval).  */
-      if (!first_retrieval && opt.wait)
-	sleep (opt.wait);
+	 retrieval).
+	 Check if we are retrying or not, wait accordingly - HEH */
+      if (!first_retrieval && (opt.wait || (count && opt.waitretry)))
+	if (count)
+	  if (count<opt.waitretry)
+	    sleep(count);
+	  else
+	    sleep(opt.waitretry);
+	else
+	  sleep (opt.wait);
       if (first_retrieval)
 	first_retrieval = 0;
       /* Get the current time string.  */

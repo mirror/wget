@@ -1,3 +1,7 @@
+1999-08-25  Heiko Herold  <Heiko.Herold@previnet.it>
+
+	* ftp.c: Respect new option waitretry.
+
 2000-01-30  Damir Dzeko  <ddzeko@zesoi.fer.hr>
 
 	* http.c (gethttp): Send custom Referer, if required.

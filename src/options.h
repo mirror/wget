@@ -95,7 +95,8 @@ struct options
   long timeout;			/* The value of read timeout in
 				   seconds. */
 #endif
-  long wait;			/* The wait period between retries. */
+  long wait;			/* The wait period between retrievals. */
+  long waitretry;		/* The wait period between retries. - HEH */
   int use_robots;		/* Do we heed robots.txt? */
 
   long quota;			/* Maximum number of bytes to

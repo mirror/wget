@@ -151,7 +151,8 @@ static struct {
   { "useproxy",		&opt.use_proxy,		cmd_boolean },
   { "useragent",	NULL,			cmd_spec_useragent },
   { "verbose",		&opt.verbose,		cmd_boolean },
-  { "wait",		&opt.wait,		cmd_time }
+  { "wait",		&opt.wait,		cmd_time },
+  { "waitretry",	&opt.waitretry,		cmd_time }
 };
 
 /* Return index of COM if it is a valid command, or -1 otherwise.  COM

@@ -142,6 +142,7 @@ Download:\n\
        --spider                 don\'t download anything.\n\
   -T,  --timeout=SECONDS        set the read timeout to SECONDS.\n\
   -w,  --wait=SECONDS           wait SECONDS between retrievals.\n\
+       --waitretry=SECONDS	wait 0..max SECONDS between retries of a retrieval.\n\
   -Y,  --proxy=on/off           turn proxy on or off.\n\
   -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n\
 \n"),  _("\
@@ -197,6 +198,7 @@ main (int argc, char *const *argv)
 {
   char **url, **t;
   int i, c, nurl, status, append_to_log;
+  int wr;
 
   static struct option long_options[] =
   {
@@ -268,6 +270,7 @@ main (int argc, char *const *argv)
     { "referer", required_argument, NULL, 129 },
     { "use-proxy", required_argument, NULL, 'Y' },
     { "wait", required_argument, NULL, 'w' },
+    { "waitretry", required_argument, NULL, 24 },
     { 0, 0, 0, 0 }
   };
 
@@ -556,6 +559,10 @@ GNU General Public License for more details.\n"));
 	case 'w':
 	  setval ("wait", optarg);
 	  break;
+	case 24:
+	  setval ("waitretry", optarg);
+	  wr = 1;
+	  break;
 	case 'X':
 	  setval ("excludedirectories", optarg);
 	  break;
@@ -574,6 +581,13 @@ GNU General Public License for more details.\n"));
   if (opt.verbose == -1)
     opt.verbose = !opt.quiet;
 
+  /* Retain compatibility with previous scripts.
+     if wait has been set, but waitretry has not, give it the wait value.
+     A simple check on the values is not enough, I could have set
+     wait to n>0 and waitretry to 0 - HEH */
+  if (opt.wait && !wr)
+    setval ("waitretry", opt.wait);
+    
   /* Sanity checks.  */
   if (opt.verbose && opt.quiet)
     {
