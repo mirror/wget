@@ -112,14 +112,16 @@ Foundation, Inc.
 @cindex features
 
 @c man begin DESCRIPTION
-GNU Wget is a freely available network utility to retrieve files from
-the World Wide Web, using @sc{http} (Hyper Text Transfer Protocol) and
-@sc{ftp} (File Transfer Protocol), the two most widely used Internet
-protocols.  It has many useful features to make downloading easier, some
-of them being:
+GNU Wget is a free utility for non-interactive download of files from
+the Web.  It supports @sc{http}, @sc{https}, and @sc{ftp} protocols, as
+well as retrieval through @sc{http} proxies.
+
+@c man end
+This chapter is a partial overview of Wget's features.
 
 @itemize @bullet
 @item
+@c man begin DESCRIPTION
 Wget is non-interactive, meaning that it can work in the background,
 while the user is not logged on.  This allows you to start a retrieval
 and disconnect from the system, letting Wget finish the work.  By
@@ -128,18 +130,23 @@ which can be a great hindrance when transferring a lot of data.
 @c man end
 
 @sp 1
-@c man begin DESCRIPTION
 @item
-Wget is capable of descending recursively through the structure of
-@sc{html} documents and @sc{ftp} directory trees, making a local copy of
-the directory hierarchy similar to the one on the remote server.  This
-feature can be used to mirror archives and home pages, or traverse the
-web in search of data, like a @sc{www} robot (@pxref{Robots}).  In that
-spirit, Wget understands the @code{norobots} convention.
+@ignore
+@c man begin DESCRIPTION
+
+@c man end
+@end ignore
+@c man begin DESCRIPTION
+Wget can follow links in @sc{html} pages and create local versions of
+remote web sites, fully recreating the directory structure of the
+original site.  This is sometimes referred to as ``recursive
+downloading.''  While doing that, Wget respects the Robot Exclusion
+Standard (@file{/robots.txt}).  Wget can be instructed to convert the
+links in downloaded @sc{html} files to the local files for offline
+viewing.
 @c man end
 
 @sp 1
-@c man begin DESCRIPTION
 @item
 File name wildcard matching and recursive mirroring of directories are
 available when retrieving via @sc{ftp}.  Wget can read the time-stamp
@@ -148,52 +155,47 @@ locally.  Thus Wget can see if the remote file has changed since last
 retrieval, and automatically retrieve the new version if it has.  This
 makes Wget suitable for mirroring of @sc{ftp} sites, as well as home
 pages.
-@c man end
 
 @sp 1
-@c man begin DESCRIPTION
 @item
-Wget works exceedingly well on slow or unstable connections,
-retrying the document until it is fully retrieved, or until a
-user-specified retry count is surpassed.  It will try to resume the
-download from the point of interruption, using @code{REST} with @sc{ftp}
-and @code{Range} with @sc{http} servers that support them.
+@ignore
+@c man begin DESCRIPTION
+
+@c man end
+@end ignore
+@c man begin DESCRIPTION
+Wget has been designed for robustness over slow or unstable network
+connections; if a download fails due to a network problem, it will
+keep retrying until the whole file has been retrieved.  If the server
+supports regetting, it will instruct the server to continue the
+download from where it left off.
 @c man end
 
 @sp 1
-@c man begin DESCRIPTION
 @item
-By default, Wget supports proxy servers, which can lighten the network
-load, speed up retrieval and provide access behind firewalls.  However,
-if you are behind a firewall that requires that you use a socks style
-gateway, you can get the socks library and build Wget with support for
-socks.  Wget also supports the passive @sc{ftp} downloading as an
-option.
-@c man end
+Wget supports proxy servers, which can lighten the network load, speed
+up retrieval and provide access behind firewalls.  However, if you are
+behind a firewall that requires that you use a socks style gateway, you
+can get the socks library and build Wget with support for socks.  Wget
+also supports the passive @sc{ftp} downloading as an option.
 
 @sp 1
-@c man begin DESCRIPTION
 @item
 Builtin features offer mechanisms to tune which links you wish to follow
 (@pxref{Following Links}).
-@c man end
 
 @sp 1
-@c man begin DESCRIPTION
 @item
 The retrieval is conveniently traced with printing dots, each dot
 representing a fixed amount of data received (1KB by default).  These
 representations can be customized to your preferences.
-@c man end
 
 @sp 1
-@c man begin DESCRIPTION
 @item
 Most of the features are fully configurable, either through command line
 options, or via the initialization file @file{.wgetrc} (@pxref{Startup
 File}).  Wget allows you to define @dfn{global} startup files
 (@file{/usr/local/etc/wgetrc} by default) for site settings.
-@c man end
 
 @ignore
 @c man begin FILES
@@ -208,14 +210,12 @@ User startup file.
 @end ignore
 
 @sp 1
-@c man begin DESCRIPTION
 @item
 Finally, GNU Wget is free software.  This means that everyone may use
 it, redistribute it and/or modify it under the terms of the GNU General
 Public License, as published by the Free Software Foundation
 (@pxref{Copying}).
 @end itemize
-@c man end
 
 @node Invoking, Recursive Retrieval, Overview, Top
 @chapter Invoking
@@ -1206,17 +1206,6 @@ likes to use a few options in addition to @samp{-p}:
 wget -E -H -k -K -p http://@var{site}/@var{document}
 @end example
 
-In one case you'll need to add a couple more options.  If @var{document}
-is a @code{<FRAMESET>} page, the "one more hop" that @samp{-p} gives you
-won't be enough---you'll get the @code{<FRAME>} pages that are
-referenced, but you won't get @emph{their} requisites.  Therefore, in
-this case you'll need to add @samp{-r -l1} to the commandline.  The
-@samp{-r -l1} will recurse from the @code{<FRAMESET>} page to to the
-@code{<FRAME>} pages, and the @samp{-p} will get their requisites.  If
-you're already using a recursion level of 1 or more, you'll need to up
-it by one.  In the future, @samp{-p} may be made smarter so that it'll
-do "two more hops" in the case of a @code{<FRAMESET>} page.
-
 To finish off this topic, it's worth knowing that Wget's idea of an
 external document link is any URL specified in an @code{<A>} tag, an
 @code{<AREA>} tag, or a @code{<LINK>} tag other than @code{<LINK
@@ -2199,16 +2188,14 @@ its line.
 @chapter Examples
 @cindex examples
 
-The examples are classified into three sections, because of clarity.
-The first section is a tutorial for beginners.  The second section
-explains some of the more complex program features.  The third section
-contains advice for mirror administrators, as well as even more complex
-features (that some would call perverted).
+@c man begin EXAMPLES
+The examples are divided into three sections loosely based on their
+complexity.
 
 @menu
-* Simple Usage::        Simple, basic usage of the program.
-* Advanced Usage::      Advanced techniques of usage.
-* Guru Usage::          Mirroring and the hairy stuff.
+* Simple Usage::         Simple, basic usage of the program.
+* Advanced Usage::       Advanced tips.
+* Very Advanced Usage::  The hairy stuff.
 @end menu
 
 @node Simple Usage, Advanced Usage, Examples, Examples
@@ -2220,22 +2207,6 @@ Say you want to download a @sc{url}.  Just type:
 
 @example
 wget http://fly.srk.fer.hr/
-@end example
-
-The response will be something like:
-
-@example
-@group
---13:30:45--  http://fly.srk.fer.hr:80/en/
-           => `index.html'
-Connecting to fly.srk.fer.hr:80... connected!
-HTTP request sent, awaiting response... 200 OK
-Length: 4,694 [text/html]
-
-    0K -> ....                                                   [100%]
-
-13:30:46 (23.75 KB/s) - `index.html' saved [4694/4694]
-@end group
 @end example
 
 @item
@@ -2267,20 +2238,7 @@ The usage of @sc{ftp} is as simple.  Wget will take care of login and
 password.
 
 @example
-@group
-$ wget ftp://gnjilux.srk.fer.hr/welcome.msg
---10:08:47--  ftp://gnjilux.srk.fer.hr:21/welcome.msg
-           => `welcome.msg'
-Connecting to gnjilux.srk.fer.hr:21... connected!
-Logging in as anonymous ... Logged in!
-==> TYPE I ... done.  ==> CWD not needed.
-==> PORT ... done.    ==> RETR welcome.msg ... done.
-Length: 1,340 (unauthoritative)
-
-    0K -> .                                                      [100%]
-
-10:08:48 (1.28 MB/s) - `welcome.msg' saved [1340]
-@end group
+wget ftp://gnjilux.srk.fer.hr/welcome.msg
 @end example
 
 @item
@@ -2289,39 +2247,65 @@ parse it and convert it to @sc{html}.  Try:
 
 @example
 wget ftp://prep.ai.mit.edu/pub/gnu/
-lynx index.html
+links index.html
 @end example
 @end itemize
 
-@node Advanced Usage, Guru Usage, Simple Usage, Examples
+@node Advanced Usage, Very Advanced Usage, Simple Usage, Examples
 @section Advanced Usage
 
 @itemize @bullet
 @item
-You would like to read the list of @sc{url}s from a file?  Not a problem
-with that:
+You have a file that contains the URLs you want to download?  Use the
+@samp{-i} switch:
 
 @example
-wget -i file
+wget -i @var{file}
 @end example
 
 If you specify @samp{-} as file name, the @sc{url}s will be read from
 standard input.
 
 @item
-Create a mirror image of GNU @sc{www} site (with the same directory structure
-the original has) with only one try per document, saving the log of the
-activities to @file{gnulog}:
+Create a five levels deep mirror image of the GNU web site, with the
+same directory structure the original has, with only one try per
+document, saving the log of the activities to @file{gnulog}:
 
 @example
-wget -r -t1 http://www.gnu.ai.mit.edu/ -o gnulog
+wget -r http://www.gnu.org/ -o gnulog
 @end example
 
 @item
-Retrieve the first layer of yahoo links:
+The same as the above, but convert the links in the @sc{html} files to
+point to local files, so you can view the documents off-line:
 
 @example
-wget -r -l1 http://www.yahoo.com/
+wget --convert-links -r http://www.gnu.org/ -o gnulog
+@end example
+
+@item
+Retrieve only one HTML page, but make sure that all the elements needed
+for the page to be displayed, such as inline images and external style
+sheets, are also downloaded.  Also make sure the downloaded page
+references the downloaded links.
+
+@example
+wget -p --convert-links http://www.server.com/dir/page.html
+@end example
+
+The HTML page will be saved to @file{www.server.com/dir/page.html}, and
+the images, stylesheets, etc., somewhere under @file{www.server.com/},
+depending on where they were on the remote server.
+
+@item
+The same as the above, but without the @file{www.server.com/} directory.
+In fact, I don't want to have all those random server directories
+anyway---just save @emph{all} those files under a @file{download/}
+subdirectory of the current directory.
+
+@example
+wget -p --convert-links -nH -nd -Pdownload \
+     http://www.server.com/dir/page.html
 @end example
 
 @item
@@ -2333,7 +2317,8 @@ wget -S http://www.lycos.com/
 @end example
 
 @item
-Save the server headers with the file:
+Save the server headers with the file, perhaps for post-processing.
+
 @example
 wget -s http://www.lycos.com/
 more index.html
@@ -2341,25 +2326,26 @@ more index.html
 
 @item
 Retrieve the first two levels of @samp{wuarchive.wustl.edu}, saving them
-to /tmp.
+to @file{/tmp}.
 
 @example
-wget -P/tmp -l2 ftp://wuarchive.wustl.edu/
+wget -r -l2 -P/tmp ftp://wuarchive.wustl.edu/
 @end example
 
 @item
-You want to download all the @sc{gif}s from an @sc{http} directory.
-@samp{wget http://host/dir/*.gif} doesn't work, since @sc{http}
-retrieval does not support globbing.  In that case, use:
+You want to download all the @sc{gif}s from a directory on an @sc{http}
+server.  @samp{wget http://www.server.com/dir/*.gif} doesn't work
+because @sc{http} retrieval does not support globbing.  In that case,
+use:
 
 @example
-wget -r -l1 --no-parent -A.gif http://host/dir/
+wget -r -l1 --no-parent -A.gif http://www.server.com/dir/
 @end example
 
-It is a bit of a kludge, but it works.  @samp{-r -l1} means to retrieve
-recursively (@pxref{Recursive Retrieval}), with maximum depth of 1.
-@samp{--no-parent} means that references to the parent directory are
-ignored (@pxref{Directory-Based Limits}), and @samp{-A.gif} means to
+More verbose, but the effect is the same.  @samp{-r -l1} means to
+retrieve recursively (@pxref{Recursive Retrieval}), with maximum depth
+of 1.  @samp{--no-parent} means that references to the parent directory
+are ignored (@pxref{Directory-Based Limits}), and @samp{-A.gif} means to
 download only the @sc{gif} files.  @samp{-A "*.gif"} would have worked
 too.
 
@@ -2369,7 +2355,7 @@ interrupted.  Now you do not want to clobber the files already present.
 It would be:
 
 @example
-wget -nc -r http://www.gnu.ai.mit.edu/
+wget -nc -r http://www.gnu.org/
 @end example
 
 @item
@@ -2377,80 +2363,75 @@ If you want to encode your own username and password to @sc{http} or
 @sc{ftp}, use the appropriate @sc{url} syntax (@pxref{URL Format}).
 
 @example
-wget ftp://hniksic:mypassword@@jagor.srce.hr/.emacs
+wget ftp://hniksic:mypassword@@unix.server.com/.emacs
 @end example
 
+@cindex redirecting output
 @item
-If you do not like the default retrieval visualization (1K dots with 10
-dots per cluster and 50 dots per line), you can customize it through dot
-settings (@pxref{Wgetrc Commands}).  For example, many people like the
-``binary'' style of retrieval, with 8K dots and 512K lines:
+You would like the output documents to go to standard output instead of
+to files?
 
 @example
-wget --dot-style=binary ftp://prep.ai.mit.edu/pub/gnu/README
+wget -O - http://jagor.srce.hr/ http://www.srce.hr/
 @end example
 
-You can experiment with other styles, like:
+You can also combine the two options and make pipelines to retrieve the
+documents from remote hotlists:
 
 @example
-wget --dot-style=mega ftp://ftp.xemacs.org/pub/xemacs/xemacs-20.4/xemacs-20.4.tar.gz
-wget --dot-style=micro http://fly.srk.fer.hr/
+wget -O - http://cool.list.com/ | wget --force-html -i -
 @end example
-
-To make these settings permanent, put them in your @file{.wgetrc}, as
-described before (@pxref{Sample Wgetrc}).
 @end itemize
 
-@node Guru Usage,  , Advanced Usage, Examples
-@section Guru Usage
+@node Very Advanced Usage,  , Advanced Usage, Examples
+@section Very Advanced Usage
 
 @cindex mirroring
 @itemize @bullet
 @item
 If you wish Wget to keep a mirror of a page (or @sc{ftp}
 subdirectories), use @samp{--mirror} (@samp{-m}), which is the shorthand
-for @samp{-r -N}.  You can put Wget in the crontab file asking it to
-recheck a site each Sunday:
+for @samp{-r -l inf -N}.  You can put Wget in the crontab file asking it
+to recheck a site each Sunday:
 
 @example
 crontab
-0 0 * * 0 wget --mirror ftp://ftp.xemacs.org/pub/xemacs/ -o /home/me/weeklog
+0 0 * * 0 wget --mirror http://www.gnu.org/ -o /home/me/weeklog
 @end example
 
 @item
-You may wish to do the same with someone's home page.  But you do not
-want to download all those images---you're only interested in @sc{html}.
+In addition to the above, you want the links to be converted for local
+viewing.  But, after having read this manual, you know that link
+conversion doesn't play well with timestamping, so you also want Wget to
+back up the original HTML files before the conversion.  Wget invocation
+would look like this:
 
 @example
-wget --mirror -A.html http://www.w3.org/
+wget --mirror --convert-links --backup-converted  \
+     http://www.gnu.org/ -o /home/me/weeklog
 @end example
 
 @item
-You have a presentation and would like the dumb absolute links to be
-converted to relative?  Use @samp{-k}:
+But you've also noticed that local viewing doesn't work all that well
+when HTML files are saved under extensions other than @samp{.html},
+perhaps because they were served as @file{index.cgi}.  So you'd like
+Wget to rename all the files served with content-type @samp{text/html}
+to @file{@var{name}.html}.
 
 @example
-wget -k -r @var{URL}
+wget --mirror --convert-links --backup-converted \
+     --html-extension -o /home/me/weeklog        \
+     http://www.gnu.org/
 @end example
 
-@cindex redirecting output
-@item
-You would like the output documents to go to standard output instead of
-to files?  OK, but Wget will automatically shut up (turn on
-@samp{--quiet}) to prevent mixing of Wget output and the retrieved
-documents.
+Or, with less typing:
 
 @example
-wget -O - http://jagor.srce.hr/ http://www.srce.hr/
-@end example
-
-You can also combine the two options and make weird pipelines to
-retrieve the documents from remote hotlists:
-
-@example
-wget -O - http://cool.list.com/ | wget --force-html -i -
+wget -m -k -K -E http://www.gnu.org/ -o /home/me/weeklog
 @end example
 @end itemize
+
+@c man end
 
 @node Various, Appendices, Examples, Top
 @chapter Various
@@ -2592,16 +2573,18 @@ they are supposed to work, it might well be a bug.
 
 @item
 Try to repeat the bug in as simple circumstances as possible.  E.g. if
-Wget crashes on @samp{wget -rLl0 -t5 -Y0 http://yoyodyne.com -o
-/tmp/log}, you should try to see if it will crash with a simpler set of
-options.
+Wget crashes while downloading @samp{wget -rl0 -kKE -t5 -Y0
+http://yoyodyne.com -o /tmp/log}, you should try to see if the crash is
+repeatable, and if will occur with a simpler set of options.  You might
+even try to start the download at the page where the crash occurred to
+see if that page somehow triggered the crash.
 
 Also, while I will probably be interested to know the contents of your
 @file{.wgetrc} file, just dumping it into the debug message is probably
 a bad idea.  Instead, you should first try to see if the bug repeats
 with @file{.wgetrc} moved out of the way.  Only if it turns out that
-@file{.wgetrc} settings affect the bug, should you mail me the relevant
-parts of the file.
+@file{.wgetrc} settings affect the bug, mail me the relevant parts of
+the file.
 
 @item
 Please start Wget with @samp{-d} option and send the log (or the
@@ -2612,9 +2595,6 @@ on.
 @item
 If Wget has crashed, try to run it in a debugger, e.g. @code{gdb `which
 wget` core} and type @code{where} to get the backtrace.
-
-@item
-Find where the bug is, fix it and send me the patches. :-)
 @end enumerate
 @c man end
 

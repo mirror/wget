@@ -1,3 +1,11 @@
+2001-12-08  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* texi2pod.pl: Include the EXAMPLES section.
+
+	* wget.texi (Overview): Shorten the man page DESCRIPTION.
+	(Examples): Redo the Examples chapter.  Include it in the man
+	page.
+
 2001-12-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi: Update the manual with the new recursive retrieval
