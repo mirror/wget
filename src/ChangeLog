@@ -1,3 +1,8 @@
+2001-04-10  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
+
+	* ftp-ls.c (ftp_parse_winnt_ls): Made the fix for AM/PM more
+	effective. Suggested by Edward J. Sabol.
+
 2001-04-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* cookies.c (build_cookies_request): Use and sort cookies from all
