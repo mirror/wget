@@ -493,12 +493,11 @@ lookup_host (const char *host, int silent)
 {
   struct address_list *al = NULL;
 
-  /* If we're not using getaddrinfo, first check if HOST names a
-     numeric IPv4 address.  This was necessary under old (e.g. Ultrix)
-     implementations of gethostbyname that couldn't handle numeric
-     addresses (!).  This is not done under IPv6 because getaddrinfo
-     always handles numeric addresses.  */
 #ifndef ENABLE_IPV6
+  /* If we're not using getaddrinfo, first check if HOST names a
+     numeric IPv4 address.  gethostbyname is not required to accept
+     dotted-decimal IPv4 addresses, and some older implementations
+     (e.g. the Ultrix one) indeed didn't.  */
   {
     uint32_t addr_ipv4 = (uint32_t)inet_addr (host);
     if (addr_ipv4 != (uint32_t) -1)
