@@ -96,6 +96,7 @@ ftp_expected_bytes (const char *s)
 	++s;
       if (!*s)
 	return 0;
+      ++s;			/* skip the '(' */
       res = str_to_wgint (s, (char **) &s, 10);
       if (!*s)
 	return 0;

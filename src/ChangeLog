@@ -1,5 +1,10 @@
 2005-02-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp.c (ftp_expected_bytes): Fix bug that caused infloop because
+	of not correctly skipping the '(' character.
+
+2005-02-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* mswindows.c (wget_ftello): Removed.
 
 	* mswindows.h: Remove bogus definition of stat.
