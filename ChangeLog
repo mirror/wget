@@ -1,10 +1,10 @@
 2001-03-16  Dan Harkless  <wget@harkless.org>
 
-	* config.guess: Hadn't been updated since 1996 -- didn't work for
-	NetWinder ARM Linux system (among others).  Updated to 2001-03-16 vers.
+	* config.guess: Hadn't been updated since 1996 -- didn't work for recent
+	machines and OSes, such as NetWinder ARM Linux.  Updated to latest 
+	version (2001-03-16) from <ftp://ftp.gnu.org/pub/gnu/config/>.
 	
-	* config.sub: Hadn't been updated since 1996 -- didn't work for
-	NetWinder ARM Linux system (among others).  Updated to 2001-03-12 vers.
+	* config.sub: Ditto -- updated to latest version (2001-03-12).
 	
 2001-03-16  Dan Harkless  <wget@harkless.org>
 
