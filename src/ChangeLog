@@ -1,5 +1,10 @@
 2001-11-24  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* progress.c (bar_finish): If the timer didn't record any time
+	since the download beginning, fake 1ms.
+
+2001-11-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* recur.c (recursive_retrieve): Fix typo.
 
 2001-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
