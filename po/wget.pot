@@ -6,62 +6,91 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-02-23 13:23-0800\n"
+"POT-Creation-Date: 2001-04-27 08:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Transfer-Encoding: 8-bit\n"
 
-#: src/ftp-ls.c:779
+#: src/cookies.c:623
+#, c-format
+msgid "Error in Set-Cookie, field `%s'"
+msgstr ""
+
+#: src/cookies.c:647
+#, c-format
+msgid "Syntax error in Set-Cookie at character `%c'.\n"
+msgstr ""
+
+#: src/cookies.c:655
+msgid "Syntax error in Set-Cookie: premature end of string.\n"
+msgstr ""
+
+#: src/cookies.c:1350
+#, c-format
+msgid "Cannot open cookies file `%s': %s\n"
+msgstr ""
+
+#: src/cookies.c:1362
+#, c-format
+msgid "Error writing to `%s': %s\n"
+msgstr ""
+
+#: src/cookies.c:1366
+#, c-format
+msgid "Error closing `%s': %s\n"
+msgstr ""
+
+#: src/ftp-ls.c:785
 msgid "Usupported listing type, trying Unix listing parser.\n"
 msgstr ""
 
-#: src/ftp-ls.c:824 src/ftp-ls.c:826
+#: src/ftp-ls.c:830 src/ftp-ls.c:832
 #, c-format
 msgid "Index of /%s on %s:%d"
 msgstr ""
 
-#: src/ftp-ls.c:848
+#: src/ftp-ls.c:854
 msgid "time unknown       "
 msgstr ""
 
-#: src/ftp-ls.c:852
+#: src/ftp-ls.c:858
 msgid "File        "
 msgstr ""
 
-#: src/ftp-ls.c:855
+#: src/ftp-ls.c:861
 msgid "Directory   "
 msgstr ""
 
-#: src/ftp-ls.c:858
+#: src/ftp-ls.c:864
 msgid "Link        "
 msgstr ""
 
-#: src/ftp-ls.c:861
+#: src/ftp-ls.c:867
 msgid "Not sure    "
 msgstr ""
 
-#: src/ftp-ls.c:879
+#: src/ftp-ls.c:885
 #, c-format
 msgid " (%s bytes)"
 msgstr ""
 
 #. Login to the server:
 #. First: Establish the control connection.
-#: src/ftp.c:151 src/http.c:618
+#: src/ftp.c:151 src/http.c:627
 #, c-format
 msgid "Connecting to %s:%hu... "
 msgstr ""
 
-#: src/ftp.c:173 src/ftp.c:517 src/http.c:635
+#: src/ftp.c:173 src/ftp.c:540 src/http.c:644
 #, c-format
 msgid "Connection to %s:%hu refused.\n"
 msgstr ""
 
 #. Second: Login with proper USER/PASS sequence.
-#: src/ftp.c:194 src/http.c:646
+#: src/ftp.c:194 src/http.c:655
 msgid "connected!\n"
 msgstr ""
 
@@ -70,8 +99,8 @@ msgstr ""
 msgid "Logging in as %s ... "
 msgstr ""
 
-#: src/ftp.c:204 src/ftp.c:257 src/ftp.c:288 src/ftp.c:313 src/ftp.c:407
-#: src/ftp.c:459 src/ftp.c:553 src/ftp.c:626 src/ftp.c:674 src/ftp.c:722
+#: src/ftp.c:204 src/ftp.c:257 src/ftp.c:289 src/ftp.c:337 src/ftp.c:430
+#: src/ftp.c:482 src/ftp.c:576 src/ftp.c:649 src/ftp.c:710 src/ftp.c:758
 msgid "Error in server response, closing control connection.\n"
 msgstr ""
 
@@ -79,8 +108,8 @@ msgstr ""
 msgid "Error in server greeting.\n"
 msgstr ""
 
-#: src/ftp.c:220 src/ftp.c:322 src/ftp.c:416 src/ftp.c:468 src/ftp.c:563
-#: src/ftp.c:636 src/ftp.c:684 src/ftp.c:732
+#: src/ftp.c:220 src/ftp.c:346 src/ftp.c:439 src/ftp.c:491 src/ftp.c:586
+#: src/ftp.c:659 src/ftp.c:720 src/ftp.c:768
 msgid "Write failed, closing control connection.\n"
 msgstr ""
 
@@ -100,28 +129,28 @@ msgstr ""
 msgid "Server error, can't determine system type.\n"
 msgstr ""
 
-#: src/ftp.c:276 src/ftp.c:538 src/ftp.c:610 src/ftp.c:654
+#: src/ftp.c:276 src/ftp.c:561 src/ftp.c:633 src/ftp.c:690
 msgid "done.    "
 msgstr ""
 
-#: src/ftp.c:302 src/ftp.c:437 src/ftp.c:705 src/ftp.c:753 src/url.c:1432
+#: src/ftp.c:326 src/ftp.c:460 src/ftp.c:741 src/ftp.c:789 src/url.c:1429
 msgid "done.\n"
 msgstr ""
 
-#: src/ftp.c:330
+#: src/ftp.c:354
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
 msgstr ""
 
-#: src/ftp.c:343
+#: src/ftp.c:367
 msgid "done.  "
 msgstr ""
 
-#: src/ftp.c:349
+#: src/ftp.c:373
 msgid "==> CWD not needed.\n"
 msgstr ""
 
-#: src/ftp.c:423
+#: src/ftp.c:446
 #, c-format
 msgid ""
 "No such directory `%s'.\n"
@@ -129,130 +158,137 @@ msgid ""
 msgstr ""
 
 #. do not CWD
-#: src/ftp.c:441
+#: src/ftp.c:464
 msgid "==> CWD not required.\n"
 msgstr ""
 
-#: src/ftp.c:475
+#: src/ftp.c:498
 msgid "Cannot initiate PASV transfer.\n"
 msgstr ""
 
-#: src/ftp.c:479
+#: src/ftp.c:502
 msgid "Cannot parse PASV response.\n"
 msgstr ""
 
-#: src/ftp.c:493
+#: src/ftp.c:516
 #, c-format
 msgid "Will try connecting to %s:%hu.\n"
 msgstr ""
 
-#: src/ftp.c:580
+#: src/ftp.c:603
 #, c-format
 msgid "Bind error (%s).\n"
 msgstr ""
 
-#: src/ftp.c:596
+#: src/ftp.c:619
 msgid "Invalid PORT.\n"
 msgstr ""
 
-#: src/ftp.c:643
+#: src/ftp.c:672
+#, c-format
+msgid ""
+"\n"
+"REST failed; will not truncate `%s'.\n"
+msgstr ""
+
+#: src/ftp.c:679
 msgid ""
 "\n"
 "REST failed, starting from scratch.\n"
 msgstr ""
 
-#: src/ftp.c:692
+#: src/ftp.c:728
 #, c-format
 msgid ""
 "No such file `%s'.\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:740
+#: src/ftp.c:776
 #, c-format
 msgid ""
 "No such file or directory `%s'.\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:816 src/ftp.c:823
+#: src/ftp.c:860 src/ftp.c:868
 #, c-format
 msgid "Length: %s"
 msgstr ""
 
-#: src/ftp.c:818 src/ftp.c:825
+#: src/ftp.c:862 src/ftp.c:870
 #, c-format
 msgid " [%s to go]"
 msgstr ""
 
-#: src/ftp.c:827
+#: src/ftp.c:872
 msgid " (unauthoritative)\n"
 msgstr ""
 
-#: src/ftp.c:853
+#: src/ftp.c:899
 #, c-format
 msgid "%s: %s, closing control connection.\n"
 msgstr ""
 
-#: src/ftp.c:861
+#: src/ftp.c:907
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
 msgstr ""
 
-#: src/ftp.c:878
+#: src/ftp.c:924
 msgid "Control connection closed.\n"
 msgstr ""
 
-#: src/ftp.c:896
+#: src/ftp.c:942
 msgid "Data transfer aborted.\n"
 msgstr ""
 
-#: src/ftp.c:960
+#: src/ftp.c:1006
 #, c-format
 msgid "File `%s' already there, not retrieving.\n"
 msgstr ""
 
-#: src/ftp.c:1021 src/http.c:1394
+#: src/ftp.c:1076 src/http.c:1501
 #, c-format
 msgid "(try:%2d)"
 msgstr ""
 
-#: src/ftp.c:1085 src/http.c:1632
+#: src/ftp.c:1140 src/http.c:1754
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld]\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1127 src/main.c:789 src/recur.c:509 src/retr.c:602
+#: src/ftp.c:1182 src/main.c:814 src/recur.c:483 src/retr.c:566
 #, c-format
 msgid "Removing %s.\n"
 msgstr ""
 
-#: src/ftp.c:1168
+#: src/ftp.c:1222
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
 msgstr ""
 
-#: src/ftp.c:1180
+#: src/ftp.c:1234
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr ""
 
-#: src/ftp.c:1216
+#: src/ftp.c:1270
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr ""
 
 #. Remote file is older, file sizes can be compared and
 #. are both equal.
-#: src/ftp.c:1277
+#: src/ftp.c:1331
 #, c-format
 msgid "Remote file no newer than local file `%s' -- not retrieving.\n"
 msgstr ""
 
 #. Remote file is newer or sizes cannot be matched
-#: src/ftp.c:1284
+#: src/ftp.c:1338
 #, c-format
 msgid ""
 "Remote file is newer than local file `%s' -- retrieving.\n"
@@ -260,60 +296,60 @@ msgid ""
 msgstr ""
 
 #. Sizes do not match
-#: src/ftp.c:1291
+#: src/ftp.c:1345
 #, c-format
 msgid ""
 "The sizes do not match (local %ld) -- retrieving.\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1308
+#: src/ftp.c:1362
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr ""
 
-#: src/ftp.c:1325
+#: src/ftp.c:1379
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1333
+#: src/ftp.c:1387
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr ""
 
-#: src/ftp.c:1344
+#: src/ftp.c:1398
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
 msgstr ""
 
-#: src/ftp.c:1356
+#: src/ftp.c:1410
 #, c-format
 msgid "Skipping directory `%s'.\n"
 msgstr ""
 
-#: src/ftp.c:1365
+#: src/ftp.c:1419
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr ""
 
-#: src/ftp.c:1392
+#: src/ftp.c:1446
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr ""
 
-#: src/ftp.c:1413
+#: src/ftp.c:1467
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr ""
 
-#: src/ftp.c:1449
+#: src/ftp.c:1513
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr ""
 
-#: src/ftp.c:1494
+#: src/ftp.c:1560
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr ""
@@ -321,17 +357,17 @@ msgstr ""
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1541
+#: src/ftp.c:1607
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr ""
 
-#: src/ftp.c:1605
+#: src/ftp.c:1672
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
 msgstr ""
 
-#: src/ftp.c:1610
+#: src/ftp.c:1677
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr ""
@@ -380,27 +416,27 @@ msgstr ""
 msgid "%s: option requires an argument -- %c\n"
 msgstr ""
 
-#: src/host.c:394
+#: src/host.c:391
 #, c-format
 msgid "%s: Cannot determine user-id.\n"
 msgstr ""
 
-#: src/host.c:406
+#: src/host.c:403
 #, c-format
 msgid "%s: Warning: uname failed: %s\n"
 msgstr ""
 
-#: src/host.c:418
+#: src/host.c:415
 #, c-format
 msgid "%s: Warning: gethostname failed\n"
 msgstr ""
 
-#: src/host.c:446
+#: src/host.c:443
 #, c-format
 msgid "%s: Warning: cannot determine local IP address.\n"
 msgstr ""
 
-#: src/host.c:460
+#: src/host.c:457
 #, c-format
 msgid "%s: Warning: cannot reverse-lookup local IP address.\n"
 msgstr ""
@@ -409,257 +445,273 @@ msgstr ""
 #. that there can be valid reasons for the local host
 #. name not to be an FQDN, so I've decided to remove the
 #. annoying warning.
-#: src/host.c:473
+#: src/host.c:470
 #, c-format
 msgid "%s: Warning: reverse-lookup of local address did not yield FQDN!\n"
 msgstr ""
 
-#: src/host.c:501
+#: src/host.c:498
 msgid "Host not found"
 msgstr ""
 
-#: src/host.c:503
+#: src/host.c:500
 msgid "Unknown error"
 msgstr ""
 
 #. this is fatal
-#: src/http.c:549
+#: src/http.c:554
 msgid "Failed to set up an SSL context\n"
 msgstr ""
 
-#: src/http.c:555
+#: src/http.c:560
 #, c-format
 msgid "Failed to load certificates from %s\n"
 msgstr ""
 
-#: src/http.c:559 src/http.c:567
+#: src/http.c:564 src/http.c:572
 msgid "Trying without the specified certificate\n"
 msgstr ""
 
-#: src/http.c:563
+#: src/http.c:568
 #, c-format
 msgid "Failed to get certificate key from %s\n"
 msgstr ""
 
-#: src/http.c:657 src/http.c:1470
+#: src/http.c:666 src/http.c:1592
 msgid "Unable to establish SSL connection.\n"
 msgstr ""
 
-#: src/http.c:665
+#: src/http.c:674
 #, c-format
 msgid "Reusing connection to %s:%hu.\n"
 msgstr ""
 
-#: src/http.c:841
+#: src/http.c:860
 #, c-format
 msgid "Failed writing HTTP request: %s.\n"
 msgstr ""
 
-#: src/http.c:846
+#: src/http.c:865
 #, c-format
 msgid "%s request sent, awaiting response... "
 msgstr ""
 
-#: src/http.c:890
+#: src/http.c:909
 msgid "End of file while parsing headers.\n"
 msgstr ""
 
-#: src/http.c:901
+#: src/http.c:920
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr ""
 
-#: src/http.c:941
+#: src/http.c:960
 msgid "No data received"
 msgstr ""
 
-#: src/http.c:943
+#: src/http.c:962
 msgid "Malformed status line"
 msgstr ""
 
-#: src/http.c:948
+#: src/http.c:967
 msgid "(no description)"
 msgstr ""
 
-#: src/http.c:1066
+#: src/http.c:1090
 msgid "Authorization failed.\n"
 msgstr ""
 
-#: src/http.c:1073
+#: src/http.c:1097
 msgid "Unknown authentication scheme.\n"
 msgstr ""
 
-#: src/http.c:1163
+#: src/http.c:1173
+msgid ""
+"\n"
+"    The file is already fully retrieved; nothing to do.\n"
+"\n"
+msgstr ""
+
+#: src/http.c:1190
+#, c-format
+msgid ""
+"\n"
+"    The server does not support continued download;\n"
+"    refusing to truncate `%s'.\n"
+"\n"
+msgstr ""
+
+#: src/http.c:1238
 #, c-format
 msgid "Location: %s%s\n"
 msgstr ""
 
-#: src/http.c:1164 src/http.c:1189
+#: src/http.c:1239 src/http.c:1265
 msgid "unspecified"
 msgstr ""
 
-#: src/http.c:1165
+#: src/http.c:1240
 msgid " [following]"
 msgstr ""
 
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
-#: src/http.c:1179
+#: src/http.c:1255
 msgid "Length: "
 msgstr ""
 
-#: src/http.c:1184
+#: src/http.c:1260
 #, c-format
 msgid " (%s to go)"
 msgstr ""
 
-#: src/http.c:1189
+#: src/http.c:1265
 msgid "ignored"
 msgstr ""
 
-#: src/http.c:1290
+#: src/http.c:1395
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr ""
 
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:1311
+#: src/http.c:1416
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
 msgstr ""
 
-#: src/http.c:1462
+#: src/http.c:1584
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr ""
 
-#: src/http.c:1480
+#: src/http.c:1602
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr ""
 
-#: src/http.c:1505
+#: src/http.c:1627
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr ""
 
-#: src/http.c:1518
+#: src/http.c:1640
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr ""
 
-#: src/http.c:1526
+#: src/http.c:1648
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr ""
 
-#: src/http.c:1549
+#: src/http.c:1671
 #, c-format
 msgid ""
 "Server file no newer than local file `%s' -- not retrieving.\n"
 "\n"
 msgstr ""
 
-#: src/http.c:1557
+#: src/http.c:1679
 #, c-format
 msgid "The sizes do not match (local %ld) -- retrieving.\n"
 msgstr ""
 
-#: src/http.c:1561
+#: src/http.c:1683
 msgid "Remote file is newer, retrieving.\n"
 msgstr ""
 
-#: src/http.c:1606
+#: src/http.c:1728
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld]\n"
 "\n"
 msgstr ""
 
-#: src/http.c:1654
+#: src/http.c:1776
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld. "
 msgstr ""
 
-#: src/http.c:1662
+#: src/http.c:1784
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%ld/%ld])\n"
 "\n"
 msgstr ""
 
-#: src/http.c:1682
+#: src/http.c:1804
 #, c-format
 msgid "%s (%s) - Connection closed at byte %ld/%ld. "
 msgstr ""
 
-#: src/http.c:1693
+#: src/http.c:1815
 #, c-format
 msgid "%s (%s) - Read error at byte %ld (%s)."
 msgstr ""
 
-#: src/http.c:1701
+#: src/http.c:1823
 #, c-format
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
 msgstr ""
 
-#: src/init.c:336 src/netrc.c:261
+#: src/init.c:348 src/netrc.c:260
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr ""
 
-#: src/init.c:354 src/init.c:360
+#: src/init.c:366 src/init.c:372
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr ""
 
-#: src/init.c:391
+#: src/init.c:404
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr ""
 
-#: src/init.c:483
+#: src/init.c:496
 #, c-format
 msgid "%s: BUG: unknown command `%s', value `%s'.\n"
 msgstr ""
 
-#: src/init.c:504
+#: src/init.c:526
 #, c-format
 msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
 msgstr ""
 
-#: src/init.c:532
+#: src/init.c:557
 #, c-format
 msgid "%s: %s: Please specify on or off.\n"
 msgstr ""
 
-#: src/init.c:576
+#: src/init.c:601
 #, c-format
 msgid "%s: %s: Please specify always, on, off, or never.\n"
 msgstr ""
 
-#: src/init.c:595 src/init.c:852 src/init.c:874 src/init.c:938
+#: src/init.c:620 src/init.c:917 src/init.c:939 src/init.c:1003
 #, c-format
 msgid "%s: %s: Invalid specification `%s'.\n"
 msgstr ""
 
-#: src/init.c:708 src/init.c:730 src/init.c:752 src/init.c:778
+#: src/init.c:773 src/init.c:795 src/init.c:817 src/init.c:843
 #, c-format
 msgid "%s: Invalid specification `%s'\n"
 msgstr ""
 
-#: src/main.c:120
+#: src/main.c:119
 #, c-format
 msgid "Usage: %s [OPTION]... [URL]...\n"
 msgstr ""
 
-#: src/main.c:128
+#: src/main.c:127
 #, c-format
 msgid "GNU Wget %s, a non-interactive network retriever.\n"
 msgstr ""
 
 #. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
 #. don't bitch.  Also, it makes translation much easier.
-#: src/main.c:133
+#: src/main.c:132
 msgid ""
 "\n"
 "Mandatory arguments to long options are mandatory for short options too.\n"
@@ -676,7 +728,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/main.c:142
+#: src/main.c:143
 msgid ""
 "Logging and input file:\n"
 "  -o,  --output-file=FILE     log messages to FILE.\n"
@@ -693,7 +745,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/main.c:155
+#: src/main.c:157
 msgid ""
 "Download:\n"
 "       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local "
@@ -718,7 +770,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/main.c:171
+#: src/main.c:174
 msgid ""
 "Directories:\n"
 "  -nd  --no-directories            don't create directories.\n"
@@ -730,7 +782,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/main.c:178
+#: src/main.c:182
 msgid ""
 "HTTP options:\n"
 "       --http-user=USER      set http user to USER.\n"
@@ -746,10 +798,13 @@ msgid ""
 "       --referer=URL         include `Referer: URL' header in HTTP request.\n"
 "  -s,  --save-headers        save the HTTP headers to file.\n"
 "  -U,  --user-agent=AGENT    identify as AGENT instead of Wget/VERSION.\n"
+"       --cookies=no\t     don't use cookies.\n"
+"       --load-cookies=FILE   load cookies from FILE before session.\n"
+"       --save-cookies=FILE   save cookies to FILE after session.\n"
 "\n"
 msgstr ""
 
-#: src/main.c:191
+#: src/main.c:199
 msgid ""
 "FTP options:\n"
 "  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
@@ -760,7 +815,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/main.c:197
+#: src/main.c:206
 msgid ""
 "Recursive retrieval:\n"
 "  -r,  --recursive          recursive web-suck -- use with care!\n"
@@ -775,7 +830,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/main.c:206
+#: src/main.c:216
 msgid ""
 "Recursive accept/reject:\n"
 "  -A,  --accept=LIST                comma-separated list of accepted "
@@ -800,16 +855,16 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/main.c:221
+#: src/main.c:232
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr ""
 
-#: src/main.c:409
+#: src/main.c:424
 #, c-format
 msgid "%s: debug support not compiled in.\n"
 msgstr ""
 
-#: src/main.c:461
+#: src/main.c:476
 msgid ""
 "Copyright (C) 1995, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.\n"
 "This program is distributed in the hope that it will be useful,\n"
@@ -818,49 +873,49 @@ msgid ""
 "GNU General Public License for more details.\n"
 msgstr ""
 
-#: src/main.c:467
+#: src/main.c:482
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
 msgstr ""
 
-#: src/main.c:549
+#: src/main.c:573
 #, c-format
 msgid "%s: %s: invalid command\n"
 msgstr ""
 
-#: src/main.c:605
+#: src/main.c:629
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr ""
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:608 src/main.c:650 src/main.c:708
+#: src/main.c:632 src/main.c:674 src/main.c:732
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr ""
 
-#: src/main.c:688
+#: src/main.c:712
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr ""
 
-#: src/main.c:694
+#: src/main.c:718
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr ""
 
 #. No URL specified.
-#: src/main.c:703
+#: src/main.c:727
 #, c-format
 msgid "%s: missing URL\n"
 msgstr ""
 
-#: src/main.c:804
+#: src/main.c:829
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr ""
 
-#: src/main.c:813
+#: src/main.c:838
 #, c-format
 msgid ""
 "\n"
@@ -868,18 +923,19 @@ msgid ""
 "Downloaded: %s bytes in %d files\n"
 msgstr ""
 
-#: src/main.c:821
+#: src/main.c:846
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr ""
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:851
+#: src/main.c:880
+#, c-format
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr ""
 
-#: src/mswindows.c:123
+#: src/mswindows.c:115
 #, c-format
 msgid ""
 "\n"
@@ -889,129 +945,129 @@ msgid ""
 msgstr ""
 
 #. parent, no error
-#: src/mswindows.c:140 src/utils.c:451
+#: src/mswindows.c:132 src/utils.c:481
 msgid "Continuing in background.\n"
 msgstr ""
 
-#: src/mswindows.c:142 src/utils.c:453
+#: src/mswindows.c:134 src/utils.c:483
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr ""
 
-#: src/mswindows.c:232
+#: src/mswindows.c:214
 #, c-format
 msgid "Starting WinHelp %s\n"
 msgstr ""
 
-#: src/mswindows.c:259 src/mswindows.c:267
+#: src/mswindows.c:241 src/mswindows.c:248
 #, c-format
 msgid "%s: Couldn't find usable socket driver.\n"
 msgstr ""
 
-#: src/netrc.c:367
+#: src/netrc.c:360
 #, c-format
 msgid "%s: %s:%d: warning: \"%s\" token appears before any machine name\n"
 msgstr ""
 
-#: src/netrc.c:398
+#: src/netrc.c:391
 #, c-format
 msgid "%s: %s:%d: unknown token \"%s\"\n"
 msgstr ""
 
-#: src/netrc.c:462
+#: src/netrc.c:455
 #, c-format
 msgid "Usage: %s NETRC [HOSTNAME]\n"
 msgstr ""
 
-#: src/netrc.c:472
+#: src/netrc.c:465
 #, c-format
 msgid "%s: cannot stat %s: %s\n"
 msgstr ""
 
-#: src/recur.c:510
+#: src/recur.c:484
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
 msgstr ""
 
-#: src/recur.c:684
+#: src/recur.c:679
 msgid "Loading robots.txt; please ignore errors.\n"
 msgstr ""
 
-#: src/retr.c:229
+#: src/retr.c:227
 #, c-format
 msgid ""
 "\n"
 "          [ skipping %dK ]"
 msgstr ""
 
-#: src/retr.c:421
+#: src/retr.c:373
 msgid "Could not find proxy host.\n"
 msgstr ""
 
-#: src/retr.c:435
+#: src/retr.c:387
 #, c-format
 msgid "Proxy %s: Must be HTTP.\n"
 msgstr ""
 
-#: src/retr.c:529
+#: src/retr.c:481
 #, c-format
 msgid "%s: Redirection cycle detected.\n"
 msgstr ""
 
-#: src/retr.c:623
+#: src/retr.c:587
 msgid ""
 "Giving up.\n"
 "\n"
 msgstr ""
 
-#: src/retr.c:623
+#: src/retr.c:587
 msgid ""
 "Retrying.\n"
 "\n"
 msgstr ""
 
-#: src/url.c:1332
+#: src/url.c:1329
 #, c-format
 msgid "Converting %s... "
 msgstr ""
 
-#: src/url.c:1345
+#: src/url.c:1342
 msgid "nothing to do.\n"
 msgstr ""
 
-#: src/url.c:1353 src/url.c:1377
+#: src/url.c:1350 src/url.c:1374
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr ""
 
-#: src/url.c:1368
+#: src/url.c:1365
 #, c-format
 msgid "Unable to delete `%s': %s\n"
 msgstr ""
 
-#: src/url.c:1558
+#: src/url.c:1555
 #, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr ""
 
-#: src/utils.c:94
+#: src/utils.c:93
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
 msgstr ""
 
-#: src/utils.c:386
+#: src/utils.c:416
 msgid "Unknown/unsupported protocol"
 msgstr ""
 
-#: src/utils.c:389
+#: src/utils.c:419
 msgid "Invalid port specification"
 msgstr ""
 
-#: src/utils.c:392
+#: src/utils.c:422
 msgid "Invalid host name"
 msgstr ""
 
-#: src/utils.c:613
+#: src/utils.c:643
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr ""
