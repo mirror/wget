@@ -241,7 +241,6 @@ http_process_type (const char *hdr, void *arg)
   char **result = (char **)arg;
   char *p;
 
-  *result = xstrdup (hdr);
   p = strrchr (hdr, ';');
   if (p)
     {
@@ -458,13 +457,16 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   remhost = ou->host;
   remport = ou->port;
 
-  if (remport == 80) {
-      host_port = NULL; host_port_len = 0;
-  }
-  else {
+  if (remport == 80)
+    {
+      host_port = NULL;
+      host_port_len = 0;
+    }
+  else
+    {
       host_port = (char *)alloca (numdigit (remport) + 2);
       host_port_len = sprintf (host_port, ":%d", remport);
-  }
+    }
 
   /* Allocate the memory for the request.  */
   request = (char *)alloca (strlen (command) + strlen (path)

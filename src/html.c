@@ -264,7 +264,7 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init)
 	      for (++buf, --bufsize;
 		   bufsize && *buf != s->quote_char && *buf != '\n';
 		   ++buf, --bufsize)
-		if (*buf == '#')
+		if (ph && *buf == '#')
 		  ph = buf;
 	      if (!bufsize)
 		{
@@ -287,7 +287,7 @@ htmlfindurl (const char *buf, int bufsize, int *size, int init)
 	    {
 	      p = buf;
 	      for (; bufsize && !ISSPACE (*buf) && *buf != '>'; ++buf, --bufsize)
-		if (*buf == '#')
+		if (ph && *buf == '#')
 		  ph = buf;
 	      if (!bufsize)
 		break;

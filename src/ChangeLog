@@ -1,3 +1,12 @@
+1998-10-17  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* http.c (http_process_type): Removed needless strdup(), a memory
+	leak.
+
+1998-09-25  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* html.c (htmlfindurl): Set PH to the first occurrence of `#'.
+
 1998-09-25  Simon Munton  <simonm@m4data.co.uk>
 
 	* init.c (wgetrc_file_name): Don't free HOME under Windows.
