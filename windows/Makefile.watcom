@@ -1,16 +1,29 @@
 ## Compiler, linker, and lib stuff
 ## Makefile for use with watcom win95/winnt executable.
 #
-# Copy this file to the ..\src directory (maybe rename to Makefile). Also:
-# copy config.h.ms ..\src\config.h
+# Copy this file to the ..\src directory (maybe rename to Makefile).
 #
 
 CC=wcc386 /zq
 LINK=wlink
 
-#disabled for faster compiler
-LFLAGS=sys nt op st=32767 op vers=1.7 op map op q op de 'GNU wget 1.7dev' de all
-CFLAGS=/zp4 /d1 /w4 /fpd /5s /fp5 /bm /mf /os /bt=nt /DWINDOWS /DHAVE_CONFIG_H /I=$(%WATCOM)\h;$(%WATCOM)\h\nt;.
+.BEFORE
+	@SET INCLUDE=$(%WATCOM)\h;$(%WATCOM)\h\nt;.
+
+LFLAGS=op q sys nt op st=32767 op vers=1.7 op map op de 'GNU wget 1.7dev' de dw op symf
+#
+# op q              : quiet !
+# sys nt            : producing an NT app
+# op st(ack)=32768  : stack size
+# op vers(ion)=1.7  : "Image version" in the EXE header ( major.minor )
+# op map            : produce a map file
+# op de             : textual description, placed in the executable
+# de dw             : debug info on Dwarf format
+# op symf           : place debug info in a separate wget.sym
+#
+
+CFLAGS=/zp4 /w4 /fpd /5s /fp5 /bm /mf /bt=nt /DWINDOWS /DHAVE_CONFIG_H
+#                    ^^^^^^^^ wget will run on NT. We can safely assume a Pentium :-)
 # /zp4= pack structure members with this alignment
 # /d1 = line number debug info
 # /w4 = warning level
@@ -19,8 +32,21 @@ CFLAGS=/zp4 /d1 /w4 /fpd /5s /fp5 /bm /mf /os /bt=nt /DWINDOWS /DHAVE_CONFIG_H /
 # /fp5= Pentium floating point
 # /bm = build multi-threaded
 # /mf = flat memory model
-# /os = optimize for size
 # /bt = "build target" (nt)
+
+#
+# Choose one of the following three:
+# /od /d2  for no optimization, full debug info
+# /os /d2  to optimize for size, full debug info (or /d1 for line number debug info)
+# /othexan for "heavy-duty" optimizations, no debug info
+#
+#CFLAGS+= /od /d2
+CFLAGS+= /os /d2
+#CFLAGS+= /othexan
+#       ^^-- mind the gap !!
+
+#CFLAGS+= /DDEBUG_MALLOC
+#       ^^-- mind the gap !!
 
 #
 # The trouble: dependencies need to be space-separated (exe : obj1 obj2)
@@ -53,7 +79,7 @@ _=,
 LINKOBJS=FILE $+$(OBJS)$-
 
 #
-# Empty $_ again. OBJS now can be used as the dependency list for wget.exe
+# Empty $_ again. OBJS can now be used as the dependency list for wget.exe
 #
 _=
 
@@ -66,8 +92,16 @@ LIBFILES =
 
 BINNAME=wget.exe
 
+all : config.h $(BINNAME) .SYMBOLIC
+
+#
+# We use config.h.ms
+#
+config.h : ..\windows\config.h.ms
+	copy $[@ $^@
+
 $(BINNAME): $(OBJS) Makefile
-        $(LINK) $(LFLAGS) NAME $(BINNAME) $(LINKOBJS) $(LIBPATH) $(LIBFILES)
+	$(LINK) $(LFLAGS) NAME $(BINNAME) $(LINKOBJS) $(LIBPATH) $(LIBFILES)
 
 
 #
@@ -77,4 +111,5 @@ $(BINNAME): $(OBJS) Makefile
 #
 
 .c.obj: .AUTODEPEND
-        $(CC) $(CFLAGS) $[@
+	$(CC) $(CFLAGS) $[@
+

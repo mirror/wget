@@ -1,5 +1,9 @@
 2001-05-14  Csaba Raduly  <csaba.raduly@sophos.com>
 
+	* windows/Makefile.watcom: Updated.
+
+2001-05-14  Csaba Raduly  <csaba.raduly@sophos.com>
+
 	* windows/Makefile.watcom: Rewritten.
 
 2001-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
