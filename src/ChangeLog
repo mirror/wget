@@ -1,3 +1,8 @@
+2002-05-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* progress.c (bar_set_params): Fall back to dot progress if the
+	terminal type is "emacs".
+
 2002-05-20  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* log.c: Don't #undef WGET_USE_STDARG.

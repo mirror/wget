@@ -801,6 +801,7 @@ static void
 bar_set_params (const char *params)
 {
   int sw;
+  char *term = getenv ("TERM");
 
   if (params
       && 0 == strcmp (params, "force"))
@@ -808,10 +809,19 @@ bar_set_params (const char *params)
 
   if ((opt.lfilename
 #ifdef HAVE_ISATTY
+       /* The progress bar doesn't make sense if the output is not a
+	  TTY -- when logging to file, it is better to review the
+	  dots.  */
        || !isatty (fileno (stderr))
 #else
        1
 #endif
+       /* Normally we don't depend on terminal type because the
+	  progress bar only uses ^M to move the cursor to the
+	  beginning of line, which works even on dumb terminals.  But
+	  Jamie Zawinski reports that ^M and ^H tricks don't work in
+	  Emacs shell buffers, and only make a mess.  */
+       || (term && 0 == strcmp (term, "emacs"))
        )
       && !current_impl_locked)
     {
