@@ -20,6 +20,12 @@ http://127.0.0.1' tells Wget to connect to localhost, but to specify
 "foo.bar" in the `Host' header.  In previous versions such use of
 `--header' lead to duplicate headers in HTTP requests.
 
+** The responses without headers, aka "HTTP 0.9" responses, are
+detected and handled.  Although HTTP 0.9 has long been obsolete, it is
+still occasionally encountered.  (Popular browsers still support it,
+so clueless authors of dynamic pages who forget to emit headers don't
+notice anything wrong.)
+
 ** The progress bar is now updated regularly even when the data does
 not arrive.
 
