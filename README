@@ -1,7 +1,7 @@
                                                           -*- text -*-
 GNU Wget
 ========
-                           (Temporary) Web home: http://wget.sunsite.dk/
+                             Current Web home: http://wget.sunsite.dk/
 
 GNU Wget is a free utility for non-interactive download of files from
 the Web.  It supports HTTP, HTTPS, and FTP protocols, as well as
@@ -44,9 +44,9 @@ described in the INSTALL file.
 
 Like all GNU utilities, the latest version of Wget can be found at the
 master GNU archive site ftp.gnu.org, and its mirrors.  For example,
-Wget 1.8.1 is available at:
+Wget 1.9 is available at:
 
-    ftp://ftp.gnu.org/pub/gnu/wget/wget-1.8.1.tar.gz
+    ftp://ftp.gnu.org/pub/gnu/wget/wget-1.9.tar.gz
 
 Please report bugs in Wget to <bug-wget@gnu.org>.
 
@@ -56,16 +56,14 @@ Wget has a mailing list at <wget@sunsite.dk>.  To subscribe, mail to
 <http://www.gnu.org/software/wget/>, where will be its permanent home.
 
 
-MAINTAINERS: Hrvoje Niksic <hniksic@arsdigita.com>
-             Dan Harkless <wget@harkless.org>
+MAINTAINER: Hrvoje Niksic <hniksic@xemacs.org>
 
 Wget was originally written by Hrvoje Niksic.  Please see the file
 AUTHORS for a list of major contributors, and the ChangeLogs for a
 detailed listing of all contributions.
 
 
-Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001, 2002 Free Software
-Foundation, Inc.
+Copyright (C) 2003 Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
