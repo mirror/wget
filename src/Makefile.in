@@ -63,7 +63,7 @@ OBJ = $(ALLOCA) cmpt$o connect$o fnmatch$o ftp$o ftp-basic$o  \
       ftp-ls$o $(OPIE_OBJ) getopt$o hash$o headers$o host$o   \
       html-parse$o html-url$o http$o init$o log$o main$o      \
       $(MD5_OBJ) netrc$o rbuf$o recur$o retr$o snprintf$o     \
-      $(SSL_OBJ) url$o utils$o version$o
+      $(SSL_OBJ) url$o utils$o version$o safe-ctype$o
 
 .SUFFIXES:
 .SUFFIXES: .c .o ._c ._o
@@ -162,6 +162,7 @@ rbuf$o: wget.h rbuf.h connect.h
 recur$o: wget.h url.h recur.h utils.h retr.h ftp.h fnmatch.h host.h hash.h
 retr$o: wget.h utils.h retr.h url.h recur.h ftp.h host.h connect.h hash.h
 snprintf$o:
+safe-ctype$o: safe-ctype.h
 url$o: wget.h utils.h url.h host.h
 utils$o: wget.h utils.h fnmatch.h hash.h
 version$o:

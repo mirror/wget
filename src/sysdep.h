@@ -125,26 +125,6 @@ do {						\
 # define VERY_LONG_FORMAT "%llu"
 #endif /* use long long */
 
-/* OK, now define a decent interface to ctype macros.  The regular
-   ones misfire when you feed them chars > 127, as they understand
-   them as "negative", which results in out-of-bound access at
-   table-lookup, yielding random results.  This is, of course, totally
-   bogus.  One way to "solve" this is to use `unsigned char'
-   everywhere, but it is nearly impossible to do that cleanly, because
-   all of the library functions and system calls accept `char'.
-
-   Thus we define our wrapper macros which simply cast the argument to
-   unsigned char before passing it to the <ctype.h> macro.  These
-   versions are used consistently across the code.  */
-#define ISASCII(x)  isascii ((unsigned char)(x))
-#define ISALPHA(x)  isalpha ((unsigned char)(x))
-#define ISALNUM(x)  isalnum ((unsigned char)(x))
-#define ISSPACE(x)  isspace ((unsigned char)(x))
-#define ISDIGIT(x)  isdigit ((unsigned char)(x))
-#define ISXDIGIT(x) isxdigit ((unsigned char)(x))
-#define TOUPPER(x)  toupper ((unsigned char)(x))
-#define TOLOWER(x)  tolower ((unsigned char)(x))
-
 /* Defined in cmpt.c: */
 #ifndef HAVE_STRERROR
 char *strerror ();

@@ -21,7 +21,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif /* HAVE_UNISTD_H */
@@ -90,6 +89,7 @@ i18n_initialize (void)
      makes http_atotm() malfunction.  */
 #ifdef LC_MESSAGES
   setlocale (LC_MESSAGES, "");
+  setlocale (LC_CTYPE, "");
 #else
   setlocale (LC_ALL, "");
 #endif

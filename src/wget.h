@@ -66,6 +66,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 /* Include these, so random files need not include them.  */
 #include "sysdep.h"
 #include "options.h"
+/* locale independent replacement for ctype.h */
+#include "safe-ctype.h"
 
 #define DO_NOTHING do {} while (0)
 

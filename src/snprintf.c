@@ -78,9 +78,9 @@
 #if !defined(HAVE_SNPRINTF) || !defined(HAVE_VSNPRINTF)
 
 #include <string.h>
-#include <ctype.h>
 #include <sys/types.h>
 #include <stdio.h>		/* for NULL */
+#include <safe-ctype.h>
 
 /* varargs declarations: */
 
@@ -227,7 +227,7 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
       }
       break;
     case DP_S_MIN:
-      if (isdigit(ch)) 
+      if (ISDIGIT(ch)) 
       {
 	min = 10*min + char_to_int (ch);
 	ch = *format++;
@@ -251,7 +251,7 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
 	state = DP_S_MOD;
       break;
     case DP_S_MAX:
-      if (isdigit(ch)) 
+      if (ISDIGIT(ch)) 
       {
 	if (max < 0)
 	  max = 0;

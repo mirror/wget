@@ -31,7 +31,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #else
 # include <strings.h>
 #endif /* HAVE_STRING_H */
-#include <ctype.h>
 #include <assert.h>
 
 #include "wget.h"

@@ -26,7 +26,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #else
 # include <strings.h>
 #endif /* HAVE_STRING_H */
-#include <ctype.h>
 
 #include <sys/types.h>
 #ifdef HAVE_UNISTD_H
@@ -657,9 +656,9 @@ strptime_internal (buf, format, tm, decided)
     {
       /* A white space in the format string matches 0 more or white
 	 space in the input string.  */
-      if (isspace (*fmt))
+      if (ISSPACE (*fmt))
 	{
-	  while (isspace (*rp))
+	  while (ISSPACE (*rp))
 	    ++rp;
 	  ++fmt;
 	  continue;
@@ -851,7 +850,7 @@ strptime_internal (buf, format, tm, decided)
 	case 'n':
 	case 't':
 	  /* Match any white space.  */
-	  while (isspace (*rp))
+	  while (ISSPACE (*rp))
 	    ++rp;
 	  break;
 	case 'p':

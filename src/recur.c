@@ -31,7 +31,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #endif /* HAVE_UNISTD_H */
 #include <errno.h>
 #include <assert.h>
-#include <ctype.h>
 #include <sys/types.h>
 
 #include "wget.h"

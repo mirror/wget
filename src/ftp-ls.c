@@ -31,7 +31,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include <unistd.h>
 #endif
 #include <sys/types.h>
-#include <ctype.h>
 #include <errno.h>
 
 #include "wget.h"

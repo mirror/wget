@@ -1,3 +1,33 @@
+2001-03-09  Philipp Thomas  <pthomas@suse.de>
+
+	* safe-ctype.h: New file. Locale independent ctype.h
+	replacement taken from libiberty.
+	safe-ctype.c: New file. Tables for above.
+	Makefile.in: Add safe-ctype$o to OBJS.
+	Add dependencies for safe-ctype$o.
+	cmpt.c: Remove include of ctype.h. Use ISSPACE instead
+	of isspace.
+	ftp-basic.c: Don't include ctype.h.
+	ftp-ls.c: Likewise.
+	ftp.c: Likewise.
+	headers.c: Likewise.
+	host.c: Likewise.
+	html-parse.c: Likewise.
+	html-url.c: Likewise.
+	http.c: Likewise.
+	init.c: Likewise.
+	main.c: Likewise. Set LC_CTYPE along with LC_MESSAGES.
+	netrc.c: Likewise.
+	recur.c: Likewise.
+	retr.c: Likewise.
+	snprintf.c: Replace ctype.h with safe-ctype.h. Use
+	ISDIGIT instead of isdigit.
+	sysdep.h: Remove defines of ctype macros as they aren't
+	needed for safe-ctype-h.
+	url.c: Don't include ctype.h.
+	utils.c: Likewise.
+	wget.h: Include safe-ctype.h.
+
 2001-03-27  Dan Harkless  <wget@harkless.org>
 
 	* Makefile.in: Moved top_builddir out of "User configuration
