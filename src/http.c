@@ -939,10 +939,6 @@ Accept: %s\r\n\
 	  all_headers[all_length] = '\0';
 	}
 
-      /* Print the header if requested.  */
-      if (opt.server_response && hcount != 1)
-	logprintf (LOG_VERBOSE, "\n%d %s", hcount, hdr);
-
       /* Check for status line.  */
       if (hcount == 1)
 	{
@@ -973,7 +969,12 @@ Accept: %s\r\n\
 	      && !opt.debug
 #endif
 	      )
-	    logprintf (LOG_VERBOSE, "%d %s", statcode, error);
+	    {
+             if (opt.server_response)
+	       logprintf (LOG_VERBOSE, "\n%2d %s", hcount, hdr);
+             else
+	       logprintf (LOG_VERBOSE, "%2d %s", statcode, error);
+	    }
 
 	  goto done_header;
 	}
@@ -984,6 +985,10 @@ Accept: %s\r\n\
 	  xfree (hdr);
 	  break;
 	}
+
+      /* Print the header if requested.  */
+      if (opt.server_response && hcount != 1)
+	logprintf (LOG_VERBOSE, "\n%2d %s", hcount, hdr);
 
       /* Try getting content-length.  */
       if (contlen == -1 && !opt.ignore_length)
