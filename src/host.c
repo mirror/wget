@@ -353,7 +353,7 @@ host_errstr (int error)
       || error == NO_RECOVERY
       || error == NO_DATA
       || error == NO_ADDRESS)
-    return _("Host not found");
+    return _("Unknown host");
   else if (error == TRY_AGAIN)
     /* Message modeled after what gai_strerror returns in similar
        circumstances.  */

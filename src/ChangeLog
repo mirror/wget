@@ -1,3 +1,8 @@
+2003-11-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* host.c (host_errstr): Use the more standard message "Unknown
+	host".
+
 2003-11-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* connect.c (connect_to_host): Use that flag to decide whether to
