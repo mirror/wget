@@ -9,10 +9,9 @@
 	shouldn't give away the number of characters in the password by
 	replacing each character with a 'x'.  Use "<password>" instead.
 
-	* ftp.c (ftp_retrieve_dirs): I don't see a ChangeLog entry for
- 	this, but the bug where recursion into FTP directories didn't work
- 	if logging in put you in a directory other than "/" is apparently
- 	fixed now.  Removed the comment here warning of the bug.
+	* ftp.c (ftp_retrieve_dirs): The bug where recursion into FTP
+ 	directories didn't work if logging in put you in a directory other
+ 	than "/" is fixed now.  Removed the comment here warning of the bug.
 
 	* main.c (print_help): --continue's description was misleading.
   	We don't "restart", we "resume".  Also, better to say
