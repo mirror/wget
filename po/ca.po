@@ -1,336 +1,403 @@
-# Translation of wget messages to Catalan.
-# Copyright (C) 2001, 2002 Free Software Foundation, Inc.
-# Jordi Valverde Sivilla <jordi@eclipsi.net>, 2001, 2002.
+# Missatges del `wget' en Català
+# Copyright (C) 2002 Free Software Foundation, Inc.
+# Jordi Valverde Sivilla <jordi@eclipsi.net>, 2002.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.8\n"
-"POT-Creation-Date: 2001-12-08 23:28+0100\n"
-"PO-Revision-Date: 2002-01-13 21:29+0100\n"
+"Project-Id-Version: wget 1.9\n"
+"POT-Creation-Date: 2003-10-11 16:21+0200\n"
+"PO-Revision-Date: 2003-10-30 01:00+0100\n"
 "Last-Translator: Jordi Valverde Sivilla <jordi@eclipsi.net>\n"
 "Language-Team: Catalan <ca@dodds.net>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 0.9.5\n"
 
-#: src/connect.c:94
+#: src/connect.c:88
+#, c-format
+msgid "Unable to convert `%s' to a bind address.  Reverting to ANY.\n"
+msgstr "No s'ha pogut convertir `%s' en una adreça vàlida. S'utilitza `ANY'.\n"
+
+#: src/connect.c:165
 #, c-format
 msgid "Connecting to %s[%s]:%hu... "
-msgstr "Conectant a %s[%s]:%hu... "
+msgstr "Connectant amb %s[%s]:%hu... "
 
-#: src/connect.c:97
+#: src/connect.c:168
 #, c-format
 msgid "Connecting to %s:%hu... "
-msgstr "Conectant a %s:%hu... "
+msgstr "Connectant amb %s:%hu... "
 
-#: src/connect.c:131
+#: src/connect.c:222
 msgid "connected.\n"
-msgstr "conectat.\n"
+msgstr "connexió establerta.\n"
 
-#: src/cookies.c:595
+#: src/convert.c:171
+#, c-format
+msgid "Converted %d files in %.2f seconds.\n"
+msgstr "S'han convertit %d arxius en %.2f segons.\n"
+
+#: src/convert.c:197
+#, c-format
+msgid "Converting %s... "
+msgstr "Convertint %s... "
+
+#: src/convert.c:210
+msgid "nothing to do.\n"
+msgstr "res a fer.\n"
+
+#: src/convert.c:218 src/convert.c:242
+#, c-format
+msgid "Cannot convert links in %s: %s\n"
+msgstr "No s'han pogut convertir els enllaços de `%s': %s\n"
+
+#: src/convert.c:233
+#, c-format
+msgid "Unable to delete `%s': %s\n"
+msgstr "No s'ha pogut esborrar `%s': %s\n"
+
+#: src/convert.c:439
+#, c-format
+msgid "Cannot back up %s as %s: %s\n"
+msgstr "No s'ha pogut fer una còpia de %s com a %s: %s\n"
+
+#: src/cookies.c:606
 #, c-format
 msgid "Error in Set-Cookie, field `%s'"
-msgstr "Error al fixar a la secció de la cookie `%s'"
+msgstr "Error a la capçalera Set-Cockie, camp `%s'"
 
-#: src/cookies.c:619
+#: src/cookies.c:629
 #, c-format
-msgid "Syntax error in Set-Cookie at character `%c'.\n"
-msgstr "Error de sintaxi al fixar la cookie al caracter `%c'.\n"
+msgid "Syntax error in Set-Cookie: %s at position %d.\n"
+msgstr "Error de sintaxi a la capçalera Set-Cookie: %s a la posició %d.\n"
 
-#: src/cookies.c:627
-msgid "Syntax error in Set-Cookie: premature end of string.\n"
-msgstr "Error de sintaxi al fixar la cookie: final inesperat.\n"
-
-#: src/cookies.c:1329
+#: src/cookies.c:1426
 #, c-format
 msgid "Cannot open cookies file `%s': %s\n"
-msgstr "No es pot obrir el arxiu de cookies `%s': %s\n"
+msgstr "No s'ha pogut obrir el fitxer de cookies `%s': %s\n"
 
-#: src/cookies.c:1341
+#: src/cookies.c:1438
 #, c-format
 msgid "Error writing to `%s': %s\n"
-msgstr "Error d'escriptura a `%s': %s\n"
+msgstr "Error quan s'escrivia `%s': %s\n"
 
-#: src/cookies.c:1345
+#: src/cookies.c:1442
 #, c-format
 msgid "Error closing `%s': %s\n"
-msgstr "Error tancant `%s': %s\n"
+msgstr "Error quan es tancava `%s': %s\n"
 
-#: src/ftp-ls.c:787
+#: src/ftp-ls.c:812
 msgid "Unsupported listing type, trying Unix listing parser.\n"
-msgstr "tipus de llistat no soportat, intentant fent servir el parsejador de Unix.\n"
+msgstr "Tipus de llista no suportat, provant amb l'analitzador de Unix.\n"
 
-#: src/ftp-ls.c:832 src/ftp-ls.c:834
+#: src/ftp-ls.c:857 src/ftp-ls.c:859
 #, c-format
 msgid "Index of /%s on %s:%d"
 msgstr "Índex de /%s a %s:%d"
 
-#: src/ftp-ls.c:856
+#: src/ftp-ls.c:882
 msgid "time unknown       "
-msgstr "temps desconegut       "
+msgstr "data no disponible "
 
-#: src/ftp-ls.c:860
+#: src/ftp-ls.c:886
 msgid "File        "
-msgstr "Arxiu         "
+msgstr "Fitxer      "
 
-#: src/ftp-ls.c:863
+#: src/ftp-ls.c:889
 msgid "Directory   "
 msgstr "Directori   "
 
-#: src/ftp-ls.c:866
+#: src/ftp-ls.c:892
 msgid "Link        "
-msgstr "Enllaç        "
+msgstr "Enllaç      "
 
-#: src/ftp-ls.c:869
+#: src/ftp-ls.c:895
 msgid "Not sure    "
-msgstr "No segur    "
+msgstr "            "
 
-#: src/ftp-ls.c:887
+#: src/ftp-ls.c:913
 #, c-format
 msgid " (%s bytes)"
-msgstr " (%s bytes)"
+msgstr " (%s octets)"
 
 #. Second: Login with proper USER/PASS sequence.
-#: src/ftp.c:179
+#: src/ftp.c:202
 #, c-format
 msgid "Logging in as %s ... "
-msgstr "entrant com a %s ... "
+msgstr "Entrant com a `%s' ... "
 
-#: src/ftp.c:188 src/ftp.c:241 src/ftp.c:272 src/ftp.c:326 src/ftp.c:419
-#: src/ftp.c:470 src/ftp.c:500 src/ftp.c:564 src/ftp.c:628 src/ftp.c:689
-#: src/ftp.c:737
+#: src/ftp.c:215 src/ftp.c:268 src/ftp.c:299 src/ftp.c:353 src/ftp.c:468
+#: src/ftp.c:519 src/ftp.c:551 src/ftp.c:611 src/ftp.c:675 src/ftp.c:748
+#: src/ftp.c:796
 msgid "Error in server response, closing control connection.\n"
-msgstr "Error en el servidor, tancant la conexió de control.\n"
+msgstr "Resposta del servidor errònia, tancant la connexió de control.\n"
 
-#: src/ftp.c:196
+#: src/ftp.c:223
 msgid "Error in server greeting.\n"
-msgstr "Error en la benvinguda del servidor.\n"
+msgstr "Missatge de benvinguda del servidor erroni.\n"
 
-#: src/ftp.c:204 src/ftp.c:335 src/ftp.c:428 src/ftp.c:509 src/ftp.c:574
-#: src/ftp.c:638 src/ftp.c:699 src/ftp.c:747
+#: src/ftp.c:231 src/ftp.c:362 src/ftp.c:477 src/ftp.c:560 src/ftp.c:621
+#: src/ftp.c:685 src/ftp.c:758 src/ftp.c:806
 msgid "Write failed, closing control connection.\n"
-msgstr "Escritura fallada, tancant la conexió de control.\n"
+msgstr "Error d'escriptura, tancant la connexió de control.\n"
 
-#: src/ftp.c:211
+#: src/ftp.c:238
 msgid "The server refuses login.\n"
-msgstr "El servidor refusa la entrada.\n"
+msgstr "El servidor refusa les peticions d'entrada.\n"
 
-#: src/ftp.c:218
+#: src/ftp.c:245
 msgid "Login incorrect.\n"
-msgstr "entrada incorrecte.\n"
+msgstr "Entrada incorrecta.\n"
 
-#: src/ftp.c:225
+#: src/ftp.c:252
 msgid "Logged in!\n"
-msgstr "entrada aconseguida!\n"
+msgstr "S'ha entrat amb èxit!\n"
 
-#: src/ftp.c:250
+#: src/ftp.c:277
 msgid "Server error, can't determine system type.\n"
-msgstr "Error de servidor, no es pot determinar el tipus de sistema.\n"
+msgstr "Error del servidor, no es pot determinar el tipus de sistema.\n"
 
-#: src/ftp.c:260 src/ftp.c:549 src/ftp.c:612 src/ftp.c:669
+#: src/ftp.c:287 src/ftp.c:596 src/ftp.c:659 src/ftp.c:716
 msgid "done.    "
-msgstr "fet.    "
+msgstr "fet.     "
 
-#: src/ftp.c:314 src/ftp.c:449 src/ftp.c:484 src/ftp.c:720 src/ftp.c:768
-#: src/host.c:280
+#: src/ftp.c:341 src/ftp.c:498 src/ftp.c:533 src/ftp.c:779 src/ftp.c:827
 msgid "done.\n"
 msgstr "fet.\n"
 
-#: src/ftp.c:343
+#: src/ftp.c:370
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
-msgstr "Tipus desconegut `%c', tancant la conexió de control.\n"
+msgstr "Tipus desconegut `%c', tancant la connexió de control.\n"
 
-#: src/ftp.c:356
+#: src/ftp.c:383
 msgid "done.  "
-msgstr "fet.  "
+msgstr "fet.   "
 
-#: src/ftp.c:362
+#: src/ftp.c:389
 msgid "==> CWD not needed.\n"
-msgstr "==> CWD no necessari.\n"
+msgstr "==> CWD innecessari.\n"
 
-#: src/ftp.c:435
+#: src/ftp.c:484
 #, c-format
-msgid "No such directory `%s'.\n\n"
-msgstr "No existeix el directori `%s'.\n\n"
+msgid ""
+"No such directory `%s'.\n"
+"\n"
+msgstr ""
+"El directori `%s' no existeix.\n"
+"\n"
 
 #. do not CWD
-#: src/ftp.c:453
+#: src/ftp.c:502
 msgid "==> CWD not required.\n"
 msgstr "==> CWD no requerit.\n"
 
-#: src/ftp.c:516
+#: src/ftp.c:567
 msgid "Cannot initiate PASV transfer.\n"
-msgstr "No es pot iniciar la transferéncia en PASV.\n"
+msgstr "No s'ha pogut iniciar la transferència PASV.\n"
 
-#: src/ftp.c:520
+#: src/ftp.c:571
 msgid "Cannot parse PASV response.\n"
-msgstr "No es pot parsejar la resposta en PASV.\n"
+msgstr "No s'ha pogut analitzar la resposta PASV.\n"
 
-#: src/ftp.c:541
+#: src/ftp.c:588
 #, c-format
 msgid "couldn't connect to %s:%hu: %s\n"
-msgstr "no es pot conectar a `%s:%hu: %s\n"
+msgstr "no s'ha pogut connectar amb `%s:%hu: %s\n"
 
-#: src/ftp.c:591
-#, c-format
+#: src/ftp.c:638
+#, fuzzy, c-format
 msgid "Bind error (%s).\n"
-msgstr "Error a la trucada `bind' (%s).\n"
+msgstr "Error de la rutina `bind' (%s).\n"
 
-#: src/ftp.c:598
+#: src/ftp.c:645
 msgid "Invalid PORT.\n"
 msgstr "PORT incorrecte.\n"
 
-#: src/ftp.c:651
+#: src/ftp.c:698
 #, c-format
-msgid "\nREST failed; will not truncate `%s'.\n"
-msgstr "\nREST fallat; no es truncarà `%s'.\n"
+msgid ""
+"\n"
+"REST failed; will not truncate `%s'.\n"
+msgstr ""
+"\n"
+"REST ha fallat; `%s' no es truncarà.\n"
 
-#: src/ftp.c:658
-msgid "\nREST failed, starting from scratch.\n"
-msgstr "\nREST ha fallat, començant des del inici.\n"
+#: src/ftp.c:705
+msgid ""
+"\n"
+"REST failed, starting from scratch.\n"
+msgstr ""
+"\n"
+"REST ha fallat, començant des del principi.\n"
 
-#: src/ftp.c:707
+#: src/ftp.c:766
 #, c-format
-msgid "No such file `%s'.\n\n"
-msgstr "No existeix el arxiu `%s'.\n\n"
+msgid ""
+"No such file `%s'.\n"
+"\n"
+msgstr ""
+"El fitxer `%s' no existeix.\n"
+"\n"
 
-#: src/ftp.c:755
+#: src/ftp.c:814
 #, c-format
-msgid "No such file or directory `%s'.\n\n"
-msgstr "No existeix el arxiu o directori `%s'.\n\n"
+msgid ""
+"No such file or directory `%s'.\n"
+"\n"
+msgstr ""
+"El fitxer o directori `%s' no existeix.\n"
+"\n"
 
-#: src/ftp.c:839 src/ftp.c:847
+#: src/ftp.c:898 src/ftp.c:906
 #, c-format
 msgid "Length: %s"
-msgstr "Longitut: %s"
+msgstr "Mida: %s"
 
-#: src/ftp.c:841 src/ftp.c:849
+#: src/ftp.c:900 src/ftp.c:908
 #, c-format
 msgid " [%s to go]"
 msgstr " [%s per acabar]"
 
-#: src/ftp.c:851
+#: src/ftp.c:910
+#, fuzzy
 msgid " (unauthoritative)\n"
-msgstr " (probablement)\n"
+msgstr " (no autoritariu)\n"
 
-#: src/ftp.c:877
+#: src/ftp.c:936
 #, c-format
 msgid "%s: %s, closing control connection.\n"
-msgstr "%s: %s, tancant la conexió de control.\n"
+msgstr "%s: %s, tancant la connexió de control.\n"
 
-#: src/ftp.c:885
+#: src/ftp.c:944
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
-msgstr "%s (%s)   Conexió de dades: %s; "
+msgstr "%s (%s) - Connexió de dades: %s; "
 
-#: src/ftp.c:902
+#: src/ftp.c:961
 msgid "Control connection closed.\n"
-msgstr "Conexió de control tancada.\n"
+msgstr "Connexió de control tancada.\n"
 
-#: src/ftp.c:920
+#: src/ftp.c:979
 msgid "Data transfer aborted.\n"
-msgstr "Transferéncia de dades cancel·lada.\n"
+msgstr "Transferència de dades cancel·lada.\n"
 
-#: src/ftp.c:984
-#, c-format
+#: src/ftp.c:1044
+#, fuzzy, c-format
 msgid "File `%s' already there, not retrieving.\n"
-msgstr "L'arxiu `%s' ja existeix, no es descarregarà.\n"
+msgstr "El fitxer `%s' ja existeix, no es descarrega.\n"
 
-#: src/ftp.c:1054 src/http.c:1527
+#: src/ftp.c:1114 src/http.c:1716
 #, c-format
 msgid "(try:%2d)"
-msgstr "(prova:%2d)"
+msgstr "(intent:%2d)"
 
-#: src/ftp.c:1118 src/http.c:1786
+#: src/ftp.c:1180 src/http.c:1975
 #, c-format
-msgid "%s (%s) - `%s' saved [%ld]\n\n"
-msgstr "%s (%s)   `%s guardat [%ld]\n\n"
+msgid ""
+"%s (%s) - `%s' saved [%ld]\n"
+"\n"
+msgstr ""
+"%s (%s) - `%s' desat [%ld]\n"
+"\n"
 
-#: src/ftp.c:1160 src/main.c:822 src/recur.c:349 src/retr.c:587
+#: src/ftp.c:1222 src/main.c:890 src/recur.c:377 src/retr.c:596
 #, c-format
 msgid "Removing %s.\n"
-msgstr "Esborrant %s.\n"
+msgstr "Eliminant %s.\n"
 
-#: src/ftp.c:1202
+#: src/ftp.c:1264
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
-msgstr "Utilitzant `%s' com a un arxiu de llistat temporal.\n"
+msgstr "S'utilitza `%s' com a fitxer temporal de llistat.\n"
 
-#: src/ftp.c:1217
+#: src/ftp.c:1279
 #, c-format
 msgid "Removed `%s'.\n"
-msgstr "Esborrat `%s'.\n"
+msgstr "Eliminat `%s'.\n"
 
-#: src/ftp.c:1252
+#: src/ftp.c:1314
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
-msgstr "La profunditat de recursió %d excedeix el màxim permés %d.\n"
+msgstr "La profunditat de recursió %d excedeix el màxim permès %d.\n"
 
 #. Remote file is older, file sizes can be compared and
 #. are both equal.
-#: src/ftp.c:1317
-#, c-format
-msgid "Remote file no newer than local file `%s' -- not retrieving.\n"
-msgstr "L'arxiu remot no és més nou que l'arxiu local `%s' -- no es descarrega.\n"
-
-#. Remote file is newer or sizes cannot be matched
-#: src/ftp.c:1324
-#, c-format
-msgid "Remote file is newer than local file `%s' -- retrieving.\n\n"
-msgstr "L'arxiu remot és més nou que l'arxiu local `%s' -- descarregant.\n\n"
-
-#. Sizes do not match
-#: src/ftp.c:1331
-#, c-format
-msgid "The sizes do not match (local %ld) -- retrieving.\n\n"
-msgstr "Els tamanys no corresponen (local %ld) -- descarregant.\n"
-
-#: src/ftp.c:1348
-msgid "Invalid name of the symlink, skipping.\n"
-msgstr "El nom del enllaç és incorrecte; omitint.\n"
-
-#: src/ftp.c:1365
-#, c-format
-msgid "Already have correct symlink %s -> %s\n\n"
-msgstr "Ja té el enllaç correcte %s --> %s\n\n"
-
-#: src/ftp.c:1373
-#, c-format
-msgid "Creating symlink %s -> %s\n"
-msgstr "Creant enllaç %s --> %s\n"
-
 #: src/ftp.c:1384
 #, c-format
-msgid "Symlinks not supported, skipping symlink `%s'.\n"
-msgstr "Els enllaços no estan suportats, omitint enllaç `%s'.\n"
+msgid "Remote file no newer than local file `%s' -- not retrieving.\n"
+msgstr "El fitxer remot no és més nou que el local `%s' -- no es descarrega.\n"
 
-#: src/ftp.c:1396
+#. Remote file is newer or sizes cannot be matched
+#: src/ftp.c:1391
 #, c-format
-msgid "Skipping directory `%s'.\n"
-msgstr "omitint directori `%s'.\n"
+msgid ""
+"Remote file is newer than local file `%s' -- retrieving.\n"
+"\n"
+msgstr ""
+"El fitxer remot és més nou que el local `%s' -- es descarrega.\n"
+"\n"
 
-#: src/ftp.c:1405
+#. Sizes do not match
+#: src/ftp.c:1398
 #, c-format
-msgid "%s: unknown/unsupported file type.\n"
-msgstr "%s: tipus d'arxiu desconegut/no soportat.\n"
+msgid ""
+"The sizes do not match (local %ld) -- retrieving.\n"
+"\n"
+msgstr ""
+"Els fitxers no tenen la mateixa mida (local %ld) -- es descarrega.\n"
+"\n"
+
+#: src/ftp.c:1415
+msgid "Invalid name of the symlink, skipping.\n"
+msgstr "El nom de l'enllaç simbólic no és correcte; s'omet.\n"
 
 #: src/ftp.c:1432
+#, fuzzy, c-format
+msgid ""
+"Already have correct symlink %s -> %s\n"
+"\n"
+msgstr ""
+"Ja hi ha un enllaç simbòlic correcte %s -> %s\n"
+"\n"
+
+#: src/ftp.c:1440
+#, c-format
+msgid "Creating symlink %s -> %s\n"
+msgstr "Creant l'enllaç simbólic %s -> %s\n"
+
+#: src/ftp.c:1451
+#, c-format
+msgid "Symlinks not supported, skipping symlink `%s'.\n"
+msgstr "No es suporten enllaços simbòlics; s'omet l'enllaç `%s'.\n"
+
+#: src/ftp.c:1463
+#, c-format
+msgid "Skipping directory `%s'.\n"
+msgstr "Ometent el directori `%s'.\n"
+
+#: src/ftp.c:1472
+#, c-format
+msgid "%s: unknown/unsupported file type.\n"
+msgstr "%s: tipus de fitxer desconegut, o no suportat.\n"
+
+#: src/ftp.c:1499
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
-msgstr "%s: marca de temps corrupte.\n"
+msgstr "%s: informació horària corrupta.\n"
 
-#: src/ftp.c:1457
-#, c-format
+#: src/ftp.c:1524
+#, fuzzy, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
-msgstr "No es descarregaran els directoris perquè la profunditat es %d (màx %d).\n"
+msgstr "No es descarregaran directoris ja que la profunditat és %d (max %d).\n"
 
-#: src/ftp.c:1507
+#: src/ftp.c:1574
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
-msgstr "Es descén fins a `%s' per estar exclós/no inclós.\n"
+msgstr "No es descendeix a `%s' ja que està exclòs, o no inclòs.\n"
 
-#: src/ftp.c:1561
+#: src/ftp.c:1639 src/ftp.c:1652
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr "Rebutjant `%s'.\n"
@@ -338,173 +405,204 @@ msgstr "Rebutjant `%s'.\n"
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1608
+#: src/ftp.c:1698
 #, c-format
 msgid "No matches on pattern `%s'.\n"
-msgstr "No hi ha res que s'ajusti al patró `%s'.\n"
+msgstr "Cap coincidència amb el patró `%s'.\n"
 
-#: src/ftp.c:1673
+#: src/ftp.c:1764
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%ld].\n"
-msgstr "S'ha escrit un índex amb HTML a `%s' [%ld].\n"
+msgstr "S'ha escrit un índex HTMLitzat a `%s' [%ld].\n"
 
-#: src/ftp.c:1678
+#: src/ftp.c:1769
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
-msgstr "S'ha escrit un índex HTML a `%s'.\n"
+msgstr "S'ha escrit un índex HTMLitzat a `%s'.\n"
 
-#: src/gen_sslfunc.c:109
+#: src/gen_sslfunc.c:117
 msgid "Could not seed OpenSSL PRNG; disabling SSL.\n"
-msgstr "No es s'ha pogut alimentar el PRNG d'OpenSSL; deshabilitant SSL.\n"
+msgstr "No es s'ha pogut alimentar el PRNG d'OpenSSL; es deshabilita la SSL.\n"
 
-#: src/getopt.c:454
+#: src/getopt.c:675
 #, c-format
 msgid "%s: option `%s' is ambiguous\n"
-msgstr "%s: la opció `%s' és ambigua\n"
+msgstr "%s: l'opció `%s' és ambigua\n"
 
-#: src/getopt.c:478
+#: src/getopt.c:700
 #, c-format
 msgid "%s: option `--%s' doesn't allow an argument\n"
-msgstr "%s: la opció `--%s' no permet un argument\n"
+msgstr "%s: l'opció `--%s' no admet arguments\n"
 
-#: src/getopt.c:483
+#: src/getopt.c:705
 #, c-format
 msgid "%s: option `%c%s' doesn't allow an argument\n"
-msgstr "%s: la opció `%c%s' no permet un argument\n"
+msgstr "%s: l'opció `%c%s' no admet arguments\n"
 
-#: src/getopt.c:498
+#: src/getopt.c:723 src/getopt.c:896
 #, c-format
 msgid "%s: option `%s' requires an argument\n"
-msgstr "%s: la opció `%s' requereix un argument\n"
+msgstr "%s: l'opció `%s' requereix un argument\n"
 
 #. --option
-#: src/getopt.c:528
+#: src/getopt.c:752
 #, c-format
 msgid "%s: unrecognized option `--%s'\n"
 msgstr "%s: opció desconeguda `--%s'\n"
 
 #. +option or -option
-#: src/getopt.c:532
+#: src/getopt.c:756
 #, c-format
 msgid "%s: unrecognized option `%c%s'\n"
 msgstr "%s: opció desconeguda `%c%s'\n"
 
 #. 1003.2 specifies the format of this message.
-#: src/getopt.c:563
+#: src/getopt.c:782
 #, c-format
 msgid "%s: illegal option -- %c\n"
-msgstr "%s: opció no permesa -- %c\n"
+msgstr "%s: opció il·legal -- %c\n"
+
+#: src/getopt.c:785
+#, c-format
+msgid "%s: invalid option -- %c\n"
+msgstr "%s: opció no vàlida -- %c\n"
 
 #. 1003.2 specifies the format of this message.
-#: src/getopt.c:602
+#: src/getopt.c:815 src/getopt.c:945
 #, c-format
 msgid "%s: option requires an argument -- %c\n"
-msgstr "%s: aquesta opció requereix un argument -- %c\n"
+msgstr "%s: l'opció requereix un argument -- %c\n"
 
-#: src/host.c:268
+#: src/getopt.c:862
+#, c-format
+msgid "%s: option `-W %s' is ambiguous\n"
+msgstr "%s: l'opció `-W %s' és ambigua\n"
+
+#: src/getopt.c:880
+#, c-format
+msgid "%s: option `-W %s' doesn't allow an argument\n"
+msgstr "%s: l'opció `-W %s' no admet arguments\n"
+
+#: src/host.c:636
 #, c-format
 msgid "Resolving %s... "
 msgstr "Resolent %s... "
 
-#: src/host.c:275
+#: src/host.c:656 src/host.c:672
 #, c-format
 msgid "failed: %s.\n"
-msgstr "Fallat: %s.\n"
+msgstr "error: %s.\n"
 
-#: src/host.c:345
+#: src/host.c:674
+msgid "failed: timed out.\n"
+msgstr "error: temps esgotat.\n"
+
+#: src/host.c:762
 msgid "Host not found"
-msgstr "Oste no trobat"
+msgstr "No s'ha trobat el host"
 
-#: src/host.c:347
+#: src/host.c:764
 msgid "Unknown error"
-msgstr "Error desconegut"
+msgstr "Error no identificat"
+
+#: src/html-url.c:293
+#, c-format
+msgid "%s: Cannot resolve incomplete link %s.\n"
+msgstr "%s: No s'ha pogut resoldre l'enllaç incomplet %s.\n"
 
 #. this is fatal
-#: src/http.c:573
+#: src/http.c:674
 msgid "Failed to set up an SSL context\n"
-msgstr "S'ha fallat al intentar fixar un context SSL\n"
+msgstr "No s'ha pogut establir un context SSL\n"
 
-#: src/http.c:579
+#: src/http.c:680
 #, c-format
 msgid "Failed to load certificates from %s\n"
-msgstr "S'ha fallat al intentar carregar els certificats des de %s\n"
+msgstr "No s'han pogut carregar els certificats de %s\n"
 
-#: src/http.c:583 src/http.c:591
+#: src/http.c:684 src/http.c:692
 msgid "Trying without the specified certificate\n"
-msgstr "Probant sense el certificat especificat\n"
+msgstr "S'intenta sense el certificat especificat\n"
 
-#: src/http.c:587
+#: src/http.c:688
 #, c-format
 msgid "Failed to get certificate key from %s\n"
-msgstr "S'ha fallat al intentar conseguir la clau del certificat des de %s\n"
+msgstr "No s'ha pogut obtenir la clau del certificat de %s\n"
 
-#: src/http.c:657 src/http.c:1620
+#: src/http.c:761 src/http.c:1809
 msgid "Unable to establish SSL connection.\n"
-msgstr "No es pot establir una conexió SSL.\n"
+msgstr "No s'ha pogut establir la connexió SSL.\n"
 
-#: src/http.c:666
+#: src/http.c:770
 #, c-format
 msgid "Reusing connection to %s:%hu.\n"
-msgstr "S'està reutilitzant la conexió a %s:%hu.\n"
+msgstr "Reutilitzant la connexió amb %s:%hu.\n"
 
-#: src/http.c:868
+#: src/http.c:1034
 #, c-format
 msgid "Failed writing HTTP request: %s.\n"
-msgstr "Ha fallat al escriure la petició HTTP: %s.\n"
+msgstr "Error escrivint la petició HTTP: %s.\n"
 
-#: src/http.c:873
+#: src/http.c:1039
 #, c-format
 msgid "%s request sent, awaiting response... "
-msgstr "%s: Petició enviada, esperant resposta... "
+msgstr "%s: petició enviada, esperant resposta... "
 
-#: src/http.c:917
+#: src/http.c:1083
 msgid "End of file while parsing headers.\n"
-msgstr "Fi del arxiu al parsejar les capçaleres.\n"
+msgstr "Final de fitxer mentre s'analitzaven les capçaleres.\n"
 
-#: src/http.c:927
+#: src/http.c:1093
 #, c-format
 msgid "Read error (%s) in headers.\n"
-msgstr "Error de lectura (%s) a les capçaleres.\n"
+msgstr "Error en llegir les capçaleres (%s).\n"
 
-#: src/http.c:962
+#: src/http.c:1128
 msgid "No data received"
-msgstr "No s'han rebut dades"
+msgstr "No s'ha rebut cap dada"
 
-#: src/http.c:964
+#: src/http.c:1130
 msgid "Malformed status line"
-msgstr "línia de estat mal formada"
+msgstr "Línia d'estat mal formada"
 
-#: src/http.c:969
+#: src/http.c:1135
 msgid "(no description)"
 msgstr "(sense descripció)"
 
-#: src/http.c:1101
+#: src/http.c:1267
 msgid "Authorization failed.\n"
 msgstr "Autorització fallida.\n"
 
-#: src/http.c:1108
+#: src/http.c:1274
 msgid "Unknown authentication scheme.\n"
-msgstr "Métode de autentificació desconeguda.\n"
+msgstr "Mètode d'autentificació desconegut.\n"
 
-#: src/http.c:1148
+#: src/http.c:1314
 #, c-format
 msgid "Location: %s%s\n"
-msgstr "Localització: %s%s\n"
+msgstr "Ubicació: %s%s\n"
 
-#: src/http.c:1149 src/http.c:1282
+# és femení: ubicació/mida. eac
+#: src/http.c:1315 src/http.c:1454
 msgid "unspecified"
-msgstr "no especificat"
+msgstr "no especificada"
 
-#: src/http.c:1150
+#: src/http.c:1316
 msgid " [following]"
-msgstr " [el següent]"
+msgstr " [seguint]"
 
-#: src/http.c:1213
-msgid "\n    The file is already fully retrieved; nothing to do.\n\n"
-msgstr "\n    L'arxiu següent està descarregat totalment; res a fer.\n\n"
+#: src/http.c:1383
+msgid ""
+"\n"
+"    The file is already fully retrieved; nothing to do.\n"
+"\n"
+msgstr ""
+"\n"
+"    El fitxer ja s'ha descarregat totalment; res a fer.\n"
+"\n"
 
-#: src/http.c:1229
-#, c-format
+#: src/http.c:1401
+#, fuzzy, c-format
 msgid ""
 "\n"
 "Continued download failed on this file, which conflicts with `-c'.\n"
@@ -512,171 +610,225 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"La descàrrega continuada ha fallat en aquest arxiu, que dóna conflictes amb `-c'.\n"
-"No es truncarà l'arxiu existent `%s'.\n"
+"No s'ha pogut continuar la descàrrega d'aquest fitxer.\n"
+"El fitxer existent `%s' no es sobreescriurà.\n"
 "\n"
 
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
-#: src/http.c:1272
+#: src/http.c:1444
 msgid "Length: "
-msgstr "Longitud:"
+msgstr "Mida:"
 
-#: src/http.c:1277
+#: src/http.c:1449
 #, c-format
 msgid " (%s to go)"
 msgstr " (%s per acabar)"
 
-#: src/http.c:1282
+#: src/http.c:1454
 msgid "ignored"
-msgstr "ignorat"
+msgstr "s'ignora"
 
-#: src/http.c:1413
+#: src/http.c:1598
+#, fuzzy
 msgid "Warning: wildcards not supported in HTTP.\n"
-msgstr "Perill: Les wildcards no estan suportades en HTTP.\n"
+msgstr "Atenció: En HTTP no es suporten patrons.\n"
 
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:1443
+#: src/http.c:1628
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
-msgstr "L'arxiu `%s' ja esta aquí, no es descarregarà.\n"
+msgstr "El fitxer `%s' ja existeix, no es descarrega.\n"
 
-#: src/http.c:1611
+#: src/http.c:1800
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
-msgstr "No es pot escriure a '%s' (%s).\n"
+msgstr "No s'ha pogut escriure a `%s' (%s).\n"
 
-#: src/http.c:1630
+#: src/http.c:1819
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
-msgstr "ERROR: La redirecció (%d) sense localització.\n"
-
-#: src/http.c:1662
-#, c-format
-msgid "%s ERROR %d: %s.\n"
-msgstr "%s ERROR %d %s.\n"
-
-#: src/http.c:1675
-msgid "Last-modified header missing -- time-stamps turned off.\n"
-msgstr "La capçalera d'arxiu modificat no hi es --- Timestamp parada.\n"
-
-#: src/http.c:1683
-msgid "Last-modified header invalid -- time-stamp ignored.\n"
-msgstr "L'últim modificador és incorrecte -- time stamp ignorada.\n"
-
-#: src/http.c:1706
-#, c-format
-msgid "Server file no newer than local file `%s' -- not retrieving.\n\n"
-msgstr "L'arxiu remot no és més nou que el local `%s' -- no es descarregarà.\n"
-
-#: src/http.c:1714
-#, c-format
-msgid "The sizes do not match (local %ld) -- retrieving.\n"
-msgstr "Els tamanys no són iguals (local %ld) -- descarregant.\n"
-
-#: src/http.c:1718
-msgid "Remote file is newer, retrieving.\n"
-msgstr "L'arxiu remot és més nou, descarregant.\n"
-
-#: src/http.c:1759
-#, c-format
-msgid "%s (%s) - `%s' saved [%ld/%ld]\n\n"
-msgstr "%s (%s) - `%s' guardat [%ld/%ld]\n"
-
-#: src/http.c:1809
-#, c-format
-msgid "%s (%s) - Connection closed at byte %ld. "
-msgstr "%s (%s) -- Conexió tancada al byte %ld. "
-
-#: src/http.c:1818
-#, c-format
-msgid "%s (%s) - `%s' saved [%ld/%ld])\n\n"
-msgstr "%s (%s) - `%s' guardat [%ld/%ld]\n\n"
-
-#: src/http.c:1839
-#, c-format
-msgid "%s (%s) - Connection closed at byte %ld/%ld. "
-msgstr "%s (%s) - Conexió tancada al byte %ld/%ld. "
+msgstr "ERROR: Redirecció (%d) sense ubicació.\n"
 
 #: src/http.c:1851
 #, c-format
-msgid "%s (%s) - Read error at byte %ld (%s)."
-msgstr "%s (%s) - Error de lectura al byte %ld (%s)."
+msgid "%s ERROR %d: %s.\n"
+msgstr "%s ERROR: %d %s.\n"
 
-#: src/http.c:1860
+#: src/http.c:1864
+msgid "Last-modified header missing -- time-stamps turned off.\n"
+msgstr "Falta la capçalera Last-modified -- seguiment horari deshabilitat.\n"
+
+#: src/http.c:1872
+msgid "Last-modified header invalid -- time-stamp ignored.\n"
+msgstr "Capçalera Last-modified no vàlida -- s'ignora l'informació horària.\n"
+
+#: src/http.c:1895
+#, c-format
+msgid ""
+"Server file no newer than local file `%s' -- not retrieving.\n"
+"\n"
+msgstr "El fitxer remot no és més nou que el local `%s' -- no es descarrega.\n"
+
+#: src/http.c:1903
+#, c-format
+msgid "The sizes do not match (local %ld) -- retrieving.\n"
+msgstr "Les mides dels fitxers no coincideixen (local %ld) -- es descarrega.\n"
+
+#: src/http.c:1907
+msgid "Remote file is newer, retrieving.\n"
+msgstr "El fitxer remot és més nou, es descarrega.\n"
+
+#: src/http.c:1948
+#, c-format
+msgid ""
+"%s (%s) - `%s' saved [%ld/%ld]\n"
+"\n"
+msgstr ""
+"%s (%s) - `%s' desat [%ld/%ld]\n"
+"\n"
+
+#: src/http.c:1998
+#, c-format
+msgid "%s (%s) - Connection closed at byte %ld. "
+msgstr "%s (%s) - Connexió tallada a l'octet %ld. "
+
+#: src/http.c:2007
+#, c-format
+msgid ""
+"%s (%s) - `%s' saved [%ld/%ld])\n"
+"\n"
+msgstr ""
+"%s (%s) - `%s' desat [%ld/%ld])\n"
+"\n"
+
+#: src/http.c:2028
+#, c-format
+msgid "%s (%s) - Connection closed at byte %ld/%ld. "
+msgstr "%s (%s) - Connexió tallada a l'octet %ld/%ld. "
+
+#: src/http.c:2040
+#, c-format
+msgid "%s (%s) - Read error at byte %ld (%s)."
+msgstr "%s (%s) - Error de lectura a l'octet %ld (%s)."
+
+#: src/http.c:2049
 #, c-format
 msgid "%s (%s) - Read error at byte %ld/%ld (%s). "
-msgstr "%s (%s) - Error de lectura al byte %ld/%ld (%s)."
+msgstr "%s (%s) - Error de lectura a l'octet %ld/%ld (%s). "
 
-#: src/init.c:354 src/netrc.c:265
+#: src/init.c:342
+#, c-format
+msgid "%s: WGETRC points to %s, which doesn't exist.\n"
+msgstr "%s: La variable WGETRC apunta a %s, que no existeix.\n"
+
+#: src/init.c:398 src/netrc.c:276
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
-msgstr "%s: No s'ha pogut llegi %s (%s).\n"
+msgstr "%s: No s'ha pogut llegir %s (%s).\n"
 
-#: src/init.c:372 src/init.c:378
+#: src/init.c:416 src/init.c:422
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
-msgstr "%s: Error de %s a la linia %d.\n"
+msgstr "%s: Error a %s, línia %d.\n"
 
-#: src/init.c:410
-#, c-format
+# es refereix a variables d'entorn o què? eac
+#: src/init.c:454
+#, fuzzy, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
-msgstr "%s: Perill: El wgetrc del sistema i del usuari apunten a `%s'.\n"
+msgstr "%s: Atenció: L'wgetrc del sistema i de l'usuari apunten a `%s'.\n"
 
-#: src/init.c:502
+#: src/init.c:594
 #, c-format
-msgid "%s: BUG: unknown command `%s', value `%s'.\n"
-msgstr "%s: BUG: ordre desconeguda `%s', valor `%s'.\n"
+msgid "%s: Invalid --execute command `%s'\n"
+msgstr "%s: Ordre --execute no vàlida `%s'\n"
 
-#: src/init.c:536
+#: src/init.c:630
 #, c-format
-msgid "%s: %s: Cannot convert `%s' to an IP address.\n"
-msgstr "%s: %s: No es pot convertir `%s' a una adreça IP.\n"
+msgid "%s: %s: Invalid boolean `%s', use `on' or `off'.\n"
+msgstr "%s: %s: Variable booleana `%s' no vàlida; useu `on' o `off'.\n"
 
-#: src/init.c:569
+#: src/init.c:673
 #, c-format
-msgid "%s: %s: Please specify on or off.\n"
-msgstr "%s: %s: Sius-plau especifica on o off.\n"
+msgid "%s: %s: Invalid boolean `%s', use always, on, off, or never.\n"
+msgstr "%s: %s: Variable booleana `%s' no vàlida; useu `always', `on', `off' o `never'.\n"
 
-#: src/init.c:613
+#: src/init.c:691
 #, c-format
-msgid "%s: %s: Please specify always, on, off, or never.\n"
-msgstr "%s: %s: Sius-plau especifica sempre, on, off o nerver.\n"
+msgid "%s: %s: Invalid number `%s'.\n"
+msgstr "%s: %s: Número no vàlid `%s'.\n"
 
-#: src/init.c:632 src/init.c:899 src/init.c:978
+#: src/init.c:930 src/init.c:949
 #, c-format
-msgid "%s: %s: Invalid specification `%s'.\n"
-msgstr "%s: %s: Especificació incorrecte `%s'.\n"
+msgid "%s: %s: Invalid byte value `%s'\n"
+msgstr "%s: %s: Octet `%s' no vàlid.\n"
 
-#: src/init.c:788 src/init.c:810 src/init.c:832 src/init.c:858
+#: src/init.c:974
 #, c-format
-msgid "%s: Invalid specification `%s'\n"
-msgstr "%s: Especificació incorrecte `%s'\n"
+msgid "%s: %s: Invalid time period `%s'\n"
+msgstr "%s: %s: Període de temps `%s' no vàlid.\n"
 
-#: src/init.c:949
+#: src/init.c:1051
+#, c-format
+msgid "%s: %s: Invalid header `%s'.\n"
+msgstr "%s: %s: Capçalera `%s' no vàlida.\n"
+
+#: src/init.c:1106
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
-msgstr "%s: %s: Tipus de progrés incorrecte `%s'.\n"
+msgstr "%s: %s: Tipus d'indicador de progrés `%s' no vàlid.\n"
 
-#: src/main.c:116
+#: src/init.c:1157
+#, c-format
+msgid "%s: %s: Invalid restriction `%s', use `unix' or `windows'.\n"
+msgstr "%s: %s: Restricció `%s' no vàlida, useu `unix' o `windows'.\n"
+
+#: src/init.c:1198
+#, c-format
+msgid "%s: %s: Invalid value `%s'.\n"
+msgstr "%s: %s: El valor `%s' no és vàlid.\n"
+
+#: src/log.c:636
+#, c-format
+msgid ""
+"\n"
+"%s received, redirecting output to `%s'.\n"
+msgstr ""
+"\n"
+"%s rebut, la sortida es redirigeix a `%s'.\n"
+
+#. Eek!  Opening the alternate log file has failed.  Nothing we
+#. can do but disable printing completely.
+#: src/log.c:643
+#, fuzzy, c-format
+msgid "%s: %s; disabling logging.\n"
+msgstr "%s: %s; es desactiva el registre.\n"
+
+#: src/main.c:127
 #, c-format
 msgid "Usage: %s [OPTION]... [URL]...\n"
-msgstr "Ús: %s [OPTION]... [URL]...\n"
+msgstr "Forma d'ús: %s [OPCIÓ]... [URL]...\n"
 
-#: src/main.c:124
-#, c-format
+#: src/main.c:135
+#, fuzzy, c-format
 msgid "GNU Wget %s, a non-interactive network retriever.\n"
-msgstr "GNU Wget %s, un descarregador de la xarxa no interactiu.\n"
+msgstr "GNU Wget %s, un descarregador de xarxa no interactiu.\n"
 
 #. Had to split this in parts, so the #@@#%# Ultrix compiler and cpp
 #. don't bitch.  Also, it makes translation much easier.
-#: src/main.c:129
-msgid "\nMandatory arguments to long options are mandatory for short options too.\n\n"
-msgstr "\nEls arguments obligatoris de les opcions més llargues són obligatoris per les opcions curtes també.\n\n"
+#: src/main.c:140
+msgid ""
+"\n"
+"Mandatory arguments to long options are mandatory for short options too.\n"
+"\n"
+msgstr ""
+"\n"
+"Els arguments obligatoris per les opcions llargues també ho són per les curtes.\n"
+"\n"
 
-#: src/main.c:133
+#: src/main.c:144
 msgid ""
 "Startup:\n"
 "  -V,  --version           display the version of Wget and exit.\n"
@@ -686,13 +838,13 @@ msgid ""
 "\n"
 msgstr ""
 "Inici:\n"
-" -V, --version            Mostra la versió del Wget i surt.\n"
-" -h, --help                 Mostra aquesta ajuda.\n"
-" -b, --background      va al fons després del inici.\n"
-" -e, --execute=ORDRE  executa una ordre del estil del `wgetrc'.\n"
+"  -V,  --version           mostra la versió de Wget i surt.\n"
+"  -h,  --help              mostra aquesta ajuda.\n"
+"  -b,  --background        execució en segon terme.\n"
+"  -e,  --execute=ORDRE     executa una ordre de l'estil `.wgetrc'.\n"
 "\n"
 
-#: src/main.c:140
+#: src/main.c:151
 msgid ""
 "Logging and input file:\n"
 "  -o,  --output-file=FILE     log messages to FILE.\n"
@@ -704,31 +856,25 @@ msgid ""
 "  -i,  --input-file=FILE      download URLs found in FILE.\n"
 "  -F,  --force-html           treat input file as HTML.\n"
 "  -B,  --base=URL             prepends URL to relative links in -F -i file.\n"
-"       --sslcertfile=FILE     optional client certificate.\n"
-"       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
-"       --egd-file=FILE        file name of the EGD socket.\n"
 "\n"
 msgstr ""
-"Log i arxius d'entrada:\n"
-"  -o,  --output-file=ARXIU                        logueja els missatges a un ARXIU.\n"
-"  -a,  --append-output=ARXIU                 afegeix els missatges a un ARXIU.\n"
-"  -d,  --debug                                           escriu a pantalla el depurat.\n"
-"  -q,  --quiet                                              mode silenciós (no mostra cap sortida).\n"
-"  -v,  --verbose                                        mode informatiu (això és per defecte).\n"
-"  -nv, --non-verbose                                apaga l'informació que surt a pantalla.\n"
-"   -i,  --input-file=ARXIU                          descarrega les URL trobades a un ARXIU.\n"
-"  -F,  --force-html                                    tracta l'arxiu com a HTML.\n"
-"  -B,  --base=URL                                   afegeix un URL davant dels enllaços relatius en l'arxiu -F -i.\n"
-"        --ssicertfile=ARXIU                        certificat del client opcional.\n"
-"        --ssicertkey=ARXIUCLAU              Arxiu-clau per aquest certificat.\n"
-"        --egd-file=ARXIU                            nom del arxiu del socket EGD.\n"
-"\n"
+"Registre i fitxer d'entrada:\n"
+"  -o,  --output-file=FITXER   desa els missatges del programa a FITXER.\n"
+"  -a,  --append-output=FITXER afegeix els missatges a FITXER.\n"
+"  -d,  --debug                mostra informació de depuració.\n"
+"  -q,  --quiet                mode silenciós (cap missatge).\n"
+"  -v,  --verbose              mode loquaç (per omissió).\n"
+"  -nv, --non-verbose          mode no loquaç, però tampoc del tot silenciós.\n"
+"  -i,  --input-file=FITXER    llegeix els enllaços de FITXER.\n"
+"  -F,  --force-html           tracta el fitxer d'entrada com a HTML.\n"
+"  -B,  --base=URL             afegeix el prefix URL a tots els enllaços\n"
+"                               relatius del fitxer d'entrada.\n"
 
-#: src/main.c:155
+#: src/main.c:163
 msgid ""
 "Download:\n"
-"       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n"
 "  -t,  --tries=NUMBER           set number of retries to NUMBER (0 unlimits).\n"
+"       --retry-connrefused      retry even if connection is refused.\n"
 "  -O   --output-document=FILE   write documents to FILE.\n"
 "  -nc, --no-clobber             don't clobber existing files or use .# suffixes.\n"
 "  -c,  --continue               resume getting a partially-downloaded file.\n"
@@ -736,38 +882,51 @@ msgid ""
 "  -N,  --timestamping           don't re-retrieve files unless newer than local.\n"
 "  -S,  --server-response        print server response.\n"
 "       --spider                 don't download anything.\n"
-"  -T,  --timeout=SECONDS        set the read timeout to SECONDS.\n"
+"  -T,  --timeout=SECONDS        set all timeout values to SECONDS.\n"
+"       --dns-timeout=SECS       set the DNS lookup timeout to SECS.\n"
+"       --connect-timeout=SECS   set the connect timeout to SECS.\n"
+"       --read-timeout=SECS      set the read timeout to SECS.\n"
 "  -w,  --wait=SECONDS           wait SECONDS between retrievals.\n"
 "       --waitretry=SECONDS      wait 1...SECONDS between retries of a retrieval.\n"
 "       --random-wait            wait from 0...2*WAIT secs between retrievals.\n"
 "  -Y,  --proxy=on/off           turn proxy on or off.\n"
 "  -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n"
+"       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n"
 "       --limit-rate=RATE        limit download rate to RATE.\n"
+"       --dns-cache=off          disable caching DNS lookups.\n"
+"       --restrict-file-names=OS restrict chars in file names to ones OS allows.\n"
 "\n"
 msgstr ""
 "Descàrrega:\n"
-"               --bind-address=ADREÇA      fa un bind a l'adreça (oste o IP) en l'oste local.\n"
-"  -t,     --tries=NÚMERO                        fixa el número de reintents (0=sense limit).\n"
-"  -O,   --output-document=ARXIU          escriu els documents a un ARXIU.\n"
-"  -nc,  --no-clobber                                 no sobreescriu els arxius existents. O no utilitzar sufixos.\n"
-"  -c,   -­continue                                    Continua una descàrrega interrompuda.\n"
-"        --progress=TIPUS                       Selecciona el tipus de mesura de descàrrega.\n"
-"  -N,  --timestamping                             No descarrega de nou els arxius fins que no són més nous que\n"
-"                                                            els locals.\n"
-"  -S,  --server-response                         Escriu a pantalla les respostes del servidor.\n"
-"        --spider                                         No descarrega res.\n"
-"   -T,  --timeout=SEGONS                      fixa la lectura de temps en SEGONS.\n"
-"  -w,  --wait=SEGONS                           espera SEGONS entre les descàrregues.\n"
-"           --waitrery=SEGONS                  espra 1...SEGONS entre els intents de descàrrega.\n"
-"  -Y,  --proxy=on/off                              Apaga o engega el proxy.\n"
-"  -Q,  --quota=NÚMERO                       fixa la quota de descàrrega a un NÚMERO.\n"
-"         --limit-rate=PERCENTATGE       limita el percentatge de descàrrega a un PERCENTATGE.\n"
+"  -t,  --tries=NOMBRE           estableix el nombre de reintents (0=sense limit).\n"
+"       --retry-connrefused      reintenta encara que es refusi la connexió.\n"
+"  -O,  --output-document=FITXER escriu els documents a FITXER.\n"
+"  -nc, --no-clobber             no descarrega fitxers ja existents.\n"
+"  -c,  -­continue               continua una descàrrega interrompuda.\n"
+"       --progress=TIPUS         selecciona el tipus d'indicador de progressió.\n"
+"  -N,  --timestamping           només descarrega fitxers més nous que els locals.\n"
+"  -S,  --server-response        mostra les respostes del servidor.\n"
+"       --spider                 no descarrega.\n"
+"  -T,  --timeout=SEGONS         estableix tots els temps d'espera en SEGONS.\n"
+"       --dns-timeout=SEGS       estableix el temps d'espera de DNS en SEGS.\n"
+"       --connect-timeout=SEGS   estableix el temps d'espera de connexió en SEGS.\n"
+"       --read-timeout=SEGS      estableix el temps d'espera de lectura en SEGS.\n"
+"  -w,  --wait=SEGONS            pausa entre descàrregues de SEGONS.\n"
+"       --waitretry=SEGONS       pausa entre intents de descàrrega de 1...SEGONS.\n"
+"       --random-wait            pausa de 0...2*PAUSA segons entre descàrregues.\n"
+"  -Y,  --proxy=on/off           habilita o deshabilita l'ús de proxy.\n"
+"  -Q,  --quota=NOMBRE           estableix la quota de descàrrega en NOMBRE.\n"
+"       --bind-address=ADREÇA    usa l'adreça local ADREÇA\n"
+"       --limit-rate=NOMBRE      extableix el límit d'octets per segon.\n"
+"       --dns-cache=off          no usa `cache' en la resolució de noms de domini.\n"
+"       --restrict-file-names=SO restringeix determinats caràcters dels noms dels\n"
+"                                 fitxers segons el SO (sistema operatiu).\n"
 "\n"
 
-#: src/main.c:174
+#: src/main.c:188
 msgid ""
 "Directories:\n"
-"  -nd  --no-directories            don't create directories.\n"
+"  -nd, --no-directories            don't create directories.\n"
 "  -x,  --force-directories         force creation of directories.\n"
 "  -nH, --no-host-directories       don't create host directories.\n"
 "  -P,  --directory-prefix=PREFIX   save files to PREFIX/...\n"
@@ -775,14 +934,15 @@ msgid ""
 "\n"
 msgstr ""
 "Directoris:\n"
-"  -nd,     --no-directories                     no crea els directoris.\n"
-"  -x,     --force-directories                   força la creació dels directoris.\n"
-"  -nH,  --no-host-directories                no crea directoris al oste.\n"
-"  -P,    --directory-prefix=PREFIX        guarda els arxius a un PREFIX/...\n"
-"          --cut-dirs=NÚMERO                 talla els directoris a guardar.\n"
+"  -nd, --no-directories            no crea directoris.\n"
+"  -x,  --force-directories         crea directoris obligatòriament.\n"
+"  -nH, --no-host-directories       crea directoris, sense el prefix del host.\n"
+"  -P,  --directory-prefix=PREFIX   desa els fitxers a PREFIX/...\n"
+"       --cut-dirs=NOMBRE           omet NOMBRE components de l'estructura de\n"
+"                                    directoris remota.\n"
 "\n"
 
-#: src/main.c:182
+#: src/main.c:196
 msgid ""
 "HTTP options:\n"
 "       --http-user=USER      set http user to USER.\n"
@@ -800,26 +960,56 @@ msgid ""
 "       --cookies=off         don't use cookies.\n"
 "       --load-cookies=FILE   load cookies from FILE before session.\n"
 "       --save-cookies=FILE   save cookies to FILE after session.\n"
+"       --post-data=STRING    use the POST method; send STRING as the data.\n"
+"       --post-file=FILE      use the POST method; send contents of FILE.\n"
 "\n"
 msgstr ""
-"Opcions de HTTP:\n"
-"          --http-user=USUARI            fixa el usuari de HTTP.\n"
-"          --http-passwd=PASS           fixa la contrassenya d'usuari.\n"
-"  -C,   --cache=on/off                     apaga o engega la caché d'arxius   -E,   --html-extension                   guarda tots els documents sota una extensió .html.\n"
-"         --ignore-length                     ignora la longitut de la capçalera.\n"
-"         --header=STRING               inserta una cadena entre les capçaleres.\n"
-"         --proxy-user=USUARI          fixa el usuari de proxy.\n"
-"         --proxy-passwd=pass           fixa la contrasenya del proxy.\n"
-"         --referer=URL                      inclou la capçalera 'referer' a la petició HTTP.\n"
-"  -s,   --save-headers                     guarda les capçaleres HTTP a un arxiu.\n"
-"  -U,  --user-agent=AGENT            identifica com un AGENT en lloc de Wget/VERSION.\n"
-"        --no-http-keep-alive               desactiva les conexions permanents de HTTP.\n"
-"        --cookies=off                         desactiva les cookies.\n"
-"        --load cookies=ARXIU           carrega les cookies d'un ARXIU abans de començar la sessió.\n"
-"        --save-cookies=ARXIU           guarda les cookies a un ARXIU després de la sessió.\n"
+"Opcions d'HTTP:\n"
+"       --http-user=USUARI    estableix l'usuari http en USUARI.\n"
+"       --http-passwd=PASS    estableix la contrasenya http en PASS.\n"
+"  -C,  --cache=on/off        admet o no dades del `cache' del servidor.\n"
+"  -E,  --html-extension      afegeix l'ext. html a tots els fitxers text/html\n"
+"       --ignore-length       ignora la capçalera `Content-Length'.\n"
+"       --header=CADENA       insereix CADENA entre les capçaleres.\n"
+"       --proxy-user=USUARI   estableix l'usuari pel proxy en USUARI.\n"
+"       --proxy-passwd=PASS   estableix la contrasenya pel proxy en PASS.\n"
+"       --referer=URL         inclou una capçalera `Referer' a la petició HTTP.\n"
+"  -s,  --save-headers        desa les capçaleres HTTP en un fitxer.\n"
+"  -U,  --user-agent=AGENT    s'identifica com a AGENT en lloc de Wget/VERSIÓ.\n"
+"       --no-http-keep-alive  no utilitza connexions HTTP persistents.\n"
+"       --cookies=off         no admet cookies.\n"
+"       --load-cookies=FITXER carrega les cookies de FITXER.\n"
+"       --save-cookies=FITXER desa les cookies a FITXER.\n"
+"       --post-data=CADENA    envia CADENA com a dades `POST'.\n"
+"       --post-file=FITXER    envia FITXER com a dades `POST'.\n"
 "\n"
 
-#: src/main.c:200
+#: src/main.c:217
+msgid ""
+"HTTPS (SSL) options:\n"
+"       --sslcertfile=FILE     optional client certificate.\n"
+"       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
+"       --egd-file=FILE        file name of the EGD socket.\n"
+"       --sslcadir=DIR         dir where hash list of CA's are stored.\n"
+"       --sslcafile=FILE       file with bundle of CA's\n"
+"       --sslcerttype=0/1      Client-Cert type 0=PEM (default) / 1=ASN1 (DER)\n"
+"       --sslcheckcert=0/1     Check the server cert agenst given CA\n"
+"       --sslprotocol=0-3      choose SSL protocol; 0=automatic,\n"
+"                              1=SSLv2 2=SSLv3 3=TLSv1\n"
+"\n"
+msgstr ""
+"Opcions d'HTTPS (SSL):\n"
+"       --sslcertfile=FITXER   certificat opcional del client.\n"
+"       --sslcertkey=FITXER    clau opcional del certificat.\n"
+"       --egd-file=FITXER      usa FITXER com a socket EGD.\n"
+"       --sslcadir=DIRECTORI   directori on hi ha la llista de CA's.\n"
+"       --sslcafile=FITXER     fitxer que conté els CA's.\n"
+"       --sslcerttype=0/1      tipus de Client-Cert: 0=OEM (per omissió), 1=ASN1\n"
+"       --sslcheckcert=0/1     comprova el certificat del servidor amb el CA.\n"
+"       --sslprotocol=0-3      protocol SSL: 0=auto, 1=SSLv2, 2=SSLv3, 3=TLSv1\n"
+"\n"
+
+#: src/main.c:230
 msgid ""
 "FTP options:\n"
 "  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
@@ -828,38 +1018,41 @@ msgid ""
 "       --retr-symlinks         when recursing, get linked-to files (not dirs).\n"
 "\n"
 msgstr ""
-"Opcions FTP:\n"
-"   --nr,  --dont-remove-listing          no elimina els arxius 'listing'.\n"
-"   -g,   --glob=on/off                       habilita o activa el us de comodins als arxius.\n"
-"         --passive-ftp                         activa el ftp passiu.\n"
-"        --retr-symlinks                       quan hi ha recursio recupera els arxius que apunten als directoris\n"
-"                                                     (no els directoris).\n"
+"Opcions d'FTP:\n"
+"  -nr, --dont-remove-listing   no elimina els fitxers `.listing'.\n"
+"  -g,  --glob=on/off           habilita o no l'interpretació de caràcters\n"
+"                                especials, com `*', per seleccionar fitxers.\n"
+"       --passive-ftp           usa el mode de transferència passiu.\n"
+"       --retr-symlinks         descarrega els fitxers apuntats per enllaços\n"
+"                                simbòlics, en mode de recursió.\n"
 "\n"
 
-#: src/main.c:207
+#: src/main.c:237
 msgid ""
 "Recursive retrieval:\n"
-"  -r,  --recursive          recursive web-suck -- use with care!\n"
+"  -r,  --recursive          recursive download.\n"
 "  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n"
 "       --delete-after       delete files locally after downloading them.\n"
 "  -k,  --convert-links      convert non-relative links to relative.\n"
 "  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
 "  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"
 "  -p,  --page-requisites    get all images, etc. needed to display HTML page.\n"
+"       --strict-comments    turn on strict (SGML) handling of HTML comments.\n"
 "\n"
 msgstr ""
-"Descarrega recursiva:\n"
-"  -r,    --recursive                descàrrega recursiva de la web -- usar amb compte!\n"
-"  -l,     --level=NUMBER      màxim nivell de recursió (inf o 0 per infinit).\n"
-"         --delete-after             borrar els arxius després d'haver-los descarregat.\n"
-"  -k,   --convert-links            converteix els enllaços no relatius a enllaços relatius.\n"
-"  -K,  --backup-converted    abans de convertir un arxiu X, fa un backup que es dirà X.orig.\n"
-"  -m,  --mirror                      opció equivalent a -r -N -l inf -nr.\n"
-"  -p,  --page-requisites        descarrega totes les imatges, etc, necessàries per veure el\n"
-"                                          HTML correctament.\n"
+"Opcions de recursió:\n"
+"  -r,  --recursive          descarrega de forma recursiva.\n"
+"  -l,  --level=NOMBRE       nivell màxim de recursió (inf o 0 per infinit).\n"
+"       --delete-after       elimina els fitxers locals un cop descarregats.\n"
+"  -k,  --convert-links      converteix els enllaços absoluts a relatius.\n"
+"  -K,  --backup-converted   fa una còpia dels fitxers abans de convertir-los.\n"
+"  -m,  --mirror             opció equivalent a -r -N -l inf -nr.\n"
+"  -p,  --page-requisites    descarrega tots els components (imatges, etc.)\n"
+"                             necessaris per veure el document HTML.\n"
+"       --strict-comments    interpreta els comentaris de forma estricta.\n"
 "\n"
 
-#: src/main.c:217
+#: src/main.c:248
 msgid ""
 "Recursive accept/reject:\n"
 "  -A,  --accept=LIST                comma-separated list of accepted extensions.\n"
@@ -876,86 +1069,86 @@ msgid ""
 "  -np, --no-parent                  don't ascend to the parent directory.\n"
 "\n"
 msgstr ""
-"Recuperació recursiva accept/reject:\n"
-"  -A,  --accept=LLISTA                            llista separada per comes de lo que s'accepta.\n"
-"  -R,   --reject=LLISTA                              llista separada per comes de lo que no s'accepta.\n"
-"  -D,   --domains=LLISTA                          llista dels dominis separada per comes que s'accepta.\n"
-"         --exclude-domains=LLISTA             llista dels dominis separada per comes que no s'accepta.\n"
-"         --follow-ftp                                      segueix els enllaços FTP dels documents HTML.\n"
-"        --follow-tags=LLISTA                       llista de tags que s'accepten per seguir.\n"
-"  -G,  --ignore-tags=LLISTA                     llista de tags separat per coma que s'ignoren.\n"
-"  -H,  --span-hosts                                    anar a hosts diferents a la hora de la recursió.\n"
-"  --L,  --relative                                         segueix només els enllaços relatius.\n"
-"  -I,   --include-directories=LLISTA           llista dels directoris permesos.\n"
-"  -X,  --exclude-directories=LLISTA          llista de directoris a excloure.\n"
-"  -np,  --no-parent                                    no puja al directori pare.\n"
+"Inclusió/Exclusió en mode recursiu:\n"
+"  -A,  --accept=LLISTA              llista d'extensions acceptades.\n"
+"  -R,  --reject=LLISTA              llista d'extensions rebutjades.\n"
+"  -D,  --domains=LLISTA             llista de dominis acceptats.\n"
+"       --exclude-domains=LLISTA     llista de dominis rebutjats.\n"
+"       --follow-ftp                 segueix enllaços FTP en documents HTML.\n"
+"       --follow-tags=LLISTA         llista de tags HTML que contenen enllaços.\n"
+"  -G,  --ignore-tags=LLISTA         llista de tags HTML ignorats.\n"
+"  -H,  --span-hosts                 segueix enllaços a altres hosts.\n"
+"  -L,  --relative                   només segueix enllaços relatius.\n"
+"  -I,  --include-directories=LLISTA llista de directoris acceptats.\n"
+"  -X,  --exclude-directories=LLISTA llista de directoris rebutjats.\n"
+"  -np, --no-parent                  no ascendeix a directoris superiors.\n"
 "\n"
 
-#: src/main.c:232
+#: src/main.c:263
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
-msgstr "Envia els teus reports de bugs a <bug-wget@gnu.org>.\n"
+msgstr "Envieu `bugs' i suggeriments a <bug-wget@gnu.org>.\n"
 
-#: src/main.c:420
+#: src/main.c:465
 #, c-format
 msgid "%s: debug support not compiled in.\n"
-msgstr "%s: informació de depurat no compilada.\n"
+msgstr "%s: no s'ha compilat suport per depuració.\n"
 
-#: src/main.c:472
-msgid "Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.\n"
-msgstr "Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, inc.\n"
+#: src/main.c:517
+msgid "Copyright (C) 2003 Free Software Foundation, Inc.\n"
+msgstr "Copyright (C) 2003 Free Software Foundation, Inc.\n"
 
-#: src/main.c:474
+#: src/main.c:519
 msgid ""
 "This program is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 msgstr ""
-"Aquest programa es distribueix amb l'esperança de que serà útil,\n"
-"però SENSE CAP TIPUS DE GARANTIA; fins i tot sense la garantia implicita\n"
-"de Comercialitat o idoneitat per el fi determinat. Veure la llicència publica de GNU per més detalls.\n"
+"Aquest programa es distribueix amb l'esperança que sigui útil, però\n"
+"SENSE CAP MENA DE GARANTIA; ni tan sols amb la garantia implícita de\n"
+"COMERCIABILITAT o IDONEÏTAT PER A UN PROPÒSIT PARTICULAR. Vegeu la\n"
+"llicència GNU General Public License per a més informació.\n"
 
-#: src/main.c:479
-msgid "\nOriginally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
-msgstr "\nOriginàriament escrit per Hrvoje Niksic <hniksic@arsdigita.com>.\n"
+#: src/main.c:524
+msgid ""
+"\n"
+"Originally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"
+msgstr ""
+"\n"
+"Escrit originàriament per Hrvoje Niksic <hniksic@xemacs>.\n"
 
-#: src/main.c:578
-#, c-format
-msgid "%s: %s: invalid command\n"
-msgstr "%s: %s: ordre incorrecte\n"
-
-#: src/main.c:631
+#: src/main.c:703
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
-msgstr "%s: opció desconeguda  -- `n%c'\n"
+msgstr "%s: opció il·legal -- `-n%c'\n"
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:634 src/main.c:676 src/main.c:727
+#: src/main.c:706 src/main.c:748 src/main.c:794
 #, c-format
 msgid "Try `%s --help' for more options.\n"
-msgstr "Prova `%s --help' per més opcions.\n"
+msgstr "Proveu `%s --help' per a més informació.\n"
 
-#: src/main.c:707
+#: src/main.c:774
 msgid "Can't be verbose and quiet at the same time.\n"
-msgstr "No es pot oferir informació i estar silenciós al mateix temps.\n"
+msgstr "No es pot donar informació i ser silenciós al mateix temps.\n"
 
-#: src/main.c:713
+#: src/main.c:780
 msgid "Can't timestamp and not clobber old files at the same time.\n"
-msgstr "No es poden utilitzar marques de temps i no sobreescriure arxius al mateix temps.\n"
+msgstr "No té sentit no sobreescriure fitxers i fer un seguiment de dates.\n"
 
 #. No URL specified.
-#: src/main.c:722
+#: src/main.c:789
 #, c-format
 msgid "%s: missing URL\n"
-msgstr "%s: URL perduda\n"
+msgstr "%s: falta l'URL\n"
 
-#: src/main.c:837
+#: src/main.c:905
 #, c-format
 msgid "No URLs found in %s.\n"
-msgstr "No s'han trobat URLs a %s.\n"
+msgstr "No s'ha trobat cap URL a %s.\n"
 
-#: src/main.c:846
+#: src/main.c:914
 #, c-format
 msgid ""
 "\n"
@@ -963,163 +1156,154 @@ msgid ""
 "Downloaded: %s bytes in %d files\n"
 msgstr ""
 "\n"
-"ACABAT  --%s--\n"
-"S'han descarregat: %s bytes en %d arxius\n"
+"ACABAT --%s--\n"
+"Descarregat: %s octets en %d fitxers\n"
 
-#: src/main.c:854
+#: src/main.c:920
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
-msgstr "La quota de descàrrega de (%s bytes) HA SIGUT EXCEDIDA!\n"
+msgstr "La quota de descàrrega (%s octets) S'HA EXCEDIT!\n"
 
-#. Please note that the double `%' in `%%s' is intentional, because
-#. redirect_output passes tmp through printf.
-#: src/main.c:896
-#, c-format
-msgid "%s received, redirecting output to `%%s'.\n"
-msgstr "%s s'ha rebut, redireccionant sortida a `%%s'.\n"
-
-#: src/mswindows.c:106
-#, c-format
-msgid ""
-"\n"
-"CTRL+Break received, redirecting output to `%s'.\n"
-"Execution continued in background.\n"
-"You may stop Wget by pressing CTRL+ALT+DELETE.\n"
-msgstr ""
-"\n"
-"CTRL+Break rebut, redireccionant sortida a `%s'.\n"
-"Execució continuada en segón pla.\n"
-"Pot apagar la execució de Wget apretant CTRL+ALT+SUPR.\n"
-
-#. parent, no error
-#: src/mswindows.c:123 src/utils.c:467
+#: src/mswindows.c:147
 msgid "Continuing in background.\n"
-msgstr "Continuant en segón pla.\n"
+msgstr "Es continua en segon terme.\n"
 
-#: src/mswindows.c:125 src/utils.c:469
+#: src/mswindows.c:149 src/utils.c:487
 #, c-format
 msgid "Output will be written to `%s'.\n"
-msgstr "La sortida serà escrita a `%s'.\n"
+msgstr "La sortida s'escriurà a `%s'.\n"
 
-#: src/mswindows.c:205
+#: src/mswindows.c:245
 #, c-format
 msgid "Starting WinHelp %s\n"
-msgstr "Engegant WinHelp %s\n"
+msgstr "Iniciant WinHelp %s\n"
 
-#: src/mswindows.c:232 src/mswindows.c:239
+#: src/mswindows.c:272 src/mswindows.c:279
 #, c-format
 msgid "%s: Couldn't find usable socket driver.\n"
-msgstr "%s: No s'ha trobat un controlador de socket.\n"
+msgstr "%s: No s'ha trobat cap controlador de socket usable.\n"
 
-#: src/netrc.c:365
+#: src/netrc.c:380
 #, c-format
 msgid "%s: %s:%d: warning: \"%s\" token appears before any machine name\n"
-msgstr "%s: %s:%d perill: no apareix cap nom de màquina després de \"%s\".\n"
+msgstr "%s: %s:%d: atenció: \"%s\" apareix abans que cap nom de màquina.\n"
 
-#: src/netrc.c:396
+#: src/netrc.c:411
 #, c-format
 msgid "%s: %s:%d: unknown token \"%s\"\n"
-msgstr "%s: %s%d: Símbol desconegut \"%s\"\n"
+msgstr "%s: %s:%d: component desconegut \"%s\"\n"
 
-#: src/netrc.c:460
+#: src/netrc.c:475
 #, c-format
 msgid "Usage: %s NETRC [HOSTNAME]\n"
-msgstr "Ús: %s NETRC [HOSTNAME]\n"
+msgstr "Forma d'ús: %s NETRC [HOST]\n"
 
-#: src/netrc.c:470
+#: src/netrc.c:485
 #, c-format
 msgid "%s: cannot stat %s: %s\n"
-msgstr "%s: no s'ha pogut executar `stat' en aquesta ordre %s: %s\n"
+msgstr "%s: no s'ha pogut determinar l'estat de %s: %s\n"
 
 #. Align the [ skipping ... ] line with the dots.  To do
 #. that, insert the number of spaces equal to the number of
 #. digits in the skipped amount in K.
-#: src/progress.c:224
+#: src/progress.c:234
 #, c-format
-msgid "\n%*s[ skipping %dK ]"
-msgstr "\n%*s [ ignorant %dK ]"
+msgid ""
+"\n"
+"%*s[ skipping %dK ]"
+msgstr ""
+"\n"
+"%*s[ ometent %dK ]"
 
-#: src/progress.c:391
+#: src/progress.c:401
 #, c-format
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
-msgstr "Especificació incorrecte del estil de dot `%s'; deixant-ho sense canviar.\n"
+msgstr "L'estil de progressió `%s' no és vàlid; no es canvia.\n"
 
-#: src/recur.c:350
+#: src/recur.c:378
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
-msgstr "Borrant %s fins que sigui rebutjat.\n"
+msgstr "Eliminant %s ja que no s'hauria de descarregar.\n"
 
-#: src/recur.c:916
-#, c-format
-msgid "Converted %d files in %.2f seconds.\n"
-msgstr "Convertits %d arxius en %.2f segons.\n"
-
-#: src/res.c:541
+#: src/res.c:549
 msgid "Loading robots.txt; please ignore errors.\n"
-msgstr "Carregant robots.txt; sius-plau ignoreu els errors.\n"
+msgstr "Llegint el robots.txt; si us plau, ignoreu els errors.\n"
 
-#: src/retr.c:363
-msgid "Could not find proxy host.\n"
-msgstr "No s'ha trobat l'oste del proxy.\n"
-
-#: src/retr.c:375
-#, c-format
+#: src/retr.c:400
+#, fuzzy, c-format
 msgid "Error parsing proxy URL %s: %s.\n"
-msgstr "Error parsejant la URL %s:%s.\n"
+msgstr "Error quan s'analitzava l'URL %s: %s.\n"
 
-#: src/retr.c:384
-#, c-format
+#: src/retr.c:408
+#, fuzzy, c-format
 msgid "Error in proxy URL %s: Must be HTTP.\n"
-msgstr "Error en la URL del proxy %s: ha de ser HTTP.\n"
+msgstr "Error a l'URL %s: Ha de ser HTTP.\n"
 
-#: src/retr.c:476
+#: src/retr.c:493
 #, c-format
 msgid "%d redirections exceeded.\n"
-msgstr "%d redireccions excedides.\n"
+msgstr "s'ha excedit el màxim de redireccions (%d).\n"
 
-#: src/retr.c:491
-#, c-format
-msgid "%s: Redirection cycle detected.\n"
-msgstr "%s: Cicle de redireccions detectada.\n"
+#: src/retr.c:617
+msgid ""
+"Giving up.\n"
+"\n"
+msgstr ""
+"Es deixa estar.\n"
+"\n"
 
-#: src/retr.c:608
-msgid "Giving up.\n\n"
-msgstr "Donant per vençut.\n\n"
+#: src/retr.c:617
+msgid ""
+"Retrying.\n"
+"\n"
+msgstr ""
+"Reintentant.\n"
+"\n"
 
-#: src/retr.c:608
-msgid "Retrying.\n\n"
-msgstr "Descarregant.\n\n"
+#: src/url.c:621
+msgid "No error"
+msgstr "Cap error"
 
-#: src/url.c:1748
-#, c-format
-msgid "Converting %s... "
-msgstr "Convertint %s... "
+#: src/url.c:623
+msgid "Unsupported scheme"
+msgstr "Sistema no soportat"
 
-#: src/url.c:1761
-msgid "nothing to do.\n"
-msgstr "Res a fer.\n"
+#: src/url.c:625
+msgid "Empty host"
+msgstr "Host no especificat"
 
-#: src/url.c:1769 src/url.c:1793
-#, c-format
-msgid "Cannot convert links in %s: %s\n"
-msgstr "No es poden convertir els enllaços a %s: %s\n"
+#: src/url.c:627
+msgid "Bad port number"
+msgstr "Nombre de port incorrecte"
 
-#: src/url.c:1784
-#, c-format
-msgid "Unable to delete `%s': %s\n"
-msgstr "No es pot borrar `%s': %s\n"
+#: src/url.c:629
+msgid "Invalid user name"
+msgstr "Nom d'usuari no vàlid"
 
-#: src/url.c:1990
-#, c-format
-msgid "Cannot back up %s as %s: %s\n"
-msgstr "No es pot guardar cópia de seguretat %s com %s: %s\n"
+#: src/url.c:631
+msgid "Unterminated IPv6 numeric address"
+msgstr "Adreça numèrica IPv6 no acabada"
 
-#: src/utils.c:102
+#: src/url.c:633
+msgid "IPv6 addresses not supported"
+msgstr "Les adreces IPv6 no estan suportades"
+
+#: src/url.c:635
+msgid "Invalid IPv6 numeric address"
+msgstr "Adreça numèrica IPv6 no vàlida"
+
+#: src/utils.c:120
 #, c-format
 msgid "%s: %s: Not enough memory.\n"
-msgstr "%s: %s: No hi ha memória suficient.\n"
+msgstr "%s: %s: No hi ha memòria suficient.\n"
 
-#: src/utils.c:667
+#. parent, no error
+#: src/utils.c:485
+#, c-format
+msgid "Continuing in background, pid %d.\n"
+msgstr "Continuant en segon terme, pid %d.\n"
+
+#: src/utils.c:529
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
-msgstr "S'ha fallat a la hora de trencar el enllaç simbolic `%s': %s\n"
+msgstr "No s'ha pogut eliminar l'enllaç simbòlic `%s': %s\n"
