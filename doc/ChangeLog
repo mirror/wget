@@ -1,3 +1,9 @@
+2003-09-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.in ($(TEXI2POD)): Update only the #! line.
+
+	* texi2pod.pl: New version from Gcc.
+
 2003-09-16  Noel Kothe  <noel@debian.org>
 
 	* wget.texi (Download Options): Fix misspelling.
