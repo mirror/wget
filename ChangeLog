@@ -1,3 +1,14 @@
+2000-12-05  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* configure.in: Don't unconditionally define HAVE_SSL, even when
+	--with-ssl is given.
+
+2000-12-03  Christian Fraenkel <christian.fraenkel@gmx.net>
+
+        * INSTALL: Added the --with-ssl switch
+	* configure.in: ditto
+	* TODO: Removed the corresponding entry
+
 2000-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* configure.in: Build ALL_LINGUAS dynamically.

@@ -1,3 +1,20 @@
+2000-12-03  Christian Fraenkel <christian.fraenkel@gmx.net>
+
+	* Makefile.in: added gen_sslfunc object
+	* config.h.in: added HAVE_SSL define
+	* connect.c: changed select_fd from static int to int
+	* connect.h: ditto
+	* gen_sslfunc.h: New file
+	* gen_sslfunc.c: ditto
+	* http.c: added HTTPS fuctionality
+	* retrc.c: ditto
+	* url.c: ditto
+	* init.c: added opt.httpsproxy
+	* options.h: ditto
+	* rbuf.h: added alternate rbuf struct
+	* wget.h: added CONSSLERR
+	* rbuf.c: ditto
+
 2000-11-30  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
         * ftp-ls.c (ftp_parse_unix_ls): Added second parameter

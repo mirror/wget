@@ -25,10 +25,23 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "rbuf.h"
 #include "connect.h"
 
+#ifdef HAVE_SSL
+#include <openssl/bio.h>
+#include <openssl/crypto.h>
+#include <openssl/x509.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/pem.h>
+#endif /* HAVE_SSL */
+
 void
 rbuf_initialize (struct rbuf *rbuf, int fd)
 {
   rbuf->fd = fd;
+#ifdef HAVE_SSL
+/* pointing ssl to NULL results in an unchanged behaviour */
+  rbuf->ssl = NULL;
+#endif /* HAVE_SSL */
   rbuf->buffer_pos = rbuf->buffer;
   rbuf->buffer_left = 0;
 }
@@ -64,7 +77,15 @@ rbuf_peek (struct rbuf *rbuf, char *store)
       int res;
       rbuf->buffer_pos = rbuf->buffer;
       rbuf->buffer_left = 0;
-      res = iread (rbuf->fd, rbuf->buffer, sizeof (rbuf->buffer));
+#ifdef HAVE_SSL
+		if (rbuf->ssl != NULL) {
+		res = ssl_iread (rbuf->ssl, rbuf->buffer, sizeof (rbuf->buffer));
+		} else {
+#endif /* HAVE_SSL */
+		res = iread (rbuf->fd, rbuf->buffer, sizeof (rbuf->buffer));
+#ifdef HAVE_SSL
+      }
+#endif /* HAVE_SSL */
       if (res <= 0)
 	return res;
       rbuf->buffer_left = res;

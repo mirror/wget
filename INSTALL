@@ -29,6 +29,7 @@ scripts take.  The most important ones are:
 
 --enable and --with options recognized (mostly Wget-specific):
   --with-socks            use the socks library
+  --with-ssl              use the openssl library
   --disable-opie          disable support for opie or s/key FTP login
   --disable-digest        disable support for HTTP digest authorization
   --disable-debug         disable support for debugging output

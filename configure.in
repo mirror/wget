@@ -45,6 +45,9 @@ AC_ARG_WITH(socks,
 [  --with-socks            use the socks library],
 [AC_DEFINE(HAVE_SOCKS)])
 
+AC_ARG_WITH(ssl,
+[  --with-ssl              use the openssl library])
+
 AC_ARG_ENABLE(opie,
 [  --disable-opie          disable support for opie or s/key FTP login],
 USE_OPIE=$enableval, USE_OPIE=yes)
@@ -181,6 +184,20 @@ if test "x${with_socks}" = xyes
 then
   AC_CHECK_LIB(resolv, main)
   AC_CHECK_LIB(socks, Rconnect)
+fi
+
+dnl check for ssl libraries
+if test "x${with_ssl}" = xyes
+then
+  ssl_lose=no
+  AC_CHECK_LIB(ssl,SSL_new,,ssl_lose=yes,-lcrypto)
+  AC_CHECK_LIB(crypto,main,,ssl_lose=yes)
+  if test "$ssl_lose" = no
+  then
+    AC_DEFINE(HAVE_SSL)
+    SSL_OBJ='gen_sslfunc$o'
+    AC_SUBST(SSL_OBJ)
+  fi
 fi
 
 dnl

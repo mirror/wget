@@ -46,6 +46,7 @@ extern int errno;
 /* Default port definitions */
 #define DEFAULT_HTTP_PORT 80
 #define DEFAULT_FTP_PORT 21
+#define DEFAULT_HTTPS_PORT 443
 
 /* Table of Unsafe chars.  This is intialized in
    init_unsafe_char_table.  */
@@ -77,8 +78,8 @@ static void path_simplify_with_kludge PARAMS ((char *));
 static int urlpath_length PARAMS ((const char *));
 
 /* NULL-terminated list of strings to be recognized as prototypes (URL
-   schemes).  Note that recognized doesn't mean supported -- only HTTP
-   and FTP are currently supported.
+   schemes).  Note that recognized doesn't mean supported -- only HTTP,
+   HTTPS and FTP are currently supported .
 
    However, a string that does not match anything in the list will be
    considered a relative URL.  Thus it's important that this list has
@@ -133,6 +134,9 @@ struct proto
 static struct proto sup_protos[] =
 {
   { "http://", URLHTTP, DEFAULT_HTTP_PORT },
+#ifdef HAVE_SSL
+  { "https://",URLHTTPS, DEFAULT_HTTPS_PORT},
+#endif
   { "ftp://", URLFTP, DEFAULT_FTP_PORT },
   /*{ "file://", URLFILE, DEFAULT_FTP_PORT },*/
 };
@@ -1288,6 +1292,10 @@ getproxy (uerr_t proto)
     return opt.http_proxy ? opt.http_proxy : getenv ("http_proxy");
   else if (proto == URLFTP)
     return opt.ftp_proxy ? opt.ftp_proxy : getenv ("ftp_proxy");
+#ifdef HAVE_SSL
+  else if (proto == URLHTTPS)
+    return opt.https_proxy ? opt.https_proxy : getenv ("https_proxy");
+#endif /* HAVE_SSL */
   else
     return NULL;
 }

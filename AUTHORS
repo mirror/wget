@@ -17,3 +17,5 @@ authentication.
 
 Dan Harkless.  Added --backup-converted, --follow-tags, --html-extension,
 --ignore-tags, and --page-requisites; improved documentation; etc.
+
+Christian Fraenkel.  Implemented SSL support.

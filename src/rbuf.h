@@ -20,10 +20,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifndef RBUF_H
 #define RBUF_H
 
+#ifdef HAVE_SSL
+# include <openssl/ssl.h>
+#endif
+
 /* Retrieval stream */
 struct rbuf
 {
   int fd;
+#ifdef HAVE_SSL
+  SSL *ssl;		/* the ssl structure -- replaces fd for ssl connections */
+#endif /* HAVE_SSL */
   char buffer[4096];		/* the input buffer */
   char *buffer_pos;		/* current position in the buffer */
   size_t buffer_left;		/* number of bytes left in the buffer:
@@ -42,6 +49,23 @@ struct rbuf
    result of historical implementation of header code.  The macro
    should return the character or EOF, and in case of error store it
    to rbuf->err or something.  */
+#ifdef HAVE_SSL
+/* SSL version of rbuf. If rbuf.ssl isn't NULL use ssl_iread instead 
+   of iread  */
+#define RBUF_READCHAR(rbuf, store)					\
+((rbuf)->buffer_left							\
+ ? (--(rbuf)->buffer_left,						\
+    *((char *) (store)) = *(rbuf)->buffer_pos++, 1)			\
+ : ((rbuf)->buffer_pos = (rbuf)->buffer,				\
+    ((((rbuf)->internal_dont_touch_this					\
+		= (rbuf->ssl == NULL) ? (iread ((rbuf)->fd, (rbuf)->buffer,				\
+		sizeof ((rbuf)->buffer))) : (ssl_iread ((rbuf)->ssl, (rbuf)->buffer,		\
+		sizeof ((rbuf)->buffer))) ) <= 0)				\
+     ? (rbuf)->internal_dont_touch_this					\
+     : ((rbuf)->buffer_left = (rbuf)->internal_dont_touch_this - 1,	\
+	*((char *) (store)) = *(rbuf)->buffer_pos++,			\
+	1))))
+#else
 #define RBUF_READCHAR(rbuf, store)					\
 ((rbuf)->buffer_left							\
  ? (--(rbuf)->buffer_left,						\
@@ -55,8 +79,14 @@ struct rbuf
 	*((char *) (store)) = *(rbuf)->buffer_pos++,			\
 	1))))
 
+
+#endif /* HAVE_SSL */
+
 /* Return the file descriptor of RBUF.  */
 #define RBUF_FD(rbuf) ((rbuf)->fd)
+
+/* Return the file descriptor of RBUF.  */
+#define RBUF_SSL(rbuf) ((rbuf)->ssl)
 
 /* Function declarations */
 void rbuf_initialize PARAMS ((struct rbuf *, int));

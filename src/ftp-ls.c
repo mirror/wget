@@ -490,37 +490,37 @@ ftp_parse_winnt_ls (const char *file)
       tok = strtok(NULL, " ");
       while (*tok == '\0')  tok = strtok(NULL, " ");
       if (*tok == '<')
-      {
-        cur.type  = FT_DIRECTORY;
-        cur.size  = 0;
-        cur.perms = 493; /* my gcc does not like 0755 ?? */
-        DEBUGP(("Directory\n"));
-      }
+	{
+	  cur.type  = FT_DIRECTORY;
+	  cur.size  = 0;
+	  cur.perms = 493; /* my gcc does not like 0755 ?? */
+	  DEBUGP(("Directory\n"));
+	}
       else
-      {
-        cur.type  = FT_PLAINFILE;
-        cur.size  = atoi(tok);
-        cur.perms = 420; /* 0664 octal */
-        DEBUGP(("File, size %ld bytes\n", cur.size));
-      }
+	{
+	  cur.type  = FT_PLAINFILE;
+	  cur.size  = atoi(tok);
+	  cur.perms = 420; /* 0664 octal */
+	  DEBUGP(("File, size %ld bytes\n", cur.size));
+	}
 
       cur.linkto = NULL;
 
       /* And put everything into the linked list */
       if (!dir)
-      {
-        l = dir = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
-        memcpy (l, &cur, sizeof (cur));
-        l->prev = l->next = NULL;
-      }
+	{
+	  l = dir = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
+	  memcpy (l, &cur, sizeof (cur));
+	  l->prev = l->next = NULL;
+	}
       else
-      {
-        cur.prev = l;
-        l->next = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
-        l = l->next;
-        memcpy (l, &cur, sizeof (cur));
-        l->next = NULL;
-      }
+	{
+	  cur.prev = l;
+	  l->next = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
+	  l = l->next;
+	  memcpy (l, &cur, sizeof (cur));
+	  l->next = NULL;
+	}
 
       xfree(line);
     }

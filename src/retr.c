@@ -118,7 +118,15 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
       int amount_to_read = (use_expected
 			    ? MIN (expected - *len, sizeof (c))
 			    : sizeof (c));
-      res = iread (fd, c, amount_to_read);
+#ifdef HAVE_SSL
+		if (rbuf->ssl!=NULL) {
+		  res = ssl_iread (rbuf->ssl, c, amount_to_read);
+		} else {
+#endif /* HAVE_SSL */
+		  res = iread (fd, c, amount_to_read);
+#ifdef HAVE_SSL
+		}
+#endif /* HAVE_SSL */
       if (res > 0)
 	{
 	  if (fwrite (c, sizeof (char), res, fp) < res)
@@ -322,7 +330,7 @@ rate (long bytes, long msecs)
 			&& no_proxy_match((u)->host,			\
 					  (const char **)opt.no_proxy))
 
-/* Retrieve the given URL.  Decides which loop to call -- HTTP, FTP,
+/* Retrieve the given URL.  Decides which loop to call -- HTTP(S), FTP,
    or simply copy it with file:// (#### the latter not yet
    implemented!).  */
 uerr_t
@@ -415,7 +423,11 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   assert (u->proto != URLFILE);	/* #### Implement me!  */
   mynewloc = NULL;
 
+#ifdef HAVE_SSL
+  if (u->proto == URLHTTP || u->proto == URLHTTPS )
+#else
   if (u->proto == URLHTTP)
+#endif /* HAVE_SSL */
     result = http_loop (u, &mynewloc, dt);
   else if (u->proto == URLFTP)
     {

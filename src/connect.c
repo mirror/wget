@@ -201,7 +201,7 @@ bindport (unsigned short *port)
 
    Returns 1 if FD is accessible, 0 for timeout and -1 for error in
    select().  */
-static int
+int
 select_fd (int fd, int maxtime, int writep)
 {
   fd_set fds, exceptfds;

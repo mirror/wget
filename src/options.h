@@ -90,7 +90,7 @@ struct options
 
   int use_proxy;		/* Do we use proxy? */
   int proxy_cache;		/* Do we load from proxy cache? */
-  char *http_proxy, *ftp_proxy;
+  char *http_proxy, *ftp_proxy, *https_proxy;
   char **no_proxy;
   char *base_href;
   char *proxy_user; /*oli*/

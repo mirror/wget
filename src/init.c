@@ -126,6 +126,7 @@ static struct {
   { "httppasswd",	&opt.http_passwd,	cmd_string },
   { "httpproxy",	&opt.http_proxy,	cmd_string },
   { "httpuser",		&opt.http_user,		cmd_string },
+  { "httpsproxy",	&opt.https_proxy,	cmd_string },
   { "ignorelength",	&opt.ignore_length,	cmd_boolean },
   { "ignoretags",	&opt.ignore_tags,	cmd_vector },
   { "includedirectories", &opt.includes,	cmd_directory_vector },
@@ -1012,6 +1013,7 @@ cleanup (void)
   xfree (opt.ftp_acc);
   FREE_MAYBE (opt.ftp_pass);
   FREE_MAYBE (opt.ftp_proxy);
+  FREE_MAYBE (opt.https_proxy);
   FREE_MAYBE (opt.http_proxy);
   free_vec (opt.no_proxy);
   FREE_MAYBE (opt.useragent);

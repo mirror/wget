@@ -110,5 +110,3 @@ changes.
 * Implement HTTP cookies.
 
 * Implement more HTTP/1.1 bells and whistles (ETag, Content-MD5 etc.)
-
-* Support SSL encryption through SSLeay or OpenSSL.

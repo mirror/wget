@@ -218,4 +218,7 @@ char *alloca ();
 # define _SVID_SOURCE
 #endif
 
+/* Define if all libs needed for ssl support are existing */
+#undef HAVE_SSL
+
 #endif /* CONFIG_H */
