@@ -307,6 +307,8 @@ main (int argc, char *const *argv)
     { "no", required_argument, NULL, 'n' },
     { "output-document", required_argument, NULL, 'O' },
     { "output-file", required_argument, NULL, 'o' },
+    { "post-data", required_argument, NULL, 167 },
+    { "post-file", required_argument, NULL, 168 },
     { "progress", required_argument, NULL, 163 },
     { "proxy", required_argument, NULL, 'Y' },
     { "proxy-passwd", required_argument, NULL, 144 },
@@ -547,6 +549,12 @@ GNU General Public License for more details.\n"));
 	  setval ("egdfile", optarg);
 	  break;
 #endif /* HAVE_SSL */
+	case 167:
+	  setval ("postdata", optarg);
+	  break;
+	case 168:
+	  setval ("postfile", optarg);
+	  break;
 	case 'A':
 	  setval ("accept", optarg);
 	  break;

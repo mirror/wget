@@ -1,5 +1,21 @@
 2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* retr.c (retrieve_url): Make sure that POST is not honored for
+	redirections.
+
+	* http.c (gethttp): Send the POST data when requested.
+	(post_file): New function.
+	(gethttp): Use it.
+
+	* main.c (main): Ditto.
+
+	* init.c: Add new options.
+
+	* options.h (struct options): New options post_data and
+	post_file_name.
+
+2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* connect.c (connect_with_timeout): Firing SIGALRM can result in
 	connect() exiting with EINTR.  Treat EINTR the same as ETIMEDOUT.
 

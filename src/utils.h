@@ -61,6 +61,7 @@ void touch PARAMS ((const char *, time_t));
 int remove_link PARAMS ((const char *));
 int file_exists_p PARAMS ((const char *));
 int file_non_directory_p PARAMS ((const char *));
+long file_size PARAMS ((const char *));
 int make_directory PARAMS ((const char *));
 char *unique_name PARAMS ((const char *));
 char *file_merge PARAMS ((const char *, const char *));

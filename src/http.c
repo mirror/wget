@@ -1,5 +1,5 @@
 /* HTTP support.
-   Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001
+   Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -168,6 +168,79 @@ parse_http_status_line (const char *line, const char **reason_phrase_ptr)
     *reason_phrase_ptr = line + 1;
 
   return statcode;
+}
+
+#define WMIN(x, y) ((x) > (y) ? (y) : (x))
+
+/* Send the contents of FILE_NAME to SOCK/SSL.  Make sure that exactly
+   PROMISED_SIZE bytes are sent over the wire -- if the file is
+   longer, read only that much; if the file is shorter, pad it with
+   zeros.  */
+
+static int
+post_file (int sock, void *ssl, const char *file_name, long promised_size)
+{
+  static char chunk[8192];
+  int written = 0;
+  int write_error;
+  FILE *fp;
+
+  /* Only one of SOCK and SSL may be active at the same time. */
+  assert (sock > -1 || ssl != NULL);
+  assert (sock == -1 || ssl == NULL);
+
+  DEBUGP (("[writing POST file %s ... ", file_name));
+
+  fp = fopen (file_name, "rb");
+  if (!fp)
+    goto pad;
+  while (written < promised_size)
+    {
+      long towrite;
+      int length = fread (chunk, 1, sizeof (chunk), fp);
+      if (length == 0)
+	break;
+      towrite = WMIN (promised_size - written, length);
+#ifdef HAVE_SSL
+      if (ssl)
+	write_error = ssl_iwrite (ssl, chunk, towrite);
+      else
+#endif
+	write_error = iwrite (sock, chunk, towrite);
+      if (write_error < 0)
+	{
+	  fclose (fp);
+	  return -1;
+	}
+      written += towrite;
+    }
+  fclose (fp);
+ pad:
+  if (written < promised_size)
+    {
+      DEBUGP (("padding ... "));
+      /* This highly unlikely case can happen only if the file has
+	 shrunk while we weren't looking.  To uphold the promise, pad
+	 the remaining data with zeros.  #### Should we abort
+	 instead?  */
+      memset (chunk, '\0', sizeof (chunk));
+      while (written < promised_size)
+	{
+	  long towrite = WMIN (promised_size - written, sizeof (chunk));
+#ifdef HAVE_SSL
+	  if (ssl)
+	    write_error = ssl_iwrite (ssl, chunk, towrite);
+	  else
+#endif
+	    write_error = iwrite (sock, chunk, towrite);
+	  if (write_error < 0)
+	    return -1;
+	  written += towrite;
+	}
+    }
+  assert (written == promised_size);
+  DEBUGP (("done]\n"));
+  return 0;
 }
 
 /* Functions to be used as arguments to header_process(): */
@@ -540,7 +613,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   char *all_headers;
   char *port_maybe;
   char *request_keep_alive;
-  int sock, hcount, num_written, all_length, statcode;
+  int sock, hcount, all_length, statcode;
+  int write_error;
   long contlen, contrange;
   struct url *conn;
   FILE *fp;
@@ -549,7 +623,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 #ifdef HAVE_SSL
   static SSL_CTX *ssl_ctx = NULL;
   SSL *ssl = NULL;
-#endif /* HAVE_SSL */
+#endif
   char *cookies = NULL;
 
   /* Whether this connection will be kept alive after the HTTP request
@@ -567,6 +641,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
      e.g. "Host: [3ffe:8100:200:2::2]:1234" instead of the usual
      "Host: symbolic-name:1234". */
   int squares_around_host = 0;
+
+  /* Headers sent when using POST. */
+  char *post_content_type, *post_content_length;
+  long post_data_size;
 
 #ifdef HAVE_SSL
   /* initialize ssl_ctx on first run */
@@ -623,6 +701,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
   keep_alive = 0;
   http_keep_alive_1 = http_keep_alive_2 = 0;
+
+  post_content_type = NULL;
+  post_content_length = NULL;
 
   /* Initialize certain elements of struct http_stat.  */
   hs->len = 0L;
@@ -683,7 +764,12 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       DEBUGP (("Reusing fd %d.\n", sock));
     }
 
-  command = (*dt & HEAD_ONLY) ? "HEAD" : "GET";
+  if (*dt & HEAD_ONLY)
+    command = "HEAD";
+  else if (opt.post_file_name || opt.post_data)
+    command = "POST";
+  else
+    command = "GET";
 
   referer = NULL;
   if (hs->referer)
@@ -812,6 +898,26 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 #endif
 				     );
 
+  if (opt.post_data || opt.post_file_name)
+    {
+      post_content_type = "Content-Type: application/x-www-form-urlencoded\r\n";
+      if (opt.post_data)
+	post_data_size = strlen (opt.post_data);
+      else
+	{
+	  post_data_size = file_size (opt.post_file_name);
+	  if (post_data_size == -1)
+	    {
+	      logprintf (LOG_NOTQUIET, "POST data file missing: %s\n",
+			 opt.post_file_name);
+	      post_data_size = 0;
+	    }
+	}
+      post_content_length = xmalloc (16 + numdigit (post_data_size) + 2 + 1);
+      sprintf (post_content_length,
+	       "Content-Length: %ld\r\n", post_data_size);
+    }
+
   if (proxy)
     full_path = xstrdup (u->url);
   else
@@ -838,6 +944,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 			    + (proxyauth ? strlen (proxyauth) : 0)
 			    + (range ? strlen (range) : 0)
 			    + strlen (pragma_h)
+			    + (post_content_type
+			       ? strlen (post_content_type) : 0)
+			    + (post_content_length
+			       ? strlen (post_content_length) : 0)
 			    + (opt.user_header ? strlen (opt.user_header) : 0)
 			    + 64);
   /* Construct the request.  */
@@ -846,7 +956,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 User-Agent: %s\r\n\
 Host: %s%s%s%s\r\n\
 Accept: %s\r\n\
-%s%s%s%s%s%s%s%s\r\n",
+%s%s%s%s%s%s%s%s%s%s\r\n",
 	   command, full_path,
 	   useragent,
 	   squares_around_host ? "[" : "", u->host, squares_around_host ? "]" : "",
@@ -858,9 +968,11 @@ Accept: %s\r\n\
 	   wwwauth ? wwwauth : "", 
 	   proxyauth ? proxyauth : "", 
 	   range ? range : "",
-	   pragma_h, 
+	   pragma_h,
+	   post_content_type ? post_content_type : "",
+	   post_content_length ? post_content_length : "",
 	   opt.user_header ? opt.user_header : "");
-  DEBUGP (("---request begin---\n%s---request end---\n", request));
+  DEBUGP (("---request begin---\n%s", request));
 
   /* Free the temporary memory.  */
   FREE_MAYBE (wwwauth);
@@ -871,12 +983,38 @@ Accept: %s\r\n\
   /* Send the request to server.  */
 #ifdef HAVE_SSL
   if (conn->scheme == SCHEME_HTTPS)
-    num_written = ssl_iwrite (ssl, request, strlen (request));
+    write_error = ssl_iwrite (ssl, request, strlen (request));
   else
-#endif /* HAVE_SSL */
-    num_written = iwrite (sock, request, strlen (request));
+#endif
+    write_error = iwrite (sock, request, strlen (request));
 
-  if (num_written < 0)
+  if (write_error >= 0)
+    {
+      if (opt.post_data)
+	{
+	  DEBUGP (("[POST data: %s]\n", opt.post_data));
+#ifdef HAVE_SSL
+	  if (conn->scheme == SCHEME_HTTPS)
+	    write_error = ssl_iwrite (ssl, opt.post_data, post_data_size);
+	  else
+#endif
+	    write_error = iwrite (sock, opt.post_data, post_data_size);
+	}
+      else if (opt.post_file_name)
+	{
+#ifdef HAVE_SSL
+	  if (conn->scheme == SCHEME_HTTPS)
+	    write_error = post_file (-1, ssl, opt.post_file_name,
+				     post_data_size);
+	  else
+#endif
+	    write_error = post_file (sock, NULL, opt.post_file_name,
+				     post_data_size);
+	}
+    }
+  DEBUGP (("---request end---\n"));
+
+  if (write_error < 0)
     {
       logprintf (LOG_VERBOSE, _("Failed writing HTTP request: %s.\n"),
 		 strerror (errno));

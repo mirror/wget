@@ -554,6 +554,22 @@ file_non_directory_p (const char *path)
   return S_ISDIR (buf.st_mode) ? 0 : 1;
 }
 
+/* Return the size of file named by FILENAME, or -1 if it cannot be
+   opened or seeked into. */
+long
+file_size (const char *filename)
+{
+  long size;
+  /* We use fseek rather than stat to determine the file size because
+     that way we can also verify whether the file is readable.
+     Inspired by the POST patch by Arnaud Wylie.  */
+  FILE *fp = fopen (filename, "rb");
+  fseek (fp, 0, SEEK_END);
+  size = ftell (fp);
+  fclose (fp);
+  return size;
+}
+
 /* Return a unique filename, given a prefix and count */
 static char *
 unique_name_1 (const char *fileprefix, int count)

@@ -473,7 +473,6 @@ iwrite (int fd, char *buf, int len)
 		{
 		  /* Set errno to ETIMEDOUT on timeout.  */
 		  if (res == 0)
-		    /* #### Potentially evil!  */
 		    errno = ETIMEDOUT;
 		  return -1;
 		}

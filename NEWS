@@ -7,6 +7,10 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.9.
 
+** It is now possible to specify that POST method be used for HTTP
+requests.  For example, `wget --post-data="id=foo&data=bar" URL' will
+send a POST request with the specified contents.
+
 ** IPv6 is experimentally supported.
 
 ** The `--timeout' option now affects the connect timeout as well.

@@ -158,6 +158,8 @@ static struct {
   { "pagerequisites",	&opt.page_requisites,	cmd_boolean },
   { "passiveftp",	&opt.ftp_pasv,		cmd_lockable_boolean },
   { "passwd",		&opt.ftp_pass,		cmd_string },
+  { "postdata",		&opt.post_data,		cmd_string },
+  { "postfile",		&opt.post_file_name,	cmd_file },
   { "progress",		&opt.progress_type,	cmd_spec_progress },
   { "proxypasswd",	&opt.proxy_passwd,	cmd_string },
   { "proxyuser",	&opt.proxy_user,	cmd_string },

@@ -164,6 +164,9 @@ struct options
   int   cookies;
   char *cookies_input;
   char *cookies_output;
+
+  char *post_data;		/* POST query string */
+  char *post_file_name;		/* File to post */
 };
 
 extern struct options opt;

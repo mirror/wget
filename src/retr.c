@@ -154,7 +154,7 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 	  res = -2;
 	  goto out;
 	}
-      if (opt.verbose)
+      if (progress)
 	progress_update (progress, sz, 0);
     }
 
@@ -202,7 +202,7 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 	      last_dltime = dltime;
 	    }
 
-	  if (opt.verbose)
+	  if (progress)
 	    progress_update (progress, res, dltime);
 	  *len += res;
 	}
@@ -213,7 +213,7 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
     res = -1;
 
  out:
-  if (opt.verbose)
+  if (progress)
     progress_finish (progress, dltime);
   if (elapsed)
     *elapsed = dltime;
@@ -281,8 +281,28 @@ calc_rate (long bytes, long msecs, int *units)
 
 #define MAX_REDIRECTIONS 20
 
+#define SUSPEND_POST_DATA do {			\
+  post_data_suspended = 1;			\
+  saved_post_data = opt.post_data;		\
+  saved_post_file_name = opt.post_file_name;	\
+  opt.post_data = NULL;				\
+  opt.post_file_name = NULL;			\
+} while (0)
+
+#define RESTORE_POST_DATA do {				\
+  if (post_data_suspended)				\
+    {							\
+      opt.post_data = saved_post_data;			\
+      opt.post_file_name = saved_post_file_name;	\
+      post_data_suspended = 0;				\
+    }							\
+} while (0)
+
 /* Retrieve the given URL.  Decides which loop to call -- HTTP, FTP,
    FTP, proxy, etc.  */
+
+/* #### This function should be rewritten so it doesn't return from
+   multiple points. */
 
 uerr_t
 retrieve_url (const char *origurl, char **file, char **newloc,
@@ -296,6 +316,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   int up_error_code;		/* url parse error code */
   char *local_file;
   int redirection_count = 0;
+
+  int post_data_suspended = 0;
+  char *saved_post_data;
+  char *saved_post_file_name;
 
   /* If dt is NULL, just ignore it.  */
   if (!dt)
@@ -334,6 +358,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  logprintf (LOG_NOTQUIET, _("Error parsing proxy URL %s: %s.\n"),
 		     proxy, url_error (up_error_code));
 	  xfree (url);
+	  RESTORE_POST_DATA;
 	  return PROXERR;
 	}
       if (proxy_url->scheme != SCHEME_HTTP && proxy_url->scheme != u->scheme)
@@ -341,6 +366,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  logprintf (LOG_NOTQUIET, _("Error in proxy URL %s: Must be HTTP.\n"), proxy);
 	  url_free (proxy_url);
 	  xfree (url);
+	  RESTORE_POST_DATA;
 	  return PROXERR;
 	}
     }
@@ -409,6 +435,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  url_free (u);
 	  xfree (url);
 	  xfree (mynewloc);
+	  RESTORE_POST_DATA;
 	  return result;
 	}
 
@@ -427,6 +454,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 	  url_free (u);
 	  xfree (url);
 	  xfree (mynewloc);
+	  RESTORE_POST_DATA;
 	  return WRONGCODE;
 	}
 
@@ -434,6 +462,15 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       url = mynewloc;
       url_free (u);
       u = newloc_parsed;
+
+      /* If we're being redirected from POST, we don't want to POST
+	 again.  Many requests answer POST with a redirection to an
+	 index page; that redirection is clearly a GET.  We "suspend"
+	 POST data for the duration of the redirections, and restore
+	 it when we're done. */
+      if (!post_data_suspended)
+	SUSPEND_POST_DATA;
+
       goto redirected;
     }
 
@@ -471,6 +508,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     }
 
   ++global_download_count;
+  RESTORE_POST_DATA;
 
   return result;
 }
