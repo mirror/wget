@@ -1,5 +1,12 @@
 2001-11-26  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* progress.c: Don't allocate new timers; use the timing data
+	propagated from the caller.
+
+	* retr.c (get_contents): Allocate and use a timer.
+
+2001-11-26  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* http.c (last_host_ip): Made into an address_list.
 	(invalidate_persistent): Release pc_last_host_ip.
 	(register_persistent): Use lookup_host.

@@ -77,32 +77,38 @@ int global_download_count;
    from fd immediately, flush or discard the buffer.  */
 int
 get_contents (int fd, FILE *fp, long *len, long restval, long expected,
-	      struct rbuf *rbuf, int use_expected)
+	      struct rbuf *rbuf, int use_expected, long *elapsed)
 {
   int res = 0;
   static char c[8192];
   void *progress = NULL;
+  struct wget_timer *timer = NULL;
 
   *len = restval;
+
   if (opt.verbose)
     progress = progress_create (restval, expected);
+  if (opt.verbose || elapsed != NULL)
+    timer = wtimer_new ();
 
   if (rbuf && RBUF_FD (rbuf) == fd)
     {
-      int need_flush = 0;
+      int sz = 0;
       while ((res = rbuf_flush (rbuf, c, sizeof (c))) != 0)
 	{
-	  if (fwrite (c, sizeof (char), res, fp) < res)
-	    return -2;
-	  if (opt.verbose)
-	    progress_update (progress, res);
+	  fwrite (c, sizeof (char), res, fp);
 	  *len += res;
-	  need_flush = 1;
+	  sz += res;
 	}
-      if (need_flush)
+      if (sz)
 	fflush (fp);
       if (ferror (fp))
-	return -2;
+	{
+	  res = -2;
+	  goto out;
+	}
+      if (opt.verbose)
+	progress_update (progress, sz, wtimer_elapsed (timer));
     }
   /* Read from fd while there is available data.
 
@@ -131,9 +137,12 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
 	     packets typically won't be too tiny anyway.  */
 	  fflush (fp);
 	  if (ferror (fp))
-	    return -2;
+	    {
+	      res = -2;
+	      goto out;
+	    }
 	  if (opt.verbose)
-	    progress_update (progress, res);
+	    progress_update (progress, res, wtimer_elapsed (timer));
 	  *len += res;
 	}
       else
@@ -141,8 +150,17 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
     }
   if (res < -1)
     res = -1;
-  if (opt.verbose)
-    progress_finish (progress);
+
+ out:
+  if (timer)
+    {
+      long dltime = wtimer_elapsed (timer);
+      if (opt.verbose)
+	progress_finish (progress, dltime);
+      if (elapsed)
+	*elapsed = dltime;
+      wtimer_delete (timer);
+    }
   return res;
 }
 

@@ -39,21 +39,21 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 struct progress_implementation {
   char *name;
   void *(*create) (long, long);
-  void (*update) (void *, long);
-  void (*finish) (void *);
+  void (*update) (void *, long, long);
+  void (*finish) (void *, long);
   void (*set_params) (const char *);
 };
 
 /* Necessary forward declarations. */
 
 static void *dot_create PARAMS ((long, long));
-static void dot_update PARAMS ((void *, long));
-static void dot_finish PARAMS ((void *));
+static void dot_update PARAMS ((void *, long, long));
+static void dot_finish PARAMS ((void *, long));
 static void dot_set_params PARAMS ((const char *));
 
 static void *bar_create PARAMS ((long, long));
-static void bar_update PARAMS ((void *, long));
-static void bar_finish PARAMS ((void *));
+static void bar_update PARAMS ((void *, long, long));
+static void bar_finish PARAMS ((void *, long));
 static void bar_set_params PARAMS ((const char *));
 
 static struct progress_implementation implementations[] = {
@@ -132,21 +132,22 @@ progress_create (long initial, long total)
   return current_impl->create (initial, total);
 }
 
-/* Inform the progress gauge of newly received bytes. */
+/* Inform the progress gauge of newly received bytes.  DLTIME is the
+   time in milliseconds since the beginning of the download.  */
 
 void
-progress_update (void *progress, long howmuch)
+progress_update (void *progress, long howmuch, long dltime)
 {
-  current_impl->update (progress, howmuch);
+  current_impl->update (progress, howmuch, dltime);
 }
 
 /* Tell the progress gauge to clean up.  Calling this will free the
    PROGRESS object, the further use of which is not allowed.  */
 
 void
-progress_finish (void *progress)
+progress_finish (void *progress, long dltime)
 {
-  current_impl->finish (progress);
+  current_impl->finish (progress, dltime);
 }
 
 /* Dot-printing. */
@@ -161,9 +162,6 @@ struct dot_progress {
 
   int rows;			/* number of rows printed so far */
   int dots;			/* number of dots printed in this row */
-
-  struct wget_timer *timer;	/* timer used to measure per-row
-				   download rates. */
   long last_timer_value;
 };
 
@@ -178,7 +176,6 @@ dot_create (long initial, long total)
 
   dp->initial_length = initial;
   dp->total_length   = total;
-  dp->timer = wtimer_new ();
 
   if (dp->initial_length)
     {
@@ -227,18 +224,17 @@ print_percentage (long bytes, long expected)
 }
 
 static void
-print_download_speed (struct dot_progress *dp, long bytes)
+print_download_speed (struct dot_progress *dp, long bytes, long dltime)
 {
-  long timer_value = wtimer_elapsed (dp->timer);
   logprintf (LOG_VERBOSE, " %s",
-	     retr_rate (bytes, timer_value - dp->last_timer_value, 1));
-  dp->last_timer_value = timer_value;
+	     retr_rate (bytes, dltime - dp->last_timer_value, 1));
+  dp->last_timer_value = dltime;
 }
 
 /* Dot-progress backend for progress_update. */
 
 static void
-dot_update (void *progress, long howmuch)
+dot_update (void *progress, long howmuch, long dltime)
 {
   struct dot_progress *dp = progress;
   int dot_bytes = opt.dot_bytes;
@@ -266,7 +262,8 @@ dot_update (void *progress, long howmuch)
 	    print_percentage (dp->rows * row_bytes, dp->total_length);
 
 	  print_download_speed (dp,
-				row_bytes - (dp->initial_length % row_bytes));
+				row_bytes - (dp->initial_length % row_bytes),
+				dltime);
 	}
     }
 
@@ -276,7 +273,7 @@ dot_update (void *progress, long howmuch)
 /* Dot-progress backend for progress_finish. */
 
 static void
-dot_finish (void *progress)
+dot_finish (void *progress, long dltime)
 {
   struct dot_progress *dp = progress;
   int dot_bytes = opt.dot_bytes;
@@ -301,12 +298,12 @@ dot_finish (void *progress)
 
   print_download_speed (dp, dp->dots * dot_bytes
 			+ dp->accumulated
-			- dp->initial_length % row_bytes);
+			- dp->initial_length % row_bytes,
+			dltime);
   logputs (LOG_VERBOSE, "\n\n");
 
   log_set_flush (0);
 
-  wtimer_delete (dp->timer);
   xfree (dp);
 }
 
@@ -379,8 +376,6 @@ struct bar_progress {
 				   download finishes */
   long count;			/* bytes downloaded so far */
 
-  struct wget_timer *timer;	/* timer used to measure the download
-				   rates. */
   long last_update;		/* time of the last screen update. */
 
   int width;			/* screen width at the time the
@@ -403,11 +398,10 @@ bar_create (long initial, long total)
 
   bp->initial_length = initial;
   bp->total_length   = total;
-  bp->timer = wtimer_new ();
   bp->width = screen_width;
   bp->buffer = xmalloc (bp->width + 1);
 
-  logputs (LOG_VERBOSE, "\n");
+  logputs (LOG_VERBOSE, "\n\n");
 
   create_image (bp, 0);
   display_image (bp->buffer);
@@ -416,11 +410,10 @@ bar_create (long initial, long total)
 }
 
 static void
-bar_update (void *progress, long howmuch)
+bar_update (void *progress, long howmuch, long dltime)
 {
   struct bar_progress *bp = progress;
   int force_update = 0;
-  long dltime = wtimer_elapsed (bp->timer);
 
   bp->count += howmuch;
   if (bp->total_length > 0
@@ -449,24 +442,22 @@ bar_update (void *progress, long howmuch)
 }
 
 static void
-bar_finish (void *progress)
+bar_finish (void *progress, long dltime)
 {
   struct bar_progress *bp = progress;
-  long elapsed = wtimer_elapsed (bp->timer);
 
-  if (elapsed == 0)
+  if (dltime == 0)
     /* If the download was faster than the granularity of the timer,
        fake some output so that we don't get the ugly "----.--" rate
        at the download finish.  */
-    elapsed = 1;
+    dltime = 1;
 
-  create_image (bp, elapsed);
+  create_image (bp, dltime);
   display_image (bp->buffer);
 
   logputs (LOG_VERBOSE, "\n\n");
 
   xfree (bp->buffer);
-  wtimer_delete (bp->timer);
   xfree (bp);
 }
 
