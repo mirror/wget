@@ -1,3 +1,7 @@
+2001-04-26  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (getproxy): Ignore empty proxy vars.
+
 2001-04-25  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* http.c (http_loop): Would load cookies every time.

@@ -1286,16 +1286,21 @@ opt_url (struct urlinfo *u)
 char *
 getproxy (uerr_t proto)
 {
+  char *proxy;
+
   if (proto == URLHTTP)
-    return opt.http_proxy ? opt.http_proxy : getenv ("http_proxy");
+    proxy = opt.http_proxy ? opt.http_proxy : getenv ("http_proxy");
   else if (proto == URLFTP)
-    return opt.ftp_proxy ? opt.ftp_proxy : getenv ("ftp_proxy");
+    proxy = opt.ftp_proxy ? opt.ftp_proxy : getenv ("ftp_proxy");
 #ifdef HAVE_SSL
   else if (proto == URLHTTPS)
-    return opt.https_proxy ? opt.https_proxy : getenv ("https_proxy");
+    proxy = opt.https_proxy ? opt.https_proxy : getenv ("https_proxy");
 #endif /* HAVE_SSL */
   else
+    proxy = NULL;
+  if (!proxy || !*proxy)
     return NULL;
+  return proxy;
 }
 
 /* Should a host be accessed through proxy, concerning no_proxy?  */
