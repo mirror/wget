@@ -1,3 +1,10 @@
+2002-04-24  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.texi (Robot Exclusion): Explain how to turn off the robot
+	exclusion support from the command line.
+	(Wgetrc Commands): Explain that the `robots' variable also takes
+	effect on the "nofollow" matching.
+
 2002-04-15  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* wget.texi (Download Options): Fix the documentation of

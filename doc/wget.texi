@@ -2219,8 +2219,11 @@ When set to on, retrieve symbolic links as if they were plain files; the
 same as @samp{--retr-symlinks}.
 
 @item robots = on/off
-Use (or not) @file{/robots.txt} file (@pxref{Robots}).  Be sure to know
-what you are doing before changing the default (which is @samp{on}).
+Specify whether the norobots convention is respected by Wget, ``on'' by
+default.  This switch controls both the @file{/robots.txt} and the
+@samp{nofollow} aspect of the spec.  @xref{Robot Exclusion}, for more
+details about this.  Be sure you know what you are doing before turning
+this off.
 
 @item server_response = on/off
 Choose whether or not to print the @sc{http} and @sc{ftp} server
@@ -2744,14 +2747,14 @@ Other than that, Wget will not try to interfere with signals in any way.
 This chapter contains some references I consider useful.
 
 @menu
-* Robots::                  Wget as a WWW robot.
+* Robot Exclusion::         Wget's support for RES.
 * Security Considerations:: Security with Wget.
 * Contributors::            People who helped.
 @end menu
 
-@node Robots, Security Considerations, Appendices, Appendices
-@section Robots
-@cindex robots
+@node Robot Exclusion, Security Considerations, Appendices, Appendices
+@section Robot Exclusion
+@cindex robot exclusion
 @cindex robots.txt
 @cindex server maintenance
 
@@ -2759,26 +2762,35 @@ It is extremely easy to make Wget wander aimlessly around a web site,
 sucking all the available data in progress.  @samp{wget -r @var{site}},
 and you're set.  Great?  Not for the server admin.
 
-While Wget is retrieving static pages, there's not much of a problem.
-But for Wget, there is no real difference between a static page and the
-most demanding CGI.  For instance, a site I know has a section handled
-by an, uh, @dfn{bitchin'} CGI script that converts all the Info files to
-HTML.  The script can and does bring the machine to its knees without
-providing anything useful to the downloader.
+As long as Wget is only retrieving static pages, and doing it at a
+reasonable rate (see the @samp{--wait} option), there's not much of a
+problem.  The trouble is that Wget can't tell the difference between the
+smallest static page and the most demanding CGI.  A site I know has a
+section handled by an, uh, @dfn{bitchin'} CGI Perl script that converts
+Info files to HTML on the fly.  The script is slow, but works well
+enough for human users viewing an occasional Info file.  However, when
+someone's recursive Wget download stumbles upon the index page that
+links to all the Info files through the script, the system is brought to
+its knees without providing anything useful to the downloader.
 
-For such and similar cases various robot exclusion schemes have been
-devised as a means for the server administrators and document authors to
-protect chosen portions of their sites from the wandering of robots.
+To avoid this kind of accident, as well as to preserve privacy for
+documents that need to be protected from well-behaved robots, the
+concept of @dfn{robot exclusion} has been invented.  The idea is that
+the server administrators and document authors can specify which
+portions of the site they wish to protect from the robots.
 
-The more popular mechanism is the @dfn{Robots Exclusion Standard}, or
-@sc{res}, written by Martijn Koster et al. in 1994.  It specifies the
-format of a text file containing directives that instruct the robots
-which URL paths to avoid.  To be found by the robots, the specifications
-must be placed in @file{/robots.txt} in the server root, which the
-robots are supposed to download and parse.
+The most popular mechanism, and the de facto standard supported by all
+the major robots, is the ``Robots Exclusion Standard'' (RES) written by
+Martijn Koster et al. in 1994.  It specifies the format of a text file
+containing directives that instruct the robots which URL paths to avoid.
+To be found by the robots, the specifications must be placed in
+@file{/robots.txt} in the server root, which the robots are supposed to
+download and parse.
 
-Wget supports @sc{res} when downloading recursively.  So, when you
-issue:
+Although Wget is not a web robot in the strictest sense of the word, it
+can downloads large parts of the site without the user's intervention to
+download an individual page.  Because of that, Wget honors RES when
+downloading recursively.  For instance, when you issue:
 
 @example
 wget -r http://www.server.com/
@@ -2815,7 +2827,12 @@ This is explained in some detail at
 method of robot exclusion in addition to the usual @file{/robots.txt}
 exclusion.
 
-@node Security Considerations, Contributors, Robots, Appendices
+If you know what you are doing and really really wish to turn off the
+robot exclusion, set the @code{robots} variable to @samp{off} in your
+@file{.wgetrc}.  You can achieve the same effect from the command line
+using the @code{-e} switch, e.g. @samp{wget -e robots=off @var{url}...}.
+
+@node Security Considerations, Contributors, Robot Exclusion, Appendices
 @section Security Considerations
 @cindex security
 
