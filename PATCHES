@@ -5,13 +5,13 @@
 -----------------------------
 
 Patches intended to be applied to Wget should be mailed to
-<wget-patches@sunsite.auc.dk>.  Each patch will be reviewed by the
+<wget-patches@sunsite.dk>.  Each patch will be reviewed by the
 developers, and will be acked and added to the distribution, or
 rejected with an explanation.
 
 If you want to discuss your patch with the community of Wget users and
 developers, it is OK to send it to the general list at
-<wget@sunsite.auc.dk>.  If the patch is really huge (more than 100K or
+<wget@sunsite.dk>.  If the patch is really huge (more than 100K or
 so), you may want to put it on the web and post the URL.
 
 EVERY patch should be accompanied by an explanation of what the patch

@@ -45,14 +45,14 @@ Wget 1.6 is at:
 
 Please report bugs in Wget to <bug-wget@gnu.org>.
 
-Wget has a mailing list at <wget@sunsite.auc.dk>.  To subscribe, mail
-to <wget-subscribe@sunsite.auc.dk>.  Wget's home page is at
+Wget has a mailing list at <wget@sunsite.dk>.  To subscribe, mail
+to <wget-subscribe@sunsite.dk>.  Wget's home page is at
 <URL:http://sunsite.dk/wget/>.
 
 Wget is free in all senses -- it is freely redistributable, and no
 payment is required.  If you still wish to donate money to the
 developers or fund the development for a specific purpose, please send
-mail to the development mailing list at <wget@sunsite.auc.dk>.
+mail to the development mailing list at <wget@sunsite.dk>.
 
 
 MAINTAINERS: Dan Harkless <wget@harkless.org>
