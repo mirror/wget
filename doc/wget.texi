@@ -833,6 +833,30 @@ and flushing out-of-date documents on proxy servers.
 
 Caching is allowed by default.
 
+@cindex cookies
+@item --cookies=on/off
+When set to off, disable the use of cookies.  Cookies are a mechanism
+for maintaining server-side state.  The server sends the client a cookie
+using the @code{Set-Cookie} header, and the client responds with the
+same cookie upon further requests.  Since cookies allow the server
+owners to keep track of visitors and for sites to exchange this
+information, some consider them a breach of privacy.  The default is to
+use cookies; however, @emph{storing} cookies is not on by default.
+
+@cindex loading cookies
+@cindex cookies, loading
+@item --load-cookies @var{file}
+Load cookies from @var{file} before the first HTTP retrieval.  The
+format of @var{file} is one used by Netscape and Mozilla, at least their
+Unix version.
+
+@cindex saving cookies
+@cindex cookies, saving
+@item --save-cookies @var{file}
+Save cookies from @var{file} at the end of session.  Cookies whose
+expiry time is not specified, or those that have already expired, are
+not saved.
+
 @cindex Content-Length, ignore
 @cindex ignore length
 @item --ignore-length
@@ -1904,6 +1928,15 @@ When set to off, disallow server-caching.  See the @samp{-C} option.
 
 @item convert links = on/off
 Convert non-relative links locally.  The same as @samp{-k}.
+
+@item cookies = on/off
+When set to off, disallow cookies.  See the @samp{--cookies} option.
+
+@item load_cookies = @var{file}
+Load cookies from @var{file}.  See @samp{--load-cookies}.
+
+@item save_cookies = @var{file}
+Save cookies to @var{file}.  See @samp{--save-cookies}.
 
 @item cut_dirs = @var{n}
 Ignore @var{n} remote directory components.
