@@ -1725,7 +1725,6 @@ wtimer_granularity (void)
 #endif
 
 #ifdef TIMER_TIME
-  /* This is clear. */
   return 1000;
 #endif
 
@@ -1848,7 +1847,11 @@ determine_screen_width (void)
    This uses rand() for portability.  It has been suggested that
    random() offers better randomness, but this is not required for
    Wget, so I chose to go for simplicity and use rand
-   unconditionally.  */
+   unconditionally.
+
+   DO NOT use this for cryptographic purposes.  It is only meant to be
+   used in situations where quality of the random numbers returned
+   doesn't really matter.  */
 
 int
 random_number (int max)
@@ -1929,8 +1932,9 @@ debug_test_md5 (char *buf)
 }
 #endif
 
-/* Implementation of run_with_timeout, a generic timeout handler for
-   systems with Unix-like signal handling.  */
+/* Implementation of run_with_timeout, a generic timeout-forcing
+   routine for systems with Unix-like signal handling.  */
+
 #ifdef USE_SIGNAL_TIMEOUT
 # ifdef HAVE_SIGSETJMP
 #  define SETJMP(env) sigsetjmp (env, 1)
@@ -2014,6 +2018,32 @@ alarm_cancel (void)
 }
 
 #endif /* USE_SIGNAL_TIMEOUT */
+
+/* Run FUN(ARG) for not more than TIMEOUT seconds.  Returns non-zero
+   if the function was interrupted with a timeout, zero otherwise.
+
+   This works by setting up SIGALRM to be delivered in TIMEOUT seconds
+   using setitimer() or alarm().  The timeout is enforced by
+   longjumping out of the SIGALRM handler.  This has several
+   advantages compared to the traditional approach of relying on
+   signals causing system calls to exit with EINTR:
+
+     * The callback function is *forcibly* interrupted after the
+       timeout expires, (almost) regardless of what it was doing and
+       whether it was in a syscall.  For example, a calculation that
+       takes a long time is interrupted as reliably as an IO
+       operation.
+
+     * It works with both SYSV and BSD signals because it doesn't
+       depend on the default setting of SA_RESTART.
+
+     * It doesn't special handler setup beyond a simple call to
+       signal().  (It does use sigsetjmp/siglongjmp, but they're
+       optional.)
+
+   The only downside is that, if FUN allocates internal resources that
+   are normally freed prior to exit from the functions, they will be
+   lost in case of timeout.  */
 
 int
 run_with_timeout (double timeout, void (*fun) (void *), void *arg)
