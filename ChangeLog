@@ -1,5 +1,9 @@
 2003-09-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* util/dist-wget: Fixed portable echo checking under Bash.
+
+2003-09-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Change AC_CHECK_FUNC(getaddrinfo...) to
 	AC_CHECK_FUNCS, which automatically defines HAVE_GETADDRINFO.
 

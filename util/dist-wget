@@ -69,7 +69,7 @@ done
 # Resolve echo -n incompatibilities.
 e_n=-n
 e_c=
-if test "`(echo foo; echo -n bar) | tr '[\012]' x`" != fooxbar; then
+if test x"`(echo -n foo; echo bar)`" != xfoobar; then
   e_n=
   e_c='\c'
 fi
