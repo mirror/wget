@@ -32,4 +32,5 @@ src/res.c
 src/retr.c
 src/url.c
 src/utils.c
+src/xmalloc.c
 src/version.c
