@@ -1,5 +1,12 @@
 2003-10-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* html-parse.c (convert_and_copy): Handle numeric entities in
+	hexadecimal, &#xHH.
+	(convert_and_copy): Copy the contents directly to the pool without
+	a stack-allocated intermediary.
+
+2003-10-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (alarm_set): New function; use either setitimer or alarm
 	to set up the alarm.
 	(alarm_cancel): New function; cancel the alarm set up by

@@ -46,10 +46,7 @@ so, delete this exception statement from your version.  */
    written some time during the Geturl 1.0 beta cycle, and was very
    inefficient and buggy.  It also contained some very complex code to
    remember a list of parser states, because it was supposed to be
-   reentrant.  The idea was that several parsers would be running
-   concurrently, and you'd have pass the function a unique ID string
-   (for example, the URL) by which it found the relevant parser state
-   and returned the next URL.  Over-engineering at its best.
+   reentrant.
 
    The second HTML parser was written for Wget 1.4 (the first version
    by the name `Wget'), and was a complete rewrite.  Although the new
@@ -110,15 +107,30 @@ so, delete this exception statement from your version.  */
 #include "html-parse.h"
 
 #ifdef STANDALONE
+# undef xmalloc
+# undef xrealloc
+# undef xfree
 # define xmalloc malloc
 # define xrealloc realloc
 # define xfree free
 
+# undef ISSPACE
+# undef ISDIGIT
+# undef ISXDIGIT
+# undef ISALPHA
+# undef ISALNUM
+# undef TOLOWER
+# undef TOUPPER
+
 # define ISSPACE(x) isspace (x)
 # define ISDIGIT(x) isdigit (x)
+# define ISXDIGIT(x) isxdigit (x)
 # define ISALPHA(x) isalpha (x)
 # define ISALNUM(x) isalnum (x)
 # define TOLOWER(x) tolower (x)
+# define TOUPPER(x) toupper (x)
+
+static struct options opt;
 #endif /* STANDALONE */
 
 /* Pool support.  A pool is a resizable chunk of memory.  It is first
@@ -171,22 +183,20 @@ struct pool {
    is done.  */
 
 #define POOL_APPEND(pool, beg, end) do {			\
-  const char *PA_beg = beg;					\
-  int PA_size = end - PA_beg;					\
+  const char *PA_beg = (beg);					\
+  int PA_size = (end) - PA_beg;					\
   POOL_GROW (pool, PA_size);					\
   memcpy ((pool).contents + (pool).index, PA_beg, PA_size);	\
   (pool).index += PA_size;					\
 } while (0)
 
-/* The same as the above, but with zero termination. */
+/* Append one character to the pool.  Can be used to zero-terminate
+   pool strings.  */
 
-#define POOL_APPEND_ZT(pool, beg, end) do {			\
-  const char *PA_beg = beg;					\
-  int PA_size = end - PA_beg;					\
-  POOL_GROW (pool, PA_size + 1);				\
-  memcpy ((pool).contents + (pool).index, PA_beg, PA_size);	\
-  (pool).contents[(pool).index + PA_size] = '\0';		\
-  (pool).index += PA_size + 1;					\
+#define POOL_APPEND_CHR(pool, ch) do {		\
+  char PAC_char = (ch);				\
+  POOL_GROW (pool, 1);				\
+  (pool).contents[(pool).index++] = PAC_char;	\
 } while (0)
 
 /* Forget old pool contents.  The allocated memory is not freed. */
@@ -210,11 +220,11 @@ struct pool {
 
 #define AP_DOWNCASE		1
 #define AP_PROCESS_ENTITIES	2
-#define AP_SKIP_BLANKS		4
+#define AP_TRIM_BLANKS		4
 
 /* Copy the text in the range [BEG, END) to POOL, optionally
    performing operations specified by FLAGS.  FLAGS may be any
-   combination of AP_DOWNCASE, AP_PROCESS_ENTITIES and AP_SKIP_BLANKS
+   combination of AP_DOWNCASE, AP_PROCESS_ENTITIES and AP_TRIM_BLANKS
    with the following meaning:
 
    * AP_DOWNCASE -- downcase all the letters;
@@ -223,8 +233,9 @@ struct pool {
    the decoded string.  Recognized entities are &lt, &gt, &amp, &quot,
    &nbsp and the numerical entities.
 
-   * AP_SKIP_BLANKS -- ignore blanks at the beginning and at the end
+   * AP_TRIM_BLANKS -- ignore blanks at the beginning and at the end
    of text.  */
+
 static void
 convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags)
 {
@@ -234,7 +245,7 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
   /* First, skip blanks if required.  We must do this before entities
      are processed, so that blanks can still be inserted as, for
      instance, `&#32;'.  */
-  if (flags & AP_SKIP_BLANKS)
+  if (flags & AP_TRIM_BLANKS)
     {
       while (beg < end && ISSPACE (*beg))
 	++beg;
@@ -245,11 +256,16 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
 
   if (flags & AP_PROCESS_ENTITIES)
     {
-      /* Stack-allocate a copy of text, process entities and copy it
-         to the pool.  */
-      char *local_copy = (char *)alloca (size + 1);
+      /* Grow the pool, then copy the text to the pool character by
+	 character, processing the encountered entities as we go
+	 along.
+
+	 It's safe (and necessary) to grow the pool in advance because
+	 processing the entities can only *shorten* the string, it can
+	 never lengthen it.  */
+      POOL_GROW (*pool, end - beg);
       const char *from = beg;
-      char *to = local_copy;
+      char *to = pool->contents + pool->index;
 
       while (from < end)
 	{
@@ -260,22 +276,33 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
 	      const char *save = from;
 	      int remain;
 
-	      if (++from == end) goto lose;
+	      if (++from == end)
+		goto lose;
 	      remain = end - from;
 
+	      /* Process numeric entities "&#DDD;" and "&#xHH;".  */
 	      if (*from == '#')
 		{
-		  int numeric;
+		  int numeric = 0, digits = 0;
 		  ++from;
-		  if (from == end || !ISDIGIT (*from)) goto lose;
-		  for (numeric = 0; from < end && ISDIGIT (*from); from++)
-		    numeric = 10 * numeric + (*from) - '0';
-		  if (from < end && ISALPHA (*from)) goto lose;
+		  if (*from == 'x')
+		    {
+		      ++from;
+		      for (; from < end && ISXDIGIT (*from); from++, digits++)
+			numeric = (numeric << 4) + XDIGIT_TO_NUM (*from);
+		    }
+		  else
+		    {
+		      for (; from < end && ISDIGIT (*from); from++, digits++)
+			numeric = (numeric * 10) + (*from - '0');
+		    }
+		  if (!digits)
+		    goto lose;
 		  numeric &= 0xff;
 		  *to++ = numeric;
 		}
 #define FROB(x) (remain >= (sizeof (x) - 1)			\
-		 && !memcmp (from, x, sizeof (x) - 1)		\
+		 && 0 == memcmp (from, x, sizeof (x) - 1)	\
 		 && (*(from + sizeof (x) - 1) == ';'		\
 		     || remain == sizeof (x) - 1		\
 		     || !ISALNUM (*(from + sizeof (x) - 1))))
@@ -309,13 +336,20 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
 	      *to++ = *from++;
 	    }
 	}
-      *to++ = '\0';
-      POOL_APPEND (*pool, local_copy, to);
+      /* Verify that we haven't exceeded the original size.  (It
+	 shouldn't happen, hence the assert.)  */
+      assert (to - (pool->contents + pool->index) <= end - beg);
+
+      /* Make POOL's tail point to the position following the string
+	 we've written.  */
+      pool->index = to - pool->contents;
+      POOL_APPEND_CHR (*pool, '\0');
     }
   else
     {
       /* Just copy the text to the pool.  */
-      POOL_APPEND_ZT (*pool, beg, end);
+      POOL_APPEND (*pool, beg, end);
+      POOL_APPEND_CHR (*pool, '\0');
     }
 
   if (flags & AP_DOWNCASE)
@@ -822,10 +856,11 @@ map_html_tags (const char *text, int size,
 		  goto look_for_tag;
 		attr_raw_value_end = p;	/* <foo bar="baz"> */
 					/*               ^ */
-		/* The AP_SKIP_BLANKS part is not entirely correct,
-		   because we don't want to skip blanks for all the
-		   attribute values.  */
-		operation = AP_PROCESS_ENTITIES | AP_SKIP_BLANKS;
+		/* The AP_TRIM_BLANKS is there for buggy HTML
+		   generators that generate <a href=" foo"> instead of
+		   <a href="foo"> (Netscape ignores spaces as well.)
+		   If you really mean space, use &32; or %20.  */
+		operation = AP_PROCESS_ENTITIES | AP_TRIM_BLANKS;
 	      }
 	    else
 	      {
