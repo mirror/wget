@@ -181,9 +181,7 @@ AC_CHECK_TYPES(uint32_t)
 AC_TYPE_SIGNAL
 AC_CHECK_TYPES(sig_atomic_t, [], [], [
 #include <stdio.h>
-#if HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
+#include <sys/types.h>
 #if HAVE_INTTYPES_H
 # include <inttypes.h>
 #endif
