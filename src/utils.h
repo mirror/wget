@@ -112,8 +112,9 @@ int string_set_contains PARAMS ((struct hash_table *, const char *));
 void string_set_free PARAMS ((struct hash_table *));
 void free_keys_and_values PARAMS ((struct hash_table *));
 
-char *legible PARAMS ((wgint));
-char *legible_large_int PARAMS ((LARGE_INT));
+char *with_thousand_seps PARAMS ((wgint));
+char *with_thousand_seps_large PARAMS ((LARGE_INT));
+char *human_readable PARAMS ((wgint));
 int numdigit PARAMS ((wgint));
 char *number_to_string PARAMS ((char *, wgint));
 char *number_to_static_string PARAMS ((wgint));

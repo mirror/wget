@@ -1089,8 +1089,15 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
      is done. */
   int keep_alive;
 
-  /* Whether keep-alive should be inhibited. */
-  int inhibit_keep_alive = !opt.http_keep_alive || opt.ignore_length;
+  /* Whether keep-alive should be inhibited.
+
+     RFC 2068 requests that 1.0 clients not send keep-alive requests
+     to proxies.  This is because many 1.0 proxies do not interpret
+     the Connection header and transfer it to the remote server,
+     causing it to not close the connection and leave both the proxy
+     and the client hanging.  */
+  int inhibit_keep_alive =
+    !opt.http_keep_alive || opt.ignore_length /*|| proxy != NULL*/;
 
   /* Headers sent when using POST. */
   wgint post_data_size = 0;
@@ -1733,9 +1740,20 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  logputs (LOG_VERBOSE, _("Length: "));
 	  if (contlen != -1)
 	    {
-	      logputs (LOG_VERBOSE, legible (contlen + contrange));
+	      logputs (LOG_VERBOSE, with_thousand_seps (contlen + contrange));
+	      if (contlen + contrange >= 1024)
+		logprintf (LOG_VERBOSE, " (%s)",
+			   human_readable (contlen + contrange));
 	      if (contrange)
-		logprintf (LOG_VERBOSE, _(" (%s to go)"), legible (contlen));
+		{
+		  if (contlen >= 1024)
+		    logprintf (LOG_VERBOSE, _(", %s (%s) remaining"),
+			       with_thousand_seps (contlen),
+			       human_readable (contlen));
+		  else
+		    logprintf (LOG_VERBOSE, _(", %s remaining"),
+			       with_thousand_seps (contlen));
+		}
 	    }
 	  else
 	    logputs (LOG_VERBOSE,

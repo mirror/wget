@@ -111,7 +111,9 @@ so, delete this exception statement from your version.  */
 /* Define a large integral type useful for storing large sizes that
    exceed sizes of one download, such as when printing the sum of all
    downloads.  Note that this has nothing to do with large file
-   support, which determines the wgint type.
+   support, which determines the wgint type.  This should be as large
+   as possible even on systems where when wgint is 32-bit; also,
+   unlike wgint, this can be a floating point type.
 
    We use a 64-bit integral type where available, `double' otherwise.
    It's hard to print LARGE_INT's portably, but fortunately it's

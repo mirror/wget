@@ -1,3 +1,21 @@
+2005-03-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (gethttp): Print the human-readable size.
+
+	* ftp.c (getftp): Print the human-readable size of the file to be
+	downloaded.
+
+	* utils.c (human_readable): New function.
+
+	* utils.c: Renamed "legible" to "with_thousand_seps",
+	"legible_large_int" to "with_thousand_seps_large", and "legible_1"
+	to "add_thousand_seps".
+
+2005-03-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (gethttp): Inhibit persistent connections when talking to
+	proxies, as mandated by RFC 2068.
+
 2005-03-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (unescape_single_char): New function.

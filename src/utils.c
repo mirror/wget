@@ -1226,11 +1226,11 @@ free_keys_and_values (struct hash_table *ht)
 }
 
 
-/* Engine for legible and legible_large_int; add thousand separators
-   to numbers printed in strings.  */
+/* Add thousand separators to a number already in string form.  Used
+   by with_thousand_seps and with_thousand_seps_large.  */
 
 static char *
-legible_1 (const char *repr)
+add_thousand_seps (const char *repr)
 {
   static char outbuf[48];
   int i, i1, mod;
@@ -1266,41 +1266,106 @@ legible_1 (const char *repr)
   return outbuf;
 }
 
-/* Legible -- return a static pointer to the legibly printed wgint.  */
+/* Return a static pointer to the number printed with thousand
+   separators inserted at the right places.  */
 
 char *
-legible (wgint l)
+with_thousand_seps (wgint l)
 {
   char inbuf[24];
   /* Print the number into the buffer.  */
   number_to_string (inbuf, l);
-  return legible_1 (inbuf);
+  return add_thousand_seps (inbuf);
 }
 
 /* Write a string representation of LARGE_INT NUMBER into the provided
-   buffer.  The buffer should be able to accept 24 characters,
-   including the terminating zero.
+   buffer.
 
    It would be dangerous to use sprintf, because the code wouldn't
    work on a machine with gcc-provided long long support, but without
-   libc support for "%lld".  However, such platforms will typically
-   not have snprintf and will use our version, which does support
-   "%lld" where long longs are available.  */
+   libc support for "%lld".  However, such old systems platforms
+   typically lack snprintf and will end up using our version, which
+   does support "%lld" whereever long longs are available.  */
 
 static void
-large_int_to_string (char *buffer, LARGE_INT number)
+large_int_to_string (char *buffer, int bufsize, LARGE_INT number)
 {
-  snprintf (buffer, 24, LARGE_INT_FMT, number);
+  snprintf (buffer, bufsize, LARGE_INT_FMT, number);
 }
 
-/* The same as legible(), but works on LARGE_INT.  */
+/* The same as with_thousand_seps, but works on LARGE_INT.  */
 
 char *
-legible_large_int (LARGE_INT l)
+with_thousand_seps_large (LARGE_INT l)
 {
   char inbuf[48];
-  large_int_to_string (inbuf, l);
-  return legible_1 (inbuf);
+  large_int_to_string (inbuf, sizeof (inbuf), l);
+  return add_thousand_seps (inbuf);
+}
+
+/* N, a byte quantity, is converted to a human-readable abberviated
+   form a la sizes printed by `ls -lh'.  The result is written to a
+   static buffer, a pointer to which is returned.
+
+   Unlike `with_thousand_seps', this approximates to the nearest unit.
+   Quoting GNU libit: "Most people visually process strings of 3-4
+   digits effectively, but longer strings of digits are more prone to
+   misinterpretation.  Hence, converting to an abbreviated form
+   usually improves readability."
+
+   This intentionally uses kilobyte (KB), megabyte (MB), etc. in their
+   original computer science meaning of "multiples of 1024".
+   Multiples of 1000 would be useless since Wget already adds thousand
+   separators for legibility.  We don't use the "*bibyte" names
+   invented in 1998, and seldom used in practice.  Wikipedia's entry
+   on kilobyte discusses this in some detail.  */
+
+char *
+human_readable (wgint n)
+{
+  /* These suffixes are compatible with those of GNU `ls -lh'. */
+  static char powers[] =
+    {
+      'K',			/* kilobyte, 2^10 bytes */
+      'M',			/* megabyte, 2^20 bytes */
+      'G',			/* gigabyte, 2^30 bytes */
+      'T',			/* terabyte, 2^40 bytes */
+      'P',			/* petabyte, 2^50 bytes */
+      'E',			/* exabyte,  2^60 bytes */
+    };
+  static char buf[8];
+  int i;
+
+  /* If the quantity is smaller than 1K, just print it. */
+  if (n < 1024)
+    {
+      snprintf (buf, sizeof (buf), "%d", (int) n);
+      return buf;
+    }
+
+  /* Loop over powers, dividing N with 1024 in each iteration.  This
+     works unchanged for all sizes of wgint, while still avoiding
+     non-portable `long double' arithmetic.  */
+  for (i = 0; i < countof (powers); i++)
+    {
+      /* At each iteration N is greater than the *subsequent* power.
+	 That way N/1024.0 produces a decimal number in the units of
+	 *this* power.  */
+      if ((n >> 10) < 1024 || i == countof (powers) - 1)
+	{
+	  /* Must cast to long first because MS VC can't directly cast
+	     __int64 to double.  (This is safe because N is known to
+	     be <2**20.)  */
+	  double val = (double) (long) n / 1024.0;
+	  /* Print values smaller than 10 with one decimal digits, and
+	     others without any decimals.  */
+	  snprintf (buf, sizeof (buf), "%.*f%c",
+		    val < 10 ? 1 : 0, val, powers[i]);
+	  return buf;
+	}
+      n >>= 10;
+    }
+  return NULL;			/* unreached */
 }
 
 /* Count the digits in an integer number.  */
