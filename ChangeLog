@@ -1,5 +1,10 @@
 2002-04-12  Ian Abbott  <abbotti@mev.co.uk>
 
+	* windows/Makefile.src.bor: Removed pre-compiled header options as
+	they increase build time (on my machine).
+
+2002-04-12  Ian Abbott  <abbotti@mev.co.uk>
+
 	* windows/config.h.bor: Account for Borland not defining `__STDC__'
 	when Borland's extensions enabled, and define it anyway.
 

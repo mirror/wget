@@ -5,7 +5,7 @@ CC=bcc32
 LINK=ilink32
 
 LFLAGS=
-CFLAGS=-DWINDOWS -DHAVE_CONFIG_H -I. -H -H=wget.csm -w- -O2
+CFLAGS=-DWINDOWS -DHAVE_CONFIG_H -I. -w- -O2
 
 ## variables
 OBJS=cmpt.obj connect.obj fnmatch.obj ftp.obj ftp-basic.obj  \
