@@ -196,8 +196,10 @@ retrieve_tree (const char *start_url)
      now. */
   struct url *start_url_parsed = url_parse (start_url, NULL);
 
-  url_enqueue (queue, xstrdup (start_url), NULL, 0);
-  string_set_add (blacklist, start_url);
+  /* Enqueue the starting URL.  Use start_url_parsed->url rather than
+     just URL so we enqueue the canonical form of the URL.  */
+  url_enqueue (queue, xstrdup (start_url_parsed->url), NULL, 0);
+  string_set_add (blacklist, start_url_parsed->url);
 
   while (1)
     {

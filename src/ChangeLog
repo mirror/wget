@@ -1,5 +1,10 @@
 2001-12-19  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* recur.c (retrieve_tree): Enqueue the canonical representation of
+	start_url, so that the test against dl_url_file_map works.
+
+2001-12-19  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* log.c (logputs): Check for requested verbosity before printing
 	anything.
 
