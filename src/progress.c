@@ -414,13 +414,13 @@ dot_set_params (const char *params)
 static int screen_width = DEFAULT_SCREEN_WIDTH;
 
 /* Size of the download speed history ring. */
-#define DLSPEED_HISTORY_SIZE 30
+#define DLSPEED_HISTORY_SIZE 20
 
 /* The minimum time length of a history sample.  By default, each
-   sample is at least 100ms long, which means that, over the course of
-   30 samples, "current" download speed spans at least 3s into the
+   sample is at least 150ms long, which means that, over the course of
+   20 samples, "current" download speed spans at least 3s into the
    past.  */
-#define DLSPEED_SAMPLE_MIN 100
+#define DLSPEED_SAMPLE_MIN 150
 
 struct bar_progress {
   long initial_length;		/* how many bytes have been downloaded
@@ -561,19 +561,19 @@ bar_finish (void *progress, double dltime)
    speed, over the course of no less than 3s.  (Shorter intervals
    produce very erratic results.)
 
-   To do so, it samples the speed in 0.1s intervals and stores the
+   To do so, it samples the speed in 150ms intervals and stores the
    recorded samples in a FIFO history ring.  The ring stores no more
-   than 30 intervals, hence the history covers the period of at least
-   three seconds and at most 30 reads into the past.  This method
-   should produce good results for both very fast and very slow
-   downloads.
+   than 20 intervals, hence the history covers the period of at least
+   three seconds and at most 20 reads into the past.  This method
+   should produce reasonable results for downloads ranging from very
+   slow to very fast.
 
    The idea is that for fast downloads, we get the speed over exactly
    the last three seconds.  For slow downloads (where a network read
-   takes more than 0.1s to complete), we get the speed over a larger
+   takes more than 150ms to complete), we get the speed over a larger
    time period, as large as it takes to complete thirty reads.  This
    is good because slow downloads tend to fluctuate more and a
-   3-second average would be very erratic.  */
+   3-second average would be too erratic.  */
 
 static void
 update_speed_ring (struct bar_progress *bp, long howmuch, double dltime)
@@ -688,29 +688,38 @@ create_image (struct bar_progress *bp, double dl_total_time)
   else
     APPEND_LITERAL ("    ");
 
-  /* The progress bar: "[====>      ]" */
+  /* The progress bar: "[====>      ]" or "[--==>      ]". */
   if (progress_size && bp->total_length > 0)
     {
-      double fraction = (double)size / bp->total_length;
-      int dlsz = (int)(fraction * progress_size);
+      /* Size of the initial portion. */
+      int insz = (double)bp->initial_length / bp->total_length * progress_size;
+
+      /* Size of the downloaded portion. */
+      int dlsz = (double)size / bp->total_length * progress_size;
+
       char *begin;
+      int i;
 
       assert (dlsz <= progress_size);
+      assert (insz <= dlsz);
 
       *p++ = '[';
       begin = p;
 
+      /* Print the initial portion of the download with '-' chars, the
+	 rest with '=' and one '>'.  */
+      for (i = 0; i < insz; i++)
+	*p++ = '-';
+      dlsz -= insz;
       if (dlsz > 0)
 	{
-	  /* Draw dlsz-1 '=' chars and one arrow char.  */
-	  while (dlsz-- > 1)
+	  for (i = 0; i < dlsz - 1; i++)
 	    *p++ = '=';
 	  *p++ = '>';
 	}
 
       while (p - begin < progress_size)
 	*p++ = ' ';
-
       *p++ = ']';
     }
   else if (progress_size)
@@ -758,7 +767,9 @@ create_image (struct bar_progress *bp, double dl_total_time)
   else
     APPEND_LITERAL ("   --.--K/s");
 
-  /* " ETA xx:xx:xx" */
+  /* " ETA xx:xx:xx"; wait for three seconds before displaying the ETA.
+     That's because the ETA value needs a while to become
+     reliable.  */
   if (bp->total_length > 0 && dl_total_time > 3000)
     {
       long eta;

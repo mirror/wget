@@ -1,5 +1,9 @@
 2003-09-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* progress.c (create_image): Print the initial part of the
+	download with '-' characters, analogous to how dot progress prints
+	the initial part with ','.
+
 	* hash.c (ptrhash): New function.
 	(ptrcmp): Ditto.
 	(hash_table_new): Default to identity hash table.
