@@ -390,10 +390,10 @@ logvprintf (struct logvprintf_state *state, const char *fmt, va_list args)
   /* vsnprintf() will not step over the limit given by available_size.
      If it fails, it will return either -1 (POSIX?) or the number of
      characters that *would have* been written, if there had been
-     enough room.  In the former case, we double the available_size
-     and malloc() to get a larger buffer, and try again.  In the
-     latter case, we use the returned information to build a buffer of
-     the correct size.  */
+     enough room (C99).  In the former case, we double the
+     available_size and malloc to get a larger buffer, and try again.
+     In the latter case, we use the returned information to build a
+     buffer of the correct size.  */
 
   if (numwritten == -1)
     {
@@ -473,45 +473,26 @@ log_set_save_context (int savep)
   return old;
 }
 
-#ifdef WGET_USE_STDARG
-# define VA_START_1(arg1_type, arg1, args) va_start(args, arg1)
-# define VA_START_2(arg1_type, arg1, arg2_type, arg2, args) va_start(args, arg2)
-#else  /* not WGET_USE_STDARG */
-# define VA_START_1(arg1_type, arg1, args) do {	\
-  va_start (args);							\
-  arg1 = va_arg (args, arg1_type);					\
-} while (0)
-# define VA_START_2(arg1_type, arg1, arg2_type, arg2, args) do {	\
-  va_start (args);							\
-  arg1 = va_arg (args, arg1_type);					\
-  arg2 = va_arg (args, arg2_type);					\
-} while (0)
-#endif /* not WGET_USE_STDARG */
-
-/* Portability with pre-ANSI compilers makes these two functions look
-   like @#%#@$@#$.  */
+/* Handle difference in va_start between pre-ANSI and ANSI C.  Note
+   that we always use `...' in function definitions and let ansi2knr
+   convert it for us.  */
 
 #ifdef WGET_USE_STDARG
+# define VA_START(args, arg1) va_start (args, arg1)
+#else
+# define VA_START(args, ignored) va_start (args)
+#endif
+
+/* Print a message to the screen or to the log.  The first argument
+   defines the verbosity of the message, and the rest are as in
+   printf(3).  */
+
 void
 logprintf (enum log_options o, const char *fmt, ...)
-#else  /* not WGET_USE_STDARG */
-void
-logprintf (va_alist)
-     va_dcl
-#endif /* not WGET_USE_STDARG */
 {
   va_list args;
   struct logvprintf_state lpstate;
   int done;
-
-#ifndef WGET_USE_STDARG
-  enum log_options o;
-  const char *fmt;
-
-  /* Perform a "dry run" of VA_START_2 to get the value of O. */
-  VA_START_2 (enum log_options, o, char *, fmt, args);
-  va_end (args);
-#endif
 
   check_redirect_output ();
   if (inhibit_logging)
@@ -521,7 +502,7 @@ logprintf (va_alist)
   memset (&lpstate, '\0', sizeof (lpstate));
   do
     {
-      VA_START_2 (enum log_options, o, char *, fmt, args);
+      VA_START (args, fmt);
       done = logvprintf (&lpstate, fmt, args);
       va_end (args);
     }
@@ -531,21 +512,12 @@ logprintf (va_alist)
 #ifdef DEBUG
 /* The same as logprintf(), but does anything only if opt.debug is
    non-zero.  */
-#ifdef WGET_USE_STDARG
 void
 debug_logprintf (const char *fmt, ...)
-#else  /* not WGET_USE_STDARG */
-void
-debug_logprintf (va_alist)
-     va_dcl
-#endif /* not WGET_USE_STDARG */
 {
   if (opt.debug)
     {
       va_list args;
-#ifndef WGET_USE_STDARG
-      const char *fmt;
-#endif
       struct logvprintf_state lpstate;
       int done;
 
@@ -556,7 +528,7 @@ debug_logprintf (va_alist)
       memset (&lpstate, '\0', sizeof (lpstate));
       do
 	{
-	  VA_START_1 (char *, fmt, args);
+	  VA_START (args, fmt);
 	  done = logvprintf (&lpstate, fmt, args);
 	  va_end (args);
 	}
@@ -590,9 +562,9 @@ log_init (const char *file, int appendp)
       logfp = stderr;
 
       /* If the output is a TTY, enable storing, which will make Wget
-         remember all the printed messages, to be able to dump them to
-         a log file in case SIGHUP or SIGUSR1 is received (or
-         Ctrl+Break is pressed under Windows).  */
+         remember the last several printed messages, to be able to
+         dump them to a log file in case SIGHUP or SIGUSR1 is received
+         (or Ctrl+Break is pressed under Windows).  */
       if (1
 #ifdef HAVE_ISATTY
 	  && isatty (fileno (logfp))

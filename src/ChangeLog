@@ -1,3 +1,9 @@
+2003-10-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* log.c: Use `...' in function definitions; ansi2knr will convert
+	them to va_dcl.  This allowed removal of the ugly VA_START_1 and
+	VA_START_2 macros.
+
 2003-10-03  Gisle Vanem  <giva@bgnett.no>
 
 	* connect.c: And don't include them here.
