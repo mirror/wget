@@ -428,13 +428,6 @@ bind_local (const ip_address *bind_address, int *port)
   setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, setopt_ptr, setopt_size);
 #endif
 
-#ifdef ENABLE_IPV6
-# ifdef HAVE_IPV6_V6ONLY
-  if (family == AF_INET6)
-    setsockopt (sock, IPPROTO_IPV6, IPV6_V6ONLY, setopt_ptr, setopt_size);
-# endif
-#endif
-
   xzero (ss);
   sockaddr_set_data (sa, bind_address, *port);
   if (bind (sock, sa, sockaddr_size (sa)) < 0)

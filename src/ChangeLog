@@ -1,3 +1,8 @@
+2003-12-12  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c (bind_local): Don't set the IPV6_V6ONLY option on the
+	socket.
+
 2003-12-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (url_file_name): Respect the setting of
