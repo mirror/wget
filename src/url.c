@@ -198,8 +198,8 @@ url_escape_1 (const char *s, unsigned char mask, int allow_passthrough)
 	{
 	  unsigned char c = *p1++;
 	  *p2++ = '%';
-	  *p2++ = XNUM_TO_digit (c >> 4);
-	  *p2++ = XNUM_TO_digit (c & 0xf);
+	  *p2++ = XNUM_TO_DIGIT (c >> 4);
+	  *p2++ = XNUM_TO_DIGIT (c & 0xf);
 	}
       else
 	*p2++ = *p1++;
@@ -1130,6 +1130,7 @@ url_escape_dir (const char *dir)
 
   for (; *h; h++, t++)
     {
+      /* url_escape_1 having converted '/' to "%2F" exactly. */
       if (*h == '%' && h[1] == '2' && h[2] == 'F')
 	{
 	  *t = '/';
