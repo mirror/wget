@@ -1,3 +1,18 @@
+2003-09-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* cookies.c (struct cookie): New flag domain_exact.
+	(update_cookie_field): Skip leading dot in domain.
+	(find_matching_chains): Match numeric addresses exactly; don't
+	needlessly copy HOST to the stack.
+	(matching_cookie): Added argument HOST.  If cookie->domain_exact
+	is set, check that HOST is equal to cookie->domain.
+	(cookie_jar_load): Only use TAB as delimiter.  Document the
+	meaning of DOMAIN-FLAG.  Skip leading dot in domain.
+	(cookie_jar_load): Don't ignore DOMAIN-FLAG -- instead, set
+	domain_exact to true if DOMAIN-FLAG is false.
+	(save_cookies_mapper): If domain_exact is false, prepend the
+	domain with dot, like Mozilla does.
+
 2003-09-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* progress.c (create_image): Print the initial part of the
