@@ -1,3 +1,11 @@
+2001-04-08  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
+
+	* ChangeLog: Removed an excess conflict marker. Reformatted the
+	entry by Philipp Thomas from 2001-03-09.
+
+	* ftp-ls.c (ftp_parse_winnt_ls): Ensure that adjusted PM hours lay
+	between 0 and 23. Elminate unused variable `sec'.
+
 2001-04-08  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* hash.c (hash_table_count): New function.
@@ -38,7 +46,6 @@
 	username was present, but the URL did not contain a slash, e.g.
 	http://foo:bar@myhost.
 
->>>>>>> 1.148
 2001-04-03  KOJIMA Hajime  <kjm@rins.ryukoku.ac.jp>
 
 	* http.c (http_atotm): Use %A instead of %a to match full
@@ -134,33 +141,54 @@
 
 2001-03-09  Philipp Thomas  <pthomas@suse.de>
 
-	* safe-ctype.h: New file. Locale independent ctype.h
-	replacement taken from libiberty.
-	safe-ctype.c: New file. Tables for above.
-	Makefile.in: Add safe-ctype$o to OBJS.
-	Add dependencies for safe-ctype$o.
-	cmpt.c: Remove include of ctype.h. Use ISSPACE instead
-	of isspace.
-	ftp-basic.c: Don't include ctype.h.
-	ftp-ls.c: Likewise.
-	ftp.c: Likewise.
-	headers.c: Likewise.
-	host.c: Likewise.
-	html-parse.c: Likewise.
-	html-url.c: Likewise.
-	http.c: Likewise.
-	init.c: Likewise.
-	main.c: Likewise. Set LC_CTYPE along with LC_MESSAGES.
-	netrc.c: Likewise.
-	recur.c: Likewise.
-	retr.c: Likewise.
-	snprintf.c: Replace ctype.h with safe-ctype.h. Use
-	ISDIGIT instead of isdigit.
-	sysdep.h: Remove defines of ctype macros as they aren't
-	needed for safe-ctype-h.
-	url.c: Don't include ctype.h.
-	utils.c: Likewise.
-	wget.h: Include safe-ctype.h.
+	* safe-ctype.h: New file. Locale independent ctype.h replacement
+	taken from libiberty.
+
+	* safe-ctype.c: New file. Tables for above.
+
+	* Makefile.in: Add safe-ctype$o to OBJS.  Add dependencies for
+	safe-ctype$o.
+
+	* cmpt.c: Remove include of ctype.h. Use ISSPACE instead of
+	isspace.
+
+	* ftp-basic.c: Don't include ctype.h.
+
+	* ftp-ls.c: Likewise.
+
+	* ftp.c: Likewise.
+
+	* headers.c: Likewise.
+
+	* host.c: Likewise.
+
+	* html-parse.c: Likewise.
+
+	* html-url.c: Likewise.
+
+	* http.c: Likewise.
+
+	* init.c: Likewise.
+
+	* main.c: Likewise. Set LC_CTYPE along with LC_MESSAGES.
+
+	* netrc.c: Likewise.
+
+	* recur.c: Likewise.
+
+	* retr.c: Likewise.
+
+	* snprintf.c: Replace ctype.h with safe-ctype.h. Use ISDIGIT
+	instead of isdigit.
+
+	* sysdep.h: Remove defines of ctype macros as they aren't needed
+	for safe-ctype-h.
+
+	* url.c: Don't include ctype.h.
+
+	* utils.c: Likewise.
+
+	* wget.h: Include safe-ctype.h.
 
 2001-03-27  Dan Harkless  <wget@harkless.org>
 

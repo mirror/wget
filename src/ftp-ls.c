@@ -410,7 +410,7 @@ ftp_parse_winnt_ls (const char *file)
   FILE *fp;
   int len;
   int year, month, day;         /* for time analysis */
-  int hour, min, sec;
+  int hour, min;
   struct tm timestruct;
 
   char *line, *tok;             /* tokenizer */
@@ -450,22 +450,21 @@ ftp_parse_winnt_ls (const char *file)
       /* Assuming the epoch starting at 1.1.1970 */
       if (year <= 70) year += 100;
 
-      /* Second column: hh:mm[AP]M */
+      /* Second column: hh:mm[AP]M, listing does not contain value for
+         seconds */
       tok = strtok(NULL,  ":");
       hour = atoi(tok);
       tok = strtok(NULL,  "M");
       min = atoi(tok);
       /* Adjust hour from AM/PM */
       tok+=2;
-      if (*tok == 'P') hour += 12;
-      /* Listing does not contain value for seconds */
-      sec = 0;
+      if (*tok == 'P') hour = (hour + 12) % 24;
 
       DEBUGP(("YYYY/MM/DD HH:MM - %d/%02d/%02d %02d:%02d\n", 
               year+1900, month, day, hour, min));
       
       /* Build the time-stamp (copy & paste from above) */
-      timestruct.tm_sec   = sec;
+      timestruct.tm_sec   = 0;
       timestruct.tm_min   = min;
       timestruct.tm_hour  = hour;
       timestruct.tm_mday  = day;
