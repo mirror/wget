@@ -1,5 +1,21 @@
 2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* http.c (gethttp): Ditto.
+
+	* retr.c (retrieve_url): Initialize variables to appease the
+	compiler.
+
+	* gen_sslfunc.c (ssl_iread): Don't handle EINTR when calling
+	select_fd.
+	(ssl_iwrite): Ditto.
+
+	* connect.c (select_fd): Rewrite to handle EINTR.  Set errno to
+	ETIMEDOUT in case of timeout.
+	(iread): No need to handle EINTR when calling select_fd.
+	(iwrite): Ditto.
+
+2002-04-14  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* retr.c (retrieve_url): Make sure that POST is not honored for
 	redirections.
 

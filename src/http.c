@@ -181,7 +181,7 @@ static int
 post_file (int sock, void *ssl, const char *file_name, long promised_size)
 {
   static char chunk[8192];
-  int written = 0;
+  long written = 0;
   int write_error;
   FILE *fp;
 
@@ -196,7 +196,7 @@ post_file (int sock, void *ssl, const char *file_name, long promised_size)
     goto pad;
   while (written < promised_size)
     {
-      long towrite;
+      int towrite;
       int length = fread (chunk, 1, sizeof (chunk), fp);
       if (length == 0)
 	break;
@@ -215,18 +215,19 @@ post_file (int sock, void *ssl, const char *file_name, long promised_size)
       written += towrite;
     }
   fclose (fp);
+
  pad:
   if (written < promised_size)
     {
-      DEBUGP (("padding ... "));
       /* This highly unlikely case can happen only if the file has
-	 shrunk while we weren't looking.  To uphold the promise, pad
-	 the remaining data with zeros.  #### Should we abort
-	 instead?  */
+	 shrunk under us.  To uphold the promise that exactly
+	 promised_size bytes would be delivered, pad the remaining
+	 data with zeros.  #### Should we abort instead?  */
+      DEBUGP (("padding %ld bytes ... ", promised_size - written));
       memset (chunk, '\0', sizeof (chunk));
       while (written < promised_size)
 	{
-	  long towrite = WMIN (promised_size - written, sizeof (chunk));
+	  int towrite = WMIN (promised_size - written, sizeof (chunk));
 #ifdef HAVE_SSL
 	  if (ssl)
 	    write_error = ssl_iwrite (ssl, chunk, towrite);
@@ -644,7 +645,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
   /* Headers sent when using POST. */
   char *post_content_type, *post_content_length;
-  long post_data_size;
+  long post_data_size = 0;
 
 #ifdef HAVE_SSL
   /* initialize ssl_ctx on first run */

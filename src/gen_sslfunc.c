@@ -207,56 +207,33 @@ ssl_printerrors (void)
   return ocerr;
 }
 
-/* SSL version of iread. Only exchanged read for SSL_read 
-   Read at most LEN bytes from FD, storing them to BUF.  This is
-   virtually the same as read(), but takes care of EINTR braindamage
-   and uses select() to timeout the stale connections (a connection is
-   stale if more than OPT.TIMEOUT time is spent in select() or
-   read()).  */
+/* SSL version of iread.  Only exchanged read for SSL_read Read at
+   most LEN bytes from FD, storing them to BUF. */
+
 int
 ssl_iread (SSL *con, char *buf, int len)
 {
-  int res;
-  int fd;
+  int res, fd;
   BIO_get_fd (con->rbio, &fd);
-  do
-    {
 #ifdef HAVE_SELECT
-      if (opt.timeout && !SSL_pending (con))
-	{
-	  do
-	    {
-	      res = select_fd (fd, opt.timeout, 0);
-	    }
-	  while (res == -1 && errno == EINTR);
-	  if (res <= 0)
-	    {
-	      /* Set errno to ETIMEDOUT on timeout.  */
-	      if (res == 0)
-		/* #### Potentially evil!  */
-		errno = ETIMEDOUT;
-	      return -1;
-	    }
-	}
+  if (opt.timeout && !SSL_pending (con))
+    if (select_fd (fd, opt.timeout, 0) <= 0)
+      return -1;
 #endif
-      res = SSL_read (con, buf, len);
-    }
+  do
+    res = SSL_read (con, buf, len);
   while (res == -1 && errno == EINTR);
 
   return res;
 }
 
-/* SSL version of iwrite. Only exchanged write for SSL_write 
-   Write LEN bytes from BUF to FD.  This is similar to iread(), but
-   doesn't bother with select().  Unlike iread(), it makes sure that
-   all of BUF is actually written to FD, so callers needn't bother
-   with checking that the return value equals to LEN.  Instead, you
-   should simply check for -1.  */
+/* SSL version of iwrite.  Only exchanged write for SSL_write Write
+   LEN bytes from BUF to FD.  */
+
 int
 ssl_iwrite (SSL *con, char *buf, int len)
 {
-  int res = 0;
-  int fd;
+  int res = 0, fd;
   BIO_get_fd (con->rbio, &fd);
   /* `write' may write less than LEN bytes, thus the outward loop
      keeps trying it until all was written, or an error occurred.  The
@@ -264,28 +241,13 @@ ssl_iwrite (SSL *con, char *buf, int len)
      innermost loop deals with the same during select().  */
   while (len > 0)
     {
-      do
-	{
 #ifdef HAVE_SELECT
-	  if (opt.timeout)
-	    {
-	      do
-		{
-		  res = select_fd (fd, opt.timeout, 1);
-		}
-	      while (res == -1 && errno == EINTR);
-	      if (res <= 0)
-		{
-		  /* Set errno to ETIMEDOUT on timeout.  */
-		  if (res == 0)
-		    /* #### Potentially evil!  */
-		    errno = ETIMEDOUT;
-		  return -1;
-		}
-	    }
+      if (opt.timeout)
+	if (select_fd (fd, opt.timeout, 1) <= 0)
+	  return -1;
 #endif
-	  res = SSL_write (con, buf, len);
-	}
+      do
+	res = SSL_write (con, buf, len);
       while (res == -1 && errno == EINTR);
       if (res <= 0)
 	break;

@@ -320,27 +320,37 @@ bindport (unsigned short *port, int family)
 }
 
 #ifdef HAVE_SELECT
-/* Wait for file descriptor FD to be readable, MAXTIME being the
-   timeout in seconds.  If WRITEP is non-zero, checks for FD being
-   writable instead.
+/* Wait for file descriptor FD to be available, timing out after
+   MAXTIME seconds.  "Available" means readable if writep is 0,
+   writeable otherwise.
 
-   Returns 1 if FD is accessible, 0 for timeout and -1 for error in
-   select().  */
+   Returns 1 if FD is available, 0 for timeout and -1 for error.  */
+
 int
 select_fd (int fd, int maxtime, int writep)
 {
-  fd_set fds, exceptfds;
-  struct timeval timeout;
+  fd_set fds;
+  fd_set *rd = NULL, *wrt = NULL;
+  struct timeval tmout;
+  int result;
 
   FD_ZERO (&fds);
   FD_SET (fd, &fds);
-  FD_ZERO (&exceptfds);
-  FD_SET (fd, &exceptfds);
-  timeout.tv_sec = maxtime;
-  timeout.tv_usec = 0;
-  /* HPUX reportedly warns here.  What is the correct incantation?  */
-  return select (fd + 1, writep ? NULL : &fds, writep ? &fds : NULL,
-		 &exceptfds, &timeout);
+  *(writep ? &wrt : &rd) = &fds;
+
+  tmout.tv_sec = maxtime;
+  tmout.tv_usec = 0;
+
+  do
+    result = select (fd + 1, rd, wrt, NULL, &tmout);
+  while (result < 0 && errno == EINTR);
+
+  /* When we've timed out, set errno to ETIMEDOUT for the convenience
+     of the caller. */
+  if (result == 0)
+    errno = ETIMEDOUT;
+
+  return result;
 }
 #endif /* HAVE_SELECT */
 
@@ -411,43 +421,29 @@ conaddr (int fd, ip_address *ip)
    and uses select() to timeout the stale connections (a connection is
    stale if more than OPT.TIMEOUT time is spent in select() or
    read()).  */
+
 int
 iread (int fd, char *buf, int len)
 {
   int res;
 
-  do
-    {
 #ifdef HAVE_SELECT
-      if (opt.timeout)
-	{
-	  do
-	    {
-	      res = select_fd (fd, opt.timeout, 0);
-	    }
-	  while (res == -1 && errno == EINTR);
-	  if (res <= 0)
-	    {
-	      /* Set errno to ETIMEDOUT on timeout.  */
-	      if (res == 0)
-		/* #### Potentially evil!  */
-		errno = ETIMEDOUT;
-	      return -1;
-	    }
-	}
+  if (opt.timeout)
+    if (select_fd (fd, opt.timeout, 0) <= 0)
+      return -1;
 #endif
-      res = READ (fd, buf, len);
-    }
+  do
+    res = READ (fd, buf, len);
   while (res == -1 && errno == EINTR);
 
   return res;
 }
 
 /* Write LEN bytes from BUF to FD.  This is similar to iread(), but
-   doesn't bother with select().  Unlike iread(), it makes sure that
-   all of BUF is actually written to FD, so callers needn't bother
-   with checking that the return value equals to LEN.  Instead, you
-   should simply check for -1.  */
+   unlike iread(), it makes sure that all of BUF is actually written
+   to FD, so callers needn't bother with checking that the return
+   value equals to LEN.  Instead, you should simply check for -1.  */
+
 int
 iwrite (int fd, char *buf, int len)
 {
@@ -459,27 +455,13 @@ iwrite (int fd, char *buf, int len)
      innermost loop deals with the same during select().  */
   while (len > 0)
     {
-      do
-	{
 #ifdef HAVE_SELECT
-	  if (opt.timeout)
-	    {
-	      do
-		{
-		  res = select_fd (fd, opt.timeout, 1);
-		}
-	      while (res == -1 && errno == EINTR);
-	      if (res <= 0)
-		{
-		  /* Set errno to ETIMEDOUT on timeout.  */
-		  if (res == 0)
-		    errno = ETIMEDOUT;
-		  return -1;
-		}
-	    }
+      if (opt.timeout)
+	if (select_fd (fd, opt.timeout, 1) <= 0)
+	  return -1;
 #endif
-	  res = WRITE (fd, buf, len);
-	}
+      do
+	res = WRITE (fd, buf, len);
       while (res == -1 && errno == EINTR);
       if (res <= 0)
 	break;

@@ -318,8 +318,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   int redirection_count = 0;
 
   int post_data_suspended = 0;
-  char *saved_post_data;
-  char *saved_post_file_name;
+  char *saved_post_data = NULL;
+  char *saved_post_file_name = NULL;
 
   /* If dt is NULL, just ignore it.  */
   if (!dt)
