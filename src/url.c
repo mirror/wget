@@ -76,20 +76,34 @@ static struct scheme_data supported_schemes[] =
 
 static int path_simplify PARAMS ((char *));
 
-/* Support for encoding and decoding of URL strings.  We determine
-   whether a character is unsafe through static table lookup.  This
-   code assumes ASCII character set and 8-bit chars.
+/* Support for escaping and unescaping of URL strings.  */
 
-   Note that rfc2396 chose a different terminology from rfc1738.  The
-   recoding that URL does should be compliant with both specs,
-   although escaping the "unsafe" ("unreserved" in rfc2396 parlance)
-   chars where not strictly necessary is now frowned upon.  */
+/* Table of "reserved" and "unsafe" characters.  Those terms are
+   rfc1738-speak, as such largely obsoleted by rfc2396 and later
+   specs, but the general idea remains.
+
+   A reserved character is the one that you can't decode without
+   changing the meaning of the URL.  For example, you can't decode
+   "/foo/%2f/bar" into "/foo///bar" because the number and contents of
+   path components is different.  Non-reserved characters can be
+   changed, so "/foo/%78/bar" is safe to change to "/foo/x/bar".  Wget
+   uses the rfc1738 set of reserved characters, plus "$" and ",", as
+   recommended by rfc2396.
+
+   An unsafe characters is the one that should be encoded when URLs
+   are placed in foreign environments.  E.g. space and newline are
+   unsafe in HTTP contexts because HTTP uses them as separator and
+   terminator, so they must be encoded to %20 and %0A respectively.
+   "*" is unsafe in shell context, etc.
+
+   We determine whether a character is unsafe through static table
+   lookup.  This code assumes ASCII character set and 8-bit chars.  */
 
 enum {
-  /* rfc1738 reserved chars, preserved from encoding.  */
+  /* rfc1738 reserved chars + "$" and ",".  */
   urlchr_reserved = 1,
 
-  /* rfc1738 unsafe chars, plus some more.  */
+  /* rfc1738 unsafe chars, plus non-printables.  */
   urlchr_unsafe   = 2
 };
 
