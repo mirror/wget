@@ -1,3 +1,8 @@
+2002-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* configure.in: Check for <setjmp.h>.  Check for sigsetjmp and
+	sigblock.
+
 2002-04-09  Ian Abbott  <abbotti@mev.co.uk>
 
 	* windows/config.h.bor: define `HACK_BCC_UTIME_BUG'. Define `utime'

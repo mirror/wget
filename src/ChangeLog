@@ -1,3 +1,11 @@
+2002-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* connect.c (connect_with_timeout): New function.
+	(connect_to_one): Use it.
+
+	* config.h.in: Add stubs for HAVE_SIGSETJMP, HAVE_SIGBLOCK, and
+	HAVE_SETJMP_H.
+
 2002-04-11  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* log.c: Set WGET_USE_STDARG if __STDC__ is defined and stdarg.h

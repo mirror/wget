@@ -156,7 +156,8 @@ dnl
 dnl Checks for headers
 dnl
 AC_CHECK_HEADERS(string.h stdarg.h unistd.h sys/time.h utime.h sys/utime.h pwd.h)
-AC_CHECK_HEADERS(termios.h sys/ioctl.h sys/select.h sys/utsname.h signal.h)
+AC_CHECK_HEADERS(termios.h sys/ioctl.h sys/select.h sys/utsname.h)
+AC_CHECK_HEADERS(signal.h setjmp.h)
 AC_HEADER_TIME
 
 dnl
@@ -174,8 +175,8 @@ dnl
 AC_FUNC_ALLOCA
 AC_FUNC_MMAP
 AC_CHECK_FUNCS(strdup strstr strcasecmp strncasecmp strpbrk memmove)
-AC_CHECK_FUNCS(gettimeofday mktime strptime)
-AC_CHECK_FUNCS(strerror snprintf vsnprintf select signal symlink access isatty)
+AC_CHECK_FUNCS(gettimeofday mktime strptime strerror snprintf vsnprintf)
+AC_CHECK_FUNCS(select sigblock sigsetjmp signal symlink access isatty)
 AC_CHECK_FUNCS(uname gethostname usleep)
 
 dnl
