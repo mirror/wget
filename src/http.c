@@ -61,7 +61,6 @@ extern int errno;
 #include "utils.h"
 #include "url.h"
 #include "host.h"
-#include "rbuf.h"
 #include "retr.h"
 #include "headers.h"
 #include "connect.h"
@@ -233,6 +232,24 @@ post_file (int sock, const char *file_name, long promised_size)
   DEBUGP (("done]\n"));
   return 0;
 }
+
+static const char *
+next_header (const char *h)
+{
+  const char *end = NULL;
+  const char *p = h;
+  do
+    {
+      p = strchr (p, '\n');
+      if (!p)
+	return end;
+      end = ++p;
+    }
+  while (*p == ' ' || *p == '\t');
+
+  return end;
+}
+
 
 /* Functions to be used as arguments to header_process(): */
 
@@ -598,18 +615,19 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   char *pragma_h, *referer, *useragent, *range, *wwwauth;
   char *authenticate_h;
   char *proxyauth;
-  char *all_headers;
   char *port_maybe;
   char *request_keep_alive;
-  int sock, hcount, all_length, statcode;
+  int sock, hcount, statcode;
   int write_error;
   long contlen, contrange;
   struct url *conn;
   FILE *fp;
   int auth_tried_already;
-  struct rbuf rbuf;
   int using_ssl = 0;
   char *cookies = NULL;
+
+  char *head;
+  const char *hdr_beg, *hdr_end;
 
   /* Whether this connection will be kept alive after the HTTP request
      is done. */
@@ -989,70 +1007,43 @@ Accept: %s\r\n\
   statcode = -1;
   *dt &= ~RETROKF;
 
-  /* Before reading anything, initialize the rbuf.  */
-  rbuf_initialize (&rbuf, sock);
-  all_headers = NULL;
-  all_length = 0;
-
   DEBUGP (("\n---response begin---\n"));
 
-  /* Header-fetching loop.  */
-  hcount = 0;
-  while (1)
+  head = fd_read_head (sock);
+  if (!head)
     {
-      char *hdr;
-      int status;
-
-      ++hcount;
-      /* Get the header.  */
-      status = header_get (&rbuf, &hdr,
-			   /* Disallow continuations for status line.  */
-			   (hcount == 1 ? HG_NO_CONTINUATIONS : HG_NONE));
-
-      /* Check for errors.  */
-      if (status == HG_EOF && *hdr)
+      logputs (LOG_VERBOSE, "\n");
+      if (errno == 0)
 	{
-	  /* This used to be an unconditional error, but that was
-             somewhat controversial, because of a large number of
-             broken CGI's that happily "forget" to send the second EOL
-             before closing the connection of a HEAD request.
-
-	     So, the deal is to check whether the header is empty
-	     (*hdr is zero if it is); if yes, it means that the
-	     previous header was fully retrieved, and that -- most
-	     probably -- the request is complete.  "...be liberal in
-	     what you accept."  Oh boy.  */
-	  logputs (LOG_VERBOSE, "\n");
-	  logputs (LOG_NOTQUIET, _("End of file while parsing headers.\n"));
-	  xfree (hdr);
-	  xfree_null (type);
-	  xfree_null (all_headers);
+	  logputs (LOG_NOTQUIET, _("No data received.\n"));
 	  CLOSE_INVALIDATE (sock);
 	  return HEOF;
 	}
-      else if (status == HG_ERROR)
+      else
 	{
-	  logputs (LOG_VERBOSE, "\n");
 	  logprintf (LOG_NOTQUIET, _("Read error (%s) in headers.\n"),
 		     strerror (errno));
-	  xfree (hdr);
-	  xfree_null (type);
-	  xfree_null (all_headers);
 	  CLOSE_INVALIDATE (sock);
 	  return HERR;
 	}
+    }
 
-      /* If the headers are to be saved to a file later, save them to
-	 memory now.  */
-      if (opt.save_headers)
-	{
-	  int lh = strlen (hdr);
-	  all_headers = (char *)xrealloc (all_headers, all_length + lh + 2);
-	  memcpy (all_headers + all_length, hdr, lh);
-	  all_length += lh;
-	  all_headers[all_length++] = '\n';
-	  all_headers[all_length] = '\0';
-	}
+  /* Loop through the headers and process them. */
+
+  hcount = 0;
+  for (hdr_beg = head;
+       (hdr_end = next_header (hdr_beg));
+       hdr_beg = hdr_end)
+    {
+      char *hdr = strdupdelim (hdr_beg, hdr_end);
+      {
+	char *tmp = hdr + strlen (hdr);
+	if (tmp > hdr && tmp[-1] == '\n')
+	  *--tmp = '\0';
+	if (tmp > hdr && tmp[-1] == '\r')
+	  *--tmp = '\0';
+      }
+      ++hcount;
 
       /* Check for status line.  */
       if (hcount == 1)
@@ -1257,7 +1248,6 @@ Accept: %s\r\n\
 	  CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
 					   might be more bytes in the body. */
 	  xfree_null (type);
-	  xfree_null (all_headers);
 	  return NEWLOCATION;
 	}
     }
@@ -1328,7 +1318,6 @@ Accept: %s\r\n\
 	      /* Mark as successfully retrieved. */
 	      *dt |= RETROKF;
 	      xfree_null (type);
-	      xfree_null (all_headers);
 	      CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
 					   might be more bytes in the body. */
 	      return RETRUNNEEDED;
@@ -1343,7 +1332,6 @@ Accept: %s\r\n\
 Continued download failed on this file, which conflicts with `-c'.\n\
 Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
 	      xfree_null (type);
-	      xfree_null (all_headers);
 	      CLOSE_INVALIDATE (sock);
 	      return CONTNOTSUPPORTED;
 	    }
@@ -1359,7 +1347,6 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
       /* This means the whole request was somehow misunderstood by the
 	 server.  Bail out.  */
       xfree_null (type);
-      xfree_null (all_headers);
       CLOSE_INVALIDATE (sock);
       return RANGEERR;
     }
@@ -1408,7 +1395,6 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
       hs->len = 0L;
       hs->res = 0;
       xfree_null (type);
-      xfree_null (all_headers);
       CLOSE_INVALIDATE (sock);	/* would be CLOSE_FINISH, but there
 				   might be more bytes in the body. */
       return RETRFINISHED;
@@ -1426,7 +1412,6 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
 	  logprintf (LOG_NOTQUIET, "%s: %s\n", *hs->local_file, strerror (errno));
 	  CLOSE_INVALIDATE (sock); /* would be CLOSE_FINISH, but there
 				      might be more bytes in the body. */
-	  xfree_null (all_headers);
 	  return FOPENERR;
 	}
     }
@@ -1466,12 +1451,12 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
   /* #### This confuses the code that checks for file size.  There
      should be some overhead information.  */
   if (opt.save_headers)
-    fwrite (all_headers, 1, all_length, fp);
+    fwrite (head, 1, strlen (head), fp);
 
   /* Get the contents of the document.  */
-  hs->res = get_contents (sock, fp, &hs->len, hs->restval,
+  hs->res = fd_read_body (sock, fp, &hs->len, hs->restval,
 			  (contlen != -1 ? contlen : 0),
-			  &rbuf, keep_alive, &hs->dltime);
+			  keep_alive, &hs->dltime);
 
   if (hs->res >= 0)
     CLOSE_FINISH (sock);
@@ -1490,7 +1475,6 @@ Refusing to truncate existing file `%s'.\n\n"), *hs->local_file);
     if (flush_res == EOF)
       hs->res = -2;
   }
-  xfree_null (all_headers);
   if (hs->res == -2)
     return FWRITEERR;
   return RETRFINISHED;

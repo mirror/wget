@@ -39,7 +39,6 @@ so, delete this exception statement from your version.  */
 
 #include "wget.h"
 #include "connect.h"
-#include "rbuf.h"
 #include "headers.h"
 
 /* This file contains the generic routines for work with headers.
@@ -62,74 +61,7 @@ so, delete this exception statement from your version.  */
    The public functions are header_get() and header_process(), which
    see.  */
 
-
-/* Get a header from read-buffer RBUF and return it in *HDR.
 
-   As defined in RFC2068 and elsewhere, a header can be folded into
-   multiple lines if the continuation line begins with a space or
-   horizontal TAB.  Also, this function will accept a header ending
-   with just LF instead of CRLF.
-
-   The header may be of arbitrary length; the function will allocate
-   as much memory as necessary for it to fit.  It need not contain a
-   `:', thus you can use it to retrieve, say, HTTP status line.
-
-   All trailing whitespace is stripped from the header, and it is
-   zero-terminated.  */
-int
-header_get (struct rbuf *rbuf, char **hdr, enum header_get_flags flags)
-{
-  int i;
-  int bufsize = 80;
-
-  *hdr = (char *)xmalloc (bufsize);
-  for (i = 0; 1; i++)
-    {
-      int res;
-      /* #### Use DO_REALLOC?  */
-      if (i > bufsize - 1)
-	*hdr = (char *)xrealloc (*hdr, (bufsize <<= 1));
-      res = RBUF_READCHAR (rbuf, *hdr + i);
-      if (res == 1)
-	{
-	  if ((*hdr)[i] == '\n')
-	    {
-	      if (!((flags & HG_NO_CONTINUATIONS)
-		    || i == 0
-		    || (i == 1 && (*hdr)[0] == '\r')))
-		{
-		  char next;
-		  /* If the header is non-empty, we need to check if
-		     it continues on to the other line.  We do that by
-		     peeking at the next character.  */
-		  res = rbuf_peek (rbuf, &next);
-		  if (res == 0)
-		    return HG_EOF;
-		  else if (res == -1)
-		    return HG_ERROR;
-		  /*  If the next character is HT or SP, just continue.  */
-		  if (next == '\t' || next == ' ')
-		    continue;
-		}
-
-	      /* Strip trailing whitespace.  (*hdr)[i] is the newline;
-		 decrement I until it points to the last available
-		 whitespace.  */
-	      while (i > 0 && ISSPACE ((*hdr)[i - 1]))
-		--i;
-	      (*hdr)[i] = '\0';
-	      break;
-	    }
-	}
-      else if (res == 0)
-	return HG_EOF;
-      else
-	return HG_ERROR;
-    }
-  DEBUGP (("%s\n", *hdr));
-  return HG_OK;
-}
-
 /* Check whether HEADER begins with NAME and, if yes, skip the `:' and
    the whitespace, and call PROCFUN with the arguments of HEADER's
    contents (after the `:' and space) and ARG.  Otherwise, return 0.  */

@@ -133,9 +133,7 @@ limit_bandwidth (long bytes, struct wget_timer *timer)
 
 /* Reads the contents of file descriptor FD, until it is closed, or a
    read error occurs.  The data is read in 8K chunks, and stored to
-   stream fp, which should have been open for writing.  If BUF is
-   non-NULL and its file descriptor is equal to FD, flush RBUF first.
-   This function will *not* use the rbuf_* functions!
+   stream fp, which should have been open for writing.
 
    The EXPECTED argument is passed to show_progress() unchanged, but
    otherwise ignored.
@@ -147,14 +145,11 @@ limit_bandwidth (long bytes, struct wget_timer *timer)
 
    The function exits and returns codes of 0, -1 and -2 if the
    connection was closed, there was a read error, or if it could not
-   write to the output stream, respectively.
+   write to the output stream, respectively.  */
 
-   IMPORTANT: The function flushes the contents of the buffer in
-   rbuf_flush() before actually reading from fd.  If you wish to read
-   from fd immediately, flush or discard the buffer.  */
 int
-get_contents (int fd, FILE *fp, long *len, long restval, long expected,
-	      struct rbuf *rbuf, int use_expected, double *elapsed)
+fd_read_body (int fd, FILE *out, long *len, long restval, long expected,
+	      int use_expected, double *elapsed)
 {
   int res = 0;
 
@@ -179,26 +174,6 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
     {
       progress = progress_create (restval, expected);
       progress_interactive = progress_interactive_p (progress);
-    }
-
-  if (rbuf && RBUF_FD (rbuf) == fd)
-    {
-      int sz = 0;
-      while ((res = rbuf_flush (rbuf, dlbuf, sizeof (dlbuf))) != 0)
-	{
-	  fwrite (dlbuf, 1, res, fp);
-	  *len += res;
-	  sz += res;
-	}
-      if (sz)
-	fflush (fp);
-      if (ferror (fp))
-	{
-	  res = -2;
-	  goto out;
-	}
-      if (progress)
-	progress_update (progress, sz, 0);
     }
 
   if (opt.limit_rate)
@@ -253,14 +228,14 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
       wtimer_update (timer);
       if (res > 0)
 	{
-	  fwrite (dlbuf, 1, res, fp);
+	  fwrite (dlbuf, 1, res, out);
 	  /* Always flush the contents of the network packet.  This
 	     should not hinder performance: fast downloads will be
 	     received in 16K chunks (which stdio would write out
 	     anyway), and slow downloads won't be limited by disk
 	     performance.  */
-	  fflush (fp);
-	  if (ferror (fp))
+	  fflush (out);
+	  if (ferror (out))
 	    {
 	      res = -2;
 	      goto out;
@@ -290,6 +265,157 @@ get_contents (int fd, FILE *fp, long *len, long restval, long expected,
   wtimer_delete (timer);
 
   return res;
+}
+
+typedef const char *(*finder_t) PARAMS ((const char *, int, int));
+
+/* Driver for fd_read_line and fd_read_head: keeps reading data until
+   a terminator (as decided by FINDER) occurs in the data.  The trick
+   is that the data is first peeked at, and only then actually read.
+   That way the data after the terminator is never read.  */
+
+static char *
+fd_read_until (int fd, finder_t finder, int bufsize)
+{
+  int size = bufsize, tail = 0;
+  char *buf = xmalloc (size);
+
+  while (1)
+    {
+      const char *end;
+      int pklen, rdlen, remain;
+
+      /* First, peek at the available data. */
+
+      pklen = fd_peek (fd, buf + tail, size - tail, -1);
+      if (pklen < 0)
+	{
+	  xfree (buf);
+	  return NULL;
+	}
+      end = finder (buf, tail, pklen);
+      if (end)
+	{
+	  /* The data contains the terminator: we'll read the data up
+	     to the end of the terminator.  */
+	  remain = end - (buf + tail);
+	  /* Note +1 for trailing \0. */
+	  if (size < tail + remain + 1)
+	    {
+	      size = tail + remain + 1;
+	      buf = xrealloc (buf, size);
+	    }
+	}
+      else
+	/* No terminator: simply read the data we know is (or should
+	   be) available.  */
+	remain = pklen;
+
+      /* Now, read the data.  Note that we make no assumptions about
+	 how much data we'll get.  (Some TCP stacks are notorious for
+	 read returning less data than the previous MSG_PEEK.)  */
+
+      rdlen = fd_read (fd, buf + tail, remain, 0);
+      if (rdlen < 0)
+	{
+	  xfree_null (buf);
+	  return NULL;
+	}
+      if (rdlen == 0)
+	{
+	  if (tail == 0)
+	    {
+	      /* EOF without anything having been read */
+	      xfree (buf);
+	      errno = 0;
+	      return NULL;
+	    }
+	  /* Return what we received so far. */
+	  if (size < tail + 1)
+	    {
+	      size = tail + 1;	/* expand the buffer to receive the
+				   terminating \0 */
+	      buf = xrealloc (buf, size);
+	    }
+	  buf[tail] = '\0';
+	  return buf;
+	}
+      tail += rdlen;
+      if (end && rdlen == remain)
+	{
+	  /* The end was seen and the data read -- we got what we came
+	     for.  */
+	  buf[tail] = '\0';
+	  return buf;
+	}
+
+      /* Keep looping until all the data arrives. */
+
+      if (tail == size)
+	{
+	  size <<= 1;
+	  buf = xrealloc (buf, size);
+	}
+    }
+}
+
+static const char *
+line_terminator (const char *buf, int tail, int peeklen)
+{
+  const char *p = memchr (buf + tail, '\n', peeklen);
+  if (p)
+    /* p+1 because we want the line to include '\n' */
+    return p + 1;
+  return NULL;
+}
+
+/* Read one line from FD and return it.  The line is allocated using
+   malloc.
+
+   If an error occurs, or if no data can be read, NULL is returned.
+   In the former case errno indicates the error condition, and in the
+   latter case, errno is NULL.  */
+
+char *
+fd_read_line (int fd)
+{
+  return fd_read_until (fd, line_terminator, 128);
+}
+
+static const char *
+head_terminator (const char *buf, int tail, int peeklen)
+{
+  const char *start, *end;
+  if (tail < 4)
+    start = buf;
+  else
+    start = buf + tail - 4;
+  end = buf + tail + peeklen;
+
+  for (; start < end - 1; start++)
+    if (*start == '\n')
+      {
+	if (start < end - 2
+	    && start[1] == '\r'
+	    && start[2] == '\n')
+	  return start + 3;
+	if (start[1] == '\n')
+	  return start + 2;
+      }
+  return NULL;
+}
+
+/* Read the request head from FD and return it.  The chunk of data is
+   allocated using malloc.
+
+   If an error occurs, or if no data can be read, NULL is returned.
+   In the former case errno indicates the error condition, and in the
+   latter case, errno is NULL.  */
+
+char *
+fd_read_head (int fd)
+{
+  return fd_read_until (fd, head_terminator, 512);
 }
 
 /* Return a printed representation of the download rate, as

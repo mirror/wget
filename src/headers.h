@@ -37,7 +37,6 @@ enum {
 enum header_get_flags { HG_NONE = 0,
 			HG_NO_CONTINUATIONS = 0x2 };
 
-int header_get PARAMS ((struct rbuf *, char **, enum header_get_flags));
 int header_process PARAMS ((const char *, const char *,
 			    int (*) (const char *, void *),
 			    void *));

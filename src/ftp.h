@@ -30,9 +30,6 @@ so, delete this exception statement from your version.  */
 #ifndef FTP_H
 #define FTP_H
 
-/* Need it for struct rbuf.  */
-#include "rbuf.h"
-
 #include "host.h"
 
 /* System types. */
@@ -46,24 +43,24 @@ enum stype
   ST_OTHER
 };
   
-uerr_t ftp_response PARAMS ((struct rbuf *, char **));
-uerr_t ftp_login PARAMS ((struct rbuf *, const char *, const char *));
-uerr_t ftp_port PARAMS ((struct rbuf *, int *));
-uerr_t ftp_pasv PARAMS ((struct rbuf *, ip_address *, int *));
+uerr_t ftp_response PARAMS ((int, char **));
+uerr_t ftp_login PARAMS ((int, const char *, const char *));
+uerr_t ftp_port PARAMS ((int, int *));
+uerr_t ftp_pasv PARAMS ((int, ip_address *, int *));
 #ifdef ENABLE_IPV6
-uerr_t ftp_lprt PARAMS ((struct rbuf *, int *));
-uerr_t ftp_lpsv PARAMS ((struct rbuf *, ip_address *, int *));
-uerr_t ftp_eprt PARAMS ((struct rbuf *, int *));
-uerr_t ftp_epsv PARAMS ((struct rbuf *, ip_address *, int *));
+uerr_t ftp_lprt PARAMS ((int, int *));
+uerr_t ftp_lpsv PARAMS ((int, ip_address *, int *));
+uerr_t ftp_eprt PARAMS ((int, int *));
+uerr_t ftp_epsv PARAMS ((int, ip_address *, int *));
 #endif
-uerr_t ftp_type PARAMS ((struct rbuf *, int));
-uerr_t ftp_cwd PARAMS ((struct rbuf *, const char *));
-uerr_t ftp_retr PARAMS ((struct rbuf *, const char *));
-uerr_t ftp_rest PARAMS ((struct rbuf *, long));
-uerr_t ftp_list PARAMS ((struct rbuf *, const char *));
-uerr_t ftp_syst PARAMS ((struct rbuf *, enum stype *));
-uerr_t ftp_pwd PARAMS ((struct rbuf *, char **));
-uerr_t ftp_size PARAMS ((struct rbuf *, const char *, long int *));
+uerr_t ftp_type PARAMS ((int, int));
+uerr_t ftp_cwd PARAMS ((int, const char *));
+uerr_t ftp_retr PARAMS ((int, const char *));
+uerr_t ftp_rest PARAMS ((int, long));
+uerr_t ftp_list PARAMS ((int, const char *));
+uerr_t ftp_syst PARAMS ((int, enum stype *));
+uerr_t ftp_pwd PARAMS ((int, char **));
+uerr_t ftp_size PARAMS ((int, const char *, long int *));
 
 #ifdef USE_OPIE
 const char *skey_response PARAMS ((int, const char *, const char *));

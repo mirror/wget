@@ -735,6 +735,16 @@ sock_poll (int fd, double timeout, int wait_for)
   return select_fd (fd, timeout, wait_for);
 }
 
+static int
+sock_peek (int fd, char *buf, int bufsize)
+{
+  int res;
+  do
+    res = recv (fd, buf, bufsize, MSG_PEEK);
+  while (res == -1 && errno == EINTR);
+  return res;
+}
+
 static void
 sock_close (int fd)
 {
@@ -760,6 +770,7 @@ struct transport_info {
   fd_reader_t reader;
   fd_writer_t writer;
   fd_poller_t poller;
+  fd_peeker_t peeker;
   fd_closer_t closer;
   void *ctx;
 };
@@ -773,7 +784,8 @@ struct transport_info {
 
 void
 fd_register_transport (int fd, fd_reader_t reader, fd_writer_t writer,
-		       fd_poller_t poller, fd_closer_t closer, void *ctx)
+		       fd_poller_t poller, fd_peeker_t peeker,
+		       fd_closer_t closer, void *ctx)
 {
   struct transport_info *info;
 
@@ -786,6 +798,7 @@ fd_register_transport (int fd, fd_reader_t reader, fd_writer_t writer,
   info->reader = reader;
   info->writer = writer;
   info->poller = poller;
+  info->peeker = peeker;
   info->closer = closer;
   info->ctx = ctx;
   if (!transport_map)
@@ -819,6 +832,26 @@ fd_register_transport (int fd, fd_reader_t reader, fd_writer_t writer,
     }									\
 } while (0)
 
+static int
+poll_internal (int fd, struct transport_info *info, int wf, double timeout)
+{
+  if (timeout == -1)
+    timeout = opt.read_timeout;
+  if (timeout)
+    {
+      int test;
+      if (info && info->poller)
+	test = info->poller (fd, timeout, wf, info->ctx);
+      else
+	test = sock_poll (fd, timeout, wf);
+      if (test == 0)
+	errno = ETIMEDOUT;
+      if (test <= 0)
+	return 0;
+    }
+  return 1;
+}
+
 /* Read no more than BUFSIZE bytes of data from FD, storing them to
    BUF.  If TIMEOUT is non-zero, the operation aborts if no data is
    received after that many seconds.  If TIMEOUT is -1, the value of
@@ -829,24 +862,28 @@ fd_read (int fd, char *buf, int bufsize, double timeout)
 {
   struct transport_info *info;
   LAZY_RETRIEVE_INFO (info);
-  if (timeout == -1)
-    timeout = opt.read_timeout;
-  if (timeout)
-    {
-      int test;
-      if (info && info->poller)
-	test = info->poller (fd, timeout, WAIT_FOR_READ, info->ctx);
-      else
-	test = sock_poll (fd, timeout, WAIT_FOR_READ);
-      if (test == 0)
-	errno = ETIMEDOUT;
-      if (test <= 0)
-	return -1;
-    }
+  if (!poll_internal (fd, info, WAIT_FOR_READ, timeout))
+    return -1;
   if (info && info->reader)
     return info->reader (fd, buf, bufsize, info->ctx);
   else
     return sock_read (fd, buf, bufsize);
+}
+
+/* The same as xread, but don't actually read the data, just copy it
+   instead.  */
+
+int
+fd_peek (int fd, char *buf, int bufsize, double timeout)
+{
+  struct transport_info *info;
+  LAZY_RETRIEVE_INFO (info);
+  if (!poll_internal (fd, info, WAIT_FOR_READ, timeout))
+    return -1;
+  if (info && info->peeker)
+    return info->peeker (fd, buf, bufsize, info->ctx);
+  else
+    return sock_peek (fd, buf, bufsize);
 }
 
 /* Write the entire contents of BUF to FD.  If TIMEOUT is non-zero,
@@ -860,26 +897,14 @@ fd_write (int fd, char *buf, int bufsize, double timeout)
   int res;
   struct transport_info *info;
   LAZY_RETRIEVE_INFO (info);
-  if (timeout == -1)
-    timeout = opt.read_timeout;
 
   /* `write' may write less than LEN bytes, thus the loop keeps trying
      it until all was written, or an error occurred.  */
   res = 0;
   while (bufsize > 0)
     {
-      if (timeout)
-	{
-	  int test;
-	  if (info && info->poller)
-	    test = info->poller (fd, timeout, WAIT_FOR_WRITE, info->ctx);
-	  else
-	    test = sock_poll (fd, timeout, WAIT_FOR_WRITE);
-	  if (test == 0)
-	    errno = ETIMEDOUT;
-	  if (test <= 0)
-	    return -1;
-	}
+      if (!poll_internal (fd, info, WAIT_FOR_WRITE, timeout))
+	return -1;
       if (info && info->writer)
 	res = info->writer (fd, buf, bufsize, info->ctx);
       else

@@ -70,13 +70,14 @@ int socket_has_inet6 PARAMS ((void));
 typedef int (*fd_reader_t) PARAMS ((int, char *, int, void *));
 typedef int (*fd_writer_t) PARAMS ((int, char *, int, void *));
 typedef int (*fd_poller_t) PARAMS ((int, double, int, void *));
+typedef int (*fd_peeker_t) PARAMS ((int, char *, int, void *));
 typedef void (*fd_closer_t) PARAMS ((int, void *));
-void fd_register_transport PARAMS ((int,
-				    fd_reader_t, fd_writer_t,
-				    fd_poller_t, fd_closer_t,
+void fd_register_transport PARAMS ((int, fd_reader_t, fd_writer_t,
+				    fd_poller_t, fd_peeker_t, fd_closer_t,
 				    void *));
 
 int fd_read PARAMS ((int, char *, int, double));
 int fd_write PARAMS ((int, char *, int, double));
+int fd_peek PARAMS ((int, char *, int, double));
 void fd_close PARAMS ((int));
 #endif /* CONNECT_H */

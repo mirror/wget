@@ -1,3 +1,25 @@
+2003-11-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* rbuf.c: Removed.
+
+	* ftp-basic.c (ftp_response): Use fd_read_line.  No longer use
+	struct rbuf.  Updated all callers.
+
+	* http.c (gethttp): Use fd_read_head to read all the headers in
+	one go.
+	(next_header): New function.
+
+	* retr.c (fd_read_line): New function: reads a line from FD,
+	leaving the rest of the data unread.
+	(fd_read_head): New function.
+
+	* connect.c (fd_peek): New function, implements peeking.
+	(poll_internal): New function.
+	(fd_read): Use it.
+	(fd_write): Ditto.
+	(fd_peek): Ditto.
+	(fd_register_transport): Allow registering a "peeker" callback.
+
 2003-11-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* connect.c: Renamed xread/xwrite/xclose to

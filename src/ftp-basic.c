@@ -6,7 +6,7 @@ This file is part of GNU Wget.
 GNU Wget is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ (at your option) any later version.
 
 GNU Wget is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,10 +46,10 @@ so, delete this exception statement from your version.  */
 
 #include "wget.h"
 #include "utils.h"
-#include "rbuf.h"
 #include "connect.h"
 #include "host.h"
 #include "ftp.h"
+#include "retr.h"
 
 char ftp_last_respline[128];
 
@@ -59,45 +59,32 @@ char ftp_last_respline[128];
    line is 0-terminated.  All the response lines but the last one are
    skipped.  The last line is determined as described in RFC959.  */
 uerr_t
-ftp_response (struct rbuf *rbuf, char **line)
+ftp_response (int fd, char **ret_line)
 {
-  int i;
-  int bufsize = 40;
-
-  *line = (char *)xmalloc (bufsize);
-  do
+  while (1)
     {
-      for (i = 0; 1; i++)
-        {
-          int res;
-          if (i > bufsize - 1)
-            *line = (char *)xrealloc (*line, (bufsize <<= 1));
-          res = RBUF_READCHAR (rbuf, *line + i);
-          /* RES is number of bytes read.  */
-          if (res == 1)
-            {
-              if ((*line)[i] == '\n')
-                {
-                  (*line)[i] = '\0';
-                  /* Get rid of \r.  */
-                  if (i > 0 && (*line)[i - 1] == '\r')
-                    (*line)[i - 1] = '\0';
-                  break;
-                }
-            }
-          else
-            return FTPRERR;
-        }
+      char *line = fd_read_line (fd);
+      if (!line)
+	return FTPRERR;
       if (opt.server_response)
-        logprintf (LOG_ALWAYS, "%s\n", *line);
+        logputs (LOG_NOTQUIET, line);
       else
-        DEBUGP (("%s\n", *line));
+        DEBUGP (("%s", line));
+      if (ISDIGIT (line[0]) && ISDIGIT (line[1]) && ISDIGIT (line[2])
+	  && line[3] == ' ')
+	{
+	  char *p = line + strlen (line);
+	  if (p > line && p[-1] == '\n')
+	    *--p = '\0';
+	  if (p > line && p[-1] == '\r')
+	    *--p = '\0';
+	  strncpy (ftp_last_respline, line, sizeof (ftp_last_respline));
+	  ftp_last_respline[sizeof (ftp_last_respline) - 1] = '\0';
+	  *ret_line = line;
+	  return FTPOK;
+	}
+      xfree (line);
     }
-  while (!(i >= 3 && ISDIGIT (**line) && ISDIGIT ((*line)[1]) &&
-           ISDIGIT ((*line)[2]) && (*line)[3] == ' '));
-  strncpy (ftp_last_respline, *line, sizeof (ftp_last_respline));
-  ftp_last_respline[sizeof (ftp_last_respline) - 1] = '\0';
-  return FTPOK;
 }
 
 /* Returns the malloc-ed FTP request, ending with <CR><LF>, printing
@@ -126,14 +113,14 @@ ftp_request (const char *command, const char *value)
 /* Sends the USER and PASS commands to the server, to control
    connection socket csock.  */
 uerr_t
-ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
+ftp_login (int csock, const char *acc, const char *pass)
 {
   uerr_t err;
   char *request, *respline;
   int nwritten;
 
   /* Get greeting.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -147,7 +134,7 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
   xfree (respline);
   /* Send USER username.  */
   request = ftp_request ("USER", acc);
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -155,7 +142,7 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
     }
   xfree (request);
   /* Get appropriate response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -214,7 +201,7 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
   xfree (respline);
   /* Send PASS password.  */
   request = ftp_request ("PASS", pass);
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -222,7 +209,7 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
     }
   xfree (request);
   /* Get appropriate response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -260,7 +247,7 @@ ip_address_to_port_repr (const ip_address *addr, int port, char *buf,
    server.  Use acceptport after RETR, to get the socket of data
    connection.  */
 uerr_t
-ftp_port (struct rbuf *rbuf, int *local_sock)
+ftp_port (int csock, int *local_sock)
 {
   uerr_t err;
   char *request, *respline;
@@ -270,11 +257,8 @@ ftp_port (struct rbuf *rbuf, int *local_sock)
   /* Must contain the argument of PORT (of the form a,b,c,d,e,f). */
   char bytes[6 * 4 + 1];
 
-  assert (rbuf != NULL);
-  assert (rbuf_initialized_p (rbuf));
-
   /* Get the address of this side of the connection. */
-  if (!socket_ip_address (RBUF_FD (rbuf), &addr, ENDPOINT_LOCAL))
+  if (!socket_ip_address (csock, &addr, ENDPOINT_LOCAL))
     return FTPSYSERR;
 
   assert (addr.type == IPV4_ADDRESS);
@@ -292,7 +276,7 @@ ftp_port (struct rbuf *rbuf, int *local_sock)
 
   /* Send PORT request.  */
   request = ftp_request ("PORT", bytes);
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -302,7 +286,7 @@ ftp_port (struct rbuf *rbuf, int *local_sock)
   xfree (request);
 
   /* Get appropriate response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -357,7 +341,7 @@ ip_address_to_lprt_repr (const ip_address *addr, int port, char *buf,
    server.  Use acceptport after RETR, to get the socket of data
    connection.  */
 uerr_t
-ftp_lprt (struct rbuf *rbuf, int *local_sock)
+ftp_lprt (int csock, int *local_sock)
 {
   uerr_t err;
   char *request, *respline;
@@ -367,11 +351,8 @@ ftp_lprt (struct rbuf *rbuf, int *local_sock)
   /* Must contain the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
   char bytes[21 * 4 + 1];
 
-  assert (rbuf != NULL);
-  assert (rbuf_initialized_p (rbuf));
-
   /* Get the address of this side of the connection. */
-  if (!socket_ip_address (RBUF_FD (rbuf), &addr, ENDPOINT_LOCAL))
+  if (!socket_ip_address (csock, &addr, ENDPOINT_LOCAL))
     return FTPSYSERR;
 
   assert (addr.type == IPV4_ADDRESS || addr.type == IPV6_ADDRESS);
@@ -389,7 +370,7 @@ ftp_lprt (struct rbuf *rbuf, int *local_sock)
 
   /* Send PORT request.  */
   request = ftp_request ("LPRT", bytes);
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -398,7 +379,7 @@ ftp_lprt (struct rbuf *rbuf, int *local_sock)
     }
   xfree (request);
   /* Get appropriate response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -439,7 +420,7 @@ ip_address_to_eprt_repr (const ip_address *addr, int port, char *buf,
    server.  Use acceptport after RETR, to get the socket of data
    connection.  */
 uerr_t
-ftp_eprt (struct rbuf *rbuf, int *local_sock)
+ftp_eprt (int csock, int *local_sock)
 {
   uerr_t err;
   char *request, *respline;
@@ -451,11 +432,8 @@ ftp_eprt (struct rbuf *rbuf, int *local_sock)
    * 1 char for af (1-2) and 5 chars for port (0-65535) */
   char bytes[4 + INET6_ADDRSTRLEN + 1 + 5 + 1];
 
-  assert (rbuf != NULL);
-  assert (rbuf_initialized_p(rbuf));
-
   /* Get the address of this side of the connection. */
-  if (!socket_ip_address (RBUF_FD (rbuf), &addr, ENDPOINT_LOCAL))
+  if (!socket_ip_address (csock, &addr, ENDPOINT_LOCAL))
     return FTPSYSERR;
 
   assert (addr.type == IPV4_ADDRESS || addr.type == IPV6_ADDRESS);
@@ -473,7 +451,7 @@ ftp_eprt (struct rbuf *rbuf, int *local_sock)
 
   /* Send PORT request.  */
   request = ftp_request ("EPRT", bytes);
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -482,7 +460,7 @@ ftp_eprt (struct rbuf *rbuf, int *local_sock)
     }
   xfree (request);
   /* Get appropriate response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -504,15 +482,13 @@ ftp_eprt (struct rbuf *rbuf, int *local_sock)
    transfer.  Reads the response from server and parses it.  Reads the
    host and port addresses and returns them.  */
 uerr_t
-ftp_pasv (struct rbuf *rbuf, ip_address *addr, int *port)
+ftp_pasv (int csock, ip_address *addr, int *port)
 {
   char *request, *respline, *s;
   int nwritten, i;
   uerr_t err;
   unsigned char tmp[6];
 
-  assert (rbuf != NULL);
-  assert (rbuf_initialized_p (rbuf));
   assert (addr != NULL);
   assert (port != NULL);
 
@@ -521,7 +497,7 @@ ftp_pasv (struct rbuf *rbuf, ip_address *addr, int *port)
   /* Form the request.  */
   request = ftp_request ("PASV", NULL);
   /* And send it.  */
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -529,7 +505,7 @@ ftp_pasv (struct rbuf *rbuf, ip_address *addr, int *port)
     }
   xfree (request);
   /* Get the server response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -573,7 +549,7 @@ ftp_pasv (struct rbuf *rbuf, ip_address *addr, int *port)
    transfer.  Reads the response from server and parses it.  Reads the
    host and port addresses and returns them.  */
 uerr_t
-ftp_lpsv (struct rbuf *rbuf, ip_address *addr, int *port)
+ftp_lpsv (int csock, ip_address *addr, int *port)
 {
   char *request, *respline, *s;
   int nwritten, i, af, addrlen, portlen;
@@ -581,8 +557,6 @@ ftp_lpsv (struct rbuf *rbuf, ip_address *addr, int *port)
   unsigned char tmp[16];
   unsigned char tmpprt[2];
 
-  assert (rbuf != NULL);
-  assert (rbuf_initialized_p(rbuf));
   assert (addr != NULL);
   assert (port != NULL);
 
@@ -592,7 +566,7 @@ ftp_lpsv (struct rbuf *rbuf, ip_address *addr, int *port)
   request = ftp_request ("LPSV", NULL);
 
   /* And send it.  */
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -601,7 +575,7 @@ ftp_lpsv (struct rbuf *rbuf, ip_address *addr, int *port)
   xfree (request);
 
   /* Get the server response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -739,15 +713,13 @@ ftp_lpsv (struct rbuf *rbuf, ip_address *addr, int *port)
    transfer.  Reads the response from server and parses it.  Reads the
    host and port addresses and returns them.  */
 uerr_t
-ftp_epsv (struct rbuf *rbuf, ip_address *ip, int *port)
+ftp_epsv (int csock, ip_address *ip, int *port)
 {
   char *request, *respline, *start, delim, *s;
   int nwritten, i;
   uerr_t err;
   int tport;
 
-  assert (rbuf != NULL);
-  assert (rbuf_initialized_p(rbuf));
   assert (ip != NULL);
   assert (port != NULL);
 
@@ -759,7 +731,7 @@ ftp_epsv (struct rbuf *rbuf, ip_address *ip, int *port)
   request = ftp_request ("EPSV", (ip->type == IPV4_ADDRESS ? "1" : "2"));
 
   /* And send it.  */
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -768,7 +740,7 @@ ftp_epsv (struct rbuf *rbuf, ip_address *ip, int *port)
   xfree (request);
 
   /* Get the server response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -847,7 +819,7 @@ ftp_epsv (struct rbuf *rbuf, ip_address *ip, int *port)
 
 /* Sends the TYPE request to the server.  */
 uerr_t
-ftp_type (struct rbuf *rbuf, int type)
+ftp_type (int csock, int type)
 {
   char *request, *respline;
   int nwritten;
@@ -859,7 +831,7 @@ ftp_type (struct rbuf *rbuf, int type)
   stype[1] = 0;
   /* Send TYPE request.  */
   request = ftp_request ("TYPE", stype);
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -867,7 +839,7 @@ ftp_type (struct rbuf *rbuf, int type)
     }
   xfree (request);
   /* Get appropriate response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -886,7 +858,7 @@ ftp_type (struct rbuf *rbuf, int type)
 /* Changes the working directory by issuing a CWD command to the
    server.  */
 uerr_t
-ftp_cwd (struct rbuf *rbuf, const char *dir)
+ftp_cwd (int csock, const char *dir)
 {
   char *request, *respline;
   int nwritten;
@@ -894,7 +866,7 @@ ftp_cwd (struct rbuf *rbuf, const char *dir)
 
   /* Send CWD request.  */
   request = ftp_request ("CWD", dir);
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -902,7 +874,7 @@ ftp_cwd (struct rbuf *rbuf, const char *dir)
     }
   xfree (request);
   /* Get appropriate response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -925,7 +897,7 @@ ftp_cwd (struct rbuf *rbuf, const char *dir)
 
 /* Sends REST command to the FTP server.  */
 uerr_t
-ftp_rest (struct rbuf *rbuf, long offset)
+ftp_rest (int csock, long offset)
 {
   char *request, *respline;
   int nwritten;
@@ -934,7 +906,7 @@ ftp_rest (struct rbuf *rbuf, long offset)
 
   number_to_string (numbuf, offset);
   request = ftp_request ("REST", numbuf);
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -942,7 +914,7 @@ ftp_rest (struct rbuf *rbuf, long offset)
     }
   xfree (request);
   /* Get appropriate response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -960,7 +932,7 @@ ftp_rest (struct rbuf *rbuf, long offset)
 
 /* Sends RETR command to the FTP server.  */
 uerr_t
-ftp_retr (struct rbuf *rbuf, const char *file)
+ftp_retr (int csock, const char *file)
 {
   char *request, *respline;
   int nwritten;
@@ -968,7 +940,7 @@ ftp_retr (struct rbuf *rbuf, const char *file)
 
   /* Send RETR request.  */
   request = ftp_request ("RETR", file);
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -976,7 +948,7 @@ ftp_retr (struct rbuf *rbuf, const char *file)
     }
   xfree (request);
   /* Get appropriate response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -1000,7 +972,7 @@ ftp_retr (struct rbuf *rbuf, const char *file)
 /* Sends the LIST command to the server.  If FILE is NULL, send just
    `LIST' (no space).  */
 uerr_t
-ftp_list (struct rbuf *rbuf, const char *file)
+ftp_list (int csock, const char *file)
 {
   char *request, *respline;
   int nwritten;
@@ -1008,7 +980,7 @@ ftp_list (struct rbuf *rbuf, const char *file)
 
   /* Send LIST request.  */
   request = ftp_request ("LIST", file);
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -1016,7 +988,7 @@ ftp_list (struct rbuf *rbuf, const char *file)
     }
   xfree (request);
   /* Get appropriate respone.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -1039,7 +1011,7 @@ ftp_list (struct rbuf *rbuf, const char *file)
 
 /* Sends the SYST command to the server. */
 uerr_t
-ftp_syst (struct rbuf *rbuf, enum stype *server_type)
+ftp_syst (int csock, enum stype *server_type)
 {
   char *request, *respline;
   int nwritten;
@@ -1047,7 +1019,7 @@ ftp_syst (struct rbuf *rbuf, enum stype *server_type)
 
   /* Send SYST request.  */
   request = ftp_request ("SYST", NULL);
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -1056,7 +1028,7 @@ ftp_syst (struct rbuf *rbuf, enum stype *server_type)
   xfree (request);
 
   /* Get appropriate response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -1096,7 +1068,7 @@ ftp_syst (struct rbuf *rbuf, enum stype *server_type)
 
 /* Sends the PWD command to the server. */
 uerr_t
-ftp_pwd (struct rbuf *rbuf, char **pwd)
+ftp_pwd (int csock, char **pwd)
 {
   char *request, *respline;
   int nwritten;
@@ -1104,7 +1076,7 @@ ftp_pwd (struct rbuf *rbuf, char **pwd)
 
   /* Send PWD request.  */
   request = ftp_request ("PWD", NULL);
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -1112,7 +1084,7 @@ ftp_pwd (struct rbuf *rbuf, char **pwd)
     }
   xfree (request);
   /* Get appropriate response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);
@@ -1142,7 +1114,7 @@ ftp_pwd (struct rbuf *rbuf, char **pwd)
 /* Sends the SIZE command to the server, and returns the value in 'size'.
  * If an error occurs, size is set to zero. */
 uerr_t
-ftp_size (struct rbuf *rbuf, const char *file, long int *size)
+ftp_size (int csock, const char *file, long int *size)
 {
   char *request, *respline;
   int nwritten;
@@ -1150,7 +1122,7 @@ ftp_size (struct rbuf *rbuf, const char *file, long int *size)
 
   /* Send PWD request.  */
   request = ftp_request ("SIZE", file);
-  nwritten = fd_write (RBUF_FD (rbuf), request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1);
   if (nwritten < 0)
     {
       xfree (request);
@@ -1159,7 +1131,7 @@ ftp_size (struct rbuf *rbuf, const char *file, long int *size)
     }
   xfree (request);
   /* Get appropriate response.  */
-  err = ftp_response (rbuf, &respline);
+  err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
       xfree (respline);

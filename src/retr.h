@@ -30,10 +30,10 @@ so, delete this exception statement from your version.  */
 #ifndef RETR_H
 #define RETR_H
 
-#include "rbuf.h"
+char *fd_read_line PARAMS ((int));
+char *fd_read_head PARAMS ((int));
 
-int get_contents PARAMS ((int, FILE *, long *, long, long, struct rbuf *,
-			  int, double *));
+int fd_read_body PARAMS ((int, FILE *, long *, long, long, int, double *));
 
 uerr_t retrieve_url PARAMS ((const char *, char **, char **,
 			     const char *, int *));
