@@ -107,7 +107,7 @@ typedef struct
   char *id;			/* initial directory */
 } ccon;
 
-struct fileinfo *ftp_parse_ls PARAMS ((const char *, enum stype));
+struct fileinfo *ftp_parse_ls PARAMS ((const char *, const enum stype));
 uerr_t ftp_loop PARAMS ((struct urlinfo *, int *));
 
 uerr_t ftp_index (const char *, struct urlinfo *, struct fileinfo *);
