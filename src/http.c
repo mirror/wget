@@ -264,31 +264,87 @@ http_process_connection (const char *hdr, void *arg)
   return 1;
 }
 
-/* Persistent connections (pc). */
+/* Persistent connections (pc).  Currently, we cache the most recently
+   used connection as persistent, provided that the HTTP server agrees
+   to make it such.  The persistence data is stored in the variables
+   below.  Ideally, it would be in a structure, and it should be
+   possible to cache an arbitrary fixed number of these connections.
 
+   I think the code is quite easy to extend in that direction.  */
+
+/* Whether the persistent connection is active. */
+static int pc_active_p;
+
+/* Host and port of the last persistent connection. */
 static unsigned char pc_last_host[4];
 static unsigned short pc_last_port;
+
+/* File descriptor of the last persistent connection. */
 static int pc_last_fd;
 
-static void
-register_persistent (const char *host, unsigned short port, int fd)
-{
-  if (!store_hostaddress (pc_last_host, host))
-    return;
-  pc_last_port = port;
-  pc_last_fd = fd;
-}
+/* Mark the persistent connection as invalid.  This is used by the
+   CLOSE_* macros after they forcefully close a registered persistent
+   connection.  */
 
 static void
 invalidate_persistent (void)
 {
-  pc_last_port = 0;
+  pc_active_p = 0;
+  DEBUGP (("Invalidating fd %d from further reuse.\n", pc_last_fd));
 }
+
+/* Register FD, which should be a TCP/IP connection to HOST:PORT, as
+   persistent.  This will enable someone to use the same connection
+   later.  In the context of HTTP, this must be called only AFTER the
+   response has been received and the server has promised that the
+   connection will remain alive.
+
+   If a previous connection was persistent, it is closed. */
+
+static void
+register_persistent (const char *host, unsigned short port, int fd)
+{
+  int success;
+
+  if (pc_active_p)
+    {
+      if (pc_last_fd == fd)
+	{
+	  /* The connection FD is already registered.  Nothing to
+	     do. */
+	  return;
+	}
+      else
+	{
+	  /* The old persistent connection is still active; let's
+	     close it first.  This situation arises whenever a
+	     persistent connection exists, but we then connect to a
+	     different host, and try to register a persistent
+	     connection to that one.  */
+	  CLOSE (pc_last_fd);
+	  invalidate_persistent ();
+	}
+    }
+
+  /* This store_hostaddress may not fail, because it has the results
+     in the cache.  */
+  success = store_hostaddress (pc_last_host, host);
+  assert (success);
+  pc_last_port = port;
+  pc_last_fd = fd;
+  pc_active_p = 1;
+  DEBUGP (("Registered fd %d for persistent reuse.\n", fd));
+}
+
+/* Return non-zero if a persistent connection is available for
+   connecting to HOST:PORT.  */
 
 static int
 persistent_available_p (const char *host, unsigned short port)
 {
   unsigned char this_host[4];
+  if (!pc_active_p)
+    return 0;
   if (port != pc_last_port)
     return 0;
   if (!store_hostaddress (this_host, host))
@@ -297,6 +353,7 @@ persistent_available_p (const char *host, unsigned short port)
     return 0;
   if (!test_socket_open (pc_last_fd))
     {
+      CLOSE (pc_last_fd);
       invalidate_persistent ();
       return 0;
     }
@@ -312,24 +369,24 @@ persistent_available_p (const char *host, unsigned short port)
    In case of keep_alive, CLOSE_FINISH should leave the connection
    open, while CLOSE_INVALIDATE should still close it.
 
-   The semantic difference between the flags `keep_alive' and
-   `reused_connection' is that keep_alive defines the state of HTTP:
-   whether the connection *will* be preservable.  reused_connection,
-   on the other hand, reflects the present: whether the *current*
-   connection is the result of preserving.  */
+   Note that the semantics of the flag `keep_alive' is "this
+   connection *will* be reused (the server has promised not to close
+   the connection once we're done)", while the semantics of
+   `pc_active_p && (fd) == pc_last_fd' is "we're *now* using an
+   active, registered connection".  */
 
 #define CLOSE_FINISH(fd) do {			\
   if (!keep_alive)				\
     {						\
       CLOSE (fd);				\
-      if (reused_connection)			\
+      if (pc_active_p && (fd) == pc_last_fd)	\
 	invalidate_persistent ();		\
     }						\
 } while (0)
 
 #define CLOSE_INVALIDATE(fd) do {		\
   CLOSE (fd);					\
-  if (reused_connection)			\
+  if (pc_active_p && (fd) == pc_last_fd)	\
     invalidate_persistent ();			\
 } while (0)
 
@@ -388,6 +445,7 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   char *proxyauth;
   char *all_headers;
   char *host_port;
+  char *request_keep_alive;
   int host_port_len;
   int sock, hcount, num_written, all_length, remport, statcode;
   long contlen, contrange;
@@ -396,8 +454,17 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   FILE *fp;
   int auth_tried_already;
   struct rbuf rbuf;
-  int keep_alive, http_keep_alive_1, http_keep_alive_2;
-  int reused_connection;
+
+  /* Whether this connection will be kept alive after the HTTP request
+     is done. */
+  int keep_alive;
+
+  /* Flags that detect the two ways of specifying HTTP keep-alive
+     response.  */
+  int http_keep_alive_1, http_keep_alive_2;
+
+  /* Whether keep-alive should be inhibited. */
+  int inhibit_keep_alive;
 
   if (!(*dt & HEAD_ONLY))
     /* If we're doing a GET on the URL, as opposed to just a HEAD, we need to
@@ -407,12 +474,13 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   authenticate_h = 0;
   auth_tried_already = 0;
 
+  inhibit_keep_alive = (u->proxy != NULL);
+
  again:
   /* We need to come back here when the initial attempt to retrieve
      without authorization header fails.  */
   keep_alive = 0;
   http_keep_alive_1 = http_keep_alive_2 = 0;
-  reused_connection = 0;
 
   /* Initialize certain elements of struct http_stat.  */
   hs->len = 0L;
@@ -429,7 +497,8 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
     ou = u;
 
   /* First: establish the connection.  */
-  if (u->proxy || !persistent_available_p (u->host, u->port))
+  if (inhibit_keep_alive
+      || !persistent_available_p (u->host, u->port))
     {
       logprintf (LOG_VERBOSE, _("Connecting to %s:%hu... "), u->host, u->port);
       err = make_connection (&sock, u->host, u->port);
@@ -469,8 +538,10 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   else
     {
       logprintf (LOG_VERBOSE, _("Reusing connection to %s:%hu.\n"), u->host, u->port);
+      /* #### pc_last_fd should be accessed through an accessor
+         function.  */
       sock = pc_last_fd;
-      reused_connection = 1;
+      DEBUGP (("Reusing fd %d.\n", sock));
     }
 
   if (u->proxy)
@@ -492,12 +563,13 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   if (hs->restval)
     {
       range = (char *)alloca (13 + numdigit (hs->restval) + 4);
-      /* #### Gag me!  Some servers (e.g. WebSitePro) have been known
-         to misinterpret the following `Range' format, and return the
-         document as multipart/x-byte-ranges MIME type!
-
-	 #### TODO: Interpret MIME types, recognize bullshits similar
-	 the one described above, and deal with them!  */
+      /* Gag me!  Some servers (e.g. WebSitePro) have been known to
+         respond to the following `Range' format by generating a
+         multipart/x-byte-ranges MIME document!  This MIME type was
+         present in an old draft of the byteranges specification.
+         HTTP/1.1 specifies a multipart/byte-ranges MIME type, but
+         only if multiple non-overlapping ranges are requested --
+         which Wget never does.  */
       sprintf (range, "Range: bytes=%ld-\r\n", hs->restval);
     }
   else
@@ -562,11 +634,18 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
       host_port_len = sprintf (host_port, ":%d", remport);
     }
 
+  if (!inhibit_keep_alive)
+    request_keep_alive = "Connection: Keep-Alive\r\n";
+  else
+    request_keep_alive = NULL;
+
   /* Allocate the memory for the request.  */
   request = (char *)alloca (strlen (command) + strlen (path)
 			    + strlen (useragent)
 			    + strlen (remhost) + host_port_len
 			    + strlen (HTTP_ACCEPT)
+			    + (request_keep_alive
+			       ? strlen (request_keep_alive) : 0)
 			    + (referer ? strlen (referer) : 0)
 			    + (wwwauth ? strlen (wwwauth) : 0)
 			    + (proxyauth ? strlen (proxyauth) : 0)
@@ -580,11 +659,12 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
 User-Agent: %s\r\n\
 Host: %s%s\r\n\
 Accept: %s\r\n\
-Connection: Keep-Alive\r\n\
-%s%s%s%s%s%s\r\n",
+%s%s%s%s%s%s%s\r\n",
 	   command, path, useragent, remhost,
 	   host_port ? host_port : "",
-	   HTTP_ACCEPT, referer ? referer : "",
+	   HTTP_ACCEPT,
+	   request_keep_alive ? request_keep_alive : "",
+	   referer ? referer : "",
 	   wwwauth ? wwwauth : "", 
 	   proxyauth ? proxyauth : "", 
 	   range ? range : "",
@@ -767,19 +847,23 @@ Connection: Keep-Alive\r\n\
 	      goto done_header;
 	    }
 	}
-      /* Check for the `Keep-Alive' header. */
-      if (!http_keep_alive_1)
+      /* Check for keep-alive related responses. */
+      if (!inhibit_keep_alive)
 	{
-	  if (header_process (hdr, "Keep-Alive", header_exists,
-			      &http_keep_alive_1))
-	    goto done_header;
-	}
-      /* Check for `Connection: Keep-Alive'. */
-      if (!http_keep_alive_2)
-	{
-	  if (header_process (hdr, "Connection", http_process_connection,
-			      &http_keep_alive_2))
-	    goto done_header;
+	  /* Check for the `Keep-Alive' header. */
+	  if (!http_keep_alive_1)
+	    {
+	      if (header_process (hdr, "Keep-Alive", header_exists,
+				  &http_keep_alive_1))
+		goto done_header;
+	    }
+	  /* Check for `Connection: Keep-Alive'. */
+	  if (!http_keep_alive_2)
+	    {
+	      if (header_process (hdr, "Connection", http_process_connection,
+				  &http_keep_alive_2))
+		goto done_header;
+	    }
 	}
     done_header:
       free (hdr);
@@ -789,8 +873,13 @@ Connection: Keep-Alive\r\n\
 
   if (contlen != -1
       && (http_keep_alive_1 || http_keep_alive_2))
-    keep_alive = 1;
-  if (keep_alive && !reused_connection)
+    {
+      assert (inhibit_keep_alive == 0);
+      keep_alive = 1;
+    }
+  if (keep_alive)
+    /* The server has promised that it will not close the connection
+       when we're done.  This means that we can register it.  */
     register_persistent (u->host, u->port, sock);
 
   if ((statcode == HTTP_STATUS_UNAUTHORIZED)

@@ -1,3 +1,16 @@
+2000-11-20  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* recur.c (recursive_retrieve): Print the "so we don't load"
+	debugging message only if we really don't load.
+
+	* http.c (gethttp): Inhibit keep-alive if proxy is being used.
+	(gethttp): Don't request keep-alive if keep-alive is inhibited.
+
+2000-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* http.c (gethttp): Make the HTTP persistent connections more
+	robust.
+
 2000-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* retr.c (get_contents): If use_expected, make sure that the

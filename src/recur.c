@@ -518,7 +518,8 @@ recursive_retrieve (const char *file, const char *this_url)
 	      cur_url->local_name = xstrdup (filename);
 	    }
 	}
-      DEBUGP (("%s already in list, so we don't load.\n", constr));
+      else
+	DEBUGP (("%s already in list, so we don't load.\n", constr));
       /* Free filename and constr.  */
       FREE_MAYBE (filename);
       FREE_MAYBE (constr);
