@@ -1,3 +1,8 @@
+2002-05-07  Ian Abbott  <abbotti@mev.co.uk>
+
+	* cookies.c (cookie_jar_process_set_cookie): Do not store
+	discarded cookie.
+
 2002-04-21  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* cookies.c (check_domain_match): Allow cookies to be set for

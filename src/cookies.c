@@ -842,7 +842,7 @@ cookie_jar_process_set_cookie (struct cookie_jar *jar,
   if (cookie->discard_requested)
     {
       discard_matching_cookie (jar, cookie);
-      delete_cookie (cookie);
+      goto out;
     }
 
   store_cookie (jar, cookie);
