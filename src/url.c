@@ -660,7 +660,7 @@ static char *parse_errors[] = {
     *(p) = (v);					\
 } while (0)
 
-#ifdef INET6
+#ifdef ENABLE_IPV6
 /* The following two functions were adapted from glibc. */
 
 static int
@@ -863,7 +863,7 @@ url_parse (const char *url, int *error)
 	  return NULL;
 	}
 
-#ifdef INET6
+#ifdef ENABLE_IPV6
       /* Check if the IPv6 address is valid. */
       if (!is_valid_ipv6_address(host_b, host_e))
 	{

@@ -250,6 +250,12 @@ char *alloca ();
 /* Define if we're using builtin (GNU) md5.c.  */
 #undef HAVE_BUILTIN_MD5
 
+/* Define if you have the getaddrinfo function.  */
+#undef HAVE_GETADDRINFO
+
+/* Define if you want to enable the IPv6 support.  */
+#undef ENABLE_IPV6
+
 /* First a gambit to see whether we're on Solaris.  We'll
    need it below.  */
 #ifdef __sun

@@ -1,3 +1,8 @@
+2003-09-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in, aclocal.m4: Added configure check for IPv6 and
+	getaddrinfo.  From Daniel Stenberg.
+
 2003-09-05  Maciej W. Rozycki  <macro@ds2.pg.gda.pl>
 
 	* configure.in: Additional M4 quoting.

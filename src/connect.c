@@ -412,7 +412,7 @@ conaddr (int fd, ip_address *ip)
 
   switch (mysrv.sa.sa_family)
     {
-#ifdef INET6
+#ifdef ENABLE_IPV6
     case AF_INET6:
       memcpy (ip, &mysrv.sin6.sin6_addr, 16);
       return 1;

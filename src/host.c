@@ -81,7 +81,7 @@ extern int h_errno;
 # endif
 #endif
 
-#ifdef INET6
+#ifdef ENABLE_IPV6
 int     ip_default_family = AF_INET6;
 #else
 int     ip_default_family = AF_INET;
@@ -153,7 +153,7 @@ address_list_set_faulty (struct address_list *al, int index)
     al->faulty = 0;
 }
 
-#ifdef INET6
+#ifdef HAVE_GETADDRINFO
 /**
   * address_list_from_addrinfo
   *
@@ -296,7 +296,7 @@ wget_sockaddr_set_address (wget_sockaddr *sa,
 	}
       return;
     }
-#ifdef INET6
+#ifdef ENABLE_IPV6
   if (ip_family == AF_INET6) 
     {
       sa->sin6.sin6_family = ip_family;
@@ -336,7 +336,7 @@ wget_sockaddr_set_port (wget_sockaddr *sa, unsigned short port)
       sa->sin.sin_port = htons (port);
       return;
     }  
-#ifdef INET6
+#ifdef ENABLE_IPV6
   if (sa->sa.sa_family == AF_INET6)
     {
       sa->sin6.sin6_port = htons (port);
@@ -366,7 +366,7 @@ wget_sockaddr_get_addr (wget_sockaddr *sa)
 { 
   if (sa->sa.sa_family == AF_INET)
     return &sa->sin.sin_addr;
-#ifdef INET6
+#ifdef ENABLE_IPV6
   if (sa->sa.sa_family == AF_INET6)
     return &sa->sin6.sin6_addr;
 #endif
@@ -395,7 +395,7 @@ wget_sockaddr_get_port (const wget_sockaddr *sa)
 {
   if (sa->sa.sa_family == AF_INET)
       return htons (sa->sin.sin_port);
-#ifdef INET6
+#ifdef ENABLE_IPV6
   if (sa->sa.sa_family == AF_INET6)
       return htons (sa->sin6.sin6_port);
 #endif
@@ -425,7 +425,7 @@ sockaddr_len ()
 {
   if (ip_default_family == AF_INET) 
     return sizeof (struct sockaddr_in);
-#ifdef INET6
+#ifdef ENABLE_IPV6
   if (ip_default_family == AF_INET6) 
     return sizeof (struct sockaddr_in6);
 #endif
@@ -440,7 +440,7 @@ sockaddr_len ()
 void 
 map_ipv4_to_ip (ip4_address *ipv4, ip_address *ip) 
 {
-#ifdef INET6
+#ifdef ENABLE_IPV6
   static unsigned char ipv64[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
   memcpy ((char *)ip + 12, ipv4 , 4);
   memcpy ((char *)ip + 0, ipv64, 12);
@@ -458,7 +458,7 @@ map_ipv4_to_ip (ip4_address *ipv4, ip_address *ip)
 int 
 map_ip_to_ipv4 (ip_address *ip, ip4_address *ipv4) 
 {
-#ifdef INET6
+#ifdef ENABLE_IPV6
   static unsigned char ipv64[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
   if (0 != memcmp (ip, ipv64, 12))
     return 0;
@@ -473,7 +473,7 @@ map_ip_to_ipv4 (ip_address *ip, ip4_address *ipv4)
 
 /* Versions of gethostbyname and getaddrinfo that support timeout. */
 
-#ifndef INET6
+#ifndef ENABLE_IPV6
 
 struct ghbnwt_context {
   const char *host_name;
@@ -508,7 +508,7 @@ gethostbyname_with_timeout (const char *host_name, int timeout)
   return ctx.hptr;
 }
 
-#else  /* INET6 */
+#else  /* ENABLE_IPV6 */
 
 struct gaiwt_context {
   const char *node;
@@ -548,7 +548,7 @@ getaddrinfo_with_timeout (const char *node, const char *service,
   return ctx.exit_code;
 }
 
-#endif /* INET6 */
+#endif /* ENABLE_IPV6 */
 
 /* Pretty-print ADDR.  When compiled without IPv6, this is the same as
    inet_ntoa.  With IPv6, it either prints an IPv6 address or an IPv4
@@ -557,7 +557,7 @@ getaddrinfo_with_timeout (const char *node, const char *service,
 char *
 pretty_print_address (ip_address *addr)
 {
-#ifdef INET6
+#ifdef ENABLE_IPV6
   ip4_address addr4;
   static char buf[128];
 
@@ -606,7 +606,7 @@ lookup_host (const char *host, int silent)
   /* First, try to check whether the address is already a numeric
      address.  */
 
-#ifdef INET6
+#ifdef ENABLE_IPV6
   if (inet_pton (AF_INET6, host, &addr) > 0)
     return address_list_new_one (&addr);
 #endif
@@ -644,7 +644,7 @@ lookup_host (const char *host, int silent)
 
   /* Host name lookup goes on below. */
 
-#ifdef INET6
+#ifdef HAVE_GETADDRINFO
   {
     struct addrinfo hints, *ai;
     int err;

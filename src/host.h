@@ -41,8 +41,6 @@ so, delete this exception statement from your version.  */
 #endif
 #endif
 
-#undef INET6
-
 struct url;
 struct address_list;
 
@@ -52,7 +50,7 @@ struct address_list;
 typedef union {
 	struct sockaddr     sa;   /* Generic but too small */
 	struct sockaddr_in  sin;  /* IPv4 socket address */
-#ifdef INET6
+#ifdef ENABLE_IPV6
 	struct sockaddr_in6 sin6; /* IPv6 socket address */
 #endif
 } wget_sockaddr;
@@ -65,7 +63,7 @@ typedef struct {
    addresses as IPv6 addresses.  IPv4 addresses are dynamically mapped
    to IPv6, i.e. stored in the format ::ffff:<Ipv4>.  */
 
-#ifdef INET6
+#ifdef ENABLE_IPV6
 # define MAX_IP_ADDRESS_SIZE 16
 #else
 # define MAX_IP_ADDRESS_SIZE 4

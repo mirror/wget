@@ -86,6 +86,47 @@ else
   AC_MSG_RESULT(no)
 fi])
 
+dnl ************************************************************
+dnl check for working getaddrinfo()
+dnl
+AC_DEFUN(WGET_CHECK_WORKING_GETADDRINFO,[
+  AC_CACHE_CHECK(for working getaddrinfo, ac_cv_working_getaddrinfo,[
+  AC_TRY_RUN( [
+#include <netdb.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int main(void) {
+    struct addrinfo hints, *ai;
+    int error;
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    error = getaddrinfo("127.0.0.1", "8080", &hints, &ai);
+    if (error) {
+        exit(1);
+    }
+    else {
+        exit(0);
+    }
+}
+],[
+  ac_cv_working_getaddrinfo="yes"
+],[
+  ac_cv_working_getaddrinfo="no"
+],[
+  ac_cv_working_getaddrinfo="yes"
+])])
+if test x"$ac_cv_working_getaddrinfo" = xyes; then
+  AC_DEFINE(HAVE_GETADDRINFO, 1, [Define if getaddrinfo exists and works])
+  AC_DEFINE(ENABLE_IPV6, 1, [Define if you want to enable IPv6 support])
+
+  IPV6_ENABLED=1
+  AC_SUBST(IPV6_ENABLED)
+fi
+])
+
 
 # This code originates from Ulrich Drepper's AM_WITH_NLS.
 

@@ -30,7 +30,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 
 AC_INIT(src/version.c)
-AC_PREREQ(2.12)
+AC_PREREQ(2.50)
 AC_CONFIG_HEADER(src/config.h)
 
 dnl
@@ -155,7 +155,6 @@ AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T
 AC_TYPE_PID_T
-dnl #### This generates a warning.  What do I do to shut it up?
 AC_C_BIGENDIAN
 
 # Check size of long.
@@ -441,6 +440,55 @@ then
 fi
 AC_DEFINE(HAVE_MD5)
 AC_SUBST(MD5_OBJ)
+
+dnl **********************************************************************
+dnl Checks for IPv6
+dnl **********************************************************************
+
+dnl
+dnl If --enable-ipv6 is specified, we try to use IPv6 (as long as
+dnl getaddrinfo is also present).  If --disable-ipv6 is specified, we
+dnl don't use IPv6 or getaddrinfo.  If neither are specified, we test
+dnl whether it's possible to create an AF_INET6 socket and if yes, use
+dnl IPv6.
+dnl
+
+AC_MSG_CHECKING([whether to enable ipv6])
+AC_ARG_ENABLE(ipv6,
+AC_HELP_STRING([--enable-ipv6],[Enable ipv6 support])
+AC_HELP_STRING([--disable-ipv6],[Disable ipv6 support]),
+[ case "$enableval" in
+  no)
+       AC_MSG_RESULT(no)
+       ipv6=no
+       ;;
+  *)   AC_MSG_RESULT(yes)
+       ipv6=yes
+       ;;
+  esac ],
+
+  AC_TRY_RUN([ /* is AF_INET6 available? */
+#include <sys/types.h>
+#include <sys/socket.h>
+main()
+{
+ if (socket(AF_INET6, SOCK_STREAM, 0) < 0)
+   exit(1);
+ else
+   exit(0);
+}
+],
+  AC_MSG_RESULT(yes)
+  ipv6=yes,
+  AC_MSG_RESULT(no)
+  ipv6=no,
+  AC_MSG_RESULT(no)
+  ipv6=no
+))
+
+if test x"$ipv6" = xyes; then
+  WGET_CHECK_WORKING_GETADDRINFO
+fi
 
 dnl
 dnl Set of available languages.

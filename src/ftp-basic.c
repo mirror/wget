@@ -252,7 +252,7 @@ ftp_login (struct rbuf *rbuf, const char *acc, const char *pass)
   return FTPOK;
 }
 
-#ifdef INET6
+#ifdef ENABLE_IPV6
 uerr_t
 ftp_eprt (struct rbuf *rbuf)
 {
@@ -324,7 +324,7 @@ ftp_port (struct rbuf *rbuf)
 
   int nwritten;
   unsigned short port;
-#ifdef INET6
+#ifdef ENABLE_IPV6
   /*
     Only try the Extented Version if we actually use IPv6
   */
@@ -382,7 +382,7 @@ ftp_port (struct rbuf *rbuf)
   return FTPOK;
 }
 
-#ifdef INET6
+#ifdef ENABLE_IPV6
 uerr_t
 ftp_epsv (struct rbuf *rbuf, ip_address *addr, unsigned short *port, 
 	  char *typ)
@@ -453,7 +453,7 @@ ftp_pasv (struct rbuf *rbuf, ip_address *addr, unsigned short *port)
   uerr_t err;
   unsigned char addr4[4];
 
-#ifdef INET6
+#ifdef ENABLE_IPV6
   if (ip_default_family == AF_INET6) 
     {
       err = ftp_epsv (rbuf, addr, port, "2");	/* try IPv6 with EPSV */

@@ -49,7 +49,7 @@ uerr_t ftp_response PARAMS ((struct rbuf *, char **));
 uerr_t ftp_login PARAMS ((struct rbuf *, const char *, const char *));
 uerr_t ftp_port PARAMS ((struct rbuf *));
 uerr_t ftp_pasv PARAMS ((struct rbuf *, ip_address *, unsigned short *));
-#ifdef INET6
+#ifdef ENABLE_IPV6
 uerr_t ftp_epsv PARAMS ((struct rbuf *, ip_address *, unsigned short *,
 			 char *));
 #endif

@@ -1,5 +1,12 @@
 2003-09-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* config.h.in: Initialize HAVE_GETADDRINFO and ENABLE_IPV6.
+
+	* all: Use #ifdef ENABLE_IPV6 instead of the older INET6.  Use
+	HAVE_GETADDRINFO for getaddrinfo-related stuff.
+
+2003-09-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (url_parse): Return an error if the URL contains a [...]
 	IPv6 numeric address and we don't support IPv6.
 
