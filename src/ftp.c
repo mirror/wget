@@ -1006,7 +1006,7 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	    /* --dont-remove-listing was specified, so do count this towards the
 	       number of bytes and files downloaded. */
 	    {
-	      opt.downloaded += len;
+	      downloaded_increase (len);
 	      opt.numurls++;
 	    }
 
@@ -1021,7 +1021,7 @@ ftp_loop_internal (struct urlinfo *u, struct fileinfo *f, ccon *con)
 	     downloaded if they're going to be deleted.  People seeding proxies,
 	     for instance, may want to know how many bytes and files they've
 	     downloaded through it. */
-	  opt.downloaded += len;
+	  downloaded_increase (len);
 	  opt.numurls++;
 
 	  if (opt.delete_after)
@@ -1142,7 +1142,7 @@ ftp_retrieve_list (struct urlinfo *u, struct fileinfo *f, ccon *con)
 
   while (f)
     {
-      if (opt.quota && opt.downloaded > opt.quota)
+      if (downloaded_exceeds_quota ())
 	{
 	  --depth;
 	  return QUOTEXC;
@@ -1308,7 +1308,7 @@ ftp_retrieve_dirs (struct urlinfo *u, struct fileinfo *f, ccon *con)
     {
       int len;
 
-      if (opt.quota && opt.downloaded > opt.quota)
+      if (downloaded_exceeds_quota ())
 	break;
       if (f->type != FT_DIRECTORY)
 	continue;
@@ -1429,7 +1429,7 @@ ftp_retrieve_glob (struct urlinfo *u, ccon *con, int action)
 	}
     }
   freefileinfo (start);
-  if (opt.quota && opt.downloaded > opt.quota)
+  if (downloaded_exceeds_quota ())
     return QUOTEXC;
   else
     /* #### Should we return `res' here?  */

@@ -1223,7 +1223,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 			 tms, u->url, hstat.len, hstat.contlen, locf, count);
 	    }
 	  ++opt.numurls;
-	  opt.downloaded += hstat.len;
+	  downloaded_increase (hstat.len);
 
 	  /* Remember that we downloaded the file for later ".orig" code. */
 	  if (*dt & ADDED_HTML_EXTENSION)
@@ -1249,7 +1249,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 			     tms, u->url, hstat.len, locf, count);
 		}
 	      ++opt.numurls;
-	      opt.downloaded += hstat.len;
+	      downloaded_increase (hstat.len);
 
 	      /* Remember that we downloaded the file for later ".orig" code. */
 	      if (*dt & ADDED_HTML_EXTENSION)
@@ -1278,7 +1278,7 @@ The sizes do not match (local %ld) -- retrieving.\n"), local_size);
 			 "%s URL:%s [%ld/%ld] -> \"%s\" [%d]\n",
 			 tms, u->url, hstat.len, hstat.contlen, locf, count);
 	      ++opt.numurls;
-	      opt.downloaded += hstat.len;
+	      downloaded_increase (hstat.len);
 
 	      /* Remember that we downloaded the file for later ".orig" code. */
 	      if (*dt & ADDED_HTML_EXTENSION)

@@ -1,5 +1,36 @@
 2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
+	* main.c (main): In case of opt.downloaded overflowing, print
+	<overflow> instead of a totally bogus random value.
+
+	* retr.c (retrieve_from_file): Ditto.
+
+	* recur.c (recursive_retrieve): Ditto.
+
+	* main.c (main): Ditto.
+
+	* http.c (http_loop): Ditto.
+
+	* ftp.c (ftp_loop_internal): Use downloaded_increase() instead of
+	`+=', and downloaded_exceeds_quota() instead of the simple-minded
+	check.
+	(ftp_retrieve_list): Ditto.
+	(ftp_retrieve_dirs): Ditto.
+	(ftp_retrieve_glob): Ditto.
+
+	* retr.c (downloaded_increase): New function.  Notice overflows of
+	opt.downloaded.
+	(downloaded_exceeds_quota): Make sure that opt.downloaded is not
+	used if it overflowed.
+
+	* options.h (struct options): New member downloaded_overflow.
+
+2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* wget.h (enum): Remove extra space after last enumeration.
+
+2000-11-01  Hrvoje Niksic  <hniksic@arsdigita.com>
+
 	* main.c (main): Use legible_very_long() for printing
 	opt.downloaded.
 

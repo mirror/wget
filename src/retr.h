@@ -34,4 +34,7 @@ char *rate PARAMS ((long, long));
 
 void printwhat PARAMS ((int, int));
 
+void downloaded_increase PARAMS ((unsigned long));
+int downloaded_exceeds_quota PARAMS ((void));
+
 #endif /* RETR_H */

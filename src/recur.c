@@ -127,7 +127,7 @@ recursive_retrieve (const char *file, const char *this_url)
   assert (this_url != NULL);
   assert (file != NULL);
   /* If quota was exceeded earlier, bail out.  */
-  if (opt.quota && (opt.downloaded > opt.quota))
+  if (downloaded_exceeds_quota ())
     return QUOTEXC;
   /* Cache the current URL in the list.  */
   if (first_time)
@@ -198,7 +198,7 @@ recursive_retrieve (const char *file, const char *this_url)
   for (cur_url = url_list; cur_url; cur_url = cur_url->next)
     {
       /* If quota was exceeded earlier, bail out.  */
-      if (opt.quota && (opt.downloaded > opt.quota))
+      if (downloaded_exceeds_quota ())
 	break;
       /* Parse the URL for convenient use in other functions, as well
 	 as to get the optimized form.  It also checks URL integrity.  */
@@ -496,7 +496,7 @@ recursive_retrieve (const char *file, const char *this_url)
   FREE_MAYBE (canon_this_url);
   /* Decrement the recursion depth.  */
   --depth;
-  if (opt.quota && (opt.downloaded > opt.quota))
+  if (downloaded_exceeds_quota ())
     return QUOTEXC;
   else
     return RETROK;
