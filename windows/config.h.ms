@@ -55,7 +55,7 @@
 #define USE_DIGEST 1
 
 /* Define if you want the debug output support compiled in.  */
-#define DEBUG
+#define ENABLE_DEBUG
 
 /* Define if you have sys/time.h header. */
 #undef HAVE_SYS_TIME_H
