@@ -180,19 +180,24 @@ ws_changetitle (const char *url)
 void
 ws_percenttitle (double percentage_float)
 {
-  int percentage = (int) percentage_float;
+  int percentage;
+
+  if (!title_buf || !curr_url)
+    return;
+
+  percentage = (int) percentage_float;
+
+  /* Clamp percentage value.  */
+  if (percentage < 0)
+    percentage = 0;
+  if (percentage > 100)
+    percentage = 100;
 
   /* Only update the title when the percentage has changed.  */
   if (percentage == old_percentage)
     return;
 
   old_percentage = percentage;
-
-  if (percentage > 100)
-    return;
-
-  assert (title_buf != NULL);
-  assert (curr_url != NULL);
 
   sprintf (title_buf, "Wget [%d%%] %s", percentage, curr_url);
   SetConsoleTitle (title_buf);
