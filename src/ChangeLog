@@ -1,3 +1,9 @@
+2000-05-18  Hrvoje Niksic  <hniksic@iskon.hr>
+
+	* ftp.c (getftp): Ditto.
+
+	* http.c (gethttp): Check for return value of fclose/fflush.
+
 2000-04-12  Hrvoje Niksic  <hniksic@iskon.hr>
 
 	* host.c (store_hostaddress): Instead of shifting ADDR, start

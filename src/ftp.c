@@ -711,10 +711,18 @@ Error in server response, closing control connection.\n"));
   /* Close data connection socket.  */
   closeport (dtsock);
   /* Close the local file.  */
-  if (!opt.dfp || con->cmd & DO_LIST)
-    fclose (fp);
-  else
-    fflush (fp);
+  {
+    /* Close or flush the file.  We have to be careful to check for
+       error here.  Checking the result of fwrite() is not enough --
+       errors could go unnoticed!  */
+    int flush_res;
+    if (!opt.dfp || con->cmd & DO_LIST)
+      flush_res = fclose (fp);
+    else
+      flush_res = fflush (fp);
+    if (flush_res == EOF)
+      res = -2;
+  }
   /* If get_contents couldn't write to fp, bail out.  */
   if (res == -2)
     {

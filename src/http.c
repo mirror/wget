@@ -835,10 +835,18 @@ Accept: %s\r\n\
 			  (contlen != -1 ? contlen : 0),
 			  &rbuf);
   hs->dltime = elapsed_time ();
-  if (!opt.dfp)
-    fclose (fp);
-  else
-    fflush (fp);
+  {
+    /* Close or flush the file.  We have to be careful to check for
+       error here.  Checking the result of fwrite() is not enough --
+       errors could go unnoticed!  */
+    int flush_res;
+    if (!opt.dfp)
+      flush_res = fclose (fp);
+    else
+      flush_res = fflush (fp);
+    if (flush_res == EOF)
+      hs->res = -2;
+  }
   FREE_MAYBE (all_headers);
   CLOSE (sock);
   if (hs->res == -2)
