@@ -1,3 +1,8 @@
+2002-04-12  Ian Abbott  <abbotti@mev.co.uk>
+
+	* windows/config.h.bor: Account for Borland not defining `__STDC__'
+	when Borland's extensions enabled, and define it anyway.
+
 2002-04-12  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* configure.in: Check for <setjmp.h>.  Check for sigsetjmp and
