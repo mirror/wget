@@ -329,7 +329,6 @@ append_url (const char *link_uri,
   DEBUGP (("appending \"%s\" to urlpos.\n", url->url));
 
   newel = xnew0 (struct urlpos);
-  newel->next = NULL;
   newel->url = url;
   newel->pos = tag->attrs[attrind].value_raw_beginning - ctx->text;
   newel->size = tag->attrs[attrind].value_raw_size;
