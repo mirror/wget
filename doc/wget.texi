@@ -581,7 +581,7 @@ Unfortunately this also happens if the local file is the same length as
 the server file---this will be fixed in a future version of Wget, but in
 the meantime you can use @samp{--timestamping} to prevent this on files
 for which the server gives timestamps (e.g. static files but not CGI
-output or directory listings).
+output or @sc{http} directory listings).
 
 On the other side of the coin, while using @samp{-c}, any file that's
 bigger on the server than locally will be considered an incomplete
@@ -1576,8 +1576,8 @@ recently than the local file.
 @end enumerate
 
 To implement this, the program needs to be aware of the time of last
-modification of both remote and local files.  Such information are
-called the @dfn{time-stamps}.
+modification of both local and remote files.  We call this information the
+@dfn{time-stamp} of a file.
 
 The time-stamping in GNU Wget is turned on using @samp{--timestamping}
 (@samp{-N}) option, or through @code{timestamping = on} directive in
@@ -1610,7 +1610,7 @@ wget -S http://www.gnu.ai.mit.edu/
 A simple @code{ls -l} shows that the time stamp on the local file equals
 the state of the @code{Last-Modified} header, as returned by the server.
 As you can see, the time-stamping info is preserved locally, even
-without @samp{-N}.
+without @samp{-N} (at least for @sc{http}).
 
 Several days later, you would like Wget to check if the remote file has
 changed, and download it if it has.
@@ -1620,30 +1620,36 @@ wget -N http://www.gnu.ai.mit.edu/
 @end example
 
 Wget will ask the server for the last-modified date.  If the local file
-is newer, the remote file will not be re-fetched.  However, if the remote
-file is more recent, Wget will proceed fetching it normally.
+has the same timestamp as the server, or a newer one, the remote file
+will not be re-fetched.  However, if the remote file is more recent,
+Wget will proceed to fetch it.
 
 The same goes for @sc{ftp}.  For example:
 
 @example
-wget ftp://ftp.ifi.uio.no/pub/emacs/gnus/*
+wget "ftp://ftp.ifi.uio.no/pub/emacs/gnus/*"
 @end example
 
-@code{ls} will show that the timestamps are set according to the state
-on the remote server.  Reissuing the command with @samp{-N} will make
-Wget re-fetch @emph{only} the files that have been modified.
+(The quotes around that URL are to prevent the shell from trying to
+interpret the @samp{*}.)
 
-In both @sc{http} and @sc{ftp} retrieval Wget will time-stamp the local
-file correctly (with or without @samp{-N}) if it gets the stamps,
-i.e. gets the directory listing for @sc{ftp} or the @code{Last-Modified}
-header for @sc{http}.
+After download, a local directory listing will show that the timestamps
+match those on the remote server.  Reissuing the command with @samp{-N}
+will make Wget re-fetch @emph{only} the files that have been modified
+since the last download.
 
-If you wished to mirror the GNU archive every week, you would use the
-following command every week:
+If you wished to mirror the GNU archive every week, you would use a
+command like the following, weekly:
 
 @example
-wget --timestamping -r ftp://prep.ai.mit.edu/pub/gnu/
+wget --timestamping -r ftp://ftp.gnu.org/pub/gnu/
 @end example
+
+Note that time-stamping will only work for files for which the server
+gives a timestamp.  For @sc{http}, this depends on getting a
+@code{Last-Modified} header.  For @sc{ftp}, this depends on getting a
+directory listing with dates in a format that Wget can parse
+(@pxref{FTP Time-Stamping Internals}).
 
 @node HTTP Time-Stamping Internals, FTP Time-Stamping Internals, Time-Stamping Usage, Time-Stamping
 @section HTTP Time-Stamping Internals
@@ -1685,10 +1691,14 @@ In theory, @sc{ftp} time-stamping works much the same as @sc{http}, only
 @sc{ftp} has no headers---time-stamps must be received from the
 directory listings.
 
-For each directory files must be retrieved from, Wget will use the
-@code{LIST} command to get the listing.  It will try to analyze the
-listing, assuming that it is a Unix @code{ls -l} listing, and extract
-the time-stamps.  The rest is exactly the same as for @sc{http}.
+If an @sc{ftp} download is recursive or uses globbing, Wget will use the
+@sc{ftp} @code{LIST} command to get a file listing for the directory
+containing the desired file(s).  It will try to analyze the listing,
+treating it like Unix @code{ls -l} output, extracting the time-stamps.
+The rest is exactly the same as for @sc{http}.  Note that when
+retrieving individual files from an @sc{ftp} server without using
+globbing or recursion, listing files will not be downloaded (and thus
+files will not be time-stamped) unless @samp{-N} is specified.
 
 Assumption that every directory listing is a Unix-style listing may
 sound extremely constraining, but in practice it is not, as many
