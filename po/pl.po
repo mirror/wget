@@ -1,7 +1,7 @@
 # Polish translation of wget
 # Copyright (C) 1998-2000 Free Software Foundation, Inc.
 # Arkadiusz Mi¶kiewicz <misiek@pld.ORG.PL>, 1998-2000.
-# $Id: pl.po 319 2001-02-23 21:32:57Z dan $
+# $Id: pl.po 474 2001-06-02 16:57:16Z hniksic $
 msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.6\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Last-Translator: Arkadiusz Mi¶kiewicz <misiek@pld.ORG.PL>\n"
 "Language-Team: PL <pl@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO8859-2\n"
+"Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/ftp-ls.c:779
