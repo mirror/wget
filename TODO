@@ -112,8 +112,6 @@ changes.
 * Rewrite FTP code to allow for easy addition of new commands.  It
   should probably be coded as a simple DFA engine.
 
-* Recognize more FTP servers (VMS).
-
 * Make HTTP timestamping use If-Modified-Since facility.
 
 * Implement better spider options.
