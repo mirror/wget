@@ -1,5 +1,9 @@
 2001-04-08  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
+	* ftp-ls.c (ftp_parse_winnt_ls): The AM/PM change did assume
+	12:01PM == 00:01, which was obviously wrong. Taken care of this
+	anomaly.
+
 	* ChangeLog: Removed an excess conflict marker. Reformatted the
 	entry by Philipp Thomas from 2001-03-09.
 
