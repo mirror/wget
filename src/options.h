@@ -153,6 +153,13 @@ struct options
 				   necessary to display a page properly. */
 
   struct sockaddr_in *bind_address; /* What local IP address to bind to. */
+
+#ifdef HAVE_SSL
+  char *sslcertfile;		/* external client cert to use. */
+  char *sslcertkey;		/* the keyfile for this certificate
+				   (if not internal) included in the
+				   certfile. */
+#endif /* HAVE_SSL */
 };
 
 #ifndef OPTIONS_DEFINED_HERE

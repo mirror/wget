@@ -32,8 +32,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <openssl/err.h>
 #include <openssl/pem.h>
 
-#define SSL_ERR_CTX_CREATION -2
-
 #include "wget.h"
 #include "connect.h"
 
@@ -41,11 +39,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 extern int errno;
 #endif
 
-/* #### Shouldn't this be static?  --hniksic */
-int verify_callback PARAMS ((int, X509_STORE_CTX *));
+static int verify_callback PARAMS ((int, X509_STORE_CTX *));
 
 /* Creates a SSL Context and sets some defaults for it */
-int
+uerr_t
 init_ssl (SSL_CTX **ctx)
 {
   SSL_METHOD *meth = NULL;
@@ -57,7 +54,18 @@ init_ssl (SSL_CTX **ctx)
   meth = SSLv23_client_method ();
   *ctx = SSL_CTX_new (meth);
   SSL_CTX_set_verify (*ctx, verify, verify_callback);
-  if (*ctx == NULL) return SSL_ERR_CTX_CREATION;
+  if (*ctx == NULL) return SSLERRCTXCREATE;
+  if (opt.sslcertfile)
+    {
+      if (SSL_CTX_use_certificate_file (*ctx, opt.sslcertfile,
+					SSL_FILETYPE_PEM) <= 0)
+	return SSLERRCERTFILE;
+      if (opt.sslcertkey == NULL) 
+	opt.sslcertkey=opt.sslcertfile;
+      if (SSL_CTX_use_PrivateKey_file (*ctx, opt.sslcertkey,
+				       SSL_FILETYPE_PEM) <= 0)
+	return SSLERRCERTKEY;
+  }
   return 0; /* Succeded */
 }
 
@@ -105,6 +113,23 @@ verify_callback (int ok, X509_STORE_CTX *ctx)
     }
   }
   return ok;
+}
+
+/* pass all ssl errors to DEBUGP
+   returns the number of printed errors */
+int
+ssl_printerrors (void) 
+{
+  int ocerr = 0;
+  unsigned long curerr = 0;
+  char errbuff[1024];
+  memset(errbuff, 0, sizeof(errbuff));
+  for (curerr = ERR_get_error (); curerr; curerr = ERR_get_error ())
+    {
+      DEBUGP (("OpenSSL: %s\n", ERR_error_string (curerr, errbuff)));
+      ++ocerr;
+    }
+  return ocerr;
 }
 
 /* SSL version of iread. Only exchanged read for SSL_read 

@@ -536,9 +536,41 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   int inhibit_keep_alive;
 
 #ifdef HAVE_SSL
-/* initialize ssl_ctx on first run */
+  /* initialize ssl_ctx on first run */
   if (!ssl_ctx)
-    init_ssl (&ssl_ctx);
+    {
+      err=init_ssl (&ssl_ctx);
+      if (err != 0)
+	{
+	  switch (err)
+	    {
+	    case SSLERRCTXCREATE:
+	      /* this is fatal */
+	      logprintf (LOG_NOTQUIET, _("Failed to set up an SSL context\n"));
+	      ssl_printerrors ();
+	      return err;
+	    case SSLERRCERTFILE:
+	      /* try without certfile */
+	      logprintf (LOG_NOTQUIET,
+			 _("Failed to load certificates from %s\n"),
+			 opt.sslcertfile);
+	      ssl_printerrors ();
+	      logprintf (LOG_NOTQUIET,
+			 _("Trying without the specified certificate\n"));
+	      break;
+	    case SSLERRCERTKEY:
+	      logprintf (LOG_NOTQUIET,
+			 _("Failed to get certificate key from %s\n"),
+			 opt.sslcertkey);
+	      ssl_printerrors ();
+	      logprintf (LOG_NOTQUIET,
+			 _("Trying without the specified certificate\n"));
+	      break;
+	    default:
+	      break;
+	    }
+	}
+    }
 #endif /* HAVE_SSL */
 
   if (!(*dt & HEAD_ONLY))
@@ -1417,7 +1449,8 @@ File `%s' already there, will not retrieve.\n"), u->local);
 	  printwhat (count, opt.ntry);
 	  continue;
 	  break;
-	case HOSTERR: case CONREFUSED: case PROXERR: case AUTHFAILED:
+	case HOSTERR: case CONREFUSED: case PROXERR: case AUTHFAILED: 
+	case SSLERRCTXCREATE:
 	  /* Fatal errors just return from the function.  */
 	  FREEHSTAT (hstat);
 	  xfree (filename_plus_orig_suffix); /* must precede every return! */

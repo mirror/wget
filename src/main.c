@@ -150,6 +150,8 @@ Logging and input file:\n\
   -i,  --input-file=FILE      download URLs found in FILE.\n\
   -F,  --force-html           treat input file as HTML.\n\
   -B,  --base=URL             prepends URL to relative links in -F -i file.\n\
+       --sslcertfile=FILE     optional client certificate.\n\
+       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n\
 \n"), _("\
 Download:\n\
        --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local host.\n\
@@ -303,6 +305,10 @@ main (int argc, char *const *argv)
     { "user-agent", required_argument, NULL, 'U' },
     { "referer", required_argument, NULL, 129 },
     { "use-proxy", required_argument, NULL, 'Y' },
+#ifdef HAVE_SSL
+    { "sslcertfile", required_argument, NULL, 132},
+    { "sslcertkey", required_argument, NULL, 133},
+#endif /* HAVE_SSL */
     { "wait", required_argument, NULL, 'w' },
     { "waitretry", required_argument, NULL, 24 },
     { 0, 0, 0, 0 }
@@ -506,6 +512,14 @@ GNU General Public License for more details.\n"));
 	case 129:
 	  setval ("referer", optarg);
 	  break;
+#ifdef HAVE_SSL
+	case 132:
+	  setval ("sslcertfile", optarg);
+	  break;
+	case 133:
+	  setval ("sslcertkey", optarg);
+	  break;
+#endif /* HAVE_SSL */
 	case 'A':
 	  setval ("accept", optarg);
 	  break;

@@ -1,3 +1,19 @@
+2001-02-08  Christian Fraenkel <christian.fraenkel@gmx.net>
+
+        * gen_sslfunc.c: verify_callback is now static
+
+        * gen_sslfunc.c (init_ssl): load certificate if specified
+
+        * gen_sslfunc.c (ssl_printerr): new function
+
+        * init.c: added new --sslcertfile and --sslcertkey switches
+
+        * main.c: ditto
+
+        * options.h: ditto
+
+        * http.c (gethttp): abort when init_ssl fails
+
 2001-01-23  Herold Heiko  <Heiko.Herold@previnet.it>
 
 	* mswindows.h: Include <malloc.h>; it's needed for alloca().

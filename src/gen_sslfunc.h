@@ -28,4 +28,5 @@ void free_ssl_ctx PARAMS ((SSL_CTX *));
 int verify_callback PARAMS ((int, X509_STORE_CTX *));
 int ssl_iread PARAMS ((SSL *, char *, int));
 int ssl_iwrite PARAMS ((SSL *, char *, int));
+int ssl_printerrors PARAMS ((void)); 
 

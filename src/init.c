@@ -161,6 +161,10 @@ static struct {
   { "simplehostcheck",	&opt.simple_check,	cmd_boolean },
   { "spanhosts",	&opt.spanhost,		cmd_boolean },
   { "spider",		&opt.spider,		cmd_boolean },
+#ifdef HAVE_SSL
+  { "sslcertfile",	&opt.sslcertfile,	cmd_string },
+  { "sslcertkey",	&opt.sslcertkey,	cmd_string },
+#endif /* HAVE_SSL */
   { "timeout",		&opt.timeout,		cmd_time },
   { "timestamping",	&opt.timestamping,	cmd_boolean },
   { "tries",		&opt.ntry,		cmd_number_inf },
@@ -1014,4 +1018,8 @@ cleanup (void)
   FREE_MAYBE (opt.http_user);
   FREE_MAYBE (opt.http_passwd);
   FREE_MAYBE (opt.user_header);
+#ifdef HAVE_SSL
+  FREE_MAYBE (opt.sslcertkey);
+  FREE_MAYBE (opt.sslcertfile);
+#endif /* HAVE_SSL */
 }
