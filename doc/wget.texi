@@ -742,7 +742,7 @@ Note that this option is turned on by default in the global
 
 @cindex wait, random
 @cindex random wait
-@itemx --random-wait
+@item --random-wait
 Some web sites may perform log analysis to identify retrieval programs
 such as Wget by looking for statistically significant similarities in
 the time between requests. This option causes the time between requests
@@ -787,7 +787,7 @@ Setting quota to 0 or to @samp{inf} unlimits the download quota.
 
 @cindex DNS cache
 @cindex caching of DNS lookups
-@itemx --dns-cache=off
+@item --dns-cache=off
 Turn off caching of DNS lookups.  Normally, Wget remembers the addresses
 it looked up from DNS so it doesn't have to repeatedly contact the DNS
 server for the same (typically small) set of addresses it retrieves
@@ -810,7 +810,7 @@ this option.
 
 @cindex file names, restrict
 @cindex Windows file names
-@itemx --restrict-file-names=@var{mode}
+@item --restrict-file-names=@var{mode}
 Change which characters found in remote URLs may show up in local file
 names generated from those URLs.  Characters that are @dfn{restricted}
 by this option are escaped, i.e. replaced with @samp{%HH}, where
