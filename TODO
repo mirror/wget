@@ -4,7 +4,12 @@ This is the to-do list for Wget.  There is no timetable of when we plan to
 implement these features -- this is just a list of things it'd be nice to see in
 Wget.  Patches to implement any of these items would be gladly accepted.  The
 items are not listed in any particular order (except that recently-added items
-may tend towards the top).  Not all of these represent user-visible changes.
+may tend towards the top).  Not all of these represent user-visible
+changes.
+
+* Take a look at
+  <http://info.webcrawler.com/mak/projects/robots/norobots-rfc.html>
+  and support the new directives.
 
 * Generalize --html-extension to something like --mime-extensions and have it
   look at mime.types/mimecap file for preferred extension.  Non-HTML files with
@@ -28,9 +33,6 @@ may tend towards the top).  Not all of these represent user-visible changes.
 * Make wget return non-zero status in more situations, like incorrect HTTP auth.
 
 * Timestamps are sometimes not copied over on files retrieved by FTP.
-
-* Wget does not currently handle "fragment identifiers" (the part of a URL 
-  starting with the '#' character) properly.
 
 * Make -K compare X.orig to X and move the former on top of the latter if 
   they're the same, rather than leaving identical .orig files laying around.
