@@ -2097,32 +2097,27 @@ find_fragment (const char *beg, int size, const char **bp, const char **ep)
   return 0;
 }
 
-/* The idea here was to quote ? as %3F to avoid passing part of the
-   file name as the parameter when browsing the converted file through
-   HTTP.  However, actually doing that breaks local browsing because
-   "index.html%3Ffoo=bar" isn't even recognized as an HTML file!
-   Perhaps this should be controlled by an option, but for now I'm
-   leaving the question marks.
+/* Quote FILE for use as local reference to an HTML file.
 
-   This is the original docstring of this function:
-
-   FILE should be a relative link to a local file.  It should be
-   quoted as HTML because it will be used in HTML context.  However,
-   we need to quote ? as %3F to avoid passing part of the file name as
-   the parameter.  (This is not a problem when viewing locally, but is
-   if the downloaded and converted tree is served by an HTTP
-   server.)  */
-
-/* Quote string as HTML. */
+   We quote ? as %3F to avoid passing part of the file name as the
+   parameter when browsing the converted file through HTTP.  However,
+   it is safe to do this only when `--html-extension' is turned on.
+   This is because converting "index.html?foo=bar" to
+   "index.html%3Ffoo=bar" would break local browsing, as the latter
+   isn't even recognized as an HTML file!  However, converting
+   "index.html?foo=bar.html" to "index.html%3Ffoo=bar.html" should be
+   safe for both local and HTTP-served browsing.  */
 
 static char *
 local_quote_string (const char *file)
 {
-  return html_quote_string (file);
-
-#if 0
   const char *file_sans_qmark;
-  int qm = count_char (file, '?');
+  int qm;
+
+  if (!opt.html_extension)
+    return html_quote_string (file);
+
+  qm = count_char (file, '?');
 
   if (qm)
     {
@@ -2154,7 +2149,6 @@ local_quote_string (const char *file)
     file_sans_qmark = file;
 
   return html_quote_string (file_sans_qmark);
-#endif
 }
 
 /* We're storing "modes" of type downloaded_file_t in the hash table.
