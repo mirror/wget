@@ -596,10 +596,6 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
   keep_alive = 0;
   http_keep_alive_1 = http_keep_alive_2 = 0;
 
-  if (opt.cookies)
-    cookies = build_cookies_request (u->host, u->port, u->path,
-				     u->proto == URLHTTPS);
-
   /* Initialize certain elements of struct http_stat.  */
   hs->len = 0L;
   hs->contlen = -1;
@@ -806,6 +802,10 @@ gethttp (struct urlinfo *u, struct http_stat *hs, int *dt)
     request_keep_alive = "Connection: Keep-Alive\r\n";
   else
     request_keep_alive = NULL;
+
+  if (opt.cookies)
+    cookies = build_cookies_request (ou->host, ou->port, ou->path,
+				     ou->proto == URLHTTPS);
 
   /* Allocate the memory for the request.  */
   request = (char *)alloca (strlen (command) + strlen (path)
