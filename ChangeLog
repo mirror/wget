@@ -1,5 +1,11 @@
 2003-10-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* aclocal.m4 (WGET_WITH_NLS): First check for gettext in libintl,
+	then use the libc version.  That way systems that get libintl.h
+	from /usr/local/include will get the matching gettext.
+
+2003-10-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* po/tr.po: Ditto.
 
 	* po/sv.po: Updated from TP.

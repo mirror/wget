@@ -278,14 +278,19 @@ AC_DEFUN(WGET_WITH_NLS,
 
       AC_CHECK_HEADERS(locale.h libintl.h)
 
-      AC_CHECK_FUNCS(gettext, [], [
-	AC_CHECK_LIB(intl, gettext, [
-          dnl gettext is in libintl; announce the fact manually.
-          LIBS="-lintl $LIBS"
-	  AC_DEFINE(HAVE_GETTEXT)
-        ], [
-	  AC_MSG_RESULT(
-	    [gettext not found; disabling NLS])
+      dnl Prefer gettext found in -lintl to the one in libc.
+      dnl Otherwise it can happen that we include libintl.h from
+      dnl /usr/local/lib, but fail to specify -lintl, which results in
+      dnl link or run-time failures.  (Symptom: libintl_bindtextdomain
+      dnl not found at link-time.)
+
+      AC_CHECK_LIB(intl, gettext, [
+        dnl gettext is in libintl; announce the fact manually.
+        LIBS="-lintl $LIBS"
+	AC_DEFINE(HAVE_GETTEXT)
+      ], [
+        AC_CHECK_FUNCS(gettext, [], [
+          AC_MSG_RESULT([gettext not found; disabling NLS])
           HAVE_NLS=no
         ])
       ])
