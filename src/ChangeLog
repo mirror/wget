@@ -30,7 +30,7 @@
 2003-10-27  Mauro Tortonesi <mauro@deepspace6.net>
 
 	* host.c, connect.c, ftp.c, ...: Added support for dual-family
-	IPv6.  Reworked FTP code.
+	IPv6.  Reworked FTP code.  [More complete description to come.]
 
 2003-10-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
