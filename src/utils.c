@@ -969,7 +969,7 @@ read_file (const char *file)
        efficiency, but at some cost to generality.  */
     fm->content = mmap (NULL, fm->length, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE, fd, 0);
-    if (fm->content == MAP_FAILED)
+    if (fm->content == (char *)MAP_FAILED)
       goto mmap_lose;
     if (!inhibit_close)
       close (fd);
