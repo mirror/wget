@@ -802,6 +802,15 @@ url_parse (const char *url, int *error)
       query_b = p;
       p = strpbrk_or_eos (p, "#");
       query_e = p;
+
+      /* Hack that allows users to use '?' (a wildcard character) in
+	 FTP URLs without it being interpreted as a query string
+	 delimiter.  */
+      if (scheme == SCHEME_FTP)
+	{
+	  query_b = query_e = NULL;
+	  path_e = p;
+	}
     }
   if (*p == '#')
     {

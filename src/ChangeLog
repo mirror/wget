@@ -1,3 +1,8 @@
+2002-02-19  Hrvoje Niksic  <hniksic@arsdigita.com>
+
+	* url.c (url_parse): Don't treat '?' as query string separator
+	when parsing FTP URLs.
+
 2002-02-01  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* html-url.c (tag_handle_meta): Don't crash on <meta
