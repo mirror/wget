@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-11-27 13:50+0100\n"
+"POT-Creation-Date: 2001-11-27 13:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -260,7 +260,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/ftp.c:1173 src/main.c:819 src/recur.c:329 src/retr.c:561
+#: src/ftp.c:1173 src/main.c:815 src/recur.c:329 src/retr.c:561
 #, c-format
 msgid "Removing %s.\n"
 msgstr ""
@@ -754,11 +754,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/main.c:170
-msgid "\n"
-msgstr ""
-
-#: src/main.c:173
+#: src/main.c:169
 msgid ""
 "Directories:\n"
 "  -nd  --no-directories            don't create directories.\n"
@@ -770,7 +766,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/main.c:181
+#: src/main.c:177
 msgid ""
 "HTTP options:\n"
 "       --http-user=USER      set http user to USER.\n"
@@ -794,7 +790,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/main.c:199
+#: src/main.c:195
 msgid ""
 "FTP options:\n"
 "  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
@@ -805,7 +801,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/main.c:206
+#: src/main.c:202
 msgid ""
 "Recursive retrieval:\n"
 "  -r,  --recursive          recursive web-suck -- use with care!\n"
@@ -820,7 +816,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/main.c:216
+#: src/main.c:212
 msgid ""
 "Recursive accept/reject:\n"
 "  -A,  --accept=LIST                comma-separated list of accepted "
@@ -845,22 +841,22 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/main.c:232
+#: src/main.c:228
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr ""
 
-#: src/main.c:419
+#: src/main.c:415
 #, c-format
 msgid "%s: debug support not compiled in.\n"
 msgstr ""
 
-#: src/main.c:471
+#: src/main.c:467
 msgid ""
 "Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001 Free Software Foundation, "
 "Inc.\n"
 msgstr ""
 
-#: src/main.c:473
+#: src/main.c:469
 msgid ""
 "This program is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -868,49 +864,49 @@ msgid ""
 "GNU General Public License for more details.\n"
 msgstr ""
 
-#: src/main.c:478
+#: src/main.c:474
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@arsdigita.com>.\n"
 msgstr ""
 
-#: src/main.c:580
+#: src/main.c:576
 #, c-format
 msgid "%s: %s: invalid command\n"
 msgstr ""
 
-#: src/main.c:633
+#: src/main.c:629
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr ""
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
-#: src/main.c:636 src/main.c:678 src/main.c:729
+#: src/main.c:632 src/main.c:674 src/main.c:725
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr ""
 
-#: src/main.c:709
+#: src/main.c:705
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr ""
 
-#: src/main.c:715
+#: src/main.c:711
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr ""
 
 #. No URL specified.
-#: src/main.c:724
+#: src/main.c:720
 #, c-format
 msgid "%s: missing URL\n"
 msgstr ""
 
-#: src/main.c:834
+#: src/main.c:830
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr ""
 
-#: src/main.c:843
+#: src/main.c:839
 #, c-format
 msgid ""
 "\n"
@@ -918,14 +914,14 @@ msgid ""
 "Downloaded: %s bytes in %d files\n"
 msgstr ""
 
-#: src/main.c:851
+#: src/main.c:847
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr ""
 
 #. Please note that the double `%' in `%%s' is intentional, because
 #. redirect_output passes tmp through printf.
-#: src/main.c:889
+#: src/main.c:885
 #, c-format
 msgid "%s received, redirecting output to `%%s'.\n"
 msgstr ""
