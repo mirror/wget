@@ -1,3 +1,11 @@
+2003-10-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (alarm_set): New function; use either setitimer or alarm
+	to set up the alarm.
+	(alarm_cancel): New function; cancel the alarm set up by
+	alarm_set.
+	(run_with_timeout): Use them.
+
 2003-10-01  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (url_parse): Don't leak memory when a reencoded URL turns

@@ -1963,6 +1963,56 @@ abort_run_with_timeout (int sig)
   longjmp (run_with_timeout_env, -1);
 }
 # endif /* not HAVE_SIGSETJMP */
+
+/* Arrange for SIGALRM to be delivered in TIMEOUT seconds.  This uses
+   setitimer where available, alarm otherwise.
+
+   TIMEOUT should be non-zero.  If the timeout value is so small that
+   it would be rounded to zero, it is rounded to the least legal value
+   instead (1us for setitimer, 1s for alarm).  That ensures that
+   SIGALRM will be delivered in all cases.  */
+
+static void
+alarm_set (double timeout)
+{
+#ifdef ITIMER_REAL
+  /* Use the modern itimer interface. */
+  struct itimerval itv;
+  memset (&itv, 0, sizeof (itv));
+  itv.it_value.tv_sec = (long) timeout;
+  itv.it_value.tv_usec = 1000000L * (timeout - (long)timeout);
+  if (itv.it_value.tv_sec == 0 && itv.it_value.tv_usec == 0)
+    /* Ensure that we wait for at least the minimum interval.
+       Specifying zero would mean "wait forever".  */
+    itv.it_value.tv_usec = 1;
+  setitimer (ITIMER_REAL, &itv, NULL);
+#else  /* not ITIMER_REAL */
+  /* Use the old alarm() interface. */
+  int secs = (int) timeout;
+  if (secs == 0)
+    /* Round TIMEOUTs smaller than 1 to 1, not to zero.  This is
+       because alarm(0) means "never deliver the alarm", i.e. "wait
+       forever", which is not what someone who specifies a 0.5s
+       timeout would expect.  */
+    secs = 1;
+  alarm (secs);
+#endif /* not ITIMER_REAL */
+}
+
+/* Cancel the alarm set with alarm_set. */
+
+static void
+alarm_cancel (void)
+{
+#ifdef ITIMER_REAL
+  struct itimerval disable;
+  memset (&disable, 0, sizeof (disable));
+  setitimer (ITIMER_REAL, &disable, NULL);
+#else  /* not ITIMER_REAL */
+  alarm (0);
+#endif /* not ITIMER_REAL */
+}
+
 #endif /* USE_SIGNAL_TIMEOUT */
 
 int
@@ -1980,13 +2030,6 @@ run_with_timeout (double timeout, void (*fun) (void *), void *arg)
       return 0;
     }
 
-  /* Calling alarm() rounds TIMEOUT.  If it is smaller than 1, round
-     it to 1, not to 0, because alarm(0) means "never deliver the
-     alarm", i.e. "wait forever", which is not what someone who
-     specifies a 0.5s timeout would expect.  */
-  if (timeout < 1)
-    timeout = 1;
-
   signal (SIGALRM, abort_run_with_timeout);
   if (SETJMP (run_with_timeout_env) != 0)
     {
@@ -1994,12 +2037,12 @@ run_with_timeout (double timeout, void (*fun) (void *), void *arg)
       signal (SIGALRM, SIG_DFL);
       return 1;
     }
-  alarm ((int) timeout);
+  alarm_set (timeout);
   fun (arg);
 
   /* Preserve errno in case alarm() or signal() modifies it. */
   saved_errno = errno;
-  alarm (0);
+  alarm_cancel ();
   signal (SIGALRM, SIG_DFL);
   errno = saved_errno;
 

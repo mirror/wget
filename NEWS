@@ -13,8 +13,8 @@ send a POST request with the specified contents.
 
 ** IPv6 is experimentally supported.
 
-** The `--timeout' option now affects DNS lookup and establishing the
-connection as well.  Previously it only affected reading and writing
+** The `--timeout' option now also affects DNS lookup and establishing
+the TCP connection.  Previously it only affected reading and writing
 data.  Those three timeouts can be set separately using
 `--dns-timeout', `--connection-timeout', and `--read-timeout',
 respectively.
@@ -53,9 +53,9 @@ as "//img.foo.com/foo.jpg".
 ** Boolean options in `.wgetrc' and on the command line now accept
 values "yes" and "no" along with the traditional "on" and "off".
 
-** It is now possible to specify decimal values for --timeout, --wait,
---waitretry, and --limit-rate.  For instance, `--wait=0.5' now
-works as expected, and so does --limit-rate=2.5k.
+** It is now possible to specify decimal values for timeouts, waiting
+periods, and download rate.  For instance, `--wait=0.5' now works as
+expected, as does `--dns-timeout=0.5' and even `--limit-rate=2.5k'.
 
 * Wget 1.8.2 is a bugfix release with no user-visible changes.
 
