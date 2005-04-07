@@ -1,5 +1,8 @@
 2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ptimer.c (ptimer_init): In fact, _POSIX_MONOTONIC_CLOCK needs to
+	be >= 0.
+
 	* ptimer.c (ptimer_init): Check whether _POSIX_MONOTONIC_CLOCK is
 	defined instead of whether it's greater than 0.  glibc defines it
 	to 0, but still makes it available via sysconf.
