@@ -115,8 +115,8 @@ char_value (char c, int base)
 __int64
 str_to_int64 (const char *nptr, char **endptr, int base)
 {
-#define OVERFLOW 9223372036854775807I64
-#define UNDERFLOW (-OVERFLOW - 1)
+#define INT64_OVERFLOW 9223372036854775807I64
+#define INT64_UNDERFLOW (-INT64_OVERFLOW - 1)
 
   __int64 result = 0;
   int negative;
@@ -169,7 +169,7 @@ str_to_int64 (const char *nptr, char **endptr, int base)
 	  __int64 newresult = base * result + val;
 	  if (newresult < result)
 	    {
-	      result = OVERFLOW;
+	      result = INT64_OVERFLOW;
 	      errno = ERANGE;
 	      break;
 	    }
@@ -185,7 +185,7 @@ str_to_int64 (const char *nptr, char **endptr, int base)
 	  __int64 newresult = base * result - val;
 	  if (newresult > result)
 	    {
-	      result = UNDERFLOW;
+	      result = INT64_UNDERFLOW;
 	      errno = ERANGE;
 	      break;
 	    }
