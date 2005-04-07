@@ -1,3 +1,8 @@
+2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.in ($(srcdir)/stamp-h.in): Don't attempt to run
+	autoheader automatically; it breaks things with fresh CVS builds.
+
 2005-04-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Allow the user to disable NTLM authorization.
