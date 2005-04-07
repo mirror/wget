@@ -1,3 +1,14 @@
+2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* ptimer.c (ptimer_init): Check whether _POSIX_MONOTONIC_CLOCK is
+	defined instead of whether it's greater than 0.  glibc defines it
+	to 0, but still makes it available via sysconf.
+
+2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* mswindows.c (str_to_int64): Rename OVERFLOW and UNDERFLOW to
+	INT64_OVERFLOW and INT64_UNDERFLOW, since those names are used.
+
 2005-04-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ptimer.c: New file.  Move the "wtimer" functions from utils.c to

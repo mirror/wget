@@ -183,7 +183,7 @@ ptimer_init (void)
 {
   struct timespec res;
 
-#if _POSIX_MONOTONIC_CLOCK > 0
+#ifdef _POSIX_MONOTONIC_CLOCK
   if (sysconf (_SC_MONOTONIC_CLOCK) > 0)
     posix_clock_id = CLOCK_MONOTONIC;
   else
