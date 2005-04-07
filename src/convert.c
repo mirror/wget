@@ -49,6 +49,7 @@ so, delete this exception statement from your version.  */
 #include "recur.h"
 #include "utils.h"
 #include "hash.h"
+#include "ptimer.h"
 
 static struct hash_table *dl_file_url_map;
 struct hash_table *dl_url_file_map;
@@ -81,7 +82,7 @@ convert_all_links (void)
   double secs;
   int file_count = 0;
 
-  struct wget_timer *timer = wtimer_new ();
+  struct ptimer *timer = ptimer_new ();
 
   int cnt;
   char **file_array;
@@ -170,9 +171,8 @@ convert_all_links (void)
       free_urlpos (urls);
     }
 
-  wtimer_update (timer);
-  secs = wtimer_read (timer) / 1000;
-  wtimer_delete (timer);
+  secs = ptimer_measure (timer) / 1000;
+  ptimer_destroy (timer);
   logprintf (LOG_VERBOSE, _("Converted %d files in %.*f seconds.\n"),
 	     file_count, secs < 10 ? 3 : 1, secs);
 }
@@ -834,8 +834,10 @@ register_html (const char *url, const char *file)
   string_set_add (downloaded_html_set, file);
 }
 
-/* Cleanup the data structures associated with recursive retrieving
-   (the variables above).  */
+static void downloaded_files_free PARAMS ((void));
+
+/* Cleanup the data structures associated with this file.  */
+
 void
 convert_cleanup (void)
 {
@@ -853,6 +855,7 @@ convert_cleanup (void)
     }
   if (downloaded_html_set)
     string_set_free (downloaded_html_set);
+  downloaded_files_free ();
 }
 
 /* Book-keeping code for downloaded files that enables extension
@@ -943,7 +946,7 @@ df_free_mapper (void *key, void *value, void *ignored)
   return 0;
 }
 
-void
+static void
 downloaded_files_free (void)
 {
   if (downloaded_files_hash)
@@ -952,4 +955,76 @@ downloaded_files_free (void)
       hash_table_destroy (downloaded_files_hash);
       downloaded_files_hash = NULL;
     }
+}
+
+/* The function returns the pointer to the malloc-ed quoted version of
+   string s.  It will recognize and quote numeric and special graphic
+   entities, as per RFC1866:
+
+   `&' -> `&amp;'
+   `<' -> `&lt;'
+   `>' -> `&gt;'
+   `"' -> `&quot;'
+   SP  -> `&#32;'
+
+   No other entities are recognized or replaced.  */
+char *
+html_quote_string (const char *s)
+{
+  const char *b = s;
+  char *p, *res;
+  int i;
+
+  /* Pass through the string, and count the new size.  */
+  for (i = 0; *s; s++, i++)
+    {
+      if (*s == '&')
+	i += 4;			/* `amp;' */
+      else if (*s == '<' || *s == '>')
+	i += 3;			/* `lt;' and `gt;' */
+      else if (*s == '\"')
+	i += 5;			/* `quot;' */
+      else if (*s == ' ')
+	i += 4;			/* #32; */
+    }
+  res = (char *)xmalloc (i + 1);
+  s = b;
+  for (p = res; *s; s++)
+    {
+      switch (*s)
+	{
+	case '&':
+	  *p++ = '&';
+	  *p++ = 'a';
+	  *p++ = 'm';
+	  *p++ = 'p';
+	  *p++ = ';';
+	  break;
+	case '<': case '>':
+	  *p++ = '&';
+	  *p++ = (*s == '<' ? 'l' : 'g');
+	  *p++ = 't';
+	  *p++ = ';';
+	  break;
+	case '\"':
+	  *p++ = '&';
+	  *p++ = 'q';
+	  *p++ = 'u';
+	  *p++ = 'o';
+	  *p++ = 't';
+	  *p++ = ';';
+	  break;
+	case ' ':
+	  *p++ = '&';
+	  *p++ = '#';
+	  *p++ = '3';
+	  *p++ = '2';
+	  *p++ = ';';
+	  break;
+	default:
+	  *p++ = *s;
+	}
+    }
+  *p = '\0';
+  return res;
 }

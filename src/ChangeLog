@@ -1,5 +1,10 @@
 2005-04-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ptimer.c: New file.  Move the "wtimer" functions from utils.c to
+	this file and rename them to ptimer_.
+
+2005-04-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* host.c (NO_ADDRESS): Define NO_ADDRESS only after the system
 	headers have been included.
 

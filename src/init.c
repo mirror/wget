@@ -55,6 +55,7 @@ so, delete this exception statement from your version.  */
 #include "progress.h"
 #include "recur.h"		/* for INFINITE_RECURSION */
 #include "convert.h"		/* for convert_cleanup */
+#include "res.h"		/* for res_cleanup */
 
 #ifndef errno
 extern int errno;
@@ -1300,8 +1301,6 @@ check_user_specified_header (const char *s)
 }
 
 void cleanup_html_url PARAMS ((void));
-void res_cleanup PARAMS ((void));
-void downloaded_files_free PARAMS ((void));
 void http_cleanup PARAMS ((void));
 
 
@@ -1332,7 +1331,6 @@ cleanup (void)
   res_cleanup ();
   http_cleanup ();
   cleanup_html_url ();
-  downloaded_files_free ();
   host_cleanup ();
   log_cleanup ();
 

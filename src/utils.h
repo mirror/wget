@@ -44,8 +44,6 @@ struct file_memory {
 
 #define HYPHENP(x) (*(x) == '-' && !*((x) + 1))
 
-struct wget_timer;
-
 char *time_str PARAMS ((time_t *));
 char *datetime_str PARAMS ((time_t *));
 
@@ -107,16 +105,6 @@ char *human_readable PARAMS ((wgint));
 int numdigit PARAMS ((wgint));
 char *number_to_string PARAMS ((char *, wgint));
 char *number_to_static_string PARAMS ((wgint));
-
-struct wget_timer *wtimer_allocate PARAMS ((void));
-struct wget_timer *wtimer_new PARAMS ((void));
-void wtimer_delete PARAMS ((struct wget_timer *));
-void wtimer_reset PARAMS ((struct wget_timer *));
-void wtimer_update PARAMS ((struct wget_timer *));
-double wtimer_read PARAMS ((const struct wget_timer *));
-double wtimer_granularity PARAMS ((void));
-
-char *html_quote_string PARAMS ((const char *));
 
 int determine_screen_width PARAMS ((void));
 int random_number PARAMS ((int));

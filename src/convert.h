@@ -101,4 +101,6 @@ void register_delete_file PARAMS ((const char *));
 void convert_all_links PARAMS ((void));
 void convert_cleanup PARAMS ((void));
 
+char *html_quote_string PARAMS ((const char *));
+
 #endif /* CONVERT_H */

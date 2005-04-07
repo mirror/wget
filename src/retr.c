@@ -54,6 +54,7 @@ so, delete this exception statement from your version.  */
 #include "connect.h"
 #include "hash.h"
 #include "convert.h"
+#include "ptimer.h"
 
 #ifdef HAVE_SSL
 # include "gen_sslfunc.h"	/* for ssl_iread */
@@ -92,9 +93,9 @@ limit_bandwidth_reset (void)
    is the timer that started at the beginning of download.  */
 
 static void
-limit_bandwidth (wgint bytes, struct wget_timer *timer)
+limit_bandwidth (wgint bytes, struct ptimer *timer)
 {
-  double delta_t = wtimer_read (timer) - limit_data.chunk_start;
+  double delta_t = ptimer_read (timer) - limit_data.chunk_start;
   double expected;
 
   limit_data.chunk_bytes += bytes;
@@ -119,10 +120,9 @@ limit_bandwidth (wgint bytes, struct wget_timer *timer)
 	       slp, number_to_static_string (limit_data.chunk_bytes),
 	       limit_data.sleep_adjust));
 
-      t0 = wtimer_read (timer);
+      t0 = ptimer_read (timer);
       xsleep (slp / 1000);
-      wtimer_update (timer);
-      t1 = wtimer_read (timer);
+      t1 = ptimer_measure (timer);
 
       /* Due to scheduling, we probably slept slightly longer (or
 	 shorter) than desired.  Calculate the difference between the
@@ -132,7 +132,7 @@ limit_bandwidth (wgint bytes, struct wget_timer *timer)
     }
 
   limit_data.chunk_bytes = 0;
-  limit_data.chunk_start = wtimer_read (timer);
+  limit_data.chunk_start = ptimer_read (timer);
 }
 
 #ifndef MIN
@@ -202,7 +202,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
   static char dlbuf[16384];
   int dlbufsize = sizeof (dlbuf);
 
-  struct wget_timer *timer = NULL;
+  struct ptimer *timer = NULL;
   double last_successful_read_tm = 0;
 
   /* The progress gauge, set according to the user preferences. */
@@ -241,7 +241,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
      the timer.  */
   if (progress || opt.limit_rate || elapsed)
     {
-      timer = wtimer_new ();
+      timer = ptimer_new ();
       last_successful_read_tm = 0;
     }
 
@@ -269,7 +269,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
 	  if (opt.read_timeout)
 	    {
 	      double waittm;
-	      waittm = (wtimer_read (timer) - last_successful_read_tm) / 1000;
+	      waittm = (ptimer_read (timer) - last_successful_read_tm) / 1000;
 	      if (waittm + tmout > opt.read_timeout)
 		{
 		  /* Don't let total idle time exceed read timeout. */
@@ -292,9 +292,9 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
 
       if (progress || opt.limit_rate)
 	{
-	  wtimer_update (timer);
+	  ptimer_measure (timer);
 	  if (ret > 0)
-	    last_successful_read_tm = wtimer_read (timer);
+	    last_successful_read_tm = ptimer_read (timer);
 	}
 
       if (ret > 0)
@@ -311,7 +311,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
 	limit_bandwidth (ret, timer);
 
       if (progress)
-	progress_update (progress, ret, wtimer_read (timer));
+	progress_update (progress, ret, ptimer_read (timer));
 #ifdef WINDOWS
       if (toread > 0 && !opt.quiet)
 	ws_percenttitle (100.0 *
@@ -323,12 +323,12 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
 
  out:
   if (progress)
-    progress_finish (progress, wtimer_read (timer));
+    progress_finish (progress, ptimer_read (timer));
 
   if (elapsed)
-    *elapsed = wtimer_read (timer);
+    *elapsed = ptimer_read (timer);
   if (timer)
-    wtimer_delete (timer);
+    ptimer_destroy (timer);
 
   if (qtyread)
     *qtyread += sum_read;
@@ -534,11 +534,12 @@ calc_rate (wgint bytes, double msecs, int *units)
 
   if (msecs == 0)
     /* If elapsed time is exactly zero, it means we're under the
-       granularity of the timer.  This often happens on systems that
-       use time() for the timer.  */
-    msecs = wtimer_granularity ();
+       granularity of the timer.  This can easily happen on systems
+       that use time() for the timer.  Since the interval lies between
+       0 and the timer's granularity, assume half the granularity.  */
+    msecs = ptimer_granularity () / 2.0;
 
-  dlrate = (double)1000 * bytes / msecs;
+  dlrate = 1000.0 * bytes / msecs;
   if (dlrate < 1024.0)
     *units = 0;
   else if (dlrate < 1024.0 * 1024.0)

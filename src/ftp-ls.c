@@ -47,6 +47,7 @@ so, delete this exception statement from your version.  */
 #include "utils.h"
 #include "ftp.h"
 #include "url.h"
+#include "convert.h"		/* for html_quote_string prototype */
 
 extern FILE *output_stream;
 
