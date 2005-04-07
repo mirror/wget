@@ -1,3 +1,8 @@
+2005-04-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* host.c (NO_ADDRESS): Define NO_ADDRESS only after the system
+	headers have been included.
+
 2005-04-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (pconn): Include NTLM data, which is per-connection.

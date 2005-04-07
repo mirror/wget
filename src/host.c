@@ -55,10 +55,6 @@ so, delete this exception statement from your version.  */
 # define SET_H_ERRNO(err) WSASetLastError (err)
 #endif /* WINDOWS */
 
-#ifndef NO_ADDRESS
-# define NO_ADDRESS NO_DATA
-#endif
-
 #include <errno.h>
 
 #include "wget.h"
@@ -76,6 +72,10 @@ extern int errno;
 # ifndef __CYGWIN__
 extern int h_errno;
 # endif
+#endif
+
+#ifndef NO_ADDRESS
+# define NO_ADDRESS NO_DATA
 #endif
 
 /* Lists of IP addresses that result from running DNS queries.  See
