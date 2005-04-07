@@ -1,5 +1,12 @@
 2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Use it.
+
+	* aclocal.m4 (WGET_POSIX_CLOCK): Check whether -lrt is needed to
+	use POSIX clock functions like clock_gettime.
+
+2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* Makefile.in ($(srcdir)/stamp-h.in): Don't attempt to run
 	autoheader automatically; it breaks things with fresh CVS builds.
 

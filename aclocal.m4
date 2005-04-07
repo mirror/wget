@@ -63,7 +63,7 @@ AC_DEFUN([WGET_FNMATCH], [
 ])
 
 dnl Check for nanosleep.  For nanosleep to work on Solaris, we must
-dnl link with -lt (recently) or with -lposix (older releases).
+dnl link with -lrt (recently) or with -lposix4 (older releases).
 
 AC_DEFUN([WGET_NANOSLEEP], [
   AC_CHECK_FUNCS(nanosleep, [], [
@@ -78,6 +78,12 @@ AC_DEFUN([WGET_NANOSLEEP], [
 	LIBS="-lposix4 $LIBS"
       ])
     ])
+  ])
+])
+
+AC_DEFUN([WGET_POSIX_CLOCK], [
+  AC_CHECK_FUNCS(clock_gettime, [], [
+    AC_CHECK_LIB(rt, clock_gettime)
   ])
 ])
 
