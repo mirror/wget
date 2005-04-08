@@ -88,7 +88,9 @@ typedef char *pointer;
    Callers below should use malloc.  */
 
 #ifndef emacs
+#include "wget.h"
 #define malloc xmalloc
+#define free xfree
 #endif
 extern pointer malloc ();
 

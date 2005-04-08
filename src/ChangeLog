@@ -1,5 +1,10 @@
 2005-04-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* alloca.c: Include wget.h to be able to use xmalloc.  In addition
+	to defining malloc to xmalloc, also define free to xfree.
+
+2005-04-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http-ntlm.c (ntlm_output): Use "char", not "unsigned char" for
 	ntlmbuf.  Our base64 functions accept char anyway.
 	(ntlm_output): Join up the format string, since we nominally
