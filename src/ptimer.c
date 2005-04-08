@@ -314,7 +314,7 @@ ptimer_diff (ptimer_system_time *pst1, ptimer_system_time *pst2)
 #endif
 
 #ifdef WINDOWS
-  if (using_hires_timers)
+  if (windows_hires_timers)
     return (pst1->hires.QuadPart - pst2->hires.QuadPart) / windows_hires_msfreq;
   else
     return pst1->lores - pst2->lores;
