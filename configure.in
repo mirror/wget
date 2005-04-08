@@ -327,10 +327,20 @@ if test x"$with_ssl" != x"no"; then
     ssl_found_includes=no
     CPPFLAGS="$SSL_INCLUDES $wget_save_CPPFLAGS"
 
+    dnl Check for all the OpenSSL includes that Wget actually uses.
+    dnl This will prune both invalid installations and ancient
+    dnl versions of OpenSSL that we can't use.
     AC_MSG_CHECKING([for includes])
     AC_COMPILE_IFELSE([
 #include <openssl/ssl.h>
-#include <openssl/rsa.h>
+#include <openssl/bio.h>
+#include <openssl/crypto.h>
+#include <openssl/des.h>
+#include <openssl/err.h>
+#include <openssl/md4.h>
+#include <openssl/pem.h>
+#include <openssl/rand.h>
+#include <openssl/x509.h>
     ], [
       AC_MSG_RESULT(found)
       ssl_found_includes=yes

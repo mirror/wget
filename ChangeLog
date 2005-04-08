@@ -1,5 +1,10 @@
 2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: When checking for OpenSSL headers, check for all
+	the ones that Wget is using.
+
+2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* windows/Makefile.src: Compile ptimer.c and http-ntlm.c.
 
 2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
