@@ -1,5 +1,9 @@
 2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* windows/Makefile.src: Compile ptimer.c and http-ntlm.c.
+
+2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Use it.
 
 	* aclocal.m4 (WGET_POSIX_CLOCK): Check whether -lrt is needed to
