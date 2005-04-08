@@ -66,7 +66,7 @@ $(SAMPLERCTEXI): $(srcdir)/sample.wgetrc
 	sed s/@/@@/g $? > $@
 
 wget.info: $(srcdir)/wget.texi $(SAMPLERCTEXI)
-	$(MAKEINFO) -I$(srcdir) $<
+	$(MAKEINFO) -I$(srcdir) $(srcdir)/wget.texi
 
 $(TEXI2POD): $(srcdir)/$(TEXI2POD).in
 	sed 's,^#! /usr/bin/perl,#! @PERL@,' $? > $@
