@@ -1,3 +1,11 @@
+2005-04-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http-ntlm.c (ntlm_output): Use "char", not "unsigned char" for
+	ntlmbuf.  Our base64 functions accept char anyway.
+	(ntlm_output): Join up the format string, since we nominally
+	support K&R compilers.
+	(ntlm_output): Ditto.
+
 2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ptimer.c: Use Windows timers under Cygwin, whose POSIX timer

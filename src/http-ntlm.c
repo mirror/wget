@@ -145,7 +145,7 @@ int ntlm_input (struct ntlmdata *ntlm, const char *header)
          32 (48) start of data block
       */
       int size;
-      unsigned char *buffer = (unsigned char *) alloca (strlen (header));
+      char *buffer = (char *) alloca (strlen (header));
 
       size = base64_decode (header, buffer);
       if (size < 0)
@@ -306,7 +306,7 @@ char *ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
   int domoff;  /* domain name offset */
   int size;
   char *base64;
-  unsigned char ntlmbuf[256]; /* enough, unless the host/domain is very long */
+  char ntlmbuf[256]; /* enough, unless the host/domain is very long */
 
   /* point to the address of the pointer that holds the string to sent to the
      server, which is for a plain host or for a HTTP proxy */
@@ -338,21 +338,24 @@ char *ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
     24    Supplied Workstation security buffer(*)
     32    start of data block
 
+    Format string (merged for pre-ANSI compilers):
+      "NTLMSSP%c"
+      "\x01%c%c%c" 32-bit type = 1
+      "%c%c%c%c"   32-bit NTLM flag field
+      "%c%c"  domain length
+      "%c%c"  domain allocated space
+      "%c%c"  domain name offset
+      "%c%c"  2 zeroes
+      "%c%c"  host length
+      "%c%c"  host allocated space
+      "%c%c"  host name offset
+      "%c%c"  2 zeroes
+      "%s"    host name
+      "%s"   domain string
     */
 
-    snprintf((char *)ntlmbuf, sizeof(ntlmbuf), "NTLMSSP%c"
-             "\x01%c%c%c" /* 32-bit type = 1 */
-             "%c%c%c%c"   /* 32-bit NTLM flag field */
-             "%c%c"  /* domain length */
-             "%c%c"  /* domain allocated space */
-             "%c%c"  /* domain name offset */
-             "%c%c"  /* 2 zeroes */
-             "%c%c"  /* host length */
-             "%c%c"  /* host allocated space */
-             "%c%c"  /* host name offset */
-             "%c%c"  /* 2 zeroes */
-             "%s"   /* host name */
-             "%s",  /* domain string */
+    snprintf(ntlmbuf, sizeof(ntlmbuf),
+	     "NTLMSSP%c\x01%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%s%s",
              0,     /* trailing zero */
              0,0,0, /* part of type-1 long */
 
@@ -434,47 +437,42 @@ char *ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
     lmrespoff = hostoff + hostlen;
     ntrespoff = lmrespoff + 0x18;
 
-    /* Create the big type-3 message binary blob */
-    size = snprintf((char *)ntlmbuf, sizeof(ntlmbuf),
-                    "NTLMSSP%c"
-                    "\x03%c%c%c" /* type-3, 32 bits */
+    /* Create the big type-3 message binary blob:
+	 "NTLMSSP%c"
+	 "\x03%c%c%c"  type-3, 32 bits 
 
-                    "%c%c%c%c" /* LanManager length + allocated space */
-                    "%c%c" /* LanManager offset */
-                    "%c%c" /* 2 zeroes */
+	 "%c%c%c%c"  LanManager length + allocated space 
+	 "%c%c"      LanManager offset 
+	 "%c%c"      2 zeroes 
 
-                    "%c%c" /* NT-response length */
-                    "%c%c" /* NT-response allocated space */
-                    "%c%c" /* NT-response offset */
-                    "%c%c" /* 2 zeroes */
-                    
-                    "%c%c"  /* domain length */
-                    "%c%c"  /* domain allocated space */
-                    "%c%c"  /* domain name offset */
-                    "%c%c"  /* 2 zeroes */
-                    
-                    "%c%c"  /* user length */
-                    "%c%c"  /* user allocated space */
-                    "%c%c"  /* user offset */
-                    "%c%c"  /* 2 zeroes */
-                    
-                    "%c%c"  /* host length */
-                    "%c%c"  /* host allocated space */
-                    "%c%c"  /* host offset */
-                    "%c%c%c%c%c%c"  /* 6 zeroes */
-                    
-                    "\xff\xff"  /* message length */
-                    "%c%c"  /* 2 zeroes */
-                    
-                    "\x01\x82" /* flags */
-                    "%c%c"  /* 2 zeroes */
+	 "%c%c"  NT-response length 
+	 "%c%c"  NT-response allocated space 
+	 "%c%c"  NT-response offset 
+	 "%c%c"  2 zeroes 
 
-                    /* domain string */
-                    /* user string */
-                    /* host string */
-                    /* LanManager response */
-                    /* NT response */
-                    ,
+	 "%c%c"  domain length 
+	 "%c%c"  domain allocated space 
+	 "%c%c"  domain name offset 
+	 "%c%c"  2 zeroes 
+
+	 "%c%c"  user length 
+	 "%c%c"  user allocated space 
+	 "%c%c"  user offset 
+	 "%c%c"  2 zeroes 
+
+	 "%c%c"  host length 
+	 "%c%c"  host allocated space 
+	 "%c%c"  host offset 
+	 "%c%c%c%c%c%c" 6 zeroes 
+
+	 "\xff\xff"   message length 
+	 "%c%c"   2 zeroes 
+
+	 "\x01\x82"  flags 
+	 "%c%c"   2 zeroes */
+
+    size = snprintf(ntlmbuf, sizeof(ntlmbuf),
+		    "NTLMSSP%c\x03%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\xff\xff%c%c\x01\x82%c%c",
                     0, /* zero termination */
                     0,0,0, /* type-3 long, the 24 upper bits */
 
