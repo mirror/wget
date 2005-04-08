@@ -1,5 +1,10 @@
 2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ptimer.c: Use Windows timers under Cygwin, whose POSIX timer
+	implementation is incomplete.
+
+2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ptimer.c (struct ptimer): Remove the unused initialized field.
 
 	* ptimer.c: Renamed function parameters from WT (which used to
