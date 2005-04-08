@@ -39,9 +39,10 @@ so, delete this exception statement from your version.  */
      ptimer_destroy -- destroy the timer.
      ptimer_granularity -- returns the approximate granularity of the timers.
 
-   Timers operate in milliseconds, but return floating point values
-   that can be more precise.  For example, to measure the time it
-   takes to run a loop, you can use something like:
+   Timers measure time in milliseconds, but the timings they return
+   are floating point numbers, so they can carry as much precision as
+   the underlying system timer supports.  For example, to measure the
+   time it takes to run a loop, you can use something like:
 
      ptimer *tmr = ptimer_new ();
      while (...)
@@ -338,9 +339,6 @@ windows_resolution (void)
 /* The code below this point is independent of timer implementation. */
 
 struct ptimer {
-  /* Whether the start time has been set. */
-  int initialized;
-
   /* The starting point in time which, subtracted from the current
      time, yields elapsed time. */
   ptimer_system_time start;
@@ -360,7 +358,7 @@ struct ptimer {
 struct ptimer *
 ptimer_new (void)
 {
-  struct ptimer *wt = xnew0 (struct ptimer);
+  struct ptimer *pt = xnew0 (struct ptimer);
 #ifdef IMPL_init
   static int init_done;
   if (!init_done)
@@ -369,31 +367,30 @@ ptimer_new (void)
       IMPL_init ();
     }
 #endif
-  ptimer_reset (wt);
-  return wt;
+  ptimer_reset (pt);
+  return pt;
 }
 
 /* Free the resources associated with the timer.  Its further use is
    prohibited.  */
 
 void
-ptimer_destroy (struct ptimer *wt)
+ptimer_destroy (struct ptimer *pt)
 {
-  xfree (wt);
+  xfree (pt);
 }
 
-/* Reset timer WT.  This establishes the starting point from which
+/* Reset timer PT.  This establishes the starting point from which
    ptimer_read() will return the number of elapsed milliseconds.
    It is allowed to reset a previously used timer.  */
 
 void
-ptimer_reset (struct ptimer *wt)
+ptimer_reset (struct ptimer *pt)
 {
   /* Set the start time to the current time. */
-  IMPL_measure (&wt->start);
-  wt->elapsed_last = 0;
-  wt->elapsed_pre_start = 0;
-  wt->initialized = 1;
+  IMPL_measure (&pt->start);
+  pt->elapsed_last = 0;
+  pt->elapsed_pre_start = 0;
 }
 
 /* Measure the elapsed time since timer creation/reset and return it
@@ -408,24 +405,22 @@ ptimer_reset (struct ptimer *wt)
    ignored.  */
 
 double
-ptimer_measure (struct ptimer *wt)
+ptimer_measure (struct ptimer *pt)
 {
   ptimer_system_time now;
   double elapsed;
 
-  assert (wt->initialized != 0);
-
   IMPL_measure (&now);
-  elapsed = wt->elapsed_pre_start + IMPL_diff (&now, &wt->start);
+  elapsed = pt->elapsed_pre_start + IMPL_diff (&now, &pt->start);
 
   /* Ideally we'd just return the difference between NOW and
-     wt->start.  However, the system timer can be set back, and we
+     pt->start.  However, the system timer can be set back, and we
      could return a value smaller than when we were last called, even
      a negative value.  Both of these would confuse the callers, which
      expect us to return monotonically nondecreasing values.
 
      Therefore: if ELAPSED is smaller than its previous known value,
-     we reset wt->start to the current time and effectively start
+     we reset pt->start to the current time and effectively start
      measuring from this point.  But since we don't want the elapsed
      value to start from zero, we set elapsed_pre_start to the last
      elapsed time and increment all future calculations by that
@@ -434,14 +429,14 @@ ptimer_measure (struct ptimer *wt)
      This cannot happen with Windows and POSIX monotonic/highres
      timers, but the check is not expensive.  */
 
-  if (elapsed < wt->elapsed_last)
+  if (elapsed < pt->elapsed_last)
     {
-      wt->start = now;
-      wt->elapsed_pre_start = wt->elapsed_last;
-      elapsed = wt->elapsed_last;
+      pt->start = now;
+      pt->elapsed_pre_start = pt->elapsed_last;
+      elapsed = pt->elapsed_last;
     }
 
-  wt->elapsed_last = elapsed;
+  pt->elapsed_last = elapsed;
   return elapsed;
 }
 
@@ -449,9 +444,9 @@ ptimer_measure (struct ptimer *wt)
    ptimer_reset and the last call to ptimer_update.  */
 
 double
-ptimer_read (const struct ptimer *wt)
+ptimer_read (const struct ptimer *pt)
 {
-  return wt->elapsed_last;
+  return pt->elapsed_last;
 }
 
 /* Return the assessed resolution of the timer implementation, in

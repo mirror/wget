@@ -1,5 +1,12 @@
 2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ptimer.c (struct ptimer): Remove the unused initialized field.
+
+	* ptimer.c: Renamed function parameters from WT (which used to
+	stand for wget_timer or wtimer) to PT.
+
+2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ptimer.c (posix_init): Be smarter about choosing clocks.  In
 	decreasing order of preference, use CLOCK_MONOTONIC,
 	CLOCK_HIGHRES, and CLOCK_REALTIME.
