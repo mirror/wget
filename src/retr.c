@@ -534,10 +534,10 @@ calc_rate (wgint bytes, double msecs, int *units)
 
   if (msecs == 0)
     /* If elapsed time is exactly zero, it means we're under the
-       granularity of the timer.  This can easily happen on systems
+       resolution of the timer.  This can easily happen on systems
        that use time() for the timer.  Since the interval lies between
-       0 and the timer's granularity, assume half the granularity.  */
-    msecs = ptimer_granularity () / 2.0;
+       0 and the timer's resolution, assume half the resolution.  */
+    msecs = ptimer_resolution () / 2.0;
 
   dlrate = 1000.0 * bytes / msecs;
   if (dlrate < 1024.0)

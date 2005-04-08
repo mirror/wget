@@ -1,5 +1,22 @@
 2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ptimer.c (posix_init): Be smarter about choosing clocks.  In
+	decreasing order of preference, use CLOCK_MONOTONIC,
+	CLOCK_HIGHRES, and CLOCK_REALTIME.
+	(ptimer_allocate): Removed.
+
+	* ptimer.c: Refactor the code by cleanly separating the
+	architecture-dependent code from the architecture-independent
+	code.
+
+2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* ptimer.c (ptimer_init): Explicitly check that
+	_POSIX_MONOTONIC_CLOCK is *both* defined and >=0.  (Undefined
+	symbols are >=0.)
+
+2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ptimer.c (ptimer_diff): Fix typo affecting Windows build.
 
 2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
