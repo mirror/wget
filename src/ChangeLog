@@ -1,5 +1,17 @@
 2005-04-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* recur.c (download_child_p): When -p is used, (temporarily)
+	ignore accept/reject rules for HTMLs, even when they are at the
+	maximum recursion depth.  That is because with -p we are, if
+	necessary, overstepping the max. depth to get the requisites.
+
+2004-06-12  Larry Jones <lawrence.jones@ugsplm.com>
+
+	* recur.c (download_child_p): Correct the logic in check number 6:
+	test opt.reclevel (not DEPTH) against INFINITE_RECURSION.
+
+2005-04-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c: Use "static const" in preference to "const static".
 	Sun's cc warns that "storage class after type is obsolescent".
 

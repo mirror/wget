@@ -516,13 +516,21 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
     }
 
   /* 6. Check for acceptance/rejection rules.  We ignore these rules
-     for directories (no file name to match) and for HTML documents,
-     which might lead to other files that do need to be downloaded.
-     That is, unless we've exhausted the recursion depth anyway.  */
+     for directories (no file name to match) and for non-leaf HTMLs,
+     which can lead to other files that do need to be downloaded.  (-p
+     automatically implies non-leaf because with -p we can, if
+     necesary, overstep the maximum depth to get the page requisites.)  */
   if (u->file[0] != '\0'
       && !(has_html_suffix_p (u->file)
-	   && depth != INFINITE_RECURSION
-	   && depth < opt.reclevel - 1))
+	   /* The exception only applies to non-leaf HTMLs (but -p
+	      always implies non-leaf because we can overstep the
+	      maximum depth to get the requisites): */
+	   && (/* non-leaf */
+	       opt.reclevel == INFINITE_RECURSION
+	       /* also non-leaf */
+	       || depth < opt.reclevel - 1
+	       /* -p, which implies non-leaf (see above) */
+	       || opt.page_requisites)))
     {
       if (!acceptable (u->file))
 	{
