@@ -87,13 +87,14 @@ static int path_simplify PARAMS ((char *));
    changing the meaning of the URL.  For example, you can't decode
    "/foo/%2f/bar" into "/foo///bar" because the number and contents of
    path components is different.  Non-reserved characters can be
-   changed, so "/foo/%78/bar" is safe to change to "/foo/x/bar".  Wget
-   uses the rfc1738 set of reserved characters, plus "$" and ",", as
-   recommended by rfc2396.
+   changed, so "/foo/%78/bar" is safe to change to "/foo/x/bar".  The
+   unsafe characters are loosely based on rfc1738, plus "$" and ",",
+   as recommended by rfc2396, and minus "~", which is very frequently
+   used (and sometimes unrecognized as %7E by broken servers).
 
-   An unsafe characters is the one that should be encoded when URLs
-   are placed in foreign environments.  E.g. space and newline are
-   unsafe in HTTP contexts because HTTP uses them as separator and
+   An unsafe character is the one that should be encoded when URLs are
+   placed in foreign environments.  E.g. space and newline are unsafe
+   in HTTP contexts because HTTP uses them as separator and line
    terminator, so they must be encoded to %20 and %0A respectively.
    "*" is unsafe in shell context, etc.
 
@@ -117,7 +118,7 @@ enum {
 #define U  urlchr_unsafe
 #define RU R|U
 
-const static unsigned char urlchr_table[256] =
+static const unsigned char urlchr_table[256] =
 {
   U,  U,  U,  U,   U,  U,  U,  U,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
   U,  U,  U,  U,   U,  U,  U,  U,   /* BS  HT  LF  VT   FF  CR  SO  SI  */
@@ -134,7 +135,7 @@ const static unsigned char urlchr_table[256] =
   U,  0,  0,  0,   0,  0,  0,  0,   /* `   a   b   c    d   e   f   g   */
   0,  0,  0,  0,   0,  0,  0,  0,   /* h   i   j   k    l   m   n   o   */
   0,  0,  0,  0,   0,  0,  0,  0,   /* p   q   r   s    t   u   v   w   */
-  0,  0,  0,  U,   U,  U,  U,  U,   /* x   y   z   {    |   }   ~   DEL */
+  0,  0,  0,  U,   U,  U,  0,  U,   /* x   y   z   {    |   }   ~   DEL */
 
   U, U, U, U,  U, U, U, U,  U, U, U, U,  U, U, U, U,
   U, U, U, U,  U, U, U, U,  U, U, U, U,  U, U, U, U,
@@ -1269,7 +1270,7 @@ enum {
    translate file name back to URL, this would become important
    crucial.  Right now, it's better to be minimal in escaping.  */
 
-const static unsigned char filechr_table[256] =
+static const unsigned char filechr_table[256] =
 {
 UWC,  C,  C,  C,   C,  C,  C,  C,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
   C,  C,  C,  C,   C,  C,  C,  C,   /* BS  HT  LF  VT   FF  CR  SO  SI  */

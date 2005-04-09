@@ -1,5 +1,16 @@
 2005-04-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c: Use "static const" in preference to "const static".
+	Sun's cc warns that "storage class after type is obsolescent".
+
+	* url.c (urlchr_table): Don't mark ~ as unsafe, too many broken
+	web sites are confused when ~ is changed to %7E.  Their servers
+	redirect /%7Efoo/ to /~foo/, which Wget again accesses using %7E,
+	causing further redirections, therefore looping infinitely.  See
+	Debian bug #301624 for an example.
+
+2005-04-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* alloca.c: Include wget.h to be able to use xmalloc.  In addition
 	to defining malloc to xmalloc, also define free to xfree.
 
