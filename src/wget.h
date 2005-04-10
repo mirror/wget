@@ -91,23 +91,31 @@ so, delete this exception statement from your version.  */
 /* locale independent replacement for ctype.h */
 #include "safe-ctype.h"
 
-#define DO_NOTHING do {} while (0)
+/* Conditionalize the use of GCC's __attribute__((format)) and
+   __builtin_expect features using macros.  */
+
+#if defined(__GNUC__) && __GNUC__ >= 3
+# define GCC_FORMAT_ATTR(a, b) __attribute__ ((format (printf, a, b)))
+# define LIKELY(exp)   __builtin_expect (!!(exp), 1)
+# define UNLIKELY(exp) __builtin_expect ((exp), 0)
+#else
+# define GCC_FORMAT_ATTR(a, b)
+# define LIKELY(exp)   (exp)
+# define UNLIKELY(exp) (exp)
+#endif
 
 /* Print X if debugging is enabled; a no-op otherwise.  */
+
 #ifdef ENABLE_DEBUG
-# define DEBUGP(x) do { if (opt.debug) { debug_logprintf x; } } while (0)
+# define DEBUGP(x) do if (UNLIKELY (opt.debug)) {debug_logprintf x;} while (0)
 #else  /* not ENABLE_DEBUG */
-# define DEBUGP(x) DO_NOTHING
+# define DEBUGP(x) do {} while (0)
 #endif /* not ENABLE_DEBUG */
 
-#ifdef __GNUC__
-# define GCC_FORMAT_ATTR(a, b) __attribute__ ((format (printf, a, b)))
-#else  /* not __GNUC__ */
-# define GCC_FORMAT_ATTR(a, b)
-#endif /* not __GNUC__ */
+/* Define an integer type that works for file sizes, content lengths,
+   and such.  Normally we could just use off_t, but off_t is always
+   32-bit on Windows.  */
 
-/* Define an integer type that works for LFS.  off_t would be perfect
-   for this, but off_t is always 32-bit under Windows.  */
 #ifndef WINDOWS
 typedef off_t wgint;
 # define SIZEOF_WGINT SIZEOF_OFF_T

@@ -1,5 +1,10 @@
 2005-04-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.h (DEBUGP): Use __builtin_expect to give a hint to GCC that
+	opt.debug is false in the vast majority of cases.
+
+2005-04-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* config-post.h: Declare alloca as void *, not char *.
 
 2005-04-09  Hrvoje Niksic  <hniksic@xemacs.org>
