@@ -395,6 +395,10 @@ construct_relative (const char *basefile, const char *linkfile)
   return link;
 }
 
+/* Used by write_backup_file to remember which files have been
+   written. */
+static struct hash_table *converted_files;
+
 static void
 write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
 {
@@ -406,7 +410,6 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
   /* Construct the backup filename as the original name plus ".orig". */
   size_t         filename_len = strlen (file);
   char*          filename_plus_orig_suffix;
-  static struct hash_table *converted_files;
 
   if (downloaded_file_return == FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED)
     {
@@ -856,6 +859,8 @@ convert_cleanup (void)
   if (downloaded_html_set)
     string_set_free (downloaded_html_set);
   downloaded_files_free ();
+  if (converted_files)
+    string_set_free (converted_files);
 }
 
 /* Book-keeping code for downloaded files that enables extension

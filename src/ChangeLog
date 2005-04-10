@@ -1,3 +1,7 @@
+2005-04-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* convert.c (convert_cleanup): Free converted_files.
+
 2005-04-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.h (DEBUGP): Use __builtin_expect to give a hint to GCC that
