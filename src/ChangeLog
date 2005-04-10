@@ -1,3 +1,7 @@
+2005-04-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* config-post.h: Declare alloca as void *, not char *.
+
 2005-04-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* recur.c (download_child_p): When -p is used, (temporarily)
