@@ -39,11 +39,6 @@ void *alloca ();
 
 #ifdef solaris
 # define NAMESPACE_TWEAKS
-# ifdef __GNUC__
-/* Prevent stdio.h from declaring va_list and thus tripping gcc's
-   stdarg.h. */
-#  define _VA_LIST
-# endif
 #endif
 
 #ifdef __linux__

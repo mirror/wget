@@ -1,5 +1,11 @@
 2005-04-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* config-post.h: Don't define _VA_LIST under Solaris; it breaks
+	compilation with GCC 3.4 under Solaris 10.  (It was defined to
+	avoid a warning with previous versions of GCC.)
+
+2005-04-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* xmalloc.c (register_ptr): Warn the user to increase SZ prior to
 	aborting.
 
