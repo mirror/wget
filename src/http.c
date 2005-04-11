@@ -358,7 +358,7 @@ request_free (struct request *req)
   xfree (req);
 }
 
-/* Send the contents of FILE_NAME to SOCK/SSL.  Make sure that exactly
+/* Send the contents of FILE_NAME to SOCK.  Make sure that exactly
    PROMISED_SIZE bytes are sent over the wire -- if the file is
    longer, read only that much; if the file is shorter, report an error.  */
 
