@@ -218,9 +218,8 @@ static int malloc_count, free_count;
 
 /* Home-grown hash table of mallocs: */
 
-#define SZ 100003		/* Prime number a little over 100,000.
-				   Increase the table size if you need
-				   to debug larger Wget runs.  */
+#define SZ 100003		/* Prime just over 100,000.  Increase
+				   it to debug larger Wget runs.  */
 
 static struct {
   const void *ptr;
@@ -250,7 +249,11 @@ register_ptr (const void *ptr, const char *file, int line)
 {
   int i;
   if (malloc_count - free_count > SZ)
-    abort ();
+    {
+      fprintf (stderr, "Increase SZ to a larger value and recompile.\n");
+      fflush (stderr);
+      abort ();
+    }
 
   i = ptr_position (ptr);
   malloc_table[i].ptr = ptr;

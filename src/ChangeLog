@@ -1,5 +1,10 @@
 2005-04-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* xmalloc.c (register_ptr): Warn the user to increase SZ prior to
+	aborting.
+
+2005-04-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* convert.c (convert_cleanup): Free converted_files.
 
 2005-04-10  Hrvoje Niksic  <hniksic@xemacs.org>
