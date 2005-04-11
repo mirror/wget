@@ -30,7 +30,7 @@ so, delete this exception statement from your version.  */
 /* With -DSTANDALONE, this file can be compiled outside Wget source
    tree.  To test, also use -DTEST.  */
 
-#ifndef STANDALONE
+#ifdef HAVE_CONFIG_H
 # include <config.h>
 # ifdef HAVE_STRING_H
 #  include <string.h>

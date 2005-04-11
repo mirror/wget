@@ -1,5 +1,10 @@
 2005-04-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* hash.c: Conditionalize including config.h on HAVE_CONFIG_H
+	instead of on STANDALONE.
+
+2005-04-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* gen_sslfunc.c (ssl_print_errors): Made static.
 	(ssl_print_errors): Eliminate potentially dangerous fixed-size
 	error buffer.  Passing NULL to ERR_error_string causes it to use
