@@ -30,9 +30,10 @@ so, delete this exception statement from your version.  */
 #ifndef XMALLOC_H
 #define XMALLOC_H
 
-/* Define this to get Wget's builtin malloc debugging, which is
-   primitive but fairly extensive.  It will make Wget somewhat slower
-   and larger, so it should be used by developers only.  */
+/* Define this to use Wget's builtin malloc debugging, which is crude
+   but occasionally useful.  It will make Wget a lot slower and
+   larger, and susceptible to aborting if malloc_table overflows, so
+   it should be used by developers only.  */
 #undef DEBUG_MALLOC
 
 /* When DEBUG_MALLOC is not defined (which is normally the case), the
