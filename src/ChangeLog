@@ -1,5 +1,19 @@
 2005-04-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* gen_sslfunc.c (ssl_print_errors): Made static.
+	(ssl_print_errors): Eliminate potentially dangerous fixed-size
+	error buffer.  Passing NULL to ERR_error_string causes it to use
+	its own static buffer, which is fine for our purposes.
+
+	* gen_sslfunc.c: Include gen_sslfunc.h.  Make the declarations of
+	ssl_init and ssl_conect match the actual definitions.
+	(ssl_connect): Simply return a boolean, the SSL context is no
+	longer useful as a return value.
+
+	* retr.c: Don't include SSL headers; we don't need them.
+
+2005-04-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* config-post.h: Don't define _VA_LIST under Solaris; it breaks
 	compilation with GCC 3.4 under Solaris 10.  (It was defined to
 	avoid a warning with previous versions of GCC.)

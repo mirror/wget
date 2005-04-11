@@ -31,9 +31,7 @@ so, delete this exception statement from your version.  */
 #ifndef GEN_SSLFUNC_H
 #define GEN_SSLFUNC_H
 
-int ssl_init PARAMS ((void));
-
+uerr_t ssl_init PARAMS ((void));
 int ssl_connect PARAMS ((int));
-int ssl_print_error PARAMS ((void)); 
 
 #endif /* GEN_SSLFUNC_H */

@@ -53,6 +53,7 @@ so, delete this exception statement from your version.  */
 #include "utils.h"
 #include "connect.h"
 #include "url.h"
+#include "gen_sslfunc.h"
 
 #ifndef errno
 extern int errno;
@@ -138,15 +139,12 @@ verify_callback (int ok, X509_STORE_CTX *ctx)
 
 /* Print SSL errors. */
 
-void
+static void
 ssl_print_errors (void) 
 {
   unsigned long curerr = 0;
-  char errbuff[1024];
-  xzero (errbuff);
   while ((curerr = ERR_get_error ()) != 0)
-    logprintf (LOG_NOTQUIET, "OpenSSL: %s\n",
-	       ERR_error_string (curerr, errbuff));
+    logprintf (LOG_NOTQUIET, "OpenSSL: %s\n", ERR_error_string (curerr, NULL));
 }
 
 /* Creates a SSL Context and sets some defaults for it */
@@ -329,9 +327,14 @@ ssl_close (int fd, void *ctx)
   DEBUGP (("Closed %d/SSL 0x%0lx\n", fd, (unsigned long) ssl));
 }
 
-/* Sets up a SSL structure and performs the handshake on fd. */
+/* Sets up a SSL structure and performs the handshake on fd.  The
+   resulting SSL structure is registered with the file descriptor FD
+   using fd_register_transport.  That way subsequent calls to xread,
+   xwrite, etc., will use the appropriate SSL functions.
 
-SSL *
+   Returns 1 on success, 0 on failure.  */
+
+int
 ssl_connect (int fd) 
 {
   SSL *ssl;
@@ -352,12 +355,13 @@ ssl_connect (int fd)
      friends and not care what happens underneath.  */
   fd_register_transport (fd, ssl_read, ssl_write, ssl_poll, ssl_peek,
 			 ssl_close, ssl);
-  DEBUGP (("Connected %d to SSL 0x%0lx\n", fd, (unsigned long) ssl));
-  return ssl;
+  DEBUGP (("Connected %d to SSL 0x%0*lx\n", fd, 2 * sizeof (void *),
+	   (unsigned long) ssl));
+  return 1;
 
  err:
   ssl_print_errors ();
   if (ssl)
     SSL_free (ssl);
-  return NULL;
+  return 0;
 }
