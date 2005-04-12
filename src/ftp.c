@@ -982,7 +982,7 @@ Error in server response, closing control connection.\n"));
 	fp = fopen (con->target, "wb");
       else
 	{
-	  fp = fopen_excl (con->target, 0);
+	  fp = fopen_excl (con->target, 1);
 	  if (!fp && errno == EEXIST)
 	    {
 	      /* We cannot just invent a new name and use it (which is

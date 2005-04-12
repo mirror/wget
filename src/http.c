@@ -1803,7 +1803,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	fp = fopen (*hs->local_file, "wb");
       else
 	{
-	  fp = fopen_excl (*hs->local_file, 0);
+	  fp = fopen_excl (*hs->local_file, 1);
 	  if (!fp && errno == EEXIST)
 	    {
 	      /* We cannot just invent a new name and use it (which is

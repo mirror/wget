@@ -1,3 +1,9 @@
+2005-04-12  Gisle Vanem  <giva@bgnett.no>
+
+	* ftp.c (getftp): Ditto.
+
+	* http.c (gethttp): Open the output file in binary mode.
+
 2005-04-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* hash.c: Conditionalize including config.h on HAVE_CONFIG_H
