@@ -1,3 +1,11 @@
+2005-04-14  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (skip_short_body): Print the skipped body data in debug
+	mode.
+	(skip_short_body): Don't skip more than 4k of body data.
+	(skip_short_body): Return whether the skipping was successful.
+	(gethttp): If skip_short_body failed, invalidate the connection.
+
 2005-04-12  Gisle Vanem  <giva@bgnett.no>
 
 	* ftp.c (getftp): Ditto.

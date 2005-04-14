@@ -711,22 +711,8 @@ resp_free (struct response *resp)
   xfree (resp);
 }
 
-/* Print [b, e) to the log, omitting the trailing CRLF.  */
-
-static void
-print_server_response_1 (const char *prefix, const char *b, const char *e)
-{
-  char *ln;
-  if (b < e && e[-1] == '\n')
-    --e;
-  if (b < e && e[-1] == '\r')
-    --e;
-  BOUNDED_TO_ALLOCA (b, e, ln);
-  logprintf (LOG_VERBOSE, "%s%s\n", prefix, escnonprint (ln));
-}
-
-/* Print the server response, line by line, omitting the trailing CR
-   characters, prefixed with PREFIX.  */
+/* Print the server response, line by line, omitting the trailing CRLF
+   from individual header lines, and prefixed with PREFIX.  */
 
 static void
 print_server_response (const struct response *resp, const char *prefix)
@@ -735,7 +721,18 @@ print_server_response (const struct response *resp, const char *prefix)
   if (!resp->headers)
     return;
   for (i = 0; resp->headers[i + 1]; i++)
-    print_server_response_1 (prefix, resp->headers[i], resp->headers[i + 1]);
+    {
+      const char *b = resp->headers[i];
+      const char *e = resp->headers[i + 1];
+      /* Skip CRLF */
+      if (b < e && e[-1] == '\n')
+	--e;
+      if (b < e && e[-1] == '\r')
+	--e;
+      /* This is safe even on printfs with broken handling of "%.<n>s"
+	 because resp->headers ends with \0.  */
+      logprintf (LOG_VERBOSE, "%s%.*s\n", prefix, e - b, b);
+    }
 }
 
 /* Parse the `Content-Range' header and extract the information it
@@ -782,30 +779,54 @@ parse_content_range (const char *hdr, wgint *first_byte_ptr,
 }
 
 /* Read the body of the request, but don't store it anywhere and don't
-   display a progress gauge.  This is useful for reading the error
-   responses whose bodies don't need to be displayed or logged, but
-   which need to be read anyway.  */
+   display a progress gauge.  This is useful for reading the bodies of
+   administrative responses to which we will soon issue another
+   request.  The response is not useful to the user, but reading it
+   allows us to continue using the same connection to the server.
 
-static void
+   If reading fails, 0 is returned, non-zero otherwise.  In debug
+   mode, the body is displayed for debugging purposes.  */
+
+static int
 skip_short_body (int fd, wgint contlen)
 {
-  /* Skipping the body doesn't make sense if the content length is
-     unknown because, in that case, persistent connections cannot be
-     used.  (#### This is not the case with HTTP/1.1 where they can
-     still be used with the magic of the "chunked" transfer!)  */
-  if (contlen == -1)
-    return;
-  DEBUGP (("Skipping %s bytes of body data... ", number_to_static_string (contlen)));
+  enum {
+    SKIP_SIZE = 512,		/* size of the download buffer */
+    SKIP_THRESHOLD = 4096	/* the largest size we read */
+  };
+  char dlbuf[SKIP_SIZE + 1];
+  dlbuf[SKIP_SIZE] = '\0';	/* so DEBUGP can safely print it */
+
+  /* We shouldn't get here with unknown contlen.  (This will change
+     with HTTP/1.1, which supports "chunked" transfer.)  */
+  assert (contlen != -1);
+
+  /* If the body is too large, it makes more sense to simply close the
+     connection than to try to read the body.  */
+  if (contlen > SKIP_THRESHOLD)
+    return 0;
+
+  DEBUGP (("Skipping %s bytes of body: [", number_to_static_string (contlen)));
 
   while (contlen > 0)
     {
-      char dlbuf[512];
-      int ret = fd_read (fd, dlbuf, MIN (contlen, sizeof (dlbuf)), -1);
+      int ret = fd_read (fd, dlbuf, MIN (contlen, SKIP_SIZE), -1);
       if (ret <= 0)
-	return;
+	{
+	  /* Don't normally report the error since this is an
+	     optimization that should be invisible to the user.  */
+	  DEBUGP (("] aborting (%s).\n",
+		   ret < 0 ? strerror (errno) : "EOF received"));
+	  return 0;
+	}
       contlen -= ret;
+      /* Safe even if %.*s bogusly expects terminating \0 because
+	 we've zero-terminated dlbuf above.  */
+      DEBUGP (("%.*s", ret, dlbuf));
     }
-  DEBUGP (("done.\n"));
+
+  DEBUGP (("] done.\n"));
+  return 1;
 }
 
 /* Persistent connections.  Currently, we cache the most recently used
@@ -1557,8 +1578,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   if (statcode == HTTP_STATUS_UNAUTHORIZED)
     {
       /* Authorization is required.  */
-      skip_short_body (sock, contlen);
-      CLOSE_FINISH (sock);
+      if (skip_short_body (sock, contlen))
+	CLOSE_FINISH (sock);
+      else
+	CLOSE_INVALIDATE (sock);
       if (auth_tried_already || !(user && passwd))
 	{
 	  /* If we have tried it already, then there is not point
@@ -1672,8 +1695,12 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 		     hs->newloc ? escnonprint_uri (hs->newloc) : _("unspecified"),
 		     hs->newloc ? _(" [following]") : "");
 	  if (keep_alive)
-	    skip_short_body (sock, contlen);
-	  CLOSE_FINISH (sock);
+	    {
+	      if (skip_short_body (sock, contlen))
+		CLOSE_FINISH (sock);
+	      else
+		CLOSE_INVALIDATE (sock);
+	    }
 	  xfree_null (type);
 	  return NEWLOCATION;
 	}
