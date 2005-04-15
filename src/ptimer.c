@@ -92,7 +92,7 @@ extern int errno;
 #if defined(WINDOWS) || defined(__CYGWIN__)
 # define PTIMER_WINDOWS		/* use Windows timers */
 #else
-# if defined(_POSIX_TIMERS) && _POSIX_TIMERS > 0
+# if _POSIX_TIMERS - 0 > 0
 #  define PTIMER_POSIX		/* use POSIX timers (clock_gettime) */
 # else
 #  ifdef HAVE_GETTIMEOFDAY
@@ -139,7 +139,7 @@ posix_init (void)
     int id;
     int sysconf_name;
   } clocks[] = {
-#if defined(_POSIX_MONOTONIC_CLOCK) && _POSIX_MONOTONIC_CLOCK >= 0
+#if _POSIX_MONOTONIC_CLOCK - 0 >= 0
     { CLOCK_MONOTONIC, _SC_MONOTONIC_CLOCK },
 #endif
 #ifdef CLOCK_HIGHRES

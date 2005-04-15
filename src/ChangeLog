@@ -1,5 +1,12 @@
 2005-04-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ptimer.c: Use _POSIX_TIMERS - 0 > 0, which handles the case when
+	_POSIX_TIMERS is defined but empty, as well as the case when it is
+	undefined.  Do the same with the check for _POSIX_MONOTONIC_CLOCK.
+	Suggested by Larry Jones.
+
+2005-04-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ptimer.c: Check that _POSIX_TIMERS is defined as well as > 0.
 	Problem reported by Steven M. Schweda.
 
