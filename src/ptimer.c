@@ -92,7 +92,7 @@ extern int errno;
 #if defined(WINDOWS) || defined(__CYGWIN__)
 # define PTIMER_WINDOWS		/* use Windows timers */
 #else
-# if _POSIX_TIMERS > 0
+# if defined(_POSIX_TIMERS) && _POSIX_TIMERS > 0
 #  define PTIMER_POSIX		/* use POSIX timers (clock_gettime) */
 # else
 #  ifdef HAVE_GETTIMEOFDAY

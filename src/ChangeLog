@@ -1,3 +1,8 @@
+2005-04-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* ptimer.c: Check that _POSIX_TIMERS is defined as well as > 0.
+	Problem reported by Steven M. Schweda.
+
 2005-04-14  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (skip_short_body): Print the skipped body data in debug
