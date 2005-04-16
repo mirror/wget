@@ -1,3 +1,8 @@
+2005-04-17  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* snprintf.c (fmtfp): More correct handling of significant digit
+	count with %g -- 0.002 has one significant digit, not three.
+
 2005-04-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* retr.c (fd_read_body): Respect read timeout with non-interactive

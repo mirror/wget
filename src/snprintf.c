@@ -727,11 +727,24 @@ fmtfp (char *buffer, size_t *currlen, size_t maxlen,
      includes the digits in intpart. */
   if (flags & DP_F_FP_G)
     {
-      LLONG temp = intpart;
-      for (temp = intpart; temp != 0; temp /= 10)
-	--max;
-      if (max < 0)
-	max = 0;
+      if (intpart != 0)
+	{
+	  /* For each digit of INTPART, print one less fractional digit. */
+	  LLONG temp = intpart;
+	  for (temp = intpart; temp != 0; temp /= 10)
+	    --max;
+	  if (max < 0)
+	    max = 0;
+	}
+      else
+	{
+	  /* For each leading 0 in fractional part, print one more
+	     fractional digit. */
+	  LDOUBLE temp;
+	  if (ufvalue != 0)
+	    for (temp = ufvalue; temp < 0.1; temp *= 10)
+	      ++max;
+	}
     }
 
   /* C99: trailing zeros are removed from the fractional portion of the
@@ -916,6 +929,8 @@ main (void)
   char buf1[LONG_STRING];
   char buf2[LONG_STRING];
   char *fp_fmt[] = {
+    /* %f formats */
+    "%f",
     "%-1.5f",
     "%1.5f",
     "%123.9f",
@@ -929,13 +944,28 @@ main (void)
     "%3.2f",
     "%.0f",
     "%.1f",
-    "%-1.5g",
+    "%#10.1f",
+#if SIZEOF_LONG_LONG != 0
+    "%.16f",
+    "%18.16f",
+    "%-16.16f",
+#endif
+    /* %g formats */
+    "%g",
     "%1.5g",
+    "%-1.5g",
+    "%.9g",
     "%123.9g",
+    "%#123.9g",
+#if SIZEOF_LONG_LONG != 0
+    "%.16g",
+    "%20.16g",
+#endif
     NULL
   };
   double fp_nums[] = { -1.5, 134.21, 91340.2, 341.1234, 0203.9, 0.96, 0.996, 
-    0.9996, 1.996, 4.136, 0.00205, 0};
+		       0.9996, 1.996, 4.136, 0.00205, 0.0001, 321.000009,
+		       0};
   char *int_fmt[] = {
     "%-1.5d",
     "%1.5d",
