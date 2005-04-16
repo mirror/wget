@@ -1,3 +1,10 @@
+2005-04-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* retr.c (fd_read_body): Respect read timeout with non-interactive
+	or no progress gauge -- treat ETIMEDOUT specially only when
+	progress_interactive.
+	Reported by FUJISHIMA Satsuki.
+
 2005-04-16  FUJISHIMA Satsuki  <sf@FreeBSD.org>
 
 	* http.c (gethttp): Don't use HTTP/1.0 persistent connections over

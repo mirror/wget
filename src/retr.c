@@ -281,10 +281,10 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
 	}
       ret = fd_read (fd, dlbuf, rdsize, tmout);
 
-      if (ret == 0 || (ret < 0 && errno != ETIMEDOUT))
-	break;			/* read error */
-      else if (ret < 0)
-	ret = 0;		/* read timeout */
+      if (progress_interactive && ret < 0 && errno == ETIMEDOUT)
+	ret = 0;		/* interactive timeout, handled above */
+      else if (ret <= 0)
+	break;			/* EOF or read error */
 
       if (progress || opt.limit_rate)
 	{
