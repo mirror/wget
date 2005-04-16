@@ -1,3 +1,20 @@
+2005-04-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* snprintf.c: Use the PARAMS macro to handle prototypes.  Write
+	function definitions in the ansi2knr-friendly way.
+	(fmtstr): If string precision is specified, don't read VALUE past
+	it.
+	(dopr): Actually print %g and %e formats.
+	(fmtfp): Fix a bug that caused 0.01 to be printed as 0.1.
+	(fmtfp): Use LLONG in floating point conversions to be able to
+	convert more digits.
+	(fmtfp): Interpret precision as number of significant digits with
+	%g.
+	(fmtfp): Omit trailing decimal zeros with %g.
+
+	* snprintf.c: Don't include <ctype.h> because none of it is used.
+	Include strings.h/string.h, as per Autoconf.
+
 2005-04-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ptimer.c: Use _POSIX_TIMERS - 0 > 0, which handles the case when

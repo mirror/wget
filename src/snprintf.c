@@ -70,18 +70,48 @@
  *    don't declare argument types to (v)snprintf if stdarg is not used.
  *    use int instead of short int as 2nd arg to va_arg.
  *
+ *  alexk (INN) 2002-08-21
+ *    use LLONG in fmtfp to handle more characters during floating
+ *    point conversion.
+ *
+ *  herb (Samba) 2002-12-19
+ *    actually print args for %g and %e
+ *
+ *  Hrvoje Niksic <hniksic@xemacs.org> 2005-04-15
+ *    use the PARAMS macro to handle prototypes.
+ *    write function definitions in the ansi2knr-friendly way.
+ *    if string precision is specified, don't read VALUE past it.
+ *    fix bug in fmtfp that caused 0.01 to be printed as 0.1.
+ *    don't include <ctype.h> because none of it is used.
+ *    interpret precision as number of significant digits with %g
+ *    omit trailing decimal zeros with %g
+ *
  **************************************************************/
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
+/* For testing purposes, always compile in the code. */
+#ifdef TEST_SNPRINTF
+# undef HAVE_SNPRINTF
+# undef HAVE_VSNPRINTF
+# ifndef SIZEOF_LONG_LONG
+#  ifdef __GNUC__
+#   define SIZEOF_LONG_LONG 8
+#  endif
+# endif
+#endif
+
 #if !defined(HAVE_SNPRINTF) || !defined(HAVE_VSNPRINTF)
 
-#include <string.h>
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# include <strings.h>
+#endif
 #include <sys/types.h>
 #include <stdio.h>		/* for NULL */
-#include <safe-ctype.h>
 
 /* varargs declarations: */
 
@@ -113,6 +143,13 @@
 # define LLONG long
 #endif
 
+/* If we're running the test suite, rename snprintf and vsnprintf to
+   avoid conflicts with the system version.  */
+#ifdef TEST_SNPRINTF
+# define snprintf test_snprintf
+# define vsnprintf test_vsnprintf
+#endif
+
 #ifdef HAVE_STDARGS
 int snprintf (char *str, size_t count, const char *fmt, ...);
 int vsnprintf (char *str, size_t count, const char *fmt, va_list arg);
@@ -121,15 +158,20 @@ int snprintf ();
 int vsnprintf ();
 #endif
 
-static int dopr (char *buffer, size_t maxlen, const char *format, 
-                 va_list args);
-static int fmtstr (char *buffer, size_t *currlen, size_t maxlen,
-		   char *value, int flags, int min, int max);
-static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
-		   LLONG value, int base, int min, int max, int flags);
-static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
-		  LDOUBLE fvalue, int min, int max, int flags);
-static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c );
+#ifndef PARAMS
+# define PARAMS(x) x
+#endif
+
+static int dopr PARAMS ((char *buffer, size_t maxlen, const char *format, 
+			 va_list args));
+static int fmtstr PARAMS ((char *buffer, size_t *currlen, size_t maxlen,
+			   char *value, int flags, int min, int max));
+static int fmtint PARAMS ((char *buffer, size_t *currlen, size_t maxlen,
+			   LLONG value, int base, int min, int max, int flags));
+static int fmtfp PARAMS ((char *buffer, size_t *currlen, size_t maxlen,
+			  LDOUBLE fvalue, int min, int max, int flags));
+static int dopr_outch PARAMS ((char *buffer, size_t *currlen, size_t maxlen,
+			       char c));
 
 /*
  * dopr(): poor man's version of doprintf
@@ -154,6 +196,7 @@ static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c );
 #define DP_F_ZERO  	(1 << 4)
 #define DP_F_UP    	(1 << 5)
 #define DP_F_UNSIGNED 	(1 << 6)
+#define DP_F_FP_G 	(1 << 7)
 
 /* Conversion Flags */
 #define DP_C_SHORT   1
@@ -165,7 +208,8 @@ static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c );
 #define MAX(p,q) ((p >= q) ? p : q)
 #define MIN(p,q) ((p <= q) ? p : q)
 
-static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
+static int
+dopr (char *buffer, size_t maxlen, const char *format, va_list args)
 {
   char ch;
   LLONG value;
@@ -309,7 +353,7 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
       case 'd':
       case 'i':
 	if (cflags == DP_C_SHORT) 
-	  value = (short int)va_arg (args, int);
+	  value = (short int) va_arg (args, int);
 	else if (cflags == DP_C_LONG)
 	  value = va_arg (args, long int);
 	else if (cflags == DP_C_LLONG)
@@ -321,7 +365,7 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
       case 'o':
 	flags |= DP_F_UNSIGNED;
 	if (cflags == DP_C_SHORT)
-	  value = (unsigned short int)va_arg (args, unsigned int);
+	  value = (unsigned short int) va_arg (args, unsigned int);
 	else if (cflags == DP_C_LONG)
 	  value = va_arg (args, unsigned long int);
 	else if (cflags == DP_C_LLONG)
@@ -333,7 +377,7 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
       case 'u':
 	flags |= DP_F_UNSIGNED;
 	if (cflags == DP_C_SHORT)
-	  value = (unsigned short int)va_arg (args, unsigned int);
+	  value = (unsigned short int) va_arg (args, unsigned int);
 	else if (cflags == DP_C_LONG)
 	  value = va_arg (args, unsigned long int);
 	else if (cflags == DP_C_LLONG)
@@ -347,7 +391,7 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
       case 'x':
 	flags |= DP_F_UNSIGNED;
 	if (cflags == DP_C_SHORT)
-	  value = (unsigned short int)va_arg (args, unsigned int);
+	  value = (unsigned short int) va_arg (args, unsigned int);
 	else if (cflags == DP_C_LONG)
 	  value = va_arg (args, unsigned long int);
 	else if (cflags == DP_C_LLONG)
@@ -361,7 +405,6 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
 	  fvalue = va_arg (args, LDOUBLE);
 	else
 	  fvalue = va_arg (args, double);
-	/* um, floating point? */
 	total += fmtfp (buffer, &currlen, maxlen, fvalue, min, max, flags);
 	break;
       case 'E':
@@ -371,14 +414,20 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
 	  fvalue = va_arg (args, LDOUBLE);
 	else
 	  fvalue = va_arg (args, double);
+	total += fmtfp (buffer, &currlen, maxlen, fvalue, min, max, flags);
 	break;
       case 'G':
 	flags |= DP_F_UP;
       case 'g':
+	flags |= DP_F_FP_G;
 	if (cflags == DP_C_LDOUBLE)
 	  fvalue = va_arg (args, LDOUBLE);
 	else
 	  fvalue = va_arg (args, double);
+	if (max == 0)
+	  /* C99 says: if precision [for %g] is zero, it is taken as one */
+	  max = 1;
+	total += fmtfp (buffer, &currlen, maxlen, fvalue, min, max, flags);
 	break;
       case 'c':
 	total += dopr_outch (buffer, &currlen, maxlen, va_arg (args, int));
@@ -451,8 +500,9 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
   return total;
 }
 
-static int fmtstr (char *buffer, size_t *currlen, size_t maxlen,
-                   char *value, int flags, int min, int max)
+static int
+fmtstr (char *buffer, size_t *currlen, size_t maxlen,
+	char *value, int flags, int min, int max)
 {
   int padlen, strln;     /* amount to pad */
   int cnt = 0;
@@ -460,12 +510,15 @@ static int fmtstr (char *buffer, size_t *currlen, size_t maxlen,
   
   if (value == 0)
   {
-    value = "<NULL>";
+    value = "(null)";
   }
 
-  for (strln = 0; value[strln]; ++strln); /* strlen */
-  if (max >= 0 && max < strln)
-    strln = max;
+  if (max < 0)
+    strln = strlen (value);
+  else
+    /* When precision is specified, don't read VALUE past precision. */
+    /*strln = strnlen (value, max);*/
+    for (strln = 0; strln < max && value[strln]; ++strln);
   padlen = min - strln;
   if (padlen < 0) 
     padlen = 0;
@@ -492,8 +545,9 @@ static int fmtstr (char *buffer, size_t *currlen, size_t maxlen,
 
 /* Have to handle DP_F_NUM (ie 0x and 0 alternates) */
 
-static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
-		   LLONG value, int base, int min, int max, int flags)
+static int
+fmtint (char *buffer, size_t *currlen, size_t maxlen,
+	LLONG value, int base, int min, int max, int flags)
 {
   int signvalue = 0;
   unsigned LLONG uvalue;
@@ -587,7 +641,8 @@ static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
   return total;
 }
 
-static LDOUBLE abs_val (LDOUBLE value)
+static LDOUBLE
+abs_val (LDOUBLE value)
 {
   LDOUBLE result = value;
 
@@ -597,7 +652,8 @@ static LDOUBLE abs_val (LDOUBLE value)
   return result;
 }
 
-static LDOUBLE pow10 (int exp)
+static LDOUBLE
+pow10 (int exp)
 {
   LDOUBLE result = 1;
 
@@ -610,9 +666,10 @@ static LDOUBLE pow10 (int exp)
   return result;
 }
 
-static long round (LDOUBLE value)
+static LLONG
+round (LDOUBLE value)
 {
-  long intpart;
+  LLONG intpart;
 
   intpart = value;
   value = value - intpart;
@@ -622,21 +679,25 @@ static long round (LDOUBLE value)
   return intpart;
 }
 
-static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
-		  LDOUBLE fvalue, int min, int max, int flags)
+static int
+fmtfp (char *buffer, size_t *currlen, size_t maxlen,
+       LDOUBLE fvalue, int min, int max, int flags)
 {
   int signvalue = 0;
   LDOUBLE ufvalue;
-  char iconvert[20];
-  char fconvert[20];
+  char iconvert[24];
+  char fconvert[24];
   int iplace = 0;
   int fplace = 0;
   int padlen = 0; /* amount to pad */
   int zpadlen = 0; 
-  int caps = 0;
   int total = 0;
-  long intpart;
-  long fracpart;
+  LLONG intpart;
+  LLONG fracpart;
+  LLONG mask10;
+  int leadingfrac0s = 0; /* zeros at the start of fractional part */
+  int omitzeros = 0;
+  int omitcount = 0;
   
   /* 
    * AIX manpage says the default is 0, but Solaris says the default
@@ -662,23 +723,57 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 
   intpart = ufvalue;
 
+  /* With %g precision is the number of significant digits, which
+     includes the digits in intpart. */
+  if (flags & DP_F_FP_G)
+    {
+      LLONG temp = intpart;
+      for (temp = intpart; temp != 0; temp /= 10)
+	--max;
+      if (max < 0)
+	max = 0;
+    }
+
+  /* C99: trailing zeros are removed from the fractional portion of the
+     result unless the # flag is specified */
+  if ((flags & DP_F_FP_G) && !(flags & DP_F_NUM))
+    omitzeros = 1;
+
+#if SIZEOF_LONG_LONG > 0
+# define MAX_DIGITS 18		/* grok more digits with long long */
+#else
+# define MAX_DIGITS 9		/* just long */
+#endif
+
   /* 
-   * Sorry, we only support 9 digits past the decimal because of our 
-   * conversion method
+   * Sorry, we only support several digits past the decimal because of
+   * our conversion method
    */
-  if (max > 9)
-    max = 9;
+  if (max > MAX_DIGITS)
+    max = MAX_DIGITS;
+
+  /* Factor of 10 with the needed number of digits, e.g. 1000 for max==3 */
+  mask10 = pow10 (max);
 
   /* We "cheat" by converting the fractional part to integer by
    * multiplying by a factor of 10
    */
-  fracpart = round ((pow10 (max)) * (ufvalue - intpart));
+  fracpart = round (mask10 * (ufvalue - intpart));
 
-  if (fracpart >= pow10 (max))
+  if (fracpart >= mask10)
   {
     intpart++;
-    fracpart -= pow10 (max);
+    fracpart -= mask10;
   }
+  else if (fracpart != 0)
+    /* If fracpart has less digits than the 10* mask, we need to
+       manually insert leading 0s.  For example 2.01's fractional part
+       requires one leading zero to distinguish it from 2.1. */
+    while (fracpart < mask10 / 10)
+      {
+	++leadingfrac0s;
+	mask10 /= 10;
+      }
 
 #ifdef DEBUG_SNPRINTF
   dprint (1, (debugfile, "fmtfp: %f =? %d.%d\n", fvalue, intpart, fracpart));
@@ -686,25 +781,29 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 
   /* Convert integer part */
   do {
-    iconvert[iplace++] =
-      (caps? "0123456789ABCDEF":"0123456789abcdef")[intpart % 10];
+    iconvert[iplace++] = '0' + intpart % 10;
     intpart = (intpart / 10);
-  } while(intpart && (iplace < 20));
-  if (iplace == 20) iplace--;
+  } while(intpart && (iplace < sizeof(iconvert)));
+  if (iplace == sizeof(iconvert)) iplace--;
   iconvert[iplace] = 0;
 
   /* Convert fractional part */
   do {
-    fconvert[fplace++] =
-      (caps? "0123456789ABCDEF":"0123456789abcdef")[fracpart % 10];
+    fconvert[fplace++] = '0' + fracpart % 10;
     fracpart = (fracpart / 10);
-  } while(fracpart && (fplace < 20));
-  if (fplace == 20) fplace--;
+  } while(fracpart && (fplace < sizeof(fconvert)));
+  while (leadingfrac0s-- > 0 && fplace < sizeof(fconvert))
+    fconvert[fplace++] = '0';
+  if (fplace == sizeof(fconvert)) fplace--;
   fconvert[fplace] = 0;
+  if (omitzeros)
+    while (omitcount < fplace && fconvert[omitcount] == '0')
+      ++omitcount;
 
   /* -1 for decimal point, another -1 if we are printing a sign */
-  padlen = min - iplace - max - 1 - ((signvalue) ? 1 : 0); 
-  zpadlen = max - fplace;
+  padlen = min - iplace - (max - omitcount) - 1 - ((signvalue) ? 1 : 0);
+  if (!omitzeros)
+    zpadlen = max - fplace;
   if (zpadlen < 0)
     zpadlen = 0;
   if (padlen < 0) 
@@ -741,11 +840,11 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
    * Decimal point.  This should probably use locale to find the correct
    * char to print out.
    */
-  if (max > 0)
+  if (max > 0 && (fplace > omitcount || zpadlen > 0))
   {
     total += dopr_outch (buffer, currlen, maxlen, '.');
 
-    while (fplace > 0) 
+    while (fplace > omitcount) 
       total += dopr_outch (buffer, currlen, maxlen, fconvert[--fplace]);
   }
 
@@ -764,7 +863,8 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
   return total;
 }
 
-static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c)
+static int
+dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c)
 {
   if (*currlen + 1 < maxlen)
     buffer[(*currlen)++] = c;
@@ -772,7 +872,8 @@ static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c)
 }
 
 #ifndef HAVE_VSNPRINTF
-int vsnprintf (char *str, size_t count, const char *fmt, va_list args)
+int
+vsnprintf (char *str, size_t count, const char *fmt, va_list args)
 {
   if (str != NULL)
     str[0] = 0;
@@ -781,12 +882,8 @@ int vsnprintf (char *str, size_t count, const char *fmt, va_list args)
 #endif /* !HAVE_VSNPRINTF */
 
 #ifndef HAVE_SNPRINTF
-/* VARARGS3 */
-#ifdef HAVE_STDARGS
-int snprintf (char *str,size_t count,const char *fmt,...)
-#else
-int snprintf (va_alist) va_dcl
-#endif
+int
+snprintf (char *str, size_t count,const char *fmt,...)
 {
 #ifndef HAVE_STDARGS
   char *str;
@@ -809,12 +906,12 @@ int snprintf (va_alist) va_dcl
 
 #ifdef TEST_SNPRINTF
 
-#include <stdio.h>
+# ifndef LONG_STRING
+#  define LONG_STRING 1024
+# endif
 
-#ifndef LONG_STRING
-#define LONG_STRING 1024
-#endif
-int main (void)
+int
+main (void)
 {
   char buf1[LONG_STRING];
   char buf2[LONG_STRING];
@@ -832,10 +929,13 @@ int main (void)
     "%3.2f",
     "%.0f",
     "%.1f",
+    "%-1.5g",
+    "%1.5g",
+    "%123.9g",
     NULL
   };
   double fp_nums[] = { -1.5, 134.21, 91340.2, 341.1234, 0203.9, 0.96, 0.996, 
-    0.9996, 1.996, 4.136, 0};
+    0.9996, 1.996, 4.136, 0.00205, 0};
   char *int_fmt[] = {
     "%-1.5d",
     "%1.5d",
@@ -922,5 +1022,6 @@ int main (void)
 #endif
 
   printf ("%d tests failed out of %d.\n", fail, num);
+  return 0;
 }
-#endif /* SNPRINTF_TEST */
+#endif /* TEST_SNPRINTF */
