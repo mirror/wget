@@ -1,3 +1,8 @@
+2005-04-16  FUJISHIMA Satsuki  <sf@FreeBSD.org>
+
+	* http.c (gethttp): Don't use HTTP/1.0 persistent connections over
+	proxy.
+
 2005-04-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* snprintf.c: Use the PARAMS macro to handle prototypes.  Write

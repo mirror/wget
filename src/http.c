@@ -1126,7 +1126,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
      causing it to not close the connection and leave both the proxy
      and the client hanging.  */
   int inhibit_keep_alive =
-    !opt.http_keep_alive || opt.ignore_length /*|| proxy != NULL*/;
+    !opt.http_keep_alive || opt.ignore_length || proxy != NULL;
 
   /* Headers sent when using POST. */
   wgint post_data_size = 0;
