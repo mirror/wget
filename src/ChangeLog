@@ -1,5 +1,10 @@
 2005-04-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (request_set_header): Free NAME when VALUE is NULL and
+	freeing the header name is requested.
+
+2005-04-17  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* snprintf.c (fmtstr): Declare VALUE as const char *.
 	Based on patch by Russ Allbery.
 

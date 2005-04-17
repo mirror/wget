@@ -234,7 +234,13 @@ request_set_header (struct request *req, char *name, char *value,
   struct request_header *hdr;
   int i;
   if (!value)
-    return;
+    {
+      /* A NULL value is a no-op; if freeing the name is requested,
+	 free it now to avoid leaks.  */
+      if (release_policy == rel_name || release_policy == rel_both)
+	xfree (name);
+      return;
+    }
   for (i = 0; i < req->hcount; i++)
     {
       hdr = &req->headers[i];
