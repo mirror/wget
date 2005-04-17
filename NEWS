@@ -14,7 +14,8 @@ Unix variants, as well as Windows.
 ** IPv6 is now supported by Wget.  Unlike the experimental code in
 1.9, this version has no problems with dual-family systems.  The new
 flags `--inet4' and `--inet6' (or `-4' and `-6' for short) force the
-use of IPv4 and IPv6 respectively.
+use of IPv4 and IPv6 respectively.  Unfortunately the IPv6 support
+still does not work on Windows.
 
 ** Talking to SSL servers over proxies now actually works.
 
@@ -22,8 +23,9 @@ use of IPv4 and IPv6 respectively.
 has to start over because the server doesn't support Range.  Instead,
 with such servers Wget now simply ignores the data up to the byte
 where the last attempt left off, and only then continues appending to
-the file.  That way the downloaded file never shrinks, and "start
-over" retries work correctly even when downloading to stdout.
+the file.  That way the downloaded file never shrinks, and download
+retries from servers without support for partial downloads work even
+when downloading to stdout.
 
 ** Passive FTP is now the default FTP transfer mode.  Use
 `--no-passive-ftp' or specify `passive_ftp = off' in your init file to
