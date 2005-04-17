@@ -1,5 +1,10 @@
 2005-04-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* snprintf.c (fmtstr): Declare VALUE as const char *.
+	Based on patch by Russ Allbery.
+
+2005-04-17  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* snprintf.c (fmtfp): More correct handling of significant digit
 	count with %g -- 0.002 has one significant digit, not three.
 

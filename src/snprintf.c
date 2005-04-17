@@ -165,7 +165,7 @@ int vsnprintf ();
 static int dopr PARAMS ((char *buffer, size_t maxlen, const char *format, 
 			 va_list args));
 static int fmtstr PARAMS ((char *buffer, size_t *currlen, size_t maxlen,
-			   char *value, int flags, int min, int max));
+			   const char *value, int flags, int min, int max));
 static int fmtint PARAMS ((char *buffer, size_t *currlen, size_t maxlen,
 			   LLONG value, int base, int min, int max, int flags));
 static int fmtfp PARAMS ((char *buffer, size_t *currlen, size_t maxlen,
@@ -502,7 +502,7 @@ dopr (char *buffer, size_t maxlen, const char *format, va_list args)
 
 static int
 fmtstr (char *buffer, size_t *currlen, size_t maxlen,
-	char *value, int flags, int min, int max)
+	const char *value, int flags, int min, int max)
 {
   int padlen, strln;     /* amount to pad */
   int cnt = 0;
