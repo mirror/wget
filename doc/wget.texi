@@ -813,26 +813,24 @@ Setting quota to 0 or to @samp{inf} unlimits the download quota.
 
 @cindex DNS cache
 @cindex caching of DNS lookups
-@item --dns-cache=off
-Turn off caching of DNS lookups.  Normally, Wget remembers the addresses
-it looked up from DNS so it doesn't have to repeatedly contact the DNS
-server for the same (typically small) set of addresses it retrieves
-from.  This cache exists in memory only; a new Wget run will contact DNS
-again.
+@item --no-dns-cache
+Turn off caching of DNS lookups.  Normally, Wget remembers the IP
+addresses it looked up from DNS so it doesn't have to repeatedly
+contact the DNS server for the same (typically small) set of hosts it
+retrieves from.  This cache exists in memory only; a new Wget run will
+contact DNS again.
 
-However, in some cases it is not desirable to cache host names, even for
-the duration of a short-running application like Wget.  For example,
-some HTTP servers are hosted on machines with dynamically allocated IP
-addresses that change from time to time.  Their DNS entries are updated
-along with each change.  When Wget's download from such a host gets
-interrupted by IP address change, Wget retries the download, but (due to
-DNS caching) it contacts the old address.  With the DNS cache turned
-off, Wget will repeat the DNS lookup for every connect and will thus get
-the correct dynamic address every time---at the cost of additional DNS
-lookups where they're probably not needed.
+However, it has been reported that in some situations it is not
+desirable to cache host names, even for the duration of a
+short-running application like Wget.  With this option Wget issues a
+new DNS lookup (more precisely, a new call to @code{gethostbyname} or
+@code{getaddrinfo}) each time it makes a new connection.  Please note
+that this option will @emph{not} affect caching that might be
+performed by the resolving library or by an external caching layer,
+such as NSCD.
 
-If you don't understand the above description, you probably won't need
-this option.
+If you don't understand exactly what this option does, you probably
+won't need it.
 
 @cindex file names, restrict
 @cindex Windows file names
@@ -1065,7 +1063,7 @@ Write down the name and value of the cookie, and manually instruct Wget
 to send those cookies, bypassing the ``official'' cookie support:
 
 @example
-wget --cookies=off --header "Cookie: @var{name}=@var{value}"
+wget --no-cookies --header "Cookie: @var{name}=@var{value}"
 @end example
 
 @cindex saving cookies

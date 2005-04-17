@@ -1,3 +1,8 @@
+2005-04-18  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Download Options): Don't claim that --no-dns-cache is
+	necessary for dyndns servers -- it's not.
+
 2005-04-08  Larry Jones  <lawrence.jones@ugsplm.com>
 
 	* Makefile.in (wget.info): Don't use $< in an explicit rule.
