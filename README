@@ -55,14 +55,14 @@ being migrated to <http://www.gnu.org/software/wget/>, where will be
 its permanent home.
 
 
-MAINTAINER: Hrvoje Niksic <hniksic@xemacs.org>
+MAINTAINER: Mauro Tortonesi <mauro@ferrara.linux.it>
 
 Wget was originally written by Hrvoje Niksic.  Please see the file
 AUTHORS for a list of major contributors, and the ChangeLogs for a
 detailed listing of all contributions.
 
 
-Copyright (C) 2003 Free Software Foundation, Inc.
+Copyright (C) 2005 Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
