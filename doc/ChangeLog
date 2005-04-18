@@ -1,5 +1,9 @@
 2005-04-18  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi: Update mailing list information.
+
+2005-04-18  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi (Download Options): Don't claim that --no-dns-cache is
 	necessary for dyndns servers -- it's not.
 

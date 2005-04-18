@@ -2885,19 +2885,36 @@ Wget @value{VERSION} can be found at
 @cindex mailing list
 @cindex list
 
-Wget has its own mailing list at @email{wget@@sunsite.dk}, thanks
-to Karsten Thygesen.  The mailing list is for discussion of Wget
-features and web, reporting Wget bugs (those that you think may be of
-interest to the public) and mailing announcements.  You are welcome to
-subscribe.  The more people on the list, the better!
+There are several Wget-related mailing lists, all hosted by
+SunSITE.dk.  The general discussion list is at
+@email{wget@@sunsite.dk}.  It is the preferred place for bug reports
+and suggestions, as well as for discussion of development.  You are
+invited to subscribe.
 
-To subscribe, simply send mail to @email{wget-subscribe@@sunsite.dk}.
-Unsubscribe by mailing to @email{wget-unsubscribe@@sunsite.dk}.
+To subscribe, simply send mail to @email{wget-subscribe@@sunsite.dk}
+and follow the instructions.  Unsubscribe by mailing to
+@email{wget-unsubscribe@@sunsite.dk}.  The mailing list is archived at
+@url{http://www.mail-archive.com/wget%40sunsite.dk/} and at
+@url{http://news.gmane.org/gmane.comp.web.wget.general}.
 
-The mailing list is archived at @url{http://fly.srk.fer.hr/archive/wget}.
-Alternative archive is available at
-@url{http://www.mail-archive.com/wget%40sunsite.auc.dk/}.
- 
+The second mailing list is at @email{wget-patches@@sunsite.dk}, and is
+used to submit patches for review by Wget developers.  A ``patch'' is
+a textual representation of change to source code, readable by both
+humans and programs.  The file @file{PATCHES} that comes with Wget
+covers the creation and submitting of patches in detail.  Please don't
+send general suggestions or bug reports to @samp{wget-patches}; use it
+only for patch submissions.
+
+To subscribe, simply send mail to @email{wget-subscribe@@sunsite.dk}
+and follow the instructions.  Unsubscribe by mailing to
+@email{wget-unsubscribe@@sunsite.dk}.  The mailing list is archived at
+@url{http://news.gmane.org/gmane.comp.web.wget.patches}.
+
+Finally, there is a read-only list at @email{wget-cvs@@sunsite.dk}
+that tracks commits to the Wget CVS repository.  To subscribe to that
+list, send mail to @email{wget-cvs-subscribe@@sunsite.dk}.  The list
+is not archived.
+
 @node Reporting Bugs
 @section Reporting Bugs
 @cindex bugs
@@ -2934,14 +2951,24 @@ with @file{.wgetrc} moved out of the way.  Only if it turns out that
 the file.
 
 @item
-Please start Wget with @samp{-d} option and send the log (or the
-relevant parts of it).  If Wget was compiled without debug support,
-recompile it.  It is @emph{much} easier to trace bugs with debug support
-on.
+Please start Wget with @samp{-d} option and send us the resulting
+output (or relevant parts thereof).  If Wget was compiled without
+debug support, recompile it---it is @emph{much} easier to trace bugs
+with debug support on.
+
+Note: please make sure to remove any potentially sensitive information
+from the debug log before sending it to the bug address.  The
+@code{-d} won't go out of its way to collect sensitive information,
+but the log @emph{will} contain a fairly complete transcript of Wget's
+communication with the server, which may include passwords and pieces
+of downloaded data.  Since the bug address is publically archived, you
+may assume that all bug reports are visible to the public.
 
 @item
 If Wget has crashed, try to run it in a debugger, e.g. @code{gdb `which
-wget` core} and type @code{where} to get the backtrace.
+wget` core} and type @code{where} to get the backtrace.  This may not
+work if the system administrator has disabled core files, but it is
+safe to try.
 @end enumerate
 @c man end
 
