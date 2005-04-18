@@ -378,7 +378,7 @@ char *ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
     size = 32 + hostlen + domlen;
 
     base64 = (char *) alloca (BASE64_LENGTH (size) + 1);
-    base64_encode (ntlmbuf, base64, size);
+    base64_encode (ntlmbuf, size, base64);
 
     output = concat_strings ("NTLM ", base64, (char *) 0);
     break;
@@ -538,7 +538,7 @@ char *ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
 
     /* convert the binary blob into base64 */
     base64 = (char *) alloca (BASE64_LENGTH (size) + 1);
-    base64_encode (ntlmbuf, base64, size);
+    base64_encode (ntlmbuf, size, base64);
 
     output = concat_strings ("NTLM ", base64, (char *) 0);
 

@@ -2607,29 +2607,35 @@ http_atotm (const char *time_string)
   return -1;
 }
 
-/* Authorization support: We support two authorization schemes:
+/* Authorization support: We support three authorization schemes:
 
    * `Basic' scheme, consisting of base64-ing USER:PASSWORD string;
 
    * `Digest' scheme, added by Junio Hamano <junio@twinsun.com>,
    consisting of answering to the server's challenge with the proper
-   MD5 digests.  */
+   MD5 digests.
+
+   * `NTLM' ("NT Lan Manager") scheme, based on code written by Daniel
+   Stenberg for libcurl.  Like digest, NTLM is based on a
+   challenge-response mechanism, but unlike digest, it is non-standard
+   (authenticates TCP connections rather than requests), undocumented
+   and Microsoft-specific.  */
 
 /* Create the authentication header contents for the `Basic' scheme.
    This is done by encoding the string `USER:PASS' in base64 and
    prepending `HEADER: Basic ' to it.  */
+
 static char *
 basic_authentication_encode (const char *user, const char *passwd)
 {
   char *t1, *t2;
   int len1 = strlen (user) + 1 + strlen (passwd);
-  int len2 = BASE64_LENGTH (len1);
 
   t1 = (char *)alloca (len1 + 1);
   sprintf (t1, "%s:%s", user, passwd);
 
-  t2 = (char *)alloca (len2 + 1);
-  base64_encode (t1, t2, len1);
+  t2 = (char *)alloca (BASE64_LENGTH (len1) + 1);
+  base64_encode (t1, len1, t2);
 
   return concat_strings ("Basic ", t2, (char *) 0);
 }

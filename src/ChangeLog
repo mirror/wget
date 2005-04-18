@@ -1,3 +1,9 @@
+2005-04-18  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (base64_encode): Use the parameter order that makes more
+	sense.  Return the length of the base64 written.  Updated all
+	callers.
+
 2005-04-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (request_set_header): Free NAME when VALUE is NULL and

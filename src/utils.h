@@ -116,7 +116,7 @@ void xsleep PARAMS ((double));
 /* How many bytes it will take to store LEN bytes in base64.  */
 #define BASE64_LENGTH(len) (4 * (((len) + 2) / 3))
 
-void base64_encode PARAMS ((const char *, char *, int));
+int base64_encode PARAMS ((const char *, int, char *));
 int base64_decode PARAMS ((const char *, char *));
 
 #endif /* UTILS_H */

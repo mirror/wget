@@ -1826,11 +1826,16 @@ xsleep (double seconds)
 #endif /* not WINDOWS */
 
 /* Encode the string S of length LENGTH to base64 format and place it
-   to STORE.  STORE will be 0-terminated, and must point to a writable
-   buffer of at least 1+BASE64_LENGTH(length) bytes.  */
+   to B64STORE.  The output will be \0-terminated, and must point to a
+   writable buffer of at least 1+BASE64_LENGTH(length) bytes.  It
+   returns the length of the resulting base64 data, not counting the
+   terminating zero.
 
-void
-base64_encode (const char *s, char *store, int length)
+   This implementation will not emit newlines after 76 characters of
+   base64 data.  */
+
+int
+base64_encode (const char *s, int length, char *b64store)
 {
   /* Conversion table.  */
   static char tbl[64] = {
@@ -1844,7 +1849,7 @@ base64_encode (const char *s, char *store, int length)
     '4','5','6','7','8','9','+','/'
   };
   int i;
-  unsigned char *p = (unsigned char *)store;
+  unsigned char *p = (unsigned char *) b64store;
 
   /* Transform the 3x8 bits to 4x6 bits, as required by base64.  */
   for (i = 0; i < length; i += 3)
@@ -1855,13 +1860,17 @@ base64_encode (const char *s, char *store, int length)
       *p++ = tbl[s[2] & 0x3f];
       s += 3;
     }
+
   /* Pad the result if necessary...  */
   if (i == length + 1)
     *(p - 1) = '=';
   else if (i == length + 2)
     *(p - 1) = *(p - 2) = '=';
+
   /* ...and zero-terminate it.  */
   *p = '\0';
+
+  return p - (unsigned char *) b64store;
 }
 
 #define IS_ASCII(c) (((c) & 0x80) == 0)
@@ -1886,7 +1895,8 @@ base64_encode (const char *s, char *store, int length)
 int
 base64_decode (const char *base64, char *to)
 {
-  /* Table of base64 values for first 128 characters.  */
+  /* Table of base64 values for first 128 characters.  Note that this
+     assumes ASCII (but so does Wget in other places).  */
   static short base64_char_to_value[128] =
     {
       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,	/*   0-  9 */
