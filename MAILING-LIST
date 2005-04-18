@@ -2,7 +2,8 @@
 
 		      WGET-RELATED MAILING LISTS
 
-Wget has several mailing lists, all hosted by SunSITE.dk.
+There are several mailing lists related to GNU Wget, all of them
+hosted by SunSITE.dk.
 
 wget@sunsite.dk:
 
@@ -14,14 +15,17 @@ wget@sunsite.dk:
     subscribe, send mail to <wget-subscribe@sunsite.dk>.
 
     NOTE: The list allows posts from non-subscribers.  This is
-    intentional; I hate having to subscribe to a list if I only want
-    to ask a single question.  If you're not subscribed to the list
-    and ask something, don't forget to request that the responses be
-    Cc'ed to you.
+    intentional; I hate having to subscribe to a list only to ask a
+    single question.  However, to protect the list members from spam,
+    non-subscribers must confirm messages they send to the list.
 
-    This mailing list is archived at:
+    If you're not subscribed to the list and ask something, don't
+    forget to request that the responses be Cc'ed to you.
+
+    The list is archived at:
 
 	http://www.mail-archive.com/wget%40sunsite.dk/
+        http://news.gmane.org/gmane.comp.web.wget.general
 
 wget-patches@sunsite.dk:
 
@@ -36,12 +40,19 @@ wget-patches@sunsite.dk:
     the new patches.  To do that, send mail to
     <wget-patches-subscribe@sunsite.dk>.
 
+    The list is archived at:
+
+        http://news.gmane.org/gmane.comp.web.wget.patches
+
 wget-cvs@sunsite.dk:
 
     This list just distributes notices about commits to the Wget CVS
     tree.  It has no discussions, and it is not interesting unless you
-    wish to take part in development.  If so, send mail to
-    <wget-cvs-subscribe@sunsite.dk> to subscribe.
+    wish to take part in development or track commits for whatever
+    reasons.  If so, send mail to <wget-cvs-subscribe@sunsite.dk> to
+    subscribe.
+
+    The list is not archived.
 
 As of this writing, the mail alias <bug-wget@gnu.org> is an alias for
 <wget@sunsite.dk>.
