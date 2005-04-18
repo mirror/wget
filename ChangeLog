@@ -1,3 +1,7 @@
+2005-04-18  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* MACHINES: Removed.
+
 2005-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: When checking for OpenSSL headers, check for all

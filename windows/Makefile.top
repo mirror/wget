@@ -72,6 +72,6 @@ bindist: wget.zip
 
 wget.zip: $(SUBDIRS)
 	$(RM) wget.zip
-	zip -Djl9 wget.zip AUTHORS COPYING INSTALL MACHINES MAILING-LIST NEWS README doc/sample.wgetrc
+	zip -Djl9 wget.zip AUTHORS COPYING INSTALL MAILING-LIST NEWS README doc/sample.wgetrc
 	zip -Dj9 wget.zip src/wget.exe doc/wget.hlp
 
