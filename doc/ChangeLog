@@ -1,3 +1,7 @@
+2005-04-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi: Document IPv6 related options.
+
 2005-04-18  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi: Update mailing list information.
