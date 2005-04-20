@@ -1,5 +1,9 @@
 2005-04-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi: Document behavior of -6 wrt mapped IPv4 addresses.
+
+2005-04-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi: Document IPv6 related options.
 
 2005-04-18  Hrvoje Niksic  <hniksic@xemacs.org>
