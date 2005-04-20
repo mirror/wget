@@ -257,7 +257,7 @@ request_set_header (struct request *req, char *name, char *value,
 
   /* Install new header. */
 
-  if (req->hcount >= req->hcount)
+  if (req->hcount >= req->hcapacity)
     {
       req->hcapacity <<= 1;
       req->headers = xrealloc (req->headers,

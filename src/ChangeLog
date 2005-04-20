@@ -1,3 +1,8 @@
+2005-04-20  FUJISHIMA Satsuki  <sf@FreeBSD.org>
+
+	* http.c (request_set_header): Fix the check whether a new header
+	needs to be allocated.
+
 2005-04-18  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (base64_encode): Use the parameter order that makes more
