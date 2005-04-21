@@ -51,6 +51,7 @@ AC_DEFINE_UNQUOTED([OS_TYPE], "$host_os",
 dnl
 dnl Process features.
 dnl
+_AS_PATH_SEPARATOR_PREPARE
 
 AC_ARG_WITH(ssl,
 [[  --with-ssl[=SSL-ROOT]   link with SSL support [default=auto]

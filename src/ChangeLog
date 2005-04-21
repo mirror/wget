@@ -1,3 +1,7 @@
+2005-04-20  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* connect.c: Set IPV6_V6ONLY socket option when -6 switch is used.
+
 2005-04-20  FUJISHIMA Satsuki  <sf@FreeBSD.org>
 
 	* http.c (request_set_header): Fix the check whether a new header

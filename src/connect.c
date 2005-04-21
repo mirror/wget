@@ -283,6 +283,18 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
   if (sock < 0)
     goto err;
 
+#if defined(ENABLE_IPV6) && defined(IPV6_V6ONLY)
+  if (opt.ipv6_only) {
+    int on = 1;
+    /* In case of error, we will go on anyway... */
+    int err = setsockopt (sock, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof (on));
+#ifdef ENABLE_DEBUG
+    if (err < 0) 
+      DEBUGP (("Failed setting IPV6_V6ONLY: %s", strerror (errno)));
+#endif
+  }
+#endif
+
   /* For very small rate limits, set the buffer size (and hence,
      hopefully, the kernel's TCP window size) to the per-second limit.
      That way we should never have to sleep for more than 1s between
