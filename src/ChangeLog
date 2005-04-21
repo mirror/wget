@@ -1,3 +1,8 @@
+2005-04-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http-ntlm.c (ntlm_output): Fix setting the domain.
+	Suggested by Sami Krank.
+
 2005-04-20  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* connect.c: Set IPV6_V6ONLY socket option when -6 switch is used.

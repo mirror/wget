@@ -417,7 +417,7 @@ char *ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
       usr = strchr(user, '/');
 
     if (usr) {
-      domain = usr;
+      domain = user;
       domlen = usr - domain;
       usr++;
     }
