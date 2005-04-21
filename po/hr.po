@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.9-b5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-23 18:41+0100\n"
+"POT-Creation-Date: 2005-04-21 17:45+0200\n"
 "PO-Revision-Date: 2005-03-23 21:58+0100\n"
 "Last-Translator: Hrvoje Niksic <hniksic@xemacs.org>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
@@ -29,35 +29,35 @@ msgstr "Spajam se na %s|%s|:%d... "
 msgid "Connecting to %s:%d... "
 msgstr "Spajam se na %s:%d... "
 
-#: src/connect.c:324
+#: src/connect.c:336
 msgid "connected.\n"
 msgstr "spojen.\n"
 
-#: src/convert.c:172
-#, c-format
-msgid "Converted %d files in %.2f seconds.\n"
+#: src/convert.c:176
+#, fuzzy, c-format
+msgid "Converted %d files in %.*f seconds.\n"
 msgstr "Konvertirao %d spisa za %.2f sekundi.\n"
 
-#: src/convert.c:198
+#: src/convert.c:202
 #, c-format
 msgid "Converting %s... "
 msgstr "Konvertiram %s... "
 
-#: src/convert.c:211
+#: src/convert.c:215
 msgid "nothing to do.\n"
 msgstr "nema posla.\n"
 
-#: src/convert.c:219 src/convert.c:243
+#: src/convert.c:223 src/convert.c:247
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "Ne mogu konvertirati linkove u %s: %s\n"
 
-#: src/convert.c:234
+#: src/convert.c:238
 #, c-format
 msgid "Unable to delete `%s': %s\n"
 msgstr "Ne mogu izbrisati `%s': %s\n"
 
-#: src/convert.c:449
+#: src/convert.c:447
 #, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Ne mogu snimiti backup iz %s u %s: %s\n"
@@ -87,42 +87,42 @@ msgstr "Gre¹ka pri pisanju u `%s': %s\n"
 msgid "Error closing `%s': %s\n"
 msgstr "Gre¹ka pri zatvaranju `%s': %s\n"
 
-#: src/ftp-ls.c:840
+#: src/ftp-ls.c:841
 msgid "Unsupported listing type, trying Unix listing parser.\n"
 msgstr ""
 "Nepodr¾ana vrsta ispisa, poku¹avat æu s Unixovim razluèiteljem ispisa.\n"
 
-#: src/ftp-ls.c:886 src/ftp-ls.c:888
+#: src/ftp-ls.c:887 src/ftp-ls.c:889
 #, c-format
 msgid "Index of /%s on %s:%d"
 msgstr "Indeks direktorija /%s na %s:%d"
 
-#: src/ftp-ls.c:911
+#: src/ftp-ls.c:912
 #, c-format
 msgid "time unknown       "
 msgstr "nepoznato vrijeme    "
 
-#: src/ftp-ls.c:915
+#: src/ftp-ls.c:916
 #, c-format
 msgid "File        "
 msgstr "Spis        "
 
-#: src/ftp-ls.c:918
+#: src/ftp-ls.c:919
 #, c-format
 msgid "Directory   "
 msgstr "Direktorij  "
 
-#: src/ftp-ls.c:921
+#: src/ftp-ls.c:922
 #, c-format
 msgid "Link        "
 msgstr "Link        "
 
-#: src/ftp-ls.c:924
+#: src/ftp-ls.c:925
 #, c-format
 msgid "Not sure    "
 msgstr "Ne znam     "
 
-#: src/ftp-ls.c:942
+#: src/ftp-ls.c:943
 #, c-format
 msgid " (%s bytes)"
 msgstr " (%s bajtova)"
@@ -132,12 +132,12 @@ msgstr " (%s bajtova)"
 msgid "Length: %s"
 msgstr "Duljina: %s"
 
-#: src/ftp.c:232 src/http.c:1750
+#: src/ftp.c:232 src/http.c:1791
 #, c-format
 msgid ", %s (%s) remaining"
 msgstr ", %s (%s) preostalo"
 
-#: src/ftp.c:236 src/http.c:1754
+#: src/ftp.c:236 src/http.c:1795
 #, c-format
 msgid ", %s remaining"
 msgstr ", %s preostalo"
@@ -268,7 +268,7 @@ msgstr ""
 #. what functions like unique_create typically do)
 #. because we told the user we'd use this name.
 #. Instead, return and retry the download.
-#: src/ftp.c:992 src/http.c:1806
+#: src/ftp.c:992 src/http.c:1847
 #, c-format
 msgid "%s has sprung into existence.\n"
 msgstr "%s se nenadano pojavio.\n"
@@ -296,19 +296,21 @@ msgstr "Prijenos podataka prekinut.\n"
 msgid "File `%s' already there, not retrieving.\n"
 msgstr "Spis `%s' veæ postoji, ne dohvaæam.\n"
 
-#: src/ftp.c:1224 src/http.c:2025
+#: src/ftp.c:1224 src/http.c:2066
 #, c-format
 msgid "(try:%2d)"
 msgstr "(pok:%2d)"
 
-#: src/ftp.c:1296 src/http.c:2306
+#: src/ftp.c:1296 src/http.c:2347
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s]\n"
 "\n"
-msgstr "%s (%s) - `%s' snimljen [%s]\n\n"
+msgstr ""
+"%s (%s) - `%s' snimljen [%s]\n"
+"\n"
 
-#: src/ftp.c:1338 src/main.c:921 src/recur.c:376 src/retr.c:838
+#: src/ftp.c:1338 src/main.c:921 src/recur.c:376 src/retr.c:835
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Bri¹em %s.\n"
@@ -400,7 +402,7 @@ msgstr "Ne dohvaæam direktorije jer je dubina %d (najvi¹e %d).\n"
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr "Ne ponirem u `%s' jer je iskljuèen ili nije ukljuèen.\n"
 
-#: src/ftp.c:1758 src/ftp.c:1772
+#: src/ftp.c:1759 src/ftp.c:1773
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr "Odbijam `%s'.\n"
@@ -408,17 +410,17 @@ msgstr "Odbijam `%s'.\n"
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1818
+#: src/ftp.c:1819
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr "Ni¹ta ne ide uz `%s'.\n"
 
-#: src/ftp.c:1884
+#: src/ftp.c:1885
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%s].\n"
 msgstr "Snimio HTML-iziran indeks u `%s' [%s].\n"
 
-#: src/ftp.c:1889
+#: src/ftp.c:1890
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr "Snimio HTML-iziran indeks u `%s'.\n"
@@ -429,13 +431,17 @@ msgstr "Snimio HTML-iziran indeks u `%s'.\n"
 #. cryptographically weak, but people who care about strong
 #. cryptography should install /dev/random (default on Linux) or
 #. specify their own source of randomness anyway.
-#: src/gen_sslfunc.c:108
+#: src/gen_sslfunc.c:109
 msgid "Warning: using a weak random seed.\n"
 msgstr "Upozorenje: koristi se slab zametak generatora slucajnih brojeva.\n"
 
-#: src/gen_sslfunc.c:168
+#: src/gen_sslfunc.c:166
 msgid "Could not seed OpenSSL PRNG; disabling SSL.\n"
 msgstr "Nije uspjela inicijalizacija OpenSSL-ovog PRNG-a; SSL iskljuèen.\n"
+
+#: src/gen_sslfunc.c:223
+msgid "Warning: validation of server certificate not possible!\n"
+msgstr ""
 
 #: src/getopt.c:675
 #, c-format
@@ -496,35 +502,35 @@ msgstr "%s: opcija `-W %s' je dvosmislena\n"
 msgid "%s: option `-W %s' doesn't allow an argument\n"
 msgstr "%s: uz opciju `-W %s' ne ide argument\n"
 
-#: src/host.c:345
+#: src/host.c:368
 msgid "Unknown host"
 msgstr "Nepoznat host"
 
 #. Message modeled after what gai_strerror returns in similar
 #. circumstances.
-#: src/host.c:349
+#: src/host.c:372
 msgid "Temporary failure in name resolution"
 msgstr "Privremena pogre¹ka pri pronala¾enju adrese"
 
-#: src/host.c:351
+#: src/host.c:374
 msgid "Unknown error"
 msgstr "Nepoznata gre¹ka"
 
-#: src/host.c:725
+#: src/host.c:748
 #, c-format
 msgid "Resolving %s... "
 msgstr "Tra¾im %s... "
 
-#: src/host.c:769 src/host.c:790
+#: src/host.c:792 src/host.c:839
 #, c-format
 msgid "failed: %s.\n"
 msgstr "nije uspjelo: %s.\n"
 
-#: src/host.c:778
+#: src/host.c:801
 msgid "failed: No IPv4/IPv6 addresses for host.\n"
 msgstr "neuspjeh: raèunalo nema IPv4/IPv6 adresa.\n"
 
-#: src/host.c:793
+#: src/host.c:842
 msgid "failed: timed out.\n"
 msgstr "neuspjeh: isteklo vrijeme.\n"
 
@@ -533,103 +539,103 @@ msgstr "neuspjeh: isteklo vrijeme.\n"
 msgid "%s: Cannot resolve incomplete link %s.\n"
 msgstr "%s: Ne mogu sastaviti nepotpun link %s.\n"
 
-#: src/http.c:340 src/http.c:1469
+#: src/http.c:349 src/http.c:1504
 #, c-format
 msgid "Failed writing HTTP request: %s.\n"
 msgstr "Nisam uspio poslati HTTP zahtjev: %s.\n"
 
-#: src/http.c:654
+#: src/http.c:663
 msgid "No headers, assuming HTTP/0.9"
 msgstr "Nema zaglavlja, pretpostavljam HTTP/0.9"
 
 #. this is fatal
-#: src/http.c:1116
+#: src/http.c:1151
 msgid "Failed to set up an SSL context\n"
 msgstr "Gre¹ka pri uspostavljanju SSL konteksta\n"
 
-#: src/http.c:1121
+#: src/http.c:1156
 #, c-format
 msgid "Failed to load certificates from %s\n"
 msgstr "Nisam uspio uèitati ovjere iz %s\n"
 
-#: src/http.c:1124 src/http.c:1131
+#: src/http.c:1159 src/http.c:1166
 msgid "Trying without the specified certificate\n"
 msgstr "Poku¹avam bez zadane ovjere\n"
 
-#: src/http.c:1128
+#: src/http.c:1163
 #, c-format
 msgid "Failed to get certificate key from %s\n"
 msgstr "Nisam uspio dobiti certifikat kljuèa iz %s\n"
 
-#: src/http.c:1347
+#: src/http.c:1382
 #, c-format
 msgid "Reusing existing connection to %s:%d.\n"
 msgstr "Koristim postojeæu vezu prema %s:%d.\n"
 
-#: src/http.c:1399
+#: src/http.c:1434
 #, c-format
 msgid "Failed writing to proxy: %s.\n"
 msgstr "Nisam uspio pisati proxyju: %s.\n"
 
-#: src/http.c:1408
+#: src/http.c:1443
 #, c-format
 msgid "Failed reading proxy response: %s\n"
 msgstr "Nisam uspio procitati proxyjev odgovor: %s.\n"
 
-#: src/http.c:1428
+#: src/http.c:1463
 #, c-format
 msgid "Proxy tunneling failed: %s"
 msgstr "Neuspjeh tuneliranja kroz proxy: %s"
 
-#: src/http.c:1475
+#: src/http.c:1510
 #, c-format
 msgid "%s request sent, awaiting response... "
 msgstr "%s zahtjev poslan, i¹èekujem odgovor... "
 
-#: src/http.c:1486
+#: src/http.c:1521
 msgid "No data received.\n"
 msgstr "Podaci nisu primljeni.\n"
 
-#: src/http.c:1493
+#: src/http.c:1528
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr "Gre¹ka pri èitanju zaglavlja (%s).\n"
 
 #. If we have tried it already, then there is not point
 #. retrying it.
-#: src/http.c:1558
+#: src/http.c:1595
 msgid "Authorization failed.\n"
 msgstr "Ovjera nije uspjela.\n"
 
-#: src/http.c:1572
+#: src/http.c:1609
 msgid "Unknown authentication scheme.\n"
 msgstr "Nepoznata metoda ovjere.\n"
 
-#: src/http.c:1597
+#: src/http.c:1634
 msgid "Malformed status line"
 msgstr "Deformirana statusna linija"
 
-#: src/http.c:1599
+#: src/http.c:1636
 msgid "(no description)"
 msgstr "(bez opisa)"
 
-#: src/http.c:1663
+#: src/http.c:1700
 #, c-format
 msgid "Location: %s%s\n"
 msgstr "Polo¾aj: %s%s\n"
 
-#: src/http.c:1664 src/http.c:1760
+#: src/http.c:1701 src/http.c:1801
 msgid "unspecified"
 msgstr "nenaznaèen"
 
-#: src/http.c:1665
+#: src/http.c:1702
 msgid " [following]"
 msgstr " [pratim]"
 
 #. If `-c' is in use and the file has been fully downloaded (or
 #. the remote file has shrunk), Wget effectively requests bytes
 #. after the end of file and the server response with 416.
-#: src/http.c:1710
+#: src/http.c:1751
 msgid ""
 "\n"
 "    The file is already fully retrieved; nothing to do.\n"
@@ -642,53 +648,53 @@ msgstr ""
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
-#: src/http.c:1740
+#: src/http.c:1781
 msgid "Length: "
 msgstr "Duljina: "
 
-#: src/http.c:1760
+#: src/http.c:1801
 msgid "ignored"
 msgstr "zanemarena"
 
-#: src/http.c:1902
+#: src/http.c:1943
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr "Upozorenje: wildcardi nisu podr¾ani za HTTP.\n"
 
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:1937
+#: src/http.c:1978
 #, c-format
 msgid "File `%s' already there, will not retrieve.\n"
 msgstr "Spis `%s' veæ postoji, ne dohvaæam.\n"
 
-#: src/http.c:2124
+#: src/http.c:2165
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr "Ne mogu pisati u `%s' (%s).\n"
 
-#: src/http.c:2133
+#: src/http.c:2174
 msgid "Unable to establish SSL connection.\n"
 msgstr "Ne mogu uspostaviti SSL vezu.\n"
 
-#: src/http.c:2143
+#: src/http.c:2184
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "GRE©KA: Redirekcija (%d) bez novog polo¾aja (location).\n"
 
-#: src/http.c:2175
+#: src/http.c:2216
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s GRE©KA %d: %s.\n"
 
-#: src/http.c:2188
+#: src/http.c:2229
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr "Nedostaje zaglavlje Last-Modified -- ignoriram vremensku granicu.\n"
 
-#: src/http.c:2196
+#: src/http.c:2237
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr "Neispravno zaglavlje Last-Modified -- ignoriram vremensku oznaku.\n"
 
-#: src/http.c:2219
+#: src/http.c:2260
 #, c-format
 msgid ""
 "Server file no newer than local file `%s' -- not retrieving.\n"
@@ -696,116 +702,120 @@ msgid ""
 msgstr ""
 "Spis na poslu¾itelju nije noviji od lokalnog spisa `%s' -- ne dohvaæam.\n"
 
-#: src/http.c:2227
+#: src/http.c:2268
 #, c-format
 msgid "The sizes do not match (local %s) -- retrieving.\n"
 msgstr "Velièine se ne sla¾u (lokalno %s) -- dohvaæam.\n"
 
-#: src/http.c:2232
+#: src/http.c:2273
 msgid "Remote file is newer, retrieving.\n"
 msgstr "Spis na poslu¾itelju je noviji, dohvaæam.\n"
 
-#: src/http.c:2274
+#: src/http.c:2315
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s/%s]\n"
 "\n"
-msgstr "%s (%s) - `%s' snimljen [%s/%s]\n\n"
+msgstr ""
+"%s (%s) - `%s' snimljen [%s/%s]\n"
+"\n"
 
-#: src/http.c:2331
+#: src/http.c:2372
 #, c-format
 msgid "%s (%s) - Connection closed at byte %s. "
 msgstr "%s (%s) - Veza zatvorena na bajtu %s. "
 
-#: src/http.c:2340
+#: src/http.c:2381
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s/%s])\n"
 "\n"
-msgstr "%s (%s) - `%s' snimljen [%s/%s])\n\n"
+msgstr ""
+"%s (%s) - `%s' snimljen [%s/%s])\n"
+"\n"
 
-#: src/http.c:2366
+#: src/http.c:2407
 #, c-format
 msgid "%s (%s) - Connection closed at byte %s/%s. "
 msgstr "%s (%s) - Veza zatvorena na bajtu %s/%s. "
 
-#: src/http.c:2380
+#: src/http.c:2421
 #, c-format
 msgid "%s (%s) - Read error at byte %s (%s)."
 msgstr "%s (%s) - Gre¹ka pri èitanju na bajtu %s (%s)."
 
-#: src/http.c:2390
+#: src/http.c:2431
 #, c-format
 msgid "%s (%s) - Read error at byte %s/%s (%s). "
 msgstr "%s (%s) - Gre¹ka pri èitanju na bajtu %s/%s (%s). "
 
-#: src/init.c:341
+#: src/init.c:342
 #, c-format
 msgid "%s: WGETRC points to %s, which doesn't exist.\n"
 msgstr "%s: WGETRC pokazuje na %s, koji ne postoji.\n"
 
-#: src/init.c:394 src/netrc.c:277
+#: src/init.c:395 src/netrc.c:277
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Ne mogu proèitati %s (%s).\n"
 
-#: src/init.c:412 src/init.c:418
+#: src/init.c:413 src/init.c:419
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Gre¹ka u %s na liniji %d.\n"
 
-#: src/init.c:450
+#: src/init.c:451
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: Upozorenje: sistemski i korisnikov wgetrc su `%s'.\n"
 
-#: src/init.c:594
+#: src/init.c:595
 #, c-format
 msgid "%s: Invalid --execute command `%s'\n"
 msgstr "%s: Neispravna --execute naredba `%s'\n"
 
-#: src/init.c:630
+#: src/init.c:631
 #, c-format
 msgid "%s: %s: Invalid boolean `%s', use `on' or `off'.\n"
 msgstr "%s: %s: Neispravan boolean `%s', navedite `on' ili `off'.\n"
 
-#: src/init.c:673
+#: src/init.c:674
 #, c-format
 msgid "%s: %s: Invalid boolean `%s', use always, on, off, or never.\n"
 msgstr "%s: %s: Neispravan boolean `%s', navedite always, on, off ili never.\n"
 
-#: src/init.c:692
+#: src/init.c:693
 #, c-format
 msgid "%s: %s: Invalid number `%s'.\n"
 msgstr "%s: %s: Neispravan broj `%s'.\n"
 
-#: src/init.c:925 src/init.c:944
+#: src/init.c:926 src/init.c:945
 #, c-format
 msgid "%s: %s: Invalid byte value `%s'\n"
 msgstr "%s: %s: Neispravna bajtovna vrijednost `%s'\n"
 
-#: src/init.c:969
+#: src/init.c:970
 #, c-format
 msgid "%s: %s: Invalid time period `%s'\n"
 msgstr "%s: %s: Neispravan vremenski period `%s'\n"
 
-#: src/init.c:1036
+#: src/init.c:1037
 #, c-format
 msgid "%s: %s: Invalid header `%s'.\n"
 msgstr "%s: %s: Neispravno zaglavlje `%s'.\n"
 
-#: src/init.c:1082
+#: src/init.c:1083
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: Neispravan indikator napretka `%s'.\n"
 
-#: src/init.c:1133
+#: src/init.c:1134
 #, c-format
 msgid "%s: %s: Invalid restriction `%s', use `unix' or `windows'.\n"
 msgstr ""
 "%s: %s: Neispravna restrikcija `%s', upotrijebite `unix' ili `windows'.\n"
 
-#: src/init.c:1174
+#: src/init.c:1175
 #, c-format
 msgid "%s: %s: Invalid value `%s'.\n"
 msgstr "%s: %s: Neispravna vrijednost `%s'.\n"
@@ -826,7 +836,9 @@ msgstr ""
 msgid ""
 "\n"
 "%s received.\n"
-msgstr "\ndobio %s.\n"
+msgstr ""
+"\n"
+"dobio %s.\n"
 
 #: src/log.c:788
 #, c-format
@@ -1209,19 +1221,15 @@ msgid "       --sslcertkey=KEYFILE  optional keyfile for this certificate.\n"
 msgstr "       --sslcertkey=KEYFILE  opcionalni spis s kljuèem za ovjeru.\n"
 
 #: src/main.c:534
-msgid "       --egd-file=FILE       file name of the EGD socket.\n"
-msgstr "       --egd-file=SPIS       spis EGD socketa.\n"
-
-#: src/main.c:536
 msgid "       --sslcadir=DIR        dir where hash list of CA's are stored.\n"
 msgstr ""
 "       --sslcadir=DIR        direktorij gdje je pohranjena lista CA-ova.\n"
 
-#: src/main.c:538
+#: src/main.c:536
 msgid "       --sslcafile=FILE      file with bundle of CA's.\n"
 msgstr "       --sslcafile=SPIS      spis s CA-ovima na okupu.\n"
 
-#: src/main.c:540
+#: src/main.c:538
 msgid ""
 "       --sslcerttype=0/1     Client-Cert type 0=PEM (default) / 1=ASN1 "
 "(DER).\n"
@@ -1229,19 +1237,23 @@ msgstr ""
 "       --sslcerttype=0/1     vrst Client-Certa, 0=PEM (podrazumijevano) /\n"
 "                             1=ASN (DER).\n"
 
-#: src/main.c:542
+#: src/main.c:540
 msgid "       --sslcheckcert=0/1    Check the server cert against given CA.\n"
 msgstr ""
 "       --sslcheckcert=0/1    provjeri poslu¾iteljevu ovjeru spram zadanog "
 "CA.\n"
 
-#: src/main.c:544
+#: src/main.c:542
 msgid ""
 "       --sslprotocol=0-3     choose SSL protocol; 0=automatic,\n"
 "                             1=SSLv2 2=SSLv3 3=TLSv1.\n"
 msgstr ""
 "       --sslprotocol=0-3     izaberi SSL protokol; 0=automatski,\n"
 "                             1=SSLv2, 2=SSLv3, 3=TLSv1.\n"
+
+#: src/main.c:545
+msgid "       --egd-file=FILE       file name of the EGD socket.\n"
+msgstr "       --egd-file=SPIS       spis EGD socketa.\n"
 
 #: src/main.c:550
 msgid "FTP options:\n"
@@ -1576,22 +1588,22 @@ msgstr "Uklanjam %s buduæi da bi ga trebalo odbiti.\n"
 msgid "Loading robots.txt; please ignore errors.\n"
 msgstr "Uèitavam robots.txt; molim ne obazirati se na gre¹ke.\n"
 
-#: src/retr.c:641
+#: src/retr.c:638
 #, c-format
 msgid "Error parsing proxy URL %s: %s.\n"
 msgstr "Gre¹ka u proxy URL-u %s: %s.\n"
 
-#: src/retr.c:649
+#: src/retr.c:646
 #, c-format
 msgid "Error in proxy URL %s: Must be HTTP.\n"
 msgstr "Gre¹ka u proxy URL-u %s: Mora biti HTTP.\n"
 
-#: src/retr.c:734
+#: src/retr.c:731
 #, c-format
 msgid "%d redirections exceeded.\n"
 msgstr "Vi¹e od %d preusmjeravanja.\n"
 
-#: src/retr.c:859
+#: src/retr.c:856
 msgid ""
 "Giving up.\n"
 "\n"
@@ -1599,7 +1611,7 @@ msgstr ""
 "Odustajem.\n"
 "\n"
 
-#: src/retr.c:859
+#: src/retr.c:856
 msgid ""
 "Retrying.\n"
 "\n"
@@ -1607,35 +1619,35 @@ msgstr ""
 "Poku¹avam ponovo.\n"
 "\n"
 
-#: src/url.c:641
+#: src/url.c:642
 msgid "No error"
 msgstr "Nema gre¹ke"
 
-#: src/url.c:643
+#: src/url.c:644
 msgid "Unsupported scheme"
 msgstr "Nepodr¾ana shema"
 
-#: src/url.c:645
+#: src/url.c:646
 msgid "Empty host"
 msgstr "Prazno ime poslu¾itelja"
 
-#: src/url.c:647
+#: src/url.c:648
 msgid "Bad port number"
 msgstr "Neispravan broj porta"
 
-#: src/url.c:649
+#: src/url.c:650
 msgid "Invalid user name"
 msgstr "Neispravno korisnièko ime"
 
-#: src/url.c:651
+#: src/url.c:652
 msgid "Unterminated IPv6 numeric address"
 msgstr "Nedovrssena IPv6 numerièka adresa"
 
-#: src/url.c:653
+#: src/url.c:654
 msgid "IPv6 addresses not supported"
 msgstr "IPv6 adrese nisu podr¾ane"
 
-#: src/url.c:655
+#: src/url.c:656
 msgid "Invalid IPv6 numeric address"
 msgstr "Neispravna IPv6 numerièka adresa"
 
