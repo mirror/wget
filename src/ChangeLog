@@ -1,5 +1,10 @@
 2005-04-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c (print_help): Print the EGD option outside the cluster of
+	SSL options.
+
+2005-04-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http-ntlm.c (ntlm_output): Fix setting the domain.
 	Suggested by Sami Krank.
 

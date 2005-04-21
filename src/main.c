@@ -532,8 +532,6 @@ HTTPS (SSL) options:\n"),
     N_("\
        --sslcertkey=KEYFILE  optional keyfile for this certificate.\n"),
     N_("\
-       --egd-file=FILE       file name of the EGD socket.\n"),
-    N_("\
        --sslcadir=DIR        dir where hash list of CA's are stored.\n"),
     N_("\
        --sslcafile=FILE      file with bundle of CA's.\n"),
@@ -544,6 +542,8 @@ HTTPS (SSL) options:\n"),
     N_("\
        --sslprotocol=0-3     choose SSL protocol; 0=automatic,\n\
                              1=SSLv2 2=SSLv3 3=TLSv1.\n"),
+    N_("\
+       --egd-file=FILE       file name of the EGD socket.\n"),
     "\n",
 #endif /* HAVE_SSL */
 
