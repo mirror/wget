@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: wget 1.9-b5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-04-21 17:45+0200\n"
-"PO-Revision-Date: 2005-03-23 21:58+0100\n"
+"PO-Revision-Date: 2005-04-21 18:00+0200\n"
 "Last-Translator: Hrvoje Niksic <hniksic@xemacs.org>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
 "MIME-Version: 1.0\n"
@@ -34,9 +34,9 @@ msgid "connected.\n"
 msgstr "spojen.\n"
 
 #: src/convert.c:176
-#, fuzzy, c-format
+#, c-format
 msgid "Converted %d files in %.*f seconds.\n"
-msgstr "Konvertirao %d spisa za %.2f sekundi.\n"
+msgstr "Konvertirao %d spisa za %.*f sekundi.\n"
 
 #: src/convert.c:202
 #, c-format
@@ -135,12 +135,12 @@ msgstr "Duljina: %s"
 #: src/ftp.c:232 src/http.c:1791
 #, c-format
 msgid ", %s (%s) remaining"
-msgstr ", %s (%s) preostalo"
+msgstr ", %s (%s) preostaje"
 
 #: src/ftp.c:236 src/http.c:1795
 #, c-format
 msgid ", %s remaining"
-msgstr ", %s preostalo"
+msgstr ", %s preostaje"
 
 #: src/ftp.c:240
 msgid " (unauthoritative)\n"
@@ -441,7 +441,7 @@ msgstr "Nije uspjela inicijalizacija OpenSSL-ovog PRNG-a; SSL iskljuèen.\n"
 
 #: src/gen_sslfunc.c:223
 msgid "Warning: validation of server certificate not possible!\n"
-msgstr ""
+msgstr "Upozorenje: nije moguæe provjeriti poslu¾iteljevu ovjeru!\n"
 
 #: src/getopt.c:675
 #, c-format
@@ -1666,33 +1666,3 @@ msgstr "Ne mogu izbrisati link `%s': %s\n"
 #, c-format
 msgid "%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"
 msgstr "%s: %s: Nije uspjela alokacija %ld bajtova; memorija je potro¹ena.\n"
-
-#~ msgid ""
-#~ "\n"
-#~ "REST failed; will not truncate `%s'.\n"
-#~ msgstr ""
-#~ "\n"
-#~ "REST nije uspio; neæu skratiti `%s'.\n"
-
-#~ msgid " [%s to go]"
-#~ msgstr " [jo¹ %s]"
-
-#~ msgid "End of file while parsing headers.\n"
-#~ msgstr "Kraj spisa za vrijeme obrade zaglavlja.\n"
-
-#~ msgid ""
-#~ "\n"
-#~ "Continued download failed on this file, which conflicts with `-c'.\n"
-#~ "Refusing to truncate existing file `%s'.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "\n"
-#~ "Nastavljanje dohvata nije uspjelo s ovim spisom, ¹to se kosi s `-c'.\n"
-#~ "Odbijam skratiti postojeæi spis `%s'.\n"
-#~ "\n"
-
-#~ msgid " (%s to go)"
-#~ msgstr " (jo¹ %s)"
-
-#~ msgid "Starting WinHelp %s\n"
-#~ msgstr "Pokreæem WinHelp %s\n"
