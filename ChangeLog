@@ -1,3 +1,7 @@
+2005-04-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* po/vi.po: Added Vietnamese translation.
+
 2005-04-18  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* MACHINES: Removed.
