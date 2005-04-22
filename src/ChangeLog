@@ -1,3 +1,13 @@
+2005-04-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (gethttp): Handle multiple WWW-Authentication headers,
+	only one of which is recognized.  Those are sent by IIS with NTLM
+	authorization.
+	(create_authorization_line): Propagate information whether
+	authorization is finished.
+	(gethttp): Only stop authorization when it's really finished, not
+	after fixed two steps.
+
 2005-04-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* gen_sslfunc.c (ssl_init): Fix warning message text; mark the

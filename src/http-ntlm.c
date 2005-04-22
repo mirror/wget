@@ -147,6 +147,8 @@ int ntlm_input (struct ntlmdata *ntlm, const char *header)
       int size;
       char *buffer = (char *) alloca (strlen (header));
 
+      DEBUGP (("Received a type-2 NTLM message.\n"));
+
       size = base64_decode (header, buffer);
       if (size < 0)
 	return 0;		/* malformed base64 from server */
@@ -162,8 +164,12 @@ int ntlm_input (struct ntlmdata *ntlm, const char *header)
   else
     {
       if (ntlm->state >= NTLMSTATE_TYPE1)
-        return 0; /* this is an error */
+	{
+	  DEBUGP (("Unexpected empty NTLM message.\n"));
+	  return 0; /* this is an error */
+	}
 
+      DEBUGP (("Empty NTLM message, starting transaction.\n"));
       ntlm->state = NTLMSTATE_TYPE1; /* we should sent away a type-1 */
     }
 
@@ -326,6 +332,8 @@ char *ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
   default: /* for the weird cases we (re)start here */
     hostoff = 32;
     domoff = hostoff + hostlen;
+
+    DEBUGP (("Creating a type-1 NTLM message.\n"));
     
     /* Create and send a type-1 message:
 
@@ -411,6 +419,8 @@ char *ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
 #endif
     const char *usr;
     int userlen;
+
+    DEBUGP (("Creating a type-3 NTLM message.\n"));
 
     usr = strchr(user, '\\');
     if(!usr)

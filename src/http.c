@@ -1071,9 +1071,9 @@ free_hstat (struct http_stat *hs)
 
 static char *create_authorization_line PARAMS ((const char *, const char *,
 						const char *, const char *,
-						const char *));
+						const char *, int *));
 static char *basic_authentication_encode PARAMS ((const char *, const char *));
-static int known_authentication_scheme_p PARAMS ((const char *));
+static int known_authentication_scheme_p PARAMS ((const char *, const char *));
 
 time_t http_atotm PARAMS ((const char *));
 
@@ -1109,8 +1109,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   int sock = -1;
   int flags;
 
-  /* Whether authorization has been already tried. */
-  int auth_tried_already;
+  /* Set to 1 when the authorization has failed permanently and should
+     not be tried again. */
+  int auth_finished = 0;
 
   /* Whether our connection to the remote host is through SSL.  */
   int using_ssl = 0;
@@ -1175,8 +1176,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     /* If we're doing a GET on the URL, as opposed to just a HEAD, we need to
        know the local filename so we can save to it. */
     assert (*hs->local_file != NULL);
-
-  auth_tried_already = 0;
 
   /* Initialize certain elements of struct http_stat.  */
   hs->len = 0;
@@ -1588,7 +1587,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	CLOSE_FINISH (sock);
       else
 	CLOSE_INVALIDATE (sock);
-      if (auth_tried_already || !(user && passwd))
+      if (auth_finished || !(user && passwd))
 	{
 	  /* If we have tried it already, then there is not point
 	     retrying it.  */
@@ -1596,13 +1595,26 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	}
       else
 	{
-	  char *www_authenticate = resp_header_strdup (resp,
-						       "WWW-Authenticate");
-	  /* If the authentication scheme is unknown or if it's the
-	     "Basic" authentication (which we try by default), there's
-	     no sense in retrying.  */
+	  /* IIS sometimes sends two instances of WWW-Authenticate
+	     header, one with the keyword "negotiate", and other with
+	     useful data.  Loop over all occurrences of this header
+	     and use the one we recognize.  */
+	  int wapos;
+	  const char *wabeg, *waend;
+	  char *www_authenticate = NULL;
+	  for (wapos = 0;
+	       (wapos = resp_header_locate (resp, "WWW-Authenticate", wapos,
+					    &wabeg, &waend)) != -1;
+	       ++wapos)
+	    if (known_authentication_scheme_p (wabeg, waend))
+	      {
+		www_authenticate = strdupdelim (wabeg, waend);
+		break;
+	      }
+	  /* If the authentication header is missing or recognized, or
+	     if the authentication scheme is "Basic" (which we send by
+	     default), there's no sense in retrying.  */
 	  if (!www_authenticate
-	      || !known_authentication_scheme_p (www_authenticate)
 	      || BEGINS_WITH (www_authenticate, "Basic"))
 	    {
 	      xfree_null (www_authenticate);
@@ -1611,13 +1623,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  else
 	    {
 	      char *pth;
-	      auth_tried_already = 1;
 	      pth = url_full_path (u);
 	      request_set_header (req, "Authorization",
 				  create_authorization_line (www_authenticate,
 							     user, passwd,
 							     request_method (req),
-							     pth),
+							     pth,
+							     &auth_finished),
 				  rel_value);
 	      xfree (pth);
 	      xfree (www_authenticate);
@@ -2833,26 +2845,33 @@ username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\"",
 }
 #endif /* ENABLE_DIGEST */
 
+/* Computing the size of a string literal must take into account that
+   value returned by sizeof includes the terminating \0.  */
+#define STRSIZE(literal) (sizeof (literal) - 1)
 
-#define BEGINS_WITH(line, string_constant)				\
-  (!strncasecmp (line, string_constant, sizeof (string_constant) - 1)	\
-   && (ISSPACE (line[sizeof (string_constant) - 1])			\
-       || !line[sizeof (string_constant) - 1]))
+/* Whether chars in [b, e) begin with the literal string provided as
+   first argument and are followed by whitespace or terminating \0.
+   The comparison is case-insensitive.  */
+#define STARTS(literal, b, e)				\
+  ((e) - (b) >= STRSIZE (literal)			\
+   && 0 == strncasecmp (b, literal, STRSIZE (literal))	\
+   && ((e) - (b) == STRSIZE (literal)			\
+       || ISSPACE (b[STRSIZE (literal)])))
 
 static int
-known_authentication_scheme_p (const char *au)
+known_authentication_scheme_p (const char *hdrbeg, const char *hdrend)
 {
-  return BEGINS_WITH (au, "Basic")
+  return STARTS ("Basic", hdrbeg, hdrend)
 #ifdef ENABLE_DIGEST
-    || BEGINS_WITH (au, "Digest")
+    || STARTS ("Digest", hdrbeg, hdrend)
 #endif
 #ifdef ENABLE_NTLM
-    || BEGINS_WITH (au, "NTLM")
+    || STARTS ("NTLM", hdrbeg, hdrend)
 #endif
     ;
 }
 
-#undef BEGINS_WITH
+#undef STARTS
 
 /* Create the HTTP authorization request header.  When the
    `WWW-Authenticate' response header is seen, according to the
@@ -2862,25 +2881,34 @@ known_authentication_scheme_p (const char *au)
 static char *
 create_authorization_line (const char *au, const char *user,
 			   const char *passwd, const char *method,
-			   const char *path)
+			   const char *path, int *finished)
 {
-  if (0 == strncasecmp (au, "Basic", 5))
-    return basic_authentication_encode (user, passwd);
+  /* We are called only with known schemes, so we can dispatch on the
+     first letter. */
+  switch (TOUPPER (*au))
+    {
+    case 'B':			/* Basic */
+      *finished = 1;
+      return basic_authentication_encode (user, passwd);
 #ifdef ENABLE_DIGEST
-  if (0 == strncasecmp (au, "Digest", 6))
-    return digest_authentication_encode (au, user, passwd, method, path);
+    case 'D':			/* Digest */
+      *finished = 1;
+      return digest_authentication_encode (au, user, passwd, method, path);
 #endif
 #ifdef ENABLE_NTLM
-  if (0 == strncasecmp (au, "NTLM", 4))
-    {
-      int ok = ntlm_input (&pconn.ntlm, au);
-      if (!ok)
-	return NULL;
-      /* #### we shouldn't ignore the OK that ntlm_output returns. */
-      return ntlm_output (&pconn.ntlm, user, passwd, &ok);
-    }
+    case 'N':			/* NTLM */
+      if (!ntlm_input (&pconn.ntlm, au))
+	{
+	  *finished = 1;
+	  return NULL;
+	}
+      return ntlm_output (&pconn.ntlm, user, passwd, finished);
 #endif
-  return NULL;
+    default:
+      /* We shouldn't get here -- this function should be only called
+	 with values approved by known_authentication_scheme_p.  */
+      abort ();
+    }
 }
 
 void
