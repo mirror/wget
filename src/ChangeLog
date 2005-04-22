@@ -1,5 +1,10 @@
 2005-04-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* gen_sslfunc.c (ssl_init): Fix warning message text; mark the
+	message as translatable.
+
+2005-04-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (print_help): Print the EGD option outside the cluster of
 	SSL options.
 
