@@ -71,7 +71,7 @@ so, delete this exception statement from your version.  */
 #endif
 
 /* Define this to make the type-3 message include the NT response message */
-#undef USE_NTRESPONSES
+#define USE_NTRESPONSES 1
 
 /* Flag bits definitions available at on
    http://davenport.sourceforge.net/ntlm.html */
@@ -120,7 +120,8 @@ so, delete this exception statement from your version.  */
 */
 
 /* return 1 on success, 0 otherwise */
-int ntlm_input (struct ntlmdata *ntlm, const char *header)
+int
+ntlm_input (struct ntlmdata *ntlm, const char *header)
 {
   if (0 != strncmp (header, "NTLM", 4))
     return 0;
@@ -180,8 +181,9 @@ int ntlm_input (struct ntlmdata *ntlm, const char *header)
  * Turns a 56 bit key into the 64 bit, odd parity key and sets the key.  The
  * key schedule ks is also set.
  */
-static void setup_des_key(unsigned char *key_56,
-                          DES_key_schedule DESKEYARG(ks))
+static void
+setup_des_key(unsigned char *key_56,
+	      DES_key_schedule DESKEYARG(ks))
 {
   DES_cblock key;
 
@@ -203,9 +205,8 @@ static void setup_des_key(unsigned char *key_56,
   * 8 byte plaintext is encrypted with each key and the resulting 24
   * bytes are stored in the results array.
   */
-static void calc_resp(unsigned char *keys,
-                      unsigned char *plaintext,
-                      unsigned char *results)
+static void
+calc_resp(unsigned char *keys, unsigned char *plaintext, unsigned char *results)
 {
   DES_key_schedule ks;
 
@@ -225,11 +226,12 @@ static void calc_resp(unsigned char *keys,
 /*
  * Set up lanmanager and nt hashed passwords
  */
-static void mkhash(const char *password,
-                   unsigned char *nonce,  /* 8 bytes */
-                   unsigned char *lmresp  /* must fit 0x18 bytes */
+static void
+mkhash(const char *password,
+       unsigned char *nonce,	/* 8 bytes */
+       unsigned char *lmresp	/* must fit 0x18 bytes */
 #ifdef USE_NTRESPONSES
-                   , unsigned char *ntresp  /* must fit 0x18 bytes */
+       , unsigned char *ntresp  /* must fit 0x18 bytes */
 #endif
   )
 {
@@ -301,8 +303,9 @@ static void mkhash(const char *password,
   (((x) >>16)&0xff), ((x)>>24)
 
 /* this is for creating ntlm header output */
-char *ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
-		   int *ready)
+char *
+ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
+	     int *ready)
 {
   const char *domain=""; /* empty */
   const char *host=""; /* empty */

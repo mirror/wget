@@ -1,3 +1,8 @@
+2005-04-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http-ntlm.c: Format the function definitions in an
+	ansi2knr-friendly fashion.
+
 2005-04-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (gethttp): Handle multiple WWW-Authentication headers,
