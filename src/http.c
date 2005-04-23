@@ -202,7 +202,7 @@ release_header (struct request_header *hdr)
 /* Set the request named NAME to VALUE.  Specifically, this means that
    a "NAME: VALUE\r\n" header line will be used in the request.  If a
    header with the same name previously existed in the request, its
-   value will be replaced by this one.
+   value will be replaced by this one.  A NULL value means do nothing.
 
    RELEASE_POLICY determines whether NAME and VALUE should be released
    (freed) with request_free.  Allowed values are:
@@ -233,6 +233,7 @@ request_set_header (struct request *req, char *name, char *value,
 {
   struct request_header *hdr;
   int i;
+
   if (!value)
     {
       /* A NULL value is a no-op; if freeing the name is requested,
@@ -241,6 +242,7 @@ request_set_header (struct request *req, char *name, char *value,
 	xfree (name);
       return;
     }
+
   for (i = 0; i < req->hcount; i++)
     {
       hdr = &req->headers[i];
@@ -260,8 +262,7 @@ request_set_header (struct request *req, char *name, char *value,
   if (req->hcount >= req->hcapacity)
     {
       req->hcapacity <<= 1;
-      req->headers = xrealloc (req->headers,
-			       req->hcapacity * sizeof (struct request_header));
+      req->headers = xrealloc (req->headers, req->hcapacity * sizeof (*hdr));
     }
   hdr = &req->headers[req->hcount++];
   hdr->name = name;
@@ -286,6 +287,29 @@ request_set_user_header (struct request *req, const char *header)
   while (ISSPACE (*p))
     ++p;
   request_set_header (req, xstrdup (name), (char *) p, rel_name);
+}
+
+/* Remove the header with specified name from REQ.  Returns 1 if the
+   header was actually removed, 0 otherwise.  */
+
+static int
+request_remove_header (struct request *req, char *name)
+{
+  int i;
+  for (i = 0; i < req->hcount; i++)
+    {
+      struct request_header *hdr = &req->headers[i];
+      if (0 == strcasecmp (name, hdr->name))
+	{
+	  release_header (hdr);
+	  /* Move the remaining headers by one. */
+	  if (i < req->hcount - 1)
+	    memmove (hdr, hdr + 1, (req->hcount - i - 1) * sizeof (*hdr));
+	  --req->hcount;
+	  return 1;
+	}
+    }
+  return 0;
 }
 
 #define APPEND(p, str) do {			\
@@ -855,6 +879,12 @@ static struct {
   /* Whether a ssl handshake has occoured on this connection.  */
   int ssl;
 
+  /* Whether the connection was authorized.  This is only done by
+     NTLM, which authorizes *connections* rather than individual
+     requests.  (That practice is peculiar for HTTP, but it is a
+     useful optimization.)  */
+  int authorized;
+
 #ifdef ENABLE_NTLM
   /* NTLM data of the current connection.  */
   struct ntlmdata ntlm;
@@ -909,6 +939,7 @@ register_persistent (const char *host, int port, int fd, int ssl)
   pconn.host = xstrdup (host);
   pconn.port = port;
   pconn.ssl = ssl;
+  pconn.authorized = 0;
 
   DEBUGP (("Registered socket %d for persistent reuse.\n", fd));
 }
@@ -1112,6 +1143,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   /* Set to 1 when the authorization has failed permanently and should
      not be tried again. */
   int auth_finished = 0;
+
+  /* Whether NTLM authentication is used for this request. */
+  int ntlm_seen = 0;
 
   /* Whether our connection to the remote host is through SSL.  */
   int using_ssl = 0;
@@ -1381,6 +1415,11 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  logprintf (LOG_VERBOSE, _("Reusing existing connection to %s:%d.\n"),
 		     escnonprint (pconn.host), pconn.port);
 	  DEBUGP (("Reusing fd %d.\n", sock));
+	  if (pconn.authorized)
+	    /* If the connection is already authorized, the "Basic"
+	       authorization added by code above is unnecessary and
+	       only hurts us.  */
+	    request_remove_header (req, "Authorization");
 	}
     }
 
@@ -1587,6 +1626,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	CLOSE_FINISH (sock);
       else
 	CLOSE_INVALIDATE (sock);
+      pconn.authorized = 0;
       if (auth_finished || !(user && passwd))
 	{
 	  /* If we have tried it already, then there is not point
@@ -1631,6 +1671,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 							     pth,
 							     &auth_finished),
 				  rel_value);
+	      if (BEGINS_WITH (www_authenticate, "NTLM"))
+		ntlm_seen = 1;
 	      xfree (pth);
 	      xfree (www_authenticate);
 	      goto retry_with_auth;
@@ -1638,6 +1680,12 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	}
       request_free (req);
       return AUTHFAILED;
+    }
+  else /* statcode != HTTP_STATUS_UNAUTHORIZED */
+    {
+      /* Kludge: if NTLM is used, mark the TCP connection as authorized. */
+      if (ntlm_seen)
+	pconn.authorized = 1;
     }
   request_free (req);
 

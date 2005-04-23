@@ -1435,10 +1435,6 @@ const unsigned short int __mon_yday[2][13] =
   };
 #endif
 
-/* Currently unused in Wget.  Uncomment if we start using memmove
-   again. */
-#if 0
-
 #ifndef HAVE_MEMMOVE
 void *
 memmove (char *dest, const char *source, unsigned length)
@@ -1457,8 +1453,6 @@ memmove (char *dest, const char *source, unsigned length)
   return (void *) d0;
 }
 #endif /* not HAVE_MEMMOVE */
-
-#endif /* 0 */
 
 /* fnmatch is a POSIX function, but we include an implementation for
    the sake of systems that don't have it.  Furthermore, according to

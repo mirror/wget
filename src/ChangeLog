@@ -1,5 +1,16 @@
 2005-04-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* cmpt.c: Reenable the memmove implementation for systems that
+	lack it.
+
+	* http.c (gethttp): Store the "authorized" state of the persistent
+	connection.
+	(request_remove_header): New function.
+	(gethttp): Don't send the "Basic" authentication if the connection
+	is already authorized.
+
+2005-04-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (base64_encode): Treat input as unsigned chars.
 	Required for correct encoding of binary stuff.
 
