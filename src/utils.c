@@ -1825,7 +1825,7 @@ xsleep (double seconds)
 
 #endif /* not WINDOWS */
 
-/* Encode the string S of length LENGTH to base64 format and place it
+/* Encode the string STR of length LENGTH to base64 format and place it
    to B64STORE.  The output will be \0-terminated, and must point to a
    writable buffer of at least 1+BASE64_LENGTH(length) bytes.  It
    returns the length of the resulting base64 data, not counting the
@@ -1835,7 +1835,7 @@ xsleep (double seconds)
    base64 data.  */
 
 int
-base64_encode (const char *s, int length, char *b64store)
+base64_encode (const char *str, int length, char *b64store)
 {
   /* Conversion table.  */
   static char tbl[64] = {
@@ -1849,7 +1849,8 @@ base64_encode (const char *s, int length, char *b64store)
     '4','5','6','7','8','9','+','/'
   };
   int i;
-  unsigned char *p = (unsigned char *) b64store;
+  const unsigned char *s = (const unsigned char *) str;
+  char *p = b64store;
 
   /* Transform the 3x8 bits to 4x6 bits, as required by base64.  */
   for (i = 0; i < length; i += 3)
@@ -1870,7 +1871,7 @@ base64_encode (const char *s, int length, char *b64store)
   /* ...and zero-terminate it.  */
   *p = '\0';
 
-  return p - (unsigned char *) b64store;
+  return p - b64store;
 }
 
 #define IS_ASCII(c) (((c) & 0x80) == 0)

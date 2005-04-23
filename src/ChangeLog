@@ -1,5 +1,10 @@
 2005-04-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (base64_encode): Treat input as unsigned chars.
+	Required for correct encoding of binary stuff.
+
+2005-04-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http-ntlm.c: Format the function definitions in an
 	ansi2knr-friendly fashion.
 
