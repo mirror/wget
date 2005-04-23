@@ -1,3 +1,8 @@
+2005-04-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* texi2pod.pl.in: First process @@ then @}, so @samp{-wget@@} is
+	interpreted correctly.
+
 2005-04-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi: Document behavior of -6 wrt mapped IPv4 addresses.
