@@ -1,5 +1,10 @@
 2005-04-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi (Wgetrc Commands): Document ftp_passwd.
+	(FTP Options): Document --ftp-passwd.
+
+2005-04-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* texi2pod.pl.in: First process @@ then @}, so @samp{-wget@@} is
 	interpreted correctly.
 
