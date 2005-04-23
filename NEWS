@@ -17,7 +17,14 @@ flags `--inet4' and `--inet6' (or `-4' and `-6' for short) force the
 use of IPv4 and IPv6 respectively.  Unfortunately the IPv6 support
 still does not work on Windows.
 
-** Talking to SSL servers over proxies now actually works.
+** Talking to SSL servers over proxies now actually works.  Previous
+versions of Wget erroneously sent GET requests for SSL URLs.  Wget
+1.10 utilizes the CONNECT method designed for this purpose.
+
+** Microsoft's proprietary "NTLM" method of HTTP authentication is now
+supported.  This authentication method is undocumented and only used
+by IIS.  Note that *proxy* authentication is not supported in this
+release; you can only authenticate to the target web site.
 
 ** Wget no longer truncates partially downloaded files when download
 has to start over because the server doesn't support Range.  Instead,
