@@ -260,6 +260,7 @@ the command line.
 * Download Options::
 * Directory Options::
 * HTTP Options::
+* HTTPS (SSL/TLS) Options::
 * FTP Options::
 * Recursive Retrieval Options::
 * Recursive Accept/Reject Options::
@@ -1248,6 +1249,74 @@ wget --load-cookies cookies.txt \
      -p http://server.com/interesting/article.php
 @end group
 @end example
+@end table
+
+@node HTTPS (SSL/TLS) Options
+@section HTTPS (SSL/TLS) Options
+
+@cindex SSL
+To support SSL-based HTTP (HTTPS) downloads, Wget must be compiled
+with an external SSL library, currently OpenSSL.  If Wget is compiled
+without SSL support, none of these options are available.
+
+@table @samp
+@item --sslcertfile=@var{file}
+Use the client certificate stored in @var{file}.  This is needed for
+servers that are configured to require certificates from the clients
+that connect to them.  Normally a certificate is not required and this
+switch is optional.
+
+@cindex SSL certificate
+@item --sslcertkey=@var{keyfile}
+Read the certificate key from @var{keyfile}.
+
+@cindex SSL certificate authority
+@item --sslcadir=@var{directory}
+Specifies directory used for certificate authorities (``CA'').
+
+@item --sslcafile=@var{file}
+Use @var{file} as the file with the bundle of certificate authorities.
+
+@cindex SSL certificate type, specify
+@item --sslcerttype=0/1
+Specify the type of the client certificate: 0 means @code{PEM}
+(default), 1 means @code{ASN1} (@code{DER}).
+
+@cindex SSL certificate, check
+@item --sslcheckcert=0/1
+If set to 1, check the server certificate against the specified client
+authorities.  If this is 0 (the default), Wget will break the SSL
+handshake if the server certificate is not valid.
+
+@cindex SSL protocol, choose
+@item --sslprotocol=0-3
+Choose the SSL protocol to be used.  If 0 is specified (the default),
+the OpenSSL library chooses the appropriate protocol automatically.
+Specifying 1 forces the use of SSLv2, specifying 2 forces SSLv3, and
+specifying 3 forces TLSv1.
+
+In most cases the OpenSSL library is capable of making an intelligent
+choice of the protocol, but there have been reports of sites that use
+old (and presumably buggy) server libraries with which a protocol has
+to be specified manually.
+
+@cindex EGD
+@item --egd-file=@var{file}
+Use @var{file} as the EGD socket.  EGD stands for @dfn{Entropy
+Gathering Daemon}, a user-space program that collects data from
+various unpredictable system sources and makes it available to other
+programs that might need it.  Encryption software, such as the SSL
+library, needs sources of non-repeating randomness to seed the random
+number generator used to produce cryptographically strong keys.
+
+OpenSSL allows the user to specify his own source of entropy using the
+@code{RAND_FILE} environment variable.  If this variable is unset, or
+if the specified file does not produce enough randomness, OpenSSL will
+read random data from EGD socket specified using this option.
+
+If this option is not specified (and the equivalent startup command is
+not used), EGD is never contacted.  EGD is not needed on modern Unix
+systems that support @file{/dev/random}.
 @end table
 
 @node FTP Options
@@ -2331,6 +2400,10 @@ the retrieval (50 by default).
 @item dot_spacing = @var{n}
 Specify the number of dots in a single cluster (10 by default).
 
+@item egd_file = @var{string}
+Use @var{string} as the EGD socket file name.  The same as
+@samp{--egd-file}.
+
 @item exclude_directories = @var{string}
 Specify a comma-separated list of directories you wish to exclude from
 download---the same as @samp{-X} (@pxref{Directory-Based Limits}).
@@ -2482,11 +2555,6 @@ Set proxy authentication user name to @var{string}, like @samp{--proxy-user}.
 @item proxy_passwd = @var{string}
 Set proxy authentication password to @var{string}, like @samp{--proxy-passwd}.
 
-@item referer = @var{string}
-Set HTTP @samp{Referer:} header just like @samp{--referer}.  (Note it
-was the folks who wrote the @sc{http} spec who got the spelling of
-``referrer'' wrong.)
-
 @item quiet = on/off
 Quiet mode---the same as @samp{-q}.
 
@@ -2507,6 +2575,11 @@ Recursion level---the same as @samp{-l}.
 
 @item recursive = on/off
 Recursive on/off---the same as @samp{-r}.
+
+@item referer = @var{string}
+Set HTTP @samp{Referer:} header just like @samp{--referer}.  (Note it
+was the folks who wrote the @sc{http} spec who got the spelling of
+``referrer'' wrong.)
 
 @item relative_only = on/off
 Follow only relative links---the same as @samp{-L} (@pxref{Relative
@@ -2537,6 +2610,36 @@ responses---the same as @samp{-S}.
 
 @item span_hosts = on/off
 Same as @samp{-H}.
+
+@item ssl_cert_file = @var{string}
+Set the client certificate file name to @var{string}.  The same as
+@samp{--sslcertfile}.
+
+@item ssl_cert_key = @var{string}
+Set the certificate key file to @var{string}.  The same as
+@samp{--sslcertkey}.
+
+@item ssl_ca_dir = @var{string}
+Set the directory used for certificate authorities.  The same as
+@samp{--sslcadir}.
+
+@item ssl_ca_file = @var{string}
+Set the certificate authority bundle file to @var{string}.  The same
+as @samp{--sslcafile}.
+
+@item ssl_cert_type = 0/1
+Specify the type of the client certificate: 0 means @code{PEM}
+(default), 1 means @code{ASN1} (@code{DER}).  The same as
+@samp{--sslcerttype}.
+
+@item ssl_check_cert = 0/1
+If this is set to 1, the server certificate is checked against the
+specified client authorities.  The same as @samp{--sslcheckcert}.
+
+@item ssl_protocol = 0-3
+Choose the SSL protocol to be used.  0 means choose automatically, 1
+means force SSLv2, 2 means force SSLv3, and 3 means force TLSv1.  The
+same as @samp{--sslprotocol}.
 
 @item strict_comments = on/off
 Same as @samp{--strict-comments}.
