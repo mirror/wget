@@ -597,8 +597,16 @@ retryable_socket_connect_error (int err)
       )
     return 0;
 
-  if (err == ECONNREFUSED && !opt.retry_connrefused)
-    return 0;
+  if (!opt.retry_connrefused)
+    if (err == ECONNREFUSED
+#ifdef ENETUNREACH
+	|| err == ENETUNREACH	/* network is unreachable */
+#endif
+#ifdef EHOSTUNREACH
+	|| err == EHOSTUNREACH	/* host is unreachable */
+#endif
+	)
+      return 0;
 
   return 1;
 }

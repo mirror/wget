@@ -1,3 +1,8 @@
+2005-04-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c (retryable_socket_connect_error): Return 0 for
+	ENETUNREACH and EHOSTUNREACH.
+
 2005-04-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* cmpt.c: Reenable the memmove implementation for systems that
