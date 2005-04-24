@@ -211,7 +211,6 @@ aprintf (const char *fmt, ...)
 	size <<= 1;		/* twice the old size */
       str = xrealloc (str, size);
     }
-  return NULL;			/* unreached */
 }
 
 /* Concatenate the NULL-terminated list of string arguments into

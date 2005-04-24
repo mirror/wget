@@ -1,5 +1,9 @@
 2005-04-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (aprintf): Delete unreachable statement.
+
+2005-04-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* host.c (cmp_prefer_ipv4): New function.
 	(cmp_prefer_ipv6): New function.
 	(lookup_host): Use the appropriate comparator according to
