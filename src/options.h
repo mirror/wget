@@ -197,6 +197,12 @@ struct options
   int ipv4_only;		/* IPv4 connections have been requested. */
   int ipv6_only;		/* IPv4 connections have been requested. */
 #endif
+  enum {
+    prefer_ipv4,
+    prefer_ipv6,
+    prefer_none
+  } prefer_family;		/* preferred address family when more
+				   than one type is available */
 };
 
 extern struct options opt;

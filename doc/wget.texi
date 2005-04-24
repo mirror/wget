@@ -900,6 +900,27 @@ or to deal with broken network configuration.  Only one of
 @samp{--inet6-only} and @samp{--inet4-only} may be specified in the
 same command.  Neither option is available in Wget compiled without
 IPv6 support.
+
+@item --prefer-family=IPv4/IPv6/none
+When given a choice of several addresses, connect to the addresses
+with specified address family first.  IPv4 addresses are preferred by
+default.
+
+This avoids spurious errors and correct attempts when accessing hosts
+that resolve to both IPv6 and IPv4 addresses from IPv4 networks.  For
+example, @samp{www.kame.net} resolves to
+@samp{2001:200:0:8002:203:47ff:fea5:3085} and to
+@samp{203.178.141.194}.  When the preferred family is @code{IPv4}, the
+IPv4 address is used first; when the preferred family is @code{IPv6},
+the IPv6 address is used first; if the specified value is @code{none},
+the address order returned by DNS is used without change.
+
+Unlike @samp{-4} and @samp{-6}, this option doesn't forbid access to
+any address family, it only changes the @emph{order} in which the
+addresses are accessed.  Also note that the reordering performed by
+this option is @dfn{stable}---it doesn't affect order of addresses of
+the same family.  That is, the relative order of all IPv4 addresses
+and of all IPv6 addresses remains intact in all cases.
 @end table
 
 @node Directory Options
@@ -2536,6 +2557,12 @@ the request body.  The same as @samp{--post-data}.
 Use POST as the method for all HTTP requests and send the contents of
 @var{file} in the request body.  The same as @samp{--post-file}.
 
+@item prefer_family = IPv4/IPv6/none
+When given a choice of several addresses, connect to the addresses
+with specified address family first.  IPv4 addresses are preferred by
+default.  The same as @samp{--prefer-family}, which see for a detailed
+discussion of why this is useful.
+
 @item progress = @var{string}
 Set the type of the progress indicator.  Legal types are ``dot'' and
 ``bar''.
@@ -3548,6 +3575,12 @@ Mauro Tortonesi,
 Dave Turner,
 Gisle Vanem,
 Russell Vincent,
+@iftex
+@v{Z}eljko Vrba,
+@end iftex
+@ifnottex
+Zeljko Vrba,
+@end ifnottex
 Charles G Waldman,
 Douglas E. Wegscheid,
 YAMAZAKI Makoto,

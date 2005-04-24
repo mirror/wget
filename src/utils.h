@@ -119,4 +119,7 @@ void xsleep PARAMS ((double));
 int base64_encode PARAMS ((const char *, int, char *));
 int base64_decode PARAMS ((const char *, char *));
 
+void stable_sort PARAMS ((void *, size_t, size_t,
+                          int (*) (const void *, const void *)));
+
 #endif /* UTILS_H */

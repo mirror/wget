@@ -1,5 +1,20 @@
 2005-04-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* host.c (cmp_prefer_ipv4): New function.
+	(cmp_prefer_ipv6): New function.
+	(lookup_host): Use the appropriate comparator according to
+	opt.prefer_family.
+
+	* init.c: New option prefer_family.
+
+	* host.c (is_valid_ipv6_address): Spell NS_* constants in lower
+	case to avoid clash with system headers.
+	(lookup_host): Reorder the addresses so that IPv4 ones come first.
+
+	* utils.c (stable_sort): New function.
+
+2005-04-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c (retryable_socket_connect_error): Return 0 for
 	ENETUNREACH and EHOSTUNREACH.
 

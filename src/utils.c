@@ -1975,3 +1975,49 @@ base64_decode (const char *base64, char *to)
 #undef IS_ASCII
 #undef IS_BASE64
 #undef NEXT_BASE64_CHAR
+
+/* Simple merge sort for use by stable_sort.  Implementation courtesy
+   Zeljko Vrba.  */
+
+static void
+mergesort_internal (void *base, void *temp, size_t size, size_t from, size_t to,
+		    int (*cmpfun) PARAMS ((const void *, const void *)))
+{
+#define ELT(array, pos) ((char *)(array) + (pos) * size)
+  if (from < to)
+    {
+      size_t i, j, k;
+      size_t mid = (to + from) / 2;
+      mergesort_internal (base, temp, size, from, mid, cmpfun);
+      mergesort_internal (base, temp, size, mid + 1, to, cmpfun);
+      i = from;
+      j = mid + 1;
+      for (k = from; (i <= mid) && (j <= to); k++)
+	if (cmpfun (ELT (base, i), ELT (base, j)) <= 0)
+	  memcpy (ELT (temp, k), ELT (base, i++), size);
+	else
+	  memcpy (ELT (temp, k), ELT (base, j++), size);
+      while (i <= mid)
+	memcpy (ELT (temp, k++), ELT (base, i++), size);
+      while (j <= to)
+	memcpy (ELT (temp, k++), ELT (base, j++), size);
+      for (k = from; k <= to; k++)
+	memcpy (ELT (base, k), ELT (temp, k), size);
+    }
+#undef ELT
+}
+
+/* Stable sort with interface exactly like standard library's qsort.
+   Uses mergesort internally, allocating temporary storage with
+   alloca.  */
+
+void
+stable_sort (void *base, size_t nmemb, size_t size,
+	     int (*cmpfun) PARAMS ((const void *, const void *)))
+{
+  if (size > 1)
+    {
+      void *temp = alloca (nmemb * size * sizeof (void *));
+      mergesort_internal (base, temp, size, 0, nmemb - 1, cmpfun);
+    }
+}

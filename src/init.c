@@ -88,6 +88,7 @@ CMD_DECLARE (cmd_spec_dirstruct);
 CMD_DECLARE (cmd_spec_header);
 CMD_DECLARE (cmd_spec_htmlify);
 CMD_DECLARE (cmd_spec_mirror);
+CMD_DECLARE (cmd_spec_prefer_family);
 CMD_DECLARE (cmd_spec_progress);
 CMD_DECLARE (cmd_spec_recursive);
 CMD_DECLARE (cmd_spec_restrict_file_names);
@@ -177,6 +178,7 @@ static struct {
   { "passiveftp",	&opt.ftp_pasv,		cmd_lockable_boolean },
   { "postdata",		&opt.post_data,		cmd_string },
   { "postfile",		&opt.post_file_name,	cmd_file },
+  { "preferfamily",	NULL,			cmd_spec_prefer_family },
   { "preservepermissions", &opt.preserve_perm,	cmd_boolean },
   { "progress",		&opt.progress_type,	cmd_spec_progress },
   { "protocoldirectories", &opt.protocol_directories, cmd_boolean },
@@ -1070,6 +1072,32 @@ cmd_spec_mirror (const char *com, const char *val, void *closure)
       opt.remove_listing = 0;
     }
   return 1;
+}
+
+/* Validate --prefer-family and set the choice.  Allowed values are
+   "IPv4", "IPv6", and "none".  */
+
+static int
+cmd_spec_prefer_family (const char *com, const char *val, void *closure)
+{
+  if (0 == strcasecmp (val, "ipv4"))
+    {
+      opt.prefer_family = prefer_ipv4;
+      return 1;
+    }
+  else if (0 == strcasecmp (val, "ipv6"))
+    {
+      opt.prefer_family = prefer_ipv6;
+      return 1;
+    }
+  else if (0 == strcasecmp (val, "none"))
+    {
+      opt.prefer_family = prefer_none;
+      return 1;
+    }
+  fprintf (stderr, _("%s: %s: Invalid preferred family `%s'.\n"),
+	   exec_name, com, val);
+  return 0;
 }
 
 /* Set progress.type to VAL, but verify that it's a valid progress

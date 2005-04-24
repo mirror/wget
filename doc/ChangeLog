@@ -1,5 +1,9 @@
 2005-04-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi (Download Options): Document --prefer-family.
+
+2005-04-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi (Download Options): Don't claim that -6 accepts mapped
 	IPv4 addresses.
 

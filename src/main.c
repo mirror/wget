@@ -214,6 +214,7 @@ struct cmdline_option option_data[] =
     { "passive-ftp", 0, OPT_BOOLEAN, "passiveftp", -1 },
     { "post-data", 0, OPT_VALUE, "postdata", -1 },
     { "post-file", 0, OPT_VALUE, "postfile", -1 },
+    { "prefer-family", 0, OPT_VALUE, "preferfamily", -1 },
     { "preserve-permissions", 0, OPT_BOOLEAN, "preservepermissions", -1 },
     { "progress", 0, OPT_VALUE, "progress", -1 },
     { "protocol-directories", 0, OPT_BOOLEAN, "protocoldirectories", -1 },
@@ -465,6 +466,9 @@ Download:\n"),
   -4,  --inet4-only              connect only to IPv4 addresses.\n"),
     N_("\
   -6,  --inet6-only              connect only to IPv6 addresses.\n"),
+    N_("\
+       --prefer-family=FAMILY    connect first to addresses of specified family,\n\
+                                 one of IPv6, IPv4, or none.\n"),
 #endif
     "\n",
 
