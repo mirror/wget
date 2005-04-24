@@ -900,11 +900,6 @@ or to deal with broken network configuration.  Only one of
 @samp{--inet6-only} and @samp{--inet4-only} may be specified in the
 same command.  Neither option is available in Wget compiled without
 IPv6 support.
-
-Note: the current implementation of the @samp{-6} switch allows IPv4
-addresses mapped into IPv6 addresses to be connected to.  This usage
-is not intended to be condoned, and it might be removed in a later
-version.
 @end table
 
 @node Directory Options
