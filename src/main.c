@@ -250,7 +250,6 @@ struct cmdline_option option_data[] =
     { "timeout", 'T', OPT_VALUE, "timeout", -1 },
     { "timestamping", 'N', OPT_BOOLEAN, "timestamping", -1 },
     { "tries", 't', OPT_VALUE, "tries", -1 },
-    { "use-proxy", 'Y', OPT_BOOLEAN, "useproxy", -1 },
     { "user-agent", 'U', OPT_VALUE, "useragent", -1 },
     { "verbose", 'v', OPT_BOOLEAN, "verbose", -1 },
     { "verbose", 0, OPT_BOOLEAN, "verbose", -1 },

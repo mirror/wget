@@ -1,5 +1,10 @@
 2005-04-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c (option_data): Removed support for the undocumented flag
+	--use-proxy.
+
+2005-04-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (option_data): Don't treat -Y as a boolean switch; treat
 	it as a value switch instead, so "-Y off" continues to work.
 
