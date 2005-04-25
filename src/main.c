@@ -218,7 +218,8 @@ struct cmdline_option option_data[] =
     { "preserve-permissions", 0, OPT_BOOLEAN, "preservepermissions", -1 },
     { "progress", 0, OPT_VALUE, "progress", -1 },
     { "protocol-directories", 0, OPT_BOOLEAN, "protocoldirectories", -1 },
-    { "proxy", 'Y', OPT_BOOLEAN, "useproxy", -1 },
+    { "proxy", 0, OPT_BOOLEAN, "useproxy", -1 },
+    { "_proxy-compat", 'Y', OPT_VALUE, "useproxy", -1 }, /* back-compatible */
     { "proxy-passwd", 0, OPT_VALUE, "proxypasswd", -1 },
     { "proxy-user", 0, OPT_VALUE, "proxyuser", -1 },
     { "quiet", 'q', OPT_BOOLEAN, "quiet", -1 },
