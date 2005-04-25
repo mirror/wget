@@ -3512,6 +3512,7 @@ KOJIMA Haime,
 Fila Kolodny,
 Alexander Kourakos,
 Martin Kraemer,
+Sami Krank,
 @tex
 $\Sigma\acute{\iota}\mu o\varsigma\;
 \Xi\varepsilon\nu\iota\tau\acute{\epsilon}\lambda\lambda\eta\varsigma$
