@@ -1,3 +1,8 @@
+2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Option Syntax): Document boolean options.  Include
+	the option syntax in the man page.
+
 2005-04-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Advanced Usage): Don't advertise the non-existent

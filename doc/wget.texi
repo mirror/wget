@@ -339,16 +339,18 @@ If you do not understand the difference between these notations, or do
 not know which one to use, just use the plain ordinary format you use
 with your favorite browser, like @code{Lynx} or @code{Netscape}.
 
+@c man begin OPTIONS
+
 @node Option Syntax
 @section Option Syntax
 @cindex option syntax
 @cindex syntax of options
 
-Since Wget uses GNU getopts to process its arguments, every option has a
-short form and a long form.  Long options are more convenient to
-remember, but take time to type.  You may freely mix different option
-styles, or specify options after the command-line arguments.  Thus you
-may write:
+Since Wget uses GNU getopt to process command-line arguments, every
+option has a long form along with the short one.  Long options are
+more convenient to remember, but take time to type.  You may freely
+mix different option styles, or specify options after the command-line
+arguments.  Thus you may write:
 
 @example
 wget -r --tries=10 http://fly.srk.fer.hr/ -o log
@@ -390,7 +392,29 @@ and @file{/~somebody}.  You can also clear the lists in @file{.wgetrc}
 wget -X '' -X /~nobody,/~somebody
 @end example
 
-@c man begin OPTIONS
+Most options that do not accept arguments are @dfn{boolean} options,
+so named because their state can be captured with a yes-or-no
+(``boolean'') variable.  For example, @samp{--follow-ftp} tells Wget
+to follow FTP links from HTML files and, on the other hand,
+@samp{--no-glob} tells it not to perform file globbing on FTP URLs.  A
+boolean option is either @dfn{affirmative} or @dfn{negative}
+(beginning with @samp{--no}).  All such options share several
+properties.
+
+Unless stated otherwise, it is assumed that the default behavior is
+the opposite of what the option accomplishes.  For example, the
+documented existence of @samp{--follow-ftp} assumes that the default
+is to @emph{not} follow FTP links from HTML pages.
+
+Affirmative options can be negated by prepending the @samp{--no-} to
+the option name; negative options can be negated by omitting the
+@samp{--no-} prefix.  This might seem superfluous---if the default for
+an affirmative option is to not do something, then why provide a way
+to explicitly turn it off?  But the startup file may in fact change
+the default.  For instance, using @code{follow_ftp = off} in
+@file{.wgetrc} makes Wget @emph{not} follow FTP links by default, and
+using @samp{--no-follow-ftp} is the only way to restore the factory
+default from the command line.
 
 @node Basic Startup Options
 @section Basic Startup Options
