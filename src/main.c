@@ -789,7 +789,7 @@ main (int argc, char *const *argv)
      interoption dependency checks. */
 
   if (opt.reclevel == 0)
-    opt.reclevel = INFINITE_RECURSION;  /* see wget.h for commentary on this */
+    opt.reclevel = INFINITE_RECURSION; /* see recur.h for commentary on this */
 
   if (opt.page_requisites && !opt.recursive)
     {
