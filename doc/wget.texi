@@ -2857,7 +2857,7 @@ wget -S http://www.lycos.com/
 Save the server headers with the file, perhaps for post-processing.
 
 @example
-wget -s http://www.lycos.com/
+wget --save-headers http://www.lycos.com/
 more index.html
 @end example
 

@@ -1,5 +1,10 @@
 2005-04-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi (Advanced Usage): Don't advertise the non-existent
+	`-s' option.
+
+2005-04-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi (Download Options): Document --retry-connrefused.
 
 2005-04-25  Hrvoje Niksic  <hniksic@xemacs.org>
