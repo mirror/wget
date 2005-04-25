@@ -1,3 +1,10 @@
+2005-04-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.in (wget.info): Depend on version.texi as well.
+
+	* wget.texi: Simplify copyright.  Replace remaining instances of
+	--OPTION=off with --no-OPTION.
+
 2005-04-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Download Options): Document --prefer-family.

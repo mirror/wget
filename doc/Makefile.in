@@ -65,14 +65,14 @@ everything: all wget_us.ps wget_a4.ps wget_toc.html
 $(SAMPLERCTEXI): $(srcdir)/sample.wgetrc
 	sed s/@/@@/g $? > $@
 
-wget.info: $(srcdir)/wget.texi $(SAMPLERCTEXI)
+wget.info: $(srcdir)/wget.texi $(SAMPLERCTEXI) $(srcdir)/version.texi
 	$(MAKEINFO) -I$(srcdir) $(srcdir)/wget.texi
 
 $(TEXI2POD): $(srcdir)/$(TEXI2POD).in
 	sed 's,^#! /usr/bin/perl,#! @PERL@,' $? > $@
 	chmod u+x $@
 
-wget.pod: $(srcdir)/wget.texi $(TEXI2POD)
+wget.pod: $(srcdir)/wget.texi $(TEXI2POD) $(srcdir)/version.texi
 	./$(TEXI2POD) $(srcdir)/wget.texi $@
 
 $(MAN): wget.pod
