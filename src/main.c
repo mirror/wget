@@ -326,9 +326,11 @@ init_switches (void)
 	    *p++ = ':';
 	  break;
 	case OPT_BOOLEAN:
-	  /* Don't specify optional arguments for boolean short
-	     options.  They are evil because they prevent combining of
-	     short options.  */
+	  /* Specify an optional argument for long options, so that
+	     --option=off works the same as --no-option, for
+	     compatibility with pre-1.10 Wget.  However, don't specify
+	     optional arguments short-option booleans because they
+	     prevent combining of short options.  */
 	  longopt->has_arg = optional_argument;
 	  /* For Boolean options, add the "--no-FOO" variant, which is
 	     identical to "--foo", except it has opposite meaning and
