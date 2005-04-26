@@ -1,7 +1,13 @@
 2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi (Directory Options): Removed stray text after
+	--protocol-directories.
+
+2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi (Option Syntax): Document boolean options.  Include
 	the option syntax in the man page.
+	(Directory Options): Removed stray text after --protocol-directories.
 
 2005-04-25  Hrvoje Niksic  <hniksic@xemacs.org>
 

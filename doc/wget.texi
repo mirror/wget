@@ -983,11 +983,6 @@ Use the protocol name as a directory component of local file names.  For
 example, with this option, @samp{wget -r http://@var{host}} will save to
 @samp{http/@var{host}/...} rather than just to @samp{@var{host}/...}.
 
-Disable generation of host-prefixed directories.  By default, invoking
-Wget with @samp{-r http://fly.srk.fer.hr/} will create a structure of
-directories beginning with @file{fly.srk.fer.hr/}.  This option disables
-such behavior.
-
 @cindex cut directories
 @item --cut-dirs=@var{number}
 Ignore @var{number} directory components.  This is useful for getting a
