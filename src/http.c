@@ -1113,6 +1113,14 @@ time_t http_atotm PARAMS ((const char *));
    && (ISSPACE (line[sizeof (string_constant) - 1])			\
        || !line[sizeof (string_constant) - 1]))
 
+#define SET_USER_AGENT(req)						\
+  if (opt.useragent)							\
+    request_set_header (req, "User-Agent", opt.useragent, rel_none);	\
+  else									\
+    request_set_header (req, "User-Agent",				\
+			aprintf ("Wget/%s", version_string), rel_value);
+
+
 /* Retrieve a document through HTTP protocol.  It recognizes status
    code, and correctly handles redirections.  It closes the network
    socket.  If it receives an error from the functions below it, it
@@ -1245,11 +1253,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 			aprintf ("bytes=%s-",
 				 number_to_static_string (hs->restval)),
 			rel_value);
-  if (opt.useragent)
-    request_set_header (req, "User-Agent", opt.useragent, rel_none);
-  else
-    request_set_header (req, "User-Agent",
-			aprintf ("Wget/%s", version_string), rel_value);
+  SET_USER_AGENT (req);
   request_set_header (req, "Accept", "*/*", rel_none);
 
   /* Find the username and password for authentication. */
@@ -1455,6 +1459,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  struct request *connreq = request_new ();
 	  request_set_method (connreq, "CONNECT",
 			      aprintf ("%s:%d", u->host, u->port));
+	  SET_USER_AGENT (req);
 	  if (proxyauth)
 	    {
 	      request_set_header (connreq, "Proxy-Authorization",
@@ -1464,6 +1469,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 		 the regular request below.  */
 	      proxyauth = NULL;
 	    }
+	  /* Examples in rfc2817 use the Host header in CONNECT
+	     requests.  I don't see how that gains anything, given
+	     that the contents of Host would be exactly the same as
+	     the contents of CONNECT.  */
 
 	  write_error = request_send (connreq, sock);
 	  request_free (connreq);
@@ -1622,10 +1631,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   if (statcode == HTTP_STATUS_UNAUTHORIZED)
     {
       /* Authorization is required.  */
-      if (skip_short_body (sock, contlen))
-	CLOSE_FINISH (sock);
-      else
-	CLOSE_INVALIDATE (sock);
+      if (keep_alive)
+	{
+	  if (skip_short_body (sock, contlen))
+	    CLOSE_FINISH (sock);
+	  else
+	    CLOSE_INVALIDATE (sock);
+	}
       pconn.authorized = 0;
       if (auth_finished || !(user && passwd))
 	{
@@ -1714,6 +1726,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
   /* Handle (possibly multiple instances of) the Set-Cookie header. */
   {
+    char *pth = NULL;
     int scpos;
     const char *scbeg, *scend;
     /* The jar should have been created by now. */
@@ -1723,10 +1736,16 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 				      &scbeg, &scend)) != -1;
 	 ++scpos)
       {
-	char *set_cookie = strdupdelim (scbeg, scend);
-	cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port, u->path,
+	char *set_cookie; BOUNDED_TO_ALLOCA (scbeg, scend, set_cookie);
+	if (pth == NULL)
+	  {
+	    /* u->path doesn't begin with /, which cookies.c expects. */
+	    pth = (char *) alloca (1 + strlen (u->path) + 1);
+	    pth[0] = '/';
+	    strcpy (pth + 1, u->path);
+	  }
+	cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port, pth,
 				  set_cookie);
-	xfree (set_cookie);
       }
   }
 

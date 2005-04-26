@@ -1,3 +1,18 @@
+2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* cookies.c (cookie_handle_set_cookie): Delete the part of the
+	path after the trailing slash.
+
+	* http.c (gethttp): Call cookie_handle_set_cookie with path that
+	begins with '/'.
+
+2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (gethttp): Call skip_short_body only if keep_alive is in
+	use.
+	(gethttp): Send the User-Agent header with the CONNECT request as
+	well.
+
 2005-04-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* main.c (option_data): Removed support for the undocumented flag

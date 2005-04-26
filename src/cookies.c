@@ -870,9 +870,19 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
     }
 
   if (!cookie->path)
-    cookie->path = xstrdup (path);
+    {
+      /* The cookie doesn't set path: set it to the URL path, sans the
+	 file part ("/dir/file" truncated to "/dir/").  */
+      char *trailing_slash = strrchr (path, '/');
+      if (trailing_slash)
+	cookie->path = strdupdelim (path, trailing_slash + 1);
+      else
+	/* no slash in the string -- can this even happen? */
+	cookie->path = xstrdup (path);
+    }
   else
     {
+      /* The cookie sets its own path; verify that it is legal. */
       if (!check_path_match (cookie->path, path))
 	{
 	  DEBUGP (("Attempt to fake the path: %s, %s\n",
@@ -880,6 +890,9 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
 	  goto out;
 	}
     }
+
+  /* Now store the cookie, or discard an existing cookie, if
+     discarding was requested.  */
 
   if (cookie->discard_requested)
     {
