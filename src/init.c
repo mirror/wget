@@ -1007,7 +1007,7 @@ cmd_time (const char *com, const char *val, void *place)
       break;
     default:
       /* Not a recognized suffix: assume it belongs to the number.
-	 (If not, atof simple_atof will raise an error.)  */
+	 (If not, simple_atof will raise an error.)  */
       mult = 1;
     }
 
