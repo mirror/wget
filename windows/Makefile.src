@@ -32,8 +32,8 @@
 !ifndef NO_SSL
 SSLDEFS	= /DHAVE_SSL
 SSLLIBS	= libeay32.lib ssleay32.lib
-SSLSRC	= gen_sslfunc.c http-ntlm.c
-SSLOBJ	= gen_sslfunc$o http-ntlm$o
+SSLSRC	= openssl.c http-ntlm.c
+SSLOBJ	= openssl$o http-ntlm$o
 !endif
 
 o = .obj

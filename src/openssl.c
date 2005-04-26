@@ -53,7 +53,7 @@ so, delete this exception statement from your version.  */
 #include "utils.h"
 #include "connect.h"
 #include "url.h"
-#include "gen_sslfunc.h"
+#include "ssl.h"
 
 #ifndef errno
 extern int errno;
@@ -213,7 +213,7 @@ ssl_init ()
 
   if (opt.cert_file != NULL || opt.cert_key != NULL)
     {
-      int ssl_cert_type;
+      int ssl_cert_type = SSL_FILETYPE_PEM;
       switch (opt.cert_type)
 	{
 	case cert_type_pem:

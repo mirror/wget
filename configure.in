@@ -406,7 +406,7 @@ main(){return 0;}
     AC_DEFINE([HAVE_SSL], 1,
               [Define if SSL support should be compiled in.])
     AC_SUBST(SSL_INCLUDES)
-    SSL_OBJ='gen_sslfunc$o'
+    SSL_OBJ='openssl$o'
     AC_SUBST(SSL_OBJ)
   else
     LDFLAGS=$wget_save_LDFLAGS

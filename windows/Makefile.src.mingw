@@ -33,7 +33,7 @@ ifdef SSL
     OPENSSL_PATH = ../../openssl-0.9.7c
     CFLAGS += -I${OPENSSL_PATH}/outinc -DHAVE_SSL
     LIBS += -L${OPENSSL_PATH}/out -leay32 -lssl32
-    OBJS += gen_sslfunc${OBJ_EXT} http-ntlm${OBJ_EXT}
+    OBJS += openssl${OBJ_EXT} http-ntlm${OBJ_EXT}
 endif
 
 all: wget.exe

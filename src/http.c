@@ -64,7 +64,7 @@ extern int errno;
 #include "connect.h"
 #include "netrc.h"
 #ifdef HAVE_SSL
-# include "gen_sslfunc.h"
+# include "ssl.h"
 #endif
 #ifdef ENABLE_NTLM
 # include "http-ntlm.h"

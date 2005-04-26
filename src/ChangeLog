@@ -1,5 +1,11 @@
 2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* openssl.c: Renamed "gen_sslfunc.c" to "openssl.c" and
+	"gen_sslfunc.h" to "openssl.h".  This reflects the intent of
+	openssl.c encapsulating the OpenSSL-specific code.
+
+2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c: Renamed "closure" (a synonym for context in some
 	cultures) to "place", which more accurately reflects the usage.
 

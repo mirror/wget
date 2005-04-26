@@ -166,7 +166,7 @@ ftp-opie$o: wget.h sysdep.h options.h safe-ctype.h gen-md5.h
 ftp$o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h retr.h \
 	ftp.h host.h connect.h netrc.h
 gen-md5$o: wget.h sysdep.h options.h safe-ctype.h gen-md5.h
-gen_sslfunc$o: wget.h sysdep.h options.h safe-ctype.h utils.h connect.h host.h \
+openssl$o: wget.h sysdep.h options.h safe-ctype.h utils.h connect.h host.h \
 	url.h
 getopt$o: wget.h sysdep.h options.h safe-ctype.h getopt.h
 gnu-md5$o: wget.h sysdep.h options.h safe-ctype.h gnu-md5.h
@@ -175,13 +175,13 @@ host$o: wget.h sysdep.h options.h safe-ctype.h utils.h host.h url.h hash.h
 html-parse$o: wget.h sysdep.h options.h safe-ctype.h html-parse.h
 html-url$o: wget.h sysdep.h options.h safe-ctype.h html-parse.h url.h utils.h
 http$o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h host.h \
-	retr.h connect.h host.h netrc.h gen_sslfunc.h \
+	retr.h connect.h host.h netrc.h ssl.h \
 	cookies.h gen-md5.h
 init$o: wget.h sysdep.h options.h safe-ctype.h utils.h init.h host.h recur.h \
 	netrc.h cookies.h progress.h
 log$o: wget.h sysdep.h options.h safe-ctype.h utils.h
 main$o: wget.h sysdep.h options.h safe-ctype.h utils.h init.h retr.h \
-	recur.h host.h cookies.h url.h progress.h gen_sslfunc.h getopt.h
+	recur.h host.h cookies.h url.h progress.h ssl.h getopt.h
 gnu-md5$o: wget.h sysdep.h options.h safe-ctype.h gnu-md5.h
 mswindows$o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h
 netrc$o: wget.h sysdep.h options.h safe-ctype.h utils.h netrc.h init.h
