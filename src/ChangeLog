@@ -1,5 +1,10 @@
 2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* init.c: Renamed "closure" (a synonym for context in some
+	cultures) to "place", which more accurately reflects the usage.
+
+2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* gen_sslfunc.c (ssl_init): Use default locations for loading the
 	certificate bundles.
 	(ssl_init_prng): Disable the cryptographically weak PRNG

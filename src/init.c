@@ -101,7 +101,7 @@ CMD_DECLARE (cmd_spec_secure_protocol);
 CMD_DECLARE (cmd_spec_timeout);
 CMD_DECLARE (cmd_spec_useragent);
 
-/* List of recognized commands, each consisting of name, closure and
+/* List of recognized commands, each consisting of name, place and
    function.  When adding a new command, simply add it to the list,
    but be sure to keep the list sorted alphabetically, as
    command_by_name depends on it.  Also, be sure to add any entries
@@ -110,7 +110,7 @@ CMD_DECLARE (cmd_spec_useragent);
 
 static struct {
   const char *name;
-  void *closure;
+  void *place;
   int (*action) PARAMS ((const char *, const char *, void *));
 } commands[] = {
   { "accept",		&opt.accepts,		cmd_vector },
@@ -151,7 +151,7 @@ static struct {
   { "dotspacing",	&opt.dot_spacing,	cmd_number },
   { "dotstyle",		&opt.dot_style,		cmd_string },
 #ifdef HAVE_SSL
-  { "egdfile",		&opt.egd_file,	cmd_file },
+  { "egdfile",		&opt.egd_file,		cmd_file },
 #endif
   { "excludedirectories", &opt.excludes,	cmd_directory_vector },
   { "excludedomains",	&opt.exclude_domains,	cmd_vector },
@@ -568,7 +568,7 @@ setval_internal (int comind, const char *com, const char *val)
 {
   assert (0 <= comind && comind < countof (commands));
   DEBUGP (("Setting %s (%d) to %s\n", com, comind, val));
-  return ((*commands[comind].action) (com, val, commands[comind].closure));
+  return ((*commands[comind].action) (com, val, commands[comind].place));
 }
 
 /* Run command COM with value VAL.  If running the command produces an
@@ -628,10 +628,10 @@ run_command (const char *opt)
 		     && (p)[3] == '\0')
 
 
-/* Store the boolean value from VAL to CLOSURE.  COM is ignored,
+/* Store the boolean value from VAL to PLACE.  COM is ignored,
    except for error messages.  */
 static int
-cmd_boolean (const char *com, const char *val, void *closure)
+cmd_boolean (const char *com, const char *val, void *place)
 {
   int bool_value;
 
@@ -649,11 +649,11 @@ cmd_boolean (const char *com, const char *val, void *closure)
       return 0;
     }
 
-  *(int *)closure = bool_value;
+  *(int *)place = bool_value;
   return 1;
 }
 
-/* Store the lockable_boolean {2, 1, 0, -1} value from VAL to CLOSURE.
+/* Store the lockable_boolean {2, 1, 0, -1} value from VAL to PLACE.
    COM is ignored, except for error messages.  Values 2 and -1
    indicate that once defined, the value may not be changed by
    successive wgetrc files or command-line arguments.
@@ -663,11 +663,11 @@ cmd_boolean (const char *com, const char *val, void *closure)
            0 - Disable an option ("off")
           -1 - Disable an option for good ("never") */
 static int
-cmd_lockable_boolean (const char *com, const char *val, void *closure)
+cmd_lockable_boolean (const char *com, const char *val, void *place)
 {
   int lockable_boolean_value;
 
-  int oldval = *(int *)closure;
+  int oldval = *(int *)place;
 
   /*
    * If a config file said "always" or "never", don't allow command line
@@ -692,19 +692,19 @@ cmd_lockable_boolean (const char *com, const char *val, void *closure)
       return 0;
     }
 
-  *(int *)closure = lockable_boolean_value;
+  *(int *)place = lockable_boolean_value;
   return 1;
 }
 
 static int simple_atoi PARAMS ((const char *, const char *, int *));
 
-/* Set the non-negative integer value from VAL to CLOSURE.  With
+/* Set the non-negative integer value from VAL to PLACE.  With
    incorrect specification, the number remains unchanged.  */
 static int
-cmd_number (const char *com, const char *val, void *closure)
+cmd_number (const char *com, const char *val, void *place)
 {
-  if (!simple_atoi (val, val + strlen (val), closure)
-      || *(int *) closure < 0)
+  if (!simple_atoi (val, val + strlen (val), place)
+      || *(int *) place < 0)
     {
       fprintf (stderr, _("%s: %s: Invalid number `%s'.\n"),
 	       exec_name, com, val);
@@ -715,22 +715,22 @@ cmd_number (const char *com, const char *val, void *closure)
 
 /* Similar to cmd_number(), only accepts `inf' as a synonym for 0.  */
 static int
-cmd_number_inf (const char *com, const char *val, void *closure)
+cmd_number_inf (const char *com, const char *val, void *place)
 {
   if (!strcasecmp (val, "inf"))
     {
-      *(int *)closure = 0;
+      *(int *)place = 0;
       return 1;
     }
-  return cmd_number (com, val, closure);
+  return cmd_number (com, val, place);
 }
 
 /* Copy (strdup) the string at COM to a new location and place a
-   pointer to *CLOSURE.  */
+   pointer to *PLACE.  */
 static int
-cmd_string (const char *com, const char *val, void *closure)
+cmd_string (const char *com, const char *val, void *place)
 {
-  char **pstring = (char **)closure;
+  char **pstring = (char **)place;
 
   xfree_null (*pstring);
   *pstring = xstrdup (val);
@@ -747,13 +747,13 @@ cmd_string (const char *com, const char *val, void *closure)
    `.wgetrc'.  In that case, and if VAL begins with `~', the tilde
    gets expanded to the user's home directory.  */
 static int
-cmd_file (const char *com, const char *val, void *closure)
+cmd_file (const char *com, const char *val, void *place)
 {
-  char **pstring = (char **)closure;
+  char **pstring = (char **)place;
 
   xfree_null (*pstring);
 
-  /* #### If VAL is empty, perhaps should set *CLOSURE to NULL.  */
+  /* #### If VAL is empty, perhaps should set *PLACE to NULL.  */
 
   if (!enable_tilde_expansion || !(*val == '~' && ISSEP (val[1])))
     {
@@ -792,17 +792,17 @@ cmd_file (const char *com, const char *val, void *closure)
 
 /* Like cmd_file, but strips trailing '/' characters.  */
 static int
-cmd_directory (const char *com, const char *val, void *closure)
+cmd_directory (const char *com, const char *val, void *place)
 {
   char *s, *t;
 
   /* Call cmd_file() for tilde expansion and separator
      canonicalization (backslash -> slash under Windows).  These
      things should perhaps be in a separate function.  */
-  if (!cmd_file (com, val, closure))
+  if (!cmd_file (com, val, place))
     return 0;
 
-  s = *(char **)closure;
+  s = *(char **)place;
   t = s + strlen (s);
   while (t > s && *--t == '/')
     *t = '\0';
@@ -811,13 +811,13 @@ cmd_directory (const char *com, const char *val, void *closure)
 }
 
 /* Split VAL by space to a vector of values, and append those values
-   to vector pointed to by the CLOSURE argument.  If VAL is empty, the
-   CLOSURE vector is cleared instead.  */
+   to vector pointed to by the PLACE argument.  If VAL is empty, the
+   PLACE vector is cleared instead.  */
 
 static int
-cmd_vector (const char *com, const char *val, void *closure)
+cmd_vector (const char *com, const char *val, void *place)
 {
-  char ***pvec = (char ***)closure;
+  char ***pvec = (char ***)place;
 
   if (*val)
     *pvec = merge_vecs (*pvec, sepstring (val));
@@ -830,9 +830,9 @@ cmd_vector (const char *com, const char *val, void *closure)
 }
 
 static int
-cmd_directory_vector (const char *com, const char *val, void *closure)
+cmd_directory_vector (const char *com, const char *val, void *place)
 {
-  char ***pvec = (char ***)closure;
+  char ***pvec = (char ***)place;
 
   if (*val)
     {
@@ -919,7 +919,7 @@ parse_bytes_helper (const char *val, double *result)
   return 1;
 }
 
-/* Parse VAL as a number and set its value to CLOSURE (which should
+/* Parse VAL as a number and set its value to PLACE (which should
    point to a wgint).
 
    By default, the value is assumed to be in bytes.  If "K", "M", or
@@ -930,11 +930,11 @@ parse_bytes_helper (const char *val, double *result)
 
    The string "inf" is returned as 0.
 
-   In case of error, 0 is returned and memory pointed to by CLOSURE
+   In case of error, 0 is returned and memory pointed to by PLACE
    remains unmodified.  */
 
 static int
-cmd_bytes (const char *com, const char *val, void *closure)
+cmd_bytes (const char *com, const char *val, void *place)
 {
   double byte_value;
   if (!parse_bytes_helper (val, &byte_value))
@@ -943,17 +943,17 @@ cmd_bytes (const char *com, const char *val, void *closure)
 	       exec_name, com, val);
       return 0;
     }
-  *(wgint *)closure = (wgint)byte_value;
+  *(wgint *)place = (wgint)byte_value;
   return 1;
 }
 
-/* Like cmd_bytes, but CLOSURE is interpreted as a pointer to
+/* Like cmd_bytes, but PLACE is interpreted as a pointer to
    LARGE_INT.  It works by converting the string to double, therefore
    working with values up to 2^53-1 without loss of precision.  This
    value (8192 TB) is large enough to serve for a while.  */
 
 static int
-cmd_bytes_large (const char *com, const char *val, void *closure)
+cmd_bytes_large (const char *com, const char *val, void *place)
 {
   double byte_value;
   if (!parse_bytes_helper (val, &byte_value))
@@ -962,7 +962,7 @@ cmd_bytes_large (const char *com, const char *val, void *closure)
 	       exec_name, com, val);
       return 0;
     }
-  *(LARGE_INT *)closure = (LARGE_INT)byte_value;
+  *(LARGE_INT *)place = (LARGE_INT)byte_value;
   return 1;
 }
 
@@ -971,7 +971,7 @@ cmd_bytes_large (const char *com, const char *val, void *closure)
    "d", and "w" for minutes, hours, days, and weeks respectively.  */
 
 static int
-cmd_time (const char *com, const char *val, void *closure)
+cmd_time (const char *com, const char *val, void *place)
 {
   double number, mult;
   const char *end = val + strlen (val);
@@ -1022,7 +1022,7 @@ cmd_time (const char *com, const char *val, void *closure)
   if (!simple_atof (val, end, &number))
     goto err;
 
-  *(double *)closure = number * mult;
+  *(double *)place = number * mult;
   return 1;
 }
 
@@ -1040,13 +1040,13 @@ static int decode_string PARAMS ((const char *, const struct decode_item *,
 
 #ifdef HAVE_SSL
 static int
-cmd_spec_cert_type (const char *com, const char *val, void *closure)
+cmd_spec_cert_type (const char *com, const char *val, void *place)
 {
   static const struct decode_item choices[] = {
     { "pem", cert_type_pem },
     { "asn1", cert_type_asn1 },
   };
-  int ok = decode_string (val, choices, countof (choices), closure);
+  int ok = decode_string (val, choices, countof (choices), place);
   if (!ok)
     fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"), exec_name, com, val);
   return ok;
@@ -1054,7 +1054,7 @@ cmd_spec_cert_type (const char *com, const char *val, void *closure)
 #endif
 
 static int
-cmd_spec_dirstruct (const char *com, const char *val, void *closure)
+cmd_spec_dirstruct (const char *com, const char *val, void *place_ignored)
 {
   if (!cmd_boolean (com, val, &opt.dirstruct))
     return 0;
@@ -1068,7 +1068,7 @@ cmd_spec_dirstruct (const char *com, const char *val, void *closure)
 }
 
 static int
-cmd_spec_header (const char *com, const char *val, void *closure)
+cmd_spec_header (const char *com, const char *val, void *place)
 {
   if (!check_user_specified_header (val))
     {
@@ -1076,11 +1076,11 @@ cmd_spec_header (const char *com, const char *val, void *closure)
 	       exec_name, com, val);
       return 0;
     }
-  return cmd_vector (com, val, closure);
+  return cmd_vector (com, val, place);
 }
 
 static int
-cmd_spec_htmlify (const char *com, const char *val, void *closure)
+cmd_spec_htmlify (const char *com, const char *val, void *place_ignored)
 {
   int flag = cmd_boolean (com, val, &opt.htmlify);
   if (flag && !opt.htmlify)
@@ -1092,7 +1092,7 @@ cmd_spec_htmlify (const char *com, const char *val, void *closure)
    no limit on max. recursion depth, and don't remove listings.  */
 
 static int
-cmd_spec_mirror (const char *com, const char *val, void *closure)
+cmd_spec_mirror (const char *com, const char *val, void *place_ignored)
 {
   int mirror;
 
@@ -1114,7 +1114,7 @@ cmd_spec_mirror (const char *com, const char *val, void *closure)
    "IPv4", "IPv6", and "none".  */
 
 static int
-cmd_spec_prefer_family (const char *com, const char *val, void *closure)
+cmd_spec_prefer_family (const char *com, const char *val, void *place_ignored)
 {
   static const struct decode_item choices[] = {
     { "IPv4", prefer_ipv4 },
@@ -1132,7 +1132,7 @@ cmd_spec_prefer_family (const char *com, const char *val, void *closure)
    implementation before that.  */
 
 static int
-cmd_spec_progress (const char *com, const char *val, void *closure)
+cmd_spec_progress (const char *com, const char *val, void *place_ignored)
 {
   if (!valid_progress_implementation_p (val))
     {
@@ -1153,7 +1153,7 @@ cmd_spec_progress (const char *com, const char *val, void *closure)
    is specified.  */
 
 static int
-cmd_spec_recursive (const char *com, const char *val, void *closure)
+cmd_spec_recursive (const char *com, const char *val, void *place_ignored)
 {
   if (!cmd_boolean (com, val, &opt.recursive))
     return 0;
@@ -1166,7 +1166,7 @@ cmd_spec_recursive (const char *com, const char *val, void *closure)
 }
 
 static int
-cmd_spec_restrict_file_names (const char *com, const char *val, void *closure)
+cmd_spec_restrict_file_names (const char *com, const char *val, void *place_ignored)
 {
   int restrict_os = opt.restrict_files_os;
   int restrict_ctrl = opt.restrict_files_ctrl;
@@ -1209,7 +1209,7 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *closure)
 
 #ifdef HAVE_SSL
 static int
-cmd_spec_secure_protocol (const char *com, const char *val, void *closure)
+cmd_spec_secure_protocol (const char *com, const char *val, void *place)
 {
   static const struct decode_item choices[] = {
     { "auto", secure_protocol_auto },
@@ -1217,7 +1217,7 @@ cmd_spec_secure_protocol (const char *com, const char *val, void *closure)
     { "sslv3", secure_protocol_sslv3 },
     { "tlsv1", secure_protocol_tlsv1 },
   };
-  int ok = decode_string (val, choices, countof (choices), closure);
+  int ok = decode_string (val, choices, countof (choices), place);
   if (!ok)
     fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"), exec_name, com, val);
   return ok;
@@ -1227,7 +1227,7 @@ cmd_spec_secure_protocol (const char *com, const char *val, void *closure)
 /* Set all three timeout values. */
 
 static int
-cmd_spec_timeout (const char *com, const char *val, void *closure)
+cmd_spec_timeout (const char *com, const char *val, void *place_ignored)
 {
   double value;
   if (!cmd_time (com, val, &value))
@@ -1239,7 +1239,7 @@ cmd_spec_timeout (const char *com, const char *val, void *closure)
 }
 
 static int
-cmd_spec_useragent (const char *com, const char *val, void *closure)
+cmd_spec_useragent (const char *com, const char *val, void *place_ignored)
 {
   /* Just check for empty string and newline, so we don't throw total
      junk to the server.  */
