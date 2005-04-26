@@ -1,5 +1,10 @@
 2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi (HTTP Options): Improved entry on
+	--keep-session-cookies.
+
+2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi (Directory Options): Removed stray text after
 	--protocol-directories.
 

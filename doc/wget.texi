@@ -1155,13 +1155,13 @@ cookies''), but also see @samp{--keep-session-cookies}.
 @cindex cookies, session
 @cindex session cookies
 @item --keep-session-cookies
-
 When specified, causes @samp{--save-cookies} to also save session
-cookies.  Session cookies are normally not save because they are
-supposed to be forgotten when you exit the browser.  Saving them is
-useful on sites that require you to log in or to visit the home page
-before you can access some pages.  With this option, multiple Wget runs
-are considered a single browser session as far as the site is concerned.
+cookies.  Session cookies are normally not saved because they are
+meant to be kept in memory and forgotten when you exit the browser.
+Saving them is useful on sites that require you to log in or to visit
+the home page before you can access some pages.  With this option,
+multiple Wget runs are considered a single browser session as far as
+the site is concerned.
 
 Since the cookie file format does not normally carry session cookies,
 Wget marks them with an expiry timestamp of 0.  Wget's
