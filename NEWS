@@ -72,9 +72,10 @@ is useful because it allows the user to override non-default behavior
 specified via `.wgetrc'.
 
 ** The new option `--keep-session-cookies' causes `--save-cookies' to
-save session cookies along with the permanent ones.  This is useful on
-sites that require you to log in before you can access some pages.
-With this option, multiple Wget runs will be treated as a single
+save session cookies (normally only kept in memory) along with the
+permanent ones.  Many sites track important information, such as
+whether the user has authenticated, using session cookies.  Using this
+option option allows multiple Wget runs to be treated as a single
 browser session.
 
 * `wget -b' now works correctly under Windows.
