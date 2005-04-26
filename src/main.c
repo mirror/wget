@@ -245,7 +245,7 @@ struct cmdline_option option_data[] =
     { IF_SSL ("sslcertkey"), 0, OPT_VALUE, "sslcertkey", -1 },
     { IF_SSL ("sslcerttype"), 0, OPT_VALUE, "sslcerttype", -1 },
     { IF_SSL ("sslcheckcert"), 0, OPT_VALUE, "sslcheckcert", -1 },
-    { IF_SSL ("secure-protocol"), 0, OPT_VALUE, "secureprotocol", -1 },
+    { IF_SSL ("sslprotocol"), 0, OPT_VALUE, "sslprotocol", -1 },
     { "strict-comments", 0, OPT_BOOLEAN, "strictcomments", -1 },
     { "timeout", 'T', OPT_VALUE, "timeout", -1 },
     { "timestamping", 'N', OPT_BOOLEAN, "timestamping", -1 },
