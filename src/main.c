@@ -545,9 +545,9 @@ HTTPS (SSL/TLS) options:\n"),
     N_("\
        --certificate-type=TYPE  client certificate type, PEM or ASN1.\n"),
     N_("\
-       --sslcadir=DIR           dir where hash list of CA's are stored.\n"),
+       --ca-certificate=FILE    file with the bundle of CA's.\n"),
     N_("\
-       --sslcafile=FILE         file with bundle of CA's.\n"),
+       --ca-directory=DIR       directory where hash list of CA's is stored.\n"),
     N_("\
        --egd-file=FILE          file name of the EGD socket.\n"),
     "\n",
