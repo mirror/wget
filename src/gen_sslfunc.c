@@ -1,6 +1,6 @@
-/* SSL support.
-   Copyright (C) 2000 Free Software Foundation, Inc.
-   Contributed by Christian Fraenkel.
+/* SSL support via OpenSSL library.
+   Copyright (C) 2000-2005 Free Software Foundation, Inc.
+   Originally contributed by Christian Fraenkel.
 
 This file is part of GNU Wget.
 
@@ -70,7 +70,6 @@ ssl_init_prng (void)
 
 #if SSLEAY_VERSION_NUMBER >= 0x00905100
   char rand_file[256];
-  int maxrand = 500;
 
   /* First, seed from a file specified by the user.  This will be
      $RANDFILE, if set, or ~/.rnd.  */
@@ -82,9 +81,9 @@ ssl_init_prng (void)
   if (RAND_status ())
     return;
 
-  /* Get random data from EGD if opt.sslegdsock was set.  */
-  if (opt.sslegdsock && *opt.sslegdsock)
-    RAND_egd (opt.sslegdsock);
+  /* Get random data from EGD if opt.egd_file was set.  */
+  if (opt.egd_file && *opt.egd_file)
+    RAND_egd (opt.egd_file);
 
   if (RAND_status ())
     return;
@@ -99,20 +98,25 @@ ssl_init_prng (void)
     return;
 #endif
 
-  /* Still not enough randomness, most likely because neither
-     /dev/random nor EGD were available.  Resort to a simple and
-     stupid method -- seed OpenSSL's PRNG with libc PRNG.  This is
-     cryptographically weak, but people who care about strong
-     cryptography should install /dev/random (default on Linux) or
-     specify their own source of randomness anyway.  */
+#if 0 /* don't do this by default */
+  {
+    int maxrand = 500;
 
-  logprintf (LOG_VERBOSE, _("Warning: using a weak random seed.\n"));
+    /* Still not random enough, presumably because neither /dev/random
+       nor EGD were available.  Try to seed OpenSSL's PRNG with libc
+       PRNG.  This is cryptographically weak and defeats the purpose
+       of using OpenSSL, which is why it is highly discouraged.  */
 
-  while (RAND_status () == 0 && maxrand-- > 0)
-    {
-      unsigned char rnd = random_number (256);
-      RAND_seed (&rnd, sizeof (rnd));
-    }
+    logprintf (LOG_VERBOSE, _("WARNING: using a weak random seed.\n"));
+
+    while (RAND_status () == 0 && maxrand-- > 0)
+      {
+	unsigned char rnd = random_number (256);
+	RAND_seed (&rnd, sizeof (rnd));
+      }
+  }
+#endif
+
 #endif /* SSLEAY_VERSION_NUMBER >= 0x00905100 */
 }
 
@@ -120,20 +124,23 @@ static int
 verify_callback (int ok, X509_STORE_CTX *ctx)
 {
   char *s, buf[256];
-  s = X509_NAME_oneline (X509_get_subject_name (ctx->current_cert), buf, 256);
-  if (ok == 0) {
-    switch (ctx->error) {
-    case X509_V_ERR_CERT_NOT_YET_VALID:
-    case X509_V_ERR_CERT_HAS_EXPIRED:
-      /* This mean the CERT is not valid !!! */
-      ok = 0;
-      break;
-    case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
-      /* Unsure if we should handle that this way */
-      ok = 1;
-      break;
+  s = X509_NAME_oneline (X509_get_subject_name (ctx->current_cert),
+			 buf, sizeof (buf));
+  if (ok == 0)
+    {
+      switch (ctx->error)
+	{
+	case X509_V_ERR_CERT_NOT_YET_VALID:
+	case X509_V_ERR_CERT_HAS_EXPIRED:
+	  /* This mean the CERT is not valid !!! */
+	  ok = 0;
+	  break;
+	case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+	  /* Unsure if we should handle that this way */
+	  ok = 1;
+	  break;
+	}
     }
-  }
   return ok;
 }
 
@@ -152,8 +159,6 @@ uerr_t
 ssl_init ()
 {
   SSL_METHOD *meth = NULL;
-  int verify;
-  int can_validate;
 
   if (ssl_ctx)
     return 0;
@@ -172,20 +177,20 @@ ssl_init ()
   SSL_load_error_strings ();
   SSLeay_add_all_algorithms ();
   SSLeay_add_ssl_algorithms ();
-  switch (opt.sslprotocol)
+  switch (opt.secure_protocol)
     {
-      default:
-	meth = SSLv23_client_method ();
-	break;
-      case 1 :
-	meth = SSLv2_client_method ();
-	break;
-      case 2 :
-	meth = SSLv3_client_method ();
-	break;
-      case 3 :
-	meth = TLSv1_client_method ();
-	break;
+    case secure_protocol_auto:
+      meth = SSLv23_client_method ();
+      break;
+    case secure_protocol_sslv2:
+      meth = SSLv2_client_method ();
+      break;
+    case secure_protocol_sslv3:
+      meth = SSLv3_client_method ();
+      break;
+    case secure_protocol_tlsv1:
+      meth = TLSv1_client_method ();
+      break;
     }
   if (meth == NULL)
     {
@@ -199,61 +204,41 @@ ssl_init ()
       ssl_print_errors ();
       return SSLERRCTXCREATE;
     }
-  /* Can we validate the server Cert ? */
-  if (opt.sslcadir != NULL || opt.sslcafile != NULL)
-    {
-      SSL_CTX_load_verify_locations (ssl_ctx, opt.sslcafile, opt.sslcadir);
-      can_validate = 1;
-    }
-  else
-    {
-      can_validate = 0;
-    }
 
-  if (!opt.sslcheckcert)
-    {
-      /* check cert but ignore error, do not break handshake on error */
-      verify = SSL_VERIFY_NONE;
-    }
-  else
-    {
-      if (!can_validate)
-	{
-	  logputs (LOG_NOTQUIET,
-		   _("Warning: validation of server certificate not possible!\n"));
-	  verify = SSL_VERIFY_NONE;
-	}
-     else
-	{
-	  /* break handshake if server cert is not valid but allow
-	     NO-Cert mode */
-	  verify = SSL_VERIFY_PEER;
-	}
-    }
+  SSL_CTX_set_default_verify_paths (ssl_ctx);
+  SSL_CTX_load_verify_locations (ssl_ctx, opt.ca_cert, opt.ca_directory);
+  SSL_CTX_set_verify (ssl_ctx,
+		      opt.check_cert ? SSL_VERIFY_PEER : SSL_VERIFY_NONE,
+		      verify_callback);
 
-  SSL_CTX_set_verify (ssl_ctx, verify, verify_callback);
-
-  if (opt.sslcertfile != NULL || opt.sslcertkey != NULL)
+  if (opt.cert_file != NULL || opt.cert_key != NULL)
     {
       int ssl_cert_type;
-      if (!opt.sslcerttype)
-	ssl_cert_type = SSL_FILETYPE_PEM;
-      else
-	ssl_cert_type = SSL_FILETYPE_ASN1;
+      switch (opt.cert_type)
+	{
+	case cert_type_pem:
+	  ssl_cert_type = SSL_FILETYPE_PEM;
+	  break;
+	case cert_type_asn1:
+	  ssl_cert_type = SSL_FILETYPE_ASN1;
+	  break;
+	}
 
-      if (opt.sslcertkey == NULL) 
-	opt.sslcertkey = opt.sslcertfile;
-      if (opt.sslcertfile == NULL)
-	opt.sslcertfile = opt.sslcertkey; 
+#if 0 /* what was this supposed to achieve? */
+      if (opt.cert_key == NULL) 
+	opt.cert_key = opt.cert_file;
+      if (opt.cert_file == NULL)
+	opt.cert_file = opt.cert_key;
+#endif
 
-      if (SSL_CTX_use_certificate_file (ssl_ctx, opt.sslcertfile,
-					ssl_cert_type) <= 0)
+      if (SSL_CTX_use_certificate_file (ssl_ctx, opt.cert_file,
+					ssl_cert_type) != 1)
 	{
 	  ssl_print_errors ();
   	  return SSLERRCERTFILE;
 	}
-      if (SSL_CTX_use_PrivateKey_file  (ssl_ctx, opt.sslcertkey,
-					ssl_cert_type) <= 0)
+      if (SSL_CTX_use_PrivateKey_file (ssl_ctx, opt.cert_key,
+				       ssl_cert_type) != 1)
 	{
 	  ssl_print_errors ();
 	  return SSLERRCERTKEY;

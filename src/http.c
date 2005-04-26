@@ -1197,14 +1197,14 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  /* try without certfile */
 	  logprintf (LOG_NOTQUIET,
 		     _("Failed to load certificates from %s\n"),
-		     opt.sslcertfile);
+		     opt.cert_file);
 	  logprintf (LOG_NOTQUIET,
 		     _("Trying without the specified certificate\n"));
 	  break;
 	case SSLERRCERTKEY:
 	  logprintf (LOG_NOTQUIET,
 		     _("Failed to get certificate key from %s\n"),
-		     opt.sslcertkey);
+		     opt.cert_key);
 	  logprintf (LOG_NOTQUIET,
 		     _("Trying without the specified certificate\n"));
 	  break;

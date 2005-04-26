@@ -84,6 +84,9 @@ CMD_DECLARE (cmd_directory);
 CMD_DECLARE (cmd_time);
 CMD_DECLARE (cmd_vector);
 
+#ifdef HAVE_SSL
+CMD_DECLARE (cmd_spec_cert_type);
+#endif
 CMD_DECLARE (cmd_spec_dirstruct);
 CMD_DECLARE (cmd_spec_header);
 CMD_DECLARE (cmd_spec_htmlify);
@@ -92,6 +95,9 @@ CMD_DECLARE (cmd_spec_prefer_family);
 CMD_DECLARE (cmd_spec_progress);
 CMD_DECLARE (cmd_spec_recursive);
 CMD_DECLARE (cmd_spec_restrict_file_names);
+#ifdef HAVE_SSL
+CMD_DECLARE (cmd_spec_secure_protocol);
+#endif
 CMD_DECLARE (cmd_spec_timeout);
 CMD_DECLARE (cmd_spec_useragent);
 
@@ -115,7 +121,17 @@ static struct {
   { "backups",		&opt.backups,		cmd_number },
   { "base",		&opt.base_href,		cmd_string },
   { "bindaddress",	&opt.bind_address,	cmd_string },
+#ifdef HAVE_SSL
+  { "cacertificate",	&opt.ca_cert,		cmd_file },
+#endif
   { "cache",		&opt.allow_cache,	cmd_boolean },
+#ifdef HAVE_SSL
+  { "cadirectory",	&opt.ca_directory,	cmd_directory },
+  { "certificate",	&opt.cert_file,		cmd_file },
+  { "certificatekey",	&opt.cert_key,		cmd_file },
+  { "certificatetype",	&opt.cert_type,		cmd_spec_cert_type },
+  { "checkcertificate", &opt.check_cert,	cmd_boolean },
+#endif
   { "connecttimeout",	&opt.connect_timeout,	cmd_time },
   { "continue",		&opt.always_rest,	cmd_boolean },
   { "convertlinks",	&opt.convert_links,	cmd_boolean },
@@ -135,7 +151,7 @@ static struct {
   { "dotspacing",	&opt.dot_spacing,	cmd_number },
   { "dotstyle",		&opt.dot_style,		cmd_string },
 #ifdef HAVE_SSL
-  { "egdfile",		&opt.sslegdsock,	cmd_file },
+  { "egdfile",		&opt.egd_file,	cmd_file },
 #endif
   { "excludedirectories", &opt.excludes,	cmd_directory_vector },
   { "excludedomains",	&opt.exclude_domains,	cmd_vector },
@@ -200,18 +216,12 @@ static struct {
   { "robots",		&opt.use_robots,	cmd_boolean },
   { "savecookies",	&opt.cookies_output,	cmd_file },
   { "saveheaders",	&opt.save_headers,	cmd_boolean },
+#ifdef HAVE_SSL
+  { "secureprotocol",	&opt.secure_protocol,	cmd_spec_secure_protocol },
+#endif
   { "serverresponse",	&opt.server_response,	cmd_boolean },
   { "spanhosts",	&opt.spanhost,		cmd_boolean },
   { "spider",		&opt.spider,		cmd_boolean },
-#ifdef HAVE_SSL
-  { "sslcadir",		&opt.sslcadir,		cmd_directory },
-  { "sslcafile",	&opt.sslcafile,		cmd_file },
-  { "sslcertfile",	&opt.sslcertfile,	cmd_file },
-  { "sslcertkey",	&opt.sslcertkey,	cmd_file },
-  { "sslcerttype",	&opt.sslcerttype,	cmd_number },
-  { "sslcheckcert",	&opt.sslcheckcert,	cmd_number },
-  { "sslprotocol",	&opt.sslprotocol,	cmd_number },
-#endif /* HAVE_SSL */
   { "strictcomments",	&opt.strict_comments,	cmd_boolean },
   { "timeout",		NULL,			cmd_spec_timeout },
   { "timestamping",	&opt.timestamping,	cmd_boolean },
@@ -288,6 +298,10 @@ defaults (void)
 
   opt.dns_cache = 1;
   opt.ftp_pasv = 1;
+
+#ifdef HAVE_SSL
+  opt.check_cert = 1;
+#endif
 
   /* The default for file name restriction defaults to the OS type. */
 #if !defined(WINDOWS) && !defined(__CYGWIN__)
@@ -1016,6 +1030,28 @@ cmd_time (const char *com, const char *val, void *closure)
    options specially.  */
 
 static int check_user_specified_header PARAMS ((const char *));
+/* Forward decl */
+struct decode_item {
+  const char *name;
+  int code;
+};
+static int decode_string PARAMS ((const char *, const struct decode_item *,
+				  int, int *));
+
+#ifdef HAVE_SSL
+static int
+cmd_spec_cert_type (const char *com, const char *val, void *closure)
+{
+  static const struct decode_item choices[] = {
+    { "pem", cert_type_pem },
+    { "asn1", cert_type_asn1 },
+  };
+  int ok = decode_string (val, choices, countof (choices), closure);
+  if (!ok)
+    fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"), exec_name, com, val);
+  return ok;
+}
+#endif
 
 static int
 cmd_spec_dirstruct (const char *com, const char *val, void *closure)
@@ -1080,24 +1116,16 @@ cmd_spec_mirror (const char *com, const char *val, void *closure)
 static int
 cmd_spec_prefer_family (const char *com, const char *val, void *closure)
 {
-  if (0 == strcasecmp (val, "ipv4"))
-    {
-      opt.prefer_family = prefer_ipv4;
-      return 1;
-    }
-  else if (0 == strcasecmp (val, "ipv6"))
-    {
-      opt.prefer_family = prefer_ipv6;
-      return 1;
-    }
-  else if (0 == strcasecmp (val, "none"))
-    {
-      opt.prefer_family = prefer_none;
-      return 1;
-    }
-  fprintf (stderr, _("%s: %s: Invalid preferred family `%s'.\n"),
-	   exec_name, com, val);
-  return 0;
+  static const struct decode_item choices[] = {
+    { "IPv4", prefer_ipv4 },
+    { "IPv6", prefer_ipv6 },
+    { "none", prefer_none },
+  };
+  int ok = decode_string (val, choices, countof (choices),
+			  (int *) &opt.prefer_family);
+  if (!ok)
+    fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"), exec_name, com, val);
+  return ok;
 }
 
 /* Set progress.type to VAL, but verify that it's a valid progress
@@ -1178,6 +1206,23 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *closure)
   opt.restrict_files_ctrl = restrict_ctrl;
   return 1;
 }
+
+#ifdef HAVE_SSL
+static int
+cmd_spec_secure_protocol (const char *com, const char *val, void *closure)
+{
+  static const struct decode_item choices[] = {
+    { "auto", secure_protocol_auto },
+    { "sslv2", secure_protocol_sslv2 },
+    { "sslv3", secure_protocol_sslv3 },
+    { "tlsv1", secure_protocol_tlsv1 },
+  };
+  int ok = decode_string (val, choices, countof (choices), closure);
+  if (!ok)
+    fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"), exec_name, com, val);
+  return ok;
+}
+#endif
 
 /* Set all three timeout values. */
 
@@ -1312,6 +1357,10 @@ simple_atof (const char *beg, const char *end, double *dest)
   return 1;
 }
 
+/* Verify that the user-specified header in S is valid.  It must
+   contain a colon preceded by non-white-space characters and must not
+   contain newlines.  */
+
 static int
 check_user_specified_header (const char *s)
 {
@@ -1327,6 +1376,23 @@ check_user_specified_header (const char *s)
     return 0;
   return 1;
 }
+
+/* Decode VAL into a number, according to ITEMS. */
+
+static int
+decode_string (const char *val, const struct decode_item *items, int itemcount,
+	       int *place)
+{
+  int i;
+  for (i = 0; i < itemcount; i++)
+    if (0 == strcasecmp (val, items[i].name))
+      {
+	*place = items[i].code;
+	return 1;
+      }
+  return 0;
+}
+
 
 void cleanup_html_url PARAMS ((void));
 void http_cleanup PARAMS ((void));

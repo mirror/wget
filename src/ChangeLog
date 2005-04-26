@@ -1,5 +1,15 @@
 2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* gen_sslfunc.c (ssl_init): Use default locations for loading the
+	certificate bundles.
+	(ssl_init_prng): Disable the cryptographically weak PRNG
+	initialization fallback.
+
+	* init.c: Renamed SSL command-line arguments and wgetrc commands.
+	(defaults): Check the server certificate by default.
+
+2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* cookies.c (cookie_handle_set_cookie): Delete the part of the
 	path after the trailing slash.
 

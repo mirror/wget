@@ -157,7 +157,13 @@ struct cmdline_option option_data[] =
     { "backups", 0, OPT_BOOLEAN, "backups", -1 },
     { "base", 'B', OPT_VALUE, "base", -1 },
     { "bind-address", 0, OPT_VALUE, "bindaddress", -1 },
+    { IF_SSL ("ca-certificate"), 0, OPT_VALUE, "cacertificate", -1 },
+    { IF_SSL ("ca-directory"), 0, OPT_VALUE, "cadirectory", -1 },
     { "cache", 0, OPT_BOOLEAN, "cache", -1 },
+    { IF_SSL ("certificate"), 0, OPT_VALUE, "certificate", -1 },
+    { IF_SSL ("certificate-key"), 0, OPT_VALUE, "certificatekey", -1 },
+    { IF_SSL ("certificate-type"), 0, OPT_VALUE, "certificatetype", -1 },
+    { IF_SSL ("check-certificate"), 0, OPT_BOOLEAN, "checkcertificate", -1 },
     { "clobber", 0, OPT__CLOBBER, NULL, optional_argument },
     { "connect-timeout", 0, OPT_VALUE, "connecttimeout", -1 },
     { "continue", 'c', OPT_BOOLEAN, "continue", -1 },
@@ -219,7 +225,7 @@ struct cmdline_option option_data[] =
     { "progress", 0, OPT_VALUE, "progress", -1 },
     { "protocol-directories", 0, OPT_BOOLEAN, "protocoldirectories", -1 },
     { "proxy", 0, OPT_BOOLEAN, "useproxy", -1 },
-    { "_proxy-compat", 'Y', OPT_VALUE, "useproxy", -1 }, /* back-compatible */
+    { "proxy__compat", 'Y', OPT_VALUE, "useproxy", -1 }, /* back-compatible */
     { "proxy-passwd", 0, OPT_VALUE, "proxypasswd", -1 },
     { "proxy-user", 0, OPT_VALUE, "proxyuser", -1 },
     { "quiet", 'q', OPT_BOOLEAN, "quiet", -1 },
@@ -236,16 +242,10 @@ struct cmdline_option option_data[] =
     { "retry-connrefused", 0, OPT_BOOLEAN, "retryconnrefused", -1 },
     { "save-cookies", 0, OPT_VALUE, "savecookies", -1 },
     { "save-headers", 0, OPT_BOOLEAN, "saveheaders", -1 },
+    { IF_SSL ("secure-protocol"), 0, OPT_VALUE, "secureprotocol", -1 },
     { "server-response", 'S', OPT_BOOLEAN, "serverresponse", -1 },
     { "span-hosts", 'H', OPT_BOOLEAN, "spanhosts", -1 },
     { "spider", 0, OPT_BOOLEAN, "spider", -1 },
-    { IF_SSL ("sslcadir"), 0, OPT_VALUE, "sslcadir", -1 },
-    { IF_SSL ("sslcafile"), 0, OPT_VALUE, "sslcafile", -1 },
-    { IF_SSL ("sslcertfile"), 0, OPT_VALUE, "sslcertfile", -1 },
-    { IF_SSL ("sslcertkey"), 0, OPT_VALUE, "sslcertkey", -1 },
-    { IF_SSL ("sslcerttype"), 0, OPT_VALUE, "sslcerttype", -1 },
-    { IF_SSL ("sslcheckcert"), 0, OPT_VALUE, "sslcheckcert", -1 },
-    { IF_SSL ("sslprotocol"), 0, OPT_VALUE, "sslprotocol", -1 },
     { "strict-comments", 0, OPT_BOOLEAN, "strictcomments", -1 },
     { "timeout", 'T', OPT_VALUE, "timeout", -1 },
     { "timestamping", 'N', OPT_BOOLEAN, "timestamping", -1 },
@@ -532,24 +532,24 @@ HTTP options:\n"),
 
 #ifdef HAVE_SSL
     N_("\
-HTTPS (SSL) options:\n"),
+HTTPS (SSL/TLS) options:\n"),
     N_("\
-       --sslcertfile=FILE    optional client certificate.\n"),
+       --secure-protocol=PR     choose SSL protocol, one of auto, SSLv2, SSLv3,\n\
+                                and TLSv1.\n"),
     N_("\
-       --sslcertkey=KEYFILE  optional keyfile for this certificate.\n"),
+       --no-check-certificate   don't validate the server's certificate.\n"),
     N_("\
-       --sslcadir=DIR        dir where hash list of CA's are stored.\n"),
+       --certificate=FILE       client certificate file.\n"),
     N_("\
-       --sslcafile=FILE      file with bundle of CA's.\n"),
+       --certificate-key=FILE   optional key file for this certificate.\n"),
     N_("\
-       --sslcerttype=0/1     Client-Cert type 0=PEM (default) / 1=ASN1 (DER).\n"),
+       --certificate-type=TYPE  client certificate type, PEM or ASN1.\n"),
     N_("\
-       --sslcheckcert=0/1    Check the server cert against given CA.\n"),
+       --sslcadir=DIR           dir where hash list of CA's are stored.\n"),
     N_("\
-       --sslprotocol=0-3     choose SSL protocol; 0=automatic,\n\
-                             1=SSLv2 2=SSLv3 3=TLSv1.\n"),
+       --sslcafile=FILE         file with bundle of CA's.\n"),
     N_("\
-       --egd-file=FILE       file name of the EGD socket.\n"),
+       --egd-file=FILE          file name of the EGD socket.\n"),
     "\n",
 #endif /* HAVE_SSL */
 

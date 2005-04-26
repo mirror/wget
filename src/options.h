@@ -157,17 +157,29 @@ struct options
   int page_requisites;		/* Whether we need to download all files
 				   necessary to display a page properly. */
   char *bind_address;		/* What local IP address to bind to. */
+
 #ifdef HAVE_SSL
-  char *sslcadir;		/* CA directory (hash files) */
-  char *sslcafile;		/* CA File to use */
-  char *sslcertfile;		/* external client cert to use. */
-  char *sslcertkey;		/* the keyfile for this certificate
+  enum {
+    secure_protocol_auto,
+    secure_protocol_sslv2,
+    secure_protocol_sslv3,
+    secure_protocol_tlsv1
+  } secure_protocol;		/* type of secure protocol to use. */
+  int check_cert;		/* whether to validate the server's cert */
+  char *cert_file;		/* external client certificate to use. */
+  char *cert_key;		/* the keyfile for this certificate
 				   (if not internal) included in the
 				   certfile. */
-  int   sslcerttype;		/* 0 = PEM / 1=ASN1 (DER) */
-  int   sslcheckcert;		/* 0 do not check / 1 check server cert */
-  char *sslegdsock;             /* optional socket of the egd daemon */
-  int   sslprotocol;		/* 0 = auto / 1 = v2 / 2 = v3 / 3 = TLSv1 */
+  enum {
+    cert_type_pem,
+    cert_type_asn1
+  } cert_type;			/* type of client certificate */
+
+  char *ca_directory;		/* CA directory (hash files) */
+  char *ca_cert;		/* CA certificate file to use */
+
+
+  char *egd_file;		/* file name of the egd daemon socket */
 #endif /* HAVE_SSL */
 
   int   cookies;		/* whether cookies are used. */
