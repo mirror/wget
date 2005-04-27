@@ -73,18 +73,19 @@ specified via `.wgetrc'.
 
 ** The new option `--keep-session-cookies' causes `--save-cookies' to
 save session cookies (normally only kept in memory) along with the
-permanent ones.  Many sites track important information, such as
-whether the user has authenticated, using session cookies.  Using this
-option option allows multiple Wget runs to be treated as a single
+permanent ones.  This is useful because many sites track important
+information, such as whether the user has authenticated, in session
+cookies.  With this option multiple Wget runs are treated as a single
 browser session.
 
-** Wget now supports the --ftp-user and --ftp-password command switches to set
-username and password for FTP, and the --user and --password command switches
-to set username and password for both FTP and HTTP.  The --http-passwd and
---proxy-passwd command switches have been renamed to --http-password and
---proxy-password respectively, and the related http_passwd and proxy_passwd 
-.wgetrc commands to http_password and proxy_password respectively. The 
-login and passwd .wgetrc commands have been deprecated.
+** Wget now supports the --ftp-user and --ftp-password command
+switches to set username and password for FTP, and the --user and
+--password command switches to set username and password for both FTP
+and HTTP.  The --http-passwd and --proxy-passwd command switches have
+been renamed to --http-password and --proxy-password respectively, and
+the related http_passwd and proxy_passwd .wgetrc commands to
+http_password and proxy_password respectively.  The login and passwd
+.wgetrc commands have been deprecated.
 
 * `wget -b' now works correctly under Windows.
 
