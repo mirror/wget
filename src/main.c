@@ -543,11 +543,11 @@ HTTPS (SSL/TLS) options:\n"),
     N_("\
        --certificate=FILE       client certificate file.\n"),
     N_("\
-       --certificate-type=TYPE  client certificate type, PEM or ASN1.\n"),
+       --certificate-type=TYPE  client certificate type, PEM or DER.\n"),
     N_("\
        --private-key=FILE       private key file.\n"),
     N_("\
-       --private-key-type=TYPE  private key type, PEM or ASN1.\n"),
+       --private-key-type=TYPE  private key type, PEM or DER.\n"),
     N_("\
        --ca-certificate=FILE    file with the bundle of CA's.\n"),
     N_("\

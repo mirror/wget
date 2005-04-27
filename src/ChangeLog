@@ -1,5 +1,9 @@
 2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c (print_help): Advertise "DER", not "ASN1".
+
+2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* openssl.c (init_prng): Disable the weak random seed by default.
 
 	* http.c (gethttp): Simplify SSL initialization; disable SSL when
