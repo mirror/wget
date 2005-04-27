@@ -1,5 +1,12 @@
 2005-04-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
+	* main.c: Map --ftp-password, --http-password and --proxy-password to
+	the new ftppassword, httppassword and proxypassword commands
+	respectively.  Document the --user and --password options in the help
+	string.
+	
+2005-04-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
 	* ftp.c: Add support for --user and --password.
 	
 	* http.c: Add support for --user and --password.

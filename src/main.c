@@ -186,7 +186,7 @@ struct cmdline_option option_data[] =
     { "follow-tags", 0, OPT_VALUE, "followtags", -1 },
     { "force-directories", 'x', OPT_BOOLEAN, "dirstruct", -1 },
     { "force-html", 'F', OPT_BOOLEAN, "forcehtml", -1 },
-    { "ftp-password", 0, OPT_VALUE, "ftppasswd", -1 },
+    { "ftp-password", 0, OPT_VALUE, "ftppassword", -1 },
     { "ftp-user", 0, OPT_VALUE, "ftpuser", -1 },
     { "glob", 0, OPT_BOOLEAN, "glob", -1 },
     { "header", 0, OPT_VALUE, "header", -1 },
@@ -195,8 +195,8 @@ struct cmdline_option option_data[] =
     { "html-extension", 'E', OPT_BOOLEAN, "htmlextension", -1 },
     { "htmlify", 0, OPT_BOOLEAN, "htmlify", -1 },
     { "http-keep-alive", 0, OPT_BOOLEAN, "httpkeepalive", -1 },
-    { "http-passwd", 0, OPT_VALUE, "httppasswd", -1 }, /* deprecated */
-    { "http-password", 0, OPT_VALUE, "httppasswd", -1 },
+    { "http-passwd", 0, OPT_VALUE, "httppassword", -1 }, /* deprecated */
+    { "http-password", 0, OPT_VALUE, "httppassword", -1 },
     { "http-user", 0, OPT_VALUE, "httpuser", -1 },
     { "ignore-length", 0, OPT_BOOLEAN, "ignorelength", -1 },
     { "ignore-tags", 0, OPT_VALUE, "ignoretags", -1 },
@@ -230,8 +230,8 @@ struct cmdline_option option_data[] =
     { "protocol-directories", 0, OPT_BOOLEAN, "protocoldirectories", -1 },
     { "proxy", 0, OPT_BOOLEAN, "useproxy", -1 },
     { "proxy__compat", 'Y', OPT_VALUE, "useproxy", -1 }, /* back-compatible */
-    { "proxy-passwd", 0, OPT_VALUE, "proxypasswd", -1 }, /* deprecated */
-    { "proxy-password", 0, OPT_VALUE, "proxypasswd", -1 },
+    { "proxy-passwd", 0, OPT_VALUE, "proxypassword", -1 }, /* deprecated */
+    { "proxy-password", 0, OPT_VALUE, "proxypassword", -1 },
     { "proxy-user", 0, OPT_VALUE, "proxyuser", -1 },
     { "quiet", 'q', OPT_BOOLEAN, "quiet", -1 },
     { "quota", 'Q', OPT_VALUE, "quota", -1 },
@@ -479,6 +479,10 @@ Download:\n"),
        --prefer-family=FAMILY    connect first to addresses of specified family,\n\
                                  one of IPv6, IPv4, or none.\n"),
 #endif
+    N_("\
+       --user=USER               set both ftp and http user to USER.\n"),
+    N_("\
+       --password=PASS           set both ftp and http password to PASS.\n"),
     "\n",
 
     N_("\
