@@ -1,5 +1,9 @@
 2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi (HTTPS (SSL/TLS) Options): Document --random-file.
+
+2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi: Improve wording of command descriptions.
 
 2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
