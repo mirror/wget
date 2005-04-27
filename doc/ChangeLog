@@ -1,5 +1,10 @@
 2005-04-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
+	* wget.texi: Fixed a broken reference to Security Considerations
+	section in tex-generated documents (like the man page).
+
+2005-04-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
 	* wget.texi: Document --user, --password, --ftp-user and the
 	corresponding Wgetrc command. Renamed --ftp-passwd to --ftp-password,
 	--http-passwd to --http-passwd and --proxy-passwd to proxy_password.
