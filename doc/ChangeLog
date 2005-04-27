@@ -1,3 +1,8 @@
+2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Download Options): Fix bind address cindex entry that
+	broke concept index generation.
+
 2005-04-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* wget.texi: Fixed a broken reference to Security Considerations

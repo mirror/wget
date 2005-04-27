@@ -531,11 +531,11 @@ links in the file specified by @samp{-i}.
 @section Download Options
 
 @table @samp
-@cindex bind() address
+@cindex bind address
 @cindex client IP address
 @cindex IP address, client
 @item --bind-address=@var{ADDRESS}
-When making client TCP/IP connections, @code{bind()} to @var{ADDRESS} on
+When making client TCP/IP connections, bind to @var{ADDRESS} on
 the local machine.  @var{ADDRESS} may be specified as a hostname or IP
 address.  This option can be useful if your machine is bound to multiple
 IPs.
