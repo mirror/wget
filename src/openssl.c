@@ -154,6 +154,26 @@ ssl_print_errors (void)
     logprintf (LOG_NOTQUIET, "OpenSSL: %s\n", ERR_error_string (curerr, NULL));
 }
 
+/* Convert keyfile type as used by options.h to a type as accepted by
+   SSL_CTX_use_certificate_file and SSL_CTX_use_PrivateKey_file.
+
+   (options.h intentionally doesn't use values from openssl/ssl.h so
+   it doesn't depend specifically on OpenSSL for SSL functionality.)  */
+
+static int
+key_type_to_ssl_type (enum keyfile_type type)
+{
+  switch (type)
+    {
+    case keyfile_pem:
+      return SSL_FILETYPE_PEM;
+    case keyfile_asn1:
+      return SSL_FILETYPE_ASN1;
+    default:
+      abort ();
+    }
+}
+
 /* Creates a SSL Context and sets some defaults for it */
 uerr_t
 ssl_init ()
@@ -191,59 +211,33 @@ ssl_init ()
     case secure_protocol_tlsv1:
       meth = TLSv1_client_method ();
       break;
-    }
-  if (meth == NULL)
-    {
-      ssl_print_errors ();
-      return SSLERRCTXCREATE;
+    default:
+      abort ();
     }
 
   ssl_ctx = SSL_CTX_new (meth);
-  if (meth == NULL)
-    {
-      ssl_print_errors ();
-      return SSLERRCTXCREATE;
-    }
-
   SSL_CTX_set_default_verify_paths (ssl_ctx);
   SSL_CTX_load_verify_locations (ssl_ctx, opt.ca_cert, opt.ca_directory);
   SSL_CTX_set_verify (ssl_ctx,
 		      opt.check_cert ? SSL_VERIFY_PEER : SSL_VERIFY_NONE,
 		      verify_callback);
 
-  if (opt.cert_file != NULL || opt.cert_key != NULL)
-    {
-      int ssl_cert_type = SSL_FILETYPE_PEM;
-      switch (opt.cert_type)
-	{
-	case cert_type_pem:
-	  ssl_cert_type = SSL_FILETYPE_PEM;
-	  break;
-	case cert_type_asn1:
-	  ssl_cert_type = SSL_FILETYPE_ASN1;
-	  break;
-	}
-
-#if 0 /* what was this supposed to achieve? */
-      if (opt.cert_key == NULL) 
-	opt.cert_key = opt.cert_file;
-      if (opt.cert_file == NULL)
-	opt.cert_file = opt.cert_key;
-#endif
-
-      if (SSL_CTX_use_certificate_file (ssl_ctx, opt.cert_file,
-					ssl_cert_type) != 1)
-	{
-	  ssl_print_errors ();
-  	  return SSLERRCERTFILE;
-	}
-      if (SSL_CTX_use_PrivateKey_file (ssl_ctx, opt.cert_key,
-				       ssl_cert_type) != 1)
-	{
-	  ssl_print_errors ();
-	  return SSLERRCERTKEY;
-	}
-    }
+  if (opt.cert_file)
+    if (SSL_CTX_use_certificate_file (ssl_ctx, opt.cert_file,
+				      key_type_to_ssl_type (opt.cert_type))
+	!= 1)
+      {
+	ssl_print_errors ();
+	return SSLERRCERTFILE;
+      }
+  if (opt.private_key)
+    if (SSL_CTX_use_PrivateKey_file (ssl_ctx, opt.private_key,
+				     key_type_to_ssl_type (opt.private_key_type))
+	!= 1)
+      {
+	ssl_print_errors ();
+	return SSLERRCERTKEY;
+      }
 
   return 0; /* Succeded */
 }

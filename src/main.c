@@ -161,7 +161,6 @@ struct cmdline_option option_data[] =
     { IF_SSL ("ca-directory"), 0, OPT_VALUE, "cadirectory", -1 },
     { "cache", 0, OPT_BOOLEAN, "cache", -1 },
     { IF_SSL ("certificate"), 0, OPT_VALUE, "certificate", -1 },
-    { IF_SSL ("certificate-key"), 0, OPT_VALUE, "certificatekey", -1 },
     { IF_SSL ("certificate-type"), 0, OPT_VALUE, "certificatetype", -1 },
     { IF_SSL ("check-certificate"), 0, OPT_BOOLEAN, "checkcertificate", -1 },
     { "clobber", 0, OPT__CLOBBER, NULL, optional_argument },
@@ -222,6 +221,8 @@ struct cmdline_option option_data[] =
     { "post-file", 0, OPT_VALUE, "postfile", -1 },
     { "prefer-family", 0, OPT_VALUE, "preferfamily", -1 },
     { "preserve-permissions", 0, OPT_BOOLEAN, "preservepermissions", -1 },
+    { IF_SSL ("private-key"), 0, OPT_VALUE, "privatekey", -1 },
+    { IF_SSL ("private-key-type"), 0, OPT_VALUE, "privatekeytype", -1 },
     { "progress", 0, OPT_VALUE, "progress", -1 },
     { "protocol-directories", 0, OPT_BOOLEAN, "protocoldirectories", -1 },
     { "proxy", 0, OPT_BOOLEAN, "useproxy", -1 },
@@ -541,9 +542,11 @@ HTTPS (SSL/TLS) options:\n"),
     N_("\
        --certificate=FILE       client certificate file.\n"),
     N_("\
-       --certificate-key=FILE   optional key file for this certificate.\n"),
-    N_("\
        --certificate-type=TYPE  client certificate type, PEM or ASN1.\n"),
+    N_("\
+       --private-key=FILE       private key file.\n"),
+    N_("\
+       --private-key-type=TYPE  private key type, PEM or ASN1.\n"),
     N_("\
        --ca-certificate=FILE    file with the bundle of CA's.\n"),
     N_("\

@@ -167,13 +167,13 @@ struct options
   } secure_protocol;		/* type of secure protocol to use. */
   int check_cert;		/* whether to validate the server's cert */
   char *cert_file;		/* external client certificate to use. */
-  char *cert_key;		/* the keyfile for this certificate
-				   (if not internal) included in the
-				   certfile. */
-  enum {
-    cert_type_pem,
-    cert_type_asn1
-  } cert_type;			/* type of client certificate */
+  char *private_key;		/* private key file (if not internal). */
+  enum keyfile_type {
+    keyfile_pem,
+    keyfile_asn1
+  } cert_type;			/* type of client certificate file */
+  enum keyfile_type
+    private_key_type;		/* type of private key file */
 
   char *ca_directory;		/* CA directory (hash files) */
   char *ca_cert;		/* CA certificate file to use */

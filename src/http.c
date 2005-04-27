@@ -1203,8 +1203,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  break;
 	case SSLERRCERTKEY:
 	  logprintf (LOG_NOTQUIET,
-		     _("Failed to get certificate key from %s\n"),
-		     opt.cert_key);
+		     _("Failed to get private key from %s\n"),
+		     opt.private_key);
 	  logprintf (LOG_NOTQUIET,
 		     _("Trying without the specified certificate\n"));
 	  break;

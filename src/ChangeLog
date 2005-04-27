@@ -1,3 +1,13 @@
+2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* openssl.c (ssl_init): Ditto.
+
+	* options.h (struct options): Allow separate specification of key
+	type and certificate type.
+
+	* init.c (cmd_spec_cert_type): Provide a "der" synonym for "asn1"
+	certificate encoding.
+
 2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* openssl.c: Renamed "gen_sslfunc.c" to "openssl.c" and

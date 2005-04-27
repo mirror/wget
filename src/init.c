@@ -74,6 +74,9 @@ static int enable_tilde_expansion;
 CMD_DECLARE (cmd_boolean);
 CMD_DECLARE (cmd_bytes);
 CMD_DECLARE (cmd_bytes_large);
+#ifdef HAVE_SSL
+CMD_DECLARE (cmd_cert_type);
+#endif
 CMD_DECLARE (cmd_directory_vector);
 CMD_DECLARE (cmd_lockable_boolean);
 CMD_DECLARE (cmd_number);
@@ -84,9 +87,6 @@ CMD_DECLARE (cmd_directory);
 CMD_DECLARE (cmd_time);
 CMD_DECLARE (cmd_vector);
 
-#ifdef HAVE_SSL
-CMD_DECLARE (cmd_spec_cert_type);
-#endif
 CMD_DECLARE (cmd_spec_dirstruct);
 CMD_DECLARE (cmd_spec_header);
 CMD_DECLARE (cmd_spec_htmlify);
@@ -128,8 +128,7 @@ static struct {
 #ifdef HAVE_SSL
   { "cadirectory",	&opt.ca_directory,	cmd_directory },
   { "certificate",	&opt.cert_file,		cmd_file },
-  { "certificatekey",	&opt.cert_key,		cmd_file },
-  { "certificatetype",	&opt.cert_type,		cmd_spec_cert_type },
+  { "certificatetype",	&opt.cert_type,		cmd_cert_type },
   { "checkcertificate", &opt.check_cert,	cmd_boolean },
 #endif
   { "connecttimeout",	&opt.connect_timeout,	cmd_time },
@@ -196,6 +195,8 @@ static struct {
   { "postfile",		&opt.post_file_name,	cmd_file },
   { "preferfamily",	NULL,			cmd_spec_prefer_family },
   { "preservepermissions", &opt.preserve_perm,	cmd_boolean },
+  { "privatekey",	&opt.private_key,	cmd_file },
+  { "privatekeytype",	&opt.private_key_type,	cmd_cert_type },
   { "progress",		&opt.progress_type,	cmd_spec_progress },
   { "protocoldirectories", &opt.protocol_directories, cmd_boolean },
   { "proxypasswd",	&opt.proxy_passwd,	cmd_string },
@@ -616,6 +617,16 @@ run_command (const char *opt)
 
 /* Generic helper functions, for use with `commands'. */
 
+/* Forward declarations: */
+struct decode_item {
+  const char *name;
+  int code;
+};
+static int decode_string PARAMS ((const char *, const struct decode_item *,
+				  int, int *));
+static int simple_atoi PARAMS ((const char *, const char *, int *));
+static int simple_atof PARAMS ((const char *, const char *, double *));
+
 #define CMP1(p, c0) (TOLOWER((p)[0]) == (c0) && (p)[1] == '\0')
 
 #define CMP2(p, c0, c1) (TOLOWER((p)[0]) == (c0)	\
@@ -695,8 +706,6 @@ cmd_lockable_boolean (const char *com, const char *val, void *place)
   *(int *)place = lockable_boolean_value;
   return 1;
 }
-
-static int simple_atoi PARAMS ((const char *, const char *, int *));
 
 /* Set the non-negative integer value from VAL to PLACE.  With
    incorrect specification, the number remains unchanged.  */
@@ -859,8 +868,6 @@ cmd_directory_vector (const char *com, const char *val, void *place)
     }
   return 1;
 }
-
-static int simple_atof PARAMS ((const char *, const char *, double *));
 
 /* Engine for cmd_bytes and cmd_bytes_large: converts a string such as
    "100k" or "2.5G" to a floating point number.  */
@@ -1025,26 +1032,15 @@ cmd_time (const char *com, const char *val, void *place)
   *(double *)place = number * mult;
   return 1;
 }
-
-/* Specialized helper functions, used by `commands' to handle some
-   options specially.  */
-
-static int check_user_specified_header PARAMS ((const char *));
-/* Forward decl */
-struct decode_item {
-  const char *name;
-  int code;
-};
-static int decode_string PARAMS ((const char *, const struct decode_item *,
-				  int, int *));
 
 #ifdef HAVE_SSL
 static int
-cmd_spec_cert_type (const char *com, const char *val, void *place)
+cmd_cert_type (const char *com, const char *val, void *place)
 {
   static const struct decode_item choices[] = {
-    { "pem", cert_type_pem },
-    { "asn1", cert_type_asn1 },
+    { "pem", keyfile_pem },
+    { "der", keyfile_asn1 },
+    { "asn1", keyfile_asn1 },
   };
   int ok = decode_string (val, choices, countof (choices), place);
   if (!ok)
@@ -1052,6 +1048,11 @@ cmd_spec_cert_type (const char *com, const char *val, void *place)
   return ok;
 }
 #endif
+
+/* Specialized helper functions, used by `commands' to handle some
+   options specially.  */
+
+static int check_user_specified_header PARAMS ((const char *));
 
 static int
 cmd_spec_dirstruct (const char *com, const char *val, void *place_ignored)
@@ -1455,12 +1456,12 @@ cleanup (void)
   xfree_null (opt.http_user);
   xfree_null (opt.http_passwd);
   free_vec (opt.user_headers);
-#ifdef HAVE_SSL
-  xfree_null (opt.sslcertkey);
-  xfree_null (opt.sslcertfile);
-#endif /* HAVE_SSL */
+# ifdef HAVE_SSL
+  xfree_null (opt.cert_file);
+  xfree_null (opt.private_key);
+# endif
   xfree_null (opt.bind_address);
   xfree_null (opt.cookies_input);
   xfree_null (opt.cookies_output);
-#endif
+#endif /* DEBUG_MALLOC */
 }
