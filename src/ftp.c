@@ -271,9 +271,10 @@ getftp (struct url *u, wgint *len, wgint restval, ccon *con)
   user = u->user;
   passwd = u->passwd;
   search_netrc (u->host, (const char **)&user, (const char **)&passwd, 1);
-  user = user ? user : opt.ftp_acc;
-  passwd = passwd ? passwd : opt.ftp_pass;
-  assert (user && passwd);
+  user = user ? user : (opt.ftp_user ? opt.ftp_user : opt.user);
+  if (!user) user = "anonymous";
+  passwd = passwd ? passwd : (opt.ftp_passwd ? opt.ftp_passwd : opt.passwd);
+  if (!passwd) passwd = "-wget@";
 
   dtsock = -1;
   local_sock = -1;

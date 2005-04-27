@@ -1,3 +1,9 @@
+2005-04-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* NEWS: Mention the new --ftp-user, --ftp-password, --user and
+	--password options, the name changes for --http-passwd and
+	--proxy-passwd and the deprecation of login and passwd commands.
+
 2005-04-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* po/eo.po: Added Esperanto translation.

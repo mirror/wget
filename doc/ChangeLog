@@ -1,3 +1,12 @@
+2005-04-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* wget.texi: Document --user, --password, --ftp-user and the
+	corresponding Wgetrc command. Renamed --ftp-passwd to --ftp-password,
+	--http-passwd to --http-passwd and --proxy-passwd to proxy_password.
+	Renamed ftp_passwd to ftp_password, http_passwd to http_passwd and
+	proxy_passwd to proxy_password. Removed documentation for the
+	deprecated login command.
+
 2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (HTTPS (SSL/TLS) Options): Document --random-file.

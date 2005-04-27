@@ -80,14 +80,17 @@ struct options
   char *output_document;	/* The output file to which the
 				   documents will be printed.  */
 
+  char *user;			/* Generic username */
+  char *passwd;			/* Generic password */
+  
   int always_rest;		/* Always use REST. */
-  char *ftp_acc;		/* FTP username */
-  char *ftp_pass;		/* FTP password */
+  char *ftp_user;		/* FTP username */
+  char *ftp_passwd;		/* FTP password */
   int netrc;			/* Whether to read .netrc. */
   int ftp_glob;			/* FTP globbing */
   int ftp_pasv;			/* Passive FTP. */
 
-  char *http_user;		/* HTTP user. */
+  char *http_user;		/* HTTP username. */
   char *http_passwd;		/* HTTP password. */
   char **user_headers;		/* User-defined header(s). */
   int http_keep_alive;		/* whether we use keep-alive */

@@ -1243,8 +1243,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   user = u->user;
   passwd = u->passwd;
   search_netrc (u->host, (const char **)&user, (const char **)&passwd, 0);
-  user = user ? user : opt.http_user;
-  passwd = passwd ? passwd : opt.http_passwd;
+  user = user ? user : (opt.http_user ? opt.http_user : opt.user);
+  passwd = passwd ? passwd : (opt.http_passwd ? opt.http_passwd : opt.passwd);
 
   if (user && passwd)
     {

@@ -157,14 +157,17 @@ static struct {
   { "followftp",	&opt.follow_ftp,	cmd_boolean },
   { "followtags",	&opt.follow_tags,	cmd_vector },
   { "forcehtml",	&opt.force_html,	cmd_boolean },
-  { "ftppasswd",	&opt.ftp_pass,		cmd_string },
+  { "ftppasswd",	&opt.ftp_passwd,	cmd_string }, /* deprecated */
+  { "ftppassword",	&opt.ftp_passwd,	cmd_string },
+  { "ftpuser",	        &opt.ftp_user,		cmd_string },
   { "ftpproxy",		&opt.ftp_proxy,		cmd_string },
   { "glob",		&opt.ftp_glob,		cmd_boolean },
   { "header",		&opt.user_headers,	cmd_spec_header },
   { "htmlextension",	&opt.html_extension,	cmd_boolean },
   { "htmlify",		NULL,			cmd_spec_htmlify },
   { "httpkeepalive",	&opt.http_keep_alive,	cmd_boolean },
-  { "httppasswd",	&opt.http_passwd,	cmd_string },
+  { "httppasswd",	&opt.http_passwd,	cmd_string }, /* deprecated */
+  { "httppassword",	&opt.http_passwd,	cmd_string },
   { "httpproxy",	&opt.http_proxy,	cmd_string },
   { "httpsproxy",	&opt.https_proxy,	cmd_string },
   { "httpuser",		&opt.http_user,		cmd_string },
@@ -181,7 +184,7 @@ static struct {
   { "limitrate",	&opt.limit_rate,	cmd_bytes },
   { "loadcookies",	&opt.cookies_input,	cmd_file },
   { "logfile",		&opt.lfilename,		cmd_file },
-  { "login",		&opt.ftp_acc,		cmd_string },
+  { "login",		&opt.ftp_user,		cmd_string },/* deprecated*/
   { "mirror",		NULL,			cmd_spec_mirror },
   { "netrc",		&opt.netrc,		cmd_boolean },
   { "noclobber",	&opt.noclobber,		cmd_boolean },
@@ -191,6 +194,8 @@ static struct {
   { "outputdocument",	&opt.output_document,	cmd_file },
   { "pagerequisites",	&opt.page_requisites,	cmd_boolean },
   { "passiveftp",	&opt.ftp_pasv,		cmd_lockable_boolean },
+  { "passwd",	        &opt.ftp_passwd,	cmd_string },/* deprecated*/
+  { "password",	        &opt.passwd,		cmd_string },
   { "postdata",		&opt.post_data,		cmd_string },
   { "postfile",		&opt.post_file_name,	cmd_file },
   { "preferfamily",	NULL,			cmd_spec_prefer_family },
@@ -201,7 +206,8 @@ static struct {
 #endif
   { "progress",		&opt.progress_type,	cmd_spec_progress },
   { "protocoldirectories", &opt.protocol_directories, cmd_boolean },
-  { "proxypasswd",	&opt.proxy_passwd,	cmd_string },
+  { "proxypasswd",	&opt.proxy_passwd,	cmd_string }, /* deprecated */
+  { "proxypassword",	&opt.proxy_passwd,	cmd_string },
   { "proxyuser",	&opt.proxy_user,	cmd_string },
   { "quiet",		&opt.quiet,		cmd_boolean },
   { "quota",		&opt.quota,		cmd_bytes_large },
@@ -231,6 +237,7 @@ static struct {
   { "timestamping",	&opt.timestamping,	cmd_boolean },
   { "tries",		&opt.ntry,		cmd_number_inf },
   { "useproxy",		&opt.use_proxy,		cmd_boolean },
+  { "user",	        &opt.user,		cmd_string },
   { "useragent",	NULL,			cmd_spec_useragent },
   { "verbose",		&opt.verbose,		cmd_boolean },
   { "wait",		&opt.wait,		cmd_time },
@@ -279,8 +286,6 @@ defaults (void)
   opt.ntry = 20;
   opt.reclevel = 5;
   opt.add_hostdir = 1;
-  opt.ftp_acc  = xstrdup ("anonymous");
-  opt.ftp_pass = xstrdup ("-wget@");
   opt.netrc = 1;
   opt.ftp_glob = 1;
   opt.htmlify = 1;
@@ -1449,7 +1454,8 @@ cleanup (void)
   free_vec (opt.ignore_tags);
   xfree_null (opt.progress_type);
   xfree (opt.ftp_acc);
-  xfree_null (opt.ftp_pass);
+  xfree_null (opt.ftp_user);
+  xfree_null (opt.ftp_passwd);
   xfree_null (opt.ftp_proxy);
   xfree_null (opt.https_proxy);
   xfree_null (opt.http_proxy);
@@ -1466,5 +1472,7 @@ cleanup (void)
   xfree_null (opt.bind_address);
   xfree_null (opt.cookies_input);
   xfree_null (opt.cookies_output);
+  xfree_null (opt.user);
+  xfree_null (opt.passwd);
 #endif /* DEBUG_MALLOC */
 }

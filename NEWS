@@ -7,6 +7,14 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.10.
 
+** Wget now supports the --ftp-user and --ftp-password command switches to set
+username and password for FTP, and the --user and --password command switches
+to set username and password for both FTP and HTTP.  The --http-passwd and
+--proxy-passwd command switches have been renamed to --http-password and
+--proxy-password respectively, and the related http_passwd and proxy_passwd 
+.wgetrc commands to http_password and proxy_password respectively. The 
+login and passwd .wgetrc commands have been deprecated.
+
 ** Downloading files greater than 2GB, also known as "large files",
 now works on systems that support them.  This includes most modern
 Unix variants, as well as Windows.

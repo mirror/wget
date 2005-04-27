@@ -186,7 +186,8 @@ struct cmdline_option option_data[] =
     { "follow-tags", 0, OPT_VALUE, "followtags", -1 },
     { "force-directories", 'x', OPT_BOOLEAN, "dirstruct", -1 },
     { "force-html", 'F', OPT_BOOLEAN, "forcehtml", -1 },
-    { "ftp-passwd", 0, OPT_VALUE, "ftppasswd", -1 },
+    { "ftp-password", 0, OPT_VALUE, "ftppasswd", -1 },
+    { "ftp-user", 0, OPT_VALUE, "ftpuser", -1 },
     { "glob", 0, OPT_BOOLEAN, "glob", -1 },
     { "header", 0, OPT_VALUE, "header", -1 },
     { "help", 'h', OPT_FUNCALL, (void *)print_help, no_argument },
@@ -194,7 +195,8 @@ struct cmdline_option option_data[] =
     { "html-extension", 'E', OPT_BOOLEAN, "htmlextension", -1 },
     { "htmlify", 0, OPT_BOOLEAN, "htmlify", -1 },
     { "http-keep-alive", 0, OPT_BOOLEAN, "httpkeepalive", -1 },
-    { "http-passwd", 0, OPT_VALUE, "httppasswd", -1 },
+    { "http-passwd", 0, OPT_VALUE, "httppasswd", -1 }, /* deprecated */
+    { "http-password", 0, OPT_VALUE, "httppasswd", -1 },
     { "http-user", 0, OPT_VALUE, "httpuser", -1 },
     { "ignore-length", 0, OPT_BOOLEAN, "ignorelength", -1 },
     { "ignore-tags", 0, OPT_VALUE, "ignoretags", -1 },
@@ -217,6 +219,7 @@ struct cmdline_option option_data[] =
     { "page-requisites", 'p', OPT_BOOLEAN, "pagerequisites", -1 },
     { "parent", 0, OPT__PARENT, NULL, optional_argument },
     { "passive-ftp", 0, OPT_BOOLEAN, "passiveftp", -1 },
+    { "password", 0, OPT_VALUE, "password", -1 },
     { "post-data", 0, OPT_VALUE, "postdata", -1 },
     { "post-file", 0, OPT_VALUE, "postfile", -1 },
     { "prefer-family", 0, OPT_VALUE, "preferfamily", -1 },
@@ -227,7 +230,8 @@ struct cmdline_option option_data[] =
     { "protocol-directories", 0, OPT_BOOLEAN, "protocoldirectories", -1 },
     { "proxy", 0, OPT_BOOLEAN, "useproxy", -1 },
     { "proxy__compat", 'Y', OPT_VALUE, "useproxy", -1 }, /* back-compatible */
-    { "proxy-passwd", 0, OPT_VALUE, "proxypasswd", -1 },
+    { "proxy-passwd", 0, OPT_VALUE, "proxypasswd", -1 }, /* deprecated */
+    { "proxy-password", 0, OPT_VALUE, "proxypasswd", -1 },
     { "proxy-user", 0, OPT_VALUE, "proxyuser", -1 },
     { "quiet", 'q', OPT_BOOLEAN, "quiet", -1 },
     { "quota", 'Q', OPT_VALUE, "quota", -1 },
@@ -252,6 +256,7 @@ struct cmdline_option option_data[] =
     { "timeout", 'T', OPT_VALUE, "timeout", -1 },
     { "timestamping", 'N', OPT_BOOLEAN, "timestamping", -1 },
     { "tries", 't', OPT_VALUE, "tries", -1 },
+    { "user", 0, OPT_VALUE, "user", -1 },
     { "user-agent", 'U', OPT_VALUE, "useragent", -1 },
     { "verbose", 'v', OPT_BOOLEAN, "verbose", -1 },
     { "verbose", 0, OPT_BOOLEAN, "verbose", -1 },
@@ -497,7 +502,7 @@ HTTP options:\n"),
     N_("\
        --http-user=USER        set http user to USER.\n"),
     N_("\
-       --http-passwd=PASS      set http password to PASS.\n"),
+       --http-password=PASS    set http password to PASS.\n"),
     N_("\
        --no-cache              disallow server-cached data.\n"),
     N_("\
@@ -509,7 +514,7 @@ HTTP options:\n"),
     N_("\
        --proxy-user=USER       set USER as proxy username.\n"),
     N_("\
-       --proxy-passwd=PASS     set PASS as proxy password.\n"),
+       --proxy-password=PASS   set PASS as proxy password.\n"),
     N_("\
        --referer=URL           include `Referer: URL' header in HTTP request.\n"),
     N_("\
@@ -561,6 +566,10 @@ HTTPS (SSL/TLS) options:\n"),
 
     N_("\
 FTP options:\n"),
+    N_("\
+       --ftp-user=USER         set ftp user to USER.\n"),
+    N_("\
+       --ftp-password=PASS     set ftp password to PASS.\n"),
     N_("\
        --no-remove-listing     don't remove `.listing' files.\n"),
     N_("\

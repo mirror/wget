@@ -1,3 +1,22 @@
+2005-04-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* ftp.c: Add support for --user and --password.
+	
+	* http.c: Add support for --user and --password.
+	
+	* init.c: Deprecated ftppasswd, httppasswd, login, passwd and
+	proxypasswd commands.  Added ftppassword, ftpuser, httppassword,
+	password, proxypassword and user commands.
+
+	* main.c: Renamed --ftp-passwd to --ftp-password.  Added --ftp-user,
+	--http-password, --password, --proxy-password and --user.  Deprecated
+	--http-passwd and --proxy-passwd.  Added documentation for new options
+	and removed documentation for deprecated options in the help string.
+	
+	* options.h (struct options): Added user and passwd members to handle
+	--user and --password respectively.  Renamed ftp_acc and ftp_pass
+	members to ftp_user and ftp_passwd for consistency.
+
 2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* main.c (print_help): Advertise "DER", not "ASN1".

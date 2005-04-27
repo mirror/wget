@@ -956,6 +956,17 @@ site because failure to connect is taken as a sign that the server is
 not running at all and that retries would not help.  This option is
 for mirroring unreliable sites whose servers tend to disappear for
 short periods of time.
+
+@cindex user
+@cindex password
+@cindex authentication
+@item --user=@var{user}
+@itemx --password=@var{password}
+Specify the username @var{user} and password @var{password} for both
+@sc{ftp} and @sc{http} file retrieval.  These parameters can be overridden
+using the @samp{--ftp-user} and @samp{--ftp-password} options for 
+@sc{ftp} connections and the @samp{--http-user} and @samp{--http-password} 
+options for @sc{http} connections.
 @end table
 
 @node Directory Options
@@ -1060,7 +1071,7 @@ Retrieval Options}).
 @cindex http password
 @cindex authentication
 @item --http-user=@var{user}
-@itemx --http-passwd=@var{password}
+@itemx --http-password=@var{password}
 Specify the username @var{user} and password @var{password} on an
 @sc{http} server.  According to the type of the challenge, Wget will
 encode them using either the @code{basic} (insecure) or the
@@ -1225,12 +1236,12 @@ sending of duplicate headers.
 @cindex proxy password
 @cindex proxy authentication
 @item --proxy-user=@var{user}
-@itemx --proxy-passwd=@var{password}
+@itemx --proxy-password=@var{password}
 Specify the username @var{user} and password @var{password} for
 authentication on a proxy server.  Wget will encode them using the
 @code{basic} authentication scheme.
 
-Security considerations similar to those with @samp{--http-passwd}
+Security considerations similar to those with @samp{--http-password}
 pertain here as well.
 
 @cindex http referer
@@ -1426,11 +1437,26 @@ systems that support @file{/dev/random}.
 @section FTP Options
 
 @table @samp
-@cindex password, FTP
-@item --ftp-passwd=@var{string}
-Set the default FTP password to @var{string}.  Without this, or the
-corresponding startup option, the password defaults to @samp{-wget@@},
-normally used for anonymous FTP.
+@cindex ftp user
+@cindex ftp password
+@cindex ftp authentication
+@item --ftp-user=@var{user}
+@itemx --ftp-password=@var{password}
+Specify the username @var{user} and password @var{password} on an
+@sc{ftp} server.  Without this, or the corresponding startup option, 
+the password defaults to @samp{-wget@@}, normally used for anonymous 
+FTP.
+
+Another way to specify username and password is in the @sc{url} itself
+(@pxref{URL Format}).  Either method reveals your password to anyone who
+bothers to run @code{ps}.  To prevent the passwords from being seen,
+store them in @file{.wgetrc} or @file{.netrc}, and make sure to protect
+those files from other users with @code{chmod}.  If the passwords are
+really important, do not leave them lying in those files either---edit
+the files and delete them after Wget has started the download.
+
+For more information about security issues with Wget, @xref{Security
+Considerations}.
 
 @cindex .listing files, removing
 @item --no-remove-listing
@@ -2546,7 +2572,7 @@ just like @samp{--follow-tags=@var{string}}.
 If set to on, force the input filename to be regarded as an @sc{html}
 document---the same as @samp{-F}.
 
-@item ftp_passwd = @var{string}
+@item ftp_password = @var{string}
 Set your @sc{ftp} password to @var{string}.  Without this setting, the
 password defaults to @samp{-wget@@}, which is a useful default for
 anonymous @sc{ftp} access.
@@ -2556,6 +2582,11 @@ This command used to be named @code{passwd} prior to Wget 1.10.
 @item ftp_proxy = @var{string}
 Use @var{string} as @sc{ftp} proxy, instead of the one specified in
 environment.
+
+@item ftp_user = @var{string}
+Set @sc{ftp} user to @var{string}.
+
+This command used to be named @code{login} prior to Wget 1.10.
 
 @item glob = on/off
 Turn globbing on/off---the same as @samp{--glob} and @samp{--no-glob}.
@@ -2572,9 +2603,9 @@ Add a @samp{.html} extension to @samp{text/html} or
 Turn the keep-alive feature on or off (defaults to on).  Turning it
 off is equivalent to @samp{--no-http-keep-alive}.
 
-@item http_passwd = @var{string}
+@item http_password = @var{string}
 Set @sc{http} password, equivalent to
-@samp{--http-passwd=@var{string}}.
+@samp{--http-password=@var{string}}.
 
 @item http_proxy = @var{string}
 Use @var{string} as @sc{http} proxy, instead of the one specified in
@@ -2626,10 +2657,6 @@ Load cookies from @var{file}.  See @samp{--load-cookies @var{file}}.
 @item logfile = @var{file}
 Set logfile to @var{file}, the same as @samp{-o @var{file}}.
 
-@item login = @var{string}
-Your user name on the remote machine, for @sc{ftp}.  Defaults to
-@samp{anonymous}.
-
 @item mirror = on/off
 Turn mirroring on/off.  The same as @samp{-m}.
 
@@ -2660,6 +2687,11 @@ Change setting of passive @sc{ftp}, equivalent to the
 module) files download files using @samp{wget --passive-ftp}.  If your
 firewall does not allow this, you can set @samp{passive_ftp = never}
 to override the command-line.
+
+@itemx password = @var{string}
+Specify password @var{string} for both @sc{ftp} and @sc{http} file retrieval. 
+This command can be overridden using the @samp{ftp_password} and 
+@samp{http_password} command for @sc{ftp} and @sc{http} respectively.
 
 @item post_data = @var{string}
 Use POST as the method for all HTTP requests and send @var{string} in
@@ -2697,9 +2729,9 @@ names.  The same as @samp{--protocol-directories}.
 Set proxy authentication user name to @var{string}, like
 @samp{--proxy-user=@var{string}}.
 
-@item proxy_passwd = @var{string}
+@item proxy_password = @var{string}
 Set proxy authentication password to @var{string}, like
-@samp{--proxy-passwd=@var{string}}.
+@samp{--proxy-password=@var{string}}.
 
 @item quiet = on/off
 Quiet mode---the same as @samp{-q}.
@@ -2792,6 +2824,11 @@ Set number of retries per @sc{url}---the same as @samp{-t @var{n}}.
 When set to off, don't use proxy even when proxy-related environment
 variables are set.  In that case it is the same as using
 @samp{--no-proxy}.
+
+@item user = @var{string}
+Specify username @var{string} for both @sc{ftp} and @sc{http} file retrieval. 
+This command can be overridden using the @samp{ftp_user} and 
+@samp{http_user} command for @sc{ftp} and @sc{http} respectively.
 
 @item verbose = on/off
 Turn verbose on/off---the same as @samp{-v}/@samp{-nv}.
@@ -3167,7 +3204,7 @@ http://hniksic:mypassword@@proxy.company.com:8001/
 
 Alternatively, you may use the @samp{proxy-user} and
 @samp{proxy-password} options, and the equivalent @file{.wgetrc}
-settings @code{proxy_user} and @code{proxy_passwd} to set the proxy
+settings @code{proxy_user} and @code{proxy_password} to set the proxy
 username and password.
 
 @node Distribution
