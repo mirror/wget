@@ -1258,6 +1258,7 @@ cmd_spec_useragent (const char *com, const char *val, void *place_ignored)
 	       exec_name, com, val);
       return 0;
     }
+  xfree_null (opt.useragent);
   opt.useragent = xstrdup (val);
   return 1;
 }

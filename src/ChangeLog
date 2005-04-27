@@ -1,3 +1,8 @@
+2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* init.c (cmd_spec_useragent): Free the old value of
+	opt.useragent before setting the new one.
+
 2005-04-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* main.c: Map --ftp-password, --http-password and --proxy-password to
