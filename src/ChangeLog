@@ -1,5 +1,9 @@
 2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* init.c: Wrap private key commands in IF_SSL.
+
+2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* openssl.c (ssl_init): Ditto.
 
 	* options.h (struct options): Allow separate specification of key
