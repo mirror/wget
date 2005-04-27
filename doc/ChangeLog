@@ -1,3 +1,12 @@
+2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (HTTP Options): Mention --keep-session-cookies when
+	documenting --post-data.
+
+2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi: Document the new form of SSL/TLS options.
+
 2005-04-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (HTTP Options): Improved entry on

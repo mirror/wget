@@ -928,7 +928,7 @@ When given a choice of several addresses, connect to the addresses
 with specified address family first.  IPv4 addresses are preferred by
 default.
 
-This avoids spurious errors and correct attempts when accessing hosts
+This avoids spurious errors and connect attempts when accessing hosts
 that resolve to both IPv6 and IPv4 addresses from IPv4 networks.  For
 example, @samp{www.kame.net} resolves to
 @samp{2001:200:0:8002:203:47ff:fea5:3085} and to
@@ -937,7 +937,7 @@ IPv4 address is used first; when the preferred family is @code{IPv6},
 the IPv6 address is used first; if the specified value is @code{none},
 the address order returned by DNS is used without change.
 
-Unlike @samp{-4} and @samp{-6}, this option doesn't forbid access to
+Unlike @samp{-4} and @samp{-6}, this option doesn't inhibit access to
 any address family, it only changes the @emph{order} in which the
 addresses are accessed.  Also note that the reordering performed by
 this option is @dfn{stable}---it doesn't affect order of addresses of
@@ -1290,56 +1290,83 @@ wget --load-cookies cookies.txt \
      -p http://server.com/interesting/article.php
 @end group
 @end example
+
+If the server is using session cookies to track user authentication,
+the above will not work because @samp{--save-cookies} will not save
+them (and neither will browsers) and the @file{cookies.txt} file will
+be empty.  In that case use @samp{--keep-session-cookies} along with
+@samp{--save-cookies} to force saving of session cookies.
 @end table
 
 @node HTTPS (SSL/TLS) Options
 @section HTTPS (SSL/TLS) Options
 
 @cindex SSL
-To support SSL-based HTTP (HTTPS) downloads, Wget must be compiled
+To support encrypted HTTP (HTTPS) downloads, Wget must be compiled
 with an external SSL library, currently OpenSSL.  If Wget is compiled
 without SSL support, none of these options are available.
 
 @table @samp
-@item --sslcertfile=@var{file}
+@cindex SSL protocol, choose
+@item --secure-protocol=@var{protocol}
+Choose the secure protocol to be used.  Legal values are @samp{auto},
+@samp{SSLv2}, @samp{SSLv3}, and @samp{TLSv1}.  If @samp{auto} is used,
+the SSL library is given the liberty of choosing the appropriate
+protocol automatically, which is achieved by sending an SSLv2 greeting
+and announcing support for SSLv3 and TLSv1.  This is the default.
+
+Specifying @samp{SSLv2}, @samp{SSLv3}, or @samp{TLSv1} forces the use
+of the corresponding protocol.  This is useful when talking to old and
+buggy SSL server implementations that make it hard for OpenSSL to
+choose the correct protocol version.  Fortunately, such servers are
+quite rare.
+
+@cindex SSL certificate, check
+@item --no-check-certificate
+Don't check the server certificate against the available client
+authorities.  If this is not specified, Wget will break the SSL
+handshake if the server certificate is not valid.
+
+@cindex SSL certificate
+@item --certificate=@var{file}
 Use the client certificate stored in @var{file}.  This is needed for
 servers that are configured to require certificates from the clients
 that connect to them.  Normally a certificate is not required and this
 switch is optional.
 
-@cindex SSL certificate
-@item --sslcertkey=@var{keyfile}
-Read the certificate key from @var{keyfile}.
+@cindex SSL certificate type, specify
+@item --certificate-type=@var{type}
+Specify the type of the client certificate.  Legal values are
+@samp{PEM} (assumed by default) and @samp{DER}, also known as
+@samp{ASN1}.
+
+@item --private-key=@var{file}
+Read the private key from @var{file}.  This allows you to provide the
+private key in a file separate from the certificate.
+
+@item --private-key-type=@var{type}
+Specify the type of the private key.  Accepted values are @samp{PEM}
+(the default) and @samp{DER}.
+
+@item --ca-certificate=@var{file}
+Use @var{file} as the file with the bundle of certificate authorities
+(``CA'') to verify the peers.  The certificates must be in PEM format.
+
+Without this option Wget looks for CA certificates at the
+system-specified locations, chosen at OpenSSL installation time.
 
 @cindex SSL certificate authority
-@item --sslcadir=@var{directory}
-Specifies directory used for certificate authorities (``CA'').
+@item --ca-directory=@var{directory}
+Specifies directory containing CA certificates in PEM format.  Each
+file contains one CA certificate, and the file name is based on a hash
+value derived from the certificate.  This is achieved by processing a
+certificate directory with the @code{c_rehash} utility supplied with
+OpenSSL.  Using @samp{--ca-directory} is more efficient than
+@samp{--ca-certificate} when many certificates are installed because
+it allows Wget to fetch certificates on demand.
 
-@item --sslcafile=@var{file}
-Use @var{file} as the file with the bundle of certificate authorities.
-
-@cindex SSL certificate type, specify
-@item --sslcerttype=0/1
-Specify the type of the client certificate: 0 means @code{PEM}
-(default), 1 means @code{ASN1} (@code{DER}).
-
-@cindex SSL certificate, check
-@item --sslcheckcert=0/1
-If set to 1, check the server certificate against the specified client
-authorities.  If this is 0 (the default), Wget will break the SSL
-handshake if the server certificate is not valid.
-
-@cindex SSL protocol, choose
-@item --sslprotocol=0-3
-Choose the SSL protocol to be used.  If 0 is specified (the default),
-the OpenSSL library chooses the appropriate protocol automatically.
-Specifying 1 forces the use of SSLv2, specifying 2 forces SSLv3, and
-specifying 3 forces TLSv1.
-
-In most cases the OpenSSL library is capable of making an intelligent
-choice of the protocol, but there have been reports of sites that use
-old (and presumably buggy) server libraries with which a protocol has
-to be specified manually.
+Without this option Wget looks for CA certificates at the
+system-specified locations, chosen at OpenSSL installation time.
 
 @cindex EGD
 @item --egd-file=@var{file}
@@ -2381,21 +2408,37 @@ interpreted as @sc{html} as being relative to @var{string}---the same as
 @item bind_address = @var{address}
 Bind to @var{address}, like the @samp{--bind-address} option.
 
+@item ca_certificate = @var{string}
+Set the certificate authority bundle file to @var{string}.  The same
+as @samp{--ca-certificate}.
+
+@item ca_directory = @var{string}
+Set the directory used for certificate authorities.  The same as
+@samp{--ca-directory}.
+
 @item cache = on/off
 When set to off, disallow server-caching.  See the @samp{--no-cache}
 option.
+
+@item certificate = @var{string}
+Set the client certificate file name to @var{string}.  The same as
+@samp{--certificate}.
+
+@item certificate_type = @var{string}
+Specify the type of the client certificate, legal values being
+@samp{PEM} (the default) and @samp{DER} (aka ASN1).  The same as
+@samp{--private-type}.
+
+@item check_certificate = on/off
+If this is set to off, the server certificate is not checked against
+the specified client authorities.  The default is ``on''.  The same as
+@samp{--check-certificate}.
 
 @item convert_links = on/off
 Convert non-relative links locally.  The same as @samp{-k}.
 
 @item cookies = on/off
 When set to off, disallow cookies.  See the @samp{--cookies} option.
-
-@item load_cookies = @var{file}
-Load cookies from @var{file}.  See @samp{--load-cookies}.
-
-@item save_cookies = @var{file}
-Save cookies to @var{file}.  See @samp{--save-cookies}.
 
 @item connect_timeout = @var{n}
 Set the connect timeout---the same as @samp{--connect-timeout}.
@@ -2536,6 +2579,9 @@ as there is, provided there is more than or equal to the value in
 Limit the download speed to no more than @var{rate} bytes per second.
 The same as @samp{--limit-rate}.
 
+@item load_cookies = @var{file}
+Load cookies from @var{file}.  See @samp{--load-cookies}.
+
 @item logfile = @var{string}
 Set logfile---the same as @samp{-o}.
 
@@ -2587,6 +2633,15 @@ When given a choice of several addresses, connect to the addresses
 with specified address family first.  IPv4 addresses are preferred by
 default.  The same as @samp{--prefer-family}, which see for a detailed
 discussion of why this is useful.
+
+@item private_key = @var{string}
+Set the private key file to @var{string}.  The same as
+@samp{--private-key}.
+
+@item private_key_type = @var{string}
+Specify the type of the private key, legal values being @samp{PEM}
+(the default) and @samp{DER} (aka ASN1).  The same as
+@samp{--private-type}.
 
 @item progress = @var{string}
 Set the type of the progress indicator.  Legal types are ``dot'' and
@@ -2655,42 +2710,20 @@ default.  This switch controls both the @file{/robots.txt} and the
 details about this.  Be sure you know what you are doing before turning
 this off.
 
+@item save_cookies = @var{file}
+Save cookies to @var{file}.  See @samp{--save-cookies}.
+
+@item secure_protocol = @var{string}
+Choose the secure protocol to be used.  Legal values are @samp{auto}
+(the default), @samp{SSLv2}, @samp{SSLv3}, and @samp{TLSv1}.  The same
+as @samp{--secure-protocol}.
+
 @item server_response = on/off
 Choose whether or not to print the @sc{http} and @sc{ftp} server
 responses---the same as @samp{-S}.
 
 @item span_hosts = on/off
 Same as @samp{-H}.
-
-@item ssl_cert_file = @var{string}
-Set the client certificate file name to @var{string}.  The same as
-@samp{--sslcertfile}.
-
-@item ssl_cert_key = @var{string}
-Set the certificate key file to @var{string}.  The same as
-@samp{--sslcertkey}.
-
-@item ssl_ca_dir = @var{string}
-Set the directory used for certificate authorities.  The same as
-@samp{--sslcadir}.
-
-@item ssl_ca_file = @var{string}
-Set the certificate authority bundle file to @var{string}.  The same
-as @samp{--sslcafile}.
-
-@item ssl_cert_type = 0/1
-Specify the type of the client certificate: 0 means @code{PEM}
-(default), 1 means @code{ASN1} (@code{DER}).  The same as
-@samp{--sslcerttype}.
-
-@item ssl_check_cert = 0/1
-If this is set to 1, the server certificate is checked against the
-specified client authorities.  The same as @samp{--sslcheckcert}.
-
-@item ssl_protocol = 0-3
-Choose the SSL protocol to be used.  0 means choose automatically, 1
-means force SSLv2, 2 means force SSLv3, and 3 means force TLSv1.  The
-same as @samp{--sslprotocol}.
 
 @item strict_comments = on/off
 Same as @samp{--strict-comments}.
