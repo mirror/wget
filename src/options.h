@@ -179,6 +179,7 @@ struct options
   char *ca_cert;		/* CA certificate file to use */
 
 
+  char *random_file;		/* file with random data to seed the PRNG */
   char *egd_file;		/* file name of the egd daemon socket */
 #endif /* HAVE_SSL */
 

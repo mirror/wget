@@ -59,29 +59,43 @@ so, delete this exception statement from your version.  */
 extern int errno;
 #endif
 
+/* Application-wide SSL context.  This is common to all SSL
+   connections.  */
 SSL_CTX *ssl_ctx;
 
+/* Initialize the SSL's PRNG using various methods. */
+
 static void
-ssl_init_prng (void)
+init_prng (void)
 {
-  /* It is likely that older versions of OpenSSL will fail on
-     non-Linux machines because this code is unable to seed the PRNG
-     on older versions of the library.  */
+  char namebuf[256];
+  const char *random_file;
 
-#if SSLEAY_VERSION_NUMBER >= 0x00905100
-  char rand_file[256];
+  if (RAND_status ())
+    /* The PRNG has been seeded; no further action is necessary. */
+    return;
 
-  /* First, seed from a file specified by the user.  This will be
-     $RANDFILE, if set, or ~/.rnd.  */
-  RAND_file_name (rand_file, sizeof (rand_file));
-  if (rand_file)
-    /* Seed at most 16k (value borrowed from curl) from random file. */
-    RAND_load_file (rand_file, 16384);
+  /* Seed from a file specified by the user.  This will be the file
+     specified with --random-file, $RANDFILE, if set, or ~/.rnd, if it
+     exists.  */
+  if (opt.random_file)
+    random_file = opt.random_file;
+  else
+    {
+      /* Get the random file name using RAND_file_name. */
+      namebuf[0] = '\0';
+      random_file = RAND_file_name (namebuf, sizeof (namebuf));
+    }
+
+  if (random_file && *random_file)
+    /* Seed at most 16k (apparently arbitrary value borrowed from
+       curl) from random file. */
+    RAND_load_file (random_file, 16384);
 
   if (RAND_status ())
     return;
 
-  /* Get random data from EGD if opt.egd_file was set.  */
+  /* Get random data from EGD if opt.egd_file was used.  */
   if (opt.egd_file && *opt.egd_file)
     RAND_egd (opt.egd_file);
 
@@ -107,7 +121,7 @@ ssl_init_prng (void)
        PRNG.  This is cryptographically weak and defeats the purpose
        of using OpenSSL, which is why it is highly discouraged.  */
 
-    logprintf (LOG_VERBOSE, _("WARNING: using a weak random seed.\n"));
+    logprintf (LOG_NOTQUIET, _("WARNING: using a weak random seed.\n"));
 
     while (RAND_status () == 0 && maxrand-- > 0)
       {
@@ -116,16 +130,17 @@ ssl_init_prng (void)
       }
   }
 #endif
-
-#endif /* SSLEAY_VERSION_NUMBER >= 0x00905100 */
 }
+
+/* #### Someone should audit and document this. */
 
 static int
 verify_callback (int ok, X509_STORE_CTX *ctx)
 {
-  char *s, buf[256];
-  s = X509_NAME_oneline (X509_get_subject_name (ctx->current_cert),
-			 buf, sizeof (buf));
+  char buf[256];
+  /* #### Why are we not using the result of this call? */
+  X509_NAME_oneline (X509_get_subject_name (ctx->current_cert),
+		     buf, sizeof (buf));
   if (ok == 0)
     {
       switch (ctx->error)
@@ -144,10 +159,10 @@ verify_callback (int ok, X509_STORE_CTX *ctx)
   return ok;
 }
 
-/* Print SSL errors. */
+/* Print errors in the OpenSSL error stack. */
 
 static void
-ssl_print_errors (void) 
+print_errors (void) 
 {
   unsigned long curerr = 0;
   while ((curerr = ERR_get_error ()) != 0)
@@ -174,29 +189,34 @@ key_type_to_ssl_type (enum keyfile_type type)
     }
 }
 
-/* Creates a SSL Context and sets some defaults for it */
-uerr_t
+/* Create an SSL Context and set default paths etc.  Called the first
+   time an HTTP download is attempted.
+
+   Returns 0 on success, non-zero otherwise.  */
+
+int
 ssl_init ()
 {
-  SSL_METHOD *meth = NULL;
+  SSL_METHOD *meth;
 
   if (ssl_ctx)
-    return 0;
+    /* The SSL has already been initialized. */
+    return 1;
 
   /* Init the PRNG.  If that fails, bail out.  */
-  ssl_init_prng ();
-  if (RAND_status () == 0)
+  init_prng ();
+  if (RAND_status () != 1)
     {
       logprintf (LOG_NOTQUIET,
-		 _("Could not seed OpenSSL PRNG; disabling SSL.\n"));
-      scheme_disable (SCHEME_HTTPS);
-      return SSLERRCTXCREATE;
+		 _("Could not seed PRNG; consider using --random-file.\n"));
+      goto error;
     }
 
   SSL_library_init ();
   SSL_load_error_strings ();
   SSLeay_add_all_algorithms ();
   SSLeay_add_ssl_algorithms ();
+
   switch (opt.secure_protocol)
     {
     case secure_protocol_auto:
@@ -216,6 +236,9 @@ ssl_init ()
     }
 
   ssl_ctx = SSL_CTX_new (meth);
+  if (!ssl_ctx)
+    goto error;
+
   SSL_CTX_set_default_verify_paths (ssl_ctx);
   SSL_CTX_load_verify_locations (ssl_ctx, opt.ca_cert, opt.ca_directory);
   SSL_CTX_set_verify (ssl_ctx,
@@ -226,24 +249,24 @@ ssl_init ()
     if (SSL_CTX_use_certificate_file (ssl_ctx, opt.cert_file,
 				      key_type_to_ssl_type (opt.cert_type))
 	!= 1)
-      {
-	ssl_print_errors ();
-	return SSLERRCERTFILE;
-      }
+      goto error;
   if (opt.private_key)
     if (SSL_CTX_use_PrivateKey_file (ssl_ctx, opt.private_key,
 				     key_type_to_ssl_type (opt.private_key_type))
 	!= 1)
-      {
-	ssl_print_errors ();
-	return SSLERRCERTKEY;
-      }
+      goto error;
 
-  return 0; /* Succeded */
+  return 1;
+
+ error:
+  if (ssl_ctx)
+    SSL_CTX_free (ssl_ctx);
+  print_errors ();
+  return 0;
 }
 
 static int
-ssl_read (int fd, char *buf, int bufsize, void *ctx)
+openssl_read (int fd, char *buf, int bufsize, void *ctx)
 {
   int ret;
   SSL *ssl = (SSL *) ctx;
@@ -256,7 +279,7 @@ ssl_read (int fd, char *buf, int bufsize, void *ctx)
 }
 
 static int
-ssl_write (int fd, char *buf, int bufsize, void *ctx)
+openssl_write (int fd, char *buf, int bufsize, void *ctx)
 {
   int ret = 0;
   SSL *ssl = (SSL *) ctx;
@@ -269,7 +292,7 @@ ssl_write (int fd, char *buf, int bufsize, void *ctx)
 }
 
 static int
-ssl_poll (int fd, double timeout, int wait_for, void *ctx)
+openssl_poll (int fd, double timeout, int wait_for, void *ctx)
 {
   SSL *ssl = (SSL *) ctx;
   if (timeout == 0)
@@ -280,7 +303,7 @@ ssl_poll (int fd, double timeout, int wait_for, void *ctx)
 }
 
 static int
-ssl_peek (int fd, char *buf, int bufsize, void *ctx)
+openssl_peek (int fd, char *buf, int bufsize, void *ctx)
 {
   int ret;
   SSL *ssl = (SSL *) ctx;
@@ -293,7 +316,7 @@ ssl_peek (int fd, char *buf, int bufsize, void *ctx)
 }
 
 static void
-ssl_close (int fd, void *ctx)
+openssl_close (int fd, void *ctx)
 {
   SSL *ssl = (SSL *) ctx;
   SSL_shutdown (ssl);
@@ -332,16 +355,16 @@ ssl_connect (int fd)
 
   /* Register FD with Wget's transport layer, i.e. arrange that
      SSL-enabled functions are used for reading, writing, and polling.
-     That way the rest of Wget can keep using xread, xwrite, and
+     That way the rest of Wget can keep using fd_read, fd_write, and
      friends and not care what happens underneath.  */
-  fd_register_transport (fd, ssl_read, ssl_write, ssl_poll, ssl_peek,
-			 ssl_close, ssl);
+  fd_register_transport (fd, openssl_read, openssl_write, openssl_poll,
+			 openssl_peek, openssl_close, ssl);
   DEBUGP (("Connected %d to SSL 0x%0*lx\n", fd, 2 * sizeof (void *),
 	   (unsigned long) ssl));
   return 1;
 
  err:
-  ssl_print_errors ();
+  print_errors ();
   if (ssl)
     SSL_free (ssl);
   return 0;

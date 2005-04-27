@@ -231,6 +231,7 @@ struct cmdline_option option_data[] =
     { "proxy-user", 0, OPT_VALUE, "proxyuser", -1 },
     { "quiet", 'q', OPT_BOOLEAN, "quiet", -1 },
     { "quota", 'Q', OPT_VALUE, "quota", -1 },
+    { "random-file", 0, OPT_VALUE, "randomfile", -1 },
     { "random-wait", 0, OPT_BOOLEAN, "randomwait", -1 },
     { "read-timeout", 0, OPT_VALUE, "readtimeout", -1 },
     { "recursive", 'r', OPT_BOOLEAN, "recursive", -1 },
@@ -552,7 +553,9 @@ HTTPS (SSL/TLS) options:\n"),
     N_("\
        --ca-directory=DIR       directory where hash list of CA's is stored.\n"),
     N_("\
-       --egd-file=FILE          file name of the EGD socket.\n"),
+       --random-file=FILE       file with random data for seeding the SSL PRNG.\n"),
+    N_("\
+       --egd-file=FILE          file naming the EGD socket with random data.\n"),
     "\n",
 #endif /* HAVE_SSL */
 

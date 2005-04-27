@@ -1,5 +1,14 @@
 2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* openssl.c (init_prng): Disable the weak random seed by default.
+
+	* http.c (gethttp): Simplify SSL initialization; disable SSL when
+	anything goes wrong with the initialization.
+
+	* options.h (struct options): New option opt.random_file.
+
+2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c: Wrap private key commands in IF_SSL.
 
 2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
