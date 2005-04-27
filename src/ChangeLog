@@ -1,3 +1,7 @@
+2005-04-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (gethttp): Correctly set the user agent.
+
 2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* init.c (cmd_spec_useragent): Free the old value of

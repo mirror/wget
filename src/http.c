@@ -1442,7 +1442,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  struct request *connreq = request_new ();
 	  request_set_method (connreq, "CONNECT",
 			      aprintf ("%s:%d", u->host, u->port));
-	  SET_USER_AGENT (req);
+	  SET_USER_AGENT (connreq);
 	  if (proxyauth)
 	    {
 	      request_set_header (connreq, "Proxy-Authorization",
