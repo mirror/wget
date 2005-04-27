@@ -1,5 +1,9 @@
 2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi: Improve wording of command descriptions.
+
+2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi (HTTP Options): Mention --keep-session-cookies when
 	documenting --post-data.
 

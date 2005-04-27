@@ -494,10 +494,14 @@ information still get printed.
 @cindex input-file
 @item -i @var{file}
 @itemx --input-file=@var{file}
-Read @sc{url}s from @var{file}, in which case no @sc{url}s need to be on
-the command line.  If there are @sc{url}s both on the command line and
-in an input file, those on the command lines will be the first ones to
-be retrieved.  The @var{file} need not be an @sc{html} document (but no
+Read @sc{url}s from @var{file}.  If @samp{-} is specified as
+@var{file}, @sc{url}s are read from the standard input.  (Use
+@samp{./-} to read from a file literally named @samp{-}.)
+
+If this function is used, no @sc{url}s need be present on the command
+line.  If there are @sc{url}s both on the command line and in an input
+file, those on the command lines will be the first ones to be
+retrieved.  The @var{file} need not be an @sc{html} document (but no
 harm if it is)---it is enough if the @sc{url}s are just listed
 sequentially.
 
@@ -548,13 +552,14 @@ which are not retried.
 
 @item -O @var{file}
 @itemx --output-document=@var{file}
-The documents will not be written to the appropriate files, but all will
-be concatenated together and written to @var{file}.  If @var{file}
-already exists, it will be overwritten.  If the @var{file} is @samp{-}, 
-the documents will be written to standard output (disabling @samp{-k}).
- 
-Note that a combination with @samp{-k} is only well-defined for downloading
-a single document.
+The documents will not be written to the appropriate files, but all
+will be concatenated together and written to @var{file}.  If @samp{-}
+is used as @var{file}, documents will be printed to standard output,
+disabling link conversion.  (Use @samp{./-} to print to a file
+literally named @samp{-}.)
+
+Note that a combination with @samp{-k} is only well-defined for
+downloading a single document.
 
 @cindex clobbering, file
 @cindex downloading multiple times
@@ -1185,10 +1190,11 @@ With this option, Wget will ignore the @code{Content-Length} header---as
 if it never existed.
 
 @cindex header, add
-@item --header=@var{additional-header}
-Define an @var{additional-header} to be passed to the @sc{http} servers.
-Headers must contain a @samp{:} preceded by one or more non-blank
-characters, and must not contain newlines.
+@item --header=@var{header-line}
+Send @var{header-line} along with the rest of the headers in each
+@sc{http} request.  The supplied header is sent as-is, which means it
+must contain name and value separated by colon, and must not contain
+newlines.
 
 You may define more than one additional header by specifying
 @samp{--header} more than once.
@@ -1203,6 +1209,17 @@ wget --header='Accept-Charset: iso-8859-2' \
 
 Specification of an empty string as the header value will clear all
 previous user-defined headers.
+
+As of Wget 1.10, this option can be used to override headers otherwise
+generated automatically.  This example instructs Wget to connect to
+localhost, but to specify @samp{foo.bar} in the @code{Host} header:
+
+@example
+wget --header="Host: foo.bar" http://localhost/
+@end example
+
+In versions of Wget prior to 1.10 such use of @samp{--header} caused
+sending of duplicate headers.
 
 @cindex proxy user
 @cindex proxy password
@@ -2403,31 +2420,31 @@ Enable/disable saving pre-converted files with the suffix
 @item base = @var{string}
 Consider relative @sc{url}s in @sc{url} input files forced to be
 interpreted as @sc{html} as being relative to @var{string}---the same as
-@samp{-B}.
+@samp{--base=@var{string}}.
 
 @item bind_address = @var{address}
-Bind to @var{address}, like the @samp{--bind-address} option.
+Bind to @var{address}, like the @samp{--bind-address=@var{address}}.
 
-@item ca_certificate = @var{string}
-Set the certificate authority bundle file to @var{string}.  The same
-as @samp{--ca-certificate}.
+@item ca_certificate = @var{file}
+Set the certificate authority bundle file to @var{file}.  The same
+as @samp{--ca-certificate=@var{file}}.
 
-@item ca_directory = @var{string}
+@item ca_directory = @var{directory}
 Set the directory used for certificate authorities.  The same as
-@samp{--ca-directory}.
+@samp{--ca-directory=@var{directory}}.
 
 @item cache = on/off
 When set to off, disallow server-caching.  See the @samp{--no-cache}
 option.
 
-@item certificate = @var{string}
-Set the client certificate file name to @var{string}.  The same as
-@samp{--certificate}.
+@item certificate = @var{file}
+Set the client certificate file name to @var{file}.  The same as
+@samp{--certificate=@var{file}}.
 
 @item certificate_type = @var{string}
 Specify the type of the client certificate, legal values being
 @samp{PEM} (the default) and @samp{DER} (aka ASN1).  The same as
-@samp{--private-type}.
+@samp{--certificate-type=@var{string}}.
 
 @item check_certificate = on/off
 If this is set to off, the server certificate is not checked against
@@ -2444,7 +2461,8 @@ When set to off, disallow cookies.  See the @samp{--cookies} option.
 Set the connect timeout---the same as @samp{--connect-timeout}.
 
 @item cut_dirs = @var{n}
-Ignore @var{n} remote directory components.
+Ignore @var{n} remote directory components.  Equivalent to
+@samp{--cut-dirs=@var{n}}.
 
 @item debug = on/off
 Debug mode, same as @samp{-d}.
@@ -2453,7 +2471,7 @@ Debug mode, same as @samp{-d}.
 Delete after download---the same as @samp{--delete-after}.
 
 @item dir_prefix = @var{string}
-Top of directory tree---the same as @samp{-P}.
+Top of directory tree---the same as @samp{-P @var{string}}.
 
 @item dirstruct = on/off
 Turning dirstruct on or off---the same as @samp{-x} or @samp{-nd},
@@ -2461,7 +2479,8 @@ respectively.
 
 @item dns_cache = on/off
 Turn DNS caching on/off.  Since DNS caching is on by default, this
-option is normally used to turn it off.  Same as @samp{--dns-cache}.
+option is normally used to turn it off and is equivalent to
+@samp{--no-dns-cache}.
 
 @item dns_timeout = @var{n}
 Set the DNS timeout---the same as @samp{--dns-timeout}.
@@ -2484,24 +2503,26 @@ the retrieval (50 by default).
 @item dot_spacing = @var{n}
 Specify the number of dots in a single cluster (10 by default).
 
-@item egd_file = @var{string}
+@item egd_file = @var{file}
 Use @var{string} as the EGD socket file name.  The same as
-@samp{--egd-file}.
+@samp{--egd-file=@var{file}}.
 
 @item exclude_directories = @var{string}
 Specify a comma-separated list of directories you wish to exclude from
-download---the same as @samp{-X} (@pxref{Directory-Based Limits}).
+download---the same as @samp{-X @var{string}} (@pxref{Directory-Based
+Limits}).
 
 @item exclude_domains = @var{string}
-Same as @samp{--exclude-domains} (@pxref{Spanning Hosts}).
+Same as @samp{--exclude-domains=@var{string}} (@pxref{Spanning
+Hosts}).
 
 @item follow_ftp = on/off
 Follow @sc{ftp} links from @sc{html} documents---the same as
 @samp{--follow-ftp}.
 
 @item follow_tags = @var{string}
-Only follow certain @sc{html} tags when doing a recursive retrieval, just like
-@samp{--follow-tags}.
+Only follow certain @sc{html} tags when doing a recursive retrieval,
+just like @samp{--follow-tags=@var{string}}.
 
 @item force_html = on/off
 If set to on, force the input filename to be regarded as an @sc{html}
@@ -2522,38 +2543,40 @@ environment.
 Turn globbing on/off---the same as @samp{--glob} and @samp{--no-glob}.
 
 @item header = @var{string}
-Define an additional header, like @samp{--header}.
+Define a header for HTTP doewnloads, like using
+@samp{--header=@var{string}}.
 
 @item html_extension = on/off
-Add a @samp{.html} extension to @samp{text/html} or 
-@samp{application/xhtml+xml} files without it, like
-@samp{-E}.
+Add a @samp{.html} extension to @samp{text/html} or
+@samp{application/xhtml+xml} files without it, like @samp{-E}.
 
 @item http_keep_alive = on/off
-Turn the keep-alive feature on or off (defaults to on).  The same as
-`--http-keep-alive'.
+Turn the keep-alive feature on or off (defaults to on).  Turning it
+off is equivalent to @samp{--no-http-keep-alive}.
 
 @item http_passwd = @var{string}
-Set @sc{http} password.
+Set @sc{http} password, equivalent to
+@samp{--http-passwd=@var{string}}.
 
 @item http_proxy = @var{string}
 Use @var{string} as @sc{http} proxy, instead of the one specified in
 environment.
 
 @item http_user = @var{string}
-Set @sc{http} user to @var{string}.
+Set @sc{http} user to @var{string}, equivalent to
+@samp{--http-user=@var{string}}.
 
 @item ignore_length = on/off
 When set to on, ignore @code{Content-Length} header; the same as
 @samp{--ignore-length}.
 
 @item ignore_tags = @var{string}
-Ignore certain @sc{html} tags when doing a recursive retrieval, just like
-@samp{--ignore-tags}.
+Ignore certain @sc{html} tags when doing a recursive retrieval, like
+@samp{--ignore-tags=@var{string}}.
 
 @item include_directories = @var{string}
 Specify a comma-separated list of directories you wish to follow when
-downloading---the same as @samp{-I}.
+downloading---the same as @samp{-I @var{string}}.
 
 @item inet4_only = on/off
 Force connecting to IPv4 addresses, off by default.  You can put this
@@ -2566,8 +2589,8 @@ Force connecting to IPv6 addresses, off by default.  Available only if
 Wget was compiled with IPv6 support.  The same as @samp{--inet6-only}
 or @samp{-6}.
 
-@item input = @var{string}
-Read the @sc{url}s from @var{string}, like @samp{-i}.
+@item input = @var{file}
+Read the @sc{url}s from @var{string}, like @samp{-i @var{file}}.
 
 @item kill_longer = on/off
 Consider data longer than specified in content-length header as invalid
@@ -2577,13 +2600,13 @@ as there is, provided there is more than or equal to the value in
 
 @item limit_rate = @var{rate}
 Limit the download speed to no more than @var{rate} bytes per second.
-The same as @samp{--limit-rate}.
+The same as @samp{--limit-rate=@var{rate}}.
 
 @item load_cookies = @var{file}
-Load cookies from @var{file}.  See @samp{--load-cookies}.
+Load cookies from @var{file}.  See @samp{--load-cookies @var{file}}.
 
-@item logfile = @var{string}
-Set logfile---the same as @samp{-o}.
+@item logfile = @var{file}
+Set logfile to @var{file}, the same as @samp{-o @var{file}}.
 
 @item login = @var{string}
 Your user name on the remote machine, for @sc{ftp}.  Defaults to
@@ -2606,8 +2629,8 @@ Disallow retrieving outside the directory hierarchy, like
 Use @var{string} as the comma-separated list of domains to avoid in
 proxy loading, instead of the one specified in environment.
 
-@item output_document = @var{string}
-Set the output filename---the same as @samp{-O}.
+@item output_document = @var{file}
+Set the output filename---the same as @samp{-O @var{file}}.
 
 @item page_requisites = on/off
 Download all ancillary documents necessary for a single @sc{html} page to
@@ -2622,11 +2645,12 @@ to override the command-line.
 
 @item post_data = @var{string}
 Use POST as the method for all HTTP requests and send @var{string} in
-the request body.  The same as @samp{--post-data}.
+the request body.  The same as @samp{--post-data=@var{string}}.
 
 @item post_file = @var{file}
 Use POST as the method for all HTTP requests and send the contents of
-@var{file} in the request body.  The same as @samp{--post-file}.
+@var{file} in the request body.  The same as
+@samp{--post-file=@var{file}}.
 
 @item prefer_family = IPv4/IPv6/none
 When given a choice of several addresses, connect to the addresses
@@ -2634,28 +2658,30 @@ with specified address family first.  IPv4 addresses are preferred by
 default.  The same as @samp{--prefer-family}, which see for a detailed
 discussion of why this is useful.
 
-@item private_key = @var{string}
-Set the private key file to @var{string}.  The same as
-@samp{--private-key}.
+@item private_key = @var{file}
+Set the private key file to @var{file}.  The same as
+@samp{--private-key=@var{file}}.
 
 @item private_key_type = @var{string}
 Specify the type of the private key, legal values being @samp{PEM}
 (the default) and @samp{DER} (aka ASN1).  The same as
-@samp{--private-type}.
+@samp{--private-type=@var{string}}.
 
 @item progress = @var{string}
-Set the type of the progress indicator.  Legal types are ``dot'' and
-``bar''.
+Set the type of the progress indicator.  Legal types are @samp{dot}
+and @samp{bar}.  Equivalent to @samp{--progress=@var{string}}.
 
 @item protocol_directories = on/off
 When set, use the protocol name as a directory component of local file
 names.  The same as @samp{--protocol-directories}.
 
 @item proxy_user = @var{string}
-Set proxy authentication user name to @var{string}, like @samp{--proxy-user}.
+Set proxy authentication user name to @var{string}, like
+@samp{--proxy-user=@var{string}}.
 
 @item proxy_passwd = @var{string}
-Set proxy authentication password to @var{string}, like @samp{--proxy-passwd}.
+Set proxy authentication password to @var{string}, like
+@samp{--proxy-passwd=@var{string}}.
 
 @item quiet = on/off
 Quiet mode---the same as @samp{-q}.
@@ -2666,22 +2692,23 @@ Specify the download quota, which is useful to put in the global
 retrieving after the download sum has become greater than quota.  The
 quota can be specified in bytes (default), kbytes @samp{k} appended) or
 mbytes (@samp{m} appended).  Thus @samp{quota = 5m} will set the quota
-to 5 mbytes.  Note that the user's startup file overrides system
+to 5 megabytes.  Note that the user's startup file overrides system
 settings.
 
 @item read_timeout = @var{n}
-Set the read (and write) timeout---the same as @samp{--read-timeout}.
+Set the read (and write) timeout---the same as
+@samp{--read-timeout=@var{n}}.
 
 @item reclevel = @var{n}
-Recursion level---the same as @samp{-l}.
+Recursion level (depth)---the same as @samp{-l @var{n}}.
 
 @item recursive = on/off
 Recursive on/off---the same as @samp{-r}.
 
 @item referer = @var{string}
-Set HTTP @samp{Referer:} header just like @samp{--referer}.  (Note it
-was the folks who wrote the @sc{http} spec who got the spelling of
-``referrer'' wrong.)
+Set HTTP @samp{Referer:} header just like
+@samp{--referer=@var{string}}.  (Note it was the folks who wrote the
+@sc{http} spec who got the spelling of ``referrer'' wrong.)
 
 @item relative_only = on/off
 Follow only relative links---the same as @samp{-L} (@pxref{Relative
@@ -2711,12 +2738,13 @@ details about this.  Be sure you know what you are doing before turning
 this off.
 
 @item save_cookies = @var{file}
-Save cookies to @var{file}.  See @samp{--save-cookies}.
+Save cookies to @var{file}.  The same as @samp{--save-cookies
+@var{file}}.
 
 @item secure_protocol = @var{string}
 Choose the secure protocol to be used.  Legal values are @samp{auto}
 (the default), @samp{SSLv2}, @samp{SSLv3}, and @samp{TLSv1}.  The same
-as @samp{--secure-protocol}.
+as @samp{--secure-protocol=@var{string}}.
 
 @item server_response = on/off
 Choose whether or not to print the @sc{http} and @sc{ftp} server
@@ -2729,27 +2757,31 @@ Same as @samp{-H}.
 Same as @samp{--strict-comments}.
 
 @item timeout = @var{n}
-Set timeout value---the same as @samp{-T}.
+Set all applicable timeout values to @var{n}, the same as @samp{-T
+@var{n}}.
 
 @item timestamping = on/off
 Turn timestamping on/off.  The same as @samp{-N} (@pxref{Time-Stamping}).
 
 @item tries = @var{n}
-Set number of retries per @sc{url}---the same as @samp{-t}.
+Set number of retries per @sc{url}---the same as @samp{-t @var{n}}.
 
 @item use_proxy = on/off
-Turn proxy support on/off.  The same as @samp{-Y}.
+When set to off, don't use proxy even when proxy-related environment
+variables are set.  In that case it is the same as using
+@samp{--no-proxy}.
 
 @item verbose = on/off
 Turn verbose on/off---the same as @samp{-v}/@samp{-nv}.
 
 @item wait = @var{n}
-Wait @var{n} seconds between retrievals---the same as @samp{-w}.
+Wait @var{n} seconds between retrievals---the same as @samp{-w
+@var{n}}.
 
 @item waitretry = @var{n}
 Wait up to @var{n} seconds between retries of failed retrievals
-only---the same as @samp{--waitretry}.  Note that this is turned on by
-default in the global @file{wgetrc}.
+only---the same as @samp{--waitretry=@var{n}}.  Note that this is
+turned on by default in the global @file{wgetrc}.
 
 @item randomwait = on/off
 Turn random between-request wait times on or off. The same as 
