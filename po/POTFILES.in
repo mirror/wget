@@ -11,7 +11,6 @@ src/ftp-ls.c
 src/ftp-opie.c
 src/ftp.c
 src/gen-md5.c
-src/gen_sslfunc.c
 src/getopt.c
 src/gnu-md5.c
 src/hash.c
@@ -24,6 +23,7 @@ src/log.c
 src/main.c
 src/mswindows.c
 src/netrc.c
+src/openssl.c
 src/progress.c
 src/recur.c
 src/res.c
