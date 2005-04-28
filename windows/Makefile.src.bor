@@ -6,7 +6,7 @@ CC=bcc32
 LINK=ilink32
 
 LFLAGS=
-WARN=-w-8057 -w-8027 -w-8066 -w-8008 -w-8065
+WARN=-w-8057 -w-8027 -w-8008 -w-8065
 CFLAGS=-DWINDOWS -DHAVE_CONFIG_H -I. -O2 -6 -d -q $(WARN)
 
 ## variables

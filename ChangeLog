@@ -1,3 +1,8 @@
+2005-04-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* windows/Makefile.src.bor: Don't suppress unreachable code
+	warning.
+
 2005-04-28  Herold Heiko  <Heiko.Herold@previnet.it>
 
 	* windows/wget.dep: Rename gen_sslfunc.c to openssl.c.
