@@ -211,7 +211,9 @@ static struct {
   { "proxyuser",	&opt.proxy_user,	cmd_string },
   { "quiet",		&opt.quiet,		cmd_boolean },
   { "quota",		&opt.quota,		cmd_bytes_large },
+#ifdef HAVE_SSL
   { "randomfile",	&opt.random_file,	cmd_file },
+#endif
   { "randomwait",	&opt.random_wait,	cmd_boolean },
   { "readtimeout",	&opt.read_timeout,	cmd_time },
   { "reclevel",		&opt.reclevel,		cmd_number_inf },

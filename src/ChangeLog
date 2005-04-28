@@ -1,5 +1,10 @@
 2005-04-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* init.c (commands): Wrap the use of opt.random_file in #ifdef
+	HAVE_SSL.
+
+2005-04-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (gethttp): Correctly set the user agent.
 
 2005-04-27  Hrvoje Niksic  <hniksic@xemacs.org>
