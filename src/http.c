@@ -2258,7 +2258,6 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	  free_hstat (&hstat);
 	  xfree_null (dummy);
 	  return RETROK;
-	  break;
 	case RETRFINISHED:
 	  /* Deal with you later.  */
 	  break;

@@ -1,5 +1,10 @@
 2005-04-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp.c, hash.c, connect.c, host.c, http.c: Remove unreached code,
+	such as "break" following return or abort.
+
+2005-04-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c (commands): Wrap the use of opt.random_file in #ifdef
 	HAVE_SSL.
 

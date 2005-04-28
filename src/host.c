@@ -148,7 +148,6 @@ address_list_contains (const struct address_list *al, const ip_address *ip)
 #endif /* ENABLE_IPV6 */
     default:
       abort ();
-      return 0;
     }
 }
 
@@ -451,7 +450,6 @@ pretty_print_address (const ip_address *addr)
 #endif
     }
   abort ();
-  return NULL;
 }
 
 /* The following two functions were adapted from glibc. */

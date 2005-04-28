@@ -171,7 +171,6 @@ sockaddr_size (const struct sockaddr *sa)
 #endif
     default:
       abort ();
-      return 0;			/* so the compiler shuts up. */
     }
 }
 
@@ -560,8 +559,6 @@ socket_ip_address (int sock, ip_address *ip, int endpoint)
     default:
       abort ();
     }
-
-  return 0;
 }
 
 /* Return non-zero if the error from the connect code can be

@@ -240,7 +240,6 @@ prime_size (int size, int *prime_offset)
       }
 
   abort ();
-  return 0;
 }
 
 static int cmp_pointer PARAMS ((const void *, const void *));
