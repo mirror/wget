@@ -61,9 +61,9 @@ realclean-top: distclean-top
 
 clean-recursive distclean-recursive realclean-recursive:
 	cd src
-	$(MAKE) $(@:-recursive=)
-	cd ..\\doc
-	$(MAKE) $(@:-recursive=)
+	$(MAKEDIR)\$(MAKE) $(@:-recursive=)
+	cd ..\doc
+	$(MAKEDIR)\$(MAKE) $(@:-recursive=)
 	cd ..
 
 bindist: wget.zip

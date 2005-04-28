@@ -1,5 +1,9 @@
 2005-04-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* windows/Makefile.top.bor: Use MAKEDIR for make clean too.
+
+2005-04-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* windows/Makefile.src.bor: Don't delete executables other than
 	wget.exe.  Delete various auxilliary files created by the Borland
 	build process.
