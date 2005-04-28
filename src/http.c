@@ -2213,14 +2213,12 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 		locf = opt.output_document;
 	    }
 	  continue;
-	  break;
 	case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED: 
 	case SSLINITFAILED: case CONTNOTSUPPORTED:
 	  /* Fatal errors just return from the function.  */
 	  free_hstat (&hstat);
 	  xfree_null (dummy);
 	  return err;
-	  break;
 	case FWRITEERR: case FOPENERR:
 	  /* Another fatal error.  */
 	  logputs (LOG_VERBOSE, "\n");
@@ -2229,7 +2227,6 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	  free_hstat (&hstat);
 	  xfree_null (dummy);
 	  return err;
-	  break;
 	case CONSSLERR:
 	  /* Another fatal error.  */
 	  logputs (LOG_VERBOSE, "\n");
@@ -2237,7 +2234,6 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	  free_hstat (&hstat);
 	  xfree_null (dummy);
 	  return err;
-	  break;
 	case NEWLOCATION:
 	  /* Return the new location to the caller.  */
 	  if (!hstat.newloc)
@@ -2252,7 +2248,6 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	  free_hstat (&hstat);
 	  xfree_null (dummy);
 	  return NEWLOCATION;
-	  break;
 	case RETRUNNEEDED:
 	  /* The file was already fully retrieved. */
 	  free_hstat (&hstat);
@@ -2500,7 +2495,6 @@ The sizes do not match (local %s) -- retrieving.\n"),
 	    }
 	}
       /* not reached */
-      break;
     }
   while (!opt.ntry || (count < opt.ntry));
   return TRYLIMEXC;
