@@ -70,9 +70,13 @@ $(LIBDIR)\cw32.lib
 clean:
 	$(RM) *.bak
 	$(RM) *.obj
-	$(RM) *.exe
-	$(RM) *.map
-	$(RM) *.tds
+	$(RM) wget.exe
+	$(RM) wget.ilc
+	$(RM) wget.ild
+	$(RM) wget.ilf
+	$(RM) wget.ils
+	$(RM) wget.map
+	$(RM) wget.tds
 
 o = .obj
 
