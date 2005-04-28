@@ -1,3 +1,11 @@
+2005-04-28  Herold Heiko  <Heiko.Herold@previnet.it>
+
+	* windows/wget.dep: Rename gen_sslfunc.c to openssl.c.
+
+2005-04-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* INSTALL: Mention --disable-ntlm.
+
 2005-04-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* NEWS: Mention the new --ftp-user, --ftp-password, --user and

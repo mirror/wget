@@ -31,6 +31,7 @@ scripts take.  The most important ones are:
   --with-ssl[=SSL_ROOT]   link with libssl [in SSL_ROOT/lib] for https: support
   --disable-opie          disable support for opie or s/key FTP login
   --disable-digest        disable support for HTTP digest authorization
+  --disable-ntlm          disable support for HTTP NTLM authorization
   --disable-debug         disable support for debugging output
   --disable-nls           do not use Native Language Support
   --disable-largefile     omit support for large files
