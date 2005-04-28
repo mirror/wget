@@ -117,7 +117,7 @@ log on to the proxy as "username@host".
 even in the face of refused connections, which are otherwise
 considered a fatal error.
 
-** The new option `--dns-cache=off' may be used to prevent Wget from
+** The new option `--no-dns-cache' may be used to prevent Wget from
 caching DNS lookups.
 
 ** Wget no longer escapes characters in local file names based on

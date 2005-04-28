@@ -1,5 +1,10 @@
 2005-04-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* NEWS: Advertise new-style syntax for --no-dns-cache instead
+	of --dns-cache=off.
+
+2005-04-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* windows/Makefile.src.bor: Don't suppress unreachable code
 	warning.
 
