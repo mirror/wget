@@ -566,6 +566,7 @@ fi
 
 if test "X$ipv6" = "Xyes"; then
   AC_DEFINE([ENABLE_IPV6], 1, [Define if IPv6 support is enabled.])
+  AC_MSG_NOTICE([Enabling support for IPv6.])
 elif test "x$force_ipv6" = "xyes"; then
   AC_MSG_ERROR([IPv6 support requested but not found; aborting])
 fi
