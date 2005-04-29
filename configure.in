@@ -508,45 +508,54 @@ dnl **********************************************************************
 dnl
 dnl If --enable-ipv6 is specified, we try to use IPv6 (as long as
 dnl getaddrinfo is also present).  If --disable-ipv6 is specified, we
-dnl don't use IPv6 or getaddrinfo.
+dnl don't use IPv6 or getaddrinfo.  Otherwise we detect IPv6 and use
+dnl it where available.
 dnl
 
-ipv6=
-check_for_ipv6=no
 AC_ARG_ENABLE(ipv6,
   AC_HELP_STRING([--disable-ipv6],[disable IPv6 support]),
   [case "${enable_ipv6}" in
-  no)
-    AC_MSG_NOTICE([disabling IPv6 at user request])
-    ipv6=no
-    ;;
-  *)
+    no)
+      AC_MSG_NOTICE([disabling IPv6 at user request])
+      dnl Disable IPv6 checking
+      ipv6=no
+      ;;
+    yes)
+      dnl IPv6 explicitly enabled: force its use (abort if unavailable).
+      ipv6=yes
+      force_ipv6=yes
+      ;;
+    auto)
+      dnl Auto-detect IPv6, i.e. check for IPv6, but don't force it.
+      ipv6=yes
+      ;;
+    *)
+      AC_MSG_ERROR([Invalid --enable-ipv6 argument \`$enable_ipv6'])
+      ;;
+    esac
+  ], [
+    dnl If nothing is specified, assume auto-detection.
     ipv6=yes
-    ;;
-  esac],
-  dnl If unspecified, check for IPv6 and use it where available.
-  [check_for_ipv6=yes]
+  ]
 )
 
-if test "X$ipv6" = "Xyes" || test "X$check_for_ipv6" = "Xyes"; then
+if test "X$ipv6" = "Xyes"; then
   AC_CHECK_FUNCS(getaddrinfo, [], [
     AC_MSG_NOTICE([Disabling IPv6 support: your system does not support getaddrinfo(3)])
     ipv6=no
   ])
 fi
 
-if test "X$ipv6" = "Xyes" || test "X$check_for_ipv6" = "Xyes"; then
+if test "X$ipv6" = "Xyes"; then
   PROTO_INET6([], [
     AC_MSG_NOTICE([Disabling IPv6 support: your system does not support the PF_INET6 protocol family])
     ipv6=no
   ])
 fi
 
-if test "X$ipv6" = "Xyes" || test "X$check_for_ipv6" = "Xyes"; then
-  TYPE_STRUCT_SOCKADDR_IN6([
-    ipv6=yes
-  ],[
-    AC_MSG_NOTICE([Disabling IPv6 support: your system does not support 'struct sockaddr_in6'])
+if test "X$ipv6" = "Xyes"; then
+  TYPE_STRUCT_SOCKADDR_IN6([],[
+    AC_MSG_NOTICE([Disabling IPv6 support: your system does not support \`struct sockaddr_in6'])
     ipv6=no
   ])
   if test "X$ipv6" = "Xyes"; then
@@ -557,6 +566,8 @@ fi
 
 if test "X$ipv6" = "Xyes"; then
   AC_DEFINE([ENABLE_IPV6], 1, [Define if IPv6 support is enabled.])
+elif test "x$force_ipv6" = "xyes"; then
+  AC_MSG_ERROR([IPv6 support requested but not found; aborting])
 fi
 
 

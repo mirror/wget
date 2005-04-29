@@ -1,3 +1,10 @@
+2005-04-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Don't set ipv6 to yes only because struct
+	sockaddr_in6 was found.  Stop the rest of the IPv6 checks when one
+	check fails.  Abort if IPv6 was explicitly requested, but not
+	found.
+
 2005-04-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* windows/Makefile.top.bor: Use MAKEDIR for make clean too.
