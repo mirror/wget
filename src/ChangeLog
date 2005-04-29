@@ -1,3 +1,9 @@
+2005-04-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* ptimer.c (posix_init): Since we allow _POSIX_MONOTONIC_CLOCK==0,
+	it is not enough to check for _POSIX_MONOTONIC_CLOCK-0, we must
+	also check for defined(_POSIX_MONOTONIC_CLOCK).
+
 2005-04-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ftp.c, hash.c, connect.c, host.c, http.c: Remove unreached code,

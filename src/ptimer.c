@@ -139,7 +139,7 @@ posix_init (void)
     int id;
     int sysconf_name;
   } clocks[] = {
-#if _POSIX_MONOTONIC_CLOCK - 0 >= 0
+#if defined(_POSIX_MONOTONIC_CLOCK) && _POSIX_MONOTONIC_CLOCK - 0 >= 0
     { CLOCK_MONOTONIC, _SC_MONOTONIC_CLOCK },
 #endif
 #ifdef CLOCK_HIGHRES
