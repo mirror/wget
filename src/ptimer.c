@@ -66,8 +66,8 @@ so, delete this exception statement from your version.  */
 #endif
 #include <assert.h>
 
-/* Cygwin currently (as of 2005-04-08, Cygwin 1.5.14) lack clock_getres,
-   but still define _POSIX_TIMERS!  Because of that we simply use the
+/* Cygwin currently (as of 2005-04-08, Cygwin 1.5.14) lacks clock_getres,
+   but still defines _POSIX_TIMERS!  Because of that we simply use the
    Windows timers under Cygwin.  */
 #ifdef __CYGWIN__
 # include <windows.h>
