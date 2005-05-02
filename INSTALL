@@ -95,8 +95,10 @@ basic functionality works.
 3) Installation
 
 Use `make install' to install GNU Wget to directories specified to
-configure.  The standard prefix is "/usr/local/", which can be changed
-using the `--prefix' configure option.
+configure.  To install it in a system directory (which is the
+default), you will need to be root.  The standard prefix is
+"/usr/local/", which can be changed using the `--prefix' configure
+option.
 
 The installation process will copy the wget binary to $PREFIX/bin,
 install the wget.info* info pages to $PREFIX/info, the generated

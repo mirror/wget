@@ -1,3 +1,10 @@
+2005-05-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* INSTALL: Document environment variables affecting configure,
+	especially $CC.
+
+	* INSTALL: Mention that make install requires root.
+
 2005-04-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Don't set ipv6 to yes only because struct
