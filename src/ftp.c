@@ -1286,8 +1286,8 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 
 	  if (opt.delete_after)
 	    {
-	      DEBUGP (("Removing file due to --delete-after in"
-		       " ftp_loop_internal():\n"));
+	      DEBUGP (("\
+Removing file due to --delete-after in ftp_loop_internal():\n"));
 	      logprintf (LOG_VERBOSE, _("Removing %s.\n"), locf);
 	      if (unlink (locf))
 		logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));

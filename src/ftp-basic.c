@@ -132,7 +132,7 @@ ftp_login (int csock, const char *acc, const char *pass)
   xfree (respline);
   /* Send USER username.  */
   request = ftp_request ("USER", acc);
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -199,7 +199,7 @@ ftp_login (int csock, const char *acc, const char *pass)
   xfree (respline);
   /* Send PASS password.  */
   request = ftp_request ("PASS", pass);
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -274,7 +274,7 @@ ftp_port (int csock, int *local_sock)
 
   /* Send PORT request.  */
   request = ftp_request ("PORT", bytes);
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -368,7 +368,7 @@ ftp_lprt (int csock, int *local_sock)
 
   /* Send PORT request.  */
   request = ftp_request ("LPRT", bytes);
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -449,7 +449,7 @@ ftp_eprt (int csock, int *local_sock)
 
   /* Send PORT request.  */
   request = ftp_request ("EPRT", bytes);
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -495,7 +495,7 @@ ftp_pasv (int csock, ip_address *addr, int *port)
   /* Form the request.  */
   request = ftp_request ("PASV", NULL);
   /* And send it.  */
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -564,7 +564,7 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
   request = ftp_request ("LPSV", NULL);
 
   /* And send it.  */
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -729,7 +729,7 @@ ftp_epsv (int csock, ip_address *ip, int *port)
   request = ftp_request ("EPSV", (ip->type == IPV4_ADDRESS ? "1" : "2"));
 
   /* And send it.  */
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -829,7 +829,7 @@ ftp_type (int csock, int type)
   stype[1] = 0;
   /* Send TYPE request.  */
   request = ftp_request ("TYPE", stype);
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -864,7 +864,7 @@ ftp_cwd (int csock, const char *dir)
 
   /* Send CWD request.  */
   request = ftp_request ("CWD", dir);
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -902,7 +902,7 @@ ftp_rest (int csock, wgint offset)
   uerr_t err;
 
   request = ftp_request ("REST", number_to_static_string (offset));
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -936,7 +936,7 @@ ftp_retr (int csock, const char *file)
 
   /* Send RETR request.  */
   request = ftp_request ("RETR", file);
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -976,7 +976,7 @@ ftp_list (int csock, const char *file)
 
   /* Send LIST request.  */
   request = ftp_request ("LIST", file);
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -1015,7 +1015,7 @@ ftp_syst (int csock, enum stype *server_type)
 
   /* Send SYST request.  */
   request = ftp_request ("SYST", NULL);
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -1072,7 +1072,7 @@ ftp_pwd (int csock, char **pwd)
 
   /* Send PWD request.  */
   request = ftp_request ("PWD", NULL);
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);
@@ -1118,7 +1118,7 @@ ftp_size (int csock, const char *file, wgint *size)
 
   /* Send PWD request.  */
   request = ftp_request ("SIZE", file);
-  nwritten = fd_write (csock, request, strlen (request), -1);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
   if (nwritten < 0)
     {
       xfree (request);

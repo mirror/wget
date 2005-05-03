@@ -368,7 +368,7 @@ request_send (const struct request *req, int fd)
 
   /* Send the request to the server. */
 
-  write_error = fd_write (fd, request_string, size - 1, -1);
+  write_error = fd_write (fd, request_string, size - 1, -1.0);
   if (write_error < 0)
     logprintf (LOG_VERBOSE, _("Failed writing HTTP request: %s.\n"),
 	       strerror (errno));
@@ -412,7 +412,7 @@ post_file (int sock, const char *file_name, wgint promised_size)
       if (length == 0)
 	break;
       towrite = MIN (promised_size - written, length);
-      write_error = fd_write (sock, chunk, towrite, -1);
+      write_error = fd_write (sock, chunk, towrite, -1.0);
       if (write_error < 0)
 	{
 	  fclose (fp);
@@ -840,7 +840,7 @@ skip_short_body (int fd, wgint contlen)
 
   while (contlen > 0)
     {
-      int ret = fd_read (fd, dlbuf, MIN (contlen, SKIP_SIZE), -1);
+      int ret = fd_read (fd, dlbuf, MIN (contlen, SKIP_SIZE), -1.0);
       if (ret <= 0)
 	{
 	  /* Don't normally report the error since this is an
@@ -1523,7 +1523,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       if (opt.post_data)
 	{
 	  DEBUGP (("[POST data: %s]\n", opt.post_data));
-	  write_error = fd_write (sock, opt.post_data, post_data_size, -1);
+	  write_error = fd_write (sock, opt.post_data, post_data_size, -1.0);
 	}
       else if (opt.post_file_name && post_data_size != 0)
 	write_error = post_file (sock, opt.post_file_name, post_data_size);

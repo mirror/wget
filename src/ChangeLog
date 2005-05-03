@@ -1,3 +1,38 @@
+2005-05-03  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (url_parse): Rename label `error' to avoid conflict with
+	identifier.
+
+	* retr.c (fd_read_body): Rename label `out' to avoid conflict with
+	identifier.
+	(fd_read_hunk): Use explicit double constant.
+	(retrieve_from_file): Don't use string concatenation.
+	(sleep_between_retrievals): Make sure xsleep is called with a
+	`double' argument.
+	(no_proxy_match): Define as static, like it is declared.
+
+	* progress.c (bar_create): Use 0.0 instead of 0 because K&R
+	compilers can't automatically promote it.
+
+	* http-ntlm.c (ntlm_output): Replace \xHH sequences with \OOO for
+	the sake of old compilers.
+
+	* ftp.c (ftp_loop_internal): Don't use string concatenation.
+
+	* http.c (request_send): Use explicit double constants when
+	calling fd_read and fd_write.
+	(post_file): Ditto.
+	(gethttp): Ditto.
+	(skip_short_body): Ditto.
+
+	* ftp-basic.c: When calling fd_write, specify the last argument as
+	a `double' constant for the sake of K&R compilers which don't see
+	the prototype and therefore can't promote it to double
+	automatically.
+
+	* cookies.c (cookie_jar_load): Rename abort label to abort_cookie
+	to avoid name conflict in K&R compilers.
+
 2005-04-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ptimer.c (posix_init): Since we allow _POSIX_MONOTONIC_CLOCK==0,

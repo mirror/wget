@@ -688,7 +688,7 @@ url_parse (const char *url, int *error)
   if (scheme == SCHEME_INVALID)
     {
       error_code = PE_UNSUPPORTED_SCHEME;
-      goto error;
+      goto err;
     }
 
   url_encoded = reencode_escapes (url);
@@ -726,7 +726,7 @@ url_parse (const char *url, int *error)
       if (!host_e)
 	{
 	  error_code = PE_UNTERMINATED_IPV6_ADDRESS;
-	  goto error;
+	  goto err;
 	}
 
 #ifdef ENABLE_IPV6
@@ -734,14 +734,14 @@ url_parse (const char *url, int *error)
       if (!is_valid_ipv6_address(host_b, host_e))
 	{
 	  error_code = PE_INVALID_IPV6_ADDRESS;
-	  goto error;
+	  goto err;
 	}
 
       /* Continue parsing after the closing ']'. */
       p = host_e + 1;
 #else
       error_code = PE_IPV6_NOT_SUPPORTED;
-      goto error;
+      goto err;
 #endif
     }
   else
@@ -753,7 +753,7 @@ url_parse (const char *url, int *error)
   if (host_b == host_e)
     {
       error_code = PE_EMPTY_HOST;
-      goto error;
+      goto err;
     }
 
   port = scheme_default_port (scheme);
@@ -778,7 +778,7 @@ url_parse (const char *url, int *error)
 	 	  /* http://host:12randomgarbage/blah */
 		  /*               ^                  */
 		  error_code = PE_BAD_PORT_NUMBER;
-		  goto error;
+		  goto err;
 		}
 	      port = 10 * port + (*pp - '0');
 	      /* Check for too large port numbers here, before we have
@@ -786,7 +786,7 @@ url_parse (const char *url, int *error)
 	      if (port > 65535)
 		{
 		  error_code = PE_BAD_PORT_NUMBER;
-		  goto error;
+		  goto err;
 		}
 	    }
 	}
@@ -845,7 +845,7 @@ url_parse (const char *url, int *error)
       if (!parse_credentials (uname_b, uname_e - 1, &user, &passwd))
 	{
 	  error_code = PE_INVALID_USER_NAME;
-	  goto error;
+	  goto err;
 	}
     }
 
@@ -899,7 +899,7 @@ url_parse (const char *url, int *error)
 
   return u;
 
- error:
+ err:
   /* Cleanup in case of error: */
   if (url_encoded && url_encoded != url)
     xfree (url_encoded);

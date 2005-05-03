@@ -299,7 +299,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
 	  if (!write_data (out, dlbuf, ret, &skip, &sum_written))
 	    {
 	      ret = -2;
-	      goto out;
+	      goto out_;
 	    }
 	}
 
@@ -317,7 +317,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
   if (ret < -1)
     ret = -1;
 
- out:
+ out_:
   if (progress)
     progress_finish (progress, ptimer_read (timer));
 
@@ -388,7 +388,7 @@ fd_read_hunk (int fd, hunk_terminator_t terminator, long sizehint, long maxsize)
 
       /* First, peek at the available data. */
 
-      pklen = fd_peek (fd, hunk + tail, bufsize - 1 - tail, -1);
+      pklen = fd_peek (fd, hunk + tail, bufsize - 1 - tail, -1.0);
       if (pklen < 0)
 	{
 	  xfree (hunk);
@@ -421,7 +421,7 @@ fd_read_hunk (int fd, hunk_terminator_t terminator, long sizehint, long maxsize)
 	 how much data we'll get.  (Some TCP stacks are notorious for
 	 read returning less data than the previous MSG_PEEK.)  */
 
-      rdlen = fd_read (fd, hunk + tail, remain, 0);
+      rdlen = fd_read (fd, hunk + tail, remain, 0.0);
       if (rdlen < 0)
 	{
 	  xfree_null (hunk);
@@ -830,8 +830,8 @@ retrieve_from_file (const char *file, int html, int *count)
 
       if (filename && opt.delete_after && file_exists_p (filename))
 	{
-	  DEBUGP (("Removing file due to --delete-after in"
-		   " retrieve_from_file():\n"));
+	  DEBUGP (("\
+Removing file due to --delete-after in retrieve_from_file():\n"));
 	  logprintf (LOG_VERBOSE, _("Removing %s.\n"), filename);
 	  if (unlink (filename))
 	    logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
@@ -879,7 +879,7 @@ sleep_between_retrievals (int count)
       /* If opt.waitretry is specified and this is a retry, wait for
 	 COUNT-1 number of seconds, or for opt.waitretry seconds.  */
       if (count <= opt.waitretry)
-	xsleep (count - 1);
+	xsleep (count - 1.0);
       else
 	xsleep (opt.waitretry);
     }
@@ -992,7 +992,7 @@ getproxy (struct url *u)
 }
 
 /* Should a host be accessed through proxy, concerning no_proxy?  */
-int
+static int
 no_proxy_match (const char *host, const char **no_proxy)
 {
   if (!no_proxy)

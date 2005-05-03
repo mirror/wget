@@ -1404,7 +1404,7 @@ cookie_jar_load (struct cookie_jar *jar, const char *file)
       else
 	{
 	  if (expiry < cookies_now)
-	    goto abort;		/* ignore stale cookie. */
+	    goto abort_cookie;	/* ignore stale cookie. */
 	  cookie->expiry_time = expiry;
 	  cookie->permanent = 1;
 	}
@@ -1414,7 +1414,7 @@ cookie_jar_load (struct cookie_jar *jar, const char *file)
     next:
       continue;
 
-    abort:
+    abort_cookie:
       delete_cookie (cookie);
     }
   fclose (fp);

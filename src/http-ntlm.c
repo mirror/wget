@@ -366,7 +366,7 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
     */
 
     snprintf(ntlmbuf, sizeof(ntlmbuf),
-	     "NTLMSSP%c\x01%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%s%s",
+	     "NTLMSSP%c\001%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%s%s",
              0,     /* trailing zero */
              0,0,0, /* part of type-1 long */
 
@@ -485,7 +485,7 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
 	 "%c%c"   2 zeroes */
 
     size = snprintf(ntlmbuf, sizeof(ntlmbuf),
-		    "NTLMSSP%c\x03%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\xff\xff%c%c\x01\x82%c%c",
+		    "NTLMSSP%c\003%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\377\377%c%c\001\202%c%c",
                     0, /* zero termination */
                     0,0,0, /* type-3 long, the 24 upper bits */
 
