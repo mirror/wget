@@ -1,3 +1,8 @@
+2005-05-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.h: If gettext was found but libtintl.h wasn't, declare
+	gettext's return type to avoid type mismatches.
+
 2005-05-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (url_parse): Rename label `error' to avoid conflict with

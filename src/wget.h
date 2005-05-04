@@ -54,7 +54,9 @@ so, delete this exception statement from your version.  */
 # define _(string) gettext (string)
 # ifdef HAVE_LIBINTL_H
 #  include <libintl.h>
-# endif /* HAVE_LIBINTL_H */
+# else  /* not HAVE_LIBINTL_H */
+   const char *gettext ();
+# endif /* not HAVE_LIBINTL_H */
 #else  /* not HAVE_NLS */
 # define _(string) (string)
 #endif /* not HAVE_NLS */
