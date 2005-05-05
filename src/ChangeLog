@@ -1,5 +1,9 @@
 2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp-basic.c (ftp_response): Fix printing FTP server response.
+
+2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* retr.c (limit_bandwidth_reset): Reset sleep_adjust.
 	(limit_bandwidth): Don't allow huge "adjustment" values that
 	result from being suspended for a while.
