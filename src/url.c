@@ -175,10 +175,16 @@ url_unescape (char *s)
 	}
       else
 	{
+	  char c;
 	  /* Do nothing if '%' is not followed by two hex digits. */
 	  if (!h[1] || !h[2] || !(ISXDIGIT (h[1]) && ISXDIGIT (h[2])))
 	    goto copychar;
-	  *t = X2DIGITS_TO_NUM (h[1], h[2]);
+	  c = X2DIGITS_TO_NUM (h[1], h[2]);
+	  /* Don't unescape %00 because there is no way to insert it
+	     into a C string without effectively truncating it. */
+	  if (c == '\0')
+	    goto copychar;
+	  *t = c;
 	  h += 2;
 	}
     }

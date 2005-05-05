@@ -1,5 +1,10 @@
 2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c (url_unescape): Don't unescape %00, it effectively
+	truncates the string.
+
+2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* log.c (copy_and_escape): Replace the FOR_URI argument with a
 	slightly more general mechanism for specifying different kinds of
 	escape.
