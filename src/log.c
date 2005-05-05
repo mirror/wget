@@ -618,11 +618,7 @@ log_dump_context (void)
 /* String escape functions. */
 
 /* Return the number of non-printable characters in SOURCE.
-
-   Non-printable characters are determined as per safe-ctype.h,
-   i.e. the non-printable characters of the "C" locale.  This code is
-   meant to be used to protect the user from binary characters in
-   (normally ASCII) server messages. */
+   Non-printable characters are determined as per safe-ctype.c.  */
 
 static int
 count_nonprint (const char *source)
@@ -639,21 +635,21 @@ count_nonprint (const char *source)
 
    Non-printable refers to anything outside the non-control ASCII
    range (32-126) which means that, for example, CR, LF, and TAB are
-   considered non-printable along with ESC and other control chars.
-   This is by design: it makes sure that messages from remote servers
-   cannot be used to deceive the users by mimicking Wget's output.
-   Disallowing non-ASCII characters is another necessary security
-   measure, which makes sure that remote servers cannot garble the
-   screen or guess the local charset and perform homographic attacks.
+   considered non-printable along with ESC, BS, and other control
+   chars.  This is by design: it makes sure that messages from remote
+   servers cannot be easily used to deceive the users by mimicking
+   Wget's output.  Disallowing non-ASCII characters is another
+   necessary security measure, which makes sure that remote servers
+   cannot garble the screen or guess the local charset and perform
+   homographic attacks.
 
-   Of course, the above means that escnonprint must only be used in
-   decidedly ASCII-only context, such as when printing host names,
-   responses from HTTP headers, messages coming from FTP servers, and
-   the like.
+   Of course, the above mandates that escnonprint only be used in
+   contexts expected to be ASCII, such as when printing host names,
+   URL components, HTTP headers, FTP server messages, and the like.
 
-   ESCAPE is the character used to introduce the escape sequence.
-   BASE should be the base of the escape sequence, and must be either
-   8 for octal or 16 for hex.
+   ESCAPE is the leading character of the escape sequence.  BASE
+   should be the base of the escape sequence, and must be either 8 for
+   octal or 16 for hex.
 
    DEST must point to a location with sufficient room to store an
    encoded version of SOURCE.  */
@@ -661,19 +657,19 @@ count_nonprint (const char *source)
 static void
 copy_and_escape (const char *source, char *dest, char escape, int base)
 {
-  const char *from;
-  char *to;
+  const char *from = source;
+  char *to = dest;
+  unsigned char c;
 
-  /* Copy the string from SOURCE to DEST, escaping non-printable chars. */
+  /* Copy chars from SOURCE to DEST, escaping non-printable ones. */
   switch (base)
     {
     case 8:
-      for (from = source, to = dest; *from; from++)
-	if (ISPRINT (*from))
-	  *to++ = *from;
+      while ((c = *from++) != '\0')
+	if (ISPRINT (c))
+	  *to++ = c;
 	else
 	  {
-	    const unsigned char c = *from;
 	    *to++ = escape;
 	    *to++ = '0' + (c >> 6);
 	    *to++ = '0' + ((c >> 3) & 7);
@@ -681,12 +677,11 @@ copy_and_escape (const char *source, char *dest, char escape, int base)
 	  }
       break;
     case 16:
-      for (from = source, to = dest; *from; from++)
-	if (ISPRINT (*from))
-	  *to++ = *from;
+      while ((c = *from++) != '\0')
+	if (ISPRINT (c))
+	  *to++ = c;
 	else
 	  {
-	    const unsigned char c = *from;
 	    *to++ = escape;
 	    *to++ = XNUM_TO_DIGIT (c >> 4);
 	    *to++ = XNUM_TO_DIGIT (c & 0xf);

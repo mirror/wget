@@ -1,3 +1,8 @@
+2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* log.c (copy_and_escape): Slightly reduce code repetition between
+	the two loops.
+
 2005-05-05  Charles C.Fu  <ccwf@bacchus.com>
 
 	* utils.c (proclist): Strip leading slash when calling fnmatch
