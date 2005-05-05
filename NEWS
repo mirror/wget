@@ -8,14 +8,14 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 * Changes in Wget 1.10.
 
 ** Downloading files greater than 2GB, also known as "large files",
-now works on systems that support them.  This includes most modern
-Unix variants, as well as Windows.
+now works on systems that support them.  This includes the majority of
+modern Unixes, as well as MS Windows.
 
 ** IPv6 is now supported by Wget.  Unlike the experimental code in
-1.9, this version has no problems with dual-family systems.  The new
-flags `--inet4' and `--inet6' (or `-4' and `-6' for short) force the
-use of IPv4 and IPv6 respectively.  Unfortunately the IPv6 support
-still does not work on Windows.
+1.9, this version supports dual-family systems.  The new flags
+`--inet4' and `--inet6' (or `-4' and `-6' for short) force the use of
+IPv4 and IPv6 respectively.  Note that IPv6 support has not yet been
+tested on Windows.
 
 ** Talking to SSL servers over proxies now actually works.  Previous
 versions of Wget erroneously sent GET requests for SSL URLs.  Wget
