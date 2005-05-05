@@ -44,7 +44,7 @@ notice identical to this one except for the removal of this paragraph
 (this paragraph not being relevant to the printed manual).
 @end ignore
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1 or
+under the terms of the GNU Free Documentation License, Version 1.2 or
 any later version published by the Free Software Foundation; with the
 Invariant Sections being ``GNU General Public License'' and ``GNU Free
 Documentation License'', with no Front-Cover Texts, and with no
