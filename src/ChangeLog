@@ -1,3 +1,8 @@
+2005-05-05  Charles C.Fu  <ccwf@bacchus.com>
+
+	* utils.c (proclist): Strip leading slash when calling fnmatch
+	too, otherwise wildcard comparisons always fail.
+
 2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (touch): Set access time to current time.

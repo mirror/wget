@@ -681,19 +681,21 @@ static char *
 proclist (char **strlist, const char *s, enum accd flags)
 {
   char **x;
-
   for (x = strlist; *x; x++)
-    if (has_wildcards_p (*x))
-      {
-	if (fnmatch (*x, s, FNM_PATHNAME) == 0)
-	  break;
-      }
-    else
-      {
-	char *p = *x + ((flags & ALLABS) && (**x == '/')); /* Remove '/' */
-	if (frontcmp (p, s))
-	  break;
-      }
+    {
+      /* Remove leading '/' if ALLABS */
+      char *p = *x + ((flags & ALLABS) && (**x == '/'));
+      if (has_wildcards_p (p))
+	{
+	  if (fnmatch (p, s, FNM_PATHNAME) == 0)
+	    break;
+	}
+      else
+	{
+	  if (frontcmp (p, s))
+	    break;
+	}
+    }
   return *x;
 }
 
