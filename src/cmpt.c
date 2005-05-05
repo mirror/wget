@@ -1,5 +1,5 @@
 /* Replacements for routines missing on some systems.
-   Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
+   Copyright (C) 1995-2005 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -121,8 +121,8 @@ strncasecmp (const char *s1, const char *s2, size_t n)
 #endif /* not HAVE_STRNCASECMP */
 
 #ifndef HAVE_STRSTR
-/* From GNU libc 2.0.6.  */
-/* Return the first ocurrence of NEEDLE in HAYSTACK.  */
+/* From GNU libc 2.3.5.  */
+
 /*
  * My personal strstr() implementation that beats most other algorithms.
  * Until someone tells me otherwise, I assume that this is the
@@ -131,90 +131,88 @@ strncasecmp (const char *s1, const char *s2, size_t n)
  * as much fun trying to understand it, as I had to write it :-).
  *
  * Stephen R. van den Berg, berg@pool.informatik.rwth-aachen.de	*/
+
 typedef unsigned chartype;
 
+#undef strstr
+
 char *
-strstr (phaystack, pneedle)
-     const char *phaystack;
-     const char *pneedle;
+strstr (const char *phaystack, const char *pneedle)
 {
-  register const unsigned char *haystack, *needle;
-  register chartype b, c;
+  const unsigned char *haystack, *needle;
+  chartype b;
+  const unsigned char *rneedle;
 
   haystack = (const unsigned char *) phaystack;
-  needle = (const unsigned char *) pneedle;
 
-  b = *needle;
-  if (b != '\0')
+  if ((b = *(needle = (const unsigned char *) pneedle)))
     {
-      haystack--;				/* possible ANSI violation */
-      do
-	{
-	  c = *++haystack;
-	  if (c == '\0')
-	    goto ret0;
-	}
-      while (c != b);
+      chartype c;
+      haystack--;		/* possible ANSI violation */
 
-      c = *++needle;
-      if (c == '\0')
+      {
+	chartype a;
+	do
+	  if (!(a = *++haystack))
+	    goto ret0;
+	while (a != b);
+      }
+
+      if (!(c = *++needle))
 	goto foundneedle;
       ++needle;
       goto jin;
 
       for (;;)
-        {
-          register chartype a;
-	  register const unsigned char *rhaystack, *rneedle;
-
-	  do
-	    {
+	{
+	  {
+	    chartype a;
+	    if (0)
+	    jin:{
+		if ((a = *++haystack) == c)
+		  goto crest;
+	      }
+	    else
 	      a = *++haystack;
-	      if (a == '\0')
-		goto ret0;
-	      if (a == b)
-		break;
-	      a = *++haystack;
-	      if (a == '\0')
-		goto ret0;
-shloop:	    }
-          while (a != b);
-
-jin:	  a = *++haystack;
-	  if (a == '\0')
-	    goto ret0;
-
-	  if (a != c)
-	    goto shloop;
-
-	  rhaystack = haystack-- + 1;
-	  rneedle = needle;
-	  a = *rneedle;
-
-	  if (*rhaystack == a)
 	    do
 	      {
-		if (a == '\0')
-		  goto foundneedle;
-		++rhaystack;
-		a = *++needle;
-		if (*rhaystack != a)
-		  break;
-		if (a == '\0')
-		  goto foundneedle;
-		++rhaystack;
-		a = *++needle;
+		for (; a != b; a = *++haystack)
+		  {
+		    if (!a)
+		      goto ret0;
+		    if ((a = *++haystack) == b)
+		      break;
+		    if (!a)
+		      goto ret0;
+		  }
 	      }
-	    while (*rhaystack == a);
-
-	  needle = rneedle;		/* took the register-poor approach */
-
-	  if (a == '\0')
-	    break;
-        }
+	    while ((a = *++haystack) != c);
+	  }
+	crest:
+	  {
+	    chartype a;
+	    {
+	      const unsigned char *rhaystack;
+	      if (*(rhaystack = haystack-- + 1) == (a = *(rneedle = needle)))
+		do
+		  {
+		    if (!a)
+		      goto foundneedle;
+		    if (*++rhaystack != (a = *++needle))
+		      break;
+		    if (!a)
+		      goto foundneedle;
+		  }
+		while (*++rhaystack == (a = *++needle));
+	      needle = rneedle;	/* took the register-poor aproach */
+	    }
+	    if (!a)
+	      break;
+	  }
+	}
     }
 foundneedle:
-  return (char*) haystack;
+  return (char *) haystack;
 ret0:
   return 0;
 }

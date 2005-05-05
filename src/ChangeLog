@@ -1,3 +1,7 @@
+2005-05-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* cmpt.c (strstr): Updated from glibc 2.3.5.
+
 2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (http_atotm): Zero out the whole struct tm being passed
