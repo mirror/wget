@@ -1,5 +1,9 @@
 2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (touch): Set access time to current time.
+
+2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (url_unescape): Don't unescape %00, it effectively
 	truncates the string.
 

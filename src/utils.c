@@ -357,19 +357,23 @@ fork_to_background (void)
 }
 #endif /* not WINDOWS */
 
-/* "Touch" FILE, i.e. make its atime and mtime equal to the time
-   specified with TM.  */
+/* "Touch" FILE, i.e. make its mtime ("modified time") equal the time
+   specified with TM.  The atime ("access time") is set to the current
+   time.  */
+
 void
 touch (const char *file, time_t tm)
 {
 #ifdef HAVE_STRUCT_UTIMBUF
   struct utimbuf times;
-  times.actime = times.modtime = tm;
 #else
-  time_t times[2];
-  times[0] = times[1] = tm;
+  struct {
+    time_t actime;
+    time_t modtime;
+  } times;
 #endif
-
+  times.modtime = tm;
+  times.actime = time (NULL);
   if (utime (file, &times) == -1)
     logprintf (LOG_NOTQUIET, "utime(%s): %s\n", file, strerror (errno));
 }
