@@ -725,14 +725,17 @@ Set the network timeout to @var{seconds} seconds.  This is equivalent
 to specifying @samp{--dns-timeout}, @samp{--connect-timeout}, and
 @samp{--read-timeout}, all at the same time.
 
-Whenever Wget connects to or reads from a remote host, it checks for a
-timeout and aborts the operation if the time expires.  This prevents
-anomalous occurrences such as hanging reads or infinite connects.  The
-only timeout enabled by default is a 900-second timeout for reading.
-Setting timeout to 0 disables checking for timeouts.
+When interacting with the network, Wget can check for timeout and
+abort the operation if it takes too long.  This prevents anomalies
+like hanging reads and infinite connects.  The only timeout enabled by
+default is a 900-second read timeout.  Setting a timeout to 0 disables
+it altogether.  Unless you know what you are doing, it is best not to
+change the default timeout settings.
 
-Unless you know what you are doing, it is best not to set any of the
-timeout-related options.
+All timeout-related options accept decimal values, as well as
+subsecond values.  For example, @samp{0.1} seconds is a legal (though
+unwise) choice of timeout.  Subsecond timeouts are useful for checking
+server response times or for testing network latency.
 
 @cindex DNS timeout
 @cindex timeout, DNS
@@ -752,8 +755,14 @@ connect timeout, other than that implemented by system libraries.
 @cindex read timeout
 @cindex timeout, read
 @item --read-timeout=@var{seconds}
-Set the read (and write) timeout to @var{seconds} seconds.  Reads that
-take longer will fail.  The default value for read timeout is 900
+Set the read (and write) timeout to @var{seconds} seconds.  The
+``time'' of this timeout refers @dfn{idle time}: if, at any point in
+the download, no data is received for more than the specified number
+of seconds, reading fails and the download is restarted.  This option
+does not directly affect the duration of the entire download.
+
+Of course, the remote server may choose to terminate the connection
+sooner than this option requires.  The default read timeout is 900
 seconds.
 
 @cindex bandwidth, limit
@@ -763,9 +772,12 @@ seconds.
 Limit the download speed to @var{amount} bytes per second.  Amount may
 be expressed in bytes, kilobytes with the @samp{k} suffix, or megabytes
 with the @samp{m} suffix.  For example, @samp{--limit-rate=20k} will
-limit the retrieval rate to 20KB/s.  This kind of thing is useful when,
-for whatever reason, you don't want Wget to consume the entire available
-bandwidth.
+limit the retrieval rate to 20KB/s.  This is useful when, for whatever
+reason, you don't want Wget to consume the entire available bandwidth.
+
+This option allows the use of decimal numbers, usually in conjunction
+with power suffixes; for example, @samp{--limit-rate=2.5k} is a legal
+value.
 
 Note that Wget implements the limiting by sleeping the appropriate
 amount of time after a network read that took less time than specified
