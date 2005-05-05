@@ -1,3 +1,9 @@
+2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* retr.c (limit_bandwidth_reset): Reset sleep_adjust.
+	(limit_bandwidth): Don't allow huge "adjustment" values that
+	result from being suspended for a while.
+
 2005-05-04  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.h: If gettext was found but libtintl.h wasn't, declare

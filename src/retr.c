@@ -82,6 +82,7 @@ limit_bandwidth_reset (void)
 {
   limit_data.chunk_bytes = 0;
   limit_data.chunk_start = 0;
+  limit_data.sleep_adjust = 0;
 }
 
 /* Limit the bandwidth by pausing the download for an amount of time.
@@ -125,6 +126,12 @@ limit_bandwidth (wgint bytes, struct ptimer *timer)
 	 desired and the actual sleep, and adjust the next sleep by
 	 that amount.  */
       limit_data.sleep_adjust = slp - (t1 - t0);
+      /* If sleep_adjust is very large, it's likely due to suspension
+	 and not clock inaccuracy.  Don't enforce those.  */
+      if (limit_data.sleep_adjust > 500)
+	limit_data.sleep_adjust = 500;
+      else if (limit_data.sleep_adjust < -500)
+	limit_data.sleep_adjust = -500;
     }
 
   limit_data.chunk_bytes = 0;
