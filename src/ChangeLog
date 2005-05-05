@@ -1,5 +1,14 @@
 2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* init.c (parse_line): Make the return value indicate whether
+	there was a syntax error or a setter failed.
+	(run_wgetrc): Return an indication on whether an error has been
+	encountered.
+	(initialize): Abort if there have been errors running either
+	.wgetrc file.
+
+2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* log.c (copy_and_escape): Slightly reduce code repetition between
 	the two loops.
 

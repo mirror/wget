@@ -404,51 +404,79 @@ wgetrc_file_name (void)
   return file;
 }
 
-static int parse_line PARAMS ((const char *, char **, char **, int *));
+/* Return values of parse_line. */
+enum parse_line {
+  line_ok,
+  line_empty,
+  line_syntax_error,
+  line_unknown_command
+};
+
+static enum parse_line parse_line PARAMS ((const char *, char **,
+					   char **, int *));
 static int setval_internal PARAMS ((int, const char *, const char *));
 
-/* Initialize variables from a wgetrc file.  */
+/* Initialize variables from a wgetrc file.  Returns zero (failure) if
+   there were errors in the file.  */
 
-static void
+static int
 run_wgetrc (const char *file)
 {
   FILE *fp;
   char *line;
   int ln;
+  int errcnt = 0;
 
   fp = fopen (file, "rb");
   if (!fp)
     {
       fprintf (stderr, _("%s: Cannot read %s (%s).\n"), exec_name,
 	       file, strerror (errno));
-      return;
+      return 1;			/* not a fatal error */
     }
   enable_tilde_expansion = 1;
   ln = 1;
   while ((line = read_whole_line (fp)) != NULL)
     {
-      char *com, *val;
-      int comind, status;
+      char *com = NULL, *val = NULL;
+      int comind;
 
       /* Parse the line.  */
-      status = parse_line (line, &com, &val, &comind);
-      xfree (line);
-      /* If everything is OK, set the value.  */
-      if (status == 1)
+      switch (parse_line (line, &com, &val, &comind))
 	{
+	case line_ok:
+	  /* If everything is OK, set the value.  */
 	  if (!setval_internal (comind, com, val))
-	    fprintf (stderr, _("%s: Error in %s at line %d.\n"), exec_name,
-		     file, ln);
-	  xfree (com);
-	  xfree (val);
+	    {
+	      fprintf (stderr, _("%s: Error in %s at line %d.\n"),
+		       exec_name, file, ln);
+	      ++errcnt;
+	    }
+	  break;
+	case line_syntax_error:
+	  fprintf (stderr, _("%s: Syntax error in %s at line %d.\n"),
+		   exec_name, file, ln);
+	  ++errcnt;
+	  break;
+	case line_unknown_command:
+	  fprintf (stderr, _("%s: Unknown command `%s' in %s at line %d.\n"),
+		   exec_name, com, file, ln);
+	  ++errcnt;
+	  break;
+	case line_empty:
+	  break;
+	default:
+	  abort ();
 	}
-      else if (status == 0)
-	fprintf (stderr, _("%s: Error in %s at line %d.\n"), exec_name,
-		 file, ln);
+      xfree_null (com);
+      xfree_null (val);
+      xfree (line);
       ++ln;
     }
   enable_tilde_expansion = 0;
   fclose (fp);
+
+  return errcnt == 0;
 }
 
 /* Initialize the defaults and run the system wgetrc and user's own
@@ -457,6 +485,7 @@ void
 initialize (void)
 {
   char *file;
+  int ok = 1;
 
   /* Load the hard-coded defaults.  */
   defaults ();
@@ -464,7 +493,7 @@ initialize (void)
   /* If SYSTEM_WGETRC is defined, use it.  */
 #ifdef SYSTEM_WGETRC
   if (file_exists_p (SYSTEM_WGETRC))
-    run_wgetrc (SYSTEM_WGETRC);
+    ok &= run_wgetrc (SYSTEM_WGETRC);
 #endif
   /* Override it with your own, if one exists.  */
   file = wgetrc_file_name ();
@@ -481,7 +510,12 @@ initialize (void)
     }
   else
 #endif
-    run_wgetrc (file);
+    ok &= run_wgetrc (file);
+
+  /* If there were errors processing either `.wgetrc', abort. */
+  if (!ok)
+    exit (2);
+
   xfree (file);
   return;
 }
@@ -507,16 +541,14 @@ dehyphen (char *s)
    Uses malloc to allocate space for command and value.
    If the line is invalid, data is freed and 0 is returned.
 
-   Return values:
-    1 - success
-    0 - error
-   -1 - empty
+   Returns one of line_ok, line_empty, line_syntax_error, or
+   line_unknown_command.
 
-   In case of success, *COM and *VAL point to freshly allocated
+   In case of line_ok, *COM and *VAL point to freshly allocated
    strings, and *COMIND points to com's index.  In case of error or
-   empty line, those values are unaffected.  */
+   empty line, their values are unmodified.  */
 
-static int
+static enum parse_line
 parse_line (const char *line, char **com, char **val, int *comind)
 {
   const char *p;
@@ -535,7 +567,7 @@ parse_line (const char *line, char **com, char **val, int *comind)
 
   /* Skip empty lines and comments.  */
   if (!*line || *line == '#')
-    return -1;
+    return line_empty;
 
   p = line;
 
@@ -548,7 +580,7 @@ parse_line (const char *line, char **com, char **val, int *comind)
   while (p < end && ISSPACE (*p))
     ++p;
   if (p == end || *p != '=')
-    return 0;
+    return line_syntax_error;
   ++p;
   while (p < end && ISSPACE (*p))
     ++p;
@@ -556,20 +588,22 @@ parse_line (const char *line, char **com, char **val, int *comind)
   valstart = p;
   valend   = end;
 
+  /* The syntax is valid (even though the command might not be).  Fill
+     in the command name and value.  */
+  *com = strdupdelim (cmdstart, cmdend);
+  *val = strdupdelim (valstart, valend);
+
   /* The line now known to be syntactically correct.  Check whether
      the command is valid.  */
   BOUNDED_TO_ALLOCA (cmdstart, cmdend, cmdcopy);
   dehyphen (cmdcopy);
   ind = command_by_name (cmdcopy);
   if (ind == -1)
-    return 0;
+    return line_unknown_command;
 
-  /* The command is valid.  Now fill in the values and report success
-     to the caller.  */
+  /* Report success to the caller. */
   *comind = ind;
-  *com = strdupdelim (cmdstart, cmdend);
-  *val = strdupdelim (valstart, valend);
-  return 1;
+  return line_ok;
 }
 
 /* Run commands[comind].action. */
