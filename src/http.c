@@ -2627,10 +2627,11 @@ http_atotm (const char *time_string)
      implementations I've tested.  */
 
   static const char *time_formats[] = {
-    "%a, %d %b %Y %T",		/* RFC1123: Thu, 29 Jan 1998 22:12:57 */
-    "%A, %d-%b-%y %T",		/* RFC850:  Thursday, 29-Jan-98 22:12:57 */
-    "%a, %d-%b-%Y %T",		/* pseudo-RFC850:  Thu, 29-Jan-1998 22:12:57
-				   (google.com uses this for their cookies.) */
+    "%a, %d %b %Y %T",		/* rfc1123: Thu, 29 Jan 1998 22:12:57 */
+    "%A, %d-%b-%y %T",		/* rfc850:  Thursday, 29-Jan-98 22:12:57 */
+    "%a, %d-%b-%Y %T",		/* rfc850+: Thu, 29-Jan-1998 22:12:57
+				   (post-y2k-rfc850; apparently google
+				   uses this for their cookies.) */
     "%a %b %d %T %Y"		/* asctime: Thu Jan 29 22:12:57 1998 */
   };
   int i;
@@ -2644,15 +2645,12 @@ http_atotm (const char *time_string)
 	 to prevent garbage from the stack influencing strptime.  */
       xzero (t);
 
-      /* Note that under non-English locales Solaris strptime() fails
-	 to recognize English dates, which renders it useless for this
-	 purpose.  We solve this by not setting LC_TIME when
-	 initializing locale.  Another solution would be to
-	 temporarily set locale to C, invoke strptime(), and restore
-	 it back, but that is somewhat slow and dirty.
-
-	 GNU strptime does not have this problem because it recognizes
-	 both international and local dates.  */
+      /* Note that under non-English locales Solaris strptime fails to
+	 recognize English dates.  We work around this by not setting
+	 the LC_TIME category.  Another way would be to temporarily
+	 set locale to C before invoking strptime, but that's slow and
+	 messy.  GNU strptime does not have this problem because it
+	 recognizes English dates along with the local ones.  */
 
       if (check_end (strptime (time_string, time_formats[i], &t)))
 	return mktime_from_utc (&t);
