@@ -1,5 +1,11 @@
 2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* log.c (copy_and_escape): Replace the FOR_URI argument with a
+	slightly more general mechanism for specifying different kinds of
+	escape.
+
+2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ftp-basic.c (ftp_response): Fix printing FTP server response.
 
 2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
