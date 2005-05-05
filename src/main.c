@@ -721,17 +721,17 @@ main (int argc, char *const *argv)
       switch (opt->type)
 	{
 	case OPT_VALUE:
-	  setoptval (opt->data, optarg);
+	  setoptval (opt->data, optarg, opt->long_name);
 	  break;
 	case OPT_BOOLEAN:
 	  if (optarg)
 	    /* The user has specified a value -- use it. */
-	    setoptval (opt->data, optarg);
+	    setoptval (opt->data, optarg, opt->long_name);
 	  else
 	    {
 	      /* NEG is true for `--no-FOO' style boolean options. */
 	      int neg = val & BOOLEAN_NEG_MARKER;
-	      setoptval (opt->data, neg ? "0" : "1");
+	      setoptval (opt->data, neg ? "0" : "1", opt->long_name);
 	    }
 	  break;
 	case OPT_FUNCALL:
@@ -741,7 +741,7 @@ main (int argc, char *const *argv)
 	  }
 	  break;
 	case OPT__APPEND_OUTPUT:
-	  setoptval ("logfile", optarg);
+	  setoptval ("logfile", optarg, opt->long_name);
 	  append_to_log = 1;
 	  break;
 	case OPT__EXECUTE:
@@ -757,19 +757,19 @@ main (int argc, char *const *argv)
 	      switch (*p)
 		{
 		case 'v':
-		  setoptval ("verbose", "0");
+		  setoptval ("verbose", "0", opt->long_name);
 		  break;
 		case 'H':
-		  setoptval ("addhostdir", "0");
+		  setoptval ("addhostdir", "0", opt->long_name);
 		  break;
 		case 'd':
-		  setoptval ("dirstruct", "0");
+		  setoptval ("dirstruct", "0", opt->long_name);
 		  break;
 		case 'c':
-		  setoptval ("noclobber", "1");
+		  setoptval ("noclobber", "1", opt->long_name);
 		  break;
 		case 'p':
-		  setoptval ("noparent", "1");
+		  setoptval ("noparent", "1", opt->long_name);
 		  break;
 		default:
 		  printf (_("%s: illegal option -- `-n%c'\n"), exec_name, *p);
@@ -792,11 +792,11 @@ main (int argc, char *const *argv)
 		      || (TOLOWER (optarg[0]) == 'o'
 			  && TOLOWER (optarg[1]) == 'n'));
 	    setoptval (opt->type == OPT__PARENT ? "noparent" : "noclobber",
-		       flag ? "0" : "1");
+		       flag ? "0" : "1", opt->long_name);
 	    break;
 	  }
 	case OPT__DONT_REMOVE_LISTING:
-	  setoptval ("removelisting", "0");
+	  setoptval ("removelisting", "0", opt->long_name);
 	  break;
 	}
 

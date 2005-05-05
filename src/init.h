@@ -32,7 +32,7 @@ so, delete this exception statement from your version.  */
 
 void initialize PARAMS ((void));
 void run_command PARAMS ((const char *));
-void setoptval PARAMS ((const char *, const char *));
+void setoptval PARAMS ((const char *, const char *, const char *));
 char *home_dir PARAMS ((void));
 void cleanup PARAMS ((void));
 

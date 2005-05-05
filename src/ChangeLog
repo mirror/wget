@@ -1,5 +1,13 @@
 2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c (main): Propagate option name to setoptval.
+
+	* init.c (setoptval): Accept another argument, OPTNAME.  Propagate
+	that argument as the option name independently of the actual
+	command, determined by command_by_name(com).
+
+2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c (parse_line): Make the return value indicate whether
 	there was a syntax error or a setter failed.
 	(run_wgetrc): Return an indication on whether an error has been
