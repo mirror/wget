@@ -2633,30 +2633,30 @@ http_atotm (const char *time_string)
 				   (google.com uses this for their cookies.) */
     "%a %b %d %T %Y"		/* asctime: Thu Jan 29 22:12:57 1998 */
   };
-
   int i;
-  struct tm t;
-
-  /* According to Roger Beeman, we need to initialize tm_isdst, since
-     strptime won't do it.  */
-  t.tm_isdst = 0;
-
-  /* Note that under foreign locales Solaris strptime() fails to
-     recognize English dates, which renders this function useless.  We
-     solve this by being careful not to affect LC_TIME when
-     initializing locale.
-
-     Another solution would be to temporarily set locale to C, invoke
-     strptime(), and restore it back.  This is slow and dirty,
-     however, and locale support other than LC_MESSAGES can mess other
-     things, so I rather chose to stick with just setting LC_MESSAGES.
-
-     GNU strptime does not have this problem because it recognizes
-     both international and local dates.  */
 
   for (i = 0; i < countof (time_formats); i++)
-    if (check_end (strptime (time_string, time_formats[i], &t)))
-      return mktime_from_utc (&t);
+    {
+      struct tm t;
+
+      /* Some versions of strptime use the existing contents of struct
+	 tm to recalculate the date according to format.  Zero it out
+	 to prevent garbage from the stack influencing strptime.  */
+      xzero (t);
+
+      /* Note that under non-English locales Solaris strptime() fails
+	 to recognize English dates, which renders it useless for this
+	 purpose.  We solve this by not setting LC_TIME when
+	 initializing locale.  Another solution would be to
+	 temporarily set locale to C, invoke strptime(), and restore
+	 it back, but that is somewhat slow and dirty.
+
+	 GNU strptime does not have this problem because it recognizes
+	 both international and local dates.  */
+
+      if (check_end (strptime (time_string, time_formats[i], &t)))
+	return mktime_from_utc (&t);
+    }
 
   /* All formats have failed.  */
   return -1;

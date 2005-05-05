@@ -1,5 +1,10 @@
 2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (http_atotm): Zero out the whole struct tm being passed
+	to strptime.
+
+2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (main): Propagate option name to setoptval.
 
 	* init.c (setoptval): Accept another argument, OPTNAME.  Propagate
