@@ -7,9 +7,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.10.
 
-** Downloading files greater than 2GB, also known as "large files",
-now works on systems that support them.  This includes the majority of
-modern Unixes, as well as MS Windows.
+** Downloading files larger than 2GB, sometimes referred to as "large
+files", now works on systems that support them.  This includes the
+majority of modern Unixes, as well as MS Windows.
 
 ** IPv6 is now supported by Wget.  Unlike the experimental code in
 1.9, this version supports dual-family systems.  The new flags
@@ -77,6 +77,10 @@ permanent ones.  This is useful because many sites track important
 information, such as whether the user has authenticated, in session
 cookies.  With this option multiple Wget runs are treated as a single
 browser session.
+
+** SSL/TLS-related options have been redesigned and documented.  Refer
+to the manual for details.  The old, undocumented, options are no
+longer supported.
 
 ** Wget now supports the --ftp-user and --ftp-password command
 switches to set username and password for FTP, and the --user and
