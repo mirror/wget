@@ -1,5 +1,9 @@
 2005-05-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c (print_help): Fix wording of --secure-protocol help text.
+
+2005-05-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* cmpt.c (strstr): Updated from glibc 2.3.5.
 
 2005-05-05  Hrvoje Niksic  <hniksic@xemacs.org>

@@ -547,8 +547,8 @@ HTTP options:\n"),
     N_("\
 HTTPS (SSL/TLS) options:\n"),
     N_("\
-       --secure-protocol=PR     choose SSL protocol, one of auto, SSLv2, SSLv3,\n\
-                                and TLSv1.\n"),
+       --secure-protocol=PR     choose secure protocol, one of auto, SSLv2,\n\
+                                SSLv3, and TLSv1.\n"),
     N_("\
        --no-check-certificate   don't validate the server's certificate.\n"),
     N_("\
