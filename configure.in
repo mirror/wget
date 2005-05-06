@@ -593,13 +593,13 @@ dnl command-line options, such as `-I'.  Now we depend on makeinfo to
 dnl build the Info documentation.
 dnl
 
-AC_CHECK_PROGS(MAKEINFO, makeinfo)
+AC_CHECK_PROGS(MAKEINFO, [makeinfo], [true])
 
 dnl
 dnl Find perl and pod2man
 dnl
 
-AC_PATH_PROGS(PERL, perl5 perl, no)
+AC_PATH_PROGS(PERL, [perl5 perl], no)
 AC_PATH_PROG(POD2MAN, pod2man, no)
 
 if test "x${POD2MAN}" = xno; then

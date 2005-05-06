@@ -1,3 +1,8 @@
+2005-05-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Set MAKEINFO to "true" so build doesn't fail for
+	users without either makeinfo or the pre-packaged info files.
+
 2005-05-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* INSTALL: Document environment variables affecting configure,
