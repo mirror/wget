@@ -1285,11 +1285,15 @@ number of Wget.
 
 However, some sites have been known to impose the policy of tailoring
 the output according to the @code{User-Agent}-supplied information.
-While conceptually this is not such a bad idea, it has been abused by
-servers denying information to clients other than @code{Mozilla} or
-Microsoft @code{Internet Explorer}.  This option allows you to change
-the @code{User-Agent} line issued by Wget.  Use of this option is
-discouraged, unless you really know what you are doing.
+While this is not such a bad idea in theory, it has been abused by
+servers denying information to clients other than (historically)
+Netscape or, more frequently, Microsoft Internet Explorer.  This
+option allows you to change the @code{User-Agent} line issued by Wget.
+Use of this option is discouraged, unless you really know what you are
+doing.
+
+Specifying empty user agent with @samp{--user-agent=""} instructs Wget
+not to send the @code{User-Agent} header in @sc{http} requests.
 
 @cindex POST
 @item --post-data=@var{string}

@@ -1,5 +1,9 @@
 2005-05-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi (HTTP Options): Document empty user-agent.
+
+2005-05-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi (Download Options): Explain that the read timeout
 	really refers to idle timeout.
 	(Download Options): Mention that decimal and subsecond values may
