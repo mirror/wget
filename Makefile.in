@@ -182,7 +182,7 @@ $(srcdir)/configure: configure.in aclocal.m4
 # autoheader might not change config.h.in, so touch a stamp file.
 $(srcdir)/src/config.h.in: stamp-h.in
 $(srcdir)/stamp-h.in: configure.in aclocal.m4
-	true; # running autoheader here breaks: cd $(srcdir) && autoheader
+	@true; # running autoheader here breaks: cd $(srcdir) && autoheader
 	echo timestamp > $(srcdir)/stamp-h.in
 
 src/config.h: stamp-h
