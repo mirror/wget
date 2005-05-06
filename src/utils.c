@@ -1982,7 +1982,7 @@ base64_decode (const char *base64, char *to)
 #undef NEXT_BASE64_CHAR
 
 /* Simple merge sort for use by stable_sort.  Implementation courtesy
-   Zeljko Vrba.  */
+   Zeljko Vrba with additional debugging by Nenad Barbutov.  */
 
 static void
 mergesort_internal (void *base, void *temp, size_t size, size_t from, size_t to,
