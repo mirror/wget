@@ -2645,12 +2645,13 @@ http_atotm (const char *time_string)
 	 to prevent garbage from the stack influencing strptime.  */
       xzero (t);
 
-      /* Note that under non-English locales Solaris strptime fails to
-	 recognize English dates.  We work around this by not setting
-	 the LC_TIME category.  Another way would be to temporarily
-	 set locale to C before invoking strptime, but that's slow and
-	 messy.  GNU strptime does not have this problem because it
-	 recognizes English dates along with the local ones.  */
+      /* Note that Solaris strptime fails to recognize English month
+	 names under non-English locales.  We work around this by not
+	 setting the LC_TIME category.  Another way would be to
+	 temporarily set locale to C before invoking strptime, but
+	 that's slow and messy.  GNU strptime does not have this
+	 problem because it recognizes English names along with the
+	 local ones.  */
 
       if (check_end (strptime (time_string, time_formats[i], &t)))
 	return mktime_from_utc (&t);
