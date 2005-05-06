@@ -1216,6 +1216,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
   req = request_new ();
   {
+    char *meth_arg;
     const char *meth = "GET";
     if (*dt & HEAD_ONLY)
       meth = "HEAD";
@@ -1224,8 +1225,18 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     /* Use the full path, i.e. one that includes the leading slash and
        the query string.  E.g. if u->path is "foo/bar" and u->query is
        "param=value", full_path will be "/foo/bar?param=value".  */
-    request_set_method (req, meth,
-			proxy ? xstrdup (u->url) : url_full_path (u));
+    if (proxy
+#ifdef HAVE_SSL
+	/* When using SSL over proxy, CONNECT establishes a direct
+	   connection to the HTTPS server.  Therefore use the same
+	   argument as when talking to the server directly. */
+	&& u->scheme != SCHEME_HTTPS
+#endif
+	)
+      meth_arg = xstrdup (u->url);
+    else
+      meth_arg = url_full_path (u);
+    request_set_method (req, meth, meth_arg);
   }
 
   request_set_header (req, "Referer", (char *) hs->referer, rel_none);

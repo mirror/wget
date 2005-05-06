@@ -1,3 +1,12 @@
+2005-05-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (gethttp): When tunnelling SSL traffic over proxy with
+	CONNECT, we're really talking to the remote server directly.
+	Because of this, the request-line argument must be the URL path
+	rather than the whole URL, as it would be when using regular
+	proxies.
+	Reported by Charles Lane.
+
 2005-05-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* init.c (cmd_spec_useragent): Allow empty User-Agent.
