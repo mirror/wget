@@ -1,14 +1,14 @@
 # Croatian messages for GNU Wget
 # Copyright (C) 2005 Free Software Foundation, Inc.
-# Hrvoje Niksic <hniksic@xemacs.org>, 2005.
+# Hrvoje Nik¹iæ <hniksic@xemacs.org>, 2005.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.9-b5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-05-06 17:50+0200\n"
-"PO-Revision-Date: 2005-05-06 17:58+0200\n"
-"Last-Translator: Hrvoje Niksic <hniksic@xemacs.org>\n"
+"PO-Revision-Date: 2005-05-06 18:23+0200\n"
+"Last-Translator: Hrvoje Nik¹iæ <hniksic@xemacs.org>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-2\n"
