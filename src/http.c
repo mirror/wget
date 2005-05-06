@@ -1113,13 +1113,13 @@ time_t http_atotm PARAMS ((const char *));
    && (ISSPACE (line[sizeof (string_constant) - 1])			\
        || !line[sizeof (string_constant) - 1]))
 
-#define SET_USER_AGENT(req)						\
-  if (opt.useragent)							\
-    request_set_header (req, "User-Agent", opt.useragent, rel_none);	\
-  else									\
+#define SET_USER_AGENT(req) do {					\
+  if (!opt.useragent)							\
     request_set_header (req, "User-Agent",				\
-			aprintf ("Wget/%s", version_string), rel_value);
-
+			aprintf ("Wget/%s", version_string), rel_value); \
+  else if (*opt.useragent)						\
+    request_set_header (req, "User-Agent", opt.useragent, rel_none);	\
+} while (0)
 
 /* Retrieve a document through HTTP protocol.  It recognizes status
    code, and correctly handles redirections.  It closes the network
@@ -1622,18 +1622,11 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	    CLOSE_INVALIDATE (sock);
 	}
       pconn.authorized = 0;
-      if (auth_finished || !(user && passwd))
+      if (!auth_finished && (user && passwd))
 	{
-	  /* If we have tried it already, then there is not point
-	     retrying it.  */
-	  logputs (LOG_NOTQUIET, _("Authorization failed.\n"));
-	}
-      else
-	{
-	  /* IIS sometimes sends two instances of WWW-Authenticate
-	     header, one with the keyword "negotiate", and other with
-	     useful data.  Loop over all occurrences of this header
-	     and use the one we recognize.  */
+	  /* IIS sends multiple copies of WWW-Authenticate, one with
+	     the value "negotiate", and other(s) with data.  Loop over
+	     all the occurrences and pick the one we recognize.  */
 	  int wapos;
 	  const char *wabeg, *waend;
 	  char *www_authenticate = NULL;
@@ -1643,18 +1636,20 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	       ++wapos)
 	    if (known_authentication_scheme_p (wabeg, waend))
 	      {
-		www_authenticate = strdupdelim (wabeg, waend);
+		BOUNDED_TO_ALLOCA (wabeg, waend, www_authenticate);
 		break;
 	      }
-	  /* If the authentication header is missing or recognized, or
-	     if the authentication scheme is "Basic" (which we send by
-	     default), there's no sense in retrying.  */
-	  if (!www_authenticate
-	      || BEGINS_WITH (www_authenticate, "Basic"))
-	    {
-	      xfree_null (www_authenticate);
-	      logputs (LOG_NOTQUIET, _("Unknown authentication scheme.\n"));
-	    }
+
+	  if (!www_authenticate)
+	    /* If the authentication header is missing or
+	       unrecognized, there's no sense in retrying.  */
+	    logputs (LOG_NOTQUIET, _("Unknown authentication scheme.\n"));
+	  else if (BEGINS_WITH (www_authenticate, "Basic"))
+	    /* If the authentication scheme is "Basic", which we send
+	       by default, there's no sense in retrying either.  (This
+	       should be changed when we stop sending "Basic" data by
+	       default.)  */
+	    ;
 	  else
 	    {
 	      char *pth;
@@ -1669,10 +1664,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	      if (BEGINS_WITH (www_authenticate, "NTLM"))
 		ntlm_seen = 1;
 	      xfree (pth);
-	      xfree (www_authenticate);
 	      goto retry_with_auth;
 	    }
 	}
+      logputs (LOG_NOTQUIET, _("Authorization failed.\n"));
       request_free (req);
       return AUTHFAILED;
     }

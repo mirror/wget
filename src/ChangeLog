@@ -1,5 +1,14 @@
 2005-05-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* init.c (cmd_spec_useragent): Allow empty User-Agent.
+
+	* http.c (gethttp): Don't print "unknown authentication scheme"
+	for failed Basic authentication.
+	(SET_USER_AGENT): Don't set user-agent if opt.useragent is empty.
+	(gethttp): Use alloca for allocation of www_authenticate.
+
+2005-05-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (print_help): Fix wording of --secure-protocol help text.
 
 2005-05-06  Hrvoje Niksic  <hniksic@xemacs.org>
