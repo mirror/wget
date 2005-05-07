@@ -255,34 +255,29 @@ url_escape_allow_passthrough (const char *s)
   return url_escape_1 (s, urlchr_unsafe, 1);
 }
 
-enum copy_method { CM_DECODE, CM_ENCODE, CM_PASSTHROUGH };
+enum copy_method { cm_encode, cm_passthrough };
 
-/* Decide whether to encode, decode, or pass through the char at P.
-   This used to be a macro, but it got a little too convoluted.  */
+/* Decide whether to encode or pass through the char at P.  This used
+   to be a macro, but it got a little too convoluted.  */
+
 static inline enum copy_method
 decide_copy_method (const char *p)
 {
   if (*p == '%')
     {
       if (ISXDIGIT (*(p + 1)) && ISXDIGIT (*(p + 2)))
-	{
-	  /* %xx sequence: decode it, unless it would decode to an
-	     unsafe or a reserved char; in that case, leave it as
-	     is. */
-	  char preempt = X2DIGITS_TO_NUM (*(p + 1), *(p + 2));
-	  if (URL_UNSAFE_CHAR (preempt) || URL_RESERVED_CHAR (preempt))
-	    return CM_PASSTHROUGH;
-	  else
-	    return CM_DECODE;
-	}
+	/* Prior to 1.10 this decoded %HH escapes corresponding to
+	   "safe" chars, but that proved too obtrusive -- it's better
+	   to always preserve the escapes found in the URL.  */
+	return cm_passthrough;
       else
 	/* Garbled %.. sequence: encode `%'. */
-	return CM_ENCODE;
+	return cm_encode;
     }
   else if (URL_UNSAFE_CHAR (*p) && !URL_RESERVED_CHAR (*p))
-    return CM_ENCODE;
+    return cm_encode;
   else
-    return CM_PASSTHROUGH;
+    return cm_passthrough;
 }
 
 /* Translate a %-escaped (but possibly non-conformant) input string S
@@ -292,16 +287,15 @@ decide_copy_method (const char *p)
 
    After a URL has been run through this function, the protocols that
    use `%' as the quote character can use the resulting string as-is,
-   while those that don't call url_unescape() to get to the intended
-   data.  This function is also stable: after an input string is
-   transformed the first time, all further transformations of the
-   result yield the same result string.
+   while those that don't can use url_unescape to get to the intended
+   data.  This function is stable: once the input is transformed,
+   further transformations of the result yield the same output.
 
    Let's discuss why this function is needed.
 
-   Imagine Wget is to retrieve `http://abc.xyz/abc def'.  Since a raw
-   space character would mess up the HTTP request, it needs to be
-   quoted, like this:
+   Imagine Wget is asked to retrieve `http://abc.xyz/abc def'.  Since
+   a raw space character would mess up the HTTP request, it needs to
+   be quoted, like this:
 
        GET /abc%20def HTTP/1.0
 
@@ -312,14 +306,15 @@ decide_copy_method (const char *p)
    part of URL syntax, "%20" is the correct way to denote a literal
    space on the Wget command line.  This leaves us in the conclusion
    that in that case Wget should not call url_escape, but leave the
-   `%20' as is.
+   `%20' as is.  This is clearly contradictory, but it only gets
+   worse.
 
-   And what if the requested URI is `abc%20 def'?  If we call
-   url_escape, we end up with `/abc%2520%20def', which is almost
-   certainly not intended.  If we don't call url_escape, we are left
-   with the embedded space and cannot complete the request.  What the
-   user meant was for Wget to request `/abc%20%20def', and this is
-   where reencode_escapes kicks in.
+   What if the requested URI is `abc%20 def'?  If we call url_escape,
+   we end up with `/abc%2520%20def', which is almost certainly not
+   intended.  If we don't call url_escape, we are left with the
+   embedded space and cannot complete the request.  What the user
+   meant was for Wget to request `/abc%20%20def', and this is where
+   reencode_escapes kicks in.
 
    Wget used to solve this by first decoding %-quotes, and then
    encoding all the "unsafe" characters found in the resulting string.
@@ -333,25 +328,25 @@ decide_copy_method (const char *p)
    literal plus.  reencode_escapes correctly translates the above to
    "a%2B+b", i.e. returns the original string.
 
-   This function uses an algorithm proposed by Anon Sricharoenchai:
+   This function uses a modified version of the algorithm originally
+   proposed by Anon Sricharoenchai:
 
-   1. Encode all URL_UNSAFE and the "%" that are not followed by 2
-      hexdigits.
+   * Encode all "unsafe" characters, except those that are also
+     "reserved", to %XX.  See urlchr_table for which characters are
+     unsafe and reserved.
 
-   2. Decode all "%XX" except URL_UNSAFE, URL_RESERVED (";/?:@=&") and
-      "+".
+   * Encode the "%" characters not followed by two hex digits to
+     "%25".
 
-   ...except that this code conflates the two steps, and decides
-   whether to encode, decode, or pass through each character in turn.
-   The function still uses two passes, but their logic is the same --
-   the first pass exists merely for the sake of allocation.  Another
-   small difference is that we include `+' to URL_RESERVED.
+   * Pass through all other characters and %XX escapes as-is.  (Up to
+     Wget 1.10 this decoded %XX escapes corresponding to "safe"
+     characters, but that was obtrusive and broke some servers.)
 
    Anon's test case:
 
    "http://abc.xyz/%20%3F%%36%31%25aa% a?a=%61+a%2Ba&b=b%26c%3Dc"
    ->
-   "http://abc.xyz/%20%3F%2561%25aa%25%20a?a=a+a%2Ba&b=b%26c%3Dc"
+   "http://abc.xyz/%20%3F%25%36%31%25aa%25%20a?a=%61+a%2Ba&b=b%26c%3Dc"
 
    Simpler test cases:
 
@@ -372,7 +367,6 @@ reencode_escapes (const char *s)
   int oldlen, newlen;
 
   int encode_count = 0;
-  int decode_count = 0;
 
   /* First, pass through the string to see if there's anything to do,
      and to calculate the new length.  */
@@ -380,25 +374,21 @@ reencode_escapes (const char *s)
     {
       switch (decide_copy_method (p1))
 	{
-	case CM_ENCODE:
+	case cm_encode:
 	  ++encode_count;
 	  break;
-	case CM_DECODE:
-	  ++decode_count;
-	  break;
-	case CM_PASSTHROUGH:
+	case cm_passthrough:
 	  break;
 	}
     }
 
-  if (!encode_count && !decode_count)
+  if (!encode_count)
     /* The string is good as it is. */
-    return (char *)s;		/* C const model sucks. */
+    return (char *) s;		/* C const model sucks. */
 
   oldlen = p1 - s;
-  /* Each encoding adds two characters (hex digits), while each
-     decoding removes two characters.  */
-  newlen = oldlen + 2 * (encode_count - decode_count);
+  /* Each encoding adds two characters (hex digits).  */
+  newlen = oldlen + 2 * encode_count;
   newstr = xmalloc (newlen + 1);
 
   p1 = s;
@@ -408,7 +398,7 @@ reencode_escapes (const char *s)
     {
       switch (decide_copy_method (p1))
 	{
-	case CM_ENCODE:
+	case cm_encode:
 	  {
 	    unsigned char c = *p1++;
 	    *p2++ = '%';
@@ -416,11 +406,7 @@ reencode_escapes (const char *s)
 	    *p2++ = XNUM_TO_DIGIT (c & 0xf);
 	  }
 	  break;
-	case CM_DECODE:
-	  *p2++ = X2DIGITS_TO_NUM (p1[1], p1[2]);
-	  p1 += 3;		/* skip %xx */
-	  break;
-	case CM_PASSTHROUGH:
+	case cm_passthrough:
 	  *p2++ = *p1++;
 	}
     }
@@ -869,8 +855,9 @@ url_parse (const char *url, int *error)
   host_modified = lowercase_str (u->host);
 
   /* Decode %HH sequences in host name.  This is important not so much
-     to support %HH sequences, but to support binary characters (which
-     will have been converted to %HH by reencode_escapes).  */
+     to support %HH sequences in host names (which other browser
+     don't), but to support binary characters (which will have been
+     converted to %HH by reencode_escapes).  */
   if (strchr (u->host, '%'))
     {
       url_unescape (u->host);
@@ -1538,11 +1525,6 @@ url_file_name (const struct url *u)
    elements containing only "." are removed, and ".." is taken to mean
    "back up one element".  Single leading and trailing slashes are
    preserved.
-
-   This function does not handle URL escapes explicitly.  If you're
-   passing paths from URLs, make sure to unquote "%2e" and "%2E" to
-   ".", so that this function can find the dots.  (Wget's URL parser
-   calls reencode_escapes, which see.)
 
    For example, "a/b/c/./../d/.." will yield "a/b/".  More exhaustive
    test examples are provided below.  If you change anything in this
