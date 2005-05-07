@@ -584,21 +584,21 @@ static void split_path PARAMS ((const char *, char **, char **));
 #define strpbrk_or_eos(s, accept) ({		\
   char *SOE_p = strpbrk (s, accept);		\
   if (!SOE_p)					\
-    SOE_p = (char *)s + strlen (s);		\
+    SOE_p = strchr (s, '\0');			\
   SOE_p;					\
 })
 
 #else  /* not __GNUC__ */
 
-static char *
+static inline char *
 strpbrk_or_eos (const char *s, const char *accept)
 {
   char *p = strpbrk (s, accept);
   if (!p)
-    p = (char *)s + strlen (s);
+    p = strchr (s, '\0');
   return p;
 }
-#endif
+#endif /* not __GNUC__ */
 
 /* Turn STR into lowercase; return non-zero if a character was
    actually changed. */
