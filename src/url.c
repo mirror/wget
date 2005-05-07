@@ -297,15 +297,14 @@ char_needs_escaping (const char *p)
 
        GET /abc%20def HTTP/1.0
 
-   It appears that the unsafe chars need to be quoted, for example
-   with url_escape.  But what if we're requested to download
+   It would appear that the unsafe chars need to be quoted, for
+   example with url_escape.  But what if we're requested to download
    `abc%20def'?  url_escape transforms "%" to "%25", which would leave
    us with `abc%2520def'.  This is incorrect -- since %-escapes are
    part of URL syntax, "%20" is the correct way to denote a literal
-   space on the Wget command line.  This leaves us in the conclusion
-   that in that case Wget should not call url_escape, but leave the
-   `%20' as is.  This is clearly contradictory, but it only gets
-   worse.
+   space on the Wget command line.  This leads to the conclusion that
+   in that case Wget should not call url_escape, but leave the `%20'
+   as is.  This is clearly contradictory, but it only gets worse.
 
    What if the requested URI is `abc%20 def'?  If we call url_escape,
    we end up with `/abc%2520%20def', which is almost certainly not
