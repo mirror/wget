@@ -255,29 +255,27 @@ url_escape_allow_passthrough (const char *s)
   return url_escape_1 (s, urlchr_unsafe, 1);
 }
 
-enum copy_method { cm_encode, cm_passthrough };
+/* Decide whether the char at position P needs to be encoded.  (It is
+   not enough to pass a single char *P because the function may need
+   to inspect the surrounding context.)
 
-/* Decide whether to encode or pass through the char at P.  This used
-   to be a macro, but it got a little too convoluted.  */
+   Return 1 if the char should be escaped as %XX, 0 otherwise.  */
 
-static inline enum copy_method
-decide_copy_method (const char *p)
+static inline int
+char_needs_escaping (const char *p)
 {
   if (*p == '%')
     {
       if (ISXDIGIT (*(p + 1)) && ISXDIGIT (*(p + 2)))
-	/* Prior to 1.10 this decoded %HH escapes corresponding to
-	   "safe" chars, but that proved too obtrusive -- it's better
-	   to always preserve the escapes found in the URL.  */
-	return cm_passthrough;
+	return 0;
       else
 	/* Garbled %.. sequence: encode `%'. */
-	return cm_encode;
+	return 1;
     }
   else if (URL_UNSAFE_CHAR (*p) && !URL_RESERVED_CHAR (*p))
-    return cm_encode;
+    return 1;
   else
-    return cm_passthrough;
+    return 0;
 }
 
 /* Translate a %-escaped (but possibly non-conformant) input string S
@@ -368,19 +366,11 @@ reencode_escapes (const char *s)
 
   int encode_count = 0;
 
-  /* First, pass through the string to see if there's anything to do,
+  /* First pass: inspect the string to see if there's anything to do,
      and to calculate the new length.  */
   for (p1 = s; *p1; p1++)
-    {
-      switch (decide_copy_method (p1))
-	{
-	case cm_encode:
-	  ++encode_count;
-	  break;
-	case cm_passthrough:
-	  break;
-	}
-    }
+    if (char_needs_escaping (p1))
+      ++encode_count;
 
   if (!encode_count)
     /* The string is good as it is. */
@@ -391,25 +381,22 @@ reencode_escapes (const char *s)
   newlen = oldlen + 2 * encode_count;
   newstr = xmalloc (newlen + 1);
 
+  /* Second pass: copy the string to the destination address, encoding
+     chars when needed.  */
   p1 = s;
   p2 = newstr;
 
   while (*p1)
-    {
-      switch (decide_copy_method (p1))
-	{
-	case cm_encode:
-	  {
-	    unsigned char c = *p1++;
-	    *p2++ = '%';
-	    *p2++ = XNUM_TO_DIGIT (c >> 4);
-	    *p2++ = XNUM_TO_DIGIT (c & 0xf);
-	  }
-	  break;
-	case cm_passthrough:
-	  *p2++ = *p1++;
-	}
-    }
+    if (char_needs_escaping (p1))
+      {
+	unsigned char c = *p1++;
+	*p2++ = '%';
+	*p2++ = XNUM_TO_DIGIT (c >> 4);
+	*p2++ = XNUM_TO_DIGIT (c & 0xf);
+      }
+    else
+      *p2++ = *p1++;
+
   *p2 = '\0';
   assert (p2 - newstr == newlen);
   return newstr;
