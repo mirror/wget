@@ -1,5 +1,10 @@
 2005-05-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp-basic.c (ftp_request): Prevent newlines in VALUE causing
+	inadvertent sending of multiple FTP commands.
+
+2005-05-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (decide_copy_method): Never cause reencode_escapes to
 	decode % escapes; it is too intrusive and breaks some servers.
 

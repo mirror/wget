@@ -103,7 +103,27 @@ ftp_request (const char *command, const char *value)
 {
   char *res;
   if (value)
-    res = concat_strings (command, " ", value, "\r\n", (char *) 0);
+    {
+      /* Check for newlines in VALUE (possibly injected by the %0A URL
+	 escape) making the callers inadvertently send multiple FTP
+	 commands at once.  Without this check an attacker could
+	 intentionally redirect to ftp://server/fakedir%0Acommand.../
+	 and execute arbitrary FTP command on a remote FTP server.  */
+      if (strpbrk (value, "\r\n"))
+	{
+	  /* Copy VALUE to the stack and modify CR/LF to space. */
+	  char *defanged, *p;
+	  STRDUP_ALLOCA (defanged, value);
+	  for (p = defanged; *p; p++)
+	    if (*p == '\r' || *p == '\n')
+	      *p = ' ';
+	  DEBUGP (("\nDetected newlines in %s \"%s\"; changing to %s \"%s\"\n",
+		   command, escnonprint (value), command, escnonprint (defanged)));
+	  /* Make VALUE point to the defanged copy of the string. */
+	  value = defanged;
+	}
+      res = concat_strings (command, " ", value, "\r\n", (char *) 0);
+    }
   else
     res = concat_strings (command, "\r\n", (char *) 0);
   if (opt.server_response)
