@@ -2681,8 +2681,8 @@ http_atotm (const char *time_string)
    and Microsoft-specific.  */
 
 /* Create the authentication header contents for the `Basic' scheme.
-   This is done by encoding the string `USER:PASS' in base64 and
-   prepending `HEADER: Basic ' to it.  */
+   This is done by encoding the string "USER:PASS" to base64 and
+   prepending the string "Basic " in front of it.  */
 
 static char *
 basic_authentication_encode (const char *user, const char *passwd)
