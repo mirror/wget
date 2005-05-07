@@ -1,3 +1,7 @@
+2005-05-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* texi2pod.pl.in: Allow an "EXAMPLES" section.
+
 2005-05-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (HTTP Options): Document empty user-agent.
