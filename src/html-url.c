@@ -45,6 +45,7 @@ so, delete this exception statement from your version.  */
 #include "utils.h"
 #include "hash.h"
 #include "convert.h"
+#include "recur.h"		/* declaration of get_urls_html */
 
 #ifndef errno
 extern int errno;

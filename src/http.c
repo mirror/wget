@@ -148,7 +148,7 @@ struct request {
    called before the request can be used.  */
 
 static struct request *
-request_new ()
+request_new (void)
 {
   struct request *req = xnew0 (struct request);
   req->hcapacity = 8;
