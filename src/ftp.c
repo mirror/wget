@@ -1850,15 +1850,25 @@ ftp_loop (struct url *u, int *dt, struct url *proxy)
     }
   else
     {
-      int wild = has_wildcards_p (u->file);
-      if ((opt.ftp_glob && wild) || opt.recursive || opt.timestamping)
+      int ispattern = 0;
+      if (opt.ftp_glob)
+	{
+	  /* Treat the URL as a pattern if the file name part of the
+	     URL path contains wildcards.  (Don't check for u->file
+	     because it is unescaped and therefore doesn't leave users
+	     the option to escape literal '*' as %2A.)  */
+	  char *file_part = strrchr (u->path, '/');
+	  if (!file_part)
+	    file_part = u->path;
+	  ispattern = has_wildcards_p (file_part);
+	}
+      if (ispattern || opt.recursive || opt.timestamping)
 	{
 	  /* ftp_retrieve_glob is a catch-all function that gets called
 	     if we need globbing, time-stamping or recursion.  Its
 	     third argument is just what we really need.  */
 	  res = ftp_retrieve_glob (u, &con,
-				   (opt.ftp_glob && wild)
-				   ? GLOB_GLOBALL : GLOB_GETONE);
+				   ispattern ? GLOB_GLOBALL : GLOB_GETONE);
 	}
       else
 	res = ftp_loop_internal (u, NULL, &con);

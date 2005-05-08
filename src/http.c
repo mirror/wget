@@ -2004,10 +2004,8 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
 
   *newloc = NULL;
 
-  /* Warn on (likely bogus) wildcard usage in HTTP.  Don't use
-     has_wildcards_p because it would also warn on `?', and we know that
-     shows up in CGI paths a *lot*.  */
-  if (strchr (u->url, '*'))
+  /* Warn on (likely bogus) wildcard usage in HTTP.  */
+  if (has_wildcards_p (u->path))
     logputs (LOG_VERBOSE, _("Warning: wildcards not supported in HTTP.\n"));
 
   xzero (hstat);

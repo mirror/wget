@@ -1,5 +1,14 @@
 2005-05-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (http_loop): Check for wildcards in the URL path
+	component, not in the whole URL.
+
+	* ftp.c (ftp_loop): Check for wildcards in URL path before
+	unescaping, so the users can escape globbing metacharacters with %
+	escapes.
+
+2005-05-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c (run_command): Correctly interpret the return value of
 	parse_line.
 	(commands): Re-alphabetize.
