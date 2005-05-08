@@ -159,8 +159,8 @@ static struct {
   { "forcehtml",	&opt.force_html,	cmd_boolean },
   { "ftppasswd",	&opt.ftp_passwd,	cmd_string }, /* deprecated */
   { "ftppassword",	&opt.ftp_passwd,	cmd_string },
-  { "ftpuser",	        &opt.ftp_user,		cmd_string },
   { "ftpproxy",		&opt.ftp_proxy,		cmd_string },
+  { "ftpuser",	        &opt.ftp_user,		cmd_string },
   { "glob",		&opt.ftp_glob,		cmd_boolean },
   { "header",		&opt.user_headers,	cmd_spec_header },
   { "htmlextension",	&opt.html_extension,	cmd_boolean },
@@ -649,16 +649,15 @@ run_command (const char *opt)
 {
   char *com, *val;
   int comind;
-  int status = parse_line (opt, &com, &val, &comind);
-  if (status == 1)
+  switch (parse_line (opt, &com, &val, &comind))
     {
+    case line_ok:
       if (!setval_internal (comind, com, val))
 	exit (2);
       xfree (com);
       xfree (val);
-    }
-  else if (status == 0)
-    {
+      break;
+    default:
       fprintf (stderr, _("%s: Invalid --execute command `%s'\n"),
 	       exec_name, opt);
       exit (2);
