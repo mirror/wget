@@ -704,10 +704,11 @@ static const char *
 escnonprint_internal (const char *str, char escape, int base)
 {
   static int ringpos;		        /* current ring position */
+  int nprcnt;
 
   assert (base == 8 || base == 16);
 
-  int nprcnt = count_nonprint (str);
+  nprcnt = count_nonprint (str);
   if (nprcnt == 0)
     /* If there are no non-printable chars in STR, don't bother
        copying anything, just return STR.  */
