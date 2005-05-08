@@ -284,7 +284,7 @@ parse_netrc (const char *path)
   premature_token = NULL;
 
   /* While there are lines in the file...  */
-  while ((line = read_whole_line (fp)))
+  while ((line = read_whole_line (fp)) != NULL)
     {
       ln ++;
 

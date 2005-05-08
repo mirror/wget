@@ -874,7 +874,6 @@ url_parse (const char *url, int *error)
       else
 	u->url = url_encoded;
     }
-  url_encoded = NULL;
 
   return u;
 
@@ -1067,7 +1066,7 @@ sync_path (struct url *u)
       *p++ = '/';
       memcpy (p, efile, filelen);
       p += filelen;
-      *p++ = '\0';
+      *p = '\0';
     }
 
   u->path = newpath;

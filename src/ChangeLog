@@ -1,5 +1,19 @@
 2005-05-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* netrc.c (parse_netrc): Explicitly check for assignment != NULL
+	to silence warning from Borland C.
+
+	* url.c (sync_path): Don't unnecessarily increment p.
+	(url_parse): Don't unnecessarily set url_encode to NULL just
+	prior to return from the function.
+
+2005-05-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* log.c (escnonprint_internal): Place variable declarations
+	before other statements.
+
+2005-05-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* html-url.c: Include recur.h.
 
 	* http.c (request_new): Define as accepting no args.
