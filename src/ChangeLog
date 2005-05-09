@@ -1,3 +1,10 @@
+2005-05-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* openssl.c (verify_cert_callback): Renamed from verify_callback.
+	Always return the received "ok" value.  Print the X509 name in
+	debug mode.
+	(ssl_init): Enable partial writes in SSL context.
+
 2005-05-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (http_loop): Check for wildcards in the URL path

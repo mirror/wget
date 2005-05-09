@@ -132,30 +132,22 @@ init_prng (void)
 #endif
 }
 
-/* #### Someone should audit and document this. */
+/* This function is called for additional (app-specific) verification
+   of the server certificate.  We basically confirm the validity as
+   determined by OpenSSL.
+
+   #### Someone should audit this for correctness and document it
+   better.  */
 
 static int
-verify_callback (int ok, X509_STORE_CTX *ctx)
+verify_cert_callback (int ok, X509_STORE_CTX *ctx)
 {
   char buf[256];
-  /* #### Why are we not using the result of this call? */
-  X509_NAME_oneline (X509_get_subject_name (ctx->current_cert),
-		     buf, sizeof (buf));
-  if (ok == 0)
-    {
-      switch (ctx->error)
-	{
-	case X509_V_ERR_CERT_NOT_YET_VALID:
-	case X509_V_ERR_CERT_HAS_EXPIRED:
-	  /* This mean the CERT is not valid !!! */
-	  ok = 0;
-	  break;
-	case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
-	  /* Unsure if we should handle that this way */
-	  ok = 1;
-	  break;
-	}
-    }
+  X509 *cert = X509_STORE_CTX_get_current_cert (ctx);
+  X509_NAME_oneline (X509_get_subject_name (cert), buf, sizeof (buf));
+  /* #### Why are we not using the result of the above call?  Are we
+     supposed to print it?  */
+  DEBUGP (("verify_cert_callback: %s\n", buf));
   return ok;
 }
 
@@ -241,9 +233,12 @@ ssl_init ()
 
   SSL_CTX_set_default_verify_paths (ssl_ctx);
   SSL_CTX_load_verify_locations (ssl_ctx, opt.ca_cert, opt.ca_directory);
+
+  /* Specify whether the connect should fail if the verification of
+     the peer fails or if it should go ahead.  */
   SSL_CTX_set_verify (ssl_ctx,
 		      opt.check_cert ? SSL_VERIFY_PEER : SSL_VERIFY_NONE,
-		      verify_callback);
+		      verify_cert_callback);
 
   if (opt.cert_file)
     if (SSL_CTX_use_certificate_file (ssl_ctx, opt.cert_file,
@@ -255,6 +250,10 @@ ssl_init ()
 				     key_type_to_ssl_type (opt.private_key_type))
 	!= 1)
       goto error;
+
+  /* Since fd_write unconditionally assumes partial writes (and
+     handles them correctly), allow them in OpenSSL.  */
+  SSL_CTX_set_mode (ssl_ctx, SSL_MODE_ENABLE_PARTIAL_WRITE);
 
   return 1;
 
