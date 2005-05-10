@@ -501,11 +501,7 @@ res_register_specs (const char *host, int port, struct robot_specs *specs)
   if (!registered_specs)
     registered_specs = make_nocase_string_hash_table (0);
 
-  /* Required to shut up the compiler. */
-  old    = NULL;
-  hp_old = NULL;
-
-  if (hash_table_get_pair (registered_specs, hp, hp_old, old))
+  if (hash_table_get_pair (registered_specs, hp, &hp_old, &old))
     {
       if (old)
 	free_specs (old);
