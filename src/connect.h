@@ -69,6 +69,7 @@ typedef void (*fd_closer_t) PARAMS ((int, void *));
 void fd_register_transport PARAMS ((int, fd_reader_t, fd_writer_t,
 				    fd_poller_t, fd_peeker_t, fd_closer_t,
 				    void *));
+void *fd_transport_context PARAMS ((int));
 
 int fd_read PARAMS ((int, char *, int, double));
 int fd_write PARAMS ((int, char *, int, double));

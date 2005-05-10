@@ -33,5 +33,6 @@ so, delete this exception statement from your version.  */
 
 int ssl_init PARAMS ((void));
 int ssl_connect PARAMS ((int));
+int ssl_check_server_identity PARAMS ((int, const char *));
 
 #endif /* GEN_SSLFUNC_H */

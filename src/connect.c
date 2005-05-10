@@ -827,6 +827,17 @@ fd_register_transport (int fd, fd_reader_t reader, fd_writer_t writer,
   ++transport_map_modified_tick;
 }
 
+/* Return context of the transport registered with
+   fd_register_transport.  This assumes fd_register_transport was
+   previously called on FD.  */
+
+void *
+fd_transport_context (int fd)
+{
+  struct transport_info *info = hash_table_get (transport_map, (void *) fd);
+  return info->ctx;
+}
+
 /* When fd_read/fd_write are called multiple times in a loop, they should
    remember the INFO pointer instead of fetching it every time.  It is
    not enough to compare FD to LAST_FD because FD might have been

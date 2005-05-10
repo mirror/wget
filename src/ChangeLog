@@ -1,3 +1,16 @@
+2005-05-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (gethttp): Call ssl_check_server_identity.
+
+	* openssl.c (ssl_check_server_identity): New function, verifies
+	that the host name in the certificate matches the actual host
+	name.
+	(verify_cert_callback): Removed, since it didn't do anything
+	except returning the preverify_ok argument.
+
+	* connect.c (fd_transport_context): Allow retrieval of the context
+	pointer registered with fd_register_transport.
+
 2005-05-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* openssl.c (verify_cert_callback): Renamed from verify_callback.
