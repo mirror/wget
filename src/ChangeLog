@@ -1,5 +1,10 @@
 2005-05-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* openssl.c (ssl_check_server_identity): Print certificate subject
+	and issuer.
+
+2005-05-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* res.c (res_register_specs): Correctly pass pointers to
 	hash_table_get_pair.
 

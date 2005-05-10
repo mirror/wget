@@ -41,12 +41,9 @@ so, delete this exception statement from your version.  */
 # include <strings.h>
 #endif
 
-#include <openssl/bio.h>
-#include <openssl/crypto.h>
-#include <openssl/x509.h>
 #include <openssl/ssl.h>
+#include <openssl/x509.h>
 #include <openssl/err.h>
-#include <openssl/pem.h>
 #include <openssl/rand.h>
 
 #include "wget.h"
@@ -361,7 +358,7 @@ ssl_connect (int fd)
 int
 ssl_check_server_identity (int fd, const char *host)
 {
-  X509 *peer = NULL;
+  X509 *peer_cert = NULL;
   char peer_CN[256];
   long vresult;
   int retval;
@@ -373,14 +370,26 @@ ssl_check_server_identity (int fd, const char *host)
   SSL *ssl = (SSL *) fd_transport_context (fd);
   assert (ssl != NULL);
 
-  peer = SSL_get_peer_certificate (ssl);
-  if (!peer)
+  peer_cert = SSL_get_peer_certificate (ssl);
+  if (!peer_cert)
     {
       logprintf (LOG_NOTQUIET, _("%s: No certificate presented by %s.\n"),
 		 severity, escnonprint (host));
       retval = 0;
       goto out;
     }
+
+#ifdef ENABLE_DEBUG
+  if (opt.debug)
+    {
+      char *subject = X509_NAME_oneline (X509_get_subject_name (peer_cert), 0, 0);
+      char *issuer = X509_NAME_oneline (X509_get_issuer_name (peer_cert), 0, 0);
+      DEBUGP (("certificate:\n  subject: %s\n  issuer:  %s\n",
+	       escnonprint (subject), escnonprint (issuer)));
+      OPENSSL_free (subject);
+      OPENSSL_free (issuer);
+    }
+#endif
 
   vresult = SSL_get_verify_result (ssl);
   if (vresult != X509_V_OK)
@@ -393,14 +402,26 @@ ssl_check_server_identity (int fd, const char *host)
       goto out;
     }
 
-  /* Check that the common name matches HOST.
+  /* Check that the common name in the presented certificate matches
+     HOST.  This is a very simple implementation that should be
+     improved in the following ways:
 
-     #### This should use dNSName if available; according to rfc2818:
-     "If a subjectAltName extension of type dNSName is present, that
-     MUST be used as the identity."  */
+     1. It should use dNSName if available; according to rfc2818: "If
+        a subjectAltName extension of type dNSName is present, that
+        MUST be used as the identity."  Ditto for iPAddress.
+
+     2. It should support the wildcard character "*".  Quoting
+        rfc2818, "Names may contain the wildcard character * which is
+        considered to match any single domain name component or
+        component fragment. E.g., *.a.com matches foo.a.com but not
+        bar.foo.a.com. f*.com matches foo.com but not bar.com."
+
+     3. When matching against common names, it should loop over all
+        common names and choose the most specific (apparently the last
+        one).  */
 
   peer_CN[0] = '\0';
-  X509_NAME_get_text_by_NID (X509_get_subject_name (peer),
+  X509_NAME_get_text_by_NID (X509_get_subject_name (peer_cert),
 			     NID_commonName, peer_CN, sizeof (peer_CN));
   if (0 != strcasecmp (peer_CN, host))
     {
@@ -415,8 +436,8 @@ ssl_check_server_identity (int fd, const char *host)
   retval = 1;
 
  out:
-  if (peer)
-    X509_free (peer);
+  if (peer_cert)
+    X509_free (peer_cert);
 
   /* Allow --no-check-cert to disable certificate checking. */
   return opt.check_cert ? retval : 1;
