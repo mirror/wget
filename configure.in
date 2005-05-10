@@ -333,14 +333,12 @@ if test x"$with_ssl" != x"no"; then
     AC_MSG_CHECKING([for includes])
     AC_COMPILE_IFELSE([
 #include <openssl/ssl.h>
-#include <openssl/bio.h>
-#include <openssl/crypto.h>
-#include <openssl/des.h>
-#include <openssl/err.h>
-#include <openssl/md4.h>
-#include <openssl/pem.h>
-#include <openssl/rand.h>
 #include <openssl/x509.h>
+#include <openssl/err.h>
+#include <openssl/rand.h>
+#include <openssl/des.h>
+#include <openssl/md4.h>
+#include <openssl/md5.h>
     ], [
       AC_MSG_RESULT(found)
       ssl_found_includes=yes

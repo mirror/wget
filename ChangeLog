@@ -1,3 +1,7 @@
+2005-05-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Test for OpenSSL includes we actually need.
+
 2005-05-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* Makefile.in ($(srcdir)/stamp-h.in): Don't print the line with
