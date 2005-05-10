@@ -48,7 +48,6 @@ so, delete this exception statement from your version.  */
 
 #include <openssl/des.h>
 #include <openssl/md4.h>
-#include <openssl/ssl.h>
 
 #include "wget.h"
 #include "utils.h"
