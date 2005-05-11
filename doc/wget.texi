@@ -1383,12 +1383,13 @@ invalid certificates.  This option forces an ``insecure'' mode of
 operation that turns the certificate verification errors into warnings
 and allows you to proceed.
 
-If you see errors involving ``certificate verify failed'' or ``common
-name doesn't match requested host name'', you need to use this option
-to proceed with the download.  @emph{Only use this option if you are
-otherwise convinced of the site's authenticity, or if you don't care
-about the certificate validity.}  It is almost always a bad idea to
-use this option when transmitting confidential or important data.
+If you encounter ``certificate verification'' errors or ones saying
+that ``common name doesn't match requested host name'', you can use
+this option to bypass the verification and proceed with the download.
+@emph{Only use this option if you are otherwise convinced of the
+site's authenticity, or if you really don't care about the validity of
+its certificate.}  It is almost always a bad idea not to check the
+certificates when transmitting confidential or important data.
 
 @cindex SSL certificate
 @item --certificate=@var{file}
