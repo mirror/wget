@@ -212,10 +212,11 @@ ssl_init ()
   SSL_CTX_set_default_verify_paths (ssl_ctx);
   SSL_CTX_load_verify_locations (ssl_ctx, opt.ca_cert, opt.ca_directory);
 
-  /* Specify whether the connect should fail if the verification of
-     the peer fails or if it should go ahead.  */
-  SSL_CTX_set_verify (ssl_ctx,
-		      opt.check_cert ? SSL_VERIFY_PEER : SSL_VERIFY_NONE, NULL);
+  /* SSL_VERIFY_NONE instructs OpenSSL not to abort SSL_connect if the
+     certificate is invalid.  We verify the certificate separately in
+     ssl_check_server_identity, which provides much better diagnostics
+     than examining the error stack after a failed SSL_connect.  */
+  SSL_CTX_set_verify (ssl_ctx, SSL_VERIFY_NONE, NULL);
 
   if (opt.cert_file)
     if (SSL_CTX_use_certificate_file (ssl_ctx, opt.cert_file,
@@ -307,10 +308,11 @@ openssl_close (int fd, void *ctx)
   DEBUGP (("Closed %d/SSL 0x%0lx\n", fd, (unsigned long) ssl));
 }
 
-/* Sets up a SSL structure and performs the handshake on fd.  The
-   resulting SSL structure is registered with the file descriptor FD
-   using fd_register_transport.  That way subsequent calls to xread,
-   xwrite, etc., will use the appropriate SSL functions.
+/* Perform the SSL handshake on file descriptor FD, which is assumed
+   to be connected to an SSL server.  The SSL handle provided by
+   OpenSSL is registered with the file descriptor FD using
+   fd_register_transport, so that subsequent calls to fd_read,
+   fd_write, etc., will use the corresponding SSL functions.
 
    Returns 1 on success, 0 on failure.  */
 
@@ -329,10 +331,8 @@ ssl_connect (int fd)
   if (SSL_connect (ssl) <= 0 || ssl->state != SSL_ST_OK)
     goto error;
 
-  /* Register FD with Wget's transport layer, i.e. arrange that
-     SSL-enabled functions are used for reading, writing, and polling.
-     That way the rest of Wget can keep using fd_read, fd_write, and
-     friends and not care what happens underneath.  */
+  /* Register FD with Wget's transport layer, i.e. arrange that our
+     functions are used for reading, writing, and polling.  */
   fd_register_transport (fd, openssl_read, openssl_write, openssl_poll,
 			 openssl_peek, openssl_close, ssl);
   DEBUGP (("Connected %d to SSL 0x%0*lx\n", fd, 2 * sizeof (void *),
@@ -394,7 +394,7 @@ pattern_match (const char *pattern, const char *string)
 int
 ssl_check_server_identity (int fd, const char *host)
 {
-  X509 *peer_cert = NULL;
+  X509 *peer_cert;
   char peer_CN[256];
   long vresult;
   int retval;

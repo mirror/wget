@@ -1,5 +1,12 @@
 2005-05-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* openssl.c (ssl_init): Always use SSL_VERIFY_NONE, so that the
+	handshake finishes even if the certificate is invalid.  That way
+	ssl_check_server_identity can provide better diagnostics on why
+	the verification failed.
+
+2005-05-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* openssl.c (pattern_match): New function.
 	(ssl_check_server_identity): Treat peer certificate common name as
 	wildcard.
