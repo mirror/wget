@@ -346,6 +346,42 @@ ssl_connect (int fd)
   return 0;
 }
 
+/* Return 1 is STRING (case-insensitively) matches PATTERN, 0
+   otherwise.  The recognized wildcard character is "*", which matches
+   any character in STRING except ".".  Any number of the "*" wildcard
+   may be present in the pattern.
+
+   This is used to match of hosts as indicated in rfc2818: "Names may
+   contain the wildcard character * which is considered to match any
+   single domain name component or component fragment. E.g., *.a.com
+   matches foo.a.com but not bar.foo.a.com. f*.com matches foo.com but
+   not bar.com."  */
+
+static int
+pattern_match (const char *pattern, const char *string)
+{
+  const char *p = pattern, *n = string;
+  char c;
+  for (; (c = TOLOWER (*p++)) != '\0'; n++)
+    if (c == '*')
+      {
+	for (c = TOLOWER (*p); c == '*'; c = TOLOWER (*++p))
+	  ;
+	for (; *n != '\0'; n++)
+	  if (TOLOWER (*n) == c && pattern_match (p, n))
+	    return 1;
+	  else if (*n == '.')
+	    return 0;
+	return c == '\0';
+      }
+    else
+      {
+	if (c != TOLOWER (*n))
+	  return 0;
+      }
+  return *n == '\0';
+}
+
 /* Check that the identity of the remote host, as presented by its
    server certificate, corresponds to HOST, which is the host name the
    user thinks he's connecting to.  This assumes that FD has been
@@ -403,27 +439,20 @@ ssl_check_server_identity (int fd, const char *host)
     }
 
   /* Check that the common name in the presented certificate matches
-     HOST.  This is a very simple implementation that should be
-     improved in the following ways:
+     HOST.  This should be improved in the following ways:
 
-     1. It should use dNSName if available; according to rfc2818: "If
-        a subjectAltName extension of type dNSName is present, that
-        MUST be used as the identity."  Ditto for iPAddress.
+     - It should use dNSName/ipAddress subjectAltName extensions if
+       available; according to rfc2818: "If a subjectAltName extension
+       of type dNSName is present, that MUST be used as the identity."
 
-     2. It should support the wildcard character "*".  Quoting
-        rfc2818, "Names may contain the wildcard character * which is
-        considered to match any single domain name component or
-        component fragment. E.g., *.a.com matches foo.a.com but not
-        bar.foo.a.com. f*.com matches foo.com but not bar.com."
-
-     3. When matching against common names, it should loop over all
-        common names and choose the most specific (apparently the last
-        one).  */
+     - When matching against common names, it should loop over all
+       common names and choose the most specific (apparently the last
+       one).  */
 
   peer_CN[0] = '\0';
   X509_NAME_get_text_by_NID (X509_get_subject_name (peer_cert),
 			     NID_commonName, peer_CN, sizeof (peer_CN));
-  if (0 != strcasecmp (peer_CN, host))
+  if (!pattern_match (peer_CN, host))
     {
       logprintf (LOG_NOTQUIET, _("\
 %s: certificate common name `%s' doesn't match requested host name `%s'.\n"),

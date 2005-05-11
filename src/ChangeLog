@@ -1,3 +1,9 @@
+2005-05-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* openssl.c (pattern_match): New function.
+	(ssl_check_server_identity): Treat peer certificate common name as
+	wildcard.
+
 2005-05-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* openssl.c (ssl_check_server_identity): Print certificate subject
