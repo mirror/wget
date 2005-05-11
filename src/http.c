@@ -1516,7 +1516,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
       if (conn->scheme == SCHEME_HTTPS)
 	{
-	  if (!ssl_connect (sock) || !ssl_check_server_identity (sock, u->host))
+	  if (!ssl_connect (sock) || !ssl_check_certificate (sock, u->host))
 	    {
 	      fd_close (sock);
 	      return CONSSLERR;

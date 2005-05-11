@@ -1,5 +1,13 @@
 2005-05-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* openssl.c (ssl_check_server_identity): Renamed to
+	ssl_check_certificate because it does more than just checking the
+	server's identity.
+	(ssl_check_certificate): Tell the user about
+	--no-check-certificate.
+
+2005-05-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* openssl.c (ssl_init): Always use SSL_VERIFY_NONE, so that the
 	handshake finishes even if the certificate is invalid.  That way
 	ssl_check_server_identity can provide better diagnostics on why

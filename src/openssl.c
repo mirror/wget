@@ -382,22 +382,27 @@ pattern_match (const char *pattern, const char *string)
   return *n == '\0';
 }
 
-/* Check that the identity of the remote host, as presented by its
-   server certificate, corresponds to HOST, which is the host name the
-   user thinks he's connecting to.  This assumes that FD has been
-   connected to an SSL context using ssl_connect.  Return 1 if the
-   identity checks out, 0 otherwise.
+/* Verify the validity of the certificate presented by the server.
+   Also check that the "common name" of the server, as presented by
+   its certificate, corresponds to HOST.  (HOST typically comes from
+   the URL and is what the user thinks he's connecting to.)
 
-   If opt.check_cert is 0, this always returns 1, but still warns the
-   user about the mismatches, if any.  */
+   This assumes that ssl_connect has successfully finished, i.e. that
+   the SSL handshake has been performed and that FD is connected to an
+   SSL handle.
+
+   If opt.check_cert is non-zero (the default), this returns 1 if the
+   certificate is valid, 0 otherwise.  If opt.check_cert is 0, the
+   function always returns 1, but should still be called because it
+   warns the user about any problems with the certificate.  */
 
 int
-ssl_check_server_identity (int fd, const char *host)
+ssl_check_certificate (int fd, const char *host)
 {
-  X509 *peer_cert;
-  char peer_CN[256];
+  X509 *cert;
+  char common_name[256];
   long vresult;
-  int retval;
+  int success;
 
   /* If the user has specified --no-check-cert, we still want to warn
      him about problems with the server's certificate.  */
@@ -406,20 +411,20 @@ ssl_check_server_identity (int fd, const char *host)
   SSL *ssl = (SSL *) fd_transport_context (fd);
   assert (ssl != NULL);
 
-  peer_cert = SSL_get_peer_certificate (ssl);
-  if (!peer_cert)
+  cert = SSL_get_peer_certificate (ssl);
+  if (!cert)
     {
       logprintf (LOG_NOTQUIET, _("%s: No certificate presented by %s.\n"),
 		 severity, escnonprint (host));
-      retval = 0;
+      success = 0;
       goto out;
     }
 
 #ifdef ENABLE_DEBUG
   if (opt.debug)
     {
-      char *subject = X509_NAME_oneline (X509_get_subject_name (peer_cert), 0, 0);
-      char *issuer = X509_NAME_oneline (X509_get_issuer_name (peer_cert), 0, 0);
+      char *subject = X509_NAME_oneline (X509_get_subject_name (cert), 0, 0);
+      char *issuer = X509_NAME_oneline (X509_get_issuer_name (cert), 0, 0);
       DEBUGP (("certificate:\n  subject: %s\n  issuer:  %s\n",
 	       escnonprint (subject), escnonprint (issuer)));
       OPENSSL_free (subject);
@@ -434,12 +439,12 @@ ssl_check_server_identity (int fd, const char *host)
 		 _("%s: Certificate verification error for %s: %s\n"),
 		 severity, escnonprint (host),
 		 X509_verify_cert_error_string (vresult));
-      retval = 0;
+      success = 0;
       goto out;
     }
 
-  /* Check that the common name in the presented certificate matches
-     HOST.  This should be improved in the following ways:
+  /* Check that HOST matches the common name in the certificate.  ####
+     The remains to be done:
 
      - It should use dNSName/ipAddress subjectAltName extensions if
        available; according to rfc2818: "If a subjectAltName extension
@@ -447,27 +452,35 @@ ssl_check_server_identity (int fd, const char *host)
 
      - When matching against common names, it should loop over all
        common names and choose the most specific one, i.e. the last
-       one, not the first one, which the current code picks.  */
+       one, not the first one, which the current code picks.
 
-  peer_CN[0] = '\0';
-  X509_NAME_get_text_by_NID (X509_get_subject_name (peer_cert),
-			     NID_commonName, peer_CN, sizeof (peer_CN));
-  if (!pattern_match (peer_CN, host))
+     - Make sure that the names are encoded as UTF-8 which, being
+       ASCII-compatible, can be easily compared against HOST.  */
+
+  common_name[0] = '\0';
+  X509_NAME_get_text_by_NID (X509_get_subject_name (cert),
+			     NID_commonName, common_name, sizeof (common_name));
+  if (!pattern_match (common_name, host))
     {
       logprintf (LOG_NOTQUIET, _("\
 %s: certificate common name `%s' doesn't match requested host name `%s'.\n"),
-		 severity, escnonprint (peer_CN), escnonprint (host));
-      retval = 0;
+		 severity, escnonprint (common_name), escnonprint (host));
+      success = 0;
       goto out;
     }
 
   /* The certificate was found, verified, and matched HOST. */
-  retval = 1;
+  success = 1;
 
  out:
-  if (peer_cert)
-    X509_free (peer_cert);
+  if (cert)
+    X509_free (cert);
+
+  if (opt.check_cert && !success)
+    logprintf (LOG_NOTQUIET, _("\
+To connect to %s insecurely, use `--no-check-certificate'.\n"),
+	       escnonprint (host));
 
   /* Allow --no-check-cert to disable certificate checking. */
-  return opt.check_cert ? retval : 1;
+  return opt.check_cert ? success : 1;
 }
