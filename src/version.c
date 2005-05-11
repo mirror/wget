@@ -1,1 +1,1 @@
-char *version_string = "1.10-alpha3+cvs-dev";
+char *version_string = "1.10-beta1+cvs-dev";
