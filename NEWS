@@ -31,10 +31,10 @@ presented by the certificate corresponds to the host name in the URL.
 Although verifying the certificates provides more secure downloads, it
 *will* break interoperability with some sites that worked with
 previous versions, particularly those using self-signed, expired, or
-otherwise invalid certificates.  If you see errors involving
-"certificate verify failed" or "common name doesn't match requested
-host name" and are still convinced of the site's authenticity, you
-need to use `--no-check-certificate' to bypass the verification.
+otherwise invalid certificates.  If you encounter "certificate
+verification" errors or ones saying that "common name doesn't match
+requested host name" and are convinced of the site's authenticity, you
+can use `--no-check-certificate' to bypass the verification.
 
 ** Microsoft's proprietary "NTLM" method of HTTP authentication is now
 supported.  This authentication method is undocumented and only used
