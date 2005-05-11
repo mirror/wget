@@ -446,8 +446,8 @@ ssl_check_server_identity (int fd, const char *host)
        of type dNSName is present, that MUST be used as the identity."
 
      - When matching against common names, it should loop over all
-       common names and choose the most specific (apparently the last
-       one).  */
+       common names and choose the most specific one, i.e. the last
+       one, not the first one, which the current code picks.  */
 
   peer_CN[0] = '\0';
   X509_NAME_get_text_by_NID (X509_get_subject_name (peer_cert),
@@ -471,4 +471,3 @@ ssl_check_server_identity (int fd, const char *host)
   /* Allow --no-check-cert to disable certificate checking. */
   return opt.check_cert ? retval : 1;
 }
-
