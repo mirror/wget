@@ -1,3 +1,8 @@
+2005-05-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (HTTPS (SSL/TLS) Options): Explain certificate
+	checking in more detail.
+
 2005-05-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* texi2pod.pl.in: Allow an "EXAMPLES" section.
