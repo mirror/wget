@@ -1,5 +1,11 @@
 2005-05-12  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp-ls.c (ftp_index): Use %d to print the port number, which is
+	now int.
+	From Steven M. Schweda's VMS patches.
+
+2005-05-12  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (rewrite_shorthand_url): Don't rewrite "https://host" to
 	"ftp://https//host" when SSL is not used.
 
