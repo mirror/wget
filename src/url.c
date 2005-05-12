@@ -534,6 +534,12 @@ rewrite_shorthand_url (const char *url)
   if (p == url)
     return NULL;
 
+  /* If we're looking at "://", it means the URL uses a scheme we
+     don't support, which may include "https" when compiled without
+     SSL support.  Don't bogusly rewrite such URLs.  */
+  if (p[0] == ':' && p[1] == '/' && p[2] == '/')
+    return NULL;
+
   if (*p == ':')
     {
       const char *pp;
