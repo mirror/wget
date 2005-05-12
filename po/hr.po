@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.9-b5\n"
+"Project-Id-Version: wget 1.10-b1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-10 23:25+0200\n"
-"PO-Revision-Date: 2005-05-10 23:28+0200\n"
+"POT-Creation-Date: 2005-05-12 17:42+0200\n"
+"PO-Revision-Date: 2005-05-12 17:43+0200\n"
 "Last-Translator: Hrvoje Nik¹iæ <hniksic@xemacs.org>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
 "MIME-Version: 1.0\n"
@@ -1598,29 +1598,35 @@ msgstr "Nije postavljen zametak PRNG-a; razmisli o --random-file.\n"
 
 #. If the user has specified --no-check-cert, we still want to warn
 #. him about problems with the server's certificate.
-#: src/openssl.c:368
+#: src/openssl.c:409
 msgid "ERROR"
 msgstr "GRE©KA"
 
-#: src/openssl.c:368
+#: src/openssl.c:409
 msgid "WARNING"
 msgstr "UPOZORENJE"
 
-#: src/openssl.c:376
+#: src/openssl.c:417
 #, c-format
 msgid "%s: No certificate presented by %s.\n"
 msgstr "%s: %s nije predoèio ovjeru.\n"
 
-#: src/openssl.c:398
+#: src/openssl.c:439
 #, c-format
 msgid "%s: Certificate verification error for %s: %s\n"
 msgstr "%s: gre¹ka pri verifikaciji ovjere od %s: %s\n"
 
-#: src/openssl.c:428
+#: src/openssl.c:465
 #, c-format
 msgid ""
 "%s: certificate common name `%s' doesn't match requested host name `%s'.\n"
-msgstr "%s: \"common name\" `%s' navedeno u ovjeri ne odgovara tra¾enom imenu `%s'.\n"
+msgstr ""
+"%s: \"common name\" `%s' navedeno u ovjeri ne odgovara tra¾enom imenu `%s'.\n"
+
+#: src/openssl.c:480
+#, c-format
+msgid "To connect to %s insecurely, use `--no-check-certificate'.\n"
+msgstr "Za nesigurno spajanje na %s upotrijebite `--no-check-certificate'.\n"
 
 #. Align the [ skipping ... ] line with the dots.  To do
 #. that, insert the number of spaces equal to the number of
@@ -1680,35 +1686,35 @@ msgstr ""
 "Poku¹avam ponovo.\n"
 "\n"
 
-#: src/url.c:620
+#: src/url.c:626
 msgid "No error"
 msgstr "Nema gre¹ke"
 
-#: src/url.c:622
+#: src/url.c:628
 msgid "Unsupported scheme"
 msgstr "Nepodr¾ana shema"
 
-#: src/url.c:624
+#: src/url.c:630
 msgid "Empty host"
 msgstr "Prazno ime poslu¾itelja"
 
-#: src/url.c:626
+#: src/url.c:632
 msgid "Bad port number"
 msgstr "Neispravan broj porta"
 
-#: src/url.c:628
+#: src/url.c:634
 msgid "Invalid user name"
 msgstr "Neispravno korisnièko ime"
 
-#: src/url.c:630
+#: src/url.c:636
 msgid "Unterminated IPv6 numeric address"
 msgstr "Nedovrssena IPv6 numerièka adresa"
 
-#: src/url.c:632
+#: src/url.c:638
 msgid "IPv6 addresses not supported"
 msgstr "IPv6 adrese nisu podr¾ane"
 
-#: src/url.c:634
+#: src/url.c:640
 msgid "Invalid IPv6 numeric address"
 msgstr "Neispravna IPv6 numerièka adresa"
 
