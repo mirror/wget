@@ -214,7 +214,7 @@ ssl_init ()
 
   /* SSL_VERIFY_NONE instructs OpenSSL not to abort SSL_connect if the
      certificate is invalid.  We verify the certificate separately in
-     ssl_check_server_identity, which provides much better diagnostics
+     ssl_check_certificate, which provides much better diagnostics
      than examining the error stack after a failed SSL_connect.  */
   SSL_CTX_set_verify (ssl_ctx, SSL_VERIFY_NONE, NULL);
 
