@@ -346,6 +346,8 @@ ssl_connect (int fd)
   return 0;
 }
 
+#define ASTERISK_EXCLUDES_DOT	/* mandated by rfc2818 */
+
 /* Return 1 is STRING (case-insensitively) matches PATTERN, 0
    otherwise.  The recognized wildcard character is "*", which matches
    any character in STRING except ".".  Any number of the "*" wildcard
@@ -355,7 +357,10 @@ ssl_connect (int fd)
    contain the wildcard character * which is considered to match any
    single domain name component or component fragment. E.g., *.a.com
    matches foo.a.com but not bar.foo.a.com. f*.com matches foo.com but
-   not bar.com."  */
+   not bar.com [or foo.bar.com]."
+
+   If the pattern contain no wildcards, pattern_match(a, b) is
+   equivalent to !strcasecmp(a, b).  */
 
 static int
 pattern_match (const char *pattern, const char *string)
@@ -370,8 +375,10 @@ pattern_match (const char *pattern, const char *string)
 	for (; *n != '\0'; n++)
 	  if (TOLOWER (*n) == c && pattern_match (p, n))
 	    return 1;
+#ifdef ASTERISK_EXCLUDES_DOT
 	  else if (*n == '.')
 	    return 0;
+#endif
 	return c == '\0';
       }
     else

@@ -1,3 +1,8 @@
+2005-05-13  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* openssl.c (pattern_match): Document the code that decides
+	whether "*" matches ".".
+
 2005-05-12  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ftp-ls.c (ftp_index): Use %d to print the port number, which is
