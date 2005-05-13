@@ -450,8 +450,8 @@ ssl_check_certificate (int fd, const char *host)
       goto out;
     }
 
-  /* Check that HOST matches the common name in the certificate.  ####
-     The remains to be done:
+  /* Check that HOST matches the common name in the certificate.
+     #### The following remains to be done:
 
      - It should use dNSName/ipAddress subjectAltName extensions if
        available; according to rfc2818: "If a subjectAltName extension
