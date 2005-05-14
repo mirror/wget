@@ -17,25 +17,6 @@ majority of modern Unixes, as well as MS Windows.
 IPv4 and IPv6 respectively.  Note that IPv6 support has not yet been
 tested on Windows.
 
-** Talking to SSL servers over proxies now actually works.  Previous
-versions of Wget erroneously sent GET requests for SSL URLs.  Wget
-1.10 utilizes the CONNECT method designed for this purpose.
-
-** SSL/TLS downloads now attempt to verify the server's certificate
-against the recognized certificate authorities.  The CA certificates
-are searched for at the default locations compiled into the OpenSSL
-library, and can be overridden with the `--ca-certificate' and
-`--ca-directory' options.  Wget now also checks that the common name
-presented by the certificate corresponds to the host name in the URL.
-
-Although verifying the certificates provides more secure downloads, it
-*will* break interoperability with some sites that worked with
-previous versions, particularly those using self-signed, expired, or
-otherwise invalid certificates.  If you encounter "certificate
-verification" errors or ones saying that "common name doesn't match
-requested host name" and are convinced of the site's authenticity, you
-can use `--no-check-certificate' to bypass the verification.
-
 ** Microsoft's proprietary "NTLM" method of HTTP authentication is now
 supported.  This authentication method is undocumented and only used
 by IIS.  Note that *proxy* authentication is not supported in this
@@ -48,6 +29,37 @@ where the last attempt left off, and only then continues appending to
 the file.  That way the downloaded file never shrinks, and download
 retries from servers without support for partial downloads work even
 when downloading to stdout.
+
+** SSL/TLS changes:
+
+*** SSL/TLS downloads now attempt to verify the server's certificate
+against the recognized certificate authorities.  This requires CA
+certificates to have been installed in a location visible to the
+OpenSSL library.  If this is not the case, you can get the bundle
+yourself from a source you trust (for example, the bundle extracted
+from Mozilla available at http://curl.haxx.se/docs/caextract.html),
+and point Wget to the PEM file using the `--ca-certificate'
+command-line option or the corresponding `.wgetrc' command.
+
+*** Secure downloads now verify that the host name in the URL matches
+the "common name" in the certificate presented by the server.
+
+*** Although the above checks provide more secure downloads, they
+unavoidably break interoperability with some sites that worked with
+previous versions, particularly those using self-signed, expired, or
+otherwise invalid certificates.  If you encounter "certificate
+verification" errors or complaints that "common name doesn't match
+requested host name" and are convinced of the site's authenticity, you
+can use `--no-check-certificate' to bypass both checks.
+
+*** Talking to SSL/TLS servers over proxies now actually works.
+Previous versions of Wget erroneously sent GET requests for https
+URLs.  Wget 1.10 utilizes the CONNECT method designed for this
+purpose.
+
+*** The SSL/TLS-related options have been redesigned and, for the
+first time, documented in the manual.  The old, undocumented, options
+are no longer supported.
 
 ** Passive FTP is now the default FTP transfer mode.  Use
 `--no-passive-ftp' or specify `passive_ftp = off' in your init file to
@@ -75,12 +87,12 @@ be used to revert to the old behavior.
 ** The new option `--protocol-directories' instructs Wget to also use
 the protocol name as a directory component of local file names.
 
-** Many options that previously unconditionally set or unset various
-flags are now boolean options that can be invoked as either `--OPTION'
-or `--no-OPTION'.  Options that required an argument "on" or "off"
-have also been changed this way, but they still accept the old syntax
-for backward compatibility.  For example, instead of `--glob=off' you
-can write `--no-glob'.
+** Options that previously unconditionally set or unset various flags
+are now boolean options that can be invoked as either `--OPTION' or
+`--no-OPTION'.  Options that required an argument "on" or "off" have
+also been changed this way, but they still accept the old syntax for
+backward compatibility.  For example, instead of `--glob=off' you can
+write `--no-glob'.
 
 Allowing `--no-OPTION' for every `--OPTION' and the other way around
 is useful because it allows the user to override non-default behavior
@@ -92,10 +104,6 @@ permanent ones.  This is useful because many sites track important
 information, such as whether the user has authenticated, in session
 cookies.  With this option multiple Wget runs are treated as a single
 browser session.
-
-** SSL/TLS-related options have been redesigned and documented.  Refer
-to the manual for details.  The old, undocumented, options are no
-longer supported.
 
 ** Wget now supports the --ftp-user and --ftp-password command
 switches to set username and password for FTP, and the --user and
