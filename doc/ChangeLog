@@ -1,3 +1,8 @@
+2005-05-14  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Overview): Document --[no-]proxy as primarily being
+	used to turn *off* the use of proxies.
+
 2005-05-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (HTTPS (SSL/TLS) Options): Explain certificate

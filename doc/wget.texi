@@ -835,11 +835,9 @@ recommendation to block many unrelated users from a web site due to the
 actions of one.
 
 @cindex proxy
-@item -Y on/off
-@itemx --proxy
 @itemx --no-proxy
-Turn proxy support on or off.  The proxy is on by default if the
-appropriate environment variable is defined.
+Don't use proxies, even if the appropriate @code{*_proxy} environment
+variable is defined.
 
 For more information about the use of proxies with Wget, @xref{Proxies}.
 
@@ -3209,13 +3207,10 @@ In addition to the environment variables, proxy location and settings
 may be specified from within Wget itself.
 
 @table @samp
-@item -Y on/off
-@itemx --proxy
 @itemx --no-proxy
 @itemx proxy = on/off
-This option may be used to turn the proxy support on or off.  Proxy
-support is on by default, provided that the appropriate environment
-variables are set.
+This option and the corresponding command may be used to suppress the
+use of proxy, even if the appropriate environment variables are set.
 
 @item http_proxy = @var{URL}
 @itemx ftp_proxy = @var{URL}
