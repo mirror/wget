@@ -1625,13 +1625,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   if (statcode == HTTP_STATUS_UNAUTHORIZED)
     {
       /* Authorization is required.  */
-      if (keep_alive)
-	{
-	  if (skip_short_body (sock, contlen))
-	    CLOSE_FINISH (sock);
-	  else
-	    CLOSE_INVALIDATE (sock);
-	}
+      if (keep_alive && skip_short_body (sock, contlen))
+	CLOSE_FINISH (sock);
+      else
+	CLOSE_INVALIDATE (sock);
       pconn.authorized = 0;
       if (!auth_finished && (user && passwd))
 	{
@@ -1768,13 +1765,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 		     _("Location: %s%s\n"),
 		     hs->newloc ? escnonprint_uri (hs->newloc) : _("unspecified"),
 		     hs->newloc ? _(" [following]") : "");
-	  if (keep_alive)
-	    {
-	      if (skip_short_body (sock, contlen))
-		CLOSE_FINISH (sock);
-	      else
-		CLOSE_INVALIDATE (sock);
-	    }
+	  if (keep_alive && skip_short_body (sock, contlen))
+	    CLOSE_FINISH (sock);
+	  else
+	    CLOSE_INVALIDATE (sock);
 	  xfree_null (type);
 	  return NEWLOCATION;
 	}
