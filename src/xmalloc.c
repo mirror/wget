@@ -304,8 +304,7 @@ print_malloc_debug_stats (void)
 	  malloc_count, free_count, malloc_count - free_count);
   for (i = 0; i < SZ; i++)
     if (malloc_table[i].ptr != NULL)
-      printf ("0x%0*lx: %s:%d\n", 2 * sizeof (void *),
-	      (long) malloc_table[i].ptr,
+      printf ("0x%0*lx: %s:%d\n", PTR_FORMAT (malloc_table[i].ptr),
 	      malloc_table[i].file, malloc_table[i].line);
 }
 
@@ -368,8 +367,7 @@ debugging_free (void *ptr, const char *source_file, int source_line)
   if (!unregister_ptr (ptr))
     {
       fprintf (stderr, "%s: bad xfree(%0*lx) at %s:%d\n",
-	       exec_name, 2 * sizeof (void *), (long) ptr,
-	       source_file, source_line);
+	       exec_name, PTR_FORMAT (ptr), source_file, source_line);
       abort ();
     }
   ++free_count;

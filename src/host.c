@@ -311,10 +311,11 @@ void
 address_list_release (struct address_list *al)
 {
   --al->refcount;
-  DEBUGP (("Releasing %p (new refcount %d).\n", al, al->refcount));
+  DEBUGP (("Releasing 0x%0*lx (new refcount %d).\n", PTR_FORMAT (al),
+	   al->refcount));
   if (al->refcount <= 0)
     {
-      DEBUGP (("Deleting unused %p.\n", al));
+      DEBUGP (("Deleting unused 0x%0*lx.\n", PTR_FORMAT (al)));
       address_list_delete (al);
     }
 }

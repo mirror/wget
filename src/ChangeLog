@@ -1,5 +1,13 @@
 2005-05-14  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* openssl.c (ssl_connect): Announce the beginning and the end of
+	the SSL handshake when in debug mode.
+
+	* wget.h (PTR_FORMAT): New macro for easier printing of pointer
+	values.  Use %0*lx along with PTR_FORMAT instead of %p.
+
+2005-05-14  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (gethttp): Would forget to close the connection when
 	keep_alive was not used.
 

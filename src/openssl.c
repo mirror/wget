@@ -321,6 +321,8 @@ ssl_connect (int fd)
 {
   SSL *ssl;
 
+  DEBUGP (("Initiating SSL handshake.\n"));
+
   assert (ssl_ctx != NULL);
   ssl = SSL_new (ssl_ctx);
   if (!ssl)
@@ -335,11 +337,12 @@ ssl_connect (int fd)
      functions are used for reading, writing, and polling.  */
   fd_register_transport (fd, openssl_read, openssl_write, openssl_poll,
 			 openssl_peek, openssl_close, ssl);
-  DEBUGP (("Connected %d to SSL 0x%0*lx\n", fd, 2 * sizeof (void *),
-	   (unsigned long) ssl));
+  DEBUGP (("Handshake successful; connected socket %d to SSL handle 0x%0*lx\n",
+	   fd, PTR_FORMAT (ssl)));
   return 1;
 
  error:
+  DEBUGP (("SSL handshake failed.\n"));
   print_errors ();
   if (ssl)
     SSL_free (ssl);
@@ -478,6 +481,8 @@ ssl_check_certificate (int fd, const char *host)
 
   /* The certificate was found, verified, and matched HOST. */
   success = 1;
+  DEBUGP (("X509 certificate successfully verified and matches host %s\n",
+	   escnonprint (host)));
 
  out:
   if (cert)
