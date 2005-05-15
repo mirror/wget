@@ -744,6 +744,18 @@ escnonprint_internal (const char *str, char escape, int base)
    characters in STR, STR is returned.  See copy_and_escape for more
    information on which characters are considered non-printable.
 
+   DON'T call this function on translated strings because escaping
+   will break them.  Don't call it on literal strings from the source,
+   which are by definition trusted.  If newlines are allowed in the
+   string, escape and print it line by line because escaping the whole
+   string will convert newlines to \012.  (This is so that expectedly
+   single-line messages cannot use embedded newlines to mimic Wget's
+   output and deceive the user.)
+
+   escnonprint doesn't quote its escape character because it is notf
+   meant as a general and reversible quoting mechanism, but as a quick
+   way to defang binary junk sent by malicious or buggy servers.
+
    NOTE: since this function can return a pointer to static data, be
    careful to copy its result before calling it again.  However, to be
    more useful with printf, it maintains an internal ring of static
@@ -759,11 +771,9 @@ escnonprint (const char *str)
 
 /* Return a pointer to a static copy of STR with the non-printable
    characters escaped as %XX.  If there are no non-printable
-   characters in STR, STR is returned.  See copy_and_escape for more
-   information on which characters are considered non-printable.
+   characters in STR, STR is returned.
 
-   This function returns a pointer to static data which will be
-   overwritten by subsequent calls -- see escnonprint for details.  */
+   See escnonprint for usage details.  */
 
 const char *
 escnonprint_uri (const char *str)
