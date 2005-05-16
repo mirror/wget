@@ -1,3 +1,8 @@
+2005-05-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* ftp.c (print_length): Consistently print \n at end of the
+	"Length" line.
+
 2005-05-14  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* openssl.c (ssl_connect): Announce the beginning and the end of
