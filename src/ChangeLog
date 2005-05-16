@@ -1,5 +1,10 @@
 2005-05-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp-basic.c: Don't xfree() the line returned by ftp_response if
+	the returned code is not FTPOK.
+
+2005-05-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c (cleanup): Don't free the non-existent opt.ftp_acc.  Free
 	the SSL-related stuff.
 

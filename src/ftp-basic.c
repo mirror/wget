@@ -57,7 +57,11 @@ char ftp_last_respline[128];
 /* Get the response of FTP server and allocate enough room to handle
    it.  <CR> and <LF> characters are stripped from the line, and the
    line is 0-terminated.  All the response lines but the last one are
-   skipped.  The last line is determined as described in RFC959.  */
+   skipped.  The last line is determined as described in RFC959.
+
+   If the line is successfully read, FTPOK is returned, and *ret_line
+   is assigned a freshly allocated line.  Otherwise, FTPRERR is
+   returned, and the value of *ret_line should be ignored.  */
 
 uerr_t
 ftp_response (int fd, char **ret_line)
@@ -170,10 +174,7 @@ ftp_login (int csock, const char *acc, const char *pass)
   /* Get appropriate response.  */
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
-    {
-      xfree (respline);
-      return err;
-    }
+    return err;
   /* An unprobable possibility of logging without a password.  */
   if (*respline == '2')
     {
@@ -237,10 +238,7 @@ ftp_login (int csock, const char *acc, const char *pass)
   /* Get appropriate response.  */
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
-    {
-      xfree (respline);
-      return err;
-    }
+    return err;
   if (*respline != '2')
     {
       xfree (respline);
@@ -315,7 +313,6 @@ ftp_port (int csock, int *local_sock)
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
-      xfree (respline);
       fd_close (*local_sock);
       return err;
     }
@@ -408,7 +405,6 @@ ftp_lprt (int csock, int *local_sock)
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
-      xfree (respline);
       fd_close (*local_sock);
       return err;
     }
@@ -489,7 +485,6 @@ ftp_eprt (int csock, int *local_sock)
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
-      xfree (respline);
       fd_close (*local_sock);
       return err;
     }
@@ -533,10 +528,7 @@ ftp_pasv (int csock, ip_address *addr, int *port)
   /* Get the server response.  */
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
-    {
-      xfree (respline);
-      return err;
-    }
+    return err;
   if (*respline != '2')
     {
       xfree (respline);
@@ -603,10 +595,7 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
   /* Get the server response.  */
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
-    {
-      xfree (respline);
-      return err;
-    }
+    return err;
   if (*respline != '2')
     {
       xfree (respline);
@@ -768,10 +757,7 @@ ftp_epsv (int csock, ip_address *ip, int *port)
   /* Get the server response.  */
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
-    {
-      xfree (respline);
-      return err;
-    }
+    return err;
   if (*respline != '2')
     {
       xfree (respline);
@@ -867,10 +853,7 @@ ftp_type (int csock, int type)
   /* Get appropriate response.  */
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
-    {
-      xfree (respline);
-      return err;
-    }
+    return err;
   if (*respline != '2')
     {
       xfree (respline);
@@ -902,10 +885,7 @@ ftp_cwd (int csock, const char *dir)
   /* Get appropriate response.  */
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
-    {
-      xfree (respline);
-      return err;
-    }
+    return err;
   if (*respline == '5')
     {
       xfree (respline);
@@ -940,10 +920,7 @@ ftp_rest (int csock, wgint offset)
   /* Get appropriate response.  */
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
-    {
-      xfree (respline);
-      return err;
-    }
+    return err;
   if (*respline != '3')
     {
       xfree (respline);
@@ -974,10 +951,7 @@ ftp_retr (int csock, const char *file)
   /* Get appropriate response.  */
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
-    {
-      xfree (respline);
-      return err;
-    }
+    return err;
   if (*respline == '5')
     {
       xfree (respline);
@@ -1014,10 +988,7 @@ ftp_list (int csock, const char *file)
   /* Get appropriate respone.  */
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
-    {
-      xfree (respline);
-      return err;
-    }
+    return err;
   if (*respline == '5')
     {
       xfree (respline);
@@ -1054,10 +1025,7 @@ ftp_syst (int csock, enum stype *server_type)
   /* Get appropriate response.  */
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
-    {
-      xfree (respline);
-      return err;
-    }
+    return err;
   if (*respline == '5')
     {
       xfree (respline);
@@ -1110,10 +1078,7 @@ ftp_pwd (int csock, char **pwd)
   /* Get appropriate response.  */
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
-    {
-      xfree (respline);
-      return err;
-    }
+    return err;
   if (*respline == '5')
     {
       xfree (respline);
@@ -1158,7 +1123,6 @@ ftp_size (int csock, const char *file, wgint *size)
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
-      xfree (respline);
       *size = 0;
       return err;
     }
