@@ -1,5 +1,10 @@
 2005-05-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* openssl.c (ssl_check_certificate): Print all issues with a
+	certificate.
+
+2005-05-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ftp-basic.c: Don't xfree() the line returned by ftp_response if
 	the returned code is not FTPOK.
 

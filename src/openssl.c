@@ -412,7 +412,7 @@ ssl_check_certificate (int fd, const char *host)
   X509 *cert;
   char common_name[256];
   long vresult;
-  int success;
+  int success = 1;
 
   /* If the user has specified --no-check-cert, we still want to warn
      him about problems with the server's certificate.  */
@@ -427,7 +427,7 @@ ssl_check_certificate (int fd, const char *host)
       logprintf (LOG_NOTQUIET, _("%s: No certificate presented by %s.\n"),
 		 severity, escnonprint (host));
       success = 0;
-      goto out;
+      goto out;			/* must bail out since CERT is NULL */
     }
 
 #ifdef ENABLE_DEBUG
@@ -445,12 +445,22 @@ ssl_check_certificate (int fd, const char *host)
   vresult = SSL_get_verify_result (ssl);
   if (vresult != X509_V_OK)
     {
+      /* #### We might want to print saner (and translatable) error
+	 messages for several frequently encountered errors.  The
+	 candidates would include
+	 X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY,
+	 X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN,
+	 X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT,
+	 X509_V_ERR_CERT_NOT_YET_VALID, X509_V_ERR_CERT_HAS_EXPIRED,
+	 and possibly others.  The current approach would still be
+	 used for the less frequent failure cases.  */
       logprintf (LOG_NOTQUIET,
 		 _("%s: Certificate verification error for %s: %s\n"),
 		 severity, escnonprint (host),
 		 X509_verify_cert_error_string (vresult));
       success = 0;
-      goto out;
+      /* Fall through, so that the user is warned about *all* issues
+	 with the cert (important with --no-check-certificate.)  */
     }
 
   /* Check that HOST matches the common name in the certificate.
@@ -476,13 +486,11 @@ ssl_check_certificate (int fd, const char *host)
 %s: certificate common name `%s' doesn't match requested host name `%s'.\n"),
 		 severity, escnonprint (common_name), escnonprint (host));
       success = 0;
-      goto out;
     }
 
-  /* The certificate was found, verified, and matched HOST. */
-  success = 1;
-  DEBUGP (("X509 certificate successfully verified and matches host %s\n",
-	   escnonprint (host)));
+  if (success)
+    DEBUGP (("X509 certificate successfully verified and matches host %s\n",
+	     escnonprint (host)));
 
  out:
   if (cert)
