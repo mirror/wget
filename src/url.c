@@ -1126,7 +1126,7 @@ url_free (struct url *url)
 }
 
 /* Create all the necessary directories for PATH (a file).  Calls
-   mkdirhier() internally.  */
+   make_directory internally.  */
 int
 mkalldirs (const char *path)
 {
