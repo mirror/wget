@@ -1494,7 +1494,6 @@ cleanup (void)
   free_vec (opt.follow_tags);
   free_vec (opt.ignore_tags);
   xfree_null (opt.progress_type);
-  xfree (opt.ftp_acc);
   xfree_null (opt.ftp_user);
   xfree_null (opt.ftp_passwd);
   xfree_null (opt.ftp_proxy);
@@ -1509,6 +1508,10 @@ cleanup (void)
 # ifdef HAVE_SSL
   xfree_null (opt.cert_file);
   xfree_null (opt.private_key);
+  xfree_null (opt.ca_directory);
+  xfree_null (opt.ca_cert);
+  xfree_null (opt.random_file);
+  xfree_null (opt.egd_file);
 # endif
   xfree_null (opt.bind_address);
   xfree_null (opt.cookies_input);

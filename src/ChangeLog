@@ -1,5 +1,10 @@
 2005-05-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* init.c (cleanup): Don't free the non-existent opt.ftp_acc.  Free
+	the SSL-related stuff.
+
+2005-05-16  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ftp.c (print_length): Consistently print \n at end of the
 	"Length" line.
 
