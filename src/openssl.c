@@ -491,11 +491,9 @@ ssl_check_certificate (int fd, const char *host)
   if (success)
     DEBUGP (("X509 certificate successfully verified and matches host %s\n",
 	     escnonprint (host)));
+  X509_free (cert);
 
  out:
-  if (cert)
-    X509_free (cert);
-
   if (opt.check_cert && !success)
     logprintf (LOG_NOTQUIET, _("\
 To connect to %s insecurely, use `--no-check-certificate'.\n"),
