@@ -969,12 +969,12 @@ persistent_available_p (const char *host, int port, int ssl,
      still hope -- read below.  */
   if (0 != strcasecmp (host, pconn.host))
     {
-      /* If pconn.socket is already talking to HOST, we needn't
-	 reconnect.  This happens often when both sites are virtual
-	 hosts distinguished only by name and served by the same
-	 network interface, and hence the same web server (possibly
-	 set up by the ISP and serving many different web sites).
-	 This admittedly non-standard optimization does not contradict
+      /* Check if pconn.socket is talking to HOST under another name.
+	 This happens often when both sites are virtual hosts
+	 distinguished only by name and served by the same network
+	 interface, and hence the same web server (possibly set up by
+	 the ISP and serving many different web sites).  This
+	 admittedly unconventional optimization does not contradict
 	 HTTP and works well with popular server software.  */
 
       int found;
@@ -983,8 +983,8 @@ persistent_available_p (const char *host, int port, int ssl,
 
       if (ssl)
 	/* Don't try to talk to two different SSL sites over the same
-	   secure connection!  (Besides, it's not clear if name-based
-	   virtual hosting is even possible with SSL.)  */
+	   secure connection!  (Besides, it's not clear that
+	   name-based virtual hosting is even possible with SSL.)  */
 	return 0;
 
       /* If pconn.socket's peer is one of the IP addresses HOST
