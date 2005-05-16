@@ -450,7 +450,7 @@ ftp_eprt (int csock, int *local_sock)
   int nwritten;
   int port;
   /* Must contain the argument of EPRT (of the form |af|addr|port|). 
-   * 4 chars for the | separators, ENABLE_IPV6_ADDRSTRLEN chars for addr  
+   * 4 chars for the | separators, INET6_ADDRSTRLEN chars for addr  
    * 1 char for af (1-2) and 5 chars for port (0-65535) */
   char bytes[4 + INET6_ADDRSTRLEN + 1 + 5 + 1];
 
@@ -468,7 +468,7 @@ ftp_eprt (int csock, int *local_sock)
   if (*local_sock < 0)
     return FTPSYSERR;
 
-  /* Construct the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
+  /* Construct the argument of EPRT (of the form |af|addr|port|). */
   ip_address_to_eprt_repr (&addr, port, bytes, sizeof (bytes));
 
   /* Send PORT request.  */
