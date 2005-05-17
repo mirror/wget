@@ -1,5 +1,7 @@
 2005-05-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp.c (ftp_loop_internal): Same here.
+
 	* http.c (http_loop): Don't clobber the file when -c is specified
 	and the first attempt to retrieve the file fails.
 

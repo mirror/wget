@@ -1158,13 +1158,17 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	}
 
       /* Decide whether or not to restart.  */
-      restval = 0;
-      if (count > 1)
-	restval = len;		/* start where the previous run left off */
-      else if (opt.always_rest
-	       && stat (locf, &st) == 0
-	       && S_ISREG (st.st_mode))
+      if (opt.always_rest
+	  && stat (locf, &st) == 0
+	  && S_ISREG (st.st_mode))
+	/* When -c is used, continue from on-disk size.  (Can't use
+	   hstat.len even if count>1 because we don't want a failed
+	   first attempt to clobber existing data.)  */
 	restval = st.st_size;
+      else if (count > 1)
+	restval = len;		/* start where the previous run left off */
+      else
+	restval = 0;
 
       /* Get the current time string.  */
       tms = time_str (NULL);
