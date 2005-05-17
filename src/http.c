@@ -2141,13 +2141,18 @@ File `%s' already there, will not retrieve.\n"), *hstat.local_file);
 	*dt &= ~HEAD_ONLY;
 
       /* Decide whether or not to restart.  */
-      hstat.restval = 0;
-      if (count > 1)
-	hstat.restval = hstat.len; /* continue where we left off */
-      else if (opt.always_rest
-	       && stat (locf, &st) == 0
-	       && S_ISREG (st.st_mode))
+      if (opt.always_rest
+	  && stat (locf, &st) == 0
+	  && S_ISREG (st.st_mode))
+	/* When -c is used, continue from on-disk size.  (Can't use
+	   hstat.len even if count>1 because we don't want a failed
+	   first attempt to clobber existing data.)  */
 	hstat.restval = st.st_size;
+      else if (count > 1)
+	/* otherwise, continue where the previous try left off */
+	hstat.restval = hstat.len;
+      else
+	hstat.restval = 0;
 
       /* Decide whether to send the no-cache directive.  We send it in
 	 two cases:
