@@ -1,3 +1,11 @@
+2005-05-18  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* cookies.c (update_cookie_field): Explicitly cast -1 to time_t to
+	cope with systems where time_t is unsigned.
+
+	* cookies.c: Remove unnecessary casts to time_t from values
+	already of that type.
+
 2005-05-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ftp.c (ftp_loop_internal): Same here.

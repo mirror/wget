@@ -264,7 +264,7 @@ store_cookie (struct cookie_jar *jar, struct cookie *cookie)
 #ifdef ENABLE_DEBUG
   if (opt.debug)
     {
-      time_t exptime = (time_t) cookie->expiry_time;
+      time_t exptime = cookie->expiry_time;
       DEBUGP (("\nStored cookie %s %d%s %s <%s> <%s> [expiry %s] %s %s\n",
 	       cookie->domain, cookie->port,
 	       cookie->port == PORT_ANY ? " (ANY)" : "",
@@ -394,10 +394,10 @@ update_cookie_field (struct cookie *cookie,
       BOUNDED_TO_ALLOCA (value_b, value_e, value_copy);
 
       expires = http_atotm (value_copy);
-      if (expires != -1)
+      if (expires != (time_t) -1)
 	{
 	  cookie->permanent = 1;
-	  cookie->expiry_time = (time_t)expires;
+	  cookie->expiry_time = expires;
 	}
       else
 	/* Error in expiration spec.  Assume default (cookie doesn't
