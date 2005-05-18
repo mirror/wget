@@ -19,9 +19,9 @@ authentication.
 Dan Harkless.  Added --backup-converted, --follow-tags, --html-extension,
 --ignore-tags, and --page-requisites; improved documentation; etc.
 
-Christian Fraenkel.  Implemented SSL support.
+Christian Fraenkel.  Initially implemented SSL support.
 
-Thomas Lussnig.  Implemented IPv6 support.
+Thomas Lussnig.  Initially implemented IPv6 support.
 
 Ian Abbott.  Contributed bugfixes, Windows-related fixes, provided a
 prototype implementation of the new recursive code, and more.
@@ -36,4 +36,4 @@ family systems.  Refactored and enhanced FTP IPv6 code.
 Nicolas Schodet.  Contributed to cookie code and documentation.
 
 Daniel Stenberg.  NTLM authentication in http-ntlm.c and http-ntlm.h
-originally written curl donated for use in GNU Wget.
+originally written for curl donated for use in GNU Wget.
