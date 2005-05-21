@@ -1,3 +1,8 @@
+2005-05-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* init.c (setval_internal): Report exact command name alongside
+	the "display name".
+
 2005-05-18  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* cookies.c (update_cookie_field): Explicitly cast -1 to time_t to
