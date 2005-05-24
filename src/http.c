@@ -2596,8 +2596,9 @@ check_end (const char *p)
 /* Convert the textual specification of time in TIME_STRING to the
    number of seconds since the Epoch.
 
-   TIME_STRING can be in any of the three formats RFC2068 allows the
-   HTTP servers to emit -- RFC1123-date, RFC850-date or asctime-date.
+   TIME_STRING can be in any of the three formats RFC2616 allows the
+   HTTP servers to emit -- RFC1123-date, RFC850-date or asctime-date,
+   as well as the time format used in the Set-Cookie header.
    Timezones are ignored, and should be GMT.
 
    Return the computed time_t representation, or -1 if the conversion
@@ -2631,10 +2632,10 @@ http_atotm (const char *time_string)
   static const char *time_formats[] = {
     "%a, %d %b %Y %T",		/* rfc1123: Thu, 29 Jan 1998 22:12:57 */
     "%A, %d-%b-%y %T",		/* rfc850:  Thursday, 29-Jan-98 22:12:57 */
-    "%a, %d-%b-%Y %T",		/* rfc850+: Thu, 29-Jan-1998 22:12:57
-				   (post-y2k-rfc850; apparently google
-				   uses this for their cookies.) */
-    "%a %b %d %T %Y"		/* asctime: Thu Jan 29 22:12:57 1998 */
+    "%a %b %d %T %Y",		/* asctime: Thu Jan 29 22:12:57 1998 */
+    "%a, %d-%b-%Y %T"		/* cookies: Thu, 29-Jan-1998 22:12:57
+				   (used in Set-Cookie, defined in the
+				   Netscape cookie specification.) */
   };
   int i;
 
