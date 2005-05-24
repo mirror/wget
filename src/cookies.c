@@ -27,20 +27,20 @@ modify this file, you may extend this exception to your version of the
 file, but you are not obligated to do so.  If you do not wish to do
 so, delete this exception statement from your version.  */
 
-/* Written by Hrvoje Niksic.  Parts are loosely inspired by cookie
-   code submitted by Tomasz Wegrzanowski.
+/* Written by Hrvoje Niksic.  Parts are loosely inspired by the
+   cookie patch submitted by Tomasz Wegrzanowski.
 
-   Ideas for future work:
+   This implements the client-side cookie support, as specified
+   (loosely) by Netscape's "preliminary specification", currently
+   available at:
 
-   * Implement limits on cookie-related sizes, such as max. cookie
-     size, max. number of cookies, etc.
+       http://wp.netscape.com/newsref/std/cookie_spec.html
 
-   * Add more "cookie jar" methods, such as methods to iterate over
-     stored cookies, to clear temporary cookies, to perform
-     intelligent auto-saving, etc.
-
-   * Support `Set-Cookie2' and `Cookie2' headers?  Does anyone really
-     use them?  */
+   rfc2109 is not supported because of its incompatibilities with the
+   above widely-used specification.  rfc2965 is entirely ignored,
+   since popular client software doesn't implement it, and even the
+   sites that do send Set-Cookie2 also emit Set-Cookie for
+   compatibility.  */
 
 #include <config.h>
 
