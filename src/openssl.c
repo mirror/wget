@@ -427,7 +427,7 @@ ssl_check_certificate (int fd, const char *host)
       logprintf (LOG_NOTQUIET, _("%s: No certificate presented by %s.\n"),
 		 severity, escnonprint (host));
       success = 0;
-      goto out;			/* must bail out since CERT is NULL */
+      goto no_cert;		/* must bail out since CERT is NULL */
     }
 
 #ifdef ENABLE_DEBUG
@@ -474,8 +474,8 @@ ssl_check_certificate (int fd, const char *host)
        common names and choose the most specific one, i.e. the last
        one, not the first one, which the current code picks.
 
-     - Make sure that the names are encoded as UTF-8 which, being
-       ASCII-compatible, can be easily compared against HOST.  */
+     - Ensure that ASN1 strings from the certificate are encoded as
+       UTF-8 which can be meaningfully compared to HOST.  */
 
   common_name[0] = '\0';
   X509_NAME_get_text_by_NID (X509_get_subject_name (cert),
@@ -493,7 +493,7 @@ ssl_check_certificate (int fd, const char *host)
 	     escnonprint (host)));
   X509_free (cert);
 
- out:
+ no_cert:
   if (opt.check_cert && !success)
     logprintf (LOG_NOTQUIET, _("\
 To connect to %s insecurely, use `--no-check-certificate'.\n"),
