@@ -481,6 +481,10 @@ tag_handle_link (int tagid, struct taginfo *tag, struct map_context *ctx)
 	      && (0 == strcasecmp (rel, "stylesheet")
 		  || 0 == strcasecmp (rel, "shortcut icon")))
 	    up->link_inline_p = 1;
+	  else
+	    /* The external ones usually point to HTML pages, such as
+	       <link rel="next" href="..."> */
+	    up->link_expect_html = 1;
 	}
     }
 }

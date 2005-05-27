@@ -1,3 +1,8 @@
+2005-05-27  Andreas Beckmann  <debian@abeckmann.de>
+
+	* html-url.c (tag_handle_link): Mark the content from the <link
+	src="..."> tag as expecting HTML.
+
 2005-05-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (http_atotm): Document the origin of the "cookie date"
