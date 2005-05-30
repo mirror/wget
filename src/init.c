@@ -162,7 +162,7 @@ static struct {
   { "ftpproxy",		&opt.ftp_proxy,		cmd_string },
   { "ftpuser",	        &opt.ftp_user,		cmd_string },
   { "glob",		&opt.ftp_glob,		cmd_boolean },
-  { "header",		&opt.user_headers,	cmd_spec_header },
+  { "header",		NULL,			cmd_spec_header },
   { "htmlextension",	&opt.html_extension,	cmd_boolean },
   { "htmlify",		NULL,			cmd_spec_htmlify },
   { "httpkeepalive",	&opt.http_keep_alive,	cmd_boolean },
@@ -1118,15 +1118,24 @@ cmd_spec_dirstruct (const char *com, const char *val, void *place_ignored)
 }
 
 static int
-cmd_spec_header (const char *com, const char *val, void *place)
+cmd_spec_header (const char *com, const char *val, void *place_ignored)
 {
+  /* Empty value means reset the list of headers. */
+  if (*val == '\0')
+    {
+      free_vec (opt.user_headers);
+      opt.user_headers = NULL;
+      return 1;
+    }
+
   if (!check_user_specified_header (val))
     {
       fprintf (stderr, _("%s: %s: Invalid header `%s'.\n"),
 	       exec_name, com, val);
       return 0;
     }
-  return cmd_vector (com, val, place);
+  opt.user_headers = vec_append (opt.user_headers, val);
+  return 1;
 }
 
 static int

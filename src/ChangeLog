@@ -1,3 +1,11 @@
+2005-05-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* init.c (cmd_spec_header): Don't split the string along the
+	commas using cmd_vector; just append the new value using
+	vec_append instead.
+
+	* utils.c (vec_append): New function.
+
 2005-05-27  Andreas Beckmann  <debian@abeckmann.de>
 
 	* html-url.c (tag_handle_link): Mark the content from the <link

@@ -92,6 +92,7 @@ void read_file_free PARAMS ((struct file_memory *));
 
 void free_vec PARAMS ((char **));
 char **merge_vecs PARAMS ((char **, char **));
+char **vec_append PARAMS ((char **, const char *));
 
 void string_set_add PARAMS ((struct hash_table *, const char *));
 int string_set_contains PARAMS ((struct hash_table *, const char *));

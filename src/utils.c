@@ -1085,6 +1085,30 @@ merge_vecs (char **v1, char **v2)
   xfree (v2);
   return v1;
 }
+
+/* Append a freshly allocated copy of STR to VEC.  If VEC is NULL, it
+   is allocated as needed.  Return the new value of the vector. */
+
+char **
+vec_append (char **vec, const char *str)
+{
+  int cnt;			/* count of vector elements, including
+				   the one we're about to append */
+  if (vec != NULL)
+    {
+      for (cnt = 0; vec[cnt]; cnt++)
+	;
+      ++cnt;
+    }
+  else
+    cnt = 1;
+  /* Reallocate the array to fit the new element and the NULL. */
+  vec = xrealloc (vec, (cnt + 1) * sizeof (char *));
+  /* Append a copy of STR to the vector. */
+  vec[cnt - 1] = xstrdup (str);
+  vec[cnt] = NULL;
+  return vec;
+}
 
 /* Sometimes it's useful to create "sets" of strings, i.e. special
    hash tables where you want to store strings as keys and merely
