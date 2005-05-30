@@ -1,5 +1,10 @@
 2005-05-30  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c (strpbrk_or_eos): Check for a recent GCC version before
+	using the statement-as-expression extension.
+
+2005-05-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (gethttp): Don't attempt to "skip short body" if we're
 	issuing a HEAD request (in which case the response head is not
 	followed by a body).

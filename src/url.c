@@ -584,7 +584,7 @@ static void split_path PARAMS ((const char *, char **, char **));
    help because the check for literal accept is in the
    preprocessor.)  */
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && __GNUC__ >= 3
 
 #define strpbrk_or_eos(s, accept) ({		\
   char *SOE_p = strpbrk (s, accept);		\
@@ -593,7 +593,7 @@ static void split_path PARAMS ((const char *, char **, char **));
   SOE_p;					\
 })
 
-#else  /* not __GNUC__ */
+#else  /* not __GNUC__ or old gcc */
 
 static inline char *
 strpbrk_or_eos (const char *s, const char *accept)
@@ -603,7 +603,7 @@ strpbrk_or_eos (const char *s, const char *accept)
     p = strchr (s, '\0');
   return p;
 }
-#endif /* not __GNUC__ */
+#endif /* not __GNUC__ or old gcc */
 
 /* Turn STR into lowercase; return non-zero if a character was
    actually changed. */
