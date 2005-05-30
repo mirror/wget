@@ -105,7 +105,7 @@ CMD_DECLARE (cmd_spec_useragent);
    function.  When adding a new command, simply add it to the list,
    but be sure to keep the list sorted alphabetically, as
    command_by_name depends on it.  Also, be sure to add any entries
-   that allocate memory (e.g. cmd_string and cmd_vector guys) to the
+   that allocate memory (e.g. cmd_string and cmd_vector) to the
    cleanup() function below. */
 
 static struct {
