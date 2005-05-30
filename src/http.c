@@ -1158,6 +1158,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   /* Whether our connection to the remote host is through SSL.  */
   int using_ssl = 0;
 
+  /* Whether a HEAD request will be issued (as opposed to GET or
+     POST). */
+  int head_only = *dt & HEAD_ONLY;
+
   char *head;
   struct response *resp;
   char hdrval[256];
@@ -1197,7 +1201,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     }
 #endif /* HAVE_SSL */
 
-  if (!(*dt & HEAD_ONLY))
+  if (!head_only)
     /* If we're doing a GET on the URL, as opposed to just a HEAD, we need to
        know the local filename so we can save to it. */
     assert (*hs->local_file != NULL);
@@ -1218,7 +1222,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   {
     char *meth_arg;
     const char *meth = "GET";
-    if (*dt & HEAD_ONLY)
+    if (head_only)
       meth = "HEAD";
     else if (opt.post_file_name || opt.post_data)
       meth = "POST";
@@ -1625,7 +1629,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   if (statcode == HTTP_STATUS_UNAUTHORIZED)
     {
       /* Authorization is required.  */
-      if (keep_alive && skip_short_body (sock, contlen))
+      if (keep_alive && !head_only && skip_short_body (sock, contlen))
 	CLOSE_FINISH (sock);
       else
 	CLOSE_INVALIDATE (sock);
@@ -1765,7 +1769,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 		     _("Location: %s%s\n"),
 		     hs->newloc ? escnonprint_uri (hs->newloc) : _("unspecified"),
 		     hs->newloc ? _(" [following]") : "");
-	  if (keep_alive && skip_short_body (sock, contlen))
+	  if (keep_alive && !head_only && skip_short_body (sock, contlen))
 	    CLOSE_FINISH (sock);
 	  else
 	    CLOSE_INVALIDATE (sock);
@@ -1871,7 +1875,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   type = NULL;			/* We don't need it any more.  */
 
   /* Return if we have no intention of further downloading.  */
-  if (!(*dt & RETROKF) || (*dt & HEAD_ONLY))
+  if (!(*dt & RETROKF) || head_only)
     {
       /* In case the caller cares to look...  */
       hs->len = 0;

@@ -1,5 +1,11 @@
 2005-05-30  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (gethttp): Don't attempt to "skip short body" if we're
+	issuing a HEAD request (in which case the response head is not
+	followed by a body).
+
+2005-05-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c (cmd_spec_header): Don't split the string along the
 	commas using cmd_vector; just append the new value using
 	vec_append instead.
