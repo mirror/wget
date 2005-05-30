@@ -1311,12 +1311,12 @@ use chunked unless it knows it's talking to an HTTP/1.1 server.  And it
 can't know that until it receives a response, which in turn requires the
 request to have been completed -- a chicken-and-egg problem.
 
-Note: if Wget is redirected after the POST request is completed, it will
-not send the POST data to the redirected URL.  This is because URLs that
-process POST often respond with a redirection to a regular page
-(although that's technically disallowed), which does not desire or
-accept POST.  It is not yet clear that this behavior is optimal; if it
-doesn't work out, it will be changed.
+Note: if Wget is redirected after the POST request is completed, it
+will not send the POST data to the redirected URL.  This is because
+URLs that process POST often respond with a redirection to a regular
+page, which does not desire or accept POST.  It is not completely
+clear that this behavior is optimal; if it doesn't work out, it might
+be changed in the future.
 
 This example shows how to log to a server using POST and then proceed to
 download the desired pages, presumably only accessible to authorized

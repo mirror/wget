@@ -1,3 +1,11 @@
+2005-05-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (HTTP Options): Removed statement that redirect in
+	response to POST is "technically disallowed", which I cannot find
+	in rfc2616 nor in rfc1945.  Even if that were technically the
+	case, the widespreadedness of such responses would make the
+	prohibition irrelevant.
+
 2005-05-14  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Overview): Document --[no-]proxy as primarily being
