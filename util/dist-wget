@@ -35,7 +35,7 @@
 # * Checks out the clean CVS source from the repository to a temporary
 #   directory.
 # * Runs autoconf, configure and `make' in the doc and po subdirs to
-#   make sure that all the generated files, such as `confifure',
+#   make sure that all the generated files, such as `configure',
 #   `wget.info', and translated PO files, end up in the distribution.
 # * Optionally changes src/version.c and doc/version.texi to the
 #   version forced by `--force-version'.
