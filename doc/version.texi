@@ -1,1 +1,1 @@
-@set VERSION 1.10-alpha2+cvs-dev
+@set VERSION 1.10
