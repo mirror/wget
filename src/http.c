@@ -1365,8 +1365,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  post_data_size = file_size (opt.post_file_name);
 	  if (post_data_size == -1)
 	    {
-	      logprintf (LOG_NOTQUIET, "POST data file missing: %s\n",
-			 opt.post_file_name);
+	      logprintf (LOG_NOTQUIET, _("POST data file missing: %s (%s)\n"),
+			 opt.post_file_name, strerror (errno));
 	      post_data_size = 0;
 	    }
 	}
@@ -2040,7 +2040,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       /* If opt.noclobber is turned on and file already exists, do not
 	 retrieve the file */
       logprintf (LOG_VERBOSE, _("\
-File `%s' already there, will not retrieve.\n"), *hstat.local_file);
+File `%s' already there; not retrieving.\n\n"), *hstat.local_file);
       /* If the file is there, we suppose it's retrieved OK.  */
       *dt |= RETROKF;
 
@@ -2440,7 +2440,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
 	  else if (!opt.kill_longer) /* meaning we got more than expected */
 	    {
 	      logprintf (LOG_VERBOSE,
-			 _("%s (%s) - `%s' saved [%s/%s])\n\n"),
+			 _("%s (%s) - `%s' saved [%s/%s]\n\n"),
 			 tms, tmrate, locf,
 			 number_to_static_string (hstat.len),
 			 number_to_static_string (hstat.contlen));

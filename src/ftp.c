@@ -1111,7 +1111,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
   if (opt.noclobber && file_exists_p (con->target))
     {
       logprintf (LOG_VERBOSE,
-		 _("File `%s' already there, not retrieving.\n"), con->target);
+		 _("File `%s' already there; not retrieving.\n"), con->target);
       /* If the file is there, we suppose it's retrieved OK.  */
       return RETROK;
     }

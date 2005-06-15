@@ -862,7 +862,7 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
       if (!check_domain_match (cookie->domain, host))
 	{
 	  logprintf (LOG_NOTQUIET,
-		     "Cookie coming from %s attempted to set domain to %s\n",
+		     _("Cookie coming from %s attempted to set domain to %s\n"),
 		     escnonprint (host), escnonprint (cookie->domain));
 	  xfree (cookie->domain);
 	  goto copy_domain;
@@ -1317,7 +1317,7 @@ cookie_jar_load (struct cookie_jar *jar, const char *file)
   FILE *fp = fopen (file, "r");
   if (!fp)
     {
-      logprintf (LOG_NOTQUIET, "Cannot open cookies file `%s': %s\n",
+      logprintf (LOG_NOTQUIET, _("Cannot open cookies file `%s': %s\n"),
 		 file, strerror (errno));
       return;
     }

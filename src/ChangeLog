@@ -1,6 +1,12 @@
 2005-06-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
-	* ftp-basic.c (ftp_pwd): Handle malformed PWD response.
+	* http.c (gethttp): Also report the system error when the POST
+	data file is missing.
+
+2005-06-15  Benno Schulenberg  <benno@nietvergeten.nl>
+
+	* ftp.c, http.c, connect.c, cookies.c, html-url.c, init.c, res.c:
+	Gettext-ize messages that were previously missed.
 
 2005-06-15  Hrvoje Niksic  <hniksic@xemacs.org>
 

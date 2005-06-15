@@ -344,7 +344,7 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
     if (sock >= 0)
       fd_close (sock);
     if (print)
-      logprintf (LOG_VERBOSE, "failed: %s.\n", strerror (errno));
+      logprintf (LOG_VERBOSE, _("failed: %s.\n"), strerror (errno));
     errno = save_errno;
     return -1;
   }
