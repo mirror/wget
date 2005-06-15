@@ -49,9 +49,9 @@ struct address_list;
 typedef struct {
   /* Address type. */
   enum { 
-    IPV4_ADDRESS, 
+    IPV4_ADDRESS
 #ifdef ENABLE_IPV6
-    IPV6_ADDRESS 
+    , IPV6_ADDRESS 
 #endif /* ENABLE_IPV6 */
   } type;
 

@@ -144,7 +144,7 @@ struct cmdline_option {
     OPT__DONT_REMOVE_LISTING,
     OPT__EXECUTE,
     OPT__NO,
-    OPT__PARENT,
+    OPT__PARENT
   } type;
   const void *data;		/* for standard options */
   int argtype;			/* for non-standard options */

@@ -1,3 +1,13 @@
+2005-06-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* host.h (ip_address): Remove the trailing comma from the type
+	enum in the no-IPv6 case.
+
+	* main.c (struct cmdline_option): Remove the trailing comma from
+	the enum.
+
+	Reported by Jens Schleusener.
+
 2005-05-30  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (strpbrk_or_eos): Check for a recent GCC version before
