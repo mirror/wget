@@ -1,5 +1,9 @@
 2005-06-15  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp-basic.c (ftp_pwd): Handle malformed PWD response.
+
+2005-06-15  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* host.h (ip_address): Remove the trailing comma from the type
 	enum in the no-IPv6 case.
 

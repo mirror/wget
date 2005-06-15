@@ -1081,6 +1081,7 @@ ftp_pwd (int csock, char **pwd)
     return err;
   if (*respline == '5')
     {
+    err:
       xfree (respline);
       return FTPSRVERR;
     }
@@ -1089,6 +1090,10 @@ ftp_pwd (int csock, char **pwd)
      and everything following it. */
   strtok (respline, "\"");
   request = strtok (NULL, "\"");
+  if (!request)
+    /* Treat the malformed response as an error, which the caller has
+       to handle gracefully anyway.  */
+    goto err;
 
   /* Has the `pwd' been already allocated?  Free! */
   xfree_null (*pwd);
