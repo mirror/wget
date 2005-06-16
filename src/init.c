@@ -747,7 +747,7 @@ cmd_lockable_boolean (const char *com, const char *val, void *place)
   else
     {
       fprintf (stderr,
-	       _("%s: %s: Invalid boolean `%s', use always, on, off, or never.\n"),
+	       _("%s: %s: Invalid boolean `%s'; use on, off, always, or never.\n"),
 	       exec_name, com, val);
       return 0;
     }
