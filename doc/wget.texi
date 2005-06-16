@@ -486,10 +486,10 @@ Turn on verbose output, with all the available data.  The default output
 is verbose.
 
 @item -nv
-@itemx --non-verbose
-Non-verbose output---turn off verbose without being completely quiet
-(use @samp{-q} for that), which means that error messages and basic
-information still get printed.
+@itemx --no-verbose
+Turn off verbose without being completely quiet (use @samp{-q} for
+that), which means that error messages and basic information still get
+printed.
 
 @cindex input-file
 @item -i @var{file}
