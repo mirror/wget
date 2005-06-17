@@ -767,9 +767,9 @@ lookup_host (const char *host, int flags)
     else if (opt.ipv6_only)
       hints.ai_family = AF_INET6;
     else
-      /* We used to specify AI_ADDRCONFIG here, but removed it because
-	 it fails in on systems with IPv6 loopbacks, it loses on AIX
-	 5.1, and isn't really needed as we sort the addresses).  */
+      /* We tried using AI_ADDRCONFIG, but removed it because: it
+	 misinterprets IPv6 loopbacks, it is broken on AIX 5.1, and
+	 it's unneeded since we sort the addresses anyway.  */
 	hints.ai_family = AF_UNSPEC;
 
     if (flags & LH_BIND)
