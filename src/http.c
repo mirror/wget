@@ -1121,6 +1121,12 @@ time_t http_atotm PARAMS ((const char *));
     request_set_header (req, "User-Agent", opt.useragent, rel_none);	\
 } while (0)
 
+/* The flags that allow clobbering the file (opening with "wb").
+   Defined here to avoid repetition later.  #### This will require
+   rework.  */
+#define ALLOW_CLOBBER (opt.noclobber || opt.always_rest || opt.timestamping \
+		       || opt.dirstruct || opt.output_document)
+
 /* Retrieve a document through HTTP protocol.  It recognizes status
    code, and correctly handles redirections.  It closes the network
    socket.  If it receives an error from the functions below it, it
@@ -1793,18 +1799,28 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
        text/html file.  If some case-insensitive variation on ".htm[l]" isn't
        already the file's suffix, tack on ".html". */
     {
-      char*  last_period_in_local_filename = strrchr(*hs->local_file, '.');
+      char *last_period_in_local_filename = strrchr (*hs->local_file, '.');
 
       if (last_period_in_local_filename == NULL
 	  || !(0 == strcasecmp (last_period_in_local_filename, ".htm")
 	       || 0 == strcasecmp (last_period_in_local_filename, ".html")))
 	{
-	  size_t  local_filename_len = strlen(*hs->local_file);
-	  
-	  *hs->local_file = xrealloc(*hs->local_file,
-				     local_filename_len + sizeof(".html"));
+	  int local_filename_len = strlen (*hs->local_file);
+	  /* Resize the local file, allowing for ".html" preceded by
+	     optional ".NUMBER".  */
+	  *hs->local_file = xrealloc (*hs->local_file,
+				      local_filename_len + 24 + sizeof (".html"));
 	  strcpy(*hs->local_file + local_filename_len, ".html");
-
+	  /* If clobbering is not allowed and the file, as named,
+	     exists, tack on ".NUMBER.html" instead. */
+	  if (!ALLOW_CLOBBER)
+	    {
+	      int ext_num = 1;
+	      do
+		sprintf (*hs->local_file + local_filename_len,
+			 ".%d.html", ext_num++);
+	      while (file_exists_p (*hs->local_file));
+	    }
 	  *dt |= ADDED_HTML_EXTENSION;
 	}
     }
@@ -1897,8 +1913,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	rotate_backups (*hs->local_file);
       if (hs->restval)
 	fp = fopen (*hs->local_file, "ab");
-      else if (opt.noclobber || opt.always_rest || opt.timestamping || opt.dirstruct
-	       || opt.output_document)
+      else if (ALLOW_CLOBBER)
 	fp = fopen (*hs->local_file, "wb");
       else
 	{
