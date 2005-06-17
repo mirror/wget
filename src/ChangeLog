@@ -1,3 +1,10 @@
+2005-06-17  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* connect.c (socket_has_inet6): Removed.
+
+	* host.c (lookup_host): Don't use the AI_ADDRCONFIG getaddrinfo
+	hint.
+
 2005-06-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* init.c (cmd_lockable_boolean): Improve the error message so it

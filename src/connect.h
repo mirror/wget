@@ -59,7 +59,6 @@ enum {
 };
 int select_fd PARAMS ((int, double, int));
 int test_socket_open PARAMS ((int));
-int socket_has_inet6 PARAMS ((void));
 
 typedef int (*fd_reader_t) PARAMS ((int, char *, int, void *));
 typedef int (*fd_writer_t) PARAMS ((int, char *, int, void *));
