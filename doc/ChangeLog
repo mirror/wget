@@ -3,6 +3,10 @@
 	* wget.texi (Logging and Input File Options): It's --no-verbose,
 	not --non-verbose.
 
+2005-06-06  Keith Moore  <keithmo@exmsft.com>
+
+	* Makefile.in: Fix a harmless (but annoying) installation warning.
+
 2005-05-30  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (HTTP Options): Removed statement that redirect in
