@@ -1753,7 +1753,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	contrange = first_byte_pos;
     }
   resp_free (resp);
-  xfree (head);
 
   /* 20x responses are counted among successful by default.  */
   if (H_20X (statcode))
@@ -1945,6 +1944,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
      size.  Maybe we should save some additional information?  */
   if (opt.save_headers)
     fwrite (head, 1, strlen (head), fp);
+
+  /* Now we no longer need to store the response header. */
+  xfree (head);
 
   /* Download the request body.  */
   flags = 0;

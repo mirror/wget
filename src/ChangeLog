@@ -1,5 +1,10 @@
 2005-06-18  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (gethttp): Don't free "head" before using it to save
+	headers.
+
+2005-06-18  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (gethttp): When -E is in use, check for file existence
 	after appending ".html" to the name and modify the file name if
 	necessary.
