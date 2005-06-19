@@ -704,7 +704,7 @@ cmd_boolean (const char *com, const char *val, void *place)
   else
     {
       fprintf (stderr,
-	       _("%s: %s: Invalid boolean `%s', use `on' or `off'.\n"),
+	       _("%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"),
 	       exec_name, com, val);
       return 0;
     }
@@ -721,7 +721,16 @@ cmd_boolean (const char *com, const char *val, void *place)
    Values: 2 - Enable a particular option for good ("always")
            1 - Enable an option ("on")
            0 - Disable an option ("off")
-          -1 - Disable an option for good ("never") */
+          -1 - Disable an option for good ("never")
+
+   #### This hack is currently only used for passive FTP because a
+   contributor had broken scripts specify --passive-ftp where he
+   didn't want it.  It should be removed because the same can now be
+   achieved by replacing the wget executable with a script containing:
+
+       exec wget "$@" --no-passive-ftp
+*/
+
 static int
 cmd_lockable_boolean (const char *com, const char *val, void *place)
 {
@@ -736,18 +745,19 @@ cmd_lockable_boolean (const char *com, const char *val, void *place)
   if (oldval == -1 || oldval == 2)
     return 1;
 
-  if (0 == strcasecmp (val, "always") || CMP1 (val, '2'))
-    lockable_boolean_value = 2;
-  else if (CMP2 (val, 'o', 'n') || CMP3 (val, 'y', 'e', 's') || CMP1 (val, '1'))
+  if (CMP2 (val, 'o', 'n') || CMP3 (val, 'y', 'e', 's') || CMP1 (val, '1'))
     lockable_boolean_value = 1;
   else if (CMP3 (val, 'o', 'f', 'f') || CMP2 (val, 'n', 'o') || CMP1 (val, '0'))
     lockable_boolean_value = 0;
-  else if (0 == strcasecmp (val, "never") || CMP2 (val, '-', '1'))
+  else if (0 == strcasecmp (val, "always"))
+    lockable_boolean_value = 2;
+  else if (0 == strcasecmp (val, "never"))
     lockable_boolean_value = -1;
   else
     {
       fprintf (stderr,
-	       _("%s: %s: Invalid boolean `%s'; use on, off, always, or never.\n"),
+	       _("%s: %s: Invalid extended boolean `%s';\n\
+use one of `on', `off', `always', or `never'.\n"),
 	       exec_name, com, val);
       return 0;
     }
