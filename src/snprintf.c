@@ -132,7 +132,8 @@
 int snprintf (char *str, size_t count, const char *fmt, ...);
 int vsnprintf (char *str, size_t count, const char *fmt, va_list arg);
 
-static int dopr (char *buffer, size_t maxlen, const char *format, va_list args);
+static int dopr (char *buffer, size_t maxlen, const char *format,
+		 va_list args);
 static int fmtstr (char *buffer, size_t *currlen, size_t maxlen,
 		   const char *value, int flags, int min, int max);
 static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
@@ -176,8 +177,7 @@ static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c);
 #define MAX(p,q) ((p >= q) ? p : q)
 #define MIN(p,q) ((p <= q) ? p : q)
 
-static int
-dopr (char *buffer, size_t maxlen, const char *format, va_list args)
+static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
 {
   char ch;
   LLONG value;
@@ -468,9 +468,8 @@ dopr (char *buffer, size_t maxlen, const char *format, va_list args)
   return total;
 }
 
-static int
-fmtstr (char *buffer, size_t *currlen, size_t maxlen,
-	const char *value, int flags, int min, int max)
+static int fmtstr (char *buffer, size_t *currlen, size_t maxlen,
+		   const char *value, int flags, int min, int max)
 {
   int padlen, strln;     /* amount to pad */
   int cnt = 0;
@@ -513,9 +512,8 @@ fmtstr (char *buffer, size_t *currlen, size_t maxlen,
 
 /* Have to handle DP_F_NUM (ie 0x and 0 alternates) */
 
-static int
-fmtint (char *buffer, size_t *currlen, size_t maxlen,
-	LLONG value, int base, int min, int max, int flags)
+static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
+		   LLONG value, int base, int min, int max, int flags)
 {
   int signvalue = 0;
   unsigned LLONG uvalue;
@@ -609,8 +607,7 @@ fmtint (char *buffer, size_t *currlen, size_t maxlen,
   return total;
 }
 
-static LDOUBLE
-abs_val (LDOUBLE value)
+static LDOUBLE abs_val (LDOUBLE value)
 {
   LDOUBLE result = value;
 
@@ -620,8 +617,7 @@ abs_val (LDOUBLE value)
   return result;
 }
 
-static LDOUBLE
-pow10 (int exp)
+static LDOUBLE pow10 (int exp)
 {
   LDOUBLE result = 1;
 
@@ -634,8 +630,7 @@ pow10 (int exp)
   return result;
 }
 
-static LLONG
-round (LDOUBLE value)
+static LLONG round (LDOUBLE value)
 {
   LLONG intpart;
 
@@ -647,9 +642,8 @@ round (LDOUBLE value)
   return intpart;
 }
 
-static int
-fmtfp (char *buffer, size_t *currlen, size_t maxlen,
-       LDOUBLE fvalue, int min, int max, int flags)
+static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
+		  LDOUBLE fvalue, int min, int max, int flags)
 {
   int signvalue = 0;
   LDOUBLE ufvalue;
@@ -844,8 +838,7 @@ fmtfp (char *buffer, size_t *currlen, size_t maxlen,
   return total;
 }
 
-static int
-dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c)
+static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c)
 {
   if (*currlen + 1 < maxlen)
     buffer[(*currlen)++] = c;
@@ -853,8 +846,7 @@ dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c)
 }
 
 #ifndef HAVE_VSNPRINTF
-int
-vsnprintf (char *str, size_t count, const char *fmt, va_list args)
+int vsnprintf (char *str, size_t count, const char *fmt, va_list args)
 {
   if (str != NULL)
     str[0] = 0;
@@ -863,8 +855,7 @@ vsnprintf (char *str, size_t count, const char *fmt, va_list args)
 #endif /* !HAVE_VSNPRINTF */
 
 #ifndef HAVE_SNPRINTF
-int
-snprintf (char *str, size_t count, const char *fmt,...)
+int snprintf (char *str, size_t count, const char *fmt,...)
 {
   va_list ap;
   int total;
@@ -883,8 +874,7 @@ snprintf (char *str, size_t count, const char *fmt,...)
 #  define LONG_STRING 1024
 # endif
 
-int
-main (void)
+int main (void)
 {
   char buf1[LONG_STRING];
   char buf2[LONG_STRING];
