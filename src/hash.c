@@ -1,5 +1,5 @@
 /* Hash tables.
-   Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+   Copyright (C) 2000-2003 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -48,8 +48,7 @@ so, delete this exception statement from your version.  */
 /* Make do without them. */
 # define xnew(x) xmalloc (sizeof (x))
 # define xnew_array(type, x) xmalloc (sizeof (type) * (x))
-# define xmalloc malloc		/* or something that exits
-				   if not enough memory */
+# define xmalloc malloc
 # define xfree free
 # define countof(x) (sizeof (x) / sizeof ((x)[0]))
 # define TOLOWER(x) ('A' <= (x) && (x) <= 'Z' ? (x) - 32 : (x))

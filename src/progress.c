@@ -36,9 +36,7 @@ so, delete this exception statement from your version.  */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#ifdef HAVE_SIGNAL_H
-# include <signal.h>
-#endif
+#include <signal.h>
 
 #include "wget.h"
 #include "progress.h"
@@ -956,7 +954,7 @@ bar_set_params (const char *params)
 }
 
 #ifdef SIGWINCH
-RETSIGTYPE
+void
 progress_handle_sigwinch (int sig)
 {
   received_sigwinch = 1;

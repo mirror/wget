@@ -499,7 +499,7 @@ ws_changetitle (const char *url)
 {
   xfree_null (title_buf);
   xfree_null (curr_url);
-  title_buf = (char *)xmalloc (strlen (url) + 20);
+  title_buf = xmalloc (strlen (url) + 20);
   curr_url = xstrdup (url);
   old_percentage = -1;
   sprintf (title_buf, "Wget %s", curr_url);

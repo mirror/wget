@@ -1,3 +1,8 @@
+2005-06-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Don't check for the return type of signal
+	handlers; C89 requires it to be void.
+
 2005-06-19  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* aclocal.m4: Remove support for K&R compilers.

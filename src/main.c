@@ -35,9 +35,7 @@ so, delete this exception statement from your version.  */
 # include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 #include <string.h>
-#ifdef HAVE_SIGNAL_H
-# include <signal.h>
-#endif
+#include <signal.h>
 #ifdef HAVE_NLS
 #ifdef HAVE_LOCALE_H
 # include <locale.h>
@@ -70,7 +68,7 @@ extern char *version_string;
 
 extern struct cookie_jar *wget_cookie_jar;
 
-static RETSIGTYPE redirect_output_signal (int);
+static void redirect_output_signal (int);
 
 const char *exec_name;
 
@@ -993,13 +991,9 @@ Can't timestamp and not clobber old files at the same time.\n"));
 #ifdef HAVE_SIGNAL
 /* Hangup signal handler.  When wget receives SIGHUP or SIGUSR1, it
    will proceed operation as usual, trying to write into a log file.
-   If that is impossible, the output will be turned off.
+   If that is impossible, the output will be turned off.  */
 
-   #### It is unsafe to do call libc functions from a signal handler.
-   What we should do is, set a global variable, and have the code in
-   log.c pick it up.  */
-
-static RETSIGTYPE
+static void
 redirect_output_signal (int sig)
 {
   const char *signal_name = (sig == SIGHUP ? "SIGHUP" :

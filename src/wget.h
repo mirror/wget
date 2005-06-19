@@ -213,7 +213,7 @@ typedef off_t wgint;
     (sizevar) = DR_newsize;						\
   }									\
   if (DR_newsize)							\
-    basevar = (type *)xrealloc (basevar, DR_newsize * sizeof (type));	\
+    basevar = xrealloc (basevar, DR_newsize * sizeof (type));		\
 } while (0)
 
 /* Used to print pointers (usually for debugging).  Print pointers

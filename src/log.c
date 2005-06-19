@@ -208,7 +208,7 @@ saved_append_1 (const char *start, const char *end)
 	    {
 	      /* Allocate memory and concatenate the old and the new
                  contents. */
-	      ln->malloced_line = (char *)xmalloc (old_len + len + 1);
+	      ln->malloced_line = xmalloc (old_len + len + 1);
 	      memcpy (ln->malloced_line, ln->static_line,
 		      old_len);
 	      memcpy (ln->malloced_line + old_len, start, len);

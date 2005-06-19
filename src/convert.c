@@ -382,7 +382,7 @@ construct_relative (const char *basefile, const char *linkfile)
     }
 
   /* Construct LINK as explained above. */
-  link = (char *)xmalloc (3 * basedirs + strlen (linkfile) + 1);
+  link = xmalloc (3 * basedirs + strlen (linkfile) + 1);
   for (i = 0; i < basedirs; i++)
     memcpy (link + 3 * i, "../", 3);
   strcpy (link + 3 * i, linkfile);
@@ -985,7 +985,7 @@ html_quote_string (const char *s)
       else if (*s == ' ')
 	i += 4;			/* #32; */
     }
-  res = (char *)xmalloc (i + 1);
+  res = xmalloc (i + 1);
   s = b;
   for (p = res; *s; s++)
     {

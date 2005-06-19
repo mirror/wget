@@ -205,7 +205,7 @@ url_escape_1 (const char *s, unsigned char mask, int allow_passthrough)
     return allow_passthrough ? (char *)s : xstrdup (s);
 
   newlen = (p1 - s) + addition;
-  newstr = (char *)xmalloc (newlen + 1);
+  newstr = xmalloc (newlen + 1);
 
   p1 = s;
   p2 = newstr;
@@ -984,7 +984,7 @@ char *
 url_full_path (const struct url *url)
 {
   int length = full_path_length (url);
-  char *full_path = (char *) xmalloc (length + 1);
+  char *full_path = xmalloc (length + 1);
 
   full_path_write (url, full_path);
   full_path[length] = '\0';
@@ -1692,7 +1692,7 @@ uri_merge (const char *base, const char *link)
 	start_insert = base;
 
       span = start_insert - base;
-      merge = (char *)xmalloc (span + linklength + 1);
+      merge = xmalloc (span + linklength + 1);
       if (span)
 	memcpy (merge, base, span);
       memcpy (merge + span, link, linklength);
@@ -1747,7 +1747,7 @@ uri_merge (const char *base, const char *link)
 	start_insert = slash;
 
       span = start_insert - base;
-      merge = (char *)xmalloc (span + linklength + 1);
+      merge = xmalloc (span + linklength + 1);
       if (span)
 	memcpy (merge, base, span);
       memcpy (merge + span, link, linklength);
@@ -1785,7 +1785,7 @@ uri_merge (const char *base, const char *link)
 	}
 
       span = start_insert - base;
-      merge = (char *)xmalloc (span + linklength + 1);
+      merge = xmalloc (span + linklength + 1);
       if (span)
 	memcpy (merge, base, span);
       if (need_explicit_slash)

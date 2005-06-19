@@ -83,10 +83,10 @@ void debugging_free (void *, const char *, int);
    necessary in standard C, but Wget performs them anyway for the sake
    of pre-standard environments and possibly C++.  */
 
-#define xnew(type) ((type *) xmalloc (sizeof (type)))
-#define xnew0(type) ((type *) xmalloc0 (sizeof (type)))
-#define xnew_array(type, len) ((type *) xmalloc ((len) * sizeof (type)))
-#define xnew0_array(type, len) ((type *) xmalloc0 ((len) * sizeof (type)))
+#define xnew(type) (xmalloc (sizeof (type)))
+#define xnew0(type) (xmalloc0 (sizeof (type)))
+#define xnew_array(type, len) (xmalloc ((len) * sizeof (type)))
+#define xnew0_array(type, len) (xmalloc0 ((len) * sizeof (type)))
 
 #define alloca_array(type, size) ((type *) alloca ((size) * sizeof (type)))
 

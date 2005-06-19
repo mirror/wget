@@ -241,7 +241,7 @@ struct pool {
   if (ga_newsize != (sizevar))							\
     {										\
       if (resized)								\
-	basevar = (type *)xrealloc (basevar, ga_newsize * sizeof (type));	\
+	basevar = xrealloc (basevar, ga_newsize * sizeof (type));		\
       else									\
 	{									\
 	  void *ga_new = xmalloc (ga_newsize * sizeof (type));			\
@@ -1051,7 +1051,7 @@ test_mapper (struct taginfo *taginfo, void *arg)
 int main ()
 {
   int size = 256;
-  char *x = (char *)xmalloc (size);
+  char *x = xmalloc (size);
   int length = 0;
   int read_count;
   int tag_counter = 0;
@@ -1060,7 +1060,7 @@ int main ()
     {
       length += read_count;
       size <<= 1;
-      x = (char *)xrealloc (x, size);
+      x = xrealloc (x, size);
     }
 
   map_html_tags (x, length, test_mapper, &tag_counter, 0, NULL, NULL);

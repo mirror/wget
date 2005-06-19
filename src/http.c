@@ -2870,14 +2870,14 @@ digest_authentication_encode (const char *au, const char *user,
     gen_md5_finish (ctx, hash);
     dump_hash (response_digest, hash);
 
-    res = (char*) xmalloc (strlen (user)
-			   + strlen (user)
-			   + strlen (realm)
-			   + strlen (nonce)
-			   + strlen (path)
-			   + 2 * MD5_HASHLEN /*strlen (response_digest)*/
-			   + (opaque ? strlen (opaque) : 0)
-			   + 128);
+    res = xmalloc (strlen (user)
+		   + strlen (user)
+		   + strlen (realm)
+		   + strlen (nonce)
+		   + strlen (path)
+		   + 2 * MD5_HASHLEN /*strlen (response_digest)*/
+		   + (opaque ? strlen (opaque) : 0)
+		   + 128);
     sprintf (res, "Digest \
 username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\"",
 	     user, realm, nonce, path, response_digest);

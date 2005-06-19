@@ -39,6 +39,6 @@ int progress_interactive_p (void *);
 void progress_update (void *, wgint, double);
 void progress_finish (void *, double);
 
-RETSIGTYPE progress_handle_sigwinch (int);
+void progress_handle_sigwinch (int);
 
 #endif /* PROGRESS_H */

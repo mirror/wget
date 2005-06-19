@@ -45,9 +45,6 @@ so, delete this exception statement from your version.  */
 #ifdef HAVE_PWD_H
 # include <pwd.h>
 #endif
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif
 #ifdef HAVE_UTIME_H
 # include <utime.h>
 #endif
@@ -71,10 +68,7 @@ so, delete this exception statement from your version.  */
 #endif
 
 /* Needed for run_with_timeout. */
-#undef USE_SIGNAL_TIMEOUT
-#ifdef HAVE_SIGNAL_H
-# include <signal.h>
-#endif
+#include <signal.h>
 #ifdef HAVE_SETJMP_H
 # include <setjmp.h>
 #endif
@@ -86,11 +80,9 @@ so, delete this exception statement from your version.  */
 # endif
 #endif
 
+#undef USE_SIGNAL_TIMEOUT
 #ifdef HAVE_SIGNAL
-# ifdef HAVE_SIGSETJMP
-#  define USE_SIGNAL_TIMEOUT
-# endif
-# ifdef HAVE_SIGBLOCK
+# if defined(HAVE_SIGSETJMP) || defined(HAVE_SIGBLOCK)
 #  define USE_SIGNAL_TIMEOUT
 # endif
 #endif
@@ -117,7 +109,7 @@ xstrdup_lower (const char *s)
 char *
 strdupdelim (const char *beg, const char *end)
 {
-  char *res = (char *)xmalloc (end - beg + 1);
+  char *res = xmalloc (end - beg + 1);
   memcpy (res, beg, end - beg);
   res[end - beg] = '\0';
   return res;
@@ -141,7 +133,7 @@ sepstring (const char *s)
     {
       if (*s == ',')
 	{
-	  res = (char **)xrealloc (res, (i + 2) * sizeof (char *));
+	  res = xrealloc (res, (i + 2) * sizeof (char *));
 	  res[i] = strdupdelim (p, s);
 	  res[++i] = NULL;
 	  ++s;
@@ -153,7 +145,7 @@ sepstring (const char *s)
       else
 	++s;
     }
-  res = (char **)xrealloc (res, (i + 2) * sizeof (char *));
+  res = xrealloc (res, (i + 2) * sizeof (char *));
   res[i] = strdupdelim (p, s);
   res[i + 1] = NULL;
   return res;
@@ -616,7 +608,7 @@ file_merge (const char *base, const char *file)
   if (!cut)
     return xstrdup (file);
 
-  result = (char *)xmalloc (cut - base + 1 + strlen (file) + 1);
+  result = xmalloc (cut - base + 1 + strlen (file) + 1);
   memcpy (result, base, cut - base);
   result[cut - base] = '/';
   strcpy (result + (cut - base) + 1, file);
@@ -853,7 +845,7 @@ read_whole_line (FILE *fp)
 {
   int length = 0;
   int bufsize = 82;
-  char *line = (char *)xmalloc (bufsize);
+  char *line = xmalloc (bufsize);
 
   while (fgets (line + length, bufsize - length, fp))
     {
@@ -1065,7 +1057,7 @@ merge_vecs (char **v1, char **v2)
   /* Count v2.  */
   for (j = 0; v2[j]; j++);
   /* Reallocate v1.  */
-  v1 = (char **)xrealloc (v1, (i + j + 1) * sizeof (char **));
+  v1 = xrealloc (v1, (i + j + 1) * sizeof (char **));
   memcpy (v1 + i, v2, (j + 1) * sizeof (char *));
   xfree (v2);
   return v1;
@@ -1633,7 +1625,7 @@ random_float (void)
 
 static sigjmp_buf run_with_timeout_env;
 
-static RETSIGTYPE
+static void
 abort_run_with_timeout (int sig)
 {
   assert (sig == SIGALRM);
@@ -1644,7 +1636,7 @@ abort_run_with_timeout (int sig)
 
 static jmp_buf run_with_timeout_env;
 
-static RETSIGTYPE
+static void
 abort_run_with_timeout (int sig)
 {
   assert (sig == SIGALRM);

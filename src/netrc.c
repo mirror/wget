@@ -164,7 +164,7 @@ read_whole_line (FILE *fp)
 {
   int length = 0;
   int bufsize = 81;
-  char *line = (char *)xmalloc (bufsize);
+  char *line = xmalloc (bufsize);
 
   while (fgets (line + length, bufsize - length, fp))
     {
@@ -220,7 +220,7 @@ maybe_add_to_list (acc_t **newentry, acc_t **list)
 	}
 
       /* Allocate a new acc_t structure.  */
-      a = (acc_t *)xmalloc (sizeof (acc_t));
+      a = xmalloc (sizeof (acc_t));
     }
 
   /* Zero the structure, so that it is ready to use.  */

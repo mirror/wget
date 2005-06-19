@@ -330,7 +330,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
 		 default -F output.  I believe these cases are very
 		 rare.  */
 	      fnlen = strlen (tok); /* re-calculate `fnlen' */
-	      cur.name = (char *)xmalloc (fnlen + 1);
+	      cur.name = xmalloc (fnlen + 1);
 	      memcpy (cur.name, tok, fnlen + 1);
 	      if (fnlen)
 		{
@@ -775,14 +775,14 @@ ftp_parse_vms_ls (const char *file)
       /* And put everything into the linked list */
       if (!dir)
         {
-          l = dir = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
+          l = dir = xnew (struct fileinfo);
           memcpy (l, &cur, sizeof (cur));
           l->prev = l->next = NULL;
         }
       else
         {
           cur.prev = l;
-          l->next = (struct fileinfo *)xmalloc (sizeof (struct fileinfo));
+          l->next = xnew (struct fileinfo);
           l = l->next;
           memcpy (l, &cur, sizeof (cur));
           l->next = NULL;
