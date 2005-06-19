@@ -35,13 +35,8 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 #include <assert.h>
-#include <sys/types.h>
 
 #ifndef WINDOWS
 # include <sys/socket.h>
@@ -63,16 +58,6 @@ so, delete this exception statement from your version.  */
 #include "url.h"
 #include "hash.h"
 #include "connect.h"		/* for socket_has_inet6 */
-
-#ifndef errno
-extern int errno;
-#endif
-
-#ifndef h_errno
-# ifndef __CYGWIN__
-extern int h_errno;
-# endif
-#endif
 
 #ifndef NO_ADDRESS
 # define NO_ADDRESS NO_DATA

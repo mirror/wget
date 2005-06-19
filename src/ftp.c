@@ -32,15 +32,10 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#include <sys/types.h>
 #include <assert.h>
 #include <errno.h>
 
@@ -54,10 +49,6 @@ so, delete this exception statement from your version.  */
 #include "netrc.h"
 #include "convert.h"		/* for downloaded_file */
 #include "recur.h"		/* for INFINITE_RECURSION */
-
-#ifndef errno
-extern int errno;
-#endif
 
 extern LARGE_INT total_downloaded_bytes;
 
@@ -1355,12 +1346,10 @@ ftp_get_listing (struct url *u, ccon *con, struct fileinfo **f)
   return err;
 }
 
-static uerr_t ftp_retrieve_dirs PARAMS ((struct url *, struct fileinfo *,
-					 ccon *));
-static uerr_t ftp_retrieve_glob PARAMS ((struct url *, ccon *, int));
-static struct fileinfo *delelement PARAMS ((struct fileinfo *,
-					    struct fileinfo **));
-static void freefileinfo PARAMS ((struct fileinfo *f));
+static uerr_t ftp_retrieve_dirs (struct url *, struct fileinfo *, ccon *);
+static uerr_t ftp_retrieve_glob (struct url *, ccon *, int);
+static struct fileinfo *delelement (struct fileinfo *, struct fileinfo **);
+static void freefileinfo (struct fileinfo *f);
 
 /* Retrieve a list of files given in struct fileinfo linked list.  If
    a file is a symbolic link, do not retrieve it, but rather try to

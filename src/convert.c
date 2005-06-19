@@ -31,17 +31,12 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif /* HAVE_STRING_H */
+#include <string.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 #include <errno.h>
 #include <assert.h>
-#include <sys/types.h>
 
 #include "wget.h"
 #include "convert.h"
@@ -58,7 +53,7 @@ struct hash_table *dl_url_file_map;
    conversion after Wget is done.  */
 struct hash_table *downloaded_html_set;
 
-static void convert_links PARAMS ((const char *, struct urlpos *));
+static void convert_links (const char *, struct urlpos *);
 
 /* This function is called when the retrieval is done to convert the
    links that have been downloaded.  It has to be called at the end of
@@ -177,13 +172,12 @@ convert_all_links (void)
 	     file_count, secs < 10 ? 3 : 1, secs);
 }
 
-static void write_backup_file PARAMS ((const char *, downloaded_file_t));
-static const char *replace_attr PARAMS ((const char *, int, FILE *,
-					 const char *));
-static const char *replace_attr_refresh_hack PARAMS ((const char *, int, FILE *,
-						      const char *, int));
-static char *local_quote_string PARAMS ((const char *));
-static char *construct_relative PARAMS ((const char *, const char *));
+static void write_backup_file (const char *, downloaded_file_t);
+static const char *replace_attr (const char *, int, FILE *, const char *);
+static const char *replace_attr_refresh_hack (const char *, int, FILE *,
+					      const char *, int);
+static char *local_quote_string (const char *);
+static char *construct_relative (const char *, const char *);
 
 /* Change the links in one HTML file.  LINKS is a list of links in the
    document, along with their positions and the desired direction of
@@ -468,8 +462,7 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
     }
 }
 
-static int find_fragment PARAMS ((const char *, int, const char **,
-				  const char **));
+static int find_fragment (const char *, int, const char **, const char **);
 
 /* Replace an attribute's original text with NEW_TEXT. */
 
@@ -837,7 +830,7 @@ register_html (const char *url, const char *file)
   string_set_add (downloaded_html_set, file);
 }
 
-static void downloaded_files_free PARAMS ((void));
+static void downloaded_files_free (void);
 
 /* Cleanup the data structures associated with this file.  */
 

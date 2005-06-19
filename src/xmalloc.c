@@ -31,22 +31,13 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else  /* not HAVE_STRING_H */
-# include <strings.h>
-#endif /* not HAVE_STRING_H */
-#include <sys/types.h>
+#include <string.h>
 #include <errno.h>
 #include <assert.h>
 
 #include "wget.h"
 #include "xmalloc.h"
 #include "hash.h"		/* for hash_pointer */
-
-#ifndef errno
-extern int errno;
-#endif
 
 /* This file implements several wrappers around the basic allocation
    routines.  This is done for two reasons: first, so that the callers

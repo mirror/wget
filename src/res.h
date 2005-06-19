@@ -32,16 +32,16 @@ so, delete this exception statement from your version.  */
 
 struct robot_specs;
 
-struct robot_specs *res_parse PARAMS ((const char *, int));
-struct robot_specs *res_parse_from_file PARAMS ((const char *));
+struct robot_specs *res_parse (const char *, int);
+struct robot_specs *res_parse_from_file (const char *);
 
-int res_match_path PARAMS ((const struct robot_specs *, const char *));
+int res_match_path (const struct robot_specs *, const char *);
 
-void res_register_specs PARAMS ((const char *, int, struct robot_specs *));
-struct robot_specs *res_get_specs PARAMS ((const char *, int));
+void res_register_specs (const char *, int, struct robot_specs *);
+struct robot_specs *res_get_specs (const char *, int);
 
-int res_retrieve_file PARAMS ((const char *, char **));
+int res_retrieve_file (const char *, char **);
 
-void res_cleanup PARAMS ((void));
+void res_cleanup (void);
 
 #endif /* RES_H */

@@ -85,7 +85,7 @@ case "${ENABLE_OPIE}${ENABLE_DIGEST}" in
 	wget_need_md5=yes
 esac
 if test x"$ENABLE_OPIE" = xyes; then
-  OPIE_OBJ='ftp-opie$o'
+  OPIE_OBJ='ftp-opie.o'
 fi
 AC_SUBST(OPIE_OBJ)
 
@@ -109,7 +109,6 @@ test -z "$CC" && cc_specified=yes
 
 AC_PROG_CC
 AC_AIX
-AM_PROG_CC_STDC
 
 dnl Turn on optimization by default.  Specifically:
 dnl
@@ -155,14 +154,6 @@ AC_C_VOLATILE
 AC_C_BIGENDIAN
 AC_C_PROTOTYPES
 
-if test x"$am_cv_prog_cc_stdc" != xno; then :
-  AC_SUBST(U, [])
-  AC_SUBST(ANSI2KNR, [])
-else
-  AC_SUBST(U, [_])
-  AC_SUBST(ANSI2KNR, [./ansi2knr])
-fi
-
 dnl
 dnl Checks for header files that might be missing.
 dnl
@@ -173,7 +164,7 @@ dnl HAVE_SYS_TYPES_H, etc. before including them.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(sys/types.h sys/stat.h)
 dnl Now check for the others.
-AC_CHECK_HEADERS(string.h strings.h stdarg.h limits.h unistd.h sys/time.h)
+AC_CHECK_HEADERS(string.h strings.h limits.h unistd.h sys/time.h)
 AC_CHECK_HEADERS(termios.h sys/ioctl.h sys/select.h utime.h sys/utime.h)
 AC_CHECK_HEADERS(stdint.h inttypes.h signal.h setjmp.h pwd.h)
 AC_HEADER_TIME
@@ -237,7 +228,7 @@ dnl
 dnl Check if we need to compile in getopt.c.
 dnl
 AC_CHECK_FUNC(getopt_long, [], [
-  GETOPT_OBJ='getopt$o'
+  GETOPT_OBJ='getopt.o'
 ])
 AC_SUBST(GETOPT_OBJ)
 
@@ -404,7 +395,7 @@ main(){return 0;}
     AC_DEFINE([HAVE_SSL], 1,
               [Define if SSL support should be compiled in.])
     AC_SUBST(SSL_INCLUDES)
-    SSL_OBJ='openssl$o'
+    SSL_OBJ='openssl.o'
     AC_SUBST(SSL_OBJ)
   else
     LDFLAGS=$wget_save_LDFLAGS
@@ -434,7 +425,7 @@ then
   then
     AC_DEFINE([ENABLE_NTLM], 1,
      [Define if you want the NTLM authorization support compiled in.])
-    NTLM_OBJ='http-ntlm$o'
+    NTLM_OBJ='http-ntlm.o'
   fi
 else
   dnl If SSL is unavailable and the user explicitly requested NTLM,
@@ -455,7 +446,7 @@ then
   dnl This should be moved to an AC_DEFUN, but I'm not sure how to
   dnl manipulate MD5_OBJ from the defun.
 
-  MD5_OBJ='gen-md5$o'
+  MD5_OBJ='gen-md5.o'
   found_md5=no
 
   dnl Check for the system MD5 library on Solaris.  We don't check for
@@ -491,7 +482,7 @@ then
   dnl If none of the above worked, use the one we ship with Wget.
   if test x"$found_md5" = xno; then
     AC_DEFINE([HAVE_BUILTIN_MD5], 1, [Define to use built-in MD5.])
-    MD5_OBJ="$MD5_OBJ gnu-md5\$o"
+    MD5_OBJ="$MD5_OBJ gnu-md5.o"
     found_md5=yes
     AC_MSG_NOTICE([using the GNU MD5 implementation])
   fi

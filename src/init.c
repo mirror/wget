@@ -30,16 +30,11 @@ so, delete this exception statement from your version.  */
 #include <config.h>
 
 #include <stdio.h>
-#include <sys/types.h>
 #include <stdlib.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 #include <errno.h>
 
 #ifdef HAVE_PWD_H
@@ -57,10 +52,6 @@ so, delete this exception statement from your version.  */
 #include "convert.h"		/* for convert_cleanup */
 #include "res.h"		/* for res_cleanup */
 
-#ifndef errno
-extern int errno;
-#endif
-
 /* We want tilde expansion enabled only when reading `.wgetrc' lines;
    otherwise, it will be performed by the shell.  This variable will
    be set by the wgetrc-reading function.  */
@@ -68,8 +59,7 @@ extern int errno;
 static int enable_tilde_expansion;
 
 
-#define CMD_DECLARE(func) static int func \
-  PARAMS ((const char *, const char *, void *))
+#define CMD_DECLARE(func) static int func (const char *, const char *, void *)
 
 CMD_DECLARE (cmd_boolean);
 CMD_DECLARE (cmd_bytes);
@@ -111,7 +101,7 @@ CMD_DECLARE (cmd_spec_useragent);
 static struct {
   const char *name;
   void *place;
-  int (*action) PARAMS ((const char *, const char *, void *));
+  int (*action) (const char *, const char *, void *);
 } commands[] = {
   { "accept",		&opt.accepts,		cmd_vector },
   { "addhostdir",	&opt.add_hostdir,	cmd_boolean },
@@ -412,9 +402,8 @@ enum parse_line {
   line_unknown_command
 };
 
-static enum parse_line parse_line PARAMS ((const char *, char **,
-					   char **, int *));
-static int setval_internal PARAMS ((int, const char *, const char *));
+static enum parse_line parse_line (const char *, char **, char **, int *);
+static int setval_internal (int, const char *, const char *);
 
 /* Initialize variables from a wgetrc file.  Returns zero (failure) if
    there were errors in the file.  */
@@ -613,7 +602,7 @@ setval_internal (int comind, const char *com, const char *val)
 {
   assert (0 <= comind && comind < countof (commands));
   DEBUGP (("Setting %s (%s) to %s\n", com, commands[comind].name, val));
-  return ((*commands[comind].action) (com, val, commands[comind].place));
+  return commands[comind].action (com, val, commands[comind].place);
 }
 
 /* Run command COM with value VAL.  If running the command produces an
@@ -671,10 +660,9 @@ struct decode_item {
   const char *name;
   int code;
 };
-static int decode_string PARAMS ((const char *, const struct decode_item *,
-				  int, int *));
-static int simple_atoi PARAMS ((const char *, const char *, int *));
-static int simple_atof PARAMS ((const char *, const char *, double *));
+static int decode_string (const char *, const struct decode_item *, int, int *);
+static int simple_atoi (const char *, const char *, int *);
+static int simple_atof (const char *, const char *, double *);
 
 #define CMP1(p, c0) (TOLOWER((p)[0]) == (c0) && (p)[1] == '\0')
 
@@ -1111,7 +1099,7 @@ cmd_cert_type (const char *com, const char *val, void *place)
 /* Specialized helper functions, used by `commands' to handle some
    options specially.  */
 
-static int check_user_specified_header PARAMS ((const char *));
+static int check_user_specified_header (const char *);
 
 static int
 cmd_spec_dirstruct (const char *com, const char *val, void *place_ignored)
@@ -1463,8 +1451,8 @@ decode_string (const char *val, const struct decode_item *items, int itemcount,
 }
 
 
-void cleanup_html_url PARAMS ((void));
-void http_cleanup PARAMS ((void));
+void cleanup_html_url (void);
+void http_cleanup (void);
 
 
 /* Free the memory allocated by global variables.  */

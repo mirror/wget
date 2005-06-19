@@ -33,18 +33,8 @@ so, delete this exception statement from your version.  */
 #ifndef SYSDEP_H
 #define SYSDEP_H
 
-/* We need these to be playing with various stuff.  */
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else /* not TIME_WITH_SYS_TIME_H */
-#ifdef HAVE_SYS_TIME_H
-# include <sys/time.h>
-#else /* not HAVE_SYS_TIME_H */
-# include <time.h>
-#endif /* HAVE_SYS_TIME_H */
-#endif /* TIME_WITH_SYS_TIME_H */
-
+/* Must include these, so we can test for the missing stat macros and
+   define them as necessary.  */
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -75,12 +65,12 @@ so, delete this exception statement from your version.  */
 
 /* Needed for compilation under OS/2: */
 #ifdef __EMX__
-#ifndef S_ISLNK
-# define S_ISLNK(m) 0
-#endif
-#ifndef lstat
-# define lstat stat
-#endif
+# ifndef S_ISLNK
+#  define S_ISLNK(m) 0
+# endif
+# ifndef lstat
+#  define lstat stat
+# endif
 #endif /* __EMX__ */
 
 /* Reportedly, stat() macros are broken on some old systems.  Those
@@ -88,7 +78,7 @@ so, delete this exception statement from your version.  */
    new code to handle it.
 
    However, I will add code for *missing* macros, and the following
-   are missing from many systems.  */
+   are reportedly missing from many systems.  */
 #ifndef S_ISLNK
 # define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)
 #endif
@@ -97,15 +87,6 @@ so, delete this exception statement from your version.  */
 #endif
 #ifndef S_ISREG
 # define S_ISREG(m) (((m) & _S_IFMT) == _S_IFREG)
-#endif
-
-/* Bletch!  SPARC compiler doesn't define sparc (needed by
-   arpa/nameser.h) when in -Xc mode.  Luckily, it always defines
-   __sparc.  */
-#ifdef __sparc
-#ifndef sparc
-#define sparc
-#endif
 #endif
 
 /* Define a large integral type useful for storing large sizes that
@@ -146,14 +127,14 @@ typedef double LARGE_INT;
 # define struct_stat struct stat
 #endif
 
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif
+/* For CHAR_BIT, LONG_MAX, etc. */
+#include <limits.h>
 
 #ifndef CHAR_BIT
 # define CHAR_BIT 8
 #endif
 
+/* Used by wget.h to define SIZEOF_WGINT. */
 #ifndef LONG_MAX
 # define LONG_MAX ((long) ~((unsigned long)1 << (CHAR_BIT * sizeof (long) - 1)))
 #endif
@@ -161,54 +142,26 @@ typedef double LARGE_INT;
 # define LLONG_MAX ((long long) ~((unsigned long long)1 << (CHAR_BIT * sizeof (long long) - 1)))
 #endif
 
-/* These are defined in cmpt.c if missing, therefore it's generally
-   safe to declare their parameters.  */
-#ifndef HAVE_STRERROR
-char *strerror ();
-#endif
+/* These are defined in cmpt.c if missing, so we must declare
+   them.  */
 #ifndef HAVE_STRCASECMP
 int strcasecmp ();
 #endif
 #ifndef HAVE_STRNCASECMP
 int strncasecmp ();
 #endif
-#ifndef HAVE_STRSTR
-char *strstr ();
-#endif
 #ifndef HAVE_STRPTIME
 char *strptime ();
 #endif
+
+/* These are defined in snprintf.c.  It would be nice to have an
+   snprintf.h, though.  */
 #ifndef HAVE_SNPRINTF
 int snprintf ();
 #endif
 #ifndef HAVE_VSNPRINTF
 int vsnprintf ();
 #endif
-#ifndef HAVE_MEMMOVE
-void *memmove ();
-#endif
-
-/* SunOS brain damage -- for some reason, SunOS header files fail to
-   declare the functions below, which causes all kinds of problems,
-   most notably compilation errors when using pointer arithmetic on
-   their return values.
-
-   This used to be only within `#ifdef STDC_HEADERS', but it got
-   tripped on other systems (AIX), thus causing havoc.  Fortunately,
-   SunOS appears to be the only system braindamaged that badly, so I
-   added an extra `#ifdef sun' guard.  */
-#ifndef STDC_HEADERS
-#ifdef sun
-#ifndef __SVR4			/* exclude Solaris */
-char *strstr ();
-char *strchr ();
-char *strrchr ();
-char *strtok ();
-char *strdup ();
-void *memcpy ();
-#endif /* not __SVR4 */
-#endif /* sun */
-#endif /* not STDC_HEADERS */
 
 /* Some systems (Linux libc5, "NCR MP-RAS 3.0", and others) don't
    provide MAP_FAILED, a symbolic constant for the value returned by

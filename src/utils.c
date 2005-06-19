@@ -31,12 +31,11 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else  /* not HAVE_STRING_H */
-# include <strings.h>
-#endif /* not HAVE_STRING_H */
-#include <sys/types.h>
+#include <string.h>
+#include <time.h>
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
@@ -61,11 +60,7 @@ so, delete this exception statement from your version.  */
 #endif
 #include <fcntl.h>
 #include <assert.h>
-#ifdef WGET_USE_STDARG
-# include <stdarg.h>
-#else
-# include <varargs.h>
-#endif
+#include <stdarg.h>
 
 /* For TIOCGWINSZ and friends: */
 #ifdef HAVE_SYS_IOCTL_H
@@ -103,10 +98,6 @@ so, delete this exception statement from your version.  */
 #include "wget.h"
 #include "utils.h"
 #include "hash.h"
-
-#ifndef errno
-extern int errno;
-#endif
 
 /* Utility function: like xstrdup(), but also lowercases S.  */
 
@@ -168,12 +159,6 @@ sepstring (const char *s)
   return res;
 }
 
-#ifdef WGET_USE_STDARG
-# define VA_START(args, arg1) va_start (args, arg1)
-#else
-# define VA_START(args, ignored) va_start (args)
-#endif
-
 /* Like sprintf, but allocates a string of sufficient size with malloc
    and returns it.  GNU libc has a similar function named asprintf,
    which requires the pointer to the string to be passed.  */
@@ -196,7 +181,7 @@ aprintf (const char *fmt, ...)
       /* See log_vprintf_internal for explanation why it's OK to rely
 	 on the return value of vsnprintf.  */
 
-      VA_START (args, fmt);
+      va_start (args, fmt);
       n = vsnprintf (str, size, fmt, args);
       va_end (args);
 
@@ -230,7 +215,7 @@ concat_strings (const char *str0, ...)
   /* Calculate the length of and allocate the resulting string. */
 
   argcount = 0;
-  VA_START (args, str0);
+  va_start (args, str0);
   for (next_str = str0; next_str != NULL; next_str = va_arg (args, char *))
     {
       int len = strlen (next_str);
@@ -244,7 +229,7 @@ concat_strings (const char *str0, ...)
   /* Copy the strings into the allocated space. */
 
   argcount = 0;
-  VA_START (args, str0);
+  va_start (args, str0);
   for (next_str = str0; next_str != NULL; next_str = va_arg (args, char *))
     {
       int len;
@@ -639,7 +624,7 @@ file_merge (const char *base, const char *file)
   return result;
 }
 
-static int in_acclist PARAMS ((const char *const *, const char *, int));
+static int in_acclist (const char *const *, const char *, int);
 
 /* Determine whether a file is acceptable to be followed, according to
    lists of patterns to accept/reject.  */
@@ -1456,10 +1441,10 @@ number_to_string (char *buffer, wgint number)
   /* wgint is 32 bits wide: no number has more than 10 digits. */
   else                                   DIGITS_10 (1000000000);
 #else
-  /* wgint is 64 bits wide: handle numbers with more than 9 decimal
-     digits.  Constants are constructed by compile-time multiplication
-     to avoid dealing with different notations for 64-bit constants
-     (nnnL, nnnLL, and nnnI64, depending on the compiler).  */
+  /* wgint is 64 bits wide: handle numbers with 9-19 decimal digits.
+     Constants are constructed by compile-time multiplication to avoid
+     dealing with different notations for 64-bit constants
+     (nL/nLL/nI64, depending on the compiler and architecture).  */
   else if (n < 10*(W)1000000000)         DIGITS_10 (1000000000);
   else if (n < 100*(W)1000000000)        DIGITS_11 (10*(W)1000000000);
   else if (n < 1000*(W)1000000000)       DIGITS_12 (100*(W)1000000000);
@@ -2010,7 +1995,7 @@ base64_decode (const char *base64, char *to)
 
 static void
 mergesort_internal (void *base, void *temp, size_t size, size_t from, size_t to,
-		    int (*cmpfun) PARAMS ((const void *, const void *)))
+		    int (*cmpfun) (const void *, const void *))
 {
 #define ELT(array, pos) ((char *)(array) + (pos) * size)
   if (from < to)
@@ -2042,7 +2027,7 @@ mergesort_internal (void *base, void *temp, size_t size, size_t from, size_t to,
 
 void
 stable_sort (void *base, size_t nmemb, size_t size,
-	     int (*cmpfun) PARAMS ((const void *, const void *)))
+	     int (*cmpfun) (const void *, const void *))
 {
   if (size > 1)
     {

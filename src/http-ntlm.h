@@ -44,9 +44,8 @@ struct ntlmdata {
 };
 
 /* this is for ntlm header input */
-int ntlm_input PARAMS ((struct ntlmdata *, const char *));
+int ntlm_input (struct ntlmdata *, const char *);
 
 /* this is for creating ntlm header output */
-char *ntlm_output PARAMS ((struct ntlmdata *,
-			   const char *, const char *, int *));
+char *ntlm_output (struct ntlmdata *, const char *, const char *, int *);
 #endif

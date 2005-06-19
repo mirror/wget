@@ -56,11 +56,11 @@ so, delete this exception statement from your version.  */
 #define xstrdup  checking_strdup
 #define xfree    checking_free
 
-void *checking_malloc PARAMS ((size_t));
-void *checking_malloc0 PARAMS ((size_t));
-void *checking_realloc PARAMS ((void *, size_t));
-char *checking_strdup PARAMS ((const char *));
-void checking_free PARAMS ((void *));
+void *checking_malloc (size_t);
+void *checking_malloc0 (size_t);
+void *checking_realloc (void *, size_t);
+char *checking_strdup (const char *);
+void checking_free (void *);
 
 #else  /* DEBUG_MALLOC */
 
@@ -70,11 +70,11 @@ void checking_free PARAMS ((void *));
 #define xstrdup(p)     debugging_strdup (p, __FILE__, __LINE__)
 #define xfree(p)       debugging_free (p, __FILE__, __LINE__)
 
-void *debugging_malloc PARAMS ((size_t, const char *, int));
-void *debugging_malloc0 PARAMS ((size_t, const char *, int));
-void *debugging_realloc PARAMS ((void *, size_t, const char *, int));
-char *debugging_strdup PARAMS ((const char *, const char *, int));
-void debugging_free PARAMS ((void *, const char *, int));
+void *debugging_malloc (size_t, const char *, int);
+void *debugging_malloc0 (size_t, const char *, int);
+void *debugging_realloc (void *, size_t, const char *, int);
+char *debugging_strdup (const char *, const char *, int);
+void debugging_free (void *, const char *, int);
 
 #endif /* DEBUG_MALLOC */
 

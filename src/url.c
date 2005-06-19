@@ -31,12 +31,7 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
-#include <sys/types.h>
+#include <string.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
@@ -47,10 +42,6 @@ so, delete this exception statement from your version.  */
 #include "utils.h"
 #include "url.h"
 #include "host.h"  /* for is_valid_ipv6_address */
-
-#ifndef errno
-extern int errno;
-#endif
 
 struct scheme_data
 {
@@ -75,7 +66,7 @@ static struct scheme_data supported_schemes[] =
 
 /* Forward declarations: */
 
-static int path_simplify PARAMS ((char *));
+static int path_simplify (char *);
 
 /* Support for escaping and unescaping of URL strings.  */
 
@@ -570,7 +561,7 @@ rewrite_shorthand_url (const char *url)
     }
 }
 
-static void split_path PARAMS ((const char *, char **, char **));
+static void split_path (const char *, char **, char **);
 
 /* Like strpbrk, with the exception that it returns the pointer to the
    terminating zero (end-of-string aka "eos") if no matching character
@@ -672,7 +663,7 @@ url_parse (const char *url, int *error)
   if (scheme == SCHEME_INVALID)
     {
       error_code = PE_UNSUPPORTED_SCHEME;
-      goto err;
+      goto error;
     }
 
   url_encoded = reencode_escapes (url);
@@ -710,7 +701,7 @@ url_parse (const char *url, int *error)
       if (!host_e)
 	{
 	  error_code = PE_UNTERMINATED_IPV6_ADDRESS;
-	  goto err;
+	  goto error;
 	}
 
 #ifdef ENABLE_IPV6
@@ -718,14 +709,14 @@ url_parse (const char *url, int *error)
       if (!is_valid_ipv6_address(host_b, host_e))
 	{
 	  error_code = PE_INVALID_IPV6_ADDRESS;
-	  goto err;
+	  goto error;
 	}
 
       /* Continue parsing after the closing ']'. */
       p = host_e + 1;
 #else
       error_code = PE_IPV6_NOT_SUPPORTED;
-      goto err;
+      goto error;
 #endif
     }
   else
@@ -737,7 +728,7 @@ url_parse (const char *url, int *error)
   if (host_b == host_e)
     {
       error_code = PE_EMPTY_HOST;
-      goto err;
+      goto error;
     }
 
   port = scheme_default_port (scheme);
@@ -762,7 +753,7 @@ url_parse (const char *url, int *error)
 	 	  /* http://host:12randomgarbage/blah */
 		  /*               ^                  */
 		  error_code = PE_BAD_PORT_NUMBER;
-		  goto err;
+		  goto error;
 		}
 	      port = 10 * port + (*pp - '0');
 	      /* Check for too large port numbers here, before we have
@@ -770,7 +761,7 @@ url_parse (const char *url, int *error)
 	      if (port > 65535)
 		{
 		  error_code = PE_BAD_PORT_NUMBER;
-		  goto err;
+		  goto error;
 		}
 	    }
 	}
@@ -829,7 +820,7 @@ url_parse (const char *url, int *error)
       if (!parse_credentials (uname_b, uname_e - 1, &user, &passwd))
 	{
 	  error_code = PE_INVALID_USER_NAME;
-	  goto err;
+	  goto error;
 	}
     }
 
@@ -883,7 +874,7 @@ url_parse (const char *url, int *error)
 
   return u;
 
- err:
+ error:
   /* Cleanup in case of error: */
   if (url_encoded && url_encoded != url)
     xfree (url_encoded);

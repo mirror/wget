@@ -32,24 +32,13 @@ so, delete this exception statement from your version.  */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
-# ifdef HAVE_STRING_H
-#  include <string.h>
-# else
-#  include <strings.h>
-# endif
-# ifdef HAVE_LIMITS_H
-#  include <limits.h>
-# endif
-#else
-/* If running without Autoconf, go ahead and assume presence of
-   standard C89 headers.  */
-# include <string.h>
-# include <limits.h>
 #endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
+#include <limits.h>
 
 #ifndef STANDALONE
 /* Get Wget's utility headers. */
@@ -64,7 +53,6 @@ so, delete this exception statement from your version.  */
 # define xfree free
 # define countof(x) (sizeof (x) / sizeof ((x)[0]))
 # define TOLOWER(x) ('A' <= (x) && (x) <= 'Z' ? (x) - 32 : (x))
-# define PARAMS(x) x
 #endif
 
 #include "hash.h"
@@ -152,8 +140,8 @@ struct mapping {
   void *value;
 };
 
-typedef unsigned long (*hashfun_t) PARAMS ((const void *));
-typedef int (*testfun_t) PARAMS ((const void *, const void *));
+typedef unsigned long (*hashfun_t) (const void *);
+typedef int (*testfun_t) (const void *, const void *);
 
 struct hash_table {
   hashfun_t hash_function;
@@ -180,7 +168,7 @@ struct hash_table {
    -1.  This is acceptable because it still allows the use of
    nonnegative integer keys.  */
 
-#define INVALID_PTR ((void *) ~(unsigned long)0)
+#define INVALID_PTR ((void *) ~0UL)
 #ifndef UCHAR_MAX
 # define UCHAR_MAX 0xff
 #endif
@@ -242,7 +230,7 @@ prime_size (int size, int *prime_offset)
   abort ();
 }
 
-static int cmp_pointer PARAMS ((const void *, const void *));
+static int cmp_pointer (const void *, const void *);
 
 /* Create a hash table with hash function HASH_FUNCTION and test
    function TEST_FUNCTION.  The table is empty (its count is 0), but

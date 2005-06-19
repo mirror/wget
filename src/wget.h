@@ -40,14 +40,6 @@ so, delete this exception statement from your version.  */
 # define NDEBUG
 #endif
 
-#ifndef PARAMS
-# if PROTOTYPES
-#  define PARAMS(args) args
-# else
-#  define PARAMS(args) ()
-# endif
-#endif
-
 /* `gettext (FOO)' is long to write, so we use `_(FOO)'.  If NLS is
    unavailable, _(STRING) simply returns STRING.  */
 #ifdef HAVE_NLS

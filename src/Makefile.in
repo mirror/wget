@@ -36,8 +36,6 @@ top_builddir = ..
 top_srcdir = @top_srcdir@
 srcdir     = @srcdir@
 VPATH      = @srcdir@
-ANSI2KNR = @ANSI2KNR@
-o = .@U@o
 
 prefix       = @prefix@
 exec_prefix  = @exec_prefix@
@@ -73,42 +71,23 @@ NTLM_OBJ   = @NTLM_OBJ@
 SSL_OBJ    = @SSL_OBJ@
 GETOPT_OBJ = @GETOPT_OBJ@
 
-OBJ = $(ALLOCA) cmpt$o connect$o convert$o cookies$o              \
-      ftp$o ftp-basic$o ftp-ls$o $(OPIE_OBJ) $(GETOPT_OBJ) hash$o \
-      host$o html-parse$o html-url$o http$o $(NTLM_OBJ) init$o    \
-      log$o main$o $(MD5_OBJ) netrc$o progress$o ptimer$o recur$o \
-      res$o retr$o safe-ctype$o snprintf$o $(SSL_OBJ) url$o       \
-      utils$o version$o xmalloc$o 
+OBJ = $(ALLOCA) cmpt.o connect.o convert.o cookies.o              \
+      ftp.o ftp-basic.o ftp-ls.o $(OPIE_OBJ) $(GETOPT_OBJ) hash.o \
+      host.o html-parse.o html-url.o http.o $(NTLM_OBJ) init.o    \
+      log.o main.o $(MD5_OBJ) netrc.o progress.o ptimer.o recur.o \
+      res.o retr.o safe-ctype.o snprintf.o $(SSL_OBJ) url.o       \
+      utils.o version.o xmalloc.o 
 
 .SUFFIXES:
-.SUFFIXES: .c .o ._c ._o
+.SUFFIXES: .c .o
 
 .c.o:
 	$(COMPILE) -c $<
-
-.c._c: $(ANSI2KNR)
-	$(ANSI2KNR) $< > $*.tmp && mv $*.tmp $@
-
-._c._o:
-	@echo $(COMPILE) -c $<
-	@rm -f _$*.c
-	@ln $< _$*.c && $(COMPILE) -c _$*.c && mv _$*.o $@ && rm _$*.c
-
-.c._o: $(ANSI2KNR)
-	$(ANSI2KNR) $< > $*.tmp && mv $*.tmp $*._c
-	@echo $(COMPILE) -c $*._c
-	@rm -f _$*.c
-	@ln $*._c _$*.c && $(COMPILE) -c _$*.c && mv _$*.o $@ && rm _$*.c
 
 # Dependencies for building
 
 wget$(exeext): $(OBJ)
 	$(LINK) $(OBJ) $(LIBS)
-
-ansi2knr: ansi2knr.o
-	$(CC) -o ansi2knr ansi2knr.o $(LIBS)
-
-$(OBJ): $(ANSI2KNR)
 
 #
 # Dependencies for installing
@@ -130,7 +109,7 @@ uninstall.bin:
 #
 
 clean:
-	$(RM) *.o wget$(exeext) *~ *.bak core core.[0-9]* $(ANSI2KNR) *._o *._c
+	$(RM) *.o wget$(exeext) *~ *.bak core core.[0-9]*
 	$(RM) -r .libs
 
 distclean: clean
@@ -153,47 +132,47 @@ TAGS: *.c *.h
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-alloca$o:
-cmpt$o: wget.h sysdep.h options.h safe-ctype.h
-connect$o: wget.h sysdep.h options.h safe-ctype.h utils.h connect.h host.h
-convert$o: wget.h convert.h url.h recur.h utils.h hash.h
-cookies$o: wget.h sysdep.h options.h safe-ctype.h cookies.h hash.h url.h utils.h
-ftp-basic$o: wget.h sysdep.h options.h safe-ctype.h utils.h connect.h \
+alloca.o:
+cmpt.o: wget.h sysdep.h options.h safe-ctype.h
+connect.o: wget.h sysdep.h options.h safe-ctype.h utils.h connect.h host.h
+convert.o: wget.h convert.h url.h recur.h utils.h hash.h
+cookies.o: wget.h sysdep.h options.h safe-ctype.h cookies.h hash.h url.h utils.h
+ftp-basic.o: wget.h sysdep.h options.h safe-ctype.h utils.h connect.h \
 	host.h ftp.h
-ftp-ls$o: wget.h sysdep.h options.h safe-ctype.h utils.h ftp.h host.h \
+ftp-ls.o: wget.h sysdep.h options.h safe-ctype.h utils.h ftp.h host.h \
 	url.h
-ftp-opie$o: wget.h sysdep.h options.h safe-ctype.h gen-md5.h
-ftp$o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h retr.h \
+ftp-opie.o: wget.h sysdep.h options.h safe-ctype.h gen-md5.h
+ftp.o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h retr.h \
 	ftp.h host.h connect.h netrc.h
-gen-md5$o: wget.h sysdep.h options.h safe-ctype.h gen-md5.h
-openssl$o: wget.h sysdep.h options.h safe-ctype.h utils.h connect.h host.h \
+gen-md5.o: wget.h sysdep.h options.h safe-ctype.h gen-md5.h
+openssl.o: wget.h sysdep.h options.h safe-ctype.h utils.h connect.h host.h \
 	url.h
-getopt$o: wget.h sysdep.h options.h safe-ctype.h getopt.h
-gnu-md5$o: wget.h sysdep.h options.h safe-ctype.h gnu-md5.h
-hash$o: wget.h sysdep.h options.h safe-ctype.h utils.h hash.h
-host$o: wget.h sysdep.h options.h safe-ctype.h utils.h host.h url.h hash.h
-html-parse$o: wget.h sysdep.h options.h safe-ctype.h html-parse.h
-html-url$o: wget.h sysdep.h options.h safe-ctype.h html-parse.h url.h utils.h
-http$o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h host.h \
+getopt.o: wget.h sysdep.h options.h safe-ctype.h getopt.h
+gnu-md5.o: wget.h sysdep.h options.h safe-ctype.h gnu-md5.h
+hash.o: wget.h sysdep.h options.h safe-ctype.h utils.h hash.h
+host.o: wget.h sysdep.h options.h safe-ctype.h utils.h host.h url.h hash.h
+html-parse.o: wget.h sysdep.h options.h safe-ctype.h html-parse.h
+html-url.o: wget.h sysdep.h options.h safe-ctype.h html-parse.h url.h utils.h
+http.o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h host.h \
 	retr.h connect.h host.h netrc.h ssl.h \
 	cookies.h gen-md5.h
-init$o: wget.h sysdep.h options.h safe-ctype.h utils.h init.h host.h recur.h \
+init.o: wget.h sysdep.h options.h safe-ctype.h utils.h init.h host.h recur.h \
 	netrc.h cookies.h progress.h
-log$o: wget.h sysdep.h options.h safe-ctype.h utils.h
-main$o: wget.h sysdep.h options.h safe-ctype.h utils.h init.h retr.h \
+log.o: wget.h sysdep.h options.h safe-ctype.h utils.h
+main.o: wget.h sysdep.h options.h safe-ctype.h utils.h init.h retr.h \
 	recur.h host.h cookies.h url.h progress.h ssl.h getopt.h
-gnu-md5$o: wget.h sysdep.h options.h safe-ctype.h gnu-md5.h
-mswindows$o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h
-netrc$o: wget.h sysdep.h options.h safe-ctype.h utils.h netrc.h init.h
-progress$o: wget.h sysdep.h options.h safe-ctype.h progress.h utils.h retr.h
-recur$o: wget.h sysdep.h options.h safe-ctype.h url.h recur.h utils.h retr.h \
+gnu-md5.o: wget.h sysdep.h options.h safe-ctype.h gnu-md5.h
+mswindows.o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h
+netrc.o: wget.h sysdep.h options.h safe-ctype.h utils.h netrc.h init.h
+progress.o: wget.h sysdep.h options.h safe-ctype.h progress.h utils.h retr.h
+recur.o: wget.h sysdep.h options.h safe-ctype.h url.h recur.h utils.h retr.h \
 	ftp.h host.h hash.h
-res$o: wget.h sysdep.h options.h safe-ctype.h utils.h hash.h url.h retr.h res.h
-retr$o: wget.h sysdep.h options.h safe-ctype.h utils.h retr.h url.h \
+res.o: wget.h sysdep.h options.h safe-ctype.h utils.h hash.h url.h retr.h res.h
+retr.o: wget.h sysdep.h options.h safe-ctype.h utils.h retr.h url.h \
 	recur.h ftp.h host.h connect.h hash.h
-safe-ctype$o: safe-ctype.h
-snprintf$o: safe-ctype.h
-url$o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h host.h hash.h
-utils$o: wget.h sysdep.h options.h safe-ctype.h utils.h hash.h
-version$o:
-xmalloc$o: wget.h xmalloc.h
+safe-ctype.o: safe-ctype.h
+snprintf.o: safe-ctype.h
+url.o: wget.h sysdep.h options.h safe-ctype.h utils.h url.h host.h hash.h
+utils.o: wget.h sysdep.h options.h safe-ctype.h utils.h hash.h
+version.o:
+xmalloc.o: wget.h xmalloc.h

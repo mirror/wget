@@ -31,11 +31,7 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif /* HAVE_STRING_H */
+#include <string.h>
 #include <assert.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
@@ -52,23 +48,23 @@ so, delete this exception statement from your version.  */
 struct progress_implementation {
   const char *name;
   int interactive;
-  void *(*create) PARAMS ((wgint, wgint));
-  void (*update) PARAMS ((void *, wgint, double));
-  void (*finish) PARAMS ((void *, double));
-  void (*set_params) PARAMS ((const char *));
+  void *(*create) (wgint, wgint);
+  void (*update) (void *, wgint, double);
+  void (*finish) (void *, double);
+  void (*set_params) (const char *);
 };
 
 /* Necessary forward declarations. */
 
-static void *dot_create PARAMS ((wgint, wgint));
-static void dot_update PARAMS ((void *, wgint, double));
-static void dot_finish PARAMS ((void *, double));
-static void dot_set_params PARAMS ((const char *));
+static void *dot_create (wgint, wgint);
+static void dot_update (void *, wgint, double);
+static void dot_finish (void *, double);
+static void dot_set_params (const char *);
 
-static void *bar_create PARAMS ((wgint, wgint));
-static void bar_update PARAMS ((void *, wgint, double));
-static void bar_finish PARAMS ((void *, double));
-static void bar_set_params PARAMS ((const char *));
+static void *bar_create (wgint, wgint);
+static void bar_update (void *, wgint, double);
+static void bar_finish (void *, double);
+static void bar_set_params (const char *);
 
 static struct progress_implementation implementations[] = {
   { "dot", 0, dot_create, dot_update, dot_finish, dot_set_params },
@@ -495,8 +491,8 @@ struct bar_progress {
   wgint last_eta_value;
 };
 
-static void create_image PARAMS ((struct bar_progress *, double));
-static void display_image PARAMS ((char *));
+static void create_image (struct bar_progress *, double);
+static void display_image (char *);
 
 static void *
 bar_create (wgint initial, wgint total)
@@ -530,13 +526,13 @@ bar_create (wgint initial, wgint total)
 
   logputs (LOG_VERBOSE, "\n");
 
-  create_image (bp, 0.0);
+  create_image (bp, 0);
   display_image (bp->buffer);
 
   return bp;
 }
 
-static void update_speed_ring PARAMS ((struct bar_progress *, wgint, double));
+static void update_speed_ring (struct bar_progress *, wgint, double);
 
 static void
 bar_update (void *progress, wgint howmuch, double dltime)

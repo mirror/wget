@@ -31,30 +31,13 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
 #include <assert.h>
 #include <errno.h>
-#if TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifndef errno
-extern int errno;
-#endif
+#include <time.h>
 
 #include "wget.h"
 #include "utils.h"
@@ -368,7 +351,7 @@ request_send (const struct request *req, int fd)
 
   /* Send the request to the server. */
 
-  write_error = fd_write (fd, request_string, size - 1, -1.0);
+  write_error = fd_write (fd, request_string, size - 1, -1);
   if (write_error < 0)
     logprintf (LOG_VERBOSE, _("Failed writing HTTP request: %s.\n"),
 	       strerror (errno));
@@ -412,7 +395,7 @@ post_file (int sock, const char *file_name, wgint promised_size)
       if (length == 0)
 	break;
       towrite = MIN (promised_size - written, length);
-      write_error = fd_write (sock, chunk, towrite, -1.0);
+      write_error = fd_write (sock, chunk, towrite, -1);
       if (write_error < 0)
 	{
 	  fclose (fp);
@@ -840,7 +823,7 @@ skip_short_body (int fd, wgint contlen)
 
   while (contlen > 0)
     {
-      int ret = fd_read (fd, dlbuf, MIN (contlen, SKIP_SIZE), -1.0);
+      int ret = fd_read (fd, dlbuf, MIN (contlen, SKIP_SIZE), -1);
       if (ret <= 0)
 	{
 	  /* Don't normally report the error since this is an
@@ -1100,13 +1083,13 @@ free_hstat (struct http_stat *hs)
   hs->error = NULL;
 }
 
-static char *create_authorization_line PARAMS ((const char *, const char *,
-						const char *, const char *,
-						const char *, int *));
-static char *basic_authentication_encode PARAMS ((const char *, const char *));
-static int known_authentication_scheme_p PARAMS ((const char *, const char *));
+static char *create_authorization_line (const char *, const char *,
+					const char *, const char *,
+					const char *, int *);
+static char *basic_authentication_encode (const char *, const char *);
+static int known_authentication_scheme_p (const char *, const char *);
 
-time_t http_atotm PARAMS ((const char *));
+time_t http_atotm (const char *);
 
 #define BEGINS_WITH(line, string_constant)				\
   (!strncasecmp (line, string_constant, sizeof (string_constant) - 1)	\
@@ -1544,7 +1527,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       if (opt.post_data)
 	{
 	  DEBUGP (("[POST data: %s]\n", opt.post_data));
-	  write_error = fd_write (sock, opt.post_data, post_data_size, -1.0);
+	  write_error = fd_write (sock, opt.post_data, post_data_size, -1);
 	}
       else if (opt.post_file_name && post_data_size != 0)
 	write_error = post_file (sock, opt.post_file_name, post_data_size);

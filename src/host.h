@@ -95,26 +95,24 @@ enum {
   LH_BIND    = 2,
   LH_REFRESH = 4
 };
-struct address_list *lookup_host PARAMS ((const char *, int));
+struct address_list *lookup_host (const char *, int);
 
-void address_list_get_bounds PARAMS ((const struct address_list *,
-				      int *, int *));
-const ip_address *address_list_address_at PARAMS ((const struct address_list *,
-						   int));
-int address_list_contains PARAMS ((const struct address_list *, const ip_address *));
-void address_list_set_faulty PARAMS ((struct address_list *, int));
-void address_list_set_connected PARAMS ((struct address_list *));
-int address_list_connected_p PARAMS ((const struct address_list *));
-void address_list_release PARAMS ((struct address_list *));
+void address_list_get_bounds (const struct address_list *, int *, int *);
+const ip_address *address_list_address_at (const struct address_list *, int);
+int address_list_contains (const struct address_list *, const ip_address *);
+void address_list_set_faulty (struct address_list *, int);
+void address_list_set_connected (struct address_list *);
+int address_list_connected_p (const struct address_list *);
+void address_list_release (struct address_list *);
 
-const char *pretty_print_address PARAMS ((const ip_address *));
+const char *pretty_print_address (const ip_address *);
 #ifdef ENABLE_IPV6
-int is_valid_ipv6_address PARAMS ((const char *, const char *));
+int is_valid_ipv6_address (const char *, const char *);
 #endif
 
-int accept_domain PARAMS ((struct url *));
-int sufmatch PARAMS ((const char **, const char *));
+int accept_domain (struct url *);
+int sufmatch (const char **, const char *);
 
-void host_cleanup PARAMS ((void));
+void host_cleanup (void);
 
 #endif /* HOST_H */

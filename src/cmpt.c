@@ -31,35 +31,15 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif /* HAVE_STRING_H */
+#include <string.h>
 
-#include <sys/types.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#include <limits.h>
 
 #include <errno.h>
-#ifndef errno
-extern int errno;
-#endif
 
 #include "wget.h"
-
-#ifndef HAVE_STRERROR
-/* A strerror() clone, for systems that don't have it.  */
-char *
-strerror (int err)
-{
-  /* This loses on a system without `sys_errlist'.  */
-  extern char *sys_errlist[];
-  return sys_errlist[err];
-}
-#endif /* not HAVE_STRERROR */
 
 /* Some systems don't have some str* functions in libc.  Here we
    define them.  The same goes for strptime.  */
@@ -120,104 +100,6 @@ strncasecmp (const char *s1, const char *s2, size_t n)
 }
 #endif /* not HAVE_STRNCASECMP */
 
-#ifndef HAVE_STRSTR
-/* From GNU libc 2.3.5.  */
-
-/*
- * My personal strstr() implementation that beats most other algorithms.
- * Until someone tells me otherwise, I assume that this is the
- * fastest implementation of strstr() in C.
- * I deliberately chose not to comment it.  You should have at least
- * as much fun trying to understand it, as I had to write it :-).
- *
- * Stephen R. van den Berg, berg@pool.informatik.rwth-aachen.de	*/
-
-typedef unsigned chartype;
-
-#undef strstr
-
-char *
-strstr (const char *phaystack, const char *pneedle)
-{
-  const unsigned char *haystack, *needle;
-  chartype b;
-  const unsigned char *rneedle;
-
-  haystack = (const unsigned char *) phaystack;
-
-  if ((b = *(needle = (const unsigned char *) pneedle)))
-    {
-      chartype c;
-      haystack--;		/* possible ANSI violation */
-
-      {
-	chartype a;
-	do
-	  if (!(a = *++haystack))
-	    goto ret0;
-	while (a != b);
-      }
-
-      if (!(c = *++needle))
-	goto foundneedle;
-      ++needle;
-      goto jin;
-
-      for (;;)
-	{
-	  {
-	    chartype a;
-	    if (0)
-	    jin:{
-		if ((a = *++haystack) == c)
-		  goto crest;
-	      }
-	    else
-	      a = *++haystack;
-	    do
-	      {
-		for (; a != b; a = *++haystack)
-		  {
-		    if (!a)
-		      goto ret0;
-		    if ((a = *++haystack) == b)
-		      break;
-		    if (!a)
-		      goto ret0;
-		  }
-	      }
-	    while ((a = *++haystack) != c);
-	  }
-	crest:
-	  {
-	    chartype a;
-	    {
-	      const unsigned char *rhaystack;
-	      if (*(rhaystack = haystack-- + 1) == (a = *(rneedle = needle)))
-		do
-		  {
-		    if (!a)
-		      goto foundneedle;
-		    if (*++rhaystack != (a = *++needle))
-		      break;
-		    if (!a)
-		      goto foundneedle;
-		  }
-		while (*++rhaystack == (a = *++needle));
-	      needle = rneedle;	/* took the register-poor aproach */
-	    }
-	    if (!a)
-	      break;
-	  }
-	}
-    }
-foundneedle:
-  return (char *) haystack;
-ret0:
-  return 0;
-}
-#endif /* not HAVE_STRSTR */
-
 #ifndef HAVE_STRPBRK
 /* Find the first ocurrence in S of any character in ACCEPT.  */
 char *
@@ -257,7 +139,7 @@ strpbrk (const char *s, const char *accept)
 #endif
 
 #ifndef __P
-# define __P(args) PARAMS (args)
+# define __P(args) args
 #endif  /* Not __P.  */
 
 #ifndef CHAR_BIT
@@ -525,7 +407,7 @@ weak_alias (mktime, timelocal)
    this is enough information for determining the date.  */
 
 #ifndef __P
-# define __P(args) PARAMS (args)
+# define __P(args) args
 #endif /* not __P */
 
 #if ! HAVE_LOCALTIME_R && ! defined localtime_r
@@ -1433,30 +1315,17 @@ const unsigned short int __mon_yday[2][13] =
   };
 #endif
 
-#ifndef HAVE_MEMMOVE
-void *
-memmove (char *dest, const char *source, unsigned length)
-{
-  char *d0 = dest;
-  if (source < dest)
-    /* Moving from low mem to hi mem; start at end.  */
-    for (source += length, dest += length; length; --length)
-      *--dest = *--source;
-  else if (source != dest)
-    {
-      /* Moving from hi mem to low mem; start at beginning.  */
-      for (; length; --length)
-	*dest++ = *source++;
-    }
-  return (void *) d0;
-}
-#endif /* not HAVE_MEMMOVE */
+/* fnmatch is defined by POSIX, but we include an implementation for
+   the sake of systems that don't have it.  Some systems do have
+   fnmatch, but Apache installs its own fnmatch.h (incompatible with
+   the system one) in a system include directory, effectively
+   rendering fnmatch unusable.
 
-/* fnmatch is a POSIX function, but we include an implementation for
-   the sake of systems that don't have it.  Furthermore, according to
-   anecdotal evidence, historical implementations of fnmatch are buggy
-   and unreliable.  So we use our version, except when compiling under
-   systems where fnmatch is known to work (currently glibc.)  */
+   Additionally according to anecdotal evidence and conventional
+   wisdom I lack courage to challenge, many implementations of fnmatch
+   are notoriously buggy and unreliable.  So we use our version by
+   default, except when compiling under systems where fnmatch is known
+   to work (currently on GNU libc-based systems and Solaris.)  */
 
 #ifndef SYSTEM_FNMATCH
 
@@ -1465,8 +1334,8 @@ memmove (char *dest, const char *source, unsigned length)
 /* Match STRING against the filename pattern PATTERN, returning zero
    if it matches, FNM_NOMATCH if not.  This implementation comes from
    an earlier version of GNU Bash.  (It doesn't make sense to update
-   it with a newer version because it adds a lot of features Wget
-   doesn't use or care about.)  */
+   it with a newer version because those versions add a lot of
+   features Wget doesn't use or care about.)  */
 
 int
 fnmatch (const char *pattern, const char *string, int flags)

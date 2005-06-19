@@ -60,16 +60,3 @@ void *alloca ();
 #define _BSD_SOURCE
 
 #endif /* NAMESPACE_TWEAKS */
-
-/* Determine whether to use stdarg.  Use it only if the compiler
-   supports ANSI C and stdarg.h is present.  We check for both because
-   there are configurations where stdarg.h exists, but doesn't work.
-   This check cannot be in sysdep.h because we use it to choose which
-   system headers to include.  */
-#ifndef WGET_USE_STDARG
-# ifdef __STDC__
-#  ifdef HAVE_STDARG_H
-#   define WGET_USE_STDARG
-#  endif
-# endif
-#endif /* not WGET_USE_STDARG */

@@ -54,17 +54,13 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else  /* not HAVE_STRING_H */
-# include <strings.h>
-#endif /* not HAVE_STRING_H */
-#include <sys/types.h>
+#include <string.h>
 #include <errno.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
 #include <assert.h>
+#include <time.h>
 
 /* Cygwin currently (as of 2005-04-08, Cygwin 1.5.14) lacks clock_getres,
    but still defines _POSIX_TIMERS!  Because of that we simply use the
@@ -75,10 +71,6 @@ so, delete this exception statement from your version.  */
 
 #include "wget.h"
 #include "ptimer.h"
-
-#ifndef errno
-extern int errno;
-#endif
 
 /* Depending on the OS and availability of gettimeofday(), one and
    only one of PTIMER_POSIX, PTIMER_GETTIMEOFDAY, PTIMER_WINDOWS, or

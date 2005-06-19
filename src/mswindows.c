@@ -54,10 +54,6 @@ so, delete this exception statement from your version.  */
 #include "utils.h"
 #include "url.h"
 
-#ifndef errno
-extern int errno;
-#endif
-
 #ifndef ES_SYSTEM_REQUIRED
 #define ES_SYSTEM_REQUIRED  0x00000001
 #endif
@@ -68,7 +64,7 @@ extern int errno;
 
 
 /* Defined in log.c.  */
-void log_request_redirect_output PARAMS ((const char *));
+void log_request_redirect_output (const char *);
 
 /* Windows version of xsleep in utils.c.  */
 

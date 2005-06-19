@@ -30,17 +30,9 @@ so, delete this exception statement from your version.  */
 #include <config.h>
 
 #include <stdio.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 #include <stdlib.h>
-#ifdef WGET_USE_STDARG
-# include <stdarg.h>
-#else
-# include <varargs.h>
-#endif
+#include <stdarg.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
@@ -50,10 +42,6 @@ so, delete this exception statement from your version.  */
 #include "wget.h"
 #include "utils.h"
 #include "log.h"
-
-#ifndef errno
-extern int errno;
-#endif
 
 /* This file impplement support for "logging".  Logging means printing
    output, plus several additional features:
@@ -137,7 +125,7 @@ static int log_line_current = -1;
    than create new ones.  */
 static int trailing_line;
 
-static void check_redirect_output PARAMS ((void));
+static void check_redirect_output (void);
 
 #define ROT_ADVANCE(num) do {			\
   if (++num >= SAVED_LOG_LINES)			\
@@ -466,16 +454,6 @@ log_set_save_context (int savep)
   return old;
 }
 
-/* Handle difference in va_start between pre-ANSI and ANSI C.  Note
-   that we always use `...' in function definitions and let ansi2knr
-   convert it for us.  */
-
-#ifdef WGET_USE_STDARG
-# define VA_START(args, arg1) va_start (args, arg1)
-#else
-# define VA_START(args, ignored) va_start (args)
-#endif
-
 /* Print a message to the screen or to the log.  The first argument
    defines the verbosity of the message, and the rest are as in
    printf(3).  */
@@ -495,7 +473,7 @@ logprintf (enum log_options o, const char *fmt, ...)
   xzero (lpstate);
   do
     {
-      VA_START (args, fmt);
+      va_start (args, fmt);
       done = log_vprintf_internal (&lpstate, fmt, args);
       va_end (args);
     }
@@ -521,7 +499,7 @@ debug_logprintf (const char *fmt, ...)
       xzero (lpstate);
       do
 	{
-	  VA_START (args, fmt);
+	  va_start (args, fmt);
 	  done = log_vprintf_internal (&lpstate, fmt, args);
 	  va_end (args);
 	}

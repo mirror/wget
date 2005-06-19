@@ -96,11 +96,7 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 #include <assert.h>
 
 #include "wget.h"
@@ -1014,8 +1010,7 @@ map_html_tags (const char *text, int size,
       taginfo.attrs = pairs;
       taginfo.start_position = tag_start_position;
       taginfo.end_position   = p + 1;
-      /* Ta-dam! */
-      (*mapfun) (&taginfo, maparg);
+      mapfun (&taginfo, maparg);
       ADVANCE (p);
     }
     goto look_for_tag;

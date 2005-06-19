@@ -36,12 +36,7 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
-#include <sys/types.h>
+#include <string.h>
 #include <errno.h>
 
 #include "wget.h"
@@ -49,15 +44,11 @@ so, delete this exception statement from your version.  */
 #include "netrc.h"
 #include "init.h"
 
-#ifndef errno
-extern int errno;
-#endif
-
 #define NETRC_FILE_NAME ".netrc"
 
 acc_t *netrc_list;
 
-static acc_t *parse_netrc PARAMS ((const char *));
+static acc_t *parse_netrc (const char *);
 
 /* Return the correct user and password, given the host, user (as
    given in the URL), and password (as given in the URL).  May return

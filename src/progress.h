@@ -30,15 +30,15 @@ so, delete this exception statement from your version.  */
 #ifndef PROGRESS_H
 #define PROGRESS_H
 
-int valid_progress_implementation_p PARAMS ((const char *));
-void set_progress_implementation PARAMS ((const char *));
-void progress_schedule_redirect PARAMS ((void));
+int valid_progress_implementation_p (const char *);
+void set_progress_implementation (const char *);
+void progress_schedule_redirect (void);
 
-void *progress_create PARAMS ((wgint, wgint));
-int progress_interactive_p PARAMS ((void *));
-void progress_update PARAMS ((void *, wgint, double));
-void progress_finish PARAMS ((void *, double));
+void *progress_create (wgint, wgint);
+int progress_interactive_p (void *);
+void progress_update (void *, wgint, double);
+void progress_finish (void *, double);
 
-RETSIGTYPE progress_handle_sigwinch PARAMS ((int));
+RETSIGTYPE progress_handle_sigwinch (int);
 
 #endif /* PROGRESS_H */

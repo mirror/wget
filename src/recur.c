@@ -31,17 +31,12 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif /* HAVE_STRING_H */
+#include <string.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 #include <errno.h>
 #include <assert.h>
-#include <sys/types.h>
 
 #include "wget.h"
 #include "url.h"
@@ -53,10 +48,6 @@ so, delete this exception statement from your version.  */
 #include "hash.h"
 #include "res.h"
 #include "convert.h"
-
-#ifndef errno
-extern int errno;
-#endif
 
 extern char *version_string;
 extern LARGE_INT total_downloaded_bytes;
@@ -160,10 +151,10 @@ url_dequeue (struct url_queue *queue,
   return 1;
 }
 
-static int download_child_p PARAMS ((const struct urlpos *, struct url *, int,
-				     struct url *, struct hash_table *));
-static int descend_redirect_p PARAMS ((const char *, const char *, int,
-				       struct url *, struct hash_table *));
+static int download_child_p (const struct urlpos *, struct url *, int,
+			     struct url *, struct hash_table *);
+static int descend_redirect_p (const char *, const char *, int,
+			       struct url *, struct hash_table *);
 
 
 /* Retrieve a part of the web beginning with START_URL.  This used to

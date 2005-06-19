@@ -40,12 +40,12 @@ so, delete this exception statement from your version.  */
 
 struct urlpos;
 
-void recursive_cleanup PARAMS ((void));
-uerr_t retrieve_tree PARAMS ((const char *));
+void recursive_cleanup (void);
+uerr_t retrieve_tree (const char *);
 
 /* These are really in html-url.c. */
-struct urlpos *get_urls_file PARAMS ((const char *));
-struct urlpos *get_urls_html PARAMS ((const char *, const char *, int *));
-void free_urlpos PARAMS ((struct urlpos *));
+struct urlpos *get_urls_file (const char *);
+struct urlpos *get_urls_html (const char *, const char *, int *);
+void free_urlpos (struct urlpos *);
 
 #endif /* RECUR_H */

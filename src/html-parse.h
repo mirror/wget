@@ -60,9 +60,8 @@ struct hash_table;		/* forward declaration */
 #define MHT_TRIM_VALUES      2  /* trim attribute values, e.g. interpret
                                    <a href=" foo "> as "foo" */
 
-void map_html_tags PARAMS ((const char *, int,
-			    void (*) (struct taginfo *, void *), void *, int,
-			    const struct hash_table *,
-			    const struct hash_table *));
+void map_html_tags (const char *, int,
+		    void (*) (struct taginfo *, void *), void *, int,
+		    const struct hash_table *, const struct hash_table *);
 
 #endif /* HTML_PARSE_H */

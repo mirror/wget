@@ -45,14 +45,11 @@ so, delete this exception statement from your version.  */
 #include <config.h>
 
 #include <stdio.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <errno.h>
+#include <time.h>
 
 #include "wget.h"
 #include "utils.h"
@@ -60,7 +57,7 @@ so, delete this exception statement from your version.  */
 #include "cookies.h"
 
 /* This should *really* be in a .h file!  */
-time_t http_atotm PARAMS ((const char *));
+time_t http_atotm (const char *);
 
 /* Declarations of `struct cookie' and the most basic functions. */
 
@@ -818,7 +815,7 @@ check_domain_match (const char *cookie_domain, const char *host)
   return 1;
 }
 
-static int path_matches PARAMS ((const char *, const char *));
+static int path_matches (const char *, const char *);
 
 /* Check whether PATH begins with COOKIE_PATH. */
 

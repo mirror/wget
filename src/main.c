@@ -34,12 +34,7 @@ so, delete this exception statement from your version.  */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif /* HAVE_UNISTD_H */
-#include <sys/types.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif /* HAVE_STRING_H */
+#include <string.h>
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
 #endif
@@ -49,11 +44,7 @@ so, delete this exception statement from your version.  */
 #endif /* HAVE_LOCALE_H */
 #endif /* HAVE_NLS */
 #include <assert.h>
-
 #include <errno.h>
-#ifndef errno
-extern int errno;
-#endif
 
 #include "wget.h"
 #include "utils.h"
@@ -79,7 +70,7 @@ extern char *version_string;
 
 extern struct cookie_jar *wget_cookie_jar;
 
-static RETSIGTYPE redirect_output_signal PARAMS ((int));
+static RETSIGTYPE redirect_output_signal (int);
 
 const char *exec_name;
 
@@ -115,8 +106,8 @@ i18n_initialize (void)
 
 /* Definition of command-line options. */
 
-static void print_help PARAMS ((void));
-static void print_version PARAMS ((void));
+static void print_help (void);
+static void print_version (void);
 
 #ifdef HAVE_SSL
 # define IF_SSL(x) x
@@ -738,7 +729,7 @@ main (int argc, char *const *argv)
 	  break;
 	case OPT_FUNCALL:
 	  {
-	    void (*func) PARAMS ((void)) = (void (*) PARAMS ((void))) opt->data;
+	    void (*func) (void) = (void (*) (void)) opt->data;
 	    func ();
 	  }
 	  break;

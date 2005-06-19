@@ -43,27 +43,27 @@ enum stype
   ST_OTHER
 };
   
-uerr_t ftp_response PARAMS ((int, char **));
-uerr_t ftp_login PARAMS ((int, const char *, const char *));
-uerr_t ftp_port PARAMS ((int, int *));
-uerr_t ftp_pasv PARAMS ((int, ip_address *, int *));
+uerr_t ftp_response (int, char **);
+uerr_t ftp_login (int, const char *, const char *);
+uerr_t ftp_port (int, int *);
+uerr_t ftp_pasv (int, ip_address *, int *);
 #ifdef ENABLE_IPV6
-uerr_t ftp_lprt PARAMS ((int, int *));
-uerr_t ftp_lpsv PARAMS ((int, ip_address *, int *));
-uerr_t ftp_eprt PARAMS ((int, int *));
-uerr_t ftp_epsv PARAMS ((int, ip_address *, int *));
+uerr_t ftp_lprt (int, int *);
+uerr_t ftp_lpsv (int, ip_address *, int *);
+uerr_t ftp_eprt (int, int *);
+uerr_t ftp_epsv (int, ip_address *, int *);
 #endif
-uerr_t ftp_type PARAMS ((int, int));
-uerr_t ftp_cwd PARAMS ((int, const char *));
-uerr_t ftp_retr PARAMS ((int, const char *));
-uerr_t ftp_rest PARAMS ((int, wgint));
-uerr_t ftp_list PARAMS ((int, const char *));
-uerr_t ftp_syst PARAMS ((int, enum stype *));
-uerr_t ftp_pwd PARAMS ((int, char **));
-uerr_t ftp_size PARAMS ((int, const char *, wgint *));
+uerr_t ftp_type (int, int);
+uerr_t ftp_cwd (int, const char *);
+uerr_t ftp_retr (int, const char *);
+uerr_t ftp_rest (int, wgint);
+uerr_t ftp_list (int, const char *);
+uerr_t ftp_syst (int, enum stype *);
+uerr_t ftp_pwd (int, char **);
+uerr_t ftp_size (int, const char *, wgint *);
 
 #ifdef ENABLE_OPIE
-const char *skey_response PARAMS ((int, const char *, const char *));
+const char *skey_response (int, const char *, const char *);
 #endif
 
 struct url;
@@ -116,12 +116,12 @@ enum wget_ftp_fstatus
 				   correct.  */
 };
 
-struct fileinfo *ftp_parse_ls PARAMS ((const char *, const enum stype));
-uerr_t ftp_loop PARAMS ((struct url *, int *, struct url *));
+struct fileinfo *ftp_parse_ls (const char *, const enum stype);
+uerr_t ftp_loop (struct url *, int *, struct url *);
 
-uerr_t ftp_index PARAMS ((const char *, struct url *, struct fileinfo *));
+uerr_t ftp_index (const char *, struct url *, struct fileinfo *);
 
-char ftp_process_type PARAMS ((const char *));
+char ftp_process_type (const char *);
 
 
 #endif /* FTP_H */

@@ -31,7 +31,6 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
@@ -47,11 +46,7 @@ so, delete this exception statement from your version.  */
 #endif /* not WINDOWS */
 
 #include <errno.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif /* HAVE_STRING_H */
+#include <string.h>
 #ifdef HAVE_SYS_SELECT_H
 # include <sys/select.h>
 #endif /* HAVE_SYS_SELECT_H */
@@ -61,10 +56,6 @@ so, delete this exception statement from your version.  */
 #include "host.h"
 #include "connect.h"
 #include "hash.h"
-
-#ifndef errno
-extern int errno;
-#endif
 
 /* Define sockaddr_storage where unavailable (presumably on IPv4-only
    hosts).  */

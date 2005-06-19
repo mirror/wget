@@ -92,15 +92,15 @@ typedef enum
   CHECK_FOR_FILE
 } downloaded_file_t;
 
-downloaded_file_t downloaded_file PARAMS ((downloaded_file_t, const char *));
+downloaded_file_t downloaded_file (downloaded_file_t, const char *);
 
-void register_download PARAMS ((const char *, const char *));
-void register_redirection PARAMS ((const char *, const char *));
-void register_html PARAMS ((const char *, const char *));
-void register_delete_file PARAMS ((const char *));
-void convert_all_links PARAMS ((void));
-void convert_cleanup PARAMS ((void));
+void register_download (const char *, const char *);
+void register_redirection (const char *, const char *);
+void register_html (const char *, const char *);
+void register_delete_file (const char *);
+void convert_all_links (void);
+void convert_cleanup (void);
 
-char *html_quote_string PARAMS ((const char *));
+char *html_quote_string (const char *);
 
 #endif /* CONVERT_H */

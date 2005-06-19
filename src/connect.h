@@ -38,40 +38,39 @@ so, delete this exception statement from your version.  */
 enum {
   E_HOST = -100
 };
-int connect_to_host PARAMS ((const char *, int));
-int connect_to_ip PARAMS ((const ip_address *, int, const char *));
+int connect_to_host (const char *, int);
+int connect_to_ip (const ip_address *, int, const char *);
 
-int bind_local PARAMS ((const ip_address *, int *));
-int accept_connection PARAMS ((int));
+int bind_local (const ip_address *, int *);
+int accept_connection (int);
 
 enum {
   ENDPOINT_LOCAL,
   ENDPOINT_PEER
 };
-int socket_ip_address PARAMS ((int, ip_address *, int));
+int socket_ip_address (int, ip_address *, int);
 
-int retryable_socket_connect_error PARAMS ((int));
+int retryable_socket_connect_error (int);
 
 /* Flags for select_fd's WAIT_FOR argument. */
 enum {
   WAIT_FOR_READ = 1,
   WAIT_FOR_WRITE = 2
 };
-int select_fd PARAMS ((int, double, int));
-int test_socket_open PARAMS ((int));
+int select_fd (int, double, int);
+int test_socket_open (int);
 
-typedef int (*fd_reader_t) PARAMS ((int, char *, int, void *));
-typedef int (*fd_writer_t) PARAMS ((int, char *, int, void *));
-typedef int (*fd_poller_t) PARAMS ((int, double, int, void *));
-typedef int (*fd_peeker_t) PARAMS ((int, char *, int, void *));
-typedef void (*fd_closer_t) PARAMS ((int, void *));
-void fd_register_transport PARAMS ((int, fd_reader_t, fd_writer_t,
-				    fd_poller_t, fd_peeker_t, fd_closer_t,
-				    void *));
-void *fd_transport_context PARAMS ((int));
+typedef int (*fd_reader_t) (int, char *, int, void *);
+typedef int (*fd_writer_t) (int, char *, int, void *);
+typedef int (*fd_poller_t) (int, double, int, void *);
+typedef int (*fd_peeker_t) (int, char *, int, void *);
+typedef void (*fd_closer_t) (int, void *);
+void fd_register_transport (int, fd_reader_t, fd_writer_t,
+			    fd_poller_t, fd_peeker_t, fd_closer_t, void *);
+void *fd_transport_context (int);
 
-int fd_read PARAMS ((int, char *, int, double));
-int fd_write PARAMS ((int, char *, int, double));
-int fd_peek PARAMS ((int, char *, int, double));
-void fd_close PARAMS ((int));
+int fd_read (int, char *, int, double);
+int fd_write (int, char *, int, double);
+int fd_peek (int, char *, int, double);
+void fd_close (int);
 #endif /* CONNECT_H */

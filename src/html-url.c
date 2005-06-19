@@ -30,11 +30,7 @@ so, delete this exception statement from your version.  */
 #include <config.h>
 
 #include <stdio.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <assert.h>
@@ -47,17 +43,12 @@ so, delete this exception statement from your version.  */
 #include "convert.h"
 #include "recur.h"		/* declaration of get_urls_html */
 
-#ifndef errno
-extern int errno;
-#endif
-
 struct map_context;
 
-typedef void (*tag_handler_t) PARAMS ((int, struct taginfo *,
-				       struct map_context *));
+typedef void (*tag_handler_t) (int, struct taginfo *, struct map_context *);
 
-#define DECLARE_TAG_HANDLER(fun)					\
-  static void fun PARAMS ((int, struct taginfo *, struct map_context *))
+#define DECLARE_TAG_HANDLER(fun)				\
+  static void fun (int, struct taginfo *, struct map_context *)
 
 DECLARE_TAG_HANDLER (tag_find_urls);
 DECLARE_TAG_HANDLER (tag_handle_base);

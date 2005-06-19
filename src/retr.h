@@ -36,33 +36,31 @@ enum {
   rb_skip_startpos = 2
 };
 
-int fd_read_body PARAMS ((int, FILE *, wgint, wgint, wgint *, wgint *, double *,
-                          int));
+int fd_read_body (int, FILE *, wgint, wgint, wgint *, wgint *, double *, int);
 
-typedef const char *(*hunk_terminator_t) PARAMS ((const char *, int, int));
+typedef const char *(*hunk_terminator_t) (const char *, int, int);
 
-char *fd_read_hunk PARAMS ((int, hunk_terminator_t, long, long));
-char *fd_read_line PARAMS ((int));
+char *fd_read_hunk (int, hunk_terminator_t, long, long);
+char *fd_read_line (int);
 
-uerr_t retrieve_url PARAMS ((const char *, char **, char **,
-			     const char *, int *));
-uerr_t retrieve_from_file PARAMS ((const char *, int, int *));
+uerr_t retrieve_url (const char *, char **, char **, const char *, int *);
+uerr_t retrieve_from_file (const char *, int, int *);
 
-char *retr_rate PARAMS ((wgint, double, int));
-double calc_rate PARAMS ((wgint, double, int *));
-void printwhat PARAMS ((int, int));
+char *retr_rate (wgint, double, int);
+double calc_rate (wgint, double, int *);
+void printwhat (int, int);
 
-void sleep_between_retrievals PARAMS ((int));
+void sleep_between_retrievals (int);
 
-void rotate_backups PARAMS ((const char *));
+void rotate_backups (const char *);
 
 /* Because there's no http.h. */
 
 struct url;
 
-uerr_t http_loop PARAMS ((struct url *, char **, char **, const char *,
-			  int *, struct url *));
-void save_cookies PARAMS ((void));
+uerr_t http_loop (struct url *, char **, char **, const char *, int *,
+		  struct url *);
+void save_cookies (void);
 
 
 #endif /* RETR_H */

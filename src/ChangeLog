@@ -1,5 +1,22 @@
 2005-06-19  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* all: Don't declare errno.  Include both time.h and sys/time.h,
+	as long as sys/time.h exists.  Don't dereference function pointers
+	when invoking the functions they point to.
+
+	* cmpt.c (memmove): Remove function mandated by C89.
+	(strerror): Ditto.
+	(strstr): Ditto.
+
+	* all: Undo the K&R-ization changes from 2005-05-03.
+
+	* all: Remove support for K&R compilers: use C89 function
+	declarations, remove definition of PARAMS, remove support for
+	varargs, and remove ansi2knr.  Assume the presence of time.h,
+	string.h, and other headers mandated by C89.
+
+2005-06-19  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c (cmd_lockable_boolean): Don't recognize literal "2" and
 	"-1" values; unlike 0 and 1, those should never be exposed to the
 	user.  Update the error message to be more self-consistent, as

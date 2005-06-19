@@ -78,7 +78,6 @@
  *    actually print args for %g and %e
  *
  *  Hrvoje Niksic <hniksic@xemacs.org> 2005-04-15
- *    use the PARAMS macro to handle prototypes.
  *    write function definitions in the ansi2knr-friendly way.
  *    if string precision is specified, don't read VALUE past it.
  *    fix bug in fmtfp that caused 0.01 to be printed as 0.1.
@@ -105,31 +104,11 @@
 
 #if !defined(HAVE_SNPRINTF) || !defined(HAVE_VSNPRINTF)
 
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 #include <sys/types.h>
 #include <stdio.h>		/* for NULL */
 
-/* varargs declarations: */
-
-#if defined(HAVE_STDARG_H)
-# include <stdarg.h>
-# define HAVE_STDARGS    /* let's hope that works everywhere (mj) */
-# define VA_LOCAL_DECL   va_list ap
-# define VA_START(f)     va_start(ap, f)
-# define VA_SHIFT(v,t)  ;   /* no-op for ANSI */
-# define VA_END          va_end(ap)
-#else
-# include <varargs.h>
-# undef HAVE_STDARGS
-# define VA_LOCAL_DECL   va_list ap
-# define VA_START(f)     va_start(ap)      /* f is ignored! */
-# define VA_SHIFT(v,t) v = va_arg(ap,t)
-# define VA_END        va_end(ap)
-#endif
+#include <stdarg.h>
 
 #ifdef HAVE_LONG_DOUBLE
 #define LDOUBLE long double
@@ -150,28 +129,17 @@
 # define vsnprintf test_vsnprintf
 #endif
 
-#ifdef HAVE_STDARGS
 int snprintf (char *str, size_t count, const char *fmt, ...);
 int vsnprintf (char *str, size_t count, const char *fmt, va_list arg);
-#else
-int snprintf ();
-int vsnprintf ();
-#endif
 
-#ifndef PARAMS
-# define PARAMS(x) x
-#endif
-
-static int dopr PARAMS ((char *buffer, size_t maxlen, const char *format, 
-			 va_list args));
-static int fmtstr PARAMS ((char *buffer, size_t *currlen, size_t maxlen,
-			   const char *value, int flags, int min, int max));
-static int fmtint PARAMS ((char *buffer, size_t *currlen, size_t maxlen,
-			   LLONG value, int base, int min, int max, int flags));
-static int fmtfp PARAMS ((char *buffer, size_t *currlen, size_t maxlen,
-			  LDOUBLE fvalue, int min, int max, int flags));
-static int dopr_outch PARAMS ((char *buffer, size_t *currlen, size_t maxlen,
-			       char c));
+static int dopr (char *buffer, size_t maxlen, const char *format, va_list args);
+static int fmtstr (char *buffer, size_t *currlen, size_t maxlen,
+		   const char *value, int flags, int min, int max);
+static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
+		   LLONG value, int base, int min, int max, int flags);
+static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
+		  LDOUBLE fvalue, int min, int max, int flags);
+static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c);
 
 /*
  * dopr(): poor man's version of doprintf
@@ -896,22 +864,14 @@ vsnprintf (char *str, size_t count, const char *fmt, va_list args)
 
 #ifndef HAVE_SNPRINTF
 int
-snprintf (char *str, size_t count,const char *fmt,...)
+snprintf (char *str, size_t count, const char *fmt,...)
 {
-#ifndef HAVE_STDARGS
-  char *str;
-  size_t count;
-  char *fmt;
-#endif
-  VA_LOCAL_DECL;
+  va_list ap;
   int total;
-    
-  VA_START (fmt);
-  VA_SHIFT (str, char *);
-  VA_SHIFT (count, size_t );
-  VA_SHIFT (fmt, char *);
-  total = vsnprintf(str, count, fmt, ap);
-  VA_END;
+
+  va_start (ap, fmt);
+  total = vsnprintf (str, count, fmt, ap);
+  va_end (ap);
   return total;
 }
 #endif /* !HAVE_SNPRINTF */

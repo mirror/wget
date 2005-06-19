@@ -24,19 +24,9 @@
 # include <config.h>
 #endif
 
-/* Wget */
-/*#if STDC_HEADERS || defined _LIBC*/
-# include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
-/*#else*/
-/*# ifndef HAVE_MEMCPY*/
-/*#  define memcpy(d, s, n) bcopy ((s), (d), (n))*/
-/*# endif*/
-/*#endif*/
+/* modified for Wget: depend on C89 */
+#include <stdlib.h>
+#include <string.h>
 
 #include "wget.h"
 #include "gnu-md5.h"

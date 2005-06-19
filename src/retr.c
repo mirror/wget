@@ -31,16 +31,11 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 #include <errno.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif /* HAVE_STRING_H */
+#include <string.h>
 #include <assert.h>
 
 #include "wget.h"
@@ -55,10 +50,6 @@ so, delete this exception statement from your version.  */
 #include "hash.h"
 #include "convert.h"
 #include "ptimer.h"
-
-#ifndef errno
-extern int errno;
-#endif
 
 /* Total size of downloaded files.  Used to enforce quota.  */
 LARGE_INT total_downloaded_bytes;
@@ -306,7 +297,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
 	  if (!write_data (out, dlbuf, ret, &skip, &sum_written))
 	    {
 	      ret = -2;
-	      goto out_;
+	      goto out;
 	    }
 	}
 
@@ -324,7 +315,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
   if (ret < -1)
     ret = -1;
 
- out_:
+ out:
   if (progress)
     progress_finish (progress, ptimer_read (timer));
 
@@ -395,7 +386,7 @@ fd_read_hunk (int fd, hunk_terminator_t terminator, long sizehint, long maxsize)
 
       /* First, peek at the available data. */
 
-      pklen = fd_peek (fd, hunk + tail, bufsize - 1 - tail, -1.0);
+      pklen = fd_peek (fd, hunk + tail, bufsize - 1 - tail, -1);
       if (pklen < 0)
 	{
 	  xfree (hunk);
@@ -428,7 +419,7 @@ fd_read_hunk (int fd, hunk_terminator_t terminator, long sizehint, long maxsize)
 	 how much data we'll get.  (Some TCP stacks are notorious for
 	 read returning less data than the previous MSG_PEEK.)  */
 
-      rdlen = fd_read (fd, hunk + tail, remain, 0.0);
+      rdlen = fd_read (fd, hunk + tail, remain, 0);
       if (rdlen < 0)
 	{
 	  xfree_null (hunk);
@@ -580,7 +571,7 @@ calc_rate (wgint bytes, double msecs, int *units)
     }							\
 } while (0)
 
-static char *getproxy PARAMS ((struct url *));
+static char *getproxy (struct url *);
 
 /* Retrieve the given URL.  Decides which loop to call -- HTTP, FTP,
    FTP, proxy, etc.  */
@@ -886,7 +877,7 @@ sleep_between_retrievals (int count)
       /* If opt.waitretry is specified and this is a retry, wait for
 	 COUNT-1 number of seconds, or for opt.waitretry seconds.  */
       if (count <= opt.waitretry)
-	xsleep (count - 1.0);
+	xsleep (count - 1);
       else
 	xsleep (opt.waitretry);
     }
@@ -950,7 +941,7 @@ rotate_backups(const char *fname)
   rename(fname, to);
 }
 
-static int no_proxy_match PARAMS ((const char *, const char **));
+static int no_proxy_match (const char *, const char **);
 
 /* Return the URL of the proxy appropriate for url U.  */
 

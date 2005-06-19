@@ -32,16 +32,12 @@ so, delete this exception statement from your version.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#include <sys/types.h>
 #include <errno.h>
+#include <time.h>
 
 #include "wget.h"
 #include "utils.h"

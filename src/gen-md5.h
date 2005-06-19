@@ -42,9 +42,9 @@ struct gen_md5_context;
   gen_md5_context *var_name =				\
   (gen_md5_context *) alloca (gen_md5_context_size ())
 
-int gen_md5_context_size PARAMS ((void));
-void gen_md5_init PARAMS ((gen_md5_context *));
-void gen_md5_update PARAMS ((const unsigned char *, int, gen_md5_context *));
-void gen_md5_finish PARAMS ((gen_md5_context *, unsigned char *));
+int gen_md5_context_size (void);
+void gen_md5_init (gen_md5_context *);
+void gen_md5_update (const unsigned char *, int, gen_md5_context *);
+void gen_md5_finish (gen_md5_context *, unsigned char *);
 
 #endif /* GEN_MD5_H */

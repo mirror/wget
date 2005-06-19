@@ -1,3 +1,7 @@
+2005-06-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* ansi2knr.1: Removed.
+
 2005-06-16  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Logging and Input File Options): It's --no-verbose,

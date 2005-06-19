@@ -1,3 +1,7 @@
+2005-06-19  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* aclocal.m4: Remove support for K&R compilers.
+
 2005-05-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Test for OpenSSL includes we actually need.

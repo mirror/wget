@@ -39,7 +39,7 @@ typedef struct _acc_t
   struct _acc_t *next;
 } acc_t;
 
-void search_netrc PARAMS((const char *, const char **, const char **, int));
-void free_netrc PARAMS((acc_t *l));
+void search_netrc (const char *, const char **, const char **, int);
+void free_netrc (acc_t *l);
 
 #endif /* NETRC_H */

@@ -33,13 +33,13 @@ so, delete this exception statement from your version.  */
 struct ptimer;			/* forward declaration; all struct
                                    members are private */
 
-struct ptimer *ptimer_new PARAMS ((void));
-void ptimer_destroy PARAMS ((struct ptimer *));
+struct ptimer *ptimer_new (void);
+void ptimer_destroy (struct ptimer *);
 
-void ptimer_reset PARAMS ((struct ptimer *));
-double ptimer_measure PARAMS ((struct ptimer *));
-double ptimer_read PARAMS ((const struct ptimer *));
+void ptimer_reset (struct ptimer *);
+double ptimer_measure (struct ptimer *);
+double ptimer_read (const struct ptimer *);
 
-double ptimer_resolution PARAMS ((void));
+double ptimer_resolution (void);
 
 #endif /* PTIMER_H */

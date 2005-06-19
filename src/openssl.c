@@ -35,11 +35,7 @@ so, delete this exception statement from your version.  */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
@@ -51,10 +47,6 @@ so, delete this exception statement from your version.  */
 #include "connect.h"
 #include "url.h"
 #include "ssl.h"
-
-#ifndef errno
-extern int errno;
-#endif
 
 /* Application-wide SSL context.  This is common to all SSL
    connections.  */
