@@ -104,22 +104,18 @@ so, delete this exception statement from your version.  */
 /* Long is large enough: use it.  */
 typedef long LARGE_INT;
 # define LARGE_INT_FMT "%ld"
-#else
-# if SIZEOF_LONG_LONG >= 8
+#elif SIZEOF_LONG_LONG >= 8
 /* Long long is large enough: use it.  */
 typedef long long LARGE_INT;
-#  define LARGE_INT_FMT "%lld"
-# else
-#  if _MSC_VER
+# define LARGE_INT_FMT "%lld"
+#elif _MSC_VER
 /* Use __int64 under Windows. */
 typedef __int64 LARGE_INT;
-#   define LARGE_INT_FMT "%I64"
-#  else
-/* Large integer type unavailable; use `double' instead.  */
+# define LARGE_INT_FMT "%I64"
+#else
+/* Large integer type unavailable; fake it with `double'.  */
 typedef double LARGE_INT;
-#   define LARGE_INT_FMT "%.0f"
-#  endif
-# endif
+# define LARGE_INT_FMT "%.0f"
 #endif
 
 /* Under Windows we #define struct_stat to struct _stati64. */

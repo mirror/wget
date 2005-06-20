@@ -1354,17 +1354,13 @@ numdigit (wgint number)
    would just use "%j" and intmax_t, but many systems don't support
    it, so it's used only if nothing else works.  */
 #if SIZEOF_LONG >= SIZEOF_WGINT
-#  define SPRINTF_WGINT(buf, n) sprintf (buf, "%ld", (long) (n))
+# define SPRINTF_WGINT(buf, n) sprintf (buf, "%ld", (long) (n))
+#elif SIZEOF_LONG_LONG >= SIZEOF_WGINT
+# define SPRINTF_WGINT(buf, n) sprintf (buf, "%lld", (long long) (n))
+#elif defined(WINDOWS)
+# define SPRINTF_WGINT(buf, n) sprintf (buf, "%I64", (__int64) (n))
 #else
-# if SIZEOF_LONG_LONG >= SIZEOF_WGINT
-#   define SPRINTF_WGINT(buf, n) sprintf (buf, "%lld", (long long) (n))
-# else
-#  ifdef WINDOWS
-#   define SPRINTF_WGINT(buf, n) sprintf (buf, "%I64", (__int64) (n))
-#  else
-#   define SPRINTF_WGINT(buf, n) sprintf (buf, "%j", (intmax_t) (n))
-#  endif
-# endif
+# define SPRINTF_WGINT(buf, n) sprintf (buf, "%j", (intmax_t) (n))
 #endif
 
 /* Shorthand for casting to wgint. */
@@ -1541,16 +1537,14 @@ determine_screen_width (void)
     return 0;			/* most likely ENOTTY */
 
   return wsz.ws_col;
-#else  /* not TIOCGWINSZ */
-# ifdef WINDOWS
+#elif defined(WINDOWS)
   CONSOLE_SCREEN_BUFFER_INFO csbi;
   if (!GetConsoleScreenBufferInfo (GetStdHandle (STD_ERROR_HANDLE), &csbi))
     return 0;
   return csbi.dwSize.X;
-# else /* neither WINDOWS nor TIOCGWINSZ */
+#else  /* neither TIOCGWINSZ nor WINDOWS */
   return 0;
-#endif /* neither WINDOWS nor TIOCGWINSZ */
-#endif /* not TIOCGWINSZ */
+#endif /* neither TIOCGWINSZ nor WINDOWS */
 }
 
 /* Return a random number between 0 and MAX-1, inclusive.
@@ -1795,8 +1789,7 @@ xsleep (double seconds)
     /* If nanosleep has been interrupted by a signal, adjust the
        sleeping period and return to sleep.  */
     sleep = remaining;
-#else  /* not HAVE_NANOSLEEP */
-#ifdef HAVE_USLEEP
+#elif defined(HAVE_USLEEP)
   /* If usleep is available, use it in preference to select.  */
   if (seconds >= 1)
     {
@@ -1807,8 +1800,7 @@ xsleep (double seconds)
       seconds -= (long) seconds;
     }
   usleep (seconds * 1000000);
-#else  /* not HAVE_USLEEP */
-#ifdef HAVE_SELECT
+#elif defined(HAVE_SELECT)
   /* Note that, although Windows supports select, this sleeping
      strategy doesn't work there because Winsock's select doesn't
      implement timeout when it is passed NULL pointers for all fd
@@ -1822,11 +1814,9 @@ xsleep (double seconds)
      interrupted by a signal.  But without knowing how long we've
      actually slept, we can't return to sleep.  Using gettimeofday to
      track sleeps is slow and unreliable due to clock skew.  */
-#else  /* not HAVE_SELECT */
+#else  /* none of the above */
   sleep (seconds);
-#endif /* not HAVE_SELECT */
-#endif /* not HAVE_USLEEP */
-#endif /* not HAVE_NANOSLEEP */
+#endif
 }
 
 #endif /* not WINDOWS */

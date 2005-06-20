@@ -36,11 +36,9 @@ so, delete this exception statement from your version.  */
 #endif /* HAVE_UNISTD_H */
 #include <string.h>
 #include <signal.h>
-#ifdef HAVE_NLS
-#ifdef HAVE_LOCALE_H
+#if defined(HAVE_NLS) && defined(HAVE_LOCALE_H)
 # include <locale.h>
-#endif /* HAVE_LOCALE_H */
-#endif /* HAVE_NLS */
+#endif
 #include <assert.h>
 #include <errno.h>
 

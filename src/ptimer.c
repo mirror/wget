@@ -83,16 +83,12 @@ so, delete this exception statement from your version.  */
 
 #if defined(WINDOWS) || defined(__CYGWIN__)
 # define PTIMER_WINDOWS		/* use Windows timers */
+#elif _POSIX_TIMERS - 0 > 0
+# define PTIMER_POSIX		/* use POSIX timers (clock_gettime) */
+#elif defined(HAVE_GETTIMEOFDAY)
+# define PTIMER_GETTIMEOFDAY	/* use gettimeofday */
 #else
-# if _POSIX_TIMERS - 0 > 0
-#  define PTIMER_POSIX		/* use POSIX timers (clock_gettime) */
-# else
-#  ifdef HAVE_GETTIMEOFDAY
-#   define PTIMER_GETTIMEOFDAY	/* use gettimeofday */
-#  else
-#   define PTIMER_TIME
-#  endif
-# endif
+# define PTIMER_TIME
 #endif
 
 #ifdef PTIMER_POSIX

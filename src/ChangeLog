@@ -1,5 +1,10 @@
 2005-06-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c, ptimer.c, sysdep.h, utils.c: Use #elif to simplify reading of
+	chained if-else-else-else-... statements.
+
+2005-06-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* all: Return type of signal handlers is `void'.  Include signal.h
 	unconditionally.
 
