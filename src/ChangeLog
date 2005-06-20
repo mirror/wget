@@ -1,5 +1,12 @@
 2005-06-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* hash.c: Rename "mapping" to "cell" to avoid confusion with the
+	term "mapping" (or "map") sometimes being used for the entire hash
+	table.  Also rename "non-empty" to "occupied" for easier reading
+	of if (!NON_EMPTY (...)) ... .
+
+2005-06-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c, ptimer.c, sysdep.h, utils.c: Use #elif to simplify reading of
 	chained if-else-else-else-... statements.
 

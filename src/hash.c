@@ -71,8 +71,8 @@ so, delete this exception statement from your version.  */
      hash_table_get       -- retrieves value of key.
      hash_table_get_pair  -- get key/value pair for key.
      hash_table_contains  -- test whether the table contains key.
-     hash_table_remove    -- remove the key->value mapping for key.
-     hash_table_map       -- iterate through table mappings.
+     hash_table_remove    -- remove key->value mapping for given key.
+     hash_table_map       -- iterate through table entries.
      hash_table_clear     -- clear hash table contents.
      hash_table_count     -- return the number of entries in the table.
 
@@ -102,12 +102,12 @@ so, delete this exception statement from your version.  */
    The hash table is implemented as an open-addressed table with
    linear probing collision resolution.
 
-   The above means that all the hash entries (pairs of pointers, key
-   and value) are stored in a contiguous array.  The position of each
-   mapping is determined by the hash value of its key and the size of
-   the table: location := hash(key) % size.  If two different keys end
-   up on the same position (collide), the one that came second is
-   placed at the next empty position following the occupied place.
+   The above means that all the cells (each cell containing a key and
+   a value pointer) are stored in a contiguous array.  Array position
+   of each cell is determined by the hash value of its key and the
+   size of the table: location := hash(key) % size.  If two different
+   keys end up on the same position (collide), the one that came
+   second is stored in the first unoccupied cell that follows it.
    This collision resolution technique is called "linear probing".
 
    There are more advanced collision resolution methods (quadratic
@@ -117,13 +117,13 @@ so, delete this exception statement from your version.  */
    count/size ratio (fullness) is kept below 75%.  We make sure to
    grow and rehash the table whenever this threshold is exceeded.
 
-   Collisions make deletion tricky because clearing a position
-   followed by a colliding entry would make the position seem empty
-   and the colliding entry not found.  One solution is to leave a
-   "tombstone" instead of clearing the entry, and another is to
-   carefully rehash the entries immediately following the deleted one.
-   We use the latter method because it results in less bookkeeping and
-   faster retrieval at the (slight) expense of deletion.  */
+   Collisions complicate deletion because simply clearing a cell
+   followed by previously collided entries would cause those neighbors
+   to not be picked up by find_cell later.  One solution is to leave a
+   "tombstone" marker instead of clearing the cell, and another is to
+   recalculate the positions of adjacent cells.  We take the latter
+   approach because it results in less bookkeeping garbage and faster
+   retrieval at the (slight) expense of deletion.  */
 
 /* Maximum allowed fullness: when hash table's fullness exceeds this
    value, the table is resized.  */
@@ -134,7 +134,7 @@ so, delete this exception statement from your version.  */
    resizes.  */
 #define HASH_RESIZE_FACTOR 2
 
-struct mapping {
+struct cell {
   void *key;
   void *value;
 };
@@ -146,10 +146,10 @@ struct hash_table {
   hashfun_t hash_function;
   testfun_t test_function;
 
-  struct mapping *mappings;	/* pointer to the table entries. */
+  struct cell *cells;		/* contiguous array of cells. */
   int size;			/* size of the array. */
 
-  int count;			/* number of non-empty entries. */
+  int count;			/* number of occupied entries. */
   int resize_threshold;		/* after size exceeds this number of
 				   entries, resize the table.  */
   int prime_offset;		/* the offset of the current prime in
@@ -157,9 +157,9 @@ struct hash_table {
 };
 
 /* We use the all-bits-set constant (INVALID_PTR) marker to mean that
-   a mapping is empty.  It is unaligned and therefore illegal as a
-   pointer.  INVALID_PTR_BYTE (0xff) is the one-byte value used to
-   initialize the mappings array as empty.
+   a cell is empty.  It is unaligned and therefore illegal as a
+   pointer.  INVALID_PTR_CHAR (0xff) is the single-character constant
+   used to initialize the entire cells array as empty.
 
    The all-bits-set value is a better choice than NULL because it
    allows the use of NULL/0 keys.  Since the keys are either integers
@@ -171,19 +171,22 @@ struct hash_table {
 #ifndef UCHAR_MAX
 # define UCHAR_MAX 0xff
 #endif
-#define INVALID_PTR_BYTE UCHAR_MAX
+#define INVALID_PTR_CHAR UCHAR_MAX
 
-#define NON_EMPTY(mp) ((mp)->key != INVALID_PTR)
-#define MARK_AS_EMPTY(mp) ((mp)->key = INVALID_PTR)
+/* Whether the cell C is occupied (non-empty). */
+#define CELL_OCCUPIED(c) ((c)->key != INVALID_PTR)
 
-/* "Next" mapping is the mapping after MP, but wrapping back to
-   MAPPINGS when MP would reach MAPPINGS+SIZE.  */
-#define NEXT_MAPPING(mp, mappings, size) (mp != mappings + (size - 1)	\
-					  ? mp + 1 : mappings)
+/* Clear the cell C, i.e. mark it as empty (unoccupied). */
+#define CLEAR_CELL(c) ((c)->key = INVALID_PTR)
 
-/* Loop over non-empty mappings starting at MP. */
-#define LOOP_NON_EMPTY(mp, mappings, size)				\
-  for (; NON_EMPTY (mp); mp = NEXT_MAPPING (mp, mappings, size))
+/* "Next" cell is the cell following C, but wrapping back to CELLS
+   when C would reach CELLS+SIZE.  */
+#define NEXT_CELL(c, cells, size) (c != cells + (size - 1) ? c + 1 : cells)
+
+/* Loop over occupied cells starting at C, terminating the loop when
+   an empty cell is encountered.  */
+#define FOREACH_OCCUPIED_ADJACENT(c, cells, size)				\
+  for (; CELL_OCCUPIED (c); c = NEXT_CELL (c, cells, size))
 
 /* Return the position of KEY in hash table SIZE large, hash function
    being HASHFUN.  */
@@ -278,11 +281,11 @@ hash_table_new (int items,
   ht->resize_threshold = size * HASH_MAX_FULLNESS;
   /*assert (ht->resize_threshold >= items);*/
 
-  ht->mappings = xnew_array (struct mapping, ht->size);
+  ht->cells = xnew_array (struct cell, ht->size);
 
-  /* Mark mappings as empty.  We use 0xff rather than 0 to mark empty
+  /* Mark cells as empty.  We use 0xff rather than 0 to mark empty
      keys because it allows us to use NULL/0 as keys.  */
-  memset (ht->mappings, INVALID_PTR_BYTE, size * sizeof (struct mapping));
+  memset (ht->cells, INVALID_PTR_CHAR, size * sizeof (struct cell));
 
   ht->count = 0;
 
@@ -294,26 +297,26 @@ hash_table_new (int items,
 void
 hash_table_destroy (struct hash_table *ht)
 {
-  xfree (ht->mappings);
+  xfree (ht->cells);
   xfree (ht);
 }
 
-/* The heart of most functions in this file -- find the mapping whose
-   KEY is equal to key, using linear probing.  Returns the mapping
-   that matches KEY, or the first empty mapping if none matches.  */
+/* The heart of most functions in this file -- find the cell whose
+   KEY is equal to key, using linear probing.  Returns the cell
+   that matches KEY, or the first empty cell if none matches.  */
 
-static inline struct mapping *
-find_mapping (const struct hash_table *ht, const void *key)
+static inline struct cell *
+find_cell (const struct hash_table *ht, const void *key)
 {
-  struct mapping *mappings = ht->mappings;
+  struct cell *cells = ht->cells;
   int size = ht->size;
-  struct mapping *mp = mappings + HASH_POSITION (key, ht->hash_function, size);
+  struct cell *c = cells + HASH_POSITION (key, ht->hash_function, size);
   testfun_t equals = ht->test_function;
 
-  LOOP_NON_EMPTY (mp, mappings, size)
-    if (equals (key, mp->key))
+  FOREACH_OCCUPIED_ADJACENT (c, cells, size)
+    if (equals (key, c->key))
       break;
-  return mp;
+  return c;
 }
 
 /* Get the value that corresponds to the key KEY in the hash table HT.
@@ -326,9 +329,9 @@ find_mapping (const struct hash_table *ht, const void *key)
 void *
 hash_table_get (const struct hash_table *ht, const void *key)
 {
-  struct mapping *mp = find_mapping (ht, key);
-  if (NON_EMPTY (mp))
-    return mp->value;
+  struct cell *c = find_cell (ht, key);
+  if (CELL_OCCUPIED (c))
+    return c->value;
   else
     return NULL;
 }
@@ -340,13 +343,13 @@ int
 hash_table_get_pair (const struct hash_table *ht, const void *lookup_key,
 		     void *orig_key, void *value)
 {
-  struct mapping *mp = find_mapping (ht, lookup_key);
-  if (NON_EMPTY (mp))
+  struct cell *c = find_cell (ht, lookup_key);
+  if (CELL_OCCUPIED (c))
     {
       if (orig_key)
-	*(void **)orig_key = mp->key;
+	*(void **)orig_key = c->key;
       if (value)
-	*(void **)value = mp->value;
+	*(void **)value = c->value;
       return 1;
     }
   else
@@ -358,8 +361,8 @@ hash_table_get_pair (const struct hash_table *ht, const void *lookup_key,
 int
 hash_table_contains (const struct hash_table *ht, const void *key)
 {
-  struct mapping *mp = find_mapping (ht, key);
-  return NON_EMPTY (mp);
+  struct cell *c = find_cell (ht, key);
+  return CELL_OCCUPIED (c);
 }
 
 /* Grow hash table HT as necessary, and rehash all the key-value
@@ -369,9 +372,9 @@ static void
 grow_hash_table (struct hash_table *ht)
 {
   hashfun_t hasher = ht->hash_function;
-  struct mapping *old_mappings = ht->mappings;
-  struct mapping *old_end      = ht->mappings + ht->size;
-  struct mapping *mp, *mappings;
+  struct cell *old_cells = ht->cells;
+  struct cell *old_end   = ht->cells + ht->size;
+  struct cell *c, *cells;
   int newsize;
 
   newsize = prime_size (ht->size * HASH_RESIZE_FACTOR, &ht->prime_offset);
@@ -385,24 +388,24 @@ grow_hash_table (struct hash_table *ht)
   ht->size = newsize;
   ht->resize_threshold = newsize * HASH_MAX_FULLNESS;
 
-  mappings = xnew_array (struct mapping, newsize);
-  memset (mappings, INVALID_PTR_BYTE, newsize * sizeof (struct mapping));
-  ht->mappings = mappings;
+  cells = xnew_array (struct cell, newsize);
+  memset (cells, INVALID_PTR_CHAR, newsize * sizeof (struct cell));
+  ht->cells = cells;
 
-  for (mp = old_mappings; mp < old_end; mp++)
-    if (NON_EMPTY (mp))
+  for (c = old_cells; c < old_end; c++)
+    if (CELL_OCCUPIED (c))
       {
-	struct mapping *new_mp;
+	struct cell *new_c;
 	/* We don't need to test for uniqueness of keys because they
 	   come from the hash table and are therefore known to be
 	   unique.  */
-	new_mp = mappings + HASH_POSITION (mp->key, hasher, newsize);
-	LOOP_NON_EMPTY (new_mp, mappings, newsize)
+	new_c = cells + HASH_POSITION (c->key, hasher, newsize);
+	FOREACH_OCCUPIED_ADJACENT (new_c, cells, newsize)
 	  ;
-	*new_mp = *mp;
+	*new_c = *c;
       }
 
-  xfree (old_mappings);
+  xfree (old_cells);
 }
 
 /* Put VALUE in the hash table HT under the key KEY.  This regrows the
@@ -411,12 +414,12 @@ grow_hash_table (struct hash_table *ht)
 void
 hash_table_put (struct hash_table *ht, const void *key, void *value)
 {
-  struct mapping *mp = find_mapping (ht, key);
-  if (NON_EMPTY (mp))
+  struct cell *c = find_cell (ht, key);
+  if (CELL_OCCUPIED (c))
     {
       /* update existing item */
-      mp->key   = (void *)key; /* const? */
-      mp->value = value;
+      c->key   = (void *)key; /* const? */
+      c->value = value;
       return;
     }
 
@@ -425,54 +428,54 @@ hash_table_put (struct hash_table *ht, const void *key, void *value)
   if (ht->count >= ht->resize_threshold)
     {
       grow_hash_table (ht);
-      mp = find_mapping (ht, key);
+      c = find_cell (ht, key);
     }
 
   /* add new item */
   ++ht->count;
-  mp->key   = (void *)key;	/* const? */
-  mp->value = value;
+  c->key   = (void *)key;	/* const? */
+  c->value = value;
 }
 
-/* Remove a mapping that matches KEY from HT.  Return 0 if there was
-   no such entry; return 1 if an entry was removed.  */
+/* Remove KEY->value mapping from HT.  Return 0 if there was no such
+   entry; return 1 if an entry was removed.  */
 
 int
 hash_table_remove (struct hash_table *ht, const void *key)
 {
-  struct mapping *mp = find_mapping (ht, key);
-  if (!NON_EMPTY (mp))
+  struct cell *c = find_cell (ht, key);
+  if (!CELL_OCCUPIED (c))
     return 0;
   else
     {
       int size = ht->size;
-      struct mapping *mappings = ht->mappings;
+      struct cell *cells = ht->cells;
       hashfun_t hasher = ht->hash_function;
 
-      MARK_AS_EMPTY (mp);
+      CLEAR_CELL (c);
       --ht->count;
 
-      /* Rehash all the entries following MP.  The alternative
+      /* Rehash all the entries following C.  The alternative
 	 approach is to mark the entry as deleted, i.e. create a
 	 "tombstone".  That speeds up removal, but leaves a lot of
 	 garbage and slows down hash_table_get and hash_table_put.  */
 
-      mp = NEXT_MAPPING (mp, mappings, size);
-      LOOP_NON_EMPTY (mp, mappings, size)
+      c = NEXT_CELL (c, cells, size);
+      FOREACH_OCCUPIED_ADJACENT (c, cells, size)
 	{
-	  const void *key2 = mp->key;
-	  struct mapping *mp_new;
+	  const void *key2 = c->key;
+	  struct cell *c_new;
 
 	  /* Find the new location for the key. */
-	  mp_new = mappings + HASH_POSITION (key2, hasher, size);
-	  LOOP_NON_EMPTY (mp_new, mappings, size)
-	    if (key2 == mp_new->key)
-	      /* The mapping MP (key2) is already where we want it (in
-		 MP_NEW's "chain" of keys.)  */
+	  c_new = cells + HASH_POSITION (key2, hasher, size);
+	  FOREACH_OCCUPIED_ADJACENT (c_new, cells, size)
+	    if (key2 == c_new->key)
+	      /* The cell C (key2) is already where we want it (in
+		 C_NEW's "chain" of keys.)  */
 	      goto next_rehash;
 
-	  *mp_new = *mp;
-	  MARK_AS_EMPTY (mp);
+	  *c_new = *c;
+	  CLEAR_CELL (c);
 
 	next_rehash:
 	  ;
@@ -488,12 +491,12 @@ hash_table_remove (struct hash_table *ht, const void *key)
 void
 hash_table_clear (struct hash_table *ht)
 {
-  memset (ht->mappings, INVALID_PTR_BYTE, ht->size * sizeof (struct mapping));
+  memset (ht->cells, INVALID_PTR_CHAR, ht->size * sizeof (struct cell));
   ht->count = 0;
 }
 
-/* Map MAPFUN over all the mappings in hash table HT.  MAPFUN is
-   called with three arguments: the key, the value, and MAPARG.
+/* Map MAPFUN over all entries in HT.  MAPFUN is called with three
+   arguments: the key, the value, and MAPARG.
 
    It is undefined what happens if you add or remove entries in the
    hash table while hash_table_map is running.  The exception is the
@@ -505,20 +508,19 @@ hash_table_map (struct hash_table *ht,
 		int (*mapfun) (void *, void *, void *),
 		void *maparg)
 {
-  struct mapping *mp  = ht->mappings;
-  struct mapping *end = ht->mappings + ht->size;
+  struct cell *c  = ht->cells;
+  struct cell *end = ht->cells + ht->size;
 
-  for (; mp < end; mp++)
-    if (NON_EMPTY (mp))
+  for (; c < end; c++)
+    if (CELL_OCCUPIED (c))
       {
 	void *key;
       repeat:
-	key = mp->key;
-	if (mapfun (key, mp->value, maparg))
+	key = c->key;
+	if (mapfun (key, c->value, maparg))
 	  return;
-	/* hash_table_remove might have moved the adjacent
-	   mappings. */
-	if (mp->key != key && NON_EMPTY (mp))
+	/* hash_table_remove might have moved the adjacent cells. */
+	if (c->key != key && CELL_OCCUPIED (c))
 	  goto repeat;
       }
 }
