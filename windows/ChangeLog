@@ -1,3 +1,10 @@
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.src, Makefile.src.bor, Makefile.src.mingw: Make OBJS
+	depend on all headers.
+
+	* wget.dep: Removed.
+
 2005-04-05  Mauro Tortonesi <mauro@ferrara.linux.it>
 
 	* Makefile.src.mingw: removed string_t.c from list of source files.

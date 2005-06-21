@@ -32,7 +32,6 @@
 !ifndef NO_SSL
 SSLDEFS	= /DHAVE_SSL
 SSLLIBS	= libeay32.lib ssleay32.lib
-SSLSRC	= openssl.c http-ntlm.c
 SSLOBJ	= openssl$o http-ntlm$o
 !endif
 
@@ -67,13 +66,6 @@ CFLAGS	= $(CFLAGS) /GL
 LDFLAGS	= $(LDFLAGS) /ltcg:status
 !endif
 
-
-SRC = cmpt.c safe-ctype.c convert.c connect.c host.c http.c netrc.c \
-      ftp-basic.c ftp.c ftp-ls.c ftp-opie.c getopt.c hash.c \
-      html-parse.c html-url.c progress.c retr.c recur.c res.c url.c cookies.c \
-      init.c utils.c main.c ptimer.c version.c xmalloc.c mswindows.c \
-      gen-md5.c gnu-md5.c log.c $(SSLSRC)
-
 OBJ = cmpt$o safe-ctype$o convert$o connect$o host$o http$o netrc$o \
       ftp-basic$o ftp$o ftp-ls$o ftp-opie$o getopt$o hash$o \
       html-parse$o html-url$o progress$o retr$o recur$o res$o url$o cookies$o \
@@ -92,6 +84,11 @@ wget.exe: $(OBJ)
 	$(LD) @<< $(LDFLAGS) /out:$@ $(OBJ) $(LIBS)
 <<
 
+$(OBJ): config-post.h connect.h convert.h cookies.h ftp.h gen-md5.h \
+        getopt.h gnu-md5.h hash.h host.h html-parse.h http-ntlm.h   \
+        init.h log.h mswindows.h netrc.h options.h progress.h       \
+        ptimer.h recur.h res.h retr.h safe-ctype.h ssl.h sysdep.h   \
+        url.h utils.h wget.h xmalloc.h
 
 #
 # Dependencies for cleanup
@@ -111,8 +108,3 @@ distclean: clean
 
 realclean: distclean
 	$(RM) TAGS
-
-# Dependencies:
-
-!include "..\windows\wget.dep"
-

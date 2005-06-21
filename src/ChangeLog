@@ -1,3 +1,8 @@
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.in: Remove the manually maintained dependency list;
+	make all object files depend on every header.
+
 2005-06-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* hash.c: Rename "mapping" to "cell" to avoid confusion with the
