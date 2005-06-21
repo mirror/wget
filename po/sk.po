@@ -1,14 +1,14 @@
 # Slovak translations for GNU wget
-# Copyright (C) 1999, 2002, 2003 Free Software Foundation, Inc.
-# Marcel Telka <marcel@telka.sk>, 2002, 2003.
+# Copyright (C) 1999, 2002, 2003, 2005 Free Software Foundation, Inc.
+# Marcel Telka <marcel@telka.sk>, 2002, 2003, 2005.
 # Miroslav Vasko <vasko@debian.cz>, 1999.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU wget 1.9.1\n"
+"Project-Id-Version: GNU wget 1.10-rc1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-06-06 09:11-0400\n"
-"PO-Revision-Date: 2003-12-04 22:01+0100\n"
+"PO-Revision-Date: 2005-06-09 06:07+0200\n"
 "Last-Translator: Marcel Telka <marcel@telka.sk>\n"
 "Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"
 "MIME-Version: 1.0\n"
@@ -18,28 +18,28 @@ msgstr ""
 #: src/connect.c:199
 #, c-format
 msgid "%s: unable to resolve bind address `%s'; disabling bind.\n"
-msgstr ""
+msgstr "%s: nepodarilo sa previesť adresu zviazania `%s'; deaktivujem zviazanie.\n"
 
 # , c-format
 #: src/connect.c:271
-#, fuzzy, c-format
+#, c-format
 msgid "Connecting to %s|%s|:%d... "
-msgstr "Pripájam sa k %s[%s]:%hu... "
+msgstr "Pripájam sa k %s|%s|:%d... "
 
 # , c-format
 #: src/connect.c:274
-#, fuzzy, c-format
+#, c-format
 msgid "Connecting to %s:%d... "
-msgstr "Pripájam sa k %s:%hu... "
+msgstr "Pripájam sa k %s:%d... "
 
 #: src/connect.c:335
 msgid "connected.\n"
 msgstr "pripojené.\n"
 
 #: src/convert.c:176
-#, fuzzy, c-format
+#, c-format
 msgid "Converted %d files in %.*f seconds.\n"
-msgstr "Skonvertovaných %d súborov za %.2f sekúnd.\n"
+msgstr "Skonvertovaných %d súborov za %.*f sekúnd.\n"
 
 # , c-format
 #: src/convert.c:202
@@ -146,12 +146,12 @@ msgstr "Dĺžka: %s"
 #: src/ftp.c:232 src/http.c:1857
 #, c-format
 msgid ", %s (%s) remaining"
-msgstr ""
+msgstr ", ostáva %s (%s)"
 
 #: src/ftp.c:236 src/http.c:1861
 #, c-format
 msgid ", %s remaining"
-msgstr ""
+msgstr ", ostáva %s"
 
 #: src/ftp.c:239
 msgid " (unauthoritative)\n"
@@ -242,9 +242,9 @@ msgstr "Nemôžem analyzovať odpoveď na PASV.\n"
 
 # , c-format
 #: src/ftp.c:676
-#, fuzzy, c-format
+#, c-format
 msgid "couldn't connect to %s port %d: %s\n"
-msgstr "nemôžem sa pripojiť k %s:%hu: %s.\n"
+msgstr "nemôžem sa pripojiť k %s port %d: %s\n"
 
 # , c-format
 #: src/ftp.c:724
@@ -291,7 +291,7 @@ msgstr ""
 #: src/ftp.c:946 src/http.c:1913
 #, c-format
 msgid "%s has sprung into existence.\n"
-msgstr ""
+msgstr "%s bol odpružený do existencie.\n"
 
 # , c-format
 #: src/ftp.c:1008
@@ -327,12 +327,12 @@ msgstr "(pokus:%2d)"
 
 # , c-format
 #: src/ftp.c:1252 src/http.c:2409
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s]\n"
 "\n"
 msgstr ""
-"%s (%s) - `%s' uložený [%ld]\n"
+"%s (%s) - `%s' uložený [%s]\n"
 "\n"
 
 # , c-format
@@ -379,12 +379,12 @@ msgstr ""
 # , c-format
 #. Sizes do not match
 #: src/ftp.c:1470
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The sizes do not match (local %s) -- retrieving.\n"
 "\n"
 msgstr ""
-"Veľkosti se nezhodujú (miestny %ld) -- prenášam.\n"
+"Veľkosti se nezhodujú (miestny %s) -- prenášam.\n"
 "\n"
 
 #: src/ftp.c:1488
@@ -411,8 +411,7 @@ msgstr "Vytváram symbolický odkaz %s -> %s\n"
 #: src/ftp.c:1523
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
-msgstr ""
-"Symbolické odkazy nie sú podporované, preskakujem symbolický odkaz `%s'.\n"
+msgstr "Symbolické odkazy nie sú podporované, preskakujem symbolický odkaz `%s'.\n"
 
 # , c-format
 #: src/ftp.c:1535
@@ -436,8 +435,7 @@ msgstr "%s: časové značka súboru je porušená.\n"
 #: src/ftp.c:1599
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
-msgstr ""
-"Nebudem prenášať adresáre, pretože sme už v hĺbke %d (maximum je %d).\n"
+msgstr "Nebudem prenášať adresáre, pretože sme už v hĺbke %d (maximum je %d).\n"
 
 # , c-format
 #: src/ftp.c:1649
@@ -464,9 +462,9 @@ msgstr "Vzoru `%s' nič nezodpovedá.\n"
 
 # , c-format
 #: src/ftp.c:1841
-#, fuzzy, c-format
+#, c-format
 msgid "Wrote HTML-ized index to `%s' [%s].\n"
-msgstr "Výpis adresára v HTML formáte bol zapísaný do `%s' [%ld].\n"
+msgstr "Výpis adresára v HTML formáte bol zapísaný do `%s' [%s].\n"
 
 # , c-format
 #: src/ftp.c:1846
@@ -545,15 +543,14 @@ msgid "%s: option `-W %s' doesn't allow an argument\n"
 msgstr "%s: voľba `-W %s' nepodporuje parameter\n"
 
 #: src/host.c:371
-#, fuzzy
 msgid "Unknown host"
-msgstr "Neznáma chyba"
+msgstr "Neznámy hostiteľ"
 
 #. Message modeled after what gai_strerror returns in similar
 #. circumstances.
 #: src/host.c:375
 msgid "Temporary failure in name resolution"
-msgstr ""
+msgstr "Dočasné zlyhanie pri prevode mena"
 
 #: src/host.c:377
 msgid "Unknown error"
@@ -572,7 +569,7 @@ msgstr "zlyhalo: %s.\n"
 
 #: src/host.c:809
 msgid "failed: No IPv4/IPv6 addresses for host.\n"
-msgstr ""
+msgstr "zlyhalo: Hostiteľ nemá IPv4/IPv6 adresy.\n"
 
 #: src/host.c:832
 msgid "failed: timed out.\n"
@@ -590,32 +587,32 @@ msgstr "Požiadavku HTTP nebolo možné odoslať: %s.\n"
 
 #: src/http.c:687
 msgid "No headers, assuming HTTP/0.9"
-msgstr ""
+msgstr "Bez hlavičiek, predpokladám HTTP/0.9"
 
 #: src/http.c:1198
 msgid "Disabling SSL due to encountered errors.\n"
-msgstr ""
+msgstr "Deaktivujem SSL z dôvodu výskytu chýb.\n"
 
 # , c-format
 #: src/http.c:1417
-#, fuzzy, c-format
+#, c-format
 msgid "Reusing existing connection to %s:%d.\n"
-msgstr "Používam existujúce spojenie s %s:%hu.\n"
+msgstr "Používam existujúce spojenie s %s:%d.\n"
 
 #: src/http.c:1479
-#, fuzzy, c-format
+#, c-format
 msgid "Failed writing to proxy: %s.\n"
-msgstr "Požiadavku HTTP nebolo možné odoslať: %s.\n"
+msgstr "Zlyhal zápis do proxy: %s.\n"
 
 #: src/http.c:1488
-#, fuzzy, c-format
+#, c-format
 msgid "Failed reading proxy response: %s\n"
-msgstr "Požiadavku HTTP nebolo možné odoslať: %s.\n"
+msgstr "Zlyhalo čítanie odpovede z proxy: %s\n"
 
 #: src/http.c:1508
 #, c-format
 msgid "Proxy tunneling failed: %s"
-msgstr ""
+msgstr "Tunelovanie proxy zlyhalo: %s"
 
 # , c-format
 #: src/http.c:1555
@@ -624,9 +621,8 @@ msgid "%s request sent, awaiting response... "
 msgstr "%s požiadavka odoslaná, čakám na odpoveď... "
 
 #: src/http.c:1566
-#, fuzzy
 msgid "No data received.\n"
-msgstr "Neprišli žiadne dáta"
+msgstr "Neboli prijaté žiadne dáta.\n"
 
 # , c-format
 #: src/http.c:1573
@@ -744,9 +740,9 @@ msgstr ""
 
 # , c-format
 #: src/http.c:2330
-#, fuzzy, c-format
+#, c-format
 msgid "The sizes do not match (local %s) -- retrieving.\n"
-msgstr "Veľkosti se nezhodujú (miestny %ld) -- prenášam.\n"
+msgstr "Veľkosti se nezhodujú (miestny %s) -- prenášam.\n"
 
 #: src/http.c:2335
 msgid "Remote file is newer, retrieving.\n"
@@ -754,47 +750,47 @@ msgstr "Vzdialený súbor je novší, prenášam.\n"
 
 # , c-format
 #: src/http.c:2377
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s/%s]\n"
 "\n"
 msgstr ""
-"%s (%s) - `%s' uložené [%ld/%ld]\n"
+"%s (%s) - `%s' uložené [%s/%s]\n"
 "\n"
 
 # , c-format
 #: src/http.c:2434
-#, fuzzy, c-format
+#, c-format
 msgid "%s (%s) - Connection closed at byte %s. "
-msgstr "%s (%s) - Spojenie uzatvorené na bajte %ld. "
+msgstr "%s (%s) - Spojenie uzatvorené na bajte %s. "
 
 # , c-format
 #: src/http.c:2443
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s/%s])\n"
 "\n"
 msgstr ""
-"%s (%s) - `%s' uložené [%ld/%ld])\n"
+"%s (%s) - `%s' uložené [%s/%s])\n"
 "\n"
 
 # , c-format
 #: src/http.c:2469
-#, fuzzy, c-format
+#, c-format
 msgid "%s (%s) - Connection closed at byte %s/%s. "
-msgstr "%s (%s) - Spojenie uzatvorené na bajte %ld/%ld. "
+msgstr "%s (%s) - Spojenie uzatvorené na bajte %s/%s. "
 
 # , c-format
 #: src/http.c:2483
-#, fuzzy, c-format
+#, c-format
 msgid "%s (%s) - Read error at byte %s (%s)."
-msgstr "%s (%s) - Chyba pri čítaní na bajte %ld (%s)."
+msgstr "%s (%s) - Chyba pri čítaní na bajte %s (%s)."
 
 # , c-format
 #: src/http.c:2493
-#, fuzzy, c-format
+#, c-format
 msgid "%s (%s) - Read error at byte %s/%s (%s). "
-msgstr "%s (%s) - Chyba pri čítaní na bajte %ld/%ld (%s). "
+msgstr "%s (%s) - Chyba pri čítaní na bajte %s/%s (%s). "
 
 #: src/init.c:369
 #, c-format
@@ -815,22 +811,21 @@ msgstr "%s: Chyba v %s na riadku %d.\n"
 
 # , c-format
 #: src/init.c:457
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Syntax error in %s at line %d.\n"
-msgstr "%s: Chyba v %s na riadku %d.\n"
+msgstr "%s: Chyba syntaxe v %s na riadku %d.\n"
 
 # , c-format
 #: src/init.c:462
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Unknown command `%s' in %s at line %d.\n"
-msgstr "%s: Chyba v %s na riadku %d.\n"
+msgstr "%s: Neznámy príkaz `%s' v %s na riadku %d.\n"
 
 # , c-format
 #: src/init.c:507
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
-msgstr ""
-"%s: Upozornenie: Systémový aj používateľov súbor wgetrc sú uložené v `%s'.\n"
+msgstr "%s: Upozornenie: Systémový aj používateľov súbor wgetrc sú uložené v `%s'.\n"
 
 # , c-format
 #: src/init.c:661
@@ -848,9 +843,7 @@ msgstr "%s: %s: Neplatná logická hodnota `%s', použite `on' alebo `off'.\n"
 #: src/init.c:750
 #, c-format
 msgid "%s: %s: Invalid boolean `%s', use always, on, off, or never.\n"
-msgstr ""
-"%s: %s: Neplatná logická hodnota `%s', použite prosím always, on, off alebo "
-"never.\n"
+msgstr "%s: %s: Neplatná logická hodnota `%s', použite prosím always, on, off alebo never.\n"
 
 # , c-format
 #: src/init.c:767
@@ -906,11 +899,13 @@ msgstr ""
 #. Eek!  Opening the alternate log file has failed.  Nothing we
 #. can do but disable printing completely.
 #: src/log.c:816
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%s received.\n"
-msgstr "Neprišli žiadne dáta"
+msgstr ""
+"\n"
+"%s prijatých.\n"
 
 #: src/log.c:817
 #, c-format
@@ -924,539 +919,479 @@ msgid "Usage: %s [OPTION]... [URL]...\n"
 msgstr "Použitie: %s [VOĽBA]... [URL]...\n"
 
 #: src/main.c:387
-#, fuzzy
 msgid ""
 "Mandatory arguments to long options are mandatory for short options too.\n"
 "\n"
 msgstr ""
-"\n"
 "Parametre povinné pri dlhých voľbách sú povinné aj pre skrátené voľby.\n"
 "\n"
 
 #: src/main.c:389
 msgid "Startup:\n"
-msgstr ""
+msgstr "Spustenie:\n"
 
 #: src/main.c:391
 msgid "  -V,  --version           display the version of Wget and exit.\n"
-msgstr ""
+msgstr "  -V,  --version           zobraziť verziu programu Wget a skončiť.\n"
 
 #: src/main.c:393
 msgid "  -h,  --help              print this help.\n"
-msgstr ""
+msgstr "  -h,  --help              vytlačiť túto pomoc.\n"
 
 #: src/main.c:395
 msgid "  -b,  --background        go to background after startup.\n"
-msgstr ""
+msgstr "  -b,  --background        prejsť do pozadia po spustení.\n"
 
 #: src/main.c:397
 msgid "  -e,  --execute=COMMAND   execute a `.wgetrc'-style command.\n"
-msgstr ""
+msgstr "  -e,  --execute=PRÍKAZ    vykonať príkaz štýlu .wgetrc.\n"
 
 #: src/main.c:401
 msgid "Logging and input file:\n"
-msgstr ""
+msgstr "Zaznamenávanie a vstupný súbor:\n"
 
 #: src/main.c:403
 msgid "  -o,  --output-file=FILE    log messages to FILE.\n"
-msgstr ""
+msgstr "  -o,  --output-file=SÚBOR   zaznamenať správy do SÚBORu.\n"
 
 #: src/main.c:405
 msgid "  -a,  --append-output=FILE  append messages to FILE.\n"
-msgstr ""
+msgstr "  -a,  --append-output=SÚBOR pridať správy do SÚBORu.\n"
 
 #: src/main.c:408
 msgid "  -d,  --debug               print lots of debugging information.\n"
-msgstr ""
+msgstr "  -d,  --debug               vytlačiť množstvo ladiacich informácií.\n"
 
 #: src/main.c:411
 msgid "  -q,  --quiet               quiet (no output).\n"
-msgstr ""
+msgstr "  -q,  --quiet               potichu (bez výstupu).\n"
 
 #: src/main.c:413
 msgid "  -v,  --verbose             be verbose (this is the default).\n"
-msgstr ""
+msgstr "  -v,  --verbose             byť táravý (toto je štandard).\n"
 
 #: src/main.c:415
-msgid ""
-"  -nv, --no-verbose          turn off verboseness, without being quiet.\n"
-msgstr ""
+msgid "  -nv, --no-verbose          turn off verboseness, without being quiet.\n"
+msgstr "  -nv, --no-verbose          vypnúť táravosť bez toho, aby bolo ticho.\n"
 
 #: src/main.c:417
 msgid "  -i,  --input-file=FILE     download URLs found in FILE.\n"
-msgstr ""
+msgstr "  -i,  --input-file=SÚBOR    stiahnuť URL, ktoré sa nachádzajú v SÚBORe.\n"
 
 #: src/main.c:419
 msgid "  -F,  --force-html          treat input file as HTML.\n"
-msgstr ""
+msgstr "  -F,  --force-html          spracovať vstupný súbor ako HTML.\n"
 
 #: src/main.c:421
-msgid ""
-"  -B,  --base=URL            prepends URL to relative links in -F -i file.\n"
-msgstr ""
+msgid "  -B,  --base=URL            prepends URL to relative links in -F -i file.\n"
+msgstr "  -B,  --base=URL            predradiť URL k relatívnym odkazom v -F -i súbor.\n"
 
 #: src/main.c:425
 msgid "Download:\n"
-msgstr ""
+msgstr "Sťahovanie:\n"
 
 #: src/main.c:427
-msgid ""
-"  -t,  --tries=NUMBER            set number of retries to NUMBER (0 "
-"unlimits).\n"
-msgstr ""
+msgid "  -t,  --tries=NUMBER            set number of retries to NUMBER (0 unlimits).\n"
+msgstr "  -t,  --tries=ČÍSLO             nastaviť počet opakovaní na ČÍSLO (0 neobmedzene).\n"
 
 #: src/main.c:429
 msgid "       --retry-connrefused       retry even if connection is refused.\n"
-msgstr ""
+msgstr "       --retry-connrefused       pokús sa znova, aj keď bolo spojenie odmietnuté.\n"
 
 #: src/main.c:431
 msgid "  -O,  --output-document=FILE    write documents to FILE.\n"
-msgstr ""
+msgstr "  -O,  --output-document=SÚBOR   zapísať dokumenty do SÚBORu.\n"
 
 #: src/main.c:433
 msgid ""
 "  -nc, --no-clobber              skip downloads that would download to\n"
 "                                 existing files.\n"
 msgstr ""
+"  -nc, --no-clobber              preskočiť sťahovania, ktoré by prepísali\n"
+"                                 existujúce súbory.\n"
 
 #: src/main.c:436
-msgid ""
-"  -c,  --continue                resume getting a partially-downloaded "
-"file.\n"
-msgstr ""
+msgid "  -c,  --continue                resume getting a partially-downloaded file.\n"
+msgstr "  -c,  --continue                obnoviť získavanie čiastočne stiahnutého súboru.\n"
 
 #: src/main.c:438
 msgid "       --progress=TYPE           select progress gauge type.\n"
-msgstr ""
+msgstr "       --progress=TYP            zvoliť typ zobrazenia postupu.\n"
 
 #: src/main.c:440
 msgid ""
 "  -N,  --timestamping            don't re-retrieve files unless newer than\n"
 "                                 local.\n"
 msgstr ""
+"  -N,  --timestamping            nesťahovať opäť súbory, iba ak sú novšie\n"
+"                                 ako miestne.\n"
 
 #: src/main.c:443
 msgid "  -S,  --server-response         print server response.\n"
-msgstr ""
+msgstr "  -S,  --server-response         vytlačiť odpoveď servera.\n"
 
 #: src/main.c:445
 msgid "       --spider                  don't download anything.\n"
-msgstr ""
+msgstr "       --spider                  nesťahovať nič.\n"
 
 #: src/main.c:447
 msgid "  -T,  --timeout=SECONDS         set all timeout values to SECONDS.\n"
-msgstr ""
+msgstr "  -T,  --timeout=SEKUNDY         nastaviť všetky hodnoty časových limitov na SEKUNDY.\n"
 
 #: src/main.c:449
 msgid "       --dns-timeout=SECS        set the DNS lookup timeout to SECS.\n"
-msgstr ""
+msgstr "       --dns-timeout=SEKUNDY     nastaviť časový limit DNS vyhľadávania na SEKUNDY.\n"
 
 #: src/main.c:451
 msgid "       --connect-timeout=SECS    set the connect timeout to SECS.\n"
-msgstr ""
+msgstr "       --connect-timeout=SEKUNDY nastaviť časový limit spojenia na SEKUNDY.\n"
 
 #: src/main.c:453
 msgid "       --read-timeout=SECS       set the read timeout to SECS.\n"
-msgstr ""
+msgstr "       --read-timeout=SEKUNDY    nastaviť časový limit čítania na SEKUNDY.\n"
 
 #: src/main.c:455
 msgid "  -w,  --wait=SECONDS            wait SECONDS between retrievals.\n"
-msgstr ""
+msgstr "  -w,  --wait=SEKUNDY            počkať SEKUNDY medzi sťahovaniami.\n"
 
 #: src/main.c:457
-msgid ""
-"       --waitretry=SECONDS       wait 1..SECONDS between retries of a "
-"retrieval.\n"
-msgstr ""
+msgid "       --waitretry=SECONDS       wait 1..SECONDS between retries of a retrieval.\n"
+msgstr "       --waitretry=SEKÚND        počkať 1..SEKÚND medzi pokusmi o sťahovanie.\n"
 
 #: src/main.c:459
-msgid ""
-"       --random-wait             wait from 0...2*WAIT secs between "
-"retrievals.\n"
-msgstr ""
+msgid "       --random-wait             wait from 0...2*WAIT secs between retrievals.\n"
+msgstr "       --random-wait             počkať od 0...2*POČKAŤ sekúnd medzi sťahovaniami.\n"
 
 #: src/main.c:461
 msgid "  -Y,  --proxy                   explicitly turn on proxy.\n"
-msgstr ""
+msgstr "  -Y,  --proxy                   explicitne zapnúť proxy.\n"
 
 #: src/main.c:463
 msgid "       --no-proxy                explicitly turn off proxy.\n"
-msgstr ""
+msgstr "       --no-proxy                explicitne vypnúť proxy.\n"
 
 #: src/main.c:465
 msgid "  -Q,  --quota=NUMBER            set retrieval quota to NUMBER.\n"
-msgstr ""
+msgstr "  -Q,  --quota=ČÍSLO             nastaviť limit sťahovania na ČÍSLO.\n"
 
 #: src/main.c:467
-msgid ""
-"       --bind-address=ADDRESS    bind to ADDRESS (hostname or IP) on local "
-"host.\n"
-msgstr ""
+msgid "       --bind-address=ADDRESS    bind to ADDRESS (hostname or IP) on local host.\n"
+msgstr "       --bind-address=ADRESA     zviazať s ADRESOU (meno hostiteľa alebo IP) na miestnom hostiteľovi.\n"
 
 #: src/main.c:469
 msgid "       --limit-rate=RATE         limit download rate to RATE.\n"
-msgstr ""
+msgstr "       --limit-rate=RÝCHLOSŤ     obmedziť rýchlosť sťahovania na RÝCHLOSŤ.\n"
 
 #: src/main.c:471
 msgid "       --no-dns-cache            disable caching DNS lookups.\n"
-msgstr ""
+msgstr "       --no-dns-cache            zakázať dočasné ukladanie DNS vyhľadávania.\n"
 
 #: src/main.c:473
-msgid ""
-"       --restrict-file-names=OS  restrict chars in file names to ones OS "
-"allows.\n"
-msgstr ""
+msgid "       --restrict-file-names=OS  restrict chars in file names to ones OS allows.\n"
+msgstr "       --restrict-file-names=OS  obmedziť znaky v názvoch súborov na tie, ktoré povoľuje OS.\n"
 
 #: src/main.c:476
 msgid "  -4,  --inet4-only              connect only to IPv4 addresses.\n"
-msgstr ""
+msgstr "  -4,  --inet4-only              pripájať sa len na adresy IPv4.\n"
 
 #: src/main.c:478
 msgid "  -6,  --inet6-only              connect only to IPv6 addresses.\n"
-msgstr ""
+msgstr "  -6,  --inet6-only              pripájať sa len na adresy IPv6.\n"
 
 #: src/main.c:480
 msgid ""
-"       --prefer-family=FAMILY    connect first to addresses of specified "
-"family,\n"
+"       --prefer-family=FAMILY    connect first to addresses of specified family,\n"
 "                                 one of IPv6, IPv4, or none.\n"
 msgstr ""
+"       --prefer-family=RODINA    pripájať sa najskôr k adresám zadanej rodiny,\n"
+"                                 jedno z IPv6, IPv4 alebo none.\n"
 
 #: src/main.c:484
 msgid "       --user=USER               set both ftp and http user to USER.\n"
-msgstr ""
+msgstr "       --user=POUŽÍVATEĽ         nastaviť ftp a http používateľov na POUŽÍVATEĽ.\n"
 
 #: src/main.c:486
-msgid ""
-"       --password=PASS           set both ftp and http password to PASS.\n"
-msgstr ""
+msgid "       --password=PASS           set both ftp and http password to PASS.\n"
+msgstr "       --password=HESLO          nastaviť ftp a http heslo na HESLO.\n"
 
 #: src/main.c:490
-#, fuzzy
 msgid "Directories:\n"
-msgstr "Adresár     "
+msgstr "Adresáre:\n"
 
 #: src/main.c:492
 msgid "  -nd, --no-directories           don't create directories.\n"
-msgstr ""
+msgstr "  -nd, --no-directories           nevytvárať adresáre.\n"
 
 #: src/main.c:494
 msgid "  -x,  --force-directories        force creation of directories.\n"
-msgstr ""
+msgstr "  -x,  --force-directories        vynútiť vytváranie adresárov.\n"
 
 #: src/main.c:496
 msgid "  -nH, --no-host-directories      don't create host directories.\n"
-msgstr ""
+msgstr "  -nH, --no-host-directories      nevytvárať adresáre hostiteľa.\n"
 
 #: src/main.c:498
 msgid "       --protocol-directories     use protocol name in directories.\n"
-msgstr ""
+msgstr "       --protocol-directories     použiť názov protokolu v adresároch.\n"
 
 #: src/main.c:500
 msgid "  -P,  --directory-prefix=PREFIX  save files to PREFIX/...\n"
-msgstr ""
+msgstr "  -P,  --directory-prefix=PREDP   uložiť súbory do PREDP/...\n"
 
 #: src/main.c:502
-msgid ""
-"       --cut-dirs=NUMBER          ignore NUMBER remote directory "
-"components.\n"
-msgstr ""
+msgid "       --cut-dirs=NUMBER          ignore NUMBER remote directory components.\n"
+msgstr "       --cur-dirs=POČET           ignorovať POČET vzdialených častí názvu adresára.\n"
 
 #: src/main.c:506
 msgid "HTTP options:\n"
-msgstr ""
+msgstr "HTTP voľby:\n"
 
 #: src/main.c:508
 msgid "       --http-user=USER        set http user to USER.\n"
-msgstr ""
+msgstr "       --http-user=POUŽÍVATEĽ  nastaviť http používateľa na POUŽÍVATEĽ.\n"
 
 #: src/main.c:510
 msgid "       --http-password=PASS    set http password to PASS.\n"
-msgstr ""
+msgstr "       --http-password=HESLO   nastaviť http heslo na HESLO.\n"
 
 #: src/main.c:512
 msgid "       --no-cache              disallow server-cached data.\n"
-msgstr ""
+msgstr "       --no-cache              nepovoliť dočasne uložené dáta na serveri.\n"
 
 #: src/main.c:514
-msgid ""
-"  -E,  --html-extension        save HTML documents with `.html' extension.\n"
-msgstr ""
+msgid "  -E,  --html-extension        save HTML documents with `.html' extension.\n"
+msgstr "  -E,  --html-extension        uložiť HTML dokumenty s príponou `.html'.\n"
 
 #: src/main.c:516
 msgid "       --ignore-length         ignore `Content-Length' header field.\n"
-msgstr ""
+msgstr "       --ignore-length         ignorovať `Content-Length' pole hlavičky.\n"
 
 #: src/main.c:518
 msgid "       --header=STRING         insert STRING among the headers.\n"
-msgstr ""
+msgstr "       --header=REŤAZEC        vložiť REŤAZEC do hlavičky.\n"
 
 #: src/main.c:520
 msgid "       --proxy-user=USER       set USER as proxy username.\n"
-msgstr ""
+msgstr "       --proxy-user=POUŽÍVATEĽ nastaviť POUŽÍVATEĽa ako používateľa proxy.\n"
 
 #: src/main.c:522
 msgid "       --proxy-password=PASS   set PASS as proxy password.\n"
-msgstr ""
+msgstr "       --proxy-password=HESLO  nastaviť HESLO ako heslo proxy.\n"
 
 #: src/main.c:524
-msgid ""
-"       --referer=URL           include `Referer: URL' header in HTTP "
-"request.\n"
-msgstr ""
+msgid "       --referer=URL           include `Referer: URL' header in HTTP request.\n"
+msgstr "       --referer=URL           zahrnúť hlavičku `Referer: URL' do HTTP požiadavky.\n"
 
 #: src/main.c:526
 msgid "       --save-headers          save the HTTP headers to file.\n"
-msgstr ""
+msgstr "       --save-headers          uložiť HTTP hlavičky do súboru.\n"
 
 #: src/main.c:528
-msgid ""
-"  -U,  --user-agent=AGENT      identify as AGENT instead of Wget/VERSION.\n"
-msgstr ""
+msgid "  -U,  --user-agent=AGENT      identify as AGENT instead of Wget/VERSION.\n"
+msgstr "  -U,  --user-agent=AGENT      identifikovať sa ako AGENT namiesto Wget/VERZIA.\n"
 
 #: src/main.c:530
-msgid ""
-"       --no-http-keep-alive    disable HTTP keep-alive (persistent "
-"connections).\n"
-msgstr ""
+msgid "       --no-http-keep-alive    disable HTTP keep-alive (persistent connections).\n"
+msgstr "       --no-http-keep-alive    zakázať HTTP keep-alive (trvalé spojenia).\n"
 
 #: src/main.c:532
 msgid "       --no-cookies            don't use cookies.\n"
-msgstr ""
+msgstr "       --no-cookies            nepoužívať koláčiky.\n"
 
 #: src/main.c:534
 msgid "       --load-cookies=FILE     load cookies from FILE before session.\n"
-msgstr ""
+msgstr "       --load-cookies=SÚBOR    načítať koláčiky zo SÚBORu pred sedením.\n"
 
 #: src/main.c:536
 msgid "       --save-cookies=FILE     save cookies to FILE after session.\n"
-msgstr ""
+msgstr "       --save-cookies=SÚBOR    uložiť koláčiky do SÚBORu po sedení.\n"
 
 #: src/main.c:538
-msgid ""
-"       --keep-session-cookies  load and save session (non-permanent) "
-"cookies.\n"
-msgstr ""
+msgid "       --keep-session-cookies  load and save session (non-permanent) cookies.\n"
+msgstr "       --keep-session-cookies  načítať a uložiť koláčiky sedenia (nie trvalé).\n"
 
 #: src/main.c:540
-msgid ""
-"       --post-data=STRING      use the POST method; send STRING as the "
-"data.\n"
-msgstr ""
+msgid "       --post-data=STRING      use the POST method; send STRING as the data.\n"
+msgstr "       --post-data=REŤAZEC     použiť POST metódu; poslať REŤAZEC ako dáta.\n"
 
 #: src/main.c:542
-msgid ""
-"       --post-file=FILE        use the POST method; send contents of FILE.\n"
-msgstr ""
+msgid "       --post-file=FILE        use the POST method; send contents of FILE.\n"
+msgstr "       --post-file=SÚBOR       použiť POST metódu; poslať obsah SÚBORu.\n"
 
 #: src/main.c:547
 msgid "HTTPS (SSL/TLS) options:\n"
-msgstr ""
+msgstr "Voľby HTTPS (SSL/TLS):\n"
 
 #: src/main.c:549
 msgid ""
 "       --secure-protocol=PR     choose secure protocol, one of auto, SSLv2,\n"
 "                                SSLv3, and TLSv1.\n"
 msgstr ""
+"       --secure-protocol=PR     vybrať bezpečný protokol, jeden z auto, SSLv2,\n"
+"                                SSLv3 alebo TLSv1.\n"
 
 #: src/main.c:552
-msgid ""
-"       --no-check-certificate   don't validate the server's certificate.\n"
-msgstr ""
+msgid "       --no-check-certificate   don't validate the server's certificate.\n"
+msgstr "       --no-check-certificate   noverovať certifikát servera.\n"
 
 #: src/main.c:554
 msgid "       --certificate=FILE       client certificate file.\n"
-msgstr ""
+msgstr "       --certificate=SÚBOR      súbor certifikátu klienta.\n"
 
 #: src/main.c:556
 msgid "       --certificate-type=TYPE  client certificate type, PEM or DER.\n"
-msgstr ""
+msgstr "       --certificate-type=TYP   typ certifikátu klienta, PEM alebo DER.\n"
 
 #: src/main.c:558
 msgid "       --private-key=FILE       private key file.\n"
-msgstr ""
+msgstr "       --private-key=SÚBOR      súbor súkromného kľúča.\n"
 
 #: src/main.c:560
 msgid "       --private-key-type=TYPE  private key type, PEM or DER.\n"
-msgstr ""
+msgstr "       --private-key-type=TYP   typ súkromného kľúča, PEM alebo DER.\n"
 
 #: src/main.c:562
 msgid "       --ca-certificate=FILE    file with the bundle of CA's.\n"
-msgstr ""
+msgstr "       --ca-certificate=SÚBOR   súbor s balíkom CA.\n"
 
 #: src/main.c:564
-msgid ""
-"       --ca-directory=DIR       directory where hash list of CA's is "
-"stored.\n"
-msgstr ""
+msgid "       --ca-directory=DIR       directory where hash list of CA's is stored.\n"
+msgstr "       --ca-directory=ADR       adresár, kde je uložený hašovaný zoznam CA.\n"
 
 #: src/main.c:566
-msgid ""
-"       --random-file=FILE       file with random data for seeding the SSL "
-"PRNG.\n"
-msgstr ""
+msgid "       --random-file=FILE       file with random data for seeding the SSL PRNG.\n"
+msgstr "       --random-file=SÚBOR      súbor s náhodnými dátami, pre spustenie SSL PRNG.\n"
 
 #: src/main.c:568
-msgid ""
-"       --egd-file=FILE          file naming the EGD socket with random "
-"data.\n"
-msgstr ""
+msgid "       --egd-file=FILE          file naming the EGD socket with random data.\n"
+msgstr "       --egd-file=SÚBOR         súbor s pomenovaním EGD zásuvky s náhodnými dátami.\n"
 
 #: src/main.c:573
 msgid "FTP options:\n"
-msgstr ""
+msgstr "FTP voľby:\n"
 
 #: src/main.c:575
 msgid "       --ftp-user=USER         set ftp user to USER.\n"
-msgstr ""
+msgstr "       --ftp-user=POUŽÍVATEĽ   nastaviť ftp používateľa na POUŽÍVATEĽ.\n"
 
 #: src/main.c:577
 msgid "       --ftp-password=PASS     set ftp password to PASS.\n"
-msgstr ""
+msgstr "       --ftp-password=HESLO    nastaviť ftp heslo na HESLO.\n"
 
 #: src/main.c:579
 msgid "       --no-remove-listing     don't remove `.listing' files.\n"
-msgstr ""
+msgstr "       --no-remove-listing     neodstraňovať súbory `.listing'.\n"
 
 #: src/main.c:581
 msgid "       --no-glob               turn off FTP file name globbing.\n"
-msgstr ""
+msgstr "       --no-glob               pri FTP vypnúť používanie divokých znakov v názvoch súborov.\n"
 
 #: src/main.c:583
 msgid "       --no-passive-ftp        disable the \"passive\" transfer mode.\n"
-msgstr ""
+msgstr "       --no-passive-ftp        zakázať \"pasívny\" režim prenosu.\n"
 
 #: src/main.c:585
-msgid ""
-"       --retr-symlinks         when recursing, get linked-to files (not "
-"dir).\n"
-msgstr ""
+msgid "       --retr-symlinks         when recursing, get linked-to files (not dir).\n"
+msgstr "       --retr-symlinks         pri rekurzii získať spojené súbory (nie adresáre).\n"
 
 #: src/main.c:587
 msgid "       --preserve-permissions  preserve remote file permissions.\n"
-msgstr ""
+msgstr "       --preserve-permissions  zachovať práva vzdialených súborov.\n"
 
 #: src/main.c:591
 msgid "Recursive download:\n"
-msgstr ""
+msgstr "Rekurzívne sťahovanie:\n"
 
 #: src/main.c:593
 msgid "  -r,  --recursive          specify recursive download.\n"
-msgstr ""
+msgstr "  -r,  --recursive          nastaviť rekurzívne sťahovanie.\n"
 
 #: src/main.c:595
-msgid ""
-"  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for "
-"infinite).\n"
-msgstr ""
+msgid "  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n"
+msgstr "  -l,  --level=ČÍSLO        maximálna hĺbka rekurzie (inf alebo 0 pre nekonečno).\n"
 
 #: src/main.c:597
-msgid ""
-"       --delete-after       delete files locally after downloading them.\n"
-msgstr ""
+msgid "       --delete-after       delete files locally after downloading them.\n"
+msgstr "       --delete-after       odstrániť miestne súbory po ich stiahnutí.\n"
 
 #: src/main.c:599
-msgid ""
-"  -k,  --convert-links      make links in downloaded HTML point to local "
-"files.\n"
-msgstr ""
+msgid "  -k,  --convert-links      make links in downloaded HTML point to local files.\n"
+msgstr "  -k,  --convert-links      zmeniť odkazy v stiahnutých HTML tak, aby ukazovaly na miestne súbory.\n"
 
 #: src/main.c:601
-msgid ""
-"  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
-msgstr ""
+msgid "  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
+msgstr "  -K,  --backup-converted   pred konverziou súboru X, zazálohovať ho ako X.orig.\n"
 
 #: src/main.c:603
-msgid ""
-"  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"
-msgstr ""
+msgid "  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"
+msgstr "  -m,  --mirror             skratková voľba ekvivalentná -r -N -l inf -nr.\n"
 
 #: src/main.c:605
-msgid ""
-"  -p,  --page-requisites    get all images, etc. needed to display HTML "
-"page.\n"
-msgstr ""
+msgid "  -p,  --page-requisites    get all images, etc. needed to display HTML page.\n"
+msgstr "  -p,  --page-requisites    získaž všetky obrázky, atď. potrebné pre zobrazenie HTML stránky.\n"
 
 #: src/main.c:607
-msgid ""
-"       --strict-comments    turn on strict (SGML) handling of HTML "
-"comments.\n"
-msgstr ""
+msgid "       --strict-comments    turn on strict (SGML) handling of HTML comments.\n"
+msgstr "       --strict-comments    zapnúť striktné (SGML) spracovávanie HTML komentárov.\n"
 
 #: src/main.c:611
 msgid "Recursive accept/reject:\n"
-msgstr ""
+msgstr "Rekurzívne akceptovanie/odmietnutie:\n"
 
 #: src/main.c:613
-msgid ""
-"  -A,  --accept=LIST               comma-separated list of accepted "
-"extensions.\n"
-msgstr ""
+msgid "  -A,  --accept=LIST               comma-separated list of accepted extensions.\n"
+msgstr "  -A,  --accept=ZOZNAM             čiarkou oddelený zoznam akceptovaných prípon.\n"
 
 #: src/main.c:615
-msgid ""
-"  -R,  --reject=LIST               comma-separated list of rejected "
-"extensions.\n"
-msgstr ""
+msgid "  -R,  --reject=LIST               comma-separated list of rejected extensions.\n"
+msgstr "  -R,  --reject=ZOZNAM             čiarkou oddelený zoznam odmietnutých prípon.\n"
 
 #: src/main.c:617
-msgid ""
-"  -D,  --domains=LIST              comma-separated list of accepted "
-"domains.\n"
-msgstr ""
+msgid "  -D,  --domains=LIST              comma-separated list of accepted domains.\n"
+msgstr "  -D,  --domains=ZOZNAM            čiarkou oddelený zoznam akceptovaných domén.\n"
 
 #: src/main.c:619
-msgid ""
-"       --exclude-domains=LIST      comma-separated list of rejected "
-"domains.\n"
-msgstr ""
+msgid "       --exclude-domains=LIST      comma-separated list of rejected domains.\n"
+msgstr "       --exclude-domains=ZOZNAM    čiarkou oddelený zoznam odmietnutých domén.\n"
 
 #: src/main.c:621
-msgid ""
-"       --follow-ftp                follow FTP links from HTML documents.\n"
-msgstr ""
+msgid "       --follow-ftp                follow FTP links from HTML documents.\n"
+msgstr "       --follow-ftp                nasledovať FTP odkazy z HTML dokumentov.\n"
 
 #: src/main.c:623
-msgid ""
-"       --follow-tags=LIST          comma-separated list of followed HTML "
-"tags.\n"
-msgstr ""
+msgid "       --follow-tags=LIST          comma-separated list of followed HTML tags.\n"
+msgstr "       --follow-tags=ZOZNAM        čiarkou oddelený zoznam nasledovaných HTML značiek.\n"
 
 #: src/main.c:625
-msgid ""
-"       --ignore-tags=LIST          comma-separated list of ignored HTML "
-"tags.\n"
-msgstr ""
+msgid "       --ignore-tags=LIST          comma-separated list of ignored HTML tags.\n"
+msgstr "       --ignore-tags=ZOZNAM        čiarkou oddelený zoznam ignorovaných HTML značiek.\n"
 
 #: src/main.c:627
-msgid ""
-"  -H,  --span-hosts                go to foreign hosts when recursive.\n"
-msgstr ""
+msgid "  -H,  --span-hosts                go to foreign hosts when recursive.\n"
+msgstr "  -H,  --span-hosts                prejsť na cudzích hostiteľov pri rekurzii.\n"
 
 #: src/main.c:629
 msgid "  -L,  --relative                  follow relative links only.\n"
-msgstr ""
+msgstr "  -L,  --relative                  nasledovať len relatívne odkazy.\n"
 
 #: src/main.c:631
 msgid "  -I,  --include-directories=LIST  list of allowed directories.\n"
-msgstr ""
+msgstr "  -I,  --include-directories=ZOZNAM zoznam povolených adresárov.\n"
 
 #: src/main.c:633
 msgid "  -X,  --exclude-directories=LIST  list of excluded directories.\n"
-msgstr ""
+msgstr "  -X,  --exclude-directories=ZOZNAM zoznam vynechaných adresárov.\n"
 
 #: src/main.c:635
-msgid ""
-"  -np, --no-parent                 don't ascend to the parent directory.\n"
-msgstr ""
+msgid "  -np, --no-parent                 don't ascend to the parent directory.\n"
+msgstr "  -np, --no-parent                 nevystupovať do rodičovského adresára.\n"
 
 #: src/main.c:639
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr ""
 "Správy o chybách a návrhy na vylepšenie zasielajte na adresu\n"
 "<bug-wget@gnu.org> (iba anglicky).\n"
-"Komentáre k slovenskému prekladu zasielajte na adresu <sk-i18n@lists.linux."
-"sk>.\n"
+"Komentáre k slovenskému prekladu zasielajte na adresu <sk-i18n@lists.linux.sk>.\n"
 
 # , c-format
 #: src/main.c:644
@@ -1465,9 +1400,8 @@ msgid "GNU Wget %s, a non-interactive network retriever.\n"
 msgstr "GNU Wget %s, program pre neinteraktívne sťahovanie súborov.\n"
 
 #: src/main.c:658
-#, fuzzy
 msgid "Copyright (C) 2005 Free Software Foundation, Inc.\n"
-msgstr "Autorské práva (C) 2003 Free Software Foundation, Inc.\n"
+msgstr "Autorské práva (C) 2005 Free Software Foundation, Inc.\n"
 
 #: src/main.c:660
 msgid ""
@@ -1516,7 +1450,7 @@ msgstr "Nie je možné používať časové značky a nemazať pritom staré sú
 #: src/main.c:844
 #, c-format
 msgid "Cannot specify both --inet4-only and --inet6-only.\n"
-msgstr ""
+msgstr "Nemôžete zadať naraz --inet4-only a --inet6-only.\n"
 
 #. No URL specified.
 #: src/main.c:854
@@ -1554,9 +1488,9 @@ msgid "Continuing in background.\n"
 msgstr "Pokračujem v behu na pozadí.\n"
 
 #: src/mswindows.c:427
-#, fuzzy, c-format
+#, c-format
 msgid "Continuing in background, pid %lu.\n"
-msgstr "Pokračujem v behu na pozadí, pid %d.\n"
+msgstr "Pokračujem v behu na pozadí, pid %lu.\n"
 
 # , c-format
 #: src/mswindows.c:429 src/utils.c:348
@@ -1573,9 +1507,7 @@ msgstr "%s: Nemôžem nájsť použiteľný ovládač soketov.\n"
 #: src/netrc.c:385
 #, c-format
 msgid "%s: %s:%d: warning: \"%s\" token appears before any machine name\n"
-msgstr ""
-"%s: %s:%d varovanie: token \"%s\" je uvedený pred akýmkoľvek názvom "
-"počítača\n"
+msgstr "%s: %s:%d varovanie: token \"%s\" je uvedený pred akýmkoľvek názvom počítača\n"
 
 # , c-format
 #: src/netrc.c:416
@@ -1601,43 +1533,41 @@ msgstr "%s: volanie `stat %s' skončilo s chybou: %s\n"
 #. of using OpenSSL, which is why it is highly discouraged.
 #: src/openssl.c:121
 msgid "WARNING: using a weak random seed.\n"
-msgstr ""
+msgstr "UPOZORNENIE: používané slabé spúšťacie zrnko pre náhodné čísla.\n"
 
 #: src/openssl.c:181
-#, fuzzy
 msgid "Could not seed PRNG; consider using --random-file.\n"
-msgstr "Nemôžem inicializovať OpenSSL PRNG; vypínam SSL.\n"
+msgstr "Nemôžem inicializovať PRNG; zvážte použitie --random-file.\n"
 
 #. If the user has specified --no-check-cert, we still want to warn
 #. him about problems with the server's certificate.
 #: src/openssl.c:419
 msgid "ERROR"
-msgstr ""
+msgstr "CHYBA"
 
 #: src/openssl.c:419
 msgid "WARNING"
-msgstr ""
+msgstr "UPOZORNENIE"
 
 #: src/openssl.c:427
 #, c-format
 msgid "%s: No certificate presented by %s.\n"
-msgstr ""
+msgstr "%s: %s neprezentoval certifikát.\n"
 
 #: src/openssl.c:458
 #, c-format
 msgid "%s: Certificate verification error for %s: %s\n"
-msgstr ""
+msgstr "%s: Chyba overenia certifikátu pre %s: %s\n"
 
 #: src/openssl.c:485
 #, c-format
-msgid ""
-"%s: certificate common name `%s' doesn't match requested host name `%s'.\n"
-msgstr ""
+msgid "%s: certificate common name `%s' doesn't match requested host name `%s'.\n"
+msgstr "%s: bežné meno certifikátu `%s' sa nezhoduje s požadovaným menom hostiteľa `%s'.\n"
 
 #: src/openssl.c:498
 #, c-format
 msgid "To connect to %s insecurely, use `--no-check-certificate'.\n"
-msgstr ""
+msgstr "Na nie bezpečné pripojenie k %s použite `--no-check-certificate'.\n"
 
 # , c-format
 #. Align the [ skipping ... ] line with the dots.  To do
@@ -1749,373 +1679,4 @@ msgstr "Nebolo možné odstrániť symbolický odkaz `%s': %s\n"
 #: src/xmalloc.c:72
 #, c-format
 msgid "%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"
-msgstr ""
-
-#~ msgid "Failed to set up an SSL context\n"
-#~ msgstr "Nepodarilo sa nastaviť SSL kontext.\n"
-
-#~ msgid "Failed to load certificates from %s\n"
-#~ msgstr "Nepodarilo sa načítať certifikáty z %s\n"
-
-#~ msgid "Trying without the specified certificate\n"
-#~ msgstr "Skúšam bez zadaného certifikátu\n"
-
-#~ msgid "Failed to get certificate key from %s\n"
-#~ msgstr "Nepodarilo sa načítať kľúč certifikátu z %s\n"
-
-#~ msgid "Unable to convert `%s' to a bind address.  Reverting to ANY.\n"
-#~ msgstr ""
-#~ "Nepodarilo sa skonvertovať `%s' na adresu pripojenia.  Použijem ANY.\n"
-
-#~ msgid ""
-#~ "\n"
-#~ "REST failed; will not truncate `%s'.\n"
-#~ msgstr ""
-#~ "\n"
-#~ "REST zlyhal; `%s' sa neskráti.\n"
-
-# , c-format
-#~ msgid " [%s to go]"
-#~ msgstr " [ostáva %s]"
-
-#~ msgid "Host not found"
-#~ msgstr "Hostiteľ nebol nájdený"
-
-#~ msgid "End of file while parsing headers.\n"
-#~ msgstr "Koniec súboru počas analýzy hlavičiek.\n"
-
-#~ msgid ""
-#~ "\n"
-#~ "Continued download failed on this file, which conflicts with `-c'.\n"
-#~ "Refusing to truncate existing file `%s'.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "\n"
-#~ "Pokračovanie prenosu tohoto súboru zlyhalo, čo koliduje s `-c'.\n"
-#~ "Existujúci súbor `%s' nebude skrátený.\n"
-#~ "\n"
-
-# , c-format
-#~ msgid " (%s to go)"
-#~ msgstr " (ostáva %s)"
-
-#~ msgid ""
-#~ "Startup:\n"
-#~ "  -V,  --version           display the version of Wget and exit.\n"
-#~ "  -h,  --help              print this help.\n"
-#~ "  -b,  --background        go to background after startup.\n"
-#~ "  -e,  --execute=COMMAND   execute a `.wgetrc'-style command.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Spustenie:\n"
-#~ "  -V,  --version           vypíše verziu programu Wget a skončí.\n"
-#~ "  -h,  --help              vypíše túto nápovedu a skončí.\n"
-#~ "  -b,  --background        po spustení pokračuje v behu na pozadí.\n"
-#~ "  -e,  --execute=PRÍKAZ    vykonaj príkaz `.wgetrc'.\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "Logging and input file:\n"
-#~ "  -o,  --output-file=FILE     log messages to FILE.\n"
-#~ "  -a,  --append-output=FILE   append messages to FILE.\n"
-#~ "  -d,  --debug                print debug output.\n"
-#~ "  -q,  --quiet                quiet (no output).\n"
-#~ "  -v,  --verbose              be verbose (this is the default).\n"
-#~ "  -nv, --non-verbose          turn off verboseness, without being quiet.\n"
-#~ "  -i,  --input-file=FILE      download URLs found in FILE.\n"
-#~ "  -F,  --force-html           treat input file as HTML.\n"
-#~ "  -B,  --base=URL             prepends URL to relative links in -F -i "
-#~ "file.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Protokolovanie a vstupný súbor:\n"
-#~ "  -o,  --output-file=SÚBOR    ukladať správy protokolu do SÚBORu.\n"
-#~ "  -a,  --append-output=SÚBOR  pridať správy k SÚBORu.\n"
-#~ "  -d,  --debug                vypisovať ladiace informácie.\n"
-#~ "  -q,  --quiet                nevypisovať vôbec nič.\n"
-#~ "  -v,  --verbose              byť uhovorený (štandardne zapnuté).\n"
-#~ "  -nv, --non-verbose          vypisovať iba najdôležitejšie informácie.\n"
-#~ "  -i,  --input-file=SÚBOR     sťahovať odkazy URL načítané zo SÚBORu.\n"
-#~ "  -F,  --force-html           spracovať vstupný súbor ako HTML.\n"
-#~ "  -B,  --base=URL             predradiť URL pred relatívne odkazy v "
-#~ "súbore -F -i.\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "Download:\n"
-#~ "  -t,  --tries=NUMBER           set number of retries to NUMBER (0 "
-#~ "unlimits).\n"
-#~ "       --retry-connrefused      retry even if connection is refused.\n"
-#~ "  -O   --output-document=FILE   write documents to FILE.\n"
-#~ "  -nc, --no-clobber             don't clobber existing files or use .# "
-#~ "suffixes.\n"
-#~ "  -c,  --continue               resume getting a partially-downloaded "
-#~ "file.\n"
-#~ "       --progress=TYPE          select progress gauge type.\n"
-#~ "  -N,  --timestamping           don't re-retrieve files unless newer than "
-#~ "local.\n"
-#~ "  -S,  --server-response        print server response.\n"
-#~ "       --spider                 don't download anything.\n"
-#~ "  -T,  --timeout=SECONDS        set all timeout values to SECONDS.\n"
-#~ "       --dns-timeout=SECS       set the DNS lookup timeout to SECS.\n"
-#~ "       --connect-timeout=SECS   set the connect timeout to SECS.\n"
-#~ "       --read-timeout=SECS      set the read timeout to SECS.\n"
-#~ "  -w,  --wait=SECONDS           wait SECONDS between retrievals.\n"
-#~ "       --waitretry=SECONDS      wait 1...SECONDS between retries of a "
-#~ "retrieval.\n"
-#~ "       --random-wait            wait from 0...2*WAIT secs between "
-#~ "retrievals.\n"
-#~ "  -Y,  --proxy=on/off           turn proxy on or off.\n"
-#~ "  -Q,  --quota=NUMBER           set retrieval quota to NUMBER.\n"
-#~ "       --bind-address=ADDRESS   bind to ADDRESS (hostname or IP) on local "
-#~ "host.\n"
-#~ "       --limit-rate=RATE        limit download rate to RATE.\n"
-#~ "       --dns-cache=off          disable caching DNS lookups.\n"
-#~ "       --restrict-file-names=OS restrict chars in file names to ones OS "
-#~ "allows.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Sťahovanie:\n"
-#~ "  -t,  --tries=POČET            nastaviť počet pokusov stiahnutia URL na "
-#~ "POČET\n"
-#~ "                                (0 bez obmedzenia).\n"
-#~ "       --retry-connrefused      skúsiť priamo, či je spojenie "
-#~ "odmietnuté.\n"
-#~ "  -O   --output-document=SÚBOR  zapísať dokumenty do SÚBORu.\n"
-#~ "  -nc, --no-clobber             neprepisovať existujúce súbory alebo "
-#~ "použiť\n"
-#~ "                                prípony .#.\n"
-#~ "  -c,  --continue               pokračovať pri získavaní čiastočne "
-#~ "stiahnuteho\n"
-#~ "                                súboru.\n"
-#~ "       --progress=TYP           vybrať typ zobrazenia postupu.\n"
-#~ "  -N,  --timestamping           nesťahovať opäť súbory, iba ak sú novšie "
-#~ "ako miestne.\n"
-#~ "  -S,  --server-response        vypisovať odpovede servera.\n"
-#~ "       --spider                 nič nesťahuj.\n"
-#~ "  -T,  --timeout=SEKUNDY        nastav časový limit pre SEKUNDY.\n"
-#~ "  -w,  --wait=SEKUNDY           medzi sťahovaniami počkať SEKUNDY.\n"
-#~ "       --waitretry=SEKUNDY      počkať 1...SEKUNDY medzi pokusmi o "
-#~ "sťahovanie.\n"
-#~ "       --random-wait            počkať 0...2*WAIT sekúnd medzi "
-#~ "sťahovaniami.\n"
-#~ "  -Y,  --proxy=on/off           zapnúť alebo vypnúť proxy.\n"
-#~ "  -Q,  --quota=ČÍSLO            nastaviť limit sťahovania na ČÍSLO.\n"
-#~ "       --limit-rate=RÝCHLOSŤ    obmedziť rýchlosť sťahovania na "
-#~ "RÝCHLOSŤ.\n"
-#~ "       --dns-cache=off          zakázať dočasné ukladanie zisťovaní DNS.\n"
-#~ "       --restrict-file-names=OS obmedziť počet znakov v názve súboru.\n"
-
-#~ msgid ""
-#~ "Directories:\n"
-#~ "  -nd, --no-directories            don't create directories.\n"
-#~ "  -x,  --force-directories         force creation of directories.\n"
-#~ "  -nH, --no-host-directories       don't create host directories.\n"
-#~ "  -P,  --directory-prefix=PREFIX   save files to PREFIX/...\n"
-#~ "       --cut-dirs=NUMBER           ignore NUMBER remote directory "
-#~ "components.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Adresáre:\n"
-#~ "  -nd  --no-directories            nevytvárať adresáre.\n"
-#~ "  -x,  --force-directories         vždy vytvárať adresáre.\n"
-#~ "  -nH, --no-host-directories       nevytvárať adresáre servera.\n"
-#~ "  -P,  --directory-prefix=PREDPONA ukladať súbory do PREDPONA/...\n"
-#~ "       --cut-dirs=POČET            ignorovať POČET vzdialených "
-#~ "adresárových komponentov podadresárov.\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "HTTP options:\n"
-#~ "       --http-user=USER      set http user to USER.\n"
-#~ "       --http-passwd=PASS    set http password to PASS.\n"
-#~ "  -C,  --cache=on/off        (dis)allow server-cached data (normally "
-#~ "allowed).\n"
-#~ "  -E,  --html-extension      save all text/html documents with .html "
-#~ "extension.\n"
-#~ "       --ignore-length       ignore `Content-Length' header field.\n"
-#~ "       --header=STRING       insert STRING among the headers.\n"
-#~ "       --proxy-user=USER     set USER as proxy username.\n"
-#~ "       --proxy-passwd=PASS   set PASS as proxy password.\n"
-#~ "       --referer=URL         include `Referer: URL' header in HTTP "
-#~ "request.\n"
-#~ "  -s,  --save-headers        save the HTTP headers to file.\n"
-#~ "  -U,  --user-agent=AGENT    identify as AGENT instead of Wget/VERSION.\n"
-#~ "       --no-http-keep-alive  disable HTTP keep-alive (persistent "
-#~ "connections).\n"
-#~ "       --cookies=off         don't use cookies.\n"
-#~ "       --load-cookies=FILE   load cookies from FILE before session.\n"
-#~ "       --save-cookies=FILE   save cookies to FILE after session.\n"
-#~ "       --post-data=STRING    use the POST method; send STRING as the "
-#~ "data.\n"
-#~ "       --post-file=FILE      use the POST method; send contents of FILE.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Voľby HTTP:\n"
-#~ "       --http-user=POUŽ      nastaviť http používateľa na POUŽ.\n"
-#~ "       --http-passwd=HESLO   nastaviť http heslo na HESLO.\n"
-#~ "  -C,  --cache=on/off        povoliť alebo zakázať použitie vyrovnávacej "
-#~ "pamäte                               na strane servera (štandartne "
-#~ "povolené).\n"
-#~ "  -E,  --html-extension      zapísať všetky dokumenty text/html s "
-#~ "príponou .html.\n"
-#~ "       --ignore-length       ignorovať pole `Content-Length' v hlavičke.\n"
-#~ "       --header=REŤAZEC      zaradiť REŤAZEC k hlavičkám.\n"
-#~ "       --proxy-user=POUŽÍVATEĽ nastaviť POUŽÍVATEĽ ako meno používateľa "
-#~ "pre proxy.\n"
-#~ "       --proxy-passwd=HESLO  nastaviť HESLO ako heslo pre proxy.\n"
-#~ "       --referer=URL         zaradiť hlavičku `Referer: URL' do HTTP "
-#~ "požiadavky.\n"
-#~ "  -s,  --save-headers        uložiť HTTP hlavičky do súboru.\n"
-#~ "  -U,  --user-agent=AGENT    identifikuj sa ako AGENT namiesto Wget/"
-#~ "VERZIA.\n"
-#~ "       --no-http-keep-alive  vypnúť HTTP keep-alive (trvalé spojenia).\n"
-#~ "       --cookies=off         nepoužívať cookies.\n"
-#~ "       --load-cookies=SÚBOR  načítať cookies zo SÚBORu pred začiatkom "
-#~ "sedenia.\n"
-#~ "       --save-cookies=SÚBOR  uložiť cookies do SÚBORu po ukončení "
-#~ "sedenia.\n"
-#~ "       --post-data=REŤAZEC   použiť metódu POST; odoslať REŤAZEC ako "
-#~ "údaje.\n"
-#~ "       --post-file=SÚBOR     použiť metódu POST; odoslať obsah SÚBORu.\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "HTTPS (SSL) options:\n"
-#~ "       --sslcertfile=FILE     optional client certificate.\n"
-#~ "       --sslcertkey=KEYFILE   optional keyfile for this certificate.\n"
-#~ "       --egd-file=FILE        file name of the EGD socket.\n"
-#~ "       --sslcadir=DIR         dir where hash list of CA's are stored.\n"
-#~ "       --sslcafile=FILE       file with bundle of CA's\n"
-#~ "       --sslcerttype=0/1      Client-Cert type 0=PEM (default) / 1=ASN1 "
-#~ "(DER)\n"
-#~ "       --sslcheckcert=0/1     Check the server cert agenst given CA\n"
-#~ "       --sslprotocol=0-3      choose SSL protocol; 0=automatic,\n"
-#~ "                              1=SSLv2 2=SSLv3 3=TLSv1\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Voľby pre HTTPS (SSL):\n"
-#~ "       --sslcertfile=SÚBOR    voliteľný certifikát klienta.\n"
-#~ "       --sslcertkey=SÚBORKĽ   voliteľný súbor s kľúčmi pre tento "
-#~ "certifikát.\n"
-#~ "       --egd-file=SÚBOR       názov súboru soketu EGD.\n"
-#~ "       --sslcadir=ADR         adresár, kde sú uložené hašovacie zoznamy "
-#~ "pre CA.\n"
-#~ "       --sslcafile=SÚBOR      súbor so zväzkom CA\n"
-#~ "       --sslcerttype=0/1      Typ certifikátu klienta 0=PEM "
-#~ "(predvolené) / 1=ASN1 (DER)\n"
-#~ "       --sslcheckcert=0/1     Skontrolovať certifikát servera oproti "
-#~ "zadanému CA\n"
-#~ "       --sslprotocol=0-3      zvoliť SSL porotokol; 0=automatický,\n"
-#~ "                              1=SSLv2, 2=SSLv3, 3=TLSv1\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "FTP options:\n"
-#~ "  -nr, --dont-remove-listing   don't remove `.listing' files.\n"
-#~ "  -g,  --glob=on/off           turn file name globbing on or off.\n"
-#~ "       --passive-ftp           use the \"passive\" transfer mode.\n"
-#~ "       --retr-symlinks         when recursing, get linked-to files (not "
-#~ "dirs).\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Voľby FTP:\n"
-#~ "  -nr, --dont-remove-listing   neodstraňovať súbory `.listing'.\n"
-#~ "  -g,  --glob=on/off           zapnúť alebo vypnúť expanziu žolíkov v "
-#~ "menách súborov.\n"
-#~ "       --passive-ftp           použiť pasívny režim prenosu.\n"
-#~ "       --retr-symlinks         pri rekurzii sťahovať odkazy na súbory "
-#~ "(nie adresáre).\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "Recursive retrieval:\n"
-#~ "  -r,  --recursive          recursive download.\n"
-#~ "  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for "
-#~ "infinite).\n"
-#~ "       --delete-after       delete files locally after downloading them.\n"
-#~ "  -k,  --convert-links      convert non-relative links to relative.\n"
-#~ "  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
-#~ "  -m,  --mirror             shortcut option equivalent to -r -N -l inf -"
-#~ "nr.\n"
-#~ "  -p,  --page-requisites    get all images, etc. needed to display HTML "
-#~ "page.\n"
-#~ "       --strict-comments    turn on strict (SGML) handling of HTML "
-#~ "comments.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Rekurzívne sťahovanie:\n"
-#~ "  -r,  --recursive          rekurzívne sťahovanie.\n"
-#~ "  -l,  --level=ČÍSLO        maximálna hĺbka rekurzie (inf alebo 0 znamená "
-#~ "bez limitu).\n"
-#~ "       --delete-after       po prenose zmazať stiahnuté súbory.\n"
-#~ "  -k,  --convert-links      previesť absolútne odkazy na relatívne.\n"
-#~ "  -K,  --backup-converted   pred konverziou súboru X ho uchovaj ako X."
-#~ "orig.\n"
-#~ "  -m,  --mirror             skrátená voľba ekvivalentná -r -N -l inf -"
-#~ "nr.\n"
-#~ "  -p,  --page-requisites    preniesť všetky obrázky, atď. potrebné pre\n"
-#~ "                              zobrazenie HTML stránky.\n"
-#~ "       --strict-comments    zapnúť striktné (SGML) spracúvanie HTML "
-#~ "komentárov.\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "Recursive accept/reject:\n"
-#~ "  -A,  --accept=LIST                comma-separated list of accepted "
-#~ "extensions.\n"
-#~ "  -R,  --reject=LIST                comma-separated list of rejected "
-#~ "extensions.\n"
-#~ "  -D,  --domains=LIST               comma-separated list of accepted "
-#~ "domains.\n"
-#~ "       --exclude-domains=LIST       comma-separated list of rejected "
-#~ "domains.\n"
-#~ "       --follow-ftp                 follow FTP links from HTML "
-#~ "documents.\n"
-#~ "       --follow-tags=LIST           comma-separated list of followed HTML "
-#~ "tags.\n"
-#~ "  -G,  --ignore-tags=LIST           comma-separated list of ignored HTML "
-#~ "tags.\n"
-#~ "  -H,  --span-hosts                 go to foreign hosts when recursive.\n"
-#~ "  -L,  --relative                   follow relative links only.\n"
-#~ "  -I,  --include-directories=LIST   list of allowed directories.\n"
-#~ "  -X,  --exclude-directories=LIST   list of excluded directories.\n"
-#~ "  -np, --no-parent                  don't ascend to the parent "
-#~ "directory.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Nastavenia pri rekurzii:\n"
-#~ "  -A,  --accept=ZOZNAM              čiarkami oddelený zoznam prípusných "
-#~ "prípon.\n"
-#~ "  -R,  --reject=ZOZNAM              čiarkami oddelený zoznam "
-#~ "neprípustných prípon.\n"
-#~ "  -D,  --domains=ZOZNAM             čiarkami oddelený zoznam prípustných "
-#~ "domén.\n"
-#~ "       --exclude-domains=ZOZNAM     čiarkami oddelený zoznam "
-#~ "neprípustných domén.\n"
-#~ "       --follow-ftp                 nasledovať FTP odkazy v HTML "
-#~ "dokumentoch.\n"
-#~ "       --follow-tags=ZOZNAM         čiarkami oddelený zoznam HTML "
-#~ "značiek, ktoré budú\n"
-#~ "                                    nasledované.\n"
-#~ "  -G,  --ignore-tags=ZOZNAM         čiarkami oddelený zoznam ignorovaných "
-#~ "HTML značiek.\n"
-#~ "  -H,  --span-hosts                 pri rekurzii ísť na cudzích "
-#~ "hostiteľov.\n"
-#~ "  -L,  --relative                   nasledovať iba relatívne odkazy.\n"
-#~ "  -I,  --include-directories=ZOZNAM zoznam povolených adresárov.\n"
-#~ "  -X,  --exclude-directories=ZOZNAM zoznam vylúčených adresárov.\n"
-#~ "  -np, --no-parent                  nevystupovať do rodičovského "
-#~ "adresára.\n"
-#~ "\n"
-
-#~ msgid "%s: debug support not compiled in.\n"
-#~ msgstr "%s: program nebol preložený s podporou pre ladenie.\n"
-
-# , c-format
-#~ msgid "Starting WinHelp %s\n"
-#~ msgstr "Spúšťam WinHelp %s\n"
-
-# , c-format
-#~ msgid "%s: %s: Not enough memory.\n"
-#~ msgstr "%s: %s: Nie je dosť pamäte.\n"
+msgstr "%s: %s: Zlyhalo vyžiadanie %ld bajtov; pamäť je vyčerpaná.\n"
