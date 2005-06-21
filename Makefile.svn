@@ -1,4 +1,4 @@
-# Makefile for preparing the sources after CVS checkout.
+# Makefile for preparing the sources after Subversion checkout.
 # Copyright (C) 2000 Karl Eichwalder.
 
 # This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 #
 # Usage:
 #
-#     make -f Makefile.cvs
+#     make -f Makefile.svn
 #
 
 SHELL = /bin/sh
@@ -42,7 +42,7 @@ prep:
 # the `make' program is called `make'.  I'm keeping them for the sake
 # of the users who expect to find them.  I don't want to make this
 # file complicated by implementing smarter detections -- the user who
-# needs different behavior should simply run `make -f Makefile.cvs'
+# needs different behavior should simply run `make -f Makefile.svn'
 # and proceed as he would have normally.
 
 configure: prep

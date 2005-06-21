@@ -1,3 +1,9 @@
+2005-06-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.cvs: Renamed to Makefile.svn.
+
+	* README.cvs: Renamed to README.svn.
+
 2005-06-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Don't check for the return type of signal
