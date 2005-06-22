@@ -1704,29 +1704,30 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   hs->remote_time = resp_header_strdup (resp, "Last-Modified");
 
   /* Handle (possibly multiple instances of) the Set-Cookie header. */
-  {
-    char *pth = NULL;
-    int scpos;
-    const char *scbeg, *scend;
-    /* The jar should have been created by now. */
-    assert (wget_cookie_jar != NULL);
-    for (scpos = 0;
-	 (scpos = resp_header_locate (resp, "Set-Cookie", scpos,
-				      &scbeg, &scend)) != -1;
-	 ++scpos)
-      {
-	char *set_cookie; BOUNDED_TO_ALLOCA (scbeg, scend, set_cookie);
-	if (pth == NULL)
-	  {
-	    /* u->path doesn't begin with /, which cookies.c expects. */
-	    pth = (char *) alloca (1 + strlen (u->path) + 1);
-	    pth[0] = '/';
-	    strcpy (pth + 1, u->path);
-	  }
-	cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port, pth,
-				  set_cookie);
-      }
-  }
+  if (opt.cookies)
+    {
+      char *pth = NULL;
+      int scpos;
+      const char *scbeg, *scend;
+      /* The jar should have been created by now. */
+      assert (wget_cookie_jar != NULL);
+      for (scpos = 0;
+	   (scpos = resp_header_locate (resp, "Set-Cookie", scpos,
+					&scbeg, &scend)) != -1;
+	   ++scpos)
+	{
+	  char *set_cookie; BOUNDED_TO_ALLOCA (scbeg, scend, set_cookie);
+	  if (pth == NULL)
+	    {
+	      /* u->path doesn't begin with /, which cookies.c expects. */
+	      pth = (char *) alloca (1 + strlen (u->path) + 1);
+	      pth[0] = '/';
+	      strcpy (pth + 1, u->path);
+	    }
+	  cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port, pth,
+				    set_cookie);
+	}
+    }
 
   if (resp_header_copy (resp, "Content-Range", hdrval, sizeof (hdrval)))
     {

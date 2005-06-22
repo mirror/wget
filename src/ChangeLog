@@ -1,5 +1,12 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (gethttp): Only handle --set-cookies (and assert that
+	cookie jar exists) if opt.cookies is true.  Failure to do so
+	triggered the assert when --no-cookies was used and the server
+	sent a Set-Cookie header.  Ouch!
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* connect.c (select_fd): Expect select() to exist.
 
 	* utils.c (xsleep): Always use select() as sleep fallback on
