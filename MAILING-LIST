@@ -3,7 +3,7 @@
 		      WGET-RELATED MAILING LISTS
 
 There are several mailing lists related to GNU Wget, all of them
-hosted by SunSITE.dk.
+hosted by dotsrc.org, previously known as SunSITE.dk.
 
 wget@sunsite.dk:
 
@@ -43,16 +43,6 @@ wget-patches@sunsite.dk:
     The list is archived at:
 
         http://news.gmane.org/gmane.comp.web.wget.patches
-
-wget-cvs@sunsite.dk:
-
-    This list just distributes notices about commits to the Wget CVS
-    tree.  It has no discussions, and it is not interesting unless you
-    wish to take part in development or track commits for whatever
-    reasons.  If so, send mail to <wget-cvs-subscribe@sunsite.dk> to
-    subscribe.
-
-    The list is not archived.
 
 As of this writing, the mail alias <bug-wget@gnu.org> is an alias for
 <wget@sunsite.dk>.

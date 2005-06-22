@@ -1,5 +1,10 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* MAILING-LIST: Remove reference to the obsolete `wget-cvs'
+	mailing list.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* config.sub, config.guess: Updated from canonical location.
 
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
