@@ -1,5 +1,10 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi (Mailing List): Remove reference to the wget-cvs list,
+	which no longer exists.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi: Use the more standard authorship phrase "and others".
 
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>

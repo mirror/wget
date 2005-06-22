@@ -3262,11 +3262,6 @@ and follow the instructions.  Unsubscribe by mailing to
 @email{wget-unsubscribe@@sunsite.dk}.  The mailing list is archived at
 @url{http://news.gmane.org/gmane.comp.web.wget.patches}.
 
-Finally, there is a read-only list at @email{wget-cvs@@sunsite.dk}
-that tracks commits to the Wget CVS repository.  To subscribe to that
-list, send mail to @email{wget-cvs-subscribe@@sunsite.dk}.  The list
-is not archived.
-
 @node Reporting Bugs
 @section Reporting Bugs
 @cindex bugs
