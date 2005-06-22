@@ -292,7 +292,7 @@ fork_to_background (void)
 {
   pid_t pid;
   /* Whether we arrange our own version of opt.lfilename here.  */
-  int logfile_changed = 0;
+  bool logfile_changed = false;
 
   if (!opt.lfilename)
     {
@@ -301,10 +301,10 @@ fork_to_background (void)
 	 use fopen_excl) or lying to the user about the log file name
 	 (which arises from using unique_name, printing the name, and
 	 using fopen_excl later on.)  */
-      FILE *new_log_fp = unique_create (DEFAULT_LOGFILE, 0, &opt.lfilename);
+      FILE *new_log_fp = unique_create (DEFAULT_LOGFILE, false, &opt.lfilename);
       if (new_log_fp)
 	{
-	  logfile_changed = 1;
+	  logfile_changed = true;
 	  fclose (new_log_fp);
 	}
     }
@@ -318,7 +318,7 @@ fork_to_background (void)
   else if (pid != 0)
     {
       /* parent, no error */
-      printf (_("Continuing in background, pid %d.\n"), (int)pid);
+      printf (_("Continuing in background, pid %d.\n"), (int) pid);
       if (logfile_changed)
 	printf (_("Output will be written to `%s'.\n"), opt.lfilename);
       exit (0);			/* #### should we use _exit()? */
@@ -379,7 +379,7 @@ remove_link (const char *file)
    proper way should, of course, be to have a third, error state,
    other than true/false, but that would introduce uncalled-for
    additional complexity to the callers.  */
-int
+bool
 file_exists_p (const char *filename)
 {
 #ifdef HAVE_ACCESS
@@ -392,15 +392,15 @@ file_exists_p (const char *filename)
 
 /* Returns 0 if PATH is a directory, 1 otherwise (any kind of file).
    Returns 0 on error.  */
-int
+bool
 file_non_directory_p (const char *path)
 {
   struct_stat buf;
   /* Use lstat() rather than stat() so that symbolic links pointing to
      directories can be identified correctly.  */
   if (lstat (path, &buf) != 0)
-    return 0;
-  return S_ISDIR (buf.st_mode) ? 0 : 1;
+    return false;
+  return S_ISDIR (buf.st_mode) ? false : true;
 }
 
 /* Return the size of file named by FILENAME, or -1 if it cannot be
@@ -468,7 +468,7 @@ unique_name_1 (const char *prefix)
    (and therefore doesn't need changing).  */
 
 char *
-unique_name (const char *file, int allow_passthrough)
+unique_name (const char *file, bool allow_passthrough)
 {
   /* If the FILE itself doesn't exist, return it without
      modification. */
@@ -486,15 +486,15 @@ unique_name (const char *file, int allow_passthrough)
    opening the file returned by unique_name.  */
 
 FILE *
-unique_create (const char *name, int binary, char **opened_name)
+unique_create (const char *name, bool binary, char **opened_name)
 {
   /* unique file name, based on NAME */
-  char *uname = unique_name (name, 0);
+  char *uname = unique_name (name, false);
   FILE *fp;
   while ((fp = fopen_excl (uname, binary)) == NULL && errno == EEXIST)
     {
       xfree (uname);
-      uname = unique_name (name, 0);
+      uname = unique_name (name, false);
     }
   if (opened_name && fp != NULL)
     {
@@ -522,7 +522,7 @@ unique_create (const char *name, int binary, char **opened_name)
    appropriately.  */
    
 FILE *
-fopen_excl (const char *fname, int binary)
+fopen_excl (const char *fname, bool binary)
 {
   int fd;
 #ifdef O_EXCL
@@ -614,11 +614,11 @@ file_merge (const char *base, const char *file)
   return result;
 }
 
-static int in_acclist (const char *const *, const char *, int);
+static bool in_acclist (const char *const *, const char *, bool);
 
 /* Determine whether a file is acceptable to be followed, according to
    lists of patterns to accept/reject.  */
-int
+bool
 acceptable (const char *s)
 {
   int l = strlen (s);
@@ -630,24 +630,24 @@ acceptable (const char *s)
   if (opt.accepts)
     {
       if (opt.rejects)
-	return (in_acclist ((const char *const *)opt.accepts, s, 1)
-		&& !in_acclist ((const char *const *)opt.rejects, s, 1));
+	return (in_acclist ((const char *const *)opt.accepts, s, true)
+		&& !in_acclist ((const char *const *)opt.rejects, s, true));
       else
-	return in_acclist ((const char *const *)opt.accepts, s, 1);
+	return in_acclist ((const char *const *)opt.accepts, s, true);
     }
   else if (opt.rejects)
-    return !in_acclist ((const char *const *)opt.rejects, s, 1);
-  return 1;
+    return !in_acclist ((const char *const *)opt.rejects, s, true);
+  return true;
 }
 
 /* Compare S1 and S2 frontally; S2 must begin with S1.  E.g. if S1 is
    `/something', frontcmp() will return 1 only if S2 begins with
    `/something'.  Otherwise, 0 is returned.  */
-int
+bool
 frontcmp (const char *s1, const char *s2)
 {
   for (; *s1 && *s2 && (*s1 == *s2); ++s1, ++s2);
-  return !*s1;
+  return *s1 == '\0';
 }
 
 /* Iterate through STRLIST, and return the first element that matches
@@ -679,7 +679,7 @@ proclist (char **strlist, const char *s, enum accd flags)
 
    If FLAGS is ALLABS, the leading `/' is ignored in paths; relative
    and absolute paths may be freely intermixed.  */
-int
+bool
 accdir (const char *directory, enum accd flags)
 {
   /* Remove starting '/'.  */
@@ -688,34 +688,33 @@ accdir (const char *directory, enum accd flags)
   if (opt.includes)
     {
       if (!proclist (opt.includes, directory, flags))
-	return 0;
+	return false;
     }
   if (opt.excludes)
     {
       if (proclist (opt.excludes, directory, flags))
-	return 0;
+	return false;
     }
-  return 1;
+  return true;
 }
 
-/* Return non-zero if STRING ends with TAIL.  For instance:
+/* Return true if STRING ends with TAIL.  For instance:
 
-   match_tail ("abc", "bc", 0)  -> 1
-   match_tail ("abc", "ab", 0)  -> 0
-   match_tail ("abc", "abc", 0) -> 1
+   match_tail ("abc", "bc", false)  -> 1
+   match_tail ("abc", "ab", false)  -> 0
+   match_tail ("abc", "abc", false) -> 1
 
-   If FOLD_CASE_P is non-zero, the comparison will be
-   case-insensitive.  */
+   If FOLD_CASE is true, the comparison will be case-insensitive.  */
 
-int
-match_tail (const char *string, const char *tail, int fold_case_p)
+bool
+match_tail (const char *string, const char *tail, bool fold_case)
 {
   int i, j;
 
   /* We want this to be fast, so we code two loops, one with
      case-folding, one without. */
 
-  if (!fold_case_p)
+  if (!fold_case)
     {
       for (i = strlen (string), j = strlen (tail); i >= 0 && j >= 0; i--, j--)
 	if (string[i] != tail[j])
@@ -730,19 +729,19 @@ match_tail (const char *string, const char *tail, int fold_case_p)
 
   /* If the tail was exhausted, the match was succesful.  */
   if (j == -1)
-    return 1;
+    return true;
   else
-    return 0;
+    return false;
 }
 
 /* Checks whether string S matches each element of ACCEPTS.  A list
    element are matched either with fnmatch() or match_tail(),
    according to whether the element contains wildcards or not.
 
-   If the BACKWARD is 0, don't do backward comparison -- just compare
+   If the BACKWARD is false, don't do backward comparison -- just compare
    them normally.  */
-static int
-in_acclist (const char *const *accepts, const char *s, int backward)
+static bool
+in_acclist (const char *const *accepts, const char *s, bool backward)
 {
   for (; *accepts; accepts++)
     {
@@ -751,23 +750,23 @@ in_acclist (const char *const *accepts, const char *s, int backward)
 	  /* fnmatch returns 0 if the pattern *does* match the
 	     string.  */
 	  if (fnmatch (*accepts, s, 0) == 0)
-	    return 1;
+	    return true;
 	}
       else
 	{
 	  if (backward)
 	    {
 	      if (match_tail (s, *accepts, 0))
-		return 1;
+		return true;
 	    }
 	  else
 	    {
 	      if (!strcmp (s, *accepts))
-		return 1;
+		return true;
 	    }
 	}
     }
-  return 0;
+  return false;
 }
 
 /* Return the location of STR's suffix (file extension).  Examples:
@@ -789,20 +788,21 @@ suffix (const char *str)
     return NULL;
 }
 
-/* Return non-zero if S contains globbing wildcards (`*', `?', `[' or
+/* Return true if S contains globbing wildcards (`*', `?', `[' or
    `]').  */
 
-int
+bool
 has_wildcards_p (const char *s)
 {
   for (; *s; s++)
     if (*s == '*' || *s == '?' || *s == '[' || *s == ']')
-      return 1;
-  return 0;
+      return true;
+  return false;
 }
 
-/* Return non-zero if FNAME ends with a typical HTML suffix.  The
-   following (case-insensitive) suffixes are presumed to be HTML files:
+/* Return true if FNAME ends with a typical HTML suffix.  The
+   following (case-insensitive) suffixes are presumed to be HTML
+   files:
    
      html
      htm
@@ -810,20 +810,20 @@ has_wildcards_p (const char *s)
 
    #### CAVEAT.  This is not necessarily a good indication that FNAME
    refers to a file that contains HTML!  */
-int
+bool
 has_html_suffix_p (const char *fname)
 {
   char *suf;
 
   if ((suf = suffix (fname)) == NULL)
-    return 0;
+    return false;
   if (!strcasecmp (suf, "html"))
-    return 1;
+    return true;
   if (!strcasecmp (suf, "htm"))
-    return 1;
+    return true;
   if (suf[0] && !strcasecmp (suf + 1, "html"))
-    return 1;
-  return 0;
+    return true;
+  return false;
 }
 
 /* Read a line from FP and return the pointer to freshly allocated
@@ -898,14 +898,14 @@ read_file (const char *file)
   int fd;
   struct file_memory *fm;
   long size;
-  int inhibit_close = 0;
+  bool inhibit_close = false;
 
   /* Some magic in the finest tradition of Perl and its kin: if FILE
      is "-", just use stdin.  */
   if (HYPHENP (file))
     {
       fd = fileno (stdin);
-      inhibit_close = 1;
+      inhibit_close = true;
       /* Note that we don't inhibit mmap() in this case.  If stdin is
          redirected from a regular file, mmap() will still work.  */
     }
@@ -1694,8 +1694,8 @@ alarm_cancel (void)
 }
 
 /* Call FUN(ARG), but don't allow it to run for more than TIMEOUT
-   seconds.  Returns non-zero if the function was interrupted with a
-   timeout, zero otherwise.
+   seconds.  Returns true if the function was interrupted with a
+   timeout, false otherwise.
 
    This works by setting up SIGALRM to be delivered in TIMEOUT seconds
    using setitimer() or alarm().  The timeout is enforced by
@@ -1720,7 +1720,7 @@ alarm_cancel (void)
    are normally freed prior to exit from the functions, they will be
    lost in case of timeout.  */
 
-int
+bool
 run_with_timeout (double timeout, void (*fun) (void *), void *arg)
 {
   int saved_errno;
@@ -1728,7 +1728,7 @@ run_with_timeout (double timeout, void (*fun) (void *), void *arg)
   if (timeout == 0)
     {
       fun (arg);
-      return 0;
+      return false;
     }
 
   signal (SIGALRM, abort_run_with_timeout);
@@ -1736,7 +1736,7 @@ run_with_timeout (double timeout, void (*fun) (void *), void *arg)
     {
       /* Longjumped out of FUN with a timeout. */
       signal (SIGALRM, SIG_DFL);
-      return 1;
+      return true;
     }
   alarm_set (timeout);
   fun (arg);
@@ -1747,7 +1747,7 @@ run_with_timeout (double timeout, void (*fun) (void *), void *arg)
   signal (SIGALRM, SIG_DFL);
   errno = saved_errno;
 
-  return 0;
+  return false;
 }
 
 #else  /* not USE_SIGNAL_TIMEOUT */
@@ -1761,7 +1761,7 @@ int
 run_with_timeout (double timeout, void (*fun) (void *), void *arg)
 {
   fun (arg);
-  return 0;
+  return false;
 }
 #endif /* not WINDOWS */
 #endif /* not USE_SIGNAL_TIMEOUT */

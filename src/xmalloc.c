@@ -58,7 +58,7 @@ memfatal (const char *context, long attempted_size)
 {
   /* Make sure we don't try to store part of the log line, and thus
      call malloc.  */
-  log_set_save_context (0);
+  log_set_save_context (false);
   logprintf (LOG_ALWAYS,
 	     _("%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"),
 	     exec_name, context, attempted_size);
@@ -252,15 +252,15 @@ register_ptr (const void *ptr, const char *file, int line)
   malloc_table[i].line = line;
 }
 
-/* Unregister PTR from malloc_table.  Return 0 if PTR is not present
-   in malloc_table.  */
+/* Unregister PTR from malloc_table.  Return false if PTR is not
+   present in malloc_table.  */
 
-static int
+static bool
 unregister_ptr (void *ptr)
 {
   int i = ptr_position (ptr);
   if (malloc_table[i].ptr == NULL)
-    return 0;
+    return false;
   malloc_table[i].ptr = NULL;
 
   /* Relocate malloc_table entries immediately following PTR. */
@@ -279,7 +279,7 @@ unregister_ptr (void *ptr)
     cont_outer:
       ;
     }
-  return 1;
+  return true;
 }
 
 /* Print the malloc debug stats gathered from the above information.

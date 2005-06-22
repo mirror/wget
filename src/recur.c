@@ -96,7 +96,7 @@ url_queue_delete (struct url_queue *queue)
 
 static void
 url_enqueue (struct url_queue *queue,
-	     const char *url, const char *referer, int depth, int html_allowed)
+	     const char *url, const char *referer, int depth, bool html_allowed)
 {
   struct queue_element *qel = xnew (struct queue_element);
   qel->url = url;
@@ -120,18 +120,18 @@ url_enqueue (struct url_queue *queue,
     queue->head = queue->tail;
 }
 
-/* Take a URL out of the queue.  Return 1 if this operation succeeded,
-   or 0 if the queue is empty.  */
+/* Take a URL out of the queue.  Return true if this operation
+   succeeded, or false if the queue is empty.  */
 
-static int
+static bool
 url_dequeue (struct url_queue *queue,
 	     const char **url, const char **referer, int *depth,
-	     int *html_allowed)
+	     bool *html_allowed)
 {
   struct queue_element *qel = queue->head;
 
   if (!qel)
-    return 0;
+    return false;
 
   queue->head = queue->head->next;
   if (!queue->head)
@@ -148,13 +148,13 @@ url_dequeue (struct url_queue *queue,
   DEBUGP (("Queue count %d, maxcount %d.\n", queue->count, queue->maxcount));
 
   xfree (qel);
-  return 1;
+  return true;
 }
 
-static int download_child_p (const struct urlpos *, struct url *, int,
-			     struct url *, struct hash_table *);
-static int descend_redirect_p (const char *, const char *, int,
-			       struct url *, struct hash_table *);
+static bool download_child_p (const struct urlpos *, struct url *, int,
+			      struct url *, struct hash_table *);
+static bool descend_redirect_p (const char *, const char *, int,
+				struct url *, struct hash_table *);
 
 
 /* Retrieve a part of the web beginning with START_URL.  This used to
@@ -205,15 +205,16 @@ retrieve_tree (const char *start_url)
 
   /* Enqueue the starting URL.  Use start_url_parsed->url rather than
      just URL so we enqueue the canonical form of the URL.  */
-  url_enqueue (queue, xstrdup (start_url_parsed->url), NULL, 0, 1);
+  url_enqueue (queue, xstrdup (start_url_parsed->url), NULL, 0, true);
   string_set_add (blacklist, start_url_parsed->url);
 
   while (1)
     {
-      int descend = 0;
+      bool descend = false;
       char *url, *referer, *file = NULL;
-      int depth, html_allowed;
-      int dash_p_leaf_HTML = 0;
+      int depth;
+      bool html_allowed;
+      bool dash_p_leaf_HTML = false;
 
       if (opt.quota && total_downloaded_bytes > opt.quota)
 	break;
@@ -245,21 +246,21 @@ retrieve_tree (const char *start_url)
 	  if (html_allowed
 	      && downloaded_html_set
 	      && string_set_contains (downloaded_html_set, file))
-	    descend = 1;
+	    descend = true;
 	}
       else
 	{
 	  int dt = 0;
 	  char *redirected = NULL;
-	  int oldrec = opt.recursive;
+	  bool oldrec = opt.recursive;
 
-	  opt.recursive = 0;
+	  opt.recursive = false;
 	  status = retrieve_url (url, &file, &redirected, referer, &dt);
 	  opt.recursive = oldrec;
 
 	  if (html_allowed && file && status == RETROK
 	      && (dt & RETROKF) && (dt & TEXTHTML))
-	    descend = 1;
+	    descend = true;
 
 	  if (redirected)
 	    {
@@ -270,7 +271,7 @@ retrieve_tree (const char *start_url)
 		{
 		  if (!descend_redirect_p (redirected, url, depth,
 					   start_url_parsed, blacklist))
-		    descend = 0;
+		    descend = false;
 		  else
 		    /* Make sure that the old pre-redirect form gets
 		       blacklisted. */
@@ -295,7 +296,7 @@ retrieve_tree (const char *start_url)
 		 one, but we allow one more level so that the leaf
 		 pages that contain frames can be loaded
 		 correctly.  */
-	      dash_p_leaf_HTML = 1;
+	      dash_p_leaf_HTML = true;
 	    }
 	  else
 	    {
@@ -304,7 +305,7 @@ retrieve_tree (const char *start_url)
 		 affords us, so we need to bail out. */
 	      DEBUGP (("Not descending further; at depth %d, max. %d.\n",
 		       depth, opt.reclevel));
-	      descend = 0;
+	      descend = false;
 	    }
 	}
 
@@ -313,7 +314,7 @@ retrieve_tree (const char *start_url)
 
       if (descend)
 	{
-	  int meta_disallow_follow = 0;
+	  bool meta_disallow_follow = false;
 	  struct urlpos *children
 	    = get_urls_html (file, url, &meta_disallow_follow);
 
@@ -381,7 +382,8 @@ retrieve_tree (const char *start_url)
      now.  */
   {
     char *d1, *d2;
-    int d3, d4;
+    int d3;
+    bool d4;
     while (url_dequeue (queue,
 			(const char **)&d1, (const char **)&d2, &d3, &d4))
       {
@@ -411,13 +413,13 @@ retrieve_tree (const char *start_url)
    by storing these URLs to BLACKLIST.  This may or may not help.  It
    will help if those URLs are encountered many times.  */
 
-static int
+static bool
 download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 		  struct url *start_url_parsed, struct hash_table *blacklist)
 {
   struct url *u = upos->url;
   const char *url = u->url;
-  int u_scheme_like_http;
+  bool u_scheme_like_http;
 
   DEBUGP (("Deciding whether to enqueue \"%s\".\n", url));
 
@@ -576,12 +578,12 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
      download queue. */
   DEBUGP (("Decided to load it.\n"));
 
-  return 1;
+  return true;
 
  out:
   DEBUGP (("Decided NOT to load it.\n"));
 
-  return 0;
+  return false;
 }
 
 /* This function determines whether we will consider downloading the
@@ -589,13 +591,13 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
    possibly to another host, etc.  It is needed very rarely, and thus
    it is merely a simple-minded wrapper around download_child_p.  */
 
-static int
+static bool
 descend_redirect_p (const char *redirected, const char *original, int depth,
 		    struct url *start_url_parsed, struct hash_table *blacklist)
 {
   struct url *orig_parsed, *new_parsed;
   struct urlpos *upos;
-  int success;
+  bool success;
 
   orig_parsed = url_parse (original, NULL);
   assert (orig_parsed != NULL);

@@ -45,7 +45,7 @@ so, delete this exception statement from your version.  */
 
 struct progress_implementation {
   const char *name;
-  int interactive;
+  bool interactive;
   void *(*create) (wgint, wgint);
   void (*update) (void *, wgint, double);
   void (*finish) (void *, double);
@@ -84,10 +84,10 @@ static int current_impl_locked;
 
 #define FALLBACK_PROGRESS_IMPLEMENTATION "dot"
 
-/* Return non-zero if NAME names a valid progress bar implementation.
-   The characters after the first : will be ignored.  */
+/* Return true if NAME names a valid progress bar implementation.  The
+   characters after the first : will be ignored.  */
 
-int
+bool
 valid_progress_implementation_p (const char *name)
 {
   int i;
@@ -97,8 +97,8 @@ valid_progress_implementation_p (const char *name)
 
   for (i = 0; i < countof (implementations); i++, pi++)
     if (!strncmp (pi->name, name, namelen))
-      return 1;
-  return 0;
+      return true;
+  return false;
 }
 
 /* Set the progress implementation to NAME.  */
@@ -163,12 +163,12 @@ progress_create (wgint initial, wgint total)
   return current_impl->create (initial, total);
 }
 
-/* Return non-zero if the progress gauge is "interactive", i.e. if it
-   can profit from being called regularly even in absence of data.
-   The progress bar is interactive because it regularly updates the
-   ETA and current update.  */
+/* Return true if the progress gauge is "interactive", i.e. if it can
+   profit from being called regularly even in absence of data.  The
+   progress bar is interactive because it regularly updates the ETA
+   and current update.  */
 
-int
+bool
 progress_interactive_p (void *progress)
 {
   return current_impl->interactive;
@@ -279,7 +279,7 @@ dot_update (void *progress, wgint howmuch, double dltime)
   int dot_bytes = opt.dot_bytes;
   wgint row_bytes = opt.dot_bytes * opt.dots_in_line;
 
-  log_set_flush (0);
+  log_set_flush (false);
 
   dp->accumulated += howmuch;
   for (; dp->accumulated >= dot_bytes; dp->accumulated -= dot_bytes)
@@ -307,7 +307,7 @@ dot_update (void *progress, wgint howmuch, double dltime)
 	}
     }
 
-  log_set_flush (1);
+  log_set_flush (true);
 }
 
 /* Dot-progress backend for progress_finish. */
@@ -320,7 +320,7 @@ dot_finish (void *progress, double dltime)
   wgint row_bytes = opt.dot_bytes * opt.dots_in_line;
   int i;
 
-  log_set_flush (0);
+  log_set_flush (false);
 
   if (dp->dots == 0)
     logprintf (LOG_VERBOSE, "\n%5ldK", (long) (dp->rows * row_bytes / 1024));
@@ -346,7 +346,7 @@ dot_finish (void *progress, double dltime)
   }
 
   logputs (LOG_VERBOSE, "\n\n");
-  log_set_flush (0);
+  log_set_flush (false);
 
   xfree (dp);
 }
@@ -477,7 +477,7 @@ struct bar_progress {
 				   position. */
   wgint recent_bytes;		/* bytes downloaded so far. */
 
-  int stalled;			/* set when no data arrives for longer
+  bool stalled;			/* set when no data arrives for longer
 				   than STALL_START_TIME, then reset
 				   when new data arrives. */
 
@@ -536,7 +536,7 @@ static void
 bar_update (void *progress, wgint howmuch, double dltime)
 {
   struct bar_progress *bp = progress;
-  int force_screen_update = 0;
+  bool force_screen_update = false;
 
   bp->count += howmuch;
   if (bp->total_length > 0
@@ -564,7 +564,7 @@ bar_update (void *progress, wgint howmuch, double dltime)
 	{
 	  bp->width = screen_width - 1;
 	  bp->buffer = xrealloc (bp->buffer, bp->width + 1);
-	  force_screen_update = 1;
+	  force_screen_update = true;
 	}
       received_sigwinch = 0;
     }
@@ -641,7 +641,7 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 	  /* If we're stalling, reset the ring contents because it's
 	     stale and because it will make bar_update stop printing
 	     the (bogus) current bandwidth.  */
-	  bp->stalled = 1;
+	  bp->stalled = true;
 	  xzero (*hist);
 	  bp->recent_bytes = 0;
 	}
@@ -653,7 +653,7 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
   /* If the stall status was acquired, reset it. */
   if (bp->stalled)
     {
-      bp->stalled = 0;
+      bp->stalled = false;
       /* "recent_age" includes the the entired stalled period, which
 	 could be very long.  Don't update the speed ring with that
 	 value because the current bandwidth would start too small.
@@ -912,7 +912,7 @@ create_image (struct bar_progress *bp, double dl_total_time)
 static void
 display_image (char *buf)
 {
-  int old = log_set_save_context (0);
+  bool old = log_set_save_context (false);
   logputs (LOG_VERBOSE, "\r");
   logputs (LOG_VERBOSE, buf);
   log_set_save_context (old);

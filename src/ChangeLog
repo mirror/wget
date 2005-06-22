@@ -1,5 +1,10 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* all: Use bool instead of int and false/true instead of 0/non-0
+	for boolean variables and values.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* sysdep.h: Include the stdbool.h/_Bool/bool blurb from Autoconf.
 
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>

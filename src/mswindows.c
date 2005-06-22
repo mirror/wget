@@ -115,7 +115,7 @@ str_to_int64 (const char *nptr, char **endptr, int base)
 #define INT64_UNDERFLOW (-INT64_OVERFLOW - 1)
 
   __int64 result = 0;
-  int negative;
+  bool negative;
 
   if (base != 0 && (base < 2 || base > 36))
     {
@@ -127,16 +127,16 @@ str_to_int64 (const char *nptr, char **endptr, int base)
     ++nptr;
   if (*nptr == '-')
     {
-      negative = 1;
+      negative = true;
       ++nptr;
     }
   else if (*nptr == '+')
     {
-      negative = 0;
+      negative = false;
       ++nptr;
     }
   else
-    negative = 0;
+    negative = false;
 
   /* If base is 0, determine the real base based on the beginning on
      the number; octal numbers begin with "0", hexadecimal with "0x",
@@ -252,7 +252,7 @@ make_section_name (DWORD pid)
 struct fake_fork_info
 {
   HANDLE event;
-  int logfile_changed;
+  bool logfile_changed;
   char lfilename[MAX_PATH + 1];
 };
 
@@ -287,14 +287,14 @@ fake_fork_child (void)
 
   event = info->event;
 
-  info->logfile_changed = 0;
+  info->logfile_changed = false;
   if (!opt.lfilename)
     {
       /* See utils:fork_to_background for explanation. */
-      FILE *new_log_fp = unique_create (DEFAULT_LOGFILE, 0, &opt.lfilename);
+      FILE *new_log_fp = unique_create (DEFAULT_LOGFILE, false, &opt.lfilename);
       if (new_log_fp)
 	{
-	  info->logfile_changed = 1;
+	  info->logfile_changed = true;
 	  strncpy (info->lfilename, opt.lfilename, sizeof (info->lfilename));
 	  info->lfilename[sizeof (info->lfilename) - 1] = '\0';
 	  fclose (new_log_fp);
@@ -677,19 +677,19 @@ thread_helper (void *arg)
 }
 
 /* Call FUN(ARG), but don't allow it to run for more than TIMEOUT
-   seconds.  Returns non-zero if the function was interrupted with a
-   timeout, zero otherwise.
+   seconds.  Returns true if the function was interrupted with a
+   timeout, false otherwise.
 
    This works by running FUN in a separate thread and terminating the
    thread if it doesn't finish in the specified time.  */
 
-int
+bool
 run_with_timeout (double seconds, void (*fun) (void *), void *arg)
 {
   static HANDLE thread_hnd = NULL;
   struct thread_data thread_arg;
   DWORD thread_id;
-  int rc;
+  bool rc;
 
   DEBUGP (("seconds %.2f, ", seconds));
 
@@ -697,7 +697,7 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
     {
     blocking_fallback:
       fun (arg);
-      return 0;
+      return false;
     }
 
   /* Should never happen, but test for recursivety anyway.  */
@@ -721,12 +721,12 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
 	 so the caller can inspect it.  */
       WSASetLastError (thread_arg.ws_error);
       DEBUGP (("Winsock error: %d\n", WSAGetLastError ()));
-      rc = 0;
+      rc = false;
     }
   else
     {
       TerminateThread (thread_hnd, 1);
-      rc = 1;
+      rc = true;
     }
 
   CloseHandle (thread_hnd);	/* Clear-up after TerminateThread().  */

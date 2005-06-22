@@ -56,10 +56,10 @@ so, delete this exception statement from your version.  */
    otherwise, it will be performed by the shell.  This variable will
    be set by the wgetrc-reading function.  */
 
-static int enable_tilde_expansion;
+static bool enable_tilde_expansion;
 
 
-#define CMD_DECLARE(func) static int func (const char *, const char *, void *)
+#define CMD_DECLARE(func) static bool func (const char *, const char *, void *)
 
 CMD_DECLARE (cmd_boolean);
 CMD_DECLARE (cmd_bytes);
@@ -100,7 +100,7 @@ CMD_DECLARE (cmd_spec_useragent);
 static struct {
   const char *name;
   void *place;
-  int (*action) (const char *, const char *, void *);
+  bool (*action) (const char *, const char *, void *);
 } commands[] = {
   { "accept",		&opt.accepts,		cmd_vector },
   { "addhostdir",	&opt.add_hostdir,	cmd_boolean },
@@ -265,42 +265,42 @@ defaults (void)
 {
   char *tmp;
 
-  /* Most of the default values are 0.  Just reset everything, and
-     fill in the non-zero values.  Note that initializing pointers to
-     NULL this way is technically illegal, but porting Wget to a
-     machine where NULL is not all-zero bit pattern will be the least
-     of the implementors' worries.  */
+  /* Most of the default values are 0 (and 0.0, NULL, and false).
+     Just reset everything, and fill in the non-zero values.  Note
+     that initializing pointers to NULL this way is technically
+     illegal, but porting Wget to a machine where NULL is not all-zero
+     bit pattern will be the least of the implementors' worries.  */
   xzero (opt);
 
-  opt.cookies = 1;
+  opt.cookies = true;
   opt.verbose = -1;
   opt.ntry = 20;
   opt.reclevel = 5;
-  opt.add_hostdir = 1;
-  opt.netrc = 1;
-  opt.ftp_glob = 1;
-  opt.htmlify = 1;
-  opt.http_keep_alive = 1;
-  opt.use_proxy = 1;
+  opt.add_hostdir = true;
+  opt.netrc = true;
+  opt.ftp_glob = true;
+  opt.htmlify = true;
+  opt.http_keep_alive = true;
+  opt.use_proxy = true;
   tmp = getenv ("no_proxy");
   if (tmp)
     opt.no_proxy = sepstring (tmp);
-  opt.allow_cache = 1;
+  opt.allow_cache = true;
 
   opt.read_timeout = 900;
-  opt.use_robots = 1;
+  opt.use_robots = true;
 
-  opt.remove_listing = 1;
+  opt.remove_listing = true;
 
   opt.dot_bytes = 1024;
   opt.dot_spacing = 10;
   opt.dots_in_line = 50;
 
-  opt.dns_cache = 1;
-  opt.ftp_pasv = 1;
+  opt.dns_cache = true;
+  opt.ftp_pasv = true;
 
 #ifdef HAVE_SSL
-  opt.check_cert = 1;
+  opt.check_cert = true;
 #endif
 
   /* The default for file name restriction defaults to the OS type. */
@@ -309,7 +309,7 @@ defaults (void)
 #else
   opt.restrict_files_os = restrict_windows;
 #endif
-  opt.restrict_files_ctrl = 1;
+  opt.restrict_files_ctrl = true;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is
@@ -402,12 +402,12 @@ enum parse_line {
 };
 
 static enum parse_line parse_line (const char *, char **, char **, int *);
-static int setval_internal (int, const char *, const char *);
+static bool setval_internal (int, const char *, const char *);
 
 /* Initialize variables from a wgetrc file.  Returns zero (failure) if
    there were errors in the file.  */
 
-static int
+static bool
 run_wgetrc (const char *file)
 {
   FILE *fp;
@@ -420,9 +420,9 @@ run_wgetrc (const char *file)
     {
       fprintf (stderr, _("%s: Cannot read %s (%s).\n"), exec_name,
 	       file, strerror (errno));
-      return 1;			/* not a fatal error */
+      return true;			/* not a fatal error */
     }
-  enable_tilde_expansion = 1;
+  enable_tilde_expansion = true;
   ln = 1;
   while ((line = read_whole_line (fp)) != NULL)
     {
@@ -461,7 +461,7 @@ run_wgetrc (const char *file)
       xfree (line);
       ++ln;
     }
-  enable_tilde_expansion = 0;
+  enable_tilde_expansion = false;
   fclose (fp);
 
   return errcnt == 0;
@@ -473,7 +473,7 @@ void
 initialize (void)
 {
   char *file;
-  int ok = 1;
+  int ok = true;
 
   /* Load the hard-coded defaults.  */
   defaults ();
@@ -527,7 +527,6 @@ dehyphen (char *s)
 /* Parse the line pointed by line, with the syntax:
    <sp>* command <sp>* = <sp>* value <sp>*
    Uses malloc to allocate space for command and value.
-   If the line is invalid, data is freed and 0 is returned.
 
    Returns one of line_ok, line_empty, line_syntax_error, or
    line_unknown_command.
@@ -596,7 +595,7 @@ parse_line (const char *line, char **com, char **val, int *comind)
 
 /* Run commands[comind].action. */
 
-static int
+static bool
 setval_internal (int comind, const char *com, const char *val)
 {
   assert (0 <= comind && comind < countof (commands));
@@ -659,9 +658,9 @@ struct decode_item {
   const char *name;
   int code;
 };
-static int decode_string (const char *, const struct decode_item *, int, int *);
-static int simple_atoi (const char *, const char *, int *);
-static int simple_atof (const char *, const char *, double *);
+static bool decode_string (const char *, const struct decode_item *, int, int *);
+static bool simple_atoi (const char *, const char *, int *);
+static bool simple_atof (const char *, const char *, double *);
 
 #define CMP1(p, c0) (TOLOWER((p)[0]) == (c0) && (p)[1] == '\0')
 
@@ -677,32 +676,32 @@ static int simple_atof (const char *, const char *, double *);
 
 /* Store the boolean value from VAL to PLACE.  COM is ignored,
    except for error messages.  */
-static int
+static bool
 cmd_boolean (const char *com, const char *val, void *place)
 {
-  int bool_value;
+  bool value;
 
   if (CMP2 (val, 'o', 'n') || CMP3 (val, 'y', 'e', 's') || CMP1 (val, '1'))
     /* "on", "yes" and "1" mean true. */
-    bool_value = 1;
+    value = true;
   else if (CMP3 (val, 'o', 'f', 'f') || CMP2 (val, 'n', 'o') || CMP1 (val, '0'))
     /* "off", "no" and "0" mean false. */
-    bool_value = 0;
+    value = false;
   else
     {
       fprintf (stderr,
 	       _("%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"),
 	       exec_name, com, val);
-      return 0;
+      return false;
     }
 
-  *(int *)place = bool_value;
-  return 1;
+  *(bool *) place = value;
+  return true;
 }
 
 /* Set the non-negative integer value from VAL to PLACE.  With
    incorrect specification, the number remains unchanged.  */
-static int
+static bool
 cmd_number (const char *com, const char *val, void *place)
 {
   if (!simple_atoi (val, val + strlen (val), place)
@@ -710,33 +709,33 @@ cmd_number (const char *com, const char *val, void *place)
     {
       fprintf (stderr, _("%s: %s: Invalid number `%s'.\n"),
 	       exec_name, com, val);
-      return 0;
+      return false;
     }
-  return 1;
+  return true;
 }
 
 /* Similar to cmd_number(), only accepts `inf' as a synonym for 0.  */
-static int
+static bool
 cmd_number_inf (const char *com, const char *val, void *place)
 {
   if (!strcasecmp (val, "inf"))
     {
-      *(int *)place = 0;
-      return 1;
+      *(int *) place = 0;
+      return true;
     }
   return cmd_number (com, val, place);
 }
 
 /* Copy (strdup) the string at COM to a new location and place a
    pointer to *PLACE.  */
-static int
+static bool
 cmd_string (const char *com, const char *val, void *place)
 {
   char **pstring = (char **)place;
 
   xfree_null (*pstring);
   *pstring = xstrdup (val);
-  return 1;
+  return true;
 }
 
 #ifndef WINDOWS
@@ -748,7 +747,7 @@ cmd_string (const char *com, const char *val, void *place)
 /* Like the above, but handles tilde-expansion when reading a user's
    `.wgetrc'.  In that case, and if VAL begins with `~', the tilde
    gets expanded to the user's home directory.  */
-static int
+static bool
 cmd_file (const char *com, const char *val, void *place)
 {
   char **pstring = (char **)place;
@@ -789,11 +788,11 @@ cmd_file (const char *com, const char *val, void *place)
 	*s = '/';
   }
 #endif
-  return 1;
+  return true;
 }
 
 /* Like cmd_file, but strips trailing '/' characters.  */
-static int
+static bool
 cmd_directory (const char *com, const char *val, void *place)
 {
   char *s, *t;
@@ -802,21 +801,21 @@ cmd_directory (const char *com, const char *val, void *place)
      canonicalization (backslash -> slash under Windows).  These
      things should perhaps be in a separate function.  */
   if (!cmd_file (com, val, place))
-    return 0;
+    return false;
 
   s = *(char **)place;
   t = s + strlen (s);
   while (t > s && *--t == '/')
     *t = '\0';
 
-  return 1;
+  return true;
 }
 
 /* Split VAL by space to a vector of values, and append those values
    to vector pointed to by the PLACE argument.  If VAL is empty, the
    PLACE vector is cleared instead.  */
 
-static int
+static bool
 cmd_vector (const char *com, const char *val, void *place)
 {
   char ***pvec = (char ***)place;
@@ -828,10 +827,10 @@ cmd_vector (const char *com, const char *val, void *place)
       free_vec (*pvec);
       *pvec = NULL;
     }
-  return 1;
+  return true;
 }
 
-static int
+static bool
 cmd_directory_vector (const char *com, const char *val, void *place)
 {
   char ***pvec = (char ***)place;
@@ -859,13 +858,13 @@ cmd_directory_vector (const char *com, const char *val, void *place)
       free_vec (*pvec);
       *pvec = NULL;
     }
-  return 1;
+  return true;
 }
 
 /* Engine for cmd_bytes and cmd_bytes_large: converts a string such as
    "100k" or "2.5G" to a floating point number.  */
 
-static int
+static bool
 parse_bytes_helper (const char *val, double *result)
 {
   double number, mult;
@@ -875,14 +874,14 @@ parse_bytes_helper (const char *val, double *result)
   if (0 == strcmp (val, "inf"))
     {
       *result = 0;
-      return 1;
+      return true;
     }
 
   /* Strip trailing whitespace.  */
   while (val < end && ISSPACE (end[-1]))
     --end;
   if (val == end)
-    return 0;
+    return false;
 
   switch (TOLOWER (end[-1]))
     {
@@ -910,13 +909,13 @@ parse_bytes_helper (const char *val, double *result)
   while (val < end && ISSPACE (end[-1]))
     --end;
   if (val == end)
-    return 0;
+    return false;
 
   if (!simple_atof (val, end, &number) || number < 0)
-    return 0;
+    return false;
 
   *result = number * mult;
-  return 1;
+  return true;
 }
 
 /* Parse VAL as a number and set its value to PLACE (which should
@@ -930,10 +929,10 @@ parse_bytes_helper (const char *val, double *result)
 
    The string "inf" is returned as 0.
 
-   In case of error, 0 is returned and memory pointed to by PLACE
+   In case of error, false is returned and memory pointed to by PLACE
    remains unmodified.  */
 
-static int
+static bool
 cmd_bytes (const char *com, const char *val, void *place)
 {
   double byte_value;
@@ -941,10 +940,10 @@ cmd_bytes (const char *com, const char *val, void *place)
     {
       fprintf (stderr, _("%s: %s: Invalid byte value `%s'\n"),
 	       exec_name, com, val);
-      return 0;
+      return false;
     }
   *(wgint *)place = (wgint)byte_value;
-  return 1;
+  return true;
 }
 
 /* Like cmd_bytes, but PLACE is interpreted as a pointer to
@@ -952,7 +951,7 @@ cmd_bytes (const char *com, const char *val, void *place)
    working with values up to 2^53-1 without loss of precision.  This
    value (8192 TB) is large enough to serve for a while.  */
 
-static int
+static bool
 cmd_bytes_large (const char *com, const char *val, void *place)
 {
   double byte_value;
@@ -960,17 +959,17 @@ cmd_bytes_large (const char *com, const char *val, void *place)
     {
       fprintf (stderr, _("%s: %s: Invalid byte value `%s'\n"),
 	       exec_name, com, val);
-      return 0;
+      return false;
     }
   *(LARGE_INT *)place = (LARGE_INT)byte_value;
-  return 1;
+  return true;
 }
 
 /* Store the value of VAL to *OUT.  The value is a time period, by
    default expressed in seconds, but also accepting suffixes "m", "h",
    "d", and "w" for minutes, hours, days, and weeks respectively.  */
 
-static int
+static bool
 cmd_time (const char *com, const char *val, void *place)
 {
   double number, mult;
@@ -985,7 +984,7 @@ cmd_time (const char *com, const char *val, void *place)
     err:
       fprintf (stderr, _("%s: %s: Invalid time period `%s'\n"),
 	       exec_name, com, val);
-      return 0;
+      return false;
     }
 
   switch (TOLOWER (end[-1]))
@@ -1023,11 +1022,11 @@ cmd_time (const char *com, const char *val, void *place)
     goto err;
 
   *(double *)place = number * mult;
-  return 1;
+  return true;
 }
 
 #ifdef HAVE_SSL
-static int
+static bool
 cmd_cert_type (const char *com, const char *val, void *place)
 {
   static const struct decode_item choices[] = {
@@ -1045,23 +1044,23 @@ cmd_cert_type (const char *com, const char *val, void *place)
 /* Specialized helper functions, used by `commands' to handle some
    options specially.  */
 
-static int check_user_specified_header (const char *);
+static bool check_user_specified_header (const char *);
 
-static int
+static bool
 cmd_spec_dirstruct (const char *com, const char *val, void *place_ignored)
 {
   if (!cmd_boolean (com, val, &opt.dirstruct))
-    return 0;
+    return false;
   /* Since dirstruct behaviour is explicitly changed, no_dirstruct
      must be affected inversely.  */
   if (opt.dirstruct)
-    opt.no_dirstruct = 0;
+    opt.no_dirstruct = false;
   else
-    opt.no_dirstruct = 1;
-  return 1;
+    opt.no_dirstruct = true;
+  return true;
 }
 
-static int
+static bool
 cmd_spec_header (const char *com, const char *val, void *place_ignored)
 {
   /* Empty value means reset the list of headers. */
@@ -1069,54 +1068,54 @@ cmd_spec_header (const char *com, const char *val, void *place_ignored)
     {
       free_vec (opt.user_headers);
       opt.user_headers = NULL;
-      return 1;
+      return true;
     }
 
   if (!check_user_specified_header (val))
     {
       fprintf (stderr, _("%s: %s: Invalid header `%s'.\n"),
 	       exec_name, com, val);
-      return 0;
+      return false;
     }
   opt.user_headers = vec_append (opt.user_headers, val);
-  return 1;
+  return true;
 }
 
-static int
+static bool
 cmd_spec_htmlify (const char *com, const char *val, void *place_ignored)
 {
   int flag = cmd_boolean (com, val, &opt.htmlify);
   if (flag && !opt.htmlify)
-    opt.remove_listing = 0;
+    opt.remove_listing = false;
   return flag;
 }
 
 /* Set the "mirror" mode.  It means: recursive download, timestamping,
    no limit on max. recursion depth, and don't remove listings.  */
 
-static int
+static bool
 cmd_spec_mirror (const char *com, const char *val, void *place_ignored)
 {
   int mirror;
 
   if (!cmd_boolean (com, val, &mirror))
-    return 0;
+    return false;
   if (mirror)
     {
-      opt.recursive = 1;
+      opt.recursive = true;
       if (!opt.no_dirstruct)
-	opt.dirstruct = 1;
-      opt.timestamping = 1;
+	opt.dirstruct = true;
+      opt.timestamping = true;
       opt.reclevel = INFINITE_RECURSION;
-      opt.remove_listing = 0;
+      opt.remove_listing = false;
     }
-  return 1;
+  return true;
 }
 
 /* Validate --prefer-family and set the choice.  Allowed values are
    "IPv4", "IPv6", and "none".  */
 
-static int
+static bool
 cmd_spec_prefer_family (const char *com, const char *val, void *place_ignored)
 {
   static const struct decode_item choices[] = {
@@ -1134,41 +1133,41 @@ cmd_spec_prefer_family (const char *com, const char *val, void *place_ignored)
 /* Set progress.type to VAL, but verify that it's a valid progress
    implementation before that.  */
 
-static int
+static bool
 cmd_spec_progress (const char *com, const char *val, void *place_ignored)
 {
   if (!valid_progress_implementation_p (val))
     {
       fprintf (stderr, _("%s: %s: Invalid progress type `%s'.\n"),
 	       exec_name, com, val);
-      return 0;
+      return false;
     }
   xfree_null (opt.progress_type);
 
   /* Don't call set_progress_implementation here.  It will be called
      in main() when it becomes clear what the log output is.  */
   opt.progress_type = xstrdup (val);
-  return 1;
+  return true;
 }
 
 /* Set opt.recursive to VAL as with cmd_boolean.  If opt.recursive is
-   set to true, also set opt.dirstruct to 1, unless opt.no_dirstruct
+   set to true, also set opt.dirstruct to true, unless opt.no_dirstruct
    is specified.  */
 
-static int
+static bool
 cmd_spec_recursive (const char *com, const char *val, void *place_ignored)
 {
   if (!cmd_boolean (com, val, &opt.recursive))
-    return 0;
+    return false;
   else
     {
       if (opt.recursive && !opt.no_dirstruct)
-	opt.dirstruct = 1;
+	opt.dirstruct = true;
     }
-  return 1;
+  return true;
 }
 
-static int
+static bool
 cmd_spec_restrict_file_names (const char *com, const char *val, void *place_ignored)
 {
   int restrict_os = opt.restrict_files_os;
@@ -1192,7 +1191,7 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
       fprintf (stderr,
 	       _("%s: %s: Invalid restriction `%s', use `unix' or `windows'.\n"),
 	       exec_name, com, val);
-      return 0;
+      return false;
     }
 
 #undef VAL_IS
@@ -1200,18 +1199,18 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
   if (*end)
     {
       if (!strcmp (end + 1, "nocontrol"))
-	restrict_ctrl = 0;
+	restrict_ctrl = false;
       else
 	goto err;
     }
 
   opt.restrict_files_os = restrict_os;
   opt.restrict_files_ctrl = restrict_ctrl;
-  return 1;
+  return true;
 }
 
 #ifdef HAVE_SSL
-static int
+static bool
 cmd_spec_secure_protocol (const char *com, const char *val, void *place)
 {
   static const struct decode_item choices[] = {
@@ -1229,19 +1228,19 @@ cmd_spec_secure_protocol (const char *com, const char *val, void *place)
 
 /* Set all three timeout values. */
 
-static int
+static bool
 cmd_spec_timeout (const char *com, const char *val, void *place_ignored)
 {
   double value;
   if (!cmd_time (com, val, &value))
-    return 0;
+    return false;
   opt.read_timeout = value;
   opt.connect_timeout = value;
   opt.dns_timeout = value;
-  return 1;
+  return true;
 }
 
-static int
+static bool
 cmd_spec_useragent (const char *com, const char *val, void *place_ignored)
 {
   /* Disallow embedded newlines.  */
@@ -1249,24 +1248,24 @@ cmd_spec_useragent (const char *com, const char *val, void *place_ignored)
     {
       fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"),
 	       exec_name, com, val);
-      return 0;
+      return false;
     }
   xfree_null (opt.useragent);
   opt.useragent = xstrdup (val);
-  return 1;
+  return true;
 }
 
 /* Miscellaneous useful routines.  */
 
 /* A very simple atoi clone, more useful than atoi because it works on
-   delimited strings, and has error reportage.  Returns 1 on success,
-   0 on failure.  If successful, stores result to *DEST.  */
+   delimited strings, and has error reportage.  Returns true on success,
+   false on failure.  If successful, stores result to *DEST.  */
 
-static int
+static bool
 simple_atoi (const char *beg, const char *end, int *dest)
 {
   int result = 0;
-  int negative = 0;
+  bool negative = false;
   const char *p = beg;
 
   while (p < end && ISSPACE (*p))
@@ -1277,7 +1276,7 @@ simple_atoi (const char *beg, const char *end, int *dest)
       ++p;
     }
   if (p == end)
-    return 0;
+    return false;
 
   /* Read negative numbers in a separate loop because the most
      negative integer cannot be represented as a positive number.  */
@@ -1287,7 +1286,7 @@ simple_atoi (const char *beg, const char *end, int *dest)
       {
 	int next = (10 * result) + (*p - '0');
 	if (next < result)
-	  return 0;		/* overflow */
+	  return false;		/* overflow */
 	result = next;
       }
   else
@@ -1295,29 +1294,30 @@ simple_atoi (const char *beg, const char *end, int *dest)
       {
 	int next = (10 * result) - (*p - '0');
 	if (next > result)
-	  return 0;		/* underflow */
+	  return false;		/* underflow */
 	result = next;
       }
 
   if (p != end)
-    return 0;
+    return false;
 
   *dest = result;
-  return 1;
+  return true;
 }
 
 /* Trivial atof, with error reporting.  Handles "<digits>[.<digits>]",
-   doesn't handle exponential notation.  Returns 1 on success, 0 on
-   failure.  In case of success, stores its result to *DEST.  */
+   doesn't handle exponential notation.  Returns true on success,
+   false on failure.  In case of success, stores its result to
+   *DEST.  */
 
-static int
+static bool
 simple_atof (const char *beg, const char *end, double *dest)
 {
   double result = 0;
 
-  int negative = 0;
-  int seen_dot = 0;
-  int seen_digit = 0;
+  bool negative = false;
+  bool seen_dot = false;
+  bool seen_digit = false;
   double divider = 1;
 
   const char *p = beg;
@@ -1339,32 +1339,32 @@ simple_atof (const char *beg, const char *end, double *dest)
 	    result = (10 * result) + (ch - '0');
 	  else
 	    result += (ch - '0') / (divider *= 10);
-	  seen_digit = 1;
+	  seen_digit = true;
 	}
       else if (ch == '.')
 	{
 	  if (!seen_dot)
-	    seen_dot = 1;
+	    seen_dot = true;
 	  else
-	    return 0;
+	    return false;
 	}
       else
-	return 0;
+	return false;
     }
   if (!seen_digit)
-    return 0;
+    return false;
   if (negative)
     result = -result;
 
   *dest = result;
-  return 1;
+  return true;
 }
 
 /* Verify that the user-specified header in S is valid.  It must
    contain a colon preceded by non-white-space characters and must not
    contain newlines.  */
 
-static int
+static bool
 check_user_specified_header (const char *s)
 {
   const char *p;
@@ -1373,16 +1373,16 @@ check_user_specified_header (const char *s)
   /* The header MUST contain `:' preceded by at least one
      non-whitespace character.  */
   if (*p != ':' || p == s)
-    return 0;
+    return false;
   /* The header MUST NOT contain newlines.  */
   if (strchr (s, '\n'))
-    return 0;
-  return 1;
+    return false;
+  return true;
 }
 
 /* Decode VAL into a number, according to ITEMS. */
 
-static int
+static bool
 decode_string (const char *val, const struct decode_item *items, int itemcount,
 	       int *place)
 {
@@ -1391,9 +1391,9 @@ decode_string (const char *val, const struct decode_item *items, int itemcount,
     if (0 == strcasecmp (val, items[i].name))
       {
 	*place = items[i].code;
-	return 1;
+	return true;
       }
-  return 0;
+  return false;
 }
 
 

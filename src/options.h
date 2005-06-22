@@ -29,36 +29,36 @@ so, delete this exception statement from your version.  */
 
 struct options
 {
-  int verbose;			/* Are we verbose? */
-  int quiet;			/* Are we quiet? */
+  bool verbose;			/* Are we verbose? */
+  bool quiet;			/* Are we quiet? */
   int ntry;			/* Number of tries per URL */
-  int retry_connrefused;	/* Treat CONNREFUSED as non-fatal. */
-  int background;		/* Whether we should work in background. */
-  int kill_longer;		/* Do we reject messages with *more*
+  bool retry_connrefused;	/* Treat CONNREFUSED as non-fatal. */
+  bool background;		/* Whether we should work in background. */
+  bool kill_longer;		/* Do we reject messages with *more*
 				   data than specified in
 				   content-length? */
-  int ignore_length;		/* Do we heed content-length at all?  */
-  int recursive;		/* Are we recursive? */
-  int spanhost;			/* Do we span across hosts in
+  bool ignore_length;		/* Do we heed content-length at all?  */
+  bool recursive;		/* Are we recursive? */
+  bool spanhost;			/* Do we span across hosts in
 				   recursion? */
-  int relative_only;		/* Follow only relative links. */
-  int no_parent;		/* Restrict access to the parent
+  bool relative_only;		/* Follow only relative links. */
+  bool no_parent;		/* Restrict access to the parent
 				   directory.  */
   int reclevel;			/* Maximum level of recursion */
-  int dirstruct;		/* Do we build the directory structure
+  bool dirstruct;		/* Do we build the directory structure
 				  as we go along? */
-  int no_dirstruct;		/* Do we hate dirstruct? */
+  bool no_dirstruct;		/* Do we hate dirstruct? */
   int cut_dirs;			/* Number of directory components to cut. */
-  int add_hostdir;		/* Do we add hostname directory? */
-  int protocol_directories;	/* Whether to prepend "http"/"ftp" to dirs. */
-  int noclobber;		/* Disables clobbering of existing
+  bool add_hostdir;		/* Do we add hostname directory? */
+  bool protocol_directories;	/* Whether to prepend "http"/"ftp" to dirs. */
+  bool noclobber;		/* Disables clobbering of existing
 				   data. */
   char *dir_prefix;		/* The top of directory tree */
   char *lfilename;		/* Log filename */
   char *input_filename;		/* Input filename */
-  int force_html;		/* Is the input file an HTML file? */
+  bool force_html;		/* Is the input file an HTML file? */
 
-  int spider;			/* Is Wget in spider mode? */
+  bool spider;			/* Is Wget in spider mode? */
 
   char **accepts;		/* List of patterns to accept. */
   char **rejects;		/* List of patterns to reject. */
@@ -68,14 +68,14 @@ struct options
 
   char **domains;		/* See host.c */
   char **exclude_domains;
-  int dns_cache;		/* whether we cache DNS lookups. */
+  bool dns_cache;		/* whether we cache DNS lookups. */
 
   char **follow_tags;           /* List of HTML tags to recursively follow. */
   char **ignore_tags;           /* List of HTML tags to ignore if recursing. */
 
-  int follow_ftp;		/* Are FTP URL-s followed in recursive
+  bool follow_ftp;		/* Are FTP URL-s followed in recursive
 				   retrieving? */
-  int retr_symlinks;		/* Whether we retrieve symlinks in
+  bool retr_symlinks;		/* Whether we retrieve symlinks in
 				   FTP. */
   char *output_document;	/* The output file to which the
 				   documents will be printed.  */
@@ -83,20 +83,20 @@ struct options
   char *user;			/* Generic username */
   char *passwd;			/* Generic password */
   
-  int always_rest;		/* Always use REST. */
+  bool always_rest;		/* Always use REST. */
   char *ftp_user;		/* FTP username */
   char *ftp_passwd;		/* FTP password */
-  int netrc;			/* Whether to read .netrc. */
-  int ftp_glob;			/* FTP globbing */
-  int ftp_pasv;			/* Passive FTP. */
+  bool netrc;			/* Whether to read .netrc. */
+  bool ftp_glob;		/* FTP globbing */
+  bool ftp_pasv;			/* Passive FTP. */
 
   char *http_user;		/* HTTP username. */
   char *http_passwd;		/* HTTP password. */
   char **user_headers;		/* User-defined header(s). */
-  int http_keep_alive;		/* whether we use keep-alive */
+  bool http_keep_alive;		/* whether we use keep-alive */
 
-  int use_proxy;		/* Do we use proxy? */
-  int allow_cache;		/* Do we allow server-side caching? */
+  bool use_proxy;		/* Do we use proxy? */
+  bool allow_cache;		/* Do we allow server-side caching? */
   char *http_proxy, *ftp_proxy, *https_proxy;
   char **no_proxy;
   char *base_href;
@@ -108,42 +108,43 @@ struct options
   double dns_timeout;		/* The DNS timeout. */
   double connect_timeout;	/* The connect timeout. */
 
-  int random_wait;		/* vary from 0 .. wait secs by random()? */
+  bool random_wait;		/* vary from 0 .. wait secs by random()? */
   double wait;			/* The wait period between retrievals. */
   double waitretry;		/* The wait period between retries. - HEH */
-  int use_robots;		/* Do we heed robots.txt? */
+  bool use_robots;		/* Do we heed robots.txt? */
 
   wgint limit_rate;		/* Limit the download rate to this
 				   many bps. */
   LARGE_INT quota;		/* Maximum file size to download and
 				   store. */
-  int numurls;			/* Number of successfully downloaded
-				   URLs */
 
-  int server_response;		/* Do we print server response? */
-  int save_headers;		/* Do we save headers together with
+  int numurls;			/* Number of successfully downloaded
+				   URLs #### should be removed because
+				   it's not a setting, but a global var */
+
+  bool server_response;		/* Do we print server response? */
+  bool save_headers;		/* Do we save headers together with
 				   file? */
 
 #ifdef ENABLE_DEBUG
-  int debug;			/* Debugging on/off */
+  bool debug;			/* Debugging on/off */
 #endif
 
-  int timestamping;		/* Whether to use time-stamping. */
+  bool timestamping;		/* Whether to use time-stamping. */
 
-  int backup_converted;		/* Do we save pre-converted files as *.orig? */
-  int backups;			/* Are numeric backups made? */
+  bool backup_converted;	/* Do we save pre-converted files as *.orig? */
+  bool backups;			/* Are numeric backups made? */
 
-  char *useragent;		/* Naughty User-Agent, which can be
-				   set to something other than
-				   Wget. */
+  char *useragent;		/* User-Agent string, which can be set
+				   to something other than Wget. */
   char *referer;		/* Naughty Referer, which can be
 				   set to something other than
 				   NULL. */
-  int convert_links;		/* Will the links be converted
+  bool convert_links;		/* Will the links be converted
 				   locally? */
-  int remove_listing;		/* Do we remove .listing files
+  bool remove_listing;		/* Do we remove .listing files
 				   generated by FTP? */
-  int htmlify;			/* Do we HTML-ify the OS-dependent
+  bool htmlify;			/* Do we HTML-ify the OS-dependent
 				   listings? */
 
   char *dot_style;
@@ -152,12 +153,12 @@ struct options
   int dots_in_line;		/* How many dots in one line. */
   int dot_spacing;		/* How many dots between spacings. */
 
-  int delete_after;		/* Whether the files will be deleted
+  bool delete_after;		/* Whether the files will be deleted
 				   after download. */
 
-  int html_extension;		/* Use ".html" extension on all text/html? */
+  bool html_extension;		/* Use ".html" extension on all text/html? */
 
-  int page_requisites;		/* Whether we need to download all files
+  bool page_requisites;		/* Whether we need to download all files
 				   necessary to display a page properly. */
   char *bind_address;		/* What local IP address to bind to. */
 
@@ -168,7 +169,7 @@ struct options
     secure_protocol_sslv3,
     secure_protocol_tlsv1
   } secure_protocol;		/* type of secure protocol to use. */
-  int check_cert;		/* whether to validate the server's cert */
+  bool check_cert;		/* whether to validate the server's cert */
   char *cert_file;		/* external client certificate to use. */
   char *private_key;		/* private key file (if not internal). */
   enum keyfile_type {
@@ -186,10 +187,10 @@ struct options
   char *egd_file;		/* file name of the egd daemon socket */
 #endif /* HAVE_SSL */
 
-  int   cookies;		/* whether cookies are used. */
+  bool cookies;			/* whether cookies are used. */
   char *cookies_input;		/* file we're loading the cookies from. */
   char *cookies_output;		/* file we're saving the cookies to. */
-  int   keep_session_cookies;	/* whether session cookies should be
+  bool keep_session_cookies;	/* whether session cookies should be
 				   saved and loaded. */
 
   char *post_data;		/* POST query string */
@@ -199,19 +200,19 @@ struct options
     restrict_unix,
     restrict_windows
   } restrict_files_os;		/* file name restriction ruleset. */
-  int restrict_files_ctrl;	/* non-zero if control chars in URLs
+  bool restrict_files_ctrl;	/* non-zero if control chars in URLs
 				   are restricted from appearing in
 				   generated file names. */
 
-  int strict_comments;		/* whether strict SGML comments are
+  bool strict_comments;		/* whether strict SGML comments are
 				   enforced.  */
 
-  int preserve_perm;           /* whether remote permissions are used
+  bool preserve_perm;           /* whether remote permissions are used
 				  or that what is set by umask. */
 
 #ifdef ENABLE_IPV6
-  int ipv4_only;		/* IPv4 connections have been requested. */
-  int ipv6_only;		/* IPv4 connections have been requested. */
+  bool ipv4_only;		/* IPv4 connections have been requested. */
+  bool ipv6_only;		/* IPv4 connections have been requested. */
 #endif
   enum {
     prefer_ipv4,

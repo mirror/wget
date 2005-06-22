@@ -252,7 +252,7 @@ struct map_context {
 				   changed through <base href=...>. */
   const char *parent_base;	/* Base of the current document. */
   const char *document_file;	/* File name of this document. */
-  int nofollow;			/* whether NOFOLLOW was specified in a
+  bool nofollow;		/* whether NOFOLLOW was specified in a
                                    <meta name=robots> tag. */
 
   struct urlpos *head, *tail;	/* List of URLs that is being
@@ -541,7 +541,7 @@ tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
       if (!content)
 	return;
       if (!strcasecmp (content, "none"))
-	ctx->nofollow = 1;
+	ctx->nofollow = true;
       else
 	{
 	  while (*content)
@@ -554,7 +554,7 @@ tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
 	      else
 		end = content + strlen (content);
 	      if (!strncasecmp (content, "nofollow", end - content))
-		ctx->nofollow = 1;
+		ctx->nofollow = true;
 	      content = end;
 	    }
 	}
@@ -582,7 +582,7 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
    <base href=...> and does the right thing.  */
 
 struct urlpos *
-get_urls_html (const char *file, const char *url, int *meta_disallow_follow)
+get_urls_html (const char *file, const char *url, bool *meta_disallow_follow)
 {
   struct file_memory *fm;
   struct map_context ctx;
@@ -602,7 +602,7 @@ get_urls_html (const char *file, const char *url, int *meta_disallow_follow)
   ctx.base = NULL;
   ctx.parent_base = url ? url : opt.base_href;
   ctx.document_file = file;
-  ctx.nofollow = 0;
+  ctx.nofollow = false;
 
   if (!interesting_tags)
     init_interesting ();

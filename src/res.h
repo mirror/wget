@@ -35,12 +35,12 @@ struct robot_specs;
 struct robot_specs *res_parse (const char *, int);
 struct robot_specs *res_parse_from_file (const char *);
 
-int res_match_path (const struct robot_specs *, const char *);
+bool res_match_path (const struct robot_specs *, const char *);
 
 void res_register_specs (const char *, int, struct robot_specs *);
 struct robot_specs *res_get_specs (const char *, int);
 
-int res_retrieve_file (const char *, char **);
+bool res_retrieve_file (const char *, char **);
 
 void res_cleanup (void);
 

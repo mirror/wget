@@ -86,8 +86,8 @@ so, delete this exception statement from your version.  */
 
 struct path_info {
   char *path;
-  int allowedp;
-  int user_agent_exact_p;
+  bool allowedp;
+  bool user_agent_exact_p;
 };
 
 struct robot_specs {
@@ -104,22 +104,22 @@ struct robot_specs {
 
 static void
 match_user_agent (const char *agent, int length,
-		  int *matches, int *exact_match)
+		  bool *matches, bool *exact_match)
 {
   if (length == 1 && *agent == '*')
     {
-      *matches = 1;
-      *exact_match = 0;
+      *matches = true;
+      *exact_match = false;
     }
   else if (BOUNDED_EQUAL_NO_CASE (agent, agent + length, "wget"))
     {
-      *matches = 1;
-      *exact_match = 1;
+      *matches = true;
+      *exact_match = true;
     }
   else
     {
-      *matches = 0;
-      *exact_match = 0;
+      *matches = false;
+      *exact_match = false;
     }
 }
 
@@ -128,7 +128,7 @@ match_user_agent (const char *agent, int length,
 
 static void
 add_path (struct robot_specs *specs, const char *path_b, const char *path_e,
-	  int allowedp, int exactp)
+	  bool allowedp, bool exactp)
 {
   struct path_info pp;
   if (path_b < path_e && *path_b == '/')
@@ -151,8 +151,8 @@ add_path (struct robot_specs *specs, const char *path_b, const char *path_e,
   specs->paths[specs->count - 1] = pp;
 }
 
-/* Recreate SPECS->paths with only those paths that have non-zero
-   user_agent_exact_p.  */
+/* Recreate SPECS->paths with only those paths that have
+   user_agent_exact_p set to true.  */
 
 static void
 prune_non_exact (struct robot_specs *specs)
@@ -222,15 +222,15 @@ res_parse (const char *source, int length)
   const char *p   = source;
   const char *end = source + length;
 
-  /* non-zero if last applicable user-agent field matches Wget. */
-  int user_agent_applies = 0;
+  /* true if last applicable user-agent field matches Wget. */
+  bool user_agent_applies = false;
 
-  /* non-zero if last applicable user-agent field *exactly* matches
+  /* true if last applicable user-agent field *exactly* matches
      Wget.  */
-  int user_agent_exact = 0;
+  bool user_agent_exact = false;
 
   /* whether we ever encountered exact user agent. */
-  int found_exact = 0;
+  bool found_exact = false;
 
   /* count of allow/disallow lines in the current "record", i.e. after
      the last `user-agent' instructions.  */
@@ -320,18 +320,18 @@ res_parse (const char *source, int length)
 	     until it matches, and if that happens, we must not call
 	     it any more, until the next record.  Hence the other part
 	     of the condition.  */
-	  if (record_count != 0 || user_agent_applies == 0)
+	  if (record_count != 0 || user_agent_applies == false)
 	    match_user_agent (value_b, value_e - value_b,
 			      &user_agent_applies, &user_agent_exact);
 	  if (user_agent_exact)
-	    found_exact = 1;
+	    found_exact = true;
 	  record_count = 0;
 	}
       else if (FIELD_IS ("allow"))
 	{
 	  if (user_agent_applies)
 	    {
-	      add_path (specs, value_b, value_e, 1, user_agent_exact);
+	      add_path (specs, value_b, value_e, true, user_agent_exact);
 	    }
 	  ++record_count;
 	}
@@ -339,11 +339,10 @@ res_parse (const char *source, int length)
 	{
 	  if (user_agent_applies)
 	    {
-	      int allowed = 0;
+	      bool allowed = false;
 	      if (value_b == value_e)
-		/* Empty "disallow" line means everything is
-		   *allowed*!  */
-		allowed = 1;
+		/* Empty "disallow" line means everything is *allowed*!  */
+		allowed = true;
 	      add_path (specs, value_b, value_e, allowed, user_agent_exact);
 	    }
 	  ++record_count;
@@ -424,11 +423,11 @@ free_specs (struct robot_specs *specs)
     }								\
 } while (0)
 
-/* The inner matching engine: return non-zero if RECORD_PATH matches
+/* The inner matching engine: return true if RECORD_PATH matches
    URL_PATH.  The rules for matching are described at
    <http://www.robotstxt.org/wc/norobots-rfc.txt>, section 3.2.2.  */
 
-static int
+static bool
 matches (const char *record_path, const char *url_path)
 {
   const char *rp = record_path;
@@ -439,13 +438,13 @@ matches (const char *record_path, const char *url_path)
       char rc = *rp;
       char uc = *up;
       if (!rc)
-	return 1;
+	return true;
       if (!uc)
-	return 0;
+	return false;
       DECODE_MAYBE(rc, rp);
       DECODE_MAYBE(uc, up);
       if (rc != uc)
-	return 0;
+	return false;
     }
 }
 
@@ -453,22 +452,22 @@ matches (const char *record_path, const char *url_path)
    matches, return its allow/reject status.  If none matches,
    retrieval is by default allowed.  */
 
-int
+bool
 res_match_path (const struct robot_specs *specs, const char *path)
 {
   int i;
   if (!specs)
-    return 1;
+    return true;
   for (i = 0; i < specs->count; i++)
     if (matches (specs->paths[i].path, path))
       {
-	int allowedp = specs->paths[i].allowedp;
+	bool allowedp = specs->paths[i].allowedp;
 	DEBUGP (("%s path %s because of rule `%s'.\n",
 		 allowedp ? "Allowing" : "Rejecting",
 		 path, specs->paths[i].path));
 	return allowedp;
       }
-  return 1;
+  return true;
 }
 
 /* Registering the specs. */
@@ -529,9 +528,9 @@ res_get_specs (const char *host, int port)
    serves URL.  The file will be named according to the currently
    active rules, and the file name will be returned in *file.
 
-   Return non-zero if robots were retrieved OK, zero otherwise.  */
+   Return true if robots were retrieved OK, false otherwise.  */
 
-int
+bool
 res_retrieve_file (const char *url, char **file)
 {
   uerr_t err;

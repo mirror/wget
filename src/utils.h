@@ -55,7 +55,7 @@ char *xstrdup_lower (const char *);
 
 char *strdupdelim (const char *, const char *);
 char **sepstring (const char *);
-int frontcmp (const char *, const char *);
+bool frontcmp (const char *, const char *);
 void fork_to_background (void);
 
 char *aprintf (const char *, ...) GCC_FORMAT_ATTR (1, 2);
@@ -63,22 +63,22 @@ char *concat_strings (const char *, ...);
 
 void touch (const char *, time_t);
 int remove_link (const char *);
-int file_exists_p (const char *);
-int file_non_directory_p (const char *);
+bool file_exists_p (const char *);
+bool file_non_directory_p (const char *);
 wgint file_size (const char *);
 int make_directory (const char *);
-char *unique_name (const char *, int);
-FILE *unique_create (const char *, int, char **);
-FILE *fopen_excl (const char *, int);
+char *unique_name (const char *, bool);
+FILE *unique_create (const char *, bool, char **);
+FILE *fopen_excl (const char *, bool);
 char *file_merge (const char *, const char *);
 
-int acceptable (const char *);
-int accdir (const char *s, enum accd);
+bool acceptable (const char *);
+bool accdir (const char *s, enum accd);
 char *suffix (const char *s);
-int match_tail (const char *, const char *, int);
-int has_wildcards_p (const char *);
+bool match_tail (const char *, const char *, bool);
+bool has_wildcards_p (const char *);
 
-int has_html_suffix_p (const char *);
+bool has_html_suffix_p (const char *);
 
 char *read_whole_line (FILE *);
 struct file_memory *read_file (const char *);
@@ -105,7 +105,7 @@ int determine_screen_width (void);
 int random_number (int);
 double random_float (void);
 
-int run_with_timeout (double, void (*) (void *), void *);
+bool run_with_timeout (double, void (*) (void *), void *);
 void xsleep (double);
 
 /* How many bytes it will take to store LEN bytes in base64.  */

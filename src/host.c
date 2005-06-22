@@ -71,7 +71,7 @@ struct address_list {
   ip_address *addresses;	/* pointer to the string of addresses */
 
   int faulty;			/* number of addresses known not to work. */
-  int connected;		/* whether we were able to connect to
+  bool connected;		/* whether we were able to connect to
 				   one of the addresses in the list,
 				   at least once. */
 
@@ -97,9 +97,9 @@ address_list_address_at (const struct address_list *al, int pos)
   return al->addresses + pos;
 }
 
-/* Return non-zero if AL contains IP, zero otherwise.  */
+/* Return true if AL contains IP, false otherwise.  */
 
-int
+bool
 address_list_contains (const struct address_list *al, const ip_address *ip)
 {
   int i;
@@ -113,9 +113,9 @@ address_list_contains (const struct address_list *al, const ip_address *ip)
 	      && (ADDRESS_IPV4_IN_ADDR (cur).s_addr
 		  ==
 		  ADDRESS_IPV4_IN_ADDR (ip).s_addr))
-	    return 1;
+	    return true;
 	}
-      return 0;
+      return false;
 #ifdef ENABLE_IPV6
     case IPV6_ADDRESS:
       for (i = 0; i < al->count; i++)
@@ -127,9 +127,9 @@ address_list_contains (const struct address_list *al, const ip_address *ip)
 #endif
 	      && IN6_ARE_ADDR_EQUAL (&ADDRESS_IPV6_IN6_ADDR (cur),
 				     &ADDRESS_IPV6_IN6_ADDR (ip)))
-	    return 1;
+	    return true;
 	}
-      return 0;
+      return false;
 #endif /* ENABLE_IPV6 */
     default:
       abort ();
@@ -162,12 +162,12 @@ address_list_set_faulty (struct address_list *al, int index)
 void
 address_list_set_connected (struct address_list *al)
 {
-  al->connected = 1;
+  al->connected = true;
 }
 
 /* Return the value of the "connected" flag. */
 
-int
+bool
 address_list_connected_p (const struct address_list *al)
 {
   return al->connected;
@@ -440,10 +440,10 @@ pretty_print_address (const ip_address *addr)
 
 /* The following two functions were adapted from glibc. */
 
-static int
+static bool
 is_valid_ipv4_address (const char *str, const char *end)
 {
-  int saw_digit = 0;
+  bool saw_digit = false;
   int octets = 0;
   int val = 0;
 
@@ -456,31 +456,31 @@ is_valid_ipv4_address (const char *str, const char *end)
 	  val = val * 10 + (ch - '0');
 
 	  if (val > 255)
-	    return 0;
-	  if (saw_digit == 0)
+	    return false;
+	  if (!saw_digit)
 	    {
 	      if (++octets > 4)
-		return 0;
-	      saw_digit = 1;
+		return false;
+	      saw_digit = true;
 	    }
 	}
-      else if (ch == '.' && saw_digit == 1)
+      else if (ch == '.' && saw_digit)
 	{
 	  if (octets == 4)
-	    return 0;
+	    return false;
 	  val = 0;
-	  saw_digit = 0;
+	  saw_digit = false;
 	}
       else
-	return 0;
+	return false;
     }
   if (octets < 4)
-    return 0;
+    return false;
   
-  return 1;
+  return true;
 }
 
-int
+bool
 is_valid_ipv6_address (const char *str, const char *end)
 {
   /* Use lower-case for these to avoid clash with system headers.  */
@@ -493,25 +493,25 @@ is_valid_ipv6_address (const char *str, const char *end)
   const char *curtok;
   int tp;
   const char *colonp;
-  int saw_xdigit;
+  bool saw_xdigit;
   unsigned int val;
 
   tp = 0;
   colonp = NULL;
 
   if (str == end)
-    return 0;
+    return false;
   
   /* Leading :: requires some special handling. */
   if (*str == ':')
     {
       ++str;
       if (str == end || *str != ':')
-	return 0;
+	return false;
     }
 
   curtok = str;
-  saw_xdigit = 0;
+  saw_xdigit = false;
   val = 0;
 
   while (str < end)
@@ -524,8 +524,8 @@ is_valid_ipv6_address (const char *str, const char *end)
 	  val <<= 4;
 	  val |= XDIGIT_TO_NUM (ch);
 	  if (val > 0xffff)
-	    return 0;
-	  saw_xdigit = 1;
+	    return false;
+	  saw_xdigit = true;
 	  continue;
 	}
 
@@ -533,19 +533,19 @@ is_valid_ipv6_address (const char *str, const char *end)
       if (ch == ':')
 	{
 	  curtok = str;
-	  if (saw_xdigit == 0)
+	  if (!saw_xdigit)
 	    {
 	      if (colonp != NULL)
-		return 0;
+		return false;
 	      colonp = str + tp;
 	      continue;
 	    }
 	  else if (str == end)
-	    return 0;
+	    return false;
 	  if (tp > ns_in6addrsz - ns_int16sz)
-	    return 0;
+	    return false;
 	  tp += ns_int16sz;
-	  saw_xdigit = 0;
+	  saw_xdigit = false;
 	  val = 0;
 	  continue;
 	}
@@ -555,31 +555,31 @@ is_valid_ipv6_address (const char *str, const char *end)
 	  && is_valid_ipv4_address (curtok, end) == 1)
 	{
 	  tp += ns_inaddrsz;
-	  saw_xdigit = 0;
+	  saw_xdigit = false;
 	  break;
 	}
     
-      return 0;
+      return false;
     }
 
-  if (saw_xdigit == 1)
+  if (saw_xdigit)
     {
       if (tp > ns_in6addrsz - ns_int16sz) 
-	return 0;
+	return false;
       tp += ns_int16sz;
     }
 
   if (colonp != NULL)
     {
       if (tp == ns_in6addrsz) 
-	return 0;
+	return false;
       tp = ns_in6addrsz;
     }
 
   if (tp != ns_in6addrsz)
-    return 0;
+    return false;
 
-  return 1;
+  return true;
 }
 
 /* Simple host cache, used by lookup_host to speed up resolving.  The
@@ -675,9 +675,9 @@ struct address_list *
 lookup_host (const char *host, int flags)
 {
   struct address_list *al;
-  int silent = flags & LH_SILENT;
-  int use_cache;
-  int numeric_address = 0;
+  bool silent = !!(flags & LH_SILENT);
+  bool use_cache;
+  bool numeric_address = false;
   double timeout = opt.dns_timeout;
 
 #ifndef ENABLE_IPV6
@@ -706,7 +706,7 @@ lookup_host (const char *host, int flags)
   {
     const char *end = host + strlen (host);
     if (is_valid_ipv4_address (host, end) || is_valid_ipv6_address (host, end))
-      numeric_address = 1;
+      numeric_address = true;
   }
 #endif
 
@@ -715,7 +715,7 @@ lookup_host (const char *host, int flags)
   use_cache = opt.dns_cache;
 #ifdef ENABLE_IPV6
   if ((flags & LH_BIND) || numeric_address)
-    use_cache = 0;
+    use_cache = false;
 #endif
 
   /* Try to find the host in the cache so we don't need to talk to the
@@ -842,21 +842,21 @@ lookup_host (const char *host, int flags)
 
 /* Determine whether a URL is acceptable to be followed, according to
    a list of domains to accept.  */
-int
+bool
 accept_domain (struct url *u)
 {
   assert (u->host != NULL);
   if (opt.domains)
     {
       if (!sufmatch ((const char **)opt.domains, u->host))
-	return 0;
+	return false;
     }
   if (opt.exclude_domains)
     {
       if (sufmatch ((const char **)opt.exclude_domains, u->host))
-	return 0;
+	return false;
     }
-  return 1;
+  return true;
 }
 
 /* Check whether WHAT is matched in LIST, each element of LIST being a
@@ -864,7 +864,7 @@ accept_domain (struct url *u)
    match_backwards() in utils.c).
 
    If an element of LIST matched, 1 is returned, 0 otherwise.  */
-int
+bool
 sufmatch (const char **list, const char *what)
 {
   int i, j, k, lw;
@@ -877,9 +877,9 @@ sufmatch (const char **list, const char *what)
 	  break;
       /* The domain must be first to reach to beginning.  */
       if (j == -1)
-	return 1;
+	return true;
     }
-  return 0;
+  return false;
 }
 
 static int

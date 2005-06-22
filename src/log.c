@@ -68,18 +68,18 @@ so, delete this exception statement from your version.  */
    logging is inhibited, logfp is set back to NULL. */
 static FILE *logfp;
 
-/* If non-zero, it means logging is inhibited, i.e. nothing is printed
-   or stored.  */
-static int inhibit_logging;
+/* If true, it means logging is inhibited, i.e. nothing is printed or
+   stored.  */
+static bool inhibit_logging;
 
 /* Whether the last output lines are stored for use as context.  */
-static int save_context_p;
+static bool save_context_p;
 
 /* Whether the log is flushed after each command. */
-static int flush_log_p = 1;
+static bool flush_log_p = true;
 
 /* Whether any output has been received while flush_log_p was 0. */
-static int needs_flushing;
+static bool needs_flushing;
 
 /* In the event of a hang-up, and if its output was on a TTY, Wget
    redirects its output to `wget-log'.
@@ -123,7 +123,7 @@ static int log_line_current = -1;
    finish with \n.  This is an important piece of information because
    the code is always careful to append data to trailing lines, rather
    than create new ones.  */
-static int trailing_line;
+static bool trailing_line;
 
 static void check_redirect_output (void);
 
@@ -313,7 +313,7 @@ logputs (enum log_options o, const char *s)
   if (flush_log_p)
     logflush ();
   else
-    needs_flushing = 1;
+    needs_flushing = true;
 }
 
 struct logvprintf_state {
@@ -336,7 +336,7 @@ struct logvprintf_state {
    (An alternative approach would be to use va_copy, but that's not
    portable.)  */
 
-static int
+static bool
 log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
 		      va_list args)
 {
@@ -383,7 +383,7 @@ log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
       int newsize = available_size << 1;
       state->bigmsg = xrealloc (state->bigmsg, newsize);
       state->allocated = newsize;
-      return 0;
+      return false;
     }
   else if (numwritten >= available_size)
     {
@@ -392,7 +392,7 @@ log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
       int newsize = numwritten + 1;
       state->bigmsg = xrealloc (state->bigmsg, newsize);
       state->allocated = newsize;
-      return 0;
+      return false;
     }
 
   /* Writing succeeded. */
@@ -405,9 +405,9 @@ log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
   if (flush_log_p)
     logflush ();
   else
-    needs_flushing = 1;
+    needs_flushing = true;
 
-  return 1;
+  return true;
 }
 
 /* Flush LOGFP.  Useful while flushing is disabled.  */
@@ -417,20 +417,20 @@ logflush (void)
   FILE *fp = get_log_fp ();
   if (fp)
     fflush (fp);
-  needs_flushing = 0;
+  needs_flushing = false;
 }
 
 /* Enable or disable log flushing. */
 void
-log_set_flush (int flush)
+log_set_flush (bool flush)
 {
   if (flush == flush_log_p)
     return;
 
-  if (flush == 0)
+  if (flush == false)
     {
       /* Disable flushing by setting flush_log_p to 0. */
-      flush_log_p = 0;
+      flush_log_p = false;
     }
   else
     {
@@ -438,7 +438,7 @@ log_set_flush (int flush)
 	 flush the log now.  */
       if (needs_flushing)
 	logflush ();
-      flush_log_p = 1;
+      flush_log_p = true;
     }
 }
 
@@ -446,10 +446,10 @@ log_set_flush (int flush)
    status of storing, with which this function can be called again to
    reestablish storing. */
 
-int
-log_set_save_context (int savep)
+bool
+log_set_save_context (bool savep)
 {
-  int old = save_context_p;
+  bool old = save_context_p;
   save_context_p = savep;
   return old;
 }
@@ -463,7 +463,7 @@ logprintf (enum log_options o, const char *fmt, ...)
 {
   va_list args;
   struct logvprintf_state lpstate;
-  int done;
+  bool done;
 
   check_redirect_output ();
   if (inhibit_logging)
@@ -482,7 +482,7 @@ logprintf (enum log_options o, const char *fmt, ...)
 
 #ifdef ENABLE_DEBUG
 /* The same as logprintf(), but does anything only if opt.debug is
-   non-zero.  */
+   true.  */
 void
 debug_logprintf (const char *fmt, ...)
 {
@@ -490,7 +490,7 @@ debug_logprintf (const char *fmt, ...)
     {
       va_list args;
       struct logvprintf_state lpstate;
-      int done;
+      bool done;
 
       check_redirect_output ();
       if (inhibit_logging)
@@ -511,7 +511,7 @@ debug_logprintf (const char *fmt, ...)
 /* Open FILE and set up a logging stream.  If FILE cannot be opened,
    exit with status of 1.  */
 void
-log_init (const char *file, int appendp)
+log_init (const char *file, bool appendp)
 {
   if (file)
     {
@@ -542,7 +542,7 @@ log_init (const char *file, int appendp)
 	     the most recent several messages ("context") and dump
 	     them to a log file in case SIGHUP or SIGUSR1 is received
 	     (or Ctrl+Break is pressed under Windows).  */
-	  save_context_p = 1;
+	  save_context_p = true;
 	}
     }
 }
@@ -557,13 +557,13 @@ log_close (void)
   if (logfp)
     fclose (logfp);
   logfp = NULL;
-  inhibit_logging = 1;
-  save_context_p = 0;
+  inhibit_logging = true;
+  save_context_p = false;
 
   for (i = 0; i < SAVED_LOG_LINES; i++)
     free_log_line (i);
   log_line_current = -1;
-  trailing_line = 0;
+  trailing_line = false;
 }
 
 /* Dump saved lines to logfp. */
@@ -778,7 +778,7 @@ static void
 redirect_output (void)
 {
   char *logfile;
-  logfp = unique_create (DEFAULT_LOGFILE, 0, &logfile);
+  logfp = unique_create (DEFAULT_LOGFILE, false, &logfile);
   if (logfp)
     {
       fprintf (stderr, _("\n%s received, redirecting output to `%s'.\n"),
@@ -794,9 +794,9 @@ redirect_output (void)
       fprintf (stderr, _("\n%s received.\n"), redirect_request_signal_name);
       fprintf (stderr, _("%s: %s; disabling logging.\n"),
 	       logfile, strerror (errno));
-      inhibit_logging = 1;
+      inhibit_logging = true;
     }
-  save_context_p = 0;
+  save_context_p = false;
 }
 
 /* Check whether a signal handler requested the output to be

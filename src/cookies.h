@@ -37,7 +37,8 @@ void cookie_jar_delete (struct cookie_jar *);
 
 void cookie_handle_set_cookie (struct cookie_jar *, const char *, int,
 			       const char *, const char *);
-char *cookie_header (struct cookie_jar *, const char *, int, const char *, int);
+char *cookie_header (struct cookie_jar *, const char *, int,
+		     const char *, bool);
 
 void cookie_jar_load (struct cookie_jar *, const char *);
 void cookie_jar_save (struct cookie_jar *, const char *);

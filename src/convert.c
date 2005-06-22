@@ -462,14 +462,14 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
     }
 }
 
-static int find_fragment (const char *, int, const char **, const char **);
+static bool find_fragment (const char *, int, const char **, const char **);
 
 /* Replace an attribute's original text with NEW_TEXT. */
 
 static const char *
 replace_attr (const char *p, int size, FILE *fp, const char *new_text)
 {
-  int quote_flag = 0;
+  bool quote_flag = false;
   char quote_char = '\"';	/* use "..." for quoting, unless the
 				   original value is quoted, in which
 				   case reuse its quoting char. */
@@ -485,7 +485,7 @@ replace_attr (const char *p, int size, FILE *fp, const char *new_text)
   if (*p == '\"' || *p == '\'')
     {
       quote_char = *p;
-      quote_flag = 1;
+      quote_flag = true;
       ++p;
       size -= 2;		/* disregard opening and closing quote */
     }
@@ -523,36 +523,36 @@ replace_attr_refresh_hack (const char *p, int size, FILE *fp,
 
 /* Find the first occurrence of '#' in [BEG, BEG+SIZE) that is not
    preceded by '&'.  If the character is not found, return zero.  If
-   the character is found, return 1 and set BP and EP to point to the
-   beginning and end of the region.
+   the character is found, return true and set BP and EP to point to
+   the beginning and end of the region.
 
    This is used for finding the fragment indentifiers in URLs.  */
 
-static int
+static bool
 find_fragment (const char *beg, int size, const char **bp, const char **ep)
 {
   const char *end = beg + size;
-  int saw_amp = 0;
+  bool saw_amp = false;
   for (; beg < end; beg++)
     {
       switch (*beg)
 	{
 	case '&':
-	  saw_amp = 1;
+	  saw_amp = true;
 	  break;
 	case '#':
 	  if (!saw_amp)
 	    {
 	      *bp = beg;
 	      *ep = end;
-	      return 1;
+	      return true;
 	    }
 	  /* fallthrough */
 	default:
-	  saw_amp = 0;
+	  saw_amp = false;
 	}
     }
-  return 0;
+  return false;
 }
 
 /* Quote FILE for use as local reference to an HTML file.
@@ -623,9 +623,9 @@ local_quote_string (const char *file)
     dl_url_file_map = make_string_hash_table (0);	\
 } while (0)
 
-/* Return 1 if S1 and S2 are the same, except for "/index.html".  The
-   three cases in which it returns one are (substitute any substring
-   for "foo"):
+/* Return true if S1 and S2 are the same, except for "/index.html".
+   The three cases in which it returns one are (substitute any
+   substring for "foo"):
 
    m("foo/index.html", "foo/")  ==> 1
    m("foo/", "foo/index.html")  ==> 1
@@ -633,7 +633,7 @@ local_quote_string (const char *file)
    m("foo", "foo/"              ==> 1
    m("foo", "foo")              ==> 1  */
 
-static int
+static bool
 match_except_index (const char *s1, const char *s2)
 {
   int i;
@@ -646,14 +646,14 @@ match_except_index (const char *s1, const char *s2)
     /* Strings differ at the very beginning -- bail out.  We need to
        check this explicitly to avoid `lng - 1' reading outside the
        array.  */
-    return 0;
+    return false;
 
   if (!*s1 && !*s2)
     /* Both strings hit EOF -- strings are equal. */
-    return 1;
+    return true;
   else if (*s1 && *s2)
     /* Strings are randomly different, e.g. "/foo/bar" and "/foo/qux". */
-    return 0;
+    return false;
   else if (*s1)
     /* S1 is the longer one. */
     lng = s1;
@@ -672,7 +672,7 @@ match_except_index (const char *s1, const char *s2)
   if (*lng == '/' && *(lng + 1) == '\0')
     /* foo  */
     /* foo/ */
-    return 1;
+    return true;
 
   return 0 == strcmp (lng, "/index.html");
 }

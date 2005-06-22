@@ -48,9 +48,9 @@ enum {
   ENDPOINT_LOCAL,
   ENDPOINT_PEER
 };
-int socket_ip_address (int, ip_address *, int);
+bool socket_ip_address (int, ip_address *, int);
 
-int retryable_socket_connect_error (int);
+bool retryable_socket_connect_error (int);
 
 /* Flags for select_fd's WAIT_FOR argument. */
 enum {
@@ -58,7 +58,7 @@ enum {
   WAIT_FOR_WRITE = 2
 };
 int select_fd (int, double, int);
-int test_socket_open (int);
+bool test_socket_open (int);
 
 typedef int (*fd_reader_t) (int, char *, int, void *);
 typedef int (*fd_writer_t) (int, char *, int, void *);

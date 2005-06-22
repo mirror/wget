@@ -108,7 +108,7 @@ struct cookie {
   unsigned domain_exact :1;	/* whether DOMAIN must match as a
 				   whole. */
 
-  int permanent :1;		/* whether the cookie should outlive
+  unsigned permanent :1;	/* whether the cookie should outlive
 				   the session. */
   time_t expiry_time;		/* time when the cookie expires, 0
 				   means undetermined. */
@@ -140,7 +140,7 @@ cookie_new (void)
 /* Non-zero if the cookie has expired.  Assumes cookies_now has been
    set by one of the entry point functions.  */
 
-static int
+static bool
 cookie_expired_p (const struct cookie *c)
 {
   return c->expiry_time != 0 && c->expiry_time < cookies_now;
@@ -338,10 +338,10 @@ discard_matching_cookie (struct cookie_jar *jar, struct cookie *cookie)
    it will parse the values of the fields it recognizes and fill the
    corresponding fields in COOKIE.
 
-   Returns 1 on success.  Returns zero in case a syntax error is
+   Returns true on success.  Returns false in case a syntax error is
    found; such a cookie should be discarded.  */
 
-static int
+static bool
 update_cookie_field (struct cookie *cookie,
 		     const char *name_b, const char *name_e,
 		     const char *value_b, const char *value_e)
@@ -351,16 +351,16 @@ update_cookie_field (struct cookie *cookie,
   if (!cookie->attr)
     {
       if (!VALUE_EXISTS)
-	return 0;
+	return false;
       cookie->attr = strdupdelim (name_b, name_e);
       cookie->value = strdupdelim (value_b, value_e);
-      return 1;
+      return true;
     }
 
   if (NAME_IS ("domain"))
     {
       if (!VALUE_NON_EMPTY)
-	return 0;
+	return false;
       xfree_null (cookie->domain);
       /* Strictly speaking, we should set cookie->domain_exact if the
 	 domain doesn't begin with a dot.  But many sites set the
@@ -369,15 +369,15 @@ update_cookie_field (struct cookie *cookie,
       if (*value_b == '.')
 	++value_b;
       cookie->domain = strdupdelim (value_b, value_e);
-      return 1;
+      return true;
     }
   else if (NAME_IS ("path"))
     {
       if (!VALUE_NON_EMPTY)
-	return 0;
+	return false;
       xfree_null (cookie->path);
       cookie->path = strdupdelim (value_b, value_e);
-      return 1;
+      return true;
     }
   else if (NAME_IS ("expires"))
     {
@@ -385,7 +385,7 @@ update_cookie_field (struct cookie *cookie,
       time_t expires;
 
       if (!VALUE_NON_EMPTY)
-	return 0;
+	return false;
       BOUNDED_TO_ALLOCA (value_b, value_e, value_copy);
 
       expires = http_atotm (value_copy);
@@ -405,7 +405,7 @@ update_cookie_field (struct cookie *cookie,
       if (cookie->expiry_time < cookies_now)
 	cookie->discard_requested = 1;
 
-      return 1;
+      return true;
     }
   else if (NAME_IS ("max-age"))
     {
@@ -413,13 +413,13 @@ update_cookie_field (struct cookie *cookie,
       char *value_copy;
 
       if (!VALUE_NON_EMPTY)
-	return 0;
+	return false;
       BOUNDED_TO_ALLOCA (value_b, value_e, value_copy);
 
       sscanf (value_copy, "%lf", &maxage);
       if (maxage == -1)
 	/* something went wrong. */
-	return 0;
+	return false;
       cookie->permanent = 1;
       cookie->expiry_time = cookies_now + maxage;
 
@@ -428,22 +428,22 @@ update_cookie_field (struct cookie *cookie,
       if (maxage == 0)
 	cookie->discard_requested = 1;
 
-      return 1;
+      return true;
     }
   else if (NAME_IS ("secure"))
     {
       /* ignore value completely */
       cookie->secure = 1;
-      return 1;
+      return true;
     }
   else
     /* Unrecognized attribute; ignore it. */
-    return 1;
+    return true;
 }
 
 #undef NAME_IS
 
-/* Returns non-zero for characters that are legal in the name of an
+/* Returns true for characters that are legal in the name of an
    attribute.  This used to allow only alphanumerics, '-', and '_',
    but we need to be more lenient because a number of sites wants to
    use weirder attribute names.  rfc2965 "informally specifies"
@@ -469,10 +469,10 @@ update_cookie_field (struct cookie *cookie,
 
 static struct cookie *
 parse_set_cookies (const char *sc,
-		   int (*callback) (struct cookie *,
-				    const char *, const char *,
-				    const char *, const char *),
-		   int silent)
+		   bool (*callback) (struct cookie *,
+				     const char *, const char *,
+				     const char *, const char *),
+		   bool silent)
 {
   struct cookie *cookie = cookie_new ();
 
@@ -603,7 +603,7 @@ parse_set_cookies (const char *sc,
 	  break;
 	case S_ATTR_ACTION:
 	  {
-	    int legal = callback (cookie, name_b, name_e, value_b, value_e);
+	    bool legal = callback (cookie, name_b, name_e, value_b, value_e);
 	    if (!legal)
 	      {
 		if (!silent)
@@ -647,14 +647,14 @@ parse_set_cookies (const char *sc,
 
 #define REQUIRE_DIGITS(p) do {			\
   if (!ISDIGIT (*p))				\
-    return 0;					\
+    return false;				\
   for (++p; ISDIGIT (*p); p++)			\
     ;						\
 } while (0)
 
 #define REQUIRE_DOT(p) do {			\
   if (*p++ != '.')				\
-    return 0;					\
+    return false;				\
 } while (0)
 
 /* Check whether ADDR matches <digits>.<digits>.<digits>.<digits>.
@@ -663,7 +663,7 @@ parse_set_cookies (const char *sc,
    all we need is a check, preferrably one that is small, fast, and
    well-defined.  */
 
-static int
+static bool
 numeric_address_p (const char *addr)
 {
   const char *p = addr;
@@ -677,8 +677,8 @@ numeric_address_p (const char *addr)
   REQUIRE_DIGITS (p);		/* D */
 
   if (*p != '\0')
-    return 0;
-  return 1;
+    return false;
+  return true;
 }
 
 /* Check whether COOKIE_DOMAIN is an appropriate domain for HOST.
@@ -686,7 +686,7 @@ numeric_address_p (const char *addr)
    the sites deviated too often, so I had to fall back to "tail
    matching", as defined by the original Netscape's cookie spec.  */
 
-static int
+static bool
 check_domain_match (const char *cookie_domain, const char *host)
 {
   DEBUGP (("cdm: 1"));
@@ -700,13 +700,13 @@ check_domain_match (const char *cookie_domain, const char *host)
 
   /* For the sake of efficiency, check for exact match first. */
   if (0 == strcasecmp (cookie_domain, host))
-    return 1;
+    return true;
 
   DEBUGP ((" 3"));
 
   /* HOST must match the tail of cookie_domain. */
-  if (!match_tail (host, cookie_domain, 1))
-    return 0;
+  if (!match_tail (host, cookie_domain, true))
+    return false;
 
   /* We know that COOKIE_DOMAIN is a subset of HOST; however, we must
      make sure that somebody is not trying to set the cookie for a
@@ -752,7 +752,7 @@ check_domain_match (const char *cookie_domain, const char *host)
 	case '.':
 	  if (ldcl == 0)
 	    /* Empty domain component found -- the domain is invalid. */
-	    return 0;
+	    return false;
 	  if (*(p + 1) == '\0')
 	    {
 	      /* Tolerate trailing '.' by not treating the domain as
@@ -771,25 +771,25 @@ check_domain_match (const char *cookie_domain, const char *host)
     DEBUGP ((" 5"));
 
     if (dccount < 2)
-      return 0;
+      return false;
 
     DEBUGP ((" 6"));
 
     if (dccount == 2)
       {
 	int i;
-	int known_toplevel = 0;
+	int known_toplevel = false;
 	static const char *known_toplevel_domains[] = {
 	  ".com", ".edu", ".net", ".org", ".gov", ".mil", ".int"
 	};
 	for (i = 0; i < countof (known_toplevel_domains); i++)
-	  if (match_tail (cookie_domain, known_toplevel_domains[i], 1))
+	  if (match_tail (cookie_domain, known_toplevel_domains[i], true))
 	    {
-	      known_toplevel = 1;
+	      known_toplevel = true;
 	      break;
 	    }
 	if (!known_toplevel && nldcl <= 3)
-	  return 0;
+	  return false;
       }
   }
 
@@ -805,22 +805,22 @@ check_domain_match (const char *cookie_domain, const char *host)
       /* desired domain:             bar.com */
       /* '.' must be here in host-> ^        */
       if (hlen > dlen && host[hlen - dlen - 1] != '.')
-	return 0;
+	return false;
     }
 
   DEBUGP ((" 8"));
 
-  return 1;
+  return true;
 }
 
 static int path_matches (const char *, const char *);
 
 /* Check whether PATH begins with COOKIE_PATH. */
 
-static int
+static bool
 check_path_match (const char *cookie_path, const char *path)
 {
-  return path_matches (path, cookie_path);
+  return path_matches (path, cookie_path) != 0;
 }
 
 /* Process the HTTP `Set-Cookie' header.  This results in storing the
@@ -835,7 +835,7 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
   struct cookie *cookie;
   cookies_now = time (NULL);
 
-  cookie = parse_set_cookies (set_cookie, update_cookie_field, 0);
+  cookie = parse_set_cookies (set_cookie, update_cookie_field, false);
   if (!cookie)
     goto out;
 
@@ -996,17 +996,17 @@ path_matches (const char *full_path, const char *prefix)
   return len + 1;
 }
 
-/* Return non-zero iff COOKIE matches the provided parameters of the
-   URL being downloaded: HOST, PORT, PATH, and SECFLAG.
+/* Return true iff COOKIE matches the provided parameters of the URL
+   being downloaded: HOST, PORT, PATH, and SECFLAG.
 
    If PATH_GOODNESS is non-NULL, store the "path goodness" value
    there.  That value is a measure of how closely COOKIE matches PATH,
    used for ordering cookies.  */
 
-static int
+static bool
 cookie_matches_url (const struct cookie *cookie,
 		    const char *host, int port, const char *path,
-		    int secflag, int *path_goodness)
+		    bool secflag, int *path_goodness)
 {
   int pg;
 
@@ -1016,31 +1016,31 @@ cookie_matches_url (const struct cookie *cookie,
        stale cookies will not be saved by `save_cookies'.  On the
        other hand, this function should be as efficient as
        possible.  */
-    return 0;
+    return false;
 
   if (cookie->secure && !secflag)
     /* Don't transmit secure cookies over insecure connections.  */
-    return 0;
+    return false;
   if (cookie->port != PORT_ANY && cookie->port != port)
-    return 0;
+    return false;
 
   /* If exact domain match is required, verify that cookie's domain is
      equal to HOST.  If not, assume success on the grounds of the
      cookie's chain having been found by find_chains_of_host.  */
   if (cookie->domain_exact
       && 0 != strcasecmp (host, cookie->domain))
-    return 0;
+    return false;
 
   pg = path_matches (path, cookie->path);
-  if (!pg)
-    return 0;
+  if (pg == 0)
+    return false;
 
   if (path_goodness)
     /* If the caller requested path_goodness, we return it.  This is
        an optimization, so that the caller doesn't need to call
        path_matches() again.  */
     *path_goodness = pg;
-  return 1;
+  return true;
 }
 
 /* A structure that points to a cookie, along with the additional
@@ -1139,7 +1139,7 @@ goodness_comparator (const void *p1, const void *p2)
 
 char *
 cookie_header (struct cookie_jar *jar, const char *host,
-	       int port, const char *path, int secflag)
+	       int port, const char *path, bool secflag)
 {
   struct cookie **chains;
   int chain_count;
@@ -1528,13 +1528,13 @@ cookie_jar_delete (struct cookie_jar *jar)
 int test_count;
 char *test_results[10];
 
-static int test_parse_cookies_callback (struct cookie *ignored,
-					const char *nb, const char *ne,
-					const char *vb, const char *ve)
+static bool test_parse_cookies_callback (struct cookie *ignored,
+					 const char *nb, const char *ne,
+					 const char *vb, const char *ve)
 {
   test_results[test_count++] = strdupdelim (nb, ne);
   test_results[test_count++] = strdupdelim (vb, ve);
-  return 1;
+  return true;
 }
 
 void
@@ -1574,7 +1574,7 @@ test_cookies (void)
       struct cookie *c;
 
       test_count = 0;
-      c = parse_set_cookies (data, test_parse_cookies_callback, 1);
+      c = parse_set_cookies (data, test_parse_cookies_callback, true);
       if (!c)
 	{
 	  printf ("NULL cookie returned for valid data: %s\n", data);

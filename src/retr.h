@@ -44,9 +44,9 @@ char *fd_read_hunk (int, hunk_terminator_t, long, long);
 char *fd_read_line (int);
 
 uerr_t retrieve_url (const char *, char **, char **, const char *, int *);
-uerr_t retrieve_from_file (const char *, int, int *);
+uerr_t retrieve_from_file (const char *, bool, int *);
 
-char *retr_rate (wgint, double, int);
+char *retr_rate (wgint, double, bool);
 double calc_rate (wgint, double, int *);
 void printwhat (int, int);
 

@@ -154,16 +154,16 @@ key_type_to_ssl_type (enum keyfile_type type)
 /* Create an SSL Context and set default paths etc.  Called the first
    time an HTTP download is attempted.
 
-   Returns 1 on success, 0 otherwise.  */
+   Returns true on success, false otherwise.  */
 
-int
+bool
 ssl_init ()
 {
   SSL_METHOD *meth;
 
   if (ssl_ctx)
     /* The SSL has already been initialized. */
-    return 1;
+    return true;
 
   /* Init the PRNG.  If that fails, bail out.  */
   init_prng ();
@@ -225,13 +225,13 @@ ssl_init ()
      handles them correctly), allow them in OpenSSL.  */
   SSL_CTX_set_mode (ssl_ctx, SSL_MODE_ENABLE_PARTIAL_WRITE);
 
-  return 1;
+  return true;
 
  error:
   if (ssl_ctx)
     SSL_CTX_free (ssl_ctx);
   print_errors ();
-  return 0;
+  return false;
 }
 
 static int
@@ -306,9 +306,9 @@ openssl_close (int fd, void *ctx)
    fd_register_transport, so that subsequent calls to fd_read,
    fd_write, etc., will use the corresponding SSL functions.
 
-   Returns 1 on success, 0 on failure.  */
+   Returns true on success, false on failure.  */
 
-int
+bool
 ssl_connect (int fd) 
 {
   SSL *ssl;
@@ -331,19 +331,19 @@ ssl_connect (int fd)
 			 openssl_peek, openssl_close, ssl);
   DEBUGP (("Handshake successful; connected socket %d to SSL handle 0x%0*lx\n",
 	   fd, PTR_FORMAT (ssl)));
-  return 1;
+  return true;
 
  error:
   DEBUGP (("SSL handshake failed.\n"));
   print_errors ();
   if (ssl)
     SSL_free (ssl);
-  return 0;
+  return false;
 }
 
 #define ASTERISK_EXCLUDES_DOT	/* mandated by rfc2818 */
 
-/* Return 1 is STRING (case-insensitively) matches PATTERN, 0
+/* Return true is STRING (case-insensitively) matches PATTERN, false
    otherwise.  The recognized wildcard character is "*", which matches
    any character in STRING except ".".  Any number of the "*" wildcard
    may be present in the pattern.
@@ -357,7 +357,7 @@ ssl_connect (int fd)
    If the pattern contain no wildcards, pattern_match(a, b) is
    equivalent to !strcasecmp(a, b).  */
 
-static int
+static bool
 pattern_match (const char *pattern, const char *string)
 {
   const char *p = pattern, *n = string;
@@ -369,17 +369,17 @@ pattern_match (const char *pattern, const char *string)
 	  ;
 	for (; *n != '\0'; n++)
 	  if (TOLOWER (*n) == c && pattern_match (p, n))
-	    return 1;
+	    return true;
 #ifdef ASTERISK_EXCLUDES_DOT
 	  else if (*n == '.')
-	    return 0;
+	    return false;
 #endif
 	return c == '\0';
       }
     else
       {
 	if (c != TOLOWER (*n))
-	  return 0;
+	  return false;
       }
   return *n == '\0';
 }
@@ -393,18 +393,18 @@ pattern_match (const char *pattern, const char *string)
    the SSL handshake has been performed and that FD is connected to an
    SSL handle.
 
-   If opt.check_cert is non-zero (the default), this returns 1 if the
+   If opt.check_cert is true (the default), this returns 1 if the
    certificate is valid, 0 otherwise.  If opt.check_cert is 0, the
    function always returns 1, but should still be called because it
    warns the user about any problems with the certificate.  */
 
-int
+bool
 ssl_check_certificate (int fd, const char *host)
 {
   X509 *cert;
   char common_name[256];
   long vresult;
-  int success = 1;
+  bool success = true;
 
   /* If the user has specified --no-check-cert, we still want to warn
      him about problems with the server's certificate.  */
@@ -418,7 +418,7 @@ ssl_check_certificate (int fd, const char *host)
     {
       logprintf (LOG_NOTQUIET, _("%s: No certificate presented by %s.\n"),
 		 severity, escnonprint (host));
-      success = 0;
+      success = false;
       goto no_cert;		/* must bail out since CERT is NULL */
     }
 
@@ -448,7 +448,7 @@ ssl_check_certificate (int fd, const char *host)
 		 _("%s: Certificate verification error for %s: %s\n"),
 		 severity, escnonprint (host),
 		 X509_verify_cert_error_string (vresult));
-      success = 0;
+      success = false;
       /* Fall through, so that the user is warned about *all* issues
 	 with the cert (important with --no-check-certificate.)  */
     }
@@ -475,7 +475,7 @@ ssl_check_certificate (int fd, const char *host)
       logprintf (LOG_NOTQUIET, _("\
 %s: certificate common name `%s' doesn't match requested host name `%s'.\n"),
 		 severity, escnonprint (common_name), escnonprint (host));
-      success = 0;
+      success = false;
     }
 
   if (success)
@@ -490,5 +490,5 @@ To connect to %s insecurely, use `--no-check-certificate'.\n"),
 	       escnonprint (host));
 
   /* Allow --no-check-cert to disable certificate checking. */
-  return opt.check_cert ? success : 1;
+  return opt.check_cert ? success : true;
 }

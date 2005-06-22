@@ -30,12 +30,12 @@ so, delete this exception statement from your version.  */
 #ifndef PROGRESS_H
 #define PROGRESS_H
 
-int valid_progress_implementation_p (const char *);
+bool valid_progress_implementation_p (const char *);
 void set_progress_implementation (const char *);
 void progress_schedule_redirect (void);
 
 void *progress_create (wgint, wgint);
-int progress_interactive_p (void *);
+bool progress_interactive_p (void *);
 void progress_update (void *, wgint, double);
 void progress_finish (void *, double);
 

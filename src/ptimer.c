@@ -241,7 +241,7 @@ typedef union {
 
 /* Whether high-resolution timers are used.  Set by ptimer_initialize_once
    the first time ptimer_new is called. */
-static int windows_hires_timers;
+static bool windows_hires_timers;
 
 /* Frequency of high-resolution timers -- number of updates per
    millisecond.  Calculated the first time ptimer_new is called
@@ -256,7 +256,7 @@ windows_init (void)
   QueryPerformanceFrequency (&freq);
   if (freq.QuadPart != 0)
     {
-      windows_hires_timers = 1;
+      windows_hires_timers = true;
       windows_hires_msfreq = (double) freq.QuadPart / 1000.0;
     }
 }
@@ -318,10 +318,10 @@ ptimer_new (void)
 {
   struct ptimer *pt = xnew0 (struct ptimer);
 #ifdef IMPL_init
-  static int init_done;
+  static bool init_done;
   if (!init_done)
     {
-      init_done = 1;
+      init_done = true;
       IMPL_init ();
     }
 #endif

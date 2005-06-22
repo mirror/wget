@@ -114,12 +114,12 @@ so, delete this exception statement from your version.  */
      beginning of the NTLM message, in bytes.
 */
 
-/* return 1 on success, 0 otherwise */
-int
+/* return true on success, false otherwise */
+bool
 ntlm_input (struct ntlmdata *ntlm, const char *header)
 {
   if (0 != strncmp (header, "NTLM", 4))
-    return 0;
+    return false;
 
   header += 4;
   while (*header && ISSPACE(*header))
@@ -147,7 +147,7 @@ ntlm_input (struct ntlmdata *ntlm, const char *header)
 
       size = base64_decode (header, buffer);
       if (size < 0)
-	return 0;		/* malformed base64 from server */
+	return false;		/* malformed base64 from server */
 
       ntlm->state = NTLMSTATE_TYPE2; /* we got a type-2 */
 
@@ -162,14 +162,14 @@ ntlm_input (struct ntlmdata *ntlm, const char *header)
       if (ntlm->state >= NTLMSTATE_TYPE1)
 	{
 	  DEBUGP (("Unexpected empty NTLM message.\n"));
-	  return 0; /* this is an error */
+	  return false; /* this is an error */
 	}
 
       DEBUGP (("Empty NTLM message, starting transaction.\n"));
       ntlm->state = NTLMSTATE_TYPE1; /* we should sent away a type-1 */
     }
 
-  return 1;
+  return true;
 }
 
 /*
@@ -300,7 +300,7 @@ mkhash(const char *password,
 /* this is for creating ntlm header output */
 char *
 ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
-	     int *ready)
+	     bool *ready)
 {
   const char *domain=""; /* empty */
   const char *host=""; /* empty */
@@ -316,7 +316,7 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
      server, which is for a plain host or for a HTTP proxy */
   char *output;
 
-  *ready = 0;
+  *ready = false;
 
   /* not set means empty */
   if(!user)
@@ -554,14 +554,14 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
     output = concat_strings ("NTLM ", base64, (char *) 0);
 
     ntlm->state = NTLMSTATE_TYPE3; /* we sent a type-3 */
-    *ready = 1;
+    *ready = true;
   }
   break;
 
   case NTLMSTATE_TYPE3:
     /* connection is already authenticated,
      * don't send a header in future requests */
-    *ready = 1;
+    *ready = true;
     output = NULL;
     break;
   }

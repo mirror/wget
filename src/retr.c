@@ -60,7 +60,7 @@ FILE *output_stream;
 
 /* Whether output_document is a regular file we can manipulate,
    i.e. not `-' or a device file. */
-int output_stream_regular;
+bool output_stream_regular;
 
 static struct {
   wgint chunk_bytes;
@@ -206,9 +206,9 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
      continually update the display.  When true, smaller timeout
      values are used so that the gauge can update the display when
      data arrives slowly. */
-  int progress_interactive = 0;
+  bool progress_interactive = false;
 
-  int exact = flags & rb_read_exactly;
+  bool exact = !!(flags & rb_read_exactly);
   wgint skip = 0;
 
   /* How much data we've read/written.  */
@@ -496,10 +496,10 @@ fd_read_line (int fd)
 }
 
 /* Return a printed representation of the download rate, as
-   appropriate for the speed.  If PAD is non-zero, strings will be
-   padded to the width of 7 characters (xxxx.xx).  */
+   appropriate for the speed.  If PAD is true, strings will be padded
+   to the width of 7 characters (xxxx.xx).  */
 char *
-retr_rate (wgint bytes, double msecs, int pad)
+retr_rate (wgint bytes, double msecs, bool pad)
 {
   static char res[20];
   static const char *rate_names[] = {"B/s", "KB/s", "MB/s", "GB/s" };
@@ -555,7 +555,7 @@ calc_rate (wgint bytes, double msecs, int *units)
 #define MAX_REDIRECTIONS 20
 
 #define SUSPEND_POST_DATA do {			\
-  post_data_suspended = 1;			\
+  post_data_suspended = true;			\
   saved_post_data = opt.post_data;		\
   saved_post_file_name = opt.post_file_name;	\
   opt.post_data = NULL;				\
@@ -567,7 +567,7 @@ calc_rate (wgint bytes, double msecs, int *units)
     {							\
       opt.post_data = saved_post_data;			\
       opt.post_file_name = saved_post_file_name;	\
-      post_data_suspended = 0;				\
+      post_data_suspended = false;			\
     }							\
 } while (0)
 
@@ -585,14 +585,15 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 {
   uerr_t result;
   char *url;
-  int location_changed, dummy;
+  bool location_changed;
+  int dummy;
   char *mynewloc, *proxy;
   struct url *u, *proxy_url;
   int up_error_code;		/* url parse error code */
   char *local_file;
   int redirection_count = 0;
 
-  int post_data_suspended = 0;
+  bool post_data_suspended = false;
   char *saved_post_data = NULL;
   char *saved_post_file_name = NULL;
 
@@ -662,9 +663,9 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       /* If this is a redirection, we must not allow recursive FTP
 	 retrieval, so we save recursion to oldrec, and restore it
 	 later.  */
-      int oldrec = opt.recursive;
+      bool oldrec = opt.recursive;
       if (redirection_count)
-	opt.recursive = 0;
+	opt.recursive = false;
       result = ftp_loop (u, dt, proxy_url);
       opt.recursive = oldrec;
 
@@ -790,14 +791,14 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   return result;
 }
 
-/* Find the URLs in the file and call retrieve_url() for each of
-   them.  If HTML is non-zero, treat the file as HTML, and construct
-   the URLs accordingly.
+/* Find the URLs in the file and call retrieve_url() for each of them.
+   If HTML is true, treat the file as HTML, and construct the URLs
+   accordingly.
 
    If opt.recursive is set, call retrieve_tree() for each file.  */
 
 uerr_t
-retrieve_from_file (const char *file, int html, int *count)
+retrieve_from_file (const char *file, bool html, int *count)
 {
   uerr_t status;
   struct urlpos *url_list, *cur_url;
@@ -863,12 +864,12 @@ printwhat (int n1, int n2)
 void
 sleep_between_retrievals (int count)
 {
-  static int first_retrieval = 1;
+  static bool first_retrieval = true;
 
   if (first_retrieval)
     {
       /* Don't sleep before the very first retrieval. */
-      first_retrieval = 0;
+      first_retrieval = false;
       return;
     }
 
@@ -941,7 +942,7 @@ rotate_backups(const char *fname)
   rename(fname, to);
 }
 
-static int no_proxy_match (const char *, const char **);
+static bool no_proxy_match (const char *, const char **);
 
 /* Return the URL of the proxy appropriate for url U.  */
 
@@ -990,11 +991,11 @@ getproxy (struct url *u)
 }
 
 /* Should a host be accessed through proxy, concerning no_proxy?  */
-static int
+static bool
 no_proxy_match (const char *host, const char **no_proxy)
 {
   if (!no_proxy)
-    return 1;
+    return true;
   else
     return !sufmatch (no_proxy, host);
 }

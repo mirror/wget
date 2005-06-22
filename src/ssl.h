@@ -31,8 +31,8 @@ so, delete this exception statement from your version.  */
 #ifndef GEN_SSLFUNC_H
 #define GEN_SSLFUNC_H
 
-int ssl_init (void);
-int ssl_connect (int);
-int ssl_check_certificate (int, const char *);
+bool ssl_init (void);
+bool ssl_connect (int);
+bool ssl_check_certificate (int, const char *);
 
 #endif /* GEN_SSLFUNC_H */

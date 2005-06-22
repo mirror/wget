@@ -58,7 +58,7 @@ extern LARGE_INT total_downloaded_bytes;
 extern char ftp_last_respline[];
 
 extern FILE *output_stream;
-extern int output_stream_regular;
+extern bool output_stream_regular;
 
 typedef struct
 {
@@ -242,9 +242,9 @@ getftp (struct url *u, wgint *len, wgint restval, ccon *con)
   char *user, *passwd, *respline;
   char *tms, *tmrate;
   int cmd = con->cmd;
-  int pasv_mode_open = 0;
+  bool pasv_mode_open = false;
   wgint expected_bytes = 0;
-  int rest_failed = 0;
+  bool rest_failed = false;
   int flags;
   wgint rd_size;
 
@@ -671,7 +671,7 @@ Error in server response, closing control connection.\n"));
 			  ? CONERROR : CONIMPOSSIBLE);
 		}
 
-	      pasv_mode_open = 1;  /* Flag to avoid accept port */
+	      pasv_mode_open = true;  /* Flag to avoid accept port */
 	      if (!opt.server_response)
 		logputs (LOG_VERBOSE, _("done.    "));
 	    } /* err==FTP_OK */
@@ -765,7 +765,7 @@ Error in server response, closing control connection.\n"));
 	  return err;
 	case FTPRESTFAIL:
 	  logputs (LOG_VERBOSE, _("\nREST failed, starting from scratch.\n"));
-	  rest_failed = 1;
+	  rest_failed = true;
 	  break;
 	case FTPOK:
 	  break;
@@ -927,7 +927,7 @@ Error in server response, closing control connection.\n"));
 	fp = fopen (con->target, "wb");
       else
 	{
-	  fp = fopen_excl (con->target, 1);
+	  fp = fopen_excl (con->target, true);
 	  if (!fp && errno == EEXIST)
 	    {
 	      /* We cannot just invent a new name and use it (which is
@@ -1166,7 +1166,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
       /* Print fetch message, if opt.verbose.  */
       if (opt.verbose)
 	{
-	  char *hurl = url_string (u, 1);
+	  char *hurl = url_string (u, true);
 	  char tmp[256];
 	  strcpy (tmp, "        ");
 	  if (count > 1)
@@ -1247,7 +1247,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	  /* Need to hide the password from the URL.  The `if' is here
              so that we don't do the needless allocation every
              time. */
-	  char *hurl = url_string (u, 1);
+	  char *hurl = url_string (u, true);
 	  logprintf (LOG_NONVERBOSE, "%s URL: %s [%s] -> \"%s\" [%d]\n",
 		     tms, hurl, number_to_static_string (len), locf, count);
 	  xfree (hurl);
@@ -1366,7 +1366,7 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
   struct fileinfo *orig;
   wgint local_size;
   time_t tml;
-  int dlthis;
+  bool dlthis;
 
   /* Increase the depth.  */
   ++depth;
@@ -1412,7 +1412,7 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
       con->target = url_file_name (u);
       err = RETROK;
 
-      dlthis = 1;
+      dlthis = true;
       if (opt.timestamping && f->type == FT_PLAINFILE)
         {
 	  struct_stat st;
@@ -1423,8 +1423,8 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
 	     .orig suffix. */
 	  if (!stat (con->target, &st))
 	    {
-              int eq_size;
-              int cor_val;
+              bool eq_size;
+              bool cor_val;
 	      /* Else, get it from the file.  */
 	      local_size = st.st_size;
 	      tml = st.st_mtime;
@@ -1437,14 +1437,14 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
                  values. Assumme sizes being equal for servers that lie
                  about file size.  */
               cor_val = (con->rs == ST_UNIX || con->rs == ST_WINNT);
-              eq_size = cor_val ? (local_size == f->size) : 1 ;
+              eq_size = cor_val ? (local_size == f->size) : true;
 	      if (f->tstamp <= tml && eq_size)
 		{
 		  /* Remote file is older, file sizes can be compared and
                      are both equal. */
                   logprintf (LOG_VERBOSE, _("\
 Remote file no newer than local file `%s' -- not retrieving.\n"), con->target);
-		  dlthis = 0;
+		  dlthis = false;
 		}
 	      else if (eq_size)
                 {
@@ -1494,7 +1494,7 @@ The sizes do not match (local %s) -- retrieving.\n\n"),
 			      logprintf (LOG_VERBOSE, _("\
 Already have correct symlink %s -> %s\n\n"),
 					 con->target, escnonprint (f->linkto));
-                              dlthis = 0;
+                              dlthis = false;
 			      break;
 			    }
 			}
@@ -1659,17 +1659,17 @@ Not descending to `%s' as it is excluded/not-included.\n"),
     return RETROK;
 }
 
-/* Return non-zero if S has a leading '/'  or contains '../' */
-static int
+/* Return true if S has a leading '/'  or contains '../' */
+static bool
 has_insecure_name_p (const char *s)
 {
   if (*s == '/')
-    return 1;
+    return true;
 
   if (strstr (s, "../") != 0)
-    return 1;
+    return true;
 
-  return 0;
+  return false;
 }
 
 /* A near-top-level function to retrieve the files in a directory.
@@ -1842,7 +1842,7 @@ ftp_loop (struct url *u, int *dt, struct url *proxy)
     }
   else
     {
-      int ispattern = 0;
+      bool ispattern = false;
       if (opt.ftp_glob)
 	{
 	  /* Treat the URL as a pattern if the file name part of the

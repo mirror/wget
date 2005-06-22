@@ -45,7 +45,7 @@ uerr_t retrieve_tree (const char *);
 
 /* These are really in html-url.c. */
 struct urlpos *get_urls_file (const char *);
-struct urlpos *get_urls_html (const char *, const char *, int *);
+struct urlpos *get_urls_html (const char *, const char *, bool *);
 void free_urlpos (struct urlpos *);
 
 #endif /* RECUR_H */

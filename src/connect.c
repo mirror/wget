@@ -165,14 +165,20 @@ sockaddr_size (const struct sockaddr *sa)
     }
 }
 
-static int
+/* Resolve the bind address specified via --bind-address and store it
+   to SA.  The resolved value is stored in a static variable and
+   reused after the first invocation of this function.
+
+   Returns true on success, false on failure.  */
+
+static bool
 resolve_bind_address (struct sockaddr *sa)
 {
   struct address_list *al;
 
   /* Make sure this is called only once.  opt.bind_address doesn't
      change during a Wget run.  */
-  static int called, should_bind;
+  static bool called, should_bind;
   static ip_address ip;
   if (called)
     {
@@ -180,7 +186,7 @@ resolve_bind_address (struct sockaddr *sa)
 	sockaddr_set_data (sa, &ip, 0);
       return should_bind;
     }
-  called = 1;
+  called = true;
 
   al = lookup_host (opt.bind_address, LH_BIND | LH_SILENT);
   if (!al)
@@ -189,8 +195,8 @@ resolve_bind_address (struct sockaddr *sa)
       logprintf (LOG_NOTQUIET,
 		 _("%s: unable to resolve bind address `%s'; disabling bind.\n"),
 		 exec_name, opt.bind_address);
-      should_bind = 0;
-      return 0;
+      should_bind = false;
+      return false;
     }
 
   /* Pick the first address in the list and use it as bind address.
@@ -200,8 +206,8 @@ resolve_bind_address (struct sockaddr *sa)
   address_list_release (al);
 
   sockaddr_set_data (sa, &ip, 0);
-  should_bind = 1;
-  return 1;
+  should_bind = true;
+  return true;
 }
 
 struct cwt_context {
@@ -500,13 +506,13 @@ accept_connection (int local_sock)
 }
 
 /* Get the IP address associated with the connection on FD and store
-   it to IP.  Return 1 on success, 0 otherwise.
+   it to IP.  Return true on success, false otherwise.
 
    If ENDPOINT is ENDPOINT_LOCAL, it returns the address of the local
    (client) side of the socket.  Else if ENDPOINT is ENDPOINT_PEER, it
    returns the address of the remote (peer's) side of the socket.  */
 
-int
+bool
 socket_ip_address (int sock, ip_address *ip, int endpoint)
 {
   struct sockaddr_storage storage;
@@ -521,7 +527,7 @@ socket_ip_address (int sock, ip_address *ip, int endpoint)
   else
     abort ();
   if (ret < 0)
-    return 0;
+    return false;
 
   switch (sockaddr->sa_family)
     {
@@ -535,7 +541,7 @@ socket_ip_address (int sock, ip_address *ip, int endpoint)
 	ADDRESS_IPV6_SCOPE (ip) = sa6->sin6_scope_id;
 #endif
 	DEBUGP (("conaddr is: %s\n", pretty_print_address (ip)));
-	return 1;
+	return true;
       }
 #endif
     case AF_INET:
@@ -544,25 +550,25 @@ socket_ip_address (int sock, ip_address *ip, int endpoint)
 	ip->type = IPV4_ADDRESS;
 	ADDRESS_IPV4_IN_ADDR (ip) = sa->sin_addr;
 	DEBUGP (("conaddr is: %s\n", pretty_print_address (ip)));
-	return 1;
+	return true;
       }
     default:
       abort ();
     }
 }
 
-/* Return non-zero if the error from the connect code can be
-   considered retryable.  Wget normally retries after errors, but the
-   exception are the "unsupported protocol" type errors (possible on
-   IPv4/IPv6 dual family systems) and "connection refused".  */
+/* Return true if the error from the connect code can be considered
+   retryable.  Wget normally retries after errors, but the exception
+   are the "unsupported protocol" type errors (possible on IPv4/IPv6
+   dual family systems) and "connection refused".  */
 
-int
+bool
 retryable_socket_connect_error (int err)
 {
   /* Have to guard against some of these values not being defined.
      Cannot use a switch statement because some of the values might be
      equal.  */
-  if (0
+  if (false
 #ifdef EAFNOSUPPORT
       || err == EAFNOSUPPORT
 #endif
@@ -582,7 +588,7 @@ retryable_socket_connect_error (int err)
 	 instead of EAFNOSUPPORT and such.  */
       || err == EINVAL
       )
-    return 0;
+    return false;
 
   if (!opt.retry_connrefused)
     if (err == ECONNREFUSED
@@ -593,9 +599,9 @@ retryable_socket_connect_error (int err)
 	|| err == EHOSTUNREACH	/* host is unreachable */
 #endif
 	)
-      return 0;
+      return false;
 
-  return 1;
+  return true;
 }
 
 /* Wait for a single descriptor to become available, timing out after
@@ -632,7 +638,7 @@ select_fd (int fd, double maxtime, int wait_for)
   return result;
 }
 
-int
+bool
 test_socket_open (int sock)
 {
   fd_set check_set;
@@ -652,10 +658,10 @@ test_socket_open (int sock)
   if (select (sock + 1, &check_set, NULL, NULL, &to) == 0)
     {
       /* Connection is valid (not EOF), so continue */
-      return 1;
+      return true;
     }
   else
-    return 0;
+    return false;
 }
 
 /* Basic socket operations, mostly EINTR wrappers.  */
@@ -805,7 +811,7 @@ fd_transport_context (int fd)
     }									\
 } while (0)
 
-static int
+static bool
 poll_internal (int fd, struct transport_info *info, int wf, double timeout)
 {
   if (timeout == -1)
@@ -820,9 +826,9 @@ poll_internal (int fd, struct transport_info *info, int wf, double timeout)
       if (test == 0)
 	errno = ETIMEDOUT;
       if (test <= 0)
-	return 0;
+	return false;
     }
-  return 1;
+  return true;
 }
 
 /* Read no more than BUFSIZE bytes of data from FD, storing them to

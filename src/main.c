@@ -660,7 +660,7 @@ main (int argc, char *const *argv)
   char **url, **t;
   int i, ret, longindex;
   int nurl, status;
-  int append_to_log = 0;
+  bool append_to_log = false;
 
   i18n_initialize ();
 
@@ -719,7 +719,7 @@ main (int argc, char *const *argv)
 	  else
 	    {
 	      /* NEG is true for `--no-FOO' style boolean options. */
-	      int neg = val & BOOLEAN_NEG_MARKER;
+	      bool neg = !!(val & BOOLEAN_NEG_MARKER);
 	      setoptval (opt->data, neg ? "0" : "1", opt->long_name);
 	    }
 	  break;
@@ -731,7 +731,7 @@ main (int argc, char *const *argv)
 	  break;
 	case OPT__APPEND_OUTPUT:
 	  setoptval ("logfile", optarg, opt->long_name);
-	  append_to_log = 1;
+	  append_to_log = true;
 	  break;
 	case OPT__EXECUTE:
 	  run_command (optarg);
@@ -775,7 +775,7 @@ main (int argc, char *const *argv)
 	    /* The wgetrc commands are named noparent and noclobber,
 	       so we must revert the meaning of the cmdline options
 	       before passing the value to setoptval.  */
-	    int flag = 1;
+	    bool flag = true;
 	    if (optarg)
 	      flag = (*optarg == '1' || TOLOWER (*optarg) == 'y'
 		      || (TOLOWER (optarg[0]) == 'o'
@@ -877,7 +877,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
   if (opt.output_document)
     {
       extern FILE *output_stream;
-      extern int output_stream_regular;
+      extern bool output_stream_regular;
 
       if (HYPHENP (opt.output_document))
 	output_stream = stdout;
@@ -892,7 +892,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
 	      exit (1);
 	    }
 	  if (fstat (fileno (output_stream), &st) == 0 && S_ISREG (st.st_mode))
-	    output_stream_regular = 1;
+	    output_stream_regular = true;
 	}
     }
 

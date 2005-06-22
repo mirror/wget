@@ -153,7 +153,7 @@ struct pool {
   char *contents;		/* pointer to the contents. */
   int size;			/* size of the pool. */
   int tail;			/* next available position index. */
-  int resized;			/* whether the pool has been resized
+  bool resized;			/* whether the pool has been resized
 				   using malloc. */
 
   char *orig_contents;		/* original pool contents, usually
@@ -170,7 +170,7 @@ struct pool {
   P->contents = (initial_storage);				\
   P->size = (initial_size);					\
   P->tail = 0;							\
-  P->resized = 0;						\
+  P->resized = false;						\
   P->orig_contents = P->contents;				\
   P->orig_size = P->size;					\
 } while (0)
@@ -218,7 +218,7 @@ struct pool {
   P->contents = P->orig_contents;		\
   P->size = P->orig_size;			\
   P->tail = 0;					\
-  P->resized = 0;				\
+  P->resized = false;				\
 } while (0)
 
 /* Used for small stack-allocated memory chunks that might grow.  Like
@@ -247,7 +247,7 @@ struct pool {
 	  void *ga_new = xmalloc (ga_newsize * sizeof (type));			\
 	  memcpy (ga_new, basevar, (sizevar) * sizeof (type));			\
 	  (basevar) = ga_new;							\
-	  resized = 1;								\
+	  resized = true;							\
 	}									\
       (sizevar) = ga_newsize;							\
     }										\
@@ -385,7 +385,7 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
 	 never lengthen it.  */
       const char *from = beg;
       char *to;
-      int squash_newlines = flags & AP_TRIM_BLANKS;
+      bool squash_newlines = !!(flags & AP_TRIM_BLANKS);
 
       POOL_GROW (pool, end - beg);
       to = pool->contents + pool->tail;
@@ -680,15 +680,15 @@ find_comment_end (const char *beg, const char *end)
   return NULL;
 }
 
-/* Return non-zero of the string inside [b, e) are present in hash
-   table HT.  */
+/* Return true if the string containing of characters inside [b, e) is
+   present in hash table HT.  */
 
-static int
+static bool
 name_allowed (const struct hash_table *ht, const char *b, const char *e)
 {
   char *copy;
   if (!ht)
-    return 1;
+    return true;
   BOUNDED_TO_ALLOCA (b, e, copy);
   return hash_table_get (ht, copy) != NULL;
 }
@@ -753,7 +753,7 @@ map_html_tags (const char *text, int size,
 
   struct attr_pair attr_pair_initial_storage[8];
   int attr_pair_size = countof (attr_pair_initial_storage);
-  int attr_pair_resized = 0;
+  bool attr_pair_resized = false;
   struct attr_pair *pairs = attr_pair_initial_storage;
 
   if (!size)
@@ -765,7 +765,7 @@ map_html_tags (const char *text, int size,
     int nattrs, end_tag;
     const char *tag_name_begin, *tag_name_end;
     const char *tag_start_position;
-    int uninteresting_tag;
+    bool uninteresting_tag;
 
   look_for_tag:
     POOL_REWIND (&pool);
@@ -828,10 +828,10 @@ map_html_tags (const char *text, int size,
     if (!name_allowed (allowed_tags, tag_name_begin, tag_name_end))
       /* We can't just say "goto look_for_tag" here because we need
          the loop below to properly advance over the tag's attributes.  */
-      uninteresting_tag = 1;
+      uninteresting_tag = true;
     else
       {
-	uninteresting_tag = 0;
+	uninteresting_tag = false;
 	convert_and_copy (&pool, tag_name_begin, tag_name_end, AP_DOWNCASE);
       }
 
@@ -890,7 +890,7 @@ map_html_tags (const char *text, int size,
 	    SKIP_WS (p);
 	    if (*p == '\"' || *p == '\'')
 	      {
-		int newline_seen = 0;
+		bool newline_seen = false;
 		char quote_char = *p;
 		attr_raw_value_begin = p;
 		ADVANCE (p);
@@ -908,7 +908,7 @@ map_html_tags (const char *text, int size,
 			   comes first.  Such a tag terminated at `>'
 			   is discarded.  */
 			p = attr_value_begin;
-			newline_seen = 1;
+			newline_seen = true;
 			continue;
 		      }
 		    else if (newline_seen && *p == '>')
