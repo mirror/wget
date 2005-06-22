@@ -1,5 +1,9 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* config.sub, config.guess: Updated from canonical location.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Assume existence of gettimeofday and select.
 	gettimeofday exists on all platforms we care about (except for
 	Windows where Windows-specific functions are used instead), and
