@@ -50,10 +50,10 @@ patch survives the travel unchanged so that we can feed it to the
 First, please make sure that you are working with the latest version
 of the source -- changing obsolete code is a waste of time.  Working
 on the latest release is acceptable in most cases, but it is better
-yet to download the very latest sources from the public CVS server and
-work on those.  The web page at <http://sunsite.dk/wget/> explains
-what CVS is and how to check out Wget's source code from the public
-repository.
+yet to download the very latest sources from the public Subversionn
+server and work on those.  The web page at
+<http://www.gnu.org/software/wget/> explains how to get the source
+code from the repository.
 
 Patches are created using the `diff' program.  When making patches,
 please use the `-u' option, or if your diff doesn't support it, `-c'.
@@ -85,23 +85,22 @@ the `-r' option to compare entire directories:
 If you do that, please be careful not to include the differences to
 automatically generated files, such as `.info*'.
 
-If you are using CVS, generating diffs is much simpler -- after
+If you are using Subversion, generating diffs is even simpler -- after
 changing the files, all you need to do is run the following command
 from Wget's top-level directory:
 
-    cvs diff -u > patch.txt
+    svn diff > patch.txt
 
-If you run on Windows and don't have `diff' handy, please get one.
+If you run on Windows and don't have `diff' handy, please obtain it.
 It's extremely hard to review changes to files unless they're in the
 form of a patch.  If you really cannot use a variant of `diff', then
-mail us the whole new file and specify which version of Wget you
+mail us the whole new file and indicate which version of Wget you
 changed; that way we will be able to generate the diff ourselves.
 
 Finally, if your changes introduce new files, or if they change the
 old files past all recognition (e.g. by completely reimplementing the
-old stuff), sending a patch obviously doesn't make sense.  In that
-case, just attach the files along with an explanation of what is being
-changed.
+old stuff), sending a patch might not make sense.  In that case, just
+attach the files along with an explanation of what is being changed.
 
 ** Standards and coding style.
 ------------------------------
