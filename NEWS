@@ -5,6 +5,14 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget 1.11.
+
+** The "lockable boolean" argument type is no longer supported.  It
+was only used by the passive_ftp .wgetrc setting.  If you're running
+broken scripts or Perl modules that unconditionally specify
+`--passive-ftp' and your firewall disallows it, you can override them
+by replacing wget with a script that execs wget "$@" --no-passive-ftp.
+
 * Changes in Wget 1.10.
 
 ** Downloading files larger than 2GB, sometimes referred to as "large

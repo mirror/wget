@@ -618,7 +618,7 @@ Error in server response, closing control connection.\n"));
   /* If anything is to be retrieved, PORT (or PASV) must be sent.  */
   if (cmd & (DO_LIST | DO_RETR))
     {
-      if (opt.ftp_pasv > 0)
+      if (opt.ftp_pasv)
 	{
   	  ip_address passive_addr;
   	  int        passive_port;

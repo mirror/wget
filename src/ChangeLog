@@ -1,5 +1,9 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* init.c (cmd_lockable_boolean): Removed.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* cookies.c (struct cookie): Use 1-bit bitfields for booleans
 	which makes the structure takes less space at no cost in
 	complexity.

@@ -2459,12 +2459,7 @@ reject =
 
 The complete set of commands is listed below.  Legal values are listed
 after the @samp{=}.  Simple Boolean values can be set or unset using
-@samp{on} and @samp{off} or @samp{1} and @samp{0}.  A fancier kind of
-Boolean allowed in some cases is the @dfn{lockable Boolean}, which may
-be set to @samp{on}, @samp{off}, @samp{always}, or @samp{never}.  If an
-option is set to @samp{always} or @samp{never}, that value will be
-locked in for the duration of the Wget invocation---command-line options
-will not override.
+@samp{on} and @samp{off} or @samp{1} and @samp{0}.
 
 Some commands take pseudo-arbitrary values.  @var{address} values can be
 hostnames or dotted-quad IP addresses.  @var{n} can be any positive
@@ -2717,12 +2712,9 @@ Set the output filename---the same as @samp{-O @var{file}}.
 Download all ancillary documents necessary for a single @sc{html} page to
 display properly---the same as @samp{-p}.
 
-@item passive_ftp = on/off/always/never
+@item passive_ftp = on/off
 Change setting of passive @sc{ftp}, equivalent to the
-@samp{--passive-ftp} option.  Some scripts and @samp{.pm} (Perl
-module) files download files using @samp{wget --passive-ftp}.  If your
-firewall does not allow this, you can set @samp{passive_ftp = never}
-to override the command-line.
+@samp{--passive-ftp} option.
 
 @itemx password = @var{string}
 Specify password @var{string} for both @sc{ftp} and @sc{http} file retrieval. 
