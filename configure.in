@@ -151,27 +151,31 @@ dnl
 AC_C_CONST
 AC_C_INLINE
 AC_C_VOLATILE
+dnl Needed for GNU md5 code.
 AC_C_BIGENDIAN
-AC_C_PROTOTYPES
 
 dnl
 dnl Checks for header files that might be missing.
 dnl
 
 dnl Check for basic headers, even those we assume the presence of.
-dnl This is because Autoconf default includes check for STDC_HEADERS,
-dnl HAVE_SYS_TYPES_H, etc. before including them.
+dnl This is because test programs used by Autoconf macros check for
+dnl STDC_HEADERS, HAVE_SYS_TYPES_H, etc. before including them.
+dnl Without these checks they will fail to be included in test
+dnl programs, which will subsequently fail.
 AC_HEADER_STDC
-AC_HEADER_STDBOOL
 AC_CHECK_HEADERS(sys/types.h sys/stat.h)
-dnl Now check for the others.
+
+dnl Now the real checks:
+AC_HEADER_STDBOOL
 AC_CHECK_HEADERS(string.h strings.h limits.h unistd.h sys/time.h)
 AC_CHECK_HEADERS(termios.h sys/ioctl.h sys/select.h utime.h sys/utime.h)
-AC_CHECK_HEADERS(stdint.h inttypes.h signal.h setjmp.h pwd.h)
-AC_HEADER_TIME
+AC_CHECK_HEADERS(stdint.h inttypes.h setjmp.h pwd.h)
 
 dnl
-dnl Check integral type sizes.
+dnl Check sizes of signed integer types.  These are used to find n-bit
+dnl integral types on older systems that fail to provide intN_t and
+dnl uintN_t typedefs.
 dnl
 AC_CHECK_SIZEOF(short)
 AC_CHECK_SIZEOF(int)
@@ -198,9 +202,7 @@ AC_CHECK_TYPES(sig_atomic_t, [], [], [
 #if HAVE_INTTYPES_H
 # include <inttypes.h>
 #endif
-#ifdef HAVE_SIGNAL_H
-# include <signal.h>
-#endif
+#include <signal.h>
 ])
 
 dnl
@@ -215,7 +217,7 @@ AC_CHECK_FUNCS(usleep ftello sigblock sigsetjmp)
 AC_CHECK_FUNCS(symlink isatty)
 
 dnl
-dnl Call Wget's local macros defined in aclocal.
+dnl Call Wget-specific macros defined in aclocal.
 dnl
 WGET_STRUCT_UTIMBUF
 WGET_SOCKLEN_T

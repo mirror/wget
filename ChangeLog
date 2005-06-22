@@ -1,5 +1,10 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Don't check for signal.h.  Remove the
+	AC_HEADER_TIME check.  Remove the test for ANSI C prototypes.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Check for C99 conformant stdbool.h.
 
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
