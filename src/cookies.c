@@ -258,8 +258,7 @@ store_cookie (struct cookie_jar *jar, struct cookie *cookie)
   hash_table_put (jar->chains, chain_key, cookie);
   ++jar->cookie_count;
 
-#ifdef ENABLE_DEBUG
-  if (opt.debug)
+  IF_DEBUG
     {
       time_t exptime = cookie->expiry_time;
       DEBUGP (("\nStored cookie %s %d%s %s <%s> <%s> [expiry %s] %s %s\n",
@@ -271,7 +270,6 @@ store_cookie (struct cookie_jar *jar, struct cookie *cookie)
 	       cookie->expiry_time ? datetime_str (&exptime) : "none",
 	       cookie->attr, cookie->value));
     }
-#endif
 }
 
 /* Discard a cookie matching COOKIE's domain, port, path, and

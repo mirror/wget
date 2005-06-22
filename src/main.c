@@ -112,9 +112,9 @@ static void print_version (void);
 #endif
 
 #ifdef ENABLE_DEBUG
-# define IF_DEBUG(x) x
+# define WHEN_DEBUG(x) x
 #else
-# define IF_DEBUG(x) NULL
+# define WHEN_DEBUG(x) NULL
 #endif
 
 struct cmdline_option {
@@ -158,7 +158,7 @@ struct cmdline_option option_data[] =
     { "convert-links", 'k', OPT_BOOLEAN, "convertlinks", -1 },
     { "cookies", 0, OPT_BOOLEAN, "cookies", -1 },
     { "cut-dirs", 0, OPT_VALUE, "cutdirs", -1 },
-    { IF_DEBUG ("debug"), 'd', OPT_BOOLEAN, "debug", -1 },
+    { WHEN_DEBUG ("debug"), 'd', OPT_BOOLEAN, "debug", -1 },
     { "delete-after", 0, OPT_BOOLEAN, "deleteafter", -1 },
     { "directories", 0, OPT_BOOLEAN, "dirstruct", -1 },
     { "directory-prefix", 'P', OPT_VALUE, "dirprefix", -1 },
@@ -254,7 +254,7 @@ struct cmdline_option option_data[] =
     { "waitretry", 0, OPT_VALUE, "waitretry", -1 },
   };
 
-#undef IF_DEBUG
+#undef WHEN_DEBUG
 #undef IF_SSL
 
 /* Return a string that contains S with "no-" prepended.  The string

@@ -1,5 +1,15 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* openssl.c, connect.c, host.c: Replace instances of #ifdef
+	ENABLE_DEBUG if (opt.debug) {...} #endif with IF_DEBUG {...}.
+
+	* main.c: Rename the IF_DEBUG defined here to WHEN_DEBUG.
+
+	* wget.h (IF_DEBUG): New macro.
+	(DEBUGP): Define in terms of IF_DEBUG.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (gethttp): Only handle --set-cookies (and assert that
 	cookie jar exists) if opt.cookies is true.  Failure to do so
 	triggered the assert when --no-cookies was used and the server

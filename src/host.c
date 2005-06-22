@@ -622,8 +622,7 @@ cache_store (const char *host, struct address_list *al)
   ++al->refcount;
   hash_table_put (host_name_addresses_map, xstrdup_lower (host), al);
 
-#ifdef ENABLE_DEBUG
-  if (opt.debug)
+  IF_DEBUG
     {
       int i;
       debug_logprintf ("Caching %s =>", host);
@@ -631,7 +630,6 @@ cache_store (const char *host, struct address_list *al)
 	debug_logprintf (" %s", pretty_print_address (al->addresses + i));
       debug_logprintf ("\n");
     }
-#endif
 }
 
 /* Remove HOST from the DNS cache.  Does nothing is HOST is not in

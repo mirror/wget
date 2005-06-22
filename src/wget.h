@@ -98,13 +98,16 @@ so, delete this exception statement from your version.  */
 # define UNLIKELY(exp) (exp)
 #endif
 
-/* Print X if debugging is enabled; a no-op otherwise.  */
+/* Execute the following statement if debugging is both enabled at
+   compile-time and requested at run-time; a no-op otherwise.  */
 
 #ifdef ENABLE_DEBUG
-# define DEBUGP(x) do if (UNLIKELY (opt.debug)) {debug_logprintf x;} while (0)
-#else  /* not ENABLE_DEBUG */
-# define DEBUGP(x) do {} while (0)
-#endif /* not ENABLE_DEBUG */
+# define IF_DEBUG if (UNLIKELY (opt.debug))
+#else
+# define IF_DEBUG if (0)
+#endif
+
+#define DEBUGP(x) do { IF_DEBUG { debug_logprintf x; } } while (0)
 
 /* Define an integer type that works for file sizes, content lengths,
    and such.  Normally we could just use off_t, but off_t is always

@@ -422,8 +422,7 @@ ssl_check_certificate (int fd, const char *host)
       goto no_cert;		/* must bail out since CERT is NULL */
     }
 
-#ifdef ENABLE_DEBUG
-  if (opt.debug)
+  IF_DEBUG
     {
       char *subject = X509_NAME_oneline (X509_get_subject_name (cert), 0, 0);
       char *issuer = X509_NAME_oneline (X509_get_issuer_name (cert), 0, 0);
@@ -432,7 +431,6 @@ ssl_check_certificate (int fd, const char *host)
       OPENSSL_free (subject);
       OPENSSL_free (issuer);
     }
-#endif
 
   vresult = SSL_get_verify_result (ssl);
   if (vresult != X509_V_OK)
