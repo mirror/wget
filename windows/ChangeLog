@@ -1,5 +1,9 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* Makefile.src*: Add the config.h dependency.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* Makefile.src, Makefile.src.bor, Makefile.src.mingw: Make OBJS
 	depend on all headers.
 

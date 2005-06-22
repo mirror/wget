@@ -1,5 +1,9 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* Makefile.in ($(OBJ)): Add the config.h dependency.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* openssl.c, connect.c, host.c: Replace instances of #ifdef
 	ENABLE_DEBUG if (opt.debug) {...} #endif with IF_DEBUG {...}.
 

@@ -84,7 +84,7 @@ wget.exe: $(OBJ)
 	$(LD) @<< $(LDFLAGS) /out:$@ $(OBJ) $(LIBS)
 <<
 
-$(OBJ): config-post.h connect.h convert.h cookies.h ftp.h gen-md5.h \
+$(OBJ): config-post.h config.h connect.h convert.h cookies.h ftp.h gen-md5.h \
         getopt.h gnu-md5.h hash.h host.h html-parse.h http-ntlm.h   \
         init.h log.h mswindows.h netrc.h options.h progress.h       \
         ptimer.h recur.h res.h retr.h safe-ctype.h ssl.h sysdep.h   \
