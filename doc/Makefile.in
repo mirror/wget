@@ -48,7 +48,7 @@ INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 RM = rm -f
 
-TEXI2POD     = texi2pod.pl
+TEXI2POD     = $(srcdir)/texi2pod.pl
 POD2MAN      = @POD2MAN@
 MAN          = wget.$(manext)
 WGETRC       = $(sysconfdir)/wgetrc
@@ -68,12 +68,8 @@ $(SAMPLERCTEXI): $(srcdir)/sample.wgetrc
 wget.info: $(srcdir)/wget.texi $(SAMPLERCTEXI) $(srcdir)/version.texi
 	$(MAKEINFO) -I$(srcdir) $(srcdir)/wget.texi
 
-$(TEXI2POD): $(srcdir)/$(TEXI2POD).in
-	sed 's,^#! /usr/bin/perl,#! @PERL@,' $? > $@
-	chmod u+x $@
-
-wget.pod: $(srcdir)/wget.texi $(TEXI2POD) $(srcdir)/version.texi
-	./$(TEXI2POD) $(srcdir)/wget.texi $@
+wget.pod: $(srcdir)/wget.texi $(srcdir)/version.texi
+	$(TEXI2POD) $(srcdir)/wget.texi $@
 
 $(MAN): wget.pod
 	$(POD2MAN) --center="GNU Wget" --release="GNU Wget @VERSION@" $? > $@
@@ -166,7 +162,7 @@ clean:
 
 distclean: clean
 	$(RM) Makefile
-	$(RM) $(MAN) $(TEXI2POD)
+	$(RM) $(MAN)
 
 realclean: distclean
 	$(RM) wget.info*

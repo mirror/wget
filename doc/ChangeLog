@@ -1,5 +1,13 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* texi2pod.pl: Locate perl using the "env" program, so we don't
+	need to modify texi2pod.
+
+	* Makefile.in (wget.pod): Work with texi2pod.pl directly instead
+	of generating it from texi2pod.pl.in.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi (Wgetrc Commands): Remove the "lockable boolean"
 	feature.
 
