@@ -611,7 +611,6 @@ retryable_socket_connect_error (int err)
 int
 select_fd (int fd, double maxtime, int wait_for)
 {
-#ifdef HAVE_SELECT
   fd_set fdset;
   fd_set *rd = NULL, *wr = NULL;
   struct timeval tmout;
@@ -632,23 +631,11 @@ select_fd (int fd, double maxtime, int wait_for)
   while (result < 0 && errno == EINTR);
 
   return result;
-
-#else  /* not HAVE_SELECT */
-
-  /* If select() unavailable, just return 1.  In most usages in Wget,
-     this is the appropriate response -- "if we can't poll, go ahead
-     with the blocking operation".  If a specific part of code needs
-     different behavior, it can use #ifdef HAVE_SELECT to test whether
-     polling really occurs.  */
-  return 1;
-
-#endif /* not HAVE_SELECT */
 }
 
 int
 test_socket_open (int sock)
 {
-#ifdef HAVE_SELECT
   fd_set check_set;
   struct timeval to;
 
@@ -670,10 +657,6 @@ test_socket_open (int sock)
     }
   else
     return 0;
-#else
-  /* Without select, it's hard to know for sure. */
-  return 1;
-#endif
 }
 
 /* Basic socket operations, mostly EINTR wrappers.  */

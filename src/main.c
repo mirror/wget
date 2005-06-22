@@ -900,21 +900,25 @@ Can't timestamp and not clobber old files at the same time.\n"));
   ws_startup ();
 #endif
 
+#ifdef SIGHUP
   /* Setup the signal handler to redirect output when hangup is
      received.  */
-#ifdef HAVE_SIGNAL
   if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
     signal(SIGHUP, redirect_output_signal);
+#endif
   /* ...and do the same for SIGUSR1.  */
+#ifdef SIGUSR1
   signal (SIGUSR1, redirect_output_signal);
+#endif
+#ifdef SIGPIPE
   /* Writing to a closed socket normally signals SIGPIPE, and the
      process exits.  What we want is to ignore SIGPIPE and just check
      for the return value of write().  */
   signal (SIGPIPE, SIG_IGN);
+#endif
 #ifdef SIGWINCH
   signal (SIGWINCH, progress_handle_sigwinch);
 #endif
-#endif /* HAVE_SIGNAL */
 
   status = RETROK;		/* initialize it, just-in-case */
   /* Retrieve the URLs from argument list.  */
@@ -986,7 +990,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
     return 1;
 }
 
-#ifdef HAVE_SIGNAL
+#if defined(SIGHUP) || defined(SIGUSR1)
 /* Hangup signal handler.  When wget receives SIGHUP or SIGUSR1, it
    will proceed operation as usual, trying to write into a log file.
    If that is impossible, the output will be turned off.  */
@@ -1001,4 +1005,4 @@ redirect_output_signal (int sig)
   progress_schedule_redirect ();
   signal (sig, redirect_output_signal);
 }
-#endif /* HAVE_SIGNAL */
+#endif

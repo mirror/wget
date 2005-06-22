@@ -1,3 +1,13 @@
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Assume existence of gettimeofday and select.
+	gettimeofday exists on all platforms we care about (except for
+	Windows where Windows-specific functions are used instead), and
+	select exists virtually everywhere.
+
+	* configure.in: Assume existence of strerror, signal, strstr, and
+	memmove, which are all required by ANSI C.
+
 2005-06-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* Makefile.cvs: Renamed to Makefile.svn.

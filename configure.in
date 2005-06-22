@@ -208,10 +208,10 @@ dnl
 AC_FUNC_ALLOCA
 AC_FUNC_MMAP
 AC_FUNC_FSEEKO
-AC_CHECK_FUNCS(strdup strstr strcasecmp strncasecmp strpbrk memmove)
-AC_CHECK_FUNCS(gettimeofday mktime strptime strerror snprintf vsnprintf)
-AC_CHECK_FUNCS(usleep select ftello sigblock sigsetjmp signal)
-AC_CHECK_FUNCS(symlink access isatty)
+AC_CHECK_FUNCS(strdup strcasecmp strncasecmp strpbrk)
+AC_CHECK_FUNCS(mktime strptime snprintf vsnprintf)
+AC_CHECK_FUNCS(usleep ftello sigblock sigsetjmp)
+AC_CHECK_FUNCS(symlink isatty)
 
 dnl
 dnl Call Wget's local macros defined in aclocal.

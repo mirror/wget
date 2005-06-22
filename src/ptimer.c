@@ -72,23 +72,19 @@ so, delete this exception statement from your version.  */
 #include "wget.h"
 #include "ptimer.h"
 
-/* Depending on the OS and availability of gettimeofday(), one and
-   only one of PTIMER_POSIX, PTIMER_GETTIMEOFDAY, PTIMER_WINDOWS, or
-   PTIMER_TIME will be defined.  */
+/* Depending on the OS, one and only one of PTIMER_POSIX,
+   PTIMER_GETTIMEOFDAY, or PTIMER_WINDOWS will be defined.  */
 
 #undef PTIMER_POSIX
 #undef PTIMER_GETTIMEOFDAY
-#undef PTIMER_TIME
 #undef PTIMER_WINDOWS
 
 #if defined(WINDOWS) || defined(__CYGWIN__)
 # define PTIMER_WINDOWS		/* use Windows timers */
 #elif _POSIX_TIMERS - 0 > 0
 # define PTIMER_POSIX		/* use POSIX timers (clock_gettime) */
-#elif defined(HAVE_GETTIMEOFDAY)
-# define PTIMER_GETTIMEOFDAY	/* use gettimeofday */
 #else
-# define PTIMER_TIME
+# define PTIMER_GETTIMEOFDAY	/* use gettimeofday */
 #endif
 
 #ifdef PTIMER_POSIX
@@ -224,39 +220,6 @@ gettimeofday_resolution (void)
   return 0.1;
 }
 #endif	/* PTIMER_GETTIMEOFDAY */
-
-#ifdef PTIMER_TIME
-/* Elapsed time measurement using the time(2) call: system time is
-   held in time_t, retrieved using time, and resolution is 1 second.
-
-   This method is a catch-all for non-Windows systems without
-   gettimeofday -- e.g. DOS or really old or non-standard Unix
-   systems.  */
-
-typedef time_t ptimer_system_time;
-
-#define IMPL_measure time_measure
-#define IMPL_diff time_diff
-#define IMPL_resolution time_resolution
-
-static inline void
-time_measure (ptimer_system_time *pst)
-{
-  time (pst);
-}
-
-static inline double
-time_diff (ptimer_system_time *pst1, ptimer_system_time *pst2)
-{
-  return 1000.0 * (*pst1 - *pst2);
-}
-
-static inline double
-time_resolution (void)
-{
-  return 1;
-}
-#endif	/* PTIMER_TIME */
 
 #ifdef PTIMER_WINDOWS
 /* Elapsed time measurement on Windows: where high-resolution timers

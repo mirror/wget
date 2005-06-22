@@ -1,5 +1,20 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* connect.c (select_fd): Expect select() to exist.
+
+	* utils.c (xsleep): Always use select() as sleep fallback on
+	non-Windows platforms.
+
+	* ptimer.c: Delete the implementation of PTIMER_TIME.
+
+	* main.c: Assume existence of signal(), test for different signal
+	names instead.
+
+	* cmpt.c: Better document reasons why certain functions are
+	included.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* Makefile.in: Remove the manually maintained dependency list;
 	make all object files depend on every header.
 

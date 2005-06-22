@@ -81,10 +81,8 @@ so, delete this exception statement from your version.  */
 #endif
 
 #undef USE_SIGNAL_TIMEOUT
-#ifdef HAVE_SIGNAL
-# if defined(HAVE_SIGSETJMP) || defined(HAVE_SIGBLOCK)
-#  define USE_SIGNAL_TIMEOUT
-# endif
+#if defined(HAVE_SIGSETJMP) || defined(HAVE_SIGBLOCK)
+# define USE_SIGNAL_TIMEOUT
 #endif
 
 #include "wget.h"
@@ -1800,12 +1798,11 @@ xsleep (double seconds)
       seconds -= (long) seconds;
     }
   usleep (seconds * 1000000);
-#elif defined(HAVE_SELECT)
-  /* Note that, although Windows supports select, this sleeping
-     strategy doesn't work there because Winsock's select doesn't
-     implement timeout when it is passed NULL pointers for all fd
-     sets.  (But it does work under Cygwin, which implements its own
-     select.)  */
+#else /* fall back select */
+  /* Note that, although Windows supports select, it can't be used to
+     implement sleeping because Winsock's select doesn't implement
+     timeout when it is passed NULL pointers for all fd sets.  (But it
+     does under Cygwin, which implements Unix-compatible select.)  */
   struct timeval sleep;
   sleep.tv_sec = (long) seconds;
   sleep.tv_usec = 1000000 * (seconds - (long) seconds);
@@ -1814,8 +1811,6 @@ xsleep (double seconds)
      interrupted by a signal.  But without knowing how long we've
      actually slept, we can't return to sleep.  Using gettimeofday to
      track sleeps is slow and unreliable due to clock skew.  */
-#else  /* none of the above */
-  sleep (seconds);
 #endif
 }
 

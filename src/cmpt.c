@@ -41,8 +41,19 @@ so, delete this exception statement from your version.  */
 
 #include "wget.h"
 
-/* Some systems don't have some str* functions in libc.  Here we
-   define them.  The same goes for strptime.  */
+/* Some systems lack certain functions normally taken for granted.
+   For example, Windows doesn't have strptime, and some systems lack
+   strcasecmp and strncasecmp.  This file should contain fallback
+   implementations of the missing functions.  It should *not* define
+   new Wget-specific functions -- those should placed in utils.c or
+   elsewhere.  */
+
+/* strcasecmp and strncasecmp apparently originated with BSD 4.4.
+   SUSv3 seems to be the only standard out there (that I can find)
+   that requires their existence, so there are systems that lack them
+   still in use.  Note that these don't get defined under Windows
+   because mswindows.h defines them to the equivalent Windows
+   functions stricmp and strnicmp.  */
 
 #ifndef HAVE_STRCASECMP
 /* From GNU libc.  */
@@ -99,6 +110,9 @@ strncasecmp (const char *s1, const char *s2, size_t n)
   return c1 - c2;
 }
 #endif /* not HAVE_STRNCASECMP */
+
+/* strpbrk is required by POSIX and C99, but it is missing from some
+   older systems and from Windows.  */
 
 #ifndef HAVE_STRPBRK
 /* Find the first ocurrence in S of any character in ACCEPT.  */
@@ -117,6 +131,10 @@ strpbrk (const char *s, const char *accept)
   return 0;
 }
 #endif /* HAVE_STRPBRK */
+
+/* mktime is a BSD 4.3 function also required by POSIX and C99.  I
+   don't know if there is a widely used system that lacks it, so it
+   might be a candidate for removal.  */
 
 #ifndef HAVE_MKTIME
 /* From GNU libc 2.0.  */
@@ -390,7 +408,10 @@ __mktime_internal (tp, convert, offset)
 weak_alias (mktime, timelocal)
 #endif
 #endif /* not HAVE_MKTIME */
-
+
+/* strptime is required by POSIX, but it is missing from Windows,
+   which means we must keep a fallback implementation.  It is
+   reportedly missing or broken on many older systems as well.  */
 
 #ifndef HAVE_STRPTIME
 /* From GNU libc 2.1.3.  */
@@ -1314,14 +1335,17 @@ const unsigned short int __mon_yday[2][13] =
     { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 }
   };
 #endif
+
+/* fnmatch is required by POSIX, but we include an implementation for
+   the sake of systems that don't have it, most notably Windows.  Some
+   systems do have fnmatch, but Apache's installation process installs
+   its own fnmatch.h (incompatible with the system one!) in a system
+   include directory, effectively rendering fnmatch unusable.  This
+   has been fixed with Apache 2, where fnmatch has been moved to apr
+   and given a prefix, but many systems out there are still (as of
+   this writing in 2005) broken and we must cater to them.
 
-/* fnmatch is defined by POSIX, but we include an implementation for
-   the sake of systems that don't have it.  Some systems do have
-   fnmatch, but Apache installs its own fnmatch.h (incompatible with
-   the system one) in a system include directory, effectively
-   rendering fnmatch unusable.
-
-   Additionally according to anecdotal evidence and conventional
+   Additionally, according to anecdotal evidence and conventional
    wisdom I lack courage to challenge, many implementations of fnmatch
    are notoriously buggy and unreliable.  So we use our version by
    default, except when compiling under systems where fnmatch is known
