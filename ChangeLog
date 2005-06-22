@@ -1,5 +1,9 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Check for C99 conformant stdbool.h.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* MAILING-LIST: Remove reference to the obsolete `wget-cvs'
 	mailing list.
 

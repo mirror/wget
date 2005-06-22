@@ -162,6 +162,7 @@ dnl Check for basic headers, even those we assume the presence of.
 dnl This is because Autoconf default includes check for STDC_HEADERS,
 dnl HAVE_SYS_TYPES_H, etc. before including them.
 AC_HEADER_STDC
+AC_HEADER_STDBOOL
 AC_CHECK_HEADERS(sys/types.h sys/stat.h)
 dnl Now check for the others.
 AC_CHECK_HEADERS(string.h strings.h limits.h unistd.h sys/time.h)

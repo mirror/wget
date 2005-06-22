@@ -1,5 +1,9 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* sysdep.h: Include the stdbool.h/_Bool/bool blurb from Autoconf.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c (cmd_lockable_boolean): Removed.
 
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
