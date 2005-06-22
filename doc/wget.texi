@@ -128,7 +128,6 @@ contrast, most of the Web browsers require constant user's presence,
 which can be a great hindrance when transferring a lot of data.
 @c man end
 
-@sp 1
 @item
 @ignore
 @c man begin DESCRIPTION
@@ -145,7 +144,6 @@ links in downloaded @sc{html} files to the local files for offline
 viewing.
 @c man end
 
-@sp 1
 @item
 File name wildcard matching and recursive mirroring of directories are
 available when retrieving via @sc{ftp}.  Wget can read the time-stamp
@@ -155,7 +153,6 @@ retrieval, and automatically retrieve the new version if it has.  This
 makes Wget suitable for mirroring of @sc{ftp} sites, as well as home
 pages.
 
-@sp 1
 @item
 @ignore
 @c man begin DESCRIPTION
@@ -170,7 +167,6 @@ supports regetting, it will instruct the server to continue the
 download from where it left off.
 @c man end
 
-@sp 1
 @item
 Wget supports proxy servers, which can lighten the network load, speed
 up retrieval and provide access behind firewalls.  However, if you are
@@ -179,19 +175,16 @@ you can get the socks library and build Wget with support for socks.
 Wget uses the passive @sc{ftp} downloading by default, active @sc{ftp}
 being an option.
 
-@sp 1
 @item
 Wget supports IP version 6, the next generation of IP.  IPv6 is
 autodetected at compile-time, and can be disabled at either build or
 run time.  Binaries built with IPv6 support work well in both
 IPv4-only and dual family environments.
 
-@sp 1
 @item
 Built-in features offer mechanisms to tune which links you wish to follow
 (@pxref{Following Links}).
 
-@sp 1
 @item
 The progress of individual downloads is traced using a progress gauge.
 Interactive downloads are tracked using a ``thermometer''-style gauge,
@@ -199,7 +192,6 @@ whereas non-interactive ones are traced with dots, each dot
 representing a fixed amount of data received (1KB by default).  Either
 gauge can be customized to your preferences.
 
-@sp 1
 @item
 Most of the features are fully configurable, either through command line
 options, or via the initialization file @file{.wgetrc} (@pxref{Startup
@@ -218,7 +210,6 @@ User startup file.
 @c man end
 @end ignore
 
-@sp 1
 @item
 Finally, GNU Wget is free software.  This means that everyone may use
 it, redistribute it and/or modify it under the terms of the GNU General

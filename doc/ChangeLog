@@ -1,5 +1,9 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.texi (Overview): Remove explicit vertical spacing.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* texinfo.tex: Update with a non-prehistoric version.
 
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
