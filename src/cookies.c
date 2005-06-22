@@ -98,20 +98,20 @@ struct cookie {
   int port;			/* port number */
   char *path;			/* path prefix of the cookie */
 
-  int secure;			/* whether cookie should be
+  unsigned discard_requested :1; /* whether cookie was created to
+				   request discarding another
+				   cookie. */
+
+  unsigned secure :1;		/* whether cookie should be
 				   transmitted over non-https
 				   connections. */
-  int domain_exact;		/* whether DOMAIN must match as a
+  unsigned domain_exact :1;	/* whether DOMAIN must match as a
 				   whole. */
 
-  int permanent;		/* whether the cookie should outlive
+  int permanent :1;		/* whether the cookie should outlive
 				   the session. */
   time_t expiry_time;		/* time when the cookie expires, 0
 				   means undetermined. */
-
-  int discard_requested;	/* whether cookie was created to
-				   request discarding another
-				   cookie. */
 
   char *attr;			/* cookie attribute name */
   char *value;			/* cookie attribute value */
