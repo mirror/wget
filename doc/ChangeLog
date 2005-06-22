@@ -1,5 +1,9 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* texinfo.tex: Update with a non-prehistoric version.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* texi2pod.pl: Locate perl using the "env" program, so we don't
 	need to modify texi2pod.
 
