@@ -1,6 +1,10 @@
 /* Some autoconf-unrelated preprocessor magic that needs to be done
-   before including the system includes and therefore cannot belong in
-   sysdep.h.  This file is included at the bottom of config.h.  */
+   *before* including the system includes and therefore cannot belong
+   in sysdep.h.
+
+   Everything else related to system tweaking belongs to sysdep.h.
+
+   This file is included at the bottom of config.h.  */
 
 /* Alloca-related defines, straight out of the Autoconf manual. */
 
