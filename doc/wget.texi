@@ -57,7 +57,7 @@ entitled ``GNU Free Documentation License''.
 @title GNU Wget @value{VERSION}
 @subtitle The non-interactive download utility
 @subtitle Updated for Wget @value{VERSION}, @value{UPDATED}
-@author by Hrvoje Nik@v{s}i@'{c} and the developers
+@author by Hrvoje Nik@v{s}i@'{c} and others
 
 @ignore
 @c man begin AUTHOR
