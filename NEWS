@@ -7,6 +7,11 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.11.
 
+** The source code has migrated from CVS to Subversion.  The
+repository is available at http://svn.dotsrc.org/repo/wget/; to
+checkout the trunk to a directory named `wget', use something like
+`svn checkout http://svn.dotsrc.org/repo/wget/trunk/ wget'.
+
 ** The "lockable boolean" argument type is no longer supported.  It
 was only used by the passive_ftp .wgetrc setting.  If you're running
 broken scripts or Perl modules that unconditionally specify
