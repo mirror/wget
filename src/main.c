@@ -883,7 +883,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
 	output_stream = stdout;
       else
 	{
-	  struct_stat st;
+	  struct_fstat st;
 	  output_stream = fopen (opt.output_document,
 				 opt.always_rest ? "ab" : "wb");
 	  if (output_stream == NULL)

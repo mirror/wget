@@ -917,7 +917,7 @@ read_file (const char *file)
 
 #ifdef HAVE_MMAP
   {
-    struct_stat buf;
+    struct_fstat buf;
     if (fstat (fd, &buf) < 0)
       goto mmap_lose;
     fm->length = buf.st_size;

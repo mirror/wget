@@ -97,28 +97,34 @@ typedef __int64 wgint;
 #define str_to_wgint str_to_int64
 __int64 str_to_int64 (const char *, char **, int);
 
-/* No lstat on Windows.  */
+/* Windows has no symlink, therefore no lstat.  Without symlinks lstat
+   is equivalent to stat anyway.  */
 #define lstat stat
 
-/* On Windows the 64-bit stat requires a different version of struct
-   stat.  (On Unix too, but it happens transparently when stat is
-   remapped to stat64.)  */
-
-#if defined(_MSC_VER) || defined(__MINGW32__)
-# define struct_stat struct _stati64
-#elif defined(__BORLANDC__)
-# define struct_stat struct stati64
-#else
-# define struct_stat struct stat
-#endif
-
 /* Transparently support statting large files, like POSIX's LFS API
-   does.  */
+   does.  All Windows compilers we support use _stati64 (but have
+   different names for 2nd argument type, see below), so we use
+   that.  */
 #define stat(fname, buf) _stati64 (fname, buf)
+
+/* On Windows the 64-bit stat requires an explicitly different type
+   for the 2nd argument, so we define a struct_stat macro that expands
+   to the appropriate type on Windows, and to the regular struct stat
+   on Unix.
+
+   Note that Borland C 5.5 has 64-bit stat (_stati64), but not a
+   64-bit fstat!  Because of that we also need a struct_fstat that
+   points to struct_stat on Unix and on Windows, except under Borland,
+   where it points to the 32-bit struct stat.  */
 
 #ifndef __BORLANDC__
 # define fstat(fd, buf) _fstati64 (fd, buf)
-#endif
+# define struct_stat  struct _stati64
+# define struct_fstat struct _stati64
+#else  /* __BORLANDC__ */
+# define struct_stat  struct stati64
+# define struct_fstat struct stat
+#endif /* __BORLANDC__ */
 
 #define PATH_SEPARATOR '\\'
 

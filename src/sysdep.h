@@ -125,9 +125,13 @@ typedef double LARGE_INT;
 # define LARGE_INT_FMT "%.0f"
 #endif
 
-/* Under Windows we #define struct_stat to struct _stati64. */
+/* These are needed so we can #define struct_stat to struct _stati64
+   under Windows. */
 #ifndef struct_stat
 # define struct_stat struct stat
+#endif
+#ifndef struct_fstat
+# define struct_fstat struct stat
 #endif
 
 /* For CHAR_BIT, LONG_MAX, etc. */

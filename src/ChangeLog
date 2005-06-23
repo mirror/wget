@@ -1,5 +1,14 @@
 2005-06-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (read_file): Ditto.
+
+	* main.c (main): Use struct_fstat.
+
+	* mswindows.h (struct_fstat): Define a struct_fstat to deal with
+	the fact that Borland 5.5 has 64-bit stat, but not 64-bit fstat!
+
+2005-06-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* sysdep.h: Remove code that deals with Watcom.
 
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
