@@ -1,5 +1,8 @@
-# Makefile for preparing the sources after Subversion checkout.
-# Copyright (C) 2000 Karl Eichwalder.
+#!/bin/sh -x
+
+# The (trivial) script for preparing the sources following the
+# checkout from version control.
+# Copyright (C) 2005 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,28 +28,10 @@
 # file, but you are not obligated to do so.  If you do not wish to do
 # so, delete this exception statement from your version.
 
-#
-# Usage:
-#
-#     make -f Makefile.svn
-#
+autoheader
+autoconf
 
-SHELL = /bin/sh
+# We intentionally don't invoke configure and make because we don't
+# know where the user wants to run the configuration, nor with which
+# arguments.  That is entirely up to the user.
 
-prep:
-	autoheader
-	autoconf
-
-# The following two targets are pretty lame because we don't know that
-# the user wants to configure in `.', just like we don't know whether
-# the `make' program is called `make'.  I'm keeping them for the sake
-# of the users who expect to find them.  I don't want to make this
-# file complicated by implementing smarter detections -- the user who
-# needs different behavior should simply run `make -f Makefile.svn'
-# and proceed as he would have normally.
-
-configure: prep
-	./configure
-
-make: configure
-	make

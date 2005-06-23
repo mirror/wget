@@ -1,5 +1,12 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* autogen.sh: New file.
+
+	* Makefile.svn: Deleted, replaced with the even simpler (and more
+	standard) `autogen.sh' script.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Don't check for signal.h.  Remove the
 	AC_HEADER_TIME check.  Remove the test for ANSI C prototypes.
 
