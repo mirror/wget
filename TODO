@@ -17,10 +17,12 @@ represent user-visible changes.
   with an appropriate flag, Wget will allow the remote server to specify
   the file name, either through redirection (as is always the case now)
   or via the increasingly popular header `Content-Disposition: XXX;
-  filename="FILE"'.  The file name should be generated and displayed
-  *after* processing the server's response, not before, as it is done now.
-  This will allow trivial implementation of -nc, of O_EXCL when opening
-  the file, --html-extension will stop being a horrible hack, and so on.
+  filename="FILE"'.
+
+  The file name should be generated and displayed *after* processing
+  the server's response, not before, as it is done now.  This will
+  allow trivial implementation of -nc, of O_EXCL when opening the
+  file, --html-extension will stop being a horrible hack, and so on.
 
 * -O should be respected, with no exceptions.  It should work in
   conjunction with -N and -k.  (This is hard to achieve in the current
@@ -45,10 +47,9 @@ represent user-visible changes.
   and repetition.  Remove all the "intelligence" and make it work as
   outlined in the previous bullet.
 
-* Add support for SFTP.  Teach Wget about newer features of FTP servers
-  in general.
-
-* Use FTP features for checking MD5 sums and implementing truly robust
+* Add support for SFTP.  Teach Wget about newer features of more
+  recent FTP servers in general, such as receiving reliable checksums
+  and timestamps.  This can be used to implement really robust
   downloads.
 
 * Wget shouldn't delete rejected files that were not downloaded, but
@@ -81,23 +82,29 @@ represent user-visible changes.
   would include the FTP connection becoming a first-class objects.
 
 * Try to devise a scheme so that, when password is unknown, Wget asks
-  the user for one.
+  the user for one.  This is harder than it seems because the password
+  may be requested by some page encountered long after the user has
+  left Wget to run.
 
 * If -c used with -N, check to make sure a file hasn't changed on the server
   before "continuing" to download it (preventing a bogus hybrid file).
 
 * Generalize --html-extension to something like --mime-extensions and
-  have it look at mime.types/mimecap file for preferred extension.
-  Non-HTML files with filenames changed this way would be
-  re-downloaded each time despite -N unless .orig files were saved for
-  them.  Since .orig would contain the same data as non-.orig, the
-  latter could be just a link to the former.  Another possibility
-  would be to implement a per-directory database called something like
+  have consult mime.types for the preferred extension.  Non-HTML files
+  with filenames changed this way would be re-downloaded each time
+  despite -N unless .orig files were saved for them.  (#### Why?  The
+  HEAD request we use to implement -N would still be able to construct
+  the correct file name based on the declared Content-Type.)
+
+  Since .orig would contain the same data as non-.orig, the latter
+  could be just a link to the former.  Another possibility would be to
+  implement a per-directory database called something like
   .wget_url_mapping containing URLs and their corresponding filenames.
 
-* When spanning hosts, there's no way to say that you are only interested in
-  files in a certain directory on _one_ of the hosts (-I and -X apply to all).
-  Perhaps -I and -X should take an optional hostname before the directory?
+* When spanning hosts, there's no way to say that you are only
+  interested in files in a certain directory on _one_ of the hosts (-I
+  and -X apply to all).  Perhaps -I and -X should take an optional
+  "hostname:" before the directory?
 
 * --retr-symlinks should cause wget to traverse links to directories too.
 
@@ -121,6 +128,8 @@ represent user-visible changes.
 
 * Handle MIME types correctly.  There should be an option to (not)
   retrieve files based on MIME types, e.g. `--accept-types=image/*'.
+  This would work for FTP by translating file extensions to MIME types
+  using mime.types.
 
 * Allow time-stamping by arbitrary date.  For example,
   wget --if-modified-after DATE URL.
