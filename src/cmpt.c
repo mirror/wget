@@ -111,8 +111,10 @@ strncasecmp (const char *s1, const char *s2, size_t n)
 }
 #endif /* not HAVE_STRNCASECMP */
 
-/* strpbrk is required by POSIX and C99, but it is missing from some
-   older systems and from Windows.  */
+/* strpbrk is a BSD 4.3 function mandated by POSIX and C99 and present
+   on Windows.  It might be missing from older Unixes of non-BSD
+   ancestry or possibly from non-Unix systems Wget gets ported to, so
+   we add it here.  */
 
 #ifndef HAVE_STRPBRK
 /* Find the first ocurrence in S of any character in ACCEPT.  */
