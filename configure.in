@@ -211,8 +211,8 @@ dnl
 AC_FUNC_ALLOCA
 AC_FUNC_MMAP
 AC_FUNC_FSEEKO
-AC_CHECK_FUNCS(strdup strcasecmp strncasecmp strpbrk)
-AC_CHECK_FUNCS(mktime strptime snprintf vsnprintf)
+AC_CHECK_FUNCS(strdup strcasecmp strncasecmp)
+AC_CHECK_FUNCS(strptime snprintf vsnprintf)
 AC_CHECK_FUNCS(usleep ftello sigblock sigsetjmp)
 AC_CHECK_FUNCS(symlink isatty)
 

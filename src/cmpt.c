@@ -32,6 +32,7 @@ so, delete this exception statement from your version.  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
@@ -45,15 +46,15 @@ so, delete this exception statement from your version.  */
    For example, Windows doesn't have strptime, and some systems lack
    strcasecmp and strncasecmp.  This file should contain fallback
    implementations of the missing functions.  It should *not* define
-   new Wget-specific functions -- those should placed in utils.c or
-   elsewhere.  */
+   new Wget-specific interfaces -- those should be placed in utils.c
+   or elsewhere.  */
 
 /* strcasecmp and strncasecmp apparently originated with BSD 4.4.
    SUSv3 seems to be the only standard out there (that I can find)
-   that requires their existence, so there are systems that lack them
-   still in use.  Note that these don't get defined under Windows
-   because mswindows.h defines them to the equivalent Windows
-   functions stricmp and strnicmp.  */
+   that requires their existence, so in theory there might be systems
+   still in use that lack them.  Note that these don't get defined
+   under Windows because mswindows.h defines them to the equivalent
+   Windows functions stricmp and strnicmp.  */
 
 #ifndef HAVE_STRCASECMP
 /* From GNU libc.  */
@@ -110,306 +111,6 @@ strncasecmp (const char *s1, const char *s2, size_t n)
   return c1 - c2;
 }
 #endif /* not HAVE_STRNCASECMP */
-
-/* strpbrk is a BSD 4.3 function mandated by POSIX and C99 and present
-   on Windows.  It might be missing from older Unixes of non-BSD
-   ancestry or possibly from non-Unix systems Wget gets ported to, so
-   we add it here.  */
-
-#ifndef HAVE_STRPBRK
-/* Find the first ocurrence in S of any character in ACCEPT.  */
-char *
-strpbrk (const char *s, const char *accept)
-{
-  while (*s != '\0')
-    {
-      const char *a = accept;
-      while (*a != '\0')
-	if (*a++ == *s)
-	  return (char *) s;
-      ++s;
-    }
-
-  return 0;
-}
-#endif /* HAVE_STRPBRK */
-
-/* mktime is a BSD 4.3 function also required by POSIX and C99.  I
-   don't know if there is a widely used system that lacks it, so it
-   might be a candidate for removal.  */
-
-#ifndef HAVE_MKTIME
-/* From GNU libc 2.0.  */
-
-/* Copyright (C) 1993, 1994, 1995, 1996, 1997 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-   Contributed by Paul Eggert (eggert@twinsun.com).  */
-
-#ifdef _LIBC
-# define HAVE_LIMITS_H 1
-# define HAVE_LOCALTIME_R 1
-# define STDC_HEADERS 1
-#endif
-
-/* Assume that leap seconds are possible, unless told otherwise.
-   If the host has a `zic' command with a `-L leapsecondfilename' option,
-   then it supports leap seconds; otherwise it probably doesn't.  */
-#ifndef LEAP_SECONDS_POSSIBLE
-# define LEAP_SECONDS_POSSIBLE 1
-#endif
-
-#ifndef __P
-# define __P(args) args
-#endif  /* Not __P.  */
-
-#ifndef CHAR_BIT
-# define CHAR_BIT 8
-#endif
-
-#ifndef INT_MIN
-# define INT_MIN (~0 << (sizeof (int) * CHAR_BIT - 1))
-#endif
-#ifndef INT_MAX
-# define INT_MAX (~0 - INT_MIN)
-#endif
-
-#ifndef TIME_T_MIN
-/* The outer cast to time_t works around a bug in Cray C 5.0.3.0.  */
-# define TIME_T_MIN ((time_t) \
-		    (0 < (time_t) -1 ? (time_t) 0 \
-		     : ~ (time_t) 0 << (sizeof (time_t) * CHAR_BIT - 1)))
-#endif
-#ifndef TIME_T_MAX
-# define TIME_T_MAX (~ (time_t) 0 - TIME_T_MIN)
-#endif
-
-#define TM_YEAR_BASE 1900
-#define EPOCH_YEAR 1970
-
-#ifndef __isleap
-/* Nonzero if YEAR is a leap year (every 4 years,
-   except every 100th isn't, and every 400th is).  */
-# define __isleap(year)	\
-  ((year) % 4 == 0 && ((year) % 100 != 0 || (year) % 400 == 0))
-#endif
-
-/* How many days come before each month (0-12).  */
-/* __mon_yday[][] is common to mktime and strptime implementations.
-   --abbotti */
-const unsigned short int __mon_yday[2][13];
-#ifndef NEED_MON_YDAY
-# define NEED_MON_YDAY
-#endif
-
-static time_t ydhms_tm_diff __P ((int, int, int, int, int, const struct tm *));
-time_t __mktime_internal __P ((struct tm *,
-			       struct tm *(*) (const time_t *, struct tm *),
-			       time_t *));
-
-
-#ifdef _LIBC
-# define localtime_r __localtime_r
-#else
-# if ! HAVE_LOCALTIME_R && ! defined localtime_r
-/* Approximate localtime_r as best we can in its absence.  */
-#  define localtime_r my_mktime_localtime_r
-static struct tm *localtime_r __P ((const time_t *, struct tm *));
-static struct tm *
-localtime_r (t, tp)
-     const time_t *t;
-     struct tm *tp;
-{
-  struct tm *l = localtime (t);
-  if (! l)
-    return 0;
-  *tp = *l;
-  return tp;
-}
-# endif /* ! HAVE_LOCALTIME_R && ! defined (localtime_r) */
-#endif /* ! _LIBC */
-
-
-/* Yield the difference between (YEAR-YDAY HOUR:MIN:SEC) and (*TP),
-   measured in seconds, ignoring leap seconds.
-   YEAR uses the same numbering as TM->tm_year.
-   All values are in range, except possibly YEAR.
-   If overflow occurs, yield the low order bits of the correct answer.  */
-static time_t
-ydhms_tm_diff (year, yday, hour, min, sec, tp)
-     int year, yday, hour, min, sec;
-     const struct tm *tp;
-{
-  /* Compute intervening leap days correctly even if year is negative.
-     Take care to avoid int overflow.  time_t overflow is OK, since
-     only the low order bits of the correct time_t answer are needed.
-     Don't convert to time_t until after all divisions are done, since
-     time_t might be unsigned.  */
-  int a4 = (year >> 2) + (TM_YEAR_BASE >> 2) - ! (year & 3);
-  int b4 = (tp->tm_year >> 2) + (TM_YEAR_BASE >> 2) - ! (tp->tm_year & 3);
-  int a100 = a4 / 25 - (a4 % 25 < 0);
-  int b100 = b4 / 25 - (b4 % 25 < 0);
-  int a400 = a100 >> 2;
-  int b400 = b100 >> 2;
-  int intervening_leap_days = (a4 - b4) - (a100 - b100) + (a400 - b400);
-  time_t years = year - (time_t) tp->tm_year;
-  time_t days = (365 * years + intervening_leap_days
-		 + (yday - tp->tm_yday));
-  return (60 * (60 * (24 * days + (hour - tp->tm_hour))
-		+ (min - tp->tm_min))
-	  + (sec - tp->tm_sec));
-}
-
-
-static time_t localtime_offset;
-
-/* Convert *TP to a time_t value.  */
-time_t
-mktime (tp)
-     struct tm *tp;
-{
-#ifdef _LIBC
-  /* POSIX.1 8.1.1 requires that whenever mktime() is called, the
-     time zone names contained in the external variable `tzname' shall
-     be set as if the tzset() function had been called.  */
-  __tzset ();
-#endif
-
-  return __mktime_internal (tp, localtime_r, &localtime_offset);
-}
-
-/* Convert *TP to a time_t value, inverting
-   the monotonic and mostly-unit-linear conversion function CONVERT.
-   Use *OFFSET to keep track of a guess at the offset of the result,
-   compared to what the result would be for UTC without leap seconds.
-   If *OFFSET's guess is correct, only one CONVERT call is needed.  */
-time_t
-__mktime_internal (tp, convert, offset)
-     struct tm *tp;
-     struct tm *(*convert) __P ((const time_t *, struct tm *));
-     time_t *offset;
-{
-  time_t t, dt, t0;
-  struct tm tm;
-
-  /* The maximum number of probes (calls to CONVERT) should be enough
-     to handle any combinations of time zone rule changes, solar time,
-     and leap seconds.  Posix.1 prohibits leap seconds, but some hosts
-     have them anyway.  */
-  int remaining_probes = 4;
-
-  /* Time requested.  Copy it in case CONVERT modifies *TP; this can
-     occur if TP is localtime's returned value and CONVERT is localtime.  */
-  int sec = tp->tm_sec;
-  int min = tp->tm_min;
-  int hour = tp->tm_hour;
-  int mday = tp->tm_mday;
-  int mon = tp->tm_mon;
-  int year_requested = tp->tm_year;
-  int isdst = tp->tm_isdst;
-
-  /* Ensure that mon is in range, and set year accordingly.  */
-  int mon_remainder = mon % 12;
-  int negative_mon_remainder = mon_remainder < 0;
-  int mon_years = mon / 12 - negative_mon_remainder;
-  int year = year_requested + mon_years;
-
-  /* The other values need not be in range:
-     the remaining code handles minor overflows correctly,
-     assuming int and time_t arithmetic wraps around.
-     Major overflows are caught at the end.  */
-
-  /* Calculate day of year from year, month, and day of month.
-     The result need not be in range.  */
-  int yday = ((__mon_yday[__isleap (year + TM_YEAR_BASE)]
-	       [mon_remainder + 12 * negative_mon_remainder])
-	      + mday - 1);
-
-  int sec_requested = sec;
-#if LEAP_SECONDS_POSSIBLE
-  /* Handle out-of-range seconds specially,
-     since ydhms_tm_diff assumes every minute has 60 seconds.  */
-  if (sec < 0)
-    sec = 0;
-  if (59 < sec)
-    sec = 59;
-#endif
-
-  /* Invert CONVERT by probing.  First assume the same offset as last time.
-     Then repeatedly use the error to improve the guess.  */
-
-  tm.tm_year = EPOCH_YEAR - TM_YEAR_BASE;
-  tm.tm_yday = tm.tm_hour = tm.tm_min = tm.tm_sec = 0;
-  t0 = ydhms_tm_diff (year, yday, hour, min, sec, &tm);
-
-  for (t = t0 + *offset;
-       (dt = ydhms_tm_diff (year, yday, hour, min, sec, (*convert) (&t, &tm)));
-       t += dt)
-    if (--remaining_probes == 0)
-      return -1;
-
-  /* Check whether tm.tm_isdst has the requested value, if any.  */
-  if (0 <= isdst && 0 <= tm.tm_isdst)
-    {
-      int dst_diff = (isdst != 0) - (tm.tm_isdst != 0);
-      if (dst_diff)
-	{
-	  /* Move two hours in the direction indicated by the disagreement,
-	     probe some more, and switch to a new time if found.
-	     The largest known fallback due to daylight savings is two hours:
-	     once, in Newfoundland, 1988-10-30 02:00 -> 00:00.  */
-	  time_t ot = t - 2 * 60 * 60 * dst_diff;
-	  while (--remaining_probes != 0)
-	    {
-	      struct tm otm;
-	      if (! (dt = ydhms_tm_diff (year, yday, hour, min, sec,
-					 (*convert) (&ot, &otm))))
-		{
-		  t = ot;
-		  tm = otm;
-		  break;
-		}
-	      if ((ot += dt) == t)
-		break;  /* Avoid a redundant probe.  */
-	    }
-	}
-    }
-
-  *offset = t - t0;
-
-#if LEAP_SECONDS_POSSIBLE
-  if (sec_requested != tm.tm_sec)
-    {
-      /* Adjust time to reflect the tm_sec requested, not the normalized value.
-	 Also, repair any damage from a false match due to a leap second.  */
-      t += sec_requested - sec + (sec == 0 && tm.tm_sec == 60);
-      (*convert) (&t, &tm);
-    }
-#endif
-
-  if (TIME_T_MAX / INT_MAX / 366 / 24 / 60 / 60 < 3)
-    {
-      /* time_t isn't large enough to rule out overflows in ydhms_tm_diff,
-	 so check for major overflows.  A gross check suffices,
-	 since if t has overflowed, it is off by a multiple of
-	 TIME_T_MAX - TIME_T_MIN + 1.  So ignore any component of
-	 the difference that is bounded by a small value.  */
-
-      double dyear = (double) year_requested + mon_years - tm.tm_year;
-      double dday = 366 * dyear + mday;
-      double dsec = 60 * (60 * (24 * dday + hour) + min) + sec_requested;
-
-      if (TIME_T_MAX / 3 - TIME_T_MIN / 3 < (dsec < 0 ? - dsec : dsec))
-	return -1;
-    }
-
-  *tp = tm;
-  return t;
-}
-
-#ifdef weak_alias
-weak_alias (mktime, timelocal)
-#endif
-#endif /* not HAVE_MKTIME */
 
 /* strptime is required by POSIX, but it is missing from Windows,
    which means we must keep a fallback implementation.  It is
@@ -633,8 +334,6 @@ static char const ab_month_name[][4] =
 # define HERE_T_FMT_AMPM "%I:%M:%S %p"
 # define HERE_T_FMT "%H:%M:%S"
 
-/* __mon_yday[][] is common to mktime and strptime implementations.
-   --abbotti */
 const unsigned short int __mon_yday[2][13];
 # ifndef NEED_MON_YDAY
 #  define NEED_MON_YDAY
@@ -962,10 +661,12 @@ strptime_internal (rp, fmt, tm, decided)
 	    }
 #endif
 	  if (!match_string (HERE_AM_STR, rp))
-	    if (match_string (HERE_PM_STR, rp))
-	      is_pm = 1;
-	    else
-	      return NULL;
+	    {
+	      if (match_string (HERE_PM_STR, rp))
+		is_pm = 1;
+	      else
+		return NULL;
+	    }
 	  break;
 	case 'r':
 #ifdef _NL_CURRENT
@@ -1327,8 +1028,6 @@ strptime (buf, format, tm)
 #endif /* not HAVE_STRPTIME */
 
 #ifdef NEED_MON_YDAY
-/* __mon_yday[][] is common to mktime and strptime implementations.
-   --abbotti */
 const unsigned short int __mon_yday[2][13] =
   {
     /* Normal years.  */
