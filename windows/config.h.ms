@@ -39,12 +39,6 @@
 /* Define to `unsigned' if <sys/types.h> doesn't define.  */
 /* #undef size_t */
 
-/* Define if you have the ANSI C header files.  */
-#define STDC_HEADERS 1
-
-/* Define as the return type of signal handlers (int or void).  */
-#define RETSIGTYPE int
-
 /* Define if your architecture is big endian (with the most
    significant byte first).  */
 #undef WORDS_BIGENDIAN
@@ -66,47 +60,20 @@
 /* Define if you have sys/time.h header. */
 #undef HAVE_SYS_TIME_H
 
-/* Define if you can safely include both <sys/time.h> and <time.h>.  */
-#undef TIME_WITH_SYS_TIME
-
 /* Define if you have struct utimbuf.  */
 #define HAVE_STRUCT_UTIMBUF 1
 
 /* Define if you have the gethostbyname function.  */
 /* #undef HAVE_GETHOSTBYNAME */
 
-/* Define if you have the uname function.  */
-#undef HAVE_UNAME
-
-/* Define if you have the gethostname function.  */
-#define HAVE_GETHOSTNAME 1
-
-/* Define if you have the select function.  */
-#define HAVE_SELECT 1
-
-/* Define if you have the gettimeofday function.  */
-#undef HAVE_GETTIMEOFDAY
-
 /* Define if you have the strdup function.  */
 #define HAVE_STRDUP 1
-
-/* Define if you have the sys/utsname.h header. */
-#undef HAVE_SYS_UTSNAME_H
-
-/* Define if you have the strerror function. */
-#define HAVE_STRERROR 1
 
 /* Define if you have the snprintf function.  */
 #define HAVE_SNPRINTF 1
 
 /* Define if you have the vsnprintf function.  */
 #define HAVE_VSNPRINTF 1
-
-/* Define to 1 if you have the `strpbrk' function. */
-#define HAVE_STRPBRK 1
-
-/* Define if you have the strstr function. */
-#define HAVE_STRSTR 1
 
 /* Define if you have the strcasecmp function. */
 #define HAVE_STRCASECMP 1
@@ -117,33 +84,11 @@
 /* Define if you have the strptime function. */
 #undef HAVE_STRPTIME
 
-/* Define if you have the mktime function. */
-#define HAVE_MKTIME 1
-
 /* Define if you have the symlink function. */
 #undef HAVE_SYMLINK
 
-/* Define if you have the signal function. */
-#undef HAVE_SIGNAL
-
-/* Define if you have the <stdarg.h> header file.  */
-#define HAVE_STDARG_H 1
-
-/* Use ANSI-style stdargs regardless of whether the compiler bothers
-   to define __STDC__.  (Many don't when extensions are enabled.)
-   This define used to be in mswindows.h, but wheren't making any use there */
-#define WGET_USE_STDARG
-
-/* Define if you have the <stdlib.h> header file.  */
-#define HAVE_STDLIB_H 1
-
-/* Define if you have the <string.h> header file.  */
-#define HAVE_STRING_H 1
-
 /* Define if you have the <unistd.h> header file.  */
-#if !defined(_MSC_VER)
 #undef HAVE_UNISTD_H
-#endif
 
 /* None except Digital Mars have sleep/usleep functions */
 #if defined(__DMC__)
@@ -157,9 +102,6 @@
 /* Define if you have the <sys/utime.h> header file.  */
 #define HAVE_SYS_UTIME_H 1
 
-/* Define to 1 if you have the <limits.h> header file. */
-#define HAVE_LIMITS_H 1
-
 /* Define to 1 if you have the <locale.h> header file. */
 #define HAVE_LOCALE_H 1
 
@@ -169,19 +111,10 @@
 /* Define if you have the <pwd.h> header file.  */
 #undef HAVE_PWD_H
 
-/* Define if you have the <signal.h> header file.  */
-#define HAVE_SIGNAL_H 1
-
 /* Define to be the name of the operating system.  */
 #define OS_TYPE "Windows"
 
 #define CTRLBREAK_BACKGND 1
-
-/* Define if you wish to compile with socks support.  */
-/* #undef HAVE_SOCKS */
-
-/* Define to 1 if ANSI function prototypes are usable.  */
-#define PROTOTYPES 1
 
 /* Define if we're compiling in support for MD5.  */
 #define HAVE_MD5 1
@@ -198,9 +131,6 @@
 
 /* Define if you have the isatty function.  */
 #define HAVE_ISATTY 1
-
-/* Define if you have the memmove function */
-#define HAVE_MEMMOVE 1
 
 /* Define to the length of short. */
 #define SIZEOF_SHORT 2

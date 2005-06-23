@@ -1,5 +1,11 @@
 2005-06-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* config.h.bor: Ditto.
+
+	* config.h.ms: Remove obsolete symbols.
+
+2005-06-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* Makefile.watcom: Removed.
 
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
