@@ -29,7 +29,6 @@ rem so, delete this exception statement from your version.
 if .%1 == .--borland goto :borland
 if .%1 == .--mingw goto :mingw
 if .%1 == .--msvc goto :msvc
-if .%1 == .--watcom goto :watcom
 goto :usage
 
 :msvc
@@ -61,20 +60,6 @@ copy windows\Makefile.doc doc\Makefile > nul
 echo Type mingw32-make to start compiling.
 goto :end
 
-:watcom
-copy windows\config.h.ms src\config.h > nul
-copy windows\Makefile.watcom src\Makefile > nul
-
-@echo Checking environment vars
-@set INCLUDE | find /I "WATCOM"
-@set LIB     | find /I "WATCOM"
-@echo If WATCOM directories were not displayed, you need to
-@echo SET INCLUDE and SET LIB to the Watcom directories
-@echo.
-cd src
-@echo Type WMAKE to build
-goto :end
-
 :usage
-echo "Usage: configure [--borland | --mingw | --msvc | --watcom]"
+echo "Usage: configure [--borland | --mingw | --msvc]"
 :end

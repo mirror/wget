@@ -42,8 +42,8 @@ so, delete this exception statement from your version.  */
 
 #include <windows.h>
 
-/* Use the correct winsock header; <ws2tcpip.h> includes <winsock2.h> only
-   on Watcom/MingW.  We cannot use <winsock.h> for IPv6.  Using
+/* Use the correct winsock header; <ws2tcpip.h> includes <winsock2.h>
+   only on MingW.  We cannot use <winsock.h> for IPv6.  Using
    getaddrinfo() requires <ws2tcpip.h>.  */
 #if defined(ENABLE_IPV6) || defined(HAVE_GETADDRINFO)
 # include <winsock2.h>
@@ -90,19 +90,19 @@ typedef __int64 wgint;
 #define WGINT_MAX 9223372036854775807I64
 #endif
 
+/* str_to_wgint is a function with the semantics of strtol, but which
+   works on wgint.  Since wgint is unconditionally 64-bit on Windows,
+   we #define it to str_to_int64, which either calls _strtoi64 or
+   implements the conversion manually.  */
 #define str_to_wgint str_to_int64
 __int64 str_to_int64 (const char *, char **, int);
 
 /* No lstat on Windows.  */
 #define lstat stat
 
-/* Transparently support large files, in spirit similar to the POSIX
-   LFS API.  */
-#define stat(fname, buf) _stati64 (fname, buf)
-
-#ifndef __BORLANDC__
-# define fstat(fd, buf) _fstati64 (fd, buf)
-#endif
+/* On Windows the 64-bit stat requires a different version of struct
+   stat.  (On Unix too, but it happens transparently when stat is
+   remapped to stat64.)  */
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
 # define struct_stat struct _stati64
@@ -110,6 +110,14 @@ __int64 str_to_int64 (const char *, char **, int);
 # define struct_stat struct stati64
 #else
 # define struct_stat struct stat
+#endif
+
+/* Transparently support statting large files, like POSIX's LFS API
+   does.  */
+#define stat(fname, buf) _stati64 (fname, buf)
+
+#ifndef __BORLANDC__
+# define fstat(fd, buf) _fstati64 (fd, buf)
 #endif
 
 #define PATH_SEPARATOR '\\'

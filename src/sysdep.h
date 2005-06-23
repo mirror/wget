@@ -43,25 +43,14 @@ so, delete this exception statement from your version.  */
 #endif
 
 #ifdef WINDOWS
-/* Windows doesn't have some functions.  Include mswindows.h so we get
-   their declarations, as well as some additional declarations and
-   macros.  This must come first, so it can set things up.  */
-#include <mswindows.h>
-#endif /* WINDOWS */
-
-/* Watcom-specific stuff.  In practice this is probably specific to
-   Windows, although Watcom exists under other OS's too.  For that
-   reason, we keep this here.  */
-
-#ifdef __WATCOMC__
-/* Watcom has its own alloca() defined in malloc.h malloc.h needs to
-   be included in the sources to prevent 'undefined external' errors
-   at the link phase. */
-# include <malloc.h>
-/* io.h defines unlink() and chmod().  We put this here because it's
-   way too obscure to require all the .c files to observe.  */
-# include <io.h>
-#endif /* __WATCOMC__ */
+/* Windows doesn't have some functions normally found on Unix-like
+   systems, such as strcasecmp, strptime, strpbrk, etc.  Include
+   mswindows.h so we get the declarations for their replacements in
+   mswindows.c, as well as to pick up Windows-specific includes and
+   constants.  To be able to test for such features, the file must be
+   included as early as possible.  */
+# include <mswindows.h>
+#endif
 
 /* Provide support for C99-type boolean type "bool".  This blurb comes
    straight from the Autoconf 2.59 manual. */
@@ -126,7 +115,7 @@ typedef long LARGE_INT;
 /* Long long is large enough: use it.  */
 typedef long long LARGE_INT;
 # define LARGE_INT_FMT "%lld"
-#elif _MSC_VER
+#elif WINDOWS
 /* Use __int64 under Windows. */
 typedef __int64 LARGE_INT;
 # define LARGE_INT_FMT "%I64"
