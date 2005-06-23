@@ -32,8 +32,8 @@
 # It uses `make dist' to do most of the work, but corrects some
 # things that `make dist' doesn't and can't do.  Specifically:
 #
-# * Checks out the clean CVS source from the repository to a temporary
-#   directory.
+# * Checks out the clean source from the Subversion repository to a
+#   temporary directory.
 # * Runs autoconf, configure and `make' in the doc and po subdirs to
 #   make sure that all the generated files, such as `configure',
 #   `wget.info', and translated PO files, end up in the distribution.
@@ -42,20 +42,26 @@
 # * Runs `make dist' to produce the archive.
 # * Removes the checkout.
 #
-# For example, to produce a Wget beta based on the latest CVS sources,
-# with version "1.23-beta10", run `dist-wget --force-version 1.23-beta10'.
-# You can choose which sources will be used by specifying `-D DATE'
-# or `-r TAG'.
+# For example, to produce a Wget beta based on the latest sources on
+# the trunk, with version changed to "1.23-beta10", run `dist-wget
+# --force-version 1.23-beta10'.  You can choose which sources will be
+# used by specifying `-b PATH' ("trunk" by default) in combination
+# with one of `-D DATE' or `-r REVISION' (the latest revision by
+# default).
+#
+# Use the MAKE environment variable to specify a different version of
+# make, for example MAKE=gmake dist-wget ...
 #
 ##
 
 set -e
 
-CVSROOT=:pserver:cvs@sunsite.dk:/pack/anoncvs
-SUBDIR=wget.cvs.$$
+SVNURL=http://svn.dotsrc.org/repo/wget/
+SUBDIR=wget.checkout.$$
 DEBUG=no
 
-EXPORT_TAG='-r HEAD'
+EXPORT_PATH=trunk
+EXPORT_REVISION=HEAD
 VERSION=
 MAKE=${MAKE-make}
 
@@ -71,20 +77,26 @@ do
     -d)
       DEBUG=yes
       ;;
+    -b)
+      shift
+      EXPORT_PATH=$1
+      ;;
     -D)
       shift
-      EXPORT_TAG="-D $1"
+      # Subversion uses the -r {DATE} syntax for specifying revisions
+      # based on dates.
+      EXPORT_REVISION={$1}
       ;;
     -r)
       shift
-      EXPORT_TAG="-r $1"
+      EXPORT_REVISION=$1
       ;;
     --force-version)
       shift
       VERSION=$1
       ;;
     *)
-      echo "Usage: $0 [-d] [-r TAG | -D DATE]" >&2
+      echo "Usage: $0 [-d] [-b BRANCH] [-r TAG | -D DATE]" >&2
       exit 1
   esac
   shift
@@ -109,14 +121,11 @@ echo "Output from commands is in $O."
 echo "-----------" >$O
 
 # Checkout clean sources from the repository.
-echo $e_n "Exporting ($EXPORT_TAG) out the CVS tree to $TMPDIR/$SUBDIR... $e_c"
-cvs -d $CVSROOT export $EXPORT_TAG -d $SUBDIR wget 1>>$O 2>&1
+echo $e_n "Exporting $SVNURL$EXPORT_PATH/ (-r $EXPORT_REVISION) to $TMPDIR/$SUBDIR... $e_c"
+svn export -r "$EXPORT_REVISION" "$SVNURL/$EXPORT_PATH/" $SUBDIR 1>>$O 2>&1
 echo "done."
 
 cd $SUBDIR
-
-# Remove the dummy `Branches' directory.
-rm -rf Branches 1>>$O 2>&1
 
 # Force the version if required.
 if test x"$VERSION" != x
@@ -128,8 +137,8 @@ fi
 
 # Create configure and friends.
 if test ! -f configure; then
-  echo $e_n "Creating \`configure' from \`configure.in'... $e_c"
-  $MAKE -f Makefile.cvs 1>>$O 2>&1
+  echo $e_n "Creating \`configure' and \`src/config.h'... $e_c"
+  ./autogen.sh 1>>$O 2>&1
   echo "done."
 fi
 
