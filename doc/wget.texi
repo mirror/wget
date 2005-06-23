@@ -3511,10 +3511,28 @@ proposals, patches, or letters saying ``Thanks!''.
 Special thanks goes to the following people (no particular order):
 
 @itemize @bullet
+@item Mauro Tortonesi---contributed high-quality IPv6 code and many
+other fixes.
+
+@item Dan Harkless---contributed a lot of code and documentation of
+extremely high quality, as well as the @code{--page-requisites} and
+related options.  He was the principal maintainer for some time and
+released Wget 1.6.
+
+@item Ian Abbott---contributed bug fixes, Windows-related fixes, and
+provided a prototype implementation of the breadth-first recursive
+download.  Co-maintained Wget during the 1.8 release cycle.
+
 @item
-Karsten Thygesen---donated system resources such as the mailing list,
-web space, and @sc{ftp} space, along with a lot of time to make these
-actually work.
+The dotsrc.org crew, in particular Karsten Thygesen---donated system
+resources such as the mailing list, web space, @sc{ftp} space, and
+version control repositories, along with a lot of time to make these
+actually work.  Christian Reiniger was of invaluable help with setting
+up Subversion.
+
+@item
+Heiko Herold---provided high-quality Windows builds and contributed
+bug and build reports for many years.
 
 @item
 Shawn McHorse---bug reports and patches.
@@ -3540,7 +3558,8 @@ and ``philosophical'' discussions.
 Darko Budor---initial port to Windows.
 
 @item
-Antonio Rosella---help and suggestions, plus the Italian translation.
+Antonio Rosella---help and suggestions, plus the initial Italian
+translation.
 
 @item
 @iftex
@@ -3560,23 +3579,21 @@ Francois Pinard---many thorough bug reports and discussions.
 @end ifnottex
 
 @item
-Karl Eichwalder---lots of help with internationalization and other
-things.
+Karl Eichwalder---lots of help with internationalization, Makefile
+layout and many other things.
 
 @item
 Junio Hamano---donated support for Opie and @sc{http} @code{Digest}
 authentication.
 
 @item
-The people who provided donations for development, including Brian
-Gough.
+People who provided donations for development---including Brian Gough.
 @end itemize
 
 The following people have provided patches, bug/build reports, useful
 suggestions, beta testing services, fan mail and all the other things
 that make maintenance so much fun:
 
-Ian Abbott
 Tim Adam,
 Adrian Aichner,
 Martin Baehr,
@@ -3632,9 +3649,7 @@ Marcel Gerrits,
 Lemble Gregory,
 Hans Grobler,
 Mathieu Guillaume,
-Dan Harkless,
 Aaron Hawley,
-Herold Heiko,
 Jochen Hein,
 Karl Heuer,
 HIROSE Masaaki,
@@ -3737,6 +3752,7 @@ Heinz Salzmann,
 Robert Schmidt,
 Nicolas Schodet,
 Andreas Schwab,
+Steven M. Schweda,
 Chris Seawood,
 Dennis Smit,
 Toomas Soome,
