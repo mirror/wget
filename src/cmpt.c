@@ -43,9 +43,9 @@ so, delete this exception statement from your version.  */
 #include "wget.h"
 
 /* Some systems lack certain functions normally taken for granted.
-   For example, Windows doesn't have strptime, and some systems lack
-   strcasecmp and strncasecmp.  This file should contain fallback
-   implementations of the missing functions.  It should *not* define
+   For example, Windows doesn't have strptime, and some systems don't
+   have a usable fnmatch.  This file should contain fallback
+   implementations of such missing functions.  It should *not* define
    new Wget-specific interfaces -- those should be placed in utils.c
    or elsewhere.  */
 
