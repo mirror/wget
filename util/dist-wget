@@ -96,7 +96,7 @@ do
       VERSION=$1
       ;;
     *)
-      echo "Usage: $0 [-d] [-b BRANCH] [-r TAG | -D DATE]" >&2
+      echo "Usage: $0 [-d] [-b BRANCH-PATH] [-r REVISION | -D DATE]" >&2
       exit 1
   esac
   shift
