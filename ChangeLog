@@ -1,5 +1,9 @@
 2005-06-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Don't check for strpbrk and mktime.
+
+2005-06-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* util/dist-wget: Port to subversion.
 
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
