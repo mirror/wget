@@ -1,5 +1,10 @@
 2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* README.svn: Renamed to README.checkout.  Edited to mention the
+	autogen.sh script.
+
+2005-06-22  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* autogen.sh: New file.
 
 	* Makefile.svn: Deleted, replaced with the even simpler (and more
