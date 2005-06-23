@@ -28,10 +28,13 @@
 # file, but you are not obligated to do so.  If you do not wish to do
 # so, delete this exception statement from your version.
 
+# TODO: print an error message nicer than "sh: command not found" when
+# Autoconf is not installed (or, more precisely, not found in the
+# PATH).
+
 autoheader
 autoconf
 
-# We intentionally don't invoke configure and make because we don't
-# know where the user wants to run the configuration, nor with which
-# arguments.  That is entirely up to the user.
-
+# At this point we intentionally don't invoke configure and make
+# because we don't know where the user wants to run the configuration,
+# nor with which arguments.  That should be up to the user.
