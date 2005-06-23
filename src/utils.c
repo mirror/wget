@@ -1249,7 +1249,7 @@ with_thousand_seps_large (LARGE_INT l)
    usually improves readability."
 
    This intentionally uses kilobyte (KB), megabyte (MB), etc. in their
-   original computer science meaning of "powers of 1024".  Powers of
+   original computer-related meaning of "powers of 1024".  Powers of
    1000 would be useless since Wget already displays sizes with
    thousand separators.  We don't use the "*bibyte" names invented in
    1998, and seldom used in practice.  Wikipedia's entry on kilobyte
