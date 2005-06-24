@@ -3705,7 +3705,12 @@ Nicolas Lichtmeier,
 @end ifnottex
 Dave Love,
 Alexander V. Lukyanov,
+@iftex
+Thomas Lu@ss{}nig,
+@end iftex
+@ifnottex
 Thomas Lussnig,
+@end ifnottex
 Andre Majorel,
 Aurelien Marchand,
 Matthew J. Mellon,
