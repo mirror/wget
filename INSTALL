@@ -1,20 +1,34 @@
-                                                                   -*- text -*-
-			Installation Procedure
+                                                            -*- text -*-
+		   GNU Wget Installation Procedure
+                   ===============================
 
-0) Preparation
+0. Preparation
+--------------
 
 To build and install GNU Wget, you need to unpack the archive (which
 you have presumably done, since you are reading this), and read on.
 Like most GNU utilities, Wget uses the GNU Autoconf mechanism for
-build and installation; those of you familiar with compiling GNU
-software will feel at home.
+build and installation; users familiar with compiling GNU software
+should feel at home.
 
-1) Configuration
+Note that instructions in this file do not pertain to installation on
+Windows, for which see windows/README.
 
-To configure Wget, run the configure script provided with the
-distribution.  It will create the Makefiles needed to start the
-compilation.  You may use the standard arguments Autoconf-created
-configure scripts take, the most important ones being:
+1. Configuration
+----------------
+
+Before compiling Wget, you need to "configure" it using the provided
+`configure' script.  Configuration serves two purposes: it enables the
+compilation system to inspect certain features of your operating
+system for more robust compilation, and it enables you to choose which
+features you want the resulting Wget to have.
+
+The simplest way to configure Wget is by running the configure script
+provided with the distribution without additional arguments.  After
+running some programming-related tests, it will create the Makefiles
+needed to compile Wget.  If you have experience with Autoconf-based
+build systems, you may use the standard arguments such configure
+scripts take, the most important ones being:
 
   --help                  display a help message and exit
 
@@ -24,12 +38,20 @@ configure scripts take, the most important ones being:
   --infodir=DIR           info documentation in DIR [PREFIX/info]
   --mandir=DIR            man documentation in DIR [PREFIX/man]
 
-  --build=BUILD           configure for building on BUILD [BUILD=HOST]
-  --host=HOST             configure for HOST [guessed]
-  --target=TARGET         configure for TARGET [TARGET=HOST]
+For example, if you are not root and want to install Wget in your home
+directory, you can use:
 
---enable and --with options recognized (mostly Wget-specific):
-  --with-ssl[=SSL_ROOT]   link with libssl [in SSL_ROOT/lib] for https: support
+    ./configure --prefix=$HOME
+
+Options beginning with "--disable", such as `--disable-opie' or
+`--disable-ntlm', allow you to turn off certain built-in functionality
+you don't need in order to reduce the size of the executable.  Options
+beginning with "--with" turning off autodetection and use of external
+software Wget can link with, such as the SSL libraries.  Recognized
+"--enable" and "--with" options include:
+
+  --without-ssl           disable SSL autodetection (used for https support)
+  --with-libssl-prefix=DIR search for libssl in DIR/lib
   --disable-opie          disable support for opie or s/key FTP login
   --disable-digest        disable support for HTTP digest authorization
   --disable-ntlm          disable support for HTTP NTLM authorization
@@ -37,62 +59,70 @@ configure scripts take, the most important ones being:
   --disable-nls           do not use Native Language Support
   --disable-largefile     omit support for large files
   --disable-ipv6          disable IPv6 support
+  --disable-rpath         do not hardcode runtime library paths
 
-If you want to configure Wget for installation in your home directory,
-you can type:
-
-    ./configure --prefix=$HOME
-
-You can customize many settings simply by editing the Makefiles and
-`src/config.h'.  The defaults should work without intervention, but it
-is useful to have a look at things you can change there.
+You can inspect the decisions made by configure by editing the
+generated Makefiles and the `src/config.h' include file.  The defaults
+should work without intervention, but if you know what you are doing,
+editing the generated files before compilation is fine -- they will
+not be regenerated until you run configure again.
 
 configure will try to find a compiler in your PATH, defaulting to
 `gcc', but falling back to `cc' if the former is unavailable.  This is
 a reasonable default on most Unix-like systems, but sometimes you
-might want to override it.  The compiler choice is overridden with the
-value of the `CC' environment variable.  For example, to force
-compilation with the Unix `cc' compiler, invoke configure like this:
+might want to override it.  The compiler choice is overridden by
+setting the `CC' environment variable to the desired compiler file
+name.  For example, to force compilation with the Unix `cc' compiler,
+invoke configure like this:
 
     ./configure CC=cc
 
-This assumes that `cc' is in your path -- if it is not, simply replace
-"cc" with "/path/to/cc".  Note that environment variables that affect
-configure can be set with the usual shell syntax `var=value
-./configure' (assuming an sh-compatible shell).  In addition to that,
-configure allows environment variables to be specified as arguments in
-the form "var=value", which are shell-independent.
+This assumes that `cc' is in your path -- if it is not, simply use
+CC=/path/to/cc instead.  Note that environment variables that affect
+configure can be set with the usual shell syntax `VAR=value
+./configure' (assuming sh syntax), but can also be specified as
+arguments to configure, as shown above.  The latter method, while
+being specific to configure, works unmodified in all shells.
 
-Environment variables that affect `configure' include: CFLAGS for
-compilation flags, LDFLAGS for linker flags, and CPPFLAGS for
-preprocessor flags.
+Environment variables that affect `configure' include: CFLAGS for C
+compiler flags, CPPFLAGS for C preprocessor flags, LDFLAGS for linker
+flags, and LIBS for libraries.
 
-If you have OpenSSL libraries installed at one of the default
-locations, such as the system library directories or /usr/local/lib or
-/usr/local/ssl/lib, configure will autodetect them.  If they are
-installed elsewhere, you need to specify the OpenSSL root directory.
-For instance, if libcrypto.* and libssl.* are in /opt/openssl/lib, you
-need to `configure --with-ssl=/opt/openssl'.
+Barring a the use of --without-* flags, configure will try to
+autodetect certain external libraries needed by Wget, currently only
+the OpenSSL libraries.  If they are installed in the system library
+directories or in the same prefix where you plan to install Wget,
+configure should be able to autodetect them.  If they are installed
+elsewhere, use the `--with-libNAME' option to specify the root
+directory under which libraries reside in the `lib/' subdirectory and
+the corresponding header files reside in the `include/' subdirectory.
+For example, if the OpenSSL libraries are installed under the
+/usr/local/ssl prefix, use `--with-libssl=/usr/local/ssl'.
 
-To configure Wget on Windows, read the instructions in
-`windows/README'.  If this doesn't work for any reason, talk to the
-Windows developers listed there; I do not maintain the port.  Those
-instructions do not apply to the "Cygwin" environment, where Wget
-should build out of the box as described here.
+Sometimes external libraries will be installed on the system, but the
+header files will be missing, which happens on Linux if you forget to
+install the "-devel" or "-dev" package that corresponds to the library
+and that is typically *not* installed by default.  In that case
+configure will not find the library and you will not be able to use
+the features provided by the library until you install the devel
+package and rerun configure.  If you have all the necessary headers,
+but configure still fails to detect the library, report a bug.
 
-2) Compilation
+2. Compilation
+--------------
 
 To compile GNU Wget after it has been configured, simply type make.
-If you do not have an ISO C (C89) compiler, Wget will try to K&R-ize
-its sources on the fly.  This should make GNU Wget compilable on
-almost any Unix-like system you are likely to encounter.
+Wget requires a compiler and standard library compliant with the 1990
+ISO C standard, which includes the vast majority of compilation
+environments present on systems in use today.
 
 After the compilation a ready-to-use `wget' executable should reside
 in the src directory.  At this point there is no formal test suite for
 testing the binary, but it should be easy enough to test whether the
 basic functionality works.
 
-3) Installation
+3. Installation
+---------------
 
 Use `make install' to install GNU Wget to directories specified to
 configure.  To install it in a system directory (which is the
