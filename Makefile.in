@@ -57,7 +57,7 @@ CC = @CC@
 CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 DEFS = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
-LIBS = @LIBS@
+LIBS = @LIBS@ @LIBSSL@
 LDFLAGS = @LDFLAGS@
 
 #
@@ -66,7 +66,6 @@ LDFLAGS = @LDFLAGS@
 #
 
 DISTNAME = wget-@VERSION@
-LIBTOOL_DEPS = @LIBTOOL_DEPS@
 RM = rm -f
 
 # These are used for maintenance only, so they are safe without
@@ -85,7 +84,7 @@ infodir='$(infodir)' mandir='$(mandir)' manext='$(manext)'
 SUBDIRS = src doc po util windows
 
 # default target
-all: libtool src/config.h Makefile $(SUBDIRS)
+all: src/config.h Makefile $(SUBDIRS)
 
 check: all
 
@@ -107,10 +106,6 @@ install.info uninstall.info install.man uninstall.man install.wgetrc:
 # Install `.mo' files
 install.mo:
 	cd po && $(MAKE) $(MAKEDEFS) $@
-
-# Regenerate libtool if ltconfig and/or ltmain are updated
-libtool: $(LIBTOOL_DEPS)
-	$(SHELL) ./config.status --recheck
 
 # Create configure.bat from configure.bat.in by DOS-ifying the lines.
 # This is invoked by `make dist' and deleted by `make realclean' (not

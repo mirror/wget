@@ -50,14 +50,15 @@ CPPFLAGS = @CPPFLAGS@
 # The following line is losing on some versions of make!
 DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
 CFLAGS   = @CFLAGS@
-LDFLAGS  = @LDFLAGS@
-LIBS     = @LIBS@
+LDFLAGS  = @LDFLAGS@ 
+LIBS     = @LIBS@ @LIBSSL@
 exeext   = @exeext@
 
-INCLUDES = -I. -I$(srcdir) @SSL_INCLUDES@
+#INCLUDES = -I. -I$(srcdir) @SSL_INCLUDES@
+INCLUDES = -I. -I$(srcdir)
 
 COMPILE = $(CC) $(INCLUDES) $(CPPFLAGS)  $(DEFS) $(CFLAGS)
-LINK    = @LIBTOOL@ --mode=link $(CC) $(CFLAGS) $(LDFLAGS) -o $@
+LINK    = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 RM = rm -f
