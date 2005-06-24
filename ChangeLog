@@ -31,6 +31,18 @@
 	functions we know must be there.  But manually AC_DEFINE the
 	functions that might be missing from non-Unix systems.
 
+2005-06-23  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* libtool.m4, ltmain.sh: Deleted.
+
+	* configure.in: Replaced ugly libtool-based check for OpenSSL libs
+	with a simpler config.rpath-based approach.
+
+	* Makefile.in, src/Makefile.in: Removed libtool support.
+
+	* m4/lib-link.m4, m4/lib-prefix.m4, m4/lib-ld.m4, config.rpath:
+	config.rpath macros taken from gettext 0.14.5.
+
 2005-06-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Don't check for strpbrk and mktime.
