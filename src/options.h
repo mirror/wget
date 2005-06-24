@@ -29,7 +29,8 @@ so, delete this exception statement from your version.  */
 
 struct options
 {
-  bool verbose;			/* Are we verbose? */
+  int verbose;			/* Are we verbose?  (First set to -1,
+                                   hence not boolean.) */
   bool quiet;			/* Are we quiet? */
   int ntry;			/* Number of tries per URL */
   bool retry_connrefused;	/* Treat CONNREFUSED as non-fatal. */

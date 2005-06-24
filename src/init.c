@@ -89,6 +89,7 @@ CMD_DECLARE (cmd_spec_secure_protocol);
 #endif
 CMD_DECLARE (cmd_spec_timeout);
 CMD_DECLARE (cmd_spec_useragent);
+CMD_DECLARE (cmd_spec_verbose);
 
 /* List of recognized commands, each consisting of name, place and
    function.  When adding a new command, simply add it to the list,
@@ -230,7 +231,7 @@ static struct {
   { "useproxy",		&opt.use_proxy,		cmd_boolean },
   { "user",	        &opt.user,		cmd_string },
   { "useragent",	NULL,			cmd_spec_useragent },
-  { "verbose",		&opt.verbose,		cmd_boolean },
+  { "verbose",		NULL,			cmd_spec_verbose },
   { "wait",		&opt.wait,		cmd_time },
   { "waitretry",	&opt.waitretry,		cmd_time }
 };
@@ -1253,6 +1254,22 @@ cmd_spec_useragent (const char *com, const char *val, void *place_ignored)
   xfree_null (opt.useragent);
   opt.useragent = xstrdup (val);
   return true;
+}
+
+/* The "verbose" option cannot be cmd_boolean because the variable is
+   not bool -- it's of type int (-1 means uninitialized because of
+   some random hackery for disallowing -q -v).  */
+
+static bool
+cmd_spec_verbose (const char *com, const char *val, void *place_ignored)
+{
+  bool flag;
+  if (cmd_boolean (com, val, &flag))
+    {
+      opt.verbose = flag;
+      return true;
+    }
+  return false;
 }
 
 /* Miscellaneous useful routines.  */

@@ -1,3 +1,7 @@
+2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* init.c: opt.verbose must be declared as int.
+
 2005-06-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* cmpt.c (strpbrk): Removed.
