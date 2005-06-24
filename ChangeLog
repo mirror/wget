@@ -1,3 +1,12 @@
+2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Use AC_LIB_HAVE_LINKFLAGS instead of
+	AC_LIB_LINKFLAGS when checking for library functions.
+
+	* configure.in: Don't waste time checking for headers and
+	functions we know must be there.  But manually AC_DEFINE the
+	functions that might be missing from non-Unix systems.
+
 2005-06-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Don't check for strpbrk and mktime.

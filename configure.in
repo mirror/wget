@@ -152,17 +152,16 @@ dnl
 dnl Checks for header files that might be missing.
 dnl
 
-dnl Check for basic headers, even those we assume the presence of.
-dnl This is because test programs used by Autoconf macros check for
-dnl STDC_HEADERS, HAVE_SYS_TYPES_H, etc. before including them.
-dnl Without these checks they will fail to be included in test
+dnl Check for basic headers, even though we expect their presence to
+dnl compile.  This is because test programs used by Autoconf macros
+dnl check for STDC_HEADERS, HAVE_SYS_TYPES_H, etc. before including
+dnl them.  Without these checks they will fail to be included in test
 dnl programs, which will subsequently fail.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(sys/types.h sys/stat.h)
 
 dnl Now the real checks:
 AC_HEADER_STDBOOL
-AC_CHECK_HEADERS(string.h strings.h limits.h unistd.h sys/time.h)
+AC_CHECK_HEADERS(unistd.h sys/time.h)
 AC_CHECK_HEADERS(termios.h sys/ioctl.h sys/select.h utime.h sys/utime.h)
 AC_CHECK_HEADERS(stdint.h inttypes.h setjmp.h pwd.h)
 
@@ -205,10 +204,18 @@ dnl
 AC_FUNC_ALLOCA
 AC_FUNC_MMAP
 AC_FUNC_FSEEKO
-AC_CHECK_FUNCS(strdup strcasecmp strncasecmp)
 AC_CHECK_FUNCS(strptime snprintf vsnprintf)
-AC_CHECK_FUNCS(usleep ftello sigblock sigsetjmp)
-AC_CHECK_FUNCS(symlink isatty)
+AC_CHECK_FUNCS(usleep ftello sigblock sigsetjmp symlink)
+
+dnl We expect to have these functions on Unix-like systems configure
+dnl runs on.  The defines are provided to get them in config.h.in so
+dnl Wget can still be ported to non-Unix systems (such as Windows)
+dnl that lack some of these functions.
+AC_DEFINE([HAVE_STRCASECMP], 1, [Define to 1 if you have the `strcasecmp' function.])
+AC_DEFINE([HAVE_STRNCASECMP], 1, [Define to 1 if you have the `strncasecmp' function.])
+AC_DEFINE([HAVE_STRDUP], 1, [Define to 1 if you have the `strdup' function.])
+AC_DEFINE([HAVE_ISATTY], 1, [Define to 1 if you have the `isatty' function.])
+AC_DEFINE([HAVE_SYMLINK], 1, [Define to 1 if you have the `symlink' function.])
 
 dnl
 dnl Call Wget-specific macros defined in aclocal.
@@ -231,12 +238,19 @@ AC_SUBST(GETOPT_OBJ)
 dnl
 dnl Checks for libraries.
 dnl
-AC_CHECK_LIB(dl,dlopen)
-AC_CHECK_LIB(dl,shl_load)
 
 dnl Check for OpenSSL
-AC_LIB_LINKFLAGS([crypto])
-AC_LIB_LINKFLAGS([ssl],[crypto],[
+
+dnl As of this writing (OpenSSL 0.9.6), the libcrypto shared library
+dnl doesn't record its dependency on libdl, so we need to make sure
+dnl -ldl ends up in LIBS on systems that have it.  Most OSes use
+dnl dlopen(), but HP-UX uses dnl shl_load().
+AC_CHECK_LIB(dl, dlopen, [], [
+  AC_CHECK_LIB(dl, shl_load)
+])
+
+dnl Now actually check for -lssl
+AC_LIB_HAVE_LINKFLAGS([ssl], [crypto], [
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
 #include <openssl/err.h>
@@ -244,7 +258,7 @@ AC_LIB_LINKFLAGS([ssl],[crypto],[
 #include <openssl/des.h>
 #include <openssl/md4.h>
 #include <openssl/md5.h>
-])
+], [SSL_library_init ()])
 if test x"$LIBSSL" != x
 then
   AC_MSG_NOTICE([compiling in support for SSL])
@@ -256,7 +270,7 @@ AC_SUBST(SSL_OBJ)
 
 dnl Enable NTLM if requested and if SSL is available.
 NTLM_OBJ=''
-if test x"$ssl_success" = xyes
+if test x"$LIBSSL" != x
 then
   if test x"$ENABLE_NTLM" != xno
   then
