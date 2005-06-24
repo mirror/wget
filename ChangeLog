@@ -1,5 +1,11 @@
 2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Move the large file check further up.  Only check
+	for endianness if GNU md5 is used (it being the only file that
+	needs endianness information).
+
+2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Don't indent #include lines.
 
 2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>

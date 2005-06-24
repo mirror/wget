@@ -150,28 +150,31 @@ dnl
 AC_C_CONST
 AC_C_INLINE
 AC_C_VOLATILE
-dnl Needed for GNU md5 code.
-AC_C_BIGENDIAN
 
-dnl
-dnl Checks for header files that might be missing.
-dnl
-
-dnl Check for basic headers, even though we expect their presence to
-dnl compile.  This is because test programs used by Autoconf macros
-dnl check for STDC_HEADERS, HAVE_SYS_TYPES_H, etc. before including
-dnl them.  Without these checks they will fail to be included in test
-dnl programs, which will subsequently fail.
+dnl Check for basic headers, even though we expect them to exist and
+dnl #include them unconditionally in the code.  Their detection is
+dnl still needed because test programs used by Autoconf macros check
+dnl for STDC_HEADERS, HAVE_SYS_TYPES_H, etc. before using them.
+dnl Without the checks they will fail to be included in test programs,
+dnl which will subsequently fail.
 AC_HEADER_STDC
 
-dnl Now the real checks:
+dnl Check for large file support.  This check needs to come fairly
+dnl early because it could (in principle) affect whether functions and
+dnl headers are available, whether they work, etc.
+AC_SYS_LARGEFILE
+AC_CHECK_SIZEOF(off_t)
+
+dnl
+dnl Checks for system header files that might be missing.
+dnl
 AC_HEADER_STDBOOL
 AC_CHECK_HEADERS(unistd.h sys/time.h)
 AC_CHECK_HEADERS(termios.h sys/ioctl.h sys/select.h utime.h sys/utime.h)
 AC_CHECK_HEADERS(stdint.h inttypes.h setjmp.h pwd.h)
 
 dnl
-dnl Check sizes of signed integer types.  These are used to find n-bit
+dnl Check sizes of integer types.  These are used to find n-bit
 dnl integral types on older systems that fail to provide intN_t and
 dnl uintN_t typedefs.
 dnl
@@ -179,14 +182,6 @@ AC_CHECK_SIZEOF(short)
 AC_CHECK_SIZEOF(int)
 AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(long long)
-
-dnl
-dnl Check for large file support.  This check needs to come fairly
-dnl early because it could (in principle) affect whether functions and
-dnl headers are available, whether they work, etc.
-dnl
-AC_SYS_LARGEFILE
-AC_CHECK_SIZEOF(off_t)
 
 dnl
 dnl Checks for non-universal or system-specific types.
@@ -296,7 +291,8 @@ fi
 AC_SUBST(NTLM_OBJ)
 
 dnl
-dnl Find an md5 implementation.
+dnl Find an MD5 implementation.  Since Wget rarely needs MD5, we try
+dnl to use an existing library implementation to save on code size.
 dnl
 
 if test x"$wget_need_md5" = xyes
@@ -309,8 +305,9 @@ then
 
   dnl Check for the system MD5 library on Solaris.  We don't check for
   dnl something simple like "MD5Update" because there are a number of
-  dnl MD5 implementations that use that name.  md5_calc is, hopefully,
-  dnl specific to the Solaris MD5 library.
+  dnl MD5 implementations that use that name, but have an otherwise
+  dnl incompatible interface.  md5_calc is, hopefully, specific to the
+  dnl Solaris MD5 library.
   if test x"$found_md5" = xno; then
     AC_CHECK_LIB(md5, md5_calc, [
       dnl Some installations have bogus <md5.h> in the compiler's
@@ -343,6 +340,7 @@ then
     MD5_OBJ="$MD5_OBJ gnu-md5.o"
     found_md5=yes
     AC_MSG_NOTICE([using the GNU MD5 implementation])
+    AC_C_BIGENDIAN
   fi
 fi
 AC_DEFINE([HAVE_MD5], 1, [Define if we're compiling support for MD5.])
@@ -353,10 +351,15 @@ dnl Checks for IPv6
 dnl **********************************************************************
 
 dnl
-dnl If --enable-ipv6 is specified, we try to use IPv6 (as long as
-dnl getaddrinfo is also present).  If --disable-ipv6 is specified, we
-dnl don't use IPv6 or getaddrinfo.  Otherwise we detect IPv6 and use
-dnl it where available.
+dnl We test for IPv6 by checking, in turn, for availability of
+dnl getaddrinfo, presence of the INET6 address/protocol family, and
+dnl the existence of struct sockaddr_in6.  If any of them is missing,
+dnl IPv6 is disabled, and the code reverts to old-style gethostbyname.
+dnl
+dnl If --enable-ipv6 is explicitly specified on the configure command
+dnl line, we check for IPv6 and abort if not found.  If --disable-ipv6
+dnl is specified, we disable IPv6 and don't check for it.  The default
+dnl is to autodetect IPv6 and use it where available.
 dnl
 
 AC_ARG_ENABLE(ipv6,
@@ -422,12 +425,12 @@ fi
 dnl
 dnl Set of available languages.
 dnl
-ALL_LINGUAS=`(cd ${srcdir}/po && ls *.po | sed -e 's/\.po$//' | tr '\012' ' ')`
-
 dnl Originally this used to be static, looking like this:
 dnl     ALL_LINGUAS="cs de hr it ..."
 dnl The downside was that configure needed to be rebuilt whenever a
 dnl new language was added.
+dnl
+ALL_LINGUAS=`(cd ${srcdir}/po && ls *.po | sed -e 's/\.po$//' | tr '\012' ' ')`
 
 dnl internationalization macros
 WGET_WITH_NLS
