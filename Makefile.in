@@ -107,17 +107,11 @@ install.info uninstall.info install.man uninstall.man install.wgetrc:
 install.mo:
 	cd po && $(MAKE) $(MAKEDEFS) $@
 
-# Create configure.bat from configure.bat.in by DOS-ifying the lines.
-# This is invoked by `make dist' and deleted by `make realclean' (not
-# `make distclean' because we want to preserve it for distribution).
-configure.bat: $(srcdir)/configure.bat.in
-	awk '{ print $$0 ($$0 ~ /\r$$/ ? "" : "\r") }' $< > $@
-
 # create tag files for Emacs
 TAGS:
 	cd src && $(MAKE) $@
 
-dist: $(srcdir)/configure $(srcdir)/configure.bat DISTFILES
+dist: $(srcdir)/configure DISTFILES
 	mkdir $(DISTNAME)
 	for d in `$(FIND) . -type d ! -name CVS -a ! -name RCS -print`; do \
 		if [ "$$d" != "." -a "$$d" != "./$(DISTNAME)" ]; then \
@@ -159,7 +153,7 @@ distclean-top: clean-top
 	$(RM) -r autom4te.cache
 
 realclean-top: distclean-top
-	$(RM) configure configure.bat
+	$(RM) configure
 
 clean-recursive distclean-recursive realclean-recursive:
 	for subdir in $(SUBDIRS); do \

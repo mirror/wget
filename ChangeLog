@@ -1,3 +1,9 @@
+2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.in: Instead of creating configure.bat from
+	configure.bat.in, simply make sure the correct EOL style in
+	checked out of the repository.
+
 2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Move the large file check further up.  Only check
