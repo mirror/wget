@@ -822,6 +822,17 @@ check_path_match (const char *cookie_path, const char *path)
 {
   return path_matches (path, cookie_path) != 0;
 }
+
+/* Prepend '/' to string S.  S is copied to fresh stack-allocated
+   space and its value is modified to point to the new location.  */
+
+#define PREPEND_SLASH(s) do {					\
+  char *PS_newstr = (char *) alloca (1 + strlen (s) + 1);	\
+  *PS_newstr = '/';						\
+  strcpy (PS_newstr + 1, s);					\
+  s = PS_newstr;						\
+} while (0)
+
 
 /* Process the HTTP `Set-Cookie' header.  This results in storing the
    cookie or discarding a matching one, or ignoring it completely, all
@@ -834,6 +845,11 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
 {
   struct cookie *cookie;
   cookies_now = time (NULL);
+
+  /* Wget's paths don't begin with '/' (blame rfc1808), but cookie
+     usage assumes /-prefixed paths.  Until the rest of Wget is fixed,
+     simply prepend slash to PATH.  */
+  PREPEND_SLASH (path);
 
   cookie = parse_set_cookies (set_cookie, update_cookie_field, false);
   if (!cookie)
@@ -977,16 +993,7 @@ find_chains_of_host (struct cookie_jar *jar, const char *host,
 static int
 path_matches (const char *full_path, const char *prefix)
 {
-  int len;
-
-  if (*prefix != '/')
-    /* Wget's HTTP paths do not begin with '/' (the URL code treats it
-       as a mere separator, inspired by rfc1808), but the '/' is
-       assumed when matching against the cookie stuff.  */
-    return 0;
-
-  ++prefix;
-  len = strlen (prefix);
+  int len = strlen (prefix);
 
   if (0 != strncmp (full_path, prefix, len))
     /* FULL_PATH doesn't begin with PREFIX. */
@@ -1149,6 +1156,7 @@ cookie_header (struct cookie_jar *jar, const char *host,
   int count, i, ocnt;
   char *result;
   int result_size, pos;
+  PREPEND_SLASH (path);		/* see cookie_handle_set_cookie */
 
   /* First, find the cookie chains whose domains match HOST. */
 

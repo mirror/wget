@@ -1,5 +1,12 @@
 2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (gethttp): Don't prepend / here.
+
+	* cookies.c (cookie_handle_set_cookie): Prepend / to PATH.
+	(cookie_header): Ditto.
+
+2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* init.c: opt.verbose must be declared as int.
 
 2005-06-23  Hrvoje Niksic  <hniksic@xemacs.org>

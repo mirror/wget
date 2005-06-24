@@ -1706,7 +1706,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   /* Handle (possibly multiple instances of) the Set-Cookie header. */
   if (opt.cookies)
     {
-      char *pth = NULL;
       int scpos;
       const char *scbeg, *scend;
       /* The jar should have been created by now. */
@@ -1717,15 +1716,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	   ++scpos)
 	{
 	  char *set_cookie; BOUNDED_TO_ALLOCA (scbeg, scend, set_cookie);
-	  if (pth == NULL)
-	    {
-	      /* u->path doesn't begin with /, which cookies.c expects. */
-	      pth = (char *) alloca (1 + strlen (u->path) + 1);
-	      pth[0] = '/';
-	      strcpy (pth + 1, u->path);
-	    }
-	  cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port, pth,
-				    set_cookie);
+	  cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port,
+				    u->path, set_cookie);
 	}
     }
 
