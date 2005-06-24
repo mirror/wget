@@ -1,5 +1,10 @@
 2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* Makefile.in ($(srcdir)/stamp-h.in): Remove the aclocal.m4
+	dependencies.
+
+2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Include m4/*.m4.
 
 	* aclocal.m4: Renamed to m4/wget.m4.

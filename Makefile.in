@@ -171,12 +171,12 @@ clean-recursive distclean-recursive realclean-recursive:
 # Dependencies for maintenance
 #
 
-$(srcdir)/configure: configure.in aclocal.m4
+$(srcdir)/configure: configure.in
 	cd $(srcdir) && autoconf
 
 # autoheader might not change config.h.in, so touch a stamp file.
 $(srcdir)/src/config.h.in: stamp-h.in
-$(srcdir)/stamp-h.in: configure.in aclocal.m4
+$(srcdir)/stamp-h.in: configure.in
 	@true; # running autoheader here breaks: cd $(srcdir) && autoheader
 	echo timestamp > $(srcdir)/stamp-h.in
 
