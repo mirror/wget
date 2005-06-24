@@ -1,5 +1,10 @@
 2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* Makefile.in (DISTFILES): Don't split the sed invocation across
+	several lines, Solaris make passes the backslashes to sed literally.
+
+2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* Makefile.in: Instead of creating configure.bat from
 	configure.bat.in, simply make sure the correct EOL style in
 	checked out of the repository.

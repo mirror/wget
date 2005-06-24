@@ -130,10 +130,7 @@ dist: $(srcdir)/configure DISTFILES
 DISTFILES: FORCE
 	rm -rf $(DISTNAME)	
 	(cd $(srcdir); find . ! -type d -print) \
-	| sed '/\/\(CVS\|RCS\)\//d; \
-		/$@/d; \
-		/\.tar.*/d; \
-	  	s/^.\///; /^\.$$/d;' \
+	| sed '/\/\(CVS\|RCS\)\//d; /$@/d; /\.tar.*/d; s/^.\///; /^\.$$/d;' \
 	| sort | uniq > $@
 
 #
