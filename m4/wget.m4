@@ -1,4 +1,8 @@
 dnl
+dnl Wget-specific Autoconf macros.
+dnl
+
+dnl
 dnl Check for `struct utimbuf'.
 dnl
 

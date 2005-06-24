@@ -32,6 +32,12 @@ dnl
 AC_INIT([src/version.c])
 AC_PREREQ(2.57)
 
+dnl Include the M4 macros we use.
+builtin(include, [m4/wget.m4])dnl
+builtin(include, [m4/lib-ld.m4])dnl
+builtin(include, [m4/lib-link.m4])dnl
+builtin(include, [m4/lib-prefix.m4])dnl
+
 dnl
 dnl What version of Wget are we building?
 dnl

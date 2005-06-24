@@ -32,7 +32,6 @@
 # Autoconf is not installed (or, more precisely, not found in the
 # PATH).
 
-cat m4/*.m4 > aclocal.m4
 autoheader
 autoconf
 

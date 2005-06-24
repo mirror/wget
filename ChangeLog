@@ -1,5 +1,11 @@
 2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Include m4/*.m4.
+
+	* aclocal.m4: Renamed to m4/wget.m4.
+
+2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Use AC_LIB_HAVE_LINKFLAGS instead of
 	AC_LIB_LINKFLAGS when checking for library functions.
 
