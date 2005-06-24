@@ -1,5 +1,8 @@
 2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Enable the user to turn off SSL autodetection and
+	disable SSL using --without-ssl.
+
 	* Makefile.in ($(srcdir)/stamp-h.in): Remove the aclocal.m4
 	dependencies.
 

@@ -59,8 +59,7 @@ dnl Process features.
 dnl
 
 AC_ARG_WITH(ssl,
-[[  --with-ssl[=SSL-ROOT]   link with SSL support [default=auto]
-  --without-ssl           disable SSL autodetection]])
+[[  --without-ssl           disable SSL autodetection]])
 
 AC_ARG_ENABLE(opie,
 [  --disable-opie          disable support for opie or s/key FTP login],
@@ -246,31 +245,33 @@ dnl Checks for libraries.
 dnl
 
 dnl Check for OpenSSL
-
-dnl As of this writing (OpenSSL 0.9.6), the libcrypto shared library
-dnl doesn't record its dependency on libdl, so we need to make sure
-dnl -ldl ends up in LIBS on systems that have it.  Most OSes use
-dnl dlopen(), but HP-UX uses dnl shl_load().
-AC_CHECK_LIB(dl, dlopen, [], [
-  AC_CHECK_LIB(dl, shl_load)
-])
-
-dnl Now actually check for -lssl
-AC_LIB_HAVE_LINKFLAGS([ssl], [crypto], [
-#include <openssl/ssl.h>
-#include <openssl/x509.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
-#include <openssl/des.h>
-#include <openssl/md4.h>
-#include <openssl/md5.h>
-], [SSL_library_init ()])
-if test x"$LIBSSL" != x
+if test x"$with_ssl" != x"no"
 then
-  AC_MSG_NOTICE([compiling in support for SSL])
-  AC_DEFINE([HAVE_SSL], 1,
-            [Define if SSL support should be compiled in.])
-  SSL_OBJ='openssl.o'
+  dnl As of this writing (OpenSSL 0.9.6), the libcrypto shared library
+  dnl doesn't record its dependency on libdl, so we need to make sure
+  dnl -ldl ends up in LIBS on systems that have it.  Most OSes use
+  dnl dlopen(), but HP-UX uses dnl shl_load().
+  AC_CHECK_LIB(dl, dlopen, [], [
+    AC_CHECK_LIB(dl, shl_load)
+  ])
+
+  dnl Now actually check for -lssl
+  AC_LIB_HAVE_LINKFLAGS([ssl], [crypto], [
+  #include <openssl/ssl.h>
+  #include <openssl/x509.h>
+  #include <openssl/err.h>
+  #include <openssl/rand.h>
+  #include <openssl/des.h>
+  #include <openssl/md4.h>
+  #include <openssl/md5.h>
+  ], [SSL_library_init ()])
+  if test x"$LIBSSL" != x
+  then
+    AC_MSG_NOTICE([compiling in support for SSL])
+    AC_DEFINE([HAVE_SSL], 1,
+	      [Define if SSL support should be compiled in.])
+    SSL_OBJ='openssl.o'
+  fi
 fi
 AC_SUBST(SSL_OBJ)
 
