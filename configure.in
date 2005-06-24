@@ -257,13 +257,13 @@ then
 
   dnl Now actually check for -lssl
   AC_LIB_HAVE_LINKFLAGS([ssl], [crypto], [
-  #include <openssl/ssl.h>
-  #include <openssl/x509.h>
-  #include <openssl/err.h>
-  #include <openssl/rand.h>
-  #include <openssl/des.h>
-  #include <openssl/md4.h>
-  #include <openssl/md5.h>
+#include <openssl/ssl.h>
+#include <openssl/x509.h>
+#include <openssl/err.h>
+#include <openssl/rand.h>
+#include <openssl/des.h>
+#include <openssl/md4.h>
+#include <openssl/md5.h>
   ], [SSL_library_init ()])
   if test x"$LIBSSL" != x
   then

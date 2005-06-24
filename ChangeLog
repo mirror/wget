@@ -1,5 +1,9 @@
 2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Don't indent #include lines.
+
+2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Enable the user to turn off SSL autodetection and
 	disable SSL using --without-ssl.
 
