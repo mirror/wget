@@ -1,5 +1,10 @@
 2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (SPRINTF_WGINT): The correct format is %I64d, not just
+	%I64.
+
+2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (http_loop): Don't warn about wildcards in HTTP URLs if
 	globbing isn't requested in the first place.
 

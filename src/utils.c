@@ -1345,7 +1345,7 @@ numdigit (wgint number)
 #elif SIZEOF_LONG_LONG >= SIZEOF_WGINT
 # define SPRINTF_WGINT(buf, n) sprintf (buf, "%lld", (long long) (n))
 #elif defined(WINDOWS)
-# define SPRINTF_WGINT(buf, n) sprintf (buf, "%I64", (__int64) (n))
+# define SPRINTF_WGINT(buf, n) sprintf (buf, "%I64d", (__int64) (n))
 #else
 # define SPRINTF_WGINT(buf, n) sprintf (buf, "%j", (intmax_t) (n))
 #endif
