@@ -1996,7 +1996,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   *newloc = NULL;
 
   /* Warn on (likely bogus) wildcard usage in HTTP.  */
-  if (has_wildcards_p (u->path))
+  if (opt.ftp_glob && has_wildcards_p (u->path))
     logputs (LOG_VERBOSE, _("Warning: wildcards not supported in HTTP.\n"));
 
   xzero (hstat);

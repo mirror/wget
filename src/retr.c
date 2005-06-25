@@ -660,14 +660,16 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     }
   else if (u->scheme == SCHEME_FTP)
     {
-      /* If this is a redirection, we must not allow recursive FTP
-	 retrieval, so we save recursion to oldrec, and restore it
-	 later.  */
-      bool oldrec = opt.recursive;
+      /* If this is a redirection, temporarily turn off opt.ftp_glob
+	 and opt.recursive, both being undesirable when following
+	 redirects.  */
+      bool oldrec = opt.recursive, oldglob = opt.ftp_glob;
       if (redirection_count)
-	opt.recursive = false;
+	opt.recursive = opt.ftp_glob = false;
+
       result = ftp_loop (u, dt, proxy_url);
       opt.recursive = oldrec;
+      opt.ftp_glob = oldglob;
 
       /* There is a possibility of having HTTP being redirected to
 	 FTP.  In these cases we must decide whether the text is HTML

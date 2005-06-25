@@ -1,5 +1,13 @@
 2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (http_loop): Don't warn about wildcards in HTTP URLs if
+	globbing isn't requested in the first place.
+
+	* retr.c (retrieve_url): Temporarily turn off globbing when
+	processing HTTP->FTP redirects.
+
+2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (with_thousand_seps_sum): Now defined only if
 	SUM_SIZE_INT is double.
 
