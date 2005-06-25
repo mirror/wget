@@ -486,7 +486,7 @@ struct bar_progress {
   double last_eta_time;		/* time of the last update to download
 				   speed and ETA, measured since the
 				   beginning of download. */
-  wgint last_eta_value;
+  int last_eta_value;
 };
 
 static void create_image (struct bar_progress *, double);
@@ -700,6 +700,8 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 #endif
 }
 
+static const char *eta_to_human (int);
+
 #define APPEND_LITERAL(s) do {			\
   memcpy (p, s, sizeof (s) - 1);		\
   p += sizeof (s) - 1;				\
@@ -721,7 +723,7 @@ create_image (struct bar_progress *bp, double dl_total_time)
   struct bar_progress_hist *hist = &bp->hist;
 
   /* The progress bar should look like this:
-     xx% [=======>             ] nn,nnn 12.34K/s ETA 00:00
+     xx% [=======>             ] nn,nnn 12.34K/s  eta 36m 51s
 
      Calculate the geometry.  The idea is to assign as much room as
      possible to the progress bar.  The other idea is to never let
@@ -734,7 +736,7 @@ create_image (struct bar_progress *bp, double dl_total_time)
      "[]"              - progress bar decorations - 2 chars
      " nnn,nnn,nnn"    - downloaded bytes         - 12 chars or very rarely more
      " 1012.56K/s"     - dl rate                  - 11 chars
-     " ETA xx:xx:xx"   - ETA                      - 13 chars
+     "  eta 36m 51s"   - ETA                      - 13 chars
 
      "=====>..."       - progress bar             - the rest
   */
@@ -748,7 +750,6 @@ create_image (struct bar_progress *bp, double dl_total_time)
   if (bp->total_length > 0)
     {
       int percentage = (int)(100.0 * size / bp->total_length);
-
       assert (percentage <= 100);
 
       if (percentage < 100)
@@ -841,13 +842,12 @@ create_image (struct bar_progress *bp, double dl_total_time)
   else
     APPEND_LITERAL ("   --.--K/s");
 
-  /* " ETA xx:xx:xx"; wait for three seconds before displaying the ETA.
+  /* "  ETA ..m ..s"; wait for three seconds before displaying the ETA.
      That's because the ETA value needs a while to become
      reliable.  */
   if (bp->total_length > 0 && bp->count > 0 && dl_total_time > 3000)
     {
-      wgint eta;
-      int eta_hrs, eta_min, eta_sec;
+      int eta;
 
       /* Don't change the value of ETA more than approximately once
 	 per second; doing so would cause flashing without providing
@@ -864,38 +864,18 @@ create_image (struct bar_progress *bp, double dl_total_time)
 	     hist->total_time and bp->count with hist->total_bytes.
 	     I found that doing that results in a very jerky and
 	     ultimately unreliable ETA.  */
-	  double time_sofar = (double)dl_total_time / 1000;
+	  double time_sofar = (double) dl_total_time / 1000;
 	  wgint bytes_remaining = bp->total_length - size;
-	  eta = (wgint) (time_sofar * bytes_remaining / bp->count);
+	  eta = (int) (time_sofar * bytes_remaining / bp->count + 0.5);
 	  bp->last_eta_value = eta;
 	  bp->last_eta_time = dl_total_time;
 	}
 
-      eta_hrs = eta / 3600, eta %= 3600;
-      eta_min = eta / 60,   eta %= 60;
-      eta_sec = eta;
-
-      if (eta_hrs > 99)
-	goto no_eta;
-
-      if (eta_hrs == 0)
-	{
-	  /* Hours not printed: pad with three spaces. */
-	  APPEND_LITERAL ("   ");
-	  sprintf (p, " ETA %02d:%02d", eta_min, eta_sec);
-	}
-      else
-	{
-	  if (eta_hrs < 10)
-	    /* Hours printed with one digit: pad with one space. */
-	    *p++ = ' ';
-	  sprintf (p, " ETA %d:%02d:%02d", eta_hrs, eta_min, eta_sec);
-	}
+      sprintf (p, "  eta %s", eta_to_human (eta));
       p += strlen (p);
     }
   else if (bp->total_length > 0)
     {
-    no_eta:
       APPEND_LITERAL ("             ");
     }
 
@@ -961,3 +941,34 @@ progress_handle_sigwinch (int sig)
   signal (SIGWINCH, progress_handle_sigwinch);
 }
 #endif
+
+/* Provide a human-readable rendition of the ETA.  It never occupies
+   more than 7 characters of screen space.  */
+
+static const char *
+eta_to_human (int secs)
+{
+  static char buf[10];		/* 8 is enough, but just in case */
+  static int last = -1;
+
+  /* Trivial optimization.  This function can be called every 200
+     msecs (see bar_update) for fast downloads, but ETA will only
+     change once per 900 msecs (see create_image).  */
+  if (secs == last)
+    return buf;
+  last = secs;
+
+  if (secs < 100)
+    sprintf (buf, "%ds", secs);
+  else if (secs < 100 * 60)
+    sprintf (buf, "%dm %ds", secs / 60, secs % 60);
+  else if (secs < 100 * 3600)
+    sprintf (buf, "%dh %dm", secs / 3600, (secs / 60) % 60);
+  else if (secs < 100 * 86400)
+    sprintf (buf, "%dd %dh", secs / 86400, (secs / 3600) % 60);
+  else
+    /* (2^31-1)/86400 doesn't overflow BUF. */
+    sprintf (buf, "%dd", secs / 86400);
+
+  return buf;
+}

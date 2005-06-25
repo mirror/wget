@@ -1,5 +1,10 @@
 2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* progress.c (eta_to_human): New logic for more human-readable
+	ETA.
+
+2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (with_thousand_seps_sum): Decrease buffer size so it
 	cannot overrun add_thousand_seps's buffer.
 
