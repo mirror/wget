@@ -62,7 +62,7 @@ so, delete this exception statement from your version.  */
 /* Missing in several .c files.  Include here.  */
 #include <io.h>
 
-/* Apparently needed for alloca().  */
+/* Apparently needed to get alloca().  */
 #include <malloc.h>
 
 #ifndef S_ISDIR
