@@ -1,5 +1,9 @@
 2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* Makefile.in: No need to clean .libs.
+
+2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* Makefile.in (DISTFILES): Don't split the sed invocation across
 	several lines, Solaris make passes the backslashes to sed literally.
 

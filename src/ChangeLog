@@ -1,5 +1,9 @@
 2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* Makefile.in: No need to clean .libs.
+
+2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* cookies.c (parse_set_cookies): Cast pointer subtraction to int
 	before using it with %d; AIX compiler warns on this.
 	Reported by Jens Schleusener.

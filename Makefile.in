@@ -143,7 +143,6 @@ realclean:	realclean-recursive	realclean-top
 
 clean-top:
 	$(RM) *~ *.bak $(DISTNAME).tar.gz
-	$(RM) -r .libs
 
 distclean-top: clean-top
 	$(RM) Makefile config.status config.log config.cache libtool stamp-h

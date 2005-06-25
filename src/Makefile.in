@@ -123,7 +123,6 @@ uninstall.bin:
 
 clean:
 	$(RM) *.o wget$(exeext) *~ *.bak core core.[0-9]*
-	$(RM) -r .libs
 
 distclean: clean
 	$(RM) Makefile config.h
