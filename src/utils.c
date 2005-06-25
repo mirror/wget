@@ -1275,11 +1275,11 @@ human_readable (wgint n)
       /* At each iteration N is greater than the *subsequent* power.
 	 That way N/1024.0 produces a decimal number in the units of
 	 *this* power.  */
-      if ((n >> 10) < 1024 || i == countof (powers) - 1)
+      if ((n / 1024) < 1024 || i == countof (powers) - 1)
 	{
 	  /* Must cast to long first because MS VC can't directly cast
 	     __int64 to double.  (This is safe because N is known to
-	     be <2**20.)  */
+	     be < 1024^2, so always fits into long.)  */
 	  double val = (double) (long) n / 1024.0;
 	  /* Print values smaller than 10 with one decimal digits, and
 	     others without any decimals.  */
@@ -1287,7 +1287,7 @@ human_readable (wgint n)
 		    val < 10 ? 1 : 0, val, powers[i]);
 	  return buf;
 	}
-      n >>= 10;
+      n /= 1024;
     }
   return NULL;			/* unreached */
 }

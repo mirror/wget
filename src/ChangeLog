@@ -1,5 +1,10 @@
 2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (human_readable): Divide with 1024 instead of shifting
+	so the operation can work with non-integer N.
+
+2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* progress.c (eta_to_human): New logic for more human-readable
 	ETA.
 
