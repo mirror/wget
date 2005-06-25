@@ -129,6 +129,25 @@ typedef off_t wgint;
 # endif
 #endif
 
+/* Now define a large integral type useful for storing sizes of *sums*
+   of downloads, such as the value of the --quota option.  This should
+   be a type able to hold 2G+ values even on systems without large
+   file support.  (It is useful to limit Wget's download quota to say
+   10G even if a single file cannot be that large.)
+
+   To make sure we get the largest size possible, we use `double' on
+   systems without a 64-bit integral type.  (Since it is used in very
+   few places in Wget, this is acceptable.)  */
+
+#if SIZEOF_WGINT >= 8
+/* just use wgint, which we already know how to print */
+typedef wgint SUM_SIZE_INT;
+# define with_thousand_seps_sum with_thousand_seps
+#else
+/* On systems without LFS, use double, which buys us integers up to 2^53. */
+typedef double SUM_SIZE_INT;
+#endif
+
 #include "options.h"
 
 /* Everything uses this, so include them here directly.  */

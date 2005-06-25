@@ -63,7 +63,7 @@ static bool enable_tilde_expansion;
 
 CMD_DECLARE (cmd_boolean);
 CMD_DECLARE (cmd_bytes);
-CMD_DECLARE (cmd_bytes_large);
+CMD_DECLARE (cmd_bytes_sum);
 #ifdef HAVE_SSL
 CMD_DECLARE (cmd_cert_type);
 #endif
@@ -200,7 +200,7 @@ static struct {
   { "proxypassword",	&opt.proxy_passwd,	cmd_string },
   { "proxyuser",	&opt.proxy_user,	cmd_string },
   { "quiet",		&opt.quiet,		cmd_boolean },
-  { "quota",		&opt.quota,		cmd_bytes_large },
+  { "quota",		&opt.quota,		cmd_bytes_sum },
 #ifdef HAVE_SSL
   { "randomfile",	&opt.random_file,	cmd_file },
 #endif
@@ -862,7 +862,7 @@ cmd_directory_vector (const char *com, const char *val, void *place)
   return true;
 }
 
-/* Engine for cmd_bytes and cmd_bytes_large: converts a string such as
+/* Engine for cmd_bytes and cmd_bytes_sum: converts a string such as
    "100k" or "2.5G" to a floating point number.  */
 
 static bool
@@ -948,12 +948,12 @@ cmd_bytes (const char *com, const char *val, void *place)
 }
 
 /* Like cmd_bytes, but PLACE is interpreted as a pointer to
-   LARGE_INT.  It works by converting the string to double, therefore
+   SIZE_SUM.  It works by converting the string to double, therefore
    working with values up to 2^53-1 without loss of precision.  This
    value (8192 TB) is large enough to serve for a while.  */
 
 static bool
-cmd_bytes_large (const char *com, const char *val, void *place)
+cmd_bytes_sum (const char *com, const char *val, void *place)
 {
   double byte_value;
   if (!parse_bytes_helper (val, &byte_value))
@@ -962,7 +962,7 @@ cmd_bytes_large (const char *com, const char *val, void *place)
 	       exec_name, com, val);
       return false;
     }
-  *(LARGE_INT *)place = (LARGE_INT)byte_value;
+  *(SUM_SIZE_INT *) place = (SUM_SIZE_INT) byte_value;
   return true;
 }
 

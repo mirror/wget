@@ -50,7 +50,7 @@ so, delete this exception statement from your version.  */
 #include "convert.h"		/* for downloaded_file */
 #include "recur.h"		/* for INFINITE_RECURSION */
 
-extern LARGE_INT total_downloaded_bytes;
+extern SUM_SIZE_INT total_downloaded_bytes;
 
 /* File where the "ls -al" listing will be saved.  */
 #define LIST_FILENAME ".listing"

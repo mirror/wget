@@ -95,7 +95,9 @@ void string_set_free (struct hash_table *);
 void free_keys_and_values (struct hash_table *);
 
 char *with_thousand_seps (wgint);
-char *with_thousand_seps_large (LARGE_INT);
+#ifndef with_thousand_seps_sum
+char *with_thousand_seps_sum (SUM_SIZE_INT);
+#endif
 char *human_readable (wgint);
 int numdigit (wgint);
 char *number_to_string (char *, wgint);

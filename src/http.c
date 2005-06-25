@@ -59,7 +59,7 @@ so, delete this exception statement from your version.  */
 #include "convert.h"
 
 extern char *version_string;
-extern LARGE_INT total_downloaded_bytes;
+extern SUM_SIZE_INT total_downloaded_bytes;
 
 extern FILE *output_stream;
 extern bool output_stream_regular;

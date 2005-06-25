@@ -1162,7 +1162,7 @@ free_keys_and_values (struct hash_table *ht)
 
 
 /* Add thousand separators to a number already in string form.  Used
-   by with_thousand_seps and with_thousand_seps_large.  */
+   by with_thousand_seps and with_thousand_seps_sum.  */
 
 static char *
 add_thousand_seps (const char *repr)
@@ -1213,30 +1213,19 @@ with_thousand_seps (wgint l)
   return add_thousand_seps (inbuf);
 }
 
-/* Write a string representation of LARGE_INT NUMBER into the provided
-   buffer.
+/* When SUM_SIZE_INT is wgint, with_thousand_seps_large is #defined to
+   with_thousand_seps.  The function below is used on non-LFS systems
+   where SUM_SIZE_INT typedeffed to double.  */
 
-   It would be dangerous to use sprintf, because the code wouldn't
-   work on a machine with gcc-provided long long support, but without
-   libc support for "%lld".  However, such old systems platforms
-   typically lack snprintf and will end up using our version, which
-   does support "%lld" whereever long longs are available.  */
-
-static void
-large_int_to_string (char *buffer, int bufsize, LARGE_INT number)
-{
-  snprintf (buffer, bufsize, LARGE_INT_FMT, number);
-}
-
-/* The same as with_thousand_seps, but works on LARGE_INT.  */
-
+#ifndef with_thousand_seps_sum
 char *
-with_thousand_seps_large (LARGE_INT l)
+with_thousand_seps_sum (SUM_SIZE_INT l)
 {
-  char inbuf[48];
-  large_int_to_string (inbuf, sizeof (inbuf), l);
+  char inbuf[64];
+  snprintf (inbuf, sizeof (inbuf), "%.0f", l);
   return add_thousand_seps (inbuf);
 }
+#endif /* not with_thousand_seps_sum */
 
 /* N, a byte quantity, is converted to a human-readable abberviated
    form a la sizes printed by `ls -lh'.  The result is written to a

@@ -61,7 +61,7 @@ so, delete this exception statement from your version.  */
 
 struct options opt;
 
-extern LARGE_INT total_downloaded_bytes;
+extern SUM_SIZE_INT total_downloaded_bytes;
 extern char *version_string;
 
 extern struct cookie_jar *wget_cookie_jar;
@@ -961,13 +961,14 @@ Can't timestamp and not clobber old files at the same time.\n"));
     {
       logprintf (LOG_NOTQUIET,
 		 _("\nFINISHED --%s--\nDownloaded: %s bytes in %d files\n"),
-		 time_str (NULL), with_thousand_seps_large (total_downloaded_bytes),
+		 time_str (NULL),
+		 with_thousand_seps_sum (total_downloaded_bytes),
 		 opt.numurls);
       /* Print quota warning, if exceeded.  */
       if (opt.quota && total_downloaded_bytes > opt.quota)
 	logprintf (LOG_NOTQUIET,
 		   _("Download quota (%s bytes) EXCEEDED!\n"),
-		   with_thousand_seps_large (opt.quota));
+		   with_thousand_seps_sum (opt.quota));
     }
 
   if (opt.cookies_output)

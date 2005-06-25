@@ -116,7 +116,7 @@ struct options
 
   wgint limit_rate;		/* Limit the download rate to this
 				   many bps. */
-  LARGE_INT quota;		/* Maximum file size to download and
+  SUM_SIZE_INT quota;		/* Maximum file size to download and
 				   store. */
 
   int numurls;			/* Number of successfully downloaded

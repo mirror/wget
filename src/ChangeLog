@@ -1,5 +1,18 @@
 2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (with_thousand_seps_sum): Now defined only if
+	SUM_SIZE_INT is double.
+
+	* wget.h (SUM_SIZE_INT): Instead of bothering with long, long
+	long, __int64, and friends, simply either use wgint or double, end
+	of story.  Since we know how to print either, we no longer need
+	LARGE_INT_FMT.
+
+	* sysdeps.h (LARGE_INT): Renamed to SUM_SIZE_INT to better reflect
+	its intent, and moved to wget.h.
+
+2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* Makefile.in: No need to clean .libs.
 
 2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>

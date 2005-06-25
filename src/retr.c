@@ -52,7 +52,7 @@ so, delete this exception statement from your version.  */
 #include "ptimer.h"
 
 /* Total size of downloaded files.  Used to enforce quota.  */
-LARGE_INT total_downloaded_bytes;
+SUM_SIZE_INT total_downloaded_bytes;
 
 /* If non-NULL, the stream to which output should be written.  This
    stream is initialized when `-O' is used.  */
