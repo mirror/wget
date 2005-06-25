@@ -1,3 +1,8 @@
+2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Download Options): Update -4/-6 documentation to
+	reflect the fact that we no longer use AI_ADDRCONFIG.
+
 2005-06-24  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* gpl.texi (GNU General Public License): Split GPL text into a

@@ -919,15 +919,16 @@ only connect to IPv6 hosts and ignore A records and IPv4 addresses.
 
 Neither options should be needed normally.  By default, an IPv6-aware
 Wget will use the address family specified by the host's DNS record.
-If the DNS specifies both an A record and an AAAA record, Wget will
-try them in sequence until it finds one it can connect to.
+If the DNS responds with both IPv4 and IPv6 addresses, Wget will them
+in sequence until it finds one it can connect to.  (Also see
+@code{--prefer-family} option described below.)
 
 These options can be used to deliberately force the use of IPv4 or
 IPv6 address families on dual family systems, usually to aid debugging
 or to deal with broken network configuration.  Only one of
-@samp{--inet6-only} and @samp{--inet4-only} may be specified in the
-same command.  Neither option is available in Wget compiled without
-IPv6 support.
+@samp{--inet6-only} and @samp{--inet4-only} may be specified at the
+same time.  Neither option is available in Wget compiled without IPv6
+support.
 
 @item --prefer-family=IPv4/IPv6/none
 When given a choice of several addresses, connect to the addresses
