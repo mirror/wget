@@ -1221,7 +1221,7 @@ with_thousand_seps (wgint l)
 char *
 with_thousand_seps_sum (SUM_SIZE_INT l)
 {
-  char inbuf[64];
+  char inbuf[32];
   snprintf (inbuf, sizeof (inbuf), "%.0f", l);
   return add_thousand_seps (inbuf);
 }
