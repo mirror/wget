@@ -58,6 +58,9 @@ so, delete this exception statement from your version.  */
 #include <fcntl.h>
 #include <assert.h>
 #include <stdarg.h>
+#ifdef HAVE_LOCALE_H
+# include <locale.h>
+#endif
 
 /* For TIOCGWINSZ and friends: */
 #ifdef HAVE_SYS_IOCTL_H
@@ -1161,71 +1164,67 @@ free_keys_and_values (struct hash_table *ht)
 }
 
 
-/* Add thousand separators to a number already in string form.  Used
-   by with_thousand_seps and with_thousand_seps_sum.  */
+/* Return a printed representation of N with thousand separators.
+   This should respect locale settings, with the exception of the "C"
+   locale which mandates no separator, but we use one anyway.
 
-static char *
-add_thousand_seps (const char *repr)
+   Unfortunately, we cannot use %'d (in fact it would be %'j) to get
+   the separators because it's too non-portable, and it's hard to test
+   for this feature at configure time.  Besides, it wouldn't work in
+   the "C" locale, which many Unix users still work in.  */
+
+const char *
+with_thousand_seps (wgint n)
 {
   static char outbuf[48];
-  int i, i1, mod;
-  char *outptr;
-  const char *inptr;
 
-  /* Reset the pointers.  */
-  outptr = outbuf;
-  inptr = repr;
+  static char loc_sepchar;
+  static const char *loc_grouping;
 
-  /* Ignore the sign for the purpose of adding thousand
-     separators.  */
-  if (*inptr == '-')
+  int i = 0, groupsize;
+  char *p;
+  const char *atgroup;
+
+  if (!loc_sepchar)
     {
-      *outptr++ = '-';
-      ++inptr;
+#ifdef LC_NUMERIC
+      /* Get the grouping character from the locale. */
+      struct lconv *lconv;
+      const char *oldlocale = setlocale (LC_NUMERIC, "");
+      lconv = localeconv ();
+      loc_sepchar = *lconv->thousands_sep;
+      loc_grouping = xstrdup (lconv->grouping);
+      /* Restore the C locale semantics of printing and reading numbers */
+      setlocale (LC_NUMERIC, oldlocale);
+      if (!loc_sepchar)
+#endif
+	/* defaults for C locale or no locale */
+	loc_sepchar = ',', loc_grouping = "\x03";
     }
-  /* How many digits before the first separator?  */
-  mod = strlen (inptr) % 3;
-  /* Insert them.  */
-  for (i = 0; i < mod; i++)
-    *outptr++ = inptr[i];
-  /* Now insert the rest of them, putting separator before every
-     third digit.  */
-  for (i1 = i, i = 0; inptr[i1]; i++, i1++)
+  atgroup = loc_grouping;
+
+  p = outbuf + sizeof outbuf;
+  *--p = '\0';
+  groupsize = *atgroup++;
+
+  while (1)
     {
-      if (i % 3 == 0 && i1 != 0)
-	*outptr++ = ',';
-      *outptr++ = inptr[i1];
+      *--p = n % 10 + '0';
+      n /= 10;
+      if (n == 0)
+	break;
+      /* Insert the separator on every groupsize'd digit, and get the
+	 new groupsize.  */
+      if (++i == groupsize)
+	{
+	  *--p = loc_sepchar;
+	  i = 0;
+	  if (*atgroup)
+	    groupsize = *atgroup++;
+	}
     }
-  /* Zero-terminate the string.  */
-  *outptr = '\0';
-  return outbuf;
+  return p;
 }
-
-/* Return a static pointer to the number printed with thousand
-   separators inserted at the right places.  */
-
-char *
-with_thousand_seps (wgint l)
-{
-  char inbuf[24];
-  /* Print the number into the buffer.  */
-  number_to_string (inbuf, l);
-  return add_thousand_seps (inbuf);
-}
-
-/* When SUM_SIZE_INT is wgint, with_thousand_seps_large is #defined to
-   with_thousand_seps.  The function below is used on non-LFS systems
-   where SUM_SIZE_INT typedeffed to double.  */
-
-#ifndef with_thousand_seps_sum
-char *
-with_thousand_seps_sum (SUM_SIZE_INT l)
-{
-  char inbuf[32];
-  snprintf (inbuf, sizeof (inbuf), "%.0f", l);
-  return add_thousand_seps (inbuf);
-}
-#endif /* not with_thousand_seps_sum */
 
 /* N, a byte quantity, is converted to a human-readable abberviated
    form a la sizes printed by `ls -lh'.  The result is written to a
@@ -1245,7 +1244,7 @@ with_thousand_seps_sum (SUM_SIZE_INT l)
    discusses this in some detail.  */
 
 char *
-human_readable (wgint n)
+human_readable (HR_NUMTYPE n)
 {
   /* These suffixes are compatible with those of GNU `ls -lh'. */
   static char powers[] =

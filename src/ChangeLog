@@ -1,3 +1,15 @@
+2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* main.c (main): Print the downloaded and quota amounts with the
+	"human_readable" function.
+
+	* ftp.c (print_length): Ditto.
+
+	* http.c (gethttp): Don't display thousand separators.
+
+	* utils.c (with_thousand_seps): Rewritten to respect locale
+	settings and to be type size agnostic.
+
 2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (human_readable): Divide with 1024 instead of shifting

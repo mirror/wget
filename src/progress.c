@@ -717,8 +717,8 @@ create_image (struct bar_progress *bp, double dl_total_time)
   char *p = bp->buffer;
   wgint size = bp->initial_length + bp->count;
 
-  char *size_legible = with_thousand_seps (size);
-  int size_legible_len = strlen (size_legible);
+  const char *size_grouped = with_thousand_seps (size);
+  int size_grouped_len = strlen (size_grouped);
 
   struct bar_progress_hist *hist = &bp->hist;
 
@@ -740,7 +740,7 @@ create_image (struct bar_progress *bp, double dl_total_time)
 
      "=====>..."       - progress bar             - the rest
   */
-  int dlbytes_size = 1 + MAX (size_legible_len, 11);
+  int dlbytes_size = 1 + MAX (size_grouped_len, 11);
   int progress_size = bp->width - (4 + 2 + dlbytes_size + 11 + 13);
 
   if (progress_size < 5)
@@ -823,7 +823,7 @@ create_image (struct bar_progress *bp, double dl_total_time)
     }
 
   /* " 234,567,890" */
-  sprintf (p, " %-11s", with_thousand_seps (size));
+  sprintf (p, " %-11s", size_grouped);
   p += strlen (p);
 
   /* " 1012.45K/s" */

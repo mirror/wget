@@ -1838,7 +1838,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  logputs (LOG_VERBOSE, _("Length: "));
 	  if (contlen != -1)
 	    {
-	      logputs (LOG_VERBOSE, with_thousand_seps (contlen + contrange));
+	      logputs (LOG_VERBOSE, number_to_static_string (contlen + contrange));
 	      if (contlen + contrange >= 1024)
 		logprintf (LOG_VERBOSE, " (%s)",
 			   human_readable (contlen + contrange));
@@ -1846,11 +1846,11 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 		{
 		  if (contlen >= 1024)
 		    logprintf (LOG_VERBOSE, _(", %s (%s) remaining"),
-			       with_thousand_seps (contlen),
+			       number_to_static_string (contlen),
 			       human_readable (contlen));
 		  else
 		    logprintf (LOG_VERBOSE, _(", %s remaining"),
-			       with_thousand_seps (contlen));
+			       number_to_static_string (contlen));
 		}
 	    }
 	  else

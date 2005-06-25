@@ -94,11 +94,19 @@ void string_set_to_array (struct hash_table *, char **);
 void string_set_free (struct hash_table *);
 void free_keys_and_values (struct hash_table *);
 
-char *with_thousand_seps (wgint);
-#ifndef with_thousand_seps_sum
-char *with_thousand_seps_sum (SUM_SIZE_INT);
+const char *with_thousand_seps (wgint);
+
+/* human_readable must be able to accept wgint and SUM_SIZE_INT
+   arguments.  On machines where wgint is 32-bit, declare it to accept
+   double.  */
+#if SIZEOF_WGINT >= 8
+# define HR_NUMTYPE wgint
+#else
+# define HR_NUMTYPE double
 #endif
-char *human_readable (wgint);
+char *human_readable (HR_NUMTYPE);
+
+
 int numdigit (wgint);
 char *number_to_string (char *, wgint);
 char *number_to_static_string (wgint);
