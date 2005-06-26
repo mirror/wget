@@ -6,23 +6,7 @@
 
    This file is included at the bottom of config.h.  */
 
-/* Alloca-related defines, straight out of the Autoconf manual. */
-
-/* AIX requires this to be the first thing in the file.  */
-#ifndef __GNUC__
-# if HAVE_ALLOCA_H
-#  include <alloca.h>
-# else
-#  ifdef _AIX
- #pragma alloca
-#  else
-#   ifndef alloca /* predefined by HP cc +Olibcalls */
-void *alloca ();
-#   endif
-#  endif
-# endif
-#endif
-
+/* Testing for __sun is not enough because it's also defined on SunOS.  */
 #ifdef __sun
 # ifdef __SVR4
 #  define solaris
@@ -64,3 +48,25 @@ void *alloca ();
 #define _BSD_SOURCE
 
 #endif /* NAMESPACE_TWEAKS */
+
+
+/* Alloca-related defines, straight out of the Autoconf manual.  These
+   have to be after the above namespace tweaks, but before actual
+   declarations and system includes.  */
+
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#elif defined __GNUC__
+# define alloca __builtin_alloca
+#elif defined _AIX
+# define alloca __alloca
+#elif defined _MSC_VER
+# include <malloc.h>
+# define alloca _alloca
+#else
+# include <stddef.h>
+# ifdef  __cplusplus
+extern "C"
+# endif
+void *alloca (size_t);
+#endif

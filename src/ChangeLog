@@ -1,5 +1,11 @@
 2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* config-post.h: Replace the alloca declaration with the one from
+	the latest Autoconf manual.  This should remove a warning with GCC
+	on AIX.
+
+2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ftp.c (getftp): Always invoke SIZE, not only when continuing a
 	download.
 
