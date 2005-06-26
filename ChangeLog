@@ -1,3 +1,7 @@
+2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* m4/wget.m4: Use proper GPL header.
+
 2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* Makefile.in: No need to clean .libs.

@@ -1,6 +1,29 @@
-dnl
 dnl Wget-specific Autoconf macros.
-dnl
+dnl Copyright (C) 1996-2005 Free Software Foundation, Inc.
+
+dnl This program is free software; you can redistribute it and/or modify
+dnl it under the terms of the GNU General Public License as published by
+dnl the Free Software Foundation; either version 2 of the License, or
+dnl (at your option) any later version.
+
+dnl This program is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl GNU General Public License for more details.
+
+dnl You should have received a copy of the GNU General Public License
+dnl along with this program; if not, write to the Free Software
+dnl Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+dnl In addition, as a special exception, the Free Software Foundation
+dnl gives permission to link the code of its release of Wget with the
+dnl OpenSSL project's "OpenSSL" library (or with modified versions of it
+dnl that use the same license as the "OpenSSL" library), and distribute
+dnl the linked executables.  You must obey the GNU General Public License
+dnl in all respects for all of the code used other than "OpenSSL".  If you
+dnl modify this file, you may extend this exception to your version of the
+dnl file, but you are not obligated to do so.  If you do not wish to do
+dnl so, delete this exception statement from your version.
 
 dnl
 dnl Check for `struct utimbuf'.
