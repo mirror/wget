@@ -176,6 +176,13 @@ int wrapped_closesocket (int);
 #endif
 const char *windows_strerror (int);
 
+/* MingW 3.7 (or older) prototypes gai_strerror(), but is missing
+   from all import libraries. */
+#if defined(__MINGW32__) && defined(ENABLE_IPV6)
+# undef gai_strerror
+# define gai_strerror windows_strerror
+#endif
+
 /* Declarations of various socket errors:  */
 
 #define EWOULDBLOCK             WSAEWOULDBLOCK

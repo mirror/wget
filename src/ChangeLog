@@ -1,3 +1,7 @@
+2005-06-26  Gisle Vanem  <giva@bgnett.no>
+
+	* mswindows.h: Define gai_strerror under MinGW.
+
 2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (with_thousand_seps): Correctly implement thousand seps
