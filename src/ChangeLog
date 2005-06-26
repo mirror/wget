@@ -1,5 +1,18 @@
 2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c (secs_to_human_time): Ditto.
+
+	* progress.c (create_image): Print more exact duration of very
+	short downloads.
+
+	* main.c (secs_to_human_time): Don't translate time suffixes "h",
+	"m", and "s", which are not strictly SI, but are "accepted for use
+	with SI".
+	(secs_to_human_time): Print really small intervals as 0s, not
+	0.00s.
+
+2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* config-post.h: Replace the alloca declaration with the one from
 	the latest Autoconf manual.  This should remove a warning with GCC
 	on AIX.

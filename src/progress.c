@@ -707,6 +707,11 @@ static const char *eta_to_human_short (int);
   p += sizeof (s) - 1;				\
 } while (0)
 
+/* Use move_to_end (s) to get S to point the end of the string (the
+   terminating \0).  This is faster than s+=strlen(s), but some people
+   are confused when they see strchr (s, '\0') in the code.  */
+#define move_to_end(s) s = strchr (s, '\0');
+
 #ifndef MAX
 # define MAX(a, b) ((a) >= (b) ? (a) : (b))
 #endif
@@ -824,7 +829,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 
   /* " 234,567,890" */
   sprintf (p, " %-11s", size_grouped);
-  p += strlen (p);
+  move_to_end (p);
 
   /* " 1012.45K/s" */
   if (hist->total_time && hist->total_bytes)
@@ -837,7 +842,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       double dltime = hist->total_time + (dl_total_time - bp->recent_start);
       double dlspeed = calc_rate (dlquant, dltime, &units);
       sprintf (p, " %7.2f%s", dlspeed, short_units[units]);
-      p += strlen (p);
+      move_to_end (p);
     }
   else
     APPEND_LITERAL ("   --.--K/s");
@@ -873,8 +878,10 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 	      bp->last_eta_time = dl_total_time;
 	    }
 
+	  /* Translation note: "ETA" is English-centric, but this must
+	     be short, ideally 3 chars.  Abbreviate if necessary.  */
 	  sprintf (p, "  eta %s", eta_to_human_short (eta));
-	  p += strlen (p);
+	  move_to_end (p);
 	}
       else if (bp->total_length > 0)
 	{
@@ -884,8 +891,22 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   else
     {
       /* When the download is done, print the elapsed time.  */
-      sprintf (p, _("   in %s"), eta_to_human_short (dl_total_time / 1000 + 0.5));
-      p += strlen (p);
+      double secs = dl_total_time / 1000;
+      /* Note to translators: this should not take up more room than
+	 available here.  Abbreviate if necessary.  */
+      strcpy (p, _("   in "));
+      move_to_end (p);		/* not p+=6, think translations! */
+      if (secs >= 10)
+	strcpy (p, eta_to_human_short ((int) (secs + 0.5)));
+      else
+	/* For very quick downloads show more exact timing information. */
+	sprintf (p, _("%.*fs"),
+		 secs < 0.001 ? 0 : /* 0s instead of 0.000s */
+		 secs < 0.01 ? 3 :  /* 0.00x */
+		 secs < 0.1 ? 2 :   /* 0.0x */
+		 1,                 /* 0.x, 1.x, ..., 9.x */
+		 secs);
+      move_to_end (p);
     }
 
   assert (p - bp->buffer <= bp->width);
@@ -951,13 +972,20 @@ progress_handle_sigwinch (int sig)
 }
 #endif
 
-/* Provide a short human-readable rendition of the ETA.  It never
-   occupies more than 7 characters of screen space.  */
+/* Provide a short human-readable rendition of the ETA.  This is like
+   secs_to_human_time in main.c, except the output doesn't include
+   fractions (which would look silly in by nature imprecise ETA) and
+   takes less room.  If the time is measured in hours, hours and
+   minutes (but not seconds) are shown; if measured in days, then days
+   and hours are shown.  This ensures brevity while still displaying
+   as much as possible.
+
+   It never occupies more than 7 characters of screen space.  */
 
 static const char *
 eta_to_human_short (int secs)
 {
-  static char buf[10];		/* 8 is enough, but just in case */
+  static char buf[10];		/* 8 should be enough, but just in case */
   static int last = -1;
 
   /* Trivial optimization.  This function can be called every 200
@@ -968,16 +996,16 @@ eta_to_human_short (int secs)
   last = secs;
 
   if (secs < 100)
-    sprintf (buf, _("%ds"), secs);
+    sprintf (buf, "%ds", secs);
   else if (secs < 100 * 60)
-    sprintf (buf, _("%dm %ds"), secs / 60, secs % 60);
+    sprintf (buf, "%dm %ds", secs / 60, secs % 60);
   else if (secs < 100 * 3600)
-    sprintf (buf, _("%dh %dm"), secs / 3600, (secs / 60) % 60);
+    sprintf (buf, "%dh %dm", secs / 3600, (secs / 60) % 60);
   else if (secs < 100 * 86400)
-    sprintf (buf, _("%dd %dh"), secs / 86400, (secs / 3600) % 60);
+    sprintf (buf, "%dd %dh", secs / 86400, (secs / 3600) % 60);
   else
-    /* (2^31-1)/86400 doesn't overflow BUF. */
-    sprintf (buf, _("%dd"), secs / 86400);
+    /* even (2^31-1)/86400 doesn't overflow BUF. */
+    sprintf (buf, "%dd", secs / 86400);
 
   return buf;
 }

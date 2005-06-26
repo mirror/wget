@@ -637,11 +637,14 @@ Recursive accept/reject:\n"),
   exit (0);
 }
 
+/* Return a human-readable printed representation of INTERVAL,
+   measured in seconds.  */
+
 static char *
-secs_to_human_time (double secs_decimal)
+secs_to_human_time (double interval)
 {
   static char buf[32];
-  int secs = (int) (secs_decimal + 0.5);
+  int secs = (int) (interval + 0.5);
   int hours, mins, days;
 
   days = secs / 86400, secs %= 86400;
@@ -649,15 +652,21 @@ secs_to_human_time (double secs_decimal)
   mins = secs / 60, secs %= 60;
 
   if (days)
-    sprintf (buf, _("%dd %dh %dm %ds"), days, hours, mins, secs);
+    sprintf (buf, "%dd %dh %dm %ds", days, hours, mins, secs);
   else if (hours)
-    sprintf (buf, _("%dh %dm %ds"), hours, mins, secs);
+    sprintf (buf, "%dh %dm %ds", hours, mins, secs);
   else if (mins)
-    sprintf (buf, _("%dm %ds"), mins, secs);
-  else if (secs_decimal >= 1)
-    sprintf (buf, _("%ds"), secs);
+    sprintf (buf, "%dm %ds", mins, secs);
+  else if (interval >= 10)
+    sprintf (buf, "%ds", secs);
   else
-    sprintf (buf, _("%.2fs"), secs_decimal);
+    /* For very quick downloads show more exact timing information. */
+    sprintf (buf, "%.*fs",
+	     interval < 0.001 ? 0 : /* 0s instead of 0.000s */
+	     interval < 0.01 ? 3 :  /* 0.00x */
+	     interval < 0.1 ? 2 :   /* 0.0x */
+	     1,                     /* 0.x, 1.x, ..., 9.x */
+	     interval);
 
   return buf;
 }
