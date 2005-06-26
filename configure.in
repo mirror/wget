@@ -264,7 +264,7 @@ then
   then
     AC_MSG_NOTICE([compiling in support for SSL])
     AC_DEFINE([HAVE_SSL], 1,
-	      [Define if SSL support should be compiled in.])
+	      [Define if SSL support is being compiled in.])
     SSL_OBJ='openssl.o'
   fi
 fi
