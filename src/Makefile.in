@@ -54,7 +54,6 @@ LDFLAGS  = @LDFLAGS@
 LIBS     = @LIBS@ @LIBSSL@
 exeext   = @exeext@
 
-#INCLUDES = -I. -I$(srcdir) @SSL_INCLUDES@
 INCLUDES = -I. -I$(srcdir)
 
 COMPILE = $(CC) $(INCLUDES) $(CPPFLAGS)  $(DEFS) $(CFLAGS)
