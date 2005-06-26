@@ -701,7 +701,6 @@ get_urls_file (const char *file)
       xfree (url_text);
 
       entry = xnew0 (struct urlpos);
-      entry->next = NULL;
       entry->url = url;
 
       if (!head)

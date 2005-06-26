@@ -1,3 +1,8 @@
+2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* html-url.c (get_urls_file): Don't explicitly set entry->next to
+	NULL since entry is already zeroed out.
+
 2005-06-26  Gisle Vanem  <giva@bgnett.no>
 
 	* mswindows.h: Define gai_strerror under MinGW.
