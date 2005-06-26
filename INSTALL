@@ -88,25 +88,26 @@ Environment variables that affect `configure' include: CFLAGS for C
 compiler flags, CPPFLAGS for C preprocessor flags, LDFLAGS for linker
 flags, and LIBS for libraries.
 
-Barring a the use of --without-* flags, configure will try to
-autodetect certain external libraries needed by Wget, currently only
-the OpenSSL libraries.  If they are installed in the system library
-directories or in the same prefix where you plan to install Wget,
-configure should be able to autodetect them.  If they are installed
-elsewhere, use the `--with-libNAME' option to specify the root
-directory under which libraries reside in the `lib/' subdirectory and
-the corresponding header files reside in the `include/' subdirectory.
-For example, if the OpenSSL libraries are installed under the
-/usr/local/ssl prefix, use `--with-libssl=/usr/local/ssl'.
+Barring the use of --without-* flags, configure will try to autodetect
+external libraries needed by Wget, currently only the OpenSSL
+libraries.  If they are installed in the system library directories or
+in the same prefix where you plan to install Wget, configure should be
+able to autodetect them.  If they are installed elsewhere, use the
+`--with-libNAME' option to specify the root directory under which
+libraries reside in the `lib/' subdirectory and the corresponding
+header files reside in the `include/' subdirectory.  For example, if
+the OpenSSL libraries are installed under the /usr/local/ssl prefix,
+use `--with-libssl=/usr/local/ssl'.
 
 Sometimes external libraries will be installed on the system, but the
-header files will be missing, which happens on Linux if you forget to
-install the "-devel" or "-dev" package that corresponds to the library
-and that is typically *not* installed by default.  In that case
-configure will not find the library and you will not be able to use
-the features provided by the library until you install the devel
-package and rerun configure.  If you have all the necessary headers,
-but configure still fails to detect the library, report a bug.
+header files will be missing.  This often happens on Linux if you
+forget to install the "-devel" or "-dev" package that corresponds to
+the library and that is typically *not* installed by default.  In that
+case configure will not find the library and you will not be able to
+use the features provided by the library until you install the devel
+package and rerun configure.  If you believe you have the necessary
+headers, but configure still fails to detect the library, please
+report it as a bug.
 
 2. Compilation
 --------------
