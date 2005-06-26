@@ -1,3 +1,7 @@
+2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (with_thousand_seps): Handle negative numbers.
+
 2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* progress.c (create_image): Mark the "eta" string for translation.

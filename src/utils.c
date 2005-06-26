@@ -1192,7 +1192,6 @@ get_grouping_data (const char **sep, const char **grouping)
   *grouping = cached_grouping;
 }
 
-
 /* Return a printed representation of N with thousand separators.
    This should respect locale settings, with the exception of the "C"
    locale which mandates no separator, but we use one anyway.
@@ -1216,11 +1215,18 @@ with_thousand_seps (wgint n)
   int i = 0, groupsize;
   const char *atgroup;
 
+  bool negative = n < 0;
+
   /* Initialize grouping data. */
   get_grouping_data (&sep, &grouping);
   seplen = strlen (sep);
   atgroup = grouping;
   groupsize = *atgroup++;
+
+  /* This will overflow on WGINT_MIN, but we're not using this to
+     print negative numbers anyway.  */
+  if (negative)
+    n = -n;
 
   /* Write the number into the buffer, backwards, inserting the
      separators as necessary.  */
@@ -1243,6 +1249,9 @@ with_thousand_seps (wgint n)
 	    groupsize = *atgroup++;
 	}
     }
+  if (negative)
+    *--p = '-';
+
   return p;
 }
 
