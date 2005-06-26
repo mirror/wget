@@ -880,7 +880,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 
 	  /* Translation note: "ETA" is English-centric, but this must
 	     be short, ideally 3 chars.  Abbreviate if necessary.  */
-	  sprintf (p, "  eta %s", eta_to_human_short (eta));
+	  sprintf (p, _("  eta %s"), eta_to_human_short (eta));
 	  move_to_end (p);
 	}
       else if (bp->total_length > 0)

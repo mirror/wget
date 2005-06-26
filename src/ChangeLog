@@ -1,5 +1,9 @@
 2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* progress.c (create_image): Mark the "eta" string for translation.
+
+2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* html-url.c (get_urls_file): Don't explicitly set entry->next to
 	NULL since entry is already zeroed out.
 
