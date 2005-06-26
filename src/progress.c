@@ -265,8 +265,8 @@ print_percentage (wgint bytes, wgint expected)
 static void
 print_download_speed (struct dot_progress *dp, wgint bytes, double dltime)
 {
-  logprintf (LOG_VERBOSE, " %s",
-	     retr_rate (bytes, dltime - dp->last_timer_value, 1));
+  logprintf (LOG_VERBOSE, " %7s",
+	     retr_rate (bytes, dltime - dp->last_timer_value));
   dp->last_timer_value = dltime;
 }
 
@@ -489,7 +489,7 @@ struct bar_progress {
   int last_eta_value;
 };
 
-static void create_image (struct bar_progress *, double);
+static void create_image (struct bar_progress *, double, bool);
 static void display_image (char *);
 
 static void *
@@ -524,7 +524,7 @@ bar_create (wgint initial, wgint total)
 
   logputs (LOG_VERBOSE, "\n");
 
-  create_image (bp, 0);
+  create_image (bp, 0, false);
   display_image (bp->buffer);
 
   return bp;
@@ -573,7 +573,7 @@ bar_update (void *progress, wgint howmuch, double dltime)
     /* Don't update more often than five times per second. */
     return;
 
-  create_image (bp, dltime);
+  create_image (bp, dltime, false);
   display_image (bp->buffer);
   bp->last_screen_update = dltime;
 }
@@ -588,7 +588,7 @@ bar_finish (void *progress, double dltime)
     /* See bar_update() for explanation. */
     bp->total_length = bp->initial_length + bp->count;
 
-  create_image (bp, dltime);
+  create_image (bp, dltime, true);
   display_image (bp->buffer);
 
   logputs (LOG_VERBOSE, "\n\n");
@@ -700,7 +700,7 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 #endif
 }
 
-static const char *eta_to_human (int);
+static const char *eta_to_human_short (int);
 
 #define APPEND_LITERAL(s) do {			\
   memcpy (p, s, sizeof (s) - 1);		\
@@ -712,7 +712,7 @@ static const char *eta_to_human (int);
 #endif
 
 static void
-create_image (struct bar_progress *bp, double dl_total_time)
+create_image (struct bar_progress *bp, double dl_total_time, bool done)
 {
   char *p = bp->buffer;
   wgint size = bp->initial_length + bp->count;
@@ -842,41 +842,50 @@ create_image (struct bar_progress *bp, double dl_total_time)
   else
     APPEND_LITERAL ("   --.--K/s");
 
-  /* "  ETA ..m ..s"; wait for three seconds before displaying the ETA.
-     That's because the ETA value needs a while to become
-     reliable.  */
-  if (bp->total_length > 0 && bp->count > 0 && dl_total_time > 3000)
+  if (!done)
     {
-      int eta;
-
-      /* Don't change the value of ETA more than approximately once
-	 per second; doing so would cause flashing without providing
-	 any value to the user. */
-      if (bp->total_length != size
-	  && bp->last_eta_value != 0
-	  && dl_total_time - bp->last_eta_time < 900)
-	eta = bp->last_eta_value;
-      else
+      /* "  eta ..m ..s"; wait for three seconds before displaying the ETA.
+	 That's because the ETA value needs a while to become
+	 reliable.  */
+      if (bp->total_length > 0 && bp->count > 0 && dl_total_time > 3000)
 	{
-	  /* Calculate ETA using the average download speed to predict
-	     the future speed.  If you want to use a speed averaged
-	     over a more recent period, replace dl_total_time with
-	     hist->total_time and bp->count with hist->total_bytes.
-	     I found that doing that results in a very jerky and
-	     ultimately unreliable ETA.  */
-	  double time_sofar = (double) dl_total_time / 1000;
-	  wgint bytes_remaining = bp->total_length - size;
-	  eta = (int) (time_sofar * bytes_remaining / bp->count + 0.5);
-	  bp->last_eta_value = eta;
-	  bp->last_eta_time = dl_total_time;
-	}
+	  int eta;
 
-      sprintf (p, "  eta %s", eta_to_human (eta));
-      p += strlen (p);
+	  /* Don't change the value of ETA more than approximately once
+	     per second; doing so would cause flashing without providing
+	     any value to the user. */
+	  if (bp->total_length != size
+	      && bp->last_eta_value != 0
+	      && dl_total_time - bp->last_eta_time < 900)
+	    eta = bp->last_eta_value;
+	  else
+	    {
+	      /* Calculate ETA using the average download speed to predict
+		 the future speed.  If you want to use a speed averaged
+		 over a more recent period, replace dl_total_time with
+		 hist->total_time and bp->count with hist->total_bytes.
+		 I found that doing that results in a very jerky and
+		 ultimately unreliable ETA.  */
+	      double time_sofar = (double) dl_total_time / 1000;
+	      wgint bytes_remaining = bp->total_length - size;
+	      eta = (int) (time_sofar * bytes_remaining / bp->count + 0.5);
+	      bp->last_eta_value = eta;
+	      bp->last_eta_time = dl_total_time;
+	    }
+
+	  sprintf (p, "  eta %s", eta_to_human_short (eta));
+	  p += strlen (p);
+	}
+      else if (bp->total_length > 0)
+	{
+	  APPEND_LITERAL ("             ");
+	}
     }
-  else if (bp->total_length > 0)
+  else
     {
-      APPEND_LITERAL ("             ");
+      /* When the download is done, print the elapsed time.  */
+      sprintf (p, _("   in %s"), eta_to_human_short (dl_total_time / 1000 + 0.5));
+      p += strlen (p);
     }
 
   assert (p - bp->buffer <= bp->width);
@@ -942,11 +951,11 @@ progress_handle_sigwinch (int sig)
 }
 #endif
 
-/* Provide a human-readable rendition of the ETA.  It never occupies
-   more than 7 characters of screen space.  */
+/* Provide a short human-readable rendition of the ETA.  It never
+   occupies more than 7 characters of screen space.  */
 
 static const char *
-eta_to_human (int secs)
+eta_to_human_short (int secs)
 {
   static char buf[10];		/* 8 is enough, but just in case */
   static int last = -1;
@@ -959,16 +968,16 @@ eta_to_human (int secs)
   last = secs;
 
   if (secs < 100)
-    sprintf (buf, "%ds", secs);
+    sprintf (buf, _("%ds"), secs);
   else if (secs < 100 * 60)
-    sprintf (buf, "%dm %ds", secs / 60, secs % 60);
+    sprintf (buf, _("%dm %ds"), secs / 60, secs % 60);
   else if (secs < 100 * 3600)
-    sprintf (buf, "%dh %dm", secs / 3600, (secs / 60) % 60);
+    sprintf (buf, _("%dh %dm"), secs / 3600, (secs / 60) % 60);
   else if (secs < 100 * 86400)
-    sprintf (buf, "%dd %dh", secs / 86400, (secs / 3600) % 60);
+    sprintf (buf, _("%dd %dh"), secs / 86400, (secs / 3600) % 60);
   else
     /* (2^31-1)/86400 doesn't overflow BUF. */
-    sprintf (buf, "%dd", secs / 86400);
+    sprintf (buf, _("%dd"), secs / 86400);
 
   return buf;
 }

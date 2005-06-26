@@ -30,6 +30,9 @@ so, delete this exception statement from your version.  */
 #ifndef RETR_H
 #define RETR_H
 
+extern SUM_SIZE_INT total_downloaded_bytes;
+extern double total_download_time;
+
 /* Flags for fd_read_body. */
 enum {
   rb_read_exactly  = 1,
@@ -46,7 +49,7 @@ char *fd_read_line (int);
 uerr_t retrieve_url (const char *, char **, char **, const char *, int *);
 uerr_t retrieve_from_file (const char *, bool, int *);
 
-char *retr_rate (wgint, double, bool);
+const char *retr_rate (wgint, double);
 double calc_rate (wgint, double, int *);
 void printwhat (int, int);
 

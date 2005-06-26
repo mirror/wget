@@ -1,5 +1,15 @@
 2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp.c (getftp): Always invoke SIZE, not only when continuing a
+	download.
+
+	* main.c (main): Ditto here.
+
+	* progress.c (create_image): When the download is finished, print
+	how long it took.
+
+2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (main): Print the downloaded and quota amounts with the
 	"human_readable" function.
 

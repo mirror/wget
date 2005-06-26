@@ -50,8 +50,6 @@ so, delete this exception statement from your version.  */
 #include "convert.h"		/* for downloaded_file */
 #include "recur.h"		/* for INFINITE_RECURSION */
 
-extern SUM_SIZE_INT total_downloaded_bytes;
-
 /* File where the "ls -al" listing will be saved.  */
 #define LIST_FILENAME ".listing"
 
@@ -212,7 +210,7 @@ ftp_do_port (int csock, int *local_sock)
 #endif
 
 static void
-print_length (wgint size, wgint start, int authoritative)
+print_length (wgint size, wgint start, bool authoritative)
 {
   logprintf (LOG_VERBOSE, _("Length: %s"), number_to_static_string (size));
   if (size >= 1024)
@@ -240,7 +238,8 @@ getftp (struct url *u, wgint *len, wgint restval, ccon *con)
   uerr_t err = RETROK;		/* appease the compiler */
   FILE *fp;
   char *user, *passwd, *respline;
-  char *tms, *tmrate;
+  char *tms;
+  const char *tmrate;
   int cmd = con->cmd;
   bool pasv_mode_open = false;
   wgint expected_bytes = 0;
@@ -585,7 +584,7 @@ Error in server response, closing control connection.\n"));
   else /* do not CWD */
     logputs (LOG_VERBOSE, _("==> CWD not required.\n"));
 
-  if ((cmd & DO_RETR) && restval && *len == 0)
+  if ((cmd & DO_RETR) && *len == 0)
     {
       if (opt.verbose)
 	{
@@ -598,7 +597,7 @@ Error in server response, closing control connection.\n"));
       switch (err)
 	{
 	case FTPRERR:
-	case FTPSRVERR :
+	case FTPSRVERR:
 	  logputs (LOG_VERBOSE, "\n");
 	  logputs (LOG_NOTQUIET, _("\
 Error in server response, closing control connection.\n"));
@@ -612,7 +611,8 @@ Error in server response, closing control connection.\n"));
 	  abort ();
 	}
 	if (!opt.server_response)
-	  logputs (LOG_VERBOSE, _("done.\n"));
+	  logprintf (LOG_VERBOSE, *len ? "%s\n" : _("done.\n"),
+		     number_to_static_string (*len));
     }
 
   /* If anything is to be retrieved, PORT (or PASV) must be sent.  */
@@ -958,11 +958,11 @@ Error in server response, closing control connection.\n"));
 
   if (*len)
     {
-      print_length (*len, restval, 1);
+      print_length (*len, restval, true);
       expected_bytes = *len;	/* for get_contents/show_progress */
     }
   else if (expected_bytes)
-    print_length (expected_bytes, restval, 0);
+    print_length (expected_bytes, restval, false);
 
   /* Get the contents of the document.  */
   flags = 0;
@@ -975,7 +975,9 @@ Error in server response, closing control connection.\n"));
 		      restval, &rd_size, len, &con->dltime, flags);
 
   tms = time_str (NULL);
-  tmrate = retr_rate (rd_size, con->dltime, 0);
+  tmrate = retr_rate (rd_size, con->dltime);
+  total_download_time += con->dltime;
+
   /* Close data connection socket.  */
   fd_close (dtsock);
   fd_close (local_sock);
@@ -1092,7 +1094,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
   int count, orig_lp;
   wgint restval, len = 0;
   char *tms, *locf;
-  char *tmrate = NULL;
+  const char *tmrate = NULL;
   uerr_t err;
   struct_stat st;
 
@@ -1228,7 +1230,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	}
       tms = time_str (NULL);
       if (!opt.spider)
-        tmrate = retr_rate (len - restval, con->dltime, 0);
+        tmrate = retr_rate (len - restval, con->dltime);
 
       /* If we get out of the switch above without continue'ing, we've
 	 successfully downloaded a file.  Remember this fact. */

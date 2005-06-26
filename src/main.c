@@ -61,7 +61,6 @@ so, delete this exception statement from your version.  */
 
 struct options opt;
 
-extern SUM_SIZE_INT total_downloaded_bytes;
 extern char *version_string;
 
 extern struct cookie_jar *wget_cookie_jar;
@@ -638,6 +637,31 @@ Recursive accept/reject:\n"),
   exit (0);
 }
 
+static char *
+secs_to_human_time (double secs_decimal)
+{
+  static char buf[32];
+  int secs = (int) (secs_decimal + 0.5);
+  int hours, mins, days;
+
+  days = secs / 86400, secs %= 86400;
+  hours = secs / 3600, secs %= 3600;
+  mins = secs / 60, secs %= 60;
+
+  if (days)
+    sprintf (buf, _("%dd %dh %dm %ds"), days, hours, mins, secs);
+  else if (hours)
+    sprintf (buf, _("%dh %dm %ds"), hours, mins, secs);
+  else if (mins)
+    sprintf (buf, _("%dm %ds"), mins, secs);
+  else if (secs_decimal >= 1)
+    sprintf (buf, _("%ds"), secs);
+  else
+    sprintf (buf, _("%.2fs"), secs_decimal);
+
+  return buf;
+}
+
 static void
 print_version (void)
 {
@@ -960,10 +984,12 @@ Can't timestamp and not clobber old files at the same time.\n"));
       || (opt.input_filename && total_downloaded_bytes != 0))
     {
       logprintf (LOG_NOTQUIET,
-		 _("\nFINISHED --%s--\nDownloaded: %s in %d files\n"),
+		 _("FINISHED --%s--\nDownloaded: %d files, %s in %s (%s)\n"),
 		 time_str (NULL),
+		 opt.numurls,
 		 human_readable (total_downloaded_bytes),
-		 opt.numurls);
+		 secs_to_human_time (total_download_time / 1000),
+		 retr_rate (total_downloaded_bytes, total_download_time));
       /* Print quota warning, if exceeded.  */
       if (opt.quota && total_downloaded_bytes > opt.quota)
 	logprintf (LOG_NOTQUIET,

@@ -59,7 +59,6 @@ so, delete this exception statement from your version.  */
 #include "convert.h"
 
 extern char *version_string;
-extern SUM_SIZE_INT total_downloaded_bytes;
 
 extern FILE *output_stream;
 extern bool output_stream_regular;
@@ -1970,7 +1969,8 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   bool use_ts, got_head = false;/* time-stamping info */
   char *filename_plus_orig_suffix;
   char *local_filename = NULL;
-  char *tms, *locf, *tmrate;
+  char *tms, *locf;
+  const char *tmrate;
   uerr_t err;
   time_t tml = -1, tmr = -1;	/* local and remote time-stamps */
   wgint local_size = 0;		/* the size of the local file */
@@ -2360,7 +2360,8 @@ The sizes do not match (local %s) -- retrieving.\n"),
 	  return RETROK;
 	}
 
-      tmrate = retr_rate (hstat.rd_size, hstat.dltime, 0);
+      tmrate = retr_rate (hstat.rd_size, hstat.dltime);
+      total_download_time += hstat.dltime;
 
       if (hstat.len == hstat.contlen)
 	{

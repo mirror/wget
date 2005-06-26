@@ -54,6 +54,9 @@ so, delete this exception statement from your version.  */
 /* Total size of downloaded files.  Used to enforce quota.  */
 SUM_SIZE_INT total_downloaded_bytes;
 
+/* Total download time in milliseconds. */
+double total_download_time;
+
 /* If non-NULL, the stream to which output should be written.  This
    stream is initialized when `-O' is used.  */
 FILE *output_stream;
@@ -495,18 +498,18 @@ fd_read_line (int fd)
   return fd_read_hunk (fd, line_terminator, 128, FD_READ_LINE_MAX);
 }
 
-/* Return a printed representation of the download rate, as
-   appropriate for the speed.  If PAD is true, strings will be padded
-   to the width of 7 characters (xxxx.xx).  */
-char *
-retr_rate (wgint bytes, double msecs, bool pad)
+/* Return a printed representation of the download rate, along with
+   the units appropriate for the download speed.  */
+
+const char *
+retr_rate (wgint bytes, double msecs)
 {
   static char res[20];
   static const char *rate_names[] = {"B/s", "KB/s", "MB/s", "GB/s" };
   int units = 0;
 
   double dlrate = calc_rate (bytes, msecs, &units);
-  sprintf (res, pad ? "%7.2f %s" : "%.2f %s", dlrate, rate_names[units]);
+  sprintf (res, "%.2f %s", dlrate, rate_names[units]);
 
   return res;
 }
