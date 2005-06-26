@@ -76,7 +76,7 @@ static int current_impl_locked;
 
 #define DEFAULT_PROGRESS_IMPLEMENTATION "bar"
 
-/* Fallnback progress implementation should be something that works
+/* Fallback progress implementation should be something that works
    under all display types.  If you put something other than "dot"
    here, remember that bar_set_params tries to switch to this if we're
    not running on a TTY.  So changing this to "bar" could cause
@@ -108,7 +108,7 @@ set_progress_implementation (const char *name)
 {
   int i, namelen;
   struct progress_implementation *pi = implementations;
-  char *colon;
+  const char *colon;
 
   if (!name)
     name = DEFAULT_PROGRESS_IMPLEMENTATION;
