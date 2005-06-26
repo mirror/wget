@@ -107,7 +107,12 @@ so, delete this exception statement from your version.  */
 # define IF_DEBUG if (0)
 #endif
 
-#define DEBUGP(x) do { IF_DEBUG { debug_logprintf x; } } while (0)
+/* Print ARGS if debugging is enabled and requested, otherwise do
+   nothing.  This must be called with an extra level of parentheses
+   because it's not possible to pass a variable number of arguments to
+   a macro (in portable C89).  ARGS are like arguments to printf.  */
+
+#define DEBUGP(args) do { IF_DEBUG { debug_logprintf args; } } while (0)
 
 /* Define an integer type that works for file sizes, content lengths,
    and such.  Normally we could just use off_t, but off_t is always
