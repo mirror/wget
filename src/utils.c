@@ -1164,6 +1164,35 @@ free_keys_and_values (struct hash_table *ht)
 }
 
 
+static void
+get_grouping_data (const char **sep, const char **grouping)
+{
+  static const char *cached_sep;
+  static const char *cached_grouping;
+  static bool initialized;
+  if (!initialized)
+    {
+#ifdef LC_NUMERIC
+      /* Get the grouping info from the locale. */
+      struct lconv *lconv;
+      const char *oldlocale = setlocale (LC_NUMERIC, "");
+      lconv = localeconv ();
+      cached_sep = xstrdup (lconv->thousands_sep);
+      cached_grouping = xstrdup (lconv->grouping);
+      /* Restore the locale to previous settings. */
+      setlocale (LC_NUMERIC, oldlocale);
+      if (!cached_sep)
+#endif
+	/* Force separator for locales that specify no separators
+	   ("C", "hr", and probably many more.) */
+	cached_sep = ",", cached_grouping = "\x03";
+      initialized = true;
+    }
+  *sep = cached_sep;
+  *grouping = cached_grouping;
+}
+
+
 /* Return a printed representation of N with thousand separators.
    This should respect locale settings, with the exception of the "C"
    locale which mandates no separator, but we use one anyway.
@@ -1177,47 +1206,38 @@ const char *
 with_thousand_seps (wgint n)
 {
   static char outbuf[48];
+  char *p = outbuf + sizeof outbuf;
 
-  static char loc_sepchar;
-  static const char *loc_grouping;
+  /* Info received from locale */
+  const char *grouping, *sep;
+  int seplen;
 
+  /* State information */
   int i = 0, groupsize;
-  char *p;
   const char *atgroup;
 
-  if (!loc_sepchar)
-    {
-#ifdef LC_NUMERIC
-      /* Get the grouping character from the locale. */
-      struct lconv *lconv;
-      const char *oldlocale = setlocale (LC_NUMERIC, "");
-      lconv = localeconv ();
-      loc_sepchar = *lconv->thousands_sep;
-      loc_grouping = xstrdup (lconv->grouping);
-      /* Restore the C locale semantics of printing and reading numbers */
-      setlocale (LC_NUMERIC, oldlocale);
-      if (!loc_sepchar)
-#endif
-	/* defaults for C locale or no locale */
-	loc_sepchar = ',', loc_grouping = "\x03";
-    }
-  atgroup = loc_grouping;
-
-  p = outbuf + sizeof outbuf;
-  *--p = '\0';
+  /* Initialize grouping data. */
+  get_grouping_data (&sep, &grouping);
+  seplen = strlen (sep);
+  atgroup = grouping;
   groupsize = *atgroup++;
 
+  /* Write the number into the buffer, backwards, inserting the
+     separators as necessary.  */
+  *--p = '\0';
   while (1)
     {
       *--p = n % 10 + '0';
       n /= 10;
       if (n == 0)
 	break;
-      /* Insert the separator on every groupsize'd digit, and get the
-	 new groupsize.  */
+      /* Prepend SEP to every groupsize'd digit and get new groupsize.  */
       if (++i == groupsize)
 	{
-	  *--p = loc_sepchar;
+	  if (seplen == 1)
+	    *--p = *sep;
+	  else
+	    memcpy (p -= seplen, sep, seplen);
 	  i = 0;
 	  if (*atgroup)
 	    groupsize = *atgroup++;

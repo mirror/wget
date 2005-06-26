@@ -1,5 +1,10 @@
 2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (with_thousand_seps): Correctly implement thousand seps
+	consisting of more than one character.
+
+2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (secs_to_human_time): Ditto.
 
 	* progress.c (create_image): Print more exact duration of very
