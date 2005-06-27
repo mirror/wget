@@ -34,9 +34,6 @@ so, delete this exception statement from your version.  */
 /* Define if you have the <alloca.h> header file.  */
 /* #undef HAVE_ALLOCA_H */
 
-/* For MinGW GCC/Win32, alloca is defined in the <malloc.h> header file. */
-#include <malloc.h>
-
 /* Flag that C files should include <stdarg.h>, not <varargs.h>.  */
 #define WGET_USE_STDARG
 

@@ -47,9 +47,6 @@
 /* Define if you have the <alloca.h> header file.  */
 #undef HAVE_ALLOCA_H
 
-/* For Borland C++ 5.5, alloca is defined in the <malloc.h> header file. */
-#include <malloc.h>
-
 /* Define to empty if the keyword does not work.  */
 /* #undef const */
 
