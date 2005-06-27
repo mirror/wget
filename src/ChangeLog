@@ -1,5 +1,9 @@
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* cookies.c: Make cookies_now static.
+
+2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (human_readable): Remove intermediary cast to long; MSVC
 	has problems casting *unsigned* __int64 to double.
 

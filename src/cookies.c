@@ -82,7 +82,7 @@ struct cookie_jar {
 
 /* Value set by entry point functions, so that the low-level
    routines don't need to call time() all the time.  */
-time_t cookies_now;
+static time_t cookies_now;
 
 struct cookie_jar *
 cookie_jar_new (void)
