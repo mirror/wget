@@ -1,5 +1,10 @@
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* config-post.h (alloca): Don't #define alloca under MinGW32,
+	which defines it in malloc.h, included from mswindows.h.
+
+2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (get_grouping_data): Force the use of separators in C
 	locale.
 
