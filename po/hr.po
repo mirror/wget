@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: wget 1.10-b1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-06-27 03:15+0200\n"
-"PO-Revision-Date: 2005-06-27 03:19+0200\n"
+"PO-Revision-Date: 2005-06-27 03:24+0200\n"
 "Last-Translator: Hrvoje Nik¹iæ <hniksic@xemacs.org>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
 "MIME-Version: 1.0\n"
@@ -1677,7 +1677,7 @@ msgstr "Uèitavam robots.txt; molim ne obazirati se na gre¹ke.\n"
 #: src/retr.c:640
 #, c-format
 msgid "Error parsing proxy URL %s: %s.\n"
-msgstr "Gre¹ka u pri ra¹èlani proxy URL-a %s: %s.\n"
+msgstr "Gre¹ka pri ra¹èlani proxy URL-a %s: %s.\n"
 
 #: src/retr.c:648
 #, c-format
