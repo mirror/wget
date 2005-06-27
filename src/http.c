@@ -2665,7 +2665,6 @@ http_atotm (const char *time_string)
   /* Restore the previous locale. */
   setlocale (LC_TIME, oldlocale);
 
-  /* All formats have failed.  */
   return ret;
 }
 
