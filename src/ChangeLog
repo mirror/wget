@@ -1,5 +1,10 @@
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (human_readable): Remove intermediary cast to long; MSVC
+	has problems casting *unsigned* __int64 to double.
+
+2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* sysdep.h: Use the system-provided fnmatch by default.
 
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>

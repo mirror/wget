@@ -1317,10 +1317,7 @@ human_readable (HR_NUMTYPE n)
 	 *this* power.  */
       if ((n / 1024) < 1024 || i == countof (powers) - 1)
 	{
-	  /* Must cast to long first because MS VC can't directly cast
-	     __int64 to double.  (This is safe because N is known to
-	     be < 1024^2, so always fits into long.)  */
-	  double val = (double) (long) n / 1024.0;
+	  double val = n / 1024.0;
 	  /* Print values smaller than 10 with one decimal digits, and
 	     others without any decimals.  */
 	  snprintf (buf, sizeof (buf), "%.*f%c",
