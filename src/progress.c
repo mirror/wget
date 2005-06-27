@@ -900,7 +900,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 	strcpy (p, eta_to_human_short ((int) (secs + 0.5)));
       else
 	/* For very quick downloads show more exact timing information. */
-	sprintf (p, _("%.*fs"),
+	sprintf (p, "%.*fs",
 		 secs < 0.001 ? 0 : /* 0s instead of 0.000s */
 		 secs < 0.01 ? 3 :  /* 0.00x */
 		 secs < 0.1 ? 2 :   /* 0.0x */
