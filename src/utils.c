@@ -1169,7 +1169,7 @@ free_keys_and_values (struct hash_table *ht)
    the function.
 
    In locales that don't set a thousand separator (such as the "C"
-   locale), this forces it to be ",".  Wget 1.10 is only using
+   locale), this forces it to be ",".  We are now only showing
    thousand separators in one place, so this shouldn't be a problem in
    practice.  */
 
