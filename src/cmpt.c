@@ -1254,10 +1254,9 @@ fnmatch (const char *pattern, const char *string, int flags)
      mktime(tm+o) --> t+2o
      t+o - (t+2o - t+o) = t
 
-   Contributed by Roger Beeman <beeman@cisco.com>, with the help of
-   Mark Baushke <mdb@cisco.com> and other experts at CISCO.  Further
-   improved by Roger with assistance from Edward J. Sabol based on
-   input by Jamie Zawinski.  */
+   Contributed by Roger Beeman, with the help of Mark Baushke and
+   other experts at CISCO.  Further improved by Roger with assistance
+   from Edward J. Sabol based on input by Jamie Zawinski.  */
 
 time_t
 timegm (struct tm *t)
