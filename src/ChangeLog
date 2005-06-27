@@ -1,5 +1,11 @@
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c (i18n_initialize): Set all locale categories.
+
+	* http.c (http_atotm): Temporarily set locale to "C".
+
+2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (gethttp): Improve "POST data file missing" error
 	message.
 

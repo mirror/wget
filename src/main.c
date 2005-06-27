@@ -79,20 +79,7 @@ i18n_initialize (void)
   /* HAVE_NLS implies existence of functions invoked here.  */
 #ifdef HAVE_NLS
   /* Set the current locale.  */
-  /* Where possible, sets only LC_MESSAGES and LC_CTYPE.  Other
-     categories, such as numeric, time, or collation, break code that
-     parses data received from the network and relies on C-locale
-     behavior of libc functions.  For example, Solaris strptime fails
-     to recognize English month names in non-English locales, which
-     breaks http_atotm.  Some implementations of fnmatch perform
-     unwanted case folding in non-C locales.  ctype macros, while they
-     were used, provided another example against LC_ALL.  */
-#if defined(LC_MESSAGES) && defined(LC_CTYPE)
-  setlocale (LC_MESSAGES, "");
-  setlocale (LC_CTYPE, "");	/* safe because we use safe-ctype */
-#else
   setlocale (LC_ALL, "");
-#endif
   /* Set the text message domain.  */
   bindtextdomain ("wget", LOCALEDIR);
   textdomain ("wget");

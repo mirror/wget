@@ -38,6 +38,7 @@ so, delete this exception statement from your version.  */
 #include <assert.h>
 #include <errno.h>
 #include <time.h>
+#include <locale.h>
 
 #include "wget.h"
 #include "utils.h"
@@ -2635,7 +2636,14 @@ http_atotm (const char *time_string)
 				   (used in Set-Cookie, defined in the
 				   Netscape cookie specification.) */
   };
+  const char *oldlocale;
   int i;
+  time_t ret = (time_t) -1;
+
+  /* Solaris strptime fails to recognize English month names in
+     non-English locales, which we work around by temporarily setting
+     locale to C before invoking strptime.  */
+  oldlocale = setlocale (LC_TIME, "C");
 
   for (i = 0; i < countof (time_formats); i++)
     {
@@ -2646,19 +2654,18 @@ http_atotm (const char *time_string)
 	 to prevent garbage from the stack influencing strptime.  */
       xzero (t);
 
-      /* Solaris strptime fails to recognize English month names in
-	 non-English locales, which we work around by not setting the
-	 LC_TIME category.  Another way would be to temporarily set
-	 locale to C before invoking strptime, but that's slow and
-	 messy.  GNU strptime does not have this problem because it
-	 recognizes English month names along with the local ones.  */
-
       if (check_end (strptime (time_string, time_formats[i], &t)))
-	return mktime_from_utc (&t);
+	{
+	  ret = mktime_from_utc (&t);
+	  break;
+	}
     }
 
+  /* Restore the previous locale. */
+  setlocale (LC_TIME, oldlocale);
+
   /* All formats have failed.  */
-  return -1;
+  return ret;
 }
 
 /* Authorization support: We support three authorization schemes:
