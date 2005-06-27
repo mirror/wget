@@ -1,5 +1,10 @@
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* config-post.h (alloca): Amend alloca declaration to take care of
+	all Win32 compilers, not just MSVC and MinGW.
+
+2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (get_grouping_data): Force separator to "." rather than
 	" " when "," is taken.
 

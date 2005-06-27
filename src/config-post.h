@@ -50,21 +50,18 @@
 #endif /* NAMESPACE_TWEAKS */
 
 
-/* Alloca-related defines, straight out of the Autoconf manual.  These
-   have to be after the above namespace tweaks, but before actual
-   declarations and system includes.  */
+/* Alloca declaration, based on recommendation in the Autoconf manual.
+   These have to be after the above namespace tweaks, but before any
+   non-preprocessor code.  */
 
 #if HAVE_ALLOCA_H
 # include <alloca.h>
+#elif defined _MSC_VER || defined __BORLANDC__ || defined __MINGW32__
+# include <malloc.h>
 #elif defined __GNUC__
-# ifndef __MINGW32__
-#  define alloca __builtin_alloca
-# endif
+# define alloca __builtin_alloca
 #elif defined _AIX
 # define alloca __alloca
-#elif defined _MSC_VER
-# include <malloc.h>
-# define alloca _alloca
 #else
 # include <stddef.h>
 # ifdef  __cplusplus
