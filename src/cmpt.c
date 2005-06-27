@@ -1222,8 +1222,8 @@ fnmatch (const char *pattern, const char *string, int flags)
 #endif /* not SYSTEM_FNMATCH */
 
 #ifndef HAVE_TIMEGM
-/* timegm is a GNU extension typically unavailable on non-glibc-based
-   platforms. */
+/* timegm is a GNU extension, but lately also available on *BSD and
+   possibly elsewhere. */
 
 /* Inverse of gmtime: converts struct tm to time_t, assuming the data
    in tm is UTC rather than local timezone.
