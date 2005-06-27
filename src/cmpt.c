@@ -1234,11 +1234,11 @@ fnmatch (const char *pattern, const char *string, int flags)
    understanding that an offset will be introduced by the local time
    assumption.
 
-   timegm then measures the introduced offset by applying gmtime to
-   the initial result and applying mktime to the resulting
-   "broken-down" form.  The difference between the two mktime results
-   is the measured offset which is then subtracted from the initial
-   mktime result to yield a calendar time which is the value returned.
+   It then measures the introduced offset by applying gmtime to the
+   initial result and applying mktime to the resulting "broken-down"
+   form.  The difference between the two mktime results is the
+   measured offset which is then subtracted from the initial mktime
+   result to yield a calendar time which is the value returned.
 
    tm_isdst in struct tm is set to 0 to force mktime to introduce a
    consistent offset (the non DST offset) since tm and tm+o might be
