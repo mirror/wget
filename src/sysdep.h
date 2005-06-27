@@ -49,7 +49,7 @@ so, delete this exception statement from your version.  */
    well as to pick up Windows-specific includes and constants.  To be
    able to test for such features, the file must be included as early
    as possible.  */
-# include <mswindows.h>
+# include "mswindows.h"
 #endif
 
 /* Provide support for C99-type boolean type "bool".  This blurb comes
