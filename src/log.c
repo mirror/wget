@@ -769,7 +769,7 @@ log_cleanup (void)
 
 /* When SIGHUP or SIGUSR1 are received, the output is redirected
    elsewhere.  Such redirection is only allowed once. */
-enum { RR_NONE, RR_REQUESTED, RR_DONE } redirect_request = RR_NONE;
+static enum { RR_NONE, RR_REQUESTED, RR_DONE } redirect_request = RR_NONE;
 static const char *redirect_request_signal_name;
 
 /* Redirect output to `wget-log'.  */

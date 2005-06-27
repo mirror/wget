@@ -45,6 +45,7 @@ so, delete this exception statement from your version.  */
 #include "url.h"
 #include "recur.h"
 #include "ftp.h"
+#include "http.h"
 #include "host.h"
 #include "connect.h"
 #include "hash.h"

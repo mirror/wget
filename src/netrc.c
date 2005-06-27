@@ -46,7 +46,7 @@ so, delete this exception statement from your version.  */
 
 #define NETRC_FILE_NAME ".netrc"
 
-acc_t *netrc_list;
+static acc_t *netrc_list;
 
 static acc_t *parse_netrc (const char *);
 

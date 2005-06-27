@@ -53,11 +53,6 @@ so, delete this exception statement from your version.  */
 /* File where the "ls -al" listing will be saved.  */
 #define LIST_FILENAME ".listing"
 
-extern char ftp_last_respline[];
-
-extern FILE *output_stream;
-extern bool output_stream_regular;
-
 typedef struct
 {
   int st;			/* connection status */
@@ -1308,7 +1303,7 @@ Removing file due to --delete-after in ftp_loop_internal():\n"));
 
 /* Return the directory listing in a reusable format.  The directory
    is specifed in u->dir.  */
-uerr_t
+static uerr_t
 ftp_get_listing (struct url *u, ccon *con, struct fileinfo **f)
 {
   uerr_t err;

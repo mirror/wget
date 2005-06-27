@@ -41,6 +41,7 @@ so, delete this exception statement from your version.  */
 #include <locale.h>
 
 #include "wget.h"
+#include "http.h"
 #include "utils.h"
 #include "url.h"
 #include "host.h"
@@ -60,9 +61,6 @@ so, delete this exception statement from your version.  */
 #include "convert.h"
 
 extern char *version_string;
-
-extern FILE *output_stream;
-extern bool output_stream_regular;
 
 #ifndef MIN
 # define MIN(x, y) ((x) > (y) ? (y) : (x))
@@ -1088,8 +1086,6 @@ static char *create_authorization_line (const char *, const char *,
 					const char *, bool *);
 static char *basic_authentication_encode (const char *, const char *);
 static bool known_authentication_scheme_p (const char *, const char *);
-
-time_t http_atotm (const char *);
 
 #define BEGINS_WITH(line, string_constant)				\
   (!strncasecmp (line, string_constant, sizeof (string_constant) - 1)	\
@@ -2683,7 +2679,7 @@ extract_header_attr (const char *au, const char *attr_name, char **ret)
    buffer of 33 writable characters (32 for hex digits plus one for
    zero termination).  */
 static void
-dump_hash (unsigned char *buf, const unsigned char *hash)
+dump_hash (char *buf, const unsigned char *hash)
 {
   int i;
 
@@ -2772,8 +2768,8 @@ digest_authentication_encode (const char *au, const char *user,
   {
     ALLOCA_MD5_CONTEXT (ctx);
     unsigned char hash[MD5_HASHLEN];
-    unsigned char a1buf[MD5_HASHLEN * 2 + 1], a2buf[MD5_HASHLEN * 2 + 1];
-    unsigned char response_digest[MD5_HASHLEN * 2 + 1];
+    char a1buf[MD5_HASHLEN * 2 + 1], a2buf[MD5_HASHLEN * 2 + 1];
+    char response_digest[MD5_HASHLEN * 2 + 1];
 
     /* A1BUF = H(user ":" realm ":" password) */
     gen_md5_init (ctx);
@@ -2795,11 +2791,11 @@ digest_authentication_encode (const char *au, const char *user,
 
     /* RESPONSE_DIGEST = H(A1BUF ":" nonce ":" A2BUF) */
     gen_md5_init (ctx);
-    gen_md5_update (a1buf, MD5_HASHLEN * 2, ctx);
+    gen_md5_update ((unsigned char *)a1buf, MD5_HASHLEN * 2, ctx);
     gen_md5_update ((unsigned char *)":", 1, ctx);
     gen_md5_update ((unsigned char *)nonce, strlen (nonce), ctx);
     gen_md5_update ((unsigned char *)":", 1, ctx);
-    gen_md5_update (a2buf, MD5_HASHLEN * 2, ctx);
+    gen_md5_update ((unsigned char *)a2buf, MD5_HASHLEN * 2, ctx);
     gen_md5_finish (ctx, hash);
     dump_hash (response_digest, hash);
 

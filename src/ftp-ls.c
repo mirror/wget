@@ -44,8 +44,7 @@ so, delete this exception statement from your version.  */
 #include "ftp.h"
 #include "url.h"
 #include "convert.h"		/* for html_quote_string prototype */
-
-extern FILE *output_stream;
+#include "retr.h"		/* for output_stream */
 
 /* Converts symbolic permissions to number-style ones, e.g. string
    rwxr-xr-x to 755.  For now, it knows nothing of

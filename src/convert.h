@@ -31,6 +31,7 @@ so, delete this exception statement from your version.  */
 #define CONVERT_H
 
 struct hash_table;		/* forward decl */
+extern struct hash_table *dl_url_file_map;
 extern struct hash_table *downloaded_html_set;
 
 enum convert_options {

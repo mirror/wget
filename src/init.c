@@ -51,6 +51,8 @@ so, delete this exception statement from your version.  */
 #include "recur.h"		/* for INFINITE_RECURSION */
 #include "convert.h"		/* for convert_cleanup */
 #include "res.h"		/* for res_cleanup */
+#include "http.h"		/* for http_cleanup */
+#include "retr.h"		/* for output_stream */
 
 /* We want tilde expansion enabled only when reading `.wgetrc' lines;
    otherwise, it will be performed by the shell.  This variable will
@@ -1415,7 +1417,6 @@ decode_string (const char *val, const struct decode_item *items, int itemcount,
 
 
 void cleanup_html_url (void);
-void http_cleanup (void);
 
 
 /* Free the memory allocated by global variables.  */
@@ -1424,13 +1425,10 @@ cleanup (void)
 {
   /* Free external resources, close files, etc. */
 
-  {
-    extern FILE *output_stream;
-    if (output_stream)
-      fclose (output_stream);
-    /* No need to check for error because Wget flushes its output (and
-       checks for errors) after any data arrives.  */
-  }
+  if (output_stream)
+    fclose (output_stream);
+  /* No need to check for error because Wget flushes its output (and
+     checks for errors) after any data arrives.  */
 
   /* We're exiting anyway so there's no real need to call free()
      hundreds of times.  Skipping the frees will make Wget exit

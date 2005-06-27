@@ -55,9 +55,7 @@ so, delete this exception statement from your version.  */
 #include "utils.h"
 #include "hash.h"
 #include "cookies.h"
-
-/* This should *really* be in a .h file!  */
-time_t http_atotm (const char *);
+#include "http.h"		/* for http_atotm */
 
 /* Declarations of `struct cookie' and the most basic functions. */
 

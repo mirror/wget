@@ -1,5 +1,18 @@
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.h (PTR_FORMAT): Cast the result of sizeof to int before
+	passing it to printf's %*.
+
+	* retr.h: Declare output_stream and output_stream_regular.
+
+	* ftp.h: Declare ftp_last_respline.
+
+	* convert.h: Declare dl_url_file_map.
+
+	* http.h: New file.
+
+2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* cookies.c: Make cookies_now static.
 
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>

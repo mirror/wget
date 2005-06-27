@@ -247,7 +247,7 @@ typedef double SUM_SIZE_INT;
    using printf ("%0*lx", PTR_FORMAT (p)).  (%p is too unpredictable;
    some implementations prepend 0x, while some don't, and most don't
    0-pad the address.)  */
-#define PTR_FORMAT(p) 2 * sizeof (void *), (unsigned long) (p)
+#define PTR_FORMAT(p) (int) (2 * sizeof (void *)), (unsigned long) (p)
 
 extern const char *exec_name;
 

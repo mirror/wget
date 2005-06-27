@@ -51,6 +51,7 @@ so, delete this exception statement from your version.  */
 #include "url.h"
 #include "progress.h"		/* for progress_handle_sigwinch */
 #include "convert.h"
+#include "http.h"		/* for save_cookies */
 
 /* On GNU system this will include system-wide getopt.h. */
 #include "getopt.h"
@@ -62,8 +63,6 @@ so, delete this exception statement from your version.  */
 struct options opt;
 
 extern char *version_string;
-
-extern struct cookie_jar *wget_cookie_jar;
 
 static void redirect_output_signal (int);
 
@@ -123,7 +122,7 @@ struct cmdline_option {
   int argtype;			/* for non-standard options */
 };
 
-struct cmdline_option option_data[] =
+static struct cmdline_option option_data[] =
   {
     { "accept", 'A', OPT_VALUE, "accept", -1 },
     { "append-output", 'a', OPT__APPEND_OUTPUT, NULL, required_argument },
@@ -896,9 +895,6 @@ Can't timestamp and not clobber old files at the same time.\n"));
   /* Open the output filename if necessary.  */
   if (opt.output_document)
     {
-      extern FILE *output_stream;
-      extern bool output_stream_regular;
-
       if (HYPHENP (opt.output_document))
 	output_stream = stdout;
       else

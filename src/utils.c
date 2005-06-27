@@ -1477,6 +1477,7 @@ number_to_string (char *buffer, wgint number)
 
 #undef PR
 #undef W
+#undef SPRINTF_WGINT
 #undef DIGITS_1
 #undef DIGITS_2
 #undef DIGITS_3

@@ -50,7 +50,7 @@ so, delete this exception statement from your version.  */
 
 /* Application-wide SSL context.  This is common to all SSL
    connections.  */
-SSL_CTX *ssl_ctx;
+static SSL_CTX *ssl_ctx;
 
 /* Initialize the SSL's PRNG using various methods. */
 

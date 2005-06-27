@@ -170,8 +170,8 @@ static const char *additional_attributes[] = {
   "action"			/* used by tag_handle_form */
 };
 
-struct hash_table *interesting_tags;
-struct hash_table *interesting_attributes;
+static struct hash_table *interesting_tags;
+static struct hash_table *interesting_attributes;
 
 static void
 init_interesting (void)

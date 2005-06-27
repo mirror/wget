@@ -1,5 +1,5 @@
-/* Declarations for retr.c.
-   Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
+/* Declarations for HTTP.
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -27,38 +27,15 @@ modify this file, you may extend this exception to your version of the
 file, but you are not obligated to do so.  If you do not wish to do
 so, delete this exception statement from your version.  */
 
-#ifndef RETR_H
-#define RETR_H
+#ifndef HTTP_H
+#define HTTP_H
 
-/* These global vars should be made static to retr.c and exported via
-   functions! */
-extern SUM_SIZE_INT total_downloaded_bytes;
-extern double total_download_time;
-extern FILE *output_stream;
-extern bool output_stream_regular;
+struct url;
 
-/* Flags for fd_read_body. */
-enum {
-  rb_read_exactly  = 1,
-  rb_skip_startpos = 2
-};
+uerr_t http_loop (struct url *, char **, char **, const char *, int *,
+		  struct url *);
+void save_cookies (void);
+void http_cleanup (void);
+time_t http_atotm (const char *);
 
-int fd_read_body (int, FILE *, wgint, wgint, wgint *, wgint *, double *, int);
-
-typedef const char *(*hunk_terminator_t) (const char *, int, int);
-
-char *fd_read_hunk (int, hunk_terminator_t, long, long);
-char *fd_read_line (int);
-
-uerr_t retrieve_url (const char *, char **, char **, const char *, int *);
-uerr_t retrieve_from_file (const char *, bool, int *);
-
-const char *retr_rate (wgint, double);
-double calc_rate (wgint, double, int *);
-void printwhat (int, int);
-
-void sleep_between_retrievals (int);
-
-void rotate_backups (const char *);
-
-#endif /* RETR_H */
+#endif /* HTTP_H */
