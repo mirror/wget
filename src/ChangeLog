@@ -1,5 +1,9 @@
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (http_atotm): Correctly query the old locale value.
+
+2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* config-post.h (alloca): Don't #define alloca under MinGW32,
 	which defines it in malloc.h, included from mswindows.h.
 

@@ -2643,7 +2643,8 @@ http_atotm (const char *time_string)
   /* Solaris strptime fails to recognize English month names in
      non-English locales, which we work around by temporarily setting
      locale to C before invoking strptime.  */
-  oldlocale = setlocale (LC_TIME, "C");
+  oldlocale = setlocale (LC_TIME, NULL);
+  setlocale (LC_TIME, "C");
 
   for (i = 0; i < countof (time_formats); i++)
     {
