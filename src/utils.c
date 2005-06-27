@@ -1164,6 +1164,15 @@ free_keys_and_values (struct hash_table *ht)
 }
 
 
+/* Get grouping data, the separator and grouping info, by calling
+   localeconv().  The information is cached after the first call to
+   the function.
+
+   In locales that don't set a thousand separator (such as the "C"
+   locale), this forces it to be ",".  Wget 1.10 is only using
+   thousand separators in one place, so this shouldn't be a problem in
+   practice.  */
+
 static void
 get_grouping_data (const char **sep, const char **grouping)
 {
@@ -1172,20 +1181,23 @@ get_grouping_data (const char **sep, const char **grouping)
   static bool initialized;
   if (!initialized)
     {
-#ifdef LC_NUMERIC
       /* Get the grouping info from the locale. */
-      struct lconv *lconv;
-      const char *oldlocale = setlocale (LC_NUMERIC, "");
-      lconv = localeconv ();
-      cached_sep = xstrdup (lconv->thousands_sep);
-      cached_grouping = xstrdup (lconv->grouping);
-      /* Restore the locale to previous settings. */
-      setlocale (LC_NUMERIC, oldlocale);
-      if (!cached_sep)
-#endif
-	/* Force separator for locales that specify no separators
-	   ("C", "hr", and probably many more.) */
-	cached_sep = ",", cached_grouping = "\x03";
+      struct lconv *lconv = localeconv ();
+      cached_sep = lconv->thousands_sep;
+      cached_grouping = lconv->grouping;
+      if (!*cached_sep)
+	{
+	  /* Many locales (such as "C" or "hr_HR") don't specify
+	     grouping, which we still want to use it for legibility.
+	     In those locales set the sep char to ',', unless that
+	     character is used for decimal point, in which case set it
+	     to " ".  */
+	  if (*lconv->decimal_point != ',')
+	    cached_sep = ",";
+	  else
+	    cached_sep = " ";
+	  cached_grouping = "\x03";
+	}
       initialized = true;
     }
   *sep = cached_sep;

@@ -1,5 +1,10 @@
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (get_grouping_data): Force the use of separators in C
+	locale.
+
+2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (i18n_initialize): Set all locale categories.
 
 	* http.c (http_atotm): Temporarily set locale to "C".
