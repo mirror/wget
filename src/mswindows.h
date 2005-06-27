@@ -32,20 +32,20 @@ so, delete this exception statement from your version.  */
 #define MSWINDOWS_H
 
 #ifndef WGET_H
-#error Include mswindows.h inside or after "wget.h"
+# error This file should not be included directly.
 #endif
 
 /* Prevent inclusion of <winsock*.h> in <windows.h>.  */
 #ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
+# define WIN32_LEAN_AND_MEAN
 #endif
 
 #include <windows.h>
 
-/* Use the correct winsock header; <ws2tcpip.h> includes <winsock2.h>
-   only on MingW.  We cannot use <winsock.h> for IPv6.  Using
-   getaddrinfo() requires <ws2tcpip.h>.  */
-#if defined(ENABLE_IPV6) || defined(HAVE_GETADDRINFO)
+/* We need winsock2.h for IPv6 and ws2tcpip.h for getaddrinfo, so
+  include both in ENABLE_IPV6 case.  (ws2tcpip.h includes winsock2.h
+  only on MinGW.) */
+#ifdef ENABLE_IPV6
 # include <winsock2.h>
 # include <ws2tcpip.h>
 #else
@@ -56,14 +56,9 @@ so, delete this exception statement from your version.  */
 # define EAI_SYSTEM -1   /* value doesn't matter */
 #endif
 
-/* Must include <sys/stat.h> because of 'stat' define below.  */
-#include <sys/stat.h>
-
-/* Missing in several .c files.  Include here.  */
+/* Declares file access functions, such as open, creat, access, and
+   chmod.  Unix declares these in unistd.h and fcntl.h.  */
 #include <io.h>
-
-/* Needed to get alloca() under Win32.  */
-#include <malloc.h>
 
 #ifndef S_ISDIR
 # define S_ISDIR(m) (((m) & (_S_IFMT)) == (_S_IFDIR))
@@ -134,16 +129,24 @@ __int64 str_to_int64 (const char *, char **, int);
 #endif
 #endif
 
-/* #### Do we need this?  */
-#include <direct.h>
-
-/* Windows compilers accept only one arg to mkdir.  */
+/* Win32 doesn't support the MODE argument to mkdir.  */
 #define mkdir(a, b) _mkdir(a)
+
+/* Additional declarations needed for IPv6: */
+#ifdef ENABLE_IPV6
+/* Missing declaration? */
+extern const char *inet_ntop (int, const void *, char *, size_t);
+/* MinGW 3.7 (or older) prototypes gai_strerror(), but is missing
+   from all import libraries. */
+# ifdef __MINGW32__
+#  undef gai_strerror
+#  define gai_strerror windows_strerror
+# endif
+#endif /* ENABLE_IPV6 */
 
 #ifndef INHIBIT_WRAP
 
-/* Winsock functions don't set errno, so we provide wrappers
-   that do. */
+/* Winsock functions don't set errno, so we provide wrappers that do. */
 
 #define socket wrapped_socket
 #define bind wrapped_bind
@@ -175,13 +178,6 @@ int wrapped_closesocket (int);
 # define strerror windows_strerror
 #endif
 const char *windows_strerror (int);
-
-/* MingW 3.7 (or older) prototypes gai_strerror(), but is missing
-   from all import libraries. */
-#if defined(__MINGW32__) && defined(ENABLE_IPV6)
-# undef gai_strerror
-# define gai_strerror windows_strerror
-#endif
 
 /* Declarations of various socket errors:  */
 
@@ -228,12 +224,5 @@ void ws_changetitle (const char *);
 void ws_percenttitle (double);
 char *ws_mypath (void);
 void windows_main (int *, char **, char **);
-
-/* Things needed for IPv6; missing in <ws2tcpip.h>.  */
-#ifdef ENABLE_IPV6
-# ifndef HAVE_INET_NTOP
-extern const char *inet_ntop (int af, const void *src, char *dst, size_t size);
-# endif
-#endif /* ENABLE_IPV6 */
 
 #endif /* MSWINDOWS_H */

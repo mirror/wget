@@ -1,5 +1,9 @@
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* mswindows.h: Remove superfluous includes.
+
+2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* config-post.h (alloca): Amend alloca declaration to take care of
 	all Win32 compilers, not just MSVC and MinGW.
 
