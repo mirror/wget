@@ -1191,11 +1191,11 @@ get_grouping_data (const char **sep, const char **grouping)
 	     grouping, which we still want to use it for legibility.
 	     In those locales set the sep char to ',', unless that
 	     character is used for decimal point, in which case set it
-	     to " ".  */
+	     to ".".  */
 	  if (*lconv->decimal_point != ',')
 	    cached_sep = ",";
 	  else
-	    cached_sep = " ";
+	    cached_sep = ".";
 	  cached_grouping = "\x03";
 	}
       initialized = true;

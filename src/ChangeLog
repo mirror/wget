@@ -1,5 +1,10 @@
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (get_grouping_data): Force separator to "." rather than
+	" " when "," is taken.
+
+2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.h (PTR_FORMAT): Cast the result of sizeof to int before
 	passing it to printf's %*.
 
