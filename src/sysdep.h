@@ -131,6 +131,10 @@ int strncasecmp ();
 #ifndef HAVE_STRPTIME
 char *strptime ();
 #endif
+#ifndef HAVE_TIMEGM
+# include <time.h>
+time_t timegm (struct tm *);
+#endif
 
 /* These are defined in snprintf.c.  It would be nice to have an
    snprintf.h, though.  */
