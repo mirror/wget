@@ -1,5 +1,9 @@
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* sysdep.h: Use the system-provided fnmatch by default.
+
+2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (mktime_from_utc): Renamed to timegm and moved to cmpt.c.
 	Don't compile it if GNU timegm is available.
 	(http_atotm): Use timegm.

@@ -155,19 +155,12 @@ int vsnprintf ();
 # define MAP_FAILED ((void *) -1)
 #endif
 
-/* Enable system fnmatch only on systems where fnmatch.h is usable and
-   which are known to have a non-broken fnmatch implementation.
-   Currently those include glibc-based systems and Solaris.  One could
-   add more, but fnmatch is not that large, so it might be better to
-   play it safe.  */
+/* Enable system fnmatch only on systems where fnmatch.h is usable.
+   If the fnmatch on your system is buggy, undef this symbol and a
+   replacement implementation will be used instead.  */
 #ifdef HAVE_WORKING_FNMATCH_H
-# if defined __GLIBC__ && __GLIBC__ >= 2
-#  define SYSTEM_FNMATCH
-# endif
-# ifdef solaris
-#  define SYSTEM_FNMATCH
-# endif
-#endif /* HAVE_WORKING_FNMATCH_H */
+# define SYSTEM_FNMATCH
+#endif
 
 #ifdef SYSTEM_FNMATCH
 # include <fnmatch.h>
