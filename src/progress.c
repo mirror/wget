@@ -200,7 +200,8 @@ struct dot_progress {
   wgint total_length;		/* expected total byte count when the
 				   download finishes */
 
-  int accumulated;
+  int accumulated;		/* number of bytes accumulated after
+				   the last printed dot */
 
   int rows;			/* number of rows printed so far */
   int dots;			/* number of dots printed in this row */
