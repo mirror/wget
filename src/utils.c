@@ -1571,68 +1571,74 @@ determine_screen_width (void)
   return 0;
 #endif /* neither TIOCGWINSZ nor WINDOWS */
 }
+
+/* Whether the rnd system (either rand or [dl]rand48) has been
+   seeded.  */
+static int rnd_seeded;
 
 /* Return a random number between 0 and MAX-1, inclusive.
 
-   If MAX is greater than the value of RAND_MAX+1 on the system, the
-   returned value will be in the range [0, RAND_MAX].  This may be
-   fixed in a future release.
-
+   If the system does not support lrand48 and MAX is greater than the
+   value of RAND_MAX+1 on the system, the returned value will be in
+   the range [0, RAND_MAX].  This may be fixed in a future release.
    The random number generator is seeded automatically the first time
    it is called.
 
-   This uses rand() for portability.  It has been suggested that
-   random() offers better randomness, but this is not required for
-   Wget, so I chose to go for simplicity and use rand
-   unconditionally.
-
-   DO NOT use this for cryptographic purposes.  It is only meant to be
-   used in situations where quality of the random numbers returned
-   doesn't really matter.  */
+   This uses lrand48 where available, rand elsewhere.  DO NOT use it
+   for cryptography.  It is only meant to be used in situations where
+   quality of the random numbers returned doesn't really matter.  */
 
 int
 random_number (int max)
 {
-  static int seeded;
+#ifdef HAVE_DRAND48
+  if (!rnd_seeded)
+    {
+      srand48 ((long) time (NULL) ^ (long) getpid ());
+      rnd_seeded = 1;
+    }
+  return lrand48 () % max;
+#else  /* not HAVE_DRAND48 */
+
   double bounded;
   int rnd;
-
-  if (!seeded)
+  if (!rnd_seeded)
     {
-      srand (time (NULL));
-      seeded = 1;
+      srand ((unsigned) time (NULL) ^ (unsigned) getpid ());
+      rnd_seeded = 1;
     }
   rnd = rand ();
 
-  /* On systems that don't define RAND_MAX, assume it to be 2**15 - 1,
-     and enforce that assumption by masking other bits.  */
-#ifndef RAND_MAX
-# define RAND_MAX 32767
-  rnd &= RAND_MAX;
-#endif
+  /* Like rand() % max, but uses the high-order bits for better
+     randomness on architectures where rand() is implemented using a
+     simple congruential generator.  */
 
-  /* This is equivalent to rand() % max, but uses the high-order bits
-     for better randomness on architecture where rand() is implemented
-     using a simple congruential generator.  */
+  bounded = (double) max * rnd / (RAND_MAX + 1.0);
+  return (int) bounded;
 
-  bounded = (double)max * rnd / (RAND_MAX + 1.0);
-  return (int)bounded;
+#endif /* not HAVE_DRAND48 */
 }
 
 /* Return a random uniformly distributed floating point number in the
-   [0, 1) range.  The precision of returned numbers is 9 digits.
-
-   Modify this to use drand48() where available!  */
+   [0, 1) range.  Uses drand48 where available, and a really lame
+   kludge elsewhere.  */
 
 double
 random_float (void)
 {
-  /* We can't rely on any specific value of RAND_MAX, but it must
-     always be greater than 1000.  */
-  int rnd1 = random_number (1000);
-  int rnd2 = random_number (1000);
-  int rnd3 = random_number (1000);
-  return rnd1 / 1000.0 + rnd2 / 1000000.0 + rnd3 / 1000000000.0;
+#ifdef HAVE_DRAND48
+  if (!rnd_seeded)
+    {
+      srand48 ((long) time (NULL) ^ (long) getpid ());
+      rnd_seeded = 1;
+    }
+  return drand48 ();
+#else  /* not HAVE_DRAND48 */
+  return (  random_number (10000) / 10000.0
+	  + random_number (10000) / (10000.0 * 10000.0)
+	  + random_number (10000) / (10000.0 * 10000.0 * 10000.0)
+	  + random_number (10000) / (10000.0 * 10000.0 * 10000.0 * 10000.0));
+#endif /* not HAVE_DRAND48 */
 }
 
 /* Implementation of run_with_timeout, a generic timeout-forcing

@@ -1,5 +1,10 @@
 2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (random_number): Use lrand48 if available.
+	(random_float): Use drand48 if available.
+
+2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (secs_to_human_time): Use print_decimal when printing
 	total download time in seconds.
 

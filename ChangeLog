@@ -1,3 +1,7 @@
+2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Check for drand48.
+
 2005-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* m4/wget.m4: Use proper GPL header.
