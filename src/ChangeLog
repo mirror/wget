@@ -4,8 +4,7 @@
 
 2005-06-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
-	* progress.c (print_percentage): Round the percentage value.
-	(dot_create): Remove unnecessary casts.
+	* (dot_create): Remove unnecessary casts.
 
 2005-06-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
