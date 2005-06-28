@@ -313,6 +313,8 @@ print_row_stats (struct dot_progress *dp, double dltime, bool last)
 
   if (!last)
     {
+      /* Display ETA based on average speed.  Inspired by Vladi
+	 Belperchinov-Shabanski's "wget-new-percentage" patch.  */
       if (dp->total_length)
 	{
 	  wgint bytes_remaining = dp->total_length - bytes_displayed;
