@@ -1,3 +1,8 @@
+2005-06-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* ftp.c (getftp): Delete trailing newlines from LIST output so
+	lines don't come out with trailing \015\012 with -S.
+
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* mswindows.h: Remove superfluous includes.

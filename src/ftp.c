@@ -1068,6 +1068,9 @@ Error in server response, closing control connection.\n"));
 	     no-buffering on opt.lfile.  */
 	  while ((line = read_whole_line (fp)) != NULL)
 	    {
+	      char *p = strchr (line, '\0');
+	      while (p > line && (p[-1] == '\n' || p[-1] == '\r'))
+		*--p = '\0';
 	      logprintf (LOG_ALWAYS, "%s\n", escnonprint (line));
 	      xfree (line);
 	    }
