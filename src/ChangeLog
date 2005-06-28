@@ -1,5 +1,9 @@
 2005-06-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* init.c (parse_line): Check for alphanumerics.
+
+2005-06-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* progress.c (print_percentage): Round the percentage value.
 	(dot_create): Remove unnecessary casts.
 

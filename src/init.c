@@ -562,7 +562,7 @@ parse_line (const char *line, char **com, char **val, int *comind)
   p = line;
 
   cmdstart = p;
-  while (p < end && (ISALPHA (*p) || *p == '_' || *p == '-'))
+  while (p < end && (ISALNUM (*p) || *p == '_' || *p == '-'))
     ++p;
   cmdend = p;
 
