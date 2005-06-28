@@ -258,12 +258,9 @@ dot_create (wgint initial, wgint total)
 static void
 print_percentage (wgint bytes, wgint expected)
 {
-  /* This intentionally rounds to the floor value because it is a
-     measure of how much data *has* been retrieved.  Therefore 12.8%
-     rounds to 12% because the 13% mark has not yet been reached.
-     Likewise, 100% is only shown when all data has been retrieved,
-     not before.  */
-
+  /* Round to the floor value in order to gauge how much data *has*
+     been retrieved.  12.8% will round to 12% because the 13% mark has
+     not yet been reached.  100% is only shown when done.  */
   int percentage = 100.0 * bytes / expected;
   logprintf (LOG_VERBOSE, "%3d%%", percentage);
 }
