@@ -643,16 +643,8 @@ secs_to_human_time (double interval)
     sprintf (buf, "%dh %dm %ds", hours, mins, secs);
   else if (mins)
     sprintf (buf, "%dm %ds", mins, secs);
-  else if (interval >= 10)
-    sprintf (buf, "%ds", secs);
   else
-    /* For very quick downloads show more exact timing information. */
-    sprintf (buf, "%.*fs",
-	     interval < 0.001 ? 0 : /* 0s instead of 0.000s */
-	     interval < 0.01 ? 3 :  /* 0.00x */
-	     interval < 0.1 ? 2 :   /* 0.0x */
-	     1,                     /* 0.x, 1.x, ..., 9.x */
-	     interval);
+    sprintf (buf, "%ss", print_decimal (interval));
 
   return buf;
 }

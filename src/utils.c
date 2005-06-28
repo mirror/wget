@@ -2039,3 +2039,38 @@ stable_sort (void *base, size_t nmemb, size_t size,
       mergesort_internal (base, temp, size, 0, nmemb - 1, cmpfun);
     }
 }
+
+/* Print a decimal number.  If it is equal to or larger than ten, the
+   number is rounded.  Otherwise it is printed with one significant
+   digit without trailing zeros and with no more than three fractional
+   digits total.  For example, 0.1 is printed as "0.1", 0.035 is
+   printed as "0.04", 0.0091 as "0.009", and 0.0003 as simply "0".
+
+   This is useful for displaying durations because it provides
+   order-of-magnitude information without unnecessary clutter --
+   long-running downloads are shown without the fractional part, and
+   short ones still retain one significant digit.  */
+
+const char *
+print_decimal (double number)
+{
+  static char buf[32];
+  double n = number >= 0 ? number : -number;
+
+  if (n >= 9.95)
+    /* Cut off at 9.95 because the below %.1f would round 9.96 to
+       "10.0" instead of "10".  OTOH 9.94 will print as "9.9".  */
+    snprintf (buf, sizeof buf, "%.0f", number);
+  else if (n >= 0.95)
+    snprintf (buf, sizeof buf, "%.1f", number);
+  else if (n >= 0.001)
+    snprintf (buf, sizeof buf, "%.1g", number);
+  else if (n >= 0.0005)
+    /* round [0.0005, 0.001) to 0.001 */
+    snprintf (buf, sizeof buf, "%.3f", number);
+  else
+    /* print numbers close to 0 as 0, not 0.000 */
+    strcpy (buf, "0");
+
+  return buf;
+}

@@ -1,3 +1,18 @@
+2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* main.c (secs_to_human_time): Use print_decimal when printing
+	total download time in seconds.
+
+	* progress.c (print_row_stats): Use it to print total download
+	time at the end of the download.
+	(create_image): Ditto.
+
+	* utils.c (print_decimal): New function; print small decimal
+	numbers with more precision than large ones.
+
+	* progress.c (print_row_stats): New function.  Print ETA after the
+	download rate at the end of each row.
+
 2005-06-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* init.c (parse_line): Check for alphanumerics.

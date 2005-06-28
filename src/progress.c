@@ -205,6 +205,7 @@ struct dot_progress {
 
   int rows;			/* number of rows printed so far */
   int dots;			/* number of dots printed in this row */
+
   double last_timer_value;
 };
 
@@ -220,26 +221,28 @@ dot_create (wgint initial, wgint total)
   if (dp->initial_length)
     {
       int dot_bytes = opt.dot_bytes;
-      wgint row_bytes = opt.dot_bytes * opt.dots_in_line;
+      const wgint ROW_BYTES = opt.dot_bytes * opt.dots_in_line;
 
-      int remainder = dp->initial_length % row_bytes;
+      int remainder = dp->initial_length % ROW_BYTES;
       wgint skipped = dp->initial_length - remainder;
 
       if (skipped)
 	{
-	  int skipped_k = skipped / 1024; /* skipped amount in K */
+	  wgint skipped_k = skipped / 1024; /* skipped amount in K */
 	  int skipped_k_len = numdigit (skipped_k);
-	  if (skipped_k_len < 5)
-	    skipped_k_len = 5;
+	  if (skipped_k_len < 6)
+	    skipped_k_len = 6;
 
 	  /* Align the [ skipping ... ] line with the dots.  To do
 	     that, insert the number of spaces equal to the number of
 	     digits in the skipped amount in K.  */
-	  logprintf (LOG_VERBOSE, _("\n%*s[ skipping %dK ]"),
-		     2 + skipped_k_len, "", skipped_k);
+	  logprintf (LOG_VERBOSE, _("\n%*s[ skipping %sK ]"),
+		     2 + skipped_k_len, "",
+		     number_to_static_string (skipped_k));
 	}
 
-      logprintf (LOG_VERBOSE, "\n%5ldK", (long) (skipped / 1024));
+      logprintf (LOG_VERBOSE, "\n%6sK",
+		 number_to_static_string (skipped / 1024));
       for (; remainder >= dot_bytes; remainder -= dot_bytes)
 	{
 	  if (dp->dots % opt.dot_spacing == 0)
@@ -250,28 +253,86 @@ dot_create (wgint initial, wgint total)
       assert (dp->dots < opt.dots_in_line);
 
       dp->accumulated = remainder;
-      dp->rows = skipped / row_bytes;
+      dp->rows = skipped / ROW_BYTES;
     }
 
   return dp;
 }
 
-static void
-print_percentage (wgint bytes, wgint expected)
-{
-  /* Round to the floor value in order to gauge how much data *has*
-     been retrieved.  12.8% will round to 12% because the 13% mark has
-     not yet been reached.  100% is only shown when done.  */
-  int percentage = 100.0 * bytes / expected;
-  logprintf (LOG_VERBOSE, "%3d%%", percentage);
-}
+static const char *eta_to_human_short (int, bool);
+
+/* Prints the stats (percentage of completion, speed, ETA) for current
+   row.  DLTIME is the time spent downloading the data in current
+   row.
+
+   #### This function is somewhat uglified by the fact that current
+   row and last row have somewhat different stats requirements.  It
+   might be worthwhile to split it to two different functions.  */
 
 static void
-print_download_speed (struct dot_progress *dp, wgint bytes, double dltime)
+print_row_stats (struct dot_progress *dp, double dltime, bool last)
 {
-  logprintf (LOG_VERBOSE, " %7s",
-	     retr_rate (bytes, dltime - dp->last_timer_value));
-  dp->last_timer_value = dltime;
+  const wgint ROW_BYTES = opt.dot_bytes * opt.dots_in_line;
+
+  /* bytes_displayed is the number of bytes indicated to the user by
+     dots printed so far, includes the initially "skipped" amount */
+  wgint bytes_displayed = dp->rows * ROW_BYTES + dp->dots * opt.dot_bytes;
+
+  if (last)
+    /* For last row also count bytes accumulated after last dot */
+    bytes_displayed += dp->accumulated;
+
+  if (dp->total_length)
+    {
+      /* Round to floor value to provide gauge how much data *has*
+	 been retrieved.  12.8% will round to 12% because the 13% mark
+	 has not yet been reached.  100% is only shown when done.  */
+      int percentage = 100.0 * bytes_displayed / dp->total_length;
+      logprintf (LOG_VERBOSE, "%3d%%", percentage);
+    }
+
+  {
+    static char names[] = {' ', 'K', 'M', 'G'};
+    int units;
+    double rate;
+    wgint bytes_this_row;
+    if (!last)
+      bytes_this_row = ROW_BYTES;
+    else
+      /* For last row also include bytes accumulated after last dot.  */
+      bytes_this_row = dp->dots * opt.dot_bytes + dp->accumulated;
+    if (dp->rows == dp->initial_length / ROW_BYTES)
+      /* Don't count the portion of the row belonging to initial_length */
+      bytes_this_row -= dp->initial_length % ROW_BYTES;
+    rate = calc_rate (bytes_this_row, dltime - dp->last_timer_value, &units);
+    logprintf (LOG_VERBOSE, " %4.*f%c",
+	       rate >= 100 ? 0 : rate >= 9.995 ? 1 : 2,
+	       rate, names[units]);
+    dp->last_timer_value = dltime;
+  }
+
+  if (!last)
+    {
+      if (dp->total_length)
+	{
+	  wgint bytes_remaining = dp->total_length - bytes_displayed;
+	  /* The quantity downloaded in this download run. */
+	  wgint bytes_sofar = bytes_displayed - dp->initial_length;
+	  double secs_sofar = dltime / 1000;
+	  int eta = (int) (secs_sofar * bytes_remaining / bytes_sofar + 0.5);
+	  logprintf (LOG_VERBOSE, " %s", eta_to_human_short (eta, true));
+	}
+    }
+  else
+    {
+      /* When done, print the total download time */
+      double secs = dltime / 1000;
+      if (secs >= 10)
+	logprintf (LOG_VERBOSE, "=%s",
+		   eta_to_human_short ((int) (secs + 0.5), true));
+      else
+	logprintf (LOG_VERBOSE, "=%ss", print_decimal (secs));
+    }
 }
 
 /* Dot-progress backend for progress_update. */
@@ -281,7 +342,7 @@ dot_update (void *progress, wgint howmuch, double dltime)
 {
   struct dot_progress *dp = progress;
   int dot_bytes = opt.dot_bytes;
-  wgint row_bytes = opt.dot_bytes * opt.dots_in_line;
+  wgint ROW_BYTES = opt.dot_bytes * opt.dots_in_line;
 
   log_set_flush (false);
 
@@ -289,7 +350,8 @@ dot_update (void *progress, wgint howmuch, double dltime)
   for (; dp->accumulated >= dot_bytes; dp->accumulated -= dot_bytes)
     {
       if (dp->dots == 0)
-	logprintf (LOG_VERBOSE, "\n%5ldK", (long) (dp->rows * row_bytes / 1024));
+	logprintf (LOG_VERBOSE, "\n%6sK",
+		   number_to_static_string (dp->rows * ROW_BYTES / 1024));
 
       if (dp->dots % opt.dot_spacing == 0)
 	logputs (LOG_VERBOSE, " ");
@@ -298,16 +360,14 @@ dot_update (void *progress, wgint howmuch, double dltime)
       ++dp->dots;
       if (dp->dots >= opt.dots_in_line)
 	{
-	  wgint row_qty = row_bytes;
-	  if (dp->rows == dp->initial_length / row_bytes)
-	    row_qty -= dp->initial_length % row_bytes;
+	  wgint row_qty = ROW_BYTES;
+	  if (dp->rows == dp->initial_length / ROW_BYTES)
+	    row_qty -= dp->initial_length % ROW_BYTES;
 
 	  ++dp->rows;
 	  dp->dots = 0;
 
-	  if (dp->total_length)
-	    print_percentage (dp->rows * row_bytes, dp->total_length);
-	  print_download_speed (dp, row_qty, dltime);
+	  print_row_stats (dp, dltime, false);
 	}
     }
 
@@ -320,35 +380,22 @@ static void
 dot_finish (void *progress, double dltime)
 {
   struct dot_progress *dp = progress;
-  int dot_bytes = opt.dot_bytes;
-  wgint row_bytes = opt.dot_bytes * opt.dots_in_line;
+  wgint ROW_BYTES = opt.dot_bytes * opt.dots_in_line;
   int i;
 
   log_set_flush (false);
 
   if (dp->dots == 0)
-    logprintf (LOG_VERBOSE, "\n%5ldK", (long) (dp->rows * row_bytes / 1024));
+    logprintf (LOG_VERBOSE, "\n%6sK",
+	       number_to_static_string (dp->rows * ROW_BYTES / 1024));
   for (i = dp->dots; i < opt.dots_in_line; i++)
     {
       if (i % opt.dot_spacing == 0)
 	logputs (LOG_VERBOSE, " ");
       logputs (LOG_VERBOSE, " ");
     }
-  if (dp->total_length)
-    {
-      print_percentage (dp->rows * row_bytes
-			+ dp->dots * dot_bytes
-			+ dp->accumulated,
-			dp->total_length);
-    }
 
-  {
-    wgint row_qty = dp->dots * dot_bytes + dp->accumulated;
-    if (dp->rows == dp->initial_length / row_bytes)
-      row_qty -= dp->initial_length % row_bytes;
-    print_download_speed (dp, row_qty, dltime);
-  }
-
+  print_row_stats (dp, dltime, true);
   logputs (LOG_VERBOSE, "\n\n");
   log_set_flush (false);
 
@@ -704,8 +751,6 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 #endif
 }
 
-static const char *eta_to_human_short (int);
-
 #define APPEND_LITERAL(s) do {			\
   memcpy (p, s, sizeof (s) - 1);		\
   p += sizeof (s) - 1;				\
@@ -884,7 +929,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 
 	  /* Translation note: "ETA" is English-centric, but this must
 	     be short, ideally 3 chars.  Abbreviate if necessary.  */
-	  sprintf (p, _("  eta %s"), eta_to_human_short (eta));
+	  sprintf (p, _("  eta %s"), eta_to_human_short (eta, false));
 	  move_to_end (p);
 	}
       else if (bp->total_length > 0)
@@ -901,15 +946,9 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       strcpy (p, _("   in "));
       move_to_end (p);		/* not p+=6, think translations! */
       if (secs >= 10)
-	strcpy (p, eta_to_human_short ((int) (secs + 0.5)));
+	strcpy (p, eta_to_human_short ((int) (secs + 0.5), false));
       else
-	/* For very quick downloads show more exact timing information. */
-	sprintf (p, "%.*fs",
-		 secs < 0.001 ? 0 : /* 0s instead of 0.000s */
-		 secs < 0.01 ? 3 :  /* 0.00x */
-		 secs < 0.1 ? 2 :   /* 0.0x */
-		 1,                 /* 0.x, 1.x, ..., 9.x */
-		 secs);
+	sprintf (p, "%ss", print_decimal (secs));
       move_to_end (p);
     }
 
@@ -984,18 +1023,20 @@ progress_handle_sigwinch (int sig)
    and hours are shown.  This ensures brevity while still displaying
    as much as possible.
 
-   If SEP is false, the separator between minutes and seconds (and
-   hours and minutes, etc.) is not included, shortening the display by
-   one additional character.  This is used for dot progress.
+   If CONDENSED is true, the separator between minutes and seconds
+   (and hours and minutes, etc.) is not included, shortening the
+   display by one additional character.  This is used for dot
+   progress.
 
    The display never occupies more than 7 characters of screen
    space.  */
 
 static const char *
-eta_to_human_short (int secs)
+eta_to_human_short (int secs, bool condensed)
 {
   static char buf[10];		/* 8 should be enough, but just in case */
   static int last = -1;
+  const char *space = condensed ? "" : " ";
 
   /* Trivial optimization.  create_image can call us every 200 msecs
      (see bar_update) for fast downloads, but ETA will only change
@@ -1007,11 +1048,11 @@ eta_to_human_short (int secs)
   if (secs < 100)
     sprintf (buf, "%ds", secs);
   else if (secs < 100 * 60)
-    sprintf (buf, "%dm %ds", secs / 60, secs % 60);
+    sprintf (buf, "%dm%s%ds", secs / 60, space, secs % 60);
   else if (secs < 100 * 3600)
-    sprintf (buf, "%dh %dm", secs / 3600, (secs / 60) % 60);
+    sprintf (buf, "%dh%s%dm", secs / 3600, space, (secs / 60) % 60);
   else if (secs < 100 * 86400)
-    sprintf (buf, "%dd %dh", secs / 86400, (secs / 3600) % 60);
+    sprintf (buf, "%dd%s%dh", secs / 86400, space, (secs / 3600) % 60);
   else
     /* even (2^31-1)/86400 doesn't overflow BUF. */
     sprintf (buf, "%dd", secs / 86400);

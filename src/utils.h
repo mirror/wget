@@ -126,4 +126,6 @@ int base64_decode (const char *, char *);
 
 void stable_sort (void *, size_t, size_t, int (*) (const void *, const void *));
 
+const char *print_decimal (double);
+
 #endif /* UTILS_H */
