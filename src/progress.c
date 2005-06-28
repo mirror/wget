@@ -222,12 +222,12 @@ dot_create (wgint initial, wgint total)
       int dot_bytes = opt.dot_bytes;
       wgint row_bytes = opt.dot_bytes * opt.dots_in_line;
 
-      int remainder = (int) (dp->initial_length % row_bytes);
+      int remainder = dp->initial_length % row_bytes;
       wgint skipped = dp->initial_length - remainder;
 
       if (skipped)
 	{
-	  int skipped_k = (int) (skipped / 1024); /* skipped amount in K */
+	  int skipped_k = skipped / 1024; /* skipped amount in K */
 	  int skipped_k_len = numdigit (skipped_k);
 	  if (skipped_k_len < 5)
 	    skipped_k_len = 5;
