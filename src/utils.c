@@ -1622,13 +1622,13 @@ random_number (int max)
 /* Return a random uniformly distributed floating point number in the
    [0, 1) range.  The precision of returned numbers is 9 digits.
 
-   Modify this to use erand48() where available!  */
+   Modify this to use drand48() where available!  */
 
 double
 random_float (void)
 {
-  /* We can't rely on any specific value of RAND_MAX, but I'm pretty
-     sure it's greater than 1000.  */
+  /* We can't rely on any specific value of RAND_MAX, but it must
+     always be greater than 1000.  */
   int rnd1 = random_number (1000);
   int rnd2 = random_number (1000);
   int rnd3 = random_number (1000);
