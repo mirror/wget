@@ -514,8 +514,8 @@ option.
 @cindex base for relative links in input file
 @item -B @var{URL}
 @itemx --base=@var{URL}
-When used in conjunction with @samp{-F}, prepends @var{URL} to relative
-links in the file specified by @samp{-i}.
+Prepends @var{URL} to relative links read from the file specified with
+the @samp{-i} option.
 @end table
 
 @node Download Options

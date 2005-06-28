@@ -1,3 +1,8 @@
+2005-06-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Logging and Input File Options): Don't claim that
+	--base requires --force-html to work.
+
 2005-06-25  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Download Options): Update -4/-6 documentation to
