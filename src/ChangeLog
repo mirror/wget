@@ -1,5 +1,9 @@
 2005-06-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* progress.c (print_percentage): Round the percentage value.
+
+2005-06-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ftp.c (getftp): Delete trailing newlines from LIST output so
 	lines don't come out with trailing \015\012 with -S.
 

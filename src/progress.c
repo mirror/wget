@@ -258,7 +258,13 @@ dot_create (wgint initial, wgint total)
 static void
 print_percentage (wgint bytes, wgint expected)
 {
-  int percentage = (int)(100.0 * bytes / expected);
+  /* This intentionally rounds to the floor value because it is a
+     measure of how much data *has* been retrieved.  Therefore 12.8%
+     rounds to 12% because the 13% mark has not yet been reached.
+     Likewise, 100% is only shown when all data has been retrieved,
+     not before.  */
+
+  int percentage = 100.0 * bytes / expected;
   logprintf (LOG_VERBOSE, "%3d%%", percentage);
 }
 
@@ -754,7 +760,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   /* "xx% " */
   if (bp->total_length > 0)
     {
-      int percentage = (int)(100.0 * size / bp->total_length);
+      int percentage = 100.0 * size / bp->total_length;
       assert (percentage <= 100);
 
       if (percentage < 100)
@@ -980,7 +986,12 @@ progress_handle_sigwinch (int sig)
    and hours are shown.  This ensures brevity while still displaying
    as much as possible.
 
-   It never occupies more than 7 characters of screen space.  */
+   If SEP is false, the separator between minutes and seconds (and
+   hours and minutes, etc.) is not included, shortening the display by
+   one additional character.  This is used for dot progress.
+
+   The display never occupies more than 7 characters of screen
+   space.  */
 
 static const char *
 eta_to_human_short (int secs)
@@ -988,9 +999,9 @@ eta_to_human_short (int secs)
   static char buf[10];		/* 8 should be enough, but just in case */
   static int last = -1;
 
-  /* Trivial optimization.  This function can be called every 200
-     msecs (see bar_update) for fast downloads, but ETA will only
-     change once per 900 msecs (see create_image).  */
+  /* Trivial optimization.  create_image can call us every 200 msecs
+     (see bar_update) for fast downloads, but ETA will only change
+     once per 900 msecs.  */
   if (secs == last)
     return buf;
   last = secs;
