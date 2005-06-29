@@ -1,5 +1,10 @@
 2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Test for $LIBSSL instead of the old $ssl_success
+	when deciding which MD5 to use.
+
+2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Require Autoconf 2.59.
 
 2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>

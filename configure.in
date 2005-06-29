@@ -327,7 +327,7 @@ then
   dnl Then see if we're linking OpenSSL anyway; if yes, use its md5
   dnl implementation.
   if test x"$found_md5" = xno; then
-    if test x"$ssl_success" = xyes; then
+    if test x"$LIBSSL" != x; then
       AC_DEFINE([HAVE_OPENSSL_MD5], 1, [Define to use OpenSSL MD5.])
       found_md5=yes
       AC_MSG_NOTICE([using the OpenSSL MD5 implementation])
