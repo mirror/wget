@@ -59,8 +59,10 @@ so, delete this exception statement from your version.  */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#include <assert.h>
 #include <time.h>
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
 
 /* Cygwin currently (as of 2005-04-08, Cygwin 1.5.14) lacks clock_getres,
    but still defines _POSIX_TIMERS!  Because of that we simply use the
