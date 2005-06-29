@@ -30,7 +30,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 
 AC_INIT([src/version.c])
-AC_PREREQ(2.57)
+AC_PREREQ(2.59)
 
 dnl Include the M4 macros we use.
 builtin(include, [m4/wget.m4])dnl
