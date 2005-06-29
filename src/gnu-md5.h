@@ -21,9 +21,7 @@
 #ifndef _MD5_H
 #define _MD5_H 1
 
-#if defined HAVE_LIMITS_H || _LIBC
-# include <limits.h>
-#endif
+#include <limits.h>
 
 /* The following contortions are an attempt to use the C preprocessor
    to determine an unsigned integral type that is 32 bits wide.  An

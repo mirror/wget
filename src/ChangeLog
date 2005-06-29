@@ -1,5 +1,9 @@
 2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* gnu-md5.h: Unconditionally include limits.h.
+
+2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (random_number): Use lrand48 if available.
 	(random_float): Use drand48 if available.
 
