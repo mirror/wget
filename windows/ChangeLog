@@ -1,4 +1,4 @@
-2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
+2005-06-29  Gisle Vanem  <giva@bgnett.no>
 
 	* config.h.mingw: MinGW has limits.h, uint32_t, and the
 	sin6_scope_id member of sockaddr_in6.  Include config-post.h.
