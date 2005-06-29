@@ -1,5 +1,9 @@
 2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* m4/wget.m4 (WGET_WITH_NLS): Don't check for locale.h.
+
+2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Test for $LIBSSL instead of the old $ssl_success
 	when deciding which MD5 to use.
 

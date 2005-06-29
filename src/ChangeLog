@@ -1,5 +1,9 @@
 2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c: Unconditionally include locale.h.
+
+2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ptimer.c: Include sys/time.h to get struct timeval.
 
 2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>

@@ -58,9 +58,7 @@ so, delete this exception statement from your version.  */
 #include <fcntl.h>
 #include <assert.h>
 #include <stdarg.h>
-#ifdef HAVE_LOCALE_H
-# include <locale.h>
-#endif
+#include <locale.h>
 
 /* For TIOCGWINSZ and friends: */
 #ifdef HAVE_SYS_IOCTL_H

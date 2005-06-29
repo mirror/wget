@@ -279,7 +279,7 @@ AC_DEFUN([WGET_WITH_NLS],
 	fi
       fi
 
-      AC_CHECK_HEADERS(locale.h libintl.h)
+      AC_CHECK_HEADERS(libintl.h)
 
       dnl Prefer gettext found in -lintl to the one in libc.
       dnl Otherwise it can happen that we include libintl.h from
