@@ -177,6 +177,9 @@ so, delete this exception statement from your version.  */
 /* Define if you have the usleep function.  */
 /* #undef HAVE_USLEEP */
 
+/* Define if you have the <limits.h> header file.  */
+#define HAVE_LIMITS_H
+
 /* Define if you have the <string.h> header file.  */
 #define HAVE_STRING_H 1
 
@@ -256,7 +259,7 @@ so, delete this exception statement from your version.  */
 /* #undef HAVE_HAVE_STRUCT_SOCKADDR_IN6 */
 
 /* Define if struct sockaddr_in6 has the sin6_scope_id member */
-/* #undef HAVE_SOCKADDR_IN6_SCOPE_ID */
+#define HAVE_SOCKADDR_IN6_SCOPE_ID
 
 /* Define if you want to enable the IPv6 support.  */
 /* #undef ENABLE_IPV6 */
@@ -265,6 +268,8 @@ so, delete this exception statement from your version.  */
 #define socklen_t int
 
 /* Define if you have uint32_t.  */
-#undef HAVE_UINT32_T
+#define HAVE_UINT32_T
+
+#include "config-post.h"
 
 #endif /* CONFIG_H */
