@@ -1,3 +1,9 @@
+2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* config.h.ms: Ditto.
+
+	* config.h.bor: Explicitly include config-post.h.
+
 2005-06-29  Gisle Vanem  <giva@bgnett.no>
 
 	* config.h.mingw: MinGW has limits.h, uint32_t, and the

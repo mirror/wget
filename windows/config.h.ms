@@ -147,4 +147,6 @@
 /* Define if you have uint32_t.  */
 #undef HAVE_UINT32_T
 
+#include "config-post.h"
+
 #endif /* CONFIG_H */
