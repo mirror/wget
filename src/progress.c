@@ -301,8 +301,8 @@ print_row_stats (struct dot_progress *dp, double dltime, bool last)
     else
       /* For last row also include bytes accumulated after last dot.  */
       bytes_this_row = dp->dots * opt.dot_bytes + dp->accumulated;
+    /* Don't count the portion of the row belonging to initial_length */
     if (dp->rows == dp->initial_length / ROW_BYTES)
-      /* Don't count the portion of the row belonging to initial_length */
       bytes_this_row -= dp->initial_length % ROW_BYTES;
     rate = calc_rate (bytes_this_row, dltime - dp->last_timer_value, &units);
     logprintf (LOG_VERBOSE, " %4.*f%c",
