@@ -1,5 +1,9 @@
 2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.h: Remove obsolete definition of with_thousand_seps_sum.
+
+2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* gnu-md5.h: Unconditionally include limits.h.
 
 2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>

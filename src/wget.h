@@ -145,9 +145,8 @@ typedef off_t wgint;
    few places in Wget, this is acceptable.)  */
 
 #if SIZEOF_WGINT >= 8
-/* just use wgint, which we already know how to print */
+/* just use wgint */
 typedef wgint SUM_SIZE_INT;
-# define with_thousand_seps_sum with_thousand_seps
 #else
 /* On systems without LFS, use double, which buys us integers up to 2^53. */
 typedef double SUM_SIZE_INT;
