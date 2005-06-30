@@ -64,7 +64,9 @@ struct options opt;
 
 extern char *version_string;
 
+#if defined(SIGHUP) || defined(SIGUSR1)
 static void redirect_output_signal (int);
+#endif
 
 const char *exec_name;
 
@@ -1002,6 +1004,15 @@ Can't timestamp and not clobber old files at the same time.\n"));
 }
 
 #if defined(SIGHUP) || defined(SIGUSR1)
+
+/* So the signal_name check doesn't blow when only one is available. */
+#ifndef SIGHUP
+# define SIGHUP -1
+#endif
+#ifndef SIGUSR1
+# define SIGUSR1 -1
+#endif
+
 /* Hangup signal handler.  When wget receives SIGHUP or SIGUSR1, it
    will proceed operation as usual, trying to write into a log file.
    If that is impossible, the output will be turned off.  */

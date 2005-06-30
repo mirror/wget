@@ -1,5 +1,9 @@
 2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c: Check for both SIGHUP and SIGUSR1 before using them.
+
+2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c: Unconditionally include locale.h.
 
 2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
