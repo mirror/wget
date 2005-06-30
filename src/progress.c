@@ -362,10 +362,6 @@ dot_update (void *progress, wgint howmuch, double dltime)
       ++dp->dots;
       if (dp->dots >= opt.dots_in_line)
 	{
-	  wgint row_qty = ROW_BYTES;
-	  if (dp->rows == dp->initial_length / ROW_BYTES)
-	    row_qty -= dp->initial_length % ROW_BYTES;
-
 	  ++dp->rows;
 	  dp->dots = 0;
 

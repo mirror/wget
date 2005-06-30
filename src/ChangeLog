@@ -1,3 +1,7 @@
+2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* progress.c (dot_update): Remove unused variable row_qty.
+
 2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* main.c: Check for both SIGHUP and SIGUSR1 before using them.
