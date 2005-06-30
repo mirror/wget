@@ -1,5 +1,10 @@
 2005-06-30  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* host.c (pretty_print_address): Renamed to just print_address.
+	Clarify documentation.
+
+2005-06-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (gethttp): Explicitly document the different cases when
 	generating the Host header.
 

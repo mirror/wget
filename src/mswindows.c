@@ -851,8 +851,8 @@ windows_strerror (int err)
 
 #ifdef ENABLE_IPV6
 /* An IPv6-only inet_ntop that prints with WSAAddressToString.  (Wget
-   uses inet_ntoa for IPv4 addresses -- see pretty_print_address.)
-   Prototype complies with POSIX 1003.1-2004.  */
+   uses inet_ntoa for IPv4 addresses -- see print_address.)  Prototype
+   complies with POSIX 1003.1-2004.  */
 
 const char *
 inet_ntop (int af, const void *src, char *dst, socklen_t cnt)

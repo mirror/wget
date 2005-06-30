@@ -419,9 +419,6 @@ ip_address_to_eprt_repr (const ip_address *addr, int port, char *buf,
 {
   int afnum;
 
-  assert (addr != NULL);
-  assert (addr->type == IPV4_ADDRESS || addr->type == IPV6_ADDRESS);
-  assert (buf != NULL);
   /* buf must contain the argument of EPRT (of the form |af|addr|port|). 
    * 4 chars for the | separators, INET6_ADDRSTRLEN chars for addr  
    * 1 char for af (1-2) and 5 chars for port (0-65535) */
@@ -429,7 +426,7 @@ ip_address_to_eprt_repr (const ip_address *addr, int port, char *buf,
 
   /* Construct the argument of EPRT (of the form |af|addr|port|). */
   afnum = (addr->type == IPV4_ADDRESS ? 1 : 2);
-  snprintf (buf, buflen, "|%d|%s|%d|", afnum, pretty_print_address (addr), port);
+  snprintf (buf, buflen, "|%d|%s|%d|", afnum, print_address (addr), port);
   buf[buflen - 1] = '\0';
 }
 
@@ -452,8 +449,6 @@ ftp_eprt (int csock, int *local_sock)
   /* Get the address of this side of the connection. */
   if (!socket_ip_address (csock, &addr, ENDPOINT_LOCAL))
     return FTPSYSERR;
-
-  assert (addr.type == IPV4_ADDRESS || addr.type == IPV6_ADDRESS);
 
   /* Setting port to 0 lets the system choose a free port.  */
   port = 0;
@@ -698,7 +693,7 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
       addr->type = IPV4_ADDRESS;
       memcpy (ADDRESS_IPV4_DATA (addr), tmp, 4);
       *port = ((tmpprt[0] << 8) & 0xff00) + tmpprt[1];
-      DEBUGP (("lpsv addr is: %s\n", pretty_print_address(addr)));
+      DEBUGP (("lpsv addr is: %s\n", print_address(addr)));
       DEBUGP (("tmpprt[0] is: %d\n", tmpprt[0]));
       DEBUGP (("tmpprt[1] is: %d\n", tmpprt[1]));
       DEBUGP (("*port is: %d\n", *port));
@@ -709,7 +704,7 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
       addr->type = IPV6_ADDRESS;
       memcpy (ADDRESS_IPV6_DATA (addr), tmp, 16);
       *port = ((tmpprt[0] << 8) & 0xff00) + tmpprt[1];
-      DEBUGP (("lpsv addr is: %s\n", pretty_print_address(addr)));
+      DEBUGP (("lpsv addr is: %s\n", print_address(addr)));
       DEBUGP (("tmpprt[0] is: %d\n", tmpprt[0]));
       DEBUGP (("tmpprt[1] is: %d\n", tmpprt[1]));
       DEBUGP (("*port is: %d\n", *port));

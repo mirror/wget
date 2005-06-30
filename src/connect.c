@@ -263,7 +263,7 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
      PRINT being the host name we're connecting to.  */
   if (print)
     {
-      const char *txt_addr = pretty_print_address (ip);
+      const char *txt_addr = print_address (ip);
       if (print && 0 != strcmp (print, txt_addr))
 	logprintf (LOG_VERBOSE, _("Connecting to %s|%s|:%d... "),
 		   escnonprint (print), txt_addr, port);
@@ -460,8 +460,8 @@ bind_local (const ip_address *bind_address, int *port)
 	  return -1;
 	}
       sockaddr_get_data (sa, NULL, port);
-      DEBUGP (("binding to address %s using port %i.\n", 
-	       pretty_print_address (bind_address), *port));
+      DEBUGP (("binding to address %s using port %i.\n",
+	       print_address (bind_address), *port));
     }
   if (listen (sock, 1) < 0)
     {
@@ -540,7 +540,7 @@ socket_ip_address (int sock, ip_address *ip, int endpoint)
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
 	ADDRESS_IPV6_SCOPE (ip) = sa6->sin6_scope_id;
 #endif
-	DEBUGP (("conaddr is: %s\n", pretty_print_address (ip)));
+	DEBUGP (("conaddr is: %s\n", print_address (ip)));
 	return true;
       }
 #endif
@@ -549,7 +549,7 @@ socket_ip_address (int sock, ip_address *ip, int endpoint)
 	struct sockaddr_in *sa = (struct sockaddr_in *)&storage;
 	ip->type = IPV4_ADDRESS;
 	ADDRESS_IPV4_IN_ADDR (ip) = sa->sin_addr;
-	DEBUGP (("conaddr is: %s\n", pretty_print_address (ip)));
+	DEBUGP (("conaddr is: %s\n", print_address (ip)));
 	return true;
       }
     default:

@@ -651,8 +651,7 @@ Error in server response, closing control connection.\n"));
 	  if (err==FTPOK)
 	    {
 	      DEBUGP (("trying to connect to %s port %d\n", 
-		      pretty_print_address (&passive_addr),
-		      passive_port));
+		      print_address (&passive_addr), passive_port));
 	      dtsock = connect_to_ip (&passive_addr, passive_port, NULL);
 	      if (dtsock < 0)
 		{
@@ -660,7 +659,7 @@ Error in server response, closing control connection.\n"));
 		  fd_close (csock);
 		  con->csock = -1;
 		  logprintf (LOG_VERBOSE, _("couldn't connect to %s port %d: %s\n"),
-			     pretty_print_address (&passive_addr), passive_port,
+			     print_address (&passive_addr), passive_port,
 			     strerror (save_errno));
 		  return (retryable_socket_connect_error (save_errno)
 			  ? CONERROR : CONIMPOSSIBLE);

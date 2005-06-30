@@ -404,12 +404,12 @@ getaddrinfo_with_timeout (const char *node, const char *service,
 
 #endif /* ENABLE_IPV6 */
 
-/* Pretty-print ADDR.  When compiled without IPv6, this is the same as
-   inet_ntoa.  With IPv6, it either prints an IPv6 address or an IPv4
-   address.  */
+/* Return a textual representation of ADDR, i.e. the dotted quad for
+   IPv4 addresses, and the colon-separated list of hex words (with all
+   zeros omitted, etc.) for IPv6 addresses.  */
 
 const char *
-pretty_print_address (const ip_address *addr)
+print_address (const ip_address *addr)
 {
   switch (addr->type) 
     {
@@ -421,7 +421,7 @@ pretty_print_address (const ip_address *addr)
         static char buf[64];
 	if (!inet_ntop (AF_INET6, &ADDRESS_IPV6_IN6_ADDR (addr),
 			buf, sizeof (buf)))
-	  snprintf (buf, sizeof buf, "[error: %s]", strerror (errno));
+	  snprintf (buf, sizeof buf, "<error: %s>", strerror (errno));
         buf[sizeof (buf) - 1] = '\0';
         return buf;
       }
@@ -619,7 +619,7 @@ cache_store (const char *host, struct address_list *al)
       int i;
       debug_logprintf ("Caching %s =>", host);
       for (i = 0; i < al->count; i++)
-	debug_logprintf (" %s", pretty_print_address (al->addresses + i));
+	debug_logprintf (" %s", print_address (al->addresses + i));
       debug_logprintf ("\n");
     }
 }
@@ -815,8 +815,7 @@ lookup_host (const char *host, int flags)
       int printmax = al->count <= 3 ? al->count : 3;
       for (i = 0; i < printmax; i++)
 	{
-	  logprintf (LOG_VERBOSE, "%s",
-		     pretty_print_address (al->addresses + i));
+	  logputs (LOG_VERBOSE, print_address (al->addresses + i));
 	  if (i < printmax - 1)
 	    logputs (LOG_VERBOSE, ", ");
 	}
