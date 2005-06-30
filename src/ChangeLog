@@ -1,3 +1,13 @@
+2005-06-30  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* host.c (pretty_print_address): Handle error result from
+	inet_ntop.
+
+2005-06-30  Gisle Vanem  <giva@bgnett.no>
+
+	* mswindows.c (inet_ntop): New function.  Print IPv6 addresses
+	using WSAAddressToString.
+
 2005-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* progress.c (dot_update): Remove unused variable row_qty.

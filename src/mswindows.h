@@ -134,8 +134,7 @@ __int64 str_to_int64 (const char *, char **, int);
 
 /* Additional declarations needed for IPv6: */
 #ifdef ENABLE_IPV6
-/* Missing declaration? */
-extern const char *inet_ntop (int, const void *, char *, size_t);
+const char *inet_ntop (int, const void *, char *, socklen_t);
 /* MinGW 3.7 (or older) prototypes gai_strerror(), but is missing
    from all import libraries. */
 # ifdef __MINGW32__

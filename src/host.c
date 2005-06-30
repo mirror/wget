@@ -418,18 +418,10 @@ pretty_print_address (const ip_address *addr)
 #ifdef ENABLE_IPV6
     case IPV6_ADDRESS:
       {
-        static char buf[128];
-	inet_ntop (AF_INET6, &ADDRESS_IPV6_IN6_ADDR (addr), buf, sizeof (buf));
-#if 0
-#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	{
-	  /* append "%SCOPE_ID" for all ?non-global? addresses */
-	  char *p = buf + strlen (buf);
-	  *p++ = '%';
-	  number_to_string (p, ADDRESS_IPV6_SCOPE (addr));
-	}
-#endif
-#endif
+        static char buf[64];
+	if (!inet_ntop (AF_INET6, &ADDRESS_IPV6_IN6_ADDR (addr),
+			buf, sizeof (buf)))
+	  snprintf (buf, sizeof buf, "[error: %s]", strerror (errno));
         buf[sizeof (buf) - 1] = '\0';
         return buf;
       }

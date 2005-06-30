@@ -848,3 +848,28 @@ windows_strerror (int err)
       return buf;
     }
 }
+
+#ifdef ENABLE_IPV6
+/* An IPv6-only inet_ntop that prints with WSAAddressToString.  (Wget
+   uses inet_ntoa for IPv4 addresses -- see pretty_print_address.)
+   Prototype complies with POSIX 1003.1-2004.  */
+
+const char *
+inet_ntop (int af, const void *src, char *dst, socklen_t cnt)
+{
+  struct sockaddr_in6 sin6;
+  DWORD dstlen = cnt;
+
+  assert (af == AF_INET6);
+  xzero (sin6);
+  sin6.sin6_family = AF_INET6;
+  sin6.sin6_addr = *(struct in6_addr *) src;
+  if (WSAAddressToString ((struct sockaddr *) &sin6, sizeof (sin6),
+                          NULL, dst, &dstlen) != 0)
+    {
+      errno = WSAGetLastError();
+      return NULL;
+    }
+  return (const char *) dst;
+}
+#endif
