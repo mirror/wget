@@ -1,3 +1,8 @@
+2005-07-01  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Mention in message that the "GNU" md5
+	implementation is in fact built-in to Wget.
+
 2005-06-29  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* m4/wget.m4 (WGET_WITH_NLS): Don't check for locale.h.
