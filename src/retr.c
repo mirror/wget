@@ -336,22 +336,35 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
   return ret;
 }
 
-/* Read a hunk of data from FD, up until a terminator.  The terminator
-   is whatever the TERMINATOR function determines it to be; for
-   example, it can be a line of data, or the head of an HTTP response.
-   The function returns the data read allocated with malloc.
+/* Read a hunk of data from FD, up until a terminator.  The hunk is
+   limited by whatever the TERMINATOR callback chooses as its
+   terminator.  For example, if terminator stops at newline, the hunk
+   will consist of a line of data; if terminator stops at two
+   newlines, it can be used to read the head of an HTTP response.
+   Upon determining the boundary, the function returns the data (up to
+   the terminator) in malloc-allocated storage.
 
-   In case of error, NULL is returned.  In case of EOF and no data
-   read, NULL is returned and errno set to 0.  In case of EOF with
-   data having been read, the data is returned, but it will
-   (obviously) not contain the terminator.
+   In case of read error, NULL is returned.  In case of EOF and no
+   data read, NULL is returned and errno set to 0.  In case of having
+   read some data, but encountering EOF before seeing the terminator,
+   the data that has been read is returned, but it will (obviously)
+   not contain the terminator.
+
+   The TERMINATOR function is called with three arguments: the
+   beginning of the data read so far, the beginning of the current
+   block of peeked-at data, and the length of the current block.
+   Depending on its needs, the function is free to choose whether to
+   analyze all data or just the newly arrived data.  If TERMINATOR
+   returns NULL, it means that the terminator has not been seen.
+   Otherwise it should return a pointer to the charactre immediately
+   following the terminator.
 
    The idea is to be able to read a line of input, or otherwise a hunk
    of text, such as the head of an HTTP request, without crossing the
    boundary, so that the next call to fd_read etc. reads the data
    after the hunk.  To achieve that, this function does the following:
 
-   1. Peek at available data.
+   1. Peek at incoming data.
 
    2. Determine whether the peeked data, along with the previously
       read data, includes the terminator.
@@ -396,12 +409,13 @@ fd_read_hunk (int fd, hunk_terminator_t terminator, long sizehint, long maxsize)
 	  xfree (hunk);
 	  return NULL;
 	}
-      end = terminator (hunk, tail, pklen);
+      end = terminator (hunk, hunk + tail, pklen);
       if (end)
 	{
 	  /* The data contains the terminator: we'll drain the data up
 	     to the end of the terminator.  */
 	  remain = end - (hunk + tail);
+	  assert (remain >= 0);
 	  if (remain == 0)
 	    {
 	      /* No more data needs to be read. */
@@ -471,11 +485,11 @@ fd_read_hunk (int fd, hunk_terminator_t terminator, long sizehint, long maxsize)
 }
 
 static const char *
-line_terminator (const char *hunk, int oldlen, int peeklen)
+line_terminator (const char *start, const char *peeked, int peeklen)
 {
-  const char *p = memchr (hunk + oldlen, '\n', peeklen);
+  const char *p = memchr (peeked, '\n', peeklen);
   if (p)
-    /* p+1 because we want the line to include '\n' */
+    /* p+1 because the line must include '\n' */
     return p + 1;
   return NULL;
 }

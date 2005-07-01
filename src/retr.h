@@ -45,7 +45,7 @@ enum {
 
 int fd_read_body (int, FILE *, wgint, wgint, wgint *, wgint *, double *, int);
 
-typedef const char *(*hunk_terminator_t) (const char *, int, int);
+typedef const char *(*hunk_terminator_t) (const char *, const char *, int);
 
 char *fd_read_hunk (int, hunk_terminator_t, long, long);
 char *fd_read_line (int);

@@ -416,40 +416,51 @@ post_file (int sock, const char *file_name, wgint promised_size)
   return 0;
 }
 
+/* Determine whether [START, PEEKED + PEEKLEN) contains an empty line.
+   If so, return the pointer to the position after the line, otherwise
+   return NULL.  This is used as callback to fd_read_hunk.  The data
+   between START and PEEKED has been read and cannot be "unread"; the
+   data after PEEKED has only been peeked.  */
+
 static const char *
-response_head_terminator (const char *hunk, int oldlen, int peeklen)
+response_head_terminator (const char *start, const char *peeked, int peeklen)
 {
-  const char *start, *end;
+  const char *p, *end;
 
   /* If at first peek, verify whether HUNK starts with "HTTP".  If
      not, this is a HTTP/0.9 request and we must bail out without
      reading anything.  */
-  if (oldlen == 0 && 0 != memcmp (hunk, "HTTP", MIN (peeklen, 4)))
-    return hunk;
+  if (start == peeked && 0 != memcmp (start, "HTTP", MIN (peeklen, 4)))
+    return start;
 
-  if (oldlen < 4)
-    start = hunk;
-  else
-    start = hunk + oldlen - 4;
-  end = hunk + oldlen + peeklen;
+  /* Look for "\n[\r]\n", and return the following position if found.
+     Start two chars before the current to cover the possibility that
+     part of the terminator (e.g. "\n\r") arrived in the previous
+     batch.  */
+  p = peeked - start < 2 ? start : peeked - 2;
+  end = peeked + peeklen;
 
-  for (; start < end - 1; start++)
-    if (*start == '\n')
+  /* Check for \n\r\n or \n\n anywhere in [p, end-2). */
+  for (; p < end - 2; p++)
+    if (*p == '\n')
       {
-	if (start < end - 2
-	    && start[1] == '\r'
-	    && start[2] == '\n')
-	  return start + 3;
-	if (start[1] == '\n')
-	  return start + 2;
+	if (p[1] == '\r' && p[2] == '\n')
+	  return p + 3;
+	else if (p[1] == '\n')
+	  return p + 2;
       }
+  /* p==end-2: check for \n\n directly preceding END. */
+  if (p[0] == '\n' && p[1] == '\n')
+    return p + 2;
+
   return NULL;
 }
 
-/* The maximum size of a single HTTP response we care to read.  This
-   is not meant to impose an arbitrary limit, but to protect the user
-   from Wget slurping up available memory upon encountering malicious
-   or buggy server output.  Define it to 0 to remove the limit.  */
+/* The maximum size of a single HTTP response we care to read.  Rather
+   than being a limit of the reader implementation, this limit
+   prevents Wget from slurping all available memory upon encountering
+   malicious or buggy server output, thus protecting the user.  Define
+   it to 0 to remove the limit.  */
 
 #define HTTP_RESPONSE_MAX_SIZE 65536
 

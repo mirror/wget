@@ -1,3 +1,11 @@
+2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (response_head_terminator): Minor optimization.
+
+	* retr.c (fd_read_hunk): Call terminator with pointer to the start
+	of the data and the pointer to the current data.  Changed all
+	callers.
+
 2005-07-01  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (url_parse): Make sure u->params is not initialized for
