@@ -45,20 +45,29 @@ so, delete this exception statement from your version.  */
 
 struct scheme_data
 {
+  /* Short name of the scheme, such as "http" or "ftp". */
   const char *name;
+  /* Leading string that identifies the scheme, such as "https://". */
   const char *leading_string;
+  /* Default port of the scheme when none is specified. */
   int default_port;
-  bool enabled;
+  /* Used for disabling https when OpenSSL fails to init. */
+  bool disabled;
+  /* Allowed separators, handled by url_parse.  For example, ftp
+     doesn't support the "?query", and http/https don't support
+     ";params".  All schemes must support at least "/:".  */
+  const char *separators;
+  int flags;
 };
 
 /* Supported schemes: */
 static struct scheme_data supported_schemes[] =
 {
-  { "http",	"http://",  DEFAULT_HTTP_PORT,  1 },
+  { "http",	"http://",  DEFAULT_HTTP_PORT,  false, "/:?#" },
 #ifdef HAVE_SSL
-  { "https",	"https://", DEFAULT_HTTPS_PORT, 1 },
+  { "https",	"https://", DEFAULT_HTTPS_PORT, false, "/:?#" },
 #endif
-  { "ftp",	"ftp://",   DEFAULT_FTP_PORT,   1 },
+  { "ftp",	"ftp://",   DEFAULT_FTP_PORT,   false, "/:;#" },
 
   /* SCHEME_INVALID */
   { NULL,	NULL,       -1,                 0 }
@@ -404,7 +413,7 @@ url_scheme (const char *url)
     if (0 == strncasecmp (url, supported_schemes[i].leading_string,
 			  strlen (supported_schemes[i].leading_string)))
       {
-	if (supported_schemes[i].enabled)
+	if (!(supported_schemes[i].disabled))
 	  return (enum url_scheme) i;
 	else
 	  return SCHEME_INVALID;
@@ -444,7 +453,7 @@ scheme_default_port (enum url_scheme scheme)
 void
 scheme_disable (enum url_scheme scheme)
 {
-  supported_schemes[scheme].enabled = false;
+  supported_schemes[scheme].disabled = true;
 }
 
 /* Skip the username and password, if present in the URL.  The
@@ -617,8 +626,8 @@ static const char *parse_errors[] = {
   N_("No error"),
 #define PE_UNSUPPORTED_SCHEME		1
   N_("Unsupported scheme"),
-#define PE_EMPTY_HOST			2
-  N_("Empty host"),
+#define PE_INVALID_HOST_NAME		2
+  N_("Invalid host name"),
 #define PE_BAD_PORT_NUMBER		3
   N_("Bad port number"),
 #define PE_INVALID_USER_NAME		4
@@ -644,6 +653,7 @@ url_parse (const char *url, int *error)
   bool path_modified, host_modified;
 
   enum url_scheme scheme;
+  const char *seps;
 
   const char *uname_b,     *uname_e;
   const char *host_b,      *host_e;
@@ -682,9 +692,15 @@ url_parse (const char *url, int *error)
 
        scheme://host[:port][/path][;params][?query][#fragment]  */
 
+  path_b     = path_e     = NULL;
   params_b   = params_e   = NULL;
   query_b    = query_e    = NULL;
   fragment_b = fragment_e = NULL;
+
+  /* Initialize separators for optional parts of URL, depending on the
+     scheme.  For example, FTP has params, and HTTP and HTTPS have
+     query string and fragment. */
+  seps = supported_schemes[scheme].separators;
 
   host_b = p;
 
@@ -718,16 +734,28 @@ url_parse (const char *url, int *error)
       error_code = PE_IPV6_NOT_SUPPORTED;
       goto error;
 #endif
+
+      /* The closing bracket must be followed by a separator or by the
+	 null char.  */
+      /* http://[::1]... */
+      /*             ^   */
+      if (!strchr (seps, *p))
+	{
+	  /* Trailing garbage after []-delimited IPv6 address. */
+	  error_code = PE_INVALID_HOST_NAME;
+	  goto error;
+	}
     }
   else
     {
-      p = strpbrk_or_eos (p, ":/;?#");
+      p = strpbrk_or_eos (p, seps);
       host_e = p;
     }
+  ++seps;			/* advance to '/' */
 
   if (host_b == host_e)
     {
-      error_code = PE_EMPTY_HOST;
+      error_code = PE_INVALID_HOST_NAME;
       goto error;
     }
 
@@ -740,76 +768,48 @@ url_parse (const char *url, int *error)
       /*              ^             */
       ++p;
       port_b = p;
-      p = strpbrk_or_eos (p, "/;?#");
+      p = strpbrk_or_eos (p, seps);
       port_e = p;
 
       /* Allow empty port, as per rfc2396. */
       if (port_b != port_e)
-	{
-	  for (port = 0, pp = port_b; pp < port_e; pp++)
-	    {
-	      if (!ISDIGIT (*pp))
-		{
-	 	  /* http://host:12randomgarbage/blah */
-		  /*               ^                  */
-		  error_code = PE_BAD_PORT_NUMBER;
-		  goto error;
-		}
-	      port = 10 * port + (*pp - '0');
-	      /* Check for too large port numbers here, before we have
-		 a chance to overflow on bogus port values.  */
-	      if (port > 65535)
-		{
-		  error_code = PE_BAD_PORT_NUMBER;
-		  goto error;
-		}
-	    }
-	}
+	for (port = 0, pp = port_b; pp < port_e; pp++)
+	  {
+	    if (!ISDIGIT (*pp))
+	      {
+		/* http://host:12randomgarbage/blah */
+		/*               ^                  */
+		error_code = PE_BAD_PORT_NUMBER;
+		goto error;
+	      }
+	    port = 10 * port + (*pp - '0');
+	    /* Check for too large port numbers here, before we have
+	       a chance to overflow on bogus port values.  */
+	    if (port > 0xffff)
+	      {
+		error_code = PE_BAD_PORT_NUMBER;
+		goto error;
+	      }
+	  }
     }
+  /* Advance to the first separator *after* '/' (either ';' or '?',
+     depending on the scheme).  */
+  ++seps;
 
-  if (*p == '/')
-    {
-      ++p;
-      path_b = p;
-      p = strpbrk_or_eos (p, ";?#");
-      path_e = p;
-    }
-  else
-    {
-      /* Path is not allowed not to exist. */
-      path_b = path_e = p;
-    }
+  /* Get the optional parts of URL, each part being delimited by
+     current location and the position of the next separator.  */
+#define GET_URL_PART(sepchar, var) do {				\
+  if (*p == sepchar)						\
+    var##_b = ++p, var##_e = p = strpbrk_or_eos (p, seps);	\
+  ++seps;							\
+} while (0)
 
-  if (*p == ';')
-    {
-      ++p;
-      params_b = p;
-      p = strpbrk_or_eos (p, "?#");
-      params_e = p;
-    }
-  if (*p == '?')
-    {
-      ++p;
-      query_b = p;
-      p = strpbrk_or_eos (p, "#");
-      query_e = p;
+  GET_URL_PART ('/', path);
+  GET_URL_PART (';', params);
+  GET_URL_PART ('?', query);
+  GET_URL_PART ('#', fragment);
 
-      /* Hack that allows users to use '?' (a wildcard character) in
-	 FTP URLs without it being interpreted as a query string
-	 delimiter.  */
-      if (scheme == SCHEME_FTP)
-	{
-	  query_b = query_e = NULL;
-	  path_e = p;
-	}
-    }
-  if (*p == '#')
-    {
-      ++p;
-      fragment_b = p;
-      p += strlen (p);
-      fragment_e = p;
-    }
+#undef GET_URL_PART
   assert (*p == 0);
 
   if (uname_b != uname_e)

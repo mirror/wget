@@ -1,5 +1,12 @@
 2005-07-01  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c (url_parse): Make sure u->params is not initialized for
+	http/https URLs.
+	(url_parse): Don't crash on garbage following []-delimited IPv6
+	addresses.
+
+2005-07-01  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* main.c (print_help): Don't refer to the non-existent -nr in
 	description of --mirror.
 
