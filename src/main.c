@@ -575,7 +575,7 @@ Recursive download:\n"),
     N_("\
   -K,  --backup-converted   before converting file X, back up as X.orig.\n"),
     N_("\
-  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"),
+  -m,  --mirror             shortcut for -N -r -l inf --no-remove-listing.\n"),
     N_("\
   -p,  --page-requisites    get all images, etc. needed to display HTML page.\n"),
     N_("\

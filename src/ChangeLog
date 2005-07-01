@@ -1,3 +1,8 @@
+2005-07-01  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* main.c (print_help): Don't refer to the non-existent -nr in
+	description of --mirror.
+
 2005-06-30  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* host.c (pretty_print_address): Renamed to just print_address.
