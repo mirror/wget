@@ -1,5 +1,10 @@
 2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* version.c: Don't use "cvs" in version name, since we're not
+	using CVS anymore.
+
+2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* progress.c (create_image): Ditto.
 
 	* retr.c (retr_rate): Display smaller rate numbers with greater
