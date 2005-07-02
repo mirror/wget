@@ -1,5 +1,10 @@
 2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* host.c: Don't include "connect.h" now that we no longer have
+	socket_has_inet6.
+
+2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* host.c: Remove extraneous definition of netdb.h.
 
 2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>

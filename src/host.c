@@ -53,7 +53,6 @@ so, delete this exception statement from your version.  */
 #include "host.h"
 #include "url.h"
 #include "hash.h"
-#include "connect.h"		/* for socket_has_inet6 */
 
 #ifndef NO_ADDRESS
 # define NO_ADDRESS NO_DATA
