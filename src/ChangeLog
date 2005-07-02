@@ -1,7 +1,7 @@
 2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
-	* http.c (gethttp): Except for head_only, use skip_short_body to
-	skip the non-20x error message before leaving gethttp.
+	* http.c (gethttp): Skip error message body in the keep-alive
+	case.
 
 2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
