@@ -5,14 +5,22 @@
 0. Preparation
 --------------
 
-To build and install GNU Wget, you need to unpack the archive (which
-you have presumably done, since you are reading this), and read on.
-Like most GNU utilities, Wget uses the GNU Autoconf mechanism for
-build and installation; users familiar with compiling GNU software
-should feel at home.
+To build GNU Wget from source code and install it on your system, you
+need to unpack the archive (which you have presumably done, since you
+are reading this) and read on.  Like most GNU utilities, Wget uses the
+GNU Autoconf mechanism for build and installation; users familiar with
+compiling GNU software should feel at home.  Please note that
+instructions in this file do not concern to installation on Windows,
+for which see windows/README.
 
-Note that instructions in this file do not pertain to installation on
-Windows, for which see windows/README.
+The system requirements include: a Unix-like system with the utilities
+typically shipped with Unix (sh, grep, awk, sed, etc.) and a C
+compilation environment, including the compiler, system headers,
+`make', and so on.
+
+External dependencies (all optional):
+  - OpenSSL, for "https" URLs.
+  - GNU gettext, for translated messages.
 
 1. Configuration
 ----------------
