@@ -1009,11 +1009,17 @@ persistent_available_p (const char *host, int port, bool ssl,
     }
 
   /* Finally, check whether the connection is still open.  This is
-     important because most server implement a liberal (short) timeout
+     important because most servers implement liberal (short) timeout
      on persistent connections.  Wget can of course always reconnect
      if the connection doesn't work out, but it's nicer to know in
      advance.  This test is a logical followup of the first test, but
-     is "expensive" and therefore placed at the end of the list.  */
+     is "expensive" and therefore placed at the end of the list.
+
+     (Current implementation of test_socket_open has a nice side
+     effect that it treats sockets with pending data as "closed".
+     This is exactly what we want: if a broken server sends message
+     body in response to HEAD, or if it sends more than conent-length
+     data, we won't reuse the corrupted connection.)  */
 
   if (!test_socket_open (pconn.socket))
     {
