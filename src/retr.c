@@ -521,10 +521,14 @@ retr_rate (wgint bytes, double msecs)
 {
   static char res[20];
   static const char *rate_names[] = {"B/s", "KB/s", "MB/s", "GB/s" };
-  int units = 0;
+  int units;
 
   double dlrate = calc_rate (bytes, msecs, &units);
-  sprintf (res, "%.2f %s", dlrate, rate_names[units]);
+  /* Use more digits for smaller numbers (regardless of unit used),
+     e.g. "1022", "247", "12.5", "2.38".  */
+  sprintf (res, "%.*f %s",
+	   dlrate >= 99.95 ? 0 : dlrate >= 9.995 ? 1 : 2,
+	   dlrate, rate_names[units]);
 
   return res;
 }

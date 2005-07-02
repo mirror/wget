@@ -306,7 +306,7 @@ print_row_stats (struct dot_progress *dp, double dltime, bool last)
       bytes_this_row -= dp->initial_length % ROW_BYTES;
     rate = calc_rate (bytes_this_row, dltime - dp->last_timer_value, &units);
     logprintf (LOG_VERBOSE, " %4.*f%c",
-	       rate >= 100 ? 0 : rate >= 9.995 ? 1 : 2,
+	       rate >= 99.95 ? 0 : rate >= 9.995 ? 1 : 2,
 	       rate, names[units]);
     dp->last_timer_value = dltime;
   }
@@ -787,13 +787,13 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
      "xx% " or "100%"  - percentage               - 4 chars
      "[]"              - progress bar decorations - 2 chars
      " nnn,nnn,nnn"    - downloaded bytes         - 12 chars or very rarely more
-     " 1012.56K/s"     - dl rate                  - 11 chars
+     " 12.5K/s"        - download rate             - 8 chars
      "  eta 36m 51s"   - ETA                      - 13 chars
 
      "=====>..."       - progress bar             - the rest
   */
   int dlbytes_size = 1 + MAX (size_grouped_len, 11);
-  int progress_size = bp->width - (4 + 2 + dlbytes_size + 11 + 13);
+  int progress_size = bp->width - (4 + 2 + dlbytes_size + 8 + 13);
 
   if (progress_size < 5)
     progress_size = 0;
@@ -878,7 +878,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   sprintf (p, " %-11s", size_grouped);
   move_to_end (p);
 
-  /* " 1012.45K/s" */
+  /* " 12.52K/s" */
   if (hist->total_time && hist->total_bytes)
     {
       static const char *short_units[] = { "B/s", "K/s", "M/s", "G/s" };
@@ -888,11 +888,12 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       wgint dlquant = hist->total_bytes + bp->recent_bytes;
       double dltime = hist->total_time + (dl_total_time - bp->recent_start);
       double dlspeed = calc_rate (dlquant, dltime, &units);
-      sprintf (p, " %7.2f%s", dlspeed, short_units[units]);
+      sprintf (p, " %4.*f%s", dlspeed >= 99.95 ? 0 : dlspeed >= 9.995 ? 1 : 2,
+	       dlspeed, short_units[units]);
       move_to_end (p);
     }
   else
-    APPEND_LITERAL ("   --.--K/s");
+    APPEND_LITERAL (" --.-K/s");
 
   if (!done)
     {

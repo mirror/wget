@@ -1,5 +1,12 @@
 2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* progress.c (create_image): Ditto.
+
+	* retr.c (retr_rate): Display smaller rate numbers with greater
+	precision.
+
+2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (response_head_terminator): Minor optimization.
 
 	* retr.c (fd_read_hunk): Call terminator with pointer to the start
