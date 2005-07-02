@@ -8,8 +8,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 * Changes in Wget 1.11.
 
 ** ETA projection is now displayed in "dot" progress output as well as
-in the default progress bar.  The dot progress is used by default when
-logging Wget's output to file using the `-o' option.
+in the default progress bar.  (The dot progress is used by default when
+logging Wget's output to file using the `-o' option.)
 
 ** The "lockable boolean" argument type is no longer supported.  It
 was only used by the passive_ftp .wgetrc setting.  If you're running
