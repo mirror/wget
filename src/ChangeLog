@@ -1,5 +1,10 @@
 2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* url.c (url_parse): Would crash when parsing fragments.  Support
+	fragments for FTP URLs too.
+
+2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* version.c: Don't use "cvs" in version name, since we're not
 	using CVS anymore.
 

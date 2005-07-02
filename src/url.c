@@ -43,6 +43,13 @@ so, delete this exception statement from your version.  */
 #include "url.h"
 #include "host.h"  /* for is_valid_ipv6_address */
 
+enum {
+  scm_disabled = 1,		/* for https when OpenSSL fails to init. */
+  scm_has_params = 2,		/* whether scheme has ;params */
+  scm_has_query = 4,		/* whether scheme has ?query */
+  scm_has_fragment = 8		/* whether scheme has #fragment */
+};
+
 struct scheme_data
 {
   /* Short name of the scheme, such as "http" or "ftp". */
@@ -51,23 +58,18 @@ struct scheme_data
   const char *leading_string;
   /* Default port of the scheme when none is specified. */
   int default_port;
-  /* Used for disabling https when OpenSSL fails to init. */
-  bool disabled;
-  /* Allowed separators, handled by url_parse.  For example, ftp
-     doesn't support the "?query", and http/https don't support
-     ";params".  All schemes must support at least "/:".  */
-  const char *separators;
+  /* Various flags. */
   int flags;
 };
 
 /* Supported schemes: */
 static struct scheme_data supported_schemes[] =
 {
-  { "http",	"http://",  DEFAULT_HTTP_PORT,  false, "/:?#" },
+  { "http",	"http://",  DEFAULT_HTTP_PORT,  scm_has_query|scm_has_fragment },
 #ifdef HAVE_SSL
-  { "https",	"https://", DEFAULT_HTTPS_PORT, false, "/:?#" },
+  { "https",	"https://", DEFAULT_HTTPS_PORT, scm_has_query|scm_has_fragment },
 #endif
-  { "ftp",	"ftp://",   DEFAULT_FTP_PORT,   false, "/:;#" },
+  { "ftp",	"ftp://",   DEFAULT_FTP_PORT,   scm_has_params|scm_has_fragment },
 
   /* SCHEME_INVALID */
   { NULL,	NULL,       -1,                 0 }
@@ -413,7 +415,7 @@ url_scheme (const char *url)
     if (0 == strncasecmp (url, supported_schemes[i].leading_string,
 			  strlen (supported_schemes[i].leading_string)))
       {
-	if (!(supported_schemes[i].disabled))
+	if (!(supported_schemes[i].flags & scm_disabled))
 	  return (enum url_scheme) i;
 	else
 	  return SCHEME_INVALID;
@@ -453,7 +455,7 @@ scheme_default_port (enum url_scheme scheme)
 void
 scheme_disable (enum url_scheme scheme)
 {
-  supported_schemes[scheme].disabled = true;
+  supported_schemes[scheme].flags |= scm_disabled;
 }
 
 /* Skip the username and password, if present in the URL.  The
@@ -621,6 +623,23 @@ lowercase_str (char *str)
   return changed;
 }
 
+static const char *
+init_seps (enum url_scheme scheme)
+{
+  static char seps[8] = ":/";
+  char *p = seps + 2;
+  int flags = supported_schemes[scheme].flags;
+
+  if (flags & scm_has_params)
+    *p++ = ';';
+  if (flags & scm_has_query)
+    *p++ = '?';
+  if (flags & scm_has_fragment)
+    *p++ = '#';
+  *p++ = '\0';
+  return seps;
+}
+
 static const char *parse_errors[] = {
 #define PE_NO_ERROR			0
   N_("No error"),
@@ -700,7 +719,7 @@ url_parse (const char *url, int *error)
   /* Initialize separators for optional parts of URL, depending on the
      scheme.  For example, FTP has params, and HTTP and HTTPS have
      query string and fragment. */
-  seps = supported_schemes[scheme].separators;
+  seps = init_seps (scheme);
 
   host_b = p;
 
@@ -805,9 +824,12 @@ url_parse (const char *url, int *error)
 } while (0)
 
   GET_URL_PART ('/', path);
-  GET_URL_PART (';', params);
-  GET_URL_PART ('?', query);
-  GET_URL_PART ('#', fragment);
+  if (supported_schemes[scheme].flags & scm_has_params)
+    GET_URL_PART (';', params);
+  if (supported_schemes[scheme].flags & scm_has_query)
+    GET_URL_PART ('?', query);
+  if (supported_schemes[scheme].flags & scm_has_fragment)
+    GET_URL_PART ('#', fragment);
 
 #undef GET_URL_PART
   assert (*p == 0);
