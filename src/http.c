@@ -1884,11 +1884,17 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       hs->len = 0;
       hs->res = 0;
       xfree_null (type);
-      /* Pre-1.10 Wget used CLOSE_INVALIDATE here.  Now we trust the
-	 servers not to send body in response to a HEAD request.  If
-	 you encounter such a server (more likely a broken CGI), use
-	 `--no-http-keep-alive'.  */
-      CLOSE_FINISH (sock);
+      if (head_only)
+	/* Pre-1.10 Wget used CLOSE_INVALIDATE here.  Now we trust the
+	   servers not to send body in response to a HEAD request.  If
+	   you encounter such a server (more likely a broken CGI), use
+	   `--no-http-keep-alive'.  */
+	CLOSE_FINISH (sock);
+      else if (keep_alive && skip_short_body (sock, contlen))
+	/* Successfully skipped the body; also keep using the socket. */
+	CLOSE_FINISH (sock);
+      else
+	CLOSE_INVALIDATE (sock);
       return RETRFINISHED;
     }
 
