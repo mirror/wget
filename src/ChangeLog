@@ -1,5 +1,9 @@
 2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* host.c: Remove extraneous definition of netdb.h.
+
+2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (gethttp): Skip error message body in the keep-alive
 	case.
 

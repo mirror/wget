@@ -29,10 +29,6 @@ so, delete this exception statement from your version.  */
 
 #include <config.h>
 
-#ifndef WINDOWS
-#include <netdb.h>
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
