@@ -1892,8 +1892,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       xfree_null (type);
       if (head_only)
 	/* Pre-1.10 Wget used CLOSE_INVALIDATE here.  Now we trust the
-	   servers not to send body in response to a HEAD request.  If
-	   you encounter such a server (more likely a broken CGI), use
+	   servers not to send body in response to a HEAD request, and
+	   those that do will likely be caught by test_socket_open.
+	   If not, they can be worked around using
 	   `--no-http-keep-alive'.  */
 	CLOSE_FINISH (sock);
       else if (keep_alive && skip_short_body (sock, contlen))
