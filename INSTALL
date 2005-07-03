@@ -2,41 +2,69 @@
 		   GNU Wget Installation Procedure
                    ===============================
 
-0. Preparation
---------------
+0. Introduction
+---------------
 
-To build GNU Wget from source code and install it on your system, you
-need to unpack the archive (which you have presumably done, since you
-are reading this) and read on.  Like most GNU utilities, Wget uses the
-GNU Autoconf mechanism for build and installation; users familiar with
-compiling GNU software should feel at home.  Please note that
-instructions in this file do not concern to installation on Windows,
-for which see windows/README.
+This document describes how to build Wget from source-code on
+Unix-like systems.  If you want to install a precompiled Wget, this
+document is not for you -- refer to the documentation provided by the
+distributors instead.  If you already have Wget and want to learn how
+to use it, refer to Wget's Info documentation or man page which you
+should have received with your system.  If you are using Windows
+(except for Cygwin), read windows/README instead.  If you want to
+compile Wget from source code on a Unix-like system, read on.
 
-The system requirements include: a Unix-like system with the utilities
-typically shipped with Unix (sh, grep, awk, sed, etc.) and a C
-compilation environment, including the compiler, system headers,
-`make', and so on.
+The preferred form of building Wget is to get a release archive and
+unpack it (which you have presumably done, since you are reading
+this).  If you have obtained the source code via the Subversion
+repository, please follow the instructions in `README.checkout' before
+continuing.
 
-External dependencies (all optional):
-  - OpenSSL, for "https" URLs.
-  - GNU gettext, for translated messages.
+1. Dependencies
+---------------
 
-1. Configuration
+To build Wget, your system must support a Unix-like command-line
+development environment, including the text-processing utilities (sh,
+grep, awk, sed, etc.) and a functional C compiler.  On some GNU/Linux
+systems, this means that you will need to install packages such as
+`gcc', `glibc-devel' (or `libc6-dev') and `make'.  Most systems come
+with these packages preinstalled, but it doesn't hurt to check.  If
+you have successfully compiled other software from source, you
+probably have them all.
+
+In addition to the C development environment, Wget can use a number of
+optional libraries to provide additional features, such as translated
+messages and support for "https" URLs.  The "external" dependencies
+include:
+
+  - OpenSSL -- for "https" URLs.
+  - GNU gettext -- for translated messages.
+
+To be usable for building Wget, the listed libraries must be installed
+with their "development" header files.  On GNU/Linux systems this
+typically means installing the corredponsing "lib<name>-devel" or
+"lib<name>-dev" package along with the package with "lib<name>".
+
+2. Configuration
 ----------------
 
-Before compiling Wget, you need to "configure" it using the provided
-`configure' script.  Configuration serves two purposes: it enables the
-compilation system to inspect certain features of your operating
-system for more robust compilation, and it enables you to choose which
-features you want the resulting Wget to have.
+Before compiling Wget, you need to "configure" it using the
+`configure' script provided with the distribution.  Configuration
+serves two distinct purposes: it enables Wget's build system to
+inspect certain features of your operating system for more robust
+compilation, and it enables you to choose which features you want the
+resulting Wget to have.
 
-The simplest way to configure Wget is by running the configure script
-provided with the distribution without additional arguments.  After
-running some programming-related tests, it will create the Makefiles
-needed to compile Wget.  If you have experience with Autoconf-based
-build systems, you may use the standard arguments such configure
-scripts take, the most important ones being:
+As is the case with most GNU software, Wget's configure script was
+generated with GNU Autoconf.  If you're not familiar with
+Autoconf-generated scripts, read on.
+
+The most straightforward way to configure Wget is by running the
+configure script without any arguments.  After running some
+compilation-related tests, it will create the Makefiles needed to
+build Wget.  However, you may wish to customize Wget's configuration
+by providing arguments to `configure'.  Wget's configure script
+accepts standard Autoconf arguments, the most important ones being:
 
   --help                  display a help message and exit
 
@@ -46,12 +74,14 @@ scripts take, the most important ones being:
   --infodir=DIR           info documentation in DIR [PREFIX/info]
   --mandir=DIR            man documentation in DIR [PREFIX/man]
 
-For example, if you are not root and want to install Wget in your home
-directory, you can use:
+For example, if you are not root and want to install Wget in
+subdirectories of your home directory, you can use:
 
     ./configure --prefix=$HOME
 
-Options beginning with "--disable", such as `--disable-opie' or
+In addition to the above generic options, Wget's configuration
+supports a number of options more or less specific to Wget.  Options
+beginning with "--disable", such as `--disable-opie' or
 `--disable-ntlm', allow you to turn off certain built-in functionality
 you don't need in order to reduce the size of the executable.  Options
 beginning with "--with" turning off autodetection and use of external
@@ -69,13 +99,13 @@ software Wget can link with, such as the SSL libraries.  Recognized
   --disable-ipv6          disable IPv6 support
   --disable-rpath         do not hardcode runtime library paths
 
-You can inspect the decisions made by configure by editing the
-generated Makefiles and the `src/config.h' include file.  The defaults
-should work without intervention, but if you know what you are doing,
-editing the generated files before compilation is fine -- they will
-not be regenerated until you run configure again.
+You can inspect decisions made by configure by editing the generated
+Makefiles and the `src/config.h' include file.  The defaults should
+work without intervention, but if you know what you are doing, editing
+the generated files before compilation is fine -- they will not be
+regenerated until you run configure again.
 
-configure will try to find a compiler in your PATH, defaulting to
+`configure' will try to find a compiler in your PATH, defaulting to
 `gcc', but falling back to `cc' if the former is unavailable.  This is
 a reasonable default on most Unix-like systems, but sometimes you
 might want to override it.  The compiler choice is overridden by
@@ -117,7 +147,7 @@ package and rerun configure.  If you believe you have the necessary
 headers, but configure still fails to detect the library, please
 report it as a bug.
 
-2. Compilation
+3. Compilation
 --------------
 
 To compile GNU Wget after it has been configured, simply type make.
@@ -130,7 +160,7 @@ in the src directory.  At this point there is no formal test suite for
 testing the binary, but it should be easy enough to test whether the
 basic functionality works.
 
-3. Installation
+4. Installation
 ---------------
 
 Use `make install' to install GNU Wget to directories specified to
