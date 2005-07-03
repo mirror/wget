@@ -352,7 +352,7 @@ request_send (const struct request *req, int fd)
   write_error = fd_write (fd, request_string, size - 1, -1);
   if (write_error < 0)
     logprintf (LOG_VERBOSE, _("Failed writing HTTP request: %s.\n"),
-	       strerror (errno));
+	       fd_errstr (fd));
   return write_error;
 }
 
@@ -838,7 +838,7 @@ skip_short_body (int fd, wgint contlen)
 	  /* Don't normally report the error since this is an
 	     optimization that should be invisible to the user.  */
 	  DEBUGP (("] aborting (%s).\n",
-		   ret < 0 ? strerror (errno) : "EOF received"));
+		   ret < 0 ? fd_errstr (fd) : "EOF received"));
 	  return false;
 	}
       contlen -= ret;
@@ -1075,6 +1075,7 @@ struct http_stat
   wgint contlen;		/* expected length */
   wgint restval;		/* the restart value */
   int res;			/* the result of last read */
+  const char *errstr;		/* error message from read error */
   char *newloc;			/* new location (redirection) */
   char *remote_time;		/* remote time-stamp string */
   char *error;			/* textual HTTP error */
@@ -1212,6 +1213,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   hs->len = 0;
   hs->contlen = -1;
   hs->res = -1;
+  hs->errstr = "";
   hs->newloc = NULL;
   hs->remote_time = NULL;
   hs->error = NULL;
@@ -1484,7 +1486,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  if (write_error < 0)
 	    {
 	      logprintf (LOG_VERBOSE, _("Failed writing to proxy: %s.\n"),
-			 strerror (errno));
+			 fd_errstr (sock));
 	      CLOSE_INVALIDATE (sock);
 	      return WRITEFAILED;
 	    }
@@ -1493,7 +1495,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  if (!head)
 	    {
 	      logprintf (LOG_VERBOSE, _("Failed reading proxy response: %s\n"),
-			 strerror (errno));
+			 fd_errstr (sock));
 	      CLOSE_INVALIDATE (sock);
 	      return HERR;
 	    }
@@ -1554,7 +1556,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   if (write_error < 0)
     {
       logprintf (LOG_VERBOSE, _("Failed writing HTTP request: %s.\n"),
-		 strerror (errno));
+		 fd_errstr (sock));
       CLOSE_INVALIDATE (sock);
       request_free (req);
       return WRITEFAILED;
@@ -1578,7 +1580,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       else
 	{
 	  logprintf (LOG_NOTQUIET, _("Read error (%s) in headers.\n"),
-		     strerror (errno));
+		     fd_errstr (sock));
 	  CLOSE_INVALIDATE (sock);
 	  request_free (req);
 	  return HERR;
@@ -1966,20 +1968,14 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   if (hs->res >= 0)
     CLOSE_FINISH (sock);
   else
-    CLOSE_INVALIDATE (sock);
+    {
+      if (hs->res < 0)
+	hs->errstr = fd_errstr (sock);
+      CLOSE_INVALIDATE (sock);
+    }
 
-  {
-    /* Close or flush the file.  We have to be careful to check for
-       error here.  Checking the result of fwrite() is not enough --
-       errors could go unnoticed!  */
-    int flush_res;
-    if (!output_stream)
-      flush_res = fclose (fp);
-    else
-      flush_res = fflush (fp);
-    if (flush_res == EOF)
-      hs->res = -2;
-  }
+  if (!output_stream)
+    fclose (fp);
   if (hs->res == -2)
     return FWRITEERR;
   return RETRFINISHED;
@@ -2502,7 +2498,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
 	      logprintf (LOG_VERBOSE,
 			 _("%s (%s) - Read error at byte %s (%s)."),
 			 tms, tmrate, number_to_static_string (hstat.len),
-			 strerror (errno));
+			 hstat.errstr);
 	      printwhat (count, opt.ntry);
 	      free_hstat (&hstat);
 	      continue;
@@ -2514,7 +2510,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
 			 tms, tmrate,
 			 number_to_static_string (hstat.len),
 			 number_to_static_string (hstat.contlen),
-			 strerror (errno));
+			 hstat.errstr);
 	      printwhat (count, opt.ntry);
 	      free_hstat (&hstat);
 	      continue;

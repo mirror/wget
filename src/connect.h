@@ -60,17 +60,21 @@ enum {
 int select_fd (int, double, int);
 bool test_socket_open (int);
 
-typedef int (*fd_reader_t) (int, char *, int, void *);
-typedef int (*fd_writer_t) (int, char *, int, void *);
-typedef int (*fd_poller_t) (int, double, int, void *);
-typedef int (*fd_peeker_t) (int, char *, int, void *);
-typedef void (*fd_closer_t) (int, void *);
-void fd_register_transport (int, fd_reader_t, fd_writer_t,
-			    fd_poller_t, fd_peeker_t, fd_closer_t, void *);
-void *fd_transport_context (int);
+struct transport_implementation {
+  int (*reader) (int, char *, int, void *);
+  int (*writer) (int, char *, int, void *);
+  int (*poller) (int, double, int, void *);
+  int (*peeker) (int, char *, int, void *);
+  const char *(*errstr) (int, void *);
+  void (*closer) (int, void *);
+};
 
+void fd_register_transport (int, struct transport_implementation *, void *);
+void *fd_transport_context (int);
 int fd_read (int, char *, int, double);
 int fd_write (int, char *, int, double);
 int fd_peek (int, char *, int, double);
+const char *fd_errstr (int);
 void fd_close (int);
+
 #endif /* CONNECT_H */

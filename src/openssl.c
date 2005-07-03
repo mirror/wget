@@ -126,9 +126,9 @@ init_prng (void)
 static void
 print_errors (void) 
 {
-  unsigned long curerr = 0;
-  while ((curerr = ERR_get_error ()) != 0)
-    logprintf (LOG_NOTQUIET, "OpenSSL: %s\n", ERR_error_string (curerr, NULL));
+  unsigned long err;
+  while ((err = ERR_get_error ()) != 0)
+    logprintf (LOG_NOTQUIET, "OpenSSL: %s\n", ERR_error_string (err, NULL));
 }
 
 /* Convert keyfile type as used by options.h to a type as accepted by
@@ -238,7 +238,7 @@ static int
 openssl_read (int fd, char *buf, int bufsize, void *ctx)
 {
   int ret;
-  SSL *ssl = (SSL *) ctx;
+  SSL *ssl = ctx;
   do
     ret = SSL_read (ssl, buf, bufsize);
   while (ret == -1
@@ -251,7 +251,7 @@ static int
 openssl_write (int fd, char *buf, int bufsize, void *ctx)
 {
   int ret = 0;
-  SSL *ssl = (SSL *) ctx;
+  SSL *ssl = ctx;
   do
     ret = SSL_write (ssl, buf, bufsize);
   while (ret == -1
@@ -263,7 +263,7 @@ openssl_write (int fd, char *buf, int bufsize, void *ctx)
 static int
 openssl_poll (int fd, double timeout, int wait_for, void *ctx)
 {
-  SSL *ssl = (SSL *) ctx;
+  SSL *ssl = ctx;
   if (timeout == 0)
     return 1;
   if (SSL_pending (ssl))
@@ -275,7 +275,7 @@ static int
 openssl_peek (int fd, char *buf, int bufsize, void *ctx)
 {
   int ret;
-  SSL *ssl = (SSL *) ctx;
+  SSL *ssl = ctx;
   do
     ret = SSL_peek (ssl, buf, bufsize);
   while (ret == -1
@@ -284,10 +284,43 @@ openssl_peek (int fd, char *buf, int bufsize, void *ctx)
   return ret;
 }
 
+static const char *
+openssl_errstr (int fd, void *ctx)
+{
+  /* Unfortunately we cannot use ERR_error_string's internal buf
+     because we must be prepared to printing more than one error in
+     succession.  */
+  static char errbuf[512];
+  char *p = errbuf, *end = errbuf + sizeof errbuf;
+  unsigned long err;
+
+  if ((err = ERR_get_error ()) == 0)
+    /* Inform the caller that there have been no errors */
+    return NULL;
+
+  /* Iterate over OpenSSL's error stack and print errors to ERRBUF,
+     each followed by '\n', while being careful not to overrun
+     ERRBUF.  */
+  do
+    {
+      ERR_error_string_n (err, p, end - p);
+      p = strchr (p, '\0');
+      if (p < end)
+       *p++ = '\n';
+    }
+  while ((err = ERR_get_error ()) != 0);
+
+  if (p < end)
+    *p++ = '\0';
+  else
+    end[-1] = '\0';
+  return errbuf;
+}
+
 static void
 openssl_close (int fd, void *ctx)
 {
-  SSL *ssl = (SSL *) ctx;
+  SSL *ssl = ctx;
   SSL_shutdown (ssl);
   SSL_free (ssl);
 
@@ -299,6 +332,14 @@ openssl_close (int fd, void *ctx)
 
   DEBUGP (("Closed %d/SSL 0x%0lx\n", fd, (unsigned long) ssl));
 }
+
+/* openssl_transport is the singleton that describes the SSL transport
+   methods provided by this file.  */
+
+static struct transport_implementation openssl_transport = {
+  openssl_read, openssl_write, openssl_poll,
+  openssl_peek, openssl_errstr, openssl_close
+};
 
 /* Perform the SSL handshake on file descriptor FD, which is assumed
    to be connected to an SSL server.  The SSL handle provided by
@@ -327,8 +368,7 @@ ssl_connect (int fd)
 
   /* Register FD with Wget's transport layer, i.e. arrange that our
      functions are used for reading, writing, and polling.  */
-  fd_register_transport (fd, openssl_read, openssl_write, openssl_poll,
-			 openssl_peek, openssl_close, ssl);
+  fd_register_transport (fd, &openssl_transport, ssl);
   DEBUGP (("Handshake successful; connected socket %d to SSL handle 0x%0*lx\n",
 	   fd, PTR_FORMAT (ssl)));
   return true;

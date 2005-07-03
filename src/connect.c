@@ -732,14 +732,10 @@ sock_close (int fd)
    or SSL_read or whatever is necessary.  */
 
 static struct hash_table *transport_map;
-static int transport_map_modified_tick;
+static unsigned int transport_map_modified_tick;
 
 struct transport_info {
-  fd_reader_t reader;
-  fd_writer_t writer;
-  fd_poller_t poller;
-  fd_peeker_t peeker;
-  fd_closer_t closer;
+  struct transport_implementation *imp;
   void *ctx;
 };
 
@@ -751,9 +747,7 @@ struct transport_info {
    call getpeername, etc.  */
 
 void
-fd_register_transport (int fd, fd_reader_t reader, fd_writer_t writer,
-		       fd_poller_t poller, fd_peeker_t peeker,
-		       fd_closer_t closer, void *ctx)
+fd_register_transport (int fd, struct transport_implementation *imp, void *ctx)
 {
   struct transport_info *info;
 
@@ -763,11 +757,7 @@ fd_register_transport (int fd, fd_reader_t reader, fd_writer_t writer,
   assert (fd >= 0);
 
   info = xnew (struct transport_info);
-  info->reader = reader;
-  info->writer = writer;
-  info->poller = poller;
-  info->peeker = peeker;
-  info->closer = closer;
+  info->imp = imp;
   info->ctx = ctx;
   if (!transport_map)
     transport_map = hash_table_new (0, NULL, NULL);
@@ -819,8 +809,8 @@ poll_internal (int fd, struct transport_info *info, int wf, double timeout)
   if (timeout)
     {
       int test;
-      if (info && info->poller)
-	test = info->poller (fd, timeout, wf, info->ctx);
+      if (info && info->imp->poller)
+	test = info->imp->poller (fd, timeout, wf, info->ctx);
       else
 	test = sock_poll (fd, timeout, wf);
       if (test == 0)
@@ -843,8 +833,8 @@ fd_read (int fd, char *buf, int bufsize, double timeout)
   LAZY_RETRIEVE_INFO (info);
   if (!poll_internal (fd, info, WAIT_FOR_READ, timeout))
     return -1;
-  if (info && info->reader)
-    return info->reader (fd, buf, bufsize, info->ctx);
+  if (info && info->imp->reader)
+    return info->imp->reader (fd, buf, bufsize, info->ctx);
   else
     return sock_read (fd, buf, bufsize);
 }
@@ -868,8 +858,8 @@ fd_peek (int fd, char *buf, int bufsize, double timeout)
   LAZY_RETRIEVE_INFO (info);
   if (!poll_internal (fd, info, WAIT_FOR_READ, timeout))
     return -1;
-  if (info && info->peeker)
-    return info->peeker (fd, buf, bufsize, info->ctx);
+  if (info && info->imp->peeker)
+    return info->imp->peeker (fd, buf, bufsize, info->ctx);
   else
     return sock_peek (fd, buf, bufsize);
 }
@@ -893,8 +883,8 @@ fd_write (int fd, char *buf, int bufsize, double timeout)
     {
       if (!poll_internal (fd, info, WAIT_FOR_WRITE, timeout))
 	return -1;
-      if (info && info->writer)
-	res = info->writer (fd, buf, bufsize, info->ctx);
+      if (info && info->imp->writer)
+	res = info->imp->writer (fd, buf, bufsize, info->ctx);
       else
 	res = sock_write (fd, buf, bufsize);
       if (res <= 0)
@@ -903,6 +893,34 @@ fd_write (int fd, char *buf, int bufsize, double timeout)
       bufsize -= res;
     }
   return res;
+}
+
+/* Report the most recent error(s) on FD.  This should only be called
+   after fd_* functions, such as fd_read and fd_write, and only if
+   they return a negative result.  For errors coming from other calls
+   such as setsockopt or fopen, strerror should continue to be
+   used.
+
+   If the transport doesn't support error messages or doesn't supply
+   one, strerror(errno) is returned.  */
+
+const char *
+fd_errstr (int fd)
+{
+  /* Don't bother with LAZY_RETRIEVE_INFO, as this will only be called
+     in case of error, never in a tight loop.  */
+  struct transport_info *info = NULL;
+  if (transport_map)
+    info = hash_table_get (transport_map, (void *) fd);
+
+  if (info && info->imp->errstr)
+    {
+      const char *err = info->imp->errstr (fd, info->ctx);
+      if (err)
+	return err;
+      /* else, fall through and print the system error. */
+    }
+  return strerror (errno);
 }
 
 /* Close the file descriptor FD.  */
@@ -920,8 +938,8 @@ fd_close (int fd)
   if (transport_map)
     info = hash_table_get (transport_map, (void *) fd);
 
-  if (info && info->closer)
-    info->closer (fd, info->ctx);
+  if (info && info->imp->closer)
+    info->imp->closer (fd, info->ctx);
   else
     sock_close (fd);
 

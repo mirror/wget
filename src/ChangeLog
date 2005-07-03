@@ -1,5 +1,21 @@
 2005-07-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ftp.c (getftp): Ditto.
+
+	* http.c (gethttp): Use fd_errstr.
+
+	* connect.c (fd_register_transport): Restructure parameters to
+	include only a single structure that describes transport
+	implementation.
+
+	* openssl.c (openssl_errstr): New function: dump SSL error strings
+	into a static buffer and return a pointer to the buffer.
+
+	* connect.c (fd_errstr): New function; returns transport-specific
+	error message, or strerror(errno) if transport doesn't supply one.
+
+2005-07-03  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* mswindows.h: Also wrap accept() and listen().
 
 2005-07-03  Hrvoje Niksic  <hniksic@xemacs.org>
