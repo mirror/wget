@@ -752,6 +752,8 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
 WRAP (socket, (int domain, int type, int protocol), (domain, type, protocol))
 WRAP (bind, (int s, struct sockaddr *a, int alen), (s, a, alen))
 WRAP (connect, (int s, const struct sockaddr *a, int alen), (s, a, alen))
+WRAP (listen, (int s, int backlog), (s, backlog))
+WRAP (accept, (int s, struct sockaddr *a, int *alen), (s, a, alen))
 WRAP (recv, (int s, void *buf, int len, int flags), (s, buf, len, flags))
 WRAP (send, (int s, const void *buf, int len, int flags), (s, buf, len, flags))
 WRAP (select, (int n, fd_set *r, fd_set *w, fd_set *e, const struct timeval *tm),

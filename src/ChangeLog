@@ -1,5 +1,9 @@
 2005-07-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* mswindows.h: Also wrap accept() and listen().
+
+2005-07-03  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (path_end): Skip separators appropriate for the scheme.
 	(strpbrk_or_eos): Remove gcc-specific version, as the optimization
 	it tried to perform no longer applies.

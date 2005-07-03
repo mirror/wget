@@ -149,6 +149,8 @@ const char *inet_ntop (int, const void *, char *, socklen_t);
 #define socket wrapped_socket
 #define bind wrapped_bind
 #define connect wrapped_connect
+#define listen wrapped_listen
+#define accept wrapped_accept
 #define recv wrapped_recv
 #define send wrapped_send
 #define select wrapped_select
@@ -162,6 +164,8 @@ const char *inet_ntop (int, const void *, char *, socklen_t);
 int wrapped_socket (int, int, int);
 int wrapped_bind (int, struct sockaddr *, int);
 int wrapped_connect (int, const struct sockaddr *, int);
+int wrapped_listen (int s, int backlog);
+int wrapped_accept (int s, struct sockaddr *a, int *alen);
 int wrapped_recv (int, void *, int, int);
 int wrapped_send (int, const void *, int, int);
 int wrapped_select (int, fd_set *, fd_set *, fd_set *, const struct timeval *);
