@@ -1,3 +1,9 @@
+2005-07-03  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (path_end): Skip separators appropriate for the scheme.
+	(strpbrk_or_eos): Remove gcc-specific version, as the optimization
+	it tried to perform no longer applies.
+
 2005-07-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* host.c: Don't include "connect.h" now that we no longer have

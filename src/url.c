@@ -576,26 +576,7 @@ static void split_path (const char *, char **, char **);
 
 /* Like strpbrk, with the exception that it returns the pointer to the
    terminating zero (end-of-string aka "eos") if no matching character
-   is found.
-
-   Although I normally balk at Gcc-specific optimizations, it probably
-   makes sense here: glibc has optimizations that detect strpbrk being
-   called with literal string as ACCEPT and inline the search.  That
-   optimization is defeated if strpbrk is hidden within the call to
-   another function.  (And no, making strpbrk_or_eos inline doesn't
-   help because the check for literal accept is in the
-   preprocessor.)  */
-
-#if defined(__GNUC__) && __GNUC__ >= 3
-
-#define strpbrk_or_eos(s, accept) ({		\
-  char *SOE_p = strpbrk (s, accept);		\
-  if (!SOE_p)					\
-    SOE_p = strchr (s, '\0');			\
-  SOE_p;					\
-})
-
-#else  /* not __GNUC__ or old gcc */
+   is found.  */
 
 static inline char *
 strpbrk_or_eos (const char *s, const char *accept)
@@ -605,7 +586,6 @@ strpbrk_or_eos (const char *s, const char *accept)
     p = strchr (s, '\0');
   return p;
 }
-#endif /* not __GNUC__ or old gcc */
 
 /* Turn STR into lowercase; return true if a character was actually
    changed. */
@@ -1605,14 +1585,19 @@ path_simplify (char *path)
 }
 
 /* Return the length of URL's path.  Path is considered to be
-   terminated by one of '?', ';', '#', or by the end of the
-   string.  */
+   terminated by one or more of the ?query or ;params or #fragment,
+   depending on the scheme.  */
 
-static int
-path_length (const char *url)
+static const char *
+path_end (const char *url)
 {
-  const char *q = strpbrk_or_eos (url, "?;#");
-  return q - url;
+  enum url_scheme scheme = url_scheme (url);
+  const char *seps;
+  if (scheme == SCHEME_INVALID)
+    scheme = SCHEME_HTTP;	/* use http semantics for rel links */
+  /* +2 to ignore the first two separators ':' and '/' */
+  seps = init_seps (scheme) + 2;
+  return strpbrk_or_eos (url, seps);
 }
 
 /* Find the last occurrence of character C in the range [b, e), or
@@ -1651,7 +1636,7 @@ uri_merge (const char *base, const char *link)
     return xstrdup (link);
 
   /* We may not examine BASE past END. */
-  end = base + path_length (base);
+  end = path_end (base);
   linklength = strlen (link);
 
   if (!*link)
