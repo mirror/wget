@@ -1,3 +1,7 @@
+2005-07-03  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* po/POTFILES.in: Include src/ptimer.c.
+
 2005-07-01  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Mention in message that the "GNU" md5

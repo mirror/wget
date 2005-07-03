@@ -25,6 +25,7 @@ src/mswindows.c
 src/netrc.c
 src/openssl.c
 src/progress.c
+src/ptimer.c
 src/recur.c
 src/res.c
 src/retr.c
