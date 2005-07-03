@@ -5,7 +5,7 @@
 0. Introduction
 ---------------
 
-This document describes how to build Wget from source-code on
+This document describes how to build Wget from source code on
 Unix-like systems.  If you want to install a precompiled Wget, this
 document is not for you -- refer to the documentation provided by the
 distributors instead.  If you already have Wget and want to learn how
@@ -138,7 +138,7 @@ the OpenSSL libraries are installed under the /usr/local/ssl prefix,
 use `--with-libssl=/usr/local/ssl'.
 
 Sometimes external libraries will be installed on the system, but the
-header files will be missing.  This often happens on Linux if you
+header files will be missing.  This often happens on GNU/Linux if you
 forget to install the "-devel" or "-dev" package that corresponds to
 the library and that is typically *not* installed by default.  In that
 case configure will not find the library and you will not be able to
