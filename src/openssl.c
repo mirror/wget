@@ -287,9 +287,8 @@ openssl_peek (int fd, char *buf, int bufsize, void *ctx)
 static const char *
 openssl_errstr (int fd, void *ctx)
 {
-  /* Unfortunately we cannot use ERR_error_string's internal buf
-     because we must be prepared to printing more than one error in
-     succession.  */
+  /* Unfortunately we cannot use ERR_error_string's internal buffer
+     because we must be prepared to print more than one error.  */
   static char errbuf[512];
   char *p = errbuf, *end = errbuf + sizeof errbuf;
   unsigned long err;
@@ -299,16 +298,18 @@ openssl_errstr (int fd, void *ctx)
     return NULL;
 
   /* Iterate over OpenSSL's error stack and print errors to ERRBUF,
-     each followed by '\n', while being careful not to overrun
-     ERRBUF.  */
+     separated by "; ", while being careful not to overrun ERRBUF.  */
   do
     {
       ERR_error_string_n (err, p, end - p);
       p = strchr (p, '\0');
-      if (p < end)
-       *p++ = '\n';
+      err = ERR_get_error ();
+      if (err == 0)
+	break;
+      if (p < end) *p++ = ';';
+      if (p < end) *p++ = ' ';
     }
-  while ((err = ERR_get_error ()) != 0);
+  while (p < end);
 
   if (p < end)
     *p++ = '\0';

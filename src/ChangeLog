@@ -1,3 +1,7 @@
+2005-07-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* openssl.c (openssl_errstr): Separate error messages with "; ".
+
 2005-07-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ftp.c (getftp): Ditto.
