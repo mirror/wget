@@ -1,5 +1,10 @@
 2005-07-04  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* config-post.h (alloca): Updated declaration to not enumerate all
+	Windows compilers.
+
+2005-07-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* openssl.c (openssl_errstr): Separate error messages with "; ".
 
 2005-07-03  Hrvoje Niksic  <hniksic@xemacs.org>

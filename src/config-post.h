@@ -56,8 +56,11 @@
 
 #if HAVE_ALLOCA_H
 # include <alloca.h>
-#elif defined _MSC_VER || defined __BORLANDC__ || defined __MINGW32__
+#elif defined WINDOWS
 # include <malloc.h>
+# ifndef alloca
+#  define alloca _alloca
+# endif
 #elif defined __GNUC__
 # define alloca __builtin_alloca
 #elif defined _AIX
