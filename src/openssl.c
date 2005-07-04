@@ -234,96 +234,124 @@ ssl_init ()
   return false;
 }
 
+struct openssl_transport_context {
+  SSL *conn;			/* SSL connection handle */
+  char *last_error;		/* last error printed with openssl_errstr */
+};
+
 static int
-openssl_read (int fd, char *buf, int bufsize, void *ctx)
+openssl_read (int fd, char *buf, int bufsize, void *arg)
 {
   int ret;
-  SSL *ssl = ctx;
+  struct openssl_transport_context *ctx = arg;
+  SSL *conn = ctx->conn;
   do
-    ret = SSL_read (ssl, buf, bufsize);
+    ret = SSL_read (conn, buf, bufsize);
   while (ret == -1
-	 && SSL_get_error (ssl, ret) == SSL_ERROR_SYSCALL
+	 && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
 	 && errno == EINTR);
   return ret;
 }
 
 static int
-openssl_write (int fd, char *buf, int bufsize, void *ctx)
+openssl_write (int fd, char *buf, int bufsize, void *arg)
 {
   int ret = 0;
-  SSL *ssl = ctx;
+  struct openssl_transport_context *ctx = arg;
+  SSL *conn = ctx->conn;
   do
-    ret = SSL_write (ssl, buf, bufsize);
+    ret = SSL_write (conn, buf, bufsize);
   while (ret == -1
-	 && SSL_get_error (ssl, ret) == SSL_ERROR_SYSCALL
+	 && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
 	 && errno == EINTR);
   return ret;
 }
 
 static int
-openssl_poll (int fd, double timeout, int wait_for, void *ctx)
+openssl_poll (int fd, double timeout, int wait_for, void *arg)
 {
-  SSL *ssl = ctx;
+  struct openssl_transport_context *ctx = arg;
+  SSL *conn = ctx->conn;
   if (timeout == 0)
     return 1;
-  if (SSL_pending (ssl))
+  if (SSL_pending (conn))
     return 1;
   return select_fd (fd, timeout, wait_for);
 }
 
 static int
-openssl_peek (int fd, char *buf, int bufsize, void *ctx)
+openssl_peek (int fd, char *buf, int bufsize, void *arg)
 {
   int ret;
-  SSL *ssl = ctx;
+  struct openssl_transport_context *ctx = arg;
+  SSL *conn = ctx->conn;
   do
-    ret = SSL_peek (ssl, buf, bufsize);
+    ret = SSL_peek (conn, buf, bufsize);
   while (ret == -1
-	 && SSL_get_error (ssl, ret) == SSL_ERROR_SYSCALL
+	 && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
 	 && errno == EINTR);
   return ret;
 }
 
 static const char *
-openssl_errstr (int fd, void *ctx)
+openssl_errstr (int fd, void *arg)
 {
-  /* Unfortunately we cannot use ERR_error_string's internal buffer
-     because we must be prepared to print more than one error.  */
-  static char errbuf[512];
-  char *p = errbuf, *end = errbuf + sizeof errbuf;
-  unsigned long err;
+  struct openssl_transport_context *ctx = arg;
+  unsigned long errcode;
+  char *errmsg = NULL;
+  int msglen = 0;
 
-  if ((err = ERR_get_error ()) == 0)
-    /* Inform the caller that there have been no errors */
+  /* If there are no SSL-specific errors, just return NULL. */
+  if ((errcode = ERR_get_error ()) == 0)
     return NULL;
 
-  /* Iterate over OpenSSL's error stack and print errors to ERRBUF,
-     separated by "; ", while being careful not to overrun ERRBUF.  */
-  do
-    {
-      ERR_error_string_n (err, p, end - p);
-      p = strchr (p, '\0');
-      err = ERR_get_error ();
-      if (err == 0)
-	break;
-      if (p < end) *p++ = ';';
-      if (p < end) *p++ = ' ';
-    }
-  while (p < end);
+  /* Get rid of previous contents of ctx->last_error, if any.  */
+  xfree_null (ctx->last_error);
 
-  if (p < end)
-    *p++ = '\0';
-  else
-    end[-1] = '\0';
-  return errbuf;
+  /* Iterate over OpenSSL's error stack and accumulate errors in the
+     last_error buffer, separated by "; ".  This is better than using
+     a static buffer, which *always* takes up space (and has to be
+     large, to fit more than one error message), whereas these
+     allocations are only performed when there is an actual error.  */
+
+  for (;;)
+    {
+      const char *str = ERR_error_string (errcode, NULL);
+      int len = strlen (str);
+
+      /* Allocate space for the existing message, plus two more chars
+	 for the "; " separator and one for the terminating \0.  */
+      errmsg = xrealloc (errmsg, msglen + len + 2 + 1);
+      memcpy (errmsg + msglen, str, len);
+      msglen += len;
+
+      /* Get next error and bail out if there are no more. */
+      errcode = ERR_get_error ();
+      if (errcode == 0)
+	break;
+
+      errmsg[msglen++] = ';';
+      errmsg[msglen++] = ' ';
+    }
+  errmsg[msglen] = '\0';
+
+  /* Store the error in ctx->last_error where openssl_close will
+     eventually find it and free it.  */
+  ctx->last_error = errmsg;
+
+  return errmsg;
 }
 
 static void
-openssl_close (int fd, void *ctx)
+openssl_close (int fd, void *arg)
 {
-  SSL *ssl = ctx;
-  SSL_shutdown (ssl);
-  SSL_free (ssl);
+  struct openssl_transport_context *ctx = arg;
+  SSL *conn = ctx->conn;
+
+  SSL_shutdown (conn);
+  SSL_free (conn);
+  xfree_null (ctx->last_error);
+  xfree (ctx);
 
 #ifdef WINDOWS
   closesocket (fd);
@@ -331,7 +359,7 @@ openssl_close (int fd, void *ctx)
   close (fd);
 #endif
 
-  DEBUGP (("Closed %d/SSL 0x%0lx\n", fd, (unsigned long) ssl));
+  DEBUGP (("Closed %d/SSL 0x%0*lx\n", fd, PTR_FORMAT (conn)));
 }
 
 /* openssl_transport is the singleton that describes the SSL transport
@@ -353,32 +381,36 @@ static struct transport_implementation openssl_transport = {
 bool
 ssl_connect (int fd) 
 {
-  SSL *ssl;
+  SSL *conn;
+  struct openssl_transport_context *ctx;
 
   DEBUGP (("Initiating SSL handshake.\n"));
 
   assert (ssl_ctx != NULL);
-  ssl = SSL_new (ssl_ctx);
-  if (!ssl)
+  conn = SSL_new (ssl_ctx);
+  if (!conn)
     goto error;
-  if (!SSL_set_fd (ssl, fd))
+  if (!SSL_set_fd (conn, fd))
     goto error;
-  SSL_set_connect_state (ssl);
-  if (SSL_connect (ssl) <= 0 || ssl->state != SSL_ST_OK)
+  SSL_set_connect_state (conn);
+  if (SSL_connect (conn) <= 0 || conn->state != SSL_ST_OK)
     goto error;
+
+  ctx = xnew0 (struct openssl_transport_context);
+  ctx->conn = conn;
 
   /* Register FD with Wget's transport layer, i.e. arrange that our
      functions are used for reading, writing, and polling.  */
-  fd_register_transport (fd, &openssl_transport, ssl);
+  fd_register_transport (fd, &openssl_transport, ctx);
   DEBUGP (("Handshake successful; connected socket %d to SSL handle 0x%0*lx\n",
-	   fd, PTR_FORMAT (ssl)));
+	   fd, PTR_FORMAT (conn)));
   return true;
 
  error:
   DEBUGP (("SSL handshake failed.\n"));
   print_errors ();
-  if (ssl)
-    SSL_free (ssl);
+  if (conn)
+    SSL_free (conn);
   return false;
 }
 
@@ -451,10 +483,11 @@ ssl_check_certificate (int fd, const char *host)
      him about problems with the server's certificate.  */
   const char *severity = opt.check_cert ? _("ERROR") : _("WARNING");
 
-  SSL *ssl = (SSL *) fd_transport_context (fd);
-  assert (ssl != NULL);
+  struct openssl_transport_context *ctx = fd_transport_context (fd);
+  SSL *conn = ctx->conn;
+  assert (conn != NULL);
 
-  cert = SSL_get_peer_certificate (ssl);
+  cert = SSL_get_peer_certificate (conn);
   if (!cert)
     {
       logprintf (LOG_NOTQUIET, _("%s: No certificate presented by %s.\n"),
@@ -473,7 +506,7 @@ ssl_check_certificate (int fd, const char *host)
       OPENSSL_free (issuer);
     }
 
-  vresult = SSL_get_verify_result (ssl);
+  vresult = SSL_get_verify_result (conn);
   if (vresult != X509_V_OK)
     {
       /* #### We might want to print saner (and translatable) error

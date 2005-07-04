@@ -1,5 +1,11 @@
 2005-07-04  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* openssl.c (openssl_errstr): Instead of always using a large
+	static buffer, only allocate the error string when there is an
+	actual error.
+
+2005-07-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* xmalloc.c (debugging_free): Prefix hex pointer value with "0x"
 	when printing.
 

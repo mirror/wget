@@ -913,7 +913,8 @@ fd_write (int fd, char *buf, int bufsize, double timeout)
    used.
 
    If the transport doesn't support error messages or doesn't supply
-   one, strerror(errno) is returned.  */
+   one, strerror(errno) is returned.  The returned error message
+   should not be used after fd_close has been called.  */
 
 const char *
 fd_errstr (int fd)

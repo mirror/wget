@@ -1075,7 +1075,7 @@ struct http_stat
   wgint contlen;		/* expected length */
   wgint restval;		/* the restart value */
   int res;			/* the result of last read */
-  const char *errstr;		/* error message from read error */
+  char *rderrmsg;		/* error message from read error */
   char *newloc;			/* new location (redirection) */
   char *remote_time;		/* remote time-stamp string */
   char *error;			/* textual HTTP error */
@@ -1092,6 +1092,7 @@ free_hstat (struct http_stat *hs)
   xfree_null (hs->newloc);
   xfree_null (hs->remote_time);
   xfree_null (hs->error);
+  xfree_null (hs->rderrmsg);
 
   /* Guard against being called twice. */
   hs->newloc = NULL;
@@ -1213,7 +1214,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   hs->len = 0;
   hs->contlen = -1;
   hs->res = -1;
-  hs->errstr = "";
+  hs->rderrmsg = NULL;
   hs->newloc = NULL;
   hs->remote_time = NULL;
   hs->error = NULL;
@@ -1970,7 +1971,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   else
     {
       if (hs->res < 0)
-	hs->errstr = fd_errstr (sock);
+	hs->rderrmsg = xstrdup (fd_errstr (sock));
       CLOSE_INVALIDATE (sock);
     }
 
@@ -2498,7 +2499,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
 	      logprintf (LOG_VERBOSE,
 			 _("%s (%s) - Read error at byte %s (%s)."),
 			 tms, tmrate, number_to_static_string (hstat.len),
-			 hstat.errstr);
+			 hstat.rderrmsg);
 	      printwhat (count, opt.ntry);
 	      free_hstat (&hstat);
 	      continue;
@@ -2510,7 +2511,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
 			 tms, tmrate,
 			 number_to_static_string (hstat.len),
 			 number_to_static_string (hstat.contlen),
-			 hstat.errstr);
+			 hstat.rderrmsg);
 	      printwhat (count, opt.ntry);
 	      free_hstat (&hstat);
 	      continue;
