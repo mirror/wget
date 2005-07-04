@@ -797,7 +797,8 @@ fd_transport_context (int fd)
 
 #define LAZY_RETRIEVE_INFO(info) do {					\
   static struct transport_info *last_info;				\
-  static int last_fd = -1, last_tick;					\
+  static int last_fd = -1;						\
+  static unsigned int last_tick;					\
   if (!transport_map)							\
     info = NULL;							\
   else if (last_fd == fd && last_tick == transport_map_modified_tick)	\

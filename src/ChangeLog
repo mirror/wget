@@ -1,5 +1,10 @@
 2005-07-04  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* connect.c (LAZY_RETRIEVE_INFO): Make last_tick unsigned to match
+	transport_map_modified_tick.
+
+2005-07-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* config-post.h (alloca): Updated declaration to not enumerate all
 	Windows compilers.
 
