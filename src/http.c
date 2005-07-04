@@ -1486,8 +1486,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 	  request_free (connreq);
 	  if (write_error < 0)
 	    {
-	      logprintf (LOG_VERBOSE, _("Failed writing to proxy: %s.\n"),
-			 fd_errstr (sock));
 	      CLOSE_INVALIDATE (sock);
 	      return WRITEFAILED;
 	    }
@@ -1556,8 +1554,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
   if (write_error < 0)
     {
-      logprintf (LOG_VERBOSE, _("Failed writing HTTP request: %s.\n"),
-		 fd_errstr (sock));
       CLOSE_INVALIDATE (sock);
       request_free (req);
       return WRITEFAILED;

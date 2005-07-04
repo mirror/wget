@@ -1,3 +1,8 @@
+2005-07-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (gethttp): Don't print the request write error message
+	twice.
+
 2005-07-04  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* openssl.c (openssl_errstr): Instead of always using a large
