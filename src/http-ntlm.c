@@ -37,7 +37,6 @@ so, delete this exception statement from your version.  */
 
 */
 
-/* -- WIN32 approved -- */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
