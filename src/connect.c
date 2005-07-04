@@ -665,11 +665,12 @@ test_socket_open (int sock)
   to.tv_sec = 0;
   to.tv_usec = 1;
 
-  /* If we get a timeout, then that means still connected */
   if (select (sock + 1, &check_set, NULL, NULL, &to) == 0)
-    /* Connection is valid (not EOF), so continue */
+    /* We got a timeout, it means we're still connected. */
     return true;
   else
+    /* Read now would not wait, it means we have either pending data
+       or EOF/error. */
     return false;
 }
 
