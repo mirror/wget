@@ -357,7 +357,7 @@ debugging_free (void *ptr, const char *source_file, int source_line)
     }
   if (!unregister_ptr (ptr))
     {
-      fprintf (stderr, "%s: bad xfree(%0*lx) at %s:%d\n",
+      fprintf (stderr, "%s: bad xfree(0x%0*lx) at %s:%d\n",
 	       exec_name, PTR_FORMAT (ptr), source_file, source_line);
       abort ();
     }
