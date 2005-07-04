@@ -638,6 +638,17 @@ select_fd (int fd, double maxtime, int wait_for)
   return result;
 }
 
+/* Return true iff the connection to the remote site established
+   through SOCK is still open.
+
+   Specifically, this function returns true if SOCK is not ready for
+   reading.  This is because, when the connection closes, the socket
+   is ready for reading because EOF is about to be delivered.  A side
+   effect of this method is that sockets that have pending data are
+   considered non-open.  This is actually a good thing for callers of
+   this function, where such pending data can only be unwanted
+   leftover from a previous request.  */
+
 bool
 test_socket_open (int sock)
 {
@@ -656,10 +667,8 @@ test_socket_open (int sock)
 
   /* If we get a timeout, then that means still connected */
   if (select (sock + 1, &check_set, NULL, NULL, &to) == 0)
-    {
-      /* Connection is valid (not EOF), so continue */
-      return true;
-    }
+    /* Connection is valid (not EOF), so continue */
+    return true;
   else
     return false;
 }
