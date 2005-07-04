@@ -1899,16 +1899,24 @@ base64_encode (const char *str, int length, char *b64store)
 #define IS_ASCII(c) (((c) & 0x80) == 0)
 #define IS_BASE64(c) ((IS_ASCII (c) && base64_char_to_value[c] >= 0) || c == '=')
 
-/* Get next character from the string, except that non-base64
-   characters are ignored, as mandated by rfc2045.  */
-#define NEXT_BASE64_CHAR(c, p) do {			\
-  c = *p++;						\
-} while (c != '\0' && !IS_BASE64 (c))
+/* Get next character from the string, ignoring whitespace.  C should
+   be int, and will contain the next character, \0 if end is reached,
+   or -1 if a non-ws non-base64 character is read.  */
+#define NEXT_BASE64_CHAR(c, p) for (;;) {	\
+  c = (unsigned char) *p++;			\
+  if (IS_BASE64 (c) || c == '\0')		\
+    break;					\
+  else if (!ISSPACE (c))			\
+    {						\
+      c = -1;					\
+      break;					\
+    }						\
+  /* c is whitespace, keep looping */		\
+}
 
-/* Decode data from BASE64 (assumed to be encoded as base64) into
-   memory pointed to by TO.  TO should be large enough to accomodate
-   the decoded data, which is guaranteed to be less than
-   strlen(base64).
+/* Decode data from BASE64 (pointer to \0-terminated text) into memory
+   pointed to by TO.  TO should be large enough to accomodate the
+   decoded data, which is guaranteed to be less than strlen(base64).
 
    Since TO is assumed to contain binary data, it is not
    NUL-terminated.  The function returns the length of the data
@@ -1920,7 +1928,7 @@ base64_decode (const char *base64, char *to)
 {
   /* Table of base64 values for first 128 characters.  Note that this
      assumes ASCII (but so does Wget in other places).  */
-  static short base64_char_to_value[128] =
+  static signed char base64_char_to_value[128] =
     {
       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,	/*   0-  9 */
       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,	/*  10- 19 */
@@ -1936,36 +1944,39 @@ base64_decode (const char *base64, char *to)
       39,  40,  41,  42,  43,  44,  45,  46,  47,  48,	/* 110-119 */
       49,  50,  51,  -1,  -1,  -1,  -1,  -1		/* 120-127 */
     };
+#define BASE64_CHAR_TO_VALUE(c) ((int) base64_char_to_value[c])
 
   const char *p = base64;
   char *q = to;
 
   while (1)
     {
-      unsigned char c;
+      int c;
       unsigned long value;
 
       /* Process first byte of a quadruplet.  */
       NEXT_BASE64_CHAR (c, p);
       if (!c)
 	break;
-      if (c == '=')
-	return -1;		/* illegal '=' while decoding base64 */
-      value = base64_char_to_value[c] << 18;
+      if (c == '=' || c == -1)
+	return -1;		/* illegal char while decoding base64 */
+      value = BASE64_CHAR_TO_VALUE (c) << 18;
 
       /* Process scond byte of a quadruplet.  */
       NEXT_BASE64_CHAR (c, p);
       if (!c)
 	return -1;		/* premature EOF while decoding base64 */
-      if (c == '=')
-	return -1;		/* illegal `=' while decoding base64 */
-      value |= base64_char_to_value[c] << 12;
+      if (c == '=' || c == -1)
+	return -1;		/* illegal char while decoding base64 */
+      value |= BASE64_CHAR_TO_VALUE (c) << 12;
       *q++ = value >> 16;
 
       /* Process third byte of a quadruplet.  */
       NEXT_BASE64_CHAR (c, p);
       if (!c)
 	return -1;		/* premature EOF while decoding base64 */
+      if (c == -1)
+	return -1;		/* illegal char while decoding base64 */
 
       if (c == '=')
 	{
@@ -1977,7 +1988,7 @@ base64_decode (const char *base64, char *to)
 	  continue;
 	}
 
-      value |= base64_char_to_value[c] << 6;
+      value |= BASE64_CHAR_TO_VALUE (c) << 6;
       *q++ = 0xff & value >> 8;
 
       /* Process fourth byte of a quadruplet.  */
@@ -1986,10 +1997,13 @@ base64_decode (const char *base64, char *to)
 	return -1;		/* premature EOF while decoding base64 */
       if (c == '=')
 	continue;
+      if (c == -1)
+	return -1;		/* illegal char while decoding base64 */
 
-      value |= base64_char_to_value[c];
+      value |= BASE64_CHAR_TO_VALUE (c);
       *q++ = 0xff & value;
     }
+#undef BASE64_CHAR_TO_VALUE
 
   return q - to;
 }
