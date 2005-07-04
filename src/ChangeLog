@@ -1,5 +1,10 @@
 2005-07-04  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (NEXT_BASE64_CHAR): Rename to NEXT_CHAR and simplify to
+	get the next non-whitespace character.
+
+2005-07-04  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (base64_decode): Don't silently tolerate non-base64
 	non-white-space characters in the base64 stream.
 

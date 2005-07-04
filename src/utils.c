@@ -1896,23 +1896,13 @@ base64_encode (const char *str, int length, char *b64store)
   return p - b64store;
 }
 
-#define IS_ASCII(c) (((c) & 0x80) == 0)
-#define IS_BASE64(c) ((IS_ASCII (c) && base64_char_to_value[c] >= 0) || c == '=')
-
-/* Get next character from the string, ignoring whitespace.  C should
-   be int, and will contain the next character, \0 if end is reached,
-   or -1 if a non-ws non-base64 character is read.  */
-#define NEXT_BASE64_CHAR(c, p) for (;;) {	\
+/* Store in C the next non-whitespace character from the string, or \0
+   when end of string is reached.  */
+#define NEXT_CHAR(c, p) do {			\
   c = (unsigned char) *p++;			\
-  if (IS_BASE64 (c) || c == '\0')		\
-    break;					\
-  else if (!ISSPACE (c))			\
-    {						\
-      c = -1;					\
-      break;					\
-    }						\
-  /* c is whitespace, keep looping */		\
-}
+} while (ISSPACE (c))
+
+#define IS_ASCII(c) (((c) & 0x80) == 0)
 
 /* Decode data from BASE64 (pointer to \0-terminated text) into memory
    pointed to by TO.  TO should be large enough to accomodate the
@@ -1945,42 +1935,43 @@ base64_decode (const char *base64, char *to)
       49,  50,  51,  -1,  -1,  -1,  -1,  -1		/* 120-127 */
     };
 #define BASE64_CHAR_TO_VALUE(c) ((int) base64_char_to_value[c])
+#define IS_BASE64(c) ((IS_ASCII (c) && BASE64_CHAR_TO_VALUE (c) >= 0) || c == '=')
 
   const char *p = base64;
   char *q = to;
 
   while (1)
     {
-      int c;
+      unsigned char c;
       unsigned long value;
 
       /* Process first byte of a quadruplet.  */
-      NEXT_BASE64_CHAR (c, p);
+      NEXT_CHAR (c, p);
       if (!c)
 	break;
-      if (c == '=' || c == -1)
+      if (c == '=' || !IS_BASE64 (c))
 	return -1;		/* illegal char while decoding base64 */
       value = BASE64_CHAR_TO_VALUE (c) << 18;
 
-      /* Process scond byte of a quadruplet.  */
-      NEXT_BASE64_CHAR (c, p);
+      /* Process second byte of a quadruplet.  */
+      NEXT_CHAR (c, p);
       if (!c)
 	return -1;		/* premature EOF while decoding base64 */
-      if (c == '=' || c == -1)
+      if (c == '=' || !IS_BASE64 (c))
 	return -1;		/* illegal char while decoding base64 */
       value |= BASE64_CHAR_TO_VALUE (c) << 12;
       *q++ = value >> 16;
 
       /* Process third byte of a quadruplet.  */
-      NEXT_BASE64_CHAR (c, p);
+      NEXT_CHAR (c, p);
       if (!c)
 	return -1;		/* premature EOF while decoding base64 */
-      if (c == -1)
+      if (!IS_BASE64 (c))
 	return -1;		/* illegal char while decoding base64 */
 
       if (c == '=')
 	{
-	  NEXT_BASE64_CHAR (c, p);
+	  NEXT_CHAR (c, p);
 	  if (!c)
 	    return -1;		/* premature EOF while decoding base64 */
 	  if (c != '=')
@@ -1992,24 +1983,24 @@ base64_decode (const char *base64, char *to)
       *q++ = 0xff & value >> 8;
 
       /* Process fourth byte of a quadruplet.  */
-      NEXT_BASE64_CHAR (c, p);
+      NEXT_CHAR (c, p);
       if (!c)
 	return -1;		/* premature EOF while decoding base64 */
       if (c == '=')
 	continue;
-      if (c == -1)
+      if (!IS_BASE64 (c))
 	return -1;		/* illegal char while decoding base64 */
 
       value |= BASE64_CHAR_TO_VALUE (c);
       *q++ = 0xff & value;
     }
+#undef IS_BASE64
 #undef BASE64_CHAR_TO_VALUE
 
   return q - to;
 }
 
 #undef IS_ASCII
-#undef IS_BASE64
 #undef NEXT_BASE64_CHAR
 
 /* Simple merge sort for use by stable_sort.  Implementation courtesy
