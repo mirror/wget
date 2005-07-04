@@ -2001,7 +2001,7 @@ base64_decode (const char *base64, char *to)
 }
 
 #undef IS_ASCII
-#undef NEXT_BASE64_CHAR
+#undef NEXT_CHAR
 
 /* Simple merge sort for use by stable_sort.  Implementation courtesy
    Zeljko Vrba with additional debugging by Nenad Barbutov.  */
