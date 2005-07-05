@@ -1248,8 +1248,8 @@ timegm (struct tm *t)
     return (time_t) -1;
 
   days = 365 * (t->tm_year - 70);
-  /* Take into account the leap days between 1970 and YEAR-1; all
-     years divisible by four between 1968 and 2100 should be leap.  */
+  /* Take into account leap years between 1970 and YEAR-1; all years
+     divisible by four between 1968 and 2100 should be leap.  */
   days += (t->tm_year - 1 - 68) / 4;
   if (t->tm_mon < 0 || t->tm_mon >= 12)
     return (time_t) -1;
