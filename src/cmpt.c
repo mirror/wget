@@ -1241,7 +1241,7 @@ timegm (struct tm *t)
     { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 }
   };
   unsigned long secs;
-  int year, days;
+  int days;
 
   /* Only handles years between 1970 and 2099. */
   if (t->tm_year < 70 || t->tm_year > 129)
