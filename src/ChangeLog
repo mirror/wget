@@ -1,5 +1,10 @@
 2005-07-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* cmpt.c (timegm): Don't call mktime; simply count the seconds
+	between 1970-01-01 and the specified date.
+
+2005-07-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.h (or): Define HAVE_SSL when either HAVE_OPENSSL or
 	HAVE_GNUTLS are defined.
 

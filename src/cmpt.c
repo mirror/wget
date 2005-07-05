@@ -1226,64 +1226,37 @@ fnmatch (const char *pattern, const char *string, int flags)
    possibly elsewhere. */
 
 /* Inverse of gmtime: converts struct tm to time_t, assuming the data
-   in tm is UTC rather than local timezone.
+   in tm is UTC rather than local timezone.  This implementation
+   returns the number of seconds since 1070-01-01, converted to
+   time_t.  */
 
-   mktime is similar but assumes struct tm, also known as the
-   "broken-down" form of time, is in local time zone.  This
-   implementation of timegm uses mktime to make the conversion
-   understanding that an offset will be introduced by the local time
-   assumption.
-
-   It then measures the introduced offset by applying gmtime to the
-   initial result and applying mktime to the resulting "broken-down"
-   form.  The difference between the two mktime results is the
-   measured offset which is then subtracted from the initial mktime
-   result to yield a calendar time which is the value returned.
-
-   tm_isdst in struct tm is set to 0 to force mktime to introduce a
-   consistent offset (the non DST offset) since tm and tm+o might be
-   on opposite sides of a DST change.
-
-   Some implementations of mktime return -1 for the nonexistent
-   localtime hour at the beginning of DST.  In this event, use
-   mktime(tm - 1hr) + 3600.
-
-   Schematically
-     mktime(tm)   --> t+o
-     gmtime(t+o)  --> tm+o
-     mktime(tm+o) --> t+2o
-     t+o - (t+2o - t+o) = t
-
-   Contributed by Roger Beeman, with the help of Mark Baushke and
-   other experts at CISCO.  Further improved by Roger with assistance
-   from Edward J. Sabol based on input by Jamie Zawinski.  */
+#define IS_LEAP(year)							\
+    ((year) % 4 == 0 && ((year) % 100 != 0 || (year) % 400 == 0))
 
 time_t
 timegm (struct tm *t)
 {
-  time_t tl, tb;
-  struct tm *tg;
+  static const unsigned short int month_to_days[][13] = {
+    { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 },
+    { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 }
+  };
+  unsigned long secs;
+  int year, days;
 
-  tl = mktime (t);
-  if (tl == -1)
-    {
-      t->tm_hour--;
-      tl = mktime (t);
-      if (tl == -1)
-	return -1; /* can't deal with contents of T */
-      tl += 3600;
-    }
-  tg = gmtime (&tl);
-  tg->tm_isdst = 0;
-  tb = mktime (tg);
-  if (tb == -1)
-    {
-      tg->tm_hour--;
-      tb = mktime (tg);
-      if (tb == -1)
-	return -1; /* can't deal with output from gmtime */
-      tb += 3600;
-    }
-  return (tl - (tb - tl));
+  /* Only handles years between 1970 and 2099. */
+  if (t->tm_year < 70 || t->tm_year > 129)
+    return (time_t) -1;
+
+  days = 365 * (t->tm_year - 70);
+  /* Take into account the leap days between 1970 and YEAR-1; all
+     years divisible by four between 1968 and 2100 should be leap.  */
+  days += (t->tm_year - 1 - 68) / 4;
+  if (t->tm_mon < 0 || t->tm_mon >= 12)
+    return (time_t) -1;
+  days += month_to_days[IS_LEAP (1900 + t->tm_year)][t->tm_mon];
+  days += t->tm_mday - 1;
+
+  secs = days * 86400 + t->tm_hour * 3600 + t->tm_min * 60 + t->tm_sec;
+  return (time_t) secs;
 }
 #endif /* HAVE_TIMEGM */
