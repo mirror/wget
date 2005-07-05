@@ -239,9 +239,20 @@ dnl
 dnl Checks for libraries.
 dnl
 
-dnl Check for OpenSSL
-if test x"$with_ssl" != x"no"
+if test x"$with_ssl" = xgnutls
 then
+  dnl Now actually check for -lssl
+  AC_LIB_HAVE_LINKFLAGS([gnutls], [], [
+#include <gnutls/gnutls.h>
+  ], [gnutls_global_init()])
+  if test x"$LIBGNUTLS" != x
+  then
+    AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
+    AC_DEFINE([HAVE_GNUTLS], 1,
+	      [Define if support for the GnuTLS library is being compiled in.])
+    SSL_OBJ='gnutls.o'
+  fi
+else
   dnl As of this writing (OpenSSL 0.9.6), the libcrypto shared library
   dnl doesn't record its dependency on libdl, so we need to make sure
   dnl -ldl ends up in LIBS on systems that have it.  Most OSes use
@@ -262,12 +273,13 @@ then
   ], [SSL_library_init ()])
   if test x"$LIBSSL" != x
   then
-    AC_MSG_NOTICE([compiling in support for SSL])
-    AC_DEFINE([HAVE_SSL], 1,
-	      [Define if SSL support is being compiled in.])
+    AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
+    AC_DEFINE([HAVE_OPENSSL], 1,
+	      [Define if support for the OpenSSL library is being compiled in.])
     SSL_OBJ='openssl.o'
   fi
 fi
+
 AC_SUBST(SSL_OBJ)
 
 dnl Enable NTLM if requested and if SSL is available.

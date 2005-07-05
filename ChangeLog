@@ -1,3 +1,7 @@
+2005-07-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Add check for GnuTLS if --with-ssl=gnutls is used.
+
 2005-07-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* po/POTFILES.in: Include src/ptimer.c.

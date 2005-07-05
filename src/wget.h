@@ -40,6 +40,10 @@ so, delete this exception statement from your version.  */
 # define NDEBUG
 #endif
 
+#if defined HAVE_OPENSSL || defined HAVE_GNUTLS
+# define HAVE_SSL
+#endif
+
 /* `gettext (FOO)' is long to write, so we use `_(FOO)'.  If NLS is
    unavailable, _(STRING) simply returns STRING.  */
 #ifdef HAVE_NLS

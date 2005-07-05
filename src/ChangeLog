@@ -1,5 +1,12 @@
 2005-07-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.h (or): Define HAVE_SSL when either HAVE_OPENSSL or
+	HAVE_GNUTLS are defined.
+
+	* gnutls.c: New file.
+
+2005-07-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (gethttp): Don't print the request write error message
 	twice.
 
