@@ -1230,8 +1230,12 @@ fnmatch (const char *pattern, const char *string, int flags)
    returns the number of seconds since 1970-01-01, converted to
    time_t.  */
 
-#define IS_LEAP(year)							\
-    ((year) % 4 == 0 && ((year) % 100 != 0 || (year) % 400 == 0))
+#define IS_LEAP(year)						\
+  ((year) % 4 == 0 && ((year) % 100 != 0 || (year) % 400 == 0))
+
+/* Number of leap years in the range [y1, y2). */
+#define LEAPDAYS(y1, y2)						\
+  ((y2-1)/4 - (y1-1)/4) - ((y2-1)/100 - (y1-1)/100) + ((y2-1)/400 - (y1-1)/400)
 
 time_t
 timegm (struct tm *t)
@@ -1240,20 +1244,20 @@ timegm (struct tm *t)
     { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 },
     { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 }
   };
+  const int year = 1900 + t->tm_year;
   unsigned long secs;
   int days;
 
-  /* Only handles years between 1970 and 2099. */
-  if (t->tm_year < 70 || t->tm_year > 129)
+  if (year < 1970)
     return (time_t) -1;
 
-  days = 365 * (t->tm_year - 70);
-  /* Take into account leap years between 1970 and t->tm_year-1; all
-     years divisible by four between 1968 and 2100 should be leap.  */
-  days += (t->tm_year - 1 - 68) / 4;
+  days = 365 * (year - 1970);
+  /* Take into account leap years between 1970 and YEAR, not counting
+     YEAR itself.  */
+  days += LEAPDAYS (1970, year);
   if (t->tm_mon < 0 || t->tm_mon >= 12)
     return (time_t) -1;
-  days += month_to_days[IS_LEAP (1900 + t->tm_year)][t->tm_mon];
+  days += month_to_days[IS_LEAP (year)][t->tm_mon];
   days += t->tm_mday - 1;
 
   secs = days * 86400 + t->tm_hour * 3600 + t->tm_min * 60 + t->tm_sec;

@@ -1,5 +1,9 @@
 2005-07-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* cmpt.c (timegm): Handle years after 2099.
+
+2005-07-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* cmpt.c (timegm): Remove unused variable.
 
 2005-07-05  Hrvoje Niksic  <hniksic@xemacs.org>
