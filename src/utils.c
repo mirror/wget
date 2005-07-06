@@ -68,11 +68,9 @@ so, delete this exception statement from your version.  */
 # include <termios.h>
 #endif
 
-/* Needed for run_with_timeout. */
+/* Needed for Unix version of run_with_timeout. */
 #include <signal.h>
-#ifdef HAVE_SETJMP_H
-# include <setjmp.h>
-#endif
+#include <setjmp.h>
 
 #ifndef HAVE_SIGSETJMP
 /* If sigsetjmp is a macro, configure won't pick it up. */

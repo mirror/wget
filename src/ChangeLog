@@ -1,5 +1,9 @@
 2005-07-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c: Unconditionally include <setjmp.h>.
+
+2005-07-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* utils.c (fnmatch_nocase): New function.
 	(proclist): Use it instead of fnmatch when opt.ignore_case is
 	requested.
