@@ -596,7 +596,7 @@ make_directory (const char *directory)
    file_merge("/foo/bar/", "baz") => "/foo/bar/baz"
    file_merge("foo", "bar")       => "bar"
 
-   In other words, it's a simpler and gentler version of uri_merge_1.  */
+   In other words, it's a simpler and gentler version of uri_merge.  */
 
 char *
 file_merge (const char *base, const char *file)
