@@ -55,7 +55,7 @@ so, delete this exception statement from your version.  */
 /* Total size of downloaded files.  Used to enforce quota.  */
 SUM_SIZE_INT total_downloaded_bytes;
 
-/* Total download time in milliseconds. */
+/* Total download time in seconds. */
 double total_download_time;
 
 /* If non-NULL, the stream to which output should be written.  This
@@ -75,9 +75,7 @@ static struct {
 static void
 limit_bandwidth_reset (void)
 {
-  limit_data.chunk_bytes = 0;
-  limit_data.chunk_start = 0;
-  limit_data.sleep_adjust = 0;
+  xzero (limit_data);
 }
 
 /* Limit the bandwidth by pausing the download for an amount of time.
@@ -95,25 +93,25 @@ limit_bandwidth (wgint bytes, struct ptimer *timer)
   /* Calculate the amount of time we expect downloading the chunk
      should take.  If in reality it took less time, sleep to
      compensate for the difference.  */
-  expected = 1000.0 * limit_data.chunk_bytes / opt.limit_rate;
+  expected = (double) limit_data.chunk_bytes / opt.limit_rate;
 
   if (expected > delta_t)
     {
       double slp = expected - delta_t + limit_data.sleep_adjust;
       double t0, t1;
-      if (slp < 200)
+      if (slp < 0.2)
 	{
 	  DEBUGP (("deferring a %.2f ms sleep (%s/%.2f).\n",
-		   slp, number_to_static_string (limit_data.chunk_bytes),
+		   slp * 1000, number_to_static_string (limit_data.chunk_bytes),
 		   delta_t));
 	  return;
 	}
       DEBUGP (("\nsleeping %.2f ms for %s bytes, adjust %.2f ms\n",
-	       slp, number_to_static_string (limit_data.chunk_bytes),
+	       slp * 1000, number_to_static_string (limit_data.chunk_bytes),
 	       limit_data.sleep_adjust));
 
       t0 = ptimer_read (timer);
-      xsleep (slp / 1000);
+      xsleep (slp);
       t1 = ptimer_measure (timer);
 
       /* Due to scheduling, we probably slept slightly longer (or
@@ -123,10 +121,10 @@ limit_bandwidth (wgint bytes, struct ptimer *timer)
       limit_data.sleep_adjust = slp - (t1 - t0);
       /* If sleep_adjust is very large, it's likely due to suspension
 	 and not clock inaccuracy.  Don't enforce those.  */
-      if (limit_data.sleep_adjust > 500)
-	limit_data.sleep_adjust = 500;
-      else if (limit_data.sleep_adjust < -500)
-	limit_data.sleep_adjust = -500;
+      if (limit_data.sleep_adjust > 0.5)
+	limit_data.sleep_adjust = 0.5;
+      else if (limit_data.sleep_adjust < -0.5)
+	limit_data.sleep_adjust = -0.5;
     }
 
   limit_data.chunk_bytes = 0;
@@ -185,7 +183,7 @@ write_data (FILE *out, const char *buf, int bufsize, wgint *skip,
    is incremented by the amount of data read from the network.  If
    QTYWRITTEN is non-NULL, the value it points to is incremented by
    the amount of data written to disk.  The time it took to download
-   the data (in milliseconds) is stored to ELAPSED.
+   the data is stored to ELAPSED.
 
    The function exits and returns the amount of data read.  In case of
    error while reading data, -1 is returned.  In case of error while
@@ -267,7 +265,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
 	  if (opt.read_timeout)
 	    {
 	      double waittm;
-	      waittm = (ptimer_read (timer) - last_successful_read_tm) / 1000;
+	      waittm = ptimer_read (timer) - last_successful_read_tm;
 	      if (waittm + tmout > opt.read_timeout)
 		{
 		  /* Don't let total idle time exceed read timeout. */
@@ -540,22 +538,23 @@ retr_rate (wgint bytes, double msecs)
 
    UNITS is zero for B/s, one for KB/s, two for MB/s, and three for
    GB/s.  */
+
 double
-calc_rate (wgint bytes, double msecs, int *units)
+calc_rate (wgint bytes, double secs, int *units)
 {
   double dlrate;
 
-  assert (msecs >= 0);
+  assert (secs >= 0);
   assert (bytes >= 0);
 
-  if (msecs == 0)
+  if (secs == 0)
     /* If elapsed time is exactly zero, it means we're under the
        resolution of the timer.  This can easily happen on systems
        that use time() for the timer.  Since the interval lies between
        0 and the timer's resolution, assume half the resolution.  */
-    msecs = ptimer_resolution () / 2.0;
+    secs = ptimer_resolution () / 2.0;
 
-  dlrate = 1000.0 * bytes / msecs;
+  dlrate = bytes / secs;
   if (dlrate < 1024.0)
     *units = 0;
   else if (dlrate < 1024.0 * 1024.0)

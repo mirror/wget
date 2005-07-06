@@ -39,16 +39,16 @@ so, delete this exception statement from your version.  */
      ptimer_destroy -- destroy the timer.
      ptimer_granularity -- returns the approximate granularity of the timers.
 
-   Timers measure time in milliseconds, but the timings they return
-   are floating point numbers, so they can carry as much precision as
-   the underlying system timer supports.  For example, to measure the
-   time it takes to run a loop, you can use something like:
+   Timers measure time in seconds, returning the timings as floating
+   point numbers, so they can carry as much precision as the
+   underlying system timer supports.  For example, to measure the time
+   it takes to run a loop, you can use something like:
 
      ptimer *tmr = ptimer_new ();
      while (...)
        ... loop ...
-     double msecs = ptimer_measure ();
-     printf ("The loop took %.2f ms\n", msecs);  */
+     double secs = ptimer_measure ();
+     printf ("The loop took %.2fs\n", secs);  */
 
 #include <config.h>
 
@@ -108,8 +108,8 @@ typedef struct timespec ptimer_system_time;
    CLOCK_MONOTONIC where available, CLOCK_REALTIME otherwise.  */
 static int posix_clock_id;
 
-/* Resolution of the clock, in milliseconds. */
-static double posix_millisec_resolution;
+/* Resolution of the clock, initialized in posix_init. */
+static double posix_clock_resolution;
 
 /* Decide which clock_id to use.  */
 
@@ -148,11 +148,10 @@ posix_init (void)
       if (clock_getres (clocks[i].id, &r) < 0)
 	continue;		/* clock_getres doesn't work for this clock */
       posix_clock_id = clocks[i].id;
-      posix_millisec_resolution = r.tv_sec * 1000.0 + r.tv_nsec / 1000000.0;
-      /* Guard against broken clock_getres returning nonsensical
-	 values.  */
-      if (posix_millisec_resolution == 0)
-	posix_millisec_resolution = 1;
+      posix_clock_resolution = (double) r.tv_sec + r.tv_nsec / 1e9;
+      /* Guard against nonsense returned by a broken clock_getres.  */
+      if (posix_clock_resolution == 0)
+	posix_clock_resolution = 1e-3;
       break;
     }
   if (i == countof (clocks))
@@ -163,7 +162,7 @@ posix_init (void)
 		 strerror (errno));
       /* Use CLOCK_REALTIME, but invent a plausible resolution. */
       posix_clock_id = CLOCK_REALTIME;
-      posix_millisec_resolution = 1;
+      posix_clock_resolution = 1e-3;
     }
 }
 
@@ -176,14 +175,14 @@ posix_measure (ptimer_system_time *pst)
 static inline double
 posix_diff (ptimer_system_time *pst1, ptimer_system_time *pst2)
 {
-  return ((pst1->tv_sec - pst2->tv_sec) * 1000.0
-	  + (pst1->tv_nsec - pst2->tv_nsec) / 1000000.0);
+  return ((pst1->tv_sec - pst2->tv_sec)
+	  + (pst1->tv_nsec - pst2->tv_nsec) / 1e9);
 }
 
 static inline double
 posix_resolution (void)
 {
-  return posix_millisec_resolution;
+  return posix_clock_resolution;
 }
 #endif	/* PTIMER_POSIX */
 
@@ -209,8 +208,8 @@ gettimeofday_measure (ptimer_system_time *pst)
 static inline double
 gettimeofday_diff (ptimer_system_time *pst1, ptimer_system_time *pst2)
 {
-  return ((pst1->tv_sec - pst2->tv_sec) * 1000.0
-	  + (pst1->tv_usec - pst2->tv_usec) / 1000.0);
+  return ((pst1->tv_sec - pst2->tv_sec)
+	  + (pst1->tv_usec - pst2->tv_usec) / 1e6);
 }
 
 static inline double
@@ -246,9 +245,9 @@ typedef union {
 static bool windows_hires_timers;
 
 /* Frequency of high-resolution timers -- number of updates per
-   millisecond.  Calculated the first time ptimer_new is called
-   provided that high-resolution timers are available. */
-static double windows_hires_msfreq;
+   second.  Calculated the first time ptimer_new is called provided
+   that high-resolution timers are available. */
+static double windows_hires_freq;
 
 static void
 windows_init (void)
@@ -259,7 +258,7 @@ windows_init (void)
   if (freq.QuadPart != 0)
     {
       windows_hires_timers = true;
-      windows_hires_msfreq = (double) freq.QuadPart / 1000.0;
+      windows_hires_freq = (double) freq.QuadPart;
     }
 }
 
@@ -281,7 +280,7 @@ static inline double
 windows_diff (ptimer_system_time *pst1, ptimer_system_time *pst2)
 {
   if (windows_hires_timers)
-    return (pst1->hires.QuadPart - pst2->hires.QuadPart) / windows_hires_msfreq;
+    return (pst1->hires.QuadPart - pst2->hires.QuadPart) / windows_hires_freq;
   else
     return pst1->lores - pst2->lores;
 }
@@ -290,7 +289,7 @@ static double
 windows_resolution (void)
 {
   if (windows_hires_timers)
-    return 1.0 / windows_hires_msfreq;
+    return 1.0 / windows_hires_freq;
   else
     return 10;			/* according to MSDN */
 }
@@ -303,8 +302,7 @@ struct ptimer {
      time, yields elapsed time. */
   ptimer_system_time start;
 
-  /* The most recent elapsed time, calculated by ptimer_measure().
-     Measured in milliseconds.  */
+  /* The most recent elapsed time, calculated by ptimer_measure().  */
   double elapsed_last;
 
   /* Approximately, the time elapsed between the true start of the
@@ -341,8 +339,8 @@ ptimer_destroy (struct ptimer *pt)
 }
 
 /* Reset timer PT.  This establishes the starting point from which
-   ptimer_read() will return the number of elapsed milliseconds.
-   It is allowed to reset a previously used timer.  */
+   ptimer_measure() will return the elapsed time in seconds.  It is
+   allowed to reset a previously used timer.  */
 
 void
 ptimer_reset (struct ptimer *pt)
@@ -353,13 +351,10 @@ ptimer_reset (struct ptimer *pt)
   pt->elapsed_pre_start = 0;
 }
 
-/* Measure the elapsed time since timer creation/reset and return it
-   to the caller.  The value remains stored for further reads by
-   ptimer_read.
-
-   This function causes the timer to call gettimeofday (or time(),
-   etc.) to update its idea of current time.  To get the elapsed
-   interval in milliseconds, use ptimer_read.
+/* Measure the elapsed time since timer creation/reset.  This causes
+   the timer to internally call clock_gettime (or gettimeofday, etc.) 
+   to update its idea of current time.  The time is returned, but is
+   also stored for later access through ptimer_read().
 
    This function handles clock skew, i.e. time that moves backwards is
    ignored.  */
@@ -400,8 +395,9 @@ ptimer_measure (struct ptimer *pt)
   return elapsed;
 }
 
-/* Return the elapsed time in milliseconds between the last call to
-   ptimer_reset and the last call to ptimer_update.  */
+/* Return the most recent elapsed time measured with ptimer_measure.
+   If ptimer_measure has not yet been called since the timer was
+   created or reset, this returns 0.  */
 
 double
 ptimer_read (const struct ptimer *pt)
@@ -410,8 +406,8 @@ ptimer_read (const struct ptimer *pt)
 }
 
 /* Return the assessed resolution of the timer implementation, in
-   milliseconds.  This is used by code that tries to substitute a
-   better value for timers that have returned zero.  */
+   seconds.  This is used by code that tries to substitute a better
+   value for timers that have returned zero.  */
 
 double
 ptimer_resolution (void)

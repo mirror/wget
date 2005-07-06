@@ -1,5 +1,10 @@
 2005-07-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* ptimer.c: Measure time in seconds rather than milliseconds.
+	Adjusted all callers.
+
+2005-07-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* http.c (gethttp): When freeing MESSAGE, take into account that
 	it can be NULL.
 

@@ -974,7 +974,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
 		 time_str (NULL),
 		 opt.numurls,
 		 human_readable (total_downloaded_bytes),
-		 secs_to_human_time (total_download_time / 1000),
+		 secs_to_human_time (total_download_time),
 		 retr_rate (total_downloaded_bytes, total_download_time));
       /* Print quota warning, if exceeded.  */
       if (opt.quota && total_downloaded_bytes > opt.quota)

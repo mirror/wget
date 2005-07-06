@@ -175,7 +175,7 @@ progress_interactive_p (void *progress)
 }
 
 /* Inform the progress gauge of newly received bytes.  DLTIME is the
-   time in milliseconds since the beginning of the download.  */
+   time since the beginning of the download.  */
 
 void
 progress_update (void *progress, wgint howmuch, double dltime)
@@ -320,20 +320,18 @@ print_row_stats (struct dot_progress *dp, double dltime, bool last)
 	  wgint bytes_remaining = dp->total_length - bytes_displayed;
 	  /* The quantity downloaded in this download run. */
 	  wgint bytes_sofar = bytes_displayed - dp->initial_length;
-	  double secs_sofar = dltime / 1000;
-	  int eta = (int) (secs_sofar * bytes_remaining / bytes_sofar + 0.5);
+	  int eta = (int) (dltime * bytes_remaining / bytes_sofar + 0.5);
 	  logprintf (LOG_VERBOSE, " %s", eta_to_human_short (eta, true));
 	}
     }
   else
     {
       /* When done, print the total download time */
-      double secs = dltime / 1000;
-      if (secs >= 10)
+      if (dltime >= 10)
 	logprintf (LOG_VERBOSE, "=%s",
-		   eta_to_human_short ((int) (secs + 0.5), true));
+		   eta_to_human_short ((int) (dltime + 0.5), true));
       else
-	logprintf (LOG_VERBOSE, "=%ss", print_decimal (secs));
+	logprintf (LOG_VERBOSE, "=%ss", print_decimal (dltime));
     }
 }
 
@@ -478,12 +476,12 @@ static volatile sig_atomic_t received_sigwinch;
    sample is at least 150ms long, which means that, over the course of
    20 samples, "current" download speed spans at least 3s into the
    past.  */
-#define DLSPEED_SAMPLE_MIN 150
+#define DLSPEED_SAMPLE_MIN 0.15
 
 /* The time after which the download starts to be considered
    "stalled", i.e. the current bandwidth is not printed and the recent
    download speeds are scratched.  */
-#define STALL_START_TIME 5000
+#define STALL_START_TIME 5
 
 struct bar_progress {
   wgint initial_length;		/* how many bytes have been downloaded
@@ -513,12 +511,12 @@ struct bar_progress {
      details.  */
   struct bar_progress_hist {
     int pos;
-    wgint times[DLSPEED_HISTORY_SIZE];
+    double times[DLSPEED_HISTORY_SIZE];
     wgint bytes[DLSPEED_HISTORY_SIZE];
 
     /* The sum of times and bytes respectively, maintained for
        efficiency. */
-    wgint total_time;
+    double total_time;
     wgint total_bytes;
   } hist;
 
@@ -618,7 +616,7 @@ bar_update (void *progress, wgint howmuch, double dltime)
       received_sigwinch = 0;
     }
 
-  if (dltime - bp->last_screen_update < 200 && !force_screen_update)
+  if (dltime - bp->last_screen_update < 0.2 && !force_screen_update)
     /* Don't update more often than five times per second. */
     return;
 
@@ -708,7 +706,7 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 	 value because the current bandwidth would start too small.
 	 Start with an arbitrary (but more reasonable) time value and
 	 let it level out.  */
-      recent_age = 1000;
+      recent_age = 1;
     }
 
   /* Store "recent" bytes and download time to history ring at the
@@ -743,8 +741,14 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 	sumt += hist->times[i];
 	sumb += hist->bytes[i];
       }
-    assert (sumt == hist->total_time);
     assert (sumb == hist->total_bytes);
+    /* We can't use assert(sumt==hist->total_time) because some
+       precision is lost by adding and subtracting floating-point
+       numbers.  But during a download this precision should not be
+       detectable, i.e. no larger than 1ns.  */
+    double diff = sumt - hist->total_time;
+    if (diff < 0) diff = -diff;
+    assert (diff < 1e-9);
   }
 #endif
 }
@@ -879,7 +883,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   move_to_end (p);
 
   /* " 12.52K/s" */
-  if (hist->total_time && hist->total_bytes)
+  if (hist->total_time > 0 && hist->total_bytes)
     {
       static const char *short_units[] = { "B/s", "K/s", "M/s", "G/s" };
       int units = 0;
@@ -900,7 +904,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       /* "  eta ..m ..s"; wait for three seconds before displaying the ETA.
 	 That's because the ETA value needs a while to become
 	 reliable.  */
-      if (bp->total_length > 0 && bp->count > 0 && dl_total_time > 3000)
+      if (bp->total_length > 0 && bp->count > 0 && dl_total_time > 3)
 	{
 	  int eta;
 
@@ -909,7 +913,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 	     any value to the user. */
 	  if (bp->total_length != size
 	      && bp->last_eta_value != 0
-	      && dl_total_time - bp->last_eta_time < 900)
+	      && dl_total_time - bp->last_eta_time < 0.9)
 	    eta = bp->last_eta_value;
 	  else
 	    {
@@ -919,9 +923,8 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 		 hist->total_time and bp->count with hist->total_bytes.
 		 I found that doing that results in a very jerky and
 		 ultimately unreliable ETA.  */
-	      double time_sofar = (double) dl_total_time / 1000;
 	      wgint bytes_remaining = bp->total_length - size;
-	      eta = (int) (time_sofar * bytes_remaining / bp->count + 0.5);
+	      eta = (int) (dl_total_time * bytes_remaining / bp->count + 0.5);
 	      bp->last_eta_value = eta;
 	      bp->last_eta_time = dl_total_time;
 	    }
@@ -939,15 +942,15 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   else
     {
       /* When the download is done, print the elapsed time.  */
-      double secs = dl_total_time / 1000;
+
       /* Note to translators: this should not take up more room than
 	 available here.  Abbreviate if necessary.  */
       strcpy (p, _("   in "));
       move_to_end (p);		/* not p+=6, think translations! */
-      if (secs >= 10)
-	strcpy (p, eta_to_human_short ((int) (secs + 0.5), false));
+      if (dl_total_time >= 10)
+	strcpy (p, eta_to_human_short ((int) (dl_total_time + 0.5), false));
       else
-	sprintf (p, "%ss", print_decimal (secs));
+	sprintf (p, "%ss", print_decimal (dl_total_time));
       move_to_end (p);
     }
 
