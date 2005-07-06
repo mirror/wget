@@ -125,12 +125,19 @@ so, delete this exception statement from your version.  */
 #undef struct_fstat
 
 /* DMC's runtime supports some POSIX and C99 features we use.  */
-#define HAVE_USLEEP 1
+
+#define HAVE_STDINT_H
+#define HAVE_INTTYPES_H
 #define HAVE_STDBOOL_H 1
-#define HAVE__BOOL 1
+
+#define HAVE_UINT32_T
 #undef SIZEOF_LONG_LONG
 #define SIZEOF_LONG_LONG 8
+#define HAVE__BOOL 1
+
+#define HAVE_USLEEP 1
 #define HAVE_STRTOLL
+
 
 #else
 # error Your compiler is not supported.
