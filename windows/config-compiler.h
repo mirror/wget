@@ -73,8 +73,7 @@ so, delete this exception statement from your version.  */
    from all import libraries. */
 #ifdef ENABLE_IPV6
 # undef gai_strerror
-#  define gai_strerror windows_strerror
-# endif
+# define gai_strerror windows_strerror
 #endif
 
 /* -------------------- */
