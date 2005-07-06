@@ -72,7 +72,7 @@ xsleep (double seconds)
 #endif /* not HAVE_USLEEP */
 }
 
-#if defined(__BORLANDC__) || (defined(_MSC_VER) && _MSC_VER < 1300)
+#if !defined(HAVE_STRTOLL) && !defined(HAVE__STRTOI64)
 
 static inline int
 char_value (char c, int base)
@@ -180,20 +180,7 @@ str_to_int64 (const char *nptr, char **endptr, int base)
     *endptr = (char *) nptr;
   return result;
 }
-
-#else  /* !defined(__BORLANDC__) && (!defined(_MSC_VER) || _MSC_VER >= 1300) */
-
-__int64
-str_to_int64 (const char *nptr, char **endptr, int base)
-{
-#ifdef _MSC_VER
-  return _strtoi64 (nptr, endptr, base);
-#else
-  return strtoll (nptr, endptr, base);
 #endif
-}
-
-#endif /* !defined(__BORLANDC__) && (!defined(_MSC_VER) || _MSC_VER >= 1300) */
 
 void
 windows_main (int *argc, char **argv, char **exec_name)

@@ -1,5 +1,9 @@
 2005-07-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* mswindows.h: Use strtoll where available.
+
+2005-07-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* sysdep.h: Add a full declaration of fnmatch.h.
 
 2005-07-06  Hrvoje Niksic  <hniksic@xemacs.org>

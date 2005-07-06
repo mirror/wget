@@ -95,6 +95,10 @@ so, delete this exception statement from your version.  */
 #define struct_fstat struct _stati64
 
 #define isatty _isatty
+
+#if _MSC_VER >= 1300
+# define HAVE__STRTOI64
+#endif
 
 /* ------------------ */
 /* Borland C section. */
@@ -126,6 +130,7 @@ so, delete this exception statement from your version.  */
 #define HAVE__BOOL 1
 #undef SIZEOF_LONG_LONG
 #define SIZEOF_LONG_LONG 8
+#define HAVE_STRTOLL
 
 #else
 # error Your compiler is not supported.
