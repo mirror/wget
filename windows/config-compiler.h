@@ -46,6 +46,8 @@ so, delete this exception statement from your version.  */
 /* -------------------- */
 #if defined __GNUC__
 
+#define OS_TYPE "Windows-MinGW"
+
 #define LL(n) n##LL
 
 /* Transparently support statting large files, like POSIX's LFS API
@@ -80,6 +82,8 @@ so, delete this exception statement from your version.  */
 /* -------------------- */
 #elif defined _MSC_VER
 
+#define OS_TYPE "Windows-MSVC"
+
 #define LL(n) n##I64
 
 #define stat(fname, buf) _stati64 (fname, buf)
@@ -93,6 +97,8 @@ so, delete this exception statement from your version.  */
 /* ------------------ */
 #elif defined __BORLANDC__
 
+#define OS_TYPE "Windows-Borland"
+
 #define LL(n) n##I64
 #define stat(fname, buf) _stati64 (fname, buf)
 #define struct_stat struct stati64
@@ -102,6 +108,8 @@ so, delete this exception statement from your version.  */
 /* Digital Mars Compiler section. */
 /* ------------------------------ */
 #elif defined __DMC__
+
+#define OS_TYPE "Windows-DMC"
 
 #define LL(n) n##LL
 #undef stat
