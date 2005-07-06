@@ -1222,8 +1222,8 @@ fnmatch (const char *pattern, const char *string, int flags)
 #endif /* not SYSTEM_FNMATCH */
 
 #ifndef HAVE_TIMEGM
-/* timegm is a GNU extension, but lately also available on *BSD and
-   possibly elsewhere. */
+/* timegm is a GNU extension, but lately also available on *BSD
+   systems and possibly elsewhere. */
 
 /* True if YEAR is a leap year. */
 #define ISLEAP(year)						\
