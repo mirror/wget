@@ -621,6 +621,8 @@ int
 fnmatch_nocase (const char *pattern, const char *string, int flags)
 {
 #ifdef FNM_CASEFOLD
+  /* The FNM_CASEFOLD flag started as a GNU extension, but it is now
+     also present on *BSD platforms, and possibly elsewhere.  */
   return fnmatch (pattern, string, flags | FNM_CASEFOLD);
 #else
   /* Turn PATTERN and STRING to lower case and call fnmatch on them. */
