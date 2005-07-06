@@ -216,6 +216,8 @@
    code using `volatile' can become incorrect without. Disable with care. */
 #undef volatile
 
+/* Include compiler-specific defines. */
+#include "config-compiler.h"
 
 #include "config-post.h"
 
