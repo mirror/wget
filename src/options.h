@@ -66,6 +66,8 @@ struct options
   char **excludes;		/* List of excluded FTP directories. */
   char **includes;		/* List of FTP directories to
 				   follow. */
+  bool ignore_case;		/* Whether to ignore case when
+				   matching dirs and files */
 
   char **domains;		/* See host.c */
   char **exclude_domains;

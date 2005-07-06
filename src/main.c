@@ -174,6 +174,7 @@ static struct cmdline_option option_data[] =
     { "http-passwd", 0, OPT_VALUE, "httppassword", -1 }, /* deprecated */
     { "http-password", 0, OPT_VALUE, "httppassword", -1 },
     { "http-user", 0, OPT_VALUE, "httpuser", -1 },
+    { "ignore-case", 0, OPT_BOOLEAN, "ignorecase", -1 },
     { "ignore-length", 0, OPT_BOOLEAN, "ignorelength", -1 },
     { "ignore-tags", 0, OPT_VALUE, "ignoretags", -1 },
     { "include-directories", 'I', OPT_VALUE, "includedirectories", -1 },
@@ -446,6 +447,8 @@ Download:\n"),
        --no-dns-cache            disable caching DNS lookups.\n"),
     N_("\
        --restrict-file-names=OS  restrict chars in file names to ones OS allows.\n"),
+    N_("\
+       --ignore-case             ignore case when matching files/directories.\n"),
 #ifdef ENABLE_IPV6
     N_("\
   -4,  --inet4-only              connect only to IPv4 addresses.\n"),

@@ -615,6 +615,28 @@ file_merge (const char *base, const char *file)
   return result;
 }
 
+/* Like fnmatch, but performs a lower-case comparison.  */
+
+int
+fnmatch_nocase (const char *pattern, const char *string, int flags)
+{
+#ifdef FNM_CASEFOLD
+  return fnmatch (pattern, string, flags | FNM_CASEFOLD);
+#else
+  /* Turn PATTERN and STRING to lower case and call fnmatch on them. */
+  char *patcopy = (char *) alloca (strlen (pattern) + 1);
+  char *strcopy = (char *) alloca (strlen (string) + 1);
+  char *p;
+  for (p = patcopy; *pattern; pattern++, p++)
+    *p = TOLOWER (*pattern);
+  *p = '\0';
+  for (p = strcopy; *string; string++, p++)
+    *p = TOLOWER (*string);
+  *p = '\0';
+  return fnmatch (patcopy, strcopy, flags);
+#endif
+}
+
 static bool in_acclist (const char *const *, const char *, bool);
 
 /* Determine whether a file is acceptable to be followed, according to
@@ -642,28 +664,34 @@ acceptable (const char *s)
 }
 
 /* Compare S1 and S2 frontally; S2 must begin with S1.  E.g. if S1 is
-   `/something', frontcmp() will return 1 only if S2 begins with
-   `/something'.  Otherwise, 0 is returned.  */
+   `/something', frontcmp() will return true only if S2 begins with
+   `/something'.  */
 bool
 frontcmp (const char *s1, const char *s2)
 {
-  for (; *s1 && *s2 && (*s1 == *s2); ++s1, ++s2);
+  if (!opt.ignore_case)
+    for (; *s1 && *s2 && (*s1 == *s2); ++s1, ++s2);
+  else
+    for (; *s1 && *s2 && (TOLOWER (*s1) == TOLOWER (*s2)); ++s1, ++s2);
   return *s1 == '\0';
 }
 
 /* Iterate through STRLIST, and return the first element that matches
    S, through wildcards or front comparison (as appropriate).  */
 static char *
-proclist (char **strlist, const char *s, enum accd flags)
+proclist (char **strlist, const char *s)
 {
   char **x;
+  int (*matcher) (const char *, const char *, int)
+    = opt.ignore_case ? fnmatch_nocase : fnmatch;
+
   for (x = strlist; *x; x++)
     {
-      /* Remove leading '/' if ALLABS */
-      char *p = *x + ((flags & ALLABS) && (**x == '/'));
+      /* Remove leading '/' */
+      char *p = *x + (**x == '/');
       if (has_wildcards_p (p))
 	{
-	  if (fnmatch (p, s, FNM_PATHNAME) == 0)
+	  if (matcher (p, s, FNM_PATHNAME) == 0)
 	    break;
 	}
       else
@@ -678,22 +706,23 @@ proclist (char **strlist, const char *s, enum accd flags)
 /* Returns whether DIRECTORY is acceptable for download, wrt the
    include/exclude lists.
 
-   If FLAGS is ALLABS, the leading `/' is ignored in paths; relative
-   and absolute paths may be freely intermixed.  */
+   The leading `/' is ignored in paths; relative and absolute paths
+   may be freely intermixed.  */
+
 bool
-accdir (const char *directory, enum accd flags)
+accdir (const char *directory)
 {
   /* Remove starting '/'.  */
-  if (flags & ALLABS && *directory == '/')
+  if (*directory == '/')
     ++directory;
   if (opt.includes)
     {
-      if (!proclist (opt.includes, directory, flags))
+      if (!proclist (opt.includes, directory))
 	return false;
     }
   if (opt.excludes)
     {
-      if (proclist (opt.excludes, directory, flags))
+      if (proclist (opt.excludes, directory))
 	return false;
     }
   return true;
@@ -748,21 +777,24 @@ in_acclist (const char *const *accepts, const char *s, bool backward)
     {
       if (has_wildcards_p (*accepts))
 	{
-	  /* fnmatch returns 0 if the pattern *does* match the
-	     string.  */
-	  if (fnmatch (*accepts, s, 0) == 0)
+	  int res = opt.ignore_case
+	    ? fnmatch_nocase (*accepts, s, 0) : fnmatch (*accepts, s, 0);
+	  /* fnmatch returns 0 if the pattern *does* match the string.  */
+	  if (res == 0)
 	    return true;
 	}
       else
 	{
 	  if (backward)
 	    {
-	      if (match_tail (s, *accepts, 0))
+	      if (match_tail (s, *accepts, opt.ignore_case))
 		return true;
 	    }
 	  else
 	    {
-	      if (!strcmp (s, *accepts))
+	      int cmp = opt.ignore_case
+		? strcasecmp (s, *accepts) : strcmp (s, *accepts);
+	      if (cmp == 0)
 		return true;
 	    }
 	}

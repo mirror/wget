@@ -163,6 +163,7 @@ static struct {
   { "httpproxy",	&opt.http_proxy,	cmd_string },
   { "httpsproxy",	&opt.https_proxy,	cmd_string },
   { "httpuser",		&opt.http_user,		cmd_string },
+  { "ignorecase",	&opt.ignore_case,	cmd_boolean },
   { "ignorelength",	&opt.ignore_length,	cmd_boolean },
   { "ignoretags",	&opt.ignore_tags,	cmd_vector },
   { "includedirectories", &opt.includes,	cmd_directory_vector },

@@ -30,10 +30,6 @@ so, delete this exception statement from your version.  */
 #ifndef UTILS_H
 #define UTILS_H
 
-enum accd {
-   ALLABS = 1
-};
-
 struct hash_table;
 
 struct file_memory {
@@ -72,8 +68,9 @@ FILE *unique_create (const char *, bool, char **);
 FILE *fopen_excl (const char *, bool);
 char *file_merge (const char *, const char *);
 
+int fnmatch_nocase (const char *, const char *, int);
 bool acceptable (const char *);
-bool accdir (const char *s, enum accd);
+bool accdir (const char *s);
 char *suffix (const char *s);
 bool match_tail (const char *, const char *, bool);
 bool has_wildcards_p (const char *);

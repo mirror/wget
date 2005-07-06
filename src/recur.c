@@ -495,7 +495,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
      exclusion and inclusion lists.  */
   if (opt.includes || opt.excludes)
     {
-      if (!accdir (u->dir, ALLABS))
+      if (!accdir (u->dir))
 	{
 	  DEBUGP (("%s (%s) is excluded/not-included.\n", url, u->dir));
 	  goto out;

@@ -1621,7 +1621,7 @@ ftp_retrieve_dirs (struct url *u, struct fileinfo *f, ccon *con)
       DEBUGP (("Composing new CWD relative to the initial directory.\n"));
       DEBUGP (("  odir = '%s'\n  f->name = '%s'\n  newdir = '%s'\n\n",
 	       odir, f->name, newdir));
-      if (!accdir (newdir, ALLABS))
+      if (!accdir (newdir))
 	{
 	  logprintf (LOG_VERBOSE, _("\
 Not descending to `%s' as it is excluded/not-included.\n"),
@@ -1714,12 +1714,14 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
      If we are dealing with a globbing pattern, that is.  */
   if (*u->file && (action == GLOB_GLOBALL || action == GLOB_GETONE))
     {
+      int (*matcher) (const char *, const char *, int)
+	= opt.ignore_case ? fnmatch_nocase : fnmatch;
       int matchres = 0;
 
       f = start;
       while (f)
 	{
-	  matchres = fnmatch (u->file, f->name, 0);
+	  matchres = matcher (u->file, f->name, 0);
 	  if (matchres == -1)
 	    {
 	      logprintf (LOG_NOTQUIET, "%s: %s\n", con->target,

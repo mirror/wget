@@ -47,6 +47,11 @@
 #define _SVID_SOURCE
 #define _BSD_SOURCE
 
+/* Under glibc-based systems we want all GNU extensions as well.  This
+   declares some unnecessary cruft, but also useful functions such as
+   timegm, FNM_CASEFOLD extension to fnmatch, memrchr, etc.  */
+#define _GNU_SOURCE
+
 #endif /* NAMESPACE_TWEAKS */
 
 

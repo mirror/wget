@@ -7,6 +7,10 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.11.
 
+** The new function `--ignore-case' makes Wget ignore case when
+matching files, directories, and wildcards.  This affects the -X, -I,
+-A, and -R options, as well as globbing in FTP URLs.
+
 ** ETA projection is now displayed in "dot" progress output as well as
 in the default progress bar.  (The dot progress is used by default when
 logging Wget's output to file using the `-o' option.)

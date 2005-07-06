@@ -1,5 +1,15 @@
 2005-07-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (fnmatch_nocase): New function.
+	(proclist): Use it instead of fnmatch when opt.ignore_case is
+	requested.
+	(in_acclist): Respect opt.ignore_case.
+	(frontcmp): Respect opt.ignore_case.
+
+	* options.h (struct options): New flag opt.ignore_case.
+
+2005-07-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* ptimer.c: Measure time in seconds rather than milliseconds.
 	Adjusted all callers.
 
