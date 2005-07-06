@@ -40,6 +40,11 @@ so, delete this exception statement from your version.  */
 
    Things that apply to *all* compilers, as well as things that are
    specific to Wget, belong in src/mswindows.h.  */
+
+/* For all compilers: must include <sys/stat.h> before redefining
+   stat.  */
+
+#include <sys/stat.h>
 
 /* -------------------- */
 /* MinGW (GCC) section. */
