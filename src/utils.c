@@ -615,7 +615,7 @@ file_merge (const char *base, const char *file)
   return result;
 }
 
-/* Like fnmatch, but performs a lower-case comparison.  */
+/* Like fnmatch, but performs a case-insensitive match.  */
 
 int
 fnmatch_nocase (const char *pattern, const char *string, int flags)
