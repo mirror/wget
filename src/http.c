@@ -1704,7 +1704,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     hs->error = xstrdup (_("(no description)"));
   else
     hs->error = xstrdup (message);
-  xfree (message);
+  xfree_null (message);
 
   type = resp_header_strdup (resp, "Content-Type");
   if (type)
