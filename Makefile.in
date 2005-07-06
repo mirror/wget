@@ -57,7 +57,7 @@ CC = @CC@
 CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 DEFS = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
-LIBS = @LIBS@ @LIBSSL@
+LIBS = @LIBS@ @LIBSSL@ @LIBGNUTLS@
 LDFLAGS = @LDFLAGS@
 
 #

@@ -1,3 +1,7 @@
+2005-07-06  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* Makefile.in: Also use @LIBGNUTLS@ to build LIBS.
+
 2005-07-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Add check for GnuTLS if --with-ssl=gnutls is used.
