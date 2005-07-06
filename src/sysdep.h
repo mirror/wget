@@ -177,8 +177,7 @@ int vsnprintf ();
 # define FNM_PERIOD	(1 << 2) /* Leading `.' is matched only explicitly.  */
 # define FNM_NOMATCH	1
 
-/* Declare the function minimally. */
-int fnmatch ();
+int fnmatch (const char *, const char *, int);
 #endif
 
 /* Provide sig_atomic_t if the system doesn't.  */
