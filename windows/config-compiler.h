@@ -124,6 +124,8 @@ so, delete this exception statement from your version.  */
 #define HAVE_USLEEP 1
 #define HAVE_STDBOOL_H 1
 #define HAVE__BOOL 1
+#undef SIZEOF_LONG_LONG
+#define SIZEOF_LONG_LONG 8
 
 #else
 # error Your compiler is not supported.
