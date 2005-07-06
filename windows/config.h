@@ -137,7 +137,7 @@
 #undef HAVE_USLEEP
 
 /* Define to 1 if you have the <utime.h> header file. */
-#undef HAVE_UTIME_H
+#define HAVE_UTIME_H 1
 
 /* Define to 1 if you have the `vsnprintf' function. */
 #define HAVE_VSNPRINTF 1
