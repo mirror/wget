@@ -66,9 +66,13 @@ so, delete this exception statement from your version.  */
 # define S_ISLNK(a) 0
 #endif
 
-/* We have strcasecmp and strncasecmp, just under a different name.  */
-#define strcasecmp stricmp
-#define strncasecmp strnicmp
+/* We have strcasecmp and strncasecmp, just under different names.  */
+#ifndef HAVE_STRCASECMP
+# define strcasecmp stricmp
+#endif
+#ifndef HAVE_STRNCASECMP
+# define strncasecmp strnicmp
+#endif
 
 /* The same for snprintf() and vsnprintf().  */
 #define snprintf _snprintf
@@ -77,12 +81,7 @@ so, delete this exception statement from your version.  */
 /* Define a wgint type under Windows. */
 typedef __int64 wgint;
 #define SIZEOF_WGINT 8
-
-#ifdef __GNUC__
-#define WGINT_MAX 9223372036854775807LL
-#else
-#define WGINT_MAX 9223372036854775807I64
-#endif
+#define WGINT_MAX LL (9223372036854775807)
 
 /* str_to_wgint is a function with the semantics of strtol, but which
    works on wgint.  Since wgint is unconditionally 64-bit on Windows,
@@ -95,52 +94,16 @@ __int64 str_to_int64 (const char *, char **, int);
    is equivalent to stat anyway.  */
 #define lstat stat
 
-/* Transparently support statting large files, like POSIX's LFS API
-   does.  All Windows compilers we support use _stati64 (but have
-   different names for 2nd argument type, see below), so we use
-   that.  */
-#define stat(fname, buf) _stati64 (fname, buf)
-
-/* On Windows the 64-bit stat requires an explicitly different type
-   for the 2nd argument, so we define a struct_stat macro that expands
-   to the appropriate type on Windows, and to the regular struct stat
-   on Unix.
-
-   Note that Borland C 5.5 has 64-bit stat (_stati64), but not a
-   64-bit fstat!  Because of that we also need a struct_fstat that
-   points to struct_stat on Unix and on Windows, except under Borland,
-   where it points to the 32-bit struct stat.  */
-
-#ifndef __BORLANDC__
-# define fstat(fd, buf) _fstati64 (fd, buf)
-# define struct_stat  struct _stati64
-# define struct_fstat struct _stati64
-#else  /* __BORLANDC__ */
-# define struct_stat  struct stati64
-# define struct_fstat struct stat
-#endif /* __BORLANDC__ */
-
 #define PATH_SEPARATOR '\\'
 
-#ifdef HAVE_ISATTY
-#ifdef _MSC_VER
-# define isatty _isatty
-#endif
-#endif
-
 /* Win32 doesn't support the MODE argument to mkdir.  */
-#define mkdir(a, b) _mkdir(a)
+#include <direct.h>
+#define mkdir(a, b) (mkdir) (a)
 
 /* Additional declarations needed for IPv6: */
 #ifdef ENABLE_IPV6
 const char *inet_ntop (int, const void *, char *, socklen_t);
-/* MinGW 3.7 (or older) prototypes gai_strerror(), but is missing
-   from all import libraries. */
-# ifdef __MINGW32__
-#  undef gai_strerror
-#  define gai_strerror windows_strerror
-# endif
-#endif /* ENABLE_IPV6 */
+#endif
 
 #ifndef INHIBIT_WRAP
 

@@ -32,7 +32,6 @@ if .%1 == .--msvc goto :msvc
 goto :usage
 
 :msvc
-copy windows\config.h.ms src\config.h > nul
 copy windows\Makefile.top Makefile > nul
 copy windows\Makefile.src src\Makefile > nul
 copy windows\Makefile.doc doc\Makefile > nul
@@ -43,7 +42,6 @@ echo and then NMAKE.
 goto :end
 
 :borland
-copy windows\config.h.bor src\config.h > nul
 copy windows\Makefile.top.bor Makefile > nul
 copy windows\Makefile.src.bor src\Makefile > nul
 copy windows\Makefile.doc doc\Makefile > nul
@@ -52,7 +50,6 @@ echo Type MAKE to start compiling.
 goto :end
 
 :mingw
-copy windows\config.h.mingw src\config.h > nul
 copy windows\Makefile.top.mingw Makefile > nul
 copy windows\Makefile.src.mingw src\Makefile > nul
 copy windows\Makefile.doc doc\Makefile > nul
@@ -63,3 +60,6 @@ goto :end
 :usage
 echo "Usage: configure [--borland | --mingw | --msvc]"
 :end
+
+copy windows\config.h src\config.h > nul
+copy windows\config-compiler.h src\config-compiler.h > nul
