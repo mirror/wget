@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: GNU wget 1.10-rc1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-06-06 09:11-0400\n"
-"PO-Revision-Date: 2005-06-14 08:00-0500\n"
+"PO-Revision-Date: 2005-07-02 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "MIME-Version: 1.0\n"
@@ -273,7 +273,7 @@ msgstr ""
 #: src/ftp.c:946 src/http.c:1913
 #, c-format
 msgid "%s has sprung into existence.\n"
-msgstr ""
+msgstr "%s vient de s'annoncer comme existante.\n"
 
 #: src/ftp.c:1008
 #, c-format
@@ -1186,119 +1186,119 @@ msgstr "FTP options:\n"
 
 #: src/main.c:575
 msgid "       --ftp-user=USER         set ftp user to USER.\n"
-msgstr ""
+msgstr "       --ftp-user=USAGER       utiliser le transfert ftp pour l'USAGER.\n"
 
 #: src/main.c:577
 msgid "       --ftp-password=PASS     set ftp password to PASS.\n"
-msgstr ""
+msgstr "       --ftp-password=MDP      utiliser le MDP (mot de passe) pour les transfert ftp.\n"
 
 #: src/main.c:579
 msgid "       --no-remove-listing     don't remove `.listing' files.\n"
-msgstr ""
+msgstr "       --no-remove-listing     ne pas enlever les fichiers `.listing'.\n"
 
 #: src/main.c:581
 msgid "       --no-glob               turn off FTP file name globbing.\n"
-msgstr ""
+msgstr "       --no-glob               désactiver la mutilation des noms de fichiers par FTP.\n"
 
 #: src/main.c:583
 msgid "       --no-passive-ftp        disable the \"passive\" transfer mode.\n"
-msgstr ""
+msgstr "       --no-passive-ftp        désactiver le mode de transfert passif ( \"passive\" ) .\n"
 
 #: src/main.c:585
 msgid "       --retr-symlinks         when recursing, get linked-to files (not dir).\n"
-msgstr ""
+msgstr "       --retr-symlinks         lors de la récursion, prendre les fichiers attachés à des liens (par les répertoires).\n"
 
 #: src/main.c:587
 msgid "       --preserve-permissions  preserve remote file permissions.\n"
-msgstr ""
+msgstr "       --preserve-permissions  préserver les permissions des fichiers distants.\n"
 
 #: src/main.c:591
 msgid "Recursive download:\n"
-msgstr ""
+msgstr "Téléchargement récursif:\n"
 
 #: src/main.c:593
 msgid "  -r,  --recursive          specify recursive download.\n"
-msgstr ""
+msgstr "  -r,  --recursive          spécifer un téléchargement récursif.\n"
 
 #: src/main.c:595
 msgid "  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n"
-msgstr ""
+msgstr "  -l,  --level=NOMBRE       profondeeur maximale de récursion (inf ou 0 pour infini).\n"
 
 #: src/main.c:597
 msgid "       --delete-after       delete files locally after downloading them.\n"
-msgstr ""
+msgstr "       --delete-after       détruire les fichiers localementn après les avoir télécharger.\n"
 
 #: src/main.c:599
 msgid "  -k,  --convert-links      make links in downloaded HTML point to local files.\n"
-msgstr ""
+msgstr "  -k,  --convert-links      faire pointer les liens HTML téléchargés vers les fichiers locaux.\n"
 
 #: src/main.c:601
 msgid "  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
-msgstr ""
+msgstr "  -K,  --backup-converted   avant de convertir le fichier X en faire l'archive sous X.orig.\n"
 
 #: src/main.c:603
 msgid "  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"
-msgstr ""
+msgstr "  -m,  --mirror             option courte équivalente à -r -N -l inf -nr.\n"
 
 #: src/main.c:605
 msgid "  -p,  --page-requisites    get all images, etc. needed to display HTML page.\n"
-msgstr ""
+msgstr "  -p,  --page-requisites    obtenir toutes les images, etc. nécessaires à l'affichage de la page HTML.\n"
 
 #: src/main.c:607
 msgid "       --strict-comments    turn on strict (SGML) handling of HTML comments.\n"
-msgstr ""
+msgstr "       --strict-comments    activer le traitement strict (SGML) des commentaires HTML.\n"
 
 #: src/main.c:611
 msgid "Recursive accept/reject:\n"
-msgstr ""
+msgstr "Acceptation/rejet récursif:\n"
 
 #: src/main.c:613
 msgid "  -A,  --accept=LIST               comma-separated list of accepted extensions.\n"
-msgstr ""
+msgstr "  -A,  --accept=LISTE              liste des extensions acceptées.\n"
 
 #: src/main.c:615
 msgid "  -R,  --reject=LIST               comma-separated list of rejected extensions.\n"
-msgstr ""
+msgstr "  -R,  --reject=LISTE              liste des extensions rejetées.\n"
 
 #: src/main.c:617
 msgid "  -D,  --domains=LIST              comma-separated list of accepted domains.\n"
-msgstr ""
+msgstr "  -D,  --domains=LISTE             liste des domaines acceptés.\n"
 
 #: src/main.c:619
 msgid "       --exclude-domains=LIST      comma-separated list of rejected domains.\n"
-msgstr ""
+msgstr "       --exclude-domains=LISTE     liste des domaines rejetés.\n"
 
 #: src/main.c:621
 msgid "       --follow-ftp                follow FTP links from HTML documents.\n"
-msgstr ""
+msgstr "       --follow-ftp                suivre les liens FTP à partir des documents HTML.\n"
 
 #: src/main.c:623
 msgid "       --follow-tags=LIST          comma-separated list of followed HTML tags.\n"
-msgstr ""
+msgstr "       --follow-tags=LISTE         liste des étiquettes HTML poursuivies.\n"
 
 #: src/main.c:625
 msgid "       --ignore-tags=LIST          comma-separated list of ignored HTML tags.\n"
-msgstr ""
+msgstr "       --ignore-tags=LISTE         liste des étiquettes HTML ignorées.\n"
 
 #: src/main.c:627
 msgid "  -H,  --span-hosts                go to foreign hosts when recursive.\n"
-msgstr ""
+msgstr "  -H,  --span-hosts                aller sur les hôtes externes en mode récursif.\n"
 
 #: src/main.c:629
 msgid "  -L,  --relative                  follow relative links only.\n"
-msgstr ""
+msgstr "  -L,  --relative                  suivre les liens relatifs seulement.\n"
 
 #: src/main.c:631
 msgid "  -I,  --include-directories=LIST  list of allowed directories.\n"
-msgstr ""
+msgstr "  -I,  --include-directories=LISTE liste des répertoires permis.\n"
 
 #: src/main.c:633
 msgid "  -X,  --exclude-directories=LIST  list of excluded directories.\n"
-msgstr ""
+msgstr "  -X,  --exclude-directories=LISTE liste des répertoires exclus.\n"
 
 #: src/main.c:635
 msgid "  -np, --no-parent                 don't ascend to the parent directory.\n"
-msgstr ""
+msgstr "  -np, --no-parent                 ne pas remonter dans le répertoire parent.\n"
 
 #: src/main.c:639
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
@@ -1359,7 +1359,7 @@ msgstr "Ne peut se servir des dates et ne pas écraser les vieux fichiers en même
 #: src/main.c:844
 #, c-format
 msgid "Cannot specify both --inet4-only and --inet6-only.\n"
-msgstr ""
+msgstr "Ne peut utiliser ensemble --inet4-only et --inet6-only.\n"
 
 #. No URL specified.
 #: src/main.c:854
@@ -1434,7 +1434,7 @@ msgstr "%s: ne peut évaluer par stat() le fichier %s: %s\n"
 #. of using OpenSSL, which is why it is highly discouraged.
 #: src/openssl.c:121
 msgid "WARNING: using a weak random seed.\n"
-msgstr ""
+msgstr "AVERTISSEMENT: utilisation d'un germe aléatoire faible.\n"
 
 #: src/openssl.c:181
 msgid "Could not seed PRNG; consider using --random-file.\n"
@@ -1463,12 +1463,12 @@ msgstr "%s: erreur de vérification du certificat pour %s: %s\n"
 #: src/openssl.c:485
 #, c-format
 msgid "%s: certificate common name `%s' doesn't match requested host name `%s'.\n"
-msgstr ""
+msgstr "%s: le nom du certificat commun `%s' ne concorde par avec le nom de l'hôte demandé `%s'.\n"
 
 #: src/openssl.c:498
 #, c-format
 msgid "To connect to %s insecurely, use `--no-check-certificate'.\n"
-msgstr ""
+msgstr "Pour établir une connexion à %s non sécuritaire, utiliser `--no-check-certificate'.\n"
 
 #. Align the [ skipping ... ] line with the dots.  To do
 #. that, insert the number of spaces equal to the number of
@@ -1573,7 +1573,7 @@ msgstr "ÉCHEC de « unlink » sur le lien symbolique « %s »: %s\n"
 #: src/xmalloc.c:72
 #, c-format
 msgid "%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"
-msgstr ""
+msgstr "%s: %s: échec d'allocation de %ld octets; mémoire épuisée.\n"
 
 #~ msgid "Unable to convert `%s' to a bind address.  Reverting to ANY.\n"
 #~ msgstr "Incapable de convertir `%s' pour lier l'adresse. Retour à ANY.\n"
