@@ -1133,7 +1133,8 @@ fnmatch (const char *pattern, const char *string, int flags)
 	    {
 	      register const char *np;
 
-	      for (np = p; np && *np && *np != ']'; np++);
+	      for (np = p; np && *np && *np != ']'; np++)
+		;
 
 	      if (np && !*np)
 		{
