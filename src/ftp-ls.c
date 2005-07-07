@@ -642,7 +642,8 @@ ftp_parse_vms_ls (const char *file)
       tok = strtok(line, " ");
       if (tok == NULL) tok = line;
       DEBUGP(("file name: '%s'\n", tok));
-      for (p = tok ; *p && *p != ';' ; p++);
+      for (p = tok ; *p && *p != ';' ; p++)
+	;
       if (*p == ';') *p = '\0';
       p   = tok + strlen(tok) - 4;
       if (!strcmp(p, ".DIR")) *p = '\0';
@@ -724,10 +725,12 @@ ftp_parse_vms_ls (const char *file)
       min = sec = 0;
       p = tok;
       hour = atoi (p);
-      for (; *p && *p != ':'; ++p);
+      for (; *p && *p != ':'; ++p)
+	;
       if (*p)
 	min = atoi (++p);
-      for (; *p && *p != ':'; ++p);
+      for (; *p && *p != ':'; ++p)
+	;
       if (*p)
 	sec = atoi (++p);
 

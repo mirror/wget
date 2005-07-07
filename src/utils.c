@@ -670,9 +670,11 @@ bool
 frontcmp (const char *s1, const char *s2)
 {
   if (!opt.ignore_case)
-    for (; *s1 && *s2 && (*s1 == *s2); ++s1, ++s2);
+    for (; *s1 && *s2 && (*s1 == *s2); ++s1, ++s2)
+      ;
   else
-    for (; *s1 && *s2 && (TOLOWER (*s1) == TOLOWER (*s2)); ++s1, ++s2);
+    for (; *s1 && *s2 && (TOLOWER (*s1) == TOLOWER (*s2)); ++s1, ++s2)
+      ;
   return *s1 == '\0';
 }
 
@@ -1084,9 +1086,11 @@ merge_vecs (char **v1, char **v2)
       return v1;
     }
   /* Count v1.  */
-  for (i = 0; v1[i]; i++);
+  for (i = 0; v1[i]; i++)
+    ;
   /* Count v2.  */
-  for (j = 0; v2[j]; j++);
+  for (j = 0; v2[j]; j++)
+    ;
   /* Reallocate v1.  */
   v1 = xrealloc (v1, (i + j + 1) * sizeof (char **));
   memcpy (v1 + i, v2, (j + 1) * sizeof (char *));

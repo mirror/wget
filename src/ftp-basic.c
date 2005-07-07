@@ -526,7 +526,8 @@ ftp_pasv (int csock, ip_address *addr, int *port)
     }
   /* Parse the request.  */
   s = respline;
-  for (s += 4; *s && !ISDIGIT (*s); s++);
+  for (s += 4; *s && !ISDIGIT (*s); s++)
+    ;
   if (!*s)
     return FTPINVPASV;
   for (i = 0; i < 6; i++)
@@ -594,7 +595,8 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
 
   /* Parse the response.  */
   s = respline;
-  for (s += 4; *s && !ISDIGIT (*s); s++);
+  for (s += 4; *s && !ISDIGIT (*s); s++)
+    ;
   if (!*s)
     return FTPINVPASV;
 

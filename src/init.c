@@ -1389,7 +1389,8 @@ check_user_specified_header (const char *s)
 {
   const char *p;
 
-  for (p = s; *p && *p != ':' && !ISSPACE (*p); p++);
+  for (p = s; *p && *p != ':' && !ISSPACE (*p); p++)
+    ;
   /* The header MUST contain `:' preceded by at least one
      non-whitespace character.  */
   if (*p != ':' || p == s)

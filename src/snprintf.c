@@ -485,7 +485,8 @@ static int fmtstr (char *buffer, size_t *currlen, size_t maxlen,
   else
     /* When precision is specified, don't read VALUE past precision. */
     /*strln = strnlen (value, max);*/
-    for (strln = 0; strln < max && value[strln]; ++strln);
+    for (strln = 0; strln < max && value[strln]; ++strln)
+      ;
   padlen = min - strln;
   if (padlen < 0) 
     padlen = 0;
