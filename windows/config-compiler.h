@@ -28,28 +28,32 @@ file, but you are not obligated to do so.  If you do not wish to do
 so, delete this exception statement from your version.  */
 
 
-/* This file contains specifics of various compilers supported on the
-   Windows platform.  In this case "compiler" can refer either to the
-   specific compiler feature (such as how to construct a 64-bit
-   constant) or to a feature of the compilation environment shipped
-   with the compiler.
+/* This file contains information about various compilers used to
+   build Wget on the Windows platform using its "native" API,
+   sometimes referred to as "Win32".  (This excludes Cygwin, which
+   defines a Unix-compatible layer and is handled with configure.)
 
-   The file is divided into sections for each compiler.  Most of the
-   explanatory comments are in the first (MinGW) section to avoid
-   repetition.
+   The above "information about compilers" includes both actual
+   differences in compilers (such as how to construct 64-bit constants
+   or whether C99 `bool' is available) and the properties of the
+   compilation environment and run-time library shipped with the
+   compiler (such as whether stat handles large files or whether
+   strtoll is present).
 
-   Things that apply to *all* compilers, as well as things that are
-   specific to Wget, belong in src/mswindows.h.  */
+   The file is divided into sections for each compiler/environment.
+   Being based on free software, MinGW's section comes first and
+   contains most of the explanatory comments.  Things that apply to
+   *all* compilers, as well as things that are specific to Wget,
+   belong in src/mswindows.h.  */
 
-/* For all compilers: must include <sys/stat.h> before redefining
+/* For all compilers: must include <sys/stat.h> *before* redefining
    stat.  */
-
 #include <sys/stat.h>
 
 /* -------------------- */
 /* MinGW (GCC) section. */
 /* -------------------- */
-#if defined __GNUC__
+#if defined __MINGW32__
 
 #define OS_TYPE "Windows-MinGW"
 
@@ -97,7 +101,7 @@ so, delete this exception statement from your version.  */
 #define isatty _isatty
 
 #if _MSC_VER >= 1300
-# define HAVE__STRTOI64
+# define HAVE__STRTOI64 1
 #endif
 
 /* ------------------ */
@@ -120,23 +124,28 @@ so, delete this exception statement from your version.  */
 #define OS_TYPE "Windows-DMC"
 
 #define LL(n) n##LL
+
+/* DMC supports 64-bit types, including long long, but not statting
+   large files.  */
 #undef stat
+/* If left undefined, sysdep.h will define these to struct stat. */
 #undef struct_stat
 #undef struct_fstat
 
-/* DMC's runtime supports some POSIX and C99 features we use.  */
+/* DMC's runtime supports some POSIX and C99 headers, types, and
+   functions that we use.  */
 
-#define HAVE_STDINT_H
-#define HAVE_INTTYPES_H
+#define HAVE_STDINT_H 1
+#define HAVE_INTTYPES_H 1
 #define HAVE_STDBOOL_H 1
 
-#define HAVE_UINT32_T
-#undef SIZEOF_LONG_LONG
+#define HAVE_UINT32_T 1
+#undef SIZEOF_LONG_LONG		/* avoid redefinition warning */
 #define SIZEOF_LONG_LONG 8
 #define HAVE__BOOL 1
 
 #define HAVE_USLEEP 1
-#define HAVE_STRTOLL
+#define HAVE_STRTOLL 1
 
 
 #else
