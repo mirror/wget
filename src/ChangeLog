@@ -1,5 +1,10 @@
 2005-07-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* gnutls.c (ssl_check_certificate): Check for the validity of the
+	presented X509 certificate.
+
+2005-07-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* openssl.c (ssl_check_certificate): Print custom error messages
 	for frequent X509 certificate problems.
 

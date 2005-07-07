@@ -38,6 +38,7 @@ so, delete this exception statement from your version.  */
 #include <stdio.h>
 
 #include <gnutls/gnutls.h>
+#include <gnutls/x509.h>
 
 #include "wget.h"
 #include "utils.h"
@@ -212,22 +213,20 @@ ssl_check_certificate (int fd, const char *host)
   struct wgnutls_transport_context *ctx = fd_transport_context (fd);
 
   unsigned int status;
-  const gnutls_datum *cert_list;
-  int cert_list_size, ret;
-  gnutls_x509_crt cert;
+  int err;
 
   /* If the user has specified --no-check-cert, we still want to warn
      him about problems with the server's certificate.  */
   const char *severity = opt.check_cert ? _("ERROR") : _("WARNING");
   bool success = true;
 
-  ret = gnutls_certificate_verify_peers2 (ctx->session, &status);
-  if (ret < 0)
+  err = gnutls_certificate_verify_peers2 (ctx->session, &status);
+  if (err < 0)
     {
       logprintf (LOG_NOTQUIET, _("%s: No certificate presented by %s.\n"),
 		 severity, escnonprint (host));
       success = false;
-      goto no_cert;
+      goto out;
     }
 
   if (status & GNUTLS_CERT_INVALID)
@@ -249,6 +248,56 @@ ssl_check_certificate (int fd, const char *host)
       success = false;
     }
 
- no_cert:
+  if (gnutls_certificate_type_get (ctx->session) == GNUTLS_CRT_X509)
+    {
+      time_t now = time (NULL);
+      gnutls_x509_crt cert;
+      const gnutls_datum *cert_list;
+      unsigned int cert_list_size;
+
+      if ((err = gnutls_x509_crt_init (&cert)) < 0)
+	{
+	  logprintf (LOG_NOTQUIET, _("Error initializing X509 certificate: %s\n"),
+		     gnutls_strerror (err));
+	  success = false;
+	  goto out;
+	}
+
+      cert_list = gnutls_certificate_get_peers (ctx->session, &cert_list_size);
+      if (!cert_list)
+	{
+	  logprintf (LOG_NOTQUIET, _("No certificate found\n"));
+	  success = false;
+	  goto out;
+	}
+      err = gnutls_x509_crt_import (cert, cert_list, GNUTLS_X509_FMT_DER);
+      if (err < 0)
+	{
+	  logprintf (LOG_NOTQUIET, _("Error parsing certificate: %s\n"),
+		     gnutls_strerror (err));
+	  success = false;
+	  goto out;
+	}
+      if (now < gnutls_x509_crt_get_activation_time (cert))
+	{
+	  logprintf (LOG_NOTQUIET, _("The certificate has not yet been activated\n"));
+	  success = false;
+	}
+      if (now >= gnutls_x509_crt_get_expiration_time (cert))
+	{
+	  logprintf (LOG_NOTQUIET, _("The certificate has expired\n"));
+	  success = false;
+	}
+      if (!gnutls_x509_crt_check_hostname (cert, host))
+	{
+	  logprintf (LOG_NOTQUIET,
+		     _("The certificate's owner does not match hostname '%s'\n"),
+		     host);
+	  success = false;
+	}
+      gnutls_x509_crt_deinit (cert);
+   }
+
+ out:
   return opt.check_cert ? success : true;
 }
