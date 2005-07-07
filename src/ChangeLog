@@ -1,3 +1,10 @@
+2005-07-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* mswindows.h: Define an alias for stat and fstat, as requested by
+	config-compiler.h.
+	(gai_strerror): Define to windows_strerror if NEED_GAI_STRERROR is
+	defined.
+
 2005-07-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* mswindows.h: Use strtoll where available.

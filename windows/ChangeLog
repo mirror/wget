@@ -1,3 +1,10 @@
+2005-07-07  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* config-compiler.h (stat_alias): Don't directly redefine stat and
+	fstat here.  Just define the alias symbols.
+	(gai_strerror): Just declare that it needs to be defined instead
+	of defining it directly.
+
 2005-07-07  Gisle Vanem  <giva@bgnett.no>
 
 	* config-compiler.h: Define HAVE__BOOL, HAVE_INTTYPES_H, and

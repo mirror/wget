@@ -45,10 +45,6 @@ so, delete this exception statement from your version.  */
    contains most of the explanatory comments.  Things that apply to
    *all* compilers, as well as things that are specific to Wget,
    belong in src/mswindows.h.  */
-
-/* For all compilers: must include <sys/stat.h> *before* redefining
-   stat.  */
-#include <sys/stat.h>
 
 /* -------------------- */
 /* MinGW (GCC) section. */
@@ -60,10 +56,11 @@ so, delete this exception statement from your version.  */
 #define LL(n) n##LL
 
 /* Transparently support statting large files, like POSIX's LFS API
-   does.  All Windows compilers we support use _stati64 (but have
-   different names for 2nd argument type, see below), so we use
-   that.  */
-#define stat(fname, buf) _stati64 (fname, buf)
+   does, by aliasing stat and fstat to their equivalents that do LFS.
+   Most Windows compilers we support use _stati64 (but have different
+   names for 2nd argument type, see below), so we use that.  */
+#define stat_alias _stati64
+#define fstat_alias _fstati64
 
 /* On Windows the 64-bit stat requires an explicitly different type
    for the 2nd argument, so we define a struct_stat macro that expands
@@ -81,13 +78,16 @@ so, delete this exception statement from your version.  */
 /* MinGW 3.7 (or older) prototypes gai_strerror(), but is missing
    from all import libraries. */
 #ifdef ENABLE_IPV6
-# undef gai_strerror
-# define gai_strerror windows_strerror
+# define NEED_GAI_STRERROR
 #endif
 
 /* MinGW and GCC support some POSIX and C99 features.  */
-#define HAVE__BOOL 1
 #define HAVE_INTTYPES_H 1
+
+#define HAVE__BOOL 1
+#undef SIZEOF_LONG_LONG		/* avoid redefinition warning */
+#define SIZEOF_LONG_LONG 8
+
 #define HAVE_STRTOLL 1
 
 /* -------------------- */
@@ -99,7 +99,8 @@ so, delete this exception statement from your version.  */
 
 #define LL(n) n##I64
 
-#define stat(fname, buf) _stati64 (fname, buf)
+#define stat_alias _stati64
+#define fstat_alias _fstati64
 #define struct_stat struct _stati64
 #define struct_fstat struct _stati64
 
@@ -117,9 +118,11 @@ so, delete this exception statement from your version.  */
 #define OS_TYPE "Windows-Borland"
 
 #define LL(n) n##I64
-#define stat(fname, buf) _stati64 (fname, buf)
+
+#define stat_alias _stati64
+#undef fstat_alias
 #define struct_stat struct stati64
-#define struct_fstat struct stat
+#undef struct_fstat
 
 /* ------------------------------ */
 /* Digital Mars Compiler section. */
@@ -132,7 +135,8 @@ so, delete this exception statement from your version.  */
 
 /* DMC supports 64-bit types, including long long, but not statting
    large files.  */
-#undef stat
+#undef stat_alias
+#undef fstat_alias
 /* If left undefined, sysdep.h will define these to struct stat. */
 #undef struct_stat
 #undef struct_fstat

@@ -98,6 +98,14 @@ __int64 str_to_int64 (const char *, char **, int);
    is equivalent to stat anyway.  */
 #define lstat stat
 
+/* Define LFS aliases for stat and fstat. */
+#ifdef stat_alias
+# define stat(f, b) stat_alias (f, b)
+#endif
+#ifdef fstat_alias
+# define fstat(f, b) fstat_alias (f, b)
+#endif
+
 #define PATH_SEPARATOR '\\'
 
 /* Win32 doesn't support the MODE argument to mkdir.  */
@@ -107,6 +115,11 @@ __int64 str_to_int64 (const char *, char **, int);
 /* Additional declarations needed for IPv6: */
 #ifdef ENABLE_IPV6
 const char *inet_ntop (int, const void *, char *, socklen_t);
+#endif
+
+#ifdef NEED_GAI_STRERROR
+# undef gai_strerror
+# define gai_strerror windows_strerror
 #endif
 
 #ifndef INHIBIT_WRAP
