@@ -1,3 +1,8 @@
+2005-07-07  Gisle Vanem  <giva@bgnett.no>
+
+	* config-compiler.h: Define HAVE__BOOL, HAVE_INTTYPES_H, and
+	HAVE_STRTOLL for MinGW.
+
 2005-07-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* config.h.mingw: Removed.

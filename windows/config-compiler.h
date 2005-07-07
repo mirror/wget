@@ -84,6 +84,11 @@ so, delete this exception statement from your version.  */
 # undef gai_strerror
 # define gai_strerror windows_strerror
 #endif
+
+/* MinGW and GCC support some POSIX and C99 features.  */
+#define HAVE__BOOL 1
+#define HAVE_INTTYPES_H 1
+#define HAVE_STRTOLL 1
 
 /* -------------------- */
 /* MS Visual C section. */
