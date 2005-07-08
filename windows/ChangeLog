@@ -1,3 +1,8 @@
+2005-07-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* config.h: Comment out the #undef lines so that they don't undo
+	the flags set in the Makefiles.
+
 2005-07-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* config-compiler.h (stat_alias): Don't directly redefine stat and
