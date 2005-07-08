@@ -59,6 +59,9 @@ so, delete this exception statement from your version.  */
    chmod.  Unix declares these in unistd.h and fcntl.h.  */
 #include <io.h>
 
+/* Declares getpid(). */
+#include <process.h>
+
 #ifndef S_ISDIR
 # define S_ISDIR(m) (((m) & (_S_IFMT)) == (_S_IFDIR))
 #endif

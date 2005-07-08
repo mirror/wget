@@ -1,3 +1,7 @@
+2005-07-08  Gisle Vanem  <giva@bgnett.no>
+
+	* mswindows.h: Include process.h to get getpid() declaration.
+
 2005-07-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (aprintf): Use vasprintf where available.
