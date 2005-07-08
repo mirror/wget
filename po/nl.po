@@ -1,4 +1,4 @@
-# Translation of wget-1.10-rc1 to Dutch.
+# Translation of wget-1.10.1-b1 to Dutch.
 # Copyright (C) 1997, 1998, 2004, 2005 Free Software Foundation, Inc.
 # Benno Schulenberg <benno@nietvergeten.nl>, 2005.
 # Elros Cyriatan <cyriatan@fastmail.fm>, 2004.
@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.10-rc1\n"
+"Project-Id-Version: wget 1.10.1-b1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-06 09:11-0400\n"
-"PO-Revision-Date: 2005-06-12 14:44+0200\n"
+"POT-Creation-Date: 2005-07-08 08:08-0400\n"
+"PO-Revision-Date: 2005-07-08 20:51+0200\n"
 "Last-Translator: Benno Schulenberg <benno@nietvergeten.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
@@ -35,6 +35,11 @@ msgstr "Verbinding maken met %s:%d... "
 #: src/connect.c:335
 msgid "connected.\n"
 msgstr "verbonden.\n"
+
+#: src/connect.c:347 src/host.c:789 src/host.c:818
+#, c-format
+msgid "failed: %s.\n"
+msgstr "mislukt: %s.\n"
 
 #: src/convert.c:176
 #, c-format
@@ -68,27 +73,32 @@ msgstr "Kan geen reservekopie %2$s van %1$s maken: %3$s\n"
 #: src/cookies.c:619
 #, c-format
 msgid "Error in Set-Cookie, field `%s'"
-msgstr "Fout in Set-Cookie-kopregel, veld '%s'"
+msgstr "Fout in Set-Cookie-kopregel, veld '%s'."
 
 #: src/cookies.c:643
 #, c-format
 msgid "Syntax error in Set-Cookie: %s at position %d.\n"
 msgstr "Syntaxfout in Set-Cookie-kopregel: %s op positie %d.\n"
 
-#: src/cookies.c:1469
+#: src/cookies.c:881
+#, c-format
+msgid "Cookie coming from %s attempted to set domain to %s\n"
+msgstr "Een cookie afkomstig van %s probeerde %s als domein in te stellen\n"
+
+#: src/cookies.c:1328 src/cookies.c:1477
 #, c-format
 msgid "Cannot open cookies file `%s': %s\n"
 msgstr "Kan cookiesbestand '%s' niet openen: %s\n"
 
-#: src/cookies.c:1481
+#: src/cookies.c:1489
 #, c-format
 msgid "Error writing to `%s': %s\n"
-msgstr "Fout tijdens schrijven naar '%s': %s\n"
+msgstr "Fout tijdens schrijven naar '%s': %s.\n"
 
-#: src/cookies.c:1484
+#: src/cookies.c:1492
 #, c-format
 msgid "Error closing `%s': %s\n"
-msgstr "Fout tijdens sluiten van '%s': %s\n"
+msgstr "Fout tijdens sluiten van '%s': %s.\n"
 
 #: src/ftp-ls.c:841
 msgid "Unsupported listing type, trying Unix listing parser.\n"
@@ -134,12 +144,12 @@ msgstr " (%s bytes)"
 msgid "Length: %s"
 msgstr "Lengte: %s"
 
-#: src/ftp.c:232 src/http.c:1857
+#: src/ftp.c:232 src/http.c:1861
 #, c-format
 msgid ", %s (%s) remaining"
 msgstr ", %s (%s) resterend"
 
-#: src/ftp.c:236 src/http.c:1861
+#: src/ftp.c:236 src/http.c:1865
 #, c-format
 msgid ", %s remaining"
 msgstr ", %s resterend"
@@ -160,7 +170,7 @@ msgstr "Inloggen als %s... "
 #: src/ftp.c:612 src/ftp.c:640 src/ftp.c:698 src/ftp.c:759 src/ftp.c:819
 #: src/ftp.c:866
 msgid "Error in server response, closing control connection.\n"
-msgstr "Fout in server-antwoord, de besturingsverbinding wordt gesloten.\n"
+msgstr "Fout in server-antwoord -- de besturingsverbinding wordt gesloten.\n"
 
 #: src/ftp.c:334
 msgid "Error in server greeting.\n"
@@ -169,7 +179,7 @@ msgstr "Fout in server-groet.\n"
 #: src/ftp.c:341 src/ftp.c:462 src/ftp.c:574 src/ftp.c:648 src/ftp.c:708
 #: src/ftp.c:769 src/ftp.c:829 src/ftp.c:876
 msgid "Write failed, closing control connection.\n"
-msgstr "Schrijffout, de besturingsverbinding wordt gesloten.\n"
+msgstr "Schrijffout -- de besturingsverbinding wordt gesloten.\n"
 
 #: src/ftp.c:347
 msgid "The server refuses login.\n"
@@ -185,7 +195,7 @@ msgstr "Ingelogd!\n"
 
 #: src/ftp.c:381
 msgid "Server error, can't determine system type.\n"
-msgstr "Serverfout, kan systeemsoort niet bepalen.\n"
+msgstr "Serverfout; kan systeemsoort niet bepalen.\n"
 
 #: src/ftp.c:390 src/ftp.c:685 src/ftp.c:742 src/ftp.c:785
 msgid "done.    "
@@ -198,7 +208,7 @@ msgstr "gereed.\n"
 #: src/ftp.c:469
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
-msgstr "Onbekend soort '%c', de besturingsverbinding wordt gesloten.\n"
+msgstr "Onbekend soort '%c' -- de besturingsverbinding wordt gesloten.\n"
 
 #: src/ftp.c:481
 msgid "done.  "
@@ -250,7 +260,7 @@ msgid ""
 "REST failed, starting from scratch.\n"
 msgstr ""
 "\n"
-"REST-opdracht is mislukt, van voren af aan begonnen.\n"
+"REST-opdracht is mislukt; van voren af aan begonnen.\n"
 
 #: src/ftp.c:837
 #, c-format
@@ -274,7 +284,7 @@ msgstr ""
 #. what functions like unique_create typically do)
 #. because we told the user we'd use this name.
 #. Instead, return and retry the download.
-#: src/ftp.c:946 src/http.c:1913
+#: src/ftp.c:946 src/http.c:1922
 #, c-format
 msgid "%s has sprung into existence.\n"
 msgstr "%s is zojuist ontstaan.\n"
@@ -282,7 +292,7 @@ msgstr "%s is zojuist ontstaan.\n"
 #: src/ftp.c:1008
 #, c-format
 msgid "%s: %s, closing control connection.\n"
-msgstr "%s: %s, de besturingsverbinding wordt gesloten.\n"
+msgstr "%s: %s -- de besturingsverbinding wordt gesloten.\n"
 
 #: src/ftp.c:1016
 #, c-format
@@ -297,17 +307,17 @@ msgstr "Besturingsverbinding is gesloten.\n"
 msgid "Data transfer aborted.\n"
 msgstr "Gegevensoverdracht is afgebroken.\n"
 
-#: src/ftp.c:1114
+#: src/ftp.c:1117
 #, c-format
-msgid "File `%s' already there, not retrieving.\n"
+msgid "File `%s' already there; not retrieving.\n"
 msgstr "Bestand '%s' is reeds aanwezig -- wordt niet opgehaald.\n"
 
-#: src/ftp.c:1182 src/http.c:2130
+#: src/ftp.c:1185 src/http.c:2142
 #, c-format
 msgid "(try:%2d)"
 msgstr "(poging: %2d) "
 
-#: src/ftp.c:1252 src/http.c:2409
+#: src/ftp.c:1255 src/http.c:2421
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s]\n"
@@ -316,35 +326,35 @@ msgstr ""
 "%s (%s) - '%s' opgeslagen [%s]\n"
 "\n"
 
-#: src/ftp.c:1294 src/main.c:948 src/recur.c:376 src/retr.c:842
+#: src/ftp.c:1297 src/main.c:948 src/recur.c:376 src/retr.c:844
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Verwijderen van %s.\n"
 
-#: src/ftp.c:1336
+#: src/ftp.c:1339
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
 msgstr "'%s' wordt gebruikt als tijdelijk lijstbestand.\n"
 
-#: src/ftp.c:1351
+#: src/ftp.c:1354
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr "'%s' is verwijderd.\n"
 
-#: src/ftp.c:1386
+#: src/ftp.c:1389
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr "Recursiediepte %d overschreed de maximum diepte %d.\n"
 
 #. Remote file is older, file sizes can be compared and
 #. are both equal.
-#: src/ftp.c:1456
+#: src/ftp.c:1459
 #, c-format
 msgid "Remote file no newer than local file `%s' -- not retrieving.\n"
 msgstr "Bestand op server is niet nieuwer dan lokaal bestand '%s' -- wordt niet opgehaald.\n"
 
 #. Remote file is newer or sizes cannot be matched
-#: src/ftp.c:1463
+#: src/ftp.c:1466
 #, c-format
 msgid ""
 "Remote file is newer than local file `%s' -- retrieving.\n"
@@ -354,7 +364,7 @@ msgstr ""
 "\n"
 
 #. Sizes do not match
-#: src/ftp.c:1470
+#: src/ftp.c:1473
 #, c-format
 msgid ""
 "The sizes do not match (local %s) -- retrieving.\n"
@@ -363,11 +373,11 @@ msgstr ""
 "De groottes komen niet overeen (is lokaal %s) -- ophalen.\n"
 "\n"
 
-#: src/ftp.c:1488
+#: src/ftp.c:1491
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr "Ongeldige naam voor een symbolische koppeling, wordt overgeslagen.\n"
 
-#: src/ftp.c:1505
+#: src/ftp.c:1508
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
@@ -376,42 +386,42 @@ msgstr ""
 "Correcte symbolische koppeling bestaat al: %s -> %s\n"
 "\n"
 
-#: src/ftp.c:1513
+#: src/ftp.c:1516
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr "Maken van symbolische koppeling: %s -> %s\n"
 
-#: src/ftp.c:1523
+#: src/ftp.c:1526
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
 msgstr "Symbolische koppelingen worden niet ondersteund, '%s' wordt overgeslagen.\n"
 
-#: src/ftp.c:1535
+#: src/ftp.c:1538
 #, c-format
 msgid "Skipping directory `%s'.\n"
 msgstr "Map '%s' wordt overgeslagen.\n"
 
-#: src/ftp.c:1544
+#: src/ftp.c:1547
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr "%s: onbekende of niet-ondersteunde bestandssoort.\n"
 
-#: src/ftp.c:1571
+#: src/ftp.c:1574
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr "%s: beschadigd tijdstempel.\n"
 
-#: src/ftp.c:1599
+#: src/ftp.c:1602
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr "Mappen worden niet opgehaald, want de diepte is %d (maximaal %d).\n"
 
-#: src/ftp.c:1649
+#: src/ftp.c:1652
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr "Er wordt niet afgedaald naar '%s', want deze is uitgesloten of niet ingesloten.\n"
 
-#: src/ftp.c:1715 src/ftp.c:1729
+#: src/ftp.c:1718 src/ftp.c:1732
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr "'%s' wordt verworpen.\n"
@@ -419,17 +429,17 @@ msgstr "'%s' wordt verworpen.\n"
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1775
+#: src/ftp.c:1778
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr "Geen overeenkomsten met patroon '%s'.\n"
 
-#: src/ftp.c:1841
+#: src/ftp.c:1844
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%s].\n"
 msgstr "Index is in HTML-vorm naar '%s' [%s] geschreven.\n"
 
-#: src/ftp.c:1846
+#: src/ftp.c:1849
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr "Index is in HTML-vorm naar '%s' geschreven.\n"
@@ -493,35 +503,30 @@ msgstr "%s: optie '-W %s' is niet eenduidig\n"
 msgid "%s: option `-W %s' doesn't allow an argument\n"
 msgstr "%s: optie '-W %s' staat geen argument toe\n"
 
-#: src/host.c:371
+#: src/host.c:366
 msgid "Unknown host"
 msgstr "Onbekende host"
 
 #. Message modeled after what gai_strerror returns in similar
 #. circumstances.
-#: src/host.c:375
+#: src/host.c:370
 msgid "Temporary failure in name resolution"
 msgstr "Tijdelijke storing in naamsherleiding"
 
-#: src/host.c:377
+#: src/host.c:372
 msgid "Unknown error"
 msgstr "Onbekende fout"
 
-#: src/host.c:756
+#: src/host.c:751
 #, c-format
 msgid "Resolving %s... "
 msgstr "Herleiden van %s... "
 
-#: src/host.c:800 src/host.c:829
-#, c-format
-msgid "failed: %s.\n"
-msgstr "mislukt: %s.\n"
-
-#: src/host.c:809
+#: src/host.c:798
 msgid "failed: No IPv4/IPv6 addresses for host.\n"
 msgstr "mislukt: geen IPv4/IPv6-adressen voor de host.\n"
 
-#: src/host.c:832
+#: src/host.c:821
 msgid "failed: timed out.\n"
 msgstr "mislukt: wachttijd is verstreken.\n"
 
@@ -530,7 +535,12 @@ msgstr "mislukt: wachttijd is verstreken.\n"
 msgid "%s: Cannot resolve incomplete link %s.\n"
 msgstr "%s: Kan doel van onvolledige hyperlink %s niet bepalen.\n"
 
-#: src/http.c:373 src/http.c:1549
+#: src/html-url.c:705
+#, c-format
+msgid "%s: Invalid URL %s: %s\n"
+msgstr "%s: Ongeldige URL '%s': %s.\n"
+
+#: src/http.c:373
 #, c-format
 msgid "Failed writing HTTP request: %s.\n"
 msgstr "Schrijven van HTTP-verzoek is mislukt: %s.\n"
@@ -539,79 +549,79 @@ msgstr "Schrijven van HTTP-verzoek is mislukt: %s.\n"
 msgid "No headers, assuming HTTP/0.9"
 msgstr "Geen kopregels aanwezig, HTTP/0.9 aangenomen."
 
-#: src/http.c:1198
+#: src/http.c:1204
 msgid "Disabling SSL due to encountered errors.\n"
 msgstr "Wegens fouten wordt SSL uitgeschakeld.\n"
 
-#: src/http.c:1417
+#: src/http.c:1374
+#, c-format
+msgid "POST data file `%s' missing: %s\n"
+msgstr "POST-gegevensbestand '%s' ontbreekt: %s.\n"
+
+#: src/http.c:1423
 #, c-format
 msgid "Reusing existing connection to %s:%d.\n"
 msgstr "Verbinding met %s:%d wordt hergebruikt.\n"
 
-#: src/http.c:1479
-#, c-format
-msgid "Failed writing to proxy: %s.\n"
-msgstr "Schrijven naar proxy is mislukt: %s\n"
-
-#: src/http.c:1488
+#: src/http.c:1492
 #, c-format
 msgid "Failed reading proxy response: %s\n"
-msgstr "Lezen van proxy-antwoord is mislukt: %s\n"
+msgstr "Lezen van proxy-antwoord is mislukt: %s.\n"
 
-#: src/http.c:1508
+#: src/http.c:1512
 #, c-format
 msgid "Proxy tunneling failed: %s"
-msgstr "Het tunnelen door een proxy is mislukt: %s"
+msgstr "Het tunnelen door een proxy is mislukt: %s."
 
-#: src/http.c:1555
+#: src/http.c:1557
 #, c-format
 msgid "%s request sent, awaiting response... "
 msgstr "%s-verzoek is verzonden, wachten op antwoord... "
 
-#: src/http.c:1566
+#: src/http.c:1568
 msgid "No data received.\n"
 msgstr "Geen gegevens ontvangen.\n"
 
-#: src/http.c:1573
+#: src/http.c:1575
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr "Leesfout (%s) in kopregels.\n"
 
 #. If the authentication header is missing or
 #. unrecognized, there's no sense in retrying.
-#: src/http.c:1658
+#: src/http.c:1660
 msgid "Unknown authentication scheme.\n"
 msgstr "Onbekend aanmeldingsschema.\n"
 
-#: src/http.c:1682
+#: src/http.c:1684
 msgid "Authorization failed.\n"
 msgstr "Aanmelding is mislukt.\n"
 
-#: src/http.c:1696
+#: src/http.c:1698
 msgid "Malformed status line"
 msgstr "Onjuiste statusregel"
 
-#: src/http.c:1698
+#: src/http.c:1700
 msgid "(no description)"
 msgstr "(geen omschrijving)"
 
-#: src/http.c:1769
+#: src/http.c:1763
 #, c-format
 msgid "Location: %s%s\n"
 msgstr "Lokatie: %s%s\n"
 
-#: src/http.c:1770 src/http.c:1867
+#: src/http.c:1764 src/http.c:1871
 msgid "unspecified"
 msgstr "niet-opgegeven"
 
-#: src/http.c:1771
+#: src/http.c:1765
 msgid " [following]"
 msgstr " [volgend]"
 
 #. If `-c' is in use and the file has been fully downloaded (or
 #. the remote file has shrunk), Wget effectively requests bytes
 #. after the end of file and the server response with 416.
-#: src/http.c:1817
+#: src/http.c:1821
 msgid ""
 "\n"
 "    The file is already fully retrieved; nothing to do.\n"
@@ -625,54 +635,58 @@ msgstr ""
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
-#: src/http.c:1847
+#: src/http.c:1851
 msgid "Length: "
 msgstr "Lengte: "
 
-#: src/http.c:1867
+#: src/http.c:1871
 msgid "ignored"
 msgstr "genegeerd"
 
-#: src/http.c:2007
+#: src/http.c:2019
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr "Waarschuwing: jokertekens worden in HTTP niet ondersteund.\n"
 
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:2042
+#: src/http.c:2054
 #, c-format
-msgid "File `%s' already there, will not retrieve.\n"
-msgstr "Bestand '%s' is reeds aanwezig -- wordt niet opgehaald.\n"
+msgid ""
+"File `%s' already there; not retrieving.\n"
+"\n"
+msgstr ""
+"Bestand '%s' is reeds aanwezig -- wordt niet opgehaald.\n"
+"\n"
 
-#: src/http.c:2232
+#: src/http.c:2244
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr "Kan niet naar '%s' schrijven (%s).\n"
 
 #. Another fatal error.
-#: src/http.c:2239
+#: src/http.c:2251
 msgid "Unable to establish SSL connection.\n"
 msgstr "Kan geen SSL-verbinding maken.\n"
 
-#: src/http.c:2248
+#: src/http.c:2260
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "Fout: doorverwijzing (%d) zonder lokatie.\n"
 
-#: src/http.c:2278
+#: src/http.c:2290
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s Fout %d: %s.\n"
 
-#: src/http.c:2291
+#: src/http.c:2303
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr "'Laatst-aangepast'-kopregel ontbreekt -- tijdstempels worden uitgeschakeld.\n"
 
-#: src/http.c:2299
+#: src/http.c:2311
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr "'Laatst-aangepast'-kopregel is ongeldig -- tijdstempels worden genegeerd.\n"
 
-#: src/http.c:2322
+#: src/http.c:2334
 #, c-format
 msgid ""
 "Server file no newer than local file `%s' -- not retrieving.\n"
@@ -681,16 +695,16 @@ msgstr ""
 "Bestand op server is niet nieuwer dan lokaal bestand '%s' -- wordt niet opgehaald.\n"
 "\n"
 
-#: src/http.c:2330
+#: src/http.c:2342
 #, c-format
 msgid "The sizes do not match (local %s) -- retrieving.\n"
 msgstr "De groottes komen niet overeen (is lokaal %s) -- ophalen.\n"
 
-#: src/http.c:2335
+#: src/http.c:2347
 msgid "Remote file is newer, retrieving.\n"
 msgstr "Bestand op server is nieuwer -- ophalen.\n"
 
-#: src/http.c:2377
+#: src/http.c:2389 src/http.c:2455
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s/%s]\n"
@@ -699,31 +713,22 @@ msgstr ""
 "%s (%s) - '%s' opgeslagen [%s/%s]\n"
 "\n"
 
-#: src/http.c:2434
+#: src/http.c:2446
 #, c-format
 msgid "%s (%s) - Connection closed at byte %s. "
 msgstr "%s (%s) - Verbinding werd verbroken bij byte %s. "
 
-#: src/http.c:2443
-#, c-format
-msgid ""
-"%s (%s) - `%s' saved [%s/%s])\n"
-"\n"
-msgstr ""
-"%s (%s) - '%s' opgeslagen [%s/%s]\n"
-"\n"
-
-#: src/http.c:2469
+#: src/http.c:2481
 #, c-format
 msgid "%s (%s) - Connection closed at byte %s/%s. "
 msgstr "%s (%s) - Verbinding werd verbroken bij byte %s/%s. "
 
-#: src/http.c:2483
+#: src/http.c:2495
 #, c-format
 msgid "%s (%s) - Read error at byte %s (%s)."
 msgstr "%s (%s) - Leesfout bij byte %s (%s)."
 
-#: src/http.c:2493
+#: src/http.c:2505
 #, c-format
 msgid "%s (%s) - Read error at byte %s/%s (%s). "
 msgstr "%s (%s) - Leesfout bij byte %s/%s (%s). "
@@ -765,45 +770,49 @@ msgstr "%s: Ongeldige opdracht '%s' bij '--execute'.\n"
 
 #: src/init.c:707
 #, c-format
-msgid "%s: %s: Invalid boolean `%s', use `on' or `off'.\n"
+msgid "%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"
 msgstr "%s: %s: Ongeldige boolean '%s';  gebruik 'on' of 'off'.\n"
 
-#: src/init.c:750
+#: src/init.c:759
 #, c-format
-msgid "%s: %s: Invalid boolean `%s', use always, on, off, or never.\n"
-msgstr "%s: %s: Ongeldige boolean '%s';  gebruik 'always', 'on', 'off' of 'never'.\n"
+msgid ""
+"%s: %s: Invalid extended boolean `%s';\n"
+"use one of `on', `off', `always', or `never'.\n"
+msgstr ""
+"%s: %s: Ongeldige uitgebreide boolean '%s';\n"
+"gebruik 'on', 'off', 'always', of 'never'.\n"
 
-#: src/init.c:767
+#: src/init.c:777
 #, c-format
 msgid "%s: %s: Invalid number `%s'.\n"
-msgstr "%s: %s: Ongeldige aantal '%s'.\n"
+msgstr "%s: %s: Ongeldig aantal '%s'.\n"
 
-#: src/init.c:998 src/init.c:1017
+#: src/init.c:1008 src/init.c:1027
 #, c-format
 msgid "%s: %s: Invalid byte value `%s'\n"
 msgstr "%s: %s: Ongeldige bytewaarde '%s'.\n"
 
-#: src/init.c:1042
+#: src/init.c:1052
 #, c-format
 msgid "%s: %s: Invalid time period `%s'\n"
 msgstr "%s: %s: Ongeldig tijdsinterval '%s'.\n"
 
-#: src/init.c:1096 src/init.c:1186 src/init.c:1281 src/init.c:1306
+#: src/init.c:1106 src/init.c:1196 src/init.c:1291 src/init.c:1316
 #, c-format
 msgid "%s: %s: Invalid value `%s'.\n"
 msgstr "%s: %s: Ongeldige waarde '%s'.\n"
 
-#: src/init.c:1133
+#: src/init.c:1143
 #, c-format
 msgid "%s: %s: Invalid header `%s'.\n"
 msgstr "%s: %s: Ongeldige kopregel '%s'.\n"
 
-#: src/init.c:1198
+#: src/init.c:1208
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: Ongeldig voortgangstype '%s'.\n"
 
-#: src/init.c:1249
+#: src/init.c:1259
 #, c-format
 msgid "%s: %s: Invalid restriction `%s', use `unix' or `windows'.\n"
 msgstr "%s: %s: Ongeldige beperking '%s';  gebruik 'unix' of 'windows'.\n"
@@ -1253,8 +1262,8 @@ msgstr ""
 "                            te converteren\n"
 
 #: src/main.c:603
-msgid "  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"
-msgstr "  -m,  --mirror             gelijk aan de opties '-r -N -l0 -nr' samen\n"
+msgid "  -m,  --mirror             shortcut for -N -r -l inf --no-remove-listing.\n"
+msgstr "  -m,  --mirror             gelijk aan '-r -N -l inf --no-remove-listing' samen\n"
 
 #: src/main.c:605
 msgid "  -p,  --page-requisites    get all images, etc. needed to display HTML page.\n"
@@ -1403,7 +1412,7 @@ msgstr ""
 "KLAAR --%s--\n"
 "Opgehaald: %s bytes in %d bestanden\n"
 
-#: src/main.c:978
+#: src/main.c:979
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "Downloadquotum (%s bytes) is overschreden!\n"
@@ -1418,7 +1427,7 @@ msgstr "Voortzetting in de achtergrond.\n"
 msgid "Continuing in background, pid %lu.\n"
 msgstr "Voortzetting in de achtergrond, proces-ID %lu.\n"
 
-#: src/mswindows.c:429 src/utils.c:348
+#: src/mswindows.c:429 src/utils.c:351
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "Uitvoer wordt naar '%s' geschreven.\n"
@@ -1509,10 +1518,22 @@ msgstr ""
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
 msgstr "Ongeldige puntjesstijl '%s' opgegeven; blijft onveranderd.\n"
 
+#. If no clock was found, it means that clock_getres failed for
+#. the realtime clock.
+#: src/ptimer.c:176
+#, c-format
+msgid "Cannot get REALTIME clock frequency: %s\n"
+msgstr "Kan frequentie van de klok niet bepalen: %s\n"
+
 #: src/recur.c:377
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
 msgstr "'%s' wordt verwijderd omdat het verworpen dient te worden.\n"
+
+#: src/res.c:394
+#, c-format
+msgid "Cannot open %s: %s"
+msgstr "Kan %s niet openen: %s"
 
 #: src/res.c:544
 msgid "Loading robots.txt; please ignore errors.\n"
@@ -1521,19 +1542,19 @@ msgstr "Laden van 'robots.txt'; fouten kunnen worden genegeerd.\n"
 #: src/retr.c:645
 #, c-format
 msgid "Error parsing proxy URL %s: %s.\n"
-msgstr "Fout tijdens ontleden van proxy-URL %s: %s.\n"
+msgstr "Fout tijdens ontleden van proxy-URL '%s': %s.\n"
 
 #: src/retr.c:653
 #, c-format
 msgid "Error in proxy URL %s: Must be HTTP.\n"
-msgstr "Fout in proxy-URL %s: moet HTTP zijn.\n"
+msgstr "Fout in proxy-URL '%s': moet HTTP zijn.\n"
 
-#: src/retr.c:738
+#: src/retr.c:740
 #, c-format
 msgid "%d redirections exceeded.\n"
 msgstr "%d doorverwijzingen overschreden.\n"
 
-#: src/retr.c:863
+#: src/retr.c:865
 msgid ""
 "Giving up.\n"
 "\n"
@@ -1541,7 +1562,7 @@ msgstr ""
 "Pogingen worden gestaakt.\n"
 "\n"
 
-#: src/retr.c:863
+#: src/retr.c:865
 msgid ""
 "Retrying.\n"
 "\n"
@@ -1558,8 +1579,8 @@ msgid "Unsupported scheme"
 msgstr "Niet-ondersteund schema"
 
 #: src/url.c:630
-msgid "Empty host"
-msgstr "Lege host"
+msgid "Invalid host name"
+msgstr "Ongeldige hostnaam"
 
 #: src/url.c:632
 msgid "Bad port number"
@@ -1582,12 +1603,12 @@ msgid "Invalid IPv6 numeric address"
 msgstr "Ongeldig numeriek IPv6-adres"
 
 #. parent, no error
-#: src/utils.c:346
+#: src/utils.c:349
 #, c-format
 msgid "Continuing in background, pid %d.\n"
 msgstr "Voortzetting in de achtergrond, proces-ID %d.\n"
 
-#: src/utils.c:394
+#: src/utils.c:397
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "Verwijderen van symbolische koppeling '%s' is mislukt: %s\n"
