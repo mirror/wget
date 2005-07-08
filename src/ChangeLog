@@ -1,3 +1,8 @@
+2005-07-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (rewrite_shorthand_url): Simplify code using aprintf and
+	strspn.
+
 2005-07-07  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* gnutls.c (ssl_check_certificate): Check for the validity of the
