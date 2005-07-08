@@ -1,5 +1,10 @@
 2005-07-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* configure.in: Remove -Wno-implicit from default GCC warning
+	flags.
+
+2005-07-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* configure.in: Don't check for symlink, which is expected to
 	exist.  Check for asprintf.
 
