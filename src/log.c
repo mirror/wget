@@ -369,12 +369,12 @@ log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
   numwritten = vsnprintf (write_ptr, available_size, fmt, args);
 
   /* vsnprintf() will not step over the limit given by available_size.
-     If it fails, it will return either -1 (POSIX?) or the number of
-     characters that *would have* been written, if there had been
-     enough room (C99).  In the former case, we double the
-     available_size and malloc to get a larger buffer, and try again.
-     In the latter case, we use the returned information to build a
-     buffer of the correct size.  */
+     If it fails, it returns either -1 (older implementations) or the
+     number of characters (not counting the terminating \0) that
+     *would have* been written if there had been enough room (C99).
+     In the former case, we double available_size and malloc to get a
+     larger buffer, and try again.  In the latter case, we use the
+     returned information to build a buffer of the correct size.  */
 
   if (numwritten == -1)
     {
