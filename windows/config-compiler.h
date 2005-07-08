@@ -149,13 +149,43 @@ so, delete this exception statement from your version.  */
 #define HAVE_STDBOOL_H 1
 
 #define HAVE_UINT32_T 1
-#undef SIZEOF_LONG_LONG		/* avoid redefinition warning */
+#undef SIZEOF_LONG_LONG
 #define SIZEOF_LONG_LONG 8
 #define HAVE__BOOL 1
 
 #define HAVE_USLEEP 1
 #define HAVE_STRTOLL 1
 
+
+/* -------------------- */
+/* OpenWatcom section.  */
+/* -------------------- */
+#elif defined __WATCOMC__
+
+#define OS_TYPE "Windows-Watcom"
+
+#define LL(n) n##LL
+
+#define stat_alias _stati64
+#define fstat_alias _fstati64
+#define struct_stat struct _stati64
+#define struct_fstat struct _stati64
+
+#ifdef ENABLE_IPV6
+# define NEED_GAI_STRERROR
+#endif
+
+#define HAVE_STDINT_H 1
+#define HAVE_INTTYPES_H 1
+#define HAVE_STDBOOL_H 1
+#define HAVE_STRTOLL 1
+#define HAVE_UINT32_T 1
+#define HAVE_SYS_UTIME_H 1
+#undef HAVE_UTIME_H
+#undef socklen_t                /* avoid clash with <ws2tcpip.h> */
+
+#undef SIZEOF_LONG_LONG
+#define SIZEOF_LONG_LONG 8
 
 #else
 # error Your compiler is not supported.

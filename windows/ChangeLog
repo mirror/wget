@@ -1,3 +1,7 @@
+2005-07-08  Gisle Vanem  <giva@bgnett.no>
+
+	* config-compiler.h: Reintroduced Watcom support.
+
 2005-07-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* config.h: Comment out the #undef lines so that they don't undo
