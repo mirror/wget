@@ -42,9 +42,6 @@ so, delete this exception statement from your version.  */
 #ifdef HAVE_MMAP
 # include <sys/mman.h>
 #endif
-#ifdef HAVE_PWD_H
-# include <pwd.h>
-#endif
 #ifdef HAVE_UTIME_H
 # include <utime.h>
 #endif
@@ -52,9 +49,6 @@ so, delete this exception statement from your version.  */
 # include <sys/utime.h>
 #endif
 #include <errno.h>
-#ifdef NeXT
-# include <libc.h>		/* for access() */
-#endif
 #include <fcntl.h>
 #include <assert.h>
 #include <stdarg.h>
@@ -79,8 +73,7 @@ so, delete this exception statement from your version.  */
 # endif
 #endif
 
-#undef USE_SIGNAL_TIMEOUT
-#if defined(HAVE_SIGSETJMP) || defined(HAVE_SIGBLOCK)
+#if defined HAVE_SIGSETJMP || defined HAVE_SIGBLOCK
 # define USE_SIGNAL_TIMEOUT
 #endif
 
@@ -148,17 +141,37 @@ sepstring (const char *s)
   return res;
 }
 
-/* Like sprintf, but allocates a string of sufficient size with malloc
-   and returns it.  GNU libc has a similar function named asprintf,
-   which requires the pointer to the string to be passed.  */
+/* Like sprintf, but prints into a string of sufficient size freshly
+   allocated with malloc, which is returned.  If unable to print due
+   to invalid format, returns NULL.  Inability to allocate needed
+   memory results in abort, as with xmalloc.  This is in spirit
+   similar to the GNU/BSD extension asprintf, but somewhat easier to
+   use.
+
+   Internally the function either calls vasprintf or loops around
+   vsnprintf until the correct size is found.  Since Wget also ships a
+   fallback implementation of vsnprintf, this should be portable.  */
 
 char *
 aprintf (const char *fmt, ...)
 {
-  /* This function is implemented using vsnprintf, which we provide
-     for the systems that don't have it.  Therefore, it should be 100%
-     portable.  */
+#ifdef HAVE_VASPRINTF
+  /* Use vasprintf. */
+  int ret;
+  va_list args;
+  char *str;
+  va_start (args, fmt);
+  ret = vasprintf (&str, fmt, args);
+  va_end (args);
+  if (ret < 0 && errno == ENOMEM)
+    abort ();			/* for consistency with xmalloc/xrealloc */
+  else if (ret < 0)
+    return NULL;
+  return str;
+#else  /* not HAVE_VASPRINTF */
 
+  /* vasprintf is unavailable.  snprintf into a small buffer and
+     resize it as necessary. */
   int size = 32;
   char *str = xmalloc (size);
 
@@ -166,9 +179,6 @@ aprintf (const char *fmt, ...)
     {
       int n;
       va_list args;
-
-      /* See log_vprintf_internal for explanation why it's OK to rely
-	 on the return value of vsnprintf.  */
 
       va_start (args, fmt);
       n = vsnprintf (str, size, fmt, args);
@@ -185,6 +195,7 @@ aprintf (const char *fmt, ...)
 	size <<= 1;		/* twice the old size */
       str = xrealloc (str, size);
     }
+#endif /* not HAVE_VASPRINTF */
 }
 
 /* Concatenate the NULL-terminated list of string arguments into

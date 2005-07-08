@@ -1,5 +1,9 @@
 2005-07-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* utils.c (aprintf): Use vasprintf where available.
+
+2005-07-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (rewrite_shorthand_url): Simplify code using aprintf and
 	strspn.
 
