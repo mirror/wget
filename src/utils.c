@@ -175,6 +175,9 @@ aprintf (const char *fmt, ...)
   int size = 32;
   char *str = xmalloc (size);
 
+  /* #### This code will infloop and eventually abort in xrealloc if
+     passed a FMT that causes snprintf to consistently return -1.  */
+
   while (1)
     {
       int n;
