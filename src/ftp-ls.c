@@ -104,7 +104,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
   struct tm timestruct, *tnow;
   time_t timenow;
 
-  char *line, *tok;		/* tokenizer */
+  char *line, *tok, *ptok;	/* tokenizer */
   struct fileinfo *dir, *l, cur; /* list creation */
 
   fp = fopen (file, "rb");
@@ -195,7 +195,9 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
 	 This tactic is quite dubious when it comes to
 	 internationalization issues (non-English month names), but it
 	 works for now.  */
-      while ((tok = strtok (NULL, " ")) != NULL)
+      ptok = line;
+      while (ptok = tok,
+	     (tok = strtok (NULL, " ")) != NULL)
 	{
 	  --next;
 	  if (next < 0)		/* a month name was not encountered */
@@ -211,7 +213,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
 
 		  /* Back up to the beginning of the previous token
 		     and parse it with str_to_wgint.  */
-		  char *t = tok - 2;
+		  char *t = ptok;
 		  while (t > line && ISDIGIT (*t))
 		    --t;
 		  if (t == line)

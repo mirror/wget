@@ -1,3 +1,8 @@
+2005-08-04  Giuseppe Bonacci  <g.bonacci@libero.it>
+
+	* ftp-ls.c (ftp_parse_unix_ls): Remember the position of the
+	previous token instead of backtracking back to it.
+
 2005-07-08  Gisle Vanem  <giva@bgnett.no>
 
 	* mswindows.h: Include process.h to get getpid() declaration.
