@@ -1,3 +1,8 @@
+2005-08-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Wgetrc Commands): Removed documentation for the now
+	deleted command "kill_longer".
+
 2005-06-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Logging and Input File Options): Don't claim that
