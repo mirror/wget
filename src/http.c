@@ -1950,7 +1950,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
   /* Download the request body.  */
   flags = 0;
-  if (keep_alive)
+  if (contlen != -1)
+    /* If content-length is present, read that much; otherwise, read
+       until EOF.  The HTTP spec doesn't require the server to
+       actually close the connection when it's done sending data. */
     flags |= rb_read_exactly;
   if (hs->restval > 0 && contrange == 0)
     /* If the server ignored our range request, instruct fd_read_body
@@ -2352,9 +2355,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
       if ((tmr != (time_t) (-1))
 	  && !opt.spider
 	  && ((hstat.len == hstat.contlen) ||
-	      ((hstat.res == 0) &&
-	       ((hstat.contlen == -1) ||
-		(hstat.len >= hstat.contlen && !opt.kill_longer)))))
+	      ((hstat.res == 0) && (hstat.contlen == -1))))
 	{
 	  /* #### This code repeats in http.c and ftp.c.  Move it to a
              function!  */
@@ -2450,43 +2451,10 @@ The sizes do not match (local %s) -- retrieving.\n"),
 	      free_hstat (&hstat);
 	      continue;
 	    }
-	  else if (!opt.kill_longer) /* meaning we got more than expected */
-	    {
-	      logprintf (LOG_VERBOSE,
-			 _("%s (%s) - `%s' saved [%s/%s]\n\n"),
-			 tms, tmrate, locf,
-			 number_to_static_string (hstat.len),
-			 number_to_static_string (hstat.contlen));
-	      logprintf (LOG_NONVERBOSE,
-			 "%s URL:%s [%s/%s] -> \"%s\" [%d]\n",
-			 tms, u->url,
-			 number_to_static_string (hstat.len),
-			 number_to_static_string (hstat.contlen),
-			 locf, count);
-	      ++opt.numurls;
-	      total_downloaded_bytes += hstat.len;
-
-	      /* Remember that we downloaded the file for later ".orig" code. */
-	      if (*dt & ADDED_HTML_EXTENSION)
-		downloaded_file(FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED, locf);
-	      else
-		downloaded_file(FILE_DOWNLOADED_NORMALLY, locf);
-	      
-	      free_hstat (&hstat);
-	      xfree_null (dummy);
-	      return RETROK;
-	    }
-	  else			/* the same, but not accepted */
-	    {
-	      logprintf (LOG_VERBOSE,
-			 _("%s (%s) - Connection closed at byte %s/%s. "),
-			 tms, tmrate,
-			 number_to_static_string (hstat.len),
-			 number_to_static_string (hstat.contlen));
-	      printwhat (count, opt.ntry);
-	      free_hstat (&hstat);
-	      continue;
-	    }
+	  else
+	    /* Getting here would mean reading more data than
+	       requested with content-length, which we never do.  */
+	    abort ();
 	}
       else			/* now hstat.res can only be -1 */
 	{

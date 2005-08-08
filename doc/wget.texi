@@ -2664,12 +2664,6 @@ or @samp{-6}.
 @item input = @var{file}
 Read the @sc{url}s from @var{string}, like @samp{-i @var{file}}.
 
-@item kill_longer = on/off
-Consider data longer than specified in content-length header as invalid
-(and retry getting it).  The default behavior is to save as much data
-as there is, provided there is more than or equal to the value in
-@code{Content-Length}.
-
 @item limit_rate = @var{rate}
 Limit the download speed to no more than @var{rate} bytes per second.
 The same as @samp{--limit-rate=@var{rate}}.

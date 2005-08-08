@@ -1,3 +1,8 @@
+2005-08-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (gethttp): Don't read more than the amount of data
+	specified by the content-length header.
+
 2005-08-09  Vasil Dimov  <vd@datamax.bg>
 
 	* ftp.c (getftp): Don't free RESPLINE if ftp_response returns a

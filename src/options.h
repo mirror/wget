@@ -35,9 +35,6 @@ struct options
   int ntry;			/* Number of tries per URL */
   bool retry_connrefused;	/* Treat CONNREFUSED as non-fatal. */
   bool background;		/* Whether we should work in background. */
-  bool kill_longer;		/* Do we reject messages with *more*
-				   data than specified in
-				   content-length? */
   bool ignore_length;		/* Do we heed content-length at all?  */
   bool recursive;		/* Are we recursive? */
   bool spanhost;			/* Do we span across hosts in
