@@ -1,3 +1,8 @@
+2005-08-09  Vasil Dimov  <vd@datamax.bg>
+
+	* ftp.c (getftp): Don't free RESPLINE if ftp_response returns a
+	status other than FTPOK.
+
 2005-08-04  Giuseppe Bonacci  <g.bonacci@libero.it>
 
 	* ftp-ls.c (ftp_parse_unix_ls): Remember the position of the

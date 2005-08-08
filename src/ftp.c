@@ -999,7 +999,6 @@ Error in server response, closing control connection.\n"));
   err = ftp_response (csock, &respline);
   if (err != FTPOK)
     {
-      xfree (respline);
       /* The control connection is decidedly closed.  Print the time
 	 only if it hasn't already been printed.  */
       if (res != -1)
