@@ -799,22 +799,39 @@ windows_strerror (int err)
 }
 
 #ifdef ENABLE_IPV6
-/* An IPv6-only inet_ntop that prints with WSAAddressToString.  (Wget
-   uses inet_ntoa for IPv4 addresses -- see print_address.)  Prototype
-   complies with POSIX 1003.1-2004.  */
+/* An inet_ntop implementation that uses WSAAddressToString.
+   Prototype complies with POSIX 1003.1-2004.  This is only used under
+   IPv6 because Wget prints IPv4 addresses using inet_ntoa.  */
 
 const char *
 inet_ntop (int af, const void *src, char *dst, socklen_t cnt)
 {
-  struct sockaddr_in6 sin6;
+  /* struct sockaddr can't accomodate struct sockaddr_in6. */
+  union {
+    struct sockaddr_in6 sin6;
+    struct sockaddr_in sin;
+  } sa;
   DWORD dstlen = cnt;
+  size_t srcsize;
 
-  assert (af == AF_INET6);
-  xzero (sin6);
-  sin6.sin6_family = AF_INET6;
-  sin6.sin6_addr = *(struct in6_addr *) src;
-  if (WSAAddressToString ((struct sockaddr *) &sin6, sizeof (sin6),
-                          NULL, dst, &dstlen) != 0)
+  xzero (sa);
+  switch (af)
+    {
+    case AF_INET:
+      sa.sin.sin_family = AF_INET;
+      sa.sin.sin_addr = *(struct in_addr *) src;
+      srcsize = sizeof (sa.sin);
+      break;
+    case AF_INET6:
+      sa.sin6.sin6_family = AF_INET6;
+      sa.sin6.sin6_addr = *(struct in6_addr *) src;
+      srcsize = sizeof (sa.sin6);
+      break;
+    default:
+      abort ();
+    }
+
+  if (WSAAddressToString ((struct sockaddr *) &sa, srcsize, NULL, dst, &dstlen) != 0)
     {
       errno = WSAGetLastError();
       return NULL;
