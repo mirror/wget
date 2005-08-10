@@ -1210,11 +1210,10 @@ free_keys_and_values (struct hash_table *ht)
 {
   hash_table_map (ht, free_keys_and_values_mapper, NULL);
 }
-
 
-/* Get grouping data, the separator and grouping info, by calling
-   localeconv().  The information is cached after the first call to
-   the function.
+/* Get digit grouping data for thousand separors by calling
+   localeconv().  The data includes separator string and grouping info
+   and is cached after the first call to the function.
 
    In locales that don't set a thousand separator (such as the "C"
    locale), this forces it to be ",".  We are now only showing
@@ -1258,8 +1257,8 @@ get_grouping_data (const char **sep, const char **grouping)
 
    Unfortunately, we cannot use %'d (in fact it would be %'j) to get
    the separators because it's too non-portable, and it's hard to test
-   for this feature at configure time.  Besides, it wouldn't work in
-   the "C" locale, which many Unix users still work in.  */
+   for this feature at configure time.  Besides, it wouldn't display
+   separators in the "C" locale, still used by many Unix users.  */
 
 const char *
 with_thousand_seps (wgint n)
@@ -1283,8 +1282,8 @@ with_thousand_seps (wgint n)
   atgroup = grouping;
   groupsize = *atgroup++;
 
-  /* This will overflow on WGINT_MIN, but we're not using this to
-     print negative numbers anyway.  */
+  /* This would overflow on WGINT_MIN, but printing negative numbers
+     is not an important goal of this fuinction.  */
   if (negative)
     n = -n;
 
