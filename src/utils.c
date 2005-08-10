@@ -1326,11 +1326,10 @@ with_thousand_seps (wgint n)
    usually improves readability."
 
    This intentionally uses kilobyte (KB), megabyte (MB), etc. in their
-   original computer-related meaning of "powers of 1024".  Powers of
-   1000 would be useless since Wget already displays sizes with
-   thousand separators.  We don't use the "*bibyte" names invented in
-   1998, and seldom used in practice.  Wikipedia's entry on kilobyte
-   discusses this in some detail.  */
+   original computer-related meaning of "powers of 1024".  We don't
+   use the "*bibyte" names invented in 1998, and seldom used in
+   practice.  Wikipedia's entry on "binary prefix" discusses this in
+   some detail.  */
 
 char *
 human_readable (HR_NUMTYPE n)
