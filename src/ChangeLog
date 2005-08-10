@@ -1,3 +1,10 @@
+2005-08-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* host.c (print_address): Always use inet_ntop when IPv6 is
+	enabled.
+
+	* host.h (ip_address): Simplify the data union.
+
 2005-08-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* mswindows.c (inet_ntop): Also handle IPv4 addresses for

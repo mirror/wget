@@ -73,27 +73,27 @@ so, delete this exception statement from your version.  */
 static void
 sockaddr_set_data (struct sockaddr *sa, const ip_address *ip, int port)
 {
-  switch (ip->type)
+  switch (ip->family)
     {
-    case IPV4_ADDRESS:
+    case AF_INET:
       {
 	struct sockaddr_in *sin = (struct sockaddr_in *)sa;
 	xzero (*sin);
 	sin->sin_family = AF_INET;
 	sin->sin_port = htons (port);
-	sin->sin_addr = ADDRESS_IPV4_IN_ADDR (ip);
+	sin->sin_addr = ip->data.d4;
 	break;
       }
 #ifdef ENABLE_IPV6
-    case IPV6_ADDRESS:
+    case AF_INET6:
       {
 	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
 	xzero (*sin6);
 	sin6->sin6_family = AF_INET6;
 	sin6->sin6_port = htons (port);
-	sin6->sin6_addr = ADDRESS_IPV6_IN6_ADDR (ip);
+	sin6->sin6_addr = ip->data.d6;
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	sin6->sin6_scope_id = ADDRESS_IPV6_SCOPE (ip);
+	sin6->sin6_scope_id = ip->ipv6_scope;
 #endif
 	break;
       }
@@ -117,8 +117,8 @@ sockaddr_get_data (const struct sockaddr *sa, ip_address *ip, int *port)
 	struct sockaddr_in *sin = (struct sockaddr_in *)sa;
 	if (ip)
 	  {
-	    ip->type = IPV4_ADDRESS;
-	    ADDRESS_IPV4_IN_ADDR (ip) = sin->sin_addr;
+	    ip->family = AF_INET;
+	    ip->data.d4 = sin->sin_addr;
 	  }
 	if (port)
 	  *port = ntohs (sin->sin_port);
@@ -130,10 +130,10 @@ sockaddr_get_data (const struct sockaddr *sa, ip_address *ip, int *port)
 	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
 	if (ip)
 	  {
-	    ip->type = IPV6_ADDRESS;
-	    ADDRESS_IPV6_IN6_ADDR (ip) = sin6->sin6_addr;
+	    ip->family = AF_INET6;
+	    ip->data.d6 = sin6->sin6_addr;
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	    ADDRESS_IPV6_SCOPE (ip) = sin6->sin6_scope_id;
+	    ip->ipv6_scope = sin6->sin6_scope_id;
 #endif
 	  }
 	if (port)
@@ -415,7 +415,6 @@ int
 bind_local (const ip_address *bind_address, int *port)
 {
   int sock;
-  int family = AF_INET;
   struct sockaddr_storage ss;
   struct sockaddr *sa = (struct sockaddr *)&ss;
 
@@ -424,12 +423,7 @@ bind_local (const ip_address *bind_address, int *port)
   void *setopt_ptr = (void *)&setopt_val;
   socklen_t setopt_size = sizeof (setopt_val);
 
-#ifdef ENABLE_IPV6
-  if (bind_address->type == IPV6_ADDRESS) 
-    family = AF_INET6;
-#endif
-
-  sock = socket (family, SOCK_STREAM, 0);
+  sock = socket (bind_address->family, SOCK_STREAM, 0);
   if (sock < 0)
     return -1;
 
@@ -529,16 +523,16 @@ socket_ip_address (int sock, ip_address *ip, int endpoint)
   if (ret < 0)
     return false;
 
+  ip->family = sockaddr->sa_family;
   switch (sockaddr->sa_family)
     {
 #ifdef ENABLE_IPV6
     case AF_INET6:
       {
 	struct sockaddr_in6 *sa6 = (struct sockaddr_in6 *)&storage;
-	ip->type = IPV6_ADDRESS;
-	ADDRESS_IPV6_IN6_ADDR (ip) = sa6->sin6_addr;
+	ip->data.d6 = sa6->sin6_addr;
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	ADDRESS_IPV6_SCOPE (ip) = sa6->sin6_scope_id;
+	ip->ipv6_scope = sa6->sin6_scope_id;
 #endif
 	DEBUGP (("conaddr is: %s\n", print_address (ip)));
 	return true;
@@ -547,8 +541,7 @@ socket_ip_address (int sock, ip_address *ip, int endpoint)
     case AF_INET:
       {
 	struct sockaddr_in *sa = (struct sockaddr_in *)&storage;
-	ip->type = IPV4_ADDRESS;
-	ADDRESS_IPV4_IN_ADDR (ip) = sa->sin_addr;
+	ip->data.d4 = sa->sin_addr;
 	DEBUGP (("conaddr is: %s\n", print_address (ip)));
 	return true;
       }

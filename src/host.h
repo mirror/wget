@@ -47,48 +47,30 @@ struct address_list;
 /* This struct defines an IP address, tagged with family type.  */
 
 typedef struct {
-  /* Address type. */
-  enum { 
-    IPV4_ADDRESS
-#ifdef ENABLE_IPV6
-    , IPV6_ADDRESS 
-#endif /* ENABLE_IPV6 */
-  } type;
+  /* Address family, one of AF_INET or AF_INET6. */
+  int family;
 
-  /* Address data union: ipv6 contains IPv6-related data (address and
-     scope), and ipv4 contains the IPv4 address.  */
+  /* The actual data, in the form of struct in_addr or in6_addr: */
   union {
+    struct in_addr d4;		/* IPv4 address */
 #ifdef ENABLE_IPV6
-    struct {
-      struct in6_addr addr;
-# ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-      unsigned int scope_id;
-# endif
-    } ipv6;
-#endif /* ENABLE_IPV6 */
-    struct {
-      struct in_addr addr;
-    } ipv4;
-  } u;
+    struct in6_addr d6;		/* IPv6 address */
+#endif
+  } data;
+
+  /* Under IPv6 getaddrinfo also returns scope_id.  Since it's
+     IPv6-specific it strictly belongs in the above union, but we put
+     it here for simplicity.  */
+#if defined ENABLE_IPV6 && defined HAVE_SOCKADDR_IN6_SCOPE_ID
+  int ipv6_scope;
+#endif
 } ip_address;
 
-/* Because C doesn't support anonymous unions, access to ip_address
-   elements is unwieldy.  Hence the accessors.
-
-   The _ADDR accessors return the address as the struct in_addr or
-   in6_addr.  The _DATA accessor returns a pointer to the address data
-   -- pretty much the same as the above, but cast to void*.  The
-   _SCOPE accessor returns the address's scope_id, and makes sense
-   only when IPv6 and HAVE_SOCKADDR_IN6_SCOPE_ID are both defined.  */
-
-#define ADDRESS_IPV4_IN_ADDR(x) ((x)->u.ipv4.addr)
-/* Don't use &x->u.ipv4.addr.s_addr because it can be #defined to a
-   bitfield, which you can't take an address of.  */
-#define ADDRESS_IPV4_DATA(x) ((void *)&(x)->u.ipv4.addr)
-
-#define ADDRESS_IPV6_IN6_ADDR(x) ((x)->u.ipv6.addr)
-#define ADDRESS_IPV6_DATA(x) ((void *)&(x)->u.ipv6.addr)
-#define ADDRESS_IPV6_SCOPE(x) ((x)->u.ipv6.scope_id)
+/* IP_INADDR_DATA macro returns a void pointer that can be interpreted
+   as a pointer to struct in_addr in IPv4 context or a pointer to
+   struct in6_addr in IPv4 context.  This pointer can be passed to
+   functions that work on either, such as inet_ntop.  */
+#define IP_INADDR_DATA(x) ((void *) &(x)->data)
 
 enum {
   LH_SILENT  = 1,

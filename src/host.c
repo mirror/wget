@@ -98,30 +98,27 @@ bool
 address_list_contains (const struct address_list *al, const ip_address *ip)
 {
   int i;
-  switch (ip->type)
+  switch (ip->family)
     {
-    case IPV4_ADDRESS:
+    case AF_INET:
       for (i = 0; i < al->count; i++)
 	{
 	  ip_address *cur = al->addresses + i;
-	  if (cur->type == IPV4_ADDRESS
-	      && (ADDRESS_IPV4_IN_ADDR (cur).s_addr
-		  ==
-		  ADDRESS_IPV4_IN_ADDR (ip).s_addr))
+	  if (cur->family == AF_INET
+	      && (cur->data.d4.s_addr == ip->data.d4.s_addr))
 	    return true;
 	}
       return false;
 #ifdef ENABLE_IPV6
-    case IPV6_ADDRESS:
+    case AF_INET6:
       for (i = 0; i < al->count; i++)
 	{
 	  ip_address *cur = al->addresses + i;
-	  if (cur->type == IPV6_ADDRESS
+	  if (cur->family == AF_INET6
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	      && ADDRESS_IPV6_SCOPE (cur) == ADDRESS_IPV6_SCOPE (ip)
+	      && cur->ipv6_scope == ip->ipv6_scope
 #endif
-	      && IN6_ARE_ADDR_EQUAL (&ADDRESS_IPV6_IN6_ADDR (cur),
-				     &ADDRESS_IPV6_IN6_ADDR (ip)))
+	      && IN6_ARE_ADDR_EQUAL (&cur->data.d6, &ip->data.d6))
 	    return true;
 	}
       return false;
@@ -199,10 +196,10 @@ address_list_from_addrinfo (const struct addrinfo *ai)
       {
 	const struct sockaddr_in6 *sin6 =
 	  (const struct sockaddr_in6 *)ptr->ai_addr;
-	ip->type = IPV6_ADDRESS;
-	ADDRESS_IPV6_IN6_ADDR (ip) = sin6->sin6_addr;
+	ip->family = AF_INET6;
+	ip->data.d6 = sin6->sin6_addr;
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	ADDRESS_IPV6_SCOPE (ip) = sin6->sin6_scope_id;
+	ip->ipv6_scope = sin6->sin6_scope_id;
 #endif
 	++ip;
       } 
@@ -210,17 +207,17 @@ address_list_from_addrinfo (const struct addrinfo *ai)
       {
 	const struct sockaddr_in *sin =
 	  (const struct sockaddr_in *)ptr->ai_addr;
-	ip->type = IPV4_ADDRESS;
-	ADDRESS_IPV4_IN_ADDR (ip) = sin->sin_addr;
+	ip->family = AF_INET;
+	ip->data.d4 = sin->sin_addr;
 	++ip;
       }
   assert (ip - al->addresses == cnt);
   return al;
 }
 
-#define IS_IPV4(addr) (((const ip_address *) addr)->type == IPV4_ADDRESS)
+#define IS_IPV4(addr) (((const ip_address *) addr)->family == AF_INET)
 
-/* Compare two IP addresses by type, giving preference to the IPv4
+/* Compare two IP addresses by family, giving preference to the IPv4
    address (sorting it first).  In other words, return -1 if ADDR1 is
    IPv4 and ADDR2 is IPv6, +1 if ADDR1 is IPv6 and ADDR2 is IPv4, and
    0 otherwise.
@@ -234,7 +231,7 @@ cmp_prefer_ipv4 (const void *addr1, const void *addr2)
   return !IS_IPV4 (addr1) - !IS_IPV4 (addr2);
 }
 
-#define IS_IPV6(addr) (((const ip_address *) addr)->type == IPV6_ADDRESS)
+#define IS_IPV6(addr) (((const ip_address *) addr)->family == AF_INET6)
 
 /* Like the above, but give preference to the IPv6 address.  */
 
@@ -267,7 +264,7 @@ address_list_from_ipv4_addresses (char **vec)
   for (i = 0; i < count; i++)
     {
       ip_address *ip = &al->addresses[i];
-      ip->type = IPV4_ADDRESS;
+      ip->family = AF_INET;
       memcpy (ADDRESS_IPV4_DATA (ip), vec[i], 4);
     }
 
@@ -406,26 +403,18 @@ getaddrinfo_with_timeout (const char *node, const char *service,
 const char *
 print_address (const ip_address *addr)
 {
-  switch (addr->type) 
-    {
-    case IPV4_ADDRESS:
-      return inet_ntoa (ADDRESS_IPV4_IN_ADDR (addr));
 #ifdef ENABLE_IPV6
-    case IPV6_ADDRESS:
-      {
-        static char buf[64];
-	if (!inet_ntop (AF_INET6, &ADDRESS_IPV6_IN6_ADDR (addr),
-			buf, sizeof (buf)))
-	  snprintf (buf, sizeof buf, "<error: %s>", strerror (errno));
-        buf[sizeof (buf) - 1] = '\0';
-        return buf;
-      }
+  static char buf[64];
+  if (!inet_ntop (addr->family, IP_INADDR_DATA (addr), buf, sizeof buf))
+    snprintf (buf, sizeof buf, "<error: %s>", strerror (errno));
+  return buf;
+#else
+  return inet_ntoa (addr->data.d4);
 #endif
-    }
-  abort ();
 }
 
-/* The following two functions were adapted from glibc. */
+/* The following two functions were adapted from glibc's
+   implementation of inet_pton, written by Paul Vixie. */
 
 static bool
 is_valid_ipv4_address (const char *str, const char *end)

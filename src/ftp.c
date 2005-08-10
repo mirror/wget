@@ -116,14 +116,14 @@ ftp_do_pasv (int csock, ip_address *addr, int *port)
   /* If our control connection is over IPv6, then we first try EPSV and then 
    * LPSV if the former is not supported. If the control connection is over 
    * IPv4, we simply issue the good old PASV request. */
-  switch (addr->type)
+  switch (addr->family)
     {
-    case IPV4_ADDRESS:
+    case AF_INET:
       if (!opt.server_response)
         logputs (LOG_VERBOSE, "==> PASV ... ");
       err = ftp_pasv (csock, addr, port);
       break;
-    case IPV6_ADDRESS:
+    case AF_INET6:
       if (!opt.server_response)
         logputs (LOG_VERBOSE, "==> EPSV ... ");
       err = ftp_epsv (csock, addr, port);
@@ -159,14 +159,14 @@ ftp_do_port (int csock, int *local_sock)
   /* If our control connection is over IPv6, then we first try EPRT and then 
    * LPRT if the former is not supported. If the control connection is over 
    * IPv4, we simply issue the good old PORT request. */
-  switch (cip.type)
+  switch (cip.family)
     {
-    case IPV4_ADDRESS:
+    case AF_INET:
       if (!opt.server_response)
         logputs (LOG_VERBOSE, "==> PORT ... ");
       err = ftp_port (csock, local_sock);
       break;
-    case IPV6_ADDRESS:
+    case AF_INET6:
       if (!opt.server_response)
         logputs (LOG_VERBOSE, "==> EPRT ... ");
       err = ftp_eprt (csock, local_sock);

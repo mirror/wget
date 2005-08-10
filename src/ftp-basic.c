@@ -250,13 +250,11 @@ ip_address_to_port_repr (const ip_address *addr, int port, char *buf,
 {
   unsigned char *ptr;
 
-  assert (addr != NULL);
-  assert (addr->type == IPV4_ADDRESS);
-  assert (buf != NULL);
+  assert (addr->family == AF_INET);
   /* buf must contain the argument of PORT (of the form a,b,c,d,e,f). */
   assert (buflen >= 6 * 4);
 
-  ptr = ADDRESS_IPV4_DATA (addr);
+  ptr = IP_INADDR_DATA (addr);
   snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d", ptr[0], ptr[1],
             ptr[2], ptr[3], (port & 0xff00) >> 8, port & 0xff);
   buf[buflen - 1] = '\0';
@@ -280,7 +278,7 @@ ftp_port (int csock, int *local_sock)
   if (!socket_ip_address (csock, &addr, ENDPOINT_LOCAL))
     return FTPSYSERR;
 
-  assert (addr.type == IPV4_ADDRESS);
+  assert (addr.family == AF_INET);
 
   /* Setting port to 0 lets the system choose a free port.  */
   port = 0;
@@ -326,32 +324,29 @@ static void
 ip_address_to_lprt_repr (const ip_address *addr, int port, char *buf, 
                          size_t buflen)
 {
-  unsigned char *ptr;
+  unsigned char *ptr = IP_INADDR_DATA (addr);
 
-  assert (addr != NULL);
-  assert (addr->type == IPV4_ADDRESS || addr->type == IPV6_ADDRESS);
-  assert (buf != NULL);
   /* buf must contain the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
   assert (buflen >= 21 * 4);
 
   /* Construct the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
-  switch (addr->type) 
+  switch (addr->family) 
     {
-      case IPV4_ADDRESS: 
-	ptr = ADDRESS_IPV4_DATA (addr);
-        snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d,%d,%d,%d", 4, 4, 
-                  ptr[0], ptr[1], ptr[2], ptr[3], 2,
-                  (port & 0xff00) >> 8, port & 0xff);
-        buf[buflen - 1] = '\0';
-        break;
-      case IPV6_ADDRESS: 
-	ptr = ADDRESS_IPV6_DATA (addr);
-	snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
-	          6, 16, ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7], 
-		  ptr[8], ptr[9], ptr[10], ptr[11], ptr[12], ptr[13], ptr[14], ptr[15], 2,
-		  (port & 0xff00) >> 8, port & 0xff);
-	buf[buflen - 1] = '\0';
-	break;
+    case AF_INET: 
+      snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d,%d,%d,%d", 4, 4, 
+		ptr[0], ptr[1], ptr[2], ptr[3], 2,
+		(port & 0xff00) >> 8, port & 0xff);
+      break;
+    case AF_INET6: 
+      snprintf (buf, buflen,
+		"%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+		6, 16,
+		ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7], 
+		ptr[8], ptr[9], ptr[10], ptr[11], ptr[12], ptr[13], ptr[14], ptr[15],
+		2, (port & 0xff00) >> 8, port & 0xff);
+      break;
+    default:
+      abort ();
     }
 }
 
@@ -373,7 +368,7 @@ ftp_lprt (int csock, int *local_sock)
   if (!socket_ip_address (csock, &addr, ENDPOINT_LOCAL))
     return FTPSYSERR;
 
-  assert (addr.type == IPV4_ADDRESS || addr.type == IPV6_ADDRESS);
+  assert (addr.family == AF_INET || addr.family == AF_INET6);
 
   /* Setting port to 0 lets the system choose a free port.  */
   port = 0;
@@ -425,7 +420,7 @@ ip_address_to_eprt_repr (const ip_address *addr, int port, char *buf,
   assert (buflen >= 4 + INET6_ADDRSTRLEN + 1 + 5); 
 
   /* Construct the argument of EPRT (of the form |af|addr|port|). */
-  afnum = (addr->type == IPV4_ADDRESS ? 1 : 2);
+  afnum = (addr->family == AF_INET ? 1 : 2);
   snprintf (buf, buflen, "|%d|%s|%d|", afnum, print_address (addr), port);
   buf[buflen - 1] = '\0';
 }
@@ -546,8 +541,8 @@ ftp_pasv (int csock, ip_address *addr, int *port)
     }
   xfree (respline);
 
-  addr->type = IPV4_ADDRESS;
-  memcpy (ADDRESS_IPV4_DATA (addr), tmp, 4);
+  addr->family = AF_INET;
+  memcpy (IP_INADDR_DATA (addr), tmp, 4);
   *port = ((tmp[4] << 8) & 0xff00) + tmp[5];
 
   return FTPOK;
@@ -692,8 +687,8 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
 
   if (af == 4)
     {
-      addr->type = IPV4_ADDRESS;
-      memcpy (ADDRESS_IPV4_DATA (addr), tmp, 4);
+      addr->family = AF_INET;
+      memcpy (IP_INADDR_DATA (addr), tmp, 4);
       *port = ((tmpprt[0] << 8) & 0xff00) + tmpprt[1];
       DEBUGP (("lpsv addr is: %s\n", print_address(addr)));
       DEBUGP (("tmpprt[0] is: %d\n", tmpprt[0]));
@@ -703,8 +698,8 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
   else
     {
       assert (af == 6);
-      addr->type = IPV6_ADDRESS;
-      memcpy (ADDRESS_IPV6_DATA (addr), tmp, 16);
+      addr->family = AF_INET6;
+      memcpy (IP_INADDR_DATA (addr), tmp, 16);
       *port = ((tmpprt[0] << 8) & 0xff00) + tmpprt[1];
       DEBUGP (("lpsv addr is: %s\n", print_address(addr)));
       DEBUGP (("tmpprt[0] is: %d\n", tmpprt[0]));
@@ -735,7 +730,7 @@ ftp_epsv (int csock, ip_address *ip, int *port)
 
   /* Form the request.  */
   /* EPSV 1 means that we ask for IPv4 and EPSV 2 means that we ask for IPv6. */
-  request = ftp_request ("EPSV", (ip->type == IPV4_ADDRESS ? "1" : "2"));
+  request = ftp_request ("EPSV", (ip->family == AF_INET ? "1" : "2"));
 
   /* And send it.  */
   nwritten = fd_write (csock, request, strlen (request), -1);
