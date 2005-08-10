@@ -80,7 +80,7 @@
 #define HAVE_SNPRINTF 1
 
 /* Define if struct sockaddr_in6 has the sin6_scope_id member */
-/* #undef HAVE_SOCKADDR_IN6_SCOPE_ID */
+#define HAVE_SOCKADDR_IN6_SCOPE_ID 1
 
 /* Define when using Solaris MD5. */
 /* #undef HAVE_SOLARIS_MD5 */

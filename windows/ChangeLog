@@ -1,3 +1,8 @@
+2005-08-10  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* config.h (HAVE_SOCKADDR_IN6_SCOPE_ID): According to MSDN,
+	Winsock supports sin6_scope_id.
+
 2005-07-08  Gisle Vanem  <giva@bgnett.no>
 
 	* config-compiler.h: Reintroduced Watcom support.
