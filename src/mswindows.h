@@ -86,15 +86,16 @@ typedef __int64 wgint;
 #define SIZEOF_WGINT 8
 #define WGINT_MAX LL (9223372036854775807)
 
-/* str_to_wgint is a function with the semantics of strtol, but which
-   works on wgint.  */
+/* str_to_wgint is a function with the semantics of strtol[l], but
+   which works on wgint.  */
 #if defined HAVE_STRTOLL
 # define str_to_wgint strtoll
 #elif defined HAVE__STRTOI64
 # define str_to_wgint _strtoi64
 #else
-__int64 str_to_int64 (const char *, char **, int);
-# define str_to_wgint str_to_int64
+# define str_to_wgint strtoll
+# define NEED_STRTOLL
+# define strtoll_return __int64
 #endif
 
 /* Windows has no symlink, therefore no lstat.  Without symlinks lstat

@@ -133,9 +133,22 @@ typedef off_t wgint;
 #  define str_to_wgint strtol
 #  define WGINT_MAX LONG_MAX
 # else
-#  define str_to_wgint strtoll
 #  define WGINT_MAX LLONG_MAX
+#  ifdef HAVE_STRTOLL
+#   define str_to_wgint strtoll
+#  elif HAVE_STRTOIMAX
+#   define str_to_wgint strtoimax
+#  else
+#   define str_to_wgint strtoll
+#   define NEED_STRTOLL
+#   define strtoll_return long long
+#  endif
 # endif
+#endif
+
+/* Declare our strtoll replacement. */
+#ifdef NEED_STRTOLL
+strtoll_return strtoll (const char *, char **, int);
 #endif
 
 /* Now define a large integral type useful for storing sizes of *sums*

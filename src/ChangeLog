@@ -1,3 +1,10 @@
+2005-08-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* cmpt.c (strtoll): Define it if missing on the system and if Wget
+	needs it.
+
+	* mswindows.c (str_to_int64): Move to cmpt.c and rename to strtoll.
+
 2005-08-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* host.c (print_address): Always use inet_ntop when IPv6 is

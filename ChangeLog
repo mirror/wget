@@ -1,3 +1,7 @@
+2005-08-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Check for strtoll and strtoimax.
+
 2005-07-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Remove -Wno-implicit from default GCC warning

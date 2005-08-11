@@ -1266,3 +1266,128 @@ timegm (struct tm *t)
   return (time_t) secs;
 }
 #endif /* HAVE_TIMEGM */
+
+#ifdef NEED_STRTOLL
+/* strtoll is required by C99 and used by Wget only on systems with
+   LFS.  Unfortunately, some systems have LFS, but no strtoll or
+   equivalent.  These include HPUX 11.0 and Windows.
+
+   We use #ifdef NEED_STRTOLL instead of #ifndef HAVE_STRTOLL because
+   of the systems which have a suitable replacement (e.g. _strtoi64 on
+   Windows), on which Wget's str_to_wgint is instructed to use that
+   instead.  */
+
+static inline int
+char_value (char c, int base)
+{
+  int value;
+  if (c < '0')
+    return -1;
+  if ('0' <= c && c <= '9')
+    value = c - '0';
+  else if ('a' <= c && c <= 'z')
+    value = c - 'a' + 10;
+  else if ('A' <= c && c <= 'Z')
+    value = c - 'A' + 10;
+  else
+    return -1;
+  if (value >= base)
+    return -1;
+  return value;
+}
+
+#define LL strtoll_return	/* long long or __int64 */
+
+/* These constants assume 64-bit strtoll_return. */
+
+/* A roundabout way of writing 2**63-1 = 9223372036854775807 */
+#define STRTOLL_OVERFLOW (((LL) 1 << 62) - 1 + ((LL) 1 << 62))
+/* A roundabout way of writing -2**63 = -9223372036854775808 */
+#define STRTOLL_UNDERFLOW (-STRTOLL_OVERFLOW - 1)
+
+/* A strtoll replacement for systems that have LFS but don't supply
+   strtoll.  The headers typedef strtoll_return to long long or to
+   __int64.  */
+
+strtoll_return
+strtoll (const char *nptr, char **endptr, int base)
+{
+  strtoll_return result = 0;
+  bool negative;
+
+  if (base != 0 && (base < 2 || base > 36))
+    {
+      errno = EINVAL;
+      return 0;
+    }
+
+  while (*nptr == ' ' || *nptr == '\t')
+    ++nptr;
+  if (*nptr == '-')
+    {
+      negative = true;
+      ++nptr;
+    }
+  else if (*nptr == '+')
+    {
+      negative = false;
+      ++nptr;
+    }
+  else
+    negative = false;
+
+  /* If base is 0, determine the real base based on the beginning on
+     the number; octal numbers begin with "0", hexadecimal with "0x",
+     and the others are considered octal.  */
+  if (*nptr == '0')
+    {
+      if ((base == 0 || base == 16)
+	  &&
+	  (*(nptr + 1) == 'x' || *(nptr + 1) == 'X'))
+	{
+	  base = 16;
+	  nptr += 2;
+	}
+      else if (base == 0)
+	base = 8;
+    }
+  else if (base == 0)
+    base = 10;
+
+  if (!negative)
+    {
+      /* Parse positive number, checking for overflow. */
+      int val;
+      for (; (val = char_value (*nptr, base)) != -1; ++nptr)
+	{
+	  strtoll_return newresult = base * result + val;
+	  if (newresult < result)
+	    {
+	      result = STRTOLL_OVERFLOW;
+	      errno = ERANGE;
+	      break;
+	    }
+	  result = newresult;
+	}
+    }
+  else
+    {
+      /* Parse negative number, checking for underflow. */
+      int val;
+      for (; (val = char_value (*nptr, base)) != -1; ++nptr)
+	{
+	  strtoll_return newresult = base * result - val;
+	  if (newresult > result)
+	    {
+	      result = STRTOLL_UNDERFLOW;
+	      errno = ERANGE;
+	      break;
+	    }
+	  result = newresult;
+	}
+    }
+  if (endptr)
+    *endptr = (char *) nptr;
+  return result;
+}
+#endif	/* NEED_STRTOLL */
