@@ -1051,7 +1051,7 @@ eta_to_human_short (int secs, bool condensed)
     sprintf (buf, "%ds", secs);
   else if (secs < 100 * 60)
     sprintf (buf, "%dm%s%ds", secs / 60, space, secs % 60);
-  else if (secs < 100 * 3600)
+  else if (secs < 48 * 3600)
     sprintf (buf, "%dh%s%dm", secs / 3600, space, (secs / 60) % 60);
   else if (secs < 100 * 86400)
     sprintf (buf, "%dd%s%dh", secs / 86400, space, (secs / 3600) % 60);

@@ -1,5 +1,11 @@
 2005-08-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* progress.c (eta_to_human_short): Switch to days when printing
+	more than 48h rather than 100h.  (It's not immediately apparent
+	how many days there are in 83h.)
+
+2005-08-11  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* cmpt.c (strtoll): Define it if missing on the system and if Wget
 	needs it.
 
