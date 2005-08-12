@@ -134,7 +134,7 @@ typedef off_t wgint;
 #  define WGINT_MAX LLONG_MAX
 #  ifdef HAVE_STRTOLL
 #   define str_to_wgint strtoll
-#  elif HAVE_STRTOIMAX		/* HPUX 11.0 has strtoimax, but no strtoll */
+#  elif defined HAVE_STRTOIMAX	/* HPUX 11.0 has strtoimax, but no strtoll */
 #   define str_to_wgint strtoimax
 #  else
 #   define str_to_wgint strtoll
