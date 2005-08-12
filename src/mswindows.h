@@ -95,7 +95,7 @@ typedef __int64 wgint;
 #else
 # define str_to_wgint strtoll
 # define NEED_STRTOLL
-# define strtoll_return __int64
+# define strtoll_type __int64
 #endif
 
 /* Windows has no symlink, therefore no lstat.  Without symlinks lstat

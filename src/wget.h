@@ -125,10 +125,8 @@ so, delete this exception statement from your version.  */
 #ifndef WINDOWS
 typedef off_t wgint;
 # define SIZEOF_WGINT SIZEOF_OFF_T
-#endif
 
-/* Define a strtol/strtoll clone that works with wgint.  */
-#ifndef str_to_wgint		/* mswindows.h defines its own alias */
+/* Pick the strtol-like function that will work with wgint.  */
 # if SIZEOF_WGINT == SIZEOF_LONG
 #  define str_to_wgint strtol
 #  define WGINT_MAX LONG_MAX
@@ -136,22 +134,22 @@ typedef off_t wgint;
 #  define WGINT_MAX LLONG_MAX
 #  ifdef HAVE_STRTOLL
 #   define str_to_wgint strtoll
-#  elif HAVE_STRTOIMAX
+#  elif HAVE_STRTOIMAX		/* HPUX 11.0 has strtoimax, but no strtoll */
 #   define str_to_wgint strtoimax
 #  else
 #   define str_to_wgint strtoll
 #   define NEED_STRTOLL
-#   define strtoll_return long long
+#   define strtoll_type long long
 #  endif
 # endif
-#endif
+#endif	/* not WINDOWS */
 
 /* Declare our strtoll replacement. */
 #ifdef NEED_STRTOLL
-strtoll_return strtoll (const char *, char **, int);
+strtoll_type strtoll (const char *, char **, int);
 #endif
 
-/* Now define a large integral type useful for storing sizes of *sums*
+/* Now define a large numeric type useful for storing sizes of *sums*
    of downloads, such as the value of the --quota option.  This should
    be a type able to hold 2G+ values even on systems without large
    file support.  (It is useful to limit Wget's download quota to say

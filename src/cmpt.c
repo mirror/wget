@@ -1296,9 +1296,9 @@ char_value (char c, int base)
   return value;
 }
 
-#define LL strtoll_return	/* long long or __int64 */
+#define LL strtoll_type		/* long long or __int64 */
 
-/* These constants assume 64-bit strtoll_return. */
+/* These constants assume 64-bit strtoll_type. */
 
 /* A roundabout way of writing 2**63-1 = 9223372036854775807 */
 #define STRTOLL_OVERFLOW (((LL) 1 << 62) - 1 + ((LL) 1 << 62))
@@ -1306,13 +1306,13 @@ char_value (char c, int base)
 #define STRTOLL_UNDERFLOW (-STRTOLL_OVERFLOW - 1)
 
 /* A strtoll replacement for systems that have LFS but don't supply
-   strtoll.  The headers typedef strtoll_return to long long or to
+   strtoll.  The headers typedef strtoll_type to long long or to
    __int64.  */
 
-strtoll_return
+strtoll_type
 strtoll (const char *nptr, char **endptr, int base)
 {
-  strtoll_return result = 0;
+  strtoll_type result = 0;
   bool negative;
 
   if (base != 0 && (base < 2 || base > 36))
@@ -1360,7 +1360,7 @@ strtoll (const char *nptr, char **endptr, int base)
       int val;
       for (; (val = char_value (*nptr, base)) != -1; ++nptr)
 	{
-	  strtoll_return newresult = base * result + val;
+	  strtoll_type newresult = base * result + val;
 	  if (newresult < result)
 	    {
 	      result = STRTOLL_OVERFLOW;
@@ -1376,7 +1376,7 @@ strtoll (const char *nptr, char **endptr, int base)
       int val;
       for (; (val = char_value (*nptr, base)) != -1; ++nptr)
 	{
-	  strtoll_return newresult = base * result - val;
+	  strtoll_type newresult = base * result - val;
 	  if (newresult > result)
 	    {
 	      result = STRTOLL_UNDERFLOW;

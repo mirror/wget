@@ -1,3 +1,7 @@
+2005-08-12  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.h: Renamed strtoll_return to strtoll_type.
+
 2005-08-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* progress.c (eta_to_human_short): Switch to days when printing
