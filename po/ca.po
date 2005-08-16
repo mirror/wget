@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.10-rc1\n"
+"Project-Id-Version: wget 1.10.1-b1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-06 09:11-0400\n"
-"PO-Revision-Date: 2005-06-08 14:32+0200\n"
+"POT-Creation-Date: 2005-07-08 08:08-0400\n"
+"PO-Revision-Date: 2005-07-14 14:40+0300\n"
 "Last-Translator: Jordi Mallach <jordi@gnu.org>\n"
 "Language-Team: Catalan <ca@dodds.net>\n"
 "MIME-Version: 1.0\n"
@@ -35,6 +35,11 @@ msgstr "S'està connectant a %s:%d..."
 #: src/connect.c:335
 msgid "connected.\n"
 msgstr "connectat.\n"
+
+#: src/connect.c:347 src/host.c:789 src/host.c:818
+#, c-format
+msgid "failed: %s.\n"
+msgstr "error: %s.\n"
 
 #: src/convert.c:176
 #, c-format
@@ -75,17 +80,22 @@ msgstr "S'ha produït un error a la capçalera Set-Cookie, camp «%s»"
 msgid "Syntax error in Set-Cookie: %s at position %d.\n"
 msgstr "S'ha produït un error de sintaxi a la capçalera Set-Cookie: %s a la posició %d.\n"
 
-#: src/cookies.c:1469
+#: src/cookies.c:881
+#, c-format
+msgid "Cookie coming from %s attempted to set domain to %s\n"
+msgstr "La galeta provinent de %s ha intentat establir el domini a %s\n"
+
+#: src/cookies.c:1328 src/cookies.c:1477
 #, c-format
 msgid "Cannot open cookies file `%s': %s\n"
 msgstr "No es pot obrir el fitxer de cookies «%s»: %s\n"
 
-#: src/cookies.c:1481
+#: src/cookies.c:1489
 #, c-format
 msgid "Error writing to `%s': %s\n"
 msgstr "S'ha produït un error en escriure a «%s»: %s\n"
 
-#: src/cookies.c:1484
+#: src/cookies.c:1492
 #, c-format
 msgid "Error closing `%s': %s\n"
 msgstr "S'ha produït un error en tancar «%s»: %s\n"
@@ -134,12 +144,12 @@ msgstr " (%s octets)"
 msgid "Length: %s"
 msgstr "Mida: %s"
 
-#: src/ftp.c:232 src/http.c:1857
+#: src/ftp.c:232 src/http.c:1861
 #, c-format
 msgid ", %s (%s) remaining"
 msgstr ", %s (%s) restant"
 
-#: src/ftp.c:236 src/http.c:1861
+#: src/ftp.c:236 src/http.c:1865
 #, c-format
 msgid ", %s remaining"
 msgstr ", %s restant"
@@ -272,7 +282,7 @@ msgstr ""
 #. what functions like unique_create typically do)
 #. because we told the user we'd use this name.
 #. Instead, return and retry the download.
-#: src/ftp.c:946 src/http.c:1913
+#: src/ftp.c:946 src/http.c:1922
 #, c-format
 msgid "%s has sprung into existence.\n"
 msgstr "%s ha començat a existir.\n"
@@ -295,17 +305,17 @@ msgstr "Connexió de control tancada.\n"
 msgid "Data transfer aborted.\n"
 msgstr "S'ha avortat la transferència de dades.\n"
 
-#: src/ftp.c:1114
+#: src/ftp.c:1117
 #, c-format
-msgid "File `%s' already there, not retrieving.\n"
+msgid "File `%s' already there; not retrieving.\n"
 msgstr "El fitxer «%s» ja existeix, no es descarrega.\n"
 
-#: src/ftp.c:1182 src/http.c:2130
+#: src/ftp.c:1185 src/http.c:2142
 #, c-format
 msgid "(try:%2d)"
 msgstr "(intent:%2d)"
 
-#: src/ftp.c:1252 src/http.c:2409
+#: src/ftp.c:1255 src/http.c:2421
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s]\n"
@@ -314,35 +324,35 @@ msgstr ""
 "%s (%s) - s'ha desat «%s» [%s]\n"
 "\n"
 
-#: src/ftp.c:1294 src/main.c:948 src/recur.c:376 src/retr.c:842
+#: src/ftp.c:1297 src/main.c:948 src/recur.c:376 src/retr.c:844
 #, c-format
 msgid "Removing %s.\n"
 msgstr "S'està suprimint %s.\n"
 
-#: src/ftp.c:1336
+#: src/ftp.c:1339
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
 msgstr "S'utilitza «%s» com a fitxer de llistat temporal.\n"
 
-#: src/ftp.c:1351
+#: src/ftp.c:1354
 #, c-format
 msgid "Removed `%s'.\n"
 msgstr "S'ha suprimit «%s».\n"
 
-#: src/ftp.c:1386
+#: src/ftp.c:1389
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr "La profunditat de recursió %d excedeix el màxim permès %d.\n"
 
 #. Remote file is older, file sizes can be compared and
 #. are both equal.
-#: src/ftp.c:1456
+#: src/ftp.c:1459
 #, c-format
 msgid "Remote file no newer than local file `%s' -- not retrieving.\n"
 msgstr "El fitxer remot no és més nou que el local «%s» -- no es descarrega.\n"
 
 #. Remote file is newer or sizes cannot be matched
-#: src/ftp.c:1463
+#: src/ftp.c:1466
 #, c-format
 msgid ""
 "Remote file is newer than local file `%s' -- retrieving.\n"
@@ -352,7 +362,7 @@ msgstr ""
 "\n"
 
 #. Sizes do not match
-#: src/ftp.c:1470
+#: src/ftp.c:1473
 #, c-format
 msgid ""
 "The sizes do not match (local %s) -- retrieving.\n"
@@ -361,11 +371,11 @@ msgstr ""
 "Els fitxers no tenen la mateixa mida (local %s) -- s'està descarregant.\n"
 "\n"
 
-#: src/ftp.c:1488
+#: src/ftp.c:1491
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr "El nom de l'enllaç simbòlic no és correcte; s'omet.\n"
 
-#: src/ftp.c:1505
+#: src/ftp.c:1508
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
@@ -374,42 +384,42 @@ msgstr ""
 "Ja hi ha un enllaç simbòlic correcte %s -> %s\n"
 "\n"
 
-#: src/ftp.c:1513
+#: src/ftp.c:1516
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr "S'està creant l'enllaç simbòlic %s -> %s\n"
 
-#: src/ftp.c:1523
+#: src/ftp.c:1526
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
 msgstr "No es suporten enllaços simbòlics; s'omet l'enllaç «%s».\n"
 
-#: src/ftp.c:1535
+#: src/ftp.c:1538
 #, c-format
 msgid "Skipping directory `%s'.\n"
 msgstr "S'està ometent el directori «%s».\n"
 
-#: src/ftp.c:1544
+#: src/ftp.c:1547
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr "%s: tipus de fitxer desconegut o no suportat.\n"
 
-#: src/ftp.c:1571
+#: src/ftp.c:1574
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr "%s: la marca de temps és corrupta..\n"
 
-#: src/ftp.c:1599
+#: src/ftp.c:1602
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr "No es descarregaran directoris ja que la profunditat és %d (max %d).\n"
 
-#: src/ftp.c:1649
+#: src/ftp.c:1652
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
 msgstr "No es descendeix a «%s» ja que està exclòs, o no inclòs.\n"
 
-#: src/ftp.c:1715 src/ftp.c:1729
+#: src/ftp.c:1718 src/ftp.c:1732
 #, c-format
 msgid "Rejecting `%s'.\n"
 msgstr "S'està rebutjant «%s».\n"
@@ -417,17 +427,17 @@ msgstr "S'està rebutjant «%s».\n"
 #. No luck.
 #. #### This message SUCKS.  We should see what was the
 #. reason that nothing was retrieved.
-#: src/ftp.c:1775
+#: src/ftp.c:1778
 #, c-format
 msgid "No matches on pattern `%s'.\n"
 msgstr "Cap coincidència amb el patró «%s».\n"
 
-#: src/ftp.c:1841
+#: src/ftp.c:1844
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%s].\n"
 msgstr "S'ha escrit un índex HTMLitzat a «%s» [%s].\n"
 
-#: src/ftp.c:1846
+#: src/ftp.c:1849
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
 msgstr "S'ha escrit un índex HTMLitzat a «%s».\n"
@@ -491,35 +501,30 @@ msgstr "%s: l'opció «-W %s» és ambigua\n"
 msgid "%s: option `-W %s' doesn't allow an argument\n"
 msgstr "%s: l'opció «-W %s» no admet arguments\n"
 
-#: src/host.c:371
+#: src/host.c:366
 msgid "Unknown host"
 msgstr "Servidor desconegut"
 
 #. Message modeled after what gai_strerror returns in similar
 #. circumstances.
-#: src/host.c:375
+#: src/host.c:370
 msgid "Temporary failure in name resolution"
 msgstr "S'ha produït un error temporal en la resolució de noms"
 
-#: src/host.c:377
+#: src/host.c:372
 msgid "Unknown error"
 msgstr "S'ha produït un error desconegut"
 
-#: src/host.c:756
+#: src/host.c:751
 #, c-format
 msgid "Resolving %s... "
 msgstr "S'està resolent %s... "
 
-#: src/host.c:800 src/host.c:829
-#, c-format
-msgid "failed: %s.\n"
-msgstr "error: %s.\n"
-
-#: src/host.c:809
+#: src/host.c:798
 msgid "failed: No IPv4/IPv6 addresses for host.\n"
 msgstr "error: No hi ha adreces IPv4/IPv6 per al servidor.\n"
 
-#: src/host.c:832
+#: src/host.c:821
 msgid "failed: timed out.\n"
 msgstr "error: s'ha exhaurit el temps.\n"
 
@@ -528,7 +533,12 @@ msgstr "error: s'ha exhaurit el temps.\n"
 msgid "%s: Cannot resolve incomplete link %s.\n"
 msgstr "%s: No s'ha pogut resoldre l'enllaç incomplet %s.\n"
 
-#: src/http.c:373 src/http.c:1549
+#: src/html-url.c:705
+#, c-format
+msgid "%s: Invalid URL %s: %s\n"
+msgstr "%s: L'URL %s no és vàlid: %s\n"
+
+#: src/http.c:373
 #, c-format
 msgid "Failed writing HTTP request: %s.\n"
 msgstr "S'ha produït un error en escriure la petició HTTP: %s.\n"
@@ -537,80 +547,80 @@ msgstr "S'ha produït un error en escriure la petició HTTP: %s.\n"
 msgid "No headers, assuming HTTP/0.9"
 msgstr "No hi ha capçaleres, s'assumeix HTTP/0.9"
 
-#: src/http.c:1198
+#: src/http.c:1204
 msgid "Disabling SSL due to encountered errors.\n"
 msgstr "S'està inhabilitant SSL a causa dels errors trobats.\n"
 
-#: src/http.c:1417
+#: src/http.c:1374
+#, c-format
+msgid "POST data file `%s' missing: %s\n"
+msgstr "Manca el fitxer de dades POST «%s»: %s\n"
+
+#: src/http.c:1423
 #, c-format
 msgid "Reusing existing connection to %s:%d.\n"
 msgstr "S'està reutilitzant la connexió a %s:%d.\n"
 
-#: src/http.c:1479
-#, c-format
-msgid "Failed writing to proxy: %s.\n"
-msgstr "S'ha produït un error en escriure al servidor intermediari: %s.\n"
-
-#: src/http.c:1488
+#: src/http.c:1492
 #, c-format
 msgid "Failed reading proxy response: %s\n"
 msgstr "S'ha produït un error en llegir la resposta del servidor intermediari: %s\n"
 
-#: src/http.c:1508
+#: src/http.c:1512
 #, c-format
 msgid "Proxy tunneling failed: %s"
 msgstr "Ha fallat la tunelització del servidor intermediari: %s"
 
-#: src/http.c:1555
+#: src/http.c:1557
 #, c-format
 msgid "%s request sent, awaiting response... "
 msgstr "%s: s'ha enviat la petició, s'està esperant una resposta..."
 
-#: src/http.c:1566
+#: src/http.c:1568
 msgid "No data received.\n"
 msgstr "No s'ha rebut cap dada\n"
 
-#: src/http.c:1573
+#: src/http.c:1575
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr "S'ha produït un error de lectura (%s) a les capçaleres.\n"
 
 #. If the authentication header is missing or
 #. unrecognized, there's no sense in retrying.
-#: src/http.c:1658
+#: src/http.c:1660
 msgid "Unknown authentication scheme.\n"
 msgstr "L'esquema d'autenticació és desconegut.\n"
 
-#: src/http.c:1682
+#: src/http.c:1684
 msgid "Authorization failed.\n"
 msgstr "Ha fallat l'autorització.\n"
 
-#: src/http.c:1696
+#: src/http.c:1698
 msgid "Malformed status line"
 msgstr "La línia d'estat és malformada"
 
-#: src/http.c:1698
+#: src/http.c:1700
 msgid "(no description)"
 msgstr "(sense descripció)"
 
-#: src/http.c:1769
+#: src/http.c:1763
 #, c-format
 msgid "Location: %s%s\n"
 msgstr "Ubicació: %s%s\n"
 
 # és femení: ubicació/mida. eac
-#: src/http.c:1770 src/http.c:1867
+#: src/http.c:1764 src/http.c:1871
 msgid "unspecified"
 msgstr "no especificada"
 
-#: src/http.c:1771
+#: src/http.c:1765
 msgid " [following]"
 msgstr " [es segueix]"
 
 #. If `-c' is in use and the file has been fully downloaded (or
 #. the remote file has shrunk), Wget effectively requests bytes
 #. after the end of file and the server response with 416.
-#: src/http.c:1817
+#: src/http.c:1821
 msgid ""
 "\n"
 "    The file is already fully retrieved; nothing to do.\n"
@@ -623,70 +633,74 @@ msgstr ""
 #. No need to print this output if the body won't be
 #. downloaded at all, or if the original server response is
 #. printed.
-#: src/http.c:1847
+#: src/http.c:1851
 msgid "Length: "
 msgstr "Mida: "
 
-#: src/http.c:1867
+#: src/http.c:1871
 msgid "ignored"
 msgstr "s'ignora"
 
-#: src/http.c:2007
+#: src/http.c:2019
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr "Avís: En HTTP no es suporten patrons.\n"
 
 #. If opt.noclobber is turned on and file already exists, do not
 #. retrieve the file
-#: src/http.c:2042
+#: src/http.c:2054
 #, c-format
-msgid "File `%s' already there, will not retrieve.\n"
-msgstr "El fitxer «%s» ja existeix, no es descarrega.\n"
+msgid ""
+"File `%s' already there; not retrieving.\n"
+"\n"
+msgstr ""
+"El fitxer «%s» ja existeix, no es descarrega.\n"
+"\n"
 
-#: src/http.c:2232
+#: src/http.c:2244
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr "No s'ha pogut escriure a «%s» (%s).\n"
 
 #. Another fatal error.
-#: src/http.c:2239
+#: src/http.c:2251
 msgid "Unable to establish SSL connection.\n"
 msgstr "No s'ha pogut establir la connexió SSL.\n"
 
-#: src/http.c:2248
+#: src/http.c:2260
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "ERROR: Redirecció (%d) sense ubicació.\n"
 
-#: src/http.c:2278
+#: src/http.c:2290
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s ERROR: %d %s.\n"
 
-#: src/http.c:2291
+#: src/http.c:2303
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr "Falta la capçalera Last-modified -- s'han inhabilitat les marques de temps.\n"
 
-#: src/http.c:2299
+#: src/http.c:2311
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr "Capçalera Last-modified no vàlida -- s'omet la marca de temps.\n"
 
-#: src/http.c:2322
+#: src/http.c:2334
 #, c-format
 msgid ""
 "Server file no newer than local file `%s' -- not retrieving.\n"
 "\n"
 msgstr "El fitxer remot no és més nou que el local «%s» -- no es descarrega.\n"
 
-#: src/http.c:2330
+#: src/http.c:2342
 #, c-format
 msgid "The sizes do not match (local %s) -- retrieving.\n"
 msgstr "Les mides dels fitxers no coincideixen (local %s) -- s'està descarregant.\n"
 
-#: src/http.c:2335
+#: src/http.c:2347
 msgid "Remote file is newer, retrieving.\n"
 msgstr "El fitxer remot és més nou, s'està descarregant.\n"
 
-#: src/http.c:2377
+#: src/http.c:2389 src/http.c:2455
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s/%s]\n"
@@ -695,31 +709,22 @@ msgstr ""
 "%s (%s) - s'ha desat «%s» [%s/%s]\n"
 "\n"
 
-#: src/http.c:2434
+#: src/http.c:2446
 #, c-format
 msgid "%s (%s) - Connection closed at byte %s. "
 msgstr "%s (%s) - S'ha tancat la connexió a l'octet %s. "
 
-#: src/http.c:2443
-#, c-format
-msgid ""
-"%s (%s) - `%s' saved [%s/%s])\n"
-"\n"
-msgstr ""
-"%s (%s) - s'ha desat «%s» [%s/%s])\n"
-"\n"
-
-#: src/http.c:2469
+#: src/http.c:2481
 #, c-format
 msgid "%s (%s) - Connection closed at byte %s/%s. "
 msgstr "%s (%s) - S'ha tancat la connexió a l'octet %s/%s. "
 
-#: src/http.c:2483
+#: src/http.c:2495
 #, c-format
 msgid "%s (%s) - Read error at byte %s (%s)."
 msgstr "%s (%s) - S'ha produït un error de lectura a l'octet %s (%s)."
 
-#: src/http.c:2493
+#: src/http.c:2505
 #, c-format
 msgid "%s (%s) - Read error at byte %s/%s (%s). "
 msgstr "%s (%s) - S'ha produït un error de lectura a l'octet %s/%s (%s). "
@@ -763,45 +768,47 @@ msgstr "%s: L'ordre --execute «%s» no és vàlida.\n"
 
 #: src/init.c:707
 #, c-format
-msgid "%s: %s: Invalid boolean `%s', use `on' or `off'.\n"
-msgstr "%s: %s: La variable booleana «%s» no és vàlida; useu «on» o «off».\n"
+msgid "%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"
+msgstr "%s: %s: El booleà «%s» no és vàlid; useu «on» o «off».\n"
 
-#: src/init.c:750
+#: src/init.c:759
 #, c-format
-msgid "%s: %s: Invalid boolean `%s', use always, on, off, or never.\n"
-msgstr "%s: %s: La variable booleana «%s» no és vàlida; useu «always», «on», «off» o «never».\n"
+msgid ""
+"%s: %s: Invalid extended boolean `%s';\n"
+"use one of `on', `off', `always', or `never'.\n"
+msgstr "%s: %s: El booleà estés «%s» no és vàlid; useu «always», «on», «off» o «never».\n"
 
-#: src/init.c:767
+#: src/init.c:777
 #, c-format
 msgid "%s: %s: Invalid number `%s'.\n"
 msgstr "%s: %s: El número «%s» no és vàlid.\n"
 
-#: src/init.c:998 src/init.c:1017
+#: src/init.c:1008 src/init.c:1027
 #, c-format
 msgid "%s: %s: Invalid byte value `%s'\n"
 msgstr "%s: %s: L'octet «%s» no és vàlid.\n"
 
-#: src/init.c:1042
+#: src/init.c:1052
 #, c-format
 msgid "%s: %s: Invalid time period `%s'\n"
 msgstr "%s: %s: El període de temps «%s» no és vàlid.\n"
 
-#: src/init.c:1096 src/init.c:1186 src/init.c:1281 src/init.c:1306
+#: src/init.c:1106 src/init.c:1196 src/init.c:1291 src/init.c:1316
 #, c-format
 msgid "%s: %s: Invalid value `%s'.\n"
 msgstr "%s: %s: El valor «%s» no és vàlid.\n"
 
-#: src/init.c:1133
+#: src/init.c:1143
 #, c-format
 msgid "%s: %s: Invalid header `%s'.\n"
 msgstr "%s: %s: La capçalera «%s» no és vàlida.\n"
 
-#: src/init.c:1198
+#: src/init.c:1208
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: El tipus d'indicador de progrés «%s» no és vàlid.\n"
 
-#: src/init.c:1249
+#: src/init.c:1259
 #, c-format
 msgid "%s: %s: Invalid restriction `%s', use `unix' or `windows'.\n"
 msgstr "%s: %s: La restricció «%s» no és vàlida, useu «unix» o «windows».\n"
@@ -1281,8 +1288,8 @@ msgstr ""
 "                            de convertir-los.\n"
 
 #: src/main.c:603
-msgid "  -m,  --mirror             shortcut option equivalent to -r -N -l inf -nr.\n"
-msgstr "  -m,  --mirror             opció equivalent a -r -N -l inf -nr.\n"
+msgid "  -m,  --mirror             shortcut for -N -r -l inf --no-remove-listing.\n"
+msgstr "  -m,  --mirror             opció equivalent -N -r -l inf -no-remove-listings.\n"
 
 #: src/main.c:605
 msgid "  -p,  --page-requisites    get all images, etc. needed to display HTML page.\n"
@@ -1442,7 +1449,7 @@ msgstr ""
 "FINALITZAT --%s--\n"
 "Descarregat: %s octets en %d fitxers\n"
 
-#: src/main.c:978
+#: src/main.c:979
 #, c-format
 msgid "Download quota (%s bytes) EXCEEDED!\n"
 msgstr "S'ha EXCEDIT la quota de descàrrega (%s octets)!\n"
@@ -1457,7 +1464,7 @@ msgstr "S'esta continuant en segon terme.\n"
 msgid "Continuing in background, pid %lu.\n"
 msgstr "S'està continuant en segon terme, pid %lu.\n"
 
-#: src/mswindows.c:429 src/utils.c:348
+#: src/mswindows.c:429 src/utils.c:351
 #, c-format
 msgid "Output will be written to `%s'.\n"
 msgstr "La sortida s'escriurà a «%s».\n"
@@ -1546,10 +1553,22 @@ msgstr ""
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
 msgstr "L'estil de progrés «%s» no és vàlid; no es canvia.\n"
 
+#. If no clock was found, it means that clock_getres failed for
+#. the realtime clock.
+#: src/ptimer.c:176
+#, c-format
+msgid "Cannot get REALTIME clock frequency: %s\n"
+msgstr "No es pot obtenir la frequència del rellotge en TEMPS REAL: %s\n"
+
 #: src/recur.c:377
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
 msgstr "S'està suprimint %s ja que no s'hauria de descarregar.\n"
+
+#: src/res.c:394
+#, c-format
+msgid "Cannot open %s: %s"
+msgstr "No es pot obrir %s: %s"
 
 #: src/res.c:544
 msgid "Loading robots.txt; please ignore errors.\n"
@@ -1565,12 +1584,12 @@ msgstr "S'ha produït un error en analitzar la URL del servidor intermediari %s:
 msgid "Error in proxy URL %s: Must be HTTP.\n"
 msgstr "Hi ha un error a la URL del servidor intermediari %s: Ha de ser HTTP.\n"
 
-#: src/retr.c:738
+#: src/retr.c:740
 #, c-format
 msgid "%d redirections exceeded.\n"
 msgstr "S'ha excedit el màxim de redireccions (%d).\n"
 
-#: src/retr.c:863
+#: src/retr.c:865
 msgid ""
 "Giving up.\n"
 "\n"
@@ -1578,7 +1597,7 @@ msgstr ""
 "S'està abandonant.\n"
 "\n"
 
-#: src/retr.c:863
+#: src/retr.c:865
 msgid ""
 "Retrying.\n"
 "\n"
@@ -1592,15 +1611,15 @@ msgstr "Cap error"
 
 #: src/url.c:628
 msgid "Unsupported scheme"
-msgstr "Sistema no suportat"
+msgstr "L'esquema no està implementat"
 
 #: src/url.c:630
-msgid "Empty host"
-msgstr "Servidor no especificat"
+msgid "Invalid host name"
+msgstr "El nom del servidor és invàlid"
 
 #: src/url.c:632
 msgid "Bad port number"
-msgstr "Nombre de port incorrecte"
+msgstr "El número de port és incorrecte"
 
 #: src/url.c:634
 msgid "Invalid user name"
@@ -1608,7 +1627,7 @@ msgstr "Nom d'usuari no vàlid"
 
 #: src/url.c:636
 msgid "Unterminated IPv6 numeric address"
-msgstr "Adreça numèrica IPv6 no acabada"
+msgstr "L'adreça numèrica IPv6 no està terminada"
 
 #: src/url.c:638
 msgid "IPv6 addresses not supported"
@@ -1619,12 +1638,12 @@ msgid "Invalid IPv6 numeric address"
 msgstr "L'adreça numèrica IPv6 no és vàlida"
 
 #. parent, no error
-#: src/utils.c:346
+#: src/utils.c:349
 #, c-format
 msgid "Continuing in background, pid %d.\n"
 msgstr "Es continua en segon terme, pid %d.\n"
 
-#: src/utils.c:394
+#: src/utils.c:397
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
 msgstr "No s'ha pogut eliminar l'enllaç simbòlic «%s»: %s\n"
@@ -1633,3 +1652,19 @@ msgstr "No s'ha pogut eliminar l'enllaç simbòlic «%s»: %s\n"
 #, c-format
 msgid "%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"
 msgstr "%s: %s: No s'ha pogut assignar %ld octets; s'ha exhaurit la memòria.\n"
+
+#~ msgid "Failed writing to proxy: %s.\n"
+#~ msgstr "S'ha produït un error en escriure al servidor intermediari: %s.\n"
+
+#~ msgid "File `%s' already there, will not retrieve.\n"
+#~ msgstr "El fitxer «%s» ja existeix, no es descarrega.\n"
+
+#~ msgid ""
+#~ "%s (%s) - `%s' saved [%s/%s])\n"
+#~ "\n"
+#~ msgstr ""
+#~ "%s (%s) - s'ha desat «%s» [%s/%s])\n"
+#~ "\n"
+
+#~ msgid "Empty host"
+#~ msgstr "Servidor no especificat"
