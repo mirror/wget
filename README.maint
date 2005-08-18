@@ -23,7 +23,7 @@ cd ~/tmp
 3) test the tarball
 
 
-4) set new version number X.Y.Z on the repository
+4) set new version number "X.Y.Z" on the repository
 
 
 5) tag the sources in subversion
@@ -37,9 +37,12 @@ from a branch:
 svn copy -m "Tagging release X.Y.Z" http://svn.dotsrc.org/repo/wget/branches/X.Y/ http://svn.dotsrc.org/repo/wget/tags/WGET_X_Y_Z/
 
 
-6) upload the tarball on gnu.org and deepspace6.net
+6) upload the tarball on gnu.org
 
-prepare_wget_for_upload.sh X.Y.Z
+TARBALL = wget-X.Y.Z.tar.gz
+gpg --default-key 7B2FD4B0 --detach-sign -b --output ${TARBALL}.sig $TARBALL
+echo "directory: wget" > ${TARBALL}.directive
+gpg --default-key 7B2FD4B0 --clearsign ${TARBALL}.directive
 
 lftp ftp://ftp-upload.gnu.org/incoming/ftp
 put wget-X.Y.Z.tar.gz
@@ -73,10 +76,9 @@ pub  1024D/7B2FD4B0 2005-06-02 Mauro Tortonesi (GNU Wget Maintainer)
 <mauro@ferrara.linux.it>
      Key fingerprint = 1E90 AEA8 D511 58F0 94E5  B106 7220 24E9 7B2F D4B0
 
-the MD5 checksum of the tarball (and signature) are:
+the MD5 checksum of the tarball is:
 
 MD5 of tarball    wget-X.Y.Z.tar.gz
-MD5 of signature  wget-X.Y.Z.tar.gz.sig
 
 {DESCRIPTION OF THE CHANGES}
 
@@ -84,8 +86,6 @@ MD5 of signature  wget-X.Y.Z.tar.gz.sig
 9) send announcement on info-gnu@gnu.org
 
 I'm very pleased to announce the availability of GNU Wget X.Y.Z. 
-
-{DESCRIPTION OF THE CHANGES}
 
 GNU Wget is a non-interactive command-line tool for retrieving files using 
 HTTP, HTTPS and FTP, which may easily be called from scripts, cron jobs, 
@@ -101,10 +101,9 @@ Here are the compressed sources and the GPG detached signature:
 ftp://ftp.gnu.org/gnu/wget/wget-X.Y.Z.tar.gz
 ftp://ftp.gnu.org/gnu/wget/wget-X.Y.Z.tar.gz.sig
 
-The MD5 checksums of the tarball and signature are:
+The MD5 checksums of the tarball is:
 
 MD5 of tarball    wget-X.Y.Z.tar.gz
-MD5 of signature  wget-X.Y.Z.tar.gz.sig
 
 
 The GPG key I have used for the tarball signature is available at this URL:
@@ -117,10 +116,12 @@ pub  1024D/7B2FD4B0 2005-06-02 Mauro Tortonesi (GNU Wget Maintainer)
 <mauro@ferrara.linux.it>
      Key fingerprint = 1E90 AEA8 D511 58F0 94E5  B106 7220 24E9 7B2F D4B0
 
+{DESCRIPTION OF THE CHANGES}
 
-10) ask Hrvoje to post announcement on freshmeat.net
+
+10) post announcement on freshmeat.net
 
 
-11) set new version number X.Y.Z+devel on the repository
+11) set new version number "X.Y.Z+devel" on the repository
 
 
