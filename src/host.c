@@ -265,7 +265,7 @@ address_list_from_ipv4_addresses (char **vec)
     {
       ip_address *ip = &al->addresses[i];
       ip->family = AF_INET;
-      memcpy (ADDRESS_IPV4_DATA (ip), vec[i], 4);
+      memcpy (IP_INADDR_DATA (ip), vec[i], 4);
     }
 
   return al;
