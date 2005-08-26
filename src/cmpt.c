@@ -1046,9 +1046,10 @@ const unsigned short int __mon_yday[2][13] =
    and given a prefix, but many systems out there are still (as of
    this writing in 2005) broken and we must cater to them.
 
-   Additionally, according to some conventional, many historical
-   implementations of fnmatch are buggy and unreliable.  If yours is
-   such, undefine SYSTEM_FNMATCH in sysdep.h and tell us about it.  */
+   Additionally, according to some conventional wisdom, many
+   historical implementations of fnmatch are buggy and unreliable.  If
+   yours is such, undefine SYSTEM_FNMATCH in sysdep.h and tell us
+   about it.  */
 
 #ifndef SYSTEM_FNMATCH
 
