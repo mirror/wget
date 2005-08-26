@@ -248,15 +248,15 @@ then
   if test x"$LIBGNUTLS" != x
   then
     AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
-    AC_DEFINE([HAVE_GNUTLS], 1,
-	      [Define if support for the GnuTLS library is being compiled in.])
     SSL_OBJ='gnutls.o'
+  else
+    AC_MSG_ERROR([--with-ssl=gnutls was given, but GNUTLS is not available.])
   fi
-else
+elif test x"$with_ssl" != xno; then
   dnl As of this writing (OpenSSL 0.9.6), the libcrypto shared library
   dnl doesn't record its dependency on libdl, so we need to make sure
   dnl -ldl ends up in LIBS on systems that have it.  Most OSes use
-  dnl dlopen(), but HP-UX uses dnl shl_load().
+  dnl dlopen(), but HP-UX uses shl_load().
   AC_CHECK_LIB(dl, dlopen, [], [
     AC_CHECK_LIB(dl, shl_load)
   ])
@@ -274,9 +274,10 @@ else
   if test x"$LIBSSL" != x
   then
     AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
-    AC_DEFINE([HAVE_OPENSSL], 1,
-	      [Define if support for the OpenSSL library is being compiled in.])
     SSL_OBJ='openssl.o'
+  elif x"$with_ssl" != x
+  then
+    AC_MSG_ERROR([--with-ssl was given, but SSL is not available.])
   fi
 fi
 

@@ -40,7 +40,8 @@ so, delete this exception statement from your version.  */
 # define NDEBUG
 #endif
 
-#if defined HAVE_OPENSSL || defined HAVE_GNUTLS
+/* Is OpenSSL or GNUTLS available? */
+#if defined HAVE_LIBSSL || defined HAVE_LIBGNUTLS
 # define HAVE_SSL
 #endif
 

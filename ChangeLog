@@ -1,3 +1,9 @@
+2005-08-26  Stepan Kasal  <kasal@ucw.cz>
+
+	* configure.in: Abort configure if --with-ssl given but SSL
+	unavailable.  Use HAVE_LIBSSL and HAVE_LIBGNUTLS symbols provided
+	by AC_LIB_HAVE_LINKFLAGS instead of inventing new ones.
+
 2005-08-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Check for strtoll and strtoimax.
