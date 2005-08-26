@@ -41,7 +41,8 @@ prefix       = @prefix@
 exec_prefix  = @exec_prefix@
 bindir       = @bindir@
 sysconfdir   = @sysconfdir@
-localedir    = $(prefix)/share/locale
+datadir      = @datadir@
+localedir    = $(datadir)/locale
 
 DESTDIR      =
 

@@ -1,3 +1,7 @@
+2005-08-26  Albert Chin  <wget@mlists.thewrittenword.com>
+
+	* Makefile.in: Use @datadir@.  Define localedir as $(datadir)/locale.
+
 2005-08-26  Jeremy Shapiro  <jnshapiro@gmail.com>
 
 	* openssl.c (ssl_init): Set SSL_MODE_AUTO_RETRY.
