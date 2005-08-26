@@ -275,7 +275,7 @@ elif test x"$with_ssl" != xno; then
   then
     AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
     SSL_OBJ='openssl.o'
-  elif x"$with_ssl" != x
+  elif test x"$with_ssl" != x
   then
     AC_MSG_ERROR([--with-ssl was given, but SSL is not available.])
   fi
