@@ -1940,9 +1940,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   else
     fp = output_stream;
 
-  /* #### This confuses the timestamping code that checks for file
-     size.  Maybe we should save some additional information?  */
-  if (opt.save_headers)
+  /* This confuses the timestamping code that checks for file size.
+     #### The timestamping code should be smarter about file size.  */
+  if (opt.save_headers && hs->restval == 0)
     fwrite (head, 1, strlen (head), fp);
 
   /* Now we no longer need to store the response header. */

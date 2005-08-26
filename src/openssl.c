@@ -225,6 +225,10 @@ ssl_init ()
      handles them correctly), allow them in OpenSSL.  */
   SSL_CTX_set_mode (ssl_ctx, SSL_MODE_ENABLE_PARTIAL_WRITE);
 
+  /* The OpenSSL library can handle renegotiations automatically, so
+     tell it to do so.  */
+  SSL_CTX_set_mode (ssl_ctx, SSL_MODE_AUTO_RETRY);
+
   return true;
 
  error:

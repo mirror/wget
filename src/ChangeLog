@@ -1,3 +1,7 @@
+2005-08-26  Jeremy Shapiro  <jnshapiro@gmail.com>
+
+	* openssl.c (ssl_init): Set SSL_MODE_AUTO_RETRY.
+
 2005-08-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* host.c (address_list_from_ipv4_addresses): Use IP_INADDR_DATA.
