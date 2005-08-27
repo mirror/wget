@@ -7,7 +7,12 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.11.
 
-** The new function `--ignore-case' makes Wget ignore case when
+** The GnuTLS library is now also supported for https downloads.
+This is still work-in-progress.  OpenSSL is still used by default; use
+--with-ssl=gnutls to build with GnuTLS.  OpenSSL is still required for
+NTLM authorization to work, but this should eventually change.
+
+** The new option `--ignore-case' makes Wget ignore case when
 matching files, directories, and wildcards.  This affects the -X, -I,
 -A, and -R options, as well as globbing in FTP URLs.
 
