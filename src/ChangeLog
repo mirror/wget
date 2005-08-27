@@ -1,3 +1,14 @@
+2005-08-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* hash.c (hash_table_map): Rename to hash_table_for_each and
+	update callers.
+	Document the meaning of the callback's return value.
+	(hash_table_iterate): New function.
+	(hash_table_iter_next): Likewise.
+	Update most places that used hash_table_for_each to use the
+	iteration, which doesn't require a temporary function with
+	explicit state management.
+
 2005-08-26  Albert Chin  <wget@mlists.thewrittenword.com>
 
 	* Makefile.in: Use @datadir@.  Define localedir as $(datadir)/locale.

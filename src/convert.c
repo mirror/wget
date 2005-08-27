@@ -700,8 +700,9 @@ dissociate_urls_from_file_mapper (void *key, void *value, void *arg)
 static void
 dissociate_urls_from_file (const char *file)
 {
-  hash_table_map (dl_url_file_map, dissociate_urls_from_file_mapper,
-		  (char *)file);
+  /* Can't use hash_table_iter_* because the table mutates while mapping.  */
+  hash_table_for_each (dl_url_file_map, dissociate_urls_from_file_mapper,
+		       (char *) file);
 }
 
 /* Register that URL has been successfully downloaded to FILE.  This
@@ -937,19 +938,16 @@ downloaded_file (downloaded_file_t mode, const char *file)
   return FILE_NOT_ALREADY_DOWNLOADED;
 }
 
-static int
-df_free_mapper (void *key, void *value, void *ignored)
-{
-  xfree (key);
-  return 0;
-}
-
 static void
 downloaded_files_free (void)
 {
   if (downloaded_files_hash)
     {
-      hash_table_map (downloaded_files_hash, df_free_mapper, NULL);
+      hash_table_iterator iter;
+      for (hash_table_iterate (downloaded_files_hash, &iter);
+	   hash_table_iter_next (&iter);
+	   )
+	xfree (iter.key);
       hash_table_destroy (downloaded_files_hash);
       downloaded_files_hash = NULL;
     }

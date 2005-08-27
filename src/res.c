@@ -552,20 +552,19 @@ res_retrieve_file (const char *url, char **file)
   return err == RETROK;
 }
 
-static int
-cleanup_hash_table_mapper (void *key, void *value, void *arg_ignored)
-{
-  xfree (key);
-  free_specs (value);
-  return 0;
-}
-
 void
 res_cleanup (void)
 {
   if (registered_specs)
     {
-      hash_table_map (registered_specs, cleanup_hash_table_mapper, NULL);
+      hash_table_iterator iter;
+      for (hash_table_iterate (registered_specs, &iter);
+	   hash_table_iter_next (&iter);
+	   )
+	{
+	  xfree (iter.key);
+	  free_specs (iter.value);
+	}
       hash_table_destroy (registered_specs);
       registered_specs = NULL;
     }

@@ -857,26 +857,22 @@ sufmatch (const char **list, const char *what)
   return false;
 }
 
-static int
-host_cleanup_mapper (void *key, void *value, void *arg_ignored)
-{
-  struct address_list *al;
-
-  xfree (key);			/* host */
-
-  al = (struct address_list *)value;
-  assert (al->refcount == 1);
-  address_list_delete (al);
-
-  return 0;
-}
-
 void
 host_cleanup (void)
 {
   if (host_name_addresses_map)
     {
-      hash_table_map (host_name_addresses_map, host_cleanup_mapper, NULL);
+      hash_table_iterator iter;
+      for (hash_table_iterate (host_name_addresses_map, &iter);
+	   hash_table_iter_next (&iter);
+	   )
+	{
+	  char *host = iter.key;
+	  struct address_list *al = iter.value;
+	  xfree (host);
+	  assert (al->refcount == 1);
+	  address_list_delete (al);
+	}
       hash_table_destroy (host_name_addresses_map);
       host_name_addresses_map = NULL;
     }

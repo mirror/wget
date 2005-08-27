@@ -72,7 +72,9 @@ so, delete this exception statement from your version.  */
      hash_table_get_pair  -- get key/value pair for key.
      hash_table_contains  -- test whether the table contains key.
      hash_table_remove    -- remove key->value mapping for given key.
-     hash_table_map       -- iterate through table entries.
+     hash_table_for_each  -- call function for each table entry.
+     hash_table_iterate   -- iterate over entries in hash table.
+     hash_table_iter_next -- return next element during iteration.
      hash_table_clear     -- clear hash table contents.
      hash_table_count     -- return the number of entries in the table.
 
@@ -81,21 +83,22 @@ so, delete this exception statement from your version.  */
    with each resize, which ensures that the amortized time per
    operation remains constant.
 
-   By default, tables created by hash_table_new consider the keys to
-   be equal if their pointer values are the same.  You can use
-   make_string_hash_table to create tables whose keys are considered
-   equal if their string contents are the same.  In the general case,
-   the criterion of equality used to compare keys is specified at
-   table creation time with two callback functions, "hash" and "test".
-   The hash function transforms the key into an arbitrary number that
-   must be the same for two equal keys.  The test function accepts two
-   keys and returns non-zero if they are to be considered equal.
+   If not instructed otherwise, tables created by hash_table_new
+   consider the keys to be equal if their pointer values are the same.
+   You can use make_string_hash_table to create tables whose keys are
+   considered equal if their string contents are the same.  In the
+   general case, the criterion of equality used to compare keys is
+   specified at table creation time with two callback functions,
+   "hash" and "test".  The hash function transforms the key into an
+   arbitrary number that must be the same for two equal keys.  The
+   test function accepts two keys and returns non-zero if they are to
+   be considered equal.
 
    Note that neither keys nor values are copied when inserted into the
    hash table, so they must exist for the lifetime of the table.  This
    means that e.g. the use of static strings is OK, but objects with a
-   shorter life-time need to be copied (with strdup() or the like in
-   the case of strings) before being inserted.  */
+   shorter life-time probably need to be copied (with strdup() or the
+   like in the case of strings) before being inserted.  */
 
 /* IMPLEMENTATION:
 
@@ -495,20 +498,22 @@ hash_table_clear (struct hash_table *ht)
   ht->count = 0;
 }
 
-/* Map MAPFUN over all entries in HT.  MAPFUN is called with three
-   arguments: the key, the value, and MAPARG.
+/* Call FN for each entry in HT.  FN is called with three arguments:
+   the key, the value, and ARG.  When FN returns a non-zero value, the
+   mapping stops.
 
    It is undefined what happens if you add or remove entries in the
-   hash table while hash_table_map is running.  The exception is the
-   entry you're currently mapping over; you may remove or change that
-   entry.  */
+   hash table while hash_table_for_each is running.  The exception is
+   the entry you're currently mapping over; you may call
+   hash_table_put or hash_table_remove on that entry's key.  That is
+   also the reason why this function cannot be implemented in terms of
+   hash_table_iterate.  */
 
 void
-hash_table_map (struct hash_table *ht,
-		int (*mapfun) (void *, void *, void *),
-		void *maparg)
+hash_table_for_each (struct hash_table *ht,
+		     int (*fn) (void *, void *, void *), void *arg)
 {
-  struct cell *c  = ht->cells;
+  struct cell *c = ht->cells;
   struct cell *end = ht->cells + ht->size;
 
   for (; c < end; c++)
@@ -517,12 +522,54 @@ hash_table_map (struct hash_table *ht,
 	void *key;
       repeat:
 	key = c->key;
-	if (mapfun (key, c->value, maparg))
+	if (fn (key, c->value, arg))
 	  return;
 	/* hash_table_remove might have moved the adjacent cells. */
 	if (c->key != key && CELL_OCCUPIED (c))
 	  goto repeat;
       }
+}
+
+/* Initiate iteration over HT.  Get the next entry using
+   hash_table_iter_next.  The typical loop looks like this:
+
+       hash_table_iterator iter;
+       for (hash_table_iterate (ht, &iter); hash_table_iter_next (&iter); )
+         ... do something with iter.key and iter.value ...
+
+   The iterator does not need to be deallocated after use.  The hash
+   table must not be modified while being iterated over.  */
+
+void
+hash_table_iterate (struct hash_table *ht, hash_table_iterator *iter)
+{
+  iter->pos = ht->cells;
+  iter->end = ht->cells + ht->size;
+}
+
+/* Get the next hash table entry.  ITER is an iterator object
+   initialized using hash_table_iterate.  While there are more
+   entries, the key and value pointers are stored to ITER->key and
+   ITER->value respectively and 1 is returned.  When there are no more
+   entries, 0 is returned.
+
+   The hash table must not be modified between calls to this
+   function.  */
+
+int
+hash_table_iter_next (hash_table_iterator *iter)
+{
+  struct cell *c = iter->pos;
+  struct cell *end = iter->end;
+  for (; c < end; c++)
+    if (CELL_OCCUPIED (c))
+      {
+	iter->key = c->key;
+	iter->value = c->value;
+	iter->pos = c + 1;
+	return 1;
+      }
+  return 0;
 }
 
 /* Return the number of elements in the hash table.  This is not the
@@ -653,14 +700,15 @@ make_nocase_string_hash_table (int items)
 /* Hashing of numeric values, such as pointers and integers.
 
    This implementation is the Robert Jenkins' 32 bit Mix Function,
-   with a simple adaptation for 64-bit values.  It offers excellent
-   spreading of values and doesn't need to know the hash table size to
-   work (unlike the very popular Knuth's multiplication hash).  */
+   with a simple adaptation for 64-bit values.  According to Jenkins
+   it should offer excellent spreading of values.  Unlike the popular
+   Knuth's multiplication hash, this function doesn't need to know the
+   hash table size to work.  */
 
 unsigned long
 hash_pointer (const void *ptr)
 {
-  unsigned long key = (unsigned long)ptr;
+  unsigned long key = (unsigned long) ptr;
   key += (key << 12);
   key ^= (key >> 22);
   key += (key << 4);
@@ -693,20 +741,16 @@ cmp_pointer (const void *ptr1, const void *ptr2)
 #include <stdio.h>
 #include <string.h>
 
-int
-print_hash_table_mapper (void *key, void *value, void *count)
-{
-  ++*(int *)count;
-  printf ("%s: %s\n", (const char *)key, (char *)value);
-  return 0;
-}
-
 void
 print_hash (struct hash_table *sht)
 {
-  int debug_count = 0;
-  hash_table_map (sht, print_hash_table_mapper, &debug_count);
-  assert (debug_count == sht->count);
+  hash_table_iterator iter;
+  int count = 0;
+
+  for (hash_table_iterate (sht, &iter); hash_table_iter_next (&iter);
+       ++count)
+    printf ("%s: %s\n", iter.key, iter.value);
+  assert (count == sht->count);
 }
 
 int

@@ -1165,50 +1165,36 @@ string_set_contains (struct hash_table *ht, const char *s)
   return hash_table_contains (ht, s);
 }
 
-static int
-string_set_to_array_mapper (void *key, void *value_ignored, void *arg)
-{
-  char ***arrayptr = (char ***) arg;
-  *(*arrayptr)++ = (char *) key;
-  return 0;
-}
-
 /* Convert the specified string set to array.  ARRAY should be large
    enough to hold hash_table_count(ht) char pointers.  */
 
 void string_set_to_array (struct hash_table *ht, char **array)
 {
-  hash_table_map (ht, string_set_to_array_mapper, &array);
-}
-
-static int
-string_set_free_mapper (void *key, void *value_ignored, void *arg_ignored)
-{
-  xfree (key);
-  return 0;
+  hash_table_iterator iter;
+  for (hash_table_iterate (ht, &iter); hash_table_iter_next (&iter); )
+    *array++ = iter.key;
 }
 
 void
 string_set_free (struct hash_table *ht)
 {
-  hash_table_map (ht, string_set_free_mapper, NULL);
+  hash_table_iterator iter;
+  for (hash_table_iterate (ht, &iter); hash_table_iter_next (&iter); )
+    xfree (iter.key);
   hash_table_destroy (ht);
 }
 
-static int
-free_keys_and_values_mapper (void *key, void *value, void *arg_ignored)
-{
-  xfree (key);
-  xfree (value);
-  return 0;
-}
-
-/* Another utility function: call free() on all keys and values of HT.  */
+/* Utility function: simply call free() on all keys and values of HT.  */
 
 void
 free_keys_and_values (struct hash_table *ht)
 {
-  hash_table_map (ht, free_keys_and_values_mapper, NULL);
+  hash_table_iterator iter;
+  for (hash_table_iterate (ht, &iter); hash_table_iter_next (&iter); )
+    {
+      xfree (iter.key);
+      xfree (iter.value);
+    }
 }
 
 /* Get digit grouping data for thousand separors by calling
