@@ -1175,6 +1175,10 @@ void string_set_to_array (struct hash_table *ht, char **array)
     *array++ = iter.key;
 }
 
+/* Free the string set.  This frees both the storage allocated for
+   keys and the actual hash table.  (hash_table_destroy would only
+   destroy the hash table.)  */
+
 void
 string_set_free (struct hash_table *ht)
 {
@@ -1184,7 +1188,7 @@ string_set_free (struct hash_table *ht)
   hash_table_destroy (ht);
 }
 
-/* Utility function: simply call free() on all keys and values of HT.  */
+/* Utility function: simply call xfree() on all keys and values of HT.  */
 
 void
 free_keys_and_values (struct hash_table *ht)
