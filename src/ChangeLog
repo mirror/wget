@@ -1,5 +1,11 @@
 2005-08-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* cmpt.c (strtoll): Correctly handle strtoll("0x", ptr, 0) and
+	strtoll("0x<nonhexchar>", ptr, 0) -- in both cases *ptr must be
+	set to the position of 'x', not after it.
+
+2005-08-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* hash.c (hash_table_map): Rename to hash_table_for_each and
 	update callers.
 	Document the meaning of the callback's return value.

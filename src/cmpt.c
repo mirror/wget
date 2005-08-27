@@ -1348,6 +1348,13 @@ strtoll (const char *nptr, char **endptr, int base)
 	{
 	  base = 16;
 	  nptr += 2;
+	  /* "0x" must be followed by at least one hex char.  If not,
+	     return 0 and place ENDPTR on 'x'. */
+	  if (!ISXDIGIT (*nptr))
+	    {
+	      --nptr;
+	      goto out;
+	    }
 	}
       else if (base == 0)
 	base = 8;
@@ -1387,6 +1394,7 @@ strtoll (const char *nptr, char **endptr, int base)
 	  result = newresult;
 	}
     }
+ out:
   if (endptr)
     *endptr = (char *) nptr;
   return result;
