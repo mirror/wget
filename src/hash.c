@@ -530,8 +530,8 @@ hash_table_for_each (struct hash_table *ht,
       }
 }
 
-/* Initiate iteration over HT.  Get the next entry using
-   hash_table_iter_next.  The typical loop looks like this:
+/* Initiate iteration over HT.  Entries are obtained with
+   hash_table_iter_next, a typical iteration loop looking like this:
 
        hash_table_iterator iter;
        for (hash_table_iterate (ht, &iter); hash_table_iter_next (&iter); )
@@ -553,8 +553,8 @@ hash_table_iterate (struct hash_table *ht, hash_table_iterator *iter)
    ITER->value respectively and 1 is returned.  When there are no more
    entries, 0 is returned.
 
-   The hash table must not be modified between calls to this
-   function.  */
+   If the hash table is modified between calls to this function, the
+   result is undefined.  */
 
 int
 hash_table_iter_next (hash_table_iterator *iter)
@@ -602,7 +602,7 @@ hash_table_count (const struct hash_table *ht)
      a hash function that returns 0 for any given object is a
      perfectly valid (albeit extremely bad) hash function.  A hash
      function that hashes a string by adding up all its characters is
-     another example of a valid (but quite bad) hash function.
+     another example of a valid (but still quite bad) hash function.
 
      It is not hard to make hash and test functions agree about
      equality.  For example, if the test function compares strings
@@ -610,24 +610,25 @@ hash_table_count (const struct hash_table *ht)
      characters when calculating the hash value.  That ensures that
      two strings differing only in case will hash the same.
 
-   - If you care about performance, choose a hash function with as
-     good "spreading" as possible.  A good hash function will use all
-     the bits of the input when calculating the hash, and will react
-     to even small changes in input with a completely different
-     output.  Finally, don't make the hash function itself overly
-     slow, because you'll be incurring a non-negligible overhead to
-     all hash table operations.  */
+   - To prevent performance degradation, choose a hash function with
+     as good "spreading" as possible.  A good hash function will use
+     all the bits of the input when calculating the hash, and will
+     react to even small changes in input with a completely different
+     output.  But don't make the hash function itself overly slow,
+     because you'll be incurring a non-negligible overhead to all hash
+     table operations.  */
 
 /*
  * Support for hash tables whose keys are strings.
  *
  */
    
-/* 31 bit hash function.  Taken from Gnome's glib, modified to use
+/* Base 31 hash function.  Taken from Gnome's glib, modified to use
    standard C types.
 
    We used to use the popular hash function from the Dragon Book, but
-   this one seems to perform much better.  */
+   this one seems to perform much better, both by being faster and by
+   generating less collisions.  */
 
 static unsigned long
 hash_string (const void *key)
