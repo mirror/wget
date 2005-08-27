@@ -1482,40 +1482,25 @@ cookie_jar_save (struct cookie_jar *jar, const char *file)
   DEBUGP (("Done saving cookies.\n"));
 }
 
-/* Destroy all the elements in the chain and unhook it from the cookie
-   jar.  This is written in the form of a callback to
-   hash_table_for_each and used by cookie_jar_delete to delete all the
-   cookies in a jar.  */
-
-static int
-nuke_cookie_chain (void *value, void *key, void *arg)
-{
-  char *chain_key = (char *)value;
-  struct cookie *chain = (struct cookie *)key;
-  struct cookie_jar *jar = (struct cookie_jar *)arg;
-
-  /* Remove the chain from the table and free the key. */
-  hash_table_remove (jar->chains, chain_key);
-  xfree (chain_key);
-
-  /* Then delete all the cookies in the chain. */
-  while (chain)
-    {
-      struct cookie *next = chain->next;
-      delete_cookie (chain);
-      chain = next;
-    }
-
-  /* Keep mapping. */
-  return 0;
-}
-
 /* Clean up cookie-related data. */
 
 void
 cookie_jar_delete (struct cookie_jar *jar)
 {
-  hash_table_for_each (jar->chains, nuke_cookie_chain, jar);
+  /* Iterate over chains (indexed by domain) and free them. */
+  hash_table_iterator iter;
+  for (hash_table_iterate (jar->chains, &iter); hash_table_iter_next (&iter); )
+    {
+      struct cookie *chain = iter.value;
+      xfree (iter.key);
+      /* Then all cookies in this chain. */
+      while (chain)
+	{
+	  struct cookie *next = chain->next;
+	  delete_cookie (chain);
+	  chain = next;
+	}
+    }
   hash_table_destroy (jar->chains);
   xfree (jar);
 }
