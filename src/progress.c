@@ -483,6 +483,14 @@ static volatile sig_atomic_t received_sigwinch;
    download speeds are scratched.  */
 #define STALL_START_TIME 5
 
+/* Time between screen refreshes will not be shorter than this, so
+   that Wget doesn't swamp the TTY with output.  */
+#define REFRESH_INTERVAL 0.2
+
+/* Don't refresh the ETA too often to avoid jerkiness in predictions.
+   This allows ETA to change approximately once per second.  */
+#define ETA_REFRESH_INTERVAL 0.99
+
 struct bar_progress {
   wgint initial_length;		/* how many bytes have been downloaded
 				   previously. */
@@ -616,7 +624,7 @@ bar_update (void *progress, wgint howmuch, double dltime)
       received_sigwinch = 0;
     }
 
-  if (dltime - bp->last_screen_update < 0.2 && !force_screen_update)
+  if (dltime - bp->last_screen_update < REFRESH_INTERVAL && !force_screen_update)
     /* Don't update more often than five times per second. */
     return;
 
@@ -913,7 +921,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 	     any value to the user. */
 	  if (bp->total_length != size
 	      && bp->last_eta_value != 0
-	      && dl_total_time - bp->last_eta_time < 0.9)
+	      && dl_total_time - bp->last_eta_time < ETA_REFRESH_INTERVAL)
 	    eta = bp->last_eta_value;
 	  else
 	    {

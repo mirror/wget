@@ -1,3 +1,8 @@
+2005-09-01  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* progress.c: Introduce symbolic constants for "magic" values of
+	0.2 and 0.9, REFRESH_INTERVAL and ETA_REFRESH_INTERVAL.
+
 2005-08-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* cmpt.c (strtoll): Correctly handle strtoll("0x", ptr, 0) and
