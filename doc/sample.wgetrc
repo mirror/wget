@@ -35,10 +35,13 @@
 # the recursive retrieval.  The default is 5.
 #reclevel = 5
 
-# Many sites are behind firewalls that do not allow initiation of
-# connections from the outside.  On these sites you have to use the
-# `passive' feature of FTP.  If you are behind such a firewall, you
-# can turn this on to make Wget use passive FTP by default.
+# By default Wget uses "passive FTP" transfer where the client
+# initiates the data connection to the server rather than the other
+# way around.  That is required on systems behind NAT where the client
+# computer cannot be easily reached from the Internet.  However, some
+# firewalls software explicitly supports active FTP and in fact has
+# problems supporting passive transfer.  If you are in such
+# environment, use "passive_ftp = off" to revert to active FTP.
 #passive_ftp = off
 
 # The "wait" command below makes Wget wait between every connection.
