@@ -515,13 +515,13 @@ fd_read_line (int fd)
    the units appropriate for the download speed.  */
 
 const char *
-retr_rate (wgint bytes, double msecs)
+retr_rate (wgint bytes, double secs)
 {
   static char res[20];
   static const char *rate_names[] = {"B/s", "KB/s", "MB/s", "GB/s" };
   int units;
 
-  double dlrate = calc_rate (bytes, msecs, &units);
+  double dlrate = calc_rate (bytes, secs, &units);
   /* Use more digits for smaller numbers (regardless of unit used),
      e.g. "1022", "247", "12.5", "2.38".  */
   sprintf (res, "%.*f %s",

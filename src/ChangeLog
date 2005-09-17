@@ -1,3 +1,8 @@
+2005-09-17  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* retr.c (retr_rate): Rename parameter from MSECS to SECS since it
+	no longer holds milliseconds.
+
 2005-09-01  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* progress.c: Introduce symbolic constants for "magic" values of
