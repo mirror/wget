@@ -1,5 +1,9 @@
 2005-09-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* main.c (main): Don't print the summary if nothing has been downloaded.
+
+2005-09-17  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* retr.c (retr_rate): Rename parameter from MSECS to SECS since it
 	no longer holds milliseconds.
 

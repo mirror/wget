@@ -968,9 +968,11 @@ Can't timestamp and not clobber old files at the same time.\n"));
 		   opt.input_filename);
     }
   /* Print the downloaded sum.  */
-  if (opt.recursive || opt.page_requisites
-      || nurl > 1
-      || (opt.input_filename && total_downloaded_bytes != 0))
+  if ((opt.recursive || opt.page_requisites
+       || nurl > 1
+       || (opt.input_filename && total_downloaded_bytes != 0))
+      &&
+      total_downloaded_bytes != 0)
     {
       logprintf (LOG_NOTQUIET,
 		 _("FINISHED --%s--\nDownloaded: %d files, %s in %s (%s)\n"),
