@@ -1421,7 +1421,7 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
 	      tml++;
 #endif
               /* Compare file sizes only for servers that tell us correct
-                 values. Assumme sizes being equal for servers that lie
+                 values. Assume sizes being equal for servers that lie
                  about file size.  */
               cor_val = (con->rs == ST_UNIX || con->rs == ST_WINNT);
               eq_size = cor_val ? (local_size == f->size) : true;
