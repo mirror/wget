@@ -978,7 +978,7 @@ getproxy (struct url *u)
 
   if (!opt.use_proxy)
     return NULL;
-  if (!no_proxy_match (u->host, (const char **)opt.no_proxy))
+  if (no_proxy_match (u->host, (const char **)opt.no_proxy))
     return NULL;
 
   switch (u->scheme)
@@ -1018,7 +1018,7 @@ static bool
 no_proxy_match (const char *host, const char **no_proxy)
 {
   if (!no_proxy)
-    return true;
+    return false;
   else
-    return !sufmatch (no_proxy, host);
+    return sufmatch (no_proxy, host);
 }

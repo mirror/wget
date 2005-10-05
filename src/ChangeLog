@@ -1,3 +1,7 @@
+2005-10-05  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* retr.c: Changed semantics of no_proxy_match.
+
 2005-09-17  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* main.c (main): Don't print the summary if nothing has been downloaded.
