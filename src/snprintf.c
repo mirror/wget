@@ -618,7 +618,7 @@ static LDOUBLE abs_val (LDOUBLE value)
   return result;
 }
 
-static LDOUBLE pow10 (int exp)
+static LDOUBLE pow10_int (int exp)
 {
   LDOUBLE result = 1;
 
@@ -631,7 +631,7 @@ static LDOUBLE pow10 (int exp)
   return result;
 }
 
-static LLONG round (LDOUBLE value)
+static LLONG round_int (LDOUBLE value)
 {
   LLONG intpart;
 
@@ -729,12 +729,12 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
     max = MAX_DIGITS;
 
   /* Factor of 10 with the needed number of digits, e.g. 1000 for max==3 */
-  mask10 = pow10 (max);
+  mask10 = pow10_int (max);
 
   /* We "cheat" by converting the fractional part to integer by
    * multiplying by a factor of 10
    */
-  fracpart = round (mask10 * (ufvalue - intpart));
+  fracpart = round_int (mask10 * (ufvalue - intpart));
 
   if (fracpart >= mask10)
   {

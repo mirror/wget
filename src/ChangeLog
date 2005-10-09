@@ -1,3 +1,8 @@
+2005-10-09  Russ Allbery  <rra@stanford.edu>
+
+	* snprintf.c: Remove round to round_int and pow10 to pow10_int, to
+	avoid warnings from GCC 4.0.
+
 2005-10-05  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* retr.c: Changed semantics of no_proxy_match.
