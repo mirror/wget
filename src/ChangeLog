@@ -1,3 +1,7 @@
+2005-10-13  Daniel Stenberg  <daniel@haxx.se>
+
+	* http-ntlm.c (ntlm_output): Fixed buffer overflow vulnerability.
+
 2005-10-09  Russ Allbery  <rra@stanford.edu>
 
 	* snprintf.c: Remove round to round_int and pow10 to pow10_int, to
