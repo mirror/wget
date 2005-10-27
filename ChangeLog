@@ -1,3 +1,7 @@
+2005-10-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* Makefile.in: Added basic support for unit testing.
+	
 2005-08-26  Stepan Kasal  <kasal@ucw.cz>
 
 	* configure.in: Abort configure if --with-ssl given but SSL

@@ -670,6 +670,7 @@ GNU General Public License for more details.\n"), stdout);
   exit (0);
 }
 
+#ifndef TESTING
 int
 main (int argc, char *const *argv)
 {
@@ -1007,6 +1008,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
   else
     return 1;
 }
+#endif /* TESTING */
 
 #if defined(SIGHUP) || defined(SIGUSR1)
 

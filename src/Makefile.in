@@ -103,6 +103,26 @@ $(OBJ): config-post.h config.h connect.h convert.h cookies.h ftp.h   \
         sysdep.h url.h utils.h wget.h xmalloc.h
 
 #
+# Dependencies for test binary
+#
+
+TESTOBJ = $(ALLOCA) cmpt.o connect.o convert.o cookies.o              \
+          ftp.o ftp-basic.o ftp-ls.o $(OPIE_OBJ) $(GETOPT_OBJ) hash.o \
+          host.o html-parse.o html-url.o http.o $(NTLM_OBJ) init.o    \
+          log.o main.o $(MD5_OBJ) netrc.o progress.o ptimer.o recur.o \
+          res.o retr.o safe-ctype.o snprintf.o $(SSL_OBJ) test.o      \
+	  url.o utils.o version.o xmalloc.o
+
+$(TESTOBJ): config-post.h config.h connect.h convert.h cookies.h ftp.h   \
+            gen-md5.h getopt.h gnu-md5.h hash.h host.h html-parse.h      \
+            http-ntlm.h init.h log.h mswindows.h netrc.h options.h       \
+            progress.h ptimer.h recur.h res.h retr.h safe-ctype.h ssl.h  \
+            sysdep.h test.h url.h utils.h wget.h xmalloc.h
+
+test$(exeext): $(TESTOBJ)
+	$(LINK) $(TESTOBJ) $(LIBS)
+
+#
 # Dependencies for installing
 #
 

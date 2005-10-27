@@ -80,12 +80,20 @@ CFLAGS='$(CFLAGS)' LDFLAGS='$(LDFLAGS)' LIBS='$(LIBS)' \
 prefix='$(prefix)' exec_prefix='$(exec_prefix)' bindir='$(bindir)' \
 infodir='$(infodir)' mandir='$(mandir)' manext='$(manext)'
 
+TESTDEFS = CC='$(CC)' CPPFLAGS='$(CPPFLAGS) -DTESTING' DEFS='$(DEFS)' \
+CFLAGS='$(CFLAGS)' LDFLAGS='$(LDFLAGS)' LIBS='$(LIBS)' \
+prefix='$(prefix)' exec_prefix='$(exec_prefix)' bindir='$(bindir)' \
+infodir='$(infodir)' mandir='$(mandir)' manext='$(manext)'
+
 # subdirectories in the distribution
 SUBDIRS = src doc po util windows
 
 # default target
 all: src/config.h Makefile $(SUBDIRS)
 
+test: src/config.h Makefile 
+	cd src && $(MAKE) $(TESTDEFS) clean && $(MAKE) $(TESTDEFS) test$(exeext)
+	
 check: all
 
 $(SUBDIRS): FORCE

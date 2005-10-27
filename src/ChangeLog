@@ -1,3 +1,11 @@
+2005-10-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* Makefile.in: Added basic support for unit testing.
+
+	* test.c: Ditto.
+	
+	* test.h: Ditto.
+	
 2005-10-13  Daniel Stenberg  <daniel@haxx.se>
 
 	* http-ntlm.c (ntlm_output): Fixed buffer overflow vulnerability.
