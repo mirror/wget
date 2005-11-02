@@ -1,0 +1,38 @@
+#!/usr/bin/perl -w
+
+use Testing;
+
+use strict;
+
+###############################################################################
+
+my $dummyfile = <<EOF;
+Content
+EOF
+
+# code, msg, headers, content
+my %urls = (
+    '/dummy.html' => {
+        code => "200",
+        msg => "Dontcare",
+        headers => {
+            "Content-type" => "text/plain",
+        },
+        content => $dummyfile
+    },
+);
+
+my $cmdline = "wget -vd http://localhost:8080/dummy.html";
+
+my $expected_error_code = 0;
+
+my %expected_downloaded_files = (
+    'dummy.html' => $dummyfile,
+);
+
+###############################################################################
+
+Testing::Run_HTTP_Test (\%urls, $cmdline, $expected_error_code, \%expected_downloaded_files);
+
+# vim: et ts=4 sw=4
+

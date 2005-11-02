@@ -1,0 +1,9 @@
+2005-11-02  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* HTTPServer.pm: Added basic support for HTTP testing.
+	
+	* Testing.pm: Added basic support for feature testing (only HTTP
+	testing is supported at the moment).
+
+	* test1: Added basic HTTP test.
+
