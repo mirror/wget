@@ -1,3 +1,9 @@
+2005-11-02  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* Makefile.in: Improved support for unit testing.
+	
+	* configure.in: Ditto.
+	
 2005-10-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* Makefile.in: Added basic support for unit testing.

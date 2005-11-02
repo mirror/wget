@@ -81,10 +81,10 @@ unittest: test$(exeext)
 # Dependencies for test binary
 #
 
-TESTOBJ = $(ALLOCA) ccache.o cmpt.o connect.o convert.o cookies.o     \
+TESTOBJ = $(ALLOCA) cmpt.o connect.o convert.o cookies.o              \
           ftp.o ftp-basic.o ftp-ls.o $(OPIE_OBJ) $(GETOPT_OBJ) hash.o \
           host.o html-parse.o html-url.o http.o $(NTLM_OBJ) init.o    \
-          log.o main.o $(MD5_OBJ) netrc.o progress.o protocol.o       \
+          log.o main.o $(MD5_OBJ) netrc.o progress.o                  \
           ptimer.o recur.o res.o retr.o safe-ctype.o snprintf.o       \
           $(SSL_OBJ) test.o url.o utils.o version.o xmalloc.o
 
@@ -94,13 +94,13 @@ TESTOBJ = $(ALLOCA) ccache.o cmpt.o connect.o convert.o cookies.o     \
 # time, and it's a lot safer than attempting to get all the
 # dependencies right.
 
-HEADERS = ../src/ccache.h ../src/config-post.h ../src/config.h \
+HEADERS = ../src/config-post.h ../src/config.h                 \
 	  ../src/connect.h ../src/convert.h ../src/cookies.h   \
 	  ../src/ftp.h ../src/gen-md5.h ../src/getopt.h        \
 	  ../src/gnu-md5.h ../src/hash.h ../src/host.h         \
 	  ../src/html-parse.h ../src/http-ntlm.h ../src/init.h \
 	  ../src/log.h ../src/mswindows.h ../src/netrc.h       \
-	  ../src/options.h ../src/progress.h ../src/protocol.h \
+	  ../src/options.h ../src/progress.h                   \
 	  ../src/ptimer.h ../src/recur.h ../src/res.h          \
 	  ../src/retr.h ../src/safe-ctype.h ../src/ssl.h       \
 	  ../src/sysdep.h ../src/test.h ../src/url.h           \
