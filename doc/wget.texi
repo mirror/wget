@@ -3171,13 +3171,14 @@ the following environment variables:
 @table @code
 @item http_proxy
 @itemx https_proxy
-This variable should contain the @sc{url} of the proxy for @sc{http}
-and @sc{https} connections.
+If set, the @code{http_proxy} and @code{https_proxy} variables should
+contain the @sc{url}s of the proxies for @sc{http} and @sc{https}
+connections respectively.
 
 @item ftp_proxy
 This variable should contain the @sc{url} of the proxy for @sc{ftp}
-connections.  It is quite common that @sc{http_proxy} and @sc{ftp_proxy}
-are set to the same @sc{url}.
+connections.  It is quite common that @code{http_proxy} and
+@code{ftp_proxy} are set to the same @sc{url}.
 
 @item no_proxy
 This variable should contain a comma-separated list of domain extensions
