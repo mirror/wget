@@ -2638,6 +2638,10 @@ environment.
 Set @sc{http} user to @var{string}, equivalent to
 @samp{--http-user=@var{string}}.
 
+@item https_proxy = @var{string}
+Use @var{string} as @sc{https} proxy, instead of the one specified in
+environment.
+
 @item ignore_length = on/off
 When set to on, ignore @code{Content-Length} header; the same as
 @samp{--ignore-length}.
@@ -3166,8 +3170,9 @@ the following environment variables:
 
 @table @code
 @item http_proxy
+@itemx https_proxy
 This variable should contain the @sc{url} of the proxy for @sc{http}
-connections.
+and @sc{https} connections.
 
 @item ftp_proxy
 This variable should contain the @sc{url} of the proxy for @sc{ftp}
@@ -3191,6 +3196,7 @@ This option and the corresponding command may be used to suppress the
 use of proxy, even if the appropriate environment variables are set.
 
 @item http_proxy = @var{URL}
+@itemx https_proxy = @var{URL}
 @itemx ftp_proxy = @var{URL}
 @itemx no_proxy = @var{string}
 These startup file variables allow you to override the proxy settings
