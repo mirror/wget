@@ -170,7 +170,7 @@ struct hash_table {
    -1.  This is acceptable because it still allows the use of
    nonnegative integer keys.  */
 
-#define INVALID_PTR ((void *) ~0UL)
+#define INVALID_PTR ((void *) ~(uintptr_t) 0)
 #ifndef UCHAR_MAX
 # define UCHAR_MAX 0xff
 #endif
@@ -709,7 +709,7 @@ make_nocase_string_hash_table (int items)
 unsigned long
 hash_pointer (const void *ptr)
 {
-  unsigned long key = (unsigned long) ptr;
+  uintptr_t key = (uintptr_t) ptr;
   key += (key << 12);
   key ^= (key >> 22);
   key += (key << 4);
@@ -718,7 +718,7 @@ hash_pointer (const void *ptr)
   key ^= (key >> 2);
   key += (key << 7);
   key ^= (key >> 12);
-#if SIZEOF_LONG > 4
+#if SIZEOF_VOID_P > 4
   key += (key << 44);
   key ^= (key >> 54);
   key += (key << 36);
@@ -728,7 +728,7 @@ hash_pointer (const void *ptr)
   key += (key << 39);
   key ^= (key >> 44);
 #endif
-  return key;
+  return (unsigned long) key;
 }
 
 static int

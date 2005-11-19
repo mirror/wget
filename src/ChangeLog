@@ -1,3 +1,8 @@
+2005-11-19  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* hash.c (INVALID_PTR): Use uintptr_t instead of unsigned long.
+	(hash_pointer): Don't assume a pointer fits in `unsigned long'.
+
 2005-11-02  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* Makefile.in: Removed support for unit testing (now it is in

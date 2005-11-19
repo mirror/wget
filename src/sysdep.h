@@ -207,4 +207,9 @@ typedef unsigned short uint32_t;
 # endif
 #endif
 
+/* If uintptr_t isn't defined, simply typedef it to unsigned long. */
+#ifndef HAVE_UINTPTR_T
+typedef unsigned long uintptr_t;
+#endif
+
 #endif /* SYSDEP_H */
