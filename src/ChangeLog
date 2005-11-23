@@ -1,3 +1,8 @@
+2005-11-23  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* http.c: Refactored HTTP code. Added support for
+	Content-Disposition header. 
+
 2005-11-19  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* hash.c (INVALID_PTR): Use uintptr_t instead of unsigned long.
