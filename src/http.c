@@ -2222,7 +2222,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
           /* Non-fatal errors continue executing the loop, which will
              bring them to "while" statement at the end, to judge
              whether the number of tries was exceeded.  */
-          //free_hstat (&hstat);
+          /* free_hstat (&hstat); */
           printwhat (count, opt.ntry);
           continue;
         case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED: 
@@ -2336,7 +2336,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
                          _("Remote file is newer, retrieving.\n"));
             }
           
-          //free_hstat (&hstat);
+          /* free_hstat (&hstat); */
           hstat.timestamp_checked = true;
           continue;
         }
@@ -2434,7 +2434,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
                          _("%s (%s) - Connection closed at byte %s. "),
                          tms, tmrate, number_to_static_string (hstat.len));
               printwhat (count, opt.ntry);
-              //free_hstat (&hstat);
+              /* free_hstat (&hstat); */
               continue;
             }
           else
@@ -2451,7 +2451,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
                          tms, tmrate, number_to_static_string (hstat.len),
                          hstat.rderrmsg);
               printwhat (count, opt.ntry);
-              //free_hstat (&hstat);
+              /* free_hstat (&hstat); */
               continue;
             }
           else /* hstat.res == -1 and contlen is given */
@@ -2463,7 +2463,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
                          number_to_static_string (hstat.contlen),
                          hstat.rderrmsg);
               printwhat (count, opt.ntry);
-              //free_hstat (&hstat);
+              /* free_hstat (&hstat); */
               continue;
             }
         }

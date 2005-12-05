@@ -37,12 +37,12 @@ so, delete this exception statement from your version.  */
 
 int tests_run;
 
-// char *test_ccache();
+/* char *test_ccache(); */
 
 static char *
 all_tests()
 {
-  // mu_run_test (test_ccache);
+  /* mu_run_test (test_ccache); */
   
   return NULL;
 }
