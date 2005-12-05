@@ -1,7 +1,9 @@
 2005-11-23  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
-	* http.c: Refactored HTTP code. Added support for
-	Content-Disposition header. 
+	* http.c: Refactored HTTP code.  If -O is not used, the new code
+	delays the choice of the file name where the downloaded resource
+	will be saved until the HTTP headers have been retrieved.
+	Added support for Content-Disposition header. 
 
 2005-11-19  Hrvoje Niksic  <hniksic@xemacs.org>
 
