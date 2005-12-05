@@ -1,8 +1,9 @@
 #!/usr/bin/perl -w
 
-use Testing;
-
 use strict;
+
+use HTTPTest;
+
 
 ###############################################################################
 
@@ -17,22 +18,30 @@ my %urls = (
         msg => "Dontcare",
         headers => {
             "Content-type" => "text/plain",
+            "Last-Modified" => "Sat, 09 Oct 2004 08:30:00 GMT",
         },
         content => $dummyfile
     },
 );
 
-my $cmdline = "wget -vd http://localhost:8080/dummy.html";
+my $cmdline = "../src/wget -vd -N http://localhost:8080/dummy.html";
 
 my $expected_error_code = 0;
 
 my %expected_downloaded_files = (
-    'dummy.html' => $dummyfile,
+    'dummy.html' => {
+        content => $dummyfile,
+        timestamp => 1097310600, # "Sat, 09 Oct 2004 08:30:00 GMT"
+    }
 );
 
 ###############################################################################
 
-Testing::Run_HTTP_Test (\%urls, $cmdline, $expected_error_code, \%expected_downloaded_files);
+my $the_test = HTTPTest->new (urls => \%urls, 
+                              cmdline => $cmdline, 
+                              errcode => $expected_error_code, 
+                              downloads => \%expected_downloaded_files);
+$the_test->run();
 
 # vim: et ts=4 sw=4
 

@@ -1,3 +1,24 @@
+2005-12-05  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* HTTPServer.pm: Refactored as a subclass of HTTP::Daemon. 
+	Removed the old run method and renamed the old run_daemon 
+	method to run.  Added support for partial 
+	
+	* Testing.pm: Renamed to HTTPTest.pm.
+	
+	* HTTPTest.pm: Refactored as a subclass of Test.  Renamed 
+	Run_HTTP_Test to run, verify_download to _verify_download 
+	and added support for timestamp checking.
+
+	* Test.pm: Added Test class as the super class of every 
+	testcase.
+
+	* test1: Renamed to Test1.px.
+	
+	* Test1.px: Refactored as an instance of the HTTPTest class.
+	
+	* Test2.px: Added -N HTTP test.
+
 2005-11-02  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* HTTPServer.pm: Added basic support for HTTP testing.
