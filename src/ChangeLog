@@ -1,3 +1,8 @@
+2005-12-07  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* http.c: Fixed pre-download verbose output which was broken by 
+	HTTP code refactoring.
+
 2005-11-23  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* http.c: Refactored HTTP code.  If -O is not used, the new code
