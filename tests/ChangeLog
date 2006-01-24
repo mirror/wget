@@ -1,3 +1,21 @@
+2006-01-24  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* HTTPServer.pm: Enhanced logging support.
+
+	* HTTPTest.pm: Updated to new test format.
+	
+	* Test.pm: Improved test setup, verification and cleanup. Major 
+	refactoring.
+	
+	* Test1.px: Updated to new test format.
+
+	* Test2.px: Updated to new test format.
+
+	* Test3.px: Added new test for quiet download of nonexistent URL.
+
+	* Test4.px: Added new test for quiet download of nonexistent URL with
+	--output-document option.
+	
 2005-12-05  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* HTTPServer.pm: Refactored as a subclass of HTTP::Daemon. 

@@ -8,7 +8,7 @@ use HTTPTest;
 ###############################################################################
 
 my $dummyfile = <<EOF;
-Content
+Don't care.
 EOF
 
 # code, msg, headers, content
@@ -23,19 +23,16 @@ my %urls = (
     },
 );
 
-my $cmdline = "../src/wget http://localhost:8080/dummy.html";
+my $cmdline = "../src/wget --quiet http://localhost:8080/nonexistent";
 
-my $expected_error_code = 0;
+my $expected_error_code = 256;
 
 my %expected_downloaded_files = (
-    'dummy.html' => {
-        content => $dummyfile,
-    }
 );
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test1",
+my $the_test = HTTPTest->new (name => "Test3",
                               input => \%urls, 
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 

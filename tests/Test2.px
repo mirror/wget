@@ -24,7 +24,7 @@ my %urls = (
     },
 );
 
-my $cmdline = "../src/wget -vd -N http://localhost:8080/dummy.html";
+my $cmdline = "../src/wget -N http://localhost:8080/dummy.html";
 
 my $expected_error_code = 0;
 
@@ -37,10 +37,11 @@ my %expected_downloaded_files = (
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (urls => \%urls, 
+my $the_test = HTTPTest->new (name => "Test2",
+                              input => \%urls, 
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 
-                              downloads => \%expected_downloaded_files);
+                              output => \%expected_downloaded_files);
 $the_test->run();
 
 # vim: et ts=4 sw=4
