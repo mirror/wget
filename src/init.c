@@ -1427,7 +1427,15 @@ cleanup (void)
   /* Free external resources, close files, etc. */
 
   if (output_stream)
-    fclose (output_stream);
+    {
+      fclose (output_stream);
+      if (opt.output_document 
+          && !(total_downloaded_bytes > 0))
+        {
+          unlink (opt.output_document);
+        }
+    }
+  
   /* No need to check for error because Wget flushes its output (and
      checks for errors) after any data arrives.  */
 
