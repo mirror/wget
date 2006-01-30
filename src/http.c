@@ -1200,8 +1200,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
   bool host_lookup_failed = false;
 
-  DEBUGP(("in gethttp 1\n"));
-  
 #ifdef HAVE_SSL
   if (u->scheme == SCHEME_HTTPS)
     {
@@ -1217,9 +1215,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     }
 #endif /* HAVE_SSL */
 
-  DEBUGP(("in gethttp 2\n"));
-  DEBUGP(("in gethttp 3\n"));
-  
   /* Initialize certain elements of struct http_stat.  */
   hs->len = 0;
   hs->contlen = -1;
@@ -1609,8 +1604,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       print_server_response (resp, "  ");
     }
 
-  DEBUGP(("in gethttp 4\n"));
-  
   /* Determine the local filename if needed. Notice that if -O is used 
    * hstat.local_file is set by http_loop to the argument of -O. */
   if (!hs->local_file)     
@@ -1627,8 +1620,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
         }
     }
   
-  DEBUGP(("in gethttp 5\n"));
-
   /* TODO: perform this check only once. */
   if (opt.noclobber && file_exists_p (hs->local_file))
     {
@@ -2013,6 +2004,13 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
       return RETRFINISHED;
     }
 
+  /* Print fetch message, if opt.verbose.  */
+  if (opt.verbose)
+    {
+      logprintf (LOG_NOTQUIET, _("\nStoring resource in file: `%s'\n"), 
+                 HYPHENP (hs->local_file) ? "STDOUT" : hs->local_file);
+    }
+    
   /* Open the local file.  */
   if (!output_stream)
     {
@@ -2106,8 +2104,6 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   struct http_stat hstat;        /* HTTP status */
   struct_stat st;
 
-  DEBUGP(("in http_loop\n"));
-
   /* Assert that no value for *LOCAL_FILE was passed. */
   assert (local_file == NULL || *local_file == NULL);
   
@@ -2144,8 +2140,6 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   /* THE loop */
   do
     {
-      DEBUGP(("in http_loop LOOP\n"));
-
       /* Increment the pass counter.  */
       ++count;
       sleep_between_retrievals (count);
@@ -2157,28 +2151,18 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       if (opt.verbose)
         {
           char *hurl = url_string (u, true);
-          logprintf (LOG_VERBOSE, "--%s--  %s\n",
-                     tms, hurl);
           
           if (count > 1) 
             {
               char tmp[256];
               sprintf (tmp, _("(try:%2d)"), count);
-              logprintf (LOG_VERBOSE, "  %s", tmp);
+              logprintf (LOG_NOTQUIET, "--%s--  %s  %s\n\n",
+                         tms, tmp, hurl);
             }
           else 
             {
-              logprintf (LOG_VERBOSE, "        ");
-            }
-          
-          if (hstat.local_file) 
-            {
-              logprintf (LOG_VERBOSE, " => `%s'\n", 
-                         HYPHENP (hstat.local_file) ? "STDOUT" : hstat.local_file);
-            }
-          else
-            {
-              logprintf (LOG_VERBOSE, "\n");
+              logprintf (LOG_NOTQUIET, "--%s--  %s\n\n",
+                         tms, hurl);
             }
           
 #ifdef WINDOWS
@@ -2352,6 +2336,8 @@ The sizes do not match (local %s) -- retrieving.\n"),
               else
                 logputs (LOG_VERBOSE,
                          _("Remote file is newer, retrieving.\n"));
+
+              logputs (LOG_VERBOSE, "\n");
             }
           
           /* free_hstat (&hstat); */

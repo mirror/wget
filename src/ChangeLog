@@ -1,3 +1,8 @@
+2006-01-30  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* http.c: Changed output format. Removed excessively verbose debugging
+	output.
+
 2005-12-07  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* http.c: Fixed pre-download verbose output which was broken by 
