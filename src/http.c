@@ -2007,7 +2007,7 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
   /* Print fetch message, if opt.verbose.  */
   if (opt.verbose)
     {
-      logprintf (LOG_NOTQUIET, _("\nStoring resource in file: `%s'\n"), 
+      logprintf (LOG_NOTQUIET, _("Saving to: `%s'\n"), 
                  HYPHENP (hs->local_file) ? "STDOUT" : hs->local_file);
     }
     
@@ -2156,12 +2156,12 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
             {
               char tmp[256];
               sprintf (tmp, _("(try:%2d)"), count);
-              logprintf (LOG_NOTQUIET, "--%s--  %s  %s\n\n",
+              logprintf (LOG_NOTQUIET, "--%s--  %s  %s\n",
                          tms, tmp, hurl);
             }
           else 
             {
-              logprintf (LOG_NOTQUIET, "--%s--  %s\n\n",
+              logprintf (LOG_NOTQUIET, "--%s--  %s\n",
                          tms, hurl);
             }
           
