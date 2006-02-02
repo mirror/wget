@@ -54,6 +54,11 @@ so, delete this exception statement from your version.  */
 #  define countof(x) (sizeof (x) / sizeof ((x)[0]))
 # endif
 # define TOLOWER(x) ('A' <= (x) && (x) <= 'Z' ? (x) - 32 : (x))
+# if __STDC_VERSION__ >= 199901L
+#  include <stdint.h>  /* for uintptr_t */
+# else
+   typedef unsigned long uintptr_t;
+# endif
 #endif
 
 #include "hash.h"

@@ -2,6 +2,8 @@
 
 	* hash.c: Don't define countof if it's already defined.
 
+	* hash.c: Obtain the definition of uintptr_t when standalone.
+
 2006-01-30  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* http.c: Changed output format. Removed excessively verbose debugging
