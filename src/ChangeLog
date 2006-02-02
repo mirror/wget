@@ -1,3 +1,7 @@
+2006-02-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* hash.c: Don't define countof if it's already defined.
+
 2006-01-30  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* http.c: Changed output format. Removed excessively verbose debugging

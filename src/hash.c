@@ -50,7 +50,9 @@ so, delete this exception statement from your version.  */
 # define xnew_array(type, x) xmalloc (sizeof (type) * (x))
 # define xmalloc malloc
 # define xfree free
-# define countof(x) (sizeof (x) / sizeof ((x)[0]))
+# ifndef countof
+#  define countof(x) (sizeof (x) / sizeof ((x)[0]))
+# endif
 # define TOLOWER(x) ('A' <= (x) && (x) <= 'Z' ? (x) - 32 : (x))
 #endif
 
