@@ -1,3 +1,9 @@
+2006-02-03  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (number_to_string): Don't use sprintf for printing
+	WGINT_MIN; simply divide n by 10 and defer printing the last
+	digit.
+
 2006-02-03  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* http.c: Fixed support for Content-Disposition header.

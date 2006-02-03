@@ -1409,10 +1409,10 @@ numdigit (wgint number)
 #define DIGITS_18(mask) PR (mask), n %= (mask), DIGITS_17 ((mask) / 10)
 #define DIGITS_19(mask) PR (mask), n %= (mask), DIGITS_18 ((mask) / 10)
 
-/* SPRINTF_WGINT is used by number_to_string to handle pathological
-   cases and to portably support strange sizes of wgint.  Ideally this
-   would just use "%j" and intmax_t, but many systems don't support
-   it, so it's used only if nothing else works.  */
+/* SPRINTF_WGINT to portably support machines with strange sizes of
+   wgint.  Ideally this would just cast wgint to intmax_t and use
+   "%j", but many systems don't support it, so it's used only where
+   nothing else is known to work.  */
 #if SIZEOF_LONG >= SIZEOF_WGINT
 # define SPRINTF_WGINT(buf, n) sprintf (buf, "%ld", (long) (n))
 #elif SIZEOF_LONG_LONG >= SIZEOF_WGINT
@@ -1451,21 +1451,29 @@ number_to_string (char *buffer, wgint number)
   char *p = buffer;
   wgint n = number;
 
+  int last_digit_char = 0;
+
 #if (SIZEOF_WGINT != 4) && (SIZEOF_WGINT != 8)
-  /* We are running in a strange or misconfigured environment.  Let
-     sprintf cope with it.  */
-  SPRINTF_WGINT (buffer, n);
-  p += strlen (buffer);
+  /* We are running in a very strange or misconfigured environment.
+     Let sprintf cope with it.  */
+  p += SPRINTF_WGINT (buffer, n);
 #else  /* (SIZEOF_WGINT == 4) || (SIZEOF_WGINT == 8) */
 
   if (n < 0)
     {
       if (n < -WGINT_MAX)
 	{
-	  /* -n would overflow.  Have sprintf deal with this.  */
-	  SPRINTF_WGINT (buffer, n);
-	  p += strlen (buffer);
-	  return p;
+	  /* n = -n would overflow because -n would evaluate to a
+             wgint value larger than WGINT_MAX.  Need to make n
+             smaller and handle the last digit separately.  */
+          int last_digit = n % 10;
+          /* The sign of n%10 is implementation-defined. */
+          if (last_digit < 0)
+            last_digit_char = '0' - last_digit;
+          else
+            last_digit_char = '0' + last_digit;
+          /* After n is made smaller, -n will not overflow. */
+          n /= 10;
 	}
 
       *p++ = '-';
@@ -1504,6 +1512,9 @@ number_to_string (char *buffer, wgint number)
   else if (n < 1000000000*(W)1000000000) DIGITS_18 (100000000*(W)1000000000);
   else                                   DIGITS_19 (1000000000*(W)1000000000);
 #endif
+
+  if (last_digit_char)
+    *p++ = last_digit_char;
 
   *p = '\0';
 #endif /* (SIZEOF_WGINT == 4) || (SIZEOF_WGINT == 8) */
