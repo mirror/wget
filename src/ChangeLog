@@ -3,6 +3,7 @@
 	* utils.c (number_to_string): Don't use sprintf for printing
 	WGINT_MIN; simply divide n by 10 and defer printing the last
 	digit.
+	(number_to_string): Removed the SPRINTF_WGINT macro.
 
 2006-02-03  Mauro Tortonesi  <mauro@ferrara.linux.it>
 

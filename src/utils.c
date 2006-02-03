@@ -1409,20 +1409,6 @@ numdigit (wgint number)
 #define DIGITS_18(mask) PR (mask), n %= (mask), DIGITS_17 ((mask) / 10)
 #define DIGITS_19(mask) PR (mask), n %= (mask), DIGITS_18 ((mask) / 10)
 
-/* SPRINTF_WGINT to portably support machines with strange sizes of
-   wgint.  Ideally this would just cast wgint to intmax_t and use
-   "%j", but many systems don't support it, so it's used only where
-   nothing else is known to work.  */
-#if SIZEOF_LONG >= SIZEOF_WGINT
-# define SPRINTF_WGINT(buf, n) sprintf (buf, "%ld", (long) (n))
-#elif SIZEOF_LONG_LONG >= SIZEOF_WGINT
-# define SPRINTF_WGINT(buf, n) sprintf (buf, "%lld", (long long) (n))
-#elif defined(WINDOWS)
-# define SPRINTF_WGINT(buf, n) sprintf (buf, "%I64d", (__int64) (n))
-#else
-# define SPRINTF_WGINT(buf, n) sprintf (buf, "%j", (intmax_t) (n))
-#endif
-
 /* Shorthand for casting to wgint. */
 #define W wgint
 
@@ -1454,9 +1440,9 @@ number_to_string (char *buffer, wgint number)
   int last_digit_char = 0;
 
 #if (SIZEOF_WGINT != 4) && (SIZEOF_WGINT != 8)
-  /* We are running in a very strange or misconfigured environment.
-     Let sprintf cope with it.  */
-  p += SPRINTF_WGINT (buffer, n);
+  /* We are running in a very strange environment.  Leave the correct
+     printing to sprintf.  */
+  p += sprintf (buf, "%j", (intmax_t) (n));
 #else  /* (SIZEOF_WGINT == 4) || (SIZEOF_WGINT == 8) */
 
   if (n < 0)
