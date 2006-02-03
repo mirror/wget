@@ -1,3 +1,10 @@
+2006-02-03  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* http.c: Fixed support for Content-Disposition header.
+
+	* test.c: Added test_parse_content_disposition to the list of unit
+	tests to run.
+
 2006-02-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* hash.c: Don't define countof if it's already defined.

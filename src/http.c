@@ -60,6 +60,10 @@ so, delete this exception statement from your version.  */
 #endif
 #include "convert.h"
 
+#ifdef TESTING
+#include "test.h"
+#endif
+
 extern char *version_string;
 
 #ifndef MIN
@@ -850,6 +854,79 @@ skip_short_body (int fd, wgint contlen)
   DEBUGP (("] done.\n"));
   return true;
 }
+
+static bool
+extract_param_value_delim (const char *begin, const char *end, 
+                           const char *param_name, char **param_value)
+{
+  const char *p; 
+  int len;  
+
+  assert (begin);
+  assert (end);
+  assert (param_name);
+  assert (param_value);
+
+  len = strlen (param_name);
+
+  /* skip initial whitespaces */
+  p = begin;
+  while (*p && ISSPACE (*p) && p < end) ++p;
+  
+  if (end - p > len
+      && 0 == strncasecmp (p, param_name, len))
+    {
+      const char *e;
+
+      /* skip white spaces, equal sign and inital quote */
+      p += len;
+      while (*p && (ISSPACE (*p) || *p == '\"' || *p == '=') && p < end) ++p;
+
+      /* find last quote */
+      e = p;
+      while (*e && *e != '\"' && e < end) ++e;
+      
+      *param_value = strdupdelim (p, e);
+      
+      return true;
+    }
+
+  return false;
+}
+
+/* Parse the `Content-Disposition' header and extract the information it
+   contains.  Returns true if successful, false otherwise.  */
+static bool
+parse_content_disposition (const char *hdrval, char **filename)
+{
+  const char *b = hdrval; /* b - begin */
+  const char *e = hdrval; /* e - end   */
+
+  assert (hdrval);
+  assert (filename);
+
+  for (; *e; ++e)
+    {
+      if (*e == ';'
+          && e > b)
+        {           
+          /* process chars b->e-1 */
+          if (true == extract_param_value_delim (b, e - 1, "filename", filename)) 
+            return true;
+
+          b = e + 1;
+        }      
+    }
+
+  if (b != e)
+    {
+      /* process chars b->e */
+      if (true == extract_param_value_delim (b, e, "filename", filename)) 
+        return true;
+    }
+
+  return false;
+}
 
 /* Persistent connections.  Currently, we cache the most recently used
    connection as persistent, provided that the HTTP server agrees to
@@ -1608,14 +1685,11 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
    * hstat.local_file is set by http_loop to the argument of -O. */
   if (!hs->local_file)     
     {
-      if (resp_header_copy (resp, "Content-Disposition", hdrval, sizeof (hdrval)))
-        /* Honor Content-Disposition. */
+      /* Honor Content-Disposition whether possible. */
+      if (!resp_header_copy (resp, "Content-Disposition", hdrval, sizeof (hdrval))
+          || false == parse_content_disposition (hdrval, &hs->local_file))
         {
-          hs->local_file = xstrdup (hdrval);
-        }
-      else
-        /* Choose filename according to URL name. */
-        {
+          /* Choose filename according to URL name. */
           hs->local_file = url_file_name (u);
         }
     }
@@ -2895,6 +2969,42 @@ http_cleanup (void)
   if (wget_cookie_jar)
     cookie_jar_delete (wget_cookie_jar);
 }
+
+
+#ifdef TESTING
+
+char *
+test_parse_content_disposition()
+{
+  int i;
+  struct {
+    char *hdrval;    
+    char *filename;
+    bool result;
+  } test_array[] = {
+    { "filename=\"file.ext\"", "file.ext", true },
+    { "attachment; filename=\"file.ext\"", "file.ext", true },
+    { "attachment; filename=\"file.ext\"; dummy", "file.ext", true },
+    { "attachment", NULL, false },    
+  };
+  
+  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 
+    {
+      char *filename;
+      bool res = parse_content_disposition (test_array[i].hdrval, &filename);
+
+      mu_assert ("test_parse_content_disposition: wrong result", 
+                 res == test_array[i].result
+                 && (res == false 
+                     || 0 == strcmp (test_array[i].filename, filename)));
+
+      /* printf ("test %d: %s\n", i, res == false ? "false" : filename); */
+    }
+
+  return NULL;
+}
+
+#endif /* TESTING */
 
 /*
  * vim: et ts=2 sw=2
