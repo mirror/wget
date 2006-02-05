@@ -915,9 +915,9 @@ sleep_between_retrievals (int count)
       else
 	{
 	  /* Sleep a random amount of time averaging in opt.wait
-	     seconds.  The sleeping amount ranges from 0 to
-	     opt.wait*2, inclusive.  */
-	  double waitsecs = 2 * opt.wait * random_float ();
+	     seconds.  The sleeping amount ranges from 0.5*opt.wait to
+	     1.5*opt.wait.  */
+	  double waitsecs = (0.5 + random_float ()) * opt.wait;
 	  DEBUGP (("sleep_between_retrievals: avg=%f,sleep=%f\n",
 		   opt.wait, waitsecs));
 	  xsleep (waitsecs);

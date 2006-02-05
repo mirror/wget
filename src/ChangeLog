@@ -1,3 +1,8 @@
+2006-02-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* retr.c (sleep_between_retrievals): Sleep at a minimum of 1/2 of
+	the specified wait period.
+
 2006-02-03  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (number_to_string): Don't use sprintf for printing

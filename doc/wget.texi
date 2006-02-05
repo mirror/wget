@@ -789,7 +789,9 @@ suffix, or in days using @code{d} suffix.
 
 Specifying a large value for this option is useful if the network or the
 destination host is down, so that Wget can wait long enough to
-reasonably expect the network error to be fixed before the retry.
+reasonably expect the network error to be fixed before the retry.  The
+waiting interval specified by this function is influenced by
+@code{--random-wait}, which see.
 
 @cindex retries, waiting between
 @cindex waiting between retries
@@ -811,7 +813,7 @@ Note that this option is turned on by default in the global
 Some web sites may perform log analysis to identify retrieval programs
 such as Wget by looking for statistically significant similarities in
 the time between requests. This option causes the time between requests
-to vary between 0 and 2 * @var{wait} seconds, where @var{wait} was
+to vary between 0.5 and 1.5 * @var{wait} seconds, where @var{wait} was
 specified using the @samp{--wait} option, in order to mask Wget's
 presence from such analysis.
 
