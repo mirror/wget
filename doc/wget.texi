@@ -817,7 +817,7 @@ to vary between 0.5 and 1.5 * @var{wait} seconds, where @var{wait} was
 specified using the @samp{--wait} option, in order to mask Wget's
 presence from such analysis.
 
-A recent article in a publication devoted to development on a popular
+A 2001 article in a publication devoted to development on a popular
 consumer platform provided code to perform this analysis on the fly.
 Its author suggested blocking at the class C address level to ensure
 automated retrieval programs were blocked despite changing DHCP-supplied

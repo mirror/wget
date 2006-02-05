@@ -1,5 +1,11 @@
 2006-02-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	(Download Options): Changed "a recent article" to "a 2001 article"
+	in the description of --random-wait, since the article in question
+	is not really recent.
+
+2006-02-05  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* wget.texi (Download Options): Document the modified meaning of
 	--random-wait.
 
