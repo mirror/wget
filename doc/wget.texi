@@ -2769,6 +2769,10 @@ settings.
 Use @var{file} as a source of randomness on systems lacking
 @file{/dev/random}.
 
+@item random_wait = on/off
+Turn random between-request wait times on or off. The same as 
+@samp{--random-wait}.
+
 @item read_timeout = @var{n}
 Set the read (and write) timeout---the same as
 @samp{--read-timeout=@var{n}}.
@@ -2861,10 +2865,6 @@ Wait @var{n} seconds between retrievals---the same as @samp{-w
 Wait up to @var{n} seconds between retries of failed retrievals
 only---the same as @samp{--waitretry=@var{n}}.  Note that this is
 turned on by default in the global @file{wgetrc}.
-
-@item randomwait = on/off
-Turn random between-request wait times on or off. The same as 
-@samp{--random-wait}.
 @end table
 
 @node Sample Wgetrc
