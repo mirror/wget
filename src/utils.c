@@ -1418,15 +1418,15 @@ numdigit (wgint number)
 
    The speedup may make a difference in programs that frequently
    convert numbers to strings.  Some implementations of sprintf,
-   particularly the one in GNU libc, have been known to be extremely
-   slow when converting integers to strings.
+   particularly the one in some versions of GNU libc, have been known
+   to be quite slow when converting integers to strings.
 
    Return the pointer to the location where the terminating zero was
    printed.  (Equivalent to calling buffer+strlen(buffer) after the
    function is done.)
 
-   BUFFER should be big enough to accept as many bytes as you expect
-   the number to take up.  On machines with 64-bit longs the maximum
+   BUFFER should be large enough to accept as many bytes as you expect
+   the number to take up.  On machines with 64-bit wgints the maximum
    needed size is 24 bytes.  That includes the digits needed for the
    largest 64-bit number, the `-' sign in case it's negative, and the
    terminating '\0'.  */
