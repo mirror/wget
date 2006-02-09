@@ -523,7 +523,7 @@ thread_helper (void *arg)
 bool
 run_with_timeout (double seconds, void (*fun) (void *), void *arg)
 {
-  static HANDLE thread_hnd = NULL;
+  HANDLE thread_hnd;
   struct thread_data thread_arg;
   DWORD thread_id;
   bool rc;
@@ -536,9 +536,6 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
       fun (arg);
       return false;
     }
-
-  /* Should never happen, but test for recursivety anyway.  */
-  assert (thread_hnd == NULL);
 
   thread_arg.fun = fun;
   thread_arg.arg = arg;

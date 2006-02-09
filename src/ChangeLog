@@ -1,3 +1,7 @@
+2006-02-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* mswindows.c (run_with_timeout): Made thread_hnd non-static.
+
 2006-02-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* retr.c (sleep_between_retrievals): Sleep at a minimum of 1/2 of
