@@ -1,3 +1,7 @@
+2006-02-25  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (gethttp): Only use FILE.N.html if FILE.html exists.
+
 2006-02-09  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* mswindows.c (run_with_timeout): Made thread_hnd non-static.

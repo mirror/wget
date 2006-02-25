@@ -1979,7 +1979,7 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
           strcpy(hs->local_file + local_filename_len, ".html");
           /* If clobbering is not allowed and the file, as named,
              exists, tack on ".NUMBER.html" instead. */
-          if (!ALLOW_CLOBBER)
+          if (!ALLOW_CLOBBER && file_exists_p (hs->local_file))
             {
               int ext_num = 1;
               do
