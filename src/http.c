@@ -855,11 +855,11 @@ skip_short_body (int fd, wgint contlen)
   return true;
 }
 
-/* Extract a parameter from the HTTP header at *SOURCE and advance
-   *SOURCE to the next parameter.  Return false when there are no more
-   parameters to extract.  The name of the parameter is returned in
-   NAME, and the value in VALUE.  If the parameter has no value, the
-   token's value is zeroed out.
+/* Extract a parameter from the string (typically an HTTP header) at
+   **SOURCE and advance SOURCE to the next parameter.  Return false
+   when there are no more parameters to extract.  The name of the
+   parameter is returned in NAME, and the value in VALUE.  If the
+   parameter has no value, the token's value is zeroed out.
 
    For example, if *SOURCE points to the string "attachment;
    filename=\"foo bar\"", the first call to this function will return
@@ -868,7 +868,8 @@ skip_short_body (int fd, wgint contlen)
    call will return false, indicating no more valid tokens.  */
 
 bool
-extract_param (const char **source, param_token *name, param_token *value)
+extract_param (const char **source, param_token *name, param_token *value,
+	       char separator)
 {
   const char *p = *source;
 
@@ -881,15 +882,15 @@ extract_param (const char **source, param_token *name, param_token *value)
 
   /* Extract name. */
   name->b = p;
-  while (*p && !ISSPACE (*p) && *p != '=' && *p != ';') ++p;
+  while (*p && !ISSPACE (*p) && *p != '=' && *p != separator) ++p;
   name->e = p;
   if (name->b == name->e)
     return false;		/* empty name: error */
   while (ISSPACE (*p)) ++p;
-  if (*p == ';' || !*p)		/* no value */
+  if (*p == separator || !*p)		/* no value */
     {
       xzero (*value);
-      if (*p == ';') ++p;
+      if (*p == separator) ++p;
       *source = p;
       return true;
     }
@@ -908,8 +909,8 @@ extract_param (const char **source, param_token *name, param_token *value)
       value->e = p++;
       /* Currently at closing quote; find the end of param. */
       while (ISSPACE (*p)) ++p;
-      while (*p && *p != ';') ++p;
-      if (*p == ';')
+      while (*p && *p != separator) ++p;
+      if (*p == separator)
 	++p;
       else if (*p)
 	/* garbage after closed quote, e.g. foo="bar"baz */
@@ -918,11 +919,11 @@ extract_param (const char **source, param_token *name, param_token *value)
   else				/* unquoted */
     {
       value->b = p;
-      while (*p && *p != ';') ++p;
+      while (*p && *p != separator) ++p;
       value->e = p;
       while (value->e != value->b && ISSPACE (value->e[-1]))
         --value->e;
-      if (*p == ';') ++p;
+      if (*p == separator) ++p;
     }
   *source = p;
   return true;
@@ -935,7 +936,7 @@ static bool
 parse_content_disposition (const char *hdr, char **filename)
 {
   param_token name, value;
-  while (extract_param (&hdr, &name, &value))
+  while (extract_param (&hdr, &name, &value, ';'))
     if (BOUNDED_EQUAL_NO_CASE (name.b, name.e, "filename") && value.b != NULL)
       {
 	/* Make the file name begin at the last slash or backslash. */
@@ -2715,45 +2716,6 @@ basic_authentication_encode (const char *user, const char *passwd)
 } while (0)
 
 #ifdef ENABLE_DIGEST
-/* Parse HTTP `WWW-Authenticate:' header.  AU points to the beginning
-   of a field in such a header.  If the field is the one specified by
-   ATTR_NAME ("realm", "opaque", and "nonce" are used by the current
-   digest authorization code), extract its value in the (char*)
-   variable pointed by RET.  Returns negative on a malformed header,
-   or number of bytes that have been parsed by this call.  */
-static int
-extract_header_attr (const char *au, const char *attr_name, char **ret)
-{
-  const char *ep;
-  const char *cp = au;
-
-  if (strncmp (cp, attr_name, strlen (attr_name)) == 0)
-    {
-      cp += strlen (attr_name);
-      if (!*cp)
-        return -1;
-      SKIP_WS (cp);
-      if (*cp != '=')
-        return -1;
-      if (!*++cp)
-        return -1;
-      SKIP_WS (cp);
-      if (*cp != '\"')
-        return -1;
-      if (!*++cp)
-        return -1;
-      for (ep = cp; *ep && *ep != '\"'; ep++)
-        ;
-      if (!*ep)
-        return -1;
-      xfree_null (*ret);
-      *ret = strdupdelim (cp, ep);
-      return ep - au + 1;
-    }
-  else
-    return 0;
-}
-
 /* Dump the hexadecimal representation of HASH to BUF.  HASH should be
    an array of 16 bytes containing the hash keys, and BUF should be a
    buffer of 33 writable characters (32 for hex digits plus one for
@@ -2788,53 +2750,21 @@ digest_authentication_encode (const char *au, const char *user,
     { "nonce", &nonce }
   };
   char *res;
+  param_token name, value;
 
   realm = opaque = nonce = NULL;
 
   au += 6;                      /* skip over `Digest' */
-  while (*au)
+  while (extract_param (&au, &name, &value, ','))
     {
       int i;
-
-      SKIP_WS (au);
       for (i = 0; i < countof (options); i++)
-        {
-          int skip = extract_header_attr (au, options[i].name,
-                                          options[i].variable);
-          if (skip < 0)
-            {
-              xfree_null (realm);
-              xfree_null (opaque);
-              xfree_null (nonce);
-              return NULL;
-            }
-          else if (skip)
-            {
-              au += skip;
-              break;
-            }
-        }
-      if (i == countof (options))
-        {
-          while (*au && *au != '=')
-            au++;
-          if (*au && *++au)
-            {
-              SKIP_WS (au);
-              if (*au == '\"')
-                {
-                  au++;
-                  while (*au && *au != '\"')
-                    au++;
-                  if (*au)
-                    au++;
-                }
-            }
-        }
-      while (*au && *au != ',')
-        au++;
-      if (*au)
-        au++;
+	if (name.e - name.b == strlen (options[i].name)
+	    && 0 == strncmp (name.b, options[i].name, name.e - name.b))
+	  {
+	    *options[i].variable = strdupdelim (value.b, value.e);
+	    break;
+	  }
     }
   if (!realm || !nonce || !user || !passwd || !path || !method)
     {
