@@ -855,11 +855,6 @@ skip_short_body (int fd, wgint contlen)
   return true;
 }
 
-typedef struct {
-  /* A token consists of characters in the [b, e) range. */
-  const char *b, *e;
-} param_token;
-
 /* Extract a parameter from the HTTP header at *SOURCE and advance
    *SOURCE to the next parameter.  Return false when there are no more
    parameters to extract.  The name of the parameter is returned in
@@ -872,19 +867,24 @@ typedef struct {
    return the token named "filename" and value "foo bar".  The third
    call will return false, indicating no more valid tokens.  */
 
-static bool
+bool
 extract_param (const char **source, param_token *name, param_token *value)
 {
   const char *p = *source;
 
   while (ISSPACE (*p)) ++p;
   if (!*p)
-    return false;		/* nothing more to extract */
+    {
+      *source = p;
+      return false;		/* no error; nothing more to extract */
+    }
 
   /* Extract name. */
   name->b = p;
   while (*p && !ISSPACE (*p) && *p != '=' && *p != ';') ++p;
   name->e = p;
+  if (name->b == name->e)
+    return false;		/* empty name: error */
   while (ISSPACE (*p)) ++p;
   if (*p == ';' || !*p)		/* no value */
     {

@@ -38,4 +38,11 @@ void save_cookies (void);
 void http_cleanup (void);
 time_t http_atotm (const char *);
 
+typedef struct {
+  /* A token consists of characters in the [b, e) range. */
+  const char *b, *e;
+} param_token;
+bool extract_param (const char **, param_token *, param_token *);
+
+
 #endif /* HTTP_H */

@@ -319,139 +319,10 @@ discard_matching_cookie (struct cookie_jar *jar, struct cookie *cookie)
 /* Functions for parsing the `Set-Cookie' header, and creating new
    cookies from the wire.  */
 
-#define NAME_IS(string_literal)					\
-  BOUNDED_EQUAL_NO_CASE (name_b, name_e, string_literal)
+#define TOKEN_IS(token, string_literal)				\
+  BOUNDED_EQUAL_NO_CASE (token.b, token.e, string_literal)
 
-#define VALUE_EXISTS (value_b && value_e)
-
-#define VALUE_NON_EMPTY (VALUE_EXISTS && (value_b != value_e))
-
-/* Update the appropriate cookie field.  [name_b, name_e) are expected
-   to delimit the attribute name, while [value_b, value_e) (optional)
-   should delimit the attribute value.
-
-   When called the first time, it will set the cookie's attribute name
-   and value.  After that, it will check the attribute name for
-   special fields such as `domain', `path', etc.  Where appropriate,
-   it will parse the values of the fields it recognizes and fill the
-   corresponding fields in COOKIE.
-
-   Returns true on success.  Returns false in case a syntax error is
-   found; such a cookie should be discarded.  */
-
-static bool
-update_cookie_field (struct cookie *cookie,
-		     const char *name_b, const char *name_e,
-		     const char *value_b, const char *value_e)
-{
-  assert (name_b != NULL && name_e != NULL);
-
-  if (!cookie->attr)
-    {
-      if (!VALUE_EXISTS)
-	return false;
-      cookie->attr = strdupdelim (name_b, name_e);
-      cookie->value = strdupdelim (value_b, value_e);
-      return true;
-    }
-
-  if (NAME_IS ("domain"))
-    {
-      if (!VALUE_NON_EMPTY)
-	return false;
-      xfree_null (cookie->domain);
-      /* Strictly speaking, we should set cookie->domain_exact if the
-	 domain doesn't begin with a dot.  But many sites set the
-	 domain to "foo.com" and expect "subhost.foo.com" to get the
-	 cookie, and it apparently works.  */
-      if (*value_b == '.')
-	++value_b;
-      cookie->domain = strdupdelim (value_b, value_e);
-      return true;
-    }
-  else if (NAME_IS ("path"))
-    {
-      if (!VALUE_NON_EMPTY)
-	return false;
-      xfree_null (cookie->path);
-      cookie->path = strdupdelim (value_b, value_e);
-      return true;
-    }
-  else if (NAME_IS ("expires"))
-    {
-      char *value_copy;
-      time_t expires;
-
-      if (!VALUE_NON_EMPTY)
-	return false;
-      BOUNDED_TO_ALLOCA (value_b, value_e, value_copy);
-
-      expires = http_atotm (value_copy);
-      if (expires != (time_t) -1)
-	{
-	  cookie->permanent = 1;
-	  cookie->expiry_time = expires;
-	}
-      else
-	/* Error in expiration spec.  Assume default (cookie doesn't
-	   expire, but valid only for this session.)  */
-	;
-
-      /* According to netscape's specification, expiry time in the
-	 past means that discarding of a matching cookie is
-	 requested.  */
-      if (cookie->expiry_time < cookies_now)
-	cookie->discard_requested = 1;
-
-      return true;
-    }
-  else if (NAME_IS ("max-age"))
-    {
-      double maxage = -1;
-      char *value_copy;
-
-      if (!VALUE_NON_EMPTY)
-	return false;
-      BOUNDED_TO_ALLOCA (value_b, value_e, value_copy);
-
-      sscanf (value_copy, "%lf", &maxage);
-      if (maxage == -1)
-	/* something went wrong. */
-	return false;
-      cookie->permanent = 1;
-      cookie->expiry_time = cookies_now + maxage;
-
-      /* According to rfc2109, a cookie with max-age of 0 means that
-	 discarding of a matching cookie is requested.  */
-      if (maxage == 0)
-	cookie->discard_requested = 1;
-
-      return true;
-    }
-  else if (NAME_IS ("secure"))
-    {
-      /* ignore value completely */
-      cookie->secure = 1;
-      return true;
-    }
-  else
-    /* Unrecognized attribute; ignore it. */
-    return true;
-}
-
-#undef NAME_IS
-
-/* Returns true for characters that are legal in the name of an
-   attribute.  This used to allow only alphanumerics, '-', and '_',
-   but we need to be more lenient because a number of sites wants to
-   use weirder attribute names.  rfc2965 "informally specifies"
-   attribute name (token) as "a sequence of non-special, non-white
-   space characters".  So we allow everything except the stuff we know
-   could harm us.  */
-
-#define ATTR_NAME_CHAR(c) ((c) > 32 && (c) < 127	\
-			   && (c) != '"' && (c) != '='	\
-			   && (c) != ';' && (c) != ',')
+#define TOKEN_NON_EMPTY(token) (token.b != NULL && token.b != token.e)
 
 /* Parse the contents of the `Set-Cookie' header.  The header looks
    like this:
@@ -461,182 +332,124 @@ update_cookie_field (struct cookie *cookie,
    Trailing semicolon is optional; spaces are allowed between all
    tokens.  Additionally, values may be quoted.
 
-   A new cookie is returned upon success, NULL otherwise.  The
-   specified CALLBACK function (normally `update_cookie_field' is used
-   to update the fields of the newly created cookie structure.  */
+   A new cookie is returned upon success, NULL otherwise.
+
+   The first name-value pair will be used to set the cookie's
+   attribute name and value.  Subsequent parameters will be checked
+   against field names such as `domain', `path', etc.  Recognized
+   fields will be parsed and the corresponding members of COOKIE
+   filled.  */
 
 static struct cookie *
-parse_set_cookies (const char *sc,
-		   bool (*callback) (struct cookie *,
-				     const char *, const char *,
-				     const char *, const char *),
-		   bool silent)
+parse_set_cookie (const char *set_cookie, bool silent)
 {
+  const char *ptr = set_cookie;
   struct cookie *cookie = cookie_new ();
+  param_token name, value;
 
-  /* #### Hand-written DFAs are no fun to debug.  We'de be better off
-     to rewrite this as an inline parser.  */
+  if (!extract_param (&ptr, &name, &value))
+    goto error;
+  if (!value.b)
+    goto error;
+  cookie->attr = strdupdelim (name.b, name.e);
+  cookie->value = strdupdelim (value.b, value.e);
 
-  enum { S_START, S_NAME, S_NAME_POST,
-	 S_VALUE_PRE, S_VALUE, S_QUOTED_VALUE, S_VALUE_TRAILSPACE,
-	 S_ATTR_ACTION, S_DONE, S_ERROR
-  } state = S_START;
-
-  const char *p = sc;
-  char c;
-
-  const char *name_b  = NULL, *name_e  = NULL;
-  const char *value_b = NULL, *value_e = NULL;
-
-  c = *p;
-
-  while (state != S_DONE && state != S_ERROR)
+  while (extract_param (&ptr, &name, &value))
     {
-      switch (state)
+      if (TOKEN_IS (name, "domain"))
 	{
-	case S_START:
-	  if (!c)
-	    state = S_DONE;
-	  else if (ISSPACE (c))
-	    /* Strip all whitespace preceding the name. */
-	    c = *++p;
-	  else if (ATTR_NAME_CHAR (c))
-	    {
-	      name_b = p;
-	      state = S_NAME;
-	    }
-	  else
-	    /* empty attr name not allowed */
-	    state = S_ERROR;
-	  break;
-	case S_NAME:
-	  if (!c || c == ';' || c == '=' || ISSPACE (c))
-	    {
-	      name_e = p;
-	      state = S_NAME_POST;
-	    }
-	  else if (ATTR_NAME_CHAR (c))
-	    c = *++p;
-	  else
-	    state = S_ERROR;
-	  break;
-	case S_NAME_POST:
-	  if (!c || c == ';')
-	    {
-	      value_b = value_e = NULL;
-	      if (c == ';')
-		c = *++p;
-	      state = S_ATTR_ACTION;
-	    }
-	  else if (c == '=')
-	    {
-	      c = *++p;
-	      state = S_VALUE_PRE;
-	    }
-	  else if (ISSPACE (c))
-	    /* Ignore space and keep the state. */
-	    c = *++p;
-	  else
-	    state = S_ERROR;
-	  break;
-	case S_VALUE_PRE:
-	  if (!c || c == ';')
-	    {
-	      value_b = value_e = p;
-	      if (c == ';')
-		c = *++p;
-	      state = S_ATTR_ACTION;
-	    }
-	  else if (c == '"')
-	    {
-	      c = *++p;
-	      value_b = p;
-	      state = S_QUOTED_VALUE;
-	    }
-	  else if (ISSPACE (c))
-	    c = *++p;
-	  else
-	    {
-	      value_b = p;
-	      value_e = NULL;
-	      state = S_VALUE;
-	    }
-	  break;
-	case S_VALUE:
-	  if (!c || c == ';' || ISSPACE (c))
-	    {
-	      value_e = p;
-	      state = S_VALUE_TRAILSPACE;
-	    }
-	  else
-	    {
-	      value_e = NULL;	/* no trailing space */
-	      c = *++p;
-	    }
-	  break;
-	case S_QUOTED_VALUE:
-	  if (c == '"')
-	    {
-	      value_e = p;
-	      c = *++p;
-	      state = S_VALUE_TRAILSPACE;
-	    }
-	  else if (!c)
-	    state = S_ERROR;
-	  else
-	    c = *++p;
-	  break;
-	case S_VALUE_TRAILSPACE:
-	  if (c == ';')
-	    {
-	      c = *++p;
-	      state = S_ATTR_ACTION;
-	    }
-	  else if (!c)
-	    state = S_ATTR_ACTION;
-	  else if (ISSPACE (c))
-	    c = *++p;
-	  else
-	    state = S_VALUE;
-	  break;
-	case S_ATTR_ACTION:
-	  {
-	    bool legal = callback (cookie, name_b, name_e, value_b, value_e);
-	    if (!legal)
-	      {
-		if (!silent)
-		  {
-		    char *name;
-		    BOUNDED_TO_ALLOCA (name_b, name_e, name);
-		    logprintf (LOG_NOTQUIET,
-			       _("Error in Set-Cookie, field `%s'"),
-			       escnonprint (name));
-		  }
-		state = S_ERROR;
-		break;
-	      }
-	    state = S_START;
-	  }
-	  break;
-	case S_DONE:
-	case S_ERROR:
-	  /* handled by loop condition */
-	  break;
+	  if (!TOKEN_NON_EMPTY (value))
+	    goto error;
+	  xfree_null (cookie->domain);
+	  /* Strictly speaking, we should set cookie->domain_exact if the
+	     domain doesn't begin with a dot.  But many sites set the
+	     domain to "foo.com" and expect "subhost.foo.com" to get the
+	     cookie, and it apparently works in browsers.  */
+	  if (*value.b == '.')
+	    ++value.b;
+	  cookie->domain = strdupdelim (value.b, value.e);
 	}
+      else if (TOKEN_IS (name, "path"))
+	{
+	  if (!TOKEN_NON_EMPTY (value))
+	    goto error;
+	  xfree_null (cookie->path);
+	  cookie->path = strdupdelim (value.b, value.e);
+	}
+      else if (TOKEN_IS (name, "expires"))
+	{
+	  char *value_copy;
+	  time_t expires;
+
+	  if (!TOKEN_NON_EMPTY (value))
+	    goto error;
+	  BOUNDED_TO_ALLOCA (value.b, value.e, value_copy);
+
+	  expires = http_atotm (value_copy);
+	  if (expires != (time_t) -1)
+	    {
+	      cookie->permanent = 1;
+	      cookie->expiry_time = expires;
+	    }
+	  else
+	    /* Error in expiration spec.  Assume default (cookie doesn't
+	       expire, but valid only for this session.)  */
+	    ;
+
+	  /* According to netscape's specification, expiry time in the
+	     past means that discarding of a matching cookie is
+	     requested.  */
+	  if (cookie->expiry_time < cookies_now)
+	    cookie->discard_requested = 1;
+	}
+      else if (TOKEN_IS (name, "max-age"))
+	{
+	  double maxage = -1;
+	  char *value_copy;
+
+	  if (!TOKEN_NON_EMPTY (value))
+	    goto error;
+	  BOUNDED_TO_ALLOCA (value.b, value.e, value_copy);
+
+	  sscanf (value_copy, "%lf", &maxage);
+	  if (maxage == -1)
+	    /* something went wrong. */
+	    goto error;
+	  cookie->permanent = 1;
+	  cookie->expiry_time = cookies_now + maxage;
+
+	  /* According to rfc2109, a cookie with max-age of 0 means that
+	     discarding of a matching cookie is requested.  */
+	  if (maxage == 0)
+	    cookie->discard_requested = 1;
+	}
+      else if (TOKEN_IS (name, "secure"))
+	{
+	  /* ignore value completely */
+	  cookie->secure = 1;
+	}
+      else
+	/* Ignore unrecognized attribute. */
+	;
     }
-  if (state == S_DONE)
-    return cookie;
+  if (*ptr)
+    /* extract_param has encountered a syntax error */
+    goto error;
 
-  delete_cookie (cookie);
-  if (state != S_ERROR)
-    abort ();
+  /* The cookie has been successfully constructed; return it. */
+  return cookie;
 
+ error:
   if (!silent)
     logprintf (LOG_NOTQUIET,
 	       _("Syntax error in Set-Cookie: %s at position %d.\n"),
-	       escnonprint (sc), (int) (p - sc));
+	       escnonprint (set_cookie), (int) (ptr - set_cookie));
+  delete_cookie (cookie);
   return NULL;
 }
+
+#undef TOKEN_IS
+#undef TOKEN_NON_EMPTY
 
 /* Sanity checks.  These are important, otherwise it is possible for
    mailcious attackers to destroy important cookie information and/or
@@ -849,7 +662,7 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
      simply prepend slash to PATH.  */
   PREPEND_SLASH (path);
 
-  cookie = parse_set_cookies (set_cookie, update_cookie_field, false);
+  cookie = parse_set_cookie (set_cookie, false);
   if (!cookie)
     goto out;
 
@@ -1510,27 +1323,14 @@ cookie_jar_delete (struct cookie_jar *jar)
    from main.  */
 
 #ifdef TEST_COOKIES
-int test_count;
-char *test_results[10];
-
-static bool test_parse_cookies_callback (struct cookie *ignored,
-					 const char *nb, const char *ne,
-					 const char *vb, const char *ve)
-{
-  test_results[test_count++] = strdupdelim (nb, ne);
-  test_results[test_count++] = strdupdelim (vb, ve);
-  return true;
-}
-
 void
 test_cookies (void)
 {
   /* Tests expected to succeed: */
   static struct {
-    char *data;
-    char *results[10];
+    const char *data;
+    const char *results[10];
   } tests_succ[] = {
-    { "", {NULL} },
     { "arg=value", {"arg", "value", NULL} },
     { "arg1=value1;arg2=value2", {"arg1", "value1", "arg2", "value2", NULL} },
     { "arg1=value1; arg2=value2", {"arg1", "value1", "arg2", "value2", NULL} },
@@ -1554,39 +1354,51 @@ test_cookies (void)
   for (i = 0; i < countof (tests_succ); i++)
     {
       int ind;
-      char *data = tests_succ[i].data;
-      char **expected = tests_succ[i].results;
+      const char *data = tests_succ[i].data;
+      const char **expected = tests_succ[i].results;
       struct cookie *c;
 
-      test_count = 0;
-      c = parse_set_cookies (data, test_parse_cookies_callback, true);
+      c = parse_set_cookie (data, true);
       if (!c)
 	{
 	  printf ("NULL cookie returned for valid data: %s\n", data);
 	  continue;
 	}
 
-      for (ind = 0; ind < test_count; ind += 2)
-	{
-	  if (!expected[ind])
-	    break;
-	  if (0 != strcmp (expected[ind], test_results[ind]))
-	    printf ("Invalid name %d for '%s' (expected '%s', got '%s')\n",
-		    ind / 2 + 1, data, expected[ind], test_results[ind]);
-	  if (0 != strcmp (expected[ind + 1], test_results[ind + 1]))
-	    printf ("Invalid value %d for '%s' (expected '%s', got '%s')\n",
-		    ind / 2 + 1, data, expected[ind + 1], test_results[ind + 1]);
-	}
-      if (ind < test_count || expected[ind])
-	printf ("Unmatched number of results: %s\n", data);
+      /* Test whether extract_param handles these cases correctly. */
+      {
+	param_token name, value;
+	const char *ptr = data;
+	int j = 0;
+	while (extract_param (&ptr, &name, &value))
+	  {
+	    char *n = strdupdelim (name.b, name.e);
+	    char *v = strdupdelim (value.b, value.e);
+	    if (!expected[j])
+	      {
+		printf ("Too many parameters for '%s'\n", data);
+		break;
+	      }
+	    if (0 != strcmp (expected[j], n))
+	      printf ("Invalid name %d for '%s' (expected '%s', got '%s')\n",
+		      j / 2 + 1, data, expected[j], n);
+	    if (0 != strcmp (expected[j + 1], v))
+	      printf ("Invalid value %d for '%s' (expected '%s', got '%s')\n",
+		      j / 2 + 1, data, expected[j + 1], v);
+	    j += 2;
+	    free (n);
+	    free (v);
+	  }
+	if (expected[j])
+	  printf ("Too few parameters for '%s'\n", data);
+      }
     }
 
   for (i = 0; i < countof (tests_fail); i++)
     {
       struct cookie *c;
       char *data = tests_fail[i];
-      test_count = 0;
-      c = parse_set_cookies (data, test_parse_cookies_callback, 1);
+      c = parse_set_cookie (data, true);
       if (c)
 	printf ("Failed to report error on invalid data: %s\n", data);
     }

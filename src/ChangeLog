@@ -1,5 +1,11 @@
 2006-02-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (extract_param): Declare extern so it can be used from
+	other files.
+	(extract_param): Return error for empty name.
+
+2006-02-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* url.c (find_last_char): Define in terms of memrchr.
 
 	* cmpt.c (memrchr): Define it on systems that don't have it.
