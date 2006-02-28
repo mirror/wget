@@ -855,45 +855,6 @@ skip_short_body (int fd, wgint contlen)
   return true;
 }
 
-static bool
-extract_param_value_delim (const char *begin, const char *end, 
-                           const char *param_name, char **param_value)
-{
-  const char *p; 
-  int len;  
-
-  assert (begin);
-  assert (end);
-  assert (param_name);
-  assert (param_value);
-
-  len = strlen (param_name);
-
-  /* skip initial whitespaces */
-  p = begin;
-  while (*p && ISSPACE (*p) && p < end) ++p;
-  
-  if (end - p > len
-      && 0 == strncasecmp (p, param_name, len))
-    {
-      const char *e;
-
-      /* skip white spaces, equal sign and inital quote */
-      p += len;
-      while (*p && (ISSPACE (*p) || *p == '\"' || *p == '=') && p < end) ++p;
-
-      /* find last quote */
-      e = p;
-      while (*e && *e != '\"' && e < end) ++e;
-      
-      *param_value = strdupdelim (p, e);
-      
-      return true;
-    }
-
-  return false;
-}
-
 typedef struct {
   /* A token consists of characters in the [b, e) range. */
   const char *b, *e;
