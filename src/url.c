@@ -1511,8 +1511,7 @@ path_simplify (char *path)
 {
   char *h = path;		/* hare */
   char *t = path;		/* tortoise */
-  char *beg = path;		/* boundary for backing the tortoise */
-  char *end = path + strlen (path);
+  char *end = strchr (path, '\0');
 
   while (h < end)
     {
@@ -1527,26 +1526,17 @@ path_simplify (char *path)
 	{
 	  /* Handle "../" by retreating the tortoise by one path
 	     element -- but not past beggining.  */
-	  if (t > beg)
+	  if (t > path)
 	    {
 	      /* Move backwards until T hits the beginning of the
 		 previous path element or the beginning of path. */
-	      for (--t; t > beg && t[-1] != '/'; t--)
+	      for (--t; t > path && t[-1] != '/'; t--)
 		;
-	    }
-	  else
-	    {
-	      /* If we're at the beginning, copy the "../" literally
-		 move the beginning so a later ".." doesn't remove
-		 it.  */
-	      beg = t + 3;
-	      goto regular;
 	    }
 	  h += 3;
 	}
       else
 	{
-	regular:
 	  /* A regular path element.  If H hasn't advanced past T,
 	     simply skip to the next path element.  Otherwise, copy
 	     the path element until the next slash.  */
@@ -1972,8 +1962,8 @@ test_path_simplify (void)
     { "",			"",		false },
     { ".",			"",		true },
     { "./",			"",		true },
-    { "..",			"..",		false },
-    { "../",			"../",		false },
+    { "..",			"",		true },
+    { "../",			"",		true },
     { "foo",			"foo",		false },
     { "foo/bar",		"foo/bar",	false },
     { "foo///bar",		"foo///bar",	false },
@@ -1986,9 +1976,9 @@ test_path_simplify (void)
     { "foo/bar/../x",		"foo/x",	true },
     { "foo/bar/../x/",		"foo/x/",	true },
     { "foo/..",			"",		true },
-    { "foo/../..",		"..",		true },
-    { "foo/../../..",		"../..",	true },
-    { "foo/../../bar/../../baz", "../../baz",	true },
+    { "foo/../..",		"",		true },
+    { "foo/../../..",		"",		true },
+    { "foo/../../bar/../../baz", "baz",		true },
     { "a/b/../../c",		"c",		true },
     { "./a/../b",		"b",		true }
   };
