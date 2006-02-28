@@ -1,3 +1,7 @@
+2006-02-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: Check for memrchr.
+
 2005-11-19  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Check for uintptr_t.

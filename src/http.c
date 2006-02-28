@@ -894,37 +894,101 @@ extract_param_value_delim (const char *begin, const char *end,
   return false;
 }
 
-/* Parse the `Content-Disposition' header and extract the information it
-   contains.  Returns true if successful, false otherwise.  */
+typedef struct {
+  /* A token consists of characters in the [b, e) range. */
+  const char *b, *e;
+} param_token;
+
+/* Extract a parameter from the HTTP header at *SOURCE and advance
+   *SOURCE to the next parameter.  Return false when there are no more
+   parameters to extract.  The name of the parameter is returned in
+   NAME, and the value in VALUE.  If the parameter has no value, the
+   token's value is zeroed out.
+
+   For example, if *SOURCE points to the string "attachment;
+   filename=\"foo bar\"", the first call to this function will return
+   the token named "attachment" and no value, and the second call will
+   return the token named "filename" and value "foo bar".  The third
+   call will return false, indicating no more valid tokens.  */
+
 static bool
-parse_content_disposition (const char *hdrval, char **filename)
+extract_param (const char **source, param_token *name, param_token *value)
 {
-  const char *b = hdrval; /* b - begin */
-  const char *e = hdrval; /* e - end   */
+  const char *p = *source;
 
-  assert (hdrval);
-  assert (filename);
+  while (ISSPACE (*p)) ++p;
+  if (!*p)
+    return false;		/* nothing more to extract */
 
-  for (; *e; ++e)
+  /* Extract name. */
+  name->b = p;
+  while (*p && !ISSPACE (*p) && *p != '=' && *p != ';') ++p;
+  name->e = p;
+  while (ISSPACE (*p)) ++p;
+  if (*p == ';' || !*p)		/* no value */
     {
-      if (*e == ';'
-          && e > b)
-        {           
-          /* process chars b->e-1 */
-          if (true == extract_param_value_delim (b, e - 1, "filename", filename)) 
-            return true;
-
-          b = e + 1;
-        }      
+      xzero (*value);
+      if (*p == ';') ++p;
+      *source = p;
+      return true;
     }
+  if (*p != '=')
+    return false;		/* error */
 
-  if (b != e)
+  /* *p is '=', extract value */
+  ++p;
+  while (ISSPACE (*p)) ++p;
+  if (*p == '"')		/* quoted */
     {
-      /* process chars b->e */
-      if (true == extract_param_value_delim (b, e, "filename", filename)) 
+      value->b = ++p;
+      while (*p && *p != '"') ++p;
+      if (!*p)
+        return false;
+      value->e = p++;
+      /* Currently at closing quote; find the end of param. */
+      while (ISSPACE (*p)) ++p;
+      while (*p && *p != ';') ++p;
+      if (*p == ';')
+	++p;
+      else if (*p)
+	/* garbage after closed quote, e.g. foo="bar"baz */
+	return false;
+    }
+  else				/* unquoted */
+    {
+      value->b = p;
+      while (*p && *p != ';') ++p;
+      value->e = p;
+      while (value->e != value->b && ISSPACE (value->e[-1]))
+        --value->e;
+      if (*p == ';') ++p;
+    }
+  *source = p;
+  return true;
+}
+
+#undef MAX
+#define MAX(p, q) ((p) > (q) ? (p) : (q))
+
+static bool
+parse_content_disposition (const char *hdr, char **filename)
+{
+  param_token name, value;
+  while (extract_param (&hdr, &name, &value))
+    if (BOUNDED_EQUAL_NO_CASE (name.b, name.e, "filename") && value.b != NULL)
+      {
+	/* Make the file name begin at the last slash or backslash. */
+        const char *last_slash = memrchr (value.b, '/', value.e - value.b);
+        const char *last_bs = memrchr (value.b, '\\', value.e - value.b);
+        if (last_slash && last_bs)
+          value.b = 1 + MAX (last_slash, last_bs);
+        else if (last_slash || last_bs)
+          value.b = 1 + (last_slash ? last_slash : last_bs);
+	if (value.b == value.e)
+	  continue;
+        *filename = strdupdelim (value.b, value.e);
         return true;
-    }
-
+      }
   return false;
 }
 
@@ -1687,7 +1751,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     {
       /* Honor Content-Disposition whether possible. */
       if (!resp_header_copy (resp, "Content-Disposition", hdrval, sizeof (hdrval))
-          || false == parse_content_disposition (hdrval, &hs->local_file))
+          || !parse_content_disposition (hdrval, &hs->local_file))
         {
           /* Choose filename according to URL name. */
           hs->local_file = url_file_name (u);

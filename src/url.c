@@ -1582,17 +1582,8 @@ path_end (const char *url)
 }
 
 /* Find the last occurrence of character C in the range [b, e), or
-   NULL, if none are present.  We might want to use memrchr (a GNU
-   extension) under GNU libc.  */
-
-static const char *
-find_last_char (const char *b, const char *e, char c)
-{
-  for (; e > b; e--)
-    if (*e == c)
-      return e;
-  return NULL;
-}
+   NULL, if none are present.  */
+#define find_last_char(b, e, c) memrchr ((b), (c), (e) - (b))
 
 /* Merge BASE with LINK and return the resulting URI.
 

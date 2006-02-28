@@ -1,3 +1,14 @@
+2006-02-28  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* url.c (find_last_char): Define in terms of memrchr.
+
+	* cmpt.c (memrchr): Define it on systems that don't have it.
+
+	* http.c (extract_param): New function for parsing header values
+	with parameters.
+	(parse_content_disposition): Use it.  Don't allow slashes and
+	backslashes in the file name.
+
 2006-02-27  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* url.c (path_simplify): Don't preserve ".." at beginning of path.

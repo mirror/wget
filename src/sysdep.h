@@ -135,6 +135,9 @@ char *strptime ();
 # include <time.h>
 time_t timegm (struct tm *);
 #endif
+#ifndef HAVE_MEMRCHR
+void *memrchr (const void *, int, size_t);
+#endif
 
 /* These are defined in snprintf.c.  It would be nice to have an
    snprintf.h, though.  */

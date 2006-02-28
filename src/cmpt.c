@@ -111,10 +111,28 @@ strncasecmp (const char *s1, const char *s2, size_t n)
   return c1 - c2;
 }
 #endif /* not HAVE_STRNCASECMP */
+
+#ifndef HAVE_MEMRCHR
+/* memrchr is a GNU extension.  It is like the memchr function, except
+   that it searches backwards from the end of the n bytes pointed to
+   by s instead of forwards from the front.  */
+
+void *
+memrchr (const void *s, int c, size_t n)
+{
+  const char *b = s;
+  const char *e = b + n;
+  while (e > b)
+    if (*--e == c)
+      return (void *) e;
+  return NULL;
+}
+#endif
 
 /* strptime is required by POSIX, but it is missing from Windows,
    which means we must keep a fallback implementation.  It is
-   reportedly missing or broken on many older systems as well.  */
+   reportedly missing or broken on many older Unix systems as well, so
+   it's good to have around.  */
 
 #ifndef HAVE_STRPTIME
 /* From GNU libc 2.1.3.  */
