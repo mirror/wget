@@ -1,3 +1,7 @@
+2006-03-02  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* http.c (http_loop): Fixed recursive HTTP retrieval.
+
 2006-02-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (extract_param): Declare extern so it can be used from

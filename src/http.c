@@ -2198,11 +2198,11 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   bool got_head = false;         /* used for time-stamping */
   char *tms;
   const char *tmrate;
-  uerr_t err;
+  uerr_t err, ret = TRYLIMEXC;
   time_t tmr = -1;               /* remote time-stamp */
   wgint local_size = 0;          /* the size of the local file */
   struct http_stat hstat;        /* HTTP status */
-  struct_stat st;
+  struct_stat st;  
 
   /* Assert that no value for *LOCAL_FILE was passed. */
   assert (local_file == NULL || *local_file == NULL);
@@ -2300,8 +2300,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
               we require a fresh get.
            b) caching is explicitly inhibited. */
       if ((proxy && count > 1)        /* a */
-          || !opt.allow_cache         /* b */
-          )
+          || !opt.allow_cache)        /* b */
         *dt |= SEND_NOCACHE;
       else
         *dt &= ~SEND_NOCACHE;
@@ -2324,26 +2323,23 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
           /* Non-fatal errors continue executing the loop, which will
              bring them to "while" statement at the end, to judge
              whether the number of tries was exceeded.  */
-          /* free_hstat (&hstat); */
           printwhat (count, opt.ntry);
           continue;
-        case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED: 
-        case SSLINITFAILED: case CONTNOTSUPPORTED:
-          /* Fatal errors just return from the function.  */
-          free_hstat (&hstat);
-          return err;
         case FWRITEERR: case FOPENERR:
           /* Another fatal error.  */
           logputs (LOG_VERBOSE, "\n");
           logprintf (LOG_NOTQUIET, _("Cannot write to `%s' (%s).\n"),
                      hstat.local_file, strerror (errno));
-          free_hstat (&hstat);
-          return err;
+        case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED: 
+        case SSLINITFAILED: case CONTNOTSUPPORTED:
+          /* Fatal errors just return from the function.  */
+          ret = err;
+          goto exit;
         case CONSSLERR:
           /* Another fatal error.  */
           logprintf (LOG_NOTQUIET, _("Unable to establish SSL connection.\n"));
-          free_hstat (&hstat);
-          return err;
+          ret = err;
+          goto exit;
         case NEWLOCATION:
           /* Return the new location to the caller.  */
           if (!*newloc)
@@ -2351,15 +2347,17 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
               logprintf (LOG_NOTQUIET,
                          _("ERROR: Redirection (%d) without location.\n"),
                          hstat.statcode);
-              free_hstat (&hstat);
-              return WRONGCODE;
+              ret = WRONGCODE;
             }
-          free_hstat (&hstat);
-          return NEWLOCATION;
+          else 
+            {
+              ret = NEWLOCATION;
+            }
+          goto exit;
         case RETRUNNEEDED:
           /* The file was already fully retrieved. */
-          free_hstat (&hstat);
-          return RETROK;
+          ret = RETROK;
+          goto exit;
         case RETRFINISHED:
           /* Deal with you later.  */
           break;
@@ -2380,8 +2378,8 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
           logprintf (LOG_NOTQUIET, _("%s ERROR %d: %s.\n"),
                      tms, hstat.statcode, escnonprint (hstat.error));
           logputs (LOG_VERBOSE, "\n");
-          free_hstat (&hstat);
-          return WRONGCODE;
+          ret = WRONGCODE;
+          goto exit;
         }
 
       /* Did we get the time-stamp? */
@@ -2423,8 +2421,8 @@ Last-modified header invalid -- time-stamp ignored.\n"));
                       logprintf (LOG_VERBOSE, _("\
 Server file no newer than local file `%s' -- not retrieving.\n\n"),
                                  hstat.orig_file_name);
-                      free_hstat (&hstat);
-                      return RETROK;
+                      ret = RETROK;
+                      goto exit;
                     }
                   else
                     {
@@ -2469,7 +2467,8 @@ The sizes do not match (local %s) -- retrieving.\n"),
         {
           logprintf (LOG_NOTQUIET, "%d %s\n\n", hstat.statcode,
                      escnonprint (hstat.error));
-          return RETROK;
+          ret = RETROK;
+          goto exit;
         }
 
       tmrate = retr_rate (hstat.rd_size, hstat.dltime);
@@ -2500,8 +2499,8 @@ The sizes do not match (local %s) -- retrieving.\n"),
           else
             downloaded_file(FILE_DOWNLOADED_NORMALLY, hstat.local_file);
 
-          free_hstat (&hstat);
-          return RETROK;
+          ret = RETROK;
+          goto exit;
         }
       else if (hstat.res == 0) /* No read error */
         {
@@ -2528,8 +2527,8 @@ The sizes do not match (local %s) -- retrieving.\n"),
               else
                 downloaded_file(FILE_DOWNLOADED_NORMALLY, hstat.local_file);
               
-              free_hstat (&hstat);
-              return RETROK;
+              ret = RETROK;
+              goto exit;
             }
           else if (hstat.len < hstat.contlen) /* meaning we lost the
                                                  connection too soon */
@@ -2538,7 +2537,6 @@ The sizes do not match (local %s) -- retrieving.\n"),
                          _("%s (%s) - Connection closed at byte %s. "),
                          tms, tmrate, number_to_static_string (hstat.len));
               printwhat (count, opt.ntry);
-              /* free_hstat (&hstat); */
               continue;
             }
           else
@@ -2555,7 +2553,6 @@ The sizes do not match (local %s) -- retrieving.\n"),
                          tms, tmrate, number_to_static_string (hstat.len),
                          hstat.rderrmsg);
               printwhat (count, opt.ntry);
-              /* free_hstat (&hstat); */
               continue;
             }
           else /* hstat.res == -1 and contlen is given */
@@ -2567,15 +2564,19 @@ The sizes do not match (local %s) -- retrieving.\n"),
                          number_to_static_string (hstat.contlen),
                          hstat.rderrmsg);
               printwhat (count, opt.ntry);
-              /* free_hstat (&hstat); */
               continue;
             }
         }
       /* not reached */
     }
   while (!opt.ntry || (count < opt.ntry));
+
+exit:
+  if (ret == RETROK) 
+    *local_file = xstrdup (hstat.local_file);
+  free_hstat (&hstat);
   
-  return TRYLIMEXC;
+  return ret;
 }
 
 /* Check whether the result of strptime() indicates success.
