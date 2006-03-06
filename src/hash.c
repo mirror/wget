@@ -53,7 +53,8 @@ so, delete this exception statement from your version.  */
 # ifndef countof
 #  define countof(x) (sizeof (x) / sizeof ((x)[0]))
 # endif
-# define TOLOWER(x) ('A' <= (x) && (x) <= 'Z' ? (x) - 32 : (x))
+# include <ctype.h>
+# define TOLOWER(x) tolower ((unsigned char) x)
 # if __STDC_VERSION__ >= 199901L
 #  include <stdint.h>  /* for uintptr_t */
 # else
