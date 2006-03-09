@@ -962,33 +962,45 @@ ftp_list (int csock, const char *file)
   char *request, *respline;
   int nwritten;
   uerr_t err;
+  bool ok = false;
+  int i = 0;
+  /* Try `LIST -a' first and revert to `LIST' in case of failure.  */
+  const char *list_commands[] = { "LIST -a", 
+                                  "LIST" };
 
-  /* Send LIST request.  */
-  request = ftp_request ("LIST", file);
-  nwritten = fd_write (csock, request, strlen (request), -1);
-  if (nwritten < 0)
-    {
-      xfree (request);
-      return WRITEFAILED;
-    }
-  xfree (request);
-  /* Get appropriate respone.  */
-  err = ftp_response (csock, &respline);
-  if (err != FTPOK)
-    return err;
-  if (*respline == '5')
-    {
-      xfree (respline);
-      return FTPNSFOD;
-    }
-  if (*respline != '1')
-    {
-      xfree (respline);
-      return FTPRERR;
-    }
-  xfree (respline);
-  /* All OK.  */
-  return FTPOK;
+  do {
+    /* Send request.  */
+    request = ftp_request (list_commands[i], file);
+    nwritten = fd_write (csock, request, strlen (request), -1);
+    if (nwritten < 0)
+      {
+        xfree (request);
+        return WRITEFAILED;
+      }
+    xfree (request);
+    /* Get appropriate response.  */
+    err = ftp_response (csock, &respline);
+    if (err == FTPOK)
+      {
+        if (*respline == '5')
+          {
+            err = FTPNSFOD;
+          }
+	else if (*respline == '1')
+          {
+            err = FTPOK;
+            ok = true;
+          }
+        else 
+          {
+    	    err = FTPRERR;
+          }
+        xfree (respline);
+      }
+    ++i;
+  } while (i < countof (list_commands) && !ok);
+  
+  return err;
 }
 
 /* Sends the SYST command to the server. */

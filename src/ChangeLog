@@ -1,3 +1,8 @@
+2006-03-09  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* ftp.c (ftp_list): Try `LIST -a' command first and revert to `LIST'
+	in case of failure.
+
 2006-03-06  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* hash.c (TOLOWER): Fix definition when STANDALONE.
