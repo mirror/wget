@@ -1,3 +1,7 @@
+2006-03-09  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* config-compiler.h (HAVE_UINTPTR_T): Define to 1 under MinGW.
+
 2005-08-10  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* config.h (HAVE_SOCKADDR_IN6_SCOPE_ID): According to MSDN,
