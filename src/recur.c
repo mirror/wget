@@ -55,7 +55,7 @@ struct queue_element {
   const char *url;		/* the URL to download */
   const char *referer;		/* the referring document */
   int depth;			/* the depth */
-  unsigned int html_allowed :1;	/* whether the document is allowed to
+  bool html_allowed;	        /* whether the document is allowed to
 				   be treated as HTML. */
 
   struct queue_element *next;	/* next element in queue */
