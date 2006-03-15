@@ -482,7 +482,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
       && u->port == start_url_parsed->port
       && !(opt.page_requisites && upos->link_inline_p))
     {
-      if (!frontcmp (start_url_parsed->dir, u->dir))
+      if (!subdir_p (start_url_parsed->dir, u->dir))
 	{
 	  DEBUGP (("Going to \"%s\" would escape \"%s\" with no_parent on.\n",
 		   u->dir, start_url_parsed->dir));

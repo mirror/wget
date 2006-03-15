@@ -1,3 +1,22 @@
+2006-03-15  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* utils.c: Restricted operational semantics of frontcmp and proclist
+	from generic strings to directory names and them to subdir_p and
+	dir_matches_p respectively.  Applied George Ogata's one line patch to
+	restrict algorithm of subdir_p to full directory name matching.  Added
+	testcases for subdir_p and dir_matches_p.
+
+	* utils.h: Changed all frontcmp occurrences to subdir_p.
+	
+	* recur.c: Ditto.
+	
+	* test.c: Changed type returned by test functions from char * to const
+	char *.  Added test_subdir_p and test_dir_matches_p to the list of
+	tests to run.
+
+	* http.c (test_parse_content_disposition): Changed return type from
+	char * to const char *. 
+
 2006-03-14  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* recur.c (struct queue_element): Changed type of html_allowed member

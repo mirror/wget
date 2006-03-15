@@ -81,6 +81,10 @@ so, delete this exception statement from your version.  */
 #include "utils.h"
 #include "hash.h"
 
+#ifdef TESTING
+#include "test.h"
+#endif 
+
 /* Utility function: like xstrdup(), but also lowercases S.  */
 
 char *
@@ -677,46 +681,49 @@ acceptable (const char *s)
   return true;
 }
 
-/* Compare S1 and S2 frontally; S2 must begin with S1.  E.g. if S1 is
-   `/something', frontcmp() will return true only if S2 begins with
-   `/something'.  */
+/* Check if D2 is a subdirectory of D1.  E.g. if D1 is `/something', subdir_p()
+   will return true if and only if D2 begins with `/something/' or is exactly 
+   '/something'.  */
 bool
-frontcmp (const char *s1, const char *s2)
+subdir_p (const char *d1, const char *d2)
 {
   if (!opt.ignore_case)
-    for (; *s1 && *s2 && (*s1 == *s2); ++s1, ++s2)
+    for (; *d1 && *d2 && (*d1 == *d2); ++d1, ++d2)
       ;
   else
-    for (; *s1 && *s2 && (TOLOWER (*s1) == TOLOWER (*s2)); ++s1, ++s2)
+    for (; *d1 && *d2 && (TOLOWER (*d1) == TOLOWER (*d2)); ++d1, ++d2)
       ;
-  return *s1 == '\0';
+  
+  return *d1 == '\0' && (*d2 == '\0' || *d2 == '/');
 }
 
-/* Iterate through STRLIST, and return the first element that matches
-   S, through wildcards or front comparison (as appropriate).  */
-static char *
-proclist (char **strlist, const char *s)
+/* Iterate through DIRLIST (which must be NULL-terminated), and return the
+   first element that matches DIR, through wildcards or front comparison (as
+   appropriate).  */
+static bool
+dir_matches_p (char **dirlist, const char *dir)
 {
   char **x;
   int (*matcher) (const char *, const char *, int)
     = opt.ignore_case ? fnmatch_nocase : fnmatch;
 
-  for (x = strlist; *x; x++)
+  for (x = dirlist; *x; x++)
     {
       /* Remove leading '/' */
       char *p = *x + (**x == '/');
       if (has_wildcards_p (p))
 	{
-	  if (matcher (p, s, FNM_PATHNAME) == 0)
+	  if (matcher (p, dir, FNM_PATHNAME) == 0)
 	    break;
 	}
       else
 	{
-	  if (frontcmp (p, s))
+	  if (subdir_p (p, dir))
 	    break;
 	}
     }
-  return *x;
+      
+  return *x ? true : false;
 }
 
 /* Returns whether DIRECTORY is acceptable for download, wrt the
@@ -733,12 +740,12 @@ accdir (const char *directory)
     ++directory;
   if (opt.includes)
     {
-      if (!proclist (opt.includes, directory))
+      if (!dir_matches_p (opt.includes, directory))
 	return false;
     }
   if (opt.excludes)
     {
-      if (proclist (opt.excludes, directory))
+      if (dir_matches_p (opt.excludes, directory))
 	return false;
     }
   return true;
@@ -2118,3 +2125,60 @@ print_decimal (double number)
 
   return buf;
 }
+
+#ifdef TESTING
+
+const char *
+test_subdir_p()
+{
+  int i;
+  struct {
+    char *d1;
+    char *d2;
+    bool result;
+  } test_array[] = {
+    { "/somedir", "/somedir", true },
+    { "/somedir", "/somedir/d2", true },
+    { "/somedir/d1", "/somedir", false },
+  };
+  
+  for (i = 0; i < countof(test_array); ++i) 
+    {
+      bool res = subdir_p (test_array[i].d1, test_array[i].d2);
+
+      mu_assert ("test_subdir_p: wrong result", 
+                 res == test_array[i].result);
+    }
+
+  return NULL;
+}
+
+const char *
+test_dir_matches_p()
+{
+  int i;
+  struct {
+    char *dirlist[3];
+    char *dir;
+    bool result;
+  } test_array[] = {
+    { { "/somedir", "/someotherdir", NULL }, "somedir", true },
+    { { "/somedir", "/someotherdir", NULL }, "anotherdir", false },
+    { { "/somedir", "/*otherdir", NULL }, "anotherdir", true },
+    { { "/somedir/d1", "/someotherdir", NULL }, "somedir/d1", true },
+    { { "/somedir/d1", "/someotherdir", NULL }, "d1", false },
+  };
+  
+  for (i = 0; i < countof(test_array); ++i) 
+    {
+      bool res = dir_matches_p (test_array[i].dirlist, test_array[i].dir);
+      
+      mu_assert ("test_dir_matches_p: wrong result", 
+                 res == test_array[i].result);
+    }
+
+  return NULL;
+}
+
+#endif /* TESTING */
+

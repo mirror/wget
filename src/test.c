@@ -35,12 +35,18 @@ so, delete this exception statement from your version.  */
 #error "TESTING not set!!!"
 #endif
 
+const char *test_parse_content_disposition();
+const char *test_subdir_p();
+const char *test_dir_matches_p();
+
 int tests_run;
 
-static char *
+static const char *
 all_tests()
 {
   mu_run_test (test_parse_content_disposition);
+  mu_run_test (test_subdir_p);
+  mu_run_test (test_dir_matches_p);
   
   return NULL;
 }
@@ -49,7 +55,7 @@ all_tests()
 int
 main (void) 
 {
-  char *result = all_tests();
+  const char *result = all_tests();
   
   if (result != NULL) 
     {
