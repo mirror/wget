@@ -1,11 +1,15 @@
 GNU Wget NEWS -- history of user-visible changes.
 
-Copyright (C) 1997-2005 Free Software Foundation, Inc.
+Copyright (C) 1997-2006 Free Software Foundation, Inc.
 See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.11.
+
+** Wget now saves HTTP downloads using file names specified by the
+`Content-Disposition' header.  This is a standard way of specifying
+the file name used by many web dynamically generated pages.
 
 ** The GnuTLS library is now also supported for https downloads.
 This is still work-in-progress.  OpenSSL is still used by default; use
