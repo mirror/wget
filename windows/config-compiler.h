@@ -110,6 +110,13 @@ so, delete this exception statement from your version.  */
 #if _MSC_VER >= 1300
 # define HAVE__STRTOI64 1
 #endif
+
+#if _MSC_VER >= 1400
+#pragma warning ( disable : 4996 )
+#define _CRT_SECURE_NO_DEPRECATE
+#define HAVE_SYS_UTIME_H 1
+#undef HAVE_UTIME_H
+#endif
 
 /* ------------------ */
 /* Borland C section. */
