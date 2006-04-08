@@ -1,3 +1,7 @@
+2006-04-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* http.c (parse_content_disposition): Doc fix.
+
 2006-03-15  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* utils.c: Restricted operational semantics of frontcmp and proclist

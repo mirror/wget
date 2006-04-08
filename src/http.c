@@ -932,6 +932,23 @@ extract_param (const char **source, param_token *name, param_token *value,
 #undef MAX
 #define MAX(p, q) ((p) > (q) ? (p) : (q))
 
+/* Parse the contents of the `Content-Disposition' header, extracting
+   the information useful to Wget.  Content-Disposition is a header
+   borrowed from MIME; when used in HTTP, it typically serves for
+   specifying the desired file name of the resource.  For example:
+
+       Content-Disposition: attachment; filename="flora.jpg"
+
+   Wget will skip the tokens it doesn't care about, such as
+   "attachment" in the previous example; it will also skip other
+   unrecognized params.  If the header is syntactically correct and
+   contains a file name, a copy of the file name is stored in
+   *filename and true is returned.  Otherwise, the function returns
+   false.
+
+   The file name is stripped of directory components and must not be
+   empty.  */
+
 static bool
 parse_content_disposition (const char *hdr, char **filename)
 {
