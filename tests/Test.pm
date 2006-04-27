@@ -13,8 +13,9 @@ my @unexpected_downloads = ();
 {
     my %_attr_data = ( # DEFAULT
         _cmdline      => "",
-        _cwd          => Cwd::getcwd(),
+        _workdir      => Cwd::getcwd(),
         _errcode      => 0,
+        _existing     => {},
         _input        => {},
         _name         => "",
         _output       => {},
@@ -38,7 +39,7 @@ sub new {
     my $caller_is_obj = ref($caller);
     my $class = $caller_is_obj || $caller;
     #print STDERR "class = ", $class, "\n";
-    #print STDERR "_attr_data {cwd} = ", $Test::_attr_data{_cwd}, "\n";
+    #print STDERR "_attr_data {workdir} = ", $Test::_attr_data{_workdir}, "\n";
     my $self = bless {}, $class;
     foreach my $attrname ($self->_standard_keys()) {
         #print STDERR "attrname = ", $attrname, " value = ";
@@ -55,7 +56,7 @@ sub new {
         }
         #print STDERR $attrname, '=', $self->{$attrname}, "\n";
     }
-    #printf STDERR "_cwd default = ", $self->_default_for("_cwd");
+    #printf STDERR "_workdir default = ", $self->_default_for("_workdir");
     return $self;
 }
 
@@ -68,7 +69,7 @@ sub run {
     
     # Setup 
     $self->_setup();
-    chdir ("$self->{_cwd}/$self->{_name}/input");
+    chdir ("$self->{_workdir}/$self->{_name}/input");
     
     # Launch server
     my $pid = fork();
@@ -78,9 +79,9 @@ sub run {
     # print STDERR "Spawned server with pid: $pid\n"; 
     
     # Call wget
-    chdir ("$self->{_cwd}/$self->{_name}/output");
+    chdir ("$self->{_workdir}/$self->{_name}/output");
     # print "Calling $self->{_cmdline}\n";
-    my $errcode = system ("$self->{_cwd}/../src/$self->{_cmdline}");
+    my $errcode = system ("$self->{_workdir}/../src/$self->{_cmdline}");
 
     # Shutdown server
     kill ('TERM', $pid);
@@ -105,25 +106,37 @@ sub _setup {
     my $self = shift;
 
     #print $self->{_name}, "\n";
-    chdir ($self->{_cwd});
+    chdir ($self->{_workdir});
 
     # Create temporary directory
     mkdir ($self->{_name});
     chdir ($self->{_name});
     mkdir ("input");
     mkdir ("output");
+    
+    # Setup existing files
+    chdir ("output");
+    foreach my $filename (keys %{$self->{_existing}}) {
+        open (FILE, ">$filename") 
+            or return "Test failed: cannot open pre-existing file $filename\n";
+        
+        print FILE $self->{_existing}->{$filename}->{content}
+            or return "Test failed: cannot write pre-existing file $filename\n";
+        
+        close (FILE);
+    } 
+    
     chdir ("input");
-
     $self->_setup_server();
 
-    chdir ($self->{_cwd});
+    chdir ($self->{_workdir});
 }
 
 
 sub _cleanup {
     my $self = shift;
 
-    chdir ($self->{_cwd});
+    chdir ($self->{_workdir});
     File::Path::rmtree ($self->{_name});
 }
 
@@ -131,7 +144,7 @@ sub _cleanup {
 sub _verify_download {
     my $self = shift;
 
-    chdir ("$self->{_cwd}/$self->{_name}/output");
+    chdir ("$self->{_workdir}/$self->{_name}/output");
     
     # use slurp mode to read file content
     my $old_input_record_separator = $/;
@@ -159,7 +172,7 @@ sub _verify_download {
     $/ = $old_input_record_separator;    
 
     # make sure no unexpected files were downloaded
-    chdir ("$self->{_cwd}/$self->{_name}/output");
+    chdir ("$self->{_workdir}/$self->{_name}/output");
 
     __dir_walk('.', sub { push @unexpected_downloads, $_[0] unless (exists $self->{_output}{$_[0]}) }, sub { shift; return @_ } );
     if (@unexpected_downloads) { 
