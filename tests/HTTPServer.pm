@@ -20,19 +20,25 @@ sub run {
                                 
     while (my $con = $self->accept) {
         while (my $req = $con->get_request) {
-            print STDERR "Method: ", $req->method, "\n" if $log;
-            print STDERR "Path: ", $req->url->path, "\n" if $log;
-            foreach my $key (keys %{HTTPServer::urls}) {
-                print STDERR $key, '\n';
+            my $url_path = $req->url->path;
+            if ($url_path =~ m{/$}) {
+                $url_path .= 'index.html';
             }
-            if (exists($urls->{$req->url->path})) {
-                print STDERR "Serving requested URL: ", $req->url->path, "\n" if $log;
+            if ($log) {
+                print STDERR "Method: ", $req->method, "\n";
+                print STDERR "Path: ", $url_path, "\n";
+                print STDERR "Available URLs: ", "\n";
+                foreach my $key (keys %$urls) {
+                    print STDERR $key, "\n";
+                }
+            }
+            if (exists($urls->{$url_path})) {
+                print STDERR "Serving requested URL: ", $url_path, "\n" if $log;
                 next unless ($req->method eq "HEAD" || $req->method eq "GET");
                 
                 # create response
-                my $tmp = $urls->{$req->url->path};
-                my $resp = HTTP::Response->new ($tmp->{code},
-                                                $tmp->{msg});
+                my $tmp = $urls->{$url_path};
+                my $resp = HTTP::Response->new ($tmp->{code}, $tmp->{msg});
                 print STDERR "HTTP::Response: \n", $resp->as_string if $log;
                 
                 #if (is_dynamic_url) { # dynamic resource
@@ -63,7 +69,7 @@ sub run {
                 $con->send_response($resp);
                 print STDERR "HTTP::Response sent: \n", $resp->as_string if $log;
             } else {
-                print STDERR "Requested wrong URL: ", $req->url->path, "\n" if $log;
+                print STDERR "Requested wrong URL: ", $url_path, "\n" if $log;
                 $con->send_error($HTTP::Status::RC_FORBIDDEN);
             }
         }
