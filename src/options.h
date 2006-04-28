@@ -220,6 +220,8 @@ struct options
     prefer_none
   } prefer_family;		/* preferred address family when more
 				   than one type is available */
+  
+  bool content_disposition;	/* Honor HTTP Content-Disposition header. */
 };
 
 extern struct options opt;

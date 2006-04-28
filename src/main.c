@@ -143,6 +143,7 @@ static struct cmdline_option option_data[] =
     { "connect-timeout", 0, OPT_VALUE, "connecttimeout", -1 },
     { "continue", 'c', OPT_BOOLEAN, "continue", -1 },
     { "convert-links", 'k', OPT_BOOLEAN, "convertlinks", -1 },
+    { "content-disposition", 0, OPT_BOOLEAN, "contentdisposition", -1 },
     { "cookies", 0, OPT_BOOLEAN, "cookies", -1 },
     { "cut-dirs", 0, OPT_VALUE, "cutdirs", -1 },
     { WHEN_DEBUG ("debug"), 'd', OPT_BOOLEAN, "debug", -1 },
@@ -518,6 +519,8 @@ HTTP options:\n"),
        --post-data=STRING      use the POST method; send STRING as the data.\n"),
     N_("\
        --post-file=FILE        use the POST method; send contents of FILE.\n"),
+    N_("\
+       --no-content-disposition  don't honor Content-Disposition header.\n"),
     "\n",
 
 #ifdef HAVE_SSL

@@ -1726,33 +1726,49 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
   /* Determine the local filename if needed. Notice that if -O is used 
    * hstat.local_file is set by http_loop to the argument of -O. */
-  if (!hs->local_file)     
+  if (!hs->local_file)
     {
       /* Honor Content-Disposition whether possible. */
-      if (!resp_header_copy (resp, "Content-Disposition", hdrval, sizeof (hdrval))
+      if (!opt.content_disposition
+          || !resp_header_copy (resp, "Content-Disposition", 
+                                hdrval, sizeof (hdrval))
           || !parse_content_disposition (hdrval, &hs->local_file))
         {
-          /* Choose filename according to URL name. */
+          /* The Content-Disposition header is missing or broken. 
+           * Choose unique file name according to given URL. */
           hs->local_file = url_file_name (u);
         }
     }
   
+  DEBUGP (("hs->local_file is: %s %s\n", hs->local_file,
+          file_exists_p (hs->local_file) ? "(existing)" : "(not existing)"));
+  
   /* TODO: perform this check only once. */
-  if (opt.noclobber && file_exists_p (hs->local_file))
+  if (file_exists_p (hs->local_file))
     {
-      /* If opt.noclobber is turned on and file already exists, do not
-         retrieve the file */
-      logprintf (LOG_VERBOSE, _("\
+      if (opt.noclobber)
+        {
+          /* If opt.noclobber is turned on and file already exists, do not
+             retrieve the file */
+          logprintf (LOG_VERBOSE, _("\
 File `%s' already there; not retrieving.\n\n"), hs->local_file);
-      /* If the file is there, we suppose it's retrieved OK.  */
-      *dt |= RETROKF;
+          /* If the file is there, we suppose it's retrieved OK.  */
+          *dt |= RETROKF;
 
-      /* #### Bogusness alert.  */
-      /* If its suffix is "html" or "htm" or similar, assume text/html.  */
-      if (has_html_suffix_p (hs->local_file))
-        *dt |= TEXTHTML;
+          /* #### Bogusness alert.  */
+          /* If its suffix is "html" or "htm" or similar, assume text/html.  */
+          if (has_html_suffix_p (hs->local_file))
+            *dt |= TEXTHTML;
 
-      return RETROK;
+          return RETROK;
+        }
+      else
+        {
+          char *unique = unique_name (hs->local_file, true);
+          if (unique != hs->local_file)
+            xfree (hs->local_file);
+          hs->local_file = unique;
+        }
     }
 
   /* Support timestamping */
@@ -1998,10 +2014,12 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
      content-type.  */
   if (!type ||
         0 == strncasecmp (type, TEXTHTML_S, strlen (TEXTHTML_S)) ||
-        0 == strncasecmp (type, TEXTXHTML_S, strlen (TEXTXHTML_S)))
+        0 == strncasecmp (type, TEXTXHTML_S, strlen (TEXTXHTML_S)))    
     *dt |= TEXTHTML;
   else
     *dt &= ~TEXTHTML;
+
+  DEBUGP (("TEXTHTML is %s.\n", *dt | TEXTHTML ? "on": "off"));
 
   if (opt.html_extension && (*dt & TEXTHTML))
     /* -E / --html-extension / html_extension = on was specified, and this is a
@@ -2121,13 +2139,6 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
       return RETRFINISHED;
     }
 
-  /* Print fetch message, if opt.verbose.  */
-  if (opt.verbose)
-    {
-      logprintf (LOG_NOTQUIET, _("Saving to: `%s'\n"), 
-                 HYPHENP (hs->local_file) ? "STDOUT" : hs->local_file);
-    }
-    
   /* Open the local file.  */
   if (!output_stream)
     {
@@ -2164,6 +2175,13 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
   else
     fp = output_stream;
 
+  /* Print fetch message, if opt.verbose.  */
+  if (opt.verbose)
+    {
+      logprintf (LOG_NOTQUIET, _("Saving to: `%s'\n"), 
+                 HYPHENP (hs->local_file) ? "STDOUT" : hs->local_file);
+    }
+    
   /* This confuses the timestamping code that checks for file size.
      #### The timestamping code should be smarter about file size.  */
   if (opt.save_headers && hs->restval == 0)

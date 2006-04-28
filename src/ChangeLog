@@ -1,3 +1,16 @@
+2006-04-28  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* http.c: If Content-Disposition header is present, allow unique
+	filename generation unless -nc is given. Permit to disable parsing of
+	Content-Disposition header.
+
+	* options.h: Added option --no-content-disposition to disable parsing
+	of HTTP Content-Disposition header.
+
+	* init.c: Ditto.
+	
+	* main.c: Ditto.
+
 2006-04-11  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* hash.c (TOLOWER): Wrap macro arg in parentheses.

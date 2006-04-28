@@ -126,6 +126,7 @@ static struct {
   { "connecttimeout",	&opt.connect_timeout,	cmd_time },
   { "continue",		&opt.always_rest,	cmd_boolean },
   { "convertlinks",	&opt.convert_links,	cmd_boolean },
+  { "contentdisposition", &opt.content_disposition, cmd_boolean },
   { "cookies",		&opt.cookies,		cmd_boolean },
   { "cutdirs",		&opt.cut_dirs,		cmd_number },
 #ifdef ENABLE_DEBUG
@@ -313,6 +314,8 @@ defaults (void)
   opt.restrict_files_os = restrict_windows;
 #endif
   opt.restrict_files_ctrl = true;
+
+  opt.content_disposition = true;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is
