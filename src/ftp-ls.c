@@ -195,7 +195,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
 	 This tactic is quite dubious when it comes to
 	 internationalization issues (non-English month names), but it
 	 works for now.  */
-      ptok = line;
+      tok = line;
       while (ptok = tok,
 	     (tok = strtok (NULL, " ")) != NULL)
 	{
@@ -211,25 +211,22 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
 		{
 		  wgint size;
 
-		  /* Back up to the beginning of the previous token
-		     and parse it with str_to_wgint.  */
-		  char *t = ptok;
-		  while (t > line && ISDIGIT (*t))
-		    --t;
-		  if (t == line)
+		  /* Parse the previous token with str_to_wgint.  */
+		  if (ptok == line)
 		    {
 		      /* Something has gone wrong during parsing. */
 		      error = 1;
 		      break;
 		    }
 		  errno = 0;
-		  size = str_to_wgint (t, NULL, 10);
+		  size = str_to_wgint (ptok, NULL, 10);
 		  if (size == WGINT_MAX && errno == ERANGE)
 		    /* Out of range -- ignore the size.  #### Should
 		       we refuse to start the download.  */
 		    cur.size = 0;
 		  else
 		    cur.size = size;
+		  DEBUGP (("size: %s; ", number_to_static_string(cur.size)));
 
 		  month = i;
 		  next = 5;
@@ -363,7 +360,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
       if (!cur.name || (cur.type == FT_SYMLINK && !cur.linkto))
 	error = 1;
 
-      DEBUGP (("\n"));
+      DEBUGP (("%s\n", cur.name ? cur.name : ""));
 
       if (error || ignore)
 	{

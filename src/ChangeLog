@@ -1,3 +1,8 @@
+2006-05-18  Lawrence Jones  <lawrence.jones@ugs.com>
+
+	* ftp-ls.c (ftp_parse_unix_ls): Correct size parsing, add size
+	and filename debugging output.
+
 2006-04-28  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* http.c: If Content-Disposition header is present, allow unique
