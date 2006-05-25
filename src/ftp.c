@@ -1773,7 +1773,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
    of URL.  Inherently, its capabilities are limited on what can be
    encoded into a URL.  */
 uerr_t
-ftp_loop (struct url *u, int *dt, struct url *proxy)
+ftp_loop (struct url *u, int *dt, struct url *proxy, bool recursive, bool glob)
 {
   ccon con;			/* FTP connection */
   uerr_t res;
@@ -1791,7 +1791,7 @@ ftp_loop (struct url *u, int *dt, struct url *proxy)
   /* If the file name is empty, the user probably wants a directory
      index.  We'll provide one, properly HTML-ized.  Unless
      opt.htmlify is 0, of course.  :-) */
-  if (!*u->file && !opt.recursive)
+  if (!*u->file && !recursive)
     {
       struct fileinfo *f;
       res = ftp_get_listing (u, &con, &f);
@@ -1832,7 +1832,7 @@ ftp_loop (struct url *u, int *dt, struct url *proxy)
   else
     {
       bool ispattern = false;
-      if (opt.ftp_glob)
+      if (glob)
 	{
 	  /* Treat the URL as a pattern if the file name part of the
 	     URL path contains wildcards.  (Don't check for u->file
@@ -1843,7 +1843,7 @@ ftp_loop (struct url *u, int *dt, struct url *proxy)
 	    file_part = u->path;
 	  ispattern = has_wildcards_p (file_part);
 	}
-      if (ispattern || opt.recursive || opt.timestamping)
+      if (ispattern || recursive || opt.timestamping)
 	{
 	  /* ftp_retrieve_glob is a catch-all function that gets called
 	     if we need globbing, time-stamping or recursion.  Its

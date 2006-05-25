@@ -602,7 +602,7 @@ static char *getproxy (struct url *);
 
 uerr_t
 retrieve_url (const char *origurl, char **file, char **newloc,
-	      const char *refurl, int *dt)
+	      const char *refurl, int *dt, bool recursive)
 {
   uerr_t result;
   char *url;
@@ -684,13 +684,12 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       /* If this is a redirection, temporarily turn off opt.ftp_glob
 	 and opt.recursive, both being undesirable when following
 	 redirects.  */
-      bool oldrec = opt.recursive, oldglob = opt.ftp_glob;
+      bool oldrec = recursive, glob = opt.ftp_glob;
       if (redirection_count)
-	opt.recursive = opt.ftp_glob = false;
+	oldrec = glob = false;
 
-      result = ftp_loop (u, dt, proxy_url);
-      opt.recursive = oldrec;
-      opt.ftp_glob = oldglob;
+      result = ftp_loop (u, dt, proxy_url, recursive, glob);
+      recursive = oldrec;
 
       /* There is a possibility of having HTTP being redirected to
 	 FTP.  In these cases we must decide whether the text is HTML
@@ -848,7 +847,7 @@ retrieve_from_file (const char *file, bool html, int *count)
 	  && cur_url->url->scheme != SCHEME_FTP)
 	status = retrieve_tree (cur_url->url->url);
       else
-	status = retrieve_url (cur_url->url->url, &filename, &new_file, NULL, &dt);
+	status = retrieve_url (cur_url->url->url, &filename, &new_file, NULL, &dt, opt.recursive);
 
       if (filename && opt.delete_after && file_exists_p (filename))
 	{

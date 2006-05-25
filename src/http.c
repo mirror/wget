@@ -2309,7 +2309,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       /* Default document type is empty.  However, if spider mode is
          on or time-stamping is employed, HEAD_ONLY commands is
          encoded within *dt.  */
-      if (opt.spider || (opt.timestamping && !got_head))
+      if ((opt.spider && !opt.recursive) || (opt.timestamping && !got_head))
         *dt |= HEAD_ONLY;
       else
         *dt &= ~HEAD_ONLY;
@@ -2400,20 +2400,26 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
           /* All possibilities should have been exhausted.  */
           abort ();
         }
-      
+     
       if (!(*dt & RETROKF))
         {
+          char *hurl = NULL;
           if (!opt.verbose)
             {
               /* #### Ugly ugly ugly! */
-              char *hurl = url_string (u, true);
+              hurl = url_string (u, true);
               logprintf (LOG_NONVERBOSE, "%s:\n", hurl);
-              xfree (hurl);
+            }
+          if (opt.spider && opt.recursive)
+            {
+              if (!hurl) hurl = url_string (u, true);
+              nonexisting_url (hurl, referer);
             }
           logprintf (LOG_NOTQUIET, _("%s ERROR %d: %s.\n"),
                      tms, hstat.statcode, escnonprint (hstat.error));
           logputs (LOG_VERBOSE, "\n");
           ret = WRONGCODE;
+          xfree_null (hurl);
           goto exit;
         }
 
@@ -2479,7 +2485,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
         }
       
       if ((tmr != (time_t) (-1))
-          && !opt.spider
+          && (!opt.spider || opt.recursive)
           && ((hstat.len == hstat.contlen) ||
               ((hstat.res == 0) && (hstat.contlen == -1))))
         {
@@ -2498,7 +2504,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
         }
       /* End of time-stamping section. */
 
-      if (opt.spider)
+      if (opt.spider && !opt.recursive)
         {
           logprintf (LOG_NOTQUIET, "%d %s\n\n", hstat.statcode,
                      escnonprint (hstat.error));

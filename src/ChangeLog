@@ -1,3 +1,27 @@
+2006-05-25  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* convert.c: Added mechanisms to keep track broken links.
+
+	* convert.h: Ditto.
+
+	* wget.h: Reordered and enumerated uerr_t constants.
+
+	* recur.c: Fixes to support recursive spider mode.
+
+	* http.c: Ditto.
+
+	* main.c: Print broken links in case of recursive spider mode.
+
+	* retr.c: Changed interface of retrieve_url.
+
+	* retr.h: Ditto.
+
+	* ftp.c: Changed interface of ftp_loop.
+
+	* ftp.h: Ditto.
+
+	* res.c: Minor change to reflect changes in interface of retrieve_url.
+
 2006-05-18  Lawrence Jones  <lawrence.jones@ugs.com>
 
 	* ftp-ls.c (ftp_parse_unix_ls): Correct size parsing, add size

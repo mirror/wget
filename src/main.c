@@ -948,7 +948,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
 	  && url_scheme (*t) != SCHEME_FTP)
 	status = retrieve_tree (*t);
       else
-	status = retrieve_url (*t, &filename, &redirected_URL, NULL, &dt);
+	status = retrieve_url (*t, &filename, &redirected_URL, NULL, &dt, opt.recursive);
 
       if (opt.delete_after && file_exists_p(filename))
 	{
@@ -971,6 +971,13 @@ Can't timestamp and not clobber old files at the same time.\n"));
 	logprintf (LOG_NOTQUIET, _("No URLs found in %s.\n"),
 		   opt.input_filename);
     }
+
+  /* Print broken links. */
+  if (opt.recursive && opt.spider)
+    {
+      print_broken_links();
+    }
+  
   /* Print the downloaded sum.  */
   if ((opt.recursive || opt.page_requisites
        || nurl > 1
