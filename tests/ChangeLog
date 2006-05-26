@@ -1,3 +1,10 @@
+2006-05-26  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* HTTPServer.pm: Fixed bug when returning 404. Improved logging. 
+
+	* Test.pm: Added support for command lines which use an absolute path
+	for the Wget binary.
+
 2006-04-28  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* Test5.px: Added test for HTTP Content-Disposition support.

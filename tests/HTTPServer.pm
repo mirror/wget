@@ -19,6 +19,7 @@ sub run {
     my ($self, $urls) = @_;
                                 
     while (my $con = $self->accept) {
+        print STDERR "Accepted a new connection\n" if $log;
         while (my $req = $con->get_request) {
             my $url_path = $req->url->path;
             if ($url_path =~ m{/$}) {
@@ -71,8 +72,10 @@ sub run {
             } else {
                 print STDERR "Requested wrong URL: ", $url_path, "\n" if $log;
                 $con->send_error($HTTP::Status::RC_FORBIDDEN);
-            }
+                last;
+            }            
         }
+        print STDERR "Closing connection\n" if $log;
         $con->close;
         undef($con);
     }

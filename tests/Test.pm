@@ -81,7 +81,10 @@ sub run {
     # Call wget
     chdir ("$self->{_workdir}/$self->{_name}/output");
     # print "Calling $self->{_cmdline}\n";
-    my $errcode = system ("$self->{_workdir}/../src/$self->{_cmdline}");
+    my $errcode = 
+        ($self->{_cmdline} =~ m{^/.*}) 
+            ? system ($self->{_cmdline})
+            : system ("$self->{_workdir}/../src/$self->{_cmdline}");
 
     # Shutdown server
     kill ('TERM', $pid);
