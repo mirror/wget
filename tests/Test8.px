@@ -7,68 +7,61 @@ use HTTPTest;
 
 ###############################################################################
 
-my $dontcare = <<EOF;
-Don't care.
-EOF
-
-my $dummyfile = <<EOF;
+my $mainpage = <<EOF;
 <html>
 <head>
-  <title>Page Title</title>
+  <title>Main Page Title</title>
 </head>
 <body>
-  <p>
-    Some text.
-  </p>
+  <a href="http://localhost:8080/subpage.html">Secondary Page</a>
+</body>
+</html>
+EOF
+
+my $subpage = <<EOF;
+<html>
+<head>
+  <title>Secondary Page Title</title>
+</head>
+<body>
+  <a href="http://localhost:8080/nonexistent">Broken Link</a>
 </body>
 </html>
 EOF
 
 # code, msg, headers, content
 my %urls = (
-    '/dummy.html' => {
+    '/index.html' => {
         code => "200",
         msg => "Dontcare",
         headers => {
             "Content-type" => "text/html",
-            "Content-Disposition" => "attachment; filename=\"filename.html\"",
         },
-        content => $dummyfile,
+        content => $mainpage,
+    },
+    '/subpage.html' => {
+        code => "200",
+        msg => "Dontcare",
+        headers => {
+            "Content-type" => "text/html",
+        },
+        content => $subpage,
     },
 );
 
-my $cmdline = "wget http://localhost:8080/dummy.html";
+my $cmdline = "wget -Sd --spider -r http://localhost:8080/";
 
 my $expected_error_code = 0;
 
-my %existing_files = (
-    'filename.html' => {
-        content => $dontcare,
-    },
-    'filename.html.1' => {
-        content => $dontcare,
-    },
-);
-
 my %expected_downloaded_files = (
-    'filename.html' => {
-        content => $dontcare,
-    },
-    'filename.html.1' => {
-        content => $dontcare,
-    },
-    'filename.html.2' => {
-        content => $dummyfile,
-    },
 );
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test6",
+my $the_test = HTTPTest->new (name => "Test8",
                               input => \%urls, 
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 
-                              existing => \%existing_files,
                               output => \%expected_downloaded_files);
 $the_test->run();
 

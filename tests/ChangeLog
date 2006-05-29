@@ -1,5 +1,30 @@
 2006-05-26  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
+	* HTTPServer.pm: Added synchronization between client and server
+	processes to prevent the test to start before the server is ready.
+
+	* HTTPTest.pm: Ditto.
+
+	* Test.pm: Ditto.
+
+	* Test1.px: Removed unneeded ../src/ from command line.
+
+	* Test2.px: Ditto.
+	
+	* Test3.px: Ditto.
+	
+	* Test4.px: Ditto.
+
+	* Test5.px: Ditto.
+
+	* Test6.px: Ditto.
+
+	* Test7.px: Ditto.
+
+	* Test8.px: Added test for recursive spider mode.
+
+2006-05-26  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
 	* HTTPServer.pm: Fixed bug when returning 404. Improved logging. 
 
 	* Test.pm: Added support for command lines which use an absolute path

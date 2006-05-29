@@ -24,7 +24,7 @@ my %urls = (
     },
 );
 
-my $cmdline = "../src/wget -N http://localhost:8080/dummy.html";
+my $cmdline = "wget -N http://localhost:8080/dummy.html";
 
 my $expected_error_code = 0;
 

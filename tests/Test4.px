@@ -23,7 +23,7 @@ my %urls = (
     },
 );
 
-my $cmdline = "../src/wget --quiet -O out http://localhost:8080/nonexistent";
+my $cmdline = "wget --quiet -O out http://localhost:8080/nonexistent";
 
 my $expected_error_code = 11;
 

@@ -16,9 +16,16 @@ my $CRLF = "\015\012"; # "\r\n" is not portable
 my $log = undef;
 
 sub run {
-    my ($self, $urls) = @_;
+    my ($self, $urls, $synch_callback) = @_;
+    my $initialized = 0;
+
+    while (1) {
+        if (!$initialized) {
+            $synch_callback->();
+            $initialized = 1;
+        }        
                                 
-    while (my $con = $self->accept) {
+        my $con = $self->accept();
         print STDERR "Accepted a new connection\n" if $log;
         while (my $req = $con->get_request) {
             my $url_path = $req->url->path;
@@ -77,7 +84,6 @@ sub run {
         }
         print STDERR "Closing connection\n" if $log;
         $con->close;
-        undef($con);
     }
 }
 

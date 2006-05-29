@@ -72,11 +72,7 @@ sub run {
     chdir ("$self->{_workdir}/$self->{_name}/input");
     
     # Launch server
-    my $pid = fork();
-    if($pid == 0) {
-        $self->_launch_server();
-    }
-    # print STDERR "Spawned server with pid: $pid\n"; 
+    my $pid = $self->_fork_and_launch_server();
     
     # Call wget
     chdir ("$self->{_workdir}/$self->{_name}/output");
@@ -87,8 +83,10 @@ sub run {
             : system ("$self->{_workdir}/../src/$self->{_cmdline}");
 
     # Shutdown server
+    # if we didn't explicitely kill the server, we would have to call 
+    # waitpid ($pid, 0) here in order to wait for the child process to 
+    # terminate
     kill ('TERM', $pid);
-    # print "Killed server\n";
 
     # Verify download
     unless ($errcode == $self->{_errcode}) {
@@ -209,6 +207,31 @@ sub __dir_walk {
     } else {
         return $filefunc ? $filefunc->($top) : () ;
     }
+}
+
+
+sub _fork_and_launch_server 
+{
+    my $self = shift;
+
+    pipe(FROM_CHILD, TO_PARENT) or die "Cannot create pipe!";
+    select((select(TO_PARENT), $| = 1)[0]);
+
+    my $pid = fork();
+    if ($pid < 0) {
+        die "Cannot fork";
+    } elsif ($pid == 0) {
+        # child 
+        close FROM_CHILD;
+        $self->_launch_server(sub { print TO_PARENT "SYNC\n"; close TO_PARENT });
+    } else {
+        # father
+        close TO_PARENT;
+        chomp(my $line = <FROM_CHILD>);
+        close FROM_CHILD;
+    }
+
+    return $pid;
 }
 
 1;

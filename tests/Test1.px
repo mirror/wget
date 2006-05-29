@@ -23,7 +23,7 @@ my %urls = (
     },
 );
 
-my $cmdline = "../src/wget http://localhost:8080/dummy.html";
+my $cmdline = "wget http://localhost:8080/dummy.html";
 
 my $expected_error_code = 0;
 

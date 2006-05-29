@@ -37,7 +37,7 @@ my %urls = (
     },
 );
 
-my $cmdline = "../src/wget --no-content-disposition http://localhost:8080/dummy.html";
+my $cmdline = "wget --no-content-disposition http://localhost:8080/dummy.html";
 
 my $expected_error_code = 0;
 
