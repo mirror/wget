@@ -945,8 +945,18 @@ Can't timestamp and not clobber old files at the same time.\n"));
       int dt;
 
       if ((opt.recursive || opt.page_requisites)
-	  && url_scheme (*t) != SCHEME_FTP)
-	status = retrieve_tree (*t);
+	  && (url_scheme (*t) != SCHEME_FTP || opt.use_proxy))
+      	{
+	  int old_follow_ftp = opt.follow_ftp;
+
+	  /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
+	  if (url_scheme (*t) == SCHEME_FTP) 
+	    opt.follow_ftp = 1;
+	  
+	  status = retrieve_tree (*t);
+
+	  opt.follow_ftp = old_follow_ftp;
+	}
       else
 	status = retrieve_url (*t, &filename, &redirected_URL, NULL, &dt, opt.recursive);
 

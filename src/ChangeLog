@@ -1,3 +1,21 @@
+2006-06-12  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* retr.c (retrieve_from_file): Use retrieve_tree and automatically
+	turn on opt.follow_ftp in case of recursive FTP retrieval through HTTP
+	proxy.
+
+	* main.c: Automatically turn on opt.follow_ftp in case of recursive
+	FTP retrieval through HTTP proxy.
+
+2006-06-12  Tony Lewis  <tlewis@exelana.com>
+
+	* main.c: Improved CHEN Peng's patch by proposing a simpler logic.
+
+2006-06-12  CHEN Peng  <chenpeng@alumni.nus.edu.sg>
+
+	* main.c: Use retrieve_tree in case of recursive FTP retrieval through
+	HTTP proxy.
+
 2006-05-25  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* convert.c: Added mechanisms to keep track broken links.

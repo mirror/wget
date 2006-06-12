@@ -844,8 +844,18 @@ retrieve_from_file (const char *file, bool html, int *count)
 	  break;
 	}
       if ((opt.recursive || opt.page_requisites)
-	  && cur_url->url->scheme != SCHEME_FTP)
-	status = retrieve_tree (cur_url->url->url);
+	  && (cur_url->url->scheme != SCHEME_FTP || opt.use_proxy))
+      	{
+	  int old_follow_ftp = opt.follow_ftp;
+
+	  /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
+	  if (cur_url->url->scheme == SCHEME_FTP) 
+	    opt.follow_ftp = 1;
+	  
+	  status = retrieve_tree (cur_url->url->url);
+
+	  opt.follow_ftp = old_follow_ftp;
+	}
       else
 	status = retrieve_url (cur_url->url->url, &filename, &new_file, NULL, &dt, opt.recursive);
 
