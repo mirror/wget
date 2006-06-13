@@ -38,6 +38,8 @@ so, delete this exception statement from your version.  */
 const char *test_parse_content_disposition();
 const char *test_subdir_p();
 const char *test_dir_matches_p();
+const char *test_cmd_spec_restrict_file_names();
+const char *test_append_uri_pathel();
 
 int tests_run;
 
@@ -47,6 +49,8 @@ all_tests()
   mu_run_test (test_parse_content_disposition);
   mu_run_test (test_subdir_p);
   mu_run_test (test_dir_matches_p);
+  mu_run_test (test_cmd_spec_restrict_file_names);
+  mu_run_test (test_append_uri_pathel);
   
   return NULL;
 }

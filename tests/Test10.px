@@ -10,28 +10,19 @@ use HTTPTest;
 my $mainpage = <<EOF;
 <html>
 <head>
-  <title>Main Page Title</title>
+  <title>Some Page Title</title>
 </head>
 <body>
-  <a href="http://localhost:8080/subpage.html">Secondary Page</a>
-</body>
-</html>
-EOF
-
-my $subpage = <<EOF;
-<html>
-<head>
-  <title>Secondary Page Title</title>
-</head>
-<body>
-  <a href="http://localhost:8080/nonexistent">Broken Link</a>
+  <p>
+    Some text...
+  </p>
 </body>
 </html>
 EOF
 
 # code, msg, headers, content
 my %urls = (
-    '/index.html' => {
+    '/SomePage.html' => {
         code => "200",
         msg => "Dontcare",
         headers => {
@@ -39,26 +30,21 @@ my %urls = (
         },
         content => $mainpage,
     },
-    '/subpage.html' => {
-        code => "200",
-        msg => "Dontcare",
-        headers => {
-            "Content-type" => "text/html",
-        },
-        content => $subpage,
-    },
 );
 
-my $cmdline = "wget --spider -r http://localhost:8080/";
+my $cmdline = "wget --restrict-file-names=uppercase http://localhost:8080/SomePage.html";
 
 my $expected_error_code = 0;
 
 my %expected_downloaded_files = (
+    'SOMEPAGE.HTML' => {
+        content => $mainpage,
+    },
 );
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test8",
+my $the_test = HTTPTest->new (name => "Test9",
                               input => \%urls, 
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 

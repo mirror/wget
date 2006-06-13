@@ -54,6 +54,10 @@ so, delete this exception statement from your version.  */
 #include "http.h"		/* for http_cleanup */
 #include "retr.h"		/* for output_stream */
 
+#ifdef TESTING
+#include "test.h"
+#endif
+
 /* We want tilde expansion enabled only when reading `.wgetrc' lines;
    otherwise, it will be performed by the shell.  This variable will
    be set by the wgetrc-reading function.  */
@@ -314,6 +318,7 @@ defaults (void)
   opt.restrict_files_os = restrict_windows;
 #endif
   opt.restrict_files_ctrl = true;
+  opt.restrict_files_case = restrict_no_case_restriction;
 
   opt.content_disposition = true;
 }
@@ -1178,40 +1183,47 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
 {
   int restrict_os = opt.restrict_files_os;
   int restrict_ctrl = opt.restrict_files_ctrl;
+  int restrict_case = opt.restrict_files_case;
 
-  const char *end = strchr (val, ',');
-  if (!end)
-    end = val + strlen (val);
+  const char *end;
 
 #define VAL_IS(string_literal) BOUNDED_EQUAL (val, end, string_literal)
 
-  if (VAL_IS ("unix"))
-    restrict_os = restrict_unix;
-  else if (VAL_IS ("windows"))
-    restrict_os = restrict_windows;
-  else if (VAL_IS ("nocontrol"))
-    restrict_ctrl = 0;
-  else
+  do
     {
-    err:
-      fprintf (stderr,
-	       _("%s: %s: Invalid restriction `%s', use `unix' or `windows'.\n"),
-	       exec_name, com, val);
-      return false;
+      end = strchr (val, ',');
+      if (!end)
+        end = val + strlen (val);
+      
+      if (VAL_IS ("unix"))
+        restrict_os = restrict_unix;
+      else if (VAL_IS ("windows"))
+        restrict_os = restrict_windows;
+      else if (VAL_IS ("lowercase"))
+        restrict_case = restrict_lowercase;
+      else if (VAL_IS ("uppercase"))
+        restrict_case = restrict_uppercase;
+      else if (VAL_IS ("nocontrol"))
+        restrict_ctrl = false;
+      else
+        {
+          fprintf (stderr,
+                   _("%s: %s: Invalid restriction `%s', use [unix|windows],[lowercase|uppercase],[nocontrol].\n"),
+                   exec_name, com, val);
+          return false;
+	}
+
+      if (*end) 
+	val = end + 1;
     }
+  while (*val && *end);
 
 #undef VAL_IS
 
-  if (*end)
-    {
-      if (!strcmp (end + 1, "nocontrol"))
-	restrict_ctrl = false;
-      else
-	goto err;
-    }
-
   opt.restrict_files_os = restrict_os;
   opt.restrict_files_ctrl = restrict_ctrl;
+  opt.restrict_files_case = restrict_case;
+  
   return true;
 }
 
@@ -1492,3 +1504,50 @@ cleanup (void)
   xfree_null (opt.passwd);
 #endif /* DEBUG_MALLOC */
 }
+
+/* Unit testing routines.  */
+
+#ifdef TESTING
+
+const char *
+test_cmd_spec_restrict_file_names()
+{
+  int i;
+  struct {
+    char *val;
+    int expected_restrict_files_os;
+    int expected_restrict_files_ctrl;
+    int expected_restrict_files_case;
+    bool result;
+  } test_array[] = {
+    { "windows", restrict_windows, true, restrict_no_case_restriction, true },
+    { "windows,", restrict_windows, true, restrict_no_case_restriction, true },
+    { "windows,lowercase", restrict_windows, true, restrict_lowercase, true },
+    { "unix,nocontrol,lowercase,", restrict_unix, false, restrict_lowercase, true },
+  };
+  
+  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 
+    {
+      bool res;
+      
+      defaults();
+      res = cmd_spec_restrict_file_names ("dummy", test_array[i].val, NULL);
+
+      /*
+      fprintf (stderr, "test_cmd_spec_restrict_file_names: TEST %d\n", i); fflush (stderr);
+      fprintf (stderr, "opt.restrict_files_os: %d\n",   opt.restrict_files_os); fflush (stderr);
+      fprintf (stderr, "opt.restrict_files_ctrl: %d\n", opt.restrict_files_ctrl); fflush (stderr);
+      fprintf (stderr, "opt.restrict_files_case: %d\n", opt.restrict_files_case); fflush (stderr);
+      */
+      mu_assert ("test_cmd_spec_restrict_file_names: wrong result", 
+                 res == test_array[i].result
+                 && opt.restrict_files_os   == test_array[i].expected_restrict_files_os 
+                 && opt.restrict_files_ctrl == test_array[i].expected_restrict_files_ctrl 
+                 && opt.restrict_files_case == test_array[i].expected_restrict_files_case);
+    }
+
+  return NULL;
+}
+
+#endif /* TESTING */
+

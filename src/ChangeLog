@@ -1,3 +1,19 @@
+2006-06-13  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* options.h (struct options): Introduced member restrict_files_case to
+	keep track of preferences on character case restrictions for
+	filenames.
+
+	* init.c: Modified defaults and cmd_spec_restrict_file_names to
+	support character case restrictions for filenames. Added
+	test_cmd_spec_restrict_file_names unit test.
+
+	* url.c: Modified append_uri_pathel to support character case
+	restrictions for filenames. Added test_append_uri_pathel unit test.
+
+	* test.c: Added test_cmd_spec_restrict_file_names and
+	test_append_uri_pathel to the list of unit tests to run.
+
 2006-06-12  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* retr.c (retrieve_from_file): Use retrieve_tree and automatically

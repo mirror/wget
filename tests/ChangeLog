@@ -1,3 +1,9 @@
+2006-06-13  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* Test9.px: Added test for --restrict-file-names=lowercase option.
+	
+	* Test10.px: Added test for --restrict-file-names=uppercase option.
+
 2006-05-26  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* HTTPServer.pm: Added synchronization between client and server

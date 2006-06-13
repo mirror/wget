@@ -43,6 +43,10 @@ so, delete this exception statement from your version.  */
 #include "url.h"
 #include "host.h"  /* for is_valid_ipv6_address */
 
+#ifdef TESTING
+#include "test.h"
+#endif
+
 enum {
   scm_disabled = 1,		/* for https when OpenSSL fails to init. */
   scm_has_params = 2,		/* whether scheme has ;params */
@@ -1360,6 +1364,21 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
 	}
       assert (q - TAIL (dest) == outlen);
     }
+  
+  /* Perform inline case transformation if required.  */
+  if (opt.restrict_files_case == restrict_lowercase
+      || opt.restrict_files_case == restrict_uppercase)
+    {
+      char *q;
+      for (q = TAIL (dest); *q; ++q)
+        {
+          if (opt.restrict_files_case == restrict_lowercase)
+            *q = TOLOWER (*q);
+          else
+            *q = TOUPPER (*q);
+        }
+    }
+	  
   TAIL_INCR (dest, outlen);
 }
 
@@ -1984,3 +2003,38 @@ test_path_simplify (void)
     }
 }
 #endif
+
+#ifdef TESTING
+
+const char *
+test_append_uri_pathel()
+{
+  int i;
+  struct {
+    char *original_url;
+    char *input;
+    bool escaped;
+    char *expected_result;
+  } test_array[] = {
+    { "http://www.yoyodyne.com/path/", "somepage.html", false, "http://www.yoyodyne.com/path/somepage.html" },
+  };
+  
+  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 
+    {
+      struct growable dest;
+      const char *p = test_array[i].input;
+      
+      memset (&dest, 0, sizeof (dest));
+      
+      append_string (test_array[i].original_url, &dest);
+      append_uri_pathel (p, p + strlen(p), test_array[i].escaped, &dest);
+
+      mu_assert ("test_append_uri_pathel: wrong result", 
+                 strcmp (dest.base, test_array[i].expected_result) == 0);
+    }
+
+  return NULL;
+}
+
+#endif /* TESTING */
+

@@ -203,6 +203,11 @@ struct options
   bool restrict_files_ctrl;	/* non-zero if control chars in URLs
 				   are restricted from appearing in
 				   generated file names. */
+  enum {
+    restrict_no_case_restriction,
+    restrict_lowercase,
+    restrict_uppercase
+  } restrict_files_case;	/* file name case restriction. */
 
   bool strict_comments;		/* whether strict SGML comments are
 				   enforced.  */
