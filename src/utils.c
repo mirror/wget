@@ -1912,26 +1912,35 @@ base64_encode (const char *str, int length, char *b64store)
     'w','x','y','z','0','1','2','3',
     '4','5','6','7','8','9','+','/'
   };
-  int i;
   const unsigned char *s = (const unsigned char *) str;
+  const unsigned char *end = (const unsigned char *) str + length - 2;
   char *p = b64store;
 
   /* Transform the 3x8 bits to 4x6 bits, as required by base64.  */
-  for (i = 0; i < length; i += 3)
+  for (; s < end; s += 3)
     {
       *p++ = tbl[s[0] >> 2];
       *p++ = tbl[((s[0] & 3) << 4) + (s[1] >> 4)];
       *p++ = tbl[((s[1] & 0xf) << 2) + (s[2] >> 6)];
       *p++ = tbl[s[2] & 0x3f];
-      s += 3;
     }
 
   /* Pad the result if necessary...  */
-  if (i == length + 1)
-    *(p - 1) = '=';
-  else if (i == length + 2)
-    *(p - 1) = *(p - 2) = '=';
-
+  switch (length % 3)
+    {
+    case 1:
+      *p++ = tbl[s[0] >> 2];
+      *p++ = tbl[(s[0] & 3) << 4];
+      *p++ = '=';
+      *p++ = '=';
+      break;
+    case 2:
+      *p++ = tbl[s[0] >> 2];
+      *p++ = tbl[((s[0] & 3) << 4) + (s[1] >> 4)];
+      *p++ = tbl[((s[1] & 0xf) << 2)];
+      *p++ = '=';
+      break;
+    }
   /* ...and zero-terminate it.  */
   *p = '\0';
 

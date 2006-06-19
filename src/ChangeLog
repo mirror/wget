@@ -1,3 +1,8 @@
+2006-06-19  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (base64_encode): Would read past end of STR.
+	Reported by rick@eckle.org.
+
 2006-06-13  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* options.h (struct options): Introduced member restrict_files_case to
