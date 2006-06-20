@@ -921,8 +921,8 @@ only connect to IPv6 hosts and ignore A records and IPv4 addresses.
 
 Neither options should be needed normally.  By default, an IPv6-aware
 Wget will use the address family specified by the host's DNS record.
-If the DNS responds with both IPv4 and IPv6 addresses, Wget will them
-in sequence until it finds one it can connect to.  (Also see
+If the DNS responds with both IPv4 and IPv6 addresses, Wget will try
+them in sequence until it finds one it can connect to.  (Also see
 @code{--prefer-family} option described below.)
 
 These options can be used to deliberately force the use of IPv4 or

@@ -1,3 +1,8 @@
+2006-06-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Download Options): Add missing word.
+	Reported by Adrian Knoth.
+
 2006-02-05  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	(Download Options): Changed "a recent article" to "a 2001 article"
