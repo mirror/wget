@@ -1970,7 +1970,7 @@ base64_decode (const char *base64, void *dest)
 {
   /* Table of base64 values for first 128 characters.  Note that this
      assumes ASCII (but so does Wget in other places).  */
-  static signed char base64_char_to_value[128] =
+  static const signed char base64_char_to_value[128] =
     {
       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,	/*   0-  9 */
       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,	/*  10- 19 */
