@@ -118,8 +118,8 @@ void xsleep (double);
 /* How many bytes it will take to store LEN bytes in base64.  */
 #define BASE64_LENGTH(len) (4 * (((len) + 2) / 3))
 
-int base64_encode (const char *, int, char *);
-int base64_decode (const char *, char *);
+int base64_encode (const void *, int, char *);
+int base64_decode (const char *, void *);
 
 void stable_sort (void *, size_t, size_t, int (*) (const void *, const void *));
 

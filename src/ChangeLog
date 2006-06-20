@@ -1,3 +1,10 @@
+2006-06-20  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (base64_encode): Made the DATA pointer void * so the
+	callers can pass it any kind of pointer (including both signed and
+	unsigned char pointers).
+	(base64_decode): Ditto for DEST.
+
 2006-06-19  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (base64_encode): Would read past end of STR.

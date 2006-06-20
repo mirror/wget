@@ -1889,20 +1889,20 @@ xsleep (double seconds)
 
 #endif /* not WINDOWS */
 
-/* Encode the string STR of length LENGTH to base64 format and place it
-   to B64STORE.  The output will be \0-terminated, and must point to a
-   writable buffer of at least 1+BASE64_LENGTH(length) bytes.  It
-   returns the length of the resulting base64 data, not counting the
-   terminating zero.
+/* Encode the octets in DATA of length LENGTH to base64 format,
+   storing the result to DEST.  The output will be zero-terminated,
+   and must point to a writable buffer of at least
+   1+BASE64_LENGTH(length) bytes.  The function returns the length of
+   the resulting base64 data, not counting the terminating zero.
 
-   This implementation will not emit newlines after 76 characters of
+   This implementation does not emit newlines after 76 characters of
    base64 data.  */
 
 int
-base64_encode (const char *str, int length, char *b64store)
+base64_encode (const void *data, int length, char *dest)
 {
   /* Conversion table.  */
-  static char tbl[64] = {
+  static const char tbl[64] = {
     'A','B','C','D','E','F','G','H',
     'I','J','K','L','M','N','O','P',
     'Q','R','S','T','U','V','W','X',
@@ -1912,9 +1912,10 @@ base64_encode (const char *str, int length, char *b64store)
     'w','x','y','z','0','1','2','3',
     '4','5','6','7','8','9','+','/'
   };
-  const unsigned char *s = (const unsigned char *) str;
-  const unsigned char *end = (const unsigned char *) str + length - 2;
-  char *p = b64store;
+  const unsigned char *s = data;
+  /* Theoretical ANSI violation when length < 3. */
+  const unsigned char *end = data + length - 2;
+  char *p = dest;
 
   /* Transform the 3x8 bits to 4x6 bits, as required by base64.  */
   for (; s < end; s += 3)
@@ -1944,7 +1945,7 @@ base64_encode (const char *str, int length, char *b64store)
   /* ...and zero-terminate it.  */
   *p = '\0';
 
-  return p - b64store;
+  return p - dest;
 }
 
 /* Store in C the next non-whitespace character from the string, or \0
@@ -1956,16 +1957,16 @@ base64_encode (const char *str, int length, char *b64store)
 #define IS_ASCII(c) (((c) & 0x80) == 0)
 
 /* Decode data from BASE64 (pointer to \0-terminated text) into memory
-   pointed to by TO.  TO should be large enough to accomodate the
+   pointed to by DEST.  DEST should be large enough to accomodate the
    decoded data, which is guaranteed to be less than strlen(base64).
 
-   Since TO is assumed to contain binary data, it is not
+   Since DEST is assumed to contain binary data, it is not
    NUL-terminated.  The function returns the length of the data
    written to TO.  -1 is returned in case of error caused by malformed
    base64 input.  */
 
 int
-base64_decode (const char *base64, char *to)
+base64_decode (const char *base64, void *dest)
 {
   /* Table of base64 values for first 128 characters.  Note that this
      assumes ASCII (but so does Wget in other places).  */
@@ -1989,7 +1990,7 @@ base64_decode (const char *base64, char *to)
 #define IS_BASE64(c) ((IS_ASCII (c) && BASE64_CHAR_TO_VALUE (c) >= 0) || c == '=')
 
   const char *p = base64;
-  char *q = to;
+  char *q = dest;
 
   while (1)
     {
@@ -2048,7 +2049,7 @@ base64_decode (const char *base64, char *to)
 #undef IS_BASE64
 #undef BASE64_CHAR_TO_VALUE
 
-  return q - to;
+  return q - (char *) dest;
 }
 
 #undef IS_ASCII
