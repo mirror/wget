@@ -1,3 +1,8 @@
+2006-06-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* utils.c (base64_encode): Cast void pointer to char * before
+	doing arithmetic.
+
 2006-06-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (base64_encode): Made TBL const.

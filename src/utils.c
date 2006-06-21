@@ -1914,7 +1914,7 @@ base64_encode (const void *data, int length, char *dest)
   };
   const unsigned char *s = data;
   /* Theoretical ANSI violation when length < 3. */
-  const unsigned char *end = data + length - 2;
+  const unsigned char *end = (const unsigned char *) data + length - 2;
   char *p = dest;
 
   /* Transform the 3x8 bits to 4x6 bits, as required by base64.  */
