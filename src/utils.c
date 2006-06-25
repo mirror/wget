@@ -1954,14 +1954,17 @@ base64_encode (const void *data, int length, char *dest)
 
 #define IS_ASCII(c) (((c) & 0x80) == 0)
 
-/* Decode data from BASE64 (pointer to \0-terminated text) into memory
-   pointed to by DEST.  DEST should be large enough to accomodate the
-   decoded data, which is guaranteed to be less than strlen(base64).
+/* Decode data from BASE64 (a null-terminated string) into memory
+   pointed to by DEST.  DEST is assumed to be large enough to
+   accomodate the decoded data, which is guaranteed to be no more than
+   3/4*strlen(base64).
 
    Since DEST is assumed to contain binary data, it is not
    NUL-terminated.  The function returns the length of the data
    written to TO.  -1 is returned in case of error caused by malformed
-   base64 input.  */
+   base64 input.
+
+   This function originates from Free Recode.  */
 
 int
 base64_decode (const char *base64, void *dest)
