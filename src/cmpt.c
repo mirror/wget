@@ -1315,18 +1315,19 @@ char_value (char c, int base)
   return value;
 }
 
-#define LL strtoll_type		/* long long or __int64 */
+#define TYPE_MAXIMUM(t) ((t) (~ (~ (t) 0 << (sizeof (t) * CHAR_BIT - 1))))
 
-/* These constants assume 64-bit strtoll_type. */
+#define STRTOLL_MAX TYPE_MAXIMUM (strtoll_type)
+/* This definition assumes two's complement arithmetic */
+#define STRTOLL_MIN (-STRTOLL_MAX - 1)
 
-/* A roundabout way of writing 2**63-1 = 9223372036854775807 */
-#define STRTOLL_OVERFLOW (((LL) 1 << 62) - 1 + ((LL) 1 << 62))
-/* A roundabout way of writing -2**63 = -9223372036854775808 */
-#define STRTOLL_UNDERFLOW (-STRTOLL_OVERFLOW - 1)
+/* Like a%b, but always returns a positive number when A is negative.
+   (C doesn't guarantee the sign of the result.)  */
+#define MOD(a, b) ((strtoll_type) -1 % 2 == 1 ? (a) % (b) : - ((a) % (b)))
 
-/* A strtoll replacement for systems that have LFS but don't supply
-   strtoll.  The headers typedef strtoll_type to long long or to
-   __int64.  */
+/* A strtoll-like replacement for systems that have an integral type
+   larger than long but don't supply strtoll.  This implementation
+   makes no assumptions about the size of strtoll_type.  */
 
 strtoll_type
 strtoll (const char *nptr, char **endptr, int base)
@@ -1355,7 +1356,7 @@ strtoll (const char *nptr, char **endptr, int base)
   else
     negative = false;
 
-  /* If base is 0, determine the real base based on the beginning on
+  /* If BASE is 0, determine the real base based on the beginning on
      the number; octal numbers begin with "0", hexadecimal with "0x",
      and the others are considered octal.  */
   if (*nptr == '0')
@@ -1383,33 +1384,38 @@ strtoll (const char *nptr, char **endptr, int base)
   if (!negative)
     {
       /* Parse positive number, checking for overflow. */
-      int val;
-      for (; (val = char_value (*nptr, base)) != -1; ++nptr)
+      int digit;
+      /* Overflow watermark.  If RESULT exceeds it, overflow occurs on
+	 this digit.  If result==WATERMARK, current digit may not
+	 exceed the last digit of maximum value. */
+      const strtoll_type WATERMARK = STRTOLL_MAX / base;
+      for (; (digit = char_value (*nptr, base)) != -1; ++nptr)
 	{
-	  strtoll_type newresult = base * result + val;
-	  if (newresult < result)
+	  if (result > WATERMARK
+	      || (result == WATERMARK && digit > STRTOLL_MAX % base))
 	    {
-	      result = STRTOLL_OVERFLOW;
+	      result = STRTOLL_MAX;
 	      errno = ERANGE;
 	      break;
 	    }
-	  result = newresult;
+	  result = base * result + digit;
 	}
     }
   else
     {
       /* Parse negative number, checking for underflow. */
-      int val;
-      for (; (val = char_value (*nptr, base)) != -1; ++nptr)
+      int digit;
+      const strtoll_type WATERMARK = STRTOLL_MIN / base;
+      for (; (digit = char_value (*nptr, base)) != -1; ++nptr)
 	{
-	  strtoll_type newresult = base * result - val;
-	  if (newresult > result)
+	  if (result < WATERMARK
+	      || (result == WATERMARK && digit > MOD (STRTOLL_MIN, base)))
 	    {
-	      result = STRTOLL_UNDERFLOW;
+	      result = STRTOLL_MIN;
 	      errno = ERANGE;
 	      break;
 	    }
-	  result = newresult;
+	  result = base * result - digit;
 	}
     }
  out:
@@ -1417,4 +1423,9 @@ strtoll (const char *nptr, char **endptr, int base)
     *endptr = (char *) nptr;
   return result;
 }
+
+#undef STRTOLL_MAX
+#undef STRTOLL_MIN
+#undef ABS
+
 #endif	/* NEED_STRTOLL */

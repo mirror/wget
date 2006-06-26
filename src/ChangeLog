@@ -1,3 +1,9 @@
+2006-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* cmpt.c (strtoll): Check for overflow and underflow without
+	relying on (technically) undefined behavior.  Don't assume that
+	strtoll_type is 64 bits wide.
+
 2006-06-21  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (base64_encode): Cast void pointer to char * before
