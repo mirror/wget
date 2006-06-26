@@ -1834,6 +1834,15 @@ ignore @code{<LINK>}, because then stylesheets will not be downloaded.
 Now the best bet for downloading a single page and its requisites is the
 dedicated @samp{--page-requisites} option.
 
+@cindex case fold
+@cindex ignore case
+@item --ignore-case
+Ignore case when matching files and directories.  This influences the
+behavior of -R, -A, -I, and -X options, as well as globbing
+implemented when downloading from FTP sites.  For example, with this
+option, @samp{-A *.txt} will match @samp{file1.txt}, but also
+@samp{file2.TXT}, @samp{file3.TxT}, and so on.
+
 @item -H
 @itemx --span-hosts
 Enable spanning across hosts when doing recursive retrieving
@@ -2643,6 +2652,10 @@ Set @sc{http} user to @var{string}, equivalent to
 @item https_proxy = @var{string}
 Use @var{string} as @sc{https} proxy, instead of the one specified in
 environment.
+
+@item ignore_case = on/off
+When set to on, match files and directories case insensitively; the
+same as @samp{--ignore-case}.
 
 @item ignore_length = on/off
 When set to on, ignore @code{Content-Length} header; the same as

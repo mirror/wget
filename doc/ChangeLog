@@ -1,3 +1,8 @@
+2006-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Recursive Accept/Reject Options): Document
+	--ignore-case.
+
 2006-06-20  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Download Options): Add missing word.
