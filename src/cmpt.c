@@ -1315,8 +1315,6 @@ char_value (char c, int base)
   return value;
 }
 
-#define TYPE_MAXIMUM(t) ((t) (~ (~ (t) 0 << (sizeof (t) * CHAR_BIT - 1))))
-
 #define STRTOLL_MAX TYPE_MAXIMUM (strtoll_type)
 /* This definition assumes two's complement arithmetic */
 #define STRTOLL_MIN (-STRTOLL_MAX - 1)

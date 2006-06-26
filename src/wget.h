@@ -119,31 +119,60 @@ so, delete this exception statement from your version.  */
 
 #define DEBUGP(args) do { IF_DEBUG { debug_logprintf args; } } while (0)
 
-/* Define an integer type that works for file sizes, content lengths,
-   and such.  Normally we could just use off_t, but off_t is always
-   32-bit on Windows.  */
+/* Pick an integer type large enough for file sizes, content lengths,
+   and such.  Because today's files can be very large, it should be a
+   signed integer at least 64 bits wide.  This can't be typedeffed to
+   off_t because: a) off_t is always 32-bit on Windows, and b) we
+   don't necessarily want to tie having a 64-bit type for internal
+   calculations to having LFS support.  */
 
-#ifndef WINDOWS
-typedef off_t wgint;
+#ifdef WINDOWS
+  /* nothing to do, see mswindows.h */
+#elif SIZEOF_LONG >= 8
+  /* long is large enough, so use it. */
+  typedef long wgint;
+# define SIZEOF_WGINT SIZEOF_LONG
+#elif SIZEOF_LONG_LONG >= 8
+  /* long long is large enough and available, use that */
+  typedef long long wgint;
+# define SIZEOF_WGINT SIZEOF_LONG_LONG
+#elif HAVE_INT64_T
+  typedef int64_t wgint;
+# define SIZEOF_WGINT 8
+#elif SIZEOF_OFF_T >= 8
+  /* In case off_t is typedeffed to a large non-standard type that our
+     tests don't find. */
+  typedef off_t wgint;
 # define SIZEOF_WGINT SIZEOF_OFF_T
+#else
+  /* Fall back to using long, which is always available and in most
+     cases large enough. */
+typedef long off_t;
+# define SIZEOF_WGINT SIZEOF_LONG
+#endif
 
-/* Pick the strtol-like function that will work with wgint.  */
-# if SIZEOF_WGINT == SIZEOF_LONG
-#  define str_to_wgint strtol
-#  define WGINT_MAX LONG_MAX
-# else
-#  define WGINT_MAX LLONG_MAX
-#  ifdef HAVE_STRTOLL
-#   define str_to_wgint strtoll
-#  elif defined HAVE_STRTOIMAX	/* HPUX 11.0 has strtoimax, but no strtoll */
-#   define str_to_wgint strtoimax
-#  else
-#   define str_to_wgint strtoll
-#   define NEED_STRTOLL
-#   define strtoll_type long long
-#  endif
+/* Pick a strtol-compatible function that will work with wgint.  The
+   choices are strtol, strtoll, or our own implementation of strtoll
+   in cmpt.c, activated with NEED_STRTOLL.  */
+
+#ifdef WINDOWS
+  /* nothing to do, see mswindows.h */
+#elif SIZEOF_WGINT == SIZEOF_LONG
+# define str_to_wgint strtol
+#elif SIZEOF_WGINT == SIZEOF_LONG_LONG
+# define str_to_wgint strtoll
+# ifndef HAVE_STRTOLL
+#  define NEED_STRTOLL
+#  define strtoll_type long long
 # endif
-#endif	/* not WINDOWS */
+#else
+  /* wgint has a strange size; synthesize strtoll and use it. */
+# define str_to_wgint strtoll
+# define NEED_STRTOLL
+# define strtoll_type wgint
+#endif
+
+#define WGINT_MAX TYPE_MAXIMUM (wgint)
 
 /* Declare our strtoll replacement. */
 #ifdef NEED_STRTOLL

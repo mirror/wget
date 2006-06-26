@@ -1,5 +1,10 @@
 2006-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* wget.h (wgint): Typedef to any 64-bit (or larger) type we can
+	find, not necessarily off_t or long.
+
+2006-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* cmpt.c (strtoll): Check for overflow and underflow without
 	relying on (technically) undefined behavior.  Don't assume that
 	strtoll_type is 64 bits wide.

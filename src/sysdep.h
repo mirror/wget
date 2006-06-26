@@ -112,13 +112,8 @@ typedef unsigned char _Bool;
 # define CHAR_BIT 8
 #endif
 
-/* Used by wget.h to define SIZEOF_WGINT. */
-#ifndef LONG_MAX
-# define LONG_MAX ((long) ~((unsigned long)1 << (CHAR_BIT * sizeof (long) - 1)))
-#endif
-#ifndef LLONG_MAX
-# define LLONG_MAX ((long long) ~((unsigned long long)1 << (CHAR_BIT * sizeof (long long) - 1)))
-#endif
+/* From gnulib, simplified to assume a signed type. */
+#define TYPE_MAXIMUM(t) ((t) (~ (~ (t) 0 << (sizeof (t) * CHAR_BIT - 1))))
 
 /* These are defined in cmpt.c if missing, so we must declare
    them.  */

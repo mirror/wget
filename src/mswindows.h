@@ -84,7 +84,6 @@ so, delete this exception statement from your version.  */
 /* Define a wgint type under Windows. */
 typedef __int64 wgint;
 #define SIZEOF_WGINT 8
-#define WGINT_MAX LL (9223372036854775807)
 
 /* str_to_wgint is a function with the semantics of strtol[l], but
    which works on wgint.  */
