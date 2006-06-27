@@ -1,3 +1,7 @@
+2006-06-27  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* configure.in: We're no longer using strtoimax.
+
 2006-02-28  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* configure.in: Check for memrchr.
