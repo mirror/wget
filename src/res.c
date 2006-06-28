@@ -84,6 +84,10 @@ so, delete this exception statement from your version.  */
 #include "retr.h"
 #include "res.h"
 
+#ifdef TESTING
+#include "test.h"
+#endif
+
 struct path_info {
   char *path;
   bool allowedp;
@@ -104,7 +108,7 @@ struct robot_specs {
 
 static void
 match_user_agent (const char *agent, int length,
-		  bool *matches, bool *exact_match)
+                  bool *matches, bool *exact_match)
 {
   if (length == 1 && *agent == '*')
     {
@@ -128,7 +132,7 @@ match_user_agent (const char *agent, int length,
 
 static void
 add_path (struct robot_specs *specs, const char *path_b, const char *path_e,
-	  bool allowedp, bool exactp)
+          bool allowedp, bool exactp)
 {
   struct path_info pp;
   if (path_b < path_e && *path_b == '/')
@@ -142,11 +146,11 @@ add_path (struct robot_specs *specs, const char *path_b, const char *path_e,
   if (specs->count > specs->size)
     {
       if (specs->size == 0)
-	specs->size = 1;
+        specs->size = 1;
       else
-	specs->size <<= 1;
+        specs->size <<= 1;
       specs->paths = xrealloc (specs->paths,
-			       specs->size * sizeof (struct path_info));
+                               specs->size * sizeof (struct path_info));
     }
   specs->paths[specs->count - 1] = pp;
 }
@@ -176,12 +180,12 @@ prune_non_exact (struct robot_specs *specs)
 
 #define EOL(p) ((p) >= lineend)
 
-#define SKIP_SPACE(p) do {		\
-  while (!EOL (p) && ISSPACE (*p))	\
-    ++p;				\
+#define SKIP_SPACE(p) do {              \
+  while (!EOL (p) && ISSPACE (*p))      \
+    ++p;                                \
 } while (0)
 
-#define FIELD_IS(string_literal)	\
+#define FIELD_IS(string_literal)        \
   BOUNDED_EQUAL_NO_CASE (field_b, field_e, string_literal)
 
 /* Parse textual RES specs beginning with SOURCE of length LENGTH.
@@ -245,113 +249,113 @@ res_parse (const char *source, int length)
       const char *value_b, *value_e;
 
       if (p == end)
-	break;
+        break;
       lineend_real = memchr (p, '\n', end - p);
       if (lineend_real)
-	++lineend_real;
+        ++lineend_real;
       else
-	lineend_real = end;
+        lineend_real = end;
       lineend = lineend_real;
 
       /* Before doing anything else, check whether the line is empty
-	 or comment-only. */
+         or comment-only. */
       SKIP_SPACE (p);
       if (EOL (p) || *p == '#')
-	goto next;
+        goto next;
 
       /* Make sure the end-of-line comments are respected by setting
-	 lineend to a location preceding the first comment.  Real line
-	 ending remains in lineend_real.  */
+         lineend to a location preceding the first comment.  Real line
+         ending remains in lineend_real.  */
       for (lineend = p; lineend < lineend_real; lineend++)
-	if ((lineend == p || ISSPACE (*(lineend - 1)))
-	    && *lineend == '#')
-	  break;
+        if ((lineend == p || ISSPACE (*(lineend - 1)))
+            && *lineend == '#')
+          break;
 
       /* Ignore trailing whitespace in the same way. */
       while (lineend > p && ISSPACE (*(lineend - 1)))
-	--lineend;
+        --lineend;
 
       assert (!EOL (p));
 
       field_b = p;
       while (!EOL (p) && (ISALNUM (*p) || *p == '-'))
-	++p;
+        ++p;
       field_e = p;
 
       SKIP_SPACE (p);
       if (field_b == field_e || EOL (p) || *p != ':')
-	{
-	  DEBUGP (("Ignoring malformed line %d", line_count));
-	  goto next;
-	}
-      ++p;			/* skip ':' */
+        {
+          DEBUGP (("Ignoring malformed line %d", line_count));
+          goto next;
+        }
+      ++p;                      /* skip ':' */
       SKIP_SPACE (p);
 
       value_b = p;
       while (!EOL (p))
-	++p;
+        ++p;
       value_e = p;
 
       /* Finally, we have a syntactically valid line. */
       if (FIELD_IS ("user-agent"))
-	{
-	  /* We have to support several cases:
+        {
+          /* We have to support several cases:
 
-	     --previous records--
+             --previous records--
 
-	     User-Agent: foo
-	     User-Agent: Wget
-	     User-Agent: bar
-	     ... matching record ...
+             User-Agent: foo
+             User-Agent: Wget
+             User-Agent: bar
+             ... matching record ...
 
-	     User-Agent: baz
-	     User-Agent: qux
-	     ... non-matching record ...
+             User-Agent: baz
+             User-Agent: qux
+             ... non-matching record ...
 
-	     User-Agent: *
-	     ... matching record, but will be pruned later ...
+             User-Agent: *
+             ... matching record, but will be pruned later ...
 
-	     We have to respect `User-Agent' at the beginning of each
-	     new record simply because we don't know if we're going to
-	     encounter "Wget" among the agents or not.  Hence,
-	     match_user_agent is called when record_count != 0.
+             We have to respect `User-Agent' at the beginning of each
+             new record simply because we don't know if we're going to
+             encounter "Wget" among the agents or not.  Hence,
+             match_user_agent is called when record_count != 0.
 
-	     But if record_count is 0, we have to keep calling it
-	     until it matches, and if that happens, we must not call
-	     it any more, until the next record.  Hence the other part
-	     of the condition.  */
-	  if (record_count != 0 || user_agent_applies == false)
-	    match_user_agent (value_b, value_e - value_b,
-			      &user_agent_applies, &user_agent_exact);
-	  if (user_agent_exact)
-	    found_exact = true;
-	  record_count = 0;
-	}
+             But if record_count is 0, we have to keep calling it
+             until it matches, and if that happens, we must not call
+             it any more, until the next record.  Hence the other part
+             of the condition.  */
+          if (record_count != 0 || user_agent_applies == false)
+            match_user_agent (value_b, value_e - value_b,
+                              &user_agent_applies, &user_agent_exact);
+          if (user_agent_exact)
+            found_exact = true;
+          record_count = 0;
+        }
       else if (FIELD_IS ("allow"))
-	{
-	  if (user_agent_applies)
-	    {
-	      add_path (specs, value_b, value_e, true, user_agent_exact);
-	    }
-	  ++record_count;
-	}
+        {
+          if (user_agent_applies)
+            {
+              add_path (specs, value_b, value_e, true, user_agent_exact);
+            }
+          ++record_count;
+        }
       else if (FIELD_IS ("disallow"))
-	{
-	  if (user_agent_applies)
-	    {
-	      bool allowed = false;
-	      if (value_b == value_e)
-		/* Empty "disallow" line means everything is *allowed*!  */
-		allowed = true;
-	      add_path (specs, value_b, value_e, allowed, user_agent_exact);
-	    }
-	  ++record_count;
-	}
+        {
+          if (user_agent_applies)
+            {
+              bool allowed = false;
+              if (value_b == value_e)
+                /* Empty "disallow" line means everything is *allowed*!  */
+                allowed = true;
+              add_path (specs, value_b, value_e, allowed, user_agent_exact);
+            }
+          ++record_count;
+        }
       else
-	{
-	  DEBUGP (("Ignoring unknown field at line %d", line_count));
-	  goto next;
-	}
+        {
+          DEBUGP (("Ignoring unknown field at line %d", line_count));
+          goto next;
+        }
 
     next:
       p = lineend_real;
@@ -361,15 +365,15 @@ res_parse (const char *source, int length)
   if (found_exact)
     {
       /* We've encountered an exactly matching user-agent.  Throw out
-	 all the stuff with user-agent: *.  */
+         all the stuff with user-agent: *.  */
       prune_non_exact (specs);
     }
   else if (specs->size > specs->count)
     {
       /* add_path normally over-allocates specs->paths.  Reallocate it
-	 to the correct size in order to conserve some memory.  */
+         to the correct size in order to conserve some memory.  */
       specs->paths = xrealloc (specs->paths,
-			       specs->count * sizeof (struct path_info));
+                               specs->count * sizeof (struct path_info));
       specs->size = specs->count;
     }
 
@@ -387,7 +391,7 @@ res_parse_from_file (const char *filename)
   if (!fm)
     {
       logprintf (LOG_NOTQUIET, _("Cannot open %s: %s"),
-		 filename, strerror (errno));
+                 filename, strerror (errno));
       return NULL;
     }
   specs = res_parse (fm->content, fm->length);
@@ -411,16 +415,16 @@ free_specs (struct robot_specs *specs)
    that number is not a numerical representation of '/', decode C and
    advance the pointer.  */
 
-#define DECODE_MAYBE(c, ptr) do {				\
-  if (c == '%' && ISXDIGIT (ptr[1]) && ISXDIGIT (ptr[2]))	\
-    {								\
-      char decoded = X2DIGITS_TO_NUM (ptr[1], ptr[2]);		\
-      if (decoded != '/')					\
-	{							\
-	  c = decoded;						\
-	  ptr += 2;						\
-	}							\
-    }								\
+#define DECODE_MAYBE(c, ptr) do {                               \
+  if (c == '%' && ISXDIGIT (ptr[1]) && ISXDIGIT (ptr[2]))       \
+    {                                                           \
+      char decoded = X2DIGITS_TO_NUM (ptr[1], ptr[2]);          \
+      if (decoded != '/')                                       \
+        {                                                       \
+          c = decoded;                                          \
+          ptr += 2;                                             \
+        }                                                       \
+    }                                                           \
 } while (0)
 
 /* The inner matching engine: return true if RECORD_PATH matches
@@ -438,13 +442,13 @@ matches (const char *record_path, const char *url_path)
       char rc = *rp;
       char uc = *up;
       if (!rc)
-	return true;
+        return true;
       if (!uc)
-	return false;
+        return false;
       DECODE_MAYBE(rc, rp);
       DECODE_MAYBE(uc, up);
       if (rc != uc)
-	return false;
+        return false;
     }
 }
 
@@ -461,11 +465,11 @@ res_match_path (const struct robot_specs *specs, const char *path)
   for (i = 0; i < specs->count; i++)
     if (matches (specs->paths[i].path, path))
       {
-	bool allowedp = specs->paths[i].allowedp;
-	DEBUGP (("%s path %s because of rule `%s'.\n",
-		 allowedp ? "Allowing" : "Rejecting",
-		 path, specs->paths[i].path));
-	return allowedp;
+        bool allowedp = specs->paths[i].allowedp;
+        DEBUGP (("%s path %s because of rule `%s'.\n",
+                 allowedp ? "Allowing" : "Rejecting",
+                 path, specs->paths[i].path));
+        return allowedp;
       }
   return true;
 }
@@ -475,12 +479,12 @@ res_match_path (const struct robot_specs *specs, const char *path)
 static struct hash_table *registered_specs;
 
 /* Stolen from cookies.c. */
-#define SET_HOSTPORT(host, port, result) do {		\
-  int HP_len = strlen (host);				\
-  result = alloca (HP_len + 1 + numdigit (port) + 1);	\
-  memcpy (result, host, HP_len);			\
-  result[HP_len] = ':';					\
-  number_to_string (result + HP_len + 1, port);		\
+#define SET_HOSTPORT(host, port, result) do {           \
+  int HP_len = strlen (host);                           \
+  result = alloca (HP_len + 1 + numdigit (port) + 1);   \
+  memcpy (result, host, HP_len);                        \
+  result[HP_len] = ':';                                 \
+  number_to_string (result + HP_len + 1, port);         \
 } while (0)
 
 /* Register RES specs that below to server on HOST:PORT.  They will
@@ -499,7 +503,7 @@ res_register_specs (const char *host, int port, struct robot_specs *specs)
   if (hash_table_get_pair (registered_specs, hp, &hp_old, &old))
     {
       if (old)
-	free_specs (old);
+        free_specs (old);
       hash_table_put (registered_specs, hp_old, specs);
     }
   else
@@ -544,12 +548,23 @@ res_retrieve_file (const char *url, char **file)
   if (err != RETROK && *file != NULL)
     {
       /* If the file is not retrieved correctly, but retrieve_url
-	 allocated the file name, deallocate is here so that the
-	 caller doesn't have to worry about it.  */
+         allocated the file name, deallocate is here so that the
+         caller doesn't have to worry about it.  */
       xfree (*file);
       *file = NULL;
     }
   return err == RETROK;
+}
+
+bool
+is_robots_txt_url (const char *url)
+{
+  char *robots_url = uri_merge (url, RES_SPECS_LOCATION);
+  bool ret = are_urls_equal (url, robots_url);
+
+  xfree (robots_url);
+  
+  return ret;
 }
 
 void
@@ -559,13 +574,44 @@ res_cleanup (void)
     {
       hash_table_iterator iter;
       for (hash_table_iterate (registered_specs, &iter);
-	   hash_table_iter_next (&iter);
-	   )
-	{
-	  xfree (iter.key);
-	  free_specs (iter.value);
-	}
+           hash_table_iter_next (&iter);
+           )
+        {
+          xfree (iter.key);
+          free_specs (iter.value);
+        }
       hash_table_destroy (registered_specs);
       registered_specs = NULL;
     }
 }
+
+#ifdef TESTING
+
+const char *
+test_is_robots_txt_url()
+{
+  int i;
+  struct {
+    char *url;
+    bool expected_result;
+  } test_array[] = {
+    { "http://www.yoyodyne.com/robots.txt", true },
+    { "http://www.yoyodyne.com/somepath/", false },
+    { "http://www.yoyodyne.com/somepath/robots.txt", false },
+  };
+  
+  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 
+    {
+      mu_assert ("test_is_robots_txt_url: wrong result", 
+                 is_robots_txt_url (test_array[i].url) == test_array[i].expected_result);
+    }
+
+  return NULL;
+}
+
+#endif /* TESTING */
+
+/*
+ * vim: et ts=2 sw=2
+ */
+

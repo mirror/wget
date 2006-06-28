@@ -42,6 +42,8 @@ struct robot_specs *res_get_specs (const char *, int);
 
 bool res_retrieve_file (const char *, char **);
 
+bool is_robots_txt_url (const char *);
+
 void res_cleanup (void);
 
 #endif /* RES_H */

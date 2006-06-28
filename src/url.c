@@ -48,10 +48,10 @@ so, delete this exception statement from your version.  */
 #endif
 
 enum {
-  scm_disabled = 1,		/* for https when OpenSSL fails to init. */
-  scm_has_params = 2,		/* whether scheme has ;params */
-  scm_has_query = 4,		/* whether scheme has ?query */
-  scm_has_fragment = 8		/* whether scheme has #fragment */
+  scm_disabled = 1,             /* for https when OpenSSL fails to init. */
+  scm_has_params = 2,           /* whether scheme has ;params */
+  scm_has_query = 4,            /* whether scheme has ?query */
+  scm_has_fragment = 8          /* whether scheme has #fragment */
 };
 
 struct scheme_data
@@ -69,14 +69,14 @@ struct scheme_data
 /* Supported schemes: */
 static struct scheme_data supported_schemes[] =
 {
-  { "http",	"http://",  DEFAULT_HTTP_PORT,  scm_has_query|scm_has_fragment },
+  { "http",     "http://",  DEFAULT_HTTP_PORT,  scm_has_query|scm_has_fragment },
 #ifdef HAVE_SSL
-  { "https",	"https://", DEFAULT_HTTPS_PORT, scm_has_query|scm_has_fragment },
+  { "https",    "https://", DEFAULT_HTTPS_PORT, scm_has_query|scm_has_fragment },
 #endif
-  { "ftp",	"ftp://",   DEFAULT_FTP_PORT,   scm_has_params|scm_has_fragment },
+  { "ftp",      "ftp://",   DEFAULT_FTP_PORT,   scm_has_params|scm_has_fragment },
 
   /* SCHEME_INVALID */
-  { NULL,	NULL,       -1,                 0 }
+  { NULL,       NULL,       -1,                 0 }
 };
 
 /* Forward declarations: */
@@ -169,30 +169,30 @@ static const unsigned char urlchr_table[256] =
 static void
 url_unescape (char *s)
 {
-  char *t = s;			/* t - tortoise */
-  char *h = s;			/* h - hare     */
+  char *t = s;                  /* t - tortoise */
+  char *h = s;                  /* h - hare     */
 
   for (; *h; h++, t++)
     {
       if (*h != '%')
-	{
-	copychar:
-	  *t = *h;
-	}
+        {
+        copychar:
+          *t = *h;
+        }
       else
-	{
-	  char c;
-	  /* Do nothing if '%' is not followed by two hex digits. */
-	  if (!h[1] || !h[2] || !(ISXDIGIT (h[1]) && ISXDIGIT (h[2])))
-	    goto copychar;
-	  c = X2DIGITS_TO_NUM (h[1], h[2]);
-	  /* Don't unescape %00 because there is no way to insert it
-	     into a C string without effectively truncating it. */
-	  if (c == '\0')
-	    goto copychar;
-	  *t = c;
-	  h += 2;
-	}
+        {
+          char c;
+          /* Do nothing if '%' is not followed by two hex digits. */
+          if (!h[1] || !h[2] || !(ISXDIGIT (h[1]) && ISXDIGIT (h[2])))
+            goto copychar;
+          c = X2DIGITS_TO_NUM (h[1], h[2]);
+          /* Don't unescape %00 because there is no way to insert it
+             into a C string without effectively truncating it. */
+          if (c == '\0')
+            goto copychar;
+          *t = c;
+          h += 2;
+        }
     }
   *t = '\0';
 }
@@ -214,7 +214,7 @@ url_escape_1 (const char *s, unsigned char mask, bool allow_passthrough)
 
   for (p1 = s; *p1; p1++)
     if (urlchr_test (*p1, mask))
-      addition += 2;		/* Two more characters (hex digits) */
+      addition += 2;            /* Two more characters (hex digits) */
 
   if (!addition)
     return allow_passthrough ? (char *)s : xstrdup (s);
@@ -228,14 +228,14 @@ url_escape_1 (const char *s, unsigned char mask, bool allow_passthrough)
     {
       /* Quote the characters that match the test mask. */
       if (urlchr_test (*p1, mask))
-	{
-	  unsigned char c = *p1++;
-	  *p2++ = '%';
-	  *p2++ = XNUM_TO_DIGIT (c >> 4);
-	  *p2++ = XNUM_TO_DIGIT (c & 0xf);
-	}
+        {
+          unsigned char c = *p1++;
+          *p2++ = '%';
+          *p2++ = XNUM_TO_DIGIT (c >> 4);
+          *p2++ = XNUM_TO_DIGIT (c & 0xf);
+        }
       else
-	*p2++ = *p1++;
+        *p2++ = *p1++;
     }
   assert (p2 - newstr == newlen);
   *p2 = '\0';
@@ -273,10 +273,10 @@ char_needs_escaping (const char *p)
   if (*p == '%')
     {
       if (ISXDIGIT (*(p + 1)) && ISXDIGIT (*(p + 2)))
-	return false;
+        return false;
       else
-	/* Garbled %.. sequence: encode `%'. */
-	return true;
+        /* Garbled %.. sequence: encode `%'. */
+        return true;
     }
   else if (URL_UNSAFE_CHAR (*p) && !URL_RESERVED_CHAR (*p))
     return true;
@@ -379,7 +379,7 @@ reencode_escapes (const char *s)
 
   if (!encode_count)
     /* The string is good as it is. */
-    return (char *) s;		/* C const model sucks. */
+    return (char *) s;          /* C const model sucks. */
 
   oldlen = p1 - s;
   /* Each encoding adds two characters (hex digits).  */
@@ -394,10 +394,10 @@ reencode_escapes (const char *s)
   while (*p1)
     if (char_needs_escaping (p1))
       {
-	unsigned char c = *p1++;
-	*p2++ = '%';
-	*p2++ = XNUM_TO_DIGIT (c >> 4);
-	*p2++ = XNUM_TO_DIGIT (c & 0xf);
+        unsigned char c = *p1++;
+        *p2++ = '%';
+        *p2++ = XNUM_TO_DIGIT (c >> 4);
+        *p2++ = XNUM_TO_DIGIT (c & 0xf);
       }
     else
       *p2++ = *p1++;
@@ -417,12 +417,12 @@ url_scheme (const char *url)
 
   for (i = 0; supported_schemes[i].leading_string; i++)
     if (0 == strncasecmp (url, supported_schemes[i].leading_string,
-			  strlen (supported_schemes[i].leading_string)))
+                          strlen (supported_schemes[i].leading_string)))
       {
-	if (!(supported_schemes[i].flags & scm_disabled))
-	  return (enum url_scheme) i;
-	else
-	  return SCHEME_INVALID;
+        if (!(supported_schemes[i].flags & scm_disabled))
+          return (enum url_scheme) i;
+        else
+          return SCHEME_INVALID;
       }
 
   return SCHEME_INVALID;
@@ -489,11 +489,11 @@ parse_credentials (const char *beg, const char *end, char **user, char **passwd)
   const char *userend;
 
   if (beg == end)
-    return false;		/* empty user name */
+    return false;               /* empty user name */
 
   colon = memchr (beg, ':', end - beg);
   if (colon == beg)
-    return false;		/* again empty user name */
+    return false;               /* again empty user name */
 
   if (colon)
     {
@@ -549,10 +549,10 @@ rewrite_shorthand_url (const char *url)
   if (p && *p == ':')
     {
       /* Colon indicates ftp, as in foo.bar.com:path.  Check for
-	 special case of http port number ("localhost:10000").  */
+         special case of http port number ("localhost:10000").  */
       int digits = strspn (p + 1, "0123456789");
       if (digits && (p[1 + digits] == '/' || p[1 + digits] == '\0'))
-	goto http;
+        goto http;
 
       /* Turn "foo.bar.com:path" to "ftp://foo.bar.com/path". */
       ret = aprintf ("ftp://%s", url);
@@ -592,8 +592,8 @@ lowercase_str (char *str)
   for (; *str; str++)
     if (ISUPPER (*str))
       {
-	changed = true;
-	*str = TOLOWER (*str);
+        changed = true;
+        *str = TOLOWER (*str);
       }
   return changed;
 }
@@ -616,21 +616,21 @@ init_seps (enum url_scheme scheme)
 }
 
 static const char *parse_errors[] = {
-#define PE_NO_ERROR			0
+#define PE_NO_ERROR                     0
   N_("No error"),
-#define PE_UNSUPPORTED_SCHEME		1
+#define PE_UNSUPPORTED_SCHEME           1
   N_("Unsupported scheme"),
-#define PE_INVALID_HOST_NAME		2
+#define PE_INVALID_HOST_NAME            2
   N_("Invalid host name"),
-#define PE_BAD_PORT_NUMBER		3
+#define PE_BAD_PORT_NUMBER              3
   N_("Bad port number"),
-#define PE_INVALID_USER_NAME		4
+#define PE_INVALID_USER_NAME            4
   N_("Invalid user name"),
-#define PE_UNTERMINATED_IPV6_ADDRESS	5
+#define PE_UNTERMINATED_IPV6_ADDRESS    5
   N_("Unterminated IPv6 numeric address"),
-#define PE_IPV6_NOT_SUPPORTED		6
+#define PE_IPV6_NOT_SUPPORTED           6
   N_("IPv6 addresses not supported"),
-#define PE_INVALID_IPV6_ADDRESS		7
+#define PE_INVALID_IPV6_ADDRESS         7
   N_("Invalid IPv6 numeric address")
 };
 
@@ -701,26 +701,26 @@ url_parse (const char *url, int *error)
   if (*p == '[')
     {
       /* Handle IPv6 address inside square brackets.  Ideally we'd
-	 just look for the terminating ']', but rfc2732 mandates
-	 rejecting invalid IPv6 addresses.  */
+         just look for the terminating ']', but rfc2732 mandates
+         rejecting invalid IPv6 addresses.  */
 
       /* The address begins after '['. */
       host_b = p + 1;
       host_e = strchr (host_b, ']');
 
       if (!host_e)
-	{
-	  error_code = PE_UNTERMINATED_IPV6_ADDRESS;
-	  goto error;
-	}
+        {
+          error_code = PE_UNTERMINATED_IPV6_ADDRESS;
+          goto error;
+        }
 
 #ifdef ENABLE_IPV6
       /* Check if the IPv6 address is valid. */
       if (!is_valid_ipv6_address(host_b, host_e))
-	{
-	  error_code = PE_INVALID_IPV6_ADDRESS;
-	  goto error;
-	}
+        {
+          error_code = PE_INVALID_IPV6_ADDRESS;
+          goto error;
+        }
 
       /* Continue parsing after the closing ']'. */
       p = host_e + 1;
@@ -730,22 +730,22 @@ url_parse (const char *url, int *error)
 #endif
 
       /* The closing bracket must be followed by a separator or by the
-	 null char.  */
+         null char.  */
       /* http://[::1]... */
       /*             ^   */
       if (!strchr (seps, *p))
-	{
-	  /* Trailing garbage after []-delimited IPv6 address. */
-	  error_code = PE_INVALID_HOST_NAME;
-	  goto error;
-	}
+        {
+          /* Trailing garbage after []-delimited IPv6 address. */
+          error_code = PE_INVALID_HOST_NAME;
+          goto error;
+        }
     }
   else
     {
       p = strpbrk_or_eos (p, seps);
       host_e = p;
     }
-  ++seps;			/* advance to '/' */
+  ++seps;                       /* advance to '/' */
 
   if (host_b == host_e)
     {
@@ -767,24 +767,24 @@ url_parse (const char *url, int *error)
 
       /* Allow empty port, as per rfc2396. */
       if (port_b != port_e)
-	for (port = 0, pp = port_b; pp < port_e; pp++)
-	  {
-	    if (!ISDIGIT (*pp))
-	      {
-		/* http://host:12randomgarbage/blah */
-		/*               ^                  */
-		error_code = PE_BAD_PORT_NUMBER;
-		goto error;
-	      }
-	    port = 10 * port + (*pp - '0');
-	    /* Check for too large port numbers here, before we have
-	       a chance to overflow on bogus port values.  */
-	    if (port > 0xffff)
-	      {
-		error_code = PE_BAD_PORT_NUMBER;
-		goto error;
-	      }
-	  }
+        for (port = 0, pp = port_b; pp < port_e; pp++)
+          {
+            if (!ISDIGIT (*pp))
+              {
+                /* http://host:12randomgarbage/blah */
+                /*               ^                  */
+                error_code = PE_BAD_PORT_NUMBER;
+                goto error;
+              }
+            port = 10 * port + (*pp - '0');
+            /* Check for too large port numbers here, before we have
+               a chance to overflow on bogus port values.  */
+            if (port > 0xffff)
+              {
+                error_code = PE_BAD_PORT_NUMBER;
+                goto error;
+              }
+          }
     }
   /* Advance to the first separator *after* '/' (either ';' or '?',
      depending on the scheme).  */
@@ -792,10 +792,10 @@ url_parse (const char *url, int *error)
 
   /* Get the optional parts of URL, each part being delimited by
      current location and the position of the next separator.  */
-#define GET_URL_PART(sepchar, var) do {				\
-  if (*p == sepchar)						\
-    var##_b = ++p, var##_e = p = strpbrk_or_eos (p, seps);	\
-  ++seps;							\
+#define GET_URL_PART(sepchar, var) do {                         \
+  if (*p == sepchar)                                            \
+    var##_b = ++p, var##_e = p = strpbrk_or_eos (p, seps);      \
+  ++seps;                                                       \
 } while (0)
 
   GET_URL_PART ('/', path);
@@ -815,10 +815,10 @@ url_parse (const char *url, int *error)
       /*        ^         ^    */
       /*     uname_b   uname_e */
       if (!parse_credentials (uname_b, uname_e - 1, &user, &passwd))
-	{
-	  error_code = PE_INVALID_USER_NAME;
-	  goto error;
-	}
+        {
+          error_code = PE_INVALID_USER_NAME;
+          goto error;
+        }
     }
 
   u = xnew0 (struct url);
@@ -854,19 +854,19 @@ url_parse (const char *url, int *error)
   if (path_modified || u->fragment || host_modified || path_b == path_e)
     {
       /* If we suspect that a transformation has rendered what
-	 url_string might return different from URL_ENCODED, rebuild
-	 u->url using url_string.  */
+         url_string might return different from URL_ENCODED, rebuild
+         u->url using url_string.  */
       u->url = url_string (u, false);
 
       if (url_encoded != url)
-	xfree ((char *) url_encoded);
+        xfree ((char *) url_encoded);
     }
   else
     {
       if (url_encoded == url)
-	u->url = xstrdup (url);
+        u->url = xstrdup (url);
       else
-	u->url = url_encoded;
+        u->url = url_encoded;
     }
 
   return u;
@@ -956,14 +956,14 @@ full_path_length (const struct url *url)
 static void
 full_path_write (const struct url *url, char *where)
 {
-#define FROB(el, chr) do {			\
-  char *f_el = url->el;				\
-  if (f_el) {					\
-    int l = strlen (f_el);			\
-    *where++ = chr;				\
-    memcpy (where, f_el, l);			\
-    where += l;					\
-  }						\
+#define FROB(el, chr) do {                      \
+  char *f_el = url->el;                         \
+  if (f_el) {                                   \
+    int l = strlen (f_el);                      \
+    *where++ = chr;                             \
+    memcpy (where, f_el, l);                    \
+    where += l;                                 \
+  }                                             \
 } while (0)
 
   FROB (path, '/');
@@ -998,17 +998,17 @@ unescape_single_char (char *str, char chr)
 {
   const char c1 = XNUM_TO_DIGIT (chr >> 4);
   const char c2 = XNUM_TO_DIGIT (chr & 0xf);
-  char *h = str;		/* hare */
-  char *t = str;		/* tortoise */
+  char *h = str;                /* hare */
+  char *t = str;                /* tortoise */
   for (; *h; h++, t++)
     {
       if (h[0] == '%' && h[1] == c1 && h[2] == c2)
-	{
-	  *t = chr;
-	  h += 2;
-	}
+        {
+          *t = chr;
+          h += 2;
+        }
       else
-	*t = *h;
+        *t = *h;
     }
   *t = '\0';
 }
@@ -1136,27 +1136,27 @@ mkalldirs (const char *path)
   if ((stat (t, &st) == 0))
     {
       if (S_ISDIR (st.st_mode))
-	{
-	  xfree (t);
-	  return 0;
-	}
+        {
+          xfree (t);
+          return 0;
+        }
       else
-	{
-	  /* If the dir exists as a file name, remove it first.  This
-	     is *only* for Wget to work with buggy old CERN http
-	     servers.  Here is the scenario: When Wget tries to
-	     retrieve a directory without a slash, e.g.
-	     http://foo/bar (bar being a directory), CERN server will
-	     not redirect it too http://foo/bar/ -- it will generate a
-	     directory listing containing links to bar/file1,
-	     bar/file2, etc.  Wget will lose because it saves this
-	     HTML listing to a file `bar', so it cannot create the
-	     directory.  To work around this, if the file of the same
-	     name exists, we just remove it and create the directory
-	     anyway.  */
-	  DEBUGP (("Removing %s because of directory danger!\n", t));
-	  unlink (t);
-	}
+        {
+          /* If the dir exists as a file name, remove it first.  This
+             is *only* for Wget to work with buggy old CERN http
+             servers.  Here is the scenario: When Wget tries to
+             retrieve a directory without a slash, e.g.
+             http://foo/bar (bar being a directory), CERN server will
+             not redirect it too http://foo/bar/ -- it will generate a
+             directory listing containing links to bar/file1,
+             bar/file2, etc.  Wget will lose because it saves this
+             HTML listing to a file `bar', so it cannot create the
+             directory.  To work around this, if the file of the same
+             name exists, we just remove it and create the directory
+             anyway.  */
+          DEBUGP (("Removing %s because of directory danger!\n", t));
+          unlink (t);
+        }
     }
   res = make_directory (t);
   if (res != 0)
@@ -1185,9 +1185,9 @@ struct growable {
    the current TAIL position.  If necessary, this will grow the string
    and update its allocated size.  If the string is already large
    enough to take TAIL+APPEND_COUNT characters, this does nothing.  */
-#define GROW(g, append_size) do {					\
-  struct growable *G_ = g;						\
-  DO_REALLOC (G_->base, G_->size, G_->tail + append_size, char);	\
+#define GROW(g, append_size) do {                                       \
+  struct growable *G_ = g;                                              \
+  DO_REALLOC (G_->base, G_->size, G_->tail + append_size, char);        \
 } while (0)
 
 /* Return the tail position of the string. */
@@ -1220,9 +1220,9 @@ append_char (char ch, struct growable *dest)
 }
 
 enum {
-  filechr_not_unix    = 1,	/* unusable on Unix, / and \0 */
-  filechr_not_windows = 2,	/* unusable on Windows, one of \|/<>?:*" */
-  filechr_control     = 4	/* a control character, e.g. 0-31 */
+  filechr_not_unix    = 1,      /* unusable on Unix, / and \0 */
+  filechr_not_windows = 2,      /* unusable on Windows, one of \|/<>?:*" */
+  filechr_control     = 4       /* a control character, e.g. 0-31 */
 };
 
 #define FILE_CHAR_TEST(c, mask) (filechr_table[(unsigned char)(c)] & (mask))
@@ -1297,7 +1297,7 @@ UWC,  C,  C,  C,   C,  C,  C,  C,   /* NUL SOH STX ETX  EOT ENQ ACK BEL */
 
 static void
 append_uri_pathel (const char *b, const char *e, bool escaped,
-		   struct growable *dest)
+                   struct growable *dest)
 {
   const char *p;
   int quoted, outlen;
@@ -1344,24 +1344,24 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
   if (!quoted)
     {
       /* If there's nothing to quote, we can simply append the string
-	 without processing it again.  */
+         without processing it again.  */
       memcpy (TAIL (dest), b, outlen);
     }
   else
     {
       char *q = TAIL (dest);
       for (p = b; p < e; p++)
-	{
-	  if (!FILE_CHAR_TEST (*p, mask))
-	    *q++ = *p;
-	  else
-	    {
-	      unsigned char ch = *p;
-	      *q++ = '%';
-	      *q++ = XNUM_TO_DIGIT (ch >> 4);
-	      *q++ = XNUM_TO_DIGIT (ch & 0xf);
-	    }
-	}
+        {
+          if (!FILE_CHAR_TEST (*p, mask))
+            *q++ = *p;
+          else
+            {
+              unsigned char ch = *p;
+              *q++ = '%';
+              *q++ = XNUM_TO_DIGIT (ch >> 4);
+              *q++ = XNUM_TO_DIGIT (ch & 0xf);
+            }
+        }
       assert (q - TAIL (dest) == outlen);
     }
   
@@ -1378,7 +1378,7 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
             *q = TOUPPER (*q);
         }
     }
-	  
+          
   TAIL_INCR (dest, outlen);
 }
 
@@ -1409,13 +1409,13 @@ append_dir_structure (const struct url *u, struct growable *dest)
   for (; (next = strchr (pathel, '/')) != NULL; pathel = next + 1)
     {
       if (cut-- > 0)
-	continue;
+        continue;
       if (pathel == next)
-	/* Ignore empty pathels.  */
-	continue;
+        /* Ignore empty pathels.  */
+        continue;
 
       if (dest->tail)
-	append_char ('/', dest);
+        append_char ('/', dest);
       append_uri_pathel (pathel, next, true, dest);
     }
 }
@@ -1426,7 +1426,7 @@ append_dir_structure (const struct url *u, struct growable *dest)
 char *
 url_file_name (const struct url *u)
 {
-  struct growable fnres;	/* stands for "file name result" */
+  struct growable fnres;        /* stands for "file name result" */
 
   const char *u_file, *u_query;
   char *fname, *unique;
@@ -1445,30 +1445,30 @@ url_file_name (const struct url *u)
   if (opt.dirstruct)
     {
       if (opt.protocol_directories)
-	{
-	  if (fnres.tail)
-	    append_char ('/', &fnres);
-	  append_string (supported_schemes[u->scheme].name, &fnres);
-	}
+        {
+          if (fnres.tail)
+            append_char ('/', &fnres);
+          append_string (supported_schemes[u->scheme].name, &fnres);
+        }
       if (opt.add_hostdir)
-	{
-	  if (fnres.tail)
-	    append_char ('/', &fnres);
-	  if (0 != strcmp (u->host, ".."))
-	    append_string (u->host, &fnres);
-	  else
-	    /* Host name can come from the network; malicious DNS may
-	       allow ".." to be resolved, causing us to write to
-	       "../<file>".  Defang such host names.  */
-	    append_string ("%2E%2E", &fnres);
-	  if (u->port != scheme_default_port (u->scheme))
-	    {
-	      char portstr[24];
-	      number_to_string (portstr, u->port);
-	      append_char (FN_PORT_SEP, &fnres);
-	      append_string (portstr, &fnres);
-	    }
-	}
+        {
+          if (fnres.tail)
+            append_char ('/', &fnres);
+          if (0 != strcmp (u->host, ".."))
+            append_string (u->host, &fnres);
+          else
+            /* Host name can come from the network; malicious DNS may
+               allow ".." to be resolved, causing us to write to
+               "../<file>".  Defang such host names.  */
+            append_string ("%2E%2E", &fnres);
+          if (u->port != scheme_default_port (u->scheme))
+            {
+              char portstr[24];
+              number_to_string (portstr, u->port);
+              append_char (FN_PORT_SEP, &fnres);
+              append_string (portstr, &fnres);
+            }
+        }
 
       append_dir_structure (u, &fnres);
     }
@@ -1528,8 +1528,8 @@ url_file_name (const struct url *u)
 static bool
 path_simplify (char *path)
 {
-  char *h = path;		/* hare */
-  char *t = path;		/* tortoise */
+  char *h = path;               /* hare */
+  char *t = path;               /* tortoise */
   char *end = strchr (path, '\0');
 
   while (h < end)
@@ -1537,45 +1537,45 @@ path_simplify (char *path)
       /* Hare should be at the beginning of a path element. */
 
       if (h[0] == '.' && (h[1] == '/' || h[1] == '\0'))
-	{
-	  /* Ignore "./". */
-	  h += 2;
-	}
+        {
+          /* Ignore "./". */
+          h += 2;
+        }
       else if (h[0] == '.' && h[1] == '.' && (h[2] == '/' || h[2] == '\0'))
-	{
-	  /* Handle "../" by retreating the tortoise by one path
-	     element -- but not past beggining.  */
-	  if (t > path)
-	    {
-	      /* Move backwards until T hits the beginning of the
-		 previous path element or the beginning of path. */
-	      for (--t; t > path && t[-1] != '/'; t--)
-		;
-	    }
-	  h += 3;
-	}
+        {
+          /* Handle "../" by retreating the tortoise by one path
+             element -- but not past beggining.  */
+          if (t > path)
+            {
+              /* Move backwards until T hits the beginning of the
+                 previous path element or the beginning of path. */
+              for (--t; t > path && t[-1] != '/'; t--)
+                ;
+            }
+          h += 3;
+        }
       else
-	{
-	  /* A regular path element.  If H hasn't advanced past T,
-	     simply skip to the next path element.  Otherwise, copy
-	     the path element until the next slash.  */
-	  if (t == h)
-	    {
-	      /* Skip the path element, including the slash.  */
-	      while (h < end && *h != '/')
-		t++, h++;
-	      if (h < end)
-		t++, h++;
-	    }
-	  else
-	    {
-	      /* Copy the path element, including the final slash.  */
-	      while (h < end && *h != '/')
-		*t++ = *h++;
-	      if (h < end)
-		*t++ = *h++;
-	    }
-	}
+        {
+          /* A regular path element.  If H hasn't advanced past T,
+             simply skip to the next path element.  Otherwise, copy
+             the path element until the next slash.  */
+          if (t == h)
+            {
+              /* Skip the path element, including the slash.  */
+              while (h < end && *h != '/')
+                t++, h++;
+              if (h < end)
+                t++, h++;
+            }
+          else
+            {
+              /* Copy the path element, including the final slash.  */
+              while (h < end && *h != '/')
+                *t++ = *h++;
+              if (h < end)
+                *t++ = *h++;
+            }
+        }
     }
 
   if (t != h)
@@ -1594,7 +1594,7 @@ path_end (const char *url)
   enum url_scheme scheme = url_scheme (url);
   const char *seps;
   if (scheme == SCHEME_INVALID)
-    scheme = SCHEME_HTTP;	/* use http semantics for rel links */
+    scheme = SCHEME_HTTP;       /* use http semantics for rel links */
   /* +2 to ignore the first two separators ':' and '/' */
   seps = init_seps (scheme) + 2;
   return strpbrk_or_eos (url, seps);
@@ -1638,7 +1638,7 @@ uri_merge (const char *base, const char *link)
   else if (*link == '?')
     {
       /* LINK points to the same location, but changes the query
-	 string.  Examples: */
+         string.  Examples: */
       /* uri_merge("path",         "?new") -> "path?new"     */
       /* uri_merge("path?foo",     "?new") -> "path?new"     */
       /* uri_merge("path?foo#bar", "?new") -> "path?new"     */
@@ -1658,7 +1658,7 @@ uri_merge (const char *base, const char *link)
       int baselength;
       const char *end1 = strchr (base, '#');
       if (!end1)
-	end1 = base + strlen (base);
+        end1 = base + strlen (base);
       baselength = end1 - base;
       merge = xmalloc (baselength + linklength + 1);
       memcpy (merge, base, baselength);
@@ -1668,8 +1668,8 @@ uri_merge (const char *base, const char *link)
   else if (*link == '/' && *(link + 1) == '/')
     {
       /* LINK begins with "//" and so is a net path: we need to
-	 replace everything after (and including) the double slash
-	 with LINK. */
+         replace everything after (and including) the double slash
+         with LINK. */
 
       /* uri_merge("foo", "//new/bar")            -> "//new/bar"      */
       /* uri_merge("//old/foo", "//new/bar")      -> "//new/bar"      */
@@ -1682,112 +1682,112 @@ uri_merge (const char *base, const char *link)
       /* Look for first slash. */
       slash = memchr (base, '/', end - base);
       /* If found slash and it is a double slash, then replace
-	 from this point, else default to replacing from the
-	 beginning.  */
+         from this point, else default to replacing from the
+         beginning.  */
       if (slash && *(slash + 1) == '/')
-	start_insert = slash;
+        start_insert = slash;
       else
-	start_insert = base;
+        start_insert = base;
 
       span = start_insert - base;
       merge = xmalloc (span + linklength + 1);
       if (span)
-	memcpy (merge, base, span);
+        memcpy (merge, base, span);
       memcpy (merge + span, link, linklength);
       merge[span + linklength] = '\0';
     }
   else if (*link == '/')
     {
       /* LINK is an absolute path: we need to replace everything
-	 after (and including) the FIRST slash with LINK.
+         after (and including) the FIRST slash with LINK.
 
-	 So, if BASE is "http://host/whatever/foo/bar", and LINK is
-	 "/qux/xyzzy", our result should be
-	 "http://host/qux/xyzzy".  */
+         So, if BASE is "http://host/whatever/foo/bar", and LINK is
+         "/qux/xyzzy", our result should be
+         "http://host/qux/xyzzy".  */
       int span;
       const char *slash;
       const char *start_insert = NULL; /* for gcc to shut up. */
       const char *pos = base;
       bool seen_slash_slash = false;
       /* We're looking for the first slash, but want to ignore
-	 double slash. */
+         double slash. */
     again:
       slash = memchr (pos, '/', end - pos);
       if (slash && !seen_slash_slash)
-	if (*(slash + 1) == '/')
-	  {
-	    pos = slash + 2;
-	    seen_slash_slash = true;
-	    goto again;
-	  }
+        if (*(slash + 1) == '/')
+          {
+            pos = slash + 2;
+            seen_slash_slash = true;
+            goto again;
+          }
 
       /* At this point, SLASH is the location of the first / after
-	 "//", or the first slash altogether.  START_INSERT is the
-	 pointer to the location where LINK will be inserted.  When
-	 examining the last two examples, keep in mind that LINK
-	 begins with '/'. */
+         "//", or the first slash altogether.  START_INSERT is the
+         pointer to the location where LINK will be inserted.  When
+         examining the last two examples, keep in mind that LINK
+         begins with '/'. */
 
       if (!slash && !seen_slash_slash)
-	/* example: "foo" */
-	/*           ^    */
-	start_insert = base;
+        /* example: "foo" */
+        /*           ^    */
+        start_insert = base;
       else if (!slash && seen_slash_slash)
-	/* example: "http://foo" */
-	/*                     ^ */
-	start_insert = end;
+        /* example: "http://foo" */
+        /*                     ^ */
+        start_insert = end;
       else if (slash && !seen_slash_slash)
-	/* example: "foo/bar" */
-	/*           ^        */
-	start_insert = base;
+        /* example: "foo/bar" */
+        /*           ^        */
+        start_insert = base;
       else if (slash && seen_slash_slash)
-	/* example: "http://something/" */
-	/*                           ^  */
-	start_insert = slash;
+        /* example: "http://something/" */
+        /*                           ^  */
+        start_insert = slash;
 
       span = start_insert - base;
       merge = xmalloc (span + linklength + 1);
       if (span)
-	memcpy (merge, base, span);
+        memcpy (merge, base, span);
       memcpy (merge + span, link, linklength);
       merge[span + linklength] = '\0';
     }
   else
     {
       /* LINK is a relative URL: we need to replace everything
-	 after last slash (possibly empty) with LINK.
+         after last slash (possibly empty) with LINK.
 
-	 So, if BASE is "whatever/foo/bar", and LINK is "qux/xyzzy",
-	 our result should be "whatever/foo/qux/xyzzy".  */
+         So, if BASE is "whatever/foo/bar", and LINK is "qux/xyzzy",
+         our result should be "whatever/foo/qux/xyzzy".  */
       bool need_explicit_slash = false;
       int span;
       const char *start_insert;
       const char *last_slash = find_last_char (base, end, '/');
       if (!last_slash)
-	{
-	  /* No slash found at all.  Replace what we have with LINK. */
-	  start_insert = base;
-	}
+        {
+          /* No slash found at all.  Replace what we have with LINK. */
+          start_insert = base;
+        }
       else if (last_slash && last_slash >= base + 2
-	       && last_slash[-2] == ':' && last_slash[-1] == '/')
-	{
-	  /* example: http://host"  */
-	  /*                      ^ */
-	  start_insert = end + 1;
-	  need_explicit_slash = true;
-	}
+               && last_slash[-2] == ':' && last_slash[-1] == '/')
+        {
+          /* example: http://host"  */
+          /*                      ^ */
+          start_insert = end + 1;
+          need_explicit_slash = true;
+        }
       else
-	{
-	  /* example: "whatever/foo/bar" */
-	  /*                        ^    */
-	  start_insert = last_slash + 1;
-	}
+        {
+          /* example: "whatever/foo/bar" */
+          /*                        ^    */
+          start_insert = last_slash + 1;
+        }
 
       span = start_insert - base;
       merge = xmalloc (span + linklength + 1);
       if (span)
-	memcpy (merge, base, span);
+        memcpy (merge, base, span);
       if (need_explicit_slash)
-	merge[span - 1] = '/';
+        merge[span - 1] = '/';
       memcpy (merge + span, link, linklength);
       merge[span + linklength] = '\0';
     }
@@ -1795,10 +1795,10 @@ uri_merge (const char *base, const char *link)
   return merge;
 }
 
-#define APPEND(p, s) do {			\
-  int len = strlen (s);				\
-  memcpy (p, s, len);				\
-  p += len;					\
+#define APPEND(p, s) do {                       \
+  int len = strlen (s);                         \
+  memcpy (p, s, len);                           \
+  p += len;                                     \
 } while (0)
 
 /* Use this instead of password when the actual password is supposed
@@ -1834,12 +1834,12 @@ url_string (const struct url *url, bool hide_password)
     {
       quoted_user = url_escape_allow_passthrough (url->user);
       if (url->passwd)
-	{
-	  if (hide_password)
-	    quoted_passwd = HIDDEN_PASSWORD;
-	  else
-	    quoted_passwd = url_escape_allow_passthrough (url->passwd);
-	}
+        {
+          if (hide_password)
+            quoted_passwd = HIDDEN_PASSWORD;
+          else
+            quoted_passwd = url_escape_allow_passthrough (url->passwd);
+        }
     }
 
   /* In the unlikely event that the host name contains non-printable
@@ -1854,17 +1854,17 @@ url_string (const struct url *url, bool hide_password)
   brackets_around_host = strchr (quoted_host, ':') != NULL;
 
   size = (strlen (scheme_str)
-	  + strlen (quoted_host)
-	  + (brackets_around_host ? 2 : 0)
-	  + fplen
-	  + 1);
+          + strlen (quoted_host)
+          + (brackets_around_host ? 2 : 0)
+          + fplen
+          + 1);
   if (url->port != scheme_port)
     size += 1 + numdigit (url->port);
   if (quoted_user)
     {
       size += 1 + strlen (quoted_user);
       if (quoted_passwd)
-	size += 1 + strlen (quoted_passwd);
+        size += 1 + strlen (quoted_passwd);
     }
 
   p = result = xmalloc (size);
@@ -1874,10 +1874,10 @@ url_string (const struct url *url, bool hide_password)
     {
       APPEND (p, quoted_user);
       if (quoted_passwd)
-	{
-	  *p++ = ':';
-	  APPEND (p, quoted_passwd);
-	}
+        {
+          *p++ = ':';
+          APPEND (p, quoted_passwd);
+        }
       *p++ = '@';
     }
 
@@ -1926,6 +1926,64 @@ schemes_are_similar_p (enum url_scheme a, enum url_scheme b)
   return false;
 }
 
+static int
+getchar_from_escaped_string (const char *str, char *c)
+{  
+  const char *p = str;
+
+  assert (str && *str);
+  assert (c);
+  
+  if (p[0] == '%')
+    {
+      if (p[1] == 0)
+        return 0; /* error: invalid string */
+
+      if (p[1] == '%')
+        {
+          *c = '%';
+          return 1;
+        }
+      else
+        {
+          if (p[2] == 0)
+            return 0; /* error: invalid string */
+
+          *c = X2DIGITS_TO_NUM (p[1], p[2]);
+
+          return 3;
+        }
+    }
+  else
+    {
+      *c = p[0];
+    }
+
+  return 1;
+}
+
+bool
+are_urls_equal (const char *u1, const char *u2)
+{
+  const char *p, *q;
+  int pp, qq;
+  char ch1, ch2;
+
+  p = u1;
+  q = u2;
+
+  while (*p 
+         && (pp = getchar_from_escaped_string (p, &ch1))
+         && (qq = getchar_from_escaped_string (q, &ch2))
+         && (TOLOWER(ch1) == TOLOWER(ch2)))
+    {
+      p += pp;
+      q += qq;
+    }
+  
+  return (*p == 0 && *q == 0 ? true : false);
+}
+
 #if 0
 /* Debugging and testing support for path_simplify. */
 
@@ -1948,16 +2006,16 @@ run_test (char *test, char *expected_result, bool expected_change)
   if (0 != strcmp (test_copy, expected_result))
     {
       printf ("Failed path_simplify(\"%s\"): expected \"%s\", got \"%s\".\n",
-	      test, expected_result, test_copy);
+              test, expected_result, test_copy);
     }
   if (modified != expected_change)
     {
       if (expected_change)
-	printf ("Expected modification with path_simplify(\"%s\").\n",
-		test);
+        printf ("Expected modification with path_simplify(\"%s\").\n",
+                test);
       else
-	printf ("Expected no modification with path_simplify(\"%s\").\n",
-		test);
+        printf ("Expected no modification with path_simplify(\"%s\").\n",
+                test);
     }
   xfree (test_copy);
 }
@@ -1969,28 +2027,28 @@ test_path_simplify (void)
     char *test, *result;
     bool should_modify;
   } tests[] = {
-    { "",			"",		false },
-    { ".",			"",		true },
-    { "./",			"",		true },
-    { "..",			"",		true },
-    { "../",			"",		true },
-    { "foo",			"foo",		false },
-    { "foo/bar",		"foo/bar",	false },
-    { "foo///bar",		"foo///bar",	false },
-    { "foo/.",			"foo/",		true },
-    { "foo/./",			"foo/",		true },
-    { "foo./",			"foo./",	false },
-    { "foo/../bar",		"bar",		true },
-    { "foo/../bar/",		"bar/",		true },
-    { "foo/bar/..",		"foo/",		true },
-    { "foo/bar/../x",		"foo/x",	true },
-    { "foo/bar/../x/",		"foo/x/",	true },
-    { "foo/..",			"",		true },
-    { "foo/../..",		"",		true },
-    { "foo/../../..",		"",		true },
-    { "foo/../../bar/../../baz", "baz",		true },
-    { "a/b/../../c",		"c",		true },
-    { "./a/../b",		"b",		true }
+    { "",                       "",             false },
+    { ".",                      "",             true },
+    { "./",                     "",             true },
+    { "..",                     "",             true },
+    { "../",                    "",             true },
+    { "foo",                    "foo",          false },
+    { "foo/bar",                "foo/bar",      false },
+    { "foo///bar",              "foo///bar",    false },
+    { "foo/.",                  "foo/",         true },
+    { "foo/./",                 "foo/",         true },
+    { "foo./",                  "foo./",        false },
+    { "foo/../bar",             "bar",          true },
+    { "foo/../bar/",            "bar/",         true },
+    { "foo/bar/..",             "foo/",         true },
+    { "foo/bar/../x",           "foo/x",        true },
+    { "foo/bar/../x/",          "foo/x/",       true },
+    { "foo/..",                 "",             true },
+    { "foo/../..",              "",             true },
+    { "foo/../../..",           "",             true },
+    { "foo/../../bar/../../baz", "baz",         true },
+    { "a/b/../../c",            "c",            true },
+    { "./a/../b",               "b",            true }
   };
   int i;
 
@@ -2036,5 +2094,33 @@ test_append_uri_pathel()
   return NULL;
 }
 
+const char*
+test_are_urls_equal()
+{
+  int i;
+  struct {
+    char *url1;
+    char *url2;
+    bool expected_result;
+  } test_array[] = {
+    { "http://www.adomain.com/apath/", "http://www.adomain.com/apath/",       true },
+    { "http://www.adomain.com/apath/", "http://www.adomain.com/anotherpath/", false },
+    { "http://www.adomain.com/apath/", "http://www.anotherdomain.com/path/",  false },
+    { "http://www.adomain.com/~path/", "http://www.adomain.com/%7epath/",     true },
+  };
+  
+  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 
+    {
+      mu_assert ("test_are_urls_equal: wrong result", 
+                 are_urls_equal (test_array[i].url1, test_array[i].url2) == test_array[i].expected_result);
+    }
+
+  return NULL;
+}
+
 #endif /* TESTING */
+
+/*
+ * vim: et ts=2 sw=2
+ */
 

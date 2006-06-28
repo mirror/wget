@@ -1,3 +1,22 @@
+2006-06-28  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* res.c: Implemented is_robots_txt_url function for detection of
+	robots.txt URLs and related test routine.
+
+	* res.h: Ditto.
+
+	* url.c: Implemented are_urls_equal function for URL comparison and
+	related testing routine.
+
+	* url.h: Ditto.
+
+	* convert.c: Fixes for recursive spider mode: don't consider
+	non-existing robots.txt as a broken link, and use are_urls_equal
+	instead of strcasecmp for referrer URLs comparison.
+
+	* test.c: Call tests routines for are_urls_equal and 
+	is_robots_txt_url.
+
 2006-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.h (wgint): Typedef to any 64-bit (or larger) type we can
