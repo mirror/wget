@@ -3,7 +3,7 @@
 @c %**start of header
 @setfilename wget.info
 @include version.texi
-@set UPDATED Apr 2005
+@set UPDATED Jun 2006
 @settitle GNU Wget @value{VERSION} Manual
 @c Disable the monstrous rectangles beside overfull hbox-es.
 @finalout
@@ -31,7 +31,7 @@ This file documents the the GNU Wget utility for downloading network
 data.
 
 @c man begin COPYRIGHT
-Copyright @copyright{} 1996--2005 Free Software Foundation, Inc.
+Copyright @copyright{} 1996--2006 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -45,9 +45,8 @@ notice identical to this one except for the removal of this paragraph
 @end ignore
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.2 or
-any later version published by the Free Software Foundation; with the
-Invariant Sections being ``GNU General Public License'' and ``GNU Free
-Documentation License'', with no Front-Cover Texts, and with no
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no
 Back-Cover Texts.  A copy of the license is included in the section
 entitled ``GNU Free Documentation License''.
 @c man end
@@ -70,7 +69,7 @@ GNU Info entry for @file{wget}.
 
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1996--2005, Free Software Foundation, Inc.
+Copyright @copyright{} 1996--2006, Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.2 or
@@ -88,7 +87,7 @@ entitled ``GNU Free Documentation License''.
 This manual documents version @value{VERSION} of GNU Wget, the freely
 available utility for network downloads.
 
-Copyright @copyright{} 1996--2005 Free Software Foundation, Inc.
+Copyright @copyright{} 1996--2006 Free Software Foundation, Inc.
 
 @menu
 * Overview::            Features of Wget.
@@ -3862,9 +3861,8 @@ In addition to this, this manual is free in the same sense:
 @quotation
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.2 or
-any later version published by the Free Software Foundation; with the
-Invariant Sections being ``GNU General Public License'' and ``GNU Free
-Documentation License'', with no Front-Cover Texts, and with no
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no
 Back-Cover Texts.  A copy of the license is included in the section
 entitled ``GNU Free Documentation License''.
 @end quotation

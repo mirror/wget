@@ -1,3 +1,8 @@
+2006-06-28  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* wget.texi: Removed invariant status to the GPL and GFDL sections.
+	Changed UPDATED to Jun 2006. Updated copyright notice to include 2006.
+
 2006-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* wget.texi (Recursive Accept/Reject Options): Document
