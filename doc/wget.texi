@@ -3,7 +3,7 @@
 @c %**start of header
 @setfilename wget.info
 @include version.texi
-@set UPDATED Jun 2006
+@set UPDATED Jul 2006
 @settitle GNU Wget @value{VERSION} Manual
 @c Disable the monstrous rectangles beside overfull hbox-es.
 @finalout
@@ -61,6 +61,7 @@ entitled ``GNU Free Documentation License''.
 @ignore
 @c man begin AUTHOR
 Originally written by Hrvoje Niksic <hniksic@xemacs.org>.
+Currently maintained by Mauro Tortonesi <mauro@ferrara.linux.it>.
 @c man end
 @c man begin SEEALSO
 GNU Info entry for @file{wget}.
@@ -830,7 +831,9 @@ actions of one.
 Don't use proxies, even if the appropriate @code{*_proxy} environment
 variable is defined.
 
+@c man end
 For more information about the use of proxies with Wget, @xref{Proxies}.
+@c man begin OPTIONS
 
 @cindex quota
 @item -Q @var{quota}
@@ -3514,21 +3517,20 @@ me).
 @cindex contributors
 
 @iftex
-GNU Wget was written by Hrvoje Nik@v{s}i@'{c} @email{hniksic@@xemacs.org}.
+GNU Wget was written by Hrvoje Nik@v{s}i@'{c} @email{hniksic@@xemacs.org},
 @end iftex
 @ifnottex
-GNU Wget was written by Hrvoje Niksic @email{hniksic@@xemacs.org}.
+GNU Wget was written by Hrvoje Niksic @email{hniksic@@xemacs.org},
 @end ifnottex
-However, its development could never have gone as far as it has, were it
-not for the help of many people, either with bug reports, feature
-proposals, patches, or letters saying ``Thanks!''.
+and it is currently maintained by Mauro Tortonesi @email{mauro@@ferrara.linux.it}.
+
+However, the development of Wget could never have gone as far as it has, were
+it not for the help of many people, either with bug reports, feature proposals,
+patches, or letters saying ``Thanks!''.
 
 Special thanks goes to the following people (no particular order):
 
 @itemize @bullet
-@item Mauro Tortonesi---contributed high-quality IPv6 code and many
-other fixes.
-
 @item Dan Harkless---contributed a lot of code and documentation of
 extremely high quality, as well as the @code{--page-requisites} and
 related options.  He was the principal maintainer for some time and
