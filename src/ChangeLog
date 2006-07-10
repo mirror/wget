@@ -1,3 +1,8 @@
+2006-06-28  KJKHyperion  <hackbunny@reactos.com>
+
+	* url.c (filechr_table): Mark DEL (0x7f) as a control character
+	and | as a character Windows can't handle.
+
 2006-06-28  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* res.c: Implemented is_robots_txt_url function for detection of
