@@ -1,7 +1,13 @@
 #!/bin/bash
 
-#cd po
 for i in *.po
 do 
-	wget http://www.iro.umontreal.ca/translation/maint/wget/$i -O $i
+	mv $i $i.old
+
+	wget http://www.iro.umontreal.ca/translation/maint/wget/$i
+
+	if test -f $i
+	then 
+		rm -f $i.old
+	fi
 done
