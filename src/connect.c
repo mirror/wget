@@ -1,5 +1,5 @@
 /* Establishing and handling network connections.
-   Copyright (C) 1996-2005 Free Software Foundation, Inc.
+   Copyright (C) 1996-2006 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -764,7 +764,7 @@ fd_register_transport (int fd, struct transport_implementation *imp, void *ctx)
   info->ctx = ctx;
   if (!transport_map)
     transport_map = hash_table_new (0, NULL, NULL);
-  hash_table_put (transport_map, (void *) fd, info);
+  hash_table_put (transport_map, (void *)(intptr_t) fd, info);
   ++transport_map_modified_tick;
 }
 
@@ -775,7 +775,7 @@ fd_register_transport (int fd, struct transport_implementation *imp, void *ctx)
 void *
 fd_transport_context (int fd)
 {
-  struct transport_info *info = hash_table_get (transport_map, (void *) fd);
+  struct transport_info *info = hash_table_get (transport_map, (void *)(intptr_t) fd);
   return info->ctx;
 }
 
@@ -798,7 +798,7 @@ fd_transport_context (int fd)
     info = last_info;							\
   else									\
     {									\
-      info = hash_table_get (transport_map, (void *) fd);		\
+      info = hash_table_get (transport_map, (void *)(intptr_t) fd);	\
       last_fd = fd;							\
       last_info = info;							\
       last_tick = transport_map_modified_tick;				\
@@ -916,7 +916,7 @@ fd_errstr (int fd)
      in case of error, never in a tight loop.  */
   struct transport_info *info = NULL;
   if (transport_map)
-    info = hash_table_get (transport_map, (void *) fd);
+    info = hash_table_get (transport_map, (void *)(intptr_t) fd);
 
   if (info && info->imp->errstr)
     {
@@ -941,7 +941,7 @@ fd_close (int fd)
      per socket, so that particular optimization wouldn't work.  */
   info = NULL;
   if (transport_map)
-    info = hash_table_get (transport_map, (void *) fd);
+    info = hash_table_get (transport_map, (void *)(intptr_t) fd);
 
   if (info && info->imp->closer)
     info->imp->closer (fd, info->ctx);
@@ -950,7 +950,7 @@ fd_close (int fd)
 
   if (info)
     {
-      hash_table_remove (transport_map, (void *) fd);
+      hash_table_remove (transport_map, (void *)(intptr_t) fd);
       xfree (info);
       ++transport_map_modified_tick;
     }

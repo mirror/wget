@@ -1,5 +1,5 @@
 /* HTML parser for Wget.
-   Copyright (C) 1998-2005 Free Software Foundation, Inc.
+   Copyright (C) 1998-2006 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 

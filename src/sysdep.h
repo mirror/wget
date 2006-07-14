@@ -1,5 +1,5 @@
 /* Dirty system-dependent hacks.
-   Copyright (C) 1996-2005 Free Software Foundation, Inc.
+   Copyright (C) 1996-2006 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -208,6 +208,11 @@ typedef unsigned short uint32_t;
 /* If uintptr_t isn't defined, simply typedef it to unsigned long. */
 #ifndef HAVE_UINTPTR_T
 typedef unsigned long uintptr_t;
+#endif
+
+/* If intptr_t isn't defined, simply typedef it to long. */
+#ifndef HAVE_INTPTR_T
+typedef long intptr_t;
 #endif
 
 #endif /* SYSDEP_H */

@@ -1,4 +1,19 @@
-2006-06-28  KJKHyperion  <hackbunny@reactos.com>
+2006-07-14  Mauro Tortonesi  <mauro@ferrara.linux.it>
+	
+	* sysdep.h: If intptr_t isn't defined, simply typedef it to long.
+
+	* http.c: Added explicit cast to int in logprintf call to remove
+	compiler warnings on 64-bit platforms.
+
+	* connect.c: Added a few casts to intptr_t to remove compiler warnings
+	on 64-bit platforms.
+	
+	* main.c: Disable -r, -p and -N when -O is used. Disable -k when -O is
+	used and multiple URLs are given. Update maintainer information.
+	
+	* all: Update copyright information.
+	
+2006-07-10  KJKHyperion  <hackbunny@reactos.com>
 
 	* url.c (filechr_table): Mark DEL (0x7f) as a control character
 	and | as a character Windows can't handle.

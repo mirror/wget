@@ -1,5 +1,5 @@
 /* Command line parsing.
-   Copyright (C) 1996-2005 Free Software Foundation, Inc.
+   Copyright (C) 1996-2006 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -49,9 +49,9 @@ so, delete this exception statement from your version.  */
 #include "recur.h"
 #include "host.h"
 #include "url.h"
-#include "progress.h"		/* for progress_handle_sigwinch */
+#include "progress.h"           /* for progress_handle_sigwinch */
 #include "convert.h"
-#include "http.h"		/* for save_cookies */
+#include "http.h"               /* for save_cookies */
 
 /* On GNU system this will include system-wide getopt.h. */
 #include "getopt.h"
@@ -120,8 +120,8 @@ struct cmdline_option {
     OPT__NO,
     OPT__PARENT
   } type;
-  const void *data;		/* for standard options */
-  int argtype;			/* for non-standard options */
+  const void *data;             /* for standard options */
+  int argtype;                  /* for non-standard options */
 };
 
 static struct cmdline_option option_data[] =
@@ -291,51 +291,51 @@ init_switches (void)
       struct option *longopt;
 
       if (!opt->long_name)
-	/* The option is disabled. */
-	continue;
+        /* The option is disabled. */
+        continue;
 
       longopt = &long_options[o++];
       longopt->name = opt->long_name;
       longopt->val = i;
       if (opt->short_name)
-	{
-	  *p++ = opt->short_name;
-	  optmap[opt->short_name - 32] = longopt - long_options;
-	}
+        {
+          *p++ = opt->short_name;
+          optmap[opt->short_name - 32] = longopt - long_options;
+        }
       switch (opt->type)
-	{
-	case OPT_VALUE:
-	  longopt->has_arg = required_argument;
+        {
+        case OPT_VALUE:
+          longopt->has_arg = required_argument;
           if (opt->short_name)
-	    *p++ = ':';
-	  break;
-	case OPT_BOOLEAN:
-	  /* Specify an optional argument for long options, so that
-	     --option=off works the same as --no-option, for
-	     compatibility with pre-1.10 Wget.  However, don't specify
-	     optional arguments short-option booleans because they
-	     prevent combining of short options.  */
-	  longopt->has_arg = optional_argument;
-	  /* For Boolean options, add the "--no-FOO" variant, which is
-	     identical to "--foo", except it has opposite meaning and
-	     it doesn't allow an argument.  */
-	  longopt = &long_options[o++];
-	  longopt->name = no_prefix (opt->long_name);
-	  longopt->has_arg = no_argument;
-	  /* Mask the value so we'll be able to recognize that we're
-	     dealing with the false value.  */
-	  longopt->val = i | BOOLEAN_NEG_MARKER;
-	  break;
-	default:
-	  assert (opt->argtype != -1);
-	  longopt->has_arg = opt->argtype;
-	  if (opt->short_name)
-	    {
-	      if (longopt->has_arg == required_argument)
-		*p++ = ':';
-	      /* Don't handle optional_argument */
-	    }
-	}
+            *p++ = ':';
+          break;
+        case OPT_BOOLEAN:
+          /* Specify an optional argument for long options, so that
+             --option=off works the same as --no-option, for
+             compatibility with pre-1.10 Wget.  However, don't specify
+             optional arguments short-option booleans because they
+             prevent combining of short options.  */
+          longopt->has_arg = optional_argument;
+          /* For Boolean options, add the "--no-FOO" variant, which is
+             identical to "--foo", except it has opposite meaning and
+             it doesn't allow an argument.  */
+          longopt = &long_options[o++];
+          longopt->name = no_prefix (opt->long_name);
+          longopt->has_arg = no_argument;
+          /* Mask the value so we'll be able to recognize that we're
+             dealing with the false value.  */
+          longopt->val = i | BOOLEAN_NEG_MARKER;
+          break;
+        default:
+          assert (opt->argtype != -1);
+          longopt->has_arg = opt->argtype;
+          if (opt->short_name)
+            {
+              if (longopt->has_arg == required_argument)
+                *p++ = ':';
+              /* Don't handle optional_argument */
+            }
+        }
     }
   /* Terminate short_options. */
   *p = '\0';
@@ -622,7 +622,7 @@ Recursive accept/reject:\n"),
   int i;
 
   printf (_("GNU Wget %s, a non-interactive network retriever.\n"),
-	  version_string);
+          version_string);
   print_usage ();
 
   for (i = 0; i < countof (help); i++)
@@ -662,14 +662,16 @@ print_version (void)
 {
   printf ("GNU Wget %s\n\n", version_string);
   fputs (_("\
-Copyright (C) 2005 Free Software Foundation, Inc.\n"), stdout);
+Copyright (C) 2006 Free Software Foundation, Inc.\n"), stdout);
   fputs (_("\
 This program is distributed in the hope that it will be useful,\n\
 but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
 GNU General Public License for more details.\n"), stdout);
   fputs (_("\nOriginally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"),
-	 stdout);
+         stdout);
+  fputs (_("\nCurrently maintained by Mauro Tortonesi <mauro@ferrara.linux.it>.\n"),
+         stdout);
   exit (0);
 }
 
@@ -702,115 +704,117 @@ main (int argc, char *const *argv)
   init_switches ();
   longindex = -1;
   while ((ret = getopt_long (argc, argv,
-			     short_options, long_options, &longindex)) != -1)
+                             short_options, long_options, &longindex)) != -1)
     {
       int val;
       struct cmdline_option *opt;
 
       /* If LONGINDEX is unchanged, it means RET is referring a short
-	 option.  */
+         option.  */
       if (longindex == -1)
-	{
-	  if (ret == '?')
-	    {
-	      print_usage ();
-	      printf ("\n");
-	      printf (_("Try `%s --help' for more options.\n"), exec_name);
-	      exit (2);
-	    }
-	  /* Find the short option character in the mapping.  */
-	  longindex = optmap[ret - 32];
-	}
+        {
+          if (ret == '?')
+            {
+              print_usage ();
+              printf ("\n");
+              printf (_("Try `%s --help' for more options.\n"), exec_name);
+              exit (2);
+            }
+          /* Find the short option character in the mapping.  */
+          longindex = optmap[ret - 32];
+        }
       val = long_options[longindex].val;
 
       /* Use the retrieved value to locate the option in the
-	 option_data array, and to see if we're dealing with the
-	 negated "--no-FOO" variant of the boolean option "--foo".  */
+         option_data array, and to see if we're dealing with the
+         negated "--no-FOO" variant of the boolean option "--foo".  */
       opt = &option_data[val & ~BOOLEAN_NEG_MARKER];
       switch (opt->type)
-	{
-	case OPT_VALUE:
-	  setoptval (opt->data, optarg, opt->long_name);
-	  break;
-	case OPT_BOOLEAN:
-	  if (optarg)
-	    /* The user has specified a value -- use it. */
-	    setoptval (opt->data, optarg, opt->long_name);
-	  else
-	    {
-	      /* NEG is true for `--no-FOO' style boolean options. */
-	      bool neg = !!(val & BOOLEAN_NEG_MARKER);
-	      setoptval (opt->data, neg ? "0" : "1", opt->long_name);
-	    }
-	  break;
-	case OPT_FUNCALL:
-	  {
-	    void (*func) (void) = (void (*) (void)) opt->data;
-	    func ();
-	  }
-	  break;
-	case OPT__APPEND_OUTPUT:
-	  setoptval ("logfile", optarg, opt->long_name);
-	  append_to_log = true;
-	  break;
-	case OPT__EXECUTE:
-	  run_command (optarg);
-	  break;
-	case OPT__NO:
-	  {
-	    /* We support real --no-FOO flags now, but keep these
-	       short options for convenience and backward
-	       compatibility.  */
-	    char *p;
-	    for (p = optarg; *p; p++)
-	      switch (*p)
-		{
-		case 'v':
-		  setoptval ("verbose", "0", opt->long_name);
-		  break;
-		case 'H':
-		  setoptval ("addhostdir", "0", opt->long_name);
-		  break;
-		case 'd':
-		  setoptval ("dirstruct", "0", opt->long_name);
-		  break;
-		case 'c':
-		  setoptval ("noclobber", "1", opt->long_name);
-		  break;
-		case 'p':
-		  setoptval ("noparent", "1", opt->long_name);
-		  break;
-		default:
-		  printf (_("%s: illegal option -- `-n%c'\n"), exec_name, *p);
-		  print_usage ();
-		  printf ("\n");
-		  printf (_("Try `%s --help' for more options.\n"), exec_name);
-		  exit (1);
-		}
-	    break;
-	  }
-	case OPT__PARENT:
-	case OPT__CLOBBER:
-	  {
-	    /* The wgetrc commands are named noparent and noclobber,
-	       so we must revert the meaning of the cmdline options
-	       before passing the value to setoptval.  */
-	    bool flag = true;
-	    if (optarg)
-	      flag = (*optarg == '1' || TOLOWER (*optarg) == 'y'
-		      || (TOLOWER (optarg[0]) == 'o'
-			  && TOLOWER (optarg[1]) == 'n'));
-	    setoptval (opt->type == OPT__PARENT ? "noparent" : "noclobber",
-		       flag ? "0" : "1", opt->long_name);
-	    break;
-	  }
-	case OPT__DONT_REMOVE_LISTING:
-	  setoptval ("removelisting", "0", opt->long_name);
-	  break;
-	}
+        {
+        case OPT_VALUE:
+          setoptval (opt->data, optarg, opt->long_name);
+          break;
+        case OPT_BOOLEAN:
+          if (optarg)
+            /* The user has specified a value -- use it. */
+            setoptval (opt->data, optarg, opt->long_name);
+          else
+            {
+              /* NEG is true for `--no-FOO' style boolean options. */
+              bool neg = !!(val & BOOLEAN_NEG_MARKER);
+              setoptval (opt->data, neg ? "0" : "1", opt->long_name);
+            }
+          break;
+        case OPT_FUNCALL:
+          {
+            void (*func) (void) = (void (*) (void)) opt->data;
+            func ();
+          }
+          break;
+        case OPT__APPEND_OUTPUT:
+          setoptval ("logfile", optarg, opt->long_name);
+          append_to_log = true;
+          break;
+        case OPT__EXECUTE:
+          run_command (optarg);
+          break;
+        case OPT__NO:
+          {
+            /* We support real --no-FOO flags now, but keep these
+               short options for convenience and backward
+               compatibility.  */
+            char *p;
+            for (p = optarg; *p; p++)
+              switch (*p)
+                {
+                case 'v':
+                  setoptval ("verbose", "0", opt->long_name);
+                  break;
+                case 'H':
+                  setoptval ("addhostdir", "0", opt->long_name);
+                  break;
+                case 'd':
+                  setoptval ("dirstruct", "0", opt->long_name);
+                  break;
+                case 'c':
+                  setoptval ("noclobber", "1", opt->long_name);
+                  break;
+                case 'p':
+                  setoptval ("noparent", "1", opt->long_name);
+                  break;
+                default:
+                  printf (_("%s: illegal option -- `-n%c'\n"), exec_name, *p);
+                  print_usage ();
+                  printf ("\n");
+                  printf (_("Try `%s --help' for more options.\n"), exec_name);
+                  exit (1);
+                }
+            break;
+          }
+        case OPT__PARENT:
+        case OPT__CLOBBER:
+          {
+            /* The wgetrc commands are named noparent and noclobber,
+               so we must revert the meaning of the cmdline options
+               before passing the value to setoptval.  */
+            bool flag = true;
+            if (optarg)
+              flag = (*optarg == '1' || TOLOWER (*optarg) == 'y'
+                      || (TOLOWER (optarg[0]) == 'o'
+                          && TOLOWER (optarg[1]) == 'n'));
+            setoptval (opt->type == OPT__PARENT ? "noparent" : "noclobber",
+                       flag ? "0" : "1", opt->long_name);
+            break;
+          }
+        case OPT__DONT_REMOVE_LISTING:
+          setoptval ("removelisting", "0", opt->long_name);
+          break;
+        }
 
       longindex = -1;
     }
+
+  nurl = argc - optind;
 
   /* All user options have now been processed, so it's now safe to do
      interoption dependency checks. */
@@ -821,11 +825,11 @@ main (int argc, char *const *argv)
   if (opt.page_requisites && !opt.recursive)
     {
       /* Don't set opt.recursive here because it would confuse the FTP
-	 code.  Instead, call retrieve_tree below when either
-	 page_requisites or recursive is requested.  */
+         code.  Instead, call retrieve_tree below when either
+         page_requisites or recursive is requested.  */
       opt.reclevel = 0;
       if (!opt.no_dirstruct)
-	opt.dirstruct = 1;	/* normally handled by cmd_spec_recursive() */
+        opt.dirstruct = 1;      /* normally handled by cmd_spec_recursive() */
     }
 
   if (opt.verbose == -1)
@@ -853,8 +857,24 @@ Can't timestamp and not clobber old files at the same time.\n"));
       exit (1);
     }
 #endif
+  if (opt.output_document
+      && (opt.page_requisites
+          || opt.recursive
+          || opt.timestamping))
+    {
+          printf (_("Cannot specify -r, -p or -N if -O is given.\n"));
+          print_usage ();
+          exit (1);
+    }
+  if (opt.output_document
+      && opt.convert_links 
+      && nurl > 1)
+    {
+          printf (_("Cannot specify both -k and -O if multiple URLs are given.\n"));
+          print_usage ();
+          exit (1);
+    }
 
-  nurl = argc - optind;
   if (!nurl && !opt.input_filename)
     {
       /* No URL specified.  */
@@ -862,7 +882,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
       print_usage ();
       printf ("\n");
       /* #### Something nicer should be printed here -- similar to the
-	 pre-1.5 `--help' page.  */
+         pre-1.5 `--help' page.  */
       printf (_("Try `%s --help' for more options.\n"), exec_name);
       exit (1);
     }
@@ -881,9 +901,9 @@ Can't timestamp and not clobber old files at the same time.\n"));
     {
       char *rewritten = rewrite_shorthand_url (argv[optind]);
       if (rewritten)
-	url[i] = rewritten;
+        url[i] = rewritten;
       else
-	url[i] = xstrdup (argv[optind]);
+        url[i] = xstrdup (argv[optind]);
     }
   url[i] = NULL;
 
@@ -891,26 +911,26 @@ Can't timestamp and not clobber old files at the same time.\n"));
   log_init (opt.lfilename, append_to_log);
 
   DEBUGP (("DEBUG output created by Wget %s on %s.\n\n", version_string,
-	   OS_TYPE));
+           OS_TYPE));
 
   /* Open the output filename if necessary.  */
   if (opt.output_document)
     {
       if (HYPHENP (opt.output_document))
-	output_stream = stdout;
+        output_stream = stdout;
       else
-	{
-	  struct_fstat st;
-	  output_stream = fopen (opt.output_document,
-				 opt.always_rest ? "ab" : "wb");
-	  if (output_stream == NULL)
-	    {
-	      perror (opt.output_document);
-	      exit (1);
-	    }
-	  if (fstat (fileno (output_stream), &st) == 0 && S_ISREG (st.st_mode))
-	    output_stream_regular = true;
-	}
+        {
+          struct_fstat st;
+          output_stream = fopen (opt.output_document,
+                                 opt.always_rest ? "ab" : "wb");
+          if (output_stream == NULL)
+            {
+              perror (opt.output_document);
+              exit (1);
+            }
+          if (fstat (fileno (output_stream), &st) == 0 && S_ISREG (st.st_mode))
+            output_stream_regular = true;
+        }
     }
 
 #ifdef WINDOWS
@@ -937,7 +957,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
   signal (SIGWINCH, progress_handle_sigwinch);
 #endif
 
-  status = RETROK;		/* initialize it, just-in-case */
+  status = RETROK;              /* initialize it, just-in-case */
   /* Retrieve the URLs from argument list.  */
   for (t = url; *t; t++)
     {
@@ -945,28 +965,28 @@ Can't timestamp and not clobber old files at the same time.\n"));
       int dt;
 
       if ((opt.recursive || opt.page_requisites)
-	  && (url_scheme (*t) != SCHEME_FTP || opt.use_proxy))
-      	{
-	  int old_follow_ftp = opt.follow_ftp;
+          && (url_scheme (*t) != SCHEME_FTP || opt.use_proxy))
+        {
+          int old_follow_ftp = opt.follow_ftp;
 
-	  /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-	  if (url_scheme (*t) == SCHEME_FTP) 
-	    opt.follow_ftp = 1;
-	  
-	  status = retrieve_tree (*t);
+          /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
+          if (url_scheme (*t) == SCHEME_FTP) 
+            opt.follow_ftp = 1;
+          
+          status = retrieve_tree (*t);
 
-	  opt.follow_ftp = old_follow_ftp;
-	}
+          opt.follow_ftp = old_follow_ftp;
+        }
       else
-	status = retrieve_url (*t, &filename, &redirected_URL, NULL, &dt, opt.recursive);
+        status = retrieve_url (*t, &filename, &redirected_URL, NULL, &dt, opt.recursive);
 
       if (opt.delete_after && file_exists_p(filename))
-	{
-	  DEBUGP (("Removing file due to --delete-after in main():\n"));
-	  logprintf (LOG_VERBOSE, _("Removing %s.\n"), filename);
-	  if (unlink (filename))
-	    logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
-	}
+        {
+          DEBUGP (("Removing file due to --delete-after in main():\n"));
+          logprintf (LOG_VERBOSE, _("Removing %s.\n"), filename);
+          if (unlink (filename))
+            logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
+        }
 
       xfree_null (redirected_URL);
       xfree_null (filename);
@@ -978,8 +998,8 @@ Can't timestamp and not clobber old files at the same time.\n"));
       int count;
       status = retrieve_from_file (opt.input_filename, opt.force_html, &count);
       if (!count)
-	logprintf (LOG_NOTQUIET, _("No URLs found in %s.\n"),
-		   opt.input_filename);
+        logprintf (LOG_NOTQUIET, _("No URLs found in %s.\n"),
+                   opt.input_filename);
     }
 
   /* Print broken links. */
@@ -996,17 +1016,17 @@ Can't timestamp and not clobber old files at the same time.\n"));
       total_downloaded_bytes != 0)
     {
       logprintf (LOG_NOTQUIET,
-		 _("FINISHED --%s--\nDownloaded: %d files, %s in %s (%s)\n"),
-		 time_str (NULL),
-		 opt.numurls,
-		 human_readable (total_downloaded_bytes),
-		 secs_to_human_time (total_download_time),
-		 retr_rate (total_downloaded_bytes, total_download_time));
+                 _("FINISHED --%s--\nDownloaded: %d files, %s in %s (%s)\n"),
+                 time_str (NULL),
+                 opt.numurls,
+                 human_readable (total_downloaded_bytes),
+                 secs_to_human_time (total_download_time),
+                 retr_rate (total_downloaded_bytes, total_download_time));
       /* Print quota warning, if exceeded.  */
       if (opt.quota && total_downloaded_bytes > opt.quota)
-	logprintf (LOG_NOTQUIET,
-		   _("Download quota of %s EXCEEDED!\n"),
-		   human_readable (opt.quota));
+        logprintf (LOG_NOTQUIET,
+                   _("Download quota of %s EXCEEDED!\n"),
+                   human_readable (opt.quota));
     }
 
   if (opt.cookies_output)
@@ -1048,10 +1068,14 @@ static void
 redirect_output_signal (int sig)
 {
   const char *signal_name = (sig == SIGHUP ? "SIGHUP" :
-			     (sig == SIGUSR1 ? "SIGUSR1" :
-			      "WTF?!"));
+                             (sig == SIGUSR1 ? "SIGUSR1" :
+                              "WTF?!"));
   log_request_redirect_output (signal_name);
   progress_schedule_redirect ();
   signal (sig, redirect_output_signal);
 }
 #endif
+
+/*
+ * vim: et ts=2 sw=2
+ */
