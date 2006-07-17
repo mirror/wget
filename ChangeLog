@@ -1,3 +1,7 @@
+2006-07-17  Daniel Richard G.  <skunk@iSKUNK.ORG>
+
+	* Makefile.in: Added DESTDIR='$(DESTDIR)' to MAKEDEFS. 
+
 2006-07-14  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* configure.in: Check for intptr_t.

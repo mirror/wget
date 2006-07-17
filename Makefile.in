@@ -77,8 +77,9 @@ TAR = tar
 # flags passed to recursive makes in subdirectories
 MAKEDEFS = CC='$(CC)' CPPFLAGS='$(CPPFLAGS)' DEFS='$(DEFS)' \
 CFLAGS='$(CFLAGS)' LDFLAGS='$(LDFLAGS)' LIBS='$(LIBS)' \
-prefix='$(prefix)' exec_prefix='$(exec_prefix)' bindir='$(bindir)' \
-infodir='$(infodir)' mandir='$(mandir)' manext='$(manext)'
+DESTDIR='$(DESTDIR=)' prefix='$(prefix)' exec_prefix='$(exec_prefix)' \
+bindir='$(bindir)' infodir='$(infodir)' mandir='$(mandir)' \
+manext='$(manext)'
 
 # subdirectories in the distribution
 SUBDIRS = src doc po tests util windows
