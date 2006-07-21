@@ -1,3 +1,7 @@
+2006-07-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* init.c (commands): Correctly place "contentdisposition".
+
 2006-07-14  Mauro Tortonesi  <mauro@ferrara.linux.it>
 	
 	* sysdep.h: If intptr_t isn't defined, simply typedef it to long.

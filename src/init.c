@@ -128,9 +128,9 @@ static struct {
   { "checkcertificate", &opt.check_cert,	cmd_boolean },
 #endif
   { "connecttimeout",	&opt.connect_timeout,	cmd_time },
+  { "contentdisposition", &opt.content_disposition, cmd_boolean },
   { "continue",		&opt.always_rest,	cmd_boolean },
   { "convertlinks",	&opt.convert_links,	cmd_boolean },
-  { "contentdisposition", &opt.content_disposition, cmd_boolean },
   { "cookies",		&opt.cookies,		cmd_boolean },
   { "cutdirs",		&opt.cut_dirs,		cmd_number },
 #ifdef ENABLE_DEBUG
