@@ -2280,7 +2280,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       sleep_between_retrievals (count);
       
       /* Get the current time string.  */
-      tms = time_str (NULL);
+      tms = time_str (time (NULL));
       
       /* Print fetch message, if opt.verbose.  */
       if (opt.verbose)
@@ -2344,7 +2344,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       err = gethttp (u, &hstat, dt, proxy);
 
       /* Time?  */
-      tms = time_str (NULL);
+      tms = time_str (time (NULL));
       
       /* Get the new location (with or without the redirection).  */
       if (hstat.newloc)

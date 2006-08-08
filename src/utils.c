@@ -253,51 +253,38 @@ concat_strings (const char *str0, ...)
   return ret;
 }
 
+/* Format the provided time according to the specified format.  The
+   format is a string with format elements supported by strftime.  */
+
+static char *
+fmttime (time_t t, const char *fmt)
+{
+  static char output[32];
+  struct tm *tm = localtime(&t);
+  if (!tm)
+    abort ();
+  if (!strftime(output, sizeof(output), fmt, tm))
+    abort ();
+  return output;
+}
+
 /* Return pointer to a static char[] buffer in which zero-terminated
    string-representation of TM (in form hh:mm:ss) is printed.
 
    If TM is NULL, the current time will be used.  */
 
 char *
-time_str (time_t *tm)
+time_str (time_t t)
 {
-  static char output[15];
-  struct tm *ptm;
-  time_t secs = tm ? *tm : time (NULL);
-
-  if (secs == -1)
-    {
-      /* In case of error, return the empty string.  Maybe we should
-	 just abort if this happens?  */
-      *output = '\0';
-      return output;
-    }
-  ptm = localtime (&secs);
-  sprintf (output, "%02d:%02d:%02d", ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
-  return output;
+  return fmttime(t, "%H:%M:%S");
 }
 
 /* Like the above, but include the date: YYYY-MM-DD hh:mm:ss.  */
 
 char *
-datetime_str (time_t *tm)
+datetime_str (time_t t)
 {
-  static char output[20];	/* "YYYY-MM-DD hh:mm:ss" + \0 */
-  struct tm *ptm;
-  time_t secs = tm ? *tm : time (NULL);
-
-  if (secs == -1)
-    {
-      /* In case of error, return the empty string.  Maybe we should
-	 just abort if this happens?  */
-      *output = '\0';
-      return output;
-    }
-  ptm = localtime (&secs);
-  sprintf (output, "%04d-%02d-%02d %02d:%02d:%02d",
-	   ptm->tm_year + 1900, ptm->tm_mon + 1, ptm->tm_mday,
-	   ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
-  return output;
+  return fmttime(t, "%Y-%m-%d %H:%M:%S");
 }
 
 /* The Windows versions of the following two functions are defined in

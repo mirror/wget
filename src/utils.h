@@ -40,8 +40,8 @@ struct file_memory {
 
 #define HYPHENP(x) (*(x) == '-' && !*((x) + 1))
 
-char *time_str (time_t *);
-char *datetime_str (time_t *);
+char *time_str (time_t);
+char *datetime_str (time_t);
 
 #ifdef DEBUG_MALLOC
 void print_malloc_debug_stats ();
