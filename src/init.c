@@ -100,15 +100,16 @@ CMD_DECLARE (cmd_spec_verbose);
 /* List of recognized commands, each consisting of name, place and
    function.  When adding a new command, simply add it to the list,
    but be sure to keep the list sorted alphabetically, as
-   command_by_name depends on it.  Also, be sure to add any entries
-   that allocate memory (e.g. cmd_string and cmd_vector) to the
-   cleanup() function below. */
+   command_by_name's binary search depends on it.  Also, be sure to
+   add any entries that allocate memory (e.g. cmd_string and
+   cmd_vector) to the cleanup() function below. */
 
 static struct {
   const char *name;
   void *place;
   bool (*action) (const char *, const char *, void *);
 } commands[] = {
+  /* KEEP THIS LIST ALPHABETICALLY SORTED */
   { "accept",		&opt.accepts,		cmd_vector },
   { "addhostdir",	&opt.add_hostdir,	cmd_boolean },
   { "alwaysrest",	&opt.always_rest,	cmd_boolean }, /* deprecated */
