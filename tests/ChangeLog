@@ -1,3 +1,7 @@
+2006-08-17  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* HTTPServer.pm: Added support for Range header.
+
 2006-07-14  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* Test4.px: Fixed wrong expected behaviour.
