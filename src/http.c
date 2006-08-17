@@ -1762,7 +1762,7 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
 
           return RETROK;
         }
-      else
+      else if (!ALLOW_CLOBBER)
         {
           char *unique = unique_name (hs->local_file, true);
           if (unique != hs->local_file)
@@ -2231,6 +2231,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
 {
   int count;
   bool got_head = false;         /* used for time-stamping */
+  bool got_name = false;
   char *tms;
   const char *tmrate;
   uerr_t err, ret = TRYLIMEXC;
@@ -2264,7 +2265,10 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   hstat.referer = referer;
 
   if (opt.output_document)
-    hstat.local_file = xstrdup (opt.output_document);
+    {
+      hstat.local_file = xstrdup (opt.output_document);
+      got_name = true;
+    }
 
   /* Reset the counter. */
   count = 0;
@@ -2309,13 +2313,16 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       /* Default document type is empty.  However, if spider mode is
          on or time-stamping is employed, HEAD_ONLY commands is
          encoded within *dt.  */
-      if ((opt.spider && !opt.recursive) || (opt.timestamping && !got_head))
+      if ((opt.spider && !opt.recursive) 
+          || (opt.timestamping && !got_head)
+          || (opt.always_rest && !got_name))
         *dt |= HEAD_ONLY;
       else
         *dt &= ~HEAD_ONLY;
 
       /* Decide whether or not to restart.  */
       if (opt.always_rest
+          && got_name
           && stat (hstat.local_file, &st) == 0
           && S_ISREG (st.st_mode))
         /* When -c is used, continue from on-disk size.  (Can't use
@@ -2484,6 +2491,12 @@ The sizes do not match (local %s) -- retrieving.\n"),
           continue;
         }
       
+      if (opt.always_rest && !got_name)
+        {
+          got_name = true;
+          continue;
+        }
+          
       if ((tmr != (time_t) (-1))
           && (!opt.spider || opt.recursive)
           && ((hstat.len == hstat.contlen) ||

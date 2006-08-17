@@ -1,3 +1,9 @@
+2006-08-16  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* http.c: Fixed bug which broke --continue feature. Now if -c is
+	given, http_loop sends a HEAD request to find out the destination
+	filename before resuming download.
+
 2006-08-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* utils.c (datetime_str): Avoid code repetition with time_str.
