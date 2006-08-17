@@ -65,7 +65,24 @@ sub run {
                             $con->send_basic_header($tmp->{code}, $resp->message, $resp->protocol);
                             print $con $resp->headers_as_string($CRLF);
                             print $con $CRLF;
-                            print $con $tmp->{content};                                
+                            print $con $tmp->{content};
+                            next;
+                        }
+                        if ($req->header("Range")) {
+                            $req->header("Range") =~ m/bytes=(\d*)-(\d*)/;
+                            my $content_len = length($tmp->{content});
+                            my $start = $1 ? $1 : 0;
+                            my $end = $2 ? $2 : ($content_len - 1);
+                            my $len = $2 ? ($2 - $start) : ($content_len - $start);
+                            $resp->header("Accept-Ranges" => "bytes");
+                            $resp->header("Content-Length" => $len);
+                            $resp->header("Content-Range" => "bytes $start-$end/$content_len");
+                            $resp->header("Keep-Alive" => "timeout=15, max=100");
+                            $resp->header("Connection" => "Keep-Alive");
+                            $con->send_basic_header(206, "Partial Content", $resp->protocol);
+                            print $con $resp->headers_as_string($CRLF);
+                            print $con $CRLF;
+                            print $con substr($tmp->{content}, $start, $len);
                             next;
                         }
                         # fill in content
