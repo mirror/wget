@@ -1,3 +1,7 @@
+2006-08-21  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* http.c: Fixed timestamping-related bug.
+
 2006-08-16  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* http.c: Fixed bug which broke --continue feature. Now if -c is

@@ -1740,9 +1740,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
         }
     }
   
-  DEBUGP (("hs->local_file is: %s %s\n", hs->local_file,
-          file_exists_p (hs->local_file) ? "(existing)" : "(not existing)"));
-  
   /* TODO: perform this check only once. */
   if (file_exists_p (hs->local_file))
     {
@@ -1806,7 +1803,7 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
           /* Try to stat() the .orig file. */
           if (stat (filename_plus_orig_suffix, &st) == 0)
             {
-              local_dot_orig_file_exists = 1;
+              local_dot_orig_file_exists = true;
               local_filename = filename_plus_orig_suffix;
             }
         }      
@@ -2019,8 +2016,6 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
   else
     *dt &= ~TEXTHTML;
 
-  DEBUGP (("TEXTHTML is %s.\n", *dt | TEXTHTML ? "on": "off"));
-
   if (opt.html_extension && (*dt & TEXTHTML))
     /* -E / --html-extension / html_extension = on was specified, and this is a
        text/html file.  If some case-insensitive variation on ".htm[l]" isn't
@@ -2230,7 +2225,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
            int *dt, struct url *proxy)
 {
   int count;
-  bool got_head = false;         /* used for time-stamping */
+  bool got_head = false;         /* used for time-stamping and filename detection */
   bool got_name = false;
   char *tms;
   const char *tmrate;
@@ -2314,7 +2309,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
          on or time-stamping is employed, HEAD_ONLY commands is
          encoded within *dt.  */
       if ((opt.spider && !opt.recursive) 
-          || (opt.timestamping && !got_head)
+          || (opt.timestamping  && !got_head)
           || (opt.always_rest && !got_name))
         *dt |= HEAD_ONLY;
       else
@@ -2433,6 +2428,8 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       /* Did we get the time-stamp? */
       if (!got_head)
         {
+          bool restart_loop = false;
+
           if (opt.timestamping && !hstat.remote_time)
             {
               logputs (LOG_NOTQUIET, _("\
@@ -2446,55 +2443,62 @@ Last-modified header missing -- time-stamps turned off.\n"));
                 logputs (LOG_VERBOSE, _("\
 Last-modified header invalid -- time-stamp ignored.\n"));
             }
-        }
+      
+          /* The time-stamping section.  */
+          if (opt.timestamping)
+            {
+              if (hstat.orig_file_name) /* Perform this check only if the file we're 
+                                           supposed to download already exists. */
+                {
+                  if (hstat.remote_time && tmr != (time_t) (-1))
+                    {
+                      /* Now time-stamping can be used validly.  Time-stamping
+                         means that if the sizes of the local and remote file
+                         match, and local file is newer than the remote file,
+                         it will not be retrieved.  Otherwise, the normal
+                         download procedure is resumed.  */
+                      if (hstat.orig_file_tstamp >= tmr)
+                        {
+                          if (hstat.contlen == -1 || hstat.orig_file_size == hstat.contlen)
+                            {
+                              logprintf (LOG_VERBOSE, _("\
+Server file no newer than local file `%s' -- not retrieving.\n\n"),
+                                         hstat.orig_file_name);
+                              ret = RETROK;
+                              goto exit;
+                            }
+                          else
+                            {
+                              logprintf (LOG_VERBOSE, _("\
+The sizes do not match (local %s) -- retrieving.\n"),
+                                         number_to_static_string (local_size));
+                            }
+                        }
+                      else
+                        logputs (LOG_VERBOSE,
+                                 _("Remote file is newer, retrieving.\n"));
 
-      /* The time-stamping section.  */
-      if (opt.timestamping && !got_head)
-        {
+                      logputs (LOG_VERBOSE, "\n");
+                    }
+                }
+              
+              /* free_hstat (&hstat); */
+              hstat.timestamp_checked = true;
+              restart_loop = true;
+            }
+          
+          if (opt.always_rest)
+            {
+              got_name = true;
+              restart_loop = true;
+            }
+
           got_head = true;    /* no more time-stamping */
           *dt &= ~HEAD_ONLY;
           count = 0;          /* the retrieve count for HEAD is reset */
-          
-          if (hstat.remote_time && tmr != (time_t) (-1))
-            {
-              /* Now time-stamping can be used validly.  Time-stamping
-                 means that if the sizes of the local and remote file
-                 match, and local file is newer than the remote file,
-                 it will not be retrieved.  Otherwise, the normal
-                 download procedure is resumed.  */
-              if (hstat.orig_file_tstamp >= tmr)
-                {
-                  if (hstat.contlen == -1 || hstat.orig_file_size == hstat.contlen)
-                    {
-                      logprintf (LOG_VERBOSE, _("\
-Server file no newer than local file `%s' -- not retrieving.\n\n"),
-                                 hstat.orig_file_name);
-                      ret = RETROK;
-                      goto exit;
-                    }
-                  else
-                    {
-                      logprintf (LOG_VERBOSE, _("\
-The sizes do not match (local %s) -- retrieving.\n"),
-                                 number_to_static_string (local_size));
-                    }
-                }
-              else
-                logputs (LOG_VERBOSE,
-                         _("Remote file is newer, retrieving.\n"));
 
-              logputs (LOG_VERBOSE, "\n");
-            }
-          
-          /* free_hstat (&hstat); */
-          hstat.timestamp_checked = true;
-          continue;
-        }
-      
-      if (opt.always_rest && !got_name)
-        {
-          got_name = true;
-          continue;
+          if (restart_loop) 
+            continue;
         }
           
       if ((tmr != (time_t) (-1))
