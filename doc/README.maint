@@ -39,12 +39,15 @@ svn copy -m "Tagging release X.Y.Z" http://svn.dotsrc.org/repo/wget/branches/X.Y
 
 6) upload the tarball on gnu.org
 
-TARBALL = wget-X.Y.Z.tar.gz
+RELEASE=X.Y.Z
+TARBALL=wget-${RELEASE}.tar.gz
 gpg --default-key 7B2FD4B0 --detach-sign -b --output ${TARBALL}.sig $TARBALL
-echo "directory: wget" > ${TARBALL}.directive
+echo -e "version: 1.1\ndirectory: wget\nfilename: $TARBALL\ncomment: Wget release ${RELEASE}" > ${TARBALL}.directive
 gpg --default-key 7B2FD4B0 --clearsign ${TARBALL}.directive
 
 lftp ftp://ftp-upload.gnu.org/incoming/ftp
+(use ftp://ftp-upload.gnu.org/incoming/alpha for pre-releases)
+
 put wget-X.Y.Z.tar.gz
 put wget-X.Y.Z.tar.gz.sig
 put wget-X.Y.Z.tar.gz.directive.asc
