@@ -17,7 +17,7 @@ my %urls = (
         code => "200",
         msg => "Dontcare",
         headers => {
-            "Content-type" => "text/plain",
+            "Content-type" => "text/html",
             "Last-Modified" => "Sat, 09 Oct 2004 08:30:00 GMT",
         },
         content => $dummyfile
