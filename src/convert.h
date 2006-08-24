@@ -104,7 +104,4 @@ void convert_cleanup (void);
 
 char *html_quote_string (const char *);
 
-void nonexisting_url (const char *, const char *);
-void print_broken_links (void);
-
 #endif /* CONVERT_H */

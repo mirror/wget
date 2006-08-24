@@ -1,3 +1,27 @@
+2006-08-24  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* Makefile.in: Added spider.c to the list of files to compile and
+	spider.h to the list of header files. Updated copyright information.
+
+	* http.c: Major changes to recursive spider mode. Now for every
+	resource we are supposed to check, we send a HEAD request to find out
+	if it exists. If the resource is a HTML file, we retrieve it and parse
+	it to discover links to other resources.
+
+	* recur.c: Ditto.
+
+	* res.c (res_retrieve_file): Disable opt.timestamping and opt.spider
+	when retrieving robots.txt. Updated copyright information.
+
+	* convert.c: Moved code tracking broken links to spider.c.
+
+	* convert.h: Ditto.
+
+	* spider.c: Created new file to keep track of visited URLs in spider
+	mode.
+
+	* spider.h: Ditto.
+
 2006-08-21  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* http.c: Fixed timestamping-related bug.

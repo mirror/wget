@@ -2281,6 +2281,10 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       /* Get the current time string.  */
       tms = time_str (time (NULL));
       
+      if (opt.spider && !got_head)
+        logprintf (LOG_VERBOSE, _("\
+Spider mode enabled. Check if remote file exists.\n"));
+
       /* Print fetch message, if opt.verbose.  */
       if (opt.verbose)
         {
@@ -2308,8 +2312,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       /* Default document type is empty.  However, if spider mode is
          on or time-stamping is employed, HEAD_ONLY commands is
          encoded within *dt.  */
-      if ((opt.spider && !opt.recursive) 
-          || (opt.timestamping  && !got_head)
+      if (((opt.spider || opt.timestamping) && !got_head)
           || (opt.always_rest && !got_name))
         *dt |= HEAD_ONLY;
       else
@@ -2412,13 +2415,22 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
               hurl = url_string (u, true);
               logprintf (LOG_NONVERBOSE, "%s:\n", hurl);
             }
-          if (opt.spider && opt.recursive)
+          /* Maybe we should always keep track of broken links, not just in
+           * spider mode.  */
+          if (opt.spider)
             {
-              if (!hurl) hurl = url_string (u, true);
-              nonexisting_url (hurl, referer);
+              /* #### Again: ugly ugly ugly! */
+              if (!hurl) 
+                hurl = url_string (u, true);
+              nonexisting_url (hurl);
+              logprintf (LOG_NOTQUIET, _("\
+Remote file does not exist -- broken link!!!\n"));
             }
-          logprintf (LOG_NOTQUIET, _("%s ERROR %d: %s.\n"),
-                     tms, hstat.statcode, escnonprint (hstat.error));
+          else
+            {
+              logprintf (LOG_NOTQUIET, _("%s ERROR %d: %s.\n"),
+                         tms, hstat.statcode, escnonprint (hstat.error));
+            }
           logputs (LOG_VERBOSE, "\n");
           ret = WRONGCODE;
           xfree_null (hurl);
@@ -2447,10 +2459,12 @@ Last-modified header invalid -- time-stamp ignored.\n"));
           /* The time-stamping section.  */
           if (opt.timestamping)
             {
-              if (hstat.orig_file_name) /* Perform this check only if the file we're 
-                                           supposed to download already exists. */
+              if (hstat.orig_file_name) /* Perform the following checks only 
+                                           if the file we're supposed to 
+                                           download already exists. */
                 {
-                  if (hstat.remote_time && tmr != (time_t) (-1))
+                  if (hstat.remote_time && 
+                      tmr != (time_t) (-1))
                     {
                       /* Now time-stamping can be used validly.  Time-stamping
                          means that if the sizes of the local and remote file
@@ -2459,7 +2473,8 @@ Last-modified header invalid -- time-stamp ignored.\n"));
                          download procedure is resumed.  */
                       if (hstat.orig_file_tstamp >= tmr)
                         {
-                          if (hstat.contlen == -1 || hstat.orig_file_size == hstat.contlen)
+                          if (hstat.contlen == -1 
+                              || hstat.orig_file_size == hstat.contlen)
                             {
                               logprintf (LOG_VERBOSE, _("\
 Server file no newer than local file `%s' -- not retrieving.\n\n"),
@@ -2492,6 +2507,33 @@ The sizes do not match (local %s) -- retrieving.\n"),
               got_name = true;
               restart_loop = true;
             }
+          
+          if (opt.spider)
+            {
+              if (opt.recursive)
+                {
+                  if (*dt & TEXTHTML)
+                    {
+                      logputs (LOG_VERBOSE, _("\
+Remote file exists and could contain links to other resources -- retrieving.\n\n"));
+                      restart_loop = true;
+                    }
+                  else 
+                    {
+                      logprintf (LOG_VERBOSE, _("\
+Remote file exists but does not contain any link -- not retrieving.\n\n"));
+                      ret = RETRUNNEEDED;
+                      goto exit;
+                    }
+                }
+              else
+                {
+                  logprintf (LOG_VERBOSE, _("\
+Remote file exists but recursion is disabled -- not retrieving.\n\n"));
+                  ret = RETRUNNEEDED;
+                  goto exit;
+                }
+            }
 
           got_head = true;    /* no more time-stamping */
           *dt &= ~HEAD_ONLY;
@@ -2502,7 +2544,6 @@ The sizes do not match (local %s) -- retrieving.\n"),
         }
           
       if ((tmr != (time_t) (-1))
-          && (!opt.spider || opt.recursive)
           && ((hstat.len == hstat.contlen) ||
               ((hstat.res == 0) && (hstat.contlen == -1))))
         {
@@ -2520,14 +2561,6 @@ The sizes do not match (local %s) -- retrieving.\n"),
             touch (fl, tmr);
         }
       /* End of time-stamping section. */
-
-      if (opt.spider && !opt.recursive)
-        {
-          logprintf (LOG_NOTQUIET, "%d %s\n\n", hstat.statcode,
-                     escnonprint (hstat.error));
-          ret = RETROK;
-          goto exit;
-        }
 
       tmrate = retr_rate (hstat.rd_size, hstat.dltime);
       total_download_time += hstat.dltime;

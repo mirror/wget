@@ -274,6 +274,11 @@ retrieve_tree (const char *start_url)
 	    }
 	}
 
+      if (opt.spider)
+      	{
+          visited_url (url, referer);
+	}
+
       if (descend
 	  && depth >= opt.reclevel && opt.reclevel != INFINITE_RECURSION)
 	{
@@ -365,6 +370,7 @@ retrieve_tree (const char *start_url)
 		     file);
 	  if (unlink (file))
 	    logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
+	  logputs (LOG_VERBOSE, "\n");
 	  register_delete_file (file);
 	}
 
@@ -420,6 +426,13 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 
   if (string_set_contains (blacklist, url))
     {
+      if (opt.spider) 
+	{
+          char *referrer = url_string (parent, true);
+          DEBUGP (("download_child_p: parent->url is: `%s'\n", parent->url));
+          visited_url (url, referrer);
+	  xfree (referrer);
+	}
       DEBUGP (("Already on the black list.\n"));
       goto out;
     }
