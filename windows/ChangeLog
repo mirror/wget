@@ -1,3 +1,12 @@
+2006-08-24  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* Makefile.src: Added spider.c to the list of files to compile and
+	spider.h to the list of header files. Updated copyright information.
+
+	* Makefile.src.mingw: Ditto.
+
+	* Makefile.src.bor: Ditto.
+
 2006-04-07  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* config-compiler.h: Several fixes for MSVC 8 (Visual C 2005).
