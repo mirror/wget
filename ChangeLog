@@ -1,3 +1,7 @@
+2006-08-28  Noèl Köthe <noel@debian.org>
+
+	* Makefile.in: Fixed a DESTDIR-related bug.
+
 2006-07-17  Daniel Richard G.  <skunk@iSKUNK.ORG>
 
 	* Makefile.in: Added DESTDIR='$(DESTDIR)' to MAKEDEFS. 
