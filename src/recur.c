@@ -48,6 +48,7 @@ so, delete this exception statement from your version.  */
 #include "hash.h"
 #include "res.h"
 #include "convert.h"
+#include "spider.h"
 
 /* Functions for maintaining the URL queue.  */
 

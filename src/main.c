@@ -52,6 +52,7 @@ so, delete this exception statement from your version.  */
 #include "url.h"
 #include "progress.h"           /* for progress_handle_sigwinch */
 #include "convert.h"
+#include "spider.h"
 #include "http.h"               /* for save_cookies */
 
 /* On GNU system this will include system-wide getopt.h. */

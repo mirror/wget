@@ -59,6 +59,7 @@ so, delete this exception statement from your version.  */
 # include "gen-md5.h"
 #endif
 #include "convert.h"
+#include "spider.h"
 
 #ifdef TESTING
 #include "test.h"

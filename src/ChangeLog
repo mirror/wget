@@ -1,3 +1,11 @@
+2006-08-28  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* http.c: #include'd spider.h to get rid of compiler warnings.
+
+	* main.c: Ditto.
+
+	* recur.c: Ditto.
+
 2006-08-24  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* Makefile.in: Added spider.c to the list of files to compile and
