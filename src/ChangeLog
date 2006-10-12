@@ -1,3 +1,8 @@
+2006-10-12  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* convert.c (downloaded_file): Fixed bug which used to break -E -k -K 
+	mode.
+
 2006-08-28  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* http.c: #include'd spider.h to get rid of compiler warnings.

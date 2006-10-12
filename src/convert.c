@@ -934,7 +934,7 @@ downloaded_file (downloaded_file_t mode, const char *file)
     return *ptr;
 
   ptr = downloaded_mode_to_ptr (mode);
-  hash_table_put (downloaded_files_hash, xstrdup (file), &ptr);
+  hash_table_put (downloaded_files_hash, xstrdup (file), ptr);
 
   return FILE_NOT_ALREADY_DOWNLOADED;
 }
