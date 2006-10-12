@@ -1,3 +1,65 @@
+2006-10-12  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* Test1.px: Renamed to Test-noop.px.
+
+	* Test-noop.px: Ditto.
+
+	* Test2.px: Renamed to Test-N.px.
+
+	* Test-N.px: Ditto.
+
+	* Test3.px: Renamed to Test-nonexisting-quiet.px.
+
+	* Test-nonexisting-quiet.px: Ditto.
+
+	* Test4.px: Renamed to Test-O-nonexisting.px.
+
+	* Test-O-nonexisting.px: Ditto.
+
+	* Test5.px: Renamed to Test-HTTP-Content-Disposition.px.
+	
+	* Test-HTTP-Content-Disposition.px: Ditto.
+	
+	* Test6.px: Renamed to Test-HTTP-Content-Disposition-1.px.
+	
+	* Test-HTTP-Content-Disposition-1.px: Ditto.
+	
+	* Test7.px: Renamed to Test-HTTP-Content-Disposition-2.px.
+
+	* Test-HTTP-Content-Disposition-2.px: Ditto.
+
+	* Test8.px: Replaced by Test--spider-r.px.
+
+	* Test9.px: Renamed to Test-Restrict-Lowercase.px.
+
+	* Test-Restrict-Lowercase.px: Ditto.
+
+	* Test10.px: Renamed to Test-Restrict-Uppercase.px.
+	
+	* Test-Restrict-Uppercase.px: Ditto.
+
+	* Test--spider.px: Added test for spider mode.
+	
+	* Test--spider-fail.px: Added failing test for spider mode.
+	
+	* Test--spider-r.px: Added test for recursive spider mode.
+
+	* Test-c.px: Added test for --continue mode.
+
+	* Test-c-full.px: Added test for --continue mode.
+
+	* Test-c-partial.px: Added test for --continue mode.
+
+	* Test-O.px: Added test for -O.
+
+	* Test-N-current.px: Added test for -N.
+	
+	* Test-N-old.px: Added test for -N.
+
+	* Test-E-k.px: Added test for -E -k.
+
+	* Test-E-k-K.px: Added test for -E -k -K.
+
 2006-08-17  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* HTTPServer.pm: Added support for Range header.

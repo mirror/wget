@@ -7,35 +7,41 @@ use HTTPTest;
 
 ###############################################################################
 
-my $dummyfile = <<EOF;
-Content
+my $mainpage = <<EOF;
+<html>
+<head>
+  <title>Main Page</title>
+</head>
+<body>
+  <p>
+    Some text.
+  </p>
+</body>
+</html>
 EOF
 
 # code, msg, headers, content
 my %urls = (
-    '/dummy.html' => {
+    '/index.html' => {
         code => "200",
         msg => "Dontcare",
         headers => {
-            "Content-type" => "text/plain",
+            "Content-type" => "text/html",
         },
-        content => $dummyfile
+        content => $mainpage,
     },
 );
 
-my $cmdline = "wget http://localhost:8080/dummy.html";
+my $cmdline = "wget --spider http://localhost:8080/index.html";
 
-my $expected_error_code = 0;
+my $expected_error_code = 256;
 
 my %expected_downloaded_files = (
-    'dummy.html' => {
-        content => $dummyfile,
-    }
 );
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test1",
+my $the_test = HTTPTest->new (name => "Test--spider",
                               input => \%urls, 
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 

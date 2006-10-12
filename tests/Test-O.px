@@ -13,7 +13,7 @@ EOF
 
 # code, msg, headers, content
 my %urls = (
-    '/dummy.html' => {
+    '/dummy.txt' => {
         code => "200",
         msg => "Dontcare",
         headers => {
@@ -23,16 +23,19 @@ my %urls = (
     },
 );
 
-my $cmdline = "wget --quiet http://localhost:8080/nonexistent";
+my $cmdline = "wget -O out http://localhost:8080/dummy.txt";
 
-my $expected_error_code = 256;
+my $expected_error_code = 0;
 
 my %expected_downloaded_files = (
+    'out' => {
+        content => $dummyfile,
+    }
 );
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test3",
+my $the_test = HTTPTest->new (name => "Test-O",
                               input => \%urls, 
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 
