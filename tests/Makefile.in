@@ -86,7 +86,7 @@ TESTOBJ = $(ALLOCA) cmpt.o connect.o convert.o cookies.o              \
           host.o html-parse.o html-url.o http.o $(NTLM_OBJ) init.o    \
           log.o main.o $(MD5_OBJ) netrc.o progress.o                  \
           ptimer.o recur.o res.o retr.o safe-ctype.o snprintf.o       \
-          $(SSL_OBJ) test.o url.o utils.o version.o xmalloc.o
+          spider.o $(SSL_OBJ) test.o url.o utils.o version.o xmalloc.o
 
 # We make object files depend on every header.  Rather than attempt to
 # track dependencies, everything gets recompiled when a header
@@ -102,9 +102,10 @@ HEADERS = ../src/config-post.h ../src/config.h                 \
 	  ../src/log.h ../src/mswindows.h ../src/netrc.h       \
 	  ../src/options.h ../src/progress.h                   \
 	  ../src/ptimer.h ../src/recur.h ../src/res.h          \
-	  ../src/retr.h ../src/safe-ctype.h ../src/ssl.h       \
-	  ../src/sysdep.h ../src/test.h ../src/url.h           \
-	  ../src/utils.h ../src/wget.h ../src/xmalloc.h
+	  ../src/retr.h ../src/safe-ctype.h ../src/spider.h    \
+	  ../src/ssl.h ../src/sysdep.h ../src/test.h           \
+	  ../src/url.h ../src/utils.h ../src/wget.h            \
+	  ../src/xmalloc.h
 
 alloca.o: ../src/alloca.c $(HEADERS)
 	$(COMPILE) -DTESTING -c $<
@@ -206,6 +207,9 @@ safe-ctype.o: ../src/safe-ctype.c $(HEADERS)
 	$(COMPILE) -DTESTING -c $<
 
 snprintf.o: ../src/snprintf.c $(HEADERS)
+	$(COMPILE) -DTESTING -c $<
+
+spider.o: ../src/spider.c $(HEADERS)
 	$(COMPILE) -DTESTING -c $<
 
 test.o: ../src/test.c $(HEADERS)
