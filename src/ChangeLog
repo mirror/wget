@@ -1,3 +1,9 @@
+2006-10-17  Mike Grant  <mggr@pml.ac.uk>
+
+	* ftp.c (ftp_loop_internal): Would incorrectly skip changing
+	working directory when retrying after a failed FTP attempt.
+	Originally reported by Nate Eldredge.
+
 2006-10-12  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* convert.c (downloaded_file): Fixed bug which used to break -E -k -K 

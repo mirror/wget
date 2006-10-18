@@ -1173,7 +1173,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	len = 0;
       err = getftp (u, &len, restval, con);
 
-      if (con->csock != -1)
+      if (con->csock == -1)
 	con->st &= ~DONE_CWD;
       else
 	con->st |= DONE_CWD;
