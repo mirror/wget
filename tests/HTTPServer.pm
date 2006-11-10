@@ -29,8 +29,11 @@ sub run {
         print STDERR "Accepted a new connection\n" if $log;
         while (my $req = $con->get_request) {
             my $url_path = $req->url->path;
-            if ($url_path =~ m{/$}) {
+            if ($url_path =~ m{/$}) { # append 'index.html'
                 $url_path .= 'index.html';
+            }
+            if ($url_path =~ m{^/}) { # remove trailing '/'
+                $url_path = substr ($url_path, 1);
             }
             if ($log) {
                 print STDERR "Method: ", $req->method, "\n";

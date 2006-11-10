@@ -1,3 +1,9 @@
+2006-11-10  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* Test-np.px: Added test for -np.
+
+	* HTTPTest.pm: Ignore initial '/' character in requested URLs.
+	
 2006-10-12  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* Test1.px: Renamed to Test-noop.px.
