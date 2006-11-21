@@ -1,3 +1,12 @@
+2006-11-21  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* retr.c (retrieve_from_file): Ditto.
+	(url_uses_proxy): New function.
+
+	* main.c (main): Don't check for opt.use_proxy when deciding
+	whether to call retrieve_url or retrieve_tree; check whether the
+	proxy would be used for *this* URL.
+
 2006-10-17  Mike Grant  <mggr@pml.ac.uk>
 
 	* ftp.c (ftp_loop_internal): Would incorrectly skip changing

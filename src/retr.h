@@ -61,4 +61,6 @@ void sleep_between_retrievals (int);
 
 void rotate_backups (const char *);
 
+bool url_uses_proxy (const char *);
+
 #endif /* RETR_H */

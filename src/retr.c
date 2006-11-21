@@ -844,7 +844,7 @@ retrieve_from_file (const char *file, bool html, int *count)
 	  break;
 	}
       if ((opt.recursive || opt.page_requisites)
-	  && (cur_url->url->scheme != SCHEME_FTP || opt.use_proxy))
+	  && (cur_url->url->scheme != SCHEME_FTP || getproxy (cur_url->url)))
       	{
 	  int old_follow_ftp = opt.follow_ftp;
 
@@ -1020,6 +1020,20 @@ getproxy (struct url *u)
     }
 
   return proxy;
+}
+
+/* Returns true if URL would be downloaded through a proxy. */
+
+bool
+url_uses_proxy (const char *url)
+{
+  bool ret;
+  struct url *u = url_parse (url, NULL);
+  if (!u)
+    return false;
+  ret = getproxy (u) != NULL;
+  url_free (u);
+  return ret;
 }
 
 /* Should a host be accessed through proxy, concerning no_proxy?  */
