@@ -35,7 +35,7 @@ my %expected_downloaded_files = (
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test4",
+my $the_test = HTTPTest->new (name => "Test-O-nonexisting",
                               input => \%urls, 
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 

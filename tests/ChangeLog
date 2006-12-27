@@ -1,3 +1,7 @@
+2006-12-22  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* HTTPTest.pm: Don't ignore initial '/' character in requested URLs.
+
 2006-11-10  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* Test-np.px: Added test for -np.

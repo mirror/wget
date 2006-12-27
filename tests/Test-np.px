@@ -77,7 +77,7 @@ EOF
 
 # code, msg, headers, content
 my %urls = (
-    'firstlevel/index.html' => {
+    '/firstlevel/index.html' => {
         code => "200",
         msg => "Dontcare",
         headers => {
@@ -85,7 +85,7 @@ my %urls = (
         },
         content => $mainpage,
     },
-    'firstlevel/secondpage.html' => {
+    '/firstlevel/secondpage.html' => {
         code => "200",
         msg => "Dontcare",
         headers => {
@@ -93,7 +93,7 @@ my %urls = (
         },
         content => $secondpage,
     },
-    'firstlevel/lowerlevel/thirdpage.html' => {
+    '/firstlevel/lowerlevel/thirdpage.html' => {
         code => "200",
         msg => "Dontcare",
         headers => {
@@ -101,7 +101,7 @@ my %urls = (
         },
         content => $thirdpage,
     },
-    'firstlevel/fourthpage.html' => {
+    '/firstlevel/fourthpage.html' => {
         code => "200",
         msg => "Dontcare",
         headers => {
@@ -109,7 +109,7 @@ my %urls = (
         },
         content => $fourthpage,
     },
-    'higherlevelpage.html' => {
+    '/higherlevelpage.html' => {
         code => "200",
         msg => "Dontcare",
         headers => {

@@ -21,16 +21,16 @@ my @unexpected_downloads = ();
         _output       => {},
     );
     
-	sub _default_for
-	{
-		my ($self, $attr) = @_;
-		$_attr_data{$attr};
-	}
+    sub _default_for
+    {
+        my ($self, $attr) = @_;
+        $_attr_data{$attr};
+    }
 
-	sub _standard_keys 
-	{
-		keys %_attr_data;
-	}
+    sub _standard_keys 
+    {
+        keys %_attr_data;
+    }
 }
 
 

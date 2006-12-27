@@ -32,9 +32,9 @@ sub run {
             if ($url_path =~ m{/$}) { # append 'index.html'
                 $url_path .= 'index.html';
             }
-            if ($url_path =~ m{^/}) { # remove trailing '/'
-                $url_path = substr ($url_path, 1);
-            }
+            #if ($url_path =~ m{^/}) { # remove trailing '/'
+            #    $url_path = substr ($url_path, 1);
+            #}
             if ($log) {
                 print STDERR "Method: ", $req->method, "\n";
                 print STDERR "Path: ", $url_path, "\n";

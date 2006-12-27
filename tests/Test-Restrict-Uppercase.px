@@ -44,7 +44,7 @@ my %expected_downloaded_files = (
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test9",
+my $the_test = HTTPTest->new (name => "Test-Restrict-Uppercase",
                               input => \%urls, 
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 
