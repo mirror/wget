@@ -870,7 +870,7 @@ skip_short_body (int fd, wgint contlen)
 
 bool
 extract_param (const char **source, param_token *name, param_token *value,
-	       char separator)
+               char separator)
 {
   const char *p = *source;
 
@@ -878,7 +878,7 @@ extract_param (const char **source, param_token *name, param_token *value,
   if (!*p)
     {
       *source = p;
-      return false;		/* no error; nothing more to extract */
+      return false;             /* no error; nothing more to extract */
     }
 
   /* Extract name. */
@@ -886,9 +886,9 @@ extract_param (const char **source, param_token *name, param_token *value,
   while (*p && !ISSPACE (*p) && *p != '=' && *p != separator) ++p;
   name->e = p;
   if (name->b == name->e)
-    return false;		/* empty name: error */
+    return false;               /* empty name: error */
   while (ISSPACE (*p)) ++p;
-  if (*p == separator || !*p)		/* no value */
+  if (*p == separator || !*p)           /* no value */
     {
       xzero (*value);
       if (*p == separator) ++p;
@@ -896,12 +896,12 @@ extract_param (const char **source, param_token *name, param_token *value,
       return true;
     }
   if (*p != '=')
-    return false;		/* error */
+    return false;               /* error */
 
   /* *p is '=', extract value */
   ++p;
   while (ISSPACE (*p)) ++p;
-  if (*p == '"')		/* quoted */
+  if (*p == '"')                /* quoted */
     {
       value->b = ++p;
       while (*p && *p != '"') ++p;
@@ -912,12 +912,12 @@ extract_param (const char **source, param_token *name, param_token *value,
       while (ISSPACE (*p)) ++p;
       while (*p && *p != separator) ++p;
       if (*p == separator)
-	++p;
+        ++p;
       else if (*p)
-	/* garbage after closed quote, e.g. foo="bar"baz */
-	return false;
+        /* garbage after closed quote, e.g. foo="bar"baz */
+        return false;
     }
-  else				/* unquoted */
+  else                          /* unquoted */
     {
       value->b = p;
       while (*p && *p != separator) ++p;
@@ -957,16 +957,34 @@ parse_content_disposition (const char *hdr, char **filename)
   while (extract_param (&hdr, &name, &value, ';'))
     if (BOUNDED_EQUAL_NO_CASE (name.b, name.e, "filename") && value.b != NULL)
       {
-	/* Make the file name begin at the last slash or backslash. */
+        /* Make the file name begin at the last slash or backslash. */
         const char *last_slash = memrchr (value.b, '/', value.e - value.b);
         const char *last_bs = memrchr (value.b, '\\', value.e - value.b);
         if (last_slash && last_bs)
           value.b = 1 + MAX (last_slash, last_bs);
         else if (last_slash || last_bs)
           value.b = 1 + (last_slash ? last_slash : last_bs);
-	if (value.b == value.e)
-	  continue;
-        *filename = strdupdelim (value.b, value.e);
+        if (value.b == value.e)
+          continue;
+        /* Start with the directory prefix, if specified. */
+        if (opt.dir_prefix)
+          {
+            int prefix_length = strlen (opt.dir_prefix);
+            bool add_slash = (opt.dir_prefix[prefix_length - 1] != '/');
+            int total_length;
+
+            if (add_slash) 
+              ++prefix_length;
+            total_length = prefix_length + (value.e - value.b);            
+            *filename = xmalloc (total_length + 1);
+            strcpy (*filename, opt.dir_prefix);
+            if (add_slash) 
+              (*filename)[prefix_length - 1] = '/';
+            memcpy (*filename + prefix_length, value.b, (value.e - value.b));
+            (*filename)[total_length] = '\0';
+          }
+        else
+          *filename = strdupdelim (value.b, value.e);
         return true;
       }
   return false;
@@ -2852,12 +2870,12 @@ digest_authentication_encode (const char *au, const char *user,
     {
       int i;
       for (i = 0; i < countof (options); i++)
-	if (name.e - name.b == strlen (options[i].name)
-	    && 0 == strncmp (name.b, options[i].name, name.e - name.b))
-	  {
-	    *options[i].variable = strdupdelim (value.b, value.e);
-	    break;
-	  }
+        if (name.e - name.b == strlen (options[i].name)
+            && 0 == strncmp (name.b, options[i].name, name.e - name.b))
+          {
+            *options[i].variable = strdupdelim (value.b, value.e);
+            break;
+          }
     }
   if (!realm || !nonce || !user || !passwd || !path || !method)
     {
@@ -3027,19 +3045,27 @@ test_parse_content_disposition()
   int i;
   struct {
     char *hdrval;    
+    char *opt_dir_prefix;
     char *filename;
     bool result;
   } test_array[] = {
-    { "filename=\"file.ext\"", "file.ext", true },
-    { "attachment; filename=\"file.ext\"", "file.ext", true },
-    { "attachment; filename=\"file.ext\"; dummy", "file.ext", true },
-    { "attachment", NULL, false },    
+    { "filename=\"file.ext\"", NULL, "file.ext", true },
+    { "filename=\"file.ext\"", "somedir", "somedir/file.ext", true },
+    { "attachment; filename=\"file.ext\"", NULL, "file.ext", true },
+    { "attachment; filename=\"file.ext\"", "somedir", "somedir/file.ext", true },
+    { "attachment; filename=\"file.ext\"; dummy", NULL, "file.ext", true },
+    { "attachment; filename=\"file.ext\"; dummy", "somedir", "somedir/file.ext", true },
+    { "attachment", NULL, NULL, false },
+    { "attachment", "somedir", NULL, false },
   };
   
   for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 
     {
       char *filename;
-      bool res = parse_content_disposition (test_array[i].hdrval, &filename);
+      bool res;
+
+      opt.dir_prefix = test_array[i].opt_dir_prefix;
+      res = parse_content_disposition (test_array[i].hdrval, &filename);
 
       mu_assert ("test_parse_content_disposition: wrong result", 
                  res == test_array[i].result
