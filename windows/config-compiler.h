@@ -89,8 +89,16 @@ so, delete this exception statement from your version.  */
 #define SIZEOF_LONG_LONG 8
 #define HAVE_INTPTR_T 1 
 #define HAVE_UINTPTR_T 1
-
 #define HAVE_STRTOLL 1
+
+/* MingW needs _WIN32_WINNT==0x0501 defined to pull in getaddrinfo()
+ * and freeaddrinfo() etc.
+ */
+#if !defined(_WIN32_WINNT) || (_WIN32_WINNT < 0x0501)
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#endif
+
 
 /* -------------------- */
 /* MS Visual C section. */
@@ -115,9 +123,10 @@ so, delete this exception statement from your version.  */
 #if _MSC_VER >= 1400
 #pragma warning ( disable : 4996 )
 #define _CRT_SECURE_NO_DEPRECATE
-#define HAVE_SYS_UTIME_H 1
-#undef HAVE_UTIME_H
 #endif
+
+#undef HAVE_UTIME_H         /* no <utime.h> */
+
 
 /* ------------------ */
 /* Borland C section. */
@@ -158,12 +167,16 @@ so, delete this exception statement from your version.  */
 #define HAVE_STDBOOL_H 1
 
 #define HAVE_UINT32_T 1
+#define HAVE_UINTPTR_T 1
+#define HAVE_INTPTR_T 1
+
 #undef SIZEOF_LONG_LONG
 #define SIZEOF_LONG_LONG 8
 #define HAVE__BOOL 1
 
 #define HAVE_USLEEP 1
 #define HAVE_STRTOLL 1
+#undef HAVE_UTIME_H         /* no <utime.h> */
 
 
 /* -------------------- */
@@ -186,15 +199,25 @@ so, delete this exception statement from your version.  */
 
 #define HAVE_STDINT_H 1
 #define HAVE_INTTYPES_H 1
-#define HAVE_STDBOOL_H 1
+
+/* Watcom 1.6 do have <stdbool.h>, but definition of '_Bool' is missing! */
+/* #define HAVE_STDBOOL_H 1 */
 #define HAVE_STRTOLL 1
 #define HAVE_UINT32_T 1
-#define HAVE_SYS_UTIME_H 1
 #undef HAVE_UTIME_H
 #undef socklen_t                /* avoid clash with <ws2tcpip.h> */
 
 #undef SIZEOF_LONG_LONG
 #define SIZEOF_LONG_LONG 8
+
+/* OpenWatcom needs _WIN32_WINNT==0x0501 defined to pull in getaddrinfo()
+ * and freeaddrinfo() etc.
+ */
+#if !defined(_WIN32_WINNT) || (_WIN32_WINNT < 0x0501)
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#endif
+
 
 #else
 # error Your compiler is not supported.

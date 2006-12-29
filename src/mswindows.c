@@ -90,6 +90,7 @@ ws_cleanup (void)
   WSACleanup ();
 }
 
+#if defined(CTRLBREAK_BACKGND) || defined(CTRLC_BACKGND)
 static void
 ws_hangup (const char *reason)
 {
@@ -103,6 +104,7 @@ ws_hangup (const char *reason)
      gesture as the parent will wait for us to terminate before resuming.  */
   FreeConsole ();
 }
+#endif
 
 /* Construct the name for a named section (a.k.a. `file mapping') object.
    The returned string is dynamically allocated and needs to be xfree()'d.  */

@@ -1,3 +1,15 @@
+2006-12-29  Gisle Vanem  <giva@bgnett.no>
+
+	* config.h: Added 'HAVE_SYS_UTIME_H 1' which gets undefined as needed
+	in config-compiler.h. 
+
+	* config-compiler.h: Added '_WIN32_WINNT=0x0501' as needed to pull in
+	the prototype of getaddrinfo() and other library functions. Defined
+	HAVE_UINTPTR_T and HAVE_INTPTR_T for Digital Mars, which supports
+	'uintptr_t' and 'intptr_t'. Undefined HAVE_STDBOOL_H for Watcom, which
+	has <stdbol.h> but the file cannot be used since the '_Bool' builtin
+	is missing in the compiler!
+
 2006-10-12  Gisle Vanem  <giva@bgnett.no>
 
 	* config-compiler.h (HAVE_INTPTR_T): Define to 1 under MinGW.

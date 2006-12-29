@@ -1,3 +1,7 @@
+2006-12-29  Gisle Vanem  <giva@bgnett.no>
+
+	* mswindows.c: Avoid a warning if 'ws_hangup()' is unused.
+
 2006-12-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* http.c (parse_content_disposition): Consider directory prefix, if
