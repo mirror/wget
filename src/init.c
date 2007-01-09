@@ -1135,10 +1135,11 @@ cmd_spec_prefer_family (const char *com, const char *val, void *place_ignored)
     { "IPv6", prefer_ipv6 },
     { "none", prefer_none },
   };
-  int ok = decode_string (val, choices, countof (choices),
-			  (int *) &opt.prefer_family);
+  int prefer_family = prefer_ipv4;
+  int ok = decode_string (val, choices, countof (choices), &prefer_family);
   if (!ok)
     fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"), exec_name, com, val);
+  opt.prefer_family = prefer_family;
   return ok;
 }
 

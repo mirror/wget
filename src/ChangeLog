@@ -1,3 +1,8 @@
+2007-01-09  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* init.c (cmd_spec_prefer_family): Small fix to get rid of a gcc
+	warning about strict-aliasing violation.
+
 2007-01-09  Steven M. Schweda  <sms@antinode.org>
 
 	* ftp-basic.c (ftp_syst): Fixed segfault if response text is missing.
