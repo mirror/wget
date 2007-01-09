@@ -1,5 +1,5 @@
 /* Basic FTP routines.
-   Copyright (C) 1996-2006 Free Software Foundation, Inc.
+   Copyright (C) 1996-2007 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -1038,7 +1038,9 @@ ftp_syst (int csock, enum stype *server_type)
      first word of the server response)?  */
   request = strtok (NULL, " ");
 
-  if (!strcasecmp (request, "VMS"))
+  if (request == NULL)
+    *server_type = ST_OTHER;
+  else if (!strcasecmp (request, "VMS"))
     *server_type = ST_VMS;
   else if (!strcasecmp (request, "UNIX"))
     *server_type = ST_UNIX;

@@ -1,3 +1,7 @@
+2007-01-09  Steven M. Schweda  <sms@antinode.org>
+
+	* ftp-basic.c (ftp_syst): Fixed segfault if response text is missing.
+
 2006-12-29  Gisle Vanem  <giva@bgnett.no>
 
 	* mswindows.c: Avoid a warning if 'ws_hangup()' is unused.
