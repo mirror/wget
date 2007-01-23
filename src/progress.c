@@ -320,8 +320,10 @@ print_row_stats (struct dot_progress *dp, double dltime, bool last)
 	  wgint bytes_remaining = dp->total_length - bytes_displayed;
 	  /* The quantity downloaded in this download run. */
 	  wgint bytes_sofar = bytes_displayed - dp->initial_length;
-	  int eta = (int) (dltime * bytes_remaining / bytes_sofar + 0.5);
-	  logprintf (LOG_VERBOSE, " %s", eta_to_human_short (eta, true));
+	  double eta = dltime * bytes_remaining / bytes_sofar;
+	  if (eta < INT_MAX - 1)
+	    logprintf (LOG_VERBOSE, " %s",
+		       eta_to_human_short ((int) (eta + 0.5), true));
 	}
     }
   else
@@ -932,7 +934,10 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 		 I found that doing that results in a very jerky and
 		 ultimately unreliable ETA.  */
 	      wgint bytes_remaining = bp->total_length - size;
-	      eta = (int) (dl_total_time * bytes_remaining / bp->count + 0.5);
+	      double eta_ = dl_total_time * bytes_remaining / bp->count;
+	      if (eta_ >= INT_MAX - 1)
+		goto skip_eta;
+	      eta = (int) (eta_ + 0.5);
 	      bp->last_eta_value = eta;
 	      bp->last_eta_time = dl_total_time;
 	    }
@@ -944,6 +949,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 	}
       else if (bp->total_length > 0)
 	{
+	skip_eta:
 	  APPEND_LITERAL ("             ");
 	}
     }
