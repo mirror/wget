@@ -1,5 +1,10 @@
 2007-01-23  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* cookies.c (parse_set_cookie): Would erroneously discard cookies
+	with unparsable expiry time.
+
+2007-01-23  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* progress.c (create_image): Check for ETA overflow.
 	(print_row_stats): Ditto.
 

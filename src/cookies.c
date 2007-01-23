@@ -390,17 +390,16 @@ parse_set_cookie (const char *set_cookie, bool silent)
 	    {
 	      cookie->permanent = 1;
 	      cookie->expiry_time = expires;
+	      /* According to netscape's specification, expiry time in
+		 the past means that discarding of a matching cookie
+		 is requested.  */
+	      if (cookie->expiry_time < cookies_now)
+		cookie->discard_requested = 1;
 	    }
 	  else
 	    /* Error in expiration spec.  Assume default (cookie doesn't
 	       expire, but valid only for this session.)  */
 	    ;
-
-	  /* According to netscape's specification, expiry time in the
-	     past means that discarding of a matching cookie is
-	     requested.  */
-	  if (cookie->expiry_time < cookies_now)
-	    cookie->discard_requested = 1;
 	}
       else if (TOKEN_IS (name, "max-age"))
 	{
