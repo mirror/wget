@@ -159,7 +159,7 @@ sepstring (const char *s)
 char *
 aprintf (const char *fmt, ...)
 {
-#ifdef HAVE_VASPRINTF
+#if defined HAVE_VASPRINTF && !defined DEBUG_MALLOC
   /* Use vasprintf. */
   int ret;
   va_list args;
