@@ -1,5 +1,10 @@
 2007-02-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
+	* http.c (print_server_response): Escape non-printable characters
+	in server respone.
+
+2007-02-02  Hrvoje Niksic  <hniksic@xemacs.org>
+
 	* netrc.c: Don't make netrc_list static, as it prevents
 	compilation with DEBUG_MALLOC.
 
