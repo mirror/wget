@@ -1,3 +1,19 @@
+2006-06-25  Christopher Lewis <chris@christopherlewis.com>
+
+	* Windows\Makefile.top: Added OpenSSL dlls and cacert.pem to
+	wget.zip to further automate the Win32 build process
+
+	* Windows\Makefile.top.bor: Added OpenSSL dlls and cacert.pem to
+	wget.zip to further automate the Win32 build process
+
+2007-01-23  Christopher Lewis <chris@christopherlewis.com>
+
+	* Windows\Makefile.top: Added the required file msvcr80.dll.  This
+	file is required by OpenSSL.
+
+	* Windows\Makefile.top.bor: Added the required file msvcr80.dll.
+	This file is required by OpenSSL.
+
 2006-12-29  Gisle Vanem  <giva@bgnett.no>
 
 	* config.h: Added 'HAVE_SYS_UTIME_H 1' which gets undefined as needed
