@@ -127,7 +127,7 @@ sub _setup {
         close (FILE);
     } 
     
-    chdir ("input");
+    chdir ("../input");
     $self->_setup_server();
 
     chdir ($self->{_workdir});
