@@ -15,18 +15,18 @@ my $VERSION = 0.01;
     my %_attr_data = ( # DEFAULT
     );
     
-	sub _default_for
-	{
-		my ($self, $attr) = @_;
+    sub _default_for
+    {
+        my ($self, $attr) = @_;
         return $_attr_data{$attr} if exists $_attr_data{$attr};
-		return $self->SUPER::_default_for($attr);
-	}
+        return $self->SUPER::_default_for($attr);
+    }
 
-	sub _standard_keys 
-	{
+    sub _standard_keys 
+    {
         my ($self) = @_;
-		($self->SUPER::_standard_keys(), keys %_attr_data);
-	}
+        ($self->SUPER::_standard_keys(), keys %_attr_data);
+    }
 }
     
 
