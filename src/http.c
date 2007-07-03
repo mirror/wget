@@ -2343,8 +2343,7 @@ Spider mode enabled. Check if remote file exists.\n"));
       /* Default document type is empty.  However, if spider mode is
          on or time-stamping is employed, HEAD_ONLY commands is
          encoded within *dt.  */
-      if (((opt.spider || opt.timestamping) && !got_head)
-          || (opt.always_rest && !got_name))
+      if (((opt.spider || opt.timestamping) && !got_head) || !got_name)
         *dt |= HEAD_ONLY;
       else
         *dt &= ~HEAD_ONLY;
