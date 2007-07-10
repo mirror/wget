@@ -4,7 +4,7 @@ rem Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
 
 rem This program is free software; you can redistribute it and/or modify
 rem it under the terms of the GNU General Public License as published by
-rem the Free Software Foundation; either version 2 of the License, or
+rem the Free Software Foundation; either version 3 of the License, or
 rem (at your option) any later version.
 
 rem This program is distributed in the hope that it will be useful,
@@ -13,8 +13,7 @@ rem MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 rem GNU General Public License for more details.
 
 rem You should have received a copy of the GNU General Public License
-rem along with this program; if not, write to the Free Software
-rem Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+rem along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 rem In addition, as a special exception, the Free Software Foundation
 rem gives permission to link the code of its release of Wget with the

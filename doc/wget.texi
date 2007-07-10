@@ -46,9 +46,9 @@ notice identical to this one except for the removal of this paragraph
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.2 or
 any later version published by the Free Software Foundation; with no
-Invariant Sections, with no Front-Cover Texts, and with no
-Back-Cover Texts.  A copy of the license is included in the section
-entitled ``GNU Free Documentation License''.
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License''.
 @c man end
 @end ifnottex
 
@@ -61,7 +61,7 @@ entitled ``GNU Free Documentation License''.
 @ignore
 @c man begin AUTHOR
 Originally written by Hrvoje Niksic <hniksic@xemacs.org>.
-Currently maintained by Mauro Tortonesi <mauro@ferrara.linux.it>.
+Currently maintained by Micah Cowan <micah@cowan.name>.
 @c man end
 @c man begin SEEALSO
 GNU Info entry for @file{wget}.
@@ -75,9 +75,9 @@ Copyright @copyright{} 1996--2006, Free Software Foundation, Inc.
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.2 or
 any later version published by the Free Software Foundation; with no
-Invariant Sections, with no Front-Cover Texts, and with no
-Back-Cover Texts.  A copy of the license is included in the section
-entitled ``GNU Free Documentation License''.
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License''.
 @end titlepage
 
 @ifnottex
@@ -99,7 +99,7 @@ Copyright @copyright{} 1996--2006 Free Software Foundation, Inc.
 * Examples::            Examples of usage.
 * Various::             The stuff that doesn't fit anywhere else.
 * Appendices::          Some useful references.
-* Copying::             You may give out copies of Wget and of this manual.
+* Copying this manual:: You may give out copies of Wget and of this manual.
 * Concept Index::       Topics covered by this manual.
 @end menu
 @end ifnottex
@@ -212,8 +212,8 @@ User startup file.
 @item
 Finally, GNU Wget is free software.  This means that everyone may use
 it, redistribute it and/or modify it under the terms of the GNU General
-Public License, as published by the Free Software Foundation
-(@pxref{Copying}).
+Public License, as published by the Free Software Foundation (see the
+file @file{COPYING} that came with GNU Wget, for details).
 @end itemize
 
 @node Invoking
@@ -3522,7 +3522,7 @@ GNU Wget was written by Hrvoje Nik@v{s}i@'{c} @email{hniksic@@xemacs.org},
 @ifnottex
 GNU Wget was written by Hrvoje Niksic @email{hniksic@@xemacs.org},
 @end ifnottex
-and it is currently maintained by Mauro Tortonesi @email{mauro@@ferrara.linux.it}.
+and it is currently maintained by Micah Cowan @email{micah@@cowan.name}.
 
 However, the development of Wget could never have gone as far as it has, were
 it not for the help of many people, either with bug reports, feature proposals,
@@ -3812,78 +3812,15 @@ Kristijan Zimmer.
 Apologies to all who I accidentally left out, and many thanks to all the
 subscribers of the Wget mailing list.
 
-@node Copying
-@chapter Copying
-@cindex copying
-@cindex GPL
-@cindex GFDL
-@cindex free software
-
-GNU Wget is licensed under the GNU General Public License (GNU GPL),
-which makes it @dfn{free software}.  Please note that ``free'' in ``free
-software'' refers to liberty, not price.  As some people like to point
-out, it's the ``free'' of ``free speech'', not the ``free'' of ``free
-beer''.
-
-The exact and legally binding distribution terms are spelled out below.
-The GPL guarantees that you have the right (freedom) to run and change
-GNU Wget and distribute it to others, and even---if you want---charge
-money for doing any of those things.  With these rights comes the
-obligation to distribute the source code along with the software and to
-grant your recipients the same rights and impose the same restrictions.
-
-This licensing model is also known as @dfn{open source} because it,
-among other things, makes sure that all recipients will receive the
-source code along with the program, and be able to improve it.  The GNU
-project prefers the term ``free software'' for reasons outlined at
-@url{http://www.gnu.org/philosophy/free-software-for-freedom.html}.
-
-The exact license terms are defined by this paragraph and the GNU
-General Public License it refers to:
-
-@quotation
-GNU Wget is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2 of the License, or (at your
-option) any later version.
-
-GNU Wget is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-for more details.
-
-A copy of the GNU General Public License is included as part of this
-manual; if you did not receive it, write to the Free Software
-Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-@end quotation
-
-In addition to this, this manual is free in the same sense:
-
-@quotation
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.2 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, with no Front-Cover Texts, and with no
-Back-Cover Texts.  A copy of the license is included in the section
-entitled ``GNU Free Documentation License''.
-@end quotation
-
-@c #### Maybe we should wrap these licenses in ifinfo?  Stallman says
-@c that the GFDL needs to be present in the manual, and to me it would
-@c suck to include the license for the manual and not the license for
-@c the program.
-
-The full texts of the GNU General Public License and of the GNU Free
-Documentation License are available below.
-
+@node Copying this manual
+@appendix Copying this manual
+  
 @menu
-* GNU General Public License::
-* GNU Free Documentation License::
+* GNU Free Documentation License::  Licnse for copying this manual.
 @end menu
 
-@include gpl.texi
-
 @include fdl.texi
+
 
 @node Concept Index
 @unnumbered Concept Index

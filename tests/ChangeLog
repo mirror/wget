@@ -1,3 +1,9 @@
+2007-07-05  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.in:
+	Updated GPL reference to version 3 or later, removed FSF
+	address.
+
 2007-06-14  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* FTPServer.pm: Added FTP testing support.

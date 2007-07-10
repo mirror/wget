@@ -5,7 +5,7 @@ This file is part of GNU Wget.
 
 GNU Wget is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+the Free Software Foundation; either version 3 of the License, or
 (at your option) any later version.
 
 GNU Wget is distributed in the hope that it will be useful,
@@ -14,8 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Wget; if not, write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+along with Wget.  If not, see <http://www.gnu.org/licenses/>.
 
 In addition, as a special exception, the Free Software Foundation
 gives permission to link the code of its release of Wget with the
@@ -664,15 +663,14 @@ print_version (void)
 {
   printf ("GNU Wget %s\n\n", version_string);
   fputs (_("\
-Copyright (C) 2006 Free Software Foundation, Inc.\n"), stdout);
+Copyright (C) 2007 Free Software Foundation, Inc.\n"), stdout);
   fputs (_("\
-This program is distributed in the hope that it will be useful,\n\
-but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
-GNU General Public License for more details.\n"), stdout);
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n\
+This is free software: you are free to change and redistribute it.\n\
+There is NO WARRANTY, to the extent permitted by law.\n", stdout);
   fputs (_("\nOriginally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"),
          stdout);
-  fputs (_("\nCurrently maintained by Mauro Tortonesi <mauro@ferrara.linux.it>.\n"),
+  fputs (_("Currently maintained by Micah Cowan <micah@cowan.name>.\n"),
          stdout);
   exit (0);
 }

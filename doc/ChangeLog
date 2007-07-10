@@ -1,3 +1,21 @@
+2007-07-05  Micah Cowan  <micah@cowan.name>
+
+	* fdl.texi:
+	Changed to match the version in gnulib.
+
+	* Makefile.in:
+	* texi2pod.pl:
+	* texinfo.tex:
+	Updated GPL reference to version 3 or later, removed FSF
+	address.
+
+	* wget.texi:
+	Slightly reworded the FDL license invocation. Replaced the
+	maintainer reference. Removed the GPL text from the manual.
+
+	* gpl.texi:
+	Removed due to discontinuation of reference in Wget manual.
+
 2006-07-10  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* wget.texi: Fixed rendering of --no-proxy description in the man

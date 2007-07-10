@@ -3,7 +3,7 @@ dnl Copyright (C) 1996-2005 Free Software Foundation, Inc.
 
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
-dnl the Free Software Foundation; either version 2 of the License, or
+dnl the Free Software Foundation; either version 3 of the License, or
 dnl (at your option) any later version.
 
 dnl This program is distributed in the hope that it will be useful,
@@ -12,8 +12,7 @@ dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 dnl GNU General Public License for more details.
 
 dnl You should have received a copy of the GNU General Public License
-dnl along with this program; if not, write to the Free Software
-dnl Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+dnl along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 dnl In addition, as a special exception, the Free Software Foundation
 dnl gives permission to link the code of its release of Wget with the

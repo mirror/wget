@@ -1,3 +1,20 @@
+2007-07-05  Micah Cowan  <micah@cowan.name>
+
+	* cmpt.c, connect.c, connect.h, convert.c, convert.h:
+	* cookies.c, cookies.h, ftp-basic.c, ftp.c, ftp.h, ftp-ls.c:
+	* ftp-opie.c, gen-md5.c, gen-md5.h, getopt.c, getopt.h, gnu-md5.c:
+	* gnu-md5.h, gnutls.c, hash.c, hash.h, host.c, host.h:
+	* html-parse.c, html-parse.h, html-url.c, http.c, http.h:
+	* http-ntlm.c, http-ntlm.h, init.c, init.h, log.c, log.h, main.c:
+	* Makefile.in, mswindows.c, mswindows.h, netrc.c, netrc.h:
+	* openssl.c, options.h, progress.c, progress.h, ptimer.c:
+	* ptimer.h, recur.c, recur.h, res.c, res.h, retr.c, retr.h:
+	* safe-ctype.c, safe-ctype.h, spider.c, spider.h, ssl.h, sysdep.h:
+	* test.c, test.h, url.c, url.h, utils.c, utils.h, wget.h:
+	* xmalloc.c, xmalloc.h:
+	Updated GPL reference to version 3 or later, removed FSF
+	address.
+
 2007-07-04  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* http.c (http_loop): Skip HEAD request and start immediately with GET

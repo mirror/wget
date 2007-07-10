@@ -1,3 +1,10 @@
+2007-07-05  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.top.bor, Makefile.doc, Makefile.in, Makefile.src:
+	* config-compiler.h, Makefile.top, Makefile.top.mingw:
+	Updated GPL reference to version 3 or later, removed FSF
+	address.
+
 2006-06-25  Christopher Lewis <chris@christopherlewis.com>
 
 	* Windows\Makefile.top: Added OpenSSL dlls and cacert.pem to

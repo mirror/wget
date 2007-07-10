@@ -1,3 +1,25 @@
+2007-07-09  Micah Cowan  <micah@cowan.name>
+
+	* README: Removed references to wget.sunsite.dk.
+
+2007-07-05  Micah Cowan  <micah@cowan.name>
+
+	* AUTHORS:
+	Draw attention to previous maintainers.
+
+	* autogen.sh, config.guess, config.sub, configure.bat:
+	* configure.in, m4/wget.m4, Makefile.in, util/dist-wget:
+	* util/Makefile.in, util/rmold.pl:
+	Updated GPL reference to version 3 or later, removed FSF
+	address.
+
+	* README:
+	Updated reference to maintainer, and updated GPL reference to
+	version 3 or later.
+
+	* COPYING:
+	Replaced with verson 3.
+
 2006-08-28  Noèl Köthe <noel@debian.org>
 
 	* Makefile.in: Fixed a DESTDIR-related bug.
