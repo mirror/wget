@@ -3,7 +3,7 @@ Version: 1.7
 Release: 1
 Copyright: GPL
 Source: ftp://ftp.gnu.org/gnu/wget/wget-%{version}.tar.gz 
-Url: http://sunsite.dk/wget/
+Url: http://www.gnu.org/software/wget/
 Provides: webclient
 Prereq: /sbin/install-info
 BuildRoot: /var/tmp/%{name}-root

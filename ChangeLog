@@ -1,6 +1,6 @@
 2007-07-09  Micah Cowan  <micah@cowan.name>
 
-	* README: Removed references to wget.sunsite.dk.
+	* README, util/wget.spec: Removed references to wget.sunsite.dk.
 
 2007-07-05  Micah Cowan  <micah@cowan.name>
 
