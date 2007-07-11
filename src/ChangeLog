@@ -15,11 +15,6 @@
 	Updated GPL reference to version 3 or later, removed FSF
 	address.
 
-2007-07-04  Mauro Tortonesi  <mauro@ferrara.linux.it>
-
-	* http.c (http_loop): Skip HEAD request and start immediately with GET
-	if -O is given.
-
 2007-02-02  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* http.c (print_server_response): Escape non-printable characters
