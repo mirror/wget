@@ -23,7 +23,7 @@ my %urls = (
     },
 );
 
-my $cmdline = "wget --quiet -O out http://localhost:8080/nonexistent";
+my $cmdline = $WgetTest::WGETPATH . " --quiet -O out http://localhost:8080/nonexistent";
 
 my $expected_error_code = 256;
 
@@ -40,7 +40,7 @@ my $the_test = HTTPTest->new (name => "Test-O-nonexisting",
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 
                               output => \%expected_downloaded_files);
-$the_test->run();
+exit $the_test->run();
 
 # vim: et ts=4 sw=4
 

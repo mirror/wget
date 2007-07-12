@@ -32,7 +32,7 @@ my %urls = (
     },
 );
 
-my $cmdline = "wget --spider http://localhost:8080/index.html";
+my $cmdline = $WgetTest::WGETPATH . " --spider http://localhost:8080/index.html";
 
 my $expected_error_code = 256;
 
@@ -46,7 +46,7 @@ my $the_test = HTTPTest->new (name => "Test--spider",
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 
                               output => \%expected_downloaded_files);
-$the_test->run();
+exit $the_test->run();
 
 # vim: et ts=4 sw=4
 

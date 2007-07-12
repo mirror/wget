@@ -24,7 +24,7 @@ my %urls = (
     },
 );
 
-my $cmdline = "wget -N http://localhost:8080/dummy.txt";
+my $cmdline = $WgetTest::WGETPATH . " -N http://localhost:8080/dummy.txt";
 
 my $expected_error_code = 0;
 
@@ -42,7 +42,7 @@ my $the_test = HTTPTest->new (name => "Test-N",
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 
                               output => \%expected_downloaded_files);
-$the_test->run();
+exit $the_test->run();
 
 # vim: et ts=4 sw=4
 

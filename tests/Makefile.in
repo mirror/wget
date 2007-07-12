@@ -74,7 +74,38 @@ GETOPT_OBJ = @GETOPT_OBJ@
 
 all:
 
-unittest: test$(exeext)
+.PHONY: test
+
+test: run-unit-tests run-px-tests
+
+run-unit-tests: unit-tests$(exeext)
+	./unit-tests$(exeext)
+
+run-px-tests: WgetTest.pm
+	./Test-c-full.px && echo && echo
+	./Test-c-partial.px && echo && echo
+	./Test-c.px && echo && echo
+#	./Test-E-k-K.px && echo && echo
+#	./Test-E-k.px && echo && echo
+	./Test-ftp.px && echo && echo
+#	./Test-HTTP-Content-Disposition.px && echo && echo
+#	./Test-HTTP-Content-Disposition-1.px && echo && echo
+#	./Test-HTTP-Content-Disposition-2.px && echo && echo
+	./Test-N-current.px && echo && echo
+#	./Test-nonexisting-quiet.px && echo && echo
+#	./Test-noop.px && echo && echo
+#	./Test-np.px && echo && echo
+#	./Test-N.px && echo && echo
+	./Test-O-nonexisting.px && echo && echo
+	./Test-O.px && echo && echo
+#	./Test-Restrict-Lowercase.px && echo && echo
+#	./Test-Restrict-Uppercase.px && echo && echo
+	./Test--spider-fail.px && echo && echo
+	./Test--spider.px && echo && echo
+	./Test--spider-r.px && echo && echo
+
+WgetTest.pm: WgetTest.pm.in @top_srcdir@/config.status
+	cd @top_srcdir@ && ./config.status
 
 #
 # Dependencies for test binary
@@ -227,7 +258,7 @@ xmalloc.o: ../src/xmalloc.c $(HEADERS)
 	$(COMPILE) -DTESTING -c $<
 
 	
-test$(exeext): $(TESTOBJ)
+unit-tests$(exeext): $(TESTOBJ)
 	$(LINK) $(TESTOBJ) $(LIBS)
 
 #
@@ -235,7 +266,7 @@ test$(exeext): $(TESTOBJ)
 #
 
 clean:
-	$(RM) *.o test$(exeext) *~ *.bak core core.[0-9]*
+	$(RM) *.o unit-tests$(exeext) *~ *.bak core core.[0-9]*
 
 distclean: clean
 	$(RM) Makefile

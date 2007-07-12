@@ -86,7 +86,7 @@ SUBDIRS = src doc po tests util windows
 # default target
 all: src/config.h Makefile $(SUBDIRS)
 
-unittest: src/config.h Makefile 
+test: src/config.h Makefile 
 	cd tests && $(MAKE) $(MAKEDEFS) $@
 	
 check: all

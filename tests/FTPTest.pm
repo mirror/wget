@@ -5,9 +5,9 @@ package FTPTest;
 use strict;
 
 use FTPServer;
-use Test;
+use WgetTest;
 
-our @ISA = qw(Test);
+our @ISA = qw(WgetTest);
 my $VERSION = 0.01;
 
 

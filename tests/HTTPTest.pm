@@ -5,9 +5,9 @@ package HTTPTest;
 use strict;
 
 use HTTPServer;
-use Test;
+use WgetTest;
 
-our @ISA = qw(Test);
+our @ISA = qw(WgetTest);
 my $VERSION = 0.01;
 
 

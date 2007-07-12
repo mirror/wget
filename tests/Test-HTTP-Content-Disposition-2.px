@@ -37,7 +37,7 @@ my %urls = (
     },
 );
 
-my $cmdline = "wget --no-content-disposition http://localhost:8080/dummy.html";
+my $cmdline = $WgetTest::WGETPATH . " --no-content-disposition http://localhost:8080/dummy.html";
 
 my $expected_error_code = 0;
 
@@ -70,7 +70,7 @@ my $the_test = HTTPTest->new (name => "Test-HTTP-Content-Disposition-2",
                               errcode => $expected_error_code, 
                               existing => \%existing_files,
                               output => \%expected_downloaded_files);
-$the_test->run();
+exit $the_test->run();
 
 # vim: et ts=4 sw=4
 

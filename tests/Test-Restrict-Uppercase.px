@@ -32,7 +32,7 @@ my %urls = (
     },
 );
 
-my $cmdline = "wget --restrict-file-names=uppercase http://localhost:8080/SomePage.html";
+my $cmdline = $WgetTest::WGETPATH . " --restrict-file-names=uppercase http://localhost:8080/SomePage.html";
 
 my $expected_error_code = 0;
 
@@ -49,7 +49,7 @@ my $the_test = HTTPTest->new (name => "Test-Restrict-Uppercase",
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 
                               output => \%expected_downloaded_files);
-$the_test->run();
+exit $the_test->run();
 
 # vim: et ts=4 sw=4
 

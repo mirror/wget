@@ -476,7 +476,8 @@ dnl
 dnl Create output
 dnl
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile util/Makefile
-                 po/Makefile.in tests/Makefile windows/Makefile])
+                 po/Makefile.in tests/Makefile tests/WgetTest.pm
+                 windows/Makefile])
 AC_CONFIG_HEADERS([src/config.h])
 AH_BOTTOM([
 #include "config-post.h"

@@ -33,7 +33,7 @@ my %urls = (
     },
 );
 
-my $cmdline = "wget http://localhost:8080/";
+my $cmdline = $WgetTest::WGETPATH . " http://localhost:8080/";
 
 my $expected_error_code = 0;
 
@@ -50,7 +50,7 @@ my $the_test = HTTPTest->new (name => "Test-noop",
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 
                               output => \%expected_downloaded_files);
-$the_test->run();
+exit $the_test->run();
 
 # vim: et ts=4 sw=4
 

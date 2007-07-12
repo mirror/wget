@@ -1,12 +1,14 @@
 #!/usr/bin/perl -w
 
-package Test;
+package WgetTest;
 $VERSION = 0.01;
 
 use strict;
 
 use Cwd;
 use File::Path;
+
+our $WGETPATH = "@top_srcdir@/src/wget";
 
 my @unexpected_downloads = ();
 
@@ -39,7 +41,7 @@ sub new {
     my $caller_is_obj = ref($caller);
     my $class = $caller_is_obj || $caller;
     #print STDERR "class = ", $class, "\n";
-    #print STDERR "_attr_data {workdir} = ", $Test::_attr_data{_workdir}, "\n";
+    #print STDERR "_attr_data {workdir} = ", $WgetTest::_attr_data{_workdir}, "\n";
     my $self = bless {}, $class;
     foreach my $attrname ($self->_standard_keys()) {
         #print STDERR "attrname = ", $attrname, " value = ";
@@ -92,7 +94,8 @@ sub run {
     unless ($errcode == $self->{_errcode}) {
         $result_message = "Test failed: wrong code returned (was: $errcode, expected: $self->{_errcode})\n";
     }
-    if (my $error_str = $self->_verify_download()) {
+    my $error_str;
+    if ($error_str = $self->_verify_download()) {
         $result_message = $error_str;
     }
 
@@ -100,6 +103,7 @@ sub run {
     $self->_cleanup();
 
     print $result_message;
+    return $errcode != $self->{_errcode} || ($error_str ? 1 : 0);
 }
 
 

@@ -119,7 +119,7 @@ my %urls = (
     },
 );
 
-my $cmdline = "wget -np -nH -r http://localhost:8080/firstlevel/";
+my $cmdline = $WgetTest::WGETPATH . " -np -nH -r http://localhost:8080/firstlevel/";
 
 my $expected_error_code = 0;
 
@@ -142,7 +142,7 @@ my $the_test = HTTPTest->new (name => "Test-np",
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 
                               output => \%expected_downloaded_files);
-$the_test->run();
+exit $the_test->run();
 
 # vim: et ts=4 sw=4
 
