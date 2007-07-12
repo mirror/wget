@@ -76,7 +76,10 @@ all:
 
 .PHONY: test
 
-test: run-unit-tests run-px-tests
+test: @top_srcdir@/src/wget run-unit-tests run-px-tests
+
+@top_srcdir@/src/wget:
+	cd @top_srcdir@ && $(MAKE)
 
 run-unit-tests: unit-tests$(exeext)
 	./unit-tests$(exeext)
