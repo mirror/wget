@@ -1,3 +1,8 @@
+2007-07-16  Joshua David Williams  <yurimxpxman@gmail.com>
+
+	* test.h: tests made more verbose; now displays the name
+	of each test run.
+
 2007-07-05  Micah Cowan  <micah@cowan.name>
 
 	* cmpt.c, connect.c, connect.h, convert.c, convert.h:

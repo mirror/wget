@@ -31,8 +31,14 @@ so, delete this exception statement from your version.  */
 
 /* from MinUnit */
 #define mu_assert(message, test) do { if (!(test)) return message; } while (0)
-#define mu_run_test(test) do { const char *message = test(); tests_run++; \
-                               if (message) return message; } while (0)
+#define mu_run_test(test) \
+do { \
+  puts("RUNNING TEST " #test "..."); \
+  const char *message = test(); \
+  tests_run++; \
+  if (message) return message; \
+  puts("PASSED\n"); \
+} while (0)
 
 extern int tests_run;
 
