@@ -1239,6 +1239,13 @@ wget --header="Host: foo.bar" http://localhost/
 In versions of Wget prior to 1.10 such use of @samp{--header} caused
 sending of duplicate headers.
 
+@cindex redirect
+@item --max-redirect=@var{number}
+Specifies the maximum number of redirections to follow for a resource.
+The default is 20, which is usually far more than necessary. However, on
+those occasions where you want to allow more (or fewer), this is the
+option to use.
+
 @cindex proxy user
 @cindex proxy password
 @cindex proxy authentication

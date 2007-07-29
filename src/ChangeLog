@@ -1,3 +1,20 @@
+2007-07-28  Micah Cowan  <micah@cowan.name>
+
+	* options.h, init.c, retr.c, main.c: renamed opt maxredirect
+	field to max_redirect, for improved consistency.
+	* init.c: changed max_redirect parser from cmd_number_inf to
+	cmd_number, as infinite redirects may not be appropriate.
+	Alternatively, if cmd_number_inf should be used, then
+	opt.max_redirect's value should be checked a bit differently in
+	retr.c, to allow for the "infinite" meaning of zero.
+
+2007-07-16  Joshua David Williams  <yurimxpxman@gmail.com>
+
+	* options.h: added maxredirect to options struct
+	* init.c: added maxredirect to list of variables
+	* retr.c (retrieve_url): replaced MAX_REDIRECTIONS with opt.maxredirect
+	* main.c: added option --max-redirect
+
 2007-07-16  Joshua David Williams  <yurimxpxman@gmail.com>
 
 	* test.h: tests made more verbose; now displays the name

@@ -567,12 +567,6 @@ calc_rate (wgint bytes, double secs, int *units)
   return dlrate;
 }
 
-/* Maximum number of allowed redirections.  20 was chosen as a
-   "reasonable" value, which is low enough to not cause havoc, yet
-   high enough to guarantee that normal retrievals will not be hurt by
-   the check.  */
-
-#define MAX_REDIRECTIONS 20
 
 #define SUSPEND_POST_DATA do {			\
   post_data_suspended = true;			\
@@ -746,10 +740,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       mynewloc = xstrdup (newloc_parsed->url);
 
       /* Check for max. number of redirections.  */
-      if (++redirection_count > MAX_REDIRECTIONS)
+      if (++redirection_count > opt.max_redirect)
 	{
 	  logprintf (LOG_NOTQUIET, _("%d redirections exceeded.\n"),
-		     MAX_REDIRECTIONS);
+		     opt.max_redirect);
 	  url_free (newloc_parsed);
 	  url_free (u);
 	  xfree (url);

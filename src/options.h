@@ -36,8 +36,10 @@ struct options
   bool background;		/* Whether we should work in background. */
   bool ignore_length;		/* Do we heed content-length at all?  */
   bool recursive;		/* Are we recursive? */
-  bool spanhost;			/* Do we span across hosts in
+  bool spanhost;		/* Do we span across hosts in
 				   recursion? */
+  int  max_redirect;            /* Maximum number of times we'll allow
+                                   a page to redirect. */
   bool relative_only;		/* Follow only relative links. */
   bool no_parent;		/* Restrict access to the parent
 				   directory.  */

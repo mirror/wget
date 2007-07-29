@@ -182,6 +182,7 @@ static struct {
   { "loadcookies",	&opt.cookies_input,	cmd_file },
   { "logfile",		&opt.lfilename,		cmd_file },
   { "login",		&opt.ftp_user,		cmd_string },/* deprecated*/
+  { "maxredirect",	&opt.max_redirect,	cmd_number },
   { "mirror",		NULL,			cmd_spec_mirror },
   { "netrc",		&opt.netrc,		cmd_boolean },
   { "noclobber",	&opt.noclobber,		cmd_boolean },
@@ -321,6 +322,7 @@ defaults (void)
   opt.restrict_files_case = restrict_no_case_restriction;
 
   opt.content_disposition = true;
+  opt.max_redirect = 20;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is
