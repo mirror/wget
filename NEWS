@@ -18,6 +18,9 @@ just the ones at or below the original authenticated location.
 Credentials for Digest authentication are still never saved or issued
 automatically, and continue to require a challenge for each resource.
 
+** Added --max-redirect option, allowing the user to specify what should
+be the maximum number of HTTP redirects to follow.
+
 ** Wget now saves HTTP downloads using file names specified by the
 `Content-Disposition' header.  This is a standard way of specifying
 the file name used by many web dynamically generated pages.

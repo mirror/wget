@@ -1,7 +1,7 @@
 2007-07-29  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: No more auth before challenge. No more auth info in
-	Referer.
+	Referer. New --max-redirect option.
 
 2007-07-09  Micah Cowan  <micah@cowan.name>
 
