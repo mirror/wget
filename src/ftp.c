@@ -1153,7 +1153,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
       /* Print fetch message, if opt.verbose.  */
       if (opt.verbose)
 	{
-	  char *hurl = url_string (u, true);
+	  char *hurl = url_string (u, URL_AUTH_HIDE_PASSWD);
 	  char tmp[256];
 	  strcpy (tmp, "        ");
 	  if (count > 1)
@@ -1234,7 +1234,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 	  /* Need to hide the password from the URL.  The `if' is here
              so that we don't do the needless allocation every
              time. */
-	  char *hurl = url_string (u, true);
+	  char *hurl = url_string (u, URL_AUTH_HIDE_PASSWD);
 	  logprintf (LOG_NONVERBOSE, "%s URL: %s [%s] -> \"%s\" [%d]\n",
 		     tms, hurl, number_to_static_string (len), locf, count);
 	  xfree (hurl);

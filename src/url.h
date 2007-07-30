@@ -34,6 +34,14 @@ so, delete this exception statement from your version.  */
 #define DEFAULT_FTP_PORT 21
 #define DEFAULT_HTTPS_PORT 443
 
+/* Specifies how, or whether, user auth information should be included
+ * in URLs regenerated from URL parse structures. */
+enum url_auth_mode {
+  URL_AUTH_SHOW,
+  URL_AUTH_HIDE_PASSWD,
+  URL_AUTH_HIDE
+};
+
 /* Note: the ordering here is related to the order of elements in
    `supported_schemes' in url.c.  */
 
@@ -86,7 +94,7 @@ bool url_has_scheme (const char *);
 int scheme_default_port (enum url_scheme);
 void scheme_disable (enum url_scheme);
 
-char *url_string (const struct url *, bool);
+char *url_string (const struct url *, enum url_auth_mode);
 char *url_file_name (const struct url *);
 
 char *uri_merge (const char *, const char *);

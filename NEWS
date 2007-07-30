@@ -7,6 +7,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.11.
 
+** Authentication information is no longer sent as part of the Referer
+header in recursive fetches.
+
 ** No authentication credentials are sent until a challenge is issued,
 for improved security. Authentication handling is still not
 RFC-compliant, as once a Basic challenge has been received, it will

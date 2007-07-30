@@ -1,6 +1,7 @@
 2007-07-29  Micah Cowan  <micah@cowan.name>
 
-	* NEWS: No more auth before challenge.
+	* NEWS: No more auth before challenge. No more auth info in
+	Referer.
 
 2007-07-09  Micah Cowan  <micah@cowan.name>
 

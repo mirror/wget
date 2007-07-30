@@ -324,7 +324,13 @@ retrieve_tree (const char *start_url)
 	    {
 	      struct urlpos *child = children;
 	      struct url *url_parsed = url_parsed = url_parse (url, NULL);
+              char *referer_url = url;
+              bool strip_auth = url_parsed->user;
 	      assert (url_parsed != NULL);
+
+              /* Strip auth info if present */
+              if (strip_auth)
+                referer_url = url_string (url_parsed, URL_AUTH_HIDE);
 
 	      for (; child; child = child->next)
 		{
@@ -336,7 +342,7 @@ retrieve_tree (const char *start_url)
 					blacklist))
 		    {
 		      url_enqueue (queue, xstrdup (child->url->url),
-				   xstrdup (url), depth + 1,
+				   xstrdup (referer_url), depth + 1,
 				   child->link_expect_html);
 		      /* We blacklist the URL we have enqueued, because we
 			 don't want to enqueue (and hence download) the
@@ -345,6 +351,8 @@ retrieve_tree (const char *start_url)
 		    }
 		}
 
+              if (strip_auth)
+                xfree (referer_url);
 	      url_free (url_parsed);
 	      free_urlpos (children);
 	    }
@@ -428,7 +436,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
     {
       if (opt.spider) 
 	{
-          char *referrer = url_string (parent, true);
+          char *referrer = url_string (parent, URL_AUTH_HIDE_PASSWD);
           DEBUGP (("download_child_p: parent->url is: `%s'\n", parent->url));
           visited_url (url, referrer);
 	  xfree (referrer);
@@ -628,3 +636,5 @@ descend_redirect_p (const char *redirected, const char *original, int depth,
 
   return success;
 }
+
+/* vim:set sts=2 sw=2 cino+={s: */

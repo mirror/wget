@@ -855,7 +855,7 @@ url_parse (const char *url, int *error)
       /* If we suspect that a transformation has rendered what
          url_string might return different from URL_ENCODED, rebuild
          u->url using url_string.  */
-      u->url = url_string (u, false);
+      u->url = url_string (u, URL_AUTH_SHOW);
 
       if (url_encoded != url)
         xfree ((char *) url_encoded);
@@ -1071,7 +1071,7 @@ sync_path (struct url *u)
 
   /* Regenerate u->url as well.  */
   xfree (u->url);
-  u->url = url_string (u, false);
+  u->url = url_string (u, URL_AUTH_SHOW);
 }
 
 /* Mutators.  Code in ftp.c insists on changing u->dir and u->file.
@@ -1814,7 +1814,7 @@ uri_merge (const char *base, const char *link)
    the URL will be quoted.  */
 
 char *
-url_string (const struct url *url, bool hide_password)
+url_string (const struct url *url, enum url_auth_mode auth_mode)
 {
   int size;
   char *result, *p;
@@ -1831,13 +1831,16 @@ url_string (const struct url *url, bool hide_password)
   /* Make sure the user name and password are quoted. */
   if (url->user)
     {
-      quoted_user = url_escape_allow_passthrough (url->user);
-      if (url->passwd)
+      if (auth_mode != URL_AUTH_HIDE)
         {
-          if (hide_password)
-            quoted_passwd = HIDDEN_PASSWORD;
-          else
-            quoted_passwd = url_escape_allow_passthrough (url->passwd);
+          quoted_user = url_escape_allow_passthrough (url->user);
+          if (url->passwd)
+            {
+              if (auth_mode = URL_AUTH_HIDE_PASSWD)
+                quoted_passwd = HIDDEN_PASSWORD;
+              else
+                quoted_passwd = url_escape_allow_passthrough (url->passwd);
+            }
         }
     }
 
@@ -1899,7 +1902,8 @@ url_string (const struct url *url, bool hide_password)
 
   if (quoted_user && quoted_user != url->user)
     xfree (quoted_user);
-  if (quoted_passwd && !hide_password && quoted_passwd != url->passwd)
+  if (quoted_passwd && auth_mode == URL_AUTH_SHOW
+      && quoted_passwd != url->passwd)
     xfree (quoted_passwd);
   if (quoted_host != url->host)
     xfree (quoted_host);

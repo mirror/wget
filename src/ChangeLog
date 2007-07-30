@@ -1,3 +1,12 @@
+2007-07-29  Micah Cowan  <micah@cowan.name>
+
+	* url.h, url.c (url_string): Replaced bool arg of the url_string
+	function with enum url_auth_mode, with added option to
+	completely remove user/pass auth information.
+	* http.c, ftp.c, url.c, recur.c: Adapted call to url_string
+	function to fit new usage.
+	* recur.c (retrieve_tree): Remove auth info from Referer header.
+
 2007-07-28  Micah Cowan  <micah@cowan.name>
 
 	* options.h, init.c, retr.c, main.c: renamed opt maxredirect

@@ -2359,7 +2359,7 @@ Spider mode enabled. Check if remote file exists.\n"));
       /* Print fetch message, if opt.verbose.  */
       if (opt.verbose)
         {
-          char *hurl = url_string (u, true);
+          char *hurl = url_string (u, URL_AUTH_HIDE_PASSWD);
           
           if (count > 1) 
             {
@@ -2483,7 +2483,7 @@ Spider mode enabled. Check if remote file exists.\n"));
           if (!opt.verbose)
             {
               /* #### Ugly ugly ugly! */
-              hurl = url_string (u, true);
+              hurl = url_string (u, URL_AUTH_HIDE_PASSWD);
               logprintf (LOG_NONVERBOSE, "%s:\n", hurl);
             }
           /* Maybe we should always keep track of broken links, not just in
@@ -2492,7 +2492,7 @@ Spider mode enabled. Check if remote file exists.\n"));
             {
               /* #### Again: ugly ugly ugly! */
               if (!hurl) 
-                hurl = url_string (u, true);
+                hurl = url_string (u, URL_AUTH_HIDE_PASSWD);
               nonexisting_url (hurl);
               logprintf (LOG_NOTQUIET, _("\
 Remote file does not exist -- broken link!!!\n"));
