@@ -1,3 +1,7 @@
+2007-07-29  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: No more auth before challenge.
+
 2007-07-09  Micah Cowan  <micah@cowan.name>
 
 	* README, util/wget.spec: Removed references to wget.sunsite.dk.
