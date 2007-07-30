@@ -8,6 +8,24 @@
 	opt.max_redirect's value should be checked a bit differently in
 	retr.c, to allow for the "infinite" meaning of zero.
 
+2007-07-25  Micah Cowan  <micah@cowan.name>
+
+	* http.c (create_authorization_line)
+	(basic_authentication_encode, known_authentication_scheme_p)
+	(load_cookies): Moved declarations up.
+	(basic_authed_hosts): Added. Tracks what hosts have issued Basic
+	challenge and been given the global username, password.
+	(maybe_send_basic_creds): Added. Sends Basic creds for hosts that
+	have issued Basic challenges.
+	(register_basic_auth_host): Added. Instantiates
+	basic_authed_hosts if necessary, then registers the host that
+	has issued a challenge.
+	(gethttp) <auth>: Only send authentication credentials after
+	we've received a challenge from that host. This is a stop-gap
+	fix until a proper fix can be implemented; still isn't quite
+	right, as we should only be sending credentials automatically
+	for authenticated paths and below, and not for the entire host.
+
 2007-07-16  Joshua David Williams  <yurimxpxman@gmail.com>
 
 	* options.h: added maxredirect to options struct

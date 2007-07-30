@@ -40,6 +40,7 @@ so, delete this exception statement from your version.  */
 #include <locale.h>
 
 #include "wget.h"
+#include "hash.h"
 #include "http.h"
 #include "utils.h"
 #include "url.h"
@@ -65,6 +66,14 @@ so, delete this exception statement from your version.  */
 #endif
 
 extern char *version_string;
+
+/* Forward decls. */
+static char *create_authorization_line (const char *, const char *,
+                                        const char *, const char *,
+                                        const char *, bool *);
+static char *basic_authentication_encode (const char *, const char *);
+static bool known_authentication_scheme_p (const char *, const char *);
+static void load_cookies (void);
 
 #ifndef MIN
 # define MIN(x, y) ((x) > (y) ? (y) : (x))
@@ -372,6 +381,50 @@ request_free (struct request *req)
   xfree_null (req->headers);
   xfree (req);
 }
+
+static struct hash_table *basic_authed_hosts;
+
+/* Find out if this host has issued a Basic challenge yet; if so, give
+ * it the username, password. A temporary measure until we can get
+ * proper authentication in place. */
+
+static int
+maybe_send_basic_creds (const char *hostname, const char *user,
+                        const char *passwd, struct request *req)
+{
+  int did_challenge = 0;
+
+  if (basic_authed_hosts
+      && hash_table_contains(basic_authed_hosts, hostname))
+    {
+      DEBUGP(("Found `%s' in basic_authed_hosts.\n", hostname));
+      request_set_header (req, "Authorization",
+                          basic_authentication_encode (user, passwd),
+                          rel_value);
+      did_challenge = 1;
+    }
+  else
+    {
+      DEBUGP(("Host `%s' has not issued a general basic challenge.\n",
+              hostname));
+    }
+  return did_challenge;
+}
+
+static void
+register_basic_auth_host (const char *hostname)
+{
+  if (!basic_authed_hosts)
+    {
+      basic_authed_hosts = make_nocase_string_hash_table (1);
+    }
+  if (!hash_table_contains(basic_authed_hosts, hostname))
+    {
+      hash_table_put (basic_authed_hosts, xstrdup(hostname), NULL);
+      DEBUGP(("Inserted `%s' into basic_authed_hosts\n", hostname));
+    }
+}
+
 
 /* Send the contents of FILE_NAME to SOCK.  Make sure that exactly
    PROMISED_SIZE bytes are sent over the wire -- if the file is
@@ -1259,13 +1312,6 @@ free_hstat (struct http_stat *hs)
   hs->error = NULL;
 }
 
-static char *create_authorization_line (const char *, const char *,
-                                        const char *, const char *,
-                                        const char *, bool *);
-static char *basic_authentication_encode (const char *, const char *);
-static bool known_authentication_scheme_p (const char *, const char *);
-static void load_cookies (void);
-
 #define BEGINS_WITH(line, string_constant)                               \
   (!strncasecmp (line, string_constant, sizeof (string_constant) - 1)    \
    && (ISSPACE (line[sizeof (string_constant) - 1])                      \
@@ -1312,9 +1358,14 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   int sock = -1;
   int flags;
 
-  /* Set to 1 when the authorization has failed permanently and should
+  /* Set to 1 when the authorization has already been sent and should
      not be tried again. */
   bool auth_finished = false;
+
+  /* Set to 1 when just globally-set Basic authorization has been sent;
+   * should prevent further Basic negotiations, but not other
+   * mechanisms. */
+  bool basic_auth_finished = false;
 
   /* Whether NTLM authentication is used for this request. */
   bool ntlm_seen = false;
@@ -1421,31 +1472,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   user = user ? user : (opt.http_user ? opt.http_user : opt.user);
   passwd = passwd ? passwd : (opt.http_passwd ? opt.http_passwd : opt.passwd);
 
-  if (user && passwd)
+  if (user && passwd
+      && !u->user) /* We only do "site-wide" authentication with "global"
+                      user/password values; URL user/password info overrides. */
     {
-      /* We have the username and the password, but haven't tried
-         any authorization yet.  Let's see if the "Basic" method
-         works.  If not, we'll come back here and construct a
-         proper authorization method with the right challenges.
-
-         If we didn't employ this kind of logic, every URL that
-         requires authorization would have to be processed twice,
-         which is very suboptimal and generates a bunch of false
-         "unauthorized" errors in the server log.
-
-         #### But this logic also has a serious problem when used
-         with stronger authentications: we *first* transmit the
-         username and the password in clear text, and *then* attempt a
-         stronger authentication scheme.  That cannot be right!  We
-         are only fortunate that almost everyone still uses the
-         `Basic' scheme anyway.
-
-         There should be an option to prevent this from happening, for
-         those who use strong authentication schemes and value their
-         passwords.  */
-      request_set_header (req, "Authorization",
-                          basic_authentication_encode (user, passwd),
-                          rel_value);
+      /* If this is a host for which we've already received a Basic
+       * challenge, we'll go ahead and send Basic authentication creds. */
+      basic_auth_finished = maybe_send_basic_creds(u->host, user, passwd, req);
     }
 
   proxyauth = NULL;
@@ -1919,16 +1952,13 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
               }
 
           if (!www_authenticate)
-            /* If the authentication header is missing or
-               unrecognized, there's no sense in retrying.  */
-            logputs (LOG_NOTQUIET, _("Unknown authentication scheme.\n"));
-          else if (BEGINS_WITH (www_authenticate, "Basic"))
-            /* If the authentication scheme is "Basic", which we send
-               by default, there's no sense in retrying either.  (This
-               should be changed when we stop sending "Basic" data by
-               default.)  */
-            ;
-          else
+            {
+              /* If the authentication header is missing or
+                 unrecognized, there's no sense in retrying.  */
+              logputs (LOG_NOTQUIET, _("Unknown authentication scheme.\n"));
+            }
+          else if (!basic_auth_finished
+                   || !BEGINS_WITH (www_authenticate, "Basic"))
             {
               char *pth;
               pth = url_full_path (u);
@@ -1941,8 +1971,19 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
                                   rel_value);
               if (BEGINS_WITH (www_authenticate, "NTLM"))
                 ntlm_seen = true;
+              else if (!u->user && BEGINS_WITH (www_authenticate, "Basic"))
+                {
+                  /* Need to register this host as using basic auth,
+                   * so we automatically send creds next time. */
+                  register_basic_auth_host (u->host);
+                }
               xfree (pth);
               goto retry_with_auth;
+            }
+          else
+            {
+              /* We already did Basic auth, and it failed. Gotta
+               * give up. */
             }
         }
       logputs (LOG_NOTQUIET, _("Authorization failed.\n"));
@@ -3090,6 +3131,6 @@ test_parse_content_disposition()
 #endif /* TESTING */
 
 /*
- * vim: et ts=2 sw=2
+ * vim: et sts=2 sw=2 cino+={s
  */
 

@@ -1,3 +1,19 @@
+2007-07-25  Micah Cowan  <micah@cowan.name>
+
+	* HTTPServer.pm (run, send_response): Farmed out some logic from
+	the run method into a separate one named send_response, which
+	was then modified to handle simple authentication testing.
+	(handle_auth): Added to handle simple authentication testing.
+	(verify_auth_basic): Checks to make sure Basic credentials are
+	valid.
+	(verify_auth_digest): Stub added; always fails test.
+	* Makefile.in: Added Test-auth-basic.px to list of automatically
+	run tests.
+	* Test-auth-basic: Simple basic authentication test; mainly just
+	lets the server do its testing. Its current purpose is just to
+	ensure that correct basic creds are sent, but never until a
+	challenge has been sent.
+
 2007-07-05  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.in:

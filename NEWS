@@ -7,6 +7,14 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.11.
 
+** No authentication credentials are sent until a challenge is issued,
+for improved security. Authentication handling is still not
+RFC-compliant, as once a Basic challenge has been received, it will
+assume it can send credentials to any URL at that same host, and not
+just the ones at or below the original authenticated location.
+Credentials for Digest authentication are still never saved or issued
+automatically, and continue to require a challenge for each resource.
+
 ** Wget now saves HTTP downloads using file names specified by the
 `Content-Disposition' header.  This is a standard way of specifying
 the file name used by many web dynamically generated pages.

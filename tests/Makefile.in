@@ -106,6 +106,7 @@ run-px-tests: WgetTest.pm
 	./Test--spider-fail.px && echo && echo
 	./Test--spider.px && echo && echo
 	./Test--spider-r.px && echo && echo
+	./Test-auth-basic.px && echo && echo
 
 WgetTest.pm: WgetTest.pm.in @top_srcdir@/config.status
 	cd @top_srcdir@ && ./config.status
