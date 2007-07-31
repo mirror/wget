@@ -1,3 +1,9 @@
+2007-07-31  Micah Cowan  <micah@cowan.name>
+
+	* http.c (gethttp): Set contlen = -1 when we encounter a
+	negative-valued Content-Length header, so we don't consider it
+	an internal error later on and call abort().
+
 2007-07-29  Micah Cowan  <micah@cowan.name>
 
 	* url.h, url.c (url_string): Replaced bool arg of the url_string

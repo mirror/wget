@@ -1899,12 +1899,20 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
       errno = 0;
       parsed = str_to_wgint (hdrval, NULL, 10);
       if (parsed == WGINT_MAX && errno == ERANGE)
-        /* Out of range.
-           #### If Content-Length is out of range, it most likely
-           means that the file is larger than 2G and that we're
-           compiled without LFS.  In that case we should probably
-           refuse to even attempt to download the file.  */
-        contlen = -1;
+        {
+          /* Out of range.
+             #### If Content-Length is out of range, it most likely
+             means that the file is larger than 2G and that we're
+             compiled without LFS.  In that case we should probably
+             refuse to even attempt to download the file.  */
+          contlen = -1;
+        }
+      else if (parsed < 0)
+        {
+          /* Negative Content-Length; nonsensical, so we can't
+             assume any information about the content to receive. */
+          contlen = -1;
+        }
       else
         contlen = parsed;
     }
