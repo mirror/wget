@@ -156,14 +156,14 @@ struct hash_table {
   hashfun_t hash_function;
   testfun_t test_function;
 
-  struct cell *cells;		/* contiguous array of cells. */
-  int size;			/* size of the array. */
+  struct cell *cells;           /* contiguous array of cells. */
+  int size;                     /* size of the array. */
 
-  int count;			/* number of occupied entries. */
-  int resize_threshold;		/* after size exceeds this number of
-				   entries, resize the table.  */
-  int prime_offset;		/* the offset of the current prime in
-				   the prime table. */
+  int count;                    /* number of occupied entries. */
+  int resize_threshold;         /* after size exceeds this number of
+                                   entries, resize the table.  */
+  int prime_offset;             /* the offset of the current prime in
+                                   the prime table. */
 };
 
 /* We use the all-bits-set constant (INVALID_PTR) marker to mean that
@@ -195,7 +195,7 @@ struct hash_table {
 
 /* Loop over occupied cells starting at C, terminating the loop when
    an empty cell is encountered.  */
-#define FOREACH_OCCUPIED_ADJACENT(c, cells, size)				\
+#define FOREACH_OCCUPIED_ADJACENT(c, cells, size)                               \
   for (; CELL_OCCUPIED (c); c = NEXT_CELL (c, cells, size))
 
 /* Return the position of KEY in hash table SIZE large, hash function
@@ -230,13 +230,13 @@ prime_size (int size, int *prime_offset)
   for (i = *prime_offset; i < countof (primes); i++)
     if (primes[i] >= size)
       {
-	/* Set the offset to the next prime.  That is safe because,
-	   next time we are called, it will be with a larger SIZE,
-	   which means we could never return the same prime anyway.
-	   (If that is not the case, the caller can simply reset
-	   *prime_offset.)  */
-	*prime_offset = i + 1;
-	return primes[i];
+        /* Set the offset to the next prime.  That is safe because,
+           next time we are called, it will be with a larger SIZE,
+           which means we could never return the same prime anyway.
+           (If that is not the case, the caller can simply reset
+           *prime_offset.)  */
+        *prime_offset = i + 1;
+        return primes[i];
       }
 
   abort ();
@@ -270,8 +270,8 @@ static int cmp_pointer (const void *, const void *);
 
 struct hash_table *
 hash_table_new (int items,
-		unsigned long (*hash_function) (const void *),
-		int (*test_function) (const void *, const void *))
+                unsigned long (*hash_function) (const void *),
+                int (*test_function) (const void *, const void *))
 {
   int size;
   struct hash_table *ht = xnew (struct hash_table);
@@ -351,15 +351,15 @@ hash_table_get (const struct hash_table *ht, const void *key)
 
 int
 hash_table_get_pair (const struct hash_table *ht, const void *lookup_key,
-		     void *orig_key, void *value)
+                     void *orig_key, void *value)
 {
   struct cell *c = find_cell (ht, lookup_key);
   if (CELL_OCCUPIED (c))
     {
       if (orig_key)
-	*(void **)orig_key = c->key;
+        *(void **)orig_key = c->key;
       if (value)
-	*(void **)value = c->value;
+        *(void **)value = c->value;
       return 1;
     }
   else
@@ -390,9 +390,9 @@ grow_hash_table (struct hash_table *ht)
   newsize = prime_size (ht->size * HASH_RESIZE_FACTOR, &ht->prime_offset);
 #if 0
   printf ("growing from %d to %d; fullness %.2f%% to %.2f%%\n",
-	  ht->size, newsize,
-	  100.0 * ht->count / ht->size,
-	  100.0 * ht->count / newsize);
+          ht->size, newsize,
+          100.0 * ht->count / ht->size,
+          100.0 * ht->count / newsize);
 #endif
 
   ht->size = newsize;
@@ -405,14 +405,14 @@ grow_hash_table (struct hash_table *ht)
   for (c = old_cells; c < old_end; c++)
     if (CELL_OCCUPIED (c))
       {
-	struct cell *new_c;
-	/* We don't need to test for uniqueness of keys because they
-	   come from the hash table and are therefore known to be
-	   unique.  */
-	new_c = cells + HASH_POSITION (c->key, hasher, newsize);
-	FOREACH_OCCUPIED_ADJACENT (new_c, cells, newsize)
-	  ;
-	*new_c = *c;
+        struct cell *new_c;
+        /* We don't need to test for uniqueness of keys because they
+           come from the hash table and are therefore known to be
+           unique.  */
+        new_c = cells + HASH_POSITION (c->key, hasher, newsize);
+        FOREACH_OCCUPIED_ADJACENT (new_c, cells, newsize)
+          ;
+        *new_c = *c;
       }
 
   xfree (old_cells);
@@ -443,7 +443,7 @@ hash_table_put (struct hash_table *ht, const void *key, void *value)
 
   /* add new item */
   ++ht->count;
-  c->key   = (void *)key;	/* const? */
+  c->key   = (void *)key;       /* const? */
   c->value = value;
 }
 
@@ -466,30 +466,30 @@ hash_table_remove (struct hash_table *ht, const void *key)
       --ht->count;
 
       /* Rehash all the entries following C.  The alternative
-	 approach is to mark the entry as deleted, i.e. create a
-	 "tombstone".  That speeds up removal, but leaves a lot of
-	 garbage and slows down hash_table_get and hash_table_put.  */
+         approach is to mark the entry as deleted, i.e. create a
+         "tombstone".  That speeds up removal, but leaves a lot of
+         garbage and slows down hash_table_get and hash_table_put.  */
 
       c = NEXT_CELL (c, cells, size);
       FOREACH_OCCUPIED_ADJACENT (c, cells, size)
-	{
-	  const void *key2 = c->key;
-	  struct cell *c_new;
+        {
+          const void *key2 = c->key;
+          struct cell *c_new;
 
-	  /* Find the new location for the key. */
-	  c_new = cells + HASH_POSITION (key2, hasher, size);
-	  FOREACH_OCCUPIED_ADJACENT (c_new, cells, size)
-	    if (key2 == c_new->key)
-	      /* The cell C (key2) is already where we want it (in
-		 C_NEW's "chain" of keys.)  */
-	      goto next_rehash;
+          /* Find the new location for the key. */
+          c_new = cells + HASH_POSITION (key2, hasher, size);
+          FOREACH_OCCUPIED_ADJACENT (c_new, cells, size)
+            if (key2 == c_new->key)
+              /* The cell C (key2) is already where we want it (in
+                 C_NEW's "chain" of keys.)  */
+              goto next_rehash;
 
-	  *c_new = *c;
-	  CLEAR_CELL (c);
+          *c_new = *c;
+          CLEAR_CELL (c);
 
-	next_rehash:
-	  ;
-	}
+        next_rehash:
+          ;
+        }
       return 1;
     }
 }
@@ -518,7 +518,7 @@ hash_table_clear (struct hash_table *ht)
 
 void
 hash_table_for_each (struct hash_table *ht,
-		     int (*fn) (void *, void *, void *), void *arg)
+                     int (*fn) (void *, void *, void *), void *arg)
 {
   struct cell *c = ht->cells;
   struct cell *end = ht->cells + ht->size;
@@ -526,14 +526,14 @@ hash_table_for_each (struct hash_table *ht,
   for (; c < end; c++)
     if (CELL_OCCUPIED (c))
       {
-	void *key;
+        void *key;
       repeat:
-	key = c->key;
-	if (fn (key, c->value, arg))
-	  return;
-	/* hash_table_remove might have moved the adjacent cells. */
-	if (c->key != key && CELL_OCCUPIED (c))
-	  goto repeat;
+        key = c->key;
+        if (fn (key, c->value, arg))
+          return;
+        /* hash_table_remove might have moved the adjacent cells. */
+        if (c->key != key && CELL_OCCUPIED (c))
+          goto repeat;
       }
 }
 
@@ -571,10 +571,10 @@ hash_table_iter_next (hash_table_iterator *iter)
   for (; c < end; c++)
     if (CELL_OCCUPIED (c))
       {
-	iter->key = c->key;
-	iter->value = c->value;
-	iter->pos = c + 1;
-	return 1;
+        iter->key = c->key;
+        iter->value = c->value;
+        iter->pos = c + 1;
+        return 1;
       }
   return 0;
 }
@@ -770,20 +770,20 @@ main (void)
     {
       int len = strlen (line);
       if (len <= 1)
-	continue;
+        continue;
       line[--len] = '\0';
       if (!hash_table_contains (ht, line))
-	hash_table_put (ht, strdup (line), "here I am!");
+        hash_table_put (ht, strdup (line), "here I am!");
 #if 1
       if (len % 5 == 0)
-	{
-	  char *line_copy;
-	  if (hash_table_get_pair (ht, line, &line_copy, NULL))
-	    {
-	      hash_table_remove (ht, line);
-	      xfree (line_copy);
-	    }
-	}
+        {
+          char *line_copy;
+          if (hash_table_get_pair (ht, line, &line_copy, NULL))
+            {
+              hash_table_remove (ht, line);
+              xfree (line_copy);
+            }
+        }
 #endif
     }
 #if 0

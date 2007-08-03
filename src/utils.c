@@ -125,18 +125,18 @@ sepstring (const char *s)
   while (*s)
     {
       if (*s == ',')
-	{
-	  res = xrealloc (res, (i + 2) * sizeof (char *));
-	  res[i] = strdupdelim (p, s);
-	  res[++i] = NULL;
-	  ++s;
-	  /* Skip the blanks following the ','.  */
-	  while (ISSPACE (*s))
-	    ++s;
-	  p = s;
-	}
+        {
+          res = xrealloc (res, (i + 2) * sizeof (char *));
+          res[i] = strdupdelim (p, s);
+          res[++i] = NULL;
+          ++s;
+          /* Skip the blanks following the ','.  */
+          while (ISSPACE (*s))
+            ++s;
+          p = s;
+        }
       else
-	++s;
+        ++s;
     }
   res = xrealloc (res, (i + 2) * sizeof (char *));
   res[i] = strdupdelim (p, s);
@@ -167,7 +167,7 @@ aprintf (const char *fmt, ...)
   ret = vasprintf (&str, fmt, args);
   va_end (args);
   if (ret < 0 && errno == ENOMEM)
-    abort ();			/* for consistency with xmalloc/xrealloc */
+    abort ();                   /* for consistency with xmalloc/xrealloc */
   else if (ret < 0)
     return NULL;
   return str;
@@ -192,13 +192,13 @@ aprintf (const char *fmt, ...)
 
       /* If the printing worked, return the string. */
       if (n > -1 && n < size)
-	return str;
+        return str;
 
       /* Else try again with a larger buffer. */
-      if (n > -1)		/* C99 */
-	size = n + 1;		/* precisely what is needed */
+      if (n > -1)               /* C99 */
+        size = n + 1;           /* precisely what is needed */
       else
-	size <<= 1;		/* twice the old size */
+        size <<= 1;             /* twice the old size */
       str = xrealloc (str, size);
     }
 #endif /* not HAVE_VASPRINTF */
@@ -211,7 +211,7 @@ char *
 concat_strings (const char *str0, ...)
 {
   va_list args;
-  int saved_lengths[5];		/* inspired by Apache's apr_pstrcat */
+  int saved_lengths[5];         /* inspired by Apache's apr_pstrcat */
   char *ret, *p;
 
   const char *next_str;
@@ -226,7 +226,7 @@ concat_strings (const char *str0, ...)
     {
       int len = strlen (next_str);
       if (argcount < countof (saved_lengths))
-	saved_lengths[argcount++] = len;
+        saved_lengths[argcount++] = len;
       total_length += len;
     }
   va_end (args);
@@ -240,9 +240,9 @@ concat_strings (const char *str0, ...)
     {
       int len;
       if (argcount < countof (saved_lengths))
-	len = saved_lengths[argcount++];
+        len = saved_lengths[argcount++];
       else
-	len = strlen (next_str);
+        len = strlen (next_str);
       memcpy (p, next_str, len);
       p += len;
     }
@@ -300,16 +300,16 @@ fork_to_background (void)
   if (!opt.lfilename)
     {
       /* We must create the file immediately to avoid either a race
-	 condition (which arises from using unique_name and failing to
-	 use fopen_excl) or lying to the user about the log file name
-	 (which arises from using unique_name, printing the name, and
-	 using fopen_excl later on.)  */
+         condition (which arises from using unique_name and failing to
+         use fopen_excl) or lying to the user about the log file name
+         (which arises from using unique_name, printing the name, and
+         using fopen_excl later on.)  */
       FILE *new_log_fp = unique_create (DEFAULT_LOGFILE, false, &opt.lfilename);
       if (new_log_fp)
-	{
-	  logfile_changed = true;
-	  fclose (new_log_fp);
-	}
+        {
+          logfile_changed = true;
+          fclose (new_log_fp);
+        }
     }
   pid = fork ();
   if (pid < 0)
@@ -323,8 +323,8 @@ fork_to_background (void)
       /* parent, no error */
       printf (_("Continuing in background, pid %d.\n"), (int) pid);
       if (logfile_changed)
-	printf (_("Output will be written to `%s'.\n"), opt.lfilename);
-      exit (0);			/* #### should we use _exit()? */
+        printf (_("Output will be written to `%s'.\n"), opt.lfilename);
+      exit (0);                 /* #### should we use _exit()? */
     }
 
   /* child: give up the privileges and keep running. */
@@ -369,8 +369,8 @@ remove_link (const char *file)
       DEBUGP (("Unlinking %s (symlink).\n", file));
       err = unlink (file);
       if (err != 0)
-	logprintf (LOG_VERBOSE, _("Failed to unlink symlink `%s': %s\n"),
-		   file, strerror (errno));
+        logprintf (LOG_VERBOSE, _("Failed to unlink symlink `%s': %s\n"),
+                   file, strerror (errno));
     }
   return err;
 }
@@ -502,12 +502,12 @@ unique_create (const char *name, bool binary, char **opened_name)
   if (opened_name && fp != NULL)
     {
       if (fp)
-	*opened_name = uname;
+        *opened_name = uname;
       else
-	{
-	  *opened_name = NULL;
-	  xfree (uname);
-	}
+        {
+          *opened_name = NULL;
+          xfree (uname);
+        }
     }
   else
     xfree (uname);
@@ -572,21 +572,21 @@ make_directory (const char *directory)
   for (i = (*dir == '/'); 1; ++i)
     {
       for (; dir[i] && dir[i] != '/'; i++)
-	;
+        ;
       if (!dir[i])
-	quit = 1;
+        quit = 1;
       dir[i] = '\0';
       /* Check whether the directory already exists.  Allow creation of
-	 of intermediate directories to fail, as the initial path components
-	 are not necessarily directories!  */
+         of intermediate directories to fail, as the initial path components
+         are not necessarily directories!  */
       if (!file_exists_p (dir))
-	ret = mkdir (dir, 0777);
+        ret = mkdir (dir, 0777);
       else
-	ret = 0;
+        ret = 0;
       if (quit)
-	break;
+        break;
       else
-	dir[i] = '/';
+        dir[i] = '/';
     }
   return ret;
 }
@@ -657,10 +657,10 @@ acceptable (const char *s)
   if (opt.accepts)
     {
       if (opt.rejects)
-	return (in_acclist ((const char *const *)opt.accepts, s, true)
-		&& !in_acclist ((const char *const *)opt.rejects, s, true));
+        return (in_acclist ((const char *const *)opt.accepts, s, true)
+                && !in_acclist ((const char *const *)opt.rejects, s, true));
       else
-	return in_acclist ((const char *const *)opt.accepts, s, true);
+        return in_acclist ((const char *const *)opt.accepts, s, true);
     }
   else if (opt.rejects)
     return !in_acclist ((const char *const *)opt.rejects, s, true);
@@ -698,15 +698,15 @@ dir_matches_p (char **dirlist, const char *dir)
       /* Remove leading '/' */
       char *p = *x + (**x == '/');
       if (has_wildcards_p (p))
-	{
-	  if (matcher (p, dir, FNM_PATHNAME) == 0)
-	    break;
-	}
+        {
+          if (matcher (p, dir, FNM_PATHNAME) == 0)
+            break;
+        }
       else
-	{
-	  if (subdir_p (p, dir))
-	    break;
-	}
+        {
+          if (subdir_p (p, dir))
+            break;
+        }
     }
       
   return *x ? true : false;
@@ -727,12 +727,12 @@ accdir (const char *directory)
   if (opt.includes)
     {
       if (!dir_matches_p (opt.includes, directory))
-	return false;
+        return false;
     }
   if (opt.excludes)
     {
       if (dir_matches_p (opt.excludes, directory))
-	return false;
+        return false;
     }
   return true;
 }
@@ -756,14 +756,14 @@ match_tail (const char *string, const char *tail, bool fold_case)
   if (!fold_case)
     {
       for (i = strlen (string), j = strlen (tail); i >= 0 && j >= 0; i--, j--)
-	if (string[i] != tail[j])
-	  break;
+        if (string[i] != tail[j])
+          break;
     }
   else
     {
       for (i = strlen (string), j = strlen (tail); i >= 0 && j >= 0; i--, j--)
-	if (TOLOWER (string[i]) != TOLOWER (tail[j]))
-	  break;
+        if (TOLOWER (string[i]) != TOLOWER (tail[j]))
+          break;
     }
 
   /* If the tail was exhausted, the match was succesful.  */
@@ -785,28 +785,28 @@ in_acclist (const char *const *accepts, const char *s, bool backward)
   for (; *accepts; accepts++)
     {
       if (has_wildcards_p (*accepts))
-	{
-	  int res = opt.ignore_case
-	    ? fnmatch_nocase (*accepts, s, 0) : fnmatch (*accepts, s, 0);
-	  /* fnmatch returns 0 if the pattern *does* match the string.  */
-	  if (res == 0)
-	    return true;
-	}
+        {
+          int res = opt.ignore_case
+            ? fnmatch_nocase (*accepts, s, 0) : fnmatch (*accepts, s, 0);
+          /* fnmatch returns 0 if the pattern *does* match the string.  */
+          if (res == 0)
+            return true;
+        }
       else
-	{
-	  if (backward)
-	    {
-	      if (match_tail (s, *accepts, opt.ignore_case))
-		return true;
-	    }
-	  else
-	    {
-	      int cmp = opt.ignore_case
-		? strcasecmp (s, *accepts) : strcmp (s, *accepts);
-	      if (cmp == 0)
-		return true;
-	    }
-	}
+        {
+          if (backward)
+            {
+              if (match_tail (s, *accepts, opt.ignore_case))
+                return true;
+            }
+          else
+            {
+              int cmp = opt.ignore_case
+                ? strcasecmp (s, *accepts) : strcmp (s, *accepts);
+              if (cmp == 0)
+                return true;
+            }
+        }
     }
   return false;
 }
@@ -891,12 +891,12 @@ read_whole_line (FILE *fp)
     {
       length += strlen (line + length);
       if (length == 0)
-	/* Possible for example when reading from a binary file where
-	   a line begins with \0.  */
-	continue;
+        /* Possible for example when reading from a binary file where
+           a line begins with \0.  */
+        continue;
 
       if (line[length - 1] == '\n')
-	break;
+        break;
 
       /* fgets() guarantees to read the whole line, or to use up the
          space we've given it.  We can double the buffer
@@ -968,7 +968,7 @@ read_file (const char *file)
        specify PROT_READ and MAP_SHARED for a marginal gain in
        efficiency, but at some cost to generality.  */
     fm->content = mmap (NULL, fm->length, PROT_READ | PROT_WRITE,
-			MAP_PRIVATE, fd, 0);
+                        MAP_PRIVATE, fd, 0);
     if (fm->content == (char *)MAP_FAILED)
       goto mmap_lose;
     if (!inhibit_close)
@@ -986,41 +986,41 @@ read_file (const char *file)
 #endif /* HAVE_MMAP */
 
   fm->length = 0;
-  size = 512;			/* number of bytes fm->contents can
+  size = 512;                   /* number of bytes fm->contents can
                                    hold at any given time. */
   fm->content = xmalloc (size);
   while (1)
     {
       wgint nread;
       if (fm->length > size / 2)
-	{
-	  /* #### I'm not sure whether the whole exponential-growth
+        {
+          /* #### I'm not sure whether the whole exponential-growth
              thing makes sense with kernel read.  On Linux at least,
              read() refuses to read more than 4K from a file at a
              single chunk anyway.  But other Unixes might optimize it
              better, and it doesn't *hurt* anything, so I'm leaving
              it.  */
 
-	  /* Normally, we grow SIZE exponentially to make the number
+          /* Normally, we grow SIZE exponentially to make the number
              of calls to read() and realloc() logarithmic in relation
              to file size.  However, read() can read an amount of data
              smaller than requested, and it would be unreasonable to
              double SIZE every time *something* was read.  Therefore,
              we double SIZE only when the length exceeds half of the
              entire allocated size.  */
-	  size <<= 1;
-	  fm->content = xrealloc (fm->content, size);
-	}
+          size <<= 1;
+          fm->content = xrealloc (fm->content, size);
+        }
       nread = read (fd, fm->content + fm->length, size - fm->length);
       if (nread > 0)
-	/* Successful read. */
-	fm->length += nread;
+        /* Successful read. */
+        fm->length += nread;
       else if (nread < 0)
-	/* Error. */
-	goto lose;
+        /* Error. */
+        goto lose;
       else
-	/* EOF */
-	break;
+        /* EOF */
+        break;
     }
   if (!inhibit_close)
     close (fd);
@@ -1069,7 +1069,7 @@ free_vec (char **vec)
     {
       char **p = vec;
       while (*p)
-	xfree (*p++);
+        xfree (*p++);
       xfree (vec);
     }
 }
@@ -1111,12 +1111,12 @@ merge_vecs (char **v1, char **v2)
 char **
 vec_append (char **vec, const char *str)
 {
-  int cnt;			/* count of vector elements, including
-				   the one we're about to append */
+  int cnt;                      /* count of vector elements, including
+                                   the one we're about to append */
   if (vec != NULL)
     {
       for (cnt = 0; vec[cnt]; cnt++)
-	;
+        ;
       ++cnt;
     }
   else
@@ -1216,18 +1216,18 @@ get_grouping_data (const char **sep, const char **grouping)
       cached_sep = lconv->thousands_sep;
       cached_grouping = lconv->grouping;
       if (!*cached_sep)
-	{
-	  /* Many locales (such as "C" or "hr_HR") don't specify
-	     grouping, which we still want to use it for legibility.
-	     In those locales set the sep char to ',', unless that
-	     character is used for decimal point, in which case set it
-	     to ".".  */
-	  if (*lconv->decimal_point != ',')
-	    cached_sep = ",";
-	  else
-	    cached_sep = ".";
-	  cached_grouping = "\x03";
-	}
+        {
+          /* Many locales (such as "C" or "hr_HR") don't specify
+             grouping, which we still want to use it for legibility.
+             In those locales set the sep char to ',', unless that
+             character is used for decimal point, in which case set it
+             to ".".  */
+          if (*lconv->decimal_point != ',')
+            cached_sep = ",";
+          else
+            cached_sep = ".";
+          cached_grouping = "\x03";
+        }
       initialized = true;
     }
   *sep = cached_sep;
@@ -1278,18 +1278,18 @@ with_thousand_seps (wgint n)
       *--p = n % 10 + '0';
       n /= 10;
       if (n == 0)
-	break;
+        break;
       /* Prepend SEP to every groupsize'd digit and get new groupsize.  */
       if (++i == groupsize)
-	{
-	  if (seplen == 1)
-	    *--p = *sep;
-	  else
-	    memcpy (p -= seplen, sep, seplen);
-	  i = 0;
-	  if (*atgroup)
-	    groupsize = *atgroup++;
-	}
+        {
+          if (seplen == 1)
+            *--p = *sep;
+          else
+            memcpy (p -= seplen, sep, seplen);
+          i = 0;
+          if (*atgroup)
+            groupsize = *atgroup++;
+        }
     }
   if (negative)
     *--p = '-';
@@ -1319,12 +1319,12 @@ human_readable (HR_NUMTYPE n)
   /* These suffixes are compatible with those of GNU `ls -lh'. */
   static char powers[] =
     {
-      'K',			/* kilobyte, 2^10 bytes */
-      'M',			/* megabyte, 2^20 bytes */
-      'G',			/* gigabyte, 2^30 bytes */
-      'T',			/* terabyte, 2^40 bytes */
-      'P',			/* petabyte, 2^50 bytes */
-      'E',			/* exabyte,  2^60 bytes */
+      'K',                      /* kilobyte, 2^10 bytes */
+      'M',                      /* megabyte, 2^20 bytes */
+      'G',                      /* gigabyte, 2^30 bytes */
+      'T',                      /* terabyte, 2^40 bytes */
+      'P',                      /* petabyte, 2^50 bytes */
+      'E',                      /* exabyte,  2^60 bytes */
     };
   static char buf[8];
   int i;
@@ -1342,20 +1342,20 @@ human_readable (HR_NUMTYPE n)
   for (i = 0; i < countof (powers); i++)
     {
       /* At each iteration N is greater than the *subsequent* power.
-	 That way N/1024.0 produces a decimal number in the units of
-	 *this* power.  */
+         That way N/1024.0 produces a decimal number in the units of
+         *this* power.  */
       if ((n / 1024) < 1024 || i == countof (powers) - 1)
-	{
-	  double val = n / 1024.0;
-	  /* Print values smaller than 10 with one decimal digits, and
-	     others without any decimals.  */
-	  snprintf (buf, sizeof (buf), "%.*f%c",
-		    val < 10 ? 1 : 0, val, powers[i]);
-	  return buf;
-	}
+        {
+          double val = n / 1024.0;
+          /* Print values smaller than 10 with one decimal digits, and
+             others without any decimals.  */
+          snprintf (buf, sizeof (buf), "%.*f%c",
+                    val < 10 ? 1 : 0, val, powers[i]);
+          return buf;
+        }
       n /= 1024;
     }
-  return NULL;			/* unreached */
+  return NULL;                  /* unreached */
 }
 
 /* Count the digits in the provided number.  Used to allocate space
@@ -1366,7 +1366,7 @@ numdigit (wgint number)
 {
   int cnt = 1;
   if (number < 0)
-    ++cnt;			/* accomodate '-' */
+    ++cnt;                      /* accomodate '-' */
   while ((number /= 10) != 0)
     ++cnt;
   return cnt;
@@ -1441,8 +1441,8 @@ number_to_string (char *buffer, wgint number)
   if (n < 0)
     {
       if (n < -WGINT_MAX)
-	{
-	  /* n = -n would overflow because -n would evaluate to a
+        {
+          /* n = -n would overflow because -n would evaluate to a
              wgint value larger than WGINT_MAX.  Need to make n
              smaller and handle the last digit separately.  */
           int last_digit = n % 10;
@@ -1453,7 +1453,7 @@ number_to_string (char *buffer, wgint number)
             last_digit_char = '0' + last_digit;
           /* After n is made smaller, -n will not overflow. */
           n /= 10;
-	}
+        }
 
       *p++ = '-';
       n = -n;
@@ -1585,7 +1585,7 @@ determine_screen_width (void)
 
   fd = fileno (stderr);
   if (ioctl (fd, TIOCGWINSZ, &wsz) < 0)
-    return 0;			/* most likely ENOTTY */
+    return 0;                   /* most likely ENOTTY */
 
   return wsz.ws_col;
 #elif defined(WINDOWS)
@@ -1661,9 +1661,9 @@ random_float (void)
   return drand48 ();
 #else  /* not HAVE_DRAND48 */
   return (  random_number (10000) / 10000.0
-	  + random_number (10000) / (10000.0 * 10000.0)
-	  + random_number (10000) / (10000.0 * 10000.0 * 10000.0)
-	  + random_number (10000) / (10000.0 * 10000.0 * 10000.0 * 10000.0));
+          + random_number (10000) / (10000.0 * 10000.0)
+          + random_number (10000) / (10000.0 * 10000.0 * 10000.0)
+          + random_number (10000) / (10000.0 * 10000.0 * 10000.0 * 10000.0));
 #endif /* not HAVE_DRAND48 */
 }
 
@@ -1851,8 +1851,8 @@ xsleep (double seconds)
   if (seconds >= 1)
     {
       /* On some systems, usleep cannot handle values larger than
-	 1,000,000.  If the period is larger than that, use sleep
-	 first, then add usleep for subsecond accuracy.  */
+         1,000,000.  If the period is larger than that, use sleep
+         first, then add usleep for subsecond accuracy.  */
       sleep (seconds);
       seconds -= (long) seconds;
     }
@@ -1934,8 +1934,8 @@ base64_encode (const void *data, int length, char *dest)
 
 /* Store in C the next non-whitespace character from the string, or \0
    when end of string is reached.  */
-#define NEXT_CHAR(c, p) do {			\
-  c = (unsigned char) *p++;			\
+#define NEXT_CHAR(c, p) do {                    \
+  c = (unsigned char) *p++;                     \
 } while (ISSPACE (c))
 
 #define IS_ASCII(c) (((c) & 0x80) == 0)
@@ -1959,19 +1959,19 @@ base64_decode (const char *base64, void *dest)
      assumes ASCII (but so does Wget in other places).  */
   static const signed char base64_char_to_value[128] =
     {
-      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,	/*   0-  9 */
-      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,	/*  10- 19 */
-      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,	/*  20- 29 */
-      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,	/*  30- 39 */
-      -1,  -1,  -1,  62,  -1,  -1,  -1,  63,  52,  53,	/*  40- 49 */
-      54,  55,  56,  57,  58,  59,  60,  61,  -1,  -1,	/*  50- 59 */
-      -1,  -1,  -1,  -1,  -1,  0,   1,   2,   3,   4,	/*  60- 69 */
-      5,   6,   7,   8,   9,   10,  11,  12,  13,  14,	/*  70- 79 */
-      15,  16,  17,  18,  19,  20,  21,  22,  23,  24,	/*  80- 89 */
-      25,  -1,  -1,  -1,  -1,  -1,  -1,  26,  27,  28,	/*  90- 99 */
-      29,  30,  31,  32,  33,  34,  35,  36,  37,  38,	/* 100-109 */
-      39,  40,  41,  42,  43,  44,  45,  46,  47,  48,	/* 110-119 */
-      49,  50,  51,  -1,  -1,  -1,  -1,  -1		/* 120-127 */
+      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  /*   0-  9 */
+      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  /*  10- 19 */
+      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  /*  20- 29 */
+      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  /*  30- 39 */
+      -1,  -1,  -1,  62,  -1,  -1,  -1,  63,  52,  53,  /*  40- 49 */
+      54,  55,  56,  57,  58,  59,  60,  61,  -1,  -1,  /*  50- 59 */
+      -1,  -1,  -1,  -1,  -1,  0,   1,   2,   3,   4,   /*  60- 69 */
+      5,   6,   7,   8,   9,   10,  11,  12,  13,  14,  /*  70- 79 */
+      15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  /*  80- 89 */
+      25,  -1,  -1,  -1,  -1,  -1,  -1,  26,  27,  28,  /*  90- 99 */
+      29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  /* 100-109 */
+      39,  40,  41,  42,  43,  44,  45,  46,  47,  48,  /* 110-119 */
+      49,  50,  51,  -1,  -1,  -1,  -1,  -1             /* 120-127 */
     };
 #define BASE64_CHAR_TO_VALUE(c) ((int) base64_char_to_value[c])
 #define IS_BASE64(c) ((IS_ASCII (c) && BASE64_CHAR_TO_VALUE (c) >= 0) || c == '=')
@@ -1987,36 +1987,36 @@ base64_decode (const char *base64, void *dest)
       /* Process first byte of a quadruplet.  */
       NEXT_CHAR (c, p);
       if (!c)
-	break;
+        break;
       if (c == '=' || !IS_BASE64 (c))
-	return -1;		/* illegal char while decoding base64 */
+        return -1;              /* illegal char while decoding base64 */
       value = BASE64_CHAR_TO_VALUE (c) << 18;
 
       /* Process second byte of a quadruplet.  */
       NEXT_CHAR (c, p);
       if (!c)
-	return -1;		/* premature EOF while decoding base64 */
+        return -1;              /* premature EOF while decoding base64 */
       if (c == '=' || !IS_BASE64 (c))
-	return -1;		/* illegal char while decoding base64 */
+        return -1;              /* illegal char while decoding base64 */
       value |= BASE64_CHAR_TO_VALUE (c) << 12;
       *q++ = value >> 16;
 
       /* Process third byte of a quadruplet.  */
       NEXT_CHAR (c, p);
       if (!c)
-	return -1;		/* premature EOF while decoding base64 */
+        return -1;              /* premature EOF while decoding base64 */
       if (!IS_BASE64 (c))
-	return -1;		/* illegal char while decoding base64 */
+        return -1;              /* illegal char while decoding base64 */
 
       if (c == '=')
-	{
-	  NEXT_CHAR (c, p);
-	  if (!c)
-	    return -1;		/* premature EOF while decoding base64 */
-	  if (c != '=')
-	    return -1;		/* padding `=' expected but not found */
-	  continue;
-	}
+        {
+          NEXT_CHAR (c, p);
+          if (!c)
+            return -1;          /* premature EOF while decoding base64 */
+          if (c != '=')
+            return -1;          /* padding `=' expected but not found */
+          continue;
+        }
 
       value |= BASE64_CHAR_TO_VALUE (c) << 6;
       *q++ = 0xff & value >> 8;
@@ -2024,11 +2024,11 @@ base64_decode (const char *base64, void *dest)
       /* Process fourth byte of a quadruplet.  */
       NEXT_CHAR (c, p);
       if (!c)
-	return -1;		/* premature EOF while decoding base64 */
+        return -1;              /* premature EOF while decoding base64 */
       if (c == '=')
-	continue;
+        continue;
       if (!IS_BASE64 (c))
-	return -1;		/* illegal char while decoding base64 */
+        return -1;              /* illegal char while decoding base64 */
 
       value |= BASE64_CHAR_TO_VALUE (c);
       *q++ = 0xff & value;
@@ -2047,7 +2047,7 @@ base64_decode (const char *base64, void *dest)
 
 static void
 mergesort_internal (void *base, void *temp, size_t size, size_t from, size_t to,
-		    int (*cmpfun) (const void *, const void *))
+                    int (*cmpfun) (const void *, const void *))
 {
 #define ELT(array, pos) ((char *)(array) + (pos) * size)
   if (from < to)
@@ -2059,16 +2059,16 @@ mergesort_internal (void *base, void *temp, size_t size, size_t from, size_t to,
       i = from;
       j = mid + 1;
       for (k = from; (i <= mid) && (j <= to); k++)
-	if (cmpfun (ELT (base, i), ELT (base, j)) <= 0)
-	  memcpy (ELT (temp, k), ELT (base, i++), size);
-	else
-	  memcpy (ELT (temp, k), ELT (base, j++), size);
+        if (cmpfun (ELT (base, i), ELT (base, j)) <= 0)
+          memcpy (ELT (temp, k), ELT (base, i++), size);
+        else
+          memcpy (ELT (temp, k), ELT (base, j++), size);
       while (i <= mid)
-	memcpy (ELT (temp, k++), ELT (base, i++), size);
+        memcpy (ELT (temp, k++), ELT (base, i++), size);
       while (j <= to)
-	memcpy (ELT (temp, k++), ELT (base, j++), size);
+        memcpy (ELT (temp, k++), ELT (base, j++), size);
       for (k = from; k <= to; k++)
-	memcpy (ELT (base, k), ELT (temp, k), size);
+        memcpy (ELT (base, k), ELT (temp, k), size);
     }
 #undef ELT
 }
@@ -2079,7 +2079,7 @@ mergesort_internal (void *base, void *temp, size_t size, size_t from, size_t to,
 
 void
 stable_sort (void *base, size_t nmemb, size_t size,
-	     int (*cmpfun) (const void *, const void *))
+             int (*cmpfun) (const void *, const void *))
 {
   if (size > 1)
     {

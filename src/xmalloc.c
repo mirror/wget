@@ -36,7 +36,7 @@ so, delete this exception statement from your version.  */
 
 #include "wget.h"
 #include "xmalloc.h"
-#include "hash.h"		/* for hash_pointer */
+#include "hash.h"               /* for hash_pointer */
 
 /* This file implements several wrappers around the basic allocation
    routines.  This is done for two reasons: first, so that the callers
@@ -59,8 +59,8 @@ memfatal (const char *context, long attempted_size)
      call malloc.  */
   log_set_save_context (false);
   logprintf (LOG_ALWAYS,
-	     _("%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"),
-	     exec_name, context, attempted_size);
+             _("%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"),
+             exec_name, context, attempted_size);
   exit (1);
 }
 
@@ -208,8 +208,8 @@ static int malloc_count, free_count;
 
 /* Home-grown hash table of mallocs: */
 
-#define SZ 100003		/* Prime just over 100,000.  Increase
-				   it to debug larger Wget runs.  */
+#define SZ 100003               /* Prime just over 100,000.  Increase
+                                   it to debug larger Wget runs.  */
 
 static struct {
   const void *ptr;
@@ -269,10 +269,10 @@ unregister_ptr (void *ptr)
       /* Find the new location for the key. */
       int j = hash_pointer (ptr2) % SZ;
       for (; malloc_table[j].ptr != NULL; j = (j + 1) % SZ)
-	if (ptr2 == malloc_table[j].ptr)
-	  /* No need to relocate entry at [i]; it's already at or near
-	     its hash position. */
-	  goto cont_outer;
+        if (ptr2 == malloc_table[j].ptr)
+          /* No need to relocate entry at [i]; it's already at or near
+             its hash position. */
+          goto cont_outer;
       malloc_table[j] = malloc_table[i];
       malloc_table[i].ptr = NULL;
     cont_outer:
@@ -291,11 +291,11 @@ print_malloc_debug_stats (void)
 {
   int i;
   printf ("\nMalloc:  %d\nFree:    %d\nBalance: %d\n\n",
-	  malloc_count, free_count, malloc_count - free_count);
+          malloc_count, free_count, malloc_count - free_count);
   for (i = 0; i < SZ; i++)
     if (malloc_table[i].ptr != NULL)
       printf ("0x%0*lx: %s:%d\n", PTR_FORMAT (malloc_table[i].ptr),
-	      malloc_table[i].file, malloc_table[i].line);
+              malloc_table[i].file, malloc_table[i].line);
 }
 
 void *
@@ -351,13 +351,13 @@ debugging_free (void *ptr, const char *source_file, int source_line)
   if (ptr == NULL)
     {
       fprintf (stderr, "%s: xfree(NULL) at %s:%d\n",
-	       exec_name, source_file, source_line);
+               exec_name, source_file, source_line);
       abort ();
     }
   if (!unregister_ptr (ptr))
     {
       fprintf (stderr, "%s: bad xfree(0x%0*lx) at %s:%d\n",
-	       exec_name, PTR_FORMAT (ptr), source_file, source_line);
+               exec_name, PTR_FORMAT (ptr), source_file, source_line);
       abort ();
     }
   ++free_count;

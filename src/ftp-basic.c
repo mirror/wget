@@ -65,30 +65,30 @@ ftp_response (int fd, char **ret_line)
       char *p;
       char *line = fd_read_line (fd);
       if (!line)
-	return FTPRERR;
+        return FTPRERR;
 
       /* Strip trailing CRLF before printing the line, so that
-	 escnonprint doesn't include bogus \012 and \015. */
+         escnonprint doesn't include bogus \012 and \015. */
       p = strchr (line, '\0');
       if (p > line && p[-1] == '\n')
-	*--p = '\0';
+        *--p = '\0';
       if (p > line && p[-1] == '\r')
-	*--p = '\0';
+        *--p = '\0';
 
       if (opt.server_response)
-	logprintf (LOG_NOTQUIET, "%s\n", escnonprint (line));
+        logprintf (LOG_NOTQUIET, "%s\n", escnonprint (line));
       else
         DEBUGP (("%s\n", escnonprint (line)));
 
       /* The last line of output is the one that begins with "ddd ". */
       if (ISDIGIT (line[0]) && ISDIGIT (line[1]) && ISDIGIT (line[2])
-	  && line[3] == ' ')
-	{
-	  strncpy (ftp_last_respline, line, sizeof (ftp_last_respline));
-	  ftp_last_respline[sizeof (ftp_last_respline) - 1] = '\0';
-	  *ret_line = line;
-	  return FTPOK;
-	}
+          && line[3] == ' ')
+        {
+          strncpy (ftp_last_respline, line, sizeof (ftp_last_respline));
+          ftp_last_respline[sizeof (ftp_last_respline) - 1] = '\0';
+          *ret_line = line;
+          return FTPOK;
+        }
       xfree (line);
     }
 }
@@ -103,23 +103,23 @@ ftp_request (const char *command, const char *value)
   if (value)
     {
       /* Check for newlines in VALUE (possibly injected by the %0A URL
-	 escape) making the callers inadvertently send multiple FTP
-	 commands at once.  Without this check an attacker could
-	 intentionally redirect to ftp://server/fakedir%0Acommand.../
-	 and execute arbitrary FTP command on a remote FTP server.  */
+         escape) making the callers inadvertently send multiple FTP
+         commands at once.  Without this check an attacker could
+         intentionally redirect to ftp://server/fakedir%0Acommand.../
+         and execute arbitrary FTP command on a remote FTP server.  */
       if (strpbrk (value, "\r\n"))
-	{
-	  /* Copy VALUE to the stack and modify CR/LF to space. */
-	  char *defanged, *p;
-	  STRDUP_ALLOCA (defanged, value);
-	  for (p = defanged; *p; p++)
-	    if (*p == '\r' || *p == '\n')
-	      *p = ' ';
-	  DEBUGP (("\nDetected newlines in %s \"%s\"; changing to %s \"%s\"\n",
-		   command, escnonprint (value), command, escnonprint (defanged)));
-	  /* Make VALUE point to the defanged copy of the string. */
-	  value = defanged;
-	}
+        {
+          /* Copy VALUE to the stack and modify CR/LF to space. */
+          char *defanged, *p;
+          STRDUP_ALLOCA (defanged, value);
+          for (p = defanged; *p; p++)
+            if (*p == '\r' || *p == '\n')
+              *p = ' ';
+          DEBUGP (("\nDetected newlines in %s \"%s\"; changing to %s \"%s\"\n",
+                   command, escnonprint (value), command, escnonprint (defanged)));
+          /* Make VALUE point to the defanged copy of the string. */
+          value = defanged;
+        }
       res = concat_strings (command, " ", value, "\r\n", (char *) 0);
     }
   else
@@ -192,29 +192,29 @@ ftp_login (int csock, const char *acc, const char *pass)
 
     for (i = 0; i < countof (skey_head); i++)
       {
-	int l = strlen (skey_head[i]);
+        int l = strlen (skey_head[i]);
         if (0 == strncasecmp (skey_head[i], respline, l))
-	  {
-	    seed = respline + l;
-	    break;
-	  }
+          {
+            seed = respline + l;
+            break;
+          }
       }
     if (seed)
       {
         int skey_sequence = 0;
 
-	/* Extract the sequence from SEED.  */
-	for (; ISDIGIT (*seed); seed++)
-	  skey_sequence = 10 * skey_sequence + *seed - '0';
-	if (*seed == ' ')
-	  ++seed;
+        /* Extract the sequence from SEED.  */
+        for (; ISDIGIT (*seed); seed++)
+          skey_sequence = 10 * skey_sequence + *seed - '0';
+        if (*seed == ' ')
+          ++seed;
         else
           {
             xfree (respline);
             return FTPLOGREFUSED;
           }
-	/* Replace the password with the SKEY response to the
-	   challenge.  */
+        /* Replace the password with the SKEY response to the
+           challenge.  */
         pass = skey_response (skey_sequence, seed, pass);
       }
   }
@@ -333,16 +333,16 @@ ip_address_to_lprt_repr (const ip_address *addr, int port, char *buf,
     {
     case AF_INET: 
       snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d,%d,%d,%d", 4, 4, 
-		ptr[0], ptr[1], ptr[2], ptr[3], 2,
-		(port & 0xff00) >> 8, port & 0xff);
+                ptr[0], ptr[1], ptr[2], ptr[3], 2,
+                (port & 0xff00) >> 8, port & 0xff);
       break;
     case AF_INET6: 
       snprintf (buf, buflen,
-		"%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
-		6, 16,
-		ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7], 
-		ptr[8], ptr[9], ptr[10], ptr[11], ptr[12], ptr[13], ptr[14], ptr[15],
-		2, (port & 0xff00) >> 8, port & 0xff);
+                "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+                6, 16,
+                ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7], 
+                ptr[8], ptr[9], ptr[10], ptr[11], ptr[12], ptr[13], ptr[14], ptr[15],
+                2, (port & 0xff00) >> 8, port & 0xff);
       break;
     default:
       abort ();
@@ -985,14 +985,14 @@ ftp_list (int csock, const char *file)
           {
             err = FTPNSFOD;
           }
-	else if (*respline == '1')
+        else if (*respline == '1')
           {
             err = FTPOK;
             ok = true;
           }
         else 
           {
-    	    err = FTPRERR;
+            err = FTPRERR;
           }
         xfree (respline);
       }
@@ -1044,7 +1044,7 @@ ftp_syst (int csock, enum stype *server_type)
   else if (!strcasecmp (request, "UNIX"))
     *server_type = ST_UNIX;
   else if (!strcasecmp (request, "WINDOWS_NT")
-	   || !strcasecmp (request, "WINDOWS2000"))
+           || !strcasecmp (request, "WINDOWS2000"))
     *server_type = ST_WINNT;
   else if (!strcasecmp (request, "MACOS"))
     *server_type = ST_MACOS;

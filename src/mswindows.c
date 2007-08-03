@@ -159,12 +159,12 @@ fake_fork_child (void)
       /* See utils:fork_to_background for explanation. */
       FILE *new_log_fp = unique_create (DEFAULT_LOGFILE, false, &opt.lfilename);
       if (new_log_fp)
-	{
-	  info->logfile_changed = true;
-	  strncpy (info->lfilename, opt.lfilename, sizeof (info->lfilename));
-	  info->lfilename[sizeof (info->lfilename) - 1] = '\0';
-	  fclose (new_log_fp);
-	}
+        {
+          info->logfile_changed = true;
+          strncpy (info->lfilename, opt.lfilename, sizeof (info->lfilename));
+          info->lfilename[sizeof (info->lfilename) - 1] = '\0';
+          fclose (new_log_fp);
+        }
     }
 
   UnmapViewOfFile (info);
@@ -457,14 +457,14 @@ ws_startup (void)
   if (err != 0)
     {
       fprintf (stderr, _("%s: Couldn't find usable socket driver.\n"),
-	       exec_name);
+               exec_name);
       exit (1);
     }
 
   if (data.wVersion < requested)
     {
       fprintf (stderr, _("%s: Couldn't find usable socket driver.\n"),
-	       exec_name);
+               exec_name);
       WSACleanup ();
       exit (1);
     }
@@ -542,7 +542,7 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
   thread_arg.arg = arg;
   thread_arg.ws_error = WSAGetLastError ();
   thread_hnd = CreateThread (NULL, THREAD_STACK_SIZE, thread_helper,
-			     &thread_arg, 0, &thread_id);
+                             &thread_arg, 0, &thread_id);
   if (!thread_hnd)
     {
       DEBUGP (("CreateThread() failed; [0x%x]\n", GetLastError ()));
@@ -553,7 +553,7 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
       == WAIT_OBJECT_0)
     {
       /* Propagate error state (which is per-thread) to this thread,
-	 so the caller can inspect it.  */
+         so the caller can inspect it.  */
       WSASetLastError (thread_arg.ws_error);
       DEBUGP (("Winsock error: %d\n", WSAGetLastError ()));
       rc = false;
@@ -564,7 +564,7 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
       rc = true;
     }
 
-  CloseHandle (thread_hnd);	/* Clear-up after TerminateThread().  */
+  CloseHandle (thread_hnd);     /* Clear-up after TerminateThread().  */
   thread_hnd = NULL;
   return rc;
 }
@@ -578,11 +578,11 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
 /* Define a macro that creates a function definition that wraps FUN into
    a function that sets errno the way the rest of the code expects. */
 
-#define WRAP(fun, decl, call) int wrapped_##fun decl {	\
-  int retval = fun call;				\
-  if (retval < 0)					\
-    errno = WSAGetLastError ();				\
-  return retval;					\
+#define WRAP(fun, decl, call) int wrapped_##fun decl {  \
+  int retval = fun call;                                \
+  if (retval < 0)                                       \
+    errno = WSAGetLastError ();                         \
+  return retval;                                        \
 }
 
 WRAP (socket, (int domain, int type, int protocol), (domain, type, protocol))

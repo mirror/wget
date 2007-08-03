@@ -113,8 +113,8 @@ init_prng (void)
 
     while (RAND_status () == 0 && maxrand-- > 0)
       {
-	unsigned char rnd = random_number (256);
-	RAND_seed (&rnd, sizeof (rnd));
+        unsigned char rnd = random_number (256);
+        RAND_seed (&rnd, sizeof (rnd));
       }
   }
 #endif
@@ -169,7 +169,7 @@ ssl_init ()
   if (RAND_status () != 1)
     {
       logprintf (LOG_NOTQUIET,
-		 _("Could not seed PRNG; consider using --random-file.\n"));
+                 _("Could not seed PRNG; consider using --random-file.\n"));
       goto error;
     }
 
@@ -211,13 +211,13 @@ ssl_init ()
 
   if (opt.cert_file)
     if (SSL_CTX_use_certificate_file (ssl_ctx, opt.cert_file,
-				      key_type_to_ssl_type (opt.cert_type))
-	!= 1)
+                                      key_type_to_ssl_type (opt.cert_type))
+        != 1)
       goto error;
   if (opt.private_key)
     if (SSL_CTX_use_PrivateKey_file (ssl_ctx, opt.private_key,
-				     key_type_to_ssl_type (opt.private_key_type))
-	!= 1)
+                                     key_type_to_ssl_type (opt.private_key_type))
+        != 1)
       goto error;
 
   /* Since fd_write unconditionally assumes partial writes (and
@@ -238,8 +238,8 @@ ssl_init ()
 }
 
 struct openssl_transport_context {
-  SSL *conn;			/* SSL connection handle */
-  char *last_error;		/* last error printed with openssl_errstr */
+  SSL *conn;                    /* SSL connection handle */
+  char *last_error;             /* last error printed with openssl_errstr */
 };
 
 static int
@@ -251,8 +251,8 @@ openssl_read (int fd, char *buf, int bufsize, void *arg)
   do
     ret = SSL_read (conn, buf, bufsize);
   while (ret == -1
-	 && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
-	 && errno == EINTR);
+         && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
+         && errno == EINTR);
   return ret;
 }
 
@@ -265,8 +265,8 @@ openssl_write (int fd, char *buf, int bufsize, void *arg)
   do
     ret = SSL_write (conn, buf, bufsize);
   while (ret == -1
-	 && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
-	 && errno == EINTR);
+         && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
+         && errno == EINTR);
   return ret;
 }
 
@@ -291,8 +291,8 @@ openssl_peek (int fd, char *buf, int bufsize, void *arg)
   do
     ret = SSL_peek (conn, buf, bufsize);
   while (ret == -1
-	 && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
-	 && errno == EINTR);
+         && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
+         && errno == EINTR);
   return ret;
 }
 
@@ -323,7 +323,7 @@ openssl_errstr (int fd, void *arg)
       int len = strlen (str);
 
       /* Allocate space for the existing message, plus two more chars
-	 for the "; " separator and one for the terminating \0.  */
+         for the "; " separator and one for the terminating \0.  */
       errmsg = xrealloc (errmsg, msglen + len + 2 + 1);
       memcpy (errmsg + msglen, str, len);
       msglen += len;
@@ -331,7 +331,7 @@ openssl_errstr (int fd, void *arg)
       /* Get next error and bail out if there are no more. */
       errcode = ERR_get_error ();
       if (errcode == 0)
-	break;
+        break;
 
       errmsg[msglen++] = ';';
       errmsg[msglen++] = ' ';
@@ -406,7 +406,7 @@ ssl_connect (int fd)
      functions are used for reading, writing, and polling.  */
   fd_register_transport (fd, &openssl_transport, ctx);
   DEBUGP (("Handshake successful; connected socket %d to SSL handle 0x%0*lx\n",
-	   fd, PTR_FORMAT (conn)));
+           fd, PTR_FORMAT (conn)));
   return true;
 
  error:
@@ -417,7 +417,7 @@ ssl_connect (int fd)
   return false;
 }
 
-#define ASTERISK_EXCLUDES_DOT	/* mandated by rfc2818 */
+#define ASTERISK_EXCLUDES_DOT   /* mandated by rfc2818 */
 
 /* Return true is STRING (case-insensitively) matches PATTERN, false
    otherwise.  The recognized wildcard character is "*", which matches
@@ -441,21 +441,21 @@ pattern_match (const char *pattern, const char *string)
   for (; (c = TOLOWER (*p++)) != '\0'; n++)
     if (c == '*')
       {
-	for (c = TOLOWER (*p); c == '*'; c = TOLOWER (*++p))
-	  ;
-	for (; *n != '\0'; n++)
-	  if (TOLOWER (*n) == c && pattern_match (p, n))
-	    return true;
+        for (c = TOLOWER (*p); c == '*'; c = TOLOWER (*++p))
+          ;
+        for (; *n != '\0'; n++)
+          if (TOLOWER (*n) == c && pattern_match (p, n))
+            return true;
 #ifdef ASTERISK_EXCLUDES_DOT
-	  else if (*n == '.')
-	    return false;
+          else if (*n == '.')
+            return false;
 #endif
-	return c == '\0';
+        return c == '\0';
       }
     else
       {
-	if (c != TOLOWER (*n))
-	  return false;
+        if (c != TOLOWER (*n))
+          return false;
       }
   return *n == '\0';
 }
@@ -494,9 +494,9 @@ ssl_check_certificate (int fd, const char *host)
   if (!cert)
     {
       logprintf (LOG_NOTQUIET, _("%s: No certificate presented by %s.\n"),
-		 severity, escnonprint (host));
+                 severity, escnonprint (host));
       success = false;
-      goto no_cert;		/* must bail out since CERT is NULL */
+      goto no_cert;             /* must bail out since CERT is NULL */
     }
 
   IF_DEBUG
@@ -504,7 +504,7 @@ ssl_check_certificate (int fd, const char *host)
       char *subject = X509_NAME_oneline (X509_get_subject_name (cert), 0, 0);
       char *issuer = X509_NAME_oneline (X509_get_issuer_name (cert), 0, 0);
       DEBUGP (("certificate:\n  subject: %s\n  issuer:  %s\n",
-	       escnonprint (subject), escnonprint (issuer)));
+               escnonprint (subject), escnonprint (issuer)));
       OPENSSL_free (subject);
       OPENSSL_free (issuer);
     }
@@ -514,35 +514,35 @@ ssl_check_certificate (int fd, const char *host)
     {
       char *issuer = X509_NAME_oneline (X509_get_issuer_name (cert), 0, 0);
       logprintf (LOG_NOTQUIET,
-		 _("%s: cannot verify %s's certificate, issued by `%s':\n"),
-		 severity, escnonprint (host), escnonprint (issuer));
+                 _("%s: cannot verify %s's certificate, issued by `%s':\n"),
+                 severity, escnonprint (host), escnonprint (issuer));
       /* Try to print more user-friendly (and translated) messages for
-	 the frequent verification errors.  */
+         the frequent verification errors.  */
       switch (vresult)
-	{
-	case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
-	  logprintf (LOG_NOTQUIET,
-		     _("  Unable to locally verify the issuer's authority.\n"));
-	  break;
-	case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
-	case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
-	  logprintf (LOG_NOTQUIET, _("  Self-signed certificate encountered.\n"));
-	  break;
-	case X509_V_ERR_CERT_NOT_YET_VALID:
-	  logprintf (LOG_NOTQUIET, _("  Issued certificate not yet valid.\n"));
-	  break;
-	case X509_V_ERR_CERT_HAS_EXPIRED:
-	  logprintf (LOG_NOTQUIET, _("  Issued certificate has expired.\n"));
-	  break;
-	default:
-	  /* For the less frequent error strings, simply provide the
-	     OpenSSL error message.  */
-	  logprintf (LOG_NOTQUIET, "  %s\n",
-		     X509_verify_cert_error_string (vresult));
-	}
+        {
+        case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
+          logprintf (LOG_NOTQUIET,
+                     _("  Unable to locally verify the issuer's authority.\n"));
+          break;
+        case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+        case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+          logprintf (LOG_NOTQUIET, _("  Self-signed certificate encountered.\n"));
+          break;
+        case X509_V_ERR_CERT_NOT_YET_VALID:
+          logprintf (LOG_NOTQUIET, _("  Issued certificate not yet valid.\n"));
+          break;
+        case X509_V_ERR_CERT_HAS_EXPIRED:
+          logprintf (LOG_NOTQUIET, _("  Issued certificate has expired.\n"));
+          break;
+        default:
+          /* For the less frequent error strings, simply provide the
+             OpenSSL error message.  */
+          logprintf (LOG_NOTQUIET, "  %s\n",
+                     X509_verify_cert_error_string (vresult));
+        }
       success = false;
       /* Fall through, so that the user is warned about *all* issues
-	 with the cert (important with --no-check-certificate.)  */
+         with the cert (important with --no-check-certificate.)  */
     }
 
   /* Check that HOST matches the common name in the certificate.
@@ -561,25 +561,25 @@ ssl_check_certificate (int fd, const char *host)
 
   common_name[0] = '\0';
   X509_NAME_get_text_by_NID (X509_get_subject_name (cert),
-			     NID_commonName, common_name, sizeof (common_name));
+                             NID_commonName, common_name, sizeof (common_name));
   if (!pattern_match (common_name, host))
     {
       logprintf (LOG_NOTQUIET, _("\
 %s: certificate common name `%s' doesn't match requested host name `%s'.\n"),
-		 severity, escnonprint (common_name), escnonprint (host));
+                 severity, escnonprint (common_name), escnonprint (host));
       success = false;
     }
 
   if (success)
     DEBUGP (("X509 certificate successfully verified and matches host %s\n",
-	     escnonprint (host)));
+             escnonprint (host)));
   X509_free (cert);
 
  no_cert:
   if (opt.check_cert && !success)
     logprintf (LOG_NOTQUIET, _("\
 To connect to %s insecurely, use `--no-check-certificate'.\n"),
-	       escnonprint (host));
+               escnonprint (host));
 
   /* Allow --no-check-cert to disable certificate checking. */
   return opt.check_cert ? success : true;

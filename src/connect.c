@@ -76,25 +76,25 @@ sockaddr_set_data (struct sockaddr *sa, const ip_address *ip, int port)
     {
     case AF_INET:
       {
-	struct sockaddr_in *sin = (struct sockaddr_in *)sa;
-	xzero (*sin);
-	sin->sin_family = AF_INET;
-	sin->sin_port = htons (port);
-	sin->sin_addr = ip->data.d4;
-	break;
+        struct sockaddr_in *sin = (struct sockaddr_in *)sa;
+        xzero (*sin);
+        sin->sin_family = AF_INET;
+        sin->sin_port = htons (port);
+        sin->sin_addr = ip->data.d4;
+        break;
       }
 #ifdef ENABLE_IPV6
     case AF_INET6:
       {
-	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
-	xzero (*sin6);
-	sin6->sin6_family = AF_INET6;
-	sin6->sin6_port = htons (port);
-	sin6->sin6_addr = ip->data.d6;
+        struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
+        xzero (*sin6);
+        sin6->sin6_family = AF_INET6;
+        sin6->sin6_port = htons (port);
+        sin6->sin6_addr = ip->data.d6;
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	sin6->sin6_scope_id = ip->ipv6_scope;
+        sin6->sin6_scope_id = ip->ipv6_scope;
 #endif
-	break;
+        break;
       }
 #endif /* ENABLE_IPV6 */
     default:
@@ -113,31 +113,31 @@ sockaddr_get_data (const struct sockaddr *sa, ip_address *ip, int *port)
     {
     case AF_INET:
       {
-	struct sockaddr_in *sin = (struct sockaddr_in *)sa;
-	if (ip)
-	  {
-	    ip->family = AF_INET;
-	    ip->data.d4 = sin->sin_addr;
-	  }
-	if (port)
-	  *port = ntohs (sin->sin_port);
-	break;
+        struct sockaddr_in *sin = (struct sockaddr_in *)sa;
+        if (ip)
+          {
+            ip->family = AF_INET;
+            ip->data.d4 = sin->sin_addr;
+          }
+        if (port)
+          *port = ntohs (sin->sin_port);
+        break;
       }
 #ifdef ENABLE_IPV6
     case AF_INET6:
       {
-	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
-	if (ip)
-	  {
-	    ip->family = AF_INET6;
-	    ip->data.d6 = sin6->sin6_addr;
+        struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
+        if (ip)
+          {
+            ip->family = AF_INET6;
+            ip->data.d6 = sin6->sin6_addr;
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	    ip->ipv6_scope = sin6->sin6_scope_id;
+            ip->ipv6_scope = sin6->sin6_scope_id;
 #endif
-	  }
-	if (port)
-	  *port = ntohs (sin6->sin6_port);
-	break;
+          }
+        if (port)
+          *port = ntohs (sin6->sin6_port);
+        break;
       }
 #endif
     default:
@@ -182,7 +182,7 @@ resolve_bind_address (struct sockaddr *sa)
   if (called)
     {
       if (should_bind)
-	sockaddr_set_data (sa, &ip, 0);
+        sockaddr_set_data (sa, &ip, 0);
       return should_bind;
     }
   called = true;
@@ -192,8 +192,8 @@ resolve_bind_address (struct sockaddr *sa)
     {
       /* #### We should be able to print the error message here. */
       logprintf (LOG_NOTQUIET,
-		 _("%s: unable to resolve bind address `%s'; disabling bind.\n"),
-		 exec_name, opt.bind_address);
+                 _("%s: unable to resolve bind address `%s'; disabling bind.\n"),
+                 exec_name, opt.bind_address);
       should_bind = false;
       return false;
     }
@@ -229,7 +229,7 @@ connect_with_timeout_callback (void *arg)
 
 static int
 connect_with_timeout (int fd, const struct sockaddr *addr, socklen_t addrlen,
-		      double timeout)
+                      double timeout)
 {
   struct cwt_context ctx;
   ctx.fd = fd;
@@ -264,10 +264,10 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
     {
       const char *txt_addr = print_address (ip);
       if (print && 0 != strcmp (print, txt_addr))
-	logprintf (LOG_VERBOSE, _("Connecting to %s|%s|:%d... "),
-		   escnonprint (print), txt_addr, port);
+        logprintf (LOG_VERBOSE, _("Connecting to %s|%s|:%d... "),
+                   escnonprint (print), txt_addr, port);
       else
-	logprintf (LOG_VERBOSE, _("Connecting to %s:%d... "), txt_addr, port);
+        logprintf (LOG_VERBOSE, _("Connecting to %s:%d... "), txt_addr, port);
     }
 
   /* Store the sockaddr info to SA.  */
@@ -285,7 +285,7 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
     int err = setsockopt (sock, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof (on));
     IF_DEBUG
       if (err < 0) 
-	DEBUGP (("Failed setting IPV6_V6ONLY: %s", strerror (errno)));
+        DEBUGP (("Failed setting IPV6_V6ONLY: %s", strerror (errno)));
   }
 #endif
 
@@ -297,31 +297,31 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
     {
       int bufsize = opt.limit_rate;
       if (bufsize < 512)
-	bufsize = 512;		/* avoid pathologically small values */
+        bufsize = 512;          /* avoid pathologically small values */
 #ifdef SO_RCVBUF
       setsockopt (sock, SOL_SOCKET, SO_RCVBUF,
-		  (void *)&bufsize, (socklen_t)sizeof (bufsize));
+                  (void *)&bufsize, (socklen_t)sizeof (bufsize));
 #endif
       /* When we add limit_rate support for writing, which is useful
-	 for POST, we should also set SO_SNDBUF here.  */
+         for POST, we should also set SO_SNDBUF here.  */
     }
 
   if (opt.bind_address)
     {
       /* Bind the client side of the socket to the requested
-	 address.  */
+         address.  */
       struct sockaddr_storage bind_ss;
       struct sockaddr *bind_sa = (struct sockaddr *)&bind_ss;
       if (resolve_bind_address (bind_sa))
-	{
+        {
           if (bind (sock, bind_sa, sockaddr_size (bind_sa)) < 0)
-	    goto err;
-	}
+            goto err;
+        }
     }
 
   /* Connect the socket to the remote endpoint.  */
   if (connect_with_timeout (sock, sa, sockaddr_size (sa),
-			    opt.connect_timeout) < 0)
+                            opt.connect_timeout) < 0)
     goto err;
 
   /* Success. */
@@ -369,15 +369,15 @@ connect_to_host (const char *host, int port)
       const ip_address *ip = address_list_address_at (al, i);
       sock = connect_to_ip (ip, port, host);
       if (sock >= 0)
-	{
-	  /* Success. */
-	  address_list_set_connected (al);
-	  address_list_release (al);
-	  return sock;
-	}
+        {
+          /* Success. */
+          address_list_set_connected (al);
+          address_list_release (al);
+          return sock;
+        }
 
       /* The attempt to connect has failed.  Continue with the loop
-	 and try next address. */
+         and try next address. */
 
       address_list_set_faulty (al, i);
     }
@@ -387,7 +387,7 @@ connect_to_host (const char *host, int port)
   if (address_list_connected_p (al))
     {
       /* We connected to AL before, but cannot do so now.  That might
-	 indicate that our DNS cache entry for HOST has expired.  */
+         indicate that our DNS cache entry for HOST has expired.  */
       address_list_release (al);
       al = lookup_host (host, LH_REFRESH);
       goto retry;
@@ -444,17 +444,17 @@ bind_local (const ip_address *bind_address, int *port)
     {
       socklen_t addrlen = sockaddr_size (sa);
       if (getsockname (sock, sa, &addrlen) < 0)
-	{
-	  /* If we can't find out the socket's local address ("name"),
-	     something is seriously wrong with the socket, and it's
-	     unusable for us anyway because we must know the chosen
-	     port.  */
-	  fd_close (sock);
-	  return -1;
-	}
+        {
+          /* If we can't find out the socket's local address ("name"),
+             something is seriously wrong with the socket, and it's
+             unusable for us anyway because we must know the chosen
+             port.  */
+          fd_close (sock);
+          return -1;
+        }
       sockaddr_get_data (sa, NULL, port);
       DEBUGP (("binding to address %s using port %i.\n",
-	       print_address (bind_address), *port));
+               print_address (bind_address), *port));
     }
   if (listen (sock, 1) < 0)
     {
@@ -489,9 +489,9 @@ accept_connection (int local_sock)
     {
       int test = select_fd (local_sock, opt.connect_timeout, WAIT_FOR_READ);
       if (test == 0)
-	errno = ETIMEDOUT;
+        errno = ETIMEDOUT;
       if (test <= 0)
-	return -1;
+        return -1;
     }
   sock = accept (local_sock, sa, &addrlen);
   DEBUGP (("Accepted client at socket %d.\n", sock));
@@ -528,21 +528,21 @@ socket_ip_address (int sock, ip_address *ip, int endpoint)
 #ifdef ENABLE_IPV6
     case AF_INET6:
       {
-	struct sockaddr_in6 *sa6 = (struct sockaddr_in6 *)&storage;
-	ip->data.d6 = sa6->sin6_addr;
+        struct sockaddr_in6 *sa6 = (struct sockaddr_in6 *)&storage;
+        ip->data.d6 = sa6->sin6_addr;
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	ip->ipv6_scope = sa6->sin6_scope_id;
+        ip->ipv6_scope = sa6->sin6_scope_id;
 #endif
-	DEBUGP (("conaddr is: %s\n", print_address (ip)));
-	return true;
+        DEBUGP (("conaddr is: %s\n", print_address (ip)));
+        return true;
       }
 #endif
     case AF_INET:
       {
-	struct sockaddr_in *sa = (struct sockaddr_in *)&storage;
-	ip->data.d4 = sa->sin_addr;
-	DEBUGP (("conaddr is: %s\n", print_address (ip)));
-	return true;
+        struct sockaddr_in *sa = (struct sockaddr_in *)&storage;
+        ip->data.d4 = sa->sin_addr;
+        DEBUGP (("conaddr is: %s\n", print_address (ip)));
+        return true;
       }
     default:
       abort ();
@@ -567,7 +567,7 @@ retryable_socket_connect_error (int err)
 #ifdef EPFNOSUPPORT
       || err == EPFNOSUPPORT
 #endif
-#ifdef ESOCKTNOSUPPORT		/* no, "sockt" is not a typo! */
+#ifdef ESOCKTNOSUPPORT          /* no, "sockt" is not a typo! */
       || err == ESOCKTNOSUPPORT
 #endif
 #ifdef EPROTONOSUPPORT
@@ -577,7 +577,7 @@ retryable_socket_connect_error (int err)
       || err == ENOPROTOOPT
 #endif
       /* Apparently, older versions of Linux and BSD used EINVAL
-	 instead of EAFNOSUPPORT and such.  */
+         instead of EAFNOSUPPORT and such.  */
       || err == EINVAL
       )
     return false;
@@ -585,12 +585,12 @@ retryable_socket_connect_error (int err)
   if (!opt.retry_connrefused)
     if (err == ECONNREFUSED
 #ifdef ENETUNREACH
-	|| err == ENETUNREACH	/* network is unreachable */
+        || err == ENETUNREACH   /* network is unreachable */
 #endif
 #ifdef EHOSTUNREACH
-	|| err == EHOSTUNREACH	/* host is unreachable */
+        || err == EHOSTUNREACH  /* host is unreachable */
 #endif
-	)
+        )
       return false;
 
   return true;
@@ -787,21 +787,21 @@ fd_transport_context (int fd)
    This is a macro because we want the static storage variables to be
    per-function.  */
 
-#define LAZY_RETRIEVE_INFO(info) do {					\
-  static struct transport_info *last_info;				\
-  static int last_fd = -1;						\
-  static unsigned int last_tick;					\
-  if (!transport_map)							\
-    info = NULL;							\
-  else if (last_fd == fd && last_tick == transport_map_modified_tick)	\
-    info = last_info;							\
-  else									\
-    {									\
-      info = hash_table_get (transport_map, (void *)(intptr_t) fd);	\
-      last_fd = fd;							\
-      last_info = info;							\
-      last_tick = transport_map_modified_tick;				\
-    }									\
+#define LAZY_RETRIEVE_INFO(info) do {                                   \
+  static struct transport_info *last_info;                              \
+  static int last_fd = -1;                                              \
+  static unsigned int last_tick;                                        \
+  if (!transport_map)                                                   \
+    info = NULL;                                                        \
+  else if (last_fd == fd && last_tick == transport_map_modified_tick)   \
+    info = last_info;                                                   \
+  else                                                                  \
+    {                                                                   \
+      info = hash_table_get (transport_map, (void *)(intptr_t) fd);     \
+      last_fd = fd;                                                     \
+      last_info = info;                                                 \
+      last_tick = transport_map_modified_tick;                          \
+    }                                                                   \
 } while (0)
 
 static bool
@@ -813,13 +813,13 @@ poll_internal (int fd, struct transport_info *info, int wf, double timeout)
     {
       int test;
       if (info && info->imp->poller)
-	test = info->imp->poller (fd, timeout, wf, info->ctx);
+        test = info->imp->poller (fd, timeout, wf, info->ctx);
       else
-	test = sock_poll (fd, timeout, wf);
+        test = sock_poll (fd, timeout, wf);
       if (test == 0)
-	errno = ETIMEDOUT;
+        errno = ETIMEDOUT;
       if (test <= 0)
-	return false;
+        return false;
     }
   return true;
 }
@@ -885,13 +885,13 @@ fd_write (int fd, char *buf, int bufsize, double timeout)
   while (bufsize > 0)
     {
       if (!poll_internal (fd, info, WAIT_FOR_WRITE, timeout))
-	return -1;
+        return -1;
       if (info && info->imp->writer)
-	res = info->imp->writer (fd, buf, bufsize, info->ctx);
+        res = info->imp->writer (fd, buf, bufsize, info->ctx);
       else
-	res = sock_write (fd, buf, bufsize);
+        res = sock_write (fd, buf, bufsize);
       if (res <= 0)
-	break;
+        break;
       buf += res;
       bufsize -= res;
     }
@@ -921,7 +921,7 @@ fd_errstr (int fd)
     {
       const char *err = info->imp->errstr (fd, info->ctx);
       if (err)
-	return err;
+        return err;
       /* else, fall through and print the system error. */
     }
   return strerror (errno);

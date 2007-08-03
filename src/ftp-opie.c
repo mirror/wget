@@ -2117,8 +2117,8 @@ extract (const unsigned char *s, int start, int length)
 static char *
 btoe (char *store, const unsigned char *c)
 {
-  unsigned char cp[10];		/* add in room for the parity 2 bits +
-				   extract() slop.  */
+  unsigned char cp[10];         /* add in room for the parity 2 bits +
+                                   extract() slop.  */
   int p, i;
   char *store_beg = store;
 
@@ -2154,7 +2154,7 @@ btoe (char *store, const unsigned char *c)
   store += STRLEN_1_4 (store);
   *store++ = ' ';
   memcpy (store, &Wp[extract (cp, 55, 11)][0], 4);
-  store[4] = '\0';		/* make sure the string is terminated */
+  store[4] = '\0';              /* make sure the string is terminated */
 
   DEBUGP (("wrote `%s' to STORE\n", store_beg));
   return store_beg;

@@ -61,16 +61,16 @@ so, delete this exception statement from your version.  */
    lookup_host for details.  */
 
 struct address_list {
-  int count;			/* number of adrresses */
-  ip_address *addresses;	/* pointer to the string of addresses */
+  int count;                    /* number of adrresses */
+  ip_address *addresses;        /* pointer to the string of addresses */
 
-  int faulty;			/* number of addresses known not to work. */
-  bool connected;		/* whether we were able to connect to
-				   one of the addresses in the list,
-				   at least once. */
+  int faulty;                   /* number of addresses known not to work. */
+  bool connected;               /* whether we were able to connect to
+                                   one of the addresses in the list,
+                                   at least once. */
 
-  int refcount;			/* reference count; when it drops to
-				   0, the entry is freed. */
+  int refcount;                 /* reference count; when it drops to
+                                   0, the entry is freed. */
 };
 
 /* Get the bounds of the address list.  */
@@ -101,25 +101,25 @@ address_list_contains (const struct address_list *al, const ip_address *ip)
     {
     case AF_INET:
       for (i = 0; i < al->count; i++)
-	{
-	  ip_address *cur = al->addresses + i;
-	  if (cur->family == AF_INET
-	      && (cur->data.d4.s_addr == ip->data.d4.s_addr))
-	    return true;
-	}
+        {
+          ip_address *cur = al->addresses + i;
+          if (cur->family == AF_INET
+              && (cur->data.d4.s_addr == ip->data.d4.s_addr))
+            return true;
+        }
       return false;
 #ifdef ENABLE_IPV6
     case AF_INET6:
       for (i = 0; i < al->count; i++)
-	{
-	  ip_address *cur = al->addresses + i;
-	  if (cur->family == AF_INET6
+        {
+          ip_address *cur = al->addresses + i;
+          if (cur->family == AF_INET6
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	      && cur->ipv6_scope == ip->ipv6_scope
+              && cur->ipv6_scope == ip->ipv6_scope
 #endif
-	      && IN6_ARE_ADDR_EQUAL (&cur->data.d6, &ip->data.d6))
-	    return true;
-	}
+              && IN6_ARE_ADDR_EQUAL (&cur->data.d6, &ip->data.d6))
+            return true;
+        }
       return false;
 #endif /* ENABLE_IPV6 */
     default:
@@ -193,22 +193,22 @@ address_list_from_addrinfo (const struct addrinfo *ai)
   for (ptr = ai; ptr != NULL; ptr = ptr->ai_next)
     if (ptr->ai_family == AF_INET6) 
       {
-	const struct sockaddr_in6 *sin6 =
-	  (const struct sockaddr_in6 *)ptr->ai_addr;
-	ip->family = AF_INET6;
-	ip->data.d6 = sin6->sin6_addr;
+        const struct sockaddr_in6 *sin6 =
+          (const struct sockaddr_in6 *)ptr->ai_addr;
+        ip->family = AF_INET6;
+        ip->data.d6 = sin6->sin6_addr;
 #ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-	ip->ipv6_scope = sin6->sin6_scope_id;
+        ip->ipv6_scope = sin6->sin6_scope_id;
 #endif
-	++ip;
+        ++ip;
       } 
     else if (ptr->ai_family == AF_INET)
       {
-	const struct sockaddr_in *sin =
-	  (const struct sockaddr_in *)ptr->ai_addr;
-	ip->family = AF_INET;
-	ip->data.d4 = sin->sin_addr;
-	++ip;
+        const struct sockaddr_in *sin =
+          (const struct sockaddr_in *)ptr->ai_addr;
+        ip->family = AF_INET;
+        ip->data.d4 = sin->sin_addr;
+        ++ip;
       }
   assert (ip - al->addresses == cnt);
   return al;
@@ -288,7 +288,7 @@ address_list_release (struct address_list *al)
 {
   --al->refcount;
   DEBUGP (("Releasing 0x%0*lx (new refcount %d).\n", PTR_FORMAT (al),
-	   al->refcount));
+           al->refcount));
   if (al->refcount <= 0)
     {
       DEBUGP (("Deleting unused 0x%0*lx.\n", PTR_FORMAT (al)));
@@ -376,8 +376,8 @@ getaddrinfo_with_timeout_callback (void *arg)
 
 static int
 getaddrinfo_with_timeout (const char *node, const char *service,
-			  const struct addrinfo *hints, struct addrinfo **res,
-			  double timeout)
+                          const struct addrinfo *hints, struct addrinfo **res,
+                          double timeout)
 {
   struct gaiwt_context ctx;
   ctx.node = node;
@@ -427,27 +427,27 @@ is_valid_ipv4_address (const char *str, const char *end)
       int ch = *str++;
 
       if (ch >= '0' && ch <= '9')
-	{
-	  val = val * 10 + (ch - '0');
+        {
+          val = val * 10 + (ch - '0');
 
-	  if (val > 255)
-	    return false;
-	  if (!saw_digit)
-	    {
-	      if (++octets > 4)
-		return false;
-	      saw_digit = true;
-	    }
-	}
+          if (val > 255)
+            return false;
+          if (!saw_digit)
+            {
+              if (++octets > 4)
+                return false;
+              saw_digit = true;
+            }
+        }
       else if (ch == '.' && saw_digit)
-	{
-	  if (octets == 4)
-	    return false;
-	  val = 0;
-	  saw_digit = false;
-	}
+        {
+          if (octets == 4)
+            return false;
+          val = 0;
+          saw_digit = false;
+        }
       else
-	return false;
+        return false;
     }
   if (octets < 4)
     return false;
@@ -482,7 +482,7 @@ is_valid_ipv6_address (const char *str, const char *end)
     {
       ++str;
       if (str == end || *str != ':')
-	return false;
+        return false;
     }
 
   curtok = str;
@@ -495,44 +495,44 @@ is_valid_ipv6_address (const char *str, const char *end)
 
       /* if ch is a number, add it to val. */
       if (ISXDIGIT (ch))
-	{
-	  val <<= 4;
-	  val |= XDIGIT_TO_NUM (ch);
-	  if (val > 0xffff)
-	    return false;
-	  saw_xdigit = true;
-	  continue;
-	}
+        {
+          val <<= 4;
+          val |= XDIGIT_TO_NUM (ch);
+          if (val > 0xffff)
+            return false;
+          saw_xdigit = true;
+          continue;
+        }
 
       /* if ch is a colon ... */
       if (ch == ':')
-	{
-	  curtok = str;
-	  if (!saw_xdigit)
-	    {
-	      if (colonp != NULL)
-		return false;
-	      colonp = str + tp;
-	      continue;
-	    }
-	  else if (str == end)
-	    return false;
-	  if (tp > ns_in6addrsz - ns_int16sz)
-	    return false;
-	  tp += ns_int16sz;
-	  saw_xdigit = false;
-	  val = 0;
-	  continue;
-	}
+        {
+          curtok = str;
+          if (!saw_xdigit)
+            {
+              if (colonp != NULL)
+                return false;
+              colonp = str + tp;
+              continue;
+            }
+          else if (str == end)
+            return false;
+          if (tp > ns_in6addrsz - ns_int16sz)
+            return false;
+          tp += ns_int16sz;
+          saw_xdigit = false;
+          val = 0;
+          continue;
+        }
 
       /* if ch is a dot ... */
       if (ch == '.' && (tp <= ns_in6addrsz - ns_inaddrsz)
-	  && is_valid_ipv4_address (curtok, end) == 1)
-	{
-	  tp += ns_inaddrsz;
-	  saw_xdigit = false;
-	  break;
-	}
+          && is_valid_ipv4_address (curtok, end) == 1)
+        {
+          tp += ns_inaddrsz;
+          saw_xdigit = false;
+          break;
+        }
     
       return false;
     }
@@ -540,14 +540,14 @@ is_valid_ipv6_address (const char *str, const char *end)
   if (saw_xdigit)
     {
       if (tp > ns_in6addrsz - ns_int16sz) 
-	return false;
+        return false;
       tp += ns_int16sz;
     }
 
   if (colonp != NULL)
     {
       if (tp == ns_in6addrsz) 
-	return false;
+        return false;
       tp = ns_in6addrsz;
     }
 
@@ -602,7 +602,7 @@ cache_store (const char *host, struct address_list *al)
       int i;
       debug_logprintf ("Caching %s =>", host);
       for (i = 0; i < al->count; i++)
-	debug_logprintf (" %s", print_address (al->addresses + i));
+        debug_logprintf (" %s", print_address (al->addresses + i));
       debug_logprintf ("\n");
     }
 }
@@ -642,7 +642,7 @@ cache_remove (const char *host)
      LH_SILENT  - don't print the "resolving ... done" messages.
      LH_BIND    - resolve addresses for use with bind, which under
                   IPv6 means to use AI_PASSIVE flag to getaddrinfo.
-		  Passive lookups are not cached under IPv6.
+                  Passive lookups are not cached under IPv6.
      LH_REFRESH - if HOST is cached, remove the entry from the cache
                   and resolve it anew.  */
 
@@ -664,12 +664,12 @@ lookup_host (const char *host, int flags)
     uint32_t addr_ipv4 = (uint32_t)inet_addr (host);
     if (addr_ipv4 != (uint32_t) -1)
       {
-	/* No need to cache host->addr relation, just return the
-	   address.  */
-	char *vec[2];
-	vec[0] = (char *)&addr_ipv4;
-	vec[1] = NULL;
-	return address_list_from_ipv4_addresses (vec);
+        /* No need to cache host->addr relation, just return the
+           address.  */
+        char *vec[2];
+        vec[0] = (char *)&addr_ipv4;
+        vec[1] = NULL;
+        return address_list_from_ipv4_addresses (vec);
       }
   }
 #else  /* ENABLE_IPV6 */
@@ -699,13 +699,13 @@ lookup_host (const char *host, int flags)
   if (use_cache)
     {
       if (!(flags & LH_REFRESH))
-	{
-	  al = cache_query (host);
-	  if (al)
-	    return al;
-	}
+        {
+          al = cache_query (host);
+          if (al)
+            return al;
+        }
       else
-	cache_remove (host);
+        cache_remove (host);
     }
 
   /* No luck with the cache; resolve HOST. */
@@ -726,9 +726,9 @@ lookup_host (const char *host, int flags)
       hints.ai_family = AF_INET6;
     else
       /* We tried using AI_ADDRCONFIG, but removed it because: it
-	 misinterprets IPv6 loopbacks, it is broken on AIX 5.1, and
-	 it's unneeded since we sort the addresses anyway.  */
-	hints.ai_family = AF_UNSPEC;
+         misinterprets IPv6 loopbacks, it is broken on AIX 5.1, and
+         it's unneeded since we sort the addresses anyway.  */
+        hints.ai_family = AF_UNSPEC;
 
     if (flags & LH_BIND)
       hints.ai_flags |= AI_PASSIVE;
@@ -736,30 +736,30 @@ lookup_host (const char *host, int flags)
 #ifdef AI_NUMERICHOST
     if (numeric_address)
       {
-	/* Where available, the AI_NUMERICHOST hint can prevent costly
-	   access to DNS servers.  */
-	hints.ai_flags |= AI_NUMERICHOST;
-	timeout = 0;		/* no timeout needed when "resolving"
-				   numeric hosts -- avoid setting up
-				   signal handlers and such. */
+        /* Where available, the AI_NUMERICHOST hint can prevent costly
+           access to DNS servers.  */
+        hints.ai_flags |= AI_NUMERICHOST;
+        timeout = 0;            /* no timeout needed when "resolving"
+                                   numeric hosts -- avoid setting up
+                                   signal handlers and such. */
       }
 #endif
 
     err = getaddrinfo_with_timeout (host, NULL, &hints, &res, timeout);
     if (err != 0 || res == NULL)
       {
-	if (!silent)
-	  logprintf (LOG_VERBOSE, _("failed: %s.\n"),
-		     err != EAI_SYSTEM ? gai_strerror (err) : strerror (errno));
-	return NULL;
+        if (!silent)
+          logprintf (LOG_VERBOSE, _("failed: %s.\n"),
+                     err != EAI_SYSTEM ? gai_strerror (err) : strerror (errno));
+        return NULL;
       }
     al = address_list_from_addrinfo (res);
     freeaddrinfo (res);
     if (!al)
       {
-	logprintf (LOG_VERBOSE,
-		   _("failed: No IPv4/IPv6 addresses for host.\n"));
-	return NULL;
+        logprintf (LOG_VERBOSE,
+                   _("failed: No IPv4/IPv6 addresses for host.\n"));
+        return NULL;
       }
 
     /* Reorder addresses so that IPv4 ones (or IPv6 ones, as per
@@ -767,23 +767,23 @@ lookup_host (const char *host, int flags)
        the addresses with the same family is undisturbed.  */
     if (al->count > 1 && opt.prefer_family != prefer_none)
       stable_sort (al->addresses, al->count, sizeof (ip_address),
-		   opt.prefer_family == prefer_ipv4
-		   ? cmp_prefer_ipv4 : cmp_prefer_ipv6);
+                   opt.prefer_family == prefer_ipv4
+                   ? cmp_prefer_ipv4 : cmp_prefer_ipv6);
   }
 #else  /* not ENABLE_IPV6 */
   {
     struct hostent *hptr = gethostbyname_with_timeout (host, timeout);
     if (!hptr)
       {
-	if (!silent)
-	  {
-	    if (errno != ETIMEDOUT)
-	      logprintf (LOG_VERBOSE, _("failed: %s.\n"),
-			 host_errstr (h_errno));
-	    else
-	      logputs (LOG_VERBOSE, _("failed: timed out.\n"));
-	  }
-	return NULL;
+        if (!silent)
+          {
+            if (errno != ETIMEDOUT)
+              logprintf (LOG_VERBOSE, _("failed: %s.\n"),
+                         host_errstr (h_errno));
+            else
+              logputs (LOG_VERBOSE, _("failed: timed out.\n"));
+          }
+        return NULL;
       }
     /* Do older systems have h_addr_list?  */
     al = address_list_from_ipv4_addresses (hptr->h_addr_list);
@@ -797,13 +797,13 @@ lookup_host (const char *host, int flags)
       int i;
       int printmax = al->count <= 3 ? al->count : 3;
       for (i = 0; i < printmax; i++)
-	{
-	  logputs (LOG_VERBOSE, print_address (al->addresses + i));
-	  if (i < printmax - 1)
-	    logputs (LOG_VERBOSE, ", ");
-	}
+        {
+          logputs (LOG_VERBOSE, print_address (al->addresses + i));
+          if (i < printmax - 1)
+            logputs (LOG_VERBOSE, ", ");
+        }
       if (printmax != al->count)
-	logputs (LOG_VERBOSE, ", ...");
+        logputs (LOG_VERBOSE, ", ...");
       logputs (LOG_VERBOSE, "\n");
     }
 
@@ -823,12 +823,12 @@ accept_domain (struct url *u)
   if (opt.domains)
     {
       if (!sufmatch ((const char **)opt.domains, u->host))
-	return false;
+        return false;
     }
   if (opt.exclude_domains)
     {
       if (sufmatch ((const char **)opt.exclude_domains, u->host))
-	return false;
+        return false;
     }
   return true;
 }
@@ -847,11 +847,11 @@ sufmatch (const char **list, const char *what)
   for (i = 0; list[i]; i++)
     {
       for (j = strlen (list[i]), k = lw; j >= 0 && k >= 0; j--, k--)
-	if (TOLOWER (list[i][j]) != TOLOWER (what[k]))
-	  break;
+        if (TOLOWER (list[i][j]) != TOLOWER (what[k]))
+          break;
       /* The domain must be first to reach to beginning.  */
       if (j == -1)
-	return true;
+        return true;
     }
   return false;
 }
@@ -863,15 +863,15 @@ host_cleanup (void)
     {
       hash_table_iterator iter;
       for (hash_table_iterate (host_name_addresses_map, &iter);
-	   hash_table_iter_next (&iter);
-	   )
-	{
-	  char *host = iter.key;
-	  struct address_list *al = iter.value;
-	  xfree (host);
-	  assert (al->refcount == 1);
-	  address_list_delete (al);
-	}
+           hash_table_iter_next (&iter);
+           )
+        {
+          char *host = iter.key;
+          struct address_list *al = iter.value;
+          xfree (host);
+          assert (al->refcount == 1);
+          address_list_delete (al);
+        }
       hash_table_destroy (host_name_addresses_map);
       host_name_addresses_map = NULL;
     }

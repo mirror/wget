@@ -47,11 +47,11 @@ so, delete this exception statement from your version.  */
 #include "host.h"
 #include "netrc.h"
 #include "progress.h"
-#include "recur.h"		/* for INFINITE_RECURSION */
-#include "convert.h"		/* for convert_cleanup */
-#include "res.h"		/* for res_cleanup */
-#include "http.h"		/* for http_cleanup */
-#include "retr.h"		/* for output_stream */
+#include "recur.h"              /* for INFINITE_RECURSION */
+#include "convert.h"            /* for convert_cleanup */
+#include "res.h"                /* for res_cleanup */
+#include "http.h"               /* for http_cleanup */
+#include "retr.h"               /* for output_stream */
 
 #ifdef TESTING
 #include "test.h"
@@ -109,139 +109,139 @@ static struct {
   bool (*action) (const char *, const char *, void *);
 } commands[] = {
   /* KEEP THIS LIST ALPHABETICALLY SORTED */
-  { "accept",		&opt.accepts,		cmd_vector },
-  { "addhostdir",	&opt.add_hostdir,	cmd_boolean },
-  { "alwaysrest",	&opt.always_rest,	cmd_boolean }, /* deprecated */
-  { "background",	&opt.background,	cmd_boolean },
-  { "backupconverted",	&opt.backup_converted,	cmd_boolean },
-  { "backups",		&opt.backups,		cmd_number },
-  { "base",		&opt.base_href,		cmd_string },
-  { "bindaddress",	&opt.bind_address,	cmd_string },
+  { "accept",           &opt.accepts,           cmd_vector },
+  { "addhostdir",       &opt.add_hostdir,       cmd_boolean },
+  { "alwaysrest",       &opt.always_rest,       cmd_boolean }, /* deprecated */
+  { "background",       &opt.background,        cmd_boolean },
+  { "backupconverted",  &opt.backup_converted,  cmd_boolean },
+  { "backups",          &opt.backups,           cmd_number },
+  { "base",             &opt.base_href,         cmd_string },
+  { "bindaddress",      &opt.bind_address,      cmd_string },
 #ifdef HAVE_SSL
-  { "cacertificate",	&opt.ca_cert,		cmd_file },
+  { "cacertificate",    &opt.ca_cert,           cmd_file },
 #endif
-  { "cache",		&opt.allow_cache,	cmd_boolean },
+  { "cache",            &opt.allow_cache,       cmd_boolean },
 #ifdef HAVE_SSL
-  { "cadirectory",	&opt.ca_directory,	cmd_directory },
-  { "certificate",	&opt.cert_file,		cmd_file },
-  { "certificatetype",	&opt.cert_type,		cmd_cert_type },
-  { "checkcertificate", &opt.check_cert,	cmd_boolean },
+  { "cadirectory",      &opt.ca_directory,      cmd_directory },
+  { "certificate",      &opt.cert_file,         cmd_file },
+  { "certificatetype",  &opt.cert_type,         cmd_cert_type },
+  { "checkcertificate", &opt.check_cert,        cmd_boolean },
 #endif
-  { "connecttimeout",	&opt.connect_timeout,	cmd_time },
+  { "connecttimeout",   &opt.connect_timeout,   cmd_time },
   { "contentdisposition", &opt.content_disposition, cmd_boolean },
-  { "continue",		&opt.always_rest,	cmd_boolean },
-  { "convertlinks",	&opt.convert_links,	cmd_boolean },
-  { "cookies",		&opt.cookies,		cmd_boolean },
-  { "cutdirs",		&opt.cut_dirs,		cmd_number },
+  { "continue",         &opt.always_rest,       cmd_boolean },
+  { "convertlinks",     &opt.convert_links,     cmd_boolean },
+  { "cookies",          &opt.cookies,           cmd_boolean },
+  { "cutdirs",          &opt.cut_dirs,          cmd_number },
 #ifdef ENABLE_DEBUG
-  { "debug",		&opt.debug,		cmd_boolean },
+  { "debug",            &opt.debug,             cmd_boolean },
 #endif
-  { "deleteafter",	&opt.delete_after,	cmd_boolean },
-  { "dirprefix",	&opt.dir_prefix,	cmd_directory },
-  { "dirstruct",	NULL,			cmd_spec_dirstruct },
-  { "dnscache",		&opt.dns_cache,		cmd_boolean },
-  { "dnstimeout",	&opt.dns_timeout,	cmd_time },
-  { "domains",		&opt.domains,		cmd_vector },
-  { "dotbytes",		&opt.dot_bytes,		cmd_bytes },
-  { "dotsinline",	&opt.dots_in_line,	cmd_number },
-  { "dotspacing",	&opt.dot_spacing,	cmd_number },
-  { "dotstyle",		&opt.dot_style,		cmd_string },
+  { "deleteafter",      &opt.delete_after,      cmd_boolean },
+  { "dirprefix",        &opt.dir_prefix,        cmd_directory },
+  { "dirstruct",        NULL,                   cmd_spec_dirstruct },
+  { "dnscache",         &opt.dns_cache,         cmd_boolean },
+  { "dnstimeout",       &opt.dns_timeout,       cmd_time },
+  { "domains",          &opt.domains,           cmd_vector },
+  { "dotbytes",         &opt.dot_bytes,         cmd_bytes },
+  { "dotsinline",       &opt.dots_in_line,      cmd_number },
+  { "dotspacing",       &opt.dot_spacing,       cmd_number },
+  { "dotstyle",         &opt.dot_style,         cmd_string },
 #ifdef HAVE_SSL
-  { "egdfile",		&opt.egd_file,		cmd_file },
+  { "egdfile",          &opt.egd_file,          cmd_file },
 #endif
-  { "excludedirectories", &opt.excludes,	cmd_directory_vector },
-  { "excludedomains",	&opt.exclude_domains,	cmd_vector },
-  { "followftp",	&opt.follow_ftp,	cmd_boolean },
-  { "followtags",	&opt.follow_tags,	cmd_vector },
-  { "forcehtml",	&opt.force_html,	cmd_boolean },
-  { "ftppasswd",	&opt.ftp_passwd,	cmd_string }, /* deprecated */
-  { "ftppassword",	&opt.ftp_passwd,	cmd_string },
-  { "ftpproxy",		&opt.ftp_proxy,		cmd_string },
-  { "ftpuser",	        &opt.ftp_user,		cmd_string },
-  { "glob",		&opt.ftp_glob,		cmd_boolean },
-  { "header",		NULL,			cmd_spec_header },
-  { "htmlextension",	&opt.html_extension,	cmd_boolean },
-  { "htmlify",		NULL,			cmd_spec_htmlify },
-  { "httpkeepalive",	&opt.http_keep_alive,	cmd_boolean },
-  { "httppasswd",	&opt.http_passwd,	cmd_string }, /* deprecated */
-  { "httppassword",	&opt.http_passwd,	cmd_string },
-  { "httpproxy",	&opt.http_proxy,	cmd_string },
-  { "httpsproxy",	&opt.https_proxy,	cmd_string },
-  { "httpuser",		&opt.http_user,		cmd_string },
-  { "ignorecase",	&opt.ignore_case,	cmd_boolean },
-  { "ignorelength",	&opt.ignore_length,	cmd_boolean },
-  { "ignoretags",	&opt.ignore_tags,	cmd_vector },
-  { "includedirectories", &opt.includes,	cmd_directory_vector },
+  { "excludedirectories", &opt.excludes,        cmd_directory_vector },
+  { "excludedomains",   &opt.exclude_domains,   cmd_vector },
+  { "followftp",        &opt.follow_ftp,        cmd_boolean },
+  { "followtags",       &opt.follow_tags,       cmd_vector },
+  { "forcehtml",        &opt.force_html,        cmd_boolean },
+  { "ftppasswd",        &opt.ftp_passwd,        cmd_string }, /* deprecated */
+  { "ftppassword",      &opt.ftp_passwd,        cmd_string },
+  { "ftpproxy",         &opt.ftp_proxy,         cmd_string },
+  { "ftpuser",          &opt.ftp_user,          cmd_string },
+  { "glob",             &opt.ftp_glob,          cmd_boolean },
+  { "header",           NULL,                   cmd_spec_header },
+  { "htmlextension",    &opt.html_extension,    cmd_boolean },
+  { "htmlify",          NULL,                   cmd_spec_htmlify },
+  { "httpkeepalive",    &opt.http_keep_alive,   cmd_boolean },
+  { "httppasswd",       &opt.http_passwd,       cmd_string }, /* deprecated */
+  { "httppassword",     &opt.http_passwd,       cmd_string },
+  { "httpproxy",        &opt.http_proxy,        cmd_string },
+  { "httpsproxy",       &opt.https_proxy,       cmd_string },
+  { "httpuser",         &opt.http_user,         cmd_string },
+  { "ignorecase",       &opt.ignore_case,       cmd_boolean },
+  { "ignorelength",     &opt.ignore_length,     cmd_boolean },
+  { "ignoretags",       &opt.ignore_tags,       cmd_vector },
+  { "includedirectories", &opt.includes,        cmd_directory_vector },
 #ifdef ENABLE_IPV6
-  { "inet4only",	&opt.ipv4_only,		cmd_boolean },
-  { "inet6only",	&opt.ipv6_only,		cmd_boolean },
+  { "inet4only",        &opt.ipv4_only,         cmd_boolean },
+  { "inet6only",        &opt.ipv6_only,         cmd_boolean },
 #endif
-  { "input",		&opt.input_filename,	cmd_file },
+  { "input",            &opt.input_filename,    cmd_file },
   { "keepsessioncookies", &opt.keep_session_cookies, cmd_boolean },
-  { "limitrate",	&opt.limit_rate,	cmd_bytes },
-  { "loadcookies",	&opt.cookies_input,	cmd_file },
-  { "logfile",		&opt.lfilename,		cmd_file },
-  { "login",		&opt.ftp_user,		cmd_string },/* deprecated*/
-  { "maxredirect",	&opt.max_redirect,	cmd_number },
-  { "mirror",		NULL,			cmd_spec_mirror },
-  { "netrc",		&opt.netrc,		cmd_boolean },
-  { "noclobber",	&opt.noclobber,		cmd_boolean },
-  { "noparent",		&opt.no_parent,		cmd_boolean },
-  { "noproxy",		&opt.no_proxy,		cmd_vector },
-  { "numtries",		&opt.ntry,		cmd_number_inf },/* deprecated*/
-  { "outputdocument",	&opt.output_document,	cmd_file },
-  { "pagerequisites",	&opt.page_requisites,	cmd_boolean },
-  { "passiveftp",	&opt.ftp_pasv,		cmd_boolean },
-  { "passwd",	        &opt.ftp_passwd,	cmd_string },/* deprecated*/
-  { "password",	        &opt.passwd,		cmd_string },
-  { "postdata",		&opt.post_data,		cmd_string },
-  { "postfile",		&opt.post_file_name,	cmd_file },
-  { "preferfamily",	NULL,			cmd_spec_prefer_family },
-  { "preservepermissions", &opt.preserve_perm,	cmd_boolean },
+  { "limitrate",        &opt.limit_rate,        cmd_bytes },
+  { "loadcookies",      &opt.cookies_input,     cmd_file },
+  { "logfile",          &opt.lfilename,         cmd_file },
+  { "login",            &opt.ftp_user,          cmd_string },/* deprecated*/
+  { "maxredirect",      &opt.max_redirect,      cmd_number },
+  { "mirror",           NULL,                   cmd_spec_mirror },
+  { "netrc",            &opt.netrc,             cmd_boolean },
+  { "noclobber",        &opt.noclobber,         cmd_boolean },
+  { "noparent",         &opt.no_parent,         cmd_boolean },
+  { "noproxy",          &opt.no_proxy,          cmd_vector },
+  { "numtries",         &opt.ntry,              cmd_number_inf },/* deprecated*/
+  { "outputdocument",   &opt.output_document,   cmd_file },
+  { "pagerequisites",   &opt.page_requisites,   cmd_boolean },
+  { "passiveftp",       &opt.ftp_pasv,          cmd_boolean },
+  { "passwd",           &opt.ftp_passwd,        cmd_string },/* deprecated*/
+  { "password",         &opt.passwd,            cmd_string },
+  { "postdata",         &opt.post_data,         cmd_string },
+  { "postfile",         &opt.post_file_name,    cmd_file },
+  { "preferfamily",     NULL,                   cmd_spec_prefer_family },
+  { "preservepermissions", &opt.preserve_perm,  cmd_boolean },
 #ifdef HAVE_SSL
-  { "privatekey",	&opt.private_key,	cmd_file },
-  { "privatekeytype",	&opt.private_key_type,	cmd_cert_type },
+  { "privatekey",       &opt.private_key,       cmd_file },
+  { "privatekeytype",   &opt.private_key_type,  cmd_cert_type },
 #endif
-  { "progress",		&opt.progress_type,	cmd_spec_progress },
+  { "progress",         &opt.progress_type,     cmd_spec_progress },
   { "protocoldirectories", &opt.protocol_directories, cmd_boolean },
-  { "proxypasswd",	&opt.proxy_passwd,	cmd_string }, /* deprecated */
-  { "proxypassword",	&opt.proxy_passwd,	cmd_string },
-  { "proxyuser",	&opt.proxy_user,	cmd_string },
-  { "quiet",		&opt.quiet,		cmd_boolean },
-  { "quota",		&opt.quota,		cmd_bytes_sum },
+  { "proxypasswd",      &opt.proxy_passwd,      cmd_string }, /* deprecated */
+  { "proxypassword",    &opt.proxy_passwd,      cmd_string },
+  { "proxyuser",        &opt.proxy_user,        cmd_string },
+  { "quiet",            &opt.quiet,             cmd_boolean },
+  { "quota",            &opt.quota,             cmd_bytes_sum },
 #ifdef HAVE_SSL
-  { "randomfile",	&opt.random_file,	cmd_file },
+  { "randomfile",       &opt.random_file,       cmd_file },
 #endif
-  { "randomwait",	&opt.random_wait,	cmd_boolean },
-  { "readtimeout",	&opt.read_timeout,	cmd_time },
-  { "reclevel",		&opt.reclevel,		cmd_number_inf },
-  { "recursive",	NULL,			cmd_spec_recursive },
-  { "referer",		&opt.referer,		cmd_string },
-  { "reject",		&opt.rejects,		cmd_vector },
-  { "relativeonly",	&opt.relative_only,	cmd_boolean },
-  { "removelisting",	&opt.remove_listing,	cmd_boolean },
-  { "restrictfilenames", NULL,			cmd_spec_restrict_file_names },
-  { "retrsymlinks",	&opt.retr_symlinks,	cmd_boolean },
-  { "retryconnrefused",	&opt.retry_connrefused,	cmd_boolean },
-  { "robots",		&opt.use_robots,	cmd_boolean },
-  { "savecookies",	&opt.cookies_output,	cmd_file },
-  { "saveheaders",	&opt.save_headers,	cmd_boolean },
+  { "randomwait",       &opt.random_wait,       cmd_boolean },
+  { "readtimeout",      &opt.read_timeout,      cmd_time },
+  { "reclevel",         &opt.reclevel,          cmd_number_inf },
+  { "recursive",        NULL,                   cmd_spec_recursive },
+  { "referer",          &opt.referer,           cmd_string },
+  { "reject",           &opt.rejects,           cmd_vector },
+  { "relativeonly",     &opt.relative_only,     cmd_boolean },
+  { "removelisting",    &opt.remove_listing,    cmd_boolean },
+  { "restrictfilenames", NULL,                  cmd_spec_restrict_file_names },
+  { "retrsymlinks",     &opt.retr_symlinks,     cmd_boolean },
+  { "retryconnrefused", &opt.retry_connrefused, cmd_boolean },
+  { "robots",           &opt.use_robots,        cmd_boolean },
+  { "savecookies",      &opt.cookies_output,    cmd_file },
+  { "saveheaders",      &opt.save_headers,      cmd_boolean },
 #ifdef HAVE_SSL
-  { "secureprotocol",	&opt.secure_protocol,	cmd_spec_secure_protocol },
+  { "secureprotocol",   &opt.secure_protocol,   cmd_spec_secure_protocol },
 #endif
-  { "serverresponse",	&opt.server_response,	cmd_boolean },
-  { "spanhosts",	&opt.spanhost,		cmd_boolean },
-  { "spider",		&opt.spider,		cmd_boolean },
-  { "strictcomments",	&opt.strict_comments,	cmd_boolean },
-  { "timeout",		NULL,			cmd_spec_timeout },
-  { "timestamping",	&opt.timestamping,	cmd_boolean },
-  { "tries",		&opt.ntry,		cmd_number_inf },
-  { "useproxy",		&opt.use_proxy,		cmd_boolean },
-  { "user",	        &opt.user,		cmd_string },
-  { "useragent",	NULL,			cmd_spec_useragent },
-  { "verbose",		NULL,			cmd_spec_verbose },
-  { "wait",		&opt.wait,		cmd_time },
-  { "waitretry",	&opt.waitretry,		cmd_time }
+  { "serverresponse",   &opt.server_response,   cmd_boolean },
+  { "spanhosts",        &opt.spanhost,          cmd_boolean },
+  { "spider",           &opt.spider,            cmd_boolean },
+  { "strictcomments",   &opt.strict_comments,   cmd_boolean },
+  { "timeout",          NULL,                   cmd_spec_timeout },
+  { "timestamping",     &opt.timestamping,      cmd_boolean },
+  { "tries",            &opt.ntry,              cmd_number_inf },
+  { "useproxy",         &opt.use_proxy,         cmd_boolean },
+  { "user",             &opt.user,              cmd_string },
+  { "useragent",        NULL,                   cmd_spec_useragent },
+  { "verbose",          NULL,                   cmd_spec_verbose },
+  { "wait",             &opt.wait,              cmd_time },
+  { "waitretry",        &opt.waitretry,         cmd_time }
 };
 
 /* Look up CMDNAME in the commands[] and return its position in the
@@ -259,11 +259,11 @@ command_by_name (const char *cmdname)
       int mid = (lo + hi) >> 1;
       int cmp = strcasecmp (cmdname, commands[mid].name);
       if (cmp < 0)
-	hi = mid - 1;
+        hi = mid - 1;
       else if (cmp > 0)
-	lo = mid + 1;
+        lo = mid + 1;
       else
-	return mid;
+        return mid;
     }
   return -1;
 }
@@ -339,7 +339,7 @@ home_dir (void)
          file.  */
       struct passwd *pwd = getpwuid (getuid ());
       if (!pwd || !pwd->pw_dir)
-	return NULL;
+        return NULL;
       home = pwd->pw_dir;
 #else  /* WINDOWS */
       /* Under Windows, if $HOME isn't defined, use the directory where
@@ -367,11 +367,11 @@ wgetrc_file_name (void)
   if (env && *env)
     {
       if (!file_exists_p (env))
-	{
-	  fprintf (stderr, _("%s: WGETRC points to %s, which doesn't exist.\n"),
-		   exec_name, env);
-	  exit (1);
-	}
+        {
+          fprintf (stderr, _("%s: WGETRC points to %s, which doesn't exist.\n"),
+                   exec_name, env);
+          exit (1);
+        }
       return xstrdup (env);
     }
 
@@ -392,7 +392,7 @@ wgetrc_file_name (void)
       file = NULL;
       home = ws_mypath ();
       if (home)
-	file = aprintf ("%s/wget.ini", home);
+        file = aprintf ("%s/wget.ini", home);
     }
 #endif /* WINDOWS */
 
@@ -432,8 +432,8 @@ run_wgetrc (const char *file)
   if (!fp)
     {
       fprintf (stderr, _("%s: Cannot read %s (%s).\n"), exec_name,
-	       file, strerror (errno));
-      return true;			/* not a fatal error */
+               file, strerror (errno));
+      return true;                      /* not a fatal error */
     }
   enable_tilde_expansion = true;
   ln = 1;
@@ -444,31 +444,31 @@ run_wgetrc (const char *file)
 
       /* Parse the line.  */
       switch (parse_line (line, &com, &val, &comind))
-	{
-	case line_ok:
-	  /* If everything is OK, set the value.  */
-	  if (!setval_internal (comind, com, val))
-	    {
-	      fprintf (stderr, _("%s: Error in %s at line %d.\n"),
-		       exec_name, file, ln);
-	      ++errcnt;
-	    }
-	  break;
-	case line_syntax_error:
-	  fprintf (stderr, _("%s: Syntax error in %s at line %d.\n"),
-		   exec_name, file, ln);
-	  ++errcnt;
-	  break;
-	case line_unknown_command:
-	  fprintf (stderr, _("%s: Unknown command `%s' in %s at line %d.\n"),
-		   exec_name, com, file, ln);
-	  ++errcnt;
-	  break;
-	case line_empty:
-	  break;
-	default:
-	  abort ();
-	}
+        {
+        case line_ok:
+          /* If everything is OK, set the value.  */
+          if (!setval_internal (comind, com, val))
+            {
+              fprintf (stderr, _("%s: Error in %s at line %d.\n"),
+                       exec_name, file, ln);
+              ++errcnt;
+            }
+          break;
+        case line_syntax_error:
+          fprintf (stderr, _("%s: Syntax error in %s at line %d.\n"),
+                   exec_name, file, ln);
+          ++errcnt;
+          break;
+        case line_unknown_command:
+          fprintf (stderr, _("%s: Unknown command `%s' in %s at line %d.\n"),
+                   exec_name, com, file, ln);
+          ++errcnt;
+          break;
+        case line_empty:
+          break;
+        default:
+          abort ();
+        }
       xfree_null (com);
       xfree_null (val);
       xfree (line);
@@ -507,7 +507,7 @@ initialize (void)
     {
       fprintf (stderr, _("\
 %s: Warning: Both system and user wgetrc point to `%s'.\n"),
-	       exec_name, file);
+               exec_name, file);
     }
   else
 #endif
@@ -527,8 +527,8 @@ initialize (void)
 static void
 dehyphen (char *s)
 {
-  char *t = s;			/* t - tortoise */
-  char *h = s;			/* h - hare     */
+  char *t = s;                  /* t - tortoise */
+  char *h = s;                  /* h - hare     */
   while (*h)
     if (*h == '_' || *h == '-')
       ++h;
@@ -653,13 +653,13 @@ run_command (const char *opt)
     {
     case line_ok:
       if (!setval_internal (comind, com, val))
-	exit (2);
+        exit (2);
       xfree (com);
       xfree (val);
       break;
     default:
       fprintf (stderr, _("%s: Invalid --execute command `%s'\n"),
-	       exec_name, opt);
+               exec_name, opt);
       exit (2);
     }
 }
@@ -677,14 +677,14 @@ static bool simple_atof (const char *, const char *, double *);
 
 #define CMP1(p, c0) (TOLOWER((p)[0]) == (c0) && (p)[1] == '\0')
 
-#define CMP2(p, c0, c1) (TOLOWER((p)[0]) == (c0)	\
-			 && TOLOWER((p)[1]) == (c1)	\
-			 && (p)[2] == '\0')
+#define CMP2(p, c0, c1) (TOLOWER((p)[0]) == (c0)        \
+                         && TOLOWER((p)[1]) == (c1)     \
+                         && (p)[2] == '\0')
 
-#define CMP3(p, c0, c1, c2) (TOLOWER((p)[0]) == (c0)	\
-		     && TOLOWER((p)[1]) == (c1)		\
-		     && TOLOWER((p)[2]) == (c2)		\
-		     && (p)[3] == '\0')
+#define CMP3(p, c0, c1, c2) (TOLOWER((p)[0]) == (c0)    \
+                     && TOLOWER((p)[1]) == (c1)         \
+                     && TOLOWER((p)[2]) == (c2)         \
+                     && (p)[3] == '\0')
 
 
 /* Store the boolean value from VAL to PLACE.  COM is ignored,
@@ -703,8 +703,8 @@ cmd_boolean (const char *com, const char *val, void *place)
   else
     {
       fprintf (stderr,
-	       _("%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"),
-	       exec_name, com, val);
+               _("%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"),
+               exec_name, com, val);
       return false;
     }
 
@@ -721,7 +721,7 @@ cmd_number (const char *com, const char *val, void *place)
       || *(int *) place < 0)
     {
       fprintf (stderr, _("%s: %s: Invalid number `%s'.\n"),
-	       exec_name, com, val);
+               exec_name, com, val);
       return false;
     }
   return true;
@@ -779,15 +779,15 @@ cmd_file (const char *com, const char *val, void *place)
       int homelen;
       char *home = home_dir ();
       if (!home)
-	goto noexpand;
+        goto noexpand;
 
       homelen = strlen (home);
       while (homelen && ISSEP (home[homelen - 1]))
-	home[--homelen] = '\0';
+        home[--homelen] = '\0';
 
       /* Skip the leading "~/". */
       for (++val; ISSEP (*val); val++)
-	;
+        ;
 
       *pstring = concat_strings (home, "/", val, (char *) 0);
     }
@@ -798,7 +798,7 @@ cmd_file (const char *com, const char *val, void *place)
     char *s;
     for (s = *pstring; *s; s++)
       if (*s == '\\')
-	*s = '/';
+        *s = '/';
   }
 #endif
   return true;
@@ -855,15 +855,15 @@ cmd_directory_vector (const char *com, const char *val, void *place)
 
       seps = sepstring (val);
       for (t = seps; t && *t; t++)
-	{
-	  int len = strlen (*t);
-	  /* Skip degenerate case of root directory.  */
-	  if (len > 1)
-	    {
-	      if ((*t)[len - 1] == '/')
-		(*t)[len - 1] = '\0';
-	    }
-	}
+        {
+          int len = strlen (*t);
+          /* Skip degenerate case of root directory.  */
+          if (len > 1)
+            {
+              if ((*t)[len - 1] == '/')
+                (*t)[len - 1] = '\0';
+            }
+        }
       *pvec = merge_vecs (*pvec, seps);
     }
   else
@@ -912,7 +912,7 @@ parse_bytes_helper (const char *val, double *result)
       break;
     default:
       /* Not a recognized suffix: assume it's a digit.  (If not,
-	 simple_atof will raise an error.)  */
+         simple_atof will raise an error.)  */
       mult = 1;
     }
 
@@ -952,7 +952,7 @@ cmd_bytes (const char *com, const char *val, void *place)
   if (!parse_bytes_helper (val, &byte_value))
     {
       fprintf (stderr, _("%s: %s: Invalid byte value `%s'\n"),
-	       exec_name, com, val);
+               exec_name, com, val);
       return false;
     }
   *(wgint *)place = (wgint)byte_value;
@@ -971,7 +971,7 @@ cmd_bytes_sum (const char *com, const char *val, void *place)
   if (!parse_bytes_helper (val, &byte_value))
     {
       fprintf (stderr, _("%s: %s: Invalid byte value `%s'\n"),
-	       exec_name, com, val);
+               exec_name, com, val);
       return false;
     }
   *(SUM_SIZE_INT *) place = (SUM_SIZE_INT) byte_value;
@@ -996,30 +996,30 @@ cmd_time (const char *com, const char *val, void *place)
     {
     err:
       fprintf (stderr, _("%s: %s: Invalid time period `%s'\n"),
-	       exec_name, com, val);
+               exec_name, com, val);
       return false;
     }
 
   switch (TOLOWER (end[-1]))
     {
     case 's':
-      --end, mult = 1;		/* seconds */
+      --end, mult = 1;          /* seconds */
       break;
     case 'm':
-      --end, mult = 60;		/* minutes */
+      --end, mult = 60;         /* minutes */
       break;
     case 'h':
-      --end, mult = 3600;	/* hours */
+      --end, mult = 3600;       /* hours */
       break;
     case 'd':
-      --end, mult = 86400.0;	/* days */
+      --end, mult = 86400.0;    /* days */
       break;
     case 'w':
-      --end, mult = 604800.0;	/* weeks */
+      --end, mult = 604800.0;   /* weeks */
       break;
     default:
       /* Not a recognized suffix: assume it belongs to the number.
-	 (If not, simple_atof will raise an error.)  */
+         (If not, simple_atof will raise an error.)  */
       mult = 1;
     }
 
@@ -1087,7 +1087,7 @@ cmd_spec_header (const char *com, const char *val, void *place_ignored)
   if (!check_user_specified_header (val))
     {
       fprintf (stderr, _("%s: %s: Invalid header `%s'.\n"),
-	       exec_name, com, val);
+               exec_name, com, val);
       return false;
     }
   opt.user_headers = vec_append (opt.user_headers, val);
@@ -1117,7 +1117,7 @@ cmd_spec_mirror (const char *com, const char *val, void *place_ignored)
     {
       opt.recursive = true;
       if (!opt.no_dirstruct)
-	opt.dirstruct = true;
+        opt.dirstruct = true;
       opt.timestamping = true;
       opt.reclevel = INFINITE_RECURSION;
       opt.remove_listing = false;
@@ -1153,7 +1153,7 @@ cmd_spec_progress (const char *com, const char *val, void *place_ignored)
   if (!valid_progress_implementation_p (val))
     {
       fprintf (stderr, _("%s: %s: Invalid progress type `%s'.\n"),
-	       exec_name, com, val);
+               exec_name, com, val);
       return false;
     }
   xfree_null (opt.progress_type);
@@ -1176,7 +1176,7 @@ cmd_spec_recursive (const char *com, const char *val, void *place_ignored)
   else
     {
       if (opt.recursive && !opt.no_dirstruct)
-	opt.dirstruct = true;
+        opt.dirstruct = true;
     }
   return true;
 }
@@ -1214,10 +1214,10 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
                    _("%s: %s: Invalid restriction `%s', use [unix|windows],[lowercase|uppercase],[nocontrol].\n"),
                    exec_name, com, val);
           return false;
-	}
+        }
 
       if (*end) 
-	val = end + 1;
+        val = end + 1;
     }
   while (*val && *end);
 
@@ -1268,7 +1268,7 @@ cmd_spec_useragent (const char *com, const char *val, void *place_ignored)
   if (strchr (val, '\n'))
     {
       fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"),
-	       exec_name, com, val);
+               exec_name, com, val);
       return false;
     }
   xfree_null (opt.useragent);
@@ -1321,18 +1321,18 @@ simple_atoi (const char *beg, const char *end, int *dest)
   if (!negative)
     for (; p < end && ISDIGIT (*p); p++)
       {
-	int next = (10 * result) + (*p - '0');
-	if (next < result)
-	  return false;		/* overflow */
-	result = next;
+        int next = (10 * result) + (*p - '0');
+        if (next < result)
+          return false;         /* overflow */
+        result = next;
       }
   else
     for (; p < end && ISDIGIT (*p); p++)
       {
-	int next = (10 * result) - (*p - '0');
-	if (next > result)
-	  return false;		/* underflow */
-	result = next;
+        int next = (10 * result) - (*p - '0');
+        if (next > result)
+          return false;         /* underflow */
+        result = next;
       }
 
   if (p != end)
@@ -1371,22 +1371,22 @@ simple_atof (const char *beg, const char *end, double *dest)
     {
       char ch = *p;
       if (ISDIGIT (ch))
-	{
-	  if (!seen_dot)
-	    result = (10 * result) + (ch - '0');
-	  else
-	    result += (ch - '0') / (divider *= 10);
-	  seen_digit = true;
-	}
+        {
+          if (!seen_dot)
+            result = (10 * result) + (ch - '0');
+          else
+            result += (ch - '0') / (divider *= 10);
+          seen_digit = true;
+        }
       else if (ch == '.')
-	{
-	  if (!seen_dot)
-	    seen_dot = true;
-	  else
-	    return false;
-	}
+        {
+          if (!seen_dot)
+            seen_dot = true;
+          else
+            return false;
+        }
       else
-	return false;
+        return false;
     }
   if (!seen_digit)
     return false;
@@ -1422,14 +1422,14 @@ check_user_specified_header (const char *s)
 
 static bool
 decode_string (const char *val, const struct decode_item *items, int itemcount,
-	       int *place)
+               int *place)
 {
   int i;
   for (i = 0; i < itemcount; i++)
     if (0 == strcasecmp (val, items[i].name))
       {
-	*place = items[i].code;
-	return true;
+        *place = items[i].code;
+        return true;
       }
   return false;
 }

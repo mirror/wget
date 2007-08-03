@@ -56,20 +56,20 @@ so, delete this exception statement from your version.  */
 #define xd _sch_isxdigit
 
 /* Masks.  */
-#define L  lo|is   |pr	/* lower case letter */
-#define XL lo|is|xd|pr	/* lowercase hex digit */
-#define U  up|is   |pr	/* upper case letter */
-#define XU up|is|xd|pr	/* uppercase hex digit */
-#define D  di   |xd|pr	/* decimal digit */
-#define P  pn      |pr	/* punctuation */
-#define _  pn|is   |pr	/* underscore */
+#define L  lo|is   |pr  /* lower case letter */
+#define XL lo|is|xd|pr  /* lowercase hex digit */
+#define U  up|is   |pr  /* upper case letter */
+#define XU up|is|xd|pr  /* uppercase hex digit */
+#define D  di   |xd|pr  /* decimal digit */
+#define P  pn      |pr  /* punctuation */
+#define _  pn|is   |pr  /* underscore */
 
-#define C           cn	/* control character */
-#define Z  nv      |cn	/* NUL */
-#define M  nv|sp   |cn	/* cursor movement: \f \v */
-#define V  vs|sp   |cn	/* vertical space: \r \n */
-#define T  nv|sp|bl|cn	/* tab */
-#define S  nv|sp|bl|pr	/* space */
+#define C           cn  /* control character */
+#define Z  nv      |cn  /* NUL */
+#define M  nv|sp   |cn  /* cursor movement: \f \v */
+#define V  vs|sp   |cn  /* vertical space: \r \n */
+#define T  nv|sp|bl|cn  /* tab */
+#define S  nv|sp|bl|pr  /* space */
 
 /* Are we ASCII? */
 #if '\n' == 0x0A && ' ' == 0x20 && '0' == 0x30 \

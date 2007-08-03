@@ -33,7 +33,7 @@ so, delete this exception statement from your version.  */
      ptimer_new     -- creates a timer.
      ptimer_reset   -- resets the timer's elapsed time to zero.
      ptimer_measure -- measure and return the time elapsed since
-		       creation or last reset.
+                       creation or last reset.
      ptimer_read    -- reads the last measured elapsed value.
      ptimer_destroy -- destroy the timer.
      ptimer_granularity -- returns the approximate granularity of the timers.
@@ -81,11 +81,11 @@ so, delete this exception statement from your version.  */
 #undef PTIMER_WINDOWS
 
 #if defined(WINDOWS) || defined(__CYGWIN__)
-# define PTIMER_WINDOWS		/* use Windows timers */
+# define PTIMER_WINDOWS         /* use Windows timers */
 #elif _POSIX_TIMERS - 0 > 0
-# define PTIMER_POSIX		/* use POSIX timers (clock_gettime) */
+# define PTIMER_POSIX           /* use POSIX timers (clock_gettime) */
 #else
-# define PTIMER_GETTIMEOFDAY	/* use gettimeofday */
+# define PTIMER_GETTIMEOFDAY    /* use gettimeofday */
 #endif
 
 #ifdef PTIMER_POSIX
@@ -142,23 +142,23 @@ posix_init (void)
     {
       struct timespec r;
       if (clocks[i].sysconf_name != NO_SYSCONF_CHECK)
-	if (sysconf (clocks[i].sysconf_name) < 0)
-	  continue;		/* sysconf claims this clock is unavailable */
+        if (sysconf (clocks[i].sysconf_name) < 0)
+          continue;             /* sysconf claims this clock is unavailable */
       if (clock_getres (clocks[i].id, &r) < 0)
-	continue;		/* clock_getres doesn't work for this clock */
+        continue;               /* clock_getres doesn't work for this clock */
       posix_clock_id = clocks[i].id;
       posix_clock_resolution = (double) r.tv_sec + r.tv_nsec / 1e9;
       /* Guard against nonsense returned by a broken clock_getres.  */
       if (posix_clock_resolution == 0)
-	posix_clock_resolution = 1e-3;
+        posix_clock_resolution = 1e-3;
       break;
     }
   if (i == countof (clocks))
     {
       /* If no clock was found, it means that clock_getres failed for
-	 the realtime clock.  */
+         the realtime clock.  */
       logprintf (LOG_NOTQUIET, _("Cannot get REALTIME clock frequency: %s\n"),
-		 strerror (errno));
+                 strerror (errno));
       /* Use CLOCK_REALTIME, but invent a plausible resolution. */
       posix_clock_id = CLOCK_REALTIME;
       posix_clock_resolution = 1e-3;
@@ -175,7 +175,7 @@ static inline double
 posix_diff (ptimer_system_time *pst1, ptimer_system_time *pst2)
 {
   return ((pst1->tv_sec - pst2->tv_sec)
-	  + (pst1->tv_nsec - pst2->tv_nsec) / 1e9);
+          + (pst1->tv_nsec - pst2->tv_nsec) / 1e9);
 }
 
 static inline double
@@ -183,7 +183,7 @@ posix_resolution (void)
 {
   return posix_clock_resolution;
 }
-#endif	/* PTIMER_POSIX */
+#endif  /* PTIMER_POSIX */
 
 #ifdef PTIMER_GETTIMEOFDAY
 /* Elapsed time measurement using gettimeofday: system time is held in
@@ -208,7 +208,7 @@ static inline double
 gettimeofday_diff (ptimer_system_time *pst1, ptimer_system_time *pst2)
 {
   return ((pst1->tv_sec - pst2->tv_sec)
-	  + (pst1->tv_usec - pst2->tv_usec) / 1e6);
+          + (pst1->tv_usec - pst2->tv_usec) / 1e6);
 }
 
 static inline double
@@ -219,7 +219,7 @@ gettimeofday_resolution (void)
      than 1ms.  Assume 100 usecs.  */
   return 0.1;
 }
-#endif	/* PTIMER_GETTIMEOFDAY */
+#endif  /* PTIMER_GETTIMEOFDAY */
 
 #ifdef PTIMER_WINDOWS
 /* Elapsed time measurement on Windows: where high-resolution timers
@@ -290,9 +290,9 @@ windows_resolution (void)
   if (windows_hires_timers)
     return 1.0 / windows_hires_freq;
   else
-    return 10;			/* according to MSDN */
+    return 10;                  /* according to MSDN */
 }
-#endif	/* PTIMER_WINDOWS */
+#endif  /* PTIMER_WINDOWS */
 
 /* The code below this point is independent of timer implementation. */
 

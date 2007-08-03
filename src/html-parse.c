@@ -149,13 +149,13 @@ hash_table_get (const struct hash_table *ht, void *ptr)
    allocation because the entire pool is kept on the stack.  */
 
 struct pool {
-  char *contents;		/* pointer to the contents. */
-  int size;			/* size of the pool. */
-  int tail;			/* next available position index. */
-  bool resized;			/* whether the pool has been resized
-				   using malloc. */
+  char *contents;               /* pointer to the contents. */
+  int size;                     /* size of the pool. */
+  int tail;                     /* next available position index. */
+  bool resized;                 /* whether the pool has been resized
+                                   using malloc. */
 
-  char *orig_contents;		/* original pool contents, usually
+  char *orig_contents;          /* original pool contents, usually
                                    stack-allocated.  used by POOL_FREE
                                    to restore the pool to the initial
                                    state. */
@@ -164,41 +164,41 @@ struct pool {
 
 /* Initialize the pool to hold INITIAL_SIZE bytes of storage. */
 
-#define POOL_INIT(p, initial_storage, initial_size) do {	\
-  struct pool *P = (p);						\
-  P->contents = (initial_storage);				\
-  P->size = (initial_size);					\
-  P->tail = 0;							\
-  P->resized = false;						\
-  P->orig_contents = P->contents;				\
-  P->orig_size = P->size;					\
+#define POOL_INIT(p, initial_storage, initial_size) do {        \
+  struct pool *P = (p);                                         \
+  P->contents = (initial_storage);                              \
+  P->size = (initial_size);                                     \
+  P->tail = 0;                                                  \
+  P->resized = false;                                           \
+  P->orig_contents = P->contents;                               \
+  P->orig_size = P->size;                                       \
 } while (0)
 
 /* Grow the pool to accomodate at least SIZE new bytes.  If the pool
    already has room to accomodate SIZE bytes of data, this is a no-op.  */
 
-#define POOL_GROW(p, increase)					\
-  GROW_ARRAY ((p)->contents, (p)->size, (p)->tail + (increase),	\
-	      (p)->resized, char)
+#define POOL_GROW(p, increase)                                  \
+  GROW_ARRAY ((p)->contents, (p)->size, (p)->tail + (increase), \
+              (p)->resized, char)
 
 /* Append text in the range [beg, end) to POOL.  No zero-termination
    is done.  */
 
-#define POOL_APPEND(p, beg, end) do {			\
-  const char *PA_beg = (beg);				\
-  int PA_size = (end) - PA_beg;				\
-  POOL_GROW (p, PA_size);				\
-  memcpy ((p)->contents + (p)->tail, PA_beg, PA_size);	\
-  (p)->tail += PA_size;					\
+#define POOL_APPEND(p, beg, end) do {                   \
+  const char *PA_beg = (beg);                           \
+  int PA_size = (end) - PA_beg;                         \
+  POOL_GROW (p, PA_size);                               \
+  memcpy ((p)->contents + (p)->tail, PA_beg, PA_size);  \
+  (p)->tail += PA_size;                                 \
 } while (0)
 
 /* Append one character to the pool.  Can be used to zero-terminate
    pool strings.  */
 
-#define POOL_APPEND_CHR(p, ch) do {		\
-  char PAC_char = (ch);				\
-  POOL_GROW (p, 1);				\
-  (p)->contents[(p)->tail++] = PAC_char;	\
+#define POOL_APPEND_CHR(p, ch) do {             \
+  char PAC_char = (ch);                         \
+  POOL_GROW (p, 1);                             \
+  (p)->contents[(p)->tail++] = PAC_char;        \
 } while (0)
 
 /* Forget old pool contents.  The allocated memory is not freed. */
@@ -210,14 +210,14 @@ struct pool {
    values.  That way after POOL_FREE, the pool is fully usable, just
    as if it were freshly initialized with POOL_INIT.  */
 
-#define POOL_FREE(p) do {			\
-  struct pool *P = p;				\
-  if (P->resized)				\
-    xfree (P->contents);			\
-  P->contents = P->orig_contents;		\
-  P->size = P->orig_size;			\
-  P->tail = 0;					\
-  P->resized = false;				\
+#define POOL_FREE(p) do {                       \
+  struct pool *P = p;                           \
+  if (P->resized)                               \
+    xfree (P->contents);                        \
+  P->contents = P->orig_contents;               \
+  P->size = P->orig_size;                       \
+  P->tail = 0;                                  \
+  P->resized = false;                           \
 } while (0)
 
 /* Used for small stack-allocated memory chunks that might grow.  Like
@@ -232,24 +232,24 @@ struct pool {
    After the first resize, subsequent ones are performed with realloc,
    just like DO_REALLOC.  */
 
-#define GROW_ARRAY(basevar, sizevar, needed_size, resized, type) do {		\
-  long ga_needed_size = (needed_size);						\
-  long ga_newsize = (sizevar);							\
-  while (ga_newsize < ga_needed_size)						\
-    ga_newsize <<= 1;								\
-  if (ga_newsize != (sizevar))							\
-    {										\
-      if (resized)								\
-	basevar = xrealloc (basevar, ga_newsize * sizeof (type));		\
-      else									\
-	{									\
-	  void *ga_new = xmalloc (ga_newsize * sizeof (type));			\
-	  memcpy (ga_new, basevar, (sizevar) * sizeof (type));			\
-	  (basevar) = ga_new;							\
-	  resized = true;							\
-	}									\
-      (sizevar) = ga_newsize;							\
-    }										\
+#define GROW_ARRAY(basevar, sizevar, needed_size, resized, type) do {           \
+  long ga_needed_size = (needed_size);                                          \
+  long ga_newsize = (sizevar);                                                  \
+  while (ga_newsize < ga_needed_size)                                           \
+    ga_newsize <<= 1;                                                           \
+  if (ga_newsize != (sizevar))                                                  \
+    {                                                                           \
+      if (resized)                                                              \
+        basevar = xrealloc (basevar, ga_newsize * sizeof (type));               \
+      else                                                                      \
+        {                                                                       \
+          void *ga_new = xmalloc (ga_newsize * sizeof (type));                  \
+          memcpy (ga_new, basevar, (sizevar) * sizeof (type));                  \
+          (basevar) = ga_new;                                                   \
+          resized = true;                                                       \
+        }                                                                       \
+      (sizevar) = ga_newsize;                                                   \
+    }                                                                           \
 } while (0)
 
 /* Test whether n+1-sized entity name fits in P.  We don't support
@@ -292,42 +292,42 @@ decode_entity (const char **ptr, const char *end)
     case '#':
       /* Process numeric entities "&#DDD;" and "&#xHH;".  */
       {
-	int digits = 0;
-	value = 0;
-	if (*p == 'x')
-	  for (++p; value < 256 && p < end && ISXDIGIT (*p); p++, digits++)
-	    value = (value << 4) + XDIGIT_TO_NUM (*p);
-	else
-	  for (; value < 256 && p < end && ISDIGIT (*p); p++, digits++)
-	    value = (value * 10) + (*p - '0');
-	if (!digits)
-	  return -1;
-	/* Don't interpret 128+ codes and NUL because we cannot
-	   portably reinserted them into HTML.  */
-	if (!value || (value & ~0x7f))
-	  return -1;
-	*ptr = SKIP_SEMI (p, 0);
-	return value;
+        int digits = 0;
+        value = 0;
+        if (*p == 'x')
+          for (++p; value < 256 && p < end && ISXDIGIT (*p); p++, digits++)
+            value = (value << 4) + XDIGIT_TO_NUM (*p);
+        else
+          for (; value < 256 && p < end && ISDIGIT (*p); p++, digits++)
+            value = (value * 10) + (*p - '0');
+        if (!digits)
+          return -1;
+        /* Don't interpret 128+ codes and NUL because we cannot
+           portably reinserted them into HTML.  */
+        if (!value || (value & ~0x7f))
+          return -1;
+        *ptr = SKIP_SEMI (p, 0);
+        return value;
       }
     /* Process named ASCII entities.  */
     case 'g':
       if (ENT1 (p, 't'))
-	value = '>', *ptr = SKIP_SEMI (p, 1);
+        value = '>', *ptr = SKIP_SEMI (p, 1);
       break;
     case 'l':
       if (ENT1 (p, 't'))
-	value = '<', *ptr = SKIP_SEMI (p, 1);
+        value = '<', *ptr = SKIP_SEMI (p, 1);
       break;
     case 'a':
       if (ENT2 (p, 'm', 'p'))
-	value = '&', *ptr = SKIP_SEMI (p, 2);
+        value = '&', *ptr = SKIP_SEMI (p, 2);
       else if (ENT3 (p, 'p', 'o', 's'))
-	/* handle &apos for the sake of the XML/XHTML crowd. */
-	value = '\'', *ptr = SKIP_SEMI (p, 3);
+        /* handle &apos for the sake of the XML/XHTML crowd. */
+        value = '\'', *ptr = SKIP_SEMI (p, 3);
       break;
     case 'q':
       if (ENT3 (p, 'u', 'o', 't'))
-	value = '\"', *ptr = SKIP_SEMI (p, 3);
+        value = '\"', *ptr = SKIP_SEMI (p, 3);
       break;
     }
   return value;
@@ -339,9 +339,9 @@ decode_entity (const char **ptr, const char *end)
 #undef SKIP_SEMI
 
 enum {
-  AP_DOWNCASE		= 1,
-  AP_DECODE_ENTITIES	= 2,
-  AP_TRIM_BLANKS	= 4
+  AP_DOWNCASE           = 1,
+  AP_DECODE_ENTITIES    = 2,
+  AP_TRIM_BLANKS        = 4
 };
 
 /* Copy the text in the range [BEG, END) to POOL, optionally
@@ -368,20 +368,20 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
   if (flags & AP_TRIM_BLANKS)
     {
       while (beg < end && ISSPACE (*beg))
-	++beg;
+        ++beg;
       while (end > beg && ISSPACE (end[-1]))
-	--end;
+        --end;
     }
 
   if (flags & AP_DECODE_ENTITIES)
     {
       /* Grow the pool, then copy the text to the pool character by
-	 character, processing the encountered entities as we go
-	 along.
+         character, processing the encountered entities as we go
+         along.
 
-	 It's safe (and necessary) to grow the pool in advance because
-	 processing the entities can only *shorten* the string, it can
-	 never lengthen it.  */
+         It's safe (and necessary) to grow the pool in advance because
+         processing the entities can only *shorten* the string, it can
+         never lengthen it.  */
       const char *from = beg;
       char *to;
       bool squash_newlines = !!(flags & AP_TRIM_BLANKS);
@@ -390,26 +390,26 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
       to = pool->contents + pool->tail;
 
       while (from < end)
-	{
-	  if (*from == '&')
-	    {
-	      int entity = decode_entity (&from, end);
-	      if (entity != -1)
-		*to++ = entity;
-	      else
-		*to++ = *from++;
-	    }
-	  else if ((*from == '\n' || *from == '\r') && squash_newlines)
-	    ++from;
-	  else
-	    *to++ = *from++;
-	}
+        {
+          if (*from == '&')
+            {
+              int entity = decode_entity (&from, end);
+              if (entity != -1)
+                *to++ = entity;
+              else
+                *to++ = *from++;
+            }
+          else if ((*from == '\n' || *from == '\r') && squash_newlines)
+            ++from;
+          else
+            *to++ = *from++;
+        }
       /* Verify that we haven't exceeded the original size.  (It
-	 shouldn't happen, hence the assert.)  */
+         shouldn't happen, hence the assert.)  */
       assert (to - (pool->contents + pool->tail) <= end - beg);
 
       /* Make POOL's tail point to the position following the string
-	 we've written.  */
+         we've written.  */
       pool->tail = to - pool->contents;
       POOL_APPEND_CHR (pool, '\0');
     }
@@ -424,7 +424,7 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
     {
       char *p = pool->contents + old_tail;
       for (; *p; p++)
-	*p = TOLOWER (*p);
+        *p = TOLOWER (*p);
     }
 }
 
@@ -443,8 +443,8 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
    This only affects attribute and tag names; attribute values allow
    an even greater variety of characters.  */
 
-#define NAME_CHAR_P(x) ((x) > 32 && (x) < 127				\
-			&& (x) != '=' && (x) != '>' && (x) != '/')
+#define NAME_CHAR_P(x) ((x) > 32 && (x) < 127                           \
+                        && (x) != '=' && (x) != '>' && (x) != '/')
 
 #ifdef STANDALONE
 static int comment_backout_count;
@@ -473,7 +473,7 @@ static const char *
 advance_declaration (const char *beg, const char *end)
 {
   const char *p = beg;
-  char quote_char = '\0';	/* shut up, gcc! */
+  char quote_char = '\0';       /* shut up, gcc! */
   char ch;
 
   enum {
@@ -502,122 +502,122 @@ advance_declaration (const char *beg, const char *end)
   while (state != AC_S_DONE && state != AC_S_BACKOUT)
     {
       if (p == end)
-	state = AC_S_BACKOUT;
+        state = AC_S_BACKOUT;
       switch (state)
-	{
-	case AC_S_DONE:
-	case AC_S_BACKOUT:
-	  break;
-	case AC_S_BANG:
-	  if (ch == '!')
-	    {
-	      ch = *p++;
-	      state = AC_S_DEFAULT;
-	    }
-	  else
-	    state = AC_S_BACKOUT;
-	  break;
-	case AC_S_DEFAULT:
-	  switch (ch)
-	    {
-	    case '-':
-	      state = AC_S_DASH1;
-	      break;
-	    case ' ':
-	    case '\t':
-	    case '\r':
-	    case '\n':
-	      ch = *p++;
-	      break;
-	    case '>':
-	      state = AC_S_DONE;
-	      break;
-	    case '\'':
-	    case '\"':
-	      state = AC_S_QUOTE1;
-	      break;
-	    default:
-	      if (NAME_CHAR_P (ch))
-		state = AC_S_DCLNAME;
-	      else
-		state = AC_S_BACKOUT;
-	      break;
-	    }
-	  break;
-	case AC_S_DCLNAME:
-	  if (ch == '-')
-	    state = AC_S_DASH1;
-	  else if (NAME_CHAR_P (ch))
-	    ch = *p++;
-	  else
-	    state = AC_S_DEFAULT;
-	  break;
-	case AC_S_QUOTE1:
-	  /* We must use 0x22 because broken assert macros choke on
-	     '"' and '\"'.  */
-	  assert (ch == '\'' || ch == 0x22);
-	  quote_char = ch;	/* cheating -- I really don't feel like
-				   introducing more different states for
-				   different quote characters. */
-	  ch = *p++;
-	  state = AC_S_IN_QUOTE;
-	  break;
-	case AC_S_IN_QUOTE:
-	  if (ch == quote_char)
-	    state = AC_S_QUOTE2;
-	  else
-	    ch = *p++;
-	  break;
-	case AC_S_QUOTE2:
-	  assert (ch == quote_char);
-	  ch = *p++;
-	  state = AC_S_DEFAULT;
-	  break;
-	case AC_S_DASH1:
-	  assert (ch == '-');
-	  ch = *p++;
-	  state = AC_S_DASH2;
-	  break;
-	case AC_S_DASH2:
-	  switch (ch)
-	    {
-	    case '-':
-	      ch = *p++;
-	      state = AC_S_COMMENT;
-	      break;
-	    default:
-	      state = AC_S_BACKOUT;
-	    }
-	  break;
-	case AC_S_COMMENT:
-	  switch (ch)
-	    {
-	    case '-':
-	      state = AC_S_DASH3;
-	      break;
-	    default:
-	      ch = *p++;
-	      break;
-	    }
-	  break;
-	case AC_S_DASH3:
-	  assert (ch == '-');
-	  ch = *p++;
-	  state = AC_S_DASH4;
-	  break;
-	case AC_S_DASH4:
-	  switch (ch)
-	    {
-	    case '-':
-	      ch = *p++;
-	      state = AC_S_DEFAULT;
-	      break;
-	    default:
-	      state = AC_S_COMMENT;
-	      break;
-	    }
-	  break;
-	}
+        {
+        case AC_S_DONE:
+        case AC_S_BACKOUT:
+          break;
+        case AC_S_BANG:
+          if (ch == '!')
+            {
+              ch = *p++;
+              state = AC_S_DEFAULT;
+            }
+          else
+            state = AC_S_BACKOUT;
+          break;
+        case AC_S_DEFAULT:
+          switch (ch)
+            {
+            case '-':
+              state = AC_S_DASH1;
+              break;
+            case ' ':
+            case '\t':
+            case '\r':
+            case '\n':
+              ch = *p++;
+              break;
+            case '>':
+              state = AC_S_DONE;
+              break;
+            case '\'':
+            case '\"':
+              state = AC_S_QUOTE1;
+              break;
+            default:
+              if (NAME_CHAR_P (ch))
+                state = AC_S_DCLNAME;
+              else
+                state = AC_S_BACKOUT;
+              break;
+            }
+          break;
+        case AC_S_DCLNAME:
+          if (ch == '-')
+            state = AC_S_DASH1;
+          else if (NAME_CHAR_P (ch))
+            ch = *p++;
+          else
+            state = AC_S_DEFAULT;
+          break;
+        case AC_S_QUOTE1:
+          /* We must use 0x22 because broken assert macros choke on
+             '"' and '\"'.  */
+          assert (ch == '\'' || ch == 0x22);
+          quote_char = ch;      /* cheating -- I really don't feel like
+                                   introducing more different states for
+                                   different quote characters. */
+          ch = *p++;
+          state = AC_S_IN_QUOTE;
+          break;
+        case AC_S_IN_QUOTE:
+          if (ch == quote_char)
+            state = AC_S_QUOTE2;
+          else
+            ch = *p++;
+          break;
+        case AC_S_QUOTE2:
+          assert (ch == quote_char);
+          ch = *p++;
+          state = AC_S_DEFAULT;
+          break;
+        case AC_S_DASH1:
+          assert (ch == '-');
+          ch = *p++;
+          state = AC_S_DASH2;
+          break;
+        case AC_S_DASH2:
+          switch (ch)
+            {
+            case '-':
+              ch = *p++;
+              state = AC_S_COMMENT;
+              break;
+            default:
+              state = AC_S_BACKOUT;
+            }
+          break;
+        case AC_S_COMMENT:
+          switch (ch)
+            {
+            case '-':
+              state = AC_S_DASH3;
+              break;
+            default:
+              ch = *p++;
+              break;
+            }
+          break;
+        case AC_S_DASH3:
+          assert (ch == '-');
+          ch = *p++;
+          state = AC_S_DASH4;
+          break;
+        case AC_S_DASH4:
+          switch (ch)
+            {
+            case '-':
+              ch = *p++;
+              state = AC_S_DEFAULT;
+              break;
+            default:
+              state = AC_S_COMMENT;
+              break;
+            }
+          break;
+        }
     }
 
   if (state == AC_S_BACKOUT)
@@ -647,34 +647,34 @@ find_comment_end (const char *beg, const char *end)
     switch (p[0])
       {
       case '>':
-	if (p[-1] == '-' && p[-2] == '-')
-	  return p + 1;
-	break;
+        if (p[-1] == '-' && p[-2] == '-')
+          return p + 1;
+        break;
       case '-':
       at_dash:
-	if (p[-1] == '-')
-	  {
-	  at_dash_dash:
-	    if (++p == end) return NULL;
-	    switch (p[0])
-	      {
-	      case '>': return p + 1;
-	      case '-': goto at_dash_dash;
-	      }
-	  }
-	else
-	  {
-	    if ((p += 2) >= end) return NULL;
-	    switch (p[0])
-	      {
-	      case '>':
-		if (p[-1] == '-')
-		  return p + 1;
-		break;
-	      case '-':
-		goto at_dash;
-	      }
-	  }
+        if (p[-1] == '-')
+          {
+          at_dash_dash:
+            if (++p == end) return NULL;
+            switch (p[0])
+              {
+              case '>': return p + 1;
+              case '-': goto at_dash_dash;
+              }
+          }
+        else
+          {
+            if ((p += 2) >= end) return NULL;
+            switch (p[0])
+              {
+              case '>':
+                if (p[-1] == '-')
+                  return p + 1;
+                break;
+              case '-':
+                goto at_dash;
+              }
+          }
       }
   return NULL;
 }
@@ -695,26 +695,26 @@ name_allowed (const struct hash_table *ht, const char *b, const char *e)
 /* Advance P (a char pointer), with the explicit intent of being able
    to read the next character.  If this is not possible, go to finish.  */
 
-#define ADVANCE(p) do {				\
-  ++p;						\
-  if (p >= end)					\
-    goto finish;				\
+#define ADVANCE(p) do {                         \
+  ++p;                                          \
+  if (p >= end)                                 \
+    goto finish;                                \
 } while (0)
 
 /* Skip whitespace, if any. */
 
-#define SKIP_WS(p) do {				\
-  while (ISSPACE (*p)) {			\
-    ADVANCE (p);				\
-  }						\
+#define SKIP_WS(p) do {                         \
+  while (ISSPACE (*p)) {                        \
+    ADVANCE (p);                                \
+  }                                             \
 } while (0)
 
 /* Skip non-whitespace, if any. */
 
-#define SKIP_NON_WS(p) do {			\
-  while (!ISSPACE (*p)) {			\
-    ADVANCE (p);				\
-  }						\
+#define SKIP_NON_WS(p) do {                     \
+  while (!ISSPACE (*p)) {                       \
+    ADVANCE (p);                                \
+  }                                             \
 } while (0)
 
 #ifdef STANDALONE
@@ -737,10 +737,10 @@ static int tag_backout_count;
 
 void
 map_html_tags (const char *text, int size,
-	       void (*mapfun) (struct taginfo *, void *), void *maparg,
-	       int flags,
-	       const struct hash_table *allowed_tags,
-	       const struct hash_table *allowed_attributes)
+               void (*mapfun) (struct taginfo *, void *), void *maparg,
+               int flags,
+               const struct hash_table *allowed_tags,
+               const struct hash_table *allowed_attributes)
 {
   /* storage for strings passed to MAPFUN callback; if 256 bytes is
      too little, POOL_APPEND allocates more with malloc. */
@@ -785,34 +785,34 @@ map_html_tags (const char *text, int size,
        declaration).  */
     if (*p == '!')
       {
-	if (!(flags & MHT_STRICT_COMMENTS)
-	    && p < end + 3 && p[1] == '-' && p[2] == '-')
-	  {
-	    /* If strict comments are not enforced and if we know
-	       we're looking at a comment, simply look for the
-	       terminating "-->".  Non-strict is the default because
-	       it works in other browsers and most HTML writers can't
-	       be bothered with getting the comments right.  */
-	    const char *comment_end = find_comment_end (p + 3, end);
-	    if (comment_end)
-	      p = comment_end;
-	  }
-	else
-	  {
-	    /* Either in strict comment mode or looking at a non-empty
-	       declaration.  Real declarations are much less likely to
-	       be misused the way comments are, so advance over them
-	       properly regardless of strictness.  */
-	    p = advance_declaration (p, end);
-	  }
-	if (p == end)
-	  goto finish;
-	goto look_for_tag;
+        if (!(flags & MHT_STRICT_COMMENTS)
+            && p < end + 3 && p[1] == '-' && p[2] == '-')
+          {
+            /* If strict comments are not enforced and if we know
+               we're looking at a comment, simply look for the
+               terminating "-->".  Non-strict is the default because
+               it works in other browsers and most HTML writers can't
+               be bothered with getting the comments right.  */
+            const char *comment_end = find_comment_end (p + 3, end);
+            if (comment_end)
+              p = comment_end;
+          }
+        else
+          {
+            /* Either in strict comment mode or looking at a non-empty
+               declaration.  Real declarations are much less likely to
+               be misused the way comments are, so advance over them
+               properly regardless of strictness.  */
+            p = advance_declaration (p, end);
+          }
+        if (p == end)
+          goto finish;
+        goto look_for_tag;
       }
     else if (*p == '/')
       {
-	end_tag = 1;
-	ADVANCE (p);
+        end_tag = 1;
+        ADVANCE (p);
       }
     tag_name_begin = p;
     while (NAME_CHAR_P (*p))
@@ -830,162 +830,162 @@ map_html_tags (const char *text, int size,
       uninteresting_tag = true;
     else
       {
-	uninteresting_tag = false;
-	convert_and_copy (&pool, tag_name_begin, tag_name_end, AP_DOWNCASE);
+        uninteresting_tag = false;
+        convert_and_copy (&pool, tag_name_begin, tag_name_end, AP_DOWNCASE);
       }
 
     /* Find the attributes. */
     while (1)
       {
-	const char *attr_name_begin, *attr_name_end;
-	const char *attr_value_begin, *attr_value_end;
-	const char *attr_raw_value_begin, *attr_raw_value_end;
-	int operation = AP_DOWNCASE; /* stupid compiler. */
+        const char *attr_name_begin, *attr_name_end;
+        const char *attr_value_begin, *attr_value_end;
+        const char *attr_raw_value_begin, *attr_raw_value_end;
+        int operation = AP_DOWNCASE; /* stupid compiler. */
 
-	SKIP_WS (p);
+        SKIP_WS (p);
 
-	if (*p == '/')
-	  {
-	    /* A slash at this point means the tag is about to be
-	       closed.  This is legal in XML and has been popularized
-	       in HTML via XHTML.  */
-	    /* <foo a=b c=d /> */
-	    /*              ^  */
-	    ADVANCE (p);
-	    SKIP_WS (p);
-	    if (*p != '>')
-	      goto backout_tag;
-	  }
+        if (*p == '/')
+          {
+            /* A slash at this point means the tag is about to be
+               closed.  This is legal in XML and has been popularized
+               in HTML via XHTML.  */
+            /* <foo a=b c=d /> */
+            /*              ^  */
+            ADVANCE (p);
+            SKIP_WS (p);
+            if (*p != '>')
+              goto backout_tag;
+          }
 
-	/* Check for end of tag definition. */
-	if (*p == '>')
-	  break;
+        /* Check for end of tag definition. */
+        if (*p == '>')
+          break;
 
-	/* Establish bounds of attribute name. */
-	attr_name_begin = p;	/* <foo bar ...> */
-				/*      ^        */
-	while (NAME_CHAR_P (*p))
-	  ADVANCE (p);
-	attr_name_end = p;	/* <foo bar ...> */
-				/*         ^     */
-	if (attr_name_begin == attr_name_end)
-	  goto backout_tag;
+        /* Establish bounds of attribute name. */
+        attr_name_begin = p;    /* <foo bar ...> */
+                                /*      ^        */
+        while (NAME_CHAR_P (*p))
+          ADVANCE (p);
+        attr_name_end = p;      /* <foo bar ...> */
+                                /*         ^     */
+        if (attr_name_begin == attr_name_end)
+          goto backout_tag;
 
-	/* Establish bounds of attribute value. */
-	SKIP_WS (p);
-	if (NAME_CHAR_P (*p) || *p == '/' || *p == '>')
-	  {
-	    /* Minimized attribute syntax allows `=' to be omitted.
+        /* Establish bounds of attribute value. */
+        SKIP_WS (p);
+        if (NAME_CHAR_P (*p) || *p == '/' || *p == '>')
+          {
+            /* Minimized attribute syntax allows `=' to be omitted.
                For example, <UL COMPACT> is a valid shorthand for <UL
                COMPACT="compact">.  Even if such attributes are not
                useful to Wget, we need to support them, so that the
                tags containing them can be parsed correctly. */
-	    attr_raw_value_begin = attr_value_begin = attr_name_begin;
-	    attr_raw_value_end = attr_value_end = attr_name_end;
-	  }
-	else if (*p == '=')
-	  {
-	    ADVANCE (p);
-	    SKIP_WS (p);
-	    if (*p == '\"' || *p == '\'')
-	      {
-		bool newline_seen = false;
-		char quote_char = *p;
-		attr_raw_value_begin = p;
-		ADVANCE (p);
-		attr_value_begin = p; /* <foo bar="baz"> */
-				      /*           ^     */
-		while (*p != quote_char)
-		  {
-		    if (!newline_seen && *p == '\n')
-		      {
-			/* If a newline is seen within the quotes, it
-			   is most likely that someone forgot to close
-			   the quote.  In that case, we back out to
-			   the value beginning, and terminate the tag
-			   at either `>' or the delimiter, whichever
-			   comes first.  Such a tag terminated at `>'
-			   is discarded.  */
-			p = attr_value_begin;
-			newline_seen = true;
-			continue;
-		      }
-		    else if (newline_seen && *p == '>')
-		      break;
-		    ADVANCE (p);
-		  }
-		attr_value_end = p; /* <foo bar="baz"> */
-				    /*              ^  */
-		if (*p == quote_char)
-		  ADVANCE (p);
-		else
-		  goto look_for_tag;
-		attr_raw_value_end = p;	/* <foo bar="baz"> */
-					/*               ^ */
-		operation = AP_DECODE_ENTITIES;
-		if (flags & MHT_TRIM_VALUES)
-		  operation |= AP_TRIM_BLANKS;
-	      }
-	    else
-	      {
-		attr_value_begin = p; /* <foo bar=baz> */
-				      /*          ^    */
-		/* According to SGML, a name token should consist only
-		   of alphanumerics, . and -.  However, this is often
-		   violated by, for instance, `%' in `width=75%'.
-		   We'll be liberal and allow just about anything as
-		   an attribute value.  */
-		while (!ISSPACE (*p) && *p != '>')
-		  ADVANCE (p);
-		attr_value_end = p; /* <foo bar=baz qux=quix> */
-				    /*             ^          */
-		if (attr_value_begin == attr_value_end)
-		  /* <foo bar=> */
-		  /*          ^ */
-		  goto backout_tag;
-		attr_raw_value_begin = attr_value_begin;
-		attr_raw_value_end = attr_value_end;
-		operation = AP_DECODE_ENTITIES;
-	      }
-	  }
-	else
-	  {
-	    /* We skipped the whitespace and found something that is
-	       neither `=' nor the beginning of the next attribute's
-	       name.  Back out.  */
-	    goto backout_tag;	/* <foo bar [... */
-				/*          ^    */
-	  }
+            attr_raw_value_begin = attr_value_begin = attr_name_begin;
+            attr_raw_value_end = attr_value_end = attr_name_end;
+          }
+        else if (*p == '=')
+          {
+            ADVANCE (p);
+            SKIP_WS (p);
+            if (*p == '\"' || *p == '\'')
+              {
+                bool newline_seen = false;
+                char quote_char = *p;
+                attr_raw_value_begin = p;
+                ADVANCE (p);
+                attr_value_begin = p; /* <foo bar="baz"> */
+                                      /*           ^     */
+                while (*p != quote_char)
+                  {
+                    if (!newline_seen && *p == '\n')
+                      {
+                        /* If a newline is seen within the quotes, it
+                           is most likely that someone forgot to close
+                           the quote.  In that case, we back out to
+                           the value beginning, and terminate the tag
+                           at either `>' or the delimiter, whichever
+                           comes first.  Such a tag terminated at `>'
+                           is discarded.  */
+                        p = attr_value_begin;
+                        newline_seen = true;
+                        continue;
+                      }
+                    else if (newline_seen && *p == '>')
+                      break;
+                    ADVANCE (p);
+                  }
+                attr_value_end = p; /* <foo bar="baz"> */
+                                    /*              ^  */
+                if (*p == quote_char)
+                  ADVANCE (p);
+                else
+                  goto look_for_tag;
+                attr_raw_value_end = p; /* <foo bar="baz"> */
+                                        /*               ^ */
+                operation = AP_DECODE_ENTITIES;
+                if (flags & MHT_TRIM_VALUES)
+                  operation |= AP_TRIM_BLANKS;
+              }
+            else
+              {
+                attr_value_begin = p; /* <foo bar=baz> */
+                                      /*          ^    */
+                /* According to SGML, a name token should consist only
+                   of alphanumerics, . and -.  However, this is often
+                   violated by, for instance, `%' in `width=75%'.
+                   We'll be liberal and allow just about anything as
+                   an attribute value.  */
+                while (!ISSPACE (*p) && *p != '>')
+                  ADVANCE (p);
+                attr_value_end = p; /* <foo bar=baz qux=quix> */
+                                    /*             ^          */
+                if (attr_value_begin == attr_value_end)
+                  /* <foo bar=> */
+                  /*          ^ */
+                  goto backout_tag;
+                attr_raw_value_begin = attr_value_begin;
+                attr_raw_value_end = attr_value_end;
+                operation = AP_DECODE_ENTITIES;
+              }
+          }
+        else
+          {
+            /* We skipped the whitespace and found something that is
+               neither `=' nor the beginning of the next attribute's
+               name.  Back out.  */
+            goto backout_tag;   /* <foo bar [... */
+                                /*          ^    */
+          }
 
-	/* If we're not interested in the tag, don't bother with any
+        /* If we're not interested in the tag, don't bother with any
            of the attributes.  */
-	if (uninteresting_tag)
-	  continue;
+        if (uninteresting_tag)
+          continue;
 
-	/* If we aren't interested in the attribute, skip it.  We
+        /* If we aren't interested in the attribute, skip it.  We
            cannot do this test any sooner, because our text pointer
            needs to correctly advance over the attribute.  */
-	if (!name_allowed (allowed_attributes, attr_name_begin, attr_name_end))
-	  continue;
+        if (!name_allowed (allowed_attributes, attr_name_begin, attr_name_end))
+          continue;
 
-	GROW_ARRAY (pairs, attr_pair_size, nattrs + 1, attr_pair_resized,
-		    struct attr_pair);
+        GROW_ARRAY (pairs, attr_pair_size, nattrs + 1, attr_pair_resized,
+                    struct attr_pair);
 
-	pairs[nattrs].name_pool_index = pool.tail;
-	convert_and_copy (&pool, attr_name_begin, attr_name_end, AP_DOWNCASE);
+        pairs[nattrs].name_pool_index = pool.tail;
+        convert_and_copy (&pool, attr_name_begin, attr_name_end, AP_DOWNCASE);
 
-	pairs[nattrs].value_pool_index = pool.tail;
-	convert_and_copy (&pool, attr_value_begin, attr_value_end, operation);
-	pairs[nattrs].value_raw_beginning = attr_raw_value_begin;
-	pairs[nattrs].value_raw_size = (attr_raw_value_end
-					- attr_raw_value_begin);
-	++nattrs;
+        pairs[nattrs].value_pool_index = pool.tail;
+        convert_and_copy (&pool, attr_value_begin, attr_value_end, operation);
+        pairs[nattrs].value_raw_beginning = attr_raw_value_begin;
+        pairs[nattrs].value_raw_size = (attr_raw_value_end
+                                        - attr_raw_value_begin);
+        ++nattrs;
       }
 
     if (uninteresting_tag)
       {
-	ADVANCE (p);
-	goto look_for_tag;
+        ADVANCE (p);
+        goto look_for_tag;
       }
 
     /* By now, we have a valid tag with a name and zero or more
@@ -998,14 +998,14 @@ map_html_tags (const char *text, int size,
       taginfo.end_tag_p = end_tag;
       taginfo.nattrs    = nattrs;
       /* We fill in the char pointers only now, when pool can no
-	 longer get realloc'ed.  If we did that above, we could get
-	 hosed by reallocation.  Obviously, after this point, the pool
-	 may no longer be grown.  */
+         longer get realloc'ed.  If we did that above, we could get
+         hosed by reallocation.  Obviously, after this point, the pool
+         may no longer be grown.  */
       for (i = 0; i < nattrs; i++)
-	{
-	  pairs[i].name = pool.contents + pairs[i].name_pool_index;
-	  pairs[i].value = pool.contents + pairs[i].value_pool_index;
-	}
+        {
+          pairs[i].name = pool.contents + pairs[i].name_pool_index;
+          pairs[i].value = pool.contents + pairs[i].value_pool_index;
+        }
       taginfo.attrs = pairs;
       taginfo.start_position = tag_start_position;
       taginfo.end_position   = p + 1;

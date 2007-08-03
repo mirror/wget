@@ -59,13 +59,13 @@ ssl_init ()
   gnutls_certificate_allocate_credentials (&credentials);
   if (opt.ca_cert)
     gnutls_certificate_set_x509_trust_file (credentials, opt.ca_cert,
-					    GNUTLS_X509_FMT_PEM);
+                                            GNUTLS_X509_FMT_PEM);
   return true;
 }
 
 struct wgnutls_transport_context {
-  gnutls_session session;	/* GnuTLS session handle */
-  int last_error;		/* last error returned by read/write/... */
+  gnutls_session session;       /* GnuTLS session handle */
+  int last_error;               /* last error returned by read/write/... */
 
   /* Since GnuTLS doesn't support the equivalent to recv(...,
      MSG_PEEK) or SSL_peek(), we have to do it ourselves.  Peeked data
@@ -92,9 +92,9 @@ wgnutls_read (int fd, char *buf, int bufsize, void *arg)
       memcpy (buf, ctx->peekbuf + ctx->peekstart, copysize);
       ctx->peeklen -= copysize;
       if (ctx->peeklen != 0)
-	ctx->peekstart += copysize;
+        ctx->peekstart += copysize;
       else
-	ctx->peekstart = 0;
+        ctx->peekstart = 0;
       return copysize;
     }
 
@@ -223,7 +223,7 @@ ssl_check_certificate (int fd, const char *host)
   if (err < 0)
     {
       logprintf (LOG_NOTQUIET, _("%s: No certificate presented by %s.\n"),
-		 severity, escnonprint (host));
+                 severity, escnonprint (host));
       success = false;
       goto out;
     }
@@ -231,19 +231,19 @@ ssl_check_certificate (int fd, const char *host)
   if (status & GNUTLS_CERT_INVALID)
     {
       logprintf (LOG_NOTQUIET, _("%s: The certificate of `%s' is not trusted.\n"),
-		 severity, escnonprint (host));
+                 severity, escnonprint (host));
       success = false;
     }
   if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
     {
       logprintf (LOG_NOTQUIET, _("%s: The certificate of `%s' hasn't got a known issuer.\n"),
-		 severity, escnonprint (host));
+                 severity, escnonprint (host));
       success = false;
     }
   if (status & GNUTLS_CERT_REVOKED)
     {
       logprintf (LOG_NOTQUIET, _("%s: The certificate of `%s' has been revoked.\n"),
-		 severity, escnonprint (host));
+                 severity, escnonprint (host));
       success = false;
     }
 
@@ -255,45 +255,45 @@ ssl_check_certificate (int fd, const char *host)
       unsigned int cert_list_size;
 
       if ((err = gnutls_x509_crt_init (&cert)) < 0)
-	{
-	  logprintf (LOG_NOTQUIET, _("Error initializing X509 certificate: %s\n"),
-		     gnutls_strerror (err));
-	  success = false;
-	  goto out;
-	}
+        {
+          logprintf (LOG_NOTQUIET, _("Error initializing X509 certificate: %s\n"),
+                     gnutls_strerror (err));
+          success = false;
+          goto out;
+        }
 
       cert_list = gnutls_certificate_get_peers (ctx->session, &cert_list_size);
       if (!cert_list)
-	{
-	  logprintf (LOG_NOTQUIET, _("No certificate found\n"));
-	  success = false;
-	  goto out;
-	}
+        {
+          logprintf (LOG_NOTQUIET, _("No certificate found\n"));
+          success = false;
+          goto out;
+        }
       err = gnutls_x509_crt_import (cert, cert_list, GNUTLS_X509_FMT_DER);
       if (err < 0)
-	{
-	  logprintf (LOG_NOTQUIET, _("Error parsing certificate: %s\n"),
-		     gnutls_strerror (err));
-	  success = false;
-	  goto out;
-	}
+        {
+          logprintf (LOG_NOTQUIET, _("Error parsing certificate: %s\n"),
+                     gnutls_strerror (err));
+          success = false;
+          goto out;
+        }
       if (now < gnutls_x509_crt_get_activation_time (cert))
-	{
-	  logprintf (LOG_NOTQUIET, _("The certificate has not yet been activated\n"));
-	  success = false;
-	}
+        {
+          logprintf (LOG_NOTQUIET, _("The certificate has not yet been activated\n"));
+          success = false;
+        }
       if (now >= gnutls_x509_crt_get_expiration_time (cert))
-	{
-	  logprintf (LOG_NOTQUIET, _("The certificate has expired\n"));
-	  success = false;
-	}
+        {
+          logprintf (LOG_NOTQUIET, _("The certificate has expired\n"));
+          success = false;
+        }
       if (!gnutls_x509_crt_check_hostname (cert, host))
-	{
-	  logprintf (LOG_NOTQUIET,
-		     _("The certificate's owner does not match hostname '%s'\n"),
-		     host);
-	  success = false;
-	}
+        {
+          logprintf (LOG_NOTQUIET,
+                     _("The certificate's owner does not match hostname '%s'\n"),
+                     host);
+          success = false;
+        }
       gnutls_x509_crt_deinit (cert);
    }
 

@@ -118,18 +118,18 @@ set_progress_implementation (const char *name)
   for (i = 0; i < countof (implementations); i++, pi++)
     if (!strncmp (pi->name, name, namelen))
       {
-	current_impl = pi;
-	current_impl_locked = 0;
+        current_impl = pi;
+        current_impl_locked = 0;
 
-	if (colon)
-	  /* We call pi->set_params even if colon is NULL because we
-	     want to give the implementation a chance to set up some
-	     things it needs to run.  */
-	  ++colon;
+        if (colon)
+          /* We call pi->set_params even if colon is NULL because we
+             want to give the implementation a chance to set up some
+             things it needs to run.  */
+          ++colon;
 
-	if (pi->set_params)
-	  pi->set_params (colon);
-	return;
+        if (pi->set_params)
+          pi->set_params (colon);
+        return;
       }
   abort ();
 }
@@ -155,7 +155,7 @@ progress_create (wgint initial, wgint total)
   if (output_redirected)
     {
       if (!current_impl_locked)
-	set_progress_implementation (FALLBACK_PROGRESS_IMPLEMENTATION);
+        set_progress_implementation (FALLBACK_PROGRESS_IMPLEMENTATION);
       output_redirected = 0;
     }
 
@@ -194,16 +194,16 @@ progress_finish (void *progress, double dltime)
 /* Dot-printing. */
 
 struct dot_progress {
-  wgint initial_length;		/* how many bytes have been downloaded
-				   previously. */
-  wgint total_length;		/* expected total byte count when the
-				   download finishes */
+  wgint initial_length;         /* how many bytes have been downloaded
+                                   previously. */
+  wgint total_length;           /* expected total byte count when the
+                                   download finishes */
 
-  int accumulated;		/* number of bytes accumulated after
-				   the last printed dot */
+  int accumulated;              /* number of bytes accumulated after
+                                   the last printed dot */
 
-  int rows;			/* number of rows printed so far */
-  int dots;			/* number of dots printed in this row */
+  int rows;                     /* number of rows printed so far */
+  int dots;                     /* number of dots printed in this row */
 
   double last_timer_value;
 };
@@ -226,29 +226,29 @@ dot_create (wgint initial, wgint total)
       wgint skipped = dp->initial_length - remainder;
 
       if (skipped)
-	{
-	  wgint skipped_k = skipped / 1024; /* skipped amount in K */
-	  int skipped_k_len = numdigit (skipped_k);
-	  if (skipped_k_len < 6)
-	    skipped_k_len = 6;
+        {
+          wgint skipped_k = skipped / 1024; /* skipped amount in K */
+          int skipped_k_len = numdigit (skipped_k);
+          if (skipped_k_len < 6)
+            skipped_k_len = 6;
 
-	  /* Align the [ skipping ... ] line with the dots.  To do
-	     that, insert the number of spaces equal to the number of
-	     digits in the skipped amount in K.  */
-	  logprintf (LOG_VERBOSE, _("\n%*s[ skipping %sK ]"),
-		     2 + skipped_k_len, "",
-		     number_to_static_string (skipped_k));
-	}
+          /* Align the [ skipping ... ] line with the dots.  To do
+             that, insert the number of spaces equal to the number of
+             digits in the skipped amount in K.  */
+          logprintf (LOG_VERBOSE, _("\n%*s[ skipping %sK ]"),
+                     2 + skipped_k_len, "",
+                     number_to_static_string (skipped_k));
+        }
 
       logprintf (LOG_VERBOSE, "\n%6sK",
-		 number_to_static_string (skipped / 1024));
+                 number_to_static_string (skipped / 1024));
       for (; remainder >= dot_bytes; remainder -= dot_bytes)
-	{
-	  if (dp->dots % opt.dot_spacing == 0)
-	    logputs (LOG_VERBOSE, " ");
-	  logputs (LOG_VERBOSE, ",");
-	  ++dp->dots;
-	}
+        {
+          if (dp->dots % opt.dot_spacing == 0)
+            logputs (LOG_VERBOSE, " ");
+          logputs (LOG_VERBOSE, ",");
+          ++dp->dots;
+        }
       assert (dp->dots < opt.dots_in_line);
 
       dp->accumulated = remainder;
@@ -284,8 +284,8 @@ print_row_stats (struct dot_progress *dp, double dltime, bool last)
   if (dp->total_length)
     {
       /* Round to floor value to provide gauge how much data *has*
-	 been retrieved.  12.8% will round to 12% because the 13% mark
-	 has not yet been reached.  100% is only shown when done.  */
+         been retrieved.  12.8% will round to 12% because the 13% mark
+         has not yet been reached.  100% is only shown when done.  */
       int percentage = 100.0 * bytes_displayed / dp->total_length;
       logprintf (LOG_VERBOSE, "%3d%%", percentage);
     }
@@ -305,34 +305,34 @@ print_row_stats (struct dot_progress *dp, double dltime, bool last)
       bytes_this_row -= dp->initial_length % ROW_BYTES;
     rate = calc_rate (bytes_this_row, dltime - dp->last_timer_value, &units);
     logprintf (LOG_VERBOSE, " %4.*f%c",
-	       rate >= 99.95 ? 0 : rate >= 9.995 ? 1 : 2,
-	       rate, names[units]);
+               rate >= 99.95 ? 0 : rate >= 9.995 ? 1 : 2,
+               rate, names[units]);
     dp->last_timer_value = dltime;
   }
 
   if (!last)
     {
       /* Display ETA based on average speed.  Inspired by Vladi
-	 Belperchinov-Shabanski's "wget-new-percentage" patch.  */
+         Belperchinov-Shabanski's "wget-new-percentage" patch.  */
       if (dp->total_length)
-	{
-	  wgint bytes_remaining = dp->total_length - bytes_displayed;
-	  /* The quantity downloaded in this download run. */
-	  wgint bytes_sofar = bytes_displayed - dp->initial_length;
-	  double eta = dltime * bytes_remaining / bytes_sofar;
-	  if (eta < INT_MAX - 1)
-	    logprintf (LOG_VERBOSE, " %s",
-		       eta_to_human_short ((int) (eta + 0.5), true));
-	}
+        {
+          wgint bytes_remaining = dp->total_length - bytes_displayed;
+          /* The quantity downloaded in this download run. */
+          wgint bytes_sofar = bytes_displayed - dp->initial_length;
+          double eta = dltime * bytes_remaining / bytes_sofar;
+          if (eta < INT_MAX - 1)
+            logprintf (LOG_VERBOSE, " %s",
+                       eta_to_human_short ((int) (eta + 0.5), true));
+        }
     }
   else
     {
       /* When done, print the total download time */
       if (dltime >= 10)
-	logprintf (LOG_VERBOSE, "=%s",
-		   eta_to_human_short ((int) (dltime + 0.5), true));
+        logprintf (LOG_VERBOSE, "=%s",
+                   eta_to_human_short ((int) (dltime + 0.5), true));
       else
-	logprintf (LOG_VERBOSE, "=%ss", print_decimal (dltime));
+        logprintf (LOG_VERBOSE, "=%ss", print_decimal (dltime));
     }
 }
 
@@ -351,21 +351,21 @@ dot_update (void *progress, wgint howmuch, double dltime)
   for (; dp->accumulated >= dot_bytes; dp->accumulated -= dot_bytes)
     {
       if (dp->dots == 0)
-	logprintf (LOG_VERBOSE, "\n%6sK",
-		   number_to_static_string (dp->rows * ROW_BYTES / 1024));
+        logprintf (LOG_VERBOSE, "\n%6sK",
+                   number_to_static_string (dp->rows * ROW_BYTES / 1024));
 
       if (dp->dots % opt.dot_spacing == 0)
-	logputs (LOG_VERBOSE, " ");
+        logputs (LOG_VERBOSE, " ");
       logputs (LOG_VERBOSE, ".");
 
       ++dp->dots;
       if (dp->dots >= opt.dots_in_line)
-	{
-	  ++dp->rows;
-	  dp->dots = 0;
+        {
+          ++dp->rows;
+          dp->dots = 0;
 
-	  print_row_stats (dp, dltime, false);
-	}
+          print_row_stats (dp, dltime, false);
+        }
     }
 
   log_set_flush (true);
@@ -384,11 +384,11 @@ dot_finish (void *progress, double dltime)
 
   if (dp->dots == 0)
     logprintf (LOG_VERBOSE, "\n%6sK",
-	       number_to_static_string (dp->rows * ROW_BYTES / 1024));
+               number_to_static_string (dp->rows * ROW_BYTES / 1024));
   for (i = dp->dots; i < opt.dots_in_line; i++)
     {
       if (i % opt.dot_spacing == 0)
-	logputs (LOG_VERBOSE, " ");
+        logputs (LOG_VERBOSE, " ");
       logputs (LOG_VERBOSE, " ");
     }
 
@@ -417,7 +417,7 @@ dot_set_params (const char *params)
   if (!strcasecmp (params, "default"))
     {
       /* Default style: 1K dots, 10 dots in a cluster, 50 dots in a
-	 line.  */
+         line.  */
       opt.dot_bytes = 1024;
       opt.dot_spacing = 10;
       opt.dots_in_line = 50;
@@ -425,7 +425,7 @@ dot_set_params (const char *params)
   else if (!strcasecmp (params, "binary"))
     {
       /* "Binary" retrieval: 8K dots, 16 dots in a cluster, 48 dots
-	 (384K) in a line.  */
+         (384K) in a line.  */
       opt.dot_bytes = 8192;
       opt.dot_spacing = 16;
       opt.dots_in_line = 48;
@@ -433,7 +433,7 @@ dot_set_params (const char *params)
   else if (!strcasecmp (params, "mega"))
     {
       /* "Mega" retrieval, for retrieving very long files; each dot is
-	 64K, 8 dots in a cluster, 6 clusters (3M) in a line.  */
+         64K, 8 dots in a cluster, 6 clusters (3M) in a line.  */
       opt.dot_bytes = 65536L;
       opt.dot_spacing = 8;
       opt.dots_in_line = 48;
@@ -441,16 +441,16 @@ dot_set_params (const char *params)
   else if (!strcasecmp (params, "giga"))
     {
       /* "Giga" retrieval, for retrieving very very *very* long files;
-	 each dot is 1M, 8 dots in a cluster, 4 clusters (32M) in a
-	 line.  */
+         each dot is 1M, 8 dots in a cluster, 4 clusters (32M) in a
+         line.  */
       opt.dot_bytes = (1L << 20);
       opt.dot_spacing = 8;
       opt.dots_in_line = 32;
     }
   else
     fprintf (stderr,
-	     _("Invalid dot style specification `%s'; leaving unchanged.\n"),
-	     params);
+             _("Invalid dot style specification `%s'; leaving unchanged.\n"),
+             params);
 }
 
 /* "Thermometer" (bar) progress. */
@@ -493,27 +493,27 @@ static volatile sig_atomic_t received_sigwinch;
 #define ETA_REFRESH_INTERVAL 0.99
 
 struct bar_progress {
-  wgint initial_length;		/* how many bytes have been downloaded
-				   previously. */
-  wgint total_length;		/* expected total byte count when the
-				   download finishes */
-  wgint count;			/* bytes downloaded so far */
+  wgint initial_length;         /* how many bytes have been downloaded
+                                   previously. */
+  wgint total_length;           /* expected total byte count when the
+                                   download finishes */
+  wgint count;                  /* bytes downloaded so far */
 
-  double last_screen_update;	/* time of the last screen update,
-				   measured since the beginning of
-				   download. */
+  double last_screen_update;    /* time of the last screen update,
+                                   measured since the beginning of
+                                   download. */
 
-  int width;			/* screen width we're using at the
-				   time the progress gauge was
-				   created.  this is different from
-				   the screen_width global variable in
-				   that the latter can be changed by a
-				   signal. */
-  char *buffer;			/* buffer where the bar "image" is
-				   stored. */
-  int tick;			/* counter used for drawing the
-				   progress bar where the total size
-				   is not known. */
+  int width;                    /* screen width we're using at the
+                                   time the progress gauge was
+                                   created.  this is different from
+                                   the screen_width global variable in
+                                   that the latter can be changed by a
+                                   signal. */
+  char *buffer;                 /* buffer where the bar "image" is
+                                   stored. */
+  int tick;                     /* counter used for drawing the
+                                   progress bar where the total size
+                                   is not known. */
 
   /* The following variables (kept in a struct for namespace reasons)
      keep track of recent download speeds.  See bar_update() for
@@ -529,19 +529,19 @@ struct bar_progress {
     wgint total_bytes;
   } hist;
 
-  double recent_start;		/* timestamp of beginning of current
-				   position. */
-  wgint recent_bytes;		/* bytes downloaded so far. */
+  double recent_start;          /* timestamp of beginning of current
+                                   position. */
+  wgint recent_bytes;           /* bytes downloaded so far. */
 
-  bool stalled;			/* set when no data arrives for longer
-				   than STALL_START_TIME, then reset
-				   when new data arrives. */
+  bool stalled;                 /* set when no data arrives for longer
+                                   than STALL_START_TIME, then reset
+                                   when new data arrives. */
 
   /* create_image() uses these to make sure that ETA information
      doesn't flicker. */
-  double last_eta_time;		/* time of the last update to download
-				   speed and ETA, measured since the
-				   beginning of download. */
+  double last_eta_time;         /* time of the last update to download
+                                   speed and ETA, measured since the
+                                   beginning of download. */
   int last_eta_value;
 };
 
@@ -567,9 +567,9 @@ bar_create (wgint initial, wgint total)
     {
       screen_width = determine_screen_width ();
       if (!screen_width)
-	screen_width = DEFAULT_SCREEN_WIDTH;
+        screen_width = DEFAULT_SCREEN_WIDTH;
       else if (screen_width < MINIMUM_SCREEN_WIDTH)
-	screen_width = MINIMUM_SCREEN_WIDTH;
+        screen_width = MINIMUM_SCREEN_WIDTH;
       received_sigwinch = 0;
     }
 
@@ -613,15 +613,15 @@ bar_update (void *progress, wgint howmuch, double dltime)
       int old_width = screen_width;
       screen_width = determine_screen_width ();
       if (!screen_width)
-	screen_width = DEFAULT_SCREEN_WIDTH;
+        screen_width = DEFAULT_SCREEN_WIDTH;
       else if (screen_width < MINIMUM_SCREEN_WIDTH)
-	screen_width = MINIMUM_SCREEN_WIDTH;
+        screen_width = MINIMUM_SCREEN_WIDTH;
       if (screen_width != old_width)
-	{
-	  bp->width = screen_width - 1;
-	  bp->buffer = xrealloc (bp->buffer, bp->width + 1);
-	  force_screen_update = true;
-	}
+        {
+          bp->width = screen_width - 1;
+          bp->buffer = xrealloc (bp->buffer, bp->width + 1);
+          force_screen_update = true;
+        }
       received_sigwinch = 0;
     }
 
@@ -689,18 +689,18 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
   if (howmuch == 0)
     {
       /* If we're not downloading anything, we might be stalling,
-	 i.e. not downloading anything for an extended period of time.
-	 Since 0-reads do not enter the history ring, recent_age
-	 effectively measures the time since last read.  */
+         i.e. not downloading anything for an extended period of time.
+         Since 0-reads do not enter the history ring, recent_age
+         effectively measures the time since last read.  */
       if (recent_age >= STALL_START_TIME)
-	{
-	  /* If we're stalling, reset the ring contents because it's
-	     stale and because it will make bar_update stop printing
-	     the (bogus) current bandwidth.  */
-	  bp->stalled = true;
-	  xzero (*hist);
-	  bp->recent_bytes = 0;
-	}
+        {
+          /* If we're stalling, reset the ring contents because it's
+             stale and because it will make bar_update stop printing
+             the (bogus) current bandwidth.  */
+          bp->stalled = true;
+          xzero (*hist);
+          bp->recent_bytes = 0;
+        }
       return;
     }
 
@@ -711,10 +711,10 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
     {
       bp->stalled = false;
       /* "recent_age" includes the the entired stalled period, which
-	 could be very long.  Don't update the speed ring with that
-	 value because the current bandwidth would start too small.
-	 Start with an arbitrary (but more reasonable) time value and
-	 let it level out.  */
+         could be very long.  Don't update the speed ring with that
+         value because the current bandwidth would start too small.
+         Start with an arbitrary (but more reasonable) time value and
+         let it level out.  */
       recent_age = 1;
     }
 
@@ -747,8 +747,8 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
     double sumt = 0, sumb = 0;
     for (i = 0; i < DLSPEED_HISTORY_SIZE; i++)
       {
-	sumt += hist->times[i];
-	sumb += hist->bytes[i];
+        sumt += hist->times[i];
+        sumb += hist->bytes[i];
       }
     assert (sumb == hist->total_bytes);
     /* We can't use assert(sumt==hist->total_time) because some
@@ -762,9 +762,9 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 #endif
 }
 
-#define APPEND_LITERAL(s) do {			\
-  memcpy (p, s, sizeof (s) - 1);		\
-  p += sizeof (s) - 1;				\
+#define APPEND_LITERAL(s) do {                  \
+  memcpy (p, s, sizeof (s) - 1);                \
+  p += sizeof (s) - 1;                          \
 } while (0)
 
 /* Use move_to_end (s) to get S to point the end of the string (the
@@ -818,9 +818,9 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       assert (percentage <= 100);
 
       if (percentage < 100)
-	sprintf (p, "%2d%% ", percentage);
+        sprintf (p, "%2d%% ", percentage);
       else
-	strcpy (p, "100%");
+        strcpy (p, "100%");
       p += 4;
     }
   else
@@ -845,43 +845,43 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       begin = p;
 
       /* Print the initial portion of the download with '+' chars, the
-	 rest with '=' and one '>'.  */
+         rest with '=' and one '>'.  */
       for (i = 0; i < insz; i++)
-	*p++ = '+';
+        *p++ = '+';
       dlsz -= insz;
       if (dlsz > 0)
-	{
-	  for (i = 0; i < dlsz - 1; i++)
-	    *p++ = '=';
-	  *p++ = '>';
-	}
+        {
+          for (i = 0; i < dlsz - 1; i++)
+            *p++ = '=';
+          *p++ = '>';
+        }
 
       while (p - begin < progress_size)
-	*p++ = ' ';
+        *p++ = ' ';
       *p++ = ']';
     }
   else if (progress_size)
     {
       /* If we can't draw a real progress bar, then at least show
-	 *something* to the user.  */
+         *something* to the user.  */
       int ind = bp->tick % (progress_size * 2 - 6);
       int i, pos;
 
       /* Make the star move in two directions. */
       if (ind < progress_size - 2)
-	pos = ind + 1;
+        pos = ind + 1;
       else
-	pos = progress_size - (ind - progress_size + 5);
+        pos = progress_size - (ind - progress_size + 5);
 
       *p++ = '[';
       for (i = 0; i < progress_size; i++)
-	{
-	  if      (i == pos - 1) *p++ = '<';
-	  else if (i == pos    ) *p++ = '=';
-	  else if (i == pos + 1) *p++ = '>';
-	  else
-	    *p++ = ' ';
-	}
+        {
+          if      (i == pos - 1) *p++ = '<';
+          else if (i == pos    ) *p++ = '=';
+          else if (i == pos + 1) *p++ = '>';
+          else
+            *p++ = ' ';
+        }
       *p++ = ']';
 
       ++bp->tick;
@@ -897,12 +897,12 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       static const char *short_units[] = { "B/s", "K/s", "M/s", "G/s" };
       int units = 0;
       /* Calculate the download speed using the history ring and
-	 recent data that hasn't made it to the ring yet.  */
+         recent data that hasn't made it to the ring yet.  */
       wgint dlquant = hist->total_bytes + bp->recent_bytes;
       double dltime = hist->total_time + (dl_total_time - bp->recent_start);
       double dlspeed = calc_rate (dlquant, dltime, &units);
       sprintf (p, " %4.*f%s", dlspeed >= 99.95 ? 0 : dlspeed >= 9.995 ? 1 : 2,
-	       dlspeed, short_units[units]);
+               dlspeed, short_units[units]);
       move_to_end (p);
     }
   else
@@ -911,59 +911,59 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   if (!done)
     {
       /* "  eta ..m ..s"; wait for three seconds before displaying the ETA.
-	 That's because the ETA value needs a while to become
-	 reliable.  */
+         That's because the ETA value needs a while to become
+         reliable.  */
       if (bp->total_length > 0 && bp->count > 0 && dl_total_time > 3)
-	{
-	  int eta;
+        {
+          int eta;
 
-	  /* Don't change the value of ETA more than approximately once
-	     per second; doing so would cause flashing without providing
-	     any value to the user. */
-	  if (bp->total_length != size
-	      && bp->last_eta_value != 0
-	      && dl_total_time - bp->last_eta_time < ETA_REFRESH_INTERVAL)
-	    eta = bp->last_eta_value;
-	  else
-	    {
-	      /* Calculate ETA using the average download speed to predict
-		 the future speed.  If you want to use a speed averaged
-		 over a more recent period, replace dl_total_time with
-		 hist->total_time and bp->count with hist->total_bytes.
-		 I found that doing that results in a very jerky and
-		 ultimately unreliable ETA.  */
-	      wgint bytes_remaining = bp->total_length - size;
-	      double eta_ = dl_total_time * bytes_remaining / bp->count;
-	      if (eta_ >= INT_MAX - 1)
-		goto skip_eta;
-	      eta = (int) (eta_ + 0.5);
-	      bp->last_eta_value = eta;
-	      bp->last_eta_time = dl_total_time;
-	    }
+          /* Don't change the value of ETA more than approximately once
+             per second; doing so would cause flashing without providing
+             any value to the user. */
+          if (bp->total_length != size
+              && bp->last_eta_value != 0
+              && dl_total_time - bp->last_eta_time < ETA_REFRESH_INTERVAL)
+            eta = bp->last_eta_value;
+          else
+            {
+              /* Calculate ETA using the average download speed to predict
+                 the future speed.  If you want to use a speed averaged
+                 over a more recent period, replace dl_total_time with
+                 hist->total_time and bp->count with hist->total_bytes.
+                 I found that doing that results in a very jerky and
+                 ultimately unreliable ETA.  */
+              wgint bytes_remaining = bp->total_length - size;
+              double eta_ = dl_total_time * bytes_remaining / bp->count;
+              if (eta_ >= INT_MAX - 1)
+                goto skip_eta;
+              eta = (int) (eta_ + 0.5);
+              bp->last_eta_value = eta;
+              bp->last_eta_time = dl_total_time;
+            }
 
-	  /* Translation note: "ETA" is English-centric, but this must
-	     be short, ideally 3 chars.  Abbreviate if necessary.  */
-	  sprintf (p, _("  eta %s"), eta_to_human_short (eta, false));
-	  move_to_end (p);
-	}
+          /* Translation note: "ETA" is English-centric, but this must
+             be short, ideally 3 chars.  Abbreviate if necessary.  */
+          sprintf (p, _("  eta %s"), eta_to_human_short (eta, false));
+          move_to_end (p);
+        }
       else if (bp->total_length > 0)
-	{
-	skip_eta:
-	  APPEND_LITERAL ("             ");
-	}
+        {
+        skip_eta:
+          APPEND_LITERAL ("             ");
+        }
     }
   else
     {
       /* When the download is done, print the elapsed time.  */
 
       /* Note to translators: this should not take up more room than
-	 available here.  Abbreviate if necessary.  */
+         available here.  Abbreviate if necessary.  */
       strcpy (p, _("   in "));
-      move_to_end (p);		/* not p+=6, think translations! */
+      move_to_end (p);          /* not p+=6, think translations! */
       if (dl_total_time >= 10)
-	strcpy (p, eta_to_human_short ((int) (dl_total_time + 0.5), false));
+        strcpy (p, eta_to_human_short ((int) (dl_total_time + 0.5), false));
       else
-	sprintf (p, "%ss", print_decimal (dl_total_time));
+        sprintf (p, "%ss", print_decimal (dl_total_time));
       move_to_end (p);
     }
 
@@ -998,24 +998,24 @@ bar_set_params (const char *params)
   if ((opt.lfilename
 #ifdef HAVE_ISATTY
        /* The progress bar doesn't make sense if the output is not a
-	  TTY -- when logging to file, it is better to review the
-	  dots.  */
+          TTY -- when logging to file, it is better to review the
+          dots.  */
        || !isatty (fileno (stderr))
 #endif
        /* Normally we don't depend on terminal type because the
-	  progress bar only uses ^M to move the cursor to the
-	  beginning of line, which works even on dumb terminals.  But
-	  Jamie Zawinski reports that ^M and ^H tricks don't work in
-	  Emacs shell buffers, and only make a mess.  */
+          progress bar only uses ^M to move the cursor to the
+          beginning of line, which works even on dumb terminals.  But
+          Jamie Zawinski reports that ^M and ^H tricks don't work in
+          Emacs shell buffers, and only make a mess.  */
        || (term && 0 == strcmp (term, "emacs"))
        )
       && !current_impl_locked)
     {
       /* We're not printing to a TTY, so revert to the fallback
-	 display.  #### We're recursively calling
-	 set_progress_implementation here, which is slightly kludgy.
-	 It would be nicer if we provided that function a return value
-	 indicating a failure of some sort.  */
+         display.  #### We're recursively calling
+         set_progress_implementation here, which is slightly kludgy.
+         It would be nicer if we provided that function a return value
+         indicating a failure of some sort.  */
       set_progress_implementation (FALLBACK_PROGRESS_IMPLEMENTATION);
       return;
     }
@@ -1049,7 +1049,7 @@ progress_handle_sigwinch (int sig)
 static const char *
 eta_to_human_short (int secs, bool condensed)
 {
-  static char buf[10];		/* 8 should be enough, but just in case */
+  static char buf[10];          /* 8 should be enough, but just in case */
   static int last = -1;
   const char *space = condensed ? "" : " ";
 
