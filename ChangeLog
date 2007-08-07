@@ -1,3 +1,12 @@
+2007-08-07  Micah Cowan  <micah@cowan.name>
+
+	* configure.in: Fix --with-libssl-prefix failure by replacing
+	usage of sh "if" statement with "AS_IF" macros, to force
+	AC_REQUIRE'd macros to be expanded before the conditional
+	statement body.
+	* NEWS: Note that configure.in now requires autoconf >= 2.61,
+	to support AS_IF and its expansion of AC_REQUIREs.
+
 2007-07-29  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: No more auth before challenge. No more auth info in

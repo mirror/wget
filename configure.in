@@ -29,7 +29,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 
 AC_INIT([src/version.c])
-AC_PREREQ(2.59)
+AC_PREREQ(2.61)
 
 dnl Include the M4 macros we use.
 builtin(include, [m4/wget.m4])dnl
@@ -239,8 +239,7 @@ dnl
 dnl Checks for libraries.
 dnl
 
-if test x"$with_ssl" = xgnutls
-then
+AS_IF([test x"$with_ssl" = xgnutls], [
   dnl Now actually check for -lssl
   AC_LIB_HAVE_LINKFLAGS([gnutls], [], [
 #include <gnutls/gnutls.h>
@@ -252,34 +251,37 @@ then
   else
     AC_MSG_ERROR([--with-ssl=gnutls was given, but GNUTLS is not available.])
   fi
-elif test x"$with_ssl" != xno; then
-  dnl As of this writing (OpenSSL 0.9.6), the libcrypto shared library
-  dnl doesn't record its dependency on libdl, so we need to make sure
-  dnl -ldl ends up in LIBS on systems that have it.  Most OSes use
-  dnl dlopen(), but HP-UX uses shl_load().
-  AC_CHECK_LIB(dl, dlopen, [], [
-    AC_CHECK_LIB(dl, shl_load)
-  ])
+], [
+  # --with-ssl is not gnutls: check if it's no
+  AS_IF([test x"$with_ssl" != xno], [
+    dnl As of this writing (OpenSSL 0.9.6), the libcrypto shared library
+    dnl doesn't record its dependency on libdl, so we need to make sure
+    dnl -ldl ends up in LIBS on systems that have it.  Most OSes use
+    dnl dlopen(), but HP-UX uses shl_load().
+    AC_CHECK_LIB(dl, dlopen, [], [
+      AC_CHECK_LIB(dl, shl_load)
+    ])
 
-  dnl Now actually check for -lssl
-  AC_LIB_HAVE_LINKFLAGS([ssl], [crypto], [
-#include <openssl/ssl.h>
-#include <openssl/x509.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
-#include <openssl/des.h>
-#include <openssl/md4.h>
-#include <openssl/md5.h>
-  ], [SSL_library_init ()])
-  if test x"$LIBSSL" != x
-  then
-    AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
-    SSL_OBJ='openssl.o'
-  elif test x"$with_ssl" != x
-  then
-    AC_MSG_ERROR([--with-ssl was given, but SSL is not available.])
-  fi
-fi
+    dnl Now actually check for -lssl
+    AC_LIB_HAVE_LINKFLAGS([ssl], [crypto], [
+  #include <openssl/ssl.h>
+  #include <openssl/x509.h>
+  #include <openssl/err.h>
+  #include <openssl/rand.h>
+  #include <openssl/des.h>
+  #include <openssl/md4.h>
+  #include <openssl/md5.h>
+    ], [SSL_library_init ()])
+    if test x"$LIBSSL" != x
+    then
+      AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
+      SSL_OBJ='openssl.o'
+    elif test x"$with_ssl" != x
+    then
+      AC_MSG_ERROR([--with-ssl was given, but SSL is not available.])
+    fi
+  ]) # endif: --with-ssl == no?
+]) # endif: --with-ssl == gnutls?
 
 AC_SUBST(SSL_OBJ)
 
