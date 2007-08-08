@@ -1,3 +1,8 @@
+2007-08-08  Micah Cowan  <micah@cowan.name>
+
+	* init.c (defaults): Content disposition will not be default,
+	since it currently results in extra round-trips.
+
 2007-07-31  Micah Cowan  <micah@cowan.name>
 
 	* http.c (gethttp): Set contlen = -1 when we encounter a

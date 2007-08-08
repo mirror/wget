@@ -1,3 +1,8 @@
+2007-08-08  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: Call attention to the fact that Content-Disposition is
+	not enabled by default.
+
 2007-08-07  Micah Cowan  <micah@cowan.name>
 
 	* configure.in: Fix --with-libssl-prefix failure by replacing

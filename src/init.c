@@ -321,7 +321,6 @@ defaults (void)
   opt.restrict_files_ctrl = true;
   opt.restrict_files_case = restrict_no_case_restriction;
 
-  opt.content_disposition = true;
   opt.max_redirect = 20;
 }
 
