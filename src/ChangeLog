@@ -1,3 +1,8 @@
+2007-08-09  Ralf Wildenhues  <Ralf.Wildenhues <at> gmx.de>
+
+	* src/url.c (url_string): Use comparison, not assignment, in
+	check for auth_mode == URL_AUTH_HIDE_PASSWD.
+
 2007-08-08  Micah Cowan  <micah@cowan.name>
 
 	* init.c (defaults): Content disposition will not be default,

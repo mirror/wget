@@ -1836,7 +1836,7 @@ url_string (const struct url *url, enum url_auth_mode auth_mode)
           quoted_user = url_escape_allow_passthrough (url->user);
           if (url->passwd)
             {
-              if (auth_mode = URL_AUTH_HIDE_PASSWD)
+              if (auth_mode == URL_AUTH_HIDE_PASSWD)
                 quoted_passwd = HIDDEN_PASSWORD;
               else
                 quoted_passwd = url_escape_allow_passthrough (url->passwd);
