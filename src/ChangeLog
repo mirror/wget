@@ -1,4 +1,4 @@
-2007-08-09  Ralf Wildenhues  <Ralf.Wildenhues <at> gmx.de>
+2007-08-09  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
 
 	* src/url.c (url_string): Use comparison, not assignment, in
 	check for auth_mode == URL_AUTH_HIDE_PASSWD.

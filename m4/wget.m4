@@ -1,5 +1,5 @@
 dnl Wget-specific Autoconf macros.
-dnl Copyright (C) 1996-2005 Free Software Foundation, Inc.
+dnl Copyright (C) 1996-2005, 2007 Free Software Foundation, Inc.
 
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -332,7 +332,7 @@ dnl
 dnl This is not strictly an Autoconf macro, because it is run from
 dnl within `config.status' rather than from within configure.  This
 dnl is why special rules must be applied for it.
-AC_DEFUN(WGET_PROCESS_PO,
+AC_DEFUN([WGET_PROCESS_PO],
   [
    dnl I wonder what the following several lines do...
    if test "x$srcdir" != "x."; then
@@ -364,11 +364,9 @@ AC_DEFUN(WGET_PROCESS_PO,
 # functionality.  Please note that the actual code is *not* freely
 # available.
 
-# serial 1
-
 dnl AM_PATH_PROG_WITH_TEST(VARIABLE, PROG-TO-CHECK-FOR,
 dnl   TEST-PERFORMED-ON-FOUND_PROGRAM [, VALUE-IF-NOT-FOUND [, PATH]])
-AC_DEFUN(AM_PATH_PROG_WITH_TEST,
+AC_DEFUN([AM_PATH_PROG_WITH_TEST],
 [# Extract the first word of "$2", so it can be a program name with args.
 set dummy $2; ac_word=[$]2
 AC_MSG_CHECKING([for $ac_word])

@@ -1,3 +1,8 @@
+2007-08-09  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
+
+	* m4/wget.m4 (WGET_PROCESS_PO, AM_PATH_PROG_WITH_TEST): Add
+	missing M4 quotation.  Delete serial number.
+
 2007-08-08  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: Call attention to the fact that Content-Disposition is
