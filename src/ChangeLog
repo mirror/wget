@@ -1,6 +1,12 @@
+2007-08-10  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
+
+	* url.c (append_uri_pathel): Do not assume dest string to be
+	zero-terminated.
+	(test_append_uri_pathel): Terminate string to fix test failure.
+
 2007-08-09  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
 
-	* src/url.c (url_string): Use comparison, not assignment, in
+	* url.c (url_string): Use comparison, not assignment, in
 	check for auth_mode == URL_AUTH_HIDE_PASSWD.
 
 2007-08-08  Micah Cowan  <micah@cowan.name>

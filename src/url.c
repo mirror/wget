@@ -1,5 +1,5 @@
 /* URL handling.
-   Copyright (C) 1996-2006 Free Software Foundation, Inc.
+   Copyright (C) 1996-2007 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -1369,7 +1369,7 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
       || opt.restrict_files_case == restrict_uppercase)
     {
       char *q;
-      for (q = TAIL (dest); *q; ++q)
+      for (q = TAIL (dest); q < TAIL (dest) + outlen; ++q)
         {
           if (opt.restrict_files_case == restrict_lowercase)
             *q = TOLOWER (*q);
@@ -2089,6 +2089,7 @@ test_append_uri_pathel()
       
       append_string (test_array[i].original_url, &dest);
       append_uri_pathel (p, p + strlen(p), test_array[i].escaped, &dest);
+      append_char ('\0', &dest);
 
       mu_assert ("test_append_uri_pathel: wrong result", 
                  strcmp (dest.base, test_array[i].expected_result) == 0);
