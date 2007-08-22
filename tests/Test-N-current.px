@@ -7,7 +7,7 @@ use HTTPTest;
 
 ###############################################################################
 
-my $wholefile = <<EOF;
+my $currentversion = <<EOF;
 11111111111111111111111111111111111111111111111111
 222222222222222222222222222222222222222222222222222222222222
 3333333333333333333333333333333333333333333333333333333333333333333333
@@ -22,24 +22,27 @@ my %urls = (
         msg => "Dontcare",
         headers => {
             "Content-type" => "text/plain",
+            "Last-Modified" => "Sat, 09 Oct 2004 08:30:00 GMT",
         },
-        content => $wholefile,
+        content => $currentversion,
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " -c http://localhost:8080/somefile.txt";
+my $cmdline = $WgetTest::WGETPATH . " -N http://localhost:8080/somefile.txt";
 
 my $expected_error_code = 0;
 
 my %existing_files = (
     'somefile.txt' => {
-        content => $wholefile,
+        content => $currentversion,
+        timestamp => 1097310600, # "Sat, 09 Oct 2004 08:30:00 GMT"
     },
 );
 
 my %expected_downloaded_files = (
     'somefile.txt' => {
-        content => $wholefile,
+        content => $currentversion,
+        timestamp => 1097310600, # "Sat, 09 Oct 2004 08:30:00 GMT"
     },
 );
 

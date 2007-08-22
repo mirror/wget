@@ -124,11 +124,17 @@ sub _setup {
     foreach my $filename (keys %{$self->{_existing}}) {
         open (FILE, ">$filename") 
             or return "Test failed: cannot open pre-existing file $filename\n";
-        
-        print FILE $self->{_existing}->{$filename}->{content}
+
+        my $file = $self->{_existing}->{$filename};
+        print FILE $file->{content}
             or return "Test failed: cannot write pre-existing file $filename\n";
-        
+
         close (FILE);
+
+        if (exists($file->{timestamp})) {
+            utime $file->{timestamp}, $file->{timestamp}, $filename
+                or return "Test failed: cannot set timestamp on pre-existing file $filename\n";
+        }
     } 
     
     chdir ("../input");

@@ -1,3 +1,18 @@
+2007-08-21  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+        * WgetTest.pm.in: Added support for timestamping of pre-existing
+        files.
+
+        * Test-N-current.px: Fixed broken test logic.
+
+	* Makefile.in: Updated list of automatically run tests.
+
+        * Test-HTTP-Content-Disposition.px: Added -e contentdisposition=on
+        option, since now HTTP Content-Disposition header support is turned
+        off by default.
+
+        * Test-HTTP-Content-Disposition-1.px: Ditto.
+
 2007-07-25  Micah Cowan  <micah@cowan.name>
 
 	* HTTPServer.pm (run, send_response): Farmed out some logic from

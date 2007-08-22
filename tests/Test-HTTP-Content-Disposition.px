@@ -33,7 +33,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " http://localhost:8080/dummy.html";
+my $cmdline = $WgetTest::WGETPATH . " -e contentdisposition=on http://localhost:8080/dummy.html";
 
 my $expected_error_code = 0;
 
