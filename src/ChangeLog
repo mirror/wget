@@ -1,3 +1,7 @@
+2007-08-23  Joshua David Williams  <yurimxpxman@gmail.com>
+
+	* spider.c (in_url_list_p): Removed the bool verbose argument
+
 2007-08-10  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
 
 	* url.c (append_uri_pathel): Do not assume dest string to be

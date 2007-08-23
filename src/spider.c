@@ -67,7 +67,7 @@ struct url_list
 };
 
 static bool
-in_url_list_p (const struct url_list *list, const char *url, bool verbose)
+in_url_list_p (const struct url_list *list, const char *url)
 {
   const struct url_list *ptr;
   
@@ -100,7 +100,7 @@ visited_url (const char *url, const char *referrer)
       list->url = referrer ? xstrdup (referrer) : NULL;
       hash_table_put (visited_urls_hash, xstrdup (url), list);
     }
-  else if (referrer && !in_url_list_p (list, referrer, false)) 
+  else if (referrer && !in_url_list_p (list, referrer)) 
     {
       /* Append referrer at the end of the list */
       struct url_list *newnode;
