@@ -116,7 +116,7 @@ TAGS:
 
 dist: $(srcdir)/configure DISTFILES
 	mkdir $(DISTNAME)
-	for d in `$(FIND) . -type d ! -name CVS -a ! -name RCS -print`; do \
+	for d in `$(FIND) . -type d ! -regex '.*/\.svn\(/.*\)?' -print`; do \
 		if [ "$$d" != "." -a "$$d" != "./$(DISTNAME)" ]; then \
 			mkdir $(DISTNAME)/$$d; \
 		fi; \
@@ -133,7 +133,7 @@ dist: $(srcdir)/configure DISTFILES
 DISTFILES: FORCE
 	rm -rf $(DISTNAME)	
 	(cd $(srcdir); find . ! -type d -print) \
-	| sed '/\/\(CVS\|RCS\)\//d; /$@/d; /\.tar.*/d; s/^.\///; /^\.$$/d;' \
+	| sed '/\/\.svn\//d; /$@/d; /\.tar.*/d; s/^.\///; /^\.$$/d;' \
 	| sort | uniq > $@
 
 #
