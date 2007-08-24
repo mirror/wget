@@ -1,3 +1,8 @@
+2007-08-24  Micah Cowan  <micah@cowan.name>
+
+	* po/no.po: removed; replaced by nb.po (per the translation
+	project coordinator, Benno Schulenberg).
+
 2007-08-22  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.in: Exclude .svn directories and below from
