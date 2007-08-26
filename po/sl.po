@@ -1,7 +1,7 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for GNU Wget
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Roman Maurer <roman.maurer@hermes.si>, 2001.
-# $Id: sl.po 2323 2007-08-03 04:14:15Z micah $
+# $Id: sl.po 2363 2007-08-26 23:22:20Z micah $
 #
 # Spremembe:
 #
@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.9-b5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-02 21:02-0700\n"
+"POT-Creation-Date: 2007-08-26 16:14-0700\n"
 "PO-Revision-Date: 2003-10-13 10:00+0200\n"
 "Last-Translator: Roman Maurer <roman.maurer@hermes.si>\n"
 "Language-Team: Slovenian <translation-team-sl@lists.sourceforge.net>\n"
@@ -769,77 +769,77 @@ msgstr "%s (%s) - Napaka pri branju na bajtu %ld (%s)."
 msgid "%s (%s) - Read error at byte %s/%s (%s). "
 msgstr "%s (%s) - Napaka pri èitanju na bajtu %ld/%ld (%s). "
 
-#: src/init.c:371
+#: src/init.c:370
 #, c-format
 msgid "%s: WGETRC points to %s, which doesn't exist.\n"
 msgstr "%s: WGETRC ka¾e na %s, ki ne obstaja.\n"
 
-#: src/init.c:434 src/netrc.c:267
+#: src/init.c:433 src/netrc.c:267
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Ne morem prebrati %s (%s).\n"
 
-#: src/init.c:452
+#: src/init.c:451
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Napaka v %s na liniji %d.\n"
 
-#: src/init.c:458
+#: src/init.c:457
 #, fuzzy, c-format
 msgid "%s: Syntax error in %s at line %d.\n"
 msgstr "%s: Napaka v %s na liniji %d.\n"
 
-#: src/init.c:463
+#: src/init.c:462
 #, fuzzy, c-format
 msgid "%s: Unknown command `%s' in %s at line %d.\n"
 msgstr "%s: Napaka v %s na liniji %d.\n"
 
-#: src/init.c:508
+#: src/init.c:507
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: Pozor: sistemska in uporabnikova wgetrc ka¾eta na `%s'.\n"
 
-#: src/init.c:661
+#: src/init.c:660
 #, c-format
 msgid "%s: Invalid --execute command `%s'\n"
 msgstr "%s: Neveljaven ukaz --execute `%s'\n"
 
-#: src/init.c:706
+#: src/init.c:705
 #, fuzzy, c-format
 msgid "%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"
 msgstr "%s: %s: Neveljavni booleov '%s', uporabite `on' ali `off'.\n"
 
-#: src/init.c:723
+#: src/init.c:722
 #, c-format
 msgid "%s: %s: Invalid number `%s'.\n"
 msgstr "%s: %s: Neveljavno ¹tevilo `%s'\n"
 
-#: src/init.c:954 src/init.c:973
+#: src/init.c:953 src/init.c:972
 #, c-format
 msgid "%s: %s: Invalid byte value `%s'\n"
 msgstr "%s: %s: Neveljavna vrednost bajta ,%s`\n"
 
-#: src/init.c:998
+#: src/init.c:997
 #, c-format
 msgid "%s: %s: Invalid time period `%s'\n"
 msgstr "%s: %s: Neveljavno èasovno obdobje `%s'\n"
 
-#: src/init.c:1052 src/init.c:1142 src/init.c:1245 src/init.c:1270
+#: src/init.c:1051 src/init.c:1141 src/init.c:1244 src/init.c:1269
 #, c-format
 msgid "%s: %s: Invalid value `%s'.\n"
 msgstr "%s: %s: Neveljavna vrednost '%s'\n"
 
-#: src/init.c:1089
+#: src/init.c:1088
 #, c-format
 msgid "%s: %s: Invalid header `%s'.\n"
 msgstr "%s: %s: Neveljavna glava `%s'\n"
 
-#: src/init.c:1155
+#: src/init.c:1154
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: Neveljavna vrsta napredka ,%s`\n"
 
-#: src/init.c:1214
+#: src/init.c:1213
 #, fuzzy, c-format
 msgid ""
 "%s: %s: Invalid restriction `%s', use [unix|windows],[lowercase|uppercase],"
@@ -1696,6 +1696,33 @@ msgid ""
 msgstr ""
 "Posku¹am ponovno.\n"
 "\n"
+
+#: src/spider.c:137
+msgid ""
+"Found no broken links.\n"
+"\n"
+msgstr ""
+
+#: src/spider.c:144
+#, c-format
+msgid ""
+"Found %d broken link.\n"
+"\n"
+msgid_plural ""
+"Found %d broken links.\n"
+"\n"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/spider.c:154
+#, c-format
+msgid "%s referred by:\n"
+msgstr ""
+
+#: src/spider.c:159
+#, c-format
+msgid "    %s\n"
+msgstr ""
 
 #: src/url.c:619
 msgid "No error"

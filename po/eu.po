@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.9.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-02 21:02-0700\n"
+"POT-Creation-Date: 2007-08-26 16:14-0700\n"
 "PO-Revision-Date: 2004-03-29 16:58+0200\n"
 "Last-Translator: Mikel Olasagasti <hey_neken@euskal.org>\n"
 "Language-Team: Basque <linux-eu@chanae.alphanet.ch>\n"
@@ -759,77 +759,77 @@ msgstr "%s (%s) - Irakurtze errorea %ld bytean (%s)."
 msgid "%s (%s) - Read error at byte %s/%s (%s). "
 msgstr "%s (%s) - Irakurtze errorea %ld/%ld bytean (%s). "
 
-#: src/init.c:371
+#: src/init.c:370
 #, c-format
 msgid "%s: WGETRC points to %s, which doesn't exist.\n"
 msgstr "%s: WGETRC %sra apuntatzen du, ez dena existitzen.\n"
 
-#: src/init.c:434 src/netrc.c:267
+#: src/init.c:433 src/netrc.c:267
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Ezin irakurri %s (%s).\n"
 
-#: src/init.c:452
+#: src/init.c:451
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: %s-n errorea %d lerroan.\n"
 
-#: src/init.c:458
+#: src/init.c:457
 #, fuzzy, c-format
 msgid "%s: Syntax error in %s at line %d.\n"
 msgstr "%s: %s-n errorea %d lerroan.\n"
 
-#: src/init.c:463
+#: src/init.c:462
 #, fuzzy, c-format
 msgid "%s: Unknown command `%s' in %s at line %d.\n"
 msgstr "%s: %s-n errorea %d lerroan.\n"
 
-#: src/init.c:508
+#: src/init.c:507
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: Kontuz: Bai sistema bai wgetrc `%s'ra apuntatzen dute.\n"
 
-#: src/init.c:661
+#: src/init.c:660
 #, c-format
 msgid "%s: Invalid --execute command `%s'\n"
 msgstr "%s: Baliogaeko --exekutatu`%s' komandoa\n"
 
-#: src/init.c:706
+#: src/init.c:705
 #, fuzzy, c-format
 msgid "%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"
 msgstr "%s: %s: Baliogabeko booleanoa `%s', erabili `on' edo `off'.\n"
 
-#: src/init.c:723
+#: src/init.c:722
 #, c-format
 msgid "%s: %s: Invalid number `%s'.\n"
 msgstr "%s: %s: Baliogabeko zenbakia `%s'.\n"
 
-#: src/init.c:954 src/init.c:973
+#: src/init.c:953 src/init.c:972
 #, c-format
 msgid "%s: %s: Invalid byte value `%s'\n"
 msgstr "%s: %s: Baliogabeko byte balioa `%s'\n"
 
-#: src/init.c:998
+#: src/init.c:997
 #, c-format
 msgid "%s: %s: Invalid time period `%s'\n"
 msgstr "%s: %s: Baliogabeko denbora tartea `%s'\n"
 
-#: src/init.c:1052 src/init.c:1142 src/init.c:1245 src/init.c:1270
+#: src/init.c:1051 src/init.c:1141 src/init.c:1244 src/init.c:1269
 #, c-format
 msgid "%s: %s: Invalid value `%s'.\n"
 msgstr "%s: %s: Baliogabeko balioa `%s'.\n"
 
-#: src/init.c:1089
+#: src/init.c:1088
 #, c-format
 msgid "%s: %s: Invalid header `%s'.\n"
 msgstr "%s: %s: Baliogabeko goiburukoa `%s'.\n"
 
-#: src/init.c:1155
+#: src/init.c:1154
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: Baliogabeko aurreratze mota `%s'.\n"
 
-#: src/init.c:1214
+#: src/init.c:1213
 #, fuzzy, c-format
 msgid ""
 "%s: %s: Invalid restriction `%s', use [unix|windows],[lowercase|uppercase],"
@@ -1687,6 +1687,33 @@ msgid ""
 msgstr ""
 "Berriz saiatzen.\n"
 "\n"
+
+#: src/spider.c:137
+msgid ""
+"Found no broken links.\n"
+"\n"
+msgstr ""
+
+#: src/spider.c:144
+#, c-format
+msgid ""
+"Found %d broken link.\n"
+"\n"
+msgid_plural ""
+"Found %d broken links.\n"
+"\n"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/spider.c:154
+#, c-format
+msgid "%s referred by:\n"
+msgstr ""
+
+#: src/spider.c:159
+#, c-format
+msgid "    %s\n"
+msgstr ""
 
 #: src/url.c:619
 msgid "No error"

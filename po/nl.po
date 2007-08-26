@@ -1,21 +1,22 @@
-# Translation of wget-1.10.2 to Dutch.
-# Copyright (C) 1997, 1998, 2004, 2005, 2006 Free Software Foundation, Inc.
+# Translation of wget-1.11-b2344 to Dutch.
+# Copyright (C) 1997, 1998, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
+#
 # André van Dijk <ady@unseen.demon.nl>, 1998.
 # Elros Cyriatan <cyriatan@fastmail.fm>, 2004.
-# Benno Schulenberg <benno@vertaalt.nl>, 2005, 2006.
-#
+# Benno Schulenberg <benno@vertaalt.nl>, 2005, 2006, 2007.
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.10.2\n"
+"Project-Id-Version: wget-1.11-b2344\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-02 21:02-0700\n"
-"PO-Revision-Date: 2006-12-19 23:46+0100\n"
+"POT-Creation-Date: 2007-08-26 16:14-0700\n"
+"PO-Revision-Date: 2007-08-25 00:06+0200\n"
 "Last-Translator: Benno Schulenberg <benno@vertaalt.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/connect.c:195
 #, c-format
@@ -43,9 +44,9 @@ msgid "failed: %s.\n"
 msgstr "mislukt: %s.\n"
 
 #: src/convert.c:171
-#, fuzzy, c-format
+#, c-format
 msgid "Converted %d files in %s seconds.\n"
-msgstr "%d bestanden geconverteerd in %.*f seconden.\n"
+msgstr "%d bestanden geconverteerd in %s seconden.\n"
 
 #: src/convert.c:196
 #, c-format
@@ -89,12 +90,12 @@ msgstr "Kan cookiesbestand '%s' niet openen: %s\n"
 #: src/cookies.c:1287
 #, c-format
 msgid "Error writing to `%s': %s\n"
-msgstr "Fout tijdens schrijven naar '%s': %s.\n"
+msgstr "Fout bij schrijven naar '%s': %s.\n"
 
 #: src/cookies.c:1290
 #, c-format
 msgid "Error closing `%s': %s\n"
-msgstr "Fout tijdens sluiten van '%s': %s.\n"
+msgstr "Fout bij sluiten van '%s': %s.\n"
 
 #: src/ftp-ls.c:836
 msgid "Unsupported listing type, trying Unix listing parser.\n"
@@ -191,7 +192,7 @@ msgstr "Ingelogd!\n"
 
 #: src/ftp.c:365
 msgid "Server error, can't determine system type.\n"
-msgstr "Serverfout; kan systeemsoort niet bepalen.\n"
+msgstr "Serverfout -- kan systeemsoort niet bepalen.\n"
 
 #: src/ftp.c:374 src/ftp.c:669 src/ftp.c:726 src/ftp.c:769
 msgid "done.    "
@@ -239,7 +240,7 @@ msgstr "Kan PASV-antwoord niet verwerken.\n"
 #: src/ftp.c:660
 #, c-format
 msgid "couldn't connect to %s port %d: %s\n"
-msgstr "Kan niet verbinden met %s op poort %d: %s\n"
+msgstr "Kan geen verbinding maken met %s op poort %d: %s\n"
 
 #: src/ftp.c:708
 #, c-format
@@ -311,7 +312,7 @@ msgstr "Bestand '%s' is reeds aanwezig -- wordt niet opgehaald.\n"
 #: src/ftp.c:1160 src/http.c:2375
 #, c-format
 msgid "(try:%2d)"
-msgstr "(poging: %2d) "
+msgstr "(poging %2d) "
 
 #: src/ftp.c:1230 src/http.c:2683
 #, c-format
@@ -340,7 +341,7 @@ msgstr "'%s' is verwijderd.\n"
 #: src/ftp.c:1362
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
-msgstr "Recursiediepte %d overschreed de maximum diepte %d.\n"
+msgstr "Recursiediepte %d heeft maximum diepte %d overschreden.\n"
 
 #. Remote file is older, file sizes can be compared and
 #. are both equal.
@@ -393,7 +394,7 @@ msgstr "Maken van symbolische koppeling: %s -> %s\n"
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
 msgstr ""
-"Symbolische koppelingen worden niet ondersteund, '%s' wordt overgeslagen.\n"
+"Symbolische koppelingen worden niet ondersteund; '%s' wordt overgeslagen.\n"
 
 #: src/ftp.c:1511
 #, c-format
@@ -525,7 +526,7 @@ msgstr "Herleiden van %s... "
 
 #: src/host.c:761
 msgid "failed: No IPv4/IPv6 addresses for host.\n"
-msgstr "mislukt: geen IPv4/IPv6-adressen voor de host.\n"
+msgstr "mislukt: geen IPv4/IPv6-adressen gevonden voor de host.\n"
 
 #: src/host.c:784
 msgid "failed: timed out.\n"
@@ -548,7 +549,7 @@ msgstr "Schrijven van HTTP-verzoek is mislukt: %s.\n"
 
 #: src/http.c:736
 msgid "No headers, assuming HTTP/0.9"
-msgstr "Geen kopregels aanwezig, HTTP/0.9 aangenomen."
+msgstr "Geen kopregels aanwezig; HTTP/0.9 aangenomen."
 
 #: src/http.c:1413
 msgid "Disabling SSL due to encountered errors.\n"
@@ -577,7 +578,7 @@ msgstr "Het tunnelen door een proxy is mislukt: %s."
 #: src/http.c:1749
 #, c-format
 msgid "%s request sent, awaiting response... "
-msgstr "%s-verzoek is verzonden, wachten op antwoord... "
+msgstr "%s-verzoek is verzonden; wachten op antwoord... "
 
 #: src/http.c:1760
 msgid "No data received.\n"
@@ -656,17 +657,18 @@ msgid "ignored"
 msgstr "genegeerd"
 
 #: src/http.c:2255
-#, fuzzy, c-format
+#, c-format
 msgid "Saving to: `%s'\n"
-msgstr "Map '%s' wordt overgeslagen.\n"
+msgstr "Wordt geschreven naar: %s\n"
 
 #: src/http.c:2335
 msgid "Warning: wildcards not supported in HTTP.\n"
-msgstr "Waarschuwing: jokertekens worden in HTTP niet ondersteund.\n"
+msgstr "Waarschuwing: jokertekens zijn bij HTTP niet mogelijk.\n"
 
 #: src/http.c:2364
 msgid "Spider mode enabled. Check if remote file exists.\n"
 msgstr ""
+"Spider-modus ingeschakeld.  Controleren of bestand bestaat op server.\n"
 
 #: src/http.c:2450
 #, c-format
@@ -685,7 +687,7 @@ msgstr "Fout: doorverwijzing (%d) zonder lokatie.\n"
 
 #: src/http.c:2505
 msgid "Remote file does not exist -- broken link!!!\n"
-msgstr ""
+msgstr "Bestand bestaat niet op server -- verbroken hyperlink!\n"
 
 #: src/http.c:2510
 #, c-format
@@ -723,31 +725,28 @@ msgid "Remote file is newer, retrieving.\n"
 msgstr "Bestand op server is nieuwer -- ophalen.\n"
 
 #: src/http.c:2596
-#, fuzzy
 msgid ""
 "Remote file exists and could contain links to other resources -- "
 "retrieving.\n"
 "\n"
 msgstr ""
-"Bestand op server is nieuwer dan lokaal bestand '%s' -- ophalen.\n"
+"Bestand bestaat op server en zou hyperlinks kunnen bevatten -- ophalen.\n"
 "\n"
 
 #: src/http.c:2602
-#, fuzzy
 msgid ""
 "Remote file exists but does not contain any link -- not retrieving.\n"
 "\n"
 msgstr ""
-"Bestand op server is niet nieuwer dan lokaal bestand '%s' -- wordt niet "
+"Bestand bestaat op server maar bevat geen hyperlinks -- wordt niet "
 "opgehaald.\n"
 
 #: src/http.c:2610
-#, fuzzy
 msgid ""
 "Remote file exists but recursion is disabled -- not retrieving.\n"
 "\n"
 msgstr ""
-"Bestand op server is niet nieuwer dan lokaal bestand '%s' -- wordt niet "
+"Bestand bestaat op server maar recursie is uitgeschakeld -- wordt niet "
 "opgehaald.\n"
 
 #: src/http.c:2652
@@ -774,83 +773,85 @@ msgstr "%s (%s) - Leesfout bij byte %s (%s)."
 msgid "%s (%s) - Read error at byte %s/%s (%s). "
 msgstr "%s (%s) - Leesfout bij byte %s/%s (%s). "
 
-#: src/init.c:371
+#: src/init.c:370
 #, c-format
 msgid "%s: WGETRC points to %s, which doesn't exist.\n"
 msgstr "%s: De variabele WGETRC wijst naar %s, maar deze bestaat niet.\n"
 
-#: src/init.c:434 src/netrc.c:267
+#: src/init.c:433 src/netrc.c:267
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Kan '%s' niet lezen (%s).\n"
 
-#: src/init.c:452
+#: src/init.c:451
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Fout in %s op regel %d.\n"
 
-#: src/init.c:458
+#: src/init.c:457
 #, c-format
 msgid "%s: Syntax error in %s at line %d.\n"
 msgstr "%s: Syntaxfout in %s op regel %d.\n"
 
-#: src/init.c:463
+#: src/init.c:462
 #, c-format
 msgid "%s: Unknown command `%s' in %s at line %d.\n"
 msgstr "%s: Onbekende opdracht '%s' in %s op regel %d.\n"
 
-#: src/init.c:508
+#: src/init.c:507
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr ""
 "%s: Waarschuwing: zowel de systeem- als gebruikers-wgetrc wijzen naar '%s'.\n"
 
-#: src/init.c:661
+#: src/init.c:660
 #, c-format
 msgid "%s: Invalid --execute command `%s'\n"
 msgstr "%s: Ongeldige opdracht '%s' bij '--execute'.\n"
 
-#: src/init.c:706
+#: src/init.c:705
 #, c-format
 msgid "%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"
 msgstr "%s: %s: Ongeldige boolean '%s';  gebruik 'on' of 'off'.\n"
 
-#: src/init.c:723
+#: src/init.c:722
 #, c-format
 msgid "%s: %s: Invalid number `%s'.\n"
 msgstr "%s: %s: Ongeldig aantal '%s'.\n"
 
-#: src/init.c:954 src/init.c:973
+#: src/init.c:953 src/init.c:972
 #, c-format
 msgid "%s: %s: Invalid byte value `%s'\n"
 msgstr "%s: %s: Ongeldige bytewaarde '%s'.\n"
 
-#: src/init.c:998
+#: src/init.c:997
 #, c-format
 msgid "%s: %s: Invalid time period `%s'\n"
 msgstr "%s: %s: Ongeldig tijdsinterval '%s'.\n"
 
-#: src/init.c:1052 src/init.c:1142 src/init.c:1245 src/init.c:1270
+#: src/init.c:1051 src/init.c:1141 src/init.c:1244 src/init.c:1269
 #, c-format
 msgid "%s: %s: Invalid value `%s'.\n"
 msgstr "%s: %s: Ongeldige waarde '%s'.\n"
 
-#: src/init.c:1089
+#: src/init.c:1088
 #, c-format
 msgid "%s: %s: Invalid header `%s'.\n"
 msgstr "%s: %s: Ongeldige kopregel '%s'.\n"
 
-#: src/init.c:1155
+#: src/init.c:1154
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: Ongeldig voortgangstype '%s'.\n"
 
-#: src/init.c:1214
-#, fuzzy, c-format
+#: src/init.c:1213
+#, c-format
 msgid ""
 "%s: %s: Invalid restriction `%s', use [unix|windows],[lowercase|uppercase],"
 "[nocontrol].\n"
-msgstr "%s: %s: Ongeldige beperking '%s';  gebruik 'unix' of 'windows'.\n"
+msgstr ""
+"%s: %s: Ongeldige beperking '%s';\n"
+"gebruik 'unix' of 'windows', 'lowercase' of 'uppercase', of 'nocontrol'.\n"
 
 #: src/log.c:783
 #, c-format
@@ -943,7 +944,7 @@ msgstr ""
 
 #: src/main.c:395
 msgid "  -i,  --input-file=FILE     download URLs found in FILE.\n"
-msgstr "  -i,  --input-file=BESTAND     URLs uit dit BESTAND lezen\n"
+msgstr "  -i,  --input-file=BESTAND     URL's uit dit BESTAND lezen\n"
 
 #: src/main.c:397
 msgid "  -F,  --force-html          treat input file as HTML.\n"
@@ -1097,11 +1098,13 @@ msgstr ""
 "                                welke besturingssysteem OS toestaat\n"
 
 #: src/main.c:453
-#, fuzzy
 msgid ""
 "       --ignore-case             ignore case when matching files/"
 "directories.\n"
-msgstr "       --ignore-length          de 'Content-Length'-kopregel negeren\n"
+msgstr ""
+"       --ignore-case            verschil tussen kleine en hoofdletters "
+"negeren\n"
+"                                bij vergelijken van bestands- en mapnamen\n"
 
 #: src/main.c:456
 msgid "  -4,  --inet4-only              connect only to IPv4 addresses.\n"
@@ -1196,6 +1199,7 @@ msgstr ""
 #: src/main.c:500
 msgid "       --max-redirect          maximum redirections allowed per page.\n"
 msgstr ""
+"       --max-redirect           maximum aantal doorverwijzingen per pagina\n"
 
 #: src/main.c:502
 msgid "       --proxy-user=USER       set USER as proxy username.\n"
@@ -1270,6 +1274,7 @@ msgstr ""
 msgid ""
 "       --no-content-disposition  don't honor Content-Disposition header.\n"
 msgstr ""
+"       --no-content-disposition de 'Content-Disposition'-kopregel negeren\n"
 
 #: src/main.c:531
 msgid "HTTPS (SSL/TLS) options:\n"
@@ -1505,8 +1510,9 @@ msgstr "  -np, --no-parent                  hogergelegen mappen negeren\n"
 #: src/main.c:623
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgstr ""
-"Rapporteer fouten in het programma (of suggesties) aan <bug-wget@gnu.org>.\n"
-"Meld gebreken in de vertaling aan <vertaling@vrijschrift.org>.\n"
+"Rapporteer gebreken in het programma (of suggesties) aan <bug-wget@gnu."
+"org>;\n"
+"meld fouten in de vertaling aan <vertaling@vrijschrift.org>.\n"
 
 #: src/main.c:628
 #, c-format
@@ -1519,9 +1525,8 @@ msgstr ""
 "\n"
 
 #: src/main.c:668
-#, fuzzy
 msgid "Copyright (C) 2007 Free Software Foundation, Inc.\n"
-msgstr "Copyright (C) 2005 Free Software Foundation, Inc.\n"
+msgstr "Copyright (C) 2007 Free Software Foundation, Inc.\n"
 
 #: src/main.c:670
 msgid ""
@@ -1530,6 +1535,10 @@ msgid ""
 "This is free software: you are free to change and redistribute it.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
+"Dit is vrije software: u mag het vrijelijk wijzigen en verder verspreiden.\n"
+"De precieze licentie is GPLv3+: GNU GPL versie 3 of later.\n"
+"Zie http://gnu.org/licenses/gpl.html voor de volledige tekst.\n"
+"Er is GEEN GARANTIE, voor zover de wet dit toestaat.\n"
 
 #: src/main.c:675
 msgid ""
@@ -1537,18 +1546,18 @@ msgid ""
 "Originally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"
 msgstr ""
 "\n"
-"Oorspronkelijk geschreven door Hrvoje Niksic <hniksic@xemacs.org>.\n"
+"Oorspronkelijk geschreven door Hrvoje Nikšić <hniksic@xemacs.org>.\n"
 
 #: src/main.c:677
 msgid "Currently maintained by Micah Cowan <micah@cowan.name>.\n"
-msgstr ""
+msgstr "Tegenwoordig onderhouden door Micah Cowan <micah@cowan.name>.\n"
 
 #. #### Something nicer should be printed here -- similar to the
 #. pre-1.5 `--help' page.
 #: src/main.c:724 src/main.c:793 src/main.c:890
 #, c-format
 msgid "Try `%s --help' for more options.\n"
-msgstr "Probeer '%s --help' voor meer opties.\n"
+msgstr "Typ '%s --help' voor meer opties.\n"
 
 #: src/main.c:790
 #, c-format
@@ -1574,12 +1583,13 @@ msgstr "Opties '--inet4-only' en '--inet6-only' gaan niet samen.\n"
 #: src/main.c:869
 #, c-format
 msgid "Cannot specify -r, -p or -N if -O is given.\n"
-msgstr ""
+msgstr "Opties '-r', '-p' en '-N en gaan niet samen met '-O'.\n"
 
 #: src/main.c:877
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot specify both -k and -O if multiple URLs are given.\n"
-msgstr "Opties '--inet4-only' en '--inet6-only' gaan niet samen.\n"
+msgstr ""
+"Opties '-k' en '-O' gaan niet samen als er meerdere URL's gegeven zijn.\n"
 
 #. No URL specified.
 #: src/main.c:885
@@ -1590,22 +1600,21 @@ msgstr "%s: ontbrekende URL\n"
 #: src/main.c:1005
 #, c-format
 msgid "No URLs found in %s.\n"
-msgstr "Geen URLs gevonden in %s.\n"
+msgstr "Geen URL's gevonden in %s.\n"
 
 #: src/main.c:1023
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "FINISHED --%s--\n"
 "Downloaded: %d files, %s in %s (%s)\n"
 msgstr ""
-"\n"
 "KLAAR --%s--\n"
-"Opgehaald: %s bytes in %d bestanden\n"
+"Opgehaald: %d bestanden, %s in %s (%s)\n"
 
 #: src/main.c:1032
-#, fuzzy, c-format
+#, c-format
 msgid "Download quota of %s EXCEEDED!\n"
-msgstr "Downloadquotum (%s bytes) is overschreden!\n"
+msgstr "Downloadquotum van %s bytes is overschreden!\n"
 
 #: src/mswindows.c:96
 #, c-format
@@ -1644,11 +1653,10 @@ msgstr "%s: %s:%d: onbekend sleutelwoord '%s'\n"
 msgid "Usage: %s NETRC [HOSTNAME]\n"
 msgstr "Gebruik:  %s NETRC [HOSTNAAM]\n"
 
-# stat
 #: src/netrc.c:480
 #, c-format
 msgid "%s: cannot stat %s: %s\n"
-msgstr "%s: kan de status van bestand %s niet opvragen: %s\n"
+msgstr "%s: kan status van %s niet opvragen: %s\n"
 
 #. Still not random enough, presumably because neither /dev/random
 #. nor EGD were available.  Try to seed OpenSSL's PRNG with libc
@@ -1680,25 +1688,25 @@ msgid "%s: No certificate presented by %s.\n"
 msgstr "%s: Geen certificaat aangeboden door %s.\n"
 
 #: src/openssl.c:517
-#, fuzzy, c-format
+#, c-format
 msgid "%s: cannot verify %s's certificate, issued by `%s':\n"
-msgstr "%s: Geen certificaat aangeboden door %s.\n"
+msgstr "%s: Kan certificaat van %s (uitgegeven door %s) niet controleren:\n"
 
 #: src/openssl.c:525
 msgid "  Unable to locally verify the issuer's authority.\n"
-msgstr ""
+msgstr "  Kan de autoriteit van de uitgever niet lokaal verifiëren.\n"
 
 #: src/openssl.c:529
 msgid "  Self-signed certificate encountered.\n"
-msgstr ""
+msgstr "  Zelf-ondertekend certificaat gevonden.\n"
 
 #: src/openssl.c:532
 msgid "  Issued certificate not yet valid.\n"
-msgstr ""
+msgstr "  Certificaat is nog niet geldig.\n"
 
 #: src/openssl.c:535
 msgid "  Issued certificate has expired.\n"
-msgstr ""
+msgstr "  Certificaat is verlopen.\n"
 
 #: src/openssl.c:567
 #, c-format
@@ -1719,13 +1727,13 @@ msgstr ""
 #. that, insert the number of spaces equal to the number of
 #. digits in the skipped amount in K.
 #: src/progress.c:238
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%*s[ skipping %sK ]"
 msgstr ""
 "\n"
-"%*s[ %dK wordt overgeslagen ]"
+"%*s[ %sK wordt overgeslagen ]"
 
 #: src/progress.c:452
 #, c-format
@@ -1737,14 +1745,14 @@ msgstr "Ongeldige puntjesstijl '%s' opgegeven; blijft onveranderd.\n"
 #: src/progress.c:946
 #, c-format
 msgid "  eta %s"
-msgstr ""
+msgstr "  nog %s"
 
 #. When the download is done, print the elapsed time.
 #. Note to translators: this should not take up more room than
 #. available here.  Abbreviate if necessary.
 #: src/progress.c:961
 msgid "   in "
-msgstr ""
+msgstr "   in "
 
 #. If no clock was found, it means that clock_getres failed for
 #. the realtime clock.
@@ -1780,7 +1788,7 @@ msgstr "Fout in proxy-URL '%s': moet HTTP zijn.\n"
 #: src/retr.c:745
 #, c-format
 msgid "%d redirections exceeded.\n"
-msgstr "%d doorverwijzingen overschreden.\n"
+msgstr "Maximum van %d doorverwijzingen is overschreden.\n"
 
 #: src/retr.c:880
 msgid ""
@@ -1797,6 +1805,35 @@ msgid ""
 msgstr ""
 "Nieuwe poging.\n"
 "\n"
+
+#: src/spider.c:137
+msgid ""
+"Found no broken links.\n"
+"\n"
+msgstr ""
+
+#: src/spider.c:144
+#, c-format
+msgid ""
+"Found %d broken link.\n"
+"\n"
+msgid_plural ""
+"Found %d broken links.\n"
+"\n"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/spider.c:154
+#, fuzzy, c-format
+msgid "%s referred by:\n"
+msgstr ""
+"\n"
+"%s ontvangen.\n"
+
+#: src/spider.c:159
+#, fuzzy, c-format
+msgid "    %s\n"
+msgstr "  nog %s"
 
 #: src/url.c:619
 msgid "No error"
@@ -1845,27 +1882,3 @@ msgstr "Verwijderen van symbolische koppeling '%s' is mislukt: %s\n"
 #, c-format
 msgid "%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"
 msgstr "%s: %s: Kan geen %ld bytes reserveren; onvoldoende geheugen.\n"
-
-#~ msgid "Error in Set-Cookie, field `%s'"
-#~ msgstr "Fout in 'Set-Cookie'-kopregel, veld '%s'."
-
-#~ msgid ""
-#~ "%s: %s: Invalid extended boolean `%s';\n"
-#~ "use one of `on', `off', `always', or `never'.\n"
-#~ msgstr ""
-#~ "%s: %s: Ongeldige uitgebreide boolean '%s';\n"
-#~ "gebruik 'on', 'off', 'always', of 'never'.\n"
-
-#~ msgid ""
-#~ "This program is distributed in the hope that it will be useful,\n"
-#~ "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-#~ "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-#~ "GNU General Public License for more details.\n"
-#~ msgstr ""
-#~ "Dit programma wordt verspreid in de hoop dat het nuttig zal zijn,\n"
-#~ "maar ZONDER ENIGE GARANTIE; zelfs zonder de impliciete garantie\n"
-#~ "van VERKOOPBAARHEID of GESCHIKTHEID VOOR EEN BEPAALD DOEL.\n"
-#~ "Zie de GNU General Public License voor de details.\n"
-
-#~ msgid "%s: Certificate verification error for %s: %s\n"
-#~ msgstr "%s: Fout tijdens certificaatscontrole voor %s: %s\n"

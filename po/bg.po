@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.8.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-02 21:02-0700\n"
+"POT-Creation-Date: 2007-08-26 16:14-0700\n"
 "PO-Revision-Date: 2002-03-18 03:11\n"
 "Last-Translator: Yassen Roussev <slona@bulgaria.com>\n"
 "Language-Team: Bulgarian <bg@bulgaria.com>\n"
@@ -754,77 +754,77 @@ msgstr "%s (%s) - Грешка при четене, байт %ld (%s)."
 msgid "%s (%s) - Read error at byte %s/%s (%s). "
 msgstr "%s (%s) - Грешка при четене, байт %ld/%ld (%s). "
 
-#: src/init.c:371
+#: src/init.c:370
 #, c-format
 msgid "%s: WGETRC points to %s, which doesn't exist.\n"
 msgstr ""
 
-#: src/init.c:434 src/netrc.c:267
+#: src/init.c:433 src/netrc.c:267
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Немога да прочета %s (%s).\n"
 
-#: src/init.c:452
+#: src/init.c:451
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Грешка при %s в ред %d.\n"
 
-#: src/init.c:458
+#: src/init.c:457
 #, fuzzy, c-format
 msgid "%s: Syntax error in %s at line %d.\n"
 msgstr "%s: Грешка при %s в ред %d.\n"
 
-#: src/init.c:463
+#: src/init.c:462
 #, fuzzy, c-format
 msgid "%s: Unknown command `%s' in %s at line %d.\n"
 msgstr "%s: БЪГ: непозната команда `%s', стойност `%s'.\n"
 
-#: src/init.c:508
+#: src/init.c:507
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr "%s: Внимание: Системният wgetrc и личният сочат към `%s'.\n"
 
-#: src/init.c:661
+#: src/init.c:660
 #, fuzzy, c-format
 msgid "%s: Invalid --execute command `%s'\n"
 msgstr "%s: Невалидна спецификация `%s'\n"
 
-#: src/init.c:706
+#: src/init.c:705
 #, fuzzy, c-format
 msgid "%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"
 msgstr "%s: %s: Моля определете on или off.\n"
 
-#: src/init.c:723
+#: src/init.c:722
 #, fuzzy, c-format
 msgid "%s: %s: Invalid number `%s'.\n"
 msgstr "%s: %s: Невалидна спецификация `%s'.\n"
 
-#: src/init.c:954 src/init.c:973
+#: src/init.c:953 src/init.c:972
 #, fuzzy, c-format
 msgid "%s: %s: Invalid byte value `%s'\n"
 msgstr "%s: %s: Невалиден вид напредък `%s'.\n"
 
-#: src/init.c:998
+#: src/init.c:997
 #, fuzzy, c-format
 msgid "%s: %s: Invalid time period `%s'\n"
 msgstr "%s: %s: Невалидна спецификация `%s'.\n"
 
-#: src/init.c:1052 src/init.c:1142 src/init.c:1245 src/init.c:1270
+#: src/init.c:1051 src/init.c:1141 src/init.c:1244 src/init.c:1269
 #, fuzzy, c-format
 msgid "%s: %s: Invalid value `%s'.\n"
 msgstr "%s: %s: Невалидна спецификация `%s'.\n"
 
-#: src/init.c:1089
+#: src/init.c:1088
 #, fuzzy, c-format
 msgid "%s: %s: Invalid header `%s'.\n"
 msgstr "%s: %s: Невалидна спецификация `%s'.\n"
 
-#: src/init.c:1155
+#: src/init.c:1154
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: Невалиден вид напредък `%s'.\n"
 
-#: src/init.c:1214
+#: src/init.c:1213
 #, c-format
 msgid ""
 "%s: %s: Invalid restriction `%s', use [unix|windows],[lowercase|uppercase],"
@@ -1682,6 +1682,33 @@ msgid ""
 msgstr ""
 "Продължавам.\n"
 "\n"
+
+#: src/spider.c:137
+msgid ""
+"Found no broken links.\n"
+"\n"
+msgstr ""
+
+#: src/spider.c:144
+#, c-format
+msgid ""
+"Found %d broken link.\n"
+"\n"
+msgid_plural ""
+"Found %d broken links.\n"
+"\n"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/spider.c:154
+#, c-format
+msgid "%s referred by:\n"
+msgstr ""
+
+#: src/spider.c:159
+#, c-format
+msgid "    %s\n"
+msgstr ""
 
 #: src/url.c:619
 #, fuzzy

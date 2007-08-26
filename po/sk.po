@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU wget 1.10.1-b1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-02 21:02-0700\n"
+"POT-Creation-Date: 2007-08-26 16:14-0700\n"
 "PO-Revision-Date: 2005-07-08 22:41+0200\n"
 "Last-Translator: Marcel Telka <marcel@telka.sk>\n"
 "Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"
@@ -825,92 +825,92 @@ msgstr "%s (%s) - Chyba pri čítaní na bajte %s (%s)."
 msgid "%s (%s) - Read error at byte %s/%s (%s). "
 msgstr "%s (%s) - Chyba pri čítaní na bajte %s/%s (%s). "
 
-#: src/init.c:371
+#: src/init.c:370
 #, c-format
 msgid "%s: WGETRC points to %s, which doesn't exist.\n"
 msgstr "%s: WGETRC ukazuje na %s a ten neexistuje.\n"
 
 # , c-format
-#: src/init.c:434 src/netrc.c:267
+#: src/init.c:433 src/netrc.c:267
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Nemožno prečítať %s (%s).\n"
 
 # , c-format
-#: src/init.c:452
+#: src/init.c:451
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
 msgstr "%s: Chyba v %s na riadku %d.\n"
 
 # , c-format
-#: src/init.c:458
+#: src/init.c:457
 #, c-format
 msgid "%s: Syntax error in %s at line %d.\n"
 msgstr "%s: Chyba syntaxe v %s na riadku %d.\n"
 
 # , c-format
-#: src/init.c:463
+#: src/init.c:462
 #, c-format
 msgid "%s: Unknown command `%s' in %s at line %d.\n"
 msgstr "%s: Neznámy príkaz `%s' v %s na riadku %d.\n"
 
 # , c-format
-#: src/init.c:508
+#: src/init.c:507
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr ""
 "%s: Upozornenie: Systémový aj používateľov súbor wgetrc sú uložené v `%s'.\n"
 
 # , c-format
-#: src/init.c:661
+#: src/init.c:660
 #, c-format
 msgid "%s: Invalid --execute command `%s'\n"
 msgstr "%s: Neplatný príkaz --execute `%s'\n"
 
 # , c-format
-#: src/init.c:706
+#: src/init.c:705
 #, c-format
 msgid "%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"
 msgstr "%s: %s: Neplatná logická hodnota `%s'; použite `on' alebo `off'.\n"
 
 # , c-format
-#: src/init.c:723
+#: src/init.c:722
 #, c-format
 msgid "%s: %s: Invalid number `%s'.\n"
 msgstr "%s: %s: Neplatné číslo `%s'.\n"
 
 # , c-format
-#: src/init.c:954 src/init.c:973
+#: src/init.c:953 src/init.c:972
 #, c-format
 msgid "%s: %s: Invalid byte value `%s'\n"
 msgstr "%s: %s: Neplatná hodnota bajtu `%s'.\n"
 
 # , c-format
-#: src/init.c:998
+#: src/init.c:997
 #, c-format
 msgid "%s: %s: Invalid time period `%s'\n"
 msgstr "%s: %s: Neplatný časový interval `%s'.\n"
 
 # , c-format
-#: src/init.c:1052 src/init.c:1142 src/init.c:1245 src/init.c:1270
+#: src/init.c:1051 src/init.c:1141 src/init.c:1244 src/init.c:1269
 #, c-format
 msgid "%s: %s: Invalid value `%s'.\n"
 msgstr "%s: %s: Neplatná hodnota `%s'.\n"
 
 # , c-format
-#: src/init.c:1089
+#: src/init.c:1088
 #, c-format
 msgid "%s: %s: Invalid header `%s'.\n"
 msgstr "%s: %s: Neplatná hlaavička `%s'.\n"
 
 # , c-format
-#: src/init.c:1155
+#: src/init.c:1154
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
 msgstr "%s: %s: Neplatný typ postupu `%s'.\n"
 
 # , c-format
-#: src/init.c:1214
+#: src/init.c:1213
 #, fuzzy, c-format
 msgid ""
 "%s: %s: Invalid restriction `%s', use [unix|windows],[lowercase|uppercase],"
@@ -1889,6 +1889,35 @@ msgid ""
 msgstr ""
 "Skúšam znova.\n"
 "\n"
+
+#: src/spider.c:137
+msgid ""
+"Found no broken links.\n"
+"\n"
+msgstr ""
+
+#: src/spider.c:144
+#, c-format
+msgid ""
+"Found %d broken link.\n"
+"\n"
+msgid_plural ""
+"Found %d broken links.\n"
+"\n"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/spider.c:154
+#, fuzzy, c-format
+msgid "%s referred by:\n"
+msgstr ""
+"\n"
+"%s prijatých.\n"
+
+#: src/spider.c:159
+#, c-format
+msgid "    %s\n"
+msgstr ""
 
 #: src/url.c:619
 msgid "No error"
