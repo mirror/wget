@@ -1,3 +1,8 @@
+2007-08-26  Micah Cowan  <micah@cowan.name>
+
+	* spider.c (print_broken_links): Fixed incorrect plurals msgid
+	usage, switched to use ngettext function.
+
 2007-08-23  Joshua David Williams  <yurimxpxman@gmail.com>
 
 	* spider.c (in_url_list_p): Removed the bool verbose argument

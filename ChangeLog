@@ -1,3 +1,7 @@
+2007-08-26  Micah Cowan  <micah@cowan.name>
+
+	* po/POTFILES.in: Added spider.c.
+
 2007-08-24  Micah Cowan  <micah@cowan.name>
 
 	* po/no.po: removed; replaced by nb.po (per the translation
