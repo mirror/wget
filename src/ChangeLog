@@ -6,6 +6,7 @@
 	* getopt.c: Fix missing (but, accidentally, legal) comment
 	delimiter after licensing text.
 	* recur.c (retrieve_tree): Inserted missing cast for strip_auth.
+	Includes adjustment by Ralf Wildenhues.
 	* openssl.c (ssl_init): const-ified the meth local variable.
 	* main.c: Include all the static function definitions in the
 	"#ifndef TESTING" clause, leaving just the definitions for
