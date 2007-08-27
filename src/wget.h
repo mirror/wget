@@ -55,6 +55,7 @@ so, delete this exception statement from your version.  */
 # endif /* not HAVE_LIBINTL_H */
 #else  /* not HAVE_NLS */
 # define _(string) (string)
+# define ngettext(sing, plur, num)  ((num) == 1 ? (sing) : (plur))
 #endif /* not HAVE_NLS */
 
 /* A pseudo function call that serves as a marker for the automated

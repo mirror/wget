@@ -1,3 +1,8 @@
+2007-08-27  Micah Cowan  <micah@cowan.name>
+
+	* wget.h: Added macro replacement for ngettext, for environs
+	that lack NLS.
+
 2007-08-26  Micah Cowan  <micah@cowan.name>
 
 	* spider.c (print_broken_links): Fixed incorrect plurals msgid
