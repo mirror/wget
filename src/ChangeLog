@@ -7,6 +7,9 @@
 	delimiter after licensing text.
 	* recur.c (retrieve_tree): Inserted missing cast for strip_auth.
 	* openssl.c (ssl_init): const-ified the meth local variable.
+	* main.c: Include all the static function definitions in the
+	"#ifndef TESTING" clause, leaving just the definitions for
+	exec_name (not set), and opt.
 
 2007-08-27  Micah Cowan  <micah@cowan.name>
 

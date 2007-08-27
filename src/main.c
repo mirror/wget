@@ -71,6 +71,7 @@ static void redirect_output_signal (int);
 
 const char *exec_name;
 
+#ifndef TESTING
 /* Initialize I18N/L10N.  That amounts to invoking setlocale, and
    setting up gettext's message catalog using bindtextdomain and
    textdomain.  Does nothing if NLS is disabled or missing.  */
@@ -679,7 +680,6 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout);
   exit (0);
 }
 
-#ifndef TESTING
 int
 main (int argc, char *const *argv)
 {
