@@ -1,3 +1,13 @@
+2007-08-27  Gisle Vanem	 <giva@bgnett.no>
+
+	* mswindows.c (run_with_timeout): Ensure that the correct
+	conversion specification is used for the return result of
+	the GetLastError function.
+	* getopt.c: Fix missing (but, accidentally, legal) comment
+	delimiter after licensing text.
+	* recur.c (retrieve_tree): Inserted missing cast for strip_auth.
+	* openssl.c (ssl_init): const-ified the meth local variable.
+
 2007-08-27  Micah Cowan  <micah@cowan.name>
 
 	* wget.h: Added macro replacement for ngettext, for environs

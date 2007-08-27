@@ -545,7 +545,8 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
                              &thread_arg, 0, &thread_id);
   if (!thread_hnd)
     {
-      DEBUGP (("CreateThread() failed; [0x%x]\n", GetLastError ()));
+      DEBUGP (("CreateThread() failed; [%#lx]\n",
+               (unsigned long) GetLastError ()));
       goto blocking_fallback;
     }
 
