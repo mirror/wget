@@ -1816,7 +1816,7 @@ run_with_timeout (double timeout, void (*fun) (void *), void *arg)
    define it under Windows, because Windows has its own version of
    run_with_timeout that uses threads.  */
 
-int
+bool
 run_with_timeout (double timeout, void (*fun) (void *), void *arg)
 {
   fun (arg);

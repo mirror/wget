@@ -10,6 +10,8 @@
 	* main.c: Include all the static function definitions in the
 	"#ifndef TESTING" clause, leaving just the definitions for
 	exec_name (not set), and opt.
+	* utils.c (run_with_timeout): Now returns bool, to align with
+	declaration in utils.h.
 
 2007-08-27  Micah Cowan  <micah@cowan.name>
 
