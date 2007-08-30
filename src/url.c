@@ -1971,11 +1971,12 @@ are_urls_equal (const char *u1, const char *u2)
   const char *p, *q;
   int pp, qq;
   char ch1, ch2;
+  assert(u1 && u2);
 
   p = u1;
   q = u2;
 
-  while (*p 
+  while (*p && *q
          && (pp = getchar_from_escaped_string (p, &ch1))
          && (qq = getchar_from_escaped_string (q, &ch2))
          && (TOLOWER(ch1) == TOLOWER(ch2)))
@@ -2111,6 +2112,8 @@ test_are_urls_equal()
     { "http://www.adomain.com/apath/", "http://www.adomain.com/anotherpath/", false },
     { "http://www.adomain.com/apath/", "http://www.anotherdomain.com/path/",  false },
     { "http://www.adomain.com/~path/", "http://www.adomain.com/%7epath/",     true },
+    { "http://www.adomain.com/longer-path/", "http://www.adomain.com/path/",  false },
+    { "http://www.adomain.com/path%2f", "http://www.adomain.com/path/",       false },
   };
   
   for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 

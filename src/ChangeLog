@@ -38,6 +38,12 @@
 	RETRUNNEEDED appears never to be referenced outside of
 	http.c (and wget.h), and, when returned by gethttp, is
 	translated by http_loop to RETROK.
+	* url.c (are_urls_equal): Don't call getchar_from_escaped_string
+	if u2 is shorter than u1.
+	(test_are_urls_equal): Added tests to handle u2 shorter than u1,
+	and %2f not treated the same as / (latter currently fails).
+	* spider.c (in_url_list_p): Don't call are_urls_equal if one of
+	them is NULL.
 
 2007-08-23  Joshua David Williams  <yurimxpxman@gmail.com>
 

@@ -74,7 +74,7 @@ in_url_list_p (const struct url_list *list, const char *url)
   for (ptr = list; ptr; ptr = ptr->next)
     {
       /* str[case]cmp is inadequate for URL comparison */
-      if (are_urls_equal (url, ptr->url)) 
+      if (ptr->url != NULL && are_urls_equal (url, ptr->url)) 
         return true;
     }
  
