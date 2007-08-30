@@ -2619,7 +2619,7 @@ Remote file exists and could contain links to other resources -- retrieving.\n\n
                     {
                       logprintf (LOG_VERBOSE, _("\
 Remote file exists but does not contain any link -- not retrieving.\n\n"));
-                      ret = RETRUNNEEDED;
+                      ret = RETROK; /* RETRUNNEEDED is not for caller. */
                       goto exit;
                     }
                 }
@@ -2627,7 +2627,7 @@ Remote file exists but does not contain any link -- not retrieving.\n\n"));
                 {
                   logprintf (LOG_VERBOSE, _("\
 Remote file exists but recursion is disabled -- not retrieving.\n\n"));
-                  ret = RETRUNNEEDED;
+                  ret = RETROK; /* RETRUNNEEDED is not for caller. */
                   goto exit;
                 }
             }

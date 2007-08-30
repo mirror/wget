@@ -32,7 +32,12 @@
 2007-08-24  Micah Cowan  <micah@cowan.name>
 
 	* http.c (http_loop): Introduced time_came_from_head boolean
-	flag, to help avoid parsing the same Last-Modified header twice,
+	flag, to help avoid parsing the same Last-Modified header twice.
+	Replaced spidering returns of RETRUNNEEDED for some situations,
+	to RETROK, as otherwise it will be interpreted as an error.
+	RETRUNNEEDED appears never to be referenced outside of
+	http.c (and wget.h), and, when returned by gethttp, is
+	translated by http_loop to RETROK.
 
 2007-08-23  Joshua David Williams  <yurimxpxman@gmail.com>
 
