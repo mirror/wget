@@ -33,6 +33,21 @@
 
 	* spider.c (in_url_list_p): Removed the bool verbose argument
 
+2007-08-22  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* http.c (http_loop): Fall back to GET if HEAD fails with a 500 or 501
+	error code.
+
+2007-08-21  Mauro Tortonesi  <mauro@ferrara.linux.it>
+	
+	* http.c (http_loop): Send preliminary HEAD request if -N is given and
+	the destination file exists already.
+
+2007-08-10  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* http.c (http_loop): Fixed HTTP HEAD requests logic when --spider is
+	given.
+
 2007-08-10  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
 
 	* url.c (append_uri_pathel): Do not assume dest string to be
@@ -110,6 +125,12 @@
 	* test.h: tests made more verbose; now displays the name
 	of each test run.
 
+2007-07-10  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* http.c (http_loop): Fixed the HTTP requests logic. Now it skips the 
+	preliminary HEAD request if either -O or --no-content-disposition are 
+	given, and neither --spider and -N are given.
+
 2007-07-05  Micah Cowan  <micah@cowan.name>
 
 	* cmpt.c, connect.c, connect.h, convert.c, convert.h:
@@ -126,6 +147,11 @@
 	* xmalloc.c, xmalloc.h:
 	Updated GPL reference to version 3 or later, removed FSF
 	address.
+
+2007-07-04  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* http.c (http_loop): Skip HEAD request and start immediately with GET
+	if -O is given.
 
 2007-02-02  Hrvoje Niksic  <hniksic@xemacs.org>
 

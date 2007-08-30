@@ -2314,6 +2314,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   wgint local_size = 0;          /* the size of the local file */
   struct http_stat hstat;        /* HTTP status */
   struct_stat st;  
+  bool send_head_first = true;
 
   /* Assert that no value for *LOCAL_FILE was passed. */
   assert (local_file == NULL || *local_file == NULL);
@@ -2350,6 +2351,19 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   
   /* Reset the document type. */
   *dt = 0;
+  
+  /* Skip preliminary HEAD request if we're not in spider mode AND
+   * if -O was given or HTTP Content-Disposition support is disabled. */
+  if (!opt.spider
+      && (got_name || !opt.content_disposition))
+    send_head_first = false;
+
+  /* Send preliminary HEAD request if -N is given and we have an existing 
+   * destination file. */
+  if (opt.timestamping 
+      && !opt.content_disposition
+      && file_exists_p (url_file_name (u)))
+    send_head_first = true;
   
   /* THE loop */
   do
@@ -2392,8 +2406,7 @@ Spider mode enabled. Check if remote file exists.\n"));
       /* Default document type is empty.  However, if spider mode is
          on or time-stamping is employed, HEAD_ONLY commands is
          encoded within *dt.  */
-      if (((opt.spider || opt.timestamping) && !got_head)
-          || (opt.always_rest && !got_name))
+      if (send_head_first && !got_head) 
         *dt |= HEAD_ONLY;
       else
         *dt &= ~HEAD_ONLY;
@@ -2434,7 +2447,7 @@ Spider mode enabled. Check if remote file exists.\n"));
       /* Get the new location (with or without the redirection).  */
       if (hstat.newloc)
         *newloc = xstrdup (hstat.newloc);
-      
+
       switch (err)
         {
         case HERR: case HEOF: case CONSOCKERR: case CONCLOSED:
@@ -2485,7 +2498,7 @@ Spider mode enabled. Check if remote file exists.\n"));
           /* All possibilities should have been exhausted.  */
           abort ();
         }
-     
+      
       if (!(*dt & RETROKF))
         {
           char *hurl = NULL;
@@ -2495,9 +2508,17 @@ Spider mode enabled. Check if remote file exists.\n"));
               hurl = url_string (u, URL_AUTH_HIDE_PASSWD);
               logprintf (LOG_NONVERBOSE, "%s:\n", hurl);
             }
+
+          /* Fall back to GET if HEAD fails with a 500 or 501 error code. */
+          if (*dt & HEAD_ONLY
+              && (hstat.statcode == 500 || hstat.statcode == 501))
+            {
+              got_head = true;
+              continue;
+            }
           /* Maybe we should always keep track of broken links, not just in
            * spider mode.  */
-          if (opt.spider)
+          else if (opt.spider)
             {
               /* #### Again: ugly ugly ugly! */
               if (!hurl) 
@@ -2518,7 +2539,7 @@ Remote file does not exist -- broken link!!!\n"));
         }
 
       /* Did we get the time-stamp? */
-      if (!got_head)
+      if (send_head_first && !got_head)
         {
           bool restart_loop = false;
 
@@ -2584,12 +2605,6 @@ The sizes do not match (local %s) -- retrieving.\n"),
               restart_loop = true;
             }
           
-          if (opt.always_rest)
-            {
-              got_name = true;
-              restart_loop = true;
-            }
-          
           if (opt.spider)
             {
               if (opt.recursive)
@@ -2617,6 +2632,12 @@ Remote file exists but recursion is disabled -- not retrieving.\n\n"));
                 }
             }
 
+          if (send_head_first)
+            {
+              got_name = true;
+              restart_loop = true;
+            }
+          
           got_head = true;    /* no more time-stamping */
           *dt &= ~HEAD_ONLY;
           count = 0;          /* the retrieve count for HEAD is reset */

@@ -95,18 +95,33 @@ run-px-tests: WgetTest.pm
 	./Test-HTTP-Content-Disposition-1.px && echo && echo
 	./Test-HTTP-Content-Disposition-2.px && echo && echo
 	./Test-HTTP-Content-Disposition.px && echo && echo
+	./Test-N-current-HTTP-CD.px && echo && echo
 	./Test-N-current.px && echo && echo
+	./Test-N-HTTP-Content-Disposition.px && echo && echo
+	./Test-N--no-content-disposition.px && echo && echo
+	./Test-N--no-content-disposition-trivial.px && echo && echo
+	./Test--no-content-disposition.px && echo && echo
+	./Test--no-content-disposition-trivial.px && echo && echo
 	./Test-N-old.px && echo && echo
 	./Test-nonexisting-quiet.px && echo && echo
 	./Test-noop.px && echo && echo
 	./Test-np.px && echo && echo
 	./Test-N.px && echo && echo
+	./Test-O-HTTP-Content-Disposition.px && echo && echo
+	./Test-O--no-content-disposition.px && echo && echo
+	./Test-O--no-content-disposition-trivial.px && echo && echo
 	./Test-O-nonexisting.px && echo && echo
 	./Test-O.px && echo && echo
 	./Test-Restrict-Lowercase.px && echo && echo
 	./Test-Restrict-Uppercase.px && echo && echo
 	./Test--spider-fail.px && echo && echo
+	./Test--spider-HTTP-Content-Disposition.px && echo && echo
+	./Test--spider--no-content-disposition.px && echo && echo
+	./Test--spider--no-content-disposition-trivial.px && echo && echo
 	./Test--spider.px && echo && echo
+	./Test--spider-r-HTTP-Content-Disposition.px && echo && echo
+	./Test--spider-r--no-content-disposition.px && echo && echo
+	./Test--spider-r--no-content-disposition-trivial.px && echo && echo
 	./Test--spider-r.px && echo && echo
 
 WgetTest.pm: WgetTest.pm.in @top_srcdir@/config.status

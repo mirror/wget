@@ -1,17 +1,34 @@
 2007-08-21  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
-        * WgetTest.pm.in: Added support for timestamping of pre-existing
-        files.
+	* WgetTest.pm.in: Added support for timestamping of pre-existing
+	files.
 
-        * Test-N-current.px: Fixed broken test logic.
+	* Test-N-current.px: Fixed broken test logic.
 
 	* Makefile.in: Updated list of automatically run tests.
 
-        * Test-HTTP-Content-Disposition.px: Added -e contentdisposition=on
-        option, since now HTTP Content-Disposition header support is turned
-        off by default.
+	* Test-HTTP-Content-Disposition.px: Added -e contentdisposition=on
+	option, since now HTTP Content-Disposition header support is turned
+	off by default.
 
-        * Test-HTTP-Content-Disposition-1.px: Ditto.
+	* Test-HTTP-Content-Disposition-1.px: Ditto.
+
+2007-08-10  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* Test--spider--no-content-disposition-trivial.px: Added new tests for
+	validation of HTTP Content-Disposition header support logic. In
+	particular, these tests check wget's behavior for every combination of
+	--spider [-r] and -e contentdisposition=on/off options.
+
+	* Test--spider-r-HTTP-Content-Disposition.px: Ditto.
+
+	* Test--spider-HTTP-Content-Disposition.px: Ditto.
+
+	* Test--spider--no-content-disposition.px: Ditto.
+
+	* Test--spider-r--no-content-disposition-trivial.px: Ditto.
+
+	* Test--spider-r--no-content-disposition.px: Ditto.
 
 2007-07-25  Micah Cowan  <micah@cowan.name>
 
@@ -28,6 +45,27 @@
 	lets the server do its testing. Its current purpose is just to
 	ensure that correct basic creds are sent, but never until a
 	challenge has been sent.
+
+2007-07-10  Mauro Tortonesi  <mauro@ferrara.linux.it>
+
+	* Test--no-content-disposition.px: Added new tests for validation of
+	HTTP Content-Disposition header support logic. In particular, these
+	tests check wget's behavior for every combination of -N/-O and -e
+	contentdisposition=on/off options.
+
+	* Test--no-content-disposition-trivial.px: Ditto.
+
+	* Test-N-HTTP-Content-Disposition.px: Ditto.
+
+	* Test-N--no-content-disposition.px: Ditto.
+
+	* Test-N--no-content-disposition-trivial.px: Ditto.
+
+	* Test-O-HTTP-Content-Disposition.px: Ditto.
+
+	* Test-O--no-content-disposition.px: Ditto.
+
+	* Test-O--no-content-disposition-trivial.px: Ditto.
 
 2007-07-05  Micah Cowan  <micah@cowan.name>
 
