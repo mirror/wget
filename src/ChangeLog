@@ -40,8 +40,11 @@
 	translated by http_loop to RETROK.
 	* url.c (are_urls_equal): Don't call getchar_from_escaped_string
 	if u2 is shorter than u1.
+	(getchar_from_escaped_string): Don't decode reserved characters.
+	Handle illegally appearing '%'s as literal '%'s. Ensure hex
+	digits before attempting to decode.
 	(test_are_urls_equal): Added tests to handle u2 shorter than u1,
-	and %2f not treated the same as / (latter currently fails).
+	and %2f not treated the same as /.
 	* spider.c (in_url_list_p): Don't call are_urls_equal if one of
 	them is NULL.
 

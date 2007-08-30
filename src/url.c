@@ -1939,10 +1939,7 @@ getchar_from_escaped_string (const char *str, char *c)
   
   if (p[0] == '%')
     {
-      if (p[1] == 0)
-        return 0; /* error: invalid string */
-
-      if (p[1] == '%')
+      if (!ISXDIGIT(p[1]) || !ISXDIGIT(p[2]))
         {
           *c = '%';
           return 1;
@@ -1953,8 +1950,13 @@ getchar_from_escaped_string (const char *str, char *c)
             return 0; /* error: invalid string */
 
           *c = X2DIGITS_TO_NUM (p[1], p[2]);
-
-          return 3;
+          if (URL_RESERVED_CHAR(*c))
+            {
+              *c = '%';
+              return 1;
+            }
+          else
+            return 3;
         }
     }
   else
