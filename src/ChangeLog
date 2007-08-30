@@ -24,6 +24,11 @@
 	* spider.c (print_broken_links): Fixed incorrect plurals msgid
 	usage, switched to use ngettext function.
 
+2007-08-24  Micah Cowan  <micah@cowan.name>
+
+	* http.c (http_loop): Introduced time_came_from_head boolean
+	flag, to help avoid parsing the same Last-Modified header twice,
+
 2007-08-23  Joshua David Williams  <yurimxpxman@gmail.com>
 
 	* spider.c (in_url_list_p): Removed the bool verbose argument
@@ -38,6 +43,12 @@
 
 	* url.c (url_string): Use comparison, not assignment, in
 	check for auth_mode == URL_AUTH_HIDE_PASSWD.
+
+2007-08-09  Micah Cowan  <micah@cowan.name>
+
+	* http.c (http_loop): If we got a HEAD and then a GET, and the
+	GET had a timestamp, use that one, not any we may have gotten
+	from the HEAD.
 
 2007-08-08  Micah Cowan  <micah@cowan.name>
 

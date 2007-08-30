@@ -2305,6 +2305,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
 {
   int count;
   bool got_head = false;         /* used for time-stamping and filename detection */
+  bool time_came_from_head = false;
   bool got_name = false;
   char *tms;
   const char *tmrate;
@@ -2533,6 +2534,8 @@ Last-modified header missing -- time-stamps turned off.\n"));
               if (tmr == (time_t) (-1))
                 logputs (LOG_VERBOSE, _("\
 Last-modified header invalid -- time-stamp ignored.\n"));
+              if (*dt & HEAD_ONLY)
+                time_came_from_head = true;
             }
       
           /* The time-stamping section.  */
@@ -2637,7 +2640,18 @@ Remote file exists but recursion is disabled -- not retrieving.\n\n"));
           else
             fl = hstat.local_file;
           if (fl)
-            touch (fl, tmr);
+            {
+              time_t newtmr = -1;
+              /* Reparse time header, in case it's changed. */
+              if (time_came_from_head
+                  && hstat.remote_time && hstat.remote_time[0])
+                {
+                  newtmr = http_atotm (hstat.remote_time);
+                  if (newtmr != -1)
+                    tmr = newtmr;
+                }
+              touch (fl, tmr);
+            }
         }
       /* End of time-stamping section. */
 
