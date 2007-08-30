@@ -40,7 +40,6 @@ so, delete this exception statement from your version.  */
 #include "res.h"
 
 
-static struct hash_table *visited_urls_hash;
 static struct hash_table *nonexisting_urls_set;
 
 /* Cleanup the data structures associated with this file.  */
@@ -48,70 +47,8 @@ static struct hash_table *nonexisting_urls_set;
 void
 spider_cleanup (void)
 {
-  if (visited_urls_hash)
-    {
-      free_keys_and_values (visited_urls_hash);
-      hash_table_destroy (visited_urls_hash);
-      visited_urls_hash = NULL;
-    }
   if (nonexisting_urls_set)
     string_set_free (nonexisting_urls_set);
-}
-
-/* Remembers visited files.  */
-
-struct url_list 
-{
-  char *url;
-  struct url_list *next;
-};
-
-static bool
-in_url_list_p (const struct url_list *list, const char *url)
-{
-  const struct url_list *ptr;
-  
-  for (ptr = list; ptr; ptr = ptr->next)
-    {
-      /* str[case]cmp is inadequate for URL comparison */
-      if (ptr->url != NULL && are_urls_equal (url, ptr->url)) 
-        return true;
-    }
- 
-  return false;
-}
-
-void
-visited_url (const char *url, const char *referrer)
-{
-  struct url_list *list;
-
-  /* Ignore robots.txt URLs */
-  if (is_robots_txt_url (url))
-    return;
-  
-  if (!visited_urls_hash)
-    visited_urls_hash = make_string_hash_table (0);
-
-  list = hash_table_get (visited_urls_hash, url);
-  if (!list)
-    {
-      list = (struct url_list *) xnew0 (struct url_list);
-      list->url = referrer ? xstrdup (referrer) : NULL;
-      hash_table_put (visited_urls_hash, xstrdup (url), list);
-    }
-  else if (referrer && !in_url_list_p (list, referrer)) 
-    {
-      /* Append referrer at the end of the list */
-      struct url_list *newnode;
-      
-      while (list->next) 
-        list = list->next;
-      
-      newnode = (struct url_list *) xnew0 (struct url_list);
-      newnode->url = xstrdup (referrer);
-      list->next = newnode;
-    }
 }
 
 /* Remembers broken links.  */
@@ -151,13 +88,7 @@ print_broken_links (void)
       struct url_list *list;
       const char *url = (const char *) iter.key;
           
-      logprintf (LOG_NOTQUIET, _("%s referred by:\n"), url);
-      
-      for (list = (struct url_list *) hash_table_get (visited_urls_hash, url); 
-           list; list = list->next) 
-        {
-          logprintf (LOG_NOTQUIET, _("    %s\n"), list->url);
-        }
+      logprintf (LOG_NOTQUIET, _("%s\n"), url);
     }
   logputs (LOG_NOTQUIET, "\n");
 }

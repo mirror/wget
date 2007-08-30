@@ -2,6 +2,12 @@
 
 	* openssl.c (ssl_init): Re un-const-ified the meth local
 	variable, to match current versions of openssl.
+	* spider.c: Removed visited_url function, as it may be very
+	inefficient.
+	(print_broken_links): Removed traversal of referrers, until such
+	time as a more efficient implementation can be written.
+	* spider.h: Replaced declaration of visited_url with an
+	empty-bodied, function-like macro.
 
 2007-08-27  Gisle Vanem	 <giva@bgnett.no>
 

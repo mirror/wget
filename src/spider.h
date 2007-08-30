@@ -29,7 +29,7 @@ so, delete this exception statement from your version.  */
 #ifndef SPIDER_H
 #define SPIDER_H
 
-void visited_url (const char *, const char *);
+#define visited_url(a,b)
 void nonexisting_url (const char *);
 void print_broken_links (void);
 
