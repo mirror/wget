@@ -1,3 +1,8 @@
+2007-08-29  Micah Cowan  <micah@cowan.name>
+
+	* openssl.c (ssl_init): Re un-const-ified the meth local
+	variable, to match current versions of openssl.
+
 2007-08-27  Gisle Vanem	 <giva@bgnett.no>
 
 	* mswindows.c (run_with_timeout): Ensure that the correct
