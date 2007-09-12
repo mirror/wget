@@ -548,6 +548,13 @@ is used as @var{file}, documents will be printed to standard output,
 disabling link conversion.  (Use @samp{./-} to print to a file
 literally named @samp{-}.)
 
+Use of @samp{-O} is @emph{not} intended to mean simply ``use the name
+@var{file} instead of the one in the URL;'' rather, it is
+analogous to shell redirection.
+@samp{wget -O file http://foo} is intended to work like
+@samp{wget -O - http://foo > file}. @file{file} will be truncated
+immediately, and don't expect timestamping to work with it.
+
 Note that a combination with @samp{-k} is only well-defined for
 downloading a single document.
 
