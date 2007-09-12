@@ -2539,7 +2539,7 @@ Remote file does not exist -- broken link!!!\n"));
         }
 
       /* Did we get the time-stamp? */
-      if (send_head_first && !got_head)
+      if (!got_head)
         {
           bool restart_loop = false;
 
