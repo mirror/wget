@@ -550,13 +550,14 @@ literally named @samp{-}.)
 
 Use of @samp{-O} is @emph{not} intended to mean simply ``use the name
 @var{file} instead of the one in the URL;'' rather, it is
-analogous to shell redirection.
+analogous to shell redirection:
 @samp{wget -O file http://foo} is intended to work like
-@samp{wget -O - http://foo > file}. @file{file} will be truncated
-immediately, and don't expect timestamping to work with it.
+@samp{wget -O - http://foo > file}; @file{file} will be truncated
+immediately, and @emph{all} downloaded content will be written there.
 
-Note that a combination with @samp{-k} is only well-defined for
-downloading a single document.
+Note that a combination with @samp{-k} is only permitted when
+downloading a single document, and combination with any of @samp{-r},
+@samp{-p}, or @samp{-N} is not allowed.
 
 @cindex clobbering, file
 @cindex downloading multiple times
