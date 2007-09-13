@@ -1807,7 +1807,10 @@ option to turn it on.
 @item -A @var{acclist} --accept @var{acclist}
 @itemx -R @var{rejlist} --reject @var{rejlist}
 Specify comma-separated lists of file name suffixes or patterns to
-accept or reject (@pxref{Types of Files} for more details).
+accept or reject (@pxref{Types of Files} for more details). Note that if
+any of the wildcard characters, @samp{*}, @samp{?}, @samp{[} or
+@samp{]}, appear in an element of @var{acclist} or @var{rejlist},
+it will be treated as a pattern, rather than a suffix.
 
 @item -D @var{domain-list}
 @itemx --domains=@var{domain-list}
