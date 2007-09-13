@@ -7,6 +7,10 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.11.
 
+** TODO file removed: we use a bugtracker now; see
+http://wget.addictivecode.org/BugTracker. Also,
+http://wget.addictivecode.org/FeatureSpecifications.
+
 ** Timestamping now uses the value from the most recent HTTP response,
 rather than the first one it got.
 
