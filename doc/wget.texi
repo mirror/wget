@@ -548,8 +548,16 @@ is used as @var{file}, documents will be printed to standard output,
 disabling link conversion.  (Use @samp{./-} to print to a file
 literally named @samp{-}.)
 
-Note that a combination with @samp{-k} is only well-defined for
-downloading a single document.
+Use of @samp{-O} is @emph{not} intended to mean simply ``use the name
+@var{file} instead of the one in the URL;'' rather, it is
+analogous to shell redirection:
+@samp{wget -O file http://foo} is intended to work like
+@samp{wget -O - http://foo > file}; @file{file} will be truncated
+immediately, and @emph{all} downloaded content will be written there.
+
+Note that a combination with @samp{-k} is only permitted when
+downloading a single document, and combination with any of @samp{-r},
+@samp{-p}, or @samp{-N} is not allowed.
 
 @cindex clobbering, file
 @cindex downloading multiple times
@@ -561,7 +569,7 @@ behavior depends on a few options, including @samp{-nc}.  In certain
 cases, the local file will be @dfn{clobbered}, or overwritten, upon
 repeated download.  In other cases it will be preserved.
 
-When running Wget without @samp{-N}, @samp{-nc}, or @samp{-r},
+When running Wget without @samp{-N}, @samp{-nc}, @samp{-r}, or @samp{p},
 downloading the same file in the same directory will result in the
 original copy of @var{file} being preserved and the second copy being
 named @samp{@var{file}.1}.  If that file is downloaded yet again, the
@@ -573,17 +581,17 @@ clobbering that's prevented (as the numeric suffixes were already
 preventing clobbering), but rather the multiple version saving that's
 prevented.
 
-When running Wget with @samp{-r}, but without @samp{-N} or @samp{-nc},
-re-downloading a file will result in the new copy simply overwriting the
-old.  Adding @samp{-nc} will prevent this behavior, instead causing the
-original version to be preserved and any newer copies on the server to
-be ignored.
+When running Wget with @samp{-r} or @samp{-p}, but without @samp{-N}
+or @samp{-nc}, re-downloading a file will result in the new copy
+simply overwriting the old.  Adding @samp{-nc} will prevent this
+behavior, instead causing the original version to be preserved and any
+newer copies on the server to be ignored.
 
-When running Wget with @samp{-N}, with or without @samp{-r}, the
-decision as to whether or not to download a newer copy of a file depends
-on the local and remote timestamp and size of the file
-(@pxref{Time-Stamping}).  @samp{-nc} may not be specified at the same
-time as @samp{-N}.
+When running Wget with @samp{-N}, with or without @samp{-r} or
+@samp{-p}, the decision as to whether or not to download a newer copy
+of a file depends on the local and remote timestamp and size of the
+file (@pxref{Time-Stamping}).  @samp{-nc} may not be specified at the
+same time as @samp{-N}.
 
 Note that when @samp{-nc} is specified, files with the suffixes
 @samp{.html} or @samp{.htm} will be loaded from the local disk and
@@ -1799,7 +1807,10 @@ option to turn it on.
 @item -A @var{acclist} --accept @var{acclist}
 @itemx -R @var{rejlist} --reject @var{rejlist}
 Specify comma-separated lists of file name suffixes or patterns to
-accept or reject (@pxref{Types of Files} for more details).
+accept or reject (@pxref{Types of Files} for more details). Note that if
+any of the wildcard characters, @samp{*}, @samp{?}, @samp{[} or
+@samp{]}, appear in an element of @var{acclist} or @var{rejlist},
+it will be treated as a pattern, rather than a suffix.
 
 @item -D @var{domain-list}
 @itemx --domains=@var{domain-list}
