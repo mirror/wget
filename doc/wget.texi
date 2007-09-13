@@ -569,7 +569,7 @@ behavior depends on a few options, including @samp{-nc}.  In certain
 cases, the local file will be @dfn{clobbered}, or overwritten, upon
 repeated download.  In other cases it will be preserved.
 
-When running Wget without @samp{-N}, @samp{-nc}, or @samp{-r},
+When running Wget without @samp{-N}, @samp{-nc}, @samp{-r}, or @samp{p},
 downloading the same file in the same directory will result in the
 original copy of @var{file} being preserved and the second copy being
 named @samp{@var{file}.1}.  If that file is downloaded yet again, the
@@ -581,17 +581,17 @@ clobbering that's prevented (as the numeric suffixes were already
 preventing clobbering), but rather the multiple version saving that's
 prevented.
 
-When running Wget with @samp{-r}, but without @samp{-N} or @samp{-nc},
-re-downloading a file will result in the new copy simply overwriting the
-old.  Adding @samp{-nc} will prevent this behavior, instead causing the
-original version to be preserved and any newer copies on the server to
-be ignored.
+When running Wget with @samp{-r} or @samp{-p}, but without @samp{-N}
+or @samp{-nc}, re-downloading a file will result in the new copy
+simply overwriting the old.  Adding @samp{-nc} will prevent this
+behavior, instead causing the original version to be preserved and any
+newer copies on the server to be ignored.
 
-When running Wget with @samp{-N}, with or without @samp{-r}, the
-decision as to whether or not to download a newer copy of a file depends
-on the local and remote timestamp and size of the file
-(@pxref{Time-Stamping}).  @samp{-nc} may not be specified at the same
-time as @samp{-N}.
+When running Wget with @samp{-N}, with or without @samp{-r} or
+@samp{-p}, the decision as to whether or not to download a newer copy
+of a file depends on the local and remote timestamp and size of the
+file (@pxref{Time-Stamping}).  @samp{-nc} may not be specified at the
+same time as @samp{-N}.
 
 Note that when @samp{-nc} is specified, files with the suffixes
 @samp{.html} or @samp{.htm} will be loaded from the local disk and

@@ -1,7 +1,8 @@
 2007-09-12  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi: Expanded the description of -O. Clarified the
-	detection of elements as "patterns" versus "suffixes" in -A, -R.
+	detection of elements as "patterns" versus "suffixes" in -A,
+	-R. Describe -p in relation to -nc.
 
 2007-07-28  Micah Cowan  <micah@cowan.name>
 
