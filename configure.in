@@ -134,16 +134,6 @@ if test -n "$auto_cflags"; then
 fi
 
 dnl
-dnl In case of {cyg,gnu}win32.  Should be a _target_ test.
-dnl Might also be erelevant for DJGPP.
-dnl
-case "$host_os" in
-  *win32) exeext='.exe';;
-  *) exeext='';;
-esac
-AC_SUBST(exeext)
-
-dnl
 dnl Checks for basic compiler characteristics.
 dnl
 AC_C_CONST

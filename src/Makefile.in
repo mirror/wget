@@ -52,7 +52,7 @@ DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(local
 CFLAGS   = @CFLAGS@
 LDFLAGS  = @LDFLAGS@ 
 LIBS     = @LIBS@ @LIBSSL@ @LIBGNUTLS@
-exeext   = @exeext@
+exeext   = @EXEEXT@
 
 INCLUDES = -I. -I$(srcdir)
 
