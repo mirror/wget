@@ -2311,7 +2311,6 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   const char *tmrate;
   uerr_t err, ret = TRYLIMEXC;
   time_t tmr = -1;               /* remote time-stamp */
-  wgint local_size = 0;          /* the size of the local file */
   struct http_stat hstat;        /* HTTP status */
   struct_stat st;  
   bool send_head_first = true;
@@ -2589,7 +2588,7 @@ Server file no newer than local file `%s' -- not retrieving.\n\n"),
                             {
                               logprintf (LOG_VERBOSE, _("\
 The sizes do not match (local %s) -- retrieving.\n"),
-                                         number_to_static_string (local_size));
+                                         number_to_static_string (hstat.orig_file_size));
                             }
                         }
                       else
