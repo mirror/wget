@@ -1,3 +1,8 @@
+2007-09-24  Christopher Lewis <chris@christopherlewis.com>
+
+	* config-compiler.h: Fix compiler warnings related to
+	HAVE_INTPTR_T.
+
 2007-07-05  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.top.bor, Makefile.doc, Makefile.in, Makefile.src:
