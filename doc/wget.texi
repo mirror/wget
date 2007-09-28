@@ -3622,6 +3622,18 @@ Junio Hamano---donated support for Opie and @sc{http} @code{Digest}
 authentication.
 
 @item
+Mauro Tortonesi---Improved IPv6 support, adding support for dual
+family systems.  Refactored and enhanced FTP IPv6 code. Maintained GNU
+Wget from 2004--2007.
+
+@item
+Christopher G.@: Lewis---Maintenance of the Windows version of GNU WGet.
+
+@item
+Gisle Vanem---Many helpful patches and improvements, especially for
+Windows and MS-DOS support.
+
+@item
 People who provided donations for development---including Brian Gough.
 @end itemize
 
@@ -3635,7 +3647,7 @@ Martin Baehr,
 Dieter Baron,
 Roger Beeman,
 Dan Berger,
-T. Bharath,
+T.@: Bharath,
 Christian Biere,
 Paul Bludov,
 Daniel Bodea,
@@ -3676,7 +3688,7 @@ Aleksandar Erkalovic,
 Andy Eskilsson,
 Christian Fraenkel,
 David Fritz,
-Charles C. Fu,
+Charles C.@: Fu,
 FUJISHIMA Satsuki,
 Masashi Fujita,
 Howard Gayle,
@@ -3731,7 +3743,7 @@ Simos KSenitellis,
 @end ifnottex
 Christian Lackas,
 Hrvoje Lacko,
-Daniel S. Lewart,
+Daniel S.@: Lewart,
 @iftex
 Nicol@'{a}s Lichtmeier,
 @end iftex
@@ -3739,7 +3751,7 @@ Nicol@'{a}s Lichtmeier,
 Nicolas Lichtmeier,
 @end ifnottex
 Dave Love,
-Alexander V. Lukyanov,
+Alexander V.@: Lukyanov,
 @iftex
 Thomas Lu@ss{}nig,
 @end iftex
@@ -3748,16 +3760,16 @@ Thomas Lussnig,
 @end ifnottex
 Andre Majorel,
 Aurelien Marchand,
-Matthew J. Mellon,
+Matthew J.@: Mellon,
 Jordan Mendelson,
 Lin Zhe Min,
 Jan Minar,
 Tim Mooney,
 Keith Moore,
-Adam D. Moss,
+Adam D.@: Moss,
 Simon Munton,
 Charlie Negyesi,
-R. K. Owen,
+R.@: K.@: Owen,
 Leonid Petrov,
 Simone Piunno,
 Andrew Pollock,
@@ -3779,6 +3791,7 @@ Keith Refson,
 Bill Richardson,
 Tyler Riddle,
 Tobias Ringstrom,
+Jochen Roderburg,
 @c Texinfo doesn't grok @'{@i}, so we have to use TeX itself.
 @tex
 Juan Jos\'{e} Rodr\'{\i}guez,
@@ -3786,13 +3799,13 @@ Juan Jos\'{e} Rodr\'{\i}guez,
 @ifnottex
 Juan Jose Rodriguez,
 @end ifnottex
-Maciej W. Rozycki,
-Edward J. Sabol,
+Maciej W.@: Rozycki,
+Edward J.@: Sabol,
 Heinz Salzmann,
 Robert Schmidt,
 Nicolas Schodet,
 Andreas Schwab,
-Steven M. Schweda,
+Steven M.@: Schweda,
 Chris Seawood,
 Dennis Smit,
 Toomas Soome,
@@ -3816,7 +3829,9 @@ Russell Vincent,
 Zeljko Vrba,
 @end ifnottex
 Charles G Waldman,
-Douglas E. Wegscheid,
+Douglas E.@: Wegscheid,
+Ralf Wildenhues,
+Joshua David Williams,
 YAMAZAKI Makoto,
 Jasmin Zainul,
 @iftex
