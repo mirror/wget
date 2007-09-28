@@ -1,3 +1,13 @@
+2007-09-27  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi: Removed "for more details" from parenthesese
+	enclosing @pxref{}s, so that texi2pod.pl knows to remove the
+	whole reference. Made some gramattical improvements, and
+	strengthened the recommendation to use the info manual instead.
+	* texi2pod.pl: Brought in some updates from the GCC version. Not
+	an entire update, since a couple "fixes" there breaks stuff
+	here.
+
 2007-09-12  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi: Expanded the description of -O. Clarified the
