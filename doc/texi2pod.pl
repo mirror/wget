@@ -204,9 +204,9 @@ while(<$inf>) {
     # Now the ones that have to be replaced by special escapes
     # (which will be turned back into text by unmunge())
     s/&/&amp;/g;
+    s/\@\@/&at;/g;
     s/\@\{/&lbrace;/g;
     s/\@\}/&rbrace;/g;
-    s/\@\@/&at;/g;
 
     # Inside a verbatim block, handle @var specially.
     if ($shift ne "") {
