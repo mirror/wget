@@ -1,3 +1,8 @@
+2007-09-24  Gisle Vanem  <giva@bgnett.no>
+
+	* connect.c, init.c, main.c, openssl.c, options.h, sysdep.h,
+	url.c, utils.c: Added support for building on MS-DOS.
+
 2007-09-24  Jochen Roderburg  <roderburg@uni-koeln.de>
 
 	* http.c (http_zero): Remove no-longer-used local_size variable.

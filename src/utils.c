@@ -287,9 +287,9 @@ datetime_str (time_t t)
 }
 
 /* The Windows versions of the following two functions are defined in
-   mswindows.c.  */
+   mswindows.c. On MSDOS this function should never be called. */
 
-#ifndef WINDOWS
+#if !defined(WINDOWS) && !defined(MSDOS)
 void
 fork_to_background (void)
 {
@@ -333,7 +333,7 @@ fork_to_background (void)
   freopen ("/dev/null", "w", stdout);
   freopen ("/dev/null", "w", stderr);
 }
-#endif /* not WINDOWS */
+#endif /* !WINDOWS && !MSDOS */
 
 /* "Touch" FILE, i.e. make its mtime ("modified time") equal the time
    specified with TM.  The atime ("access time") is set to the current

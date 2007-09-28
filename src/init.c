@@ -103,7 +103,7 @@ CMD_DECLARE (cmd_spec_verbose);
    add any entries that allocate memory (e.g. cmd_string and
    cmd_vector) to the cleanup() function below. */
 
-static struct {
+static const struct {
   const char *name;
   void *place;
   bool (*action) (const char *, const char *, void *);
@@ -241,7 +241,10 @@ static struct {
   { "useragent",        NULL,                   cmd_spec_useragent },
   { "verbose",          NULL,                   cmd_spec_verbose },
   { "wait",             &opt.wait,              cmd_time },
-  { "waitretry",        &opt.waitretry,         cmd_time }
+  { "waitretry",        &opt.waitretry,         cmd_time },
+#ifdef MSDOS
+  { "wdebug",           &opt.wdebug,            cmd_boolean },
+#endif
 };
 
 /* Look up CMDNAME in the commands[] and return its position in the
@@ -313,10 +316,10 @@ defaults (void)
 #endif
 
   /* The default for file name restriction defaults to the OS type. */
-#if !defined(WINDOWS) && !defined(__CYGWIN__)
-  opt.restrict_files_os = restrict_unix;
-#else
+#if defined(WINDOWS) || defined(MSDOS) || defined(__CYGWIN__)
   opt.restrict_files_os = restrict_windows;
+#else
+  opt.restrict_files_os = restrict_unix;
 #endif
   opt.restrict_files_ctrl = true;
   opt.restrict_files_case = restrict_no_case_restriction;
@@ -333,14 +336,27 @@ home_dir (void)
 
   if (!home)
     {
-#ifndef WINDOWS
+#if defined(MSDOS)
+      /* Under MSDOS, if $HOME isn't defined, use the directory where
+         `wget.exe' resides.  */
+      const char *_w32_get_argv0 (void); /* in libwatt.a/pcconfig.c */
+      char *p, buf[PATH_MAX];
+
+      strcpy (buf, _w32_get_argv0 ());
+      p = strrchr (buf, '/');            /* djgpp */
+      if (!p)
+        p = strrchr (buf, '\\');          /* others */
+      assert (p);
+      *p = '\0';
+      home = buf;
+#elif !defined(WINDOWS)
       /* If HOME is not defined, try getting it from the password
          file.  */
       struct passwd *pwd = getpwuid (getuid ());
       if (!pwd || !pwd->pw_dir)
         return NULL;
       home = pwd->pw_dir;
-#else  /* WINDOWS */
+#else  /* !WINDOWS */
       /* Under Windows, if $HOME isn't defined, use the directory where
          `wget.exe' resides.  */
       home = ws_mypath ();
@@ -750,10 +766,10 @@ cmd_string (const char *com, const char *val, void *place)
   return true;
 }
 
-#ifndef WINDOWS
-# define ISSEP(c) ((c) == '/')
-#else
+#if defined(WINDOWS) || defined(MSDOS)
 # define ISSEP(c) ((c) == '/' || (c) == '\\')
+#else
+# define ISSEP(c) ((c) == '/')
 #endif
 
 /* Like the above, but handles tilde-expansion when reading a user's
@@ -791,7 +807,7 @@ cmd_file (const char *com, const char *val, void *place)
       *pstring = concat_strings (home, "/", val, (char *) 0);
     }
 
-#ifdef WINDOWS
+#if defined(WINDOWS) || defined(MSDOS)
   /* Convert "\" to "/". */
   {
     char *s;

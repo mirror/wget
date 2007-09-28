@@ -131,6 +131,10 @@ struct options
   bool debug;			/* Debugging on/off */
 #endif
 
+#ifdef MSDOS
+  bool wdebug;                  /* Watt-32 tcp/ip debugging on/off */
+#endif
+
   bool timestamping;		/* Whether to use time-stamping. */
 
   bool backup_converted;	/* Do we save pre-converted files as *.orig? */

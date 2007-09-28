@@ -1,0 +1,4 @@
+2007-09-24  Gisle Vanem  <giva@bgnett.no>
+
+	* Makefile.DJ, config.h: Added to support building on MS-DOS via
+	DJGPP.

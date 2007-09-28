@@ -668,7 +668,7 @@ test_socket_open (int sock)
 
 /* Basic socket operations, mostly EINTR wrappers.  */
 
-#ifdef WINDOWS
+#if defined(WINDOWS) || defined(MSDOS)
 # define read(fd, buf, cnt) recv (fd, buf, cnt, 0)
 # define write(fd, buf, cnt) send (fd, buf, cnt, 0)
 # define close(fd) closesocket (fd)
