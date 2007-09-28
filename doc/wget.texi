@@ -64,7 +64,11 @@ Originally written by Hrvoje Niksic <hniksic@xemacs.org>.
 Currently maintained by Micah Cowan <micah@cowan.name>.
 @c man end
 @c man begin SEEALSO
-GNU Info entry for @file{wget}.
+This is @strong{not} the complete manual for GNU Wget.
+For more complete information, including more detailed explanations of
+some of the options, and a number of commands available
+for use with @file{.wgetrc} files and the @samp{-e} option, see the GNU
+Info entry for @file{wget}.
 @c man end
 @end ignore
 
