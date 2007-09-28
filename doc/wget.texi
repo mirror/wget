@@ -347,7 +347,7 @@ wget -r --tries=10 http://fly.srk.fer.hr/ -o log
 @end example
 
 The space between the option accepting an argument and the argument may
-be omitted.  Instead @samp{-o log} you can write @samp{-olog}.
+be omitted.  Instead of @samp{-o log} you can write @samp{-olog}.
 
 You may put several options that do not require arguments together,
 like:
@@ -754,7 +754,7 @@ connect timeout, other than that implemented by system libraries.
 @cindex timeout, read
 @item --read-timeout=@var{seconds}
 Set the read (and write) timeout to @var{seconds} seconds.  The
-``time'' of this timeout refers @dfn{idle time}: if, at any point in
+``time'' of this timeout refers to @dfn{idle time}: if, at any point in
 the download, no data is received for more than the specified number
 of seconds, reading fails and the download is restarted.  This option
 does not directly affect the duration of the entire download.
@@ -1087,8 +1087,8 @@ Retrieval Options}).
 @itemx --http-password=@var{password}
 Specify the username @var{user} and password @var{password} on an
 @sc{http} server.  According to the type of the challenge, Wget will
-encode them using either the @code{basic} (insecure) or the
-@code{digest} authentication scheme.
+encode them using either the @code{basic} (insecure),
+the @code{digest}, or the Windows @code{NTLM} authentication scheme.
 
 Another way to specify username and password is in the @sc{url} itself
 (@pxref{URL Format}).  Either method reveals your password to anyone who
@@ -1807,7 +1807,7 @@ option to turn it on.
 @item -A @var{acclist} --accept @var{acclist}
 @itemx -R @var{rejlist} --reject @var{rejlist}
 Specify comma-separated lists of file name suffixes or patterns to
-accept or reject (@pxref{Types of Files} for more details). Note that if
+accept or reject (@pxref{Types of Files}). Note that if
 any of the wildcard characters, @samp{*}, @samp{?}, @samp{[} or
 @samp{]}, appear in an element of @var{acclist} or @var{rejlist},
 it will be treated as a pattern, rather than a suffix.
@@ -1876,13 +1876,13 @@ without any distractions, not even those from the same hosts
 @item -I @var{list}
 @itemx --include-directories=@var{list}
 Specify a comma-separated list of directories you wish to follow when
-downloading (@pxref{Directory-Based Limits} for more details.)  Elements
+downloading (@pxref{Directory-Based Limits}).  Elements
 of @var{list} may contain wildcards.
 
 @item -X @var{list}
 @itemx --exclude-directories=@var{list}
 Specify a comma-separated list of directories you wish to exclude from
-download (@pxref{Directory-Based Limits} for more details.)  Elements of
+download (@pxref{Directory-Based Limits}).  Elements of
 @var{list} may contain wildcards.
 
 @item -np
