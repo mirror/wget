@@ -204,9 +204,9 @@ while(<$inf>) {
     # Now the ones that have to be replaced by special escapes
     # (which will be turned back into text by unmunge())
     s/&/&amp;/g;
-    s/\@\@/&at;/g;
     s/\@\{/&lbrace;/g;
     s/\@\}/&rbrace;/g;
+    s/\@\@/&at;/g;
 
     # Inside a verbatim block, handle @var specially.
     if ($shift ne "") {
@@ -227,11 +227,12 @@ while(<$inf>) {
     /^\@include\s+(.+)$/ and do {
 	push @instack, $inf;
 	$inf = gensym();
+	$file = postprocess($1);
 
 	# Try cwd and $ibase.
-	open($inf, "<" . $1) 
-	    or open($inf, "<" . $ibase . "/" . $1)
-		or die "cannot open $1 or $ibase/$1: $!\n";
+	open($inf, "<" . $file) 
+	    or open($inf, "<" . $ibase . "/" . $file)
+		or die "cannot open $file or $ibase/$file: $!\n";
 	next;
     };
 
@@ -274,7 +275,6 @@ while(<$inf>) {
 	$ic =~ s/\@(?:code|kbd)/C/;
 	$ic =~ s/\@(?:dfn|var|emph|cite|i)/I/;
 	$ic =~ s/\@(?:file)/F/;
-	$ic =~ s/\@(?:asis)/S/; # punt
 	$_ = "\n=over 4\n";
     };
 
@@ -308,7 +308,7 @@ die "No filename or title\n" unless defined $fn && defined $tl;
 $sects{NAME} = "$fn \- $tl\n";
 $sects{FOOTNOTES} .= "=back\n" if exists $sects{FOOTNOTES};
 
-for $sect (qw(NAME SYNOPSIS DESCRIPTION OPTIONS ENVIRONMENT EXAMPLES FILES
+for $sect (qw(NAME SYNOPSIS DESCRIPTION OPTIONS ENVIRONMENT FILES
 	      BUGS NOTES FOOTNOTES SEEALSO AUTHOR COPYRIGHT)) {
     if(exists $sects{$sect}) {
 	$head = $sect;
@@ -349,6 +349,13 @@ sub postprocess
     s/\@file\{([^\}]*)\}/F<$1>/g;
     s/\@w\{([^\}]*)\}/S<$1>/g;
     s/\@(?:dmn|math)\{([^\}]*)\}/$1/g;
+
+    # keep references of the form @ref{...}, print them bold
+    s/\@(?:ref)\{([^\}]*)\}/B<$1>/g;
+
+    # Change double single quotes to double quotes.
+    s/''/"/g;
+    s/``/"/g;
 
     # Cross references are thrown away, as are @noindent and @refill.
     # (@noindent is impossible in .pod, and @refill is unnecessary.)
