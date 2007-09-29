@@ -1821,7 +1821,7 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
           if (has_html_suffix_p (hs->local_file))
             *dt |= TEXTHTML;
 
-          return RETROK;
+          return RETRUNNEEDED;
         }
       else if (!ALLOW_CLOBBER)
         {
