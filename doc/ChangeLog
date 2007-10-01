@@ -1,3 +1,9 @@
+2007-10-01  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi: Updated information in Mailing Lists, Reporting
+	Bugs. Added Web Site section, and add information about Mac OS
+	X, MS-DOS, and VMS in Portability.
+
 2007-09-27  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi: Removed "for more details" from parenthesese

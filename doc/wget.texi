@@ -3179,8 +3179,9 @@ wget -m -k -K -E http://www.gnu.org/ -o /home/me/weeklog
 This chapter contains all the stuff that could not fit anywhere else.
 
 @menu
-* Proxies::             Support for proxy servers
+* Proxies::             Support for proxy servers.
 * Distribution::        Getting the latest version.
+* Web Site::            GNU Wget's presence on the World Wide Web.
 * Mailing List::        Wget mailing list for announcements and discussion.
 * Reporting Bugs::      How and where to report bugs.
 * Portability::         The systems Wget works on.
@@ -3272,16 +3273,24 @@ master GNU archive site ftp.gnu.org, and its mirrors.  For example,
 Wget @value{VERSION} can be found at
 @url{ftp://ftp.gnu.org/pub/gnu/wget/wget-@value{VERSION}.tar.gz}
 
+@node Web Site
+@section Web Site
+@cindex web site
+
+The official web site for GNU Wget is at
+@url{http://www.gnu.org/software/wget/}. However, most useful
+information resides at ``The Wget Wgiki'',
+@url{http://wget.addictivecode.org/}.
+
 @node Mailing List
 @section Mailing List
 @cindex mailing list
 @cindex list
 
-There are several Wget-related mailing lists, all hosted by
-SunSITE.dk.  The general discussion list is at
-@email{wget@@sunsite.dk}.  It is the preferred place for bug reports
-and suggestions, as well as for discussion of development.  You are
-invited to subscribe.
+There are several Wget-related mailing lists.  The general discussion
+list is at @email{wget@@sunsite.dk}.  It is the preferred place for
+support requests and suggestions, as well as for discussion of
+development.  You are invited to subscribe.
 
 To subscribe, simply send mail to @email{wget-subscribe@@sunsite.dk}
 and follow the instructions.  Unsubscribe by mailing to
@@ -3289,7 +3298,7 @@ and follow the instructions.  Unsubscribe by mailing to
 @url{http://www.mail-archive.com/wget%40sunsite.dk/} and at
 @url{http://news.gmane.org/gmane.comp.web.wget.general}.
 
-The second mailing list is at @email{wget-patches@@sunsite.dk}, and is
+Another mailing list is at @email{wget-patches@@sunsite.dk}, and is
 used to submit patches for review by Wget developers.  A ``patch'' is
 a textual representation of change to source code, readable by both
 humans and programs.  The file @file{PATCHES} that comes with Wget
@@ -3297,10 +3306,18 @@ covers the creation and submitting of patches in detail.  Please don't
 send general suggestions or bug reports to @samp{wget-patches}; use it
 only for patch submissions.
 
-To subscribe, simply send mail to @email{wget-subscribe@@sunsite.dk}
-and follow the instructions.  Unsubscribe by mailing to
-@email{wget-unsubscribe@@sunsite.dk}.  The mailing list is archived at
+Subscription is the same as above for @email{wget@@sunsite.dk}, except
+that you send to @email{wget-patches-subscribe@@sunsite.dk}, instead.
+The mailing list is archived at
 @url{http://news.gmane.org/gmane.comp.web.wget.patches}.
+
+Finally, there is the @email{wget-notify@@addictivecode.org} mailing
+list. This is a non-discussion list that receives commit notifications
+from the source repository, and also bug report-change notifications.
+This is the highest-traffic list for Wget, and is recommended only for
+people who are seriously interested in ongoing Wget development.
+Subscription is through the @code{mailman} interface at
+@url{http://addictivecode.org/mailman/listinfo/wget-notify}.
 
 @node Reporting Bugs
 @section Reporting Bugs
@@ -3309,8 +3326,8 @@ and follow the instructions.  Unsubscribe by mailing to
 @cindex bug reports
 
 @c man begin BUGS
-You are welcome to send bug reports about GNU Wget to
-@email{bug-wget@@gnu.org}.
+You are welcome to submit bug reports via the GNU Wget bug tracker (see
+@url{http://wget.addictivecode.org/BugTracker}).
 
 Before actually submitting a bug report, please try to follow a few
 simple guidelines.
@@ -3320,7 +3337,9 @@ simple guidelines.
 Please try to ascertain that the behavior you see really is a bug.  If
 Wget crashes, it's a bug.  If Wget does not behave as documented,
 it's a bug.  If things work strange, but you are not sure about the way
-they are supposed to work, it might well be a bug.
+they are supposed to work, it might well be a bug, but you might want to
+double-check the documentation and the mailing lists (@pxref{Mailing
+List}).
 
 @item
 Try to repeat the bug in as simple circumstances as possible.  E.g. if
@@ -3369,10 +3388,10 @@ uses GNU Autoconf for building and configuring, and mostly avoids using
 ``special'' features of any particular Unix, it should compile (and
 work) on all common Unix flavors.
 
-Various Wget versions have been compiled and tested under many kinds
-of Unix systems, including GNU/Linux, Solaris, SunOS 4.x, OSF (aka
-Digital Unix or Tru64), Ultrix, *BSD, IRIX, AIX, and others.  Some of
-those systems are no longer in widespread use and may not be able to
+Various Wget versions have been compiled and tested under many kinds of
+Unix systems, including GNU/Linux, Solaris, SunOS 4.x, Mac OS X, OSF
+(aka Digital Unix or Tru64), Ultrix, *BSD, IRIX, AIX, and others.  Some
+of those systems are no longer in widespread use and may not be able to
 support recent versions of Wget.  If Wget fails to compile on your
 system, we would like to know about it.
 
@@ -3387,6 +3406,10 @@ case in practice for many years now.  All questions and problems in
 Windows usage should be reported to Wget mailing list at
 @email{wget@@sunsite.dk} where the volunteers who maintain the
 Windows-related features might look at them.
+
+Support for building on MS-DOS via DJGPP has been contributed by Gisle
+Vanem; a port to VMS is maintained by Steven Schweda, and is available
+at @url{http://antinode.org/}.
 
 @node Signals
 @section Signals
