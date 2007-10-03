@@ -2373,7 +2373,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       sleep_between_retrievals (count);
       
       /* Get the current time string.  */
-      tms = time_str (time (NULL));
+      tms = datetime_str (time (NULL));
       
       if (opt.spider && !got_head)
         logprintf (LOG_VERBOSE, _("\
@@ -2442,7 +2442,7 @@ Spider mode enabled. Check if remote file exists.\n"));
       err = gethttp (u, &hstat, dt, proxy);
 
       /* Time?  */
-      tms = time_str (time (NULL));
+      tms = datetime_str (time (NULL));
       
       /* Get the new location (with or without the redirection).  */
       if (hstat.newloc)

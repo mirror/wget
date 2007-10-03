@@ -1,3 +1,9 @@
+2007-10-02  Micah Cowan  <micah@cowan.name>
+
+	* ftp.c (getftp, ftp_loop_internal), http.c (http_loop), main
+	(main): Use datetime_str instead of time_str, for those who have
+	potentially long-running sessions.
+
 2007-09-24  Gisle Vanem  <giva@bgnett.no>
 
 	* connect.c, init.c, main.c, openssl.c, options.h, sysdep.h,

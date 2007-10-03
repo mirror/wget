@@ -968,7 +968,7 @@ Error in server response, closing control connection.\n"));
                       expected_bytes ? expected_bytes - restval : 0,
                       restval, &rd_size, len, &con->dltime, flags);
 
-  tms = time_str (time (NULL));
+  tms = datetime_str (time (NULL));
   tmrate = retr_rate (rd_size, con->dltime);
   total_download_time += con->dltime;
 
@@ -1150,7 +1150,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
         restval = 0;
 
       /* Get the current time string.  */
-      tms = time_str (time (NULL));
+      tms = datetime_str (time (NULL));
       /* Print fetch message, if opt.verbose.  */
       if (opt.verbose)
         {
@@ -1214,7 +1214,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
           /* Not as great.  */
           abort ();
         }
-      tms = time_str (time (NULL));
+      tms = datetime_str (time (NULL));
       if (!opt.spider)
         tmrate = retr_rate (len - restval, con->dltime);
 
