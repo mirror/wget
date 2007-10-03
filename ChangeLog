@@ -1,3 +1,7 @@
+2007-10-03  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: Note missing functionality from GnuTLS support.
+
 2007-09-25  Micah Cowan  <micah@cowan.name>
 
 	* configure.in: Remove unnecessary heuristic to generate exeext
