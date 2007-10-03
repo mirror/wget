@@ -5,6 +5,12 @@
 	potentially long-running sessions. Based on suggestions by Saso
 	Tomat <miskox@hotmail.com> and Steven M. Schweda
 	<sms@antinode.org>.
+	* http.c (gethttp): Warn about host lookup failures. Adjusted
+	from Stephen Gildea's patch.
+
+2007-10-02  Stephen Gildea  <stepheng+wget@gildea.com>
+
+	* connect.c (connect_to_host): Warn about host lookup failures.
 
 2007-09-25  Micah Cowan  <micah@cowan.name>
 
