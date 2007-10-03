@@ -1,7 +1,8 @@
 2007-10-03  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi <Wgetrc Commands>: Cleaned up alphabetization,
-	more consistent use of underscores.
+	more consistent use of underscores. Added a description of the
+	content_disposition wgetrc command.
 
 2007-10-01  Micah Cowan  <micah@cowan.name>
 
