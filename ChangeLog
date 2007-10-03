@@ -1,3 +1,9 @@
+2007-09-25  Micah Cowan  <micah@cowan.name>
+
+	* configure.in: Remove unnecessary heuristic to generate exeext
+	variable, since AC_PROG_CC and others automatically set EXEEXT.
+	Pointed out by Steve Kenton <skenton@ou.edu>.
+
 2007-09-12  Micah Cowan  <micah@cowan.name>
 
 	* AUTHORS: Added... me...

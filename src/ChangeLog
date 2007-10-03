@@ -1,3 +1,7 @@
+2007-09-25  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.in: Use EXEEXT instead of exeext.
+
 2007-09-24  Jochen Roderburg  <roderburg@uni-koeln.de>
 
 	* http.c (http_zero): Remove no-longer-used local_size variable.
