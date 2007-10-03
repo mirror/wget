@@ -36,7 +36,8 @@ be the maximum number of HTTP redirects to follow.
 file name used by many web dynamically generated pages. For the time
 being, Content-Disposition is not used by default, to avoid the extra
 round-trips incurred (must specify "-e contentdisposition=yes"); this
-may change in a future version.
+may change in a future version. NOTE: This functionality is currently
+considered "experimental", and may not be fully functional.
 
 ** The GnuTLS library is now also experimentally supported for https
 downloads.  This is still work-in-progress.  OpenSSL is still used by
