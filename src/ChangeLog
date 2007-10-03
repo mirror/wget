@@ -4,6 +4,10 @@
 	(main): Use datetime_str instead of time_str, for those who have
 	potentially long-running sessions.
 
+2007-09-25  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.in: Use EXEEXT instead of exeext.
+
 2007-09-24  Gisle Vanem  <giva@bgnett.no>
 
 	* connect.c, init.c, main.c, openssl.c, options.h, sysdep.h,

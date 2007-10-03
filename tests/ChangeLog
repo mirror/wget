@@ -1,3 +1,7 @@
+2007-09-25  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.in: Use EXEEXT instead of exeext.
+
 2007-08-21  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* WgetTest.pm.in: Added support for timestamping of pre-existing
