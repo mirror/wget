@@ -1,3 +1,8 @@
+2007-10-03  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi <Wgetrc Commands>: Cleaned up alphabetization,
+	more consistent use of underscores.
+
 2007-10-01  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi: Updated information in Mailing Lists, Reporting

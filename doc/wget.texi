@@ -2503,10 +2503,6 @@ Same as @samp{-A}/@samp{-R} (@pxref{Types of Files}).
 @item add_hostdir = on/off
 Enable/disable host-prefixed file names.  @samp{-nH} disables it.
 
-@item continue = on/off
-If set to on, force continuation of preexistent partially retrieved
-files.  See @samp{-c} before setting it.
-
 @item background = on/off
 Enable/disable going to background---the same as @samp{-b} (which
 enables it).
@@ -2552,14 +2548,18 @@ If this is set to off, the server certificate is not checked against
 the specified client authorities.  The default is ``on''.  The same as
 @samp{--check-certificate}.
 
+@item connect_timeout = @var{n}
+Set the connect timeout---the same as @samp{--connect-timeout}.
+
+@item continue = on/off
+If set to on, force continuation of preexistent partially retrieved
+files.  See @samp{-c} before setting it.
+
 @item convert_links = on/off
 Convert non-relative links locally.  The same as @samp{-k}.
 
 @item cookies = on/off
 When set to off, disallow cookies.  See the @samp{--cookies} option.
-
-@item connect_timeout = @var{n}
-Set the connect timeout---the same as @samp{--connect-timeout}.
 
 @item cut_dirs = @var{n}
 Ignore @var{n} remote directory components.  Equivalent to
@@ -2597,12 +2597,12 @@ respectively.  With dot settings you can tailor the dot retrieval to
 suit your needs, or you can use the predefined @dfn{styles}
 (@pxref{Download Options}).
 
+@item dot_spacing = @var{n}
+Specify the number of dots in a single cluster (10 by default).
+
 @item dots_in_line = @var{n}
 Specify the number of dots that will be printed in each line throughout
 the retrieval (50 by default).
-
-@item dot_spacing = @var{n}
-Specify the number of dots in a single cluster (10 by default).
 
 @item egd_file = @var{file}
 Use @var{string} as the EGD socket file name.  The same as
@@ -2722,7 +2722,7 @@ Turn mirroring on/off.  The same as @samp{-m}.
 @item netrc = on/off
 Turn reading netrc on or off.
 
-@item noclobber = on/off
+@item no_clobber = on/off
 Same as @samp{-nc}.
 
 @item no_parent = on/off
@@ -2781,13 +2781,13 @@ and @samp{bar}.  Equivalent to @samp{--progress=@var{string}}.
 When set, use the protocol name as a directory component of local file
 names.  The same as @samp{--protocol-directories}.
 
-@item proxy_user = @var{string}
-Set proxy authentication user name to @var{string}, like
-@samp{--proxy-user=@var{string}}.
-
 @item proxy_password = @var{string}
 Set proxy authentication password to @var{string}, like
 @samp{--proxy-password=@var{string}}.
+
+@item proxy_user = @var{string}
+Set proxy authentication user name to @var{string}, like
+@samp{--proxy-user=@var{string}}.
 
 @item quiet = on/off
 Quiet mode---the same as @samp{-q}.
@@ -2821,8 +2821,8 @@ Recursive on/off---the same as @samp{-r}.
 
 @item referer = @var{string}
 Set HTTP @samp{Referer:} header just like
-@samp{--referer=@var{string}}.  (Note it was the folks who wrote the
-@sc{http} spec who got the spelling of ``referrer'' wrong.)
+@samp{--referer=@var{string}}.  (Note that it was the folks who wrote
+the @sc{http} spec who got the spelling of ``referrer'' wrong.)
 
 @item relative_only = on/off
 Follow only relative links---the same as @samp{-L} (@pxref{Relative
@@ -2897,7 +2897,7 @@ Turn verbose on/off---the same as @samp{-v}/@samp{-nv}.
 Wait @var{n} seconds between retrievals---the same as @samp{-w
 @var{n}}.
 
-@item waitretry = @var{n}
+@item wait_retry = @var{n}
 Wait up to @var{n} seconds between retries of failed retrievals
 only---the same as @samp{--waitretry=@var{n}}.  Note that this is
 turned on by default in the global @file{wgetrc}.
