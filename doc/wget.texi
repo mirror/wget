@@ -2726,6 +2726,10 @@ Load cookies from @var{file}.  See @samp{--load-cookies @var{file}}.
 @item logfile = @var{file}
 Set logfile to @var{file}, the same as @samp{-o @var{file}}.
 
+@item max_redirect = @var{number}
+Specifies the maximum number of redirections to follow for a resource.
+See @samp{--max-redirect=@var{number}}.
+
 @item mirror = on/off
 Turn mirroring on/off.  The same as @samp{-m}.
 
