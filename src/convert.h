@@ -1,5 +1,5 @@
 /* Declarations for convert.c
-   Copyright (C) 2003-2006 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 

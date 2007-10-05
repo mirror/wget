@@ -64,7 +64,11 @@ Originally written by Hrvoje Niksic <hniksic@xemacs.org>.
 Currently maintained by Micah Cowan <micah@cowan.name>.
 @c man end
 @c man begin SEEALSO
-GNU Info entry for @file{wget}.
+This is @strong{not} the complete manual for GNU Wget.
+For more complete information, including more detailed explanations of
+some of the options, and a number of commands available
+for use with @file{.wgetrc} files and the @samp{-e} option, see the GNU
+Info entry for @file{wget}.
 @c man end
 @end ignore
 
@@ -347,7 +351,7 @@ wget -r --tries=10 http://fly.srk.fer.hr/ -o log
 @end example
 
 The space between the option accepting an argument and the argument may
-be omitted.  Instead @samp{-o log} you can write @samp{-olog}.
+be omitted.  Instead of @samp{-o log} you can write @samp{-olog}.
 
 You may put several options that do not require arguments together,
 like:
@@ -548,8 +552,16 @@ is used as @var{file}, documents will be printed to standard output,
 disabling link conversion.  (Use @samp{./-} to print to a file
 literally named @samp{-}.)
 
-Note that a combination with @samp{-k} is only well-defined for
-downloading a single document.
+Use of @samp{-O} is @emph{not} intended to mean simply ``use the name
+@var{file} instead of the one in the URL;'' rather, it is
+analogous to shell redirection:
+@samp{wget -O file http://foo} is intended to work like
+@samp{wget -O - http://foo > file}; @file{file} will be truncated
+immediately, and @emph{all} downloaded content will be written there.
+
+Note that a combination with @samp{-k} is only permitted when
+downloading a single document, and combination with any of @samp{-r},
+@samp{-p}, or @samp{-N} is not allowed.
 
 @cindex clobbering, file
 @cindex downloading multiple times
@@ -561,7 +573,7 @@ behavior depends on a few options, including @samp{-nc}.  In certain
 cases, the local file will be @dfn{clobbered}, or overwritten, upon
 repeated download.  In other cases it will be preserved.
 
-When running Wget without @samp{-N}, @samp{-nc}, or @samp{-r},
+When running Wget without @samp{-N}, @samp{-nc}, @samp{-r}, or @samp{p},
 downloading the same file in the same directory will result in the
 original copy of @var{file} being preserved and the second copy being
 named @samp{@var{file}.1}.  If that file is downloaded yet again, the
@@ -573,17 +585,17 @@ clobbering that's prevented (as the numeric suffixes were already
 preventing clobbering), but rather the multiple version saving that's
 prevented.
 
-When running Wget with @samp{-r}, but without @samp{-N} or @samp{-nc},
-re-downloading a file will result in the new copy simply overwriting the
-old.  Adding @samp{-nc} will prevent this behavior, instead causing the
-original version to be preserved and any newer copies on the server to
-be ignored.
+When running Wget with @samp{-r} or @samp{-p}, but without @samp{-N}
+or @samp{-nc}, re-downloading a file will result in the new copy
+simply overwriting the old.  Adding @samp{-nc} will prevent this
+behavior, instead causing the original version to be preserved and any
+newer copies on the server to be ignored.
 
-When running Wget with @samp{-N}, with or without @samp{-r}, the
-decision as to whether or not to download a newer copy of a file depends
-on the local and remote timestamp and size of the file
-(@pxref{Time-Stamping}).  @samp{-nc} may not be specified at the same
-time as @samp{-N}.
+When running Wget with @samp{-N}, with or without @samp{-r} or
+@samp{-p}, the decision as to whether or not to download a newer copy
+of a file depends on the local and remote timestamp and size of the
+file (@pxref{Time-Stamping}).  @samp{-nc} may not be specified at the
+same time as @samp{-N}.
 
 Note that when @samp{-nc} is specified, files with the suffixes
 @samp{.html} or @samp{.htm} will be loaded from the local disk and
@@ -746,7 +758,7 @@ connect timeout, other than that implemented by system libraries.
 @cindex timeout, read
 @item --read-timeout=@var{seconds}
 Set the read (and write) timeout to @var{seconds} seconds.  The
-``time'' of this timeout refers @dfn{idle time}: if, at any point in
+``time'' of this timeout refers to @dfn{idle time}: if, at any point in
 the download, no data is received for more than the specified number
 of seconds, reading fails and the download is restarted.  This option
 does not directly affect the duration of the entire download.
@@ -1079,8 +1091,8 @@ Retrieval Options}).
 @itemx --http-password=@var{password}
 Specify the username @var{user} and password @var{password} on an
 @sc{http} server.  According to the type of the challenge, Wget will
-encode them using either the @code{basic} (insecure) or the
-@code{digest} authentication scheme.
+encode them using either the @code{basic} (insecure),
+the @code{digest}, or the Windows @code{NTLM} authentication scheme.
 
 Another way to specify username and password is in the @sc{url} itself
 (@pxref{URL Format}).  Either method reveals your password to anyone who
@@ -1799,7 +1811,10 @@ option to turn it on.
 @item -A @var{acclist} --accept @var{acclist}
 @itemx -R @var{rejlist} --reject @var{rejlist}
 Specify comma-separated lists of file name suffixes or patterns to
-accept or reject (@pxref{Types of Files} for more details).
+accept or reject (@pxref{Types of Files}). Note that if
+any of the wildcard characters, @samp{*}, @samp{?}, @samp{[} or
+@samp{]}, appear in an element of @var{acclist} or @var{rejlist},
+it will be treated as a pattern, rather than a suffix.
 
 @item -D @var{domain-list}
 @itemx --domains=@var{domain-list}
@@ -1865,13 +1880,13 @@ without any distractions, not even those from the same hosts
 @item -I @var{list}
 @itemx --include-directories=@var{list}
 Specify a comma-separated list of directories you wish to follow when
-downloading (@pxref{Directory-Based Limits} for more details.)  Elements
+downloading (@pxref{Directory-Based Limits}).  Elements
 of @var{list} may contain wildcards.
 
 @item -X @var{list}
 @itemx --exclude-directories=@var{list}
 Specify a comma-separated list of directories you wish to exclude from
-download (@pxref{Directory-Based Limits} for more details.)  Elements of
+download (@pxref{Directory-Based Limits}).  Elements of
 @var{list} may contain wildcards.
 
 @item -np
@@ -2488,10 +2503,6 @@ Same as @samp{-A}/@samp{-R} (@pxref{Types of Files}).
 @item add_hostdir = on/off
 Enable/disable host-prefixed file names.  @samp{-nH} disables it.
 
-@item continue = on/off
-If set to on, force continuation of preexistent partially retrieved
-files.  See @samp{-c} before setting it.
-
 @item background = on/off
 Enable/disable going to background---the same as @samp{-b} (which
 enables it).
@@ -2537,14 +2548,28 @@ If this is set to off, the server certificate is not checked against
 the specified client authorities.  The default is ``on''.  The same as
 @samp{--check-certificate}.
 
+@item connect_timeout = @var{n}
+Set the connect timeout---the same as @samp{--connect-timeout}.
+
+@item content_disposition = on/off
+If this is set to on, experimental (not fully-functional) support for
+@samp{Content-Disposition} headers is enabled. This can currently result in
+extra round-trips to the server for a @samp{HEAD} request, which is why
+it is not currently enabled by default.
+
+This option is useful for some file-downloading CGI programs that use
+@samp{Content-Disposition} headers to describe what the name of a
+downloaded file should be.
+
+@item continue = on/off
+If set to on, force continuation of preexistent partially retrieved
+files.  See @samp{-c} before setting it.
+
 @item convert_links = on/off
 Convert non-relative links locally.  The same as @samp{-k}.
 
 @item cookies = on/off
 When set to off, disallow cookies.  See the @samp{--cookies} option.
-
-@item connect_timeout = @var{n}
-Set the connect timeout---the same as @samp{--connect-timeout}.
 
 @item cut_dirs = @var{n}
 Ignore @var{n} remote directory components.  Equivalent to
@@ -2582,12 +2607,12 @@ respectively.  With dot settings you can tailor the dot retrieval to
 suit your needs, or you can use the predefined @dfn{styles}
 (@pxref{Download Options}).
 
+@item dot_spacing = @var{n}
+Specify the number of dots in a single cluster (10 by default).
+
 @item dots_in_line = @var{n}
 Specify the number of dots that will be printed in each line throughout
 the retrieval (50 by default).
-
-@item dot_spacing = @var{n}
-Specify the number of dots in a single cluster (10 by default).
 
 @item egd_file = @var{file}
 Use @var{string} as the EGD socket file name.  The same as
@@ -2701,13 +2726,17 @@ Load cookies from @var{file}.  See @samp{--load-cookies @var{file}}.
 @item logfile = @var{file}
 Set logfile to @var{file}, the same as @samp{-o @var{file}}.
 
+@item max_redirect = @var{number}
+Specifies the maximum number of redirections to follow for a resource.
+See @samp{--max-redirect=@var{number}}.
+
 @item mirror = on/off
 Turn mirroring on/off.  The same as @samp{-m}.
 
 @item netrc = on/off
 Turn reading netrc on or off.
 
-@item noclobber = on/off
+@item no_clobber = on/off
 Same as @samp{-nc}.
 
 @item no_parent = on/off
@@ -2766,13 +2795,13 @@ and @samp{bar}.  Equivalent to @samp{--progress=@var{string}}.
 When set, use the protocol name as a directory component of local file
 names.  The same as @samp{--protocol-directories}.
 
-@item proxy_user = @var{string}
-Set proxy authentication user name to @var{string}, like
-@samp{--proxy-user=@var{string}}.
-
 @item proxy_password = @var{string}
 Set proxy authentication password to @var{string}, like
 @samp{--proxy-password=@var{string}}.
+
+@item proxy_user = @var{string}
+Set proxy authentication user name to @var{string}, like
+@samp{--proxy-user=@var{string}}.
 
 @item quiet = on/off
 Quiet mode---the same as @samp{-q}.
@@ -2806,8 +2835,8 @@ Recursive on/off---the same as @samp{-r}.
 
 @item referer = @var{string}
 Set HTTP @samp{Referer:} header just like
-@samp{--referer=@var{string}}.  (Note it was the folks who wrote the
-@sc{http} spec who got the spelling of ``referrer'' wrong.)
+@samp{--referer=@var{string}}.  (Note that it was the folks who wrote
+the @sc{http} spec who got the spelling of ``referrer'' wrong.)
 
 @item relative_only = on/off
 Follow only relative links---the same as @samp{-L} (@pxref{Relative
@@ -2882,7 +2911,7 @@ Turn verbose on/off---the same as @samp{-v}/@samp{-nv}.
 Wait @var{n} seconds between retrievals---the same as @samp{-w
 @var{n}}.
 
-@item waitretry = @var{n}
+@item wait_retry = @var{n}
 Wait up to @var{n} seconds between retries of failed retrievals
 only---the same as @samp{--waitretry=@var{n}}.  Note that this is
 turned on by default in the global @file{wgetrc}.
@@ -3164,8 +3193,9 @@ wget -m -k -K -E http://www.gnu.org/ -o /home/me/weeklog
 This chapter contains all the stuff that could not fit anywhere else.
 
 @menu
-* Proxies::             Support for proxy servers
+* Proxies::             Support for proxy servers.
 * Distribution::        Getting the latest version.
+* Web Site::            GNU Wget's presence on the World Wide Web.
 * Mailing List::        Wget mailing list for announcements and discussion.
 * Reporting Bugs::      How and where to report bugs.
 * Portability::         The systems Wget works on.
@@ -3257,16 +3287,24 @@ master GNU archive site ftp.gnu.org, and its mirrors.  For example,
 Wget @value{VERSION} can be found at
 @url{ftp://ftp.gnu.org/pub/gnu/wget/wget-@value{VERSION}.tar.gz}
 
+@node Web Site
+@section Web Site
+@cindex web site
+
+The official web site for GNU Wget is at
+@url{http://www.gnu.org/software/wget/}. However, most useful
+information resides at ``The Wget Wgiki'',
+@url{http://wget.addictivecode.org/}.
+
 @node Mailing List
 @section Mailing List
 @cindex mailing list
 @cindex list
 
-There are several Wget-related mailing lists, all hosted by
-SunSITE.dk.  The general discussion list is at
-@email{wget@@sunsite.dk}.  It is the preferred place for bug reports
-and suggestions, as well as for discussion of development.  You are
-invited to subscribe.
+There are several Wget-related mailing lists.  The general discussion
+list is at @email{wget@@sunsite.dk}.  It is the preferred place for
+support requests and suggestions, as well as for discussion of
+development.  You are invited to subscribe.
 
 To subscribe, simply send mail to @email{wget-subscribe@@sunsite.dk}
 and follow the instructions.  Unsubscribe by mailing to
@@ -3274,7 +3312,7 @@ and follow the instructions.  Unsubscribe by mailing to
 @url{http://www.mail-archive.com/wget%40sunsite.dk/} and at
 @url{http://news.gmane.org/gmane.comp.web.wget.general}.
 
-The second mailing list is at @email{wget-patches@@sunsite.dk}, and is
+Another mailing list is at @email{wget-patches@@sunsite.dk}, and is
 used to submit patches for review by Wget developers.  A ``patch'' is
 a textual representation of change to source code, readable by both
 humans and programs.  The file @file{PATCHES} that comes with Wget
@@ -3282,10 +3320,18 @@ covers the creation and submitting of patches in detail.  Please don't
 send general suggestions or bug reports to @samp{wget-patches}; use it
 only for patch submissions.
 
-To subscribe, simply send mail to @email{wget-subscribe@@sunsite.dk}
-and follow the instructions.  Unsubscribe by mailing to
-@email{wget-unsubscribe@@sunsite.dk}.  The mailing list is archived at
+Subscription is the same as above for @email{wget@@sunsite.dk}, except
+that you send to @email{wget-patches-subscribe@@sunsite.dk}, instead.
+The mailing list is archived at
 @url{http://news.gmane.org/gmane.comp.web.wget.patches}.
+
+Finally, there is the @email{wget-notify@@addictivecode.org} mailing
+list. This is a non-discussion list that receives commit notifications
+from the source repository, and also bug report-change notifications.
+This is the highest-traffic list for Wget, and is recommended only for
+people who are seriously interested in ongoing Wget development.
+Subscription is through the @code{mailman} interface at
+@url{http://addictivecode.org/mailman/listinfo/wget-notify}.
 
 @node Reporting Bugs
 @section Reporting Bugs
@@ -3294,8 +3340,8 @@ and follow the instructions.  Unsubscribe by mailing to
 @cindex bug reports
 
 @c man begin BUGS
-You are welcome to send bug reports about GNU Wget to
-@email{bug-wget@@gnu.org}.
+You are welcome to submit bug reports via the GNU Wget bug tracker (see
+@url{http://wget.addictivecode.org/BugTracker}).
 
 Before actually submitting a bug report, please try to follow a few
 simple guidelines.
@@ -3305,7 +3351,9 @@ simple guidelines.
 Please try to ascertain that the behavior you see really is a bug.  If
 Wget crashes, it's a bug.  If Wget does not behave as documented,
 it's a bug.  If things work strange, but you are not sure about the way
-they are supposed to work, it might well be a bug.
+they are supposed to work, it might well be a bug, but you might want to
+double-check the documentation and the mailing lists (@pxref{Mailing
+List}).
 
 @item
 Try to repeat the bug in as simple circumstances as possible.  E.g. if
@@ -3354,10 +3402,10 @@ uses GNU Autoconf for building and configuring, and mostly avoids using
 ``special'' features of any particular Unix, it should compile (and
 work) on all common Unix flavors.
 
-Various Wget versions have been compiled and tested under many kinds
-of Unix systems, including GNU/Linux, Solaris, SunOS 4.x, OSF (aka
-Digital Unix or Tru64), Ultrix, *BSD, IRIX, AIX, and others.  Some of
-those systems are no longer in widespread use and may not be able to
+Various Wget versions have been compiled and tested under many kinds of
+Unix systems, including GNU/Linux, Solaris, SunOS 4.x, Mac OS X, OSF
+(aka Digital Unix or Tru64), Ultrix, *BSD, IRIX, AIX, and others.  Some
+of those systems are no longer in widespread use and may not be able to
 support recent versions of Wget.  If Wget fails to compile on your
 system, we would like to know about it.
 
@@ -3372,6 +3420,10 @@ case in practice for many years now.  All questions and problems in
 Windows usage should be reported to Wget mailing list at
 @email{wget@@sunsite.dk} where the volunteers who maintain the
 Windows-related features might look at them.
+
+Support for building on MS-DOS via DJGPP has been contributed by Gisle
+Vanem; a port to VMS is maintained by Steven Schweda, and is available
+at @url{http://antinode.org/}.
 
 @node Signals
 @section Signals
@@ -3611,6 +3663,18 @@ Junio Hamano---donated support for Opie and @sc{http} @code{Digest}
 authentication.
 
 @item
+Mauro Tortonesi---Improved IPv6 support, adding support for dual
+family systems.  Refactored and enhanced FTP IPv6 code. Maintained GNU
+Wget from 2004--2007.
+
+@item
+Christopher G.@: Lewis---Maintenance of the Windows version of GNU WGet.
+
+@item
+Gisle Vanem---Many helpful patches and improvements, especially for
+Windows and MS-DOS support.
+
+@item
 People who provided donations for development---including Brian Gough.
 @end itemize
 
@@ -3624,7 +3688,7 @@ Martin Baehr,
 Dieter Baron,
 Roger Beeman,
 Dan Berger,
-T. Bharath,
+T.@: Bharath,
 Christian Biere,
 Paul Bludov,
 Daniel Bodea,
@@ -3665,7 +3729,7 @@ Aleksandar Erkalovic,
 Andy Eskilsson,
 Christian Fraenkel,
 David Fritz,
-Charles C. Fu,
+Charles C.@: Fu,
 FUJISHIMA Satsuki,
 Masashi Fujita,
 Howard Gayle,
@@ -3720,7 +3784,7 @@ Simos KSenitellis,
 @end ifnottex
 Christian Lackas,
 Hrvoje Lacko,
-Daniel S. Lewart,
+Daniel S.@: Lewart,
 @iftex
 Nicol@'{a}s Lichtmeier,
 @end iftex
@@ -3728,7 +3792,7 @@ Nicol@'{a}s Lichtmeier,
 Nicolas Lichtmeier,
 @end ifnottex
 Dave Love,
-Alexander V. Lukyanov,
+Alexander V.@: Lukyanov,
 @iftex
 Thomas Lu@ss{}nig,
 @end iftex
@@ -3737,16 +3801,16 @@ Thomas Lussnig,
 @end ifnottex
 Andre Majorel,
 Aurelien Marchand,
-Matthew J. Mellon,
+Matthew J.@: Mellon,
 Jordan Mendelson,
 Lin Zhe Min,
 Jan Minar,
 Tim Mooney,
 Keith Moore,
-Adam D. Moss,
+Adam D.@: Moss,
 Simon Munton,
 Charlie Negyesi,
-R. K. Owen,
+R.@: K.@: Owen,
 Leonid Petrov,
 Simone Piunno,
 Andrew Pollock,
@@ -3768,6 +3832,7 @@ Keith Refson,
 Bill Richardson,
 Tyler Riddle,
 Tobias Ringstrom,
+Jochen Roderburg,
 @c Texinfo doesn't grok @'{@i}, so we have to use TeX itself.
 @tex
 Juan Jos\'{e} Rodr\'{\i}guez,
@@ -3775,13 +3840,13 @@ Juan Jos\'{e} Rodr\'{\i}guez,
 @ifnottex
 Juan Jose Rodriguez,
 @end ifnottex
-Maciej W. Rozycki,
-Edward J. Sabol,
+Maciej W.@: Rozycki,
+Edward J.@: Sabol,
 Heinz Salzmann,
 Robert Schmidt,
 Nicolas Schodet,
 Andreas Schwab,
-Steven M. Schweda,
+Steven M.@: Schweda,
 Chris Seawood,
 Dennis Smit,
 Toomas Soome,
@@ -3805,7 +3870,9 @@ Russell Vincent,
 Zeljko Vrba,
 @end ifnottex
 Charles G Waldman,
-Douglas E. Wegscheid,
+Douglas E.@: Wegscheid,
+Ralf Wildenhues,
+Joshua David Williams,
 YAMAZAKI Makoto,
 Jasmin Zainul,
 @iftex

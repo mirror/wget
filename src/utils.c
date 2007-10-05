@@ -1,5 +1,6 @@
 /* Various utility functions.
-   Copyright (C) 1996-2006 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
+   2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -287,9 +288,9 @@ datetime_str (time_t t)
 }
 
 /* The Windows versions of the following two functions are defined in
-   mswindows.c.  */
+   mswindows.c. On MSDOS this function should never be called. */
 
-#ifndef WINDOWS
+#if !defined(WINDOWS) && !defined(MSDOS)
 void
 fork_to_background (void)
 {
@@ -333,7 +334,7 @@ fork_to_background (void)
   freopen ("/dev/null", "w", stdout);
   freopen ("/dev/null", "w", stderr);
 }
-#endif /* not WINDOWS */
+#endif /* !WINDOWS && !MSDOS */
 
 /* "Touch" FILE, i.e. make its mtime ("modified time") equal the time
    specified with TM.  The atime ("access time") is set to the current

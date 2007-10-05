@@ -1,5 +1,6 @@
 /* SSL support via OpenSSL library.
-   Copyright (C) 2000-2006 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007 Free
+   Software Foundation, Inc.
    Originally contributed by Christian Fraenkel.
 
 This file is part of GNU Wget.
@@ -356,7 +357,7 @@ openssl_close (int fd, void *arg)
   xfree_null (ctx->last_error);
   xfree (ctx);
 
-#ifdef WINDOWS
+#if defined(WINDOWS) || defined(MSDOS)
   closesocket (fd);
 #else
   close (fd);

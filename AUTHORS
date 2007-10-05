@@ -28,9 +28,9 @@ Ian Abbott.  Contributed bugfixes, Windows-related fixes, provided a
 prototype implementation of the new recursive code, and more.
 Co-maintained Wget during the 1.8 release cycle.
 
-Gisle Vanem.  Contributed Windows improvements, including a port of
-run_with_timeout to Windows, additions to Makefiles, and many bug
-reports and fixes.
+Gisle Vanem.  Contributed Windows and MS-DOS improvements, including a
+port of run_with_timeout to Windows, additions to Makefiles, and many
+bug reports and fixes.
 
 Mauro Tortonesi.  Improved IPv6 support, adding support for dual
 family systems.  Refactored and enhanced FTP IPv6 code. Maintained GNU
@@ -40,3 +40,5 @@ Nicolas Schodet.  Contributed to cookie code and documentation.
 
 Daniel Stenberg.  NTLM authentication in http-ntlm.c and http-ntlm.h
 originally written for curl donated for use in GNU Wget.
+
+Micah Cowan.  Current Wget maintainer, from mid-2007.

@@ -1,3 +1,31 @@
+2007-10-02  Micah Cowan  <micah@cowan.name>
+
+	* ftp.c (getftp, ftp_loop_internal), http.c (http_loop), main
+	(main): Use datetime_str instead of time_str, for those who have
+	potentially long-running sessions. Based on suggestions by Saso
+	Tomat <miskox@hotmail.com> and Steven M. Schweda
+	<sms@antinode.org>.
+	* http.c (gethttp): Warn about host lookup failures. Adjusted
+	from Stephen Gildea's patch.
+
+2007-10-02  Stephen Gildea  <stepheng+wget@gildea.com>
+
+	* connect.c (connect_to_host): Warn about host lookup failures.
+
+2007-09-25  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.in: Use EXEEXT instead of exeext.
+
+2007-09-24  Gisle Vanem  <giva@bgnett.no>
+
+	* connect.c, init.c, main.c, openssl.c, options.h, sysdep.h,
+	url.c, utils.c: Added support for building on MS-DOS.
+
+2007-09-24  Jochen Roderburg  <roderburg@uni-koeln.de>
+
+	* http.c (http_zero): Remove no-longer-used local_size variable.
+	Fixes bug #21057.
+
 2007-09-12  Micah Cowan  <micah@cowan.name>
 
 	* http.c (http_loop): Remove send_head_first from condition for

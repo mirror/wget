@@ -1,5 +1,5 @@
 dnl Template file for GNU Autoconf
-dnl Copyright (C) 1995, 1996, 1997, 2001 Free Software Foundation, Inc.
+dnl Copyright (C) 1995, 1996, 1997, 2001, 2007 Free Software Foundation, Inc.
 
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -132,16 +132,6 @@ if test -n "$auto_cflags"; then
     esac
   fi
 fi
-
-dnl
-dnl In case of {cyg,gnu}win32.  Should be a _target_ test.
-dnl Might also be erelevant for DJGPP.
-dnl
-case "$host_os" in
-  *win32) exeext='.exe';;
-  *) exeext='';;
-esac
-AC_SUBST(exeext)
 
 dnl
 dnl Checks for basic compiler characteristics.

@@ -1,5 +1,6 @@
 /* HTTP support.
-   Copyright (C) 1996-2006 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
+   2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -1621,19 +1622,18 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
                only hurts us.  */
             request_remove_header (req, "Authorization");
         }
+      else if (host_lookup_failed)
+        {
+          request_free (req);
+          logprintf(LOG_NOTQUIET,
+                    _("%s: unable to resolve host address `%s'\n"),
+                    exec_name, relevant->host);
+          return HOSTERR;
+        }
     }
 
   if (sock < 0)
     {
-      /* In its current implementation, persistent_available_p will
-         look up conn->host in some cases.  If that lookup failed, we
-         don't need to bother with connect_to_host.  */
-      if (host_lookup_failed)
-        {
-          request_free (req);
-          return HOSTERR;
-        }
-
       sock = connect_to_host (conn->host, conn->port);
       if (sock == E_HOST)
         {
@@ -1820,7 +1820,7 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
           if (has_html_suffix_p (hs->local_file))
             *dt |= TEXTHTML;
 
-          return RETROK;
+          return RETRUNNEEDED;
         }
       else if (!ALLOW_CLOBBER)
         {
@@ -2311,7 +2311,6 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   const char *tmrate;
   uerr_t err, ret = TRYLIMEXC;
   time_t tmr = -1;               /* remote time-stamp */
-  wgint local_size = 0;          /* the size of the local file */
   struct http_stat hstat;        /* HTTP status */
   struct_stat st;  
   bool send_head_first = true;
@@ -2345,6 +2344,11 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       hstat.local_file = xstrdup (opt.output_document);
       got_name = true;
     }
+  else if (!opt.content_disposition)
+    {
+      hstat.local_file = url_file_name (u);
+      got_name = true;
+    }
 
   /* Reset the counter. */
   count = 0;
@@ -2373,7 +2377,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       sleep_between_retrievals (count);
       
       /* Get the current time string.  */
-      tms = time_str (time (NULL));
+      tms = datetime_str (time (NULL));
       
       if (opt.spider && !got_head)
         logprintf (LOG_VERBOSE, _("\
@@ -2442,7 +2446,7 @@ Spider mode enabled. Check if remote file exists.\n"));
       err = gethttp (u, &hstat, dt, proxy);
 
       /* Time?  */
-      tms = time_str (time (NULL));
+      tms = datetime_str (time (NULL));
       
       /* Get the new location (with or without the redirection).  */
       if (hstat.newloc)
@@ -2589,7 +2593,7 @@ Server file no newer than local file `%s' -- not retrieving.\n\n"),
                             {
                               logprintf (LOG_VERBOSE, _("\
 The sizes do not match (local %s) -- retrieving.\n"),
-                                         number_to_static_string (local_size));
+                                         number_to_static_string (hstat.orig_file_size));
                             }
                         }
                       else

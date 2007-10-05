@@ -1,5 +1,6 @@
 /* Establishing and handling network connections.
-   Copyright (C) 1996-2006 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
+   2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -361,7 +362,12 @@ connect_to_host (const char *host, int port)
 
  retry:
   if (!al)
-    return E_HOST;
+    {
+      logprintf (LOG_NOTQUIET,
+                 _("%s: unable to resolve host address `%s'\n"),
+                 exec_name, host);
+      return E_HOST;
+    }
 
   address_list_get_bounds (al, &start, &end);
   for (i = start; i < end; i++)
@@ -668,7 +674,7 @@ test_socket_open (int sock)
 
 /* Basic socket operations, mostly EINTR wrappers.  */
 
-#ifdef WINDOWS
+#if defined(WINDOWS) || defined(MSDOS)
 # define read(fd, buf, cnt) recv (fd, buf, cnt, 0)
 # define write(fd, buf, cnt) send (fd, buf, cnt, 0)
 # define close(fd) closesocket (fd)

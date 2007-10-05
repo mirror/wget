@@ -1,5 +1,6 @@
 /* Dirty system-dependent hacks.
-   Copyright (C) 1996-2006 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
+   2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -69,15 +70,15 @@ typedef unsigned char _Bool;
 # define __bool_true_false_are_defined 1
 #endif
 
-/* Needed for compilation under OS/2: */
-#ifdef __EMX__
+/* Needed for compilation under OS/2 and MSDOS */
+#if defined(__EMX__) || defined(MSDOS)
 # ifndef S_ISLNK
 #  define S_ISLNK(m) 0
 # endif
 # ifndef lstat
 #  define lstat stat
 # endif
-#endif /* __EMX__ */
+#endif /* __EMX__ || MSDOS */
 
 /* Reportedly, stat() macros are broken on some old systems.  Those
    systems will have to fend for themselves, as I will not introduce

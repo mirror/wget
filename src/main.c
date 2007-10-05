@@ -1,5 +1,6 @@
 /* Command line parsing.
-   Copyright (C) 1996-2006 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
+   2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -244,6 +245,9 @@ static struct cmdline_option option_data[] =
     { "version", 'V', OPT_FUNCALL, (void *) print_version, no_argument },
     { "wait", 'w', OPT_VALUE, "wait", -1 },
     { "waitretry", 0, OPT_VALUE, "waitretry", -1 },
+#ifdef MSDOS
+    { "wdebug", 0, OPT_BOOLEAN, "wdebug", -1 },
+#endif
   };
 
 #undef WHEN_DEBUG
@@ -386,6 +390,10 @@ Logging and input file:\n"),
 #ifdef ENABLE_DEBUG
     N_("\
   -d,  --debug               print lots of debugging information.\n"),
+#endif
+#ifdef MSDOS
+    N_("\
+       --wdebug              print Watt-32 debug output.\n"),
 #endif
     N_("\
   -q,  --quiet               quiet (no output).\n"),
@@ -680,6 +688,7 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout);
   exit (0);
 }
 
+
 int
 main (int argc, char *const *argv)
 {
@@ -891,8 +900,14 @@ Can't timestamp and not clobber old files at the same time.\n"));
       exit (1);
     }
 
+#ifdef MSDOS
+  if (opt.wdebug)
+     dbug_init();
+  sock_init();
+#else
   if (opt.background)
     fork_to_background ();
+#endif
 
   /* Initialize progress.  Have to do this after the options are
      processed so we know where the log file is.  */
@@ -1021,7 +1036,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
     {
       logprintf (LOG_NOTQUIET,
                  _("FINISHED --%s--\nDownloaded: %d files, %s in %s (%s)\n"),
-                 time_str (time (NULL)),
+                 datetime_str (time (NULL)),
                  opt.numurls,
                  human_readable (total_downloaded_bytes),
                  secs_to_human_time (total_download_time),

@@ -1,3 +1,20 @@
+2007-10-03  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: Note missing functionality from GnuTLS support. Call out
+	attention to content_disposition's experimental status.
+
+2007-09-25  Micah Cowan  <micah@cowan.name>
+
+	* configure.in: Remove unnecessary heuristic to generate exeext
+	variable, since AC_PROG_CC and others automatically set EXEEXT.
+	Pointed out by Steve Kenton <skenton@ou.edu>.
+
+2007-09-12  Micah Cowan  <micah@cowan.name>
+
+	* AUTHORS: Added... me...
+	* TODO: file removed, bugtracker is authoritative source for
+	planned changes.
+
 2007-08-26  Micah Cowan  <micah@cowan.name>
 
 	* po/POTFILES.in: Added spider.c.

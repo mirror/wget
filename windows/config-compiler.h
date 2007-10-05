@@ -1,5 +1,5 @@
 /* Support for various Windows compilation environments.
-   Copyright (C) 2005 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2007 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -86,7 +86,7 @@ so, delete this exception statement from your version.  */
 #define HAVE__BOOL 1
 #undef SIZEOF_LONG_LONG		/* avoid redefinition warning */
 #define SIZEOF_LONG_LONG 8
-#define HAVE_INTPTR_T 1 
+#define HAVE_INTPTR_T 1
 #define HAVE_UINTPTR_T 1
 #define HAVE_STRTOLL 1
 
@@ -119,10 +119,16 @@ so, delete this exception statement from your version.  */
 # define HAVE__STRTOI64 1
 #endif
 
+#if _MSC_VER >= 1310
+#define HAVE_INTPTR_T 1
+#define HAVE_UINTPTR_T 1
+#endif
+
 #if _MSC_VER >= 1400
 #pragma warning ( disable : 4996 )
 #define _CRT_SECURE_NO_DEPRECATE
 #endif
+
 
 #undef HAVE_UTIME_H         /* no <utime.h> */
 
