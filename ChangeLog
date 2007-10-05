@@ -1,3 +1,8 @@
+2007-10-05  Micah Cowan  <micah@cowan.name>
+
+	* config.guess, config.sub, install-sh: Update from versions
+	found in /usr/share/automake/.
+
 2007-10-03  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: Note missing functionality from GnuTLS support. Call out
