@@ -47,7 +47,7 @@ COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
 
 POFILES = @POFILES@
 GMOFILES = @GMOFILES@
-DISTFILES = ChangeLog Makefile.in.in POTFILES.in $(PACKAGE).pot \
+DISTFILES = Makefile.in.in POTFILES.in $(PACKAGE).pot \
 $(POFILES) $(GMOFILES) $(SOURCES)
 
 POTFILES = \
@@ -152,7 +152,7 @@ check: all
 
 cat-id-tbl.o: ../intl/libgettext.h
 
-dvi info tags TAGS ID:
+dvi ps pdf html info tags TAGS ID:
 
 mostlyclean:
 	rm -f core core.* *.pox $(PACKAGE).po *.old.po
