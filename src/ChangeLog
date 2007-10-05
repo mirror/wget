@@ -32,6 +32,11 @@
 	* http.c (http_zero): Remove no-longer-used local_size variable.
 	Fixes bug #21057.
 
+2007-09-12  Micah Cowan  <micah@cowan.name>
+
+	* http.c (http_loop): Remove send_head_first from condition for
+	parsing timestamp.
+
 2007-08-29  Micah Cowan  <micah@cowan.name>
 
 	* openssl.c (ssl_init): Re un-const-ified the meth local
