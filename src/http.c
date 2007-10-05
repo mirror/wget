@@ -2344,6 +2344,11 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       hstat.local_file = xstrdup (opt.output_document);
       got_name = true;
     }
+  else if (!opt.content_disposition)
+    {
+      hstat.local_file = url_file_name (u);
+      got_name = true;
+    }
 
   /* Reset the counter. */
   count = 0;
