@@ -2,6 +2,7 @@
 
 	* config.guess, config.sub, install-sh: Update from versions
 	found in /usr/share/automake/.
+	* autogen.sh: Removed, in favor of just running autoreconf.
 
 2007-10-03  Micah Cowan  <micah@cowan.name>
 
