@@ -4,16 +4,12 @@ syntax:glob
 .svn
 **.orig
 aclocal.m4
-compile
 configure
 config.log
 **Makefile
 **Makefile.in
 config.status
-depcomp
 autom4te.cache
-mdate-sh
-missing
 tests/WgetTest.pm
 tests/unit-tests
 tests/*.o
