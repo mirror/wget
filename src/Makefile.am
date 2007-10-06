@@ -1,5 +1,5 @@
 # Makefile for `wget' utility
-# Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
+# Copyright (C) 1995-2007 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with Wget.  If not, see <http://www.gnu.org/licenses/>.
 
 # In addition, as a special exception, the Free Software Foundation
 # gives permission to link the code of its release of Wget with the
@@ -28,25 +28,27 @@
 # Version: @VERSION@
 #
 
-# This file is just a stub, so that the build subprocess in `windows'
-# succeeds.  This directory is not used under Unix builds, normally
-# affected by Makefile.in.
+# The following line is losing on some versions of make!
+DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
+LIBS     = @LIBS@ @LIBSSL@ @LIBGNUTLS@
 
-SHELL = /bin/sh
+bin_PROGRAMS = wget
+wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c ftp-basic.c	\
+	       ftp-ls.c hash.c host.c html-parse.c html-url.c http.c	\
+	       init.c log.c main.c netrc.c progress.c ptimer.c recur.c	\
+	       res.c retr.c safe-ctype.c snprintf.c spider.c url.c	\
+	       utils.c version.c xmalloc.c				\
+	       config-post.h connect.h convert.h cookies.h 		\
+	       ftp.h gen-md5.h getopt.h gnu-md5.h hash.h host.h html-parse.h \
+	       http.h http-ntlm.h init.h log.h mswindows.h netrc.h \
+	       options.h progress.h ptimer.h recur.h res.h retr.h safe-ctype.h \
+	       spider.h ssl.h sysdep.h url.h utils.h wget.h xmalloc.h
+EXTRA_wget_SOURCES = mswindows.c
+LDADD = $(ALLOCA) $(LIBOBJS)
 
-top_builddir = ..
+check_LIBRARIES = libunittest.a
+libunittest_a_SOURCES = $(wget_SOURCES) test.c test.h
+libunittest_a_CPPFLAGS = -DTESTING
+libunittest_a_LIBADD = $(ALLOCA) $(LIBOBJS)
 
-srcdir = @srcdir@
-VPATH  = @srcdir@
-
-RM = rm -f
-
-all:
-
-clean:
-
-distclean: clean
-	$(RM) Makefile
-
-realclean: distclean
-
+CLEANFILES = *~ *.bak core core.[0-9]*

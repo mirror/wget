@@ -1,5 +1,5 @@
-# Makefile for `wget' utility
-# Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
+# Makefile for `Wget' utility
+# Copyright (C) 1995, 1996, 1997, 2006, 2007 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,21 +28,37 @@
 # Version: @VERSION@
 #
 
-SHELL = /bin/sh
+# Search for macros in the m4 subdirectory:
+ACLOCAL_AMFLAGS = -I m4
 
-top_builddir = ..
-
-srcdir = @srcdir@
-VPATH  = @srcdir@
-
+# These are used for maintenance only, so they are safe without
+# special autoconf cruft.
 RM = rm -f
 
-all:
+# subdirectories in the distribution
+SUBDIRS = src doc po tests util windows
 
-clean:
+test: all
+	cd tests && $(MAKE) $(AM_MAKEFLAGS) $@
 
-distclean: clean
-	$(RM) Makefile
+EXTRA_DIST = autogen.sh ChangeLog.README configure.bat MAILING-LIST PATCHES \
+	     README.checkout
 
-realclean: distclean
+#
+# Cleanup dependencies
+#
 
+realclean:	realclean-recursive	realclean-top
+
+CLEANFILES = *~ *.bak $(DISTNAME).tar.gz
+distclean-local:
+	$(RM) -r autom4te.cache
+
+realclean-top: distclean-am
+	$(RM) configure
+
+realclean-recursive:
+	for subdir in $(SUBDIRS); do \
+	   target=`echo $@ | sed s/-recursive//`; \
+	   (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$target) || exit 1; \
+	done
