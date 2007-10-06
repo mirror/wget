@@ -18,6 +18,8 @@ tests/WgetTest.pm
 tests/unit-tests
 tests/*.o
 src/*.o
+src/.deps
+src/stamp-h1
 src/config.h
 src/config.h.in
 src/wget
