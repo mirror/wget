@@ -3,6 +3,11 @@
 	* po/Makefile.in.in: Since `distdir' is used now, adjust
 	DISTFILES to the missing ChangeLog file.
 	Add trivial targets ps, pdf, html.
+	* Makefile.in: Removed, replaced by Makefile.am.
+	* Makefile.am: Converted from Makefile.in.
+	* util/Makefile.in: Removed, replaced by Makefile.am.
+	* util/Makefile.am: Converted from Makefile.in.
+	* configure.in: Adjust for automake support.
 
 2007-10-05  Micah Cowan  <micah@cowan.name>
 
