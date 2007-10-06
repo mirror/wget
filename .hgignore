@@ -25,6 +25,7 @@ src/config.h.in
 src/wget
 src/tags
 src/TAGS
+src/libunittest.a
 doc/stamp-vti
 doc/wget.1
 doc/wget.pod
@@ -47,5 +48,6 @@ doc/wget_us.ps
 doc/version.texi
 po/POTFILES
 po/*.gmo
+po/wget.pot
 **~
 **.*.swp
