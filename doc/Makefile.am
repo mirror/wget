@@ -114,7 +114,3 @@ uninstall.man:
 
 CLEANFILES = *~ *.bak *.cat *.pod
 DISTCLEANFILES = $(MAN)
-
-realclean: distclean
-	$(RM) wget.info*
-	$(RM) $(SAMPLERCTEXI)

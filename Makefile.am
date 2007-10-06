@@ -32,10 +32,6 @@
 # Search for macros in the m4 subdirectory:
 ACLOCAL_AMFLAGS = -I m4
 
-# These are used for maintenance only, so they are safe without
-# special autoconf cruft.
-RM = rm -f
-
 # subdirectories in the distribution
 SUBDIRS = src doc po tests util windows
 
@@ -45,21 +41,4 @@ test: all
 EXTRA_DIST = autogen.sh ChangeLog.README configure.bat MAILING-LIST PATCHES \
 	     README.checkout
 
-#
-# Cleanup dependencies
-#
-
-realclean:	realclean-recursive	realclean-top
-
 CLEANFILES = *~ *.bak $(DISTNAME).tar.gz
-distclean-local:
-	$(RM) -r autom4te.cache
-
-realclean-top: distclean-am
-	$(RM) configure
-
-realclean-recursive:
-	for subdir in $(SUBDIRS); do \
-	   target=`echo $@ | sed s/-recursive//`; \
-	   (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$target) || exit 1; \
-	done
