@@ -42,6 +42,9 @@ so, delete this exception statement from your version.  */
 #ifdef HAVE_MMAP
 # include <sys/mman.h>
 #endif
+#ifdef HAVE_PROCESS_H
+# include <process.h>  /* getpid() */
+#endif
 #ifdef HAVE_UTIME_H
 # include <utime.h>
 #endif

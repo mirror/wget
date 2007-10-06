@@ -1,3 +1,11 @@
+2007-10-02  Gisle Vanem  <gvanem@broadpark.no>
+	
+	* ftp.c: Use "_listing" for MSDOS (".listing" is illegal).
+
+	* url.c: Update comment for 'filechr_not_windows'.
+
+	* utils.c: Include <process.h> for 'getpid()' on Watcom.
+
 2007-10-04  Micah Cowan  <micah@cowan.name>
 
 	* http.c (http_loop): We've got_name if content_disposition
