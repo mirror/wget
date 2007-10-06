@@ -465,6 +465,5 @@ AC_CONFIG_HEADERS([src/config.h])
 AH_BOTTOM([
 #include "config-post.h"
 ])
-AC_CONFIG_FILES([stamp-h], [echo timestamp > stamp-h])
 AC_CONFIG_COMMANDS([default], [WGET_PROCESS_PO])
 AC_OUTPUT

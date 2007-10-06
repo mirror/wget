@@ -3,12 +3,17 @@
 syntax:glob
 .svn
 **.orig
+aclocal.m4
+compile
 configure
 config.log
 **Makefile
+**Makefile.in
 config.status
+depcomp
 autom4te.cache
-stamp-h
+mdate-sh
+missing
 tests/WgetTest.pm
 tests/unit-tests
 tests/*.o
@@ -36,7 +41,6 @@ doc/wget.tp
 doc/wget.vr
 doc/wget_a4.ps
 doc/wget_us.ps
-po/Makefile.in
 po/POTFILES
 po/*.gmo
 **~
