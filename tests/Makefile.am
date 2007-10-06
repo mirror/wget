@@ -36,7 +36,7 @@ PERLRUN = $(PERL) -I$(srcdir)
 
 check-local: test
 
-test: ../src/wget$(EXEEXT) run-unit-tests run-px-tests
+test: ../src/wget$(EXEEXT) run-unit-tests #run-px-tests
 
 ../src/wget$(EXEEXT):
 	cd ../src && $(MAKE) $(AM_MAKEFLAGS)
@@ -98,6 +98,6 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
 
 check_PROGRAMS = unit-tests
 unit_tests_SOURCES = 
-LDADD = ../src/libunittest.a
+LDADD = ../src/libunittest.a @LIBSSL@ @LIBGNUTLS@
 
 CLEANFILES = *~ *.bak core core.[0-9]*
