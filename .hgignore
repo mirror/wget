@@ -25,6 +25,7 @@ src/config.h.in
 src/wget
 src/tags
 src/TAGS
+doc/stamp-vti
 doc/wget.1
 doc/wget.pod
 doc/wget.info
@@ -43,6 +44,7 @@ doc/wget.tp
 doc/wget.vr
 doc/wget_a4.ps
 doc/wget_us.ps
+doc/version.texi
 po/POTFILES
 po/*.gmo
 **~
