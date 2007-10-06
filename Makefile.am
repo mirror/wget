@@ -38,7 +38,7 @@ SUBDIRS = src doc po tests util windows
 test: all
 	cd tests && $(MAKE) $(AM_MAKEFLAGS) $@
 
-EXTRA_DIST = autogen.sh ChangeLog.README configure.bat MAILING-LIST PATCHES \
-	     README.checkout
+EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST PATCHES \
+	     msdos/ChangeLog msdos/config.h msdos/Makefile.DJ
 
 CLEANFILES = *~ *.bak $(DISTNAME).tar.gz
