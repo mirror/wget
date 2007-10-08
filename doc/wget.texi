@@ -3675,6 +3675,10 @@ Gisle Vanem---Many helpful patches and improvements, especially for
 Windows and MS-DOS support.
 
 @item
+Ralf Wildenhues---Contributed patches to convert Wget to use Automake as
+part of its build process, and various bugfixes.
+
+@item
 People who provided donations for development---including Brian Gough.
 @end itemize
 

@@ -1,3 +1,7 @@
+2007-10-08  Micah Cowan  <micah@cowan.name>
+
+	* AUTHORS: Credit to Ralf Wildenhues for automakifying patches.
+
 2007-10-05  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
 
 	* po/Makefile.in.in: Since `distdir' is used now, adjust
