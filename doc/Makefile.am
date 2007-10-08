@@ -46,7 +46,7 @@ $(SAMPLERCTEXI): $(srcdir)/sample.wgetrc
 	sed s/@/@@/g $? > $@
 
 info_TEXINFOS = wget.texi
-wget_TEXINFOS = fdl.texi
+wget_TEXINFOS = fdl.texi sample.wgetrc.munged_for_texi_inclusion
 
 EXTRA_DIST = README.maint sample.wgetrc $(SAMPLERCTEXI) \
 	     texi2pod.pl
