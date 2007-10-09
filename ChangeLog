@@ -25,6 +25,9 @@
 	* po/quot.sed: New file, from gettext-0.16.1.
 	* po/remove-potcdate.sin: New file, from gettext-0.16.1.
 
+2007-10-08  Micah Cowan  <micah@cowan.name>
+
+	* AUTHORS: Credit to Ralf Wildenhues for automakifying patches.
 
 2007-10-05  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
 
