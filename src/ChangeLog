@@ -12,6 +12,14 @@
 	support isn't on; make sure we continue properly in that case,
 	even though we're not sending HEAD.
 
+2007-10-02  Gisle Vanem  <gvanem@broadpark.no>
+	
+	* ftp.c: Use "_listing" for MSDOS (".listing" is illegal).
+
+	* url.c: Update comment for 'filechr_not_windows'.
+
+	* utils.c: Include <process.h> for 'getpid()' on Watcom.
+
 2007-10-02  Micah Cowan  <micah@cowan.name>
 
 	* ftp.c (getftp, ftp_loop_internal), http.c (http_loop), main

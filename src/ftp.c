@@ -51,7 +51,11 @@ so, delete this exception statement from your version.  */
 #include "recur.h"              /* for INFINITE_RECURSION */
 
 /* File where the "ls -al" listing will be saved.  */
+#ifdef MSDOS
+#define LIST_FILENAME "_listing"
+#else
 #define LIST_FILENAME ".listing"
+#endif
 
 typedef struct
 {

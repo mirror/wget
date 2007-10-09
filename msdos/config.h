@@ -46,39 +46,29 @@
 #endif
 
 #if defined(__HIGHC__)
-  #define inline
   #define HAVE_UNISTD_H 1
   #define HAVE_UTIME_H 1
 #endif
 
-#if defined(__WATCOMC__) || defined(__BORLANDC__)
+#if defined(__WATCOMC__) || defined(__BORLANDC__) || defined(__HIGHC__)
   #define inline
 #endif
-
-#ifdef HAVE_SSL
-  #define OPENSSL_NO_KRB5
-#endif
-
-#define STDC_HEADERS 1
-#define RETSIGTYPE void
 
 #define USE_OPIE 1
 #define USE_DIGEST 1
 #define DEBUG
 
 #ifdef __DJGPP__
-  #define HAVE_STRUCT_UTIMBUF 1
-  #define HAVE_UNAME 1
-  #define HAVE_UTIME_H 1
+  #define HAVE__BOOL          1
   #define HAVE_STRCASECMP 1
   #define HAVE_STRNCASECMP 1
-  #define HAVE_SYS_SELECT_H 1
-  #define HAVE_USLEEP 1
-  #define HAVE_SIGNAL 1
-  #define HAVE_BASENAME 1
   #define HAVE_SIGSETJMP 1
   #define HAVE_SIGBLOCK 1
-  #define HAVE__BOOL 1
+  #define HAVE_STRUCT_UTIMBUF 1
+  #define HAVE_SYS_SELECT_H   1
+  #define HAVE_USLEEP         1
+  #define HAVE_UTIME_H        1
+  #define HAVE_INT64_T        1
 
   #if (DJGPP_MINOR >= 4)
     #include <stdbool.h>
@@ -94,32 +84,18 @@
 #endif
 
 #ifdef OPENWATCOM_15
-  #define HAVE_STRCASECMP
-  #define HAVE_STRNCASECMP
+  #define HAVE_INT64_T     1
+  #define HAVE_STRCASECMP  1
+  #define HAVE_STRNCASECMP 1
+  #define HAVE_UTIME_H     1
 #endif
 
-#define HAVE_GETHOSTBYNAME 1
-#define HAVE_GETHOSTNAME 1
-#define HAVE_SELECT 1
+#define HAVE_PROCESS_H     1
 #define HAVE_STRDUP 1
-#define HAVE_STRERROR 1
-#define HAVE_STRSTR 1
-#define HAVE_MKTIME 1
-#define HAVE_STDARG_H 1
 #define HAVE_STDLIB_H 1
 #define HAVE_STRING_H 1
-#define HAVE_SIGNAL_H 1
-#define HAVE_GETTIMEOFDAY 1
-#define HAVE_MD5 1
 #define HAVE_BUILTIN_MD5 1
 #define HAVE_ISATTY 1
-#define HAVE_MEMMOVE 1
-
-#define OS_TYPE "DOS"
-#define CTRLBREAK_BACKGND 1
-#define PROTOTYPES 1
-
-#define WGET_USE_STDARG
 
 #define lookup_host  wget_lookuphost
 #define select       select_s
@@ -129,15 +105,16 @@
 #define sock_write   wget_sock_write
 #define sock_close   wget_sock_close
 
-#if defined(__DJGPP__)
-  #define MKDIR(p,a) mkdir(p,a)
-#else
+#if !defined(__DJGPP__)
+  #include <direct.h>
+  #define mkdir(p,a)  (mkdir)(p)
   #define strcasecmp stricmp
-  #define MKDIR(p,a) mkdir(p)
 #endif
 
 #if !defined(MSDOS)
-#define MSDOS
+  #define MSDOS
 #endif
+
+#define OS_TYPE "DOS"
 
 #endif  /* CONFIG_DOS_H */
