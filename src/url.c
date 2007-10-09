@@ -1221,7 +1221,7 @@ append_char (char ch, struct growable *dest)
 
 enum {
   filechr_not_unix    = 1,      /* unusable on Unix, / and \0 */
-  filechr_not_windows = 2,      /* unusable on MSDOS/Windows, one of \|/<>?:*" */
+  filechr_not_windows = 2,      /* unusable on Windows, one of \|/<>?:*" */
   filechr_control     = 4       /* a control character, e.g. 0-31 */
 };
 
