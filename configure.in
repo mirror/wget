@@ -50,6 +50,11 @@ dnl
 AM_INIT_AUTOMAKE(1.9)
 
 dnl
+dnl Gettext
+dnl
+AM_GNU_GETTEXT([external],[need-ngettext])
+
+dnl
 dnl Get cannonical host
 dnl
 AC_CANONICAL_HOST
@@ -426,10 +431,10 @@ dnl     ALL_LINGUAS="cs de hr it ..."
 dnl The downside was that configure needed to be rebuilt whenever a
 dnl new language was added.
 dnl
-ALL_LINGUAS=`(cd ${srcdir}/po && ls *.po | sed -e 's/\.po$//' | tr '\012' ' ')`
+dnl ALL_LINGUAS=`(cd ${srcdir}/po && ls *.po | sed -e 's/\.po$//' | tr '\012' ' ')`
 
 dnl internationalization macros
-WGET_WITH_NLS
+dnl WGET_WITH_NLS
 
 dnl
 dnl Find makeinfo.  We used to provide support for Emacs processing

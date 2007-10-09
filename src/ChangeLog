@@ -1,3 +1,10 @@
+2007-10-09  Micah Cowan  <micah@cowan.name>
+
+	* gettext.h: Imported from /usr/share/gettext, fuller handling
+	of --disable-nls.
+	* wget.h: Remove logic for handling lack of NLS (now in
+	gettext.h).
+
 2007-10-04  Micah Cowan  <micah@cowan.name>
 
 	* http.c (http_loop): We've got_name if content_disposition
