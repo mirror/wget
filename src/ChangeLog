@@ -1,3 +1,11 @@
+2007-10-08  Micah Cowan  <micah@cowan.name>
+
+	* http.c (http_loop): Add send_head_first conditional back
+	around code that needs it, but not around the last-modified
+	header-parsing stuff this time. Removed no-longer-useful (was it
+	ever?) restart_loop boolean, continuing unconditionally at end
+	of send_head_first conditional block (if we haven't jumped out).
+
 2007-10-04  Micah Cowan  <micah@cowan.name>
 
 	* http.c (http_loop): We've got_name if content_disposition
