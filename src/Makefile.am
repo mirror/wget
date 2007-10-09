@@ -52,7 +52,7 @@ HG_ID = $(shell hg id 2>/dev/null | cut -f 1 -d ' ')
 .PHONY: version.c
 version.c:
 	printf '%s' 'const char *version_string = "@VERSION@' > $@
-	[ "$(HG_ID)" ] && printf '%s' ' ($(HG_ID))' >> $@
+	-[ "$(HG_ID)" ] && printf '%s' ' ($(HG_ID))' >> $@
 	printf '%s\n' '";' >> $@
 
 check_LIBRARIES = libunittest.a
