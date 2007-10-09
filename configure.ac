@@ -29,12 +29,9 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 
 AC_INIT([wget], 
-	[m4_normalize(esyscmd([sed -e 's/^.*"\(.*\)";$/\1/' src/version.c]))],
+	[1.12-devel],
 	[bug-wget@gnu.org])
 AC_PREREQ(2.61)
-
-# Make configure depend on the VERSION file, since it's used in AC_INIT
-AC_SUBST([CONFIGURE_DEPENDENCIES], ['$(top_srcdir)/src/version.c'])
 
 dnl
 dnl What version of Wget are we building?
