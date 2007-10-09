@@ -4,6 +4,7 @@
 	* configure.ac: Renamed from configure.in. Added invocations of
 	AM_GNU_GETTEXT, etc.
 	* ABOUT-NLS: Added back in (required by autoreconf :\).
+	* Makefile.am: Added ABOUT-NLS to EXTRA_DIST.
 
 2007-10-09  gettextize  <bug-gnu-gettext@gnu.org>
 
