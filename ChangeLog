@@ -1,3 +1,10 @@
+2007-10-09  Micah Cowan  <micah@cowan.name>
+
+	* configure.in: Renamed to configure.ac
+	* configure.ac: Renamed from configure.in. Added invocations of
+	AM_GNU_GETTEXT, etc.
+	* ABOUT-NLS: Added back in (required by autoreconf :\).
+
 2007-10-09  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* m4/gettext.m4: New file, from gettext-0.16.1.
