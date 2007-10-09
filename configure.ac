@@ -434,9 +434,6 @@ dnl new language was added.
 dnl
 dnl ALL_LINGUAS=`(cd ${srcdir}/po && ls *.po | sed -e 's/\.po$//' | tr '\012' ' ')`
 
-dnl internationalization macros
-dnl WGET_WITH_NLS
-
 dnl
 dnl Find makeinfo.  We used to provide support for Emacs processing
 dnl Texinfo using `emacs -batch -eval ...' where makeinfo is
@@ -471,5 +468,4 @@ AC_CONFIG_HEADERS([src/config.h])
 AH_BOTTOM([
 #include "config-post.h"
 ])
-AC_CONFIG_COMMANDS([default], [WGET_PROCESS_PO])
 AC_OUTPUT

@@ -45,5 +45,7 @@ doc/version.texi
 po/POTFILES
 po/*.gmo
 po/wget.pot
+po/remove-potcdate.sed
+po/stamp-po
 **~
 **.*.swp
