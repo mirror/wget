@@ -22,6 +22,7 @@ src/wget
 src/tags
 src/TAGS
 src/libunittest.a
+src/version.c
 doc/stamp-vti
 doc/wget.1
 doc/wget.pod
