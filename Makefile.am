@@ -39,6 +39,7 @@ test: all
 	cd tests && $(MAKE) $(AM_MAKEFLAGS) $@
 
 EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST PATCHES \
-	     msdos/ChangeLog msdos/config.h msdos/Makefile.DJ ABOUT-NLS
+	     msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
+	     msdos/Makefile.WC ABOUT-NLS
 
 CLEANFILES = *~ *.bak $(DISTNAME).tar.gz
