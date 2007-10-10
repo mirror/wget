@@ -9,6 +9,7 @@ config.log
 **Makefile
 **Makefile.in
 config.status
+config.status.lineno
 autom4te.cache
 tests/WgetTest.pm
 tests/unit-tests
@@ -48,5 +49,7 @@ po/*.gmo
 po/wget.pot
 po/remove-potcdate.sed
 po/stamp-po
+po/en@boldquot.insert-header
+po/en@quot.insert-header
 **~
 **.*.swp

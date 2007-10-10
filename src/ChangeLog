@@ -5,6 +5,9 @@
 	* wget.h: Remove logic for handling lack of NLS (now in
 	gettext.h).
 	* main.c: Use gettext's ENABLE_NLS rather than HAVE_NLS.
+	* Makefile.am: added @LIBINTL@ to LIBS (though it probably
+	belongs in LDADD, along with everything else currently assigned
+	to LIBS).
 
 2007-10-08  Micah Cowan  <micah@cowan.name>
 
