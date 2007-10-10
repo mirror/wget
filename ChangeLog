@@ -6,6 +6,8 @@
 	* ABOUT-NLS: Added back in (required by autoreconf :\).
 	* Makefile.am: Added ABOUT-NLS and msdos/Makefile.WC to EXTRA_DIST.
 	* m4/wget.m4: Removed no-longer-used NLS stuff.
+	* Makefile.in.in: Restore previous policy of not updating .po's
+	unless explicitly asked (via update-po).
 
 2007-10-09  gettextize  <bug-gnu-gettext@gnu.org>
 
