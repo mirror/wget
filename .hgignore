@@ -9,6 +9,7 @@ config.log
 **Makefile
 **Makefile.in
 config.status
+config.status.lineno
 autom4te.cache
 tests/WgetTest.pm
 tests/unit-tests
