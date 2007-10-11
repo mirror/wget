@@ -1,3 +1,8 @@
+2007-10-05  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
+
+	* Makefile.in: Removed, replaced by Makefile.am.
+	* Makefile.am: Converted from Makefile.in.
+
 2007-09-24  Christopher Lewis <chris@christopherlewis.com>
 
 	* config-compiler.h: Fix compiler warnings related to

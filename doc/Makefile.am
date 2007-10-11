@@ -18,33 +18,12 @@
 # Version: @VERSION@
 #
 
-SHELL = /bin/sh
-
-# Program to format Texinfo source into Info files.
-MAKEINFO = @MAKEINFO@
-# Program to format Texinfo source into DVI files.
-TEXI2DVI = texi2dvi
 # Program to convert DVI files to PostScript
 DVIPS = dvips -D 300
 # Program to convert texinfo files to html
 TEXI2HTML = texi2html -expandinfo -split_chapter
 
-top_builddir = ..
-
-top_srcdir = @top_srcdir@
-srcdir     = @srcdir@
-VPATH      = @srcdir@
-
-prefix     = @prefix@
-infodir    = @infodir@
-mandir     = @mandir@
 manext     = 1
-sysconfdir = @sysconfdir@
-
-DESTDIR    =
-
-INSTALL      = @INSTALL@
-INSTALL_DATA = @INSTALL_DATA@
 RM = rm -f
 
 TEXI2POD     = $(srcdir)/texi2pod.pl
@@ -57,6 +36,8 @@ SAMPLERCTEXI = sample.wgetrc.munged_for_texi_inclusion
 # Dependencies for building
 #
 
+man_MANS = $(MAN)
+
 all: wget.info @COMMENT_IF_NO_POD2MAN@$(MAN)
 
 everything: all wget_us.ps wget_a4.ps wget_toc.html
@@ -64,8 +45,11 @@ everything: all wget_us.ps wget_a4.ps wget_toc.html
 $(SAMPLERCTEXI): $(srcdir)/sample.wgetrc
 	sed s/@/@@/g $? > $@
 
-wget.info: $(srcdir)/wget.texi $(SAMPLERCTEXI) $(srcdir)/version.texi
-	$(MAKEINFO) -I$(srcdir) $(srcdir)/wget.texi
+info_TEXINFOS = wget.texi
+wget_TEXINFOS = fdl.texi sample.wgetrc.munged_for_texi_inclusion
+
+EXTRA_DIST = README.maint sample.wgetrc $(SAMPLERCTEXI) \
+	     texi2pod.pl
 
 wget.pod: $(srcdir)/wget.texi $(srcdir)/version.texi
 	$(TEXI2POD) $(srcdir)/wget.texi $@
@@ -75,11 +59,6 @@ $(MAN): wget.pod
 
 #wget.cat: $(MAN)
 #	nroff -man $? > $@
-
-dvi: wget.dvi
-
-wget.dvi: $(srcdir)/wget.texi
-	$(TEXI2DVI) $(srcdir)/wget.texi
 
 wget_us.ps: wget.dvi
 	$(DVIPS) -t letter -o $@ wget.dvi
@@ -95,29 +74,11 @@ wget_toc.html: $(srcdir)/wget.texi
 #
 
 # install all the documentation
-install: install.info install.wgetrc @COMMENT_IF_NO_POD2MAN@install.man
+install-data-local: install.wgetrc @COMMENT_IF_NO_POD2MAN@install.man
 
 # uninstall all the documentation
-uninstall: uninstall.info @COMMENT_IF_NO_POD2MAN@uninstall.man
+uninstall-local: @COMMENT_IF_NO_POD2MAN@uninstall.man
 
-# install info pages, creating install directory if necessary
-# if the info pages are built in the build directory, they are used.
-# otherwise, the ones from the distribution are installed.
-install.info: wget.info
-	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(infodir)
-	-if test -f wget.info; then \
-	  for file in wget.info wget.info-*[0-9]; do \
-            if test -f "$$file"; then \
-	      $(INSTALL_DATA) "$$file" "$(DESTDIR)$(infodir)/$$file" ; \
-	    fi; \
-	  done; \
-	else \
-	  for file in $(srcdir)/wget.info $(srcdir)/wget.info-*[0-9]; do \
-            if test -f "$$file"; then \
-	      $(INSTALL_DATA) "$$file" "$(DESTDIR)$(infodir)/`basename $$file`" ; \
-	    fi; \
-	  done; \
-	fi
 
 # install man page, creating install directory if necessary
 install.man: $(MAN)
@@ -143,10 +104,6 @@ install.wgetrc: $(srcdir)/sample.wgetrc
 	  $(INSTALL_DATA) $(srcdir)/sample.wgetrc $(DESTDIR)$(WGETRC); \
 	fi
 
-# uninstall info pages
-uninstall.info:
-	$(RM) $(DESTDIR)$(infodir)/wget.info*
-
 # uninstall man page
 uninstall.man:
 	$(RM) $(DESTDIR)$(mandir)/man$(manext)/$(MAN)
@@ -155,23 +112,5 @@ uninstall.man:
 # Dependencies for cleanup
 #
 
-clean:
-	$(RM) *~ *.bak *.cat *.pod *.html
-	$(RM) *.dvi *.aux *.cp *.cps *.fn *.toc *.tp *.vr *.ps *.ky *.pg *.log
-
-distclean: clean
-	$(RM) Makefile
-	$(RM) $(MAN)
-
-realclean: distclean
-	$(RM) wget.info*
-	$(RM) $(SAMPLERCTEXI)
-
-#
-# Dependencies for maintenance
-#
-
-subdir = doc
-
-Makefile: Makefile.in ../config.status
-	cd .. && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= ./config.status
+CLEANFILES = *~ *.bak *.cat *.pod
+DISTCLEANFILES = $(MAN)

@@ -28,21 +28,5 @@
 # Version: @VERSION@
 #
 
-SHELL = /bin/sh
-
-top_builddir = ..
-
-srcdir = @srcdir@
-VPATH  = @srcdir@
-
-RM = rm -f
-
-all:
-
-clean:
-
-distclean: clean
-	$(RM) Makefile
-
-realclean: distclean
-
+EXTRA_DIST = dist-wget download.html download-netscape.html \
+	     rmold.pl update_po_files.sh wget.spec

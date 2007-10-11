@@ -1,8 +1,6 @@
-#!/bin/sh -x
-
-# The (trivial) script for preparing the sources following the
-# checkout from version control.
-# Copyright (C) 2005, 2007 Free Software Foundation, Inc.
+# Makefile for `Wget' utility
+# Copyright (C) 1995, 1996, 1997, 2006 Free Software Foundation, Inc.
+# Copyright (C) 1995, 1996, 1997, 2006, 2007 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,13 +25,21 @@
 # file, but you are not obligated to do so.  If you do not wish to do
 # so, delete this exception statement from your version.
 
-# TODO: print an error message nicer than "sh: command not found" when
-# Autoconf is not installed (or, more precisely, not found in the
-# PATH).
+#
+# Version: @VERSION@
+#
 
-autoheader
-autoconf
+# Search for macros in the m4 subdirectory:
+ACLOCAL_AMFLAGS = -I m4
 
-# At this point we intentionally don't invoke configure and make
-# because we don't know where the user wants to run the configuration,
-# nor with which arguments.  That should be up to the user.
+# subdirectories in the distribution
+SUBDIRS = src doc po tests util windows
+
+test: all
+	cd tests && $(MAKE) $(AM_MAKEFLAGS) $@
+
+EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST PATCHES \
+	     msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
+	     msdos/Makefile.WC ABOUT-NLS
+
+CLEANFILES = *~ *.bak $(DISTNAME).tar.gz

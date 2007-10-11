@@ -36,7 +36,7 @@ so, delete this exception statement from your version.  */
 #endif /* HAVE_UNISTD_H */
 #include <string.h>
 #include <signal.h>
-#ifdef HAVE_NLS
+#ifdef ENABLE_NLS
 # include <locale.h>
 #endif
 #include <assert.h>
@@ -80,14 +80,14 @@ const char *exec_name;
 static void
 i18n_initialize (void)
 {
-  /* HAVE_NLS implies existence of functions invoked here.  */
-#ifdef HAVE_NLS
+  /* ENABLE_NLS implies existence of functions invoked here.  */
+#ifdef ENABLE_NLS
   /* Set the current locale.  */
   setlocale (LC_ALL, "");
   /* Set the text message domain.  */
   bindtextdomain ("wget", LOCALEDIR);
   textdomain ("wget");
-#endif /* HAVE_NLS */
+#endif /* ENABLE_NLS */
 }
 
 /* Definition of command-line options. */

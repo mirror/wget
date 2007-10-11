@@ -6,6 +6,10 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget (MAINLINE).
+
+** Wget uses Automake now.
+
 * Changes in Wget 1.11.
 
 ** TODO file removed: we use a bugtracker now; see

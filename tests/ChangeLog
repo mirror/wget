@@ -1,3 +1,10 @@
+2007-10-05  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
+
+	* WgetTest.pm.in: wget is built in the build tree.  Use an
+	absolute path to the binary.
+	* Makefile.in: Removed, replaced by Makefile.am.
+	* Makefile.am: Converted from Makefile.in.
+
 2007-09-25  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.in: Use EXEEXT instead of exeext.

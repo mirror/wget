@@ -32,21 +32,6 @@
 # succeeds.  This directory is not used under Unix builds, normally
 # affected by Makefile.in.
 
-SHELL = /bin/sh
-
-top_builddir = ..
-
-srcdir = @srcdir@
-VPATH  = @srcdir@
-
-RM = rm -f
-
-all:
-
-clean:
-
-distclean: clean
-	$(RM) Makefile
-
-realclean: distclean
-
+EXTRA_DIST = config-compiler.h config.h Makefile.doc \
+	     Makefile.src Makefile.src.bor Makefile.src.mingw \
+	     Makefile.top Makefile.top.bor Makefile.top.mingw

@@ -47,17 +47,8 @@ so, delete this exception statement from your version.  */
 
 /* `gettext (FOO)' is long to write, so we use `_(FOO)'.  If NLS is
    unavailable, _(STRING) simply returns STRING.  */
-#ifdef HAVE_NLS
-# define _(string) gettext (string)
-# ifdef HAVE_LIBINTL_H
-#  include <libintl.h>
-# else  /* not HAVE_LIBINTL_H */
-   const char *gettext ();
-# endif /* not HAVE_LIBINTL_H */
-#else  /* not HAVE_NLS */
-# define _(string) (string)
-# define ngettext(sing, plur, num)  ((num) == 1 ? (sing) : (plur))
-#endif /* not HAVE_NLS */
+#include "gettext.h"
+#define _(string)   gettext (string)
 
 /* A pseudo function call that serves as a marker for the automated
    extraction of messages, but does not call gettext().  The run-time

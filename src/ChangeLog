@@ -3,6 +3,17 @@
 	* mswindows.c: 'argc' and 'argv' in 'windows_main()' are no longer
 	needed.  Hence simply the prototype. Free 'exec_name' at exit.
 
+2007-10-09  Micah Cowan  <micah@cowan.name>
+
+	* gettext.h: Imported from /usr/share/gettext, fuller handling
+	of --disable-nls.
+	* wget.h: Remove logic for handling lack of NLS (now in
+	gettext.h).
+	* main.c: Use gettext's ENABLE_NLS rather than HAVE_NLS.
+	* Makefile.am: added @LIBINTL@ to LIBS (though it probably
+	belongs in LDADD, along with everything else currently assigned
+	to LIBS).
+
 2007-10-08  Micah Cowan  <micah@cowan.name>
 
 	* http.c (http_loop): Add send_head_first conditional back
@@ -16,6 +27,8 @@
 	* http.c (http_loop): We've got_name if content_disposition
 	support isn't on; make sure we continue properly in that case,
 	even though we're not sending HEAD.
+	* Makefile.in: Removed, replaced by Makefile.am.
+	* Makefile.am: Converted from Makefile.in.
 
 2007-10-02  Gisle Vanem  <gvanem@broadpark.no>
 	

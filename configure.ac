@@ -28,23 +28,29 @@ dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl
 
-AC_INIT([src/version.c])
+AC_INIT([wget], 
+	[1.12-devel],
+	[bug-wget@gnu.org])
 AC_PREREQ(2.61)
-
-dnl Include the M4 macros we use.
-builtin(include, [m4/wget.m4])dnl
-builtin(include, [m4/lib-ld.m4])dnl
-builtin(include, [m4/lib-link.m4])dnl
-builtin(include, [m4/lib-prefix.m4])dnl
 
 dnl
 dnl What version of Wget are we building?
 dnl
-VERSION=`sed -e 's/^.*"\(.*\)";$/\1/' ${srcdir}/src/version.c`
-AC_MSG_NOTICE([configuring for GNU Wget $VERSION])
-AC_SUBST(VERSION)
-PACKAGE=wget
-AC_SUBST(PACKAGE)
+AC_MSG_NOTICE([configuring for GNU Wget $PACKAGE_VERSION])
+
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_AUX_DIR([.])
+
+dnl
+dnl Automake setup
+dnl
+AM_INIT_AUTOMAKE(1.9)
+
+dnl
+dnl Gettext
+dnl
+AM_GNU_GETTEXT([external],[need-ngettext])
+AM_GNU_GETTEXT_VERSION([0.16.1])
 
 dnl
 dnl Get cannonical host
@@ -88,20 +94,6 @@ case "${ENABLE_OPIE}${ENABLE_DIGEST}" in
 *yes*)
 	wget_need_md5=yes
 esac
-if test x"$ENABLE_OPIE" = xyes; then
-  OPIE_OBJ='ftp-opie.o'
-fi
-AC_SUBST(OPIE_OBJ)
-
-dnl
-dnl Whether make sets $(MAKE)...
-dnl
-AC_PROG_MAKE_SET
-
-dnl
-dnl Find a good install
-dnl
-AC_PROG_INSTALL
 
 dnl
 dnl Find the compiler
@@ -112,7 +104,10 @@ test -z "$CFLAGS"  && CFLAGS= auto_cflags=1
 test -z "$CC" && cc_specified=yes
 
 AC_PROG_CC
+AM_PROG_CC_C_O
 AC_AIX
+
+AC_PROG_RANLIB
 
 dnl Turn on optimization by default.  Specifically:
 dnl
@@ -197,6 +192,10 @@ AC_FUNC_FSEEKO
 AC_CHECK_FUNCS(strptime timegm snprintf vsnprintf vasprintf drand48)
 AC_CHECK_FUNCS(strtoll usleep ftello sigblock sigsetjmp memrchr)
 
+if test x"$ENABLE_OPIE" = xyes; then
+  AC_LIBOBJ([ftp-opie])
+fi
+
 dnl We expect to have these functions on Unix-like systems configure
 dnl runs on.  The defines are provided to get them in config.h.in so
 dnl Wget can still be ported to non-Unix systems (such as Windows)
@@ -221,9 +220,8 @@ dnl
 dnl Check if we need to compile in getopt.c.
 dnl
 AC_CHECK_FUNC(getopt_long, [], [
-  GETOPT_OBJ='getopt.o'
+  AC_LIBOBJ([getopt])
 ])
-AC_SUBST(GETOPT_OBJ)
 
 dnl
 dnl Checks for libraries.
@@ -237,7 +235,7 @@ AS_IF([test x"$with_ssl" = xgnutls], [
   if test x"$LIBGNUTLS" != x
   then
     AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
-    SSL_OBJ='gnutls.o'
+    AC_LIBOBJ([gnutls])
   else
     AC_MSG_ERROR([--with-ssl=gnutls was given, but GNUTLS is not available.])
   fi
@@ -265,7 +263,7 @@ AS_IF([test x"$with_ssl" = xgnutls], [
     if test x"$LIBSSL" != x
     then
       AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
-      SSL_OBJ='openssl.o'
+      AC_LIBOBJ([openssl])
     elif test x"$with_ssl" != x
     then
       AC_MSG_ERROR([--with-ssl was given, but SSL is not available.])
@@ -273,17 +271,15 @@ AS_IF([test x"$with_ssl" = xgnutls], [
   ]) # endif: --with-ssl == no?
 ]) # endif: --with-ssl == gnutls?
 
-AC_SUBST(SSL_OBJ)
 
 dnl Enable NTLM if requested and if SSL is available.
-NTLM_OBJ=''
 if test x"$LIBSSL" != x
 then
   if test x"$ENABLE_NTLM" != xno
   then
     AC_DEFINE([ENABLE_NTLM], 1,
      [Define if you want the NTLM authorization support compiled in.])
-    NTLM_OBJ='http-ntlm.o'
+    AC_LIBOBJ([http-ntlm])
   fi
 else
   dnl If SSL is unavailable and the user explicitly requested NTLM,
@@ -293,7 +289,6 @@ else
     AC_MSG_ERROR([NTLM authorization requested and OpenSSL not found; aborting])
   fi
 fi
-AC_SUBST(NTLM_OBJ)
 
 dnl
 dnl Find an MD5 implementation.  Since Wget rarely needs MD5, we try
@@ -305,7 +300,7 @@ then
   dnl This should be moved to an AC_DEFUN, but I'm not sure how to
   dnl manipulate MD5_OBJ from the defun.
 
-  MD5_OBJ='gen-md5.o'
+  AC_LIBOBJ([gen-md5])
   found_md5=no
 
   dnl Check for the system MD5 library on Solaris.  We don't check for
@@ -342,14 +337,13 @@ then
   dnl If none of the above worked, use the one we ship with Wget.
   if test x"$found_md5" = xno; then
     AC_DEFINE([HAVE_BUILTIN_MD5], 1, [Define when using built-in MD5.])
-    MD5_OBJ="$MD5_OBJ gnu-md5.o"
+    AC_LIBOBJ([gnu-md5])
     found_md5=yes
     AC_MSG_NOTICE([using the built-in (GNU) MD5 implementation])
     AC_C_BIGENDIAN
   fi
 fi
 AC_DEFINE([HAVE_MD5], 1, [Define if we're compiling support for MD5.])
-AC_SUBST(MD5_OBJ)
 
 dnl **********************************************************************
 dnl Checks for IPv6
@@ -435,10 +429,7 @@ dnl     ALL_LINGUAS="cs de hr it ..."
 dnl The downside was that configure needed to be rebuilt whenever a
 dnl new language was added.
 dnl
-ALL_LINGUAS=`(cd ${srcdir}/po && ls *.po | sed -e 's/\.po$//' | tr '\012' ' ')`
-
-dnl internationalization macros
-WGET_WITH_NLS
+ALL_LINGUAS="en@quot en@boldquot $(cd ${srcdir}/po && ls *.po | sed -e 's/\.po$//' | tr '\012' ' ')"
 
 dnl
 dnl Find makeinfo.  We used to provide support for Emacs processing
@@ -474,6 +465,4 @@ AC_CONFIG_HEADERS([src/config.h])
 AH_BOTTOM([
 #include "config-post.h"
 ])
-AC_CONFIG_FILES([stamp-h], [echo timestamp > stamp-h])
-AC_CONFIG_COMMANDS([default], [WGET_PROCESS_PO])
 AC_OUTPUT
