@@ -1,3 +1,8 @@
+2007-10-09  Gisle Vanem  <gvanem@broadpark.no>
+
+	* mswindows.c: 'argc' and 'argv' in 'windows_main()' are no longer
+	needed.  Hence simply the prototype. Free 'exec_name' at exit.
+
 2007-10-08  Micah Cowan  <micah@cowan.name>
 
 	* http.c (http_loop): Add send_head_first conditional back

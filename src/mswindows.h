@@ -208,6 +208,6 @@ void ws_startup (void);
 void ws_changetitle (const char *);
 void ws_percenttitle (double);
 char *ws_mypath (void);
-void windows_main (int *, char **, char **);
+void windows_main (char **);
 
 #endif /* MSWINDOWS_H */

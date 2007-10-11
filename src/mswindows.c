@@ -73,7 +73,7 @@ xsleep (double seconds)
 }
 
 void
-windows_main (int *argc, char **argv, char **exec_name)
+windows_main (char **exec_name)
 {
   char *p;
 
@@ -87,6 +87,7 @@ windows_main (int *argc, char **argv, char **exec_name)
 static void
 ws_cleanup (void)
 {
+  xfree ((char*)exec_name);
   WSACleanup ();
 }
 
