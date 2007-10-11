@@ -2659,7 +2659,7 @@ This command used to be named @code{login} prior to Wget 1.10.
 Turn globbing on/off---the same as @samp{--glob} and @samp{--no-glob}.
 
 @item header = @var{string}
-Define a header for HTTP doewnloads, like using
+Define a header for HTTP downloads, like using
 @samp{--header=@var{string}}.
 
 @item html_extension = on/off
