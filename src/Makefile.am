@@ -53,6 +53,7 @@ version.c: hg-id
 	printf '%s\n' '";' >> $@
 
 .INTERMEDIATE: hg-id
+.PHONY: hg-id
 hg-id: $(wget_SOURCES) $(LDADD)
 	-( hg id | cut -f 1 -d ' ' ) 2>/dev/null > $@
 
