@@ -47,15 +47,13 @@ wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c ftp-basic.c	\
 EXTRA_wget_SOURCES = mswindows.c
 LDADD = $(ALLOCA) $(LIBOBJS)
 
-# version.c's not really _phony_, but it does need to be generated each run.
-.PHONY: version.c
 version.c: hg-id
 	printf '%s' 'const char *version_string = "@VERSION@' > $@
 	-HG_ID=$$(cat hg-id); [ "$$HG_ID" ] && printf '%s' " ($${HG_ID})" >> $@
 	printf '%s\n' '";' >> $@
 
 .INTERMEDIATE: hg-id
-hg-id:
+hg-id: $(wget_SOURCES) $(LDADD)
 	-( hg id | cut -f 1 -d ' ' ) 2>/dev/null > $@
 
 check_LIBRARIES = libunittest.a

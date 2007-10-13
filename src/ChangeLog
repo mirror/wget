@@ -1,3 +1,9 @@
+2007-10-13  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am: Make version.c depend on Wget dependencies (source
+	files, plus such things as LIBOBJS so we get things like
+	http-ntlm.c or gen-md5.c).
+
 2007-10-10  Micah Cowan  <micah@cowan.name>
 
 	* http-ntlm.c: Include openssl/opensslv.h explicitly, instead of
