@@ -1,3 +1,8 @@
+2007-10-13  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi <Mailing Lists>: Replaced mention of no-longer
+	included PATCHES file with link to relevant Wgiki page.
+
 2007-10-10  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi <Wgetrc Commands>: Fixed "doewnloads" typo.

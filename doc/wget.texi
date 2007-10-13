@@ -3315,7 +3315,8 @@ and follow the instructions.  Unsubscribe by mailing to
 Another mailing list is at @email{wget-patches@@sunsite.dk}, and is
 used to submit patches for review by Wget developers.  A ``patch'' is
 a textual representation of change to source code, readable by both
-humans and programs.  The file @file{PATCHES} that comes with Wget
+humans and programs.  The
+@url{http://wget.addictivecode.org/PatchGuidelines} page
 covers the creation and submitting of patches in detail.  Please don't
 send general suggestions or bug reports to @samp{wget-patches}; use it
 only for patch submissions.
