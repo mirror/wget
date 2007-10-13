@@ -12,6 +12,15 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.11.
 
+** The source code has been migrated to Mercurial. The repositories are
+available at http://hg.addictivecode.org/. Prior to this, the source
+code was hosted on Subversion (migrated from the original CVS); you can
+still get access to older tags and branches for Wget in the Subversion
+repository at http://addictivecode.org/svn/wget/.
+
+** PATCH file removed; see http://wget.addictivecode.org/PatchGuidelines
+for current information about producing patches for GNU Wget.
+
 ** TODO file removed: we use a bugtracker now; see
 http://wget.addictivecode.org/BugTracker. Also,
 http://wget.addictivecode.org/FeatureSpecifications.
@@ -65,11 +74,6 @@ was only used by the passive_ftp .wgetrc setting.  If you're running
 broken scripts or Perl modules that unconditionally specify
 `--passive-ftp' and your firewall disallows it, you can override them
 by replacing wget with a script that execs wget "$@" --no-passive-ftp.
-
-** The source code has migrated from CVS to Subversion.  The
-repository is available at http://svn.dotsrc.org/repo/wget/; to
-checkout the trunk to a directory named `wget', use something like
-`svn checkout http://svn.dotsrc.org/repo/wget/trunk/ wget'.
 
 * Changes in Wget 1.10.
 

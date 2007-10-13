@@ -1,3 +1,9 @@
+2007-10-12  Micah Cowan  <micah@cowan.name>
+
+	* PATCHES: Removed.
+	* NEWS: Updated info about source repositories, removal of
+	PATCHES file.
+
 2007-10-09  Micah Cowan  <micah@cowan.name>
 
 	* configure.in: Renamed to configure.ac
