@@ -14,6 +14,9 @@ code was hosted on Subversion (migrated from the original CVS); you can
 still get access to older tags and branches for Wget in the Subversion
 repository at http://addictivecode.org/svn/wget/.
 
+** PATCH file removed; see http://wget.addictivecode.org/PatchGuidelines
+for current information about producing patches for GNU Wget.
+
 ** TODO file removed: we use a bugtracker now; see
 http://wget.addictivecode.org/BugTracker. Also,
 http://wget.addictivecode.org/FeatureSpecifications.

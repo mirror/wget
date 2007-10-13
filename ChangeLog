@@ -1,6 +1,8 @@
 2007-10-12  Micah Cowan  <micah@cowan.name>
 
-	* NEWS: Updated info about source repositories.
+	* PATCHES: Removed.
+	* NEWS: Updated info about source repositories, removal of
+	PATCHES file.
 
 2007-10-03  Micah Cowan  <micah@cowan.name>
 
