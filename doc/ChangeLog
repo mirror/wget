@@ -1,3 +1,7 @@
+2007-10-10  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi <Wgetrc Commands>: Fixed "doewnloads" typo.
+
 2007-10-03  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi <Wgetrc Commands>: Cleaned up alphabetization,
