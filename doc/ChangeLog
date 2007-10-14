@@ -2,6 +2,7 @@
 
 	* wget.texi <Mailing Lists>: Replaced mention of no-longer
 	included PATCHES file with link to relevant Wgiki page.
+	* wget.texi <Internet Relay Chat>: Added new section.
 
 2007-10-10  Micah Cowan  <micah@cowan.name>
 

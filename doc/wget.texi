@@ -3197,6 +3197,7 @@ This chapter contains all the stuff that could not fit anywhere else.
 * Distribution::        Getting the latest version.
 * Web Site::            GNU Wget's presence on the World Wide Web.
 * Mailing List::        Wget mailing list for announcements and discussion.
+* Internet Relay Chat:: Wget's presence on IRC.
 * Reporting Bugs::      How and where to report bugs.
 * Portability::         The systems Wget works on.
 * Signals::             Signal-handling performed by Wget.
@@ -3333,6 +3334,16 @@ This is the highest-traffic list for Wget, and is recommended only for
 people who are seriously interested in ongoing Wget development.
 Subscription is through the @code{mailman} interface at
 @url{http://addictivecode.org/mailman/listinfo/wget-notify}.
+
+@node Internet Relay Chat
+@section Internet Relay Chat
+@cindex Internet Relay Chat
+@cindex IRC
+@cindex #wget
+
+While, at the time of this writing, there is very low activity, we do
+have a support channel set up via IRC at @code{irc.freenode.org},
+@code{#wget}. Come check it out!
 
 @node Reporting Bugs
 @section Reporting Bugs
