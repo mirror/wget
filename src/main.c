@@ -55,8 +55,7 @@ so, delete this exception statement from your version.  */
 #include "spider.h"
 #include "http.h"               /* for save_cookies */
 
-/* On GNU system this will include system-wide getopt.h. */
-#include "getopt.h"
+#include <getopt.h>
 
 #ifndef PATH_SEPARATOR
 # define PATH_SEPARATOR '/'

@@ -1,7 +1,8 @@
 2007-10-13  Micah Cowan  <micah@cowan.name>
 
 	* GNUMakefile, maint.mk: Added as part of the gnulib-ization.
-	* Makefile.am, configure.ac: gnulib-ized.
+	* Makefile.am: gnulib-ized.
+	* configure.ac: gnulib-ized. Removed built-in getopt checks.
 
 2007-10-12  Micah Cowan  <micah@cowan.name>
 

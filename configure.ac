@@ -221,13 +221,6 @@ WGET_POSIX_CLOCK
 WGET_NSL_SOCKET
 
 dnl
-dnl Check if we need to compile in getopt.c.
-dnl
-AC_CHECK_FUNC(getopt_long, [], [
-  AC_LIBOBJ([getopt])
-])
-
-dnl
 dnl Checks for libraries.
 dnl
 

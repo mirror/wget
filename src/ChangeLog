@@ -2,7 +2,8 @@
 
 	* Makefile.am: Make version.c depend on Wget dependencies (source
 	files, plus such things as LIBOBJS so we get things like
-	http-ntlm.c or gen-md5.c).
+	http-ntlm.c). Removed getopt.[ch], as we're now using gnulib for
+	these.
 
 2007-10-10  Micah Cowan  <micah@cowan.name>
 

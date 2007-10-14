@@ -40,7 +40,7 @@ wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c ftp-basic.c	\
 	       res.c retr.c safe-ctype.c snprintf.c spider.c url.c	\
 	       utils.c version.c xmalloc.c				\
 	       config-post.h connect.h convert.h cookies.h 		\
-	       ftp.h gen-md5.h getopt.h gnu-md5.h hash.h host.h html-parse.h \
+	       ftp.h gen-md5.h gnu-md5.h hash.h host.h html-parse.h \
 	       http.h http-ntlm.h init.h log.h mswindows.h netrc.h \
 	       options.h progress.h ptimer.h recur.h res.h retr.h safe-ctype.h \
 	       spider.h ssl.h sysdep.h url.h utils.h wget.h xmalloc.h
