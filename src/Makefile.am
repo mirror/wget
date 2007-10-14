@@ -45,7 +45,7 @@ wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c ftp-basic.c	\
 	       options.h progress.h ptimer.h recur.h res.h retr.h safe-ctype.h \
 	       spider.h ssl.h sysdep.h url.h utils.h wget.h xmalloc.h
 EXTRA_wget_SOURCES = mswindows.c
-LDADD = $(ALLOCA) $(LIBOBJS)
+LDADD = $(ALLOCA) $(LIBOBJS) ../lib/libgnu.a
 
 version.c: hg-id
 	printf '%s' 'const char *version_string = "@VERSION@' > $@
