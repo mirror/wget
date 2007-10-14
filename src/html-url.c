@@ -509,20 +509,20 @@ tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
       if (!refresh)
         return;
 
-      for (p = refresh; ISDIGIT (*p); p++)
+      for (p = refresh; c_isdigit (*p); p++)
         timeout = 10 * timeout + *p - '0';
       if (*p++ != ';')
         return;
 
-      while (ISSPACE (*p))
+      while (c_isspace (*p))
         ++p;
-      if (!(   TOUPPER (*p)       == 'U'
-            && TOUPPER (*(p + 1)) == 'R'
-            && TOUPPER (*(p + 2)) == 'L'
+      if (!(   c_toupper (*p)       == 'U'
+            && c_toupper (*(p + 1)) == 'R'
+            && c_toupper (*(p + 2)) == 'L'
             &&          *(p + 3)  == '='))
         return;
       p += 4;
-      while (ISSPACE (*p))
+      while (c_isspace (*p))
         ++p;
 
       entry = append_url (p, tag, attrind, ctx);
@@ -668,9 +668,9 @@ get_urls_file (const char *file)
       text = line_end;
 
       /* Strip whitespace from the beginning and end of line. */
-      while (line_beg < line_end && ISSPACE (*line_beg))
+      while (line_beg < line_end && c_isspace (*line_beg))
         ++line_beg;
-      while (line_end > line_beg && ISSPACE (*(line_end - 1)))
+      while (line_end > line_beg && c_isspace (*(line_end - 1)))
         --line_end;
 
       if (line_beg == line_end)

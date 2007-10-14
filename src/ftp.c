@@ -88,11 +88,11 @@ ftp_expected_bytes (const char *s)
       res = str_to_wgint (s, (char **) &s, 10);
       if (!*s)
         return 0;
-      while (*s && ISSPACE (*s))
+      while (*s && c_isspace (*s))
         ++s;
       if (!*s)
         return 0;
-      if (TOLOWER (*s) != 'b')
+      if (c_tolower (*s) != 'b')
         continue;
       if (strncasecmp (s, "byte", 4))
         continue;
@@ -496,7 +496,7 @@ Error in server response, closing control connection.\n"));
 
           if (target[0] != '/'
               && !(con->rs != ST_UNIX
-                   && ISALPHA (target[0])
+                   && c_isalpha (target[0])
                    && target[1] == ':')
               && con->rs != ST_OS400)
             {

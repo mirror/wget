@@ -495,7 +495,7 @@ is_valid_ipv6_address (const char *str, const char *end)
       int ch = *str++;
 
       /* if ch is a number, add it to val. */
-      if (ISXDIGIT (ch))
+      if (c_isxdigit (ch))
         {
           val <<= 4;
           val |= XDIGIT_TO_NUM (ch);
@@ -848,7 +848,7 @@ sufmatch (const char **list, const char *what)
   for (i = 0; list[i]; i++)
     {
       for (j = strlen (list[i]), k = lw; j >= 0 && k >= 0; j--, k--)
-        if (TOLOWER (list[i][j]) != TOLOWER (what[k]))
+        if (c_tolower (list[i][j]) != c_tolower (what[k]))
           break;
       /* The domain must be first to reach to beginning.  */
       if (j == -1)

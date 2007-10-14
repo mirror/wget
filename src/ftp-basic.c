@@ -82,7 +82,7 @@ ftp_response (int fd, char **ret_line)
         DEBUGP (("%s\n", escnonprint (line)));
 
       /* The last line of output is the one that begins with "ddd ". */
-      if (ISDIGIT (line[0]) && ISDIGIT (line[1]) && ISDIGIT (line[2])
+      if (c_isdigit (line[0]) && c_isdigit (line[1]) && c_isdigit (line[2])
           && line[3] == ' ')
         {
           strncpy (ftp_last_respline, line, sizeof (ftp_last_respline));
@@ -205,7 +205,7 @@ ftp_login (int csock, const char *acc, const char *pass)
         int skey_sequence = 0;
 
         /* Extract the sequence from SEED.  */
-        for (; ISDIGIT (*seed); seed++)
+        for (; c_isdigit (*seed); seed++)
           skey_sequence = 10 * skey_sequence + *seed - '0';
         if (*seed == ' ')
           ++seed;
@@ -521,14 +521,14 @@ ftp_pasv (int csock, ip_address *addr, int *port)
     }
   /* Parse the request.  */
   s = respline;
-  for (s += 4; *s && !ISDIGIT (*s); s++)
+  for (s += 4; *s && !c_isdigit (*s); s++)
     ;
   if (!*s)
     return FTPINVPASV;
   for (i = 0; i < 6; i++)
     {
       tmp[i] = 0;
-      for (; ISDIGIT (*s); s++)
+      for (; c_isdigit (*s); s++)
         tmp[i] = (*s - '0') + 10 * tmp[i];
       if (*s == ',')
         s++;
@@ -590,14 +590,14 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
 
   /* Parse the response.  */
   s = respline;
-  for (s += 4; *s && !ISDIGIT (*s); s++)
+  for (s += 4; *s && !c_isdigit (*s); s++)
     ;
   if (!*s)
     return FTPINVPASV;
 
   /* First, get the address family */
   af = 0;
-  for (; ISDIGIT (*s); s++)
+  for (; c_isdigit (*s); s++)
     af = (*s - '0') + 10 * af;
 
   if (af != 4 && af != 6)
@@ -614,7 +614,7 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
 
   /* Then, get the address length */
   addrlen = 0;
-  for (; ISDIGIT (*s); s++)
+  for (; c_isdigit (*s); s++)
     addrlen = (*s - '0') + 10 * addrlen;
 
   if (!*s || *s++ != ',')
@@ -640,7 +640,7 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
   for (i = 0; i < addrlen; i++)
     {
       tmp[i] = 0;
-      for (; ISDIGIT (*s); s++)
+      for (; c_isdigit (*s); s++)
         tmp[i] = (*s - '0') + 10 * tmp[i];
       if (*s == ',')
         s++;
@@ -653,7 +653,7 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
 
   /* Now, get the port length */
   portlen = 0;
-  for (; ISDIGIT (*s); s++)
+  for (; c_isdigit (*s); s++)
     portlen = (*s - '0') + 10 * portlen;
 
   if (!*s || *s++ != ',')
@@ -670,7 +670,7 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
 
   /* Finally, we get the port number */
   tmpprt[0] = 0;
-  for (; ISDIGIT (*s); s++)
+  for (; c_isdigit (*s); s++)
     tmpprt[0] = (*s - '0') + 10 * tmpprt[0];
 
   if (!*s || *s++ != ',')
@@ -680,7 +680,7 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
     }
 
   tmpprt[1] = 0;
-  for (; ISDIGIT (*s); s++)
+  for (; c_isdigit (*s); s++)
     tmpprt[1] = (*s - '0') + 10 * tmpprt[1];
 
   assert (s != NULL);
@@ -786,7 +786,7 @@ ftp_epsv (int csock, ip_address *ip, int *port)
 
   /* Finally, get the port number */
   tport = 0; 
-  for (i = 1; ISDIGIT (*s); s++) 
+  for (i = 1; c_isdigit (*s); s++) 
     {
       if (i > 5)
         {
@@ -1171,7 +1171,7 @@ ftp_process_type (const char *params)
   if (params
       && 0 == strncasecmp (params, "type=", 5)
       && params[5] != '\0')
-    return TOUPPER (params[5]);
+    return c_toupper (params[5]);
   else
     return 'I';
 }

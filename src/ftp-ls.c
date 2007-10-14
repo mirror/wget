@@ -252,10 +252,10 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
               year = 0;
               min = hour = sec = 0;
               /* We must deal with digits.  */
-              if (ISDIGIT (*tok))
+              if (c_isdigit (*tok))
                 {
                   /* Suppose it's year.  */
-                  for (; ISDIGIT (*tok); tok++)
+                  for (; c_isdigit (*tok); tok++)
                     year = (*tok - '0') + 10 * year;
                   if (*tok == ':')
                     {
@@ -264,13 +264,13 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
                       year = 0;
                       ++tok;
                       /* Get the minutes...  */
-                      for (; ISDIGIT (*tok); tok++)
+                      for (; c_isdigit (*tok); tok++)
                         min = (*tok - '0') + 10 * min;
                       if (*tok == ':')
                         {
                           /* ...and the seconds.  */
                           ++tok;
-                          for (; ISDIGIT (*tok); tok++)
+                          for (; c_isdigit (*tok); tok++)
                             sec = (*tok - '0') + 10 * sec;
                         }
                     }

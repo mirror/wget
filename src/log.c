@@ -604,7 +604,7 @@ count_nonprint (const char *source)
   const char *p;
   int cnt;
   for (p = source, cnt = 0; *p; p++)
-    if (!ISPRINT (*p))
+    if (!c_isprint (*p))
       ++cnt;
   return cnt;
 }
@@ -644,7 +644,7 @@ copy_and_escape (const char *source, char *dest, char escape, int base)
     {
     case 8:
       while ((c = *from++) != '\0')
-        if (ISPRINT (c))
+        if (c_isprint (c))
           *to++ = c;
         else
           {
@@ -656,7 +656,7 @@ copy_and_escape (const char *source, char *dest, char escape, int base)
       break;
     case 16:
       while ((c = *from++) != '\0')
-        if (ISPRINT (c))
+        if (c_isprint (c))
           *to++ = c;
         else
           {

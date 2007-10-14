@@ -283,7 +283,7 @@ parse_netrc (const char *path)
       quote = 0;
 
       /* Skip leading whitespace.  */
-      while (*p && ISSPACE (*p))
+      while (*p && c_isspace (*p))
         p ++;
 
       /* If the line is empty, then end any macro definition.  */
@@ -295,7 +295,7 @@ parse_netrc (const char *path)
       while (*p && last_token != tok_macdef)
         {
           /* Skip any whitespace.  */
-          while (*p && ISSPACE (*p))
+          while (*p && c_isspace (*p))
             p ++;
 
           /* Discard end-of-line comments; also, stop processing if
@@ -313,7 +313,7 @@ parse_netrc (const char *path)
           tok = p;
 
           /* Find the end of the token, handling quotes and escapes.  */
-          while (*p && (quote ? *p != '"' : !ISSPACE (*p))){
+          while (*p && (quote ? *p != '"' : !c_isspace (*p))){
             if (*p == '\\')
               shift_left (p);
             p ++;

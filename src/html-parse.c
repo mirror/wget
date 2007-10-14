@@ -110,21 +110,21 @@ so, delete this exception statement from your version.  */
 # define xrealloc realloc
 # define xfree free
 
-# undef ISSPACE
-# undef ISDIGIT
-# undef ISXDIGIT
-# undef ISALPHA
-# undef ISALNUM
-# undef TOLOWER
-# undef TOUPPER
+# undef c_isspace
+# undef c_isdigit
+# undef c_isxdigit
+# undef c_isalpha
+# undef c_isalnum
+# undef c_tolower
+# undef c_toupper
 
-# define ISSPACE(x) isspace (x)
-# define ISDIGIT(x) isdigit (x)
-# define ISXDIGIT(x) isxdigit (x)
-# define ISALPHA(x) isalpha (x)
-# define ISALNUM(x) isalnum (x)
-# define TOLOWER(x) tolower (x)
-# define TOUPPER(x) toupper (x)
+# define c_isspace(x) isspace (x)
+# define c_isdigit(x) isdigit (x)
+# define c_isxdigit(x) isxdigit (x)
+# define c_isalpha(x) isalpha (x)
+# define c_isalnum(x) isalnum (x)
+# define c_tolower(x) tolower (x)
+# define c_toupper(x) toupper (x)
 
 struct hash_table {
   int dummy;
@@ -258,7 +258,7 @@ struct pool {
    However, "&lt;foo" will work, as will "&lt!foo", "&lt", etc.  In
    other words an entity needs to be terminated by either a
    non-alphanumeric or the end of string.  */
-#define FITS(p, n) (p + n == end || (p + n < end && !ISALNUM (p[n])))
+#define FITS(p, n) (p + n == end || (p + n < end && !c_isalnum (p[n])))
 
 /* Macros that test entity names by returning true if P is followed by
    the specified characters.  */
@@ -296,10 +296,10 @@ decode_entity (const char **ptr, const char *end)
         int digits = 0;
         value = 0;
         if (*p == 'x')
-          for (++p; value < 256 && p < end && ISXDIGIT (*p); p++, digits++)
+          for (++p; value < 256 && p < end && c_isxdigit (*p); p++, digits++)
             value = (value << 4) + XDIGIT_TO_NUM (*p);
         else
-          for (; value < 256 && p < end && ISDIGIT (*p); p++, digits++)
+          for (; value < 256 && p < end && c_isdigit (*p); p++, digits++)
             value = (value * 10) + (*p - '0');
         if (!digits)
           return -1;
@@ -368,9 +368,9 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
      `&#32;'.  */
   if (flags & AP_TRIM_BLANKS)
     {
-      while (beg < end && ISSPACE (*beg))
+      while (beg < end && c_isspace (*beg))
         ++beg;
-      while (end > beg && ISSPACE (end[-1]))
+      while (end > beg && c_isspace (end[-1]))
         --end;
     }
 
@@ -425,7 +425,7 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
     {
       char *p = pool->contents + old_tail;
       for (; *p; p++)
-        *p = TOLOWER (*p);
+        *p = c_tolower (*p);
     }
 }
 
@@ -705,7 +705,7 @@ name_allowed (const struct hash_table *ht, const char *b, const char *e)
 /* Skip whitespace, if any. */
 
 #define SKIP_WS(p) do {                         \
-  while (ISSPACE (*p)) {                        \
+  while (c_isspace (*p)) {                        \
     ADVANCE (p);                                \
   }                                             \
 } while (0)
@@ -713,7 +713,7 @@ name_allowed (const struct hash_table *ht, const char *b, const char *e)
 /* Skip non-whitespace, if any. */
 
 #define SKIP_NON_WS(p) do {                     \
-  while (!ISSPACE (*p)) {                       \
+  while (!c_isspace (*p)) {                       \
     ADVANCE (p);                                \
   }                                             \
 } while (0)
@@ -936,7 +936,7 @@ map_html_tags (const char *text, int size,
                    violated by, for instance, `%' in `width=75%'.
                    We'll be liberal and allow just about anything as
                    an attribute value.  */
-                while (!ISSPACE (*p) && *p != '>')
+                while (!c_isspace (*p) && *p != '>')
                   ADVANCE (p);
                 attr_value_end = p; /* <foo bar=baz qux=quix> */
                                     /*             ^          */

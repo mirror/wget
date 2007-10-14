@@ -811,9 +811,9 @@ main (int argc, char *const *argv)
                before passing the value to setoptval.  */
             bool flag = true;
             if (optarg)
-              flag = (*optarg == '1' || TOLOWER (*optarg) == 'y'
-                      || (TOLOWER (optarg[0]) == 'o'
-                          && TOLOWER (optarg[1]) == 'n'));
+              flag = (*optarg == '1' || c_tolower (*optarg) == 'y'
+                      || (c_tolower (optarg[0]) == 'o'
+                          && c_tolower (optarg[1]) == 'n'));
             setoptval (opt->type == OPT__PARENT ? "noparent" : "noclobber",
                        flag ? "0" : "1", opt->long_name);
             break;
