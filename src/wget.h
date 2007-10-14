@@ -80,7 +80,7 @@ so, delete this exception statement from your version.  */
 /* Include these, so random files need not include them.  */
 #include "sysdep.h"
 /* locale independent replacement for ctype.h */
-#include "safe-ctype.h"
+#include "c-ctype.h"
 
 /* Conditionalize the use of GCC's __attribute__((format)) and
    __builtin_expect features using macros.  */

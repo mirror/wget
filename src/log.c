@@ -596,7 +596,7 @@ log_dump_context (void)
 /* String escape functions. */
 
 /* Return the number of non-printable characters in SOURCE.
-   Non-printable characters are determined as per safe-ctype.c.  */
+   Non-printable characters are determined as per c-ctype.c.  */
 
 static int
 count_nonprint (const char *source)
