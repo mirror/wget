@@ -1,3 +1,8 @@
+2007-10-13  Micah Cowan  <micah@cowan.name>
+
+	* GNUMakefile, maint.mk: Added as part of the gnulib-ization.
+	* Makefile.am, configure.ac: gnulib-ized.
+
 2007-10-12  Micah Cowan  <micah@cowan.name>
 
 	* PATCHES: Removed.

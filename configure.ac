@@ -106,6 +106,7 @@ test -z "$CC" && cc_specified=yes
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_AIX
+gl_EARLY
 
 AC_PROG_RANLIB
 
@@ -182,6 +183,9 @@ AC_CHECK_TYPES(sig_atomic_t, [], [], [
 #endif
 #include <signal.h>
 ])
+
+# gnulib
+gl_INIT
 
 dnl
 dnl Checks for library functions.
@@ -460,7 +464,7 @@ dnl Create output
 dnl
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile util/Makefile
                  po/Makefile.in tests/Makefile tests/WgetTest.pm
-                 windows/Makefile])
+                 lib/Makefile windows/Makefile])
 AC_CONFIG_HEADERS([src/config.h])
 AH_BOTTOM([
 #include "config-post.h"

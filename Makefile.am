@@ -33,7 +33,7 @@
 ACLOCAL_AMFLAGS = -I m4
 
 # subdirectories in the distribution
-SUBDIRS = src doc po tests util windows
+SUBDIRS = lib src doc po tests util windows
 
 test: all
 	cd tests && $(MAKE) $(AM_MAKEFLAGS) $@
