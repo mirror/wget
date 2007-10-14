@@ -39,11 +39,14 @@ AC_DEFUN([gl_INIT],
   gl_libdeps=
   gl_ltlibdeps=
   gl_source_base='lib'
+  gl_MD5
   gl_GETOPT
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
   AM_STDBOOL_H
+  gl_STDINT_H
   gl_UNISTD_H
+  gl_WCHAR_H
   LIBGNU_LIBDEPS="$gl_libdeps"
   AC_SUBST([LIBGNU_LIBDEPS])
   LIBGNU_LTLIBDEPS="$gl_ltlibdeps"
@@ -108,11 +111,20 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/getopt1.c
   lib/getopt_int.h
   lib/gettext.h
+  lib/md5.c
+  lib/md5.h
   lib/stdbool.in.h
+  lib/stdint.in.h
   lib/unistd.in.h
+  lib/wchar.in.h
   m4/getopt.m4
   m4/gnulib-common.m4
   m4/include_next.m4
+  m4/longlong.m4
+  m4/md5.m4
   m4/stdbool.m4
+  m4/stdint.m4
+  m4/ulonglong.m4
   m4/unistd_h.m4
+  m4/wchar.m4
 ])

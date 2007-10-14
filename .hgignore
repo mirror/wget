@@ -11,6 +11,13 @@ config.log
 config.status
 config.status.lineno
 autom4te.cache
+lib/.deps
+lib/*.o
+lib/libgnu.a
+lib/unistd.h
+lib/stdbool.h
+lib/stdint.h
+lib/wchar.h
 tests/WgetTest.pm
 tests/unit-tests
 tests/*.o
