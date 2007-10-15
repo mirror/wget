@@ -96,7 +96,7 @@ xstrdup_lower (const char *s)
   char *copy = xstrdup (s);
   char *p = copy;
   for (; *p; p++)
-    *p = TOLOWER (*p);
+    *p = c_tolower (*p);
   return copy;
 }
 
@@ -135,7 +135,7 @@ sepstring (const char *s)
           res[++i] = NULL;
           ++s;
           /* Skip the blanks following the ','.  */
-          while (ISSPACE (*s))
+          while (c_isspace (*s))
             ++s;
           p = s;
         }
@@ -636,10 +636,10 @@ fnmatch_nocase (const char *pattern, const char *string, int flags)
   char *strcopy = (char *) alloca (strlen (string) + 1);
   char *p;
   for (p = patcopy; *pattern; pattern++, p++)
-    *p = TOLOWER (*pattern);
+    *p = c_tolower (*pattern);
   *p = '\0';
   for (p = strcopy; *string; string++, p++)
-    *p = TOLOWER (*string);
+    *p = c_tolower (*string);
   *p = '\0';
   return fnmatch (patcopy, strcopy, flags);
 #endif
@@ -681,7 +681,7 @@ subdir_p (const char *d1, const char *d2)
     for (; *d1 && *d2 && (*d1 == *d2); ++d1, ++d2)
       ;
   else
-    for (; *d1 && *d2 && (TOLOWER (*d1) == TOLOWER (*d2)); ++d1, ++d2)
+    for (; *d1 && *d2 && (c_tolower (*d1) == c_tolower (*d2)); ++d1, ++d2)
       ;
   
   return *d1 == '\0' && (*d2 == '\0' || *d2 == '/');
@@ -766,7 +766,7 @@ match_tail (const char *string, const char *tail, bool fold_case)
   else
     {
       for (i = strlen (string), j = strlen (tail); i >= 0 && j >= 0; i--, j--)
-        if (TOLOWER (string[i]) != TOLOWER (tail[j]))
+        if (c_tolower (string[i]) != c_tolower (tail[j]))
           break;
     }
 
@@ -1940,7 +1940,7 @@ base64_encode (const void *data, int length, char *dest)
    when end of string is reached.  */
 #define NEXT_CHAR(c, p) do {                    \
   c = (unsigned char) *p++;                     \
-} while (ISSPACE (c))
+} while (c_isspace (c))
 
 #define IS_ASCII(c) (((c) & 0x80) == 0)
 

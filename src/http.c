@@ -279,7 +279,7 @@ request_set_user_header (struct request *req, const char *header)
     return;
   BOUNDED_TO_ALLOCA (header, p, name);
   ++p;
-  while (ISSPACE (*p))
+  while (c_isspace (*p))
     ++p;
   request_set_header (req, xstrdup (name), (char *) p, rel_name);
 }
@@ -653,9 +653,9 @@ resp_header_locate (const struct response *resp, const char *name, int start,
           && 0 == strncasecmp (b, name, name_len))
         {
           b += name_len + 1;
-          while (b < e && ISSPACE (*b))
+          while (b < e && c_isspace (*b))
             ++b;
-          while (b < e && ISSPACE (e[-1]))
+          while (b < e && c_isspace (e[-1]))
             --e;
           *begptr = b;
           *endptr = e;
@@ -754,17 +754,17 @@ resp_status (const struct response *resp, char **message)
   if (p < end && *p == '/')
     {
       ++p;
-      while (p < end && ISDIGIT (*p))
+      while (p < end && c_isdigit (*p))
         ++p;
       if (p < end && *p == '.')
         ++p; 
-      while (p < end && ISDIGIT (*p))
+      while (p < end && c_isdigit (*p))
         ++p;
     }
 
-  while (p < end && ISSPACE (*p))
+  while (p < end && c_isspace (*p))
     ++p;
-  if (end - p < 3 || !ISDIGIT (p[0]) || !ISDIGIT (p[1]) || !ISDIGIT (p[2]))
+  if (end - p < 3 || !c_isdigit (p[0]) || !c_isdigit (p[1]) || !c_isdigit (p[2]))
     return -1;
 
   status = 100 * (p[0] - '0') + 10 * (p[1] - '0') + (p[2] - '0');
@@ -772,9 +772,9 @@ resp_status (const struct response *resp, char **message)
 
   if (message)
     {
-      while (p < end && ISSPACE (*p))
+      while (p < end && c_isspace (*p))
         ++p;
-      while (p < end && ISSPACE (end[-1]))
+      while (p < end && c_isspace (end[-1]))
         --end;
       *message = strdupdelim (p, end);
     }
@@ -845,26 +845,26 @@ parse_content_range (const char *hdr, wgint *first_byte_ptr,
          HTTP spec. */
       if (*hdr == ':')
         ++hdr;
-      while (ISSPACE (*hdr))
+      while (c_isspace (*hdr))
         ++hdr;
       if (!*hdr)
         return false;
     }
-  if (!ISDIGIT (*hdr))
+  if (!c_isdigit (*hdr))
     return false;
-  for (num = 0; ISDIGIT (*hdr); hdr++)
+  for (num = 0; c_isdigit (*hdr); hdr++)
     num = 10 * num + (*hdr - '0');
-  if (*hdr != '-' || !ISDIGIT (*(hdr + 1)))
+  if (*hdr != '-' || !c_isdigit (*(hdr + 1)))
     return false;
   *first_byte_ptr = num;
   ++hdr;
-  for (num = 0; ISDIGIT (*hdr); hdr++)
+  for (num = 0; c_isdigit (*hdr); hdr++)
     num = 10 * num + (*hdr - '0');
-  if (*hdr != '/' || !ISDIGIT (*(hdr + 1)))
+  if (*hdr != '/' || !c_isdigit (*(hdr + 1)))
     return false;
   *last_byte_ptr = num;
   ++hdr;
-  for (num = 0; ISDIGIT (*hdr); hdr++)
+  for (num = 0; c_isdigit (*hdr); hdr++)
     num = 10 * num + (*hdr - '0');
   *entity_length_ptr = num;
   return true;
@@ -939,7 +939,7 @@ extract_param (const char **source, param_token *name, param_token *value,
 {
   const char *p = *source;
 
-  while (ISSPACE (*p)) ++p;
+  while (c_isspace (*p)) ++p;
   if (!*p)
     {
       *source = p;
@@ -948,11 +948,11 @@ extract_param (const char **source, param_token *name, param_token *value,
 
   /* Extract name. */
   name->b = p;
-  while (*p && !ISSPACE (*p) && *p != '=' && *p != separator) ++p;
+  while (*p && !c_isspace (*p) && *p != '=' && *p != separator) ++p;
   name->e = p;
   if (name->b == name->e)
     return false;               /* empty name: error */
-  while (ISSPACE (*p)) ++p;
+  while (c_isspace (*p)) ++p;
   if (*p == separator || !*p)           /* no value */
     {
       xzero (*value);
@@ -965,7 +965,7 @@ extract_param (const char **source, param_token *name, param_token *value,
 
   /* *p is '=', extract value */
   ++p;
-  while (ISSPACE (*p)) ++p;
+  while (c_isspace (*p)) ++p;
   if (*p == '"')                /* quoted */
     {
       value->b = ++p;
@@ -974,7 +974,7 @@ extract_param (const char **source, param_token *name, param_token *value,
         return false;
       value->e = p++;
       /* Currently at closing quote; find the end of param. */
-      while (ISSPACE (*p)) ++p;
+      while (c_isspace (*p)) ++p;
       while (*p && *p != separator) ++p;
       if (*p == separator)
         ++p;
@@ -987,7 +987,7 @@ extract_param (const char **source, param_token *name, param_token *value,
       value->b = p;
       while (*p && *p != separator) ++p;
       value->e = p;
-      while (value->e != value->b && ISSPACE (value->e[-1]))
+      while (value->e != value->b && c_isspace (value->e[-1]))
         --value->e;
       if (*p == separator) ++p;
     }
@@ -1315,7 +1315,7 @@ free_hstat (struct http_stat *hs)
 
 #define BEGINS_WITH(line, string_constant)                               \
   (!strncasecmp (line, string_constant, sizeof (string_constant) - 1)    \
-   && (ISSPACE (line[sizeof (string_constant) - 1])                      \
+   && (c_isspace (line[sizeof (string_constant) - 1])                      \
        || !line[sizeof (string_constant) - 1]))
 
 #define SET_USER_AGENT(req) do {                                         \
@@ -2021,7 +2021,7 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
       char *tmp = strchr (type, ';');
       if (tmp)
         {
-          while (tmp > type && ISSPACE (tmp[-1]))
+          while (tmp > type && c_isspace (tmp[-1]))
             --tmp;
           *tmp = '\0';
         }
@@ -2796,11 +2796,11 @@ check_end (const char *p)
 {
   if (!p)
     return false;
-  while (ISSPACE (*p))
+  while (c_isspace (*p))
     ++p;
   if (!*p
       || (p[0] == 'G' && p[1] == 'M' && p[2] == 'T')
-      || ((p[0] == '+' || p[0] == '-') && ISDIGIT (p[1])))
+      || ((p[0] == '+' || p[0] == '-') && c_isdigit (p[1])))
     return true;
   else
     return false;
@@ -2916,7 +2916,7 @@ basic_authentication_encode (const char *user, const char *passwd)
 }
 
 #define SKIP_WS(x) do {                         \
-  while (ISSPACE (*(x)))                        \
+  while (c_isspace (*(x)))                        \
     ++(x);                                      \
 } while (0)
 
@@ -3048,7 +3048,7 @@ username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\"",
   ((e) - (b) >= STRSIZE (literal)                       \
    && 0 == strncasecmp (b, literal, STRSIZE (literal))  \
    && ((e) - (b) == STRSIZE (literal)                   \
-       || ISSPACE (b[STRSIZE (literal)])))
+       || c_isspace (b[STRSIZE (literal)])))
 
 static bool
 known_authentication_scheme_p (const char *hdrbeg, const char *hdrend)
@@ -3077,7 +3077,7 @@ create_authorization_line (const char *au, const char *user,
 {
   /* We are called only with known schemes, so we can dispatch on the
      first letter. */
-  switch (TOUPPER (*au))
+  switch (c_toupper (*au))
     {
     case 'B':                   /* Basic */
       *finished = true;

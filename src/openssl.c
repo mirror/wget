@@ -439,13 +439,13 @@ pattern_match (const char *pattern, const char *string)
 {
   const char *p = pattern, *n = string;
   char c;
-  for (; (c = TOLOWER (*p++)) != '\0'; n++)
+  for (; (c = c_tolower (*p++)) != '\0'; n++)
     if (c == '*')
       {
-        for (c = TOLOWER (*p); c == '*'; c = TOLOWER (*++p))
+        for (c = c_tolower (*p); c == '*'; c = c_tolower (*++p))
           ;
         for (; *n != '\0'; n++)
-          if (TOLOWER (*n) == c && pattern_match (p, n))
+          if (c_tolower (*n) == c && pattern_match (p, n))
             return true;
 #ifdef ASTERISK_EXCLUDES_DOT
           else if (*n == '.')
@@ -455,7 +455,7 @@ pattern_match (const char *pattern, const char *string)
       }
     else
       {
-        if (c != TOLOWER (*n))
+        if (c != c_tolower (*n))
           return false;
       }
   return *n == '\0';

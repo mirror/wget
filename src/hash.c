@@ -54,7 +54,7 @@ so, delete this exception statement from your version.  */
 #  define countof(x) (sizeof (x) / sizeof ((x)[0]))
 # endif
 # include <ctype.h>
-# define TOLOWER(x) tolower ((unsigned char) (x))
+# define c_tolower(x) tolower ((unsigned char) (x))
 # if __STDC_VERSION__ >= 199901L
 #  include <stdint.h>  /* for uintptr_t */
 # else
@@ -680,11 +680,11 @@ static unsigned long
 hash_string_nocase (const void *key)
 {
   const char *p = key;
-  unsigned int h = TOLOWER (*p);
+  unsigned int h = c_tolower (*p);
   
   if (h)
     for (p += 1; *p != '\0'; p++)
-      h = (h << 5) - h + TOLOWER (*p);
+      h = (h << 5) - h + c_tolower (*p);
   
   return h;
 }

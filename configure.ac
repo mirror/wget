@@ -106,6 +106,7 @@ test -z "$CC" && cc_specified=yes
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_AIX
+gl_EARLY
 
 AC_PROG_RANLIB
 
@@ -183,6 +184,9 @@ AC_CHECK_TYPES(sig_atomic_t, [], [], [
 #include <signal.h>
 ])
 
+# gnulib
+gl_INIT
+
 dnl
 dnl Checks for library functions.
 dnl
@@ -215,13 +219,6 @@ WGET_FNMATCH
 WGET_NANOSLEEP
 WGET_POSIX_CLOCK
 WGET_NSL_SOCKET
-
-dnl
-dnl Check if we need to compile in getopt.c.
-dnl
-AC_CHECK_FUNC(getopt_long, [], [
-  AC_LIBOBJ([getopt])
-])
 
 dnl
 dnl Checks for libraries.
@@ -337,7 +334,6 @@ then
   dnl If none of the above worked, use the one we ship with Wget.
   if test x"$found_md5" = xno; then
     AC_DEFINE([HAVE_BUILTIN_MD5], 1, [Define when using built-in MD5.])
-    AC_LIBOBJ([gnu-md5])
     found_md5=yes
     AC_MSG_NOTICE([using the built-in (GNU) MD5 implementation])
     AC_C_BIGENDIAN
@@ -460,7 +456,7 @@ dnl Create output
 dnl
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile util/Makefile
                  po/Makefile.in tests/Makefile tests/WgetTest.pm
-                 windows/Makefile])
+                 lib/Makefile windows/Makefile])
 AC_CONFIG_HEADERS([src/config.h])
 AH_BOTTOM([
 #include "config-post.h"

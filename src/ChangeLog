@@ -8,11 +8,22 @@
 	* recur.c (download_child_p): Remove robots.txt if
 	--delete-after or --spider is on.
 
+2007-10-14  Micah Cowan  <micah@cowan.name>
+
+	* cmpt.c, cookies.c, ftp-basic.c, ftp-ls.c, ftp.c, hash.c,
+	host.c, html-parse.c, html-url.c, http-ntlm.c, http.c, init.c,
+	log.c, main.c, netrc.c, openssl.c, res.c, url.c, utils.c,
+	wget.h: Replace uses of ISSPACE, etc with c_isspace, etc.
+	* gnu-md5.c, gnu-md5.h: Removed, in deference to gnulib.
+	* Makefile.am: Removed gnu-md5.h from wget_SOURCES.
+	* gen-md5.c: Changed #inclusion of gnu-md5.h to md5.h (gnulib's).
+
 2007-10-13  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am: Make version.c depend on Wget dependencies (source
 	files, plus such things as LIBOBJS so we get things like
-	http-ntlm.c or gen-md5.c).
+	http-ntlm.c). Removed getopt.[ch], as we're now using gnulib for
+	these.
 
 2007-10-10  Micah Cowan  <micah@cowan.name>
 

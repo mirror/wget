@@ -576,9 +576,9 @@ parse_line (const char *line, char **com, char **val, int *comind)
   int ind;
 
   /* Skip leading and trailing whitespace.  */
-  while (*line && ISSPACE (*line))
+  while (*line && c_isspace (*line))
     ++line;
-  while (end > line && ISSPACE (end[-1]))
+  while (end > line && c_isspace (end[-1]))
     --end;
 
   /* Skip empty lines and comments.  */
@@ -588,17 +588,17 @@ parse_line (const char *line, char **com, char **val, int *comind)
   p = line;
 
   cmdstart = p;
-  while (p < end && (ISALNUM (*p) || *p == '_' || *p == '-'))
+  while (p < end && (c_isalnum (*p) || *p == '_' || *p == '-'))
     ++p;
   cmdend = p;
 
   /* Skip '=', as well as any space before or after it. */
-  while (p < end && ISSPACE (*p))
+  while (p < end && c_isspace (*p))
     ++p;
   if (p == end || *p != '=')
     return line_syntax_error;
   ++p;
-  while (p < end && ISSPACE (*p))
+  while (p < end && c_isspace (*p))
     ++p;
 
   valstart = p;
@@ -691,15 +691,15 @@ static bool decode_string (const char *, const struct decode_item *, int, int *)
 static bool simple_atoi (const char *, const char *, int *);
 static bool simple_atof (const char *, const char *, double *);
 
-#define CMP1(p, c0) (TOLOWER((p)[0]) == (c0) && (p)[1] == '\0')
+#define CMP1(p, c0) (c_tolower((p)[0]) == (c0) && (p)[1] == '\0')
 
-#define CMP2(p, c0, c1) (TOLOWER((p)[0]) == (c0)        \
-                         && TOLOWER((p)[1]) == (c1)     \
+#define CMP2(p, c0, c1) (c_tolower((p)[0]) == (c0)        \
+                         && c_tolower((p)[1]) == (c1)     \
                          && (p)[2] == '\0')
 
-#define CMP3(p, c0, c1, c2) (TOLOWER((p)[0]) == (c0)    \
-                     && TOLOWER((p)[1]) == (c1)         \
-                     && TOLOWER((p)[2]) == (c2)         \
+#define CMP3(p, c0, c1, c2) (c_tolower((p)[0]) == (c0)    \
+                     && c_tolower((p)[1]) == (c1)         \
+                     && c_tolower((p)[2]) == (c2)         \
                      && (p)[3] == '\0')
 
 
@@ -907,12 +907,12 @@ parse_bytes_helper (const char *val, double *result)
     }
 
   /* Strip trailing whitespace.  */
-  while (val < end && ISSPACE (end[-1]))
+  while (val < end && c_isspace (end[-1]))
     --end;
   if (val == end)
     return false;
 
-  switch (TOLOWER (end[-1]))
+  switch (c_tolower (end[-1]))
     {
     case 'k':
       --end, mult = 1024.0;
@@ -933,9 +933,9 @@ parse_bytes_helper (const char *val, double *result)
     }
 
   /* Skip leading and trailing whitespace. */
-  while (val < end && ISSPACE (*val))
+  while (val < end && c_isspace (*val))
     ++val;
-  while (val < end && ISSPACE (end[-1]))
+  while (val < end && c_isspace (end[-1]))
     --end;
   if (val == end)
     return false;
@@ -1005,7 +1005,7 @@ cmd_time (const char *com, const char *val, void *place)
   const char *end = val + strlen (val);
 
   /* Strip trailing whitespace.  */
-  while (val < end && ISSPACE (end[-1]))
+  while (val < end && c_isspace (end[-1]))
     --end;
 
   if (val == end)
@@ -1016,7 +1016,7 @@ cmd_time (const char *com, const char *val, void *place)
       return false;
     }
 
-  switch (TOLOWER (end[-1]))
+  switch (c_tolower (end[-1]))
     {
     case 's':
       --end, mult = 1;          /* seconds */
@@ -1040,9 +1040,9 @@ cmd_time (const char *com, const char *val, void *place)
     }
 
   /* Skip leading and trailing whitespace. */
-  while (val < end && ISSPACE (*val))
+  while (val < end && c_isspace (*val))
     ++val;
-  while (val < end && ISSPACE (end[-1]))
+  while (val < end && c_isspace (end[-1]))
     --end;
   if (val == end)
     goto err;
@@ -1321,7 +1321,7 @@ simple_atoi (const char *beg, const char *end, int *dest)
   bool negative = false;
   const char *p = beg;
 
-  while (p < end && ISSPACE (*p))
+  while (p < end && c_isspace (*p))
     ++p;
   if (p < end && (*p == '-' || *p == '+'))
     {
@@ -1335,7 +1335,7 @@ simple_atoi (const char *beg, const char *end, int *dest)
      negative integer cannot be represented as a positive number.  */
 
   if (!negative)
-    for (; p < end && ISDIGIT (*p); p++)
+    for (; p < end && c_isdigit (*p); p++)
       {
         int next = (10 * result) + (*p - '0');
         if (next < result)
@@ -1343,7 +1343,7 @@ simple_atoi (const char *beg, const char *end, int *dest)
         result = next;
       }
   else
-    for (; p < end && ISDIGIT (*p); p++)
+    for (; p < end && c_isdigit (*p); p++)
       {
         int next = (10 * result) - (*p - '0');
         if (next > result)
@@ -1375,7 +1375,7 @@ simple_atof (const char *beg, const char *end, double *dest)
 
   const char *p = beg;
 
-  while (p < end && ISSPACE (*p))
+  while (p < end && c_isspace (*p))
     ++p;
   if (p < end && (*p == '-' || *p == '+'))
     {
@@ -1386,7 +1386,7 @@ simple_atof (const char *beg, const char *end, double *dest)
   for (; p < end; p++)
     {
       char ch = *p;
-      if (ISDIGIT (ch))
+      if (c_isdigit (ch))
         {
           if (!seen_dot)
             result = (10 * result) + (ch - '0');
@@ -1422,7 +1422,7 @@ check_user_specified_header (const char *s)
 {
   const char *p;
 
-  for (p = s; *p && *p != ':' && !ISSPACE (*p); p++)
+  for (p = s; *p && *p != ':' && !c_isspace (*p); p++)
     ;
   /* The header MUST contain `:' preceded by at least one
      non-whitespace character.  */

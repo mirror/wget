@@ -456,9 +456,9 @@ parse_set_cookie (const char *set_cookie, bool silent)
 
 
 #define REQUIRE_DIGITS(p) do {                  \
-  if (!ISDIGIT (*p))                            \
+  if (!c_isdigit (*p))                            \
     return false;                               \
-  for (++p; ISDIGIT (*p); p++)                  \
+  for (++p; c_isdigit (*p); p++)                  \
     ;                                           \
 } while (0)
 
@@ -1102,7 +1102,7 @@ domain_port (const char *domain_b, const char *domain_e,
   const char *colon = memchr (domain_b, ':', domain_e - domain_b);
   if (!colon)
     return 0;
-  for (p = colon + 1; p < domain_e && ISDIGIT (*p); p++)
+  for (p = colon + 1; p < domain_e && c_isdigit (*p); p++)
     port = 10 * port + (*p - '0');
   if (p < domain_e)
     /* Garbage following port number. */
@@ -1153,7 +1153,7 @@ cookie_jar_load (struct cookie_jar *jar, const char *file)
       char *value_b   = NULL, *value_e   = NULL;
 
       /* Skip leading white-space. */
-      while (*p && ISSPACE (*p))
+      while (*p && c_isspace (*p))
         ++p;
       /* Ignore empty lines.  */
       if (!*p || *p == '#')

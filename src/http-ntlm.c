@@ -121,7 +121,7 @@ ntlm_input (struct ntlmdata *ntlm, const char *header)
     return false;
 
   header += 4;
-  while (*header && ISSPACE(*header))
+  while (*header && c_isspace(*header))
     header++;
 
   if (*header)
@@ -247,7 +247,7 @@ mkhash(const char *password,
     len = 14;
   
   for (i=0; i<len; i++)
-    pw[i] = TOUPPER (password[i]);
+    pw[i] = c_toupper (password[i]);
 
   for (; i<14; i++)
     pw[i] = 0;

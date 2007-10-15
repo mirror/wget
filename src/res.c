@@ -180,7 +180,7 @@ prune_non_exact (struct robot_specs *specs)
 #define EOL(p) ((p) >= lineend)
 
 #define SKIP_SPACE(p) do {              \
-  while (!EOL (p) && ISSPACE (*p))      \
+  while (!EOL (p) && c_isspace (*p))      \
     ++p;                                \
 } while (0)
 
@@ -266,18 +266,18 @@ res_parse (const char *source, int length)
          lineend to a location preceding the first comment.  Real line
          ending remains in lineend_real.  */
       for (lineend = p; lineend < lineend_real; lineend++)
-        if ((lineend == p || ISSPACE (*(lineend - 1)))
+        if ((lineend == p || c_isspace (*(lineend - 1)))
             && *lineend == '#')
           break;
 
       /* Ignore trailing whitespace in the same way. */
-      while (lineend > p && ISSPACE (*(lineend - 1)))
+      while (lineend > p && c_isspace (*(lineend - 1)))
         --lineend;
 
       assert (!EOL (p));
 
       field_b = p;
-      while (!EOL (p) && (ISALNUM (*p) || *p == '-'))
+      while (!EOL (p) && (c_isalnum (*p) || *p == '-'))
         ++p;
       field_e = p;
 
@@ -415,7 +415,7 @@ free_specs (struct robot_specs *specs)
    advance the pointer.  */
 
 #define DECODE_MAYBE(c, ptr) do {                               \
-  if (c == '%' && ISXDIGIT (ptr[1]) && ISXDIGIT (ptr[2]))       \
+  if (c == '%' && c_isxdigit (ptr[1]) && c_isxdigit (ptr[2]))       \
     {                                                           \
       char decoded = X2DIGITS_TO_NUM (ptr[1], ptr[2]);          \
       if (decoded != '/')                                       \

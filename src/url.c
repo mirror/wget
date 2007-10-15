@@ -183,7 +183,7 @@ url_unescape (char *s)
         {
           char c;
           /* Do nothing if '%' is not followed by two hex digits. */
-          if (!h[1] || !h[2] || !(ISXDIGIT (h[1]) && ISXDIGIT (h[2])))
+          if (!h[1] || !h[2] || !(c_isxdigit (h[1]) && c_isxdigit (h[2])))
             goto copychar;
           c = X2DIGITS_TO_NUM (h[1], h[2]);
           /* Don't unescape %00 because there is no way to insert it
@@ -272,7 +272,7 @@ char_needs_escaping (const char *p)
 {
   if (*p == '%')
     {
-      if (ISXDIGIT (*(p + 1)) && ISXDIGIT (*(p + 2)))
+      if (c_isxdigit (*(p + 1)) && c_isxdigit (*(p + 2)))
         return false;
       else
         /* Garbled %.. sequence: encode `%'. */
@@ -428,7 +428,7 @@ url_scheme (const char *url)
   return SCHEME_INVALID;
 }
 
-#define SCHEME_CHAR(ch) (ISALNUM (ch) || (ch) == '-' || (ch) == '+')
+#define SCHEME_CHAR(ch) (c_isalnum (ch) || (ch) == '-' || (ch) == '+')
 
 /* Return 1 if the URL begins with any "scheme", 0 otherwise.  As
    currently implemented, it returns true if URL begins with
@@ -590,10 +590,10 @@ lowercase_str (char *str)
 {
   bool changed = false;
   for (; *str; str++)
-    if (ISUPPER (*str))
+    if (c_isupper (*str))
       {
         changed = true;
-        *str = TOLOWER (*str);
+        *str = c_tolower (*str);
       }
   return changed;
 }
@@ -769,7 +769,7 @@ url_parse (const char *url, int *error)
       if (port_b != port_e)
         for (port = 0, pp = port_b; pp < port_e; pp++)
           {
-            if (!ISDIGIT (*pp))
+            if (!c_isdigit (*pp))
               {
                 /* http://host:12randomgarbage/blah */
                 /*               ^                  */
@@ -1373,9 +1373,9 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
       for (q = TAIL (dest); q < TAIL (dest) + outlen; ++q)
         {
           if (opt.restrict_files_case == restrict_lowercase)
-            *q = TOLOWER (*q);
+            *q = c_tolower (*q);
           else
-            *q = TOUPPER (*q);
+            *q = c_toupper (*q);
         }
     }
           
@@ -1940,7 +1940,7 @@ getchar_from_escaped_string (const char *str, char *c)
   
   if (p[0] == '%')
     {
-      if (!ISXDIGIT(p[1]) || !ISXDIGIT(p[2]))
+      if (!c_isxdigit(p[1]) || !c_isxdigit(p[2]))
         {
           *c = '%';
           return 1;
@@ -1982,7 +1982,7 @@ are_urls_equal (const char *u1, const char *u2)
   while (*p && *q
          && (pp = getchar_from_escaped_string (p, &ch1))
          && (qq = getchar_from_escaped_string (q, &ch2))
-         && (TOLOWER(ch1) == TOLOWER(ch2)))
+         && (c_tolower(ch1) == c_tolower(ch2)))
     {
       p += pp;
       q += qq;
