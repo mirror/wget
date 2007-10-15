@@ -1,3 +1,8 @@
+2007-10-14  Joshua David Williams  <yurimxpxman@gmail.com>
+
+	* recur.c (download_child_p): Remove robots.txt if
+	--delete-after or --spider is on.
+
 2007-10-13  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am: Make version.c depend on Wget dependencies (source
