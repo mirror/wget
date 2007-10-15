@@ -1,15 +1,5 @@
 2007-10-14  Micah Cowan  <micah@cowan.name>
 
-	* recur.c (download_child_p): Print error if unlink of
-	robots.txt fails.
-
-2007-10-14  Joshua David Williams  <yurimxpxman@gmail.com>
-
-	* recur.c (download_child_p): Remove robots.txt if
-	--delete-after or --spider is on.
-
-2007-10-14  Micah Cowan  <micah@cowan.name>
-
 	* cmpt.c, cookies.c, ftp-basic.c, ftp-ls.c, ftp.c, hash.c,
 	host.c, html-parse.c, html-url.c, http-ntlm.c, http.c, init.c,
 	log.c, main.c, netrc.c, openssl.c, res.c, url.c, utils.c,
@@ -17,6 +7,15 @@
 	* gnu-md5.c, gnu-md5.h: Removed, in deference to gnulib.
 	* Makefile.am: Removed gnu-md5.h from wget_SOURCES.
 	* gen-md5.c: Changed #inclusion of gnu-md5.h to md5.h (gnulib's).
+	* recur.c (download_child_p): Print error if unlink of
+	robots.txt fails.
+	* main.c (main): --spider or --delete-after now implies
+	--no-directories (thanks, Josh Williams).
+
+2007-10-14  Joshua David Williams  <yurimxpxman@gmail.com>
+
+	* recur.c (download_child_p): Remove robots.txt if
+	--delete-after or --spider is on.
 
 2007-10-13  Micah Cowan  <micah@cowan.name>
 

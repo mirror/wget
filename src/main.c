@@ -832,7 +832,10 @@ main (int argc, char *const *argv)
      interoption dependency checks. */
 
   if (opt.reclevel == 0)
-    opt.reclevel = INFINITE_RECURSION; /* see recur.h for commentary on this */
+      opt.reclevel = INFINITE_RECURSION; /* see recur.h for commentary */
+
+  if (opt.spider || opt.delete_after)
+      opt.no_dirstruct = true;
 
   if (opt.page_requisites && !opt.recursive)
     {
