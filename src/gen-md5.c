@@ -33,7 +33,7 @@ so, delete this exception statement from your version.  */
 #include "gen-md5.h"
 
 #ifdef HAVE_BUILTIN_MD5
-# include <gnu-md5.h>
+# include <md5.h>
 typedef struct md5_ctx gen_md5_context_imp;
 #endif
 

@@ -334,7 +334,6 @@ then
   dnl If none of the above worked, use the one we ship with Wget.
   if test x"$found_md5" = xno; then
     AC_DEFINE([HAVE_BUILTIN_MD5], 1, [Define when using built-in MD5.])
-    AC_LIBOBJ([gnu-md5])
     found_md5=yes
     AC_MSG_NOTICE([using the built-in (GNU) MD5 implementation])
     AC_C_BIGENDIAN
