@@ -1,3 +1,13 @@
+2007-10-15  Gisle Vanem  <gvanem@broadpark.no>
+
+	* config.h: Added some HAVE_* for djgpp 2.04 and Watcom 1.7+.
+
+	* Makefile.DJ: rewritten for including some files from ../lib.
+
+	* Makefile.WC: Ditto. Handling source-files out-of current
+	directory makes compliation a bit more painfull. AFAICS, one
+	must use explicit rules.
+
 2007-10-02  Gisle Vanem  <gvanem@broadpark.no>
 
 	* config.h: Removed unused defines, added needed 'HAVE_*' defines.

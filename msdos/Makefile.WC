@@ -4,8 +4,8 @@
 #
 
 COMPILE = *wcc386 -mf -3r -w6 -d2 -zq -zm -of -I. -I$(%watt_root)\inc &
-            -I..\msdos -fr=nul -bt=dos -s -dHAVE_CONFIG_H -dENABLE_DEBUG &
-            -dSIZEOF_INT=4
+            -I..\msdos -I..\lib -fr=nul -bt=dos -s -dHAVE_CONFIG_H &
+            -dENABLE_DEBUG -dSIZEOF_INT=4
 
 LINK = *wlink option quiet, map, verbose, eliminate, caseexact, stack=100k &
         debug all system dos32a
@@ -14,20 +14,20 @@ OBJ_DIR = Watcom.obj
 
 OBJECTS = $(OBJ_DIR)\cmpt.obj      $(OBJ_DIR)\connect.obj    &
           $(OBJ_DIR)\convert.obj   $(OBJ_DIR)\cookies.obj    &
-          $(OBJ_DIR)\ftp-basic.obj $(OBJ_DIR)\ftp-ls.obj     &
-          $(OBJ_DIR)\ftp-opie.obj  $(OBJ_DIR)\ftp.obj        &
-          $(OBJ_DIR)\gen-md5.obj   $(OBJ_DIR)\getopt.obj     &
-          $(OBJ_DIR)\gnu-md5.obj   $(OBJ_DIR)\hash.obj       &
-          $(OBJ_DIR)\host.obj      $(OBJ_DIR)\html-parse.obj &
-          $(OBJ_DIR)\html-url.obj  $(OBJ_DIR)\http.obj       &
-          $(OBJ_DIR)\init.obj      $(OBJ_DIR)\log.obj        &
-          $(OBJ_DIR)\main.obj      $(OBJ_DIR)\netrc.obj      &
+          $(OBJ_DIR)\c-ctype.obj    $(OBJ_DIR)\ftp-basic.obj &
+          $(OBJ_DIR)\ftp-ls.obj     $(OBJ_DIR)\ftp-opie.obj  &
+          $(OBJ_DIR)\ftp.obj        $(OBJ_DIR)\gen-md5.obj   &
+          $(OBJ_DIR)\getopt.obj     $(OBJ_DIR)\getopt1.obj   &
+          $(OBJ_DIR)\hash.obj       $(OBJ_DIR)\host.obj      &
+          $(OBJ_DIR)\html-parse.obj $(OBJ_DIR)\html-url.obj  &
+          $(OBJ_DIR)\http.obj       $(OBJ_DIR)\init.obj      &
+          $(OBJ_DIR)\log.obj        $(OBJ_DIR)\main.obj      &
+          $(OBJ_DIR)\md5.obj        $(OBJ_DIR)\netrc.obj     &
           $(OBJ_DIR)\progress.obj  $(OBJ_DIR)\ptimer.obj     &
           $(OBJ_DIR)\recur.obj     $(OBJ_DIR)\res.obj        &
-          $(OBJ_DIR)\retr.obj      $(OBJ_DIR)\safe-ctype.obj &
-          $(OBJ_DIR)\spider.obj    $(OBJ_DIR)\url.obj        &
-          $(OBJ_DIR)\utils.obj     $(OBJ_DIR)\version.obj    &
-          $(OBJ_DIR)\xmalloc.obj
+          $(OBJ_DIR)\retr.obj       $(OBJ_DIR)\spider.obj    &
+          $(OBJ_DIR)\url.obj        $(OBJ_DIR)\utils.obj     &
+          $(OBJ_DIR)\version.obj    $(OBJ_DIR)\xmalloc.obj
 
 all: $(OBJ_DIR) wget.exe .SYMBOLIC
 	@echo 'Welcome to Wget / Watcom'
@@ -36,8 +36,24 @@ $(OBJ_DIR):
 	- mkdir $^@
 
 .ERASE
-.c{$(OBJ_DIR)}.obj:
-	*$(COMPILE) $[@ -fo=$@
+.c{$(OBJ_DIR)}.obj: .AUTODEPEND
+	*$(COMPILE) -fo=$@ $[@
+
+.ERASE
+$(OBJ_DIR)\c-ctype.obj: ..\lib\c-ctype.c
+	*$(COMPILE) -fo=$@ $[@
+
+.ERASE
+$(OBJ_DIR)\md5.obj: ..\lib\md5.c
+	*$(COMPILE) -fo=$@ $[@
+
+.ERASE
+$(OBJ_DIR)\getopt.obj: ..\lib\getopt.c
+	*$(COMPILE) -d_UNISTD_H_INCLUDED -fo=$@ $[@
+
+.ERASE
+$(OBJ_DIR)\getopt1.obj: ..\lib\getopt1.c
+	*$(COMPILE) -d_UNISTD_H_INCLUDED -fo=$@ $[@
 
 wget.exe: $(OBJECTS)
       $(LINK) name $@ file { $(OBJECTS) } library $(%watt_root)\lib\wattcpwf.lib
