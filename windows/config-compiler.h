@@ -205,8 +205,13 @@ so, delete this exception statement from your version.  */
 #define HAVE_STDINT_H 1
 #define HAVE_INTTYPES_H 1
 
-/* Watcom 1.6 do have <stdbool.h>, but definition of '_Bool' is missing! */
-/* #define HAVE_STDBOOL_H 1 */
+/* OpenWatcom 1.6 do have <stdbool.h>, but definition of '_Bool' is missing! */
+/* This was fixed in OpenWatcom 1.7 */
+#if __WATCOMC__ >= 1270
+#define HAVE_STDBOOL_H 1
+#define HAVE__BOOL 1
+#endif
+
 #define HAVE_STRTOLL 1
 #define HAVE_UINT32_T 1
 #undef HAVE_UTIME_H
