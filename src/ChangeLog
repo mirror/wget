@@ -1,3 +1,8 @@
+2007-10-14  Micah Cowan  <micah@cowan.name>
+
+	* recur.c (download_child_p): Print error if unlink of
+	robots.txt fails.
+
 2007-10-14  Joshua David Williams  <yurimxpxman@gmail.com>
 
 	* recur.c (download_child_p): Remove robots.txt if
