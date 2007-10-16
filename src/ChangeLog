@@ -1,3 +1,8 @@
+2007-10-15  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am: Remove intermediary hg-id file generation, make
+	version.c-generation more portable.
+
 2007-10-14  Micah Cowan  <micah@cowan.name>
 
 	* cmpt.c, cookies.c, ftp-basic.c, ftp-ls.c, ftp.c, hash.c,

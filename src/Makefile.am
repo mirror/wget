@@ -48,15 +48,10 @@ EXTRA_wget_SOURCES = mswindows.c
 LDADD = $(ALLOCA) $(LIBOBJS) ../lib/libgnu.a
 AM_CPPFLAGS = -I$(top_srcdir)/lib
 
-version.c: hg-id
+version.c:  $(wget_SOURCES) $(LDADD)
 	printf '%s' 'const char *version_string = "@VERSION@' > $@
-	-HG_ID=$$(cat hg-id); [ "$$HG_ID" ] && printf '%s' " ($${HG_ID})" >> $@
+	-hg log -r tip --template=' ({node|short})' >> $@
 	printf '%s\n' '";' >> $@
-
-.INTERMEDIATE: hg-id
-.PHONY: hg-id
-hg-id: $(wget_SOURCES) $(LDADD)
-	-( hg id | cut -f 1 -d ' ' ) 2>/dev/null > $@
 
 check_LIBRARIES = libunittest.a
 libunittest_a_SOURCES = $(wget_SOURCES) test.c test.h
