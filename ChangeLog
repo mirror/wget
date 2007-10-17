@@ -1,3 +1,7 @@
+2007-10-16  Micah Cowan  <micah@cowan.name>
+
+	* README: Draw attention to wiki:PatchGuidelines.
+
 2007-10-14  Micah Cowan  <micah@cowan.name>
 
 	* configure.ac: Let gnulib handle builtin MD5 functionality.
