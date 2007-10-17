@@ -48,10 +48,10 @@ EXTRA_wget_SOURCES = mswindows.c
 LDADD = $(ALLOCA) $(LIBOBJS) ../lib/libgnu.a
 AM_CPPFLAGS = -I$(top_srcdir)/lib
 
-version.c:  $(wget_SOURCES) $(LDADD)
-	printf '%s' 'const char *version_string = "@VERSION@' > $@
-	-hg log -r tip --template=' ({node|short})' >> $@
-	printf '%s\n' '";' >> $@
+version.c:  $(wget_SOURCES) $(LDADD) $(srcdir)/Makefile.am
+	echo 'const char *version_string = "@VERSION@"' > $@
+	-hg log -r . --template='" ({node|short})"\n' 2>/dev/null >> $@
+	echo ';' >> $@
 
 check_LIBRARIES = libunittest.a
 libunittest_a_SOURCES = $(wget_SOURCES) test.c test.h
