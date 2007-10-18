@@ -3,6 +3,7 @@
 # 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 # Package source files
+lib/getopt.c
 src/cmpt.c
 src/connect.c
 src/convert.c
@@ -12,8 +13,6 @@ src/ftp-ls.c
 src/ftp-opie.c
 src/ftp.c
 src/gen-md5.c
-src/getopt.c
-src/gnu-md5.c
 src/hash.c
 src/host.c
 src/html-parse.c
@@ -33,5 +32,4 @@ src/retr.c
 src/spider.c
 src/url.c
 src/utils.c
-src/version.c
 src/xmalloc.c
