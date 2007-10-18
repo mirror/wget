@@ -38,7 +38,7 @@ SUBDIRS = lib src doc po tests util windows
 test: all
 	cd tests && $(MAKE) $(AM_MAKEFLAGS) $@
 
-EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST PATCHES \
+EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST \
 	     msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
 	     msdos/Makefile.WC ABOUT-NLS
 
