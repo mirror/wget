@@ -38,12 +38,13 @@ wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c ftp-basic.c	\
 	       ftp-ls.c hash.c host.c html-parse.c html-url.c http.c	\
 	       init.c log.c main.c netrc.c progress.c ptimer.c recur.c	\
 	       res.c retr.c snprintf.c spider.c url.c	\
-	       utils.c version.c xmalloc.c				\
+	       utils.c xmalloc.c				\
 	       config-post.h connect.h convert.h cookies.h 		\
 	       ftp.h gen-md5.h hash.h host.h html-parse.h \
 	       http.h http-ntlm.h init.h log.h mswindows.h netrc.h \
 	       options.h progress.h ptimer.h recur.h res.h retr.h \
 	       spider.h ssl.h sysdep.h url.h utils.h wget.h xmalloc.h
+nodist_wget_SOURCES = version.c
 EXTRA_wget_SOURCES = mswindows.c
 LDADD = $(ALLOCA) $(LIBOBJS) ../lib/libgnu.a
 AM_CPPFLAGS = -I$(top_srcdir)/lib
@@ -58,4 +59,4 @@ libunittest_a_SOURCES = $(wget_SOURCES) test.c test.h
 libunittest_a_CPPFLAGS = -DTESTING
 libunittest_a_LIBADD = $(ALLOCA) $(LIBOBJS)
 
-CLEANFILES = *~ *.bak core core.[0-9]*
+CLEANFILES = *~ *.bak core core.[0-9]* version.c

@@ -1,3 +1,7 @@
+2007-10-18  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am: version.c should not be distributed.
+
 2007-10-15  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am: Remove intermediary hg-id file generation, make
