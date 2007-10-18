@@ -1,6 +1,10 @@
 2007-10-18  Micah Cowan  <micah@cowan.name>
 
 	* po/POTFILES.in: Removed no-longer-existing or generated files.
+	* autogen.sh: Reinstated, in case we have to do something at
+	some point other than autoreconf.
+	* Makefile.am: Put autogen.sh back in EXTRA_DIST. Just in case
+	someone needs to rebuild configure.
 
 2007-10-16  Micah Cowan  <micah@cowan.name>
 

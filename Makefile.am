@@ -40,6 +40,6 @@ test: all
 
 EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST \
 	     msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
-	     msdos/Makefile.WC ABOUT-NLS
+	     msdos/Makefile.WC ABOUT-NLS autogen.sh
 
 CLEANFILES = *~ *.bak $(DISTNAME).tar.gz
