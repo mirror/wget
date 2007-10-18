@@ -1,15 +1,16 @@
 Important note:
 
-To reduce bandwidth and needless updates, the Subversion tree does not
+To reduce bandwidth and needless updates, the source repository does not
 contain automatically-generated files, even when those files are
 normally present in the distribution tarballs.
 
-Therefore, if you're building from the sources obtained via Subversion,
-you'll need to have at least GNU Autoconf (2.61 or newer) and GNU
-Automake (1.10 or newer) installed on your system.  To generate the Info
-documentation, you will need the GNU Texinfo package. Those packages are
-available from <ftp://ftp.gnu.org/pub/gnu/<package>/> and its mirrors,
-listed at <http://www.gnu.org/order/ftp.html>.
+Therefore, if you're building from the sources obtained from the source
+repository, you'll need to have at least GNU Autoconf (2.61 or newer)
+and GNU Automake (1.10 or newer) installed on your system.  To generate
+the Info documentation, you will need the GNU Texinfo package. Those
+packages are available from <ftp://ftp.gnu.org/pub/gnu/<package>/> and
+its mirrors, listed at <http://www.gnu.org/order/ftp.html>. Generating
+the wget.1 manpage, and running some tests, requires Perl.
 
 In case you aren't used to running autotools manually to generate the
 necessary configure script, a script called autogen.sh has been
