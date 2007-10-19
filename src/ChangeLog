@@ -1,7 +1,8 @@
 2007-10-18  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am: version.c should not be distributed. Removed
-	config-post.h.
+	config-post.h. Add version.c dependency and gnulib include path
+	for libunittest.a.
 	* sysdep.h: Got contents of config-post.h
 	* config-post.h: Removed.
 	* wget.h: #include "config.h".

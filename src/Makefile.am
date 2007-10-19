@@ -56,7 +56,8 @@ version.c:  $(wget_SOURCES) $(LDADD) $(srcdir)/Makefile.am
 
 check_LIBRARIES = libunittest.a
 libunittest_a_SOURCES = $(wget_SOURCES) test.c test.h
-libunittest_a_CPPFLAGS = -DTESTING
+nodist_libunittest_a_SOURCES = version.c
+libunittest_a_CPPFLAGS = -DTESTING -I$(top_srcdir)/lib
 libunittest_a_LIBADD = $(ALLOCA) $(LIBOBJS)
 
 CLEANFILES = *~ *.bak core core.[0-9]* version.c

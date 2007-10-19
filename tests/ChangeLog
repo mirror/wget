@@ -1,3 +1,7 @@
+2007-10-18  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am: Add dependency for unit_tests on libgnu.a.
+
 2007-10-05  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
 
 	* WgetTest.pm.in: wget is built in the build tree.  Use an
