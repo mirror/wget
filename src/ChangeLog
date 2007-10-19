@@ -1,3 +1,8 @@
+2007-10-18  Steven Schweda  <sms@antinode.org>
+
+	* sysdep.h: #include <stdint.h> as well as <inttypes.h>, to work
+	around a glitch on Tru64 systems.
+
 2007-10-18  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am: version.c should not be distributed. Removed

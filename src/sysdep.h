@@ -111,6 +111,8 @@ void *alloca (size_t);
 #include <sys/stat.h>
 
 #ifdef HAVE_INTTYPES_H
+  /* Compaq C V6.5-303 (dtk) on HP Tru64 UNIX V5.1B (Rev. 2650) needs: */
+# include <stdint.h>
 # include <inttypes.h>
 #endif
 
