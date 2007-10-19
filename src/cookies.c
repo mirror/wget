@@ -42,7 +42,7 @@ so, delete this exception statement from your version.  */
    sites that do send Set-Cookie2 also emit Set-Cookie for
    compatibility.  */
 
-#include <config.h>
+#include "wget.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -50,8 +50,6 @@ so, delete this exception statement from your version.  */
 #include <assert.h>
 #include <errno.h>
 #include <time.h>
-
-#include "wget.h"
 #include "utils.h"
 #include "hash.h"
 #include "cookies.h"

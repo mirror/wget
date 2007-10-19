@@ -21,6 +21,8 @@
    allocating any.  It is a good idea to use alloca(0) in
    your main control loop, etc. to force garbage collection.  */
 
+#include "wget.h"
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -88,7 +90,6 @@ typedef char *pointer;
    Callers below should use malloc.  */
 
 #ifndef emacs
-#include "wget.h"
 #define malloc xmalloc
 #define free xfree
 #endif

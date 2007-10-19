@@ -88,7 +88,7 @@ so, delete this exception statement from your version.  */
 /* To test as standalone, compile with `-DSTANDALONE -I.'.  You'll
    still need Wget headers to compile.  */
 
-#include <config.h>
+#include "wget.h"
 
 #ifdef STANDALONE
 # define I_REALLY_WANT_CTYPE_MACROS
@@ -99,7 +99,6 @@ so, delete this exception statement from your version.  */
 #include <string.h>
 #include <assert.h>
 
-#include "wget.h"
 #include "html-parse.h"
 
 #ifdef STANDALONE

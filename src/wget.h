@@ -35,6 +35,11 @@ so, delete this exception statement from your version.  */
 #ifndef WGET_H
 #define WGET_H
 
+#include "config.h"
+
+/* Include these, so random files need not include them.  */
+#include "sysdep.h"
+
 /* Disable assertions when debug support is not compiled in. */
 #ifndef ENABLE_DEBUG
 # define NDEBUG
@@ -76,9 +81,6 @@ so, delete this exception statement from your version.  */
    debug problems with Wget.  If I get them in a language I don't
    understand, debugging will become a new challenge of its own!  */
 
-
-/* Include these, so random files need not include them.  */
-#include "sysdep.h"
 /* locale independent replacement for ctype.h */
 #include "c-ctype.h"
 

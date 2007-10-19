@@ -66,9 +66,7 @@ so, delete this exception statement from your version.  */
    res_match_path, res_register_specs, res_get_specs, and
    res_retrieve_file.  */
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include "wget.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -76,7 +74,6 @@ so, delete this exception statement from your version.  */
 #include <errno.h>
 #include <assert.h>
 
-#include "wget.h"
 #include "utils.h"
 #include "hash.h"
 #include "url.h"

@@ -458,7 +458,4 @@ AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile util/Makefile
                  po/Makefile.in tests/Makefile tests/WgetTest.pm
                  lib/Makefile windows/Makefile])
 AC_CONFIG_HEADERS([src/config.h])
-AH_BOTTOM([
-#include "config-post.h"
-])
 AC_OUTPUT

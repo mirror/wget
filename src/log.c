@@ -27,7 +27,7 @@ modify this file, you may extend this exception to your version of the
 file, but you are not obligated to do so.  If you do not wish to do
 so, delete this exception statement from your version.  */
 
-#include <config.h>
+#include "wget.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -39,7 +39,6 @@ so, delete this exception statement from your version.  */
 #include <assert.h>
 #include <errno.h>
 
-#include "wget.h"
 #include "utils.h"
 #include "log.h"
 

@@ -30,8 +30,8 @@ so, delete this exception statement from your version.  */
 /* With -DSTANDALONE, this file can be compiled outside Wget source
    tree.  To test, also use -DTEST.  */
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
+#ifndef STANDALONE
+# include "wget.h"
 #endif
 
 #include <stdio.h>
@@ -42,7 +42,6 @@ so, delete this exception statement from your version.  */
 
 #ifndef STANDALONE
 /* Get Wget's utility headers. */
-# include "wget.h"
 # include "utils.h"
 #else
 /* Make do without them. */

@@ -49,7 +49,7 @@ so, delete this exception statement from your version.  */
      double secs = ptimer_measure ();
      printf ("The loop took %.2fs\n", secs);  */
 
-#include <config.h>
+#include "wget.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -70,7 +70,6 @@ so, delete this exception statement from your version.  */
 # include <windows.h>
 #endif
 
-#include "wget.h"
 #include "ptimer.h"
 
 /* Depending on the OS, one and only one of PTIMER_POSIX,

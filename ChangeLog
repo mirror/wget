@@ -5,6 +5,8 @@
 	some point other than autoreconf.
 	* Makefile.am: Put autogen.sh back in EXTRA_DIST. Just in case
 	someone needs to rebuild configure.
+	* configure.ac: Removed config-post.h inclusion from bottom of
+	generated config.h.
 
 2007-10-16  Micah Cowan  <micah@cowan.name>
 

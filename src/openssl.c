@@ -28,7 +28,7 @@ modify this file, you may extend this exception to your version of the
 file, but you are not obligated to do so.  If you do not wish to do
 so, delete this exception statement from your version.  */
 
-#include <config.h>
+#include "wget.h"
 
 #include <assert.h>
 #include <errno.h>
@@ -42,7 +42,6 @@ so, delete this exception statement from your version.  */
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
-#include "wget.h"
 #include "utils.h"
 #include "connect.h"
 #include "url.h"

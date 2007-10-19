@@ -29,16 +29,13 @@ so, delete this exception statement from your version.  */
 /* This file used to be kept in synch with the code in Fetchmail, but
    the latter has diverged since.  */
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include "wget.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
-#include "wget.h"
 #include "utils.h"
 #include "netrc.h"
 #include "init.h"

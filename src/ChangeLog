@@ -1,6 +1,17 @@
 2007-10-18  Micah Cowan  <micah@cowan.name>
 
-	* Makefile.am: version.c should not be distributed.
+	* Makefile.am: version.c should not be distributed. Removed
+	config-post.h.
+	* sysdep.h: Got contents of config-post.h
+	* config-post.h: Removed.
+	* wget.h: #include "config.h".
+	* alloca.c, cmpt.c, connect.c, convert.c, cookies.c,
+	ftp-basic.c, ftp-ls.c, ftp-opie.c, ftp.c, gen-md5.c, gnutls.c,
+	hash.c, host.c, html-parse.c, html-url.c, http-ntlm.c, http.c,
+	init.c, log.c, main.c, mswindows.c, netrc.c, openssl.c,
+	progress.c, ptimer.c, recur.c, res.c, retr.c, spider.c, url.c,
+	utils.c, xmalloc.c: Use wget.h at very top, and instead of
+	config.h.
 
 2007-10-15  Micah Cowan  <micah@cowan.name>
 
