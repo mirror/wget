@@ -1,3 +1,8 @@
+2007-10-22  Gisle Vanem  <gvanem@broadpark.no>
+
+	* mswindows.c: Move INHIBIT_WRAP macro definition up with wget.h
+	inclusion.
+
 2007-10-18  Steven Schweda  <sms@antinode.org>
 
 	* sysdep.h: #include <stdint.h> as well as <inttypes.h>, to work
