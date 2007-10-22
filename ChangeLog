@@ -1,3 +1,7 @@
+2007-10-22  Micah Cowan  <micah@cowan.name>
+
+	* po/*.po: Refresh from TP and update-po.
+
 2007-10-18  Micah Cowan  <micah@cowan.name>
 
 	* po/POTFILES.in: Removed no-longer-existing or generated files.

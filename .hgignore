@@ -57,6 +57,8 @@ po/wget.pot
 po/remove-potcdate.sed
 po/stamp-po
 po/en@boldquot.insert-header
+po/en@boldquot.po
 po/en@quot.insert-header
+po/en@quot.po
 **~
 **.*.swp
