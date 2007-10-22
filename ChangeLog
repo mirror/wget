@@ -1,6 +1,9 @@
 2007-10-22  Micah Cowan  <micah@cowan.name>
 
 	* po/*.po: Refresh from TP and update-po.
+	* lib/Makefile.am, m4/gnulib-cache.m4, m4/longlong.m4,
+	m4/ulonglong.m4, maint.mk:  gnulib-tool --update. Includes fix
+	for maint.mk with old versions of gzip.
 
 2007-10-18  Micah Cowan  <micah@cowan.name>
 
