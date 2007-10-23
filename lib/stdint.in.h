@@ -247,6 +247,11 @@
 # define uintmax_t unsigned long int
 #endif
 
+/* Verify that intmax_t and uintmax_t have the same size.  Too much code
+   breaks if this is not the case.  If this check fails, the reason is likely
+   to be found in the autoconf macros.  */
+typedef int _verify_intmax_size[2 * (sizeof (intmax_t) == sizeof (uintmax_t)) - 1];
+
 /* 7.18.2. Limits of specified-width integer types */
 
 #if ! defined __cplusplus || defined __STDC_LIMIT_MACROS

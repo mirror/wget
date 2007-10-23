@@ -1,3 +1,8 @@
+2007-10-23  Micah Cowan  <micah@schmendrick>
+
+	* lib/stdbool.in.h, lib/stdint.in.h: gnulib-tool --update.
+	Includes fix for broken stdbool.h on Tru64.
+
 2007-10-22  Micah Cowan  <micah@cowan.name>
 
 	* po/*.po: Refresh from TP and update-po.
