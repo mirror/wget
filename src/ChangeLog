@@ -1,3 +1,9 @@
+2007-10-30  Micah Cowan  <micah@cowan.name>
+
+	* main.c (main): Declare argv parameter as char **argv, rather
+	than char *const *argv. This fixes usage of getopt_long,
+	regardless of whether getopt_long has a constified argv or not.
+
 2007-10-22  Gisle Vanem  <gvanem@broadpark.no>
 
 	* mswindows.c: Move INHIBIT_WRAP macro definition up with wget.h
