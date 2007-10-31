@@ -688,7 +688,7 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout);
 
 
 int
-main (int argc, char *const *argv)
+main (int argc, char **argv)
 {
   char **url, **t;
   int i, ret, longindex;

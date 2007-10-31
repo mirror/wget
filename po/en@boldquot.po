@@ -1827,4 +1827,3 @@ msgstr "Failed to unlink symlink ‘[1m%s[0m’: %s\n"
 #, c-format
 msgid "%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"
 msgstr "%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"
-

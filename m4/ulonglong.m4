@@ -1,5 +1,5 @@
-# ulonglong.m4 serial 6
-dnl Copyright (C) 1999-2006 Free Software Foundation, Inc.
+# ulonglong.m4 serial 8
+dnl Copyright (C) 1999-2007 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -7,8 +7,8 @@ dnl with or without modifications, as long as this notice is preserved.
 dnl From Paul Eggert.
 
 # Define HAVE_UNSIGNED_LONG_LONG_INT if 'unsigned long long int' works.
-# This fixes a bug in Autoconf 2.60, but can be removed once we
-# assume 2.61 everywhere.
+# This fixes a bug in Autoconf 2.61, but can be removed once we
+# assume 2.62 everywhere.
 
 # Note: If the type 'unsigned long long int' exists but is only 32 bits
 # large (as on some very old compilers), AC_TYPE_UNSIGNED_LONG_LONG_INT
@@ -21,7 +21,10 @@ AC_DEFUN([AC_TYPE_UNSIGNED_LONG_LONG_INT],
     [ac_cv_type_unsigned_long_long_int],
     [AC_LINK_IFELSE(
        [AC_LANG_PROGRAM(
-	  [[unsigned long long int ull = 18446744073709551615ULL;
+	  [[#if ! (18446744073709551615ULL <= -1ull)
+	      error in preprocessor;
+	    #endif
+	    unsigned long long int ull = 18446744073709551615ULL;
 	    typedef int a[(18446744073709551615ULL <= (unsigned long long int) -1
 			   ? 1 : -1)];
 	   int i = 63;]],
