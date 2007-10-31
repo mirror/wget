@@ -1403,8 +1403,8 @@
 2001-03-20  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Oops.  Hostless absolute link conversion _is_ working.  My
- 	test that led me to believe it wasn't was exposing a different bug
- 	-- URLs specified on the commandline as opposed to being recursed
+	test that led me to believe it wasn't was exposing a different bug
+	-- URLs specified on the commandline as opposed to being recursed
 	to don't always get re-converted at the end of the Wget run.
 
 2001-03-17  Dan Harkless  <wget@harkless.org>
@@ -1442,7 +1442,7 @@
 2001-03-12  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Only normal recursion should respect -np -- page-requisite
- 	recursion should not.
+	recursion should not.
 
 2001-03-07  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
@@ -1456,10 +1456,10 @@
 2001-03-01  Dan Harkless  <wget@harkless.org>
 
 	* ChangeLog.README: Renamed from README.branches and added a note
- 	that Wget has multiple ChangeLog files (currently ./ChangeLog,
- 	doc/ChangeLog, and src/ChangeLog), since this is unusual and
- 	people have complained their patches hadn't been applied after
- 	checking only the top-level ChangeLog.
+	that Wget has multiple ChangeLog files (currently ./ChangeLog,
+	doc/ChangeLog, and src/ChangeLog), since this is unusual and
+	people have complained their patches hadn't been applied after
+	checking only the top-level ChangeLog.
 
 2001-02-28  Dan Harkless  <wget@harkless.org>
 
@@ -1478,10 +1478,10 @@
 	moving -nr to a different category.
 
 	* TODO: "Timestamps are sometimes not copied over on files
- 	retrieved by FTP." removed.  Hopefully all the failures I was
- 	seeing were due to the fact that it wasn't documented that
- 	non-globbing, non-recursive FTP downloads need -N to get the
- 	remote timestamp to be preserved.
+	retrieved by FTP." removed.  Hopefully all the failures I was
+	seeing were due to the fact that it wasn't documented that
+	non-globbing, non-recursive FTP downloads need -N to get the
+	remote timestamp to be preserved.
 
 2001-02-22  Dan Harkless  <wget@harkless.org>
 
@@ -1525,7 +1525,7 @@
 2001-01-11  Dan Harkless  <wget@harkless.org>
 
 	* TODO: If -c used with -N, check to make sure a file hasn't
- 	changed on the server before "continuing" to download it.
+	changed on the server before "continuing" to download it.
 	
 2001-01-11  Adrian Aichner  <Adrian.Aichner@t-online.de>
 
@@ -1542,7 +1542,7 @@
 	directory got fixed without the TODO entry for it being removed.
 
 	* TODO: Add a "rollback" option to have --continue throw away X
- 	corrupted (e.g. by proxy) bytes from end of file before resuming.
+	corrupted (e.g. by proxy) bytes from end of file before resuming.
 
 	* po/*.po*: Updated after changing --help's description of -c.
 
@@ -1556,8 +1556,8 @@
 	* README.branches: Explains the 1.6_branch.ChangeLog files.
 
 	* README.cvs: Falsely claimed you only needed GNU autoconf to
- 	build from the CVS sources.  You also need GNU gettext and
- 	texinfo.  I also did a bunch of general re-writing of this file.
+	build from the CVS sources.  You also need GNU gettext and
+	texinfo.  I also did a bunch of general re-writing of this file.
 
 2001-01-03  Dan Harkless  <wget@harkless.org>
 

@@ -671,26 +671,26 @@
 2001-02-22  Dan Harkless  <wget@harkless.org>
 
 	* Makefile.in: Make wget man page and install it if we have
- 	pod2man.  Added some missing '$(srcdir)/'s.  Added missing
- 	dependencies on install targets (allowing you to just do `make
- 	install' rather than forcing you to do `make && make install').
-  	Also, Makefile rules should always use output file parameters if
- 	available rather than redirecting stdout with '>', or you falsely
- 	satisfy dependencies if the tool you're running is missing or
- 	fails -- fixed call of texi2pod.pl that did this wrong.
+	pod2man.  Added some missing '$(srcdir)/'s.  Added missing
+	dependencies on install targets (allowing you to just do `make
+	install' rather than forcing you to do `make && make install').
+	Also, Makefile rules should always use output file parameters if
+	available rather than redirecting stdout with '>', or you falsely
+	satisfy dependencies if the tool you're running is missing or
+	fails -- fixed call of texi2pod.pl that did this wrong.
 
 	* texi2pod.pl: Removed from CVS.  Now automatically generated.
 		
 	* texi2pod.pl.in: This new file is processed into texi2pod.pl,
- 	getting the appropriate path to the Perl 5+ executable on this
- 	system and becoming executable (CVS files, by contrast, don't
- 	arrive executable).
+	getting the appropriate path to the Perl 5+ executable on this
+	system and becoming executable (CVS files, by contrast, don't
+	arrive executable).
 	
 2001-02-19  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Download Options): Further improvement to --continue
- 	documentation -- explain interaction with -r and -N, mention
- 	usefulness for downloading new sections of appended-to files, etc.
+	documentation -- explain interaction with -r and -N, mention
+	usefulness for downloading new sections of appended-to files, etc.
 
 2001-01-06  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
@@ -713,7 +713,7 @@
 2001-01-09  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Download Options): Did a bunch of clarification and
- 	correction to the description of --continue.
+	correction to the description of --continue.
 
 2001-01-06  Dan Harkless  <wget@harkless.org>
 
@@ -739,7 +739,7 @@
 	looking at the dates would make you think that things went into
 	1.6 that actually just went into the 1.7-dev branch.  Added "[Not
 	in 1.6 branch.]" where appropriate to clarify.
-        
+
 2000-12-10  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* Makefile.in (install.info): Info files are *not* in $(srcdir),
@@ -827,22 +827,22 @@
 2000-08-22  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Download Options): --no-clobber's documentation was
- 	severely lacking -- ameliorated the situation.  Some of the
- 	previously-undocumented stuff (like the multiple-file-version
- 	numeric-suffixing) that's now mentioned for the first (and only)
- 	time in the -nc documentation should probably be mentioned
- 	elsewhere, but due to the way that wget.texi's hierarchy is laid
- 	out, I had a hard time finding anywhere else appropriate.
+	severely lacking -- ameliorated the situation.  Some of the
+	previously-undocumented stuff (like the multiple-file-version
+	numeric-suffixing) that's now mentioned for the first (and only)
+	time in the -nc documentation should probably be mentioned
+	elsewhere, but due to the way that wget.texi's hierarchy is laid
+	out, I had a hard time finding anywhere else appropriate.
 
 2000-07-17  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (HTTP Options): Minor clarification in "download a
- 	single HTML page and all files necessary to display it" example.
+	single HTML page and all files necessary to display it" example.
 
 2000-05-22  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (HTTP Options): Damir Dzeko <ddzeko@zesoi.fer.hr> did
- 	not document his new --referer option.  Did so.
+	not document his new --referer option.  Did so.
 
 2000-04-18  Dan Harkless  <wget@harkless.org>
 
@@ -865,27 +865,27 @@
 2000-04-12  Dan Harkless  <wget@harkless.org>
 
 	* Makefile.in (install.wgetrc): I completely missed the message
- 	that the new wgetrc wasn't being installed the first couple of
- 	times I ran `make install' after changing sample.wgetrc.  Added
- 	blank lines around the message and a "<Hit RETURN to
- 	acknowledge>", and reworded the message to be a bit more clear.
+	that the new wgetrc wasn't being installed the first couple of
+	times I ran `make install' after changing sample.wgetrc.  Added
+	blank lines around the message and a "<Hit RETURN to
+	acknowledge>", and reworded the message to be a bit more clear.
 	
 	* sample.wgetrc: Added entries for backup_converted and waitretry.
 
 	* wget.texi (Download Options and Wgetrc Commands): Herold Heiko
- 	<Heiko.Herold@previnet.it>'s new --waitretry option was
- 	undocumented until now.  Reworded the suggested documentation he
- 	sent to the list.
+	<Heiko.Herold@previnet.it>'s new --waitretry option was
+	undocumented until now.  Reworded the suggested documentation he
+	sent to the list.
 
 2000-03-10  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Recursive Retrieval Options): In -K description,
- 	added a link to the discussion of interaction with -N.
+	added a link to the discussion of interaction with -N.
 	(Recursive Accept/Reject Options): Did some alphabetizing and added
 	descriptions of new --follow-tags and -G / --ignore-tags options.
 	(Following Links): Changed "the loads of" to "loads of".
 	(Wgetrc Commands): Added descriptions of new follow_tags and
- 	ignore_tags commands.
+	ignore_tags commands.
 
 2000-03-02  Daniel S. Lewart  <d-lewart@uiuc.edu>
 
@@ -898,7 +898,7 @@
 2000-03-01  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (HTTP Time-Stamping Internals): Added a note about my
- 	newly-implemented interaction between -K and -N.
+	newly-implemented interaction between -K and -N.
 
 2000-02-29  Dan Harkless  <wget@harkless.org>
 
@@ -909,7 +909,7 @@
 2000-02-18  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Recursive Retrieval Options): Documented my new -K /
- 	--backup-converted option.
+	--backup-converted option.
 	(Wgetrc Commands): Documented backup_converted equivalent.
 
 1998-09-10  Hrvoje Niksic  <hniksic@srce.hr>
@@ -936,7 +936,7 @@
 1998-05-02  Hrvoje Niksic  <hniksic@srce.hr>
 
 	* wget.texi (Recursive Retrieval): Fix typo.  Suggested by
- 	Francois Pinard.
+	Francois Pinard.
 
 1998-04-18  Hrvoje Niksic  <hniksic@srce.hr>
 
@@ -953,7 +953,7 @@
 1998-03-29  Hrvoje Niksic  <hniksic@srce.hr>
 
 	* wget.texi (Invoking): Split into more sections, analogous to
- 	output of `wget --help'.
+	output of `wget --help'.
 	(HTTP Options): Document --user-agent.
 
 1998-03-16  Hrvoje Niksic  <hniksic@srce.hr>
@@ -1004,7 +1004,7 @@
 1997-02-17  Hrvoje Niksic  <hniksic@srce.hr>
 
 	* wget.texi (Advanced Options): Document --proxy-user and
- 	--proxy-passwd.
+	--proxy-passwd.
 
 1997-02-14  Karl Eichwalder  <ke@ke.Central.DE>
 
@@ -1051,7 +1051,7 @@
 1996-12-12  Dieter Baron <dillo@danbala.tuwien.ac.at>
 
 	* wget.texi (Advanced Usage): Would reference prep instead of
- 	wuarchive.
+	wuarchive.
 
 1996-11-25  Hrvoje Niksic  <hniksic@srce.hr>
 
@@ -1064,7 +1064,7 @@
 1996-11-22  Hrvoje Niksic  <hniksic@srce.hr>
 
 	* wget.texi (Portability): Add IRIX and FreeBSD as the "regular"
- 	platforms.
+	platforms.
 
 1996-11-20  Hrvoje Niksic  <hniksic@srce.hr>
 
