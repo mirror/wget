@@ -3,7 +3,7 @@
 @c %**start of header
 @setfilename wget.info
 @include version.texi
-@set UPDATED Jul 2006
+@set UPDATED Oct 2007
 @settitle GNU Wget @value{VERSION} Manual
 @c Disable the monstrous rectangles beside overfull hbox-es.
 @finalout
@@ -31,7 +31,7 @@ This file documents the the GNU Wget utility for downloading network
 data.
 
 @c man begin COPYRIGHT
-Copyright @copyright{} 1996--2006 Free Software Foundation, Inc.
+Copyright @copyright{} 1996--2007 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -74,7 +74,7 @@ Info entry for @file{wget}.
 
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1996--2006, Free Software Foundation, Inc.
+Copyright @copyright{} 1996--2007, Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.2 or
@@ -91,7 +91,7 @@ Documentation License''.
 This manual documents version @value{VERSION} of GNU Wget, the freely
 available utility for network downloads.
 
-Copyright @copyright{} 1996--2006 Free Software Foundation, Inc.
+Copyright @copyright{} 1996--2007 Free Software Foundation, Inc.
 
 @menu
 * Overview::            Features of Wget.
