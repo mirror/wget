@@ -14,15 +14,16 @@ dnl GNU General Public License for more details.
 dnl You should have received a copy of the GNU General Public License
 dnl along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-dnl In addition, as a special exception, the Free Software Foundation
-dnl gives permission to link the code of its release of Wget with the
-dnl OpenSSL project's "OpenSSL" library (or with modified versions of it
-dnl that use the same license as the "OpenSSL" library), and distribute
-dnl the linked executables.  You must obey the GNU General Public License
-dnl in all respects for all of the code used other than "OpenSSL".  If you
-dnl modify this file, you may extend this exception to your version of the
-dnl file, but you are not obligated to do so.  If you do not wish to do
-dnl so, delete this exception statement from your version.
+dnl Additional permission under GNU GPL version 3 section 7
+
+dnl If you modify this program, or any covered work, by linking or
+dnl combining it with the OpenSSL project's OpenSSL library (or a
+dnl modified version of that library), containing parts covered by the
+dnl terms of the OpenSSL or SSLeay licenses, the Free Software Foundation
+dnl grants you additional permission to convey the resulting work.
+dnl Corresponding Source for a non-source form of such a combination
+dnl shall include the source code for the parts of OpenSSL used as well
+dnl as that of the covered work.
 
 dnl
 dnl Process this file with autoconf to produce a configure script.
