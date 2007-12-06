@@ -677,6 +677,8 @@ acceptable (const char *s)
 bool
 subdir_p (const char *d1, const char *d2)
 {
+  if (*d1 == '\0')
+    return true;
   if (!opt.ignore_case)
     for (; *d1 && *d2 && (*d1 == *d2); ++d1, ++d2)
       ;

@@ -1,3 +1,7 @@
+2007-12-05  Micah Cowan  <micah@cowan.name>
+
+	* utils.c (subdir_p): Handle the case where d1 is "".
+
 2007-11-28  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am, cmpt.c, connect.c, connect.h, convert.c,
