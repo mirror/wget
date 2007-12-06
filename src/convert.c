@@ -85,7 +85,7 @@ convert_all_links (void)
   if (downloaded_html_set)
     cnt = hash_table_count (downloaded_html_set);
   if (cnt == 0)
-    return;
+    goto cleanup;
   file_array = alloca_array (char *, cnt);
   string_set_to_array (downloaded_html_set, file_array);
 
@@ -166,9 +166,10 @@ convert_all_links (void)
     }
 
   secs = ptimer_measure (timer);
-  ptimer_destroy (timer);
   logprintf (LOG_VERBOSE, _("Converted %d files in %s seconds.\n"),
              file_count, print_decimal (secs));
+cleanup:
+  ptimer_destroy (timer);
 }
 
 static void write_backup_file (const char *, downloaded_file_t);

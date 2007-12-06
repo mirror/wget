@@ -1,6 +1,8 @@
 2007-12-05  Micah Cowan  <micah@cowan.name>
 
 	* utils.c (subdir_p): Handle the case where d1 is "".
+	* convert.c (convert_all_links): Don't return without
+	deallocating timer.
 
 2007-11-28  Micah Cowan  <micah@cowan.name>
 
