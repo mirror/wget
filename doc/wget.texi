@@ -27,7 +27,7 @@
 @end direntry
 
 @ifnottex
-This file documents the the GNU Wget utility for downloading network
+This file documents the GNU Wget utility for downloading network
 data.
 
 @c man begin COPYRIGHT

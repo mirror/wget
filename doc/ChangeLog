@@ -1,3 +1,7 @@
+2007-12-06  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi: "the the" -> "the"
+
 2007-12-05  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi <Wgetrc Commands>: Explicitly mention that
