@@ -15,18 +15,18 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=lib --m4-base=m4 --doc-base=doc --aux-dir=. --no-libtool --macro-prefix=gl c-ctype getopt maintainer-makefile
+#   gnulib-tool --import --dir=. --lib=libmd5 --source-base=md5 --m4-base=md5/m4 --doc-base=doc --aux-dir=. --no-libtool --macro-prefix=md5 crypto/md5
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
-gl_MODULES([c-ctype getopt maintainer-makefile])
+gl_MODULES([crypto/md5])
 gl_AVOID([])
-gl_SOURCE_BASE([lib])
-gl_M4_BASE([m4])
+gl_SOURCE_BASE([md5])
+gl_M4_BASE([md5/m4])
 gl_PO_BASE([])
 gl_DOC_BASE([doc])
 gl_TESTS_BASE([tests])
-gl_LIB([libgnu])
+gl_LIB([libmd5])
 gl_MAKEFILE_NAME([])
-gl_MACRO_PREFIX([gl])
+gl_MACRO_PREFIX([md5])
 gl_PO_DOMAIN([])

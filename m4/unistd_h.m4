@@ -1,4 +1,4 @@
-# unistd_h.m4 serial 9
+# unistd_h.m4 serial 10
 dnl Copyright (C) 2006-2007 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -38,6 +38,7 @@ AC_DEFUN([gl_UNISTD_H_DEFAULTS],
   GNULIB_FTRUNCATE=0;     AC_SUBST([GNULIB_FTRUNCATE])
   GNULIB_GETCWD=0;        AC_SUBST([GNULIB_GETCWD])
   GNULIB_GETLOGIN_R=0;    AC_SUBST([GNULIB_GETLOGIN_R])
+  GNULIB_GETPAGESIZE=0;   AC_SUBST([GNULIB_GETPAGESIZE])
   GNULIB_LCHOWN=0;        AC_SUBST([GNULIB_LCHOWN])
   GNULIB_LSEEK=0;         AC_SUBST([GNULIB_LSEEK])
   GNULIB_READLINK=0;      AC_SUBST([GNULIB_READLINK])
@@ -45,9 +46,12 @@ AC_DEFUN([gl_UNISTD_H_DEFAULTS],
   dnl Assume proper GNU behavior unless another module says otherwise.
   HAVE_DUP2=1;            AC_SUBST([HAVE_DUP2])
   HAVE_FTRUNCATE=1;       AC_SUBST([HAVE_FTRUNCATE])
+  HAVE_GETPAGESIZE=1;     AC_SUBST([HAVE_GETPAGESIZE])
   HAVE_READLINK=1;        AC_SUBST([HAVE_READLINK])
   HAVE_SLEEP=1;           AC_SUBST([HAVE_SLEEP])
   HAVE_DECL_GETLOGIN_R=1; AC_SUBST([HAVE_DECL_GETLOGIN_R])
+  HAVE_OS_H=0;            AC_SUBST([HAVE_OS_H])
+  HAVE_SYS_PARAM_H=0;     AC_SUBST([HAVE_SYS_PARAM_H])
   REPLACE_CHOWN=0;        AC_SUBST([REPLACE_CHOWN])
   REPLACE_FCHDIR=0;       AC_SUBST([REPLACE_FCHDIR])
   REPLACE_GETCWD=0;       AC_SUBST([REPLACE_GETCWD])

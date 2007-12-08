@@ -31,10 +31,10 @@
 #
 
 # Search for macros in the m4 subdirectory:
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 -I md5/m4
 
 # subdirectories in the distribution
-SUBDIRS = lib src doc po tests util windows
+SUBDIRS = lib md5 src doc po tests util windows
 
 test: all
 	cd tests && $(MAKE) $(AM_MAKEFLAGS) $@

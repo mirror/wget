@@ -108,6 +108,7 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_AIX
 gl_EARLY
+md5_EARLY
 
 AC_PROG_RANLIB
 
@@ -338,9 +339,10 @@ then
     found_md5=yes
     AC_MSG_NOTICE([using the built-in (GNU) MD5 implementation])
     AC_C_BIGENDIAN
+    md5_INIT
   fi
+  AC_DEFINE([HAVE_MD5], 1, [Define if we're compiling support for MD5.])
 fi
-AC_DEFINE([HAVE_MD5], 1, [Define if we're compiling support for MD5.])
 
 dnl **********************************************************************
 dnl Checks for IPv6

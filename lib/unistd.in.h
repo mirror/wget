@@ -3,7 +3,7 @@
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
+   the Free Software Foundation; either version 3, or (at your option)
    any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -177,6 +177,61 @@ extern int getlogin_r (char *name, size_t size);
     (GL_LINK_WARNING ("getlogin_r is unportable - " \
                       "use gnulib module getlogin_r for portability"), \
      getlogin_r (n, s))
+#endif
+
+
+#if @GNULIB_GETPAGESIZE@
+# if !@HAVE_GETPAGESIZE@
+/* This is for POSIX systems.  */
+#  if !defined getpagesize && defined _SC_PAGESIZE
+#   if ! (defined __VMS && __VMS_VER < 70000000)
+#    define getpagesize() sysconf (_SC_PAGESIZE)
+#   endif
+#  endif
+/* This is for older VMS.  */
+#  if !defined getpagesize && defined __VMS
+#   ifdef __ALPHA
+#    define getpagesize() 8192
+#   else
+#    define getpagesize() 512
+#   endif
+#  endif
+/* This is for BeOS.  */
+#  if !defined getpagesize && @HAVE_OS_H@
+#   include <OS.h>
+#   if defined B_PAGE_SIZE
+#    define getpagesize() B_PAGE_SIZE
+#   endif
+#  endif
+/* This is for AmigaOS4.0.  */
+#  if !defined getpagesize && defined __amigaos4__
+#   define getpagesize() 2048
+#  endif
+/* This is for older Unix systems.  */
+#  if !defined getpagesize && @HAVE_SYS_PARAM_H@
+#   include <sys/param.h>
+#   ifdef EXEC_PAGESIZE
+#    define getpagesize() EXEC_PAGESIZE
+#   else
+#    ifdef NBPG
+#     ifndef CLSIZE
+#      define CLSIZE 1
+#     endif
+#     define getpagesize() (NBPG * CLSIZE)
+#    else
+#     ifdef NBPC
+#      define getpagesize() NBPC
+#     endif
+#    endif
+#   endif
+#  endif
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef getpagesize
+# define getpagesize() \
+    (GL_LINK_WARNING ("getpagesize is unportable - " \
+                      "use gnulib module getpagesize for portability"), \
+     getpagesize ())
 #endif
 
 

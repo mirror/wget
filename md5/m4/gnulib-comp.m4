@@ -18,7 +18,7 @@
 # This macro should be invoked from ./configure.ac, in the section
 # "Checks for programs", right after AC_PROG_CC, and certainly before
 # any checks for libraries, header files, types and library functions.
-AC_DEFUN([gl_EARLY],
+AC_DEFUN([md5_EARLY],
 [
   m4_pattern_forbid([^gl_[A-Z]])dnl the gnulib macro namespace
   m4_pattern_allow([^gl_ES$])dnl a valid locale name
@@ -29,90 +29,83 @@ AC_DEFUN([gl_EARLY],
 
 # This macro should be invoked from ./configure.ac, in the section
 # "Check for header files, types and library functions".
-AC_DEFUN([gl_INIT],
+AC_DEFUN([md5_INIT],
 [
-  m4_pushdef([AC_LIBOBJ], m4_defn([gl_LIBOBJ]))
-  m4_pushdef([AC_REPLACE_FUNCS], m4_defn([gl_REPLACE_FUNCS]))
-  m4_pushdef([AC_LIBSOURCES], m4_defn([gl_LIBSOURCES]))
+  m4_pushdef([AC_LIBOBJ], m4_defn([md5_LIBOBJ]))
+  m4_pushdef([AC_REPLACE_FUNCS], m4_defn([md5_REPLACE_FUNCS]))
+  m4_pushdef([AC_LIBSOURCES], m4_defn([md5_LIBSOURCES]))
   AM_CONDITIONAL([GL_COND_LIBTOOL], [false])
   gl_cond_libtool=false
   gl_libdeps=
   gl_ltlibdeps=
-  gl_source_base='lib'
-  gl_GETOPT
-  AC_SUBST([LIBINTL])
-  AC_SUBST([LTLIBINTL])
-  AM_STDBOOL_H
-  gl_UNISTD_H
-  LIBGNU_LIBDEPS="$gl_libdeps"
-  AC_SUBST([LIBGNU_LIBDEPS])
-  LIBGNU_LTLIBDEPS="$gl_ltlibdeps"
-  AC_SUBST([LIBGNU_LTLIBDEPS])
+  gl_source_base='md5'
+  gl_MD5
+  gl_STDINT_H
+  gl_WCHAR_H
+  LIBMD5_LIBDEPS="$gl_libdeps"
+  AC_SUBST([LIBMD5_LIBDEPS])
+  LIBMD5_LTLIBDEPS="$gl_ltlibdeps"
+  AC_SUBST([LIBMD5_LTLIBDEPS])
   m4_popdef([AC_LIBSOURCES])
   m4_popdef([AC_REPLACE_FUNCS])
   m4_popdef([AC_LIBOBJ])
   AC_CONFIG_COMMANDS_PRE([
-    gl_libobjs=
-    gl_ltlibobjs=
-    if test -n "$gl_LIBOBJS"; then
+    md5_libobjs=
+    md5_ltlibobjs=
+    if test -n "$md5_LIBOBJS"; then
       # Remove the extension.
       sed_drop_objext='s/\.o$//;s/\.obj$//'
-      for i in `for i in $gl_LIBOBJS; do echo "$i"; done | sed "$sed_drop_objext" | sort | uniq`; do
-        gl_libobjs="$gl_libobjs $i.$ac_objext"
-        gl_ltlibobjs="$gl_ltlibobjs $i.lo"
+      for i in `for i in $md5_LIBOBJS; do echo "$i"; done | sed "$sed_drop_objext" | sort | uniq`; do
+        md5_libobjs="$md5_libobjs $i.$ac_objext"
+        md5_ltlibobjs="$md5_ltlibobjs $i.lo"
       done
     fi
-    AC_SUBST([gl_LIBOBJS], [$gl_libobjs])
-    AC_SUBST([gl_LTLIBOBJS], [$gl_ltlibobjs])
+    AC_SUBST([md5_LIBOBJS], [$md5_libobjs])
+    AC_SUBST([md5_LTLIBOBJS], [$md5_ltlibobjs])
   ])
 ])
 
 # Like AC_LIBOBJ, except that the module name goes
-# into gl_LIBOBJS instead of into LIBOBJS.
-AC_DEFUN([gl_LIBOBJ], [
-  AS_LITERAL_IF([$1], [gl_LIBSOURCES([$1.c])])dnl
-  gl_LIBOBJS="$gl_LIBOBJS $1.$ac_objext"
+# into md5_LIBOBJS instead of into LIBOBJS.
+AC_DEFUN([md5_LIBOBJ], [
+  AS_LITERAL_IF([$1], [md5_LIBSOURCES([$1.c])])dnl
+  md5_LIBOBJS="$md5_LIBOBJS $1.$ac_objext"
 ])
 
 # Like AC_REPLACE_FUNCS, except that the module name goes
-# into gl_LIBOBJS instead of into LIBOBJS.
-AC_DEFUN([gl_REPLACE_FUNCS], [
+# into md5_LIBOBJS instead of into LIBOBJS.
+AC_DEFUN([md5_REPLACE_FUNCS], [
   m4_foreach_w([gl_NAME], [$1], [AC_LIBSOURCES(gl_NAME[.c])])dnl
-  AC_CHECK_FUNCS([$1], , [gl_LIBOBJ($ac_func)])
+  AC_CHECK_FUNCS([$1], , [md5_LIBOBJ($ac_func)])
 ])
 
 # Like AC_LIBSOURCES, except the directory where the source file is
 # expected is derived from the gnulib-tool parametrization,
 # and alloca is special cased (for the alloca-opt module).
 # We could also entirely rely on EXTRA_lib..._SOURCES.
-AC_DEFUN([gl_LIBSOURCES], [
+AC_DEFUN([md5_LIBSOURCES], [
   m4_foreach([_gl_NAME], [$1], [
     m4_if(_gl_NAME, [alloca.c], [], [
-      m4_syscmd([test -r lib/]_gl_NAME[ || test ! -d lib])dnl
+      m4_syscmd([test -r md5/]_gl_NAME[ || test ! -d md5])dnl
       m4_if(m4_sysval, [0], [],
-        [AC_FATAL([missing lib/]_gl_NAME)])
+        [AC_FATAL([missing md5/]_gl_NAME)])
     ])
   ])
 ])
 
 # This macro records the list of files which have been installed by
 # gnulib-tool and may be removed by future gnulib-tool invocations.
-AC_DEFUN([gl_FILE_LIST], [
-  build-aux/GNUmakefile
+AC_DEFUN([md5_FILE_LIST], [
   build-aux/link-warning.h
-  build-aux/maint.mk
-  lib/c-ctype.c
-  lib/c-ctype.h
-  lib/getopt.c
-  lib/getopt.in.h
-  lib/getopt1.c
-  lib/getopt_int.h
-  lib/gettext.h
-  lib/stdbool.in.h
-  lib/unistd.in.h
-  m4/getopt.m4
+  lib/dummy.c
+  lib/md5.c
+  lib/md5.h
+  lib/stdint.in.h
+  lib/wchar.in.h
   m4/gnulib-common.m4
   m4/include_next.m4
-  m4/stdbool.m4
-  m4/unistd_h.m4
+  m4/longlong.m4
+  m4/md5.m4
+  m4/stdint.m4
+  m4/wchar.m4
 ])

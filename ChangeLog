@@ -1,3 +1,22 @@
+2007-12-07  Micah Cowan  <micah@cowan.name>
+
+	* lib/Makefile.am, lib/c-ctype.c, lib/c-ctype.h, lib/gettext.h,
+	lib/stdbool.in.h, lib/unistd.in.h, m4/gnulib-cache.m4,
+	m4/gnulib-common.m4, m4/gnulib-comp.m4, m4/unistd_h.m4:
+	Updated from gnulib.
+	* Makefile.am, configure.ac: Plugged in the md5/ stuff.
+	* lib/md5.c, lib/md5.h, lib/stdint.in.h, lib/wchar.in.h,
+	m4/longlong.m4, m4/md5.m4, m4/stdint.m4, m4/wchar.m4: Moved to
+	md5/.
+	* md5/Makefile.am, md5/dummy.c, md5/m4/gnulib-cache.m4,
+	md5/m4/gnulib-common.m4, md5/m4/gnulib-comp.m4,
+	md5/m4/gnulib-tool.m4, md5/m4/include_next.m4,
+	md5/m4/longlong.m4, md5/m4/md5.m4, md5/m4/stdint.m4,
+	md5/m4/wchar.m4, md5/md5.c, md5/md5.h, md5/stdint.in.h,
+	md5/wchar.in.h: Moved/copied from lib/, m4/; updated from
+	gnulib.
+	* m4/ulonglong.m4: Removed (via update from gnulib).
+
 2007-12-05  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: Reword warnings regarding --content-disposition.
