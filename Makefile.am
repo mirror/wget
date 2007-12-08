@@ -34,7 +34,7 @@
 ACLOCAL_AMFLAGS = -I m4 -I md5/m4
 
 # subdirectories in the distribution
-SUBDIRS = lib md5 src doc po tests util windows
+SUBDIRS = lib @MD5_SUBDIR@ src doc po tests util windows
 
 test: all
 	cd tests && $(MAKE) $(AM_MAKEFLAGS) $@

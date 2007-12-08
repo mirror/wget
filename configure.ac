@@ -339,6 +339,10 @@ then
     found_md5=yes
     AC_MSG_NOTICE([using the built-in (GNU) MD5 implementation])
     AC_C_BIGENDIAN
+
+    AC_SUBST(MD5_CPPFLAGS, '-I $(top_srcdir)/md5')
+    AC_SUBST(MD5_LDADD, '../md5/libmd5.a')
+    AC_SUBST(MD5_SUBDIR, md5)
     md5_INIT
   fi
   AC_DEFINE([HAVE_MD5], 1, [Define if we're compiling support for MD5.])
@@ -459,6 +463,6 @@ dnl Create output
 dnl
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile util/Makefile
                  po/Makefile.in tests/Makefile tests/WgetTest.pm
-                 lib/Makefile windows/Makefile])
+                 lib/Makefile md5/Makefile windows/Makefile])
 AC_CONFIG_HEADERS([src/config.h])
 AC_OUTPUT

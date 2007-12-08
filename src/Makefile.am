@@ -47,8 +47,8 @@ wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c ftp-basic.c	\
 	       spider.h ssl.h sysdep.h url.h utils.h wget.h xmalloc.h
 nodist_wget_SOURCES = version.c
 EXTRA_wget_SOURCES = mswindows.c
-LDADD = $(ALLOCA) $(LIBOBJS) ../lib/libgnu.a
-AM_CPPFLAGS = -I$(top_srcdir)/lib
+LDADD = $(ALLOCA) $(LIBOBJS) ../lib/libgnu.a @MD5_LDADD@
+AM_CPPFLAGS = -I $(top_srcdir)/lib @MD5_CPPFLAGS@
 
 version.c:  $(wget_SOURCES) $(LDADD) $(srcdir)/Makefile.am
 	echo 'const char *version_string = "@VERSION@"' > $@
