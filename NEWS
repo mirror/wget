@@ -47,13 +47,12 @@ automatically, and continue to require a challenge for each resource.
 ** Added --max-redirect option, allowing the user to specify what should
 be the maximum number of HTTP redirects to follow.
 
-** Wget now saves HTTP downloads using file names specified by the
-`Content-Disposition' header.  This is a standard way of specifying the
-file name used by many web dynamically generated pages. For the time
-being, Content-Disposition is not used by default, to avoid the extra
-round-trips incurred (must specify "-e contentdisposition=yes"); this
-may change in a future version. NOTE: This functionality is currently
-considered "experimental", and may not be fully functional.
+** Wget now supports saving HTTP downloads using file names specified by
+the `Content-Disposition' header.  This is a standard way of specifying
+the file name used by many web dynamically generated pages. However, the
+current implementation is inefficient, and known to have bugs. It is
+EXPERIMENTAL only, and not enabled by default. Use --content-disposition
+to enable it.
 
 ** The GnuTLS library is now also experimentally supported for https
 downloads.  This is still work-in-progress.  OpenSSL is still used by

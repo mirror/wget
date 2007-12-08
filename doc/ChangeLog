@@ -1,3 +1,8 @@
+2007-12-05  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi <Wgetrc Commands>: Explicitly mention that
+	--content-disposition has known issues.
+
 2007-10-13  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi <Mailing Lists>: Replaced mention of no-longer

@@ -2554,8 +2554,8 @@ Set the connect timeout---the same as @samp{--connect-timeout}.
 @item content_disposition = on/off
 If this is set to on, experimental (not fully-functional) support for
 @samp{Content-Disposition} headers is enabled. This can currently result in
-extra round-trips to the server for a @samp{HEAD} request, which is why
-it is not currently enabled by default.
+extra round-trips to the server for a @samp{HEAD} request, and is known
+to suffer from a few bugs, which is why it is not currently enabled by default.
 
 This option is useful for some file-downloading CGI programs that use
 @samp{Content-Disposition} headers to describe what the name of a

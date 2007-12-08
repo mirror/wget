@@ -1,3 +1,7 @@
+2007-12-05  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: Reword warnings regarding --content-disposition.
+
 2007-11-28  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am, README, autogen.sh, configure.bat, configure.in,
