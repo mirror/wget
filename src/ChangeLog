@@ -1,3 +1,10 @@
+2007-12-08  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* ftp.c (ftp_retrieve_glob): Print both arguments of fnmatch in
+	fnmatch error message.
+	(ftp_retrieve_glob): Don't match with fnmatch if we're only
+	supposed to get one file.
+
 2007-12-07  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am: Plug in vars to include stuff from
