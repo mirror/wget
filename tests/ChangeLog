@@ -1,3 +1,8 @@
+2007-11-28  Micah Cowan <micah@cowan.name>
+
+	* Makefile.in: Updated license exception for OpenSSL, per the
+	SFLC.
+
 2007-09-25  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.in: Use EXEEXT instead of exeext.

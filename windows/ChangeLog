@@ -1,3 +1,9 @@
+2007-11-28  Micah Cowan <micah@cowan.name>
+
+	* Makefile.doc, Makefile.in, Makefile.src, Makefile.top,
+	Makefile.top.bor, Makefile.top.mingw, config-compiler.h: Updated
+	license exception for OpenSSL, per the SFLC.
+
 2007-09-24  Christopher Lewis <chris@christopherlewis.com>
 
 	* config-compiler.h: Fix compiler warnings related to

@@ -1,3 +1,7 @@
+2007-11-28  Micah Cowan <micah@cowan.name>
+
+	* config.h: Updated license exception for OpenSSL, per the SFLC.
+
 2007-09-24  Gisle Vanem  <giva@bgnett.no>
 
 	* Makefile.DJ, config.h: Added to support building on MS-DOS via
