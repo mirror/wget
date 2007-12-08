@@ -1,3 +1,18 @@
+2007-11-28  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am, cmpt.c, connect.c, connect.h, convert.c,
+	convert.h, cookies.c, cookies.h, ftp-basic.c, ftp-ls.c,
+	ftp-opie.c, ftp.c, ftp.h, gen-md5.c, gen-md5.h, gnutls.c,
+	hash.c, hash.h, host.c, host.h, html-parse.c, html-parse.h,
+	html-url.c, http-ntlm.c, http-ntlm.h, http.c, http.h, init.c,
+	init.h, log.c, log.h, main.c, mswindows.c, mswindows.h,
+	netrc.c, netrc.h, openssl.c, options.h, progress.c, progress.h,
+	ptimer.c, ptimer.h, recur.c, recur.h, res.c, res.h, retr.c,
+	retr.h, safe-ctype.c, safe-ctype.h, spider.c, spider.h, ssl.h,
+	sysdep.h, test.c, test.h, url.c, url.h, utils.c, utils.h,
+	wget.h, xmalloc.c, xmalloc.h: Updated license exception for
+	OpenSSL, per the SFLC.
+
 2007-10-30  Micah Cowan  <micah@cowan.name>
 
 	* main.c (main): Declare argv parameter as char **argv, rather

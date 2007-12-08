@@ -1,3 +1,9 @@
+2007-11-28  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am, README, autogen.sh, configure.bat, configure.in,
+	m4/wget.m4, util/Makefile.am, util/dist-wget: Updated license
+	exception for OpenSSL, per the SFLC.
+
 2007-10-23  Micah Cowan  <micah@schmendrick>
 
 	* lib/stdbool.in.h, lib/stdint.in.h: gnulib-tool --update.

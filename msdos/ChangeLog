@@ -1,3 +1,7 @@
+2007-11-28  Micah Cowan <micah@cowan.name>
+
+	* config.h: Updated license exception for OpenSSL, per the SFLC.
+
 2007-10-15  Gisle Vanem  <gvanem@broadpark.no>
 
 	* config.h: Added some HAVE_* for djgpp 2.04 and Watcom 1.7+.

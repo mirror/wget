@@ -1,3 +1,9 @@
+2007-11-28  Micah Cowan <micah@cowan.name>
+
+	* Makefile.doc, Makefile.am, Makefile.src, Makefile.top,
+	Makefile.top.bor, Makefile.top.mingw, config-compiler.h: Updated
+	license exception for OpenSSL, per the SFLC.
+
 2007-10-15  Gisle Vanem  <giva@bgnett.no>
 
 	* config-compiler.h: Adjust for OpenWacom 1.7's _Bool fix.

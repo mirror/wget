@@ -1,3 +1,8 @@
+2007-11-28  Micah Cowan <micah@cowan.name>
+
+	* Makefile.am: Updated license exception for OpenSSL, per the
+	SFLC.
+
 2007-10-18  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am: Add dependency for unit_tests on libgnu.a.

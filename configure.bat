@@ -15,15 +15,16 @@ rem GNU General Public License for more details.
 rem You should have received a copy of the GNU General Public License
 rem along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-rem In addition, as a special exception, the Free Software Foundation
-rem gives permission to link the code of its release of Wget with the
-rem OpenSSL project's "OpenSSL" library (or with modified versions of it
-rem that use the same license as the "OpenSSL" library), and distribute
-rem the linked executables.  You must obey the GNU General Public License
-rem in all respects for all of the code used other than "OpenSSL".  If you
-rem modify this file, you may extend this exception to your version of the
-rem file, but you are not obligated to do so.  If you do not wish to do
-rem so, delete this exception statement from your version.
+rem Additional permission under GNU GPL version 3 section 7
+
+rem If you modify this program, or any covered work, by linking or
+rem combining it with the OpenSSL project's OpenSSL library (or a
+rem modified version of that library), containing parts covered by the
+rem terms of the OpenSSL or SSLeay licenses, the Free Software Foundation
+rem grants you additional permission to convey the resulting work.
+rem Corresponding Source for a non-source form of such a combination
+rem shall include the source code for the parts of OpenSSL used as well
+rem as that of the covered work.
 
 if .%1 == .--borland goto :borland
 if .%1 == .--mingw goto :mingw
