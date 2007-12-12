@@ -3376,7 +3376,7 @@ List}).
 
 @item
 Try to repeat the bug in as simple circumstances as possible.  E.g. if
-Wget crashes while downloading @samp{wget -rl0 -kKE -t5 -Y0
+Wget crashes while downloading @samp{wget -rl0 -kKE -t5 --no-proxy
 http://yoyodyne.com -o /tmp/log}, you should try to see if the crash is
 repeatable, and if will occur with a simpler set of options.  You might
 even try to start the download at the page where the crash occurred to

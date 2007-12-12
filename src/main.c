@@ -445,8 +445,6 @@ Download:\n"),
     N_("\
        --random-wait             wait from 0...2*WAIT secs between retrievals.\n"),
     N_("\
-  -Y,  --proxy                   explicitly turn on proxy.\n"),
-    N_("\
        --no-proxy                explicitly turn off proxy.\n"),
     N_("\
   -Q,  --quota=NUMBER            set retrieval quota to NUMBER.\n"),
