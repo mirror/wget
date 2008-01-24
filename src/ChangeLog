@@ -1,3 +1,8 @@
+2007-12-10  Micah Cowan  <micah@cowan.name>
+
+	* main.c: The option is --content-disposition, not
+	--no-content-disposition (at the moment).
+
 2007-12-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ftp.c (ftp_retrieve_glob): Print both arguments of fnmatch in
