@@ -532,7 +532,8 @@ HTTP options:\n"),
     N_("\
        --post-file=FILE        use the POST method; send contents of FILE.\n"),
     N_("\
-       --no-content-disposition  don't honor Content-Disposition header.\n"),
+       --content-disposition   honor the Content-Disposition header when\n\
+                               choosing local file names (EXPERIMENTAL).\n"),
     "\n",
 
 #ifdef HAVE_SSL

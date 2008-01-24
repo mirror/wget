@@ -1354,6 +1354,19 @@ the above will not work because @samp{--save-cookies} will not save
 them (and neither will browsers) and the @file{cookies.txt} file will
 be empty.  In that case use @samp{--keep-session-cookies} along with
 @samp{--save-cookies} to force saving of session cookies.
+
+@cindex Content-Disposition
+@item --content-disposition
+
+If this is set to on, experimental (not fully-functional) support for
+@code{Content-Disposition} headers is enabled. This can currently result in
+extra round-trips to the server for a @code{HEAD} request, and is known
+to suffer from a few bugs, which is why it is not currently enabled by default.
+
+This option is useful for some file-downloading CGI programs that use
+@code{Content-Disposition} headers to describe what the name of a
+downloaded file should be.
+
 @end table
 
 @node HTTPS (SSL/TLS) Options
@@ -2552,14 +2565,8 @@ the specified client authorities.  The default is ``on''.  The same as
 Set the connect timeout---the same as @samp{--connect-timeout}.
 
 @item content_disposition = on/off
-If this is set to on, experimental (not fully-functional) support for
-@samp{Content-Disposition} headers is enabled. This can currently result in
-extra round-trips to the server for a @samp{HEAD} request, and is known
-to suffer from a few bugs, which is why it is not currently enabled by default.
-
-This option is useful for some file-downloading CGI programs that use
-@samp{Content-Disposition} headers to describe what the name of a
-downloaded file should be.
+Turn on recognition of the (non-standard) @samp{Content-Disposition}
+HTTP header---if set to @samp{on}, the same as @samp{--content-disposition}.
 
 @item continue = on/off
 If set to on, force continuation of preexistent partially retrieved

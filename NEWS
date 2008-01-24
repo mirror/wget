@@ -15,23 +15,8 @@ GNU Wget.
 
 * Changes in Wget 1.11.
 
-** The source code has been migrated to Mercurial. The repositories are
-available at http://hg.addictivecode.org/. Prior to this, the source
-code was hosted on Subversion (migrated from the original CVS); you can
-still get access to older tags and branches for Wget in the Subversion
-repository at http://addictivecode.org/svn/wget/.
-
-** PATCH file removed; see http://wget.addictivecode.org/PatchGuidelines
-for current information about producing patches for GNU Wget.
-
-** TODO file removed: we use a bugtracker now; see
-http://wget.addictivecode.org/BugTracker. Also,
-http://wget.addictivecode.org/FeatureSpecifications.
-
 ** Timestamping now uses the value from the most recent HTTP response,
 rather than the first one it got.
-
-** configure.in now requires autoconf >= 2.61, rather than 2.59.
 
 ** Authentication information is no longer sent as part of the Referer
 header in recursive fetches.
@@ -54,15 +39,6 @@ current implementation is inefficient, and known to have bugs. It is
 EXPERIMENTAL only, and not enabled by default. Use --content-disposition
 to enable it.
 
-** The GnuTLS library is now also experimentally supported for https
-downloads.  This is still work-in-progress.  OpenSSL is still used by
-default; use --with-ssl=gnutls to build with GnuTLS.  OpenSSL is still
-required for NTLM authorization to work, but this should eventually
-change. NOTE: Certificate verification is _not_ currently supported:
-this means that you can currently only use GnuTLS to encrypt
-connections, but _not_ to verify that a host is who it claims to be. Use
-of OpenSSL is suggested until this missing feature is implemented.
-
 ** The new option `--ignore-case' makes Wget ignore case when
 matching files, directories, and wildcards.  This affects the -X, -I,
 -A, and -R options, as well as globbing in FTP URLs.
@@ -76,6 +52,12 @@ was only used by the passive_ftp .wgetrc setting.  If you're running
 broken scripts or Perl modules that unconditionally specify
 `--passive-ftp' and your firewall disallows it, you can override them
 by replacing wget with a script that execs wget "$@" --no-passive-ftp.
+
+** The source code has been migrated to Mercurial. The repositories are
+available at http://hg.addictivecode.org/. Prior to this, the source
+code was hosted on Subversion (migrated from the original CVS); you can
+still get access to older tags and branches for Wget in the Subversion
+repository at http://addictivecode.org/svn/wget/.
 
 * Changes in Wget 1.10.
 

@@ -1,3 +1,8 @@
+2007-12-10  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: Removed developer-only notices (Autoconf, TODO, PATCHES,
+	GNUTLS).
+
 2007-12-07  Micah Cowan  <micah@cowan.name>
 
 	* lib/Makefile.am, lib/c-ctype.c, lib/c-ctype.h, lib/gettext.h,
