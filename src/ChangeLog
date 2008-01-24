@@ -1,3 +1,8 @@
+2007-12-10  Micah Cowan  <micah@cowan.name>
+
+	* main.c: The option is --content-disposition, not
+	--no-content-disposition (at the moment).
+
 2007-12-08  Hrvoje Niksic  <hniksic@xemacs.org>
 
 	* ftp.c (ftp_retrieve_glob): Print both arguments of fnmatch in
@@ -9,11 +14,6 @@
 
 	* Makefile.am: Plug in vars to include stuff from
 	$(top_srcdir)/md5 when appropriate.
-
-2007-12-10  Micah Cowan  <micah@cowan.name>
-
-	* main.c: The option is --content-disposition, not
-	--no-content-disposition (at the moment).
 
 2007-12-05  Micah Cowan  <micah@cowan.name>
 
