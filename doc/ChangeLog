@@ -1,3 +1,8 @@
+2007-12-10  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi: Document the --content-disposition option (and not
+	just the .wgetrc setting).
+
 2007-12-06  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi: "the the" -> "the"
