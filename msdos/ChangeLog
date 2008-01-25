@@ -1,3 +1,7 @@
+2008-01-25  Micah Cowan  <micah@cowan.name>
+
+	* config.h: Updated copyright year.
+
 2007-11-28  Micah Cowan <micah@cowan.name>
 
 	* config.h: Updated license exception for OpenSSL, per the SFLC.
