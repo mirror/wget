@@ -1,3 +1,7 @@
+2008-01-25  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am: Updated copyright year.
+
 2008-01-23  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am: Add libmd5 to unit-tests.

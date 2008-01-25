@@ -1,6 +1,6 @@
 /* Command line parsing.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-   2004, 2005, 2006, 2007 Free Software Foundation, Inc.
+   2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -675,7 +675,7 @@ print_version (void)
   /* TRANSLATORS: When available, an actual copyright character
      (cirle-c) should be used in preference to "(C)". */
   fputs (_("\
-Copyright (C) 2007 Free Software Foundation, Inc.\n"), stdout);
+Copyright (C) 2008 Free Software Foundation, Inc.\n"), stdout);
   fputs (_("\
 License GPLv3+: GNU GPL version 3 or later\n\
 <http://www.gnu.org/licenses/gpl.html>.\n\

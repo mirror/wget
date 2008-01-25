@@ -1,5 +1,6 @@
 dnl Template file for GNU Autoconf
-dnl Copyright (C) 1995, 1996, 1997, 2001, 2007 Free Software Foundation, Inc.
+dnl Copyright (C) 1995, 1996, 1997, 2001, 2007,
+dnl 2008 Free Software Foundation, Inc.
 
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by

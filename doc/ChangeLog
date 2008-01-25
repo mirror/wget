@@ -1,3 +1,7 @@
+2008-01-25  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am, wget.texi: Updated copyright year.
+
 2007-12-10  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi: Document the --content-disposition option (and not

@@ -1,3 +1,9 @@
+2008-01-25  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am, NEWS, README, configure.ac, configure.bat,
+	m4/wget.m4, msdos/config.h, po/POTFILES.in, util/Makefile.am,
+	util/dist-wget, util/rmold.pl, files: Updated copyright year.
+
 2008-01-24  Micah Cowan  <micah@cowan.name>
 
 	* configure.ac: Added en_US LINGUA (generated).

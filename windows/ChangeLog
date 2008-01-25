@@ -1,3 +1,9 @@
+2008-01-25  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am, Makefile.doc, Makefile.src, Makefile.top,
+	Makefile.top.bor, Makefile.top.mingw, config-compiler.h: Updated
+	copyright year.
+
 2007-11-28  Micah Cowan <micah@cowan.name>
 
 	* Makefile.doc, Makefile.am, Makefile.src, Makefile.top,
