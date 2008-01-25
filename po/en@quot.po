@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU wget 1.12-devel\n"
 "Report-Msgid-Bugs-To: wget@sunsite.dk\n"
-"POT-Creation-Date: 2008-01-24 23:27-0800\n"
-"PO-Revision-Date: 2008-01-24 23:27-0800\n"
+"POT-Creation-Date: 2008-01-25 00:04-0800\n"
+"PO-Revision-Date: 2008-01-25 00:04-0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -1497,7 +1497,7 @@ msgstr "GNU Wget %s, a non-interactive network retriever.\n"
 
 #: src/main.c:675
 msgid "Copyright (C) 2007 Free Software Foundation, Inc.\n"
-msgstr "Copyright (C) 2007 Free Software Foundation, Inc.\n"
+msgstr "Copyright © 2007 Free Software Foundation, Inc.\n"
 
 #: src/main.c:677
 msgid ""

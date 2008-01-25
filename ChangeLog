@@ -3,8 +3,8 @@
 	* configure.ac: Added en_US LINGUA (generated).
 	* po/Rules-quot: Added rule to copy en_US.po from en@quot.po.
 	* po/boldquot.sed, po/quot.sed: Translate _all_ apostrophes we
-	find, not just the ones used for quotes; and add a rule to write
-	Hrvoje's last name properly. ^_^
+	find, not just the ones used for quotes; and add rules to use
+	the copyight symbol, and write Hrvoje's last name properly. ^_^
 	* po/en@quot.po, po/en@boldquot.po: Updated by new rules.
 	* po/en_US.po: Added.
 
