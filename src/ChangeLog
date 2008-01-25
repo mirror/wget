@@ -1,3 +1,8 @@
+2008-01-25  Micah Cowan  <micah@cowan.name>
+
+	* main.c: Added notes to translators regarding (C), diacritics
+	in names.
+
 2007-12-10  Micah Cowan  <micah@cowan.name>
 
 	* main.c: The option is --content-disposition, not
