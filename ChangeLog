@@ -1,3 +1,11 @@
+2008-01-24  Micah Cowan  <micah@cowan.name>
+
+	* configure.ac: Added en_US LINGUA (generated).
+	* po/Rules-quot: Added rule to copy en_US.po from en@quot.po.
+	* po/boldquot.sed, po/quot.sed: Translate _all_ apostrophes we
+	find, not just the ones used for quotes; and add a rule to write
+	Hrvoje's last name properly. ^_^
+
 2007-12-10  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: Removed developer-only notices (Autoconf, TODO, PATCHES,

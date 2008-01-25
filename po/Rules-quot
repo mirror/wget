@@ -45,3 +45,8 @@ en@boldquot.insert-header: insert-header.sin
 mostlyclean: mostlyclean-quot
 mostlyclean-quot:
 	rm -f *.insert-header
+
+en_US.po: en_US.po-update
+
+en_US.po-update: en@quot.po
+	cp $^ en_US.po

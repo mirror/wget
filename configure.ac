@@ -432,7 +432,7 @@ dnl     ALL_LINGUAS="cs de hr it ..."
 dnl The downside was that configure needed to be rebuilt whenever a
 dnl new language was added.
 dnl
-ALL_LINGUAS="en@quot en@boldquot $(cd ${srcdir}/po && ls *.po | grep -v 'en@.*quot' | sed -e 's/\.po$//' | tr '\012' ' ')"
+ALL_LINGUAS="en@quot en@boldquot en_US $(cd ${srcdir}/po && ls *.po | grep -v 'en@.*quot' | sed -e 's/\.po$//' | tr '\012' ' ')"
 
 dnl
 dnl Find makeinfo.  We used to provide support for Emacs processing
