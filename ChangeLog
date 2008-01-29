@@ -3,6 +3,8 @@
 	* po/en@quot.po, po/en@boldquot.po, po/en_US.po: Updated
 	translations for copyright year in --version.
 	* po/Rules-quot: Make en@*-update should create wget.pot.
+	* configure.ac: Ensure that en_US appears in ALL_LINGUAS exactly
+	once.
 
 2008-01-25  Micah Cowan  <micah@cowan.name>
 
