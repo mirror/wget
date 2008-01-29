@@ -12,6 +12,9 @@ en@boldquot.po-create:
 en@quot.po-update: en@quot.po-update-en
 en@boldquot.po-update: en@boldquot.po-update-en
 
+en@quot.po-update-en: $(srcdir)/$(DOMAIN).pot
+en@boldquot.po-update-en: $(srcdir)/$(DOMAIN).pot
+
 .insert-header.po-update-en:
 	@lang=`echo $@ | sed -e 's/\.po-update-en$$//'`; \
 	if test "$(PACKAGE)" = "gettext"; then PATH=`pwd`/../src:$$PATH; GETTEXTLIBDIR=`cd $(top_srcdir)/src && pwd`; export GETTEXTLIBDIR; fi; \

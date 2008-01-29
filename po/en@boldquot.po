@@ -32,8 +32,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU wget 1.12-devel\n"
 "Report-Msgid-Bugs-To: wget@sunsite.dk\n"
-"POT-Creation-Date: 2008-01-25 00:04-0800\n"
-"PO-Revision-Date: 2008-01-25 00:04-0800\n"
+"POT-Creation-Date: 2008-01-28 17:25-0800\n"
+"PO-Revision-Date: 2008-01-28 17:25-0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -125,31 +125,31 @@ msgstr "failed: %s.\n"
 msgid "%s: unable to resolve host address `%s'\n"
 msgstr "%s: unable to resolve host address ‘[1m%s[0m’\n"
 
-#: src/convert.c:169
+#: src/convert.c:170
 #, c-format
 msgid "Converted %d files in %s seconds.\n"
 msgstr "Converted %d files in %s seconds.\n"
 
-#: src/convert.c:196
+#: src/convert.c:197
 #, c-format
 msgid "Converting %s... "
 msgstr "Converting %s... "
 
-#: src/convert.c:209
+#: src/convert.c:210
 msgid "nothing to do.\n"
 msgstr "nothing to do.\n"
 
-#: src/convert.c:217 src/convert.c:241
+#: src/convert.c:218 src/convert.c:242
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
 msgstr "Cannot convert links in %s: %s\n"
 
-#: src/convert.c:232
+#: src/convert.c:233
 #, c-format
 msgid "Unable to delete `%s': %s\n"
 msgstr "Unable to delete ‘[1m%s[0m’: %s\n"
 
-#: src/convert.c:441
+#: src/convert.c:442
 #, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Cannot back up %s as %s: %s\n"
@@ -397,7 +397,7 @@ msgstr ""
 "%s (%s) - ‘[1m%s[0m’ saved [%s]\n"
 "\n"
 
-#: src/ftp.c:1277 src/main.c:1006 src/recur.c:378 src/retr.c:860
+#: src/ftp.c:1277 src/main.c:1010 src/recur.c:378 src/retr.c:860
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Removing %s.\n"
@@ -1501,11 +1501,13 @@ msgstr "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
 msgid "GNU Wget %s, a non-interactive network retriever.\n"
 msgstr "GNU Wget %s, a non-interactive network retriever.\n"
 
-#: src/main.c:675
-msgid "Copyright (C) 2007 Free Software Foundation, Inc.\n"
-msgstr "Copyright © 2007 Free Software Foundation, Inc.\n"
-
+#. TRANSLATORS: When available, an actual copyright character
+#. (cirle-c) should be used in preference to "(C)".
 #: src/main.c:677
+msgid "Copyright (C) 2008 Free Software Foundation, Inc.\n"
+msgstr "Copyright © 2008 Free Software Foundation, Inc.\n"
+
+#: src/main.c:679
 msgid ""
 "License GPLv3+: GNU GPL version 3 or later\n"
 "<http://www.gnu.org/licenses/gpl.html>.\n"
@@ -1517,7 +1519,9 @@ msgstr ""
 "This is free software: you are free to change and redistribute it.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 
-#: src/main.c:682
+#. TRANSLATORS: When available, please use the proper diacritics for
+#. names such as this one. See en_US.po for reference.
+#: src/main.c:686
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"
@@ -1525,56 +1529,56 @@ msgstr ""
 "\n"
 "Originally written by Hrvoje Nikšić <hniksic@xemacs.org>.\n"
 
-#: src/main.c:684
+#: src/main.c:688
 msgid "Currently maintained by Micah Cowan <micah@cowan.name>.\n"
 msgstr "Currently maintained by Micah Cowan <micah@cowan.name>.\n"
 
-#: src/main.c:731 src/main.c:800 src/main.c:900
+#: src/main.c:735 src/main.c:804 src/main.c:904
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Try ‘[1m%s --help[0m’ for more options.\n"
 
-#: src/main.c:797
+#: src/main.c:801
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: illegal option -- ‘[1m-n%c[0m’\n"
 
-#: src/main.c:855
+#: src/main.c:859
 #, c-format
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "Can’t be verbose and quiet at the same time.\n"
 
-#: src/main.c:861
+#: src/main.c:865
 #, c-format
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr "Can’t timestamp and not clobber old files at the same time.\n"
 
-#: src/main.c:869
+#: src/main.c:873
 #, c-format
 msgid "Cannot specify both --inet4-only and --inet6-only.\n"
 msgstr "Cannot specify both --inet4-only and --inet6-only.\n"
 
-#: src/main.c:879
+#: src/main.c:883
 #, c-format
 msgid "Cannot specify -r, -p or -N if -O is given.\n"
 msgstr "Cannot specify -r, -p or -N if -O is given.\n"
 
-#: src/main.c:887
+#: src/main.c:891
 #, c-format
 msgid "Cannot specify both -k and -O if multiple URLs are given.\n"
 msgstr "Cannot specify both -k and -O if multiple URLs are given.\n"
 
-#: src/main.c:895
+#: src/main.c:899
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: missing URL\n"
 
-#: src/main.c:1021
+#: src/main.c:1025
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "No URLs found in %s.\n"
 
-#: src/main.c:1039
+#: src/main.c:1043
 #, c-format
 msgid ""
 "FINISHED --%s--\n"
@@ -1583,7 +1587,7 @@ msgstr ""
 "FINISHED --%s--\n"
 "Downloaded: %d files, %s in %s (%s)\n"
 
-#: src/main.c:1048
+#: src/main.c:1052
 #, c-format
 msgid "Download quota of %s EXCEEDED!\n"
 msgstr "Download quota of %s EXCEEDED!\n"

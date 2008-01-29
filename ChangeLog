@@ -1,3 +1,9 @@
+2008-01-28  Micah Cowan  <micah@cowan.name>
+
+	* po/en@quot.po, po/en@boldquot.po, po/en_US.po: Updated
+	translations for copyright year in --version.
+	* po/Rules-quot: Make en@*-update should create wget.pot.
+
 2008-01-25  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am, NEWS, README, configure.ac, configure.bat,
