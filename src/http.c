@@ -864,8 +864,11 @@ parse_content_range (const char *hdr, wgint *first_byte_ptr,
     return false;
   *last_byte_ptr = num;
   ++hdr;
-  for (num = 0; c_isdigit (*hdr); hdr++)
-    num = 10 * num + (*hdr - '0');
+  if (*hdr == '*')
+    num = -1;
+  else
+    for (num = 0; c_isdigit (*hdr); hdr++)
+      num = 10 * num + (*hdr - '0');
   *entity_length_ptr = num;
   return true;
 }
@@ -2052,7 +2055,10 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
       wgint first_byte_pos, last_byte_pos, entity_length;
       if (parse_content_range (hdrval, &first_byte_pos, &last_byte_pos,
                                &entity_length))
-        contrange = first_byte_pos;
+        {
+          contrange = first_byte_pos;
+          contlen = last_byte_pos - first_byte_pos + 1;
+        }
     }
   resp_free (resp);
 
@@ -2152,7 +2158,10 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
       CLOSE_INVALIDATE (sock);
       return RANGEERR;
     }
-  hs->contlen = contlen + contrange;
+  if (contlen == -1)
+    hs->contlen = -1;
+  else
+    hs->contlen = contlen + contrange;
 
   if (opt.verbose)
     {

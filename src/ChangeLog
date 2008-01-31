@@ -1,3 +1,10 @@
+2008-01-31  Micah Cowan  <micah@cowan.name>
+
+	* http.c (gethttp): Don't derive hs->contlen from possibly
+	invalid/missing Content-Length; instead, get the appropriate
+	value from the Content-Range header values.
+	(parse_content_range): Handle '*' instance-length field.
+
 2008-01-25  Micah Cowan  <micah@cowan.name>
 
 	* main.c: Added notes to translators regarding (C), diacritics
