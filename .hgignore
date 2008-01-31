@@ -29,6 +29,7 @@ src/stamp-h1
 src/config.h
 src/config.h.in
 src/wget
+src/cscope.out
 src/tags
 src/TAGS
 src/libunittest.a
