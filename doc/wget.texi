@@ -26,7 +26,7 @@
 * Wget: (wget).         The non-interactive network downloader.
 @end direntry
 
-@ifnottex
+@copying
 This file documents the GNU Wget utility for downloading network
 data.
 
@@ -34,9 +34,11 @@ data.
 Copyright @copyright{} 1996, 1997, 1998, 1999, 2000, 2001, 2002,
 2003, 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
 
+@iftex
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
 are preserved on all copies.
+@end iftex
 
 @ignore
 Permission is granted to process this file through TeX and print the
@@ -51,7 +53,7 @@ Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
 copy of the license is included in the section entitled ``GNU Free
 Documentation License''.
 @c man end
-@end ifnottex
+@end copying
 
 @titlepage
 @title GNU Wget @value{VERSION}
@@ -75,26 +77,17 @@ Info entry for @file{wget}.
 
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1996, 1997, 1998, 1999, 2000, 2001, 2002,
-2003, 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
-
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.2 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
-copy of the license is included in the section entitled ``GNU Free
-Documentation License''.
+@insertcopying
 @end titlepage
+
+@contents
 
 @ifnottex
 @node Top
 @top Wget @value{VERSION}
 
-This manual documents version @value{VERSION} of GNU Wget, the freely
-available utility for network downloads.
-
-Copyright @copyright{} 1996, 1997, 1998, 1999, 2000, 2001, 2002,
-2003, 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+@insertcopying
+@end ifnottex
 
 @menu
 * Overview::            Features of Wget.
@@ -109,7 +102,6 @@ Copyright @copyright{} 1996, 1997, 1998, 1999, 2000, 2001, 2002,
 * Copying this manual:: You may give out copies of Wget and of this manual.
 * Concept Index::       Topics covered by this manual.
 @end menu
-@end ifnottex
 
 @node Overview
 @chapter Overview
