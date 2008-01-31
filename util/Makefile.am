@@ -29,5 +29,4 @@
 # Version: @VERSION@
 #
 
-EXTRA_DIST = dist-wget download.html download-netscape.html \
-	     rmold.pl update_po_files.sh wget.spec
+EXTRA_DIST = README rmold.pl
