@@ -38,6 +38,9 @@ as that of the covered work.  */
 # include <unistd.h>
 #endif
 #include <signal.h>
+#ifdef HAVE_WCHAR_H
+# include <wchar.h>
+#endif
 
 #include "progress.h"
 #include "utils.h"
@@ -763,6 +766,10 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
   }
 #endif
 }
+
+#if ! HAVE_WCWIDTH
+#define wcwidth(wc) (1)
+#endif
 
 int
 count_cols (const char *mbs)

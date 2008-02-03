@@ -159,7 +159,7 @@ dnl
 AC_HEADER_STDBOOL
 AC_CHECK_HEADERS(unistd.h sys/time.h)
 AC_CHECK_HEADERS(termios.h sys/ioctl.h sys/select.h utime.h sys/utime.h)
-AC_CHECK_HEADERS(stdint.h inttypes.h pwd.h)
+AC_CHECK_HEADERS(stdint.h inttypes.h pwd.h wchar.h)
 
 dnl
 dnl Check sizes of integer types.  These are used to find n-bit
@@ -197,7 +197,7 @@ AC_FUNC_ALLOCA
 AC_FUNC_MMAP
 AC_FUNC_FSEEKO
 AC_CHECK_FUNCS(strptime timegm snprintf vsnprintf vasprintf drand48)
-AC_CHECK_FUNCS(strtoll usleep ftello sigblock sigsetjmp memrchr)
+AC_CHECK_FUNCS(strtoll usleep ftello sigblock sigsetjmp memrchr wcwidth)
 
 if test x"$ENABLE_OPIE" = xyes; then
   AC_LIBOBJ([ftp-opie])

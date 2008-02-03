@@ -1,3 +1,8 @@
+2008-02-03  Micah Cowan  <micah@cowan.name>
+
+	* configure.in: Add checks for wchar.h, wcwidth function (to
+	support column-counting in progress.c).
+
 2008-01-31  Micah Cowan  <micah@cowan.name>
 
 	* util/README, util/dist-wget, util/download-netscape.html,
