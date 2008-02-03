@@ -778,13 +778,21 @@ count_cols (const char *mbs)
   int     bytes;
   int     remaining = strlen(mbs);
   int     cols = 0;
+  int     wccols;
 
   while (*mbs != '\0')
     {
       bytes = mbtowc (&wc, mbs, remaining);
+      assert (bytes != 0);  /* Only happens when *mbs == '\0' */
+      if (bytes == -1)
+        {
+          /* Invalid sequence. We'll just have to fudge it. */
+          return cols + remaining;
+        }
       mbs += bytes;
       remaining -= bytes;
-      cols += wcwidth(wc);
+      wccols = wcwidth(wc);
+      cols += (wccols == -1? 1 : wccols);
     }
   return cols;
 }
