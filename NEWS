@@ -6,6 +6,8 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Wget 1.11.1 is a bugfix release with no other user-visible changes.
+
 * Changes in Wget (MAINLINE).
 
 ** Gnulib is now used to provide code for certain portability aspects in

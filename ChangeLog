@@ -2,6 +2,7 @@
 
 	* configure.in: Add checks for wchar.h, wcwidth function (to
 	support column-counting in progress.c).
+	* NEWS: Added line for 1.11.1.
 
 2008-01-31  Micah Cowan  <micah@cowan.name>
 
