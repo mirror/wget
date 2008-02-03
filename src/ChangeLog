@@ -6,6 +6,9 @@
 	bugs (#22161, #20481)
 	(get_eta, count_cols): Added to support the changes for
 	create_image.
+	* http.c (http_loop): Put no-clobber logic back into http_loop,
+	before starting to fetch, for when we're not doing
+	content-disposition.
 
 2008-01-31  Micah Cowan  <micah@cowan.name>
 
