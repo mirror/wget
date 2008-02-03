@@ -1,3 +1,12 @@
+2008-02-03  Micah Cowan  <micah@cowan.name>
+
+	* progress.c (create_image): Use number of characters/columns
+	consumed, rather than number of bytes, to determine how much of
+	a line we've used. Fixes assertion errors and field alignment
+	bugs (#22161, #20481)
+	(get_eta, count_cols): Added to support the changes for
+	create_image.
+
 2008-01-31  Micah Cowan  <micah@cowan.name>
 
 	* http.c (gethttp): Don't derive hs->contlen from possibly

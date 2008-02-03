@@ -576,8 +576,9 @@ bar_create (wgint initial, wgint total)
 
   /* - 1 because we don't want to use the last screen column. */
   bp->width = screen_width - 1;
-  /* + 1 for the terminating zero. */
-  bp->buffer = xmalloc (bp->width + 1);
+  /* + enough space for the terminating zero, and hopefully enough room
+   * for multibyte characters. */
+  bp->buffer = xmalloc (bp->width + 100);
 
   logputs (LOG_VERBOSE, "\n");
 
@@ -620,7 +621,7 @@ bar_update (void *progress, wgint howmuch, double dltime)
       if (screen_width != old_width)
         {
           bp->width = screen_width - 1;
-          bp->buffer = xrealloc (bp->buffer, bp->width + 1);
+          bp->buffer = xrealloc (bp->buffer, bp->width + 100);
           force_screen_update = true;
         }
       received_sigwinch = 0;
@@ -763,6 +764,55 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 #endif
 }
 
+int
+count_cols (const char *mbs)
+{
+  wchar_t wc;
+  int     bytes;
+  int     remaining = strlen(mbs);
+  int     cols = 0;
+
+  while (*mbs != '\0')
+    {
+      bytes = mbtowc (&wc, mbs, remaining);
+      mbs += bytes;
+      remaining -= bytes;
+      cols += wcwidth(wc);
+    }
+  return cols;
+}
+
+/* Translation note: "ETA" is English-centric, but this must
+   be short, ideally 3 chars.  Abbreviate if necessary.  */
+static const char eta_str[] = N_("  eta %s");
+static const char *eta_trans;
+static int bytes_cols_diff;
+
+const char *
+get_eta (void)
+{
+  if (eta_trans == NULL)
+    {
+      int nbytes;
+      int ncols;
+
+      eta_trans = _(eta_str);
+
+      /* Determine the number of bytes used in the translated string,
+       * versus the number of columns used. This is to figure out how
+       * many spaces to add at the end to pad to the full line width.
+       *
+       * We'll store the difference between the number of bytes and
+       * number of columns, so that removing this from the string length
+       * will reveal the total number of columns in the progress bar. */
+      nbytes = strlen (eta_trans);
+      ncols = count_cols (eta_trans);
+      bytes_cols_diff = nbytes - ncols;
+    }
+
+  return eta_trans;
+}
+
 #define APPEND_LITERAL(s) do {                  \
   memcpy (p, s, sizeof (s) - 1);                \
   p += sizeof (s) - 1;                          \
@@ -784,7 +834,10 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   wgint size = bp->initial_length + bp->count;
 
   const char *size_grouped = with_thousand_seps (size);
-  int size_grouped_len = strlen (size_grouped);
+  int size_grouped_len = count_cols (size_grouped);
+  /* Difference between num cols and num bytes: */
+  int size_grouped_diff = strlen (size_grouped) - size_grouped_len;
+  int size_grouped_pad; /* Used to pad the field width for size_grouped. */
 
   struct bar_progress_hist *hist = &bp->hist;
 
@@ -889,8 +942,17 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
     }
 
   /* " 234,567,890" */
-  sprintf (p, " %-11s", size_grouped);
+  sprintf (p, " %s", size_grouped);
   move_to_end (p);
+  /* Pad with spaces to 11 chars for the size_grouped field;
+   * couldn't use the field width specifier in sprintf, because
+   * it counts in bytes, not characters. */
+  for (size_grouped_pad = 11 - size_grouped_len;
+       size_grouped_pad > 0;
+       --size_grouped_pad)
+    {
+      *p++ = ' ';
+    }
 
   /* " 12.52K/s" */
   if (hist->total_time > 0 && hist->total_bytes)
@@ -942,9 +1004,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
               bp->last_eta_time = dl_total_time;
             }
 
-          /* Translation note: "ETA" is English-centric, but this must
-             be short, ideally 3 chars.  Abbreviate if necessary.  */
-          sprintf (p, _("  eta %s"), eta_to_human_short (eta, false));
+          sprintf (p, get_eta(), eta_to_human_short (eta, false));
           move_to_end (p);
         }
       else if (bp->total_length > 0)
@@ -968,9 +1028,9 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       move_to_end (p);
     }
 
-  assert (p - bp->buffer <= bp->width);
+  assert (p - bp->buffer - bytes_cols_diff - size_grouped_diff <= bp->width);
 
-  while (p < bp->buffer + bp->width)
+  while (p - bp->buffer - bytes_cols_diff - size_grouped_diff < bp->width)
     *p++ = ' ';
   *p = '\0';
 }
