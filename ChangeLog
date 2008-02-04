@@ -3,6 +3,9 @@
 	* configure.in: Add checks for wchar.h, wcwidth function (to
 	support column-counting in progress.c).
 	* NEWS: Added line for 1.11.1.
+	* util/README, util/Makefile.am, util/trunc.c: Added a small
+	utility program to create files of arbitrary size (useful for
+	testing certain situations with --continue).
 
 2008-01-31  Micah Cowan  <micah@cowan.name>
 

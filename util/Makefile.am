@@ -30,3 +30,5 @@
 #
 
 EXTRA_DIST = README rmold.pl
+
+bin_PROGRAMS = trunc
