@@ -1,425 +1,434 @@
+# translation of wget-1.11-b2425.po to translation-team-fi
 # Finnish messages for wget.
-# Copyright (C) 2005 Free Software Foundation, Inc.
-# Petri T. Koistinen <petri.koistinen@iki.fi>, 2005.
-# Proofreading by Tero J‰nk‰ and others.
+# Copyright ¬© 2005, 2007 Free Software Foundation, Inc.
+# This file is distributed under the same license as the wget package.
+# Proofreading by Tero J√§nk√§ and others.
 #
+# Petri T. Koistinen <petri.koistinen@iki.fi>, 2005.
+# Jorma Karvonen <karvjorm@users.sf.net>, 2007.
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.10.1-b1\n"
+"Project-Id-Version: wget 1.11-b2425\n"
 "Report-Msgid-Bugs-To: wget@sunsite.dk\n"
-"POT-Creation-Date: 2007-10-22 11:58-0700\n"
-"PO-Revision-Date: 2005-07-12 00:11+0300\n"
-"Last-Translator: Petri T. Koistinen <petri.koistinen@iki.fi>\n"
+"POT-Creation-Date: 2008-02-06 18:23-0800\n"
+"PO-Revision-Date: 2007-12-23 00:44+0200\n"
+"Last-Translator: Jorma Karvonen <karvjorm@users.sf.net>\n"
 "Language-Team: Finnish <translation-team-fi@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-15\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: KBabel 1.11.4\n"
 
 #: lib/getopt.c:530 lib/getopt.c:546
 #, c-format
 msgid "%s: option `%s' is ambiguous\n"
-msgstr "%s: valitsin \"%s\" on moniselkoinen\n"
+msgstr "%s: valitsin ‚Äù%s‚Äù on moniselkoinen\n"
 
 #: lib/getopt.c:579 lib/getopt.c:583
 #, c-format
 msgid "%s: option `--%s' doesn't allow an argument\n"
-msgstr "%s: valitsin \"--%s\" ei salli argumenttia\n"
+msgstr "%s: valitsin ‚Äù--%s‚Äù ei salli argumenttia\n"
 
 #: lib/getopt.c:592 lib/getopt.c:597
 #, c-format
 msgid "%s: option `%c%s' doesn't allow an argument\n"
-msgstr "%s: valitsin \"%c%s\" ei salli argumenttia\n"
+msgstr "%s: valitsin ‚Äù%c%s‚Äù ei salli argumenttia\n"
 
 #: lib/getopt.c:640 lib/getopt.c:659 lib/getopt.c:975 lib/getopt.c:994
 #, c-format
 msgid "%s: option `%s' requires an argument\n"
-msgstr "%s: valitsin \"%s\" vaatii argumentin\n"
+msgstr "%s: valitsin ‚Äù%s‚Äù vaatii argumentin\n"
 
 #: lib/getopt.c:697 lib/getopt.c:700
 #, c-format
 msgid "%s: unrecognized option `--%s'\n"
-msgstr "%s: tuntematon valitsin \"--%s\"\n"
+msgstr "%s: tuntematon valitsin ‚Äù--%s‚Äù\n"
 
 #: lib/getopt.c:708 lib/getopt.c:711
 #, c-format
 msgid "%s: unrecognized option `%c%s'\n"
-msgstr "%s: tuntematon valitsin \"%c%s\"\n"
+msgstr "%s: tuntematon valitsin ‚Äù%c%s‚Äù\n"
 
 #: lib/getopt.c:763 lib/getopt.c:766
 #, c-format
 msgid "%s: illegal option -- %c\n"
-msgstr "%s: valitsin ei kelpaa -- %c\n"
+msgstr "%s: valitsin ei kelpaa ‚Äì %c\n"
 
 #: lib/getopt.c:772 lib/getopt.c:775
 #, c-format
 msgid "%s: invalid option -- %c\n"
-msgstr "%s: valitsin on virheellinen -- %c\n"
+msgstr "%s: valitsin on virheellinen ‚Äì %c\n"
 
 #: lib/getopt.c:827 lib/getopt.c:843 lib/getopt.c:1047 lib/getopt.c:1065
 #, c-format
 msgid "%s: option requires an argument -- %c\n"
-msgstr "%s: valitsin vaatii argumentin -- %c\n"
+msgstr "%s: valitsin vaatii argumentin ‚Äì %c\n"
 
 #: lib/getopt.c:896 lib/getopt.c:912
 #, c-format
 msgid "%s: option `-W %s' is ambiguous\n"
-msgstr "%s: valitsin \"-W %s\" on moniselkoinen\n"
+msgstr "%s: valitsin ‚Äù-W %s‚Äù on moniselkoinen\n"
 
 #: lib/getopt.c:936 lib/getopt.c:954
 #, c-format
 msgid "%s: option `-W %s' doesn't allow an argument\n"
-msgstr "%s: valitsin \"-W %s\" ei salli argumentteja\n"
+msgstr "%s: valitsin ‚Äù-W %s‚Äù ei salli argumentteja\n"
 
-#: src/connect.c:194
+#: src/connect.c:195
 #, c-format
 msgid "%s: unable to resolve bind address `%s'; disabling bind.\n"
-msgstr "%s: l‰hdeosoite %s ei selvinnyt, osoitetta ei k‰ytet‰.\n"
+msgstr "%s: l√§hdeosoite %s ei selvinnyt, osoitetta ei k√§ytet√§.\n"
 
-#: src/connect.c:266
+#: src/connect.c:267
 #, c-format
 msgid "Connecting to %s|%s|:%d... "
-msgstr "Yhdistet‰‰n palvelimeen %s|%s|:%d... "
+msgstr "Yhdistet√§√§n palvelimeen %s|%s|:%d... "
 
-#: src/connect.c:269
+#: src/connect.c:270
 #, c-format
 msgid "Connecting to %s:%d... "
-msgstr "Yhdistet‰‰n palvelimeen %s:%d... "
+msgstr "Yhdistet√§√§n palvelimeen %s:%d... "
 
-#: src/connect.c:329
+#: src/connect.c:330
 msgid "connected.\n"
 msgstr "yhdistetty.\n"
 
-#: src/connect.c:341 src/host.c:752 src/host.c:781
+#: src/connect.c:342 src/host.c:753 src/host.c:782
 #, c-format
 msgid "failed: %s.\n"
-msgstr "ep‰onnistui: %s.\n"
+msgstr "ep√§onnistui: %s.\n"
 
-#: src/connect.c:365 src/http.c:1628
-#, fuzzy, c-format
+#: src/connect.c:366 src/http.c:1632
+#, c-format
 msgid "%s: unable to resolve host address `%s'\n"
-msgstr "%s: l‰hdeosoite %s ei selvinnyt, osoitetta ei k‰ytet‰.\n"
+msgstr "%s: ei kyetty ratkaisemaan palvelinosoitetta ‚Äù%s‚Äù\n"
 
-#: src/convert.c:169
-#, fuzzy, c-format
+#: src/convert.c:170
+#, c-format
 msgid "Converted %d files in %s seconds.\n"
-msgstr "Muunnettu %d tiedostoa %.*f sekunnissa.\n"
+msgstr "Muunnettu %d tiedostoa %s sekunnissa.\n"
 
-#: src/convert.c:194
+#: src/convert.c:197
 #, c-format
 msgid "Converting %s... "
-msgstr "Muunnetaan linkkej‰ %s... "
+msgstr "Muunnetaan linkkej√§ %s... "
 
-#: src/convert.c:207
+#: src/convert.c:210
 msgid "nothing to do.\n"
-msgstr "ei ole teht‰v‰‰.\n"
+msgstr "ei ole teht√§v√§√§.\n"
 
-#: src/convert.c:215 src/convert.c:239
+#: src/convert.c:218 src/convert.c:242
 #, c-format
 msgid "Cannot convert links in %s: %s\n"
-msgstr "Ei voida muuntaa linkkej‰ tiedostossa %s: %s\n"
+msgstr "Ei voida muuntaa linkkej√§ tiedostossa %s: %s\n"
 
-#: src/convert.c:230
+#: src/convert.c:233
 #, c-format
 msgid "Unable to delete `%s': %s\n"
-msgstr "Tiedostoa \"%s\" ei voitu poistaa: %s\n"
+msgstr "Tiedostoa ‚Äù%s‚Äù ei voitu poistaa: %s\n"
 
-#: src/convert.c:439
+#: src/convert.c:442
 #, c-format
 msgid "Cannot back up %s as %s: %s\n"
 msgstr "Tiedostoa %s ei voitu varmuuskopioida tiedostoon %s: %s\n"
 
-#: src/cookies.c:442
+#: src/cookies.c:443
 #, c-format
 msgid "Syntax error in Set-Cookie: %s at position %d.\n"
 msgstr "Syntaksivirhe Set-Cookiessa: %s kohdassa %d.\n"
 
-#: src/cookies.c:684
+#: src/cookies.c:685
 #, c-format
 msgid "Cookie coming from %s attempted to set domain to %s\n"
 msgstr ""
-"Ev‰ste, joka tuli osoitteesta %s yritti asettaa verkkotunnukseksi %s.\n"
+"Ev√§ste, joka tuli osoitteesta %s yritti asettaa verkkotunnukseksi %s.\n"
 
-#: src/cookies.c:1131 src/cookies.c:1249
+#: src/cookies.c:1132 src/cookies.c:1250
 #, c-format
 msgid "Cannot open cookies file `%s': %s\n"
-msgstr "Ev‰stetiedostoa \"%s\" ei voitu avata: %s\n"
+msgstr "Ev√§stetiedostoa ‚Äù%s‚Äù ei voitu avata: %s\n"
 
-#: src/cookies.c:1286
+#: src/cookies.c:1287
 #, c-format
 msgid "Error writing to `%s': %s\n"
-msgstr "Kirjoitettaessa tiedostoon \"%s\" tapahtui virhe: %s\n"
+msgstr "Kirjoitettaessa tiedostoon ‚Äù%s‚Äù tapahtui virhe: %s\n"
 
-#: src/cookies.c:1289
+#: src/cookies.c:1290
 #, c-format
 msgid "Error closing `%s': %s\n"
-msgstr "Virhe suljettaessa tiedostoa \"%s\": %s\n"
+msgstr "Virhe suljettaessa tiedostoa ‚Äù%s‚Äù: %s\n"
 
-#: src/ftp-ls.c:835
+#: src/ftp-ls.c:836
 msgid "Unsupported listing type, trying Unix listing parser.\n"
-msgstr "Listaustyyppi‰ ei tueta, yritet‰‰n j‰sent‰‰ unix-listauksena.\n"
+msgstr "Listaustyyppi√§ ei tueta, yritet√§√§n j√§sent√§√§ unix-listauksena.\n"
 
-#: src/ftp-ls.c:881 src/ftp-ls.c:883
+#: src/ftp-ls.c:882 src/ftp-ls.c:884
 #, c-format
 msgid "Index of /%s on %s:%d"
 msgstr "/%s indeksi kohteessa %s:%d"
 
-#: src/ftp-ls.c:906
+#: src/ftp-ls.c:907
 #, c-format
 msgid "time unknown       "
 msgstr "tuntematon aika    "
 
-#: src/ftp-ls.c:910
+#: src/ftp-ls.c:911
 #, c-format
 msgid "File        "
 msgstr "Tiedosto    "
 
-#: src/ftp-ls.c:913
+#: src/ftp-ls.c:914
 #, c-format
 msgid "Directory   "
 msgstr "Hakemisto   "
 
-#: src/ftp-ls.c:916
+#: src/ftp-ls.c:917
 #, c-format
 msgid "Link        "
 msgstr "Linkki      "
 
-#: src/ftp-ls.c:919
+#: src/ftp-ls.c:920
 #, c-format
 msgid "Not sure    "
-msgstr "Ep‰varma    "
+msgstr "Ep√§varma    "
 
-#: src/ftp-ls.c:937
+#: src/ftp-ls.c:938
 #, c-format
 msgid " (%s bytes)"
 msgstr " (%s tavua)"
 
-#: src/ftp.c:213
+#: src/ftp.c:214
 #, c-format
 msgid "Length: %s"
 msgstr "Pituus: %s"
 
-#: src/ftp.c:219 src/http.c:2173
+#: src/ftp.c:220 src/http.c:2183
 #, c-format
 msgid ", %s (%s) remaining"
-msgstr ", %s (%s) j‰ljell‰"
+msgstr ", %s (%s) j√§ljell√§"
 
-#: src/ftp.c:223 src/http.c:2177
+#: src/ftp.c:224 src/http.c:2187
 #, c-format
 msgid ", %s remaining"
-msgstr ", %s j‰ljell‰"
+msgstr ", %s j√§ljell√§"
 
-#: src/ftp.c:226
+#: src/ftp.c:227
 msgid " (unauthoritative)\n"
 msgstr " (vahvistamaton)\n"
 
-#: src/ftp.c:302
+#: src/ftp.c:303
 #, c-format
 msgid "Logging in as %s ... "
-msgstr "Kirjaudutaan nimell‰ %s ... "
+msgstr "Kirjaudutaan nimell√§ %s ... "
 
-#: src/ftp.c:315 src/ftp.c:361 src/ftp.c:390 src/ftp.c:442 src/ftp.c:554
-#: src/ftp.c:600 src/ftp.c:629 src/ftp.c:686 src/ftp.c:747 src/ftp.c:807
-#: src/ftp.c:854
+#: src/ftp.c:316 src/ftp.c:362 src/ftp.c:391 src/ftp.c:443 src/ftp.c:555
+#: src/ftp.c:601 src/ftp.c:630 src/ftp.c:687 src/ftp.c:748 src/ftp.c:808
+#: src/ftp.c:855
 msgid "Error in server response, closing control connection.\n"
 msgstr "Virhe palvelimen vastauksessa. Hallintayhteys suljetaan.\n"
 
-#: src/ftp.c:322
+#: src/ftp.c:323
 msgid "Error in server greeting.\n"
-msgstr "Virhe palvelimen tervehdyksess‰.\n"
+msgstr "Virhe palvelimen tervehdyksess√§.\n"
 
-#: src/ftp.c:329 src/ftp.c:450 src/ftp.c:562 src/ftp.c:637 src/ftp.c:696
-#: src/ftp.c:757 src/ftp.c:817 src/ftp.c:864
+#: src/ftp.c:330 src/ftp.c:451 src/ftp.c:563 src/ftp.c:638 src/ftp.c:697
+#: src/ftp.c:758 src/ftp.c:818 src/ftp.c:865
 msgid "Write failed, closing control connection.\n"
-msgstr "Kirjoitus ep‰onnistui. Hallintayhteys suljetaan.\n"
+msgstr "Kirjoitus ep√§onnistui. Hallintayhteys suljetaan.\n"
 
-#: src/ftp.c:335
+#: src/ftp.c:336
 msgid "The server refuses login.\n"
-msgstr "Palvelin hylk‰si kirjautumisen.\n"
+msgstr "Palvelin hylk√§si kirjautumisen.\n"
 
-#: src/ftp.c:341
+#: src/ftp.c:342
 msgid "Login incorrect.\n"
-msgstr "Kirjautuminen ep‰onnistui.\n"
+msgstr "Kirjautuminen ep√§onnistui.\n"
 
-#: src/ftp.c:347
+#: src/ftp.c:348
 msgid "Logged in!\n"
 msgstr "Kirjauduttu!\n"
 
-#: src/ftp.c:369
+#: src/ftp.c:370
 msgid "Server error, can't determine system type.\n"
-msgstr "Palvelinvirhe, j‰rjestelm‰n tyyppi‰ ei voitu p‰‰tell‰.\n"
+msgstr "Palvelinvirhe, j√§rjestelm√§n tyyppi√§ ei voitu p√§√§tell√§.\n"
 
-#: src/ftp.c:378 src/ftp.c:673 src/ftp.c:730 src/ftp.c:773
+#: src/ftp.c:379 src/ftp.c:674 src/ftp.c:731 src/ftp.c:774
 msgid "done.    "
 msgstr "valmis.  "
 
-#: src/ftp.c:430 src/ftp.c:579 src/ftp.c:612 src/ftp.c:837 src/ftp.c:883
+#: src/ftp.c:431 src/ftp.c:580 src/ftp.c:613 src/ftp.c:838 src/ftp.c:884
 msgid "done.\n"
 msgstr "valmis.\n"
 
-#: src/ftp.c:457
+#: src/ftp.c:458
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
-msgstr "Tuntematon tyyppi \"%c\". Hallintayhteys suljetaan.\n"
+msgstr "Tuntematon tyyppi ‚Äù%c‚Äù. Hallintayhteys suljetaan.\n"
 
-#: src/ftp.c:469
+#: src/ftp.c:470
 msgid "done.  "
 msgstr "valmis."
 
-#: src/ftp.c:475
+#: src/ftp.c:476
 msgid "==> CWD not needed.\n"
-msgstr "==> CWD:t‰ ei tarvita.\n"
+msgstr "==> CWD:t√§ ei tarvita.\n"
 
-#: src/ftp.c:568
+#: src/ftp.c:569
 #, c-format
 msgid ""
 "No such directory `%s'.\n"
 "\n"
 msgstr ""
-"Hakemistoa \"%s\" ei ole.\n"
+"Hakemistoa ‚Äù%s‚Äù ei ole.\n"
 "\n"
 
-#: src/ftp.c:583
+#: src/ftp.c:584
 msgid "==> CWD not required.\n"
-msgstr "==> CWD:t‰ ei vaadita.\n"
+msgstr "==> CWD:t√§ ei vaadita.\n"
 
-#: src/ftp.c:643
+#: src/ftp.c:644
 msgid "Cannot initiate PASV transfer.\n"
 msgstr "PASV-siirtoa ei voitu aloittaa.\n"
 
-#: src/ftp.c:647
+#: src/ftp.c:648
 msgid "Cannot parse PASV response.\n"
-msgstr "PASV-vastausta ei voitu j‰sent‰‰.\n"
+msgstr "PASV-vastausta ei voitu j√§sent√§√§.\n"
 
-#: src/ftp.c:664
+#: src/ftp.c:665
 #, c-format
 msgid "couldn't connect to %s port %d: %s\n"
-msgstr "ei voitu yhdist‰‰ %s porttiin %d: %s\n"
+msgstr "ei voitu yhdist√§√§ %s porttiin %d: %s\n"
 
-#: src/ftp.c:712
+#: src/ftp.c:713
 #, c-format
 msgid "Bind error (%s).\n"
 msgstr "Bind-virhe (%s).\n"
 
-#: src/ftp.c:718
+#: src/ftp.c:719
 msgid "Invalid PORT.\n"
-msgstr "Virheellinen PORT.\n"
+msgstr "Virheellinen PORTti.\n"
 
-#: src/ftp.c:764
+#: src/ftp.c:765
 msgid ""
 "\n"
 "REST failed, starting from scratch.\n"
 msgstr ""
 "\n"
-"REST ep‰onnistui, aloitetaan alusta.\n"
+"REST ep√§onnistui, aloitetaan alusta.\n"
 
-#: src/ftp.c:825
+#: src/ftp.c:826
 #, c-format
 msgid ""
 "No such file `%s'.\n"
 "\n"
 msgstr ""
-"Tiedostoa \"%s\" ei ole.\n"
+"Tiedostoa ‚Äù%s‚Äù ei ole.\n"
 "\n"
 
-#: src/ftp.c:872
+#: src/ftp.c:873
 #, c-format
 msgid ""
 "No such file or directory `%s'.\n"
 "\n"
 msgstr ""
-"Tiedostoa tai hakemistoa \"%s\" ei ole.\n"
+"Tiedostoa tai hakemistoa ‚Äù%s‚Äù ei ole.\n"
 "\n"
 
-#: src/ftp.c:934 src/http.c:2235
+#: src/ftp.c:935 src/http.c:2245
 #, c-format
 msgid "%s has sprung into existence.\n"
 msgstr "%s on ilmestynyt.\n"
 
-#: src/ftp.c:986
+#: src/ftp.c:987
 #, c-format
 msgid "%s: %s, closing control connection.\n"
 msgstr "%s: %s, suljetaan hallintayhteys.\n"
 
-#: src/ftp.c:995
+#: src/ftp.c:996
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
 msgstr "%s (%s) - tiedonsiirtoyhteys: %s; "
 
-#: src/ftp.c:1010
+#: src/ftp.c:1011
 msgid "Control connection closed.\n"
 msgstr "Hallintayhteys suljettu.\n"
 
-#: src/ftp.c:1028
+#: src/ftp.c:1029
 msgid "Data transfer aborted.\n"
 msgstr "Tiedonsiirto keskeytetty.\n"
 
-#: src/ftp.c:1096
+#: src/ftp.c:1097
 #, c-format
 msgid "File `%s' already there; not retrieving.\n"
-msgstr "Tiedostoa \"%s\" ei noudeta, koska se on jo paikalla.\n"
+msgstr "Tiedostoa ‚Äù%s‚Äù ei noudeta, koska se on jo paikalla.\n"
 
-#: src/ftp.c:1164 src/http.c:2393
+#: src/ftp.c:1165 src/http.c:2423
 #, c-format
 msgid "(try:%2d)"
 msgstr "(yritys:%2d)"
 
-#: src/ftp.c:1234 src/http.c:2716
+#: src/ftp.c:1235 src/http.c:2746
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s]\n"
 "\n"
 msgstr ""
-"%s (%s) - \"%s\" tallennettu [%s]\n"
+"%s (%s) - ‚Äù%s‚Äù tallennettu [%s]\n"
 "\n"
 
-#: src/ftp.c:1276 src/main.c:1006 src/recur.c:377 src/retr.c:859
+#: src/ftp.c:1277 src/main.c:1010 src/recur.c:378 src/retr.c:860
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Poistetaan %s.\n"
 
-#: src/ftp.c:1318
+#: src/ftp.c:1319
 #, c-format
 msgid "Using `%s' as listing tmp file.\n"
-msgstr "Listaus tallennetaan v‰liaikaisesti \"%s\" tiedostoon.\n"
+msgstr "Listaus tallennetaan v√§liaikaisesti ‚Äù%s‚Äù tiedostoon.\n"
 
-#: src/ftp.c:1333
+#  T√§h√§n lis√§sin ylim√§√§r√§isen sanan, jotta lause alkaisi isolla kirjaimella.
+#: src/ftp.c:1334
 #, c-format
 msgid "Removed `%s'.\n"
-msgstr "\"%s\" poistettu.\n"
+msgstr "Listatiedosto ‚Äù%s‚Äù poistettu.\n"
 
-#: src/ftp.c:1366
+#: src/ftp.c:1367
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
-msgstr "Rekursiosyvyys %d on ylitt‰nyt sallitun syvyyden %d.\n"
+msgstr "Rekursiosyvyys %d on ylitt√§nyt sallitun syvyyden %d.\n"
 
-#: src/ftp.c:1436
+#  Kahdessa seuraavassa olen otaksunut, ett√§ et√§tiedosto
+#  ja paikallinen ovat samannimisi√§ ja siksi tiedoston
+#  nimen paikkaa voi vaihtaa.
+#: src/ftp.c:1437
 #, c-format
 msgid "Remote file no newer than local file `%s' -- not retrieving.\n"
-msgstr "Et‰tiedosto \"%s\" ei ole paikallista uudempi -- ei noudeta.\n"
+msgstr "Et√§tiedosto ‚Äù%s‚Äù ei ole uudempi kuin paikallinen ‚Äì ei noudeta.\n"
 
-#: src/ftp.c:1443
+#: src/ftp.c:1444
 #, c-format
 msgid ""
 "Remote file is newer than local file `%s' -- retrieving.\n"
 "\n"
 msgstr ""
-"Et‰tiedosto \"%s\" on uudempi kuin paikallinen -- noudetaan.\n"
+"Et√§tiedosto ‚Äù%s‚Äù on uudempi kuin paikallinen ‚Äì noudetaan.\n"
 "\n"
 
-#: src/ftp.c:1450
+#: src/ftp.c:1451
 #, c-format
 msgid ""
 "The sizes do not match (local %s) -- retrieving.\n"
 "\n"
 msgstr ""
-"Koot eiv‰t t‰sm‰‰ (paikallinen %s) -- noudetaan.\n"
+"Koot eiv√§t t√§sm√§√§ (paikallinen %s) ‚Äì noudetaan.\n"
 "\n"
 
-#: src/ftp.c:1468
+#: src/ftp.c:1469
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr "Symbolisen linkin nimi on virheellinen, ohitetaan.\n"
 
-#: src/ftp.c:1485
+#: src/ftp.c:1486
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
@@ -428,182 +437,187 @@ msgstr ""
 "Oikea symbolinen linkki %s -> %s on jo paikallaan.\n"
 "\n"
 
-#: src/ftp.c:1493
+#: src/ftp.c:1494
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr "Luodaan symbolinen linkki %s -> %s\n"
 
-#: src/ftp.c:1503
+#: src/ftp.c:1504
 #, c-format
 msgid "Symlinks not supported, skipping symlink `%s'.\n"
-msgstr "Ei tukea symbolisille linkeille, ohitetaan \"%s\".\n"
+msgstr "Ei tukea symbolisille linkeille, ohitetaan ‚Äù%s‚Äù.\n"
 
-#: src/ftp.c:1515
+#: src/ftp.c:1516
 #, c-format
 msgid "Skipping directory `%s'.\n"
-msgstr "Ohitetaan hakemisto \"%s\".\n"
+msgstr "Ohitetaan hakemisto ‚Äù%s‚Äù.\n"
 
-#: src/ftp.c:1524
+#: src/ftp.c:1525
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr "%s: tuntematon/tukematon tiedostotyyppi.\n"
 
-#: src/ftp.c:1551
+#: src/ftp.c:1552
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
-msgstr "%s: v‰‰ristynyt aikaleima.\n"
+msgstr "%s: v√§√§ristynyt aikaleima.\n"
 
-#: src/ftp.c:1579
+#: src/ftp.c:1580
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr "Hakemistoja ei noudeta, koska syvyys on %d (raja %d).\n"
 
-#: src/ftp.c:1629
+#: src/ftp.c:1630
 #, c-format
 msgid "Not descending to `%s' as it is excluded/not-included.\n"
-msgstr "Hakemiston \"%s\" sis‰ltˆ‰ ei noudeta, koska se on poissuljettu.\n"
+msgstr "Hakemiston ‚Äù%s‚Äù sis√§lt√∂√§ ei noudeta, koska se on poissuljettu.\n"
 
-#: src/ftp.c:1695 src/ftp.c:1709
+#: src/ftp.c:1696 src/ftp.c:1710
 #, c-format
 msgid "Rejecting `%s'.\n"
-msgstr "Hyl‰t‰‰n \"%s\".\n"
+msgstr "Hyl√§t√§√§n ‚Äù%s‚Äù.\n"
 
-#: src/ftp.c:1757
+#: src/ftp.c:1733
+#, fuzzy, c-format
+msgid "Error matching %s against %s: %s\n"
+msgstr "Kirjoitettaessa tiedostoon ‚Äù%s‚Äù tapahtui virhe: %s\n"
+
+#: src/ftp.c:1774
 #, c-format
 msgid "No matches on pattern `%s'.\n"
-msgstr "Hakulause \"%s\" ei lˆyt‰nyt mit‰‰n.\n"
+msgstr "Hakulause ‚Äù%s‚Äù ei l√∂yt√§nyt mit√§√§n.\n"
 
-#: src/ftp.c:1823
+#: src/ftp.c:1840
 #, c-format
 msgid "Wrote HTML-ized index to `%s' [%s].\n"
-msgstr "HTML-muotoiltu indeksi on kirjoitettu tiedostoon \"%s\" [%s].\n"
+msgstr "HTML-muotoiltu indeksi on kirjoitettu tiedostoon ‚Äù%s‚Äù [%s].\n"
 
-#: src/ftp.c:1828
+#: src/ftp.c:1845
 #, c-format
 msgid "Wrote HTML-ized index to `%s'.\n"
-msgstr "HTML-muotoiltu indeksi on kirjoitettu tiedostoon \"%s\".\n"
+msgstr "HTML-muotoiltu indeksi on kirjoitettu tiedostoon ‚Äù%s‚Äù.\n"
 
-#: src/host.c:347
+#: src/host.c:348
 msgid "Unknown host"
 msgstr "Tuntematon palvelin"
 
-#: src/host.c:351
+#: src/host.c:352
 msgid "Temporary failure in name resolution"
-msgstr "V‰liaikainen virhe nimipalvelussa"
+msgstr "V√§liaikainen virhe nimipalvelussa"
 
-#: src/host.c:353
+#: src/host.c:354
 msgid "Unknown error"
 msgstr "Tuntematon virhe"
 
-#: src/host.c:714
+#: src/host.c:715
 #, c-format
 msgid "Resolving %s... "
-msgstr "Selvitet‰‰n osoitetta %s... "
+msgstr "Selvitet√§√§n osoitetta %s... "
 
-#: src/host.c:761
+#: src/host.c:762
 msgid "failed: No IPv4/IPv6 addresses for host.\n"
-msgstr "ep‰onnistui: Palvelimelle ei ole IPv4/IPv6-osoitteita.\n"
+msgstr "ep√§onnistui: Palvelimelle ei ole IPv4/IPv6-osoitteita.\n"
 
-#: src/host.c:784
+#: src/host.c:785
 msgid "failed: timed out.\n"
-msgstr "ep‰onnistui: aikaraja ylittyi.\n"
+msgstr "ep√§onnistui: aikaraja ylittyi.\n"
 
-#: src/html-url.c:288
+#: src/html-url.c:289
 #, c-format
 msgid "%s: Cannot resolve incomplete link %s.\n"
-msgstr "%s: Ep‰t‰ydellist‰ linkki‰ %s ei voitu selvitt‰‰.\n"
+msgstr "%s: Ep√§t√§ydellist√§ linkki√§ %s ei voitu selvitt√§√§.\n"
 
-#: src/html-url.c:695
+#: src/html-url.c:696
 #, c-format
 msgid "%s: Invalid URL %s: %s\n"
 msgstr "%s: virheellinen URL %s: %s\n"
 
-#: src/http.c:367
+#: src/http.c:368
 #, c-format
 msgid "Failed writing HTTP request: %s.\n"
-msgstr "HTTP-pyynnˆn kirjoitus ep‰onnistui: %s.\n"
+msgstr "HTTP-pyynn√∂n kirjoitus ep√§onnistui: %s.\n"
 
-#: src/http.c:736
+#: src/http.c:737
 msgid "No headers, assuming HTTP/0.9"
 msgstr "Ei otsakkeita, oletetaan HTTP/0.9"
 
-#: src/http.c:1413
+#: src/http.c:1417
 msgid "Disabling SSL due to encountered errors.\n"
-msgstr "SSL otetaan pois p‰‰lt‰ tapahtuneiden virheiden johdosta.\n"
+msgstr "SSL otetaan pois p√§√§lt√§ tapahtuneiden virheiden johdosta.\n"
 
-#: src/http.c:1566
+#: src/http.c:1570
 #, c-format
 msgid "POST data file `%s' missing: %s\n"
-msgstr "POST:n data-tiedosto \"%s\" puuttuu: %s\n"
+msgstr "POST-metodin data-tiedosto ‚Äù%s‚Äù puuttuu: %s\n"
 
-#: src/http.c:1615
+#: src/http.c:1619
 #, c-format
 msgid "Reusing existing connection to %s:%d.\n"
-msgstr "K‰ytet‰‰n uudelleen yhteytt‰ %s:%d.\n"
+msgstr "K√§ytet√§√§n uudelleen yhteytt√§ %s:%d.\n"
 
-#: src/http.c:1683
+#: src/http.c:1687
 #, c-format
 msgid "Failed reading proxy response: %s\n"
-msgstr "Vastaanotto v‰lityspalvelimelta ep‰onnistui: %s.\n"
+msgstr "Vastaanotto v√§lityspalvelimelta ep√§onnistui: %s.\n"
 
-#: src/http.c:1703
+#: src/http.c:1707
 #, c-format
 msgid "Proxy tunneling failed: %s"
-msgstr "V‰lityspalvelintunnelointi ep‰onnistui: %s"
+msgstr "V√§lityspalvelintunnelointi ep√§onnistui: %s"
 
-#: src/http.c:1748
+#: src/http.c:1752
 #, c-format
 msgid "%s request sent, awaiting response... "
-msgstr "%s-pyyntˆ l‰hetetty, odotetaan vastausta... "
+msgstr "%s-pyynt√∂ l√§hetetty, odotetaan vastausta... "
 
-#: src/http.c:1759
+#: src/http.c:1763
 msgid "No data received.\n"
-msgstr "Yht‰‰n dataa ei vastaanotettu.\n"
+msgstr "Yht√§√§n dataa ei vastaanotettu.\n"
 
-#: src/http.c:1766
+#: src/http.c:1770
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr "Lukuvirhe (%s) otsakkeissa.\n"
 
-#: src/http.c:1812
+#: src/http.c:1816 src/http.c:2368
 #, c-format
 msgid ""
 "File `%s' already there; not retrieving.\n"
 "\n"
 msgstr ""
-"Tiedostoa \"%s\" ei noudeta, koska se on jo paikalla.\n"
+"Tiedostoa ‚Äù%s‚Äù ei noudeta, koska se on jo paikalla.\n"
 "\n"
 
-#: src/http.c:1965
+#: src/http.c:1969
 msgid "Unknown authentication scheme.\n"
-msgstr "Tuntematon todennusj‰rjestelm‰.\n"
+msgstr "Tuntematon todennusj√§rjestelm√§.\n"
 
-#: src/http.c:1996
+#: src/http.c:2000
 msgid "Authorization failed.\n"
-msgstr "Todentaminen ep‰onnistui.\n"
+msgstr "Todentaminen ep√§onnistui.\n"
 
-#: src/http.c:2010
+#: src/http.c:2014
 msgid "Malformed status line"
-msgstr "V‰‰rin muotoiltu Status-otsake"
+msgstr "V√§√§rin muotoiltu Status-otsake"
 
-#: src/http.c:2012
+#: src/http.c:2016
 msgid "(no description)"
 msgstr "(ei kuvausta)"
 
-#: src/http.c:2075
+#: src/http.c:2082
 #, c-format
 msgid "Location: %s%s\n"
 msgstr "Sijainti: %s%s\n"
 
-#: src/http.c:2076 src/http.c:2183
+#: src/http.c:2083 src/http.c:2193
 msgid "unspecified"
-msgstr "m‰‰rittelem‰tˆn"
+msgstr "m√§√§rittelem√§t√∂n"
 
-#: src/http.c:2077
+#: src/http.c:2084
 msgid " [following]"
 msgstr " [seurataan]"
 
-#: src/http.c:2133
+#: src/http.c:2140
 msgid ""
 "\n"
 "    The file is already fully retrieved; nothing to do.\n"
@@ -613,215 +627,220 @@ msgstr ""
 "    Tiedosto on jo kokonaan noudettu.\n"
 "\n"
 
-#: src/http.c:2163
+#: src/http.c:2173
 msgid "Length: "
 msgstr "Pituus: "
 
-#: src/http.c:2183
+#: src/http.c:2193
 msgid "ignored"
-msgstr "j‰tetty huomiotta"
+msgstr "j√§tetty huomiotta"
 
-#: src/http.c:2254
-#, fuzzy, c-format
+#: src/http.c:2264
+#, c-format
 msgid "Saving to: `%s'\n"
-msgstr "Ohitetaan hakemisto \"%s\".\n"
+msgstr "Tallennetaan kohteeseen ‚Äù%s‚Äù\n"
 
-#: src/http.c:2335
+#: src/http.c:2345
 msgid "Warning: wildcards not supported in HTTP.\n"
-msgstr "Varoitus: HTTP ei tue jokerimerkkej‰.\n"
+msgstr "Varoitus: HTTP ei tue jokerimerkkej√§.\n"
 
-#: src/http.c:2382
+#: src/http.c:2412
 msgid "Spider mode enabled. Check if remote file exists.\n"
-msgstr ""
+msgstr "Hakurobottitila aktivoitu. Tarkista, onko et√§tiedosto olemassa.\n"
 
-#: src/http.c:2467
+#: src/http.c:2497
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
-msgstr "Tiedostoon \"%s\" ei voitu kirjoittaa (%s).\n"
+msgstr "Tiedostoon ‚Äù%s‚Äù ei voitu kirjoittaa (%s).\n"
 
-#: src/http.c:2476
+#: src/http.c:2506
 msgid "Unable to establish SSL connection.\n"
 msgstr "SSL-yhteyden muodostaminen ei onnistunut.\n"
 
-#: src/http.c:2484
+#: src/http.c:2514
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "VIRHE: Edelleenohjaus (%d) ilman sijaintia.\n"
 
-#: src/http.c:2530
+#: src/http.c:2560
 msgid "Remote file does not exist -- broken link!!!\n"
-msgstr ""
+msgstr "Et√§tiedostoa ei ole ‚Äì rikkin√§inen linkki!!!\n"
 
-#: src/http.c:2535
+#: src/http.c:2565
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s VIRHE %d: %s.\n"
 
-#: src/http.c:2551
+#: src/http.c:2581
 msgid "Last-modified header missing -- time-stamps turned off.\n"
-msgstr "Last-modified -otsake puuttuu -- aikaleimat poistettu k‰ytˆst‰.\n"
-
-#: src/http.c:2559
-msgid "Last-modified header invalid -- time-stamp ignored.\n"
-msgstr ""
-"Viimeksi muutettu -otsake on virheellinen -- aikaleima j‰tetty huomiotta.\n"
+msgstr "‚ÄùLast-modified‚Äù-otsake puuttuu ‚Äì aikaleimat poistettu k√§yt√∂st√§.\n"
 
 #: src/http.c:2589
+msgid "Last-modified header invalid -- time-stamp ignored.\n"
+msgstr ""
+"‚ÄùLast-modified‚Äù-otsake on virheellinen ‚Äì aikaleima j√§tetty huomiotta.\n"
+
+#: src/http.c:2619
 #, c-format
 msgid ""
 "Server file no newer than local file `%s' -- not retrieving.\n"
 "\n"
 msgstr ""
-"Palvelimen tiedosto \"%s\" ei ole paikallista uudempi -- ei noudeta.\n"
+"Palvelimen tiedosto ‚Äù%s‚Äù ei ole paikallista uudempi ‚Äì ei noudeta.\n"
 "\n"
 
-#: src/http.c:2597
+#: src/http.c:2627
 #, c-format
 msgid "The sizes do not match (local %s) -- retrieving.\n"
-msgstr "Koot eiv‰t t‰sm‰‰ (paikallinen %s) -- noudetaan.\n"
+msgstr "Koot eiv√§t t√§sm√§√§ (paikallinen %s) ‚Äì noudetaan.\n"
 
-#: src/http.c:2604
+#: src/http.c:2634
 msgid "Remote file is newer, retrieving.\n"
-msgstr "Et‰tiedosto on uudempi, noudetaan.\n"
+msgstr "Et√§tiedosto on uudempi, noudetaan.\n"
 
-#: src/http.c:2620
-#, fuzzy
+#: src/http.c:2650
 msgid ""
 "Remote file exists and could contain links to other resources -- "
 "retrieving.\n"
 "\n"
 msgstr ""
-"Et‰tiedosto \"%s\" on uudempi kuin paikallinen -- noudetaan.\n"
+"Et√§tiedosto on olemassa ja saattaisi sis√§lt√§√§ linkkej√§ muihin resursseihin ‚Äì "
+"noudetaan.\n"
 "\n"
 
-#: src/http.c:2625
-#, fuzzy
+#: src/http.c:2655
 msgid ""
 "Remote file exists but does not contain any link -- not retrieving.\n"
 "\n"
-msgstr "Et‰tiedosto \"%s\" ei ole paikallista uudempi -- ei noudeta.\n"
+msgstr ""
+"Et√§tiedosto on olemassa, mutta ei sis√§ll√§ yht√§√§n linkki√§ ‚Äì ei noudeta.\n"
+"\n"
 
-#: src/http.c:2633
-#, fuzzy
+#  T√§m√§ kuten useat aiemmat yll√§ ovat lokitiedostorivej√§, joilla
+#  kommentoidaan hakurobotin tekemisi√§ ja tekem√§tt√§ j√§tt√§misi√§.
+#: src/http.c:2663
 msgid ""
 "Remote file exists but recursion is disabled -- not retrieving.\n"
 "\n"
-msgstr "Et‰tiedosto \"%s\" ei ole paikallista uudempi -- ei noudeta.\n"
+msgstr ""
+"Et√§tiedosto on olemassa, mutta rekursiivisuus on passivoitu ‚Äì ei noudeta.\n"
+"\n"
 
-#: src/http.c:2685
+#: src/http.c:2715
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s/%s]\n"
 "\n"
 msgstr ""
-"%s (%s) - \"%s\" tallennettu [%s/%s]\n"
+"%s (%s) - ‚Äù%s‚Äù tallennettu [%s/%s]\n"
 "\n"
 
-#: src/http.c:2740
+#: src/http.c:2770
 #, c-format
 msgid "%s (%s) - Connection closed at byte %s. "
 msgstr "%s (%s) - Yhteys suljettu tavun %s kohdalla. "
 
-#: src/http.c:2755
+#: src/http.c:2785
 #, c-format
 msgid "%s (%s) - Read error at byte %s (%s)."
 msgstr "%s (%s) - Lukuvirhe tavun %s kohdalla (%s)."
 
-#: src/http.c:2764
+#: src/http.c:2794
 #, c-format
 msgid "%s (%s) - Read error at byte %s/%s (%s). "
 msgstr "%s (%s) - Lukuvirhe tavun %s/%s kohdalla (%s). "
 
-#: src/init.c:386
+#: src/init.c:387
 #, c-format
 msgid "%s: WGETRC points to %s, which doesn't exist.\n"
 msgstr "%s: WGETRC osoittaa kohteeseen %s, jota ei ole olemassa.\n"
 
-#: src/init.c:449 src/netrc.c:264
+#: src/init.c:450 src/netrc.c:265
 #, c-format
 msgid "%s: Cannot read %s (%s).\n"
 msgstr "%s: Ei voitu lukea %s (%s).\n"
 
-#: src/init.c:467
+#: src/init.c:468
 #, c-format
 msgid "%s: Error in %s at line %d.\n"
-msgstr "%s: Virhe kohdassa %s rivill‰ %d.\n"
+msgstr "%s: Virhe kohdassa %s rivill√§ %d.\n"
 
-#: src/init.c:473
+#: src/init.c:474
 #, c-format
 msgid "%s: Syntax error in %s at line %d.\n"
-msgstr "%s: Syntaksivirhe kohdassa %s rivill‰ %d.\n"
+msgstr "%s: Syntaksivirhe kohdassa %s rivill√§ %d.\n"
 
-#: src/init.c:478
+#: src/init.c:479
 #, c-format
 msgid "%s: Unknown command `%s' in %s at line %d.\n"
-msgstr "%s: Tuntematon komento \"%s\" kohdassa %s rivill‰ %d.\n"
+msgstr "%s: Tuntematon komento ‚Äù%s‚Äù kohdassa %s rivill√§ %d.\n"
 
-#: src/init.c:523
+#: src/init.c:524
 #, c-format
 msgid "%s: Warning: Both system and user wgetrc point to `%s'.\n"
 msgstr ""
-"%s: Varoitus: Sek‰ j‰rjestelm‰n ett‰ k‰ytt‰j‰n wgetrc osoittavat %s "
+"%s: Varoitus: Sek√§ j√§rjestelm√§n ett√§ k√§ytt√§j√§n wgetrc osoittavat ‚Äù%s‚Äù-"
 "tiedostoon.\n"
 
-#: src/init.c:676
+#: src/init.c:677
 #, c-format
 msgid "%s: Invalid --execute command `%s'\n"
-msgstr "%s: --execute \"%s\" on virheellinen komento\n"
+msgstr "%s: Komento --execute ‚Äù%s‚Äù on virheellinen\n"
 
-#: src/init.c:721
+#: src/init.c:722
 #, c-format
 msgid "%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"
-msgstr "%s: %s: Valinta \"%s\" on virheellinen, valitse \"on\" tai \"off\".\n"
+msgstr "%s: %s: Valinta ‚Äù%s‚Äù on virheellinen, valitse ‚Äùon‚Äù tai ‚Äùoff‚Äù.\n"
 
-#: src/init.c:738
+#: src/init.c:739
 #, c-format
 msgid "%s: %s: Invalid number `%s'.\n"
-msgstr "%s: %s: Numero \"%s\" on virheellinen.\n"
+msgstr "%s: %s: Numero ‚Äù%s‚Äù on virheellinen.\n"
 
-#: src/init.c:969 src/init.c:988
+#: src/init.c:970 src/init.c:989
 #, c-format
 msgid "%s: %s: Invalid byte value `%s'\n"
-msgstr "%s: %s: Tavun arvo \"%s\" on virheellinen.\n"
+msgstr "%s: %s: Tavun arvo ‚Äù%s‚Äù on virheellinen.\n"
 
-#: src/init.c:1013
+#: src/init.c:1014
 #, c-format
 msgid "%s: %s: Invalid time period `%s'\n"
-msgstr "%s: %s: Aikav‰li \"%s\" on virheellinen.\n"
+msgstr "%s: %s: Aikav√§li ‚Äù%s‚Äù on virheellinen.\n"
 
-#: src/init.c:1067 src/init.c:1157 src/init.c:1260 src/init.c:1285
+#: src/init.c:1068 src/init.c:1158 src/init.c:1261 src/init.c:1286
 #, c-format
 msgid "%s: %s: Invalid value `%s'.\n"
-msgstr "%s: %s: Arvo \"%s\" on virheellinen.\n"
+msgstr "%s: %s: Arvo ‚Äù%s‚Äù on virheellinen.\n"
 
-#: src/init.c:1104
+#: src/init.c:1105
 #, c-format
 msgid "%s: %s: Invalid header `%s'.\n"
-msgstr "%s: %s: Otsake \"%s\" on virheellinen.\n"
+msgstr "%s: %s: Otsake ‚Äù%s‚Äù on virheellinen.\n"
 
-#: src/init.c:1170
+#: src/init.c:1171
 #, c-format
 msgid "%s: %s: Invalid progress type `%s'.\n"
-msgstr "%s: %s: Edistymistyyppi \"%s\" on virheellinen.\n"
+msgstr "%s: %s: Edistymistyyppi ‚Äù%s‚Äù on virheellinen.\n"
 
-#: src/init.c:1229
-#, fuzzy, c-format
+#: src/init.c:1230
+#, c-format
 msgid ""
 "%s: %s: Invalid restriction `%s', use [unix|windows],[lowercase|uppercase],"
 "[nocontrol].\n"
 msgstr ""
-"%s: %s: Rajoitus \"%s\" on virheellinen, valitse \"unix\" tai \"windows\".\n"
+"%s: %s: Rajoitus ‚Äù%s‚Äù on virheellinen, valitse [unix|windows],[lowercase|"
+"uppercase],[nocontrol].\n"
 
-#: src/log.c:783
+#: src/log.c:784
 #, c-format
 msgid ""
 "\n"
 "%s received, redirecting output to `%s'.\n"
 msgstr ""
 "\n"
-"%s vastaanotettu, ohjataan tulostus tiedostoon \"%s\".\n"
+"%s vastaanotettu, ohjataan tulostus tiedostoon ‚Äù%s‚Äù.\n"
 
-#: src/log.c:793
+#: src/log.c:794
 #, c-format
 msgid ""
 "\n"
@@ -830,118 +849,119 @@ msgstr ""
 "\n"
 "%s vastaanotettu.\n"
 
-#: src/log.c:794
+#: src/log.c:795
 #, c-format
 msgid "%s: %s; disabling logging.\n"
-msgstr "%s: %s; loki poistettu k‰ytˆst‰.\n"
+msgstr "%s: %s; loki poistettu k√§yt√∂st√§.\n"
 
-#: src/main.c:356
+#: src/main.c:357
 #, c-format
 msgid "Usage: %s [OPTION]... [URL]...\n"
-msgstr "K‰yttˆ: %s [VALITSIN]... [URL]...\n"
+msgstr "K√§ytt√∂: %s [VALITSIN]... [URL]...\n"
 
-#: src/main.c:368
+#: src/main.c:369
 msgid ""
 "Mandatory arguments to long options are mandatory for short options too.\n"
 "\n"
 msgstr ""
-"Pakolliset argumentit pitkille valitsimille ovat pakollisia myˆs lyhyille.\n"
+"Pakolliset argumentit pitkille valitsimille ovat pakollisia my√∂s lyhyille.\n"
 "\n"
 
-#: src/main.c:370
+#: src/main.c:371
 msgid "Startup:\n"
-msgstr "K‰ynnistys:\n"
+msgstr "K√§ynnistys:\n"
 
-#: src/main.c:372
+#: src/main.c:373
 msgid "  -V,  --version           display the version of Wget and exit.\n"
-msgstr "  -V,  --version                   n‰yt‰ Wget:in versio ja lopeta\n"
+msgstr "  -V,  --version                   n√§yt√§ Wget-versio ja lopeta\n"
 
-#: src/main.c:374
+#: src/main.c:375
 msgid "  -h,  --help              print this help.\n"
-msgstr "  -h,  --help                      n‰yt‰ t‰m‰ ohje\n"
+msgstr "  -h,  --help                      n√§yt√§ t√§m√§ ohje\n"
 
-#: src/main.c:376
+#: src/main.c:377
 msgid "  -b,  --background        go to background after startup.\n"
 msgstr ""
-"  -b,  --background                siirry taustalle k‰ynnistyksen j‰lkeen\n"
+"  -b,  --background                siirry taustalle k√§ynnistyksen j√§lkeen\n"
 
-#: src/main.c:378
+#: src/main.c:379
 msgid "  -e,  --execute=COMMAND   execute a `.wgetrc'-style command.\n"
-msgstr "  -e,  --execute=KOMENTO           suorita .wgetrc-tyylinen komento\n"
+msgstr ""
+"  -e,  --execute=KOMENTO           suorita ‚Äù.wgetrc‚Äù-tyylinen komento\n"
 
-#: src/main.c:382
+#: src/main.c:383
 msgid "Logging and input file:\n"
-msgstr "Loki ja syˆttˆtiedostot:\n"
+msgstr "Loki ja sy√∂tt√∂tiedostot:\n"
 
-#: src/main.c:384
+#: src/main.c:385
 msgid "  -o,  --output-file=FILE    log messages to FILE.\n"
-msgstr "  -o,  --output-file=TIEDOSTO      kirjaa viestit TIEDOSTOON\n"
+msgstr "  -o,  --output-file=TIEDOSTO      kirjaa viestit TIEDOSTOon\n"
 
-#: src/main.c:386
+#: src/main.c:387
 msgid "  -a,  --append-output=FILE  append messages to FILE.\n"
-msgstr "  -a,  --append-output=TIEDOSTO    lis‰‰ viestit TIEDOSTOON\n"
+msgstr "  -a,  --append-output=TIEDOSTO    lis√§√§ viestit TIEDOSTOon\n"
 
-#: src/main.c:389
+#: src/main.c:390
 msgid "  -d,  --debug               print lots of debugging information.\n"
-msgstr "  -d,  --debug                     n‰yt‰ paljon vianetsint‰tietoja\n"
+msgstr "  -d,  --debug                     n√§yt√§ paljon vianetsint√§tietoja\n"
 
-#: src/main.c:393
-#, fuzzy
+#: src/main.c:394
 msgid "       --wdebug              print Watt-32 debug output.\n"
-msgstr "  -d,  --debug                     n‰yt‰ paljon vianetsint‰tietoja\n"
+msgstr ""
+"       --wdebug                    n√§yt√§ ‚ÄùWatt-32‚Äù-virheenj√§ljitystuloste.\n"
 
-#: src/main.c:396
+#: src/main.c:397
 msgid "  -q,  --quiet               quiet (no output).\n"
 msgstr "  -q,  --quiet                     ole hiljaa (ei tulostusta)\n"
 
-#: src/main.c:398
+#: src/main.c:399
 msgid "  -v,  --verbose             be verbose (this is the default).\n"
-msgstr "  -v,  --verbose                   n‰yt‰ yksityiskohtia (oletus)\n"
+msgstr "  -v,  --verbose                   n√§yt√§ yksityiskohtia (oletus)\n"
 
-#: src/main.c:400
+#: src/main.c:401
 msgid ""
 "  -nv, --no-verbose          turn off verboseness, without being quiet.\n"
 msgstr ""
-"  -nv, --non-verbose               ei yksityiskohtia, muttei hiljainen\n"
+"  -nv, --no-verbose                ei yksityiskohtia, muttei hiljainen\n"
 
-#: src/main.c:402
+#: src/main.c:403
 msgid "  -i,  --input-file=FILE     download URLs found in FILE.\n"
-msgstr "  -i,  --input-file=TIEDOSTO       lataa URL:t TIEDOSTOSTA\n"
+msgstr "  -i,  --input-file=TIEDOSTO       lataa URL:t TIEDOSTOsta\n"
 
-#: src/main.c:404
+#: src/main.c:405
 msgid "  -F,  --force-html          treat input file as HTML.\n"
-msgstr "  -F,  --force-html                k‰sittele syˆttˆtiedosto HTML:n‰\n"
+msgstr "  -F,  --force-html                k√§sittele sy√∂tetiedosto HTML:n√§\n"
 
-#: src/main.c:406
+#: src/main.c:407
 msgid ""
 "  -B,  --base=URL            prepends URL to relative links in -F -i file.\n"
 msgstr ""
-"  -B,  --base=URL                  lis‰‰ URL suhteellisten linkkien alkuun\n"
-"                                   -F -i valintojen m‰‰rittelem‰‰n "
+"  -B,  --base=URL                  lis√§√§ URL suhteellisten linkkien alkuun\n"
+"                                   -F -i valintojen m√§√§rittelem√§√§n "
 "tiedostoon\n"
 
-#: src/main.c:410
+#: src/main.c:411
 msgid "Download:\n"
 msgstr "Noutaminen:\n"
 
-#: src/main.c:412
+#: src/main.c:413
 msgid ""
 "  -t,  --tries=NUMBER            set number of retries to NUMBER (0 "
 "unlimits).\n"
 msgstr ""
-"  -t,  --tries=MƒƒRƒ               yrityskertojen MƒƒRƒ (0 on rajaton)\n"
+"  -t,  --tries=M√Ñ√ÑR√Ñ               yrityskertojen M√Ñ√ÑR√Ñ (0 on rajaton)\n"
 
-#: src/main.c:414
+#: src/main.c:415
 msgid "       --retry-connrefused       retry even if connection is refused.\n"
 msgstr ""
-"       --retry-connrefused         yrit‰ uudelleen vaikka yhteys "
+"       --retry-connrefused         yrit√§ uudelleen vaikka yhteys "
 "torjuttaisiin\n"
 
-#: src/main.c:416
+#: src/main.c:417
 msgid "  -O,  --output-document=FILE    write documents to FILE.\n"
-msgstr "  -O,  --output-document=TIEDOSTO  kirjoita dokumentit TIEDOSTOON\n"
+msgstr "  -O,  --output-document=TIEDOSTO  kirjoita dokumentit TIEDOSTOon\n"
 
-#: src/main.c:418
+#: src/main.c:419
 msgid ""
 "  -nc, --no-clobber              skip downloads that would download to\n"
 "                                 existing files.\n"
@@ -949,7 +969,7 @@ msgstr ""
 "  -nc, --no-clobber                ohita noudot, jotka korvaisivat jo\n"
 "                                   olemassaolevia tiedostoja\n"
 
-#: src/main.c:421
+#: src/main.c:422
 msgid ""
 "  -c,  --continue                resume getting a partially-downloaded "
 "file.\n"
@@ -957,11 +977,11 @@ msgstr ""
 "  -c,  --continue                  jatka osittain noudetun tiedoston "
 "noutamista\n"
 
-#: src/main.c:423
+#: src/main.c:424
 msgid "       --progress=TYPE           select progress gauge type.\n"
 msgstr "       --progress=TYYPPI           valitse edistymismittarin tyyppi\n"
 
-#: src/main.c:425
+#: src/main.c:426
 msgid ""
 "  -N,  --timestamping            don't re-retrieve files unless newer than\n"
 "                                 local.\n"
@@ -969,270 +989,280 @@ msgstr ""
 "  -N,  --timestamping              nouda vain paikallista uudemmat "
 "tiedostot\n"
 
-#: src/main.c:428
+#: src/main.c:429
 msgid "  -S,  --server-response         print server response.\n"
-msgstr "  -S,  --server-response           n‰yt‰ palvelimen vastaus\n"
+msgstr "  -S,  --server-response           n√§yt√§ palvelimen vastaus\n"
 
-#: src/main.c:430
+#: src/main.c:431
 msgid "       --spider                  don't download anything.\n"
-msgstr "       --spider                    ‰l‰ nouda mit‰‰n\n"
+msgstr "       --spider                    √§l√§ nouda mit√§√§n\n"
 
-#: src/main.c:432
+#: src/main.c:433
 msgid "  -T,  --timeout=SECONDS         set all timeout values to SECONDS.\n"
 msgstr "  -T,  --timeout=SEKUNTIA          kaikkien aikakatkaisujen pituus\n"
 
-#: src/main.c:434
+#: src/main.c:435
 msgid "       --dns-timeout=SECS        set the DNS lookup timeout to SECS.\n"
 msgstr ""
 "       --dns-timeout=SEKUNTIA      nimipalveluhaun aikakatkaisun pituus\n"
 
-#: src/main.c:436
+#: src/main.c:437
 msgid "       --connect-timeout=SECS    set the connect timeout to SECS.\n"
-msgstr "       --connect-timeout=SEKUNTIA  yhdist‰misen aikakatkaisun pituus\n"
+msgstr "       --connect-timeout=SEKUNTIA  yhdist√§misen aikakatkaisun pituus\n"
 
-#: src/main.c:438
+#: src/main.c:439
 msgid "       --read-timeout=SECS       set the read timeout to SECS.\n"
 msgstr "       --read-timeout=SEKUNTIA     vastaanoton aikakatkaisun pituus\n"
 
-#: src/main.c:440
+#: src/main.c:441
 msgid "  -w,  --wait=SECONDS            wait SECONDS between retrievals.\n"
-msgstr "  -w,  --wait=SEKUNTIA             odota SEKUNTIA noutojen v‰lill‰\n"
+msgstr "  -w,  --wait=SEKUNTIA             odota SEKUNTIA noutojen v√§lill√§\n"
 
-#: src/main.c:442
+#: src/main.c:443
 msgid ""
 "       --waitretry=SECONDS       wait 1..SECONDS between retries of a "
 "retrieval.\n"
 msgstr ""
 "       --waitretry=SEKUNTIA        odota 1...SEKUNTIA noutojen\n"
-"                                   uudelleenyritysten v‰lill‰\n"
+"                                   uudelleenyritysten v√§lill√§\n"
 
-#: src/main.c:444
+#: src/main.c:445
 msgid ""
 "       --random-wait             wait from 0...2*WAIT secs between "
 "retrievals.\n"
 msgstr ""
 "       --random-wait               odota 0...2*WAIT sekuntia noutojen "
-"v‰lill‰\n"
+"v√§lill√§\n"
 
-#: src/main.c:446
-msgid "  -Y,  --proxy                   explicitly turn on proxy.\n"
-msgstr "  -Y,  --proxy                     v‰lityspalvelin p‰‰lle\n"
-
-#: src/main.c:448
+#: src/main.c:447
 msgid "       --no-proxy                explicitly turn off proxy.\n"
-msgstr "       --no-proxy                  v‰lityspalvelin pois p‰‰lt‰\n"
+msgstr "       --no-proxy                  v√§lityspalvelin pois p√§√§lt√§\n"
 
-#: src/main.c:450
+#: src/main.c:449
 msgid "  -Q,  --quota=NUMBER            set retrieval quota to NUMBER.\n"
-msgstr "  -Q,  --quota=LUKU                noutokiintiˆn koko\n"
+msgstr "  -Q,  --quota=LUKU                noutokiinti√∂n koko\n"
 
-#: src/main.c:452
+#: src/main.c:451
 msgid ""
 "       --bind-address=ADDRESS    bind to ADDRESS (hostname or IP) on local "
 "host.\n"
 msgstr ""
-"       --bind-address=OSOITE       liit‰ (palvelin tai IP-) OSOITE "
+"       --bind-address=OSOITE       liit√§ (palvelin tai IP-) OSOITE "
 "paikallisesti\n"
 
-#: src/main.c:454
+#: src/main.c:453
 msgid "       --limit-rate=RATE         limit download rate to RATE.\n"
 msgstr "       --limit-rate=NOPEUS         rajoita noutonopeutta\n"
 
-#: src/main.c:456
+#: src/main.c:455
 msgid "       --no-dns-cache            disable caching DNS lookups.\n"
 msgstr ""
-"       --no-dns-cache              ‰l‰ s‰ilyt‰ nimipalvelutietoja "
-"v‰limuistissa\n"
+"       --no-dns-cache              √§l√§ s√§ilyt√§ nimipalvelutietoja "
+"v√§limuistissa\n"
 
-#: src/main.c:458
+#: src/main.c:457
 msgid ""
 "       --restrict-file-names=OS  restrict chars in file names to ones OS "
 "allows.\n"
 msgstr ""
-"       --restrict-file-names=KJ    k‰yt‰ vain k‰yttˆj‰rjestelm‰n\n"
-"                                   sallimia tiedostonimi‰\n"
+"       --restrict-file-names=KJ    k√§yt√§ vain k√§ytt√∂j√§rjestelm√§n\n"
+"                                   sallimia tiedostonimi√§\n"
 
-#: src/main.c:460
-#, fuzzy
+#: src/main.c:459
 msgid ""
 "       --ignore-case             ignore case when matching files/"
 "directories.\n"
 msgstr ""
-"       --ignore-length          ‰l‰ v‰lit‰ \"Content-Length\"-"
-"otsakekent‰st‰\n"
+"       --ignore-case             ei oteta huomioon merkkikokoa kun verrataan "
+"tiedostoja/hakemistoja.\n"
 
-#: src/main.c:463
+#: src/main.c:462
 msgid "  -4,  --inet4-only              connect only to IPv4 addresses.\n"
 msgstr ""
-"  -4,  --inet4-only                ota yhteytt‰ vain IPv4-osoitteisiin\n"
+"  -4,  --inet4-only                ota yhteytt√§ vain IPv4-osoitteisiin\n"
 
-#: src/main.c:465
+#: src/main.c:464
 msgid "  -6,  --inet6-only              connect only to IPv6 addresses.\n"
 msgstr ""
-"  -6,  --inet6-only                ota yhteytt‰ vain IPv6-osoitteisiin\n"
+"  -6,  --inet6-only                ota yhteytt√§ vain IPv6-osoitteisiin\n"
 
-#: src/main.c:467
+#: src/main.c:466
 msgid ""
 "       --prefer-family=FAMILY    connect first to addresses of specified "
 "family,\n"
 "                                 one of IPv6, IPv4, or none.\n"
 msgstr ""
-"       --prefer-family=PERHE       ota yhteytt‰ ensin PERHEen m‰‰rittem‰‰n\n"
+"       --prefer-family=PERHE       ota yhteytt√§ ensin PERHEen m√§√§rittem√§√§n\n"
 "                                   osoitteeseen, vaihtoedot: IPv6, IPv4 tai "
 "none\n"
 
-#: src/main.c:471
+#: src/main.c:470
 msgid "       --user=USER               set both ftp and http user to USER.\n"
-msgstr "       --user=KƒYTTƒJƒ             FTP- ja HTTP-k‰ytt‰j‰nimi\n"
+msgstr "       --user=K√ÑYTT√ÑJ√Ñ             FTP- ja HTTP-k√§ytt√§j√§nimi\n"
 
-#: src/main.c:473
+#: src/main.c:472
 msgid ""
 "       --password=PASS           set both ftp and http password to PASS.\n"
 msgstr "       --password=SALASANA         FTP- ja HTTP-salasana\n"
 
-#: src/main.c:477
+#: src/main.c:476
 msgid "Directories:\n"
 msgstr "Hakemistot:\n"
 
-#: src/main.c:479
+#: src/main.c:478
 msgid "  -nd, --no-directories           don't create directories.\n"
-msgstr "  -nd  --no-directories             ‰l‰ luo hakemistoja\n"
+msgstr "  -nd  --no-directories            √§l√§ luo hakemistoja\n"
 
-#: src/main.c:481
+#: src/main.c:480
 msgid "  -x,  --force-directories        force creation of directories.\n"
-msgstr "  -x,  --force-directories          pakotettu hakemistojen luonti\n"
+msgstr "  -x,  --force-directories         pakotettu hakemistojen luonti\n"
 
-#: src/main.c:483
+#: src/main.c:482
 msgid "  -nH, --no-host-directories      don't create host directories.\n"
-msgstr "  -nH, --no-host-directories        ‰l‰ luo palvelin hakemistoja\n"
+msgstr "  -nH, --no-host-directories       √§l√§ luo palvelinhakemistoja\n"
 
-#: src/main.c:485
+#: src/main.c:484
 msgid "       --protocol-directories     use protocol name in directories.\n"
 msgstr ""
-"       --protocol-directories       k‰yt‰ protokollan nime‰ hakemistoissa\n"
+"       --protocol-directories      k√§yt√§ protokollan nime√§ hakemistoissa\n"
 
-#: src/main.c:487
+#: src/main.c:486
 msgid "  -P,  --directory-prefix=PREFIX  save files to PREFIX/...\n"
 msgstr ""
-"  -P,  --directory-prefix=ETULIITE  tallenna tiedostot hakemistoon "
+"  -P,  --directory-prefix=ETULIITE tallenna tiedostot hakemistoon "
 "ETULIITE/...\n"
 
-#: src/main.c:489
+#: src/main.c:488
 msgid ""
 "       --cut-dirs=NUMBER          ignore NUMBER remote directory "
 "components.\n"
 msgstr ""
-"       --cut-dirs=LUKU              ohita alusta LUKU kappaletta "
-"hakemistoja\n"
+"       --cut-dirs=LUKU             ohita alusta LUKU kappaletta hakemistoja\n"
 
-#: src/main.c:493
+#: src/main.c:492
 msgid "HTTP options:\n"
 msgstr "HTTP-valitsimet:\n"
 
-#: src/main.c:495
+#: src/main.c:494
 msgid "       --http-user=USER        set http user to USER.\n"
-msgstr "       --http-user=KƒYTTƒJƒ     HTTP-k‰ytt‰j‰nimi\n"
+msgstr "       --http-user=K√ÑYTT√ÑJ√Ñ        HTTP-k√§ytt√§j√§nimi\n"
 
-#: src/main.c:497
+#: src/main.c:496
 msgid "       --http-password=PASS    set http password to PASS.\n"
-msgstr "       --http-passwd=SALASANA   HTTP-salasana\n"
+msgstr "       --http-passwd=SALASANA      HTTP-salasana\n"
 
-#: src/main.c:499
+#: src/main.c:498
 msgid "       --no-cache              disallow server-cached data.\n"
 msgstr ""
-"       --no-cache               ‰l‰ k‰yt‰ palvelimelle v‰livarastoidua "
+"       --no-cache                  √§l√§ k√§yt√§ palvelimelle v√§livarastoitua "
 "dataa\n"
 
-#: src/main.c:501
+#: src/main.c:500
 msgid ""
 "  -E,  --html-extension        save HTML documents with `.html' extension.\n"
 msgstr ""
-"  -E,  --html-extension         tallenna HTML-dokumentit .html-p‰‰tteisin‰\n"
+"  -E,  --html-extension            tallenna HTML-dokumentit ‚Äù.html‚Äù-"
+"p√§√§tteisin√§\n"
 
-#: src/main.c:503
+#: src/main.c:502
 msgid "       --ignore-length         ignore `Content-Length' header field.\n"
 msgstr ""
-"       --ignore-length          ‰l‰ v‰lit‰ \"Content-Length\"-"
-"otsakekent‰st‰\n"
+"       --ignore-length             √§l√§ v√§lit√§ ‚ÄùContent-Length‚Äù-"
+"otsakekent√§st√§\n"
 
-#: src/main.c:505
+#: src/main.c:504
 msgid "       --header=STRING         insert STRING among the headers.\n"
-msgstr "       --header=MERKKIJONO      lis‰‰ MERKKIJONO otsakkeiden sekaan\n"
+msgstr ""
+"       --header=MERKKIJONO         lis√§√§ MERKKIJONO otsakkeiden sekaan\n"
 
-#: src/main.c:507
+#: src/main.c:506
 msgid "       --max-redirect          maximum redirections allowed per page.\n"
 msgstr ""
+"       --max-redirect              uudelleenohjausten sallittu maksimim√§√§r√§ "
+"sivua kohden.\n"
 
-#: src/main.c:509
+#: src/main.c:508
 msgid "       --proxy-user=USER       set USER as proxy username.\n"
-msgstr "       --proxy-user=KƒYTTƒJƒ    aseta v‰lityspalvelimen k‰ytt‰j‰nimi\n"
+msgstr "       --proxy-user=K√ÑYTT√ÑJ√Ñ       v√§lityspalvelimen k√§ytt√§j√§nimi\n"
 
-#: src/main.c:511
+#: src/main.c:510
 msgid "       --proxy-password=PASS   set PASS as proxy password.\n"
-msgstr "       --proxy-passwd=SALASANA  aseta v‰lityspalvelimen salasana\n"
+msgstr "       --proxy-passwd=SALASANA     v√§lityspalvelimen salasana\n"
 
-#: src/main.c:513
+#: src/main.c:512
 msgid ""
 "       --referer=URL           include `Referer: URL' header in HTTP "
 "request.\n"
 msgstr ""
-"       --referer=URL            liit‰ \"Referer: URL\"-otsake HTTP-pyyntˆˆn\n"
+"       --referer=URL               liit√§ ‚ÄùReferer: URL‚Äù-otsake HTTP-"
+"pyynt√∂√∂n\n"
 
-#: src/main.c:515
+#: src/main.c:514
 msgid "       --save-headers          save the HTTP headers to file.\n"
-msgstr "       --save-headers           tallenna HTTP-otsakkeet tiedostoon\n"
+msgstr ""
+"       --save-headers              tallenna HTTP-otsakkeet tiedostoon\n"
 
-#: src/main.c:517
+#: src/main.c:516
 msgid ""
 "  -U,  --user-agent=AGENT      identify as AGENT instead of Wget/VERSION.\n"
 msgstr ""
-"  -U,  --user-agent=AGENTTI     tunnnistaudu Wget/version sijasta AGENTIKSI\n"
+"  -U,  --user-agent=AGENTTI        tunnnistaudu Wget/version sijasta AGENTTI-"
+"k√§ytt√§j√§ksi\n"
 
-#: src/main.c:519
+#: src/main.c:518
 msgid ""
 "       --no-http-keep-alive    disable HTTP keep-alive (persistent "
 "connections).\n"
-msgstr "       --no-http-keep-alive     ota pois k‰ytˆst‰ jatkuvat yhteydet\n"
+msgstr ""
+"       --no-http-keep-alive        ota pois k√§yt√∂st√§ jatkuvat yhteydet\n"
 
-#: src/main.c:521
+#: src/main.c:520
 msgid "       --no-cookies            don't use cookies.\n"
-msgstr "       --no-cookies             ‰l‰ k‰yt‰ ev‰steit‰\n"
+msgstr "       --no-cookies                √§l√§ k√§yt√§ ev√§steit√§\n"
 
-#: src/main.c:523
+#: src/main.c:522
 msgid "       --load-cookies=FILE     load cookies from FILE before session.\n"
-msgstr "       --load-cookies=TIEDOSTO  lue ev‰steet ennen istuntoa\n"
+msgstr ""
+"       --load-cookies=TIEDOSTO     lue ev√§steet ennen istuntoa TIEDOSTOsta\n"
 
-#: src/main.c:525
+#: src/main.c:524
 msgid "       --save-cookies=FILE     save cookies to FILE after session.\n"
-msgstr "       --save-cookies=TIEDOSTO  tallenna ev‰steet istunnon j‰lkeen\n"
+msgstr ""
+"       --save-cookies=TIEDOSTO     tallenna ev√§steet istunnon j√§lkeen "
+"TIEDOSTOon\n"
 
-#: src/main.c:527
+#: src/main.c:526
 msgid ""
 "       --keep-session-cookies  load and save session (non-permanent) "
 "cookies.\n"
 msgstr ""
-"       --keep-session-cookies   hae ja tallenna (v‰liaikaiset) "
-"istuntoev‰steet\n"
+"       --keep-session-cookies      hae ja tallenna (v√§liaikaiset) "
+"istuntoev√§steet\n"
 
-#: src/main.c:529
+#: src/main.c:528
 msgid ""
 "       --post-data=STRING      use the POST method; send STRING as the "
 "data.\n"
 msgstr ""
-"       --post-data=MERKKIJONO   k‰yt‰ POST-metodia; l‰het‰ MERKKIJONO "
+"       --post-data=MERKKIJONO      k√§yt√§ POST-metodia; l√§het√§ MERKKIJONO "
 "datana\n"
 
-#: src/main.c:531
+#: src/main.c:530
 msgid ""
 "       --post-file=FILE        use the POST method; send contents of FILE.\n"
 msgstr ""
-"       --post-file=TIEDOSTO     k‰yt‰ POST-metodia; l‰het‰ TIEDOSTON "
-"sis‰ltˆ\n"
+"       --post-file=TIEDOSTO        k√§yt√§ POST-metodia; l√§het√§ TIEDOSTON "
+"sis√§lt√∂\n"
 
-#: src/main.c:533
+#: src/main.c:532
 msgid ""
-"       --no-content-disposition  don't honor Content-Disposition header.\n"
+"       --content-disposition   honor the Content-Disposition header when\n"
+"                               choosing local file names (EXPERIMENTAL).\n"
 msgstr ""
+"       --content-disposition   kunnioittaa Content-Disposition-otsaketta "
+"kun\n"
+"                               valitaan paikalliset tiedostonimet "
+"(KOKEELLINEN).\n"
 
 #: src/main.c:538
 msgid "HTTPS (SSL/TLS) options:\n"
@@ -1243,57 +1273,56 @@ msgid ""
 "       --secure-protocol=PR     choose secure protocol, one of auto, SSLv2,\n"
 "                                SSLv3, and TLSv1.\n"
 msgstr ""
-"       --secure-protocol=PR         valitse turvaprotokolla, vaihtoehdot:\n"
-"                                    auto, SSLv2, SSLv3 tai TLSv1\n"
+"       --secure-protocol=PR        valitse turvaprotokolla, vaihtoehdot:\n"
+"                                   auto, SSLv2, SSLv3 tai TLSv1\n"
 
 #: src/main.c:543
 msgid ""
 "       --no-check-certificate   don't validate the server's certificate.\n"
 msgstr ""
-"       --no-check-certificate       ‰l‰ tarkista palvelimen varmennetta\n"
+"       --no-check-certificate      √§l√§ tarkista palvelimen varmennetta\n"
 
 #: src/main.c:545
 msgid "       --certificate=FILE       client certificate file.\n"
-msgstr "       --certificate=TIEDOSTO       asiakasvarmenne\n"
+msgstr "       --certificate=TIEDOSTO      asiakasvarmenne\n"
 
 #: src/main.c:547
 msgid "       --certificate-type=TYPE  client certificate type, PEM or DER.\n"
 msgstr ""
-"       --certificate-type=TYYPPI    asiakasvarmenteen tyyppi: PEM tai DER\n"
+"       --certificate-type=TYYPPI   asiakasvarmenteen tyyppi: PEM tai DER\n"
 
 #: src/main.c:549
 msgid "       --private-key=FILE       private key file.\n"
-msgstr "       --private-key=TIEDOSTO       salainen avain\n"
+msgstr "       --private-key=TIEDOSTO      salainen avain\n"
 
 #: src/main.c:551
 msgid "       --private-key-type=TYPE  private key type, PEM or DER.\n"
 msgstr ""
-"       --private-key-type=TYYPPI    salaisen avaimen tyyppi: PEM tai DER\n"
+"       --private-key-type=TYYPPI   salaisen avaimen tyyppi: PEM tai DER\n"
 
 #: src/main.c:553
 msgid "       --ca-certificate=FILE    file with the bundle of CA's.\n"
-msgstr "       --ca-certificate=TIEDOSTO    juurivarmennekokoelma\n"
+msgstr "       --ca-certificate=TIEDOSTO   juurivarmennekokoelma\n"
 
 #: src/main.c:555
 msgid ""
 "       --ca-directory=DIR       directory where hash list of CA's is "
 "stored.\n"
-msgstr "       --ca-directory=HAKEMISTO     juurivarmenteiden hajautuslista\n"
+msgstr "       --ca-directory=HAKEMISTO    juurivarmenteiden hajautuslista\n"
 
 #: src/main.c:557
 msgid ""
 "       --random-file=FILE       file with random data for seeding the SSL "
 "PRNG.\n"
 msgstr ""
-"       --random-file=TIEDOSTO       satunnaista dataa SSL PRNG:n siemeneksi\n"
+"       --random-file=TIEDOSTO      satunnaista dataa SSL PRNG:n siemeneksi\n"
 
 #: src/main.c:559
 msgid ""
 "       --egd-file=FILE          file naming the EGD socket with random "
 "data.\n"
 msgstr ""
-"       --egd-file=TIEDOSTO          EGD-pistoke, josta saa satunnaista "
-"dataa\n"
+"       --egd-file=TIEDOSTO         EGD-pistoke, josta saa satunnaista dataa\n"
 
 #: src/main.c:564
 msgid "FTP options:\n"
@@ -1301,37 +1330,37 @@ msgstr "FTP-valitsimet:\n"
 
 #: src/main.c:566
 msgid "       --ftp-user=USER         set ftp user to USER.\n"
-msgstr "       --ftp-user=KƒYTTƒJƒ          FTP-k‰ytt‰j‰nimi\n"
+msgstr "       --ftp-user=K√ÑYTT√ÑJ√Ñ         FTP-k√§ytt√§j√§nimi\n"
 
 #: src/main.c:568
 msgid "       --ftp-password=PASS     set ftp password to PASS.\n"
-msgstr "       --ftp-password=SALASANA      FTP-salasana\n"
+msgstr "       --ftp-password=SALASANA     FTP-salasana\n"
 
 #: src/main.c:570
 msgid "       --no-remove-listing     don't remove `.listing' files.\n"
-msgstr "       --dont-remove-listing        ‰l‰ poista .listing-tiedostoja\n"
+msgstr "       --no-remove-listing         √§l√§ poista ‚Äù.listing‚Äù-tiedostoja\n"
 
 #: src/main.c:572
 msgid "       --no-glob               turn off FTP file name globbing.\n"
-msgstr "       --no-glob                    ‰l‰ t‰ydenn‰ tiedostonimi‰\n"
+msgstr "       --no-glob                   √§l√§ t√§ydenn√§ tiedostonimi√§\n"
 
 #: src/main.c:574
 msgid "       --no-passive-ftp        disable the \"passive\" transfer mode.\n"
 msgstr ""
-"       --no-passive-ftp             ‰l‰ k‰yt‰ \"passiivista\" siirtotapaa\n"
+"       --no-passive-ftp            √§l√§ k√§yt√§ ‚Äùpassiivista‚Äù siirtotapaa\n"
 
 #: src/main.c:576
 msgid ""
 "       --retr-symlinks         when recursing, get linked-to files (not "
 "dir).\n"
 msgstr ""
-"       --retr-symlinks              rekursiossa: hae linkitetyt tiedostot\n"
-"                                    (ei hakemistoja)\n"
+"       --retr-symlinks             rekursiossa: hae linkitetyt tiedostot\n"
+"                                   (ei hakemistoja)\n"
 
 #: src/main.c:578
 msgid "       --preserve-permissions  preserve remote file permissions.\n"
 msgstr ""
-"       --preserve-permissions       s‰ilyt‰ noudetun tiedoston oikeudet\n"
+"       --preserve-permissions      s√§ilyt√§ noudetun tiedoston oikeudet\n"
 
 #: src/main.c:582
 msgid "Recursive download:\n"
@@ -1339,159 +1368,164 @@ msgstr "Rekursiivinen nouto:\n"
 
 #: src/main.c:584
 msgid "  -r,  --recursive          specify recursive download.\n"
-msgstr "  -r,  --recursive                  nouda rekursiivisesti\n"
+msgstr "  -r,  --recursive                 nouda rekursiivisesti\n"
 
 #: src/main.c:586
 msgid ""
 "  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for "
 "infinite).\n"
 msgstr ""
-"  -l,  --level=LUKU                 rekursiosyvyys (inf ja 0 = ‰‰retˆn)\n"
+"  -l,  --level=LUKU                rekursiosyvyys (inf ja 0 = √§√§ret√∂n)\n"
 
 #: src/main.c:588
 msgid ""
 "       --delete-after       delete files locally after downloading them.\n"
-msgstr "       --delete-after               poista tiedostot haun j‰lkeen\n"
+msgstr "       --delete-after              poista tiedostot haun j√§lkeen\n"
 
 #: src/main.c:590
 msgid ""
 "  -k,  --convert-links      make links in downloaded HTML point to local "
 "files.\n"
 msgstr ""
-"  -k,  --convert-links              aseta haettujen HTML-sivujen linkit\n"
-"                                    osoittamaan paikallisiin tiedostoihin\n"
+"  -k,  --convert-links             aseta haettujen HTML-sivujen linkit\n"
+"                                   osoittamaan paikallisiin tiedostoihin\n"
 
 #: src/main.c:592
 msgid ""
 "  -K,  --backup-converted   before converting file X, back up as X.orig.\n"
 msgstr ""
-"  -K,  --backup-converted           ennen tiedoston X muuttamista,\n"
-"                                    varmuuskopioi X.orig nimell‰\n"
+"  -K,  --backup-converted          ennen tiedoston X muuttamista,\n"
+"                                   varmuuskopioi X.orig nimell√§\n"
 
 #: src/main.c:594
 msgid ""
 "  -m,  --mirror             shortcut for -N -r -l inf --no-remove-listing.\n"
 msgstr ""
-"  -m,  --mirror                     oikovalitsin, yht‰kuin -r -N -l inf\n"
-"                                    --no-remove-listing\n"
+"  -m,  --mirror                    oikovalitsin, yht√§kuin -r -N -l inf\n"
+"                                   --no-remove-listing\n"
 
 #: src/main.c:596
 msgid ""
 "  -p,  --page-requisites    get all images, etc. needed to display HTML "
 "page.\n"
 msgstr ""
-"  -p,  --page-requisites            nouda kaikki kuvat yms. HTML-sivun\n"
-"                                    n‰ytt‰miseen tarvittava.\n"
+"  -p,  --page-requisites           nouda kaikki kuvat yms. HTML-sivun\n"
+"                                   n√§ytt√§miseen tarvittava.\n"
 
 #: src/main.c:598
 msgid ""
 "       --strict-comments    turn on strict (SGML) handling of HTML "
 "comments.\n"
 msgstr ""
-"       --strict-comments            k‰yt‰ HTML-kommenttien tiukkaa\n"
-"                                    (SGML) k‰sittely‰\n"
+"       --strict-comments           k√§yt√§ HTML-kommenttien tiukkaa\n"
+"                                   (SGML) k√§sittely√§\n"
 
 #: src/main.c:602
 msgid "Recursive accept/reject:\n"
 msgstr ""
-"Rekursiivinen hyv‰ksynt‰/torjunta:\n"
+"Rekursiivinen hyv√§ksynt√§/torjunta:\n"
 "(listojen osat erotellaan pilkuin)\n"
 
 #: src/main.c:604
 msgid ""
 "  -A,  --accept=LIST               comma-separated list of accepted "
 "extensions.\n"
-msgstr "  -A,  --accept=LISTA               lista hyv‰ksytyist‰ p‰‰tteist‰\n"
+msgstr "  -A,  --accept=LISTA              lista hyv√§ksytyist√§ p√§√§tteist√§\n"
 
 #: src/main.c:606
 msgid ""
 "  -R,  --reject=LIST               comma-separated list of rejected "
 "extensions.\n"
-msgstr "  -R,  --reject=LISTA               lista torjutuista p‰‰tteist‰\n"
+msgstr "  -R,  --reject=LISTA              lista torjutuista p√§√§tteist√§\n"
 
 #: src/main.c:608
 msgid ""
 "  -D,  --domains=LIST              comma-separated list of accepted "
 "domains.\n"
 msgstr ""
-"  -D,  --domains=LISTA              lista hyv‰ksytyist‰ verkkotunnuksista\n"
+"  -D,  --domains=LISTA             lista hyv√§ksytyist√§ verkkotunnuksista\n"
 
 #: src/main.c:610
 msgid ""
 "       --exclude-domains=LIST      comma-separated list of rejected "
 "domains.\n"
 msgstr ""
-"       --exclude-domains=LISTA      lista torjutuista verkkotunnuksista\n"
+"       --exclude-domains=LISTA     lista torjutuista verkkotunnuksista\n"
 
 #: src/main.c:612
 msgid ""
 "       --follow-ftp                follow FTP links from HTML documents.\n"
 msgstr ""
-"       --follow-ftp                 seuraa ftp-linkkej‰ HTML-dokumenteista\n"
+"       --follow-ftp                seuraa ftp-linkkej√§ HTML-dokumenteista\n"
 
 #: src/main.c:614
 msgid ""
 "       --follow-tags=LIST          comma-separated list of followed HTML "
 "tags.\n"
-msgstr ""
-"       --follow-tags=LISTA          lista seurattavista HTML-tageista\n"
+msgstr "       --follow-tags=LISTA         lista seurattavista HTML-tageista\n"
 
 #: src/main.c:616
 msgid ""
 "       --ignore-tags=LIST          comma-separated list of ignored HTML "
 "tags.\n"
-msgstr ""
-"       --ignore-tags=LISTA          lista ohitettavista HTML-tageista\n"
+msgstr "       --ignore-tags=LISTA         lista ohitettavista HTML-tageista\n"
 
 #: src/main.c:618
 msgid ""
 "  -H,  --span-hosts                go to foreign hosts when recursive.\n"
 msgstr ""
-"  -H,  --span-hosts                 siirry rekursiossa eri palvelimille\n"
+"  -H,  --span-hosts                siirry rekursiossa eri palvelimille\n"
 
 #: src/main.c:620
 msgid "  -L,  --relative                  follow relative links only.\n"
-msgstr ""
-"  -L,  --relative                   seuraa vain suhteellisia linkkej‰\n"
+msgstr "  -L,  --relative                  seuraa vain suhteellisia linkkej√§\n"
 
 #: src/main.c:622
 msgid "  -I,  --include-directories=LIST  list of allowed directories.\n"
-msgstr ""
-"  -I,  --include-directories=LISTA  lista hyv‰ksytyist‰ hakemistoista\n"
+msgstr "  -I,  --include-directories=LISTA lista hyv√§ksytyist√§ hakemistoista\n"
 
 #: src/main.c:624
 msgid "  -X,  --exclude-directories=LIST  list of excluded directories.\n"
 msgstr ""
-"  -X,  --exclude-directories=LISTA  lista poissuljetuista hakemistoista\n"
+"  -X,  --exclude-directories=LISTA lista poissuljetuista hakemistoista\n"
 
 #: src/main.c:626
 msgid ""
 "  -np, --no-parent                 don't ascend to the parent directory.\n"
-msgstr "  -np, --no-parent                  ‰l‰ nouse hakemistorakenteessa\n"
+msgstr "  -np, --no-parent                 √§l√§ nouse hakemistorakenteessa\n"
 
 #: src/main.c:630
 msgid "Mail bug reports and suggestions to <bug-wget@gnu.org>.\n"
-msgstr "L‰het‰ virheraportit ja ehdotukset osoitteeseen <bug-wget@gnu.org>.\n"
+msgstr "L√§het√§ virheraportit ja ehdotukset osoitteeseen <bug-wget@gnu.org>.\n"
 
 #: src/main.c:635
 #, c-format
 msgid "GNU Wget %s, a non-interactive network retriever.\n"
-msgstr "GNU Wget %s, tiedostojen noutaja.\n"
+msgstr "GNU Wget %s, ei-vuorovaikutteinen tiedostojen noutaja.\n"
 
-#: src/main.c:675
-#, fuzzy
-msgid "Copyright (C) 2007 Free Software Foundation, Inc.\n"
-msgstr "Tekij‰noikeus © 2005 Free Software Foundation, Inc.\n"
-
+#. TRANSLATORS: When available, an actual copyright character
+#. (cirle-c) should be used in preference to "(C)".
 #: src/main.c:677
+#, fuzzy
+msgid "Copyright (C) 2008 Free Software Foundation, Inc.\n"
+msgstr "Tekij√§noikeudet ¬© 2007 Free Software Foundation, Inc.\n"
+
+#: src/main.c:679
 msgid ""
 "License GPLv3+: GNU GPL version 3 or later\n"
 "<http://www.gnu.org/licenses/gpl.html>.\n"
 "This is free software: you are free to change and redistribute it.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
+"Lisenssi GPLv3+: GNU GPL versio 3 tai my√∂h√§isempi\n"
+"<http://www.gnu.org/licenses/gpl.html>.\n"
+"T√§m√§ on vapaa ohjelmisto: voit muuttaa sit√§ vapaasti ja jakaa sit√§ "
+"edelleen.\n"
+"Ohjelmalle EI OLE MIT√Ñ√ÑN TAKUUTA siin√§ laajuudessa, mit√§ laki sallii.\n"
 
-#: src/main.c:682
+#. TRANSLATORS: When available, please use the proper diacritics for
+#. names such as this one. See en_US.po for reference.
+#: src/main.c:686
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"
@@ -1499,227 +1533,230 @@ msgstr ""
 "\n"
 "Alunperin kirjoittanut Hrvoje Niksic <hniksic@xemacs.org>.\n"
 
-#: src/main.c:684
+#: src/main.c:688
 msgid "Currently maintained by Micah Cowan <micah@cowan.name>.\n"
-msgstr ""
+msgstr "Nykyinen yll√§pit√§j√§ Micah Cowan <micah@cowan.name>.\n"
 
-#: src/main.c:731 src/main.c:800 src/main.c:900
+#: src/main.c:735 src/main.c:804 src/main.c:904
 #, c-format
 msgid "Try `%s --help' for more options.\n"
-msgstr "Kirjoita \"%s --help\" saadaksesi lis‰‰ valitsimia.\n"
+msgstr "Kirjoita ‚Äù%s --help‚Äù saadaksesi lis√§√§ valitsimia.\n"
 
-#: src/main.c:797
+#: src/main.c:801
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
-msgstr "%s: virheellinen valitsin -- \"-n%c\"\n"
+msgstr "%s: virheellinen valitsin ‚Äì ‚Äù-n%c‚Äù\n"
 
-#: src/main.c:855
+#: src/main.c:859
 #, c-format
 msgid "Can't be verbose and quiet at the same time.\n"
-msgstr "Ei voi n‰ytt‰‰ yksityiskohtia ja olla hiljaa yht‰ aikaa.\n"
+msgstr "Ei voi n√§ytt√§√§ yksityiskohtia ja olla hiljaa yht√§ aikaa.\n"
 
-#: src/main.c:861
+#: src/main.c:865
 #, c-format
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr ""
-"Vanhoja tiedostoja ei voi aikaleimata ja j‰tt‰‰ koskematta yht‰ aikaa.\n"
+"Vanhoja tiedostoja ei voi aikaleimata ja j√§tt√§√§ koskematta yht√§ aikaa.\n"
 
-#: src/main.c:869
+#: src/main.c:873
 #, c-format
 msgid "Cannot specify both --inet4-only and --inet6-only.\n"
-msgstr "Argumentteja --inet4-only ja --inet6-only ei voi k‰ytt‰‰ yht‰ aikaa.\n"
+msgstr ""
+"Argumentteja ‚Äù--inet4-only‚Äù ja ‚Äù--inet6-only‚Äù ei voi k√§ytt√§√§ yht√§ aikaa.\n"
 
-#: src/main.c:879
+#: src/main.c:883
 #, c-format
 msgid "Cannot specify -r, -p or -N if -O is given.\n"
 msgstr ""
+"Ei voida m√§√§ritell√§ argumentteja ‚Äù-r‚Äù, ‚Äù-p‚Äù tai ‚Äù-N‚Äù jos ‚Äù-O‚Äù on annettu.\n"
 
-#: src/main.c:887
-#, fuzzy, c-format
+#: src/main.c:891
+#, c-format
 msgid "Cannot specify both -k and -O if multiple URLs are given.\n"
-msgstr "Argumentteja --inet4-only ja --inet6-only ei voi k‰ytt‰‰ yht‰ aikaa.\n"
+msgstr ""
+"Ei voida m√§√§ritell√§ sek√§ argumenttia ‚Äù-k‚Äù ett√§ argumenttia ‚Äù-O‚Äù jos on "
+"annettu useita URL-osoitteita.\n"
 
-#: src/main.c:895
+#: src/main.c:899
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: URL puuttuu\n"
 
-#: src/main.c:1021
+#: src/main.c:1025
 #, c-format
 msgid "No URLs found in %s.\n"
-msgstr "Tiedostosta %s ei lˆytynyt URLeja.\n"
+msgstr "Tiedostosta %s ei l√∂ytynyt URLeja.\n"
 
-#: src/main.c:1039
-#, fuzzy, c-format
+#: src/main.c:1043
+#, c-format
 msgid ""
 "FINISHED --%s--\n"
 "Downloaded: %d files, %s in %s (%s)\n"
 msgstr ""
-"\n"
 "VALMIS --%s--\n"
-"Noudettu: %s tavua ja %d tiedostoa\n"
+"Noudettu: %d tiedostoa, %s kohteesssa %s (%s)\n"
 
-#: src/main.c:1048
-#, fuzzy, c-format
+#: src/main.c:1052
+#, c-format
 msgid "Download quota of %s EXCEEDED!\n"
-msgstr "Hakukiintiˆ (%s tavua) YLITETTY!\n"
+msgstr "Haun %s:n tavun kiinti√∂ YLITETTY!\n"
 
-#: src/mswindows.c:97
+#: src/mswindows.c:99
 #, c-format
 msgid "Continuing in background.\n"
 msgstr "Ohjelman suoritus jatkuu taustalla.\n"
 
-#: src/mswindows.c:290
+#: src/mswindows.c:292
 #, c-format
 msgid "Continuing in background, pid %lu.\n"
 msgstr "Ohjelman suoritus jatkuu taustalla, pid %lu.\n"
 
-#: src/mswindows.c:292 src/utils.c:329
+#: src/mswindows.c:294 src/utils.c:330
 #, c-format
 msgid "Output will be written to `%s'.\n"
-msgstr "Tuloste kirjoitetaan tiedostoon \"%s\".\n"
+msgstr "Tuloste kirjoitetaan tiedostoon ‚Äù%s‚Äù.\n"
 
-#: src/mswindows.c:460 src/mswindows.c:467
+#: src/mswindows.c:462 src/mswindows.c:469
 #, c-format
 msgid "%s: Couldn't find usable socket driver.\n"
-msgstr "%s: Ei lˆytynyt k‰yttˆkelpoista socket-ajuria.\n"
+msgstr "%s: Ei l√∂ytynyt k√§ytt√∂kelpoista pistokeajuria.\n"
 
-#: src/netrc.c:372
+#: src/netrc.c:373
 #, c-format
 msgid "%s: %s:%d: warning: \"%s\" token appears before any machine name\n"
 msgstr ""
-"%s: %s:%d: varoitus: \"%s\"-merkint‰ esiintyy kaikkien koneiden nimien "
-"edess‰\n"
+"%s: %s:%d: varoitus: ‚Äù%s‚Äù-merkint√§ esiintyy kaikkien koneiden nimien edess√§\n"
 
-#: src/netrc.c:403
+#: src/netrc.c:404
 #, c-format
 msgid "%s: %s:%d: unknown token \"%s\"\n"
-msgstr "%s: %s:%d: tuntematon merkki \"%s\"\n"
+msgstr "%s: %s:%d: tuntematon merkki ‚Äù%s‚Äù\n"
 
-#: src/netrc.c:467
+#: src/netrc.c:468
 #, c-format
 msgid "Usage: %s NETRC [HOSTNAME]\n"
-msgstr "K‰yttˆ: %s NETRC [PALVELIMEN NIMI]\n"
+msgstr "K√§ytt√∂: %s NETRC [PALVELIMEN NIMI]\n"
 
-#: src/netrc.c:477
+#: src/netrc.c:478
 #, c-format
 msgid "%s: cannot stat %s: %s\n"
 msgstr "%s: tiedoston %s tilaa ei voitu lukea: %s\n"
 
-#: src/openssl.c:112
+#: src/openssl.c:113
 msgid "WARNING: using a weak random seed.\n"
-msgstr "VAROITUS: satunnaislukujen l‰hde on heikkolaatuinen.\n"
+msgstr "VAROITUS: satunnaislukujen l√§hde on heikkolaatuinen.\n"
 
-#: src/openssl.c:172
+#: src/openssl.c:173
 msgid "Could not seed PRNG; consider using --random-file.\n"
-msgstr "PRNG:t‰ ei voitu alustaa; harkitse --random-file valitsimen k‰yttˆ‰.\n"
+msgstr ""
+"PRNG:t√§ ei voitu alustaa; harkitse ‚Äù--random-file‚Äù-valitsimen k√§ytt√∂√§.\n"
 
-#: src/openssl.c:487
+#: src/openssl.c:488
 msgid "ERROR"
 msgstr "VIRHE"
 
-#: src/openssl.c:487
+#: src/openssl.c:488
 msgid "WARNING"
 msgstr "VAROITUS"
 
-#: src/openssl.c:496
+#: src/openssl.c:497
 #, c-format
 msgid "%s: No certificate presented by %s.\n"
-msgstr "%s: %s ei esitt‰nyt varmennetta.\n"
+msgstr "%s: %s ei esitt√§nyt varmennetta.\n"
 
-#: src/openssl.c:517
-#, fuzzy, c-format
+#: src/openssl.c:518
+#, c-format
 msgid "%s: cannot verify %s's certificate, issued by `%s':\n"
-msgstr "%s: %s ei esitt‰nyt varmennetta.\n"
+msgstr "%s: ei voida todentaa kohteen %s varmennetta, my√∂nt√§j√§: ‚Äù%s‚Äù:\n"
 
-#: src/openssl.c:525
+#: src/openssl.c:526
 msgid "  Unable to locally verify the issuer's authority.\n"
-msgstr ""
+msgstr "  Ei voida paikallisesti todentaa my√∂nt√§j√§n valtuutusta.\n"
 
-#: src/openssl.c:529
+#: src/openssl.c:530
 msgid "  Self-signed certificate encountered.\n"
-msgstr ""
+msgstr "  Itse allekirjoitettu varmenne kohdattu.\n"
 
-#: src/openssl.c:532
+#: src/openssl.c:533
 msgid "  Issued certificate not yet valid.\n"
-msgstr ""
+msgstr "  Varmenne ei ole viel√§ voimassa.\n"
 
-#: src/openssl.c:535
+#: src/openssl.c:536
 msgid "  Issued certificate has expired.\n"
-msgstr ""
+msgstr "  Varmenne on vanhentunut.\n"
 
-#: src/openssl.c:567
+#: src/openssl.c:568
 #, c-format
 msgid ""
 "%s: certificate common name `%s' doesn't match requested host name `%s'.\n"
-msgstr ""
-"%s: varmenteen yleinen nimi \"%s\" ei t‰sm‰‰ palvelimen nimeen \"%s\".\n"
+msgstr "%s: varmenteen yleinen nimi ‚Äù%s‚Äù ei t√§sm√§√§ palvelimen nimeen ‚Äù%s‚Äù.\n"
 
-#: src/openssl.c:580
+#: src/openssl.c:581
 #, c-format
 msgid "To connect to %s insecurely, use `--no-check-certificate'.\n"
 msgstr ""
-"Ottaaksesi yhteyden kohteeseen %s:n turvattomasti, k‰yt‰ --no-check-"
-"certificate valitsinta.\n"
+"Ottaaksesi yhteyden kohteeseen %s:n turvattomasti, k√§yt√§ ‚Äù--no-check-"
+"certificate‚Äù-valitsinta.\n"
 
-#: src/progress.c:238
-#, fuzzy, c-format
+#: src/progress.c:242
+#, c-format
 msgid ""
 "\n"
 "%*s[ skipping %sK ]"
 msgstr ""
 "\n"
-"%*s[ ohitetaan %dK ]"
+"%*s[ ohitetaan %sK ]"
 
-#: src/progress.c:452
+#: src/progress.c:456
 #, c-format
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
-msgstr "Pistetyylin m‰‰rittely \"%s\" on virheellinen; j‰tet‰‰n muuttamatta.\n"
+msgstr "Pistetyylin m√§√§rittely ‚Äù%s‚Äù on virheellinen; j√§tet√§√§n muuttamatta.\n"
 
-#: src/progress.c:946
+#  T√§m√§ ja seuraava ovat t√§ysi√§ arvoituksia.
+#: src/progress.c:802
 #, c-format
 msgid "  eta %s"
-msgstr ""
+msgstr "  eta %s"
 
-#: src/progress.c:961
+#: src/progress.c:1041
 msgid "   in "
-msgstr ""
+msgstr "   in "
 
-#: src/ptimer.c:159
+#: src/ptimer.c:160
 #, c-format
 msgid "Cannot get REALTIME clock frequency: %s\n"
 msgstr "REAALIAIKAkellon taajuutta ei saatu: %s\n"
 
-#: src/recur.c:378
+#: src/recur.c:379
 #, c-format
 msgid "Removing %s since it should be rejected.\n"
-msgstr "Poistetaan %s, koska sen pit‰isi olla hyl‰tty.\n"
+msgstr "Poistetaan %s, koska sen pit√§isi olla hyl√§tty.\n"
 
-#: src/res.c:389
+#: src/res.c:390
 #, c-format
 msgid "Cannot open %s: %s"
 msgstr "Ei voitu avata tiedostoa %s: %s"
 
-#: src/res.c:541
+#: src/res.c:542
 msgid "Loading robots.txt; please ignore errors.\n"
-msgstr "Ladataan robots.txt; ‰l‰ v‰lit‰ virheist‰.\n"
+msgstr "Ladataan robots.txt, √§l√§ v√§lit√§ virheist√§.\n"
 
-#: src/retr.c:651
+#: src/retr.c:652
 #, c-format
 msgid "Error parsing proxy URL %s: %s.\n"
-msgstr "Virhe tulkittaessa v‰lityspalvelimen URLia %s: %s.\n"
+msgstr "Virhe tulkittaessa v√§lityspalvelimen URLia %s: %s.\n"
 
-#: src/retr.c:659
+#: src/retr.c:660
 #, c-format
 msgid "Error in proxy URL %s: Must be HTTP.\n"
-msgstr "Virhe v‰lityspalvelimen URLissa %s: Sen t‰ytyy olla HTTP.\n"
+msgstr "Virhe v√§lityspalvelimen URLissa %s: Sen t√§ytyy olla HTTP.\n"
 
-#: src/retr.c:745
+#: src/retr.c:746
 #, c-format
 msgid "%d redirections exceeded.\n"
 msgstr "%d edelleenohjausta ylitetty.\n"
 
-#: src/retr.c:880
+#: src/retr.c:881
 msgid ""
 "Giving up.\n"
 "\n"
@@ -1727,21 +1764,23 @@ msgstr ""
 "Luovutetaan.\n"
 "\n"
 
-#: src/retr.c:880
+#: src/retr.c:881
 msgid ""
 "Retrying.\n"
 "\n"
 msgstr ""
-"Yritet‰‰n uudelleen.\n"
+"Yritet√§√§n uudelleen.\n"
 "\n"
 
-#: src/spider.c:73
+#: src/spider.c:74
 msgid ""
 "Found no broken links.\n"
 "\n"
 msgstr ""
+"Ei l√∂ydetty rikkin√§isi√§ linkkej√§.\n"
+"\n"
 
-#: src/spider.c:80
+#: src/spider.c:81
 #, c-format
 msgid ""
 "Found %d broken link.\n"
@@ -1750,83 +1789,60 @@ msgid_plural ""
 "Found %d broken links.\n"
 "\n"
 msgstr[0] ""
+"L√∂ydettiin %d rikkin√§inen linkki.\n"
+"\n"
 msgstr[1] ""
+"L√∂ydettiin %d rikkin√§ist√§ linkki√§.\n"
+"\n"
 
-#: src/spider.c:90
+#: src/spider.c:91
 #, c-format
 msgid "%s\n"
-msgstr ""
+msgstr "%s\n"
 
-#: src/url.c:619
+#: src/url.c:620
 msgid "No error"
-msgstr "Ei virhett‰"
+msgstr "Ei virhett√§"
 
-#: src/url.c:621
+#: src/url.c:622
 msgid "Unsupported scheme"
 msgstr "Kaavaa ei tueta"
 
-#: src/url.c:623
+#: src/url.c:624
 msgid "Invalid host name"
 msgstr "Palvelimen nimi on virheellinen"
 
-#: src/url.c:625
+#: src/url.c:626
 msgid "Bad port number"
 msgstr "Portin numero on virheellinen"
 
-#: src/url.c:627
+#: src/url.c:628
 msgid "Invalid user name"
-msgstr "K‰ytt‰j‰tunnus on virheellinen"
+msgstr "K√§ytt√§j√§tunnus on virheellinen"
 
-#: src/url.c:629
+#: src/url.c:630
 msgid "Unterminated IPv6 numeric address"
-msgstr "P‰‰tt‰m‰tˆn numeerinen IPv6-osoite"
+msgstr "P√§√§tt√§m√§t√∂n numeerinen IPv6-osoite"
 
-#: src/url.c:631
+#: src/url.c:632
 msgid "IPv6 addresses not supported"
 msgstr "IPv6-osoitteita ei tueta"
 
-#: src/url.c:633
+#: src/url.c:634
 msgid "Invalid IPv6 numeric address"
 msgstr "Virheellinen numeerinen IPv6-osoite"
 
-#: src/utils.c:327
+#: src/utils.c:328
 #, c-format
 msgid "Continuing in background, pid %d.\n"
 msgstr "Ohjelman suoritus jatkuu taustalla, pid %d.\n"
 
-#: src/utils.c:375
+#: src/utils.c:376
 #, c-format
 msgid "Failed to unlink symlink `%s': %s\n"
-msgstr "Symbolisen linkin \"%s\" poistaminen ep‰onnistui: %s\n"
+msgstr "Symbolisen linkin ‚Äù%s‚Äù poistaminen ep√§onnistui: %s\n"
 
-#: src/xmalloc.c:62
+#: src/xmalloc.c:63
 #, c-format
 msgid "%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"
-msgstr "%s: %s: Muisti on loppu, %ld tavun varaaminen ep‰onnistui.\n"
-
-#~ msgid "Error in Set-Cookie, field `%s'"
-#~ msgstr "Virhe Set-Cookiessa, kentt‰ \"%s\""
-
-#~ msgid "%s (%s) - Connection closed at byte %s/%s. "
-#~ msgstr "%s (%s) - Yhteys suljettu tavun %s/%s kohdalla. "
-
-#~ msgid ""
-#~ "%s: %s: Invalid extended boolean `%s';\n"
-#~ "use one of `on', `off', `always', or `never'.\n"
-#~ msgstr ""
-#~ "%s: %s: Valinta \"%s\" on virheellinen,\n"
-#~ "valitse \"on\", \"off\", \"always\" tai \"never\".\n"
-
-#~ msgid ""
-#~ "This program is distributed in the hope that it will be useful,\n"
-#~ "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-#~ "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-#~ "GNU General Public License for more details.\n"
-#~ msgstr ""
-#~ "T‰t‰ ohjelmaa levitet‰‰n siin‰ toivossa, ett‰ se olisi hyˆdyllinen,\n"
-#~ "mutta ilman mit‰‰n takuuta; ilman edes hiljaista takuuta kaupallisesti\n"
-#~ "hyv‰ksytt‰v‰st‰ laadusta tai soveltuvuudesta tiettyyn tarkoitukseen.\n"
-#~ "Katso GPL-lisenssist‰ lis‰‰ yksityiskohtia.\n"
-
-#~ msgid "%s: Certificate verification error for %s: %s\n"
-#~ msgstr "%s: %s:n varmenteen tarkistaminen ei onnistunut: %s\n"
+msgstr "%s: %s: Muisti loppui, %ld tavun varaaminen ep√§onnistui.\n"

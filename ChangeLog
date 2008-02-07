@@ -1,3 +1,8 @@
+2008-02-06  Micah Cowan  <micah@cowan.name>
+
+	* configure.ac (AC_CHECK_FUNCS): Added check for mbtowc.
+	* po/be.po: Added from the TP.
+
 2008-02-03  Micah Cowan  <micah@cowan.name>
 
 	* configure.in: Add checks for wchar.h, wcwidth function (to
