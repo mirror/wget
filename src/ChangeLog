@@ -1,3 +1,12 @@
+2008-02-06  Micah Cowan  <micah@cowan.name>
+
+	* progress.c (countcols): Use strlen() when mbtowc or wcwidth
+	not available (or not using NLS).
+	* utils.c: Ensure we use single-byte separators when not doing
+	NLS progress-bars.
+	* wget.h: Determine whether to use NLS for progress-bars, based
+	on whether wcwidth and mbtowc are available.
+
 2008-02-03  Micah Cowan  <micah@cowan.name>
 
 	* progress.c (create_image): Use number of characters/columns

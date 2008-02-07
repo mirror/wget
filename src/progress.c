@@ -767,7 +767,7 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 #endif
 }
 
-#if HAVE_MBTOWC && HAVE_WCWIDTH
+#if USE_NLS_PROGRESS_BAR
 int
 count_cols (const char *mbs)
 {
@@ -795,8 +795,6 @@ count_cols (const char *mbs)
 }
 #else
 # define count_cols(mbs) ((int)(strlen(mbs)))
-# undef  wcwidth
-# define wcwidth(wc) (1)
 #endif
 
 /* Translation note: "ETA" is English-centric, but this must
@@ -813,7 +811,7 @@ get_eta (void)
       int nbytes;
       int ncols;
 
-#if HAVE_WCWIDTH && HAVE_MBTOWC
+#if USE_NLS_PROGRESS_BAR
       eta_trans = _(eta_str);
 #else
       eta_trans = eta_str;
