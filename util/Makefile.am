@@ -29,6 +29,4 @@
 # Version: @VERSION@
 #
 
-EXTRA_DIST = README rmold.pl
-
-bin_PROGRAMS = trunc
+EXTRA_DIST = README rmold.pl trunc.c
