@@ -767,10 +767,7 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 #endif
 }
 
-#if ! HAVE_WCWIDTH
-#define wcwidth(wc) (1)
-#endif
-
+#if HAVE_MBTOWC && HAVE_WCWIDTH
 int
 count_cols (const char *mbs)
 {
@@ -796,6 +793,11 @@ count_cols (const char *mbs)
     }
   return cols;
 }
+#else
+# define count_cols(mbs) ((int)(strlen(mbs)))
+# undef  wcwidth
+# define wcwidth(wc) (1)
+#endif
 
 /* Translation note: "ETA" is English-centric, but this must
    be short, ideally 3 chars.  Abbreviate if necessary.  */
@@ -811,7 +813,11 @@ get_eta (void)
       int nbytes;
       int ncols;
 
+#if HAVE_WCWIDTH && HAVE_MBTOWC
       eta_trans = _(eta_str);
+#else
+      eta_trans = eta_str;
+#endif
 
       /* Determine the number of bytes used in the translated string,
        * versus the number of columns used. This is to figure out how

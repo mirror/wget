@@ -1221,6 +1221,12 @@ get_grouping_data (const char **sep, const char **grouping)
       struct lconv *lconv = localeconv ();
       cached_sep = lconv->thousands_sep;
       cached_grouping = lconv->grouping;
+#if ! USE_NLS_PROGRESS_BAR
+      /* We can't count column widths, so ensure that the separator
+       * is single-byte only (let check below determine what byte). */
+      if (strlen(cached_sep) > 1)
+        cached_sep = "";
+#endif
       if (!*cached_sep)
         {
           /* Many locales (such as "C" or "hr_HR") don't specify

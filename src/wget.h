@@ -67,6 +67,19 @@ as that of the covered work.  */
    variables.  -- explanation partly taken from GNU make.  */
 #define N_(string) string
 
+#if ! ENABLE_NLS
+# undef HAVE_WCHAR_H
+# undef HAVE_WCWIDTH
+# undef HAVE_MBTOWC
+#endif /* not ENABLE_NLS */
+
+#if HAVE_WCWIDTH && HAVE_MBTOWC
+# define USE_NLS_PROGRESS_BAR 1
+#else
+/* Just to be a little paranoid about it. */
+# undef  USE_NLS_PROGRESS_BAR
+#endif
+
 /* I18N NOTE: You will notice that none of the DEBUGP messages are
    marked as translatable.  This is intentional, for a few reasons:
 

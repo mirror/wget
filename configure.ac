@@ -197,7 +197,7 @@ AC_FUNC_ALLOCA
 AC_FUNC_MMAP
 AC_FUNC_FSEEKO
 AC_CHECK_FUNCS(strptime timegm snprintf vsnprintf vasprintf drand48)
-AC_CHECK_FUNCS(strtoll usleep ftello sigblock sigsetjmp memrchr wcwidth)
+AC_CHECK_FUNCS(strtoll usleep ftello sigblock sigsetjmp memrchr wcwidth mbtowc)
 
 if test x"$ENABLE_OPIE" = xyes; then
   AC_LIBOBJ([ftp-opie])
