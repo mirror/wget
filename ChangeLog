@@ -1,6 +1,8 @@
 2008-02-06  Micah Cowan  <micah@cowan.name>
 
 	* configure.ac (AC_CHECK_FUNCS): Added check for mbtowc.
+	* NEWS: Added notes regarding fixes for the localized progress
+	bar and --no-clobber wasted GET request.
 	* po/be.po: Added from the TP.
 
 2008-02-03  Micah Cowan  <micah@cowan.name>
