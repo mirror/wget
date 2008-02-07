@@ -1,3 +1,9 @@
+2008-02-07  Micah Cowan  <micah@cowan.name>
+
+	* progress.c (create_image): Remove assertion on exceeding
+	screen width, which given the less-than-robust code there, can
+	be broken by a number of factors (such as large file downloads).
+
 2008-02-06  Micah Cowan  <micah@cowan.name>
 
 	* progress.c (countcols): Use strlen() when mbtowc or wcwidth

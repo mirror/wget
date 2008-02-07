@@ -1047,8 +1047,6 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       move_to_end (p);
     }
 
-  assert (p - bp->buffer - bytes_cols_diff - size_grouped_diff <= bp->width);
-
   while (p - bp->buffer - bytes_cols_diff - size_grouped_diff < bp->width)
     *p++ = ' ';
   *p = '\0';
