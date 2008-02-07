@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU wget 1.12-devel\n"
 "Report-Msgid-Bugs-To: wget@sunsite.dk\n"
-"POT-Creation-Date: 2008-01-28 17:25-0800\n"
-"PO-Revision-Date: 2008-01-28 17:25-0800\n"
+"POT-Creation-Date: 2008-02-06 18:23-0800\n"
+"PO-Revision-Date: 2008-02-06 18:23-0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -117,7 +117,7 @@ msgstr "connected.\n"
 msgid "failed: %s.\n"
 msgstr "failed: %s.\n"
 
-#: src/connect.c:366 src/http.c:1629
+#: src/connect.c:366 src/http.c:1632
 #, c-format
 msgid "%s: unable to resolve host address `%s'\n"
 msgstr "%s: unable to resolve host address ‘%s’\n"
@@ -220,12 +220,12 @@ msgstr " (%s bytes)"
 msgid "Length: %s"
 msgstr "Length: %s"
 
-#: src/ftp.c:220 src/http.c:2174
+#: src/ftp.c:220 src/http.c:2183
 #, c-format
 msgid ", %s (%s) remaining"
 msgstr ", %s (%s) remaining"
 
-#: src/ftp.c:224 src/http.c:2178
+#: src/ftp.c:224 src/http.c:2187
 #, c-format
 msgid ", %s remaining"
 msgstr ", %s remaining"
@@ -352,7 +352,7 @@ msgstr ""
 "No such file or directory ‘%s’.\n"
 "\n"
 
-#: src/ftp.c:935 src/http.c:2236
+#: src/ftp.c:935 src/http.c:2245
 #, c-format
 msgid "%s has sprung into existence.\n"
 msgstr "%s has sprung into existence.\n"
@@ -380,12 +380,12 @@ msgstr "Data transfer aborted.\n"
 msgid "File `%s' already there; not retrieving.\n"
 msgstr "File ‘%s’ already there; not retrieving.\n"
 
-#: src/ftp.c:1165 src/http.c:2394
+#: src/ftp.c:1165 src/http.c:2423
 #, c-format
 msgid "(try:%2d)"
 msgstr "(try:%2d)"
 
-#: src/ftp.c:1235 src/http.c:2717
+#: src/ftp.c:1235 src/http.c:2746
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s]\n"
@@ -554,45 +554,45 @@ msgstr "Failed writing HTTP request: %s.\n"
 msgid "No headers, assuming HTTP/0.9"
 msgstr "No headers, assuming HTTP/0.9"
 
-#: src/http.c:1414
+#: src/http.c:1417
 msgid "Disabling SSL due to encountered errors.\n"
 msgstr "Disabling SSL due to encountered errors.\n"
 
-#: src/http.c:1567
+#: src/http.c:1570
 #, c-format
 msgid "POST data file `%s' missing: %s\n"
 msgstr "POST data file ‘%s’ missing: %s\n"
 
-#: src/http.c:1616
+#: src/http.c:1619
 #, c-format
 msgid "Reusing existing connection to %s:%d.\n"
 msgstr "Reusing existing connection to %s:%d.\n"
 
-#: src/http.c:1684
+#: src/http.c:1687
 #, c-format
 msgid "Failed reading proxy response: %s\n"
 msgstr "Failed reading proxy response: %s\n"
 
-#: src/http.c:1704
+#: src/http.c:1707
 #, c-format
 msgid "Proxy tunneling failed: %s"
 msgstr "Proxy tunneling failed: %s"
 
-#: src/http.c:1749
+#: src/http.c:1752
 #, c-format
 msgid "%s request sent, awaiting response... "
 msgstr "%s request sent, awaiting response... "
 
-#: src/http.c:1760
+#: src/http.c:1763
 msgid "No data received.\n"
 msgstr "No data received.\n"
 
-#: src/http.c:1767
+#: src/http.c:1770
 #, c-format
 msgid "Read error (%s) in headers.\n"
 msgstr "Read error (%s) in headers.\n"
 
-#: src/http.c:1813
+#: src/http.c:1816 src/http.c:2368
 #, c-format
 msgid ""
 "File `%s' already there; not retrieving.\n"
@@ -601,36 +601,36 @@ msgstr ""
 "File ‘%s’ already there; not retrieving.\n"
 "\n"
 
-#: src/http.c:1966
+#: src/http.c:1969
 msgid "Unknown authentication scheme.\n"
 msgstr "Unknown authentication scheme.\n"
 
-#: src/http.c:1997
+#: src/http.c:2000
 msgid "Authorization failed.\n"
 msgstr "Authorization failed.\n"
 
-#: src/http.c:2011
+#: src/http.c:2014
 msgid "Malformed status line"
 msgstr "Malformed status line"
 
-#: src/http.c:2013
+#: src/http.c:2016
 msgid "(no description)"
 msgstr "(no description)"
 
-#: src/http.c:2076
+#: src/http.c:2082
 #, c-format
 msgid "Location: %s%s\n"
 msgstr "Location: %s%s\n"
 
-#: src/http.c:2077 src/http.c:2184
+#: src/http.c:2083 src/http.c:2193
 msgid "unspecified"
 msgstr "unspecified"
 
-#: src/http.c:2078
+#: src/http.c:2084
 msgid " [following]"
 msgstr " [following]"
 
-#: src/http.c:2134
+#: src/http.c:2140
 msgid ""
 "\n"
 "    The file is already fully retrieved; nothing to do.\n"
@@ -640,59 +640,59 @@ msgstr ""
 "    The file is already fully retrieved; nothing to do.\n"
 "\n"
 
-#: src/http.c:2164
+#: src/http.c:2173
 msgid "Length: "
 msgstr "Length: "
 
-#: src/http.c:2184
+#: src/http.c:2193
 msgid "ignored"
 msgstr "ignored"
 
-#: src/http.c:2255
+#: src/http.c:2264
 #, c-format
 msgid "Saving to: `%s'\n"
 msgstr "Saving to: ‘%s’\n"
 
-#: src/http.c:2336
+#: src/http.c:2345
 msgid "Warning: wildcards not supported in HTTP.\n"
 msgstr "Warning: wildcards not supported in HTTP.\n"
 
-#: src/http.c:2383
+#: src/http.c:2412
 msgid "Spider mode enabled. Check if remote file exists.\n"
 msgstr "Spider mode enabled. Check if remote file exists.\n"
 
-#: src/http.c:2468
+#: src/http.c:2497
 #, c-format
 msgid "Cannot write to `%s' (%s).\n"
 msgstr "Cannot write to ‘%s’ (%s).\n"
 
-#: src/http.c:2477
+#: src/http.c:2506
 msgid "Unable to establish SSL connection.\n"
 msgstr "Unable to establish SSL connection.\n"
 
-#: src/http.c:2485
+#: src/http.c:2514
 #, c-format
 msgid "ERROR: Redirection (%d) without location.\n"
 msgstr "ERROR: Redirection (%d) without location.\n"
 
-#: src/http.c:2531
+#: src/http.c:2560
 msgid "Remote file does not exist -- broken link!!!\n"
 msgstr "Remote file does not exist -- broken link!!!\n"
 
-#: src/http.c:2536
+#: src/http.c:2565
 #, c-format
 msgid "%s ERROR %d: %s.\n"
 msgstr "%s ERROR %d: %s.\n"
 
-#: src/http.c:2552
+#: src/http.c:2581
 msgid "Last-modified header missing -- time-stamps turned off.\n"
 msgstr "Last-modified header missing -- time-stamps turned off.\n"
 
-#: src/http.c:2560
+#: src/http.c:2589
 msgid "Last-modified header invalid -- time-stamp ignored.\n"
 msgstr "Last-modified header invalid -- time-stamp ignored.\n"
 
-#: src/http.c:2590
+#: src/http.c:2619
 #, c-format
 msgid ""
 "Server file no newer than local file `%s' -- not retrieving.\n"
@@ -701,16 +701,16 @@ msgstr ""
 "Server file no newer than local file ‘%s’ -- not retrieving.\n"
 "\n"
 
-#: src/http.c:2598
+#: src/http.c:2627
 #, c-format
 msgid "The sizes do not match (local %s) -- retrieving.\n"
 msgstr "The sizes do not match (local %s) -- retrieving.\n"
 
-#: src/http.c:2605
+#: src/http.c:2634
 msgid "Remote file is newer, retrieving.\n"
 msgstr "Remote file is newer, retrieving.\n"
 
-#: src/http.c:2621
+#: src/http.c:2650
 msgid ""
 "Remote file exists and could contain links to other resources -- "
 "retrieving.\n"
@@ -720,7 +720,7 @@ msgstr ""
 "retrieving.\n"
 "\n"
 
-#: src/http.c:2626
+#: src/http.c:2655
 msgid ""
 "Remote file exists but does not contain any link -- not retrieving.\n"
 "\n"
@@ -728,7 +728,7 @@ msgstr ""
 "Remote file exists but does not contain any link -- not retrieving.\n"
 "\n"
 
-#: src/http.c:2634
+#: src/http.c:2663
 msgid ""
 "Remote file exists but recursion is disabled -- not retrieving.\n"
 "\n"
@@ -736,7 +736,7 @@ msgstr ""
 "Remote file exists but recursion is disabled -- not retrieving.\n"
 "\n"
 
-#: src/http.c:2686
+#: src/http.c:2715
 #, c-format
 msgid ""
 "%s (%s) - `%s' saved [%s/%s]\n"
@@ -745,17 +745,17 @@ msgstr ""
 "%s (%s) - ‘%s’ saved [%s/%s]\n"
 "\n"
 
-#: src/http.c:2741
+#: src/http.c:2770
 #, c-format
 msgid "%s (%s) - Connection closed at byte %s. "
 msgstr "%s (%s) - Connection closed at byte %s. "
 
-#: src/http.c:2756
+#: src/http.c:2785
 #, c-format
 msgid "%s (%s) - Read error at byte %s (%s)."
 msgstr "%s (%s) - Read error at byte %s (%s)."
 
-#: src/http.c:2765
+#: src/http.c:2794
 #, c-format
 msgid "%s (%s) - Read error at byte %s/%s (%s). "
 msgstr "%s (%s) - Read error at byte %s/%s (%s). "
@@ -1680,7 +1680,7 @@ msgstr ""
 msgid "To connect to %s insecurely, use `--no-check-certificate'.\n"
 msgstr "To connect to %s insecurely, use ‘--no-check-certificate’.\n"
 
-#: src/progress.c:239
+#: src/progress.c:242
 #, c-format
 msgid ""
 "\n"
@@ -1689,17 +1689,17 @@ msgstr ""
 "\n"
 "%*s[ skipping %sK ]"
 
-#: src/progress.c:453
+#: src/progress.c:456
 #, c-format
 msgid "Invalid dot style specification `%s'; leaving unchanged.\n"
 msgstr "Invalid dot style specification ‘%s’; leaving unchanged.\n"
 
-#: src/progress.c:947
+#: src/progress.c:802
 #, c-format
 msgid "  eta %s"
 msgstr "  eta %s"
 
-#: src/progress.c:962
+#: src/progress.c:1041
 msgid "   in "
 msgstr "   in "
 
