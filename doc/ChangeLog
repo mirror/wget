@@ -1,3 +1,8 @@
+2008-02-06  Micah Cowan  <micah@cowan.name>
+
+	* wget.ṫexi <Overview>: Remove references to no-longer-supported
+	socks library.
+
 2008-01-31  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi: Ensure that license info appears in the info

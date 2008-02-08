@@ -167,11 +167,8 @@ download from where it left off.
 
 @item
 Wget supports proxy servers, which can lighten the network load, speed
-up retrieval and provide access behind firewalls.  However, if you are
-behind a firewall that requires that you use a socks style gateway,
-you can get the socks library and build Wget with support for socks.
-Wget uses the passive @sc{ftp} downloading by default, active @sc{ftp}
-being an option.
+up retrieval and provide access behind firewalls.  Wget uses the passive
+@sc{ftp} downloading by default, active @sc{ftp} being an option.
 
 @item
 Wget supports IP version 6, the next generation of IP.  IPv6 is
