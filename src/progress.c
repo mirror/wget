@@ -874,12 +874,12 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
      "[]"              - progress bar decorations - 2 chars
      " nnn,nnn,nnn"    - downloaded bytes         - 12 chars or very rarely more
      " 12.5K/s"        - download rate             - 8 chars
-     "  eta 36m 51s"   - ETA                      - 13 chars
+     "  eta 36m 51s"   - ETA                      - 14 chars
 
      "=====>..."       - progress bar             - the rest
   */
   int dlbytes_size = 1 + MAX (size_grouped_len, 11);
-  int progress_size = bp->width - (4 + 2 + dlbytes_size + 8 + 13);
+  int progress_size = bp->width - (4 + 2 + dlbytes_size + 8 + 14);
 
   if (progress_size < 5)
     progress_size = 0;

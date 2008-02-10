@@ -1291,6 +1291,10 @@ struct http_stat
   double dltime;                /* time it took to download the data */
   const char *referer;          /* value of the referer header. */
   char *local_file;             /* local file name. */
+  bool existence_checked;       /* true if we already checked for a file's
+                                   existence after having begun to download
+                                   (needed in gethttp for when connection is
+                                   interrupted/restarted. */
   bool timestamp_checked;       /* true if pre-download time-stamping checks 
                                  * have already been performed */
   char *orig_file_name;         /* name of file to compare for time-stamping
@@ -1807,7 +1811,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
     }
   
   /* TODO: perform this check only once. */
-  if (file_exists_p (hs->local_file))
+  if (!hs->existence_checked && file_exists_p (hs->local_file))
     {
       if (opt.noclobber)
         {
@@ -1833,6 +1837,7 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
           hs->local_file = unique;
         }
     }
+  hs->existence_checked = true;
 
   /* Support timestamping */
   /* TODO: move this code out of gethttp. */

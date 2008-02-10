@@ -1,3 +1,15 @@
+2008-02-10  Micah Cowan  <micah@cowan.name>
+
+	* http.c: Added existence_checked member to the http_stat
+	struct.
+	(gethttp): Mark hs->existence_checked when we've checked whether
+	a file-to-download exists; so we don't check it again if the
+	connection gets lost (and potentially pick a new "unique" name).
+	This fixes bug 22251.
+	* progress.c (create_image): Add space for an extra column in
+	the "eta" portion of the progress bar image; to deal with
+	too-long Czech translation.
+
 2008-02-07  Micah Cowan  <micah@cowan.name>
 
 	* progress.c (create_image): Remove assertion on exceeding
