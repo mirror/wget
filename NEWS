@@ -19,7 +19,10 @@ GNU Wget.
 related assertion failure was fixed).
 
 ** Wget no longer issues a GET request over HTTP for files it should
-know it's not going to download (regression over 1.10.2).
+know it's not going to download (regression in 1.11 over 1.10.2).
+
+** Interrupted downloads no longer result in renaming the file
+(regression in 1.11 over 1.10.2).
 
 * Changes in Wget 1.11.
 

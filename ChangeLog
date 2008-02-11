@@ -1,3 +1,7 @@
+2008-02-10  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: Added note re interrupted files resulting in renames.
+
 2008-02-06  Micah Cowan  <micah@cowan.name>
 
 	* configure.ac (AC_CHECK_FUNCS): Added check for mbtowc.
