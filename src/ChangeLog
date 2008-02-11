@@ -9,6 +9,9 @@
 	* progress.c (create_image): Add space for an extra column in
 	the "eta" portion of the progress bar image; to deal with
 	too-long Czech translation.
+	* main.c, http.c, init.c: Added --auth-no-challenge option, to
+	bring back 1.10.2 unsafe auth behavior when needed. This fixes
+	bug #22242.
 
 2008-02-07  Micah Cowan  <micah@cowan.name>
 

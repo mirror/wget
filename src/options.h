@@ -234,6 +234,8 @@ struct options
 				   than one type is available */
   
   bool content_disposition;	/* Honor HTTP Content-Disposition header. */
+  bool auth_without_challenge;  /* Issue Basic authentication creds without
+                                   waiting for a challenge. */
 };
 
 extern struct options opt;

@@ -130,6 +130,7 @@ static struct cmdline_option option_data[] =
   {
     { "accept", 'A', OPT_VALUE, "accept", -1 },
     { "append-output", 'a', OPT__APPEND_OUTPUT, NULL, required_argument },
+    { "auth-no-challenge", 0, OPT_BOOLEAN, "authnochallenge", -1 },
     { "background", 'b', OPT_BOOLEAN, "background", -1 },
     { "backup-converted", 'K', OPT_BOOLEAN, "backupconverted", -1 },
     { "backups", 0, OPT_BOOLEAN, "backups", -1 },
@@ -532,6 +533,10 @@ HTTP options:\n"),
     N_("\
        --content-disposition   honor the Content-Disposition header when\n\
                                choosing local file names (EXPERIMENTAL).\n"),
+    N_("\
+       --auth-no-challenge     Send Basic HTTP authentication information\n\
+                               without first waiting for the server's\n\
+                               challenge.\n"),
     "\n",
 
 #ifdef HAVE_SSL

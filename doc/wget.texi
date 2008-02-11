@@ -1359,6 +1359,18 @@ This option is useful for some file-downloading CGI programs that use
 @code{Content-Disposition} headers to describe what the name of a
 downloaded file should be.
 
+@cindex authentication
+@item --auth-no-challenge
+
+If this option is given, Wget will send Basic HTTP authentication
+information (plaintext username and password) for all requests, just
+like Wget 1.10.2 and prior did by default.
+
+Use of this option is not recommended, and is intended only to support
+some few obscure servers, which never send HTTP authentication
+challenges, but accept unsolicited auth info, say, in addition to
+form-based authentication.
+
 @end table
 
 @node HTTPS (SSL/TLS) Options

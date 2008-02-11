@@ -1,3 +1,8 @@
+2008-02-10  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi <HTTP Options>: Added documentation of
+	--auth-no-challenge.
+
 2008-02-06  Micah Cowan  <micah@cowan.name>
 
 	* wget.ṫexi <Overview>: Remove references to no-longer-supported

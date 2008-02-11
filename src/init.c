@@ -113,6 +113,8 @@ static const struct {
   { "accept",           &opt.accepts,           cmd_vector },
   { "addhostdir",       &opt.add_hostdir,       cmd_boolean },
   { "alwaysrest",       &opt.always_rest,       cmd_boolean }, /* deprecated */
+  { "authnochallenge",  &opt.auth_without_challenge,
+                                                cmd_boolean },
   { "background",       &opt.background,        cmd_boolean },
   { "backupconverted",  &opt.backup_converted,  cmd_boolean },
   { "backups",          &opt.backups,           cmd_number },
