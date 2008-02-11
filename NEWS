@@ -23,6 +23,10 @@ know it's not going to download (regression in 1.11 over 1.10.2).
 
 ** Interrupted downloads no longer result in renaming the file
 (regression in 1.11 over 1.10.2).
+
+** Added option --auth-no-challenge, to support broken pre-1.11
+authentication-before-server-challenge, which turns out to still be
+useful for some limited cases.
 
 * Changes in Wget 1.11.
 

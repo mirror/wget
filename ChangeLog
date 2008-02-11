@@ -1,6 +1,7 @@
 2008-02-10  Micah Cowan  <micah@cowan.name>
 
-	* NEWS: Added note re interrupted files resulting in renames.
+	* NEWS: Added note re interrupted files resulting in renames,
+	and new --auth-no-challenge option.
 
 2008-02-06  Micah Cowan  <micah@cowan.name>
 
