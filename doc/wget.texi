@@ -2202,6 +2202,14 @@ followed.  Only the archive you are interested in will be downloaded.
 Essentially, @samp{--no-parent} is similar to
 @samp{-I/~luzer/my-archive}, only it handles redirections in a more
 intelligent fashion.
+
+@strong{Note} that, for HTTP (and HTTPS), the trailing slash is very
+important to @samp{--no-parent}. HTTP has no concept of a ``directory''---Wget
+relies on you to indicate what's a directory and what isn't. In
+@samp{http://foo/bar/}, Wget will consider @samp{bar} to be a
+directory, while in @samp{http://foo/bar} (no trailing slash),
+@samp{bar} will be considered a filename (so @samp{--no-parent} would be
+meaningless, as its parent is @samp{/}).
 @end table
 
 @node Relative Links

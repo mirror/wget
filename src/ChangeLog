@@ -1,3 +1,8 @@
+2008-03-17  Micah Cowan  <micah@cowan.name>
+
+	* connect.c: Include sys/time.h to support use of the select
+	function on older systems.
+
 2008-02-11  Benno Schulenberg  <bensberg@justemail.net>
 
 	* http.c: More accurate and descriptive messages for when a file
