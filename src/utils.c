@@ -2175,7 +2175,15 @@ test_dir_matches_p()
     { { "/somedir", "/someotherdir", NULL }, "anotherdir", false },
     { { "/somedir", "/*otherdir", NULL }, "anotherdir", true },
     { { "/somedir/d1", "/someotherdir", NULL }, "somedir/d1", true },
+    { { "*/*d1", "/someotherdir", NULL }, "somedir/d1", true },
     { { "/somedir/d1", "/someotherdir", NULL }, "d1", false },
+    { { "!COMPLETE", NULL, NULL }, "!COMPLETE", true },
+    { { "*COMPLETE", NULL, NULL }, "!COMPLETE", true },
+    { { "*/!COMPLETE", NULL, NULL }, "foo/!COMPLETE", true },
+    { { "*COMPLETE", NULL, NULL }, "foo/!COMPLETE", false },
+    { { "*/*COMPLETE", NULL, NULL }, "foo/!COMPLETE", true },
+    { { "/dir with spaces", NULL, NULL }, "dir with spaces", true },
+    { { "/dir*with*spaces", NULL, NULL }, "dir with spaces", true },
   };
   
   for (i = 0; i < countof(test_array); ++i) 
