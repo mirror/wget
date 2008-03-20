@@ -1,3 +1,7 @@
+*** NOTE: Wget packages do not have gettext included; passages in
+the text below that describe how to configure with
+--with-included-gettext do _not_ apply. ***
+
 1 Notes on the Free Translation Project
 ***************************************
 
