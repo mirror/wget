@@ -36,9 +36,6 @@ ACLOCAL_AMFLAGS = -I m4 -I md5/m4
 # subdirectories in the distribution
 SUBDIRS = lib @MD5_SUBDIR@ src doc po tests util windows
 
-test: all
-	cd tests && $(MAKE) $(AM_MAKEFLAGS) $@
-
 EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST \
 	     msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
 	     msdos/Makefile.WC ABOUT-NLS autogen.sh

@@ -1,3 +1,10 @@
+2008-03-20  Micah Cowan  <micah@cowan.name>
+
+	* ABOUT-NLS: Reinstated, but with a message mentioning that
+	gettext is not included.
+	* Makefile.am: Removed "test" target; "check" should be used
+	instead (and "test" was mildly broken, anyway).
+
 2008-02-14  Micah Cowan  <micah@cowan.name>
 
 	* ABOUT-NLS: Removed.
