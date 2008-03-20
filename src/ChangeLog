@@ -1,3 +1,13 @@
+2008-03-19  Micah Cowan  <micah@cowan.name>
+
+	* utils.c (test_dir_matches_p): More tests related for
+	dir_matches_p.
+
+2008-03-17  Micah Cowan  <micah@cowan.name>
+
+	* connect.c: Include sys/time.h to support use of the select
+	function on older systems.
+
 2008-02-11  Benno Schulenberg  <bensberg@justemail.net>
 
 	* http.c: More accurate and descriptive messages for when a file

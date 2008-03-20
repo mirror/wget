@@ -1,3 +1,8 @@
+2008-03-17  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi <Directory-Based Limits>: Mention importance of
+	trailing slashes to --no-parents.
+
 2008-02-10  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi <HTTP Options>: Added documentation of

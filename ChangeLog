@@ -1,3 +1,7 @@
+2008-02-14  Micah Cowan  <micah@cowan.name>
+
+	* ABOUT-NLS: Removed.
+
 2008-02-10  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: Added note re interrupted files resulting in renames,
