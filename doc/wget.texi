@@ -2125,8 +2125,47 @@ better fine-tuning of which files to retrieve.  E.g. @samp{wget -A
 a part of their name, but @emph{not} the PostScript files.
 
 Note that these two options do not affect the downloading of @sc{html}
-files; Wget must load all the @sc{html}s to know where to go at
-all---recursive retrieval would make no sense otherwise.
+files (as determined by a @samp{.htm} or @samp{.html} filename
+prefix). This behavior may not be desirable for all users, and may be
+changed for future versions of Wget.
+
+Note, too, that query strings (strings at the end of a URL beginning
+with a question mark (@samp{?}) are not included as part of the
+filename for accept/reject rules, even though these will actually
+contribute to the name chosen for the local file. It is expected that
+a future version of Wget will provide an option to allow matching
+against query strings.
+
+Finally, it's worth noting that the accept/reject lists are matched
+@emph{twice} against downloaded files: once against the URL's filename
+portion, to determine if the file should be downloaded in the first
+place; then, after it has been accepted and successfully downloaded,
+the local file's name is also checked against the accept/reject lists
+to see if it should be removed. The rationale was that, since
+@samp{.htm} and @samp{.html} files are always downloaded regardless of
+accept/reject rules, they should be removed @emph{after} being
+downloaded and scanned for links, if they did match the accept/reject
+lists. However, this can lead to unexpected results, since the local
+filenames can differ from the original URL filenames in the following
+ways, all of which can change whether an accept/reject rule matches:
+
+@itemize @bullet
+@item
+If the local file already exists and @samp{--no-directories} was
+specified, a numeric suffix will be appended to the original name.
+@item
+If @samp{--html-extension} was specified, the local filename will have
+@samp{.html} appended to it. If Wget is invoked with @samp{-E -A.php},
+a filename such as @samp{index.php} will match be accepted, but upon
+download will be named @samp{index.php.html}, which no longer matches,
+and so the file will be deleted.
+@item
+Query strings do not contribute to URL matching, but are included in
+local filenames, and so @emph{do} contribute to filename matching.
+@end itemize
+
+This behavior, too, is considered less-than-desirable, and may change
+in a future version of Wget.
 
 @node Directory-Based Limits
 @section Directory-Based Limits

@@ -1,3 +1,9 @@
+2008-03-24  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi <Types of Fields>: Mentioned various caveats in the
+	behavior of accept/reject lists, deprecate current
+	always-download-HTML feature.
+
 2008-03-17  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi <Directory-Based Limits>: Mention importance of
