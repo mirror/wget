@@ -3,7 +3,7 @@
 @c %**start of header
 @setfilename wget.info
 @include version.texi
-@set UPDATED Jan 2008
+@set UPDATED Mar 2008
 @settitle GNU Wget @value{VERSION} Manual
 @c Disable the monstrous rectangles beside overfull hbox-es.
 @finalout
@@ -2119,6 +2119,7 @@ Analogously, to download all files except the ones beginning with
 expansion by the shell.
 @end table
 
+@noindent
 The @samp{-A} and @samp{-R} options may be combined to achieve even
 better fine-tuning of which files to retrieve.  E.g. @samp{wget -A
 "*zelazny*" -R .ps} will download all the files having @samp{zelazny} as
@@ -2164,6 +2165,7 @@ Query strings do not contribute to URL matching, but are included in
 local filenames, and so @emph{do} contribute to filename matching.
 @end itemize
 
+@noindent
 This behavior, too, is considered less-than-desirable, and may change
 in a future version of Wget.
 

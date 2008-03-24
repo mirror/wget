@@ -2,7 +2,8 @@
 
 	* wget.texi <Types of Fields>: Mentioned various caveats in the
 	behavior of accept/reject lists, deprecate current
-	always-download-HTML feature.
+	always-download-HTML feature. Added @noindent to a couple of
+	appropriate spots.
 
 2008-03-17  Micah Cowan  <micah@cowan.name>
 
