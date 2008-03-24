@@ -7,7 +7,9 @@
 
 2008-03-24  Micah Cowan  <micah@cowan.name>
 
-	* NEWS: Added documentation change re: --no-parents.
+	* NEWS: Added documentation change re: --no-parents, and various
+	caveats on accept/reject lists behavior. Rearranged some items in
+	order of priority.
 
 2008-02-14  Micah Cowan  <micah@cowan.name>
 
