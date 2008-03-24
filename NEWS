@@ -15,6 +15,9 @@ GNU Wget.
 
 * Changes in Wget 1.11.1.
 
+** Documentation of --no-parents now explains how a trailing slash, or
+lack thereof, in the specified URL, will affect behavior.
+
 ** Progress bar now displays correctly in non-English locales (and a
 related assertion failure was fixed).
 

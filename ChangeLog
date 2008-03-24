@@ -5,6 +5,10 @@
 	* Makefile.am: Removed "test" target; "check" should be used
 	instead (and "test" was mildly broken, anyway).
 
+2008-03-24  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: Added documentation change re: --no-parents.
+
 2008-02-14  Micah Cowan  <micah@cowan.name>
 
 	* ABOUT-NLS: Removed.
