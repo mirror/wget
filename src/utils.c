@@ -171,7 +171,7 @@ aprintf (const char *fmt, ...)
   ret = vasprintf (&str, fmt, args);
   va_end (args);
   if (ret < 0 && errno == ENOMEM)
-    abort ();                   /* for consistency with xmalloc/xrealloc */
+    memfatal ("aprintf", UNKNOWN_ATTEMPTED_SIZE);  /* for consistency with xmalloc/xrealloc */
   else if (ret < 0)
     return NULL;
   return str;

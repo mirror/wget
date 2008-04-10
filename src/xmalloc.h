@@ -31,6 +31,13 @@ as that of the covered work.  */
 #ifndef XMALLOC_H
 #define XMALLOC_H
 
+/* Croak the fatal memory error and bail out with non-zero exit
+   status.  */
+void memfatal (const char *context, long attempted_size);
+
+/* Constant is using when we don`t know attempted size exactly */
+#define UNKNOWN_ATTEMPTED_SIZE -3
+
 /* Define this to use Wget's builtin malloc debugging, which is crude
    but occasionally useful.  It will make Wget a lot slower and
    larger, and susceptible to aborting if malloc_table overflows, so
