@@ -1,3 +1,9 @@
+2008-04-10  Alexander Dergachev  <cy6erbr4in@gmail.com>
+
+	* xmalloc.c, xmalloc.h (memfatal): Now exported; accepts an
+	"unknown" value for the attempted allocation size.
+	* utils.c (aprintf): Now calls memfatal, instead of aborting.
+
 2008-03-19  Micah Cowan  <micah@cowan.name>
 
 	* utils.c (test_dir_matches_p): More tests related for
