@@ -918,7 +918,7 @@ Error in server response, closing control connection.\n"));
       if (opt.backups)
         rotate_backups (con->target);
 
-      if (restval)
+      if (restval && !(con->cmd & DO_LIST))
         fp = fopen (con->target, "ab");
       else if (opt.noclobber || opt.always_rest || opt.timestamping || opt.dirstruct
                || opt.output_document)
@@ -1141,7 +1141,9 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
         }
 
       /* Decide whether or not to restart.  */
-      if (opt.always_rest
+      if (con->cmd & DO_LIST)
+        restval = 0;
+      else if (opt.always_rest
           && stat (locf, &st) == 0
           && S_ISREG (st.st_mode))
         /* When -c is used, continue from on-disk size.  (Can't use
