@@ -1,15 +1,15 @@
-2008-04-10  Alexander Dergachev  <cy6erbr4in@gmail.com>
-
-	* xmalloc.c, xmalloc.h (memfatal): Now exported; accepts an
-	"unknown" value for the attempted allocation size.
-	* utils.c (aprintf): Now calls memfatal, instead of aborting.
-
 2008-04-11  Micah Cowan  <micah@cowan.name>
 
 	* ftp.c (getftp, ftp_loop_internal): Don't append to an existing
 	.listing when --continue is used.  Fixes bug #22825. Thanks to
 	Rabin Vincent <rabin@rab.in> for pointing the way with a
 	suggested fix!
+
+2008-04-10  Alexander Dergachev  <cy6erbr4in@gmail.com>
+
+	* xmalloc.c, xmalloc.h (memfatal): Now exported; accepts an
+	"unknown" value for the attempted allocation size.
+	* utils.c (aprintf): Now calls memfatal, instead of aborting.
 
 2008-03-19  Micah Cowan  <micah@cowan.name>
 
