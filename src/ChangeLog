@@ -1,3 +1,10 @@
+2008-04-12  Micah Cowan  <micah@cowan.name>
+
+	* utils.c (aprintf): Minor formatting changes to Alex's code (80-
+	column limit, concatenated string literals, avoiding nesting
+	levels), and removed invocation of free (since we're aborting
+	anyway).
+
 2008-04-11  Alexander Dergachev  <cy6erbr4in@gmail.com>
 
 	* utils.c (aprintf): Now we are setting limits (1 Mb) for text
