@@ -1,3 +1,8 @@
+2008-04-10  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.in, Test-proxy-auth-basic.px: Added a test for
+	accessing password-protected URLs through a proxy.
+
 2008-01-25  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am: Updated copyright year.

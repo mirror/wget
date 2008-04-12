@@ -3,6 +3,13 @@
 	* utils.c (aprintf): Now we are setting limits (1 Mb) for text
 	buffer when we use non-C99 vsnprintf.
 	
+2008-04-11  Micah Cowan  <micah@cowan.name>
+
+	* ftp.c (getftp, ftp_loop_internal): Don't append to an existing
+	.listing when --continue is used.  Fixes bug #22825. Thanks to
+	Rabin Vincent <rabin@rab.in> for pointing the way with a
+	suggested fix!
+
 2008-04-10  Alexander Dergachev  <cy6erbr4in@gmail.com>
 
 	* xmalloc.c, xmalloc.h (memfatal): Now exported; accepts an
