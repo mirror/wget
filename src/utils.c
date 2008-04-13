@@ -301,6 +301,13 @@ fork_to_background (void)
   /* Whether we arrange our own version of opt.lfilename here.  */
   bool logfile_changed = false;
 
+  if (opt.quiet && !opt.server_response)
+    {
+      /* Don't bother with a logfile, there are virtually no logs we
+         issue in quiet mode. (Server responses in FTP are the
+         exception, when enabled.) */
+      log_close ();
+    }
   if (!opt.lfilename)
     {
       /* We must create the file immediately to avoid either a race
@@ -325,7 +332,8 @@ fork_to_background (void)
   else if (pid != 0)
     {
       /* parent, no error */
-      printf (_("Continuing in background, pid %d.\n"), (int) pid);
+      if (!quiet)
+        printf (_("Continuing in background, pid %d.\n"), (int) pid);
       if (logfile_changed)
         printf (_("Output will be written to `%s'.\n"), opt.lfilename);
       exit (0);                 /* #### should we use _exit()? */
