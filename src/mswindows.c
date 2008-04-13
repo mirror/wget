@@ -157,6 +157,10 @@ fake_fork_child (void)
   event = info->event;
 
   info->logfile_changed = false;
+  if (opt.quiet && !opt.server_response)
+    {
+      log_close ();
+    }
   if (!opt.lfilename)
     {
       /* See utils:fork_to_background for explanation. */
@@ -289,7 +293,8 @@ fake_fork (void)
       goto cleanup;
     }
 
-  printf (_("Continuing in background, pid %lu.\n"), pi.dwProcessId);
+  if (!opt.quiet)
+    printf (_("Continuing in background, pid %lu.\n"), pi.dwProcessId);
   if (info->logfile_changed)
     printf (_("Output will be written to `%s'.\n"), info->lfilename);
 

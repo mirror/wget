@@ -1,3 +1,13 @@
+2007-04-12  Micah Cowan  <micah@cowan.name>
+
+	* mswindows.c (fake_fork_child): Don't create a logfile for
+	--background when --quiet is used, but not --server-response.
+	Don't mention that we're backgrounding if --quiet is used. Based
+	on a patch submitted by Rabin Vincent <rabin@rab.in>.  Fixes bug
+	#20917.
+
+	* utils.c (fork_to_background): Likewise.
+
 2008-04-12  Micah Cowan  <micah@cowan.name>
 
 	* utils.c (aprintf): Minor formatting changes to Alex's code (80-
