@@ -157,11 +157,7 @@ fake_fork_child (void)
   event = info->event;
 
   info->logfile_changed = false;
-  if (opt.quiet && !opt.server_response)
-    {
-      log_close ();
-    }
-  if (!opt.lfilename)
+  if (!opt.lfilename && (!opt.quiet || opt.server_response))
     {
       /* See utils:fork_to_background for explanation. */
       FILE *new_log_fp = unique_create (DEFAULT_LOGFILE, false, &opt.lfilename);

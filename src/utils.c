@@ -301,14 +301,7 @@ fork_to_background (void)
   /* Whether we arrange our own version of opt.lfilename here.  */
   bool logfile_changed = false;
 
-  if (opt.quiet && !opt.server_response)
-    {
-      /* Don't bother with a logfile, there are virtually no logs we
-         issue in quiet mode. (Server responses in FTP are the
-         exception, when enabled.) */
-      log_close ();
-    }
-  if (!opt.lfilename)
+  if (!opt.lfilename && (!opt.quiet || opt.server_response))
     {
       /* We must create the file immediately to avoid either a race
          condition (which arises from using unique_name and failing to
