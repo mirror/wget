@@ -159,6 +159,13 @@ sepstring (const char *s)
    vsnprintf until the correct size is found.  Since Wget also ships a
    fallback implementation of vsnprintf, this should be portable.  */
 
+/* Constant is using for limits memory allocation for text buffer.
+   Applicable in situation when: vasprintf is not available in the system 
+   and vsnprintf return -1 when long line is truncated (in old versions of
+   glibc and in other system where C99 doesn`t support) */
+
+#define FMT_MAX_LENGTH 1048576
+
 char *
 aprintf (const char *fmt, ...)
 {
@@ -171,7 +178,8 @@ aprintf (const char *fmt, ...)
   ret = vasprintf (&str, fmt, args);
   va_end (args);
   if (ret < 0 && errno == ENOMEM)
-    memfatal ("aprintf", UNKNOWN_ATTEMPTED_SIZE);  /* for consistency with xmalloc/xrealloc */
+    memfatal ("aprintf", UNKNOWN_ATTEMPTED_SIZE);  /* for consistency
+                                                      with xmalloc/xrealloc */
   else if (ret < 0)
     return NULL;
   return str;
@@ -201,8 +209,21 @@ aprintf (const char *fmt, ...)
       /* Else try again with a larger buffer. */
       if (n > -1)               /* C99 */
         size = n + 1;           /* precisely what is needed */
+      else if (size >= FMT_MAX_LENGTH)  /* We have a huge buffer, */
+        {                               /* maybe we have some wrong
+                                           format string? */
+          logprintf (LOG_ALWAYS, 
+                     _("%s: aprintf: text buffer is too big (%ld bytes), "
+                       "aborting.\n"),
+                     exec_name, size);  /* printout a log message */
+          abort ();                     /* and abort... */
+        }
       else
-        size <<= 1;             /* twice the old size */
+        {
+          /* else, we continue to grow our
+           * buffer: Twice the old size. */
+          size <<= 1;
+        }
       str = xrealloc (str, size);
     }
 #endif /* not HAVE_VASPRINTF */

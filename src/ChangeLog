@@ -6,6 +6,18 @@
 
 	* utils.c (fork_to_background): Likewise.
 
+2008-04-12  Micah Cowan  <micah@cowan.name>
+
+	* utils.c (aprintf): Minor formatting changes to Alex's code (80-
+	column limit, concatenated string literals, avoiding nesting
+	levels), and removed invocation of free (since we're aborting
+	anyway).
+
+2008-04-11  Alexander Dergachev  <cy6erbr4in@gmail.com>
+
+	* utils.c (aprintf): Now we are setting limits (1 Mb) for text
+	buffer when we use non-C99 vsnprintf.
+	
 2008-04-11  Micah Cowan  <micah@cowan.name>
 
 	* ftp.c (getftp, ftp_loop_internal): Don't append to an existing
