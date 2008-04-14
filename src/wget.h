@@ -212,7 +212,10 @@ typedef double SUM_SIZE_INT;
 
 /* Likewise for logging functions.  */
 #include "log.h"
-
+
+/* Likewise for quoting functions.  */
+#include "quote.h"
+
 /* Useful macros used across the code: */
 
 /* The number of elements in an array.  For example:

@@ -1,3 +1,9 @@
+2008-04-14  Steven Schubiger  <schubiger@gmail.com>
+
+	* http.c: Use Gnulib's quote function for printing filenames and
+	such.
+	* wget.h: #include "quote.h".
+
 2008-04-12  Rabin Vincent  <rabin@rab.in>
 
 	* mswindows.c (fake_fork_child): Don't create a logfile for
