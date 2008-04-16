@@ -348,7 +348,7 @@ fork_to_background (void)
       /* parent, no error */
       printf (_("Continuing in background, pid %d.\n"), (int) pid);
       if (logfile_changed)
-        printf (_("Output will be written to `%s'.\n"), opt.lfilename);
+        printf (_("Output will be written to %s.\n"), quote (opt.lfilename));
       exit (0);                 /* #### should we use _exit()? */
     }
 
@@ -394,8 +394,8 @@ remove_link (const char *file)
       DEBUGP (("Unlinking %s (symlink).\n", file));
       err = unlink (file);
       if (err != 0)
-        logprintf (LOG_VERBOSE, _("Failed to unlink symlink `%s': %s\n"),
-                   file, strerror (errno));
+        logprintf (LOG_VERBOSE, _("Failed to unlink symlink %s: %s\n"),
+                   quote (file), strerror (errno));
     }
   return err;
 }
