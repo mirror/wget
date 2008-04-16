@@ -515,8 +515,8 @@ ssl_check_certificate (int fd, const char *host)
     {
       char *issuer = X509_NAME_oneline (X509_get_issuer_name (cert), 0, 0);
       logprintf (LOG_NOTQUIET,
-                 _("%s: cannot verify %s's certificate, issued by `%s':\n"),
-                 severity, escnonprint (host), escnonprint (issuer));
+                 _("%s: cannot verify %s's certificate, issued by %s:\n"),
+                 severity, escnonprint (host), quote (escnonprint (issuer)));
       /* Try to print more user-friendly (and translated) messages for
          the frequent verification errors.  */
       switch (vresult)
@@ -566,8 +566,8 @@ ssl_check_certificate (int fd, const char *host)
   if (!pattern_match (common_name, host))
     {
       logprintf (LOG_NOTQUIET, _("\
-%s: certificate common name `%s' doesn't match requested host name `%s'.\n"),
-                 severity, escnonprint (common_name), escnonprint (host));
+%s: certificate common name %s doesn't match requested host name %s.\n"),
+                 severity, quote (escnonprint (common_name)), quote (escnonprint (host)));
       success = false;
     }
 
