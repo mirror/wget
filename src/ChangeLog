@@ -12,6 +12,7 @@
 	* mswindows.c: Likewise.
 	* openssl.c: Likewise.
 	* progress.c: Likewise.
+	* recur.c: Likewise.
 
 2008-04-16  Steven Schubiger  <schubiger@gmail.com>
 
