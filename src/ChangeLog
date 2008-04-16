@@ -9,6 +9,7 @@
 	* gnutls.c: Likewise.
 	* init.c: Likewise.
 	* log.c: Likewise.
+	* mswindows.c: Likewise.
 
 2008-04-16  Steven Schubiger  <schubiger@gmail.com>
 
