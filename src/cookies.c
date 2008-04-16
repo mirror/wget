@@ -1129,8 +1129,8 @@ cookie_jar_load (struct cookie_jar *jar, const char *file)
   FILE *fp = fopen (file, "r");
   if (!fp)
     {
-      logprintf (LOG_NOTQUIET, _("Cannot open cookies file `%s': %s\n"),
-                 file, strerror (errno));
+      logprintf (LOG_NOTQUIET, _("Cannot open cookies file %s: %s\n"),
+                 quote (file), strerror (errno));
       return;
     }
   cookies_now = time (NULL);
@@ -1247,8 +1247,8 @@ cookie_jar_save (struct cookie_jar *jar, const char *file)
   fp = fopen (file, "w");
   if (!fp)
     {
-      logprintf (LOG_NOTQUIET, _("Cannot open cookies file `%s': %s\n"),
-                 file, strerror (errno));
+      logprintf (LOG_NOTQUIET, _("Cannot open cookies file %s: %s\n"),
+                 quote (file), strerror (errno));
       return;
     }
 
@@ -1284,11 +1284,11 @@ cookie_jar_save (struct cookie_jar *jar, const char *file)
     }
  out:
   if (ferror (fp))
-    logprintf (LOG_NOTQUIET, _("Error writing to `%s': %s\n"),
-               file, strerror (errno));
+    logprintf (LOG_NOTQUIET, _("Error writing to %s: %s\n"),
+               quote (file), strerror (errno));
   if (fclose (fp) < 0)
-    logprintf (LOG_NOTQUIET, _("Error closing `%s': %s\n"),
-               file, strerror (errno));
+    logprintf (LOG_NOTQUIET, _("Error closing %s: %s\n"),
+               quote (file), strerror (errno));
 
   DEBUGP (("Done saving cookies.\n"));
 }
