@@ -5,6 +5,7 @@
 	* connect.c: Likewise.
 	* convert.c: Likewise.
 	* cookies.c: Likewise.
+	* ftp-opie.c: Likewise.
 
 2008-04-16  Steven Schubiger  <schubiger@gmail.com>
 
