@@ -1,3 +1,8 @@
+2008-04-16  Steven Schubiger  <schubiger@gmail.com>
+
+	* sysdep.h: Comment the defines __EXTENSIONS__ and _GNU_SOURCE 
+	out, because they're now defined independently by config.h.
+
 2008-04-14  Steven Schubiger  <schubiger@gmail.com>
 
 	* http.c: Use Gnulib's quote function for printing filenames and
