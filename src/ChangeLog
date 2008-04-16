@@ -6,6 +6,7 @@
 	* convert.c: Likewise.
 	* cookies.c: Likewise.
 	* ftp-opie.c: Likewise.
+	* gnutls.c: Likewise.
 
 2008-04-16  Steven Schubiger  <schubiger@gmail.com>
 
