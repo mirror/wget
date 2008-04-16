@@ -1,5 +1,10 @@
 2008-04-16  Steven Schubiger  <schubiger@gmail.com>
 
+	* ftp.c: Use Gnulib's quote function for printing filenames and
+	such.
+
+2008-04-16  Steven Schubiger  <schubiger@gmail.com>
+
 	* sysdep.h: Comment the defines __EXTENSIONS__ and _GNU_SOURCE 
 	out, because they're now defined independently by config.h.
 
