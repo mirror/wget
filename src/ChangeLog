@@ -3,6 +3,7 @@
 	* ftp.c: Use Gnulib's quote function for printing filenames and
 	such.
 	* connect.c: Likewise.
+	* convert.c: Likewise.
 
 2008-04-16  Steven Schubiger  <schubiger@gmail.com>
 
