@@ -13,6 +13,7 @@
 	* openssl.c: Likewise.
 	* progress.c: Likewise.
 	* recur.c: Likewise.
+	* res.c: Likewise.
 
 2008-04-16  Steven Schubiger  <schubiger@gmail.com>
 

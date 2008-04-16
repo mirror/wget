@@ -463,9 +463,9 @@ res_match_path (const struct robot_specs *specs, const char *path)
     if (matches (specs->paths[i].path, path))
       {
         bool allowedp = specs->paths[i].allowedp;
-        DEBUGP (("%s path %s because of rule `%s'.\n",
+        DEBUGP (("%s path %s because of rule %s.\n",
                  allowedp ? "Allowing" : "Rejecting",
-                 path, specs->paths[i].path));
+                 path, quote (specs->paths[i].path)));
         return allowedp;
       }
   return true;
