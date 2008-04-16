@@ -195,8 +195,8 @@ resolve_bind_address (struct sockaddr *sa)
     {
       /* #### We should be able to print the error message here. */
       logprintf (LOG_NOTQUIET,
-                 _("%s: unable to resolve bind address `%s'; disabling bind.\n"),
-                 exec_name, opt.bind_address);
+                 _("%s: unable to resolve bind address %s; disabling bind.\n"),
+                 exec_name, quote (opt.bind_address));
       should_bind = false;
       return false;
     }
@@ -366,8 +366,8 @@ connect_to_host (const char *host, int port)
   if (!al)
     {
       logprintf (LOG_NOTQUIET,
-                 _("%s: unable to resolve host address `%s'\n"),
-                 exec_name, host);
+                 _("%s: unable to resolve host address %s\n"),
+                 exec_name, quote (host));
       return E_HOST;
     }
 
