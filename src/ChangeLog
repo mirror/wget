@@ -8,6 +8,7 @@
 	* ftp-opie.c: Likewise.
 	* gnutls.c: Likewise.
 	* init.c: Likewise.
+	* log.c: Likewise.
 
 2008-04-16  Steven Schubiger  <schubiger@gmail.com>
 
