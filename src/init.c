@@ -478,8 +478,8 @@ run_wgetrc (const char *file)
           ++errcnt;
           break;
         case line_unknown_command:
-          fprintf (stderr, _("%s: Unknown command `%s' in %s at line %d.\n"),
-                   exec_name, com, file, ln);
+          fprintf (stderr, _("%s: Unknown command %s in %s at line %d.\n"),
+                   exec_name, quote (com), file, ln);
           ++errcnt;
           break;
         case line_empty:
@@ -524,8 +524,8 @@ initialize (void)
   if (!strcmp (file, SYSTEM_WGETRC))
     {
       fprintf (stderr, _("\
-%s: Warning: Both system and user wgetrc point to `%s'.\n"),
-               exec_name, file);
+%s: Warning: Both system and user wgetrc point to %s.\n"),
+               exec_name, quote (file));
     }
   else
 #endif
@@ -676,8 +676,8 @@ run_command (const char *opt)
       xfree (val);
       break;
     default:
-      fprintf (stderr, _("%s: Invalid --execute command `%s'\n"),
-               exec_name, opt);
+      fprintf (stderr, _("%s: Invalid --execute command %s\n"),
+               exec_name, quote (opt));
       exit (2);
     }
 }
@@ -721,8 +721,8 @@ cmd_boolean (const char *com, const char *val, void *place)
   else
     {
       fprintf (stderr,
-               _("%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"),
-               exec_name, com, val);
+               _("%s: %s: Invalid boolean %s; use `on' or `off'.\n"),
+               exec_name, com, quote (val));
       return false;
     }
 
@@ -738,8 +738,8 @@ cmd_number (const char *com, const char *val, void *place)
   if (!simple_atoi (val, val + strlen (val), place)
       || *(int *) place < 0)
     {
-      fprintf (stderr, _("%s: %s: Invalid number `%s'.\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid number %s.\n"),
+               exec_name, com, quote (val));
       return false;
     }
   return true;
@@ -969,8 +969,8 @@ cmd_bytes (const char *com, const char *val, void *place)
   double byte_value;
   if (!parse_bytes_helper (val, &byte_value))
     {
-      fprintf (stderr, _("%s: %s: Invalid byte value `%s'\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid byte value %s\n"),
+               exec_name, com, quote (val));
       return false;
     }
   *(wgint *)place = (wgint)byte_value;
@@ -988,8 +988,8 @@ cmd_bytes_sum (const char *com, const char *val, void *place)
   double byte_value;
   if (!parse_bytes_helper (val, &byte_value))
     {
-      fprintf (stderr, _("%s: %s: Invalid byte value `%s'\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid byte value %s\n"),
+               exec_name, com, quote (val));
       return false;
     }
   *(SUM_SIZE_INT *) place = (SUM_SIZE_INT) byte_value;
@@ -1013,8 +1013,8 @@ cmd_time (const char *com, const char *val, void *place)
   if (val == end)
     {
     err:
-      fprintf (stderr, _("%s: %s: Invalid time period `%s'\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid time period %s\n"),
+               exec_name, com, quote (val));
       return false;
     }
 
@@ -1067,7 +1067,7 @@ cmd_cert_type (const char *com, const char *val, void *place)
   };
   int ok = decode_string (val, choices, countof (choices), place);
   if (!ok)
-    fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"), exec_name, com, val);
+    fprintf (stderr, _("%s: %s: Invalid value %s.\n"), exec_name, com, quote (val));
   return ok;
 }
 #endif
@@ -1104,8 +1104,8 @@ cmd_spec_header (const char *com, const char *val, void *place_ignored)
 
   if (!check_user_specified_header (val))
     {
-      fprintf (stderr, _("%s: %s: Invalid header `%s'.\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid header %s.\n"),
+               exec_name, com, quote (val));
       return false;
     }
   opt.user_headers = vec_append (opt.user_headers, val);
@@ -1157,7 +1157,7 @@ cmd_spec_prefer_family (const char *com, const char *val, void *place_ignored)
   int prefer_family = prefer_ipv4;
   int ok = decode_string (val, choices, countof (choices), &prefer_family);
   if (!ok)
-    fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"), exec_name, com, val);
+    fprintf (stderr, _("%s: %s: Invalid value %s.\n"), exec_name, com, quote (val));
   opt.prefer_family = prefer_family;
   return ok;
 }
@@ -1170,8 +1170,8 @@ cmd_spec_progress (const char *com, const char *val, void *place_ignored)
 {
   if (!valid_progress_implementation_p (val))
     {
-      fprintf (stderr, _("%s: %s: Invalid progress type `%s'.\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid progress type %s.\n"),
+               exec_name, com, quote (val));
       return false;
     }
   xfree_null (opt.progress_type);
@@ -1229,8 +1229,8 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
       else
         {
           fprintf (stderr,
-                   _("%s: %s: Invalid restriction `%s', use [unix|windows],[lowercase|uppercase],[nocontrol].\n"),
-                   exec_name, com, val);
+                   _("%s: %s: Invalid restriction %s, use [unix|windows],[lowercase|uppercase],[nocontrol].\n"),
+                   exec_name, com, quote (val));
           return false;
         }
 
@@ -1260,7 +1260,7 @@ cmd_spec_secure_protocol (const char *com, const char *val, void *place)
   };
   int ok = decode_string (val, choices, countof (choices), place);
   if (!ok)
-    fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"), exec_name, com, val);
+    fprintf (stderr, _("%s: %s: Invalid value %s.\n"), exec_name, com, quote (val));
   return ok;
 }
 #endif
@@ -1285,8 +1285,8 @@ cmd_spec_useragent (const char *com, const char *val, void *place_ignored)
   /* Disallow embedded newlines.  */
   if (strchr (val, '\n'))
     {
-      fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid value %s.\n"),
+               exec_name, com, quote (val));
       return false;
     }
   xfree_null (opt.useragent);
