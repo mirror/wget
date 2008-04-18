@@ -28,8 +28,6 @@ Corresponding Source for a non-source form of such a combination
 shall include the source code for the parts of OpenSSL used as well
 as that of the covered work.  */
 
-#define USE_GNULIB_ALLOC
-
 #include "wget.h"
 
 #include <stdio.h>
@@ -768,7 +766,7 @@ fd_register_transport (int fd, struct transport_implementation *imp, void *ctx)
      hash key.  */
   assert (fd >= 0);
 
-  info = xmalloc (sizeof (struct transport_info));
+  info = xnew (struct transport_info);
   info->imp = imp;
   info->ctx = ctx;
   if (!transport_map)
@@ -960,7 +958,7 @@ fd_close (int fd)
   if (info)
     {
       hash_table_remove (transport_map, (void *)(intptr_t) fd);
-      free (info);
+      xfree (info);
       ++transport_map_modified_tick;
     }
 }
