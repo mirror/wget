@@ -39,7 +39,9 @@ AC_DEFUN([gl_INIT],
   m4_pushdef([AC_LIBOBJ], m4_defn([gl_LIBOBJ]))
   m4_pushdef([AC_REPLACE_FUNCS], m4_defn([gl_REPLACE_FUNCS]))
   m4_pushdef([AC_LIBSOURCES], m4_defn([gl_LIBSOURCES]))
+  gl_COMMON
   gl_source_base='lib'
+  gl_FUNC_ALLOCA
   gl_ERROR
   m4_ifdef([AM_XGETTEXT_OPTION],
     [AM_XGETTEXT_OPTION([--flag=error:3:c-format])
@@ -92,6 +94,7 @@ AC_DEFUN([gl_INIT],
   m4_pushdef([AC_LIBOBJ], m4_defn([gltests_LIBOBJ]))
   m4_pushdef([AC_REPLACE_FUNCS], m4_defn([gltests_REPLACE_FUNCS]))
   m4_pushdef([AC_LIBSOURCES], m4_defn([gltests_LIBSOURCES]))
+  gl_COMMON
   gl_source_base='tests'
   m4_popdef([AC_LIBSOURCES])
   m4_popdef([AC_REPLACE_FUNCS])
@@ -190,6 +193,8 @@ AC_DEFUN([gltests_LIBSOURCES], [
 # gnulib-tool and may be removed by future gnulib-tool invocations.
 AC_DEFUN([gl_FILE_LIST], [
   build-aux/link-warning.h
+  lib/alloca.c
+  lib/alloca.in.h
   lib/c-ctype.c
   lib/c-ctype.h
   lib/error.c
@@ -216,6 +221,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/xalloc-die.c
   lib/xalloc.h
   lib/xmalloc.c
+  m4/alloca.m4
   m4/error.m4
   m4/exitfail.m4
   m4/extensions.m4

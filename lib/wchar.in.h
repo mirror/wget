@@ -1,6 +1,6 @@
 /* A substitute for ISO C99 <wchar.h>, for platforms that have issues.
 
-   Copyright (C) 2007 Free Software Foundation, Inc.
+   Copyright (C) 2007-2008 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
  */
 
 #ifdef __need_mbstate_t
-/* Special invocation convention inside glibc header files.  */
+/* Special invocation convention inside uClibc header files.  */
 
 #@INCLUDE_NEXT@ @NEXT_WCHAR_H@
 
