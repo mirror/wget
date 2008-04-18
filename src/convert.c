@@ -28,8 +28,6 @@ Corresponding Source for a non-source form of such a combination
 shall include the source code for the parts of OpenSSL used as well
 as that of the covered work.  */
 
-#define USE_GNULIB_ALLOC
-
 #include "wget.h"
 
 #include <stdio.h>
@@ -89,7 +87,7 @@ convert_all_links (void)
     cnt = hash_table_count (downloaded_html_set);
   if (cnt == 0)
     goto cleanup;
-  file_array = xcalloc (cnt, sizeof (char *));
+  file_array = alloca_array (char *, cnt);
   string_set_to_array (downloaded_html_set, file_array);
 
   for (i = 0; i < cnt; i++)
@@ -287,8 +285,8 @@ convert_links (const char *file, struct urlpos *links)
 
             DEBUGP (("TO_RELATIVE: %s to %s at position %d in %s.\n",
                      link->url->url, newname, link->pos, file));
-            free (newname);
-            free (quoted_newname);
+            xfree (newname);
+            xfree (quoted_newname);
             ++to_file_count;
             break;
           }
@@ -306,7 +304,7 @@ convert_links (const char *file, struct urlpos *links)
 
             DEBUGP (("TO_COMPLETE: <something> to %s at position %d in %s.\n",
                      newlink, link->pos, file));
-            free (quoted_newlink);
+            xfree (quoted_newlink);
             ++to_url_count;
             break;
           }
@@ -690,8 +688,8 @@ dissociate_urls_from_file_mapper (void *key, void *value, void *arg)
   if (0 == strcmp (mapping_file, file))
     {
       hash_table_remove (dl_url_file_map, mapping_url);
-      free (mapping_url);
-      free (mapping_file);
+      xfree (mapping_url);
+      xfree (mapping_file);
     }
 
   /* Continue mapping. */
@@ -741,8 +739,8 @@ register_download (const char *url, const char *file)
         goto url_only;
 
       hash_table_remove (dl_file_url_map, file);
-      free (old_file);
-      free (old_url);
+      xfree (old_file);
+      xfree (old_url);
 
       /* Remove all the URLs that point to this file.  Yes, there can
          be more than one such URL, because we store redirections as
@@ -782,8 +780,8 @@ register_download (const char *url, const char *file)
   if (hash_table_get_pair (dl_url_file_map, url, &old_url, &old_file))
     {
       hash_table_remove (dl_url_file_map, url);
-      free (old_url);
-      free (old_file);
+      xfree (old_url);
+      xfree (old_file);
     }
 
   hash_table_put (dl_url_file_map, xstrdup (url), xstrdup (file));
@@ -819,8 +817,8 @@ register_delete_file (const char *file)
     return;
 
   hash_table_remove (dl_file_url_map, file);
-  free (old_file);
-  free (old_url);
+  xfree (old_file);
+  xfree (old_url);
   dissociate_urls_from_file (file);
 }
 
@@ -950,7 +948,7 @@ downloaded_files_free (void)
       for (hash_table_iterate (downloaded_files_hash, &iter);
            hash_table_iter_next (&iter);
            )
-        free (iter.key);
+        xfree (iter.key);
       hash_table_destroy (downloaded_files_hash);
       downloaded_files_hash = NULL;
     }
