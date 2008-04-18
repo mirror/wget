@@ -50,6 +50,8 @@ as that of the covered work.  */
      double secs = ptimer_measure ();
      printf ("The loop took %.2fs\n", secs);  */
 
+#define USE_GNULIB_ALLOC
+
 #include "wget.h"
 
 #include <stdio.h>
@@ -71,6 +73,7 @@ as that of the covered work.  */
 # include <windows.h>
 #endif
 
+#include "utils.h"
 #include "ptimer.h"
 
 /* Depending on the OS, one and only one of PTIMER_POSIX,

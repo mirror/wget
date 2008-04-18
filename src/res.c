@@ -67,6 +67,8 @@ as that of the covered work.  */
    res_match_path, res_register_specs, res_get_specs, and
    res_retrieve_file.  */
 
+#define USE_GNULIB_ALLOC
+
 #include "wget.h"
 
 #include <stdio.h>
