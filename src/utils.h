@@ -31,8 +31,6 @@ as that of the covered work.  */
 #ifndef UTILS_H
 #define UTILS_H
 
-#ifdef USE_GNULIB_ALLOC
-
 /* Constant is using when we don`t know attempted size exactly */
 #define UNKNOWN_ATTEMPTED_SIZE -3
 
@@ -54,8 +52,6 @@ as that of the covered work.  */
    to free.  This allows us to assert p!=NULL in xfree to check
    additional errors.  (But we currently don't do that!)  */
 #define xfree_null(p) if (!(p)) ; else xfree (p)
-
-#endif /* USE_GNULIB_ALLOC */
 
 struct hash_table;
 

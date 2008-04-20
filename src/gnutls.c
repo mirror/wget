@@ -27,8 +27,6 @@ Corresponding Source for a non-source form of such a combination
 shall include the source code for the parts of OpenSSL used as well
 as that of the covered work.  */
 
-#define USE_GNULIB_ALLOC
-
 #include "wget.h"
 
 #include <assert.h>

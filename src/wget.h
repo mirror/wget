@@ -208,12 +208,8 @@ typedef double SUM_SIZE_INT;
 #include "options.h"
 
 /* Everything uses this, so include them here directly.  */
-#ifdef USE_GNULIB_ALLOC
-# include <alloca.h>
-# include "xalloc.h"
-#else
-# include "xmalloc.h"
-#endif
+#include <alloca.h>
+#include "xalloc.h"
 
 /* Likewise for logging functions.  */
 #include "log.h"

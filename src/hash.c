@@ -31,8 +31,6 @@ as that of the covered work.  */
 /* With -DSTANDALONE, this file can be compiled outside Wget source
    tree.  To test, also use -DTEST.  */
 
-#define USE_GNULIB_ALLOC
-
 #ifndef STANDALONE
 # include "wget.h"
 #endif

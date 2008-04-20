@@ -30,8 +30,6 @@ as that of the covered work.  */
 /* This file used to be kept in synch with the code in Fetchmail, but
    the latter has diverged since.  */
 
-#define USE_GNULIB_ALLOC
-
 #include "wget.h"
 
 #include <stdio.h>

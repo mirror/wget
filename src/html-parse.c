@@ -89,8 +89,6 @@ as that of the covered work.  */
 /* To test as standalone, compile with `-DSTANDALONE -I.'.  You'll
    still need Wget headers to compile.  */
 
-#define USE_GNULIB_ALLOC
-
 #include "wget.h"
 
 #ifdef STANDALONE

@@ -43,8 +43,6 @@ as that of the covered work.  */
    sites that do send Set-Cookie2 also emit Set-Cookie for
    compatibility.  */
 
-#define USE_GNULIB_ALLOC
-
 #include "wget.h"
 
 #include <stdio.h>
