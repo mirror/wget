@@ -283,7 +283,7 @@ retrieve_tree (const char *start_url)
               ((dt & TEXTCSS) || css_allowed))
             {
               descend = true;
-              is_css = false;
+              is_css = true;
             }
 
           if (redirected)
