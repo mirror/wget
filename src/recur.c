@@ -55,6 +55,7 @@ as that of the covered work.  */
 /* Functions for maintaining the URL queue.  */
 
 struct queue_element {
+  const char *url;              /* the URL to download */
   const char *referer;          /* the referring document */
   int depth;                    /* the depth */
   bool html_allowed;            /* whether the document is allowed to

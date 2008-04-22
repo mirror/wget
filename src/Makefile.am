@@ -36,7 +36,7 @@ LIBS     = @LIBS@ @LIBSSL@ @LIBGNUTLS@ @LIBINTL@
 
 bin_PROGRAMS = wget
 wget_SOURCES = cmpt.c connect.c convert.c cookies.c \
-	       css.lex css-url.c \
+	       css.l css-url.c \
 	       ftp.c ftp-basic.c \
 	       ftp-ls.c hash.c host.c html-parse.c html-url.c http.c	\
 	       init.c log.c main.c netrc.c progress.c ptimer.c recur.c	\

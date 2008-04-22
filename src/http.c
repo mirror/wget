@@ -69,6 +69,7 @@ as that of the covered work.  */
 extern char *version_string;
 
 /* Forward decls. */
+struct http_stat;
 static char *create_authorization_line (const char *, const char *,
                                         const char *, const char *,
                                         const char *, bool *);

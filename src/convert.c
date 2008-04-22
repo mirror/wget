@@ -73,7 +73,7 @@ convert_links_in_hashtable (struct hash_table *downloaded_set,
   if (downloaded_set)
     cnt = hash_table_count (downloaded_set);
   if (cnt == 0)
-    goto cleanup;
+    return;
   file_array = alloca_array (char *, cnt);
   string_set_to_array (downloaded_set, file_array);
 
@@ -184,7 +184,7 @@ convert_all_links (void)
   secs = ptimer_measure (timer);
   logprintf (LOG_VERBOSE, _("Converted %d files in %s seconds.\n"),
              file_count, print_decimal (secs));
-cleanup:
+
   ptimer_destroy (timer);
 }
 
