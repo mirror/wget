@@ -41,7 +41,11 @@ as that of the covered work.  */
 # ifndef __BEOS__
 #  include <arpa/inet.h>
 # endif
-# include <netdb.h>
+# ifdef __VMS
+#  include "vms_ip.h"
+# else /* def __VMS */
+#  include <netdb.h>
+# endif /* def __VMS [else] */
 # define SET_H_ERRNO(err) ((void)(h_errno = (err)))
 #else  /* WINDOWS */
 # define SET_H_ERRNO(err) WSASetLastError (err)

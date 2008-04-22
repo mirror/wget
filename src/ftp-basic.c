@@ -887,6 +887,42 @@ ftp_cwd (int csock, const char *dir)
   return FTPOK;
 }
 
+/* Sends DELE command to the FTP server.  */
+uerr_t
+ftp_dele (int csock, const char *file)
+{
+  char *request, *respline;
+  int nwritten;
+  uerr_t err;
+
+  /* Send DELE request.  */
+  request = ftp_request ("DELE", file);
+  nwritten = fd_write (csock, request, strlen (request), -1.0);
+  if (nwritten < 0)
+    {
+      xfree (request);
+      return WRITEFAILED;
+    }
+  xfree (request);
+  /* Get appropriate response.  */
+  err = ftp_response (csock, &respline);
+  if (err != FTPOK)
+    return err;                 /* Return with early bad status. */
+
+  /* All OK, so far.  */
+  if (*respline == '5')
+    {
+      err = FTPNSFOD;           /* Permanent Negative Completion. */
+    }
+  else if (*respline != '2')    /* Success might be 226 or 250 (or ???). */
+    {
+      err = FTPRERR;            /* Not Positive Completion. */
+    }
+
+  xfree (respline);             /* Free "respline" storage. */
+  return err;                   /* Return response-based status code. */
+}
+
 /* Sends REST command to the FTP server.  */
 uerr_t
 ftp_rest (int csock, wgint offset)
@@ -956,7 +992,7 @@ ftp_retr (int csock, const char *file)
 /* Sends the LIST command to the server.  If FILE is NULL, send just
    `LIST' (no space).  */
 uerr_t
-ftp_list (int csock, const char *file)
+ftp_list (int csock, const char *file, enum stype rs)
 {
   char *request, *respline;
   int nwritten;
@@ -966,6 +1002,13 @@ ftp_list (int csock, const char *file)
   /* Try `LIST -a' first and revert to `LIST' in case of failure.  */
   const char *list_commands[] = { "LIST -a", 
                                   "LIST" };
+
+  /* 2008-01-29  SMS.  For a VMS FTP server, where "LIST -a" may not
+     fail, but will never do what is desired here, skip directly to the
+     simple "LIST" command (assumed to be the last one in the list).
+  */
+  if (rs == ST_VMS)
+    i = countof (list_commands)- 1;
 
   do {
     /* Send request.  */

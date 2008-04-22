@@ -235,7 +235,12 @@ struct options
   
   bool content_disposition;	/* Honor HTTP Content-Disposition header. */
   bool auth_without_challenge;  /* Issue Basic authentication creds without
-                                   waiting for a challenge. */
+                                  waiting for a challenge. */
+
+#ifdef __VMS
+  int ftp_stmlf;                /* Force Stream_LF format for binary FTP. */
+#endif /* def __VMS */
+
 };
 
 extern struct options opt;

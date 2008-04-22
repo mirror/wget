@@ -58,9 +58,10 @@ uerr_t ftp_epsv (int, ip_address *, int *);
 #endif
 uerr_t ftp_type (int, int);
 uerr_t ftp_cwd (int, const char *);
+uerr_t ftp_dele (int, const char *);
 uerr_t ftp_retr (int, const char *);
 uerr_t ftp_rest (int, wgint);
-uerr_t ftp_list (int, const char *);
+uerr_t ftp_list (int, const char *, enum stype);
 uerr_t ftp_syst (int, enum stype *);
 uerr_t ftp_pwd (int, char **);
 uerr_t ftp_size (int, const char *, wgint *);

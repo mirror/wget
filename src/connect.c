@@ -39,7 +39,11 @@ as that of the covered work.  */
 
 #ifndef WINDOWS
 # include <sys/socket.h>
-# include <netdb.h>
+# ifdef __VMS
+#  include "vms_ip.h"
+# else /* def __VMS */
+#  include <netdb.h>
+# endif /* def __VMS [else] */
 # include <netinet/in.h>
 # ifndef __BEOS__
 #  include <arpa/inet.h>

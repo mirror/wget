@@ -126,4 +126,6 @@ void stable_sort (void *, size_t, size_t, int (*) (const void *, const void *));
 
 const char *print_decimal (double);
 
+extern unsigned char char_prop[];
+
 #endif /* UTILS_H */

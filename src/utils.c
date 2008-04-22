@@ -84,9 +84,94 @@ as that of the covered work.  */
 #include "utils.h"
 #include "hash.h"
 
+#ifdef __VMS
+#include "vms.h"
+#endif /* def __VMS */
+
 #ifdef TESTING
 #include "test.h"
 #endif 
+
+/* Character property table for (re-)escaping VMS ODS5 extended file
+   names.  Note that this table ignores Unicode.
+
+   ODS2 valid characters: 0-9 A-Z a-z $ - _ ~
+
+   ODS5 Invalid characters:
+      C0 control codes (0x00 to 0x1F inclusive)
+      Asterisk (*)
+      Question mark (?)
+
+   ODS5 Invalid characters only in VMS V7.2 (which no one runs, right?):
+      Double quotation marks (")
+      Backslash (\)
+      Colon (:)
+      Left angle bracket (<)
+      Right angle bracket (>)
+      Slash (/)
+      Vertical bar (|)
+
+   Characters escaped by "^":
+      SP  !  #  %  &  '  (  )  +  ,  .  ;  =  @  [  ]  ^  `  {  }  ~
+
+   Either "^_" or "^ " is accepted as a space.  Period (.) is a special
+   case.  Note that un-escaped < and > can also confuse a directory
+   spec.
+
+   Characters put out as ^xx:
+      7F (DEL)
+      80-9F (C1 control characters)
+      A0 (nonbreaking space)
+      FF (Latin small letter y diaeresis)
+
+   Other cases:
+      Unicode: "^Uxxxx", where "xxxx" is four hex digits.
+
+    Property table values:
+      Normal escape:    1
+      Space:            2
+      Dot:              4
+      Hex-hex escape:   8
+      ODS2 normal:     16
+      ODS2 lower case: 32
+      Hex digit:       64
+*/
+
+unsigned char char_prop[ 256] = {
+
+/* NUL SOH STX ETX EOT ENQ ACK BEL   BS  HT  LF  VT  FF  CR  SO  SI */
+    0,  0,  0,  0,  0,  0,  0,  0,   0,  0,  0,  0,  0,  0,  0,  0,
+
+/* DLE DC1 DC2 DC3 DC4 NAK SYN ETB  CAN  EM SUB ESC  FS  GS  RS  US */
+    0,  0,  0,  0,  0,  0,  0,  0,   0,  0,  0,  0,  0,  0,  0,  0,
+
+/*  SP  !   "   #   $   %   &   '    (   )   *   +   ,   -   .   /  */
+    2,  1,  0,  1, 16,  1,  1,  1,   1,  1,  0,  1,  1, 16,  4,  0,
+
+/*  0   1   2   3   4   5   6   7    8   9   :   ;   <   =   >   ?  */
+   80, 80, 80, 80, 80, 80, 80, 80,  80, 80,  0,  1,  1,  1,  1,  1,
+
+/*  @   A   B   C   D   E   F   G    H   I   J   K   L   M   N   O  */
+    1, 80, 80, 80, 80, 80, 80, 16,  16, 16, 16, 16, 16, 16, 16, 16,
+
+/*  P   Q   R   S   T   U   V   W    X   Y   Z   [   \   ]   ^   _  */
+   16, 16, 16, 16, 16, 16, 16, 16,  16, 16, 16,  1,  0,  1,  1, 16,
+
+/*  `   a   b   c   d   e   f   g    h   i   j   k   l   m   n   o  */
+    1, 96, 96, 96, 96, 96, 96, 32,  32, 32, 32, 32, 32, 32, 32, 32,
+
+/*  p   q   r   s   t   u   v   w    x   y   z   {   |   }   ~  DEL */
+   32, 32, 32, 32, 32, 32, 32, 32,  32, 32, 32,  1,  0,  1, 17,  8,
+
+    8,  8,  8,  8,  8,  8,  8,  8,   8,  8,  8,  8,  8,  8,  8,  8,
+    8,  8,  8,  8,  8,  8,  8,  8,   8,  8,  8,  8,  8,  8,  8,  8,
+    8,  0,  0,  0,  0,  0,  0,  0,   0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,   0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,   0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,   0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,   0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,   0,  0,  0,  0,  0,  0,  0,  8
+};
 
 /* Utility function: like xstrdup(), but also lowercases S.  */
 
@@ -314,6 +399,16 @@ datetime_str (time_t t)
 /* The Windows versions of the following two functions are defined in
    mswindows.c. On MSDOS this function should never be called. */
 
+#ifdef __VMS
+
+void
+fork_to_background (void)
+{
+  return;
+}
+
+#else /* def __VMS */
+
 #if !defined(WINDOWS) && !defined(MSDOS)
 void
 fork_to_background (void)
@@ -359,6 +454,9 @@ fork_to_background (void)
   freopen ("/dev/null", "w", stderr);
 }
 #endif /* !WINDOWS && !MSDOS */
+
+#endif /* def __VMS [else] */
+
 
 /* "Touch" FILE, i.e. make its mtime ("modified time") equal the time
    specified with TM.  The atime ("access time") is set to the current
@@ -457,6 +555,14 @@ file_size (const char *filename)
 #endif
 }
 
+/* 2005-02-19 SMS.
+   If no UNIQ_SEP is defined (as on VMS), have unique_name() return the
+   original name.  With the VMS file systems' versioning, everything
+   should be fine, and appending ".NN" just causes trouble.
+*/
+
+#ifdef UNIQ_SEP
+
 /* stat file names named PREFIX.1, PREFIX.2, etc., until one that
    doesn't exist is found.  Return a freshly allocated copy of the
    unused file name.  */
@@ -470,7 +576,7 @@ unique_name_1 (const char *prefix)
   char *template_tail = template + plen;
 
   memcpy (template, prefix, plen);
-  *template_tail++ = '.';
+  *template_tail++ = UNIQ_SEP;
 
   do
     number_to_string (template_tail, count++);
@@ -484,6 +590,8 @@ unique_name_1 (const char *prefix)
    More precisely, if FILE doesn't exist, it is returned unmodified.
    If not, FILE.1 is tried, then FILE.2, etc.  The first FILE.<number>
    file name that doesn't exist is returned.
+
+   2005-02-19 SMS.  "." is now UNIQ_SEP, and may be different.
 
    The resulting file is not created, only verified that it didn't
    exist at the point in time when the function was called.
@@ -507,6 +615,20 @@ unique_name (const char *file, bool allow_passthrough)
      and return it.  */
   return unique_name_1 (file);
 }
+
+#else /* def UNIQ_SEP */
+
+/* Dummy unique_name() for VMS.  Return the original name as easily as
+   possible.
+*/
+char *
+unique_name (const char *file, bool allow_passthrough)
+{
+  /* Return the FILE itself, without modification, irregardful. */
+  return allow_passthrough ? (char *)file : xstrdup (file);
+}
+
+#endif /* def UNIQ_SEP [else] */
 
 /* Create a file based on NAME, except without overwriting an existing
    file with that name.  Providing O_EXCL is correctly implemented,
@@ -554,12 +676,61 @@ fopen_excl (const char *fname, bool binary)
 {
   int fd;
 #ifdef O_EXCL
+
+/* 2005-04-14 SMS.
+   VMS lacks O_BINARY, but makes up for it in weird and wonderful ways.
+   It also has file versions which obviate all the O_EXCL effort.
+   O_TRUNC (something of a misnomer) requests a new version.
+*/
+# ifdef __VMS
+/* Common open() optional arguments:
+   sequential access only, access callback function.
+*/
+#  define OPEN_OPT_ARGS "fop=sqo", "acc", acc_cb, &open_id
+
+  int open_id;
+  int flags = O_WRONLY | O_CREAT | O_TRUNC;
+
+  if (binary > 1)
+    {
+      open_id = 11;
+      fd = open( fname,                 /* File name. */
+       flags,                           /* Flags. */
+       0777,                            /* Mode for default protection. */
+       "ctx=bin,stm",                   /* Binary, stream access. */
+       "rfm=stmlf",                     /* Stream_LF. */
+       OPEN_OPT_ARGS);                  /* Access callback. */
+    }
+  else if (binary)
+    {
+      open_id = 12;
+      fd = open( fname,                 /* File name. */
+       flags,                           /* Flags. */
+       0777,                            /* Mode for default protection. */
+       "ctx=bin,stm",                   /* Binary, stream access. */
+       "rfm=fix",                       /* Fixed-length, */
+       "mrs=512",                       /* 512-byte records. */
+       OPEN_OPT_ARGS);                  /* Access callback. */
+    }
+  else
+    {
+      open_id = 13;
+      fd = open( fname,                 /* File name. */
+       flags,                           /* Flags. */
+       0777,                            /* Mode for default protection.
+*/
+       "rfm=stmlf",                     /* Stream_LF. */
+       OPEN_OPT_ARGS);                  /* Access callback. */
+    }
+# else /* def __VMS */
   int flags = O_WRONLY | O_CREAT | O_EXCL;
 # ifdef O_BINARY
   if (binary)
     flags |= O_BINARY;
 # endif
   fd = open (fname, flags, 0666);
+# endif /* def __VMS [else] */
+
   if (fd < 0)
     return NULL;
   return fdopen (fd, binary ? "wb" : "w");

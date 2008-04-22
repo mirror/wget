@@ -160,6 +160,9 @@ static const struct {
   { "ftppasswd",        &opt.ftp_passwd,        cmd_string }, /* deprecated */
   { "ftppassword",      &opt.ftp_passwd,        cmd_string },
   { "ftpproxy",         &opt.ftp_proxy,         cmd_string },
+#ifdef __VMS
+  { "ftpstmlf",         &opt.ftp_stmlf,         cmd_boolean },
+#endif /* def __VMS */
   { "ftpuser",          &opt.ftp_user,          cmd_string },
   { "glob",             &opt.ftp_glob,          cmd_boolean },
   { "header",           NULL,                   cmd_spec_header },
@@ -393,11 +396,16 @@ wgetrc_file_name (void)
       return xstrdup (env);
     }
 
-  /* If that failed, try $HOME/.wgetrc.  */
+  /* If that failed, try $HOME/.wgetrc (or equivalent).  */
+
+#ifdef __VMS
+  file = "SYS$LOGIN:.wgetrc";
+#else /* def __VMS */
   home = home_dir ();
   if (home)
     file = aprintf ("%s/.wgetrc", home);
   xfree_null (home);
+#endif /* def __VMS [else] */
 
 #ifdef WINDOWS
   /* Under Windows, if we still haven't found .wgetrc, look for the file
@@ -446,7 +454,7 @@ run_wgetrc (const char *file)
   int ln;
   int errcnt = 0;
 
-  fp = fopen (file, "rb");
+  fp = fopen (file, "r");
   if (!fp)
     {
       fprintf (stderr, _("%s: Cannot read %s (%s).\n"), exec_name,
