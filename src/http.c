@@ -77,6 +77,7 @@ static struct cookie_jar *wget_cookie_jar;
 
 #define TEXTHTML_S "text/html"
 #define TEXTXHTML_S "application/xhtml+xml"
+#define TEXTCSS_S "text/css"
 
 /* Some status code validation macros: */
 #define H_20X(x)        (((x) >= 200) && ((x) < 300))
@@ -1235,6 +1236,7 @@ static char *create_authorization_line (const char *, const char *,
                                         const char *, bool *);
 static char *basic_authentication_encode (const char *, const char *);
 static bool known_authentication_scheme_p (const char *, const char *);
+static void ensure_extension (struct http_stat *, const char *, int *);
 static void load_cookies (void);
 
 #define BEGINS_WITH(line, string_constant)                               \
@@ -2017,34 +2019,25 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
   else
     *dt &= ~TEXTHTML;
 
-  if (opt.html_extension && (*dt & TEXTHTML))
-    /* -E / --html-extension / html_extension = on was specified, and this is a
-       text/html file.  If some case-insensitive variation on ".htm[l]" isn't
-       already the file's suffix, tack on ".html". */
-    {
-      char *last_period_in_local_filename = strrchr (hs->local_file, '.');
+  if (type &&
+      0 == strncasecmp (type, TEXTCSS_S, strlen (TEXTCSS_S)))
+    *dt |= TEXTCSS;
+  else
+    *dt &= ~TEXTCSS;
 
-      if (last_period_in_local_filename == NULL
-          || !(0 == strcasecmp (last_period_in_local_filename, ".htm")
-               || 0 == strcasecmp (last_period_in_local_filename, ".html")))
+  if (opt.html_extension)
+    {
+      if (*dt & TEXTHTML)
+        /* -E / --html-extension / html_extension = on was specified,
+           and this is a text/html file.  If some case-insensitive
+           variation on ".htm[l]" isn't already the file's suffix,
+           tack on ".html". */
         {
-          int local_filename_len = strlen (hs->local_file);
-          /* Resize the local file, allowing for ".html" preceded by
-             optional ".NUMBER".  */
-          hs->local_file = xrealloc (hs->local_file,
-                                     local_filename_len + 24 + sizeof (".html"));
-          strcpy(hs->local_file + local_filename_len, ".html");
-          /* If clobbering is not allowed and the file, as named,
-             exists, tack on ".NUMBER.html" instead. */
-          if (!ALLOW_CLOBBER && file_exists_p (hs->local_file))
-            {
-              int ext_num = 1;
-              do
-                sprintf (hs->local_file + local_filename_len,
-                         ".%d.html", ext_num++);
-              while (file_exists_p (hs->local_file));
-            }
-          *dt |= ADDED_HTML_EXTENSION;
+          ensure_extension (hs, ".html", dt);
+        }
+      else if (*dt & TEXTCSS)
+        {
+          ensure_extension (hs, ".css", dt);
         }
     }
 
@@ -3016,6 +3009,42 @@ http_cleanup (void)
   xfree_null (pconn.host);
   if (wget_cookie_jar)
     cookie_jar_delete (wget_cookie_jar);
+}
+
+void
+ensure_extension (struct http_stat *hs, const char *ext, int *dt)
+{
+  char *last_period_in_local_filename = strrchr (hs->local_file, '.');
+  char shortext[8];
+  int len = strlen (ext);
+  if (len == 5)
+    {
+      strncpy (shortext, ext, len - 1);
+      shortext[len - 2] = '\0';
+    }
+
+  if (last_period_in_local_filename == NULL
+      || !(0 == strcasecmp (last_period_in_local_filename, shortext)
+           || 0 == strcasecmp (last_period_in_local_filename, ext)))
+    {
+      int local_filename_len = strlen (hs->local_file);
+      /* Resize the local file, allowing for ".html" preceded by
+         optional ".NUMBER".  */
+      hs->local_file = xrealloc (hs->local_file,
+                                 local_filename_len + 24 + len);
+      strcpy (hs->local_file + local_filename_len, ext);
+      /* If clobbering is not allowed and the file, as named,
+         exists, tack on ".NUMBER.html" instead. */
+      if (!ALLOW_CLOBBER && file_exists_p (hs->local_file))
+        {
+          int ext_num = 1;
+          do
+            sprintf (hs->local_file + local_filename_len,
+                     ".%d%s", ext_num++, ext);
+          while (file_exists_p (hs->local_file));
+        }
+      *dt |= ADDED_HTML_EXTENSION;
+    }
 }
 
 

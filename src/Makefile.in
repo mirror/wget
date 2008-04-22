@@ -54,6 +54,7 @@ CFLAGS   = @CFLAGS@
 LDFLAGS  = @LDFLAGS@ 
 LIBS     = @LIBS@ @LIBSSL@ @LIBGNUTLS@
 exeext   = @exeext@
+LEX      = @LEX@
 
 INCLUDES = -I. -I$(srcdir)
 
@@ -72,12 +73,12 @@ NTLM_OBJ   = @NTLM_OBJ@
 SSL_OBJ    = @SSL_OBJ@
 GETOPT_OBJ = @GETOPT_OBJ@
 
-OBJ = $(ALLOCA) cmpt.o connect.o convert.o cookies.o              \
-      ftp.o ftp-basic.o ftp-ls.o $(OPIE_OBJ) $(GETOPT_OBJ) hash.o \
-      host.o html-parse.o html-url.o http.o $(NTLM_OBJ) init.o    \
-      log.o main.o $(MD5_OBJ) netrc.o progress.o ptimer.o recur.o \
-      res.o retr.o safe-ctype.o snprintf.o spider.o $(SSL_OBJ)    \
-      url.o utils.o version.o xmalloc.o
+OBJ = $(ALLOCA) cmpt.o connect.o convert.o cookies.o css-url.o     \
+      ftp.o ftp-basic.o ftp-ls.o $(OPIE_OBJ) $(GETOPT_OBJ) hash.o  \
+      host.o html-parse.o html-url.o http.o $(NTLM_OBJ) init.o     \
+      lex.yy.o log.o main.o $(MD5_OBJ) netrc.o progress.o ptimer.o \
+      recur.o res.o retr.o safe-ctype.o snprintf.o spider.o        \
+      $(SSL_OBJ) url.o utils.o version.o xmalloc.o
 
 .SUFFIXES:
 .SUFFIXES: .c .o
@@ -90,16 +91,19 @@ OBJ = $(ALLOCA) cmpt.o connect.o convert.o cookies.o              \
 wget$(exeext): $(OBJ)
 	$(LINK) $(OBJ) $(LIBS)
 
+lex.yy.c: css.lex
+	$(LEX) $<
+
 # We make object files depend on every header.  Rather than attempt to
 # track dependencies, everything gets recompiled when a header
 # changes.  With a program of Wget's size this doesn't waste much
 # time, and it's a lot safer than attempting to get all the
 # dependencies right.
 
-$(OBJ): config-post.h config.h connect.h convert.h cookies.h ftp.h \
-        gen-md5.h getopt.h gnu-md5.h hash.h host.h html-parse.h    \
-        http-ntlm.h init.h log.h mswindows.h netrc.h options.h     \
-        progress.h ptimer.h recur.h res.h retr.h safe-ctype.h      \
+$(OBJ): config-post.h config.h connect.h convert.h cookies.h css-url.h \
+        ftp.h gen-md5.h getopt.h gnu-md5.h hash.h host.h html-parse.h  \
+        http-ntlm.h init.h log.h mswindows.h netrc.h options.h         \
+        progress.h ptimer.h recur.h res.h retr.h safe-ctype.h          \
         spider.h ssl.h sysdep.h url.h utils.h wget.h xmalloc.h
 
 #
@@ -122,7 +126,7 @@ uninstall.bin:
 #
 
 clean:
-	$(RM) *.o wget$(exeext) *~ *.bak core core.[0-9]*
+	$(RM) *.o wget$(exeext) *~ *.bak core core.[0-9]* lex.yy.c
 
 distclean: clean
 	$(RM) Makefile config.h

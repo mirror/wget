@@ -304,7 +304,8 @@ enum
   HEAD_ONLY            = 0x0004,	/* only send the HEAD request */
   SEND_NOCACHE         = 0x0008,	/* send Pragma: no-cache directive */
   ACCEPTRANGES         = 0x0010,	/* Accept-ranges header was found */
-  ADDED_HTML_EXTENSION = 0x0020         /* added ".html" extension due to -E */
+  ADDED_HTML_EXTENSION = 0x0020,        /* added ".html" extension due to -E */
+  TEXTCSS              = 0x0040	        /* document is of type text/css */
 };
 
 /* Universal error type -- used almost everywhere.  Error reporting of

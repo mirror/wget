@@ -1,5 +1,5 @@
-/* Declarations for recur.c.
-   Copyright (C) 1996-2006 Free Software Foundation, Inc.
+/* Declarations for html-url.c.
+   Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -14,8 +14,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Wget; if not, write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+along with Wget; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 In addition, as a special exception, the Free Software Foundation
 gives permission to link the code of its release of Wget with the
@@ -27,20 +27,25 @@ modify this file, you may extend this exception to your version of the
 file, but you are not obligated to do so.  If you do not wish to do
 so, delete this exception statement from your version.  */
 
-#ifndef RECUR_H
-#define RECUR_H
+#ifndef HTML_URL_H
+#define HTML_URL_H
 
-/* For most options, 0 means no limits, but with -p in the picture,
-   that causes a problem on the maximum recursion depth variable.  To
-   retain backwards compatibility we allow users to consider "0" to be
-   synonymous with "inf" for -l, but internally infinite recursion is
-   specified by -1 and 0 means to only retrieve the requisites of a
-   single document. */
-#define INFINITE_RECURSION -1
+struct map_context {
+  char *text;			/* HTML text. */
+  char *base;			/* Base URI of the document, possibly
+				   changed through <base href=...>. */
+  const char *parent_base;	/* Base of the current document. */
+  const char *document_file;	/* File name of this document. */
+  bool nofollow;		/* whether NOFOLLOW was specified in a
+                                   <meta name=robots> tag. */
 
-struct urlpos;
+  struct urlpos *head, *tail;	/* List of URLs that is being
+				   built. */
+};
 
-void recursive_cleanup (void);
-uerr_t retrieve_tree (const char *);
+struct urlpos *get_urls_file (const char *);
+struct urlpos *get_urls_html (const char *, const char *, bool *);
+struct urlpos *append_url (const char *, int, int, struct map_context *);
+void free_urlpos (struct urlpos *);
 
-#endif /* RECUR_H */
+#endif /* HTML_URL_H */

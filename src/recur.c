@@ -48,8 +48,10 @@ so, delete this exception statement from your version.  */
 #include "hash.h"
 #include "res.h"
 #include "convert.h"
+#include "html-url.h"
+#include "css-url.h"
 #include "spider.h"
-
+
 /* Functions for maintaining the URL queue.  */
 
 struct queue_element {
@@ -58,7 +60,8 @@ struct queue_element {
   int depth;			/* the depth */
   bool html_allowed;	        /* whether the document is allowed to
 				   be treated as HTML. */
-
+  bool css_allowed; 	        /* whether the document is allowed to
+				   be treated as CSS. */
   struct queue_element *next;	/* next element in queue */
 };
 
@@ -91,13 +94,15 @@ url_queue_delete (struct url_queue *queue)
 
 static void
 url_enqueue (struct url_queue *queue,
-	     const char *url, const char *referer, int depth, bool html_allowed)
+	     const char *url, const char *referer, int depth,
+             bool html_allowed, bool css_allowed)
 {
   struct queue_element *qel = xnew (struct queue_element);
   qel->url = url;
   qel->referer = referer;
   qel->depth = depth;
   qel->html_allowed = html_allowed;
+  qel->css_allowed = css_allowed;
   qel->next = NULL;
 
   ++queue->count;
@@ -121,7 +126,7 @@ url_enqueue (struct url_queue *queue,
 static bool
 url_dequeue (struct url_queue *queue,
 	     const char **url, const char **referer, int *depth,
-	     bool *html_allowed)
+	     bool *html_allowed, bool *css_allowed)
 {
   struct queue_element *qel = queue->head;
 
@@ -136,6 +141,7 @@ url_dequeue (struct url_queue *queue,
   *referer = qel->referer;
   *depth = qel->depth;
   *html_allowed = qel->html_allowed;
+  *css_allowed = qel->css_allowed;
 
   --queue->count;
 
@@ -200,7 +206,7 @@ retrieve_tree (const char *start_url)
 
   /* Enqueue the starting URL.  Use start_url_parsed->url rather than
      just URL so we enqueue the canonical form of the URL.  */
-  url_enqueue (queue, xstrdup (start_url_parsed->url), NULL, 0, true);
+  url_enqueue (queue, xstrdup (start_url_parsed->url), NULL, 0, true, false);
   string_set_add (blacklist, start_url_parsed->url);
 
   while (1)
@@ -208,7 +214,8 @@ retrieve_tree (const char *start_url)
       bool descend = false;
       char *url, *referer, *file = NULL;
       int depth;
-      bool html_allowed;
+      bool html_allowed, css_allowed;
+      bool is_css = false;
       bool dash_p_leaf_HTML = false;
 
       if (opt.quota && total_downloaded_bytes > opt.quota)
@@ -220,7 +227,7 @@ retrieve_tree (const char *start_url)
 
       if (!url_dequeue (queue,
 			(const char **)&url, (const char **)&referer,
-			&depth, &html_allowed))
+			&depth, &html_allowed, &css_allowed))
 	break;
 
       /* ...and download it.  Note that this download is in most cases
@@ -238,10 +245,21 @@ retrieve_tree (const char *start_url)
 	  DEBUGP (("Already downloaded \"%s\", reusing it from \"%s\".\n",
 		   url, file));
 
+          /* this sucks, needs to be combined! */
 	  if (html_allowed
 	      && downloaded_html_set
 	      && string_set_contains (downloaded_html_set, file))
-	    descend = true;
+            {
+              descend = true;
+              is_css = false;
+            }
+          if (css_allowed
+              && downloaded_css_set
+              && string_set_contains (downloaded_css_set, file))
+            {
+              descend = 1;
+              is_css = true;
+            }
 	}
       else
 	{
@@ -252,7 +270,21 @@ retrieve_tree (const char *start_url)
 
 	  if (html_allowed && file && status == RETROK
 	      && (dt & RETROKF) && (dt & TEXTHTML))
-	    descend = true;
+            {
+              descend = true;
+              is_css = false;
+            }
+
+          /* a little different, css_allowed can override content type
+             lots of web servers serve css with an incorrect content type
+          */
+          if (file && status == RETROK
+              && (dt & RETROKF) &&
+              ((dt & TEXTCSS) || css_allowed))
+            {
+              descend = true;
+              is_css = false;
+            }
 
 	  if (redirected)
 	    {
@@ -306,14 +338,15 @@ retrieve_tree (const char *start_url)
 	    }
 	}
 
-      /* If the downloaded document was HTML, parse it and enqueue the
+      /* If the downloaded document was HTML or CSS, parse it and enqueue the
 	 links it contains. */
 
       if (descend)
 	{
 	  bool meta_disallow_follow = false;
 	  struct urlpos *children
-	    = get_urls_html (file, url, &meta_disallow_follow);
+	    = is_css ? get_urls_css_file (file, url) :
+                       get_urls_html (file, url, &meta_disallow_follow);
 
 	  if (opt.use_robots && meta_disallow_follow)
 	    {
@@ -338,7 +371,8 @@ retrieve_tree (const char *start_url)
 		    {
 		      url_enqueue (queue, xstrdup (child->url->url),
 				   xstrdup (url), depth + 1,
-				   child->link_expect_html);
+				   child->link_expect_html,
+				   child->link_expect_css);
 		      /* We blacklist the URL we have enqueued, because we
 			 don't want to enqueue (and hence download) the
 			 same URL twice.  */
@@ -385,9 +419,9 @@ retrieve_tree (const char *start_url)
   {
     char *d1, *d2;
     int d3;
-    bool d4;
+    bool d4, d5;
     while (url_dequeue (queue,
-			(const char **)&d1, (const char **)&d2, &d3, &d4))
+			(const char **)&d1, (const char **)&d2, &d3, &d4, &d5))
       {
 	xfree (d1);
 	xfree_null (d2);

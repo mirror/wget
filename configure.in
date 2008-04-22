@@ -115,6 +115,9 @@ test -z "$CC" && cc_specified=yes
 AC_PROG_CC
 AC_AIX
 
+YYTEXT_POINTER=1
+AC_PROG_LEX
+
 dnl Turn on optimization by default.  Specifically:
 dnl
 dnl if the user hasn't specified CFLAGS, then

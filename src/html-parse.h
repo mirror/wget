@@ -51,6 +51,9 @@ struct taginfo {
 
   const char *start_position;	/* start position of tag */
   const char *end_position;	/* end position of tag */
+
+  const char *contents_begin;   /* delimiters of tag contents */
+  const char *contents_end;     /* only valid if end_tag_p */
 };
 
 struct hash_table;		/* forward declaration */
