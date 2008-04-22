@@ -113,6 +113,8 @@ md5_EARLY
 
 AC_PROG_RANLIB
 
+AC_PROG_LEX
+
 dnl Turn on optimization by default.  Specifically:
 dnl
 dnl if the user hasn't specified CFLAGS, then
