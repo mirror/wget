@@ -1,3 +1,10 @@
+2008-04-22  Steven Schubiger  <schubiger@gmail.com>
+
+	* http.c (print_response_line): Changed to make responses always
+	be logged, even in --quiet mode, if --server-response was
+	specified. This is to bring http.c's handling of the situation
+	in line with ftp.c's.
+
 2008-04-22  Pranab Shenoy  <pranab.loosinit.shenoy@gmail.com>
 
 	* init.c: Added test_commands_sorted unit test to check is
