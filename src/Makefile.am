@@ -32,7 +32,7 @@
 
 # The following line is losing on some versions of make!
 DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
-LIBS     = @LIBS@ @LIBSSL@ @LIBGNUTLS@ @LIBINTL@
+LIBS     = @LIBSSL@ @LIBGNUTLS@ @LIBINTL@ @LIBS@
 
 bin_PROGRAMS = wget
 wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c ftp-basic.c	\

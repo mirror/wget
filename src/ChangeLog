@@ -1,3 +1,8 @@
+2008-04-22  Mike Frysinger  <vapier@gentoo.org>
+
+	* Makefile.am: Move @LIBS@ after other libraries, for better
+	static-linking support.
+
 2008-04-12  Rabin Vincent  <rabin@rab.in>
 
 	* mswindows.c (fake_fork_child): Don't create a logfile for
