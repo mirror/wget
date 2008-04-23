@@ -210,6 +210,13 @@ ssl_init ()
      than examining the error stack after a failed SSL_connect.  */
   SSL_CTX_set_verify (ssl_ctx, SSL_VERIFY_NONE, NULL);
 
+  /* Use the private key from the cert file unless otherwise specified. */
+  if (opt.cert_file && !opt.private_key)
+    {
+      opt.private_key = opt.cert_file;
+      opt.private_key_type = opt.cert_type;
+    }
+
   if (opt.cert_file)
     if (SSL_CTX_use_certificate_file (ssl_ctx, opt.cert_file,
                                       key_type_to_ssl_type (opt.cert_type))

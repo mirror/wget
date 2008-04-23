@@ -1,3 +1,9 @@
+2008-04-22  Jim Paris  <jim@jtan.com>
+
+	* openssl.c (ssl_init): Enable combined certificate/key in
+	single file (apparent regression from ~1.9). Resolves issue
+	#22767.
+
 2008-04-22  Steven Schubiger  <schubiger@gmail.com>
 
 	* http.c (print_response_line): Changed to make responses always
