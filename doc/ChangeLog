@@ -1,3 +1,7 @@
+2008-04-22  Mike Frysinger  <vapier@gentoo.org>
+
+	* sample.wgetrc: Added prefer_family example.
+
 2008-04-11  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi <Contributors>: Added Julien Buty, Alexander

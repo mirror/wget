@@ -110,3 +110,6 @@ waitretry = 10
 # To have Wget follow FTP links from HTML files by default, set this
 # to on:
 #follow_ftp = off
+
+# To try ipv6 addresses first:
+#prefer-family = IPv6
