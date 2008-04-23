@@ -1,6 +1,7 @@
 2008-04-22  Mike Frysinger  <vapier@gentoo.org>
 
-	* sample.wgetrc: Added prefer_family example.
+	* sample.wgetrc: Added prefer_family example. Resolves bug
+	#22142.
 
 2008-04-11  Micah Cowan  <micah@cowan.name>
 
