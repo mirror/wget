@@ -2205,6 +2205,8 @@ test_dir_matches_p()
     { { "*/*COMPLETE", NULL, NULL }, "foo/!COMPLETE", true },
     { { "/dir with spaces", NULL, NULL }, "dir with spaces", true },
     { { "/dir*with*spaces", NULL, NULL }, "dir with spaces", true },
+    { { "/Tmp/has", NULL, NULL }, "/Tmp/has space", false },
+    { { "/Tmp/has", NULL, NULL }, "/Tmp/has,comma", false },
   };
   
   for (i = 0; i < countof(test_array); ++i) 
