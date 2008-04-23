@@ -1,3 +1,8 @@
+2008-04-22  Rabin Vincent  <rabin@rab.in>
+
+	* ftp.c (ftp_get_listing): Only remove .listing if it has been
+	created. 
+
 2008-04-22  Alain Guibert  <alguibert+bts@free.fr>
 
 	* test.h (mu_run_test): Move declaration before statements, for
