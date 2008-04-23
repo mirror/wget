@@ -1531,6 +1531,29 @@ cleanup (void)
 #ifdef TESTING
 
 const char *
+test_commands_sorted()
+{
+  int prev_idx = 0, next_idx = 1;
+  int command_count = countof (commands) - 1;
+  int cmp = 0;
+  while (next_idx <= command_count)
+    {
+      cmp = strcasecmp (commands[prev_idx].name, commands[next_idx].name);
+      if (cmp > 0)
+        {
+          mu_assert ("FAILED", false);
+          break;
+        }     
+      else
+        { 
+          prev_idx ++;
+	  next_idx ++;
+        }
+    }
+  return NULL;
+}
+
+const char *
 test_cmd_spec_restrict_file_names()
 {
   int i;

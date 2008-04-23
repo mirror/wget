@@ -1,3 +1,10 @@
+2008-04-22  Pranab Shenoy  <pranab.loosinit.shenoy@gmail.com>
+
+	* init.c: Added test_commands_sorted unit test to check is
+	commands are sorted.  Fixes bug #21245.
+
+	* test.c: Added test_commands_sorted to the test suite.
+
 2008-04-22  Rabin Vincent  <rabin@rab.in>
 
 	* ftp.c (ftp_get_listing): Only remove .listing if it has been

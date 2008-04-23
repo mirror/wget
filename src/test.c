@@ -38,6 +38,7 @@ as that of the covered work.  */
 const char *test_parse_content_disposition();
 const char *test_subdir_p();
 const char *test_dir_matches_p();
+const char *test_commands_sorted();
 const char *test_cmd_spec_restrict_file_names();
 const char *test_append_uri_pathel();
 const char *test_are_urls_equal();
@@ -51,6 +52,7 @@ all_tests()
   mu_run_test (test_parse_content_disposition);
   mu_run_test (test_subdir_p);
   mu_run_test (test_dir_matches_p);
+  mu_run_test (test_commands_sorted);
   mu_run_test (test_cmd_spec_restrict_file_names);
   mu_run_test (test_append_uri_pathel);
   mu_run_test (test_are_urls_equal);
