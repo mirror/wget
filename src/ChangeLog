@@ -1,3 +1,8 @@
+2008-04-22  Alain Guibert  <alguibert+bts@free.fr>
+
+	* test.h (mu_run_test): Move declaration before statements, for
+	C90 conformance.
+
 2008-04-22  Mike Frysinger  <vapier@gentoo.org>
 
 	* Makefile.am: Move @LIBS@ after other libraries, for better

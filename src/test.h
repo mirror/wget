@@ -34,8 +34,9 @@ as that of the covered work.  */
 #define mu_assert(message, test) do { if (!(test)) return message; } while (0)
 #define mu_run_test(test) \
 do { \
+  const char *message; \
   puts("RUNNING TEST " #test "..."); \
-  const char *message = test(); \
+  message = test(); \
   tests_run++; \
   if (message) return message; \
   puts("PASSED\n"); \
