@@ -1,3 +1,8 @@
+2008-04-24  Micah Cowan  <micah@cowan.name>
+
+	* main.c: Revised usage description of --convert-links to apply
+	to CSS as well as to HTML.
+
 2008-04-22  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am, css.lex, css.l: Renamed css.lex to css.l.

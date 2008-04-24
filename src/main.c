@@ -593,7 +593,8 @@ Recursive download:\n"),
     N_("\
        --delete-after       delete files locally after downloading them.\n"),
     N_("\
-  -k,  --convert-links      make links in downloaded HTML point to local files.\n"),
+  -k,  --convert-links      make links in downloaded HTML or CSS point to\n\
+                            local files.\n"),
     N_("\
   -K,  --backup-converted   before converting file X, back up as X.orig.\n"),
     N_("\
