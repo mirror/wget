@@ -1,3 +1,8 @@
+2008-04-24  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi: Adjusted documentation to account for CSS support;
+	added Ted Mielczarek to contributors.
+
 2008-04-11  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi <Contributors>: Added Julien Buty, Alexander
