@@ -8,10 +8,17 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget (MAINLINE).
 
-** Gnulib is now used to provide code for certain portability aspects in
-GNU Wget.
+** Added support for CSS. This includes:
+     - Parsing links from CSS files, and from CSS content found in HTML
+       style tags and attributes.
+     - Supporting conversion of links found within CSS content, when
+       --convert-links is specified.
+     - Ensuring that CSS files end in the ".css" filename extension,
+       when --convert-links is specified.
 
-** Wget uses Automake now as part of its build infrastructure.
+   CSS support in Wget is thanks to Ted Mielczarek
+   <ted.mielczarek@gmail.com>.
+
 
 * Changes in Wget 1.11.1.
 

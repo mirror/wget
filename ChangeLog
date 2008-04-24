@@ -1,3 +1,8 @@
+2008-04-24  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: Removed info about move to Automake, Gnulib. Added item
+	about the addition of CSS support.
+
 2008-04-22  Micah Cowan  <micah@cowan.name>
 
 	* ylwrap: Added via automake -ac.
