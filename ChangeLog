@@ -1,3 +1,11 @@
+2008-04-22  Micah Cowan  <micah@cowan.name>
+
+	* ylwrap: Added via automake -ac.
+
+2008-04-22  Ted Mielczarek  <ted.mielczarek@gmail.com>
+
+	* configure.ac: Added check for lex.
+
 2008-03-20  Micah Cowan  <micah@cowan.name>
 
 	* ABOUT-NLS: Reinstated, but with a message mentioning that
