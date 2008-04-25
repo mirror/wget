@@ -300,7 +300,8 @@ getftp (struct url *u, wgint *len, wgint restval, ccon *con)
         con->csock = -1;
 
       /* Second: Login with proper USER/PASS sequence.  */
-      logprintf (LOG_VERBOSE, _("Logging in as %s ... "), escnonprint (user));
+      logprintf (LOG_VERBOSE, _("Logging in as %s ... "), 
+                 quotearg_style (escape_quoting_style, user));
       if (opt.server_response)
         logputs (LOG_ALWAYS, "\n");
       err = ftp_login (csock, logname, passwd);
@@ -545,7 +546,8 @@ Error in server response, closing control connection.\n"));
             }
 
           if (!opt.server_response)
-            logprintf (LOG_VERBOSE, "==> CWD %s ... ", escnonprint (target));
+            logprintf (LOG_VERBOSE, "==> CWD %s ... ", 
+                       quotearg_style (escape_quoting_style, target));
           err = ftp_cwd (csock, target);
           /* FTPRERR, WRITEFAILED, FTPNSFOD */
           switch (err)
@@ -567,7 +569,7 @@ Error in server response, closing control connection.\n"));
             case FTPNSFOD:
               logputs (LOG_VERBOSE, "\n");
               logprintf (LOG_NOTQUIET, _("No such directory %s.\n\n"),
-                         quote (escnonprint (u->dir)));
+                         quote (u->dir));
               fd_close (csock);
               con->csock = -1;
               return err;
@@ -588,7 +590,8 @@ Error in server response, closing control connection.\n"));
       if (opt.verbose)
         {
           if (!opt.server_response)
-            logprintf (LOG_VERBOSE, "==> SIZE %s ... ", escnonprint (u->file));
+            logprintf (LOG_VERBOSE, "==> SIZE %s ... ", 
+                       quotearg_style (escape_quoting_style, u->file));
         }
 
       err = ftp_size (csock, u->file, len);
@@ -795,7 +798,8 @@ Error in server response, closing control connection.\n"));
             {
               if (restval)
                 logputs (LOG_VERBOSE, "\n");
-              logprintf (LOG_VERBOSE, "==> RETR %s ... ", escnonprint (u->file));
+              logprintf (LOG_VERBOSE, "==> RETR %s ... ", 
+                         quotearg_style (escape_quoting_style, u->file));
             }
         }
 
@@ -824,7 +828,7 @@ Error in server response, closing control connection.\n"));
         case FTPNSFOD:
           logputs (LOG_VERBOSE, "\n");
           logprintf (LOG_NOTQUIET, _("No such file %s.\n\n"),
-                     quote (escnonprint (u->file)));
+                     quote (u->file));
           fd_close (dtsock);
           fd_close (local_sock);
           return err;
@@ -1063,7 +1067,8 @@ Error in server response, closing control connection.\n"));
               char *p = strchr (line, '\0');
               while (p > line && (p[-1] == '\n' || p[-1] == '\r'))
                 *--p = '\0';
-              logprintf (LOG_ALWAYS, "%s\n", escnonprint (line));
+              logprintf (LOG_ALWAYS, "%s\n", 
+                         quotearg_style (escape_quoting_style, line));
               xfree (line);
             }
           fclose (fp);
@@ -1487,14 +1492,15 @@ The sizes do not match (local %s) -- retrieving.\n\n"),
                             {
                               logprintf (LOG_VERBOSE, _("\
 Already have correct symlink %s -> %s\n\n"),
-                                         con->target, escnonprint (f->linkto));
+                                         con->target, 
+                                         quotearg_style (escape_quoting_style, f->linkto));
                               dlthis = false;
                               break;
                             }
                         }
                     }
                   logprintf (LOG_VERBOSE, _("Creating symlink %s -> %s\n"),
-                             con->target, escnonprint (f->linkto));
+                             con->target, quotearg_style (escape_quoting_style, f->linkto));
                   /* Unlink before creating symlink!  */
                   unlink (con->target);
                   if (symlink (f->linkto, con->target) == -1)
@@ -1516,7 +1522,7 @@ Already have correct symlink %s -> %s\n\n"),
         case FT_DIRECTORY:
           if (!opt.recursive)
             logprintf (LOG_NOTQUIET, _("Skipping directory %s.\n"),
-                       quote (escnonprint (f->name)));
+                       quote (f->name));
           break;
         case FT_PLAINFILE:
           /* Call the retrieve loop.  */
@@ -1525,7 +1531,7 @@ Already have correct symlink %s -> %s\n\n"),
           break;
         case FT_UNKNOWN:
           logprintf (LOG_NOTQUIET, _("%s: unknown/unsupported file type.\n"),
-                     escnonprint (f->name));
+                     quotearg_style (escape_quoting_style, f->name));
           break;
         }       /* switch */
 
@@ -1631,7 +1637,7 @@ ftp_retrieve_dirs (struct url *u, struct fileinfo *f, ccon *con)
         {
           logprintf (LOG_VERBOSE, _("\
 Not descending to %s as it is excluded/not-included.\n"),
-                     quote (escnonprint (newdir)));
+                     quote (newdir));
           continue;
         }
 
@@ -1696,7 +1702,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
           if (f->type != FT_DIRECTORY && !acceptable (f->name))
             {
               logprintf (LOG_VERBOSE, _("Rejecting %s.\n"),
-                         quote (escnonprint (f->name)));
+                         quote (f->name));
               f = delelement (f, &start);
             }
           else
@@ -1710,7 +1716,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
       if (has_insecure_name_p (f->name))
         {
           logprintf (LOG_VERBOSE, _("Rejecting %s.\n"),
-                     quote (escnonprint (f->name)));
+                     quote (f->name));
           f = delelement (f, &start);
         }
       else
@@ -1733,7 +1739,8 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
               if (matchres == -1)
                 {
                   logprintf (LOG_NOTQUIET, _("Error matching %s against %s: %s\n"),
-                             u->file, escnonprint (f->name), strerror (errno));
+                             u->file, quotearg_style (escape_quoting_style, f->name), 
+                             strerror (errno));
                   break;
                 }
               if (matchres == FNM_NOMATCH)
@@ -1774,7 +1781,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
           /* #### This message SUCKS.  We should see what was the
              reason that nothing was retrieved.  */
           logprintf (LOG_VERBOSE, _("No matches on pattern %s.\n"),
-                     quote (escnonprint (u->file)));
+                     quote (u->file));
         }
       else /* GLOB_GETONE or GLOB_GETALL */
         {
