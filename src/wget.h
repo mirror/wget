@@ -216,6 +216,7 @@ typedef double SUM_SIZE_INT;
 
 /* Likewise for quoting functions.  */
 #include "quote.h"
+#include "quotearg.h"
 
 /* Useful macros used across the code: */
 
