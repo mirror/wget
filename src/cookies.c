@@ -441,7 +441,8 @@ parse_set_cookie (const char *set_cookie, bool silent)
   if (!silent)
     logprintf (LOG_NOTQUIET,
                _("Syntax error in Set-Cookie: %s at position %d.\n"),
-               escnonprint (set_cookie), (int) (ptr - set_cookie));
+               quotearg_style (escape_quoting_style, set_cookie), 
+               (int) (ptr - set_cookie));
   delete_cookie (cookie);
   return NULL;
 }
@@ -683,7 +684,8 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
         {
           logprintf (LOG_NOTQUIET,
                      _("Cookie coming from %s attempted to set domain to %s\n"),
-                     escnonprint (host), escnonprint (cookie->domain));
+                     quotearg_style (escape_quoting_style, host), 
+                     quotearg_style (escape_quoting_style, cookie->domain));
           xfree (cookie->domain);
           goto copy_domain;
         }
