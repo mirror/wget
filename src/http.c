@@ -810,7 +810,8 @@ print_response_line(const char *prefix, const char *b, const char *e)
 {
   char *copy;
   BOUNDED_TO_ALLOCA(b, e, copy);
-  logprintf (LOG_VERBOSE, "%s%s\n", prefix, escnonprint(copy));
+  logprintf (LOG_VERBOSE, "%s%s\n", prefix, 
+             quotearg_style (escape_quoting_style, copy));
 }
 
 /* Print the server response, line by line, omitting the trailing CRLF
@@ -1629,7 +1630,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
           sock = pconn.socket;
           using_ssl = pconn.ssl;
           logprintf (LOG_VERBOSE, _("Reusing existing connection to %s:%d.\n"),
-                     escnonprint (pconn.host), pconn.port);
+                     quotearg_style (escape_quoting_style, pconn.host), 
+                     pconn.port);
           DEBUGP (("Reusing fd %d.\n", sock));
           if (pconn.authorized)
             /* If the connection is already authorized, the "Basic"
@@ -1717,7 +1719,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
             {
             failed_tunnel:
               logprintf (LOG_NOTQUIET, _("Proxy tunneling failed: %s"),
-                         message ? escnonprint (message) : "?");
+                         message ? quotearg_style (escape_quoting_style, message) : "?");
               xfree_null (message);
               return CONSSLERR;
             }
@@ -1795,7 +1797,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   statcode = resp_status (resp, &message);
   if (!opt.server_response)
     logprintf (LOG_VERBOSE, "%2d %s\n", statcode,
-               message ? escnonprint (message) : "");
+               message ? quotearg_style (escape_quoting_style, message) : "");
   else
     {
       logprintf (LOG_VERBOSE, "\n");
@@ -2205,7 +2207,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
             logputs (LOG_VERBOSE,
                      opt.ignore_length ? _("ignored") : _("unspecified"));
           if (type)
-            logprintf (LOG_VERBOSE, " [%s]\n", escnonprint (type));
+            logprintf (LOG_VERBOSE, " [%s]\n", quotearg_style (escape_quoting_style, type));
           else
             logputs (LOG_VERBOSE, "\n");
         }
@@ -2576,7 +2578,8 @@ Remote file does not exist -- broken link!!!\n"));
           else
             {
               logprintf (LOG_NOTQUIET, _("%s ERROR %d: %s.\n"),
-                         tms, hstat.statcode, escnonprint (hstat.error));
+                         tms, hstat.statcode, 
+                         quotearg_style (escape_quoting_style, hstat.error));
             }
           logputs (LOG_VERBOSE, "\n");
           ret = WRONGCODE;
