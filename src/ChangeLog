@@ -1,3 +1,7 @@
+2008-04-25  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am: -I foo -> -Ifoo.
+
 2008-04-23  Micah Cowan  <micah@cowan.name>
 
 	* utils.c (test_dir_matches_p): Added a test for the case
