@@ -495,7 +495,7 @@ ssl_check_certificate (int fd, const char *host)
   if (!cert)
     {
       logprintf (LOG_NOTQUIET, _("%s: No certificate presented by %s.\n"),
-                 severity, escnonprint (host));
+                 severity, quotearg_style (escape_quoting_style, host));
       success = false;
       goto no_cert;             /* must bail out since CERT is NULL */
     }
@@ -505,7 +505,8 @@ ssl_check_certificate (int fd, const char *host)
       char *subject = X509_NAME_oneline (X509_get_subject_name (cert), 0, 0);
       char *issuer = X509_NAME_oneline (X509_get_issuer_name (cert), 0, 0);
       DEBUGP (("certificate:\n  subject: %s\n  issuer:  %s\n",
-               escnonprint (subject), escnonprint (issuer)));
+               quotearg_style (escape_quoting_style, subject), 
+               quotearg_style (escape_quoting_style, issuer)));
       OPENSSL_free (subject);
       OPENSSL_free (issuer);
     }
@@ -516,7 +517,8 @@ ssl_check_certificate (int fd, const char *host)
       char *issuer = X509_NAME_oneline (X509_get_issuer_name (cert), 0, 0);
       logprintf (LOG_NOTQUIET,
                  _("%s: cannot verify %s's certificate, issued by %s:\n"),
-                 severity, escnonprint (host), quote (escnonprint (issuer)));
+                 severity, quotearg_style (escape_quoting_style, host), 
+                 quote (issuer));
       /* Try to print more user-friendly (and translated) messages for
          the frequent verification errors.  */
       switch (vresult)
@@ -567,20 +569,20 @@ ssl_check_certificate (int fd, const char *host)
     {
       logprintf (LOG_NOTQUIET, _("\
 %s: certificate common name %s doesn't match requested host name %s.\n"),
-                 severity, quote (escnonprint (common_name)), quote (escnonprint (host)));
+                 severity, quote (common_name), quote (host));
       success = false;
     }
 
   if (success)
     DEBUGP (("X509 certificate successfully verified and matches host %s\n",
-             escnonprint (host)));
+             quotearg_style (escape_quoting_style, host)));
   X509_free (cert);
 
  no_cert:
   if (opt.check_cert && !success)
     logprintf (LOG_NOTQUIET, _("\
 To connect to %s insecurely, use `--no-check-certificate'.\n"),
-               escnonprint (host));
+               quotearg_style (escape_quoting_style, host));
 
   /* Allow --no-check-cert to disable certificate checking. */
   return opt.check_cert ? success : true;
