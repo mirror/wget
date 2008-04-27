@@ -1497,41 +1497,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       basic_auth_finished = maybe_send_basic_creds(u->host, user, passwd, req);
     }
 
-  proxyauth = NULL;
-  if (proxy)
-    {
-      char *proxy_user, *proxy_passwd;
-      /* For normal username and password, URL components override
-         command-line/wgetrc parameters.  With proxy
-         authentication, it's the reverse, because proxy URLs are
-         normally the "permanent" ones, so command-line args
-         should take precedence.  */
-      if (opt.proxy_user && opt.proxy_passwd)
-        {
-          proxy_user = opt.proxy_user;
-          proxy_passwd = opt.proxy_passwd;
-        }
-      else
-        {
-          proxy_user = proxy->user;
-          proxy_passwd = proxy->passwd;
-        }
-      /* #### This does not appear right.  Can't the proxy request,
-         say, `Digest' authentication?  */
-      if (proxy_user && proxy_passwd)
-        proxyauth = basic_authentication_encode (proxy_user, proxy_passwd);
-
-      /* If we're using a proxy, we will be connecting to the proxy
-         server.  */
-      conn = proxy;
-
-      /* Proxy authorization over SSL is handled below. */
-#ifdef HAVE_SSL
-      if (u->scheme != SCHEME_HTTPS)
-#endif
-        request_set_header (req, "Proxy-Authorization", proxyauth, rel_value);
-    }
-
   /* Generate the Host header, HOST:PORT.  Take into account that:
 
      - Broken server-side software often doesn't recognize the PORT
@@ -1601,6 +1566,41 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   /* We need to come back here when the initial attempt to retrieve
      without authorization header fails.  (Expected to happen at least
      for the Digest authorization scheme.)  */
+
+  proxyauth = NULL;
+  if (proxy)
+    {
+      char *proxy_user, *proxy_passwd;
+      /* For normal username and password, URL components override
+         command-line/wgetrc parameters.  With proxy
+         authentication, it's the reverse, because proxy URLs are
+         normally the "permanent" ones, so command-line args
+         should take precedence.  */
+      if (opt.proxy_user && opt.proxy_passwd)
+        {
+          proxy_user = opt.proxy_user;
+          proxy_passwd = opt.proxy_passwd;
+        }
+      else
+        {
+          proxy_user = proxy->user;
+          proxy_passwd = proxy->passwd;
+        }
+      /* #### This does not appear right.  Can't the proxy request,
+         say, `Digest' authentication?  */
+      if (proxy_user && proxy_passwd)
+        proxyauth = basic_authentication_encode (proxy_user, proxy_passwd);
+
+      /* If we're using a proxy, we will be connecting to the proxy
+         server.  */
+      conn = proxy;
+
+      /* Proxy authorization over SSL is handled below. */
+#ifdef HAVE_SSL
+      if (u->scheme != SCHEME_HTTPS)
+#endif
+        request_set_header (req, "Proxy-Authorization", proxyauth, rel_value);
+    }
 
   keep_alive = false;
 

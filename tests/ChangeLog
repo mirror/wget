@@ -1,6 +1,12 @@
+2008-04-26  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am, Test-proxied-https-auth.px: Added a test for
+	accessing password-protected HTTPS URLs through a proxy (via
+	CONNECT).
+
 2008-04-10  Micah Cowan  <micah@cowan.name>
 
-	* Makefile.in, Test-proxy-auth-basic.px: Added a test for
+	* Makefile.am, Test-proxy-auth-basic.px: Added a test for
 	accessing password-protected URLs through a proxy.
 
 2008-01-25  Micah Cowan  <micah@cowan.name>

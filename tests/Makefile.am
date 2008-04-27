@@ -46,6 +46,7 @@ run-unit-tests: unit-tests$(EXEEXT)
 	./unit-tests$(EXEEXT)
 
 run-px-tests: WgetTest.pm
+	$(PERLRUN) $(srcdir)/Test-proxied-https-auth.px && echo && echo
 	$(PERLRUN) $(srcdir)/Test-proxy-auth-basic.px && echo && echo
 	$(PERLRUN) $(srcdir)/Test-auth-basic.px && echo && echo
 	$(PERLRUN) $(srcdir)/Test-c-full.px && echo && echo

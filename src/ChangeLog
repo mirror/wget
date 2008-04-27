@@ -1,3 +1,9 @@
+2008-04-26  Micah Cowan  <micah@cowan.name>
+
+	* http.c (gethttp): Move proxy CONNECT handling to below the
+	retry_with_auth label, to deal with properly reconnecting to
+	proxies when we need to authenticate.
+
 2008-04-25  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am: -I foo -> -Ifoo.
