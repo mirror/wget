@@ -1,5 +1,12 @@
 2008-04-27  Micah Cowan  <micah@cowan.name>
 
+	* url.c (path_simplify): Go back to allowing leading ".." in
+	paths, but only for FTP URLs.
+	(test_path_simplify): Add scheme-specificness to tests, adapt for
+	mu_run_test.
+
+	* test.c (all_tests): Add test_path_simplify.
+
 	* main.c (main): Downgrade -r, -p with -O to a warning rather than
 	an error; elaborate just a bit more for other -O combination
 	cases.
