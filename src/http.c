@@ -2389,7 +2389,8 @@ File `%s' already there; not retrieving.\n\n"),
       if (has_html_suffix_p (hstat.local_file))
         *dt |= TEXTHTML;
 
-      return RETRUNNEEDED;
+      ret = RETROK;
+      goto exit;
     }
 
   /* Reset the counter. */

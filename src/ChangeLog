@@ -1,3 +1,8 @@
+2008-04-27  Rabin Vincent  <rabin@rab.in>
+
+	* http.c (http_loop): Fix return for the case where we don't
+	download a file because of -nc.
+
 2008-04-27  Micah Cowan  <micah@cowan.name>
 
 	* url.c (path_simplify): Go back to allowing leading ".." in
