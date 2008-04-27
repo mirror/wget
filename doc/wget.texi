@@ -551,9 +551,23 @@ analogous to shell redirection:
 @samp{wget -O - http://foo > file}; @file{file} will be truncated
 immediately, and @emph{all} downloaded content will be written there.
 
+For this reason, @samp{-N} (for timestamp-checking) is not supported
+in combination with @samp{-O}: since @var{file} is always newly
+created, it will always have a very new timestamp. Contrary to some
+users' expectations, the combination has never worked, and as of
+version 1.11, it results in an error.
+
+Similarly, using @samp{-r} or @samp{-p} with @samp{-O} may not work as
+you expect: Wget won't just download the first file to @var{file} and
+then download the rest to their normal names: @emph{all} downloaded
+content will be placed in @var{file}. This was disabled in version
+1.11, but has been reinstated (with a warning) in 1.11.2, as there are
+some cases where this behavior can actually have some use.
+
 Note that a combination with @samp{-k} is only permitted when
-downloading a single document, and combination with any of @samp{-r},
-@samp{-p}, or @samp{-N} is not allowed.
+downloading a single document, as in that case it will just convert
+all relative URIs to external ones; @samp{-k} makes no sense for
+multiple URIs when they're all being downloaded to a single file.
 
 @cindex clobbering, file
 @cindex downloading multiple times

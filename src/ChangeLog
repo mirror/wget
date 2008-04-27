@@ -1,3 +1,9 @@
+2008-04-27  Micah Cowan  <micah@cowan.name>
+
+	* main.c (main): Downgrade -r, -p with -O to a warning rather than
+	an error; elaborate just a bit more for other -O combination
+	cases.
+
 2008-04-26  Micah Cowan  <micah@cowan.name>
 
 	* http.c (gethttp): Move proxy CONNECT handling to below the
