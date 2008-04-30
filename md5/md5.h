@@ -1,6 +1,6 @@
 /* Declaration of functions and data types used for MD5 sum computing
    library functions.
-   Copyright (C) 1995-1997,1999,2000,2001,2004,2005,2006
+   Copyright (C) 1995-1997,1999,2000,2001,2004,2005,2006,2008
       Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -93,19 +93,13 @@ extern void __md5_process_bytes (const void *buffer, size_t len,
 /* Process the remaining bytes in the buffer and put result from CTX
    in first 16 bytes following RESBUF.  The result is always in little
    endian byte order, so that a byte-wise output yields to the wanted
-   ASCII representation of the message digest.
-
-   IMPORTANT: On some systems, RESBUF must be aligned to a 32-bit
-   boundary. */
+   ASCII representation of the message digest.  */
 extern void *__md5_finish_ctx (struct md5_ctx *ctx, void *resbuf) __THROW;
 
 
 /* Put result from CTX in first 16 bytes following RESBUF.  The result is
    always in little endian byte order, so that a byte-wise output yields
-   to the wanted ASCII representation of the message digest.
-
-   IMPORTANT: On some systems, RESBUF must be aligned to a 32-bit
-   boundary. */
+   to the wanted ASCII representation of the message digest.  */
 extern void *__md5_read_ctx (const struct md5_ctx *ctx, void *resbuf) __THROW;
 
 

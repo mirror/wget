@@ -8,6 +8,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget (MAINLINE).
 
+** Gnulib's getpass-gnu module is used to prompt for passwords.
+
 ** Gnulib is now used to provide code for certain portability aspects in
 GNU Wget.
 

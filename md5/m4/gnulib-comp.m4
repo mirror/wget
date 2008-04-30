@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2004-2007 Free Software Foundation, Inc.
+# Copyright (C) 2002-2008 Free Software Foundation, Inc.
 #
 # This file is free software, distributed under the terms of the GNU
 # General Public License.  As a special exception to the GNU General
@@ -31,21 +31,18 @@ AC_DEFUN([md5_EARLY],
 # "Check for header files, types and library functions".
 AC_DEFUN([md5_INIT],
 [
-  m4_pushdef([AC_LIBOBJ], m4_defn([md5_LIBOBJ]))
-  m4_pushdef([AC_REPLACE_FUNCS], m4_defn([md5_REPLACE_FUNCS]))
-  m4_pushdef([AC_LIBSOURCES], m4_defn([md5_LIBSOURCES]))
   AM_CONDITIONAL([GL_COND_LIBTOOL], [false])
   gl_cond_libtool=false
   gl_libdeps=
   gl_ltlibdeps=
+  m4_pushdef([AC_LIBOBJ], m4_defn([md5_LIBOBJ]))
+  m4_pushdef([AC_REPLACE_FUNCS], m4_defn([md5_REPLACE_FUNCS]))
+  m4_pushdef([AC_LIBSOURCES], m4_defn([md5_LIBSOURCES]))
+  gl_COMMON
   gl_source_base='md5'
   gl_MD5
   gl_STDINT_H
   gl_WCHAR_H
-  LIBMD5_LIBDEPS="$gl_libdeps"
-  AC_SUBST([LIBMD5_LIBDEPS])
-  LIBMD5_LTLIBDEPS="$gl_ltlibdeps"
-  AC_SUBST([LIBMD5_LTLIBDEPS])
   m4_popdef([AC_LIBSOURCES])
   m4_popdef([AC_REPLACE_FUNCS])
   m4_popdef([AC_LIBOBJ])
@@ -63,6 +60,34 @@ AC_DEFUN([md5_INIT],
     AC_SUBST([md5_LIBOBJS], [$md5_libobjs])
     AC_SUBST([md5_LTLIBOBJS], [$md5_ltlibobjs])
   ])
+  gltests_libdeps=
+  gltests_ltlibdeps=
+  m4_pushdef([AC_LIBOBJ], m4_defn([md5tests_LIBOBJ]))
+  m4_pushdef([AC_REPLACE_FUNCS], m4_defn([md5tests_REPLACE_FUNCS]))
+  m4_pushdef([AC_LIBSOURCES], m4_defn([md5tests_LIBSOURCES]))
+  gl_COMMON
+  gl_source_base='tests'
+  m4_popdef([AC_LIBSOURCES])
+  m4_popdef([AC_REPLACE_FUNCS])
+  m4_popdef([AC_LIBOBJ])
+  AC_CONFIG_COMMANDS_PRE([
+    md5tests_libobjs=
+    md5tests_ltlibobjs=
+    if test -n "$md5tests_LIBOBJS"; then
+      # Remove the extension.
+      sed_drop_objext='s/\.o$//;s/\.obj$//'
+      for i in `for i in $md5tests_LIBOBJS; do echo "$i"; done | sed "$sed_drop_objext" | sort | uniq`; do
+        md5tests_libobjs="$md5tests_libobjs $i.$ac_objext"
+        md5tests_ltlibobjs="$md5tests_ltlibobjs $i.lo"
+      done
+    fi
+    AC_SUBST([md5tests_LIBOBJS], [$md5tests_libobjs])
+    AC_SUBST([md5tests_LTLIBOBJS], [$md5tests_ltlibobjs])
+  ])
+  LIBMD5_LIBDEPS="$gl_libdeps"
+  AC_SUBST([LIBMD5_LIBDEPS])
+  LIBMD5_LTLIBDEPS="$gl_ltlibdeps"
+  AC_SUBST([LIBMD5_LTLIBDEPS])
 ])
 
 # Like AC_LIBOBJ, except that the module name goes
@@ -71,6 +96,13 @@ AC_DEFUN([md5_LIBOBJ], [
   AS_LITERAL_IF([$1], [md5_LIBSOURCES([$1.c])])dnl
   md5_LIBOBJS="$md5_LIBOBJS $1.$ac_objext"
 ])
+
+# m4_foreach_w is provided by autoconf-2.59c and later.
+# This definition is to accommodate developers using versions
+# of autoconf older than that.
+m4_ifndef([m4_foreach_w],
+  [m4_define([m4_foreach_w],
+    [m4_foreach([$1], m4_split(m4_normalize([$2]), [ ]), [$3])])])
 
 # Like AC_REPLACE_FUNCS, except that the module name goes
 # into md5_LIBOBJS instead of into LIBOBJS.
@@ -89,6 +121,41 @@ AC_DEFUN([md5_LIBSOURCES], [
       m4_syscmd([test -r md5/]_gl_NAME[ || test ! -d md5])dnl
       m4_if(m4_sysval, [0], [],
         [AC_FATAL([missing md5/]_gl_NAME)])
+    ])
+  ])
+])
+
+# Like AC_LIBOBJ, except that the module name goes
+# into md5tests_LIBOBJS instead of into LIBOBJS.
+AC_DEFUN([md5tests_LIBOBJ], [
+  AS_LITERAL_IF([$1], [md5tests_LIBSOURCES([$1.c])])dnl
+  md5tests_LIBOBJS="$md5tests_LIBOBJS $1.$ac_objext"
+])
+
+# m4_foreach_w is provided by autoconf-2.59c and later.
+# This definition is to accommodate developers using versions
+# of autoconf older than that.
+m4_ifndef([m4_foreach_w],
+  [m4_define([m4_foreach_w],
+    [m4_foreach([$1], m4_split(m4_normalize([$2]), [ ]), [$3])])])
+
+# Like AC_REPLACE_FUNCS, except that the module name goes
+# into md5tests_LIBOBJS instead of into LIBOBJS.
+AC_DEFUN([md5tests_REPLACE_FUNCS], [
+  m4_foreach_w([gl_NAME], [$1], [AC_LIBSOURCES(gl_NAME[.c])])dnl
+  AC_CHECK_FUNCS([$1], , [md5tests_LIBOBJ($ac_func)])
+])
+
+# Like AC_LIBSOURCES, except the directory where the source file is
+# expected is derived from the gnulib-tool parametrization,
+# and alloca is special cased (for the alloca-opt module).
+# We could also entirely rely on EXTRA_lib..._SOURCES.
+AC_DEFUN([md5tests_LIBSOURCES], [
+  m4_foreach([_gl_NAME], [$1], [
+    m4_if(_gl_NAME, [alloca.c], [], [
+      m4_syscmd([test -r tests/]_gl_NAME[ || test ! -d tests])dnl
+      m4_if(m4_sysval, [0], [],
+        [AC_FATAL([missing tests/]_gl_NAME)])
     ])
   ])
 ])
