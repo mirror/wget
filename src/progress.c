@@ -797,15 +797,14 @@ count_cols (const char *mbs)
 # define count_cols(mbs) ((int)(strlen(mbs)))
 #endif
 
-/* Translation note: "ETA" is English-centric, but this must
-   be short, ideally 3 chars.  Abbreviate if necessary.  */
-static const char eta_str[] = N_("  eta %s");
-static const char *eta_trans;
-static int bytes_cols_diff;
-
 const char *
-get_eta (void)
+get_eta (int *bcd)
 {
+  /* Translation note: "ETA" is English-centric, but this must
+     be short, ideally 3 chars.  Abbreviate if necessary.  */
+  static const char eta_str[] = N_("  eta %s");
+  static const char *eta_trans;
+  static int bytes_cols_diff;
   if (eta_trans == NULL)
     {
       int nbytes;
@@ -828,6 +827,9 @@ get_eta (void)
       ncols = count_cols (eta_trans);
       bytes_cols_diff = nbytes - ncols;
     }
+
+  if (bcd != NULL)
+    *bcd = bytes_cols_diff;
 
   return eta_trans;
 }
@@ -880,6 +882,10 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   */
   int dlbytes_size = 1 + MAX (size_grouped_len, 11);
   int progress_size = bp->width - (4 + 2 + dlbytes_size + 8 + 14);
+
+  /* The difference between the number of bytes used,
+     and the number of columns used. */
+  int bytes_cols_diff = 0;
 
   if (progress_size < 5)
     progress_size = 0;
@@ -1023,7 +1029,8 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
               bp->last_eta_time = dl_total_time;
             }
 
-          sprintf (p, get_eta(), eta_to_human_short (eta, false));
+          sprintf (p, get_eta(&bytes_cols_diff),
+                   eta_to_human_short (eta, false));
           move_to_end (p);
         }
       else if (bp->total_length > 0)
@@ -1035,11 +1042,16 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   else
     {
       /* When the download is done, print the elapsed time.  */
+      int nbytes;
+      int ncols;
 
       /* Note to translators: this should not take up more room than
          available here.  Abbreviate if necessary.  */
       strcpy (p, _("   in "));
-      move_to_end (p);          /* not p+=6, think translations! */
+      nbytes = strlen (p);
+      ncols  = count_cols (p);
+      bytes_cols_diff = nbytes - ncols;
+      p += nbytes;
       if (dl_total_time >= 10)
         strcpy (p, eta_to_human_short ((int) (dl_total_time + 0.5), false));
       else

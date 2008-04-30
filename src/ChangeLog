@@ -1,3 +1,9 @@
+2008-04-30  Micah Cowan  <micah@cowan.name>
+
+	* progress.c (create_image): Fix glitch where too many spaces are
+	printed on lines that don't display the ETA, in multibyte
+	locales.
+
 2008-04-27  Rabin Vincent  <rabin@rab.in>
 
 	* http.c (http_loop): Fix return for the case where we don't
