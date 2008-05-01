@@ -1,3 +1,7 @@
+2008-04-30  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: Added documentation for changes made in 1.11.2.
+
 2008-03-20  Micah Cowan  <micah@cowan.name>
 
 	* ABOUT-NLS: Reinstated, but with a message mentioning that

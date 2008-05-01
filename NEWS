@@ -13,6 +13,28 @@ GNU Wget.
 
 ** Wget uses Automake now as part of its build infrastructure.
 
+* Changes in Wget 1.11.2
+
+** Fixed a problem in authenticating over HTTPS through a proxy.
+(Regression in 1.11 over 1.10.2.)
+
+** The combination of -r or -p with -O, which was disallowed in 1.11,
+has been downgraded to a warning in 1.11.2. (-O and -N, which was never
+meaningful, is still an error.)
+
+** Further improvements to progress bar displays in non-English locales
+(too many spaces could be inserted, causing the display to scroll).
+
+** Successive invocations of Wget on FTP URLS, with --no-remove-listing
+and --continue, was causing Wget to append, rather than replace,
+information in the .listing file, and thereby download the same files
+multiple times. This has been fixed in 1.11.2.
+
+** Wget 1.11 no longer allowed ".." to persist at the beginning of URLs,
+for improved conformance with RFC 3986. However, this behavior presents
+problems for some FTP setups, and so they are now preserved again, for
+FTP URLs only.
+
 * Changes in Wget 1.11.1.
 
 ** Interrupted downloads no longer result in renaming the file
