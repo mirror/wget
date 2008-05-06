@@ -1,4 +1,6 @@
-/* Declarations for init.c.
+/* This stores global variables that are initialized with 
+   preprocessor declarations for output with the --version flag.
+
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
    2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
 
@@ -28,16 +30,78 @@ Corresponding Source for a non-source form of such a combination
 shall include the source code for the parts of OpenSSL used as well
 as that of the covered work.  */
 
-#ifndef INIT_H
-#define INIT_H
+#include "config.h"
+#include <stdio.h>
 
-char *wgetrc_env_file_name (void);
-char *wgetrc_user_file_name (void);
-char *wgetrc_file_name (void);
-void initialize (void);
-void run_command (const char *);
-void setoptval (const char *, const char *, const char *);
-char *home_dir (void);
-void cleanup (void);
+char *system_wgetrc = SYSTEM_WGETRC;
+char *locale_dir = LOCALEDIR;
 
-#endif /* INIT_H */
+const char* (compiled_features[]) =
+{
+
+#ifdef ENABLE_DIGEST
+  "+digest",
+#else
+  "-digest",
+#endif
+
+#ifdef ENABLE_IPV6
+  "+ipv6",
+#else
+  "-ipv6",
+#endif
+
+#ifdef ENABLE_NLS
+  "+nls",
+#else
+  "-nls",
+#endif
+
+#ifdef HAVE_NTLM
+  "+ntlm",
+#else
+  "-ntlm",
+#endif
+
+#ifdef ENABLE_OPIE
+  "+opie",
+#else
+  "-opie",
+#endif
+
+#ifdef HAVE_MD5
+#ifdef HAVE_BUILTIN_MD5
+  "+md5/builtin", 
+#elif HAVE_OPENSSL_MD5
+  "+md5/openssl",
+#elif HAVE_SOLARIS_MD5
+  "+md5/solaris",
+#else
+#error "md5 set, but no library found!",
+#endif
+#else
+  "-md5",
+#endif
+
+#ifdef HAVE_LIBGNUTLS
+  "+gnutls",
+#else
+  "-gnutls",
+#endif
+
+#ifdef HAVE_LIBSSL
+  "+ssl",
+#else
+  "-ssl",
+#endif
+
+#ifdef HAVE_GETTEXT
+  "+gettext",
+#else
+  "-gettext",
+#endif
+  /* sentinel value */
+  NULL
+};
+
+

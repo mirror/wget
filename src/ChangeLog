@@ -1,3 +1,8 @@
+2008-05-02  Madhusudan Hosaagrahara <com.gmail.hrmadhu>
+        * src/Makefile.am, src/main.c, src/init.c, src/init.h,
+	  src/build_info.c: Adds build information to the --version
+	  command line option. Fixes bug #20636.
+
 2008-04-30  Micah Cowan  <micah@cowan.name>
 
 	* progress.c (create_image): Fix glitch where too many spaces are
