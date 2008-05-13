@@ -1,6 +1,7 @@
 2008-05-12  Micah Cowan  <micah@cowan.name>
 
-	* main.c (main): Downgrade "-N with -O" to a warning.
+	* main.c (main): Downgrade "-N with -O" to a warning, and switch
+	it off to avoid confusing messages.
 
 2008-04-30  Micah Cowan  <micah@cowan.name>
 

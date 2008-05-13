@@ -903,6 +903,7 @@ will be placed in the single file you specified.\n\n"));
           logprintf (LOG_NOTQUIET, "%s", _("\
 WARNING: timestamping does nothing in combination with -O. See the manual\n\
 for details.\n\n"));
+          opt.timestamping = false;
         }
     }
 
