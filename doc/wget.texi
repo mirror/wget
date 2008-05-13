@@ -553,9 +553,8 @@ immediately, and @emph{all} downloaded content will be written there.
 
 For this reason, @samp{-N} (for timestamp-checking) is not supported
 in combination with @samp{-O}: since @var{file} is always newly
-created, it will always have a very new timestamp. Contrary to some
-users' expectations, the combination has never worked, and as of
-version 1.11, it results in an error.
+created, it will always have a very new timestamp. A warning will be
+issued if this combination is used.
 
 Similarly, using @samp{-r} or @samp{-p} with @samp{-O} may not work as
 you expect: Wget won't just download the first file to @var{file} and

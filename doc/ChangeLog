@@ -1,3 +1,8 @@
+2008-05-12  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi (Download Options): -N with -O downgraded to a
+	warning.
+
 2008-04-27  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi (Download Options) <-O>: Elaborate on why certain
