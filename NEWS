@@ -6,6 +6,12 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget 1.11.3
+
+** Downgraded -N with -O to a warning, rather than an error.
+
+** Translation updates
+
 * Changes in Wget (MAINLINE).
 
 ** Gnulib is now used to provide code for certain portability aspects in
