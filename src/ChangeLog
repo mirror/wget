@@ -1,3 +1,8 @@
+2008-05-14  Micah Cowan  <micah@cowan.name>
+
+	* ftp.c (ftp_retrieve_list): Symlinks and other filenames
+	should be fully quoted.
+
 2008-04-16  Steven Schubiger  <schubiger@gmail.com>
 
 	* ftp.c: Use Gnulib's quote function for printing filenames and
