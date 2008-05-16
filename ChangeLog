@@ -2,6 +2,11 @@
 
 	* NEWS: Entry for --ask-password.
 
+2008-05-14  Joao Ferreira  <joao@joaoff.com>
+
+	* src/main.c, src/http.c, src/ftp.c: -nc is now working in 
+	conjunction with '-O file'.
+
 2008-05-12  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: Translations and -N/-O.

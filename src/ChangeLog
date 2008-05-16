@@ -1,3 +1,8 @@
+2008-05-15  Steven Schubiger  <schubiger@gmail.com>
+
+	* ftp.c (getftp): Verify that the file actually exists in FTP, by
+	checking it against the listing.
+
 2008-05-15  Micah Cowan  <micah@cowan.name>
 
 	* main.c (prompt_for_password): Use the quote module.

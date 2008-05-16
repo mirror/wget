@@ -227,6 +227,8 @@ print_length (wgint size, wgint start, bool authoritative)
   logputs (LOG_VERBOSE, !authoritative ? _(" (unauthoritative)\n") : "\n");
 }
 
+static uerr_t ftp_get_listing (struct url *, ccon *, struct fileinfo **);
+
 /* Retrieves a file with denoted parameters through opening an FTP
    connection to the server.  It always closes the data connection,
    and closes the control connection in case of error.  */
@@ -779,12 +781,37 @@ Error in server response, closing control connection.\n"));
 
   if (cmd & DO_RETR)
     {
-      /* If we're in spider mode, don't really retrieve anything.  The
-         fact that we got to this point should be proof enough that
-         the file exists, vaguely akin to HTTP's concept of a "HEAD"
-         request.  */
+      /* If we're in spider mode, don't really retrieve anything except
+	 the directory listing and verify whether the given "file" exists.  */
       if (opt.spider)
         {
+	  bool exists = false;
+	  uerr_t res;
+	  struct fileinfo *f;
+	  res = ftp_get_listing (u, con, &f);
+	  /* Set the DO_RETR command flag again, because it gets unset when 
+	     calling ftp_get_listing() and would otherwise cause an assertion 
+	     failure earlier on when this function gets repeatedly called 
+	     (e.g., when recursing).  */
+	  con->cmd |= DO_RETR;
+	  if (res == RETROK)
+	    {
+	      while (f) 
+		{
+		  if (!strcmp (f->name, u->file))
+		    {
+		      exists = true;
+		      break;
+		    }
+		  f = f->next;
+		}
+	      if (!exists)
+		{
+		  logputs (LOG_VERBOSE, "\n");
+		  logprintf (LOG_NOTQUIET, _("No such file `%s'.\n"),
+			     escnonprint (u->file));
+		}
+	    }
           fd_close (csock);
           con->csock = -1;
           fd_close (dtsock);
@@ -1096,7 +1123,9 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
   if (!con->target)
     con->target = url_file_name (u);
 
-  if (opt.noclobber && file_exists_p (con->target))
+  /* If the output_document was given, then this check was already done and
+     the file didn't exist. Hence the !opt.output_document */
+  if (opt.noclobber && !opt.output_document && file_exists_p (con->target))
     {
       logprintf (LOG_VERBOSE,
                  _("File %s already there; not retrieving.\n"), quote (con->target));
