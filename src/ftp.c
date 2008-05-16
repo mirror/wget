@@ -300,7 +300,8 @@ getftp (struct url *u, wgint *len, wgint restval, ccon *con)
         con->csock = -1;
 
       /* Second: Login with proper USER/PASS sequence.  */
-      logprintf (LOG_VERBOSE, _("Logging in as %s ... "), escnonprint (user));
+      logprintf (LOG_VERBOSE, _("Logging in as %s ... "), 
+                 quotearg_style (escape_quoting_style, user));
       if (opt.server_response)
         logputs (LOG_ALWAYS, "\n");
       err = ftp_login (csock, logname, passwd);
@@ -545,7 +546,8 @@ Error in server response, closing control connection.\n"));
             }
 
           if (!opt.server_response)
-            logprintf (LOG_VERBOSE, "==> CWD %s ... ", escnonprint (target));
+            logprintf (LOG_VERBOSE, "==> CWD %s ... ", 
+                       quotearg_style (escape_quoting_style, target));
           err = ftp_cwd (csock, target);
           /* FTPRERR, WRITEFAILED, FTPNSFOD */
           switch (err)
@@ -566,8 +568,8 @@ Error in server response, closing control connection.\n"));
               return err;
             case FTPNSFOD:
               logputs (LOG_VERBOSE, "\n");
-              logprintf (LOG_NOTQUIET, _("No such directory `%s'.\n\n"),
-                         escnonprint (u->dir));
+              logprintf (LOG_NOTQUIET, _("No such directory %s.\n\n"),
+                         quote (u->dir));
               fd_close (csock);
               con->csock = -1;
               return err;
@@ -588,7 +590,8 @@ Error in server response, closing control connection.\n"));
       if (opt.verbose)
         {
           if (!opt.server_response)
-            logprintf (LOG_VERBOSE, "==> SIZE %s ... ", escnonprint (u->file));
+            logprintf (LOG_VERBOSE, "==> SIZE %s ... ", 
+                       quotearg_style (escape_quoting_style, u->file));
         }
 
       err = ftp_size (csock, u->file, len);
@@ -795,7 +798,8 @@ Error in server response, closing control connection.\n"));
             {
               if (restval)
                 logputs (LOG_VERBOSE, "\n");
-              logprintf (LOG_VERBOSE, "==> RETR %s ... ", escnonprint (u->file));
+              logprintf (LOG_VERBOSE, "==> RETR %s ... ", 
+                         quotearg_style (escape_quoting_style, u->file));
             }
         }
 
@@ -823,8 +827,8 @@ Error in server response, closing control connection.\n"));
           return err;
         case FTPNSFOD:
           logputs (LOG_VERBOSE, "\n");
-          logprintf (LOG_NOTQUIET, _("No such file `%s'.\n\n"),
-                     escnonprint (u->file));
+          logprintf (LOG_NOTQUIET, _("No such file %s.\n\n"),
+                     quote (u->file));
           fd_close (dtsock);
           fd_close (local_sock);
           return err;
@@ -870,8 +874,8 @@ Error in server response, closing control connection.\n"));
           return err;
         case FTPNSFOD:
           logputs (LOG_VERBOSE, "\n");
-          logprintf (LOG_NOTQUIET, _("No such file or directory `%s'.\n\n"),
-                     ".");
+          logprintf (LOG_NOTQUIET, _("No such file or directory %s.\n\n"),
+                     quote ("."));
           fd_close (dtsock);
           fd_close (local_sock);
           return err;
@@ -1063,7 +1067,8 @@ Error in server response, closing control connection.\n"));
               char *p = strchr (line, '\0');
               while (p > line && (p[-1] == '\n' || p[-1] == '\r'))
                 *--p = '\0';
-              logprintf (LOG_ALWAYS, "%s\n", escnonprint (line));
+              logprintf (LOG_ALWAYS, "%s\n", 
+                         quotearg_style (escape_quoting_style, line));
               xfree (line);
             }
           fclose (fp);
@@ -1094,7 +1099,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
   if (opt.noclobber && file_exists_p (con->target))
     {
       logprintf (LOG_VERBOSE,
-                 _("File `%s' already there; not retrieving.\n"), con->target);
+                 _("File %s already there; not retrieving.\n"), quote (con->target));
       /* If the file is there, we suppose it's retrieved OK.  */
       return RETROK;
     }
@@ -1165,8 +1170,8 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
           strcpy (tmp, "        ");
           if (count > 1)
             sprintf (tmp, _("(try:%2d)"), count);
-          logprintf (LOG_VERBOSE, "--%s--  %s\n  %s => `%s'\n",
-                     tms, hurl, tmp, locf);
+          logprintf (LOG_VERBOSE, "--%s--  %s\n  %s => %s\n",
+                     tms, hurl, tmp, quote (locf));
 #ifdef WINDOWS
           ws_changetitle (hurl);
 #endif
@@ -1234,8 +1239,8 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
           con->csock = -1;
         }
       if (!opt.spider)
-        logprintf (LOG_VERBOSE, _("%s (%s) - `%s' saved [%s]\n\n"),
-                   tms, tmrate, locf, number_to_static_string (len));
+        logprintf (LOG_VERBOSE, _("%s (%s) - %s saved [%s]\n\n"),
+                   tms, tmrate, quote (locf), number_to_static_string (len));
       if (!opt.verbose && !opt.quiet)
         {
           /* Need to hide the password from the URL.  The `if' is here
@@ -1318,7 +1323,7 @@ ftp_get_listing (struct url *u, ccon *con, struct fileinfo **f)
   uf = url_file_name (u);
   lf = file_merge (uf, LIST_FILENAME);
   xfree (uf);
-  DEBUGP ((_("Using `%s' as listing tmp file.\n"), lf));
+  DEBUGP ((_("Using %s as listing tmp file.\n"), quote (lf)));
 
   con->target = lf;
   err = ftp_loop_internal (u, NULL, con);
@@ -1332,7 +1337,7 @@ ftp_get_listing (struct url *u, ccon *con, struct fileinfo **f)
           if (unlink (lf))
             logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
           else
-            logprintf (LOG_VERBOSE, _("Removed `%s'.\n"), lf);
+            logprintf (LOG_VERBOSE, _("Removed %s.\n"), quote (lf));
         }
     }
   else
@@ -1439,15 +1444,15 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
                   /* Remote file is older, file sizes can be compared and
                      are both equal. */
                   logprintf (LOG_VERBOSE, _("\
-Remote file no newer than local file `%s' -- not retrieving.\n"), con->target);
+Remote file no newer than local file %s -- not retrieving.\n"), quote (con->target));
                   dlthis = false;
                 }
               else if (eq_size)
                 {
                   /* Remote file is newer or sizes cannot be matched */
                   logprintf (LOG_VERBOSE, _("\
-Remote file is newer than local file `%s' -- retrieving.\n\n"),
-                             con->target);
+Remote file is newer than local file %s -- retrieving.\n\n"),
+                             quote (con->target));
                 }
               else
                 {
@@ -1489,14 +1494,15 @@ The sizes do not match (local %s) -- retrieving.\n\n"),
                             {
                               logprintf (LOG_VERBOSE, _("\
 Already have correct symlink %s -> %s\n\n"),
-                                         con->target, escnonprint (f->linkto));
+                                         quote (con->target),
+                                         quote (f->linkto));
                               dlthis = false;
                               break;
                             }
                         }
                     }
                   logprintf (LOG_VERBOSE, _("Creating symlink %s -> %s\n"),
-                             con->target, escnonprint (f->linkto));
+                             quote (con->target), quote (f->linkto));
                   /* Unlink before creating symlink!  */
                   unlink (con->target);
                   if (symlink (f->linkto, con->target) == -1)
@@ -1505,8 +1511,8 @@ Already have correct symlink %s -> %s\n\n"),
                 } /* have f->linkto */
 #else  /* not HAVE_SYMLINK */
               logprintf (LOG_NOTQUIET,
-                         _("Symlinks not supported, skipping symlink `%s'.\n"),
-                         con->target);
+                         _("Symlinks not supported, skipping symlink %s.\n"),
+                         quote (con->target));
 #endif /* not HAVE_SYMLINK */
             }
           else                /* opt.retr_symlinks */
@@ -1517,8 +1523,8 @@ Already have correct symlink %s -> %s\n\n"),
           break;
         case FT_DIRECTORY:
           if (!opt.recursive)
-            logprintf (LOG_NOTQUIET, _("Skipping directory `%s'.\n"),
-                       escnonprint (f->name));
+            logprintf (LOG_NOTQUIET, _("Skipping directory %s.\n"),
+                       quote (f->name));
           break;
         case FT_PLAINFILE:
           /* Call the retrieve loop.  */
@@ -1527,7 +1533,7 @@ Already have correct symlink %s -> %s\n\n"),
           break;
         case FT_UNKNOWN:
           logprintf (LOG_NOTQUIET, _("%s: unknown/unsupported file type.\n"),
-                     escnonprint (f->name));
+                     quote (f->name));
           break;
         }       /* switch */
 
@@ -1632,8 +1638,8 @@ ftp_retrieve_dirs (struct url *u, struct fileinfo *f, ccon *con)
       if (!accdir (newdir))
         {
           logprintf (LOG_VERBOSE, _("\
-Not descending to `%s' as it is excluded/not-included.\n"),
-                     escnonprint (newdir));
+Not descending to %s as it is excluded/not-included.\n"),
+                     quote (newdir));
           continue;
         }
 
@@ -1697,8 +1703,8 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
         {
           if (f->type != FT_DIRECTORY && !acceptable (f->name))
             {
-              logprintf (LOG_VERBOSE, _("Rejecting `%s'.\n"),
-                         escnonprint (f->name));
+              logprintf (LOG_VERBOSE, _("Rejecting %s.\n"),
+                         quote (f->name));
               f = delelement (f, &start);
             }
           else
@@ -1711,8 +1717,8 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
     {
       if (has_insecure_name_p (f->name))
         {
-          logprintf (LOG_VERBOSE, _("Rejecting `%s'.\n"),
-                     escnonprint (f->name));
+          logprintf (LOG_VERBOSE, _("Rejecting %s.\n"),
+                     quote (f->name));
           f = delelement (f, &start);
         }
       else
@@ -1735,7 +1741,8 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
               if (matchres == -1)
                 {
                   logprintf (LOG_NOTQUIET, _("Error matching %s against %s: %s\n"),
-                             u->file, escnonprint (f->name), strerror (errno));
+                             u->file, quotearg_style (escape_quoting_style, f->name), 
+                             strerror (errno));
                   break;
                 }
               if (matchres == FNM_NOMATCH)
@@ -1775,8 +1782,8 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
           /* No luck.  */
           /* #### This message SUCKS.  We should see what was the
              reason that nothing was retrieved.  */
-          logprintf (LOG_VERBOSE, _("No matches on pattern `%s'.\n"),
-                     escnonprint (u->file));
+          logprintf (LOG_VERBOSE, _("No matches on pattern %s.\n"),
+                     quote (u->file));
         }
       else /* GLOB_GETONE or GLOB_GETALL */
         {
@@ -1841,13 +1848,13 @@ ftp_loop (struct url *u, int *dt, struct url *proxy, bool recursive, bool glob)
                       else
                         sz = -1;
                       logprintf (LOG_NOTQUIET,
-                                 _("Wrote HTML-ized index to `%s' [%s].\n"),
-                                 filename, number_to_static_string (sz));
+                                 _("Wrote HTML-ized index to %s [%s].\n"),
+                                 quote (filename), number_to_static_string (sz));
                     }
                   else
                     logprintf (LOG_NOTQUIET,
-                               _("Wrote HTML-ized index to `%s'.\n"),
-                               filename);
+                               _("Wrote HTML-ized index to %s.\n"),
+                               quote (filename));
                 }
               xfree (filename);
             }

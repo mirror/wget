@@ -403,13 +403,13 @@ maybe_send_basic_creds (const char *hostname, const char *user,
   else if (basic_authed_hosts
       && hash_table_contains(basic_authed_hosts, hostname))
     {
-      DEBUGP(("Found `%s' in basic_authed_hosts.\n", hostname));
+      DEBUGP(("Found %s in basic_authed_hosts.\n", quote (hostname)));
       do_challenge = true;
     }
   else
     {
-      DEBUGP(("Host `%s' has not issued a general basic challenge.\n",
-              hostname));
+      DEBUGP(("Host %s has not issued a general basic challenge.\n",
+              quote (hostname)));
     }
   if (do_challenge)
     {
@@ -430,7 +430,7 @@ register_basic_auth_host (const char *hostname)
   if (!hash_table_contains(basic_authed_hosts, hostname))
     {
       hash_table_put (basic_authed_hosts, xstrdup(hostname), NULL);
-      DEBUGP(("Inserted `%s' into basic_authed_hosts\n", hostname));
+      DEBUGP(("Inserted %s into basic_authed_hosts\n", quote (hostname)));
     }
 }
 
@@ -810,7 +810,8 @@ print_response_line(const char *prefix, const char *b, const char *e)
 {
   char *copy;
   BOUNDED_TO_ALLOCA(b, e, copy);
-  logprintf (LOG_ALWAYS, "%s%s\n", prefix, escnonprint(copy));
+  logprintf (LOG_ALWAYS, "%s%s\n", prefix, 
+             quotearg_style (escape_quoting_style, copy));
 }
 
 /* Print the server response, line by line, omitting the trailing CRLF
@@ -1544,8 +1545,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
           post_data_size = file_size (opt.post_file_name);
           if (post_data_size == -1)
             {
-              logprintf (LOG_NOTQUIET, _("POST data file `%s' missing: %s\n"),
-                         opt.post_file_name, strerror (errno));
+              logprintf (LOG_NOTQUIET, _("POST data file %s missing: %s\n"),
+                         quote (opt.post_file_name), strerror (errno));
               post_data_size = 0;
             }
         }
@@ -1629,7 +1630,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
           sock = pconn.socket;
           using_ssl = pconn.ssl;
           logprintf (LOG_VERBOSE, _("Reusing existing connection to %s:%d.\n"),
-                     escnonprint (pconn.host), pconn.port);
+                     quotearg_style (escape_quoting_style, pconn.host), 
+                     pconn.port);
           DEBUGP (("Reusing fd %d.\n", sock));
           if (pconn.authorized)
             /* If the connection is already authorized, the "Basic"
@@ -1641,8 +1643,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
         {
           request_free (req);
           logprintf(LOG_NOTQUIET,
-                    _("%s: unable to resolve host address `%s'\n"),
-                    exec_name, relevant->host);
+                    _("%s: unable to resolve host address %s\n"),
+                    exec_name, quote (relevant->host));
           return HOSTERR;
         }
     }
@@ -1717,7 +1719,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
             {
             failed_tunnel:
               logprintf (LOG_NOTQUIET, _("Proxy tunneling failed: %s"),
-                         message ? escnonprint (message) : "?");
+                         message ? quotearg_style (escape_quoting_style, message) : "?");
               xfree_null (message);
               return CONSSLERR;
             }
@@ -1795,7 +1797,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   statcode = resp_status (resp, &message);
   if (!opt.server_response)
     logprintf (LOG_VERBOSE, "%2d %s\n", statcode,
-               message ? escnonprint (message) : "");
+               message ? quotearg_style (escape_quoting_style, message) : "");
   else
     {
       logprintf (LOG_VERBOSE, "\n");
@@ -1826,7 +1828,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
           /* If opt.noclobber is turned on and file already exists, do not
              retrieve the file */
           logprintf (LOG_VERBOSE, _("\
-File `%s' already there; not retrieving.\n\n"), hs->local_file);
+File %s already there; not retrieving.\n\n"), quote (hs->local_file));
           /* If the file is there, we suppose it's retrieved OK.  */
           *dt |= RETROKF;
 
@@ -2205,7 +2207,7 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
             logputs (LOG_VERBOSE,
                      opt.ignore_length ? _("ignored") : _("unspecified"));
           if (type)
-            logprintf (LOG_VERBOSE, " [%s]\n", escnonprint (type));
+            logprintf (LOG_VERBOSE, " [%s]\n", quotearg_style (escape_quoting_style, type));
           else
             logputs (LOG_VERBOSE, "\n");
         }
@@ -2274,8 +2276,8 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
   /* Print fetch message, if opt.verbose.  */
   if (opt.verbose)
     {
-      logprintf (LOG_NOTQUIET, _("Saving to: `%s'\n"), 
-                 HYPHENP (hs->local_file) ? "STDOUT" : hs->local_file);
+      logprintf (LOG_NOTQUIET, _("Saving to: %s\n"), 
+                 HYPHENP (hs->local_file) ? quote ("STDOUT") : quote (hs->local_file));
     }
     
   /* This confuses the timestamping code that checks for file size.
@@ -2379,8 +2381,8 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
       /* If opt.noclobber is turned on and file already exists, do not
          retrieve the file */
       logprintf (LOG_VERBOSE, _("\
-File `%s' already there; not retrieving.\n\n"), 
-                 hstat.local_file);
+File %s already there; not retrieving.\n\n"), 
+                 quote (hstat.local_file));
       /* If the file is there, we suppose it's retrieved OK.  */
       *dt |= RETROKF;
 
@@ -2508,8 +2510,8 @@ Spider mode enabled. Check if remote file exists.\n"));
         case FWRITEERR: case FOPENERR:
           /* Another fatal error.  */
           logputs (LOG_VERBOSE, "\n");
-          logprintf (LOG_NOTQUIET, _("Cannot write to `%s' (%s).\n"),
-                     hstat.local_file, strerror (errno));
+          logprintf (LOG_NOTQUIET, _("Cannot write to %s (%s).\n"),
+                     quote (hstat.local_file), strerror (errno));
         case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED: 
         case SSLINITFAILED: case CONTNOTSUPPORTED:
           /* Fatal errors just return from the function.  */
@@ -2577,7 +2579,8 @@ Remote file does not exist -- broken link!!!\n"));
           else
             {
               logprintf (LOG_NOTQUIET, _("%s ERROR %d: %s.\n"),
-                         tms, hstat.statcode, escnonprint (hstat.error));
+                         tms, hstat.statcode, 
+                         quotearg_style (escape_quoting_style, hstat.error));
             }
           logputs (LOG_VERBOSE, "\n");
           ret = WRONGCODE;
@@ -2631,8 +2634,8 @@ Last-modified header invalid -- time-stamp ignored.\n"));
                                   || hstat.orig_file_size == hstat.contlen)
                                 {
                                   logprintf (LOG_VERBOSE, _("\
-Server file no newer than local file `%s' -- not retrieving.\n\n"),
-                                             hstat.orig_file_name);
+Server file no newer than local file %s -- not retrieving.\n\n"),
+                                             quote (hstat.orig_file_name));
                                   ret = RETROK;
                                   goto exit;
                                 }
@@ -2735,8 +2738,8 @@ Remote file exists.\n\n"));
           if (*dt & RETROKF)
             {
               logprintf (LOG_VERBOSE,
-                         _("%s (%s) - `%s' saved [%s/%s]\n\n"),
-                         tms, tmrate, hstat.local_file,
+                         _("%s (%s) - %s saved [%s/%s]\n\n"),
+                         tms, tmrate, quote (hstat.local_file),
                          number_to_static_string (hstat.len),
                          number_to_static_string (hstat.contlen));
               logprintf (LOG_NONVERBOSE,
@@ -2766,8 +2769,8 @@ Remote file exists.\n\n"));
               if (*dt & RETROKF)
                 {
                   logprintf (LOG_VERBOSE,
-                             _("%s (%s) - `%s' saved [%s]\n\n"),
-                             tms, tmrate, hstat.local_file,
+                             _("%s (%s) - %s saved [%s]\n\n"),
+                             tms, tmrate, quote (hstat.local_file),
                              number_to_static_string (hstat.len));
                   logprintf (LOG_NONVERBOSE,
                              "%s URL:%s [%s] -> \"%s\" [%d]\n",

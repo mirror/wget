@@ -453,8 +453,8 @@ dot_set_params (const char *params)
     }
   else
     fprintf (stderr,
-             _("Invalid dot style specification `%s'; leaving unchanged.\n"),
-             params);
+             _("Invalid dot style specification %s; leaving unchanged.\n"),
+             quote (params));
 }
 
 /* "Thermometer" (bar) progress. */

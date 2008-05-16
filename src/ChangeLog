@@ -1,3 +1,8 @@
+2008-05-14  Micah Cowan  <micah@cowan.name>
+
+	* ftp.c (ftp_retrieve_list): Symlinks and other filenames
+	should be fully quoted.
+
 2008-05-12  Micah Cowan  <micah@cowan.name>
 
 	* main.c (main): Downgrade "-N with -O" to a warning, and switch
@@ -76,6 +81,35 @@
 
 	* Makefile.am: Move @LIBS@ after other libraries, for better
 	static-linking support. Fixes bug #22143.
+
+2008-04-16  Steven Schubiger  <schubiger@gmail.com>
+
+	* ftp.c: Use Gnulib's quote function for printing filenames and
+	such.
+	* connect.c: Likewise.
+	* convert.c: Likewise.
+	* cookies.c: Likewise.
+	* ftp-opie.c: Likewise.
+	* gnutls.c: Likewise.
+	* init.c: Likewise.
+	* log.c: Likewise.
+	* mswindows.c: Likewise.
+	* openssl.c: Likewise.
+	* progress.c: Likewise.
+	* recur.c: Likewise.
+	* res.c: Likewise.
+	* utils.c: Likewise.
+
+2008-04-16  Steven Schubiger  <schubiger@gmail.com>
+
+	* sysdep.h: Comment the defines __EXTENSIONS__ and _GNU_SOURCE 
+	out, because they're now defined independently by config.h.
+
+2008-04-14  Steven Schubiger  <schubiger@gmail.com>
+
+	* http.c: Use Gnulib's quote function for printing filenames and
+	such.
+	* wget.h: #include "quote.h".
 
 2008-04-12  Rabin Vincent  <rabin@rab.in>
 

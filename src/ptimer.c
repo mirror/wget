@@ -71,6 +71,7 @@ as that of the covered work.  */
 # include <windows.h>
 #endif
 
+#include "utils.h"
 #include "ptimer.h"
 
 /* Depending on the OS, one and only one of PTIMER_POSIX,

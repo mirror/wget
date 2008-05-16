@@ -12,13 +12,6 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Translation updates
 
-* Changes in Wget (MAINLINE).
-
-** Gnulib is now used to provide code for certain portability aspects in
-GNU Wget.
-
-** Wget uses Automake now as part of its build infrastructure.
-
 * Changes in Wget 1.11.2
 
 ** Fixed a problem in authenticating over HTTPS through a proxy.

@@ -2157,7 +2157,7 @@ btoe (char *store, const unsigned char *c)
   memcpy (store, &Wp[extract (cp, 55, 11)][0], 4);
   store[4] = '\0';              /* make sure the string is terminated */
 
-  DEBUGP (("wrote `%s' to STORE\n", store_beg));
+  DEBUGP (("wrote %s to STORE\n", quote (store_beg)));
   return store_beg;
 }
 
