@@ -1,3 +1,7 @@
+2008-05-15  Micah Cowan  <micah@cowan.name>
+
+	* main.c (prompt_for_password): Use the quote module.
+
 2008-05-14  Micah Cowan  <micah@cowan.name>
 
 	* ftp.c (ftp_retrieve_list): Symlinks and other filenames

@@ -56,7 +56,8 @@ as that of the covered work.  */
 #include "http.h"               /* for save_cookies */
 
 #include <getopt.h>
-#include "getpass.h"
+#include <getpass.h>
+#include <quote.h>
 
 #ifndef PATH_SEPARATOR
 # define PATH_SEPARATOR '/'
@@ -681,7 +682,7 @@ static char *
 prompt_for_password (void)
 {
   if (opt.user)
-    printf (_("Password for user \"%s\": "), opt.user);
+    printf (_("Password for user %s: "), quote (opt.user));
   else
     printf (_("Password: "));
   return getpass("");
