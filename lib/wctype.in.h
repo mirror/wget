@@ -1,6 +1,6 @@
 /* A substitute for ISO C99 <wctype.h>, for platforms that lack it.
 
-   Copyright (C) 2006, 2007 Free Software Foundation, Inc.
+   Copyright (C) 2006-2008 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -57,8 +57,9 @@ typedef int __wctype_wint_t;
 #endif
 
 /* FreeBSD 4.4 to 4.11 has <wctype.h> but lacks the functions.
+   Linux libc5 has <wctype.h> and the functions but they are broken.
    Assume all 12 functions are implemented the same way, or not at all.  */
-#if ! @HAVE_ISWCNTRL@
+#if ! @HAVE_ISWCNTRL@ || @REPLACE_ISWCNTRL@
 
 /* IRIX 5.3 has macros but no functions, its isw* macros refer to an
    undefined variable _ctmp_ and to <ctype.h> macros like _P, and they
@@ -77,6 +78,22 @@ typedef int __wctype_wint_t;
 #  undef iswspace
 #  undef iswupper
 #  undef iswxdigit
+
+/* Linux libc5 has <wctype.h> and the functions but they are broken.  */
+#  if @REPLACE_ISWCNTRL@
+#   define iswalnum rpl_iswalnum
+#   define iswalpha rpl_iswalpha
+#   define iswblank rpl_iswblank
+#   define iswcntrl rpl_iswcntrl
+#   define iswdigit rpl_iswdigit
+#   define iswgraph rpl_iswgraph
+#   define iswlower rpl_iswlower
+#   define iswprint rpl_iswprint
+#   define iswpunct rpl_iswpunct
+#   define iswspace rpl_iswspace
+#   define iswupper rpl_iswupper
+#   define iswxdigit rpl_iswxdigit
+#  endif
 
 static inline int
 iswalnum (__wctype_wint_t wc)

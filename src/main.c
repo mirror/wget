@@ -56,6 +56,7 @@ as that of the covered work.  */
 #include "http.h"               /* for save_cookies */
 
 #include <getopt.h>
+#include "getpass.h"
 
 #ifndef PATH_SEPARATOR
 # define PATH_SEPARATOR '/'
@@ -130,6 +131,7 @@ static struct cmdline_option option_data[] =
   {
     { "accept", 'A', OPT_VALUE, "accept", -1 },
     { "append-output", 'a', OPT__APPEND_OUTPUT, NULL, required_argument },
+    { "ask-password", 0, OPT_BOOLEAN, "askpassword", -1 },
     { "auth-no-challenge", 0, OPT_BOOLEAN, "authnochallenge", -1 },
     { "background", 'b', OPT_BOOLEAN, "background", -1 },
     { "backup-converted", 'K', OPT_BOOLEAN, "backupconverted", -1 },
@@ -472,6 +474,8 @@ Download:\n"),
        --user=USER               set both ftp and http user to USER.\n"),
     N_("\
        --password=PASS           set both ftp and http password to PASS.\n"),
+    N_("\
+       --ask-password            prompt for passwords.\n"),
     "\n",
 
     N_("\
@@ -671,6 +675,16 @@ secs_to_human_time (double interval)
     sprintf (buf, "%ss", print_decimal (interval));
 
   return buf;
+}
+
+static char *
+prompt_for_password (void)
+{
+  if (opt.user)
+    printf (_("Password for user \"%s\": "), opt.user);
+  else
+    printf (_("Password: "));
+  return getpass("");
 }
 
 static void
@@ -907,6 +921,13 @@ for details.\n\n"));
         }
     }
 
+  if (opt.ask_passwd && opt.passwd)
+    {
+      printf (_("Cannot specify both --ask-password and --password.\n"));
+      print_usage ();
+      exit (1);
+    }
+
   if (!nurl && !opt.input_filename)
     {
       /* No URL specified.  */
@@ -1001,6 +1022,9 @@ for details.\n\n"));
     {
       char *filename = NULL, *redirected_URL = NULL;
       int dt;
+
+      if (opt.ask_passwd)
+        opt.passwd = prompt_for_password ();
 
       if ((opt.recursive || opt.page_requisites)
           && (url_scheme (*t) != SCHEME_FTP || url_uses_proxy (*t)))

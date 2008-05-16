@@ -1,5 +1,5 @@
-# strerror.m4 serial 7
-dnl Copyright (C) 2002, 2007 Free Software Foundation, Inc.
+# strerror.m4 serial 8
+dnl Copyright (C) 2002, 2007-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -22,17 +22,17 @@ AC_DEFUN([gl_FUNC_STRERROR_SEPARATE],
    [gl_cv_func_working_strerror],
    [AC_RUN_IFELSE(
       [AC_LANG_PROGRAM(
-	 [#include <string.h>
-	 ],
-	 [return !*strerror (-2);])],
+	 [[#include <string.h>
+	 ]],
+	 [[return !*strerror (-2);]])],
       [gl_cv_func_working_strerror=yes],
       [gl_cv_func_working_strerror=no],
       [dnl Assume crossbuild works if it compiles.
        AC_COMPILE_IFELSE(
 	 [AC_LANG_PROGRAM(
-	    [#include <string.h>
-	    ],
-	    [return !*strerror (-2);])],
+	    [[#include <string.h>
+	    ]],
+	    [[return !*strerror (-2);]])],
 	 [gl_cv_func_working_strerror=yes],
 	 [gl_cv_func_working_strerror=no])])])
   if test $gl_cv_func_working_strerror = no ; then

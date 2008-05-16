@@ -6,6 +6,12 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget 1.12 (MAINLINE)
+
+** --ask-password option (and associated wgetrc command) added to
+support password prompts at the console.
+
+
 * Changes in Wget 1.11.3
 
 ** Downgraded -N with -O to a warning, rather than an error.

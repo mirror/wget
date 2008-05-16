@@ -14,6 +14,21 @@
 	printed on lines that don't display the ETA, in multibyte
 	locales.
 
+2008-04-30  Steven Schubiger  <stsc@members.fsf.org>
+
+	* main.c (main): New code that handles prompting for passwords
+	when specified explicitly via command-line option (using gnulib's
+	getpass-gnu module).
+	(main): Include the getpass header.
+
+	* init.c: Add "ask-password" to the list of recognized commands.
+
+	* options.h: Add an according boolean member to the options
+	struct.
+	
+	* sysdep.h: Comment the defines __EXTENSIONS__ and _GNU_SOURCE
+	out, because they're now defined independently by config.h.
+
 2008-04-27  Rabin Vincent  <rabin@rab.in>
 
 	* http.c (http_loop): Fix return for the case where we don't

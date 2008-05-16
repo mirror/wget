@@ -989,12 +989,16 @@ Specify the username @var{user} and password @var{password} for both
 using the @samp{--ftp-user} and @samp{--ftp-password} options for 
 @sc{ftp} connections and the @samp{--http-user} and @samp{--http-password} 
 options for @sc{http} connections.
+
+@item --ask-password
+Prompt for a password for each connection established. Cannot be specified
+when @samp{--password} is being used, because they are mutually exclusive.
 @end table
 
 @node Directory Options
 @section Directory Options
 
-@table @samp
+@table @samp       
 @item -nd
 @itemx --no-directories
 Do not create a hierarchy of directories when retrieving recursively.

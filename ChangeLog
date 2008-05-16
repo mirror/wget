@@ -1,3 +1,7 @@
+2008-05-15  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: Entry for --ask-password.
+
 2008-05-12  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: Translations and -N/-O.
@@ -6,6 +10,27 @@
 
 	* NEWS: Added documentation for changes made in 1.11.2.
 
+2008-04-30  Steven Schubiger  <stsc@members.fsf.org>
+
+	* lib/getdelim.c, lib/getline.c, lib/getpass.c,
+	lib/getpass.h, lib/realloc.c, lib/stdio.h,
+	lib/stdio.in.h, lib/stdlib.h, lib/stdlib.in.h: Imported 
+	from gnulib.
+	* m4/eoverflow.m4, m4/extensions.m4, m4/getdelim.m4, 
+	m4/getline.m4, m4/getpass.m4, m4/malloc.m4, m4/realloc.m4, 
+	m4/stdio_h.m4, m4/stdlib_h.m4: Imported from gnulib.
+	* md5/stdint.h: Imported from gnulib.
+	
+	* GNUmakefile: Updated from gnulib.
+	* lib/Makefile.am, lib/getopt.c, lib/unistd.in.h: Updated
+	from gnulib.
+	* m4/gnulib-cache.m4, m4/gnulib-common.m4, m4/gnulib-comp.m4,
+	m4/include_next.m4, m4/unistd_h.m4: Updated from gnulib.
+	* md5/Makefile.am, md5/m4/gnulib-cache.m4, md5/m4/gnulib-common.m4,
+	md5/m4/gnulib-comp.m4, md5/m4/include_next.m4, md5/m4/md5.m4,
+	md5/m4/stdint.m4, md5/md5.c, md5/md5.h, md5/stdint.in.h,
+	md5/wchar.in.h: Updated from gnulib.
+ 
 2008-04-14  Micah Cowan  <micah@cowan.name>
 
 	* GNUmakefile, lib/Makefile.am, lib/error.c, lib/error.h,

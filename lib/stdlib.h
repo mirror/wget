@@ -1,3 +1,4 @@
+/* DO NOT EDIT! GENERATED AUTOMATICALLY! */
 /* A GNU-like <stdlib.h>.
 
    Copyright (C) 1995, 2001-2004, 2006-2008 Free Software Foundation, Inc.
@@ -18,7 +19,7 @@
 #if defined __need_malloc_and_calloc
 /* Special invocation convention inside glibc header files.  */
 
-#@INCLUDE_NEXT@ @NEXT_STDLIB_H@
+#include_next <stdlib.h>
 
 #else
 /* Normal invocation convention.  */
@@ -26,13 +27,41 @@
 #ifndef _GL_STDLIB_H
 
 /* The include_next requires a split double-inclusion guard.  */
-#@INCLUDE_NEXT@ @NEXT_STDLIB_H@
+#include_next <stdlib.h>
 
 #ifndef _GL_STDLIB_H
 #define _GL_STDLIB_H
 
 
 /* The definition of GL_LINK_WARNING is copied here.  */
+/* GL_LINK_WARNING("literal string") arranges to emit the literal string as
+   a linker warning on most glibc systems.
+   We use a linker warning rather than a preprocessor warning, because
+   #warning cannot be used inside macros.  */
+#ifndef GL_LINK_WARNING
+  /* This works on platforms with GNU ld and ELF object format.
+     Testing __GLIBC__ is sufficient for asserting that GNU ld is in use.
+     Testing __ELF__ guarantees the ELF object format.
+     Testing __GNUC__ is necessary for the compound expression syntax.  */
+# if defined __GLIBC__ && defined __ELF__ && defined __GNUC__
+#  define GL_LINK_WARNING(message) \
+     GL_LINK_WARNING1 (__FILE__, __LINE__, message)
+#  define GL_LINK_WARNING1(file, line, message) \
+     GL_LINK_WARNING2 (file, line, message)  /* macroexpand file and line */
+#  define GL_LINK_WARNING2(file, line, message) \
+     GL_LINK_WARNING3 (file ":" #line ": warning: " message)
+#  define GL_LINK_WARNING3(message) \
+     ({ static const char warning[sizeof (message)]		\
+          __attribute__ ((__unused__,				\
+                          __section__ (".gnu.warning"),		\
+                          __aligned__ (1)))			\
+          = message "\n";					\
+        (void)0;						\
+     })
+# else
+#  define GL_LINK_WARNING(message) ((void) 0)
+# endif
+#endif
 
 
 /* Some systems do not define EXIT_*, despite otherwise supporting C89.  */
@@ -54,8 +83,8 @@ extern "C" {
 #endif
 
 
-#if @GNULIB_MALLOC_POSIX@
-# if !@HAVE_MALLOC_POSIX@
+#if 0
+# if !1
 #  undef malloc
 #  define malloc rpl_malloc
 extern void * malloc (size_t size);
@@ -69,8 +98,8 @@ extern void * malloc (size_t size);
 #endif
 
 
-#if @GNULIB_REALLOC_POSIX@
-# if !@HAVE_REALLOC_POSIX@
+#if 1
+# if !1
 #  undef realloc
 #  define realloc rpl_realloc
 extern void * realloc (void *ptr, size_t size);
@@ -84,8 +113,8 @@ extern void * realloc (void *ptr, size_t size);
 #endif
 
 
-#if @GNULIB_CALLOC_POSIX@
-# if !@HAVE_CALLOC_POSIX@
+#if 0
+# if !1
 #  undef calloc
 #  define calloc rpl_calloc
 extern void * calloc (size_t nmemb, size_t size);
@@ -99,7 +128,7 @@ extern void * calloc (size_t nmemb, size_t size);
 #endif
 
 
-#if @GNULIB_GETSUBOPT@
+#if 0
 /* Assuming *OPTIONP is a comma separated list of elements of the form
    "token" or "token=value", getsubopt parses the first of these elements.
    If the first element refers to a "token" that is member of the given
@@ -111,7 +140,7 @@ extern void * calloc (size_t nmemb, size_t size);
    Otherwise it returns -1, and *OPTIONP and *VALUEP are undefined.
    For more details see the POSIX:2001 specification.
    http://www.opengroup.org/susv3xsh/getsubopt.html */
-# if !@HAVE_GETSUBOPT@
+# if !1
 extern int getsubopt (char **optionp, char *const *tokens, char **valuep);
 # endif
 #elif defined GNULIB_POSIXCHECK
@@ -123,8 +152,8 @@ extern int getsubopt (char **optionp, char *const *tokens, char **valuep);
 #endif
 
 
-#if @GNULIB_MKDTEMP@
-# if !@HAVE_MKDTEMP@
+#if 0
+# if !1
 /* Create a unique temporary directory from TEMPLATE.
    The last six characters of TEMPLATE must be "XXXXXX";
    they are replaced with a string that makes the directory name unique.
@@ -141,8 +170,8 @@ extern char * mkdtemp (char * /*template*/);
 #endif
 
 
-#if @GNULIB_MKSTEMP@
-# if @REPLACE_MKSTEMP@
+#if 0
+# if 0
 /* Create a unique temporary file from TEMPLATE.
    The last six characters of TEMPLATE must be "XXXXXX";
    they are replaced with a string that makes the file name unique.
@@ -167,8 +196,8 @@ extern int mkstemp (char * /*template*/);
 #endif
 
 
-#if @GNULIB_PUTENV@
-# if @REPLACE_PUTENV@
+#if 0
+# if 0
 #  undef putenv
 #  define putenv rpl_putenv
 extern int putenv (char *string);
@@ -176,23 +205,8 @@ extern int putenv (char *string);
 #endif
 
 
-#if @GNULIB_RPMATCH@
-# if !@HAVE_RPMATCH@
-/* Test a user response to a question.
-   Return 1 if it is affirmative, 0 if it is negative, or -1 if not clear.  */
-extern int rpmatch (const char *response);
-# endif
-#elif defined GNULIB_POSIXCHECK
-# undef rpmatch
-# define rpmatch(r) \
-    (GL_LINK_WARNING ("rpmatch is unportable - " \
-                      "use gnulib module rpmatch for portability"), \
-     rpmatch (r))
-#endif
-
-
-#if @GNULIB_SETENV@
-# if !@HAVE_SETENV@
+#if 0
+# if !1
 /* Set NAME to VALUE in the environment.
    If REPLACE is nonzero, overwrite an existing value.  */
 extern int setenv (const char *name, const char *value, int replace);
@@ -200,9 +214,9 @@ extern int setenv (const char *name, const char *value, int replace);
 #endif
 
 
-#if @GNULIB_UNSETENV@
-# if @HAVE_UNSETENV@
-#  if @VOID_UNSETENV@
+#if 0
+# if 1
+#  if 0
 /* On some systems, unsetenv() returns void.
    This is the case for MacOS X 10.3, FreeBSD 4.8, NetBSD 1.6, OpenBSD 3.4.  */
 #   define unsetenv(name) ((unsetenv)(name), 0)
@@ -214,11 +228,11 @@ extern int unsetenv (const char *name);
 #endif
 
 
-#if @GNULIB_STRTOD@
-# if @REPLACE_STRTOD@
+#if 0
+# if 0
 #  define strtod rpl_strtod
 # endif
-# if !@HAVE_STRTOD@ || @REPLACE_STRTOD@
+# if !1 || 0
  /* Parse a double from STRING, updating ENDP if appropriate.  */
 extern double strtod (const char *str, char **endp);
 # endif
