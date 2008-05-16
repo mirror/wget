@@ -207,6 +207,21 @@ extern int putenv (char *string);
 
 #if 0
 # if !1
+/* Test a user response to a question.
+   Return 1 if it is affirmative, 0 if it is negative, or -1 if not clear.  */
+extern int rpmatch (const char *response);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef rpmatch
+# define rpmatch(r) \
+    (GL_LINK_WARNING ("rpmatch is unportable - " \
+                      "use gnulib module rpmatch for portability"), \
+     rpmatch (r))
+#endif
+
+
+#if 0
+# if !1
 /* Set NAME to VALUE in the environment.
    If REPLACE is nonzero, overwrite an existing value.  */
 extern int setenv (const char *name, const char *value, int replace);
