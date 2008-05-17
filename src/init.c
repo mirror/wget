@@ -301,6 +301,7 @@ defaults (void)
   tmp = getenv ("no_proxy");
   if (tmp)
     opt.no_proxy = sepstring (tmp);
+  opt.prefer_family = prefer_none;
   opt.allow_cache = true;
 
   opt.read_timeout = 900;

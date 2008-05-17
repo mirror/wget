@@ -950,10 +950,10 @@ or to deal with broken network configuration.  Only one of
 same time.  Neither option is available in Wget compiled without IPv6
 support.
 
-@item --prefer-family=IPv4/IPv6/none
+@item --prefer-family=none/IPv4/IPv6
 When given a choice of several addresses, connect to the addresses
-with specified address family first.  IPv4 addresses are preferred by
-default.
+with specified address family first.  The address order returned by
+DNS is used without change by default.
 
 This avoids spurious errors and connect attempts when accessing hosts
 that resolve to both IPv6 and IPv4 addresses from IPv4 networks.  For
@@ -2849,11 +2849,11 @@ Use POST as the method for all HTTP requests and send the contents of
 @var{file} in the request body.  The same as
 @samp{--post-file=@var{file}}.
 
-@item prefer_family = IPv4/IPv6/none
+@item prefer_family = none/IPv4/IPv6
 When given a choice of several addresses, connect to the addresses
-with specified address family first.  IPv4 addresses are preferred by
-default.  The same as @samp{--prefer-family}, which see for a detailed
-discussion of why this is useful.
+with specified address family first.  The address order returned by
+DNS is used without change by default.  The same as @samp{--prefer-family},
+which see for a detailed discussion of why this is useful.
 
 @item private_key = @var{file}
 Set the private key file to @var{file}.  The same as
