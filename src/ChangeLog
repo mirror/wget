@@ -1,7 +1,11 @@
-2008-05-17  Micah Cowan  <micah@cowan.name>
+2008-05-17  Steven Schubiger  <schubiger@gmail.com>
 
 	* init.c (defaults): Set the preferred IP family to `none' by
 	default.
+
+2008-05-17  Kenny Parnell  <k.parnell@gmail.com>
+	(cmd_spec_prefer_family): Initialize prefer_family to prefer_none.
+
 	* main.c (main): Handle Ctrl-D on command-line.
 
 2008-05-15  Steven Schubiger  <schubiger@gmail.com>
