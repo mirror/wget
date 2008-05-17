@@ -1,3 +1,7 @@
+2008-05-17  Micah Cowan  <micah@cowan.name>
+
+	* main.c (main): Handle Ctrl-D on command-line.
+
 2008-05-15  Steven Schubiger  <schubiger@gmail.com>
 
 	* ftp.c (getftp): Verify that the file actually exists in FTP, by
