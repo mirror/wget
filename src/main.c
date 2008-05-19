@@ -947,6 +947,14 @@ for details.\n\n"));
       exit (1);
     }
 
+  if (opt.ask_passwd)
+    {
+      opt.passwd = prompt_for_password ();
+
+      if (opt.passwd == NULL || opt.passwd[0] == '\0')
+        exit (1);
+    }
+
 #ifdef MSDOS
   if (opt.wdebug)
      dbug_init();
@@ -1029,14 +1037,6 @@ for details.\n\n"));
     {
       char *filename = NULL, *redirected_URL = NULL;
       int dt;
-
-      if (opt.ask_passwd)
-        {
-          opt.passwd = prompt_for_password ();
-
-          if (opt.passwd == NULL || opt.passwd[0] == '\0')
-              exit (1);
-        }
 
       if ((opt.recursive || opt.page_requisites)
           && (url_scheme (*t) != SCHEME_FTP || url_uses_proxy (*t)))
