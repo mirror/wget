@@ -1,3 +1,7 @@
+2008-05-22  Micah Cowan  <micah@cowan.name>
+
+	* FTPServer.pm (run): Avoid re-forking. Fixes bug #20458.
+
 2008-04-26  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am, Test-proxied-https-auth.px: Added a test for
