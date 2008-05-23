@@ -1,5 +1,10 @@
 2008-05-22  Micah Cowan  <micah@cowan.name>
 
+	* Makefile.am (run-px-tests): Replaced ugly list of tests with
+	run-px Perl script to manage running them.
+	
+	* run-px: Added.
+
 	* FTPServer.pm (run): Avoid re-forking. Fixes bug #20458.
 
 2008-04-26  Micah Cowan  <micah@cowan.name>
