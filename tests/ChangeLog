@@ -1,3 +1,7 @@
+2008-05-23  Micah Cowan  <micah@cowan.name>
+
+	* Test--spider.px: Make test expect 0 return code.
+
 2008-05-22  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am (run-px-tests): Replaced ugly list of tests with
