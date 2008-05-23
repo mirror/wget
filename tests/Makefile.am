@@ -46,46 +46,7 @@ run-unit-tests: unit-tests$(EXEEXT)
 	./unit-tests$(EXEEXT)
 
 run-px-tests: WgetTest.pm
-	$(PERLRUN) $(srcdir)/Test-proxied-https-auth.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-proxy-auth-basic.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-auth-basic.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-c-full.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-c-partial.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-c.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-E-k-K.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-E-k.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-ftp.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-HTTP-Content-Disposition-1.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-HTTP-Content-Disposition-2.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-HTTP-Content-Disposition.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-N-current-HTTP-CD.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-N-current.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-N-HTTP-Content-Disposition.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-N--no-content-disposition.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-N--no-content-disposition-trivial.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test--no-content-disposition.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test--no-content-disposition-trivial.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-N-old.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-nonexisting-quiet.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-noop.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-np.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-N.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-O-HTTP-Content-Disposition.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-O--no-content-disposition.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-O--no-content-disposition-trivial.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-O-nonexisting.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-O.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-Restrict-Lowercase.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test-Restrict-Uppercase.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test--spider-fail.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test--spider-HTTP-Content-Disposition.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test--spider--no-content-disposition.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test--spider--no-content-disposition-trivial.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test--spider.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test--spider-r-HTTP-Content-Disposition.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test--spider-r--no-content-disposition.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test--spider-r--no-content-disposition-trivial.px && echo && echo
-	$(PERLRUN) $(srcdir)/Test--spider-r.px && echo && echo
+	./run-px $(top_srcdir)
 
 EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
 	     Test-auth-basic.px Test-c-full.px Test-c-partial.px \
