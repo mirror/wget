@@ -9,6 +9,7 @@ my @tests = (
     'Test-proxy-auth-basic.px',
     'Test-proxied-https-auth.px',
     'Test-N-HTTP-Content-Disposition.px',
+    'Test--spider.px',
 
     'Test-c-full.px',
     'Test-c-partial.px',
@@ -37,15 +38,10 @@ my @tests = (
     'Test-Restrict-Lowercase.px',
     'Test-Restrict-Uppercase.px',
     'Test--spider-fail.px',
-    'Test--spider-HTTP-Content-Disposition.px',
     'Test--spider-r-HTTP-Content-Disposition.px',
     'Test--spider-r--no-content-disposition.px',
     'Test--spider-r--no-content-disposition-trivial.px',
     'Test--spider-r.px',
-# FAILING:
-#   'Test--spider--no-content-disposition.px',
-#   'Test--spider--no-content-disposition-trivial.px',
-#   'Test--spider.px',
 );
 
 my @results;
