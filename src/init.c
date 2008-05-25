@@ -181,9 +181,15 @@ static const struct {
   { "inet6only",        &opt.ipv6_only,         cmd_boolean },
 #endif
   { "input",            &opt.input_filename,    cmd_file },
+#ifdef ENABLE_IRI
+  { "iri",              &opt.enable_iri,        cmd_boolean },
+#endif
   { "keepsessioncookies", &opt.keep_session_cookies, cmd_boolean },
   { "limitrate",        &opt.limit_rate,        cmd_bytes },
   { "loadcookies",      &opt.cookies_input,     cmd_file },
+#ifdef ENABLE_IRI
+  { "locale",           &opt.locale,            cmd_string },
+#endif
   { "logfile",          &opt.lfilename,         cmd_file },
   { "login",            &opt.ftp_user,          cmd_string },/* deprecated*/
   { "maxredirect",      &opt.max_redirect,      cmd_number },
@@ -223,6 +229,9 @@ static const struct {
   { "referer",          &opt.referer,           cmd_string },
   { "reject",           &opt.rejects,           cmd_vector },
   { "relativeonly",     &opt.relative_only,     cmd_boolean },
+#ifdef ENABLE_IRI
+  { "remoteencoding",   &opt.encoding_remote,   cmd_string },
+#endif
   { "removelisting",    &opt.remove_listing,    cmd_boolean },
   { "restrictfilenames", NULL,                  cmd_spec_restrict_file_names },
   { "retrsymlinks",     &opt.retr_symlinks,     cmd_boolean },
