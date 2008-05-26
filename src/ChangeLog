@@ -1,3 +1,8 @@
+2008-05-26  Steven Schubiger  <schubiger@gmail.com>
+
+	* ftp.c (getftp): Replace last remaining invocation of escnonprint
+	with gnulib quote.
+
 2008-05-19  Micah Cowan  <micah@cowan.name>
 
 	* main.c (main): Password prompt should be done only once (not
