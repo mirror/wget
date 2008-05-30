@@ -35,4 +35,3 @@ src/retr.c
 src/spider.c
 src/url.c
 src/utils.c
-src/xmalloc.c

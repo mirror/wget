@@ -1,9 +1,11 @@
 2008-05-29  Micah Cowan  <micah@cowan.name>
 
-	* po/POTFILES.in: Added some more files from lib/.
+	* po/POTFILES.in: Added some more files from lib/, remove
+	src/xmalloc.c.
 
-	* po/quot.sed: Automatic handling of quotearg's ` and '.
-
+	* po/quot.sed, po/boldquot.sed: Automatic handling of quotearg's `
+	and '.
+	
 2008-05-15  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: Entry for --ask-password.
