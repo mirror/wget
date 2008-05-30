@@ -1,5 +1,7 @@
 2008-05-29  Micah Cowan  <micah@cowan.name>
 
+	* po/*.po: Updated from TP (the 1.11.3 set).
+
 	* po/POTFILES.in: Added some more files from lib/, remove
 	src/xmalloc.c.
 
