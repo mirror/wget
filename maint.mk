@@ -20,7 +20,7 @@
 ME := maint.mk
 
 # List of all C-like source code files that will be tested for
-# stylistic "errors".  You may want to define this to something 
+# stylistic "errors".  You may want to define this to something
 # more complex in Makefile.cfg.
 C_SOURCES ?= $(shell find . -name '*.[chly]')
 
