@@ -294,7 +294,7 @@ static void
 init_switches (void)
 {
   char *p = short_options;
-  int i, o = 0;
+  size_t i, o = 0;
   for (i = 0; i < countof (option_data); i++)
     {
       struct cmdline_option *opt = &option_data[i];
@@ -640,7 +640,7 @@ Recursive accept/reject:\n"),
     N_("Mail bug reports and suggestions to <bug-wget@gnu.org>.\n")
   };
 
-  int i;
+  size_t i;
 
   printf (_("GNU Wget %s, a non-interactive network retriever.\n"),
           version_string);

@@ -226,7 +226,7 @@ prime_size (int size, int *prime_offset)
     243370577, 316381771, 411296309, 534685237, 695090819, 903618083,
     1174703521, 1527114613, 1837299131, 2147483647
   };
-  int i;
+  size_t i;
 
   for (i = *prime_offset; i < countof (primes); i++)
     if (primes[i] >= size)

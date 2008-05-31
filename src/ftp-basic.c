@@ -189,7 +189,7 @@ ftp_login (int csock, const char *acc, const char *pass)
       "331 s/key ",
       "331 opiekey "
     };
-    int i;
+    size_t i;
     const char *seed = NULL;
 
     for (i = 0; i < countof (skey_head); i++)
@@ -964,7 +964,7 @@ ftp_list (int csock, const char *file)
   int nwritten;
   uerr_t err;
   bool ok = false;
-  int i = 0;
+  size_t i = 0;
   /* Try `LIST -a' first and revert to `LIST' in case of failure.  */
   const char *list_commands[] = { "LIST -a", 
                                   "LIST" };
