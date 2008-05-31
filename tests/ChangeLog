@@ -1,6 +1,8 @@
 2008-05-31  Micah Cowan  <micah@cowan.name>
 
 	* Test-N-current.px: Ensure we catch failures.
+	* Test-N-old.px: Make it test only the timestamp, and not the
+	content length in addition.
 
 2008-05-23  Micah Cowan  <micah@cowan.name>
 
