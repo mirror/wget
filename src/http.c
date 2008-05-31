@@ -3020,10 +3020,11 @@ digest_authentication_encode (const char *au, const char *user,
   while (extract_param (&au, &name, &value, ','))
     {
       size_t i;
+      size_t namelen = name.e - name.b;
       for (i = 0; i < countof (options); i++)
-        if ((size_t) (name.e - name.b) == strlen (options[i].name)
+        if (namelen == strlen (options[i].name)
             && 0 == strncmp (name.b, options[i].name,
-                             (size_t) (name.e - name.b)))
+                             namelen))
           {
             *options[i].variable = strdupdelim (value.b, value.e);
             break;
@@ -3103,9 +3104,10 @@ username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\"",
    first argument and are followed by whitespace or terminating \0.
    The comparison is case-insensitive.  */
 #define STARTS(literal, b, e)                           \
-  (((size_t) ((e) - (b))) >= STRSIZE (literal)	\
+  ((e > b) \
+   && ((size_t) ((e) - (b))) >= STRSIZE (literal)   \
    && 0 == strncasecmp (b, literal, STRSIZE (literal))  \
-   && ((e) - (b) == STRSIZE (literal)                   \
+   && ((size_t) ((e) - (b)) == STRSIZE (literal)          \
        || c_isspace (b[STRSIZE (literal)])))
 
 static bool

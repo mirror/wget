@@ -355,10 +355,11 @@ append_url (const char *link_uri,
 static void
 tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
 {
-  int i, attrind;
+  size_t i;
+  int attrind;
   int first = -1;
 
-  for (i = 0; i < (int) countof (tag_url_attributes); i++)
+  for (i = 0; i < countof (tag_url_attributes); i++)
     if (tag_url_attributes[i].tagid == tagid)
       {
         /* We've found the index of tag_url_attributes where the
@@ -382,7 +383,7 @@ tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
       /* Find whether TAG/ATTRIND is a combination that contains a
          URL. */
       char *link = tag->attrs[attrind].value;
-      const int size = countof (tag_url_attributes);
+      const size_t size = countof (tag_url_attributes);
 
       /* If you're cringing at the inefficiency of the nested loops,
          remember that they both iterate over a very small number of
