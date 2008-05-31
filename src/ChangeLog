@@ -1,3 +1,13 @@
+2008-05-31 Micah Cowan  <micah@cowan.name>
+
+	* html-url.c, http.c: Avoid casts in a couple spots.
+
+2008-05-30 Henri Häkkinen  <henux@users.sourceforge.net>
+
+	* cookies.c, ftp-basic.c, hash.c, html-url.c, http-ntlm.c, http.c,
+	init.c, log.c, main.c, progress.c, ptimer.c, spider.c, url.c,
+	utils.c: Minor changes to silence warnings when using -Wall.
+
 2008-05-26  Steven Schubiger  <schubiger@gmail.com>
 
 	* ftp.c (getftp): Replace last remaining invocation of escnonprint
