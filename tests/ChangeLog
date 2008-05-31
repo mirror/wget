@@ -3,6 +3,8 @@
 	* Test-N-current.px: Ensure we catch failures.
 	* Test-N-old.px: Make it test only the timestamp, and not the
 	content length in addition.
+	* Test-N-smaller.px: added.
+	* run-px: Added Test-N-smaller.px.
 
 2008-05-23  Micah Cowan  <micah@cowan.name>
 
