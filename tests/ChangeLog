@@ -1,3 +1,7 @@
+2008-05-31  Micah Cowan  <micah@cowan.name>
+
+	* Test-N-current.px: Ensure we catch failures.
+
 2008-05-23  Micah Cowan  <micah@cowan.name>
 
 	* Test--spider.px: Make test expect 0 return code.
