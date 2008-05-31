@@ -2908,7 +2908,7 @@ http_atotm (const char *time_string)
                                    Netscape cookie specification.) */
   };
   const char *oldlocale;
-  int i;
+  size_t i;
   time_t ret = (time_t) -1;
 
   /* Solaris strptime fails to recognize English month names in
@@ -3019,10 +3019,12 @@ digest_authentication_encode (const char *au, const char *user,
   au += 6;                      /* skip over `Digest' */
   while (extract_param (&au, &name, &value, ','))
     {
-      int i;
+      size_t i;
+      size_t namelen = name.e - name.b;
       for (i = 0; i < countof (options); i++)
-        if (name.e - name.b == strlen (options[i].name)
-            && 0 == strncmp (name.b, options[i].name, name.e - name.b))
+        if (namelen == strlen (options[i].name)
+            && 0 == strncmp (name.b, options[i].name,
+                             namelen))
           {
             *options[i].variable = strdupdelim (value.b, value.e);
             break;
@@ -3102,9 +3104,10 @@ username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\"",
    first argument and are followed by whitespace or terminating \0.
    The comparison is case-insensitive.  */
 #define STARTS(literal, b, e)                           \
-  ((e) - (b) >= STRSIZE (literal)                       \
+  ((e > b) \
+   && ((size_t) ((e) - (b))) >= STRSIZE (literal)   \
    && 0 == strncasecmp (b, literal, STRSIZE (literal))  \
-   && ((e) - (b) == STRSIZE (literal)                   \
+   && ((size_t) ((e) - (b)) == STRSIZE (literal)          \
        || c_isspace (b[STRSIZE (literal)])))
 
 static bool
