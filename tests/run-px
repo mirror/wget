@@ -21,6 +21,7 @@ my @tests = (
     'Test-HTTP-Content-Disposition.px',
     'Test-N-current.px',
     'Test-N-smaller.px',
+    'Test-N-no-info.px',
     'Test-N--no-content-disposition.px',
     'Test-N--no-content-disposition-trivial.px',
     'Test--no-content-disposition.px',

@@ -4,7 +4,8 @@
 	* Test-N-old.px: Make it test only the timestamp, and not the
 	content length in addition.
 	* Test-N-smaller.px: added.
-	* run-px: Added Test-N-smaller.px.
+	* Test-N-no-info.px: added.
+	* run-px: Added Test-N-smaller.px, Test-N-no-info.px.
 
 2008-05-23  Micah Cowan  <micah@cowan.name>
 
