@@ -5,9 +5,10 @@
 	* Test-N-old.px: Make it test only the timestamp, and not the
 	content length in addition.
 
-	* Test-N-smaller.px: added.
+	* Test-N-smaller.px, Test-N-no-info.px: added.
 
-	* Test-N-no-info.px: added.
+	* Test-c-partial.px: Improve checking that the file was
+	partially retrieved, rather than overwritten.
 
 	* run-px: Added Test-N-smaller.px, Test-N-no-info.px.
 
