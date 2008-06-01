@@ -1,11 +1,18 @@
 2008-05-31  Micah Cowan  <micah@cowan.name>
 
 	* Test-N-current.px: Ensure we catch failures.
+
 	* Test-N-old.px: Make it test only the timestamp, and not the
 	content length in addition.
+
 	* Test-N-smaller.px: added.
+
 	* Test-N-no-info.px: added.
+
 	* run-px: Added Test-N-smaller.px, Test-N-no-info.px.
+
+	* HTTPServer.pm: Return 416 for fully-retrieved content, rather
+	than 206 with a zero content-length.
 
 2008-05-23  Micah Cowan  <micah@cowan.name>
 

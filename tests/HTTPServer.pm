@@ -98,15 +98,25 @@ sub send_response {
             my $start = $1 ? $1 : 0;
             my $end = $2 ? $2 : ($content_len - 1);
             my $len = $2 ? ($2 - $start) : ($content_len - $start);
-            $resp->header("Accept-Ranges" => "bytes");
-            $resp->header("Content-Length" => $len);
-            $resp->header("Content-Range" => "bytes $start-$end/$content_len");
-            $resp->header("Keep-Alive" => "timeout=15, max=100");
-            $resp->header("Connection" => "Keep-Alive");
-            $con->send_basic_header(206, "Partial Content", $resp->protocol);
-            print $con $resp->headers_as_string($CRLF);
-            print $con $CRLF;
-            print $con substr($content, $start, $len);
+            if ($len) {
+                $resp->header("Accept-Ranges" => "bytes");
+                $resp->header("Content-Length" => $len);
+                $resp->header("Content-Range"
+                    => "bytes $start-$end/$content_len");
+                $resp->header("Keep-Alive" => "timeout=15, max=100");
+                $resp->header("Connection" => "Keep-Alive");
+                $con->send_basic_header(206,
+                    "Partial Content", $resp->protocol);
+                print $con $resp->headers_as_string($CRLF);
+                print $con $CRLF;
+                print $con substr($content, $start, $len);
+            } else {
+                $con->send_basic_header(416, "Range Not Satisfiable",
+                    $resp->protocol);
+                $resp->header("Keep-Alive" => "timeout=15, max=100");
+                $resp->header("Connection" => "Keep-Alive");
+                print $con $CRLF;
+            }
             next;
         }
         # fill in content
