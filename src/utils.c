@@ -267,7 +267,7 @@ concat_strings (const char *str0, ...)
 
   const char *next_str;
   int total_length = 0;
-  int argcount;
+  size_t argcount;
 
   /* Calculate the length of and allocate the resulting string. */
 
@@ -1386,7 +1386,7 @@ human_readable (HR_NUMTYPE n)
       'E',                      /* exabyte,  2^60 bytes */
     };
   static char buf[8];
-  int i;
+  size_t i;
 
   /* If the quantity is smaller than 1K, just print it. */
   if (n < 1024)

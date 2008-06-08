@@ -833,14 +833,14 @@ sub run
         print STDERR "got a connection from: $client_ipnum\n" if $log;
 
         # fork off a process to handle this connection.
-        my $pid = fork();
-        unless (defined $pid) {
-            warn "fork: $!";
-            sleep 5; # Back off in case system is overloaded.
-            next;
-        }
+        # my $pid = fork();
+        # unless (defined $pid) {
+        #     warn "fork: $!";
+        #     sleep 5; # Back off in case system is overloaded.
+        #     next;
+        # }
 
-        if ($pid == 0) { # Child process.
+        if (1) { # Child process.
 
             # install signals
             $SIG{URG}  = sub { 

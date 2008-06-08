@@ -587,7 +587,7 @@ check_domain_match (const char *cookie_domain, const char *host)
 
     if (dccount == 2)
       {
-        int i;
+        size_t i;
         int known_toplevel = false;
         static const char *known_toplevel_domains[] = {
           ".com", ".edu", ".net", ".org", ".gov", ".mil", ".int"

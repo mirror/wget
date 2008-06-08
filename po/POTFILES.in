@@ -3,7 +3,10 @@
 # 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
 
 # Package source files
+lib/error.c
 lib/getopt.c
+lib/quotearg.c
+lib/xalloc-die.c
 src/cmpt.c
 src/connect.c
 src/convert.c
@@ -32,4 +35,3 @@ src/retr.c
 src/spider.c
 src/url.c
 src/utils.c
-src/xmalloc.c

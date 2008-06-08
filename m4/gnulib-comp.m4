@@ -26,6 +26,7 @@ AC_DEFUN([gl_EARLY],
   m4_pattern_allow([^gl_LTLIBOBJS$])dnl a variable
   AC_REQUIRE([AC_PROG_RANLIB])
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
+  AC_REQUIRE([AC_FUNC_FSEEKO])
 ])
 
 # This macro should be invoked from ./configure.ac, in the section
@@ -50,6 +51,8 @@ AC_DEFUN([gl_INIT],
     [AM_XGETTEXT_OPTION([--flag=error:3:c-format])
      AM_XGETTEXT_OPTION([--flag=error_at_line:5:c-format])])
   gl_EXITFAIL
+  gl_FUNC_FSEEKO
+  gl_STDIO_MODULE_INDICATOR([fseeko])
   gl_FUNC_GETDELIM
   gl_STDIO_MODULE_INDICATOR([getdelim])
   gl_FUNC_GETLINE
@@ -69,6 +72,8 @@ AC_DEFUN([gl_INIT],
         [AC_CONFIG_LINKS([$GNUmakefile:$GNUmakefile], [],
   	[GNUmakefile=$GNUmakefile])])
   gl_INLINE
+  gl_FUNC_LSEEK
+  gl_UNISTD_MODULE_INDICATOR([lseek])
   gl_QUOTE
   gl_QUOTEARG
   gl_FUNC_REALLOC_POSIX
@@ -224,6 +229,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/error.h
   lib/exitfail.c
   lib/exitfail.h
+  lib/fseeko.c
   lib/getdelim.c
   lib/getline.c
   lib/getopt.c
@@ -234,12 +240,14 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/getpass.h
   lib/gettext.h
   lib/intprops.h
+  lib/lseek.c
   lib/quote.c
   lib/quote.h
   lib/quotearg.c
   lib/quotearg.h
   lib/realloc.c
   lib/stdbool.in.h
+  lib/stdio-impl.h
   lib/stdio.in.h
   lib/stdlib.in.h
   lib/strerror.c
@@ -255,6 +263,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/error.m4
   m4/exitfail.m4
   m4/extensions.m4
+  m4/fseeko.m4
   m4/getdelim.m4
   m4/getline.m4
   m4/getopt.m4
@@ -262,6 +271,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/gnulib-common.m4
   m4/include_next.m4
   m4/inline.m4
+  m4/lseek.m4
   m4/malloc.m4
   m4/mbrtowc.m4
   m4/mbstate_t.m4

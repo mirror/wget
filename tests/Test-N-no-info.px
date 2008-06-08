@@ -15,10 +15,10 @@ my $currentversion = <<EOF;
 55555555555555555555555555555555555555555555555555
 EOF
 
-# The server should serve a slightly different content, but with the
-# same length, so we can test which version was downloaded.
-my $modifiedversion = $currentversion;
-$modifiedversion =~ s/^(.{20}).(.*)$/$1x$2/s;
+my $newversion = <<EOF;
+11111111111111111111111111111111111111111111111111
+222222222222222222222222222222222222222222222222222222222222
+EOF
 
 # code, msg, headers, content
 my %urls = (
@@ -27,9 +27,8 @@ my %urls = (
         msg => "Dontcare",
         headers => {
             "Content-type" => "text/plain",
-            "Last-Modified" => "Sat, 09 Oct 2004 08:30:00 GMT",
         },
-        content => $modifiedversion,
+        content => $newversion,
     },
 );
 
@@ -46,8 +45,7 @@ my %existing_files = (
 
 my %expected_downloaded_files = (
     'somefile.txt' => {
-        content => $currentversion,
-        timestamp => 1097310600, # "Sat, 09 Oct 2004 08:30:00 GMT"
+        content => $newversion,
     },
 );
 

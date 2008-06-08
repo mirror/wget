@@ -133,7 +133,7 @@ posix_init (void)
 #endif
     { CLOCK_REALTIME, NO_SYSCONF_CHECK },
   };
-  int i;
+  size_t i;
 
   /* Determine the clock we can use.  For a clock to be usable, it
      must be confirmed with sysconf (where applicable) and with

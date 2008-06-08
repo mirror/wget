@@ -306,7 +306,7 @@ static void
 init_switches (void)
 {
   char *p = short_options;
-  int i, o = 0;
+  size_t i, o = 0;
   for (i = 0; i < countof (option_data); i++)
     {
       struct cmdline_option *opt = &option_data[i];
@@ -652,7 +652,7 @@ Recursive accept/reject:\n"),
     N_("Mail bug reports and suggestions to <bug-wget@gnu.org>.\n")
   };
 
-  int i;
+  size_t i;
 
   printf (_("GNU Wget %s, a non-interactive network retriever.\n"),
           version_string);
@@ -1021,7 +1021,19 @@ for details.\n\n"));
   if (opt.output_document)
     {
       if (HYPHENP (opt.output_document))
-        output_stream = stdout;
+        {
+#ifdef WINDOWS
+          FILE *result;
+          result = freopen (NULL, "wb", stdout);
+          if (result == NULL)
+            {
+              logputs (LOG_NOTQUIET, _("\
+WARNING: Can't reopen standard output in binary mode;\n\
+         downloaded file may contain inappropriate line endings.\n"));
+            }
+#endif
+          output_stream = stdout;
+        }
       else
         {
           struct_fstat st;

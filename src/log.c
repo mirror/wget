@@ -762,7 +762,7 @@ escnonprint_uri (const char *str)
 void
 log_cleanup (void)
 {
-  int i;
+  size_t i;
   for (i = 0; i < countof (ring); i++)
     xfree_null (ring[i].buffer);
 }

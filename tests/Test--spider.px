@@ -34,7 +34,7 @@ my %urls = (
 
 my $cmdline = $WgetTest::WGETPATH . " --spider http://localhost:8080/index.html";
 
-my $expected_error_code = 256;
+my $expected_error_code = 0;
 
 my %expected_downloaded_files = (
 );
