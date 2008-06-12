@@ -78,11 +78,13 @@ sub run {
     
     # Call wget
     chdir ("$self->{_workdir}/$self->{_name}/output");
-    # print "Calling $self->{_cmdline}\n";
+    my $cmdline = $self->{_cmdline};
+    $cmdline = $self->_substitute_port($cmdline);
+    print "Calling $cmdline\n";
     my $errcode = 
-        ($self->{_cmdline} =~ m{^/.*}) 
-            ? system ($self->{_cmdline})
-            : system ("$self->{_workdir}/../src/$self->{_cmdline}");
+        ($cmdline =~ m{^/.*}) 
+            ? system ($cmdline)
+            : system ("$self->{_workdir}/../src/$cmdline");
 
     # Shutdown server
     # if we didn't explicitely kill the server, we would have to call 
@@ -166,7 +168,9 @@ sub _verify_download {
             or return "Test failed: file $filename not downloaded\n";
         
         my $content = <FILE>;
-        $content eq $filedata->{'content'} 
+        my $expected_content = $filedata->{'content'};
+        $expected_content = $self->_substitute_port($expected_content);
+        $content eq $expected_content
             or return "Test failed: wrong content for file $filename\n";
 
         if (exists($filedata->{'timestamp'})) {

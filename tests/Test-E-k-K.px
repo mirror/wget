@@ -13,7 +13,7 @@ my $mainpage = <<EOF;
   <title>Main Page Title</title>
 </head>
 <body>
-  <a href="http://localhost:8080/subpage.php">Secondary Page</a>
+  <a href="http://localhost:{{port}}/subpage.php">Secondary Page</a>
 </body>
 </html>
 EOF
@@ -60,7 +60,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " -d -r -nd -E -k -K http://localhost:8080/index.php";
+my $cmdline = $WgetTest::WGETPATH . " -d -r -nd -E -k -K http://localhost:{{port}}/index.php";
 
 my $expected_error_code = 0;
 

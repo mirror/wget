@@ -24,7 +24,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " -O out --no-content-disposition http://localhost:8080/dummy.txt";
+my $cmdline = $WgetTest::WGETPATH . " -O out --no-content-disposition http://localhost:{{port}}/dummy.txt";
 
 my $expected_error_code = 0;
 

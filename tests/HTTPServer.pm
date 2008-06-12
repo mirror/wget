@@ -120,6 +120,7 @@ sub send_response {
             next;
         }
         # fill in content
+        $content = $self->_substitute_port($content);
         $resp->content($content);
         print STDERR "HTTP::Response with content: \n", $resp->as_string if $log;
     }
@@ -205,6 +206,13 @@ sub verify_auth_basic {
         $$msgref = "Wanted ${expected} got ${got}";
         return undef;
     }
+}
+
+sub _substitute_port {
+    my $self = shift;
+    my $ret = shift;
+    $ret =~ s/{{port}}/$self->sockport/eg;
+    return $ret;
 }
 
 1;
