@@ -87,7 +87,7 @@ sub fork_server {
 }
 
 system ('rm -f needs-auth.txt');
-&fork_server;
+my $pid = &fork_server;
 
 sleep 1;
 my $cmdline = $WgetTest::WGETPATH . " --user=fiddle-dee-dee"
@@ -98,4 +98,5 @@ my $cmdline = $WgetTest::WGETPATH . " --user=fiddle-dee-dee"
 my $code = system($cmdline);
 
 warn "Got code: $code\n" if $code;
+kill ('TERM', $pid);
 exit $code;
