@@ -25,6 +25,9 @@
 	WgetTest.pm.in: Use whatever ports are available, rather than
 	hard-coded ones.
 
+	* WgetTest.pm.in: Draw more attention to the fact that
+	WgetTest.pm is a generated file.
+
 	* Test-proxied-https-auth.px: Better cleanup, so next test can
 	open the port.
 
