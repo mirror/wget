@@ -37,7 +37,7 @@ PERLRUN = $(PERL) -I$(srcdir)
 
 check-local: test
 
-test: ../src/wget$(EXEEXT) run-unit-tests #run-px-tests
+test: ../src/wget$(EXEEXT) run-unit-tests run-px-tests
 
 ../src/wget$(EXEEXT):
 	cd ../src && $(MAKE) $(AM_MAKEFLAGS)

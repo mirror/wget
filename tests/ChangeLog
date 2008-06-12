@@ -25,6 +25,9 @@
 	WgetTest.pm.in: Use whatever ports are available, rather than
 	hard-coded ones.
 
+	* Makefile.am: Reinstate "run-px-tests" as a dependency for the
+	"check" target.
+
 	* WgetTest.pm.in: Draw more attention to the fact that
 	WgetTest.pm is a generated file.
 
