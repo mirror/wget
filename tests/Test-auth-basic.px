@@ -25,7 +25,7 @@ my %urls = (
 );
 
 my $cmdline = $WgetTest::WGETPATH . " --user=fiddle-dee-dee --password=Dodgson"
-    . " http://localhost:8080/needs-auth.txt";
+    . " http://localhost:{{port}}/needs-auth.txt";
 
 my $expected_error_code = 0;
 

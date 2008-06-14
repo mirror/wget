@@ -26,7 +26,7 @@ my %urls = (
 );
 
 my $cmdline = $WgetTest::WGETPATH . " -N --content-disposition "
-              . "http://localhost:8080/dummy.txt";
+              . "http://localhost:{{port}}/dummy.txt";
 
 my $expected_error_code = 0;
 

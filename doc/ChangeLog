@@ -1,3 +1,10 @@
+2008-06-13  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi (Mailing List): The wget-notify mailing list no longer
+	receives commit notifications from the source repository.
+	(Internet Relay Chat): Activity isn't quite so low any more,
+	remove notice to that effect.
+
 2008-05-17  Steven Schubiger  <stsc@members.fsf.org>
 
 	* wget.texi (Download Options): Change documentation to reflect

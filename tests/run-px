@@ -61,3 +61,10 @@ for (my $i=0; $i != @tests; ++$i) {
     }
     print "$tests[$i]\n";
 }
+
+print "\n";
+print scalar(@results) . " tests were run\n";
+print scalar(grep $_ == 0, @results) . " PASS\n";
+print scalar(grep $_ != 0, @results) . " FAIL\n";
+
+exit scalar (grep $_ != 0, @results);

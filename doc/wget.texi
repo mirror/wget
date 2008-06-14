@@ -3405,11 +3405,9 @@ The mailing list is archived at
 @url{http://news.gmane.org/gmane.comp.web.wget.patches}.
 
 Finally, there is the @email{wget-notify@@addictivecode.org} mailing
-list. This is a non-discussion list that receives commit notifications
-from the source repository, and also bug report-change notifications.
-This is the highest-traffic list for Wget, and is recommended only for
-people who are seriously interested in ongoing Wget development.
-Subscription is through the @code{mailman} interface at
+list. This is a non-discussion list that receives bug report-change
+notifications from the bug-tracker.  Unlike for the other mailing lists,
+subscription is through the @code{mailman} interface at
 @url{http://addictivecode.org/mailman/listinfo/wget-notify}.
 
 @node Internet Relay Chat
@@ -3418,9 +3416,8 @@ Subscription is through the @code{mailman} interface at
 @cindex IRC
 @cindex #wget
 
-While, at the time of this writing, there is very low activity, we do
-have a support channel set up via IRC at @code{irc.freenode.org},
-@code{#wget}. Come check it out!
+In addition to the mailinglists, we also have a support channel set up
+via IRC at @code{irc.freenode.org}, @code{#wget}. Come check it out!
 
 @node Reporting Bugs
 @section Reporting Bugs
