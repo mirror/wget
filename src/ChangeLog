@@ -1,3 +1,7 @@
+2008-06-13  Micah Cowan  <micah@cowan.name>
+
+	* build_info.c: ENABLE_NTLM, not HAVE_NTLM.
+
 2008-06-13  Madhusudan Hosaagrahara <com.gmail.hrmadhu>
 
 	* Makefile.am, main.c, init.c, init.h, build_info.c: Adds build

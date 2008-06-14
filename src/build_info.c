@@ -57,7 +57,7 @@ const char* (compiled_features[]) =
   "-nls",
 #endif
 
-#ifdef HAVE_NTLM
+#ifdef ENABLE_NTLM
   "+ntlm",
 #else
   "-ntlm",
