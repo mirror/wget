@@ -44,18 +44,24 @@ sub _setup_server {
 
         close (FILE);
     }
+
+    $self->{_server} = FTPServer->new (LocalAddr => 'localhost',
+                                       ReuseAddr => 1,
+                                       rootDir => "$self->{_workdir}/$self->{_name}/input") or die "Cannot create server!!!";
 }
 
 
 sub _launch_server {
     my $self = shift;
     my $synch_func = shift;
+    $self->{_server}->run ($synch_func);
+}
 
-    my $server = FTPServer->new (LocalAddr => 'localhost',
-                                 LocalPort => '8021',
-                                 ReuseAddr => 1,
-                                 rootDir => "$self->{_workdir}/$self->{_name}/input") or die "Cannot create server!!!";
-    $server->run ($synch_func);
+sub _substitute_port {
+    my $self = shift;
+    my $ret = shift;
+    $ret =~ s/{{port}}/$self->{_server}->sockport/eg;
+    return $ret;
 }
 
 1;

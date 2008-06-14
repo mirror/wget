@@ -93,10 +93,10 @@ static int current_impl_locked;
 bool
 valid_progress_implementation_p (const char *name)
 {
-  int i;
+  size_t i;
   struct progress_implementation *pi = implementations;
   char *colon = strchr (name, ':');
-  int namelen = colon ? colon - name : strlen (name);
+  size_t namelen = colon ? (size_t) (colon - name) : strlen (name);
 
   for (i = 0; i < countof (implementations); i++, pi++)
     if (!strncmp (pi->name, name, namelen))
@@ -109,7 +109,7 @@ valid_progress_implementation_p (const char *name)
 void
 set_progress_implementation (const char *name)
 {
-  int i, namelen;
+  size_t i, namelen;
   struct progress_implementation *pi = implementations;
   const char *colon;
 
@@ -117,7 +117,7 @@ set_progress_implementation (const char *name)
     name = DEFAULT_PROGRESS_IMPLEMENTATION;
 
   colon = strchr (name, ':');
-  namelen = colon ? colon - name : strlen (name);
+  namelen = colon ? (size_t) (colon - name) : strlen (name);
 
   for (i = 0; i < countof (implementations); i++, pi++)
     if (!strncmp (pi->name, name, namelen))
@@ -453,8 +453,8 @@ dot_set_params (const char *params)
     }
   else
     fprintf (stderr,
-             _("Invalid dot style specification `%s'; leaving unchanged.\n"),
-             params);
+             _("Invalid dot style specification %s; leaving unchanged.\n"),
+             quote (params));
 }
 
 /* "Thermometer" (bar) progress. */

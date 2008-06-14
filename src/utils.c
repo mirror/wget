@@ -88,6 +88,32 @@ as that of the covered work.  */
 #include "test.h"
 #endif 
 
+static void
+memfatal (const char *context, long attempted_size)
+{
+  /* Make sure we don't try to store part of the log line, and thus
+     call malloc.  */
+  log_set_save_context (false);
+
+  /* We have different log outputs in different situations:
+     1) output without bytes information
+     2) output with bytes information  */
+  if (attempted_size == UNKNOWN_ATTEMPTED_SIZE)
+    {
+      logprintf (LOG_ALWAYS,
+                 _("%s: %s: Failed to allocate enough memory; memory exhausted.\n"),
+                 exec_name, context);
+    }
+  else
+    {
+      logprintf (LOG_ALWAYS,
+                 _("%s: %s: Failed to allocate %ld bytes; memory exhausted.\n"),
+                 exec_name, context, attempted_size);
+    }
+
+  exit (1);
+}
+
 /* Utility function: like xstrdup(), but also lowercases S.  */
 
 char *
@@ -241,7 +267,7 @@ concat_strings (const char *str0, ...)
 
   const char *next_str;
   int total_length = 0;
-  int argcount;
+  size_t argcount;
 
   /* Calculate the length of and allocate the resulting string. */
 
@@ -348,7 +374,7 @@ fork_to_background (void)
       /* parent, no error */
       printf (_("Continuing in background, pid %d.\n"), (int) pid);
       if (logfile_changed)
-        printf (_("Output will be written to `%s'.\n"), opt.lfilename);
+        printf (_("Output will be written to %s.\n"), quote (opt.lfilename));
       exit (0);                 /* #### should we use _exit()? */
     }
 
@@ -394,8 +420,8 @@ remove_link (const char *file)
       DEBUGP (("Unlinking %s (symlink).\n", file));
       err = unlink (file);
       if (err != 0)
-        logprintf (LOG_VERBOSE, _("Failed to unlink symlink `%s': %s\n"),
-                   file, strerror (errno));
+        logprintf (LOG_VERBOSE, _("Failed to unlink symlink %s: %s\n"),
+                   quote (file), strerror (errno));
     }
   return err;
 }
@@ -1360,7 +1386,7 @@ human_readable (HR_NUMTYPE n)
       'E',                      /* exabyte,  2^60 bytes */
     };
   static char buf[8];
-  int i;
+  size_t i;
 
   /* If the quantity is smaller than 1K, just print it. */
   if (n < 1024)

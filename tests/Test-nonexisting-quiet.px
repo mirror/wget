@@ -23,7 +23,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " --quiet http://localhost:8080/nonexistent";
+my $cmdline = $WgetTest::WGETPATH . " --quiet http://localhost:{{port}}/nonexistent";
 
 my $expected_error_code = 256;
 

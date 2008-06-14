@@ -6,12 +6,17 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget (MAINLINE).
+* Changes in Wget 1.12 (MAINLINE)
 
-** Gnulib is now used to provide code for certain portability aspects in
-GNU Wget.
+** --ask-password option (and associated wgetrc command) added to
+support password prompts at the console.
 
-** Wget uses Automake now as part of its build infrastructure.
+
+* Changes in Wget 1.11.3
+
+** Downgraded -N with -O to a warning, rather than an error.
+
+** Translation updates
 
 * Changes in Wget 1.11.2
 

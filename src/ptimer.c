@@ -71,6 +71,7 @@ as that of the covered work.  */
 # include <windows.h>
 #endif
 
+#include "utils.h"
 #include "ptimer.h"
 
 /* Depending on the OS, one and only one of PTIMER_POSIX,
@@ -132,7 +133,7 @@ posix_init (void)
 #endif
     { CLOCK_REALTIME, NO_SYSCONF_CHECK },
   };
-  int i;
+  size_t i;
 
   /* Determine the clock we can use.  For a clock to be usable, it
      must be confirmed with sysconf (where applicable) and with

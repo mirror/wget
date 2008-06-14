@@ -889,7 +889,7 @@ url_parse (const char *url, int *error)
 const char *
 url_error (int error_code)
 {
-  assert (error_code >= 0 && error_code < countof (parse_errors));
+  assert (error_code >= 0 && ((size_t) error_code) < countof (parse_errors));
   return _(parse_errors[error_code]);
 }
 

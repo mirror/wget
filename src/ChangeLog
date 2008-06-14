@@ -1,13 +1,87 @@
-2008-05-02  Madhusudan Hosaagrahara <com.gmail.hrmadhu>
-        * src/Makefile.am, src/main.c, src/init.c, src/init.h,
-	  src/build_info.c: Adds build information to the --version
-	  command line option. Fixes bug #20636.
+2008-06-13  Madhusudan Hosaagrahara <com.gmail.hrmadhu>
+
+	* Makefile.am, main.c, init.c, init.h, build_info.c: Adds build
+	information to the --version command line option. Fixes bug
+	#20636.
+
+2008-06-01  Micah Cowan  <micah@cowan.name>
+
+	* main.c [WINDOWS]: Reopen stdout in binary mode, when -O - is
+	given.
+
+2008-05-31 Micah Cowan  <micah@cowan.name>
+
+	* html-url.c, http.c: Avoid casts in a couple spots.
+
+2008-05-30 Henri Häkkinen  <henux@users.sourceforge.net>
+
+	* cookies.c, ftp-basic.c, hash.c, html-url.c, http-ntlm.c, http.c,
+	init.c, log.c, main.c, progress.c, ptimer.c, spider.c, url.c,
+	utils.c: Minor changes to silence warnings when using -Wall.
+
+2008-05-26  Steven Schubiger  <schubiger@gmail.com>
+
+	* ftp.c (getftp): Replace last remaining invocation of escnonprint
+	with gnulib quote.
+
+2008-05-19  Micah Cowan  <micah@cowan.name>
+
+	* main.c (main): Password prompt should be done only once (not
+	once per argument), and should be done prior to the background
+	fork.
+
+2008-05-17  Steven Schubiger  <schubiger@gmail.com>
+
+	* init.c (defaults): Set the preferred IP family to `none' by
+	default.
+
+2008-05-17  Kenny Parnell  <k.parnell@gmail.com>
+	
+	(cmd_spec_prefer_family): Initialize prefer_family to prefer_none.
+
+2008-05-17  Micah Cowan  <micah@cowan.name>
+	
+	* main.c (main): Handle Ctrl-D on command-line.
+
+2008-05-15  Steven Schubiger  <schubiger@gmail.com>
+
+	* ftp.c (getftp): Verify that the file actually exists in FTP, by
+	checking it against the listing.
+
+2008-05-15  Micah Cowan  <micah@cowan.name>
+
+	* main.c (prompt_for_password): Use the quote module.
+
+2008-05-14  Micah Cowan  <micah@cowan.name>
+
+	* ftp.c (ftp_retrieve_list): Symlinks and other filenames
+	should be fully quoted.
+
+2008-05-12  Micah Cowan  <micah@cowan.name>
+
+	* main.c (main): Downgrade "-N with -O" to a warning, and switch
+	it off to avoid confusing messages.
 
 2008-04-30  Micah Cowan  <micah@cowan.name>
 
 	* progress.c (create_image): Fix glitch where too many spaces are
 	printed on lines that don't display the ETA, in multibyte
 	locales.
+
+2008-04-30  Steven Schubiger  <stsc@members.fsf.org>
+
+	* main.c (main): New code that handles prompting for passwords
+	when specified explicitly via command-line option (using gnulib's
+	getpass-gnu module).
+	(main): Include the getpass header.
+
+	* init.c: Add "ask-password" to the list of recognized commands.
+
+	* options.h: Add an according boolean member to the options
+	struct.
+	
+	* sysdep.h: Comment the defines __EXTENSIONS__ and _GNU_SOURCE
+	out, because they're now defined independently by config.h.
 
 2008-04-27  Rabin Vincent  <rabin@rab.in>
 
@@ -76,6 +150,35 @@
 
 	* Makefile.am: Move @LIBS@ after other libraries, for better
 	static-linking support. Fixes bug #22143.
+
+2008-04-16  Steven Schubiger  <schubiger@gmail.com>
+
+	* ftp.c: Use Gnulib's quote function for printing filenames and
+	such.
+	* connect.c: Likewise.
+	* convert.c: Likewise.
+	* cookies.c: Likewise.
+	* ftp-opie.c: Likewise.
+	* gnutls.c: Likewise.
+	* init.c: Likewise.
+	* log.c: Likewise.
+	* mswindows.c: Likewise.
+	* openssl.c: Likewise.
+	* progress.c: Likewise.
+	* recur.c: Likewise.
+	* res.c: Likewise.
+	* utils.c: Likewise.
+
+2008-04-16  Steven Schubiger  <schubiger@gmail.com>
+
+	* sysdep.h: Comment the defines __EXTENSIONS__ and _GNU_SOURCE 
+	out, because they're now defined independently by config.h.
+
+2008-04-14  Steven Schubiger  <schubiger@gmail.com>
+
+	* http.c: Use Gnulib's quote function for printing filenames and
+	such.
+	* wget.h: #include "quote.h".
 
 2008-04-12  Rabin Vincent  <rabin@rab.in>
 

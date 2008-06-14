@@ -56,6 +56,8 @@ as that of the covered work.  */
 #include "http.h"               /* for save_cookies */
 
 #include <getopt.h>
+#include <getpass.h>
+#include <quote.h>
 
 #ifndef PATH_SEPARATOR
 # define PATH_SEPARATOR '/'
@@ -140,6 +142,7 @@ static struct cmdline_option option_data[] =
   {
     { "accept", 'A', OPT_VALUE, "accept", -1 },
     { "append-output", 'a', OPT__APPEND_OUTPUT, NULL, required_argument },
+    { "ask-password", 0, OPT_BOOLEAN, "askpassword", -1 },
     { "auth-no-challenge", 0, OPT_BOOLEAN, "authnochallenge", -1 },
     { "background", 'b', OPT_BOOLEAN, "background", -1 },
     { "backup-converted", 'K', OPT_BOOLEAN, "backupconverted", -1 },
@@ -301,7 +304,7 @@ static void
 init_switches (void)
 {
   char *p = short_options;
-  int i, o = 0;
+  size_t i, o = 0;
   for (i = 0; i < countof (option_data); i++)
     {
       struct cmdline_option *opt = &option_data[i];
@@ -482,6 +485,8 @@ Download:\n"),
        --user=USER               set both ftp and http user to USER.\n"),
     N_("\
        --password=PASS           set both ftp and http password to PASS.\n"),
+    N_("\
+       --ask-password            prompt for passwords.\n"),
     "\n",
 
     N_("\
@@ -645,7 +650,7 @@ Recursive accept/reject:\n"),
     N_("Mail bug reports and suggestions to <bug-wget@gnu.org>.\n")
   };
 
-  int i;
+  size_t i;
 
   printf (_("GNU Wget %s, a non-interactive network retriever.\n"),
           version_string);
@@ -681,6 +686,16 @@ secs_to_human_time (double interval)
     sprintf (buf, "%ss", print_decimal (interval));
 
   return buf;
+}
+
+static char *
+prompt_for_password (void)
+{
+  if (opt.user)
+    printf (_("Password for user %s: "), quote (opt.user));
+  else
+    printf (_("Password: "));
+  return getpass("");
 }
 
 /* Function that prints the line argument while limiting it
@@ -1010,11 +1025,24 @@ will be placed in the single file you specified.\n\n"));
         }
       if (opt.timestamping)
         {
-          fputs (_("\
-Cannot specify -N if -O is given. See the manual for details.\n\n"), stdout);
-          print_usage ();
-          exit (1);
+          logprintf (LOG_NOTQUIET, "%s", _("\
+WARNING: timestamping does nothing in combination with -O. See the manual\n\
+for details.\n\n"));
+          opt.timestamping = false;
         }
+      if (opt.noclobber && file_exists_p(opt.output_document)) 
+           { 
+              /* Check if output file exists; if it does, exit. */
+              logprintf (LOG_VERBOSE, _("File `%s' already there; not retrieving.\n"), opt.output_document);
+              exit(1);
+           }  
+    }
+
+  if (opt.ask_passwd && opt.passwd)
+    {
+      printf (_("Cannot specify both --ask-password and --password.\n"));
+      print_usage ();
+      exit (1);
     }
 
   if (!nurl && !opt.input_filename)
@@ -1027,6 +1055,14 @@ Cannot specify -N if -O is given. See the manual for details.\n\n"), stdout);
          pre-1.5 `--help' page.  */
       printf (_("Try `%s --help' for more options.\n"), exec_name);
       exit (1);
+    }
+
+  if (opt.ask_passwd)
+    {
+      opt.passwd = prompt_for_password ();
+
+      if (opt.passwd == NULL || opt.passwd[0] == '\0')
+        exit (1);
     }
 
 #ifdef MSDOS
@@ -1065,7 +1101,19 @@ Cannot specify -N if -O is given. See the manual for details.\n\n"), stdout);
   if (opt.output_document)
     {
       if (HYPHENP (opt.output_document))
-        output_stream = stdout;
+        {
+#ifdef WINDOWS
+          FILE *result;
+          result = freopen (NULL, "wb", stdout);
+          if (result == NULL)
+            {
+              logputs (LOG_NOTQUIET, _("\
+WARNING: Can't reopen standard output in binary mode;\n\
+         downloaded file may contain inappropriate line endings.\n"));
+            }
+#endif
+          output_stream = stdout;
+        }
       else
         {
           struct_fstat st;

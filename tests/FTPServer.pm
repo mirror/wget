@@ -748,7 +748,7 @@ sub __wildcard_to_regex
 {
     my %_attr_data = ( # DEFAULT
         _localAddr  => 'localhost',
-        _localPort  => 8021,
+        _localPort  => undef,
         _reuseAddr  => 1,
         _rootDir    => Cwd::getcwd(),
     );
@@ -781,6 +781,16 @@ sub new {
             $self->{$attrname} = $self->_default_for($attrname);
         }
     }
+    # create server socket
+    "0" =~ /(0)/; # Perl 5.7 / IO::Socket::INET bug workaround.
+    $self->{_server_sock}
+                    = IO::Socket::INET->new (LocalHost => $self->{_localAddr},
+                                             LocalPort => $self->{_localPort},
+                                             Listen => 1,
+                                             Reuse => $self->{_reuseAddr},
+                                             Proto => 'tcp',
+                                             Type => SOCK_STREAM)
+                                        or die "bind: $!";
     return $self;
 }
 
@@ -803,21 +813,13 @@ sub run
     my $old_ils = $/;
     $/ = "\r\n";
 
-    # create server socket
-    "0" =~ /(0)/; # Perl 5.7 / IO::Socket::INET bug workaround.
-    my $server_sock = IO::Socket::INET->new (LocalHost => $self->{_localAddr},
-                                             LocalPort => $self->{_localPort},
-                                             Listen => 1,
-                                             Reuse => $self->{_reuseAddr},
-                                             Proto => 'tcp',
-                                             Type => SOCK_STREAM) or die "bind: $!";
-
     if (!$initialized) {
         $synch_callback->();
         $initialized = 1;
     }
 
     $SIG{CHLD} = sub { wait };
+    my $server_sock = $self->{_server_sock};
 
     # the accept loop
     while (my $client_addr = accept (my $socket, $server_sock))
@@ -833,14 +835,14 @@ sub run
         print STDERR "got a connection from: $client_ipnum\n" if $log;
 
         # fork off a process to handle this connection.
-        my $pid = fork();
-        unless (defined $pid) {
-            warn "fork: $!";
-            sleep 5; # Back off in case system is overloaded.
-            next;
-        }
+        # my $pid = fork();
+        # unless (defined $pid) {
+        #     warn "fork: $!";
+        #     sleep 5; # Back off in case system is overloaded.
+        #     next;
+        # }
 
-        if ($pid == 0) { # Child process.
+        if (1) { # Child process.
 
             # install signals
             $SIG{URG}  = sub { 
@@ -927,6 +929,11 @@ sub run
     } 
 
     $/ = $old_ils;
+}
+
+sub sockport {
+    my $self = shift;
+    return $self->{_server_sock}->sockport;
 }
 
 1;

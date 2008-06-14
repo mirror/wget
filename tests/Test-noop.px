@@ -33,7 +33,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " http://localhost:8080/";
+my $cmdline = $WgetTest::WGETPATH . " http://localhost:{{port}}/";
 
 my $expected_error_code = 0;
 

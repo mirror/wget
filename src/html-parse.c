@@ -100,6 +100,7 @@ as that of the covered work.  */
 #include <string.h>
 #include <assert.h>
 
+#include "utils.h"
 #include "html-parse.h"
 
 #ifdef STANDALONE

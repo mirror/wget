@@ -21,7 +21,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " -S ftp://localhost:8021/afile.txt";
+my $cmdline = $WgetTest::WGETPATH . " -S ftp://localhost:{{port}}/afile.txt";
 
 my $expected_error_code = 0;
 
