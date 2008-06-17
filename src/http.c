@@ -2800,10 +2800,18 @@ Remote file exists.\n\n"));
               printwhat (count, opt.ntry);
               continue;
             }
-          else
+          else if (hstat.len != hstat.restval)
             /* Getting here would mean reading more data than
                requested with content-length, which we never do.  */
             abort ();
+          else
+            {
+              /* Getting here probably means that the content-length was
+               * _less_ than the original, local size. We should probably
+               * truncate or re-read, or something. FIXME */
+              ret = RETROK;
+              goto exit;
+            }
         }
       else /* from now on hstat.res can only be -1 */
         {

@@ -1,3 +1,9 @@
+2008-06-16  Micah Cowan  <micah@cowan.name>
+
+	* http.c (http_loop): When hstat.len is higher than the
+	successfully completed content's length, but it's because we
+	_set_ it that way, don't abort.
+
 2008-06-13  Micah Cowan  <micah@cowan.name>
 
 	* build_info.c: ENABLE_NTLM, not HAVE_NTLM; distinguish OpenSSL
