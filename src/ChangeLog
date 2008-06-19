@@ -1,5 +1,12 @@
 2008-06-19  Xavier Saint  <wget@sxav.eu>
 
+	* iri.c, iri.h : New function check_encoding_name() as
+	a priliminary encoding name check.
+
+	* main.c, iri.c : Make use of check_encoding_name().
+
+2008-06-19  Xavier Saint  <wget@sxav.eu>
+
 	* iri.c : Include missing stringprep.h file and add a
 	cast.
 

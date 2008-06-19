@@ -64,6 +64,14 @@ parse_charset (char *str)
 
   /* sXXXav: could strdupdelim return NULL ? */
   charset = strdupdelim (str, charset);
+
+  /* Do a minimum check on the charset value */
+  if (!check_encoding_name (charset))
+    {
+      xfree (charset);
+      return NULL;
+    }
+
   logprintf (LOG_VERBOSE, "parse_charset: %s\n", quote (charset));
 
   return charset;
@@ -76,6 +84,27 @@ find_locale (void)
 {
   /* sXXXav, made our own function or use libidn one ?! */
   return (char *) stringprep_locale_charset ();
+}
+
+
+/* Basic check of an encoding name. */
+bool
+check_encoding_name (char *encoding)
+{
+  char *s = encoding;
+
+  while (*s)
+    {
+      if (!c_isascii(*s) || c_isspace(*s))
+        {
+          logprintf (LOG_VERBOSE, "Encoding %s isn't valid\n", quote(encoding));
+          return false;
+        }
+
+      s++;
+    }
+
+  return true;
 }
 
 

@@ -34,11 +34,13 @@ as that of the covered work.  */
 
 char *parse_charset (char *str);
 char *find_locale (void);
+bool check_encoding_name (char *encoding);
 
 #else /* ENABLE_IRI */
 
-#define parse_charset(str)	NULL
-#define find_locale()		NULL
+#define parse_charset(str)		NULL
+#define find_locale()			NULL
+#define check_encoding_name(str)	false
 
 #endif /* ENABLE_IRI */
 #endif /* IRI_H */
