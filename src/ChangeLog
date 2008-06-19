@@ -1,5 +1,13 @@
 2008-06-19  Xavier Saint  <wget@sxav.eu>
 
+	* iri.c : Include missing stringprep.h file and add a
+	cast.
+
+	* init.c : set a default initial value for opt.enable_iri,
+	opt.locale and opt.encoding_remote.
+
+2008-06-19  Xavier Saint  <wget@sxav.eu>
+
 	* iri.c, iri.h : Add a new function find_locale() to find
 	out the local system encoding.
 

@@ -35,6 +35,8 @@ as that of the covered work.  */
 #include <assert.h>
 #include <string.h>
 
+#include <stringprep.h>
+
 #include "utils.h"
 #include "iri.h"
 
@@ -73,7 +75,7 @@ char *
 find_locale (void)
 {
   /* sXXXav, made our own function or use libidn one ?! */
-  return stringprep_locale_charset ();
+  return (char *) stringprep_locale_charset ();
 }
 
 
