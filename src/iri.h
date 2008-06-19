@@ -33,11 +33,12 @@ as that of the covered work.  */
 #ifdef ENABLE_IRI
 
 char *parse_charset (char *str);
-
+char *find_locale (void);
 
 #else /* ENABLE_IRI */
 
 #define parse_charset(str)	NULL
+#define find_locale()		NULL
 
 #endif /* ENABLE_IRI */
 #endif /* IRI_H */

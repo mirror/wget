@@ -68,3 +68,12 @@ parse_charset (char *str)
 }
 
 
+/* Find the locale used, or fall back on a default value */
+char *
+find_locale (void)
+{
+  /* sXXXav, made our own function or use libidn one ?! */
+  return stringprep_locale_charset ();
+}
+
+

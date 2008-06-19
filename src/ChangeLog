@@ -1,5 +1,12 @@
 2008-06-19  Xavier Saint  <wget@sxav.eu>
 
+	* iri.c, iri.h : Add a new function find_locale() to find
+	out the local system encoding.
+
+	* main.c : Make use of find_locale().
+
+2008-06-19  Xavier Saint  <wget@sxav.eu>
+
 	* html-url.c : Add "content-type" meta tag parsing for
 	retrieving page encoding.
 
