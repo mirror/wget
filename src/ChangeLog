@@ -1,3 +1,11 @@
+2008-06-19  Xavier Saint  <wget@sxav.eu>
+
+	* html-url.c : Add "content-type" meta tag parsing for
+	retrieving page encoding.
+
+	* iri.h : Make no-op version of parse_charset() return
+	NULL.
+
 2008-06-14  Xavier Saint  <wget@sxav.eu>
 
  	* iri.c, iri.h : New files.

@@ -37,7 +37,7 @@ char *parse_charset (char *str);
 
 #else /* ENABLE_IRI */
 
-#define parse_charset(str)	/* no-op */
+#define parse_charset(str)	NULL
 
 #endif /* ENABLE_IRI */
 #endif /* IRI_H */

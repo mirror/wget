@@ -42,6 +42,7 @@ as that of the covered work.  */
 #include "hash.h"
 #include "convert.h"
 #include "recur.h"              /* declaration of get_urls_html */
+#include "iri.h"
 
 struct map_context;
 
@@ -533,6 +534,25 @@ tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
           entry->refresh_timeout = timeout;
           entry->link_expect_html = 1;
         }
+    }
+  else if (http_equiv && 0 == strcasecmp (http_equiv, "content-type"))
+    {
+      /* Handle stuff like:
+         <meta http-equiv="Content-Type" content="text/html; charset=CHARSET"> */
+
+      char *mcharset;
+      char *content = find_attr (tag, "content", NULL);
+      if (!content)
+        return;
+
+      mcharset = parse_charset (content);
+      if (!mcharset)
+        return;
+
+      logprintf (LOG_VERBOSE, "Meta tag charset : %s\n", quote (mcharset));
+
+      /* sXXXav: Not used yet */
+      xfree (mcharset);
     }
   else if (name && 0 == strcasecmp (name, "robots"))
     {
