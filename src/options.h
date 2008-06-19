@@ -238,11 +238,9 @@ struct options
   bool auth_without_challenge;  /* Issue Basic authentication creds without
                                    waiting for a challenge. */
 
-#ifdef ENABLE_IRI
   bool enable_iri;
   char *encoding_remote;
   char *locale;
-#endif
 };
 
 extern struct options opt;

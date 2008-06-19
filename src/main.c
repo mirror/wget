@@ -203,16 +203,12 @@ static struct cmdline_option option_data[] =
     { "inet6-only", '6', OPT_BOOLEAN, "inet6only", -1 },
 #endif
     { "input-file", 'i', OPT_VALUE, "input", -1 },
-#ifdef ENABLE_IRI
     { "iri", 0, OPT_BOOLEAN, "iri", -1 },
-#endif
     { "keep-session-cookies", 0, OPT_BOOLEAN, "keepsessioncookies", -1 },
     { "level", 'l', OPT_VALUE, "reclevel", -1 },
     { "limit-rate", 0, OPT_VALUE, "limitrate", -1 },
     { "load-cookies", 0, OPT_VALUE, "loadcookies", -1 },
-#ifdef ENABLE_IRI
     { "locale", 0, OPT_VALUE, "locale", -1 },
-#endif
     { "max-redirect", 0, OPT_VALUE, "maxredirect", -1 },
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
     { "no", 'n', OPT__NO, NULL, required_argument },
@@ -246,9 +242,7 @@ static struct cmdline_option option_data[] =
     { "referer", 0, OPT_VALUE, "referer", -1 },
     { "reject", 'R', OPT_VALUE, "reject", -1 },
     { "relative", 'L', OPT_BOOLEAN, "relativeonly", -1 },
-#ifdef ENABLE_IRI
     { "remote-encoding", 0, OPT_VALUE, "remoteencoding", -1},
-#endif
     { "remove-listing", 0, OPT_BOOLEAN, "removelisting", -1 },
     { "restrict-file-names", 0, OPT_BOOLEAN, "restrictfilenames", -1 },
     { "retr-symlinks", 0, OPT_BOOLEAN, "retrsymlinks", -1 },
@@ -1084,6 +1078,13 @@ for details.\n\n"));
           /* sXXXav : check given locale */
           logprintf (LOG_VERBOSE, "Check the locale...\n");
         }
+    }
+#else
+  if (opt.enable_iri || opt.locale || opt.encoding_remote)
+    {
+      /* sXXXav : be more specific... */
+      printf(_("This version does not have support for IRIs\n"));
+      exit(1);
     }
 #endif
 

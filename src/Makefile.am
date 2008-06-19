@@ -30,6 +30,10 @@
 # Version: @VERSION@
 #
 
+if IRI_IS_ENABLED
+IRI_OBJ = iri.c
+endif
+
 # The following line is losing on some versions of make!
 DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
 LIBS     = @LIBSSL@ @LIBGNUTLS@ @LIBINTL@ @LIBS@
@@ -39,10 +43,10 @@ wget_SOURCES = build_info.c cmpt.c connect.c convert.c cookies.c ftp.c    \
 	       ftp-basic.c ftp-ls.c hash.c host.c html-parse.c html-url.c \
 	       http.c init.c log.c main.c netrc.c progress.c ptimer.c     \
 	       recur.c res.c retr.c snprintf.c spider.c url.c	          \
-	       utils.c				          \
+	       utils.c $(IRI_OBJ)				          \
 	       connect.h convert.h cookies.h 		                  \
 	       ftp.h gen-md5.h hash.h host.h html-parse.h                 \
-	       http.h http-ntlm.h init.h log.h mswindows.h netrc.h        \
+	       http.h http-ntlm.h init.h iri.h log.h mswindows.h netrc.h  \
 	       options.h progress.h ptimer.h recur.h res.h retr.h         \
 	       spider.h ssl.h sysdep.h url.h utils.h wget.h
 nodist_wget_SOURCES = version.c

@@ -512,6 +512,10 @@ if test "X$iri" != "Xno"; then
 fi
 
 
+dnl Needed by src/Makefile.am
+AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" != "Xno"])
+
+
 dnl
 dnl Create output
 dnl

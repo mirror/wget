@@ -1,8 +1,5 @@
-/* This stores global variables that are initialized with 
-   preprocessor declarations for output with the --version flag.
-
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-   2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+/* Internationalization related declarations.
+   Copyright (C) 2000, 2007, 2008 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -30,85 +27,17 @@ Corresponding Source for a non-source form of such a combination
 shall include the source code for the parts of OpenSSL used as well
 as that of the covered work.  */
 
-#include "config.h"
-#include <stdio.h>
-
-char *system_wgetrc = SYSTEM_WGETRC;
-char *locale_dir = LOCALEDIR;
-
-const char* (compiled_features[]) =
-{
-
-#ifdef ENABLE_DIGEST
-  "+digest",
-#else
-  "-digest",
-#endif
-
-#ifdef ENABLE_IPV6
-  "+ipv6",
-#else
-  "-ipv6",
-#endif
-
-#ifdef ENABLE_NLS
-  "+nls",
-#else
-  "-nls",
-#endif
-
-#ifdef ENABLE_NTLM
-  "+ntlm",
-#else
-  "-ntlm",
-#endif
-
-#ifdef ENABLE_OPIE
-  "+opie",
-#else
-  "-opie",
-#endif
-
-#ifdef HAVE_MD5
-#ifdef HAVE_BUILTIN_MD5
-  "+md5/builtin", 
-#elif HAVE_OPENSSL_MD5
-  "+md5/openssl",
-#elif HAVE_SOLARIS_MD5
-  "+md5/solaris",
-#else
-#error "md5 set, but no library found!",
-#endif
-#else
-  "-md5",
-#endif
-
-#ifdef HAVE_LIBGNUTLS
-  "+gnutls",
-#else
-  "-gnutls",
-#endif
-
-#ifdef HAVE_LIBSSL
-  "+ssl",
-#else
-  "-ssl",
-#endif
-
-#ifdef HAVE_GETTEXT
-  "+gettext",
-#else
-  "-gettext",
-#endif
+#ifndef IRI_H
+#define IRI_H
 
 #ifdef ENABLE_IRI
-  "+iri",
-#else
-  "-iri",
-#endif
 
-  /* sentinel value */
-  NULL
-};
+char *parse_charset (char *str);
 
 
+#else /* ENABLE_IRI */
+
+#define parse_charset(str)	/* no-op */
+
+#endif /* ENABLE_IRI */
+#endif /* IRI_H */

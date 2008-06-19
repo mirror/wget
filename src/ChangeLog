@@ -1,3 +1,18 @@
+2008-06-14  Xavier Saint  <wget@sxav.eu>
+
+ 	* iri.c, iri.h : New files.
+
+	* Makefile.am : Add files iri.h and conditional iri.c.
+
+	* build_info.c : Add compiled feature "iri".
+
+	* http.c : include iri.h and parse charset from Content-Type
+	header.
+
+	* init.c, main.c, options.h : if an options isn't supported
+	at compiled time, don't get rid off it and show a dummy
+	message instead if they are used.
+
 2008-06-13  Micah Cowan  <micah@cowan.name>
 
 	* build_info.c: ENABLE_NTLM, not HAVE_NTLM.
