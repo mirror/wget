@@ -1,3 +1,8 @@
+2008-06-22  Steven Schubiger  <schubiger@gmail.com>
+
+	* http.c: Make -nv --spider include the file's name when it
+	exists.
+	
 2008-06-22  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am (version.c): Fixed version string invocation so it
