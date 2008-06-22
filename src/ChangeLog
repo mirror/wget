@@ -1,3 +1,10 @@
+2008-06-22  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am (version.c): Fixed version string invocation so it
+	once again can't result in unterminated strings, made all the
+	string vars pointers-to-const, and moved line lengths
+	below 80 (in Makefile.am, not in version.c).
+
 2008-06-16  Micah Cowan  <micah@cowan.name>
 
 	* http.c (http_loop): When hstat.len is higher than the
