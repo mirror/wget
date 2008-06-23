@@ -2,7 +2,8 @@
 
 	* Test-proxied-https-auth.px: Shift exit code so it falls in the
 	lower bits, and actually fails when it should. Use dynamic port,
-	instead of static port.
+	instead of static port. Only run the test if our Wget was built
+	with HTTPS support.
 
 	* certs/server-cert.pem, certs/server-key.pem: Apparently failed
 	to add these from 1.11.x repo. Fixed.
