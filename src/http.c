@@ -1323,6 +1323,7 @@ free_hstat (struct http_stat *hs)
   xfree_null (hs->rderrmsg);
   xfree_null (hs->local_file);
   xfree_null (hs->orig_file_name);
+  xfree_null (hs->message);
 
   /* Guard against being called twice. */
   hs->newloc = NULL;
@@ -1442,6 +1443,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   hs->newloc = NULL;
   hs->remote_time = NULL;
   hs->error = NULL;
+  hs->message = NULL;
 
   conn = u;
 

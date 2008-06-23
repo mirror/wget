@@ -1,3 +1,8 @@
+2008-06-22  Steven Schubiger  <stsc@members.fsf.org>
+
+	* http.c: Explicitly initialize and deallocate the message
+	string used by the -nv --spider functionality.
+
 2008-06-22  Steven Schubiger  <schubiger@gmail.com>
 
 	* http.c: Make -nv --spider include the file's name when it
