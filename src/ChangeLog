@@ -1,3 +1,8 @@
+2008-06-24  Steven Schubiger  <stsc@members.fsf.org>
+
+	* http.c (http_loop): Replace escnonprint() occurence with
+	a quotearg_style() call.
+
 2008-06-24  Micah Cowan  <micah@cowan.name>
 
 	* ftp-ls.c (ftp_index): Don't assume time_t* is compatible with
