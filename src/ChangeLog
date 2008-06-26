@@ -6,6 +6,32 @@
 	* url.c : Convert URLs from locale to UTF-8 allowing a basic
 	support of IRI/IDN
 
+2008-06-24  Steven Schubiger  <stsc@members.fsf.org>
+
+	* http.c (http_loop): Replace escnonprint() occurence with
+	a quotearg_style() call.
+
+2008-06-24  Micah Cowan  <micah@cowan.name>
+
+	* ftp-ls.c (ftp_index): Don't assume time_t* is compatible with
+	long*. Fixes crash on Windows, and probably other systems.
+
+2008-06-22  Steven Schubiger  <stsc@members.fsf.org>
+
+	* http.c: Explicitly initialize and deallocate the message
+	string used by the -nv --spider functionality.
+
+2008-06-22  Steven Schubiger  <schubiger@gmail.com>
+
+	* http.c: Make -nv --spider include the file's name when it
+	exists.
+
+2008-06-22  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am (version.c): Fixed version string invocation so it
+	once again can't result in unterminated strings, made all the
+	string vars pointers-to-const, and moved line lengths
+	below 80 (in Makefile.am, not in version.c).
 
 2008-06-19  Xavier Saint  <wget@sxav.eu>
 
@@ -37,6 +63,12 @@
 	* iri.h : Make no-op version of parse_charset() return
 	NULL.
 
+2008-06-16  Micah Cowan  <micah@cowan.name>
+
+	* http.c (http_loop): When hstat.len is higher than the
+	successfully completed content's length, but it's because we
+	_set_ it that way, don't abort.
+
 2008-06-14  Xavier Saint  <wget@sxav.eu>
 
  	* iri.c, iri.h : New files.
@@ -54,7 +86,8 @@
 
 2008-06-13  Micah Cowan  <micah@cowan.name>
 
-	* build_info.c: ENABLE_NTLM, not HAVE_NTLM.
+	* build_info.c: ENABLE_NTLM, not HAVE_NTLM; distinguish OpenSSL
+	from "ssl".
 
 2008-06-13  Madhusudan Hosaagrahara <com.gmail.hrmadhu>
 
@@ -94,11 +127,11 @@
 	default.
 
 2008-05-17  Kenny Parnell  <k.parnell@gmail.com>
-	
+
 	(cmd_spec_prefer_family): Initialize prefer_family to prefer_none.
 
 2008-05-17  Micah Cowan  <micah@cowan.name>
-	
+
 	* main.c (main): Handle Ctrl-D on command-line.
 
 2008-05-15  Steven Schubiger  <schubiger@gmail.com>
@@ -137,7 +170,7 @@
 
 	* options.h: Add an according boolean member to the options
 	struct.
-	
+
 	* sysdep.h: Comment the defines __EXTENSIONS__ and _GNU_SOURCE
 	out, because they're now defined independently by config.h.
 

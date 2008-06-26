@@ -90,9 +90,9 @@ const char* (compiled_features[]) =
 #endif
 
 #ifdef HAVE_LIBSSL
-  "+ssl",
+  "+openssl",
 #else
-  "-ssl",
+  "-openssl",
 #endif
 
 #ifdef HAVE_GETTEXT

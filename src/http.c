@@ -1297,6 +1297,7 @@ struct http_stat
   char *remote_time;            /* remote time-stamp string */
   char *error;                  /* textual HTTP error */
   int statcode;                 /* status code */
+  char *message;                /* status message */
   wgint rd_size;                /* amount of data read from socket */
   double dltime;                /* time it took to download the data */
   const char *referer;          /* value of the referer header. */
@@ -1323,6 +1324,7 @@ free_hstat (struct http_stat *hs)
   xfree_null (hs->rderrmsg);
   xfree_null (hs->local_file);
   xfree_null (hs->orig_file_name);
+  xfree_null (hs->message);
 
   /* Guard against being called twice. */
   hs->newloc = NULL;
@@ -1442,6 +1444,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   hs->newloc = NULL;
   hs->remote_time = NULL;
   hs->error = NULL;
+  hs->message = NULL;
 
   conn = u;
 
@@ -1714,6 +1717,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
           resp = resp_new (head);
           statcode = resp_status (resp, &message);
+          hs->message = xstrdup (message);
           resp_free (resp);
           xfree (head);
           if (statcode != 200)
@@ -1796,6 +1800,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   /* Check for status line.  */
   message = NULL;
   statcode = resp_status (resp, &message);
+  hs->message = xstrdup (message);
   if (!opt.server_response)
     logprintf (LOG_VERBOSE, "%2d %s\n", statcode,
                message ? quotearg_style (escape_quoting_style, message) : "");
@@ -2670,19 +2675,20 @@ The sizes do not match (local %s) -- retrieving.\n"),
               
               if (opt.spider)
                 {
+                  bool finished = true;
                   if (opt.recursive)
                     {
                       if (*dt & TEXTHTML)
                         {
                           logputs (LOG_VERBOSE, _("\
 Remote file exists and could contain links to other resources -- retrieving.\n\n"));
+                          finished = false;
                         }
                       else 
                         {
                           logprintf (LOG_VERBOSE, _("\
 Remote file exists but does not contain any link -- not retrieving.\n\n"));
                           ret = RETROK; /* RETRUNNEEDED is not for caller. */
-                          goto exit;
                         }
                     }
                   else
@@ -2699,6 +2705,14 @@ but recursion is disabled -- not retrieving.\n\n"));
 Remote file exists.\n\n"));
                         }
                       ret = RETROK; /* RETRUNNEEDED is not for caller. */
+                    }
+                  
+                  if (finished)
+                    {
+                      logprintf (LOG_NONVERBOSE, 
+                                 _("%s URL:%s %2d %s\n"), 
+                                 tms, u->url, hstat.statcode,
+                                 hstat.message ? quotearg_style (escape_quoting_style, hstat.message) : "");
                       goto exit;
                     }
                 }
@@ -2808,10 +2822,18 @@ Remote file exists.\n\n"));
               printwhat (count, opt.ntry);
               continue;
             }
-          else
+          else if (hstat.len != hstat.restval)
             /* Getting here would mean reading more data than
                requested with content-length, which we never do.  */
             abort ();
+          else
+            {
+              /* Getting here probably means that the content-length was
+               * _less_ than the original, local size. We should probably
+               * truncate or re-read, or something. FIXME */
+              ret = RETROK;
+              goto exit;
+            }
         }
       else /* from now on hstat.res can only be -1 */
         {
