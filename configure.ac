@@ -494,6 +494,19 @@ AC_ARG_WITH(libidn, AC_HELP_STRING([--with-libidn=[DIR]],
                                    [Support IDN/IRIs (needs GNU Libidn)]),
                                    libidn=$withval, libidn="")
 if test "X$iri" != "Xno"; then
+  AM_ICONV
+
+  if test "X$am_cv_func_iconv" != "Xyes"; then
+    iri=no
+    if test "X$force_iri" = "Xyes"; then
+      AC_MSG_ERROR([Libiconv is required for IRIs support])
+    else
+      AC_MSG_NOTICE([disabling IRIs because libiconv wasn't found])
+    fi
+  fi
+fi
+
+if test "X$iri" != "Xno"; then
   if test "$libidn" != ""; then
     LDFLAGS="${LDFLAGS} -L$libidn/lib"
     CPPFLAGS="${CPPFLAGS} -I$libidn/include"
