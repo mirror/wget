@@ -1,3 +1,12 @@
+2008-06-26  Xavier Saint  <wget@sxav.eu>
+
+	* iri.c, iri.h : New functions locale_to_utf8() and
+	idn_encode() adding basic capabilities of IRI/IDN.
+
+	* url.c : Convert URLs from locale to UTF-8 allowing a basic
+	support of IRI/IDN
+
+
 2008-06-19  Xavier Saint  <wget@sxav.eu>
 
 	* iri.c, iri.h : New function check_encoding_name() as

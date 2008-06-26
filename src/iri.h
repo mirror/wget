@@ -35,12 +35,16 @@ as that of the covered work.  */
 char *parse_charset (char *str);
 char *find_locale (void);
 bool check_encoding_name (char *encoding);
+const char *locale_to_utf8 (const char *str);
+char *idn_encode (char *host);
 
 #else /* ENABLE_IRI */
 
-#define parse_charset(str)		NULL
-#define find_locale()			NULL
-#define check_encoding_name(str)	false
+#define parse_charset(str)          NULL
+#define find_locale()               NULL
+#define check_encoding_name(str)    false
+#define locale_to_utf8(str)         (str)
+#define idn_encode(str)             NULL
 
 #endif /* ENABLE_IRI */
 #endif /* IRI_H */

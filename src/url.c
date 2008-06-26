@@ -42,6 +42,7 @@ as that of the covered work.  */
 #include "utils.h"
 #include "url.h"
 #include "host.h"  /* for is_valid_ipv6_address */
+#include "iri.h"
 
 #ifdef TESTING
 #include "test.h"
@@ -670,6 +671,12 @@ url_parse (const char *url, int *error)
       goto error;
     }
 
+  if (opt.enable_iri)
+    {
+      url_unescape ((char *) url);
+      url = locale_to_utf8(url);
+    }
+
   url_encoded = reencode_escapes (url);
   p = url_encoded;
 
@@ -844,6 +851,17 @@ url_parse (const char *url, int *error)
       host_modified = true;
     }
 
+  if (opt.enable_iri)
+    {
+      char *new = idn_encode (u->host);
+      if (new)
+        {
+          xfree (u->host);
+          u->host = new;
+          host_modified = true;
+        }
+    }
+
   if (params_b)
     u->params = strdupdelim (params_b, params_e);
   if (query_b)
@@ -851,7 +869,7 @@ url_parse (const char *url, int *error)
   if (fragment_b)
     u->fragment = strdupdelim (fragment_b, fragment_e);
 
-  if (path_modified || u->fragment || host_modified || path_b == path_e)
+  if (opt.enable_iri || path_modified || u->fragment || host_modified || path_b == path_e)
     {
       /* If we suspect that a transformation has rendered what
          url_string might return different from URL_ENCODED, rebuild
