@@ -1,3 +1,7 @@
+2008-06-29  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi <Contributors>: Added Joao Ferreira.
+
 2008-06-13  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi (Mailing List): The wget-notify mailing list no longer

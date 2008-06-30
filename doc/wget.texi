@@ -3819,6 +3819,12 @@ Aleksandar Erkalovi@'{c},
 Aleksandar Erkalovic,
 @end ifnottex
 Andy Eskilsson,
+@iftex
+Jo@~{a}o Ferreira,
+@end iftex
+@ifnottex
+Joao Ferreira,
+@end ifnottex
 Christian Fraenkel,
 David Fritz,
 Charles C.@: Fu,
