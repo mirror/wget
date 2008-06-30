@@ -1,6 +1,9 @@
 2008-06-29  Micah Cowan  <micah@cowan.name>
 
-	* wget.texi <Contributors>: Added Joao Ferreira.
+	* wget.texi <Contributors>: Added Joao Ferreira, Mike Frysinger,
+	Alain, Guibert, Madhusudan Hosaagrahara, Jim Paris, Kenny
+	Parnell, Benno Schulenberg, and Pranab Shenoy. Added Steven
+	Schubiger to the "Special Thanks" section.
 
 2008-06-13  Micah Cowan  <micah@cowan.name>
 

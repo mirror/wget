@@ -3,7 +3,7 @@
 @c %**start of header
 @setfilename wget.info
 @include version.texi
-@set UPDATED Mar 2008
+@set UPDATED Jun 2008
 @settitle GNU Wget @value{VERSION} Manual
 @c Disable the monstrous rectangles beside overfull hbox-es.
 @finalout
@@ -3765,6 +3765,12 @@ Ralf Wildenhues---Contributed patches to convert Wget to use Automake as
 part of its build process, and various bugfixes.
 
 @item
+Steven Schubiger---Many helpful patches, bugfixes and improvements.
+Notably, conversion of Wget to use the Gnulib quotes and quoteargs
+modules, and the addition of password prompts at the console, via the
+Gnulib getpasswd-gnu module.
+
+@item
 People who provided donations for development---including Brian Gough.
 @end itemize
 
@@ -3827,6 +3833,7 @@ Joao Ferreira,
 @end ifnottex
 Christian Fraenkel,
 David Fritz,
+Mike Frysinger,
 Charles C.@: Fu,
 FUJISHIMA Satsuki,
 Masashi Fujita,
@@ -3834,10 +3841,12 @@ Howard Gayle,
 Marcel Gerrits,
 Lemble Gregory,
 Hans Grobler,
+Alain Guibert,
 Mathieu Guillaume,
 Aaron Hawley,
 Jochen Hein,
 Karl Heuer,
+Madhusudan Hosaagrahara,
 HIROSE Masaaki,
 Ulf Harnhammar,
 Gregor Hoffleit,
@@ -3909,6 +3918,8 @@ Adam D.@: Moss,
 Simon Munton,
 Charlie Negyesi,
 R.@: K.@: Owen,
+Jim Paris,
+Kenny Parnell,
 Leonid Petrov,
 Simone Piunno,
 Andrew Pollock,
@@ -3943,9 +3954,11 @@ Edward J.@: Sabol,
 Heinz Salzmann,
 Robert Schmidt,
 Nicolas Schodet,
+Benno Schulenberg,
 Andreas Schwab,
 Steven M.@: Schweda,
 Chris Seawood,
+Pranab Shenoy,
 Dennis Smit,
 Toomas Soome,
 Tage Stabell-Kulo,
