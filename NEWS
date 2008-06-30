@@ -6,6 +6,11 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget 1.12 (MAINLINE)
+
+** --ask-password option (and associated wgetrc command) added to
+support password prompts at the console.
+
 * Changes in Wget 1.11.4
 
 ** Fixed an issue (apparently a regression) where -O would refuse to
@@ -19,12 +24,6 @@ locally with content.
 to a pointer-to-time_t.
 
 ** Translation updates for Catalan.
-
-* Changes in Wget 1.12 (MAINLINE)
-
-** --ask-password option (and associated wgetrc command) added to
-support password prompts at the console.
-
 
 * Changes in Wget 1.11.3
 
