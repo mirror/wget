@@ -6,6 +6,20 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget 1.11.4
+
+** Fixed an issue (apparently a regression) where -O would refuse to
+download when -nc was given, even though the file didn't exist.
+
+** Fixed a situation where Wget could abort with --continue if the
+remote server gives a content-length of zero when the file exists
+locally with content.
+
+** Fixed a crash on some systems, due to Wget casting a pointer-to-long
+to a pointer-to-time_t.
+
+** Translation updates for Catalan.
+
 * Changes in Wget 1.12 (MAINLINE)
 
 ** --ask-password option (and associated wgetrc command) added to
