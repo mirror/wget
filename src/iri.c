@@ -1,6 +1,5 @@
 /* IRI related functions.
-   Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
-   2008 Free Software Foundation, Inc.
+   Copyright (C) 2008 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -102,9 +101,9 @@ check_encoding_name (char *encoding)
 
   while (*s)
     {
-      if (!c_isascii(*s) || c_isspace(*s))
+      if (!c_isascii (*s) || c_isspace (*s))
         {
-          logprintf (LOG_VERBOSE, "Encoding %s isn't valid\n", quote(encoding));
+          logprintf (LOG_VERBOSE, "Encoding %s isn't valid\n", quote (encoding));
           return false;
         }
 
@@ -136,7 +135,7 @@ open_locale_to_utf8 (void)
     return true;
 
   logprintf (LOG_VERBOSE, "Conversion from %s to %s isn't supported\n",
-             quote (opt.locale), quote("UTF-8"));
+             quote (opt.locale), quote ("UTF-8"));
   locale2utf8 = NULL;
   return false;
 }
