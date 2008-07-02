@@ -1,3 +1,11 @@
+2008-07-02  Xavier Saint  <wget@sxav.eu>
+
+	* iri.c, iri.h  : New function idn_decode() to decode ASCII
+	encoded hostname to the locale.
+
+	* host.c : Show hostname to be resolved both in locale and
+	ASCII encoded.
+
 2008-06-26  Xavier Saint  <wget@sxav.eu>
 
 	* iri.c, iri.h : New functions locale_to_utf8() and

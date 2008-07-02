@@ -37,6 +37,7 @@ char *find_locale (void);
 bool check_encoding_name (char *encoding);
 const char *locale_to_utf8 (const char *str);
 char *idn_encode (char *host);
+char *idn_decode (char *host);
 
 #else /* ENABLE_IRI */
 
@@ -45,6 +46,7 @@ char *idn_encode (char *host);
 #define check_encoding_name(str)    false
 #define locale_to_utf8(str)         (str)
 #define idn_encode(str)             NULL
+#define idn_decode(str)             NULL
 
 #endif /* ENABLE_IRI */
 #endif /* IRI_H */
