@@ -714,7 +714,7 @@ lookup_host (const char *host, int flags)
 
   if (!silent && !numeric_address)
     {
-      char *str = NULL, *name = NULL;
+      char *str = NULL, *name;
 
       if (opt.enable_iri && (name = idn_decode (host)) != NULL)
         {
