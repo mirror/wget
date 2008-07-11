@@ -1,7 +1,168 @@
+2008-06-25  Steven Schubiger  <stsc@members.fsf.org>
+
+	* ftp.c (getftp): When spidering a FTP URL, emit a diagnostic
+	message if the remote file exists.
+
+2008-06-24  Steven Schubiger  <stsc@members.fsf.org>
+
+	* http.c (http_loop): Replace escnonprint() occurence with
+	a quotearg_style() call.
+
+2008-06-24  Micah Cowan  <micah@cowan.name>
+
+	* ftp-ls.c (ftp_index): Don't assume time_t* is compatible with
+	long*. Fixes crash on Windows, and probably other systems.
+
+2008-06-22  Steven Schubiger  <stsc@members.fsf.org>
+
+	* http.c: Explicitly initialize and deallocate the message
+	string used by the -nv --spider functionality.
+
+2008-06-22  Steven Schubiger  <schubiger@gmail.com>
+
+	* http.c: Make -nv --spider include the file's name when it
+	exists.
+	
+2008-06-22  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am (version.c): Fixed version string invocation so it
+	once again can't result in unterminated strings, made all the
+	string vars pointers-to-const, and moved line lengths
+	below 80 (in Makefile.am, not in version.c).
+
+2008-06-16  Micah Cowan  <micah@cowan.name>
+
+	* http.c (http_loop): When hstat.len is higher than the
+	successfully completed content's length, but it's because we
+	_set_ it that way, don't abort.
+
+2008-06-13  Micah Cowan  <micah@cowan.name>
+
+	* build_info.c: ENABLE_NTLM, not HAVE_NTLM; distinguish OpenSSL
+	from "ssl".
+
+2008-06-13  Madhusudan Hosaagrahara <com.gmail.hrmadhu>
+
+	* Makefile.am, main.c, init.c, init.h, build_info.c: Adds build
+	information to the --version command line option. Fixes bug
+	#20636.
+
+2008-06-01  Micah Cowan  <micah@cowan.name>
+
+	* main.c [WINDOWS]: Reopen stdout in binary mode, when -O - is
+	given.
+
+2008-05-31 Micah Cowan  <micah@cowan.name>
+
+	* html-url.c, http.c: Avoid casts in a couple spots.
+
+2008-05-30 Henri Häkkinen  <henux@users.sourceforge.net>
+
+	* cookies.c, ftp-basic.c, hash.c, html-url.c, http-ntlm.c, http.c,
+	init.c, log.c, main.c, progress.c, ptimer.c, spider.c, url.c,
+	utils.c: Minor changes to silence warnings when using -Wall.
+
+2008-05-26  Steven Schubiger  <schubiger@gmail.com>
+
+	* ftp.c (getftp): Replace last remaining invocation of escnonprint
+	with gnulib quote.
+
+2008-05-19  Micah Cowan  <micah@cowan.name>
+
+	* main.c (main): Password prompt should be done only once (not
+	once per argument), and should be done prior to the background
+	fork.
+
+2008-05-17  Steven Schubiger  <schubiger@gmail.com>
+
+	* init.c (defaults): Set the preferred IP family to `none' by
+	default.
+
+2008-05-17  Kenny Parnell  <k.parnell@gmail.com>
+	
+	(cmd_spec_prefer_family): Initialize prefer_family to prefer_none.
+
+2008-05-17  Micah Cowan  <micah@cowan.name>
+	
+	* main.c (main): Handle Ctrl-D on command-line.
+
+2008-05-15  Steven Schubiger  <schubiger@gmail.com>
+
+	* ftp.c (getftp): Verify that the file actually exists in FTP, by
+	checking it against the listing.
+
+2008-05-15  Micah Cowan  <micah@cowan.name>
+
+	* main.c (prompt_for_password): Use the quote module.
+
+2008-05-14  Micah Cowan  <micah@cowan.name>
+
+	* ftp.c (ftp_retrieve_list): Symlinks and other filenames
+	should be fully quoted.
+
+2008-05-12  Micah Cowan  <micah@cowan.name>
+
+	* main.c (main): Downgrade "-N with -O" to a warning, and switch
+	it off to avoid confusing messages.
+
+2008-04-30  Micah Cowan  <micah@cowan.name>
+
+	* progress.c (create_image): Fix glitch where too many spaces are
+	printed on lines that don't display the ETA, in multibyte
+	locales.
+
+2008-04-30  Steven Schubiger  <stsc@members.fsf.org>
+
+	* main.c (main): New code that handles prompting for passwords
+	when specified explicitly via command-line option (using gnulib's
+	getpass-gnu module).
+	(main): Include the getpass header.
+
+	* init.c: Add "ask-password" to the list of recognized commands.
+
+	* options.h: Add an according boolean member to the options
+	struct.
+	
+	* sysdep.h: Comment the defines __EXTENSIONS__ and _GNU_SOURCE
+	out, because they're now defined independently by config.h.
+
+2008-04-27  Rabin Vincent  <rabin@rab.in>
+
+	* http.c (http_loop): Fix return for the case where we don't
+	download a file because of -nc.
+
+2008-04-27  Micah Cowan  <micah@cowan.name>
+
+	* url.c (path_simplify): Go back to allowing leading ".." in
+	paths, but only for FTP URLs.
+	(test_path_simplify): Add scheme-specificness to tests, adapt for
+	mu_run_test.
+
+	* test.c (all_tests): Add test_path_simplify.
+
+	* main.c (main): Downgrade -r, -p with -O to a warning rather than
+	an error; elaborate just a bit more for other -O combination
+	cases.
+
+2008-04-26  Micah Cowan  <micah@cowan.name>
+
+	* http.c (gethttp): Move proxy CONNECT handling to below the
+	retry_with_auth label, to deal with properly reconnecting to
+	proxies when we need to authenticate.
+
+2008-04-25  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am: -I foo -> -Ifoo.
+
 2008-04-24  Micah Cowan  <micah@cowan.name>
 
 	* main.c: Revised usage description of --convert-links to apply
 	to CSS as well as to HTML.
+
+2008-04-23  Micah Cowan  <micah@cowan.name>
+
+	* utils.c (test_dir_matches_p): Added a test for the case
+	described in issue #20518.
 
 2008-04-22  Micah Cowan  <micah@cowan.name>
 
@@ -41,6 +202,70 @@
 	* wget.h: Added TEXTCSS to dt flags enum.
 	* Makefile.am: Added css.lex, css-url.c, css-url.h, html-url.h
 	to wget_SOURCES.
+
+2008-04-22  Jim Paris  <jim@jtan.com>
+
+	* openssl.c (ssl_init): Enable combined certificate/key in
+	single file (apparent regression from ~1.9). Resolves issue
+	#22767.
+
+2008-04-22  Steven Schubiger  <schubiger@gmail.com>
+
+	* http.c (print_response_line): Changed to make responses always
+	be logged, even in --quiet mode, if --server-response was
+	specified. This is to bring http.c's handling of the situation
+	in line with ftp.c's.
+
+2008-04-22  Pranab Shenoy  <pranab.loosinit.shenoy@gmail.com>
+
+	* init.c: Added test_commands_sorted unit test to check is
+	commands are sorted.  Fixes bug #21245.
+
+	* test.c: Added test_commands_sorted to the test suite.
+
+2008-04-22  Rabin Vincent  <rabin@rab.in>
+
+	* ftp.c (ftp_get_listing): Only remove .listing if it has been
+	created. 
+
+2008-04-22  Alain Guibert  <alguibert+bts@free.fr>
+
+	* test.h (mu_run_test): Move declaration before statements, for
+	C90 conformance. Fixes bug #22789.
+
+2008-04-22  Mike Frysinger  <vapier@gentoo.org>
+
+	* Makefile.am: Move @LIBS@ after other libraries, for better
+	static-linking support. Fixes bug #22143.
+
+2008-04-16  Steven Schubiger  <schubiger@gmail.com>
+
+	* ftp.c: Use Gnulib's quote function for printing filenames and
+	such.
+	* connect.c: Likewise.
+	* convert.c: Likewise.
+	* cookies.c: Likewise.
+	* ftp-opie.c: Likewise.
+	* gnutls.c: Likewise.
+	* init.c: Likewise.
+	* log.c: Likewise.
+	* mswindows.c: Likewise.
+	* openssl.c: Likewise.
+	* progress.c: Likewise.
+	* recur.c: Likewise.
+	* res.c: Likewise.
+	* utils.c: Likewise.
+
+2008-04-16  Steven Schubiger  <schubiger@gmail.com>
+
+	* sysdep.h: Comment the defines __EXTENSIONS__ and _GNU_SOURCE 
+	out, because they're now defined independently by config.h.
+
+2008-04-14  Steven Schubiger  <schubiger@gmail.com>
+
+	* http.c: Use Gnulib's quote function for printing filenames and
+	such.
+	* wget.h: #include "quote.h".
 
 2008-04-12  Rabin Vincent  <rabin@rab.in>
 

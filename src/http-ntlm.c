@@ -526,7 +526,7 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
 
     /* Make sure that the user and domain strings fit in the target buffer
        before we copy them there. */
-    if(size + userlen + domlen >= sizeof(ntlmbuf))
+    if(((size_t) size + userlen + domlen) >= sizeof(ntlmbuf))
       return NULL;
     
     memcpy(&ntlmbuf[size], domain, domlen);

@@ -81,7 +81,7 @@ static struct scheme_data supported_schemes[] =
 
 /* Forward declarations: */
 
-static bool path_simplify (char *);
+static bool path_simplify (enum url_scheme, char *);
 
 /* Support for escaping and unescaping of URL strings.  */
 
@@ -829,7 +829,7 @@ url_parse (const char *url, int *error)
   u->passwd = passwd;
 
   u->path = strdupdelim (path_b, path_e);
-  path_modified = path_simplify (u->path);
+  path_modified = path_simplify (scheme, u->path);
   split_path (u->path, &u->dir, &u->file);
 
   host_modified = lowercase_str (u->host);
@@ -889,7 +889,7 @@ url_parse (const char *url, int *error)
 const char *
 url_error (int error_code)
 {
-  assert (error_code >= 0 && error_code < countof (parse_errors));
+  assert (error_code >= 0 && ((size_t) error_code) < countof (parse_errors));
   return _(parse_errors[error_code]);
 }
 
@@ -1526,10 +1526,11 @@ url_file_name (const struct url *u)
    test case.  */
 
 static bool
-path_simplify (char *path)
+path_simplify (enum url_scheme scheme, char *path)
 {
   char *h = path;               /* hare */
   char *t = path;               /* tortoise */
+  char *beg = path;
   char *end = strchr (path, '\0');
 
   while (h < end)
@@ -1545,17 +1546,29 @@ path_simplify (char *path)
         {
           /* Handle "../" by retreating the tortoise by one path
              element -- but not past beggining.  */
-          if (t > path)
+          if (t > beg)
             {
               /* Move backwards until T hits the beginning of the
                  previous path element or the beginning of path. */
-              for (--t; t > path && t[-1] != '/'; t--)
+              for (--t; t > beg && t[-1] != '/'; t--)
                 ;
+            }
+          else if (scheme == SCHEME_FTP)
+            {
+              /* If we're at the beginning, copy the "../" literally
+                 and move the beginning so a later ".." doesn't remove
+                 it.  This violates RFC 3986; but we do it for FTP
+                 anyway because there is otherwise no way to get at a
+                 parent directory, when the FTP server drops us in a
+                 non-root directory (which is not uncommon). */
+              beg = t + 3;
+              goto regular;
             }
           h += 3;
         }
       else
         {
+        regular:
           /* A regular path element.  If H hasn't advanced past T,
              simply skip to the next path element.  Otherwise, copy
              the path element until the next slash.  */
@@ -1991,9 +2004,10 @@ are_urls_equal (const char *u1, const char *u2)
   return (*p == 0 && *q == 0 ? true : false);
 }
 
-#if 0
+#ifdef TESTING
 /* Debugging and testing support for path_simplify. */
 
+#if 0
 /* Debug: run path_simplify on PATH and return the result in a new
    string.  Useful for calling from the debugger.  */
 static char *
@@ -2003,17 +2017,20 @@ ps (char *path)
   path_simplify (copy);
   return copy;
 }
+#endif
 
-static void
-run_test (char *test, char *expected_result, bool expected_change)
+static const char *
+run_test (char *test, char *expected_result, enum url_scheme scheme,
+          bool expected_change)
 {
   char *test_copy = xstrdup (test);
-  bool modified = path_simplify (test_copy);
+  bool modified = path_simplify (scheme, test_copy);
 
   if (0 != strcmp (test_copy, expected_result))
     {
       printf ("Failed path_simplify(\"%s\"): expected \"%s\", got \"%s\".\n",
               test, expected_result, test_copy);
+      mu_assert ("", 0);
     }
   if (modified != expected_change)
     {
@@ -2025,51 +2042,60 @@ run_test (char *test, char *expected_result, bool expected_change)
                 test);
     }
   xfree (test_copy);
+  mu_assert ("", modified == expected_change);
+  return NULL;
 }
 
-static void
+const char *
 test_path_simplify (void)
 {
   static struct {
     char *test, *result;
+    enum url_scheme scheme;
     bool should_modify;
   } tests[] = {
-    { "",                       "",             false },
-    { ".",                      "",             true },
-    { "./",                     "",             true },
-    { "..",                     "",             true },
-    { "../",                    "",             true },
-    { "foo",                    "foo",          false },
-    { "foo/bar",                "foo/bar",      false },
-    { "foo///bar",              "foo///bar",    false },
-    { "foo/.",                  "foo/",         true },
-    { "foo/./",                 "foo/",         true },
-    { "foo./",                  "foo./",        false },
-    { "foo/../bar",             "bar",          true },
-    { "foo/../bar/",            "bar/",         true },
-    { "foo/bar/..",             "foo/",         true },
-    { "foo/bar/../x",           "foo/x",        true },
-    { "foo/bar/../x/",          "foo/x/",       true },
-    { "foo/..",                 "",             true },
-    { "foo/../..",              "",             true },
-    { "foo/../../..",           "",             true },
-    { "foo/../../bar/../../baz", "baz",         true },
-    { "a/b/../../c",            "c",            true },
-    { "./a/../b",               "b",            true }
+    { "",                       "",             SCHEME_HTTP, false },
+    { ".",                      "",             SCHEME_HTTP, true },
+    { "./",                     "",             SCHEME_HTTP, true },
+    { "..",                     "",             SCHEME_HTTP, true },
+    { "../",                    "",             SCHEME_HTTP, true },
+    { "..",                     "..",           SCHEME_FTP,  false },
+    { "../",                    "../",          SCHEME_FTP,  false },
+    { "foo",                    "foo",          SCHEME_HTTP, false },
+    { "foo/bar",                "foo/bar",      SCHEME_HTTP, false },
+    { "foo///bar",              "foo///bar",    SCHEME_HTTP, false },
+    { "foo/.",                  "foo/",         SCHEME_HTTP, true },
+    { "foo/./",                 "foo/",         SCHEME_HTTP, true },
+    { "foo./",                  "foo./",        SCHEME_HTTP, false },
+    { "foo/../bar",             "bar",          SCHEME_HTTP, true },
+    { "foo/../bar/",            "bar/",         SCHEME_HTTP, true },
+    { "foo/bar/..",             "foo/",         SCHEME_HTTP, true },
+    { "foo/bar/../x",           "foo/x",        SCHEME_HTTP, true },
+    { "foo/bar/../x/",          "foo/x/",       SCHEME_HTTP, true },
+    { "foo/..",                 "",             SCHEME_HTTP, true },
+    { "foo/../..",              "",             SCHEME_HTTP, true },
+    { "foo/../../..",           "",             SCHEME_HTTP, true },
+    { "foo/../../bar/../../baz", "baz",         SCHEME_HTTP, true },
+    { "foo/../..",              "..",           SCHEME_FTP,  true },
+    { "foo/../../..",           "../..",        SCHEME_FTP,  true },
+    { "foo/../../bar/../../baz", "../../baz",   SCHEME_FTP,  true },
+    { "a/b/../../c",            "c",            SCHEME_HTTP, true },
+    { "./a/../b",               "b",            SCHEME_HTTP, true }
   };
   int i;
 
   for (i = 0; i < countof (tests); i++)
     {
+      const char *message;
       char *test = tests[i].test;
       char *expected_result = tests[i].result;
+      enum url_scheme scheme = tests[i].scheme;
       bool  expected_change = tests[i].should_modify;
-      run_test (test, expected_result, expected_change);
+      message = run_test (test, expected_result, scheme, expected_change);
+      if (message) return message;
     }
+  return NULL;
 }
-#endif
-
-#ifdef TESTING
 
 const char *
 test_append_uri_pathel()

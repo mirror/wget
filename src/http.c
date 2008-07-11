@@ -406,13 +406,13 @@ maybe_send_basic_creds (const char *hostname, const char *user,
   else if (basic_authed_hosts
       && hash_table_contains(basic_authed_hosts, hostname))
     {
-      DEBUGP(("Found `%s' in basic_authed_hosts.\n", hostname));
+      DEBUGP(("Found %s in basic_authed_hosts.\n", quote (hostname)));
       do_challenge = true;
     }
   else
     {
-      DEBUGP(("Host `%s' has not issued a general basic challenge.\n",
-              hostname));
+      DEBUGP(("Host %s has not issued a general basic challenge.\n",
+              quote (hostname)));
     }
   if (do_challenge)
     {
@@ -433,7 +433,7 @@ register_basic_auth_host (const char *hostname)
   if (!hash_table_contains(basic_authed_hosts, hostname))
     {
       hash_table_put (basic_authed_hosts, xstrdup(hostname), NULL);
-      DEBUGP(("Inserted `%s' into basic_authed_hosts\n", hostname));
+      DEBUGP(("Inserted %s into basic_authed_hosts\n", quote (hostname)));
     }
 }
 
@@ -813,7 +813,8 @@ print_response_line(const char *prefix, const char *b, const char *e)
 {
   char *copy;
   BOUNDED_TO_ALLOCA(b, e, copy);
-  logprintf (LOG_VERBOSE, "%s%s\n", prefix, escnonprint(copy));
+  logprintf (LOG_ALWAYS, "%s%s\n", prefix, 
+             quotearg_style (escape_quoting_style, copy));
 }
 
 /* Print the server response, line by line, omitting the trailing CRLF
@@ -1298,6 +1299,7 @@ struct http_stat
   char *remote_time;            /* remote time-stamp string */
   char *error;                  /* textual HTTP error */
   int statcode;                 /* status code */
+  char *message;                /* status message */
   wgint rd_size;                /* amount of data read from socket */
   double dltime;                /* time it took to download the data */
   const char *referer;          /* value of the referer header. */
@@ -1324,6 +1326,7 @@ free_hstat (struct http_stat *hs)
   xfree_null (hs->rderrmsg);
   xfree_null (hs->local_file);
   xfree_null (hs->orig_file_name);
+  xfree_null (hs->message);
 
   /* Guard against being called twice. */
   hs->newloc = NULL;
@@ -1443,6 +1446,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   hs->newloc = NULL;
   hs->remote_time = NULL;
   hs->error = NULL;
+  hs->message = NULL;
 
   conn = u;
 
@@ -1500,41 +1504,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
       basic_auth_finished = maybe_send_basic_creds(u->host, user, passwd, req);
     }
 
-  proxyauth = NULL;
-  if (proxy)
-    {
-      char *proxy_user, *proxy_passwd;
-      /* For normal username and password, URL components override
-         command-line/wgetrc parameters.  With proxy
-         authentication, it's the reverse, because proxy URLs are
-         normally the "permanent" ones, so command-line args
-         should take precedence.  */
-      if (opt.proxy_user && opt.proxy_passwd)
-        {
-          proxy_user = opt.proxy_user;
-          proxy_passwd = opt.proxy_passwd;
-        }
-      else
-        {
-          proxy_user = proxy->user;
-          proxy_passwd = proxy->passwd;
-        }
-      /* #### This does not appear right.  Can't the proxy request,
-         say, `Digest' authentication?  */
-      if (proxy_user && proxy_passwd)
-        proxyauth = basic_authentication_encode (proxy_user, proxy_passwd);
-
-      /* If we're using a proxy, we will be connecting to the proxy
-         server.  */
-      conn = proxy;
-
-      /* Proxy authorization over SSL is handled below. */
-#ifdef HAVE_SSL
-      if (u->scheme != SCHEME_HTTPS)
-#endif
-        request_set_header (req, "Proxy-Authorization", proxyauth, rel_value);
-    }
-
   /* Generate the Host header, HOST:PORT.  Take into account that:
 
      - Broken server-side software often doesn't recognize the PORT
@@ -1582,8 +1551,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
           post_data_size = file_size (opt.post_file_name);
           if (post_data_size == -1)
             {
-              logprintf (LOG_NOTQUIET, _("POST data file `%s' missing: %s\n"),
-                         opt.post_file_name, strerror (errno));
+              logprintf (LOG_NOTQUIET, _("POST data file %s missing: %s\n"),
+                         quote (opt.post_file_name), strerror (errno));
               post_data_size = 0;
             }
         }
@@ -1604,6 +1573,41 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   /* We need to come back here when the initial attempt to retrieve
      without authorization header fails.  (Expected to happen at least
      for the Digest authorization scheme.)  */
+
+  proxyauth = NULL;
+  if (proxy)
+    {
+      char *proxy_user, *proxy_passwd;
+      /* For normal username and password, URL components override
+         command-line/wgetrc parameters.  With proxy
+         authentication, it's the reverse, because proxy URLs are
+         normally the "permanent" ones, so command-line args
+         should take precedence.  */
+      if (opt.proxy_user && opt.proxy_passwd)
+        {
+          proxy_user = opt.proxy_user;
+          proxy_passwd = opt.proxy_passwd;
+        }
+      else
+        {
+          proxy_user = proxy->user;
+          proxy_passwd = proxy->passwd;
+        }
+      /* #### This does not appear right.  Can't the proxy request,
+         say, `Digest' authentication?  */
+      if (proxy_user && proxy_passwd)
+        proxyauth = basic_authentication_encode (proxy_user, proxy_passwd);
+
+      /* If we're using a proxy, we will be connecting to the proxy
+         server.  */
+      conn = proxy;
+
+      /* Proxy authorization over SSL is handled below. */
+#ifdef HAVE_SSL
+      if (u->scheme != SCHEME_HTTPS)
+#endif
+        request_set_header (req, "Proxy-Authorization", proxyauth, rel_value);
+    }
 
   keep_alive = false;
 
@@ -1632,7 +1636,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
           sock = pconn.socket;
           using_ssl = pconn.ssl;
           logprintf (LOG_VERBOSE, _("Reusing existing connection to %s:%d.\n"),
-                     escnonprint (pconn.host), pconn.port);
+                     quotearg_style (escape_quoting_style, pconn.host), 
+                     pconn.port);
           DEBUGP (("Reusing fd %d.\n", sock));
           if (pconn.authorized)
             /* If the connection is already authorized, the "Basic"
@@ -1644,8 +1649,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
         {
           request_free (req);
           logprintf(LOG_NOTQUIET,
-                    _("%s: unable to resolve host address `%s'\n"),
-                    exec_name, relevant->host);
+                    _("%s: unable to resolve host address %s\n"),
+                    exec_name, quote (relevant->host));
           return HOSTERR;
         }
     }
@@ -1714,13 +1719,14 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
 
           resp = resp_new (head);
           statcode = resp_status (resp, &message);
+          hs->message = xstrdup (message);
           resp_free (resp);
           xfree (head);
           if (statcode != 200)
             {
             failed_tunnel:
               logprintf (LOG_NOTQUIET, _("Proxy tunneling failed: %s"),
-                         message ? escnonprint (message) : "?");
+                         message ? quotearg_style (escape_quoting_style, message) : "?");
               xfree_null (message);
               return CONSSLERR;
             }
@@ -1796,9 +1802,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   /* Check for status line.  */
   message = NULL;
   statcode = resp_status (resp, &message);
+  hs->message = xstrdup (message);
   if (!opt.server_response)
     logprintf (LOG_VERBOSE, "%2d %s\n", statcode,
-               message ? escnonprint (message) : "");
+               message ? quotearg_style (escape_quoting_style, message) : "");
   else
     {
       logprintf (LOG_VERBOSE, "\n");
@@ -1824,12 +1831,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   /* TODO: perform this check only once. */
   if (!hs->existence_checked && file_exists_p (hs->local_file))
     {
-      if (opt.noclobber)
+      if (opt.noclobber && !opt.output_document)
         {
           /* If opt.noclobber is turned on and file already exists, do not
-             retrieve the file */
+             retrieve the file. But if the output_document was given, then this
+             test was already done and the file didn't exist. Hence the !opt.output_document */
           logprintf (LOG_VERBOSE, _("\
-File `%s' already there; not retrieving.\n\n"), hs->local_file);
+File %s already there; not retrieving.\n\n"), quote (hs->local_file));
           /* If the file is there, we suppose it's retrieved OK.  */
           *dt |= RETROKF;
 
@@ -2199,7 +2207,7 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
             logputs (LOG_VERBOSE,
                      opt.ignore_length ? _("ignored") : _("unspecified"));
           if (type)
-            logprintf (LOG_VERBOSE, " [%s]\n", escnonprint (type));
+            logprintf (LOG_VERBOSE, " [%s]\n", quotearg_style (escape_quoting_style, type));
           else
             logputs (LOG_VERBOSE, "\n");
         }
@@ -2268,8 +2276,8 @@ File `%s' already there; not retrieving.\n\n"), hs->local_file);
   /* Print fetch message, if opt.verbose.  */
   if (opt.verbose)
     {
-      logprintf (LOG_NOTQUIET, _("Saving to: `%s'\n"), 
-                 HYPHENP (hs->local_file) ? "STDOUT" : hs->local_file);
+      logprintf (LOG_NOTQUIET, _("Saving to: %s\n"), 
+                 HYPHENP (hs->local_file) ? quote ("STDOUT") : quote (hs->local_file));
     }
     
   /* This confuses the timestamping code that checks for file size.
@@ -2368,13 +2376,14 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
 
   /* TODO: Ick! This code is now in both gethttp and http_loop, and is
    * screaming for some refactoring. */
-  if (got_name && file_exists_p (hstat.local_file) && opt.noclobber)
+  if (got_name && file_exists_p (hstat.local_file) && opt.noclobber && !opt.output_document)
     {
       /* If opt.noclobber is turned on and file already exists, do not
-         retrieve the file */
+         retrieve the file. But if the output_document was given, then this
+         test was already done and the file didn't exist. Hence the !opt.output_document */
       logprintf (LOG_VERBOSE, _("\
-File `%s' already there; not retrieving.\n\n"), 
-                 hstat.local_file);
+File %s already there; not retrieving.\n\n"), 
+                 quote (hstat.local_file));
       /* If the file is there, we suppose it's retrieved OK.  */
       *dt |= RETROKF;
 
@@ -2383,7 +2392,8 @@ File `%s' already there; not retrieving.\n\n"),
       if (has_html_suffix_p (hstat.local_file))
         *dt |= TEXTHTML;
 
-      return RETRUNNEEDED;
+      ret = RETROK;
+      goto exit;
     }
 
   /* Reset the counter. */
@@ -2501,8 +2511,8 @@ Spider mode enabled. Check if remote file exists.\n"));
         case FWRITEERR: case FOPENERR:
           /* Another fatal error.  */
           logputs (LOG_VERBOSE, "\n");
-          logprintf (LOG_NOTQUIET, _("Cannot write to `%s' (%s).\n"),
-                     hstat.local_file, strerror (errno));
+          logprintf (LOG_NOTQUIET, _("Cannot write to %s (%s).\n"),
+                     quote (hstat.local_file), strerror (errno));
         case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED: 
         case SSLINITFAILED: case CONTNOTSUPPORTED:
           /* Fatal errors just return from the function.  */
@@ -2570,7 +2580,8 @@ Remote file does not exist -- broken link!!!\n"));
           else
             {
               logprintf (LOG_NOTQUIET, _("%s ERROR %d: %s.\n"),
-                         tms, hstat.statcode, escnonprint (hstat.error));
+                         tms, hstat.statcode, 
+                         quotearg_style (escape_quoting_style, hstat.error));
             }
           logputs (LOG_VERBOSE, "\n");
           ret = WRONGCODE;
@@ -2624,8 +2635,8 @@ Last-modified header invalid -- time-stamp ignored.\n"));
                                   || hstat.orig_file_size == hstat.contlen)
                                 {
                                   logprintf (LOG_VERBOSE, _("\
-Server file no newer than local file `%s' -- not retrieving.\n\n"),
-                                             hstat.orig_file_name);
+Server file no newer than local file %s -- not retrieving.\n\n"),
+                                             quote (hstat.orig_file_name));
                                   ret = RETROK;
                                   goto exit;
                                 }
@@ -2650,19 +2661,20 @@ The sizes do not match (local %s) -- retrieving.\n"),
               
               if (opt.spider)
                 {
+                  bool finished = true;
                   if (opt.recursive)
                     {
                       if (*dt & TEXTHTML)
                         {
                           logputs (LOG_VERBOSE, _("\
 Remote file exists and could contain links to other resources -- retrieving.\n\n"));
+                          finished = false;
                         }
                       else 
                         {
                           logprintf (LOG_VERBOSE, _("\
 Remote file exists but does not contain any link -- not retrieving.\n\n"));
                           ret = RETROK; /* RETRUNNEEDED is not for caller. */
-                          goto exit;
                         }
                     }
                   else
@@ -2679,6 +2691,14 @@ but recursion is disabled -- not retrieving.\n\n"));
 Remote file exists.\n\n"));
                         }
                       ret = RETROK; /* RETRUNNEEDED is not for caller. */
+                    }
+                  
+                  if (finished)
+                    {
+                      logprintf (LOG_NONVERBOSE, 
+                                 _("%s URL:%s %2d %s\n"), 
+                                 tms, u->url, hstat.statcode,
+                                 hstat.message ? quotearg_style (escape_quoting_style, hstat.message) : "");
                       goto exit;
                     }
                 }
@@ -2728,8 +2748,8 @@ Remote file exists.\n\n"));
           if (*dt & RETROKF)
             {
               logprintf (LOG_VERBOSE,
-                         _("%s (%s) - `%s' saved [%s/%s]\n\n"),
-                         tms, tmrate, hstat.local_file,
+                         _("%s (%s) - %s saved [%s/%s]\n\n"),
+                         tms, tmrate, quote (hstat.local_file),
                          number_to_static_string (hstat.len),
                          number_to_static_string (hstat.contlen));
               logprintf (LOG_NONVERBOSE,
@@ -2759,8 +2779,8 @@ Remote file exists.\n\n"));
               if (*dt & RETROKF)
                 {
                   logprintf (LOG_VERBOSE,
-                             _("%s (%s) - `%s' saved [%s]\n\n"),
-                             tms, tmrate, hstat.local_file,
+                             _("%s (%s) - %s saved [%s]\n\n"),
+                             tms, tmrate, quote (hstat.local_file),
                              number_to_static_string (hstat.len));
                   logprintf (LOG_NONVERBOSE,
                              "%s URL:%s [%s] -> \"%s\" [%d]\n",
@@ -2788,10 +2808,18 @@ Remote file exists.\n\n"));
               printwhat (count, opt.ntry);
               continue;
             }
-          else
+          else if (hstat.len != hstat.restval)
             /* Getting here would mean reading more data than
                requested with content-length, which we never do.  */
             abort ();
+          else
+            {
+              /* Getting here probably means that the content-length was
+               * _less_ than the original, local size. We should probably
+               * truncate or re-read, or something. FIXME */
+              ret = RETROK;
+              goto exit;
+            }
         }
       else /* from now on hstat.res can only be -1 */
         {
@@ -2896,7 +2924,7 @@ http_atotm (const char *time_string)
                                    Netscape cookie specification.) */
   };
   const char *oldlocale;
-  int i;
+  size_t i;
   time_t ret = (time_t) -1;
 
   /* Solaris strptime fails to recognize English month names in
@@ -3007,10 +3035,12 @@ digest_authentication_encode (const char *au, const char *user,
   au += 6;                      /* skip over `Digest' */
   while (extract_param (&au, &name, &value, ','))
     {
-      int i;
+      size_t i;
+      size_t namelen = name.e - name.b;
       for (i = 0; i < countof (options); i++)
-        if (name.e - name.b == strlen (options[i].name)
-            && 0 == strncmp (name.b, options[i].name, name.e - name.b))
+        if (namelen == strlen (options[i].name)
+            && 0 == strncmp (name.b, options[i].name,
+                             namelen))
           {
             *options[i].variable = strdupdelim (value.b, value.e);
             break;
@@ -3090,9 +3120,10 @@ username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\"",
    first argument and are followed by whitespace or terminating \0.
    The comparison is case-insensitive.  */
 #define STARTS(literal, b, e)                           \
-  ((e) - (b) >= STRSIZE (literal)                       \
+  ((e > b) \
+   && ((size_t) ((e) - (b))) >= STRSIZE (literal)   \
    && 0 == strncasecmp (b, literal, STRSIZE (literal))  \
-   && ((e) - (b) == STRSIZE (literal)                   \
+   && ((size_t) ((e) - (b)) == STRSIZE (literal)          \
        || c_isspace (b[STRSIZE (literal)])))
 
 static bool

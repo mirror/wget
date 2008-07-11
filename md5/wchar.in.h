@@ -26,6 +26,14 @@
  * the declaration of wcwidth().
  */
 
+#ifdef __need_mbstate_t
+/* Special invocation convention inside glibc header files.  */
+
+#@INCLUDE_NEXT@ @NEXT_WCHAR_H@
+
+#else
+/* Normal invocation convention.  */
+
 #ifndef _GL_WCHAR_H
 
 /* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
@@ -80,3 +88,4 @@ extern int wcwidth (int /* actually wchar_t */);
 
 #endif /* _GL_WCHAR_H */
 #endif /* _GL_WCHAR_H */
+#endif

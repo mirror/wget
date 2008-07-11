@@ -113,6 +113,7 @@ static const struct {
   { "accept",           &opt.accepts,           cmd_vector },
   { "addhostdir",       &opt.add_hostdir,       cmd_boolean },
   { "alwaysrest",       &opt.always_rest,       cmd_boolean }, /* deprecated */
+  { "askpassword",      &opt.ask_passwd,        cmd_boolean },
   { "authnochallenge",  &opt.auth_without_challenge,
                                                 cmd_boolean },
   { "background",       &opt.background,        cmd_boolean },
@@ -300,6 +301,7 @@ defaults (void)
   tmp = getenv ("no_proxy");
   if (tmp)
     opt.no_proxy = sepstring (tmp);
+  opt.prefer_family = prefer_none;
   opt.allow_cache = true;
 
   opt.read_timeout = 900;
@@ -369,19 +371,14 @@ home_dir (void)
   return home ? xstrdup (home) : NULL;
 }
 
-/* Return the path to the user's .wgetrc.  This is either the value of
-   `WGETRC' environment variable, or `$HOME/.wgetrc'.
-
+/* Check the 'WGETRC' environment variable and return the file name 
+   if  'WGETRC' is set and is a valid file.  
    If the `WGETRC' variable exists but the file does not exist, the
    function will exit().  */
-static char *
-wgetrc_file_name (void)
+char *
+wgetrc_env_file_name (void) 
 {
-  char *env, *home;
-  char *file = NULL;
-
-  /* Try the environment.  */
-  env = getenv ("WGETRC");
+  char *env = getenv ("WGETRC");
   if (env && *env)
     {
       if (!file_exists_p (env))
@@ -392,12 +389,40 @@ wgetrc_file_name (void)
         }
       return xstrdup (env);
     }
-
-  /* If that failed, try $HOME/.wgetrc.  */
-  home = home_dir ();
+  return NULL;
+}
+/* Check for the existance of '$HOME/.wgetrc' and return it's path
+   if it exists and is set.  */
+char *
+wgetrc_user_file_name (void) 
+{
+  char *home = home_dir();
+  char *file = NULL;
   if (home)
     file = aprintf ("%s/.wgetrc", home);
   xfree_null (home);
+  if (!file)
+    return NULL;
+  if (!file_exists_p (file))
+    {
+      xfree (file);
+      return NULL;
+    }
+  return file;
+}
+/* Return the path to the user's .wgetrc.  This is either the value of
+   `WGETRC' environment variable, or `$HOME/.wgetrc'.
+
+   Additionally, for windows, look in the directory where wget.exe 
+   resides.  */
+char *
+wgetrc_file_name (void)
+{
+  char *file = wgetrc_env_file_name ();
+  if (file && *file)
+    return file;
+
+  file = wgetrc_user_file_name ();
 
 #ifdef WINDOWS
   /* Under Windows, if we still haven't found .wgetrc, look for the file
@@ -478,8 +503,8 @@ run_wgetrc (const char *file)
           ++errcnt;
           break;
         case line_unknown_command:
-          fprintf (stderr, _("%s: Unknown command `%s' in %s at line %d.\n"),
-                   exec_name, com, file, ln);
+          fprintf (stderr, _("%s: Unknown command %s in %s at line %d.\n"),
+                   exec_name, quote (com), file, ln);
           ++errcnt;
           break;
         case line_empty:
@@ -524,8 +549,8 @@ initialize (void)
   if (!strcmp (file, SYSTEM_WGETRC))
     {
       fprintf (stderr, _("\
-%s: Warning: Both system and user wgetrc point to `%s'.\n"),
-               exec_name, file);
+%s: Warning: Both system and user wgetrc point to %s.\n"),
+               exec_name, quote (file));
     }
   else
 #endif
@@ -538,7 +563,7 @@ initialize (void)
   xfree (file);
   return;
 }
-
+
 /* Remove dashes and underscores from S, modifying S in the
    process. */
 
@@ -629,7 +654,7 @@ parse_line (const char *line, char **com, char **val, int *comind)
 static bool
 setval_internal (int comind, const char *com, const char *val)
 {
-  assert (0 <= comind && comind < countof (commands));
+  assert (0 <= comind && ((size_t) comind) < countof (commands));
   DEBUGP (("Setting %s (%s) to %s\n", com, commands[comind].name, val));
   return commands[comind].action (com, val, commands[comind].place);
 }
@@ -676,8 +701,8 @@ run_command (const char *opt)
       xfree (val);
       break;
     default:
-      fprintf (stderr, _("%s: Invalid --execute command `%s'\n"),
-               exec_name, opt);
+      fprintf (stderr, _("%s: Invalid --execute command %s\n"),
+               exec_name, quote (opt));
       exit (2);
     }
 }
@@ -721,8 +746,8 @@ cmd_boolean (const char *com, const char *val, void *place)
   else
     {
       fprintf (stderr,
-               _("%s: %s: Invalid boolean `%s'; use `on' or `off'.\n"),
-               exec_name, com, val);
+               _("%s: %s: Invalid boolean %s; use `on' or `off'.\n"),
+               exec_name, com, quote (val));
       return false;
     }
 
@@ -738,8 +763,8 @@ cmd_number (const char *com, const char *val, void *place)
   if (!simple_atoi (val, val + strlen (val), place)
       || *(int *) place < 0)
     {
-      fprintf (stderr, _("%s: %s: Invalid number `%s'.\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid number %s.\n"),
+               exec_name, com, quote (val));
       return false;
     }
   return true;
@@ -969,8 +994,8 @@ cmd_bytes (const char *com, const char *val, void *place)
   double byte_value;
   if (!parse_bytes_helper (val, &byte_value))
     {
-      fprintf (stderr, _("%s: %s: Invalid byte value `%s'\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid byte value %s\n"),
+               exec_name, com, quote (val));
       return false;
     }
   *(wgint *)place = (wgint)byte_value;
@@ -988,8 +1013,8 @@ cmd_bytes_sum (const char *com, const char *val, void *place)
   double byte_value;
   if (!parse_bytes_helper (val, &byte_value))
     {
-      fprintf (stderr, _("%s: %s: Invalid byte value `%s'\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid byte value %s\n"),
+               exec_name, com, quote (val));
       return false;
     }
   *(SUM_SIZE_INT *) place = (SUM_SIZE_INT) byte_value;
@@ -1013,8 +1038,8 @@ cmd_time (const char *com, const char *val, void *place)
   if (val == end)
     {
     err:
-      fprintf (stderr, _("%s: %s: Invalid time period `%s'\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid time period %s\n"),
+               exec_name, com, quote (val));
       return false;
     }
 
@@ -1067,7 +1092,7 @@ cmd_cert_type (const char *com, const char *val, void *place)
   };
   int ok = decode_string (val, choices, countof (choices), place);
   if (!ok)
-    fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"), exec_name, com, val);
+    fprintf (stderr, _("%s: %s: Invalid value %s.\n"), exec_name, com, quote (val));
   return ok;
 }
 #endif
@@ -1104,8 +1129,8 @@ cmd_spec_header (const char *com, const char *val, void *place_ignored)
 
   if (!check_user_specified_header (val))
     {
-      fprintf (stderr, _("%s: %s: Invalid header `%s'.\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid header %s.\n"),
+               exec_name, com, quote (val));
       return false;
     }
   opt.user_headers = vec_append (opt.user_headers, val);
@@ -1154,10 +1179,10 @@ cmd_spec_prefer_family (const char *com, const char *val, void *place_ignored)
     { "IPv6", prefer_ipv6 },
     { "none", prefer_none },
   };
-  int prefer_family = prefer_ipv4;
+  int prefer_family = prefer_none;
   int ok = decode_string (val, choices, countof (choices), &prefer_family);
   if (!ok)
-    fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"), exec_name, com, val);
+    fprintf (stderr, _("%s: %s: Invalid value %s.\n"), exec_name, com, quote (val));
   opt.prefer_family = prefer_family;
   return ok;
 }
@@ -1170,8 +1195,8 @@ cmd_spec_progress (const char *com, const char *val, void *place_ignored)
 {
   if (!valid_progress_implementation_p (val))
     {
-      fprintf (stderr, _("%s: %s: Invalid progress type `%s'.\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid progress type %s.\n"),
+               exec_name, com, quote (val));
       return false;
     }
   xfree_null (opt.progress_type);
@@ -1229,8 +1254,8 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
       else
         {
           fprintf (stderr,
-                   _("%s: %s: Invalid restriction `%s', use [unix|windows],[lowercase|uppercase],[nocontrol].\n"),
-                   exec_name, com, val);
+                   _("%s: %s: Invalid restriction %s, use [unix|windows],[lowercase|uppercase],[nocontrol].\n"),
+                   exec_name, com, quote (val));
           return false;
         }
 
@@ -1260,7 +1285,7 @@ cmd_spec_secure_protocol (const char *com, const char *val, void *place)
   };
   int ok = decode_string (val, choices, countof (choices), place);
   if (!ok)
-    fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"), exec_name, com, val);
+    fprintf (stderr, _("%s: %s: Invalid value %s.\n"), exec_name, com, quote (val));
   return ok;
 }
 #endif
@@ -1285,8 +1310,8 @@ cmd_spec_useragent (const char *com, const char *val, void *place_ignored)
   /* Disallow embedded newlines.  */
   if (strchr (val, '\n'))
     {
-      fprintf (stderr, _("%s: %s: Invalid value `%s'.\n"),
-               exec_name, com, val);
+      fprintf (stderr, _("%s: %s: Invalid value %s.\n"),
+               exec_name, com, quote (val));
       return false;
     }
   xfree_null (opt.useragent);
@@ -1529,6 +1554,29 @@ cleanup (void)
 /* Unit testing routines.  */
 
 #ifdef TESTING
+
+const char *
+test_commands_sorted()
+{
+  int prev_idx = 0, next_idx = 1;
+  int command_count = countof (commands) - 1;
+  int cmp = 0;
+  while (next_idx <= command_count)
+    {
+      cmp = strcasecmp (commands[prev_idx].name, commands[next_idx].name);
+      if (cmp > 0)
+        {
+          mu_assert ("FAILED", false);
+          break;
+        }     
+      else
+        { 
+          prev_idx ++;
+	  next_idx ++;
+        }
+    }
+  return NULL;
+}
 
 const char *
 test_cmd_spec_restrict_file_names()

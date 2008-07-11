@@ -894,7 +894,8 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
             "Jan", "Feb", "Mar", "Apr", "May", "Jun",
             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
           };
-          struct tm *ptm = localtime ((time_t *)&f->tstamp);
+          time_t tstamp = f->tstamp;
+          struct tm *ptm = localtime (&tstamp);
 
           fprintf (fp, "%d %s %02d ", ptm->tm_year + 1900, months[ptm->tm_mon],
                   ptm->tm_mday);

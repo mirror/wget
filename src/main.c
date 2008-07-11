@@ -56,6 +56,8 @@ as that of the covered work.  */
 #include "http.h"               /* for save_cookies */
 
 #include <getopt.h>
+#include <getpass.h>
+#include <quote.h>
 
 #ifndef PATH_SEPARATOR
 # define PATH_SEPARATOR '/'
@@ -63,7 +65,17 @@ as that of the covered work.  */
 
 struct options opt;
 
+/* defined in version.c */
 extern char *version_string;
+extern char *compilation_string;
+extern char *system_getrc;
+extern char *link_string;
+/* defined in build_info.c */
+extern char *compiled_features[];
+extern char *system_wgetrc;
+extern char *locale_dir;
+/* Used for --version output in print_version */
+static const int max_chars_per_line = 72;
 
 #if defined(SIGHUP) || defined(SIGUSR1)
 static void redirect_output_signal (int);
@@ -130,6 +142,7 @@ static struct cmdline_option option_data[] =
   {
     { "accept", 'A', OPT_VALUE, "accept", -1 },
     { "append-output", 'a', OPT__APPEND_OUTPUT, NULL, required_argument },
+    { "ask-password", 0, OPT_BOOLEAN, "askpassword", -1 },
     { "auth-no-challenge", 0, OPT_BOOLEAN, "authnochallenge", -1 },
     { "background", 'b', OPT_BOOLEAN, "background", -1 },
     { "backup-converted", 'K', OPT_BOOLEAN, "backupconverted", -1 },
@@ -291,7 +304,7 @@ static void
 init_switches (void)
 {
   char *p = short_options;
-  int i, o = 0;
+  size_t i, o = 0;
   for (i = 0; i < countof (option_data); i++)
     {
       struct cmdline_option *opt = &option_data[i];
@@ -472,6 +485,8 @@ Download:\n"),
        --user=USER               set both ftp and http user to USER.\n"),
     N_("\
        --password=PASS           set both ftp and http password to PASS.\n"),
+    N_("\
+       --ask-password            prompt for passwords.\n"),
     "\n",
 
     N_("\
@@ -636,7 +651,7 @@ Recursive accept/reject:\n"),
     N_("Mail bug reports and suggestions to <bug-wget@gnu.org>.\n")
   };
 
-  int i;
+  size_t i;
 
   printf (_("GNU Wget %s, a non-interactive network retriever.\n"),
           version_string);
@@ -674,10 +689,121 @@ secs_to_human_time (double interval)
   return buf;
 }
 
+static char *
+prompt_for_password (void)
+{
+  if (opt.user)
+    printf (_("Password for user %s: "), quote (opt.user));
+  else
+    printf (_("Password: "));
+  return getpass("");
+}
+
+/* Function that prints the line argument while limiting it
+   to at most line_length. prefix is printed on the first line
+   and an appropriate number of spaces are added on subsequent
+   lines.*/
+static void
+format_and_print_line (char* prefix, char* line,
+		       int line_length) 
+{
+  assert (prefix != NULL);
+  assert (line != NULL);
+
+  if (line_length <= 0)
+    line_length = max_chars_per_line;
+
+  const int leading_spaces = strlen (prefix);
+  printf ("%s", prefix);
+  int remaining_chars = line_length - leading_spaces;
+  /* We break on spaces. */
+  char* token = strtok (line, " ");
+  while (token != NULL) 
+    {
+      /* If however a token is much larger than the maximum
+         line length, all bets are off and we simply print the
+         token on the next line. */
+      if (remaining_chars <= strlen (token)) 
+        {
+          printf ("\n");
+          int j = 0;
+          for (j = 0; j < leading_spaces; j++) 
+            {
+              printf (" ");
+            }
+          remaining_chars = line_length - leading_spaces;
+        }
+      printf ("%s ", token);
+      remaining_chars -= strlen (token) + 1;  // account for " "
+      token = strtok (NULL, " ");
+    }
+
+  printf ("\n");
+  xfree (prefix);
+  xfree (line);
+}
+
 static void
 print_version (void)
 {
-  printf ("GNU Wget %s\n\n", version_string);
+  const char *options_title = "Options    : ";
+  const char *wgetrc_title  = "Wgetrc     : ";
+  const char *locale_title  = "Locale     : ";
+  const char *compile_title = "Compile    : ";
+  const char *link_title    = "Link       : ";
+  const char *prefix_spaces = "             ";
+  const int prefix_space_length = strlen (prefix_spaces);
+
+  printf ("GNU Wget %s\n", version_string);
+  printf (options_title);
+  /* compiled_features is a char*[]. We limit the characters per
+     line to max_chars_per_line and prefix each line with a constant
+     number of spaces for proper alignment. */
+  int i =0;
+  for (i = 0; compiled_features[i] != NULL; ) 
+    {
+      int line_length = max_chars_per_line - prefix_space_length;
+      while ((line_length > 0) && (compiled_features[i] != NULL)) 
+        {
+          printf ("%s ", compiled_features[i]);
+          line_length -= strlen (compiled_features[i]) + 2;
+          i++;
+        }
+      printf ("\n");
+      if (compiled_features[i] != NULL) 
+        {
+	  printf (prefix_spaces);
+        }
+    }
+  /* Handle the case when $WGETRC is unset and $HOME/.wgetrc is 
+     absent. */
+  printf (wgetrc_title);
+  char *env_wgetrc = wgetrc_env_file_name ();
+  if (env_wgetrc && *env_wgetrc) 
+    {
+      printf ("%s (env)\n%s", env_wgetrc, prefix_spaces);
+      xfree (env_wgetrc);
+    }
+  char *user_wgetrc = wgetrc_user_file_name ();
+  if (user_wgetrc) 
+    {
+      printf ("%s (user)\n%s", user_wgetrc, prefix_spaces);
+      xfree (user_wgetrc);
+    }
+  printf ("%s (system)\n", system_wgetrc);
+
+  format_and_print_line (strdup (locale_title),
+			 strdup (locale_dir), 
+			 max_chars_per_line);
+  
+  format_and_print_line (strdup (compile_title),
+			 strdup (compilation_string),
+			 max_chars_per_line);
+
+  format_and_print_line (strdup (link_title),
+			 strdup (link_string),
+			 max_chars_per_line);
+  printf ("\n");
   /* TRANSLATORS: When available, an actual copyright character
      (cirle-c) should be used in preference to "(C)". */
   fputs (_("\
@@ -695,7 +821,6 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout);
          stdout);
   exit (0);
 }
-
 
 int
 main (int argc, char **argv)
@@ -881,22 +1006,44 @@ Can't timestamp and not clobber old files at the same time.\n"));
       exit (1);
     }
 #endif
-  if (opt.output_document
-      && (opt.page_requisites
-          || opt.recursive
-          || opt.timestamping))
+  if (opt.output_document)
     {
-          printf (_("Cannot specify -r, -p or -N if -O is given.\n"));
+      if (opt.convert_links 
+          && (nurl > 1 || opt.page_requisites || opt.recursive))
+        {
+          fputs (_("\
+Cannot specify both -k and -O if multiple URLs are given, or in combination\n\
+with -p or -r. See the manual for details.\n\n"), stdout);
           print_usage ();
           exit (1);
+        }
+      if (opt.page_requisites
+          || opt.recursive)
+        {
+          logprintf (LOG_NOTQUIET, "%s", _("\
+WARNING: combining -O with -r or -p will mean that all downloaded content\n\
+will be placed in the single file you specified.\n\n"));
+        }
+      if (opt.timestamping)
+        {
+          logprintf (LOG_NOTQUIET, "%s", _("\
+WARNING: timestamping does nothing in combination with -O. See the manual\n\
+for details.\n\n"));
+          opt.timestamping = false;
+        }
+      if (opt.noclobber && file_exists_p(opt.output_document)) 
+           { 
+              /* Check if output file exists; if it does, exit. */
+              logprintf (LOG_VERBOSE, _("File `%s' already there; not retrieving.\n"), opt.output_document);
+              exit(1);
+           }  
     }
-  if (opt.output_document
-      && opt.convert_links 
-      && nurl > 1)
+
+  if (opt.ask_passwd && opt.passwd)
     {
-          printf (_("Cannot specify both -k and -O if multiple URLs are given.\n"));
-          print_usage ();
-          exit (1);
+      printf (_("Cannot specify both --ask-password and --password.\n"));
+      print_usage ();
+      exit (1);
     }
 
   if (!nurl && !opt.input_filename)
@@ -909,6 +1056,14 @@ Can't timestamp and not clobber old files at the same time.\n"));
          pre-1.5 `--help' page.  */
       printf (_("Try `%s --help' for more options.\n"), exec_name);
       exit (1);
+    }
+
+  if (opt.ask_passwd)
+    {
+      opt.passwd = prompt_for_password ();
+
+      if (opt.passwd == NULL || opt.passwd[0] == '\0')
+        exit (1);
     }
 
 #ifdef MSDOS
@@ -947,7 +1102,19 @@ Can't timestamp and not clobber old files at the same time.\n"));
   if (opt.output_document)
     {
       if (HYPHENP (opt.output_document))
-        output_stream = stdout;
+        {
+#ifdef WINDOWS
+          FILE *result;
+          result = freopen (NULL, "wb", stdout);
+          if (result == NULL)
+            {
+              logputs (LOG_NOTQUIET, _("\
+WARNING: Can't reopen standard output in binary mode;\n\
+         downloaded file may contain inappropriate line endings.\n"));
+            }
+#endif
+          output_stream = stdout;
+        }
       else
         {
           struct_fstat st;

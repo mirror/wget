@@ -195,7 +195,6 @@ gl_INIT
 dnl
 dnl Checks for library functions.
 dnl
-AC_FUNC_ALLOCA
 AC_FUNC_MMAP
 AC_FUNC_FSEEKO
 AC_CHECK_FUNCS(strptime timegm snprintf vsnprintf vasprintf drand48)

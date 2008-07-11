@@ -31,6 +31,9 @@ as that of the covered work.  */
 #ifndef INIT_H
 #define INIT_H
 
+char *wgetrc_env_file_name (void);
+char *wgetrc_user_file_name (void);
+char *wgetrc_file_name (void);
 void initialize (void);
 void run_command (const char *);
 void setoptval (const char *, const char *, const char *);

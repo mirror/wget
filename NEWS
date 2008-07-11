@@ -6,7 +6,7 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget (MAINLINE).
+* Changes in Wget 1.12 (MAINLINE)
 
 ** Added support for CSS. This includes:
      - Parsing links from CSS files, and from CSS content found in HTML
@@ -19,6 +19,50 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
    CSS support in Wget is thanks to Ted Mielczarek
    <ted.mielczarek@gmail.com>.
 
+** --ask-password option (and associated wgetrc command) added to
+support password prompts at the console.
+
+* Changes in Wget 1.11.4
+
+** Fixed an issue (apparently a regression) where -O would refuse to
+download when -nc was given, even though the file didn't exist.
+
+** Fixed a situation where Wget could abort with --continue if the
+remote server gives a content-length of zero when the file exists
+locally with content.
+
+** Fixed a crash on some systems, due to Wget casting a pointer-to-long
+to a pointer-to-time_t.
+
+** Translation updates for Catalan.
+
+* Changes in Wget 1.11.3
+
+** Downgraded -N with -O to a warning, rather than an error.
+
+** Translation updates
+
+* Changes in Wget 1.11.2
+
+** Fixed a problem in authenticating over HTTPS through a proxy.
+(Regression in 1.11 over 1.10.2.)
+
+** The combination of -r or -p with -O, which was disallowed in 1.11,
+has been downgraded to a warning in 1.11.2. (-O and -N, which was never
+meaningful, is still an error.)
+
+** Further improvements to progress bar displays in non-English locales
+(too many spaces could be inserted, causing the display to scroll).
+
+** Successive invocations of Wget on FTP URLS, with --no-remove-listing
+and --continue, was causing Wget to append, rather than replace,
+information in the .listing file, and thereby download the same files
+multiple times. This has been fixed in 1.11.2.
+
+** Wget 1.11 no longer allowed ".." to persist at the beginning of URLs,
+for improved conformance with RFC 3986. However, this behavior presents
+problems for some FTP setups, and so they are now preserved again, for
+FTP URLs only.
 
 * Changes in Wget 1.11.1.
 

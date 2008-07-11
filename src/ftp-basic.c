@@ -76,9 +76,10 @@ ftp_response (int fd, char **ret_line)
         *--p = '\0';
 
       if (opt.server_response)
-        logprintf (LOG_NOTQUIET, "%s\n", escnonprint (line));
+        logprintf (LOG_NOTQUIET, "%s\n", 
+                   quotearg_style (escape_quoting_style, line));
       else
-        DEBUGP (("%s\n", escnonprint (line)));
+        DEBUGP (("%s\n", quotearg_style (escape_quoting_style, line)));
 
       /* The last line of output is the one that begins with "ddd ". */
       if (c_isdigit (line[0]) && c_isdigit (line[1]) && c_isdigit (line[2])
@@ -116,7 +117,8 @@ ftp_request (const char *command, const char *value)
             if (*p == '\r' || *p == '\n')
               *p = ' ';
           DEBUGP (("\nDetected newlines in %s \"%s\"; changing to %s \"%s\"\n",
-                   command, escnonprint (value), command, escnonprint (defanged)));
+                   command, quotearg_style (escape_quoting_style, value), 
+                   command, quotearg_style (escape_quoting_style, defanged)));
           /* Make VALUE point to the defanged copy of the string. */
           value = defanged;
         }
@@ -187,7 +189,7 @@ ftp_login (int csock, const char *acc, const char *pass)
       "331 s/key ",
       "331 opiekey "
     };
-    int i;
+    size_t i;
     const char *seed = NULL;
 
     for (i = 0; i < countof (skey_head); i++)
@@ -962,7 +964,7 @@ ftp_list (int csock, const char *file)
   int nwritten;
   uerr_t err;
   bool ok = false;
-  int i = 0;
+  size_t i = 0;
   /* Try `LIST -a' first and revert to `LIST' in case of failure.  */
   const char *list_commands[] = { "LIST -a", 
                                   "LIST" };

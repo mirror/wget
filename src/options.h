@@ -85,6 +85,7 @@ struct options
 
   char *user;			/* Generic username */
   char *passwd;			/* Generic password */
+  bool ask_passwd;              /* Ask for password? */
   
   bool always_rest;		/* Always use REST. */
   char *ftp_user;		/* FTP username */

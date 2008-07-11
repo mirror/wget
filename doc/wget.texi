@@ -3,7 +3,7 @@
 @c %**start of header
 @setfilename wget.info
 @include version.texi
-@set UPDATED Mar 2008
+@set UPDATED Jun 2008
 @settitle GNU Wget @value{VERSION} Manual
 @c Disable the monstrous rectangles beside overfull hbox-es.
 @finalout
@@ -551,9 +551,22 @@ analogous to shell redirection:
 @samp{wget -O - http://foo > file}; @file{file} will be truncated
 immediately, and @emph{all} downloaded content will be written there.
 
+For this reason, @samp{-N} (for timestamp-checking) is not supported
+in combination with @samp{-O}: since @var{file} is always newly
+created, it will always have a very new timestamp. A warning will be
+issued if this combination is used.
+
+Similarly, using @samp{-r} or @samp{-p} with @samp{-O} may not work as
+you expect: Wget won't just download the first file to @var{file} and
+then download the rest to their normal names: @emph{all} downloaded
+content will be placed in @var{file}. This was disabled in version
+1.11, but has been reinstated (with a warning) in 1.11.2, as there are
+some cases where this behavior can actually have some use.
+
 Note that a combination with @samp{-k} is only permitted when
-downloading a single document, and combination with any of @samp{-r},
-@samp{-p}, or @samp{-N} is not allowed.
+downloading a single document, as in that case it will just convert
+all relative URIs to external ones; @samp{-k} makes no sense for
+multiple URIs when they're all being downloaded to a single file.
 
 @cindex clobbering, file
 @cindex downloading multiple times
@@ -937,10 +950,10 @@ or to deal with broken network configuration.  Only one of
 same time.  Neither option is available in Wget compiled without IPv6
 support.
 
-@item --prefer-family=IPv4/IPv6/none
+@item --prefer-family=none/IPv4/IPv6
 When given a choice of several addresses, connect to the addresses
-with specified address family first.  IPv4 addresses are preferred by
-default.
+with specified address family first.  The address order returned by
+DNS is used without change by default.
 
 This avoids spurious errors and connect attempts when accessing hosts
 that resolve to both IPv6 and IPv4 addresses from IPv4 networks.  For
@@ -976,12 +989,16 @@ Specify the username @var{user} and password @var{password} for both
 using the @samp{--ftp-user} and @samp{--ftp-password} options for 
 @sc{ftp} connections and the @samp{--http-user} and @samp{--http-password} 
 options for @sc{http} connections.
+
+@item --ask-password
+Prompt for a password for each connection established. Cannot be specified
+when @samp{--password} is being used, because they are mutually exclusive.
 @end table
 
 @node Directory Options
 @section Directory Options
 
-@table @samp
+@table @samp       
 @item -nd
 @itemx --no-directories
 Do not create a hierarchy of directories when retrieving recursively.
@@ -2839,11 +2856,11 @@ Use POST as the method for all HTTP requests and send the contents of
 @var{file} in the request body.  The same as
 @samp{--post-file=@var{file}}.
 
-@item prefer_family = IPv4/IPv6/none
+@item prefer_family = none/IPv4/IPv6
 When given a choice of several addresses, connect to the addresses
-with specified address family first.  IPv4 addresses are preferred by
-default.  The same as @samp{--prefer-family}, which see for a detailed
-discussion of why this is useful.
+with specified address family first.  The address order returned by
+DNS is used without change by default.  The same as @samp{--prefer-family},
+which see for a detailed discussion of why this is useful.
 
 @item private_key = @var{file}
 Set the private key file to @var{file}.  The same as
@@ -3395,11 +3412,9 @@ The mailing list is archived at
 @url{http://news.gmane.org/gmane.comp.web.wget.patches}.
 
 Finally, there is the @email{wget-notify@@addictivecode.org} mailing
-list. This is a non-discussion list that receives commit notifications
-from the source repository, and also bug report-change notifications.
-This is the highest-traffic list for Wget, and is recommended only for
-people who are seriously interested in ongoing Wget development.
-Subscription is through the @code{mailman} interface at
+list. This is a non-discussion list that receives bug report-change
+notifications from the bug-tracker.  Unlike for the other mailing lists,
+subscription is through the @code{mailman} interface at
 @url{http://addictivecode.org/mailman/listinfo/wget-notify}.
 
 @node Internet Relay Chat
@@ -3408,9 +3423,8 @@ Subscription is through the @code{mailman} interface at
 @cindex IRC
 @cindex #wget
 
-While, at the time of this writing, there is very low activity, we do
-have a support channel set up via IRC at @code{irc.freenode.org},
-@code{#wget}. Come check it out!
+In addition to the mailinglists, we also have a support channel set up
+via IRC at @code{irc.freenode.org}, @code{#wget}. Come check it out!
 
 @node Reporting Bugs
 @section Reporting Bugs
@@ -3758,6 +3772,12 @@ Ralf Wildenhues---contributed patches to convert Wget to use Automake as
 part of its build process, and various bugfixes.
 
 @item
+Steven Schubiger---Many helpful patches, bugfixes and improvements.
+Notably, conversion of Wget to use the Gnulib quotes and quoteargs
+modules, and the addition of password prompts at the console, via the
+Gnulib getpasswd-gnu module.
+
+@item
 Ted Mielczarek---donated support for CSS.
 
 @item
@@ -3815,8 +3835,15 @@ Aleksandar Erkalovi@'{c},
 Aleksandar Erkalovic,
 @end ifnottex
 Andy Eskilsson,
+@iftex
+Jo@~{a}o Ferreira,
+@end iftex
+@ifnottex
+Joao Ferreira,
+@end ifnottex
 Christian Fraenkel,
 David Fritz,
+Mike Frysinger,
 Charles C.@: Fu,
 FUJISHIMA Satsuki,
 Masashi Fujita,
@@ -3824,10 +3851,12 @@ Howard Gayle,
 Marcel Gerrits,
 Lemble Gregory,
 Hans Grobler,
+Alain Guibert,
 Mathieu Guillaume,
 Aaron Hawley,
 Jochen Hein,
 Karl Heuer,
+Madhusudan Hosaagrahara,
 HIROSE Masaaki,
 Ulf Harnhammar,
 Gregor Hoffleit,
@@ -3900,6 +3929,8 @@ Adam D.@: Moss,
 Simon Munton,
 Charlie Negyesi,
 R.@: K.@: Owen,
+Jim Paris,
+Kenny Parnell,
 Leonid Petrov,
 Simone Piunno,
 Andrew Pollock,
@@ -3934,9 +3965,11 @@ Edward J.@: Sabol,
 Heinz Salzmann,
 Robert Schmidt,
 Nicolas Schodet,
+Benno Schulenberg,
 Andreas Schwab,
 Steven M.@: Schweda,
 Chris Seawood,
+Pranab Shenoy,
 Dennis Smit,
 Toomas Soome,
 Tage Stabell-Kulo,

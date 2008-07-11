@@ -186,7 +186,7 @@ init_interesting (void)
      matches the user's preferences as specified through --ignore-tags
      and --follow-tags.  */
 
-  int i;
+  size_t i;
   interesting_tags = make_nocase_string_hash_table (countof (known_tags));
 
   /* First, add all the tags we know hot to handle, mapped to their
@@ -360,7 +360,8 @@ check_style_attr (struct taginfo *tag, struct map_context *ctx)
 static void
 tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
 {
-  int i, attrind;
+  size_t i;
+  int attrind;
   int first = -1;
 
   for (i = 0; i < countof (tag_url_attributes); i++)
@@ -387,7 +388,7 @@ tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
       /* Find whether TAG/ATTRIND is a combination that contains a
          URL. */
       char *link = tag->attrs[attrind].value;
-      const int size = countof (tag_url_attributes);
+      const size_t size = countof (tag_url_attributes);
 
       /* If you're cringing at the inefficiency of the nested loops,
          remember that they both iterate over a very small number of

@@ -14,7 +14,7 @@ my $mainpage = <<EOF;
 </head>
 <body>
   <p>
-    Some text and a link to a <a href="http://localhost:8080/firstlevel/secondpage.html">second page</a>.
+    Some text and a link to a <a href="http://localhost:{{port}}/firstlevel/secondpage.html">second page</a>.
   </p>
 </body>
 </html>
@@ -27,7 +27,7 @@ my $secondpage = <<EOF;
 </head>
 <body>
   <p>
-    Some text and a link to a <a href="http://localhost:8080/firstlevel/lowerlevel/thirdpage.html">third page</a>.
+    Some text and a link to a <a href="http://localhost:{{port}}/firstlevel/lowerlevel/thirdpage.html">third page</a>.
   </p>
 </body>
 </html>
@@ -40,7 +40,7 @@ my $thirdpage = <<EOF;
 </head>
 <body>
   <p>
-    Some text and a link to a <a href="http://localhost:8080/higherlevelpage.html">higher level page</a>.
+    Some text and a link to a <a href="http://localhost:{{port}}/higherlevelpage.html">higher level page</a>.
   </p>
 </body>
 </html>
@@ -69,7 +69,7 @@ my $higherlevelpage = <<EOF;
   <p>
     This page is on a higher level in the URL path hierarchy. Therefore, it
     should not be downloaded. Wget should not visit the following link to a 
-    <a href="http://localhost:8080/firstlevel/fourthpage.html">fourth page</a>.
+    <a href="http://localhost:{{port}}/firstlevel/fourthpage.html">fourth page</a>.
   </p>
 </body>
 </html>
@@ -119,7 +119,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " -np -nH -r http://localhost:8080/firstlevel/";
+my $cmdline = $WgetTest::WGETPATH . " -np -nH -r http://localhost:{{port}}/firstlevel/";
 
 my $expected_error_code = 0;
 

@@ -208,11 +208,16 @@ typedef double SUM_SIZE_INT;
 #include "options.h"
 
 /* Everything uses this, so include them here directly.  */
-#include "xmalloc.h"
+#include <alloca.h>
+#include "xalloc.h"
 
 /* Likewise for logging functions.  */
 #include "log.h"
-
+
+/* Likewise for quoting functions.  */
+#include "quote.h"
+#include "quotearg.h"
+
 /* Useful macros used across the code: */
 
 /* The number of elements in an array.  For example:
