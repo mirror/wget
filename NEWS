@@ -21,6 +21,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** --ask-password option (and associated wgetrc command) added to
 support password prompts at the console.
+ 
+** The --input-file option now also handles retrieving links from
+an external file.
 
 * Changes in Wget 1.11.4
 

@@ -480,9 +480,9 @@ printed.
 @cindex input-file
 @item -i @var{file}
 @itemx --input-file=@var{file}
-Read @sc{url}s from @var{file}.  If @samp{-} is specified as
-@var{file}, @sc{url}s are read from the standard input.  (Use
-@samp{./-} to read from a file literally named @samp{-}.)
+Read @sc{url}s from a local or external @var{file}.  If @samp{-} is
+specified as @var{file}, @sc{url}s are read from the standard input.  
+(Use @samp{./-} to read from a file literally named @samp{-}.)
 
 If this function is used, no @sc{url}s need be present on the command
 line.  If there are @sc{url}s both on the command line and in an input

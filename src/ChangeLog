@@ -1,3 +1,8 @@
+2008-06-28  Steven Schubiger  <stsc@members.fsf.org>
+
+	* retr.c (retrieve_from_file): Allow for reading the links from
+	an external file (HTTP/FTP).
+
 2008-06-25  Steven Schubiger  <stsc@members.fsf.org>
 
 	* ftp.c (getftp): When spidering a FTP URL, emit a diagnostic

@@ -415,7 +415,7 @@ Logging and input file:\n"),
     N_("\
   -nv, --no-verbose          turn off verboseness, without being quiet.\n"),
     N_("\
-  -i,  --input-file=FILE     download URLs found in FILE.\n"),
+  -i,  --input-file=FILE     download URLs found in local or external FILE.\n"),
     N_("\
   -F,  --force-html          treat input file as HTML.\n"),
     N_("\

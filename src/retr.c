@@ -822,10 +822,24 @@ retrieve_from_file (const char *file, bool html, int *count)
   uerr_t status;
   struct urlpos *url_list, *cur_url;
 
-  url_list = (html ? get_urls_html (file, NULL, NULL)
-              : get_urls_file (file));
+  char *input_file = NULL;
+  const char *url = file;
+
   status = RETROK;             /* Suppose everything is OK.  */
   *count = 0;                  /* Reset the URL count.  */
+  
+  if (url_has_scheme (url))
+    {
+      uerr_t status;
+      status = retrieve_url (url, &input_file, NULL, NULL, NULL, false);
+      if (status != RETROK)
+        return status;
+    }
+  else
+    input_file = (char *) file;
+
+  url_list = (html ? get_urls_html (input_file, NULL, NULL)
+              : get_urls_file (input_file));
 
   for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
     {
