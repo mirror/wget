@@ -2350,16 +2350,16 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   uerr_t err, ret = TRYLIMEXC;
   time_t tmr = -1;               /* remote time-stamp */
   struct http_stat hstat;        /* HTTP status */
-  struct_stat st;  
+  struct_stat st;
   bool send_head_first = true;
 
   /* Assert that no value for *LOCAL_FILE was passed. */
   assert (local_file == NULL || *local_file == NULL);
-  
+
   /* Set LOCAL_FILE parameter. */
   if (local_file && opt.output_document)
     *local_file = HYPHENP (opt.output_document) ? NULL : xstrdup (opt.output_document);
-  
+
   /* Reset NEWLOC parameter. */
   *newloc = NULL;
 
@@ -2396,7 +2396,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
          retrieve the file. But if the output_document was given, then this
          test was already done and the file didn't exist. Hence the !opt.output_document */
       logprintf (LOG_VERBOSE, _("\
-File %s already there; not retrieving.\n\n"), 
+File %s already there; not retrieving.\n\n"),
                  quote (hstat.local_file));
       /* If the file is there, we suppose it's retrieved OK.  */
       *dt |= RETROKF;
@@ -2412,10 +2412,10 @@ File %s already there; not retrieving.\n\n"),
 
   /* Reset the counter. */
   count = 0;
-  
+
   /* Reset the document type. */
   *dt = 0;
-  
+
   /* Skip preliminary HEAD request if we're not in spider mode AND
    * if -O was given or HTTP Content-Disposition support is disabled. */
   if (!opt.spider
@@ -2424,21 +2424,21 @@ File %s already there; not retrieving.\n\n"),
 
   /* Send preliminary HEAD request if -N is given and we have an existing 
    * destination file. */
-  if (opt.timestamping 
+  if (opt.timestamping
       && !opt.content_disposition
       && file_exists_p (url_file_name (u)))
     send_head_first = true;
-  
+
   /* THE loop */
   do
     {
       /* Increment the pass counter.  */
       ++count;
       sleep_between_retrievals (count);
-      
+
       /* Get the current time string.  */
       tms = datetime_str (time (NULL));
-      
+
       if (opt.spider && !got_head)
         logprintf (LOG_VERBOSE, _("\
 Spider mode enabled. Check if remote file exists.\n"));
@@ -2447,20 +2447,20 @@ Spider mode enabled. Check if remote file exists.\n"));
       if (opt.verbose)
         {
           char *hurl = url_string (u, URL_AUTH_HIDE_PASSWD);
-          
-          if (count > 1) 
+
+          if (count > 1)
             {
               char tmp[256];
               sprintf (tmp, _("(try:%2d)"), count);
               logprintf (LOG_NOTQUIET, "--%s--  %s  %s\n",
                          tms, tmp, hurl);
             }
-          else 
+          else
             {
               logprintf (LOG_NOTQUIET, "--%s--  %s\n",
                          tms, hurl);
             }
-          
+
 #ifdef WINDOWS
           ws_changetitle (hurl);
 #endif
@@ -2470,7 +2470,7 @@ Spider mode enabled. Check if remote file exists.\n"));
       /* Default document type is empty.  However, if spider mode is
          on or time-stamping is employed, HEAD_ONLY commands is
          encoded within *dt.  */
-      if (send_head_first && !got_head) 
+      if (send_head_first && !got_head)
         *dt |= HEAD_ONLY;
       else
         *dt &= ~HEAD_ONLY;
@@ -2507,7 +2507,7 @@ Spider mode enabled. Check if remote file exists.\n"));
 
       /* Time?  */
       tms = datetime_str (time (NULL));
-      
+
       /* Get the new location (with or without the redirection).  */
       if (hstat.newloc)
         *newloc = xstrdup (hstat.newloc);
@@ -2546,7 +2546,7 @@ Spider mode enabled. Check if remote file exists.\n"));
                          hstat.statcode);
               ret = WRONGCODE;
             }
-          else 
+          else
             {
               ret = NEWLOCATION;
             }
@@ -2562,7 +2562,7 @@ Spider mode enabled. Check if remote file exists.\n"));
           /* All possibilities should have been exhausted.  */
           abort ();
         }
-      
+
       if (!(*dt & RETROKF))
         {
           char *hurl = NULL;
@@ -2581,11 +2581,13 @@ Spider mode enabled. Check if remote file exists.\n"));
               continue;
             }
           /* Maybe we should always keep track of broken links, not just in
-           * spider mode.  */
-          else if (opt.spider)
+           * spider mode.
+           * Don't log error if it was utf8 encoded because we will try
+           * one unencoded. */
+          else if (opt.spider && !get_utf8_encode ())
             {
               /* #### Again: ugly ugly ugly! */
-              if (!hurl) 
+              if (!hurl)
                 hurl = url_string (u, URL_AUTH_HIDE_PASSWD);
               nonexisting_url (hurl);
               logprintf (LOG_NOTQUIET, _("\
@@ -2594,7 +2596,7 @@ Remote file does not exist -- broken link!!!\n"));
           else
             {
               logprintf (LOG_NOTQUIET, _("%s ERROR %d: %s.\n"),
-                         tms, hstat.statcode, 
+                         tms, hstat.statcode,
                          quotearg_style (escape_quoting_style, hstat.error));
             }
           logputs (LOG_VERBOSE, "\n");
