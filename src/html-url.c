@@ -274,7 +274,6 @@ append_url (const char *link_uri,
   struct urlpos *newel;
   const char *base = ctx->base ? ctx->base : ctx->parent_base;
   struct url *url;
-  bool utf8_encode = false;
 
   if (!base)
     {
@@ -293,7 +292,9 @@ append_url (const char *link_uri,
           return NULL;
         }
 
-      url = url_parse (link_uri, NULL, &utf8_encode);
+      set_ugly_no_encode (true);
+      url = url_parse (link_uri, NULL);
+      set_ugly_no_encode (false);
       if (!url)
         {
           DEBUGP (("%s: link \"%s\" doesn't parse.\n",
@@ -312,7 +313,9 @@ append_url (const char *link_uri,
       DEBUGP (("%s: merge(\"%s\", \"%s\") -> %s\n",
                ctx->document_file, base, link_uri, complete_uri));
 
-      url = url_parse (complete_uri, NULL, &utf8_encode);
+      set_ugly_no_encode (true);
+      url = url_parse (complete_uri, NULL);
+      set_ugly_no_encode (false);
       if (!url)
         {
           DEBUGP (("%s: merged link \"%s\" doesn't parse.\n",
@@ -661,7 +664,6 @@ get_urls_file (const char *file)
   struct file_memory *fm;
   struct urlpos *head, *tail;
   const char *text, *text_end;
-  bool utf8_encode = false;
 
   /* Load the file.  */
   fm = read_file (file);
@@ -713,7 +715,9 @@ get_urls_file (const char *file)
           url_text = merged;
         }
 
-      url = url_parse (url_text, &up_error_code, &utf8_encode);
+      set_ugly_no_encode (true);
+      url = url_parse (url_text, &up_error_code);
+      set_ugly_no_encode (false);
       if (!url)
         {
           logprintf (LOG_NOTQUIET, _("%s: Invalid URL %s: %s\n"),

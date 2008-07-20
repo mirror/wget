@@ -1191,6 +1191,7 @@ WARNING: Can't reopen standard output in binary mode;\n\
       int dt;
 
       set_current_as_locale ();
+      set_ugly_no_encode (false);
 
       if ((opt.recursive || opt.page_requisites)
           && (url_scheme (*t) != SCHEME_FTP || url_uses_proxy (*t)))

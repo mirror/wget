@@ -43,6 +43,8 @@ as that of the covered work.  */
 
 char *remote;
 char *current;
+bool utf8_encode;
+bool ugly_no_encode;
 
 static iconv_t locale2utf8;
 
@@ -356,5 +358,30 @@ set_remote_as_current (void)
     xfree (remote);
 
   remote = current ? xstrdup (current) : NULL;
+}
+
+void reset_utf8_encode (void)
+{
+  set_utf8_encode (opt.enable_iri);
+}
+
+void set_utf8_encode (bool encode)
+{
+  utf8_encode = encode;
+}
+
+bool get_utf8_encode (void)
+{
+  return utf8_encode;
+}
+
+void set_ugly_no_encode (bool ugly)
+{
+  ugly_no_encode = ugly;
+}
+
+bool get_ugly_no_encode (void)
+{
+  return ugly_no_encode;
 }
 

@@ -46,6 +46,13 @@ void set_current_charset (char *charset);
 void set_remote_charset (char *charset);
 void set_remote_as_current (void);
 bool remote_to_utf8 (const char *str, const char **new);
+void reset_utf8_encode (void);
+void set_utf8_encode (bool encode);
+bool get_utf8_encode (void);
+
+/* ugly ugly ugly */
+void set_ugly_no_encode (bool ugly);
+bool get_ugly_no_encode (void);
 
 #else /* ENABLE_IRI */
 
@@ -63,6 +70,9 @@ bool remote_to_utf8 (const char *str, const char **new);
 #define set_remote_charset(str)
 #define set_remote_as_current()
 #define remote_to_utf8(a,b)         false
+#define reset_utf8_encode()
+#define set_utf8_encode(a)
+#define get_utf8_encode()           false
 
 #endif /* ENABLE_IRI */
 #endif /* IRI_H */

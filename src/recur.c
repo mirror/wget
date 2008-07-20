@@ -190,7 +190,6 @@ uerr_t
 retrieve_tree (const char *start_url)
 {
   uerr_t status = RETROK;
-  bool utf8_encode = false;
 
   /* The queue of URLs we need to load. */
   struct url_queue *queue;
@@ -200,8 +199,11 @@ retrieve_tree (const char *start_url)
   struct hash_table *blacklist;
 
   int up_error_code;
-  struct url *start_url_parsed = url_parse (start_url, &up_error_code, &utf8_encode);
+  struct url *start_url_parsed;
 
+  set_ugly_no_encode (true);
+  start_url_parsed= url_parse (start_url, &up_error_code);
+  set_ugly_no_encode (false);
   if (!start_url_parsed)
     {
       logprintf (LOG_NOTQUIET, "%s: %s.\n", start_url,
@@ -338,7 +340,9 @@ retrieve_tree (const char *start_url)
           if (children)
             {
               struct urlpos *child = children;
-              struct url *url_parsed = url_parsed = url_parse (url, NULL, &utf8_encode);
+              set_ugly_no_encode (true);
+              struct url *url_parsed = url_parse (url, NULL);
+              set_ugly_no_encode (false);
               char *referer_url = url;
               bool strip_auth = (url_parsed != NULL
                                  && url_parsed->user != NULL);
@@ -641,13 +645,14 @@ descend_redirect_p (const char *redirected, const char *original, int depth,
   struct url *orig_parsed, *new_parsed;
   struct urlpos *upos;
   bool success;
-  bool utf8_encode = false;
 
-  orig_parsed = url_parse (original, NULL, &utf8_encode);
+  set_ugly_no_encode (true);
+  orig_parsed = url_parse (original, NULL);
   assert (orig_parsed != NULL);
 
-  new_parsed = url_parse (redirected, NULL, &utf8_encode);
+  new_parsed = url_parse (redirected, NULL);
   assert (new_parsed != NULL);
+  set_ugly_no_encode (false);
 
   upos = xnew0 (struct urlpos);
   upos->url = new_parsed;

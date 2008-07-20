@@ -613,8 +613,6 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   char *saved_post_data = NULL;
   char *saved_post_file_name = NULL;
 
-  bool utf8_encoded = opt.enable_iri;
-
   /* If dt is NULL, use local storage.  */
   if (!dt)
     {
@@ -627,8 +625,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   if (file)
     *file = NULL;
 
+  reset_utf8_encode ();
+
  second_try:
-  u = url_parse (url, &up_error_code, &utf8_encoded);
+  u = url_parse (url, &up_error_code);
   if (!u)
     {
       logprintf (LOG_NOTQUIET, "%s: %s.\n", url, url_error (up_error_code));
@@ -652,9 +652,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   if (proxy)
     {
       /* sXXXav : support IRI for proxy */
-      bool proxy_utf8_encode = false;
       /* Parse the proxy URL.  */
-      proxy_url = url_parse (proxy, &up_error_code, &proxy_utf8_encode);
+      set_ugly_no_encode (true);
+      proxy_url = url_parse (proxy, &up_error_code);
+      set_ugly_no_encode (false);
       if (!proxy_url)
         {
           logprintf (LOG_NOTQUIET, _("Error parsing proxy URL %s: %s.\n"),
@@ -729,10 +730,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       xfree (mynewloc);
       mynewloc = construced_newloc;
 
-      utf8_encoded = opt.enable_iri;
+      reset_utf8_encode ();
 
       /* Now, see if this new location makes sense. */
-      newloc_parsed = url_parse (mynewloc, &up_error_code, &utf8_encoded);
+      newloc_parsed = url_parse (mynewloc, &up_error_code);
       if (!newloc_parsed)
         {
           logprintf (LOG_NOTQUIET, "%s: %s.\n", escnonprint_uri (mynewloc),
@@ -780,9 +781,9 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     }
 
   /* Try to not encode in UTF-8 if fetching failed */
-  if (!(*dt & RETROKF) && utf8_encoded)
+  if (!(*dt & RETROKF) && get_utf8_encode ())
     {
-      utf8_encoded = false;
+      set_utf8_encode (false);
       /*printf ("[Fallbacking to non-utf8 for `%s'\n", url);*/
       goto second_try;
     }
@@ -1036,8 +1037,11 @@ getproxy (struct url *u)
 bool
 url_uses_proxy (const char *url)
 {
-  bool ret, utf8_encode = false;
-  struct url *u = url_parse (url, NULL, &utf8_encode);
+  bool ret;
+  struct url *u;
+  set_ugly_no_encode(true);
+  u= url_parse (url, NULL);
+  set_ugly_no_encode(false);
   if (!u)
     return false;
   ret = getproxy (u) != NULL;
