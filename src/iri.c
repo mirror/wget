@@ -41,6 +41,9 @@ as that of the covered work.  */
 #include "utils.h"
 #include "iri.h"
 
+/* RFC3987 section 3.1 mandates STD3 ASCII RULES */
+#define IDNA_FLAGS  IDNA_USE_STD3_ASCII_RULES
+
 /* Note: locale encoding is kept in options struct (opt.locale) */
 
 /* Hold the encoding used for the current fetch */
@@ -254,7 +257,7 @@ idn_encode (char *host, bool utf8_encoded)
     }
 
   /* toASCII UTF-8 NULL terminated string */
-  ret = idna_to_ascii_8z (host, &new, 0);
+  ret = idna_to_ascii_8z (host, &new, IDNA_FLAGS);
   if (ret != IDNA_SUCCESS)
     {
       /* sXXXav : free new when needed ! */
@@ -274,7 +277,7 @@ idn_decode (char *host)
   char *new;
   int ret;
 
-  ret = idna_to_unicode_8zlz (host, &new, 0);
+  ret = idna_to_unicode_8zlz (host, &new, IDNA_FLAGS);
   if (ret != IDNA_SUCCESS)
     {
       logprintf (LOG_VERBOSE, "idn_decode failed (%d): %s\n", ret,
