@@ -41,13 +41,21 @@ as that of the covered work.  */
 #include "utils.h"
 #include "iri.h"
 
+/* Note: locale encoding is kept in options struct (opt.locale) */
+
+/* Hold the encoding used for the current fetch */
 char *remote;
+
+/* Hold the encoding for the future found links */
 char *current;
+
+/* Will/Is the current URL encoded in utf8 ? */
 bool utf8_encode;
+
+/* Force no utf8 encoding for url_parse () */
 bool ugly_no_encode;
 
 static iconv_t locale2utf8;
-
 
 static bool open_locale_to_utf8 (void);
 static bool do_conversion (iconv_t cd, char *in, size_t inlen, char **out);
@@ -93,7 +101,6 @@ parse_charset (char *str)
 char *
 find_locale (void)
 {
-  /* sXXXav, made our own function or use libidn one ?! */
   return (char *) stringprep_locale_charset ();
 }
 
@@ -144,7 +151,8 @@ open_locale_to_utf8 (void)
   return false;
 }
 
-/* Return a new string */
+/* Try converting string str from locale to UTF-8. Return a new string
+   on success, or str on error or if conversion isn't needed. */
 const char *
 locale_to_utf8 (const char *str)
 {
@@ -162,7 +170,9 @@ locale_to_utf8 (const char *str)
   return str;
 }
 
-/* */
+/* Do the conversion according to the passed conversion descriptor cd. *out
+   will containes the transcoded string on success. *out content is
+   unspecified otherwise. */
 static bool
 do_conversion (iconv_t cd, char *in, size_t inlen, char **out)
 {
@@ -176,7 +186,6 @@ do_conversion (iconv_t cd, char *in, size_t inlen, char **out)
   len = outlen;
   done = 0;
 
-  /* sXXXav : put a maximum looping factor ??? */
   for (;;)
     {
       if (iconv (cd, &in, &inlen, out, &outlen) != (size_t)(-1))
@@ -224,7 +233,7 @@ do_conversion (iconv_t cd, char *in, size_t inlen, char **out)
     return false;
 }
 
-/* Try to ASCII encode UTF-8 host. Return the new domain on success or NULL
+/* Try to "ASCII encode" UTF-8 host. Return the new domain on success or NULL
    on error. */
 char *
 idn_encode (char *host, bool utf8_encoded)
@@ -257,8 +266,8 @@ idn_encode (char *host, bool utf8_encoded)
   return new;
 }
 
-/* Try to decode an ASCII encoded host. Return the new domain in the locale on
-   success or NULL on error. */
+/* Try to decode an "ASCII encoded" host. Return the new domain in the locale
+   on success or NULL on error. */
 char *
 idn_decode (char *host)
 {
@@ -276,22 +285,23 @@ idn_decode (char *host)
   return new;
 }
 
-/* Return a new string */
+/* Try to transcode string str from remote encoding to UTF-8. On success, *new
+   contains the transcoded string. *new content is unspecified otherwise. */
 bool
 remote_to_utf8 (const char *str, const char **new)
 {
-  char *remote;
+  char *r;
   iconv_t cd;
   bool ret = false;
 
   if (opt.encoding_remote)
-    remote = opt.encoding_remote;
+    r = opt.encoding_remote;
   else if (current)
-    remote = current;
+    r = current;
   else
     return false;
 
-  cd = iconv_open ("UTF-8", remote);
+  cd = iconv_open ("UTF-8", r);
   if (cd == (iconv_t)(-1))
     return false;
 
@@ -323,7 +333,6 @@ char *get_current_charset (void)
 void set_current_charset (char *charset)
 {
   /*printf("[ current = `%s'\n", charset);*/
-
   if (current)
     xfree (current);
 
