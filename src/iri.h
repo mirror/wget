@@ -52,7 +52,6 @@ bool get_utf8_encode (void);
 
 /* ugly ugly ugly */
 void set_ugly_no_encode (bool ugly);
-bool get_ugly_no_encode (void);
 
 #else /* ENABLE_IRI */
 

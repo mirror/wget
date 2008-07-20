@@ -381,16 +381,11 @@ void set_utf8_encode (bool encode)
 
 bool get_utf8_encode (void)
 {
-  return utf8_encode;
+  return (!ugly_no_encode && utf8_encode);
 }
 
 void set_ugly_no_encode (bool ugly)
 {
   ugly_no_encode = ugly;
-}
-
-bool get_ugly_no_encode (void)
-{
-  return ugly_no_encode;
 }
 

@@ -671,7 +671,7 @@ url_parse (const char *url, int *error)
       goto error;
     }
 
-  if (opt.enable_iri && get_utf8_encode () && !get_ugly_no_encode ())
+  if (opt.enable_iri && get_utf8_encode ())
     {
       const char *new;
       bool utf8_encode;
