@@ -72,6 +72,7 @@ void set_ugly_no_encode (bool ugly);
 #define reset_utf8_encode()
 #define set_utf8_encode(a)
 #define get_utf8_encode()           false
+#define set_ugly_no_encode(a)
 
 #endif /* ENABLE_IRI */
 #endif /* IRI_H */
