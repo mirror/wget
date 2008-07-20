@@ -450,7 +450,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 
   if (string_set_contains (blacklist, url))
     {
-      if (opt.spider) 
+      if (opt.spider)
         {
           char *referrer = url_string (parent, URL_AUTH_HIDE_PASSWD);
           DEBUGP (("download_child_p: parent->url is: %s\n", quote (parent->url)));

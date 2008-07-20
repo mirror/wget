@@ -780,7 +780,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     }
 
   /* Try to not encode in UTF-8 if fetching failed */
-  if (result != RETROK && utf8_encoded)
+  if (!(*dt & RETROKF) && utf8_encoded)
     {
       utf8_encoded = false;
       /*printf ("[Fallbacking to non-utf8 for `%s'\n", url);*/
