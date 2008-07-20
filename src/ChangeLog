@@ -6,6 +6,11 @@
 	* host.c : Show hostname to be resolved both in locale and
 	ASCII encoded.
 
+2008-06-28  Steven Schubiger  <stsc@members.fsf.org>
+
+	* retr.c (retrieve_from_file): Allow for reading the links from
+	an external file (HTTP/FTP).
+
 2008-06-26  Xavier Saint  <wget@sxav.eu>
 
 	* iri.c, iri.h : New functions locale_to_utf8() and
@@ -13,6 +18,11 @@
 
 	* url.c : Convert URLs from locale to UTF-8 allowing a basic
 	support of IRI/IDN
+
+2008-06-25  Steven Schubiger  <stsc@members.fsf.org>
+
+	* ftp.c (getftp): When spidering a FTP URL, emit a diagnostic
+	message if the remote file exists.
 
 2008-06-24  Steven Schubiger  <stsc@members.fsf.org>
 
@@ -210,10 +220,54 @@
 
 	* Makefile.am: -I foo -> -Ifoo.
 
+2008-04-24  Micah Cowan  <micah@cowan.name>
+
+	* main.c: Revised usage description of --convert-links to apply
+	to CSS as well as to HTML.
+
 2008-04-23  Micah Cowan  <micah@cowan.name>
 
 	* utils.c (test_dir_matches_p): Added a test for the case
 	described in issue #20518.
+
+2008-04-22  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am, css.lex, css.l: Renamed css.lex to css.l.
+	* recur.c (retrieve_tree): Fix typo to allow text/css files to
+	be parsed.
+
+2008-04-22  Ted Mielczarek  <ted.mielczarek@gmail.com>
+
+	* css.lex, css-url.c, css-url.h: Added to implement support for
+	parsing CSS in Wget.
+	* convert.c: Convert links in CSS files, too.
+	* convert.h (convert_options): Added for options link_css_p,
+	link_expect_css.
+	* convert.h: Added prototype for new register_css function.
+	* html-parse.c: Added support for parsing element content, in
+	addition to tag starts and ends.
+	* html-parse.h (taginfo): Added delimiter fields for element
+	content.
+	* html-url.h: Added.
+	* html-url.c (append_url): No longer internal-linkage only. Now
+	takes position and size as explicit parameters.
+	* html-url.c: Use new html-url.h header, add support for
+	handling of "style" HTML attributes. Mark URIs obtained from
+	link tags with rel="stylesheet" with link_expect_css. Adapt
+	uses of append_url to supply the newly-added parameters for
+	position and size.
+	* http.c: Add detection for when the content-type is text/css;
+	and ensure that such files have the ".css" filename extension,
+	when --convert-links is active.
+	* recur.h: Remove declarations for functions found in
+	html-url.c (moved to html-url.h).
+	* recur.c: Add support for culling links from CSS files, too,
+	and tracking for when we're expecting the file to be CSS (even
+	when its content type isn't text/css).
+	* retr.c (retrieve_url): Add registration of CSS files.
+	* wget.h: Added TEXTCSS to dt flags enum.
+	* Makefile.am: Added css.lex, css-url.c, css-url.h, html-url.h
+	to wget_SOURCES.
 
 2008-04-22  Jim Paris  <jim@jtan.com>
 

@@ -36,6 +36,7 @@ src/.deps
 src/stamp-h1
 src/config.h
 src/config.h.in
+src/css.c
 src/wget
 src/cscope.out
 src/libunittest.a

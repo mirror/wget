@@ -52,6 +52,7 @@ as that of the covered work.  */
 #include "convert.h"
 #include "ptimer.h"
 #include "iri.h"
+#include "html-url.h"
 
 /* Total size of downloaded files.  Used to enforce quota.  */
 SUM_SIZE_INT total_downloaded_bytes;
@@ -795,6 +796,16 @@ retrieve_url (const char *origurl, char **file, char **newloc,
         register_redirection (origurl, u->url);
       if (*dt & TEXTHTML)
         register_html (u->url, local_file);
+      if (*dt & RETROKF)
+        {
+          register_download (u->url, local_file);
+          if (redirection_count && 0 != strcmp (origurl, u->url))
+            register_redirection (origurl, u->url);
+          if (*dt & TEXTHTML)
+            register_html (u->url, local_file);
+          if (*dt & TEXTCSS)
+            register_css (u->url, local_file);
+        }
     }
 
   if (file)
@@ -835,10 +846,24 @@ retrieve_from_file (const char *file, bool html, int *count)
   uerr_t status;
   struct urlpos *url_list, *cur_url;
 
-  url_list = (html ? get_urls_html (file, NULL, NULL)
-              : get_urls_file (file));
+  char *input_file = NULL;
+  const char *url = file;
+
   status = RETROK;             /* Suppose everything is OK.  */
   *count = 0;                  /* Reset the URL count.  */
+  
+  if (url_has_scheme (url))
+    {
+      uerr_t status;
+      status = retrieve_url (url, &input_file, NULL, NULL, NULL, false);
+      if (status != RETROK)
+        return status;
+    }
+  else
+    input_file = (char *) file;
+
+  url_list = (html ? get_urls_html (input_file, NULL, NULL)
+              : get_urls_file (input_file));
 
   for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
     {

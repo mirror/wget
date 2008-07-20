@@ -3,7 +3,7 @@
 @c %**start of header
 @setfilename wget.info
 @include version.texi
-@set UPDATED Mar 2008
+@set UPDATED Jun 2008
 @settitle GNU Wget @value{VERSION} Manual
 @c Disable the monstrous rectangles beside overfull hbox-es.
 @finalout
@@ -133,13 +133,13 @@ which can be a great hindrance when transferring a lot of data.
 @c man end
 @end ignore
 @c man begin DESCRIPTION
-Wget can follow links in @sc{html} and @sc{xhtml} pages and create local 
-versions of remote web sites, fully recreating the directory structure of 
-the original site.  This is sometimes referred to as ``recursive
-downloading.''  While doing that, Wget respects the Robot Exclusion
-Standard (@file{/robots.txt}).  Wget can be instructed to convert the
-links in downloaded @sc{html} files to the local files for offline
-viewing.
+Wget can follow links in @sc{html}, @sc{xhtml}, and @sc{css} pages, to
+create local versions of remote web sites, fully recreating the
+directory structure of the original site.  This is sometimes referred to
+as ``recursive downloading.''  While doing that, Wget respects the Robot
+Exclusion Standard (@file{/robots.txt}).  Wget can be instructed to
+convert the links in downloaded files to point at the local files, for
+offline viewing.
 @c man end
 
 @item
@@ -480,9 +480,9 @@ printed.
 @cindex input-file
 @item -i @var{file}
 @itemx --input-file=@var{file}
-Read @sc{url}s from @var{file}.  If @samp{-} is specified as
-@var{file}, @sc{url}s are read from the standard input.  (Use
-@samp{./-} to read from a file literally named @samp{-}.)
+Read @sc{url}s from a local or external @var{file}.  If @samp{-} is
+specified as @var{file}, @sc{url}s are read from the standard input.  
+(Use @samp{./-} to read from a file literally named @samp{-}.)
 
 If this function is used, no @sc{url}s need be present on the command
 line.  If there are @sc{url}s both on the command line and in an input
@@ -1092,6 +1092,11 @@ it doesn't yet know that the URL produces output of type
 re-downloading, you must use @samp{-k} and @samp{-K} so that the original 
 version of the file will be saved as @file{@var{X}.orig} (@pxref{Recursive 
 Retrieval Options}).
+
+As of version 1.12, Wget will also ensure that any downloaded files of
+type @samp{text/css} end in the suffix @samp{.css}. Obviously, this
+makes the name @samp{--html-extension} misleading; a better name is
+expected to be offered as an alternative in the near future.
 
 @cindex http user
 @cindex http password
@@ -1943,16 +1948,17 @@ GNU Wget is capable of traversing parts of the Web (or a single
 @sc{http} or @sc{ftp} server), following links and directory structure.
 We refer to this as to @dfn{recursive retrieval}, or @dfn{recursion}.
 
-With @sc{http} @sc{url}s, Wget retrieves and parses the @sc{html} from
-the given @sc{url}, documents, retrieving the files the @sc{html}
-document was referring to, through markup like @code{href}, or
-@code{src}.  If the freshly downloaded file is also of type
-@code{text/html} or @code{application/xhtml+xml}, it will be parsed and 
-followed further.
+With @sc{http} @sc{url}s, Wget retrieves and parses the @sc{html} or
+@sc{css} from the given @sc{url}, retrieving the files the document
+refers to, through markup like @code{href} or @code{src}, or @sc{css}
+@sc{uri} values specified using the @samp{url()} functional notation.
+If the freshly downloaded file is also of type @code{text/html},
+@code{application/xhtml+xml}, or @code{text/css}, it will be parsed
+and followed further.
 
-Recursive retrieval of @sc{http} and @sc{html} content is
+Recursive retrieval of @sc{http} and @sc{html}/@sc{css} content is
 @dfn{breadth-first}.  This means that Wget first downloads the requested
-@sc{html} document, then the documents linked from that document, then the
+document, then the documents linked from that document, then the
 documents linked by them, and so on.  In other words, Wget first
 downloads the documents at depth 1, then those at depth 2, and so on
 until the specified maximum depth.
@@ -2741,7 +2747,8 @@ Define a header for HTTP downloads, like using
 
 @item html_extension = on/off
 Add a @samp{.html} extension to @samp{text/html} or
-@samp{application/xhtml+xml} files without it, like @samp{-E}.
+@samp{application/xhtml+xml} files without it, or a @samp{.css}
+extension to @samp{text/css} files without it, like @samp{-E}.
 
 @item http_keep_alive = on/off
 Turn the keep-alive feature on or off (defaults to on).  Turning it
@@ -3103,7 +3110,7 @@ wget -r http://www.gnu.org/ -o gnulog
 @end example
 
 @item
-The same as the above, but convert the links in the @sc{html} files to
+The same as the above, but convert the links in the downloaded files to
 point to local files, so you can view the documents off-line:
 
 @example
@@ -3749,20 +3756,29 @@ Junio Hamano---donated support for Opie and @sc{http} @code{Digest}
 authentication.
 
 @item
-Mauro Tortonesi---Improved IPv6 support, adding support for dual
+Mauro Tortonesi---improved IPv6 support, adding support for dual
 family systems.  Refactored and enhanced FTP IPv6 code. Maintained GNU
 Wget from 2004--2007.
 
 @item
-Christopher G.@: Lewis---Maintenance of the Windows version of GNU WGet.
+Christopher G.@: Lewis---maintenance of the Windows version of GNU WGet.
 
 @item
-Gisle Vanem---Many helpful patches and improvements, especially for
+Gisle Vanem---many helpful patches and improvements, especially for
 Windows and MS-DOS support.
 
 @item
-Ralf Wildenhues---Contributed patches to convert Wget to use Automake as
+Ralf Wildenhues---contributed patches to convert Wget to use Automake as
 part of its build process, and various bugfixes.
+
+@item
+Steven Schubiger---Many helpful patches, bugfixes and improvements.
+Notably, conversion of Wget to use the Gnulib quotes and quoteargs
+modules, and the addition of password prompts at the console, via the
+Gnulib getpasswd-gnu module.
+
+@item
+Ted Mielczarek---donated support for CSS.
 
 @item
 People who provided donations for development---including Brian Gough.
@@ -3819,8 +3835,15 @@ Aleksandar Erkalovi@'{c},
 Aleksandar Erkalovic,
 @end ifnottex
 Andy Eskilsson,
+@iftex
+Jo@~{a}o Ferreira,
+@end iftex
+@ifnottex
+Joao Ferreira,
+@end ifnottex
 Christian Fraenkel,
 David Fritz,
+Mike Frysinger,
 Charles C.@: Fu,
 FUJISHIMA Satsuki,
 Masashi Fujita,
@@ -3828,10 +3851,12 @@ Howard Gayle,
 Marcel Gerrits,
 Lemble Gregory,
 Hans Grobler,
+Alain Guibert,
 Mathieu Guillaume,
 Aaron Hawley,
 Jochen Hein,
 Karl Heuer,
+Madhusudan Hosaagrahara,
 HIROSE Masaaki,
 Ulf Harnhammar,
 Gregor Hoffleit,
@@ -3895,6 +3920,7 @@ Andre Majorel,
 Aurelien Marchand,
 Matthew J.@: Mellon,
 Jordan Mendelson,
+Ted Mielczarek,
 Lin Zhe Min,
 Jan Minar,
 Tim Mooney,
@@ -3903,6 +3929,8 @@ Adam D.@: Moss,
 Simon Munton,
 Charlie Negyesi,
 R.@: K.@: Owen,
+Jim Paris,
+Kenny Parnell,
 Leonid Petrov,
 Simone Piunno,
 Andrew Pollock,
@@ -3937,9 +3965,11 @@ Edward J.@: Sabol,
 Heinz Salzmann,
 Robert Schmidt,
 Nicolas Schodet,
+Benno Schulenberg,
 Andreas Schwab,
 Steven M.@: Schweda,
 Chris Seawood,
+Pranab Shenoy,
 Dennis Smit,
 Toomas Soome,
 Tage Stabell-Kulo,

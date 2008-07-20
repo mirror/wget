@@ -41,10 +41,10 @@ as that of the covered work.  */
 #include "utils.h"
 #include "hash.h"
 #include "convert.h"
-#include "recur.h"              /* declaration of get_urls_html */
+#include "recur.h"
+#include "html-url.h"
+#include "css-url.h"
 #include "iri.h"
-
-struct map_context;
 
 typedef void (*tag_handler_t) (int, struct taginfo *, struct map_context *);
 
@@ -164,11 +164,12 @@ static struct {
    from the information above.  However, some places in the code refer
    to the attributes not mentioned here.  We add them manually.  */
 static const char *additional_attributes[] = {
-  "rel",                        /* used by tag_handle_link */
-  "http-equiv",                 /* used by tag_handle_meta */
-  "name",                       /* used by tag_handle_meta */
-  "content",                    /* used by tag_handle_meta */
-  "action"                      /* used by tag_handle_form */
+  "rel",                        /* used by tag_handle_link  */
+  "http-equiv",                 /* used by tag_handle_meta  */
+  "name",                       /* used by tag_handle_meta  */
+  "content",                    /* used by tag_handle_meta  */
+  "action",                     /* used by tag_handle_form  */
+  "style"                       /* used by check_style_attr */
 };
 
 static struct hash_table *interesting_tags;
@@ -247,28 +248,20 @@ find_attr (struct taginfo *tag, const char *name, int *attrind)
   return NULL;
 }
 
-struct map_context {
-  char *text;                   /* HTML text. */
-  char *base;                   /* Base URI of the document, possibly
-                                   changed through <base href=...>. */
-  const char *parent_base;      /* Base of the current document. */
-  const char *document_file;    /* File name of this document. */
-  bool nofollow;                /* whether NOFOLLOW was specified in a
-                                   <meta name=robots> tag. */
-
-  struct urlpos *head, *tail;   /* List of URLs that is being
-                                   built. */
-};
+/* used for calls to append_url */
+#define ATTR_POS(tag, attrind, ctx) \
+ (tag->attrs[attrind].value_raw_beginning - ctx->text)
+#define ATTR_SIZE(tag, attrind) \
+ (tag->attrs[attrind].value_raw_size)
 
 /* Append LINK_URI to the urlpos structure that is being built.
 
-   LINK_URI will be merged with the current document base.  TAG and
-   ATTRIND are the necessary context to store the position and
-   size.  */
+   LINK_URI will be merged with the current document base.
+*/
 
-static struct urlpos *
-append_url (const char *link_uri,
-            struct taginfo *tag, int attrind, struct map_context *ctx)
+struct urlpos *
+append_url (const char *link_uri, int position, int size,
+            struct map_context *ctx)
 {
   int link_has_scheme = url_has_scheme (link_uri);
   struct urlpos *newel;
@@ -330,8 +323,8 @@ append_url (const char *link_uri,
 
   newel = xnew0 (struct urlpos);
   newel->url = url;
-  newel->pos = tag->attrs[attrind].value_raw_beginning - ctx->text;
-  newel->size = tag->attrs[attrind].value_raw_size;
+  newel->pos = position;
+  newel->size = size;
 
   /* A URL is relative if the host is not named, and the name does not
      start with `/'.  */
@@ -351,6 +344,18 @@ append_url (const char *link_uri,
   return newel;
 }
 
+static void
+check_style_attr (struct taginfo *tag, struct map_context *ctx)
+{
+  int attrind;
+  char *style = find_attr (tag, "style", &attrind);
+  if (!style)
+    return;
+
+  /* raw pos and raw size include the quotes, hence the +1 -2 */
+  get_urls_css (ctx, ATTR_POS(tag,attrind,ctx)+1, ATTR_SIZE(tag,attrind)-2);
+}
+
 /* All the tag_* functions are called from collect_tags_mapper, as
    specified by KNOWN_TAGS.  */
 
@@ -399,7 +404,8 @@ tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
           if (0 == strcasecmp (tag->attrs[attrind].name,
                                tag_url_attributes[i].attr_name))
             {
-              struct urlpos *up = append_url (link, tag, attrind, ctx);
+              struct urlpos *up = append_url (link, ATTR_POS(tag,attrind,ctx),
+                                              ATTR_SIZE(tag,attrind), ctx);
               if (up)
                 {
                   int flags = tag_url_attributes[i].flags;
@@ -424,7 +430,8 @@ tag_handle_base (int tagid, struct taginfo *tag, struct map_context *ctx)
   if (!newbase)
     return;
 
-  base_urlpos = append_url (newbase, tag, attrind, ctx);
+  base_urlpos = append_url (newbase, ATTR_POS(tag,attrind,ctx),
+                            ATTR_SIZE(tag,attrind), ctx);
   if (!base_urlpos)
     return;
   base_urlpos->ignore_when_downloading = 1;
@@ -445,9 +452,11 @@ tag_handle_form (int tagid, struct taginfo *tag, struct map_context *ctx)
 {
   int attrind;
   char *action = find_attr (tag, "action", &attrind);
+
   if (action)
     {
-      struct urlpos *up = append_url (action, tag, attrind, ctx);
+      struct urlpos *up = append_url (action, ATTR_POS(tag,attrind,ctx),
+                                      ATTR_SIZE(tag,attrind), ctx);
       if (up)
         up->ignore_when_downloading = 1;
     }
@@ -470,14 +479,23 @@ tag_handle_link (int tagid, struct taginfo *tag, struct map_context *ctx)
   */
   if (href)
     {
-      struct urlpos *up = append_url (href, tag, attrind, ctx);
+      struct urlpos *up = append_url (href, ATTR_POS(tag,attrind,ctx),
+                                      ATTR_SIZE(tag,attrind), ctx);
       if (up)
         {
           char *rel = find_attr (tag, "rel", NULL);
-          if (rel
-              && (0 == strcasecmp (rel, "stylesheet")
-                  || 0 == strcasecmp (rel, "shortcut icon")))
-            up->link_inline_p = 1;
+          if (rel)
+            {
+              if (0 == strcasecmp (rel, "stylesheet"))
+                {
+                  up->link_inline_p = 1;
+                  up->link_expect_css = 1;
+                }
+              else if (0 == strcasecmp (rel, "shortcut icon"))
+                {
+                  up->link_inline_p = 1;
+                }
+            }
           else
             /* The external ones usually point to HTML pages, such as
                <link rel="next" href="..."> */
@@ -531,7 +549,8 @@ tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
       while (c_isspace (*p))
         ++p;
 
-      entry = append_url (p, tag, attrind, ctx);
+      entry = append_url (p, ATTR_POS(tag,attrind,ctx),
+                          ATTR_SIZE(tag,attrind), ctx);
       if (entry)
         {
           entry->link_refresh_p = 1;
@@ -595,11 +614,26 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
   struct map_context *ctx = (struct map_context *)arg;
 
   /* Find the tag in our table of tags.  This must not fail because
-     map_html_tags only returns tags found in interesting_tags.  */
+     map_html_tags only returns tags found in interesting_tags.
+     
+     I've changed this for now, I'm passing NULL as interesting_tags
+     to map_html_tags.  This way we can check all tags for a style
+     attribute.
+  */
   struct known_tag *t = hash_table_get (interesting_tags, tag->name);
-  assert (t != NULL);
 
-  t->handler (t->tagid, tag, ctx);
+  if (t != NULL)
+    t->handler (t->tagid, tag, ctx);
+
+  check_style_attr (tag, ctx);
+
+  if (tag->end_tag_p && (0 == strcasecmp (tag->name, "style")) &&
+      tag->contents_begin && tag->contents_end)
+  {
+    /* parse contents */
+    get_urls_css (ctx, tag->contents_begin - ctx->text,
+                  tag->contents_end - tag->contents_begin);
+  }
 }
 
 /* Analyze HTML tags FILE and construct a list of URLs referenced from
@@ -643,8 +677,9 @@ get_urls_html (const char *file, const char *url, bool *meta_disallow_follow)
   if (opt.strict_comments)
     flags |= MHT_STRICT_COMMENTS;
 
+  /* the NULL here used to be interesting_tags */
   map_html_tags (fm->content, fm->length, collect_tags_mapper, &ctx, flags,
-                 interesting_tags, interesting_attributes);
+                 NULL, interesting_attributes);
 
   DEBUGP (("no-follow in %s: %d\n", file, ctx.nofollow));
   if (meta_disallow_follow)

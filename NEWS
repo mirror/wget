@@ -8,9 +8,36 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.12 (MAINLINE)
 
+** Added support for CSS. This includes:
+     - Parsing links from CSS files, and from CSS content found in HTML
+       style tags and attributes.
+     - Supporting conversion of links found within CSS content, when
+       --convert-links is specified.
+     - Ensuring that CSS files end in the ".css" filename extension,
+       when --convert-links is specified.
+
+   CSS support in Wget is thanks to Ted Mielczarek
+   <ted.mielczarek@gmail.com>.
+
 ** --ask-password option (and associated wgetrc command) added to
 support password prompts at the console.
+ 
+** The --input-file option now also handles retrieving links from
+an external file.
+
+* Changes in Wget 1.11.4
 
+** Fixed an issue (apparently a regression) where -O would refuse to
+download when -nc was given, even though the file didn't exist.
+
+** Fixed a situation where Wget could abort with --continue if the
+remote server gives a content-length of zero when the file exists
+locally with content.
+
+** Fixed a crash on some systems, due to Wget casting a pointer-to-long
+to a pointer-to-time_t.
+
+** Translation updates for Catalan.
 
 * Changes in Wget 1.11.3
 

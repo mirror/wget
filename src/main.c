@@ -422,7 +422,7 @@ Logging and input file:\n"),
     N_("\
   -nv, --no-verbose          turn off verboseness, without being quiet.\n"),
     N_("\
-  -i,  --input-file=FILE     download URLs found in FILE.\n"),
+  -i,  --input-file=FILE     download URLs found in local or external FILE.\n"),
     N_("\
   -F,  --force-html          treat input file as HTML.\n"),
     N_("\
@@ -615,7 +615,8 @@ Recursive download:\n"),
     N_("\
        --delete-after       delete files locally after downloading them.\n"),
     N_("\
-  -k,  --convert-links      make links in downloaded HTML point to local files.\n"),
+  -k,  --convert-links      make links in downloaded HTML or CSS point to\n\
+                            local files.\n"),
     N_("\
   -K,  --backup-converted   before converting file X, back up as X.orig.\n"),
     N_("\

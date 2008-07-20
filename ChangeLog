@@ -1,3 +1,9 @@
+2008-06-30  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: Entries for 1.11.4.
+
+	* AUTHORS: Added Steven Schubiger.
+
 2008-06-26  Xavier Saint  <wget@sxav.eu>
 
 	* configure.ac : IRIs support required libiconv, check it.
@@ -54,6 +60,19 @@
 	md5/m4/stdint.m4, md5/md5.c, md5/md5.h, md5/stdint.in.h,
 	md5/wchar.in.h: Updated from gnulib.
  
+2008-04-24  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: Removed info about move to Automake, Gnulib. Added item
+	about the addition of CSS support.
+
+2008-04-22  Micah Cowan  <micah@cowan.name>
+
+	* ylwrap: Added via automake -ac.
+
+2008-04-22  Ted Mielczarek  <ted.mielczarek@gmail.com>
+
+	* configure.ac: Added check for lex.
+
 2008-04-14  Micah Cowan  <micah@cowan.name>
 
 	* GNUmakefile, lib/Makefile.am, lib/error.c, lib/error.h,
