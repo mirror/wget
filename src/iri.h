@@ -36,8 +36,16 @@ char *parse_charset (char *str);
 char *find_locale (void);
 bool check_encoding_name (char *encoding);
 const char *locale_to_utf8 (const char *str);
-char *idn_encode (char *host);
+char *idn_encode (char *host, bool utf8_encoded);
 char *idn_decode (char *host);
+char *get_remote_charset (void);
+char *get_current_charset (void);
+void set_current_charset (char *charset);
+void set_current_as_locale (void);
+void set_current_charset (char *charset);
+void set_remote_charset (char *charset);
+void set_remote_as_current (void);
+bool remote_to_utf8 (const char *str, const char **new);
 
 #else /* ENABLE_IRI */
 
@@ -45,8 +53,16 @@ char *idn_decode (char *host);
 #define find_locale()               NULL
 #define check_encoding_name(str)    false
 #define locale_to_utf8(str)         (str)
-#define idn_encode(str)             NULL
+#define idn_encode(str,encoded)     NULL
 #define idn_decode(str)             NULL
+#define get_remote_charset()        NULL
+#define get_current_charset()       NULL
+#define set_current_charset(str)
+#define set_current_as_locale()
+#define set_current_charset(str)
+#define set_remote_charset(str)
+#define set_remote_as_current()
+#define remote_to_utf8(a,b)         false
 
 #endif /* ENABLE_IRI */
 #endif /* IRI_H */

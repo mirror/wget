@@ -1825,7 +1825,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
           hs->local_file = url_file_name (u);
         }
     }
-  
+
   /* TODO: perform this check only once. */
   if (!hs->existence_checked && file_exists_p (hs->local_file))
     {
@@ -1894,7 +1894,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
               local_dot_orig_file_exists = true;
               local_filename = filename_plus_orig_suffix;
             }
-        }      
+        }
 
       if (!local_dot_orig_file_exists)
         /* Couldn't stat() <file>.orig, so try to stat() <file>. */
@@ -2055,7 +2055,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
 
           /* Try to get remote encoding if needed */
           if (opt.enable_iri && !opt.encoding_remote)
-            /* xxx = */ parse_charset (tmp2);
+            set_current_charset (parse_charset (tmp2));
         }
     }
   hs->newloc = resp_header_strdup (resp, "Location");

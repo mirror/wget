@@ -1067,16 +1067,16 @@ for details.\n\n"));
 #ifdef ENABLE_IRI
   if (opt.enable_iri)
     {
-      if (opt.locale && !check_encoding_name(opt.locale))
+      if (opt.locale && !check_encoding_name (opt.locale))
         opt.locale = NULL;
 
       if (!opt.locale)
         opt.locale = find_locale ();
 
-      if (opt.encoding_remote && !check_encoding_name(opt.encoding_remote))
+      if (opt.encoding_remote && !check_encoding_name (opt.encoding_remote))
         opt.encoding_remote = NULL;
 
-      logprintf (LOG_VERBOSE, "Locale = %s\n", quote (opt.locale));
+      /*logprintf (LOG_VERBOSE, "Locale = %s\n", quote (opt.locale));*/
     }
 #else
   if (opt.enable_iri || opt.locale || opt.encoding_remote)
@@ -1190,21 +1190,26 @@ WARNING: Can't reopen standard output in binary mode;\n\
       char *filename = NULL, *redirected_URL = NULL;
       int dt;
 
+      set_current_as_locale ();
+
       if ((opt.recursive || opt.page_requisites)
           && (url_scheme (*t) != SCHEME_FTP || url_uses_proxy (*t)))
         {
           int old_follow_ftp = opt.follow_ftp;
 
           /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-          if (url_scheme (*t) == SCHEME_FTP) 
+          if (url_scheme (*t) == SCHEME_FTP)
             opt.follow_ftp = 1;
-          
+
           status = retrieve_tree (*t);
 
           opt.follow_ftp = old_follow_ftp;
         }
       else
-        status = retrieve_url (*t, &filename, &redirected_URL, NULL, &dt, opt.recursive);
+        {
+          set_remote_as_current ();
+          status = retrieve_url (*t, &filename, &redirected_URL, NULL, &dt, opt.recursive);
+        }
 
       if (opt.delete_after && file_exists_p(filename))
         {

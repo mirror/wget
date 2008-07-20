@@ -49,6 +49,7 @@ as that of the covered work.  */
 #include "res.h"
 #include "convert.h"
 #include "spider.h"
+#include "iri.h"
 
 /* Functions for maintaining the URL queue.  */
 
@@ -58,7 +59,7 @@ struct queue_element {
   int depth;                    /* the depth */
   bool html_allowed;            /* whether the document is allowed to
                                    be treated as HTML. */
-
+  char *remote_encoding;
   struct queue_element *next;   /* next element in queue */
 };
 
@@ -94,11 +95,17 @@ url_enqueue (struct url_queue *queue,
              const char *url, const char *referer, int depth, bool html_allowed)
 {
   struct queue_element *qel = xnew (struct queue_element);
+  char *charset = get_current_charset ();
   qel->url = url;
   qel->referer = referer;
   qel->depth = depth;
   qel->html_allowed = html_allowed;
   qel->next = NULL;
+
+  if (charset)
+    qel->remote_encoding = xstrdup (charset);
+  else
+    qel->remote_encoding = NULL;
 
   ++queue->count;
   if (queue->count > queue->maxcount)
@@ -106,6 +113,8 @@ url_enqueue (struct url_queue *queue,
 
   DEBUGP (("Enqueuing %s at depth %d\n", url, depth));
   DEBUGP (("Queue count %d, maxcount %d.\n", queue->count, queue->maxcount));
+
+  /*printf ("[Enqueuing %s with %s\n", url, qel->remote_encoding);*/
 
   if (queue->tail)
     queue->tail->next = qel;
@@ -131,6 +140,10 @@ url_dequeue (struct url_queue *queue,
   queue->head = queue->head->next;
   if (!queue->head)
     queue->tail = NULL;
+
+  set_remote_charset (qel->remote_encoding);
+  if (qel->remote_encoding)
+    xfree (qel->remote_encoding);
 
   *url = qel->url;
   *referer = qel->referer;
@@ -177,6 +190,7 @@ uerr_t
 retrieve_tree (const char *start_url)
 {
   uerr_t status = RETROK;
+  bool utf8_encode = false;
 
   /* The queue of URLs we need to load. */
   struct url_queue *queue;
@@ -186,7 +200,7 @@ retrieve_tree (const char *start_url)
   struct hash_table *blacklist;
 
   int up_error_code;
-  struct url *start_url_parsed = url_parse (start_url, &up_error_code);
+  struct url *start_url_parsed = url_parse (start_url, &up_error_code, &utf8_encode);
 
   if (!start_url_parsed)
     {
@@ -324,7 +338,7 @@ retrieve_tree (const char *start_url)
           if (children)
             {
               struct urlpos *child = children;
-              struct url *url_parsed = url_parsed = url_parse (url, NULL);
+              struct url *url_parsed = url_parsed = url_parse (url, NULL, &utf8_encode);
               char *referer_url = url;
               bool strip_auth = (url_parsed != NULL
                                  && url_parsed->user != NULL);
@@ -360,18 +374,18 @@ retrieve_tree (const char *start_url)
             }
         }
 
-      if (file 
-          && (opt.delete_after 
+      if (file
+          && (opt.delete_after
               || opt.spider /* opt.recursive is implicitely true */
               || !acceptable (file)))
         {
           /* Either --delete-after was specified, or we loaded this
-             (otherwise unneeded because of --spider or rejected by -R) 
-             HTML file just to harvest its hyperlinks -- in either case, 
+             (otherwise unneeded because of --spider or rejected by -R)
+             HTML file just to harvest its hyperlinks -- in either case,
              delete the local file. */
           DEBUGP (("Removing file due to %s in recursive_retrieve():\n",
                    opt.delete_after ? "--delete-after" :
-                   (opt.spider ? "--spider" : 
+                   (opt.spider ? "--spider" :
                     "recursive rejection criteria")));
           logprintf (LOG_VERBOSE,
                      (opt.delete_after || opt.spider
@@ -627,11 +641,12 @@ descend_redirect_p (const char *redirected, const char *original, int depth,
   struct url *orig_parsed, *new_parsed;
   struct urlpos *upos;
   bool success;
+  bool utf8_encode = false;
 
-  orig_parsed = url_parse (original, NULL);
+  orig_parsed = url_parse (original, NULL, &utf8_encode);
   assert (orig_parsed != NULL);
 
-  new_parsed = url_parse (redirected, NULL);
+  new_parsed = url_parse (redirected, NULL, &utf8_encode);
   assert (new_parsed != NULL);
 
   upos = xnew0 (struct urlpos);

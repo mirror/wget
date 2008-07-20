@@ -641,7 +641,7 @@ static const char *parse_errors[] = {
    error, and if ERROR is not NULL, also set *ERROR to the appropriate
    error code. */
 struct url *
-url_parse (const char *url, int *error)
+url_parse (const char *url, int *error, bool *utf8_encode)
 {
   struct url *u;
   const char *p;
@@ -671,10 +671,13 @@ url_parse (const char *url, int *error)
       goto error;
     }
 
-  if (opt.enable_iri)
+  if (opt.enable_iri && *utf8_encode)
     {
+      const char *new;
       url_unescape ((char *) url);
-      url = locale_to_utf8(url);
+      *utf8_encode = remote_to_utf8 (url, &new);
+      if (*utf8_encode)
+        url = new;
     }
 
   url_encoded = reencode_escapes (url);
@@ -853,7 +856,7 @@ url_parse (const char *url, int *error)
 
   if (opt.enable_iri)
     {
-      char *new = idn_encode (u->host);
+      char *new = idn_encode (u->host, *utf8_encode);
       if (new)
         {
           xfree (u->host);

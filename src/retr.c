@@ -51,6 +51,7 @@ as that of the covered work.  */
 #include "hash.h"
 #include "convert.h"
 #include "ptimer.h"
+#include "iri.h"
 
 /* Total size of downloaded files.  Used to enforce quota.  */
 SUM_SIZE_INT total_downloaded_bytes;
@@ -612,6 +613,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   char *saved_post_data = NULL;
   char *saved_post_file_name = NULL;
 
+  bool utf8_encoded = opt.enable_iri;
+
   /* If dt is NULL, use local storage.  */
   if (!dt)
     {
@@ -624,13 +627,16 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   if (file)
     *file = NULL;
 
-  u = url_parse (url, &up_error_code);
+ second_try:
+  u = url_parse (url, &up_error_code, &utf8_encoded);
   if (!u)
     {
       logprintf (LOG_NOTQUIET, "%s: %s.\n", url, url_error (up_error_code));
       xfree (url);
       return URLERROR;
     }
+
+  /*printf ("[Retrieving %s with %s (UTF-8=%d)\n", url, get_remote_charset (), utf8_encoded);*/
 
   if (!refurl)
     refurl = opt.referer;
@@ -645,8 +651,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   proxy = getproxy (u);
   if (proxy)
     {
+      /* sXXXav : support IRI for proxy */
+      bool proxy_utf8_encode = false;
       /* Parse the proxy URL.  */
-      proxy_url = url_parse (proxy, &up_error_code);
+      proxy_url = url_parse (proxy, &up_error_code, &proxy_utf8_encode);
       if (!proxy_url)
         {
           logprintf (LOG_NOTQUIET, _("Error parsing proxy URL %s: %s.\n"),
@@ -721,8 +729,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       xfree (mynewloc);
       mynewloc = construced_newloc;
 
+      utf8_encoded = opt.enable_iri;
+
       /* Now, see if this new location makes sense. */
-      newloc_parsed = url_parse (mynewloc, &up_error_code);
+      newloc_parsed = url_parse (mynewloc, &up_error_code, &utf8_encoded);
       if (!newloc_parsed)
         {
           logprintf (LOG_NOTQUIET, "%s: %s.\n", escnonprint_uri (mynewloc),
@@ -769,16 +779,21 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       goto redirected;
     }
 
-  if (local_file)
+  /* Try to not encode in UTF-8 if fetching failed */
+  if (result != RETROK && utf8_encoded)
     {
-      if (*dt & RETROKF)
-        {
-          register_download (u->url, local_file);
-          if (redirection_count && 0 != strcmp (origurl, u->url))
-            register_redirection (origurl, u->url);
-          if (*dt & TEXTHTML)
-            register_html (u->url, local_file);
-        }
+      utf8_encoded = false;
+      /*printf ("[Fallbacking to non-utf8 for `%s'\n", url);*/
+      goto second_try;
+    }
+
+  if (local_file && *dt & RETROKF)
+    {
+      register_download (u->url, local_file);
+      if (redirection_count && 0 != strcmp (origurl, u->url))
+        register_redirection (origurl, u->url);
+      if (*dt & TEXTHTML)
+        register_html (u->url, local_file);
     }
 
   if (file)
@@ -843,9 +858,9 @@ retrieve_from_file (const char *file, bool html, int *count)
           int old_follow_ftp = opt.follow_ftp;
 
           /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-          if (cur_url->url->scheme == SCHEME_FTP) 
+          if (cur_url->url->scheme == SCHEME_FTP)
             opt.follow_ftp = 1;
-          
+
           status = retrieve_tree (cur_url->url->url);
 
           opt.follow_ftp = old_follow_ftp;
@@ -1021,8 +1036,8 @@ getproxy (struct url *u)
 bool
 url_uses_proxy (const char *url)
 {
-  bool ret;
-  struct url *u = url_parse (url, NULL);
+  bool ret, utf8_encode = false;
+  struct url *u = url_parse (url, NULL, &utf8_encode);
   if (!u)
     return false;
   ret = getproxy (u) != NULL;
