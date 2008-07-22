@@ -830,10 +830,18 @@ retrieve_from_file (const char *file, bool html, int *count)
   
   if (url_has_scheme (url))
     {
+      int dt;
       uerr_t status;
-      status = retrieve_url (url, &input_file, NULL, NULL, NULL, false);
+
+      if (!opt.base_href)
+        opt.base_href = xstrdup (url);
+
+      status = retrieve_url (url, &input_file, NULL, NULL, &dt, false);
       if (status != RETROK)
         return status;
+
+      if (dt & TEXTHTML)
+        html = true;
     }
   else
     input_file = (char *) file;

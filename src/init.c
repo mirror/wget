@@ -1548,6 +1548,8 @@ cleanup (void)
   xfree_null (opt.cookies_output);
   xfree_null (opt.user);
   xfree_null (opt.passwd);
+  xfree_null (opt.base_href);
+  
 #endif /* DEBUG_MALLOC */
 }
 

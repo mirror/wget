@@ -497,6 +497,11 @@ relative links, which you can solve either by adding @code{<base
 href="@var{url}">} to the documents or by specifying
 @samp{--base=@var{url}} on the command line.
 
+If the @var{file} is an external one, the document will be automatically
+treated as @samp{html} if the Content-Type matches @samp{text/html}.
+Furthermore, the @var{file}'s location will be implicitly used as base
+href if none was specified.
+
 @cindex force html
 @item -F
 @itemx --force-html

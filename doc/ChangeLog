@@ -1,3 +1,10 @@
+2008-07-17  Steven Schubiger  <stsc@members.fsf.org>
+
+	* wget.texi (Logging and Input File Options): Document
+	for --input-file and according remote input file URLs, the
+	implicit enforcement of treating a document as HTML and
+	the possible baseref assumption.
+
 2008-06-29  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi <Contributors>: Added Joao Ferreira, Mike Frysinger,
