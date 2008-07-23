@@ -49,7 +49,6 @@ as that of the covered work.  */
 #include "retr.h"
 #include "connect.h"
 #include "netrc.h"
-#include "iri.h"
 #ifdef HAVE_SSL
 # include "ssl.h"
 #endif
@@ -1365,7 +1364,8 @@ free_hstat (struct http_stat *hs)
    If PROXY is non-NULL, the connection will be made to the proxy
    server, and u->url will be requested.  */
 static uerr_t
-gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
+gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
+         struct iri *iri)
 {
   struct request *req;
 
@@ -2058,7 +2058,11 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
 
           /* Try to get remote encoding if needed */
           if (opt.enable_iri && !opt.encoding_remote)
-            set_current_charset (parse_charset (tmp2));
+            {
+              tmp = parse_charset (tmp2);
+              if (tmp)
+                set_content_encoding (iri, tmp);
+            }
         }
     }
   hs->newloc = resp_header_strdup (resp, "Location");
@@ -2333,7 +2337,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
    retried, and retried, and retried, and...  */
 uerr_t
 http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
-           int *dt, struct url *proxy)
+           int *dt, struct url *proxy, struct iri *iri)
 {
   int count;
   bool got_head = false;         /* used for time-stamping and filename detection */
@@ -2497,7 +2501,7 @@ Spider mode enabled. Check if remote file exists.\n"));
         *dt &= ~SEND_NOCACHE;
 
       /* Try fetching the document, or at least its head.  */
-      err = gethttp (u, &hstat, dt, proxy);
+      err = gethttp (u, &hstat, dt, proxy, iri);
 
       /* Time?  */
       tms = datetime_str (time (NULL));
@@ -2576,9 +2580,9 @@ Spider mode enabled. Check if remote file exists.\n"));
             }
           /* Maybe we should always keep track of broken links, not just in
            * spider mode.
-           * Don't log error if it was utf8 encoded because we will try
-           * one unencoded. */
-          else if (opt.spider && !get_utf8_encode ())
+           * Don't log error if it was UTF-8 encoded because we will try
+           * once unencoded. */
+          else if (opt.spider && !iri->utf8_encode)
             {
               /* #### Again: ugly ugly ugly! */
               if (!hurl)

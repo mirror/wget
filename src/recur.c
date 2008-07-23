@@ -61,7 +61,7 @@ struct queue_element {
   int depth;                    /* the depth */
   bool html_allowed;            /* whether the document is allowed to
                                    be treated as HTML. */
-  char *remote_encoding;
+  struct iri *iri;                /* sXXXav */
   bool css_allowed;             /* whether the document is allowed to
                                    be treated as CSS. */
   struct queue_element *next;   /* next element in queue */
@@ -95,23 +95,18 @@ url_queue_delete (struct url_queue *queue)
    into it.  */
 
 static void
-url_enqueue (struct url_queue *queue,
+url_enqueue (struct url_queue *queue, struct iri *i,
              const char *url, const char *referer, int depth,
              bool html_allowed, bool css_allowed)
 {
   struct queue_element *qel = xnew (struct queue_element);
-  char *charset = get_current_charset ();
+  qel->iri = i;
   qel->url = url;
   qel->referer = referer;
   qel->depth = depth;
   qel->html_allowed = html_allowed;
   qel->css_allowed = css_allowed;
   qel->next = NULL;
-
-  if (charset)
-    qel->remote_encoding = xstrdup (charset);
-  else
-    qel->remote_encoding = NULL;
 
   ++queue->count;
   if (queue->count > queue->maxcount)
@@ -120,7 +115,8 @@ url_enqueue (struct url_queue *queue,
   DEBUGP (("Enqueuing %s at depth %d\n", url, depth));
   DEBUGP (("Queue count %d, maxcount %d.\n", queue->count, queue->maxcount));
 
-  /*printf ("[Enqueuing %s with %s\n", url, qel->remote_encoding);*/
+  if (i)
+    printf ("[Enqueuing %s with %s\n", url, i->uri_encoding);
 
   if (queue->tail)
     queue->tail->next = qel;
@@ -134,7 +130,7 @@ url_enqueue (struct url_queue *queue,
    succeeded, or false if the queue is empty.  */
 
 static bool
-url_dequeue (struct url_queue *queue,
+url_dequeue (struct url_queue *queue, struct iri **i,
              const char **url, const char **referer, int *depth,
              bool *html_allowed, bool *css_allowed)
 {
@@ -147,10 +143,7 @@ url_dequeue (struct url_queue *queue,
   if (!queue->head)
     queue->tail = NULL;
 
-  set_remote_charset (qel->remote_encoding);
-  if (qel->remote_encoding)
-    xfree (qel->remote_encoding);
-
+  *i = qel->iri;
   *url = qel->url;
   *referer = qel->referer;
   *depth = qel->depth;
@@ -167,9 +160,9 @@ url_dequeue (struct url_queue *queue,
 }
 
 static bool download_child_p (const struct urlpos *, struct url *, int,
-                              struct url *, struct hash_table *);
+                              struct url *, struct hash_table *, struct iri *);
 static bool descend_redirect_p (const char *, const char *, int,
-                                struct url *, struct hash_table *);
+                                struct url *, struct hash_table *, struct iri *);
 
 
 /* Retrieve a part of the web beginning with START_URL.  This used to
@@ -207,10 +200,10 @@ retrieve_tree (const char *start_url)
 
   int up_error_code;
   struct url *start_url_parsed;
+  struct iri *i = iri_new ();
+  set_uri_encoding (i, opt.locale);
 
-  set_ugly_no_encode (true);
-  start_url_parsed= url_parse (start_url, &up_error_code);
-  set_ugly_no_encode (false);
+  start_url_parsed = url_parse (start_url, &up_error_code, i);
   if (!start_url_parsed)
     {
       logprintf (LOG_NOTQUIET, "%s: %s.\n", start_url,
@@ -223,7 +216,8 @@ retrieve_tree (const char *start_url)
 
   /* Enqueue the starting URL.  Use start_url_parsed->url rather than
      just URL so we enqueue the canonical form of the URL.  */
-  url_enqueue (queue, xstrdup (start_url_parsed->url), NULL, 0, true, false);
+  url_enqueue (queue, i, xstrdup (start_url_parsed->url), NULL, 0, true,
+               false);
   string_set_add (blacklist, start_url_parsed->url);
 
   while (1)
@@ -242,7 +236,7 @@ retrieve_tree (const char *start_url)
 
       /* Get the next URL from the queue... */
 
-      if (!url_dequeue (queue,
+      if (!url_dequeue (queue, (struct iri **) &i,
                         (const char **)&url, (const char **)&referer,
                         &depth, &html_allowed, &css_allowed))
         break;
@@ -283,7 +277,8 @@ retrieve_tree (const char *start_url)
           int dt = 0;
           char *redirected = NULL;
 
-          status = retrieve_url (url, &file, &redirected, referer, &dt, false);
+          status = retrieve_url (url, &file, &redirected, referer, &dt,
+                                 false, i);
 
           if (html_allowed && file && status == RETROK
               && (dt & RETROKF) && (dt & TEXTHTML))
@@ -311,7 +306,7 @@ retrieve_tree (const char *start_url)
               if (descend)
                 {
                   if (!descend_redirect_p (redirected, url, depth,
-                                           start_url_parsed, blacklist))
+                                           start_url_parsed, blacklist, i))
                     descend = false;
                   else
                     /* Make sure that the old pre-redirect form gets
@@ -363,7 +358,7 @@ retrieve_tree (const char *start_url)
           bool meta_disallow_follow = false;
           struct urlpos *children
             = is_css ? get_urls_css_file (file, url) :
-                       get_urls_html (file, url, &meta_disallow_follow);
+                       get_urls_html (file, url, &meta_disallow_follow, i);
 
           if (opt.use_robots && meta_disallow_follow)
             {
@@ -374,9 +369,8 @@ retrieve_tree (const char *start_url)
           if (children)
             {
               struct urlpos *child = children;
-              set_ugly_no_encode (true);
-              struct url *url_parsed = url_parse (url, NULL);
-              set_ugly_no_encode (false);
+              struct url *url_parsed = url_parse (url, NULL, i);
+              struct iri *ci;
               char *referer_url = url;
               bool strip_auth = (url_parsed != NULL
                                  && url_parsed->user != NULL);
@@ -393,9 +387,11 @@ retrieve_tree (const char *start_url)
                   if (dash_p_leaf_HTML && !child->link_inline_p)
                     continue;
                   if (download_child_p (child, url_parsed, depth, start_url_parsed,
-                                        blacklist))
+                                        blacklist, i))
                     {
-                      url_enqueue (queue, xstrdup (child->url->url),
+                      ci = iri_new ();
+                      set_uri_encoding (ci, i->content_encoding);
+                      url_enqueue (queue, ci, xstrdup (child->url->url),
                                    xstrdup (referer_url), depth + 1,
                                    child->link_expect_html,
                                    child->link_expect_css);
@@ -440,6 +436,7 @@ retrieve_tree (const char *start_url)
       xfree (url);
       xfree_null (referer);
       xfree_null (file);
+      iri_free (i);
     }
 
   /* If anything is left of the queue due to a premature exit, free it
@@ -448,9 +445,11 @@ retrieve_tree (const char *start_url)
     char *d1, *d2;
     int d3;
     bool d4, d5;
-    while (url_dequeue (queue,
+    struct iri *d6;
+    while (url_dequeue (queue, (struct iri **)&d6,
                         (const char **)&d1, (const char **)&d2, &d3, &d4, &d5))
       {
+        iri_free (d6);
         xfree (d1);
         xfree_null (d2);
       }
@@ -479,7 +478,8 @@ retrieve_tree (const char *start_url)
 
 static bool
 download_child_p (const struct urlpos *upos, struct url *parent, int depth,
-                  struct url *start_url_parsed, struct hash_table *blacklist)
+                  struct url *start_url_parsed, struct hash_table *blacklist,
+                  struct iri *iri)
 {
   struct url *u = upos->url;
   const char *url = u->url;
@@ -620,7 +620,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
       if (!specs)
         {
           char *rfile;
-          if (res_retrieve_file (url, &rfile))
+          if (res_retrieve_file (url, &rfile, iri))
             {
               specs = res_parse_from_file (rfile);
 
@@ -675,25 +675,24 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 
 static bool
 descend_redirect_p (const char *redirected, const char *original, int depth,
-                    struct url *start_url_parsed, struct hash_table *blacklist)
+                    struct url *start_url_parsed, struct hash_table *blacklist,
+                    struct iri *iri)
 {
   struct url *orig_parsed, *new_parsed;
   struct urlpos *upos;
   bool success;
 
-  set_ugly_no_encode (true);
-  orig_parsed = url_parse (original, NULL);
+  orig_parsed = url_parse (original, NULL, NULL);
   assert (orig_parsed != NULL);
 
-  new_parsed = url_parse (redirected, NULL);
+  new_parsed = url_parse (redirected, NULL, NULL);
   assert (new_parsed != NULL);
-  set_ugly_no_encode (false);
 
   upos = xnew0 (struct urlpos);
   upos->url = new_parsed;
 
   success = download_child_p (upos, orig_parsed, depth,
-                              start_url_parsed, blacklist);
+                              start_url_parsed, blacklist, iri);
 
   url_free (orig_parsed);
   url_free (new_parsed);

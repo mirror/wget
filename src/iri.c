@@ -46,18 +46,6 @@ as that of the covered work.  */
 
 /* Note: locale encoding is kept in options struct (opt.locale) */
 
-/* Hold the encoding used for the current fetch */
-char *remote;
-
-/* Hold the encoding for the future found links */
-char *current;
-
-/* Will/Is the current URL encoded in utf8 ? */
-bool utf8_encode;
-
-/* Force no utf8 encoding for url_parse () */
-bool ugly_no_encode;
-
 static iconv_t locale2utf8;
 
 static bool open_locale_to_utf8 (void);
@@ -239,15 +227,15 @@ do_conversion (iconv_t cd, char *in, size_t inlen, char **out)
 /* Try to "ASCII encode" UTF-8 host. Return the new domain on success or NULL
    on error. */
 char *
-idn_encode (char *host, bool utf8_encoded)
+idn_encode (struct iri *i, char *host)
 {
   char *new;
   int ret;
 
-  /* Encode to UTF-8 if not done using current remote */
-  if (!utf8_encoded)
+  /* Encode to UTF-8 if not done */
+  if (!i->utf8_encode)
     {
-      if (!remote_to_utf8 ((const char *) host, (const char **) &new))
+      if (!remote_to_utf8 (i, (const char *) host, (const char **) &new))
         {
           /* Nothing to encode or an error occured */
           return NULL;
@@ -291,7 +279,7 @@ idn_decode (char *host)
 /* Try to transcode string str from remote encoding to UTF-8. On success, *new
    contains the transcoded string. *new content is unspecified otherwise. */
 bool
-remote_to_utf8 (const char *str, const char **new)
+remote_to_utf8 (struct iri *i, const char *str, const char **new)
 {
   char *r;
   iconv_t cd;
@@ -299,8 +287,8 @@ remote_to_utf8 (const char *str, const char **new)
 
   if (opt.encoding_remote)
     r = opt.encoding_remote;
-  else if (current)
-    r = current;
+  else if (i->uri_encoding)
+    r = i->uri_encoding;
   else
     return false;
 
@@ -323,90 +311,52 @@ remote_to_utf8 (const char *str, const char **new)
   return ret;
 }
 
-char *get_remote_charset (void)
+struct iri *
+iri_new (void)
 {
-  return remote;
-}
-
-char *get_current_charset (void)
-{
-  return current;
-}
-
-void set_current_charset (char *charset)
-{
-  /*printf("[ current = `%s'\n", charset);*/
-  if (current)
-    {
-      /* Do nothing if already equal */
-      if (!strcasecmp (current, charset))
-        return;
-      xfree (current);
-    }
-
-  current = charset ? xstrdup (charset) : NULL;
-}
-
-void set_current_as_locale (void)
-{
-  /* sXXXav : assert opt.locale NULL ? */
-  /*printf("[ current = locale = `%s'\n", opt.locale);*/
-  if (current)
-    {
-      if (!strcasecmp (current, opt.locale))
-        return;
-      xfree (current);
-    }
-
-  current = xstrdup (opt.locale);
+  struct iri *i = xmalloc (sizeof (struct iri));
+  i->uri_encoding = opt.encoding_remote ? xstrdup (opt.encoding_remote) : NULL;
+  i->content_encoding = NULL;
+  i->utf8_encode = opt.enable_iri;
 }
 
 void
-set_remote_charset (char *charset)
+iri_free (struct iri *i)
 {
-  /*printf("[ remote = `%s'\n", charset);*/
-  if (remote)
-    {
-      /* Do nothing if already equal */
-      if (!strcasecmp (remote, charset))
-        return;
-      xfree (remote);
-    }
-  remote = charset ? xstrdup (charset) : NULL;
+  xfree_null (i->uri_encoding);
+  xfree_null (i->content_encoding);
+  xfree (i);
 }
 
 void
-set_remote_as_current (void)
+set_uri_encoding (struct iri *i, char *charset)
 {
-  /*printf("[ remote = current = `%s'\n", current);*/
-  if (remote)
+  logprintf (LOG_VERBOSE, "[ uri = `%s'\n", charset);
+  if (opt.encoding_remote)
+    return;
+  if (i->uri_encoding)
     {
-      /* Do nothing if already equal */
-      if (current && !strcasecmp (remote, current))
+      if (!strcasecmp (i->uri_encoding, charset))
         return;
-      xfree (remote);
+      xfree (i->uri_encoding);
     }
 
-  remote = current ? xstrdup (current) : NULL;
+  i->uri_encoding = charset ? xstrdup (charset) : NULL;
 }
 
-void reset_utf8_encode (void)
+void
+set_content_encoding (struct iri *i, char *charset)
 {
-  set_utf8_encode (opt.enable_iri);
-}
+  logprintf (LOG_VERBOSE, "[ content = `%s'\n", charset);
+  if (opt.encoding_remote)
+    return;
+  if (i->content_encoding)
+    {
+      if (!strcasecmp (i->content_encoding, charset))
+        return;
+      xfree (i->content_encoding);
+    }
 
-void set_utf8_encode (bool encode)
-{
-  utf8_encode = encode;
-}
-
-bool get_utf8_encode (void)
-{
-  return (!ugly_no_encode && utf8_encode);
-}
-
-void set_ugly_no_encode (bool ugly)
-{
-  ugly_no_encode = ugly;
+  i->content_encoding = charset ? xstrdup (charset) : NULL;
 }
 

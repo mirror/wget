@@ -30,49 +30,41 @@ as that of the covered work.  */
 #ifndef IRI_H
 #define IRI_H
 
+struct iri {
+  char *uri_encoding;     /* Encoding of the uri to fetch */
+  char *content_encoding;  /* Encoding of links inside the fetched file */
+  bool utf8_encode;       /* Will/Is the current url encoded in utf8 */
+};
+
 #ifdef ENABLE_IRI
 
 char *parse_charset (char *str);
 char *find_locale (void);
 bool check_encoding_name (char *encoding);
 const char *locale_to_utf8 (const char *str);
-char *idn_encode (char *host, bool utf8_encoded);
+char *idn_encode (struct iri *i, char *host);
 char *idn_decode (char *host);
-char *get_remote_charset (void);
-char *get_current_charset (void);
-void set_current_charset (char *charset);
-void set_current_as_locale (void);
-void set_current_charset (char *charset);
-void set_remote_charset (char *charset);
-void set_remote_as_current (void);
-bool remote_to_utf8 (const char *str, const char **new);
-void reset_utf8_encode (void);
-void set_utf8_encode (bool encode);
-bool get_utf8_encode (void);
-
-/* ugly ugly ugly */
-void set_ugly_no_encode (bool ugly);
+bool remote_to_utf8 (struct iri *i, const char *str, const char **new);
+struct iri *iri_new (void);
+void iri_free (struct iri *i);
+void set_uri_encoding (struct iri *i, char *charset);
+void set_content_encoding (struct iri *i, char *charset);
 
 #else /* ENABLE_IRI */
+
+struct iri dummy_iri;
 
 #define parse_charset(str)          NULL
 #define find_locale()               NULL
 #define check_encoding_name(str)    false
 #define locale_to_utf8(str)         (str)
-#define idn_encode(str,encoded)     NULL
+#define idn_encode(a,b,c)           NULL
 #define idn_decode(str)             NULL
-#define get_remote_charset()        NULL
-#define get_current_charset()       NULL
-#define set_current_charset(str)
-#define set_current_as_locale()
-#define set_current_charset(str)
-#define set_remote_charset(str)
-#define set_remote_as_current()
-#define remote_to_utf8(a,b)         false
-#define reset_utf8_encode()
-#define set_utf8_encode(a)
-#define get_utf8_encode()           false
-#define set_ugly_no_encode(a)
+#define remote_to_utf8(a,b,c)       false
+#define iri_new()                   (&dummy_iri)
+#define iri_free(a)
+#define set_uri_encoding(a,b)
+#define set_content_encoding(a,b)
 
 #endif /* ENABLE_IRI */
 #endif /* IRI_H */

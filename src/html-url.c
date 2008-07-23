@@ -44,7 +44,6 @@ as that of the covered work.  */
 #include "recur.h"
 #include "html-url.h"
 #include "css-url.h"
-#include "iri.h"
 
 typedef void (*tag_handler_t) (int, struct taginfo *, struct map_context *);
 
@@ -175,6 +174,10 @@ static const char *additional_attributes[] = {
 static struct hash_table *interesting_tags;
 static struct hash_table *interesting_attributes;
 
+/* Will contains the (last) charset found in 'http-equiv=content-type'
+   meta tags  */
+static char *meta_charset;
+
 static void
 init_interesting (void)
 {
@@ -285,9 +288,7 @@ append_url (const char *link_uri, int position, int size,
           return NULL;
         }
 
-      set_ugly_no_encode (true);
-      url = url_parse (link_uri, NULL);
-      set_ugly_no_encode (false);
+      url = url_parse (link_uri, NULL, NULL);
       if (!url)
         {
           DEBUGP (("%s: link \"%s\" doesn't parse.\n",
@@ -306,9 +307,7 @@ append_url (const char *link_uri, int position, int size,
       DEBUGP (("%s: merge(\"%s\", \"%s\") -> %s\n",
                ctx->document_file, base, link_uri, complete_uri));
 
-      set_ugly_no_encode (true);
-      url = url_parse (complete_uri, NULL);
-      set_ugly_no_encode (false);
+      url = url_parse (complete_uri, NULL, NULL);
       if (!url)
         {
           DEBUGP (("%s: merged link \"%s\" doesn't parse.\n",
@@ -573,9 +572,8 @@ tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
         return;
 
       /*logprintf (LOG_VERBOSE, "Meta tag charset : %s\n", quote (mcharset));*/
-
-      set_current_charset (mcharset);
-      xfree (mcharset);
+      xfree_null (meta_charset);
+      meta_charset = mcharset;
     }
   else if (name && 0 == strcasecmp (name, "robots"))
     {
@@ -641,7 +639,8 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
    <base href=...> and does the right thing.  */
 
 struct urlpos *
-get_urls_html (const char *file, const char *url, bool *meta_disallow_follow)
+get_urls_html (const char *file, const char *url, bool *meta_disallow_follow,
+               struct iri *iri)
 {
   struct file_memory *fm;
   struct map_context ctx;
@@ -680,6 +679,10 @@ get_urls_html (const char *file, const char *url, bool *meta_disallow_follow)
   /* the NULL here used to be interesting_tags */
   map_html_tags (fm->content, fm->length, collect_tags_mapper, &ctx, flags,
                  NULL, interesting_attributes);
+
+  /* If meta charset isn't null, override content encoding */
+  if (iri && meta_charset)
+    set_content_encoding (iri, meta_charset);
 
   DEBUGP (("no-follow in %s: %d\n", file, ctx.nofollow));
   if (meta_disallow_follow)
@@ -750,9 +753,7 @@ get_urls_file (const char *file)
           url_text = merged;
         }
 
-      set_ugly_no_encode (true);
-      url = url_parse (url_text, &up_error_code);
-      set_ugly_no_encode (false);
+      url = url_parse (url_text, &up_error_code, NULL);
       if (!url)
         {
           logprintf (LOG_NOTQUIET, _("%s: Invalid URL %s: %s\n"),

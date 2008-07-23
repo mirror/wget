@@ -598,7 +598,7 @@ static char *getproxy (struct url *);
 
 uerr_t
 retrieve_url (const char *origurl, char **file, char **newloc,
-              const char *refurl, int *dt, bool recursive)
+              const char *refurl, int *dt, bool recursive, struct iri *iri)
 {
   uerr_t result;
   char *url;
@@ -626,10 +626,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   if (file)
     *file = NULL;
 
-  reset_utf8_encode ();
-
  second_try:
-  u = url_parse (url, &up_error_code);
+  u = url_parse (url, &up_error_code, iri);
   if (!u)
     {
       logprintf (LOG_NOTQUIET, "%s: %s.\n", url, url_error (up_error_code));
@@ -637,7 +635,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       return URLERROR;
     }
 
-  /*printf ("[Retrieving %s with %s (UTF-8=%d)\n", url, get_remote_charset (), utf8_encoded);*/
+  printf ("[Retrieving %s with %s (UTF-8=%d)\n", url, iri->uri_encoding, iri->utf8_encode);
 
   if (!refurl)
     refurl = opt.referer;
@@ -652,11 +650,13 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   proxy = getproxy (u);
   if (proxy)
     {
-      /* sXXXav : support IRI for proxy */
+      /* sXXXav : could a proxy include a path ??? */
+      struct iri *pi = iri_new ();
+      set_uri_encoding (pi, opt.locale);
+      pi->utf8_encode = false;
+
       /* Parse the proxy URL.  */
-      set_ugly_no_encode (true);
-      proxy_url = url_parse (proxy, &up_error_code);
-      set_ugly_no_encode (false);
+      proxy_url = url_parse (proxy, &up_error_code, NULL);
       if (!proxy_url)
         {
           logprintf (LOG_NOTQUIET, _("Error parsing proxy URL %s: %s.\n"),
@@ -681,7 +681,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 #endif
       || (proxy_url && proxy_url->scheme == SCHEME_HTTP))
     {
-      result = http_loop (u, &mynewloc, &local_file, refurl, dt, proxy_url);
+      result = http_loop (u, &mynewloc, &local_file, refurl, dt, proxy_url, iri);
     }
   else if (u->scheme == SCHEME_FTP)
     {
@@ -731,10 +731,13 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       xfree (mynewloc);
       mynewloc = construced_newloc;
 
-      reset_utf8_encode ();
+      /* Reset UTF-8 encoding state, keep the URI encoding and reset
+         the content encoding. */
+      iri->utf8_encode = opt.enable_iri;
+      set_content_encoding (iri, NULL);
 
       /* Now, see if this new location makes sense. */
-      newloc_parsed = url_parse (mynewloc, &up_error_code);
+      newloc_parsed = url_parse (mynewloc, &up_error_code, iri);
       if (!newloc_parsed)
         {
           logprintf (LOG_NOTQUIET, "%s: %s.\n", escnonprint_uri (mynewloc),
@@ -782,10 +785,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     }
 
   /* Try to not encode in UTF-8 if fetching failed */
-  if (!(*dt & RETROKF) && get_utf8_encode ())
+  if (!(*dt & RETROKF) && iri->utf8_encode)
     {
-      set_utf8_encode (false);
-      /*printf ("[Fallbacking to non-utf8 for `%s'\n", url);*/
+      iri->utf8_encode = false;
+      printf ("[Fallbacking to non-utf8 for `%s'\n", url);
       goto second_try;
     }
 
@@ -845,24 +848,28 @@ retrieve_from_file (const char *file, bool html, int *count)
 {
   uerr_t status;
   struct urlpos *url_list, *cur_url;
+  struct iri *iri = iri_new();
 
   char *input_file = NULL;
   const char *url = file;
 
   status = RETROK;             /* Suppose everything is OK.  */
   *count = 0;                  /* Reset the URL count.  */
-  
+
+  /* sXXXav : Assume filename and links in the file are in the locale */
+  set_content_encoding (iri, opt.locale);
+
   if (url_has_scheme (url))
     {
       uerr_t status;
-      status = retrieve_url (url, &input_file, NULL, NULL, NULL, false);
+      status = retrieve_url (url, &input_file, NULL, NULL, NULL, false, iri);
       if (status != RETROK)
         return status;
     }
   else
     input_file = (char *) file;
 
-  url_list = (html ? get_urls_html (input_file, NULL, NULL)
+  url_list = (html ? get_urls_html (input_file, NULL, NULL, iri)
               : get_urls_file (input_file));
 
   for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
@@ -892,7 +899,8 @@ retrieve_from_file (const char *file, bool html, int *count)
           opt.follow_ftp = old_follow_ftp;
         }
       else
-        status = retrieve_url (cur_url->url->url, &filename, &new_file, NULL, &dt, opt.recursive);
+        status = retrieve_url (cur_url->url->url, &filename, &new_file, NULL,
+	                       &dt, opt.recursive, iri);
 
       if (filename && opt.delete_after && file_exists_p (filename))
         {
@@ -1064,9 +1072,10 @@ url_uses_proxy (const char *url)
 {
   bool ret;
   struct url *u;
-  set_ugly_no_encode(true);
-  u= url_parse (url, NULL);
-  set_ugly_no_encode(false);
+  struct iri *i = iri_new();
+  /* url was given in the command line, so use locale as encoding */
+  set_uri_encoding (i, opt.locale);
+  u= url_parse (url, NULL, i);
   if (!u)
     return false;
   ret = getproxy (u) != NULL;

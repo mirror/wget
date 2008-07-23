@@ -84,7 +84,7 @@ struct url
 
 char *url_escape (const char *);
 
-struct url *url_parse (const char *, int *);
+struct url *url_parse (const char *, int *, struct iri *iri);
 const char *url_error (int);
 char *url_full_path (const struct url *);
 void url_set_dir (struct url *, const char *);

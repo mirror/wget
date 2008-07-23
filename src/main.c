@@ -57,7 +57,6 @@ as that of the covered work.  */
 #include "convert.h"
 #include "spider.h"
 #include "http.h"               /* for save_cookies */
-#include "iri.h"
 
 #include <getopt.h>
 #include <getpass.h>
@@ -1191,9 +1190,6 @@ WARNING: Can't reopen standard output in binary mode;\n\
       char *filename = NULL, *redirected_URL = NULL;
       int dt;
 
-      set_current_as_locale ();
-      set_ugly_no_encode (false);
-
       if ((opt.recursive || opt.page_requisites)
           && (url_scheme (*t) != SCHEME_FTP || url_uses_proxy (*t)))
         {
@@ -1209,8 +1205,11 @@ WARNING: Can't reopen standard output in binary mode;\n\
         }
       else
         {
-          set_remote_as_current ();
-          status = retrieve_url (*t, &filename, &redirected_URL, NULL, &dt, opt.recursive);
+          struct iri *i = iri_new ();
+          set_uri_encoding (i, opt.locale);
+          status = retrieve_url (*t, &filename, &redirected_URL, NULL, &dt,
+                                 opt.recursive, i);
+          iri_free (i);
         }
 
       if (opt.delete_after && file_exists_p(filename))
