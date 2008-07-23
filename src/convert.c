@@ -96,7 +96,7 @@ convert_links_in_hashtable (struct hash_table *downloaded_set,
 
       /* Parse the file...  */
       urls = is_css ? get_urls_css_file (file, url) :
-                      get_urls_html (file, url, NULL);
+                      get_urls_html (file, url, NULL, NULL);
 
       /* We don't respect meta_disallow_follow here because, even if
          the file is not followed, we might still want to convert the

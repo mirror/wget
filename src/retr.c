@@ -51,6 +51,7 @@ as that of the covered work.  */
 #include "hash.h"
 #include "convert.h"
 #include "ptimer.h"
+#include "iri.h"
 #include "html-url.h"
 
 /* Total size of downloaded files.  Used to enforce quota.  */
@@ -597,7 +598,7 @@ static char *getproxy (struct url *);
 
 uerr_t
 retrieve_url (const char *origurl, char **file, char **newloc,
-              const char *refurl, int *dt, bool recursive)
+              const char *refurl, int *dt, bool recursive, struct iri *iri)
 {
   uerr_t result;
   char *url;
@@ -625,13 +626,16 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   if (file)
     *file = NULL;
 
-  u = url_parse (url, &up_error_code);
+ second_try:
+  u = url_parse (url, &up_error_code, iri);
   if (!u)
     {
       logprintf (LOG_NOTQUIET, "%s: %s.\n", url, url_error (up_error_code));
       xfree (url);
       return URLERROR;
     }
+
+  printf ("[Retrieving %s with %s (UTF-8=%d)\n", url, iri->uri_encoding, iri->utf8_encode);
 
   if (!refurl)
     refurl = opt.referer;
@@ -646,8 +650,13 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   proxy = getproxy (u);
   if (proxy)
     {
+      /* sXXXav : could a proxy include a path ??? */
+      struct iri *pi = iri_new ();
+      set_uri_encoding (pi, opt.locale);
+      pi->utf8_encode = false;
+
       /* Parse the proxy URL.  */
-      proxy_url = url_parse (proxy, &up_error_code);
+      proxy_url = url_parse (proxy, &up_error_code, NULL);
       if (!proxy_url)
         {
           logprintf (LOG_NOTQUIET, _("Error parsing proxy URL %s: %s.\n"),
@@ -672,7 +681,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 #endif
       || (proxy_url && proxy_url->scheme == SCHEME_HTTP))
     {
-      result = http_loop (u, &mynewloc, &local_file, refurl, dt, proxy_url);
+      result = http_loop (u, &mynewloc, &local_file, refurl, dt, proxy_url, iri);
     }
   else if (u->scheme == SCHEME_FTP)
     {
@@ -722,8 +731,13 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       xfree (mynewloc);
       mynewloc = construced_newloc;
 
+      /* Reset UTF-8 encoding state, keep the URI encoding and reset
+         the content encoding. */
+      iri->utf8_encode = opt.enable_iri;
+      set_content_encoding (iri, NULL);
+
       /* Now, see if this new location makes sense. */
-      newloc_parsed = url_parse (mynewloc, &up_error_code);
+      newloc_parsed = url_parse (mynewloc, &up_error_code, iri);
       if (!newloc_parsed)
         {
           logprintf (LOG_NOTQUIET, "%s: %s.\n", escnonprint_uri (mynewloc),
@@ -770,8 +784,21 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       goto redirected;
     }
 
-  if (local_file)
+  /* Try to not encode in UTF-8 if fetching failed */
+  if (!(*dt & RETROKF) && iri->utf8_encode)
     {
+      iri->utf8_encode = false;
+      printf ("[Fallbacking to non-utf8 for `%s'\n", url);
+      goto second_try;
+    }
+
+  if (local_file && *dt & RETROKF)
+    {
+      register_download (u->url, local_file);
+      if (redirection_count && 0 != strcmp (origurl, u->url))
+        register_redirection (origurl, u->url);
+      if (*dt & TEXTHTML)
+        register_html (u->url, local_file);
       if (*dt & RETROKF)
         {
           register_download (u->url, local_file);
@@ -821,13 +848,17 @@ retrieve_from_file (const char *file, bool html, int *count)
 {
   uerr_t status;
   struct urlpos *url_list, *cur_url;
+  struct iri *iri = iri_new();
 
   char *input_file = NULL;
   const char *url = file;
 
   status = RETROK;             /* Suppose everything is OK.  */
   *count = 0;                  /* Reset the URL count.  */
-  
+
+  /* sXXXav : Assume filename and links in the file are in the locale */
+  set_content_encoding (iri, opt.locale);
+
   if (url_has_scheme (url))
     {
       int dt;
@@ -836,7 +867,7 @@ retrieve_from_file (const char *file, bool html, int *count)
       if (!opt.base_href)
         opt.base_href = xstrdup (url);
 
-      status = retrieve_url (url, &input_file, NULL, NULL, &dt, false);
+      status = retrieve_url (url, &input_file, NULL, NULL, &dt, false, iri);
       if (status != RETROK)
         return status;
 
@@ -846,7 +877,7 @@ retrieve_from_file (const char *file, bool html, int *count)
   else
     input_file = (char *) file;
 
-  url_list = (html ? get_urls_html (input_file, NULL, NULL)
+  url_list = (html ? get_urls_html (input_file, NULL, NULL, iri)
               : get_urls_file (input_file));
 
   for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
@@ -868,15 +899,16 @@ retrieve_from_file (const char *file, bool html, int *count)
           int old_follow_ftp = opt.follow_ftp;
 
           /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-          if (cur_url->url->scheme == SCHEME_FTP) 
+          if (cur_url->url->scheme == SCHEME_FTP)
             opt.follow_ftp = 1;
-          
+
           status = retrieve_tree (cur_url->url->url);
 
           opt.follow_ftp = old_follow_ftp;
         }
       else
-        status = retrieve_url (cur_url->url->url, &filename, &new_file, NULL, &dt, opt.recursive);
+        status = retrieve_url (cur_url->url->url, &filename, &new_file, NULL,
+	                       &dt, opt.recursive, iri);
 
       if (filename && opt.delete_after && file_exists_p (filename))
         {
@@ -1047,7 +1079,11 @@ bool
 url_uses_proxy (const char *url)
 {
   bool ret;
-  struct url *u = url_parse (url, NULL);
+  struct url *u;
+  struct iri *i = iri_new();
+  /* url was given in the command line, so use locale as encoding */
+  set_uri_encoding (i, opt.locale);
+  u= url_parse (url, NULL, i);
   if (!u)
     return false;
   ret = getproxy (u) != NULL;
