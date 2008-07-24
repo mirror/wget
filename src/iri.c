@@ -331,7 +331,7 @@ iri_free (struct iri *i)
 void
 set_uri_encoding (struct iri *i, char *charset)
 {
-  logprintf (LOG_VERBOSE, "[ uri = `%s'\n", charset);
+  DEBUGP (("[IRI uri = `%s'\n", quote (charset)));
   if (opt.encoding_remote)
     return;
   if (i->uri_encoding)
@@ -347,7 +347,7 @@ set_uri_encoding (struct iri *i, char *charset)
 void
 set_content_encoding (struct iri *i, char *charset)
 {
-  logprintf (LOG_VERBOSE, "[ content = `%s'\n", charset);
+  DEBUGP (("[IRI content = %s\n", quote (charset)));
   if (opt.encoding_remote)
     return;
   if (i->content_encoding)
