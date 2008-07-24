@@ -58,7 +58,7 @@ struct iri dummy_iri;
 #define find_locale()               NULL
 #define check_encoding_name(str)    false
 #define locale_to_utf8(str)         (str)
-#define idn_encode(a,b,c)           NULL
+#define idn_encode(a,b)             NULL
 #define idn_decode(str)             NULL
 #define remote_to_utf8(a,b,c)       false
 #define iri_new()                   (&dummy_iri)
