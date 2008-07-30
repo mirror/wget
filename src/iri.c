@@ -329,10 +329,10 @@ iri_free (struct iri *i)
 }
 
 void
-set_uri_encoding (struct iri *i, char *charset)
+set_uri_encoding (struct iri *i, char *charset, bool force)
 {
   DEBUGP (("[IRI uri = `%s'\n", quote (charset)));
-  if (opt.encoding_remote)
+  if (!force && opt.encoding_remote)
     return;
   if (i->uri_encoding)
     {

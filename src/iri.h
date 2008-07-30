@@ -47,7 +47,7 @@ char *idn_decode (char *host);
 bool remote_to_utf8 (struct iri *i, const char *str, const char **new);
 struct iri *iri_new (void);
 void iri_free (struct iri *i);
-void set_uri_encoding (struct iri *i, char *charset);
+void set_uri_encoding (struct iri *i, char *charset, bool force);
 void set_content_encoding (struct iri *i, char *charset);
 
 #else /* ENABLE_IRI */
@@ -63,7 +63,7 @@ struct iri dummy_iri;
 #define remote_to_utf8(a,b,c)       false
 #define iri_new()                   (&dummy_iri)
 #define iri_free(a)
-#define set_uri_encoding(a,b)
+#define set_uri_encoding(a,b,c)
 #define set_content_encoding(a,b)
 
 #endif /* ENABLE_IRI */

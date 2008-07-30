@@ -653,7 +653,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     {
       /* sXXXav : could a proxy include a path ??? */
       struct iri *pi = iri_new ();
-      set_uri_encoding (pi, opt.locale);
+      set_uri_encoding (pi, opt.locale, true);
       pi->utf8_encode = false;
 
       /* Parse the proxy URL.  */
@@ -1083,7 +1083,7 @@ url_uses_proxy (const char *url)
   struct url *u;
   struct iri *i = iri_new();
   /* url was given in the command line, so use locale as encoding */
-  set_uri_encoding (i, opt.locale);
+  set_uri_encoding (i, opt.locale, true);
   u= url_parse (url, NULL, i);
   if (!u)
     return false;

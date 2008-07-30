@@ -1206,7 +1206,7 @@ WARNING: Can't reopen standard output in binary mode;\n\
       else
         {
           struct iri *i = iri_new ();
-          set_uri_encoding (i, opt.locale);
+          set_uri_encoding (i, opt.locale, true);
           status = retrieve_url (*t, &filename, &redirected_URL, NULL, &dt,
                                  opt.recursive, i);
           iri_free (i);
