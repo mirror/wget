@@ -318,6 +318,7 @@ iri_new (void)
   i->uri_encoding = opt.encoding_remote ? xstrdup (opt.encoding_remote) : NULL;
   i->content_encoding = NULL;
   i->utf8_encode = opt.enable_iri;
+  return i;
 }
 
 void
