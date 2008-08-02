@@ -318,6 +318,7 @@ iri_new (void)
   i->uri_encoding = opt.encoding_remote ? xstrdup (opt.encoding_remote) : NULL;
   i->content_encoding = NULL;
   i->utf8_encode = opt.enable_iri;
+  return i;
 }
 
 void
@@ -331,12 +332,12 @@ iri_free (struct iri *i)
 void
 set_uri_encoding (struct iri *i, char *charset, bool force)
 {
-  DEBUGP (("[IRI uri = `%s'\n", quote (charset)));
+  DEBUGP (("[IRI uri = `%s'\n", charset ? quote (charset) : "None"));
   if (!force && opt.encoding_remote)
     return;
   if (i->uri_encoding)
     {
-      if (!strcasecmp (i->uri_encoding, charset))
+      if (charset && !strcasecmp (i->uri_encoding, charset))
         return;
       xfree (i->uri_encoding);
     }
@@ -347,12 +348,12 @@ set_uri_encoding (struct iri *i, char *charset, bool force)
 void
 set_content_encoding (struct iri *i, char *charset)
 {
-  DEBUGP (("[IRI content = %s\n", quote (charset)));
+  DEBUGP (("[IRI content = %s\n", charset ? quote (charset) : "None"));
   if (opt.encoding_remote)
     return;
   if (i->content_encoding)
     {
-      if (!strcasecmp (i->content_encoding, charset))
+      if (charset && !strcasecmp (i->content_encoding, charset))
         return;
       xfree (i->content_encoding);
     }

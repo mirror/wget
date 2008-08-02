@@ -636,7 +636,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     }
 
   DEBUGP (("[IRI Retrieving %s with %s (UTF-8=%d)\n", quote (url),
-             quote (iri->uri_encoding), iri->utf8_encode));
+           iri->uri_encoding ? quote (iri->uri_encoding) : "None",
+           iri->utf8_encode));
 
   if (!refurl)
     refurl = opt.referer;
