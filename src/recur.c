@@ -117,7 +117,7 @@ url_enqueue (struct url_queue *queue, struct iri *i,
 
   if (i)
     DEBUGP (("[IRI Enqueuing %s with %s\n", quote (url),
-               quote (i->uri_encoding)));
+             i->uri_encoding ? quote (i->uri_encoding) : "None"));
 
   if (queue->tail)
     queue->tail->next = qel;
