@@ -43,9 +43,6 @@ as that of the covered work.  */
 #include <assert.h>
 #include <errno.h>
 #include <time.h>
-#ifdef ENABLE_IRI
-#include <langinfo.h>
-#endif
 
 #include "utils.h"
 #include "init.h"
