@@ -46,9 +46,6 @@ as that of the covered work.  */
 
 /* Note: locale encoding is kept in options struct (opt.locale) */
 
-static iconv_t locale2utf8;
-
-static bool open_locale_to_utf8 (void);
 static bool do_conversion (iconv_t cd, char *in, size_t inlen, char **out);
 
 
@@ -119,27 +116,7 @@ check_encoding_name (char *encoding)
 static bool
 open_locale_to_utf8 (void)
 {
-  if (locale2utf8)
-    return true;
 
-  /* sXXXav : That shouldn't happen, just in case */
-  if (!opt.locale)
-    {
-      logprintf (LOG_VERBOSE, "open_locale_to_utf8: locale is unset\n");
-      opt.locale = find_locale ();
-    }
-
-  if (!opt.locale)
-    return false;
-
-  locale2utf8 = iconv_open ("UTF-8", opt.locale);
-  if (locale2utf8 != (iconv_t)(-1))
-    return true;
-
-  logprintf (LOG_VERBOSE, "Conversion from %s to %s isn't supported\n",
-             quote (opt.locale), quote ("UTF-8"));
-  locale2utf8 = NULL;
-  return false;
 }
 
 /* Try converting string str from locale to UTF-8. Return a new string
@@ -147,22 +124,35 @@ open_locale_to_utf8 (void)
 const char *
 locale_to_utf8 (const char *str)
 {
+  iconv_t l2u;
   char *new;
 
-  if (!strcasecmp (opt.locale, "utf-8"))
+  /* That shouldn't happen, just in case */
+  if (!opt.locale)
+    {
+      logprintf (LOG_VERBOSE, "open_locale_to_utf8: locale is unset\n");
+      opt.locale = find_locale ();
+    }
+
+  if (!opt.locale || !strcasecmp (opt.locale, "utf-8"))
     return str;
 
-  if (!open_locale_to_utf8 ())
-    return str;
+  l2u = iconv_open ("UTF-8", opt.locale);
+  if (l2u != (iconv_t)(-1))
+    { 
+      logprintf (LOG_VERBOSE, "Conversion from %s to %s isn't supported\n",
+                 quote (opt.locale), quote ("UTF-8"));
+      return str;
+    }
 
-  if (do_conversion (locale2utf8, (char *) str, strlen ((char *) str), &new))
+  if (do_conversion (l2u, (char *) str, strlen ((char *) str), &new))
     return (const char *) new;
 
   return str;
 }
 
 /* Do the conversion according to the passed conversion descriptor cd. *out
-   will containes the transcoded string on success. *out content is
+   will contain the transcoded string on success. *out content is
    unspecified otherwise. */
 static bool
 do_conversion (iconv_t cd, char *in, size_t inlen, char **out)
@@ -236,11 +226,7 @@ idn_encode (struct iri *i, char *host)
   if (!i->utf8_encode)
     {
       if (!remote_to_utf8 (i, (const char *) host, (const char **) &new))
-        {
-          /* Nothing to encode or an error occured */
-          return NULL;
-        }
-
+          return NULL;  /* Nothing to encode or an error occured */
       host = new;
     }
 
@@ -281,18 +267,13 @@ idn_decode (char *host)
 bool
 remote_to_utf8 (struct iri *i, const char *str, const char **new)
 {
-  char *r;
   iconv_t cd;
   bool ret = false;
 
-  if (opt.encoding_remote)
-    r = opt.encoding_remote;
-  else if (i->uri_encoding)
-    r = i->uri_encoding;
-  else
+  if (!i->uri_encoding)
     return false;
 
-  cd = iconv_open ("UTF-8", r);
+  cd = iconv_open ("UTF-8", i->uri_encoding);
   if (cd == (iconv_t)(-1))
     return false;
 
@@ -311,6 +292,7 @@ remote_to_utf8 (struct iri *i, const char *str, const char **new)
   return ret;
 }
 
+/* Allocate a new iri structure and return a pointer to it. */
 struct iri *
 iri_new (void)
 {
@@ -321,6 +303,7 @@ iri_new (void)
   return i;
 }
 
+/* Completely free an iri structure. */
 void
 iri_free (struct iri *i)
 {
@@ -329,10 +312,12 @@ iri_free (struct iri *i)
   xfree (i);
 }
 
+/* Set uri_encoding of struct iri i. If a remote encoding was specified, use
+   it unless force is true. */
 void
 set_uri_encoding (struct iri *i, char *charset, bool force)
 {
-  DEBUGP (("[IRI uri = `%s'\n", charset ? quote (charset) : "None"));
+  DEBUGP (("URI encoding = `%s'\n", charset ? quote (charset) : "None"));
   if (!force && opt.encoding_remote)
     return;
   if (i->uri_encoding)
@@ -345,10 +330,11 @@ set_uri_encoding (struct iri *i, char *charset, bool force)
   i->uri_encoding = charset ? xstrdup (charset) : NULL;
 }
 
+/* Set content_encoding of struct iri i. */
 void
 set_content_encoding (struct iri *i, char *charset)
 {
-  DEBUGP (("[IRI content = %s\n", charset ? quote (charset) : "None"));
+  DEBUGP (("URI content encoding = %s\n", charset ? quote (charset) : "None"));
   if (opt.encoding_remote)
     return;
   if (i->content_encoding)

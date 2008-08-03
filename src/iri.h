@@ -31,9 +31,9 @@ as that of the covered work.  */
 #define IRI_H
 
 struct iri {
-  char *uri_encoding;     /* Encoding of the uri to fetch */
+  char *uri_encoding;      /* Encoding of the uri to fetch */
   char *content_encoding;  /* Encoding of links inside the fetched file */
-  bool utf8_encode;       /* Will/Is the current url encoded in utf8 */
+  bool utf8_encode;        /* Will/Is the current url encoded in utf8 */
 };
 
 #ifdef ENABLE_IRI
