@@ -25,7 +25,6 @@ my $eacute_l1 = "\xE9";
 my $eacute_u8 = "\xC3\xA9";
 my $eurosign_l15 = "\xA4";
 my $eurosign_u8 = "\xE2\x82\xAC";
-my $eurosign2_u8 = "\xE2%82\xAC";	# version wget use... sXXXav
 
 my $pageindex = <<EOF;
 <html>
@@ -187,7 +186,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " --iri -nH -r http://localhost:{{port}}/";
+my $cmdline = $WgetTest::WGETPATH . " --iri --restrict-file-names=nocontrol -nH -r http://localhost:{{port}}/";
 
 my $expected_error_code = 0;
 
@@ -204,7 +203,7 @@ my %expected_downloaded_files = (
     "p2_${eacute_u8}${eacute_u8}n.html" => {
         content => $pageeen,
     },
-    "p3_${eurosign2_u8}${eurosign2_u8}${eurosign2_u8}.html" => {
+    "p3_${eurosign_u8}${eurosign_u8}${eurosign_u8}.html" => {
         content => $pageeuro,
     },
     "p4_m${eacute_u8}${eacute_u8}r.html" => {
