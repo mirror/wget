@@ -37,7 +37,7 @@ so, delete this exception statement from your version.  */
   a browser would ignore.  That might merit some more investigation.
  */
 
-#include <config.h>
+#include <wget.h>
 
 #include <stdio.h>
 #ifdef HAVE_STRING_H

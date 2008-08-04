@@ -87,9 +87,7 @@
  *
  **************************************************************/
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include "wget.h"
 
 /* For testing purposes, always compile in the code. */
 #ifdef TEST_SNPRINTF

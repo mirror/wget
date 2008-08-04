@@ -30,7 +30,7 @@ Corresponding Source for a non-source form of such a combination
 shall include the source code for the parts of OpenSSL used as well
 as that of the covered work.  */
 
-#include "config.h"
+#include "wget.h"
 #include <stdio.h>
 
 char *system_wgetrc = SYSTEM_WGETRC;

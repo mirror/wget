@@ -1,3 +1,7 @@
+2008-08-03  Micah Cowan  <micah@cowan.name>
+
+	* build_info.c, css-url.c: #include wget.h, not config.h.
+
 2008-08-03  Steven Schubiger  <stsc@members.fsf.org>
 
 	* url.c, url.h (url_error): Better messages for unsupported
