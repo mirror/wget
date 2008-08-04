@@ -59,6 +59,8 @@ struct options
   char *input_filename;		/* Input filename */
   bool force_html;		/* Is the input file an HTML file? */
 
+  char *default_page;           /* Alternative default page (index file) */
+
   bool spider;			/* Is Wget in spider mode? */
 
   char **accepts;		/* List of patterns to accept. */

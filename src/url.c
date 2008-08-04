@@ -1448,10 +1448,16 @@ url_file_name (const struct url *u)
 
   const char *u_file, *u_query;
   char *fname, *unique;
+  char *index_filename = "index.html"; /* The default index file is index.html */
 
   fnres.base = NULL;
   fnres.size = 0;
   fnres.tail = 0;
+
+  /* If an alternative index file was defined, change index_filename */
+  if (opt.default_page)
+    index_filename = opt.default_page;
+     
 
   /* Start with the directory prefix, if specified. */
   if (opt.dir_prefix)
@@ -1494,7 +1500,7 @@ url_file_name (const struct url *u)
   /* Add the file name. */
   if (fnres.tail)
     append_char ('/', &fnres);
-  u_file = *u->file ? u->file : "index.html";
+  u_file = *u->file ? u->file : index_filename;
   append_uri_pathel (u_file, u_file + strlen (u_file), false, &fnres);
 
   /* Append "?query" to the file name. */

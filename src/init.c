@@ -140,6 +140,7 @@ static const struct {
 #ifdef ENABLE_DEBUG
   { "debug",            &opt.debug,             cmd_boolean },
 #endif
+  { "defaultpage", 	&opt.default_page,      cmd_string},
   { "deleteafter",      &opt.delete_after,      cmd_boolean },
   { "dirprefix",        &opt.dir_prefix,        cmd_directory },
   { "dirstruct",        NULL,                   cmd_spec_dirstruct },

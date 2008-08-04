@@ -8,6 +8,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.12 (MAINLINE)
 
+** --default-page option added to support alternative default names for
+index.html.
+
 ** Added support for CSS. This includes:
      - Parsing links from CSS files, and from CSS content found in HTML
        style tags and attributes.

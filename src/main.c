@@ -163,6 +163,7 @@ static struct cmdline_option option_data[] =
     { "cookies", 0, OPT_BOOLEAN, "cookies", -1 },
     { "cut-dirs", 0, OPT_VALUE, "cutdirs", -1 },
     { WHEN_DEBUG ("debug"), 'd', OPT_BOOLEAN, "debug", -1 },
+    { "default-page", 0, OPT_VALUE, "defaultpage", -1 },
     { "delete-after", 0, OPT_BOOLEAN, "deleteafter", -1 },
     { "directories", 0, OPT_BOOLEAN, "dirstruct", -1 },
     { "directory-prefix", 'P', OPT_VALUE, "dirprefix", -1 },

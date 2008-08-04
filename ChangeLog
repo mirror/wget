@@ -1,3 +1,8 @@
+2008-08-01  Joao Ferreira  <joao@joaoff.com>
+
+	* NEWS: Added option --default-page to support alternative
+	default names for index.html
+
 2008-06-30  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: Entries for 1.11.4.
