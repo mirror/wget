@@ -58,7 +58,6 @@ as that of the covered work.  */
 #include "host.h"
 #include "connect.h"
 #include "hash.h"
-#include "iri.h"
 
 /* Define sockaddr_storage where unavailable (presumably on IPv4-only
    hosts).  */

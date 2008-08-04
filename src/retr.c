@@ -51,7 +51,6 @@ as that of the covered work.  */
 #include "hash.h"
 #include "convert.h"
 #include "ptimer.h"
-#include "iri.h"
 #include "html-url.h"
 
 /* Total size of downloaded files.  Used to enforce quota.  */

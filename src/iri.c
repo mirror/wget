@@ -39,7 +39,6 @@ as that of the covered work.  */
 #include <errno.h>
 
 #include "utils.h"
-#include "iri.h"
 
 /* RFC3987 section 3.1 mandates STD3 ASCII RULES */
 #define IDNA_FLAGS  IDNA_USE_STD3_ASCII_RULES

@@ -42,7 +42,6 @@ as that of the covered work.  */
 #include "utils.h"
 #include "url.h"
 #include "host.h"  /* for is_valid_ipv6_address */
-#include "iri.h"
 
 #ifdef TESTING
 #include "test.h"

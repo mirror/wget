@@ -53,7 +53,6 @@ as that of the covered work.  */
 #include "host.h"
 #include "url.h"
 #include "hash.h"
-#include "iri.h"
 
 #ifndef NO_ADDRESS
 # define NO_ADDRESS NO_DATA
