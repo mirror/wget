@@ -1,3 +1,7 @@
+2008-08-03  Micah Cowan  <micah@cowan.name>
+
+	* main.c (print_help): Added --default-page.
+
 2008-08-01  Joao Ferreira  <joao@joaoff.com>
 
 	* init.c, main.c, options.h, url.c: Added option --default-page

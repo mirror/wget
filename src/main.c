@@ -514,6 +514,9 @@ HTTP options:\n"),
        --http-password=PASS    set http password to PASS.\n"),
     N_("\
        --no-cache              disallow server-cached data.\n"),
+    N_ ("\
+       --default-page=NAME     Change the default page name (normally\n\
+                               this is `index.html'.).\n"),
     N_("\
   -E,  --html-extension        save HTML documents with `.html' extension.\n"),
     N_("\

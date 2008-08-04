@@ -1075,6 +1075,12 @@ current directory).
 @section HTTP Options
 
 @table @samp
+@cindex default page name
+@cindex index.html
+@item --default-page=@var{name}
+Use @var{name} as the default file name when it isn't known (i.e., for
+URLs that end in a slash), instead of @file{index.html}.
+
 @cindex .html extension
 @item -E
 @itemx --html-extension
