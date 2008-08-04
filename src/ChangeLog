@@ -1,3 +1,11 @@
+2008-08-03  Steven Schubiger  <stsc@members.fsf.org>
+
+	* url.c, url.h (url_error): Better messages for unsupported
+	schemes, especially https.
+
+	* html-url.c, recur.c, retr.c: Adjust to new url_error
+	invocation, and free result.
+
 2008-07-17  Steven Schubiger  <stsc@members.fsf.org>
 
 	* retr.c (retrieve_from_file): When given an URL as input file,

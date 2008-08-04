@@ -619,7 +619,7 @@ static const char *parse_errors[] = {
 #define PE_NO_ERROR                     0
   N_("No error"),
 #define PE_UNSUPPORTED_SCHEME           1
-  N_("Unsupported scheme"),
+  N_("Unsupported scheme %s"),
 #define PE_INVALID_HOST_NAME            2
   N_("Invalid host name"),
 #define PE_BAD_PORT_NUMBER              3
@@ -886,11 +886,29 @@ url_parse (const char *url, int *error)
 /* Return the error message string from ERROR_CODE, which should have
    been retrieved from url_parse.  The error message is translated.  */
 
-const char *
-url_error (int error_code)
+char *
+url_error (const char *url, int error_code)
 {
   assert (error_code >= 0 && ((size_t) error_code) < countof (parse_errors));
-  return _(parse_errors[error_code]);
+
+  if (error_code == PE_UNSUPPORTED_SCHEME)
+    {
+      char *error, *p;
+      char *scheme = xstrdup (url);
+      assert (url_has_scheme (url));
+
+      if ((p = strchr (scheme, ':')))
+        *p = '\0';
+      if (!strcasecmp (scheme, "https"))
+        asprintf (&error, _("HTTPS support not compiled in"));
+      else
+        asprintf (&error, _(parse_errors[error_code]), quote (scheme));
+      xfree (scheme);
+
+      return error;
+    }
+  else
+    return xstrdup (_(parse_errors[error_code]));
 }
 
 /* Split PATH into DIR and FILE.  PATH comes from the URL and is

@@ -628,8 +628,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   u = url_parse (url, &up_error_code);
   if (!u)
     {
-      logprintf (LOG_NOTQUIET, "%s: %s.\n", url, url_error (up_error_code));
+      char *error = url_error (url, up_error_code);
+      logprintf (LOG_NOTQUIET, "%s: %s.\n", url, error);
       xfree (url);
+      xfree (error);
       return URLERROR;
     }
 
@@ -650,9 +652,11 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       proxy_url = url_parse (proxy, &up_error_code);
       if (!proxy_url)
         {
+          char *error = url_error (proxy, up_error_code);
           logprintf (LOG_NOTQUIET, _("Error parsing proxy URL %s: %s.\n"),
-                     proxy, url_error (up_error_code));
+                     proxy, error);
           xfree (url);
+          xfree (error);
           RESTORE_POST_DATA;
           return PROXERR;
         }
@@ -726,11 +730,13 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       newloc_parsed = url_parse (mynewloc, &up_error_code);
       if (!newloc_parsed)
         {
+          char *error = url_error (mynewloc, up_error_code);
           logprintf (LOG_NOTQUIET, "%s: %s.\n", escnonprint_uri (mynewloc),
-                     url_error (up_error_code));
+                     error);
           url_free (u);
           xfree (url);
           xfree (mynewloc);
+          xfree (error);
           RESTORE_POST_DATA;
           return result;
         }
