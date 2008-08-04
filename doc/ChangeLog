@@ -1,3 +1,7 @@
+2008-08-03  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi: Don't set UPDATED; already set by version.texi.
+
 2008-07-17  Steven Schubiger  <stsc@members.fsf.org>
 
 	* wget.texi (Logging and Input File Options): Document

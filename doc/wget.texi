@@ -3,7 +3,6 @@
 @c %**start of header
 @setfilename wget.info
 @include version.texi
-@set UPDATED Jun 2008
 @settitle GNU Wget @value{VERSION} Manual
 @c Disable the monstrous rectangles beside overfull hbox-es.
 @finalout
