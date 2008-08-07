@@ -182,9 +182,11 @@ static const struct {
   { "inet6only",        &opt.ipv6_only,         cmd_boolean },
 #endif
   { "input",            &opt.input_filename,    cmd_file },
+  { "iri",              &opt.enable_iri,        cmd_boolean },
   { "keepsessioncookies", &opt.keep_session_cookies, cmd_boolean },
   { "limitrate",        &opt.limit_rate,        cmd_bytes },
   { "loadcookies",      &opt.cookies_input,     cmd_file },
+  { "locale",           &opt.locale,            cmd_string },
   { "logfile",          &opt.lfilename,         cmd_file },
   { "login",            &opt.ftp_user,          cmd_string },/* deprecated*/
   { "maxredirect",      &opt.max_redirect,      cmd_number },
@@ -224,6 +226,7 @@ static const struct {
   { "referer",          &opt.referer,           cmd_string },
   { "reject",           &opt.rejects,           cmd_vector },
   { "relativeonly",     &opt.relative_only,     cmd_boolean },
+  { "remoteencoding",   &opt.encoding_remote,   cmd_string },
   { "removelisting",    &opt.remove_listing,    cmd_boolean },
   { "restrictfilenames", NULL,                  cmd_spec_restrict_file_names },
   { "retrsymlinks",     &opt.retr_symlinks,     cmd_boolean },
@@ -331,6 +334,14 @@ defaults (void)
   opt.restrict_files_case = restrict_no_case_restriction;
 
   opt.max_redirect = 20;
+
+#ifdef ENABLE_IRI
+  opt.enable_iri = true;
+#else
+  opt.enable_iri = false;
+#endif
+  opt.locale = NULL;
+  opt.encoding_remote = NULL;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is

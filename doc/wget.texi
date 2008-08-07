@@ -674,6 +674,30 @@ Another instance where you'll get a garbled file if you try to use
 Note that @samp{-c} only works with @sc{ftp} servers and with @sc{http}
 servers that support the @code{Range} header.
 
+@cindex iri support
+@cindex idn support
+@item --iri
+
+Turn on internationalized URI (IRI) support. Use @samp{--iri=no} to
+turn it off. IRI support is activated by default.
+
+You can set the default state of IRI support using @code{iri} command in
+@file{.wgetrc}. That setting may be overridden from the command line.
+
+@cindex local encoding
+@cindex locale
+@item --locale=@var{encoding}
+
+Force Wget to use @var{encoding} as the default system encoding. That affects
+how Wget converts URLs specified as arguments from locale to @sc{utf-8} for
+IRI support.
+
+Wget use the function @code{nl_langinfo()} and then the @code{CHARSET}
+environment variable to get the locale. If it fails, @sc{ascii} is used.
+
+You can set the default locale using the @code{locale} command in
+@file{.wgetrc}. That setting may be overridden from the command line.
+
 @cindex progress indicator
 @cindex dot style
 @item --progress=@var{type}
@@ -704,6 +728,21 @@ command in @file{.wgetrc}.  That setting may be overridden from the
 command line.  The exception is that, when the output is not a TTY, the
 ``dot'' progress will be favored over ``bar''.  To force the bar output,
 use @samp{--progress=bar:force}.
+
+@cindex remote encoding
+@item --remote-encoding=@var{encoding}
+
+Force Wget to use encoding as the default remote server encoding. That
+affects how Wget converts URIs found in files from remote encoding to
+@sc{utf-8} during a recursive fetch. This options is only useful for
+IRI support, for the interpretation of non-@sc{ascii} characters.
+
+For HTTP, remote encoding can be found in HTTP @code{Content-Type}
+header and in HTML @code{Content-Type http-equiv} meta tag.
+
+You can set the default encoding using the @code{remoteencoding}
+command in @file{.wgetrc}. That setting may be overridden from the
+command line.
 
 @item -N
 @itemx --timestamping

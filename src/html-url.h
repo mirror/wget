@@ -44,7 +44,7 @@ struct map_context {
 };
 
 struct urlpos *get_urls_file (const char *);
-struct urlpos *get_urls_html (const char *, const char *, bool *);
+struct urlpos *get_urls_html (const char *, const char *, bool *, struct iri *);
 struct urlpos *append_url (const char *, int, int, struct map_context *);
 void free_urlpos (struct urlpos *);
 
