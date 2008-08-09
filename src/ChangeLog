@@ -1,3 +1,7 @@
+2008-08-08  Steven Schubiger  <stsc@members.fsf.org>
+
+	* main.c, utils.h: Removed some dead conditional DEBUG_MALLOC code.
+
 2008-08-03  Micah Cowan  <micah@cowan.name>
 
 	* main.c (print_help): Added --default-page.
