@@ -1273,9 +1273,6 @@ WARNING: Can't reopen standard output in binary mode;\n\
     xfree (url[i]);
   cleanup ();
 
-#ifdef DEBUG_MALLOC
-  print_malloc_debug_stats ();
-#endif
   if (status == RETROK)
     return 0;
   else

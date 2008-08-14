@@ -66,10 +66,6 @@ struct file_memory {
 char *time_str (time_t);
 char *datetime_str (time_t);
 
-#ifdef DEBUG_MALLOC
-void print_malloc_debug_stats ();
-#endif
-
 char *xstrdup_lower (const char *);
 
 char *strdupdelim (const char *, const char *);
