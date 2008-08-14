@@ -928,6 +928,8 @@ Removing file due to --delete-after in retrieve_from_file():\n"));
   /* Free the linked list of URL-s.  */
   free_urlpos (url_list);
 
+  iri_free (iri);
+
   return status;
 }
 
