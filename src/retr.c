@@ -651,7 +651,6 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   proxy = getproxy (u);
   if (proxy)
     {
-      /* sXXXav : could a proxy include a path ??? */
       struct iri *pi = iri_new ();
       set_uri_encoding (pi, opt.locale, true);
       pi->utf8_encode = false;
@@ -858,6 +857,7 @@ retrieve_from_file (const char *file, bool html, int *count)
   *count = 0;                  /* Reset the URL count.  */
 
   /* sXXXav : Assume filename and links in the file are in the locale */
+  set_uri_encoding (iri, opt.locale, true);
   set_content_encoding (iri, opt.locale);
 
   if (url_has_scheme (url))
@@ -894,6 +894,10 @@ retrieve_from_file (const char *file, bool html, int *count)
           status = QUOTEXC;
           break;
         }
+
+      /* Reset UTF-8 encode status */
+      iri->utf8_encode = opt.enable_iri;
+
       if ((opt.recursive || opt.page_requisites)
           && (cur_url->url->scheme != SCHEME_FTP || getproxy (cur_url->url)))
         {
@@ -903,7 +907,7 @@ retrieve_from_file (const char *file, bool html, int *count)
           if (cur_url->url->scheme == SCHEME_FTP)
             opt.follow_ftp = 1;
 
-          status = retrieve_tree (cur_url->url->url);
+          status = retrieve_tree (cur_url->url->url, iri);
 
           opt.follow_ftp = old_follow_ftp;
         }

@@ -1196,7 +1196,7 @@ WARNING: Can't reopen standard output in binary mode;\n\
           if (url_scheme (*t) == SCHEME_FTP)
             opt.follow_ftp = 1;
 
-          status = retrieve_tree (*t);
+          status = retrieve_tree (*t, NULL);
 
           opt.follow_ftp = old_follow_ftp;
         }
