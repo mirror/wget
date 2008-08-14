@@ -1,3 +1,7 @@
+2008-08-14  Xavier Saint <wget@sxav.eu>
+	
+	* Test-iri-list.px : Fetch files from a remote list.
+
 2008-08-03  Xavier Saint <wget@sxav.eu>
 
 	* Test-iri.px : HTTP recursive fetch for testing IRI support and

@@ -25,6 +25,7 @@ my @tests = (
     'Test-iri.px',
     'Test-iri-disabled.px',
     'Test-iri-forced-remote.px',
+    'Test-iri-list.px',
     'Test-N-current.px',
     'Test-N-smaller.px',
     'Test-N-no-info.px',

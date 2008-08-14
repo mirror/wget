@@ -187,7 +187,7 @@ static bool descend_redirect_p (const char *, const char *, int,
           options, add it to the queue. */
 
 uerr_t
-retrieve_tree (const char *start_url)
+retrieve_tree (const char *start_url, struct iri *pi)
 {
   uerr_t status = RETROK;
 
@@ -201,7 +201,18 @@ retrieve_tree (const char *start_url)
   int up_error_code;
   struct url *start_url_parsed;
   struct iri *i = iri_new ();
-  set_uri_encoding (i, opt.locale, true);
+
+#define COPYSTR(x)  (x) ? xstrdup(x) : NULL;
+  /* Duplicate pi struct if not NULL */
+  if (pi)
+    {
+      i->uri_encoding = COPYSTR (pi->uri_encoding);
+      i->content_encoding = COPYSTR (pi->content_encoding);
+      i->utf8_encode = pi->utf8_encode;
+    }
+  else
+    set_uri_encoding (i, opt.locale, true);
+#undef COPYSTR
 
   start_url_parsed = url_parse (start_url, &up_error_code, i);
   if (!start_url_parsed)
