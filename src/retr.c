@@ -636,8 +636,8 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       return URLERROR;
     }
 
-  DEBUGP (("[IRI Retrieving %s with %s (UTF-8=%d)\n", quote (url),
-           iri->uri_encoding ? quote (iri->uri_encoding) : "None",
+  DEBUGP (("[IRI Retrieving %s with %s (UTF-8=%d)\n", quote_n (0, url),
+           iri->uri_encoding ? quote_n (1, iri->uri_encoding) : "None",
            iri->utf8_encode));
 
   if (!refurl)
@@ -880,6 +880,10 @@ retrieve_from_file (const char *file, bool html, int *count)
 
       if (dt & TEXTHTML)
         html = true;
+
+      /* If we have a found a content encoding, use it */
+      if (iri->content_encoding)
+	  set_uri_encoding (iri, iri->content_encoding, false);
     }
   else
     input_file = (char *) file;
