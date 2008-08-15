@@ -316,7 +316,7 @@ iri_free (struct iri *i)
 void
 set_uri_encoding (struct iri *i, char *charset, bool force)
 {
-  DEBUGP (("URI encoding = `%s'\n", charset ? quote (charset) : "None"));
+  DEBUGP (("URI encoding = %s\n", charset ? quote (charset) : "None"));
   if (!force && opt.encoding_remote)
     return;
   if (i->uri_encoding)
