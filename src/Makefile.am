@@ -51,6 +51,12 @@ EXTRA_wget_SOURCES = mswindows.c
 LDADD = $(LIBOBJS) ../lib/libgnu.a @MD5_LDADD@
 AM_CPPFLAGS = -I$(top_srcdir)/lib @MD5_CPPFLAGS@
 
+../lib/libgnu.a:
+	cd ../lib && $(MAKE) $(AM_MAKEFLAGS)
+
+../md5/libmd5.a:
+	cd ../lib && $(MAKE) $(AM_MAKEFLAGS)
+
 ESCAPEQUOTE = sed -e 's/[\\"]/\\&/g' -e 's/\\"/"/' -e 's/\\";$$/";/'
 version.c:  $(wget_SOURCES) $(LDADD) $(srcdir)/Makefile.am
 	echo '/* version.c */' > $@

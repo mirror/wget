@@ -42,10 +42,19 @@ test: ../src/wget$(EXEEXT) run-unit-tests run-px-tests
 ../src/wget$(EXEEXT):
 	cd ../src && $(MAKE) $(AM_MAKEFLAGS)
 
+../src/libunittest.a:
+	cd ../src && $(MAKE) $(AM_MAKEFLAGS) libunittest.a
+
+../lib/libgnu.a:
+	cd ../lib && $(MAKE) $(AM_MAKEFLAGS)
+
+../md5/libmd5.a:
+	cd ../lib && $(MAKE) $(AM_MAKEFLAGS)
+
 run-unit-tests: unit-tests$(EXEEXT)
 	./unit-tests$(EXEEXT)
 
-run-px-tests: WgetTest.pm
+run-px-tests: WgetTest.pm ../src/wget$(EXEEXT)
 	./run-px $(top_srcdir)
 
 EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
@@ -62,6 +71,7 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
 
 check_PROGRAMS = unit-tests
 unit_tests_SOURCES = 
+#unit-tests: ../src/libunittest.a ../lib/libgnu.a
 LDADD = ../src/libunittest.a ../lib/libgnu.a @LIBSSL@ @LIBGNUTLS@ \
         @MD5_LDADD@
 
