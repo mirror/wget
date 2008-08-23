@@ -92,13 +92,13 @@ sub send_response {
             print $con $content;
             next;
         }
-        if ($req->header("Range")) {
+        if ($req->header("Range") && !$url_rec->{'force_code'}) {
             $req->header("Range") =~ m/bytes=(\d*)-(\d*)/;
             my $content_len = length($content);
             my $start = $1 ? $1 : 0;
             my $end = $2 ? $2 : ($content_len - 1);
             my $len = $2 ? ($2 - $start) : ($content_len - $start);
-            if ($len) {
+            if ($len > 0) {
                 $resp->header("Accept-Ranges" => "bytes");
                 $resp->header("Content-Length" => $len);
                 $resp->header("Content-Range"

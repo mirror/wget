@@ -12,6 +12,7 @@ my @tests = (
     'Test--spider.px',
     'Test-c-full.px',
     'Test-c-partial.px',
+    'Test-c-shorter.px',
     'Test-c.px',
     'Test-E-k-K.px',
     'Test-E-k.px',
