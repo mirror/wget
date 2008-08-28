@@ -43,7 +43,7 @@ as that of the covered work.  */
 #include "utils.h"
 #include "log.h"
 
-/* This file impplement support for "logging".  Logging means printing
+/* This file implement support for "logging".  Logging means printing
    output, plus several additional features:
 
    - Cataloguing output by importance.  You can specify that a log

@@ -1,3 +1,30 @@
+2008-08-14  Xavier Saint <wget@sxav.eu>
+	
+	* Test-iri-list.px : Fetch files from a remote list.
+
+2008-08-03  Xavier Saint <wget@sxav.eu>
+
+	* Test-iri.px : HTTP recursive fetch for testing IRI support and
+	fallback.
+
+	* Test-iri-disabled.px : Same file structure as Test-iri.px but with
+	IRI support disabled
+
+	* Test-iri-forced-remote.px : There's a difference between ISO-8859-1
+	and ISO-8859-15 for character 0xA4 (respectively currency sign and
+	euro sign). So with a forced ISO-8859-1 remote encoding, wget should
+	see 0xA4 as a currency sign and transcode it correctly in UTF-8 instead
+	of using the ISO-8859-15 given by the server.
+
+	* Test-ftp-iri.px : Give a file to fetch via FTP in a specific locale
+	and expect wget to fetch the file UTF-8 encoded.
+
+	* Test-ftp-iri-fallback.px : Same as above but wget should fallback on
+	locale encoding to fetch the file.
+
+	* Test-ftp-iri.px : Same as Test-ftp-iri.px but with IRI support
+	disabled. The UTF-8 encoded file should not be retrieved.
+
 2008-06-22  Micah Cowan  <micah@cowan.name>
 
 	* Test-proxied-https-auth.px: Shift exit code so it falls in the

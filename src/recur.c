@@ -51,7 +51,7 @@ as that of the covered work.  */
 #include "html-url.h"
 #include "css-url.h"
 #include "spider.h"
-
+
 /* Functions for maintaining the URL queue.  */
 
 struct queue_element {
@@ -60,6 +60,7 @@ struct queue_element {
   int depth;                    /* the depth */
   bool html_allowed;            /* whether the document is allowed to
                                    be treated as HTML. */
+  struct iri *iri;                /* sXXXav */
   bool css_allowed;             /* whether the document is allowed to
                                    be treated as CSS. */
   struct queue_element *next;   /* next element in queue */
@@ -93,11 +94,12 @@ url_queue_delete (struct url_queue *queue)
    into it.  */
 
 static void
-url_enqueue (struct url_queue *queue,
+url_enqueue (struct url_queue *queue, struct iri *i,
              const char *url, const char *referer, int depth,
              bool html_allowed, bool css_allowed)
 {
   struct queue_element *qel = xnew (struct queue_element);
+  qel->iri = i;
   qel->url = url;
   qel->referer = referer;
   qel->depth = depth;
@@ -112,6 +114,10 @@ url_enqueue (struct url_queue *queue,
   DEBUGP (("Enqueuing %s at depth %d\n", url, depth));
   DEBUGP (("Queue count %d, maxcount %d.\n", queue->count, queue->maxcount));
 
+  if (i)
+    DEBUGP (("[IRI Enqueuing %s with %s\n", quote_n (0, url),
+             i->uri_encoding ? quote_n (1, i->uri_encoding) : "None"));
+
   if (queue->tail)
     queue->tail->next = qel;
   queue->tail = qel;
@@ -124,7 +130,7 @@ url_enqueue (struct url_queue *queue,
    succeeded, or false if the queue is empty.  */
 
 static bool
-url_dequeue (struct url_queue *queue,
+url_dequeue (struct url_queue *queue, struct iri **i,
              const char **url, const char **referer, int *depth,
              bool *html_allowed, bool *css_allowed)
 {
@@ -137,6 +143,7 @@ url_dequeue (struct url_queue *queue,
   if (!queue->head)
     queue->tail = NULL;
 
+  *i = qel->iri;
   *url = qel->url;
   *referer = qel->referer;
   *depth = qel->depth;
@@ -153,9 +160,9 @@ url_dequeue (struct url_queue *queue,
 }
 
 static bool download_child_p (const struct urlpos *, struct url *, int,
-                              struct url *, struct hash_table *);
+                              struct url *, struct hash_table *, struct iri *);
 static bool descend_redirect_p (const char *, const char *, int,
-                                struct url *, struct hash_table *);
+                                struct url *, struct hash_table *, struct iri *);
 
 
 /* Retrieve a part of the web beginning with START_URL.  This used to
@@ -180,7 +187,7 @@ static bool descend_redirect_p (const char *, const char *, int,
           options, add it to the queue. */
 
 uerr_t
-retrieve_tree (const char *start_url)
+retrieve_tree (const char *start_url, struct iri *pi)
 {
   uerr_t status = RETROK;
 
@@ -192,8 +199,22 @@ retrieve_tree (const char *start_url)
   struct hash_table *blacklist;
 
   int up_error_code;
-  struct url *start_url_parsed = url_parse (start_url, &up_error_code);
+  struct url *start_url_parsed;
+  struct iri *i = iri_new ();
 
+#define COPYSTR(x)  (x) ? xstrdup(x) : NULL;
+  /* Duplicate pi struct if not NULL */
+  if (pi)
+    {
+      i->uri_encoding = COPYSTR (pi->uri_encoding);
+      i->content_encoding = COPYSTR (pi->content_encoding);
+      i->utf8_encode = pi->utf8_encode;
+    }
+  else
+    set_uri_encoding (i, opt.locale, true);
+#undef COPYSTR
+
+  start_url_parsed = url_parse (start_url, &up_error_code, i);
   if (!start_url_parsed)
     {
       char *error = url_error (start_url, up_error_code);
@@ -207,7 +228,8 @@ retrieve_tree (const char *start_url)
 
   /* Enqueue the starting URL.  Use start_url_parsed->url rather than
      just URL so we enqueue the canonical form of the URL.  */
-  url_enqueue (queue, xstrdup (start_url_parsed->url), NULL, 0, true, false);
+  url_enqueue (queue, i, xstrdup (start_url_parsed->url), NULL, 0, true,
+               false);
   string_set_add (blacklist, start_url_parsed->url);
 
   while (1)
@@ -226,7 +248,7 @@ retrieve_tree (const char *start_url)
 
       /* Get the next URL from the queue... */
 
-      if (!url_dequeue (queue,
+      if (!url_dequeue (queue, (struct iri **) &i,
                         (const char **)&url, (const char **)&referer,
                         &depth, &html_allowed, &css_allowed))
         break;
@@ -267,7 +289,8 @@ retrieve_tree (const char *start_url)
           int dt = 0;
           char *redirected = NULL;
 
-          status = retrieve_url (url, &file, &redirected, referer, &dt, false);
+          status = retrieve_url (url, &file, &redirected, referer, &dt,
+                                 false, i);
 
           if (html_allowed && file && status == RETROK
               && (dt & RETROKF) && (dt & TEXTHTML))
@@ -295,7 +318,7 @@ retrieve_tree (const char *start_url)
               if (descend)
                 {
                   if (!descend_redirect_p (redirected, url, depth,
-                                           start_url_parsed, blacklist))
+                                           start_url_parsed, blacklist, i))
                     descend = false;
                   else
                     /* Make sure that the old pre-redirect form gets
@@ -347,7 +370,7 @@ retrieve_tree (const char *start_url)
           bool meta_disallow_follow = false;
           struct urlpos *children
             = is_css ? get_urls_css_file (file, url) :
-                       get_urls_html (file, url, &meta_disallow_follow);
+                       get_urls_html (file, url, &meta_disallow_follow, i);
 
           if (opt.use_robots && meta_disallow_follow)
             {
@@ -358,7 +381,8 @@ retrieve_tree (const char *start_url)
           if (children)
             {
               struct urlpos *child = children;
-              struct url *url_parsed = url_parsed = url_parse (url, NULL);
+              struct url *url_parsed = url_parse (url, NULL, i);
+              struct iri *ci;
               char *referer_url = url;
               bool strip_auth = (url_parsed != NULL
                                  && url_parsed->user != NULL);
@@ -375,9 +399,11 @@ retrieve_tree (const char *start_url)
                   if (dash_p_leaf_HTML && !child->link_inline_p)
                     continue;
                   if (download_child_p (child, url_parsed, depth, start_url_parsed,
-                                        blacklist))
+                                        blacklist, i))
                     {
-                      url_enqueue (queue, xstrdup (child->url->url),
+                      ci = iri_new ();
+                      set_uri_encoding (ci, i->content_encoding, false);
+                      url_enqueue (queue, ci, xstrdup (child->url->url),
                                    xstrdup (referer_url), depth + 1,
                                    child->link_expect_html,
                                    child->link_expect_css);
@@ -395,18 +421,18 @@ retrieve_tree (const char *start_url)
             }
         }
 
-      if (file 
-          && (opt.delete_after 
+      if (file
+          && (opt.delete_after
               || opt.spider /* opt.recursive is implicitely true */
               || !acceptable (file)))
         {
           /* Either --delete-after was specified, or we loaded this
-             (otherwise unneeded because of --spider or rejected by -R) 
-             HTML file just to harvest its hyperlinks -- in either case, 
+             (otherwise unneeded because of --spider or rejected by -R)
+             HTML file just to harvest its hyperlinks -- in either case,
              delete the local file. */
           DEBUGP (("Removing file due to %s in recursive_retrieve():\n",
                    opt.delete_after ? "--delete-after" :
-                   (opt.spider ? "--spider" : 
+                   (opt.spider ? "--spider" :
                     "recursive rejection criteria")));
           logprintf (LOG_VERBOSE,
                      (opt.delete_after || opt.spider
@@ -422,6 +448,7 @@ retrieve_tree (const char *start_url)
       xfree (url);
       xfree_null (referer);
       xfree_null (file);
+      iri_free (i);
     }
 
   /* If anything is left of the queue due to a premature exit, free it
@@ -430,9 +457,11 @@ retrieve_tree (const char *start_url)
     char *d1, *d2;
     int d3;
     bool d4, d5;
-    while (url_dequeue (queue,
+    struct iri *d6;
+    while (url_dequeue (queue, (struct iri **)&d6,
                         (const char **)&d1, (const char **)&d2, &d3, &d4, &d5))
       {
+        iri_free (d6);
         xfree (d1);
         xfree_null (d2);
       }
@@ -461,7 +490,8 @@ retrieve_tree (const char *start_url)
 
 static bool
 download_child_p (const struct urlpos *upos, struct url *parent, int depth,
-                  struct url *start_url_parsed, struct hash_table *blacklist)
+                  struct url *start_url_parsed, struct hash_table *blacklist,
+                  struct iri *iri)
 {
   struct url *u = upos->url;
   const char *url = u->url;
@@ -471,7 +501,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 
   if (string_set_contains (blacklist, url))
     {
-      if (opt.spider) 
+      if (opt.spider)
         {
           char *referrer = url_string (parent, URL_AUTH_HIDE_PASSWD);
           DEBUGP (("download_child_p: parent->url is: %s\n", quote (parent->url)));
@@ -602,7 +632,7 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
       if (!specs)
         {
           char *rfile;
-          if (res_retrieve_file (url, &rfile))
+          if (res_retrieve_file (url, &rfile, iri))
             {
               specs = res_parse_from_file (rfile);
 
@@ -657,23 +687,24 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 
 static bool
 descend_redirect_p (const char *redirected, const char *original, int depth,
-                    struct url *start_url_parsed, struct hash_table *blacklist)
+                    struct url *start_url_parsed, struct hash_table *blacklist,
+                    struct iri *iri)
 {
   struct url *orig_parsed, *new_parsed;
   struct urlpos *upos;
   bool success;
 
-  orig_parsed = url_parse (original, NULL);
+  orig_parsed = url_parse (original, NULL, NULL);
   assert (orig_parsed != NULL);
 
-  new_parsed = url_parse (redirected, NULL);
+  new_parsed = url_parse (redirected, NULL, NULL);
   assert (new_parsed != NULL);
 
   upos = xnew0 (struct urlpos);
   upos->url = new_parsed;
 
   success = download_child_p (upos, orig_parsed, depth,
-                              start_url_parsed, blacklist);
+                              start_url_parsed, blacklist, iri);
 
   url_free (orig_parsed);
   url_free (new_parsed);
