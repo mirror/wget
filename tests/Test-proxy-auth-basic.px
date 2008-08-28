@@ -11,7 +11,7 @@ my $wholefile = "You're all authenticated.\n";
 
 # code, msg, headers, content
 my %urls = (
-    '/needs-auth.txt' => {
+    'http://no.such.domain/needs-auth.txt' => {
         auth_method => 'Basic',
         user => 'fiddle-dee-dee',
         passwd => 'Dodgson',

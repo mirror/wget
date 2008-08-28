@@ -1,3 +1,15 @@
+2008-08-28  Micah Cowan  <micah@cowan.name>
+
+	* HTTPServer.pm (run): Allow distinguishing between hostnames,
+	when used as a proxy.
+
+	* Test-idn-headers.px: Added.
+
+	* run-px: Added Test-idn-headers.px.
+
+	* Test-proxy-auth-basic.px: Use the full URL, rather than just the
+	path (made necessary by the accompanying change to HTTPServer.pm).
+
 2008-08-14  Xavier Saint <wget@sxav.eu>
 	
 	* Test-iri-list.px : Fetch files from a remote list.
