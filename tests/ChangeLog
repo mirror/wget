@@ -3,9 +3,9 @@
 	* HTTPServer.pm (run): Allow distinguishing between hostnames,
 	when used as a proxy.
 
-	* Test-idn-headers.px: Added.
+	* Test-idn-headers.px, Test-idn-meta.px: Added.
 
-	* run-px: Added Test-idn-headers.px.
+	* run-px: Added Test-idn-headers.px, Test-idn-meta.px.
 
 	* Test-proxy-auth-basic.px: Use the full URL, rather than just the
 	path (made necessary by the accompanying change to HTTPServer.pm).
