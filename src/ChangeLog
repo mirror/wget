@@ -1,3 +1,8 @@
+2008-09-02  Gisle Vanem  <gvanem@broadpark.no>
+
+	* mswindows.h: Must ensure <stdio.h> is included before
+	we redefine ?vsnprintf().
+
 2008-08-08  Steven Schubiger  <stsc@members.fsf.org>
 
 	* main.c, utils.h: Removed some dead conditional DEBUG_MALLOC code.
