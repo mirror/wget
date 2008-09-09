@@ -1,11 +1,15 @@
+2008-09-09  Gisle Vanem  <gvanem@broadpark.no>
+
+	* url.c (url_error): Use aprintf, not asprintf.
+	
 2008-09-09  Micah Cowan  <micah@cowan.name>
 
 	* init.c (home_dir): Save the calculated value for home,
 	to avoid duplicated work on repeated calls.
 	(wgetrc_file_name) [WINDOWS]: Define and initialize home var.
 
-	* build_info.c: Remove unnecessary extern vars system_wgetrc and
-	locale_dir.
+	* build_info.c, main.c: Remove unnecessary extern vars
+	system_wgetrc and locale_dir.
 
 	* main.c: Define program_name for lib/error.c.
 
