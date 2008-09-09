@@ -338,35 +338,41 @@ defaults (void)
 char *
 home_dir (void)
 {
-  char *home = getenv ("HOME");
+  static char buf[PATH_MAX];
+  static char *home;
 
   if (!home)
     {
+      home = getenv ("HOME");
+      if (!home)
+        {
 #if defined(MSDOS)
-      /* Under MSDOS, if $HOME isn't defined, use the directory where
-         `wget.exe' resides.  */
-      const char *_w32_get_argv0 (void); /* in libwatt.a/pcconfig.c */
-      char *p, buf[PATH_MAX];
+          /* Under MSDOS, if $HOME isn't defined, use the directory where
+             `wget.exe' resides.  */
+          const char *_w32_get_argv0 (void); /* in libwatt.a/pcconfig.c */
+          char *p;
 
-      strcpy (buf, _w32_get_argv0 ());
-      p = strrchr (buf, '/');            /* djgpp */
-      if (!p)
-        p = strrchr (buf, '\\');          /* others */
-      assert (p);
-      *p = '\0';
-      home = buf;
+          strcpy (buf, _w32_get_argv0 ());
+          p = strrchr (buf, '/');            /* djgpp */
+          if (!p)
+            p = strrchr (buf, '\\');          /* others */
+          assert (p);
+          *p = '\0';
+          home = buf;
 #elif !defined(WINDOWS)
-      /* If HOME is not defined, try getting it from the password
-         file.  */
-      struct passwd *pwd = getpwuid (getuid ());
-      if (!pwd || !pwd->pw_dir)
-        return NULL;
-      home = pwd->pw_dir;
+          /* If HOME is not defined, try getting it from the password
+             file.  */
+          struct passwd *pwd = getpwuid (getuid ());
+          if (!pwd || !pwd->pw_dir)
+            return NULL;
+          strcpy (buf, pwd->pw_dir);
+          home = buf;
 #else  /* !WINDOWS */
-      /* Under Windows, if $HOME isn't defined, use the directory where
-         `wget.exe' resides.  */
-      home = ws_mypath ();
+          /* Under Windows, if $HOME isn't defined, use the directory where
+             `wget.exe' resides.  */
+          home = ws_mypath ();
 #endif /* WINDOWS */
+        }
     }
 
   return home ? xstrdup (home) : NULL;
@@ -392,12 +398,13 @@ wgetrc_env_file_name (void)
     }
   return NULL;
 }
+
 /* Check for the existance of '$HOME/.wgetrc' and return it's path
    if it exists and is set.  */
 char *
 wgetrc_user_file_name (void) 
 {
-  char *home = home_dir();
+  char *home = home_dir ();
   char *file = NULL;
   if (home)
     file = aprintf ("%s/.wgetrc", home);
@@ -411,6 +418,7 @@ wgetrc_user_file_name (void)
     }
   return file;
 }
+
 /* Return the path to the user's .wgetrc.  This is either the value of
    `WGETRC' environment variable, or `$HOME/.wgetrc'.
 
@@ -419,10 +427,11 @@ wgetrc_user_file_name (void)
 char *
 wgetrc_file_name (void)
 {
+  char *home = NULL;
   char *file = wgetrc_env_file_name ();
   if (file && *file)
     return file;
-
+  
   file = wgetrc_user_file_name ();
 
 #ifdef WINDOWS
@@ -430,6 +439,7 @@ wgetrc_file_name (void)
      `wget.ini' in the directory where `wget.exe' resides; we do this for
      backward compatibility with previous versions of Wget.
      SYSTEM_WGETRC should not be defined under WINDOWS.  */
+  home = home_dir ();
   if (!file || !file_exists_p (file))
     {
       xfree_null (file);
@@ -438,6 +448,7 @@ wgetrc_file_name (void)
       if (home)
         file = aprintf ("%s/wget.ini", home);
     }
+  xfree_null (home);
 #endif /* WINDOWS */
 
   if (!file)

@@ -72,8 +72,6 @@ extern char *system_getrc;
 extern char *link_string;
 /* defined in build_info.c */
 extern char *compiled_features[];
-extern char *system_wgetrc;
-extern char *locale_dir;
 /* Used for --version output in print_version */
 static const int max_chars_per_line = 72;
 
@@ -743,6 +741,10 @@ format_and_print_line (char* prefix, char* line,
     }
 
   printf ("\n");
+
+  /* FIXME: Responsibility for deallocation should be handled by
+     whatever allocated it, wherever possible. These two lines result
+     in unnecessary strdup calls in the print_version function. */
   xfree (prefix);
   xfree (line);
 }
@@ -794,10 +796,12 @@ print_version (void)
       printf ("%s (user)\n%s", user_wgetrc, prefix_spaces);
       xfree (user_wgetrc);
     }
-  printf ("%s (system)\n", system_wgetrc);
+#ifdef SYSTEM_WGETRC
+  printf ("%s (system)\n", SYSTEM_WGETRC);
+#endif
 
   format_and_print_line (strdup (locale_title),
-			 strdup (locale_dir), 
+			 strdup (LOCALEDIR), 
 			 max_chars_per_line);
   
   format_and_print_line (strdup (compile_title),

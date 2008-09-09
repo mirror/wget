@@ -33,9 +33,6 @@ as that of the covered work.  */
 #include "wget.h"
 #include <stdio.h>
 
-char *system_wgetrc = SYSTEM_WGETRC;
-char *locale_dir = LOCALEDIR;
-
 const char* (compiled_features[]) =
 {
 
