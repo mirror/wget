@@ -1,3 +1,7 @@
+2008-09-09  Micah Cowan  <micah@cowan.name>
+
+	* main.c: Define program_name for lib/error.c.
+
 2008-09-02  Gisle Vanem  <gvanem@broadpark.no>
 
 	* mswindows.h: Must ensure <stdio.h> is included before

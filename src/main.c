@@ -826,6 +826,8 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout);
   exit (0);
 }
 
+char *program_name; /* Needed by lib/error.c. */
+
 int
 main (int argc, char **argv)
 {
@@ -833,6 +835,8 @@ main (int argc, char **argv)
   int i, ret, longindex;
   int nurl, status;
   bool append_to_log = false;
+
+  program_name = argv[0];
 
   i18n_initialize ();
 
