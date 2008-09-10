@@ -3599,7 +3599,7 @@ avoid.  To be found by the robots, the specifications must be placed in
 download and parse.
 
 Although Wget is not a web robot in the strictest sense of the word, it
-can downloads large parts of the site without the user's intervention to
+can download large parts of the site without the user's intervention to
 download an individual page.  Because of that, Wget honors RES when
 downloading recursively.  For instance, when you issue:
 

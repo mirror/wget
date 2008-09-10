@@ -1,3 +1,8 @@
+2008-09-10  Michael Kessler  <kessler.michael@aon.at>
+
+	* wget.texi (Robot Exclusion): Fixed typo "downloads" ->
+	"download"
+
 2008-08-03  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi: Don't set UPDATED; already set by version.texi.
