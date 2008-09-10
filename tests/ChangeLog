@@ -1,3 +1,9 @@
+2008-09-09  Micah Cowan  <micah@cowan.name>
+
+	* Test-idn-cmd.px: Added.
+
+	* run-px: Added Test-idn-cmd.px.
+
 2008-08-28  Micah Cowan  <micah@cowan.name>
 
 	* HTTPServer.pm (run): Allow distinguishing between hostnames,

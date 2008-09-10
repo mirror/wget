@@ -25,6 +25,7 @@ my @tests = (
     'Test-HTTP-Content-Disposition.px',
     'Test-idn-headers.px',
     'Test-idn-meta.px',
+    'Test-idn-cmd.px',
     'Test-iri.px',
     'Test-iri-disabled.px',
     'Test-iri-forced-remote.px',
