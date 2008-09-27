@@ -640,7 +640,7 @@ static const char *parse_errors[] = {
    error, and if ERROR is not NULL, also set *ERROR to the appropriate
    error code. */
 struct url *
-url_parse (const char *url, int *error, struct iri *iri)
+url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
 {
   struct url *u;
   const char *p;
@@ -672,13 +672,19 @@ url_parse (const char *url, int *error, struct iri *iri)
 
   if (iri && iri->utf8_encode)
     {
-      url_unescape ((char *) url);
-      iri->utf8_encode = remote_to_utf8 (iri, url, (const char **) &new_url);
+      iri->utf8_encode = remote_to_utf8 (iri, iri->orig_url ? iri->orig_url : url, (const char **) &new_url);
       if (!iri->utf8_encode)
         new_url = NULL;
+      else
+        iri->orig_url = xstrdup (url);
     }
 
-  url_encoded = reencode_escapes (new_url ? new_url : url);
+  /* XXX XXX Could that change introduce (security) bugs ???  XXX XXX*/
+  if (percent_encode)
+    url_encoded = reencode_escapes (new_url ? new_url : url);
+  else
+     url_encoded = new_url ? new_url : url;
+
   p = url_encoded;
 
   if (new_url && url_encoded != new_url)
@@ -1992,12 +1998,12 @@ schemes_are_similar_p (enum url_scheme a, enum url_scheme b)
 
 static int
 getchar_from_escaped_string (const char *str, char *c)
-{  
+{
   const char *p = str;
 
   assert (str && *str);
   assert (c);
-  
+
   if (p[0] == '%')
     {
       if (!c_isxdigit(p[1]) || !c_isxdigit(p[2]))
@@ -2047,7 +2053,7 @@ are_urls_equal (const char *u1, const char *u2)
       p += pp;
       q += qq;
     }
-  
+
   return (*p == 0 && *q == 0 ? true : false);
 }
 
@@ -2156,7 +2162,7 @@ test_append_uri_pathel()
   } test_array[] = {
     { "http://www.yoyodyne.com/path/", "somepage.html", false, "http://www.yoyodyne.com/path/somepage.html" },
   };
-  
+
   for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 
     {
       struct growable dest;

@@ -626,7 +626,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     *file = NULL;
 
  second_try:
-  u = url_parse (url, &up_error_code, iri);
+  u = url_parse (url, &up_error_code, iri, true);
   if (!u)
     {
       char *error = url_error (url, up_error_code);
@@ -658,7 +658,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
       pi->utf8_encode = false;
 
       /* Parse the proxy URL.  */
-      proxy_url = url_parse (proxy, &up_error_code, NULL);
+      proxy_url = url_parse (proxy, &up_error_code, NULL, true);
       if (!proxy_url)
         {
           char *error = url_error (proxy, up_error_code);
@@ -739,9 +739,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
          the content encoding. */
       iri->utf8_encode = opt.enable_iri;
       set_content_encoding (iri, NULL);
+      xfree_null (iri->orig_url);
 
       /* Now, see if this new location makes sense. */
-      newloc_parsed = url_parse (mynewloc, &up_error_code, iri);
+      newloc_parsed = url_parse (mynewloc, &up_error_code, iri, true);
       if (!newloc_parsed)
         {
           char *error = url_error (mynewloc, up_error_code);
@@ -794,7 +795,7 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   if (!(*dt & RETROKF) && iri->utf8_encode)
     {
       iri->utf8_encode = false;
-      DEBUGP (("[IRI Fallbacking to non-utf8 for %s\n", quote (url)));
+      DEBUGP (("[IRI fallbacking to non-utf8 for %s\n", quote (url)));
       goto second_try;
     }
 
@@ -907,6 +908,8 @@ retrieve_from_file (const char *file, bool html, int *count)
 
       /* Reset UTF-8 encode status */
       iri->utf8_encode = opt.enable_iri;
+      xfree_null (iri->orig_url);
+      iri->orig_url = NULL;
 
       if ((opt.recursive || opt.page_requisites)
           && (cur_url->url->scheme != SCHEME_FTP || getproxy (cur_url->url)))
@@ -1100,7 +1103,7 @@ url_uses_proxy (const char *url)
   struct iri *i = iri_new();
   /* url was given in the command line, so use locale as encoding */
   set_uri_encoding (i, opt.locale, true);
-  u= url_parse (url, NULL, i);
+  u= url_parse (url, NULL, i, false);
   if (!u)
     return false;
   ret = getproxy (u) != NULL;

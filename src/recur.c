@@ -214,7 +214,7 @@ retrieve_tree (const char *start_url, struct iri *pi)
     set_uri_encoding (i, opt.locale, true);
 #undef COPYSTR
 
-  start_url_parsed = url_parse (start_url, &up_error_code, i);
+  start_url_parsed = url_parse (start_url, &up_error_code, i, true);
   if (!start_url_parsed)
     {
       char *error = url_error (start_url, up_error_code);
@@ -381,7 +381,7 @@ retrieve_tree (const char *start_url, struct iri *pi)
           if (children)
             {
               struct urlpos *child = children;
-              struct url *url_parsed = url_parse (url, NULL, i);
+              struct url *url_parsed = url_parse (url, NULL, i, false);
               struct iri *ci;
               char *referer_url = url;
               bool strip_auth = (url_parsed != NULL
@@ -694,10 +694,10 @@ descend_redirect_p (const char *redirected, const char *original, int depth,
   struct urlpos *upos;
   bool success;
 
-  orig_parsed = url_parse (original, NULL, NULL);
+  orig_parsed = url_parse (original, NULL, NULL, false);
   assert (orig_parsed != NULL);
 
-  new_parsed = url_parse (redirected, NULL, NULL);
+  new_parsed = url_parse (redirected, NULL, NULL, false);
   assert (new_parsed != NULL);
 
   upos = xnew0 (struct urlpos);

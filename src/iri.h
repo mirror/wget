@@ -33,6 +33,7 @@ as that of the covered work.  */
 struct iri {
   char *uri_encoding;      /* Encoding of the uri to fetch */
   char *content_encoding;  /* Encoding of links inside the fetched file */
+  char *orig_url;          /* */
   bool utf8_encode;        /* Will/Is the current url encoded in utf8 */
 };
 

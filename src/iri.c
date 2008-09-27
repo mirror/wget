@@ -298,6 +298,7 @@ iri_new (void)
   struct iri *i = xmalloc (sizeof (struct iri));
   i->uri_encoding = opt.encoding_remote ? xstrdup (opt.encoding_remote) : NULL;
   i->content_encoding = NULL;
+  i->orig_url = NULL;
   i->utf8_encode = opt.enable_iri;
   return i;
 }
@@ -308,6 +309,7 @@ iri_free (struct iri *i)
 {
   xfree_null (i->uri_encoding);
   xfree_null (i->content_encoding);
+  xfree_null (i->orig_url);
   xfree (i);
 }
 

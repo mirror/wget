@@ -288,7 +288,7 @@ append_url (const char *link_uri, int position, int size,
           return NULL;
         }
 
-      url = url_parse (link_uri, NULL, NULL);
+      url = url_parse (link_uri, NULL, NULL, false);
       if (!url)
         {
           DEBUGP (("%s: link \"%s\" doesn't parse.\n",
@@ -307,7 +307,7 @@ append_url (const char *link_uri, int position, int size,
       DEBUGP (("%s: merge(\"%s\", \"%s\") -> %s\n",
                ctx->document_file, base, link_uri, complete_uri));
 
-      url = url_parse (complete_uri, NULL, NULL);
+      url = url_parse (complete_uri, NULL, NULL, false);
       if (!url)
         {
           DEBUGP (("%s: merged link \"%s\" doesn't parse.\n",
@@ -752,7 +752,7 @@ get_urls_file (const char *file)
           url_text = merged;
         }
 
-      url = url_parse (url_text, &up_error_code, NULL);
+      url = url_parse (url_text, &up_error_code, NULL, false);
       if (!url)
         {
           char *error = url_error (url_text, up_error_code);
