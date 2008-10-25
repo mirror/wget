@@ -29,7 +29,7 @@ END {
     my $cols = 0;
     my $max_cols = 13;
     my $opt_chars = 
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%+/";
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     print "Free chars:\n\t";
     for (my $i = 0; $i < length $opt_chars; ++$i, ++$cols) {
         if ($cols == $max_cols) {
@@ -39,9 +39,9 @@ END {
         my $opt = substr($opt_chars,$i,1);
         print ' ';
         if (!$used_chars{ $opt }) {
-            print $opt;
+            print "-$opt";
         } else {
-            print ' ';
+            print '  ';
         }
     }
     print "\n";
