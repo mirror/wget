@@ -1,3 +1,9 @@
+2008-10-26  Gisle Vanem  <gvanem@broadpark.no>
+
+	* main.c (format_and_print_line): Put variables on top of
+	blocks (not all compilers are C99). Add an extra '\n' if
+	SYSTEM_WGETRC isn't defined and printed.
+
 2008-09-09  Gisle Vanem  <gvanem@broadpark.no>
 
 	* url.c (url_error): Use aprintf, not asprintf.

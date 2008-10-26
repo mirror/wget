@@ -709,17 +709,21 @@ static void
 format_and_print_line (char* prefix, char* line,
 		       int line_length) 
 {
+  int leading_spaces;
+  int remaining_chars;
+  char *token;
+  
   assert (prefix != NULL);
   assert (line != NULL);
 
   if (line_length <= 0)
     line_length = max_chars_per_line;
 
-  const int leading_spaces = strlen (prefix);
+  leading_spaces = strlen (prefix);
   printf ("%s", prefix);
-  int remaining_chars = line_length - leading_spaces;
+  remaining_chars = line_length - leading_spaces;
   /* We break on spaces. */
-  char* token = strtok (line, " ");
+  token = strtok (line, " ");
   while (token != NULL) 
     {
       /* If however a token is much larger than the maximum
@@ -727,8 +731,9 @@ format_and_print_line (char* prefix, char* line,
          token on the next line. */
       if (remaining_chars <= strlen (token)) 
         {
+          int j;
           printf ("\n");
-          int j = 0;
+          j = 0;
           for (j = 0; j < leading_spaces; j++) 
             {
               printf (" ");
@@ -759,13 +764,14 @@ print_version (void)
   const char *link_title    = "Link       : ";
   const char *prefix_spaces = "             ";
   const int prefix_space_length = strlen (prefix_spaces);
+  char *env_wgetrc, *user_wgetrc;
+  int i;
 
   printf ("GNU Wget %s\n", version_string);
   printf (options_title);
   /* compiled_features is a char*[]. We limit the characters per
      line to max_chars_per_line and prefix each line with a constant
      number of spaces for proper alignment. */
-  int i =0;
   for (i = 0; compiled_features[i] != NULL; ) 
     {
       int line_length = max_chars_per_line - prefix_space_length;
@@ -784,13 +790,13 @@ print_version (void)
   /* Handle the case when $WGETRC is unset and $HOME/.wgetrc is 
      absent. */
   printf (wgetrc_title);
-  char *env_wgetrc = wgetrc_env_file_name ();
+  env_wgetrc = wgetrc_env_file_name ();
   if (env_wgetrc && *env_wgetrc) 
     {
       printf ("%s (env)\n%s", env_wgetrc, prefix_spaces);
       xfree (env_wgetrc);
     }
-  char *user_wgetrc = wgetrc_user_file_name ();
+  user_wgetrc = wgetrc_user_file_name ();
   if (user_wgetrc) 
     {
       printf ("%s (user)\n%s", user_wgetrc, prefix_spaces);
@@ -798,6 +804,8 @@ print_version (void)
     }
 #ifdef SYSTEM_WGETRC
   printf ("%s (system)\n", SYSTEM_WGETRC);
+#else
+  putchar ('\n');
 #endif
 
   format_and_print_line (strdup (locale_title),
