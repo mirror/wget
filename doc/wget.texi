@@ -2671,6 +2671,9 @@ Ignore @var{n} remote directory components.  Equivalent to
 @item debug = on/off
 Debug mode, same as @samp{-d}.
 
+@item default_page = @var{string}
+Default page name---the same as @samp{--default-page=@var{string}}.
+
 @item delete_after = on/off
 Delete after download---the same as @samp{--delete-after}.
 
@@ -2963,6 +2966,9 @@ this off.
 Save cookies to @var{file}.  The same as @samp{--save-cookies
 @var{file}}.
 
+@item save_headers = on/off
+Same as @samp{--save-headers}.
+
 @item secure_protocol = @var{string}
 Choose the secure protocol to be used.  Legal values are @samp{auto}
 (the default), @samp{SSLv2}, @samp{SSLv3}, and @samp{TLSv1}.  The same
@@ -2974,6 +2980,9 @@ responses---the same as @samp{-S}.
 
 @item span_hosts = on/off
 Same as @samp{-H}.
+
+@item spider = on/off
+Same as @samp{--spider}.
 
 @item strict_comments = on/off
 Same as @samp{--strict-comments}.
@@ -2997,6 +3006,10 @@ variables are set.  In that case it is the same as using
 Specify username @var{string} for both @sc{ftp} and @sc{http} file retrieval. 
 This command can be overridden using the @samp{ftp_user} and 
 @samp{http_user} command for @sc{ftp} and @sc{http} respectively.
+
+@item user_agent = @var{string}
+User agent identification sent to the HTTP Server---the same as
+@samp{--user-agent=@var{string}}.
 
 @item verbose = on/off
 Turn verbose on/off---the same as @samp{-v}/@samp{-nv}.

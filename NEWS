@@ -27,6 +27,9 @@ support password prompts at the console.
  
 ** The --input-file option now also handles retrieving links from
 an external file.
+
+** Several previously existing, but undocumented .wgetrc options
+are now documented: save_headers, spider, and user_agent.
 
 * Changes in Wget 1.11.4
 

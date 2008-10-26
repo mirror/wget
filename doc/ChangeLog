@@ -1,3 +1,8 @@
+2008-09-30  Steven Schubiger  <stsc@members.fsf.org>
+
+	* wget.texi (Wgetrc Commands): Add default_page, save_headers, 
+	spider and user_agent to the list of recognized commands.
+
 2008-09-10  Michael Kessler  <kessler.michael@aon.at>
 
 	* wget.texi (Robot Exclusion): Fixed typo "downloads" ->
