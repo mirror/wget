@@ -75,6 +75,7 @@ clean_line(char *line)
   if (!len) return 0; 
   if (line[len - 1] == '\n')
     line[--len] = '\0';
+  if (!len) return 0; 
   if (line[len - 1] == '\r')
     line[--len] = '\0';
   for ( ; *line ; line++ ) if (*line == '\t') *line = ' '; 

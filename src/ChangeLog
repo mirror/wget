@@ -1,3 +1,9 @@
+2008-10-31  Alexander Drozdov  <dzal_mail@mtu-net.ru>
+
+	* retr.c (fd_read_hunk): Make assert deal with maxsize == 0.
+
+	* ftp-ls.c (clean_line): Prevent underflow on empty lines.
+
 2008-10-26  Gisle Vanem  <gvanem@broadpark.no>
 
 	* main.c (format_and_print_line): Put variables on top of
