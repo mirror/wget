@@ -1,3 +1,8 @@
+2008-10-31  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi (Mailing List): Update info to reflect change to
+	bug-wget@gnu.org.
+
 2008-09-30  Steven Schubiger  <stsc@members.fsf.org>
 
 	* wget.texi (Wgetrc Commands): Add default_page, save_headers, 

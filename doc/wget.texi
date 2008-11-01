@@ -3409,36 +3409,35 @@ information resides at ``The Wget Wgiki'',
 @cindex mailing list
 @cindex list
 
-There are several Wget-related mailing lists.  The general discussion
-list is at @email{wget@@sunsite.dk}.  It is the preferred place for
-support requests and suggestions, as well as for discussion of
-development.  You are invited to subscribe.
+The primary mailinglist for discussion, bug-reports, or questions
+about GNU Wget is at @email{bug-wget@@gnu.org}. To subscribe, send an
+email to @email{bug-wget-join@@gnu.org}, or visit
+@url{http://lists.gnu.org/mailman/listinfo/bug-wget}.
 
-To subscribe, simply send mail to @email{wget-subscribe@@sunsite.dk}
-and follow the instructions.  Unsubscribe by mailing to
-@email{wget-unsubscribe@@sunsite.dk}.  The mailing list is archived at
+Additionally, there is the @email{wget-notify@@addictivecode.org} mailing
+list. This is a non-discussion list that receives bug report
+notifications from the bug-tracker. To subscribe to this list,
+send an email to @email{wget-notify-join@@addictivecode.org},
+or visit @url{http://addictivecode.org/mailman/listinfo/wget-notify}.
+
+Previously, the mailing list @email{wget@@sunsite.dk} was used as the
+main discussion list, and another list,
+@email{wget-patches@@sunsite.dk} was used for submitting and
+discussing patches to GNU Wget.
+
+Messages from @email{wget@@sunsite.dk} are archived at
+@itemize @tie{}
+@item
 @url{http://www.mail-archive.com/wget%40sunsite.dk/} and at
+@item
 @url{http://news.gmane.org/gmane.comp.web.wget.general}.
+@end itemize
 
-Another mailing list is at @email{wget-patches@@sunsite.dk}, and is
-used to submit patches for review by Wget developers.  A ``patch'' is
-a textual representation of change to source code, readable by both
-humans and programs.  The
-@url{http://wget.addictivecode.org/PatchGuidelines} page
-covers the creation and submitting of patches in detail.  Please don't
-send general suggestions or bug reports to @samp{wget-patches}; use it
-only for patch submissions.
-
-Subscription is the same as above for @email{wget@@sunsite.dk}, except
-that you send to @email{wget-patches-subscribe@@sunsite.dk}, instead.
-The mailing list is archived at
+Messages from @email{wget-patches@@sunsite.dk} are archived at
+@itemize @tie{}
+@item
 @url{http://news.gmane.org/gmane.comp.web.wget.patches}.
-
-Finally, there is the @email{wget-notify@@addictivecode.org} mailing
-list. This is a non-discussion list that receives bug report-change
-notifications from the bug-tracker.  Unlike for the other mailing lists,
-subscription is through the @code{mailman} interface at
-@url{http://addictivecode.org/mailman/listinfo/wget-notify}.
+@end itemize
 
 @node Internet Relay Chat
 @section Internet Relay Chat

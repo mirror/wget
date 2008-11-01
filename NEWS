@@ -8,6 +8,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget 1.12 (MAINLINE)
 
+** Mailing list MOVED to bug-wget@gnu.org
+
 ** --default-page option added to support alternative default names for
 index.html.
 
