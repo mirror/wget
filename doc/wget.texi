@@ -4038,6 +4038,10 @@ subscribers of the Wget mailing list.
 * GNU Free Documentation License::  Licnse for copying this manual.
 @end menu
 
+@node GNU Free Documentation License
+@appendixsec GNU Free Documentation License
+@cindex FDL, GNU Free Documentation License
+
 @include fdl.texi
 
 
