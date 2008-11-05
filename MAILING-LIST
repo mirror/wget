@@ -4,7 +4,14 @@ Mailing List
 The primary mailinglist for discussion, bug-reports, or questions about
 GNU Wget is at <bug-wget@gnu.org>. To subscribe, send an email to
 <bug-wget-join@gnu.org>, or visit
-`http://lists.gnu.org/mailman/listinfo/bug-wget'.
+`http://lists.gnu.org/mailman/listinfo/bug-wget'. You do not need to
+subscribe to send a message to the list; however, please note that
+unsubscribed messages are moderated, and may take a while before they
+hit the list--*usually around a day*.  If you want your message to show
+up immediately, please subscribe to the list before posting.
+
+   Archives for this list may be found at
+`http://lists.gnu.org/pipermail/bug-wget/'.
 
    Additionally, there is the <wget-notify@addictivecode.org> mailing
 list. This is a non-discussion list that receives bug report

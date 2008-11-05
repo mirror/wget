@@ -2,6 +2,8 @@
 
 	* wget.texi: Move --no-http-keep-alive from FTP Options to HTTP
 	Options.
+	(Mailing List): Mention moderation for unsubscribed posts, and
+	archive location.
 
 2008-11-04  Micah Cowan  <micah@cowan.name>
 
