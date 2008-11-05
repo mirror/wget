@@ -1,3 +1,8 @@
+2008-11-05  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi: Move --no-http-keep-alive from FTP Options to HTTP
+	Options.
+
 2008-09-30  Steven Schubiger  <stsc@members.fsf.org>
 
 	* wget.texi (Wgetrc Commands): Add default_page, save_headers, 

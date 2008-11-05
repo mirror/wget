@@ -1131,6 +1131,19 @@ For more information about security issues with Wget, @xref{Security
 Considerations}.
 @end iftex
 
+@cindex Keep-Alive, turning off
+@cindex Persistent Connections, disabling
+@item --no-http-keep-alive
+Turn off the ``keep-alive'' feature for HTTP downloads.  Normally, Wget
+asks the server to keep the connection open so that, when you download
+more than one document from the same server, they get transferred over
+the same TCP connection.  This saves time and at the same time reduces
+the load on the server.
+
+This option is useful when, for some reason, persistent (keep-alive)
+connections don't work for you, for example due to a server bug or due
+to the inability of server-side scripts to cope with the connections.
+
 @cindex proxy
 @cindex cache
 @item --no-cache
@@ -1633,19 +1646,6 @@ Note that when retrieving a file (not a directory) because it was
 specified on the command-line, rather than because it was recursed to,
 this option has no effect.  Symbolic links are always traversed in this
 case.
-
-@cindex Keep-Alive, turning off
-@cindex Persistent Connections, disabling
-@item --no-http-keep-alive
-Turn off the ``keep-alive'' feature for HTTP downloads.  Normally, Wget
-asks the server to keep the connection open so that, when you download
-more than one document from the same server, they get transferred over
-the same TCP connection.  This saves time and at the same time reduces
-the load on the server.
-
-This option is useful when, for some reason, persistent (keep-alive)
-connections don't work for you, for example due to a server bug or due
-to the inability of server-side scripts to cope with the connections.
 @end table
 
 @node Recursive Retrieval Options
