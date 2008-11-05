@@ -1,33 +1,25 @@
 Mailing List
-================
+============
 
-There are several Wget-related mailing lists.  The general discussion
-list is at <wget@sunsite.dk>.  It is the preferred place for support
-requests and suggestions, as well as for discussion of development.
-You are invited to subscribe.
+The primary mailinglist for discussion, bug-reports, or questions about
+GNU Wget is at <bug-wget@gnu.org>. To subscribe, send an email to
+<bug-wget-join@gnu.org>, or visit
+`http://lists.gnu.org/mailman/listinfo/bug-wget'.
 
-   To subscribe, simply send mail to <wget-subscribe@sunsite.dk> and
-follow the instructions.  Unsubscribe by mailing to
-<wget-unsubscribe@sunsite.dk>.  The mailing list is archived at
-`http://www.mail-archive.com/wget%40sunsite.dk/' and at
-`http://news.gmane.org/gmane.comp.web.wget.general'.
-
-   Another mailing list is at <wget-patches@sunsite.dk>, and is used to
-submit patches for review by Wget developers.  A "patch" is a textual
-representation of change to source code, readable by both humans and
-programs.  The file `PATCHES' that comes with Wget covers the creation
-and submitting of patches in detail.  Please don't send general
-suggestions or bug reports to `wget-patches'; use it only for patch
-submissions.
-
-   Subscription is the same as above for <wget@sunsite.dk>, except that
-you send to <wget-patches-subscribe@sunsite.dk>, instead.  The mailing
-list is archived at `http://news.gmane.org/gmane.comp.web.wget.patches'.
-
-   Finally, there is the <wget-notify@addictivecode.org> mailing list.
-This is a non-discussion list that receives commit notifications from
-the source repository, and also bug report-change notifications.  This
-is the highest-traffic list for Wget, and is recommended only for
-people who are seriously interested in ongoing Wget development.
-Subscription is through the `mailman' interface at
+   Additionally, there is the <wget-notify@addictivecode.org> mailing
+list. This is a non-discussion list that receives bug report
+notifications from the bug-tracker. To subscribe to this list, send an
+email to <wget-notify-join@addictivecode.org>, or visit
 `http://addictivecode.org/mailman/listinfo/wget-notify'.
+
+   Previously, the mailing list <wget@sunsite.dk> was used as the main
+discussion list, and another list, <wget-patches@sunsite.dk> was used
+for submitting and discussing patches to GNU Wget.
+
+   Messages from <wget@sunsite.dk> are archived at
+     `http://www.mail-archive.com/wget%40sunsite.dk/' and at
+
+     `http://news.gmane.org/gmane.comp.web.wget.general'.
+
+   Messages from <wget-patches@sunsite.dk> are archived at
+     `http://news.gmane.org/gmane.comp.web.wget.patches'.

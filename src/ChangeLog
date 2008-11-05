@@ -1,3 +1,7 @@
+2008-10-31  Micah Cowan  <micah@cowan.name>
+
+	* main.c (print_version): Add information about the mailing list.
+
 2008-10-31  Alexander Drozdov  <dzal_mail@mtu-net.ru>
 
 	* retr.c (fd_read_hunk): Make assert deal with maxsize == 0.
