@@ -1,3 +1,8 @@
+2008-11-05  Micah Cowan  <micah@cowan.name>
+
+	* ftp.c (print_length): Should print humanized "size remaining"
+	only when it's at least 1k.
+
 2008-10-31  Micah Cowan  <micah@cowan.name>
 
 	* main.c (print_version): Add information about the mailing list.
