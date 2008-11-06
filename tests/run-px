@@ -52,7 +52,7 @@ my @results;
 
 for my $test (@tests) {
     print "Running $test\n\n";
-    system("$top_srcdir/tests/$test");
+    system("$^X $top_srcdir/tests/$test");
     push @results, $?;
 }
 

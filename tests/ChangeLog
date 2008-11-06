@@ -1,3 +1,8 @@
+2008-11-06  Steven Schubiger  <stsc@members.fsf.org>
+
+	* run-px: When executing test scripts, invoke them with the
+	current perl executable name as determined by env.
+
 2008-11-06  Micah Cowan  <micah@cowan.name>
 
 	* run-px: Use strict (thanks Steven Schubiger!).
