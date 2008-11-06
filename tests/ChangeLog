@@ -1,3 +1,7 @@
+2008-11-06  Micah Cowan  <micah@cowan.name>
+
+	* run-px: Use strict (thanks Steven Schubiger!).
+
 2008-06-22  Micah Cowan  <micah@cowan.name>
 
 	* Test-proxied-https-auth.px: Shift exit code so it falls in the

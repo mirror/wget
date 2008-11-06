@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
 use warnings;
+use strict;
 
 die "Please specify the top source directory.\n" if (!@ARGV);
 my $top_srcdir = shift @ARGV;
