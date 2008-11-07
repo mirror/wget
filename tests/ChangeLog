@@ -1,3 +1,9 @@
+2008-11-07  Steven Schubiger  <stsc@members.fsf.org>
+
+	* run-px: Use some colors for the summary part of the test
+	output to strengthen the distinction between a successful
+	or failing run.
+
 2008-11-06  Steven Schubiger  <stsc@members.fsf.org>
 
 	* run-px: When executing test scripts, invoke them with the
