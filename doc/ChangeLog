@@ -1,5 +1,8 @@
 2008-11-10  Micah Cowan  <micah@cowan.name>
 
+	* Makefile.am (EXTRA_DIST): Removed no-longer-present
+	README.maint (shouldn't have been there in the first place).
+
 	* wget.texi (Mailing Lists): Added information aboug Gmane portal,
 	added subsection headings.
 
