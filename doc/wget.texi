@@ -3303,7 +3303,7 @@ This chapter contains all the stuff that could not fit anywhere else.
 * Proxies::             Support for proxy servers.
 * Distribution::        Getting the latest version.
 * Web Site::            GNU Wget's presence on the World Wide Web.
-* Mailing List::        Wget mailing list for announcements and discussion.
+* Mailing Lists::       Wget mailing list for announcements and discussion.
 * Internet Relay Chat:: Wget's presence on IRC.
 * Reporting Bugs::      How and where to report bugs.
 * Portability::         The systems Wget works on.
@@ -3404,29 +3404,42 @@ The official web site for GNU Wget is at
 information resides at ``The Wget Wgiki'',
 @url{http://wget.addictivecode.org/}.
 
-@node Mailing List
-@section Mailing List
+@node Mailing Lists
+@section Mailing Lists
 @cindex mailing list
 @cindex list
+
+@unnumberedsubsec Primary List
 
 The primary mailinglist for discussion, bug-reports, or questions
 about GNU Wget is at @email{bug-wget@@gnu.org}. To subscribe, send an
 email to @email{bug-wget-join@@gnu.org}, or visit
-@url{http://lists.gnu.org/mailman/listinfo/bug-wget}. You do not need
-to subscribe to send a message to the list; however, please note that
-unsubscribed messages are moderated, and may take a while before they
-hit the list---@strong{usually around a day}.  If you want your
-message to show up immediately, please subscribe to the list before
-posting.
+@url{http://lists.gnu.org/mailman/listinfo/bug-wget}.
 
-Archives for this list may be found at
+You do not need to subscribe to send a message to the list; however,
+please note that unsubscribed messages are moderated, and may take a
+while before they hit the list---@strong{usually around a day}.  If
+you want your message to show up immediately, please subscribe to the
+list before posting. Archives for the list may be found at
 @url{http://lists.gnu.org/pipermail/bug-wget/}.
+
+An NNTP/Usenettish gateway is also available via
+@uref{http://gmane.org/about.php,Gmane}. You can see the Gmane
+archives at
+@url{http://news.gmane.org/gmane.comp.web.wget.general}. Note that the
+Gmane archives conveniently include messages from both the current
+list, and the previous one. Messages also show up in the Gmane
+archives sooner than they do at @url{lists.gnu.org}.
+
+@unnumberedsubsec Bug Notices List
 
 Additionally, there is the @email{wget-notify@@addictivecode.org} mailing
 list. This is a non-discussion list that receives bug report
 notifications from the bug-tracker. To subscribe to this list,
 send an email to @email{wget-notify-join@@addictivecode.org},
 or visit @url{http://addictivecode.org/mailman/listinfo/wget-notify}.
+
+@unnumberedsubsec Obsolete Lists
 
 Previously, the mailing list @email{wget@@sunsite.dk} was used as the
 main discussion list, and another list,
@@ -3438,7 +3451,8 @@ Messages from @email{wget@@sunsite.dk} are archived at
 @item
 @url{http://www.mail-archive.com/wget%40sunsite.dk/} and at
 @item
-@url{http://news.gmane.org/gmane.comp.web.wget.general}.
+@url{http://news.gmane.org/gmane.comp.web.wget.general} (which also
+continues to archive the current list, @email{bug-wget@@gnu.org}).
 @end itemize
 
 Messages from @email{wget-patches@@sunsite.dk} are archived at
@@ -3476,7 +3490,7 @@ Wget crashes, it's a bug.  If Wget does not behave as documented,
 it's a bug.  If things work strange, but you are not sure about the way
 they are supposed to work, it might well be a bug, but you might want to
 double-check the documentation and the mailing lists (@pxref{Mailing
-List}).
+Lists}).
 
 @item
 Try to repeat the bug in as simple circumstances as possible.  E.g. if
