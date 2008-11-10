@@ -3,6 +3,8 @@
 	* wget.texi (Mailing Lists): Added information aboug Gmane portal,
 	added subsection headings.
 
+	Update node pointers.
+	
 2008-11-05  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi: Move --no-http-keep-alive from FTP Options to HTTP
