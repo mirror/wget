@@ -12,6 +12,8 @@ my $top_srcdir = shift @ARGV;
 
 my @tests = (
     'Test-auth-basic.px',
+    'Test-auth-no-challenge.px',
+    'Test-auth-no-challenge-url.px',
     'Test-proxy-auth-basic.px',
     'Test-proxied-https-auth.px',
     'Test-N-HTTP-Content-Disposition.px',

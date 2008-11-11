@@ -1,3 +1,14 @@
+2008-11-11  Micah Cowan  <micah@cowan.name>
+
+	* HTTPServer.pm (handle_auth): Allow testing of
+	--auth-no-challenge.
+
+	* Test-auth-no-challenge.px, Test-auth-no-challenge-url.px:
+	Added.
+
+	* run-px: Add Test-auth-no-challenge.px,
+	Test-auth-no-challenge-url.px.
+
 2008-11-07  Steven Schubiger  <stsc@members.fsf.org>
 
 	* run-px: Use some colors for the summary part of the test

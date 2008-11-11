@@ -144,8 +144,7 @@ sub handle_auth {
     my $authhdr = $req->header('Authorization');
 
     # Have we sent the challenge yet?
-    unless (defined $url_rec->{auth_challenged}
-        && $url_rec->{auth_challenged}) {
+    unless ($url_rec->{auth_challenged} || $url_rec->{auth_no_challenge}) {
         # Since we haven't challenged yet, we'd better not
         # have received authentication (for our testing purposes).
         if ($authhdr) {
@@ -166,6 +165,9 @@ sub handle_auth {
         # failed it.
         $code = 400;
         $msg  = "You didn't send auth after I sent challenge";
+        if ($url_rec->{auth_no_challenge}) {
+            $msg = "--auth-no-challenge but no auth sent."
+        }
     } else {
         my ($sent_method) = ($authhdr =~ /^(\S+)/g);
         unless ($sent_method eq $url_rec->{'auth_method'}) {
