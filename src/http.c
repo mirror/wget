@@ -1495,9 +1495,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
   user = user ? user : (opt.http_user ? opt.http_user : opt.user);
   passwd = passwd ? passwd : (opt.http_passwd ? opt.http_passwd : opt.passwd);
 
-  if (user && passwd
-      && !u->user) /* We only do "site-wide" authentication with "global"
-                      user/password values; URL user/password info overrides. */
+  /* We only do "site-wide" authentication with "global" user/password
+   * values unless --auth-no-challange has been requested; URL user/password
+   * info overrides. */
+  if (user && passwd && (!u->user || opt.auth_without_challenge))
     {
       /* If this is a host for which we've already received a Basic
        * challenge, we'll go ahead and send Basic authentication creds. */
