@@ -1,3 +1,8 @@
+2008-11-11  Steven Schubiger  <stsc@members.fsf.org>
+
+	* main.c (format_and_print_line): Move both the memory
+	allocating and freeing bits upwards to print_version().
+
 2008-11-10  Saint Xavier  <wget@sxav.eu>
 
 	* http.c: Make --auth-no-challenge works with user:pass@ in URLs.

@@ -706,8 +706,8 @@ prompt_for_password (void)
    and an appropriate number of spaces are added on subsequent
    lines.*/
 static void
-format_and_print_line (char* prefix, char* line,
-		       int line_length) 
+format_and_print_line (const char *prefix, char *line,
+                       int line_length) 
 {
   int leading_spaces;
   int remaining_chars;
@@ -746,12 +746,6 @@ format_and_print_line (char* prefix, char* line,
     }
 
   printf ("\n");
-
-  /* FIXME: Responsibility for deallocation should be handled by
-     whatever allocated it, wherever possible. These two lines result
-     in unnecessary strdup calls in the print_version function. */
-  xfree (prefix);
-  xfree (line);
 }
 
 static void
@@ -764,6 +758,7 @@ print_version (void)
   const char *link_title    = "Link       : ";
   const char *prefix_spaces = "             ";
   const int prefix_space_length = strlen (prefix_spaces);
+  char *line;
   char *env_wgetrc, *user_wgetrc;
   int i;
 
@@ -808,17 +803,24 @@ print_version (void)
   putchar ('\n');
 #endif
 
-  format_and_print_line (strdup (locale_title),
-			 strdup (LOCALEDIR), 
+  line = xstrdup (LOCALEDIR);
+  format_and_print_line (locale_title,
+			 line, 
 			 max_chars_per_line);
+  xfree (line);
   
-  format_and_print_line (strdup (compile_title),
-			 strdup (compilation_string),
+  line = xstrdup (compilation_string);
+  format_and_print_line (compile_title,
+			 line,
 			 max_chars_per_line);
+  xfree (line);
 
-  format_and_print_line (strdup (link_title),
-			 strdup (link_string),
+  line = xstrdup (link_string);
+  format_and_print_line (link_title,
+			 line,
 			 max_chars_per_line);
+  xfree (line);
+
   printf ("\n");
   /* TRANSLATORS: When available, an actual copyright character
      (cirle-c) should be used in preference to "(C)". */
