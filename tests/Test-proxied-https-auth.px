@@ -1,6 +1,7 @@
 #!/usr/bin/perl
-use warnings;
+
 use strict;
+use warnings;
 
 use WgetTest;  # For $WGETPATH.
 

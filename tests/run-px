@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 
 use 5.006;
-use warnings;
 use strict;
+use warnings;
 
 use Term::ANSIColor ':constants';
 $Term::ANSIColor::AUTORESET = 1;
