@@ -1,11 +1,10 @@
-#!/usr/bin/perl -w
-
 # Part of this code was borrowed from Richard Jones's Net::FTPServer
 # http://www.annexia.org/freeware/netftpserver
 
 package FTPServer;
 
 use strict;
+use warnings;
 
 use Cwd;
 use Socket;

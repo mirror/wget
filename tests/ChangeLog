@@ -1,3 +1,9 @@
+2008-11-12  Steven Schubiger  <stsc@members.fsf.org>
+
+	* FTPServer.pm, FTPTest.pm, HTTPServer.pm, HTTPTest.pm:
+	Remove the magic interpreter line, because it cannot be
+	used fully. Substitute -w with use warnings.
+
 2008-11-11  Micah Cowan  <micah@cowan.name>
 
 	* HTTPServer.pm (handle_auth): Allow testing of

@@ -1,8 +1,7 @@
-#!/usr/bin/perl -w
-
 package HTTPServer;
 
 use strict;
+use warnings;
 
 use HTTP::Daemon;
 use HTTP::Status;
