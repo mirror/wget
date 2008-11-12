@@ -1,3 +1,8 @@
+2008-11-12  Steven Schubiger  <stsc@members.fsf.org>
+
+	* main.c (print_version): Hand the relevant
+	xstrdup/xfree calls back to format_and_print_line().
+
 2008-11-11  Steven Schubiger  <stsc@members.fsf.org>
 
 	* main.c (format_and_print_line): Move both the memory

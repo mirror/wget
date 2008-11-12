@@ -706,15 +706,17 @@ prompt_for_password (void)
    and an appropriate number of spaces are added on subsequent
    lines.*/
 static void
-format_and_print_line (const char *prefix, char *line,
+format_and_print_line (const char *prefix, const char *line,
                        int line_length) 
 {
   int leading_spaces;
   int remaining_chars;
-  char *token;
+  char *line_dup, *token;
   
   assert (prefix != NULL);
   assert (line != NULL);
+
+  line_dup = xstrdup (line);
 
   if (line_length <= 0)
     line_length = max_chars_per_line;
@@ -723,7 +725,7 @@ format_and_print_line (const char *prefix, char *line,
   printf ("%s", prefix);
   remaining_chars = line_length - leading_spaces;
   /* We break on spaces. */
-  token = strtok (line, " ");
+  token = strtok (line_dup, " ");
   while (token != NULL) 
     {
       /* If however a token is much larger than the maximum
@@ -746,6 +748,8 @@ format_and_print_line (const char *prefix, char *line,
     }
 
   printf ("\n");
+
+  xfree (line_dup);
 }
 
 static void
@@ -803,23 +807,17 @@ print_version (void)
   putchar ('\n');
 #endif
 
-  line = xstrdup (LOCALEDIR);
   format_and_print_line (locale_title,
-			 line, 
+			 LOCALEDIR, 
 			 max_chars_per_line);
-  xfree (line);
   
-  line = xstrdup (compilation_string);
   format_and_print_line (compile_title,
-			 line,
+			 compilation_string,
 			 max_chars_per_line);
-  xfree (line);
 
-  line = xstrdup (link_string);
   format_and_print_line (link_title,
-			 line,
+			 link_string,
 			 max_chars_per_line);
-  xfree (line);
 
   printf ("\n");
   /* TRANSLATORS: When available, an actual copyright character
