@@ -1,3 +1,7 @@
+2008-11-12  Micah Cowan  <micah@cowan.name>
+
+	* ftp-ls.c (ftp_index): HTML-escape dir name in title, h1.
+
 2008-11-12  Alexander Belopolsky  <alexander.belopolsky@gmail.com>
 
 	* url.c, url.h (url_escape_unsafe_and_reserved): Added.
