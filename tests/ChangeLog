@@ -1,3 +1,8 @@
+2008-11-13  Steven Schubiger  <stsc@members.fsf.org>
+
+	* FTPServer.pm, FTPTest.pm, HTTPServer.pm, HTTPTest.pm,
+	WgetTest.pm.in: Clean up leftover whitespace.
+
 2008-11-12  Steven Schubiger  <stsc@members.fsf.org>
 
 	* Test-auth-basic.px, Test-auth-no-challenge.px,

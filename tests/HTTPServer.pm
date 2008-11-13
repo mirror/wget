@@ -22,7 +22,7 @@ sub run {
         if (!$initialized) {
             $synch_callback->();
             $initialized = 1;
-        }        
+        }
         my $con = $self->accept();
         print STDERR "Accepted a new connection\n" if $log;
         while (my $req = $con->get_request) {
@@ -44,14 +44,14 @@ sub run {
             if (exists($urls->{$url_path})) {
                 print STDERR "Serving requested URL: ", $url_path, "\n" if $log;
                 next unless ($req->method eq "HEAD" || $req->method eq "GET");
-                
+
                 my $url_rec = $urls->{$url_path};
                 $self->send_response($req, $url_rec, $con);
             } else {
                 print STDERR "Requested wrong URL: ", $url_path, "\n" if $log;
                 $con->send_error($HTTP::Status::RC_FORBIDDEN);
                 last;
-            }            
+            }
         }
         print STDERR "Closing connection\n" if $log;
         $con->close;

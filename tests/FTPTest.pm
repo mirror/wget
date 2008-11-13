@@ -13,7 +13,7 @@ my $VERSION = 0.01;
 {
     my %_attr_data = ( # DEFAULT
     );
-    
+
     sub _default_for
     {
         my ($self, $attr) = @_;
@@ -27,7 +27,7 @@ my $VERSION = 0.01;
         ($self->SUPER::_standard_keys(), keys %_attr_data);
     }
 }
-    
+
 
 sub _setup_server {
     my $self = shift;
