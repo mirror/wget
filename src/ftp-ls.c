@@ -890,7 +890,6 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
   fprintf (fp, _("Index of /%s on %s:%d"), htcldir, u->host, u->port);
   fprintf (fp, "</h1>\n<hr>\n<pre>\n");
 
-  xfree (htcldir);
   while (f)
     {
       fprintf (fp, "  ");
@@ -934,7 +933,11 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
       fprintf (fp, "<a href=\"ftp://%s%s:%d", upwd, u->host, u->port);
       if (*u->dir != '/')
         putc ('/', fp);
-      fprintf (fp, "%s", u->dir);
+      /* XXX: Should probably URL-escape dir components here, rather
+       * than just HTML-escape, for consistency with the next bit where
+       * we use urlclfile for the file component. Anyway, this is safer
+       * than what we had... */
+      fprintf (fp, "%s", htcldir);
       if (*u->dir)
         putc ('/', fp);
       fprintf (fp, "%s", urlclfile);
@@ -954,6 +957,7 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
       f = f->next;
     }
   fprintf (fp, "</pre>\n</body>\n</html>\n");
+  xfree (htcldir);
   xfree (upwd);
   if (!output_stream)
     fclose (fp);

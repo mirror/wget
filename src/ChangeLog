@@ -1,6 +1,6 @@
 2008-11-12  Micah Cowan  <micah@cowan.name>
 
-	* ftp-ls.c (ftp_index): HTML-escape dir name in title, h1.
+	* ftp-ls.c (ftp_index): HTML-escape dir name in title, h1, a:href.
 
 2008-11-12  Alexander Belopolsky  <alexander.belopolsky@gmail.com>
 
