@@ -851,6 +851,7 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
   FILE *fp;
   char *upwd;
   char *htclfile;               /* HTML-clean file name */
+  char *urlclfile;              /* URL-clean file name */
 
   if (!output_stream)
     {
@@ -923,13 +924,14 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
           break;
         }
       htclfile = html_quote_string (f->name);
+      urlclfile = url_escape_unsafe_and_reserved (f->name);
       fprintf (fp, "<a href=\"ftp://%s%s:%d", upwd, u->host, u->port);
       if (*u->dir != '/')
         putc ('/', fp);
       fprintf (fp, "%s", u->dir);
       if (*u->dir)
         putc ('/', fp);
-      fprintf (fp, "%s", htclfile);
+      fprintf (fp, "%s", urlclfile);
       if (f->type == FT_DIRECTORY)
         putc ('/', fp);
       fprintf (fp, "\">%s", htclfile);
@@ -942,6 +944,7 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
         fprintf (fp, "-> %s", f->linkto ? f->linkto : "(nil)");
       putc ('\n', fp);
       xfree (htclfile);
+      xfree (urlclfile);
       f = f->next;
     }
   fprintf (fp, "</pre>\n</body>\n</html>\n");

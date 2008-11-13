@@ -1,3 +1,10 @@
+2008-11-12  Alexander Belopolsky  <alexander.belopolsky@gmail.com>
+
+	* url.c, url.h (url_escape_unsafe_and_reserved): Added.
+
+	* ftp-ls.c (ftp_index): URL-escape, rather than HTML-escape, the
+	filename appearing in the link.
+
 2008-11-12  Steven Schubiger  <stsc@members.fsf.org>
 
 	* main.c (print_version): Hand the relevant
