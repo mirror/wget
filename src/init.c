@@ -331,6 +331,8 @@ defaults (void)
   opt.restrict_files_case = restrict_no_case_restriction;
 
   opt.max_redirect = 20;
+
+  opt.waitretry = 10;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is
