@@ -69,6 +69,7 @@ typedef struct
   struct url *proxy;            /* FTWK-style proxy */
 } ccon;
 
+extern int numurls;
 
 /* Look for regexp "( *[0-9]+ *byte" (literal parenthesis) anywhere in
    the string S, and return the number converted to wgint, if found, 0
@@ -1295,7 +1296,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
                number of bytes and files downloaded. */
             {
               total_downloaded_bytes += len;
-              opt.numurls++;
+              numurls++;
             }
 
           /* Deletion of listing files is not controlled by --delete-after, but
@@ -1310,7 +1311,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
              for instance, may want to know how many bytes and files they've
              downloaded through it. */
           total_downloaded_bytes += len;
-          opt.numurls++;
+          numurls++;
 
           if (opt.delete_after)
             {

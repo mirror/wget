@@ -142,6 +142,8 @@ struct request {
   int hcount, hcapacity;
 };
 
+extern int numurls;
+
 /* Create a new, empty request.  At least request_set_method must be
    called before the request can be used.  */
 
@@ -2760,7 +2762,7 @@ Remote file exists.\n\n"));
                          number_to_static_string (hstat.contlen),
                          hstat.local_file, count);
             }
-          ++opt.numurls;
+          ++numurls;
           total_downloaded_bytes += hstat.len;
 
           /* Remember that we downloaded the file for later ".orig" code. */
@@ -2788,7 +2790,7 @@ Remote file exists.\n\n"));
                              tms, u->url, number_to_static_string (hstat.len),
                              hstat.local_file, count);
                 }
-              ++opt.numurls;
+              ++numurls;
               total_downloaded_bytes += hstat.len;
 
               /* Remember that we downloaded the file for later ".orig" code. */
