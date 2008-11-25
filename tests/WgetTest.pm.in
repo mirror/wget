@@ -1,5 +1,3 @@
-#!/usr/bin/perl -w
-
 # WARNING!
 # WgetTest.pm is a generated file! Do not edit! Edit WgetTest.pm.in
 # instead.
@@ -8,6 +6,7 @@ package WgetTest;
 $VERSION = 0.01;
 
 use strict;
+use warnings;
 
 use Cwd;
 use File::Path;
