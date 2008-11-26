@@ -1,3 +1,11 @@
+2008-11-26  Micah Cowan  <micah@cowan.name>  (not copyrightable)
+
+	* Test-ftp-iri-disabled.px, Test-ftp-iri-fallback.px,
+	Test-ftp-iri.px, Test-idn-cmd.px, Test-idn-headers.px,
+	Test-idn-meta.px, Test-iri-disabled.px,
+	Test-iri-forced-remote.px, Test-iri-list.px, Test-iri.px: More
+	module-scope warnings.
+
 2008-11-12  Steven Schubiger  <stsc@members.fsf.org>
 
 	* Test-auth-basic.px, Test-auth-no-challenge.px,
