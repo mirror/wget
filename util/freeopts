@@ -1,0 +1,48 @@
+#!/usr/bin/perl -n
+# NOTE the use of -n above; this script is called in a loop.
+use warnings;
+use strict;
+
+our $scanning;
+our %used_chars;
+BEGIN {
+    $scanning = 0;
+    %used_chars = ();
+
+    open STDIN, "../src/main.c" or die "main.c: $!\n";
+}
+
+if (/^static struct cmdline_option option_data/) {
+    $scanning = 1;
+}
+elsif (/[}];/) {
+    $scanning = 0;
+}
+elsif (
+    $scanning &&
+    /^[\t ]*\{ "[^"]*", '(.)', OPT_[A-Z0-9_]*, /
+) {
+    $used_chars{$1} = 1;
+}
+
+END {
+    my $cols = 0;
+    my $max_cols = 13;
+    my $opt_chars = 
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    print "Free chars:\n\t";
+    for (my $i = 0; $i < length $opt_chars; ++$i, ++$cols) {
+        if ($cols == $max_cols) {
+            $cols = 0;
+            print "\n\t";
+        }
+        my $opt = substr($opt_chars,$i,1);
+        print ' ';
+        if (!$used_chars{ $opt }) {
+            print "-$opt";
+        } else {
+            print '  ';
+        }
+    }
+    print "\n";
+}

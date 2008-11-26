@@ -1,3 +1,11 @@
+2008-09-09  Gisle Vanem  <gvanem@broadpark.no>
+
+	* config-compiler.h: MingW do have <stdint.h>; added HAVE_STDINT_H.
+	Added _CRT_SECURE_NO_WARNINGS to supress warnings in MSVC8+ about
+	using "old" ANSI-functions.
+
+	* config.h: config-post.h is gone. SIZEOF_LONG_LONG is 8.
+
 2008-01-25  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am, Makefile.doc, Makefile.src, Makefile.top,

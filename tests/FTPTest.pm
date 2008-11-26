@@ -1,8 +1,7 @@
-#!/usr/bin/perl -w
-
 package FTPTest;
 
 use strict;
+use warnings;
 
 use FTPServer;
 use WgetTest;

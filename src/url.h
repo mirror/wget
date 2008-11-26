@@ -83,6 +83,7 @@ struct url
 /* Function declarations */
 
 char *url_escape (const char *);
+char *url_escape_unsafe_and_reserved (const char *);
 
 struct url *url_parse (const char *, int *, struct iri *iri);
 char *url_error (const char *, int);

@@ -1,8 +1,7 @@
-#!/usr/bin/perl -w
-
 package HTTPTest;
 
 use strict;
+use warnings;
 
 use HTTPServer;
 use WgetTest;

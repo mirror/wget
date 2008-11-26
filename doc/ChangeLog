@@ -1,3 +1,39 @@
+2008-11-10  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am (EXTRA_DIST): Removed no-longer-present
+	README.maint (shouldn't have been there in the first place).
+
+	* wget.texi (Mailing Lists): Added information aboug Gmane portal,
+	added subsection headings.
+
+	Update node pointers.
+	
+2008-11-05  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi: Move --no-http-keep-alive from FTP Options to HTTP
+	Options.
+	(Mailing List): Mention moderation for unsubscribed posts, and
+	archive location.
+
+2008-11-04  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi, fdl.texi: Updated to FDL version 1.3.
+
+2008-10-31  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi (Mailing List): Update info to reflect change to
+	bug-wget@gnu.org.
+
+2008-09-30  Steven Schubiger  <stsc@members.fsf.org>
+
+	* wget.texi (Wgetrc Commands): Add default_page, save_headers, 
+	spider and user_agent to the list of recognized commands.
+
+2008-09-10  Michael Kessler  <kessler.michael@aon.at>
+
+	* wget.texi (Robot Exclusion): Fixed typo "downloads" ->
+	"download"
+
 2008-08-03  Xavier Saint  <wget@sxav.eu>
 
 	* wget.texi : Add option descriptions for the three new

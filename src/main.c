@@ -72,8 +72,6 @@ extern char *system_getrc;
 extern char *link_string;
 /* defined in build_info.c */
 extern char *compiled_features[];
-extern char *system_wgetrc;
-extern char *locale_dir;
 /* Used for --version output in print_version */
 static const int max_chars_per_line = 72;
 
@@ -711,20 +709,26 @@ prompt_for_password (void)
    and an appropriate number of spaces are added on subsequent
    lines.*/
 static void
-format_and_print_line (char* prefix, char* line,
-		       int line_length) 
+format_and_print_line (const char *prefix, const char *line,
+                       int line_length) 
 {
+  int leading_spaces;
+  int remaining_chars;
+  char *line_dup, *token;
+  
   assert (prefix != NULL);
   assert (line != NULL);
+
+  line_dup = xstrdup (line);
 
   if (line_length <= 0)
     line_length = max_chars_per_line;
 
-  const int leading_spaces = strlen (prefix);
+  leading_spaces = strlen (prefix);
   printf ("%s", prefix);
-  int remaining_chars = line_length - leading_spaces;
+  remaining_chars = line_length - leading_spaces;
   /* We break on spaces. */
-  char* token = strtok (line, " ");
+  token = strtok (line_dup, " ");
   while (token != NULL) 
     {
       /* If however a token is much larger than the maximum
@@ -732,8 +736,9 @@ format_and_print_line (char* prefix, char* line,
          token on the next line. */
       if (remaining_chars <= strlen (token)) 
         {
+          int j;
           printf ("\n");
-          int j = 0;
+          j = 0;
           for (j = 0; j < leading_spaces; j++) 
             {
               printf (" ");
@@ -746,8 +751,8 @@ format_and_print_line (char* prefix, char* line,
     }
 
   printf ("\n");
-  xfree (prefix);
-  xfree (line);
+
+  xfree (line_dup);
 }
 
 static void
@@ -760,13 +765,15 @@ print_version (void)
   const char *link_title    = "Link       : ";
   const char *prefix_spaces = "             ";
   const int prefix_space_length = strlen (prefix_spaces);
+  char *line;
+  char *env_wgetrc, *user_wgetrc;
+  int i;
 
   printf ("GNU Wget %s\n", version_string);
   printf (options_title);
   /* compiled_features is a char*[]. We limit the characters per
      line to max_chars_per_line and prefix each line with a constant
      number of spaces for proper alignment. */
-  int i =0;
   for (i = 0; compiled_features[i] != NULL; ) 
     {
       int line_length = max_chars_per_line - prefix_space_length;
@@ -785,31 +792,36 @@ print_version (void)
   /* Handle the case when $WGETRC is unset and $HOME/.wgetrc is 
      absent. */
   printf (wgetrc_title);
-  char *env_wgetrc = wgetrc_env_file_name ();
+  env_wgetrc = wgetrc_env_file_name ();
   if (env_wgetrc && *env_wgetrc) 
     {
       printf ("%s (env)\n%s", env_wgetrc, prefix_spaces);
       xfree (env_wgetrc);
     }
-  char *user_wgetrc = wgetrc_user_file_name ();
+  user_wgetrc = wgetrc_user_file_name ();
   if (user_wgetrc) 
     {
       printf ("%s (user)\n%s", user_wgetrc, prefix_spaces);
       xfree (user_wgetrc);
     }
-  printf ("%s (system)\n", system_wgetrc);
+#ifdef SYSTEM_WGETRC
+  printf ("%s (system)\n", SYSTEM_WGETRC);
+#else
+  putchar ('\n');
+#endif
 
-  format_and_print_line (strdup (locale_title),
-			 strdup (locale_dir), 
+  format_and_print_line (locale_title,
+			 LOCALEDIR, 
 			 max_chars_per_line);
   
-  format_and_print_line (strdup (compile_title),
-			 strdup (compilation_string),
+  format_and_print_line (compile_title,
+			 compilation_string,
 			 max_chars_per_line);
 
-  format_and_print_line (strdup (link_title),
-			 strdup (link_string),
+  format_and_print_line (link_title,
+			 link_string,
 			 max_chars_per_line);
+
   printf ("\n");
   /* TRANSLATORS: When available, an actual copyright character
      (cirle-c) should be used in preference to "(C)". */
@@ -826,8 +838,12 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout);
          stdout);
   fputs (_("Currently maintained by Micah Cowan <micah@cowan.name>.\n"),
          stdout);
+  fputs (_("Please send bug reports and questions to <bug-wget@gnu.org>.\n"),
+         stdout);
   exit (0);
 }
+
+char *program_name; /* Needed by lib/error.c. */
 
 int
 main (int argc, char **argv)
@@ -836,6 +852,8 @@ main (int argc, char **argv)
   int i, ret, longindex;
   int nurl, status;
   bool append_to_log = false;
+
+  program_name = argv[0];
 
   i18n_initialize ();
 

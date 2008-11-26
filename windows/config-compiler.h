@@ -83,6 +83,7 @@ as that of the covered work.  */
 
 /* MinGW and GCC support some POSIX and C99 features.  */
 #define HAVE_INTTYPES_H 1
+#define HAVE_STDINT_H 1
 
 #define HAVE__BOOL 1
 #undef SIZEOF_LONG_LONG		/* avoid redefinition warning */
@@ -128,6 +129,7 @@ as that of the covered work.  */
 #if _MSC_VER >= 1400
 #pragma warning ( disable : 4996 )
 #define _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_WARNINGS
 #endif
 
 
