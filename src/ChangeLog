@@ -1,3 +1,10 @@
+2008-11-27  Saint Xavier  <wget@sxav.eu>
+
+	* http.c (gethttp): Move authentication code before filename
+	allocation avoiding fallbacking on default filename because
+	"Content-Disposition" header wasn't present before authentcation
+	has been completed. Fixes bug #24862.
+
 2008-11-16  Steven Schubiger  <stsc@members.fsf.org>
 
 	* main.c: Declare and initialize the numurls counter.
