@@ -1,3 +1,8 @@
+2008-11-13  Micah Cowan  <micah@cowan.name>
+
+	* http.c (gethttp): Don't do anything when content-length >= our
+	requested range.
+
 2008-11-16  Steven Schubiger  <stsc@members.fsf.org>
 
 	* main.c: Declare and initialize the numurls counter.
