@@ -24,6 +24,14 @@
 
 	* AUTHORS: Added Steven Schubiger.
 
+2008-06-26  Xavier Saint  <wget@sxav.eu>
+
+	* configure.ac : IRIs support required libiconv, check it.
+
+2008-06-14  Xavier Saint  <wget@sxav.eu>
+
+	* configure.ac: Add support for IRIs
+
 2008-05-29  Micah Cowan  <micah@cowan.name>
 
 	* po/*.po: Updated from TP (the 1.11.3 set).

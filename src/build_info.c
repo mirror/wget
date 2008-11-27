@@ -97,6 +97,13 @@ const char* (compiled_features[]) =
 #else
   "-gettext",
 #endif
+
+#ifdef ENABLE_IRI
+  "+iri",
+#else
+  "-iri",
+#endif
+
   /* sentinel value */
   NULL
 };

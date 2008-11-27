@@ -113,3 +113,12 @@
 
 # To try ipv6 addresses first:
 #prefer-family = IPv6
+
+# Set default IRI support state
+#iri = off
+
+# Force the default system encoding
+#locale = UTF-8
+
+# Force the default remote server encoding
+#remoteencoding = UTF-8

@@ -649,7 +649,7 @@ static const char *parse_errors[] = {
    error, and if ERROR is not NULL, also set *ERROR to the appropriate
    error code. */
 struct url *
-url_parse (const char *url, int *error)
+url_parse (const char *url, int *error, struct iri *iri)
 {
   struct url *u;
   const char *p;
@@ -668,7 +668,7 @@ url_parse (const char *url, int *error)
   int port;
   char *user = NULL, *passwd = NULL;
 
-  char *url_encoded = NULL;
+  char *url_encoded = NULL, *new_url = NULL;
 
   int error_code;
 
@@ -679,8 +679,19 @@ url_parse (const char *url, int *error)
       goto error;
     }
 
-  url_encoded = reencode_escapes (url);
+  if (iri && iri->utf8_encode)
+    {
+      url_unescape ((char *) url);
+      iri->utf8_encode = remote_to_utf8 (iri, url, (const char **) &new_url);
+      if (!iri->utf8_encode)
+        new_url = NULL;
+    }
+
+  url_encoded = reencode_escapes (new_url ? new_url : url);
   p = url_encoded;
+
+  if (new_url && url_encoded != new_url)
+    xfree (new_url);
 
   p += strlen (supported_schemes[scheme].leading_string);
   uname_b = p;
@@ -851,6 +862,18 @@ url_parse (const char *url, int *error)
     {
       url_unescape (u->host);
       host_modified = true;
+
+      /* Apply IDNA regardless of iri->utf8_encode status */
+      if (opt.enable_iri && iri)
+        {
+          char *new = idn_encode (iri, u->host);
+          if (new)
+            {
+              xfree (u->host);
+              u->host = new;
+              host_modified = true;
+            }
+        }
     }
 
   if (params_b)
@@ -860,7 +883,7 @@ url_parse (const char *url, int *error)
   if (fragment_b)
     u->fragment = strdupdelim (fragment_b, fragment_e);
 
-  if (path_modified || u->fragment || host_modified || path_b == path_e)
+  if (opt.enable_iri || path_modified || u->fragment || host_modified || path_b == path_e)
     {
       /* If we suspect that a transformation has rendered what
          url_string might return different from URL_ENCODED, rebuild

@@ -1,3 +1,11 @@
+2008-11-26  Micah Cowan  <micah@cowan.name>  (not copyrightable)
+
+	* Test-ftp-iri-disabled.px, Test-ftp-iri-fallback.px,
+	Test-ftp-iri.px, Test-idn-cmd.px, Test-idn-headers.px,
+	Test-idn-meta.px, Test-iri-disabled.px,
+	Test-iri-forced-remote.px, Test-iri-list.px, Test-iri.px: More
+	module-scope warnings.
+
 2008-11-25  Steven Schubiger  <stsc@members.fsf.org>
 
 	* WgetTest.pm.in: Remove the magic interpreter line;
@@ -70,6 +78,51 @@
 2008-11-06  Micah Cowan  <micah@cowan.name>
 
 	* run-px: Use strict (thanks Steven Schubiger!).
+
+2008-09-09  Micah Cowan  <micah@cowan.name>
+
+	* Test-idn-cmd.px: Added.
+
+	* run-px: Added Test-idn-cmd.px.
+
+2008-08-28  Micah Cowan  <micah@cowan.name>
+
+	* HTTPServer.pm (run): Allow distinguishing between hostnames,
+	when used as a proxy.
+
+	* Test-idn-headers.px, Test-idn-meta.px: Added.
+
+	* run-px: Added Test-idn-headers.px, Test-idn-meta.px.
+
+	* Test-proxy-auth-basic.px: Use the full URL, rather than just the
+	path (made necessary by the accompanying change to HTTPServer.pm).
+
+2008-08-14  Xavier Saint <wget@sxav.eu>
+	
+	* Test-iri-list.px : Fetch files from a remote list.
+
+2008-08-03  Xavier Saint <wget@sxav.eu>
+
+	* Test-iri.px : HTTP recursive fetch for testing IRI support and
+	fallback.
+
+	* Test-iri-disabled.px : Same file structure as Test-iri.px but with
+	IRI support disabled
+
+	* Test-iri-forced-remote.px : There's a difference between ISO-8859-1
+	and ISO-8859-15 for character 0xA4 (respectively currency sign and
+	euro sign). So with a forced ISO-8859-1 remote encoding, wget should
+	see 0xA4 as a currency sign and transcode it correctly in UTF-8 instead
+	of using the ISO-8859-15 given by the server.
+
+	* Test-ftp-iri.px : Give a file to fetch via FTP in a specific locale
+	and expect wget to fetch the file UTF-8 encoded.
+
+	* Test-ftp-iri-fallback.px : Same as above but wget should fallback on
+	locale encoding to fetch the file.
+
+	* Test-ftp-iri.px : Same as Test-ftp-iri.px but with IRI support
+	disabled. The UTF-8 encoded file should not be retrieved.
 
 2008-06-22  Micah Cowan  <micah@cowan.name>
 

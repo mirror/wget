@@ -120,10 +120,26 @@
 	* init.c (cleanup): Free the memory associated with the base
 	option (when DEBUG_MALLOC is defined).
 
+2008-07-02  Xavier Saint  <wget@sxav.eu>
+
+	* iri.c, iri.h  : New function idn_decode() to decode ASCII
+	encoded hostname to the locale.
+
+	* host.c : Show hostname to be resolved both in locale and
+	ASCII encoded.
+
 2008-06-28  Steven Schubiger  <stsc@members.fsf.org>
 
 	* retr.c (retrieve_from_file): Allow for reading the links from
 	an external file (HTTP/FTP).
+
+2008-06-26  Xavier Saint  <wget@sxav.eu>
+
+	* iri.c, iri.h : New functions locale_to_utf8() and
+	idn_encode() adding basic capabilities of IRI/IDN.
+
+	* url.c : Convert URLs from locale to UTF-8 allowing a basic
+	support of IRI/IDN
 
 2008-06-25  Steven Schubiger  <stsc@members.fsf.org>
 
@@ -149,7 +165,7 @@
 
 	* http.c: Make -nv --spider include the file's name when it
 	exists.
-	
+
 2008-06-22  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am (version.c): Fixed version string invocation so it
@@ -157,11 +173,56 @@
 	string vars pointers-to-const, and moved line lengths
 	below 80 (in Makefile.am, not in version.c).
 
+2008-06-19  Xavier Saint  <wget@sxav.eu>
+
+	* iri.c, iri.h : New function check_encoding_name() as
+	a preliminary encoding name check.
+
+	* main.c, iri.c : Make use of check_encoding_name().
+
+2008-06-19  Xavier Saint  <wget@sxav.eu>
+
+	* iri.c : Include missing stringprep.h file and add a
+	cast.
+
+	* init.c : set a default initial value for opt.enable_iri,
+	opt.locale and opt.encoding_remote.
+
+2008-06-19  Xavier Saint  <wget@sxav.eu>
+
+	* iri.c, iri.h : Add a new function find_locale() to find
+	out the local system encoding.
+
+	* main.c : Make use of find_locale().
+
+2008-06-19  Xavier Saint  <wget@sxav.eu>
+
+	* html-url.c : Add "content-type" meta tag parsing for
+	retrieving page encoding.
+
+	* iri.h : Make no-op version of parse_charset() return
+	NULL.
+
 2008-06-16  Micah Cowan  <micah@cowan.name>
 
 	* http.c (http_loop): When hstat.len is higher than the
 	successfully completed content's length, but it's because we
 	_set_ it that way, don't abort.
+
+2008-06-14  Xavier Saint  <wget@sxav.eu>
+
+ 	* iri.c, iri.h : New files.
+
+	* Makefile.am : Add files iri.h and conditional iri.c.
+
+	* build_info.c : Add compiled feature "iri".
+
+	* http.c : include iri.h and parse charset from Content-Type
+	header.
+
+	* init.c, main.c, options.h : if an options isn't supported
+	at compiled time, don't get rid off it and show a dummy
+	message instead if they are used.
 
 2008-06-13  Micah Cowan  <micah@cowan.name>
 
@@ -206,11 +267,11 @@
 	default.
 
 2008-05-17  Kenny Parnell  <k.parnell@gmail.com>
-	
+
 	(cmd_spec_prefer_family): Initialize prefer_family to prefer_none.
 
 2008-05-17  Micah Cowan  <micah@cowan.name>
-	
+
 	* main.c (main): Handle Ctrl-D on command-line.
 
 2008-05-15  Steven Schubiger  <schubiger@gmail.com>
@@ -249,7 +310,7 @@
 
 	* options.h: Add an according boolean member to the options
 	struct.
-	
+
 	* sysdep.h: Comment the defines __EXTENSIONS__ and _GNU_SOURCE
 	out, because they're now defined independently by config.h.
 
