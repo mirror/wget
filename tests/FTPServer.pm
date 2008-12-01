@@ -1,11 +1,10 @@
-#!/usr/bin/perl -w
-
 # Part of this code was borrowed from Richard Jones's Net::FTPServer
 # http://www.annexia.org/freeware/netftpserver
 
 package FTPServer;
 
 use strict;
+use warnings;
 
 use Cwd;
 use Socket;
@@ -20,36 +19,36 @@ my $GOT_SIGURG = 0;
 
 # connection states
 my %_connection_states = (
-    'NEWCONN'  => 0x01, 
-    'WAIT4PWD' => 0x02, 
+    'NEWCONN'  => 0x01,
+    'WAIT4PWD' => 0x02,
     'LOGGEDIN' => 0x04,
     'TWOSOCKS' => 0x08,
 );
 
 # subset of FTP commands supported by these server and the respective
 # connection states in which they are allowed
-my %_commands = ( 
+my %_commands = (
     # Standard commands from RFC 959.
     'CWD'  => $_connection_states{LOGGEDIN} |
-              $_connection_states{TWOSOCKS}, 
+              $_connection_states{TWOSOCKS},
 #   'EPRT' => $_connection_states{LOGGEDIN},
-#   'EPSV' => $_connection_states{LOGGEDIN}, 
-    'LIST' => $_connection_states{TWOSOCKS}, 
+#   'EPSV' => $_connection_states{LOGGEDIN},
+    'LIST' => $_connection_states{TWOSOCKS},
 #   'LPRT' => $_connection_states{LOGGEDIN},
-#   'LPSV' => $_connection_states{LOGGEDIN}, 
-    'PASS' => $_connection_states{WAIT4PWD}, 
-    'PASV' => $_connection_states{LOGGEDIN}, 
-    'PORT' => $_connection_states{LOGGEDIN}, 
+#   'LPSV' => $_connection_states{LOGGEDIN},
+    'PASS' => $_connection_states{WAIT4PWD},
+    'PASV' => $_connection_states{LOGGEDIN},
+    'PORT' => $_connection_states{LOGGEDIN},
     'PWD'  => $_connection_states{LOGGEDIN} |
-              $_connection_states{TWOSOCKS}, 
+              $_connection_states{TWOSOCKS},
     'QUIT' => $_connection_states{LOGGEDIN} |
-              $_connection_states{TWOSOCKS}, 
-    'REST' => $_connection_states{TWOSOCKS}, 
-    'RETR' => $_connection_states{TWOSOCKS}, 
+              $_connection_states{TWOSOCKS},
+    'REST' => $_connection_states{TWOSOCKS},
+    'RETR' => $_connection_states{TWOSOCKS},
     'SYST' => $_connection_states{LOGGEDIN},
     'TYPE' => $_connection_states{LOGGEDIN} |
               $_connection_states{TWOSOCKS},
-    'USER' => $_connection_states{NEWCONN}, 
+    'USER' => $_connection_states{NEWCONN},
     # From ftpexts Internet Draft.
     'SIZE' => $_connection_states{LOGGEDIN} |
               $_connection_states{TWOSOCKS},
@@ -76,7 +75,7 @@ sub _CWD_command
     my @elems = split /\//, $path;
 
     foreach (@elems) {
-        if ($_ eq "" || $_ eq ".") { 
+        if ($_ eq "" || $_ eq ".") {
             # Ignore these.
             next;
         } elsif ($_ eq "..") {
@@ -117,7 +116,7 @@ sub _LIST_command
         $dir = "/";
         $path =~ s,^/+,,;
     }
-    
+
     # Parse the first elements of the path until we find the appropriate
     # working directory.
     my @elems = split /\//, $path;
@@ -142,10 +141,10 @@ sub _LIST_command
                 }
                 $dir .= $_;
             } else { # It's the last element: check if it's a file, directory or wildcard.
-                if (-f $conn->{rootdir} . $dir . $_) { 
+                if (-f $conn->{rootdir} . $dir . $_) {
                     # It's a file.
                     $filename = $_;
-                } elsif (-d $conn->{rootdir} . $dir . $_) { 
+                } elsif (-d $conn->{rootdir} . $dir . $_) {
                     # It's a directory.
                     $dir .= $_;
                 } elsif (/\*/ || /\?/) {
@@ -158,9 +157,9 @@ sub _LIST_command
             }
         }
     }
-    
+
     print STDERR "_LIST_command - dir is: $dir\n" if $log;
-    
+
     print {$conn->{socket}} "150 Opening data connection for file listing.\r\n";
 
     # Open a path back to the client.
@@ -174,7 +173,7 @@ sub _LIST_command
     # If the path contains a directory name, extract it so that
     # we can prefix it to every filename listed.
     my $prefix = (($filename || $wildcard) && $path =~ /(.*\/).*/) ? $1 : "";
-    
+
     print STDERR "_LIST_command - prefix is: $prefix\n" if $log;
 
     # OK, we're either listing a full directory, listing a single
@@ -191,7 +190,7 @@ sub _LIST_command
             __list_file ($sock, $prefix . $_);
         }
     }
-    
+
     unless ($sock->close) {
         print {$conn->{socket}} "550 Error closing data connection: $!\r\n";
         return;
@@ -208,7 +207,7 @@ sub _PASS_command
 
     print STDERR "switching to LOGGEDIN state\n" if $log;
     $conn->{state} = $_connection_states{LOGGEDIN};
-    
+
     if ($conn->{username} eq "anonymous") {
         print {$conn->{socket}} "202 Anonymous user access is always granted.\r\n";
     } else {
@@ -219,7 +218,7 @@ sub _PASS_command
 sub _PASV_command
 {
     my ($conn, $cmd, $rest) = @_;
-    
+
     # Open a listening socket - but don't actually accept on it yet.
     "0" =~ /(0)/; # Perl 5.7 / IO::Socket::INET bug workaround.
     my $sock = IO::Socket::INET->new (LocalHost => '127.0.0.1',
@@ -246,7 +245,7 @@ sub _PASV_command
     my $p2 = $sockport % 256;
 
     $conn->{state} = $_connection_states{TWOSOCKS};
-    
+
     # We only accept connections from localhost.
     print {$conn->{socket}} "227 Entering Passive Mode (127,0,0,1,$p1,$p2)\r\n";
 }
@@ -294,7 +293,7 @@ sub _PORT_command
 sub _PWD_command
 {
     my ($conn, $cmd, $rest) = @_;
-    
+
     # See RFC 959 Appendix II and draft-ietf-ftpext-mlst-11.txt section 6.2.1.
     my $pathname = $conn->{dir};
     $pathname =~ s,/+$,, unless $pathname eq "/";
@@ -306,7 +305,7 @@ sub _PWD_command
 sub _REST_command
 {
     my ($conn, $cmd, $restart_from) = @_;
-    
+
     unless ($restart_from =~ /^([1-9][0-9]*|0)$/) {
         print {$conn->{socket}} "501 REST command needs a numeric argument.\r\n";
         return;
@@ -320,7 +319,7 @@ sub _REST_command
 sub _RETR_command
 {
     my ($conn, $cmd, $path) = @_;
-    
+
     my $dir = $conn->{dir};
 
     # Absolute path?
@@ -336,7 +335,7 @@ sub _RETR_command
     my $filename = pop @elems;
 
     foreach (@elems) {
-        if ($_ eq "" || $_ eq ".") { 
+        if ($_ eq "" || $_ eq ".") {
             next # Ignore these.
         } elsif ($_ eq "..") {
             # Go to parent directory.
@@ -354,14 +353,14 @@ sub _RETR_command
 
     unless (defined $filename && length $filename) {
         print {$conn->{socket}} "550 File or directory not found.\r\n";
-	    return;
+        return;
     }
 
     if ($filename eq "." || $filename eq "..") {
         print {$conn->{socket}} "550 RETR command is not supported on directories.\r\n";
-	    return;
+        return;
     }
-    
+
     my $fullname = $conn->{rootdir} . $dir . $filename;
     unless (-f $fullname) {
         print {$conn->{socket}} "550 RETR command is only supported on plain files.\r\n";
@@ -483,7 +482,7 @@ sub _RETR_command
 sub _SIZE_command
 {
     my ($conn, $cmd, $path) = @_;
-    
+
     my $dir = $conn->{dir};
 
     # Absolute path?
@@ -499,7 +498,7 @@ sub _SIZE_command
     my $filename = pop @elems;
 
     foreach (@elems) {
-        if ($_ eq "" || $_ eq ".") { 
+        if ($_ eq "" || $_ eq ".") {
             next # Ignore these.
         } elsif ($_ eq "..") {
             # Go to parent directory.
@@ -517,12 +516,12 @@ sub _SIZE_command
 
     unless (defined $filename && length $filename) {
         print {$conn->{socket}} "550 File or directory not found.\r\n";
-	    return;
+        return;
     }
 
     if ($filename eq "." || $filename eq "..") {
         print {$conn->{socket}} "550 SIZE command is not supported on directories.\r\n";
-	    return;
+        return;
     }
 
     my $fullname = $conn->{rootdir} . $dir . $filename;
@@ -551,14 +550,14 @@ sub _SIZE_command
 sub _SYST_command
 {
     my ($conn, $cmd, $dummy) = @_;
-    
+
     print {$conn->{socket}} "215 UNIX Type: L8\r\n";
 }
 
 sub _TYPE_command
 {
     my ($conn, $cmd, $type) = @_;
-    
+
     # See RFC 959 section 5.3.2.
     if ($type =~ /^([AI])$/i) {
         $conn->{type} = 'A';
@@ -583,7 +582,7 @@ sub _USER_command
 
     print STDERR "switching to WAIT4PWD state\n" if $log;
     $conn->{state} = $_connection_states{WAIT4PWD};
-    
+
     if ($conn->{username} eq "anonymous") {
         print {$conn->{socket}} "230 Anonymous user access granted.\r\n";
     } else {
@@ -709,11 +708,11 @@ sub __get_file_list
 
     my @allfiles = readdir DIRHANDLE;
     my @filenames = ();
-    
+
     if ($wildcard) {
         # Get rid of . and ..
         @allfiles = grep !/^\.{1,2}$/, @allfiles;
-        
+
         # Convert wildcard to a regular expression.
         $wildcard = __wildcard_to_regex ($wildcard);
 
@@ -752,7 +751,7 @@ sub __wildcard_to_regex
         _reuseAddr  => 1,
         _rootDir    => Cwd::getcwd(),
     );
-    
+
     sub _default_for
     {
         my ($self, $attr) = @_;
@@ -795,7 +794,7 @@ sub new {
 }
 
 
-sub run 
+sub run
 {
     my ($self, $synch_callback) = @_;
     my $initialized = 0;
@@ -823,11 +822,11 @@ sub run
 
     # the accept loop
     while (my $client_addr = accept (my $socket, $server_sock))
-    {    
+    {
         # turn buffering off on $socket
         select((select($socket), $|=1)[0]);
-        
-        # find out who connected    
+
+        # find out who connected
         my ($client_port, $client_ip) = sockaddr_in ($client_addr);
         my $client_ipnum = inet_ntoa ($client_ip);
 
@@ -845,8 +844,8 @@ sub run
         if (1) { # Child process.
 
             # install signals
-            $SIG{URG}  = sub { 
-                $GOT_SIGURG  = 1; 
+            $SIG{URG}  = sub {
+                $GOT_SIGURG  = 1;
             };
 
             $SIG{PIPE} = sub {
@@ -858,7 +857,7 @@ sub run
                 print STDERR "Connection idle timeout expired. Closing server.\n";
                 exit;
             };
-            
+
             #$SIG{CHLD} = 'IGNORE';
 
 
@@ -872,7 +871,7 @@ sub run
                 'idle_timeout' => 60, # 1 minute timeout
                 'rootdir'      => $self->{_rootDir},
             };
-        
+
             print {$conn->{socket}} "220 GNU Wget Testing FTP Server ready.\r\n";
 
             # command handling loop
@@ -913,7 +912,7 @@ sub run
                     print {$conn->{socket}} "530 Not logged in.\r\n";
                     next;
                 }
-                
+
                 # Handle the QUIT command specially.
                 if ($cmd eq "QUIT") {
                     print {$conn->{socket}} "221 Goodbye. Service closing connection.\r\n";
@@ -926,7 +925,7 @@ sub run
         } else { # Father
             close $socket;
         }
-    } 
+    }
 
     $/ = $old_ils;
 }

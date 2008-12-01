@@ -1,3 +1,91 @@
+2008-11-13  Micah Cowan  <micah@cowan.name>
+
+	* http.c (gethttp): Don't do anything when content-length >= our
+	requested range.
+
+2008-11-16  Steven Schubiger  <stsc@members.fsf.org>
+
+	* main.c: Declare and initialize the numurls counter.
+
+	* ftp.c, http.c: Make the counter visible here and use it.
+	
+	* options.h: Remove old declaration from options struct.
+
+2008-11-15  Steven Schubiger  <stsc@members.fsf.org>
+
+	* init.c (defaults): Set default waitretry value.
+
+2008-11-14  Steven Schubiger  <stsc@members.fsf.org>
+
+	* main.c (format_and_print_line): Use a custom format 
+	string for printing leading spaces.
+
+2008-11-12  Micah Cowan  <micah@cowan.name>
+
+	* ftp-ls.c (ftp_index): HTML-escape dir name in title, h1, a:href.
+
+2008-11-12  Alexander Belopolsky  <alexander.belopolsky@gmail.com>
+
+	* url.c, url.h (url_escape_unsafe_and_reserved): Added.
+
+	* ftp-ls.c (ftp_index): URL-escape, rather than HTML-escape, the
+	filename appearing in the link.
+
+2008-11-12  Steven Schubiger  <stsc@members.fsf.org>
+
+	* main.c (print_version): Hand the relevant
+	xstrdup/xfree calls back to format_and_print_line().
+
+2008-11-11  Steven Schubiger  <stsc@members.fsf.org>
+
+	* main.c (format_and_print_line): Move both the memory
+	allocating and freeing bits upwards to print_version().
+
+2008-11-10  Saint Xavier  <wget@sxav.eu>
+
+	* http.c: Make --auth-no-challenge works with user:pass@ in URLs.
+
+2008-11-05  Micah Cowan  <micah@cowan.name>
+
+	* ftp.c (print_length): Should print humanized "size remaining"
+	only when it's at least 1k.
+
+2008-10-31  Micah Cowan  <micah@cowan.name>
+
+	* main.c (print_version): Add information about the mailing list.
+
+2008-10-31  Alexander Drozdov  <dzal_mail@mtu-net.ru>
+
+	* retr.c (fd_read_hunk): Make assert deal with maxsize == 0.
+
+	* ftp-ls.c (clean_line): Prevent underflow on empty lines.
+
+2008-10-26  Gisle Vanem  <gvanem@broadpark.no>
+
+	* main.c (format_and_print_line): Put variables on top of
+	blocks (not all compilers are C99). Add an extra '\n' if
+	SYSTEM_WGETRC isn't defined and printed.
+
+2008-09-09  Gisle Vanem  <gvanem@broadpark.no>
+
+	* url.c (url_error): Use aprintf, not asprintf.
+	
+2008-09-09  Micah Cowan  <micah@cowan.name>
+
+	* init.c (home_dir): Save the calculated value for home,
+	to avoid duplicated work on repeated calls.
+	(wgetrc_file_name) [WINDOWS]: Define and initialize home var.
+
+	* build_info.c, main.c: Remove unnecessary extern vars
+	system_wgetrc and locale_dir.
+
+	* main.c: Define program_name for lib/error.c.
+
+2008-09-02  Gisle Vanem  <gvanem@broadpark.no>
+
+	* mswindows.h: Must ensure <stdio.h> is included before
+	we redefine ?vsnprintf().
+
 2008-08-08  Steven Schubiger  <stsc@members.fsf.org>
 
 	* main.c, utils.h: Removed some dead conditional DEBUG_MALLOC code.

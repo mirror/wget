@@ -78,6 +78,8 @@ as that of the covered work.  */
 # define strncasecmp strnicmp
 #endif
 
+#include <stdio.h>
+
 /* The same for snprintf() and vsnprintf().  */
 #define snprintf _snprintf
 #define vsnprintf _vsnprintf

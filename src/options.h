@@ -124,10 +124,6 @@ struct options
   SUM_SIZE_INT quota;		/* Maximum file size to download and
 				   store. */
 
-  int numurls;			/* Number of successfully downloaded
-				   URLs #### should be removed because
-				   it's not a setting, but a global var */
-
   bool server_response;		/* Do we print server response? */
   bool save_headers;		/* Do we save headers together with
 				   file? */

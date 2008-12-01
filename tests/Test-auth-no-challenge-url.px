@@ -12,7 +12,8 @@ my $wholefile = "You're all authenticated.\n";
 
 # code, msg, headers, content
 my %urls = (
-    'http://no.such.domain/needs-auth.txt' => {
+    '/needs-auth.txt' => {
+        auth_no_challenge => 1,
         auth_method => 'Basic',
         user => 'fiddle-dee-dee',
         passwd => 'Dodgson',
@@ -25,8 +26,8 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " --debug --user=fiddle-dee-dee --password=Dodgson"
-    . " -e http_proxy=localhost:{{port}} http://no.such.domain/needs-auth.txt";
+my $cmdline = $WgetTest::WGETPATH . " --auth-no-challenge "
+    . "http://fiddle-dee-dee:Dodgson\@localhost:{{port}}/needs-auth.txt";
 
 my $expected_error_code = 0;
 
@@ -38,7 +39,7 @@ my %expected_downloaded_files = (
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test-auth-basic",
+my $the_test = HTTPTest->new (name => "Test-auth-no-challenge-url",
                               input => \%urls, 
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 

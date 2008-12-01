@@ -1,8 +1,7 @@
-#!/usr/bin/perl -w
-
 package HTTPServer;
 
 use strict;
+use warnings;
 
 use HTTP::Daemon;
 use HTTP::Status;
@@ -23,7 +22,7 @@ sub run {
         if (!$initialized) {
             $synch_callback->();
             $initialized = 1;
-        }        
+        }
         my $con = $self->accept();
         print STDERR "Accepted a new connection\n" if $log;
         while (my $req = $con->get_request) {
@@ -46,14 +45,14 @@ sub run {
             if (exists($urls->{$url_path})) {
                 print STDERR "Serving requested URL: ", $url_path, "\n" if $log;
                 next unless ($req->method eq "HEAD" || $req->method eq "GET");
-                
+
                 my $url_rec = $urls->{$url_path};
                 $self->send_response($req, $url_rec, $con);
             } else {
                 print STDERR "Requested wrong URL: ", $url_path, "\n" if $log;
                 $con->send_error($HTTP::Status::RC_FORBIDDEN);
                 last;
-            }            
+            }
         }
         print STDERR "Closing connection\n" if $log;
         $con->close;
@@ -145,8 +144,7 @@ sub handle_auth {
     my $authhdr = $req->header('Authorization');
 
     # Have we sent the challenge yet?
-    unless (defined $url_rec->{auth_challenged}
-        && $url_rec->{auth_challenged}) {
+    unless ($url_rec->{auth_challenged} || $url_rec->{auth_no_challenge}) {
         # Since we haven't challenged yet, we'd better not
         # have received authentication (for our testing purposes).
         if ($authhdr) {
@@ -167,6 +165,9 @@ sub handle_auth {
         # failed it.
         $code = 400;
         $msg  = "You didn't send auth after I sent challenge";
+        if ($url_rec->{auth_no_challenge}) {
+            $msg = "--auth-no-challenge but no auth sent."
+        }
     } else {
         my ($sent_method) = ($authhdr =~ /^(\S+)/g);
         unless ($sent_method eq $url_rec->{'auth_method'}) {

@@ -48,7 +48,8 @@ $(SAMPLERCTEXI): $(srcdir)/sample.wgetrc
 info_TEXINFOS = wget.texi
 wget_TEXINFOS = fdl.texi sample.wgetrc.munged_for_texi_inclusion
 
-EXTRA_DIST = README.maint sample.wgetrc $(SAMPLERCTEXI) \
+EXTRA_DIST = sample.wgetrc \
+	     $(SAMPLERCTEXI) \
 	     texi2pod.pl
 
 wget.pod: $(srcdir)/wget.texi $(srcdir)/version.texi

@@ -393,7 +393,7 @@ fd_read_hunk (int fd, hunk_terminator_t terminator, long sizehint, long maxsize)
   char *hunk = xmalloc (bufsize);
   int tail = 0;                 /* tail position in HUNK */
 
-  assert (maxsize >= bufsize);
+  assert (!maxsize || maxsize >= bufsize);
 
   while (1)
     {

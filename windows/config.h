@@ -158,7 +158,7 @@
 #define SIZEOF_LONG 4
 
 /* The size of a `long long', as computed by sizeof. */
-#define SIZEOF_LONG_LONG 0
+#define SIZEOF_LONG_LONG 8
 
 /* The size of a `off_t', as computed by sizeof. */
 #define SIZEOF_OFF_T 4
@@ -213,6 +213,4 @@
 
 /* Include compiler-specific defines. */
 #include "config-compiler.h"
-
-#include "config-post.h"
 

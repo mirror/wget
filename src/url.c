@@ -252,6 +252,15 @@ url_escape (const char *s)
   return url_escape_1 (s, urlchr_unsafe, false);
 }
 
+/* URL-escape the unsafe and reserved characters (see urlchr_table) in
+   a given string, returning a freshly allocated string.  */
+
+char *
+url_escape_unsafe_and_reserved (const char *s)
+{
+  return url_escape_1 (s, urlchr_unsafe|urlchr_reserved, false);
+}
+
 /* URL-escape the unsafe characters (see urlchr_table) in a given
    string.  If no characters are unsafe, S is returned.  */
 
@@ -929,9 +938,9 @@ url_error (const char *url, int error_code)
       if ((p = strchr (scheme, ':')))
         *p = '\0';
       if (!strcasecmp (scheme, "https"))
-        asprintf (&error, _("HTTPS support not compiled in"));
+        error = aprintf (_("HTTPS support not compiled in"));
       else
-        asprintf (&error, _(parse_errors[error_code]), quote (scheme));
+        error = aprintf (_(parse_errors[error_code]), quote (scheme));
       xfree (scheme);
 
       return error;

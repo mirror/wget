@@ -1,3 +1,84 @@
+2008-11-26  Micah Cowan  <micah@cowan.name>  (not copyrightable)
+
+	* Test-ftp-iri-disabled.px, Test-ftp-iri-fallback.px,
+	Test-ftp-iri.px, Test-idn-cmd.px, Test-idn-headers.px,
+	Test-idn-meta.px, Test-iri-disabled.px,
+	Test-iri-forced-remote.px, Test-iri-list.px, Test-iri.px: More
+	module-scope warnings.
+
+2008-11-25  Steven Schubiger  <stsc@members.fsf.org>
+
+	* WgetTest.pm.in: Remove the magic interpreter line;
+	replace -w with lexical warnings.
+
+2008-11-13  Steven Schubiger  <stsc@members.fsf.org>
+
+	* FTPServer.pm, FTPTest.pm, HTTPServer.pm, HTTPTest.pm,
+	WgetTest.pm.in: Clean up leftover whitespace.
+
+2008-11-12  Steven Schubiger  <stsc@members.fsf.org>
+
+	* Test-auth-basic.px, Test-auth-no-challenge.px,
+	Test-auth-no-challenge-url.px, Test-c-full.px,
+	Test-c-partial.px, Test-c.px, Test-c-shorter.px,
+	Test-E-k-K.px, Test-E-k.px, Test-ftp.px, 
+	Test-HTTP-Content-Disposition-1.px, 
+	Test-HTTP-Content-Disposition-2.px,
+	Test-HTTP-Content-Disposition.px, Test-N-current.px,
+	Test-N-HTTP-Content-Disposition.px,
+	Test-N--no-content-disposition.px,
+	Test-N--no-content-disposition-trivial.px,
+	Test-N-no-info.px, Test--no-content-disposition.px,
+	Test--no-content-disposition-trivial.px, Test-N-old.px,
+	Test-nonexisting-quiet.px, Test-noop.px, Test-np.px,
+	Test-N.px, Test-N-smaller.px, 
+	Test-O-HTTP-Content-Disposition.px, Test-O-nc.px,
+	Test-O--no-content-disposition.px, 
+	Test-O--no-content-disposition-trivial.px,
+	Test-O-nonexisting.px, Test-O.px,
+	Test-proxy-auth-basic.px, Test-Restrict-Lowercase.px,
+	Test-Restrict-Uppercase.px,
+	Test--spider-fail.pxm, Test--spider.px,
+	Test--spider-r-HTTP-Content-Disposition.px,
+	Test--spider-r--no-content-disposition.px,
+	Test--spider-r--no-content-disposition-trivial.px,
+	Test--spider-r.px: Enforce lexically scoped warnings.
+
+	* Test-proxied-https-auth.px, run-px: Place use strict
+	before use warnings.
+
+2008-11-12  Steven Schubiger  <stsc@members.fsf.org>
+
+	* FTPServer.pm, FTPTest.pm, HTTPServer.pm, HTTPTest.pm:
+	Remove the magic interpreter line, because it cannot be
+	used fully. Substitute -w with use warnings.
+
+2008-11-11  Micah Cowan  <micah@cowan.name>
+
+	* HTTPServer.pm (handle_auth): Allow testing of
+	--auth-no-challenge.
+
+	* Test-auth-no-challenge.px, Test-auth-no-challenge-url.px:
+	Added.
+
+	* run-px: Add Test-auth-no-challenge.px,
+	Test-auth-no-challenge-url.px.
+
+2008-11-07  Steven Schubiger  <stsc@members.fsf.org>
+
+	* run-px: Use some colors for the summary part of the test
+	output to strengthen the distinction between a successful
+	or failing run.
+
+2008-11-06  Steven Schubiger  <stsc@members.fsf.org>
+
+	* run-px: When executing test scripts, invoke them with the
+	current perl executable name as determined by env.
+
+2008-11-06  Micah Cowan  <micah@cowan.name>
+
+	* run-px: Use strict (thanks Steven Schubiger!).
+
 2008-09-09  Micah Cowan  <micah@cowan.name>
 
 	* Test-idn-cmd.px: Added.

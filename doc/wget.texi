@@ -82,7 +82,7 @@ Info entry for @file{wget}.
 @contents
 
 @ifnottex
-@node Top
+@node Top, Overview, (dir), (dir)
 @top Wget @value{VERSION}
 
 @insertcopying
@@ -102,7 +102,7 @@ Info entry for @file{wget}.
 * Concept Index::       Topics covered by this manual.
 @end menu
 
-@node Overview
+@node Overview, Invoking, Top, Top
 @chapter Overview
 @cindex overview
 @cindex features
@@ -211,7 +211,7 @@ Public License, as published by the Free Software Foundation (see the
 file @file{COPYING} that came with GNU Wget, for details).
 @end itemize
 
-@node Invoking
+@node Invoking, Recursive Download, Overview, Top
 @chapter Invoking
 @cindex invoking
 @cindex command line
@@ -248,7 +248,7 @@ the command line.
 * Recursive Accept/Reject Options::
 @end menu
 
-@node URL Format
+@node URL Format, Option Syntax, Invoking, Invoking
 @section URL Format
 @cindex URL
 @cindex URL syntax
@@ -326,7 +326,7 @@ with your favorite browser, like @code{Lynx} or @code{Netscape}.
 
 @c man begin OPTIONS
 
-@node Option Syntax
+@node Option Syntax, Basic Startup Options, URL Format, Invoking
 @section Option Syntax
 @cindex option syntax
 @cindex syntax of options
@@ -401,7 +401,7 @@ the default.  For instance, using @code{follow_ftp = off} in
 using @samp{--no-follow-ftp} is the only way to restore the factory
 default from the command line.
 
-@node Basic Startup Options
+@node Basic Startup Options, Logging and Input File Options, Option Syntax, Invoking
 @section Basic Startup Options
 
 @table @samp
@@ -429,7 +429,7 @@ instances of @samp{-e}.
 
 @end table
 
-@node Logging and Input File Options
+@node Logging and Input File Options, Download Options, Basic Startup Options, Invoking
 @section Logging and Input File Options
 
 @table @samp
@@ -517,7 +517,7 @@ Prepends @var{URL} to relative links read from the file specified with
 the @samp{-i} option.
 @end table
 
-@node Download Options
+@node Download Options, Directory Options, Logging and Input File Options, Invoking
 @section Download Options
 
 @table @samp
@@ -861,10 +861,9 @@ use @dfn{linear backoff}, waiting 1 second after the first failure on a
 given file, then waiting 2 seconds after the second failure on that
 file, up to the maximum number of @var{seconds} you specify.  Therefore,
 a value of 10 will actually make Wget wait up to (1 + 2 + ... + 10) = 55
-seconds per file.
+seconds per file. 
 
-Note that this option is turned on by default in the global
-@file{wgetrc} file.
+By default, Wget will assume a value of 10 seconds.
 
 @cindex wait, random
 @cindex random wait
@@ -1038,7 +1037,7 @@ Prompt for a password for each connection established. Cannot be specified
 when @samp{--password} is being used, because they are mutually exclusive.
 @end table
 
-@node Directory Options
+@node Directory Options, HTTP Options, Download Options, Invoking
 @section Directory Options
 
 @table @samp       
@@ -1110,7 +1109,7 @@ i.e. the top of the retrieval tree.  The default is @samp{.} (the
 current directory).
 @end table
 
-@node HTTP Options
+@node HTTP Options, HTTPS (SSL/TLS) Options, Directory Options, Invoking
 @section HTTP Options
 
 @table @samp
@@ -1169,6 +1168,19 @@ the files and delete them after Wget has started the download.
 For more information about security issues with Wget, @xref{Security
 Considerations}.
 @end iftex
+
+@cindex Keep-Alive, turning off
+@cindex Persistent Connections, disabling
+@item --no-http-keep-alive
+Turn off the ``keep-alive'' feature for HTTP downloads.  Normally, Wget
+asks the server to keep the connection open so that, when you download
+more than one document from the same server, they get transferred over
+the same TCP connection.  This saves time and at the same time reduces
+the load on the server.
+
+This option is useful when, for some reason, persistent (keep-alive)
+connections don't work for you, for example due to a server bug or due
+to the inability of server-side scripts to cope with the connections.
 
 @cindex proxy
 @cindex cache
@@ -1444,7 +1456,7 @@ form-based authentication.
 
 @end table
 
-@node HTTPS (SSL/TLS) Options
+@node HTTPS (SSL/TLS) Options, FTP Options, HTTP Options, Invoking
 @section HTTPS (SSL/TLS) Options
 
 @cindex SSL
@@ -1569,7 +1581,7 @@ not used), EGD is never contacted.  EGD is not needed on modern Unix
 systems that support @file{/dev/random}.
 @end table
 
-@node FTP Options
+@node FTP Options, Recursive Retrieval Options, HTTPS (SSL/TLS) Options, Invoking
 @section FTP Options
 
 @table @samp
@@ -1672,22 +1684,9 @@ Note that when retrieving a file (not a directory) because it was
 specified on the command-line, rather than because it was recursed to,
 this option has no effect.  Symbolic links are always traversed in this
 case.
-
-@cindex Keep-Alive, turning off
-@cindex Persistent Connections, disabling
-@item --no-http-keep-alive
-Turn off the ``keep-alive'' feature for HTTP downloads.  Normally, Wget
-asks the server to keep the connection open so that, when you download
-more than one document from the same server, they get transferred over
-the same TCP connection.  This saves time and at the same time reduces
-the load on the server.
-
-This option is useful when, for some reason, persistent (keep-alive)
-connections don't work for you, for example due to a server bug or due
-to the inability of server-side scripts to cope with the connections.
 @end table
 
-@node Recursive Retrieval Options
+@node Recursive Retrieval Options, Recursive Accept/Reject Options, FTP Options, Invoking
 @section Recursive Retrieval Options
 
 @table @samp
@@ -1892,7 +1891,7 @@ If, for whatever reason, you want strict comment parsing, use this
 option to turn it on.
 @end table
 
-@node Recursive Accept/Reject Options
+@node Recursive Accept/Reject Options,  , Recursive Retrieval Options, Invoking
 @section Recursive Accept/Reject Options
 
 @table @samp
@@ -1987,7 +1986,7 @@ This is a useful option, since it guarantees that only the files
 
 @c man end
 
-@node Recursive Download
+@node Recursive Download, Following Links, Invoking, Top
 @chapter Recursive Download
 @cindex recursion
 @cindex retrieving
@@ -2055,7 +2054,7 @@ about this.
 Recursive retrieval should be used with care.  Don't say you were not
 warned.
 
-@node Following Links
+@node Following Links, Time-Stamping, Recursive Download, Top
 @chapter Following Links
 @cindex links
 @cindex following links
@@ -2079,7 +2078,7 @@ links it will follow.
 * FTP Links::              Following FTP links.
 @end menu
 
-@node Spanning Hosts
+@node Spanning Hosts, Types of Files, Following Links, Following Links
 @section Spanning Hosts
 @cindex spanning hosts
 @cindex hosts, spanning
@@ -2136,7 +2135,7 @@ wget -rH -Dfoo.edu --exclude-domains sunsite.foo.edu \
 
 @end table
 
-@node Types of Files
+@node Types of Files, Directory-Based Limits, Spanning Hosts, Following Links
 @section Types of Files
 @cindex types of files
 
@@ -2241,7 +2240,7 @@ local filenames, and so @emph{do} contribute to filename matching.
 This behavior, too, is considered less-than-desirable, and may change
 in a future version of Wget.
 
-@node Directory-Based Limits
+@node Directory-Based Limits, Relative Links, Types of Files, Following Links
 @section Directory-Based Limits
 @cindex directories
 @cindex directory limits
@@ -2325,7 +2324,7 @@ directory, while in @samp{http://foo/bar} (no trailing slash),
 meaningless, as its parent is @samp{/}).
 @end table
 
-@node Relative Links
+@node Relative Links, FTP Links, Directory-Based Limits, Following Links
 @section Relative Links
 @cindex relative links
 
@@ -2354,7 +2353,7 @@ to ``just work'' without having to convert links.
 This option is probably not very useful and might be removed in a future
 release.
 
-@node FTP Links
+@node FTP Links,  , Relative Links, Following Links
 @section Following FTP Links
 @cindex following ftp links
 
@@ -2374,7 +2373,7 @@ effect on such downloads.  On the other hand, domain acceptance
 Also note that followed links to @sc{ftp} directories will not be
 retrieved recursively further.
 
-@node Time-Stamping
+@node Time-Stamping, Startup File, Following Links, Top
 @chapter Time-Stamping
 @cindex time-stamping
 @cindex timestamping
@@ -2424,7 +2423,7 @@ say.
 * FTP Time-Stamping Internals::
 @end menu
 
-@node Time-Stamping Usage
+@node Time-Stamping Usage, HTTP Time-Stamping Internals, Time-Stamping, Time-Stamping
 @section Time-Stamping Usage
 @cindex time-stamping usage
 @cindex usage, time-stamping
@@ -2480,7 +2479,7 @@ gives a timestamp.  For @sc{http}, this depends on getting a
 directory listing with dates in a format that Wget can parse
 (@pxref{FTP Time-Stamping Internals}).
 
-@node HTTP Time-Stamping Internals
+@node HTTP Time-Stamping Internals, FTP Time-Stamping Internals, Time-Stamping Usage, Time-Stamping
 @section HTTP Time-Stamping Internals
 @cindex http time-stamping
 
@@ -2512,7 +2511,7 @@ with @samp{-N}, server file @samp{@var{X}} is compared to local file
 Arguably, @sc{http} time-stamping should be implemented using the
 @code{If-Modified-Since} request.
 
-@node FTP Time-Stamping Internals
+@node FTP Time-Stamping Internals,  , HTTP Time-Stamping Internals, Time-Stamping
 @section FTP Time-Stamping Internals
 @cindex ftp time-stamping
 
@@ -2541,7 +2540,7 @@ that is supported by some @sc{ftp} servers (including the popular
 @code{wu-ftpd}), which returns the exact time of the specified file.
 Wget may support this command in the future.
 
-@node Startup File
+@node Startup File, Examples, Time-Stamping, Top
 @chapter Startup File
 @cindex startup file
 @cindex wgetrc
@@ -2569,7 +2568,7 @@ commands.
 * Sample Wgetrc::     A wgetrc example.
 @end menu
 
-@node Wgetrc Location
+@node Wgetrc Location, Wgetrc Syntax, Startup File, Startup File
 @section Wgetrc Location
 @cindex wgetrc location
 @cindex location of wgetrc
@@ -2590,7 +2589,7 @@ means that in case of collision user's wgetrc @emph{overrides} the
 system-wide wgetrc (in @file{/usr/local/etc/wgetrc} by default).
 Fascist admins, away!
 
-@node Wgetrc Syntax
+@node Wgetrc Syntax, Wgetrc Commands, Wgetrc Location, Startup File
 @section Wgetrc Syntax
 @cindex wgetrc syntax
 @cindex syntax of wgetrc
@@ -2617,7 +2616,7 @@ global @file{wgetrc}, you can do it with:
 reject =
 @end example
 
-@node Wgetrc Commands
+@node Wgetrc Commands, Sample Wgetrc, Wgetrc Syntax, Startup File
 @section Wgetrc Commands
 @cindex wgetrc commands
 
@@ -2709,6 +2708,9 @@ Ignore @var{n} remote directory components.  Equivalent to
 
 @item debug = on/off
 Debug mode, same as @samp{-d}.
+
+@item default_page = @var{string}
+Default page name---the same as @samp{--default-page=@var{string}}.
 
 @item delete_after = on/off
 Delete after download---the same as @samp{--delete-after}.
@@ -3002,6 +3004,9 @@ this off.
 Save cookies to @var{file}.  The same as @samp{--save-cookies
 @var{file}}.
 
+@item save_headers = on/off
+Same as @samp{--save-headers}.
+
 @item secure_protocol = @var{string}
 Choose the secure protocol to be used.  Legal values are @samp{auto}
 (the default), @samp{SSLv2}, @samp{SSLv3}, and @samp{TLSv1}.  The same
@@ -3013,6 +3018,9 @@ responses---the same as @samp{-S}.
 
 @item span_hosts = on/off
 Same as @samp{-H}.
+
+@item spider = on/off
+Same as @samp{--spider}.
 
 @item strict_comments = on/off
 Same as @samp{--strict-comments}.
@@ -3037,6 +3045,10 @@ Specify username @var{string} for both @sc{ftp} and @sc{http} file retrieval.
 This command can be overridden using the @samp{ftp_user} and 
 @samp{http_user} command for @sc{ftp} and @sc{http} respectively.
 
+@item user_agent = @var{string}
+User agent identification sent to the HTTP Server---the same as
+@samp{--user-agent=@var{string}}.
+
 @item verbose = on/off
 Turn verbose on/off---the same as @samp{-v}/@samp{-nv}.
 
@@ -3050,7 +3062,7 @@ only---the same as @samp{--waitretry=@var{n}}.  Note that this is
 turned on by default in the global @file{wgetrc}.
 @end table
 
-@node Sample Wgetrc
+@node Sample Wgetrc,  , Wgetrc Commands, Startup File
 @section Sample Wgetrc
 @cindex sample wgetrc
 
@@ -3067,7 +3079,7 @@ its line.
 @include sample.wgetrc.munged_for_texi_inclusion
 @end example
 
-@node Examples
+@node Examples, Various, Startup File, Top
 @chapter Examples
 @cindex examples
 
@@ -3081,7 +3093,7 @@ complexity.
 * Very Advanced Usage::  The hairy stuff.
 @end menu
 
-@node Simple Usage
+@node Simple Usage, Advanced Usage, Examples, Examples
 @section Simple Usage
 
 @itemize @bullet
@@ -3134,7 +3146,7 @@ links index.html
 @end example
 @end itemize
 
-@node Advanced Usage
+@node Advanced Usage, Very Advanced Usage, Simple Usage, Examples
 @section Advanced Usage
 
 @itemize @bullet
@@ -3270,7 +3282,7 @@ wget -O - http://cool.list.com/ | wget --force-html -i -
 @end example
 @end itemize
 
-@node Very Advanced Usage
+@node Very Advanced Usage,  , Advanced Usage, Examples
 @section Very Advanced Usage
 
 @cindex mirroring
@@ -3319,7 +3331,7 @@ wget -m -k -K -E http://www.gnu.org/ -o /home/me/weeklog
 @end itemize
 @c man end
 
-@node Various
+@node Various, Appendices, Examples, Top
 @chapter Various
 @cindex various
 
@@ -3329,14 +3341,14 @@ This chapter contains all the stuff that could not fit anywhere else.
 * Proxies::             Support for proxy servers.
 * Distribution::        Getting the latest version.
 * Web Site::            GNU Wget's presence on the World Wide Web.
-* Mailing List::        Wget mailing list for announcements and discussion.
+* Mailing Lists::       Wget mailing list for announcements and discussion.
 * Internet Relay Chat:: Wget's presence on IRC.
 * Reporting Bugs::      How and where to report bugs.
 * Portability::         The systems Wget works on.
 * Signals::             Signal-handling performed by Wget.
 @end menu
 
-@node Proxies
+@node Proxies, Distribution, Various, Various
 @section Proxies
 @cindex proxies
 
@@ -3412,7 +3424,7 @@ Alternatively, you may use the @samp{proxy-user} and
 settings @code{proxy_user} and @code{proxy_password} to set the proxy
 username and password.
 
-@node Distribution
+@node Distribution, Web Site, Proxies, Various
 @section Distribution
 @cindex latest version
 
@@ -3421,7 +3433,7 @@ master GNU archive site ftp.gnu.org, and its mirrors.  For example,
 Wget @value{VERSION} can be found at
 @url{ftp://ftp.gnu.org/pub/gnu/wget/wget-@value{VERSION}.tar.gz}
 
-@node Web Site
+@node Web Site, Mailing Lists, Distribution, Various
 @section Web Site
 @cindex web site
 
@@ -3430,43 +3442,64 @@ The official web site for GNU Wget is at
 information resides at ``The Wget Wgiki'',
 @url{http://wget.addictivecode.org/}.
 
-@node Mailing List
-@section Mailing List
+@node Mailing Lists, Internet Relay Chat, Web Site, Various
+@section Mailing Lists
 @cindex mailing list
 @cindex list
 
-There are several Wget-related mailing lists.  The general discussion
-list is at @email{wget@@sunsite.dk}.  It is the preferred place for
-support requests and suggestions, as well as for discussion of
-development.  You are invited to subscribe.
+@unnumberedsubsec Primary List
 
-To subscribe, simply send mail to @email{wget-subscribe@@sunsite.dk}
-and follow the instructions.  Unsubscribe by mailing to
-@email{wget-unsubscribe@@sunsite.dk}.  The mailing list is archived at
+The primary mailinglist for discussion, bug-reports, or questions
+about GNU Wget is at @email{bug-wget@@gnu.org}. To subscribe, send an
+email to @email{bug-wget-join@@gnu.org}, or visit
+@url{http://lists.gnu.org/mailman/listinfo/bug-wget}.
+
+You do not need to subscribe to send a message to the list; however,
+please note that unsubscribed messages are moderated, and may take a
+while before they hit the list---@strong{usually around a day}.  If
+you want your message to show up immediately, please subscribe to the
+list before posting. Archives for the list may be found at
+@url{http://lists.gnu.org/pipermail/bug-wget/}.
+
+An NNTP/Usenettish gateway is also available via
+@uref{http://gmane.org/about.php,Gmane}. You can see the Gmane
+archives at
+@url{http://news.gmane.org/gmane.comp.web.wget.general}. Note that the
+Gmane archives conveniently include messages from both the current
+list, and the previous one. Messages also show up in the Gmane
+archives sooner than they do at @url{lists.gnu.org}.
+
+@unnumberedsubsec Bug Notices List
+
+Additionally, there is the @email{wget-notify@@addictivecode.org} mailing
+list. This is a non-discussion list that receives bug report
+notifications from the bug-tracker. To subscribe to this list,
+send an email to @email{wget-notify-join@@addictivecode.org},
+or visit @url{http://addictivecode.org/mailman/listinfo/wget-notify}.
+
+@unnumberedsubsec Obsolete Lists
+
+Previously, the mailing list @email{wget@@sunsite.dk} was used as the
+main discussion list, and another list,
+@email{wget-patches@@sunsite.dk} was used for submitting and
+discussing patches to GNU Wget.
+
+Messages from @email{wget@@sunsite.dk} are archived at
+@itemize @tie{}
+@item
 @url{http://www.mail-archive.com/wget%40sunsite.dk/} and at
-@url{http://news.gmane.org/gmane.comp.web.wget.general}.
+@item
+@url{http://news.gmane.org/gmane.comp.web.wget.general} (which also
+continues to archive the current list, @email{bug-wget@@gnu.org}).
+@end itemize
 
-Another mailing list is at @email{wget-patches@@sunsite.dk}, and is
-used to submit patches for review by Wget developers.  A ``patch'' is
-a textual representation of change to source code, readable by both
-humans and programs.  The
-@url{http://wget.addictivecode.org/PatchGuidelines} page
-covers the creation and submitting of patches in detail.  Please don't
-send general suggestions or bug reports to @samp{wget-patches}; use it
-only for patch submissions.
-
-Subscription is the same as above for @email{wget@@sunsite.dk}, except
-that you send to @email{wget-patches-subscribe@@sunsite.dk}, instead.
-The mailing list is archived at
+Messages from @email{wget-patches@@sunsite.dk} are archived at
+@itemize @tie{}
+@item
 @url{http://news.gmane.org/gmane.comp.web.wget.patches}.
+@end itemize
 
-Finally, there is the @email{wget-notify@@addictivecode.org} mailing
-list. This is a non-discussion list that receives bug report-change
-notifications from the bug-tracker.  Unlike for the other mailing lists,
-subscription is through the @code{mailman} interface at
-@url{http://addictivecode.org/mailman/listinfo/wget-notify}.
-
-@node Internet Relay Chat
+@node Internet Relay Chat, Reporting Bugs, Mailing Lists, Various
 @section Internet Relay Chat
 @cindex Internet Relay Chat
 @cindex IRC
@@ -3475,7 +3508,7 @@ subscription is through the @code{mailman} interface at
 In addition to the mailinglists, we also have a support channel set up
 via IRC at @code{irc.freenode.org}, @code{#wget}. Come check it out!
 
-@node Reporting Bugs
+@node Reporting Bugs, Portability, Internet Relay Chat, Various
 @section Reporting Bugs
 @cindex bugs
 @cindex reporting bugs
@@ -3495,7 +3528,7 @@ Wget crashes, it's a bug.  If Wget does not behave as documented,
 it's a bug.  If things work strange, but you are not sure about the way
 they are supposed to work, it might well be a bug, but you might want to
 double-check the documentation and the mailing lists (@pxref{Mailing
-List}).
+Lists}).
 
 @item
 Try to repeat the bug in as simple circumstances as possible.  E.g. if
@@ -3534,7 +3567,7 @@ safe to try.
 @end enumerate
 @c man end
 
-@node Portability
+@node Portability, Signals, Reporting Bugs, Various
 @section Portability
 @cindex portability
 @cindex operating systems
@@ -3567,7 +3600,7 @@ Support for building on MS-DOS via DJGPP has been contributed by Gisle
 Vanem; a port to VMS is maintained by Steven Schweda, and is available
 at @url{http://antinode.org/}.
 
-@node Signals
+@node Signals,  , Portability, Various
 @section Signals
 @cindex signal handling
 @cindex hangup
@@ -3588,7 +3621,7 @@ SIGHUP received, redirecting output to `wget-log'.
 Other than that, Wget will not try to interfere with signals in any way.
 @kbd{C-c}, @code{kill -TERM} and @code{kill -KILL} should kill it alike.
 
-@node Appendices
+@node Appendices, Copying this manual, Various, Top
 @chapter Appendices
 
 This chapter contains some references I consider useful.
@@ -3599,7 +3632,7 @@ This chapter contains some references I consider useful.
 * Contributors::            People who helped.
 @end menu
 
-@node Robot Exclusion
+@node Robot Exclusion, Security Considerations, Appendices, Appendices
 @section Robot Exclusion
 @cindex robot exclusion
 @cindex robots.txt
@@ -3638,7 +3671,7 @@ avoid.  To be found by the robots, the specifications must be placed in
 download and parse.
 
 Although Wget is not a web robot in the strictest sense of the word, it
-can downloads large parts of the site without the user's intervention to
+can download large parts of the site without the user's intervention to
 download an individual page.  Because of that, Wget honors RES when
 downloading recursively.  For instance, when you issue:
 
@@ -3682,7 +3715,7 @@ robot exclusion, set the @code{robots} variable to @samp{off} in your
 @file{.wgetrc}.  You can achieve the same effect from the command line
 using the @code{-e} switch, e.g. @samp{wget -e robots=off @var{url}...}.
 
-@node Security Considerations
+@node Security Considerations, Contributors, Robot Exclusion, Appendices
 @section Security Considerations
 @cindex security
 
@@ -3713,7 +3746,7 @@ being careful when you send debug logs (yes, even when you send them to
 me).
 @end enumerate
 
-@node Contributors
+@node Contributors,  , Security Considerations, Appendices
 @section Contributors
 @cindex contributors
 
@@ -4058,17 +4091,21 @@ Kristijan Zimmer.
 Apologies to all who I accidentally left out, and many thanks to all the
 subscribers of the Wget mailing list.
 
-@node Copying this manual
+@node Copying this manual, Concept Index, Appendices, Top
 @appendix Copying this manual
   
 @menu
 * GNU Free Documentation License::  Licnse for copying this manual.
 @end menu
 
+@node GNU Free Documentation License,  , Copying this manual, Copying this manual
+@appendixsec GNU Free Documentation License
+@cindex FDL, GNU Free Documentation License
+
 @include fdl.texi
 
 
-@node Concept Index
+@node Concept Index,  , Copying this manual, Top
 @unnumbered Concept Index
 @printindex cp
 
