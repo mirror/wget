@@ -1,3 +1,8 @@
+2008-12-04  Micah Cowan  <micah@cowan.name> (not copyrightable)
+
+	* Test-idn-cmd.px, Test-idn-meta.px, Test-idn-headers.px:
+	Fix test names.
+
 2008-11-26  Micah Cowan  <micah@cowan.name>  (not copyrightable)
 
 	* Test-ftp-iri-disabled.px, Test-ftp-iri-fallback.px,

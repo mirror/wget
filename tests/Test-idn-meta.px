@@ -56,7 +56,7 @@ my %expected_downloaded_files = (
 
 ###############################################################################
 
-my $the_test = HTTPTest->new (name => "Test-iri-meta",
+my $the_test = HTTPTest->new (name => "Test-idn-meta",
                               input => \%urls, 
                               cmdline => $cmdline, 
                               errcode => $expected_error_code, 
