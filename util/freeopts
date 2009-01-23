@@ -28,7 +28,7 @@ elsif (
 END {
     my $cols = 0;
     my $max_cols = 13;
-    my $opt_chars = 
+    my $opt_chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     print "Free chars:\n\t";
     for (my $i = 0; $i < length $opt_chars; ++$i, ++$cols) {

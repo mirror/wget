@@ -1,3 +1,8 @@
+2009-01-23  Steven Schubiger  <stsc@members.fsf.org>
+
+	* util/freeopts, util/rmold.pl, util/trunc.c: Remove
+	unnecessary whitespace.
+
 2008-11-10  Micah Cowan  <micah@cowan.name>
 
 	* MAILING-LIST: Mention Gmane, introduce subsections.

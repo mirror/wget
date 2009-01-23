@@ -45,7 +45,7 @@ sub procdir
     local(@lcfiles, @lcdirs, %files, @fl);
 
     print STDERR "Processing directory '$dir':\n" if $verbose;
-    
+
     opendir(DH, $dir) || die("Cannot open $dir: $!\n");
     @lcfiles = ();
     @lcdirs = ();

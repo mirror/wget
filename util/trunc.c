@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2008 Micah J. Cowan
  *
- * Copying and distribution of this file, with or without modification, 
+ * Copying and distribution of this file, with or without modification,
  * are permitted in any medium without royalty provided the copyright
  * notice and this notice are preserved. */
 
@@ -62,7 +62,7 @@ get_size (const char str[])
     {
       val *= 1024 * 1024;
     }
-  
+
   return val;
 }
 
