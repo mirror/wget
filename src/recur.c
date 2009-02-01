@@ -154,7 +154,7 @@ url_dequeue (struct url_queue *queue,
 
 static bool download_child_p (const struct urlpos *, struct url *, int,
                               struct url *, struct hash_table *);
-static bool descend_redirect_p (const char *, const char *, int,
+static bool descend_redirect_p (const char *, struct url *, int,
                                 struct url *, struct hash_table *);
 
 
@@ -264,10 +264,21 @@ retrieve_tree (const char *start_url)
         }
       else
         {
-          int dt = 0;
+          int dt = 0, url_err;
           char *redirected = NULL;
+          struct url *url_parsed = url_parse (url, &url_err);
 
-          status = retrieve_url (url, &file, &redirected, referer, &dt, false);
+          if (!url_parsed)
+            {
+              char *error = url_error (url, url_err);
+              logprintf (LOG_NOTQUIET, "%s: %s.\n", url, error);
+              xfree (error);
+              status = URLERROR;
+            }
+          else
+            {
+              status = retrieve_url (url, &file, &redirected, referer, &dt, false);
+            }
 
           if (html_allowed && file && status == RETROK
               && (dt & RETROKF) && (dt & TEXTHTML))
@@ -294,7 +305,7 @@ retrieve_tree (const char *start_url)
                  want to follow it.  */
               if (descend)
                 {
-                  if (!descend_redirect_p (redirected, url, depth,
+                  if (!descend_redirect_p (redirected, url_parsed, depth,
                                            start_url_parsed, blacklist))
                     descend = false;
                   else
@@ -306,6 +317,7 @@ retrieve_tree (const char *start_url)
               xfree (url);
               url = redirected;
             }
+          url_free(url_parsed);
         }
 
       if (opt.spider)
@@ -656,14 +668,13 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
    it is merely a simple-minded wrapper around download_child_p.  */
 
 static bool
-descend_redirect_p (const char *redirected, const char *original, int depth,
+descend_redirect_p (const char *redirected, struct url *orig_parsed, int depth,
                     struct url *start_url_parsed, struct hash_table *blacklist)
 {
-  struct url *orig_parsed, *new_parsed;
+  struct url *new_parsed;
   struct urlpos *upos;
   bool success;
 
-  orig_parsed = url_parse (original, NULL);
   assert (orig_parsed != NULL);
 
   new_parsed = url_parse (redirected, NULL);
@@ -675,7 +686,6 @@ descend_redirect_p (const char *redirected, const char *original, int depth,
   success = download_child_p (upos, orig_parsed, depth,
                               start_url_parsed, blacklist);
 
-  url_free (orig_parsed);
   url_free (new_parsed);
   xfree (upos);
 
