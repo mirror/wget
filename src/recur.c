@@ -180,7 +180,7 @@ static bool descend_redirect_p (const char *, struct url *, int,
           options, add it to the queue. */
 
 uerr_t
-retrieve_tree (const char *start_url)
+retrieve_tree (struct url *start_url_parsed)
 {
   uerr_t status = RETROK;
 
@@ -190,17 +190,6 @@ retrieve_tree (const char *start_url)
   /* The URLs we do not wish to enqueue, because they are already in
      the queue, but haven't been downloaded yet.  */
   struct hash_table *blacklist;
-
-  int up_error_code;
-  struct url *start_url_parsed = url_parse (start_url, &up_error_code);
-
-  if (!start_url_parsed)
-    {
-      char *error = url_error (start_url, up_error_code);
-      logprintf (LOG_NOTQUIET, "%s: %s.\n", start_url, error);
-      xfree (error);
-      return URLERROR;
-    }
 
   queue = url_queue_new ();
   blacklist = make_string_hash_table (0);
@@ -277,7 +266,8 @@ retrieve_tree (const char *start_url)
             }
           else
             {
-              status = retrieve_url (url, &file, &redirected, referer, &dt, false);
+              status = retrieve_url (url_parsed, url, &file, &redirected,
+                                     referer, &dt, false);
             }
 
           if (html_allowed && file && status == RETROK
@@ -451,8 +441,6 @@ retrieve_tree (const char *start_url)
   }
   url_queue_delete (queue);
 
-  if (start_url_parsed)
-    url_free (start_url_parsed);
   string_set_free (blacklist);
 
   if (opt.quota && total_downloaded_bytes > opt.quota)

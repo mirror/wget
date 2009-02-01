@@ -596,15 +596,15 @@ static char *getproxy (struct url *);
    multiple points. */
 
 uerr_t
-retrieve_url (const char *origurl, char **file, char **newloc,
-              const char *refurl, int *dt, bool recursive)
+retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
+              char **newloc, const char *refurl, int *dt, bool recursive)
 {
   uerr_t result;
   char *url;
   bool location_changed;
   int dummy;
   char *mynewloc, *proxy;
-  struct url *u, *proxy_url;
+  struct url *u = orig_parsed, *proxy_url;
   int up_error_code;            /* url parse error code */
   char *local_file;
   int redirection_count = 0;
@@ -624,16 +624,6 @@ retrieve_url (const char *origurl, char **file, char **newloc,
     *newloc = NULL;
   if (file)
     *file = NULL;
-
-  u = url_parse (url, &up_error_code);
-  if (!u)
-    {
-      char *error = url_error (url, up_error_code);
-      logprintf (LOG_NOTQUIET, "%s: %s.\n", url, error);
-      xfree (url);
-      xfree (error);
-      return URLERROR;
-    }
 
   if (!refurl)
     refurl = opt.referer;
@@ -733,7 +723,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
           char *error = url_error (mynewloc, up_error_code);
           logprintf (LOG_NOTQUIET, "%s: %s.\n", escnonprint_uri (mynewloc),
                      error);
-          url_free (u);
+          if (orig_parsed != u)
+            {
+              url_free (u);
+            }
           xfree (url);
           xfree (mynewloc);
           xfree (error);
@@ -753,7 +746,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
           logprintf (LOG_NOTQUIET, _("%d redirections exceeded.\n"),
                      opt.max_redirect);
           url_free (newloc_parsed);
-          url_free (u);
+          if (orig_parsed != u)
+            {
+              url_free (u);
+            }
           xfree (url);
           xfree (mynewloc);
           RESTORE_POST_DATA;
@@ -762,7 +758,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
 
       xfree (url);
       url = mynewloc;
-      url_free (u);
+      if (orig_parsed != u)
+        {
+          url_free (u);
+        }
       u = newloc_parsed;
 
       /* If we're being redirected from POST, we don't want to POST
@@ -795,7 +794,10 @@ retrieve_url (const char *origurl, char **file, char **newloc,
   else
     xfree_null (local_file);
 
-  url_free (u);
+  if (orig_parsed != u)
+    {
+      url_free (u);
+    }
 
   if (redirection_count)
     {
@@ -836,13 +838,22 @@ retrieve_from_file (const char *file, bool html, int *count)
   
   if (url_has_scheme (url))
     {
-      int dt;
+      int dt,url_err;
       uerr_t status;
+      struct url * url_parsed = url_parse(url, &url_err);
+
+      if (!url_parsed)
+        {
+          char *error = url_error (url, url_err);
+          logprintf (LOG_NOTQUIET, "%s: %s.\n", url, error);
+          xfree (error);
+          return URLERROR;
+        }
 
       if (!opt.base_href)
         opt.base_href = xstrdup (url);
 
-      status = retrieve_url (url, &input_file, NULL, NULL, &dt, false);
+      status = retrieve_url (url_parsed, url, &input_file, NULL, NULL, &dt, false);
       if (status != RETROK)
         return status;
 
@@ -877,12 +888,15 @@ retrieve_from_file (const char *file, bool html, int *count)
           if (cur_url->url->scheme == SCHEME_FTP) 
             opt.follow_ftp = 1;
           
-          status = retrieve_tree (cur_url->url->url);
+          status = retrieve_tree (cur_url->url);
 
           opt.follow_ftp = old_follow_ftp;
         }
       else
-        status = retrieve_url (cur_url->url->url, &filename, &new_file, NULL, &dt, opt.recursive);
+        {
+          status = retrieve_url (cur_url->url, cur_url->url->url, &filename,
+                                 &new_file, NULL, &dt, opt.recursive);
+        }
 
       if (filename && opt.delete_after && file_exists_p (filename))
         {
@@ -1050,14 +1064,12 @@ getproxy (struct url *u)
 /* Returns true if URL would be downloaded through a proxy. */
 
 bool
-url_uses_proxy (const char *url)
+url_uses_proxy (struct url * u)
 {
   bool ret;
-  struct url *u = url_parse (url, NULL);
   if (!u)
     return false;
   ret = getproxy (u) != NULL;
-  url_free (u);
   return ret;
 }
 
