@@ -1,3 +1,7 @@
+2009-02-18  Steven Schubiger  <stsc@members.fsf.org>
+
+	* recur.h: Remove the dangling declaration for recursive_cleanup().
+
 2008-11-13  Micah Cowan  <micah@cowan.name>
 
 	* http.c (gethttp): Don't do anything when content-length >= our
