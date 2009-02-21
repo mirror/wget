@@ -2756,9 +2756,14 @@ Remote file exists.\n\n"));
         {
           if (*dt & RETROKF)
             {
+              bool write_to_stdout = (opt.output_document && HYPHENP (opt.output_document));
+
               logprintf (LOG_VERBOSE,
-                         _("%s (%s) - %s saved [%s/%s]\n\n"),
-                         tms, tmrate, quote (hstat.local_file),
+                         write_to_stdout 
+                         ? _("%s (%s) - written to stdout %s[%s/%s]\n\n")
+                         : _("%s (%s) - %s saved [%s/%s]\n\n"),
+                         tms, tmrate,
+                         write_to_stdout ? "" : quote (hstat.local_file),
                          number_to_static_string (hstat.len),
                          number_to_static_string (hstat.contlen));
               logprintf (LOG_NONVERBOSE,
@@ -2787,9 +2792,14 @@ Remote file exists.\n\n"));
             {
               if (*dt & RETROKF)
                 {
+                  bool write_to_stdout = (opt.output_document && HYPHENP (opt.output_document));
+
                   logprintf (LOG_VERBOSE,
-                             _("%s (%s) - %s saved [%s]\n\n"),
-                             tms, tmrate, quote (hstat.local_file),
+                             write_to_stdout
+                             ? _("%s (%s) - written to stdout %s[%s]\n\n")
+                             : _("%s (%s) - %s saved [%s]\n\n"),
+                             tms, tmrate, 
+                             write_to_stdout ? "" : quote (hstat.local_file),
                              number_to_static_string (hstat.len));
                   logprintf (LOG_NONVERBOSE,
                              "%s URL:%s [%s] -> \"%s\" [%d]\n",

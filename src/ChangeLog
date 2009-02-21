@@ -1,3 +1,9 @@
+2009-02-21  Steven Schubiger  <stsc@member.fsf.org>
+
+	* http.c (http_loop): When a document is written to 
+	standard output, don't claim it has been saved to a file.
+	Addresses bug #20520.
+
 2009-02-18  Steven Schubiger  <stsc@members.fsf.org>
 
 	* recur.h: Remove the dangling declaration for recursive_cleanup().
