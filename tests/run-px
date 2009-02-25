@@ -59,7 +59,7 @@ my @tested;
 
 foreach my $test (@tests) {
     print "Running $test\n\n";
-    system("$^X $top_srcdir/tests/$test");
+    system("$^X -I$top_srcdir/tests $top_srcdir/tests/$test");
     push @tested, { name => $test, result => $? };
 }
 

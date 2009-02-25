@@ -55,7 +55,7 @@ run-unit-tests: unit-tests$(EXEEXT)
 	./unit-tests$(EXEEXT)
 
 run-px-tests: WgetTest.pm ../src/wget$(EXEEXT)
-	./run-px $(top_srcdir)
+	$(srcdir)/run-px $(top_srcdir)
 
 EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
 	     Test-auth-basic.px Test-c-full.px Test-c-partial.px \
