@@ -1,3 +1,9 @@
+2009-02-27  Steven Schubiger  <stsc@member.fsf.org>
+
+	* ftp.c (ftp_loop_internal): Don't claim for FTP retrievals
+	when writing to standard output either that the document
+	has been saved. Addresses bug #20520 again.
+
 2009-02-21  Steven Schubiger  <stsc@member.fsf.org>
 
 	* http.c (http_loop): When a document is written to 
