@@ -1,3 +1,9 @@
+2009-02-27  Gisle Vanem  <gvanem@broadpark.no>
+
+	* main.c (main): "freopen (NULL,.." causes an assertion in MSVC
+	debug-mode.  I.e. NULL isn't legal. But the "CONOUT$" device works
+	fine.
+	
 2009-02-21  Steven Schubiger  <stsc@member.fsf.org>
 
 	* http.c (http_loop): When a document is written to 
