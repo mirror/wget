@@ -1124,7 +1124,7 @@ for details.\n\n"));
         {
 #ifdef WINDOWS
           FILE *result;
-          result = freopen ("CONAIR$", "wb", stdout);
+          result = freopen ("CONOUT$", "wb", stdout);
           if (result == NULL)
             {
               logputs (LOG_NOTQUIET, _("\
