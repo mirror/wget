@@ -1,3 +1,8 @@
+2009-03-03  Steven Schubiger  <stsc@member.fsf.org>
+
+	* src/ftp.c, src/http.c, src/main.c, src/recur.h,
+	tests/Makefile.am: Update the copyright years.
+
 2009-01-23  Steven Schubiger  <stsc@members.fsf.org>
 
 	* util/freeopts, util/rmold.pl, util/trunc.c: Remove
