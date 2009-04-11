@@ -55,12 +55,20 @@ my @tests = (
     'Test--spider-r.px',
 );
 
+foreach my $var (qw(SYSTEM_WGETRC WGETRC)) {
+    $ENV{$var} = '/dev/null';
+}
+
 my @tested;
 
 foreach my $test (@tests) {
     print "Running $test\n\n";
     system("$^X -I$top_srcdir/tests $top_srcdir/tests/$test");
     push @tested, { name => $test, result => $? };
+}
+
+foreach my $var (qw(SYSTEM_WGETRC WGETRC)) {
+    delete $ENV{$var};
 }
 
 print "\n";

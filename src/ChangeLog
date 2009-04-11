@@ -1,3 +1,8 @@
+2009-04-11  Steven Schubiger  <stsc@member.fsf.org>
+
+	* init.c (initialize): Run a custom SYSTEM_WGETRC when 
+	provided as an environment variable.
+
 2009-02-27  Gisle Vanem  <gvanem@broadpark.no>
 
 	* main.c (main): "freopen (NULL,.." causes an assertion in MSVC

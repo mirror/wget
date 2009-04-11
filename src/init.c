@@ -1,6 +1,6 @@
 /* Reading/parsing the initialization file.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-   2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+   2004, 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -542,15 +542,20 @@ run_wgetrc (const char *file)
 void
 initialize (void)
 {
-  char *file;
+  char *file, *env_sysrc;
   int ok = true;
 
   /* Load the hard-coded defaults.  */
   defaults ();
-
-  /* If SYSTEM_WGETRC is defined, use it.  */
+  
+  /* Run a non-standard system rc file when the according environment 
+     variable has been set. For internal testing purposes only!  */
+  env_sysrc = getenv ("SYSTEM_WGETRC");
+  if (env_sysrc && file_exists_p (env_sysrc))
+    ok &= run_wgetrc (env_sysrc);
+  /* Otherwise, if SYSTEM_WGETRC is defined, use it.  */
 #ifdef SYSTEM_WGETRC
-  if (file_exists_p (SYSTEM_WGETRC))
+  else if (file_exists_p (SYSTEM_WGETRC))
     ok &= run_wgetrc (SYSTEM_WGETRC);
 #endif
   /* Override it with your own, if one exists.  */

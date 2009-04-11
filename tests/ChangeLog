@@ -1,3 +1,8 @@
+2009-04-11  Steven Schubiger  <stsc@member.fsf.org>
+
+	* run-px: Skip testing with real rc files by setting 
+	SYSTEM_WGETRC and WGETRC to /dev/null.
+
 2009-02-25  Benjamin Wolsey  <bwy@benjaminwolsey.de>
 
 	* Makefile.am (run-px-tests): Ensure run-px is run from srcdir.
