@@ -1,3 +1,12 @@
+2009-04-13  Steven Schubiger  <stsc@member.fsf.org>
+
+	* ftp.c (ftp_retrieve_list): Move the duplicated code that
+	determines the local file to a function.
+	
+	* http.c (http_loop): Likewise.
+
+	* retr.c (set_local_file): New function.
+
 2009-04-11  Steven Schubiger  <stsc@member.fsf.org>
 
 	* init.c (initialize): Run a custom SYSTEM_WGETRC when 

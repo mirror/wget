@@ -1070,3 +1070,16 @@ no_proxy_match (const char *host, const char **no_proxy)
   else
     return sufmatch (no_proxy, host);
 }
+
+/* Set the file parameter to point to the local file string.  */
+void
+set_local_file (const char **file, const char *default_file)
+{
+  if (opt.output_document)
+    {
+      if (output_stream_regular)
+        *file = opt.output_document;
+    }
+  else
+    *file = default_file;
+}
