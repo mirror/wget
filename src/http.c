@@ -2723,16 +2723,8 @@ Remote file exists.\n\n"));
           && ((hstat.len == hstat.contlen) ||
               ((hstat.res == 0) && (hstat.contlen == -1))))
         {
-          /* #### This code repeats in http.c and ftp.c.  Move it to a
-             function!  */
           const char *fl = NULL;
-          if (opt.output_document)
-            {
-              if (output_stream_regular)
-                fl = opt.output_document;
-            }
-          else
-            fl = hstat.local_file;
+          set_local_file (&fl, hstat.local_file);
           if (fl)
             {
               time_t newtmr = -1;

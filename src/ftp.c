@@ -1590,16 +1590,8 @@ Already have correct symlink %s -> %s\n\n"),
           && dlthis
           && file_exists_p (con->target))
         {
-          /* #### This code repeats in http.c and ftp.c.  Move it to a
-             function!  */
           const char *fl = NULL;
-          if (opt.output_document)
-            {
-              if (output_stream_regular)
-                fl = opt.output_document;
-            }
-          else
-            fl = con->target;
+          set_local_file (&fl, con->target);
           if (fl)
             touch (fl, f->tstamp);
         }
