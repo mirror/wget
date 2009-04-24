@@ -1,3 +1,12 @@
+2009-04-24  Micah Cowan  <micah@cowan.name>
+
+	* hash.c: Change stdint.h inclusion to use HAVE_STDINT_H, not C99
+	check.
+
+	* connect.c: stdint.h inclusion added.
+
+	Thanks to Markus Duft <mduft@gentoo.org> for a similar patch.
+	
 2009-04-20  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am (version.c): Fix unportable use of "echo -n".

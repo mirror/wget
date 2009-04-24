@@ -55,8 +55,8 @@ as that of the covered work.  */
 # endif
 # include <ctype.h>
 # define c_tolower(x) tolower ((unsigned char) (x))
-# if __STDC_VERSION__ >= 199901L
-#  include <stdint.h>  /* for uintptr_t */
+# ifdef HAVE_STDINT_H
+#  include <stdint.h>
 # else
    typedef unsigned long uintptr_t;
 # endif

@@ -59,6 +59,11 @@ as that of the covered work.  */
 #include "connect.h"
 #include "hash.h"
 
+/* Apparently needed for Interix: */
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif
+
 /* Define sockaddr_storage where unavailable (presumably on IPv4-only
    hosts).  */
 
