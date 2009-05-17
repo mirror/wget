@@ -1,3 +1,8 @@
+2009-05-17  Steven Schubiger  <stsc@member.fsf.org>
+
+	* progress.c (eta_to_human_short): Fix the remaining hours
+	to be displayed. Spotted by Tadeu Martins (#26411).
+
 2009-04-24  Micah Cowan  <micah@cowan.name>
 
 	* hash.c: Change stdint.h inclusion to use HAVE_STDINT_H, not C99
