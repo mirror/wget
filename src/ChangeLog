@@ -1,3 +1,9 @@
+2009-05-27  Steven Schubiger  <stsc@member.fsf.org>
+
+	* ftp.c (ftp_get_listing): Duplicate the "listing file"
+	string to avoid memory corruption when FOPEN_EXCL_ERR is
+	encountered.
+
 2009-05-17  Steven Schubiger  <stsc@member.fsf.org>
 
 	* progress.c (eta_to_human_short): Fix the remaining hours
