@@ -1,3 +1,8 @@
+2009-05-28  Steven Schubiger  <stsc@member.fsf.org>
+
+	* ftp.c (ftp_get_listing): Update the "listing file" 
+	string after calling ftp_loop_internal().
+
 2009-05-27  Steven Schubiger  <stsc@member.fsf.org>
 
 	* ftp.c (ftp_get_listing): Duplicate the "listing file"

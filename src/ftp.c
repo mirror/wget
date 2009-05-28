@@ -1371,7 +1371,9 @@ ftp_get_listing (struct url *u, ccon *con, struct fileinfo **f)
   DEBUGP ((_("Using %s as listing tmp file.\n"), quote (lf)));
 
   con->target = xstrdup (lf);
+  xfree (lf);
   err = ftp_loop_internal (u, NULL, con);
+  lf = xstrdup (con->target);
   xfree (con->target);
   con->target = old_target;
 
