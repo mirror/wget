@@ -73,8 +73,9 @@
 # is *not* sent by default.
 #header = Accept-Language: en
 
-# You can set the default proxies for Wget to use for http and ftp.
+# You can set the default proxies for Wget to use for http, https, and ftp.
 # They will override the value in the environment.
+#https_proxy = http://proxy.yoyodyne.com:18023/
 #http_proxy = http://proxy.yoyodyne.com:18023/
 #ftp_proxy = http://proxy.yoyodyne.com:18023/
 

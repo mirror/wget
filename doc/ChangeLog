@@ -1,3 +1,8 @@
+2009-06-10  Micah Cowan  <micah@cowan.name>
+
+	* sample.wgetrc: Add "https_proxy" to the proxy examples. Thanks
+	to Martin Paul <martin@par.univie.ac.at> for the suggestion.
+
 2008-11-15  Steven Schubiger  <stsc@members.fsf.org>
 
 	* sample.wgetrc: Comment the waitretry "default" value, 
