@@ -57,7 +57,7 @@ as that of the covered work.  */
 # define NAMESPACE_TWEAKS
 #endif
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__GLIBC__)
 # define NAMESPACE_TWEAKS
 #endif
 

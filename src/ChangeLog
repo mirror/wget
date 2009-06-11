@@ -1,3 +1,8 @@
+2009-06-11  Micah Cowan  <micah@cowan.name>
+
+	* sysdep.h: Need NAMESPACE_TWEAKS on non-Linux glibc-based
+	systems, too. Thanks to Robert Millan.
+
 2009-05-28  Steven Schubiger  <stsc@member.fsf.org>
 
 	* ftp.c (ftp_get_listing): Update the "listing file" 
