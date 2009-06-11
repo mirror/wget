@@ -396,8 +396,8 @@ the option name; negative options can be negated by omitting the
 @samp{--no-} prefix.  This might seem superfluous---if the default for
 an affirmative option is to not do something, then why provide a way
 to explicitly turn it off?  But the startup file may in fact change
-the default.  For instance, using @code{follow_ftp = off} in
-@file{.wgetrc} makes Wget @emph{not} follow FTP links by default, and
+the default.  For instance, using @code{follow_ftp = on} in
+@file{.wgetrc} makes Wget @emph{follow} FTP links by default, and
 using @samp{--no-follow-ftp} is the only way to restore the factory
 default from the command line.
 

@@ -1,3 +1,8 @@
+2009-06-11  Joao Ferreira  <joao@joaoff.com>
+
+	* wget.texi (Option Syntax): Fixed contradictory and confusing
+	explanation of --folow-ftp and negation.
+
 2009-06-10  Micah Cowan  <micah@cowan.name>
 
 	* sample.wgetrc: Add "https_proxy" to the proxy examples. Thanks
