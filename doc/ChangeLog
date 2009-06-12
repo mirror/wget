@@ -1,3 +1,8 @@
+2009-06-11  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi (Contributors): Added Xin Zou, Benjamin Wolsley, and
+	Robert Millan.
+
 2009-06-11  Joao Ferreira  <joao@joaoff.com>
 
 	* wget.texi (Option Syntax): Fixed contradictory and confusing

@@ -3964,6 +3964,7 @@ Aurelien Marchand,
 Matthew J.@: Mellon,
 Jordan Mendelson,
 Ted Mielczarek,
+Robert Millan,
 Lin Zhe Min,
 Jan Minar,
 Tim Mooney,
@@ -4039,6 +4040,7 @@ Charles G Waldman,
 Douglas E.@: Wegscheid,
 Ralf Wildenhues,
 Joshua David Williams,
+Benjamin Wolsey,
 YAMAZAKI Makoto,
 Jasmin Zainul,
 @iftex
@@ -4047,7 +4049,8 @@ Bojan @v{Z}drnja,
 @ifnottex
 Bojan Zdrnja,
 @end ifnottex
-Kristijan Zimmer.
+Kristijan Zimmer,
+Xin Zou.
 
 Apologies to all who I accidentally left out, and many thanks to all the
 subscribers of the Wget mailing list.
