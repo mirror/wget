@@ -1,5 +1,9 @@
 2009-06-11  Micah Cowan  <micah@cowan.name>
 
+	* http.c (http_atotm): Handle potential for setlocale's return
+	value to be static storage. Thanks to Benjamin Wolsey
+	<bwy@benjaminwolsey.de>.
+
 	* sysdep.h: Need NAMESPACE_TWEAKS on non-Linux glibc-based
 	systems, too. Thanks to Robert Millan.
 

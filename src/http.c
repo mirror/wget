@@ -2935,6 +2935,7 @@ http_atotm (const char *time_string)
                                    Netscape cookie specification.) */
   };
   const char *oldlocale;
+  char savedlocale[256];
   size_t i;
   time_t ret = (time_t) -1;
 
@@ -2942,6 +2943,16 @@ http_atotm (const char *time_string)
      non-English locales, which we work around by temporarily setting
      locale to C before invoking strptime.  */
   oldlocale = setlocale (LC_TIME, NULL);
+  if (oldlocale)
+    {
+      size_t l = strlen (oldlocale);
+      if (l >= sizeof savedlocale)
+        savedlocale[0] = '\0';
+      else
+        memcpy (savedlocale, oldlocale, l);
+    }
+  else savedlocale[0] = '\0';
+
   setlocale (LC_TIME, "C");
 
   for (i = 0; i < countof (time_formats); i++)
@@ -2961,7 +2972,8 @@ http_atotm (const char *time_string)
     }
 
   /* Restore the previous locale. */
-  setlocale (LC_TIME, oldlocale);
+  if (savedlocale[0])
+    setlocale (LC_TIME, savedlocale);
 
   return ret;
 }
