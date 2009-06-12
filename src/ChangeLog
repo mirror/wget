@@ -1,5 +1,10 @@
 2009-06-12  Micah Cowan  <micah@cowan.name>
 
+	* host.c: Include <sys/types.h> before <sys/socket.h>. Not
+	required by POSIX any more, but some older systems (such as
+	FreeBSD 4.1) still need it, and it doesn't seem like it could
+	hurt...
+
 	* build_info.c (library): Handle "https" as a feature in its own
 	right, apart from "gnutls" and "openssl".
 

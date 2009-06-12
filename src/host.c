@@ -36,6 +36,7 @@ as that of the covered work.  */
 #include <assert.h>
 
 #ifndef WINDOWS
+# include <sys/types.h>
 # include <sys/socket.h>
 # include <netinet/in.h>
 # ifndef __BEOS__
