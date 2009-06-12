@@ -1,3 +1,7 @@
+2009-06-11  Xin Zou  <zouxin2008@gmail.com>	
+	
+	* http.c (gethttp): Fix some memory leaks.
+	
 2009-06-11  Micah Cowan  <micah@cowan.name>
 
 	* http.c (http_atotm): Handle potential for setlocale's return

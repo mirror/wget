@@ -1885,6 +1885,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
                   register_basic_auth_host (u->host);
                 }
               xfree (pth);
+              xfree_null (message);
+              resp_free (resp);
+              xfree (head);
               goto retry_with_auth;
             }
           else
@@ -1895,6 +1898,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy)
         }
       logputs (LOG_NOTQUIET, _("Authorization failed.\n"));
       request_free (req);
+      xfree_null (message);
+      resp_free (resp);
+      xfree (head);
       return AUTHFAILED;
     }
   else /* statcode != HTTP_STATUS_UNAUTHORIZED */
@@ -1938,6 +1944,8 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
           if (has_html_suffix_p (hs->local_file))
             *dt |= TEXTHTML;
 
+          xfree (head);
+          xfree_null (message);
           return RETRUNNEEDED;
         }
       else if (!ALLOW_CLOBBER)
@@ -2116,6 +2124,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
           else
             CLOSE_INVALIDATE (sock);
           xfree_null (type);
+          xfree (head);
           return NEWLOCATION;
         }
     }
@@ -2171,6 +2180,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
       xfree_null (type);
       CLOSE_INVALIDATE (sock);        /* would be CLOSE_FINISH, but there
                                    might be more bytes in the body. */
+      xfree (head);
       return RETRUNNEEDED;
     }
   if ((contrange != 0 && contrange != hs->restval)
@@ -2180,6 +2190,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
          Bail out.  */
       xfree_null (type);
       CLOSE_INVALIDATE (sock);
+      xfree (head);
       return RANGEERR;
     }
   if (contlen == -1)
@@ -2243,6 +2254,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
         CLOSE_FINISH (sock);
       else
         CLOSE_INVALIDATE (sock);
+      xfree (head);
       return RETRFINISHED;
     }
 
@@ -2269,6 +2281,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
                          _("%s has sprung into existence.\n"),
                          hs->local_file);
               CLOSE_INVALIDATE (sock);
+              xfree (head);
               return FOPEN_EXCL_ERR;
             }
         }
@@ -2276,6 +2289,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
         {
           logprintf (LOG_NOTQUIET, "%s: %s\n", hs->local_file, strerror (errno));
           CLOSE_INVALIDATE (sock);
+          xfree (head);
           return FOPENERR;
         }
     }
@@ -2347,6 +2361,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   struct http_stat hstat;        /* HTTP status */
   struct_stat st;  
   bool send_head_first = true;
+  char *file_name;
 
   /* Assert that no value for *LOCAL_FILE was passed. */
   assert (local_file == NULL || *local_file == NULL);
@@ -2419,10 +2434,12 @@ File %s already there; not retrieving.\n\n"),
 
   /* Send preliminary HEAD request if -N is given and we have an existing 
    * destination file. */
+  file_name = url_file_name (u);
   if (opt.timestamping 
       && !opt.content_disposition
-      && file_exists_p (url_file_name (u)))
+      && file_exists_p (file_name))
     send_head_first = true;
+  xfree (file_name);
   
   /* THE loop */
   do
