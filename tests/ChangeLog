@@ -1,3 +1,11 @@
+2009-06-11  Benjamin Wolsey <bwy@benjaminwolsey.de>
+
+	* Test-proxied-https-auth.px: Take an optional argument for the
+	top source directory, so we can find the cert and key.
+
+	* run-px: Provide the top source directory as an argument, so
+	scripts can find their way around.
+
 2009-04-11  Steven Schubiger  <stsc@member.fsf.org>
 
 	* run-px: Skip testing with real rc files by setting 

@@ -5,6 +5,15 @@ use warnings;
 
 use WgetTest;  # For $WGETPATH.
 
+my $cert_path;
+my $key_path;
+
+if (@ARGV) {
+    my $top_srcdir = shift @ARGV;
+    $key_path = "$top_srcdir/tests/certs/server-key.pem";
+    $cert_path = "$top_srcdir/tests/certs/server-cert.pem";
+}
+
 # Have we even built an HTTPS-supporting Wget?
 {
     my @version_lines = `${WgetTest::WGETPATH} --version`;
@@ -55,8 +64,16 @@ sub do_server {
         $rspn = HTTP::Response->new(200, 'OK');
         $conn->send_response($rspn);
 
-        $conn = IO::Socket::SSL->new_from_fd($conn->fileno, SSL_server => 1,
-            SSL_passwd_cb => sub { return "Hello"; })
+        my %options = (
+            SSL_server => 1,
+            SSL_passwd_cb => sub { return "Hello"; });
+
+        $options{SSL_cert_file} = $cert_path if ($cert_path);
+        $options{SSL_key_file} = $key_path if ($key_path);
+
+        my @options = %options;
+
+        $conn = IO::Socket::SSL->new_from_fd($conn->fileno, @options)
             or die "Couldn't initiate SSL";
 
         $rqst = &get_request($conn)
