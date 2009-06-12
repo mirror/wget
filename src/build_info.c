@@ -80,6 +80,12 @@ const char* (compiled_features[]) =
   "-md5",
 #endif
 
+#ifdef HAVE_SSL
+  "+https",
+#else
+  "-https",
+#endif
+
 #ifdef HAVE_LIBGNUTLS
   "+gnutls",
 #else

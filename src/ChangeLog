@@ -1,5 +1,8 @@
 2009-06-12  Micah Cowan  <micah@cowan.name>
 
+	* build_info.c (library): Handle "https" as a feature in its own
+	right, apart from "gnutls" and "openssl".
+
 	* host.c: Declare h_errno if no declaration is provided. Idea
 	thanks to Maciej W. Rozycki.
 
