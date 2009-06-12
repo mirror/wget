@@ -1,3 +1,8 @@
+2009-06-12  Micah Cowan  <micah@cowan.name>
+
+	* configure.ac: Check for h_errno declaration. Idea thanks to
+	Maciej W. Rozycki.
+
 2009-03-03  Steven Schubiger  <stsc@member.fsf.org>
 
 	* src/ftp.c, src/http.c, src/main.c, src/recur.h,

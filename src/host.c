@@ -58,6 +58,11 @@ as that of the covered work.  */
 # define NO_ADDRESS NO_DATA
 #endif
 
+#if !HAVE_DECL_H_ERRNO
+extern int h_errno;
+#endif
+
+
 /* Lists of IP addresses that result from running DNS queries.  See
    lookup_host for details.  */
 

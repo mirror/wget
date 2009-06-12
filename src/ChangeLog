@@ -1,3 +1,8 @@
+2009-06-12  Micah Cowan  <micah@cowan.name>
+
+	* host.c: Declare h_errno if no declaration is provided. Idea
+	thanks to Maciej W. Rozycki.
+
 2009-06-11  Xin Zou  <zouxin2008@gmail.com>	
 	
 	* http.c (gethttp): Fix some memory leaks.
