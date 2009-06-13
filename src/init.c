@@ -58,11 +58,6 @@ as that of the covered work.  */
 #include "test.h"
 #endif
 
-/* We want tilde expansion enabled only when reading `.wgetrc' lines;
-   otherwise, it will be performed by the shell.  This variable will
-   be set by the wgetrc-reading function.  */
-
-static bool enable_tilde_expansion;
 
 
 #define CMD_DECLARE(func) static bool func (const char *, const char *, void *)
@@ -473,6 +468,7 @@ enum parse_line {
 
 static enum parse_line parse_line (const char *, char **, char **, int *);
 static bool setval_internal (int, const char *, const char *);
+static bool setval_internal_wrapper (int, const char *, const char *);
 
 /* Initialize variables from a wgetrc file.  Returns zero (failure) if
    there were errors in the file.  */
@@ -492,7 +488,6 @@ run_wgetrc (const char *file)
                file, strerror (errno));
       return true;                      /* not a fatal error */
     }
-  enable_tilde_expansion = true;
   ln = 1;
   while ((line = read_whole_line (fp)) != NULL)
     {
@@ -504,7 +499,7 @@ run_wgetrc (const char *file)
         {
         case line_ok:
           /* If everything is OK, set the value.  */
-          if (!setval_internal (comind, com, val))
+          if (!setval_internal_wrapper (comind, com, val))
             {
               fprintf (stderr, _("%s: Error in %s at line %d.\n"),
                        exec_name, file, ln);
@@ -531,7 +526,6 @@ run_wgetrc (const char *file)
       xfree (line);
       ++ln;
     }
-  enable_tilde_expansion = false;
   fclose (fp);
 
   return errcnt == 0;
@@ -668,6 +662,12 @@ parse_line (const char *line, char **com, char **val, int *comind)
   return line_ok;
 }
 
+#if defined(WINDOWS) || defined(MSDOS)
+# define ISSEP(c) ((c) == '/' || (c) == '\\')
+#else
+# define ISSEP(c) ((c) == '/')
+#endif
+
 /* Run commands[comind].action. */
 
 static bool
@@ -676,6 +676,36 @@ setval_internal (int comind, const char *com, const char *val)
   assert (0 <= comind && ((size_t) comind) < countof (commands));
   DEBUGP (("Setting %s (%s) to %s\n", com, commands[comind].name, val));
   return commands[comind].action (com, val, commands[comind].place);
+}
+
+static bool
+setval_internal_wrapper (int comind, const char *com, const char *val)
+{
+  bool ret;
+  int homelen;
+  char *home;
+  char **pstring;
+  ret = setval_internal (comind, com, val);
+
+  /* We make tilde expansion for cmd_file and cmd_directory */
+  if (((commands[comind].action == cmd_file) ||
+       (commands[comind].action == cmd_directory)) && ret)
+    {
+      pstring = commands[comind].place;
+      home = home_dir();
+      if (home)
+	{
+	  homelen = strlen(home);
+	  while (homelen && ISSEP(home[homelen - 1]))
+            home[--homelen] = '\0';
+
+	  /* Skip the leading "~/". */
+	  for (++val; ISSEP(*val); val++)
+  	    ;
+	  *pstring = concat_strings (home, "/", val, (char *)0);
+	}
+    }
+  return ret;
 }
 
 /* Run command COM with value VAL.  If running the command produces an
@@ -813,11 +843,6 @@ cmd_string (const char *com, const char *val, void *place)
   return true;
 }
 
-#if defined(WINDOWS) || defined(MSDOS)
-# define ISSEP(c) ((c) == '/' || (c) == '\\')
-#else
-# define ISSEP(c) ((c) == '/')
-#endif
 
 /* Like the above, but handles tilde-expansion when reading a user's
    `.wgetrc'.  In that case, and if VAL begins with `~', the tilde
@@ -831,28 +856,7 @@ cmd_file (const char *com, const char *val, void *place)
 
   /* #### If VAL is empty, perhaps should set *PLACE to NULL.  */
 
-  if (!enable_tilde_expansion || !(*val == '~' && ISSEP (val[1])))
-    {
-    noexpand:
-      *pstring = xstrdup (val);
-    }
-  else
-    {
-      int homelen;
-      char *home = home_dir ();
-      if (!home)
-        goto noexpand;
-
-      homelen = strlen (home);
-      while (homelen && ISSEP (home[homelen - 1]))
-        home[--homelen] = '\0';
-
-      /* Skip the leading "~/". */
-      for (++val; ISSEP (*val); val++)
-        ;
-
-      *pstring = concat_strings (home, "/", val, (char *) 0);
-    }
+  *pstring = xstrdup (val);
 
 #if defined(WINDOWS) || defined(MSDOS)
   /* Convert "\" to "/". */

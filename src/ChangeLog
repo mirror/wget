@@ -1,3 +1,9 @@
+2009-06-13  Julien Pichon  <julienpichon7@gmail.com>
+
+	* init.c: Handle tilde-expansion in wgetrc commands, without
+	resorting to setting/unsetting globals to change behavior in one
+	call location.
+
 2009-06-12  Micah Cowan  <micah@cowan.name>
 
 	* host.c: Include <sys/types.h> before <sys/socket.h>. Not
