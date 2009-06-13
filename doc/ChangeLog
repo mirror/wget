@@ -1,3 +1,8 @@
+2009-06-12  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi (Download Options): More accuracy on what happens when
+	-nd is used with -r or -p.
+
 2009-06-11  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi (Contributors): Added Xin Zou, Benjamin Wolsley, and

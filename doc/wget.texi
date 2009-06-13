@@ -582,23 +582,24 @@ behavior depends on a few options, including @samp{-nc}.  In certain
 cases, the local file will be @dfn{clobbered}, or overwritten, upon
 repeated download.  In other cases it will be preserved.
 
-When running Wget without @samp{-N}, @samp{-nc}, @samp{-r}, or @samp{p},
-downloading the same file in the same directory will result in the
-original copy of @var{file} being preserved and the second copy being
-named @samp{@var{file}.1}.  If that file is downloaded yet again, the
-third copy will be named @samp{@var{file}.2}, and so on.  When
-@samp{-nc} is specified, this behavior is suppressed, and Wget will
-refuse to download newer copies of @samp{@var{file}}.  Therefore,
-``@code{no-clobber}'' is actually a misnomer in this mode---it's not
-clobbering that's prevented (as the numeric suffixes were already
-preventing clobbering), but rather the multiple version saving that's
-prevented.
+When running Wget without @samp{-N}, @samp{-nc}, @samp{-r}, or
+@samp{-p}, downloading the same file in the same directory will result
+in the original copy of @var{file} being preserved and the second copy
+being named @samp{@var{file}.1}.  If that file is downloaded yet
+again, the third copy will be named @samp{@var{file}.2}, and so on.
+(This is also the behavior with @samp{-nd}, even if @samp{-r} or
+@samp{-p} are in effect.)  When @samp{-nc} is specified, this behavior
+is suppressed, and Wget will refuse to download newer copies of
+@samp{@var{file}}.  Therefore, ``@code{no-clobber}'' is actually a
+misnomer in this mode---it's not clobbering that's prevented (as the
+numeric suffixes were already preventing clobbering), but rather the
+multiple version saving that's prevented.
 
-When running Wget with @samp{-r} or @samp{-p}, but without @samp{-N}
-or @samp{-nc}, re-downloading a file will result in the new copy
-simply overwriting the old.  Adding @samp{-nc} will prevent this
-behavior, instead causing the original version to be preserved and any
-newer copies on the server to be ignored.
+When running Wget with @samp{-r} or @samp{-p}, but without @samp{-N},
+@samp{-nd}, or @samp{-nc}, re-downloading a file will result in the
+new copy simply overwriting the old.  Adding @samp{-nc} will prevent
+this behavior, instead causing the original version to be preserved
+and any newer copies on the server to be ignored.
 
 When running Wget with @samp{-N}, with or without @samp{-r} or
 @samp{-p}, the decision as to whether or not to download a newer copy
