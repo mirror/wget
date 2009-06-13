@@ -1,3 +1,8 @@
+2009-02-01  Gerardo E. Gidoni  <gerel@gnu.org>
+
+	* main.c, recur.c, recur.h, res.c, retr.c, retr.h: restructured code to
+	avoid multiple 'url_parse' calls.
+
 2008-11-13  Micah Cowan  <micah@cowan.name>
 
 	* http.c (gethttp): Don't do anything when content-length >= our
