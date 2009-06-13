@@ -31,6 +31,8 @@ as that of the covered work.  */
 #ifndef RECUR_H
 #define RECUR_H
 
+#include "url.h"
+
 /* For most options, 0 means no limits, but with -p in the picture,
    that causes a problem on the maximum recursion depth variable.  To
    retain backwards compatibility we allow users to consider "0" to be
@@ -41,6 +43,7 @@ as that of the covered work.  */
 
 struct urlpos;
 
-uerr_t retrieve_tree (const char *);
+void recursive_cleanup (void);
+uerr_t retrieve_tree (struct url *);
 
 #endif /* RECUR_H */
