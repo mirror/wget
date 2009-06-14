@@ -1,3 +1,9 @@
+2009-06-13  Micah Cowan  <micah@cowan.name>
+
+	* init.c: Rename setval_internal_wrapper to setval_internal_tilde,
+	ensure we don't "replace" the tilde unless it's actually
+	present. Clean up some minor GNU style issues.
+
 2009-06-13  Julien Pichon  <julienpichon7@gmail.com>
 
 	* init.c: Handle tilde-expansion in wgetrc commands, without

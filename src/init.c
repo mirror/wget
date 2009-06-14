@@ -468,7 +468,7 @@ enum parse_line {
 
 static enum parse_line parse_line (const char *, char **, char **, int *);
 static bool setval_internal (int, const char *, const char *);
-static bool setval_internal_wrapper (int, const char *, const char *);
+static bool setval_internal_tilde (int, const char *, const char *);
 
 /* Initialize variables from a wgetrc file.  Returns zero (failure) if
    there were errors in the file.  */
@@ -499,7 +499,7 @@ run_wgetrc (const char *file)
         {
         case line_ok:
           /* If everything is OK, set the value.  */
-          if (!setval_internal_wrapper (comind, com, val))
+          if (!setval_internal_tilde (comind, com, val))
             {
               fprintf (stderr, _("%s: Error in %s at line %d.\n"),
                        exec_name, file, ln);
@@ -679,7 +679,7 @@ setval_internal (int comind, const char *com, const char *val)
 }
 
 static bool
-setval_internal_wrapper (int comind, const char *com, const char *val)
+setval_internal_tilde (int comind, const char *com, const char *val)
 {
   bool ret;
   int homelen;
@@ -689,18 +689,19 @@ setval_internal_wrapper (int comind, const char *com, const char *val)
 
   /* We make tilde expansion for cmd_file and cmd_directory */
   if (((commands[comind].action == cmd_file) ||
-       (commands[comind].action == cmd_directory)) && ret)
+       (commands[comind].action == cmd_directory))
+      && ret && (*val == '~' && ISSEP (val[1])))
     {
       pstring = commands[comind].place;
-      home = home_dir();
+      home = home_dir ();
       if (home)
 	{
-	  homelen = strlen(home);
-	  while (homelen && ISSEP(home[homelen - 1]))
+	  homelen = strlen (home);
+	  while (homelen && ISSEP (home[homelen - 1]))
             home[--homelen] = '\0';
 
 	  /* Skip the leading "~/". */
-	  for (++val; ISSEP(*val); val++)
+	  for (++val; ISSEP (*val); val++)
   	    ;
 	  *pstring = concat_strings (home, "/", val, (char *)0);
 	}
