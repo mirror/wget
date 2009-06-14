@@ -1,3 +1,13 @@
+2009-06-14  Micah Cowan  <micah@cowan.name>
+
+	* po/Makefile.in.in (distclean): remove en_US.po, too.
+
+	* Makefile.am: Include md5 as a subdir unconditionally. 
+	It may result in useless compilation, and additional risk of
+	breaking a build of something that isn't actually needed, but
+	otherwise it's too much of a hassle to manage a failure-free
+	distcheck.
+
 2009-06-12  Micah Cowan  <micah@cowan.name>
 
 	* configure.ac: Check for h_errno declaration. Idea thanks to

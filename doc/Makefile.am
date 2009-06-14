@@ -52,7 +52,7 @@ EXTRA_DIST = sample.wgetrc \
 	     $(SAMPLERCTEXI) \
 	     texi2pod.pl
 
-wget.pod: $(srcdir)/wget.texi $(srcdir)/version.texi
+wget.pod: $(srcdir)/wget.texi version.texi
 	$(TEXI2POD) $(srcdir)/wget.texi $@
 
 $(MAN): wget.pod

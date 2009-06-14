@@ -1,3 +1,8 @@
+2009-06-14  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am (wget_SOURCES): css-tokens.h needs to ship with
+	dist, too.
+
 2009-06-13  Micah Cowan  <micah@cowan.name>
 
 	* init.c: Rename setval_internal_wrapper to setval_internal_tilde,

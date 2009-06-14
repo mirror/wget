@@ -58,16 +58,49 @@ run-px-tests: WgetTest.pm ../src/wget$(EXEEXT)
 	$(srcdir)/run-px $(top_srcdir)
 
 EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
-	     Test-auth-basic.px Test-c-full.px Test-c-partial.px \
-	     Test-c.px Test-E-k-K.px Test-E-k.px Test-ftp.px \
-	     Test-HTTP-Content-Disposition-1.px \
-	     Test-HTTP-Content-Disposition-2.px \
-	     Test-HTTP-Content-Disposition.px \
-	     Test-N-current.px Test-N-old.px Test-nonexisting-quiet.px \
-	     Test-noop.px Test-np.px Test-N.px \
-	     Test-O-nonexisting.px Test-O.px \
-	     Test-Restrict-Lowercase.px Test-Restrict-Uppercase.px \
-	     Test--spider-fail.px Test--spider.px Test--spider-r.px
+             Test-auth-basic.px \
+             Test-auth-no-challenge.px \
+             Test-auth-no-challenge-url.px \
+             Test-c-full.px \
+             Test-c-partial.px \
+             Test-c.px \
+             Test-c-shorter.px \
+             Test-E-k-K.px \
+             Test-E-k.px \
+             Test-ftp.px \
+             Test-HTTP-Content-Disposition-1.px \
+             Test-HTTP-Content-Disposition-2.px \
+             Test-HTTP-Content-Disposition.px \
+             Test-N-current.px \
+             Test-N-HTTP-Content-Disposition.px \
+             Test-N--no-content-disposition.px \
+             Test-N--no-content-disposition-trivial.px \
+             Test-N-no-info.px \
+             Test--no-content-disposition.px \
+             Test--no-content-disposition-trivial.px \
+             Test-N-old.px \
+             Test-nonexisting-quiet.px \
+             Test-noop.px \
+             Test-np.px \
+             Test-N.px \
+             Test-N-smaller.px \
+             Test-O-HTTP-Content-Disposition.px \
+             Test-O-nc.px \
+             Test-O--no-content-disposition.px \
+             Test-O--no-content-disposition-trivial.px \
+             Test-O-nonexisting.px \
+             Test-O.px \
+             Test-proxied-https-auth.px \
+             Test-proxy-auth-basic.px \
+             Test-Restrict-Lowercase.px \
+             Test-Restrict-Uppercase.px \
+             Test--spider-fail.px \
+             Test--spider.px \
+             Test--spider-r-HTTP-Content-Disposition.px \
+             Test--spider-r--no-content-disposition.px \
+             Test--spider-r--no-content-disposition-trivial.px \
+             Test--spider-r.px \
+             run-px certs
 
 check_PROGRAMS = unit-tests
 unit_tests_SOURCES = 

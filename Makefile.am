@@ -34,10 +34,10 @@
 ACLOCAL_AMFLAGS = -I m4 -I md5/m4
 
 # subdirectories in the distribution
-SUBDIRS = lib @MD5_SUBDIR@ src doc po tests util windows
+SUBDIRS = lib md5 src doc po tests util windows
 
 EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST \
-	     msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
-	     msdos/Makefile.WC ABOUT-NLS autogen.sh
+             msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
+             msdos/Makefile.WC ABOUT-NLS autogen.sh
 
 CLEANFILES = *~ *.bak $(DISTNAME).tar.gz

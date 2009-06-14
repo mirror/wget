@@ -1,3 +1,7 @@
+2009-06-14  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am (wget.pod): $(srcdir)/version.texi -> version.texi
+
 2009-06-12  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi (Download Options): More accuracy on what happens when
