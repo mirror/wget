@@ -1,3 +1,9 @@
+2009-06-15  Micah Cowan  <micah@cowan.name>
+
+	* retr.c (fd_read_body): Make both args to progress_create
+	consistent, resulting in an accurate progress display. Fixes bug
+	#24948.
+
 2009-06-14  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am (wget_SOURCES): css-tokens.h needs to ship with

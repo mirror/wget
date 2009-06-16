@@ -226,7 +226,8 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
       /* If we're skipping STARTPOS bytes, pass 0 as the INITIAL
          argument to progress_create because the indicator doesn't
          (yet) know about "skipping" data.  */
-      progress = progress_create (skip ? 0 : startpos, startpos + toread);
+      wgint start = skip ? 0 : startpos;
+      progress = progress_create (start, start + toread);
       progress_interactive = progress_interactive_p (progress);
     }
 
