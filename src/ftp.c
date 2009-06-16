@@ -945,7 +945,7 @@ Error in server response, closing control connection.\n"));
       if (dtsock < 0)
         {
           logprintf (LOG_NOTQUIET, "accept: %s\n", strerror (errno));
-          return err;
+          return CONERROR;
         }
     }
 

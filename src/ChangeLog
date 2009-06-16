@@ -1,5 +1,9 @@
 2009-06-15  Micah Cowan  <micah@cowan.name>
 
+	* ftp.c (getftp): If we can't accept the connection, return
+	CONERROR, not whatever the contents of err happens to be. Fixes
+	bug #25015.
+
 	* retr.c (fd_read_body): Make both args to progress_create
 	consistent, resulting in an accurate progress display. Fixes bug
 	#24948.
