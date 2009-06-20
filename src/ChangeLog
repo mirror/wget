@@ -1,3 +1,9 @@
+2009-06-20  Jay Krell  <jay.krell@cornell.edu>
+
+	* sysdep.h (_ALL_SOURCE): (small change) Define the _ALL_SOURCE
+	macro on INTERIX systems. (I switched the location from ftp.c to
+	sysdep.h --mjc)
+
 2009-06-15  Micah Cowan  <micah@cowan.name>
 
 	* ftp.c (getftp): If we can't accept the connection, return

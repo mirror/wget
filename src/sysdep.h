@@ -41,6 +41,10 @@ as that of the covered work.  */
 # endif
 #endif
 
+#if defined(__INTERIX) && !defined(_ALL_SOURCE)
+# define _ALL_SOURCE
+#endif
+
 /* The "namespace tweaks" below attempt to set a friendly "compilation
    environment" under popular operating systems.  Default compilation
    environment often means that some functions that are "extensions"

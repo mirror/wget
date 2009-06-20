@@ -3935,6 +3935,7 @@ Fila Kolodny,
 Alexander Kourakos,
 Martin Kraemer,
 Sami Krank,
+Jay Krell,
 @tex
 $\Sigma\acute{\iota}\mu o\varsigma\;
 \Xi\varepsilon\nu\iota\tau\acute{\epsilon}\lambda\lambda\eta\varsigma$
