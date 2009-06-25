@@ -202,10 +202,12 @@ static struct cmdline_option option_data[] =
     { "inet6-only", '6', OPT_BOOLEAN, "inet6only", -1 },
 #endif
     { "input-file", 'i', OPT_VALUE, "input", -1 },
+    { "iri", 0, OPT_BOOLEAN, "iri", -1 },
     { "keep-session-cookies", 0, OPT_BOOLEAN, "keepsessioncookies", -1 },
     { "level", 'l', OPT_VALUE, "reclevel", -1 },
     { "limit-rate", 0, OPT_VALUE, "limitrate", -1 },
     { "load-cookies", 0, OPT_VALUE, "loadcookies", -1 },
+    { "locale", 0, OPT_VALUE, "locale", -1 },
     { "max-redirect", 0, OPT_VALUE, "maxredirect", -1 },
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
     { "no", 'n', OPT__NO, NULL, required_argument },
@@ -239,6 +241,7 @@ static struct cmdline_option option_data[] =
     { "referer", 0, OPT_VALUE, "referer", -1 },
     { "reject", 'R', OPT_VALUE, "reject", -1 },
     { "relative", 'L', OPT_BOOLEAN, "relativeonly", -1 },
+    { "remote-encoding", 0, OPT_VALUE, "remoteencoding", -1},
     { "remove-listing", 0, OPT_BOOLEAN, "removelisting", -1 },
     { "restrict-file-names", 0, OPT_BOOLEAN, "restrictfilenames", -1 },
     { "retr-symlinks", 0, OPT_BOOLEAN, "retrsymlinks", -1 },
@@ -1077,6 +1080,27 @@ for details.\n\n"));
       exit (1);
     }
 
+#ifdef ENABLE_IRI
+  if (opt.enable_iri)
+    {
+      if (opt.locale && !check_encoding_name (opt.locale))
+        opt.locale = NULL;
+
+      if (!opt.locale)
+        opt.locale = find_locale ();
+
+      if (opt.encoding_remote && !check_encoding_name (opt.encoding_remote))
+        opt.encoding_remote = NULL;
+    }
+#else
+  if (opt.enable_iri || opt.locale || opt.encoding_remote)
+    {
+      /* sXXXav : be more specific... */
+      printf(_("This version does not have support for IRIs\n"));
+      exit(1);
+    }
+#endif
+
   if (opt.ask_passwd)
     {
       opt.passwd = prompt_for_password ();
@@ -1179,7 +1203,7 @@ WARNING: Can't reopen standard output in binary mode;\n\
     {
       char *filename = NULL, *redirected_URL = NULL;
       int dt, url_err;
-      struct url *url_parsed = url_parse (*t, &url_err);
+      struct url *url_parsed = url_parse (*t, &url_err, NULL, false);
 
       if (!url_parsed)
         {
@@ -1199,12 +1223,18 @@ WARNING: Can't reopen standard output in binary mode;\n\
               if (url_scheme (*t) == SCHEME_FTP) 
                 opt.follow_ftp = 1;
           
-              status = retrieve_tree (url_parsed);
+              status = retrieve_tree (url_parsed, NULL);
 
               opt.follow_ftp = old_follow_ftp;
             }
           else
-            status = retrieve_url (url_parsed, *t, &filename, &redirected_URL, NULL, &dt, opt.recursive);
+          {
+            struct iri *i = iri_new ();
+            set_uri_encoding (i, opt.locale, true);
+            status = retrieve_url (url_parsed, *t, &filename, &redirected_URL,
+                                   NULL, &dt, opt.recursive, i);
+            iri_free (i);
+          }
 
           if (opt.delete_after && file_exists_p(filename))
             {

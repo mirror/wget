@@ -26,7 +26,8 @@ sub run {
         my $con = $self->accept();
         print STDERR "Accepted a new connection\n" if $log;
         while (my $req = $con->get_request) {
-            my $url_path = $req->url->path;
+            #my $url_path = $req->url->path;
+            my $url_path = $req->url->as_string;
             if ($url_path =~ m{/$}) { # append 'index.html'
                 $url_path .= 'index.html';
             }

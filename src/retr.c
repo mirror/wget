@@ -598,7 +598,8 @@ static char *getproxy (struct url *);
 
 uerr_t
 retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
-              char **newloc, const char *refurl, int *dt, bool recursive)
+              char **newloc, const char *refurl, int *dt, bool recursive,
+              struct iri *iri)
 {
   uerr_t result;
   char *url;
@@ -626,6 +627,11 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
   if (file)
     *file = NULL;
 
+ second_try:
+  DEBUGP (("[IRI Retrieving %s with %s (UTF-8=%d)\n", quote_n (0, url),
+           iri->uri_encoding ? quote_n (1, iri->uri_encoding) : "None",
+           iri->utf8_encode));
+
   if (!refurl)
     refurl = opt.referer;
 
@@ -639,8 +645,12 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
   proxy = getproxy (u);
   if (proxy)
     {
+      struct iri *pi = iri_new ();
+      set_uri_encoding (pi, opt.locale, true);
+      pi->utf8_encode = false;
+
       /* Parse the proxy URL.  */
-      proxy_url = url_parse (proxy, &up_error_code);
+      proxy_url = url_parse (proxy, &up_error_code, NULL, true);
       if (!proxy_url)
         {
           char *error = url_error (proxy, up_error_code);
@@ -667,7 +677,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
 #endif
       || (proxy_url && proxy_url->scheme == SCHEME_HTTP))
     {
-      result = http_loop (u, &mynewloc, &local_file, refurl, dt, proxy_url);
+      result = http_loop (u, &mynewloc, &local_file, refurl, dt, proxy_url, iri);
     }
   else if (u->scheme == SCHEME_FTP)
     {
@@ -717,8 +727,14 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       xfree (mynewloc);
       mynewloc = construced_newloc;
 
+      /* Reset UTF-8 encoding state, keep the URI encoding and reset
+         the content encoding. */
+      iri->utf8_encode = opt.enable_iri;
+      set_content_encoding (iri, NULL);
+      xfree_null (iri->orig_url);
+
       /* Now, see if this new location makes sense. */
-      newloc_parsed = url_parse (mynewloc, &up_error_code);
+      newloc_parsed = url_parse (mynewloc, &up_error_code, iri, true);
       if (!newloc_parsed)
         {
           char *error = url_error (mynewloc, up_error_code);
@@ -776,8 +792,21 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       goto redirected;
     }
 
-  if (local_file)
+  /* Try to not encode in UTF-8 if fetching failed */
+  if (!(*dt & RETROKF) && iri->utf8_encode)
     {
+      iri->utf8_encode = false;
+      DEBUGP (("[IRI fallbacking to non-utf8 for %s\n", quote (url)));
+      goto second_try;
+    }
+
+  if (local_file && *dt & RETROKF)
+    {
+      register_download (u->url, local_file);
+      if (redirection_count && 0 != strcmp (origurl, u->url))
+        register_redirection (origurl, u->url);
+      if (*dt & TEXTHTML)
+        register_html (u->url, local_file);
       if (*dt & RETROKF)
         {
           register_download (u->url, local_file);
@@ -830,18 +859,23 @@ retrieve_from_file (const char *file, bool html, int *count)
 {
   uerr_t status;
   struct urlpos *url_list, *cur_url;
+  struct iri *iri = iri_new();
 
   char *input_file = NULL;
   const char *url = file;
 
   status = RETROK;             /* Suppose everything is OK.  */
   *count = 0;                  /* Reset the URL count.  */
-  
+
+  /* sXXXav : Assume filename and links in the file are in the locale */
+  set_uri_encoding (iri, opt.locale, true);
+  set_content_encoding (iri, opt.locale);
+
   if (url_has_scheme (url))
     {
       int dt,url_err;
       uerr_t status;
-      struct url * url_parsed = url_parse(url, &url_err);
+      struct url * url_parsed = url_parse(url, &url_err, NULL, true);
 
       if (!url_parsed)
         {
@@ -854,17 +888,22 @@ retrieve_from_file (const char *file, bool html, int *count)
       if (!opt.base_href)
         opt.base_href = xstrdup (url);
 
-      status = retrieve_url (url_parsed, url, &input_file, NULL, NULL, &dt, false);
+      status = retrieve_url (url_parsed, url, &input_file, NULL, NULL, &dt,
+                             false, iri);
       if (status != RETROK)
         return status;
 
       if (dt & TEXTHTML)
         html = true;
+
+      /* If we have a found a content encoding, use it */
+      if (iri->content_encoding)
+	  set_uri_encoding (iri, iri->content_encoding, false);
     }
   else
     input_file = (char *) file;
 
-  url_list = (html ? get_urls_html (input_file, NULL, NULL)
+  url_list = (html ? get_urls_html (input_file, NULL, NULL, iri)
               : get_urls_file (input_file));
 
   for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
@@ -880,24 +919,28 @@ retrieve_from_file (const char *file, bool html, int *count)
           status = QUOTEXC;
           break;
         }
+
+      /* Reset UTF-8 encode status */
+      iri->utf8_encode = opt.enable_iri;
+      xfree_null (iri->orig_url);
+      iri->orig_url = NULL;
+
       if ((opt.recursive || opt.page_requisites)
           && (cur_url->url->scheme != SCHEME_FTP || getproxy (cur_url->url)))
         {
           int old_follow_ftp = opt.follow_ftp;
 
           /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-          if (cur_url->url->scheme == SCHEME_FTP) 
+          if (cur_url->url->scheme == SCHEME_FTP)
             opt.follow_ftp = 1;
-          
-          status = retrieve_tree (cur_url->url);
+
+          status = retrieve_tree (cur_url->url, iri);
 
           opt.follow_ftp = old_follow_ftp;
         }
       else
-        {
-          status = retrieve_url (cur_url->url, cur_url->url->url, &filename,
-                                 &new_file, NULL, &dt, opt.recursive);
-        }
+        status = retrieve_url (cur_url->url, cur_url->url->url, &filename,
+                               &new_file, NULL, &dt, opt.recursive, iri);
 
       if (filename && opt.delete_after && file_exists_p (filename))
         {
@@ -915,6 +958,8 @@ Removing file due to --delete-after in retrieve_from_file():\n"));
 
   /* Free the linked list of URL-s.  */
   free_urlpos (url_list);
+
+  iri_free (iri);
 
   return status;
 }

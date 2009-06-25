@@ -235,6 +235,10 @@ struct options
   bool content_disposition;	/* Honor HTTP Content-Disposition header. */
   bool auth_without_challenge;  /* Issue Basic authentication creds without
                                    waiting for a challenge. */
+
+  bool enable_iri;
+  char *encoding_remote;
+  char *locale;
 };
 
 extern struct options opt;

@@ -70,6 +70,15 @@
 	* wget.texi (Robot Exclusion): Fixed typo "downloads" ->
 	"download"
 
+2008-08-03  Xavier Saint  <wget@sxav.eu>
+
+	* wget.texi : Add option descriptions for the three new
+	options --iri, --locale and --remote-encoding related to
+	IRI support.
+
+	* sample.wgetrc : Add commented lines for the three new
+	command iri, locale and encoding related to IRI support.
+
 2008-08-03  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi: Don't set UPDATED; already set by version.texi.

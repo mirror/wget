@@ -462,6 +462,77 @@ else
 fi
 AC_SUBST(COMMENT_IF_NO_POD2MAN)
 
+
+dnl
+dnl Check for IDN/IRIs
+dnl
+
+AC_ARG_ENABLE(iri,
+  AC_HELP_STRING([--disable-iri],[disable IDN/IRIs support]),
+  [case "${enable_iri}" in
+    no)
+      dnl Disable IRIs checking
+      AC_MSG_NOTICE([disabling IRIs at user request])
+      iri=no
+      ;;
+    yes)
+      dnl IRIs explicitly enabled
+      iri=yes
+      force_iri=yes
+      ;;
+    auto)
+      dnl Auto-detect IRI
+      iri=yes
+      ;;
+    *)
+      AC_MSG_ERROR([Invalid --enable-iri argument \`$enable_iri'])
+      ;;
+    esac
+  ], [
+    dnl If nothing is specified, assume auto-detection
+    iri=yes
+  ]
+)
+
+AC_ARG_WITH(libidn, AC_HELP_STRING([--with-libidn=[DIR]],
+                                   [Support IDN/IRIs (needs GNU Libidn)]),
+                                   libidn=$withval, libidn="")
+if test "X$iri" != "Xno"; then
+  AM_ICONV
+
+  if test "X$am_cv_func_iconv" != "Xyes"; then
+    iri=no
+    if test "X$force_iri" = "Xyes"; then
+      AC_MSG_ERROR([Libiconv is required for IRIs support])
+    else
+      AC_MSG_NOTICE([disabling IRIs because libiconv wasn't found])
+    fi
+  fi
+fi
+
+if test "X$iri" != "Xno"; then
+  if test "$libidn" != ""; then
+    LDFLAGS="${LDFLAGS} -L$libidn/lib"
+    CPPFLAGS="${CPPFLAGS} -I$libidn/include"
+  fi
+  AC_CHECK_HEADER(idna.h,
+    AC_CHECK_LIB(idn, stringprep_check_version,
+      [iri=yes LIBS="${LIBS} -lidn"], iri=no),
+    iri=no)
+
+  if test "X$iri" != "Xno" ; then
+    AC_DEFINE(ENABLE_IRI, 1, [Define if IRI support is enabled.])
+    AC_MSG_NOTICE([Enabling support for IRI.])
+  else
+    AC_MSG_WARN([Libidn not found])
+  fi
+fi
+
+
+dnl Needed by src/Makefile.am
+AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" != "Xno"])
+
+
 dnl
 dnl Create output
 dnl

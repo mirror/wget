@@ -649,7 +649,7 @@ static const char *parse_errors[] = {
    error, and if ERROR is not NULL, also set *ERROR to the appropriate
    error code. */
 struct url *
-url_parse (const char *url, int *error)
+url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
 {
   struct url *u;
   const char *p;
@@ -668,7 +668,8 @@ url_parse (const char *url, int *error)
   int port;
   char *user = NULL, *passwd = NULL;
 
-  char *url_encoded = NULL;
+  const char *url_encoded = NULL;
+  char *new_url = NULL;
 
   int error_code;
 
@@ -679,8 +680,25 @@ url_parse (const char *url, int *error)
       goto error;
     }
 
-  url_encoded = reencode_escapes (url);
+  if (iri && iri->utf8_encode)
+    {
+      iri->utf8_encode = remote_to_utf8 (iri, iri->orig_url ? iri->orig_url : url, (const char **) &new_url);
+      if (!iri->utf8_encode)
+        new_url = NULL;
+      else
+        iri->orig_url = xstrdup (url);
+    }
+
+  /* XXX XXX Could that change introduce (security) bugs ???  XXX XXX*/
+  if (percent_encode)
+    url_encoded = reencode_escapes (new_url ? new_url : url);
+  else
+     url_encoded = new_url ? new_url : url;
+
   p = url_encoded;
+
+  if (new_url && url_encoded != new_url)
+    xfree (new_url);
 
   p += strlen (supported_schemes[scheme].leading_string);
   uname_b = p;
@@ -851,6 +869,18 @@ url_parse (const char *url, int *error)
     {
       url_unescape (u->host);
       host_modified = true;
+
+      /* Apply IDNA regardless of iri->utf8_encode status */
+      if (opt.enable_iri && iri)
+        {
+          char *new = idn_encode (iri, u->host);
+          if (new)
+            {
+              xfree (u->host);
+              u->host = new;
+              host_modified = true;
+            }
+        }
     }
 
   if (params_b)
@@ -860,7 +890,7 @@ url_parse (const char *url, int *error)
   if (fragment_b)
     u->fragment = strdupdelim (fragment_b, fragment_e);
 
-  if (path_modified || u->fragment || host_modified || path_b == path_e)
+  if (opt.enable_iri || path_modified || u->fragment || host_modified || path_b == path_e)
     {
       /* If we suspect that a transformation has rendered what
          url_string might return different from URL_ENCODED, rebuild
@@ -875,7 +905,7 @@ url_parse (const char *url, int *error)
       if (url_encoded == url)
         u->url = xstrdup (url);
       else
-        u->url = url_encoded;
+        u->url = (char *) url_encoded;
     }
 
   return u;
@@ -883,7 +913,7 @@ url_parse (const char *url, int *error)
  error:
   /* Cleanup in case of error: */
   if (url_encoded && url_encoded != url)
-    xfree (url_encoded);
+    xfree ((char *) url_encoded);
 
   /* Transmit the error code to the caller, if the caller wants to
      know.  */
@@ -1978,12 +2008,12 @@ schemes_are_similar_p (enum url_scheme a, enum url_scheme b)
 
 static int
 getchar_from_escaped_string (const char *str, char *c)
-{  
+{
   const char *p = str;
 
   assert (str && *str);
   assert (c);
-  
+
   if (p[0] == '%')
     {
       if (!c_isxdigit(p[1]) || !c_isxdigit(p[2]))
@@ -2033,7 +2063,7 @@ are_urls_equal (const char *u1, const char *u2)
       p += pp;
       q += qq;
     }
-  
+
   return (*p == 0 && *q == 0 ? true : false);
 }
 
@@ -2142,7 +2172,7 @@ test_append_uri_pathel()
   } test_array[] = {
     { "http://www.yoyodyne.com/path/", "somepage.html", false, "http://www.yoyodyne.com/path/somepage.html" },
   };
-  
+
   for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 
     {
       struct growable dest;
