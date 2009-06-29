@@ -693,7 +693,7 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
   if (percent_encode)
     url_encoded = reencode_escapes (new_url ? new_url : url);
   else
-     url_encoded = new_url ? new_url : url;
+    url_encoded = new_url ? new_url : url;
 
   p = url_encoded;
 

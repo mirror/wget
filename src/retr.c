@@ -52,6 +52,7 @@ as that of the covered work.  */
 #include "convert.h"
 #include "ptimer.h"
 #include "html-url.h"
+#include "iri.h"
 
 /* Total size of downloaded files.  Used to enforce quota.  */
 SUM_SIZE_INT total_downloaded_bytes;
@@ -885,7 +886,7 @@ retrieve_from_file (const char *file, bool html, int *count)
     {
       int dt,url_err;
       uerr_t status;
-      struct url * url_parsed = url_parse(url, &url_err, NULL, true);
+      struct url * url_parsed = url_parse(url, &url_err, iri, true);
 
       if (!url_parsed)
         {
@@ -906,9 +907,15 @@ retrieve_from_file (const char *file, bool html, int *count)
       if (dt & TEXTHTML)
         html = true;
 
-      /* If we have a found a content encoding, use it */
-      if (iri->content_encoding)
+      /* If we have a found a content encoding, use it.
+       * ( == is okay, because we're checking for identical object) */
+      if (iri->content_encoding != opt.locale)
 	  set_uri_encoding (iri, iri->content_encoding, false);
+
+      /* Reset UTF-8 encode status */
+      iri->utf8_encode = opt.enable_iri;
+      xfree_null (iri->orig_url);
+      iri->orig_url = NULL;
     }
   else
     input_file = (char *) file;
@@ -920,6 +927,8 @@ retrieve_from_file (const char *file, bool html, int *count)
     {
       char *filename = NULL, *new_file = NULL;
       int dt;
+      struct iri *tmpiri = iri_dup (iri);
+      struct url *parsed_url = NULL;
 
       if (cur_url->ignore_when_downloading)
         continue;
@@ -930,10 +939,9 @@ retrieve_from_file (const char *file, bool html, int *count)
           break;
         }
 
-      /* Reset UTF-8 encode status */
-      iri->utf8_encode = opt.enable_iri;
-      xfree_null (iri->orig_url);
-      iri->orig_url = NULL;
+      /* Need to reparse the url, since it didn't have iri information. */
+      if (opt.enable_iri)
+          parsed_url = url_parse (cur_url->url->url, NULL, tmpiri, true);
 
       if ((opt.recursive || opt.page_requisites)
           && (cur_url->url->scheme != SCHEME_FTP || getproxy (cur_url->url)))
@@ -944,13 +952,18 @@ retrieve_from_file (const char *file, bool html, int *count)
           if (cur_url->url->scheme == SCHEME_FTP)
             opt.follow_ftp = 1;
 
-          status = retrieve_tree (cur_url->url, iri);
+          status = retrieve_tree (parsed_url ? parsed_url : cur_url->url,
+                                  tmpiri);
 
           opt.follow_ftp = old_follow_ftp;
         }
       else
-        status = retrieve_url (cur_url->url, cur_url->url->url, &filename,
-                               &new_file, NULL, &dt, opt.recursive, iri);
+        status = retrieve_url (parsed_url ? parsed_url : cur_url->url,
+                               cur_url->url->url, &filename,
+                               &new_file, NULL, &dt, opt.recursive, tmpiri);
+
+      if (parsed_url)
+          url_free (parsed_url);
 
       if (filename && opt.delete_after && file_exists_p (filename))
         {
@@ -964,6 +977,7 @@ Removing file due to --delete-after in retrieve_from_file():\n"));
 
       xfree_null (new_file);
       xfree_null (filename);
+      iri_free (tmpiri);
     }
 
   /* Free the linked list of URL-s.  */

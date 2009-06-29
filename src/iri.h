@@ -47,6 +47,7 @@ char *idn_encode (struct iri *i, char *host);
 char *idn_decode (char *host);
 bool remote_to_utf8 (struct iri *i, const char *str, const char **new);
 struct iri *iri_new (void);
+struct iri *iri_dup (const struct iri *);
 void iri_free (struct iri *i);
 void set_uri_encoding (struct iri *i, char *charset, bool force);
 void set_content_encoding (struct iri *i, char *charset);

@@ -295,11 +295,22 @@ remote_to_utf8 (struct iri *i, const char *str, const char **new)
 struct iri *
 iri_new (void)
 {
-  struct iri *i = xmalloc (sizeof (struct iri));
+  struct iri *i = xmalloc (sizeof *i);
   i->uri_encoding = opt.encoding_remote ? xstrdup (opt.encoding_remote) : NULL;
   i->content_encoding = NULL;
   i->orig_url = NULL;
   i->utf8_encode = opt.enable_iri;
+  return i;
+}
+
+struct iri *iri_dup (const struct iri *src)
+{
+  struct iri *i = xmalloc (sizeof *i);
+  i->uri_encoding = src->uri_encoding ? xstrdup (src->uri_encoding) : NULL;
+  i->content_encoding = (src->content_encoding ?
+                         xstrdup (src->content_encoding) : NULL);
+  i->orig_url = src->orig_url ? xstrdup (src->orig_url) : NULL;
+  i->utf8_encode = src->utf8_encode;
   return i;
 }
 
