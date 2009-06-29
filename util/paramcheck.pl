@@ -250,8 +250,14 @@ sub emit_undocumented_opts
     }
     my @options;
     foreach my $opt (@$opts) {
-        if (not $items{$opt->{long_name}} || $opt->{deprecated}) {
-            push @options, $opt->{long_name};
+        my $opt_name = $opt->{long_name};
+        if (not $items{$opt_name}
+          || ($opt_name !~ /^no/
+            ? $items{"no-$opt_name"}
+            : false)
+          || $opt->{deprecated})
+        {
+            push @options, $opt_name;
         }
     }
 
