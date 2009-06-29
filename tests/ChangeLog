@@ -1,3 +1,8 @@
+2009-06-29  Micah Cowan  <micah@cowan.name>
+
+	* run-px, Test-iri-percent.px:  Added test for percent-coded value
+	preservation.
+
 2008-12-04  Micah Cowan  <micah@cowan.name> (not copyrightable)
 
 	* run-px, Test-idn-robots.px: Added test for robots-file
