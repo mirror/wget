@@ -1,3 +1,16 @@
+2009-06-29  Micah Cowan  <micah@cowan.name>
+
+	* retr.c (retrieve_from_file): Be sure to pass iri information
+	when parsing an input-fle url, and be sure to hand a clean iri
+	struct, off to retrieve_tree and retrieve_url.
+
+	* iri.c, iri.h (iri_dup): Added.
+
+	* retr.c (retrieve_url): Re-parse for IRI fallback.
+
+	* main.c (main): Set up iri before the url_parse invocation (so we
+	can use it).
+
 2009-06-20  Jay Krell  <jay.krell@cornell.edu>
 
 	* sysdep.h (_ALL_SOURCE): (small change) Define the _ALL_SOURCE
