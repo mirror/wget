@@ -1203,7 +1203,13 @@ WARNING: Can't reopen standard output in binary mode;\n\
     {
       char *filename = NULL, *redirected_URL = NULL;
       int dt, url_err;
-      struct url *url_parsed = url_parse (*t, &url_err, NULL, false);
+      /* Need to do a new struct iri every time, because
+       * retrieve_url may modify it in some circumstances,
+       * currently. */
+      struct iri *iri = iri_new ();
+      struct url *url_parsed = url_parse (*t, &url_err, iri, true);
+
+      set_uri_encoding (iri, opt.locale, true);
 
       if (!url_parsed)
         {
@@ -1229,11 +1235,8 @@ WARNING: Can't reopen standard output in binary mode;\n\
             }
           else
           {
-            struct iri *i = iri_new ();
-            set_uri_encoding (i, opt.locale, true);
             status = retrieve_url (url_parsed, *t, &filename, &redirected_URL,
-                                   NULL, &dt, opt.recursive, i);
-            iri_free (i);
+                                   NULL, &dt, opt.recursive, iri);
           }
 
           if (opt.delete_after && file_exists_p(filename))
@@ -1247,6 +1250,7 @@ WARNING: Can't reopen standard output in binary mode;\n\
           xfree_null (filename);
           url_free (url_parsed);
         }
+      iri_free (iri);
     }
 
   /* And then from the input file, if any.  */

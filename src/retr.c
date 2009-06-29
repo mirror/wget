@@ -796,8 +796,18 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
   if (!(*dt & RETROKF) && iri->utf8_encode)
     {
       iri->utf8_encode = false;
-      DEBUGP (("[IRI fallbacking to non-utf8 for %s\n", quote (url)));
-      goto second_try;
+      if (orig_parsed != u)
+        {
+          url_free (u);
+        }
+      u = url_parse (origurl, NULL, iri, true);
+      if (u)
+        {
+          DEBUGP (("[IRI fallbacking to non-utf8 for %s\n", quote (url)));
+          goto second_try;
+        }
+      else
+          DEBUGP (("[Couldn't fallback to non-utf8 for %s\n", quote (url)));
     }
 
   if (local_file && *dt & RETROKF)

@@ -278,7 +278,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
         {
           int dt = 0, url_err;
           char *redirected = NULL;
-          struct url *url_parsed = url_parse (url, &url_err, i, false);
+          struct url *url_parsed = url_parse (url, &url_err, i, true);
 
           status = retrieve_url (url_parsed, url, &file, &redirected, referer,
                                  &dt, false, i);
@@ -373,7 +373,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
           if (children)
             {
               struct urlpos *child = children;
-              struct url *url_parsed = url_parse (url, NULL, i, false);
+              struct url *url_parsed = url_parse (url, NULL, i, true);
               struct iri *ci;
               char *referer_url = url;
               bool strip_auth = (url_parsed != NULL
