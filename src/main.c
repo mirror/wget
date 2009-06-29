@@ -1207,9 +1207,10 @@ WARNING: Can't reopen standard output in binary mode;\n\
        * retrieve_url may modify it in some circumstances,
        * currently. */
       struct iri *iri = iri_new ();
-      struct url *url_parsed = url_parse (*t, &url_err, iri, true);
+      struct url *url_parsed;
 
       set_uri_encoding (iri, opt.locale, true);
+      url_parsed = url_parse (*t, &url_err, iri, true);
 
       if (!url_parsed)
         {
