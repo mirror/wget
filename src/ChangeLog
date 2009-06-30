@@ -1,5 +1,9 @@
 2009-06-29  Micah Cowan  <micah@cowan.name>
 
+	* html-url.c (append_url): Quote some more arguments that might
+	contain characters that are inappropriate to display for the
+	current locale.
+
 	* retr.c (retrieve_from_file): Be sure to pass iri information
 	when parsing an input-fle url, and be sure to hand a clean iri
 	struct, off to retrieve_tree and retrieve_url.

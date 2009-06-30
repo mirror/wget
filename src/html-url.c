@@ -304,8 +304,11 @@ append_url (const char *link_uri, int position, int size,
 
       char *complete_uri = uri_merge (base, link_uri);
 
-      DEBUGP (("%s: merge(\"%s\", \"%s\") -> %s\n",
-               ctx->document_file, base, link_uri, complete_uri));
+      DEBUGP (("%s: merge(%s, %s) -> %s\n",
+               quotearg_n_style (0, locale_quoting_style, ctx->document_file),
+               quote_n (1, base),
+               quote_n (2, link_uri),
+               quotearg_n_style (3, locale_quoting_style, complete_uri)));
 
       url = url_parse (complete_uri, NULL, NULL, false);
       if (!url)
@@ -318,7 +321,7 @@ append_url (const char *link_uri, int position, int size,
       xfree (complete_uri);
     }
 
-  DEBUGP (("appending \"%s\" to urlpos.\n", url->url));
+  DEBUGP (("appending %s to urlpos.\n", quote (url->url)));
 
   newel = xnew0 (struct urlpos);
   newel->url = url;
