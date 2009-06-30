@@ -1,7 +1,11 @@
 2009-06-29  Micah Cowan  <micah@cowan.name>
 
-	* run-px, Test-iri-percent.px:  Added test for percent-coded value
-	preservation.
+	* WgetTest.pm.in (_cleanup): Allow cleanup of test directories to
+	be skipped at user discretion.
+
+	* run-px, Test-iri-percent.px, Test-ftp-iri-recursive.px: Added
+	test for percent-coded value preservation, FTP recursion when IRI
+	support's on.
 
 2008-12-04  Micah Cowan  <micah@cowan.name> (not copyrightable)
 
