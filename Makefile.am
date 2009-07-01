@@ -1,6 +1,6 @@
 # Makefile for `Wget' utility
 # Copyright (C) 1995, 1996, 1997, 2006, 2007,
-#   2008 Free Software Foundation, Inc.
+#   2008, 2009 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ SUBDIRS = lib md5 src doc po tests util windows
 
 EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST \
              msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
-             msdos/Makefile.WC ABOUT-NLS autogen.sh
+             msdos/Makefile.WC ABOUT-NLS autogen.sh \
+             build_info.pl
 
 CLEANFILES = *~ *.bak $(DISTNAME).tar.gz

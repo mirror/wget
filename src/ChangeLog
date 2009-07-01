@@ -1,3 +1,13 @@
+2009-07-01  Steven Schubiger  <stsc@member.fsf.org>
+
+	* Makefile.am: Add a rule to generate build_info.c and list
+	the build_info.c.in file in EXTRA_DIST. Adjust elsewhere
+	where needed.
+	
+	* build_info.c: Remove this static source file.
+	
+	* build_info.c.in: Data for generation of build_info.c.
+
 2009-06-29  Micah Cowan  <micah@cowan.name>
 
 	* html-url.c (append_url): Quote some more arguments that might

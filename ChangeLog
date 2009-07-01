@@ -1,3 +1,9 @@
+2009-07-01  Steven Schubiger  <stsc@member.fsf.org>
+
+	* Makefile.am: Add build_info.pl to EXTRA_DIST.
+
+	* build_info.pl: Generate build_info.c from data.
+
 2009-06-14  Micah Cowan  <micah@cowan.name>
 
 	* po/Makefile.in.in (distclean): remove en_US.po, too.

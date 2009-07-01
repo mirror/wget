@@ -1,6 +1,6 @@
 # Makefile for `wget' utility
 # Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-# 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+# 2004, 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(local
 LIBS     = @LIBSSL@ @LIBGNUTLS@ @LIBINTL@ @LIBS@
 
 bin_PROGRAMS = wget
-wget_SOURCES = build_info.c cmpt.c connect.c convert.c cookies.c ftp.c    \
+wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c    		  \
 	       css.l css-url.c css-tokens.h \
 	       ftp-basic.c ftp-ls.c hash.c host.c html-parse.c html-url.c \
 	       http.c init.c log.c main.c netrc.c progress.c ptimer.c     \
@@ -50,7 +50,7 @@ wget_SOURCES = build_info.c cmpt.c connect.c convert.c cookies.c ftp.c    \
 	       http.h http-ntlm.h init.h log.h mswindows.h netrc.h        \
 	       options.h progress.h ptimer.h recur.h res.h retr.h         \
 	       spider.h ssl.h sysdep.h url.h utils.h wget.h
-nodist_wget_SOURCES = version.c
+nodist_wget_SOURCES = build_info.c version.c
 EXTRA_wget_SOURCES = mswindows.c
 LDADD = $(LIBOBJS) ../lib/libgnu.a @MD5_LDADD@
 AM_CPPFLAGS = -I$(top_srcdir)/lib @MD5_CPPFLAGS@
@@ -60,6 +60,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/lib @MD5_CPPFLAGS@
 
 ../md5/libmd5.a:
 	cd ../lib && $(MAKE) $(AM_MAKEFLAGS)
+
+build_info.c:  $(wget_SOURCES) $(LDADD) $(srcdir)/Makefile.am
+	perl $(top_srcdir)/build_info.pl > $@
 
 ESCAPEQUOTE = sed -e 's/[\\"]/\\&/g' -e 's/\\"/"/' -e 's/\\";$$/";/'
 version.c:  $(wget_SOURCES) $(LDADD) $(srcdir)/Makefile.am
@@ -77,8 +80,9 @@ version.c:  $(wget_SOURCES) $(LDADD) $(srcdir)/Makefile.am
 
 check_LIBRARIES = libunittest.a
 libunittest_a_SOURCES = $(wget_SOURCES) test.c test.h
-nodist_libunittest_a_SOURCES = version.c
+nodist_libunittest_a_SOURCES = build_info.c version.c
 libunittest_a_CPPFLAGS = -DTESTING -I$(top_srcdir)/lib
 libunittest_a_LIBADD = $(LIBOBJS)
+EXTRA_DIST = build_info.c.in
 
-CLEANFILES = *~ *.bak core core.[0-9]* version.c
+CLEANFILES = *~ *.bak core core.[0-9]* build_info.c version.c
