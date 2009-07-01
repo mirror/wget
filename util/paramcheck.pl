@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright (C) 2008 Free Software Foundation, Inc.
+# Copyright (C) 2008, 2009 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,157 +17,286 @@
 
 use strict;
 use warnings;
+use constant true  => 1;
+use constant false => 0;
 
 use FindBin qw($Bin);
 use File::Spec ();
 
 my @args = ([
-    File::Spec->catfile($Bin, '..', 'src', 'main.c'),
+    File::Spec->catfile($Bin, File::Spec->updir, 'src', 'main.c'),
     qr/static \s+? struct \s+? cmdline_option \s+? option_data\[\] \s+? = \s+? \{ (.*?) \}\;/sx,
     [ qw(long_name short_name type data argtype) ],
 ], [
-    File::Spec->catfile($Bin, '..', 'src', 'init.c'),
+    File::Spec->catfile($Bin, File::Spec->updir, 'src', 'init.c'),
     qr/commands\[\] \s+? = \s+? \{ (.*?) \}\;/sx,
     [ qw(name place action) ],
 ]);
+my $tex_file = File::Spec->catfile($Bin, File::Spec->updir, 'doc', 'wget.texi');
 
 {
-    my (@lines, @opts, $source);
+    my @data;
+
     foreach my $arg (@args) {
         my ($file, $regex, $names) = @$arg;
-        $source = read_file($file);
-        @lines = extract_opts_chunk($source, $regex);
-        push @opts, extract_opts(\@lines, $names);
+        my $source = read_file($file);
+        my @chunks = extract_chunks($source, $regex);
+        push @data, extract_entries(\@chunks, $names);
     }
-    walk_opts(@opts);
+
+    output_results(@data);
 }
 
 sub read_file
 {
     my ($file) = @_;
+
     open(my $fh, '<', $file) or die "Cannot open $file: $!";
+
     return do { local $/; <$fh> };
 }
 
-sub extract_opts_chunk
+sub extract_chunks
 {
     my ($source, $regex) = @_;
-    my ($opts) = $source =~ $regex;
-    return map { /\S/ && !/^\#/ ? $_ : () } split /(?<=\})/, $opts;
+
+    my ($raw_data) = $source =~ $regex;
+
+    return map { /\S/ && !/^\#/ ? $_ : () } split /(?<=\})/, $raw_data;
 }
 
-sub extract_opts
+sub extract_entries
 {
-    my ($lines, $names) = @_;
-    my @opts;
-    foreach my $line (@$lines) {
-        my ($args) = $line =~ /\{ \s+? (.*?) \s+? \}/sx;
+    my ($chunks, $names) = @_;
+
+    my (@entries, %index, $i);
+
+    foreach my $chunk (@$chunks) {
+        my ($args) = $chunk =~ /\{ \s+? (.*?) \s+? \}/sx;
         next unless defined $args;
-        my @args = map { tr/'"//d; $_ }
-                   map { /\((.*?)\)/ ? $1 : $_ }
-                   split /\,\s+/, $args;
-        my $opt = { map { $_ => shift @args } @$names };
-        ($opt->{line}) = $line =~ /.*? (\{.*)/;
-        $opts[-1]->{is_deprecated} = 1 if $line =~ /deprecated/i;
-        push @opts, $opt;
+
+        my @args = map {
+          tr/'"//d; $_
+        } map {
+          /\((.*?)\)/ ? $1 : $_
+        } split /\,\s+/, $args;
+
+        my $entry = { map { $_ => shift @args } @$names };
+
+        ($entry->{line}) = $chunk =~ /^ \s+? (\{.*)/mx;
+        if ($chunk =~ /deprecated/i) {
+            $entries[-1]->{deprecated} = true;
+        }
+
+        my $index_name = exists $entry->{data}
+          ? $entry->{data}
+          : $entry->{name};
+
+        $index{$index_name} = $i++;
+
+        push @entries, $entry;
     }
-    return \@opts;
+
+    push @entries, \%index;
+
+    return \@entries;
 }
 
-sub walk_opts
+sub output_results
 {
-    emit_no_corresponding_cmds(@_);
+    my ($opts, $cmds) = @_;
+
+    my %index = (
+        opts => pop @$opts,
+        cmds => pop @$cmds,
+    );
+
+    emit_no_corresponding_cmds($opts);
     print "\n";
-    emit_no_matching_long_cmds(@_);
+    emit_no_matching_long_cmds($opts);
     print "\n";
-    emit_no_corresponding_opts(@_);
+    emit_no_corresponding_opts($opts, $cmds);
     print "\n";
-    emit_deprecated_opts(@_);
+    emit_deprecated_opts($opts);
     print "\n";
-    emit_deprecated_cmds(@_);
+    emit_deprecated_cmds($cmds);
+    print "\n";
+
+    my $tex = read_file($tex_file);
+
+    emit_undocumented_opts($tex, $opts);
+    print "\n";
+    emit_undocumented_cmds($tex, $opts, $cmds, \%index);
     print "\n";
 }
 
 sub emit_no_corresponding_cmds
 {
     my ($opts) = @_;
-    print <<EOT;
-No corresponding commands
-=========================
-EOT
+
+    my @options;
     foreach my $opt (@$opts) {
         unless ($opt->{type} =~ /^(?:OPT_BOOLEAN|OPT_VALUE)$/
              && $opt->{argtype} == -1)
         {
-            print $opt->{line}, "\n";
+            push @options, $opt->{line};
         }
     }
+
+    local $" = "\n";
+    print <<EOT;
+No corresponding commands
+=========================
+@options
+EOT
 }
 
 sub emit_no_matching_long_cmds
 {
     my ($opts) = @_;
-    print <<EOT;
-Non-matching commands
-=====================
-EOT
+
+    my @options;
     foreach my $opt (@$opts) {
         my $long_name = $opt->{long_name};
         $long_name =~ tr/-//d;
         unless ($long_name eq $opt->{data}) {
-            print $opt->{line}, "\n";
+            push @options, $opt->{line};
         }
     }
+
+    local $" = "\n";
+    print <<EOT;
+Non-matching commands
+=====================
+@options
+EOT
 }
 
 sub emit_no_corresponding_opts
 {
     my ($opts, $cmds) = @_;
-    print <<EOT;
-No corresponding options
-========================
-EOT
+
+    my @commands;
     foreach my $cmd (@$cmds) {
-        my $found = 0;
+        my $found = false;
         foreach my $opt (@$opts) {
             my $long_name = $opt->{long_name};
             $long_name =~ tr/-//d;
             if ($cmd->{name} eq $opt->{data}
              || $cmd->{name} eq $long_name) {
-                $found = 1;
+                $found = true;
                 last;
             }
         }
         unless ($found) {
-            print $cmd->{line}, "\n";
+            push @commands, $cmd->{line};
         }
     }
+
+    local $" = "\n";
+    print <<EOT;
+No corresponding options
+========================
+@commands
+EOT
 }
 
 sub emit_deprecated_opts
 {
     my ($opts) = @_;
+
+    my @options;
+    foreach my $opt (@$opts) {
+        if ($opt->{deprecated}) {
+            push @options, $opt->{line};
+        }
+    }
+
+    local $" = "\n";
     print <<EOT;
 Deprecated options
 ==================
+@options
 EOT
-    foreach my $opt (@$opts) {
-        if ($opt->{is_deprecated}) {
-            print $opt->{line}, "\n";
-        }
-    }
 }
 
 sub emit_deprecated_cmds
 {
-    my ($opts, $cmds) = @_;
+    my ($cmds) = @_;
+
+    my @commands;
+    foreach my $cmd (@$cmds) {
+        if ($cmd->{deprecated}) {
+            push @commands, $cmd->{line};
+        }
+    }
+
+    local $" = "\n";
     print <<EOT;
 Deprecated commands
 ===================
+@commands
 EOT
-    foreach my $cmd (@$cmds) {
-        if ($cmd->{is_deprecated}) {
-            print $cmd->{line}, "\n";
+}
+
+sub emit_undocumented_opts
+{
+    my ($tex, $opts) = @_;
+
+    my %items;
+    while ($tex =~ /^\@item\w*? \s+? --([\w\-]+)/gmx) {
+        my $opt = $1;
+        $items{$opt} = true;
+    }
+    my @options;
+    foreach my $opt (@$opts) {
+        my $opt_name = $opt->{long_name};
+        if (not $items{$opt_name}
+          || ($opt_name !~ /^no/
+            ? $items{"no-$opt_name"}
+            : false)
+          || $opt->{deprecated})
+        {
+            push @options, $opt_name;
         }
     }
+
+    local $" = "\n";
+    print <<EOT;
+Undocumented options
+====================
+@options
+EOT
+}
+
+sub emit_undocumented_cmds
+{
+    my ($tex, $opts, $cmds, $index) = @_;
+
+    my %items;
+    while ($tex =~ /^\@item\w*? \s+? ([\w\_]+) \s+? = \s+? \S+?/gmx) {
+        my $cmd = $1;
+        $cmd =~ tr/_//d;
+        $items{$cmd} = true;
+    }
+    my @commands;
+    foreach my $cmd (@$cmds) {
+        my $cmd_name = do {
+            local $_ = exists $index->{opts}->{$cmd->{name}}
+              ? $opts->[$index->{opts}->{$cmd->{name}}]->{long_name}
+              : $cmd->{name};
+            tr/-/_/;
+            $_;
+        };
+        if (not $items{$cmd->{name}} || $cmd->{deprecated}) {
+            push @commands, $cmd_name;
+        }
+    }
+
+    local $" = "\n";
+    print <<EOT;
+Undocumented commands
+=====================
+@commands
+EOT
 }
