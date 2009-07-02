@@ -1,3 +1,14 @@
+2009-07-01  Micah Cowan  <micah@cowan.name>
+
+	* retr.c (retrieve_url): Use the existing "redirect" label,
+	instead of superfluous "second_try". Removed no-longer-accurate
+	debug statement. Use the "newloc" parameter to store the fallback
+	URL, when IRI version was rejected.
+
+	* recur.c (retrieve_tree): Always use the parsed URL for tracking
+	the Referer, since that's the one we actually requested (if
+	there's a difference in terms of percent-encodings and such).
+
 2009-07-01  Steven Schubiger  <stsc@member.fsf.org>
 
 	* Makefile.am: Add a rule to generate build_info.c and list

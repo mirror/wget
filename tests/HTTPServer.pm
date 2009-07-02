@@ -68,6 +68,9 @@ sub send_response {
     if (exists $url_rec->{'auth_method'}) {
         ($send_content, $code, $msg, $headers) =
             $self->handle_auth($req, $url_rec);
+    } elsif (!$self->verify_request_headers ($req, $url_rec)) {
+        ($send_content, $code, $msg, $headers) =
+            ('', 400, 'Mismatch on expected headers', {});
     } else {
         ($code, $msg) = @{$url_rec}{'code', 'msg'};
         $headers = $url_rec->{headers};
@@ -208,6 +211,22 @@ sub verify_auth_basic {
         $$msgref = "Wanted ${expected} got ${got}";
         return undef;
     }
+}
+
+sub verify_request_headers {
+    my ($self, $req, $url_rec) = @_;
+
+    return 1 unless exists $url_rec->{'request_headers'};
+    for my $hdrname (keys %{$url_rec->{'request_headers'}}) {
+        my $rhdr = $req->header ($hdrname);
+        my $ehdr = $url_rec->{'request_headers'}{$hdrname};
+        unless (defined $rhdr && $rhdr =~ $ehdr) {
+            print STDERR "\n*** Mismatch on $hdrname: $rhdr =~ $ehdr\n";
+            return undef;
+        }
+    }
+
+    return 1;
 }
 
 sub _substitute_port {

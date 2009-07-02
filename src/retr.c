@@ -605,6 +605,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
   uerr_t result;
   char *url;
   bool location_changed;
+  bool iri_fallbacked = 0;
   int dummy;
   char *mynewloc, *proxy;
   struct url *u = orig_parsed, *proxy_url;
@@ -628,15 +629,11 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
   if (file)
     *file = NULL;
 
- second_try:
-  DEBUGP (("[IRI Retrieving %s with %s (UTF-8=%d)\n", quote_n (0, url),
-           iri->uri_encoding ? quote_n (1, iri->uri_encoding) : "None",
-           iri->utf8_encode));
-
   if (!refurl)
     refurl = opt.referer;
 
  redirected:
+  /* (also for IRI fallbacking) */
 
   result = NOCONERROR;
   mynewloc = NULL;
@@ -805,7 +802,9 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       if (u)
         {
           DEBUGP (("[IRI fallbacking to non-utf8 for %s\n", quote (url)));
-          goto second_try;
+          url = xstrdup (u->url);
+          iri_fallbacked = 1;
+          goto redirected;
         }
       else
           DEBUGP (("[Couldn't fallback to non-utf8 for %s\n", quote (url)));
@@ -840,7 +839,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       url_free (u);
     }
 
-  if (redirection_count)
+  if (redirection_count || iri_fallbacked)
     {
       if (newloc)
         *newloc = url;

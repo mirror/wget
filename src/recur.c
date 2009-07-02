@@ -320,6 +320,11 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
               xfree (url);
               url = redirected;
             }
+          else
+            {
+              xfree (url);
+              url = xstrdup (url_parsed->url);
+            }
           url_free(url_parsed);
         }
 

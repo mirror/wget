@@ -1,3 +1,12 @@
+2009-07-01  Micah Cowan  <micah@cowan.name>
+
+	* HTTPServer.pm (send_response): Invocation of
+	verify_request_headers, to support testing of Wget-sent header
+	values.
+	(verify_request_headers): Added.
+
+	* Test-iri.px: Added verification checks for Referer values.
+
 2009-06-29  Micah Cowan  <micah@cowan.name>
 
 	* WgetTest.pm.in (_cleanup): Allow cleanup of test directories to
