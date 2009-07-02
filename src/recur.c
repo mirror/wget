@@ -111,7 +111,8 @@ url_enqueue (struct url_queue *queue, struct iri *i,
   if (queue->count > queue->maxcount)
     queue->maxcount = queue->count;
 
-  DEBUGP (("Enqueuing %s at depth %d\n", url, depth));
+  DEBUGP (("Enqueuing %s at depth %d\n",
+           quotearg_n_style (0, escape_quoting_style, url), depth));
   DEBUGP (("Queue count %d, maxcount %d.\n", queue->count, queue->maxcount));
 
   if (i)
@@ -152,7 +153,8 @@ url_dequeue (struct url_queue *queue, struct iri **i,
 
   --queue->count;
 
-  DEBUGP (("Dequeuing %s at depth %d\n", qel->url, qel->depth));
+  DEBUGP (("Dequeuing %s at depth %d\n",
+           quotearg_n_style (0, escape_quoting_style, qel->url), qel->depth));
   DEBUGP (("Queue count %d, maxcount %d.\n", queue->count, queue->maxcount));
 
   xfree (qel);
