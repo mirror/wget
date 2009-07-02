@@ -41,6 +41,7 @@ src/wget
 src/cscope.out
 src/libunittest.a
 src/version.c
+src/build_info.c
 doc/stamp-vti
 doc/wget.1
 doc/wget.pod
