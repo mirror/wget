@@ -679,7 +679,7 @@ servers that support the @code{Range} header.
 @cindex idn support
 @item --iri
 
-Turn on internationalized URI (IRI) support. Use @samp{--iri=no} to
+Turn on internationalized URI (IRI) support. Use @samp{--no-iri} to
 turn it off. IRI support is activated by default.
 
 You can set the default state of IRI support using @code{iri} command in

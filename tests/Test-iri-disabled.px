@@ -162,7 +162,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " --iri=no -nH -r http://localhost:{{port}}/";
+my $cmdline = $WgetTest::WGETPATH . " --no-iri -nH -r http://localhost:{{port}}/";
 
 my $expected_error_code = 0;
 
