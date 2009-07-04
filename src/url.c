@@ -628,18 +628,20 @@ static const char *parse_errors[] = {
 #define PE_NO_ERROR                     0
   N_("No error"),
 #define PE_UNSUPPORTED_SCHEME           1
-  N_("Unsupported scheme %s"),
-#define PE_INVALID_HOST_NAME            2
+  N_("Unsupported scheme %s"), /* support for format token only here */
+#define PE_MISSING_SCHEME               2
+  N_("Scheme missing"),
+#define PE_INVALID_HOST_NAME            3
   N_("Invalid host name"),
-#define PE_BAD_PORT_NUMBER              3
+#define PE_BAD_PORT_NUMBER              4
   N_("Bad port number"),
-#define PE_INVALID_USER_NAME            4
+#define PE_INVALID_USER_NAME            5
   N_("Invalid user name"),
-#define PE_UNTERMINATED_IPV6_ADDRESS    5
+#define PE_UNTERMINATED_IPV6_ADDRESS    6
   N_("Unterminated IPv6 numeric address"),
-#define PE_IPV6_NOT_SUPPORTED           6
+#define PE_IPV6_NOT_SUPPORTED           7
   N_("IPv6 addresses not supported"),
-#define PE_INVALID_IPV6_ADDRESS         7
+#define PE_INVALID_IPV6_ADDRESS         8
   N_("Invalid IPv6 numeric address")
 };
 
@@ -676,7 +678,10 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
   scheme = url_scheme (url);
   if (scheme == SCHEME_INVALID)
     {
-      error_code = PE_UNSUPPORTED_SCHEME;
+      if (url_has_scheme (url))
+        error_code = PE_UNSUPPORTED_SCHEME;
+      else
+        error_code = PE_MISSING_SCHEME;
       goto error;
     }
 
