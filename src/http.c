@@ -66,7 +66,11 @@ as that of the covered work.  */
 #include "test.h"
 #endif
 
-extern char *version_string;
+#include "version.h"
+
+#ifdef __VMS
+# include "vms.h"
+#endif /* def __VMS */
 
 /* Forward decls. */
 struct http_stat;
@@ -1341,13 +1345,27 @@ free_hstat (struct http_stat *hs)
    && (c_isspace (line[sizeof (string_constant) - 1])                      \
        || !line[sizeof (string_constant) - 1]))
 
+#ifdef __VMS
 #define SET_USER_AGENT(req) do {                                         \
   if (!opt.useragent)                                                    \
     request_set_header (req, "User-Agent",                               \
-                        aprintf ("Wget/%s", version_string), rel_value); \
+                        aprintf ("Wget/%s (VMS %s %s)",                  \
+                        VERSION_STRING, vms_arch(), vms_vers()),         \
+                        rel_value);                                      \
   else if (*opt.useragent)                                               \
     request_set_header (req, "User-Agent", opt.useragent, rel_none);     \
 } while (0)
+#else /* def __VMS */
+#define SET_USER_AGENT(req) do {                                         \
+  if (!opt.useragent)                                                    \
+    request_set_header (req, "User-Agent",                               \
+                        aprintf ("Wget/%s (%s)",                         \
+                        VERSION_STRING, OS_TYPE),                        \
+                        rel_value);                                      \
+  else if (*opt.useragent)                                               \
+    request_set_header (req, "User-Agent", opt.useragent, rel_none);     \
+} while (0)
+#endif /* def __VMS [else] */
 
 /* The flags that allow clobbering the file (opening with "wb").
    Defined here to avoid repetition later.  #### This will require
@@ -1744,7 +1762,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
 
       if (conn->scheme == SCHEME_HTTPS)
         {
-          if (!ssl_connect (sock) || !ssl_check_certificate (sock, u->host))
+          if (!ssl_connect_wget (sock) || !ssl_check_certificate (sock, u->host))
             {
               fd_close (sock);
               return CONSSLERR;
@@ -1964,7 +1982,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
   if (opt.timestamping && !hs->timestamp_checked)
     {
       size_t filename_len = strlen (hs->local_file);
-      char *filename_plus_orig_suffix = alloca (filename_len + sizeof (".orig"));
+      char *filename_plus_orig_suffix = alloca (filename_len + sizeof (ORIG_SFX));
       bool local_dot_orig_file_exists = false;
       char *local_filename = NULL;
       struct_stat st;
@@ -1989,7 +2007,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
              --hniksic */
           memcpy (filename_plus_orig_suffix, hs->local_file, filename_len);
           memcpy (filename_plus_orig_suffix + filename_len,
-                  ".orig", sizeof (".orig"));
+                  ORIG_SFX, sizeof (ORIG_SFX));
 
           /* Try to stat() the .orig file. */
           if (stat (filename_plus_orig_suffix, &st) == 0)
@@ -2270,6 +2288,16 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
       return RETRFINISHED;
     }
 
+/* 2005-06-17 SMS.
+   For VMS, define common fopen() optional arguments.
+*/
+#ifdef __VMS
+# define FOPEN_OPT_ARGS "fop=sqo", "acc", acc_cb, &open_id
+# define FOPEN_BIN_FLAG 3
+#else /* def __VMS */
+# define FOPEN_BIN_FLAG 1
+#endif /* def __VMS [else] */
+
   /* Open the local file.  */
   if (!output_stream)
     {
@@ -2277,9 +2305,27 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
       if (opt.backups)
         rotate_backups (hs->local_file);
       if (hs->restval)
-        fp = fopen (hs->local_file, "ab");
+        {
+#ifdef __VMS
+          int open_id;
+
+          open_id = 21;
+          fp = fopen (hs->local_file, "ab", FOPEN_OPT_ARGS);
+#else /* def __VMS */
+          fp = fopen (hs->local_file, "ab");
+#endif /* def __VMS [else] */
+        }
       else if (ALLOW_CLOBBER)
-        fp = fopen (hs->local_file, "wb");
+        {
+#ifdef __VMS
+          int open_id;
+
+          open_id = 22;
+          fp = fopen (hs->local_file, "wb", FOPEN_OPT_ARGS);
+#else /* def __VMS */
+          fp = fopen (hs->local_file, "wb");
+#endif /* def __VMS [else] */
+        }
       else
         {
           fp = fopen_excl (hs->local_file, true);
@@ -2764,7 +2810,7 @@ Remote file exists.\n\n"));
                   && hstat.remote_time && hstat.remote_time[0])
                 {
                   newtmr = http_atotm (hstat.remote_time);
-                  if (newtmr != -1)
+                  if (newtmr != (time_t)-1)
                     tmr = newtmr;
                 }
               touch (fl, tmr);

@@ -43,7 +43,20 @@ as that of the covered work.  */
 #include "utils.h"
 #include "log.h"
 
-/* This file implement support for "logging".  Logging means printing
+/* 2005-10-25 SMS.
+   VMS log files are often VFC record format, not stream, so fputs() can
+   produce multiple records, even when there's no newline terminator in
+   the buffer.  The result is unsightly output with spurious newlines.
+   Using fprintf() instead of fputs(), along with inhibiting some
+   fflush() activity below, seems to solve the problem.
+*/
+#ifdef __VMS
+# define FPUTS( s, f) fprintf( (f), "%s", (s))
+#else /* def __VMS */
+# define FPUTS( s, f) fputs( (s), (f))
+#endif /* def __VMS [else] */
+
+/* This file implements support for "logging".  Logging means printing
    output, plus several additional features:
 
    - Cataloguing output by importance.  You can specify that a log
@@ -307,7 +320,7 @@ logputs (enum log_options o, const char *s)
     return;
   CHECK_VERBOSE (o);
 
-  fputs (s, fp);
+  FPUTS (s, fp);
   if (save_context_p)
     saved_append (s);
   if (flush_log_p)
@@ -397,7 +410,7 @@ log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
 
   /* Writing succeeded. */
   saved_append (write_ptr);
-  fputs (write_ptr, fp);
+  FPUTS (write_ptr, fp);
   if (state->bigmsg)
     xfree (state->bigmsg);
 
@@ -416,7 +429,19 @@ logflush (void)
 {
   FILE *fp = get_log_fp ();
   if (fp)
-    fflush (fp);
+    {
+/* 2005-10-25 SMS.
+   On VMS, flush only for a terminal.  See note at FPUTS macro, above.
+*/
+#ifdef __VMS
+      if (isatty( fileno( fp)))
+        {
+          fflush (fp);
+        }
+#else /* def __VMS */
+      fflush (fp);
+#endif /* def __VMS [else] */
+    }
   needs_flushing = false;
 }
 
@@ -583,13 +608,13 @@ log_dump_context (void)
     {
       struct log_ln *ln = log_lines + num;
       if (ln->content)
-        fputs (ln->content, fp);
+        FPUTS (ln->content, fp);
       ROT_ADVANCE (num);
     }
   while (num != log_line_current);
   if (trailing_line)
     if (log_lines[log_line_current].content)
-      fputs (log_lines[log_line_current].content, fp);
+      FPUTS (log_lines[log_line_current].content, fp);
   fflush (fp);
 }
 

@@ -1,7 +1,5 @@
-/* SSL support.
-   Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
-   2008 Free Software Foundation, Inc.
-   Originally contributed by Christian Fraenkel.
+/* Program version
+   Copyright (C) 2008 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -15,8 +13,8 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
-with Wget.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Wget.  If not, see <http://www.gnu.org/licenses/>.
 
 Additional permission under GNU GPL version 3 section 7
 
@@ -29,11 +27,9 @@ Corresponding Source for a non-source form of such a combination
 shall include the source code for the parts of OpenSSL used as well
 as that of the covered work.  */
 
-#ifndef GEN_SSLFUNC_H
-#define GEN_SSLFUNC_H
+#ifndef VERSION_H
+#define VERSION_H
 
-bool ssl_init (void);
-bool ssl_connect_wget (int);
-bool ssl_check_certificate (int, const char *);
+#define VERSION_STRING "1.11a"
 
-#endif /* GEN_SSLFUNC_H */
+#endif /* def VERSION_H */

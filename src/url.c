@@ -43,6 +43,10 @@ as that of the covered work.  */
 #include "url.h"
 #include "host.h"  /* for is_valid_ipv6_address */
 
+#ifdef __VMS
+#include "vms.h"
+#endif /* def __VMS */
+
 #ifdef TESTING
 #include "test.h"
 #endif
@@ -1571,11 +1575,30 @@ url_file_name (const struct url *u)
 
   if ((opt.noclobber || opt.always_rest || opt.timestamping || opt.dirstruct)
       && !(file_exists_p (fname) && !file_non_directory_p (fname)))
-    return fname;
+    {
+      unique = fname;
+    }
+  else
+    {
+      unique = unique_name (fname, true);
+      if (unique != fname)
+        xfree (fname);
+    }
 
-  unique = unique_name (fname, true);
-  if (unique != fname)
-    xfree (fname);
+/* On VMS, alter the name as required. */
+#ifdef __VMS
+  {
+    char *unique2;
+
+    unique2 = ods_conform( unique);
+    if (unique2 != unique)
+      {
+        xfree (unique);
+        unique = unique2;
+      }
+  }
+#endif /* def __VMS */
+
   return unique;
 }
 

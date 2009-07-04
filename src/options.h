@@ -239,6 +239,11 @@ struct options
   bool enable_iri;
   char *encoding_remote;
   char *locale;
+
+#ifdef __VMS
+  int ftp_stmlf;                /* Force Stream_LF format for binary FTP. */
+#endif /* def __VMS */
+
 };
 
 extern struct options opt;

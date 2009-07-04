@@ -420,7 +420,8 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
   /* Rather than just writing over the original .html file with the
      converted version, save the former to *.orig.  Note we only do
      this for files we've _successfully_ downloaded, so we don't
-     clobber .orig files sitting around from previous invocations. */
+     clobber .orig files sitting around from previous invocations.
+     On VMS, use "_orig" instead of ".orig".  See "wget.h". */
 
   /* Construct the backup filename as the original name plus ".orig". */
   size_t         filename_len = strlen (file);
@@ -443,9 +444,9 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
   else /* downloaded_file_return == FILE_DOWNLOADED_NORMALLY */
     {
       /* Append ".orig" to the name. */
-      filename_plus_orig_suffix = alloca (filename_len + sizeof (".orig"));
+      filename_plus_orig_suffix = alloca (filename_len + sizeof ("ORIG_SFX"));
       strcpy (filename_plus_orig_suffix, file);
-      strcpy (filename_plus_orig_suffix + filename_len, ".orig");
+      strcpy (filename_plus_orig_suffix + filename_len, "ORIG_SFX");
     }
 
   if (!converted_files)

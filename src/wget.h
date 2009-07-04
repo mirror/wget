@@ -155,7 +155,7 @@ as that of the covered work.  */
 #else
   /* Fall back to using long, which is always available and in most
      cases large enough. */
-typedef long off_t;
+  typedef long wgint;
 # define SIZEOF_WGINT SIZEOF_LONG
 #endif
 
@@ -347,5 +347,35 @@ typedef enum
   /* 50  */
   AUTHFAILED, QUOTEXC, WRITEFAILED, SSLINITFAILED
 } uerr_t;
+
+/* 2005-02-19 SMS.
+   Select an appropriate "orig" suffix and a separator character for
+   adding a unique suffix to a file name.
+
+   A VMS ODS2 file system can not tolerate multiple dots.  An ODS5 file
+   system can, but even there not all dots are equal, and heroic effort
+   would be needed to get ".html^.orig" rather than (the less desirable)
+   "^.html.orig".  It's more satisfactory always to use "_orig" on VMS
+   (rather than including "vms.h", testing "ods5_dest", and acting
+   accordingly).
+
+   Note that code in various places assumes that this string is five
+   characters long.
+*/
+# ifdef __VMS
+#  define ORIG_SFX "_orig"
+# else /* def __VMS */
+#  define ORIG_SFX ".orig"
+# endif /* def __VMS [else] */
+
+/* ".NNN" unique-ifying suffix separator character for unique_name() in
+   url.c (and anywhere else).  Note that on VMS, the file system's
+   version numbers solve the problem that unique_name() is designed to
+   handle, obviating this whole exercise.  Other systems may specify a
+   character different from "." here, if desired.
+*/
+# ifndef __VMS
+#  define UNIQ_SEP '.'
+# endif /* ndef __VMS */
 
 #endif /* WGET_H */

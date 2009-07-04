@@ -59,6 +59,12 @@ as that of the covered work.  */
 #include <getpass.h>
 #include <quote.h>
 
+#ifdef __VMS
+#include "vms.h"
+#endif /* __VMS */
+
+#include "version.h"
+
 #ifndef PATH_SEPARATOR
 # define PATH_SEPARATOR '/'
 #endif
@@ -183,6 +189,9 @@ static struct cmdline_option option_data[] =
     { "force-directories", 'x', OPT_BOOLEAN, "dirstruct", -1 },
     { "force-html", 'F', OPT_BOOLEAN, "forcehtml", -1 },
     { "ftp-password", 0, OPT_VALUE, "ftppassword", -1 },
+#ifdef __VMS
+    { "ftp-stmlf", 0, OPT_BOOLEAN, "ftpstmlf", -1 },
+#endif /* def __VMS */
     { "ftp-user", 0, OPT_VALUE, "ftpuser", -1 },
     { "glob", 0, OPT_BOOLEAN, "glob", -1 },
     { "header", 0, OPT_VALUE, "header", -1 },
@@ -592,6 +601,10 @@ HTTPS (SSL/TLS) options:\n"),
 
     N_("\
 FTP options:\n"),
+#ifdef __VMS
+    N_("\
+       --ftp-stmlf             Use Stream_LF format for all binary FTP files.\n"),
+#endif /* def __VMS */
     N_("\
        --ftp-user=USER         set ftp user to USER.\n"),
     N_("\
@@ -619,8 +632,13 @@ Recursive download:\n"),
     N_("\
   -k,  --convert-links      make links in downloaded HTML or CSS point to\n\
                             local files.\n"),
+#ifdef __VMS
+    N_("\
+  -K,  --backup-converted   before converting file X, back up as X_orig.\n"),
+#else /* def __VMS */
     N_("\
   -K,  --backup-converted   before converting file X, back up as X.orig.\n"),
+#endif /* def __VMS [else] */
     N_("\
   -m,  --mirror             shortcut for -N -r -l inf --no-remove-listing.\n"),
     N_("\
@@ -663,7 +681,7 @@ Recursive accept/reject:\n"),
   size_t i;
 
   printf (_("GNU Wget %s, a non-interactive network retriever.\n"),
-          version_string);
+          VERSION_STRING);
   print_usage ();
 
   for (i = 0; i < countof (help); i++)
@@ -763,6 +781,12 @@ print_version (void)
   int i;
 
   printf (_("GNU Wget %s\n\n"), version_string);
+#ifdef __VMS
+  printf ("GNU Wget %s built on VMS %s %s.\n\n",
+   VERSION_STRING, vms_arch(), vms_vers());
+#else /* def __VMS */
+  printf ("GNU Wget %s built on %s.\n\n", version_string, OS_TYPE);
+#endif /* def __VMS */
   /* compiled_features is a char*[]. We limit the characters per
      line to MAX_CHARS_PER_LINE and prefix each line with a constant
      number of spaces for proper alignment. */
@@ -1128,10 +1152,19 @@ for details.\n\n"));
   /* Initialize logging.  */
   log_init (opt.lfilename, append_to_log);
 
-  DEBUGP (("DEBUG output created by Wget %s on %s.\n\n", version_string,
-           OS_TYPE));
+  DEBUGP (("DEBUG output created by Wget %s on %s.\n\n",
+           VERSION_STRING, OS_TYPE));
 
   /* Open the output filename if necessary.  */
+
+/* 2005-04-17 SMS.
+   Note that having the output_stream ("-O") file opened here for an FTP
+   URL rather than in getftp() (ftp.c) (and the http equivalent) rather
+   limits the ability in VMS to open the file differently for ASCII
+   versus binary FTP there.  (Of course, doing it here allows a open
+   failure to be detected immediately, without first connecting to the
+   server.)
+*/
   if (opt.output_document)
     {
       if (HYPHENP (opt.output_document))
@@ -1151,8 +1184,20 @@ WARNING: Can't reopen standard output in binary mode;\n\
       else
         {
           struct_fstat st;
+
+#ifdef __VMS
+/* Common fopen() optional arguments:
+   sequential access only, access callback function.
+*/
+# define FOPEN_OPT_ARGS , "fop=sqo", "acc", acc_cb, &open_id
+          int open_id = 7;
+#else /* def __VMS */
+# define FOPEN_OPT_ARGS
+#endif /* def __VMS [else] */
+
           output_stream = fopen (opt.output_document,
-                                 opt.always_rest ? "ab" : "wb");
+                                 opt.always_rest ? "ab" : "wb"
+                                 FOPEN_OPT_ARGS);
           if (output_stream == NULL)
             {
               perror (opt.output_document);
@@ -1162,6 +1207,20 @@ WARNING: Can't reopen standard output in binary mode;\n\
             output_stream_regular = true;
         }
     }
+
+#ifdef __VMS
+  /* Set global ODS5 flag according to the specified destination (if
+     any), otherwise according to the current default device.
+  */
+  if (output_stream == NULL)
+    {
+      set_ods5_dest( "SYS$DISK");
+    }
+  else if (output_stream != stdout)
+    {
+      set_ods5_dest( opt.output_document);
+    }
+#endif /* def __VMS */
 
 #ifdef WINDOWS
   ws_startup ();

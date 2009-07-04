@@ -390,7 +390,7 @@ static struct transport_implementation openssl_transport = {
    Returns true on success, false on failure.  */
 
 bool
-ssl_connect (int fd) 
+ssl_connect_wget (int fd) 
 {
   SSL *conn;
   struct openssl_transport_context *ctx;
@@ -473,7 +473,7 @@ pattern_match (const char *pattern, const char *string)
    its certificate, corresponds to HOST.  (HOST typically comes from
    the URL and is what the user thinks he's connecting to.)
 
-   This assumes that ssl_connect has successfully finished, i.e. that
+   This assumes that ssl_connect_wget has successfully finished, i.e. that
    the SSL handshake has been performed and that FD is connected to an
    SSL handle.
 
