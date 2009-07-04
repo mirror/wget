@@ -3864,6 +3864,9 @@ Gnulib getpasswd-gnu module.
 Ted Mielczarek---donated support for CSS.
 
 @item
+Saint Xavier---Support for IRIs (RFC 3987).
+
+@item
 People who provided donations for development---including Brian Gough.
 @end itemize
 
@@ -4082,6 +4085,7 @@ Douglas E.@: Wegscheid,
 Ralf Wildenhues,
 Joshua David Williams,
 Benjamin Wolsey,
+Saint Xavier,
 YAMAZAKI Makoto,
 Jasmin Zainul,
 @iftex

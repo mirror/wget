@@ -50,3 +50,7 @@ Steven Schubiger.  Many helpful patches, bugfixes and improvements.
 Notably, conversion of Wget to use the Gnulib quotes and quoteargs
 modules, and the addition of password prompts at the console, via the
 Gnulib getpasswd-gnu module.
+
+Ted Mielczarek.  Support for parsing links from CSS.
+
+Saint Xavier.  Support for IRIs (RFC 3987).
