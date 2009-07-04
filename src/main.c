@@ -73,7 +73,8 @@ extern char *link_string;
 /* defined in build_info.c */
 extern char *compiled_features[];
 /* Used for --version output in print_version */
-static const int max_chars_per_line = 72;
+#define MAX_CHARS_PER_LINE      72
+#define TABULATION              4
 
 #if defined(SIGHUP) || defined(SIGUSR1)
 static void redirect_output_signal (int);
@@ -715,7 +716,6 @@ static void
 format_and_print_line (const char *prefix, const char *line,
                        int line_length) 
 {
-  int leading_spaces;
   int remaining_chars;
   char *line_dup, *token;
   
@@ -725,11 +725,10 @@ format_and_print_line (const char *prefix, const char *line,
   line_dup = xstrdup (line);
 
   if (line_length <= 0)
-    line_length = max_chars_per_line;
+    line_length = MAX_CHARS_PER_LINE - TABULATION;
 
-  leading_spaces = strlen (prefix);
   printf ("%s", prefix);
-  remaining_chars = line_length - leading_spaces;
+  remaining_chars = line_length;
   /* We break on spaces. */
   token = strtok (line_dup, " ");
   while (token != NULL) 
@@ -739,11 +738,11 @@ format_and_print_line (const char *prefix, const char *line,
          token on the next line. */
       if (remaining_chars <= strlen (token)) 
         {
-          printf ("\n%*c", leading_spaces, ' ');
-          remaining_chars = line_length - leading_spaces;
+          printf ("\n%*c", TABULATION, ' ');
+          remaining_chars = line_length - TABULATION;
         }
       printf ("%s ", token);
-      remaining_chars -= strlen (token) + 1;  // account for " "
+      remaining_chars -= strlen (token) + 1;  /* account for " " */
       token = strtok (NULL, " ");
     }
 
@@ -755,25 +754,21 @@ format_and_print_line (const char *prefix, const char *line,
 static void
 print_version (void)
 {
-  const char *options_title = "Options    : ";
-  const char *wgetrc_title  = "Wgetrc     : ";
-  const char *locale_title  = "Locale     : ";
-  const char *compile_title = "Compile    : ";
-  const char *link_title    = "Link       : ";
-  const char *prefix_spaces = "             ";
-  const int prefix_space_length = strlen (prefix_spaces);
+  const char *wgetrc_title  = _("Wgetrc: ");
+  const char *locale_title  = _("Locale: ");
+  const char *compile_title = _("Compile: ");
+  const char *link_title    = _("Link: ");
   char *line;
   char *env_wgetrc, *user_wgetrc;
   int i;
 
-  printf ("GNU Wget %s\n", version_string);
-  printf (options_title);
+  printf (_("GNU Wget %s\n\n"), version_string);
   /* compiled_features is a char*[]. We limit the characters per
-     line to max_chars_per_line and prefix each line with a constant
+     line to MAX_CHARS_PER_LINE and prefix each line with a constant
      number of spaces for proper alignment. */
   for (i = 0; compiled_features[i] != NULL; ) 
     {
-      int line_length = max_chars_per_line - prefix_space_length;
+      int line_length = MAX_CHARS_PER_LINE;
       while ((line_length > 0) && (compiled_features[i] != NULL)) 
         {
           printf ("%s ", compiled_features[i]);
@@ -781,43 +776,38 @@ print_version (void)
           i++;
         }
       printf ("\n");
-      if (compiled_features[i] != NULL) 
-        {
-	  printf (prefix_spaces);
-        }
     }
+  printf ("\n");
   /* Handle the case when $WGETRC is unset and $HOME/.wgetrc is 
      absent. */
-  printf (wgetrc_title);
+  printf ("%s\n", wgetrc_title);
   env_wgetrc = wgetrc_env_file_name ();
   if (env_wgetrc && *env_wgetrc) 
     {
-      printf ("%s (env)\n%s", env_wgetrc, prefix_spaces);
+      printf ("    %s (env)\n", env_wgetrc);
       xfree (env_wgetrc);
     }
   user_wgetrc = wgetrc_user_file_name ();
   if (user_wgetrc) 
     {
-      printf ("%s (user)\n%s", user_wgetrc, prefix_spaces);
+      printf ("    %s (user)\n", user_wgetrc);
       xfree (user_wgetrc);
     }
 #ifdef SYSTEM_WGETRC
-  printf ("%s (system)\n", SYSTEM_WGETRC);
-#else
-  putchar ('\n');
+  printf ("    %s (system)\n", SYSTEM_WGETRC);
 #endif
 
   format_and_print_line (locale_title,
 			 LOCALEDIR, 
-			 max_chars_per_line);
+			 MAX_CHARS_PER_LINE);
   
   format_and_print_line (compile_title,
 			 compilation_string,
-			 max_chars_per_line);
+			 MAX_CHARS_PER_LINE);
 
   format_and_print_line (link_title,
 			 link_string,
-			 max_chars_per_line);
+			 MAX_CHARS_PER_LINE);
 
   printf ("\n");
   /* TRANSLATORS: When available, an actual copyright character
