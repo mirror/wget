@@ -497,7 +497,7 @@ AC_ARG_ENABLE(iri,
 AC_ARG_WITH(libidn, AC_HELP_STRING([--with-libidn=[DIR]],
                                    [Support IDN/IRIs (needs GNU Libidn)]),
                                    libidn=$withval, libidn="")
-if test "X$iri" != "Xno"; then
+AS_IF([test "X$iri" != "Xno"],[
   AM_ICONV
 
   if test "X$am_cv_func_iconv" != "Xyes"; then
@@ -508,7 +508,11 @@ if test "X$iri" != "Xno"; then
       AC_MSG_NOTICE([disabling IRIs because libiconv wasn't found])
     fi
   fi
-fi
+],[  # else
+  # For some reason, this seems to be set even when we don't check.
+  # Explicitly unset.
+  LIBICONV=
+])
 
 if test "X$iri" != "Xno"; then
   if test "$libidn" != ""; then

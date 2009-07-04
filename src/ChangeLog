@@ -1,6 +1,12 @@
 2009-07-03  Micah Cowan  <micah@cowan.name>
 
+	* iri.h (iri_dup): Provide macro definition for when IRIs are
+	disabled.
+
 	* Makefile.am (LIBS): Added @LIBICONV@.
+	(wget_SOURCES): Added iri.h.
+	(EXTRA_wget_SOURCES): Added iri.c, so it gets packaged even if IRI
+	support was disabled.
 
 2009-07-02  Micah Cowan  <micah@cowan.name>
 

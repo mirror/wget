@@ -64,6 +64,7 @@ struct iri dummy_iri;
 #define idn_decode(str)             NULL
 #define remote_to_utf8(a,b,c)       false
 #define iri_new()                   (&dummy_iri)
+#define iri_dup(a)                  (&dummy_iri)
 #define iri_free(a)
 #define set_uri_encoding(a,b,c)
 #define set_content_encoding(a,b)
