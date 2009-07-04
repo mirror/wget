@@ -63,8 +63,6 @@ as that of the covered work.  */
 #include "vms.h"
 #endif /* __VMS */
 
-#include "version.h"
-
 #ifndef PATH_SEPARATOR
 # define PATH_SEPARATOR '/'
 #endif
@@ -681,7 +679,7 @@ Recursive accept/reject:\n"),
   size_t i;
 
   printf (_("GNU Wget %s, a non-interactive network retriever.\n"),
-          VERSION_STRING);
+          version_string);
   print_usage ();
 
   for (i = 0; i < countof (help); i++)
@@ -782,7 +780,7 @@ print_version (void)
 
 #ifdef __VMS
   printf ("GNU Wget %s built on VMS %s %s.\n\n",
-   VERSION_STRING, vms_arch(), vms_vers());
+   version_string, vms_arch(), vms_vers());
 #else /* def __VMS */
   printf ("GNU Wget %s built on %s.\n\n", version_string, OS_TYPE);
 #endif /* def __VMS */
@@ -1152,7 +1150,7 @@ for details.\n\n"));
   log_init (opt.lfilename, append_to_log);
 
   DEBUGP (("DEBUG output created by Wget %s on %s.\n\n",
-           VERSION_STRING, OS_TYPE));
+           version_string, OS_TYPE));
 
   /* Open the output filename if necessary.  */
 

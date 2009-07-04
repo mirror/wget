@@ -66,11 +66,11 @@ as that of the covered work.  */
 #include "test.h"
 #endif
 
-#include "version.h"
-
 #ifdef __VMS
 # include "vms.h"
 #endif /* def __VMS */
+
+extern char *version_string;
 
 /* Forward decls. */
 struct http_stat;
@@ -1350,7 +1350,7 @@ free_hstat (struct http_stat *hs)
   if (!opt.useragent)                                                    \
     request_set_header (req, "User-Agent",                               \
                         aprintf ("Wget/%s (VMS %s %s)",                  \
-                        VERSION_STRING, vms_arch(), vms_vers()),         \
+                        version_string, vms_arch(), vms_vers()),         \
                         rel_value);                                      \
   else if (*opt.useragent)                                               \
     request_set_header (req, "User-Agent", opt.useragent, rel_none);     \
@@ -1360,7 +1360,7 @@ free_hstat (struct http_stat *hs)
   if (!opt.useragent)                                                    \
     request_set_header (req, "User-Agent",                               \
                         aprintf ("Wget/%s (%s)",                         \
-                        VERSION_STRING, OS_TYPE),                        \
+                        version_string, OS_TYPE),                        \
                         rel_value);                                      \
   else if (*opt.useragent)                                               \
     request_set_header (req, "User-Agent", opt.useragent, rel_none);     \
