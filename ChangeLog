@@ -2,6 +2,9 @@
 
 	* po/POTFILES.in: Added src/gnutls.c, src/iri.c.
 
+	* po/*.po: Updated translations from TLP. New translation:
+	Lithuanian.
+
 	* lib/*, md5/*: Updated gnulib.
 
 2009-07-04  Steven Schweda  <sms@antinode.info>
