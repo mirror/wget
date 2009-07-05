@@ -16,12 +16,14 @@ src/ftp-ls.c
 src/ftp-opie.c
 src/ftp.c
 src/gen-md5.c
+src/gnutls.c
 src/hash.c
 src/host.c
 src/html-parse.c
 src/html-url.c
 src/http.c
 src/init.c
+src/iri.c
 src/log.c
 src/main.c
 src/mswindows.c

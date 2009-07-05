@@ -101,7 +101,7 @@ check_encoding_name (char *encoding)
     {
       if (!c_isascii (*s) || c_isspace (*s))
         {
-          logprintf (LOG_VERBOSE, "Encoding %s isn't valid\n", quote (encoding));
+          logprintf (LOG_VERBOSE, _("Encoding %s isn't valid\n"), quote (encoding));
           return false;
         }
 
@@ -129,7 +129,7 @@ locale_to_utf8 (const char *str)
   /* That shouldn't happen, just in case */
   if (!opt.locale)
     {
-      logprintf (LOG_VERBOSE, "open_locale_to_utf8: locale is unset\n");
+      logprintf (LOG_VERBOSE, _("locale_to_utf8: locale is unset\n"));
       opt.locale = find_locale ();
     }
 
@@ -139,7 +139,7 @@ locale_to_utf8 (const char *str)
   l2u = iconv_open ("UTF-8", opt.locale);
   if (l2u != (iconv_t)(-1))
     { 
-      logprintf (LOG_VERBOSE, "Conversion from %s to %s isn't supported\n",
+      logprintf (LOG_VERBOSE, _("Conversion from %s to %s isn't supported\n"),
                  quote (opt.locale), quote ("UTF-8"));
       return str;
     }
@@ -180,7 +180,7 @@ do_conversion (iconv_t cd, char *in, size_t inlen, char **out)
         {
           if (!invalid)
             logprintf (LOG_VERBOSE,
-                      "Incomplete or invalide multibyte sequence encountered\n");
+                      _("Incomplete or invalide multibyte sequence encountered\n"));
 
           invalid++;
           **out = *in;
@@ -205,7 +205,7 @@ do_conversion (iconv_t cd, char *in, size_t inlen, char **out)
         }
       else /* Weird, we got an unspecified error */
         {
-          logprintf (LOG_VERBOSE, "Unhandled errno %d\n", errno);
+          logprintf (LOG_VERBOSE, _("Unhandled errno %d\n"), errno);
           break;
         }
     }
@@ -234,7 +234,7 @@ idn_encode (struct iri *i, char *host)
   if (ret != IDNA_SUCCESS)
     {
       /* sXXXav : free new when needed ! */
-      logprintf (LOG_VERBOSE, "idn_encode failed (%d): %s\n", ret,
+      logprintf (LOG_VERBOSE, _("idn_encode failed (%d): %s\n"), ret,
                  quote (idna_strerror (ret)));
       return NULL;
     }
@@ -253,7 +253,7 @@ idn_decode (char *host)
   ret = idna_to_unicode_8zlz (host, &new, IDNA_FLAGS);
   if (ret != IDNA_SUCCESS)
     {
-      logprintf (LOG_VERBOSE, "idn_decode failed (%d): %s\n", ret,
+      logprintf (LOG_VERBOSE, _("idn_decode failed (%d): %s\n"), ret,
                  quote (idna_strerror (ret)));
       return NULL;
     }
