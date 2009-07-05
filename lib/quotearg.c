@@ -37,23 +37,6 @@
 #define _(msgid) gettext (msgid)
 #define N_(msgid) msgid
 
-#if !HAVE_MBRTOWC
-/* Disable multibyte processing entirely.  Since MB_CUR_MAX is 1, the
-   other macros are defined only for documentation and to satisfy C
-   syntax.  */
-# undef MB_CUR_MAX
-# define MB_CUR_MAX 1
-# undef mbstate_t
-# define mbstate_t int
-# define mbrtowc(pwc, s, n, ps) ((*(pwc) = *(s)) != 0)
-# define iswprint(wc) isprint ((unsigned char) (wc))
-# undef HAVE_MBSINIT
-#endif
-
-#if !defined mbsinit && !HAVE_MBSINIT
-# define mbsinit(ps) 1
-#endif
-
 #ifndef SIZE_MAX
 # define SIZE_MAX ((size_t) -1)
 #endif

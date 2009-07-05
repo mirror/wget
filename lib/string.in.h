@@ -1,6 +1,6 @@
 /* A GNU-like <string.h>.
 
-   Copyright (C) 1995-1996, 2001-2008 Free Software Foundation, Inc.
+   Copyright (C) 1995-1996, 2001-2009 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,6 +17,10 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifndef _GL_STRING_H
+
+#if __GNUC__ >= 3
+@PRAGMA_SYSTEM_HEADER@
+#endif
 
 /* The include_next requires a split double-inclusion guard.  */
 #@INCLUDE_NEXT@ @NEXT_STRING_H@
@@ -44,6 +48,21 @@
 extern "C" {
 #endif
 
+
+/* Return the first instance of C within N bytes of S, or NULL.  */
+#if @GNULIB_MEMCHR@
+# if @REPLACE_MEMCHR@
+#  define memchr rpl_memchr
+extern void *memchr (void const *__s, int __c, size_t __n)
+  __attribute__ ((__pure__));
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef memchr
+# define memchr(s,c,n) \
+    (GL_LINK_WARNING ("memchr has platform-specific bugs - " \
+                      "use gnulib module memchr for portability" ), \
+     memchr (s, c, n))
+#endif
 
 /* Return the first occurrence of NEEDLE in HAYSTACK.  */
 #if @GNULIB_MEMMEM@
@@ -165,7 +184,11 @@ extern char *strchrnul (char const *__s, int __c_in)
 
 /* Duplicate S, returning an identical malloc'd string.  */
 #if @GNULIB_STRDUP@
-# if ! @HAVE_DECL_STRDUP@ && ! defined strdup
+# if @REPLACE_STRDUP@
+#  undef strdup
+#  define strdup rpl_strdup
+# endif
+# if !(@HAVE_DECL_STRDUP@ || defined strdup) || @REPLACE_STRDUP@
 extern char *strdup (char const *__s);
 # endif
 #elif defined GNULIB_POSIXCHECK
@@ -574,6 +597,18 @@ extern char *strsignal (int __sig);
     (GL_LINK_WARNING ("strsignal is unportable - " \
                       "use gnulib module strsignal for portability"), \
      strsignal (a))
+#endif
+
+#if @GNULIB_STRVERSCMP@
+# if !@HAVE_STRVERSCMP@
+extern int strverscmp (const char *, const char *);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef strverscmp
+# define strverscmp(a, b) \
+    (GL_LINK_WARNING ("strverscmp is unportable - " \
+                      "use gnulib module strverscmp for portability"), \
+     strverscmp (a, b))
 #endif
 
 

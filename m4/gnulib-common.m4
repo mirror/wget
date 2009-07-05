@@ -1,5 +1,5 @@
-# gnulib-common.m4 serial 5
-dnl Copyright (C) 2007-2008 Free Software Foundation, Inc.
+# gnulib-common.m4 serial 11
+dnl Copyright (C) 2007-2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -8,6 +8,7 @@ dnl with or without modifications, as long as this notice is preserved.
 # is expanded unconditionally through gnulib-tool magic.
 AC_DEFUN([gl_COMMON], [
   dnl Use AC_REQUIRE here, so that the code is expanded once only.
+  AC_REQUIRE([gl_00GNULIB])
   AC_REQUIRE([gl_COMMON_BODY])
 ])
 AC_DEFUN([gl_COMMON_BODY], [
@@ -21,6 +22,16 @@ AC_DEFUN([gl_COMMON_BODY], [
 #if defined __APPLE__ && defined __MACH__ && __APPLE_CC__ >= 5465 && !defined __cplusplus && __STDC_VERSION__ >= 199901L && !defined __GNUC_STDC_INLINE__
 # define __GNUC_STDC_INLINE__ 1
 #endif])
+  AH_VERBATIM([unused_parameter],
+[/* Define as a marker that can be attached to function parameter declarations
+   for parameters that are not used.  This helps to reduce warnings, such as
+   from GCC -Wunused-parameter.  */
+#if __GNUC__ >= 3 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 7)
+# define _UNUSED_PARAMETER_ __attribute__ ((__unused__))
+#else
+# define _UNUSED_PARAMETER_
+#endif
+])
 ])
 
 # gl_MODULE_INDICATOR([modulename])
@@ -42,7 +53,7 @@ m4_ifndef([m4_foreach_w],
 # is a backport of autoconf-2.60's AC_PROG_MKDIR_P.
 # Remove this macro when we can assume autoconf >= 2.60.
 m4_ifdef([AC_PROG_MKDIR_P], [], [
-  AC_DEFUN([AC_PROG_MKDIR_P],
+  AC_DEFUN_ONCE([AC_PROG_MKDIR_P],
     [AC_REQUIRE([AM_PROG_MKDIR_P])dnl defined by automake
      MKDIR_P='$(mkdir_p)'
      AC_SUBST([MKDIR_P])])])
@@ -53,7 +64,7 @@ m4_ifdef([AC_PROG_MKDIR_P], [], [
 # works.
 # This definition can be removed once autoconf >= 2.62 can be assumed.
 AC_DEFUN([AC_C_RESTRICT],
-[AC_CACHE_CHECK([for C/C++ restrict keyword], ac_cv_c_restrict,
+[AC_CACHE_CHECK([for C/C++ restrict keyword], [ac_cv_c_restrict],
   [ac_cv_c_restrict=no
    # The order here caters to the fact that C++ does not require restrict.
    for ac_kw in __restrict __restrict__ _Restrict restrict; do
@@ -88,4 +99,26 @@ AC_DEFUN([AC_C_RESTRICT],
    no) AC_DEFINE([restrict], []) ;;
    *)  AC_DEFINE_UNQUOTED([restrict], [$ac_cv_c_restrict]) ;;
  esac
+])
+
+# gl_BIGENDIAN
+# is like AC_C_BIGENDIAN, except that it can be AC_REQUIREd.
+# Note that AC_REQUIRE([AC_C_BIGENDIAN]) does not work reliably because some
+# macros invoke AC_C_BIGENDIAN with arguments.
+AC_DEFUN([gl_BIGENDIAN],
+[
+  AC_C_BIGENDIAN
+])
+
+# gl_CACHE_VAL_SILENT(cache-id, command-to-set-it)
+# is like AC_CACHE_VAL(cache-id, command-to-set-it), except that it does not
+# output a spurious "(cached)" mark in the midst of other configure output.
+# This macro should be used instead of AC_CACHE_VAL when it is not surrounded
+# by an AC_MSG_CHECKING/AC_MSG_RESULT pair.
+AC_DEFUN([gl_CACHE_VAL_SILENT],
+[
+  saved_as_echo_n="$as_echo_n"
+  as_echo_n=':'
+  AC_CACHE_VAL([$1], [$2])
+  as_echo_n="$saved_as_echo_n"
 ])

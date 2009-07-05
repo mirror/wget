@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2008 Free Software Foundation, Inc.
+# Copyright (C) 2002-2009 Free Software Foundation, Inc.
 #
 # This file is free software, distributed under the terms of the GNU
 # General Public License.  As a special exception to the GNU General
@@ -38,10 +38,27 @@ AC_DEFUN([md5_INIT],
   m4_pushdef([AC_LIBOBJ], m4_defn([md5_LIBOBJ]))
   m4_pushdef([AC_REPLACE_FUNCS], m4_defn([md5_REPLACE_FUNCS]))
   m4_pushdef([AC_LIBSOURCES], m4_defn([md5_LIBSOURCES]))
+  m4_pushdef([md5_LIBSOURCES_LIST], [])
+  m4_pushdef([md5_LIBSOURCES_DIR], [])
+  gl_COMMON
   gl_source_base='md5'
   gl_MD5
+  gl_MULTIARCH
   gl_STDINT_H
   gl_WCHAR_H
+  m4_ifval(md5_LIBSOURCES_LIST, [
+    m4_syscmd([test ! -d ]m4_defn([md5_LIBSOURCES_DIR])[ ||
+      for gl_file in ]md5_LIBSOURCES_LIST[ ; do
+        if test ! -r ]m4_defn([md5_LIBSOURCES_DIR])[/$gl_file ; then
+          echo "missing file ]m4_defn([md5_LIBSOURCES_DIR])[/$gl_file" >&2
+          exit 1
+        fi
+      done])dnl
+      m4_if(m4_sysval, [0], [],
+        [AC_FATAL([expected source file, required through AC_LIBSOURCES, not found])])
+  ])
+  m4_popdef([md5_LIBSOURCES_DIR])
+  m4_popdef([md5_LIBSOURCES_LIST])
   m4_popdef([AC_LIBSOURCES])
   m4_popdef([AC_REPLACE_FUNCS])
   m4_popdef([AC_LIBOBJ])
@@ -64,7 +81,23 @@ AC_DEFUN([md5_INIT],
   m4_pushdef([AC_LIBOBJ], m4_defn([md5tests_LIBOBJ]))
   m4_pushdef([AC_REPLACE_FUNCS], m4_defn([md5tests_REPLACE_FUNCS]))
   m4_pushdef([AC_LIBSOURCES], m4_defn([md5tests_LIBSOURCES]))
+  m4_pushdef([md5tests_LIBSOURCES_LIST], [])
+  m4_pushdef([md5tests_LIBSOURCES_DIR], [])
+  gl_COMMON
   gl_source_base='tests'
+  m4_ifval(md5tests_LIBSOURCES_LIST, [
+    m4_syscmd([test ! -d ]m4_defn([md5tests_LIBSOURCES_DIR])[ ||
+      for gl_file in ]md5tests_LIBSOURCES_LIST[ ; do
+        if test ! -r ]m4_defn([md5tests_LIBSOURCES_DIR])[/$gl_file ; then
+          echo "missing file ]m4_defn([md5tests_LIBSOURCES_DIR])[/$gl_file" >&2
+          exit 1
+        fi
+      done])dnl
+      m4_if(m4_sysval, [0], [],
+        [AC_FATAL([expected source file, required through AC_LIBSOURCES, not found])])
+  ])
+  m4_popdef([md5tests_LIBSOURCES_DIR])
+  m4_popdef([md5tests_LIBSOURCES_LIST])
   m4_popdef([AC_LIBSOURCES])
   m4_popdef([AC_REPLACE_FUNCS])
   m4_popdef([AC_LIBOBJ])
@@ -95,13 +128,6 @@ AC_DEFUN([md5_LIBOBJ], [
   md5_LIBOBJS="$md5_LIBOBJS $1.$ac_objext"
 ])
 
-# m4_foreach_w is provided by autoconf-2.59c and later.
-# This definition is to accommodate developers using versions
-# of autoconf older than that.
-m4_ifndef([m4_foreach_w],
-  [m4_define([m4_foreach_w],
-    [m4_foreach([$1], m4_split(m4_normalize([$2]), [ ]), [$3])])])
-
 # Like AC_REPLACE_FUNCS, except that the module name goes
 # into md5_LIBOBJS instead of into LIBOBJS.
 AC_DEFUN([md5_REPLACE_FUNCS], [
@@ -110,15 +136,14 @@ AC_DEFUN([md5_REPLACE_FUNCS], [
 ])
 
 # Like AC_LIBSOURCES, except the directory where the source file is
-# expected is derived from the gnulib-tool parametrization,
+# expected is derived from the gnulib-tool parameterization,
 # and alloca is special cased (for the alloca-opt module).
 # We could also entirely rely on EXTRA_lib..._SOURCES.
 AC_DEFUN([md5_LIBSOURCES], [
   m4_foreach([_gl_NAME], [$1], [
     m4_if(_gl_NAME, [alloca.c], [], [
-      m4_syscmd([test -r md5/]_gl_NAME[ || test ! -d md5])dnl
-      m4_if(m4_sysval, [0], [],
-        [AC_FATAL([missing md5/]_gl_NAME)])
+      m4_define([md5_LIBSOURCES_DIR], [md5])
+      m4_append([md5_LIBSOURCES_LIST], _gl_NAME, [ ])
     ])
   ])
 ])
@@ -130,13 +155,6 @@ AC_DEFUN([md5tests_LIBOBJ], [
   md5tests_LIBOBJS="$md5tests_LIBOBJS $1.$ac_objext"
 ])
 
-# m4_foreach_w is provided by autoconf-2.59c and later.
-# This definition is to accommodate developers using versions
-# of autoconf older than that.
-m4_ifndef([m4_foreach_w],
-  [m4_define([m4_foreach_w],
-    [m4_foreach([$1], m4_split(m4_normalize([$2]), [ ]), [$3])])])
-
 # Like AC_REPLACE_FUNCS, except that the module name goes
 # into md5tests_LIBOBJS instead of into LIBOBJS.
 AC_DEFUN([md5tests_REPLACE_FUNCS], [
@@ -145,15 +163,14 @@ AC_DEFUN([md5tests_REPLACE_FUNCS], [
 ])
 
 # Like AC_LIBSOURCES, except the directory where the source file is
-# expected is derived from the gnulib-tool parametrization,
+# expected is derived from the gnulib-tool parameterization,
 # and alloca is special cased (for the alloca-opt module).
 # We could also entirely rely on EXTRA_lib..._SOURCES.
 AC_DEFUN([md5tests_LIBSOURCES], [
   m4_foreach([_gl_NAME], [$1], [
     m4_if(_gl_NAME, [alloca.c], [], [
-      m4_syscmd([test -r tests/]_gl_NAME[ || test ! -d tests])dnl
-      m4_if(m4_sysval, [0], [],
-        [AC_FATAL([missing tests/]_gl_NAME)])
+      m4_define([md5tests_LIBSOURCES_DIR], [tests])
+      m4_append([md5tests_LIBSOURCES_LIST], _gl_NAME, [ ])
     ])
   ])
 ])
@@ -167,10 +184,13 @@ AC_DEFUN([md5_FILE_LIST], [
   lib/md5.h
   lib/stdint.in.h
   lib/wchar.in.h
+  m4/00gnulib.m4
   m4/gnulib-common.m4
   m4/include_next.m4
   m4/longlong.m4
   m4/md5.m4
+  m4/multiarch.m4
   m4/stdint.m4
   m4/wchar.m4
+  m4/wint_t.m4
 ])

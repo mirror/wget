@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2008 Free Software Foundation, Inc.
+# Copyright (C) 2002-2009 Free Software Foundation, Inc.
 #
 # This file is free software, distributed under the terms of the GNU
 # General Public License.  As a special exception to the GNU General
@@ -15,11 +15,13 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libmd5 --source-base=md5 --m4-base=md5/m4 --doc-base=doc --aux-dir=. --no-libtool --macro-prefix=md5 crypto/md5
+#   gnulib-tool --import --dir=. --lib=libmd5 --source-base=md5 --m4-base=md5/m4 --doc-base=doc --tests-base=tests --aux-dir=. --no-libtool --macro-prefix=md5 crypto/md5
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
-gl_MODULES([crypto/md5])
+gl_MODULES([
+  crypto/md5
+])
 gl_AVOID([])
 gl_SOURCE_BASE([md5])
 gl_M4_BASE([md5/m4])

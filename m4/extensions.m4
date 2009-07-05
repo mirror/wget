@@ -1,7 +1,7 @@
-# serial 5  -*- Autoconf -*-
+# serial 8  -*- Autoconf -*-
 # Enable extensions on systems that normally disable them.
 
-# Copyright (C) 2003, 2006-2008 Free Software Foundation, Inc.
+# Copyright (C) 2003, 2006-2009 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -20,9 +20,11 @@
 # AC_DEFINE.  The goal here is to define all known feature-enabling
 # macros, then, if reports of conflicts are made, disable macros that
 # cause problems on some platforms (such as __EXTENSIONS__).
-AC_DEFUN([AC_USE_SYSTEM_EXTENSIONS],
+AC_DEFUN_ONCE([AC_USE_SYSTEM_EXTENSIONS],
 [AC_BEFORE([$0], [AC_COMPILE_IFELSE])dnl
 AC_BEFORE([$0], [AC_RUN_IFELSE])dnl
+
+  AC_REQUIRE([AC_CANONICAL_HOST])
 
   AC_CHECK_HEADER([minix/config.h], [MINIX=yes], [MINIX=])
   if test "$MINIX" = yes; then
@@ -35,6 +37,16 @@ AC_BEFORE([$0], [AC_RUN_IFELSE])dnl
     AC_DEFINE([_MINIX], [1],
       [Define to 1 if on MINIX.])
   fi
+
+  dnl HP-UX 11.11 defines mbstate_t only if _XOPEN_SOURCE is defined to 500,
+  dnl regardless of whether the flags -Ae or _D_HPUX_SOURCE=1 are already
+  dnl provided.
+  case "$host_os" in
+    hpux*)
+      AC_DEFINE([_XOPEN_SOURCE], [500],
+        [Define to 500 only on HP-UX.])
+      ;;
+  esac
 
   AH_VERBATIM([__EXTENSIONS__],
 [/* Enable extensions on AIX 3, Interix.  */
@@ -78,5 +90,15 @@ AC_BEFORE([$0], [AC_RUN_IFELSE])dnl
 # ------------------------
 # Enable extensions on systems that normally disable them,
 # typically due to standards-conformance issues.
-AC_DEFUN([gl_USE_SYSTEM_EXTENSIONS],
-  [AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])])
+AC_DEFUN_ONCE([gl_USE_SYSTEM_EXTENSIONS],
+[
+  dnl Require this macro before AC_USE_SYSTEM_EXTENSIONS.
+  dnl gnulib does not need it. But if it gets required by third-party macros
+  dnl after AC_USE_SYSTEM_EXTENSIONS is required, autoconf 2.62..2.63 emit a
+  dnl warning: "AC_COMPILE_IFELSE was called before AC_USE_SYSTEM_EXTENSIONS".
+  dnl Note: We can do this only for one of the macros AC_AIX, AC_GNU_SOURCE,
+  dnl AC_MINIX. If people still use AC_AIX or AC_MINIX, they are out of luck.
+  AC_REQUIRE([AC_GNU_SOURCE])
+
+  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])
+])

@@ -25,6 +25,10 @@ lib/stdio.h
 lib/stdlib.h
 lib/string.h
 lib/wchar.h
+lib/charset.alias
+lib/configmake.h
+lib/ref-add.sed
+lib/ref-del.sed
 md5/.deps
 md5/*.o
 md5/libmd5.a
