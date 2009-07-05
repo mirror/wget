@@ -444,9 +444,9 @@ write_backup_file (const char *file, downloaded_file_t downloaded_file_return)
   else /* downloaded_file_return == FILE_DOWNLOADED_NORMALLY */
     {
       /* Append ".orig" to the name. */
-      filename_plus_orig_suffix = alloca (filename_len + sizeof ("ORIG_SFX"));
+      filename_plus_orig_suffix = alloca (filename_len + sizeof (ORIG_SFX));
       strcpy (filename_plus_orig_suffix, file);
-      strcpy (filename_plus_orig_suffix + filename_len, "ORIG_SFX");
+      strcpy (filename_plus_orig_suffix + filename_len, ORIG_SFX);
     }
 
   if (!converted_files)

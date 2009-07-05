@@ -143,10 +143,8 @@ limit_bandwidth (wgint bytes, struct ptimer *timer)
 
 static int
 write_data (FILE *out, const char *buf, int bufsize, wgint *skip,
-            wgint *written, int flags)
+            wgint *written)
 {
-  static int cr_pending = 0;    /* Found CR in ASCII FTP data. */
-
   if (!out)
     return 1;
   if (*skip > bufsize)
@@ -163,72 +161,8 @@ write_data (FILE *out, const char *buf, int bufsize, wgint *skip,
         return 1;
     }
 
-/* Note: This code assumes that "\n" is the universal line ending
-   character, as on UNIX and VMS.  If this is not true, then here's
-   where to change it.
-*/
-
-#if 1
-# define EOL_STRING "\n"
-#else /* 1 */
-# define EOL_STRING "\r\n"
-#endif /* 1 [else] */
-#define EOL_STRING_LEN (sizeof( EOL_STRING)- 1)
-
-  if (flags & rb_ftp_ascii)
-    {
-      const char *bufend;
-
-      /* ASCII transfer.  Put out lines delimited by CRLF. */
-      bufend = buf+ bufsize;
-      while (buf < bufend)
-        {
-          /* If CR, put out any pending CR, then set CR-pending flag. */
-          if (*buf == '\r')
-            {
-              if (cr_pending)
-                {
-                  fwrite ("\r", 1, 1, out);
-                  *written += 1;
-                }
-              cr_pending = 1;
-              buf++;
-              continue;
-            }
-
-          if (cr_pending)
-            {
-              if (*buf == '\n')
-                {
-                  /* Found FTP EOL (CRLF).  Put out local EOL. */
-                  fwrite (EOL_STRING, 1, EOL_STRING_LEN, out);
-                  *written += EOL_STRING_LEN;
-                }
-              else
-                {
-                  /* Normal character.  Put out pending CR and it. */
-                  fwrite ("\r", 1, 1, out);
-                  fwrite (buf, 1, 1, out);
-                  *written += 2;
-                }
-              buf++;
-              cr_pending = 0;
-            }
-          else
-            {
-              /* Normal character.  Put it out. */
-              fwrite (buf, 1, 1, out);
-              *written += 1;
-              buf++;
-            }
-        }
-    }
-  else
-    {
-      /* Image transfer.  Put out buffer. */
-      fwrite (buf, 1, bufsize, out);
-      *written += bufsize;
-    }
+  fwrite (buf, 1, bufsize, out);
+  *written += bufsize;
 
   /* Immediately flush the downloaded data.  This should not hinder
      performance: fast downloads will arrive in large 16K chunks
@@ -376,7 +310,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
       if (ret > 0)
         {
           sum_read += ret;
-          if (!write_data (out, dlbuf, ret, &skip, &sum_written, flags))
+          if (!write_data (out, dlbuf, ret, &skip, &sum_written))
             {
               ret = -2;
               goto out;
