@@ -1,3 +1,59 @@
+2009-07-04  Steven Schweda  <sms@antinode.info>
+
+	* wget.h (ORIG_SFX): Macro added, to supply an alternative "_orig"
+	suffix on VMS.
+	
+	* connect.c, host.c, host.h, main.c: Include "vms_ip.h" rather
+	than <netdb.h> on VMS systems.
+
+	* convert.c (write_backup_file): Use "_orig" rather than ".orig"
+	on VMS.
+
+	* ftp-basic.c (ftp_list): Don't use LIST -a on VMS servers.
+
+	* ftp.c [__VMS]: Include "vms.h"
+	* ftp.c (getftp): Disable some unhelpful "for VMS" code. Pass the
+	OS type to ftp_list.
+	(getftp) [__VMS]: Alter the filename as required, and invoke fopen
+	with extra optional arguments.
+	(ftp_retrieve_list): Set permissions before setting the times.
+
+	* ftp-ls.c [__VMS]: Various improvements.
+
+	* http.c (SET_USER_AGENT): Added. Include operating-system info in
+	the User-Agent header.
+	(gethttp): Use ORIG_SFX macro.
+	(gethttp) [__VMS]: invoke fopen with extra arguments to
+	communicate file type.
+	(http_loop): Add cast to time_t.
+
+	* init.c (wgetrc_user_file_name) [__VMS]: Adjustments for where to
+	find the .wgetrc.
+
+	* log.c: Adjustments to improve handling of log files on VMS.
+
+	* main.c [__VMS]: Added --ftp-stmlf option (and associated
+	documentation). Adjust description of backup-suffixes, as they now
+	differ for VMS.
+	(print_help, print_version): Include OS type in version
+	information.
+	(main) [__VMS]: Invoke fopen with extra options, to specify file
+	type information.
+
+	* netrc.c (search_netrc) [__VMS]: Fix .netrc-finding.
+
+	* openssl.c, openssl.h (ssl_connect_wget): Renamed from ssl_connect.
+
+	* options.h (struct options): Add ftp_stmlf field.
+
+	* retr.c (write_data) [__VMS]: Avoid fflush.
+
+	* url.c [__VMS]: Include vms.h.
+	* url.c (url_file_name) [__VMS]: Handle naming as required for VMS.
+
+	* utils.c [__VMS]: Include vms.h. Various added facilities for VMS
+	needs.
+
 2009-07-04  Micah Cowan  <micah@cowan.name>
 
 	* main.c (print_version): Allow localization of the version-info

@@ -1,3 +1,13 @@
+2009-07-04  Steven Schweda  <sms@antinode.info>
+
+	* vms/COLLECT_DEPS.COM, vms/config.h_vms, vms/decc_ver.c,
+	vms/DESCRIP_CONFIG.MMS, vms/DESCRIP_DEPS.MMS,
+	vms/DESCRIP_MKDEPS.MMS, vms/DESCRIP.MMS, vms/DESCRIP_SRC.MMS,
+	vms/vms.c, vms/vms.h, vms/vms_ip.h, vms/vms_name_fix.sh,
+	vms/VMS_NOTES.TXT, vms/VMS-WGET.COM, vms/WGET.HLP,
+	vms/WGET_MULTINET.OPT, vms/WGET.OPT, vms/WGET_SSL_HP.OPT,
+	vms/WGET_SSL.OPT: Added.
+
 2009-07-03  Micah Cowan  <micah@cowan.name>
 
 	* configure.ac: Ensure LIBICONV is empty if IRIs are disabled.
