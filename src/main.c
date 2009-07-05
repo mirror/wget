@@ -779,10 +779,10 @@ print_version (void)
   int i;
 
 #ifdef __VMS
-  printf ("GNU Wget %s built on VMS %s %s.\n\n",
+  printf (_("GNU Wget %s built on VMS %s %s.\n\n"),
    version_string, vms_arch(), vms_vers());
 #else /* def __VMS */
-  printf ("GNU Wget %s built on %s.\n\n", version_string, OS_TYPE);
+  printf (_("GNU Wget %s built on %s.\n\n"), version_string, OS_TYPE);
 #endif /* def __VMS */
   /* compiled_features is a char*[]. We limit the characters per
      line to MAX_CHARS_PER_LINE and prefix each line with a constant
@@ -805,17 +805,17 @@ print_version (void)
   env_wgetrc = wgetrc_env_file_name ();
   if (env_wgetrc && *env_wgetrc) 
     {
-      printf ("    %s (env)\n", env_wgetrc);
+      printf (_("    %s (env)\n"), env_wgetrc);
       xfree (env_wgetrc);
     }
   user_wgetrc = wgetrc_user_file_name ();
   if (user_wgetrc) 
     {
-      printf ("    %s (user)\n", user_wgetrc);
+      printf (_("    %s (user)\n"), user_wgetrc);
       xfree (user_wgetrc);
     }
 #ifdef SYSTEM_WGETRC
-  printf ("    %s (system)\n", SYSTEM_WGETRC);
+  printf (_("    %s (system)\n"), SYSTEM_WGETRC);
 #endif
 
   format_and_print_line (locale_title,
@@ -834,7 +834,7 @@ print_version (void)
   /* TRANSLATORS: When available, an actual copyright character
      (cirle-c) should be used in preference to "(C)". */
   fputs (_("\
-Copyright (C) 2008 Free Software Foundation, Inc.\n"), stdout);
+Copyright (C) 2009 Free Software Foundation, Inc.\n"), stdout);
   fputs (_("\
 License GPLv3+: GNU GPL version 3 or later\n\
 <http://www.gnu.org/licenses/gpl.html>.\n\

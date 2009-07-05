@@ -1,3 +1,13 @@
+2009-07-05  Peter Pisar  <petr.pisar@atlas.cz>
+
+	* main.c (print_version): Mark initial line for translation, along
+	with (env), (user), and (system). Change copyright year to 2009.
+
+	* http.c (http_loop): Space after colon.
+
+	* gnutls.c (ssl_check_certificate): Use quote function, rather
+	than explicit quotes.
+
 2009-07-05  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am (version.c): Add dependency on configure.ac.
