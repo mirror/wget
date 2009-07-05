@@ -1,4 +1,4 @@
-2009-07-05  Peter Pisar  <petr.pisar@atlas.cz>
+2009-07-05  Petr Pisar  <petr.pisar@atlas.cz>
 
 	* main.c (print_version): Mark initial line for translation, along
 	with (env), (user), and (system). Change copyright year to 2009.
