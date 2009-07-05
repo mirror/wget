@@ -1008,10 +1008,6 @@ Error in server response, closing control connection.\n"));
           fd_close (local_sock);
           return err;
         case FTPOK:
-          if (getenv( "FTP_DELETE") != NULL)
-          {
-            err = ftp_dele (csock, u->file);
-          }
           break;
         default:
           abort ();
@@ -1109,10 +1105,10 @@ Error in server response, closing control connection.\n"));
 #ifdef __VMS
       char *targ;
 
-      targ = ods_conform( con->target);
+      targ = ods_conform (con->target);
       if (targ != con->target)
         {
-          xfree( con->target);
+          xfree (con->target);
           con->target = targ;
         }
 #endif /* def __VMS */
