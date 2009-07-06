@@ -266,7 +266,7 @@ parse_netrc (const char *path)
   char *line, *p, *tok;
   const char *premature_token;
   acc_t *current, *retval;
-  int ln, quote;
+  int ln, qmark;
 
   /* The latest token we've seen in the file.  */
   enum
@@ -295,7 +295,7 @@ parse_netrc (const char *path)
 
       /* Parse the line.  */
       p = line;
-      quote = 0;
+      qmark = 0;
 
       /* Skip leading whitespace.  */
       while (*p && c_isspace (*p))
@@ -321,25 +321,25 @@ parse_netrc (const char *path)
           /* If the token starts with quotation mark, note this fact,
              and squash the quotation character */
           if (*p == '"'){
-            quote = 1;
+            qmark = 1;
             shift_left (p);
           }
 
           tok = p;
 
           /* Find the end of the token, handling quotes and escapes.  */
-          while (*p && (quote ? *p != '"' : !c_isspace (*p))){
+          while (*p && (qmark ? *p != '"' : !c_isspace (*p))){
             if (*p == '\\')
               shift_left (p);
             p ++;
           }
 
           /* If field was quoted, squash the trailing quotation mark
-             and reset quote flag.  */
-          if (quote)
+             and reset qmark flag.  */
+          if (qmark)
             {
               shift_left (p);
-              quote = 0;
+              qmark = 0;
             }
 
           /* Null-terminate the token, if it isn't already.  */
