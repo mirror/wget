@@ -590,15 +590,25 @@ tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
         {
           while (*content)
             {
-              /* Find the next occurrence of ',' or the end of
-                 the string.  */
-              char *end = strchr (content, ',');
-              if (end)
-                ++end;
-              else
-                end = content + strlen (content);
+              char *end;
+              /* Skip any initial whitespace. */
+              content += strspn (content, " \f\n\r\t\v");
+              /* Find the next occurrence of ',' or whitespace,
+               * or the end of the string.  */
+              end = content + strcspn (content, ", \f\n\r\t\v");
               if (!strncasecmp (content, "nofollow", end - content))
                 ctx->nofollow = true;
+              /* Skip past the next comma, if any. */
+              if (*end == ',')
+                ++end;
+              else
+                {
+                  end = strchr (end, ',');
+                  if (end)
+                    ++end;
+                  else
+                    end = content + strlen (content);
+                }
               content = end;
             }
         }
