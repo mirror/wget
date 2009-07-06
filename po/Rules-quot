@@ -4,8 +4,10 @@ DISTFILES.common.extra1 = quot.sed boldquot.sed en@quot.header en@boldquot.heade
 
 .SUFFIXES: .insert-header .po-update-en
 
+en@quot.po: en@quot.po-create
 en@quot.po-create:
 	$(MAKE) en@quot.po-update
+en@boldquot.po: en@boldquot.po-create
 en@boldquot.po-create:
 	$(MAKE) en@boldquot.po-update
 
