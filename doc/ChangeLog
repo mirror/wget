@@ -4,6 +4,7 @@
 	--input-file, implying that --force-html isn't necessary when the
 	input is in HTML file. Improve accuracy of --base description.
 	(Wgetrc Commands): Improve accuracy of "base" description.
+	(HTTP Options): Clarify operation of --post-file.
 
 2009-07-03  Micah Cowan  <micah@cowan.name>
 

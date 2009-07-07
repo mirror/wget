@@ -1394,10 +1394,20 @@ not to send the @code{User-Agent} header in @sc{http} requests.
 @cindex POST
 @item --post-data=@var{string}
 @itemx --post-file=@var{file}
-Use POST as the method for all HTTP requests and send the specified data
-in the request body.  @code{--post-data} sends @var{string} as data,
-whereas @code{--post-file} sends the contents of @var{file}.  Other than
-that, they work in exactly the same way.
+Use POST as the method for all HTTP requests and send the specified
+data in the request body.  @samp{--post-data} sends @var{string} as
+data, whereas @samp{--post-file} sends the contents of @var{file}.
+Other than that, they work in exactly the same way. In particular,
+they @emph{both} expect content of the form @code{key1=value1&key2=value2},
+with percent-encoding for special characters; the only difference is
+that one expects its content as a command-line paramter and the other
+accepts its content from a file. In particular, @samp{--post-file} is
+@emph{not} for transmitting files as form attachments: those must
+appear as @code{key=value} data (with appropriate percent-coding) just
+like everything else. Wget does not currently support
+@code{multipart/form-data} for transmitting POST data; only
+@code{application/x-www-form-urlencoded}. Only one of
+@samp{--post-data} and @samp{--post-file} should be specified.
 
 Please be aware that Wget needs to know the size of the POST data in
 advance.  Therefore the argument to @code{--post-file} must be a regular
