@@ -512,8 +512,17 @@ option.
 @cindex base for relative links in input file
 @item -B @var{URL}
 @itemx --base=@var{URL}
-Prepends @var{URL} to relative links read from the file specified with
-the @samp{-i} option.
+Resolves relative links using @var{URL} as the point of reference,
+when reading links from an HTML file specified via the
+@samp{-i}/@samp{--input-file} option (together with
+@samp{--force-html}, or when the input file was fetched remotely from
+a server describing it as @sc{html}). This is equivalent to the
+presence of a @code{BASE} tag in the @sc{html} input file, with
+@var{URL} as the value for the @code{href} attribute.
+
+For instance, if you specify @samp{http://foo/bar/a.html} for
+@var{URL}, and Wget reads @samp{../baz/b.html} from the input file, it
+would be resolved to @samp{http://foo/baz/b.html}.
 @end table
 
 @node Download Options, Directory Options, Logging and Input File Options, Invoking
@@ -2652,9 +2661,10 @@ Enable/disable saving pre-converted files with the suffix
 @c #### Document me!
 @c
 @item base = @var{string}
-Consider relative @sc{url}s in @sc{url} input files forced to be
-interpreted as @sc{html} as being relative to @var{string}---the same as
-@samp{--base=@var{string}}.
+Consider relative @sc{url}s in input files (specified via the
+@samp{input} command or the @samp{--input-file}/@samp{-i} option,
+together with @samp{force_html} or @samp{--force-html})
+as being relative to @var{string}---the same as @samp{--base=@var{string}}.
 
 @item bind_address = @var{address}
 Bind to @var{address}, like the @samp{--bind-address=@var{address}}.

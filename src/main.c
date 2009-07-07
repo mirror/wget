@@ -432,7 +432,8 @@ Logging and input file:\n"),
     N_("\
   -F,  --force-html          treat input file as HTML.\n"),
     N_("\
-  -B,  --base=URL            prepends URL to relative links in -F -i file.\n"),
+  -B,  --base=URL            resolves HTML input-file links (-i -F)\n\
+                             relative to URL,\n"),
     "\n",
 
     N_("\
