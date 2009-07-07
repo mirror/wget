@@ -68,9 +68,23 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              Test-E-k-K.px \
              Test-E-k.px \
              Test-ftp.px \
+             Test-ftp-iri.px \
+             Test-ftp-iri-fallback.px \
+             Test-ftp-iri-recursive.px \
+             Test-ftp-iri-disabled.px \
              Test-HTTP-Content-Disposition-1.px \
              Test-HTTP-Content-Disposition-2.px \
              Test-HTTP-Content-Disposition.px \
+             Test-idn-headers.px \
+             Test-idn-meta.px \
+             Test-idn-cmd.px \
+             Test-idn-robots.px \
+             Test-iri.px \
+             Test-iri-percent.px \
+             Test-iri-disabled.px \
+             Test-iri-forced-remote.px \
+             Test-iri-list.px \
+             Test-meta-robots.px \
              Test-N-current.px \
              Test-N-HTTP-Content-Disposition.px \
              Test-N--no-content-disposition.px \
