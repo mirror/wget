@@ -486,9 +486,8 @@ specified as @var{file}, @sc{url}s are read from the standard input.
 If this function is used, no @sc{url}s need be present on the command
 line.  If there are @sc{url}s both on the command line and in an input
 file, those on the command lines will be the first ones to be
-retrieved.  The @var{file} need not be an @sc{html} document (but no
-harm if it is)---it is enough if the @sc{url}s are just listed
-sequentially.
+retrieved.  If @samp{--force-html} is not specified, then @var{file}
+should consist of a series of URLs, one per line.
 
 However, if you specify @samp{--force-html}, the document will be
 regarded as @samp{html}.  In that case you may have problems with
