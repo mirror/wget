@@ -249,7 +249,7 @@ static struct cmdline_option option_data[] =
     { "referer", 0, OPT_VALUE, "referer", -1 },
     { "reject", 'R', OPT_VALUE, "reject", -1 },
     { "relative", 'L', OPT_BOOLEAN, "relativeonly", -1 },
-    { "remote-encoding", 0, OPT_VALUE, "remoteencoding", -1},
+    { "remote-encoding", 0, OPT_VALUE, "remoteencoding", -1 },
     { "remove-listing", 0, OPT_BOOLEAN, "removelisting", -1 },
     { "restrict-file-names", 0, OPT_BOOLEAN, "restrictfilenames", -1 },
     { "retr-symlinks", 0, OPT_BOOLEAN, "retrsymlinks", -1 },
