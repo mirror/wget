@@ -23,23 +23,28 @@ use constant false => 0;
 use FindBin qw($Bin);
 use File::Spec ();
 
+my $main_c_file = File::Spec->catfile($Bin, File::Spec->updir, 'src', 'main.c');
+my $init_c_file = File::Spec->catfile($Bin, File::Spec->updir, 'src', 'init.c');
+my $tex_file = File::Spec->catfile($Bin, File::Spec->updir, 'doc', 'wget.texi');
+my $main_content = read_file($main_c_file);
+my $init_content = read_file($init_c_file);
+my $tex_content = read_file($tex_file);
+
 my @args = ([
-    File::Spec->catfile($Bin, File::Spec->updir, 'src', 'main.c'),
+    $main_content,
     qr/static \s+? struct \s+? cmdline_option \s+? option_data\[\] \s+? = \s+? \{ (.*?) \}\;/sx,
     [ qw(long_name short_name type data argtype) ],
 ], [
-    File::Spec->catfile($Bin, File::Spec->updir, 'src', 'init.c'),
+    $init_content,
     qr/commands\[\] \s+? = \s+? \{ (.*?) \}\;/sx,
     [ qw(name place action) ],
 ]);
-my $tex_file = File::Spec->catfile($Bin, File::Spec->updir, 'doc', 'wget.texi');
 
 {
     my @data;
 
     foreach my $arg (@args) {
-        my ($file, $regex, $names) = @$arg;
-        my $source = read_file($file);
+        my ($source, $regex, $names) = @$arg;
         my @chunks = extract_chunks($source, $regex);
         push @data, extract_entries(\@chunks, $names);
     }
@@ -122,11 +127,9 @@ sub output_results
     emit_deprecated_cmds($cmds);
     print "\n";
 
-    my $tex = read_file($tex_file);
-
-    emit_undocumented_opts($tex, $opts);
+    emit_undocumented_opts($tex_content, $main_content, $opts);
     print "\n";
-    emit_undocumented_cmds($tex, $opts, $cmds, \%index);
+    emit_undocumented_cmds($tex_content, $opts, $cmds, \%index);
     print "\n";
 }
 
@@ -239,34 +242,53 @@ Deprecated commands
 EOT
 }
 
+sub find_documentation
+{
+    my ($push, $opt) = (shift, shift);
+    my $info = [];
+
+    my $opt_name = $opt->{'long_name'};
+    for my $doc (@_) {
+        next if $opt->{'deprecated'};
+        if ($doc->{$opt_name}
+            || ($opt_name !~ /^no/ && $doc->{"no-$opt_name"})) {
+            push @$info, 1;
+        } else {
+            push @$info, 0;
+        }
+    }
+    push @$push, [$opt_name, @$info] if grep {$_ eq 0} @$info;
+}
+
 sub emit_undocumented_opts
 {
-    my ($tex, $opts) = @_;
+    my ($tex, $main, $opts) = @_;
 
-    my %items;
+    my (%tex_items, %main_items);
     while ($tex =~ /^\@item\w*? \s+? --([\w\-]+)/gmx) {
-        my $opt = $1;
-        $items{$opt} = true;
+        $tex_items{$1} = true;
+    }
+    ($main) = $main =~ /(\nprint_help.*\n}\n)/s;
+    while ($main =~ /--([-a-z0-9]+)/g) {
+        $main_items{$1} = true;
     }
     my @options;
     foreach my $opt (@$opts) {
-        my $opt_name = $opt->{long_name};
-        if (not $items{$opt_name}
-          || ($opt_name !~ /^no/
-            ? $items{"no-$opt_name"}
-            : false)
-          || $opt->{deprecated})
-        {
-            push @options, $opt_name;
-        }
+        find_documentation (\@options, $opt, \%tex_items, \%main_items);
     }
 
     local $" = "\n";
     print <<EOT;
-Undocumented options
-====================
-@options
+Undocumented options          Not In:
+====================          ==================
 EOT
+    for my $opt (@options) {
+        printf("%-29s ", $opt->[0]);
+        print 'texinfo ' unless $opt->[1];
+        print 'nor ' unless $opt->[1] or $opt->[2];
+        print '--help ' unless $opt->[2];
+        print "\n";
+    }
 }
 
 sub emit_undocumented_cmds
