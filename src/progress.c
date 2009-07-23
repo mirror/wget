@@ -800,7 +800,7 @@ count_cols (const char *mbs)
 const char *
 get_eta (int *bcd)
 {
-  /* Translation note: "ETA" is English-centric, but this must
+  /* TRANSLATORS: "ETA" is English-centric, but this must
      be short, ideally 3 chars.  Abbreviate if necessary.  */
   static const char eta_str[] = N_("  eta %s");
   static const char *eta_trans;
