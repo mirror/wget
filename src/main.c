@@ -177,7 +177,7 @@ static struct cmdline_option option_data[] =
     { "dns-timeout", 0, OPT_VALUE, "dnstimeout", -1 },
     { "domains", 'D', OPT_VALUE, "domains", -1 },
     { "dont-remove-listing", 0, OPT__DONT_REMOVE_LISTING, NULL, no_argument },
-    { "dot-style", 0, OPT_VALUE, "dotstyle", -1 },
+    { "dot-style", 0, OPT_VALUE, "dotstyle", -1 }, /* deprecated */
     { "egd-file", 0, OPT_VALUE, "egdfile", -1 },
     { "exclude-directories", 'X', OPT_VALUE, "excludedirectories", -1 },
     { "exclude-domains", 0, OPT_VALUE, "excludedomains", -1 },

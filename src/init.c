@@ -145,7 +145,7 @@ static const struct {
   { "dotbytes",         &opt.dot_bytes,         cmd_bytes },
   { "dotsinline",       &opt.dots_in_line,      cmd_number },
   { "dotspacing",       &opt.dot_spacing,       cmd_number },
-  { "dotstyle",         &opt.dot_style,         cmd_string },
+  { "dotstyle",         &opt.dot_style,         cmd_string }, /* deprecated */
 #ifdef HAVE_SSL
   { "egdfile",          &opt.egd_file,          cmd_file },
 #endif
