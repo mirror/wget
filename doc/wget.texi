@@ -2660,6 +2660,16 @@ Same as @samp{-A}/@samp{-R} (@pxref{Types of Files}).
 @item add_hostdir = on/off
 Enable/disable host-prefixed file names.  @samp{-nH} disables it.
 
+@item ask_password = on/off
+Prompt for a password for each connection established. Cannot be specified
+when @samp{--password} is being used, because they are mutually
+exclusive. Equivalent to @samp{--ask-password}.
+
+@item auth_no_challenge = on/off
+If this option is given, Wget will send Basic HTTP authentication
+information (plaintext username and password) for all requests. See
+@samp{--auth-no-challenge}.
+
 @item background = on/off
 Enable/disable going to background---the same as @samp{-b} (which
 enables it).
@@ -2875,6 +2885,10 @@ or @samp{-6}.
 
 @item input = @var{file}
 Read the @sc{url}s from @var{string}, like @samp{-i @var{file}}.
+
+@item keep_session_cookies = on/off
+When specified, causes @samp{save_cookies = on} to also save session
+cookies.  See @samp{--keep-session-cookies}.
 
 @item limit_rate = @var{rate}
 Limit the download speed to no more than @var{rate} bytes per second.
