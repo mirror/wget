@@ -202,7 +202,7 @@ static const struct {
   { "postdata",         &opt.post_data,         cmd_string },
   { "postfile",         &opt.post_file_name,    cmd_file },
   { "preferfamily",     NULL,                   cmd_spec_prefer_family },
-  { "preservepermissions", &opt.preserve_perm,  cmd_boolean },
+  { "preservepermissions", &opt.preserve_perm,  cmd_boolean },/* deprecated */
 #ifdef HAVE_SSL
   { "privatekey",       &opt.private_key,       cmd_file },
   { "privatekeytype",   &opt.private_key_type,  cmd_cert_type },

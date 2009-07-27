@@ -2,7 +2,8 @@
 
 	* main.c (option_data): Rename --locale option to --local-encoding
 	(print_help): Document --no-iri, --local-encoding, and
-	--remote-encoding, within usage message.
+	--remote-encoding, within usage message. Remove defunct
+	--preserve-permissions.
 
 2009-07-23  Micah Cowan  <micah@cowan.name>
 
