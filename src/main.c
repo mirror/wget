@@ -433,7 +433,7 @@ Logging and input file:\n"),
   -F,  --force-html          treat input file as HTML.\n"),
     N_("\
   -B,  --base=URL            resolves HTML input-file links (-i -F)\n\
-                             relative to URL,\n"),
+                             relative to URL.\n"),
     "\n",
 
     N_("\
@@ -572,7 +572,7 @@ HTTP options:\n"),
        --content-disposition   honor the Content-Disposition header when\n\
                                choosing local file names (EXPERIMENTAL).\n"),
     N_("\
-       --auth-no-challenge     Send Basic HTTP authentication information\n\
+       --auth-no-challenge     send Basic HTTP authentication information\n\
                                without first waiting for the server's\n\
                                challenge.\n"),
     "\n",
