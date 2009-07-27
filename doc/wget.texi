@@ -683,30 +683,6 @@ Another instance where you'll get a garbled file if you try to use
 Note that @samp{-c} only works with @sc{ftp} servers and with @sc{http}
 servers that support the @code{Range} header.
 
-@cindex iri support
-@cindex idn support
-@item --iri
-
-Turn on internationalized URI (IRI) support. Use @samp{--no-iri} to
-turn it off. IRI support is activated by default.
-
-You can set the default state of IRI support using @code{iri} command in
-@file{.wgetrc}. That setting may be overridden from the command line.
-
-@cindex local encoding
-@cindex locale
-@item --locale=@var{encoding}
-
-Force Wget to use @var{encoding} as the default system encoding. That affects
-how Wget converts URLs specified as arguments from locale to @sc{utf-8} for
-IRI support.
-
-Wget use the function @code{nl_langinfo()} and then the @code{CHARSET}
-environment variable to get the locale. If it fails, @sc{ascii} is used.
-
-You can set the default locale using the @code{locale} command in
-@file{.wgetrc}. That setting may be overridden from the command line.
-
 @cindex progress indicator
 @cindex dot style
 @item --progress=@var{type}
@@ -737,21 +713,6 @@ command in @file{.wgetrc}.  That setting may be overridden from the
 command line.  The exception is that, when the output is not a TTY, the
 ``dot'' progress will be favored over ``bar''.  To force the bar output,
 use @samp{--progress=bar:force}.
-
-@cindex remote encoding
-@item --remote-encoding=@var{encoding}
-
-Force Wget to use encoding as the default remote server encoding. That
-affects how Wget converts URIs found in files from remote encoding to
-@sc{utf-8} during a recursive fetch. This options is only useful for
-IRI support, for the interpretation of non-@sc{ascii} characters.
-
-For HTTP, remote encoding can be found in HTTP @code{Content-Type}
-header and in HTML @code{Content-Type http-equiv} meta tag.
-
-You can set the default encoding using the @code{remoteencoding}
-command in @file{.wgetrc}. That setting may be overridden from the
-command line.
 
 @item -N
 @itemx --timestamping
@@ -1044,6 +1005,46 @@ options for @sc{http} connections.
 @item --ask-password
 Prompt for a password for each connection established. Cannot be specified
 when @samp{--password} is being used, because they are mutually exclusive.
+
+@cindex iri support
+@cindex idn support
+@item --no-iri
+
+Turn off internationalized URI (IRI) support. Use @samp{--iri} to
+turn it on. IRI support is activated by default.
+
+You can set the default state of IRI support using the @code{iri}
+command in @file{.wgetrc}. That setting may be overridden from the
+command line.
+
+@cindex local encoding
+@item --local-encoding=@var{encoding}
+
+Force Wget to use @var{encoding} as the default system encoding. That affects
+how Wget converts URLs specified as arguments from locale to @sc{utf-8} for
+IRI support.
+
+Wget use the function @code{nl_langinfo()} and then the @code{CHARSET}
+environment variable to get the locale. If it fails, @sc{ascii} is used.
+
+You can set the default local encoding using the @code{local_encoding}
+command in @file{.wgetrc}. That setting may be overridden from the
+command line.
+
+@cindex remote encoding
+@item --remote-encoding=@var{encoding}
+
+Force Wget to use @var{encoding} as the default remote server encoding.
+That affects how Wget converts URIs found in files from remote encoding
+to @sc{utf-8} during a recursive fetch. This options is only useful for
+IRI support, for the interpretation of non-@sc{ascii} characters.
+
+For HTTP, remote encoding can be found in HTTP @code{Content-Type}
+header and in HTML @code{Content-Type http-equiv} meta tag.
+
+You can set the default encoding using the @code{remoteencoding}
+command in @file{.wgetrc}. That setting may be overridden from the
+command line.
 @end table
 
 @node Directory Options, HTTP Options, Download Options, Invoking
@@ -2857,6 +2858,10 @@ Ignore certain @sc{html} tags when doing a recursive retrieval, like
 Specify a comma-separated list of directories you wish to follow when
 downloading---the same as @samp{-I @var{string}}.
 
+@item iri = on/off
+When set to on, enable internationalized URI (IRI) support; the same as
+@samp{--iri}.
+
 @item inet4_only = on/off
 Force connecting to IPv4 addresses, off by default.  You can put this
 in the global init file to disable Wget's attempts to resolve and
@@ -2877,6 +2882,10 @@ The same as @samp{--limit-rate=@var{rate}}.
 
 @item load_cookies = @var{file}
 Load cookies from @var{file}.  See @samp{--load-cookies @var{file}}.
+
+@item local_encoding = @var{encoding}
+Force Wget to use @var{encoding} as the default system encoding. See
+@samp{--local-encoding}.
 
 @item logfile = @var{file}
 Set logfile to @var{file}, the same as @samp{-o @var{file}}.
@@ -2996,6 +3005,10 @@ the @sc{http} spec who got the spelling of ``referrer'' wrong.)
 @item relative_only = on/off
 Follow only relative links---the same as @samp{-L} (@pxref{Relative
 Links}).
+
+@item remote_encoding = @var{encoding}
+Force Wget to use @var{encoding} as the default remote server encoding.
+See @samp{--remote-encoding}.
 
 @item remove_listing = on/off
 If set to on, remove @sc{ftp} listings downloaded by Wget.  Setting it

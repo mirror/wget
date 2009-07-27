@@ -215,7 +215,7 @@ static struct cmdline_option option_data[] =
     { "level", 'l', OPT_VALUE, "reclevel", -1 },
     { "limit-rate", 0, OPT_VALUE, "limitrate", -1 },
     { "load-cookies", 0, OPT_VALUE, "loadcookies", -1 },
-    { "locale", 0, OPT_VALUE, "locale", -1 },
+    { "local-encoding", 0, OPT_VALUE, "localencoding", -1 },
     { "max-redirect", 0, OPT_VALUE, "maxredirect", -1 },
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
     { "no", 'n', OPT__NO, NULL, required_argument },
@@ -501,6 +501,12 @@ Download:\n"),
        --password=PASS           set both ftp and http password to PASS.\n"),
     N_("\
        --ask-password            prompt for passwords.\n"),
+    N_("\
+       --no-iri                  turn off IRI support.\n"),
+    N_("\
+       --local-encoding=ENC      use ENC as the local encoding for IRIs.\n"),
+    N_("\
+       --remote-encoding=ENC     use ENC as the default remote encoding.\n"),
     "\n",
 
     N_("\

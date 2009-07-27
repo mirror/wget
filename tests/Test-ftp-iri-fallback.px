@@ -24,7 +24,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " --locale=iso-8859-1 -S ftp://localhost:{{port}}/fran${ccedilla_l1}ais.txt";
+my $cmdline = $WgetTest::WGETPATH . " --local-encoding=iso-8859-1 -S ftp://localhost:{{port}}/fran${ccedilla_l1}ais.txt";
 
 my $expected_error_code = 0;
 

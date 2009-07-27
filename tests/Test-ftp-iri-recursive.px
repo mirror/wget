@@ -24,7 +24,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " --locale=iso-8859-1 -r -nH -S ftp://localhost:{{port}}/";
+my $cmdline = $WgetTest::WGETPATH . " --local-encoding=iso-8859-1 -r -nH -S ftp://localhost:{{port}}/";
 
 my $expected_error_code = 0;
 

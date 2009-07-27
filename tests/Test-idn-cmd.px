@@ -28,7 +28,7 @@ my %urls = (
 );
 
 my $cmdline = $WgetTest::WGETPATH . " --debug --iri -rH"
-    . " -e http_proxy=localhost:{{port}} --locale=EUC-JP $euc_jp_hostname";
+    . " -e http_proxy=localhost:{{port}} --local-encoding=EUC-JP $euc_jp_hostname";
 
 my $expected_error_code = 0;
 
