@@ -329,6 +329,7 @@ defaults (void)
   opt.restrict_files_os = restrict_unix;
 #endif
   opt.restrict_files_ctrl = true;
+  opt.restrict_files_nonascii = false;
   opt.restrict_files_case = restrict_no_case_restriction;
 
   opt.max_redirect = 20;
@@ -1275,6 +1276,7 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
   int restrict_os = opt.restrict_files_os;
   int restrict_ctrl = opt.restrict_files_ctrl;
   int restrict_case = opt.restrict_files_case;
+  int restrict_nonascii = opt.restrict_files_nonascii;
 
   const char *end;
 
@@ -1285,7 +1287,7 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
       end = strchr (val, ',');
       if (!end)
         end = val + strlen (val);
-      
+
       if (VAL_IS ("unix"))
         restrict_os = restrict_unix;
       else if (VAL_IS ("windows"))
@@ -1296,10 +1298,13 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
         restrict_case = restrict_uppercase;
       else if (VAL_IS ("nocontrol"))
         restrict_ctrl = false;
+      else if (VAL_IS ("ascii"))
+        restrict_nonascii = true;
       else
         {
-          fprintf (stderr,
-                   _("%s: %s: Invalid restriction %s, use [unix|windows],[lowercase|uppercase],[nocontrol].\n"),
+          fprintf (stderr, _("\
+%s: %s: Invalid restriction %s,\n\
+    use [unix|windows],[lowercase|uppercase],[nocontrol],[ascii].\n"),
                    exec_name, com, quote (val));
           return false;
         }
@@ -1314,6 +1319,7 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
   opt.restrict_files_os = restrict_os;
   opt.restrict_files_ctrl = restrict_ctrl;
   opt.restrict_files_case = restrict_case;
+  opt.restrict_files_nonascii = restrict_nonascii;
   
   return true;
 }

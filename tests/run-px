@@ -60,6 +60,7 @@ my @tests = (
     'Test-O-nonexisting.px',
     'Test-O.px',
     'Test-O-nc.px',
+    'Test-restrict-ascii.px',
     'Test-Restrict-Lowercase.px',
     'Test-Restrict-Uppercase.px',
     'Test--spider-fail.px',

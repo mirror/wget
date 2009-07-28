@@ -1,3 +1,14 @@
+2009-07-27  Micah Cowan  <micah@cowan.name>
+
+	* options.h (struct options): Added restrict_files_nonascii
+	boolean field.
+
+	* url.c (FILE_CHAR_TEST): Add check for chars outside the ASCII
+	range.
+
+	* init.c (defaults): Add restrict_files_nonascii to initialization.
+	(cmd_spec_restrict_file_names): Allow parsing of "ascii" keyword.
+
 2009-07-27  Marcel Telka  <marcel@telka.sk>
 
 	* iri.c (do_conversion): Typo: invalide -> invalid

@@ -1291,7 +1291,9 @@ enum {
   filechr_control     = 4       /* a control character, e.g. 0-31 */
 };
 
-#define FILE_CHAR_TEST(c, mask) (filechr_table[(unsigned char)(c)] & (mask))
+#define FILE_CHAR_TEST(c, mask) \
+    ((opt.restrict_files_nonascii && !c_isascii ((unsigned char)(c))) || \
+    (filechr_table[(unsigned char)(c)] & (mask)))
 
 /* Shorthands for the table: */
 #define U filechr_not_unix
