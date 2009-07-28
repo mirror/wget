@@ -1,7 +1,7 @@
 GNU Wget NEWS -- history of user-visible changes.
 
 Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
-2006, 2007, 2008 Free Software Foundation, Inc.
+2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
@@ -41,8 +41,13 @@ an external file.
 information on how it was built, and the set of configure-time options
 that were selected.
 
-** Several previously existing, but undocumented .wgetrc options
-are now documented: save_headers, spider, and user_agent.
+** An "ascii" specifier is now accepted by --restrict-file-names, which
+forces the percent-encoding of all non-ASCII bytes
+
+** Several previously existing, but undocumented .wgetrc options are
+now documented: save_headers, spider, and user_agent,
+auth_no_challenge, and keep_session_cookies. Also added documentation
+for the "lowercase" and "uppercase" values for --restrict-file-names, which had been present since Wget 1.11.
 
 * Changes in Wget 1.11.4
 

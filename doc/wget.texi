@@ -904,24 +904,36 @@ won't need it.
 
 @cindex file names, restrict
 @cindex Windows file names
-@item --restrict-file-names=@var{mode}
-Change which characters found in remote URLs may show up in local file
-names generated from those URLs.  Characters that are @dfn{restricted}
+@item --restrict-file-names=@var{modes}
+Change which characters found in remote URLs must be escaped during
+generation of local filenames.  Characters that are @dfn{restricted}
 by this option are escaped, i.e. replaced with @samp{%HH}, where
 @samp{HH} is the hexadecimal number that corresponds to the restricted
-character.
+character. This option may also be used to force all alphabetical
+cases to be either lower- or uppercase.
 
-By default, Wget escapes the characters that are not valid as part of
-file names on your operating system, as well as control characters that
-are typically unprintable.  This option is useful for changing these
-defaults, either because you are downloading to a non-native partition,
-or because you want to disable escaping of the control characters.
+By default, Wget escapes the characters that are not valid or safe as
+part of file names on your operating system, as well as control
+characters that are typically unprintable.  This option is useful for
+changing these defaults, perhaps because you are downloading to a
+non-native partition, or because you want to disable escaping of the
+control characters, or you want to further restrict characters to only
+those in the @sc{ascii} range of values.
 
-When mode is set to ``unix'', Wget escapes the character @samp{/} and
+The @var{modes} are a comma-separated set of text values. The
+acceptable values are @samp{unix}, @samp{windows}, @samp{nocontrol},
+@samp{ascii}, @samp{lowercase}, and @samp{uppercase}. The values
+@samp{unix} and @samp{windows} are mutually exclusive (one will
+override the other), as are @samp{lowercase} and
+@samp{uppercase}. Those last are special cases, as they do not change
+the set of characters that would be escaped, but rather force local
+file paths to be converted either to lower- or uppercase.
+
+When ``unix'' is specified, Wget escapes the character @samp{/} and
 the control characters in the ranges 0--31 and 128--159.  This is the
-default on Unix-like OS'es.
+default on Unix-like operating systems.
 
-When mode is set to ``windows'', Wget escapes the characters @samp{\},
+When ``windows'' is given, Wget escapes the characters @samp{\},
 @samp{|}, @samp{/}, @samp{:}, @samp{?}, @samp{"}, @samp{*}, @samp{<},
 @samp{>}, and the control characters in the ranges 0--31 and 128--159.
 In addition to this, Wget in Windows mode uses @samp{+} instead of
@@ -932,11 +944,17 @@ name from the rest.  Therefore, a URL that would be saved as
 saved as @samp{www.xemacs.org+4300/search.pl@@input=blah} in Windows
 mode.  This mode is the default on Windows.
 
-If you append @samp{,nocontrol} to the mode, as in
-@samp{unix,nocontrol}, escaping of the control characters is also
-switched off.  You can use @samp{--restrict-file-names=nocontrol} to
-turn off escaping of control characters without affecting the choice of
-the OS to use as file name restriction mode.
+If you specify @samp{nocontrol}, then the escaping of the control
+characters is also switched off. This option may make sense
+when you are downloading URLs whose names contain UTF-8 characters, on
+a system which can save and display filenames in UTF-8 (some possible
+byte values used in UTF-8 byte sequences fall in the range of values
+designated by Wget as ``controls'').
+
+The @samp{ascii} mode is used to specify that any bytes whose values
+are outside the range of @sc{ascii} characters (that is, greater than
+127) shall be escaped. This can be useful when saving filenames
+whose encoding does not match the one used locally.
 
 @cindex IPv6
 @itemx -4

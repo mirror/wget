@@ -1,3 +1,8 @@
+2009-07-28  Micah Cowan  <micah@cowan.name>
+
+	* NEWS: Mention some more previously undocumented items, and the
+	new "ascii" specifer for --restrict-file-names.
+
 2009-07-27  Petr Pisar  <petr.pisar@atlas.cz>
 
 	* po/Makevars (MSGID_BUGS_ADDRESS): Fixed.
