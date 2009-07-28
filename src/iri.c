@@ -180,7 +180,7 @@ do_conversion (iconv_t cd, char *in, size_t inlen, char **out)
         {
           if (!invalid)
             logprintf (LOG_VERBOSE,
-                      _("Incomplete or invalide multibyte sequence encountered\n"));
+                      _("Incomplete or invalid multibyte sequence encountered\n"));
 
           invalid++;
           **out = *in;
