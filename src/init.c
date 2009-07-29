@@ -107,6 +107,7 @@ static const struct {
   /* KEEP THIS LIST ALPHABETICALLY SORTED */
   { "accept",           &opt.accepts,           cmd_vector },
   { "addhostdir",       &opt.add_hostdir,       cmd_boolean },
+  { "adjustextension",  &opt.adjust_extension,  cmd_boolean },
   { "alwaysrest",       &opt.always_rest,       cmd_boolean }, /* deprecated */
   { "askpassword",      &opt.ask_passwd,        cmd_boolean },
   { "authnochallenge",  &opt.auth_without_challenge,
@@ -163,7 +164,7 @@ static const struct {
   { "ftpuser",          &opt.ftp_user,          cmd_string },
   { "glob",             &opt.ftp_glob,          cmd_boolean },
   { "header",           NULL,                   cmd_spec_header },
-  { "htmlextension",    &opt.html_extension,    cmd_boolean },
+  { "htmlextension",    &opt.adjust_extension,  cmd_boolean },
   { "htmlify",          NULL,                   cmd_spec_htmlify },
   { "httpkeepalive",    &opt.http_keep_alive,   cmd_boolean },
   { "httppasswd",       &opt.http_passwd,       cmd_string }, /* deprecated */

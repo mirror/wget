@@ -147,6 +147,7 @@ struct cmdline_option {
 static struct cmdline_option option_data[] =
   {
     { "accept", 'A', OPT_VALUE, "accept", -1 },
+    { "adjust-extension", 'E', OPT_BOOLEAN, "adjustextension", -1 },
     { "append-output", 'a', OPT__APPEND_OUTPUT, NULL, required_argument },
     { "ask-password", 0, OPT_BOOLEAN, "askpassword", -1 },
     { "auth-no-challenge", 0, OPT_BOOLEAN, "authnochallenge", -1 },
@@ -195,7 +196,7 @@ static struct cmdline_option option_data[] =
     { "header", 0, OPT_VALUE, "header", -1 },
     { "help", 'h', OPT_FUNCALL, (void *)print_help, no_argument },
     { "host-directories", 0, OPT_BOOLEAN, "addhostdir", -1 },
-    { "html-extension", 'E', OPT_BOOLEAN, "htmlextension", -1 },
+    { "html-extension", 'E', OPT_BOOLEAN, "adjustextension", -1 },
     { "htmlify", 0, OPT_BOOLEAN, "htmlify", -1 },
     { "http-keep-alive", 0, OPT_BOOLEAN, "httpkeepalive", -1 },
     { "http-passwd", 0, OPT_VALUE, "httppassword", -1 }, /* deprecated */
@@ -537,7 +538,7 @@ HTTP options:\n"),
        --default-page=NAME     Change the default page name (normally\n\
                                this is `index.html'.).\n"),
     N_("\
-  -E,  --html-extension        save HTML documents with `.html' extension.\n"),
+  -E,  --adjust-extension      save HTML/CSS documents with proper extensions.\n"),
     N_("\
        --ignore-length         ignore `Content-Length' header field.\n"),
     N_("\

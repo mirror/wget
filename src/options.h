@@ -162,7 +162,7 @@ struct options
   bool delete_after;		/* Whether the files will be deleted
 				   after download. */
 
-  bool html_extension;		/* Use ".html" extension on all text/html? */
+  bool adjust_extension;		/* Use ".html" extension on all text/html? */
 
   bool page_requisites;		/* Whether we need to download all files
 				   necessary to display a page properly. */

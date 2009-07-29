@@ -41,6 +41,9 @@ an external file.
 information on how it was built, and the set of configure-time options
 that were selected.
 
+** --html-extension has been renamed to --adjust-extension, to reflect
+the fact that it now also applies to CSS content..
+
 ** An "ascii" specifier is now accepted by --restrict-file-names, which
 forces the percent-encoding of all non-ASCII bytes
 

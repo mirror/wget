@@ -2,6 +2,8 @@
 
 	* wget.texi (Download Options): Document "lowercase", "uppercase",
 	and the new "ascii" specifier for --restrict-file-names.
+	(HTTP Options): Rename --html-extension to --adjust-extension.
+	(Wgetrc Commands): Rename html_extension to adjust_extension.
 
 2009-07-26  Micah Cowan  <micah@cowan.name>
 

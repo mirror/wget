@@ -591,7 +591,7 @@ find_fragment (const char *beg, int size, const char **bp, const char **ep)
 
    We quote ? as %3F to avoid passing part of the file name as the
    parameter when browsing the converted file through HTTP.  However,
-   it is safe to do this only when `--html-extension' is turned on.
+   it is safe to do this only when `--adjust-extension' is turned on.
    This is because converting "index.html?foo=bar" to
    "index.html%3Ffoo=bar" would break local browsing, as the latter
    isn't even recognized as an HTML file!  However, converting
@@ -628,7 +628,7 @@ local_quote_string (const char *file)
         *to++ = '3';
         break;
       case '?':
-        if (opt.html_extension)
+        if (opt.adjust_extension)
           {
             *to++ = '%';
             *to++ = '3';

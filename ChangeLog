@@ -1,7 +1,8 @@
 2009-07-28  Micah Cowan  <micah@cowan.name>
 
-	* NEWS: Mention some more previously undocumented items, and the
-	new "ascii" specifer for --restrict-file-names.
+	* NEWS: Mention some more previously undocumented items, the
+	new "ascii" specifer for --restrict-file-names, and the renaming
+	of --html-extension to --adjust-extension.
 
 2009-07-27  Petr Pisar  <petr.pisar@atlas.cz>
 

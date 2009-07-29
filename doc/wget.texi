@@ -1148,8 +1148,9 @@ Use @var{name} as the default file name when it isn't known (i.e., for
 URLs that end in a slash), instead of @file{index.html}.
 
 @cindex .html extension
+@cindex .css extension
 @item -E
-@itemx --html-extension
+@itemx --adjust-extension
 If a file of type @samp{application/xhtml+xml} or @samp{text/html} is 
 downloaded and the URL does not end with the regexp 
 @samp{\.[Hh][Tt][Mm][Ll]?}, this option will cause the suffix @samp{.html} 
@@ -1170,9 +1171,14 @@ version of the file will be saved as @file{@var{X}.orig} (@pxref{Recursive
 Retrieval Options}).
 
 As of version 1.12, Wget will also ensure that any downloaded files of
-type @samp{text/css} end in the suffix @samp{.css}. Obviously, this
-makes the name @samp{--html-extension} misleading; a better name is
-expected to be offered as an alternative in the near future.
+type @samp{text/css} end in the suffix @samp{.css}, and the option was
+renamed from @samp{--html-extension}, to better reflect its new
+behavior. The old option name is still acceptable, but should now be
+considered deprecated.
+
+At some point in the future, this option may well be expanded to
+include suffixes for other types of content, including content types
+that are not parsed by Wget.
 
 @cindex http user
 @cindex http password
@@ -2264,7 +2270,7 @@ ways, all of which can change whether an accept/reject rule matches:
 If the local file already exists and @samp{--no-directories} was
 specified, a numeric suffix will be appended to the original name.
 @item
-If @samp{--html-extension} was specified, the local filename will have
+If @samp{--adjust-extension} was specified, the local filename might have
 @samp{.html} appended to it. If Wget is invoked with @samp{-E -A.php},
 a filename such as @samp{index.php} will match be accepted, but upon
 download will be named @samp{index.php.html}, which no longer matches,
@@ -2845,10 +2851,12 @@ Turn globbing on/off---the same as @samp{--glob} and @samp{--no-glob}.
 Define a header for HTTP downloads, like using
 @samp{--header=@var{string}}.
 
-@item html_extension = on/off
+@item adjust_extension = on/off
 Add a @samp{.html} extension to @samp{text/html} or
-@samp{application/xhtml+xml} files without it, or a @samp{.css}
-extension to @samp{text/css} files without it, like @samp{-E}.
+@samp{application/xhtml+xml} files that lack one, or a @samp{.css}
+extension to @samp{text/css} files that lack one, like
+@samp{-E}. Previously named @samp{html_extension} (still acceptable,
+but deprecated).
 
 @item http_keep_alive = on/off
 Turn the keep-alive feature on or off (defaults to on).  Turning it

@@ -2175,10 +2175,10 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
   else
     *dt &= ~TEXTCSS;
 
-  if (opt.html_extension)
+  if (opt.adjust_extension)
     {
       if (*dt & TEXTHTML)
-        /* -E / --html-extension / html_extension = on was specified,
+        /* -E / --adjust-extension / adjust_extension = on was specified,
            and this is a text/html file.  If some case-insensitive
            variation on ".htm[l]" isn't already the file's suffix,
            tack on ".html". */
