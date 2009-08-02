@@ -1,3 +1,9 @@
+2009-08-02  Micah Cowan  <micah@cowan.name>
+
+	* wget.texi (Option Syntax): "This is a complete equivalent of" ->
+	"This is completely equivalent to". Thanks to Reuben Thomas for
+	catching this.
+
 2009-07-28  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi (Download Options): Document "lowercase", "uppercase",

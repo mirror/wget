@@ -351,7 +351,7 @@ like:
 wget -drc @var{URL}
 @end example
 
-This is a complete equivalent of:
+This is completely equivalent to:
 
 @example
 wget -d -r -c @var{URL}
