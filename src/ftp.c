@@ -33,6 +33,7 @@ as that of the covered work.  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
