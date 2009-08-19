@@ -1,3 +1,9 @@
+2009-08-19  Micah Cowan  <micah@cowan.name>
+
+	* openssl.c (ssl_check_certificate): Only warn about an attack if
+	the hostname would otherwise have matched. Also some formatting
+	cleanup.
+
 2009-08-19  Joao Ferreira  <joao@joaoff.com>
 
 	* openssl.c (ssl_check_certificate): Detect embedded NUL
