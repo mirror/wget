@@ -1,3 +1,8 @@
+2009-08-19  Joao Ferreira  <joao@joaoff.com>
+
+	* openssl.c (ssl_check_certificate): Detect embedded NUL
+	characters in the SSL certificate common name.
+
 2009-08-17  Tony Lewis  <tlewis@exelana.com>
 
 	* http.c (gethttp): Ensure that we parse Content-Length before we
