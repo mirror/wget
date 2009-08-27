@@ -10,6 +10,10 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Mailing list MOVED to bug-wget@gnu.org
 
+** SECURITY FIX: It had been possible to trick Wget into accepting
+SSL certificates that don't match the host name, through the trick of
+embedding NUL characters into the certs' common name.
+
 ** Added support for CSS. This includes:
      - Parsing links from CSS files, and from CSS content found in HTML
        style tags and attributes.
