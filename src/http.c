@@ -1871,6 +1871,24 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
         }
     }
 
+  /* Handle (possibly multiple instances of) the Set-Cookie header. */
+  if (opt.cookies)
+    {
+      int scpos;
+      const char *scbeg, *scend;
+      /* The jar should have been created by now. */
+      assert (wget_cookie_jar != NULL);
+      for (scpos = 0;
+           (scpos = resp_header_locate (resp, "Set-Cookie", scpos,
+                                        &scbeg, &scend)) != -1;
+           ++scpos)
+        {
+          char *set_cookie; BOUNDED_TO_ALLOCA (scbeg, scend, set_cookie);
+          cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port,
+                                    u->path, set_cookie);
+        }
+    }
+
   if (keep_alive)
     /* The server has promised that it will not close the connection
        when we're done.  This means that we can register it.  */
@@ -2098,24 +2116,6 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
     }
   hs->newloc = resp_header_strdup (resp, "Location");
   hs->remote_time = resp_header_strdup (resp, "Last-Modified");
-
-  /* Handle (possibly multiple instances of) the Set-Cookie header. */
-  if (opt.cookies)
-    {
-      int scpos;
-      const char *scbeg, *scend;
-      /* The jar should have been created by now. */
-      assert (wget_cookie_jar != NULL);
-      for (scpos = 0;
-           (scpos = resp_header_locate (resp, "Set-Cookie", scpos,
-                                        &scbeg, &scend)) != -1;
-           ++scpos)
-        {
-          char *set_cookie; BOUNDED_TO_ALLOCA (scbeg, scend, set_cookie);
-          cookie_handle_set_cookie (wget_cookie_jar, u->host, u->port,
-                                    u->path, set_cookie);
-        }
-    }
 
   if (resp_header_copy (resp, "Content-Range", hdrval, sizeof (hdrval)))
     {

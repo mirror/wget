@@ -1,3 +1,9 @@
+2009-08-27  Micah Cowan  <micah@cowan.name>
+
+	* http.c (gethttp): Make sure Wget heeds cookies when they
+	are sent with a 401 response; or any other sort of response for
+	that matter (#26775).
+
 2009-08-19  Micah Cowan  <micah@cowan.name>
 
 	* openssl.c (ssl_check_certificate): Only warn about an attack if

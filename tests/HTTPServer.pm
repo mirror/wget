@@ -123,7 +123,7 @@ sub send_response {
             next;
         }
         # fill in content
-        $content = $self->_substitute_port($content);
+        $content = $self->_substitute_port($content) if defined $content;
         $resp->content($content);
         print STDERR "HTTP::Response with content: \n", $resp->as_string if $log;
     }
@@ -221,6 +221,7 @@ sub verify_request_headers {
         my $rhdr = $req->header ($hdrname);
         my $ehdr = $url_rec->{'request_headers'}{$hdrname};
         unless (defined $rhdr && $rhdr =~ $ehdr) {
+            $rhdr = '' unless defined $rhdr;
             print STDERR "\n*** Mismatch on $hdrname: $rhdr =~ $ehdr\n";
             return undef;
         }

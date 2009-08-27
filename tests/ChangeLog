@@ -1,3 +1,18 @@
+2009-08-27  Micah Cowan  <micah@cowan.name>
+
+	* run-px: Added Test-cookies.px, Test-cookies-401.px
+
+	* Test-cookies.px: Basic testing to make sure Wget doesn't send
+	cookies; no path/domain checking.
+
+	* Test-cookies.px: Test to make sure Wget heeds cookies when they
+	are sent with a 401 response (#26775).
+
+	* HTTPServer.pm (send_response): Don't try to substitute port in
+	response body, if there isn't one.
+	(verify_request_headers): Avoid uninitialized warning when an
+	expected header isn't provided by Wget.
+
 2009-07-27  Micah Cowan  <micah@cowan.name>
 
 	* Test-restrict-ascii.px: New.
