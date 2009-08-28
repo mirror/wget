@@ -283,7 +283,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
           struct url *url_parsed = url_parse (url, &url_err, i, true);
 
           status = retrieve_url (url_parsed, url, &file, &redirected, referer,
-                                 &dt, false, i);
+                                 &dt, false, i, true);
 
           if (html_allowed && file && status == RETROK
               && (dt & RETROKF) && (dt & TEXTHTML))

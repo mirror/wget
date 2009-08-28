@@ -562,7 +562,7 @@ res_retrieve_file (const char *url, char **file, struct iri *iri)
   else
     {
       err = retrieve_url (url_parsed, robots_url, file, NULL, NULL, NULL,
-                          false, i);
+                          false, i, false);
       url_free(url_parsed);
     }
 

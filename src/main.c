@@ -44,6 +44,7 @@ as that of the covered work.  */
 #include <errno.h>
 #include <time.h>
 
+#include "exits.h"
 #include "utils.h"
 #include "init.h"
 #include "retr.h"
@@ -1289,7 +1290,7 @@ WARNING: Can't reopen standard output in binary mode;\n\
           else
           {
             status = retrieve_url (url_parsed, *t, &filename, &redirected_URL,
-                                   NULL, &dt, opt.recursive, iri);
+                                   NULL, &dt, opt.recursive, iri, true);
           }
 
           if (opt.delete_after && file_exists_p(filename))
@@ -1354,10 +1355,7 @@ WARNING: Can't reopen standard output in binary mode;\n\
     xfree (url[i]);
   cleanup ();
 
-  if (status == RETROK)
-    return 0;
-  else
-    return 1;
+  return get_exit_status ();
 }
 #endif /* TESTING */
 

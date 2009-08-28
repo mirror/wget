@@ -49,7 +49,8 @@ wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c    		  \
 	       ftp.h gen-md5.h hash.h host.h html-parse.h html-url.h      \
 	       http.h http-ntlm.h init.h log.h mswindows.h netrc.h        \
 	       options.h progress.h ptimer.h recur.h res.h retr.h         \
-	       spider.h ssl.h sysdep.h url.h utils.h wget.h iri.h
+	       spider.h ssl.h sysdep.h url.h utils.h wget.h iri.h 	  \
+	       exits.c exits.h
 nodist_wget_SOURCES = build_info.c version.c
 EXTRA_wget_SOURCES = mswindows.c iri.c
 LDADD = $(LIBOBJS) ../lib/libgnu.a @MD5_LDADD@

@@ -92,7 +92,7 @@ my %urls = (
 
 my $cmdline = $WgetTest::WGETPATH . " --spider -r --no-content-disposition http://localhost:{{port}}/";
 
-my $expected_error_code = 0;
+my $expected_error_code = 8;
 
 my %expected_downloaded_files = (
 );

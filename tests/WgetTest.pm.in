@@ -88,6 +88,7 @@ sub run {
         ($cmdline =~ m{^/.*})
             ? system ($cmdline)
             : system ("$self->{_workdir}/../src/$cmdline");
+    $errcode >>= 8; # XXX: should handle abnormal error codes.
 
     # Shutdown server
     # if we didn't explicitely kill the server, we would have to call

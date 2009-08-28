@@ -39,6 +39,7 @@ as that of the covered work.  */
 #include <string.h>
 #include <assert.h>
 
+#include "exits.h"
 #include "utils.h"
 #include "retr.h"
 #include "progress.h"
@@ -611,7 +612,7 @@ static char *getproxy (struct url *);
 uerr_t
 retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
               char **newloc, const char *refurl, int *dt, bool recursive,
-              struct iri *iri)
+              struct iri *iri, bool register_status)
 {
   uerr_t result;
   char *url;
@@ -668,7 +669,8 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           xfree (url);
           xfree (error);
           RESTORE_POST_DATA;
-          return PROXERR;
+          result = PROXERR;
+          goto bail;
         }
       if (proxy_url->scheme != SCHEME_HTTP && proxy_url->scheme != u->scheme)
         {
@@ -676,7 +678,8 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           url_free (proxy_url);
           xfree (url);
           RESTORE_POST_DATA;
-          return PROXERR;
+          result = PROXERR;
+          goto bail;
         }
     }
 
@@ -757,7 +760,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           xfree (mynewloc);
           xfree (error);
           RESTORE_POST_DATA;
-          return result;
+          goto bail;
         }
 
       /* Now mynewloc will become newloc_parsed->url, because if the
@@ -779,7 +782,8 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           xfree (url);
           xfree (mynewloc);
           RESTORE_POST_DATA;
-          return WRONGCODE;
+          result = WRONGCODE;
+          goto bail;
         }
 
       xfree (url);
@@ -866,6 +870,9 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
 
   RESTORE_POST_DATA;
 
+bail:
+  if (register_status)
+    inform_exit_status (result);
   return result;
 }
 
@@ -910,7 +917,7 @@ retrieve_from_file (const char *file, bool html, int *count)
         opt.base_href = xstrdup (url);
 
       status = retrieve_url (url_parsed, url, &input_file, NULL, NULL, &dt,
-                             false, iri);
+                             false, iri, true);
       if (status != RETROK)
         return status;
 
@@ -970,7 +977,8 @@ retrieve_from_file (const char *file, bool html, int *count)
       else
         status = retrieve_url (parsed_url ? parsed_url : cur_url->url,
                                cur_url->url->url, &filename,
-                               &new_file, NULL, &dt, opt.recursive, tmpiri);
+                               &new_file, NULL, &dt, opt.recursive, tmpiri,
+                               true);
 
       if (parsed_url)
           url_free (parsed_url);

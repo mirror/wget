@@ -54,7 +54,7 @@ char *fd_read_hunk (int, hunk_terminator_t, long, long);
 char *fd_read_line (int);
 
 uerr_t retrieve_url (struct url *, const char *, char **, char **,
-                     const char *, int *, bool, struct iri *);
+                     const char *, int *, bool, struct iri *, bool);
 uerr_t retrieve_from_file (const char *, bool, int *);
 
 const char *retr_rate (wgint, double);

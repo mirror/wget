@@ -1762,10 +1762,15 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
 
       if (conn->scheme == SCHEME_HTTPS)
         {
-          if (!ssl_connect_wget (sock) || !ssl_check_certificate (sock, u->host))
+          if (!ssl_connect_wget (sock))
             {
               fd_close (sock);
               return CONSSLERR;
+            }
+          else if (!ssl_check_certificate (sock, u->host))
+            {
+              fd_close (sock);
+              return VERIFCERTERR;
             }
           using_ssl = true;
         }
@@ -2598,7 +2603,7 @@ Spider mode enabled. Check if remote file exists.\n"));
           logprintf (LOG_NOTQUIET, _("Cannot write to %s (%s).\n"),
                      quote (hstat.local_file), strerror (errno));
         case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED: 
-        case SSLINITFAILED: case CONTNOTSUPPORTED:
+        case SSLINITFAILED: case CONTNOTSUPPORTED: case VERIFCERTERR:
           /* Fatal errors just return from the function.  */
           ret = err;
           goto exit;

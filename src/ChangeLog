@@ -1,5 +1,30 @@
 2009-08-27  Micah Cowan  <micah@cowan.name>
 
+	* wget.h (uerr_t): added new VERIFCERTERR code for SSL certificate
+	problems. Marked exit codes that are defined but never used (at
+	least, the ones I could find).
+
+	* retr.c, retr.h (retrieve_url): Added a new boolean argument to
+	determine whether an exit status should be recorded.
+	(retrieve_from_file): Adjust to new retrieve_url signature.
+
+	* res.c (res_retrieve_file): Don't have retrieve_url record an
+	exit status for robots.txt.
+
+	* recur.c (retrieve_tree): Adjust to new retrieve_url signature.
+
+	* main.c (main): Use the exit status stored by retrieve_url.
+
+	* http.c (gethttp): Distinguish certificate verification problems
+	from SSL connection issues.
+	(http_loop): Handle newly-created VERIFCERTERR error code.
+
+	* exits.c, exits.h: Newly added.
+	
+	* Makefile.am (wget_SOURCES): Add exits.c and exits.h.
+
+2009-08-27  Micah Cowan  <micah@cowan.name>
+
 	* http.c (gethttp): Make sure Wget heeds cookies when they
 	are sent with a 401 response; or any other sort of response for
 	that matter (#26775).

@@ -1,5 +1,16 @@
 2009-08-27  Micah Cowan  <micah@cowan.name>
 
+	* WgetTest.pm.in (run): Shift the errcode right by 8 binary places.
+	
+	* Test--spider-fail.px, Test--spider-r--no-content-disposition.px,
+	Test--spider-r--no-content-disposition-trivial.px,
+	Test--spider-r-HTTP-Content-Disposition.px, Test--spider-r.px,
+	Test-O-nonexisting.px, Test-cookies-401.px,
+	Test-nonexisting-quiet.px: Adjusted "expected error code"; Wget's
+	exit codes have changed.
+
+2009-08-27  Micah Cowan  <micah@cowan.name>
+
 	* run-px: Added Test-cookies.px, Test-cookies-401.px
 
 	* Test-cookies.px: Basic testing to make sure Wget doesn't send

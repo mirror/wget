@@ -32,6 +32,9 @@ are translated from their source encoding to UTF-8 before percent-encoding.
    IRI support was added by Saint Xavier <wget@sxav.eu>, as his
    project for the Google Summer of Code.
 
+** Wget now provides more sensible exit status codes when downloads
+don't proceed as expected (see the manual).
+
 ** --default-page option (and associated wgetrc command) added to
 support alternative default names for index.html.
 

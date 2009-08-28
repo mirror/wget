@@ -26,7 +26,7 @@ my %urls = (
 
 my $cmdline = $WgetTest::WGETPATH . " --quiet http://localhost:{{port}}/nonexistent";
 
-my $expected_error_code = 256;
+my $expected_error_code = 8;
 
 my %expected_downloaded_files = (
 );
