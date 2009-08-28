@@ -1,3 +1,9 @@
+2009-08-27  Micah Cowan  <micah@cowan.name>
+
+	* texi2pod.pl: Handle @asis in table-element formatting.
+
+	* wget.texi (Exit Status): Document new exit codes.
+
 2009-08-02  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi (Option Syntax): "This is a complete equivalent of" ->

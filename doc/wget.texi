@@ -89,17 +89,17 @@ Info entry for @file{wget}.
 @end ifnottex
 
 @menu
-* Overview::            Features of Wget.
-* Invoking::            Wget command-line arguments.
-* Recursive Download::  Downloading interlinked pages.
-* Following Links::     The available methods of chasing links.
-* Time-Stamping::       Mirroring according to time-stamps.
-* Startup File::        Wget's initialization file.
-* Examples::            Examples of usage.
-* Various::             The stuff that doesn't fit anywhere else.
-* Appendices::          Some useful references.
-* Copying this manual:: You may give out copies of Wget and of this manual.
-* Concept Index::       Topics covered by this manual.
+* Overview::                    Features of Wget.
+* Invoking::                    Wget command-line arguments.
+* Recursive Download::          Downloading interlinked pages.
+* Following Links::             The available methods of chasing links.
+* Time-Stamping::               Mirroring according to time-stamps.
+* Startup File::                Wget's initialization file.
+* Examples::                    Examples of usage.
+* Various::                     The stuff that doesn't fit anywhere else.
+* Appendices::                  Some useful references.
+* Copying this manual::         You may give out copies of this manual.
+* Concept Index::               Topics covered by this manual.
 @end menu
 
 @node Overview, Invoking, Top, Top
@@ -235,17 +235,18 @@ command to @file{.wgetrc} (@pxref{Startup File}), or specifying it on
 the command line.
 
 @menu
-* URL Format::
-* Option Syntax::
-* Basic Startup Options::
-* Logging and Input File Options::
-* Download Options::
-* Directory Options::
-* HTTP Options::
-* HTTPS (SSL/TLS) Options::
-* FTP Options::
-* Recursive Retrieval Options::
-* Recursive Accept/Reject Options::
+* URL Format::                  
+* Option Syntax::               
+* Basic Startup Options::       
+* Logging and Input File Options::  
+* Download Options::            
+* Directory Options::           
+* HTTP Options::                
+* HTTPS (SSL/TLS) Options::     
+* FTP Options::                 
+* Recursive Retrieval Options::  
+* Recursive Accept/Reject Options::  
+* Exit Status::                 
 @end menu
 
 @node URL Format, Option Syntax, Invoking, Invoking
@@ -1935,7 +1936,7 @@ If, for whatever reason, you want strict comment parsing, use this
 option to turn it on.
 @end table
 
-@node Recursive Accept/Reject Options,  , Recursive Retrieval Options, Invoking
+@node Recursive Accept/Reject Options, Exit Status, Recursive Retrieval Options, Invoking
 @section Recursive Accept/Reject Options
 
 @table @samp
@@ -2030,6 +2031,57 @@ This is a useful option, since it guarantees that only the files
 
 @c man end
 
+@node Exit Status,  , Recursive Accept/Reject Options, Invoking
+@section Exit Status
+                                   
+@c man begin EXITSTATUS
+
+Wget may return one of several error codes if it encounters problems.
+
+
+@table @asis
+@item 0
+No problems occurred.
+
+@item 1
+Generic error code.
+
+@item 2
+Parse error---for instance, when parsing command-line options, the
+@samp{.wgetrc} or @samp{.netrc}...
+
+@item 3
+File I/O error.
+
+@item 4
+Network failure.
+
+@item 5
+SSL verification failure.
+
+@item 6
+Username/password authentication failure.
+
+@item 7
+Protocol errors.
+
+@item 8
+Server issued an error response.
+@end table
+
+
+With the exceptions of 0 and 1, the lower-numbered exit codes take
+precedence over higher-numbered ones, when multiple types of errors
+are encountered.
+
+In versions of Wget prior to 1.12, Wget's exit status tended to be
+unhelpful and inconsistent. Recursive downloads would virtually always
+return 0 (success), regardless of any issues encountered, and
+non-recursive fetches only returned the status corresponding to the
+most recently-attempted download.
+
+@c man end
+
 @node Recursive Download, Following Links, Invoking, Top
 @chapter Recursive Download
 @cindex recursion
@@ -2115,11 +2167,11 @@ Wget possesses several mechanisms that allows you to fine-tune which
 links it will follow.
 
 @menu
-* Spanning Hosts::         (Un)limiting retrieval based on host name.
-* Types of Files::         Getting only certain files.
-* Directory-Based Limits:: Getting only certain directories.
-* Relative Links::         Follow relative links only.
-* FTP Links::              Following FTP links.
+* Spanning Hosts::              (Un)limiting retrieval based on host name.
+* Types of Files::              Getting only certain files.
+* Directory-Based Limits::      Getting only certain directories.
+* Relative Links::              Follow relative links only.
+* FTP Links::                   Following FTP links.
 @end menu
 
 @node Spanning Hosts, Types of Files, Following Links, Following Links
@@ -2462,9 +2514,9 @@ match, Wget will download the remote file no matter what the time-stamps
 say.
 
 @menu
-* Time-Stamping Usage::
-* HTTP Time-Stamping Internals::
-* FTP Time-Stamping Internals::
+* Time-Stamping Usage::         
+* HTTP Time-Stamping Internals::  
+* FTP Time-Stamping Internals::  
 @end menu
 
 @node Time-Stamping Usage, HTTP Time-Stamping Internals, Time-Stamping, Time-Stamping
@@ -2606,10 +2658,10 @@ Wget reads @file{.wgetrc} upon startup, recognizing a limited set of
 commands.
 
 @menu
-* Wgetrc Location::   Location of various wgetrc files.
-* Wgetrc Syntax::     Syntax of wgetrc.
-* Wgetrc Commands::   List of available commands.
-* Sample Wgetrc::     A wgetrc example.
+* Wgetrc Location::             Location of various wgetrc files.
+* Wgetrc Syntax::               Syntax of wgetrc.
+* Wgetrc Commands::             List of available commands.
+* Sample Wgetrc::               A wgetrc example.
 @end menu
 
 @node Wgetrc Location, Wgetrc Syntax, Startup File, Startup File
@@ -3161,9 +3213,9 @@ The examples are divided into three sections loosely based on their
 complexity.
 
 @menu
-* Simple Usage::         Simple, basic usage of the program.
-* Advanced Usage::       Advanced tips.
-* Very Advanced Usage::  The hairy stuff.
+* Simple Usage::                Simple, basic usage of the program.
+* Advanced Usage::              Advanced tips.
+* Very Advanced Usage::         The hairy stuff.
 @end menu
 
 @node Simple Usage, Advanced Usage, Examples, Examples
@@ -3411,14 +3463,14 @@ wget -m -k -K -E http://www.gnu.org/ -o /home/me/weeklog
 This chapter contains all the stuff that could not fit anywhere else.
 
 @menu
-* Proxies::             Support for proxy servers.
-* Distribution::        Getting the latest version.
-* Web Site::            GNU Wget's presence on the World Wide Web.
-* Mailing Lists::       Wget mailing list for announcements and discussion.
-* Internet Relay Chat:: Wget's presence on IRC.
-* Reporting Bugs::      How and where to report bugs.
-* Portability::         The systems Wget works on.
-* Signals::             Signal-handling performed by Wget.
+* Proxies::                     Support for proxy servers.
+* Distribution::                Getting the latest version.
+* Web Site::                    GNU Wget's presence on the World Wide Web.
+* Mailing Lists::               Wget mailing list for announcements and discussion.
+* Internet Relay Chat::         Wget's presence on IRC.
+* Reporting Bugs::              How and where to report bugs.
+* Portability::                 The systems Wget works on.
+* Signals::                     Signal-handling performed by Wget.
 @end menu
 
 @node Proxies, Distribution, Various, Various
@@ -3700,9 +3752,9 @@ Other than that, Wget will not try to interfere with signals in any way.
 This chapter contains some references I consider useful.
 
 @menu
-* Robot Exclusion::         Wget's support for RES.
-* Security Considerations:: Security with Wget.
-* Contributors::            People who helped.
+* Robot Exclusion::             Wget's support for RES.
+* Security Considerations::     Security with Wget.
+* Contributors::                People who helped.
 @end menu
 
 @node Robot Exclusion, Security Considerations, Appendices, Appendices
