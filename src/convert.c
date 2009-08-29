@@ -1,6 +1,6 @@
 /* Conversion of links to local files.
    Copyright (C) 2003, 2004, 2005, 2006, 2007,
-   2008 Free Software Foundation, Inc.
+   2008, 2009 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -598,8 +598,8 @@ find_fragment (const char *beg, int size, const char **bp, const char **ep)
    "index.html?foo=bar.html" to "index.html%3Ffoo=bar.html" should be
    safe for both local and HTTP-served browsing.
 
-   We always quote "#" as "%23" and "%" as "%25" because those
-   characters have special meanings in URLs.  */
+   We always quote "#" as "%23", "%" as "%25" and ";" as "%3B"
+   because those characters have special meanings in URLs.  */
 
 static char *
 local_quote_string (const char *file)
@@ -607,7 +607,7 @@ local_quote_string (const char *file)
   const char *from;
   char *newname, *to;
 
-  char *any = strpbrk (file, "?#%");
+  char *any = strpbrk (file, "?#%;");
   if (!any)
     return html_quote_string (file);
 
@@ -626,6 +626,11 @@ local_quote_string (const char *file)
         *to++ = '%';
         *to++ = '2';
         *to++ = '3';
+        break;
+      case ';':
+        *to++ = '%';
+        *to++ = '3';
+        *to++ = 'B';
         break;
       case '?':
         if (opt.adjust_extension)

@@ -1,3 +1,9 @@
+2009-08-29  Steven Schubiger  <stsc@member.fsf.org>
+
+	* run-px: Add Test-k.px to the list.
+
+	* Test-k.px: Test escaping of semicolons in local file strings.
+
 2009-08-27  Micah Cowan  <micah@cowan.name>
 
 	* WgetTest.pm.in (run): Shift the errcode right by 8 binary places.

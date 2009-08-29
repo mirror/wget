@@ -43,6 +43,7 @@ my @tests = (
     'Test-iri-disabled.px',
     'Test-iri-forced-remote.px',
     'Test-iri-list.px',
+    'Test-k.px',
     'Test-meta-robots.px',
     'Test-N-current.px',
     'Test-N-smaller.px',
