@@ -84,6 +84,7 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              Test-iri-disabled.px \
              Test-iri-forced-remote.px \
              Test-iri-list.px \
+             Test-k.px \
              Test-meta-robots.px \
              Test-N-current.px \
              Test-N-HTTP-Content-Disposition.px \

@@ -1,3 +1,7 @@
+2009-08-31  Steven Schubiger  <stsc@member.fsf.org>
+
+	* Makefile.am: Add Test-k.px to EXTRA_DIST.
+
 2009-08-29  Steven Schubiger  <stsc@member.fsf.org>
 
 	* run-px: Add Test-k.px to the list.
