@@ -3,6 +3,21 @@
 	* Makefile.am (../src/libunittest.a): Make it a phony target,
 	so we always make sure to get up-to-date unit-test runs.
 
+2009-09-01  Steven Schubiger  <stsc@member.fsf.org>
+
+	* Makefile.am: Add Test-cookies.px, Test-cookies-401.px
+	and Test-restrict-ascii.px to EXTRA_DIST.
+
+2009-08-31  Steven Schubiger  <stsc@member.fsf.org>
+
+	* Makefile.am: Add Test-k.px to EXTRA_DIST.
+
+2009-08-29  Steven Schubiger  <stsc@member.fsf.org>
+
+	* run-px: Add Test-k.px to the list.
+
+	* Test-k.px: Test escaping of semicolons in local file strings.
+
 2009-08-27  Micah Cowan  <micah@cowan.name>
 
 	* WgetTest.pm.in (run): Shift the errcode right by 8 binary places.

@@ -1,3 +1,8 @@
+2009-08-29  Steven Schubiger  <stsc@member.fsf.org>
+
+	* convert.c (local_quote_string): Percent-encode semicolons
+	in local file strings.
+
 2009-08-27  Micah Cowan  <micah@cowan.name>
 
 	* wget.h (uerr_t): added new VERIFCERTERR code for SSL certificate
