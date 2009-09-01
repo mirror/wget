@@ -1,3 +1,8 @@
+2009-09-01  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am (../src/libunittest.a): Make it a phony target,
+	so we always make sure to get up-to-date unit-test runs.
+
 2009-08-27  Micah Cowan  <micah@cowan.name>
 
 	* WgetTest.pm.in (run): Shift the errcode right by 8 binary places.

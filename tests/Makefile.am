@@ -42,6 +42,8 @@ test: ../src/wget$(EXEEXT) run-unit-tests run-px-tests
 ../src/wget$(EXEEXT):
 	cd ../src && $(MAKE) $(AM_MAKEFLAGS)
 
+# Make libunittest "PHONY" so we're always sure we're up-to-date.
+.PHONY: ../src/libunittest.a
 ../src/libunittest.a:
 	cd ../src && $(MAKE) $(AM_MAKEFLAGS) libunittest.a
 
@@ -51,7 +53,7 @@ test: ../src/wget$(EXEEXT) run-unit-tests run-px-tests
 ../md5/libmd5.a:
 	cd ../lib && $(MAKE) $(AM_MAKEFLAGS)
 
-run-unit-tests: unit-tests$(EXEEXT)
+run-unit-tests: unit-tests$(EXEEXT) ../src/libunittest.a
 	./unit-tests$(EXEEXT)
 
 run-px-tests: WgetTest.pm ../src/wget$(EXEEXT)
@@ -117,9 +119,9 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              run-px certs
 
 check_PROGRAMS = unit-tests
-unit_tests_SOURCES = 
-#unit-tests: ../src/libunittest.a ../lib/libgnu.a
+unit_tests_SOURCES =
+unit-tests: ../src/libunittest.a
 LDADD = ../src/libunittest.a ../lib/libgnu.a @LIBSSL@ @LIBGNUTLS@ \
-        @MD5_LDADD@
+    @MD5_LDADD@
 
 CLEANFILES = *~ *.bak core core.[0-9]*
