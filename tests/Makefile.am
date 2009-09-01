@@ -65,6 +65,8 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              Test-c-partial.px \
              Test-c.px \
              Test-c-shorter.px \
+             Test-cookies.px \
+             Test-cookies-401.px \
              Test-E-k-K.px \
              Test-E-k.px \
              Test-ftp.px \
@@ -107,6 +109,7 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              Test-O.px \
              Test-proxied-https-auth.px \
              Test-proxy-auth-basic.px \
+             Test-restrict-ascii.px \
              Test-Restrict-Lowercase.px \
              Test-Restrict-Uppercase.px \
              Test--spider-fail.px \

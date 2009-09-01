@@ -1,3 +1,8 @@
+2009-09-01  Steven Schubiger  <stsc@member.fsf.org>
+
+	* Makefile.am: Add Test-cookies.px, Test-cookies-401.px
+	and Test-restrict-ascii.px to EXTRA_DIST.
+
 2009-08-31  Steven Schubiger  <stsc@member.fsf.org>
 
 	* Makefile.am: Add Test-k.px to EXTRA_DIST.
