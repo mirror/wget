@@ -1,3 +1,7 @@
+2009-09-02  Micah Cowan  <micah@cowan.name>
+
+	* build_info.c.in: Removed useless "+gettext" feature ad.
+
 2009-08-29  Steven Schubiger  <stsc@member.fsf.org>
 
 	* convert.c (local_quote_string): Percent-encode semicolons

@@ -7,7 +7,6 @@ HAVE_MD5
 HAVE_SSL       https
 HAVE_LIBGNUTLS gnutls
 HAVE_LIBSSL    openssl
-HAVE_GETTEXT   gettext
 ENABLE_IRI     iri
 
 #ifdef HAVE_MD5
