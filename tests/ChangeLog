@@ -1,3 +1,8 @@
+2009-09-02  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am (unit-tests): explicit dependency is
+	unnecessary (and harmful, as it overrides the automatic one).
+
 2009-09-01  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am (../src/libunittest.a): Make it a phony target,
