@@ -40,17 +40,17 @@ LIBS     = @LIBSSL@ @LIBGNUTLS@ @LIBICONV@ @LIBINTL@ @LIBS@
 
 bin_PROGRAMS = wget
 wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c    		  \
-	       css.l css-url.c css-tokens.h \
+	       css.l css-url.c \
 	       ftp-basic.c ftp-ls.c hash.c host.c html-parse.c html-url.c \
 	       http.c init.c log.c main.c netrc.c progress.c ptimer.c     \
 	       recur.c res.c retr.c snprintf.c spider.c url.c	          \
-	       utils.c $(IRI_OBJ)				          \
-	       css-url.h connect.h convert.h cookies.h	                  \
+	       utils.c exits.c $(IRI_OBJ)			          \
+	       css-url.h css-tokens.h connect.h convert.h cookies.h       \
 	       ftp.h gen-md5.h hash.h host.h html-parse.h html-url.h      \
 	       http.h http-ntlm.h init.h log.h mswindows.h netrc.h        \
 	       options.h progress.h ptimer.h recur.h res.h retr.h         \
 	       spider.h ssl.h sysdep.h url.h utils.h wget.h iri.h 	  \
-	       exits.c exits.h
+	       exits.h gettext.h
 nodist_wget_SOURCES = build_info.c version.c
 EXTRA_wget_SOURCES = mswindows.c iri.c
 LDADD = $(LIBOBJS) ../lib/libgnu.a @MD5_LDADD@

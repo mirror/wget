@@ -1,3 +1,9 @@
+2009-09-03  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am (wget_SOURCES): Rearranged some of the file order,
+	so .c files and .h files are apart. Added gettext.h, so that it
+	shows up in the dist.
+
 2009-09-02  Micah Cowan  <micah@cowan.name>
 
 	* gettext.h: Refreshed from gettext 0.17.
