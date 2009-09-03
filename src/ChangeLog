@@ -1,5 +1,7 @@
 2009-09-02  Micah Cowan  <micah@cowan.name>
 
+	* gettext.h: Refreshed from gettext 0.17.
+
 	* test.c: Added definition of program_name variable, required by
 	lib/error.c (libgnu.a). Doesn't cause problems until you try to
 	build on a non-GNU system...

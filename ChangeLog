@@ -1,3 +1,14 @@
+2009-09-03  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* m4/gettext.m4: Upgrade to gettext-0.17.
+	* m4/iconv.m4: Upgrade to gettext-0.17.
+	* m4/lib-link.m4: Upgrade to gettext-0.17.
+	* m4/po.m4: Upgrade to gettext-0.17.
+
+	* po/Makefile.in.in: Upgrade to gettext-0.17.
+
+	* configure.ac (AM_GNU_GETTEXT_VERSION): Bump to 0.17.
+
 2009-09-02  Micah Cowan  <micah@cowan.name>
 
 	* po/Rules-quot (en_US.po-update): Remove use of GNU make's
