@@ -1,3 +1,8 @@
+2009-09-03  Micah Cowan  <micah@cowan.name>
+
+	* configure.ac: Move AM_GNU_GETTEXT below AC_AIX, to shut up
+	autoconf warnings.
+
 2009-09-03  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* m4/gettext.m4: Upgrade to gettext-0.17.

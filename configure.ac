@@ -49,12 +49,6 @@ dnl
 AM_INIT_AUTOMAKE(1.9)
 
 dnl
-dnl Gettext
-dnl
-AM_GNU_GETTEXT([external],[need-ngettext])
-AM_GNU_GETTEXT_VERSION([0.17])
-
-dnl
 dnl Get cannonical host
 dnl
 AC_CANONICAL_HOST
@@ -108,6 +102,13 @@ test -z "$CC" && cc_specified=yes
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_AIX
+
+dnl
+dnl Gettext
+dnl
+AM_GNU_GETTEXT([external],[need-ngettext])
+AM_GNU_GETTEXT_VERSION([0.17])
+
 gl_EARLY
 md5_EARLY
 
