@@ -1,3 +1,8 @@
+2009-09-02  Micah Cowan  <micah@cowan.name>
+
+	* po/Rules-quot (en_US.po-update): Remove use of GNU make's
+	non-portable $^ variable.
+
 2009-08-27  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: Mention the changes to exit codes.

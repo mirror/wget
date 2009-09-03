@@ -1,5 +1,9 @@
 2009-09-02  Micah Cowan  <micah@cowan.name>
 
+	* test.c: Added definition of program_name variable, required by
+	lib/error.c (libgnu.a). Doesn't cause problems until you try to
+	build on a non-GNU system...
+
 	* build_info.c.in: Removed useless "+gettext" feature ad.
 
 2009-08-29  Steven Schubiger  <stsc@member.fsf.org>

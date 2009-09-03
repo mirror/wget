@@ -54,4 +54,4 @@ mostlyclean-quot:
 en_US.po: en_US.po-update
 
 en_US.po-update: en@quot.po
-	cp $^ en_US.po
+	cp en@quot.po en_US.po

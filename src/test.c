@@ -63,11 +63,16 @@ all_tests()
   return NULL;
 }
 
+char *program_name; /* Needed by lib/error.c. */
 
 int
-main (void) 
+main (int argc, char *argv[]) 
 {
-  const char *result = all_tests();
+  const char *result;
+
+  program_name = argv[0];
+
+  result = all_tests();
   
   if (result != NULL) 
     {
