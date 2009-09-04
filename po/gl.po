@@ -1,5 +1,5 @@
 # Galician translation of wget
-# Copyright (C) 2000, 2003 Free Software Foundation, Inc.
+# Copyright (C) 2000, 2003, 2009 Free Software Foundation, Inc.
 # Jacobo Tarrío Barreiro <jtarrio@trasno.net>, 2000, 2003.
 #
 msgid ""

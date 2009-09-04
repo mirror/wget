@@ -1,5 +1,6 @@
 # traditional Chinese translation of wget.
-# Copyright (C) 1998, 2000, 01, 02, 05 Free Software Foundation, Inc.
+# Copyright (C) 1998, 2000, 1901, 1902, 1905, 2009 Free Software
+# Foundation, Inc.
 # CD Chen <cdchen@linux.ntcic.edu.tw>, 1998.
 # Pofeng Lee <pofeng.lee@ms7.url.com.tw>, 1998.
 # Jing-Jong Shyue <shyue@sonoma.com.tw>, 2000.

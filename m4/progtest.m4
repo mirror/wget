@@ -1,5 +1,6 @@
 # progtest.m4 serial 4 (gettext-0.14.2)
-dnl Copyright (C) 1996-2003, 2005 Free Software Foundation, Inc.
+dnl Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005,
+dnl 2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.

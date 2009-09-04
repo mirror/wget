@@ -1,5 +1,5 @@
 # Hebrew messages for GNU Wget          -*- coding: hebrew-iso-8bit -*-
-# Copyright (C) 2002 Free Software Foundation, Inc.
+# Copyright (C) 2002, 2009 Free Software Foundation, Inc.
 # Eli Zaretskii <eliz@is.elta.co.il>, 2001, 2002.
 #
 msgid ""

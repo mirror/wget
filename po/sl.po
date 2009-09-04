@@ -1,5 +1,5 @@
 # -*- mode:po; coding:iso-8859-2; -*- Slovenian messages for GNU Wget
-# Copyright (C) 2008 Free Software Foundation, Inc.
+# Copyright (C) 2008, 2009 Free Software Foundation, Inc.
 # This file is distributed under the same license as the wget package.
 # Roman Maurer <roman.maurer@amis.net>, 2008.
 #

@@ -1,5 +1,5 @@
 # Mesajele în limba românã pentru pachetul wget.
-# Copyright (C) 2003 Free Software Foundation, Inc.
+# Copyright (C) 2003, 2009 Free Software Foundation, Inc.
 # Eugen Hoanca <eugenh@urban-grafx.ro>, 2003.
 #
 msgid ""

@@ -1,5 +1,6 @@
 # Translation of wget messages to Russian
-# Copyright (C) 1998, 1999, 2000, 2001, 2004, 2005, 2006, 2008 Free Software Foundation, Inc.
+# Copyright (C) 1998, 1999, 2000, 2001, 2004, 2005, 2006, 2008, 2009
+# Free Software Foundation, Inc.
 # This file is distributed under the same license as the wget package.
 # Const Kaplinsky <const@ce.cctpu.edu.ru>, 1998, 1999, 2000, 2001.
 # Pavel Maryanov <acid_jack@ukr.net>, 2004, 2005, 2006, 2008.

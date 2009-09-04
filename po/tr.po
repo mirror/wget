@@ -1,5 +1,5 @@
 # Turkish translations for wget messages.
-# Copyright (C) 2005 Free Software Foundation, Inc.
+# Copyright (C) 2005, 2009 Free Software Foundation, Inc.
 # Nilgün Belma Bugüner <nilgun@superonline.com>, 2001,..., 2005.
 #
 msgid ""

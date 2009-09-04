@@ -1,5 +1,5 @@
 # Wget translation file: Serbian language, cyrillic script
-# Copyright (C) 2003 Free Software Foundation, Inc.
+# Copyright (C) 2003, 2009 Free Software Foundation, Inc.
 # This file is distributed under the same license as the wget package.
 # Filip Miletić <f.miletic@ewi.tudelft.nl>, 2003.
 # -----------------------------------------

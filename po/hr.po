@@ -1,5 +1,5 @@
 # Croatian messages for GNU Wget
-# Copyright (C) 2005 Free Software Foundation, Inc.
+# Copyright (C) 2005, 2009 Free Software Foundation, Inc.
 # Hrvoje Nik¹iæ <hniksic@xemacs.org>, 2005.
 #
 msgid ""

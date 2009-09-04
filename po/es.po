@@ -1,5 +1,5 @@
 # Mensajes en español para GNU wget.
-# Copyright (C) 2001 Free Software Foundation, Inc.
+# Copyright (C) 2001, 2009 Free Software Foundation, Inc.
 # Salvador Gimeno Zanón <salgiza@jazzfree.com>, 2001
 #
 # Traducido con la ayuda de:

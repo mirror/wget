@@ -1,5 +1,5 @@
 # Polish translations of wget messages
-# Copyright (C) 2002, 2008 Free Software Foundation, Inc.
+# Copyright (C) 2002, 2008, 2009 Free Software Foundation, Inc.
 # This file is distributed under the same license as the wget package.
 # Wojciech Kotwica <wkotwica@post.pl>, 2002
 # Jakub Bogusz <qboosh@pld-linux.org>, 2005-2008

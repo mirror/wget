@@ -1,5 +1,5 @@
 # Czech translations for GNU wget
-# Copyright (C) 1998, 2000, 2001 Free Software Foundation, Inc.
+# Copyright (C) 1998, 2000, 2001, 2009 Free Software Foundation, Inc.
 # This file is distributed under the same license as the wget package.
 # Jan Prikryl <prikryl@acm.org>, 1998, 2000, 2001
 # Petr Pisar <petr.pisar@atlas.cz>, 2007, 2008

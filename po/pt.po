@@ -1,5 +1,5 @@
 # Portuguese translation of the "wget" messages
-# Copyright (C) 2005 Free Software Foundation, Inc.
+# Copyright (C) 2005, 2009 Free Software Foundation, Inc.
 # This file is distributed under the same license as the wget package.
 # Helder Correia <helder.pereira.correia@gmail.com>, 2005-2008.
 #

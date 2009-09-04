@@ -1,5 +1,5 @@
 # Swedish messages for wget.
-# Copyright (C) 2008 Free Software Foundation, Inc.
+# Copyright (C) 2008, 2009 Free Software Foundation, Inc.
 # This file is distributed under the same license as the wget package.
 # Christian Rose <menthos@menthos.com>, 1999, 2000, 2001, 2002, 2003.
 # Daniel Nylander <po@danielnylander.se>, 2006, 2007, 2008.

@@ -1,5 +1,5 @@
 # Translation of `wget' messages to Esperanto.
-# Copyright (C) 2003 Free Software Foundation, Inc.
+# Copyright (C) 2003, 2009 Free Software Foundation, Inc.
 # This file is distributed under the same license as the `wget' package.
 # Luiz Portella <lfpor@lujz.org>, 2005.
 #
