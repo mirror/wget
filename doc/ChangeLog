@@ -1,3 +1,8 @@
+2009-09-04  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am (install.man, install.wgetrc): Use $(mkinstalldirs),
+	not $(top_srcdir)/mkinstalldirs.
+
 2009-08-27  Micah Cowan  <micah@cowan.name>
 
 	* texi2pod.pl: Handle @asis in table-element formatting.

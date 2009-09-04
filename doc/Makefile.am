@@ -84,12 +84,12 @@ uninstall-local: @COMMENT_IF_NO_POD2MAN@uninstall.man
 
 # install man page, creating install directory if necessary
 install.man: $(MAN)
-	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(mandir)/man$(manext)
+	$(mkinstalldirs) $(DESTDIR)$(mandir)/man$(manext)
 	$(INSTALL_DATA) $(MAN) $(DESTDIR)$(mandir)/man$(manext)/$(MAN)
 
 # install sample.wgetrc
 install.wgetrc: $(srcdir)/sample.wgetrc
-	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(sysconfdir)
+	$(mkinstalldirs) $(DESTDIR)$(sysconfdir)
 	@if test -f $(DESTDIR)$(WGETRC); then \
 	  if cmp -s $(srcdir)/sample.wgetrc $(DESTDIR)$(WGETRC); then echo ""; \
 	     else \
