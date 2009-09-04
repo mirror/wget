@@ -39,6 +39,6 @@ SUBDIRS = lib md5 src doc po tests util windows
 EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST \
              msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
              msdos/Makefile.WC ABOUT-NLS autogen.sh \
-             build_info.pl
+             build-aux/build_info.pl
 
 CLEANFILES = *~ *.bak $(DISTNAME).tar.gz

@@ -1,5 +1,8 @@
 2009-09-04  Micah Cowan  <micah@cowan.name>
 
+	* Makefile.am (EXTRA_DIST): build_info.pl ->
+	build-aux/build_info.pl
+
 	* build-aux/build_info.pl: Moved from top directory.
 
 	* md5/*: Updated md5 from gnulib.
