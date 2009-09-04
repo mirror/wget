@@ -1,3 +1,9 @@
+2009-09-03  Gisle Vanem  <giva@bgnett.no>
+
+	* config.h (HAVE_STRING_H): Define for all Windows build
+	platforms.
+	(socklen_t): Define conditionally.
+
 2008-09-09  Gisle Vanem  <gvanem@broadpark.no>
 
 	* config-compiler.h: MingW do have <stdint.h>; added HAVE_STDINT_H.
