@@ -1,5 +1,7 @@
 2009-09-04  Micah Cowan  <micah@cowan.name>
-	
+
+	* md5/*: Updated md5 from gnulib.
+
 	* configure.ac: Configured build-aux/ as auxiliarry directory.
 
 	* build-aux/compile, build-aux/config.guess,

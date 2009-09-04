@@ -7,7 +7,7 @@ dnl with or without modifications, as long as this notice is preserved.
 
 dnl Written by Eric Blake.
 
-# wchar.m4 serial 23
+# wchar.m4 serial 25
 
 AC_DEFUN([gl_WCHAR_H],
 [
@@ -27,7 +27,10 @@ wchar_t w;]],
   fi
   AC_SUBST([HAVE_WINT_T])
 
-  if test $gl_cv_header_wchar_h_standalone != yes || test $gt_cv_c_wint_t != yes; then
+  dnl If <stddef.h> is replaced, then <wchar.h> must also be replaced.
+  AC_REQUIRE([gl_STDDEF_H])
+
+  if test $gl_cv_header_wchar_h_standalone != yes || test $gt_cv_c_wint_t != yes || test -n "$STDDEF_H"; then
     WCHAR_H=wchar.h
   fi
 

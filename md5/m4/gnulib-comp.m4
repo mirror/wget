@@ -44,6 +44,7 @@ AC_DEFUN([md5_INIT],
   gl_source_base='md5'
   gl_MD5
   gl_MULTIARCH
+  gl_STDDEF_H
   gl_STDINT_H
   gl_WCHAR_H
   m4_ifval(md5_LIBSOURCES_LIST, [
@@ -182,6 +183,7 @@ AC_DEFUN([md5_FILE_LIST], [
   lib/dummy.c
   lib/md5.c
   lib/md5.h
+  lib/stddef.in.h
   lib/stdint.in.h
   lib/wchar.in.h
   m4/00gnulib.m4
@@ -190,7 +192,9 @@ AC_DEFUN([md5_FILE_LIST], [
   m4/longlong.m4
   m4/md5.m4
   m4/multiarch.m4
+  m4/stddef_h.m4
   m4/stdint.m4
   m4/wchar.m4
+  m4/wchar_t.m4
   m4/wint_t.m4
 ])

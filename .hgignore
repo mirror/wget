@@ -20,6 +20,7 @@ lib/alloca.h
 lib/libgnu.a
 lib/unistd.h
 lib/stdbool.h
+lib/stddef.h
 lib/stdint.h
 lib/stdio.h
 lib/stdlib.h
@@ -33,6 +34,8 @@ lib/ref-del.sed
 md5/.deps
 md5/*.o
 md5/libmd5.a
+md5/stddef.h
+md5/stdint.h
 tests/WgetTest.pm
 tests/unit-tests
 tests/*.o

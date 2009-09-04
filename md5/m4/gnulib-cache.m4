@@ -15,7 +15,7 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libmd5 --source-base=md5 --m4-base=md5/m4 --doc-base=doc --tests-base=tests --aux-dir=. --no-libtool --macro-prefix=md5 crypto/md5
+#   gnulib-tool --import --dir=. --lib=libmd5 --source-base=md5 --m4-base=md5/m4 --doc-base=doc --tests-base=tests --aux-dir=build-aux --no-libtool --macro-prefix=md5 crypto/md5
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
