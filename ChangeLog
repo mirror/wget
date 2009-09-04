@@ -1,9 +1,10 @@
 2009-09-04  Micah Cowan  <micah@cowan.name>
 
+	* announce-gen: Imported from gnulib.
 	* update-copyright: Imported from gnulib.
 	* gnupload: Imported from gnulib.
 	* lib/Makefile.am, m4/gnulib-cache.m4, m4/gnulib-comp.m4: Adjusted
-	for update-copyright and gnupload.
+	for announce-gen, update-copyright, and gnupload.
 	
 2009-09-03  Micah Cowan  <micah@cowan.name>
 

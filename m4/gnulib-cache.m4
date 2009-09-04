@@ -15,12 +15,13 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=lib --m4-base=m4 --doc-base=doc --tests-base=tests --aux-dir=. --no-libtool --macro-prefix=gl alloca c-ctype getopt getpass-gnu gnupload maintainer-makefile quote quotearg strcasestr update-copyright
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=lib --m4-base=m4 --doc-base=doc --tests-base=tests --aux-dir=. --no-libtool --macro-prefix=gl alloca announce-gen c-ctype getopt getpass-gnu gnupload maintainer-makefile quote quotearg strcasestr update-copyright
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
 gl_MODULES([
   alloca
+  announce-gen
   c-ctype
   getopt
   getpass-gnu
