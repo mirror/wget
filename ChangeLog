@@ -1,5 +1,9 @@
 2009-09-03  Micah Cowan  <micah@cowan.name>
 
+	* NEWS: Give credit to jff for SSL security fix, call attention to
+	IRI support's dependence on libidn and libiconv, and note that
+	--html-extension is still accepted, though deprecated.
+
 	* lib/*, m4/*: Updated gnulib.
 	* lib/getpagesize.c, lib/memchr.c, lib/memchr.valgrind,
 	lib/stddef.in.h, lib/str-two-way.h, lib/strcasecmp.c,

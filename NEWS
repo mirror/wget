@@ -12,7 +12,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** SECURITY FIX: It had been possible to trick Wget into accepting
 SSL certificates that don't match the host name, through the trick of
-embedding NUL characters into the certs' common name.
+embedding NUL characters into the certs' common name. Fixed by Joao
+Ferreira <joao@joaoff.com>.
 
 ** Added support for CSS. This includes:
      - Parsing links from CSS files, and from CSS content found in HTML
@@ -26,11 +27,10 @@ embedding NUL characters into the certs' common name.
    <ted.mielczarek@gmail.com>.
 
 ** Added support for Internationalized Resource Identifiers (IRIs, RFC
-3987). When support is enabled (default), links with non-ASCII bytes
-are translated from their source encoding to UTF-8 before percent-encoding.
-
-   IRI support was added by Saint Xavier <wget@sxav.eu>, as his
-   project for the Google Summer of Code.
+3987). When support is enabled (requires libidn and libiconv), links
+with non-ASCII bytes are translated from their source encoding to UTF-8
+before percent-encoding.  IRI support was added by Saint Xavier
+<wget@sxav.eu>, as his project for the Google Summer of Code.
 
 ** Wget now provides more sensible exit status codes when downloads
 don't proceed as expected (see the manual).
@@ -49,7 +49,8 @@ information on how it was built, and the set of configure-time options
 that were selected.
 
 ** --html-extension has been renamed to --adjust-extension, to reflect
-the fact that it now also applies to CSS content..
+the fact that it now also applies to CSS content. --html-extension is
+still acceptable, but is now deprecated.
 
 ** An "ascii" specifier is now accepted by --restrict-file-names, which
 forces the percent-encoding of all non-ASCII bytes
