@@ -1,3 +1,9 @@
+2009-09-04  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am: Move build_info.c to wget_SOURCES from
+	nodist_wget_SOURCES, reduce dependencies, and invoke build_info.pl
+	in its new home, $(top_srcdir)/build-aux.
+
 2009-09-03  Micah Cowan  <micah@cowan.name>
 
 	* ftp-ls.c (ftp_parse_vms_ls): Replace use of localtime_r with

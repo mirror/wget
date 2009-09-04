@@ -23,7 +23,7 @@ use warnings;
 use FindBin qw($Bin);
 use File::Spec ();
 
-my $file = File::Spec->catfile($Bin, 'src', 'build_info.c.in');
+my $file = shift @ARGV;
 
 {
     my $data = parse_config();

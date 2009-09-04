@@ -44,14 +44,14 @@ wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c    		  \
 	       ftp-basic.c ftp-ls.c hash.c host.c html-parse.c html-url.c \
 	       http.c init.c log.c main.c netrc.c progress.c ptimer.c     \
 	       recur.c res.c retr.c snprintf.c spider.c url.c	          \
-	       utils.c exits.c $(IRI_OBJ)			          \
+	       utils.c exits.c build_info.c $(IRI_OBJ)			  \
 	       css-url.h css-tokens.h connect.h convert.h cookies.h       \
 	       ftp.h gen-md5.h hash.h host.h html-parse.h html-url.h      \
 	       http.h http-ntlm.h init.h log.h mswindows.h netrc.h        \
 	       options.h progress.h ptimer.h recur.h res.h retr.h         \
 	       spider.h ssl.h sysdep.h url.h utils.h wget.h iri.h 	  \
 	       exits.h gettext.h
-nodist_wget_SOURCES = build_info.c version.c
+nodist_wget_SOURCES = version.c
 EXTRA_wget_SOURCES = mswindows.c iri.c
 LDADD = $(LIBOBJS) ../lib/libgnu.a @MD5_LDADD@
 AM_CPPFLAGS = -I$(top_srcdir)/lib @MD5_CPPFLAGS@
@@ -62,8 +62,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/lib @MD5_CPPFLAGS@
 ../md5/libmd5.a:
 	cd ../lib && $(MAKE) $(AM_MAKEFLAGS)
 
-build_info.c:  $(wget_SOURCES) $(LDADD) $(srcdir)/Makefile.am
-	perl $(top_srcdir)/build_info.pl > $@
+build_info.c: $(srcdir)/Makefile.am $(srcdir)/build_info.c.in
+	$(PERL) $(top_srcdir)/build-aux/build_info.pl \
+	    $(srcdir)/build_info.c.in > $@
 
 ESCAPEQUOTE = sed -e 's/[\\"]/\\&/g' -e 's/\\"/"/' -e 's/\\";$$/";/'
 version.c:  $(wget_SOURCES) $(LDADD) $(srcdir)/Makefile.am \
@@ -81,8 +82,8 @@ version.c:  $(wget_SOURCES) $(LDADD) $(srcdir)/Makefile.am \
 	    | $(ESCAPEQUOTE) >> $@
 
 check_LIBRARIES = libunittest.a
-libunittest_a_SOURCES = $(wget_SOURCES) test.c test.h
-nodist_libunittest_a_SOURCES = build_info.c version.c
+libunittest_a_SOURCES = $(wget_SOURCES) test.c build_info.c test.h
+nodist_libunittest_a_SOURCES = version.c
 libunittest_a_CPPFLAGS = -DTESTING -I$(top_srcdir)/lib
 libunittest_a_LIBADD = $(LIBOBJS)
 EXTRA_DIST = build_info.c.in

@@ -1,5 +1,7 @@
 2009-09-04  Micah Cowan  <micah@cowan.name>
 
+	* build-aux/build_info.pl: Moved from top directory.
+
 	* md5/*: Updated md5 from gnulib.
 
 	* configure.ac: Configured build-aux/ as auxiliarry directory.
@@ -9,7 +11,7 @@
 	build-aux/install-sh, build-aux/link-warning.h,
 	build-aux/mdate-sh, build-aux/missing, build-aux/mkinstalldirs,
 	build-aux/texinfo.tex, build-aux/useless-if-before-free,
-	build-aux/vc-list-files, build-aux/ylwrap: Moved from base
+	build-aux/vc-list-files, build-aux/ylwrap: Moved from top
 	directory.
 
 	* build-aux/announce-gen: Imported from gnulib.
