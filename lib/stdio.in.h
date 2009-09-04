@@ -414,6 +414,9 @@ extern long rpl_ftell (FILE *fp);
 # if @REPLACE_FPURGE@ || !@HAVE_DECL_FPURGE@
   /* Discard all pending buffered I/O data on STREAM.
      STREAM must not be wide-character oriented.
+     When discarding pending output, the file position is set back to where it
+     was before the write calls.  When discarding pending input, the file
+     position is advanced to match the end of the previously read input.
      Return 0 if successful.  Upon error, return -1 and set errno.  */
   extern int fpurge (FILE *gl_stream);
 # endif
@@ -474,6 +477,20 @@ extern int puts (const char *string);
 # undef fwrite
 # define fwrite rpl_fwrite
 extern size_t fwrite (const void *ptr, size_t s, size_t n, FILE *stream);
+#endif
+
+#if @GNULIB_POPEN@
+# if @REPLACE_POPEN@
+#  undef popen
+#  define popen rpl_popen
+extern FILE *popen (const char *cmd, const char *mode);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef popen
+# define popen(c,m) \
+   (GL_LINK_WARNING ("popen is buggy on some platforms - " \
+                     "use gnulib module popen or pipe for more portability"), \
+    popen (c, m))
 #endif
 
 #if @GNULIB_GETDELIM@

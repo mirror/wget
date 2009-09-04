@@ -28,6 +28,8 @@
 #ifndef _GL_STRING_H
 #define _GL_STRING_H
 
+/* NetBSD 5.0 mis-defines NULL.  */
+#include <stddef.h>
 
 #ifndef __attribute__
 /* This feature is available in gcc versions 2.5 and later.  */

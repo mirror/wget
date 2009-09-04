@@ -48,8 +48,8 @@ AC_DEFUN([gl_INIT],
   gl_HEADER_ERRNO_H
   gl_ERROR
   m4_ifdef([AM_XGETTEXT_OPTION],
-    [AM_XGETTEXT_OPTION([--flag=error:3:c-format])
-     AM_XGETTEXT_OPTION([--flag=error_at_line:5:c-format])])
+    [AM_][XGETTEXT_OPTION([--flag=error:3:c-format])
+     AM_][XGETTEXT_OPTION([--flag=error_at_line:5:c-format])])
   gl_EXITFAIL
   gl_FUNC_FSEEKO
   gl_STDIO_MODULE_INDICATOR([fseeko])
@@ -57,7 +57,11 @@ AC_DEFUN([gl_INIT],
   gl_STDIO_MODULE_INDICATOR([getdelim])
   gl_FUNC_GETLINE
   gl_STDIO_MODULE_INDICATOR([getline])
-  gl_GETOPT
+  gl_FUNC_GETOPT_GNU
+  gl_MODULE_INDICATOR([getopt-gnu])
+  gl_FUNC_GETOPT_POSIX
+  gl_FUNC_GETPAGESIZE
+  gl_UNISTD_MODULE_INDICATOR([getpagesize])
   gl_FUNC_GETPASS_GNU
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
@@ -81,18 +85,26 @@ AC_DEFUN([gl_INIT],
   gl_WCHAR_MODULE_INDICATOR([mbrtowc])
   gl_FUNC_MBSINIT
   gl_WCHAR_MODULE_INDICATOR([mbsinit])
+  gl_FUNC_MEMCHR
+  gl_STRING_MODULE_INDICATOR([memchr])
   gl_MULTIARCH
   gl_QUOTE
   gl_QUOTEARG
   gl_FUNC_REALLOC_POSIX
   gl_STDLIB_MODULE_INDICATOR([realloc-posix])
   AM_STDBOOL_H
+  gl_STDDEF_H
   gl_STDINT_H
   gl_STDIO_H
   gl_STDLIB_H
+  gl_STRCASE
+  gl_FUNC_STRCASESTR
+  gl_FUNC_STRCASESTR_SIMPLE
+  gl_STRING_MODULE_INDICATOR([strcasestr])
   gl_FUNC_STRERROR
   gl_STRING_MODULE_INDICATOR([strerror])
   gl_HEADER_STRING_H
+  gl_HEADER_STRINGS_H
   gl_UNISTD_H
   gl_WCHAR_H
   gl_WCTYPE_H
@@ -249,6 +261,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/getopt.in.h
   lib/getopt1.c
   lib/getopt_int.h
+  lib/getpagesize.c
   lib/getpass.c
   lib/getpass.h
   lib/gettext.h
@@ -258,6 +271,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/lseek.c
   lib/mbrtowc.c
   lib/mbsinit.c
+  lib/memchr.c
+  lib/memchr.valgrind
   lib/quote.c
   lib/quote.h
   lib/quotearg.c
@@ -266,14 +281,20 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/ref-add.sin
   lib/ref-del.sin
   lib/stdbool.in.h
+  lib/stddef.in.h
   lib/stdint.in.h
   lib/stdio-impl.h
   lib/stdio-write.c
   lib/stdio.in.h
   lib/stdlib.in.h
+  lib/str-two-way.h
+  lib/strcasecmp.c
+  lib/strcasestr.c
   lib/streq.h
   lib/strerror.c
   lib/string.in.h
+  lib/strings.in.h
+  lib/strncasecmp.c
   lib/unistd.in.h
   lib/verify.h
   lib/wchar.in.h
@@ -292,6 +313,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/getdelim.m4
   m4/getline.m4
   m4/getopt.m4
+  m4/getpagesize.m4
   m4/getpass.m4
   m4/glibc21.m4
   m4/gnulib-common.m4
@@ -307,18 +329,25 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/mbrtowc.m4
   m4/mbsinit.m4
   m4/mbstate_t.m4
+  m4/memchr.m4
+  m4/mmap-anon.m4
   m4/multiarch.m4
   m4/quote.m4
   m4/quotearg.m4
   m4/realloc.m4
   m4/stdbool.m4
+  m4/stddef_h.m4
   m4/stdint.m4
   m4/stdio_h.m4
   m4/stdlib_h.m4
+  m4/strcase.m4
+  m4/strcasestr.m4
   m4/strerror.m4
   m4/string_h.m4
+  m4/strings_h.m4
   m4/unistd_h.m4
   m4/wchar.m4
+  m4/wchar_t.m4
   m4/wctype.m4
   m4/wint_t.m4
   m4/xalloc.m4

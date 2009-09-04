@@ -2,7 +2,7 @@
 # List version-controlled file names.
 
 # Print a version string.
-scriptversion=2009-04-25.13; # UTC
+scriptversion=2009-07-21.16; # UTC
 
 # Copyright (C) 2006-2009 Free Software Foundation, Inc.
 
@@ -74,7 +74,7 @@ test "x$dir" = x && dir=.
 if test -d .git; then
   test "x$dir" = x. \
     && dir= sed_esc= \
-    || dir="$dir/" sed_esc=`echo "$dir"|sed 's,\([\\/]\),\\\\\1,g'`
+    || { dir="$dir/"; sed_esc=`echo "$dir"|env sed 's,\([\\/]\),\\\\\1,g'`; }
   # Ignore git symlinks - either they point into the tree, in which case
   # we don't need to visit the target twice, or they point somewhere
   # else (often into a submodule), in which case the content does not

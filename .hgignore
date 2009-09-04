@@ -24,6 +24,7 @@ lib/stdint.h
 lib/stdio.h
 lib/stdlib.h
 lib/string.h
+lib/strings.h
 lib/wchar.h
 lib/charset.alias
 lib/configmake.h

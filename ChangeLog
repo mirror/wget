@@ -1,5 +1,14 @@
 2009-09-03  Micah Cowan  <micah@cowan.name>
 
+	* lib/*, m4/*: Updated gnulib.
+	* lib/getpagesize.c, lib/memchr.c, lib/memchr.valgrind,
+	lib/stddef.in.h, lib/str-two-way.h, lib/strcasecmp.c,
+	lib/strcasestr.c, lib/strings.in.h, lib/strncasecmp.c,
+	m4/getpagesize.m4, m4/memchr.m4, m4/mmap-anon.m4,
+	m4/stddef_h.m3, m4/strcase.m4, m4/strcasestr.m4,
+	m4/strings_h.m4, m4/wchar_t.m4: Added, via gnulib --import
+	strcasestr.
+
 	* configure.ac: Move AM_GNU_GETTEXT below AC_AIX, to shut up
 	autoconf warnings.
 
