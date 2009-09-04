@@ -1,5 +1,8 @@
 2009-09-03  Micah Cowan  <micah@cowan.name>
 
+	* ftp-ls.c (ftp_parse_vms_ls): Replace use of localtime_r with
+	localtime, as not all platforms have localtime_r.
+
 	* Makefile.am (wget_SOURCES): Rearranged some of the file order,
 	so .c files and .h files are apart. Added gettext.h, so that it
 	shows up in the dist.

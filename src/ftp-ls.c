@@ -675,7 +675,7 @@ ftp_parse_vms_ls (const char *file)
   int dt, i, j, len;
   int perms;
   time_t timenow;
-  struct tm timestruct;
+  struct tm *timestruct;
   char date_str[ 32];
 
   char *line, *tok;		 /* tokenizer */
@@ -961,11 +961,11 @@ ftp_parse_vms_ls (const char *file)
          fails.
       */
       timenow = time( NULL);
-      localtime_r( &timenow, &timestruct);
-      strptime( date_str, "%d-%b-%Y %H:%M:%S", &timestruct);
+      timestruct = localtime( &timenow );
+      strptime( date_str, "%d-%b-%Y %H:%M:%S", timestruct);
 
       /* Convert struct tm local time to time_t local time. */
-      timenow = mktime (&timestruct);
+      timenow = mktime (timestruct);
       /* Offset local time according to environment variable (seconds). */
       if ((tok = getenv( "WGET_TIMEZONE_DIFFERENTIAL")) != NULL)
         {
