@@ -242,6 +242,7 @@ AC_DEFUN([gltests_LIBSOURCES], [
 # gnulib-tool and may be removed by future gnulib-tool invocations.
 AC_DEFUN([gl_FILE_LIST], [
   build-aux/link-warning.h
+  build-aux/update-copyright
   build-aux/useless-if-before-free
   build-aux/vc-list-files
   lib/alloca.c
