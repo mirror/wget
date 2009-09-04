@@ -1,3 +1,8 @@
+2009-09-04  Steven Schubiger  <stsc@member.fsf.org>
+
+	* configure.ac: Place gl_EARLY and md5_EARLY before the gettext
+	macros in order to silence autoconf warnings.
+
 2009-09-04  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am (EXTRA_DIST): build_info.pl ->

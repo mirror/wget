@@ -103,14 +103,14 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_AIX
 
+gl_EARLY
+md5_EARLY
+
 dnl
 dnl Gettext
 dnl
 AM_GNU_GETTEXT([external],[need-ngettext])
 AM_GNU_GETTEXT_VERSION([0.17])
-
-gl_EARLY
-md5_EARLY
 
 AC_PROG_RANLIB
 
