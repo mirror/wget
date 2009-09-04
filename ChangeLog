@@ -1,8 +1,18 @@
 2009-09-04  Micah Cowan  <micah@cowan.name>
+	
+	* configure.ac: Configured build-aux/ as auxiliarry directory.
 
-	* announce-gen: Imported from gnulib.
-	* update-copyright: Imported from gnulib.
-	* gnupload: Imported from gnulib.
+	* build-aux/compile, build-aux/config.guess,
+	build-aux/config.rpath, build-aux/config.sub, build-aux/depcomp,
+	build-aux/install-sh, build-aux/link-warning.h,
+	build-aux/mdate-sh, build-aux/missing, build-aux/mkinstalldirs,
+	build-aux/texinfo.tex, build-aux/useless-if-before-free,
+	build-aux/vc-list-files, build-aux/ylwrap: Moved from base
+	directory.
+
+	* build-aux/announce-gen: Imported from gnulib.
+	* build-aux/update-copyright: Imported from gnulib.
+	* build-aux/gnupload: Imported from gnulib.
 	* lib/Makefile.am, m4/gnulib-cache.m4, m4/gnulib-comp.m4: Adjusted
 	for announce-gen, update-copyright, and gnupload.
 	
