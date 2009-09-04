@@ -1,5 +1,7 @@
 2009-09-04  Micah Cowan  <micah@cowan.name>
 
+	* wget.texi (Time-Stamping): "older" -> "not newer".
+
 	* Makefile.am (install.man, install.wgetrc): Use $(mkinstalldirs),
 	not $(top_srcdir)/mkinstalldirs.
 

@@ -2507,7 +2507,7 @@ The time-stamping in GNU Wget is turned on using @samp{--timestamping}
 (@samp{-N}) option, or through @code{timestamping = on} directive in
 @file{.wgetrc}.  With this option, for each file it intends to download,
 Wget will check whether a local file of the same name exists.  If it
-does, and the remote file is older, Wget will not download it.
+does, and the remote file is not newer, Wget will not download it.
 
 If the local file does not exist, or the sizes of the files do not
 match, Wget will download the remote file no matter what the time-stamps
