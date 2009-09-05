@@ -91,6 +91,7 @@
 #endif
 
 #ifdef OPENWATCOM_15
+  #define HAVE_ALLOCA_H    1
   #define HAVE_INT64_T     1
   #define HAVE_SNPRINTF    1
   #define HAVE_STRCASECMP  1
@@ -129,6 +130,11 @@
   #define MSDOS
 #endif
 
+#if !defined(USE_WATT32)
+  #define USE_WATT32
+#endif
+
+#define LOCALEDIR ""
 #define OS_TYPE "DOS"
 
 #endif  /* CONFIG_DOS_H */

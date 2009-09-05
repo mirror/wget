@@ -364,7 +364,7 @@ openssl_close (int fd, void *arg)
   xfree_null (ctx->last_error);
   xfree (ctx);
 
-#if defined(WINDOWS) || defined(MSDOS)
+#if defined(WINDOWS) || defined(USE_WATT32)
   closesocket (fd);
 #else
   close (fd);

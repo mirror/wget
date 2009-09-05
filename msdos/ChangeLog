@@ -1,3 +1,15 @@
+2009-09-05  Gisle Vanem  <gvanem@broadpark.no>
+
+	* config.h: Added 'HAVE_ALLOCA_H' for Watcom 1.5+.  Added
+	'USE_WATT32' since all DOS-targets use the Watt-32 tcp/ip stack.
+	Added meaningless dummy LOCALEDIR.
+
+	* Makefile.wc: A much needed update. Added rules for many files
+	in ./lib, css.c and version.c.
+
+	* Makefile.dj: A much needed update. Added rules for css.c and
+	version.c.
+
 2008-01-25  Micah Cowan  <micah@cowan.name>
 
 	* config.h: Updated copyright year.

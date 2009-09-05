@@ -273,7 +273,7 @@ static struct cmdline_option option_data[] =
     { "version", 'V', OPT_FUNCALL, (void *) print_version, no_argument },
     { "wait", 'w', OPT_VALUE, "wait", -1 },
     { "waitretry", 0, OPT_VALUE, "waitretry", -1 },
-#ifdef MSDOS
+#ifdef USE_WATT32
     { "wdebug", 0, OPT_BOOLEAN, "wdebug", -1 },
 #endif
   };
@@ -419,7 +419,7 @@ Logging and input file:\n"),
     N_("\
   -d,  --debug               print lots of debugging information.\n"),
 #endif
-#ifdef MSDOS
+#ifdef USE_WATT32
     N_("\
        --wdebug              print Watt-32 debug output.\n"),
 #endif
@@ -1127,7 +1127,7 @@ for details.\n\n"));
         exit (1);
     }
 
-#ifdef MSDOS
+#ifdef USE_WATT32
   if (opt.wdebug)
      dbug_init();
   sock_init();

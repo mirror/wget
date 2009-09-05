@@ -132,7 +132,7 @@ struct options
   bool debug;			/* Debugging on/off */
 #endif
 
-#ifdef MSDOS
+#ifdef USE_WATT32
   bool wdebug;                  /* Watt-32 tcp/ip debugging on/off */
 #endif
 

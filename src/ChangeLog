@@ -1,3 +1,9 @@
+2009-09-05  Gisle Vanem  <gvanem@broadpark.no>
+
+	* connect.c, init.c, main.c, openssl.c, options.h:  Replace
+	"ifdef MSDOS" with "ifdef USE_WATT32" since DOS-targets in fact
+	use the Watt-32 tcp/ip stack.
+
 2009-09-04  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am: Move build_info.c to wget_SOURCES from
