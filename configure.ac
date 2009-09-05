@@ -520,10 +520,21 @@ if test "X$iri" != "Xno"; then
     LDFLAGS="${LDFLAGS} -L$libidn/lib"
     CPPFLAGS="${CPPFLAGS} -I$libidn/include"
   fi
-  AC_CHECK_HEADER(idna.h,
+
+  # If idna.h can't be found, check to see if it was installed under
+  # /usr/include/idn (OpenSolaris, at least, places it there).
+  # Check for idn-int.h in that case, because idna.h won't find
+  # idn-int.h until we've decided to add -I/usr/include/idn.
+  AC_CHECK_HEADER(idna.h, ,
+    [AC_CHECK_HEADER(idn/idn-int.h,
+                    [CPPFLAGS="${CPPFLAGS} -I/usr/include/idn"],
+                    [iri=no])]
+  )
+
+  if test "X$iri" != "Xno"; then
     AC_CHECK_LIB(idn, stringprep_check_version,
-      [iri=yes LIBS="${LIBS} -lidn"], iri=no),
-    iri=no)
+      [iri=yes LIBS="${LIBS} -lidn"], iri=no)
+  fi
 
   if test "X$iri" != "Xno" ; then
     AC_DEFINE(ENABLE_IRI, 1, [Define if IRI support is enabled.])

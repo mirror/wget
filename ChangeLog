@@ -1,3 +1,9 @@
+2009-09-05  Micah Cowan  <micah@cowan.name>
+
+	* configure.ac: If we can't find idna.h, check to see if it's
+	because we need to add /usr/include/idn to the inclusion
+	path (for OpenSolaris).
+
 2009-09-04  Steven Schubiger  <stsc@member.fsf.org>
 
 	* configure.ac: Place gl_EARLY and md5_EARLY before the gettext
