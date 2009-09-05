@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+use WgetFeature qw(iri);
 use HTTPTest;
 
 # Just a sanity check to verify that %-encoded values are always left

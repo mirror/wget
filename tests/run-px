@@ -4,8 +4,7 @@ use 5.006;
 use strict;
 use warnings;
 
-use Term::ANSIColor ':constants';
-$Term::ANSIColor::AUTORESET = 1;
+use Term::ANSIColor;
 
 die "Please specify the top source directory.\n" if (!@ARGV);
 my $top_srcdir = shift @ARGV;
@@ -82,26 +81,42 @@ my @tested;
 foreach my $test (@tests) {
     print "Running $test\n\n";
     system("$^X -I$top_srcdir/tests $top_srcdir/tests/$test $top_srcdir");
-    push @tested, { name => $test, result => $? };
+    push @tested, { name => $test, result => $? >> 8 };
 }
 
 foreach my $var (qw(SYSTEM_WGETRC WGETRC)) {
     delete $ENV{$var};
 }
 
+my %exit = (
+    pass    => 0,
+    fail    => 1,
+    skip    => 2,
+    unknown => 3, # or greater
+);
+
+my %colors = (
+    $exit{pass}    => colored('pass:',    'green'  ),
+    $exit{fail}    => colored('FAIL:',    'red'    ),
+    $exit{skip}    => colored('Skip:',    'yellow' ),
+    $exit{unknown} => colored('Unknown:', 'magenta'),
+);
+
 print "\n";
 foreach my $test (@tested) {
-    ($test->{result} == 0)
-      ? print GREEN 'pass: '
-      : print RED 'FAIL: ';
-   print $test->{name}, "\n";
+    my $colored = exists $colors{$test->{result}}
+      ? $colors{$test->{result}}
+      : $colors{$exit{unknown}};
+    print "$colored $test->{name}\n";
 }
 
 my $count = sub
 {
     return {
-      pass => sub { scalar grep $_->{result} == 0, @tested },
-      fail => sub { scalar grep $_->{result} != 0, @tested },
+      pass    => sub { scalar grep $_->{result} == $exit{pass},    @tested },
+      fail    => sub { scalar grep $_->{result} == $exit{fail},    @tested },
+      skip    => sub { scalar grep $_->{result} == $exit{skip},    @tested },
+      unknown => sub { scalar grep $_->{result} >= $exit{unknown}, @tested },
     }->{$_[0]}->();
 };
 
@@ -110,6 +125,7 @@ my $summary = sub
     my @lines = (
         "${\scalar @tested} tests were run",
         "${\$count->('pass')} PASS, ${\$count->('fail')} FAIL",
+        "${\$count->('skip')} SKIP, ${\$count->('unknown')} UNKNOWN",
     );
     my $len_longest = sub
     {
@@ -129,8 +145,8 @@ my $summary = sub
 
 print "\n";
 print $count->('fail')
-  ? RED $summary
-  : GREEN $summary;
+  ? colored($summary, 'red')
+  : colored($summary, 'green');
 print "\n";
 
 exit $count->('fail');

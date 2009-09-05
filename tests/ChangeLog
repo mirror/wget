@@ -1,3 +1,26 @@
+2009-09-05  Steven Schubiger  <stsc@member.fsf.org>
+
+	* run-px: Introduce two new diagnostics: Skip and Unknown.
+
+	* WgetFeature.pm (import): Parse the version output of Wget
+	and assert the availability of a feature.
+
+	* WgetFeature.cfg: Messages to be printed in absence of a
+	required feature.
+
+	* Test-ftp-iri-disabled.px, Test-ftp-iri-fallback.px,
+	Test-ftp-iri-recursive.px, Test-ftp-iri.px, Test-idn-cmd.px,
+	Test-idn-headers.px, Test-idn-meta.px, Test-idn-robots.px,
+	Test-iri-forced-remote.px, Test-iri-list.px,
+	Test-iri-percent.px, Test-iri.px: Use WgetFeature.pm to
+	check for the presence of the IDN/IRI feature.
+
+	* Test-proxied-https-auth.px: Replace grepping for a feature
+	with loading WgetFeature.pm at compile-time.
+
+	* Makefile.am: Add WgetFeature.pm and WgetFeature.cfg
+	to EXTRA_DIST.
+
 2009-09-02  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am (unit-tests): explicit dependency is

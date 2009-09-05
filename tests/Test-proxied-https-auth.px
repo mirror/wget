@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+use WgetFeature qw(https);
 use WgetTest;  # For $WGETPATH.
 
 my $cert_path;
@@ -12,15 +13,6 @@ if (@ARGV) {
     my $top_srcdir = shift @ARGV;
     $key_path = "$top_srcdir/tests/certs/server-key.pem";
     $cert_path = "$top_srcdir/tests/certs/server-cert.pem";
-}
-
-# Have we even built an HTTPS-supporting Wget?
-{
-    my @version_lines = `${WgetTest::WGETPATH} --version`;
-    unless (grep /\+(openssl|gnutls)/, @version_lines) {
-        print "Not running test: Wget under test doesn't support HTTPS.\n";
-        exit 0;
-    }
 }
 
 use HTTP::Daemon;

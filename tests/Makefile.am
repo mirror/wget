@@ -60,6 +60,7 @@ run-px-tests: WgetTest.pm ../src/wget$(EXEEXT)
 	$(srcdir)/run-px $(top_srcdir)
 
 EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
+             WgetFeature.pm WgetFeature.cfg \
              Test-auth-basic.px \
              Test-auth-no-challenge.px \
              Test-auth-no-challenge-url.px \

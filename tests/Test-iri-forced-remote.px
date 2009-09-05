@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+use WgetFeature qw(iri);
 use HTTPTest;
 
 # cf. http://en.wikipedia.org/wiki/Latin1
