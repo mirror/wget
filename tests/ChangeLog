@@ -1,3 +1,7 @@
+2009-09-04  Micah Cowan  <micah@cowan.name>
+
+	* WgetTest.pm.in (run): Error-checking improvements.
+
 2009-09-02  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am (unit-tests): explicit dependency is

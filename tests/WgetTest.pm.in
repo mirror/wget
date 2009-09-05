@@ -69,12 +69,18 @@ sub new {
 sub run {
     my $self = shift;
     my $result_message = "Test successful.\n";
+    my $errcode;
 
     printf "Running test $self->{_name}\n";
 
     # Setup
-    $self->_setup();
+    my $new_result = $self->_setup();
     chdir ("$self->{_workdir}/$self->{_name}/input");
+    if (defined $new_result) {
+        $result_message = $new_result;
+        $errcode = 1;
+        goto cleanup;
+    }
 
     # Launch server
     my $pid = $self->_fork_and_launch_server();
@@ -84,7 +90,7 @@ sub run {
     my $cmdline = $self->{_cmdline};
     $cmdline = $self->_substitute_port($cmdline);
     print "Calling $cmdline\n";
-    my $errcode =
+    $errcode =
         ($cmdline =~ m{^/.*})
             ? system ($cmdline)
             : system ("$self->{_workdir}/../src/$cmdline");
@@ -99,13 +105,14 @@ sub run {
     # Verify download
     unless ($errcode == $self->{_errcode}) {
         $result_message = "Test failed: wrong code returned (was: $errcode, expected: $self->{_errcode})\n";
+        goto cleanup;
     }
     my $error_str;
     if ($error_str = $self->_verify_download()) {
         $result_message = $error_str;
     }
 
-    # Cleanup
+  cleanup:
     $self->_cleanup();
 
     print $result_message;
@@ -144,9 +151,10 @@ sub _setup {
     }
 
     chdir ("../input");
-    $self->_setup_server();
+    my $ret = $self->_setup_server();
 
     chdir ($self->{_workdir});
+    return $ret;
 }
 
 
