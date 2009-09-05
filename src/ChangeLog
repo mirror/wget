@@ -1,3 +1,7 @@
+2009-09-05  Steven Schubiger  <stsc@member.fsf.org>
+
+	* retr.h: Declare set_local_file() to avoid build warnings.
+
 2009-09-05  Gisle Vanem  <gvanem@broadpark.no>
 
 	* connect.c, init.c, main.c, openssl.c, options.h:  Replace
