@@ -1,3 +1,10 @@
+2009-09-06  Micah Cowan  <micah@cowan.name>
+
+	* ftp.c (getftp, ftp_loop_internal): Separate "len" input/output
+	parameter (with different meanings for input and output), into two
+	separate parameters, one input (passed_expected_bytes) and one
+	output (qtyread). Fixes bug #26870.
+
 2009-09-05  Steven Schubiger  <stsc@member.fsf.org>
 
 	* retr.h: Declare set_local_file() to avoid build warnings.

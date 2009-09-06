@@ -1,3 +1,40 @@
+2009-09-06  Micah Cowan  <micah@cowan.name>
+
+	* WgetTest.pm.in (_setup): Don't expect error codes from
+	_setup_server; none are returned.
+	(quotechar, _show_diff): Added facilities for expounding on where
+	output didn't match expectations.
+	(_verify_download): Use _show_diff.
+
+	* FTPTest.pm (_setup_server): Pass value of server_behavior to
+	FTPServer initialization.
+
+	* Test-ftp-pasv-fail.px: Added.
+	* run-px, Makefile.am (EXTRA_DIST): Added Test-ftp-pasv-fail.px.
+
+	* WgetTest.pm.in: Added "server_behavior" to the set of accepted
+	initialization values.
+	* FTPServer.pm (__open_data_connection): Add "server_behavior" to
+	the set of accepted initialization values.
+	(run): Honor the 'fail_on_pasv' server behavior setting, to
+	trigger the Wget getftp glitch.
+
+2009-09-05  Micah Cowan  <micah@cowan.name>
+
+	* Test-ftp-recursive.px: Added.
+	* run-px, Makefile.am (EXTRA_DIST): Added Test-ftp-recursive.px.
+
+	* FTPTest.pm (_setup_server): Don't construct the "input"
+	directory's contents, just pass the URLs structure to
+	FTPServer->new.
+	* FTPServer.pm: Rewrote portions, so that the server now uses the
+	information from the %urls hash directly, rather than reading from
+	real files. Added an FTPPaths package to the file.
+
+2009-09-04  Micah Cowan  <micah@cowan.name>
+
+	* WgetTest.pm.in (run): Error-checking improvements.
+
 2009-09-05  Steven Schubiger  <stsc@member.fsf.org>
 
 	* run-px: Introduce two new diagnostics: Skip and Unknown.
