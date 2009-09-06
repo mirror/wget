@@ -33,6 +33,8 @@ sub _setup_server {
     my $self = shift;
 
     $self->{_server} = FTPServer->new (input => $self->{_input},
+                                       server_behavior =>
+                                           $self->{_server_behavior},
                                        LocalAddr => 'localhost',
                                        ReuseAddr => 1,
                                        rootDir => "$self->{_workdir}/$self->{_name}/input") or die "Cannot create server!!!";

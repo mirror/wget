@@ -443,11 +443,12 @@ sub __open_data_connection
 
 {
     my %_attr_data = ( # DEFAULT
-        _input      => undef,
-        _localAddr  => 'localhost',
-        _localPort  => undef,
-        _reuseAddr  => 1,
-        _rootDir    => Cwd::getcwd(),
+        _input           => undef,
+        _localAddr       => 'localhost',
+        _localPort       => undef,
+        _reuseAddr       => 1,
+        _rootDir         => Cwd::getcwd(),
+        _server_behavior => {},
     );
 
     sub _default_for
@@ -562,13 +563,13 @@ sub run
             print STDERR "in child\n" if $log;
 
             my $conn = { 
-                'paths'        => FTPPaths->new($self->{'_input'}),
-                'socket'       => $socket, 
-                'state'        => $_connection_states{NEWCONN},
-                'dir'          => '/',
-                'restart'      => 0,
-                'idle_timeout' => 60, # 1 minute timeout
-                'rootdir'      => $self->{_rootDir},
+                'paths'           => FTPPaths->new($self->{'_input'}),
+                'socket'          => $socket, 
+                'state'           => $_connection_states{NEWCONN},
+                'dir'             => '/',
+                'restart'         => 0,
+                'idle_timeout'    => 60, # 1 minute timeout
+                'rootdir'         => $self->{_rootDir},
             };
 
             print {$conn->{socket}} "220 GNU Wget Testing FTP Server ready.\r\n";
@@ -615,6 +616,13 @@ sub run
                 # Handle the QUIT command specially.
                 if ($cmd eq "QUIT") {
                     print {$conn->{socket}} "221 Goodbye. Service closing connection.\r\n";
+                    last;
+                }
+
+                if (defined ($self->{_server_behavior}{fail_on_pasv})
+                        && $cmd eq 'PASV') {
+                    undef $self->{_server_behavior}{fail_on_pasv};
+                    close $socket;
                     last;
                 }
 

@@ -24,6 +24,7 @@ my @unexpected_downloads = ();
         _input        => {},
         _name         => "",
         _output       => {},
+        _server_behavior => {},
     );
 
     sub _default_for
@@ -151,10 +152,10 @@ sub _setup {
     }
 
     chdir ("../input");
-    my $ret = $self->_setup_server();
+    $self->_setup_server();
 
     chdir ($self->{_workdir});
-    return $ret;
+    return;
 }
 
 
@@ -165,6 +166,58 @@ sub _cleanup {
     File::Path::rmtree ($self->{_name}) unless $ENV{WGET_TEST_NO_CLEANUP};
 }
 
+# not a method
+sub quotechar {
+    my $c = ord( shift );
+    if ($c >= 0x7 && $c <= 0xD) {
+       return '\\' . qw(a b t n v f r)[$c - 0x7];
+    } else {
+        return sprintf('\\x%02x', $c);
+    }
+}
+
+# not a method
+sub _show_diff {
+    my $SNIPPET_SIZE = 10;
+
+    my ($expected, $actual) = @_;
+
+    my $str = '';
+    my $explen = length $expected;
+    my $actlen = length $actual;
+
+    if ($explen != $actlen) {
+        $str .= "Sizes don't match: expected = $explen, actual = $actlen\n";
+    }
+
+    my $min = $explen <= $actlen? $explen : $actlen;
+    my $line = 1;
+    my $col = 1;
+    my $i;
+    for ($i=0; $i != $min; ++$i) {
+        last if substr($expected, $i, 1) ne substr($actual, $i, 1);
+        if (substr($expected, $i, 1) eq '\n') {
+            $line++;
+            $col = 0;
+        } else {
+            $col++;
+        }
+    }
+    my $snip_start = $i - ($SNIPPET_SIZE / 2);
+    if ($snip_start < 0) {
+        $SNIPPET_SIZE += $snip_start; # Take it from the end.
+        $snip_start = 0;
+    }
+    my $exp_snip = substr($expected, $snip_start, $SNIPPET_SIZE);
+    my $act_snip = substr($actual, $snip_start, $SNIPPET_SIZE);
+    $exp_snip =~s/[^[:print:]]/ quotechar($&) /ge;
+    $act_snip =~s/[^[:print:]]/ quotechar($&) /ge;
+    $str .= "Mismatch at line $line, col $col:\n";
+    $str .= "    $exp_snip\n";
+    $str .= "    $act_snip\n";
+
+    return $str;
+}
 
 sub _verify_download {
     my $self = shift;
@@ -182,8 +235,10 @@ sub _verify_download {
         my $content = <FILE>;
         my $expected_content = $filedata->{'content'};
         $expected_content = $self->_substitute_port($expected_content);
-        $content eq $expected_content
-            or return "Test failed: wrong content for file $filename\n";
+        unless ($content eq $expected_content) {
+            return "Test failed: wrong content for file $filename\n"
+                . _show_diff($expected_content, $content);
+        }
 
         if (exists($filedata->{'timestamp'})) {
             my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size,
