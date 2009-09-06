@@ -240,7 +240,8 @@ static uerr_t ftp_get_listing (struct url *, ccon *, struct fileinfo **);
    connection to the server.  It always closes the data connection,
    and closes the control connection in case of error.  */
 static uerr_t
-getftp (struct url *u, wgint *len, wgint restval, ccon *con)
+getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
+        wgint restval, ccon *con)
 {
   int csock, dtsock, local_sock, res;
   uerr_t err = RETROK;          /* appease the compiler */
@@ -265,6 +266,8 @@ getftp (struct url *u, wgint *len, wgint restval, ccon *con)
   assert (!((cmd & DO_LIST) && (cmd & DO_RETR)));
   /* Make sure that at least *something* is requested.  */
   assert ((cmd & (DO_LIST | DO_CWD | DO_RETR | DO_LOGIN)) != 0);
+
+  *qtyread = restval;
 
   user = u->user;
   passwd = u->passwd;
@@ -730,7 +733,7 @@ Error in server response, closing control connection.\n"));
   else /* do not CWD */
     logputs (LOG_VERBOSE, _("==> CWD not required.\n"));
 
-  if ((cmd & DO_RETR) && *len == 0)
+  if ((cmd & DO_RETR) && passed_expected_bytes == 0)
     {
       if (opt.verbose)
         {
@@ -739,7 +742,7 @@ Error in server response, closing control connection.\n"));
                        quotearg_style (escape_quoting_style, u->file));
         }
 
-      err = ftp_size (csock, u->file, len);
+      err = ftp_size (csock, u->file, &expected_bytes);
       /* FTPRERR */
       switch (err)
         {
@@ -758,8 +761,8 @@ Error in server response, closing control connection.\n"));
           abort ();
         }
         if (!opt.server_response)
-          logprintf (LOG_VERBOSE, *len ? "%s\n" : _("done.\n"),
-                     number_to_static_string (*len));
+          logprintf (LOG_VERBOSE, expected_bytes ? "%s\n" : _("done.\n"),
+                     number_to_static_string (expected_bytes));
     }
 
   /* If anything is to be retrieved, PORT (or PASV) must be sent.  */
@@ -1070,11 +1073,11 @@ Error in server response, closing control connection.\n"));
 
   /* Some FTP servers return the total length of file after REST
      command, others just return the remaining size. */
-  if (*len && restval && expected_bytes
-      && (expected_bytes == *len - restval))
+  if (passed_expected_bytes && restval && expected_bytes
+      && (expected_bytes == passed_expected_bytes - restval))
     {
       DEBUGP (("Lying FTP server found, adjusting.\n"));
-      expected_bytes = *len;
+      expected_bytes = passed_expected_bytes;
     }
 
   /* If no transmission was required, then everything is OK.  */
@@ -1203,10 +1206,11 @@ Error in server response, closing control connection.\n"));
   else
     fp = output_stream;
 
-  if (*len)
+  if (passed_expected_bytes)
     {
-      print_length (*len, restval, true);
-      expected_bytes = *len;    /* for fd_read_body's progress bar */
+      print_length (passed_expected_bytes, restval, true);
+      expected_bytes = passed_expected_bytes;
+        /* for fd_read_body's progress bar */
     }
   else if (expected_bytes)
     print_length (expected_bytes, restval, false);
@@ -1215,11 +1219,10 @@ Error in server response, closing control connection.\n"));
   flags = 0;
   if (restval && rest_failed)
     flags |= rb_skip_startpos;
-  *len = restval;
   rd_size = 0;
   res = fd_read_body (dtsock, fp,
                       expected_bytes ? expected_bytes - restval : 0,
-                      restval, &rd_size, len, &con->dltime, flags);
+                      restval, &rd_size, qtyread, &con->dltime, flags);
 
   tms = datetime_str (time (NULL));
   tmrate = retr_rate (rd_size, con->dltime);
@@ -1348,7 +1351,7 @@ static uerr_t
 ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
 {
   int count, orig_lp;
-  wgint restval, len = 0;
+  wgint restval, len = 0, qtyread = 0;
   char *tms, *locf;
   const char *tmrate = NULL;
   uerr_t err;
@@ -1428,7 +1431,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
            first attempt to clobber existing data.)  */
         restval = st.st_size;
       else if (count > 1)
-        restval = len;          /* start where the previous run left off */
+        restval = qtyread;          /* start where the previous run left off */
       else
         restval = 0;
 
@@ -1454,7 +1457,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
         len = f->size;
       else
         len = 0;
-      err = getftp (u, &len, restval, con);
+      err = getftp (u, len, &qtyread, restval, con);
 
       if (con->csock == -1)
         con->st &= ~DONE_CWD;
@@ -1484,7 +1487,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
         case FTPRETRINT:
           /* If the control connection was closed, the retrieval
              will be considered OK if f->size == len.  */
-          if (!f || len != f->size)
+          if (!f || qtyread != f->size)
             {
               printwhat (count, opt.ntry);
               continue;
@@ -1499,7 +1502,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
         }
       tms = datetime_str (time (NULL));
       if (!opt.spider)
-        tmrate = retr_rate (len - restval, con->dltime);
+        tmrate = retr_rate (qtyread - restval, con->dltime);
 
       /* If we get out of the switch above without continue'ing, we've
          successfully downloaded a file.  Remember this fact. */
@@ -1520,7 +1523,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
                      : _("%s (%s) - %s saved [%s]\n\n"),
                      tms, tmrate,
                      write_to_stdout ? "" : quote (locf),
-                     number_to_static_string (len));
+                     number_to_static_string (qtyread));
         }
       if (!opt.verbose && !opt.quiet)
         {
@@ -1529,7 +1532,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
              time. */
           char *hurl = url_string (u, URL_AUTH_HIDE_PASSWD);
           logprintf (LOG_NONVERBOSE, "%s URL: %s [%s] -> \"%s\" [%d]\n",
-                     tms, hurl, number_to_static_string (len), locf, count);
+                     tms, hurl, number_to_static_string (qtyread), locf, count);
           xfree (hurl);
         }
 
@@ -1540,7 +1543,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
             /* --dont-remove-listing was specified, so do count this towards the
                number of bytes and files downloaded. */
             {
-              total_downloaded_bytes += len;
+              total_downloaded_bytes += qtyread;
               numurls++;
             }
 
@@ -1555,7 +1558,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
              downloaded if they're going to be deleted.  People seeding proxies,
              for instance, may want to know how many bytes and files they've
              downloaded through it. */
-          total_downloaded_bytes += len;
+          total_downloaded_bytes += qtyread;
           numurls++;
 
           if (opt.delete_after)
