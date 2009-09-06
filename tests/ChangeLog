@@ -1,3 +1,15 @@
+2009-09-05  Micah Cowan  <micah@cowan.name>
+
+	* Test-ftp-recursive.px: Added.
+	* run-px, Makefile.am (EXTRA_DIST): Added Test-ftp-recursive.px.
+
+	* FTPTest.pm (_setup_server): Don't construct the "input"
+	directory's contents, just pass the URLs structure to
+	FTPServer->new.
+	* FTPServer.pm: Rewrote portions, so that the server now uses the
+	information from the %urls hash directly, rather than reading from
+	real files. Added an FTPPaths package to the file.
+
 2009-09-04  Micah Cowan  <micah@cowan.name>
 
 	* WgetTest.pm.in (run): Error-checking improvements.
