@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: GNU wget 1.12-devel\n"
 "Report-Msgid-Bugs-To: bug-wget@gnu.org\n"
-"POT-Creation-Date: 2009-09-02 01:15-0700\n"
+"POT-Creation-Date: 2009-09-08 01:04-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: lib/error.c:125
+#: lib/error.c:127
 msgid "Unknown system error"
 msgstr ""
 
@@ -89,17 +89,17 @@ msgstr ""
 #. translate "`" to U+201C (LEFT DOUBLE QUOTATION MARK), and
 #. should translate "'" to U+201D (RIGHT DOUBLE QUOTATION
 #. MARK).  A British English Unicode locale should instead
-#. translate these to U+2018 (LEFT SINGLE QUOTATION MARK) and
-#. U+2019 (RIGHT SINGLE QUOTATION MARK), respectively.
+#. translate these to U+2018 (LEFT SINGLE QUOTATION MARK)
+#. and U+2019 (RIGHT SINGLE QUOTATION MARK), respectively.
 #.
 #. If you don't know what to put here, please see
 #. <http://en.wikipedia.org/wiki/Quotation_mark#Glyphs>
 #. and use glyphs suitable for your language.
-#: lib/quotearg.c:249
+#: lib/quotearg.c:272
 msgid "`"
 msgstr ""
 
-#: lib/quotearg.c:250
+#: lib/quotearg.c:273
 msgid "'"
 msgstr ""
 
@@ -248,334 +248,334 @@ msgstr ""
 msgid " (unauthoritative)\n"
 msgstr ""
 
-#: src/ftp.c:312
+#: src/ftp.c:315
 #, c-format
 msgid "Logging in as %s ... "
 msgstr ""
 
-#: src/ftp.c:326 src/ftp.c:372 src/ftp.c:401 src/ftp.c:466 src/ftp.c:696
-#: src/ftp.c:749 src/ftp.c:778 src/ftp.c:835 src/ftp.c:896 src/ftp.c:988
-#: src/ftp.c:1035
+#: src/ftp.c:329 src/ftp.c:375 src/ftp.c:404 src/ftp.c:469 src/ftp.c:699
+#: src/ftp.c:752 src/ftp.c:781 src/ftp.c:838 src/ftp.c:899 src/ftp.c:991
+#: src/ftp.c:1038
 msgid "Error in server response, closing control connection.\n"
 msgstr ""
 
-#: src/ftp.c:333
+#: src/ftp.c:336
 msgid "Error in server greeting.\n"
 msgstr ""
 
-#: src/ftp.c:340 src/ftp.c:474 src/ftp.c:704 src/ftp.c:786 src/ftp.c:845
-#: src/ftp.c:906 src/ftp.c:998 src/ftp.c:1045
+#: src/ftp.c:343 src/ftp.c:477 src/ftp.c:707 src/ftp.c:789 src/ftp.c:848
+#: src/ftp.c:909 src/ftp.c:1001 src/ftp.c:1048
 msgid "Write failed, closing control connection.\n"
 msgstr ""
 
-#: src/ftp.c:346
+#: src/ftp.c:349
 msgid "The server refuses login.\n"
 msgstr ""
 
-#: src/ftp.c:352
+#: src/ftp.c:355
 msgid "Login incorrect.\n"
 msgstr ""
 
-#: src/ftp.c:358
+#: src/ftp.c:361
 msgid "Logged in!\n"
 msgstr ""
 
-#: src/ftp.c:380
+#: src/ftp.c:383
 msgid "Server error, can't determine system type.\n"
 msgstr ""
 
-#: src/ftp.c:389 src/ftp.c:822 src/ftp.c:879 src/ftp.c:922
+#: src/ftp.c:392 src/ftp.c:825 src/ftp.c:882 src/ftp.c:925
 msgid "done.    "
 msgstr ""
 
-#: src/ftp.c:454 src/ftp.c:721 src/ftp.c:761 src/ftp.c:1018 src/ftp.c:1064
+#: src/ftp.c:457 src/ftp.c:724 src/ftp.c:764 src/ftp.c:1021 src/ftp.c:1067
 msgid "done.\n"
 msgstr ""
 
-#: src/ftp.c:481
+#: src/ftp.c:484
 #, c-format
 msgid "Unknown type `%c', closing control connection.\n"
 msgstr ""
 
-#: src/ftp.c:493
+#: src/ftp.c:496
 msgid "done.  "
 msgstr ""
 
-#: src/ftp.c:499
+#: src/ftp.c:502
 msgid "==> CWD not needed.\n"
 msgstr ""
 
-#: src/ftp.c:710
+#: src/ftp.c:713
 #, c-format
 msgid ""
 "No such directory %s.\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:731
+#: src/ftp.c:734
 msgid "==> CWD not required.\n"
 msgstr ""
 
-#: src/ftp.c:792
+#: src/ftp.c:795
 msgid "Cannot initiate PASV transfer.\n"
 msgstr ""
 
-#: src/ftp.c:796
+#: src/ftp.c:799
 msgid "Cannot parse PASV response.\n"
 msgstr ""
 
-#: src/ftp.c:813
+#: src/ftp.c:816
 #, c-format
 msgid "couldn't connect to %s port %d: %s\n"
 msgstr ""
 
-#: src/ftp.c:861
+#: src/ftp.c:864
 #, c-format
 msgid "Bind error (%s).\n"
 msgstr ""
 
-#: src/ftp.c:867
+#: src/ftp.c:870
 msgid "Invalid PORT.\n"
 msgstr ""
 
-#: src/ftp.c:913
+#: src/ftp.c:916
 msgid ""
 "\n"
 "REST failed, starting from scratch.\n"
 msgstr ""
 
-#: src/ftp.c:954
+#: src/ftp.c:957
 #, c-format
 msgid "File %s exists.\n"
 msgstr ""
 
-#: src/ftp.c:960
+#: src/ftp.c:963
 #, c-format
 msgid "No such file %s.\n"
 msgstr ""
 
-#: src/ftp.c:1006
+#: src/ftp.c:1009
 #, c-format
 msgid ""
 "No such file %s.\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1053
+#: src/ftp.c:1056
 #, c-format
 msgid ""
 "No such file or directory %s.\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1184 src/http.c:2344
+#: src/ftp.c:1187 src/http.c:2344
 #, c-format
 msgid "%s has sprung into existence.\n"
 msgstr ""
 
-#: src/ftp.c:1236
+#: src/ftp.c:1239
 #, c-format
 msgid "%s: %s, closing control connection.\n"
 msgstr ""
 
-#: src/ftp.c:1245
+#: src/ftp.c:1248
 #, c-format
 msgid "%s (%s) - Data connection: %s; "
 msgstr ""
 
-#: src/ftp.c:1260
+#: src/ftp.c:1263
 msgid "Control connection closed.\n"
 msgstr ""
 
-#: src/ftp.c:1278
+#: src/ftp.c:1281
 msgid "Data transfer aborted.\n"
 msgstr ""
 
-#: src/ftp.c:1378
+#: src/ftp.c:1381
 #, c-format
 msgid "File %s already there; not retrieving.\n"
 msgstr ""
 
-#: src/ftp.c:1444 src/http.c:2529
+#: src/ftp.c:1447 src/http.c:2529
 #, c-format
 msgid "(try:%2d)"
 msgstr ""
 
-#: src/ftp.c:1519 src/http.c:2873
+#: src/ftp.c:1522 src/http.c:2873
 #, c-format
 msgid ""
 "%s (%s) - written to stdout %s[%s]\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1520 src/http.c:2874
+#: src/ftp.c:1523 src/http.c:2874
 #, c-format
 msgid ""
 "%s (%s) - %s saved [%s]\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1565 src/main.c:1299 src/recur.c:438 src/retr.c:990
+#: src/ftp.c:1568 src/main.c:1299 src/recur.c:438 src/retr.c:990
 #, c-format
 msgid "Removing %s.\n"
 msgstr ""
 
-#: src/ftp.c:1607
+#: src/ftp.c:1610
 #, c-format
 msgid "Using %s as listing tmp file.\n"
 msgstr ""
 
-#: src/ftp.c:1624
+#: src/ftp.c:1627
 #, c-format
 msgid "Removed %s.\n"
 msgstr ""
 
-#: src/ftp.c:1661
+#: src/ftp.c:1664
 #, c-format
 msgid "Recursion depth %d exceeded max. depth %d.\n"
 msgstr ""
 
-#: src/ftp.c:1731
+#: src/ftp.c:1734
 #, c-format
 msgid "Remote file no newer than local file %s -- not retrieving.\n"
 msgstr ""
 
-#: src/ftp.c:1738
+#: src/ftp.c:1741
 #, c-format
 msgid ""
 "Remote file is newer than local file %s -- retrieving.\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1745
+#: src/ftp.c:1748
 #, c-format
 msgid ""
 "The sizes do not match (local %s) -- retrieving.\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1763
+#: src/ftp.c:1766
 msgid "Invalid name of the symlink, skipping.\n"
 msgstr ""
 
-#: src/ftp.c:1780
+#: src/ftp.c:1783
 #, c-format
 msgid ""
 "Already have correct symlink %s -> %s\n"
 "\n"
 msgstr ""
 
-#: src/ftp.c:1789
+#: src/ftp.c:1792
 #, c-format
 msgid "Creating symlink %s -> %s\n"
 msgstr ""
 
-#: src/ftp.c:1799
+#: src/ftp.c:1802
 #, c-format
 msgid "Symlinks not supported, skipping symlink %s.\n"
 msgstr ""
 
-#: src/ftp.c:1811
+#: src/ftp.c:1814
 #, c-format
 msgid "Skipping directory %s.\n"
 msgstr ""
 
-#: src/ftp.c:1820
+#: src/ftp.c:1823
 #, c-format
 msgid "%s: unknown/unsupported file type.\n"
 msgstr ""
 
-#: src/ftp.c:1857
+#: src/ftp.c:1860
 #, c-format
 msgid "%s: corrupt time-stamp.\n"
 msgstr ""
 
-#: src/ftp.c:1879
+#: src/ftp.c:1882
 #, c-format
 msgid "Will not retrieve dirs since depth is %d (max %d).\n"
 msgstr ""
 
-#: src/ftp.c:1929
+#: src/ftp.c:1932
 #, c-format
 msgid "Not descending to %s as it is excluded/not-included.\n"
 msgstr ""
 
-#: src/ftp.c:1995 src/ftp.c:2009
+#: src/ftp.c:1998 src/ftp.c:2012
 #, c-format
 msgid "Rejecting %s.\n"
 msgstr ""
 
-#: src/ftp.c:2032
+#: src/ftp.c:2035
 #, c-format
 msgid "Error matching %s against %s: %s\n"
 msgstr ""
 
-#: src/ftp.c:2074
+#: src/ftp.c:2077
 #, c-format
 msgid "No matches on pattern %s.\n"
 msgstr ""
 
-#: src/ftp.c:2145
+#: src/ftp.c:2148
 #, c-format
 msgid "Wrote HTML-ized index to %s [%s].\n"
 msgstr ""
 
-#: src/ftp.c:2150
+#: src/ftp.c:2153
 #, c-format
 msgid "Wrote HTML-ized index to %s.\n"
 msgstr ""
 
-#: src/gnutls.c:219 src/openssl.c:495
+#: src/gnutls.c:220 src/openssl.c:495
 msgid "ERROR"
 msgstr ""
 
-#: src/gnutls.c:219 src/openssl.c:495
+#: src/gnutls.c:220 src/openssl.c:495
 msgid "WARNING"
 msgstr ""
 
-#: src/gnutls.c:225 src/openssl.c:504
+#: src/gnutls.c:226 src/openssl.c:504
 #, c-format
 msgid "%s: No certificate presented by %s.\n"
 msgstr ""
 
-#: src/gnutls.c:233
+#: src/gnutls.c:234
 #, c-format
 msgid "%s: The certificate of %s is not trusted.\n"
 msgstr ""
 
-#: src/gnutls.c:239
+#: src/gnutls.c:240
 #, c-format
 msgid "%s: The certificate of %s hasn't got a known issuer.\n"
 msgstr ""
 
-#: src/gnutls.c:245
+#: src/gnutls.c:246
 #, c-format
 msgid "%s: The certificate of %s has been revoked.\n"
 msgstr ""
 
-#: src/gnutls.c:259
+#: src/gnutls.c:260
 #, c-format
 msgid "Error initializing X509 certificate: %s\n"
 msgstr ""
 
-#: src/gnutls.c:268
+#: src/gnutls.c:269
 msgid "No certificate found\n"
 msgstr ""
 
-#: src/gnutls.c:275
+#: src/gnutls.c:276
 #, c-format
 msgid "Error parsing certificate: %s\n"
 msgstr ""
 
-#: src/gnutls.c:282
+#: src/gnutls.c:283
 msgid "The certificate has not yet been activated\n"
 msgstr ""
 
-#: src/gnutls.c:287
+#: src/gnutls.c:288
 msgid "The certificate has expired\n"
 msgstr ""
 
-#: src/gnutls.c:293
+#: src/gnutls.c:294
 #, c-format
 msgid "The certificate's owner does not match hostname %s\n"
 msgstr ""
@@ -1839,7 +1839,7 @@ msgstr ""
 msgid "   in "
 msgstr ""
 
-#: src/ptimer.c:161
+#: src/ptimer.c:162
 #, c-format
 msgid "Cannot get REALTIME clock frequency: %s\n"
 msgstr ""
@@ -1849,12 +1849,12 @@ msgstr ""
 msgid "Removing %s since it should be rejected.\n"
 msgstr ""
 
-#: src/res.c:390
+#: src/res.c:391
 #, c-format
 msgid "Cannot open %s: %s"
 msgstr ""
 
-#: src/res.c:549
+#: src/res.c:550
 msgid "Loading robots.txt; please ignore errors.\n"
 msgstr ""
 
