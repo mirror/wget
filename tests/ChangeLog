@@ -1,5 +1,10 @@
 2009-09-07  Micah Cowan  <micah@cowan.name>
 
+	* Test-auth-with-content-disposition.px: New. Test Content-Disposition
+	support when HTTP authentication is required.
+	* run-px, Makefile.am (EXTRA_DIST): Added
+	Test-auth-with-content-disposition.px.
+
 	* FTPServer.pm (FTPServer::run): Pass "server behavior" information to
 	newly-constructed FTPPaths object.
 	(FTPPaths::initialize): Accept "server behavior" hash.

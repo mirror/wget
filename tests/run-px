@@ -13,6 +13,7 @@ my @tests = (
     'Test-auth-basic.px',
     'Test-auth-no-challenge.px',
     'Test-auth-no-challenge-url.px',
+    'Test-auth-with-content-disposition.px',
     'Test-cookies.px',
     'Test-cookies-401.px',
     'Test-proxy-auth-basic.px',
