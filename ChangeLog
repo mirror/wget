@@ -1,3 +1,13 @@
+2009-09-07  Micah Cowan  <micah@cowan.name>
+
+	* Makefile.am (distuninstallcheck_listfiles): Don't complain if
+	/usr/share/info/dir and /etc/wgetrc are left behind after an
+	uninstall.
+
+	* po/Rules-quot (mostlyclean-quot): Add en_US.po for remvoal by
+	mostlyclean.
+	(en_US.po-update): Behave properly for VPATH builds.
+
 2009-09-05  Micah Cowan  <micah@cowan.name>
 
 	* configure.ac: If we can't find idna.h, check to see if it's

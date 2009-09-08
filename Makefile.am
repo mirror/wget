@@ -30,6 +30,13 @@
 # Version: @VERSION@
 #
 
+
+# We can't help that installing wget.info leaves /usr/share/info/dir
+# around, and we need to prevent uninstallation of the possibly
+# previously-existing /etc/wgetrc.
+distuninstallcheck_listfiles = find . -type f | \
+			       grep -Ev '(/share/info/dir|/etc/wgetrc)$$'
+
 # Search for macros in the m4 subdirectory:
 ACLOCAL_AMFLAGS = -I m4 -I md5/m4
 

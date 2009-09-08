@@ -49,9 +49,11 @@ en@boldquot.insert-header: insert-header.sin
 
 mostlyclean: mostlyclean-quot
 mostlyclean-quot:
-	rm -f *.insert-header
+	rm -f *.insert-header en_US.po
 
 en_US.po: en_US.po-update
 
 en_US.po-update: en@quot.po
-	cp en@quot.po en_US.po
+	if test -r en@quot.po; then realcat=en@quot.po; \
+           else realcat=$(srcdir)/en@quot.po; fi; \
+	cp $$realcat en_US.po
