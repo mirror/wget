@@ -74,6 +74,7 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              Test-E-k.px \
              Test-ftp.px \
 	     Test-ftp-pasv-fail.px \
+	     Test-ftp-bad-list.px \
              Test-ftp-recursive.px \
              Test-ftp-iri.px \
              Test-ftp-iri-fallback.px \

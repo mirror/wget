@@ -563,7 +563,8 @@ sub run
             print STDERR "in child\n" if $log;
 
             my $conn = { 
-                'paths'           => FTPPaths->new($self->{'_input'}),
+                'paths'           => FTPPaths->new($self->{'_input'},
+                                        $self->{'_server_behavior'}),
                 'socket'          => $socket, 
                 'state'           => $_connection_states{NEWCONN},
                 'dir'             => '/',
@@ -693,7 +694,7 @@ sub new {
 }
 
 sub initialize {
-    my ($self, $urls) = @_;
+    my ($self, $urls, $behavior) = @_;
     my $paths = {_type => 'd'};
 
     # From a path like '/foo/bar/baz.txt', construct $paths such that
@@ -714,6 +715,7 @@ sub initialize {
     }
 
     $self->{'_paths'} = $paths;
+    $self->{'_behavior'} = $behavior;
 }
 
 sub get_info {
@@ -763,6 +765,9 @@ sub _format_for_list {
     my $size = 0;
     if ($info->{'_type'} eq 'f') {
         $size = length  $info->{'content'};
+        if ($self->{'_behavior'}{'bad_list'}) {
+            $size = 0;
+        }
     }
     my $date = strftime ("%b %e %H:%M", localtime);
     return "$mode_str 1  0  0  $size $date $name";

@@ -1,3 +1,14 @@
+2009-09-07  Micah Cowan  <micah@cowan.name>
+
+	* FTPServer.pm (FTPServer::run): Pass "server behavior" information to
+	newly-constructed FTPPaths object.
+	(FTPPaths::initialize): Accept "server behavior" hash.
+	(FTPPaths::_format_for_list): If server behavior has "bad_list"
+	set, then always report 0 for the size.
+	* Test-ftp-bad-list.px: Added. Attempts to reproduce bug
+	22403... but doesn't.
+	* run-px, Makefile.am (EXTRA_DIST): Added Test-ftp-bad-list.px.
+
 2009-09-06  Micah Cowan  <micah@cowan.name>
 
 	* WgetTest.pm.in (_setup): Don't expect error codes from

@@ -27,6 +27,7 @@ my @tests = (
     'Test-E-k.px',
     'Test-ftp.px',
     'Test-ftp-pasv-fail.px',
+    'Test-ftp-bad-list.px',
     'Test-ftp-recursive.px',
     'Test-ftp-iri.px',
     'Test-ftp-iri-fallback.px',
