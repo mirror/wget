@@ -1,5 +1,8 @@
 2009-09-07  Micah Cowan  <micah@cowan.name>
 
+	* run-px: Exit with a failure if there were any tests with
+	"unknown" exit statuses.
+	
 	* Test-auth-with-content-disposition.px: New. Test Content-Disposition
 	support when HTTP authentication is required.
 	* run-px, Makefile.am (EXTRA_DIST): Added

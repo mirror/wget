@@ -148,9 +148,9 @@ my $summary = sub
 }->();
 
 print "\n";
-print $count->('fail')
+print $count->('fail') || $count->('unknown')
   ? colored($summary, 'red')
   : colored($summary, 'green');
 print "\n";
 
-exit $count->('fail');
+exit $count->('fail') + $count->('unknown');
