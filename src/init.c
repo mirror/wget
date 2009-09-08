@@ -164,7 +164,7 @@ static const struct {
   { "ftpuser",          &opt.ftp_user,          cmd_string },
   { "glob",             &opt.ftp_glob,          cmd_boolean },
   { "header",           NULL,                   cmd_spec_header },
-  { "htmlextension",    &opt.adjust_extension,  cmd_boolean },
+  { "htmlextension",    &opt.adjust_extension,  cmd_boolean }, /* deprecated */
   { "htmlify",          NULL,                   cmd_spec_htmlify },
   { "httpkeepalive",    &opt.http_keep_alive,   cmd_boolean },
   { "httppasswd",       &opt.http_passwd,       cmd_string }, /* deprecated */

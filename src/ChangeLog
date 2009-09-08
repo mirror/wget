@@ -1,3 +1,8 @@
+2009-09-08  Steven Schubiger  <stsc@member.fsf.org>
+
+	* main.c, init.c: Mark the --preserve-permissions and 
+	--html-extension option as deprecated.
+
 2009-09-06  Micah Cowan  <micah@cowan.name>
 
 	* ftp.c (getftp, ftp_loop_internal): Separate "len" input/output
