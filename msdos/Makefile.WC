@@ -12,6 +12,11 @@ COMPILE = *wcc386 -mf -3r -w3 -d2 -zq -zm -of -I. -I$(%watt_root)\inc &
 LINK = *wlink option quiet, map, verbose, eliminate, caseexact, stack=100k &
         debug all system dos32a
 
+.c: ..\lib
+.c: ..\md5
+.c: ..\msdos
+
+
 OBJ_DIR = WC_DOS.obj
 
 OBJECTS = $(OBJ_DIR)\cmpt.obj       $(OBJ_DIR)\build_info.obj &
@@ -23,7 +28,7 @@ OBJECTS = $(OBJ_DIR)\cmpt.obj       $(OBJ_DIR)\build_info.obj &
           $(OBJ_DIR)\ftp-ls.obj     $(OBJ_DIR)\ftp-opie.obj   &
           $(OBJ_DIR)\ftp.obj        $(OBJ_DIR)\gen-md5.obj    &
           $(OBJ_DIR)\getopt.obj     $(OBJ_DIR)\getopt1.obj    &
-          $(OBJ_DIR)\getpass.obj    $(OBJ_DIR)\hash.obj       &
+          $(OBJ_DIR)\hash.obj       $(OBJ_DIR)\msdos.obj      &
           $(OBJ_DIR)\host.obj       $(OBJ_DIR)\html-parse.obj &
           $(OBJ_DIR)\html-url.obj   $(OBJ_DIR)\http.obj       &
           $(OBJ_DIR)\init.obj       $(OBJ_DIR)\log.obj        &
@@ -45,50 +50,6 @@ $(OBJ_DIR):
 .ERASE
 .c{$(OBJ_DIR)}.obj: .AUTODEPEND
 	*$(COMPILE) -fo=$@ $[@
-
-.ERASE
-$(OBJ_DIR)\c-ctype.obj: ..\lib\c-ctype.c
-	*$(COMPILE) -fo=$@ $[@
-
-.ERASE
-$(OBJ_DIR)\exitfail.obj: ..\lib\exitfail.c
-	*$(COMPILE) -fo=$@ $[@
-
-.ERASE
-$(OBJ_DIR)\error.obj: ..\lib\error.c
-	*$(COMPILE) -fo=$@ $[@
-
-.ERASE
-$(OBJ_DIR)\getopt.obj: ..\lib\getopt.c
-	*$(COMPILE) -d_UNISTD_H_INCLUDED -fo=$@ $[@
-
-.ERASE
-$(OBJ_DIR)\getopt1.obj: ..\lib\getopt1.c
-	*$(COMPILE) -d_UNISTD_H_INCLUDED -fo=$@ $[@
-
-.ERASE
-$(OBJ_DIR)\getpass.obj: ..\lib\getpass.c
-	*$(COMPILE) -d_UNISTD_H_INCLUDED -fo=$@ $[@
-
-.ERASE
-$(OBJ_DIR)\md5.obj: ..\md5\md5.c
-	*$(COMPILE) -fo=$@ $[@
-
-.ERASE
-$(OBJ_DIR)\xmalloc.obj: ..\lib\xmalloc.c
-	*$(COMPILE) -d_UNISTD_H_INCLUDED -fo=$@ $[@
-
-.ERASE
-$(OBJ_DIR)\xalloc-die.obj: ..\lib\xalloc-die.c
-	*$(COMPILE) -d_UNISTD_H_INCLUDED -fo=$@ $[@
-
-.ERASE
-$(OBJ_DIR)\quote.obj: ..\lib\quote.c
-	*$(COMPILE) -d_UNISTD_H_INCLUDED -fo=$@ $[@
-
-.ERASE
-$(OBJ_DIR)\quotearg.obj: ..\lib\quotearg.c
-	*$(COMPILE) -d_UNISTD_H_INCLUDED -fo=$@ $[@
 
 css.c: css.l
 	flex -8 -o$@ $[@

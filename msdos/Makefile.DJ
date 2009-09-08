@@ -11,7 +11,7 @@ VERSION = 1.12 (djgpp/DOS)
 
 .SUFFIXES: .exe
 
-VPATH = ../lib ../md5
+VPATH = ../lib ../md5 ../msdos
 
 USE_OPENSSL = 0
 USE_IPV6    = 1
@@ -48,6 +48,7 @@ SOURCES += cmpt.c connect.c cookies.c exits.c ftp.c ftp-basic.c ftp-ls.c \
            init.c log.c main.c gen-md5.c netrc.c progress.c recur.c \
            res.c retr.c snprintf.c url.c utils.c version.c convert.c \
            ptimer.c spider.c css.c css-url.c build_info.c ../md5/md5.c \
+           ../msdos/msdos.c \
            $(addprefix ../lib/, error.c exitfail.c quote.c \
              quotearg.c getopt.c getopt1.c xalloc-die.c xmalloc.c)
 
