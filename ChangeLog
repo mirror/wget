@@ -1,3 +1,7 @@
+2009-09-09  Micah Cowan  <micah@cowan.name>
+
+	* configure.ac: Add bz2, zip and lzma dists.
+
 2009-09-08  Micah Cowan  <micah@cowan.name>
 
 	* po/*.po: Updated from translationproject.org.
