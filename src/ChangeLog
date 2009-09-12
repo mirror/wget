@@ -1,3 +1,17 @@
+2009-09-11  Steven Schweda  <sms@antinode.info>
+
+	* utils.c, utils.h (fopen_excl): Make second argument an int,
+	rather than a bool (so it can handle the appropriate VMS version
+	of the flag).
+
+	* main.c (print_version): Don't print LOCALEDIR unless NLS is
+	enabled.
+
+	* http.c (gethttp): Pass FOPEN_BIN_FLAG, instead of true.
+
+	* ftp.c (ftp_retrieve_glob): Cast strcmp to assign to cmp, for a
+	silly HP build environment.
+
 2009-09-08  Steven Schubiger  <stsc@member.fsf.org>
 
 	* main.c, init.c: Mark the --preserve-permissions and 

@@ -825,9 +825,11 @@ print_version (void)
   printf (_("    %s (system)\n"), SYSTEM_WGETRC);
 #endif
 
+#ifdef ENABLE_NLS
   format_and_print_line (locale_title,
-			 LOCALEDIR, 
-			 MAX_CHARS_PER_LINE);
+                        LOCALEDIR,
+                        MAX_CHARS_PER_LINE);
+#endif /* def ENABLE_NLS */
   
   format_and_print_line (compile_title,
 			 compilation_string,

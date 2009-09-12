@@ -2300,7 +2300,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
 # define FOPEN_OPT_ARGS "fop=sqo", "acc", acc_cb, &open_id
 # define FOPEN_BIN_FLAG 3
 #else /* def __VMS */
-# define FOPEN_BIN_FLAG 1
+# define FOPEN_BIN_FLAG true
 #endif /* def __VMS [else] */
 
   /* Open the local file.  */
@@ -2333,7 +2333,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
         }
       else
         {
-          fp = fopen_excl (hs->local_file, true);
+          fp = fopen_excl (hs->local_file, FOPEN_BIN_FLAG);
           if (!fp && errno == EEXIST)
             {
               /* We cannot just invent a new name and use it (which is

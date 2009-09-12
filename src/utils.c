@@ -698,7 +698,7 @@ unique_create (const char *name, bool binary, char **opened_name)
    appropriately.  */
    
 FILE *
-fopen_excl (const char *fname, bool binary)
+fopen_excl (const char *fname, int binary)
 {
   int fd;
 #ifdef O_EXCL

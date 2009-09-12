@@ -84,7 +84,7 @@ wgint file_size (const char *);
 int make_directory (const char *);
 char *unique_name (const char *, bool);
 FILE *unique_create (const char *, bool, char **);
-FILE *fopen_excl (const char *, bool);
+FILE *fopen_excl (const char *, int);
 char *file_merge (const char *, const char *);
 
 int fnmatch_nocase (const char *, const char *, int);

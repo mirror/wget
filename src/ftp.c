@@ -2050,8 +2050,22 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
         }
       else if (action == GLOB_GETONE)
         {
+#ifdef __VMS
+          /* 2009-09-09 SMS.
+           * Odd-ball compiler ("HP C V7.3-009 on OpenVMS Alpha V7.3-2")
+           * bug causes spurious %CC-E-BADCONDIT complaint with this
+           * "?:" statement.  (Different linkage attributes for strcmp()
+           * and strcasecmp().)  Converting to "if" changes the
+           * complaint to %CC-W-PTRMISMATCH on "cmp = strcmp;".  Adding
+           * the senseless type cast clears the complaint, and looks
+           * harmless.
+           */
+          int (*cmp) (const char *, const char *)
+            = opt.ignore_case ? strcasecmp : (int (*)())strcmp;
+#else /* def __VMS */
           int (*cmp) (const char *, const char *)
             = opt.ignore_case ? strcasecmp : strcmp;
+#endif /* def __VMS [else] */
           f = start;
           while (f)
             {
