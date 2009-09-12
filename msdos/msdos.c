@@ -1,4 +1,4 @@
-<div class="moz-text-flowed" style="font-family: -moz-fixed">/* MSDOS utility functions.
+/* MSDOS utility functions.
    Copyright (C) 2009 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -106,4 +106,3 @@ getpass (const char *prompt)
   return strdup (getpassbuf);
 }
 
-</div>
