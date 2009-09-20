@@ -46,7 +46,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 dnl
 dnl Automake setup
 dnl
-AM_INIT_AUTOMAKE(dist-bzip2 dist-zip dist-lzma 1.9)
+AM_INIT_AUTOMAKE(dist-bzip2 dist-lzma 1.9)
 
 dnl
 dnl Get cannonical host
