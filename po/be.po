@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.11.3\n"
 "Report-Msgid-Bugs-To: bug-wget@gnu.org\n"
-"POT-Creation-Date: 2009-09-08 01:04-0700\n"
+"POT-Creation-Date: 2009-09-21 10:00-0700\n"
 "PO-Revision-Date: 2008-05-14 03:05+0300\n"
 "Last-Translator: Alexander Nyakhaychyk <nyakhaychyk@gmail.com>\n"
 "Language-Team: Belarusian <i18n@mova.org>\n"
@@ -430,7 +430,7 @@ msgstr ""
 "%s (%s) - \"%s\" захавана [%s]\n"
 "\n"
 
-#: src/ftp.c:1568 src/main.c:1299 src/recur.c:438 src/retr.c:990
+#: src/ftp.c:1568 src/main.c:1301 src/recur.c:438 src/retr.c:990
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Выдаленьне %s.\n"
@@ -531,17 +531,17 @@ msgstr "Адхіленьне \"%s\".\n"
 msgid "Error matching %s against %s: %s\n"
 msgstr "Памылка супадзеньня %s супраць %s: %s\n"
 
-#: src/ftp.c:2077
+#: src/ftp.c:2091
 #, fuzzy, c-format
 msgid "No matches on pattern %s.\n"
 msgstr "Адсутнічаюць супадзеньні з узорам \"%s\".\n"
 
-#: src/ftp.c:2148
+#: src/ftp.c:2162
 #, fuzzy, c-format
 msgid "Wrote HTML-ized index to %s [%s].\n"
 msgstr "Запісаць HTML-ізаваны індэкс у \"%s\" [%s].\n"
 
-#: src/ftp.c:2153
+#: src/ftp.c:2167
 #, fuzzy, c-format
 msgid "Wrote HTML-ized index to %s.\n"
 msgstr "Запісаць HTML-ізаваны індэкс у \"%s\".\n"
@@ -1653,14 +1653,14 @@ msgstr ""
 
 #. TRANSLATORS: When available, an actual copyright character
 #. (cirle-c) should be used in preference to "(C)".
-#: src/main.c:843
+#: src/main.c:845
 #, fuzzy
 msgid "Copyright (C) 2009 Free Software Foundation, Inc.\n"
 msgstr ""
 "Аўтарскія правы © 1995, 1996, 1997, 1998, 2000, 2001 Free Software "
 "Foundation, Inc.\n"
 
-#: src/main.c:845
+#: src/main.c:847
 msgid ""
 "License GPLv3+: GNU GPL version 3 or later\n"
 "<http://www.gnu.org/licenses/gpl.html>.\n"
@@ -1670,7 +1670,7 @@ msgstr ""
 
 #. TRANSLATORS: When available, please use the proper diacritics for
 #. names such as this one. See en_US.po for reference.
-#: src/main.c:852
+#: src/main.c:854
 #, fuzzy
 msgid ""
 "\n"
@@ -1679,94 +1679,94 @@ msgstr ""
 "\n"
 "Першы аўтар -- Hrvoje Niksic <hniksic@arsdigita.com>.\n"
 
-#: src/main.c:854
+#: src/main.c:856
 msgid "Currently maintained by Micah Cowan <micah@cowan.name>.\n"
 msgstr ""
 
-#: src/main.c:856
+#: src/main.c:858
 #, fuzzy
 msgid "Please send bug reports and questions to <bug-wget@gnu.org>.\n"
 msgstr ""
 "Лістуйце паведамленьні аб памылках і пажаданьні на <bug-wget@gnu.org>.\n"
 
-#: src/main.c:906 src/main.c:975 src/main.c:1097
+#: src/main.c:908 src/main.c:977 src/main.c:1099
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Паспрабуйце \"%s --help\", каб атрымаць больш акалічнасьцяў.\n"
 
-#: src/main.c:972
+#: src/main.c:974
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: недапушчальная акалічнасьць -- \"-n%c\"\n"
 
-#: src/main.c:1030
+#: src/main.c:1032
 #, c-format
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "Немагчыма адначасова быць падрабязным і маўклівым.\n"
 
-#: src/main.c:1036
+#: src/main.c:1038
 #, c-format
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr ""
 
-#: src/main.c:1044
+#: src/main.c:1046
 #, c-format
 msgid "Cannot specify both --inet4-only and --inet6-only.\n"
 msgstr ""
 
-#: src/main.c:1054
+#: src/main.c:1056
 msgid ""
 "Cannot specify both -k and -O if multiple URLs are given, or in combination\n"
 "with -p or -r. See the manual for details.\n"
 "\n"
 msgstr ""
 
-#: src/main.c:1063
+#: src/main.c:1065
 msgid ""
 "WARNING: combining -O with -r or -p will mean that all downloaded content\n"
 "will be placed in the single file you specified.\n"
 "\n"
 msgstr ""
 
-#: src/main.c:1069
+#: src/main.c:1071
 msgid ""
 "WARNING: timestamping does nothing in combination with -O. See the manual\n"
 "for details.\n"
 "\n"
 msgstr ""
 
-#: src/main.c:1077
+#: src/main.c:1079
 #, c-format
 msgid "File `%s' already there; not retrieving.\n"
 msgstr "Файл \"%s\" ужо тут і ня будзе выцягвацца.\n"
 
-#: src/main.c:1084
+#: src/main.c:1086
 #, c-format
 msgid "Cannot specify both --ask-password and --password.\n"
 msgstr ""
 
-#: src/main.c:1092
+#: src/main.c:1094
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: прапушчаны URL\n"
 
-#: src/main.c:1117
+#: src/main.c:1119
 #, c-format
 msgid "This version does not have support for IRIs\n"
 msgstr ""
 
-#: src/main.c:1181
+#: src/main.c:1183
 msgid ""
 "WARNING: Can't reopen standard output in binary mode;\n"
 "         downloaded file may contain inappropriate line endings.\n"
 msgstr ""
 
-#: src/main.c:1316
+#: src/main.c:1318
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "Ня знойдзены URL у %s.\n"
 
-#: src/main.c:1334
+#: src/main.c:1336
 #, c-format
 msgid ""
 "FINISHED --%s--\n"
@@ -1775,7 +1775,7 @@ msgstr ""
 "ЗАВЕРШАНА --%s--\n"
 "Выгружана: %d файлаў, %s у %s (%s)\n"
 
-#: src/main.c:1343
+#: src/main.c:1345
 #, c-format
 msgid "Download quota of %s EXCEEDED!\n"
 msgstr "Квота запампоўкі (%s) перавышана!\n"

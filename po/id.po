@@ -9,10 +9,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU wget 1.12-pre5\n"
+"Project-Id-Version: GNU wget 1.12-pre6\n"
 "Report-Msgid-Bugs-To: bug-wget@gnu.org\n"
-"POT-Creation-Date: 2009-09-08 01:04-0700\n"
-"PO-Revision-Date: 2009-08-02 19:00+0700\n"
+"POT-Creation-Date: 2009-09-21 10:00-0700\n"
+"PO-Revision-Date: 2009-09-10 08:00+0700\n"
 "Last-Translator: Arif E. Nugroho <arif_endro@yahoo.com>\n"
 "Language-Team: Indonesian <translation-team-id@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -27,57 +27,57 @@ msgstr "Error sistem tidak diketahui"
 #: lib/getopt.c:526 lib/getopt.c:542
 #, c-format
 msgid "%s: option `%s' is ambiguous\n"
-msgstr "%s: opsi `%s' adalah opsi yang ambigu\n"
+msgstr "%s: pilihan `%s' adalah pilihan yang ambigu\n"
 
 #: lib/getopt.c:575 lib/getopt.c:579
 #, c-format
 msgid "%s: option `--%s' doesn't allow an argument\n"
-msgstr "%s: opsi `--%s' tidak memperbolehkan sebuah argumen\n"
+msgstr "%s: pilihan `--%s' tidak memperbolehkan sebuah argumen\n"
 
 #: lib/getopt.c:588 lib/getopt.c:593
 #, c-format
 msgid "%s: option `%c%s' doesn't allow an argument\n"
-msgstr "%s: opsi `%c%s' tidak memperbolehkan sebuah argumen\n"
+msgstr "%s: pilihan `%c%s' tidak memperbolehkan sebuah argumen\n"
 
 #: lib/getopt.c:636 lib/getopt.c:655 lib/getopt.c:971 lib/getopt.c:990
 #, c-format
 msgid "%s: option `%s' requires an argument\n"
-msgstr "%s: opsi `%s' membutuhkan sebuah argumen\n"
+msgstr "%s: pilihan `%s' membutuhkan sebuah argumen\n"
 
 #: lib/getopt.c:693 lib/getopt.c:696
 #, c-format
 msgid "%s: unrecognized option `--%s'\n"
-msgstr "%s: opsi `--%s' tidak diketahui\n"
+msgstr "%s: pilihan `--%s' tidak diketahui\n"
 
 #: lib/getopt.c:704 lib/getopt.c:707
 #, c-format
 msgid "%s: unrecognized option `%c%s'\n"
-msgstr "%s: opsi `%c%s' tidak diketahui\n"
+msgstr "%s: pilihan `%c%s' tidak diketahui\n"
 
 #: lib/getopt.c:759 lib/getopt.c:762
 #, c-format
 msgid "%s: illegal option -- %c\n"
-msgstr "%s: opsi illegal -- %c\n"
+msgstr "%s: pilihan illegal -- %c\n"
 
 #: lib/getopt.c:768 lib/getopt.c:771
 #, c-format
 msgid "%s: invalid option -- %c\n"
-msgstr "%s: opsi -- %c tidak valid\n"
+msgstr "%s: pilihan -- %c tidak valid\n"
 
 #: lib/getopt.c:823 lib/getopt.c:839 lib/getopt.c:1043 lib/getopt.c:1061
 #, c-format
 msgid "%s: option requires an argument -- %c\n"
-msgstr "%s: opsi membutuhkan sebuah argumen -- %c\n"
+msgstr "%s: pilihan membutuhkan sebuah argumen -- %c\n"
 
 #: lib/getopt.c:892 lib/getopt.c:908
 #, c-format
 msgid "%s: option `-W %s' is ambiguous\n"
-msgstr "%s: opsi `-W %s' adalah sebuah ambigu\n"
+msgstr "%s: pilihan `-W %s' adalah sebuah ambigu\n"
 
 #: lib/getopt.c:932 lib/getopt.c:950
 #, c-format
 msgid "%s: option `-W %s' doesn't allow an argument\n"
-msgstr "%s: opsi `-W %s' tidak memperbolehkan sebuah argumen\n"
+msgstr "%s: pilihan `-W %s' tidak memperbolehkan sebuah argumen\n"
 
 #. TRANSLATORS:
 #. Get translations for open and closing quotation marks.
@@ -430,7 +430,7 @@ msgstr ""
 "%s (%s) - %s disimpan [%s]\n"
 "\n"
 
-#: src/ftp.c:1568 src/main.c:1299 src/recur.c:438 src/retr.c:990
+#: src/ftp.c:1568 src/main.c:1301 src/recur.c:438 src/retr.c:990
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Menghapus %s.\n"
@@ -533,17 +533,17 @@ msgstr "Menolak %s.\n"
 msgid "Error matching %s against %s: %s\n"
 msgstr "Gagal mencocokan %s dengan %s: %s\n"
 
-#: src/ftp.c:2077
+#: src/ftp.c:2091
 #, c-format
 msgid "No matches on pattern %s.\n"
 msgstr "Tidak ada pola %s yang cocok.\n"
 
-#: src/ftp.c:2148
+#: src/ftp.c:2162
 #, c-format
 msgid "Wrote HTML-ized index to %s [%s].\n"
 msgstr "Menulis HTML-ized indeks ke %s [%s].\n"
 
-#: src/ftp.c:2153
+#: src/ftp.c:2167
 #, c-format
 msgid "Wrote HTML-ized index to %s.\n"
 msgstr "Menulis HTML-ized indeks ke %s.\n"
@@ -1018,14 +1018,15 @@ msgstr "%s: %s; mematikan logging.\n"
 #: src/main.c:386
 #, c-format
 msgid "Usage: %s [OPTION]... [URL]...\n"
-msgstr "Penggunaan: %s [OPSI]... [URL]...\n"
+msgstr "Penggunaan: %s [PILIHAN]... [URL]...\n"
 
 #: src/main.c:398
 msgid ""
 "Mandatory arguments to long options are mandatory for short options too.\n"
 "\n"
 msgstr ""
-"Argumen yang wajib untuk opsi panjang juga wajib untuk opsi yang pendek.\n"
+"Argumen yang wajib untuk pilihan panjang juga wajib untuk pilihan yang "
+"pendek.\n"
 "\n"
 
 #: src/main.c:400
@@ -1325,7 +1326,7 @@ msgstr ""
 
 #: src/main.c:530
 msgid "HTTP options:\n"
-msgstr "Opsi HTTP:\n"
+msgstr "Pilihan HTTP:\n"
 
 #: src/main.c:532
 msgid "       --http-user=USER        set http user to USER.\n"
@@ -1462,7 +1463,7 @@ msgstr ""
 
 #: src/main.c:583
 msgid "HTTPS (SSL/TLS) options:\n"
-msgstr "Opsi HTTPS (SSL/TLS):\n"
+msgstr "Pilihan HTTPS (SSL/TLS):\n"
 
 #: src/main.c:585
 msgid ""
@@ -1526,7 +1527,7 @@ msgstr ""
 
 #: src/main.c:609
 msgid "FTP options:\n"
-msgstr "Opsi FTP:\n"
+msgstr "Pilihan FTP:\n"
 
 #: src/main.c:612
 msgid ""
@@ -1786,11 +1787,11 @@ msgstr "    %s (sistem)\n"
 
 #. TRANSLATORS: When available, an actual copyright character
 #. (cirle-c) should be used in preference to "(C)".
-#: src/main.c:843
+#: src/main.c:845
 msgid "Copyright (C) 2009 Free Software Foundation, Inc.\n"
 msgstr "Hak Cipta (C) 2009 Free Software Foundation, Inc.\n"
 
-#: src/main.c:845
+#: src/main.c:847
 msgid ""
 "License GPLv3+: GNU GPL version 3 or later\n"
 "<http://www.gnu.org/licenses/gpl.html>.\n"
@@ -1805,7 +1806,7 @@ msgstr ""
 
 #. TRANSLATORS: When available, please use the proper diacritics for
 #. names such as this one. See en_US.po for reference.
-#: src/main.c:852
+#: src/main.c:854
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"
@@ -1813,42 +1814,42 @@ msgstr ""
 "\n"
 "Originalnya ditulis oleh Hrvoje Niksic <hniksic@xemacs.org>.\n"
 
-#: src/main.c:854
+#: src/main.c:856
 msgid "Currently maintained by Micah Cowan <micah@cowan.name>.\n"
 msgstr "Saat ini dipelihara oleh Micah Cowan <micah@cowan.name>.\n"
 
-#: src/main.c:856
+#: src/main.c:858
 msgid "Please send bug reports and questions to <bug-wget@gnu.org>.\n"
 msgstr ""
 "Mohon kirimkan laporan kesalahan dan pertanyaan ke <bug-wget@gnu.org>.\n"
 
-#: src/main.c:906 src/main.c:975 src/main.c:1097
+#: src/main.c:908 src/main.c:977 src/main.c:1099
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Coba `%s --help' untuk informasi lebih lanjut.\n"
 
-#: src/main.c:972
+#: src/main.c:974
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
-msgstr "%s: illegal opsi -- `-n%c'\n"
+msgstr "%s: illegal pilihan -- `-n%c'\n"
 
-#: src/main.c:1030
+#: src/main.c:1032
 #, c-format
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "Tidak dapat verbose dan quiet pada waktu bersamaan.\n"
 
-#: src/main.c:1036
+#: src/main.c:1038
 #, c-format
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr ""
 "Tidak dapat timestamp dan tidak menclobber file lama pada waktu bersamaan.\n"
 
-#: src/main.c:1044
+#: src/main.c:1046
 #, c-format
 msgid "Cannot specify both --inet4-only and --inet6-only.\n"
 msgstr "Tidak dapat menspesifikasikan berdua --inet4-only dan --inet6-only.\n"
 
-#: src/main.c:1054
+#: src/main.c:1056
 msgid ""
 "Cannot specify both -k and -O if multiple URLs are given, or in combination\n"
 "with -p or -r. See the manual for details.\n"
@@ -1859,7 +1860,7 @@ msgstr ""
 "dengan -p atau -r. Lihat manual untuk informasi lebih details.\n"
 "\n"
 
-#: src/main.c:1063
+#: src/main.c:1065
 msgid ""
 "WARNING: combining -O with -r or -p will mean that all downloaded content\n"
 "will be placed in the single file you specified.\n"
@@ -1869,37 +1870,37 @@ msgstr ""
 "akan diambil akan diletakan dalam sebuah berkas yang anda spesifikasikan.\n"
 "\n"
 
-#: src/main.c:1069
+#: src/main.c:1071
 msgid ""
 "WARNING: timestamping does nothing in combination with -O. See the manual\n"
 "for details.\n"
 "\n"
 msgstr ""
-"PERINGATAN: penandawaktu tidak berfungsi dengan opsi -O. Lihat manual\n"
+"PERINGATAN: penandawaktu tidak berfungsi dengan pilihan -O. Lihat manual\n"
 "untuk informasi lebih lengkap.\n"
 "\n"
 
-#: src/main.c:1077
+#: src/main.c:1079
 #, c-format
 msgid "File `%s' already there; not retrieving.\n"
 msgstr "File `%s' sudah ada disana; tidak diambil.\n"
 
-#: src/main.c:1084
+#: src/main.c:1086
 #, c-format
 msgid "Cannot specify both --ask-password and --password.\n"
 msgstr "Tidak dapat menspesifikasikan baik --ask-password dan --password.\n"
 
-#: src/main.c:1092
+#: src/main.c:1094
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: hilang URL\n"
 
-#: src/main.c:1117
+#: src/main.c:1119
 #, c-format
 msgid "This version does not have support for IRIs\n"
 msgstr "Versi ini tidak mendukung untuk IRI\n"
 
-#: src/main.c:1181
+#: src/main.c:1183
 msgid ""
 "WARNING: Can't reopen standard output in binary mode;\n"
 "         downloaded file may contain inappropriate line endings.\n"
@@ -1908,12 +1909,12 @@ msgstr ""
 "            berkas yang diunduh mungkin berisi akhir baris yang tidak "
 "sesuai.\n"
 
-#: src/main.c:1316
+#: src/main.c:1318
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "Tidak ada URLs yang ditemukan dalam %s.\n"
 
-#: src/main.c:1334
+#: src/main.c:1336
 #, c-format
 msgid ""
 "FINISHED --%s--\n"
@@ -1922,7 +1923,7 @@ msgstr ""
 "SELESAI --%s--\n"
 "Terambil: %d berkas, %s dalam %s (%s)\n"
 
-#: src/main.c:1343
+#: src/main.c:1345
 #, c-format
 msgid "Download quota of %s EXCEEDED!\n"
 msgstr "Download quota dari %s TERLEWATI!\n"
@@ -2011,6 +2012,9 @@ msgid ""
 "This may be an indication that the host is not who it claims to be\n"
 "(that is, it is not the real %s).\n"
 msgstr ""
+"%s: nama umum sertifikat tidak valid (berisi sebuah karakter KOSONG).\n"
+"Ini mungkin merupakan indikasi bahwa host bukan yang dimaksud\n"
+"(mungkin ini bukan %s sesungguhnya).\n"
 
 #: src/openssl.c:627
 #, c-format

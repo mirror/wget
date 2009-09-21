@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.12-pre5\n"
+"Project-Id-Version: wget 1.12-pre6\n"
 "Report-Msgid-Bugs-To: bug-wget@gnu.org\n"
-"POT-Creation-Date: 2009-09-08 01:04-0700\n"
-"PO-Revision-Date: 2009-08-02 19:55+0200\n"
+"POT-Creation-Date: 2009-09-21 10:00-0700\n"
+"PO-Revision-Date: 2009-09-09 23:12+0200\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -433,7 +433,7 @@ msgstr ""
 "%s (%s) – %s uložen [%s]\n"
 "\n"
 
-#: src/ftp.c:1568 src/main.c:1299 src/recur.c:438 src/retr.c:990
+#: src/ftp.c:1568 src/main.c:1301 src/recur.c:438 src/retr.c:990
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Maže se %s.\n"
@@ -541,17 +541,17 @@ msgstr "%s se zamítá.\n"
 msgid "Error matching %s against %s: %s\n"
 msgstr "Při porovnávání %s s %s došlo k chybě: %s\n"
 
-#: src/ftp.c:2077
+#: src/ftp.c:2091
 #, c-format
 msgid "No matches on pattern %s.\n"
 msgstr "Vzorku %s nic neodpovídá.\n"
 
-#: src/ftp.c:2148
+#: src/ftp.c:2162
 #, c-format
 msgid "Wrote HTML-ized index to %s [%s].\n"
 msgstr "Výpis adresáře v HTML formátu byl zapsán do %s [%s].\n"
 
-#: src/ftp.c:2153
+#: src/ftp.c:2167
 #, c-format
 msgid "Wrote HTML-ized index to %s.\n"
 msgstr "Výpis adresáře v HTML formátu byl zapsán do %s.\n"
@@ -1807,11 +1807,11 @@ msgstr "    %s (globální)\n"
 
 #. TRANSLATORS: When available, an actual copyright character
 #. (cirle-c) should be used in preference to "(C)".
-#: src/main.c:843
+#: src/main.c:845
 msgid "Copyright (C) 2009 Free Software Foundation, Inc.\n"
 msgstr "Copyright © 2009 Free Software Foundation, Inc.\n"
 
-#: src/main.c:845
+#: src/main.c:847
 msgid ""
 "License GPLv3+: GNU GPL version 3 or later\n"
 "<http://www.gnu.org/licenses/gpl.html>.\n"
@@ -1825,7 +1825,7 @@ msgstr ""
 
 #. TRANSLATORS: When available, please use the proper diacritics for
 #. names such as this one. See en_US.po for reference.
-#: src/main.c:852
+#: src/main.c:854
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"
@@ -1833,43 +1833,43 @@ msgstr ""
 "\n"
 "Původním autorem tohoto programu je Hrvoje Nikšić <hniksic@xemacs.org>.\n"
 
-#: src/main.c:854
+#: src/main.c:856
 msgid "Currently maintained by Micah Cowan <micah@cowan.name>.\n"
 msgstr "Nyní jej spravuje Micah Cowan <micah@cowan.name>.\n"
 
-#: src/main.c:856
+#: src/main.c:858
 msgid "Please send bug reports and questions to <bug-wget@gnu.org>.\n"
 msgstr ""
 "Chybová hlášení a dotazy zasílejte na adresu <bug-wget@gnu.org> (pouze\n"
 "anglicky). Komentáře k českému překladu zasílejte na adresu\n"
 "<translation-team-cs@lists.sourceforge.net>.\n"
 
-#: src/main.c:906 src/main.c:975 src/main.c:1097
+#: src/main.c:908 src/main.c:977 src/main.c:1099
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Příkaz „%s --help“ vypíše další přepínače.\n"
 
-#: src/main.c:972
+#: src/main.c:974
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: nepřípustný přepínač – „-n%c“\n"
 
-#: src/main.c:1030
+#: src/main.c:1032
 #, c-format
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "Program nemůže být upovídaný a zticha zároveň.\n"
 
-#: src/main.c:1036
+#: src/main.c:1038
 #, c-format
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr "Nelze používat časová razítka a nemazat přitom staré soubory.\n"
 
-#: src/main.c:1044
+#: src/main.c:1046
 #, c-format
 msgid "Cannot specify both --inet4-only and --inet6-only.\n"
 msgstr "--inet4-only a --inet6-only nelze zadat najednou.\n"
 
-#: src/main.c:1054
+#: src/main.c:1056
 msgid ""
 "Cannot specify both -k and -O if multiple URLs are given, or in combination\n"
 "with -p or -r. See the manual for details.\n"
@@ -1878,7 +1878,7 @@ msgstr ""
 "Přepínače -k a -O  nelze spolu použít, je-li zadáno více URL nebo\n"
 "zadán přepínač -p nebo -r. Vysvětlení naleznete v manuálu.\n"
 
-#: src/main.c:1063
+#: src/main.c:1065
 msgid ""
 "WARNING: combining -O with -r or -p will mean that all downloaded content\n"
 "will be placed in the single file you specified.\n"
@@ -1888,7 +1888,7 @@ msgstr ""
 "uložen do jediného souboru, který jste určili.\n"
 "\n"
 
-#: src/main.c:1069
+#: src/main.c:1071
 msgid ""
 "WARNING: timestamping does nothing in combination with -O. See the manual\n"
 "for details.\n"
@@ -1898,27 +1898,27 @@ msgstr ""
 "v manuálu.\n"
 "\n"
 
-#: src/main.c:1077
+#: src/main.c:1079
 #, c-format
 msgid "File `%s' already there; not retrieving.\n"
 msgstr "Soubor „%s“ je již zde, nebudu jej přenášet.\n"
 
-#: src/main.c:1084
+#: src/main.c:1086
 #, c-format
 msgid "Cannot specify both --ask-password and --password.\n"
 msgstr "--ask-password a --password nelze zadat najednou.\n"
 
-#: src/main.c:1092
+#: src/main.c:1094
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: chybí URL\n"
 
-#: src/main.c:1117
+#: src/main.c:1119
 #, c-format
 msgid "This version does not have support for IRIs\n"
 msgstr "Tato verze neobsahuje podporu pro IRI\n"
 
-#: src/main.c:1181
+#: src/main.c:1183
 msgid ""
 "WARNING: Can't reopen standard output in binary mode;\n"
 "         downloaded file may contain inappropriate line endings.\n"
@@ -1926,12 +1926,12 @@ msgstr ""
 "POZOR: Standardní výstup nelze znovu otevřít v binárním režimu.\n"
 "       stažené soubory mohou obsahovat nevhodné konce řádků.\n"
 
-#: src/main.c:1316
+#: src/main.c:1318
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "V souboru „%s“ nebyla nalezena žádná URL.\n"
 
-#: src/main.c:1334
+#: src/main.c:1336
 #, c-format
 msgid ""
 "FINISHED --%s--\n"
@@ -1940,7 +1940,7 @@ msgstr ""
 "KONEC --%s--\n"
 "Staženo: %d souborů, %s za %s (%s)\n"
 
-#: src/main.c:1343
+#: src/main.c:1345
 #, c-format
 msgid "Download quota of %s EXCEEDED!\n"
 msgstr "Kvóta %s na stahování PŘEKROČENA!\n"
@@ -2031,6 +2031,9 @@ msgid ""
 "This may be an indication that the host is not who it claims to be\n"
 "(that is, it is not the real %s).\n"
 msgstr ""
+"%s: obecné jméno (CN) certifikátu není platné (obsahuje znak NUL).\n"
+"To může ukazovat na to, že stroj není tím, za koho se vydává (to jest\n"
+"ve skutečnosti to není %s).\n"
 
 #: src/openssl.c:627
 #, c-format

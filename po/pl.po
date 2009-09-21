@@ -11,10 +11,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wget 1.12-pre5\n"
+"Project-Id-Version: wget 1.12-pre6\n"
 "Report-Msgid-Bugs-To: bug-wget@gnu.org\n"
-"POT-Creation-Date: 2009-09-08 01:04-0700\n"
-"PO-Revision-Date: 2009-08-02 18:47+0200\n"
+"POT-Creation-Date: 2009-09-21 10:00-0700\n"
+"PO-Revision-Date: 2009-09-10 16:53+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -434,7 +434,7 @@ msgstr ""
 "%s (%s) - zapisano %s [%s]\n"
 "\n"
 
-#: src/ftp.c:1568 src/main.c:1299 src/recur.c:438 src/retr.c:990
+#: src/ftp.c:1568 src/main.c:1301 src/recur.c:438 src/retr.c:990
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Usuwanie %s.\n"
@@ -536,17 +536,17 @@ msgstr "Odrzucanie %s.\n"
 msgid "Error matching %s against %s: %s\n"
 msgstr "B³±d podczas dopasowywania %s wzglêdem %s: %s\n"
 
-#: src/ftp.c:2077
+#: src/ftp.c:2091
 #, c-format
 msgid "No matches on pattern %s.\n"
 msgstr "Brak pasuj±cych do wzorca %s.\n"
 
-#: src/ftp.c:2148
+#: src/ftp.c:2162
 #, c-format
 msgid "Wrote HTML-ized index to %s [%s].\n"
 msgstr "Zapisano indeks w postaci HTML-a w %s [%s].\n"
 
-#: src/ftp.c:2153
+#: src/ftp.c:2167
 #, c-format
 msgid "Wrote HTML-ized index to %s.\n"
 msgstr "Zapisano indeks w postaci HTML-a w %s.\n"
@@ -1818,11 +1818,11 @@ msgstr "    %s (system)\n"
 
 #. TRANSLATORS: When available, an actual copyright character
 #. (cirle-c) should be used in preference to "(C)".
-#: src/main.c:843
+#: src/main.c:845
 msgid "Copyright (C) 2009 Free Software Foundation, Inc.\n"
 msgstr "Copyright (C) 2009 Free Software Foundation, Inc.\n"
 
-#: src/main.c:845
+#: src/main.c:847
 msgid ""
 "License GPLv3+: GNU GPL version 3 or later\n"
 "<http://www.gnu.org/licenses/gpl.html>.\n"
@@ -1837,7 +1837,7 @@ msgstr ""
 
 #. TRANSLATORS: When available, please use the proper diacritics for
 #. names such as this one. See en_US.po for reference.
-#: src/main.c:852
+#: src/main.c:854
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"
@@ -1845,45 +1845,45 @@ msgstr ""
 "\n"
 "Autor orygina³u Hrvoje Niksic <hniksic@arsdigita.com>.\n"
 
-#: src/main.c:854
+#: src/main.c:856
 msgid "Currently maintained by Micah Cowan <micah@cowan.name>.\n"
 msgstr "Aktualnym opiekunem jest Micah Cowan <micah@cowan.name>.\n"
 
-#: src/main.c:856
+#: src/main.c:858
 msgid "Please send bug reports and questions to <bug-wget@gnu.org>.\n"
 msgstr ""
 "Prosimy o zg³aszanie b³êdów i propozycji na adres <bug-wget@gnu.org>.\n"
 
-#: src/main.c:906 src/main.c:975 src/main.c:1097
+#: src/main.c:908 src/main.c:977 src/main.c:1099
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Polecenie `%s --help' wy¶wietli wiêcej opcji.\n"
 
-#: src/main.c:972
+#: src/main.c:974
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: nieprawid³owa opcja -- `n%c'\n"
 
-#: src/main.c:1030
+#: src/main.c:1032
 #, c-format
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr ""
 "Nie mo¿na jednocze¶nie wy¶wietlaæ wiêcej informacji i w ogóle nic nie "
 "wy¶wietlaæ.\n"
 
-#: src/main.c:1036
+#: src/main.c:1038
 #, c-format
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr ""
 "Nie mo¿na jednocze¶nie u¿ywaæ znaczników czasu i zakazaæ nadpisywania "
 "starych plików.\n"
 
-#: src/main.c:1044
+#: src/main.c:1046
 #, c-format
 msgid "Cannot specify both --inet4-only and --inet6-only.\n"
 msgstr "Nie mo¿na podaæ jednocze¶nie --inet4-only i --inet6-only.\n"
 
-#: src/main.c:1054
+#: src/main.c:1056
 msgid ""
 "Cannot specify both -k and -O if multiple URLs are given, or in combination\n"
 "with -p or -r. See the manual for details.\n"
@@ -1893,7 +1893,7 @@ msgstr ""
 "z -p lub -r. Wiêcej informacji w podrêczniku.\n"
 "\n"
 
-#: src/main.c:1063
+#: src/main.c:1065
 msgid ""
 "WARNING: combining -O with -r or -p will mean that all downloaded content\n"
 "will be placed in the single file you specified.\n"
@@ -1903,7 +1903,7 @@ msgstr ""
 "we wskazanym pliku.\n"
 "\n"
 
-#: src/main.c:1069
+#: src/main.c:1071
 msgid ""
 "WARNING: timestamping does nothing in combination with -O. See the manual\n"
 "for details.\n"
@@ -1913,27 +1913,27 @@ msgstr ""
 "Szczegó³y w podrêczniku.\n"
 "\n"
 
-#: src/main.c:1077
+#: src/main.c:1079
 #, c-format
 msgid "File `%s' already there; not retrieving.\n"
 msgstr "Plik `%s' ju¿ istnieje, bez pobierania.\n"
 
-#: src/main.c:1084
+#: src/main.c:1086
 #, c-format
 msgid "Cannot specify both --ask-password and --password.\n"
 msgstr "Nie mo¿na podaæ jednocze¶nie --ask-password i --password.\n"
 
-#: src/main.c:1092
+#: src/main.c:1094
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: brakuj±cy URL\n"
 
-#: src/main.c:1117
+#: src/main.c:1119
 #, c-format
 msgid "This version does not have support for IRIs\n"
 msgstr "Ta wersja nie obs³uguje IRI\n"
 
-#: src/main.c:1181
+#: src/main.c:1183
 msgid ""
 "WARNING: Can't reopen standard output in binary mode;\n"
 "         downloaded file may contain inappropriate line endings.\n"
@@ -1941,12 +1941,12 @@ msgstr ""
 "UWAGA: Nie mo¿na ponownie otworzyæ standardowego wyj¶cia w trybie binarnym;\n"
 "       ¶ci±gniête pliki mog± zawieraæ niew³a¶ciwe koñce linii.\n"
 
-#: src/main.c:1316
+#: src/main.c:1318
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "Nie znaleziono URL-i w %s.\n"
 
-#: src/main.c:1334
+#: src/main.c:1336
 #, c-format
 msgid ""
 "FINISHED --%s--\n"
@@ -1955,7 +1955,7 @@ msgstr ""
 "ZAKOÑCZONO --%s--\n"
 "Pobrano: %d plików, %s w %s (%s)\n"
 
-#: src/main.c:1343
+#: src/main.c:1345
 #, c-format
 msgid "Download quota of %s EXCEEDED!\n"
 msgstr "Ograniczenie na ilo¶æ pobieranych danych (%s bajtów) PRZEKROCZONE!\n"
@@ -2042,6 +2042,9 @@ msgid ""
 "This may be an indication that the host is not who it claims to be\n"
 "(that is, it is not the real %s).\n"
 msgstr ""
+"%s: nazwa w certyfikacie jest nieprawid³owa (zawiera znak NUL).\n"
+"Mo¿e to oznaczaæ, ¿e host nie jest tym, za który siê podaje\n"
+"(tzn. nie jest prawdziwym %s).\n"
 
 #: src/openssl.c:627
 #, c-format

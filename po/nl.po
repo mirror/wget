@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wget 1.12-pre5\n"
 "Report-Msgid-Bugs-To: bug-wget@gnu.org\n"
-"POT-Creation-Date: 2009-09-08 01:04-0700\n"
+"POT-Creation-Date: 2009-09-21 10:00-0700\n"
 "PO-Revision-Date: 2009-08-03 07:54+0100\n"
 "Last-Translator: Erwin Poeze <erwin.poeze@gmail.com>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -430,7 +430,7 @@ msgstr ""
 "%s (%s) - '%s' opgeslagen [%s]\n"
 "\n"
 
-#: src/ftp.c:1568 src/main.c:1299 src/recur.c:438 src/retr.c:990
+#: src/ftp.c:1568 src/main.c:1301 src/recur.c:438 src/retr.c:990
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Verwijderen van %s.\n"
@@ -536,17 +536,17 @@ msgstr "'%s' wordt verworpen.\n"
 msgid "Error matching %s against %s: %s\n"
 msgstr "Fout bij vergelijken van '%s' met '%s': %s.\n"
 
-#: src/ftp.c:2077
+#: src/ftp.c:2091
 #, c-format
 msgid "No matches on pattern %s.\n"
 msgstr "Geen overeenkomsten met patroon '%s'.\n"
 
-#: src/ftp.c:2148
+#: src/ftp.c:2162
 #, c-format
 msgid "Wrote HTML-ized index to %s [%s].\n"
 msgstr "Index is in HTML-vorm naar '%s' [%s] geschreven.\n"
 
-#: src/ftp.c:2153
+#: src/ftp.c:2167
 #, c-format
 msgid "Wrote HTML-ized index to %s.\n"
 msgstr "Index is in HTML-vorm naar '%s' geschreven.\n"
@@ -1788,11 +1788,11 @@ msgstr "    %s (system)\n"
 
 #. TRANSLATORS: When available, an actual copyright character
 #. (cirle-c) should be used in preference to "(C)".
-#: src/main.c:843
+#: src/main.c:845
 msgid "Copyright (C) 2009 Free Software Foundation, Inc.\n"
 msgstr "Copyright (C) 2009 Free Software Foundation, Inc.\n"
 
-#: src/main.c:845
+#: src/main.c:847
 msgid ""
 "License GPLv3+: GNU GPL version 3 or later\n"
 "<http://www.gnu.org/licenses/gpl.html>.\n"
@@ -1806,7 +1806,7 @@ msgstr ""
 
 #. TRANSLATORS: When available, please use the proper diacritics for
 #. names such as this one. See en_US.po for reference.
-#: src/main.c:852
+#: src/main.c:854
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"
@@ -1814,44 +1814,44 @@ msgstr ""
 "\n"
 "Oorspronkelijk geschreven door Hrvoje Nikšić <hniksic@xemacs.org>.\n"
 
-#: src/main.c:854
+#: src/main.c:856
 msgid "Currently maintained by Micah Cowan <micah@cowan.name>.\n"
 msgstr "Tegenwoordig onderhouden door Micah Cowan <micah@cowan.name>.\n"
 
-#: src/main.c:856
+#: src/main.c:858
 msgid "Please send bug reports and questions to <bug-wget@gnu.org>.\n"
 msgstr ""
 "Rapporteer gebreken in het programma (of suggesties) aan <bug-wget@gnu."
 "org>;\n"
 "meld fouten in de vertaling aan <vertaling@vrijschrift.org>.\n"
 
-#: src/main.c:906 src/main.c:975 src/main.c:1097
+#: src/main.c:908 src/main.c:977 src/main.c:1099
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Typ '%s --help' voor meer opties.\n"
 
-#: src/main.c:972
+#: src/main.c:974
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: ongeldige optie -- '-n%c'\n"
 
-#: src/main.c:1030
+#: src/main.c:1032
 #, c-format
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "Kan niet gelijktijdig 'details geven' en 'stil zijn'.\n"
 
-#: src/main.c:1036
+#: src/main.c:1038
 #, c-format
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr ""
 "Tijdsstempels en het niet-overschrijven van oude bestanden gaan niet samen.\n"
 
-#: src/main.c:1044
+#: src/main.c:1046
 #, c-format
 msgid "Cannot specify both --inet4-only and --inet6-only.\n"
 msgstr "Opties '--inet4-only' en '--inet6-only' gaan niet samen.\n"
 
-#: src/main.c:1054
+#: src/main.c:1056
 msgid ""
 "Cannot specify both -k and -O if multiple URLs are given, or in combination\n"
 "with -p or -r. See the manual for details.\n"
@@ -1860,7 +1860,7 @@ msgstr ""
 "Opties '-k' en '-O' gaan niet samen als er meerdere URL's gegeven zijn\n"
 "of als ook '-p' of '-r' gegeven is.\n"
 
-#: src/main.c:1063
+#: src/main.c:1065
 msgid ""
 "WARNING: combining -O with -r or -p will mean that all downloaded content\n"
 "will be placed in the single file you specified.\n"
@@ -1870,7 +1870,7 @@ msgstr ""
 "wat opgehaald wordt in het ene opgegeven bestand geplaatst wordt.\n"
 "\n"
 
-#: src/main.c:1069
+#: src/main.c:1071
 msgid ""
 "WARNING: timestamping does nothing in combination with -O. See the manual\n"
 "for details.\n"
@@ -1880,27 +1880,27 @@ msgstr ""
 "O'.\n"
 "\n"
 
-#: src/main.c:1077
+#: src/main.c:1079
 #, c-format
 msgid "File `%s' already there; not retrieving.\n"
 msgstr "Bestand '%s' is reeds aanwezig -- wordt niet opgehaald.\n"
 
-#: src/main.c:1084
+#: src/main.c:1086
 #, c-format
 msgid "Cannot specify both --ask-password and --password.\n"
 msgstr "Opties '--ask-password' en '--password' gaan niet samen.\n"
 
-#: src/main.c:1092
+#: src/main.c:1094
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: ontbrekende URL\n"
 
-#: src/main.c:1117
+#: src/main.c:1119
 #, c-format
 msgid "This version does not have support for IRIs\n"
 msgstr "Deze versie heeft geen ondersteuning voor IRIS\n"
 
-#: src/main.c:1181
+#: src/main.c:1183
 msgid ""
 "WARNING: Can't reopen standard output in binary mode;\n"
 "         downloaded file may contain inappropriate line endings.\n"
@@ -1908,12 +1908,12 @@ msgstr ""
 "WAARSCHUWING: Kan standaarduitvoer niet opnieuw in binaire modus openen -- \n"
 "              gedownload bestand kan ongeschikte regeleinden bevatten.\n"
 
-#: src/main.c:1316
+#: src/main.c:1318
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "Geen URL's gevonden in %s.\n"
 
-#: src/main.c:1334
+#: src/main.c:1336
 #, c-format
 msgid ""
 "FINISHED --%s--\n"
@@ -1922,7 +1922,7 @@ msgstr ""
 "KLAAR --%s--\n"
 "Opgehaald: %d bestanden, %s in %s (%s)\n"
 
-#: src/main.c:1343
+#: src/main.c:1345
 #, c-format
 msgid "Download quota of %s EXCEEDED!\n"
 msgstr "Downloadquotum van %s bytes is overschreden!\n"

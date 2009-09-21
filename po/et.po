@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU wget 1.10.1-b1\n"
 "Report-Msgid-Bugs-To: bug-wget@gnu.org\n"
-"POT-Creation-Date: 2009-09-08 01:04-0700\n"
+"POT-Creation-Date: 2009-09-21 10:00-0700\n"
 "PO-Revision-Date: 2006-07-24 16:44+0300\n"
 "Last-Translator: Toomas Soome <Toomas.Soome@microlink.ee>\n"
 "Language-Team: Estonian <et@li.org>\n"
@@ -427,7 +427,7 @@ msgstr ""
 "%s (%s) - `%s' salvestatud [%s]\n"
 "\n"
 
-#: src/ftp.c:1568 src/main.c:1299 src/recur.c:438 src/retr.c:990
+#: src/ftp.c:1568 src/main.c:1301 src/recur.c:438 src/retr.c:990
 #, c-format
 msgid "Removing %s.\n"
 msgstr "Kustutan %s.\n"
@@ -528,17 +528,17 @@ msgstr "Keelame `%s'.\n"
 msgid "Error matching %s against %s: %s\n"
 msgstr "Ei saa kirjutada faili `%s': %s\n"
 
-#: src/ftp.c:2077
+#: src/ftp.c:2091
 #, fuzzy, c-format
 msgid "No matches on pattern %s.\n"
 msgstr "Jokker `%s' ei anna midagi.\n"
 
-#: src/ftp.c:2148
+#: src/ftp.c:2162
 #, fuzzy, c-format
 msgid "Wrote HTML-ized index to %s [%s].\n"
 msgstr "Kirjutasin HTML-iseeritud indeksi faili `%s' [%s].\n"
 
-#: src/ftp.c:2153
+#: src/ftp.c:2167
 #, fuzzy, c-format
 msgid "Wrote HTML-ized index to %s.\n"
 msgstr "Kirjutasin HTML-iseeritud indeksi faili `%s'.\n"
@@ -1714,12 +1714,12 @@ msgstr ""
 
 #. TRANSLATORS: When available, an actual copyright character
 #. (cirle-c) should be used in preference to "(C)".
-#: src/main.c:843
+#: src/main.c:845
 #, fuzzy
 msgid "Copyright (C) 2009 Free Software Foundation, Inc.\n"
 msgstr "Autoriõigus (C) 2005 Free Software Foundation, Inc.\n"
 
-#: src/main.c:845
+#: src/main.c:847
 msgid ""
 "License GPLv3+: GNU GPL version 3 or later\n"
 "<http://www.gnu.org/licenses/gpl.html>.\n"
@@ -1729,7 +1729,7 @@ msgstr ""
 
 #. TRANSLATORS: When available, please use the proper diacritics for
 #. names such as this one. See en_US.po for reference.
-#: src/main.c:852
+#: src/main.c:854
 msgid ""
 "\n"
 "Originally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"
@@ -1737,93 +1737,93 @@ msgstr ""
 "\n"
 "Selle programmi kirjutas Hrvoje Niksic <hniksic@xemacs.org>.\n"
 
-#: src/main.c:854
+#: src/main.c:856
 msgid "Currently maintained by Micah Cowan <micah@cowan.name>.\n"
 msgstr ""
 
-#: src/main.c:856
+#: src/main.c:858
 #, fuzzy
 msgid "Please send bug reports and questions to <bug-wget@gnu.org>.\n"
 msgstr "Saada soovitused ja vigade kirjeldused aadressil <bug-wget@gnu.org>.\n"
 
-#: src/main.c:906 src/main.c:975 src/main.c:1097
+#: src/main.c:908 src/main.c:977 src/main.c:1099
 #, c-format
 msgid "Try `%s --help' for more options.\n"
 msgstr "Täiendava info saamiseks proovige `%s --help'.\n"
 
-#: src/main.c:972
+#: src/main.c:974
 #, c-format
 msgid "%s: illegal option -- `-n%c'\n"
 msgstr "%s: illegaalne võti -- `-n%c'\n"
 
-#: src/main.c:1030
+#: src/main.c:1032
 #, c-format
 msgid "Can't be verbose and quiet at the same time.\n"
 msgstr "Ei saa korraga lobiseda ja vait olla.\n"
 
-#: src/main.c:1036
+#: src/main.c:1038
 #, c-format
 msgid "Can't timestamp and not clobber old files at the same time.\n"
 msgstr "Ei saa samaaegselt muuta failide aegu ja mitte puutuda vanu faile.\n"
 
-#: src/main.c:1044
+#: src/main.c:1046
 #, c-format
 msgid "Cannot specify both --inet4-only and --inet6-only.\n"
 msgstr "Ei saa korraga kasutada --inet4-only ja --inet6-only.\n"
 
-#: src/main.c:1054
+#: src/main.c:1056
 msgid ""
 "Cannot specify both -k and -O if multiple URLs are given, or in combination\n"
 "with -p or -r. See the manual for details.\n"
 "\n"
 msgstr ""
 
-#: src/main.c:1063
+#: src/main.c:1065
 msgid ""
 "WARNING: combining -O with -r or -p will mean that all downloaded content\n"
 "will be placed in the single file you specified.\n"
 "\n"
 msgstr ""
 
-#: src/main.c:1069
+#: src/main.c:1071
 msgid ""
 "WARNING: timestamping does nothing in combination with -O. See the manual\n"
 "for details.\n"
 "\n"
 msgstr ""
 
-#: src/main.c:1077
+#: src/main.c:1079
 #, c-format
 msgid "File `%s' already there; not retrieving.\n"
 msgstr "Fail `%s' on juba olemas, ei tõmba.\n"
 
-#: src/main.c:1084
+#: src/main.c:1086
 #, fuzzy, c-format
 msgid "Cannot specify both --ask-password and --password.\n"
 msgstr "Ei saa korraga kasutada --inet4-only ja --inet6-only.\n"
 
-#: src/main.c:1092
+#: src/main.c:1094
 #, c-format
 msgid "%s: missing URL\n"
 msgstr "%s: puudub URL\n"
 
-#: src/main.c:1117
+#: src/main.c:1119
 #, c-format
 msgid "This version does not have support for IRIs\n"
 msgstr ""
 
-#: src/main.c:1181
+#: src/main.c:1183
 msgid ""
 "WARNING: Can't reopen standard output in binary mode;\n"
 "         downloaded file may contain inappropriate line endings.\n"
 msgstr ""
 
-#: src/main.c:1316
+#: src/main.c:1318
 #, c-format
 msgid "No URLs found in %s.\n"
 msgstr "%s ei sisalda URLe.\n"
 
-#: src/main.c:1334
+#: src/main.c:1336
 #, fuzzy, c-format
 msgid ""
 "FINISHED --%s--\n"
@@ -1833,7 +1833,7 @@ msgstr ""
 "LÕPETATUD --%s--\n"
 "Alla laetud: %s baiti kokku %d failis\n"
 
-#: src/main.c:1343
+#: src/main.c:1345
 #, fuzzy, c-format
 msgid "Download quota of %s EXCEEDED!\n"
 msgstr "Allalaadimise kvoot  (%s baiti) ON ÜLETATUD!\n"
