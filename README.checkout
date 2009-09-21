@@ -1,29 +1,142 @@
-Important note:
+Compiling From Repository Sources
 
-To reduce bandwidth and needless updates, the source repository does not
-contain automatically-generated files, even when those files are
-normally present in the distribution tarballs.
+   To reduce bandwidth and needless updates, the source code repository
+   does not contain automatically-generated files, even when these are
+   normally present in the distribution tarballs. Therefore, to build GNU
+   Wget from the sources in the repository, you'll need to have one or
+   more of the following (note that gettext, OpenSSL, libidn and libiconv
+   are not absolutely required):
 
-Therefore, if you're building from the sources obtained from the source
-repository, you'll need to have at least GNU Autoconf (2.61 or newer)
-and GNU Automake (1.10 or newer) installed on your system.  To generate
-the Info documentation, you will need the GNU Texinfo package. Those
-packages are available from <ftp://ftp.gnu.org/pub/gnu/<package>/> and
-its mirrors, listed at <http://www.gnu.org/order/ftp.html>. Generating
-the wget.1 manpage, and running some tests, requires Perl.
+     * [20]autoconf (currently, GNU Wget requires version 2.61). This is
+       needed to generate the configure script from configure.in. This is
+       not required when building from a tarball distribution; only when
+       building from repository sources.
 
-In case you aren't used to running autotools manually to generate the
-necessary configure script, a script called autogen.sh has been
-provided, and may be invoked using `./autogen.sh'.  Once the script
-has completed, the configure script will reside in the current
-directory and you can proceed to build Wget as described in the
-`INSTALL' file.
+     * [21]automake (currently, GNU Wget requires version 1.10.1). This is
+       needed for generating the Makefile.in templates that the configure
+       script uses to generate the Makefiles. As with autoconf, it is not
+       required when building from a tarball distribution; only when
+       building from repository sources.
 
-To summarize, once you've checked out wget from the Subversion
-repository, the commands you'll execute will be as follows (barring
-any extra options to `configure' or to `make'):
+     * [22]flex is needed to generate the CSS-parsing code.
 
-    cd wget
-    ./autogen.sh
-    ./configure
-    make
+     * [23]Perl, if you wish to generate the wget(1) manpage, or run the
+       tests in the tests/ sub directory. Tarball distributions include an
+       already-generated wget.1 manual. The command "make check" runs the
+       test suite written in perl. To execute all the tests you need
+       [24]libwww-perl perl library. If "perl -MCPAN -e 'install
+       Bundle::LWP'" fails then you most likely don't have cpan module
+       installed. First download [25]CPAN and [26]install it. Then execute
+       "perl -MCPAN -e 'install Bundle::LWP'". Now "make check" should
+       pass most of the tests in the test suite.
+
+     * [27]texinfo in order to generate Info, PostScript and/or HTML
+       documentation. You don't need texinfo in order to generate the
+       wget(1) manpage; however, note that the manpage does not include
+       the full documentation. Tarball distributions include the
+       already-generated documentation in these formats.
+
+     * [28]gettext, if you wish to compile with NLS (Native Language
+       Support), which is enabled by default. If you do not have gettext,
+       you can compile without it by specifying --disable-nls to the
+       ./configure script. This is true regardless of where you obtained
+       the source you're building. NOTE: if you get errors about
+       AM_GNU_GETTEXT and/or AM_INTL_SUBDIR, you probably have a buggy
+       version of GNU m4. Upgrade to the latest version. You may also need
+       to export M4=<new m4 path>, to be sure that autoconf/automake use
+       it instead of the old one.
+
+     * [29]OpenSSL to handle encrypted web sessions. You almost certainly
+       want this. It is not enough to have the library installed; you need
+       to have the header files available to compile against as well. For
+       GNU/Linux systems, this usually means installing a "developer"
+       package for openssl (for example, [30]Debian systems require
+       installation of the libssl-dev package). Alternatively, you can
+       compile GNU Wget against the [31]GNUTLS library instead, by
+       specifying --with-ssl=gnutls to the ./configure script; however,
+       building against GNUTLS is currently experimental, and not
+       officially supported. If you have OpenSSL and its development
+       headers installed, but don't want to build Wget with it, specify
+       --without-ssl to the ./configure script.
+
+     * [32]libidn is required for IDN/IRI support (non-ASCII characters
+       within what would otherwise be URLs).
+
+     * [33]libiconv is required on non-GNU systems, for IDN/IRI support.
+       On GNU systems, the functionality provided by libiconv is already
+       present in the system libraries.
+
+   For those who might be confused as to what to do once they check out
+   the source code, considering configure and Makefile do not yet exist at
+   that point, a shell script called autogen.sh has been provided. After
+   calling ./autogen.sh you're ready to build GNU Wget in the normal
+   fashion, with ./configure and make.
+
+   So, to sum up, after checking out the source code as described above,
+   you may proceed as follows:
+    1. Change to the topmost GNU Wget directory:
+ $  cd wget        # assumes you've cloned a repository to "./wget"
+    2. Generate all the automatically-generated files required prior to
+       configuring the package:
+ $  ./autogen.sh
+    3. Configure the package and compile it:
+ $  ./configure [some_parameters]
+ $  make
+    4. Hack, compile, test, hack, compile, test...
+ $  src/wget --version
+ GNU Wget 1.12-devel (9cb2563197bc)
+
+ Copyright © 2008 Free Software Foundation, Inc.
+ License GPLv3+: GNU GPL version 3 or later
+ <http://www.gnu.org/licenses/gpl.html>.
+ This is free software: you are free to change and redistribute it.
+ There is NO WARRANTY, to the extent permitted by law.
+
+ Originally written by Hrvoje Niksic <hniksic@xemacs.org>.
+ Currently maintained by Micah Cowan <micah@cowan.name>.
+
+   CompilingRepoSources (last edited 2009-09-21 18:36:34 by
+   [34]MicahCowan)
+
+     * [35]Edit
+     * [36]Comments
+     * [37]Info
+     * [38]Attachments
+     * More Actions:
+       [Raw Text................] Do
+
+     * [39]MoinMoin Powered
+     * [40]Python Powered
+     * [41]GPL licensed
+     * [42]Valid HTML 4.01
+     __________________________________________________________________
+
+   All content © 2007 Free Software Foundation. For terms of use,
+   redistribution, and modification, please see the [43]WikiLicense page.
+
+References
+
+  20. http://www.gnu.org/software/autoconf/
+  21. http://www.gnu.org/software/automake/
+  22. http://flex.sourceforge.net/
+  23. http://www.perl.org/
+  24. http://search.cpan.org/dist/libwww-perl/lib/Bundle/LWP.pm
+  25. http://search.cpan.org/CPAN/authors/id/A/AN/ANDK/CPAN-1.9402.tar.gz
+  26. http://apthorpe.cynistar.net/code/configuring_cpan.html
+  27. http://www.gnu.org/software/texinfo/
+  28. http://www.gnu.org/software/gettext/
+  29. http://www.openssl.org/
+  30. http://www.debian.org/
+  31. http://www.gnu.org/software/gnutls/
+  32. http://www.gnu.org/software/libidn/
+  33. http://www.gnu.org/software/libiconv/
+  34. http://wget.addictivecode.org/MicahCowan
+  35. http://wget.addictivecode.org/CompilingRepoSources?action=edit&editor=text
+  36. http://wget.addictivecode.org/CompilingRepoSources
+  37. http://wget.addictivecode.org/CompilingRepoSources?action=info
+  38. http://wget.addictivecode.org/CompilingRepoSources?action=AttachFile
+  39. http://moinmo.in/
+  40. http://moinmo.in/Python
+  41. http://moinmo.in/GPL
+  42. http://validator.w3.org/check?uri=referer
+  43. http://wget.addictivecode.org/WikiLicense
