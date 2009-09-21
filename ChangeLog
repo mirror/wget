@@ -1,3 +1,7 @@
+2009-09-20  Micah Cowan  <micah@cowan.name>
+
+	* INSTALL: Various minor adjustments to bring it up to date.
+
 2009-09-09  Micah Cowan  <micah@cowan.name>
 
 	* configure.ac: Add bz2 and lzma dists.
