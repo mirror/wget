@@ -918,7 +918,7 @@ static struct hash_table *downloaded_files_hash;
    However, our hash tables only accept pointers for keys and values.
    So when we need a pointer, we use the address of a
    downloaded_file_t variable of static storage.  */
-   
+
 static downloaded_file_t *
 downloaded_mode_to_ptr (downloaded_file_t mode)
 {

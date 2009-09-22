@@ -32,7 +32,7 @@ as that of the covered work.  */
 #include "wget.h"
 
 /* NTLM details:
-   
+
    http://davenport.sourceforge.net/ntlm.html
    http://www.innovation.ch/java/ntlm.html
 
@@ -246,7 +246,7 @@ mkhash(const char *password,
 
   if (len > 14)
     len = 14;
-  
+
   for (i=0; i<len; i++)
     pw[i] = c_toupper (password[i]);
 
@@ -260,7 +260,7 @@ mkhash(const char *password,
     setup_des_key(pw, DESKEY(ks));
     DES_ecb_encrypt((DES_cblock *)magic, (DES_cblock *)lmbuffer,
                     DESKEY(ks), DES_ENCRYPT);
-  
+
     setup_des_key(pw+7, DESKEY(ks));
     DES_ecb_encrypt((DES_cblock *)magic, (DES_cblock *)(lmbuffer+8),
                     DESKEY(ks), DES_ENCRYPT);
@@ -324,7 +324,7 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
 
   if(!passwd)
     passwd="";
-  
+
   switch(ntlm->state) {
   case NTLMSTATE_TYPE1:
   default: /* for the weird cases we (re)start here */
@@ -332,7 +332,7 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
     domoff = hostoff + hostlen;
 
     DEBUGP (("Creating a type-1 NTLM message.\n"));
-    
+
     /* Create and send a type-1 message:
 
     Index Description          Content
@@ -385,7 +385,7 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
 
     output = concat_strings ("NTLM ", base64, (char *) 0);
     break;
-    
+
   case NTLMSTATE_TYPE2:
     /* We received the type-2 already, create a type-3 message:
 
@@ -403,7 +403,7 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
     52 (64) start of data block
 
     */
-  
+
   {
     int lmrespoff;
     int ntrespoff;
@@ -461,20 +461,20 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
                      "%c%c"  /* domain allocated space */
                      "%c%c"  /* domain name offset */
                      "%c%c"  /* 2 zeroes */
-                    
+
                      "%c%c"  /* user length */
                      "%c%c"  /* user allocated space */
                      "%c%c"  /* user offset */
                      "%c%c"  /* 2 zeroes */
-                    
+
                      "%c%c"  /* host length */
                      "%c%c"  /* host allocated space */
                      "%c%c"  /* host offset */
                      "%c%c%c%c%c%c"  /* 6 zeroes */
-                    
+
                      "\xff\xff"  /* message length */
                      "%c%c"  /* 2 zeroes */
-                    
+
                      "\x01\x82" /* flags */
                      "%c%c"  /* 2 zeroes */
 
@@ -529,7 +529,7 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
        before we copy them there. */
     if(((size_t) size + userlen + domlen) >= sizeof(ntlmbuf))
       return NULL;
-    
+
     memcpy(&ntlmbuf[size], domain, domlen);
     size += domlen;
 
@@ -543,7 +543,7 @@ ntlm_output (struct ntlmdata *ntlm, const char *user, const char *passwd,
     }
 
 #ifdef USE_NTRESPONSES
-    if(size < ((int)sizeof(ntlmbuf) - 0x18)) {      
+    if(size < ((int)sizeof(ntlmbuf) - 0x18)) {
       memcpy(&ntlmbuf[size], ntresp, 0x18);
       size += 0x18;
     }

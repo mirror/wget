@@ -1432,7 +1432,7 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
         }
       assert (q - TAIL (dest) == outlen);
     }
-  
+
   /* Perform inline case transformation if required.  */
   if (opt.restrict_files_case == restrict_lowercase
       || opt.restrict_files_case == restrict_uppercase)
@@ -1446,7 +1446,7 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
             *q = c_toupper (*q);
         }
     }
-          
+
   TAIL_INCR (dest, outlen);
 }
 
@@ -1507,7 +1507,7 @@ url_file_name (const struct url *u)
   /* If an alternative index file was defined, change index_filename */
   if (opt.default_page)
     index_filename = opt.default_page;
-     
+
 
   /* Start with the directory prefix, if specified. */
   if (opt.dir_prefix)
@@ -2019,7 +2019,7 @@ url_string (const struct url *url, enum url_auth_mode auth_mode)
 }
 
 /* Return true if scheme a is similar to scheme b.
- 
+
    Schemes are similar if they are equal.  If SSL is supported, schemes
    are also similar if one is http (SCHEME_HTTP) and the other is https
    (SCHEME_HTTPS).  */
@@ -2203,18 +2203,18 @@ test_append_uri_pathel()
     { "http://www.yoyodyne.com/path/", "somepage.html", false, "http://www.yoyodyne.com/path/somepage.html" },
   };
 
-  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 
+  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i)
     {
       struct growable dest;
       const char *p = test_array[i].input;
-      
+
       memset (&dest, 0, sizeof (dest));
-      
+
       append_string (test_array[i].original_url, &dest);
       append_uri_pathel (p, p + strlen(p), test_array[i].escaped, &dest);
       append_char ('\0', &dest);
 
-      mu_assert ("test_append_uri_pathel: wrong result", 
+      mu_assert ("test_append_uri_pathel: wrong result",
                  strcmp (dest.base, test_array[i].expected_result) == 0);
     }
 
@@ -2237,10 +2237,10 @@ test_are_urls_equal()
     { "http://www.adomain.com/longer-path/", "http://www.adomain.com/path/",  false },
     { "http://www.adomain.com/path%2f", "http://www.adomain.com/path/",       false },
   };
-  
-  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 
+
+  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i)
     {
-      mu_assert ("test_are_urls_equal: wrong result", 
+      mu_assert ("test_are_urls_equal: wrong result",
                  are_urls_equal (test_array[i].url1, test_array[i].url2) == test_array[i].expected_result);
     }
 

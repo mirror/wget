@@ -31,7 +31,6 @@ as that of the covered work.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <string.h>
 #include <iconv.h>
 #include <stringprep.h>
@@ -138,7 +137,7 @@ locale_to_utf8 (const char *str)
 
   l2u = iconv_open ("UTF-8", opt.locale);
   if (l2u != (iconv_t)(-1))
-    { 
+    {
       logprintf (LOG_VERBOSE, _("Conversion from %s to %s isn't supported\n"),
                  quote (opt.locale), quote ("UTF-8"));
       return str;

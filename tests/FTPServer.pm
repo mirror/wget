@@ -457,7 +457,7 @@ sub __open_data_connection
         $_attr_data{$attr};
     }
 
-    sub _standard_keys 
+    sub _standard_keys
     {
         keys %_attr_data;
     }
@@ -562,10 +562,10 @@ sub run
 
             print STDERR "in child\n" if $log;
 
-            my $conn = { 
+            my $conn = {
                 'paths'           => FTPPaths->new($self->{'_input'},
                                         $self->{'_server_behavior'}),
-                'socket'          => $socket, 
+                'socket'          => $socket,
                 'state'           => $_connection_states{NEWCONN},
                 'dir'             => '/',
                 'restart'         => 0,
@@ -778,7 +778,7 @@ sub get_list {
     my $info = $self->get_info($path);
     return undef unless defined $info;
     my $list = [];
-    
+
     if ($info->{'_type'} eq 'd') {
         for my $item (keys %$info) {
             next if $item =~ /^_/;

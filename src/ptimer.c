@@ -353,7 +353,7 @@ ptimer_reset (struct ptimer *pt)
 }
 
 /* Measure the elapsed time since timer creation/reset.  This causes
-   the timer to internally call clock_gettime (or gettimeofday, etc.) 
+   the timer to internally call clock_gettime (or gettimeofday, etc.)
    to update its idea of current time.  The time is returned, but is
    also stored for later access through ptimer_read().
 

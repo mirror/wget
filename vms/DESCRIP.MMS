@@ -15,7 +15,7 @@
 #    CLEAN_ALL  deletes all generated files, except the main (collected)
 #               source dependency file.
 #
-#    CLEAN_EXE  deletes only the architecture-specific executable. 
+#    CLEAN_EXE  deletes only the architecture-specific executable.
 #               Handy if all you wish to do is re-link the executable.
 #
 

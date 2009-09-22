@@ -6,7 +6,7 @@
 ## avoid having to type many many command-line options. This file does
 ## not contain a comprehensive list of commands -- look at the manual
 ## to find out what you can put into this file.
-## 
+##
 ## Wget initialization file can reside in /usr/local/etc/wgetrc
 ## (global, for all users) or $HOME/.wgetrc (for a single user).
 ##

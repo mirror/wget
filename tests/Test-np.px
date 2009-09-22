@@ -55,7 +55,7 @@ my $fourthpage = <<EOF;
 <body>
   <p>
     This page is only linked by the higher level page. Therefore, it should not
-    be downloaded. 
+    be downloaded.
   </p>
 </body>
 </html>
@@ -69,7 +69,7 @@ my $higherlevelpage = <<EOF;
 <body>
   <p>
     This page is on a higher level in the URL path hierarchy. Therefore, it
-    should not be downloaded. Wget should not visit the following link to a 
+    should not be downloaded. Wget should not visit the following link to a
     <a href="http://localhost:{{port}}/firstlevel/fourthpage.html">fourth page</a>.
   </p>
 </body>
@@ -139,9 +139,9 @@ my %expected_downloaded_files = (
 ###############################################################################
 
 my $the_test = HTTPTest->new (name => "Test-np",
-                              input => \%urls, 
-                              cmdline => $cmdline, 
-                              errcode => $expected_error_code, 
+                              input => \%urls,
+                              cmdline => $cmdline,
+                              errcode => $expected_error_code,
                               output => \%expected_downloaded_files);
 exit $the_test->run();
 

@@ -231,7 +231,7 @@ while(<$inf>) {
 	$file = postprocess($1);
 
 	# Try cwd and $ibase.
-	open($inf, "<" . $file) 
+	open($inf, "<" . $file)
 	    or open($inf, "<" . $ibase . "/" . $file)
 		or die "cannot open $file or $ibase/$file: $!\n";
 	next;

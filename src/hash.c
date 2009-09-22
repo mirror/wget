@@ -630,7 +630,7 @@ hash_table_count (const struct hash_table *ht)
  * Support for hash tables whose keys are strings.
  *
  */
-   
+
 /* Base 31 hash function.  Taken from Gnome's glib, modified to use
    standard C types.
 
@@ -643,11 +643,11 @@ hash_string (const void *key)
 {
   const char *p = key;
   unsigned int h = *p;
-  
+
   if (h)
     for (p += 1; *p != '\0'; p++)
       h = (h << 5) - h + *p;
-  
+
   return h;
 }
 
@@ -681,11 +681,11 @@ hash_string_nocase (const void *key)
 {
   const char *p = key;
   unsigned int h = c_tolower (*p);
-  
+
   if (h)
     for (p += 1; *p != '\0'; p++)
       h = (h << 5) - h + c_tolower (*p);
-  
+
   return h;
 }
 

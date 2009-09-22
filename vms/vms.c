@@ -33,7 +33,7 @@
  *
  *   Simplifies a fancy URL-derived file name into an ODS2- or
  *   ODS5-compatible file name.
- *    
+ *
  *----------------------------------------------------------------------
  *
  *       utime()
@@ -235,7 +235,7 @@ int dmy_lib$initialize = (int) lib$initialize;
 /*--------------------------------------------------------------------*/
 
 /* vms_arch()
-  
+
       Returns (run-time) VMS architecture string.
 */
 
@@ -270,7 +270,7 @@ return arch;
 /*--------------------------------------------------------------------*/
 
 /* vms_vers()
-  
+
       Returns (run-time) VMS version string.
 */
 

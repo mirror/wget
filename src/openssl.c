@@ -124,7 +124,7 @@ init_prng (void)
 /* Print errors in the OpenSSL error stack. */
 
 static void
-print_errors (void) 
+print_errors (void)
 {
   unsigned long err;
   while ((err = ERR_get_error ()) != 0)
@@ -390,7 +390,7 @@ static struct transport_implementation openssl_transport = {
    Returns true on success, false on failure.  */
 
 bool
-ssl_connect_wget (int fd) 
+ssl_connect_wget (int fd)
 {
   SSL *conn;
   struct openssl_transport_context *ctx;
@@ -512,7 +512,7 @@ ssl_check_certificate (int fd, const char *host)
       char *subject = X509_NAME_oneline (X509_get_subject_name (cert), 0, 0);
       char *issuer = X509_NAME_oneline (X509_get_issuer_name (cert), 0, 0);
       DEBUGP (("certificate:\n  subject: %s\n  issuer:  %s\n",
-               quotearg_style (escape_quoting_style, subject), 
+               quotearg_style (escape_quoting_style, subject),
                quotearg_style (escape_quoting_style, issuer)));
       OPENSSL_free (subject);
       OPENSSL_free (issuer);
@@ -524,7 +524,7 @@ ssl_check_certificate (int fd, const char *host)
       char *issuer = X509_NAME_oneline (X509_get_issuer_name (cert), 0, 0);
       logprintf (LOG_NOTQUIET,
                  _("%s: cannot verify %s's certificate, issued by %s:\n"),
-                 severity, quotearg_style (escape_quoting_style, host), 
+                 severity, quotearg_style (escape_quoting_style, host),
                  quote (issuer));
       /* Try to print more user-friendly (and translated) messages for
          the frequent verification errors.  */
@@ -605,7 +605,7 @@ ssl_check_certificate (int fd, const char *host)
 
       xentry = X509_NAME_get_entry(xname,i);
       sdata = X509_NAME_ENTRY_get_data(xentry);
-      if (strlen (common_name) != ASN1_STRING_length (sdata)) 
+      if (strlen (common_name) != ASN1_STRING_length (sdata))
         {
           logprintf (LOG_NOTQUIET, _("\
 %s: certificate common name is invalid (contains a NUL character).\n\
@@ -615,7 +615,7 @@ This may be an indication that the host is not who it claims to be\n\
           success = false;
         }
     }
-  
+
 
   if (success)
     DEBUGP (("X509 certificate successfully verified and matches host %s\n",

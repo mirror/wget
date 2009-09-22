@@ -69,7 +69,7 @@ typedef struct
   int cmd;                      /* command code */
   int csock;                    /* control connection socket */
   double dltime;                /* time of the download in msecs */
-  enum stype rs;                /* remote system reported by ftp server */ 
+  enum stype rs;                /* remote system reported by ftp server */
   char *id;                     /* initial directory */
   char *target;                 /* target file name */
   struct url *proxy;            /* FTWK-style proxy */
@@ -110,7 +110,7 @@ ftp_expected_bytes (const char *s)
 }
 
 #ifdef ENABLE_IPV6
-/* 
+/*
  * This function sets up a passive data connection with the FTP server.
  * It is merely a wrapper around ftp_epsv, ftp_lpsv and ftp_pasv.
  */
@@ -125,8 +125,8 @@ ftp_do_pasv (int csock, ip_address *addr, int *port)
   if (!socket_ip_address (csock, addr, ENDPOINT_PEER))
     abort ();
 
-  /* If our control connection is over IPv6, then we first try EPSV and then 
-   * LPSV if the former is not supported. If the control connection is over 
+  /* If our control connection is over IPv6, then we first try EPSV and then
+   * LPSV if the former is not supported. If the control connection is over
    * IPv4, we simply issue the good old PASV request. */
   switch (addr->family)
     {
@@ -155,7 +155,7 @@ ftp_do_pasv (int csock, ip_address *addr, int *port)
   return err;
 }
 
-/* 
+/*
  * This function sets up an active data connection with the FTP server.
  * It is merely a wrapper around ftp_eprt, ftp_lprt and ftp_port.
  */
@@ -168,8 +168,8 @@ ftp_do_port (int csock, int *local_sock)
   if (!socket_ip_address (csock, &cip, ENDPOINT_PEER))
     abort ();
 
-  /* If our control connection is over IPv6, then we first try EPRT and then 
-   * LPRT if the former is not supported. If the control connection is over 
+  /* If our control connection is over IPv6, then we first try EPRT and then
+   * LPRT if the former is not supported. If the control connection is over
    * IPv4, we simply issue the good old PORT request. */
   switch (cip.family)
     {
@@ -312,7 +312,7 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
         con->csock = -1;
 
       /* Second: Login with proper USER/PASS sequence.  */
-      logprintf (LOG_VERBOSE, _("Logging in as %s ... "), 
+      logprintf (LOG_VERBOSE, _("Logging in as %s ... "),
                  quotearg_style (escape_quoting_style, user));
       if (opt.server_response)
         logputs (LOG_ALWAYS, "\n");
@@ -429,7 +429,7 @@ Error in server response, closing control connection.\n"));
       */
 
       /* VMS will report something like "PUB$DEVICE:[INITIAL.FOLDER]".
-         Convert it to "/INITIAL/FOLDER" */ 
+         Convert it to "/INITIAL/FOLDER" */
       if (con->rs == ST_VMS)
         {
           char *path = strchr (con->id, '[');
@@ -529,7 +529,7 @@ Error in server response, closing control connection.\n"));
                Why is this wise even on UNIX?  It certainly fouls VMS.
                See below for a more reliable, more universal method.
             */
- 
+
             /* 2008-04-22 MJC.
                I'm not crazy about it either. I'm informed it's useful
                for misconfigured servers that have some dirs in the path
@@ -603,7 +603,7 @@ Error in server response, closing control connection.\n"));
 #endif /* 0 */
 
           /* 2004-09-20 SMS.
-             A relative directory is relative to the initial directory. 
+             A relative directory is relative to the initial directory.
              Thus, what _is_ useful on VMS (and probably elsewhere) is
              to CWD to the initial directory (ideally, whatever the
              server reports, _exactly_, NOT badly UNIX-ixed), and then
@@ -738,7 +738,7 @@ Error in server response, closing control connection.\n"));
       if (opt.verbose)
         {
           if (!opt.server_response)
-            logprintf (LOG_VERBOSE, "==> SIZE %s ... ", 
+            logprintf (LOG_VERBOSE, "==> SIZE %s ... ",
                        quotearg_style (escape_quoting_style, u->file));
         }
 
@@ -805,7 +805,7 @@ Error in server response, closing control connection.\n"));
             }   /* switch (err) */
           if (err==FTPOK)
             {
-              DEBUGP (("trying to connect to %s port %d\n", 
+              DEBUGP (("trying to connect to %s port %d\n",
                       print_address (&passive_addr), passive_port));
               dtsock = connect_to_ip (&passive_addr, passive_port, NULL);
               if (dtsock < 0)
@@ -935,14 +935,14 @@ Error in server response, closing control connection.\n"));
 	  uerr_t res;
 	  struct fileinfo *f;
 	  res = ftp_get_listing (u, con, &f);
-	  /* Set the DO_RETR command flag again, because it gets unset when 
-	     calling ftp_get_listing() and would otherwise cause an assertion 
-	     failure earlier on when this function gets repeatedly called 
+	  /* Set the DO_RETR command flag again, because it gets unset when
+	     calling ftp_get_listing() and would otherwise cause an assertion
+	     failure earlier on when this function gets repeatedly called
 	     (e.g., when recursing).  */
 	  con->cmd |= DO_RETR;
 	  if (res == RETROK)
 	    {
-	      while (f) 
+	      while (f)
 		{
 		  if (!strcmp (f->name, u->file))
 		    {
@@ -977,7 +977,7 @@ Error in server response, closing control connection.\n"));
             {
               if (restval)
                 logputs (LOG_VERBOSE, "\n");
-              logprintf (LOG_VERBOSE, "==> RETR %s ... ", 
+              logprintf (LOG_VERBOSE, "==> RETR %s ... ",
                          quotearg_style (escape_quoting_style, u->file));
             }
         }
@@ -1095,7 +1095,7 @@ Error in server response, closing control connection.\n"));
     }
 
   /* Open the file -- if output_stream is set, use it instead.  */
-  
+
   /* 2005-04-17 SMS.
      Note that having the output_stream ("-O") file opened in main()
      (main.c) rather limits the ability in VMS to open the file
@@ -1116,7 +1116,7 @@ Error in server response, closing control connection.\n"));
           con->target = targ;
         }
 #endif /* def __VMS */
- 
+
       mkalldirs (con->target);
       if (opt.backups)
         rotate_backups (con->target);
@@ -1135,7 +1135,7 @@ Error in server response, closing control connection.\n"));
 #else /* def __VMS */
 # define BIN_TYPE_FILE 1
 #endif /* def __VMS [else] */
- 
+
       if (restval && !(con->cmd & DO_LIST))
         {
 #ifdef __VMS
@@ -1331,7 +1331,7 @@ Error in server response, closing control connection.\n"));
               char *p = strchr (line, '\0');
               while (p > line && (p[-1] == '\n' || p[-1] == '\r'))
                 *--p = '\0';
-              logprintf (LOG_ALWAYS, "%s\n", 
+              logprintf (LOG_ALWAYS, "%s\n",
                          quotearg_style (escape_quoting_style, line));
               xfree (line);
             }
@@ -2033,7 +2033,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
               if (matchres == -1)
                 {
                   logprintf (LOG_NOTQUIET, _("Error matching %s against %s: %s\n"),
-                             u->file, quotearg_style (escape_quoting_style, f->name), 
+                             u->file, quotearg_style (escape_quoting_style, f->name),
                              strerror (errno));
                   break;
                 }

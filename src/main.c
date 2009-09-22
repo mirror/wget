@@ -737,11 +737,11 @@ prompt_for_password (void)
    lines.*/
 static void
 format_and_print_line (const char *prefix, const char *line,
-                       int line_length) 
+                       int line_length)
 {
   int remaining_chars;
   char *line_dup, *token;
-  
+
   assert (prefix != NULL);
   assert (line != NULL);
 
@@ -754,12 +754,12 @@ format_and_print_line (const char *prefix, const char *line,
   remaining_chars = line_length;
   /* We break on spaces. */
   token = strtok (line_dup, " ");
-  while (token != NULL) 
+  while (token != NULL)
     {
       /* If however a token is much larger than the maximum
          line length, all bets are off and we simply print the
          token on the next line. */
-      if (remaining_chars <= strlen (token)) 
+      if (remaining_chars <= strlen (token))
         {
           printf ("\n%*c", TABULATION, ' ');
           remaining_chars = line_length - TABULATION;
@@ -794,10 +794,10 @@ print_version (void)
   /* compiled_features is a char*[]. We limit the characters per
      line to MAX_CHARS_PER_LINE and prefix each line with a constant
      number of spaces for proper alignment. */
-  for (i = 0; compiled_features[i] != NULL; ) 
+  for (i = 0; compiled_features[i] != NULL; )
     {
       int line_length = MAX_CHARS_PER_LINE;
-      while ((line_length > 0) && (compiled_features[i] != NULL)) 
+      while ((line_length > 0) && (compiled_features[i] != NULL))
         {
           printf ("%s ", compiled_features[i]);
           line_length -= strlen (compiled_features[i]) + 2;
@@ -806,17 +806,17 @@ print_version (void)
       printf ("\n");
     }
   printf ("\n");
-  /* Handle the case when $WGETRC is unset and $HOME/.wgetrc is 
+  /* Handle the case when $WGETRC is unset and $HOME/.wgetrc is
      absent. */
   printf ("%s\n", wgetrc_title);
   env_wgetrc = wgetrc_env_file_name ();
-  if (env_wgetrc && *env_wgetrc) 
+  if (env_wgetrc && *env_wgetrc)
     {
       printf (_("    %s (env)\n"), env_wgetrc);
       xfree (env_wgetrc);
     }
   user_wgetrc = wgetrc_user_file_name ();
-  if (user_wgetrc) 
+  if (user_wgetrc)
     {
       printf (_("    %s (user)\n"), user_wgetrc);
       xfree (user_wgetrc);
@@ -830,7 +830,7 @@ print_version (void)
                         LOCALEDIR,
                         MAX_CHARS_PER_LINE);
 #endif /* def ENABLE_NLS */
-  
+
   format_and_print_line (compile_title,
 			 compilation_string,
 			 MAX_CHARS_PER_LINE);
@@ -1050,7 +1050,7 @@ Can't timestamp and not clobber old files at the same time.\n"));
 #endif
   if (opt.output_document)
     {
-      if (opt.convert_links 
+      if (opt.convert_links
           && (nurl > 1 || opt.page_requisites || opt.recursive))
         {
           fputs (_("\
@@ -1073,12 +1073,12 @@ WARNING: timestamping does nothing in combination with -O. See the manual\n\
 for details.\n\n"));
           opt.timestamping = false;
         }
-      if (opt.noclobber && file_exists_p(opt.output_document)) 
-           { 
+      if (opt.noclobber && file_exists_p(opt.output_document))
+           {
               /* Check if output file exists; if it does, exit. */
               logprintf (LOG_VERBOSE, _("File `%s' already there; not retrieving.\n"), opt.output_document);
               exit(1);
-           }  
+           }
     }
 
   if (opt.ask_passwd && opt.passwd)
@@ -1282,9 +1282,9 @@ WARNING: Can't reopen standard output in binary mode;\n\
               int old_follow_ftp = opt.follow_ftp;
 
               /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-              if (url_scheme (*t) == SCHEME_FTP) 
+              if (url_scheme (*t) == SCHEME_FTP)
                 opt.follow_ftp = 1;
-          
+
               status = retrieve_tree (url_parsed, NULL);
 
               opt.follow_ftp = old_follow_ftp;
@@ -1324,7 +1324,7 @@ WARNING: Can't reopen standard output in binary mode;\n\
     {
       print_broken_links();
     }
-  
+
   /* Print the downloaded sum.  */
   if ((opt.recursive || opt.page_requisites
        || nurl > 1

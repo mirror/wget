@@ -49,7 +49,6 @@ as that of the covered work.  */
 #include <stdlib.h>
 #include <ctype.h>
 #include <errno.h>
-#include <assert.h>
 
 #include "wget.h"
 #include "utils.h"
@@ -144,7 +143,7 @@ get_uri_string (const char *at, int *pos, int *length)
   if (uri)
     {
       strncpy (uri, at + *pos, *length);
-      uri[*length] = '\0';      
+      uri[*length] = '\0';
     }
 
   return uri;

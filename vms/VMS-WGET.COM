@@ -24,7 +24,7 @@ $!
 $!    To prevent automatic detection and use of OpenSSL, add "NOSSL"
 $! to the command line.  This procedure prefers a generic SSL kit to HP
 $! SSL.  If the generic logical names OPENSSL and SSLLIB are defined,
-$! they will be used instead of the the HP SSL logical names SSL$INCLUDE
+$! they will be used instead of the HP SSL logical names SSL$INCLUDE
 $! and SYS$SHARE.  To use HP SSL when these generic logical names are
 $! defined, add "HPSSL" to the command line.
 $!

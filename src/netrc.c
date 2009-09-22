@@ -253,7 +253,7 @@ static void
 shift_left(char *string)
 {
   char *p;
-  
+
   for (p=string; *p; ++p)
     *p = *(p+1);
 }

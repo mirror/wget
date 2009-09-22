@@ -181,7 +181,7 @@ static struct transport_implementation wgnutls_transport = {
 };
 
 bool
-ssl_connect (int fd) 
+ssl_connect (int fd)
 {
   static const int cert_type_priority[] = {
     GNUTLS_CRT_X509, GNUTLS_CRT_OPENPGP, 0

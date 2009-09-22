@@ -43,7 +43,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
 
 - Changed to avoid trying "LIST -a" for a VMS FTP server.
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
    Version 1.10.2c  2006-11-16
    ----------------------------
@@ -61,7 +61,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
   MultiNet versions where the old MultiNet-specific changes are still
   needed, specify "MULTINET" on the VMS-WGET.COM command line.
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
    Version 1.10.2b  2004-12-15
    ----------------------------
@@ -71,7 +71,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
 - Changed the I/O scheme on VMS for progress dots to avoid spurious
   newline characters when output is directed to a file.
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
    Version 1.10.2a  2004-10-13
    ----------------------------
@@ -90,12 +90,12 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
   directory listing format confused the program.  The typical symptom
   was "No such file `-rwx---r-x'."  The added "CWD []" command resets
   the TCPware server to VMS mode, and should be harmless on other VMS
-  FTP servers. 
+  FTP servers.
 
 - VMS-WGET.COM now finds MMK when it's on DCL$PATH as well as when a
   foreign command symbol "MMK" is defined.
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
    Version 1.10.1a  2004-09-09
    ---------------------------
@@ -110,7 +110,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
    - VMS-WGET.COM may now be run from any default directory, not only
      [.SRC].
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
    Version 1.9.1e  2005-09-09
    --------------------------
@@ -157,7 +157,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
   (was none), speeding creation of a large output file.  Explicitly set
   RMS_DEFAULT values override built-in defaults.
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
    Version 1.9.1c  2004-12-15
    --------------------------
@@ -178,7 +178,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
          redefined. at line number 178 in module NETDB of text library
          SYS$COMMON:[SYSLIB]DECC$RTLDEF.TLB;1
 
-   - A run-time problem with an FTP URL. Typical symptom: 
+   - A run-time problem with an FTP URL. Typical symptom:
 
          accept: bad address
 
@@ -199,7 +199,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
 
 - Changed VMS.C to fix a problem with the utime() function (supplied
   with Wget) when the user specified a non-UNIX file name with the Wget
-  "-O" option.  Typical symptom: 
+  "-O" option.  Typical symptom:
 
      utime(home_sms:[sms.wget]t.h): error 0
 
@@ -213,7 +213,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
   VMS-WGET.COM.  New: DESCRIP_DEPS.MMS, DESCRIP_MKDEPS.MMS,
   DESCRIP_SRC.MMS, COLLECT_DEPS.COM, and MOD_DEP.COM.
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
    Version 1.9.1b  2004-09-28
    --------------------------
@@ -233,7 +233,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
         disk:[xxx.WGET-1_9_1A_VMS.SRC]VMS.C;1
 
    - Fixed a build problem with C RTL before VMS V7.3 with C Runtime ECO
-     2 on Alpha: 
+     2 on Alpha:
         %CC-I-IMPLICITFUNC, In this statement, the identifier
         "decc$feature_get_index" is implicitly declared as a function.
         at line number 155 in file disk:[xxx.WGET-1_9_1A_VMS.SRC]VMS.C;1
@@ -246,7 +246,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
         "decc$feature_set_value" is implicitly declared as a function.
         at line number 169 in file disk:[xxx.WGET-1_9_1A_VMS.SRC]VMS.C;1
 
-     and the related: 
+     and the related:
 
         %LINK-W-NUDFSYMS, 3 undefined symbols:
         %LINK-I-UDFSYM,         DECC$FEATURE_GET_INDEX
@@ -266,7 +266,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
      caused a run-time problem on non-VAX systems with some ODS5
      extended file specifications with multiple dots in file names,
      typically when "-m" ("--mirror"), "-O" ("--output-document"), or
-     "-r" ("--recursive") was used: 
+     "-r" ("--recursive") was used:
 
         hostname/test/a.B.c: file specification syntax error
      or
@@ -274,7 +274,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
         rms-f-syn, file specification syntax error
 
    - Fixed a spurious diagnostic message when doing HTTP and
-     complex FTP transfers: 
+     complex FTP transfers:
 
         utime().  sys$parse() = 00010001.
 
@@ -291,7 +291,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
   attempt to puzzle out whether "/one/two" should really be interpreted
   as "one:[two]", but it's better equipped to do it than Wget is.
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
    Version 1.9.1a  2004-04-28
    --------------------------
@@ -299,7 +299,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
 - Changes to VMS-WGET.COM since Wget 1.5.3h:
 
    - A separate LIST command-line option now controls compiler listing
-     files.  The DBG option no longer implies compiler listing files. 
+     files.  The DBG option no longer implies compiler listing files.
      The LIST option also generates a link map with cross-reference.
 
    - The DBG option may actually work now.
@@ -310,7 +310,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
 
    - Compiler listing files (.LIS) and link maps (.MAP) are now put into
      the system-specific directory with the corresponding object files
-     (.OBJ), namely, [.SRC.ALPHA], [.SRC.IA64], or [.SRC.VAX]. 
+     (.OBJ), namely, [.SRC.ALPHA], [.SRC.IA64], or [.SRC.VAX].
      Previously, they were put into the source directory ([.SRC])
      itself.
 
@@ -388,7 +388,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
 
       vms.h              VMS-specific header file.  For VMS C RTL before
                          V7.3, replacement for <utime.h>.  For VMS C RTL
-                         before V7.0, replacement for <pwd.h>. 
+                         before V7.0, replacement for <pwd.h>.
                          Declarations of replacement data
                          types/structures and function prototypes for
                          vms.c.
@@ -453,7 +453,7 @@ OpenVMS VAX V7.3, Compaq C V6.4-005, TCPIP V5.1.
       host.c            Added code for VMS header files.
 
       host.h            Added code for VMS header files.
-      
+
       http.c            Added code for VMS header files.
                         Changed to use an OS-specific file name suffix,
                         "_orig" for VMS, rather than a hard-coded

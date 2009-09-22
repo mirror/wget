@@ -590,7 +590,7 @@ is_robots_txt_url (const char *url)
   bool ret = are_urls_equal (url, robots_url);
 
   xfree (robots_url);
-  
+
   return ret;
 }
 
@@ -626,10 +626,10 @@ test_is_robots_txt_url()
     { "http://www.yoyodyne.com/somepath/", false },
     { "http://www.yoyodyne.com/somepath/robots.txt", false },
   };
-  
-  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 
+
+  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i)
     {
-      mu_assert ("test_is_robots_txt_url: wrong result", 
+      mu_assert ("test_is_robots_txt_url: wrong result",
                  is_robots_txt_url (test_array[i].url) == test_array[i].expected_result);
     }
 

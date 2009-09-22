@@ -170,7 +170,7 @@ SSL_CDEFINES = , "HAVE_SSL", "ENABLE_NTLM"
 SSL_LINK_OPT = , [-.VMS]WGET_SSL.OPT /OPTIONS
 .ELSE                                       # SSL
 SSL_CDEFINES =
-SSL_LINK_OPT = 
+SSL_LINK_OPT =
 .ENDIF                                      # SSL
 .ENDIF                                  # HPSSL
 
@@ -190,7 +190,7 @@ CFLAGS = \
  $(CFLAGS_INCL) \
  $(CFLAGS_PREFIX) \
  /object = $(MMS$TARGET)
- 
+
 LINKFLAGS = $(LINKFLAGS_DBG) $(LINKFLAGS_LIST) \
  /executable = $(MMS$TARGET)
 

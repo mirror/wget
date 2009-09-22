@@ -242,4 +242,4 @@
  that the "FILE" be in Stream_LF format.  (In this case, HTTP 1.0
  requires the length of the request to be known, and the method used to
  determine the size of the file will fail for Variable-length format
- files.) 
+ files.)

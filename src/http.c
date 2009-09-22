@@ -774,7 +774,7 @@ resp_status (const struct response *resp, char **message)
       while (p < end && c_isdigit (*p))
         ++p;
       if (p < end && *p == '.')
-        ++p; 
+        ++p;
       while (p < end && c_isdigit (*p))
         ++p;
     }
@@ -819,7 +819,7 @@ print_response_line(const char *prefix, const char *b, const char *e)
 {
   char *copy;
   BOUNDED_TO_ALLOCA(b, e, copy);
-  logprintf (LOG_ALWAYS, "%s%s\n", prefix, 
+  logprintf (LOG_ALWAYS, "%s%s\n", prefix,
              quotearg_style (escape_quoting_style, copy));
 }
 
@@ -1059,12 +1059,12 @@ parse_content_disposition (const char *hdr, char **filename)
             bool add_slash = (opt.dir_prefix[prefix_length - 1] != '/');
             int total_length;
 
-            if (add_slash) 
+            if (add_slash)
               ++prefix_length;
-            total_length = prefix_length + (value.e - value.b);            
+            total_length = prefix_length + (value.e - value.b);
             *filename = xmalloc (total_length + 1);
             strcpy (*filename, opt.dir_prefix);
-            if (add_slash) 
+            if (add_slash)
               (*filename)[prefix_length - 1] = '/';
             memcpy (*filename + prefix_length, value.b, (value.e - value.b));
             (*filename)[total_length] = '\0';
@@ -1314,12 +1314,12 @@ struct http_stat
                                    existence after having begun to download
                                    (needed in gethttp for when connection is
                                    interrupted/restarted. */
-  bool timestamp_checked;       /* true if pre-download time-stamping checks 
+  bool timestamp_checked;       /* true if pre-download time-stamping checks
                                  * have already been performed */
   char *orig_file_name;         /* name of file to compare for time-stamping
                                  * (might be != local_file if -K is set) */
   wgint orig_file_size;         /* size of file to compare for time-stamping */
-  time_t orig_file_tstamp;      /* time-stamp of file to compare for 
+  time_t orig_file_tstamp;      /* time-stamp of file to compare for
                                  * time-stamping */
 };
 
@@ -1658,7 +1658,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
           sock = pconn.socket;
           using_ssl = pconn.ssl;
           logprintf (LOG_VERBOSE, _("Reusing existing connection to %s:%d.\n"),
-                     quotearg_style (escape_quoting_style, pconn.host), 
+                     quotearg_style (escape_quoting_style, pconn.host),
                      pconn.port);
           DEBUGP (("Reusing fd %d.\n", sock));
           if (pconn.authorized)
@@ -1977,17 +1977,17 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
         pconn.authorized = true;
     }
 
-  /* Determine the local filename if needed. Notice that if -O is used 
+  /* Determine the local filename if needed. Notice that if -O is used
    * hstat.local_file is set by http_loop to the argument of -O. */
   if (!hs->local_file)
     {
       /* Honor Content-Disposition whether possible. */
       if (!opt.content_disposition
-          || !resp_header_copy (resp, "Content-Disposition", 
+          || !resp_header_copy (resp, "Content-Disposition",
                                 hdrval, sizeof (hdrval))
           || !parse_content_disposition (hdrval, &hs->local_file))
         {
-          /* The Content-Disposition header is missing or broken. 
+          /* The Content-Disposition header is missing or broken.
            * Choose unique file name according to given URL. */
           hs->local_file = url_file_name (u);
         }
@@ -2169,7 +2169,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
      content-type.  */
   if (!type ||
         0 == strncasecmp (type, TEXTHTML_S, strlen (TEXTHTML_S)) ||
-        0 == strncasecmp (type, TEXTXHTML_S, strlen (TEXTXHTML_S)))    
+        0 == strncasecmp (type, TEXTXHTML_S, strlen (TEXTXHTML_S)))
     *dt |= TEXTHTML;
   else
     *dt &= ~TEXTHTML;
@@ -2362,10 +2362,10 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
   /* Print fetch message, if opt.verbose.  */
   if (opt.verbose)
     {
-      logprintf (LOG_NOTQUIET, _("Saving to: %s\n"), 
+      logprintf (LOG_NOTQUIET, _("Saving to: %s\n"),
                  HYPHENP (hs->local_file) ? quote ("STDOUT") : quote (hs->local_file));
     }
-    
+
   /* This confuses the timestamping code that checks for file size.
      #### The timestamping code should be smarter about file size.  */
   if (opt.save_headers && hs->restval == 0)
@@ -2495,7 +2495,7 @@ File %s already there; not retrieving.\n\n"),
       && (got_name || !opt.content_disposition))
     send_head_first = false;
 
-  /* Send preliminary HEAD request if -N is given and we have an existing 
+  /* Send preliminary HEAD request if -N is given and we have an existing
    * destination file. */
   file_name = url_file_name (u);
   if (opt.timestamping
@@ -2503,7 +2503,7 @@ File %s already there; not retrieving.\n\n"),
       && file_exists_p (file_name))
     send_head_first = true;
   xfree (file_name);
-  
+
   /* THE loop */
   do
     {
@@ -2602,7 +2602,7 @@ Spider mode enabled. Check if remote file exists.\n"));
           logputs (LOG_VERBOSE, "\n");
           logprintf (LOG_NOTQUIET, _("Cannot write to %s (%s).\n"),
                      quote (hstat.local_file), strerror (errno));
-        case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED: 
+        case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED:
         case SSLINITFAILED: case CONTNOTSUPPORTED: case VERIFCERTERR:
           /* Fatal errors just return from the function.  */
           ret = err;
@@ -2700,7 +2700,7 @@ Last-modified header invalid -- time-stamp ignored.\n"));
               if (*dt & HEAD_ONLY)
                 time_came_from_head = true;
             }
-      
+
           if (send_head_first)
             {
               /* The time-stamping section.  */
@@ -2711,7 +2711,7 @@ Last-modified header invalid -- time-stamp ignored.\n"));
                                                we're supposed to
                                                download already exists.  */
                     {
-                      if (hstat.remote_time && 
+                      if (hstat.remote_time &&
                           tmr != (time_t) (-1))
                         {
                           /* Now time-stamping can be used validly.
@@ -2722,7 +2722,7 @@ Last-modified header invalid -- time-stamp ignored.\n"));
                              download procedure is resumed.  */
                           if (hstat.orig_file_tstamp >= tmr)
                             {
-                              if (hstat.contlen == -1 
+                              if (hstat.contlen == -1
                                   || hstat.orig_file_size == hstat.contlen)
                                 {
                                   logprintf (LOG_VERBOSE, _("\
@@ -2745,11 +2745,11 @@ The sizes do not match (local %s) -- retrieving.\n"),
                           logputs (LOG_VERBOSE, "\n");
                         }
                     }
-                  
+
                   /* free_hstat (&hstat); */
                   hstat.timestamp_checked = true;
                 }
-              
+
               if (opt.spider)
                 {
                   bool finished = true;
@@ -2761,7 +2761,7 @@ The sizes do not match (local %s) -- retrieving.\n"),
 Remote file exists and could contain links to other resources -- retrieving.\n\n"));
                           finished = false;
                         }
-                      else 
+                      else
                         {
                           logprintf (LOG_VERBOSE, _("\
 Remote file exists but does not contain any link -- not retrieving.\n\n"));
@@ -2776,18 +2776,18 @@ Remote file exists but does not contain any link -- not retrieving.\n\n"));
 Remote file exists and could contain further links,\n\
 but recursion is disabled -- not retrieving.\n\n"));
                         }
-                      else 
+                      else
                         {
                           logprintf (LOG_VERBOSE, _("\
 Remote file exists.\n\n"));
                         }
                       ret = RETROK; /* RETRUNNEEDED is not for caller. */
                     }
-                  
+
                   if (finished)
                     {
-                      logprintf (LOG_NONVERBOSE, 
-                                 _("%s URL: %s %2d %s\n"), 
+                      logprintf (LOG_NONVERBOSE,
+                                 _("%s URL: %s %2d %s\n"),
                                  tms, u->url, hstat.statcode,
                                  hstat.message ? quotearg_style (escape_quoting_style, hstat.message) : "");
                       goto exit;
@@ -2800,7 +2800,7 @@ Remote file exists.\n\n"));
               continue;
             } /* send_head_first */
         } /* !got_head */
-          
+
       if ((tmr != (time_t) (-1))
           && ((hstat.len == hstat.contlen) ||
               ((hstat.res == 0) && (hstat.contlen == -1))))
@@ -2833,7 +2833,7 @@ Remote file exists.\n\n"));
               bool write_to_stdout = (opt.output_document && HYPHENP (opt.output_document));
 
               logprintf (LOG_VERBOSE,
-                         write_to_stdout 
+                         write_to_stdout
                          ? _("%s (%s) - written to stdout %s[%s/%s]\n\n")
                          : _("%s (%s) - %s saved [%s/%s]\n\n"),
                          tms, tmrate,
@@ -2862,7 +2862,7 @@ Remote file exists.\n\n"));
       else if (hstat.res == 0) /* No read error */
         {
           if (hstat.contlen == -1)  /* We don't know how much we were supposed
-                                       to get, so assume we succeeded. */ 
+                                       to get, so assume we succeeded. */
             {
               if (*dt & RETROKF)
                 {
@@ -2872,7 +2872,7 @@ Remote file exists.\n\n"));
                              write_to_stdout
                              ? _("%s (%s) - written to stdout %s[%s]\n\n")
                              : _("%s (%s) - %s saved [%s]\n\n"),
-                             tms, tmrate, 
+                             tms, tmrate,
                              write_to_stdout ? "" : quote (hstat.local_file),
                              number_to_static_string (hstat.len));
                   logprintf (LOG_NONVERBOSE,
@@ -2888,7 +2888,7 @@ Remote file exists.\n\n"));
                 downloaded_file(FILE_DOWNLOADED_AND_HTML_EXTENSION_ADDED, hstat.local_file);
               else
                 downloaded_file(FILE_DOWNLOADED_NORMALLY, hstat.local_file);
-              
+
               ret = RETROK;
               goto exit;
             }
@@ -2942,10 +2942,10 @@ Remote file exists.\n\n"));
   while (!opt.ntry || (count < opt.ntry));
 
 exit:
-  if (ret == RETROK) 
+  if (ret == RETROK)
     *local_file = xstrdup (hstat.local_file);
   free_hstat (&hstat);
-  
+
   return ret;
 }
 
@@ -3355,7 +3355,7 @@ test_parse_content_disposition()
 {
   int i;
   struct {
-    char *hdrval;    
+    char *hdrval;
     char *opt_dir_prefix;
     char *filename;
     bool result;
@@ -3369,8 +3369,8 @@ test_parse_content_disposition()
     { "attachment", NULL, NULL, false },
     { "attachment", "somedir", NULL, false },
   };
-  
-  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 
+
+  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i)
     {
       char *filename;
       bool res;
@@ -3378,9 +3378,9 @@ test_parse_content_disposition()
       opt.dir_prefix = test_array[i].opt_dir_prefix;
       res = parse_content_disposition (test_array[i].hdrval, &filename);
 
-      mu_assert ("test_parse_content_disposition: wrong result", 
+      mu_assert ("test_parse_content_disposition: wrong result",
                  res == test_array[i].result
-                 && (res == false 
+                 && (res == false
                      || 0 == strcmp (test_array[i].filename, filename)));
     }
 

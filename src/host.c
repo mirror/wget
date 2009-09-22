@@ -202,7 +202,7 @@ address_list_from_addrinfo (const struct addrinfo *ai)
 
   ip = al->addresses;
   for (ptr = ai; ptr != NULL; ptr = ptr->ai_next)
-    if (ptr->ai_family == AF_INET6) 
+    if (ptr->ai_family == AF_INET6)
       {
         const struct sockaddr_in6 *sin6 =
           (const struct sockaddr_in6 *)ptr->ai_addr;
@@ -212,7 +212,7 @@ address_list_from_addrinfo (const struct addrinfo *ai)
         ip->ipv6_scope = sin6->sin6_scope_id;
 #endif
         ++ip;
-      } 
+      }
     else if (ptr->ai_family == AF_INET)
       {
         const struct sockaddr_in *sin =
@@ -462,7 +462,7 @@ is_valid_ipv4_address (const char *str, const char *end)
     }
   if (octets < 4)
     return false;
-  
+
   return true;
 }
 
@@ -487,7 +487,7 @@ is_valid_ipv6_address (const char *str, const char *end)
 
   if (str == end)
     return false;
-  
+
   /* Leading :: requires some special handling. */
   if (*str == ':')
     {
@@ -544,20 +544,20 @@ is_valid_ipv6_address (const char *str, const char *end)
           saw_xdigit = false;
           break;
         }
-    
+
       return false;
     }
 
   if (saw_xdigit)
     {
-      if (tp > ns_in6addrsz - ns_int16sz) 
+      if (tp > ns_in6addrsz - ns_int16sz)
         return false;
       tp += ns_int16sz;
     }
 
   if (colonp != NULL)
     {
-      if (tp == ns_in6addrsz) 
+      if (tp == ns_in6addrsz)
         return false;
       tp = ns_in6addrsz;
     }

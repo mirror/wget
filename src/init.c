@@ -391,12 +391,12 @@ home_dir (void)
   return home ? xstrdup (home) : NULL;
 }
 
-/* Check the 'WGETRC' environment variable and return the file name 
-   if  'WGETRC' is set and is a valid file.  
+/* Check the 'WGETRC' environment variable and return the file name
+   if  'WGETRC' is set and is a valid file.
    If the `WGETRC' variable exists but the file does not exist, the
    function will exit().  */
 char *
-wgetrc_env_file_name (void) 
+wgetrc_env_file_name (void)
 {
   char *env = getenv ("WGETRC");
   if (env && *env)
@@ -415,7 +415,7 @@ wgetrc_env_file_name (void)
 /* Check for the existance of '$HOME/.wgetrc' and return it's path
    if it exists and is set.  */
 char *
-wgetrc_user_file_name (void) 
+wgetrc_user_file_name (void)
 {
   char *home = home_dir ();
   char *file = NULL;
@@ -443,7 +443,7 @@ wgetrc_user_file_name (void)
 /* Return the path to the user's .wgetrc.  This is either the value of
    `WGETRC' environment variable, or `$HOME/.wgetrc'.
 
-   Additionally, for windows, look in the directory where wget.exe 
+   Additionally, for windows, look in the directory where wget.exe
    resides.  */
 char *
 wgetrc_file_name (void)
@@ -451,7 +451,7 @@ wgetrc_file_name (void)
   char *file = wgetrc_env_file_name ();
   if (file && *file)
     return file;
-  
+
   file = wgetrc_user_file_name ();
 
 #ifdef WINDOWS
@@ -564,8 +564,8 @@ initialize (void)
 
   /* Load the hard-coded defaults.  */
   defaults ();
-  
-  /* Run a non-standard system rc file when the according environment 
+
+  /* Run a non-standard system rc file when the according environment
      variable has been set. For internal testing purposes only!  */
   env_sysrc = getenv ("SYSTEM_WGETRC");
   if (env_sysrc && file_exists_p (env_sysrc))
@@ -1310,7 +1310,7 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
           return false;
         }
 
-      if (*end) 
+      if (*end)
         val = end + 1;
     }
   while (*val && *end);
@@ -1321,7 +1321,7 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
   opt.restrict_files_ctrl = restrict_ctrl;
   opt.restrict_files_case = restrict_case;
   opt.restrict_files_nonascii = restrict_nonascii;
-  
+
   return true;
 }
 
@@ -1601,7 +1601,7 @@ cleanup (void)
   xfree_null (opt.user);
   xfree_null (opt.passwd);
   xfree_null (opt.base_href);
-  
+
 #endif /* DEBUG_MALLOC */
 }
 
@@ -1622,9 +1622,9 @@ test_commands_sorted()
         {
           mu_assert ("FAILED", false);
           break;
-        }     
+        }
       else
-        { 
+        {
           prev_idx ++;
 	  next_idx ++;
         }
@@ -1648,11 +1648,11 @@ test_cmd_spec_restrict_file_names()
     { "windows,lowercase", restrict_windows, true, restrict_lowercase, true },
     { "unix,nocontrol,lowercase,", restrict_unix, false, restrict_lowercase, true },
   };
-  
-  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i) 
+
+  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i)
     {
       bool res;
-      
+
       defaults();
       res = cmd_spec_restrict_file_names ("dummy", test_array[i].val, NULL);
 
@@ -1662,10 +1662,10 @@ test_cmd_spec_restrict_file_names()
       fprintf (stderr, "opt.restrict_files_ctrl: %d\n", opt.restrict_files_ctrl); fflush (stderr);
       fprintf (stderr, "opt.restrict_files_case: %d\n", opt.restrict_files_case); fflush (stderr);
       */
-      mu_assert ("test_cmd_spec_restrict_file_names: wrong result", 
+      mu_assert ("test_cmd_spec_restrict_file_names: wrong result",
                  res == test_array[i].result
-                 && opt.restrict_files_os   == test_array[i].expected_restrict_files_os 
-                 && opt.restrict_files_ctrl == test_array[i].expected_restrict_files_ctrl 
+                 && opt.restrict_files_os   == test_array[i].expected_restrict_files_os
+                 && opt.restrict_files_ctrl == test_array[i].expected_restrict_files_ctrl
                  && opt.restrict_files_case == test_array[i].expected_restrict_files_case);
     }
 

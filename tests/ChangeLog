@@ -206,7 +206,7 @@
 
 2009-04-11  Steven Schubiger  <stsc@member.fsf.org>
 
-	* run-px: Skip testing with real rc files by setting 
+	* run-px: Skip testing with real rc files by setting
 	SYSTEM_WGETRC and WGETRC to /dev/null.
 
 2009-02-25  Benjamin Wolsey  <bwy@benjaminwolsey.de>
@@ -230,8 +230,8 @@
 	* Test-auth-basic.px, Test-auth-no-challenge.px,
 	Test-auth-no-challenge-url.px, Test-c-full.px,
 	Test-c-partial.px, Test-c.px, Test-c-shorter.px,
-	Test-E-k-K.px, Test-E-k.px, Test-ftp.px, 
-	Test-HTTP-Content-Disposition-1.px, 
+	Test-E-k-K.px, Test-E-k.px, Test-ftp.px,
+	Test-HTTP-Content-Disposition-1.px,
 	Test-HTTP-Content-Disposition-2.px,
 	Test-HTTP-Content-Disposition.px, Test-N-current.px,
 	Test-N-HTTP-Content-Disposition.px,
@@ -240,9 +240,9 @@
 	Test-N-no-info.px, Test--no-content-disposition.px,
 	Test--no-content-disposition-trivial.px, Test-N-old.px,
 	Test-nonexisting-quiet.px, Test-noop.px, Test-np.px,
-	Test-N.px, Test-N-smaller.px, 
+	Test-N.px, Test-N-smaller.px,
 	Test-O-HTTP-Content-Disposition.px, Test-O-nc.px,
-	Test-O--no-content-disposition.px, 
+	Test-O--no-content-disposition.px,
 	Test-O--no-content-disposition-trivial.px,
 	Test-O-nonexisting.px, Test-O.px,
 	Test-proxy-auth-basic.px, Test-Restrict-Lowercase.px,
@@ -646,7 +646,7 @@
 
 2006-05-26  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
-	* HTTPServer.pm: Fixed bug when returning 404. Improved logging. 
+	* HTTPServer.pm: Fixed bug when returning 404. Improved logging.
 
 	* Test.pm: Added support for command lines which use an absolute path
 	for the Wget binary.
@@ -671,7 +671,7 @@
 
 	* HTTPTest.pm: Updated to new test format.
 	
-	* Test.pm: Improved test setup, verification and cleanup. Major 
+	* Test.pm: Improved test setup, verification and cleanup. Major
 	refactoring.
 	
 	* Test1.px: Updated to new test format.
@@ -685,17 +685,17 @@
 	
 2005-12-05  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
-	* HTTPServer.pm: Refactored as a subclass of HTTP::Daemon. 
-	Removed the old run method and renamed the old run_daemon 
-	method to run.  Added support for partial 
+	* HTTPServer.pm: Refactored as a subclass of HTTP::Daemon.
+	Removed the old run method and renamed the old run_daemon
+	method to run.  Added support for partial
 	
 	* Testing.pm: Renamed to HTTPTest.pm.
 	
-	* HTTPTest.pm: Refactored as a subclass of Test.  Renamed 
-	Run_HTTP_Test to run, verify_download to _verify_download 
+	* HTTPTest.pm: Refactored as a subclass of Test.  Renamed
+	Run_HTTP_Test to run, verify_download to _verify_download
 	and added support for timestamp checking.
 
-	* Test.pm: Added Test class as the super class of every 
+	* Test.pm: Added Test class as the super class of every
 	testcase.
 
 	* test1: Renamed to Test1.px.

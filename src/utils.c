@@ -90,7 +90,7 @@ as that of the covered work.  */
 
 #ifdef TESTING
 #include "test.h"
-#endif 
+#endif
 
 static void
 memfatal (const char *context, long attempted_size)
@@ -271,7 +271,7 @@ sepstring (const char *s)
    fallback implementation of vsnprintf, this should be portable.  */
 
 /* Constant is using for limits memory allocation for text buffer.
-   Applicable in situation when: vasprintf is not available in the system 
+   Applicable in situation when: vasprintf is not available in the system
    and vsnprintf return -1 when long line is truncated (in old versions of
    glibc and in other system where C99 doesn`t support) */
 
@@ -323,7 +323,7 @@ aprintf (const char *fmt, ...)
       else if (size >= FMT_MAX_LENGTH)  /* We have a huge buffer, */
         {                               /* maybe we have some wrong
                                            format string? */
-          logprintf (LOG_ALWAYS, 
+          logprintf (LOG_ALWAYS,
                      _("%s: aprintf: text buffer is too big (%ld bytes), "
                        "aborting.\n"),
                      exec_name, size);  /* printout a log message */
@@ -696,7 +696,7 @@ unique_create (const char *name, bool binary, char **opened_name)
    If opening the file fails for any reason, including the file having
    previously existed, this function returns NULL and sets errno
    appropriately.  */
-   
+
 FILE *
 fopen_excl (const char *fname, int binary)
 {
@@ -890,7 +890,7 @@ acceptable (const char *s)
 }
 
 /* Check if D2 is a subdirectory of D1.  E.g. if D1 is `/something', subdir_p()
-   will return true if and only if D2 begins with `/something/' or is exactly 
+   will return true if and only if D2 begins with `/something/' or is exactly
    '/something'.  */
 bool
 subdir_p (const char *d1, const char *d2)
@@ -903,7 +903,7 @@ subdir_p (const char *d1, const char *d2)
   else
     for (; *d1 && *d2 && (c_tolower (*d1) == c_tolower (*d2)); ++d1, ++d2)
       ;
-  
+
   return *d1 == '\0' && (*d2 == '\0' || *d2 == '/');
 }
 
@@ -932,7 +932,7 @@ dir_matches_p (char **dirlist, const char *dir)
             break;
         }
     }
-      
+
   return *x ? true : false;
 }
 
@@ -1069,7 +1069,7 @@ has_wildcards_p (const char *s)
 /* Return true if FNAME ends with a typical HTML suffix.  The
    following (case-insensitive) suffixes are presumed to be HTML
    files:
-   
+
      html
      htm
      ?html (`?' matches one character)
@@ -2368,12 +2368,12 @@ test_subdir_p()
     { "/somedir", "/somedir/d2", true },
     { "/somedir/d1", "/somedir", false },
   };
-  
-  for (i = 0; i < countof(test_array); ++i) 
+
+  for (i = 0; i < countof(test_array); ++i)
     {
       bool res = subdir_p (test_array[i].d1, test_array[i].d2);
 
-      mu_assert ("test_subdir_p: wrong result", 
+      mu_assert ("test_subdir_p: wrong result",
                  res == test_array[i].result);
     }
 
@@ -2405,12 +2405,12 @@ test_dir_matches_p()
     { { "/Tmp/has", NULL, NULL }, "/Tmp/has space", false },
     { { "/Tmp/has", NULL, NULL }, "/Tmp/has,comma", false },
   };
-  
-  for (i = 0; i < countof(test_array); ++i) 
+
+  for (i = 0; i < countof(test_array); ++i)
     {
       bool res = dir_matches_p (test_array[i].dirlist, test_array[i].dir);
-      
-      mu_assert ("test_dir_matches_p: wrong result", 
+
+      mu_assert ("test_dir_matches_p: wrong result",
                  res == test_array[i].result);
     }
 

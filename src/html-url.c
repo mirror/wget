@@ -625,7 +625,7 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 
   /* Find the tag in our table of tags.  This must not fail because
      map_html_tags only returns tags found in interesting_tags.
-     
+
      I've changed this for now, I'm passing NULL as interesting_tags
      to map_html_tags.  This way we can check all tags for a style
      attribute.

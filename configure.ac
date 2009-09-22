@@ -30,7 +30,7 @@ dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl
 
-AC_INIT([wget], 
+AC_INIT([wget],
 	[1.12-devel],
 	[bug-wget@gnu.org])
 AC_PREREQ(2.61)
@@ -537,7 +537,7 @@ if test "X$iri" != "Xno"; then
   fi
 
   if test "X$iri" != "Xno" ; then
-    AC_DEFINE(ENABLE_IRI, 1, [Define if IRI support is enabled.])
+    AC_DEFINE([ENABLE_IRI], 1, [Define if IRI support is enabled.])
     AC_MSG_NOTICE([Enabling support for IRI.])
   else
     AC_MSG_WARN([Libidn not found])

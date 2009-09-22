@@ -1,6 +1,6 @@
 /* Parsing FTP `ls' output.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc. 
+   2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -72,13 +72,13 @@ static int
 clean_line(char *line)
 {
   int len = strlen (line);
-  if (!len) return 0; 
+  if (!len) return 0;
   if (line[len - 1] == '\n')
     line[--len] = '\0';
-  if (!len) return 0; 
+  if (!len) return 0;
   if (line[len - 1] == '\r')
     line[--len] = '\0';
-  for ( ; *line ; line++ ) if (*line == '\t') *line = ' '; 
+  for ( ; *line ; line++ ) if (*line == '\t') *line = ' ';
   return len;
 }
 
@@ -487,9 +487,9 @@ ftp_parse_winnt_ls (const char *file)
       if (hour == 12)  hour  = 0;
       if (*tok == 'P') hour += 12;
 
-      DEBUGP(("YYYY/MM/DD HH:MM - %d/%02d/%02d %02d:%02d\n", 
+      DEBUGP(("YYYY/MM/DD HH:MM - %d/%02d/%02d %02d:%02d\n",
               year+1900, month, day, hour, min));
-      
+
       /* Build the time-stamp (copy & paste from above) */
       timestruct.tm_sec   = 0;
       timestruct.tm_min   = min;
@@ -567,7 +567,7 @@ ftp_parse_winnt_ls (const char *file)
    more or less.  (Different VMS FTP servers may have different headers,
    and may not supply the same data, but all should be subsets of this.)
 
-   VMS normally provides local (server) time and date information. 
+   VMS normally provides local (server) time and date information.
    Define the logical name or environment variable
    "WGET_TIMEZONE_DIFFERENTIAL" (seconds) to adjust the receiving local
    times if different from the remote local times.
@@ -770,7 +770,7 @@ ftp_parse_vms_ls (const char *file)
 #endif /* (!defined( __VMS) && !defined( PRESERVE_VMS_VERSIONS)) */
 
       /* 2005-02-23 SMS.
-         Eliminate "^" escape characters from ODS5 extended file name. 
+         Eliminate "^" escape characters from ODS5 extended file name.
          (A caret is invalid in an ODS2 name, so this is always safe.)
       */
       eat_carets( tok);
@@ -824,7 +824,7 @@ ftp_parse_vms_ls (const char *file)
       */
 
       tok = strtok(NULL, " ");
-      if (tok == NULL) 
+      if (tok == NULL)
         {
           DEBUGP(("Getting additional line.\n"));
           xfree (line);
@@ -944,7 +944,7 @@ ftp_parse_vms_ls (const char *file)
 	    }
 	  else
 	    {
-	      /* Nondescript.  Probably size(s), probably in blocks. 
+	      /* Nondescript.  Probably size(s), probably in blocks.
                  Could be "No privilege ..." message.  (Ignore.)
               */
 	      DEBUGP (("Ignored (size?).\n"));

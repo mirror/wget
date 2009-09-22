@@ -312,7 +312,7 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
     /* In case of error, we will go on anyway... */
     int err = setsockopt (sock, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof (on));
     IF_DEBUG
-      if (err < 0) 
+      if (err < 0)
         DEBUGP (("Failed setting IPV6_V6ONLY: %s", strerror (errno)));
   }
 #endif

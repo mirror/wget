@@ -18,7 +18,7 @@
 # will need to recover it from the original distribution kit.
 #
 # Note:  This dependency generation scheme assumes that the dependencies
-# do not depend on host architecture type or other such variables. 
+# do not depend on host architecture type or other such variables.
 # Therefore, no "#include" directive in the C source itself should be
 # conditional on such variables.
 #
@@ -40,7 +40,7 @@ INCL_DESCRIP_SRC = 1
 
 # The ultimate product, a comprehensive dependency list.
 
-DEPS_FILE = [-.VMS]descrip_deps.mms 
+DEPS_FILE = [-.VMS]descrip_deps.mms
 
 # Detect valid qualifier and/or macro options.
 

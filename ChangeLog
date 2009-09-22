@@ -1,5 +1,9 @@
 2009-09-21  Micah Cowan  <micah@cowan.name>
 
+	* vms/VMS-WGET.COM: "the the" -> "the".
+
+	* po/POTFILES.in: Removed some files that are not using gettext.
+	
 	* po/*.po: Updated from translationproject.org.
 
 2009-09-20  Micah Cowan  <micah@cowan.name>

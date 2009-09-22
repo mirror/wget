@@ -76,7 +76,7 @@ ftp_response (int fd, char **ret_line)
         *--p = '\0';
 
       if (opt.server_response)
-        logprintf (LOG_NOTQUIET, "%s\n", 
+        logprintf (LOG_NOTQUIET, "%s\n",
                    quotearg_style (escape_quoting_style, line));
       else
         DEBUGP (("%s\n", quotearg_style (escape_quoting_style, line)));
@@ -117,7 +117,7 @@ ftp_request (const char *command, const char *value)
             if (*p == '\r' || *p == '\n')
               *p = ' ';
           DEBUGP (("\nDetected newlines in %s \"%s\"; changing to %s \"%s\"\n",
-                   command, quotearg_style (escape_quoting_style, value), 
+                   command, quotearg_style (escape_quoting_style, value),
                    command, quotearg_style (escape_quoting_style, defanged)));
           /* Make VALUE point to the defanged copy of the string. */
           value = defanged;
@@ -246,7 +246,7 @@ ftp_login (int csock, const char *acc, const char *pass)
 }
 
 static void
-ip_address_to_port_repr (const ip_address *addr, int port, char *buf, 
+ip_address_to_port_repr (const ip_address *addr, int port, char *buf,
                          size_t buflen)
 {
   unsigned char *ptr;
@@ -322,7 +322,7 @@ ftp_port (int csock, int *local_sock)
 
 #ifdef ENABLE_IPV6
 static void
-ip_address_to_lprt_repr (const ip_address *addr, int port, char *buf, 
+ip_address_to_lprt_repr (const ip_address *addr, int port, char *buf,
                          size_t buflen)
 {
   unsigned char *ptr = IP_INADDR_DATA (addr);
@@ -331,18 +331,18 @@ ip_address_to_lprt_repr (const ip_address *addr, int port, char *buf,
   assert (buflen >= 21 * 4);
 
   /* Construct the argument of LPRT (of the form af,n,h1,h2,...,hn,p1,p2). */
-  switch (addr->family) 
+  switch (addr->family)
     {
-    case AF_INET: 
-      snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d,%d,%d,%d", 4, 4, 
+    case AF_INET:
+      snprintf (buf, buflen, "%d,%d,%d,%d,%d,%d,%d,%d,%d", 4, 4,
                 ptr[0], ptr[1], ptr[2], ptr[3], 2,
                 (port & 0xff00) >> 8, port & 0xff);
       break;
-    case AF_INET6: 
+    case AF_INET6:
       snprintf (buf, buflen,
                 "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
                 6, 16,
-                ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7], 
+                ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7],
                 ptr[8], ptr[9], ptr[10], ptr[11], ptr[12], ptr[13], ptr[14], ptr[15],
                 2, (port & 0xff00) >> 8, port & 0xff);
       break;
@@ -410,15 +410,15 @@ ftp_lprt (int csock, int *local_sock)
 }
 
 static void
-ip_address_to_eprt_repr (const ip_address *addr, int port, char *buf, 
+ip_address_to_eprt_repr (const ip_address *addr, int port, char *buf,
                          size_t buflen)
 {
   int afnum;
 
-  /* buf must contain the argument of EPRT (of the form |af|addr|port|). 
-   * 4 chars for the | separators, INET6_ADDRSTRLEN chars for addr  
+  /* buf must contain the argument of EPRT (of the form |af|addr|port|).
+   * 4 chars for the | separators, INET6_ADDRSTRLEN chars for addr
    * 1 char for af (1-2) and 5 chars for port (0-65535) */
-  assert (buflen >= 4 + INET6_ADDRSTRLEN + 1 + 5); 
+  assert (buflen >= 4 + INET6_ADDRSTRLEN + 1 + 5);
 
   /* Construct the argument of EPRT (of the form |af|addr|port|). */
   afnum = (addr->family == AF_INET ? 1 : 2);
@@ -437,8 +437,8 @@ ftp_eprt (int csock, int *local_sock)
   ip_address addr;
   int nwritten;
   int port;
-  /* Must contain the argument of EPRT (of the form |af|addr|port|). 
-   * 4 chars for the | separators, INET6_ADDRSTRLEN chars for addr  
+  /* Must contain the argument of EPRT (of the form |af|addr|port|).
+   * 4 chars for the | separators, INET6_ADDRSTRLEN chars for addr
    * 1 char for af (1-2) and 5 chars for port (0-65535) */
   char bytes[4 + INET6_ADDRSTRLEN + 1 + 5 + 1];
 
@@ -587,7 +587,7 @@ ftp_lpsv (int csock, ip_address *addr, int *port)
     {
       xfree (respline);
       return FTPNOPASV;
-    }  
+    }
 
   /* Parse the response.  */
   s = respline;
@@ -750,7 +750,7 @@ ftp_epsv (int csock, ip_address *ip, int *port)
     {
       xfree (respline);
       return FTPNOPASV;
-    }  
+    }
 
   assert (respline != NULL);
 
@@ -765,7 +765,7 @@ ftp_epsv (int csock, ip_address *ip, int *port)
     {
       xfree (respline);
       return FTPINVPASV;
-    }  
+    }
 
   /* Skip the first two void fields */
   s = start + 1;
@@ -774,26 +774,26 @@ ftp_epsv (int csock, ip_address *ip, int *port)
     {
       xfree (respline);
       return FTPINVPASV;
-    }  
+    }
 
   for (i = 0; i < 2; i++)
     {
-      if (*s++ != delim) 
+      if (*s++ != delim)
         {
           xfree (respline);
         return FTPINVPASV;
-        }  
+        }
     }
 
   /* Finally, get the port number */
-  tport = 0; 
-  for (i = 1; c_isdigit (*s); s++) 
+  tport = 0;
+  for (i = 1; c_isdigit (*s); s++)
     {
       if (i > 5)
         {
           xfree (respline);
           return FTPINVPASV;
-        }  
+        }
       tport = (*s - '0') + 10 * tport;
     }
 
@@ -802,13 +802,13 @@ ftp_epsv (int csock, ip_address *ip, int *port)
     {
       xfree (respline);
       return FTPINVPASV;
-    }  
+    }
 
   if (*s++ != ')')
     {
       xfree (respline);
       return FTPINVPASV;
-    }  
+    }
 
   *port = tport;
 
@@ -966,7 +966,7 @@ ftp_list (int csock, const char *file, enum stype rs)
   bool ok = false;
   size_t i = 0;
   /* Try `LIST -a' first and revert to `LIST' in case of failure.  */
-  const char *list_commands[] = { "LIST -a", 
+  const char *list_commands[] = { "LIST -a",
                                   "LIST" };
 
   /* 2008-01-29  SMS.  For a VMS FTP server, where "LIST -a" may not
@@ -999,7 +999,7 @@ ftp_list (int csock, const char *file, enum stype rs)
             err = FTPOK;
             ok = true;
           }
-        else 
+        else
           {
             err = FTPRERR;
           }
@@ -1007,7 +1007,7 @@ ftp_list (int csock, const char *file, enum stype rs)
       }
     ++i;
   } while (i < countof (list_commands) && !ok);
-  
+
   return err;
 }
 
@@ -1142,9 +1142,9 @@ ftp_size (int csock, const char *file, wgint *size)
     }
   if (*respline == '5')
     {
-      /* 
+      /*
        * Probably means SIZE isn't supported on this server.
-       * Error is nonfatal since SIZE isn't in RFC 959 
+       * Error is nonfatal since SIZE isn't in RFC 959
        */
       xfree (respline);
       *size = 0;
@@ -1155,7 +1155,7 @@ ftp_size (int csock, const char *file, wgint *size)
   *size = str_to_wgint (respline + 4, NULL, 10);
   if (errno)
     {
-      /* 
+      /*
        * Couldn't parse the response for some reason.  On the (few)
        * tests I've done, the response is 213 <SIZE> with nothing else -
        * maybe something a bit more resilient is necessary.  It's not a

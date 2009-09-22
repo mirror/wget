@@ -1,3 +1,10 @@
+2009-09-21  Micah Cowan  <micah@cowan.name>
+
+	* progress.c (update_speed_ring): "the the" -> "the".
+
+	* css-url.c, iri.c, mswindows.c: Removed assert.h inclusion (not
+	using it).
+
 2009-09-11  Steven Schweda  <sms@antinode.info>
 
 	* utils.c, utils.h (fopen_excl): Make second argument an int,

@@ -165,7 +165,7 @@ AC_DEFUN([TYPE_STRUCT_SOCKADDR_IN6],[
 
 AC_DEFUN([MEMBER_SIN6_SCOPE_ID],[
   AC_REQUIRE([TYPE_STRUCT_SOCKADDR_IN6])
-  
+
   wget_member_sin6_scope_id=
   if test "X$wget_have_sockaddr_in6" = "Xyes"; then
     AC_CHECK_MEMBER([struct sockaddr_in6.sin6_scope_id],[

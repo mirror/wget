@@ -21,7 +21,7 @@ my $VERSION = 0.01;
         return $self->SUPER::_default_for($attr);
     }
 
-    sub _standard_keys 
+    sub _standard_keys
     {
         my ($self) = @_;
         ($self->SUPER::_standard_keys(), keys %_attr_data);

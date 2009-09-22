@@ -37,7 +37,7 @@ SUBDIRS = src doc #util
 # default target
 all: Makefile $(SUBDIRS)
 
-$(SUBDIRS): 
+$(SUBDIRS):
 	cd $@
 	$(MAKEDIR)\$(MAKE)
 	cd ..
@@ -73,7 +73,7 @@ wget.zip: $(SUBDIRS)
 	$(RM) wget.zip
 	$(RM) cacert.pem
 	src\wget http://curl.haxx.se/ca/cacert.pem
-	zip -Djl9 wget.zip AUTHORS COPYING INSTALL MAILING-LIST NEWS README doc/sample.wgetrc 
-	zip -Dj9 wget.zip src/wget.exe doc/wget.hlp cacert.pem 
+	zip -Djl9 wget.zip AUTHORS COPYING INSTALL MAILING-LIST NEWS README doc/sample.wgetrc
+	zip -Dj9 wget.zip src/wget.exe doc/wget.hlp cacert.pem
 	zip -Dj9 wget.zip c:\openssl\bin\libeay32.dll c:\openssl\bin\ssleay32.dll c:\openssl\bin\msvcr80.dll
 

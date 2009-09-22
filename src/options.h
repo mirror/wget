@@ -88,7 +88,7 @@ struct options
   char *user;			/* Generic username */
   char *passwd;			/* Generic password */
   bool ask_passwd;              /* Ask for password? */
-  
+
   bool always_rest;		/* Always use REST. */
   char *ftp_user;		/* FTP username */
   char *ftp_passwd;		/* FTP password */
@@ -233,7 +233,7 @@ struct options
     prefer_none
   } prefer_family;		/* preferred address family when more
 				   than one type is available */
-  
+
   bool content_disposition;	/* Honor HTTP Content-Disposition header. */
   bool auth_without_challenge;  /* Issue Basic authentication creds without
                                    waiting for a challenge. */
