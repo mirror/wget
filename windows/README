@@ -1,5 +1,17 @@
                                                            -*- text -*-
 
+*** NOTE: as of version 1.12, the building of Wget on Windows using
+*** these supplied Makefiles, is severely broken. HOWEVER, it is
+*** currently possible to build Wget on Windows using the standard
+    Unix-y "./configure && make", under MinGW + MSYS, though there are
+    some rough edges when you go beyond the basic build.
+
+    We expect to support this method for building Wget more fully in
+    future releases; the degree to which other Windows build methods
+    will be supported is not currently clear, as the cost of their
+    maintenance has grown significantly.
+
+
 You can configure the Windows port of Wget by running configure.bat (in
 the main Wget directory).  You can run it with no arguments to see the
 list of possible options.  Run it with the option corresponding to the

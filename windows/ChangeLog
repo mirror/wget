@@ -1,3 +1,7 @@
+2009-09-21  Micah Cowan  <micah@cowan.name>
+
+	* README: Warn about less-than-functional Windows build support.
+
 2009-09-03  Gisle Vanem  <giva@bgnett.no>
 
 	* config.h (HAVE_STRING_H): Define for all Windows build
