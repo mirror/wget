@@ -1,5 +1,12 @@
 2009-09-22  Micah Cowan  <micah@cowan.name>
 
+	* Makefile.am (version.c): Explicitly tell Mercurial where the
+	top-source repository should be, so it doesn't accidentally use
+	the repository for a containing directory (for instance, if the
+	user's home directory is managed by a Mercurial repo). Also
+	ensures we find the repository, even if the build directory is
+	outside the source directory.
+
 	* openssl.c (ssl_check_certificate): Avoid reusing the same buffer
 	space for successive quoted arguments. Thanks to Steven Schweda
 	for pointing out the problem.
