@@ -512,8 +512,8 @@ ssl_check_certificate (int fd, const char *host)
       char *subject = X509_NAME_oneline (X509_get_subject_name (cert), 0, 0);
       char *issuer = X509_NAME_oneline (X509_get_issuer_name (cert), 0, 0);
       DEBUGP (("certificate:\n  subject: %s\n  issuer:  %s\n",
-               quotearg_style (escape_quoting_style, subject),
-               quotearg_style (escape_quoting_style, issuer)));
+               quotearg_n_style (0, escape_quoting_style, subject),
+               quotearg_n_style (1, escape_quoting_style, issuer)));
       OPENSSL_free (subject);
       OPENSSL_free (issuer);
     }
@@ -524,8 +524,8 @@ ssl_check_certificate (int fd, const char *host)
       char *issuer = X509_NAME_oneline (X509_get_issuer_name (cert), 0, 0);
       logprintf (LOG_NOTQUIET,
                  _("%s: cannot verify %s's certificate, issued by %s:\n"),
-                 severity, quotearg_style (escape_quoting_style, host),
-                 quote (issuer));
+                 severity, quotearg_n_style (0, escape_quoting_style, host),
+                 quote_n (1, issuer));
       /* Try to print more user-friendly (and translated) messages for
          the frequent verification errors.  */
       switch (vresult)
@@ -578,7 +578,7 @@ ssl_check_certificate (int fd, const char *host)
     {
       logprintf (LOG_NOTQUIET, _("\
 %s: certificate common name %s doesn't match requested host name %s.\n"),
-                 severity, quote (common_name), quote (host));
+                 severity, quote_n (0, common_name), quote_n (1, host));
       success = false;
     }
   else
