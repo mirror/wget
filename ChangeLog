@@ -1,3 +1,9 @@
+2009-09-22  Micah Cowan  <micah@cowan.name>
+
+	* configure.ac: Added "sleep" and "symlink" to AC_CHECK_FUNCS,
+	removing the hard-coded definition of HAVE_SYMLINK. When running
+	on MinGW, compile mswindows.c, and link against libwsock32.
+
 2009-09-21  Micah Cowan  <micah@cowan.name>
 
 	* vms/VMS-WGET.COM: "the the" -> "the".

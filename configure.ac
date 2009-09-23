@@ -202,6 +202,7 @@ AC_FUNC_MMAP
 AC_FUNC_FSEEKO
 AC_CHECK_FUNCS(strptime timegm snprintf vsnprintf vasprintf drand48)
 AC_CHECK_FUNCS(strtoll usleep ftello sigblock sigsetjmp memrchr wcwidth mbtowc)
+AC_CHECK_FUNCS(sleep symlink)
 
 if test x"$ENABLE_OPIE" = xyes; then
   AC_LIBOBJ([ftp-opie])
@@ -215,7 +216,6 @@ AC_DEFINE([HAVE_STRCASECMP], 1, [Define to 1 if you have the `strcasecmp' functi
 AC_DEFINE([HAVE_STRNCASECMP], 1, [Define to 1 if you have the `strncasecmp' function.])
 AC_DEFINE([HAVE_STRDUP], 1, [Define to 1 if you have the `strdup' function.])
 AC_DEFINE([HAVE_ISATTY], 1, [Define to 1 if you have the `isatty' function.])
-AC_DEFINE([HAVE_SYMLINK], 1, [Define to 1 if you have the `symlink' function.])
 
 dnl
 dnl Call Wget-specific macros defined in aclocal.
@@ -226,6 +226,14 @@ WGET_FNMATCH
 WGET_NANOSLEEP
 WGET_POSIX_CLOCK
 WGET_NSL_SOCKET
+
+dnl Deal with specific hosts
+case $host_os in
+  *mingw32* )
+    AC_SUBST(W32LIBS, '-lwsock32')
+    AC_LIBOBJ([mswindows])
+    ;;
+esac
 
 dnl
 dnl Checks for libraries.

@@ -38,6 +38,10 @@ as that of the covered work.  */
 
 #include "config.h"
 
+#if ((defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__)
+# define WINDOWS
+#endif
+
 /* Include these, so random files need not include them.  */
 #include "sysdep.h"
 

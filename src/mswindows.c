@@ -59,7 +59,7 @@ void log_request_redirect_output (const char *);
 void
 xsleep (double seconds)
 {
-#ifdef HAVE_USLEEP
+#if defined(HAVE_USLEEP) && defined(HAVE_SLEEP)
   if (seconds > 1000)
     {
       /* Explained in utils.c. */
@@ -603,91 +603,6 @@ WRAP (setsockopt, (int s, int level, int opt, const void *val, int len),
                   (s, level, opt, val, len))
 WRAP (closesocket, (int s), (s))
 
-/* Return the text of the error message for Winsock error WSERR. */
-
-static const char *
-get_winsock_error (int wserr)
-{
-  switch (wserr) {
-  case WSAEINTR:           return "Interrupted system call";
-  case WSAEBADF:           return "Bad file number";
-  case WSAEACCES:          return "Permission denied";
-  case WSAEFAULT:          return "Bad address";
-  case WSAEINVAL:          return "Invalid argument";
-  case WSAEMFILE:          return "Too many open files";
-  case WSAEWOULDBLOCK:     return "Resource temporarily unavailable";
-  case WSAEINPROGRESS:     return "Operation now in progress";
-  case WSAEALREADY:        return "Operation already in progress";
-  case WSAENOTSOCK:        return "Socket operation on nonsocket";
-  case WSAEDESTADDRREQ:    return "Destination address required";
-  case WSAEMSGSIZE:        return "Message too long";
-  case WSAEPROTOTYPE:      return "Protocol wrong type for socket";
-  case WSAENOPROTOOPT:     return "Bad protocol option";
-  case WSAEPROTONOSUPPORT: return "Protocol not supported";
-  case WSAESOCKTNOSUPPORT: return "Socket type not supported";
-  case WSAEOPNOTSUPP:      return "Operation not supported";
-  case WSAEPFNOSUPPORT:    return "Protocol family not supported";
-  case WSAEAFNOSUPPORT:    return "Address family not supported by protocol family";
-  case WSAEADDRINUSE:      return "Address already in use";
-  case WSAEADDRNOTAVAIL:   return "Cannot assign requested address";
-  case WSAENETDOWN:        return "Network is down";
-  case WSAENETUNREACH:     return "Network is unreachable";
-  case WSAENETRESET:       return "Network dropped connection on reset";
-  case WSAECONNABORTED:    return "Software caused connection abort";
-  case WSAECONNRESET:      return "Connection reset by peer";
-  case WSAENOBUFS:         return "No buffer space available";
-  case WSAEISCONN:         return "Socket is already connected";
-  case WSAENOTCONN:        return "Socket is not connected";
-  case WSAESHUTDOWN:       return "Cannot send after socket shutdown";
-  case WSAETOOMANYREFS:    return "Too many references";
-  case WSAETIMEDOUT:       return "Connection timed out";
-  case WSAECONNREFUSED:    return "Connection refused";
-  case WSAELOOP:           return "Too many levels of symbolic links";
-  case WSAENAMETOOLONG:    return "File name too long";
-  case WSAEHOSTDOWN:       return "Host is down";
-  case WSAEHOSTUNREACH:    return "No route to host";
-  case WSAENOTEMPTY:       return "Not empty";
-  case WSAEPROCLIM:        return "Too many processes";
-  case WSAEUSERS:          return "Too many users";
-  case WSAEDQUOT:          return "Bad quota";
-  case WSAESTALE:          return "Something is stale";
-  case WSAEREMOTE:         return "Remote error";
-  case WSAEDISCON:         return "Disconnected";
-
-  /* Extended Winsock errors */
-  case WSASYSNOTREADY:     return "Winsock library is not ready";
-  case WSANOTINITIALISED:  return "Winsock library not initalised";
-  case WSAVERNOTSUPPORTED: return "Winsock version not supported";
-
-  case WSAHOST_NOT_FOUND: return "Host not found";
-  case WSATRY_AGAIN:      return "Host not found, try again";
-  case WSANO_RECOVERY:    return "Unrecoverable error in call to nameserver";
-  case WSANO_DATA:        return "No data record of requested type";
-
-  default:
-    return NULL;
-  }
-}
-
-/* Return the error message corresponding to ERR.  This is different
-   from Windows libc strerror() in that it handles Winsock errors
-   correctly.  */
-
-const char *
-windows_strerror (int err)
-{
-  const char *p;
-  if (err >= 0 && err < sys_nerr)
-    return strerror (err);
-  else if ((p = get_winsock_error (err)) != NULL)
-    return p;
-  else
-    {
-      static char buf[32];
-      snprintf (buf, sizeof (buf), "Unknown error %d (%#x)", err, err);
-      return buf;
-    }
-}
 
 #ifdef ENABLE_IPV6
 /* An inet_ntop implementation that uses WSAAddressToString.

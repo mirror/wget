@@ -7,6 +7,28 @@
 	ensures we find the repository, even if the build directory is
 	outside the source directory.
 
+	* wget.h: define WINDOWS if _WIN32 or __WIN32__ is defined, but
+	not __CYGWIN__.
+
+	* mswindows.c (xsleep): Check for availability of the sleep
+	function, in addition to the usleep function.
+	(get_winsock_error, windows_strerror): Removed (gnulib already
+	supplies this functionality).
+
+	* mswindows.h [NEED_GAI_STRERROR]: define gai_strerror
+	to (gnulib's) strerror, rather than windows_strerror. Removed
+	error macro definitions provided by gnulib.
+	(windows_strerror): Removed (gnulib already supplies this
+	functionality).
+
+	* host.c: Don't declare h_errno when building on Windows.
+
+	* Makefile.am (LIBS): Added @W32LIBS@.
+	(EXTRA_wget_SOURCES): Removed (it's in LIBOBJ now).
+	(version.c): Removed dependency on $(LDADD), since it may include
+	dependencies that are not part of the Wget sources (-lwsock32, for
+	instance).
+
 	* openssl.c (ssl_check_certificate): Avoid reusing the same buffer
 	space for successive quoted arguments. Thanks to Steven Schweda
 	for pointing out the problem.

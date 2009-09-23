@@ -63,7 +63,7 @@ as that of the covered work.  */
 # define NO_ADDRESS NO_DATA
 #endif
 
-#if !HAVE_DECL_H_ERRNO
+#if !HAVE_DECL_H_ERRNO && !defined(WINDOWS)
 extern int h_errno;
 #endif
 
