@@ -1,3 +1,7 @@
+2009-09-24  Micah Cowan  <micah@cowan.name>
+
+	* host.c (host_errstr): host_errstr should return const char *.
+
 2009-09-22  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am (version.c): Explicitly tell Mercurial where the

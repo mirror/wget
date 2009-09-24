@@ -345,7 +345,7 @@ gethostbyname_with_timeout (const char *host_name, double timeout)
 }
 
 /* Print error messages for host errors.  */
-static char *
+static const char *
 host_errstr (int error)
 {
   /* Can't use switch since some of these constants can be equal,
