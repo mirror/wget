@@ -1,5 +1,7 @@
 2009-09-24  Micah Cowan  <micah@cowan.name>
 
+	* vms.c: Moved from vms/vms.c.
+
 	* sysdep.h: Use proper prototypes for snprintf, vsnprintf (thanks
 	to Steven Schweda).
 
