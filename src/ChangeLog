@@ -1,3 +1,10 @@
+2009-09-24  Steven Schweda  <sms@antinode.info>
+
+	* main.c (print_version): Remove VMS-conditional build info
+	string; the new VMS builders use OS_TYPE.
+
+	* ftp.c (getftp): Fix accidental use of target -> targ.
+
 2009-09-24  Micah Cowan  <micah@cowan.name>
 
 	* host.c (host_errstr): host_errstr should return const char *.
