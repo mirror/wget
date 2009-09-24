@@ -216,10 +216,11 @@ void *memrchr (const void *, int, size_t);
 /* These are defined in snprintf.c.  It would be nice to have an
    snprintf.h, though.  */
 #ifndef HAVE_SNPRINTF
-int snprintf ();
+int snprintf (char *str, size_t count, const char *fmt, ...);
 #endif
 #ifndef HAVE_VSNPRINTF
-int vsnprintf ();
+#include <stdarg.h>
+int vsnprintf (char *str, size_t count, const char *fmt, va_list arg);
 #endif
 
 /* Some systems (Linux libc5, "NCR MP-RAS 3.0", and others) don't

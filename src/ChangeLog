@@ -1,3 +1,8 @@
+2009-09-24  Micah Cowan  <micah@cowan.name>
+
+	* sysdep.h: Use proper prototypes for snprintf, vsnprintf (thanks
+	to Steven Schweda).
+
 2009-09-24  Steven Schweda  <sms@antinode.info>
 
 	* main.c (print_version): Remove VMS-conditional build info
