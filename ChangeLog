@@ -1,3 +1,7 @@
+2009-09-24  Micah Cowan  <micah@cowan.name>
+
+	* vms/vms.c: Moved to src/src.c.
+
 2009-09-22  Micah Cowan  <micah@cowan.name>
 
 	* configure.ac: Added "sleep" and "symlink" to AC_CHECK_FUNCS,
