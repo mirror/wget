@@ -1,16 +1,4 @@
-2009-09-24  Micah Cowan  <micah@cowan.name>
-
-	From Steven Schweda's description of his changes:
-
-	* vms/vms.c: Moved to src/src.c.
-
-	* vms/getopt.h: Copied from lib/getopt.in.h.
-
-	* vms/alloca.h: Created (empty).
-
-	* vms/stdint.h: Created (single #include <inttypes.h>)
-
-2008-09-22  Micah Cowan  <micah@cowan.name>
+2009-09-22  Micah Cowan  <micah@cowan.name>
 
 	* configure.ac: Added "sleep" and "symlink" to AC_CHECK_FUNCS,
 	removing the hard-coded definition of HAVE_SYMLINK. When running
