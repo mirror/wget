@@ -41,7 +41,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " --debug --iri -rH"
+my $cmdline = $WgetTest::WGETPATH . " --iri -rH"
     . " -e http_proxy=localhost:{{port}} http://start-here.com/start.html";
 
 my $expected_error_code = 0;

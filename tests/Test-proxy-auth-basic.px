@@ -25,7 +25,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " --debug --user=fiddle-dee-dee --password=Dodgson"
+my $cmdline = $WgetTest::WGETPATH . " --user=fiddle-dee-dee --password=Dodgson"
     . " -e http_proxy=localhost:{{port}} http://no.such.domain/needs-auth.txt";
 
 my $expected_error_code = 0;

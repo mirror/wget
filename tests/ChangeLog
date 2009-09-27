@@ -1,3 +1,9 @@
+2009-09-27  Micah Cowan  <micah@cowan.name>
+
+	* Test-idn-cmd.px, Test-idn-headers.px, Test-idn-meta.px,
+	Test-idn-robots.px, Test-proxy-auth-basic.px: Removed --debug from
+	invocation (in case it wasn't built with --debug support).
+
 2009-09-24  Micah Cowan  <micah@cowan.name>
 
 	* Test-ftp-iri-disabled.px: Fix name "Test-ftp-iri" ->
