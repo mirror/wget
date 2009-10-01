@@ -1,7 +1,6 @@
 /* Declarations for getopt.
-   Copyright (C) 1989, 1990, 1991, 1992, 1993, 1994, 1996, 1997, 1998,
-   1999, 2001, 2003, 2004, 2005, 2006, 2007, 2009 Free Software
-   Foundation, Inc.
+   Copyright (C) 1989-1994,1996-1999,2001,2003,2004,2005,2006,2007
+   Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    This program is free software: you can redistribute it and/or modify
