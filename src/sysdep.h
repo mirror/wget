@@ -131,23 +131,8 @@ void *alloca (size_t);
 # include "mswindows.h"
 #endif
 
-/* Provide support for C99-type boolean type "bool".  This blurb comes
-   straight from the Autoconf 2.59 manual. */
-#if HAVE_STDBOOL_H
+/* Provided by gnulib on systems that don't have it: */
 # include <stdbool.h>
-#else
-# if ! HAVE__BOOL
-#  ifdef __cplusplus
-typedef bool _Bool;
-#  else
-typedef unsigned char _Bool;
-#  endif
-# endif
-# define bool _Bool
-# define false 0
-# define true 1
-# define __bool_true_false_are_defined 1
-#endif
 
 /* Needed for compilation under OS/2 and MSDOS */
 #if defined(__EMX__) || defined(MSDOS)

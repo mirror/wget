@@ -1,3 +1,8 @@
+2009-09-30  Micah Cowan  <micah@cowan.name>
+
+	* sysdep.h: Unconditionally include stdbool.h (gnulib has it for
+	systems that don't supply it.)
+
 2009-09-24  Micah Cowan  <micah@cowan.name>
 
 	* vms.c: Moved from vms/vms.c.
