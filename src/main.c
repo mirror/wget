@@ -76,7 +76,7 @@ extern char *compilation_string;
 extern char *system_getrc;
 extern char *link_string;
 /* defined in build_info.c */
-extern char *compiled_features[];
+extern const char *compiled_features[];
 /* Used for --version output in print_version */
 #define MAX_CHARS_PER_LINE      72
 #define TABULATION              4

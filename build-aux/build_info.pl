@@ -78,7 +78,7 @@ sub output_code
 
     print $fh do { local $/; <DATA> }, "\n";
     print $fh <<EOC;
-const char* (compiled_features[]) =
+const char *compiled_features[] =
 {
 
 EOC

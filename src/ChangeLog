@@ -1,5 +1,7 @@
 2009-10-09  Micah Cowan  <micah@cowan.name>
 
+	* main.c: Fix declaration of compiled_features.
+
 	* build_info.c.in: Adapt to new input format. Added a check for
 	large-file support. Replaced the "openssl" and "gnutls"
 	advertisements with a single "ssl/foo" advertisement.
