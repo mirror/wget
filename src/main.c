@@ -786,9 +786,7 @@ print_version (void)
   int i;
 
   printf (_("GNU Wget %s built on %s.\n\n"), version_string, OS_TYPE);
-  /* compiled_features is a char*[]. We limit the characters per
-     line to MAX_CHARS_PER_LINE and prefix each line with a constant
-     number of spaces for proper alignment. */
+
   for (i = 0; compiled_features[i] != NULL; )
     {
       int line_length = MAX_CHARS_PER_LINE;
@@ -801,6 +799,7 @@ print_version (void)
       printf ("\n");
     }
   printf ("\n");
+
   /* Handle the case when $WGETRC is unset and $HOME/.wgetrc is
      absent. */
   printf ("%s\n", wgetrc_title);
