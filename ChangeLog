@@ -1,3 +1,11 @@
+2009-10-09  Micah Cowan  <micah@cowan.name>
+
+	* build_aux/build_info.pl: Reworked the input format. Eliminated
+	support, and need, for arbitrary #if blocks. Introduced
+	"choices", and explicitly open the .c file rather than print to
+	STDOUT, so we avoid creating the file if we find problems with
+	the input. Options are advertised in alphabetical order.
+
 2009-09-24  Micah Cowan  <micah@cowan.name>
 
 	* vms/vms.c: Moved to src/src.c.

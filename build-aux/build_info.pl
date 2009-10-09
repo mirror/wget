@@ -20,8 +20,7 @@
 use strict;
 use warnings;
 
-use FindBin qw($Bin);
-use File::Spec ();
+use Carp qw(croak);
 
 my $file = shift @ARGV;
 
@@ -32,59 +31,92 @@ my $file = shift @ARGV;
 
 sub parse_config
 {
-    my (%block, @defines, %feature);
+    my $features = [];
+    my $choice_key;
+    my $choice = [];
+    my $list = $features;
 
-    open(my $fh, '<', $file) or die "Cannot open $file: $!";
-    my $cfg = do { local $/; <$fh> };
+    open(my $fh, '<', "$file.in") or die "Cannot open $file.in: $!";
+
+    while (<$fh>) {
+        next if /^\s*$/;
+
+        if ($list eq $choice) {
+            unless (s/^\s+//) {
+                $list = $features;
+                push @$features, [$choice_key, $choice];
+                $choice = [];
+                undef $choice_key;
+            }
+        } elsif (/^([A-Za-z0-9_-]+) \s+ choice:\s*$/x) {
+            $choice_key = $1;
+            $list = $choice;
+            next;
+        }
+
+        if (/^([A-Za-z0-9_-]+) \s+ (.*)$/x) {
+            push @$list, [$1, $2];
+        } else {
+            croak "Can't parse line: $_";
+        }
+    }
+
+    if ($list eq $choice) {
+        push @$features, [$choice_key, $choice];
+    }
+
     close($fh);
 
-    while ($cfg =~ /^\ *? (\w+) (?:\s+?)? (\w+?)? \s*$/gmx) {
-        $feature{$1} = $2 || '_MISSING';
-        push @defines, $1;
-    }
-    while ($cfg =~ /^(\ *? \#\w+? \s+? (\w+) .+ \#\w+)/gmsx) {
-        $block{$2} = $1;
-    }
-
-    my %data = (
-        block   => \%block,
-        defines => \@defines,
-        feature => \%feature,
-    );
-
-    return \%data;
+    return $features;
 }
 
 sub output_code
 {
-    my ($block, $defines, $feature) =
-      map $_[0]->{$_}, qw(block defines feature);
+    my $features = shift;
 
-    print do { local $/; <DATA> }, "\n";
-    print <<EOC;
+    open(my $fh, '>', "$file") or die "Cannot open $file: $!";
+
+    print $fh do { local $/; <DATA> }, "\n";
+    print $fh <<EOC;
 const char* (compiled_features[]) =
 {
 
 EOC
-    my @output;
-    foreach my $define (@$defines) {
-        if (!exists $block->{$define}) {
-            push @output, <<EOC;
-#ifdef $define
-  "+$feature->{$define}",
-#else
-  "-$feature->{$define}",
-#endif
+    foreach my $feature (sort { $a->[0] cmp $b->[0] } @$features) {
+        my ($name, $check) = @$feature;
+
+        if (ref $check eq 'ARRAY') {
+            my ($ch_name, $ch_check) = @{ shift @$check };
+            print $fh <<EOC;
+#if $ch_check
+  "+$name/$ch_name",
 EOC
-        }
-        else {
-            push @output, <<EOC;
-$block->{$define}
+            foreach my $choice (@$check) {
+                ($ch_name, $ch_check) = @$choice;
+
+                print $fh <<EOC;
+#elif $ch_check
+  "+$name/$ch_name",
+EOC
+            }
+                print $fh <<EOC;
+#else 
+  "-$name",
+#endif
+
+EOC
+        } else {
+            print $fh <<EOC;
+#if $check
+  "+$name",
+#else
+  "-$name",
+#endif
+
 EOC
         }
     }
-    print join "\n", @output;
-    print <<EOC;
+    print $fh <<EOC;
 
   /* sentinel value */
   NULL

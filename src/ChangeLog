@@ -1,3 +1,9 @@
+2009-10-09  Micah Cowan  <micah@cowan.name>
+
+	* build_info.c.in: Adapt to new input format. Added a check for
+	large-file support. Replaced the "openssl" and "gnutls"
+	advertisements with a single "ssl/foo" advertisement.
+
 2009-09-30  Micah Cowan  <micah@cowan.name>
 
 	* sysdep.h: Unconditionally include stdbool.h (gnulib has it for

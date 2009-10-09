@@ -65,7 +65,7 @@ MD5_LDADD = @MD5_LDADD@
 
 build_info.c: $(srcdir)/Makefile.am $(srcdir)/build_info.c.in
 	$(PERL) $(top_srcdir)/build-aux/build_info.pl \
-	    $(srcdir)/build_info.c.in > $@
+	    $(srcdir)/build_info.c
 
 ESCAPEQUOTE = sed -e 's/[\\"]/\\&/g' -e 's/\\"/"/' -e 's/\\";$$/";/'
 version.c:  $(wget_SOURCES) ../lib/libgnu.a $(MD5_LDADD) \
