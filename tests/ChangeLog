@@ -1,3 +1,9 @@
+2009-10-14  Steven Schubiger  <stsc@member.fsf.org>
+
+	* Test-E-k-K.px, Test-cookies-401.px, Test-ftp-bad-list.px,
+	Test-iri-list.px, Test-iri.px: Removed -d from invocation.
+	Patch by Mike Frysinger.
+	
 2009-09-27  Micah Cowan  <micah@cowan.name>
 
 	* Test-idn-cmd.px, Test-idn-headers.px, Test-idn-meta.px,

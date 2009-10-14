@@ -61,7 +61,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " -d -r -nd -E -k -K http://localhost:{{port}}/index.php";
+my $cmdline = $WgetTest::WGETPATH . " -r -nd -E -k -K http://localhost:{{port}}/index.php";
 
 my $expected_error_code = 0;
 

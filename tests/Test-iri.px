@@ -186,7 +186,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " -d --iri --restrict-file-names=nocontrol -nH -r http://localhost:{{port}}/";
+my $cmdline = $WgetTest::WGETPATH . " --iri --restrict-file-names=nocontrol -nH -r http://localhost:{{port}}/";
 
 my $expected_error_code = 0;
 

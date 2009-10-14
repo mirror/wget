@@ -29,7 +29,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " -d -nH -Nc -r ftp://localhost:{{port}}/";
+my $cmdline = $WgetTest::WGETPATH . " -nH -Nc -r ftp://localhost:{{port}}/";
 
 my $expected_error_code = 0;
 

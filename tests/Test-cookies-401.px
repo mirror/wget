@@ -29,7 +29,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " -d http://localhost:{{port}}/one.txt"
+my $cmdline = $WgetTest::WGETPATH . " http://localhost:{{port}}/one.txt"
     . " http://localhost:{{port}}/two.txt";
 
 my $expected_error_code = 6;
