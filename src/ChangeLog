@@ -1,3 +1,8 @@
+2009-10-24  Petr Pisar  <petr.pisar@atlas.cz>
+
+	* openssl.c: Implement support for (multiple) subjectAltNames in
+	X509 certificates, not just the commonName.
+
 2009-10-09  Micah Cowan  <micah@cowan.name>
 
 	* main.c: Fix declaration of compiled_features.
