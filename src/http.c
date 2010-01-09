@@ -942,6 +942,66 @@ skip_short_body (int fd, wgint contlen)
   return true;
 }
 
+#define NOT_RFC2231 0
+#define RFC2231_NOENCODING 1
+#define RFC2231_ENCODING 2
+
+/* extract_param extracts the parameter name into NAME.
+   However, if the parameter name is in RFC2231 format then
+   this function adjusts NAME by stripping of the trailing
+   characters that are not part of the name but are present to
+   indicate the presence of encoding information in the value
+   or a fragment of a long parameter value
+*/
+static int
+modify_param_name(param_token *name)
+{
+  const char *delim1 = memchr (name->b, '*', name->e - name->b);
+  const char *delim2 = memrchr (name->b, '*', name->e - name->b);
+
+  int result;
+
+  if(delim1 == NULL)
+    {
+      result = NOT_RFC2231;
+    }
+  else if(delim1 == delim2)
+    {
+      if ((name->e - 1) == delim1)
+	{
+	  result = RFC2231_ENCODING;
+	}
+      else
+	{
+	  result = RFC2231_NOENCODING;
+	}
+      name->e = delim1;
+    }
+  else
+    {
+      name->e = delim1;
+      result = RFC2231_ENCODING;
+    }
+  return result;
+}
+
+/* extract_param extract the paramater value into VALUE.
+   Like modify_param_name this function modifies VALUE by
+   stripping off the encoding information from the actual value
+*/
+static void
+modify_param_value (param_token *value, int encoding_type )
+{
+  if (RFC2231_ENCODING == encoding_type)
+    {
+      const char *delim = memrchr (value->b, '\'', value->e - value->b);
+      if ( delim != NULL )
+	{
+	  value->b = (delim+1);
+	}
+    }
+}
+
 /* Extract a parameter from the string (typically an HTTP header) at
    **SOURCE and advance SOURCE to the next parameter.  Return false
    when there are no more parameters to extract.  The name of the
@@ -1013,7 +1073,29 @@ extract_param (const char **source, param_token *name, param_token *value,
       if (*p == separator) ++p;
     }
   *source = p;
+
+  int param_type = modify_param_name(name);
+  if (NOT_RFC2231 != param_type)
+    {
+      modify_param_value(value, param_type);
+    }
   return true;
+}
+
+#undef NOT_RFC2231
+#undef RFC2231_NOENCODING
+#undef RFC2231_ENCODING
+
+/* Appends the string represented by VALUE to FILENAME */
+
+static void
+append_value_to_filename (char **filename, param_token const * const value)
+{
+  int original_length = strlen(*filename);
+  int new_length = strlen(*filename) + (value->e - value->b);
+  *filename = xrealloc (*filename, new_length+1);
+  memcpy (*filename + original_length, value->b, (value->e - value->b)); 
+  (*filename)[new_length] = '\0';
 }
 
 #undef MAX
@@ -1035,46 +1117,72 @@ extract_param (const char **source, param_token *name, param_token *value,
 
    The file name is stripped of directory components and must not be
    empty.  */
-
 static bool
 parse_content_disposition (const char *hdr, char **filename)
 {
+  *filename = NULL;
   param_token name, value;
   while (extract_param (&hdr, &name, &value, ';'))
-    if (BOUNDED_EQUAL_NO_CASE (name.b, name.e, "filename") && value.b != NULL)
-      {
-        /* Make the file name begin at the last slash or backslash. */
-        const char *last_slash = memrchr (value.b, '/', value.e - value.b);
-        const char *last_bs = memrchr (value.b, '\\', value.e - value.b);
-        if (last_slash && last_bs)
-          value.b = 1 + MAX (last_slash, last_bs);
-        else if (last_slash || last_bs)
-          value.b = 1 + (last_slash ? last_slash : last_bs);
-        if (value.b == value.e)
-          continue;
-        /* Start with the directory prefix, if specified. */
-        if (opt.dir_prefix)
-          {
-            int prefix_length = strlen (opt.dir_prefix);
-            bool add_slash = (opt.dir_prefix[prefix_length - 1] != '/');
-            int total_length;
-
-            if (add_slash)
-              ++prefix_length;
-            total_length = prefix_length + (value.e - value.b);
-            *filename = xmalloc (total_length + 1);
-            strcpy (*filename, opt.dir_prefix);
-            if (add_slash)
-              (*filename)[prefix_length - 1] = '/';
-            memcpy (*filename + prefix_length, value.b, (value.e - value.b));
-            (*filename)[total_length] = '\0';
-          }
-        else
-          *filename = strdupdelim (value.b, value.e);
-        return true;
-      }
-  return false;
+    {
+      int isFilename = BOUNDED_EQUAL_NO_CASE ( name.b, name.e, "filename" );
+      if ( isFilename && value.b != NULL)
+	{
+	  /* Make the file name begin at the last slash or backslash. */
+	  const char *last_slash = memrchr (value.b, '/', value.e - value.b);
+	  const char *last_bs = memrchr (value.b, '\\', value.e - value.b);
+	  if (last_slash && last_bs)
+	    value.b = 1 + MAX (last_slash, last_bs);
+	  else if (last_slash || last_bs)
+	    value.b = 1 + (last_slash ? last_slash : last_bs);
+	  if (value.b == value.e)
+	    continue;
+	  /* Start with the directory prefix, if specified. */
+	  if (opt.dir_prefix)
+	    {
+	      if (!(*filename))
+		{
+		  int prefix_length = strlen (opt.dir_prefix);
+		  bool add_slash = (opt.dir_prefix[prefix_length - 1] != '/');
+		  int total_length;
+		  
+		  if (add_slash) 
+		    ++prefix_length;
+		  total_length = prefix_length + (value.e - value.b);            
+		  *filename = xmalloc (total_length + 1);
+		  strcpy (*filename, opt.dir_prefix);
+		  if (add_slash) 
+		    (*filename)[prefix_length - 1] = '/';
+		  memcpy (*filename + prefix_length, value.b, (value.e - value.b));
+		  (*filename)[total_length] = '\0';
+		}
+	      else
+		{
+		  append_value_to_filename (filename, &value);
+		}  
+	    }
+	  else
+	    {
+	      if (*filename)
+		{
+		  append_value_to_filename (filename, &value);
+		}
+	      else
+		{
+		  *filename = strdupdelim (value.b, value.e);
+		}
+	    }
+	}
+    }
+  if (*filename)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
 }
+
 
 /* Persistent connections.  Currently, we cache the most recently used
    connection as persistent, provided that the HTTP server agrees to
@@ -3368,6 +3476,8 @@ test_parse_content_disposition()
     { "attachment; filename=\"file.ext\"; dummy", "somedir", "somedir/file.ext", true },
     { "attachment", NULL, NULL, false },
     { "attachment", "somedir", NULL, false },
+    { "attachement; filename*=UTF-8'en-US'hello.txt", NULL, "hello.txt", true },
+    { "attachement; filename*0=\"hello\"; filename*1=\"world.txt\"", NULL, "helloworld.txt", true },
   };
 
   for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i)

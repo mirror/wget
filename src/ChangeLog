@@ -1,3 +1,8 @@
+2009-09-22  Arvind Jamuna Dixit  <ardsrk@gmail.com>
+
+	* http.c (extract_param, parse_content_disposition): Support
+	RFC 2231 while parsing Content-Disposition header
+
 2009-10-24  Petr Pisar  <petr.pisar@atlas.cz>
 
 	* openssl.c: Implement support for (multiple) subjectAltNames in
