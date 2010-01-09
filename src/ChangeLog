@@ -1,3 +1,8 @@
+2009-10-09  Steven Schweda  <sms@antinode.info>
+
+	* utils.c: Added characters " : \ | to the list of normal
+	caret-escaped (ODS5) characters in the char_prop[] table.
+
 2009-09-22  Arvind Jamuna Dixit  <ardsrk@gmail.com>
 
 	* http.c (extract_param, parse_content_disposition): Support
@@ -20,6 +25,13 @@
 
 	* sysdep.h: Unconditionally include stdbool.h (gnulib has it for
 	systems that don't supply it.)
+
+	* vms.c: Added functions vms_basename(), used to extract the
+	bare executable name from argv[0], and vms_getpass(), a
+	VMS-specific replacement for GNU getpass().
+
+	 vms.c: Added global string constants: compilation_string
+	(NULL), link_string (NULL), and version_string (real).
 
 2009-09-24  Micah Cowan  <micah@cowan.name>
 

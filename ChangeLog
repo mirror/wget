@@ -1,3 +1,36 @@
+2009-10-09  Steven Schweda  <sms@antinode.info>
+
+	* New VMS MMS/MMK builders, to accommodate the new source tree
+	structure:
+	lib/DESCRIP_DEPS.MMS            Dependencies (lib)
+	lib/DESCRIP_MODS.MMS            Modules (lib)
+	lib/DESCRIP_SRC.MMS             Main (lib)
+	md5/DESCRIP_DEPS.MMS            Dependencies (md5)
+	md5/DESCRIP_MODS.MMS            Modules (md5)
+	md5/DESCRIP_SRC.MMS             Main (md5)
+	src/DESCRIP_DEPS.MMS            Dependencies (src)
+	src/DESCRIP_MODS.MMS            Modules (src)
+	src/DESCRIP_SRC.MMS             Main (src)
+	vms/DESCRIP.MMS                 Main (global)
+	vms/DESCRIP_MKDEPS.MMS          Dependency generator
+	vms/DESCRIP_SRC.MMS             Main (main)
+	vms/DESCRIP_SRC_CMN.MMS         Main (common)
+	vms/DESCRIP_SRC_FLAGS.MMS       Compiler and linker flags
+	vms/COLLECT_DEPS.COM            Dependency processor
+	vms/CONFIG_EXTRACT.COM          Extract AC_INIT from configure.ac
+	vms/WGET_MULTINET.OPT           Link options for (old) MultiNet
+	vms/WGET_SSL_HP.OPT             Link options for HP SSL
+	vms/WGET_SSL_O.OPT              Link options for OpenSSL
+
+	* Other VMS-specific files:
+	vms/alloca.h                    Dummy alloca.h.
+	vms/config.h_vms                Manually crafted config.h
+	vms/stdint.h                    Dummy stdint.h
+	vms/vms.h                       Declarations, prototypes for vms.c
+	vms/vms_ip.h                    Helper for netdb.h
+	vms/VMS_NOTES.TXT               Instructions, notes
+	vms/WGET.HLP                    Basic VMS HELP
+
 2009-10-09  Micah Cowan  <micah@cowan.name>
 
 	* build_aux/build_info.pl: Reworked the input format. Eliminated
