@@ -1,44 +1,52 @@
-$!                                              12 April 2005.  SMS.
+$!                                              5 December 2006.  SMS.
 $!
-$!    Collect all source file dependencies specified by P2,
-$!    and add P3 prefix.
-$!    Convert absolute dependencies to relative from P4.
-$!    P1 = output file specification.
+$! Common VMS accessory procedure.
 $!
-$! MMS /EXTENDED_SYNTAX can't easily pass a macro invocation for P3, so
+$!    For the product named by P1,
+$!    P2 = output file specification.
+$!    Collect all source file dependencies specified by P3,
+$!    and add P4 prefix to the object file.
+$!    Convert absolute dependencies to relative from one level above P5,
+$!    and add P6 prefix (typically a rooted logical name with ":[").
+$!    Convert "[.P7]" to "[.P4]" in dependencies.
+$!
+$! MMS /EXTENDED_SYNTAX can't easily pass a macro invocation for P4, so
 $! we remove any internal spaces which might have been added to prevent
-$! immediate evaluation of a macro invocation.
+$! immediate evaluation of such a macro invocation.
 $!
-$ prefix = f$edit( p3, "COLLAPSE")
+$ prefix = f$edit( p4, "COLLAPSE")
+$ here = f$environment( "DEFAULT")
+$ dev_lose = f$edit( f$parse( p5, , , "DEVICE", "SYNTAX_ONLY"), "UPCASE")
+$ dir_lose = f$edit( f$parse( p5, , , "DIRECTORY", "SYNTAX_ONLY"), "UPCASE")
+$ set default 'dev_lose''dir_lose'
+$ set default [-]
+$ dev_dir_lose = f$environment( "DEFAULT")- "]"
 $!
-$ dev_lose = f$parse( p4, , , "DEVICE", "SYNTAX_ONLY")
-$ dir_lose = f$parse( p4, , , "DIRECTORY", "SYNTAX_ONLY")
-$ suffix = ".VMS]"
-$ suffix_loc = f$locate( suffix, dir_lose)
-$ if (suffix_loc .lt f$length( dir_lose))
+$ p6_last = f$extract( (f$length( p6)- 1), 1, p6)
+$!
+$ dest = ""
+$ if (p7 .nes. "")
 $ then
-$    dev_dir_lose = dev_lose+ dir_lose- suffix
-$ else
-$    dev_dir_lose = dev_lose+ dir_lose- "]"
+$    dest = ".''p7']"
 $ endif
 $!
-$!!! write sys$output " d_d_l: ""''dev_dir_lose'""."
+$ set default 'here'
 $!
 $! For portability, make the output file record format Stream_LF.
 $!
-$ create /fdl = sys$input 'p1'
+$ create /fdl = sys$input 'p2'
 RECORD
         Carriage_Control carriage_return
         Format stream_lf
 $!
-$ open /read /write /error = end_main deps_out 'p1'
+$ open /read /write /error = end_main deps_out 'p2'
 $ on error then goto loop_main_end
 $!
 $! Include proper-inclusion-check preface.
 $!
-$ incl_macro = "INCL_"+ f$parse( p1, , , "NAME", "SYNTAX_ONLY")
+$ incl_macro = "INCL_"+ f$parse( p2, , , "NAME", "SYNTAX_ONLY")
 $ write deps_out "#"
-$ write deps_out "# Wget for VMS - MMS (or MMK) Source Dependency File."
+$ write deps_out "# ''p1' - MMS (or MMK) Source Dependency File."
 $ write deps_out "#"
 $ write deps_out ""
 $ write deps_out -
@@ -56,13 +64,13 @@ $!
 $! Actual dependencies from individual dependency files.
 $!
 $ loop_main_top:
-$    file = f$search( p2)
+$    file = f$search( p3)
 $    if (file .eqs. "") then goto loop_main_end
 $!
 $    open /read /error = end_subs deps_in 'file'
 $    loop_subs_top:
 $       read /error = loop_subs_end deps_in line
-$       line_reduced = f$edit( line, "COMPRESS, TRIM")
+$       line_reduced = f$edit( line, "COMPRESS, TRIM, UPCASE")
 $       colon = f$locate( " : ", line_reduced)
 $       if (colon .ge. f$length( line_reduced)) then goto loop_subs_top
 $       d_d_l_loc = f$locate( dev_dir_lose, -
@@ -70,9 +78,36 @@ $       d_d_l_loc = f$locate( dev_dir_lose, -
 $       if (d_d_l_loc .eq. 0)
 $       then
 $          front = f$extract( 0, (colon+ 3), line_reduced)
-$          back = f$extract( (colon+ 3+ f$length( dev_dir_lose)), -
+$          back = f$extract( (colon+ 3+ f$length( dev_dir_lose)+ 1), -
             1000, line_reduced)
-$          line = front+ "[-"+ back
+$!
+$!         If specified, replace final ".P7]" with part of P4.
+$!
+$!         This allows a system-specific subdirectory name on a
+$!         dependency file to be replaced with an MMS macro, for
+$!         example, ".ALPHA]" with ".$(DEST)]".
+$!
+$          if (dest .nes. "")
+$          then
+$             dest_dot_loc = f$locate( dest, back)
+$             if (dest_dot_loc .lt. f$length( back))
+$             then
+$                back = f$extract( 0, dest_dot_loc, back)+ -
+                  f$extract( 1, 1000, prefix)+ -
+                  f$extract( (dest_dot_loc+ f$length( dest)), 1000, back)
+$             endif
+$          endif
+$!
+$!         Replace null subdirectory with "000000".
+$!
+$          if (f$length( back) .gt. 0)
+$          then
+$             mid = p6
+$          else
+$             mid = "000000]"
+$          endif
+$!
+$          line = front+ mid+ back
 $          write deps_out "''prefix'"+ "''line'"
 $       endif
 $    goto loop_subs_top

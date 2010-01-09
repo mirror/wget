@@ -16,6 +16,7 @@
  *     ods_conform()
  *     set_ods5_dest()
  *     vms_arch()
+ *     vms_basename()
  *     vms_vers()
  *
  *  Global storage:
@@ -77,6 +78,8 @@ char *ods_conform( char *path);
 int set_ods5_dest( char *path);
 
 char *vms_arch( void);
+
+char *vms_basename( char *file_spec);
 
 char *vms_vers( void);
 

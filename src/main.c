@@ -825,13 +825,15 @@ print_version (void)
                         MAX_CHARS_PER_LINE);
 #endif /* def ENABLE_NLS */
 
-  format_and_print_line (compile_title,
-			 compilation_string,
-			 MAX_CHARS_PER_LINE);
+  if (compilation_string != NULL)
+    format_and_print_line (compile_title,
+                           compilation_string,
+                           MAX_CHARS_PER_LINE);
 
-  format_and_print_line (link_title,
-			 link_string,
-			 MAX_CHARS_PER_LINE);
+  if (link_string != NULL)
+    format_and_print_line (link_title,
+                           link_string,
+                           MAX_CHARS_PER_LINE);
 
   printf ("\n");
   /* TRANSLATORS: When available, an actual copyright character
@@ -869,11 +871,16 @@ main (int argc, char **argv)
   i18n_initialize ();
 
   /* Construct the name of the executable, without the directory part.  */
+#ifdef __VMS
+  /* On VMS, lose the "dev:[dir]" prefix and the ".EXE;nnn" suffix. */
+  exec_name = vms_basename (argv[0]);
+#else /* def __VMS */
   exec_name = strrchr (argv[0], PATH_SEPARATOR);
   if (!exec_name)
     exec_name = argv[0];
   else
     ++exec_name;
+#endif /* def __VMS [else] */
 
 #ifdef WINDOWS
   /* Drop extension (typically .EXE) from executable filename. */

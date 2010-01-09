@@ -1,0 +1,59 @@
+#                                               21 September 2009.  SMS.
+#
+#    Wget 1.12 for VMS - MMS (or MMK) Object Module List File.
+#
+
+# This description file is included by other description files.  It is
+# not intended to be used alone.  Verify proper inclusion.
+
+.IFDEF INCL_DESCRIP_SRC
+.ELSE
+$$$$ THIS DESCRIPTION FILE IS NOT INTENDED TO BE USED THIS WAY.
+.ENDIF
+
+# Object library modules.
+
+MODS_OBJS_LIB_SRC_NOSSL = \
+ BUILD_INFO=[.$(DEST)]BUILD_INFO.OBJ \
+ CMPT=[.$(DEST)]CMPT.OBJ \
+ CONNECT=[.$(DEST)]CONNECT.OBJ \
+ CONVERT=[.$(DEST)]CONVERT.OBJ \
+ COOKIES=[.$(DEST)]COOKIES.OBJ \
+ CSS-URL=[.$(DEST)]CSS-URL.OBJ \
+ CSS=[.$(DEST)]CSS.OBJ \
+ EXITS=[.$(DEST)]EXITS.OBJ \
+ FTP-BASIC=[.$(DEST)]FTP-BASIC.OBJ \
+ FTP-LS=[.$(DEST)]FTP-LS.OBJ \
+ FTP-OPIE=[.$(DEST)]FTP-OPIE.OBJ \
+ FTP=[.$(DEST)]FTP.OBJ \
+ GEN-MD5=[.$(DEST)]GEN-MD5.OBJ \
+ HASH=[.$(DEST)]HASH.OBJ \
+ HOST=[.$(DEST)]HOST.OBJ \
+ HTML-PARSE=[.$(DEST)]HTML-PARSE.OBJ \
+ HTML-URL=[.$(DEST)]HTML-URL.OBJ \
+ HTTP-NTLM=[.$(DEST)]HTTP-NTLM.OBJ \
+ HTTP=[.$(DEST)]HTTP.OBJ \
+ INIT=[.$(DEST)]INIT.OBJ \
+ LOG=[.$(DEST)]LOG.OBJ \
+ MAIN=[.$(DEST)]MAIN.OBJ \
+ NETRC=[.$(DEST)]NETRC.OBJ \
+ PROGRESS=[.$(DEST)]PROGRESS.OBJ \
+ PTIMER=[.$(DEST)]PTIMER.OBJ \
+ RECUR=[.$(DEST)]RECUR.OBJ \
+ RES=[.$(DEST)]RES.OBJ \
+ RETR=[.$(DEST)]RETR.OBJ \
+ SNPRINTF=[.$(DEST)]SNPRINTF.OBJ \
+ SPIDER=[.$(DEST)]SPIDER.OBJ \
+ URL=[.$(DEST)]URL.OBJ \
+ UTILS=[.$(DEST)]UTILS.OBJ \
+ VMS=[.$(DEST)]VMS.OBJ \
+
+.IFDEF CDEFS_SSL                # CDEFS_SSL
+MODS_OBJS_LIB_SRC_SSL = \
+ OPENSSL=[.$(DEST)]OPENSSL.OBJ
+.ELSE                           # CDEFS_SSL
+MODS_OBJS_LIB_SRC_SSL =
+.ENDIF                          # CDEFS_SSL [else]
+
+MODS_OBJS_LIB_SRC = $(MODS_OBJS_LIB_SRC_NOSSL) $(MODS_OBJS_LIB_SRC_SSL)
+

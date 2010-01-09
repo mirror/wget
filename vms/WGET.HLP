@@ -1,10 +1,12 @@
 1 WGET
- GNU Wget 1.11a, a non-interactive network retriever.
+ GNU Wget 1.12, a non-interactive network retriever.
  Usage:
         WGET :== $ device:[directory]WGET.EXE  ! Define foreign command.
         WGET [OPTION [...]] [URL [...]]
 
  Mandatory arguments for long options are also mandatory for short options.
+
+ Mail bug reports and suggestions to <bug-wget@gnu.org>.
 
 2 Startup
   -V,  --version           display the version of Wget and exit.
@@ -58,6 +60,10 @@
                                  family, one of IPv6, IPv4, or none.
        --user=USER               set both FTP and HTTP user to USER.
        --password=PASS           set both FTP and HTTP password to PASS.
+       --ask-password            prompt for passwords.
+       --no-iri                  turn off IRI support.
+       --local-encoding=ENC      use ENC as the local encoding for IRIs.
+       --remote-encoding=ENC     use ENC as the default remote encoding.
 
 2 Directories
   -nd  --no-directories           don't create directories.
@@ -71,9 +77,12 @@
        --http-user=USER        set HTTP user to USER.
        --http-passwd=PASS      set HTTP password to PASS.
        --no-cache              disallow server-cached data.
-  -E,  --html-extension        save HTML documents with ".html" extension.
+       --default-page=NAME     Change the default page name.  (Normally
+                               this is `index.html'.)
+  -E,  --html-extension        save HTML/CSS docs with proper extensions.
        --ignore-length         ignore "Content-Length" header field.
        --header=STRING         insert STRING among the headers.
+       --max-redirect          maximum redirections allowed per page.
        --proxy-user=USER       set USER as proxy username.
        --proxy-passwd=PASS     set PASS as proxy password.
        --referer=URL           include "Referer: URL" header in HTTP
@@ -91,6 +100,9 @@
        --post-file=FILE        use the POST method; send contents of FILE.
        --content-disposition   honor the Content-Disposition header when
                                choosing local file names (EXPERIMENTAL).
+       --auth-no-challenge     send Basic HTTP authentication information
+                               without first waiting for the server's
+                               challenge.
 
 2 HTTPS (SSL/TLS) options:
        --secure-protocol=PR     choose secure protocol, PR, one of: auto,
@@ -120,25 +132,21 @@
   -r,  --recursive          recursive download.
   -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).
        --delete-after       delete files locally after downloading them.
-  -k,  --convert-links      make links in downloaded HTML point to local
-                            files.
+  -k,  --convert-links      make links in downloaded HTML or CSS point to
+                            local files.
   -K,  --backup-converted   before converting file X, back up as X_orig.
   -m,  --mirror             shortcut for -r -N -l inf --no-remove-listing.
   -p,  --page-requisites    get all images, etc. needed by HTML page.
        --strict-comments    turn on strict (SGML) handling of HTML comments.
 
 2 Recursive_accept-reject
-  -A,  --accept=LIST               comma-separated list of accepted
-                                   extensions.
-  -R,  --reject=LIST               comma-separated list of rejected
-                                   extensions.
+  -A,  --accept=LIST               comma-sep'd list of accepted extensions.
+  -R,  --reject=LIST               comma-sep'd list of rejected extensions.
   -D,  --domains=LIST              comma-separated list of accepted domains.
        --exclude-domains=LIST      comma-separated list of rejected domains.
        --follow-ftp                follow FTP links from HTML documents.
-       --follow-tags=LIST          comma-separated list of followed HTML
-                                   tags.
-  -G,  --ignore-tags=LIST          comma-separated list of ignored HTML
-                                   tags.
+       --follow-tags=LIST          comma-sep'd list of followed HTML tags.
+  -G,  --ignore-tags=LIST          comma-sep'd list of ignored HTML tags.
   -H,  --span-hosts                go to foreign hosts when recursive.
   -L,  --relative                  follow relative links only.
   -I,  --include-directories=LIST  list of allowed directories.
@@ -211,8 +219,8 @@
  In Wget versions before 1.10.1, an FTP destination file was always
  created with Stream_LF format.
 
- A new command-line option, --ftp-stmlf, forces all FTP destination
- files to Stream_LF format, as in Wget versions before 1.10.1.
+ A command-line option, --ftp-stmlf, forces all FTP destination files to
+ Stream_LF format, as in Wget versions before 1.10.1.
 
  Add ";type=a" to the end of an FTP URL to specify an ASCII transfer.
 
@@ -242,4 +250,4 @@
  that the "FILE" be in Stream_LF format.  (In this case, HTTP 1.0
  requires the length of the request to be known, and the method used to
  determine the size of the file will fail for Variable-length format
- files.)
+ files.) 
