@@ -1,6 +1,12 @@
+2010-01-09  Micah Cowan  <micah@cowan.name>
+
+	* init.c, main.c, http.c, ftp.c, options.h: Renamed
+	--no-match-server-timestamps to --no-use-server-timestamps, and
+	add it to print_help.
+
 2010-01-09  David Holman  <holman.david@gmail.com>  (tiny change)
 
-	* init.c, main.c, http.c, ftp.c: Added support for
+	* init.c, main.c, http.c, ftp.c, options.h: Added support for
 	--no-match-server-timestamps.
 
 2009-12-03  Peter Rosin  <peda@lysator.liu.se>

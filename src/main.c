@@ -218,7 +218,6 @@ static struct cmdline_option option_data[] =
     { "limit-rate", 0, OPT_VALUE, "limitrate", -1 },
     { "load-cookies", 0, OPT_VALUE, "loadcookies", -1 },
     { "local-encoding", 0, OPT_VALUE, "localencoding", -1 },
-    { "match-server-timestamps", 0, OPT_BOOLEAN, "matchservertimestamps", -1 },
     { "max-redirect", 0, OPT_VALUE, "maxredirect", -1 },
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
     { "no", 'n', OPT__NO, NULL, required_argument },
@@ -267,6 +266,7 @@ static struct cmdline_option option_data[] =
     { "timeout", 'T', OPT_VALUE, "timeout", -1 },
     { "timestamping", 'N', OPT_BOOLEAN, "timestamping", -1 },
     { "tries", 't', OPT_VALUE, "tries", -1 },
+    { "use-server-timestamps", 0, OPT_BOOLEAN, "useservertimestamps", -1 },
     { "user", 0, OPT_VALUE, "user", -1 },
     { "user-agent", 'U', OPT_VALUE, "useragent", -1 },
     { "verbose", 'v', OPT_BOOLEAN, "verbose", -1 },
@@ -457,6 +457,9 @@ Download:\n"),
     N_("\
   -N,  --timestamping            don't re-retrieve files unless newer than\n\
                                  local.\n"),
+    N_("\
+  --no-use-server-timestamps     don't set the local file's timestamp by\n\
+                                 the one on the server.\n"),
     N_("\
   -S,  --server-response         print server response.\n"),
     N_("\

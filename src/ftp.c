@@ -1849,7 +1849,7 @@ Already have correct symlink %s -> %s\n\n"),
          original.  :( */
       if (actual_target != NULL)
         {
-          if (opt.matchservertimestamps
+          if (opt.useservertimestamps
               && !(f->type == FT_SYMLINK && !opt.retr_symlinks)
               && f->tstamp != -1
               && dlthis

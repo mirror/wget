@@ -2909,7 +2909,7 @@ Remote file exists.\n\n"));
             } /* send_head_first */
         } /* !got_head */
 
-      if (opt.matchservertimestamps
+      if (opt.useservertimestamps
           && (tmr != (time_t) (-1))
           && ((hstat.len == hstat.contlen) ||
               ((hstat.res == 0) && (hstat.contlen == -1))))

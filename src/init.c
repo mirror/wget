@@ -197,7 +197,6 @@ static const struct {
   { "localencoding",    &opt.locale,            cmd_string },
   { "logfile",          &opt.lfilename,         cmd_file },
   { "login",            &opt.ftp_user,          cmd_string },/* deprecated*/
-  { "matchservertimestamps", &opt.matchservertimestamps, cmd_boolean },
   { "maxredirect",      &opt.max_redirect,      cmd_number },
   { "mirror",           NULL,                   cmd_spec_mirror },
   { "netrc",            &opt.netrc,             cmd_boolean },
@@ -256,6 +255,7 @@ static const struct {
   { "useproxy",         &opt.use_proxy,         cmd_boolean },
   { "user",             &opt.user,              cmd_string },
   { "useragent",        NULL,                   cmd_spec_useragent },
+  { "useservertimestamps", &opt.useservertimestamps, cmd_boolean },
   { "verbose",          NULL,                   cmd_spec_verbose },
   { "wait",             &opt.wait,              cmd_time },
   { "waitretry",        &opt.waitretry,         cmd_time },
@@ -355,7 +355,7 @@ defaults (void)
   opt.locale = NULL;
   opt.encoding_remote = NULL;
 
-  opt.matchservertimestamps = true;
+  opt.useservertimestamps = true;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is

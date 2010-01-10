@@ -246,7 +246,7 @@ struct options
   int ftp_stmlf;                /* Force Stream_LF format for binary FTP. */
 #endif /* def __VMS */
 
-  bool matchservertimestamps;	/* Update downloaded files' timestamps to
+  bool useservertimestamps;  	/* Update downloaded files' timestamps to
 				   match those on server? */
 
 };
