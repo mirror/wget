@@ -197,6 +197,7 @@ static const struct {
   { "localencoding",    &opt.locale,            cmd_string },
   { "logfile",          &opt.lfilename,         cmd_file },
   { "login",            &opt.ftp_user,          cmd_string },/* deprecated*/
+  { "matchservertimestamps", &opt.matchservertimestamps, cmd_boolean },
   { "maxredirect",      &opt.max_redirect,      cmd_number },
   { "mirror",           NULL,                   cmd_spec_mirror },
   { "netrc",            &opt.netrc,             cmd_boolean },
@@ -353,6 +354,8 @@ defaults (void)
 #endif
   opt.locale = NULL;
   opt.encoding_remote = NULL;
+
+  opt.matchservertimestamps = true;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is

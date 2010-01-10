@@ -1849,7 +1849,8 @@ Already have correct symlink %s -> %s\n\n"),
          original.  :( */
       if (actual_target != NULL)
         {
-          if (!(f->type == FT_SYMLINK && !opt.retr_symlinks)
+          if (opt.matchservertimestamps
+              && !(f->type == FT_SYMLINK && !opt.retr_symlinks)
               && f->tstamp != -1
               && dlthis
               && file_exists_p (con->target))

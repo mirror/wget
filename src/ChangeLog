@@ -1,3 +1,8 @@
+2010-01-09  David Holman  <holman.david@gmail.com>
+
+	* init.c, main.c, http.c, ftp.c: Added support for
+	--no-match-server-timestamps.
+
 2009-12-03  Peter Rosin  <peda@lysator.liu.se>
 
 	* snprintf.c (dopr): Output %p as unsigned.

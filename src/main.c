@@ -218,6 +218,7 @@ static struct cmdline_option option_data[] =
     { "limit-rate", 0, OPT_VALUE, "limitrate", -1 },
     { "load-cookies", 0, OPT_VALUE, "loadcookies", -1 },
     { "local-encoding", 0, OPT_VALUE, "localencoding", -1 },
+    { "match-server-timestamps", 0, OPT_BOOLEAN, "matchservertimestamps", -1 },
     { "max-redirect", 0, OPT_VALUE, "maxredirect", -1 },
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
     { "no", 'n', OPT__NO, NULL, required_argument },

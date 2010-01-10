@@ -2909,7 +2909,8 @@ Remote file exists.\n\n"));
             } /* send_head_first */
         } /* !got_head */
 
-      if ((tmr != (time_t) (-1))
+      if (opt.matchservertimestamps
+          && (tmr != (time_t) (-1))
           && ((hstat.len == hstat.contlen) ||
               ((hstat.res == 0) && (hstat.contlen == -1))))
         {
