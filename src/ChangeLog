@@ -1,3 +1,7 @@
+2009-12-03  Peter Rosin  <peda@lysator.liu.se>
+
+	* snprintf.c (dopr): Output %p as unsigned.
+
 2010-01-09  Jeremy Olexa  <darkside@gentoo.org>  (tiny change)
 
 	* init.c: Deal with systems which provide PATH_MAX in
