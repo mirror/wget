@@ -1,3 +1,8 @@
+2010-01-09  Jeremy Olexa  <darkside@gentoo.org>  (tiny change)
+
+	* init.c: Deal with systems which provide PATH_MAX in
+	sys/param.h rather than limits.h.
+
 2009-10-09  Steven Schweda  <sms@antinode.info>
 
 	* utils.c: Added characters " : \ | to the list of normal

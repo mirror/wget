@@ -37,6 +37,15 @@ as that of the covered work.  */
 #endif
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
+/* not all systems provide PATH_MAX in limits.h */
+#ifndef PATH_MAX
+# include <sys/param.h>
+# ifndef PATH_MAX
+#  define PATH_MAX MAXPATHLEN
+# endif
+#endif
+
 
 #ifdef HAVE_PWD_H
 # include <pwd.h>
