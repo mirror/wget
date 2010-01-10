@@ -1,4 +1,4 @@
-2010-01-09  David Holman  <holman.david@gmail.com>
+2010-01-09  David Holman  <holman.david@gmail.com>  (tiny change)
 
 	* init.c, main.c, http.c, ftp.c: Added support for
 	--no-match-server-timestamps.
