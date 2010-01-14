@@ -1,3 +1,7 @@
+2010-01-13  Micah Cowan  <micah@cowan.name>
+
+	* openssl.c: Fixed some mixed declarations-and-code.
+
 2010-01-09  Micah Cowan  <micah@cowan.name>
 
 	* init.c, main.c, http.c, ftp.c, options.h: Renamed
