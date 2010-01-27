@@ -1,3 +1,8 @@
+2010-01-27  Paul Townsend  <aab@purdue.edu>  (tiny change)
+
+	* retr.c (fd_read_body): Be sure to measure timer when time has
+	elapsed, too, not just when we've made progress.
+
 2010-01-13  Micah Cowan  <micah@cowan.name>
 
 	* openssl.c: Fixed some mixed declarations-and-code.

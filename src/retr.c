@@ -301,7 +301,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
       else if (ret <= 0)
         break;                  /* EOF or read error */
 
-      if (progress || opt.limit_rate)
+      if (progress || opt.limit_rate || elapsed)
         {
           ptimer_measure (timer);
           if (ret > 0)
