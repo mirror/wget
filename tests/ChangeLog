@@ -1,3 +1,8 @@
+2010-02-25  Steven Schubiger  <stsc@member.fsf.org>
+
+	* FTPServer.pm (FTPServer::new): Substitute port placeholders
+	in content of files to be retrieved via FTP.
+
 2009-10-14  Steven Schubiger  <stsc@member.fsf.org>
 
 	* Test-E-k-K.px, Test-cookies-401.px, Test-ftp-bad-list.px,

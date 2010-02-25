@@ -489,6 +489,12 @@ sub new {
                                              Proto => 'tcp',
                                              Type => SOCK_STREAM)
                                         or die "bind: $!";
+
+    foreach my $file (keys %{$self->{_input}}) {
+        my $ref = \$self->{_input}{$file}{content};
+        $$ref =~ s/{{port}}/$self->sockport/eg;
+    }
+
     return $self;
 }
 
