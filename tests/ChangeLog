@@ -1,3 +1,8 @@
+2010-02-26  Steven Schubiger  <stsc@member.fsf.org>
+
+	* Test-i-http.px: Test --input-file in conjunction with HTTP.
+	* run-px, Makefile.am (EXTRA_DIST): Added Test-i-http.px.
+
 2010-02-25  Steven Schubiger  <stsc@member.fsf.org>
 
 	* FTPServer.pm (FTPServer::new): Substitute port placeholders
