@@ -1,3 +1,15 @@
+2010-03-01  Steven Schubiger  <stsc@member.fsf.org>
+
+	* retr.c (retrieve_url): Retrieve the local filename from ftp_loop. 
+	(retrieve_from_file): Return if there's no input file.
+
+	* ftp.c (ftp_loop_internal): Duplicate the local filename into
+	retrieve_url's scope when a valid reference is being passed.
+	(ftp_loop): Call ftp_loop_internal here with passing a
+	reference to the local filename, elsewhere with NULL.
+
+	* ftp.h: Adjust declaration of ftp_loop.
+	
 2010-01-27  Paul Townsend  <aab@purdue.edu>  (tiny change)
 
 	* retr.c (fd_read_body): Be sure to measure timer when time has

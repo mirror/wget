@@ -700,7 +700,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       if (redirection_count)
         oldrec = glob = false;
 
-      result = ftp_loop (u, dt, proxy_url, recursive, glob);
+      result = ftp_loop (u, &local_file, dt, proxy_url, recursive, glob);
       recursive = oldrec;
 
       /* There is a possibility of having HTTP being redirected to
@@ -918,7 +918,9 @@ retrieve_from_file (const char *file, bool html, int *count)
 
       status = retrieve_url (url_parsed, url, &input_file, NULL, NULL, &dt,
                              false, iri, true);
-      if (status != RETROK)
+      url_free (url_parsed);
+
+      if (!input_file || (status != RETROK))
         return status;
 
       if (dt & TEXTHTML)

@@ -1,3 +1,8 @@
+2010-03-01  Steven Schubiger  <stsc@member.fsf.org>
+
+	* Test-i-ftp.px: Test --input-file in conjunction with FTP.
+	* run-px, Makefile.am (EXTRA_DIST): Added Test-i-ftp.px.
+
 2010-02-26  Steven Schubiger  <stsc@member.fsf.org>
 
 	* Test-i-http.px: Test --input-file in conjunction with HTTP.

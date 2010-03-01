@@ -84,6 +84,7 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              Test-HTTP-Content-Disposition-1.px \
              Test-HTTP-Content-Disposition-2.px \
              Test-HTTP-Content-Disposition.px \
+             Test-i-ftp.px \
              Test-i-http.px \
              Test-idn-headers.px \
              Test-idn-meta.px \

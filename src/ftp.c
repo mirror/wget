@@ -1348,7 +1348,7 @@ Error in server response, closing control connection.\n"));
    This loop either gets commands from con, or (if ON_YOUR_OWN is
    set), makes them up to retrieve the file given by the URL.  */
 static uerr_t
-ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con)
+ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_file)
 {
   int count, orig_lp;
   wgint restval, len = 0, qtyread = 0;
@@ -1576,6 +1576,10 @@ Removing file due to --delete-after in ftp_loop_internal():\n"));
         con->cmd |= LEAVE_PENDING;
       else
         con->cmd &= ~LEAVE_PENDING;
+
+      if (local_file)
+        *local_file = xstrdup (locf);
+
       return RETROK;
     } while (!opt.ntry || (count < opt.ntry));
 
@@ -1611,7 +1615,7 @@ ftp_get_listing (struct url *u, ccon *con, struct fileinfo **f)
 
   con->target = xstrdup (lf);
   xfree (lf);
-  err = ftp_loop_internal (u, NULL, con);
+  err = ftp_loop_internal (u, NULL, con, NULL);
   lf = xstrdup (con->target);
   xfree (con->target);
   con->target = old_target;
@@ -1806,7 +1810,7 @@ Already have correct symlink %s -> %s\n\n"),
           else                /* opt.retr_symlinks */
             {
               if (dlthis)
-                err = ftp_loop_internal (u, f, con);
+                err = ftp_loop_internal (u, f, con, NULL);
             } /* opt.retr_symlinks */
           break;
         case FT_DIRECTORY:
@@ -1817,7 +1821,7 @@ Already have correct symlink %s -> %s\n\n"),
         case FT_PLAINFILE:
           /* Call the retrieve loop.  */
           if (dlthis)
-            err = ftp_loop_internal (u, f, con);
+            err = ftp_loop_internal (u, f, con, NULL);
           break;
         case FT_UNKNOWN:
           logprintf (LOG_NOTQUIET, _("%s: unknown/unsupported file type.\n"),
@@ -2096,7 +2100,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
         {
           /* Let's try retrieving it anyway.  */
           con->st |= ON_YOUR_OWN;
-          res = ftp_loop_internal (u, NULL, con);
+          res = ftp_loop_internal (u, NULL, con, NULL);
           return res;
         }
 
@@ -2117,7 +2121,8 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
    of URL.  Inherently, its capabilities are limited on what can be
    encoded into a URL.  */
 uerr_t
-ftp_loop (struct url *u, int *dt, struct url *proxy, bool recursive, bool glob)
+ftp_loop (struct url *u, char **local_file, int *dt, struct url *proxy, 
+          bool recursive, bool glob)
 {
   ccon con;                     /* FTP connection */
   uerr_t res;
@@ -2196,7 +2201,7 @@ ftp_loop (struct url *u, int *dt, struct url *proxy, bool recursive, bool glob)
                                    ispattern ? GLOB_GLOBALL : GLOB_GETONE);
         }
       else
-        res = ftp_loop_internal (u, NULL, &con);
+        res = ftp_loop_internal (u, NULL, &con, local_file);
     }
   if (res == FTPOK)
     res = RETROK;
