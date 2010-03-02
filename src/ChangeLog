@@ -1,5 +1,14 @@
 2010-03-02  Steven Schubiger  <stsc@member.fsf.org>
 
+	* retr.c (retrieve_from_file): Improve checking for a URL
+	by invoking url_valid_scheme instead of url_has_scheme.
+
+	* url.c (url_valid_scheme): New function.
+
+	* url.h: Add declaration for url_valid_scheme.
+
+2010-03-02  Steven Schubiger  <stsc@member.fsf.org>
+
 	* retr.c (retrieve_from_file): Free memory of input file.
 
 2010-03-01  Steven Schubiger  <stsc@member.fsf.org>

@@ -899,7 +899,7 @@ retrieve_from_file (const char *file, bool html, int *count)
   set_uri_encoding (iri, opt.locale, true);
   set_content_encoding (iri, opt.locale);
 
-  if (url_has_scheme (url))
+  if (url_valid_scheme (url))
     {
       int dt,url_err;
       uerr_t status;

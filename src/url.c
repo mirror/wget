@@ -463,6 +463,13 @@ url_has_scheme (const char *url)
   return *p == ':';
 }
 
+bool
+url_valid_scheme (const char *url)
+{
+  enum url_scheme scheme = url_scheme (url);
+  return scheme != SCHEME_INVALID;
+}
+
 int
 scheme_default_port (enum url_scheme scheme)
 {

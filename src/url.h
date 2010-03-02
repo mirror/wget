@@ -94,6 +94,7 @@ void url_free (struct url *);
 
 enum url_scheme url_scheme (const char *);
 bool url_has_scheme (const char *);
+bool url_valid_scheme (const char *);
 int scheme_default_port (enum url_scheme);
 void scheme_disable (enum url_scheme);
 
