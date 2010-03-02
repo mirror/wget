@@ -889,7 +889,7 @@ retrieve_from_file (const char *file, bool html, int *count)
   struct urlpos *url_list, *cur_url;
   struct iri *iri = iri_new();
 
-  char *input_file = NULL;
+  char *input_file, *url_file = NULL;
   const char *url = file;
 
   status = RETROK;             /* Suppose everything is OK.  */
@@ -916,11 +916,11 @@ retrieve_from_file (const char *file, bool html, int *count)
       if (!opt.base_href)
         opt.base_href = xstrdup (url);
 
-      status = retrieve_url (url_parsed, url, &input_file, NULL, NULL, &dt,
+      status = retrieve_url (url_parsed, url, &url_file, NULL, NULL, &dt,
                              false, iri, true);
       url_free (url_parsed);
 
-      if (!input_file || (status != RETROK))
+      if (!url_file || (status != RETROK))
         return status;
 
       if (dt & TEXTHTML)
@@ -935,12 +935,16 @@ retrieve_from_file (const char *file, bool html, int *count)
       iri->utf8_encode = opt.enable_iri;
       xfree_null (iri->orig_url);
       iri->orig_url = NULL;
+
+      input_file = url_file;
     }
   else
     input_file = (char *) file;
 
   url_list = (html ? get_urls_html (input_file, NULL, NULL, iri)
               : get_urls_file (input_file));
+
+  xfree_null (url_file);
 
   for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
     {

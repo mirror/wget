@@ -1,3 +1,7 @@
+2010-03-02  Steven Schubiger  <stsc@member.fsf.org>
+
+	* retr.c (retrieve_from_file): Free memory of input file.
+
 2010-03-01  Steven Schubiger  <stsc@member.fsf.org>
 
 	* retr.c (retrieve_url): Retrieve the local filename from ftp_loop. 
