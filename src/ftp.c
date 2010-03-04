@@ -1561,7 +1561,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
           total_downloaded_bytes += qtyread;
           numurls++;
 
-          if (opt.delete_after)
+          if (opt.delete_after && !input_file_url (opt.input_filename))
             {
               DEBUGP (("\
 Removing file due to --delete-after in ftp_loop_internal():\n"));

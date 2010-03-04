@@ -69,4 +69,6 @@ bool url_uses_proxy (struct url *);
 
 void set_local_file (const char **, const char *);
 
+bool input_file_url (const char *);
+
 #endif /* RETR_H */
