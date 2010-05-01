@@ -352,7 +352,7 @@ request_send (const struct request *req, int fd)
 
   APPEND (p, req->method); *p++ = ' ';
   APPEND (p, req->arg);    *p++ = ' ';
-  memcpy (p, "HTTP/1.0\r\n", 10); p += 10;
+  memcpy (p, "HTTP/1.1\r\n", 10); p += 10;
 
   for (i = 0; i < req->hcount; i++)
     {
@@ -901,29 +901,54 @@ parse_content_range (const char *hdr, wgint *first_byte_ptr,
    mode, the body is displayed for debugging purposes.  */
 
 static bool
-skip_short_body (int fd, wgint contlen)
+skip_short_body (int fd, wgint contlen, bool chunked)
 {
   enum {
     SKIP_SIZE = 512,                /* size of the download buffer */
     SKIP_THRESHOLD = 4096        /* the largest size we read */
   };
+  wgint remaining_chunk_size = 0;
   char dlbuf[SKIP_SIZE + 1];
   dlbuf[SKIP_SIZE] = '\0';        /* so DEBUGP can safely print it */
 
-  /* We shouldn't get here with unknown contlen.  (This will change
-     with HTTP/1.1, which supports "chunked" transfer.)  */
-  assert (contlen != -1);
+  assert (contlen != -1 || contlen);
 
   /* If the body is too large, it makes more sense to simply close the
      connection than to try to read the body.  */
   if (contlen > SKIP_THRESHOLD)
     return false;
 
-  DEBUGP (("Skipping %s bytes of body: [", number_to_static_string (contlen)));
-
-  while (contlen > 0)
+  while (contlen > 0 || chunked)
     {
-      int ret = fd_read (fd, dlbuf, MIN (contlen, SKIP_SIZE), -1);
+      int ret;
+      if (chunked)
+        {
+          if (remaining_chunk_size == 0)
+            {
+              char *line = fd_read_line (fd);
+              char *endl;
+              if (line == NULL)
+                {
+                  ret = -1;
+                  break;
+                }
+
+              remaining_chunk_size = strtol (line, &endl, 16);
+              if (remaining_chunk_size == 0)
+                {
+                  ret = 0;
+                  if (fd_read_line (fd) == NULL)
+                    ret = -1;
+                  break;
+                }
+            }
+
+          contlen = MIN (remaining_chunk_size, SKIP_SIZE);
+        }
+
+      DEBUGP (("Skipping %s bytes of body: [", number_to_static_string (contlen)));
+
+      ret = fd_read (fd, dlbuf, MIN (contlen, SKIP_SIZE), -1);
       if (ret <= 0)
         {
           /* Don't normally report the error since this is an
@@ -933,6 +958,15 @@ skip_short_body (int fd, wgint contlen)
           return false;
         }
       contlen -= ret;
+
+      if (chunked)
+        {
+          remaining_chunk_size -= ret;
+          if (remaining_chunk_size == 0)
+            if (fd_read_line (fd) == NULL)
+              return false;
+        }
+
       /* Safe even if %.*s bogusly expects terminating \0 because
          we've zero-terminated dlbuf above.  */
       DEBUGP (("%.*s", ret, dlbuf));
@@ -1537,6 +1571,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
      is done. */
   bool keep_alive;
 
+  /* Is the server using the chunked transfer encoding?  */
+  bool chunked_transfer_encoding = false;
+
   /* Whether keep-alive should be inhibited.
 
      RFC 2068 requests that 1.0 clients not send keep-alive requests
@@ -1739,11 +1776,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
         request_set_header (req, "Proxy-Authorization", proxyauth, rel_value);
     }
 
-  keep_alive = false;
+  keep_alive = true;
 
   /* Establish the connection.  */
 
-  if (!inhibit_keep_alive)
+  if (inhibit_keep_alive)
+    keep_alive = false;
+  else
     {
       /* Look for a persistent connection to target host, unless a
          proxy is used.  The exception is when SSL is in use, in which
@@ -1975,14 +2014,16 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   /* Check for keep-alive related responses. */
   if (!inhibit_keep_alive && contlen != -1)
     {
-      if (resp_header_copy (resp, "Keep-Alive", NULL, 0))
-        keep_alive = true;
-      else if (resp_header_copy (resp, "Connection", hdrval, sizeof (hdrval)))
+      if (resp_header_copy (resp, "Connection", hdrval, sizeof (hdrval)))
         {
-          if (0 == strcasecmp (hdrval, "Keep-Alive"))
-            keep_alive = true;
+          if (0 == strcasecmp (hdrval, "Close"))
+            keep_alive = false;
         }
     }
+
+  resp_header_copy (resp, "Transfer-Encoding", hdrval, sizeof (hdrval));
+  if (0 == strcasecmp (hdrval, "chunked"))
+    chunked_transfer_encoding = true;
 
   /* Handle (possibly multiple instances of) the Set-Cookie header. */
   if (opt.cookies)
@@ -2010,7 +2051,8 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   if (statcode == HTTP_STATUS_UNAUTHORIZED)
     {
       /* Authorization is required.  */
-      if (keep_alive && !head_only && skip_short_body (sock, contlen))
+      if (keep_alive && !head_only
+          && skip_short_body (sock, contlen, chunked_transfer_encoding))
         CLOSE_FINISH (sock);
       else
         CLOSE_INVALIDATE (sock);
@@ -2262,7 +2304,8 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
                      _("Location: %s%s\n"),
                      hs->newloc ? escnonprint_uri (hs->newloc) : _("unspecified"),
                      hs->newloc ? _(" [following]") : "");
-          if (keep_alive && !head_only && skip_short_body (sock, contlen))
+          if (keep_alive && !head_only
+              && skip_short_body (sock, contlen, chunked_transfer_encoding))
             CLOSE_FINISH (sock);
           else
             CLOSE_INVALIDATE (sock);
@@ -2392,7 +2435,8 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
            If not, they can be worked around using
            `--no-http-keep-alive'.  */
         CLOSE_FINISH (sock);
-      else if (keep_alive && skip_short_body (sock, contlen))
+      else if (keep_alive
+               && skip_short_body (sock, contlen, chunked_transfer_encoding))
         /* Successfully skipped the body; also keep using the socket. */
         CLOSE_FINISH (sock);
       else
@@ -2493,6 +2537,10 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
     /* If the server ignored our range request, instruct fd_read_body
        to skip the first RESTVAL bytes of body.  */
     flags |= rb_skip_startpos;
+
+  if (chunked_transfer_encoding)
+    flags |= rb_chunked_transfer_encoding;
+
   hs->len = hs->restval;
   hs->rd_size = 0;
   hs->res = fd_read_body (sock, fp, contlen != -1 ? contlen : 0,

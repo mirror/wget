@@ -225,11 +225,15 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
   bool progress_interactive = false;
 
   bool exact = !!(flags & rb_read_exactly);
+
+  /* Used only by HTTP/HTTPS chunked transfer encoding.  */
+  bool chunked = flags & rb_chunked_transfer_encoding;
   wgint skip = 0;
 
   /* How much data we've read/written.  */
   wgint sum_read = 0;
   wgint sum_written = 0;
+  wgint remaining_chunk_size = 0;
 
   if (flags & rb_skip_startpos)
     skip = startpos;
@@ -269,8 +273,36 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
      should be read.  */
   while (!exact || (sum_read < toread))
     {
-      int rdsize = exact ? MIN (toread - sum_read, dlbufsize) : dlbufsize;
+      int rdsize;
       double tmout = opt.read_timeout;
+
+      if (chunked)
+        {
+          if (remaining_chunk_size == 0)
+            {
+              char *line = fd_read_line (fd);
+              char *endl;
+              if (line == NULL)
+                {
+                  ret = -1;
+                  break;
+                }
+
+              remaining_chunk_size = strtol (line, &endl, 16);
+              if (remaining_chunk_size == 0)
+                {
+                  ret = 0;
+                  if (fd_read_line (fd) == NULL)
+                    ret = -1;
+                  break;
+                }
+            }
+
+          rdsize = MIN (remaining_chunk_size, dlbufsize);
+        }
+      else
+        rdsize = exact ? MIN (toread - sum_read, dlbufsize) : dlbufsize;
+
       if (progress_interactive)
         {
           /* For interactive progress gauges, always specify a ~1s
@@ -315,6 +347,16 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
             {
               ret = -2;
               goto out;
+            }
+          if (chunked)
+            {
+              remaining_chunk_size -= ret;
+              if (remaining_chunk_size == 0)
+                if (fd_read_line (fd) == NULL)
+                  {
+                    ret = -1;
+                    break;
+                  }
             }
         }
 

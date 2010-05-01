@@ -1,3 +1,17 @@
+2010-05-01  Giuseppe Scrivano <gscrivano@gnu.org>
+
+	* http.c (request_send): Specify 1.1 as HTTP version for requests.
+	(skip_short_body): Accept new parameter `chunked'.  New variable
+	`remaining_chunk_size'.  Handle the chunked transfer encoding.
+	(gethttp): New variable `chunked_transfer_encoding`.  Set `keepalive'
+	by default to true.  Check if the server is using the chunked transfer
+	encoding.
+
+	* retr.h: Define `rb_chunked_transfer_encoding'.
+
+	* retr.c (fd_read_body): New variable `chunked'.  New variable
+	`remaining_chunk_size'.  Handle the chunked transfer encoding.
+
 2010-03-04  Steven Schubiger  <stsc@member.fsf.org>
 
 	* ftp.c (ftp_loop_internal): Omit input file from being
@@ -22,7 +36,7 @@
 
 2010-03-01  Steven Schubiger  <stsc@member.fsf.org>
 
-	* retr.c (retrieve_url): Retrieve the local filename from ftp_loop. 
+	* retr.c (retrieve_url): Retrieve the local filename from ftp_loop.
 	(retrieve_from_file): Return if there's no input file.
 
 	* ftp.c (ftp_loop_internal): Duplicate the local filename into
@@ -31,7 +45,7 @@
 	reference to the local filename, elsewhere with NULL.
 
 	* ftp.h: Adjust declaration of ftp_loop.
-	
+
 2010-01-27  Paul Townsend  <aab@purdue.edu>  (tiny change)
 
 	* retr.c (fd_read_body): Be sure to measure timer when time has
@@ -172,7 +186,7 @@
 
 2009-09-08  Steven Schubiger  <stsc@member.fsf.org>
 
-	* main.c, init.c: Mark the --preserve-permissions and 
+	* main.c, init.c: Mark the --preserve-permissions and
 	--html-extension option as deprecated.
 
 2009-09-06  Micah Cowan  <micah@cowan.name>
@@ -244,7 +258,7 @@
 	(http_loop): Handle newly-created VERIFCERTERR error code.
 
 	* exits.c, exits.h: Newly added.
-	
+
 	* Makefile.am (wget_SOURCES): Add exits.c and exits.h.
 
 2009-08-27  Micah Cowan  <micah@cowan.name>
@@ -279,7 +293,7 @@
 	* main.c (option_data): Rename --html-extension to
 	--adjust-extension.
 	(print_help): Ditto.
-	
+
 	* options.h (struct option): Rename html_extension to
 	adjust_extension.
 	* http.c (gethttp): Ditto.
@@ -352,7 +366,7 @@
 
 	* wget.h (ORIG_SFX): Macro added, to supply an alternative "_orig"
 	suffix on VMS.
-	
+
 	* connect.c, host.c, host.h, main.c: Include "vms_ip.h" rather
 	than <netdb.h> on VMS systems.
 
@@ -455,9 +469,9 @@
 	* Makefile.am: Add a rule to generate build_info.c and list
 	the build_info.c.in file in EXTRA_DIST. Adjust elsewhere
 	where needed.
-	
+
 	* build_info.c: Remove this static source file.
-	
+
 	* build_info.c.in: Data for generation of build_info.c.
 
 2009-06-29  Micah Cowan  <micah@cowan.name>
@@ -523,10 +537,10 @@
 	* host.c: Declare h_errno if no declaration is provided. Idea
 	thanks to Maciej W. Rozycki.
 
-2009-06-11  Xin Zou  <zouxin2008@gmail.com>	
-	
+2009-06-11  Xin Zou  <zouxin2008@gmail.com>
+
 	* http.c (gethttp): Fix some memory leaks.
-	
+
 2009-06-11  Micah Cowan  <micah@cowan.name>
 
 	* http.c (http_atotm): Handle potential for setlocale's return
@@ -538,7 +552,7 @@
 
 2009-05-28  Steven Schubiger  <stsc@member.fsf.org>
 
-	* ftp.c (ftp_get_listing): Update the "listing file" 
+	* ftp.c (ftp_get_listing): Update the "listing file"
 	string after calling ftp_loop_internal().
 
 2009-05-27  Steven Schubiger  <stsc@member.fsf.org>
@@ -560,7 +574,7 @@
 	* connect.c: stdint.h inclusion added.
 
 	Thanks to Markus Duft <mduft@gentoo.org> for a similar patch.
-	
+
 2009-04-20  Micah Cowan  <micah@cowan.name>
 
 	* Makefile.am (version.c): Fix unportable use of "echo -n".
@@ -569,14 +583,14 @@
 
 	* ftp.c (ftp_retrieve_list): Move the duplicated code that
 	determines the local file to a function.
-	
+
 	* http.c (http_loop): Likewise.
 
 	* retr.c (set_local_file): New function.
 
 2009-04-11  Steven Schubiger  <stsc@member.fsf.org>
 
-	* init.c (initialize): Run a custom SYSTEM_WGETRC when 
+	* init.c (initialize): Run a custom SYSTEM_WGETRC when
 	provided as an environment variable.
 
 2009-02-27  Gisle Vanem  <gvanem@broadpark.no>
@@ -593,7 +607,7 @@
 
 2009-02-21  Steven Schubiger  <stsc@member.fsf.org>
 
-	* http.c (http_loop): When a document is written to 
+	* http.c (http_loop): When a document is written to
 	standard output, don't claim it has been saved to a file.
 	Addresses bug #20520.
 
@@ -623,7 +637,7 @@
 	* main.c: Declare and initialize the numurls counter.
 
 	* ftp.c, http.c: Make the counter visible here and use it.
-	
+
 	* options.h: Remove old declaration from options struct.
 
 2008-11-15  Steven Schubiger  <stsc@members.fsf.org>
@@ -632,7 +646,7 @@
 
 2008-11-14  Steven Schubiger  <stsc@members.fsf.org>
 
-	* main.c (format_and_print_line): Use a custom format 
+	* main.c (format_and_print_line): Use a custom format
 	string for printing leading spaces.
 
 2008-11-12  Micah Cowan  <micah@cowan.name>
@@ -684,7 +698,7 @@
 2008-09-09  Gisle Vanem  <gvanem@broadpark.no>
 
 	* url.c (url_error): Use aprintf, not asprintf.
-	
+
 2008-09-09  Micah Cowan  <micah@cowan.name>
 
 	* init.c (home_dir): Save the calculated value for home,
@@ -1029,7 +1043,7 @@
 2008-04-22  Rabin Vincent  <rabin@rab.in>
 
 	* ftp.c (ftp_get_listing): Only remove .listing if it has been
-	created. 
+	created.
 
 2008-04-22  Alain Guibert  <alguibert+bts@free.fr>
 
@@ -1061,7 +1075,7 @@
 
 2008-04-16  Steven Schubiger  <schubiger@gmail.com>
 
-	* sysdep.h: Comment the defines __EXTENSIONS__ and _GNU_SOURCE 
+	* sysdep.h: Comment the defines __EXTENSIONS__ and _GNU_SOURCE
 	out, because they're now defined independently by config.h.
 
 2008-04-14  Steven Schubiger  <schubiger@gmail.com>
@@ -1089,7 +1103,7 @@
 
 	* utils.c (aprintf): Now we are setting limits (1 Mb) for text
 	buffer when we use non-C99 vsnprintf.
-	
+
 2008-04-11  Micah Cowan  <micah@cowan.name>
 
 	* ftp.c (getftp, ftp_loop_internal): Don't append to an existing
@@ -1321,7 +1335,7 @@
 	* Makefile.am: Converted from Makefile.in.
 
 2007-10-02  Gisle Vanem  <gvanem@broadpark.no>
-	
+
 	* ftp.c: Use "_listing" for MSDOS (".listing" is illegal).
 
 	* url.c: Update comment for 'filechr_not_windows'.
@@ -1427,7 +1441,7 @@
 	error code.
 
 2007-08-21  Mauro Tortonesi  <mauro@ferrara.linux.it>
-	
+
 	* http.c (http_loop): Send preliminary HEAD request if -N is given and
 	the destination file exists already.
 
@@ -1515,8 +1529,8 @@
 
 2007-07-10  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
-	* http.c (http_loop): Fixed the HTTP requests logic. Now it skips the 
-	preliminary HEAD request if either -O or --no-content-disposition are 
+	* http.c (http_loop): Fixed the HTTP requests logic. Now it skips the
+	preliminary HEAD request if either -O or --no-content-disposition are
 	given, and neither --spider and -N are given.
 
 2007-07-05  Micah Cowan  <micah@cowan.name>
@@ -1600,7 +1614,7 @@
 
 2006-10-12  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
-	* convert.c (downloaded_file): Fixed bug which used to break -E -k -K 
+	* convert.c (downloaded_file): Fixed bug which used to break -E -k -K
 	mode.
 
 2006-08-28  Mauro Tortonesi  <mauro@ferrara.linux.it>
@@ -1654,7 +1668,7 @@
 	* init.c (commands): Correctly place "contentdisposition".
 
 2006-07-14  Mauro Tortonesi  <mauro@ferrara.linux.it>
-	
+
 	* sysdep.h: If intptr_t isn't defined, simply typedef it to long.
 
 	* http.c: Added explicit cast to int in logprintf call to remove
@@ -1662,12 +1676,12 @@
 
 	* connect.c: Added a few casts to intptr_t to remove compiler warnings
 	on 64-bit platforms.
-	
+
 	* main.c: Disable -r, -p and -N when -O is used. Disable -k when -O is
 	used and multiple URLs are given. Update maintainer information.
-	
+
 	* all: Update copyright information.
-	
+
 2006-07-10  KJKHyperion  <hackbunny@reactos.com>
 
 	* url.c (filechr_table): Mark DEL (0x7f) as a control character
@@ -1689,7 +1703,7 @@
 	non-existing robots.txt as a broken link, and use are_urls_equal
 	instead of strcasecmp for referrer URLs comparison.
 
-	* test.c: Call tests routines for are_urls_equal and 
+	* test.c: Call tests routines for are_urls_equal and
 	is_robots_txt_url.
 
 2006-06-26  Hrvoje Niksic  <hniksic@xemacs.org>
@@ -1798,7 +1812,7 @@
 	of HTTP Content-Disposition header.
 
 	* init.c: Ditto.
-	
+
 	* main.c: Ditto.
 
 2006-04-11  Hrvoje Niksic  <hniksic@xemacs.org>
@@ -1818,21 +1832,21 @@
 	testcases for subdir_p and dir_matches_p.
 
 	* utils.h: Changed all frontcmp occurrences to subdir_p.
-	
+
 	* recur.c: Ditto.
-	
+
 	* test.c: Changed type returned by test functions from char * to const
 	char *.  Added test_subdir_p and test_dir_matches_p to the list of
 	tests to run.
 
 	* http.c (test_parse_content_disposition): Changed return type from
-	char * to const char *. 
+	char * to const char *.
 
 2006-03-14  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* recur.c (struct queue_element): Changed type of html_allowed member
 	to bool.
-	
+
 2006-03-09  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* ftp.c (ftp_list): Try `LIST -a' command first and revert to `LIST'
@@ -1909,7 +1923,7 @@
 
 2005-12-07  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
-	* http.c: Fixed pre-download verbose output which was broken by 
+	* http.c: Fixed pre-download verbose output which was broken by
 	HTTP code refactoring.
 
 2005-11-23  Mauro Tortonesi  <mauro@ferrara.linux.it>
@@ -1917,7 +1931,7 @@
 	* http.c: Refactored HTTP code.  If -O is not used, the new code
 	delays the choice of the file name where the downloaded resource
 	will be saved until the HTTP headers have been retrieved.
-	Added support for Content-Disposition header. 
+	Added support for Content-Disposition header.
 
 2005-11-19  Hrvoje Niksic  <hniksic@xemacs.org>
 
@@ -1934,9 +1948,9 @@
 	* Makefile.in: Added basic support for unit testing.
 
 	* test.c: Ditto.
-	
+
 	* test.h: Ditto.
-	
+
 2005-10-13  Daniel Stenberg  <daniel@haxx.se>
 
 	* http-ntlm.c (ntlm_output): Fixed buffer overflow vulnerability.
@@ -3040,13 +3054,13 @@
 	the new ftppassword, httppassword and proxypassword commands
 	respectively.  Document the --user and --password options in the help
 	string.
-	
+
 2005-04-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* ftp.c: Add support for --user and --password.
-	
+
 	* http.c: Add support for --user and --password.
-	
+
 	* init.c: Deprecated ftppasswd, httppasswd, login, passwd and
 	proxypasswd commands.  Added ftppassword, ftpuser, httppassword,
 	password, proxypassword and user commands.
@@ -3055,7 +3069,7 @@
 	--http-password, --password, --proxy-password and --user.  Deprecated
 	--http-passwd and --proxy-passwd.  Added documentation for new options
 	and removed documentation for deprecated options in the help string.
-	
+
 	* options.h (struct options): Added user and passwd members to handle
 	--user and --password respectively.  Renamed ftp_acc and ftp_pass
 	members to ftp_user and ftp_passwd for consistency.
@@ -3452,7 +3466,7 @@
 2005-04-04  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* string_t.c: Removed.
-	
+
 	* string_t.h: Removed.
 
 2005-04-02  Hrvoje Niksic  <hniksic@xemacs.org>
@@ -3822,22 +3836,22 @@
 	* init.c: Renamed command passwd to ftppasswd.
 
 2005-02-11  Mauro Tortonesi <mauro@ferrara.linux.it>
-	
+
 	* string_t.c: Fixed a bug in do_escape and triggered escape of
 	backslashes in string_escape to avoid ambiguities in the result
 	string.
-	
+
 2005-02-10  Mauro Tortonesi <mauro@ferrara.linux.it>
 
-	* string.h: Renamed to string_t.h to fix a compilation conflict 
+	* string.h: Renamed to string_t.h to fix a compilation conflict
 	with the string.h header in the standard C library.
-	
+
 	* string.c: Renamed to string_t.c for consistency with string.h.
-	
+
 	* string_t.c: Ditto.
 
 	* string_t.h: Ditto.
-	
+
 2004-12-31  Mauro Tortonesi <mauro@ferrara.linux.it>
 
 	* string.c: New file.
@@ -5128,7 +5142,7 @@
 	before statements.
 
 2003-10-02  Gisle Vanem  <giva@bgnett.no>
-	
+
 	* mswindows.c (run_with_timeout): For Windows: Run the 'fun' in a
 	thread via a helper function. Continually query the thread's
 	exit-code until finished or timed out.
@@ -6455,9 +6469,9 @@
 
 2001-12-04  Herold Heiko  <Heiko.Herold@previnet.it>
 
-	* gen_sslfunc.c: on windows provide ssl crypto random 
+	* gen_sslfunc.c: on windows provide ssl crypto random
 	  initialization through RAND_screen(); could possibly
-	  be not enough for strong ssl communication (see the 
+	  be not enough for strong ssl communication (see the
 	  relevant manual page from the openssl package).
 
 2001-12-04  Hrvoje Niksic  <hniksic@arsdigita.com>
@@ -6873,7 +6887,7 @@
 	* retr.c (register_all_redirections): New function.
 	(register_redirections_mapper): Ditto.
 	(retrieve_url): Register the redirections.
-	(retrieve_url): Make the string "Error parsing proxy ..." 
+	(retrieve_url): Make the string "Error parsing proxy ..."
 	translatable.
 
 	* res.c (add_path): Strip leading slash from robots.txt paths so
@@ -7068,7 +7082,7 @@
 
 	* main.c: Remove --wait / --waitretry backwards compatibility
 	code.
-	
+
 2001-11-19  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* main.c (main): Use it.
@@ -7561,7 +7575,7 @@
 2001-04-10  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
 
 	* ftp.c (getftp): Convert initial FTP directory from VMS to UNIX
-	notation for VMS servers. 
+	notation for VMS servers.
 	(ftp_retrieve_dirs): Do not prepend '/' to f->name when
 	odir is an empty string.
 
@@ -7821,7 +7835,7 @@
 
 	* Makefile.in: Include @SSL_INCLUDES@ substition in INCLUDES.
 	Define top_builddir.  Link wget with libtool so the user doesn't
-	have to supply a bunch of custom environment variables to 
+	have to supply a bunch of custom environment variables to
 	correctly link with the OpenSSL shared libraries.
 
 2001-03-06  Hack Kampbjorn  <hack@hackdata.com>
@@ -7831,7 +7845,7 @@
 
 	* url.c: move the #define of DEFAULT_HTTP_PORT, DEFAULT_FTP_PORT
 	and DEFAULT_HTTPS_PORT to the header file so it can be use in the
-	rest of the code. 
+	rest of the code.
 	* url.h: Ditto
 
 2001-03-01  Jonas Jensen  <bones@huleboer.dk>
@@ -7860,29 +7874,29 @@
 	listing without correct permissons).
 
 	* ftp.h (stype): Added ST_MACOS to identify the NetPresenz MacOS
-	FTP server. 
+	FTP server.
 
 	* ftp.c (ftp_retrieve_list): New mirroring logic: A remote file
 	shall be donwloaded only when it's newer than the local copy or
 	when it has the same timeestamp but its size is different. ST_VMS
-	and ST_MACOS as special cases that lie about file size. 
+	and ST_MACOS as special cases that lie about file size.
 
 	* ftp-ls.c (ftp_parse_ls): Support for ST_MACOS.
 
 	* Makefile.in: Removed dependency on ftpparse library due to unclear
-	copyright issues and absence of any feedback to our queries. 
+	copyright issues and absence of any feedback to our queries.
 
 	* ftp-ls.c: Removed dependency on ftpparse library due to unclear
-	copyright issues and absence of any feedback to our queries.   
+	copyright issues and absence of any feedback to our queries.
 	(ftp_parse_ls): Added a warning message when remote server system
-	does not seem to be suported by wget. 
+	does not seem to be suported by wget.
 	(ftp_parse_vms_ls): New function for parsing VMS ftp
 	server listing output.
 	(clean_line): New function responsible for removing
 	end-of-line characters from FTP listing texts.
 
 	* ftp.c (getftp): Global variables pwd and host_type are now
-	member of the ccon structure under names ccon.id and ccon.rs. 
+	member of the ccon structure under names ccon.id and ccon.rs.
 
 	* ftp.h (struct ccon): Added formed global variables from ftp.c,
 	enum stype rs (remote system identification) and char *id (initial
@@ -8007,7 +8021,7 @@
 	looking at the dates would make you think that things went into
 	1.6 that actually just went into the 1.7-dev branch.  Added "[Not
 	in 1.6 branch.]" where appropriate to clarify.
-	
+
 2000-12-30  Dan Harkless  <wget@harkless.org>
 
 	* ftp.c, http.c:  Applied Hack Kampbjørn <hack@hackdata.com>'s
@@ -8180,7 +8194,7 @@
 	* ftp.h (stype): New enum, distinguishes UNIX, VMS, and "other"
 	FTP servers.
 
-	* ftp.c: New static wariables host_type, pwd, and pwd_len. 
+	* ftp.c: New static wariables host_type, pwd, and pwd_len.
 	(getftp): Support for VMS. Support for FTP servers that do not
 	place you in the root directory after login.
 	(ftp_retrieve_list): VMS is silent about the real file size, issue
@@ -8263,7 +8277,7 @@
 	* ftp.h (stype): New enum, distinguishes UNIX, VMS, and "other"
 	FTP servers.
 
-	* ftp.c: New static wariables host_type, pwd, and pwd_len. 
+	* ftp.c: New static wariables host_type, pwd, and pwd_len.
 	(getftp): Support for VMS. Support for FTP servers that do not
 	place you in the root directory after login.
 	(ftp_retrieve_list): VMS is silent about the real file size, issue
@@ -8709,36 +8723,36 @@
 
 	* ftp.c (ftp_loop_internal): --delete-after wasn't implemented for
 	files downloaded via FTP.  Per a comment, .listing files were not
-	counted towards number of bytes and files downloaded because they're 
+	counted towards number of bytes and files downloaded because they're
 	deleted anyway.  Well, they aren't under -nr, so count them then.
 
 	* init.c: Manually applied Rob Mayoff's 1.5.3 patch to add
 	--bind-address, alphabetizing, changing coding style to GNU's,
 	commenting, and renaming cmd_ip_address() to cmd_address() to
 	imply hostnames also okay.
-		
+
 	* main.c (main): --delete-after didn't delete the root of the
 	tree.  Ignore --convert-links if --delete-after was specified.
 	Manually applied Rob Mayoff's 1.5.3 patch to add --bind-address,
 	fixing duplicate use of added-since-1.5.3 case value.
 	(print_help): Clarified that --delete-after deletes local files.
 	Rob forgot to add a line for his new --bind-address option.
-		
+
 	* options.h (struct options): Manually applied Rob Mayoff's patch
 	to add --bind-address (bind_address structure member).
-		
+
 	* recur.c (recursive_retrieve): Improved comment; added DEBUGP().
 	Ignore --convert-links if --delete-after was specified.
-		
+
 	* retr.c (retrieve_from_file): Just added a DEBUGP().
-		
+
 2000-10-19  Dan Harkless  <wget@harkless.org>
 
 	* ftp.c (ftp_loop_internal): downloaded_file() enumerators changed.
 	(getftp): Applied Piotr Sulecki <Piotr.Sulecki@ios.krakow.pl>'s
 	patch to work around FTP servers that incorrectly respond to the
 	"REST" command with the remaining size rather than the total file size.
-		
+
 	* http.c (gethttp): Improved a comment and added code to tack on
 	".html" to text/html files without that extension when -E specified.
 	(http_loop): Use new downloaded_file() enumerators and deal with
@@ -8763,13 +8777,13 @@
 	(downloaded_file): Now takes and returns a downloaded_file_t.
 
 	* wget.h (unnamed "dt" enum): Added ADDED_HTML_EXTENSION enumerator.
-	
+
 2000-10-09  Dan Harkless  <wget@harkless.org>
 
 	* html.c (htmlfindurl): Added unneeded initialization to quiet warning.
-		
+
 	* main.c (print_help): Clarified what --retr-symlinks does.
-	
+
 2000-09-15  John Daily  <jdaily@cyberdude.com>
 
 	* init.c: Add support for "always" and "never" values to allow
@@ -8781,21 +8795,21 @@
 2000-08-30  Dan Harkless  <wget@harkless.org>
 
 	* ftp.c (ftp_retrieve_list): Use new INFINITE_RECURSION #define.
-	
+
 	* html.c: htmlfindurl() now takes final `dash_p_leaf_HTML' parameter.
-	Wrapped some > 80-column lines.  When -p is specified and we're at a 
-	leaf node, do not traverse <A>, <AREA>, or <LINK> tags other than 
+	Wrapped some > 80-column lines.  When -p is specified and we're at a
+	leaf node, do not traverse <A>, <AREA>, or <LINK> tags other than
 	<LINK REL="stylesheet">.
-	
+
 	* html.h (htmlfindurl): Now takes final `dash_p_leaf_HTML' parameter.
-	
+
 	* init.c: Added new -p / --page-requisites / page_requisites option.
 
 	* main.c (print_help): Clarified that -l inf and -l 0 both allow
 	infinite recursion.  Changed the unhelpful --mirrior description
 	to simply give the options it's equivalent to.  Added new -p option.
 	(main): Added some comments; handle new -p / --page-requisites.
-	
+
 	* options.h (struct options): Added new page_requisites field.
 
 	* recur.c: Changed "URL-s" to "URLs" and "HTML-s" to "HTMLs".
@@ -8811,7 +8825,7 @@
 	* url.h (get_urls_html): Now takes final `dash_p_leaf_HTML' parameter.
 
 	* wget.h: Added some comments and new INFINITE_RECURSION #define.
-	
+
 2000-08-23  Dan Harkless  <wget@harkless.org>
 
 	* main.c (print_help): -B / --base was not mentioned.
@@ -8876,11 +8890,11 @@
 	* host.c (store_hostaddress): R. K. Owen's patch introduces a
 	"left shift count >= width of type" warning on 32-bit
 	architectures.  Got rid of it by tricking the compiler w/ a variable.
-	
+
 	* url.c (UNSAFE_CHAR): The macro didn't include all the illegal
 	characters per RFC1738, namely everything above '~'.  It also
 	generated a warning on OSes where char =~ unsigned char.  Fixed.
-	
+
 1998-10-17  Hrvoje Niksic  <hniksic@srce.hr>
 
 	* http.c (http_process_type): Removed needless strdup(), a memory
@@ -8928,12 +8942,12 @@
 
 	* html.c (idmatch): Implemented checking of my new --follow-tags
 	and --ignore-tags options.
-	
+
 	* init.c (commands): Added comment reminding people adding new
 	entries doing allocation to add corresponding freeing in cleanup().
 	(commands): Added new followtags and ignoretags commands.
 	(cleanup): Free storage for new followtags and ignoretags.
-	
+
 	* main.c: Use of "comma-separated list" was random -- normalized
 	it.  Did some alphabetization.  Added comments pointing out
 	"Options without arguments" and "Options accepting an argument"
@@ -8942,17 +8956,17 @@
 	currently undocumented.  Added comment that Heiko's --waitretry is
 	partially undocumented (mentioned in --help but not in
 	wget.texi).  Moved improperly sorted 24, 129, and 'G' cases.
-	
+
 	* options.h (struct options): Added new fields follow_tags and
-	ignore_tags. 
-	
+	ignore_tags.
+
 	* wget.h: Added "#define EQ 0" so we can say "strcmp(a, b) == EQ".
-	
+
 2000-03-02  Dan Harkless  <wget@harkless.org>
 
 	* ftp.c (ftp_loop_internal): Heiko introduced "suggest explicit
 	braces to avoid ambiguous `else'" warnings.  Eliminated them.
-	
+
 	* http.c (gethttp): Dan Berger's query string patch is totally
 	bogus.  If you have two different URLs, gen_page.cgi?page1 and
 	get_page.cgi?page2, they'll both be saved as get_page.cgi and the
@@ -8965,19 +8979,19 @@
 	option there?).
 	(http_loop): Heiko introduced "suggest explicit braces to avoid
 	ambiguous `else'" warnings.  Eliminated them.
-	
+
 	* main.c: Heiko's --wait / --waitretry backwards compatibility
 	code looks to have been totally untested -- automatic variable
 	'wr' was used without being initialized, and a long int was passed
 	into setval()'s char* val parameter.
-	
+
 	* recur.c (parse_robots): Applied Edward J. Sabol
 	<sabol@alderaan.gsfc.nasa.gov>'s patch for Guan Yang's reported
 	problem with "User-agent:<space>*<space>" lines in robots.txt.
-	
+
 	* url.c (parseurl, str_url): Removing Dan Berger's code (see
 	http.c above for explanation).
-	
+
 1999-08-25  Heiko Herold  <Heiko.Herold@previnet.it>
 
 	* ftp.c: Respect new option waitretry.
@@ -9018,12 +9032,12 @@
 
 	* ftp.c (ftp_loop_internal): Call new downloaded_file() function,
 	even though we don't do conversion on HTML files retrieved via
-	FTP, so _current_ usage of downloaded_file() makes this call unneeded. 
+	FTP, so _current_ usage of downloaded_file() makes this call unneeded.
 	(ftp_retrieve_list): Added a comment saying where we need to
 	stat() a .orig file if FTP'd HTML file conversion is ever implemented.
 	(ftp_retrieve_list): "Local file '%s' is more recent," is sometimes
 	a lie -- reworded as "Server file no newer than local file '%s' --".
-	
+
 	* http.c (http_loop): Fixed a typo and clarified a comment.
 	(http_loop): When -K and -N are specified together, compare size
 	and timestamp of server file X against local file X.orig (if
@@ -9032,7 +9046,7 @@
 	-- reworded as "Server file no newer than local file '%s' --".
 	(http_loop): Call new downloaded_file() function to prevent
 	wrongful overwriting of .orig file when -N is specified.
-	
+
 	* url.c (convert_links): When -K specified, only rename X to
 	X.orig if downloaded_file() returns TRUE.  Otherwise when we skip
 	file X due to -N, we clobber an X.orig from a previous invocation.
@@ -9040,7 +9054,7 @@
 	(convert_links): Added a note asking anyone who understands how
 	multiple URLs can correspond to a single file to comment it.
 	(downloaded_file): Added this new function.
-	
+
 	* url.h (downloaded_file): Added prototype for this new function
 	as well as its downloaded_file_t enum type.
 
@@ -9069,7 +9083,7 @@
 
 1998-09-21  Hrvoje Niksic  <hniksic@srce.hr>
 
-	* host.c (ftp_getaddress): Don't warn when reverse-lookup of local 
+	* host.c (ftp_getaddress): Don't warn when reverse-lookup of local
 	address doesn't yield FQDN.
 
 1998-09-21  Andreas Schwab  <schwab@issan.informatik.uni-dortmund.de>
@@ -9110,7 +9124,7 @@
 
 1998-09-10  Howard Gayle  <howard@fjst.com>
 
-	* ftp.c (ftp_retrieve_list): Don't update the time stamp of a file 
+	* ftp.c (ftp_retrieve_list): Don't update the time stamp of a file
 	not retrieved.
 
 1998-06-27  Hrvoje Niksic  <hniksic@srce.hr>
@@ -10002,7 +10016,7 @@
 	* main.c (main): Updated `--version' and `--help' output, as per
 	Francois Pinard's suggestions.
 
-	* main.c: Include locale.h; call setlocale(), bindtextdomain() and 
+	* main.c: Include locale.h; call setlocale(), bindtextdomain() and
 	textdomain().
 
 	* config.h.in: Define stubs for I18N3.

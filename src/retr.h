@@ -43,7 +43,10 @@ extern bool output_stream_regular;
 /* Flags for fd_read_body. */
 enum {
   rb_read_exactly  = 1,
-  rb_skip_startpos = 2
+  rb_skip_startpos = 2,
+
+  /* Used by HTTP/HTTPS*/
+  rb_chunked_transfer_encoding = 4
 };
 
 int fd_read_body (int, FILE *, wgint, wgint, wgint *, wgint *, double *, int);
