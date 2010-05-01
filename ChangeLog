@@ -1,3 +1,7 @@
+2010-05-01  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* NEWS: Mention support for HTTP/1.1
+
 2009-10-09  Steven Schweda  <sms@antinode.info>
 
 	* New VMS MMS/MMK builders, to accommodate the new source tree
@@ -54,7 +58,7 @@
 	* vms/VMS-WGET.COM: "the the" -> "the".
 
 	* po/POTFILES.in: Removed some files that are not using gettext.
-	
+
 	* po/*.po: Updated from translationproject.org.
 
 2009-09-20  Micah Cowan  <micah@cowan.name>
@@ -114,7 +118,7 @@
 	* build-aux/gnupload: Imported from gnulib.
 	* lib/Makefile.am, m4/gnulib-cache.m4, m4/gnulib-comp.m4: Adjusted
 	for announce-gen, update-copyright, and gnupload.
-	
+
 2009-09-03  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: Give credit to jff for SSL security fix, call attention to
@@ -212,7 +216,7 @@
 
 	* po/Makefile.in.in (distclean): remove en_US.po, too.
 
-	* Makefile.am: Include md5 as a subdir unconditionally. 
+	* Makefile.am: Include md5 as a subdir unconditionally.
 	It may result in useless compilation, and additional risk of
 	breaking a build of something that isn't actually needed, but
 	otherwise it's too much of a hassle to manage a failure-free
@@ -276,14 +280,14 @@
 
 	* po/quot.sed, po/boldquot.sed: Automatic handling of quotearg's `
 	and '.
-	
+
 2008-05-15  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: Entry for --ask-password.
 
 2008-05-14  Joao Ferreira  <joao@joaoff.com>
 
-	* src/main.c, src/http.c, src/ftp.c: -nc is now working in 
+	* src/main.c, src/http.c, src/ftp.c: -nc is now working in
 	conjunction with '-O file'.
 
 2008-05-12  Micah Cowan  <micah@cowan.name>
@@ -298,13 +302,13 @@
 
 	* lib/getdelim.c, lib/getline.c, lib/getpass.c,
 	lib/getpass.h, lib/realloc.c, lib/stdio.h,
-	lib/stdio.in.h, lib/stdlib.h, lib/stdlib.in.h: Imported 
+	lib/stdio.in.h, lib/stdlib.h, lib/stdlib.in.h: Imported
 	from gnulib.
-	* m4/eoverflow.m4, m4/extensions.m4, m4/getdelim.m4, 
-	m4/getline.m4, m4/getpass.m4, m4/malloc.m4, m4/realloc.m4, 
+	* m4/eoverflow.m4, m4/extensions.m4, m4/getdelim.m4,
+	m4/getline.m4, m4/getpass.m4, m4/malloc.m4, m4/realloc.m4,
 	m4/stdio_h.m4, m4/stdlib_h.m4: Imported from gnulib.
 	* md5/stdint.h: Imported from gnulib.
-	
+
 	* GNUmakefile: Updated from gnulib.
 	* lib/Makefile.am, lib/getopt.c, lib/unistd.in.h: Updated
 	from gnulib.
@@ -314,7 +318,7 @@
 	md5/m4/gnulib-comp.m4, md5/m4/include_next.m4, md5/m4/md5.m4,
 	md5/m4/stdint.m4, md5/md5.c, md5/md5.h, md5/stdint.in.h,
 	md5/wchar.in.h: Updated from gnulib.
- 
+
 2008-04-24  Micah Cowan  <micah@cowan.name>
 
 	* NEWS: Removed info about move to Automake, Gnulib. Added item
@@ -632,7 +636,7 @@
 
 2006-07-17  Daniel Richard G.  <skunk@iSKUNK.ORG>
 
-	* Makefile.in: Added DESTDIR='$(DESTDIR)' to MAKEDEFS. 
+	* Makefile.in: Added DESTDIR='$(DESTDIR)' to MAKEDEFS.
 
 2006-07-14  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
@@ -653,13 +657,13 @@
 2005-11-02  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* Makefile.in: Improved support for unit testing.
-	
+
 	* configure.in: Ditto.
-	
+
 2005-10-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* Makefile.in: Added basic support for unit testing.
-	
+
 2005-08-26  Stepan Kasal  <kasal@ucw.cz>
 
 	* configure.in: Abort configure if --with-ssl given but SSL
@@ -1863,7 +1867,7 @@
 
 	* aclocal.m4: Appended libtool 1.3.5's libtool.m4 to it.
 
-	* configure.in: Use AM_PROG_LIBTOOL macro (now defined in our 
+	* configure.in: Use AM_PROG_LIBTOOL macro (now defined in our
 	aclocal.m4) to create a libtool script from ltconfig and ltmain.sh.
 	If --with-ssl specified, look in /usr/local/ssl/lib by default for
 	OpenSSL libs.  Allow override with --with-ssl=<OpenSSL_root_dir>.
@@ -1886,11 +1890,11 @@
 	so I've put the item back, with a modified wording.
 
 	* config.guess: Hadn't been updated since 1996 -- didn't work for recent
-	machines and OSes, such as NetWinder ARM Linux.  Updated to latest 
+	machines and OSes, such as NetWinder ARM Linux.  Updated to latest
 	version (2001-03-16) from <ftp://ftp.gnu.org/pub/gnu/config/>.
-	
+
 	* config.sub: Ditto -- updated to latest version (2001-03-12).
-	
+
 2001-03-12  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Only normal recursion should respect -np -- page-requisite
@@ -1940,7 +1944,7 @@
 	* TODO: Remove empty directories created due to --accept/--reject.
 
 	* configure.in: Look for perl and pod2man and make substitutions.
-	
+
 	* Makefile.in (install): Do install.man if we have pod2man.
 
 2001-02-13  Jan Prikryl  <prikryl@cg.tuwien.ac.at>
@@ -1949,7 +1953,7 @@
 
 	* windows/wget.dep: Ditto.
 
-	* windows/Makefile.watcom: Ditto. 
+	* windows/Makefile.watcom: Ditto.
 
 2001-01-23  Herold Heiko  <Heiko.Herold@previnet.it>
 
@@ -1972,13 +1976,13 @@
 	* po/Makefile.in.in: `make realclean' equal to `make
 	maintainer-clean'.
 
-	* Makefile.in (realclean-top): Remove 'configure' as well. 
+	* Makefile.in (realclean-top): Remove 'configure' as well.
 
 2001-01-11  Dan Harkless  <wget@harkless.org>
 
 	* TODO: If -c used with -N, check to make sure a file hasn't
 	changed on the server before "continuing" to download it.
-	
+
 2001-01-11  Adrian Aichner  <Adrian.Aichner@t-online.de>
 
 	* windows/Makefile.src: Updated.
@@ -1988,7 +1992,7 @@
 2001-01-09  Dan Harkless  <wget@harkless.org>
 
 	* TODO: If -c is on, don't re-download a 100%-downloaded file.
-	
+
 	* TODO: The bug where you couldn't recurse into ftp directories if
 	logging in put you somewhere else besides the server's "/"
 	directory got fixed without the TODO entry for it being removed.
@@ -2031,12 +2035,12 @@
 	"1.6-pre" guy).  In any case, the 'POT-Creation-Date's and
 	'PO-Revision-Date's remain the best indicator of whether a
 	translation's out of date.
-	
+
 	* ChangeLog: Since this flat file doesn't have multiple branches,
 	looking at the dates would make you think that things went into
 	1.6 that actually just went into the 1.7-dev branch.  Added "[Not
 	in 1.6 branch.]" where appropriate to clarify.
-	
+
 2000-12-18  Csaba Raduly  <csaba.raduly@sophos.com>
 
 	* windows/Makefile.watcom: Updated.
@@ -2057,7 +2061,7 @@
 
 	* Makefile.in (SUBDIRS): Add 'windows'.
 	(dist, DISTFILES): Don't distribute CVS directories.
-	
+
 2000-12-05  Hrvoje Niksic  <hniksic@arsdigita.com>
 
 	* configure.in: Don't unconditionally define HAVE_SSL, even when
@@ -2066,9 +2070,9 @@
 2000-12-03  Christian Fraenkel  <christian.fraenkel@gmx.net>
 
 	* INSTALL: Added the --with-ssl switch.
-	
+
 	* configure.in: Ditto.
-	
+
 	* TODO: Removed the corresponding entry.
 
 2000-11-23  Hrvoje Niksic  <hniksic@arsdigita.com>
@@ -2133,7 +2137,7 @@
 	* po/pl.{gmo,po}: Added Grzegorz Kowal <g_kowal@poczta.onet.pl>'s
 	Polish message translation file.
 
-	* po/ru.{gmo,po}: Added Const Kaplinsky <const@ce.cctpu.edu.ru>'s 
+	* po/ru.{gmo,po}: Added Const Kaplinsky <const@ce.cctpu.edu.ru>'s
 	Russian message translation file.
 
 2000-10-16  Dan Harkless  <wget@harkless.org>
@@ -2157,7 +2161,7 @@
 	now says to email the mailing list or bug-wget@gnu.org.
 
 	* MAILING-LIST: Added mention of bug-wget@gnu.org.
-	
+
 	* NEWS: Added --waitretry and --page-requisites.
 
 2000-08-25  Dan Harkless  <wget@harkless.org>
@@ -2167,26 +2171,26 @@
 	made AIX and FreeBSD entries more general to reflect successful
 	use on those platforms by myself and others, removed the
 	non-factual "this version of", and fixed some grammatical errors.
-	
+
 2000-07-21  Dan Harkless  <wget@harkless.org>
 
 	* TODO: But Brian McMahon <bm@iucr.org> wants old behavior as an option.
-	
+
 2000-07-19  Dan Harkless  <wget@harkless.org>
 
 	* TODO: -k should convert "hostless absolute" URLs, like "/index.html".
-	
+
 2000-05-24  Dan Harkless  <wget@harkless.org>
 
 	* TODO: Timestamps sometimes not copied over on files retrieved by FTP.
-	
+
 2000-05-22  Dan Harkless  <wget@harkless.org>
 
 	* AUTHORS: Added myself to this file, as Hrvoje got confirmation
 	of my FSF copyright assignment.
 
 	* TODO: Added note that fragment identifiers don't work properly.
-	
+
 	* po/*.{gmo,po,pot}: Regenerated after modifying wget --help output.
 
 2000-05-17  Dan Harkless  <wget@harkless.org>
@@ -2210,7 +2214,7 @@
 
 	* TODO: Removed done item: we now have an option (-G) that makes
 	it easy to download a single HTML document and all its constituents.
-	
+
 	* po/*.{gmo,po,pot}: Regenerated after adding new options.
 
 	* po/hr.po: Hrvoje forgot '\n's on his translations of my altered
@@ -2363,7 +2367,7 @@
 
 1998-03-16  Hrvoje Niksic  <hniksic@srce.hr>
 
-	* po/POTFILES.in: Removed extraneous newline at end of line, which 
+	* po/POTFILES.in: Removed extraneous newline at end of line, which
 	caused an error in `Makefile' which Sun make choked on.
 
 1998-03-16  Jan Prikryl <prikryl@cg.tuwien.ac.at>
@@ -2437,7 +2441,7 @@
 	* configure.in (ALL_LINGUAS): New variable.  Add "de" and "hr".
 	(AM_GNU_GETTEXT): Add.
 	(AC_OUTPUT): Add po/Makefile.in; run the sed command.
-	
+
 	* aclocal.m4 (AM_WITH_NLS, AM_GNU_GETTEXT, AM_LC_MESSAGES,
 	AM_PATH_PROG_WITH_TEST): from gettext-0.10.32.
-	
+
