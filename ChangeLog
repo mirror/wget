@@ -1,6 +1,10 @@
+2010-05-03  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* configure.ac: Fix a sanity check by the AC_CONFIG_SRCDIR macro.
+
 2010-05-01  Giuseppe Scrivano  <gscrivano@gnu.org>
 
-	* NEWS: Mention support for HTTP/1.1
+	* NEWS: Mention support for HTTP/1.1.
 
 2009-10-09  Steven Schweda  <sms@antinode.info>
 

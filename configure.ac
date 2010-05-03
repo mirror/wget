@@ -43,6 +43,8 @@ AC_MSG_NOTICE([configuring for GNU Wget $PACKAGE_VERSION])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])
 
+AC_CONFIG_SRCDIR([src/wget.h])
+
 dnl
 dnl Automake setup
 dnl
