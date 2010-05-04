@@ -1888,6 +1888,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
 
           resp = resp_new (head);
           statcode = resp_status (resp, &message);
+          if (statcode < 0)
+            {
+              logprintf (LOG_NOTQUIET, _("Invalid server response.\n"));
+              CLOSE_INVALIDATE (sock);
+              xfree (head);
+              return HERR;
+            }
           hs->message = xstrdup (message);
           resp_free (resp);
           xfree (head);
@@ -1976,6 +1983,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   /* Check for status line.  */
   message = NULL;
   statcode = resp_status (resp, &message);
+  if (statcode < 0)
+    {
+      logprintf (LOG_NOTQUIET, _("Invalid server response.\n"));
+      CLOSE_INVALIDATE (sock);
+      request_free (req);
+      return HERR;
+    }
   hs->message = xstrdup (message);
   if (!opt.server_response)
     logprintf (LOG_VERBOSE, "%2d %s\n", statcode,
