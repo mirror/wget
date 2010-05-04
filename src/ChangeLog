@@ -1,3 +1,8 @@
+2010-05-04  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (gethttp): Check `resp_status' return code and handle
+	errors.
+
 2010-05-01  Giuseppe Scrivano <gscrivano@gnu.org>
 
 	* http.c (request_send): Specify 1.1 as HTTP version for requests.
