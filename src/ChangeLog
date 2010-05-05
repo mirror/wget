@@ -1,3 +1,7 @@
+2010-05-05  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (gethttp): Give a nicer message on a malformed status line.
+
 2010-05-04  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* http.c (gethttp): Check `resp_status' return code and handle
