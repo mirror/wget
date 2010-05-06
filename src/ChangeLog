@@ -1,3 +1,8 @@
+2010-05-06  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am (build_info.c): Generate build_info.c in the builddir,
+	not srcdir.
+
 2010-05-05  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* http.c (gethttp): Give a nicer message on a malformed status line.
