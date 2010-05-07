@@ -1,6 +1,7 @@
 2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac: Don't call macro WGET_SOCKLEN_T.
+	(W32LIBS): Add -lws2_32.
 
 	* Makefile.am (EXTRA_DIST): Remove autogen.sh.
 

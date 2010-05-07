@@ -231,7 +231,7 @@ WGET_NSL_SOCKET
 dnl Deal with specific hosts
 case $host_os in
   *mingw32* )
-    AC_SUBST(W32LIBS, '-lwsock32')
+    AC_SUBST(W32LIBS, '-lwsock32 -lws2_32')
     AC_LIBOBJ([mswindows])
     ;;
 esac
