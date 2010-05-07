@@ -165,11 +165,7 @@ wgnutls_close (int fd, void *arg)
   /*gnutls_bye (ctx->session, GNUTLS_SHUT_RDWR);*/
   gnutls_deinit (ctx->session);
   xfree (ctx);
-#ifndef WINDOWS
   close (fd);
-#else
-  closesocket (fd);
-#endif
 }
 
 /* gnutls_transport is the singleton that describes the SSL transport

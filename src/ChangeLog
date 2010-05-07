@@ -1,5 +1,11 @@
 2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* gnutls.c (wgnutls_close): Use always `close', not `closesocket'.
+
+	* openssl.c (openssl_close): Use always `close', not `closesocket'.
+	(ssl_connect_wget): Get the real socket handle by FD_TO_SOCKET.
+	Define FD_TO_SOCKET if it is not yet defined.
+
 	* Makefile.am (libunittest_a_CPPFLAGS): Add -I$(top_builddir)/lib.
 
 	* mswindows.h: Always include <winsock2.h> and <ws2tcpip.h>.  Do not

@@ -364,11 +364,7 @@ openssl_close (int fd, void *arg)
   xfree_null (ctx->last_error);
   xfree (ctx);
 
-#if defined(WINDOWS) || defined(USE_WATT32)
-  closesocket (fd);
-#else
   close (fd);
-#endif
 
   DEBUGP (("Closed %d/SSL 0x%0*lx\n", fd, PTR_FORMAT (conn)));
 }
@@ -401,7 +397,10 @@ ssl_connect_wget (int fd)
   conn = SSL_new (ssl_ctx);
   if (!conn)
     goto error;
-  if (!SSL_set_fd (conn, fd))
+#ifndef FD_TO_SOCKET
+# define FD_TO_SOCKET(x) (x)
+#endif
+  if (!SSL_set_fd (conn, FD_TO_SOCKET (fd)))
     goto error;
   SSL_set_connect_state (conn);
   if (SSL_connect (conn) <= 0 || conn->state != SSL_ST_OK)
