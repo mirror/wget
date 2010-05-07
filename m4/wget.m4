@@ -42,36 +42,6 @@ AC_DEFUN([WGET_STRUCT_UTIMBUF], [
   ])
 ])
 
-
-dnl Check for socklen_t.  The third argument of accept, getsockname,
-dnl etc. is int * on some systems, but size_t * on others.  POSIX
-dnl finally standardized on socklen_t, but older systems don't have
-dnl it.  If socklen_t exists, we use it, else if accept() accepts
-dnl size_t *, we use that, else we use int.
-
-AC_DEFUN([WGET_SOCKLEN_T], [
-  AC_MSG_CHECKING(for socklen_t)
-  AC_COMPILE_IFELSE([
-#include <sys/types.h>
-#include <sys/socket.h>
-socklen_t x;
-  ], [AC_MSG_RESULT(socklen_t)], [
-    AC_COMPILE_IFELSE([
-#include <sys/types.h>
-#include <sys/socket.h>
-int accept (int, struct sockaddr *, size_t *);
-    ], [
-      AC_MSG_RESULT(size_t)
-      AC_DEFINE([socklen_t], [size_t],
-                [Define to int or size_t on systems without socklen_t.])
-    ], [
-      AC_MSG_RESULT(int)
-      AC_DEFINE([socklen_t], [int],
-                [Define to int or size_t on systems without socklen_t.])
-    ])
-  ])
-])
-
 dnl Check whether fnmatch.h can be included.  This doesn't use
 dnl AC_FUNC_FNMATCH because Wget is already careful to only use
 dnl fnmatch on certain OS'es.  However, fnmatch.h is sometimes broken

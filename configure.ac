@@ -223,7 +223,6 @@ dnl
 dnl Call Wget-specific macros defined in aclocal.
 dnl
 WGET_STRUCT_UTIMBUF
-WGET_SOCKLEN_T
 WGET_FNMATCH
 WGET_NANOSLEEP
 WGET_POSIX_CLOCK
