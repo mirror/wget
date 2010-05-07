@@ -1,5 +1,9 @@
 2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* po/wget.pot: Remove.
+
+2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
+
 	* configure.ac: Don't call macro WGET_SOCKLEN_T.
 
 	* m4/wget.m4 (WGET_SOCKLEN_T): Remove macro.
