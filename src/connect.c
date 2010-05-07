@@ -1,6 +1,6 @@
 /* Establishing and handling network connections.
    Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-   2004, 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+   2004, 2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -37,8 +37,10 @@ as that of the covered work.  */
 #endif
 #include <assert.h>
 
+#include <sys/socket.h>
+#include <sys/select.h>
+
 #ifndef WINDOWS
-# include <sys/socket.h>
 # ifdef __VMS
 #  include "vms_ip.h"
 # else /* def __VMS */
@@ -52,9 +54,6 @@ as that of the covered work.  */
 
 #include <errno.h>
 #include <string.h>
-#ifdef HAVE_SYS_SELECT_H
-# include <sys/select.h>
-#endif /* HAVE_SYS_SELECT_H */
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
 #endif
@@ -700,17 +699,6 @@ test_socket_open (int sock)
 }
 
 /* Basic socket operations, mostly EINTR wrappers.  */
-
-#if defined(WINDOWS) || defined(USE_WATT32)
-# define read(fd, buf, cnt) recv (fd, buf, cnt, 0)
-# define write(fd, buf, cnt) send (fd, buf, cnt, 0)
-# define close(fd) closesocket (fd)
-#endif
-
-#ifdef __BEOS__
-# define read(fd, buf, cnt) recv (fd, buf, cnt, 0)
-# define write(fd, buf, cnt) send (fd, buf, cnt, 0)
-#endif
 
 static int
 sock_read (int fd, char *buf, int bufsize)

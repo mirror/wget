@@ -1,12 +1,15 @@
 2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
-	* po/wget.pot: Remove.
-
-2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
-
 	* configure.ac: Don't call macro WGET_SOCKLEN_T.
 
+	* Makefile.am (EXTRA_DIST): Remove autogen.sh.
+
+	* bootstrap.conf (gnulib_modules): Use new modules from gnulib: accept,
+	bind, close, connect, getpeername, getsockname, listen, setsockopt.
+
 	* m4/wget.m4 (WGET_SOCKLEN_T): Remove macro.
+
+	* po/wget.pot: Remove.
 
 2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 

@@ -42,15 +42,8 @@ as that of the covered work.  */
 
 #include <windows.h>
 
-/* We need winsock2.h for IPv6 and ws2tcpip.h for getaddrinfo, so
-  include both in ENABLE_IPV6 case.  (ws2tcpip.h includes winsock2.h
-  only on MinGW.) */
-#ifdef ENABLE_IPV6
-# include <winsock2.h>
-# include <ws2tcpip.h>
-#else
-# include <winsock.h>
-#endif
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
 #ifndef EAI_SYSTEM
 # define EAI_SYSTEM -1   /* value doesn't matter */

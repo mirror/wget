@@ -1,5 +1,13 @@
 2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* mswindows.h: Always include <winsock2.h> and <ws2tcpip.h>.  Do not
+	include <winsock.h>.
+
+	* host.h [WINDOWS]: Include <winsock2.h> not <winsock.h>.
+
+	* connect.c: Include <sys/socket.h> and <sys/select.h> on any platform,
+	gnulib ensures they exist.  Remove `read', `write', `close' macros.
+
 	* Makefile.am: Copy build_info.c.in only if we are working in a VPATH.
 	(AM_CPPFLAGS): Add directory with generated gnulib files.
 

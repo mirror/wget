@@ -32,7 +32,7 @@ as that of the covered work.  */
 #define HOST_H
 
 #ifdef WINDOWS
-# include <winsock.h>
+# include <winsock2.h>
 #else
 # ifdef __VMS
 #  include "vms_ip.h"
