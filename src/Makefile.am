@@ -54,7 +54,7 @@ wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c    		  \
 nodist_wget_SOURCES = version.c
 EXTRA_wget_SOURCES = iri.c
 LDADD = $(LIBOBJS) ../lib/libgnu.a @MD5_LDADD@
-AM_CPPFLAGS = -I$(top_srcdir)/lib @MD5_CPPFLAGS@
+AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib @MD5_CPPFLAGS@
 MD5_LDADD = @MD5_LDADD@
 
 ../lib/libgnu.a:

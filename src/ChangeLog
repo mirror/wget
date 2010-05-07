@@ -1,6 +1,7 @@
 2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am: Copy build_info.c.in only if we are working in a VPATH.
+	(AM_CPPFLAGS): Add directory with generated gnulib files.
 
 2010-05-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
