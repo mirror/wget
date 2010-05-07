@@ -2,6 +2,17 @@
 
 	* mswindows.h: Always include <winsock2.h> and <ws2tcpip.h>.  Do not
 	include <winsock.h>.
+	[! INHIBIT_WRAP]: Remove macro's socket, bind, connect, accept, recv,
+	send, select, getsockname, getpeername, setsockopt, closesocket.
+	Remove wrapped_socket, wrapped_bind, wrapped_connect, wrapped_listen,
+	wrapped_accept, wrapped_recv, wrapped_send, wrapped_select,
+	wrapped_getsockname, wrapped_getpeername, wrapped_setsockopt,
+	wrapped_closesocket prototypes.
+
+	* mswindows.c: 	Remove wrapped_socket, wrapped_bind, wrapped_connect,
+	wrapped_listen,	wrapped_accept, wrapped_recv, wrapped_send,
+	wrapped_select, wrapped_getsockname, wrapped_getpeername,
+	wrapped_setsockopt, wrapped_closesocket functions.  Remove WRAP macro.
 
 	* host.h [WINDOWS]: Include <winsock2.h> not <winsock.h>.
 

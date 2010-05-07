@@ -571,37 +571,6 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
   thread_hnd = NULL;
   return rc;
 }
-
-/* Wget expects network calls such as connect, recv, send, etc., to set
-   errno on failure.  To achieve that, Winsock calls are wrapped with code
-   that, in case of error, sets errno to the value of WSAGetLastError().
-   In addition, we provide a wrapper around strerror, which recognizes
-   Winsock errors and prints the appropriate error message. */
-
-/* Define a macro that creates a function definition that wraps FUN into
-   a function that sets errno the way the rest of the code expects. */
-
-#define WRAP(fun, decl, call) int wrapped_##fun decl {  \
-  int retval = fun call;                                \
-  if (retval < 0)                                       \
-    errno = WSAGetLastError ();                         \
-  return retval;                                        \
-}
-
-WRAP (socket, (int domain, int type, int protocol), (domain, type, protocol))
-WRAP (bind, (int s, struct sockaddr *a, int alen), (s, a, alen))
-WRAP (connect, (int s, const struct sockaddr *a, int alen), (s, a, alen))
-WRAP (listen, (int s, int backlog), (s, backlog))
-WRAP (accept, (int s, struct sockaddr *a, int *alen), (s, a, alen))
-WRAP (recv, (int s, void *buf, int len, int flags), (s, buf, len, flags))
-WRAP (send, (int s, const void *buf, int len, int flags), (s, buf, len, flags))
-WRAP (select, (int n, fd_set *r, fd_set *w, fd_set *e, const struct timeval *tm),
-              (n, r, w, e, tm))
-WRAP (getsockname, (int s, struct sockaddr *n, int *nlen), (s, n, nlen))
-WRAP (getpeername, (int s, struct sockaddr *n, int *nlen), (s, n, nlen))
-WRAP (setsockopt, (int s, int level, int opt, const void *val, int len),
-                  (s, level, opt, val, len))
-WRAP (closesocket, (int s), (s))
 
 
 #ifdef ENABLE_IPV6
