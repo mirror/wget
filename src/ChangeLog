@@ -1,3 +1,7 @@
+2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am: Copy build_info.c.in only if we are working in a VPATH.
+
 2010-05-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am (build_info.c): Generate build_info.c in the builddir,
