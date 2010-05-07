@@ -1,3 +1,7 @@
+2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* configure.ac (ALL_LINGUAS): Remove.
+
 2010-05-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap: New file.

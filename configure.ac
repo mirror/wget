@@ -438,17 +438,6 @@ elif test "x$force_ipv6" = "xyes"; then
   AC_MSG_ERROR([IPv6 support requested but not found; aborting])
 fi
 
-
-dnl
-dnl Set of available languages.
-dnl
-dnl Originally this used to be static, looking like this:
-dnl     ALL_LINGUAS="cs de hr it ..."
-dnl The downside was that configure needed to be rebuilt whenever a
-dnl new language was added.
-dnl
-ALL_LINGUAS="en@quot en@boldquot en_US $(cd ${srcdir}/po && ls *.po | grep -v 'en@.*quot' | grep -v 'en_US\.po' | sed -e 's/\.po$//' | tr '\012' ' ')"
-
 dnl
 dnl Find makeinfo.  We used to provide support for Emacs processing
 dnl Texinfo using `emacs -batch -eval ...' where makeinfo is
