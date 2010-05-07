@@ -33,6 +33,8 @@
 PERL     = perl
 PERLRUN = $(PERL) -I$(srcdir)
 
+LIBS     = @LIBSSL@ @LIBGNUTLS@ @LIBICONV@ @LIBINTL@ @W32LIBS@ @LIBS@
+
 .PHONY: test run-unit-tests run-px-tests
 
 check-local: test
@@ -131,7 +133,6 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
 
 check_PROGRAMS = unit-tests
 unit_tests_SOURCES =
-LDADD = ../src/libunittest.a ../lib/libgnu.a @LIBSSL@ @LIBGNUTLS@ \
-    @MD5_LDADD@
+LDADD = ../src/libunittest.a ../lib/libgnu.a @MD5_LDADD@ $(LIBS)
 
 CLEANFILES = *~ *.bak core core.[0-9]*

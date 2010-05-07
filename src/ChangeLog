@@ -1,5 +1,7 @@
 2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* Makefile.am (libunittest_a_CPPFLAGS): Add -I$(top_builddir)/lib.
+
 	* mswindows.h: Always include <winsock2.h> and <ws2tcpip.h>.  Do not
 	include <winsock.h>.
 	[! INHIBIT_WRAP]: Remove macro's socket, bind, connect, accept, recv,

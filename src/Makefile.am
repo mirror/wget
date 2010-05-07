@@ -88,7 +88,7 @@ version.c:  $(wget_SOURCES) ../lib/libgnu.a $(MD5_LDADD) \
 check_LIBRARIES = libunittest.a
 libunittest_a_SOURCES = $(wget_SOURCES) test.c build_info.c test.h
 nodist_libunittest_a_SOURCES = version.c
-libunittest_a_CPPFLAGS = -DTESTING -I$(top_srcdir)/lib
+libunittest_a_CPPFLAGS = -DTESTING -I$(top_builddir)/lib -I$(top_srcdir)/lib
 libunittest_a_LIBADD = $(LIBOBJS)
 EXTRA_DIST = build_info.c.in
 

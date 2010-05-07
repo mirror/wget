@@ -1,3 +1,8 @@
+2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am (LIBS): Add definition.
+	(LDADD): Add LIBS.
+
 2010-03-01  Steven Schubiger  <stsc@member.fsf.org>
 
 	* Test-i-ftp.px: Test --input-file in conjunction with FTP.
@@ -18,7 +23,7 @@
 	* Test-E-k-K.px, Test-cookies-401.px, Test-ftp-bad-list.px,
 	Test-iri-list.px, Test-iri.px: Removed -d from invocation.
 	Patch by Mike Frysinger.
-	
+
 2009-09-27  Micah Cowan  <micah@cowan.name>
 
 	* Test-idn-cmd.px, Test-idn-headers.px, Test-idn-meta.px,
@@ -37,7 +42,7 @@
 
 	* run-px: Exit with a failure if there were any tests with
 	"unknown" exit statuses.
-	
+
 	* Test-auth-with-content-disposition.px: New. Test Content-Disposition
 	support when HTTP authentication is required.
 	* run-px, Makefile.am (EXTRA_DIST): Added
@@ -140,7 +145,7 @@
 2009-08-27  Micah Cowan  <micah@cowan.name>
 
 	* WgetTest.pm.in (run): Shift the errcode right by 8 binary places.
-	
+
 	* Test--spider-fail.px, Test--spider-r--no-content-disposition.px,
 	Test--spider-r--no-content-disposition-trivial.px,
 	Test--spider-r-HTTP-Content-Disposition.px, Test--spider-r.px,
@@ -175,7 +180,7 @@
 	Test-ftp-iri-recursive.px, Test-ftp-iri-disabled.px,
 	Test-idn-cmd.px, Test-idn-robots.px: Adjust wget invocations,
 	replacing --locale with --local-encoding.
-	
+
 2009-07-07  Steven Schubiger  <stsc@member.fsf.org>
 
 	* Makefile.am: Add IDN/IRI test files and Test-meta-robots.px
@@ -184,7 +189,7 @@
 2009-07-05  Micah Cowan  <micah@cowan.name>
 
 	* Test-meta-robots.px: Added.
-	
+
 	* run-px: Add Test-meta-robots.px to the list.
 
 2009-07-03  Micah Cowan  <micah@cowan.name>
@@ -342,7 +347,7 @@
 	path (made necessary by the accompanying change to HTTPServer.pm).
 
 2008-08-14  Xavier Saint <wget@sxav.eu>
-	
+
 	* Test-iri-list.px : Fetch files from a remote list.
 
 2008-08-03  Xavier Saint <wget@sxav.eu>
@@ -441,7 +446,7 @@
 
 	* Makefile.am (run-px-tests): Replaced ugly list of tests with
 	run-px Perl script to manage running them.
-	
+
 	* run-px: Added.
 
 	* FTPServer.pm (run): Avoid re-forking. Fixes bug #20458.
@@ -577,7 +582,7 @@
 	* Test-np.px: Added test for -np.
 
 	* HTTPTest.pm: Ignore initial '/' character in requested URLs.
-	
+
 2006-10-12  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* Test1.px: Renamed to Test-noop.px.
@@ -597,13 +602,13 @@
 	* Test-O-nonexisting.px: Ditto.
 
 	* Test5.px: Renamed to Test-HTTP-Content-Disposition.px.
-	
+
 	* Test-HTTP-Content-Disposition.px: Ditto.
-	
+
 	* Test6.px: Renamed to Test-HTTP-Content-Disposition-1.px.
-	
+
 	* Test-HTTP-Content-Disposition-1.px: Ditto.
-	
+
 	* Test7.px: Renamed to Test-HTTP-Content-Disposition-2.px.
 
 	* Test-HTTP-Content-Disposition-2.px: Ditto.
@@ -615,13 +620,13 @@
 	* Test-Restrict-Lowercase.px: Ditto.
 
 	* Test10.px: Renamed to Test-Restrict-Uppercase.px.
-	
+
 	* Test-Restrict-Uppercase.px: Ditto.
 
 	* Test--spider.px: Added test for spider mode.
-	
+
 	* Test--spider-fail.px: Added failing test for spider mode.
-	
+
 	* Test--spider-r.px: Added test for recursive spider mode.
 
 	* Test-c.px: Added test for --continue mode.
@@ -633,7 +638,7 @@
 	* Test-O.px: Added test for -O.
 
 	* Test-N-current.px: Added test for -N.
-	
+
 	* Test-N-old.px: Added test for -N.
 
 	* Test-E-k.px: Added test for -E -k.
@@ -651,7 +656,7 @@
 2006-06-13  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* Test9.px: Added test for --restrict-file-names=lowercase option.
-	
+
 	* Test10.px: Added test for --restrict-file-names=uppercase option.
 
 2006-05-26  Mauro Tortonesi  <mauro@ferrara.linux.it>
@@ -666,9 +671,9 @@
 	* Test1.px: Removed unneeded ../src/ from command line.
 
 	* Test2.px: Ditto.
-	
+
 	* Test3.px: Ditto.
-	
+
 	* Test4.px: Ditto.
 
 	* Test5.px: Ditto.
@@ -691,24 +696,24 @@
 	* Test5.px: Added test for HTTP Content-Disposition support.
 
 	* Test6.px: Ditto.
-	
+
 	* Test7.px: Ditto.
 
 2006-04-27  Mauro Tortonesi  <mauro@ferrara.linux.it>
-	
+
 	* HTTPServer.pm: Serve index.html if no filename is given.
 
 	* Test.pm: Added support for pre-existing files.
-	
+
 2006-01-24  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* HTTPServer.pm: Enhanced logging support.
 
 	* HTTPTest.pm: Updated to new test format.
-	
+
 	* Test.pm: Improved test setup, verification and cleanup. Major
 	refactoring.
-	
+
 	* Test1.px: Updated to new test format.
 
 	* Test2.px: Updated to new test format.
@@ -717,15 +722,15 @@
 
 	* Test4.px: Added new test for quiet download of nonexistent URL with
 	--output-document option.
-	
+
 2005-12-05  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* HTTPServer.pm: Refactored as a subclass of HTTP::Daemon.
 	Removed the old run method and renamed the old run_daemon
 	method to run.  Added support for partial
-	
+
 	* Testing.pm: Renamed to HTTPTest.pm.
-	
+
 	* HTTPTest.pm: Refactored as a subclass of Test.  Renamed
 	Run_HTTP_Test to run, verify_download to _verify_download
 	and added support for timestamp checking.
@@ -734,15 +739,15 @@
 	testcase.
 
 	* test1: Renamed to Test1.px.
-	
+
 	* Test1.px: Refactored as an instance of the HTTPTest class.
-	
+
 	* Test2.px: Added -N HTTP test.
 
 2005-11-02  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* HTTPServer.pm: Added basic support for HTTP testing.
-	
+
 	* Testing.pm: Added basic support for feature testing (only HTTP
 	testing is supported at the moment).
 
