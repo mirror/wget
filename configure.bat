@@ -1,6 +1,6 @@
 @echo off
 rem Configure batch file for `Wget' utility
-rem Copyright (C) 1995, 1996, 1997, 2007, 2008, 2009 Free Software
+rem Copyright (C) 1995, 1996, 1997, 2007, 2008, 2009, 2010 Free Software
 rem Foundation, Inc.
 
 rem This program is free software; you can redistribute it and/or modify

@@ -1,3 +1,83 @@
+2010-05-08  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am: Update copyright years.
+
+	* build-aux/build_info.pl: Likewise.
+
+	* configure.ac: Likewise.
+
+	* configure.bat: Likewise.
+
+	* doc/Makefile.am: Likewise.
+
+	* doc/fdl.texi: Likewise.
+
+	* doc/texi2pod.pl: Likewise.
+
+	* doc/wget.texi: Likewise.
+
+	* m4/exitfail.m4: Likewise.
+
+	* m4/getpagesize.m4: Likewise.
+
+	* m4/wchar.m4: Likewise.
+
+	* m4/wctype.m4: Likewise.
+
+	* m4/wget.m4: Likewise.
+
+	* md5/Makefile.am: Likewise.
+
+	* md5/dummy.c: Likewise.
+
+	* md5/m4/00gnulib.m4: Likewise.
+
+	* md5/m4/gnulib-cache.m4: Likewise.
+
+	* md5/m4/gnulib-common.m4: Likewise.
+
+	* md5/m4/gnulib-comp.m4: Likewise.
+
+	* md5/m4/gnulib-tool.m4: Likewise.
+
+	* md5/m4/include_next.m4: Likewise.
+
+	* md5/m4/longlong.m4: Likewise.
+
+	* md5/m4/md5.m4: Likewise.
+
+	* md5/m4/multiarch.m4: Likewise.
+
+	* md5/m4/stddef_h.m4: Likewise.
+
+	* md5/m4/stdint.m4: Likewise.
+
+	* md5/m4/wchar.m4: Likewise.
+
+	* md5/m4/wchar_t.m4: Likewise.
+
+	* md5/m4/wint_t.m4: Likewise.
+
+	* md5/md5.h: Likewise.
+
+	* md5/stddef.in.h: Likewise.
+
+	* md5/stdint.in.h: Likewise.
+
+	* md5/wchar.in.h: Likewise.
+
+	* msdos/config.h: Likewise.
+
+	* msdos/msdos.c: Likewise.
+
+	* po/POTFILES.in: Likewise.
+
+	* util/Makefile.am: Likewise.
+
+	* util/paramcheck.pl: Likewise.
+
+	* util/rmold.pl: Likewise.
+
 2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac: Don't call macro WGET_SOCKLEN_T.

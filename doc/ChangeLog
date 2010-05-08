@@ -1,3 +1,13 @@
+2010-05-08  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am: Update copyright years.
+
+	* fdl.texi: Likewise.
+
+	* texi2pod.pl: Likewise.
+
+	* wget.texi: Likewise.
+
 2010-01-09  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi (Download Options): Documented

@@ -1,5 +1,5 @@
 /* Declarations for netrc.c
-   Copyright (C) 1996, 1996, 1997, 2007, 2008, 2009 Free Software
+   Copyright (C) 1996, 1996, 1997, 2007, 2008, 2009, 2010 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.

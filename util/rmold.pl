@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# Copyright (C) 1995, 1996, 1997, 2007, 2008, 2009 Free Software
+# Copyright (C) 1995, 1996, 1997, 2007, 2008, 2009, 2010 Free Software
 # Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify

@@ -1,5 +1,5 @@
 /* Collect URLs from CSS source.
-   Copyright (C) 1998, 2000, 2001, 2002, 2003, 2009 Free Software
+   Copyright (C) 1998, 2000, 2001, 2002, 2003, 2009, 2010 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.

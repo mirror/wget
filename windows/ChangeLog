@@ -1,3 +1,19 @@
+2010-05-08  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am: Update copyright years.
+
+	* Makefile.doc: Likewise.
+
+	* Makefile.src: Likewise.
+
+	* Makefile.top: Likewise.
+
+	* Makefile.top.bor: Likewise.
+
+	* Makefile.top.mingw: Likewise.
+
+	* config-compiler.h: Likewise.
+
 2009-09-21  Micah Cowan  <micah@cowan.name>
 
 	* README: Warn about less-than-functional Windows build support.

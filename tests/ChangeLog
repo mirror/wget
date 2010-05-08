@@ -1,3 +1,7 @@
+2010-05-08  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am: Update copyright years.
+
 2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am (LIBS): Add definition.
