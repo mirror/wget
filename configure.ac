@@ -31,7 +31,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 
 AC_INIT([wget],
-	[1.12.1-devel],
+  [m4_esyscmd([build-aux/bzr-version-gen])],
 	[bug-wget@gnu.org])
 AC_PREREQ(2.61)
 

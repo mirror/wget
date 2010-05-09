@@ -1,3 +1,15 @@
+2010-05-09  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* build-aux/bzr-version-gen: New file.
+
+	* Makefile.am (EXTRA_DIST): Add .version.
+	(BUILT_SOURCES): New defition.
+	(.version): New rule.
+	(dist-hook): Likewise.
+
+	* configure.ac (AC_INIT): Use build-aux/bzr-version-gen to generate the
+	version string.
+
 2010-05-08  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am: Update copyright years.

@@ -46,6 +46,19 @@ SUBDIRS = lib md5 src doc po tests util windows
 EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST \
              msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
              msdos/Makefile.WC ABOUT-NLS \
-             build-aux/build_info.pl
+             build-aux/build_info.pl .version
 
 CLEANFILES = *~ *.bak $(DISTNAME).tar.gz
+
+BUILT_SOURCES = .version
+
+clean-generic:
+	rm -f install-info
+
+.version:
+	echo $(VERSION) > $@-t && mv $@-t $@
+
+# Arrange so that .tarball-version appears only in the distribution
+# tarball, and never in a checked-out repository.
+dist-hook:
+	$(AM_V_GEN)echo $(VERSION) > $(distdir)/.tarball-version
