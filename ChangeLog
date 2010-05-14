@@ -1,3 +1,8 @@
+2010-05-14  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap (gnulib_path): Default to "gnulib" if it doesn't have a
+	value.  Redirect "git clone" stderr to stdout.
+
 2010-05-09  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* build-aux/bzr-version-gen: New file.
