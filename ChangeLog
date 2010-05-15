@@ -1,3 +1,7 @@
+2010-05-15  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (gnulib_modules): Add "getopt-gnu".  Remove "getopt".
+
 2010-05-14  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap (gnulib_path): Default to "gnulib" if it doesn't have a
