@@ -34,7 +34,7 @@ as that of the covered work.  */
 #include <stdlib.h>
 #include <string.h>
 
-#include "gen-md5.h"
+#include "md5.h"
 #include "ftp.h"
 
 /* Dictionary for integer-word translations.  Available in appendix D
@@ -2196,22 +2196,22 @@ skey_response (int sequence, const char *seed, const char *pass)
      the terminating \0.  24+5+1 == 30  */
   static char english[30];
 
-  ALLOCA_MD5_CONTEXT (md5_ctx);
+  struct md5_ctx ctx;
   uint32_t checksum[4];
 
-  gen_md5_init (md5_ctx);
-  gen_md5_update ((const unsigned char *)seed, strlen(seed), md5_ctx);
-  gen_md5_update ((const unsigned char *)pass, strlen(pass), md5_ctx);
-  gen_md5_finish (md5_ctx, (unsigned char *)checksum);
+  md5_init_ctx (&ctx);
+  md5_process_bytes ((const unsigned char *) seed, strlen (seed), &ctx);
+  md5_process_bytes ((const unsigned char *) pass, strlen (pass), &ctx);
+  md5_finish_ctx (&ctx, (unsigned char *) checksum);
   checksum[0] ^= checksum[2];
   checksum[1] ^= checksum[3];
   memcpy (key, checksum, 8);
 
   while (sequence-- > 0)
     {
-      gen_md5_init (md5_ctx);
-      gen_md5_update ((unsigned char *) key, 8, md5_ctx);
-      gen_md5_finish (md5_ctx, (unsigned char *) checksum);
+      md5_init_ctx (&ctx);
+      md5_process_bytes ((unsigned char *) key, 8, &ctx);
+      md5_finish_ctx (&ctx, (unsigned char *) checksum);
       checksum[0] ^= checksum[2];
       checksum[1] ^= checksum[3];
       memcpy (key, checksum, 8);

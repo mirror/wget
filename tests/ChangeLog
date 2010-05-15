@@ -1,3 +1,8 @@
+2010-05-16  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am (../md5/libmd5.a): Remove rule.
+	(LDADD):  Remove MD5_LDADD.
+
 2010-05-08  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am: Update copyright years.

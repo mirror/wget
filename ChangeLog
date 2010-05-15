@@ -1,3 +1,14 @@
+2010-05-16  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* md5: Remove directory.
+
+	* bootstrap.conf (gnulib_modules): Add crypto/md5.
+
+	* configure.ac: Remove any check for md5 libraries.
+
+	* Makefile.am (ACLOCAL_AMFLAGS): Remove -I md5/m4.
+	(SUBDIRS): Remove md5.
+
 2010-05-15  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap.conf (gnulib_modules): Add "getopt-gnu".  Remove "getopt".

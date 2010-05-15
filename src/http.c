@@ -56,9 +56,7 @@ as that of the covered work.  */
 # include "http-ntlm.h"
 #endif
 #include "cookies.h"
-#ifdef ENABLE_DIGEST
-# include "gen-md5.h"
-#endif
+#include "md5.h"
 #include "convert.h"
 #include "spider.h"
 
@@ -3286,7 +3284,7 @@ dump_hash (char *buf, const unsigned char *hash)
 {
   int i;
 
-  for (i = 0; i < MD5_HASHLEN; i++, hash++)
+  for (i = 0; i < MD5_DIGEST_SIZE; i++, hash++)
     {
       *buf++ = XNUM_TO_digit (*hash >> 4);
       *buf++ = XNUM_TO_digit (*hash & 0xf);
@@ -3339,37 +3337,37 @@ digest_authentication_encode (const char *au, const char *user,
 
   /* Calculate the digest value.  */
   {
-    ALLOCA_MD5_CONTEXT (ctx);
-    unsigned char hash[MD5_HASHLEN];
-    char a1buf[MD5_HASHLEN * 2 + 1], a2buf[MD5_HASHLEN * 2 + 1];
-    char response_digest[MD5_HASHLEN * 2 + 1];
+    struct md5_ctx ctx;
+    unsigned char hash[MD5_DIGEST_SIZE];
+    char a1buf[MD5_DIGEST_SIZE * 2 + 1], a2buf[MD5_DIGEST_SIZE * 2 + 1];
+    char response_digest[MD5_DIGEST_SIZE * 2 + 1];
 
     /* A1BUF = H(user ":" realm ":" password) */
-    gen_md5_init (ctx);
-    gen_md5_update ((unsigned char *)user, strlen (user), ctx);
-    gen_md5_update ((unsigned char *)":", 1, ctx);
-    gen_md5_update ((unsigned char *)realm, strlen (realm), ctx);
-    gen_md5_update ((unsigned char *)":", 1, ctx);
-    gen_md5_update ((unsigned char *)passwd, strlen (passwd), ctx);
-    gen_md5_finish (ctx, hash);
+    md5_init_ctx (&ctx);
+    md5_process_bytes ((unsigned char *)user, strlen (user), &ctx);
+    md5_process_bytes ((unsigned char *)":", 1, &ctx);
+    md5_process_bytes ((unsigned char *)realm, strlen (realm), &ctx);
+    md5_process_bytes ((unsigned char *)":", 1, &ctx);
+    md5_process_bytes ((unsigned char *)passwd, strlen (passwd), &ctx);
+    md5_finish_ctx (&ctx, hash);
     dump_hash (a1buf, hash);
 
     /* A2BUF = H(method ":" path) */
-    gen_md5_init (ctx);
-    gen_md5_update ((unsigned char *)method, strlen (method), ctx);
-    gen_md5_update ((unsigned char *)":", 1, ctx);
-    gen_md5_update ((unsigned char *)path, strlen (path), ctx);
-    gen_md5_finish (ctx, hash);
+    md5_init_ctx (&ctx);
+    md5_process_bytes ((unsigned char *)method, strlen (method), &ctx);
+    md5_process_bytes ((unsigned char *)":", 1, &ctx);
+    md5_process_bytes ((unsigned char *)path, strlen (path), &ctx);
+    md5_finish_ctx (&ctx, hash);
     dump_hash (a2buf, hash);
 
     /* RESPONSE_DIGEST = H(A1BUF ":" nonce ":" A2BUF) */
-    gen_md5_init (ctx);
-    gen_md5_update ((unsigned char *)a1buf, MD5_HASHLEN * 2, ctx);
-    gen_md5_update ((unsigned char *)":", 1, ctx);
-    gen_md5_update ((unsigned char *)nonce, strlen (nonce), ctx);
-    gen_md5_update ((unsigned char *)":", 1, ctx);
-    gen_md5_update ((unsigned char *)a2buf, MD5_HASHLEN * 2, ctx);
-    gen_md5_finish (ctx, hash);
+    md5_init_ctx (&ctx);
+    md5_process_bytes ((unsigned char *)a1buf, MD5_DIGEST_SIZE * 2, &ctx);
+    md5_process_bytes ((unsigned char *)":", 1, &ctx);
+    md5_process_bytes ((unsigned char *)nonce, strlen (nonce), &ctx);
+    md5_process_bytes ((unsigned char *)":", 1, &ctx);
+    md5_process_bytes ((unsigned char *)a2buf, MD5_DIGEST_SIZE * 2, &ctx);
+    md5_finish_ctx (&ctx, hash);
     dump_hash (response_digest, hash);
 
     res = xmalloc (strlen (user)
@@ -3377,7 +3375,7 @@ digest_authentication_encode (const char *au, const char *user,
                    + strlen (realm)
                    + strlen (nonce)
                    + strlen (path)
-                   + 2 * MD5_HASHLEN /*strlen (response_digest)*/
+                   + 2 * MD5_DIGEST_SIZE /*strlen (response_digest)*/
                    + (opaque ? strlen (opaque) : 0)
                    + 128);
     sprintf (res, "Digest \

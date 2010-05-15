@@ -53,9 +53,6 @@ test: ../src/wget$(EXEEXT) run-unit-tests run-px-tests
 ../lib/libgnu.a:
 	cd ../lib && $(MAKE) $(AM_MAKEFLAGS)
 
-../md5/libmd5.a:
-	cd ../lib && $(MAKE) $(AM_MAKEFLAGS)
-
 run-unit-tests: unit-tests$(EXEEXT) ../src/libunittest.a
 	./unit-tests$(EXEEXT)
 
@@ -134,6 +131,6 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
 
 check_PROGRAMS = unit-tests
 unit_tests_SOURCES =
-LDADD = ../src/libunittest.a ../lib/libgnu.a @MD5_LDADD@ $(LIBS)
+LDADD = ../src/libunittest.a ../lib/libgnu.a $(LIBS)
 
 CLEANFILES = *~ *.bak core core.[0-9]*

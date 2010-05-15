@@ -38,10 +38,10 @@ distuninstallcheck_listfiles = find . -type f | \
 			       grep -Ev '(/share/info/dir|/etc/wgetrc)$$'
 
 # Search for macros in the m4 subdirectory:
-ACLOCAL_AMFLAGS = -I m4 -I md5/m4
+ACLOCAL_AMFLAGS = -I m4
 
 # subdirectories in the distribution
-SUBDIRS = lib md5 src doc po tests util windows
+SUBDIRS = lib src doc po tests util windows
 
 EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST \
              msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \

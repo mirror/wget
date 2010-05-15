@@ -86,13 +86,6 @@ ENABLE_DEBUG=$enableval, ENABLE_DEBUG=yes)
 test x"${ENABLE_DEBUG}" = xyes && AC_DEFINE([ENABLE_DEBUG], 1,
    [Define if you want the debug output support compiled in.])
 
-wget_need_md5=no
-
-case "${ENABLE_OPIE}${ENABLE_DIGEST}" in
-*yes*)
-	wget_need_md5=yes
-esac
-
 dnl
 dnl Find the compiler
 dnl
@@ -106,7 +99,6 @@ AM_PROG_CC_C_O
 AC_AIX
 
 gl_EARLY
-md5_EARLY
 
 dnl
 dnl Gettext
@@ -303,65 +295,6 @@ else
   fi
 fi
 
-dnl
-dnl Find an MD5 implementation.  Since Wget rarely needs MD5, we try
-dnl to use an existing library implementation to save on code size.
-dnl
-
-if test x"$wget_need_md5" = xyes
-then
-  dnl This should be moved to an AC_DEFUN, but I'm not sure how to
-  dnl manipulate MD5_OBJ from the defun.
-
-  AC_LIBOBJ([gen-md5])
-  found_md5=no
-
-  dnl Check for the system MD5 library on Solaris.  We don't check for
-  dnl something simple like "MD5Update" because there are a number of
-  dnl MD5 implementations that use that name, but have an otherwise
-  dnl incompatible interface.  md5_calc is, hopefully, specific to the
-  dnl Solaris MD5 library.
-  if test x"$found_md5" = xno; then
-    AC_CHECK_LIB(md5, md5_calc, [
-      dnl Some installations have bogus <md5.h> in the compiler's
-      dnl include path, making the system md5 library useless.
-      AC_MSG_CHECKING([for working md5.h])
-      AC_COMPILE_IFELSE([#include <md5.h>
-                        ], [
-        AC_MSG_RESULT(yes)
-        AC_DEFINE([HAVE_SOLARIS_MD5], 1, [Define when using Solaris MD5.])
-        LIBS="-lmd5 $LIBS"
-        found_md5=yes
-        AC_MSG_NOTICE([using the Solaris MD5 implementation])
-      ], [AC_MSG_RESULT(no)])
-    ])
-  fi
-
-  dnl Then see if we're linking OpenSSL anyway; if yes, use its md5
-  dnl implementation.
-  if test x"$found_md5" = xno; then
-    if test x"$LIBSSL" != x; then
-      AC_DEFINE([HAVE_OPENSSL_MD5], 1, [Define when using OpenSSL MD5.])
-      found_md5=yes
-      AC_MSG_NOTICE([using the OpenSSL MD5 implementation])
-    fi
-  fi
-
-  dnl If none of the above worked, use the one we ship with Wget.
-  if test x"$found_md5" = xno; then
-    AC_DEFINE([HAVE_BUILTIN_MD5], 1, [Define when using built-in MD5.])
-    found_md5=yes
-    AC_MSG_NOTICE([using the built-in (GNU) MD5 implementation])
-    AC_C_BIGENDIAN
-
-    AC_SUBST(MD5_CPPFLAGS, '-I $(top_srcdir)/md5')
-    AC_SUBST(MD5_LDADD, '../md5/libmd5.a')
-    AC_SUBST(MD5_SUBDIR, md5)
-    md5_INIT
-  fi
-  AC_DEFINE([HAVE_MD5], 1, [Define if we're compiling support for MD5.])
-fi
-
 dnl **********************************************************************
 dnl Checks for IPv6
 dnl **********************************************************************
@@ -552,6 +485,6 @@ dnl Create output
 dnl
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile util/Makefile
                  po/Makefile.in tests/Makefile tests/WgetTest.pm
-                 lib/Makefile md5/Makefile windows/Makefile])
+                 lib/Makefile windows/Makefile])
 AC_CONFIG_HEADERS([src/config.h])
 AC_OUTPUT

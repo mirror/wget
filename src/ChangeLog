@@ -1,3 +1,23 @@
+2010-05-16  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am (LDADD): Remove MD5_LDADD.
+	(MD5_LDADD): Remove definition.
+	(AM_CPPFLAGS): Remove MD5_CPPFLAGS.
+	(version.c): Remove dependency from MD5_LDADD.
+	(../md5/libmd5.a): Remove rule.
+
+	* ftp-opie.c: Include "md5.h".  Do not include "gen-md5.h".
+	(skey_response): New variable ctx.  Use md5 functions from the gnulib
+	module instead of functions defined previously in the "gen-md5.h" file.
+
+	* gen-md5.h: Remove file.
+	* gen-md5.c: Likewise.
+
+	* http.c: Include "md5.h".  Do not include "gen-md5.h".
+	(digest_authentication_encode): New variable ctx.  Use md5 functions
+	from the gnulib module instead of functions defined previously in the
+	"gen-md5.h" file.
+
 2010-05-15  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am: Quote any path using $(top_srcdir) or $(top_builddir).
