@@ -1,3 +1,10 @@
+2010-05-15  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am: Quote any path using $(top_srcdir) or $(top_builddir).
+	(version.c): Remove dependency from configure.ac and Makefile.am.
+
+	* css.l: Include "wget.h".
+
 2010-05-08  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am: Update copyright years.
