@@ -3203,7 +3203,7 @@ http_atotm (const char *time_string)
   oldlocale = setlocale (LC_TIME, NULL);
   if (oldlocale)
     {
-      size_t l = strlen (oldlocale);
+      size_t l = strlen (oldlocale) + 1;
       if (l >= sizeof savedlocale)
         savedlocale[0] = '\0';
       else

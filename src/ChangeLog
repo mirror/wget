@@ -1,3 +1,9 @@
+2010-05-23  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (http_atotm): Count the NUL character when copying the locale
+	string.
+	Reported by: Florian Weimer <fw@deneb.enyo.de>
+
 2010-05-16  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am (LDADD): Remove MD5_LDADD.
