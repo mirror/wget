@@ -54,7 +54,7 @@ void set_content_encoding (struct iri *i, char *charset);
 
 #else /* ENABLE_IRI */
 
-struct iri dummy_iri;
+static struct iri dummy_iri;
 
 #define parse_charset(str)          NULL
 #define find_locale()               NULL

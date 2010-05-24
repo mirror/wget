@@ -61,6 +61,6 @@ enum {
   NUMBER,
   URI,
   FUNCTION
-} css_tokens;
+};
 
 #endif /* CSS_TOKENS_H */

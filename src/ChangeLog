@@ -1,3 +1,9 @@
+2010-05-24  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* iri.h (dummy_iri): Define static.
+
+	* css-tokens.h (css_tokens): Remove variable.
+
 2010-05-23  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* http.c (http_atotm): Count the NUL character when copying the locale
