@@ -874,6 +874,9 @@ sufmatch (const char **list, const char *what)
   lw = strlen (what);
   for (i = 0; list[i]; i++)
     {
+      if (list[i][0] == '\0')
+        continue;
+
       for (j = strlen (list[i]), k = lw; j >= 0 && k >= 0; j--, k--)
         if (c_tolower (list[i][j]) != c_tolower (what[k]))
           break;

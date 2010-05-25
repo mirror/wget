@@ -1,5 +1,7 @@
 2010-05-25  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* host.c (sufmatch): Do not consider zero length entries.
+
 	* http.c (H_10X): New macro.
 	(gethttp): Silently ignore 1xx responses.
 
