@@ -93,6 +93,7 @@ static struct cookie_jar *wget_cookie_jar;
 #define TEXTCSS_S "text/css"
 
 /* Some status code validation macros: */
+#define H_10X(x)        (((x) >= 100) && ((x) < 200))
 #define H_20X(x)        (((x) >= 200) && ((x) < 300))
 #define H_PARTIAL(x)    ((x) == HTTP_STATUS_PARTIAL_CONTENTS)
 #define H_REDIRECTED(x) ((x) == HTTP_STATUS_MOVED_PERMANENTLY          \
@@ -1958,6 +1959,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   contrange = 0;
   *dt &= ~RETROKF;
 
+read_header:
   head = read_http_response_head (sock);
   if (!head)
     {
@@ -1995,6 +1997,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       request_free (req);
       return HERR;
     }
+
+  if (H_10X (statcode))
+    {
+      DEBUGP (("Ignoring response\n"));
+      goto read_header;
+    }
+
   hs->message = xstrdup (message);
   if (!opt.server_response)
     logprintf (LOG_VERBOSE, "%2d %s\n", statcode,
