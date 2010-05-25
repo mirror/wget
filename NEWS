@@ -10,6 +10,11 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Support HTTP/1.1
 
+** Fix some portability issues.
+
+** Handle properly malformed status line in a HTTP response.
+
+** Ignore zero length domains in $no_proxy.
 
 * Changes in Wget 1.12
 
