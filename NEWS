@@ -17,6 +17,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Ignore zero length domains in $no_proxy.
 
 ** Set new cookies after an authorization failure.
+
+** Exit with failure if -k is specified and -O is not a regular file.
 
 * Changes in Wget 1.12
 

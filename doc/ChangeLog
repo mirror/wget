@@ -1,3 +1,8 @@
+2010-05-27  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Download Options): Document that -k can be used with -O
+	only with regular files.
+
 2010-05-08  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am: Update copyright years.
@@ -89,10 +94,10 @@
 
 2008-11-15  Steven Schubiger  <stsc@members.fsf.org>
 
-	* sample.wgetrc: Comment the waitretry "default" value, 
+	* sample.wgetrc: Comment the waitretry "default" value,
 	because there is a global one now.
 
-	* wget.texi (Download Options): Mention the global 
+	* wget.texi (Download Options): Mention the global
 	default value.
 
 2008-11-10  Micah Cowan  <micah@cowan.name>
@@ -104,7 +109,7 @@
 	added subsection headings.
 
 	Update node pointers.
-	
+
 2008-11-05  Micah Cowan  <micah@cowan.name>
 
 	* wget.texi: Move --no-http-keep-alive from FTP Options to HTTP
@@ -123,7 +128,7 @@
 
 2008-09-30  Steven Schubiger  <stsc@members.fsf.org>
 
-	* wget.texi (Wgetrc Commands): Add default_page, save_headers, 
+	* wget.texi (Wgetrc Commands): Add default_page, save_headers,
 	spider and user_agent to the list of recognized commands.
 
 2008-09-10  Michael Kessler  <kessler.michael@aon.at>
@@ -584,15 +589,15 @@
 	to 1.4.
 
 2005-02-11  Mauro Tortonesi  <mauro@ferrara.linux.it>
-	
+
 	* wget.texi: Added Simone Piunno as new contributor.
-	
+
 2005-01-01  Mauro Tortonesi  <mauro@ferrara.linux.it>
 
 	* wget.texi: Updated copyright information, added new contributors.
 
 2004-11-20  Hans-Andreas Engel  <engel@node.ch>
-	
+
 	* wget.texi: Describe limitations of combining `-O' with `-k'.
 
 2004-05-13  Nico R.  <n-roeser@gmx.net>
@@ -901,12 +906,12 @@
 	* wget.texi (Recursive Retrieval Options): Explained that you need
 	to use -r -l1 -p to get the two levels of requisites for a
 	<FRAMESET> page.  Also made a few other wording improvements.
-	
+
 2001-03-17  Dan Harkless  <wget@harkless.org>
 
-	* Makefile.in: Using '^' in the sed call caused a weird failure on 
+	* Makefile.in: Using '^' in the sed call caused a weird failure on
 	Solaris 2.6.  Changed it to a ','.  Defined top_builddir.
-	
+
 2001-02-23  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi: Corrections, clarifications, and English fixes to
@@ -915,7 +920,7 @@
 	Alphabetized FTP options by long option name.  Mentioned that
 	.listing symlinked to /etc/passwd is not a security hole, but that
 	other files could be, so root shouldn't run wget in user dirs.
-	
+
 2001-02-22  Dan Harkless  <wget@harkless.org>
 
 	* Makefile.in: Make wget man page and install it if we have
@@ -928,12 +933,12 @@
 	fails -- fixed call of texi2pod.pl that did this wrong.
 
 	* texi2pod.pl: Removed from CVS.  Now automatically generated.
-		
+
 	* texi2pod.pl.in: This new file is processed into texi2pod.pl,
 	getting the appropriate path to the Perl 5+ executable on this
 	system and becoming executable (CVS files, by contrast, don't
 	arrive executable).
-	
+
 2001-02-19  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Download Options): Further improvement to --continue
@@ -944,20 +949,20 @@
 
 	* wget.texi (Reporting Bugs): Deleted the setence about Cc-ing the
 	bug report to Wget mailing list as the bug report address is an
-	alias for the mailing ist anyway.  
+	alias for the mailing ist anyway.
 	(Mailing List): Added URL for the alternate archive.
-	
+
 	* wget.texi: Bunch of cosmetical changes.
-	
+
 	* Makefile.in: Added targets for manpage generation using
 	texi2pod.pl and pod2man (comes with Perl5). As we cannot rely on
 	Perl5 being available on the system, manpage is not being built
 	automatically. Updated '*clean' targets to remove
 	'sample.wgetrc.munged...', 'wget.pod', and 'wget.man'.
-	
+
 	* texi2pod.pl: New file copied from GCC distribution to facilitate
 	automatic manpage generation.
-	    
+
 2001-01-09  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Download Options): Did a bunch of clarification and
@@ -969,7 +974,7 @@
 	the best way to go about my aim.  Removed them in favor of:
 
 	* ChangeLog-branches/1.6_branch.ChangeLog: New file.
-	
+
 2000-12-31  Dan Harkless  <wget@harkless.org>
 
 	* Makefile.in (distclean): sample.wgetrc.munged_for_texi_inclusion
@@ -978,11 +983,11 @@
 	regenerated, forcing people to have makeinfo installed
 	unnecessarily.	We could use a kludge of a 0-length file in the
 	distro, but the file isn't that big and should compress very well.
-	
+
 	* wget.texi: Changed "VERSION 1.5.3+dev" to "VERSION 1.7-dev" and
 	"UPDATED Feb 2000" to "UPDATED Dec 2000".  Like the comment in the
 	file says, it'd be nice if these were handled automatically...
-	
+
 	* ChangeLog: Since this flat file doesn't have multiple branches,
 	looking at the dates would make you think that things went into
 	1.6 that actually just went into the 1.7-dev branch.  Added "[Not
@@ -1039,11 +1044,11 @@
 	* wget.texi (Recursive Retrieval Options): Improved --delete-after docs.
 	(Download Options): Documented Rob Mayoff's new --bind-address option.
 	(Wgetrc Commands): Documented Rob Mayoff's new bind_address command.
-	
+
 2000-10-20  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Recursive Retrieval Options): Sugg. -E on 1-page download.
-	
+
 2000-10-19  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (HTTP Options): Documented my new -E / --html-extension.
@@ -1051,7 +1056,7 @@
 	John Daily's "quad" values (which I renamed to "lockable
 	Boolean").  When I documented Damir Dzeko's --referer, I forgot to
 	add the .wgetrc equivalent; mentioned the "referrer" spelling issue.
-	
+
 2000-10-09  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (FTP Options): --retr-symlinks wasn't documented properly.
@@ -1060,7 +1065,7 @@
 
 	* wget.texi (Recursive Retrieval Options): Documented new -p option.
 	(Wgetrc Commands): Documented -p's equvialent, page_requisites.
-	
+
 2000-08-23  Dan Harkless  <wget@harkless.org>
 
 	* wget.texi (Download Options): Using -c on a file that's already fully
@@ -1069,7 +1074,7 @@
 	* wget.texi (Logging and Input File Options): -B / --base was not
 	documented as a separate item, and the .wgetrc version was misleading.
 
-	* wget.texi (Wgetrc Commands): Changed all instances of 
+	* wget.texi (Wgetrc Commands): Changed all instances of
 	", the same as" to the more grammatical " -- the same as".
 
 2000-08-22  Dan Harkless  <wget@harkless.org>
@@ -1095,12 +1100,12 @@
 2000-04-18  Dan Harkless  <wget@harkless.org>
 
 	* sample.wgetrc: Realized I put a global setting in the local section.
-	
+
 2000-04-13  Dan Harkless  <wget@harkless.org>
 
 	* Makefile.in (sample.wgetrc.munged_for_texi_inclusion): Added
 	build, dependencies, and distclean cleanup of this new file.
-	
+
 	* sample.wgetrc: Uncommented waitretry and set it to 10, clarified
 	some wording, and re-wrapped some text to 71 columns due to
 	@sample indentation in wget.texi.
@@ -1117,7 +1122,7 @@
 	times I ran `make install' after changing sample.wgetrc.  Added
 	blank lines around the message and a "<Hit RETURN to
 	acknowledge>", and reworded the message to be a bit more clear.
-	
+
 	* sample.wgetrc: Added entries for backup_converted and waitretry.
 
 	* wget.texi (Download Options and Wgetrc Commands): Herold Heiko

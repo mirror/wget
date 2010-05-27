@@ -1,5 +1,10 @@
 2010-05-27  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* main.c (main): Exit with failure when -k is specified and -O is not
+	a regular file.
+
+2010-05-27  Giuseppe Scrivano  <gscrivano@gnu.org>
+
 	* http.c (gethttp): Consider new cookies retrieved when the
 	authorization fails.
 

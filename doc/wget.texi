@@ -579,7 +579,8 @@ some cases where this behavior can actually have some use.
 Note that a combination with @samp{-k} is only permitted when
 downloading a single document, as in that case it will just convert
 all relative URIs to external ones; @samp{-k} makes no sense for
-multiple URIs when they're all being downloaded to a single file.
+multiple URIs when they're all being downloaded to a single file;
+@samp{-k} can be used only when the output is a regular file.
 
 @cindex clobbering, file
 @cindex downloading multiple times
