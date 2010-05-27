@@ -405,18 +405,18 @@ maybe_send_basic_creds (const char *hostname, const char *user,
 
   if (opt.auth_without_challenge)
     {
-      DEBUGP(("Auth-without-challenge set, sending Basic credentials.\n"));
+      DEBUGP (("Auth-without-challenge set, sending Basic credentials.\n"));
       do_challenge = true;
     }
   else if (basic_authed_hosts
       && hash_table_contains(basic_authed_hosts, hostname))
     {
-      DEBUGP(("Found %s in basic_authed_hosts.\n", quote (hostname)));
+      DEBUGP (("Found %s in basic_authed_hosts.\n", quote (hostname)));
       do_challenge = true;
     }
   else
     {
-      DEBUGP(("Host %s has not issued a general basic challenge.\n",
+      DEBUGP (("Host %s has not issued a general basic challenge.\n",
               quote (hostname)));
     }
   if (do_challenge)
@@ -438,7 +438,7 @@ register_basic_auth_host (const char *hostname)
   if (!hash_table_contains(basic_authed_hosts, hostname))
     {
       hash_table_put (basic_authed_hosts, xstrdup(hostname), NULL);
-      DEBUGP(("Inserted %s into basic_authed_hosts\n", quote (hostname)));
+      DEBUGP (("Inserted %s into basic_authed_hosts\n", quote (hostname)));
     }
 }
 
@@ -2624,7 +2624,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
      here so that we don't go through the hoops if we're just using
      FTP or whatever. */
   if (opt.cookies)
-    load_cookies();
+    load_cookies ();
 
   /* Warn on (likely bogus) wildcard usage in HTTP. */
   if (opt.ftp_glob && has_wildcards_p (u->path))
