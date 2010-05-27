@@ -1,3 +1,9 @@
+2010-05-27  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (gnulib_modules): Add `snprintf' module.
+
+	* configure.ac: Remove check for the `snprintf' function.
+
 2010-05-16  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* md5: Remove directory.

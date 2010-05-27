@@ -6,6 +6,12 @@
 
 2010-05-27  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* Makefile.am (wget_SOURCES): Remove `snprintf.c'.
+
+	* snprintf.c: Remove file.
+
+2010-05-27  Giuseppe Scrivano  <gscrivano@gnu.org>
+
 	* main.c (main): Exit with failure when -k is specified and -O is not
 	a regular file.
 
