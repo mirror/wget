@@ -1694,18 +1694,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   if (!inhibit_keep_alive)
     request_set_header (req, "Connection", "Keep-Alive", rel_none);
 
-  if (opt.cookies)
-    request_set_header (req, "Cookie",
-                        cookie_header (wget_cookie_jar,
-                                       u->host, u->port, u->path,
-#ifdef HAVE_SSL
-                                       u->scheme == SCHEME_HTTPS
-#else
-                                       0
-#endif
-                                       ),
-                        rel_value);
-
   if (opt.post_data || opt.post_file_name)
     {
       request_set_header (req, "Content-Type",
@@ -1727,6 +1715,23 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                           rel_value);
     }
 
+ retry_with_auth:
+  /* We need to come back here when the initial attempt to retrieve
+     without authorization header fails.  (Expected to happen at least
+     for the Digest authorization scheme.)  */
+
+  if (opt.cookies)
+    request_set_header (req, "Cookie",
+                        cookie_header (wget_cookie_jar,
+                                       u->host, u->port, u->path,
+#ifdef HAVE_SSL
+                                       u->scheme == SCHEME_HTTPS
+#else
+                                       0
+#endif
+                                       ),
+                        rel_value);
+
   /* Add the user headers. */
   if (opt.user_headers)
     {
@@ -1734,11 +1739,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       for (i = 0; opt.user_headers[i]; i++)
         request_set_user_header (req, opt.user_headers[i]);
     }
-
- retry_with_auth:
-  /* We need to come back here when the initial attempt to retrieve
-     without authorization header fails.  (Expected to happen at least
-     for the Digest authorization scheme.)  */
 
   proxyauth = NULL;
   if (proxy)

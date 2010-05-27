@@ -1,3 +1,8 @@
+2010-05-27  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (gethttp): Consider new cookies retrieved when the
+	authorization fails.
+
 2010-05-25  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* host.c (sufmatch): Do not consider zero length entries.
