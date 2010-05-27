@@ -15,6 +15,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Handle properly malformed status line in a HTTP response.
 
 ** Ignore zero length domains in $no_proxy.
+
+** Set new cookies after an authorization failure.
 
 * Changes in Wget 1.12
 
