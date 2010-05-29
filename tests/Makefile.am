@@ -65,6 +65,7 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              Test-auth-no-challenge.px \
              Test-auth-no-challenge-url.px \
              Test-auth-with-content-disposition.px \
+             Test-auth-retcode.px \
              Test-c-full.px \
              Test-c-partial.px \
              Test-c.px \
