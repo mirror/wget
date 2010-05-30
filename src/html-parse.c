@@ -528,13 +528,14 @@ convert_and_copy (struct pool *pool, const char *beg, const char *end, int flags
      * whitespace
      * 8-bit and control chars
      * characters that clearly cannot be part of name:
-       '=', '>', '/'.
+       '=', '<', '>', '/'.
 
    This only affects attribute and tag names; attribute values allow
    an even greater variety of characters.  */
 
 #define NAME_CHAR_P(x) ((x) > 32 && (x) < 127                           \
-                        && (x) != '=' && (x) != '>' && (x) != '/')
+                        && (x) != '=' && (x) != '<' && (x) != '>'       \
+                        && (x) != '/')
 
 #ifdef STANDALONE
 static int comment_backout_count;
@@ -619,6 +620,7 @@ advance_declaration (const char *beg, const char *end)
             case '\n':
               ch = *p++;
               break;
+            case '<':
             case '>':
               state = AC_S_DONE;
               break;
@@ -926,7 +928,7 @@ map_html_tags (const char *text, int size,
           }
       }
 
-    if (end_tag && *p != '>')
+    if (end_tag && *p != '>' && *p != '<')
       goto backout_tag;
 
     if (!name_allowed (allowed_tags, tag_name_begin, tag_name_end))
@@ -958,12 +960,12 @@ map_html_tags (const char *text, int size,
             /*              ^  */
             ADVANCE (p);
             SKIP_WS (p);
-            if (*p != '>')
+            if (*p != '<' || *p != '>')
               goto backout_tag;
           }
 
         /* Check for end of tag definition. */
-        if (*p == '>')
+        if (*p == '<' || *p == '>')
           break;
 
         /* Establish bounds of attribute name. */
@@ -978,7 +980,8 @@ map_html_tags (const char *text, int size,
 
         /* Establish bounds of attribute value. */
         SKIP_WS (p);
-        if (NAME_CHAR_P (*p) || *p == '/' || *p == '>')
+
+        if (NAME_CHAR_P (*p) || *p == '/' || *p == '<' || *p == '>')
           {
             /* Minimized attribute syntax allows `=' to be omitted.
                For example, <UL COMPACT> is a valid shorthand for <UL
@@ -1015,7 +1018,7 @@ map_html_tags (const char *text, int size,
                         newline_seen = true;
                         continue;
                       }
-                    else if (newline_seen && *p == '>')
+                    else if (newline_seen && (*p == '<' || *p == '>'))
                       break;
                     ADVANCE (p);
                   }
@@ -1040,7 +1043,7 @@ map_html_tags (const char *text, int size,
                    violated by, for instance, `%' in `width=75%'.
                    We'll be liberal and allow just about anything as
                    an attribute value.  */
-                while (!c_isspace (*p) && *p != '>')
+                while (!c_isspace (*p) && *p != '<' && *p != '>')
                   ADVANCE (p);
                 attr_value_end = p; /* <foo bar=baz qux=quix> */
                                     /*             ^          */
@@ -1138,7 +1141,8 @@ map_html_tags (const char *text, int size,
         }
 
       mapfun (&taginfo, maparg);
-      ADVANCE (p);
+      if (*p != '<')
+        ADVANCE (p);
     }
     goto look_for_tag;
 

@@ -19,6 +19,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Set new cookies after an authorization failure.
 
 ** Exit with failure if -k is specified and -O is not a regular file.
+
+** Cope better with unclosed html tags.
 
 * Changes in Wget 1.12
 
