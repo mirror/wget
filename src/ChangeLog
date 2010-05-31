@@ -1,5 +1,10 @@
 2010-05-31  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* html-parse.c (map_html_tags): Fix condition for closed tag.  Handle
+	the case '>' is not specified after '/'.
+
+2010-05-31  Giuseppe Scrivano  <gscrivano@gnu.org>
+
 	* sysdep.h (_SVID_SOURCE): Remove definition.
 	(_BSD_SOURCE): Remove definition.
 

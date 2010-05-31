@@ -960,7 +960,7 @@ map_html_tags (const char *text, int size,
             /*              ^  */
             ADVANCE (p);
             SKIP_WS (p);
-            if (*p != '<' || *p != '>')
+            if (*p != '<' && *p != '>')
               goto backout_tag;
           }
 
