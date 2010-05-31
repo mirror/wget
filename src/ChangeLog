@@ -1,3 +1,9 @@
+2010-05-31  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* recur.c (retrieve_tree): Remove variable `up_error_code'.
+
+	* iri.c (open_locale_to_utf8): Remove function.
+
 2010-05-30  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* html-parse.c (NAME_CHAR_P): Consider '<' an invalid character.

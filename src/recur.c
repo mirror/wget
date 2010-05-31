@@ -200,7 +200,6 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
      the queue, but haven't been downloaded yet.  */
   struct hash_table *blacklist;
 
-  int up_error_code;
   struct iri *i = iri_new ();
 
 #define COPYSTR(x)  (x) ? xstrdup(x) : NULL;

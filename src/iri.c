@@ -110,13 +110,6 @@ check_encoding_name (char *encoding)
   return true;
 }
 
-/* Try opening an iconv_t descriptor for conversion from locale to UTF-8 */
-static bool
-open_locale_to_utf8 (void)
-{
-
-}
-
 /* Try converting string str from locale to UTF-8. Return a new string
    on success, or str on error or if conversion isn't needed. */
 const char *
