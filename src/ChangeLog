@@ -1,5 +1,10 @@
 2010-05-31  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* css.l: Use option "nounput".
+	(YY_NO_INPUT): Add macro definition.
+
+2010-05-31  Giuseppe Scrivano  <gscrivano@gnu.org>
+
 	* html-parse.c (map_html_tags): Fix condition for closed tag.  Handle
 	the case '>' is not specified after '/'.
 
