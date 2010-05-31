@@ -70,20 +70,6 @@ as that of the covered work.  */
 /* Request the "Unix 98 compilation environment". */
 #define _XOPEN_SOURCE 500
 
-/* For Solaris: request everything else that is available and doesn't
-   conflict with the above.  */
-/* #define __EXTENSIONS__ */ /* XXX clashes with config.h */
-
-/* For Linux: request features of 4.3BSD and SVID (System V Interface
-   Definition). */
-#define _SVID_SOURCE
-#define _BSD_SOURCE
-
-/* Under glibc-based systems we want all GNU extensions as well.  This
-   declares some unnecessary cruft, but also useful functions such as
-   timegm, FNM_CASEFOLD extension to fnmatch, memrchr, etc.  */
-/* #define _GNU_SOURCE */ /* XXX clashes with config.h */
-
 #endif /* NAMESPACE_TWEAKS */
 
 

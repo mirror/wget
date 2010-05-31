@@ -1,5 +1,10 @@
 2010-05-31  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* sysdep.h (_SVID_SOURCE): Remove definition.
+	(_BSD_SOURCE): Remove definition.
+
+2010-05-31  Giuseppe Scrivano  <gscrivano@gnu.org>
+
 	* recur.c (retrieve_tree): Remove variable `up_error_code'.
 
 	* iri.c (open_locale_to_utf8): Remove function.
