@@ -382,9 +382,10 @@ init_switches (void)
 
 /* Print the usage message.  */
 static void
-print_usage (void)
+print_usage (int error)
 {
-  printf (_("Usage: %s [OPTION]... [URL]...\n"), exec_name);
+  fprintf (error ? stderr : stdout, _("Usage: %s [OPTION]... [URL]...\n"),
+           exec_name);
 }
 
 /* Print the help message, describing all the available options.  If
@@ -691,7 +692,7 @@ Recursive accept/reject:\n"),
 
   printf (_("GNU Wget %s, a non-interactive network retriever.\n"),
           version_string);
-  print_usage ();
+  print_usage (0);
 
   for (i = 0; i < countof (help); i++)
     fputs (_(help[i]), stdout);
@@ -785,7 +786,6 @@ print_version (void)
   const char *locale_title  = _("Locale: ");
   const char *compile_title = _("Compile: ");
   const char *link_title    = _("Link: ");
-  char *line;
   char *env_wgetrc, *user_wgetrc;
   int i;
 
@@ -908,7 +908,7 @@ main (int argc, char **argv)
         {
           if (ret == '?')
             {
-              print_usage ();
+              print_usage (0);
               printf ("\n");
               printf (_("Try `%s --help' for more options.\n"), exec_name);
               exit (2);
@@ -976,10 +976,12 @@ main (int argc, char **argv)
                   setoptval ("noparent", "1", opt->long_name);
                   break;
                 default:
-                  printf (_("%s: illegal option -- `-n%c'\n"), exec_name, *p);
-                  print_usage ();
-                  printf ("\n");
-                  printf (_("Try `%s --help' for more options.\n"), exec_name);
+                  fprintf (stderr, _("%s: illegal option -- `-n%c'\n"),
+                           exec_name, *p);
+                  print_usage (1);
+                  fprintf (stderr, "\n");
+                  fprintf (stderr, _("Try `%s --help' for more options.\n"),
+                           exec_name);
                   exit (1);
                 }
             break;
@@ -1034,22 +1036,23 @@ main (int argc, char **argv)
   /* Sanity checks.  */
   if (opt.verbose && opt.quiet)
     {
-      printf (_("Can't be verbose and quiet at the same time.\n"));
-      print_usage ();
+      fprintf (stderr, _("Can't be verbose and quiet at the same time.\n"));
+      print_usage (1);
       exit (1);
     }
   if (opt.timestamping && opt.noclobber)
     {
-      printf (_("\
+      fprintf (stderr, _("\
 Can't timestamp and not clobber old files at the same time.\n"));
-      print_usage ();
+      print_usage (1);
       exit (1);
     }
 #ifdef ENABLE_IPV6
   if (opt.ipv4_only && opt.ipv6_only)
     {
-      printf (_("Cannot specify both --inet4-only and --inet6-only.\n"));
-      print_usage ();
+      fprintf (stderr,
+               _("Cannot specify both --inet4-only and --inet6-only.\n"));
+      print_usage (1);
       exit (1);
     }
 #endif
@@ -1060,8 +1063,8 @@ Can't timestamp and not clobber old files at the same time.\n"));
         {
           fputs (_("\
 Cannot specify both -k and -O if multiple URLs are given, or in combination\n\
-with -p or -r. See the manual for details.\n\n"), stdout);
-          print_usage ();
+with -p or -r. See the manual for details.\n\n"), stderr);
+          print_usage (1);
           exit (1);
         }
       if (opt.page_requisites
@@ -1081,27 +1084,30 @@ for details.\n\n"));
       if (opt.noclobber && file_exists_p(opt.output_document))
            {
               /* Check if output file exists; if it does, exit. */
-              logprintf (LOG_VERBOSE, _("File `%s' already there; not retrieving.\n"), opt.output_document);
+              logprintf (LOG_VERBOSE,
+                         _("File `%s' already there; not retrieving.\n"),
+                         opt.output_document);
               exit(1);
            }
     }
 
   if (opt.ask_passwd && opt.passwd)
     {
-      printf (_("Cannot specify both --ask-password and --password.\n"));
-      print_usage ();
+      fprintf (stderr,
+               _("Cannot specify both --ask-password and --password.\n"));
+      print_usage (1);
       exit (1);
     }
 
   if (!nurl && !opt.input_filename)
     {
       /* No URL specified.  */
-      printf (_("%s: missing URL\n"), exec_name);
-      print_usage ();
+      fprintf (stderr, _("%s: missing URL\n"), exec_name);
+      print_usage (1);
       printf ("\n");
       /* #### Something nicer should be printed here -- similar to the
          pre-1.5 `--help' page.  */
-      printf (_("Try `%s --help' for more options.\n"), exec_name);
+      fprintf (stderr, _("Try `%s --help' for more options.\n"), exec_name);
       exit (1);
     }
 
@@ -1121,7 +1127,7 @@ for details.\n\n"));
   if (opt.enable_iri || opt.locale || opt.encoding_remote)
     {
       /* sXXXav : be more specific... */
-      printf(_("This version does not have support for IRIs\n"));
+      fprintf (stderr, _("This version does not have support for IRIs\n"));
       exit(1);
     }
 #endif
@@ -1219,9 +1225,9 @@ WARNING: Can't reopen standard output in binary mode;\n\
         }
       if (!output_stream_regular && opt.convert_links)
         {
-          printf (_("-k can be used together with -O only if outputting to \
-a regular file.\n"));
-          print_usage ();
+          fprintf (stderr, _("-k can be used together with -O only if \
+outputting to a regular file.\n"));
+          print_usage (1);
           exit(1);
         }
     }
@@ -1231,13 +1237,9 @@ a regular file.\n"));
      any), otherwise according to the current default device.
   */
   if (output_stream == NULL)
-    {
-      set_ods5_dest( "SYS$DISK");
-    }
+    set_ods5_dest( "SYS$DISK");
   else if (output_stream != stdout)
-    {
-      set_ods5_dest( opt.output_document);
-    }
+    set_ods5_dest( opt.output_document);
 #endif /* def __VMS */
 
 #ifdef WINDOWS
@@ -1333,9 +1335,7 @@ a regular file.\n"));
 
   /* Print broken links. */
   if (opt.recursive && opt.spider)
-    {
-      print_broken_links();
-    }
+    print_broken_links ();
 
   /* Print the downloaded sum.  */
   if ((opt.recursive || opt.page_requisites

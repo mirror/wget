@@ -6,6 +6,11 @@
 
 2010-05-27  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* main.c (print_usage): Accept a new parameter `error'.
+	(main): Print diagnostic messages to stderr, not stdout.
+
+2010-05-27  Giuseppe Scrivano  <gscrivano@gnu.org>
+
 	* Makefile.am (wget_SOURCES): Remove `snprintf.c'.
 
 	* snprintf.c: Remove file.

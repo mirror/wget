@@ -21,6 +21,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Exit with failure if -k is specified and -O is not a regular file.
 
 ** Cope better with unclosed html tags.
+
+** Print diagnostic messages to stderr, not stdout.
 
 * Changes in Wget 1.12
 
