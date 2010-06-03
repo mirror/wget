@@ -2673,18 +2673,14 @@ File %s already there; not retrieving.\n\n"),
   /* Reset the document type. */
   *dt = 0;
 
-  /* Skip preliminary HEAD request if we're not in spider mode AND
-   * if -O was given or HTTP Content-Disposition support is disabled. */
-  if (!opt.spider
-      && (got_name || !opt.content_disposition))
+  /* Skip preliminary HEAD request if we're not in spider mode.  */
+  if (!opt.spider)
     send_head_first = false;
 
   /* Send preliminary HEAD request if -N is given and we have an existing
    * destination file. */
   file_name = url_file_name (u);
-  if (opt.timestamping
-      && !opt.content_disposition
-      && file_exists_p (file_name))
+  if (opt.timestamping && file_exists_p (file_name))
     send_head_first = true;
   xfree (file_name);
 

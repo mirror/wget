@@ -23,6 +23,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Cope better with unclosed html tags.
 
 ** Print diagnostic messages to stderr, not stdout.
+
+** Do not use an additional HEAD request when --content-disposition is used,
+   but use directly GET.
 
 * Changes in Wget 1.12
 

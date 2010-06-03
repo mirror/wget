@@ -1,3 +1,9 @@
+2010-06-03  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (http_loop): Do not send a HEAD request before the GET request
+	when --content-disposition is used.
+	Reported by: alex_wh@mail.ru.
+
 2010-05-31  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* css.l: Use option "nounput".
