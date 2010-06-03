@@ -1,5 +1,9 @@
 2010-06-03  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* bootstrap.conf (gnulib_modules): Add iconv-h.
+
+2010-06-03  Giuseppe Scrivano  <gscrivano@gnu.org>
+
 	* configure.ac (W32LIBS): Remove -lwsock32.
 
 2010-05-27  Giuseppe Scrivano  <gscrivano@gnu.org>
