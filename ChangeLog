@@ -1,3 +1,11 @@
+2010-06-04  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* build-aux/build_info.pl: Use /usr/bin/env to find the perl
+	interpreter.
+	* util/paramcheck.pl: Likewise.
+	* util/rmold.pl: Likewise.
+	Reported by sci-fi@hush.ai.
+
 2010-06-03  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap.conf (gnulib_modules): Add iconv-h.

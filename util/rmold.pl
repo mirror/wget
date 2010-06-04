@@ -1,4 +1,4 @@
-#! /usr/bin/perl -w
+#!/usr/bin/env perl -w
 
 # Copyright (C) 1995, 1996, 1997, 2007, 2008, 2009, 2010 Free Software
 # Foundation, Inc.
