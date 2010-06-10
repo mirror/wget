@@ -1,5 +1,11 @@
 2010-06-10  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* configure.ac (AM_INIT_AUTOMAKE): Remove dist-bzip2 dist-lzma from
+	automake options.
+	Reported by: Daniel Stenberg <daniel@haxx.se>.
+
+2010-06-10  Giuseppe Scrivano  <gscrivano@gnu.org>
+
 	* bootstrap.conf (buildreq): Add definition.
 
 2010-06-04  Giuseppe Scrivano  <gscrivano@gnu.org>

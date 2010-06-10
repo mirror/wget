@@ -48,7 +48,7 @@ AC_CONFIG_SRCDIR([src/wget.h])
 dnl
 dnl Automake setup
 dnl
-AM_INIT_AUTOMAKE(dist-bzip2 dist-lzma 1.9)
+AM_INIT_AUTOMAKE([1.9])
 
 dnl
 dnl Get cannonical host
