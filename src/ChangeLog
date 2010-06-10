@@ -1,5 +1,9 @@
 2010-06-10  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* main.c (print_version): Drop the current maintainer line.
+
+2010-06-10  Giuseppe Scrivano  <gscrivano@gnu.org>
+
 	* Makefile.am (build_info.c): Generate the `build_info.c' file under
 	the build directory.
 	Patch by: Daniel Stenberg <daniel@haxx.se>.
