@@ -63,7 +63,7 @@ AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
 build_info.c: $(srcdir)/Makefile.am $(srcdir)/build_info.c.in
 	if test -n "$(VPATH)"; then cp "$(srcdir)/build_info.c.in" .; fi
 	$(PERL) "$(top_srcdir)/build-aux/build_info.pl" \
-	    "$(abs_builddir)/build_info.c"
+	    "$(top_builddir)/src/build_info.c"
 	if test -n "$(VPATH)"; then rm -f build_info.c.in; fi
 
 ESCAPEQUOTE = sed -e 's/[\\"]/\\&/g' -e 's/\\"/"/' -e 's/\\";$$/";/'

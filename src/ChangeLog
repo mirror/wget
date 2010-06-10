@@ -1,3 +1,9 @@
+2010-06-10  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am (build_info.c): Generate the `build_info.c' file under
+	the build directory.
+	Patch by: Daniel Stenberg <daniel@haxx.se>.
+
 2010-06-03  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* http.c (http_loop): Do not send a HEAD request before the GET request
