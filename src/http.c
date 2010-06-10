@@ -3029,7 +3029,7 @@ Remote file exists.\n\n"));
                          hstat.local_file, count);
             }
           ++numurls;
-          total_downloaded_bytes += hstat.len;
+          total_downloaded_bytes += hstat.rd_size;
 
           /* Remember that we downloaded the file for later ".orig" code. */
           if (*dt & ADDED_HTML_EXTENSION)
@@ -3062,7 +3062,7 @@ Remote file exists.\n\n"));
                              hstat.local_file, count);
                 }
               ++numurls;
-              total_downloaded_bytes += hstat.len;
+              total_downloaded_bytes += hstat.rd_size;
 
               /* Remember that we downloaded the file for later ".orig" code. */
               if (*dt & ADDED_HTML_EXTENSION)

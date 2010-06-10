@@ -1,3 +1,8 @@
+2010-06-10  Muthu Subramanian K <muthusuba@gmail.com> (tiny change)
+
+	* http.c (http_loop): Increase `total_downloaded_bytes' by
+	`hstat.rd_size', not `hstat.len'.
+
 2010-06-10  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* main.c (print_version): Drop the current maintainer line.

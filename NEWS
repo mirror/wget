@@ -26,6 +26,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Do not use an additional HEAD request when --content-disposition is used,
    but use directly GET.
+
+** Report the average transfer speed correctly when multiple URL's are specified
+   and -c influences the transferred data amount.
 
 * Changes in Wget 1.12
 
