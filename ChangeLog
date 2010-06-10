@@ -1,3 +1,7 @@
+2010-06-10  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (buildreq): Add definition.
+
 2010-06-04  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* build-aux/build_info.pl: Use /usr/bin/env to find the perl
