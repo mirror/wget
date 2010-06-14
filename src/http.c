@@ -2680,7 +2680,8 @@ File %s already there; not retrieving.\n\n"),
   /* Send preliminary HEAD request if -N is given and we have an existing
    * destination file. */
   file_name = url_file_name (u);
-  if (opt.timestamping && file_exists_p (file_name))
+  if (opt.timestamping && (file_exists_p (file_name)
+                           || opt.content_disposition))
     send_head_first = true;
   xfree (file_name);
 

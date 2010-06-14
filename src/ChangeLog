@@ -1,3 +1,9 @@
+2010-06-14  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (http_loop): Always send a HEAD request when -N is used
+	together with --content-disposition.
+	Reported by: Jochen Roderburg <Roderburg@Uni-Koeln.DE>.
+
 2010-06-10  Muthu Subramanian K <muthusuba@gmail.com> (tiny change)
 
 	* http.c (http_loop): Increase `total_downloaded_bytes' by
