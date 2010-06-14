@@ -1,5 +1,14 @@
 2010-06-14  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* gnutls.c: Include <stdlib.h>.
+	(struct wgnutls_transport_context): Remove `peekstart'.
+	(ssl_connect_wget): Renamed from `ssl_connect'.
+	(wgnutls_poll): New variable `ctx'.
+	(wgnutls_read): Don't use `ctx->peekstart'.
+	(wgnutls_peek): Likewise.  Don't attempt to read if there is not
+	ready data.
+
+2010-06-14  Giuseppe Scrivano  <gscrivano@gnu.org>
 	* http.c (http_loop): Always send a HEAD request when -N is used
 	together with --content-disposition.
 	Reported by: Jochen Roderburg <Roderburg@Uni-Koeln.DE>.

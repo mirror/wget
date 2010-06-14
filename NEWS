@@ -29,6 +29,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Report the average transfer speed correctly when multiple URL's are specified
    and -c influences the transferred data amount.
+
+** GNU TLS backend works again.
 
 * Changes in Wget 1.12
 

@@ -37,6 +37,7 @@ as that of the covered work.  */
 #endif
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
@@ -73,7 +74,7 @@ struct wgnutls_transport_context {
      is stored to PEEKBUF, and wgnutls_read checks that buffer before
      actually reading.  */
   char peekbuf[512];
-  int peekstart, peeklen;
+  int peeklen;
 };
 
 #ifndef MIN
@@ -83,19 +84,18 @@ struct wgnutls_transport_context {
 static int
 wgnutls_read (int fd, char *buf, int bufsize, void *arg)
 {
-  int ret;
+  int ret = 0;
   struct wgnutls_transport_context *ctx = arg;
 
   if (ctx->peeklen)
     {
       /* If we have any peek data, simply return that. */
       int copysize = MIN (bufsize, ctx->peeklen);
-      memcpy (buf, ctx->peekbuf + ctx->peekstart, copysize);
+      memcpy (buf, ctx->peekbuf, copysize);
       ctx->peeklen -= copysize;
       if (ctx->peeklen != 0)
-        ctx->peekstart += copysize;
-      else
-        ctx->peekstart = 0;
+        memmove (ctx->peekbuf, ctx->peekbuf + copysize, ctx->peeklen);
+
       return copysize;
     }
 
@@ -124,31 +124,38 @@ wgnutls_write (int fd, char *buf, int bufsize, void *arg)
 static int
 wgnutls_poll (int fd, double timeout, int wait_for, void *arg)
 {
-  return 1;
+  struct wgnutls_transport_context *ctx = arg;
+  return ctx->peeklen || gnutls_record_check_pending (ctx->session)
+    || select_fd (fd, timeout, wait_for);
 }
 
 static int
 wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
 {
-  int ret;
+  int ret = 0;
   struct wgnutls_transport_context *ctx = arg;
+  int offset = ctx->peeklen;
 
-  /* We don't support peeks following peeks: the reader must drain all
-     peeked data before the next peek.  */
-  assert (ctx->peeklen == 0);
   if (bufsize > sizeof ctx->peekbuf)
     bufsize = sizeof ctx->peekbuf;
 
+  if (offset)
+    memcpy (buf, ctx->peekbuf, offset);
+
   do
-    ret = gnutls_record_recv (ctx->session, buf, bufsize);
+    {
+      if (gnutls_record_check_pending (ctx->session)
+          || select_fd (fd, 0, WAIT_FOR_READ))
+        ret = gnutls_record_recv (ctx->session, buf + offset, bufsize - offset);
+    }
   while (ret == GNUTLS_E_INTERRUPTED);
 
-  if (ret >= 0)
+  if (ret > 0)
     {
-      memcpy (ctx->peekbuf, buf, ret);
-      ctx->peeklen = ret;
+      memcpy (ctx->peekbuf + offset, buf + offset, ret);
+      ctx->peeklen += ret;
     }
-  return ret;
+  return ctx->peeklen;
 }
 
 static const char *
@@ -177,7 +184,7 @@ static struct transport_implementation wgnutls_transport = {
 };
 
 bool
-ssl_connect (int fd)
+ssl_connect_wget (int fd)
 {
   static const int cert_type_priority[] = {
     GNUTLS_CRT_X509, GNUTLS_CRT_OPENPGP, 0
