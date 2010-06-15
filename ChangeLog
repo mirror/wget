@@ -1,3 +1,14 @@
+2010-06-15  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* m4/wget.m4 (WGET_STRUCT_SOCKADDR_STORAGE): Guard header inclusions.
+	(TYPE_STRUCT_SOCKADDR_IN6): Likewise.
+	(MEMBER_SIN6_SCOPE_ID): Likewise.
+	(PROTO_INET6): Likewise.
+
+	* configure.ac: Don't check for `getaddrinfo'.
+
+	* bootstrap.conf (gnulib_modules): Add `getaddrinfo' module.
+
 2010-06-10  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac (AM_INIT_AUTOMAKE): Remove dist-bzip2 dist-lzma from

@@ -301,9 +301,9 @@ dnl **********************************************************************
 
 dnl
 dnl We test for IPv6 by checking, in turn, for availability of
-dnl getaddrinfo, presence of the INET6 address/protocol family, and
-dnl the existence of struct sockaddr_in6.  If any of them is missing,
-dnl IPv6 is disabled, and the code reverts to old-style gethostbyname.
+dnl presence of the INET6 address/protocol family and the existence of
+dnl struct sockaddr_in6.  If any of them is missing, IPv6 is disabled,
+dnl and the code reverts to old-style gethostbyname.
 dnl
 dnl If --enable-ipv6 is explicitly specified on the configure command
 dnl line, we check for IPv6 and abort if not found.  If --disable-ipv6
@@ -337,13 +337,6 @@ AC_ARG_ENABLE(ipv6,
     ipv6=yes
   ]
 )
-
-if test "X$ipv6" = "Xyes"; then
-  AC_CHECK_FUNCS(getaddrinfo, [], [
-    AC_MSG_NOTICE([Disabling IPv6 support: your system does not support getaddrinfo(3)])
-    ipv6=no
-  ])
-fi
 
 if test "X$ipv6" = "Xyes"; then
   PROTO_INET6([], [

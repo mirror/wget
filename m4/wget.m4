@@ -122,8 +122,18 @@ AC_DEFUN([TYPE_STRUCT_SOCKADDR_IN6],[
     wget_have_sockaddr_in6=no
   ],[
 #include <sys/types.h>
+#ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
+#ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
+#endif
+#ifdef HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+#include <ws2tcpip.h>
+#endif
   ])
 
   if test "X$wget_have_sockaddr_in6" = "Xyes"; then :
@@ -145,8 +155,18 @@ AC_DEFUN([MEMBER_SIN6_SCOPE_ID],[
       wget_member_sin6_scope_id=no
     ],[
 #include <sys/types.h>
+#ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
+#ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
+#endif
+#ifdef HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+#include <ws2tcpip.h>
+#endif
     ])
   fi
 
@@ -164,13 +184,23 @@ AC_DEFUN([PROTO_INET6],[
   AC_CACHE_CHECK([for INET6 protocol support], [wget_cv_proto_inet6],[
     AC_TRY_CPP([
 #include <sys/types.h>
+#ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
-
+#endif
+#ifdef HAVE_NETINET_IN_H
+#include <netinet/in.h>
+#endif
+#ifdef HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+#include <ws2tcpip.h>
+#endif
 #ifndef PF_INET6
 #error Missing PF_INET6
 #endif
 #ifndef AF_INET6
-#error Mlssing AF_INET6
+#error Missing AF_INET6
 #endif
     ],[
       wget_cv_proto_inet6=yes
@@ -190,8 +220,13 @@ AC_DEFUN([PROTO_INET6],[
 AC_DEFUN([WGET_STRUCT_SOCKADDR_STORAGE],[
   AC_CHECK_TYPES([struct sockaddr_storage],[], [], [
 #include <sys/types.h>
+#ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
-  ])
+#endif
+#ifdef HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
+])
 ])
 
 dnl ************************************************************
