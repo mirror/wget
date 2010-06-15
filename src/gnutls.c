@@ -47,6 +47,10 @@ as that of the covered work.  */
 #include "url.h"
 #include "ssl.h"
 
+#ifdef WIN32
+# include "w32sock.h"
+#endif
+
 /* Note: some of the functions private to this file have names that
    begin with "wgnutls_" (e.g. wgnutls_read) so that they wouldn't be
    confused with actual gnutls functions -- such as the gnutls_read
@@ -196,7 +200,10 @@ ssl_connect_wget (int fd)
   gnutls_set_default_priority (session);
   gnutls_certificate_type_set_priority (session, cert_type_priority);
   gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, credentials);
-  gnutls_transport_set_ptr (session, (gnutls_transport_ptr) fd);
+#ifndef FD_TO_SOCKET
+# define FD_TO_SOCKET(X) (X)
+#endif
+  gnutls_transport_set_ptr (session, (gnutls_transport_ptr) FD_TO_SOCKET (fd));
   err = gnutls_handshake (session);
   if (err < 0)
     {

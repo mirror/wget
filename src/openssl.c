@@ -398,7 +398,7 @@ ssl_connect_wget (int fd)
   if (!conn)
     goto error;
 #ifndef FD_TO_SOCKET
-# define FD_TO_SOCKET(x) (x)
+# define FD_TO_SOCKET(X) (X)
 #endif
   if (!SSL_set_fd (conn, FD_TO_SOCKET (fd)))
     goto error;
