@@ -41,7 +41,7 @@ distuninstallcheck_listfiles = find . -type f | \
 ACLOCAL_AMFLAGS = -I m4
 
 # subdirectories in the distribution
-SUBDIRS = lib src doc po tests util windows
+SUBDIRS = lib src doc po tests util
 
 EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST \
              msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
