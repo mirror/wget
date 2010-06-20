@@ -478,7 +478,7 @@ Download:\n"),
     N_("\
        --waitretry=SECONDS       wait 1..SECONDS between retries of a retrieval.\n"),
     N_("\
-       --random-wait             wait from 0...2*WAIT secs between retrievals.\n"),
+       --random-wait             wait from 0.5*WAIT...1.5*WAIT secs between retrievals.\n"),
     N_("\
        --no-proxy                explicitly turn off proxy.\n"),
     N_("\

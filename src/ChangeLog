@@ -1,3 +1,9 @@
+2010-06-20  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* main.c (print_help): Fix help string for --random-wait.  Its range is
+	[0.5*wait, 1.5*wait) not [0, 2*wait).
+	Reported by: Tom Mizutani <gombei1970@gmail.com>.
+
 2010-06-15  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* gnutls.c [WIN32]: Include "w32sock.h".
