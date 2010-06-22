@@ -232,21 +232,7 @@ dnl
 dnl Checks for libraries.
 dnl
 
-AS_IF([test x"$with_ssl" = xgnutls], [
-  dnl Now actually check for -lssl
-  AC_LIB_HAVE_LINKFLAGS([gnutls], [], [
-#include <gnutls/gnutls.h>
-  ], [gnutls_global_init()])
-  if test x"$LIBGNUTLS" != x
-  then
-    AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
-    AC_LIBOBJ([gnutls])
-  else
-    AC_MSG_ERROR([--with-ssl=gnutls was given, but GNUTLS is not available.])
-  fi
-], [
-  # --with-ssl is not gnutls: check if it's no
-  AS_IF([test x"$with_ssl" != xno], [
+AS_IF([test x"$with_ssl" = xopenssl], [
     dnl As of this writing (OpenSSL 0.9.6), the libcrypto shared library
     dnl doesn't record its dependency on libdl, so we need to make sure
     dnl -ldl ends up in LIBS on systems that have it.  Most OSes use
@@ -271,10 +257,24 @@ AS_IF([test x"$with_ssl" = xgnutls], [
       AC_LIBOBJ([openssl])
     elif test x"$with_ssl" != x
     then
-      AC_MSG_ERROR([--with-ssl was given, but SSL is not available.])
+      AC_MSG_ERROR([--with-ssl=openssl was given, but SSL is not available.])
+    fi
+], [
+  # --with-ssl is not gnutls: check if it's no
+  AS_IF([test x"$with_ssl" != xno], [
+    dnl Now actually check for -lssl
+    AC_LIB_HAVE_LINKFLAGS([gnutls], [], [
+  #include <gnutls/gnutls.h>
+    ], [gnutls_global_init()])
+    if test x"$LIBGNUTLS" != x
+    then
+      AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
+      AC_LIBOBJ([gnutls])
+    else
+      AC_MSG_ERROR([--with-ssl was given, but GNUTLS is not available.])
     fi
   ]) # endif: --with-ssl == no?
-]) # endif: --with-ssl == gnutls?
+]) # endif: --with-ssl == openssl?
 
 
 dnl Enable NTLM if requested and if SSL is available.
