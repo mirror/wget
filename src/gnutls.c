@@ -196,6 +196,7 @@ ssl_connect_wget (int fd)
   struct wgnutls_transport_context *ctx;
   gnutls_session session;
   int err;
+  int allowed_protocols[4] = {0, 0, 0, 0};
   gnutls_init (&session, GNUTLS_CLIENT);
   gnutls_set_default_priority (session);
   gnutls_certificate_type_set_priority (session, cert_type_priority);
@@ -204,6 +205,33 @@ ssl_connect_wget (int fd)
 # define FD_TO_SOCKET(X) (X)
 #endif
   gnutls_transport_set_ptr (session, (gnutls_transport_ptr) FD_TO_SOCKET (fd));
+
+  err = 0;
+  switch (opt.secure_protocol)
+    {
+    case secure_protocol_auto:
+      break;
+    case secure_protocol_sslv2:
+    case secure_protocol_sslv3:
+      allowed_protocols[0] = GNUTLS_SSL3;
+      err = gnutls_protocol_set_priority (session, allowed_protocols);
+      break;
+    case secure_protocol_tlsv1:
+      allowed_protocols[0] = GNUTLS_TLS1_0;
+      allowed_protocols[1] = GNUTLS_TLS1_1;
+      allowed_protocols[2] = GNUTLS_TLS1_2;
+      err = gnutls_protocol_set_priority (session, allowed_protocols);
+      break;
+    default:
+      abort ();
+    }
+  if (err < 0)
+    {
+      logprintf (LOG_NOTQUIET, "GnuTLS: %s\n", gnutls_strerror (err));
+      gnutls_deinit (session);
+      return false;
+    }
+
   err = gnutls_handshake (session);
   if (err < 0)
     {
@@ -211,6 +239,7 @@ ssl_connect_wget (int fd)
       gnutls_deinit (session);
       return false;
     }
+
   ctx = xnew0 (struct wgnutls_transport_context);
   ctx->session = session;
   fd_register_transport (fd, &wgnutls_transport, ctx);
