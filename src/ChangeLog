@@ -1,3 +1,8 @@
+2010-07-05  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* gnutls.c (ssl_init): New local variables `ca_directory' and `dir'.
+	Load default root certificates under the `ca_directory' directory.
+
 2010-07-03  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* gnutls.c (ssl_connect_wget): New local variable `allowed_protocols'.
