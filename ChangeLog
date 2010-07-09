@@ -1,3 +1,7 @@
+2010-07-09  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (gnulib_modules): Add `vasprintf'.  Remove `asprintf'.
+
 2010-07-05  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap.conf (gnulib_modules): Add `asprintf'.
