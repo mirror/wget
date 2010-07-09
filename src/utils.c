@@ -1149,18 +1149,18 @@ read_whole_line (FILE *fp)
    zero-terminated, and you should *not* read or write beyond the [0,
    length) range of characters.
 
-   After you are done with the file contents, call read_file_free to
+   After you are done with the file contents, call wget_read_file_free to
    release the memory.
 
    Depending on the operating system and the type of file that is
-   being read, read_file() either mmap's the file into memory, or
+   being read, wget_read_file() either mmap's the file into memory, or
    reads the file into the core using read().
 
    If file is named "-", fileno(stdin) is used for reading instead.
    If you want to read from a real file named "-", use "./-" instead.  */
 
 struct file_memory *
-read_file (const char *file)
+wget_read_file (const char *file)
 {
   int fd;
   struct file_memory *fm;
@@ -1270,7 +1270,7 @@ read_file (const char *file)
    memory needed to hold the FM structure itself.  */
 
 void
-read_file_free (struct file_memory *fm)
+wget_read_file_free (struct file_memory *fm)
 {
 #ifdef HAVE_MMAP
   if (fm->mmap_p)

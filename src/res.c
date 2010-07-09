@@ -385,7 +385,7 @@ struct robot_specs *
 res_parse_from_file (const char *filename)
 {
   struct robot_specs *specs;
-  struct file_memory *fm = read_file (filename);
+  struct file_memory *fm = wget_read_file (filename);
   if (!fm)
     {
       logprintf (LOG_NOTQUIET, _("Cannot open %s: %s"),
@@ -393,7 +393,7 @@ res_parse_from_file (const char *filename)
       return NULL;
     }
   specs = res_parse (fm->content, fm->length);
-  read_file_free (fm);
+  wget_read_file_free (fm);
   return specs;
 }
 

@@ -97,8 +97,8 @@ bool has_wildcards_p (const char *);
 bool has_html_suffix_p (const char *);
 
 char *read_whole_line (FILE *);
-struct file_memory *read_file (const char *);
-void read_file_free (struct file_memory *);
+struct file_memory *wget_read_file (const char *);
+void wget_read_file_free (struct file_memory *);
 
 void free_vec (char **);
 char **merge_vecs (char **, char **);

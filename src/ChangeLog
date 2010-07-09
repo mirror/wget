@@ -1,3 +1,17 @@
+2010-07-09  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* css-url.c (get_urls_css_file): Use `wget_read_file' instead of
+	`read_file'.  Use `wget_read_file_free' instead of `read_file_free'.
+	* convert.c (convert_links): Likewise.
+	* html-url.c (get_urls_html, get_urls_file): Likewise.
+	* res.c (res_parse_from_file): Likewise.
+
+	* utils.h: Rename `read_file' to `wget_read_file'.  Rename
+	`read_file_free' to `wget_read_file_free'.
+
+	* utils.c (wget_read_file): Renamed from `read_file'.
+	(wget_read_file_free): Renamed from `read_file_free'.
+
 2010-07-05  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* gnutls.c (ssl_init): New local variables `ca_directory' and `dir'.

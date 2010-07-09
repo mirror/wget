@@ -228,7 +228,7 @@ convert_links (const char *file, struct urlpos *links)
       }
   }
 
-  fm = read_file (file);
+  fm = wget_read_file (file);
   if (!fm)
     {
       logprintf (LOG_NOTQUIET, _("Cannot convert links in %s: %s\n"),
@@ -248,7 +248,7 @@ convert_links (const char *file, struct urlpos *links)
     {
       logprintf (LOG_NOTQUIET, _("Unable to delete %s: %s\n"),
                  quote (file), strerror (errno));
-      read_file_free (fm);
+      wget_read_file_free (fm);
       return;
     }
   /* Now open the file for writing.  */
@@ -257,7 +257,7 @@ convert_links (const char *file, struct urlpos *links)
     {
       logprintf (LOG_NOTQUIET, _("Cannot convert links in %s: %s\n"),
                  file, strerror (errno));
-      read_file_free (fm);
+      wget_read_file_free (fm);
       return;
     }
 
@@ -342,7 +342,7 @@ convert_links (const char *file, struct urlpos *links)
   if (p - fm->content < fm->length)
     fwrite (p, 1, fm->length - (p - fm->content), fp);
   fclose (fp);
-  read_file_free (fm);
+  wget_read_file_free (fm);
 
   logprintf (LOG_VERBOSE, "%d-%d\n", to_file_count, to_url_count);
 }

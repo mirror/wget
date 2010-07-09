@@ -659,7 +659,7 @@ get_urls_html (const char *file, const char *url, bool *meta_disallow_follow,
   int flags;
 
   /* Load the file. */
-  fm = read_file (file);
+  fm = wget_read_file (file);
   if (!fm)
     {
       logprintf (LOG_NOTQUIET, "%s: %s\n", file, strerror (errno));
@@ -701,7 +701,7 @@ get_urls_html (const char *file, const char *url, bool *meta_disallow_follow,
     *meta_disallow_follow = ctx.nofollow;
 
   xfree_null (ctx.base);
-  read_file_free (fm);
+  wget_read_file_free (fm);
   return ctx.head;
 }
 
@@ -716,7 +716,7 @@ get_urls_file (const char *file)
   const char *text, *text_end;
 
   /* Load the file.  */
-  fm = read_file (file);
+  fm = wget_read_file (file);
   if (!fm)
     {
       logprintf (LOG_NOTQUIET, "%s: %s\n", file, strerror (errno));
@@ -786,7 +786,7 @@ get_urls_file (const char *file)
         tail->next = entry;
       tail = entry;
     }
-  read_file_free (fm);
+  wget_read_file_free (fm);
   return head;
 }
 

@@ -252,7 +252,7 @@ get_urls_css_file (const char *file, const char *url)
   struct map_context ctx;
 
   /* Load the file. */
-  fm = read_file (file);
+  fm = wget_read_file (file);
   if (!fm)
     {
       logprintf (LOG_NOTQUIET, "%s: %s\n", file, strerror (errno));
@@ -268,6 +268,6 @@ get_urls_css_file (const char *file, const char *url)
   ctx.nofollow = 0;
 
   get_urls_css (&ctx, 0, fm->length);
-  read_file_free (fm);
+  wget_read_file_free (fm);
   return ctx.head;
 }
