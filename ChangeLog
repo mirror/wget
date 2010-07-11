@@ -1,3 +1,8 @@
+2010-07-11  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* configure.ac (AC_CHECK_SIZEOF): Quote argument.
+	Reported by: Jochen Roderburg <Roderburg@Uni-Koeln.DE>.
+
 2010-07-09  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap.conf (buildreq): Relax gettext version to 0.17.
