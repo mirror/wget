@@ -31,6 +31,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
    and -c influences the transferred data amount.
 
 ** GNU TLS backend works again.
+
+** Now --timestamping and --continue works well together.
 
 * Changes in Wget 1.12
 

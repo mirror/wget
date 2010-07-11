@@ -1,3 +1,9 @@
+2010-07-11  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (http_loop): New variable `force_full_retrieve'.  If the remote
+	file is newer that the local one then inhibit -c.
+	Reported by: Caleb Cushing <xenoterracide@gmail.com>.
+
 2010-07-09  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* css-url.c (get_urls_css_file): Use `wget_read_file' instead of

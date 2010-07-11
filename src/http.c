@@ -2609,6 +2609,7 @@ http_loop (struct url *u, char **newloc, char **local_file, const char *referer,
   struct_stat st;
   bool send_head_first = true;
   char *file_name;
+  bool force_full_retrieve = false;
 
   /* Assert that no value for *LOCAL_FILE was passed. */
   assert (local_file == NULL || *local_file == NULL);
@@ -2732,7 +2733,9 @@ Spider mode enabled. Check if remote file exists.\n"));
         *dt &= ~HEAD_ONLY;
 
       /* Decide whether or not to restart.  */
-      if (opt.always_rest
+      if (force_full_retrieve)
+        hstat.restval = hstat.len;
+      else if (opt.always_rest
           && got_name
           && stat (hstat.local_file, &st) == 0
           && S_ISREG (st.st_mode))
@@ -2920,8 +2923,11 @@ The sizes do not match (local %s) -- retrieving.\n"),
                                 }
                             }
                           else
-                            logputs (LOG_VERBOSE,
-                                     _("Remote file is newer, retrieving.\n"));
+                            {
+                              force_full_retrieve = true;
+                              logputs (LOG_VERBOSE,
+                                       _("Remote file is newer, retrieving.\n"));
+                            }
 
                           logputs (LOG_VERBOSE, "\n");
                         }
