@@ -55,8 +55,6 @@ Wget's home page is at <http://www.gnu.org/software/wget/>.
 If you would like to contribute code for Wget, please read
 http://wget.addictivecode.org/PatchGuidelines.
 
-MAINTAINER: Micah Cowan <micah@cowan.name>
-
 Wget was originally written and mainained by Hrvoje Niksic.  Please see
 the file AUTHORS for a list of major contributors, and the ChangeLogs
 for a detailed listing of all contributions.
