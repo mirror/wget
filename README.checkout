@@ -66,10 +66,12 @@ Compiling From Repository Sources
        On GNU systems, the functionality provided by libiconv is already
        present in the system libraries.
 
+     * [34]git is used to fetch gnulib files trough the bootstrap.sh script.
+
    For those who might be confused as to what to do once they check out
    the source code, considering configure and Makefile do not yet exist at
-   that point, a shell script called autogen.sh has been provided. After
-   calling ./autogen.sh you're ready to build GNU Wget in the normal
+   that point, a shell script called bootstrap.sh has been provided. After
+   calling ./bootstrap.sh you're ready to build GNU Wget in the normal
    fashion, with ./configure and make.
 
    So, to sum up, after checking out the source code as described above,
@@ -78,7 +80,7 @@ Compiling From Repository Sources
  $  cd wget        # assumes you've cloned a repository to "./wget"
     2. Generate all the automatically-generated files required prior to
        configuring the package:
- $  ./autogen.sh
+ $  ./bootstrap.sh
     3. Configure the package and compile it:
  $  ./configure [some_parameters]
  $  make
@@ -86,17 +88,13 @@ Compiling From Repository Sources
  $  src/wget --version
  GNU Wget 1.12-devel (9cb2563197bc)
 
- Copyright © 2008 Free Software Foundation, Inc.
+ Copyright © 2008,2010 Free Software Foundation, Inc.
  License GPLv3+: GNU GPL version 3 or later
  <http://www.gnu.org/licenses/gpl.html>.
  This is free software: you are free to change and redistribute it.
  There is NO WARRANTY, to the extent permitted by law.
 
  Originally written by Hrvoje Niksic <hniksic@xemacs.org>.
- Currently maintained by Micah Cowan <micah@cowan.name>.
-
-   CompilingRepoSources (last edited 2009-09-21 18:36:34 by
-   [34]MicahCowan)
 
      * [35]Edit
      * [36]Comments
@@ -130,7 +128,7 @@ References
   31. http://www.gnu.org/software/gnutls/
   32. http://www.gnu.org/software/libidn/
   33. http://www.gnu.org/software/libiconv/
-  34. http://wget.addictivecode.org/MicahCowan
+  34. http://git-scm.com/
   35. http://wget.addictivecode.org/CompilingRepoSources?action=edit&editor=text
   36. http://wget.addictivecode.org/CompilingRepoSources
   37. http://wget.addictivecode.org/CompilingRepoSources?action=info
