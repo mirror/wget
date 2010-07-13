@@ -63,6 +63,8 @@ as that of the covered work.  */
 #define LIST_FILENAME ".listing"
 #endif
 
+#define max(a, b) ((a > b) ? (a) : (b))
+
 typedef struct
 {
   int st;                       /* connection status */
@@ -1019,7 +1021,9 @@ Error in server response, closing control connection.\n"));
 
       if (!opt.server_response)
         logputs (LOG_VERBOSE, _("done.\n"));
-      expected_bytes = ftp_expected_bytes (ftp_last_respline);
+
+      expected_bytes = max (ftp_expected_bytes (ftp_last_respline),
+                            expected_bytes);
     } /* do retrieve */
 
   if (cmd & DO_LIST)
@@ -1065,7 +1069,8 @@ Error in server response, closing control connection.\n"));
         }
       if (!opt.server_response)
         logputs (LOG_VERBOSE, _("done.\n"));
-      expected_bytes = ftp_expected_bytes (ftp_last_respline);
+      expected_bytes = max (ftp_expected_bytes (ftp_last_respline),
+                            expected_bytes);
     } /* cmd & DO_LIST */
 
   if (!(cmd & (DO_LIST | DO_RETR)) || (opt.spider && !(cmd & DO_LIST)))

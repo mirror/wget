@@ -1,3 +1,9 @@
+2010-07-14  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* ftp.c (max): Add definition.
+	(getftp): Consider for`expected_bytes' the greatest value between the bytes
+	count returned by SIZE and the bytes count returned by RETR.
+
 2010-07-11  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* http.c (http_loop): New variable `force_full_retrieve'.  If the remote
