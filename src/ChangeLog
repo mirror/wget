@@ -1,8 +1,16 @@
 2010-07-14  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* ftp.c (max): Remove definition.
+	(getftp): New variable `got_expected_bytes'.  Let `expected_bytes' be
+	the value SIZE returns, otherwise use the bytes count returned by RETR.
+	Suggested by Daniel Stenberg <daniel@haxx.se>.
+
+2010-07-14  Giuseppe Scrivano  <gscrivano@gnu.org>
+
 	* ftp.c (max): Add definition.
-	(getftp): Consider for`expected_bytes' the greatest value between the bytes
-	count returned by SIZE and the bytes count returned by RETR.
+	(getftp): Consider for `expected_bytes' the greatest value between the
+	bytes count returned by SIZE and the bytes count returned by RETR.
+	Reported by: Jozua <jozua@sparky.za.net>.
 
 2010-07-11  Giuseppe Scrivano  <gscrivano@gnu.org>
 

@@ -63,8 +63,6 @@ as that of the covered work.  */
 #define LIST_FILENAME ".listing"
 #endif
 
-#define max(a, b) ((a > b) ? (a) : (b))
-
 typedef struct
 {
   int st;                       /* connection status */
@@ -254,6 +252,7 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
   int cmd = con->cmd;
   bool pasv_mode_open = false;
   wgint expected_bytes = 0;
+  bool got_expected_bytes = false;
   bool rest_failed = false;
   int flags;
   wgint rd_size;
@@ -757,6 +756,7 @@ Error in server response, closing control connection.\n"));
           con->csock = -1;
           return err;
         case FTPOK:
+          got_expected_bytes = true;
           /* Everything is OK.  */
           break;
         default:
@@ -1022,8 +1022,8 @@ Error in server response, closing control connection.\n"));
       if (!opt.server_response)
         logputs (LOG_VERBOSE, _("done.\n"));
 
-      expected_bytes = max (ftp_expected_bytes (ftp_last_respline),
-                            expected_bytes);
+      if (! got_expected_bytes)
+        expected_bytes = ftp_expected_bytes (ftp_last_respline);
     } /* do retrieve */
 
   if (cmd & DO_LIST)
@@ -1069,8 +1069,9 @@ Error in server response, closing control connection.\n"));
         }
       if (!opt.server_response)
         logputs (LOG_VERBOSE, _("done.\n"));
-      expected_bytes = max (ftp_expected_bytes (ftp_last_respline),
-                            expected_bytes);
+
+      if (! got_expected_bytes)
+        expected_bytes = ftp_expected_bytes (ftp_last_respline);
     } /* cmd & DO_LIST */
 
   if (!(cmd & (DO_LIST | DO_RETR)) || (opt.spider && !(cmd & DO_LIST)))
