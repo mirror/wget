@@ -1,3 +1,10 @@
+2010-07-18  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (gethttp): If -N is used, don't exit immediately if the content
+	length is less or equal than the existing file size.  Specify "Range"
+	only if -N is not used.
+	Reported by: Caleb Cushing <xenoterracide@gmail.com>.
+
 2010-07-14  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* ftp.c (max): Remove definition.

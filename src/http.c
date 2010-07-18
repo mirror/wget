@@ -1645,7 +1645,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   request_set_header (req, "Referer", (char *) hs->referer, rel_none);
   if (*dt & SEND_NOCACHE)
     request_set_header (req, "Pragma", "no-cache", rel_none);
-  if (hs->restval)
+  if (hs->restval && !opt.timestamping)
     request_set_header (req, "Range",
                         aprintf ("bytes=%s-",
                                  number_to_static_string (hs->restval)),
@@ -2376,9 +2376,8 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
     }
 
   if (statcode == HTTP_STATUS_RANGE_NOT_SATISFIABLE
-      || (hs->restval > 0 && statcode == HTTP_STATUS_OK
-          && contrange == 0 && hs->restval >= contlen)
-     )
+      || (!opt.timestamping && hs->restval > 0 && statcode == HTTP_STATUS_OK
+          && contrange == 0 && hs->restval >= contlen))
     {
       /* If `-c' is in use and the file has been fully downloaded (or
          the remote file has shrunk), Wget effectively requests bytes
