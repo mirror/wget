@@ -1,3 +1,8 @@
+2010-07-20  Alan Jenkins <alan-jenkins@tuffmail.co.uk> (tiny change)
+
+	* http.c (gethttp): Check content-length was set before trying to
+	compare it with the already downloded filesize.
+
 2010-07-20  Leonid Petrov <nouser@lpetrov.net>
 
 	* ftp.c (getftp): Don't attempt to retrieve the file if it is already
