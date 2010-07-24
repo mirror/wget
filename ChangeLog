@@ -1,3 +1,7 @@
+2010-07-24  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* configure.bat: Remove file.
+
 2010-07-11  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac (AC_CHECK_SIZEOF): Quote argument.
