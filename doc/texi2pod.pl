@@ -23,6 +23,7 @@
 # something suitable for a manpage from a Texinfo document.
 
 use warnings;
+BEGIN { eval { require warnings; } and warnings->import; }
 
 $output = 0;
 $skipping = 0;

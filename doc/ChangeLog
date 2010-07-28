@@ -1,3 +1,7 @@
+2010-07-28  Alon Bar-Lev <alon.barlev@gmail.com> (tiny change)
+
+	* texi2pod.pl: Use the warnings module only when it is available.
+
 2010-05-27  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi (Download Options): Document that -k can be used with -O
