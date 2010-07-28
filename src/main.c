@@ -266,6 +266,7 @@ static struct cmdline_option option_data[] =
     { "timeout", 'T', OPT_VALUE, "timeout", -1 },
     { "timestamping", 'N', OPT_BOOLEAN, "timestamping", -1 },
     { "tries", 't', OPT_VALUE, "tries", -1 },
+    { "trust-server-names", 0, OPT_BOOLEAN, "trustservernames", -1 },
     { "use-server-timestamps", 0, OPT_BOOLEAN, "useservertimestamps", -1 },
     { "user", 0, OPT_VALUE, "user", -1 },
     { "user-agent", 'U', OPT_VALUE, "useragent", -1 },
@@ -679,6 +680,8 @@ Recursive accept/reject:\n"),
   -L,  --relative                  follow relative links only.\n"),
     N_("\
   -I,  --include-directories=LIST  list of allowed directories.\n"),
+    N_("\
+  --trust-server-names  use the name specified by the redirection url last component.\n"),
     N_("\
   -X,  --exclude-directories=LIST  list of excluded directories.\n"),
     N_("\

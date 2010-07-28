@@ -242,6 +242,7 @@ struct options
   char *encoding_remote;
   char *locale;
 
+  bool trustservernames;
 #ifdef __VMS
   int ftp_stmlf;                /* Force Stream_LF format for binary FTP. */
 #endif /* def __VMS */

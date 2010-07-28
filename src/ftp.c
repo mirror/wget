@@ -2137,7 +2137,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
    of URL.  Inherently, its capabilities are limited on what can be
    encoded into a URL.  */
 uerr_t
-ftp_loop (struct url *u, char **local_file, int *dt, struct url *proxy, 
+ftp_loop (struct url *u, char **local_file, int *dt, struct url *proxy,
           bool recursive, bool glob)
 {
   ccon con;                     /* FTP connection */
