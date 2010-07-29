@@ -35,7 +35,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Now --timestamping and --continue works well together.
 
 ** By default, on server redirects, use the original URL to get the
-   local file name. Close CVE-2010-2252.
+   local file name. Close CVE-2010-2252.  This introduce a
+   backward-incompatibility, any script that relies on the old
+   behaviour must use --trust-server-names.
 
 ** Fix a problem when -k is used and some URLs are specified trough
    CSS.
