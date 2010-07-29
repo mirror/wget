@@ -1,3 +1,8 @@
+2010-07-29  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* gnutls.c (wgnutls_peek): Don't read more data if the buffered peek
+	data is sufficient.
+
 2010-07-28  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* http.h (http_loop): Add new argument `original_url'

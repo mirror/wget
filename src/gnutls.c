@@ -173,28 +173,33 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
 {
   int ret = 0;
   struct wgnutls_transport_context *ctx = arg;
-  int offset = ctx->peeklen;
-
+  int offset = MIN (bufsize, ctx->peeklen);
   if (bufsize > sizeof ctx->peekbuf)
     bufsize = sizeof ctx->peekbuf;
 
-  if (offset)
+  if (ctx->peeklen)
     memcpy (buf, ctx->peekbuf, offset);
 
-  do
+  if (bufsize > offset)
     {
-      if (gnutls_record_check_pending (ctx->session)
-          || select_fd (fd, 0, WAIT_FOR_READ))
-        ret = gnutls_record_recv (ctx->session, buf + offset, bufsize - offset);
-    }
-  while (ret == GNUTLS_E_INTERRUPTED);
+      do
+        {
+          if (gnutls_record_check_pending (ctx->session)
+              || select_fd (fd, 0, WAIT_FOR_READ))
+            ret = gnutls_record_recv (ctx->session, buf + offset,
+                                      bufsize - offset);
+        }
+      while (ret == GNUTLS_E_INTERRUPTED);
 
-  if (ret > 0)
-    {
-      memcpy (ctx->peekbuf + offset, buf + offset, ret);
-      ctx->peeklen += ret;
+      if (ret > 0)
+        {
+          memcpy (ctx->peekbuf + offset, buf + offset,
+                  ret);
+          ctx->peeklen += ret;
+        }
     }
-  return ctx->peeklen;
+
+  return offset + ret;
 }
 
 static const char *
