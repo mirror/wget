@@ -36,6 +36,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** By default, on server redirects, use the original URL to get the
    local file name. Close CVE-2010-2252.
+
+** Fix a problem when -k is used and some URLs are specified trough
+   CSS.
 
 * Changes in Wget 1.12
 

@@ -261,7 +261,7 @@ get_urls_css_file (const char *file, const char *url)
   DEBUGP (("Loaded %s (size %s).\n", file, number_to_static_string (fm->length)));
 
   ctx.text = fm->content;
-  ctx.head = ctx.tail = NULL;
+  ctx.head = NULL;
   ctx.base = NULL;
   ctx.parent_base = url ? url : opt.base_href;
   ctx.document_file = file;

@@ -335,13 +335,27 @@ append_url (const char *link_uri, int position, int size,
   else if (link_has_scheme)
     newel->link_complete_p = 1;
 
-  if (ctx->tail)
-    {
-      ctx->tail->next = newel;
-      ctx->tail = newel;
-    }
+  /* Append the new URL maintaining the order by position.  */
+  if (ctx->head == NULL)
+    ctx->head = newel;
   else
-    ctx->tail = ctx->head = newel;
+    {
+      struct urlpos *it, *prev = NULL;
+
+      it = ctx->head;
+      while (it && position > it->pos)
+        {
+          prev = it;
+          it = it->next;
+        }
+
+      newel->next = it;
+
+      if (prev)
+        prev->next = newel;
+      else
+        ctx->head = newel;
+    }
 
   return newel;
 }
@@ -668,7 +682,7 @@ get_urls_html (const char *file, const char *url, bool *meta_disallow_follow,
   DEBUGP (("Loaded %s (size %s).\n", file, number_to_static_string (fm->length)));
 
   ctx.text = fm->content;
-  ctx.head = ctx.tail = NULL;
+  ctx.head = NULL;
   ctx.base = NULL;
   ctx.parent_base = url ? url : opt.base_href;
   ctx.document_file = file;

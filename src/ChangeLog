@@ -1,3 +1,12 @@
+2010-07-30  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* html-url.h (struct map_context): Remove member `tail'.
+
+	* html-url.c (append_url): Append the new url ordered by `position'.
+	(get_urls_html): Do not initialize `ctx.tail'.
+
+	* css-url.c (get_urls_css_file): Do not initialize `ctx.tail'.
+
 2010-07-29  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* gnutls.c (wgnutls_peek): Don't read more data if the buffered peek
