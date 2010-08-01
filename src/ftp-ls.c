@@ -100,7 +100,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
   };
   int next, len, i, error, ignore;
   int year, month, day;         /* for time analysis */
-  int hour, min, sec;
+  int hour, min, sec, ptype;
   struct tm timestruct, *tnow;
   time_t timenow;
 
@@ -183,6 +183,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
                                    treated equally for now.  */
       year = hour = min = sec = 0; /* Silence the compiler.  */
       month = day = 0;
+      ptype = TT_DAY;
       next = -1;
       /* While there are tokens on the line, parse them.  Next is the
          number of tokens left until the filename.
@@ -262,6 +263,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
                       /* This means these were hours!  */
                       hour = year;
                       year = 0;
+                      ptype = TT_HOUR_MIN;
                       ++tok;
                       /* Get the minutes...  */
                       for (; c_isdigit (*tok); tok++)
@@ -414,6 +416,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
       timestruct.tm_yday  = 0;
       timestruct.tm_isdst = -1;
       l->tstamp = mktime (&timestruct); /* store the time-stamp */
+      l->ptype = ptype;
 
       xfree (line);
     }
@@ -501,6 +504,7 @@ ftp_parse_winnt_ls (const char *file)
       timestruct.tm_yday  = 0;
       timestruct.tm_isdst = -1;
       cur.tstamp = mktime (&timestruct); /* store the time-stamp */
+      cur.ptype = TT_HOUR_MIN;
 
       DEBUGP(("Timestamp: %ld\n", cur.tstamp));
 
@@ -987,6 +991,7 @@ ftp_parse_vms_ls (const char *file)
         }
       cur.tstamp = timenow; /* Store the time-stamp. */
       DEBUGP(("Timestamp: %ld\n", cur.tstamp));
+      cur.ptype = TT_HOUR_MIN;
 
       /* Add the data for this item to the linked list, */
       if (!dir)
@@ -1134,7 +1139,7 @@ ftp_index (const char *file, struct url *u, struct fileinfo *f)
 
           fprintf (fp, "%d %s %02d ", ptm->tm_year + 1900, months[ptm->tm_mon],
                   ptm->tm_mday);
-          if (ptm->tm_hour)
+          if (f->ptype == TT_HOUR_MIN)
             fprintf (fp, "%02d:%02d  ", ptm->tm_hour, ptm->tm_min);
           else
             fprintf (fp, "       ");

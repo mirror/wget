@@ -1,3 +1,13 @@
+2010-07-25  John Trengrove  <jtrengrove@gmail.com> (tiny change)
+
+	* ftp.h: Added enum `parsetype'.  Modified struct to hold parsetype.
+
+	* ftp-ls.c (ftp_parse_unix_ls): Default to TT_DAY. Change to TT_HOUR_MIN
+	if hours/minutes parsed.
+	(ftp_parse_winnt_ls): Default to TT_HOUR_MIN.
+	(ftp_parse_vms_ls): Default to TT_HOUR_MIN.
+	(ftp_index): Print only if fileinfo struct value ttype set to TT_HOUR_MIN.
+
 2010-07-30  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* html-url.h (struct map_context): Remove member `tail'.

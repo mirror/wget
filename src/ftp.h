@@ -87,6 +87,13 @@ enum
   GLOB_GLOBALL, GLOB_GETALL, GLOB_GETONE
 };
 
+/* Used by to test if time parsed includes hours and minutes. */
+enum parsetype
+{
+  TT_HOUR_MIN, TT_DAY
+};
+
+
 /* Information about one filename in a linked list.  */
 struct fileinfo
 {
@@ -94,6 +101,7 @@ struct fileinfo
   char *name;			/* file name */
   wgint size;			/* file size */
   long tstamp;			/* time-stamp */
+  enum parsetype ptype; /* time parsing */
   int perms;			/* file permissions */
   char *linkto;			/* link to which file points */
   struct fileinfo *prev;	/* previous... */
