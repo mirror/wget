@@ -124,9 +124,11 @@ get_uri_string (const char *at, int *pos, int *length)
   /* skip leading space */
   while (isspace (at[*pos]))
     {
-    (*pos)++;
-    (*length)--;
+      (*pos)++;
+      if (--(*length) == 0)
+        return NULL;
     }
+
   /* skip trailing space */
   while (isspace (at[*pos + *length - 1]))
     {
