@@ -1,3 +1,7 @@
+2010-08-08  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am (EXTRA_DIST): Remove configure.bat.
+
 2010-07-24  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.bat: Remove file.

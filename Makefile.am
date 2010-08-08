@@ -43,7 +43,7 @@ ACLOCAL_AMFLAGS = -I m4
 # subdirectories in the distribution
 SUBDIRS = lib src doc po tests util
 
-EXTRA_DIST = ChangeLog.README configure.bat MAILING-LIST \
+EXTRA_DIST = ChangeLog.README MAILING-LIST \
              msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
              msdos/Makefile.WC ABOUT-NLS \
              build-aux/build_info.pl .version
