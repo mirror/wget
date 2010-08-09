@@ -1691,7 +1691,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                         rel_value);
   }
 
-  if (!inhibit_keep_alive)
+  if (inhibit_keep_alive)
+    request_set_header (req, "Connection", "Close", rel_none);
+  else
     request_set_header (req, "Connection", "Keep-Alive", rel_none);
 
   if (opt.post_data || opt.post_file_name)
