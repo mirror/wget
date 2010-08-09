@@ -1573,15 +1573,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   /* Is the server using the chunked transfer encoding?  */
   bool chunked_transfer_encoding = false;
 
-  /* Whether keep-alive should be inhibited.
-
-     RFC 2068 requests that 1.0 clients not send keep-alive requests
-     to proxies.  This is because many 1.0 proxies do not interpret
-     the Connection header and transfer it to the remote server,
-     causing it to not close the connection and leave both the proxy
-     and the client hanging.  */
+  /* Whether keep-alive should be inhibited.  */
   bool inhibit_keep_alive =
-    !opt.http_keep_alive || opt.ignore_length || proxy != NULL;
+    !opt.http_keep_alive || opt.ignore_length;
 
   /* Headers sent when using POST. */
   wgint post_data_size = 0;
@@ -1694,7 +1688,15 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   if (inhibit_keep_alive)
     request_set_header (req, "Connection", "Close", rel_none);
   else
-    request_set_header (req, "Connection", "Keep-Alive", rel_none);
+    {
+      if (proxy == NULL)
+        request_set_header (req, "Connection", "Keep-Alive", rel_none);
+      else
+        {
+          request_set_header (req, "Connection", "Close", rel_none);
+          request_set_header (req, "Proxy-Connection", "Keep-Alive", rel_none);
+        }
+    }
 
   if (opt.post_data || opt.post_file_name)
     {

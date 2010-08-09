@@ -1,7 +1,11 @@
 2010-08-09  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	Fix a problem with HTTP/1.0 proxies.
 	* http.c (gethttp): Specify the connection header when keep alive
 	connections are not used.
+
+	Use persistent connections with proxies supporting them.
+	* http.c (gethttp): Specify Proxy-Connection to the HTTP proxy.
 
 2010-08-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
