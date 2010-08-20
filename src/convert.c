@@ -47,6 +47,7 @@ as that of the covered work.  */
 #include "res.h"
 #include "html-url.h"
 #include "css-url.h"
+#include "iri.h"
 
 static struct hash_table *dl_file_url_map;
 struct hash_table *dl_url_file_map;
@@ -105,7 +106,8 @@ convert_links_in_hashtable (struct hash_table *downloaded_set,
       for (cur_url = urls; cur_url; cur_url = cur_url->next)
         {
           char *local_name;
-          struct url *u = cur_url->url;
+          struct url *u;
+          struct iri *pi;
 
           if (cur_url->link_base_p)
             {
@@ -119,6 +121,11 @@ convert_links_in_hashtable (struct hash_table *downloaded_set,
           /* We decide the direction of conversion according to whether
              a URL was downloaded.  Downloaded URLs will be converted
              ABS2REL, whereas non-downloaded will be converted REL2ABS.  */
+
+          pi = iri_new ();
+          set_uri_encoding (pi, opt.locale, true);
+
+          u = url_parse (cur_url->url->url, NULL, pi, true);
           local_name = hash_table_get (dl_url_file_map, u->url);
 
           /* Decide on the conversion type.  */
@@ -144,6 +151,9 @@ convert_links_in_hashtable (struct hash_table *downloaded_set,
               cur_url->local_name = NULL;
               DEBUGP (("will convert url %s to complete\n", u->url));
             }
+
+          url_free (u);
+          iri_free (pi);
         }
 
       /* Convert the links in the file.  */

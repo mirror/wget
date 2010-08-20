@@ -1,3 +1,11 @@
+2010-08-20  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* convert.c: Include "iri.h".
+	(convert_links_in_hashtable): Parse the url, if
+	necessary, before check if it is present in the dowloaded url
+	map.
+	Reported by: <sk.random@gmail.com>.
+
 2010-08-09  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	Fix a problem with HTTP/1.0 proxies.
