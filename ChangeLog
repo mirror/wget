@@ -1,3 +1,7 @@
+2010-09-06  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* lib/Makefile.am: Fix typo.
+
 2010-08-08  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am (EXTRA_DIST): Remove configure.bat.

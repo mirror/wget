@@ -1,4 +1,4 @@
-# GNU WWet
+# GNU Wget
 
 # Copyright (C) 2010 Free Software Foundation, Inc.
 
