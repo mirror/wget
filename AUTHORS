@@ -41,7 +41,7 @@ Nicolas Schodet.  Contributed to cookie code and documentation.
 Daniel Stenberg.  NTLM authentication in http-ntlm.c and http-ntlm.h
 originally written for curl donated for use in GNU Wget.
 
-Micah Cowan.  Maintained Wget maintainer, from mid-2007 to mid-2010.
+Micah Cowan.  Maintained Wget from mid-2007 to mid-2010.
 
 Ralf Wildenhues.  Contributed patches to convert Wget to use Automake as
 part of its build process, and various bugfixes.
