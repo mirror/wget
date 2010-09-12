@@ -1,3 +1,9 @@
+2010-09-12  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* main.c (print_help): Align --trust-server-names help text with
+	the rest of the text.
+	Suggested by: Mike Frysinger  <vapier@gentoo.org>.
+
 2010-08-20  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* convert.c: Include "iri.h".

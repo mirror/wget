@@ -681,7 +681,8 @@ Recursive accept/reject:\n"),
     N_("\
   -I,  --include-directories=LIST  list of allowed directories.\n"),
     N_("\
-  --trust-server-names  use the name specified by the redirection url last component.\n"),
+  --trust-server-names             use the name specified by the redirection\n\
+                                   url last component.\n"),
     N_("\
   -X,  --exclude-directories=LIST  list of excluded directories.\n"),
     N_("\
