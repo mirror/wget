@@ -143,7 +143,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " --iri -i http://localhost:{{port}}/url_list.txt";
+my $cmdline = $WgetTest::WGETPATH . " --iri --trust-server-names -i http://localhost:{{port}}/url_list.txt";
 
 my $expected_error_code = 0;
 

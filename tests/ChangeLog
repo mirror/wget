@@ -1,3 +1,11 @@
+2010-09-12  Mike Frysinger  <vapier@gentoo.org>
+
+	Fix some tests failures.
+	* Test-iri-forced-remote.px: Use --trust-server-names to the cmdline
+	variable.
+	* Test-iri-list.px: Likewise.
+	* Test-iri.px: Likewise.
+
 2010-06-04  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Test--no-content-disposition-trivial.px: Use /usr/bin/env to find the

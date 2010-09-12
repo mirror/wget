@@ -174,7 +174,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " --iri --remote-encoding=iso-8859-1 -nH -r http://localhost:{{port}}/";
+my $cmdline = $WgetTest::WGETPATH . " --iri --trust-server-names --remote-encoding=iso-8859-1 -nH -r http://localhost:{{port}}/";
 
 my $expected_error_code = 0;
 
