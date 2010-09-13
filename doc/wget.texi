@@ -1972,7 +1972,7 @@ Set domains to be followed.  @var{domain-list} is a comma-separated list
 of domains.  Note that it does @emph{not} turn on @samp{-H}.
 
 @item --exclude-domains @var{domain-list}
-Specify the domains that are @emph{not} to be followed.
+Specify the domains that are @emph{not} to be followed
 (@pxref{Spanning Hosts}).
 
 @cindex follow FTP links

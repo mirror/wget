@@ -1,3 +1,8 @@
+2010-09-13  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Recursive Accept/Reject Options): Remove superfluous dot.
+	Reported by: Snader_LB.
+
 2010-07-28  Alon Bar-Lev <alon.barlev@gmail.com> (tiny change)
 
 	* texi2pod.pl: Use the warnings module only when it is available.
