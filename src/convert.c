@@ -203,7 +203,7 @@ static const char *replace_plain (const char*, int, FILE*, const char *);
 static const char *replace_attr (const char *, int, FILE *, const char *);
 static const char *replace_attr_refresh_hack (const char *, int, FILE *,
                                               const char *, int);
-static char *local_quote_string (const char *);
+static char *local_quote_string (const char *, bool);
 static char *construct_relative (const char *, const char *);
 
 /* Change the links in one file.  LINKS is a list of links in the
@@ -301,7 +301,8 @@ convert_links (const char *file, struct urlpos *links)
           /* Convert absolute URL to relative. */
           {
             char *newname = construct_relative (file, link->local_name);
-            char *quoted_newname = local_quote_string (newname);
+            char *quoted_newname = local_quote_string (newname,
+                                                       link->link_css_p);
 
             if (link->link_css_p)
               p = replace_plain (p, link->size, fp, quoted_newname);
@@ -325,7 +326,7 @@ convert_links (const char *file, struct urlpos *links)
             char *quoted_newlink = html_quote_string (newlink);
 
             if (link->link_css_p)
-              p = replace_plain (p, link->size, fp, quoted_newlink);
+              p = replace_plain (p, link->size, fp, newlink);
             else if (!link->link_refresh_p)
               p = replace_attr (p, link->size, fp, quoted_newlink);
             else
@@ -612,14 +613,14 @@ find_fragment (const char *beg, int size, const char **bp, const char **ep)
    because those characters have special meanings in URLs.  */
 
 static char *
-local_quote_string (const char *file)
+local_quote_string (const char *file, bool no_html_quote)
 {
   const char *from;
   char *newname, *to;
 
   char *any = strpbrk (file, "?#%;");
   if (!any)
-    return html_quote_string (file);
+    return no_html_quote ? strdup (file) : html_quote_string (file);
 
   /* Allocate space assuming the worst-case scenario, each character
      having to be quoted.  */
@@ -656,7 +657,7 @@ local_quote_string (const char *file)
       }
   *to = '\0';
 
-  return html_quote_string (newname);
+  return no_html_quote ? strdup (newname) : html_quote_string (newname);
 }
 
 /* Book-keeping code for dl_file_url_map, dl_url_file_map,

@@ -1,3 +1,10 @@
+2010-09-14  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* convert.c (local_quote_string): Accept new parameter `no_html_quote'.
+	Inhibit HTML quoting when `no_html_quote'.
+	(convert_links): Disable HTML quoting in CSS files.
+	Reported by: Manuel Reinhardt <reinhardt@syslab.com>.
+
 2010-09-12  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* main.c (print_help): Align --trust-server-names help text with
