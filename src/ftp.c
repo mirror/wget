@@ -1382,7 +1382,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
   else
     {
       /* URL-derived file.  Consider "-O file" name. */
-      con->target = url_file_name (u);
+      con->target = url_file_name (u, NULL);
       if (!opt.output_document)
         locf = con->target;
       else
@@ -1496,7 +1496,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
             {
               /* Re-determine the file name. */
               xfree_null (con->target);
-              con->target = url_file_name (u);
+              con->target = url_file_name (u, NULL);
               locf = con->target;
             }
           continue;
@@ -1624,7 +1624,7 @@ ftp_get_listing (struct url *u, ccon *con, struct fileinfo **f)
   /* Find the listing file name.  We do it by taking the file name of
      the URL and replacing the last component with the listing file
      name.  */
-  uf = url_file_name (u);
+  uf = url_file_name (u, NULL);
   lf = file_merge (uf, LIST_FILENAME);
   xfree (uf);
   DEBUGP ((_("Using %s as listing tmp file.\n"), quote (lf)));
@@ -1718,7 +1718,7 @@ ftp_retrieve_list (struct url *u, struct fileinfo *f, ccon *con)
       ofile = xstrdup (u->file);
       url_set_file (u, f->name);
 
-      con->target = url_file_name (u);
+      con->target = url_file_name (u, NULL);
       err = RETROK;
 
       dlthis = true;
@@ -2168,7 +2168,7 @@ ftp_loop (struct url *u, char **local_file, int *dt, struct url *proxy,
               char *filename = (opt.output_document
                                 ? xstrdup (opt.output_document)
                                 : (con.target ? xstrdup (con.target)
-                                   : url_file_name (u)));
+                                   : url_file_name (u, NULL)));
               res = ftp_index (filename, u, f);
               if (res == FTPOK && opt.verbose)
                 {

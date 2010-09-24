@@ -99,7 +99,7 @@ int scheme_default_port (enum url_scheme);
 void scheme_disable (enum url_scheme);
 
 char *url_string (const struct url *, enum url_auth_mode);
-char *url_file_name (const struct url *);
+char *url_file_name (const struct url *, char *);
 
 char *uri_merge (const char *, const char *);
 

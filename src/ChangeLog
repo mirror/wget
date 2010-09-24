@@ -1,3 +1,16 @@
+2010-09-24  Dennis, CHENG Renquan <crquan@fedoraproject.org>
+
+	Fix problem when content-disposition is used with recursive downloading.
+	* url.h (url_file_name): Add a new argument `replaced_filename'.
+	* url.c (url_file_name): Likewise.
+	* http.c (parse_content_disposition): Do not add a prefix to the return
+	value.
+	(test_parse_content_disposition): Adjust tests.
+	(gethttp): Pass additional parameter to `url_file_name'.
+	(http_loop): Likewise.
+	* ftp.c (ftp_loop_internal, ftp_get_listing, ftp_retrieve_list)
+	(ftp_loop): Likewise.
+
 2010-09-14  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* convert.c (local_quote_string): Accept new parameter `no_html_quote'.

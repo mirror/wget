@@ -1499,7 +1499,7 @@ append_dir_structure (const struct url *u, struct growable *dest)
    possible.  Does not create directories on the file system.  */
 
 char *
-url_file_name (const struct url *u)
+url_file_name (const struct url *u, char *replaced_filename)
 {
   struct growable fnres;        /* stands for "file name result" */
 
@@ -1554,18 +1554,29 @@ url_file_name (const struct url *u)
       append_dir_structure (u, &fnres);
     }
 
-  /* Add the file name. */
-  if (fnres.tail)
-    append_char ('/', &fnres);
-  u_file = *u->file ? u->file : index_filename;
-  append_uri_pathel (u_file, u_file + strlen (u_file), false, &fnres);
-
-  /* Append "?query" to the file name. */
-  u_query = u->query && *u->query ? u->query : NULL;
-  if (u_query)
+  if (!replaced_filename)
     {
-      append_char (FN_QUERY_SEP, &fnres);
-      append_uri_pathel (u_query, u_query + strlen (u_query), true, &fnres);
+      /* Add the file name. */
+      if (fnres.tail)
+	append_char ('/', &fnres);
+      u_file = *u->file ? u->file : index_filename;
+      append_uri_pathel (u_file, u_file + strlen (u_file), false, &fnres);
+
+      /* Append "?query" to the file name. */
+      u_query = u->query && *u->query ? u->query : NULL;
+      if (u_query)
+	{
+	  append_char (FN_QUERY_SEP, &fnres);
+	  append_uri_pathel (u_query, u_query + strlen (u_query),
+			     true, &fnres);
+	}
+    }
+  else
+    {
+      if (fnres.tail)
+	append_char ('/', &fnres);
+      u_file = replaced_filename;
+      append_uri_pathel (u_file, u_file + strlen (u_file), false, &fnres);
     }
 
   /* Zero-terminate the file name. */

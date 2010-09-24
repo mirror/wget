@@ -1149,71 +1149,44 @@ append_value_to_filename (char **filename, param_token const * const value)
    false.
 
    The file name is stripped of directory components and must not be
-   empty.  */
+   empty.
+
+   Historically, this function returned filename prefixed with opt.dir_prefix,
+   now that logic is handled by the caller, new code should pay attention,
+   changed by crq, Sep 2010.
+
+*/
 static bool
 parse_content_disposition (const char *hdr, char **filename)
 {
-  *filename = NULL;
   param_token name, value;
+  *filename = NULL;
   while (extract_param (&hdr, &name, &value, ';'))
     {
       int isFilename = BOUNDED_EQUAL_NO_CASE ( name.b, name.e, "filename" );
       if ( isFilename && value.b != NULL)
-	{
-	  /* Make the file name begin at the last slash or backslash. */
-	  const char *last_slash = memrchr (value.b, '/', value.e - value.b);
-	  const char *last_bs = memrchr (value.b, '\\', value.e - value.b);
-	  if (last_slash && last_bs)
-	    value.b = 1 + MAX (last_slash, last_bs);
-	  else if (last_slash || last_bs)
-	    value.b = 1 + (last_slash ? last_slash : last_bs);
-	  if (value.b == value.e)
-	    continue;
-	  /* Start with the directory prefix, if specified. */
-	  if (opt.dir_prefix)
-	    {
-	      if (!(*filename))
-		{
-		  int prefix_length = strlen (opt.dir_prefix);
-		  bool add_slash = (opt.dir_prefix[prefix_length - 1] != '/');
-		  int total_length;
-		  
-		  if (add_slash) 
-		    ++prefix_length;
-		  total_length = prefix_length + (value.e - value.b);            
-		  *filename = xmalloc (total_length + 1);
-		  strcpy (*filename, opt.dir_prefix);
-		  if (add_slash) 
-		    (*filename)[prefix_length - 1] = '/';
-		  memcpy (*filename + prefix_length, value.b, (value.e - value.b));
-		  (*filename)[total_length] = '\0';
-		}
-	      else
-		{
-		  append_value_to_filename (filename, &value);
-		}  
-	    }
-	  else
-	    {
-	      if (*filename)
-		{
-		  append_value_to_filename (filename, &value);
-		}
-	      else
-		{
-		  *filename = strdupdelim (value.b, value.e);
-		}
-	    }
-	}
+        {
+          /* Make the file name begin at the last slash or backslash. */
+          const char *last_slash = memrchr (value.b, '/', value.e - value.b);
+          const char *last_bs = memrchr (value.b, '\\', value.e - value.b);
+          if (last_slash && last_bs)
+            value.b = 1 + MAX (last_slash, last_bs);
+          else if (last_slash || last_bs)
+            value.b = 1 + (last_slash ? last_slash : last_bs);
+          if (value.b == value.e)
+            continue;
+
+          if (*filename)
+            append_value_to_filename (filename, &value);
+          else
+            *filename = strdupdelim (value.b, value.e);
+        }
     }
+
   if (*filename)
-    {
-      return true;
-    }
+    return true;
   else
-    {
-      return false;
-    }
+    return false;
 }
 
 
@@ -2163,15 +2136,23 @@ read_header:
    * hstat.local_file is set by http_loop to the argument of -O. */
   if (!hs->local_file)
     {
+      char *local_file = NULL;
+
       /* Honor Content-Disposition whether possible. */
       if (!opt.content_disposition
           || !resp_header_copy (resp, "Content-Disposition",
                                 hdrval, sizeof (hdrval))
-          || !parse_content_disposition (hdrval, &hs->local_file))
+          || !parse_content_disposition (hdrval, &local_file))
         {
           /* The Content-Disposition header is missing or broken.
            * Choose unique file name according to given URL. */
-          hs->local_file = url_file_name (u);
+          hs->local_file = url_file_name (u, NULL);
+        }
+      else
+        {
+          DEBUGP (("Parsed filename from Content-Disposition: %s\n",
+                  local_file));
+          hs->local_file = url_file_name (u, local_file);
         }
     }
 
@@ -2647,7 +2628,7 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
   else if (!opt.content_disposition)
     {
       hstat.local_file =
-        url_file_name (opt.trustservernames ? u : original_url);
+        url_file_name (opt.trustservernames ? u : original_url, NULL);
       got_name = true;
     }
 
@@ -2685,7 +2666,7 @@ File %s already there; not retrieving.\n\n"),
 
   /* Send preliminary HEAD request if -N is given and we have an existing
    * destination file. */
-  file_name = url_file_name (opt.trustservernames ? u : original_url);
+  file_name = url_file_name (opt.trustservernames ? u : original_url, NULL);
   if (opt.timestamping && (file_exists_p (file_name)
                            || opt.content_disposition))
     send_head_first = true;
@@ -3549,20 +3530,15 @@ test_parse_content_disposition()
   int i;
   struct {
     char *hdrval;
-    char *opt_dir_prefix;
     char *filename;
     bool result;
   } test_array[] = {
-    { "filename=\"file.ext\"", NULL, "file.ext", true },
-    { "filename=\"file.ext\"", "somedir", "somedir/file.ext", true },
-    { "attachment; filename=\"file.ext\"", NULL, "file.ext", true },
-    { "attachment; filename=\"file.ext\"", "somedir", "somedir/file.ext", true },
-    { "attachment; filename=\"file.ext\"; dummy", NULL, "file.ext", true },
-    { "attachment; filename=\"file.ext\"; dummy", "somedir", "somedir/file.ext", true },
-    { "attachment", NULL, NULL, false },
-    { "attachment", "somedir", NULL, false },
-    { "attachement; filename*=UTF-8'en-US'hello.txt", NULL, "hello.txt", true },
-    { "attachement; filename*0=\"hello\"; filename*1=\"world.txt\"", NULL, "helloworld.txt", true },
+    { "filename=\"file.ext\"", "file.ext", true },
+    { "attachment; filename=\"file.ext\"", "file.ext", true },
+    { "attachment; filename=\"file.ext\"; dummy", "file.ext", true },
+    { "attachment", NULL, false },
+    { "attachement; filename*=UTF-8'en-US'hello.txt", "hello.txt", true },
+    { "attachement; filename*0=\"hello\"; filename*1=\"world.txt\"", "helloworld.txt", true },
   };
 
   for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i)
@@ -3570,7 +3546,6 @@ test_parse_content_disposition()
       char *filename;
       bool res;
 
-      opt.dir_prefix = test_array[i].opt_dir_prefix;
       res = parse_content_disposition (test_array[i].hdrval, &filename);
 
       mu_assert ("test_parse_content_disposition: wrong result",
