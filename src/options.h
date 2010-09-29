@@ -54,6 +54,7 @@ struct options
   bool protocol_directories;	/* Whether to prepend "http"/"ftp" to dirs. */
   bool noclobber;		/* Disables clobbering of existing
 				   data. */
+  bool unlink;			/* remove file before clobbering */
   char *dir_prefix;		/* The top of directory tree */
   char *lfilename;		/* Log filename */
   char *input_filename;		/* Input filename */

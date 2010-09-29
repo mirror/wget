@@ -1,3 +1,7 @@
+2010-09-25  Merinov Nikolay  <kim.roader@gmail.com>
+
+	* wget.texi (Download Options): Document --unlink option.
+
 2010-09-13  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi (Recursive Accept/Reject Options): Remove superfluous dot.

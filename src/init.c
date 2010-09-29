@@ -253,6 +253,7 @@ static const struct {
   { "timestamping",     &opt.timestamping,      cmd_boolean },
   { "tries",            &opt.ntry,              cmd_number_inf },
   { "trustservernames", &opt.trustservernames,  cmd_boolean },
+  { "unlink",           &opt.unlink,            cmd_boolean },
   { "useproxy",         &opt.use_proxy,         cmd_boolean },
   { "user",             &opt.user,              cmd_string },
   { "useragent",        NULL,                   cmd_spec_useragent },

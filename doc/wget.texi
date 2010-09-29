@@ -1075,6 +1075,13 @@ header and in HTML @code{Content-Type http-equiv} meta tag.
 You can set the default encoding using the @code{remoteencoding}
 command in @file{.wgetrc}. That setting may be overridden from the
 command line.
+
+@cindex unlink
+@item --unlink
+
+Force Wget to unlink file instead of clobbering existing file. This
+option is useful for downloading to the directory with hardlinks.
+
 @end table
 
 @node Directory Options, HTTP Options, Download Options, Invoking

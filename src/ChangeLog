@@ -1,3 +1,15 @@
+2010-09-25  Merinov Nikolay  <kim.roader@gmail.com>
+
+	* init.c: Add "unlink" command into command list.
+	* main.c: Add "unlink" option into option_data list.
+	* options.h: Adding unlink field into struct options.
+	* wget.h: Addind UNLINKERR error into uerr_t enum.
+	* exits.c (get_status_for_err): define status for UNLINKERR.
+	* ftp.c (getftp): unlink file if exists, instead clobbering.
+	(ftp_loop_internal): processing UNLINKERR.
+	* http.c (gethttp): unlink file if exists, instead clobbering.
+	(http_loop): processing UNLINKERR.
+
 2010-09-24  Dennis, CHENG Renquan <crquan@fedoraproject.org>
 
 	Fix problem when content-disposition is used with recursive downloading.

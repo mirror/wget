@@ -266,6 +266,7 @@ static struct cmdline_option option_data[] =
     { "timeout", 'T', OPT_VALUE, "timeout", -1 },
     { "timestamping", 'N', OPT_BOOLEAN, "timestamping", -1 },
     { "tries", 't', OPT_VALUE, "tries", -1 },
+    { "unlink", 0, OPT_BOOLEAN, "unlink", -1 },
     { "trust-server-names", 0, OPT_BOOLEAN, "trustservernames", -1 },
     { "use-server-timestamps", 0, OPT_BOOLEAN, "useservertimestamps", -1 },
     { "user", 0, OPT_VALUE, "user", -1 },
@@ -515,6 +516,8 @@ Download:\n"),
        --local-encoding=ENC      use ENC as the local encoding for IRIs.\n"),
     N_("\
        --remote-encoding=ENC     use ENC as the default remote encoding.\n"),
+    N_("\
+       --unlink                  remove file before clobber.\n"),
     "\n",
 
     N_("\

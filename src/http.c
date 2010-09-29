@@ -2486,6 +2486,19 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
         }
       else if (ALLOW_CLOBBER)
         {
+	  if (opt.unlink && file_exists_p (hs->local_file))
+	    {
+	      int res = unlink (hs->local_file);
+	      if (res < 0)
+		{
+		  logprintf (LOG_NOTQUIET, "%s: %s\n", hs->local_file,
+			     strerror (errno));
+		  CLOSE_INVALIDATE (sock);
+		  xfree (head);
+		  return UNLINKERR;
+		}
+	    }
+
 #ifdef __VMS
           int open_id;
 
@@ -2780,6 +2793,13 @@ Spider mode enabled. Check if remote file exists.\n"));
         case CONSSLERR:
           /* Another fatal error.  */
           logprintf (LOG_NOTQUIET, _("Unable to establish SSL connection.\n"));
+          ret = err;
+          goto exit;
+        case UNLINKERR:
+          /* Another fatal error.  */
+          logputs (LOG_VERBOSE, "\n");
+          logprintf (LOG_NOTQUIET, _("Cannot unlink %s (%s).\n"),
+                     quote (hstat.local_file), strerror (errno));
           ret = err;
           goto exit;
         case NEWLOCATION:
