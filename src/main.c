@@ -872,7 +872,7 @@ main (int argc, char **argv)
 {
   char **url, **t;
   int i, ret, longindex;
-  int nurl, status;
+  int nurl;
   bool append_to_log = false;
 
   program_name = argv[0];
@@ -1271,7 +1271,6 @@ outputting to a regular file.\n"));
   signal (SIGWINCH, progress_handle_sigwinch);
 #endif
 
-  status = RETROK;              /* initialize it, just-in-case */
   /* Retrieve the URLs from argument list.  */
   for (t = url; *t; t++)
     {
@@ -1291,7 +1290,6 @@ outputting to a regular file.\n"));
           char *error = url_error (*t, url_err);
           logprintf (LOG_NOTQUIET, "%s: %s.\n",*t, error);
           xfree (error);
-          status = URLERROR;
         }
       else
         {
@@ -1304,14 +1302,14 @@ outputting to a regular file.\n"));
               if (url_scheme (*t) == SCHEME_FTP)
                 opt.follow_ftp = 1;
 
-              status = retrieve_tree (url_parsed, NULL);
+              retrieve_tree (url_parsed, NULL);
 
               opt.follow_ftp = old_follow_ftp;
             }
           else
           {
-            status = retrieve_url (url_parsed, *t, &filename, &redirected_URL,
-                                   NULL, &dt, opt.recursive, iri, true);
+            retrieve_url (url_parsed, *t, &filename, &redirected_URL, NULL,
+                          &dt, opt.recursive, iri, true);
           }
 
           if (opt.delete_after && file_exists_p(filename))
@@ -1332,7 +1330,7 @@ outputting to a regular file.\n"));
   if (opt.input_filename)
     {
       int count;
-      status = retrieve_from_file (opt.input_filename, opt.force_html, &count);
+      retrieve_from_file (opt.input_filename, opt.force_html, &count);
       if (!count)
         logprintf (LOG_NOTQUIET, _("No URLs found in %s.\n"),
                    opt.input_filename);
