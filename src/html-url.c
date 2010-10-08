@@ -364,12 +364,27 @@ static void
 check_style_attr (struct taginfo *tag, struct map_context *ctx)
 {
   int attrind;
+  int raw_start;
+  int raw_len;
   char *style = find_attr (tag, "style", &attrind);
   if (!style)
     return;
 
-  /* raw pos and raw size include the quotes, hence the +1 -2 */
-  get_urls_css (ctx, ATTR_POS(tag,attrind,ctx)+1, ATTR_SIZE(tag,attrind)-2);
+  /* raw pos and raw size include the quotes, skip them when they are
+     present.  */
+  raw_start = ATTR_POS (tag, attrind, ctx);
+  raw_len  = ATTR_SIZE (tag, attrind);
+  if( *(char *)(ctx->text + raw_start) == '\''
+      || *(char *)(ctx->text + raw_start) == '"')
+    {
+      raw_start += 1;
+      raw_len -= 2;
+    }
+
+  if(raw_len <= 0)
+       return;
+
+  get_urls_css (ctx, raw_start, raw_len);
 }
 
 /* All the tag_* functions are called from collect_tags_mapper, as

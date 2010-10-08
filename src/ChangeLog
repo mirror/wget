@@ -1,3 +1,7 @@
+2010-10-08  Ivanov Anton <x86mail@gmail.com> (tiny change)
+
+    * src/html-url.c (check_style_attr): Skip quotes when they are present.
+
 2010-10-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* main.c (main): Remove unused variable `status'.
