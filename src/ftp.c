@@ -503,7 +503,7 @@ Error in server response, closing control connection.\n"));
         logputs (LOG_VERBOSE, _("==> CWD not needed.\n"));
       else
         {
-          char *targ;
+          char *targ = NULL;
 	  int cwd_count;
 	  int cwd_end;
 	  int cwd_start;
