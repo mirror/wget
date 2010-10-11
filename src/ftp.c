@@ -504,9 +504,9 @@ Error in server response, closing control connection.\n"));
       else
         {
           char *targ = NULL;
-	  int cwd_count;
-	  int cwd_end;
-	  int cwd_start;
+          int cwd_count;
+          int cwd_end;
+          int cwd_start;
 
           char *target = u->dir;
 
