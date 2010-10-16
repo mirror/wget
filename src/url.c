@@ -631,7 +631,7 @@ init_seps (enum url_scheme scheme)
     *p++ = '?';
   if (flags & scm_has_fragment)
     *p++ = '#';
-  *p++ = '\0';
+  *p = '\0';
   return seps;
 }
 

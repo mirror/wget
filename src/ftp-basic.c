@@ -756,9 +756,6 @@ ftp_epsv (int csock, ip_address *ip, int *port)
 
   DEBUGP(("respline is %s\n", respline));
 
-  /* Parse the response.  */
-  s = respline;
-
   /* Skip the useless stuff and get what's inside the parentheses */
   start = strchr (respline, '(');
   if (start == NULL)
@@ -804,7 +801,7 @@ ftp_epsv (int csock, ip_address *ip, int *port)
       return FTPINVPASV;
     }
 
-  if (*s++ != ')')
+  if (*s != ')')
     {
       xfree (respline);
       return FTPINVPASV;

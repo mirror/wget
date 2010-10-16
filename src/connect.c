@@ -541,10 +541,11 @@ bool
 socket_ip_address (int sock, ip_address *ip, int endpoint)
 {
   struct sockaddr_storage storage;
-  struct sockaddr *sockaddr = (struct sockaddr *)&storage;
+  struct sockaddr *sockaddr = (struct sockaddr *) &storage;
   socklen_t addrlen = sizeof (storage);
   int ret;
 
+  memset (sockaddr, 0, addrlen);
   if (endpoint == ENDPOINT_LOCAL)
     ret = getsockname (sock, sockaddr, &addrlen);
   else if (endpoint == ENDPOINT_PEER)

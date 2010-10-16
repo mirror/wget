@@ -459,7 +459,7 @@ ftp_parse_winnt_ls (const char *file)
       if (len < 40) continue;
       tok = line + 39;
       cur.name = xstrdup(tok);
-      DEBUGP(("Name: '%s'\n", cur.name));
+      DEBUGP (("Name: '%s'\n", cur.name));
 
       /* First column: mm-dd-yy. Should atoi() on the month fail, january
          will be assumed.  */
@@ -490,7 +490,7 @@ ftp_parse_winnt_ls (const char *file)
       if (hour == 12)  hour  = 0;
       if (*tok == 'P') hour += 12;
 
-      DEBUGP(("YYYY/MM/DD HH:MM - %d/%02d/%02d %02d:%02d\n",
+      DEBUGP (("YYYY/MM/DD HH:MM - %d/%02d/%02d %02d:%02d\n",
               year+1900, month, day, hour, min));
 
       /* Build the time-stamp (copy & paste from above) */
@@ -506,7 +506,7 @@ ftp_parse_winnt_ls (const char *file)
       cur.tstamp = mktime (&timestruct); /* store the time-stamp */
       cur.ptype = TT_HOUR_MIN;
 
-      DEBUGP(("Timestamp: %ld\n", cur.tstamp));
+      DEBUGP (("Timestamp: %ld\n", cur.tstamp));
 
       /* Third column: Either file length, or <DIR>. We also set the
          permissions (guessed as 0644 for plain files and 0755 for
@@ -521,7 +521,7 @@ ftp_parse_winnt_ls (const char *file)
           cur.type  = FT_DIRECTORY;
           cur.size  = 0;
           cur.perms = 0755;
-          DEBUGP(("Directory\n"));
+          DEBUGP (("Directory\n"));
         }
       else
         {
@@ -534,7 +534,7 @@ ftp_parse_winnt_ls (const char *file)
           else
             cur.size = size;
           cur.perms = 0644;
-          DEBUGP(("File, size %s bytes\n", number_to_static_string (cur.size)));
+          DEBUGP (("File, size %s bytes\n", number_to_static_string (cur.size)));
         }
 
       cur.linkto = NULL;
@@ -752,7 +752,7 @@ ftp_parse_vms_ls (const char *file)
 
       tok = strtok(line, " ");
       if (tok == NULL) tok = line;
-      DEBUGP(("file name:   '%s'\n", tok));
+      DEBUGP (("file name:   '%s'\n", tok));
 
       /* Stripping the version number on a VMS system would be wrong.
          It may be foolish on a non-VMS system, too, but that's someone
@@ -766,7 +766,7 @@ ftp_parse_vms_ls (const char *file)
       */
 
 #if (!defined( __VMS) && !defined( PRESERVE_VMS_VERSIONS))
-      for (p = tok+ strlen( tok); (--p > tok) && c_isdigit( *p); );
+      for (p = tok + strlen (tok); (--p > tok) && c_isdigit( *p); );
       if ((*p == ';') && (*(p- 1) != '^'))
         {
           *p = '\0';
@@ -777,8 +777,8 @@ ftp_parse_vms_ls (const char *file)
          Eliminate "^" escape characters from ODS5 extended file name.
          (A caret is invalid in an ODS2 name, so this is always safe.)
       */
-      eat_carets( tok);
-      DEBUGP(("file name-^: '%s'\n", tok));
+      eat_carets (tok);
+      DEBUGP (("file name-^: '%s'\n", tok));
 
       /* Differentiate between a directory and any other file.  A VMS
          listing may not include file protections (permissions).  Set a
@@ -787,29 +787,29 @@ ftp_parse_vms_ls (const char *file)
          ".DIR;1" file type and version number, as the plain name is
          what will work in a CWD command.
       */
-      len = strlen( tok);
-      if (!strncasecmp( (tok+ (len- 4)), ".DIR", 4))
+      len = strlen (tok);
+      if (!strncasecmp((tok + (len - 4)), ".DIR", 4))
         {
-          *(tok+ (len -= 4)) = '\0'; /* Discard ".DIR". */
+          *(tok+ (len - 4)) = '\0'; /* Discard ".DIR". */
           cur.type  = FT_DIRECTORY;
           cur.perms = VMS_DEFAULT_PROT_DIR;
-          DEBUGP(("Directory (nv)\n"));
+          DEBUGP (("Directory (nv)\n"));
         }
-      else if (!strncasecmp( (tok+ (len- 6)), ".DIR;1", 6))
+      else if (!strncasecmp ((tok + (len - 6)), ".DIR;1", 6))
         {
-          *(tok+ (len -= 6)) = '\0'; /* Discard ".DIR;1". */
+          *(tok+ (len - 6)) = '\0'; /* Discard ".DIR;1". */
           cur.type  = FT_DIRECTORY;
           cur.perms = VMS_DEFAULT_PROT_DIR;
-          DEBUGP(("Directory (v)\n"));
+          DEBUGP (("Directory (v)\n"));
         }
       else
         {
           cur.type  = FT_PLAINFILE;
           cur.perms = VMS_DEFAULT_PROT_FILE;
-          DEBUGP(("File\n"));
+          DEBUGP (("File\n"));
         }
-      cur.name = xstrdup(tok);
-      DEBUGP(("Name: '%s'\n", cur.name));
+      cur.name = xstrdup (tok);
+      DEBUGP (("Name: '%s'\n", cur.name));
 
       /* Null the date and time string. */
       *date_str = '\0';
@@ -821,21 +821,21 @@ ftp_parse_vms_ls (const char *file)
          hence useless for an integrity check based on byte-count.
          Set size to unknown.
       */
-      cur.size  = 0;
+      cur.size = 0;
 
       /* Get token 2, if any.  A long name may force all other data onto
          a second line.  If needed, read the second line.
       */
 
-      tok = strtok(NULL, " ");
+      tok = strtok (NULL, " ");
       if (tok == NULL)
         {
-          DEBUGP(("Getting additional line.\n"));
+          DEBUGP (("Getting additional line.\n"));
           xfree (line);
           line = read_whole_line (fp);
           if (!line)
             {
-              DEBUGP(("EOF.  Leaving listing parser.\n"));
+              DEBUGP (("EOF.  Leaving listing parser.\n"));
               break;
             }
 
@@ -843,15 +843,15 @@ ftp_parse_vms_ls (const char *file)
              line (and we may be confused).
           */
           if (i <= 0)
-	    {
+            {
               /* Blank line.  End of significant file listing. */
-              DEBUGP(("Blank line.  Leaving listing parser.\n"));
+              DEBUGP (("Blank line.  Leaving listing parser.\n"));
               xfree (line); /* Free useless line storage. */
-	      break;
-	    }
+              break;
+            }
           else if (line[ 0] != ' ')
             {
-              DEBUGP(("Non-blank in column 1.  Must be a new file name?\n"));
+              DEBUGP (("Non-blank in column 1.  Must be a new file name?\n"));
               continue;
             }
           else
@@ -860,7 +860,7 @@ ftp_parse_vms_ls (const char *file)
               if (tok == NULL)
                 {
                   /* Unexpected non-empty but apparently blank line. */
-                  DEBUGP(("Null token.  Leaving listing parser.\n"));
+                  DEBUGP (("Null token.  Leaving listing parser.\n"));
                   xfree (line); /* Free useless line storage. */
                   break;
                 }
@@ -875,87 +875,87 @@ ftp_parse_vms_ls (const char *file)
          Time:       HH:MM or HH:MM:SS or HH:MM:SS.CC
          Owner:      [user] or [user,group]
          Protection: (ppp,ppp,ppp,ppp) (where "ppp" is "RWED" or some
-                     subset thereof, for System, Owner, Group, World.
+         subset thereof, for System, Owner, Group, World.
 
          If permission is lacking, info may be replaced by the string:
          "No privilege for attempted operation".
       */
       while (tok != NULL)
-	{
-	  DEBUGP (("Token: >%s<: ", tok));
+        {
+          DEBUGP (("Token: >%s<: ", tok));
 
-	  if ((strlen( tok) < 12) && (strchr( tok, '-') != NULL))
-	    {
-	      /* Date. */
-	      DEBUGP (("Date.\n"));
-	      strcpy( date_str, tok);
-	      strcat( date_str, " ");
-	    }
-	  else if ((strlen( tok) < 12) && (strchr( tok, ':') != NULL))
-	    {
-	      /* Time. */
-	      DEBUGP (("Time. "));
-	      strncat( date_str,
-	       tok,
-	       (sizeof( date_str)- strlen( date_str)- 1));
-	      DEBUGP (("Date time: >%s<\n", date_str));
-	    }
-	  else if (strchr( tok, '[') != NULL)
-	    {
-	      /* Owner.  (Ignore.) */
-	      DEBUGP (("Owner.\n"));
-	    }
-	  else if (strchr( tok, '(') != NULL)
-	    {
-	      /* Protections (permissions). */
-	      perms = 0;
-	      j = 0;
-	      for (i = 0; i < strlen( tok); i++)
-		{
-		  switch (tok[ i])
-		    {
-		      case '(':
-		        break;
-		      case ')':
-		        break;
-		      case ',':
-		        if (j == 0)
-		          {
-		            perms = 0;
-		            j = 1;
-		          }
-		        else
-		          {
-		            perms <<= 3;
-		          }
-		        break;
-		    case 'R':
-		      perms |= 4;
-		      break;
-		    case 'W':
-		      perms |= 2;
-		      break;
-		    case 'E':
-		      perms |= 1;
-		      break;
-		    case 'D':
-		      perms |= 2;
-		      break;
-		    }
-		}
-	      cur.perms = perms;
-	      DEBUGP (("Prot.  perms = %0o.\n", cur.perms));
-	    }
-	  else
-	    {
-	      /* Nondescript.  Probably size(s), probably in blocks.
+          if ((strlen (tok) < 12) && (strchr( tok, '-') != NULL))
+            {
+              /* Date. */
+              DEBUGP (("Date.\n"));
+              strcpy( date_str, tok);
+              strcat( date_str, " ");
+            }
+          else if ((strlen (tok) < 12) && (strchr( tok, ':') != NULL))
+            {
+              /* Time. */
+              DEBUGP (("Time. "));
+              strncat( date_str,
+                       tok,
+                       (sizeof( date_str)- strlen (date_str) - 1));
+              DEBUGP (("Date time: >%s<\n", date_str));
+            }
+          else if (strchr ( tok, '[') != NULL)
+            {
+              /* Owner.  (Ignore.) */
+              DEBUGP (("Owner.\n"));
+            }
+          else if (strchr (tok, '(') != NULL)
+            {
+              /* Protections (permissions). */
+              perms = 0;
+              j = 0;
+              for (i = 0; i < strlen( tok); i++)
+                {
+                  switch (tok[ i])
+                    {
+                    case '(':
+                      break;
+                    case ')':
+                      break;
+                    case ',':
+                      if (j == 0)
+                        {
+                          perms = 0;
+                          j = 1;
+                        }
+                      else
+                        {
+                          perms <<= 3;
+                        }
+                      break;
+                    case 'R':
+                      perms |= 4;
+                      break;
+                    case 'W':
+                      perms |= 2;
+                      break;
+                    case 'E':
+                      perms |= 1;
+                      break;
+                    case 'D':
+                      perms |= 2;
+                      break;
+                    }
+                }
+              cur.perms = perms;
+              DEBUGP (("Prot.  perms = %0o.\n", cur.perms));
+            }
+          else
+            {
+              /* Nondescript.  Probably size(s), probably in blocks.
                  Could be "No privilege ..." message.  (Ignore.)
               */
-	      DEBUGP (("Ignored (size?).\n"));
-	    }
+              DEBUGP (("Ignored (size?).\n"));
+            }
 
-	  tok = strtok (NULL, " ");
-	}
+          tok = strtok (NULL, " ");
+        }
 
       /* Tokens exhausted.  Interpret the data, and fill in the
          structure.
@@ -971,26 +971,21 @@ ftp_parse_vms_ls (const char *file)
       /* Convert struct tm local time to time_t local time. */
       timenow = mktime (timestruct);
       /* Offset local time according to environment variable (seconds). */
-      if ((tok = getenv( "WGET_TIMEZONE_DIFFERENTIAL")) != NULL)
+      if ((tok = getenv ( "WGET_TIMEZONE_DIFFERENTIAL")) != NULL)
         {
-          dt = atoi( tok);
+          dt = atoi (tok);
           DEBUGP (("Time differential = %d.\n", dt));
         }
       else
-        {
-          dt = 0;
-        }
+        dt = 0;
 
       if (dt >= 0)
-        {
-          timenow += dt;
-        }
+        timenow += dt;
       else
-        {
-          timenow -= (-dt);
-        }
+        timenow -= (-dt);
+
       cur.tstamp = timenow; /* Store the time-stamp. */
-      DEBUGP(("Timestamp: %ld\n", cur.tstamp));
+      DEBUGP (("Timestamp: %ld\n", cur.tstamp));
       cur.ptype = TT_HOUR_MIN;
 
       /* Add the data for this item to the linked list, */

@@ -431,7 +431,7 @@ wgetrc_env_file_name (void)
 char *
 wgetrc_user_file_name (void)
 {
-  char *home = home_dir ();
+  char *home;
   char *file = NULL;
   /* If that failed, try $HOME/.wgetrc (or equivalent).  */
 

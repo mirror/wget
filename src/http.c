@@ -927,17 +927,12 @@ skip_short_body (int fd, wgint contlen, bool chunked)
               char *line = fd_read_line (fd);
               char *endl;
               if (line == NULL)
-                {
-                  ret = -1;
-                  break;
-                }
+                break;
 
               remaining_chunk_size = strtol (line, &endl, 16);
               if (remaining_chunk_size == 0)
                 {
-                  ret = 0;
-                  if (fd_read_line (fd) == NULL)
-                    ret = -1;
+                  fd_read_line (fd);
                   break;
                 }
             }
@@ -3136,7 +3131,7 @@ Remote file exists.\n\n"));
   while (!opt.ntry || (count < opt.ntry));
 
 exit:
-  if (ret == RETROK)
+  if (ret == RETROK && local_file)
     *local_file = xstrdup (hstat.local_file);
   free_hstat (&hstat);
 

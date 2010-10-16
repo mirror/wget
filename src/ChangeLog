@@ -1,3 +1,15 @@
+2010-10-16  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* connect.c (socket_ip_address): Initialize `sockaddr' to zero.
+	* ftp-basic.c (ftp_epsv): Remove dead assignment to `s'.
+	* ftp-ls.c (ftp_parse_vms_ls): Remove dead assignment to `len'.
+	* http.c (skip_short_body): Remove dead assignment to `ret'.
+	* init.c (wgetrc_user_file_name): Remove dead assignment to `home'.
+	* main.c (main): Silent warning reported by clang.
+	(http_loop): Silent warning reported by clang.
+	* retr.c (retrieve_url): Likewise.
+	* url.c (init_seps): Remove dead assignment to `p'.
+
 2010-10-11  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* ftp.c (getftp): Fix indentation.

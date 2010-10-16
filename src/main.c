@@ -962,7 +962,7 @@ main (int argc, char **argv)
                short options for convenience and backward
                compatibility.  */
             char *p;
-            for (p = optarg; *p; p++)
+            for (p = optarg; p && *p; p++)
               switch (*p)
                 {
                 case 'v':

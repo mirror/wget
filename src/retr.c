@@ -868,7 +868,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           DEBUGP (("[Couldn't fallback to non-utf8 for %s\n", quote (url)));
     }
 
-  if (local_file && *dt & RETROKF)
+  if (local_file && u && *dt & RETROKF)
     {
       register_download (u->url, local_file);
       if (redirection_count && 0 != strcmp (origurl, u->url))
