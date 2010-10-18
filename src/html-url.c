@@ -164,6 +164,7 @@ static struct {
    to the attributes not mentioned here.  We add them manually.  */
 static const char *additional_attributes[] = {
   "rel",                        /* used by tag_handle_link  */
+  "type",                       /* used by tag_handle_link  */
   "http-equiv",                 /* used by tag_handle_meta  */
   "name",                       /* used by tag_handle_meta  */
   "content",                    /* used by tag_handle_meta  */
@@ -505,8 +506,8 @@ tag_handle_link (int tagid, struct taginfo *tag, struct map_context *ctx)
   /* All <link href="..."> link references are external, except those
      known not to be, such as style sheet and shortcut icon:
 
-       <link rel="stylesheet" href="...">
-       <link rel="shortcut icon" href="...">
+     <link rel="stylesheet" href="...">
+     <link rel="shortcut icon" href="...">
   */
   if (href)
     {
@@ -526,11 +527,18 @@ tag_handle_link (int tagid, struct taginfo *tag, struct map_context *ctx)
                 {
                   up->link_inline_p = 1;
                 }
+              else
+                {
+                  /* The external ones usually point to HTML pages, such as
+                     <link rel="next" href="...">
+                     except when the type attribute says otherwise:
+                     <link rel="alternate" type="application/rss+xml" href=".../?feed=rss2" />
+                  */
+                  char *type = find_attr (tag, "type", NULL);
+                  if (!type || strcasecmp (type, "text/html") == 0)
+                    up->link_expect_html = 1;
+                }
             }
-          else
-            /* The external ones usually point to HTML pages, such as
-               <link rel="next" href="..."> */
-            up->link_expect_html = 1;
         }
     }
 }

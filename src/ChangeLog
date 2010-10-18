@@ -1,3 +1,8 @@
+2010-10-18  Manfred Koizar <mkoi-pg@aon.at> (tiny change)
+
+	* html-url.c (tag_handle_link): Do not assume external links type
+	to be always "text/html".
+
 2010-10-16  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* connect.c (socket_ip_address): Initialize `sockaddr' to zero.
