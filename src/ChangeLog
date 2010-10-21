@@ -1,3 +1,8 @@
+2010-10-21  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* retr.c (retrieve_url): Do not register HTML files twice.
+	Reported by: Manfred Koizar <mkoi-pg@aon.at>.
+
 2010-10-18  Manfred Koizar <mkoi-pg@aon.at> (tiny change)
 
 	* html-url.c (tag_handle_link): Do not assume external links type

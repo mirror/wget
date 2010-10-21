@@ -871,20 +871,15 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
   if (local_file && u && *dt & RETROKF)
     {
       register_download (u->url, local_file);
+
       if (redirection_count && 0 != strcmp (origurl, u->url))
         register_redirection (origurl, u->url);
+
       if (*dt & TEXTHTML)
         register_html (u->url, local_file);
-      if (*dt & RETROKF)
-        {
-          register_download (u->url, local_file);
-          if (redirection_count && 0 != strcmp (origurl, u->url))
-            register_redirection (origurl, u->url);
-          if (*dt & TEXTHTML)
-            register_html (u->url, local_file);
-          if (*dt & TEXTCSS)
-            register_css (u->url, local_file);
-        }
+
+      if (*dt & TEXTCSS)
+        register_css (u->url, local_file);
     }
 
   if (file)
