@@ -104,7 +104,8 @@ ssl_init ()
   return true;
 }
 
-struct wgnutls_transport_context {
+struct wgnutls_transport_context
+{
   gnutls_session session;       /* GnuTLS session handle */
   int last_error;               /* last error returned by read/write/... */
 
@@ -144,6 +145,7 @@ wgnutls_read (int fd, char *buf, int bufsize, void *arg)
 
   if (ret < 0)
     ctx->last_error = ret;
+
   return ret;
 }
 
@@ -190,7 +192,12 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
       while (ret == GNUTLS_E_INTERRUPTED);
 
       if (ret < 0)
-        return ret;
+        {
+          if (offset)
+            ret = 0;
+          else
+            return ret;
+        }
 
       if (ret > 0)
         {
@@ -223,7 +230,8 @@ wgnutls_close (int fd, void *arg)
 /* gnutls_transport is the singleton that describes the SSL transport
    methods provided by this file.  */
 
-static struct transport_implementation wgnutls_transport = {
+static struct transport_implementation wgnutls_transport =
+{
   wgnutls_read, wgnutls_write, wgnutls_poll,
   wgnutls_peek, wgnutls_errstr, wgnutls_close
 };
