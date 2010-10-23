@@ -184,12 +184,13 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
     {
       do
         {
-          if (gnutls_record_check_pending (ctx->session)
-              || select_fd (fd, 0, WAIT_FOR_READ))
-            ret = gnutls_record_recv (ctx->session, buf + offset,
-                                      bufsize - offset);
+          ret = gnutls_record_recv (ctx->session, buf + offset,
+                                    bufsize - offset);
         }
       while (ret == GNUTLS_E_INTERRUPTED);
+
+      if (ret < 0)
+        return ret;
 
       if (ret > 0)
         {
