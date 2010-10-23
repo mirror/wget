@@ -263,10 +263,12 @@ AS_IF([test x"$with_ssl" = xopenssl], [
   # --with-ssl is not gnutls: check if it's no
   AS_IF([test x"$with_ssl" != xno], [
     dnl Now actually check for -lssl
-    AC_LIB_HAVE_LINKFLAGS([gnutls], [], [
-  #include <gnutls/gnutls.h>
-    ], [gnutls_global_init()])
-    if test x"$LIBGNUTLS" != x
+
+    AC_CHECK_LIB(gpg-error, gpg_err_init)
+    AC_CHECK_LIB(gcrypt, gcry_control)
+    AC_CHECK_LIB(gnutls, main)
+
+    if test x"$ac_cv_lib_gnutls_main" != x
     then
       AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
       AC_LIBOBJ([gnutls])

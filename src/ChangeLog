@@ -1,5 +1,8 @@
 2010-10-23  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* Makefile.am (LIBS): Remove @LIBGNUTLS@ and use @W32LIBS@ as last
+	component.
+
 	* gnutls.c (wgnutls_peek): Block until data is available.
 
 2010-10-21  Giuseppe Scrivano  <gscrivano@gnu.org>
