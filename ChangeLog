@@ -1,3 +1,7 @@
+2010-10-24  Jessica McKellar <jesstess@mit.edu> (tiny change)
+
+	* NEWS: Mention the change to the the summary for recursive downloads.
+
 2010-10-23  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac: Add check for libgpg-error and libgcrypt.

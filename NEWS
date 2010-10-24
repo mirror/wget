@@ -46,6 +46,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
    links.
 
 ** Use persistent connections with proxies supporting them.
+
+** Print the total download time as part of the summary for recursive downloads.
 
 * Changes in Wget 1.12
 

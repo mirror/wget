@@ -1,3 +1,9 @@
+2010-10-24  Jessica McKellar <jesstess@mit.edu> (tiny change)
+
+	* main.c (main): Print the total download time as part of the
+	summary for downloads using the recursive or page requisites
+	options. Fixes bug #21359.
+
 2010-10-24  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* gnutls.c (wgnutls_peek): Do not return an error when
