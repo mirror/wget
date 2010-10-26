@@ -1,3 +1,9 @@
+2010-10-26  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Download Options): Remove unclear statement about the
+	--waitretry option.
+	Reported by: Manfred Koizar <mkoi-pg@aon.at>.
+
 2010-09-25  Merinov Nikolay  <kim.roader@gmail.com>
 
 	* wget.texi (Download Options): Document --unlink option.

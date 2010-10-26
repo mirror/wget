@@ -841,9 +841,7 @@ If you don't want Wget to wait between @emph{every} retrieval, but only
 between retries of failed downloads, you can use this option.  Wget will
 use @dfn{linear backoff}, waiting 1 second after the first failure on a
 given file, then waiting 2 seconds after the second failure on that
-file, up to the maximum number of @var{seconds} you specify.  Therefore,
-a value of 10 will actually make Wget wait up to (1 + 2 + ... + 10) = 55
-seconds per file. 
+file, up to the maximum number of @var{seconds} you specify.
 
 By default, Wget will assume a value of 10 seconds.
 
