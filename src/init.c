@@ -32,6 +32,7 @@ as that of the covered work.  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
@@ -136,6 +137,7 @@ static const struct {
   { "certificatetype",  &opt.cert_type,         cmd_cert_type },
   { "checkcertificate", &opt.check_cert,        cmd_boolean },
 #endif
+  { "chooseconfig",     &opt.choose_config,	cmd_file },
   { "connecttimeout",   &opt.connect_timeout,   cmd_time },
   { "contentdisposition", &opt.content_disposition, cmd_boolean },
   { "continue",         &opt.always_rest,       cmd_boolean },
@@ -291,7 +293,7 @@ command_by_name (const char *cmdname)
 }
 
 /* Reset the variables to default values.  */
-static void
+void
 defaults (void)
 {
   char *tmp;
@@ -510,7 +512,7 @@ static bool setval_internal_tilde (int, const char *, const char *);
 /* Initialize variables from a wgetrc file.  Returns zero (failure) if
    there were errors in the file.  */
 
-static bool
+bool
 run_wgetrc (const char *file)
 {
   FILE *fp;
@@ -574,10 +576,7 @@ void
 initialize (void)
 {
   char *file, *env_sysrc;
-  int ok = true;
-
-  /* Load the hard-coded defaults.  */
-  defaults ();
+  bool ok = true;
 
   /* Run a non-standard system rc file when the according environment
      variable has been set. For internal testing purposes only!  */
@@ -1578,6 +1577,7 @@ cleanup (void)
     extern acc_t *netrc_list;
     free_netrc (netrc_list);
   }
+  xfree_null (opt.choose_config);
   xfree_null (opt.lfilename);
   xfree_null (opt.dir_prefix);
   xfree_null (opt.input_filename);

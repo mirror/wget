@@ -1,3 +1,20 @@
+2010-08-08  Reza Snowdon <vivi@mage.me.uk>
+
+	* main.c (main): inserted 'defaults'.
+	  Added additional 'getopt_long' while loop to search and apply a
+	  user specified config file before any other options.
+	  New variables 'retconf', 'use_userconfig',
+	  'confval', 'userrc_ret', 'config_opt'.
+	* init.c: Include stdbool.h.
+          (commands): Added config details.
+	  (defaults): Removed static.
+	  (wgetrc): Removed static.
+	  (initialize): Removed 'defaults ()',
+          changed 'int ok' to 'bool ok'.
+	* options.h: New variable 'choose_config'.
+        * init.h (defaults): exported function.
+	  (run_wgetrc): exported function.
+
 2010-10-24  Jessica McKellar <jesstess@mit.edu> (tiny change)
 
 	* main.c (main): Print the total download time as part of the

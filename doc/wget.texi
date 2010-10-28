@@ -190,7 +190,9 @@ gauge can be customized to your preferences.
 Most of the features are fully configurable, either through command line
 options, or via the initialization file @file{.wgetrc} (@pxref{Startup
 File}).  Wget allows you to define @dfn{global} startup files
-(@file{/usr/local/etc/wgetrc} by default) for site settings.
+(@file{/usr/local/etc/wgetrc} by default) for site settings. You can also
+specify the location of a startup file with the --config option.
+ 
 
 @ignore
 @c man begin FILES
@@ -524,6 +526,10 @@ presence of a @code{BASE} tag in the @sc{html} input file, with
 For instance, if you specify @samp{http://foo/bar/a.html} for
 @var{URL}, and Wget reads @samp{../baz/b.html} from the input file, it
 would be resolved to @samp{http://foo/baz/b.html}.
+
+@cindex specify config 
+@item --config=@var{FILE}
+Specify the location of a startup file you wish to use.
 @end table
 
 @node Download Options, Directory Options, Logging and Input File Options, Invoking

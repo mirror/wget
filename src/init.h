@@ -39,5 +39,7 @@ void run_command (const char *);
 void setoptval (const char *, const char *, const char *);
 char *home_dir (void);
 void cleanup (void);
+void defaults (void);
+bool run_wgetrc (const char *file);
 
 #endif /* INIT_H */

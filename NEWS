@@ -48,6 +48,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Use persistent connections with proxies supporting them.
 
 ** Print the total download time as part of the summary for recursive downloads.
+
+** Now it is possible to specify a different startup configuration file trough
+   the --config option.
 
 * Changes in Wget 1.12
 
