@@ -51,6 +51,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Now it is possible to specify a different startup configuration file trough
    the --config option.
+
+** Fix an infinite loop with the error '<filename> has sprung into existence'
+   on a network error and -nc is used.
 
 * Changes in Wget 1.12
 
