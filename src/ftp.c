@@ -241,7 +241,7 @@ static uerr_t ftp_get_listing (struct url *, ccon *, struct fileinfo **);
    and closes the control connection in case of error.  */
 static uerr_t
 getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
-        wgint restval, ccon *con)
+        wgint restval, ccon *con, int count)
 {
   int csock, dtsock, local_sock, res;
   uerr_t err = RETROK;          /* appease the compiler */
@@ -1172,7 +1172,7 @@ Error in server response, closing control connection.\n"));
 #endif /* def __VMS [else] */
         }
       else if (opt.noclobber || opt.always_rest || opt.timestamping || opt.dirstruct
-               || opt.output_document)
+               || opt.output_document || count > 0)
         {	  
 	  if (opt.unlink && file_exists_p (con->target))
 	    {
@@ -1488,7 +1488,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
         len = f->size;
       else
         len = 0;
-      err = getftp (u, len, &qtyread, restval, con);
+      err = getftp (u, len, &qtyread, restval, con, count);
 
       if (con->csock == -1)
         con->st &= ~DONE_CWD;

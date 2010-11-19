@@ -1,3 +1,14 @@
+2010-11-19  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* fttp.c (getftp): Accept new argument `count'.  When `count' is
+	bigger than zero, assume the file can be overwritten.
+	(ftp_loop_internal): Pass new argument `count' to `getftp'.
+
+	* http.c (gethttp): Accept new argument `count'.  When `count' is
+	bigger than zero, assume the file can be overwritten.
+	(http_loop): Pass new argument `count' to `gethttp'.
+	Reported by: Evgeny Kapun <abacabadabacaba@gmail.com>.
+
 2010-08-08  Reza Snowdon <vivi@mage.me.uk>
 
 	* main.c (main): inserted 'defaults'.

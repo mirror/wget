@@ -1494,7 +1494,7 @@ free_hstat (struct http_stat *hs)
    server, and u->url will be requested.  */
 static uerr_t
 gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
-         struct iri *iri)
+         struct iri *iri, int count)
 {
   struct request *req;
 
@@ -2479,7 +2479,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
           fp = fopen (hs->local_file, "ab");
 #endif /* def __VMS [else] */
         }
-      else if (ALLOW_CLOBBER)
+      else if (ALLOW_CLOBBER || count > 0)
         {
 	  if (opt.unlink && file_exists_p (hs->local_file))
 	    {
@@ -2756,7 +2756,7 @@ Spider mode enabled. Check if remote file exists.\n"));
         *dt &= ~SEND_NOCACHE;
 
       /* Try fetching the document, or at least its head.  */
-      err = gethttp (u, &hstat, dt, proxy, iri);
+      err = gethttp (u, &hstat, dt, proxy, iri, count);
 
       /* Time?  */
       tms = datetime_str (time (NULL));
