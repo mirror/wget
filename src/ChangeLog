@@ -1,3 +1,10 @@
+2010-11-21  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* ftp.c (getftp): If `count' is bigger than zero, try to resume the
+	download, not restart it.
+	* http.c (gethttp): Likewise.
+	Suggested by: Evgeny Kapun <abacabadabacaba@gmail.com>.
+
 2010-11-19  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* fttp.c (getftp): Accept new argument `count'.  When `count' is

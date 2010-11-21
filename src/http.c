@@ -2468,7 +2468,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
       mkalldirs (hs->local_file);
       if (opt.backups)
         rotate_backups (hs->local_file);
-      if (hs->restval)
+      if (hs->restval || count > 0)
         {
 #ifdef __VMS
           int open_id;
@@ -2479,7 +2479,7 @@ File %s already there; not retrieving.\n\n"), quote (hs->local_file));
           fp = fopen (hs->local_file, "ab");
 #endif /* def __VMS [else] */
         }
-      else if (ALLOW_CLOBBER || count > 0)
+      else if (ALLOW_CLOBBER)
         {
 	  if (opt.unlink && file_exists_p (hs->local_file))
 	    {
