@@ -1152,7 +1152,7 @@ Error in server response, closing control connection.\n"));
 # define BIN_TYPE_FILE 1
 #endif /* def __VMS [else] */
 
-      if ((restval && !(con->cmd & DO_LIST)) || count > 0)
+      if (restval && !(con->cmd & DO_LIST))
         {
 #ifdef __VMS
           int open_id;
@@ -1172,7 +1172,7 @@ Error in server response, closing control connection.\n"));
 #endif /* def __VMS [else] */
         }
       else if (opt.noclobber || opt.always_rest || opt.timestamping || opt.dirstruct
-               || opt.output_document)
+               || opt.output_document || count > 0)
         {	  
 	  if (opt.unlink && file_exists_p (con->target))
 	    {

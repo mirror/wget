@@ -1,3 +1,9 @@
+2010-11-22  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	Revert last commit.
+	* ftp.c (getftp): When count > 0, don't append to the existing file.
+	* http.c (gethttp): Likewise.
+
 2010-11-21  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* ftp.c (getftp): If `count' is bigger than zero, try to resume the
