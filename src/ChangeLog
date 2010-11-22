@@ -7,7 +7,7 @@
 
 2010-11-19  Giuseppe Scrivano  <gscrivano@gnu.org>
 
-	* fttp.c (getftp): Accept new argument `count'.  When `count' is
+	* ftp.c (getftp): Accept new argument `count'.  When `count' is
 	bigger than zero, assume the file can be overwritten.
 	(ftp_loop_internal): Pass new argument `count' to `getftp'.
 
