@@ -34,9 +34,7 @@ as that of the covered work.  */
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
 #include <assert.h>
 #include <errno.h>
 #include <time.h>

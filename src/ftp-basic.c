@@ -36,9 +36,7 @@ as that of the covered work.  */
 #include <errno.h>
 
 #include <string.h>
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
 #include "utils.h"
 #include "connect.h"
 #include "host.h"

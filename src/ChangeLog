@@ -1,5 +1,25 @@
 2010-12-01  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* cmpt.c: Include <unistd.h> inconditionally.
+	* connect.c: Likewise.
+	* convert.c: Likewise.
+	* ftp-basic.c: Likewise.
+	* ftp-ls.c: Likewise.
+	* ftp.c: Likewise.
+	* gnutls.c: Likewise.
+	* http.c: Likewise.
+	* init.c: Likewise.
+	* log.c: Likewise.
+	* main.c: Likewise.
+	* openssl.c: Likewise.
+	* progress.c: Likewise.
+	* ptimer.c: Likewise.
+	* recur.c: Likewise.
+	* retr.c: Likewise.
+	* url.c: Likewise.
+	* utils.c: Likewise.
+
+
 	* retr.c (fd_read_body): Dinamically allocate `dlbuf'.
 
 2010-11-27  Reza Snowdon  <vivi@mage.me.uk>

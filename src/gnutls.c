@@ -32,9 +32,7 @@ as that of the covered work.  */
 
 #include <assert.h>
 #include <errno.h>
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 #include <dirent.h>

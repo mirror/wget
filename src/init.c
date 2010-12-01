@@ -33,9 +33,7 @@ as that of the covered work.  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
 #include <string.h>
 #include <errno.h>
 #include <limits.h>

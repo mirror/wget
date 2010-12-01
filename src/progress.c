@@ -34,9 +34,7 @@ as that of the covered work.  */
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
 #include <signal.h>
 #ifdef HAVE_WCHAR_H
 # include <wchar.h>
