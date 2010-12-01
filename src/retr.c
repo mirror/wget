@@ -209,8 +209,8 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
 {
   int ret = 0;
 
-  static char dlbuf[16384];
-  int dlbufsize = sizeof (dlbuf);
+  int dlbufsize = BUFSIZ;
+  char *dlbuf = xmalloc (BUFSIZ);
 
   struct ptimer *timer = NULL;
   double last_successful_read_tm = 0;
@@ -387,6 +387,8 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
     *qtyread += sum_read;
   if (qtywritten)
     *qtywritten += sum_written;
+
+  free (dlbuf);
 
   return ret;
 }

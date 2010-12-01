@@ -1,8 +1,12 @@
-2010-11-27  Reza Snowdon  <vivi@mage.me.uk> 
+2010-12-01  Giuseppe Scrivano  <gscrivano@gnu.org>
 
-        * init.c (initialize): If 'ok' is not zero; exit, as
-	this indicates there was a problem parsing 'SYSTEM_WGETRC'.
-        Fixes bug #20370  
+	* retr.c (fd_read_body): Dinamically allocate `dlbuf'.
+
+2010-11-27  Reza Snowdon  <vivi@mage.me.uk>
+
+        * init.c (initialize): If 'ok' is not zero; exit, as this
+	indicates there was a problem parsing 'SYSTEM_WGETRC'.
+        Fixes bug #20370.
 
 2010-11-22  Giuseppe Scrivano  <gscrivano@gnu.org>
 
