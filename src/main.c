@@ -454,7 +454,7 @@ Download:\n"),
   -O,  --output-document=FILE    write documents to FILE.\n"),
     N_("\
   -nc, --no-clobber              skip downloads that would download to\n\
-                                 existing files.\n"),
+                                 existing files (overwriting them).\n"),
     N_("\
   -c,  --continue                resume getting a partially-downloaded file.\n"),
     N_("\

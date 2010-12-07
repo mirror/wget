@@ -1,3 +1,7 @@
+2010-12-07  Jessica McKellar <jesstess@mit.edu> (tiny change)
+
+	* vms/WGET.HLP: Make help message clearer.
+
 2010-10-24  Jessica McKellar <jesstess@mit.edu> (tiny change)
 
 	* NEWS: Mention the change to the the summary for recursive downloads.

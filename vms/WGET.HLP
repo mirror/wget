@@ -31,7 +31,7 @@
        --retry-connrefused       retry even if connection is refused.
   -O   --output-document=FILE    write documents to FILE.
   -nc, --no-clobber              skip downloads that would download to
-                                 existing files.
+                                 existing files (overwriting them).
   -c,  --continue                resume getting a partially downloaded file.
        --progress=TYPE           select progress gauge type.
   -N,  --timestamping            don't re-retrieve files unless newer than
