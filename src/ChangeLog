@@ -1,3 +1,9 @@
+2010-12-09  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* main.c (main): If --no-clobber and --convert-links are used at the
+	same time, use only the latter.
+	Reported by: Romain Vimont <rom@rom1v.com>
+
 2010-12-07  Jessica McKellar <jesstess@mit.edu> (tiny change)
 
 	* main.c: Make help message clearer.
