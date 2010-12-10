@@ -877,6 +877,8 @@ main (int argc, char **argv)
   int nurl;
   bool append_to_log = false;
 
+  total_downloaded_bytes = 0;
+
   program_name = argv[0];
 
   struct ptimer *timer = ptimer_new ();

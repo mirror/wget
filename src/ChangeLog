@@ -1,3 +1,7 @@
+2010-12-10  Evgeniy Philippov <egphilippov@googlemail.com> (tiny change)
+
+	* main.c (main): Initialize `total_downloaded_bytes'.
+
 2010-12-09  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* main.c (main): If --no-clobber and --convert-links are used at the
