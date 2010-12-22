@@ -1188,10 +1188,7 @@ Note that filenames changed in this way will be re-downloaded every time
 you re-mirror a site, because Wget can't tell that the local
 @file{@var{X}.html} file corresponds to remote URL @samp{@var{X}} (since
 it doesn't yet know that the URL produces output of type
-@samp{text/html} or @samp{application/xhtml+xml}.  To prevent this 
-re-downloading, you must use @samp{-k} and @samp{-K} so that the original 
-version of the file will be saved as @file{@var{X}.orig} (@pxref{Recursive 
-Retrieval Options}).
+@samp{text/html} or @samp{application/xhtml+xml}.
 
 As of version 1.12, Wget will also ensure that any downloaded files of
 type @samp{text/css} end in the suffix @samp{.css}, and the option was

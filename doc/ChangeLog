@@ -1,3 +1,9 @@
+2010-12-22  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (HTTP Options): Remove sentence which doesn't reflect
+	the wget behaviour when -k -K are used with -E.
+	Reported by: pike-wget@kw.nl.
+
 2010-08-08  Reza Snowdon <vivi@mage.me.uk>
 	* wget.texi: Added information about the config option to the
 	'Overview' section and a description of the option in
