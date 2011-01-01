@@ -1,5 +1,5 @@
 /* Support for Robot Exclusion Standard (RES).
-   Copyright (C) 2001, 2006, 2007, 2008, 2009, 2010 Free Software
+   Copyright (C) 2001, 2006, 2007, 2008, 2009, 2010, 2011 Free Software
    Foundation, Inc.
 
 This file is part of Wget.
