@@ -1,3 +1,9 @@
+2011-02-22  Steven Schubiger  <stsc@member.fsf.org>
+
+	* http.c (gethttp, http_loop): Move duplicated code which is run
+	when an existing file is not to be clobbered to a function.
+	(get_file_flags): New static function.
+
 2010-12-10  Evgeniy Philippov <egphilippov@googlemail.com> (tiny change)
 
 	* main.c (main): Initialize `total_downloaded_bytes'.
