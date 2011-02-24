@@ -1,3 +1,13 @@
+2011-02-22  Gilles Carry  <gilles dot carry at st dot com>
+
+	* main.c (prompt_for_password): Use stderr instead of stdout
+	to prompt password. This allows to use --output-document=- and
+	--ask-password simultaneously. Without this, redirecting stdout
+	makes password prompt invisible and mucks up payload such as in
+	this example:
+	wget --output-document=- --ask-password -user=foo \
+		http://foo.com/tarball.tgz | tar zxf -
+
 2011-02-22  Steven Schubiger  <stsc@member.fsf.org>
 
 	* http.c (gethttp, http_loop): Move duplicated code which is run
