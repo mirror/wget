@@ -1,3 +1,8 @@
+2011-03-02  Tomasz Buchert <tomek.buchert@gmail.com> (tiny change)
+
+	* http.c (ensure_extension): Do not adjust the extension if the file
+	ends in .htm.
+
 2011-02-22  Gilles Carry  <gilles dot carry at st dot com>
 
 	* main.c (prompt_for_password): Use stderr instead of stdout

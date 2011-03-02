@@ -54,6 +54,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Fix an infinite loop with the error '<filename> has sprung into existence'
    on a network error and -nc is used.
+
+** Now --adjust-extension does not modify the file extension if the file ends
+   in .htm.
 
 * Changes in Wget 1.12
 

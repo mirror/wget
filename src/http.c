@@ -3501,7 +3501,7 @@ ensure_extension (struct http_stat *hs, const char *ext, int *dt)
   if (len == 5)
     {
       strncpy (shortext, ext, len - 1);
-      shortext[len - 2] = '\0';
+      shortext[len - 1] = '\0';
     }
 
   if (last_period_in_local_filename == NULL
