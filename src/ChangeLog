@@ -1,3 +1,9 @@
+2010-11-20  Filipe Brandenburger <filbranden@gmail.com> (tiny change)
+
+	* http.c (gethttp): Repeat a POST request on a 307 response.
+	* retr.c (retrieve_url): Use NEWLOCATION_KEEP_POST.
+	* wget.h: Define NEWLOCATION_KEEP_POST.
+
 2011-03-02  Tomasz Buchert <tomek.buchert@gmail.com> (tiny change)
 
 	* http.c (ensure_extension): Do not adjust the extension if the file

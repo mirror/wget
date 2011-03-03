@@ -2323,6 +2323,15 @@ read_header:
             CLOSE_INVALIDATE (sock);
           xfree_null (type);
           xfree (head);
+          /* From RFC2616: The status codes 303 and 307 have
+             been added for servers that wish to make unambiguously
+             clear which kind of reaction is expected of the client.
+             
+             A 307 should be redirected using the same method,
+             in other words, a POST should be preserved and not
+             converted to a GET in that case. */
+          if (statcode == HTTP_STATUS_TEMPORARY_REDIRECT)
+            return NEWLOCATION_KEEP_POST;
           return NEWLOCATION;
         }
     }
@@ -2790,6 +2799,7 @@ Spider mode enabled. Check if remote file exists.\n"));
           ret = err;
           goto exit;
         case NEWLOCATION:
+        case NEWLOCATION_KEEP_POST:
           /* Return the new location to the caller.  */
           if (!*newloc)
             {
@@ -2800,7 +2810,7 @@ Spider mode enabled. Check if remote file exists.\n"));
             }
           else
             {
-              ret = NEWLOCATION;
+              ret = err;
             }
           goto exit;
         case RETRUNNEEDED:

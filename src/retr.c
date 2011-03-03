@@ -764,7 +764,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       proxy_url = NULL;
     }
 
-  location_changed = (result == NEWLOCATION);
+  location_changed = (result == NEWLOCATION || result == NEWLOCATION_KEEP_POST);
   if (location_changed)
     {
       char *construced_newloc;
@@ -838,12 +838,17 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
         }
       u = newloc_parsed;
 
-      /* If we're being redirected from POST, we don't want to POST
+      /* If we're being redirected from POST, and we received a
+         redirect code different than 307, we don't want to POST
          again.  Many requests answer POST with a redirection to an
          index page; that redirection is clearly a GET.  We "suspend"
          POST data for the duration of the redirections, and restore
-         it when we're done. */
-      if (!post_data_suspended)
+         it when we're done.
+	 
+	 RFC2616 HTTP/1.1 introduces code 307 Temporary Redirect
+	 specifically to preserve the method of the request.
+	 */
+      if (result != NEWLOCATION_KEEP_POST && !post_data_suspended)
         SUSPEND_POST_DATA;
 
       goto redirected;

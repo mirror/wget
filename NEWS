@@ -57,6 +57,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Now --adjust-extension does not modify the file extension if the file ends
    in .htm.
+
+** Support HTTP/1.1 307 redirects keep request method.
 
 * Changes in Wget 1.12
 
