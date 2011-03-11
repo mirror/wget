@@ -455,7 +455,7 @@ ftp_parse_winnt_ls (const char *file)
          column 39 of the listing. This way we could also recognize
          filenames that begin with a series of space characters (but who
          really wants to use such filenames anyway?). */
-      if (len < 40) continue;
+      if (len < 40) goto continue_loop;
       tok = line + 39;
       cur.name = xstrdup(tok);
       DEBUGP (("Name: '%s'\n", cur.name));
@@ -463,14 +463,14 @@ ftp_parse_winnt_ls (const char *file)
       /* First column: mm-dd-yy. Should atoi() on the month fail, january
          will be assumed.  */
       tok = strtok(line, "-");
-      if (tok == NULL) continue;
+      if (tok == NULL) goto continue_loop;
       month = atoi(tok) - 1;
       if (month < 0) month = 0;
       tok = strtok(NULL, "-");
-      if (tok == NULL) continue;
+      if (tok == NULL) goto continue_loop;
       day = atoi(tok);
       tok = strtok(NULL, " ");
-      if (tok == NULL) continue;
+      if (tok == NULL) goto continue_loop;
       year = atoi(tok);
       /* Assuming the epoch starting at 1.1.1970 */
       if (year <= 70) year += 100;
@@ -478,10 +478,10 @@ ftp_parse_winnt_ls (const char *file)
       /* Second column: hh:mm[AP]M, listing does not contain value for
          seconds */
       tok = strtok(NULL,  ":");
-      if (tok == NULL) continue;
+      if (tok == NULL) goto continue_loop;
       hour = atoi(tok);
       tok = strtok(NULL,  "M");
-      if (tok == NULL) continue;
+      if (tok == NULL) goto continue_loop;
       min = atoi(tok);
       /* Adjust hour from AM/PM. Just for the record, the sequence goes
          11:00AM, 12:00PM, 01:00PM ... 11:00PM, 12:00AM, 01:00AM . */
@@ -512,9 +512,9 @@ ftp_parse_winnt_ls (const char *file)
          directories as the listing does not give us a clue) and filetype
          here. */
       tok = strtok(NULL, " ");
-      if (tok == NULL) continue;
+      if (tok == NULL) goto continue_loop;
       while ((tok != NULL) && (*tok == '\0'))  tok = strtok(NULL, " ");
-      if (tok == NULL) continue;
+      if (tok == NULL) goto continue_loop;
       if (*tok == '<')
         {
           cur.type  = FT_DIRECTORY;
@@ -554,6 +554,7 @@ ftp_parse_winnt_ls (const char *file)
           l->next = NULL;
         }
 
+continue_loop:
       xfree (line);
     }
 

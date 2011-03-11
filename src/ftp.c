@@ -301,10 +301,20 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
 
       csock = connect_to_host (host, port);
       if (csock == E_HOST)
-        return HOSTERR;
+        {
+          if (con->proxy)
+            xfree (logname);
+
+          return HOSTERR;
+        }
       else if (csock < 0)
-        return (retryable_socket_connect_error (errno)
-                ? CONERROR : CONIMPOSSIBLE);
+        {
+          if (con->proxy)
+            xfree (logname);
+
+          return (retryable_socket_connect_error (errno)
+                  ? CONERROR : CONIMPOSSIBLE);
+        }
 
       if (cmd & LEAVE_PENDING)
         con->csock = csock;

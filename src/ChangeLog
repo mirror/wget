@@ -1,3 +1,9 @@
+2011-03-11  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* ftp.c (getftp): Fix some memory leaks.
+	* ftp-ls.c (ftp_parse_winnt_ls): Likewise.
+	Reported by: Zhenbo Xu <zhenbo1987@gmail.com>.
+
 2010-11-20  Filipe Brandenburger <filbranden@gmail.com> (tiny change)
 
 	* http.c (gethttp): Repeat a POST request on a 307 response.
