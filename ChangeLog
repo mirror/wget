@@ -1,3 +1,7 @@
+2011-03-19  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (buildreq): Update build prerequisites list.
+
 2010-12-07  Jessica McKellar <jesstess@mit.edu> (tiny change)
 
 	* vms/WGET.HLP: Make help message clearer.
