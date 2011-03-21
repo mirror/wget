@@ -1,3 +1,8 @@
+2011-03-21  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi: Do not cite the current maintainer.
+	Reported by: Micah Cowan <micah@cowan.name>.
+
 2010-12-22  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi (HTTP Options): Remove sentence which doesn't reflect

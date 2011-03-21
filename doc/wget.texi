@@ -64,7 +64,6 @@ Documentation License''.
 @ignore
 @c man begin AUTHOR
 Originally written by Hrvoje Niksic <hniksic@xemacs.org>.
-Currently maintained by Micah Cowan <micah@cowan.name>.
 @c man end
 @c man begin SEEALSO
 This is @strong{not} the complete manual for GNU Wget.
@@ -3914,9 +3913,8 @@ me).
 GNU Wget was written by Hrvoje Nik@v{s}i@'{c} @email{hniksic@@xemacs.org},
 @end iftex
 @ifnottex
-GNU Wget was written by Hrvoje Niksic @email{hniksic@@xemacs.org},
+GNU Wget was written by Hrvoje Niksic @email{hniksic@@xemacs.org}.
 @end ifnottex
-and it is currently maintained by Micah Cowan @email{micah@@cowan.name}.
 
 However, the development of Wget could never have gone as far as it has, were
 it not for the help of many people, either with bug reports, feature proposals,
