@@ -68,6 +68,10 @@ as that of the covered work.  */
 # define PATH_SEPARATOR '/'
 #endif
 
+#ifndef ENABLE_IRI
+struct iri dummy_iri;
+#endif
+
 struct options opt;
 
 /* defined in version.c */
@@ -1181,6 +1185,7 @@ for details.\n\n"));
         opt.encoding_remote = NULL;
     }
 #else
+  memset (&dummy_iri, 0, sizeof (dummy_iri));
   if (opt.enable_iri || opt.locale || opt.encoding_remote)
     {
       /* sXXXav : be more specific... */

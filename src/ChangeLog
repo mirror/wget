@@ -1,3 +1,10 @@
+2011-03-21  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* iri.h: Declare `dummy_iri' as extern not static.
+
+	* main.c [!ENABLE_IRI]: Define `dummy_iri'.
+	(main) [!ENABLE_IRI]: Initialize `dummy_iri'.
+
 2011-03-11  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* ftp.c (getftp): Fix some memory leaks.
