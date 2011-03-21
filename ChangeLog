@@ -1,3 +1,7 @@
+2011-03-21  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap: Update from gnulib.
+
 2011-03-19  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap.conf (buildreq): Update build prerequisites list.
