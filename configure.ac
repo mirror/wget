@@ -268,7 +268,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
     AC_CHECK_LIB(gcrypt, gcry_control)
     AC_CHECK_LIB(gnutls, main)
 
-    if test x"$ac_cv_lib_gnutls_main" != x
+    if test x"$ac_cv_lib_gnutls_main" != xno
     then
       AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
       AC_LIBOBJ([gnutls])
