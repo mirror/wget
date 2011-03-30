@@ -283,7 +283,7 @@ res_parse (const char *source, int length)
       SKIP_SPACE (p);
       if (field_b == field_e || EOL (p) || *p != ':')
         {
-          DEBUGP (("Ignoring malformed line %d", line_count));
+          DEBUGP (("Ignoring malformed line %d\n", line_count));
           goto next;
         }
       ++p;                      /* skip ':' */
@@ -351,7 +351,7 @@ res_parse (const char *source, int length)
         }
       else
         {
-          DEBUGP (("Ignoring unknown field at line %d", line_count));
+          DEBUGP (("Ignoring unknown field at line %d\n", line_count));
           goto next;
         }
 

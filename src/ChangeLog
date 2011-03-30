@@ -1,3 +1,7 @@
+2011-03-31  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* res.c (res_parse): Add new line to debug messages.
+
 2011-03-21  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* iri.h (parse_charset) [!ENABLE_IRI]: Use the parameter to avoid a
