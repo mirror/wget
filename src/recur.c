@@ -563,7 +563,8 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
   if (opt.no_parent
       && schemes_are_similar_p (u->scheme, start_url_parsed->scheme)
       && 0 == strcasecmp (u->host, start_url_parsed->host)
-      && u->port == start_url_parsed->port
+      && (u->scheme != start_url_parsed->scheme
+          || u->port == start_url_parsed->port)
       && !(opt.page_requisites && upos->link_inline_p))
     {
       if (!subdir_p (start_url_parsed->dir, u->dir))

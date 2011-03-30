@@ -59,6 +59,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
    in .htm.
 
 ** Support HTTP/1.1 307 redirects keep request method.
+
+** Now --no-parent doesn't fetch undesired files if HTTP and HTTPS are used
+   by the same host on different pages.
 
 * Changes in Wget 1.12
 

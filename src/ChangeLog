@@ -1,5 +1,9 @@
 2011-03-31  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* recur.c (download_child_p): When --no-parent is used, check that the
+	ports are the same only in case the same protocol is used.
+	Reported by: Karl Berry <karl@freefriends.org>
+
 	* res.c (res_parse): Add new line to debug messages.
 
 2011-03-21  Giuseppe Scrivano  <gscrivano@gnu.org>
