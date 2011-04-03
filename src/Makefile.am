@@ -37,7 +37,7 @@ endif
 
 # The following line is losing on some versions of make!
 DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
-LIBS     = @LIBSSL@ @LIBICONV@ @LIBINTL@ @LIBS@ @W32LIBS@
+LIBS     = @LIBICONV@ @LIBINTL@ @LIBS@
 
 bin_PROGRAMS = wget
 wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c    		  \

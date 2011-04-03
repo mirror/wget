@@ -34,7 +34,7 @@
 PERL     = perl
 PERLRUN = $(PERL) -I$(srcdir)
 
-LIBS     = @LIBSSL@ @LIBICONV@ @LIBINTL@ @LIBS@ @W32LIBS@
+LIBS     = @LIBICONV@ @LIBINTL@ @LIBS@
 
 .PHONY: test run-unit-tests run-px-tests
 

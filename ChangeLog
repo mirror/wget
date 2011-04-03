@@ -1,3 +1,7 @@
+2011-04-04  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* configure.ac: Use AC_CHECK_LIB to look for the openssl library.
+
 2011-04-03  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap.conf (gnulib_modules): Add `fcntl'.
