@@ -2,6 +2,8 @@
 
 	* bootstrap.conf (gnulib_modules): Add `fcntl'.
 
+	(gnulib_modules): Add `ioctl'.
+
 2011-03-26  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac: Fix the gnutls detection.

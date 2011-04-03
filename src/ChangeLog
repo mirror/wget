@@ -1,7 +1,12 @@
 2011-04-03  Giuseppe Scrivano  <gscrivano@gnu.org>
 
-	* gnutls.c: Include <fcntl.h>
+	* gnutls.c: Include <fcntl.h>.
 	(wgnutls_peek): Make the socket non blocking before attempt a read.
+
+	* gnutls.c: Include <sys/ioctl.h>.
+	(wgnutls_peek) [F_GETFL]: Use fcntl.
+	(wgnutls_peek) [! F_GETFL]: Use ioctl.
+
 
 2011-03-31  Giuseppe Scrivano  <gscrivano@gnu.org>
 
