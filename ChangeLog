@@ -1,3 +1,7 @@
+2011-04-03  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (gnulib_modules): Add `fcntl'.
+
 2011-03-26  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac: Fix the gnutls detection.

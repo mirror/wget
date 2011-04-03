@@ -1,3 +1,8 @@
+2011-04-03  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* gnutls.c: Include <fcntl.h>
+	(wgnutls_peek): Make the socket non blocking before attempt a read.
+
 2011-03-31  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* recur.c (download_child_p): When --no-parent is used, check that the

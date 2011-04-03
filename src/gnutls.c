@@ -40,6 +40,7 @@ as that of the covered work.  */
 
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
+#include <fcntl.h>
 
 #include "utils.h"
 #include "connect.h"
@@ -182,6 +183,15 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
 
   if (bufsize > offset)
     {
+      int flags;
+      flags = fcntl (fd, F_GETFL, 0);
+      if (flags < 0)
+        return ret;
+
+      ret = fcntl (fd, F_SETFL, flags | O_NONBLOCK);
+      if (ret < 0)
+        return ret;
+
       do
         {
           ret = gnutls_record_recv (ctx->session, buf + offset,
@@ -203,6 +213,10 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
                   ret);
           ctx->peeklen += ret;
         }
+
+      fcntl (fd, F_SETFL, flags);
+      if (ret < 0)
+        return ret;
     }
 
   return offset + ret;
