@@ -1,5 +1,8 @@
 2011-04-04  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* host.c [WINDOWS]: Include <winsock2.h> and <ws2tcpip.h>.
+	Suggested by: Ray Satiro <raysatiro@yahoo.com>.
+
 	* Makefile.am (LIBS): Remove  @LIBSSL@ @W32LIBS@
 
 2011-04-03  Giuseppe Scrivano  <gscrivano@gnu.org>

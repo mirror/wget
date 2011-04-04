@@ -50,6 +50,8 @@ as that of the covered work.  */
 # endif /* def __VMS [else] */
 # define SET_H_ERRNO(err) ((void)(h_errno = (err)))
 #else  /* WINDOWS */
+# include <winsock2.h>
+# include <ws2tcpip.h>
 # define SET_H_ERRNO(err) WSASetLastError (err)
 #endif /* WINDOWS */
 
