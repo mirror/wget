@@ -1,6 +1,7 @@
 2011-04-04  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* openssl.c [WINDOWS]: Include <w32sock.h>.
+	(openssl_read): Retry the read on SSL_ERROR_WANT_READ.
 
 	* host.c [WINDOWS]: Include <winsock2.h> and <ws2tcpip.h>.
 	Suggested by: Ray Satiro <raysatiro@yahoo.com>.
