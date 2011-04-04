@@ -46,6 +46,10 @@ as that of the covered work.  */
 #include "url.h"
 #include "ssl.h"
 
+#ifdef WINDOWS
+# include <w32sock.h>
+#endif
+
 /* Application-wide SSL context.  This is common to all SSL
    connections.  */
 static SSL_CTX *ssl_ctx;
