@@ -173,7 +173,7 @@ wgnutls_poll (int fd, double timeout, int wait_for, void *arg)
 static int
 wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
 {
-  int ret = 0;
+  int ret = 0, read = 0;
   struct wgnutls_transport_context *ctx = arg;
   int offset = MIN (bufsize, ctx->peeklen);
   if (bufsize > sizeof ctx->peekbuf)
@@ -203,27 +203,29 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
       do
         {
           ret = gnutls_record_recv (ctx->session, buf + offset,
-                                    bufsize - offset);
+                                     bufsize - offset);
         }
       while (ret == GNUTLS_E_INTERRUPTED);
 
-      if (ret < 0)
+      read = ret;
+
+      if (read < 0)
         {
           if (offset)
-            ret = 0;
+            read = 0;
           else
-            return ret;
+            return read;
         }
 
-      if (ret > 0)
+      if (read > 0)
         {
           memcpy (ctx->peekbuf + offset, buf + offset,
-                  ret);
-          ctx->peeklen += ret;
+                  read);
+          ctx->peeklen += read;
         }
 
 #ifdef F_GETFL
-      fcntl (fd, F_SETFL, flags);
+      ret = fcntl (fd, F_SETFL, flags);
       if (ret < 0)
         return ret;
 #else
@@ -234,7 +236,7 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
 #endif
     }
 
-  return offset + ret;
+  return offset + read;
 }
 
 static const char *

@@ -1,3 +1,9 @@
+2011-04-07  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* gnutls.c (wgnutls_peek): New local variable `read'.
+	Use `read' instead of `ret' to store the number of read bytes.
+	Reported by: Ray Satiro <raysatiro@yahoo.com>
+
 2011-04-04  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* openssl.c [WINDOWS]: Include <w32sock.h>.
