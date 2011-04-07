@@ -3,6 +3,8 @@
 	* gnutls.c (ssl_init): Allow X509 v1 certificates.
 	Suggested by: Ray Satiro <raysatiro@yahoo.com>
 
+	(wgnutls_peek): Remove tight loop around gnutls_record_recv.
+
 2011-04-07  Ray Satiro  <raysatiro@yahoo.com> (tiny change)
 
 	(wgnutls_read): Check for the GNUTLS_E_AGAIN return code in the recv

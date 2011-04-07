@@ -202,15 +202,8 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
       if (ret < 0)
         return ret;
 #endif
-      do
-        {
-          ret = gnutls_record_recv (ctx->session, buf + offset,
-                                     bufsize - offset);
-        }
-      while (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN);
-
-      read = ret;
-
+      read = gnutls_record_recv (ctx->session, buf + offset,
+                                 bufsize - offset);
       if (read < 0)
         {
           if (offset)
