@@ -1,3 +1,10 @@
+2011-04-07  Ray Satiro  <raysatiro@yahoo.com> (tiny change)
+
+	(wgnutls_read): Check for the GNUTLS_E_AGAIN return code in the recv
+	tight loop.
+	(wgnutls_write): Likewise.
+	(wgnutls_peek): Likewise.
+
 2011-04-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* gnutls.c (wgnutls_peek): New local variable `read'.

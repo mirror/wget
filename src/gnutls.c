@@ -141,7 +141,7 @@ wgnutls_read (int fd, char *buf, int bufsize, void *arg)
 
   do
     ret = gnutls_record_recv (ctx->session, buf, bufsize);
-  while (ret == GNUTLS_E_INTERRUPTED);
+  while (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN);
 
   if (ret < 0)
     ctx->last_error = ret;
@@ -156,7 +156,7 @@ wgnutls_write (int fd, char *buf, int bufsize, void *arg)
   struct wgnutls_transport_context *ctx = arg;
   do
     ret = gnutls_record_send (ctx->session, buf, bufsize);
-  while (ret == GNUTLS_E_INTERRUPTED);
+  while (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN);
   if (ret < 0)
     ctx->last_error = ret;
   return ret;
@@ -205,7 +205,7 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
           ret = gnutls_record_recv (ctx->session, buf + offset,
                                      bufsize - offset);
         }
-      while (ret == GNUTLS_E_INTERRUPTED);
+      while (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN);
 
       read = ret;
 
