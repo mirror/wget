@@ -67,6 +67,8 @@ ssl_init ()
 
   gnutls_global_init ();
   gnutls_certificate_allocate_credentials (&credentials);
+  gnutls_certificate_set_verify_flags(credentials,
+                                      GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT);
 
   ca_directory = opt.ca_directory ? opt.ca_directory : "/etc/ssl/certs";
 
