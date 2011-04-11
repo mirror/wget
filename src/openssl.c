@@ -186,9 +186,11 @@ ssl_init ()
     case secure_protocol_auto:
       meth = SSLv23_client_method ();
       break;
+#ifndef OPENSSL_NO_SSL2
     case secure_protocol_sslv2:
       meth = SSLv2_client_method ();
       break;
+#endif
     case secure_protocol_sslv3:
       meth = SSLv3_client_method ();
       break;
