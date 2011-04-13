@@ -289,9 +289,9 @@ openssl_poll (int fd, double timeout, int wait_for, void *arg)
 {
   struct openssl_transport_context *ctx = arg;
   SSL *conn = ctx->conn;
-  if (timeout == 0)
-    return 1;
   if (SSL_pending (conn))
+    return 1;
+  if (timeout == 0)
     return 1;
   return select_fd (fd, timeout, wait_for);
 }
@@ -302,6 +302,8 @@ openssl_peek (int fd, char *buf, int bufsize, void *arg)
   int ret;
   struct openssl_transport_context *ctx = arg;
   SSL *conn = ctx->conn;
+  if (! openssl_poll (fd, 0.0, WAIT_FOR_READ, arg))
+    return 0;
   do
     ret = SSL_peek (conn, buf, bufsize);
   while (ret == -1

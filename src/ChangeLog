@@ -1,3 +1,9 @@
+2011-04-13  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* openssl.c (openssl_poll): Check if the specified timeout is zero after
+	SSL_pending.
+	(openssl_peek): Make the call non-blocking.
+
 2011-04-11  Cristian Rodríguez  <crrodriguez@opensuse.org> (tiny change)
 
 	* openssl.c (ssl_init) [! OPENSSL_NO_SSL2]: Use SSLv2 only when
