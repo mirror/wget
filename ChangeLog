@@ -1,3 +1,7 @@
+2011-04-14  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap: Update from gnulib.
+
 2011-04-04  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac: Use AC_CHECK_LIB to look for the openssl library.
