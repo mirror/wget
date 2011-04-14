@@ -8,6 +8,8 @@
 	* .hgignore: Likewise.
 	* .symlinks: Likewise.
 
+	* bootstrap.conf (gnulib_modules): Add `mbtowc and `unlocked-io'.
+
 2011-04-04  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac: Use AC_CHECK_LIB to look for the openssl library.
