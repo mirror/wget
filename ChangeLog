@@ -4,6 +4,10 @@
 
 	* bootstrap.conf (gnulib_modules): Add `pipe' and `sigpipe'.
 
+	* .cvsignore: Remove file.
+	* .hgignore: Likewise.
+	* .symlinks: Likewise.
+
 2011-04-04  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac: Use AC_CHECK_LIB to look for the openssl library.
