@@ -1,3 +1,9 @@
+2011-04-16  Ray Satiro <raysatiro@yahoo.com>
+2011-04-16  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* configure.ac: Detect dynamically linked OpenSSL libraries under
+	mingw32.
+
 2011-04-14  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap: Update from gnulib.
