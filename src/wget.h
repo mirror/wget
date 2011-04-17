@@ -52,7 +52,7 @@ as that of the covered work.  */
 #endif
 
 /* Is OpenSSL or GNUTLS available? */
-#if defined HAVE_LIBSSL || defined HAVE_LIBGNUTLS
+#if defined HAVE_LIBSSL || defined HAVE_LIBSSL32 || defined HAVE_LIBGNUTLS
 # define HAVE_SSL
 #endif
 

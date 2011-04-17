@@ -1,3 +1,10 @@
+2011-04-17  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.h [HAVE_LIBSSL32]: Define HAVE_SSL.
+
+	* gnutls.c (wgnutls_peek): Use correctly FIONBIO codes under Mingw32.
+	Reported by: Ray Satiro <raysatiro@yahoo.com>
+
 2011-04-13  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* openssl.c (openssl_poll): Check if the specified timeout is zero after

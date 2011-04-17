@@ -197,8 +197,8 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
         return ret;
 #else
       /* XXX: Assume it was blocking before.  */
-      const int zero = 0;
-      ret = ioctl (fd, FIONBIO, &zero);
+      const int one = 1;
+      ret = ioctl (fd, FIONBIO, &one);
       if (ret < 0)
         return ret;
 #endif
@@ -224,8 +224,8 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
       if (ret < 0)
         return ret;
 #else
-      const int one = 1;
-      ret = ioctl (fd, FIONBIO, &one);
+      const int zero = 0;
+      ret = ioctl (fd, FIONBIO, &zero);
       if (ret < 0)
         return ret;
 #endif
