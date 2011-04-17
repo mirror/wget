@@ -1,3 +1,9 @@
+2011-04-17  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* configure.ac: Do not check the host_os twice and if windres is
+	available.
+	Reported by: Ray Satiro <raysatiro@yahoo.com>
+
 2011-04-16  Ray Satiro <raysatiro@yahoo.com>
 2011-04-16  Giuseppe Scrivano  <gscrivano@gnu.org>
 

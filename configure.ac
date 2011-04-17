@@ -220,8 +220,6 @@ WGET_NANOSLEEP
 WGET_POSIX_CLOCK
 WGET_NSL_SOCKET
 
-AM_CONDITIONAL(HAVE_WINDRES, env windres > /dev/null)
-
 dnl Deal with specific hosts
 case $host_os in
   *mingw32* )
@@ -256,25 +254,21 @@ AS_IF([test x"$with_ssl" = xopenssl], [
         then
           AC_CHECK_LIB(ssl32, SSL_connect,,
                     AC_MSG_ERROR([openssl not found: shared lib eay32 found but ssl32 not found]))
-		  AC_MSG_NOTICE([Enabling support for SSL via OpenSSL (shared)])
-		else
+		      AC_MSG_NOTICE([Enabling support for SSL via OpenSSL (shared)])
+		    else
 
-        case $host_os in
-            *mingw32* )
-                LIBS+=' -lgdi32'
-            ;;
-        esac
+          LIBS+=' -lgdi32'
 
-		    dnl fallback and test static libs
-        AC_CHECK_LIB(crypto, EVP_MD_CTX_init,,,)
-		    if test x"$ac_cv_lib_crypto_EVP_MD_CTX_init" != xno
-		    then
-            AC_CHECK_LIB(ssl, SSL_connect,, AC_MSG_ERROR([openssl not found]))
-            AC_MSG_NOTICE([Enabling support for SSL via OpenSSL])
-        else
-		        AC_MSG_ERROR([openssl not found: shared (eay32/ssl32) or static (crypto/ssl) libs needed])
-		    fi
-    fi
+	  	    dnl fallback and test static libs
+          AC_CHECK_LIB(crypto, EVP_MD_CTX_init,,,)
+		      if test x"$ac_cv_lib_crypto_EVP_MD_CTX_init" != xno
+		      then
+              AC_CHECK_LIB(ssl, SSL_connect,, AC_MSG_ERROR([openssl not found]))
+              AC_MSG_NOTICE([Enabling support for SSL via OpenSSL])
+          else
+		          AC_MSG_ERROR([openssl not found: shared (eay32/ssl32) or static (crypto/ssl) libs needed])
+		      fi
+      fi
 		
         dnl add zdll lib as dep for above tests?
       ;;
