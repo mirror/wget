@@ -35,9 +35,6 @@ as that of the covered work.  */
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#ifdef HAVE_SYS_TIME_H
-# include <sys/time.h>
-#endif
 #include <unistd.h>
 #ifdef HAVE_MMAP
 # include <sys/mman.h>
@@ -48,14 +45,14 @@ as that of the covered work.  */
 #ifdef HAVE_UTIME_H
 # include <utime.h>
 #endif
-#ifdef HAVE_SYS_UTIME_H
-# include <sys/utime.h>
-#endif
 #include <errno.h>
 #include <fcntl.h>
 #include <assert.h>
 #include <stdarg.h>
 #include <locale.h>
+
+#include <sys/time.h>
+
 
 /* For TIOCGWINSZ and friends: */
 #ifdef HAVE_SYS_IOCTL_H
@@ -491,18 +488,15 @@ fork_to_background (void)
 void
 touch (const char *file, time_t tm)
 {
-#ifdef HAVE_STRUCT_UTIMBUF
-  struct utimbuf times;
-#else
-  struct {
-    time_t actime;
-    time_t modtime;
-  } times;
-#endif
-  times.modtime = tm;
-  times.actime = time (NULL);
-  if (utime (file, &times) == -1)
-    logprintf (LOG_NOTQUIET, "utime(%s): %s\n", file, strerror (errno));
+  struct timeval timevals[2];
+
+  timevals[0].tv_sec = time (NULL);
+  timevals[0].tv_usec = 0L;
+  timevals[1].tv_sec = tm;
+  timevals[1].tv_usec = 0L;
+
+  if (utimes (file, timevals) == -1)
+    logprintf (LOG_NOTQUIET, "utimes(%s): %s\n", file, strerror (errno));
 }
 
 /* Checks if FILE is a symbolic link, and removes it if it is.  Does

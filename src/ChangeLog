@@ -1,5 +1,8 @@
 2011-04-18  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* utils.c: Include <sys/time.h>.  Do not include <sys/utime.h>.
+	(touch): Use `utimes' instead of `utime'.
+
 	* openssl.c (openssl_read): Fix build error.
 
 2011-04-17  Giuseppe Scrivano  <gscrivano@gnu.org>
