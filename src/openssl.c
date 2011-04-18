@@ -263,9 +263,8 @@ openssl_read (int fd, char *buf, int bufsize, void *arg)
   do
     ret = SSL_read (conn, buf, bufsize);
   while (ret == -1
-         && (SSL_get_error (conn, ret) == SSL_ERROR_WANT_READ
              || (SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
-                 && errno == EINTR)));
+                 && errno == EINTR));
 
   return ret;
 }
