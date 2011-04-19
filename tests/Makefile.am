@@ -34,7 +34,7 @@
 PERL     = perl
 PERLRUN = $(PERL) -I$(srcdir)
 
-LIBS     = @LIBICONV@ @LIBINTL@ @LIBS@
+LIBS     = @LIBICONV@ @LIBINTL@ @LIBS@ $(LIB_CLOCK_GETTIME)
 
 .PHONY: test run-unit-tests run-px-tests
 

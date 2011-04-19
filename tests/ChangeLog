@@ -1,3 +1,7 @@
+2011-04-19  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am (LIBS): Add $(LIB_CLOCK_GETTIME).
+
 2011-04-04  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am (LIBS): Remove  @LIBSSL@ @W32LIBS@

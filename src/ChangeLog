@@ -1,5 +1,9 @@
 2011-04-19  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* Makefile.am (LIBS): Add $(LIB_CLOCK_GETTIME)
+	* utils.c: Include <sys/stat.h>.  Do not include <sys/time.h>.
+	(touch): Use `futimens' instead of `utimes'.
+
 	* mswindows.h: Do not include <direct.h>.  Remove macro definition for
 	mkdir.
 
