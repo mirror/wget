@@ -1,5 +1,9 @@
 2011-04-19  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* gnutls.c: Do not include <fcntl.h>.
+	* gnutls.c (wgnutls_peek): Ensure there is data available before attempt
+	a read on the blocking socket.
+
 	* Makefile.am (LIBS): Add $(LIB_CLOCK_GETTIME)
 	* utils.c: Include <sys/stat.h>.  Do not include <sys/time.h>.
 	(touch): Use `futimens' instead of `utimes'.

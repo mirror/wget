@@ -40,7 +40,6 @@ as that of the covered work.  */
 
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
-#include <fcntl.h>
 #include <sys/ioctl.h>
 
 #include "utils.h"
@@ -186,24 +185,13 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
 
   if (bufsize > offset)
     {
-#ifdef F_GETFL
-      int flags;
-      flags = fcntl (fd, F_GETFL, 0);
-      if (flags < 0)
-        return ret;
-
-      ret = fcntl (fd, F_SETFL, flags | O_NONBLOCK);
-      if (ret < 0)
-        return ret;
-#else
-      /* XXX: Assume it was blocking before.  */
-      const int one = 1;
-      ret = ioctl (fd, FIONBIO, &one);
-      if (ret < 0)
-        return ret;
-#endif
-      read = gnutls_record_recv (ctx->session, buf + offset,
-                                 bufsize - offset);
+      if (gnutls_record_check_pending (ctx->session) <= 0
+          && select_fd (fd, 0.0, WAIT_FOR_READ) <= 0)
+        read = 0;
+      else
+        read = gnutls_record_recv (ctx->session, buf + offset,
+                                   bufsize - offset);
+        
       if (read < 0)
         {
           if (offset)
@@ -218,17 +206,6 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
                   read);
           ctx->peeklen += read;
         }
-
-#ifdef F_GETFL
-      ret = fcntl (fd, F_SETFL, flags);
-      if (ret < 0)
-        return ret;
-#else
-      const int zero = 0;
-      ret = ioctl (fd, FIONBIO, &zero);
-      if (ret < 0)
-        return ret;
-#endif
     }
 
   return offset + read;
