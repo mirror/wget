@@ -1,3 +1,8 @@
+2011-04-19  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* mswindows.h: Do not include <direct.h>.  Remove macro definition for
+	mkdir.
+
 2011-04-18  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* utils.c: Include <sys/time.h>.  Do not include <sys/utime.h>.

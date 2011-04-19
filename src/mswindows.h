@@ -108,10 +108,6 @@ typedef __int64 wgint;
 
 #define PATH_SEPARATOR '\\'
 
-/* Win32 doesn't support the MODE argument to mkdir.  */
-#include <direct.h>
-#define mkdir(a, b) (mkdir) (a)
-
 /* Additional declarations needed for IPv6: */
 #ifdef ENABLE_IPV6
 const char *inet_ntop (int, const void *, char *, socklen_t);

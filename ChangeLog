@@ -1,3 +1,7 @@
+2011-04-19  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (gnulib_modules): Add `mkdir'.
+
 2011-04-19  Ray Satiro <raysatiro@yahoo.com>
 
 	* configure.ac: Adjust indentation.
