@@ -810,6 +810,7 @@ get_urls_file (const char *file)
                      file, url_text, error);
           xfree (url_text);
           xfree (error);
+          inform_exit_status (URLERROR);
           continue;
         }
       xfree (url_text);

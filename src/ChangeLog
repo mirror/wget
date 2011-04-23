@@ -1,3 +1,9 @@
+2011-04-21  Daniel Manrique <roadmr@tomechangosubanana.com>
+	* main.c (main): Set exit status when invalid host name given in
+	command line.
+	* html-url.c (get_urls_file): Set exit status when invalid host
+	name given in input file.
+
 2011-04-19  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* gnutls.c: Do not include <fcntl.h>.

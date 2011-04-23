@@ -1347,6 +1347,7 @@ outputting to a regular file.\n"));
           char *error = url_error (*t, url_err);
           logprintf (LOG_NOTQUIET, "%s: %s.\n",*t, error);
           xfree (error);
+          inform_exit_status (URLERROR);
         }
       else
         {
@@ -1387,7 +1388,9 @@ outputting to a regular file.\n"));
   if (opt.input_filename)
     {
       int count;
-      retrieve_from_file (opt.input_filename, opt.force_html, &count);
+      int status;
+      status = retrieve_from_file (opt.input_filename, opt.force_html, &count);
+      inform_exit_status (status);
       if (!count)
         logprintf (LOG_NOTQUIET, _("No URLs found in %s.\n"),
                    opt.input_filename);
