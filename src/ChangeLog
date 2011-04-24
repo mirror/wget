@@ -1,3 +1,8 @@
+2011-04-24  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* html-url.c: Include "exists.h".
+	* gnutls.c (wgnutls_peek): Remove local variable `ret'.
+
 2011-04-21  Daniel Manrique <roadmr@tomechangosubanana.com> (tiny change)
 	* main.c (main): Set exit status when invalid host name given in
 	command line.

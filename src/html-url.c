@@ -36,6 +36,7 @@ as that of the covered work.  */
 #include <errno.h>
 #include <assert.h>
 
+#include "exits.h"
 #include "html-parse.h"
 #include "url.h"
 #include "utils.h"

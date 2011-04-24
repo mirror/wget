@@ -174,7 +174,7 @@ wgnutls_poll (int fd, double timeout, int wait_for, void *arg)
 static int
 wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
 {
-  int ret = 0, read = 0;
+  int read = 0;
   struct wgnutls_transport_context *ctx = arg;
   int offset = MIN (bufsize, ctx->peeklen);
   if (bufsize > sizeof ctx->peekbuf)
