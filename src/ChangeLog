@@ -1,4 +1,4 @@
-2011-04-21  Daniel Manrique <roadmr@tomechangosubanana.com>
+2011-04-21  Daniel Manrique <roadmr@tomechangosubanana.com> (tiny change)
 	* main.c (main): Set exit status when invalid host name given in
 	command line.
 	* html-url.c (get_urls_file): Set exit status when invalid host
