@@ -1,3 +1,7 @@
+2011-05-15  Ray Satiro <raysatiro@yahoo.com>
+
+	* openssl.c (openssl_read): Prevent loops on read errors.
+
 2011-04-24  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* html-url.c: Include "exists.h".
