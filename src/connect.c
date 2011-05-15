@@ -656,7 +656,14 @@ select_fd (int fd, double maxtime, int wait_for)
   tmout.tv_usec = 1000000 * (maxtime - (long) maxtime);
 
   do
+  {
     result = select (fd + 1, rd, wr, NULL, &tmout);
+#ifdef WINDOWS
+    /* gnulib select() converts blocking sockets to nonblocking in windows.
+       wget uses blocking sockets so we must convert them back to blocking.  */
+    set_windows_fd_as_blocking_socket (fd);
+#endif
+  }
   while (result < 0 && errno == EINTR);
 
   return result;
@@ -678,6 +685,7 @@ test_socket_open (int sock)
 {
   fd_set check_set;
   struct timeval to;
+  int ret = 0;
 
   /* Check if we still have a valid (non-EOF) connection.  From Andrew
    * Maholski's code in the Unix Socket FAQ.  */
@@ -689,7 +697,15 @@ test_socket_open (int sock)
   to.tv_sec = 0;
   to.tv_usec = 1;
 
-  if (select (sock + 1, &check_set, NULL, NULL, &to) == 0)
+  ret = select (sock + 1, &check_set, NULL, NULL, &to);
+#ifdef WINDOWS
+/* gnulib select() converts blocking sockets to nonblocking in windows.
+wget uses blocking sockets so we must convert them back to blocking
+*/
+  set_windows_fd_as_blocking_socket ( sock );
+#endif
+
+  if ( !ret )
     /* We got a timeout, it means we're still connected. */
     return true;
   else

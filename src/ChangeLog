@@ -1,5 +1,9 @@
 2011-05-15  Ray Satiro <raysatiro@yahoo.com>
 
+	* connect.c (select_fd) [WINDOWS]: Ensure the socket is blocking.
+	* mswindows.h: Add declaration for set_windows_fd_as_blocking_socket.
+	* mswindows.c (set_windows_fd_as_blocking_socket): New function.
+
 	* openssl.c (openssl_read): Prevent loops on read errors.
 
 2011-04-24  Giuseppe Scrivano  <gscrivano@gnu.org>

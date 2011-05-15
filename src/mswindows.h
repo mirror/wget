@@ -118,6 +118,9 @@ const char *inet_ntop (int, const void *, char *, socklen_t);
 # define gai_strerror strerror
 #endif
 
+/* ioctl needed by set_windows_fd_as_blocking_socket() */
+#include <sys/ioctl.h>
+
 /* Public functions.  */
 
 void ws_startup (void);
@@ -125,5 +128,6 @@ void ws_changetitle (const char *);
 void ws_percenttitle (double);
 char *ws_mypath (void);
 void windows_main (char **);
+void set_windows_fd_as_blocking_socket (int);
 
 #endif /* MSWINDOWS_H */
