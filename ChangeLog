@@ -1,3 +1,8 @@
+2011-05-19  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* COPYING: Fix the copyright years.
+	Reported by: Brett Smith <brett@fsf.org>.
+
 2011-04-19  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap.conf (gnulib_modules): Add `mkdir'.
