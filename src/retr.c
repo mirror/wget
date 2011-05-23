@@ -208,8 +208,8 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
 {
   int ret = 0;
 
-  int dlbufsize = BUFSIZ;
-  char *dlbuf = xmalloc (BUFSIZ);
+  int dlbufsize = max (BUFSIZ, 8 * 1024);
+  char *dlbuf = xmalloc (dlbufsize);
 
   struct ptimer *timer = NULL;
   double last_successful_read_tm = 0;

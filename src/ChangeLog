@@ -1,5 +1,9 @@
 2011-05-23  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* retr.c (fd_read_body): Be sure the buffer size is at least 8Kb.
+	BUFSIZ may assume very small values with a negative impact on the
+	performances.
+
 	* mswindows.h [NEED_GAI_STRERROR]: remove definition for gai_strerror.
 
 2011-05-15  Ray Satiro <raysatiro@yahoo.com>
