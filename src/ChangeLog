@@ -1,3 +1,7 @@
+2011-05-23  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* mswindows.h [NEED_GAI_STRERROR]: remove definition for gai_strerror.
+
 2011-05-15  Ray Satiro <raysatiro@yahoo.com>
 
 	* connect.c (select_fd) [WINDOWS]: Ensure the socket is blocking.

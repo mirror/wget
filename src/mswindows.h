@@ -113,11 +113,6 @@ typedef __int64 wgint;
 const char *inet_ntop (int, const void *, char *, socklen_t);
 #endif
 
-#ifdef NEED_GAI_STRERROR
-# undef gai_strerror
-# define gai_strerror strerror
-#endif
-
 /* ioctl needed by set_windows_fd_as_blocking_socket() */
 #include <sys/ioctl.h>
 
