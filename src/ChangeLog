@@ -1,3 +1,9 @@
+2010-12-28  Adrien Nader  <adrien@notk.org> (tiny change)
+
+	* main.c [WINDOWS]: Include <io.h> and <fcntl.h>.
+	(main) [WINDOWS]: Set the stdout file mode to binary.
+	Submitted also by: Martin Panter <vadmium@gmail.com>
+
 2011-05-23  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* retr.c (fd_read_body): Be sure the buffer size is at least 8Kb.
