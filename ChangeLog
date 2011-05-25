@@ -1,3 +1,7 @@
+2011-05-25  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (gnulib_modules): Add `strerror_r-posix'.
+
 2011-05-19  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* COPYING: Fix the copyright years.
