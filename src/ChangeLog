@@ -147,7 +147,7 @@
 	* http.c (ensure_extension): Do not adjust the extension if the file
 	ends in .htm.
 
-2011-02-22  Gilles Carry  <gilles dot carry at st dot com>
+2011-02-22  Gilles Carry  <gilles.carry@st.com>
 
 	* main.c (prompt_for_password): Use stderr instead of stdout
 	to prompt password. This allows to use --output-document=- and
@@ -201,7 +201,6 @@
 	* retr.c: Likewise.
 	* url.c: Likewise.
 	* utils.c: Likewise.
-
 
 	* retr.c (fd_read_body): Dinamically allocate `dlbuf'.
 
@@ -614,149 +613,81 @@
 2010-05-08  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am: Update copyright years.
-
 	* cmpt.c: Likewise.
-
 	* connect.h: Likewise.
-
 	* convert.c: Likewise.
-
 	* convert.h: Likewise.
-
 	* cookies.c: Likewise.
-
 	* cookies.h: Likewise.
-
 	* css-tokens.h: Likewise.
-
 	* css-url.c: Likewise.
-
 	* css-url.h: Likewise.
-
 	* css.l: Likewise.
-
 	* exits.c: Likewise.
-
 	* exits.h: Likewise.
-
 	* ftp-basic.c: Likewise.
-
 	* ftp-ls.c: Likewise.
-
 	* ftp-opie.c: Likewise.
-
 	* ftp.c: Likewise.
-
 	* ftp.h: Likewise.
-
 	* gen-md5.c: Likewise.
-
 	* gen-md5.h: Likewise.
-
 	* gettext.h: Likewise.
-
 	* gnutls.c: Likewise.
-
 	* hash.c: Likewise.
-
 	* hash.h: Likewise.
-
 	* host.c: Likewise.
-
 	* host.h: Likewise.
 	* html-parse.c: Likewise.
-
 	* html-parse.h: Likewise.
-
 	* html-url.c: Likewise.
-
 	* html-url.h: Likewise.
-
 	* http-ntlm.c: Likewise.
-
 	* http-ntlm.h: Likewise.
-
 	* http.c: Likewise.
-
 	* http.h: Likewise.
-
 	* init.c: Likewise.
-
 	* init.h: Likewise.
-
 	* iri.c: Likewise.
-
 	* iri.h: Likewise.
-
 	* log.c: Likewise.
-
 	* log.h: Likewise.
-
 	* main.c: Likewise.
-
 	* mswindows.c: Likewise.
-
 	* mswindows.h: Likewise.
-
 	* netrc.c: Likewise.
-
 	* netrc.h: Likewise.
-
 	* openssl.c: Likewise.
-
 	* options.h: Likewise.
 	* progress.c: Likewise.
-
 	* progress.h: Likewise.
-
 	* ptimer.c: Likewise.
-
 	* ptimer.h: Likewise.
-
 	* recur.c: Likewise.
-
 	* recur.h: Likewise.
-
 	* res.c: Likewise.
-
 	* res.h: Likewise.
-
 	* retr.c: Likewise.
-
 	* retr.h: Likewise.
-
 	* spider.c: Likewise.
-
 	* spider.h: Likewise.
-
 	* ssl.h: Likewise.
-
 	* sysdep.h: Likewise.
-
 	* test.c: Likewise.
-
 	* test.h: Likewise.
-
 	* url.c: Likewise.
-
 	* url.h: Likewise.
-
 	* utils.c: Likewise.
-
 	* utils.h: Likewise.
-
 	* wget.h: Likewise.
 
 2010-05-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* gnutls.c (wgnutls_close): Use always `close', not `closesocket'.
-
 	* openssl.c (openssl_close): Use always `close', not `closesocket'.
 	(ssl_connect_wget): Get the real socket handle by FD_TO_SOCKET.
 	Define FD_TO_SOCKET if it is not yet defined.
-
 	* Makefile.am (libunittest_a_CPPFLAGS): Add -I$(top_builddir)/lib.
-
 	* mswindows.h: Always include <winsock2.h> and <ws2tcpip.h>.  Do not
 	include <winsock.h>.
 	[! INHIBIT_WRAP]: Remove macro's socket, bind, connect, accept, recv,
@@ -765,17 +696,13 @@
 	wrapped_accept, wrapped_recv, wrapped_send, wrapped_select,
 	wrapped_getsockname, wrapped_getpeername, wrapped_setsockopt,
 	wrapped_closesocket prototypes.
-
 	* mswindows.c: 	Remove wrapped_socket, wrapped_bind, wrapped_connect,
 	wrapped_listen,	wrapped_accept, wrapped_recv, wrapped_send,
 	wrapped_select, wrapped_getsockname, wrapped_getpeername,
 	wrapped_setsockopt, wrapped_closesocket functions.  Remove WRAP macro.
-
 	* host.h [WINDOWS]: Include <winsock2.h> not <winsock.h>.
-
 	* connect.c: Include <sys/socket.h> and <sys/select.h> on any platform,
 	gnulib ensures they exist.  Remove `read', `write', `close' macros.
-
 	* Makefile.am: Copy build_info.c.in only if we are working in a VPATH.
 	(AM_CPPFLAGS): Add directory with generated gnulib files.
 
