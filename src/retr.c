@@ -947,8 +947,7 @@ retrieve_from_file (const char *file, bool html, int *count)
     {
       int dt,url_err;
       uerr_t status;
-      struct url * url_parsed = url_parse(url, &url_err, iri, true);
-
+      struct url *url_parsed = url_parse (url, &url_err, iri, true);
       if (!url_parsed)
         {
           char *error = url_error (url, url_err);
