@@ -1005,9 +1005,7 @@ retrieve_from_file (const char *file, bool html, int *count)
           break;
         }
 
-      /* Need to reparse the url, since it didn't have iri information. */
-      if (opt.enable_iri)
-          parsed_url = url_parse (cur_url->url->url, NULL, tmpiri, true);
+      parsed_url = url_parse (cur_url->url->url, NULL, tmpiri, true);
 
       if ((opt.recursive || opt.page_requisites)
           && (cur_url->url->scheme != SCHEME_FTP || getproxy (cur_url->url)))

@@ -1,3 +1,8 @@
+2011-06-08  Giuseppe Scrivano  <gscrivano@southpole.se>
+
+	* retr.c (retrieve_from_file): Parse the url careless if IRI is enabled.
+	Reported by: Volker Kuhlmann <list0570@paradise.net.nz>.
+
 2011-05-24  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* retr.c (fd_read_body): Define max.
