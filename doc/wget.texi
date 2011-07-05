@@ -1764,12 +1764,12 @@ case.
 @item -r
 @itemx --recursive
 Turn on recursive retrieving.  @xref{Recursive Download}, for more
-details.
+details.  The default maximum depth is 5.
 
 @item -l @var{depth}
 @itemx --level=@var{depth}
 Specify recursion maximum depth level @var{depth} (@pxref{Recursive
-Download}).  The default maximum depth is 5.
+Download}).
 
 @cindex proxy filling
 @cindex delete after retrieval

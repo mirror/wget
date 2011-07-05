@@ -1,3 +1,9 @@
+2011-07-05  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Recursive Retrieval Options): Make clearer that recursion,
+	by default, uses 5 levels.
+	Reported by: Marc Deop <damnshock@gmail.com>.
+
 2011-03-21  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi: Do not cite the current maintainer.
