@@ -1,3 +1,8 @@
+2011-07-26  Giuseppe Scrivano  <giuseppe@southpole.se>
+
+	* wget.info (cookies): Remove reference to --cookies.
+	Reported by: Noèl Köthe.
+
 2011-07-05  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi (Recursive Retrieval Options): Make clearer that recursion,
