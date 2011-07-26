@@ -1,3 +1,7 @@
+2011-07-26  Giuseppe Scrivano  <gscrivano@southpole.se>
+
+	* retr.c (retrieve_url): Do not register redirects when in spider mode.
+
 2011-07-20 Merinov Nikolay <kim.roader@gmail.com>
 
 	* iri.c (remote_to_utf8): Add test for non-ASCII symbols with

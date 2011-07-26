@@ -878,7 +878,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
     {
       register_download (u->url, local_file);
 
-      if (redirection_count && 0 != strcmp (origurl, u->url))
+      if (!opt.spider && redirection_count && 0 != strcmp (origurl, u->url))
         register_redirection (origurl, u->url);
 
       if (*dt & TEXTHTML)
