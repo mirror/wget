@@ -90,7 +90,9 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              Test-idn-headers.px \
              Test-idn-meta.px \
              Test-idn-cmd.px \
+             Test-idn-cmd-utf8.px \
              Test-idn-robots.px \
+             Test-idn-robots-utf8.px \
              Test-iri.px \
              Test-iri-percent.px \
              Test-iri-disabled.px \

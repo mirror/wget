@@ -264,6 +264,21 @@ remote_to_utf8 (struct iri *i, const char *str, const char **new)
   if (!i->uri_encoding)
     return false;
 
+  /* When `i->uri_encoding' == "UTF-8" there is nothing to convert.  But we must
+     test for non-ASCII symbols for correct hostname processing in `idn_encode'
+     function. */
+  if (!strcmp (i->uri_encoding, "UTF-8"))
+    {
+      int i, len = strlen (str);
+      for (i = 0; i < len; i++)
+        if ((unsigned char) str[i] >= (unsigned char) '\200')
+          {
+            *new = strdup (str);
+            return true;
+          }
+      return false;
+    }
+
   cd = iconv_open ("UTF-8", i->uri_encoding);
   if (cd == (iconv_t)(-1))
     return false;

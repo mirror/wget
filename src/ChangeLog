@@ -1,3 +1,9 @@
+2011-07-20 Merinov Nikolay <kim.roader@gmail.com>
+
+	* iri.c (remote_to_utf8): Add test for non-ASCII symbols with
+	UTF-8 URI encoding.
+	* res.c (res_retrieve_file): Fix url_parse call.
+
 2011-06-08  Giuseppe Scrivano  <gscrivano@southpole.se>
 
 	* retr.c (retrieve_from_file): Parse the url careless if IRI is enabled.

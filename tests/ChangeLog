@@ -1,3 +1,9 @@
+2011-06-03  Merinov Nikolay  <kim.roader@gmail.com>
+
+	* Test-idn-cmd-utf8.px: Added test for idn with utf-8 local encoding.
+	* Test-idn-robots-utf8.px: Added test for idn with utf-8 local encoding
+	and robots.txt file.
+	* Makefile.am, run-px: Add new tests.
 2011-04-19  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am (LIBS): Add $(LIB_CLOCK_GETTIME).

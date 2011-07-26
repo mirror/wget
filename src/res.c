@@ -552,7 +552,7 @@ res_retrieve_file (const char *url, char **file, struct iri *iri)
   opt.timestamping = false;
   opt.spider       = false;
 
-  url_parsed = url_parse (robots_url, &url_err, iri, true);
+  url_parsed = url_parse (robots_url, &url_err, i, true);
   if (!url_parsed)
     {
       char *error = url_error (robots_url, url_err);
