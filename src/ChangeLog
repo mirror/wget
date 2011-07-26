@@ -1,3 +1,7 @@
+2011-07-26  Carlos Martín Nieto  <carlos@cmartin.tk>  (tiny change)
+
+	* init.c (home_dir): Allocate path buffer dinamically.
+
 2011-07-26  Giuseppe Scrivano  <gscrivano@southpole.se>
 
 	* retr.c (retrieve_url): Do not register redirects when in spider mode.
