@@ -1445,7 +1445,7 @@ data, whereas @samp{--post-file} sends the contents of @var{file}.
 Other than that, they work in exactly the same way. In particular,
 they @emph{both} expect content of the form @code{key1=value1&key2=value2},
 with percent-encoding for special characters; the only difference is
-that one expects its content as a command-line paramter and the other
+that one expects its content as a command-line parameter and the other
 accepts its content from a file. In particular, @samp{--post-file} is
 @emph{not} for transmitting files as form attachments: those must
 appear as @code{key=value} data (with appropriate percent-coding) just
