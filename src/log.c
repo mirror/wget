@@ -499,6 +499,9 @@ logprintf (enum log_options o, const char *fmt, ...)
       va_start (args, fmt);
       done = log_vprintf_internal (&lpstate, fmt, args);
       va_end (args);
+
+      if (done && errno == EPIPE)
+        exit (1);
     }
   while (!done);
 }

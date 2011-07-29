@@ -1,8 +1,13 @@
+2011-07-29  Giuseppe Scrivano  <giuseppe@southpole.se>
+
+	* log.c (logprintf): Exit immediately on a SIGPIPE error.
+	Reported by: Noèl Köthe  <noel@debian.org>.
+
 2011-07-26  Carlos Martín Nieto  <carlos@cmartin.tk>  (tiny change)
 
 	* init.c (home_dir): Allocate path buffer dinamically.
 
-2011-07-26  Giuseppe Scrivano  <gscrivano@southpole.se>
+2011-07-26  Giuseppe Scrivano  <giuseppe@southpole.se>
 
 	* retr.c (retrieve_url): Do not register redirects when in spider mode.
 
@@ -12,7 +17,7 @@
 	UTF-8 URI encoding.
 	* res.c (res_retrieve_file): Fix url_parse call.
 
-2011-06-08  Giuseppe Scrivano  <gscrivano@southpole.se>
+2011-06-08  Giuseppe Scrivano  <giuseppe@southpole.se>
 
 	* retr.c (retrieve_from_file): Parse the url careless if IRI is enabled.
 	Reported by: Volker Kuhlmann <list0570@paradise.net.nz>.
