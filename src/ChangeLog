@@ -1,3 +1,9 @@
+2011-08-02  Giuseppe Scrivano  <giuseppe@southpole.se>
+
+	* cookies.c (parse_set_cookie): If the value is quoted, do not modify
+	it.
+	Reported by: Nirgal Vourgère <jmv_deb@nirgal.com>
+
 2011-07-29  Giuseppe Scrivano  <giuseppe@southpole.se>
 
 	* log.c (logprintf): Exit immediately on a SIGPIPE error.

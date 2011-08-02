@@ -350,6 +350,13 @@ parse_set_cookie (const char *set_cookie, bool silent)
     goto error;
   if (!value.b)
     goto error;
+
+  /* If the value is quoted, do not modify it.  */
+  if (*(value.b - 1) == '"')
+    value.b--;
+  if (*value.e == '"')
+    value.e++;
+
   cookie->attr = strdupdelim (name.b, name.e);
   cookie->value = strdupdelim (value.b, value.e);
 
