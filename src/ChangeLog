@@ -1,3 +1,9 @@
+2011-08-05  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* utils.c (acceptable): Accept the file if it is the specified output
+	destination.
+	Reported by: Shai Berger <shai@platonix.com>
+
 2011-08-05  Giuseppe Scrivano  <giuseppe@southpole.se>
 
 	* gnutls.c (ssl_connect_wget): Use `gnutls_priority_set_direct' instead

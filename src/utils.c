@@ -875,6 +875,9 @@ acceptable (const char *s)
 {
   int l = strlen (s);
 
+  if (opt.output_document && strcmp (s, opt.output_document) == 0)
+    return true;
+
   while (l && s[l] != '/')
     --l;
   if (s[l] == '/')
