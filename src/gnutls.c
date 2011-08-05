@@ -246,7 +246,6 @@ ssl_connect_wget (int fd)
   struct wgnutls_transport_context *ctx;
   gnutls_session session;
   int err;
-  int allowed_protocols[4] = {0, 0, 0, 0};
   gnutls_init (&session, GNUTLS_CLIENT);
   gnutls_set_default_priority (session);
   gnutls_certificate_type_set_priority (session, cert_type_priority);
@@ -263,14 +262,10 @@ ssl_connect_wget (int fd)
       break;
     case secure_protocol_sslv2:
     case secure_protocol_sslv3:
-      allowed_protocols[0] = GNUTLS_SSL3;
-      err = gnutls_protocol_set_priority (session, allowed_protocols);
+      err = gnutls_priority_set_direct (session, "NORMAL:-VERS-TLS-ALL", NULL);
       break;
     case secure_protocol_tlsv1:
-      allowed_protocols[0] = GNUTLS_TLS1_0;
-      allowed_protocols[1] = GNUTLS_TLS1_1;
-      allowed_protocols[2] = GNUTLS_TLS1_2;
-      err = gnutls_protocol_set_priority (session, allowed_protocols);
+      err = gnutls_priority_set_direct (session, "NORMAL:-VERS-SSL3.0", NULL);
       break;
     default:
       abort ();
