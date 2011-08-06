@@ -1619,7 +1619,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
 
   request_set_header (req, "Referer", (char *) hs->referer, rel_none);
   if (*dt & SEND_NOCACHE)
-    request_set_header (req, "Pragma", "no-cache", rel_none);
+    {
+      /* Cache-Control MUST be obeyed by all HTTP/1.1 caching mechanisms...  */
+      request_set_header (req, "Cache-Control", "no-cache, must-revalidate", rel_none);
+
+      /* ... but some HTTP/1.0 caches doesn't implement Cache-Control.  */
+      request_set_header (req, "Pragma", "no-cache", rel_none);
+    }
   if (hs->restval && !opt.timestamping)
     request_set_header (req, "Range",
                         aprintf ("bytes=%s-",

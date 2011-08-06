@@ -1,7 +1,13 @@
+2011-08-06  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (gethttp): Add the Cache-Control HTTP header when --no-cache
+	is specified.
+	Reported by: Коренберг Марк <socketpair@gmail.com>.
+
 2011-08-05  Giuseppe Scrivano  <gscrivano@gnu.org>
 
-	* utils.c (acceptable): Accept the file if it is the specified output
-	destination.
+	* utils.c (acceptable): Accept always the file if it is the specified
+	output destination.
 	Reported by: Shai Berger <shai@platonix.com>
 
 2011-08-05  Giuseppe Scrivano  <giuseppe@southpole.se>
@@ -13,14 +19,14 @@
 
 	* cookies.c (parse_set_cookie): If the value is quoted, do not modify
 	it.
-	Reported by: Nirgal Vourg�re <jmv_deb@nirgal.com>
+	Reported by: Nirgal Vourgère <jmv_deb@nirgal.com>
 
 2011-07-29  Giuseppe Scrivano  <giuseppe@southpole.se>
 
 	* log.c (logprintf): Exit immediately on a SIGPIPE error.
-	Reported by: No�l K�the  <noel@debian.org>.
+	Reported by: Noèl Köthe  <noel@debian.org>.
 
-2011-07-26  Carlos Mart�n Nieto  <carlos@cmartin.tk>  (tiny change)
+2011-07-26  Carlos Martín Nieto  <carlos@cmartin.tk>  (tiny change)
 
 	* init.c (home_dir): Allocate path buffer dinamically.
 
@@ -109,7 +115,7 @@
 	SSL_pending.
 	(openssl_peek): Make the call non-blocking.
 
-2011-04-11  Cristian Rodr�guez  <crrodriguez@opensuse.org> (tiny change)
+2011-04-11  Cristian Rodríguez  <crrodriguez@opensuse.org> (tiny change)
 
 	* openssl.c (ssl_init) [! OPENSSL_NO_SSL2]: Use SSLv2 only when
 	available.
@@ -1636,7 +1642,7 @@
 
 	* html-url.c, http.c: Avoid casts in a couple spots.
 
-2008-05-30 Henri H�kkinen  <henux@users.sourceforge.net>
+2008-05-30 Henri Häkkinen  <henux@users.sourceforge.net>
 
 	* cookies.c, ftp-basic.c, hash.c, html-url.c, http-ntlm.c, http.c,
 	init.c, log.c, main.c, progress.c, ptimer.c, spider.c, url.c,
@@ -8627,7 +8633,7 @@
 
 2001-02-16  Dan Harkless  <wget@harkless.org>
 
-	* init.c (commands): Hack Kampbj�rn <hack@hackdata.com> discovered
+	* init.c (commands): Hack Kampbjørn <hack@hackdata.com> discovered
 	that "httpsproxy" had been inserted into commands[] out of
 	alphabetical order, causing "BUG: unknown command `httpuser'".
 
@@ -8679,7 +8685,7 @@
 	characters.
 	(skip_uname): Ditto.
 
-2001-02-11  Hack Kampbj�rn  <hack@hackdata.com>
+2001-02-11  Hack Kampbjørn  <hack@hackdata.com>
 
 	* url.c (parseurl): Debug-print u->ftp_type.
 
@@ -8787,7 +8793,7 @@
 
 2000-12-30  Dan Harkless  <wget@harkless.org>
 
-	* ftp.c, http.c:  Applied Hack Kampbj�rn <hack@hackdata.com>'s
+	* ftp.c, http.c:  Applied Hack Kampbjørn <hack@hackdata.com>'s
 	patch to deal with h_errno not being defined in netdb.h under Cygwin.
 
 2000-12-18  Csaba Raduly  <csaba.raduly@sophos.com>
