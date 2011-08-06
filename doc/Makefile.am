@@ -54,7 +54,7 @@ EXTRA_DIST = sample.wgetrc \
 	     texi2pod.pl
 
 wget.pod: $(srcdir)/wget.texi version.texi
-	$(TEXI2POD) $(srcdir)/wget.texi $@
+	$(TEXI2POD) -D VERSION="$(VERSION)" $(srcdir)/wget.texi $@
 
 $(MAN): wget.pod
 	$(POD2MAN) --center="GNU Wget" --release="GNU Wget @VERSION@" $? > $@

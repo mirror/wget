@@ -1,5 +1,7 @@
 2011-08-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* Makefile.am (wget.pod): Pass the VERSION value to texi2pod.
+
 	* texi2pod.pl: Update from GCC.
 
 2011-07-28  Noèl Köthe  <noel@debian.org> (tiny change)
