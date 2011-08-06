@@ -828,8 +828,8 @@ lookup_host (const char *host, int flags)
       int i;
       int printmax = al->count;
 
-      if (! opt.show_all_dns_entries)
-        printmax = 3;
+      if (!opt.show_all_dns_entries && printmax > 3)
+          printmax = 3;
 
       for (i = 0; i < printmax; i++)
         {

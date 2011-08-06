@@ -1,3 +1,8 @@
+2011-08-06  Jochen Roderburg <Roderburg@Uni-Koeln.DE>
+
+	* host.c (lookup_host): Ensure it doesn't print more IPs than available
+	ones.
+
 2011-08-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* init.c (defaults): Set default value for show_all_dns_entries.
