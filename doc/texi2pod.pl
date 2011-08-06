@@ -1,7 +1,6 @@
-#! /usr/bin/env perl
+#! /usr/bin/perl -w
 
-#   Copyright (C) 1999, 2000, 2001, 2003, 2007, 2009, 2010, 2011 Free
-#   Software Foundation, Inc.
+#   Copyright (C) 1999, 2000, 2001, 2003, 2010 Free Software Foundation, Inc.
 
 # This file is part of GCC.
 
@@ -16,14 +15,13 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with GCC.  If not, see <http://www.gnu.org/licenses/>.
+# along with GCC; see the file COPYING.  If not, write to
+# the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+# Boston MA 02110-1301, USA.
 
 # This does trivial (and I mean _trivial_) conversion of Texinfo
 # markup to Perl POD format.  It's intended to be used to extract
 # something suitable for a manpage from a Texinfo document.
-
-use warnings;
-BEGIN { eval { require warnings; } and warnings->import; }
 
 $output = 0;
 $skipping = 0;
@@ -38,6 +36,7 @@ $shift = "";
 $fnno = 1;
 $inf = "";
 $ibase = "";
+@ipath = ();
 
 while ($_ = shift) {
     if (/^-D(.*)$/) {
@@ -53,6 +52,13 @@ while ($_ = shift) {
 	die "flags may only contain letters, digits, hyphens, dashes and underscores\n"
 	    unless $flag =~ /^[a-zA-Z0-9_-]+$/;
 	$defs{$flag} = $value;
+    } elsif (/^-I(.*)$/) {
+	if ($1 ne "") {
+	    $flag = $1;
+	} else {
+	    $flag = shift;
+	}
+        push (@ipath, $flag);
     } elsif (/^-/) {
 	usage();
     } else {
@@ -156,6 +162,8 @@ while(<$inf>) {
 	} elsif ($ended =~ /^(?:itemize|enumerate|[fv]?table)$/) {
 	    $_ = "\n=back\n";
 	    $ic = pop @icstack;
+	} elsif ($ended eq "multitable") {
+	    $_ = "\n=back\n";
 	} else {
 	    die "unknown command \@end $ended at line $.\n";
 	}
@@ -205,14 +213,18 @@ while(<$inf>) {
 
     # Now the ones that have to be replaced by special escapes
     # (which will be turned back into text by unmunge())
+    # Replace @@ before @{ and @} in order to parse @samp{@@} correctly.
     s/&/&amp;/g;
     s/\@\@/&at;/g;
     s/\@\{/&lbrace;/g;
     s/\@\}/&rbrace;/g;
+    s/\@`\{(.)\}/&$1grave;/g;
 
-    # Inside a verbatim block, handle @var specially.
+    # Inside a verbatim block, handle @var, @samp and @url specially.
     if ($shift ne "") {
 	s/\@var\{([^\}]*)\}/<$1>/g;
+	s/\@samp\{([^\}]*)\}/"$1"/g;
+	s/\@url\{([^\}]*)\}/<$1>/g;
     }
 
     # POD doesn't interpret E<> inside a verbatim block.
@@ -231,17 +243,23 @@ while(<$inf>) {
 	$inf = gensym();
 	$file = postprocess($1);
 
-	# Try cwd and $ibase.
-	open($inf, "<" . $file)
-	    or open($inf, "<" . $ibase . "/" . $file)
-		or die "cannot open $file or $ibase/$file: $!\n";
+	# Try cwd and $ibase, then explicit -I paths.
+	$done = 0;
+	foreach $path ("", $ibase, @ipath) {
+	    $mypath = $file;
+	    $mypath = $path . "/" . $mypath if ($path ne "");
+	    open($inf, "<" . $mypath) and ($done = 1, last);
+	}
+	die "cannot find $file" if !$done;
 	next;
     };
 
-    /^\@(?:section|unnumbered|unnumberedsec|center)\s+(.+)$/
+    /^\@(?:section|unnumbered|unnumberedsec|center|heading)\s+(.+)$/
 	and $_ = "\n=head2 $1\n";
     /^\@subsection\s+(.+)$/
 	and $_ = "\n=head3 $1\n";
+    /^\@subsubsection\s+(.+)$/
+	and $_ = "\n=head4 $1\n";
 
     # Block command handlers:
     /^\@itemize(?:\s+(\@[a-z]+|\*|-))?/ and do {
@@ -250,7 +268,7 @@ while(<$inf>) {
 	if (defined $1) {
 	    $ic = $1;
 	} else {
-	    $ic = '@bullet';
+	    $ic = '*';
 	}
 	$_ = "\n=over 4\n";
 	$endw = "itemize";
@@ -268,6 +286,12 @@ while(<$inf>) {
 	$endw = "enumerate";
     };
 
+    /^\@multitable\s.*/ and do {
+	push @endwstack, $endw;
+	$endw = "multitable";
+	$_ = "\n=over 4\n";
+    };
+
     /^\@([fv]?table)\s+(\@[a-z]+)/ and do {
 	push @endwstack, $endw;
 	push @icstack, $ic;
@@ -277,6 +301,7 @@ while(<$inf>) {
 	$ic =~ s/\@(?:code|kbd)/C/;
 	$ic =~ s/\@(?:dfn|var|emph|cite|i)/I/;
 	$ic =~ s/\@(?:file)/F/;
+	$ic =~ s/\@(?:asis)//;
 	$_ = "\n=over 4\n";
     };
 
@@ -287,14 +312,29 @@ while(<$inf>) {
 	$_ = "";	# need a paragraph break
     };
 
+    /^\@item\s+(.*\S)\s*$/ and $endw eq "multitable" and do {
+	@columns = ();
+	for $column (split (/\s*\@tab\s*/, $1)) {
+	    # @strong{...} is used a @headitem work-alike
+	    $column =~ s/^\@strong{(.*)}$/$1/;
+	    push @columns, $column;
+	}
+	$_ = "\n=item ".join (" : ", @columns)."\n";
+    };
+
     /^\@itemx?\s*(.+)?$/ and do {
 	if (defined $1) {
-            my $thing = $1;
-            if ($ic =~ /\@asis/) {
-                $_ = "\n=item $thing\n";
+            if ($ic) {
+		if ($endw eq "enumerate") {
+		    $_ = "\n=item $ic $1\n";
+		    $ic =~ s/(\d+)/$1 + 1/eg;
+		} else {
+		    # Entity escapes prevent munging by the <>
+		    # processing below.
+		    $_ = "\n=item $ic\&LT;$1\&GT;\n";
+		}
             } else {
-                # Entity escapes prevent munging by the <> processing below.
-                $_ = "\n=item $ic\&LT;$thing\&GT;\n";
+                $_ = "\n=item $1\n";
             }
 	} else {
 	    $_ = "\n=item $ic\n";
@@ -315,12 +355,11 @@ die "No filename or title\n" unless defined $fn && defined $tl;
 $sects{NAME} = "$fn \- $tl\n";
 $sects{FOOTNOTES} .= "=back\n" if exists $sects{FOOTNOTES};
 
-for $sect (qw(NAME SYNOPSIS DESCRIPTION OPTIONS ENVIRONMENT EXITSTATUS
-           FILES BUGS NOTES FOOTNOTES SEEALSO AUTHOR COPYRIGHT)) {
+for $sect (qw(NAME SYNOPSIS DESCRIPTION OPTIONS ENVIRONMENT FILES
+	      BUGS NOTES FOOTNOTES SEEALSO AUTHOR COPYRIGHT)) {
     if(exists $sects{$sect}) {
 	$head = $sect;
 	$head =~ s/SEEALSO/SEE ALSO/;
-	$head =~ s/EXITSTATUS/EXIT STATUS/;
 	print "=head1 $head\n\n";
 	print scalar unmunge ($sects{$sect});
 	print "\n";
@@ -352,11 +391,13 @@ sub postprocess
     s/\@r\{([^\}]*)\}/R<$1>/g;
     s/\@(?:dfn|var|emph|cite|i)\{([^\}]*)\}/I<$1>/g;
     s/\@(?:code|kbd)\{([^\}]*)\}/C<$1>/g;
-    s/\@(?:gccoptlist|samp|strong|key|option|env|command|b)\{([^\}]*)\}/B<$1>/g;
+    s/\@(?:samp|strong|key|option|env|command|b)\{([^\}]*)\}/B<$1>/g;
     s/\@sc\{([^\}]*)\}/\U$1/g;
+    s/\@acronym\{([^\}]*)\}/\U$1/g;
     s/\@file\{([^\}]*)\}/F<$1>/g;
     s/\@w\{([^\}]*)\}/S<$1>/g;
     s/\@(?:dmn|math)\{([^\}]*)\}/$1/g;
+    s/\@\///g;
 
     # keep references of the form @ref{...}, print them bold
     s/\@(?:ref)\{([^\}]*)\}/B<$1>/g;
@@ -378,12 +419,19 @@ sub postprocess
     s/\@gol//g;
     s/\@\*\s*\n?//g;
 
+    # Anchors are thrown away
+    s/\@anchor\{(?:[^\}]*)\}//g;
+
     # @uref can take one, two, or three arguments, with different
     # semantics each time.  @url and @email are just like @uref with
     # one argument, for our purposes.
     s/\@(?:uref|url|email)\{([^\},]*)\}/&lt;B<$1>&gt;/g;
     s/\@uref\{([^\},]*),([^\},]*)\}/$2 (C<$1>)/g;
     s/\@uref\{([^\},]*),([^\},]*),([^\},]*)\}/$3/g;
+
+    # Handle gccoptlist here, so it can contain the above formatting
+    # commands.
+    s/\@gccoptlist\{([^\}]*)\}/B<$1>/g;
 
     # Un-escape <> at this point.
     s/&LT;/</g;
@@ -418,6 +466,7 @@ sub unmunge
     # Replace escaped symbols with their equivalents.
     local $_ = $_[0];
 
+    s/&(.)grave;/E<$1grave>/g;
     s/&lt;/E<lt>/g;
     s/&gt;/E<gt>/g;
     s/&lbrace;/\{/g;

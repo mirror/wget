@@ -1,3 +1,7 @@
+2011-08-06  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* texi2pod.pl: Update from GCC.
+
 2011-07-28  Noèl Köthe  <noel@debian.org> (tiny change)
 
 	* wget.texi (HTTP Options): Fix typo.
