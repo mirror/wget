@@ -1,5 +1,7 @@
 2011-08-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* wget.texi (Wgetrc Commands): Document show_all_dns_entries.
+
 	* Makefile.am (wget.pod): Pass the VERSION value to texi2pod.
 
 	* texi2pod.pl: Update from GCC.

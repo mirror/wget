@@ -1,5 +1,10 @@
 2011-08-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* host.c (lookup_host): If `showalldnsentries' is used then print all
+	the IP corresponding to a DNS entry.
+	* init.c (commands): Add `showalldnsentries'.
+	Suggested by: Witold Baryluk <baryluk@smp.if.uj.edu.pl>
+
 	* http.c (gethttp): Add the Cache-Control HTTP header when --no-cache
 	is specified.
 	Reported by: Коренберг Марк <socketpair@gmail.com>.

@@ -253,6 +253,8 @@ struct options
   bool useservertimestamps;  	/* Update downloaded files' timestamps to
 				   match those on server? */
 
+  bool show_all_dns_entries; /* Show all the DNS entries when resolving a
+                                name. */
 };
 
 extern struct options opt;

@@ -3171,6 +3171,10 @@ as @samp{--secure-protocol=@var{string}}.
 Choose whether or not to print the @sc{http} and @sc{ftp} server
 responses---the same as @samp{-S}.
 
+@item show_all_dns_entries = on/off
+When a DNS name is resolved, show all the IP addresses, not just the first
+three.
+
 @item span_hosts = on/off
 Same as @samp{-H}.
 

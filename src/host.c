@@ -822,11 +822,15 @@ lookup_host (const char *host, int flags)
 #endif /* not ENABLE_IPV6 */
 
   /* Print the addresses determined by DNS lookup, but no more than
-     three.  */
+     three if show_all_dns_entries is not specified.  */
   if (!silent && !numeric_address)
     {
       int i;
-      int printmax = al->count <= 3 ? al->count : 3;
+      int printmax = al->count;
+
+      if (! opt.show_all_dns_entries)
+        printmax = 3;
+
       for (i = 0; i < printmax; i++)
         {
           logputs (LOG_VERBOSE, print_address (al->addresses + i));

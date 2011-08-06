@@ -247,6 +247,7 @@ static const struct {
   { "secureprotocol",   &opt.secure_protocol,   cmd_spec_secure_protocol },
 #endif
   { "serverresponse",   &opt.server_response,   cmd_boolean },
+  { "showalldnsentries", &opt.show_all_dns_entries, cmd_boolean },
   { "spanhosts",        &opt.spanhost,          cmd_boolean },
   { "spider",           &opt.spider,            cmd_boolean },
   { "strictcomments",   &opt.strict_comments,   cmd_boolean },
