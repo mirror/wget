@@ -1,5 +1,7 @@
 2011-08-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* init.c (defaults): Set default value for show_all_dns_entries.
+
 	* host.c (lookup_host): If `showalldnsentries' is used then print all
 	the IP corresponding to a DNS entry.
 	* init.c (commands): Add `showalldnsentries'.

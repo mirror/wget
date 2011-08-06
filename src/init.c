@@ -360,6 +360,7 @@ defaults (void)
   opt.encoding_remote = NULL;
 
   opt.useservertimestamps = true;
+  opt.show_all_dns_entries = false;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is
