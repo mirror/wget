@@ -1,3 +1,7 @@
+2011-08-09  Giuseppe Scrivano  <gscrivano@southpole.se>
+
+	* build-aux/bzr-version-gen: Fix some portability issues.
+
 2011-05-25  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap.conf (gnulib_modules): Add `strerror_r-posix'.
