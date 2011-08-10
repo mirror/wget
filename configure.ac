@@ -62,7 +62,8 @@ dnl Process features.
 dnl
 
 AC_ARG_WITH(ssl,
-[[  --without-ssl           disable SSL autodetection]])
+[[  --without-ssl           disable SSL autodetection
+  --with-ssl={gnutls,openssl} specify the SSL backend.  GNU TLS is the default.]])
 
 AC_ARG_ENABLE(opie,
 [  --disable-opie          disable support for opie or s/key FTP login],
