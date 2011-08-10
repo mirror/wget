@@ -10,6 +10,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Support HTTP/1.1
 
+** Now by default the GNU TLS library for secure connections, instead of
+   OpenSSL.
+
 ** Fix some portability issues.
 
 ** Handle properly malformed status line in a HTTP response.
