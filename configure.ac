@@ -298,6 +298,8 @@ AS_IF([test x"$with_ssl" = xopenssl], [
     else
       AC_MSG_ERROR([--with-ssl was given, but GNUTLS is not available.])
     fi
+
+    AC_CHECK_FUNCS(gnutls_priority_set_direct)
   ]) # endif: --with-ssl == no?
 ]) # endif: --with-ssl == openssl?
 

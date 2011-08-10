@@ -1,3 +1,11 @@
+2011-08-10  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	Fix a linker error on systems with an older gnutls version.
+	* gnutls.c (ssl_connect_wget)
+	[HAVE_GNUTLS_PRIORITY_SET_DIRECT]:  Use gnutls_priority_set_direct.
+	[! HAVE_GNUTLS_PRIORITY_SET_DIRECT]:  Use gnutls_protocol_set_priority.
+	Reported by: Karl Berry<karl@freefriends.org>
+
 2011-08-06  Jochen Roderburg <Roderburg@Uni-Koeln.DE>
 
 	* host.c (lookup_host): Ensure it doesn't print more IPs than available

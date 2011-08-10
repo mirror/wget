@@ -191,7 +191,7 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
       else
         read = gnutls_record_recv (ctx->session, buf + offset,
                                    bufsize - offset);
-        
+
       if (read < 0)
         {
           if (offset)
@@ -256,6 +256,7 @@ ssl_connect_wget (int fd)
   gnutls_transport_set_ptr (session, (gnutls_transport_ptr) FD_TO_SOCKET (fd));
 
   err = 0;
+#if HAVE_GNUTLS_PRIORITY_SET_DIRECT
   switch (opt.secure_protocol)
     {
     case secure_protocol_auto:
@@ -270,6 +271,30 @@ ssl_connect_wget (int fd)
     default:
       abort ();
     }
+#else
+  int allowed_protocols[4] = {0, 0, 0, 0};
+  switch (opt.secure_protocol)
+    {
+    case secure_protocol_auto:
+      break;
+    case secure_protocol_sslv2:
+    case secure_protocol_sslv3:
+      allowed_protocols[0] = GNUTLS_SSL3;
+      err = gnutls_protocol_set_priority (session, allowed_protocols);
+      break;
+
+    case secure_protocol_tlsv1:
+      allowed_protocols[0] = GNUTLS_TLS1_0;
+      allowed_protocols[1] = GNUTLS_TLS1_1;
+      allowed_protocols[2] = GNUTLS_TLS1_2;
+      err = gnutls_protocol_set_priority (session, allowed_protocols);
+      break;
+
+    default:
+      abort ();
+    }
+#endif
+
   if (err < 0)
     {
       logprintf (LOG_NOTQUIET, "GnuTLS: %s\n", gnutls_strerror (err));

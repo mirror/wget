@@ -1,3 +1,9 @@
+2011-08-10  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* configure.ac: Check for `gnutls_priority_set_direct' when gnutls is
+	used.
+	Reported by: Karl Berry<karl@freefriends.org>
+
 2011-08-09  Giuseppe Scrivano  <gscrivano@southpole.se>
 
 	* build-aux/bzr-version-gen: Fix some portability issues.
