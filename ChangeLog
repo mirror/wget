@@ -1,3 +1,7 @@
+2011-08-11  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* build-aux/bzr-version-gen (TAG): Consider only the last tag.
+
 2011-08-10  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac: Print usage string for --with-ssl.

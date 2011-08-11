@@ -1,6 +1,6 @@
 #!/bin/sh
 
-scriptversion=2011-08-09.13; # UTC
+scriptversion=2011-08-11.08; # UTC
 
 # Copyright (C) 2010, 2011 Free Software Foundation, Inc.
 
@@ -37,7 +37,7 @@ REVNO=`bzr revno`
 TAG=`bzr tags -r $REVNO | cut -d' ' -f1`
 if test -z "$TAG"
 then
-    TAG=`bzr tags -r ..$REVNO | cut -d' ' -f1`
+    TAG=`bzr tags --sort=time -r ..$REVNO | tail -n1 | cut -d' ' -f1`
 
     # No tags yet
     test -z "$TAG" && TAG="unknown"
