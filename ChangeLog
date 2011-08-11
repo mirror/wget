@@ -1,5 +1,7 @@
 2011-08-11  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* bootstrap.conf (gnulib_modules): Include module iconv.
+
 	* configure.ac: Allow --with-libgnutls-prefix and
 	--with-libssl-prefix
 	Suggested by: Karl Berry <karl@freefriends.org>
