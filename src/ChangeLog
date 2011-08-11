@@ -1,3 +1,7 @@
+2011-08-11  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am (version.c): Don't invoke hg to set version string.
+
 2011-08-10  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	Fix a linker error on systems with an older gnutls version.
