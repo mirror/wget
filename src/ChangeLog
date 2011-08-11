@@ -11,7 +11,7 @@
 	* gnutls.c (ssl_connect_wget)
 	[HAVE_GNUTLS_PRIORITY_SET_DIRECT]:  Use gnutls_priority_set_direct.
 	[! HAVE_GNUTLS_PRIORITY_SET_DIRECT]:  Use gnutls_protocol_set_priority.
-	Reported by: Karl Berry<karl@freefriends.org>
+	Reported by: Karl Berry <karl@freefriends.org>
 
 2011-08-06  Jochen Roderburg <Roderburg@Uni-Koeln.DE>
 

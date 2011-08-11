@@ -260,27 +260,31 @@ AS_IF([test x"$with_ssl" = xopenssl], [
         else
           LIBS+=' -lgdi32'
           dnl fallback and test static libs
-          
-          AC_CHECK_LIB(crypto, EVP_MD_CTX_init,,,)
-          if test x"$ac_cv_lib_crypto_EVP_MD_CTX_init" != xno
-          then
-            AC_CHECK_LIB(ssl, SSL_connect,, AC_MSG_ERROR([openssl not found]))
-            AC_MSG_NOTICE([Enabling support for SSL via OpenSSL])
-          else
-            AC_MSG_ERROR([openssl not found: shared (eay32/ssl32) or static (crypto/ssl) libs needed])
-          fi
-          
         fi
         dnl add zdll lib as dep for above tests?
       ;;
-      *)
-
-        AC_CHECK_LIB(crypto, EVP_MD_CTX_init)
-        AC_CHECK_LIB(ssl, ERR_func_error_string,,
-                  AC_MSG_ERROR([openssl development libraries not found]))
-        AC_MSG_NOTICE([Enabling support for SSL via OpenSSL (static)])
-      ;;
     esac
+
+    dnl Now actually check for -lssl
+    AC_LIB_HAVE_LINKFLAGS([ssl], [crypto], [
+  #include <openssl/ssl.h>
+  #include <openssl/x509.h>
+  #include <openssl/err.h>
+  #include <openssl/rand.h>
+  #include <openssl/des.h>
+  #include <openssl/md4.h>
+  #include <openssl/md5.h>
+    ], [SSL_library_init ()])
+    if test x"$LIBSSL" != x
+    then
+      AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
+      AC_LIBOBJ([openssl])
+      LIBS="-lopenssl $LIBS"
+    elif test x"$with_ssl" != x
+    then
+      AC_MSG_ERROR([--with-ssl=openssl was given, but SSL is not available.])
+    fi
+
     AC_LIBOBJ([openssl])
 ], [
   # --with-ssl is not gnutls: check if it's no
@@ -290,17 +294,21 @@ AS_IF([test x"$with_ssl" = xopenssl], [
     AC_CHECK_LIB(z, compress)
     AC_CHECK_LIB(gpg-error, gpg_err_init)
     AC_CHECK_LIB(gcrypt, gcry_control)
-    AC_CHECK_LIB(gnutls, main)
 
-    if test x"$ac_cv_lib_gnutls_main" != xno
-    then
-      AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
-      AC_LIBOBJ([gnutls])
-    else
-      AC_MSG_ERROR([--with-ssl was given, but GNUTLS is not available.])
-    fi
+  dnl Now actually check for -lssl
+  AC_LIB_HAVE_LINKFLAGS([gnutls], [], [
+#include <gnutls/gnutls.h>
+  ], [gnutls_global_init()])
+  if test x"$LIBGNUTLS" != x
+  then
+    AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
+    AC_LIBOBJ([gnutls])
+    LIBS="-lgnutls $LIBS"
+  else
+    AC_MSG_ERROR([--with-ssl was given, but GNUTLS is not available.])
+  fi
 
-    AC_CHECK_FUNCS(gnutls_priority_set_direct)
+  AC_CHECK_FUNCS(gnutls_priority_set_direct)
   ]) # endif: --with-ssl == no?
 ]) # endif: --with-ssl == openssl?
 
