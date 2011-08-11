@@ -1930,9 +1930,10 @@ abort_run_with_timeout (int sig)
   /* We don't have siglongjmp to preserve the set of blocked signals;
      if we longjumped out of the handler at this point, SIGALRM would
      remain blocked.  We must unblock it manually. */
-  int mask = siggetmask ();
-  mask &= ~sigmask (SIGALRM);
-  sigsetmask (mask);
+  sigset_t set;
+  sigemptyset (&set);
+  sigaddset (&set, SIGALRM);
+  sigprocmask (SIG_BLOCK, &set, NULL);
 
   /* Now it's safe to longjump. */
   longjmp (run_with_timeout_env, -1);

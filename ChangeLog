@@ -1,5 +1,7 @@
 2011-08-11  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* bootstrap.conf (gnulib_modules): Add `sigprocmask'.
+
 	* configure.ac: Do not hardcode GNU TLS and OpenSSL libraries.
 
 	* bootstrap.conf (gnulib_modules): Include module iconv.

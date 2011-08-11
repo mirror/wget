@@ -1,5 +1,8 @@
 2011-08-11  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* utils.c (abort_run_with_timeout): Use sigprocmask instead of
+	sigsetmask.
+
 	* gnutls.c (ssl_connect_wget): Remove call to deprecated function
 	`gnutls_certificate_type_set_priority'.
 
