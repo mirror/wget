@@ -279,7 +279,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
     then
       AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
       AC_LIBOBJ([openssl])
-      LIBS="-lopenssl $LIBS"
+      LIBS="$LIBSSL $LIBS"
     elif test x"$with_ssl" != x
     then
       AC_MSG_ERROR([--with-ssl=openssl was given, but SSL is not available.])
@@ -303,7 +303,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
   then
     AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
     AC_LIBOBJ([gnutls])
-    LIBS="-lgnutls $LIBS"
+    LIBS="$LIBGNUTLS $LIBS"
   else
     AC_MSG_ERROR([--with-ssl was given, but GNUTLS is not available.])
   fi
