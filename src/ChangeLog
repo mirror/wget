@@ -1,5 +1,8 @@
 2011-08-11  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* gnutls.c (ssl_connect_wget): Remove call to deprecated function
+	`gnutls_certificate_type_set_priority'.
+
 	* Makefile.am (version.c): Don't invoke hg to set version string.
 
 2011-08-10  Giuseppe Scrivano  <gscrivano@gnu.org>

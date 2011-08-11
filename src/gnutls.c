@@ -240,15 +240,11 @@ static struct transport_implementation wgnutls_transport =
 bool
 ssl_connect_wget (int fd)
 {
-  static const int cert_type_priority[] = {
-    GNUTLS_CRT_X509, GNUTLS_CRT_OPENPGP, 0
-  };
   struct wgnutls_transport_context *ctx;
   gnutls_session session;
   int err;
   gnutls_init (&session, GNUTLS_CLIENT);
   gnutls_set_default_priority (session);
-  gnutls_certificate_type_set_priority (session, cert_type_priority);
   gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, credentials);
 #ifndef FD_TO_SOCKET
 # define FD_TO_SOCKET(X) (X)
