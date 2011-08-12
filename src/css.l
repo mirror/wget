@@ -36,7 +36,6 @@ as that of the covered work.  */
 
 #define YY_NO_INPUT
 
-#include "wget.h"
 #include "css-tokens.h"
 
 %}

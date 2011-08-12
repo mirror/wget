@@ -1,3 +1,8 @@
+2011-08-12  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* css.l: Remove include "wget.h".
+	Reported by: Perry Smith <pedzsan@gmail.com>.
+
 2011-08-11  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* utils.c (abort_run_with_timeout): Use sigprocmask instead of
