@@ -74,10 +74,6 @@ as that of the covered work.  */
 
 #include <stdio.h>
 
-/* The same for snprintf() and vsnprintf().  */
-#define snprintf _snprintf
-#define vsnprintf _vsnprintf
-
 /* Define a wgint type under Windows. */
 typedef __int64 wgint;
 #define SIZEOF_WGINT 8
