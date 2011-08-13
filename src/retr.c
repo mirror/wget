@@ -207,6 +207,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
               wgint *qtyread, wgint *qtywritten, double *elapsed, int flags)
 {
   int ret = 0;
+#undef max
 #define max(a,b) ((a) > (b) ? (a) : (b))
   int dlbufsize = max (BUFSIZ, 8 * 1024);
   char *dlbuf = xmalloc (dlbufsize);

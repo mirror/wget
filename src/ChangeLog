@@ -1,5 +1,7 @@
 2011-08-13  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* retr.c (fd_read_body): Ensure max is not already defined.
+
 	* mswindows.h (snprintf): Remove definition.
 	(vsnprintf): Likewise.
 
