@@ -1,3 +1,7 @@
+2011-08-18  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* texi2pod.pl: Don't assume the perl executable is under /usr/bin/.
+
 2011-08-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi (Wgetrc Commands): Document show_all_dns_entries.
