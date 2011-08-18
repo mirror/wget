@@ -1,9 +1,10 @@
-2011-08-18  Giuseppe Scrivano  <gscrivano@gnu.org>
+2011-08-18  Giuseppe Scrivano  <giuseppe@southpole.se>
+
+	* http.c (gethttp): Fix a memory leak on some errors.  Free the head
+	buffer.
 
 	* Makefile.am: Use an additional file "css_.c" which in turn includes
 	"wget.h" and immediately "css.c".
-
-2011-08-18  Giuseppe Scrivano  <giuseppe@southpole.se>
 
 	* http.c (gethttp): Reset chunked_transfer_encoding on redirections.
 	Reported by: Axel Reinhold <axel@freakout.de>.

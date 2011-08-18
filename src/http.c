@@ -1986,12 +1986,14 @@ read_header:
                                  _("Malformed status line")));
       CLOSE_INVALIDATE (sock);
       request_free (req);
+      xfree (head);
       return HERR;
     }
 
   if (H_10X (statcode))
     {
       DEBUGP (("Ignoring response\n"));
+      xfree (head);
       goto read_header;
     }
 
