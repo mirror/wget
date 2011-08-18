@@ -2040,8 +2040,9 @@ read_header:
         }
     }
 
-  resp_header_copy (resp, "Transfer-Encoding", hdrval, sizeof (hdrval));
-  if (0 == strcasecmp (hdrval, "chunked"))
+  chunked_transfer_encoding = false;
+  if (resp_header_copy (resp, "Transfer-Encoding", hdrval, sizeof (hdrval))
+      && 0 == strcasecmp (hdrval, "chunked"))
     chunked_transfer_encoding = true;
 
   /* Handle (possibly multiple instances of) the Set-Cookie header. */
