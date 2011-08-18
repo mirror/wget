@@ -39,9 +39,11 @@ endif
 DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
 LIBS     = @LIBICONV@ @LIBINTL@ @LIBS@ $(LIB_CLOCK_GETTIME)
 
+EXTRA_DIST = css.l css.c css_.c build_info.c.in
+
 bin_PROGRAMS = wget
 wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c    		  \
-	       css.l css-url.c \
+	       css_.c css-url.c \
 	       ftp-basic.c ftp-ls.c hash.c host.c html-parse.c html-url.c \
 	       http.c init.c log.c main.c netrc.c progress.c ptimer.c     \
 	       recur.c res.c retr.c spider.c url.c	          	  \
@@ -56,6 +58,7 @@ nodist_wget_SOURCES = version.c
 EXTRA_wget_SOURCES = iri.c
 LDADD = $(LIBOBJS) ../lib/libgnu.a
 AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
+
 
 ../lib/libgnu.a:
 	cd ../lib && $(MAKE) $(AM_MAKEFLAGS)
@@ -78,11 +81,20 @@ version.c:  $(wget_SOURCES) ../lib/libgnu.a
 	$(AM_LDFLAGS) $(LDFLAGS) $(LIBS) $(wget_LDADD)'";' \
 	    | $(ESCAPEQUOTE) >> $@
 
+css.c: $(srcdir)/css.l
+	$(LEX) $(LFLAGS) -o $@ $^
+
+css_.c: css.c
+	echo '#include "wget.h"' > $@
+	cat css.c >> $@
+
+distclean-local:
+	rm -f css.c css_.c
+
 check_LIBRARIES = libunittest.a
 libunittest_a_SOURCES = $(wget_SOURCES) test.c build_info.c test.h
 nodist_libunittest_a_SOURCES = version.c
 libunittest_a_CPPFLAGS = -DTESTING "-I$(top_builddir)/lib" "-I$(top_srcdir)/lib"
 libunittest_a_LIBADD = $(LIBOBJS)
-EXTRA_DIST = build_info.c.in
 
 CLEANFILES = *~ *.bak core core.[0-9]* build_info.c version.c
