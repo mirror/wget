@@ -370,7 +370,6 @@ home_dir (void)
 {
   static char *buf = NULL;
   static char *home, *ret;
-  int len;
 
   if (!home)
     {
@@ -378,6 +377,8 @@ home_dir (void)
       if (!home)
         {
 #if defined(MSDOS)
+          int len;
+
           /* Under MSDOS, if $HOME isn't defined, use the directory where
              `wget.exe' resides.  */
           const char *_w32_get_argv0 (void); /* in libwatt.a/pcconfig.c */
