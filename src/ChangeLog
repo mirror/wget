@@ -1,3 +1,10 @@
+2011-08-25  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* utils.c [HAVE_UTIME && HAVE_UTIME_H]: Include <utime.h>.
+	[HAVE_UTIME && HAVE_SYS_UTIME_H]: Include <sys/utime.h>.
+	(touch) [HAVE_UTIME: Prefers utime over futimens when it is available.
+	It was reported that Cygwin has a not working futimens.
+
 2011-08-19  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* init.c (home_dir) [MSDOS]: Move local variable `len' here.

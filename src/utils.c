@@ -42,14 +42,22 @@ as that of the covered work.  */
 #ifdef HAVE_PROCESS_H
 # include <process.h>  /* getpid() */
 #endif
-#ifdef HAVE_UTIME_H
-# include <utime.h>
-#endif
 #include <errno.h>
 #include <fcntl.h>
 #include <assert.h>
 #include <stdarg.h>
 #include <locale.h>
+
+#if HAVE_UTIME
+# include <sys/types.h>
+# ifdef HAVE_UTIME_H
+#  include <utime.h>
+# endif
+
+# ifdef HAVE_SYS_UTIME_H
+#  include <sys/utime.h>
+# endif
+#endif
 
 #include <sys/stat.h>
 
@@ -487,6 +495,20 @@ fork_to_background (void)
 void
 touch (const char *file, time_t tm)
 {
+#if HAVE_UTIME
+# ifdef HAVE_STRUCT_UTIMBUF
+  struct utimbuf times;
+# else
+  struct {
+    time_t actime;
+    time_t modtime;
+  } times;
+# endif
+  times.modtime = tm;
+  times.actime = time (NULL);
+  if (utime (file, &times) == -1)
+    logprintf (LOG_NOTQUIET, "utime(%s): %s\n", file, strerror (errno));
+#else
   struct timespec timespecs[2];
   int fd;
 
@@ -506,6 +528,7 @@ touch (const char *file, time_t tm)
     logprintf (LOG_NOTQUIET, "futimens(%s): %s\n", file, strerror (errno));
 
   close (fd);
+#endif
 }
 
 /* Checks if FILE is a symbolic link, and removes it if it is.  Does
