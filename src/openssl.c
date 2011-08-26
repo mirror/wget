@@ -161,7 +161,7 @@ key_type_to_ssl_type (enum keyfile_type type)
 bool
 ssl_init ()
 {
-  SSL_METHOD *meth;
+  SSL_METHOD const *meth;
 
   if (ssl_ctx)
     /* The SSL has already been initialized. */
