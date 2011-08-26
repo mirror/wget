@@ -246,6 +246,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
       AC_CHECK_LIB(dl, shl_load)
     ])
 
+    ssl_found=no
     case $host_os in
       *mingw32* )
         dnl prefer link to openssl dlls if possible. if not then fallback on static libs. if not then error
@@ -253,9 +254,11 @@ AS_IF([test x"$with_ssl" = xopenssl], [
         AC_CHECK_LIB(eay32, EVP_MD_CTX_init)
         if test x"$ac_cv_lib_eay32_EVP_MD_CTX_init" != xno
         then
-          AC_CHECK_LIB(ssl32, SSL_connect,,
-                    AC_MSG_ERROR([openssl not found: shared lib eay32 found but ssl32 not found]))
-          AC_MSG_NOTICE([Enabling support for SSL via OpenSSL (shared)])
+          AC_CHECK_LIB(ssl32, SSL_connect, [
+            ssl_found=yes
+            AC_MSG_NOTICE([Enabling support for SSL via OpenSSL (shared)])
+          ],
+          AC_MSG_ERROR([openssl not found: shared lib eay32 found but ssl32 not found]))
           
         else
           LIBS+=' -lgdi32'
@@ -265,7 +268,9 @@ AS_IF([test x"$with_ssl" = xopenssl], [
       ;;
     esac
 
-    dnl Now actually check for -lssl
+AS_IF([test x$ssl_found != xyes],
+[
+  dnl Now actually check for -lssl if it wasn't already found
     AC_LIB_HAVE_LINKFLAGS([ssl], [crypto], [
   #include <openssl/ssl.h>
   #include <openssl/x509.h>
@@ -286,6 +291,9 @@ AS_IF([test x"$with_ssl" = xopenssl], [
     fi
 
     AC_LIBOBJ([openssl])
+
+])
+
 ], [
   # --with-ssl is not gnutls: check if it's no
   AS_IF([test x"$with_ssl" != xno], [
@@ -311,7 +319,6 @@ AS_IF([test x"$with_ssl" = xopenssl], [
   AC_CHECK_FUNCS(gnutls_priority_set_direct)
   ]) # endif: --with-ssl == no?
 ]) # endif: --with-ssl == openssl?
-
 
 dnl Enable NTLM if requested and if SSL is available.
 if test x"$LIBSSL" != x

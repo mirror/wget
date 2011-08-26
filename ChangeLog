@@ -1,3 +1,9 @@
+2011-08-26  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* configure.ac: Under mingw don't check for static OpenSSL
+	libraries if the shared version was already found.
+	Suggested by: Ray Satiro <raysatiro@yahoo.com>.
+
 2011-08-25  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac: Check for `utime'.
