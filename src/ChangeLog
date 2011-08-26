@@ -1,5 +1,8 @@
 2011-08-26  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* gnutls.c: Include "ptimer.h".
+	(wgnutls_read): Honor read timeout.
+
 	* openssl.c (ssl_init): Make `meth' const.
 
 2011-08-25  Giuseppe Scrivano  <gscrivano@gnu.org>

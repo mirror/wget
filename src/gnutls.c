@@ -45,6 +45,7 @@ as that of the covered work.  */
 #include "utils.h"
 #include "connect.h"
 #include "url.h"
+#include "ptimer.h"
 #include "ssl.h"
 
 #ifdef WIN32
@@ -125,7 +126,11 @@ struct wgnutls_transport_context
 static int
 wgnutls_read (int fd, char *buf, int bufsize, void *arg)
 {
+#ifdef F_GETFL
+  int flags = 0;
+#endif
   int ret = 0;
+  struct ptimer *timer;
   struct wgnutls_transport_context *ctx = arg;
 
   if (ctx->peeklen)
@@ -140,9 +145,50 @@ wgnutls_read (int fd, char *buf, int bufsize, void *arg)
       return copysize;
     }
 
+  if (opt.read_timeout)
+    {
+#ifdef F_GETFL
+      flags = fcntl (fd, F_GETFL, 0);
+      if (flags < 0)
+        return ret;
+
+      ret = fcntl (fd, F_SETFL, flags | O_NONBLOCK);
+      if (ret < 0)
+        return ret;
+#else
+      /* XXX: Assume it was blocking before.  */
+      const int one = 1;
+      ret = ioctl (fd, FIONBIO, &one);
+      if (ret < 0)
+        return ret;
+#endif
+      timer = ptimer_new ();
+      if (timer == 0)
+        return -1;
+    }
+
   do
-    ret = gnutls_record_recv (ctx->session, buf, bufsize);
-  while (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN);
+    {
+      do
+        ret = gnutls_record_recv (ctx->session, buf, bufsize);
+      while (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN);
+    }
+  while (opt.read_timeout == 0 || ptimer_measure (timer) < opt.read_timeout);
+
+  if (opt.read_timeout)
+    {
+      ptimer_destroy (timer);
+#ifdef F_GETFL
+      ret = fcntl (fd, F_SETFL, flags);
+      if (ret < 0)
+        return ret;
+#else
+      const int zero = 0;
+      ret = ioctl (fd, FIONBIO, &zero);
+      if (ret < 0)
+        return ret;
+#endif
+    }
 
   if (ret < 0)
     ctx->last_error = ret;
