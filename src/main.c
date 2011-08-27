@@ -393,11 +393,11 @@ init_switches (void)
 }
 
 /* Print the usage message.  */
-static void
+static int
 print_usage (int error)
 {
-  fprintf (error ? stderr : stdout, _("Usage: %s [OPTION]... [URL]...\n"),
-           exec_name);
+  return fprintf (error ? stderr : stdout,
+                  _("Usage: %s [OPTION]... [URL]...\n"), exec_name);
 }
 
 /* Print the help message, describing all the available options.  If
@@ -709,12 +709,15 @@ Recursive accept/reject:\n"),
 
   size_t i;
 
-  printf (_("GNU Wget %s, a non-interactive network retriever.\n"),
-          version_string);
-  print_usage (0);
+  if (printf (_("GNU Wget %s, a non-interactive network retriever.\n"),
+              version_string))
+    exit (3);
+  if (print_usage (0) < 0)
+    exit (3);
 
   for (i = 0; i < countof (help); i++)
-    fputs (_(help[i]), stdout);
+    if (fputs (_(help[i]), stdout) < 0)
+      exit (3);
 
   exit (0);
 }
@@ -759,7 +762,7 @@ prompt_for_password (void)
    to at most line_length. prefix is printed on the first line
    and an appropriate number of spaces are added on subsequent
    lines.*/
-static void
+static int
 format_and_print_line (const char *prefix, const char *line,
                        int line_length)
 {
@@ -774,7 +777,8 @@ format_and_print_line (const char *prefix, const char *line,
   if (line_length <= 0)
     line_length = MAX_CHARS_PER_LINE - TABULATION;
 
-  printf ("%s", prefix);
+  if (printf ("%s", prefix) < 0)
+    return -1;
   remaining_chars = line_length;
   /* We break on spaces. */
   token = strtok (line_dup, " ");
@@ -785,17 +789,21 @@ format_and_print_line (const char *prefix, const char *line,
          token on the next line. */
       if (remaining_chars <= strlen (token))
         {
-          printf ("\n%*c", TABULATION, ' ');
+          if (printf ("\n%*c", TABULATION, ' ') < 0)
+            return -1;
           remaining_chars = line_length - TABULATION;
         }
-      printf ("%s ", token);
+      if (printf ("%s ", token) < 0)
+        return -1;
       remaining_chars -= strlen (token) + 1;  /* account for " " */
       token = strtok (NULL, " ");
     }
 
-  printf ("\n");
+  if (printf ("\n") < 0)
+    return -1;
 
   xfree (line_dup);
+  return 0;
 }
 
 static void
@@ -808,72 +816,91 @@ print_version (void)
   char *env_wgetrc, *user_wgetrc;
   int i;
 
-  printf (_("GNU Wget %s built on %s.\n\n"), version_string, OS_TYPE);
+  if (printf (_("GNU Wget %s built on %s.\n\n"), version_string, OS_TYPE) < 0)
+    exit (3);
 
   for (i = 0; compiled_features[i] != NULL; )
     {
       int line_length = MAX_CHARS_PER_LINE;
       while ((line_length > 0) && (compiled_features[i] != NULL))
         {
-          printf ("%s ", compiled_features[i]);
+          if (printf ("%s ", compiled_features[i]))
+            exit (3);
           line_length -= strlen (compiled_features[i]) + 2;
           i++;
         }
-      printf ("\n");
+      if (printf ("\n") < 0)
+        exit (3);
     }
-  printf ("\n");
+  if (printf ("\n") < 0)
+    exit (3);
 
   /* Handle the case when $WGETRC is unset and $HOME/.wgetrc is
      absent. */
-  printf ("%s\n", wgetrc_title);
+  if (printf ("%s\n", wgetrc_title) < 0)
+    exit (3);
+
   env_wgetrc = wgetrc_env_file_name ();
   if (env_wgetrc && *env_wgetrc)
     {
-      printf (_("    %s (env)\n"), env_wgetrc);
+      if (printf (_("    %s (env)\n"), env_wgetrc) < 0)
+        exit (3);
       xfree (env_wgetrc);
     }
   user_wgetrc = wgetrc_user_file_name ();
   if (user_wgetrc)
     {
-      printf (_("    %s (user)\n"), user_wgetrc);
+      if (printf (_("    %s (user)\n"), user_wgetrc) < 0)
+        exit (3);
       xfree (user_wgetrc);
     }
 #ifdef SYSTEM_WGETRC
-  printf (_("    %s (system)\n"), SYSTEM_WGETRC);
+  if (printf (_("    %s (system)\n"), SYSTEM_WGETRC) < 0)
+    exit (3);
 #endif
 
 #ifdef ENABLE_NLS
-  format_and_print_line (locale_title,
+  if (format_and_print_line (locale_title,
                         LOCALEDIR,
-                        MAX_CHARS_PER_LINE);
+                             MAX_CHARS_PER_LINE) < 0)
+    exit (3);
 #endif /* def ENABLE_NLS */
 
   if (compilation_string != NULL)
-    format_and_print_line (compile_title,
-                           compilation_string,
-                           MAX_CHARS_PER_LINE);
+    if (format_and_print_line (compile_title,
+                               compilation_string,
+                               MAX_CHARS_PER_LINE) < 0)
+      exit (3);
 
   if (link_string != NULL)
-    format_and_print_line (link_title,
-                           link_string,
-                           MAX_CHARS_PER_LINE);
+    if (format_and_print_line (link_title,
+                               link_string,
+                               MAX_CHARS_PER_LINE) < 0)
+      exit (3);
 
-  printf ("\n");
+  if (printf ("\n") < 0)
+    exit (3);
+
   /* TRANSLATORS: When available, an actual copyright character
      (cirle-c) should be used in preference to "(C)". */
-  fputs (_("\
-Copyright (C) 2009 Free Software Foundation, Inc.\n"), stdout);
-  fputs (_("\
+  if (fputs (_("\
+Copyright (C) 2009 Free Software Foundation, Inc.\n"), stdout) < 0)
+    exit (3);
+  if (fputs (_("\
 License GPLv3+: GNU GPL version 3 or later\n\
 <http://www.gnu.org/licenses/gpl.html>.\n\
 This is free software: you are free to change and redistribute it.\n\
-There is NO WARRANTY, to the extent permitted by law.\n"), stdout);
+There is NO WARRANTY, to the extent permitted by law.\n"), stdout) < 0)
+    exit (3);
   /* TRANSLATORS: When available, please use the proper diacritics for
      names such as this one. See en_US.po for reference. */
-  fputs (_("\nOriginally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"),
-         stdout);
-  fputs (_("Please send bug reports and questions to <bug-wget@gnu.org>.\n"),
-         stdout);
+  if (fputs (_("\nOriginally written by Hrvoje Niksic <hniksic@xemacs.org>.\n"),
+             stdout) < 0)
+    exit (3);
+  if (fputs (_("Please send bug reports and questions to <bug-wget@gnu.org>.\n"),
+             stdout) < 0)
+    exit (3);
+
   exit (0);
 }
 

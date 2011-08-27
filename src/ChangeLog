@@ -1,3 +1,10 @@
+2011-08-27  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* main.c (print_help): Exit with an error status if print to stdout
+	fails.
+	(print_usage): Change method signature and return a status code.
+	(print_version): Likewise.
+
 2011-08-26  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* gnutls.c: Include "ptimer.h".
