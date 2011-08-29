@@ -1,3 +1,9 @@
+2011-08-29  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* gnutls.c (wgnutls_read_timeout): New function.
+	(wgnutls_read): Use wgnutls_read_timeout.
+	(wgnutls_peek): Likewise.
+
 2011-08-27  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* main.c (print_help): Exit with an error status if print to stdout

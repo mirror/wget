@@ -58,7 +58,6 @@ as that of the covered work.  */
    preprocessor macro.  */
 
 static gnutls_certificate_credentials credentials;
-
 bool
 ssl_init ()
 {
@@ -123,8 +122,9 @@ struct wgnutls_transport_context
 # define MIN(i, j) ((i) <= (j) ? (i) : (j))
 #endif
 
+
 static int
-wgnutls_read (int fd, char *buf, int bufsize, void *arg)
+wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
 {
 #ifdef F_GETFL
   int flags = 0;
@@ -132,20 +132,9 @@ wgnutls_read (int fd, char *buf, int bufsize, void *arg)
   int ret = 0;
   struct ptimer *timer;
   struct wgnutls_transport_context *ctx = arg;
+  int timed_out = 0;
 
-  if (ctx->peeklen)
-    {
-      /* If we have any peek data, simply return that. */
-      int copysize = MIN (bufsize, ctx->peeklen);
-      memcpy (buf, ctx->peekbuf, copysize);
-      ctx->peeklen -= copysize;
-      if (ctx->peeklen != 0)
-        memmove (ctx->peekbuf, ctx->peekbuf + copysize, ctx->peeklen);
-
-      return copysize;
-    }
-
-  if (opt.read_timeout)
+  if (timeout)
     {
 #ifdef F_GETFL
       flags = fcntl (fd, F_GETFL, 0);
@@ -169,27 +158,61 @@ wgnutls_read (int fd, char *buf, int bufsize, void *arg)
 
   do
     {
-      do
-        ret = gnutls_record_recv (ctx->session, buf, bufsize);
-      while (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN);
-    }
-  while (opt.read_timeout == 0 || ptimer_measure (timer) < opt.read_timeout);
+      double timeout = timeout - ptimer_measure (timer);
+      if (timeout < 0)
+        break;
 
-  if (opt.read_timeout)
+      ret = GNUTLS_E_AGAIN;
+      if (timeout == 0 || gnutls_record_check_pending (ctx->session)
+          || select_fd (fd, timeout, WAIT_FOR_READ))
+        ret = gnutls_record_recv (ctx->session, buf, bufsize);
+
+      timed_out = timeout && ptimer_measure (timer) >= timeout;
+    }
+  while (ret == GNUTLS_E_INTERRUPTED || (ret == GNUTLS_E_AGAIN && !timed_out));
+
+  if (timeout)
     {
+      int status;
       ptimer_destroy (timer);
 #ifdef F_GETFL
-      ret = fcntl (fd, F_SETFL, flags);
-      if (ret < 0)
-        return ret;
+      status = fcntl (fd, F_SETFL, flags);
+      if (status < 0)
+        return status;
 #else
       const int zero = 0;
-      ret = ioctl (fd, FIONBIO, &zero);
-      if (ret < 0)
-        return ret;
+      status = ioctl (fd, FIONBIO, &zero);
+      if (status < 0)
+        return status;
 #endif
     }
 
+  return ret;
+}
+
+static int
+wgnutls_read (int fd, char *buf, int bufsize, void *arg)
+{
+#ifdef F_GETFL
+  int flags = 0;
+#endif
+  int ret = 0;
+  struct ptimer *timer;
+  struct wgnutls_transport_context *ctx = arg;
+
+  if (ctx->peeklen)
+    {
+      /* If we have any peek data, simply return that. */
+      int copysize = MIN (bufsize, ctx->peeklen);
+      memcpy (buf, ctx->peekbuf, copysize);
+      ctx->peeklen -= copysize;
+      if (ctx->peeklen != 0)
+        memmove (ctx->peekbuf, ctx->peekbuf + copysize, ctx->peeklen);
+
+      return copysize;
+    }
+
+  ret = wgnutls_read_timeout (fd, buf, bufsize, arg, opt.read_timeout);
   if (ret < 0)
     ctx->last_error = ret;
 
@@ -235,9 +258,8 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
           && select_fd (fd, 0.0, WAIT_FOR_READ) <= 0)
         read = 0;
       else
-        read = gnutls_record_recv (ctx->session, buf + offset,
-                                   bufsize - offset);
-
+        read = wgnutls_read_timeout (fd, buf + offset, bufsize - offset,
+                                     ctx->session, opt.read_timeout);
       if (read < 0)
         {
           if (offset)
