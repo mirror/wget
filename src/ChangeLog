@@ -1,3 +1,8 @@
+2011-08-30  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* gnutls.c (wgnutls_read_timeout): Use the non blocking socket only for
+	`gnutls_record_recv'.  Set errno to ETIMEDOUT on a read timeout.
+
 2011-08-29  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* gnutls.c (wgnutls_read_timeout): New function.

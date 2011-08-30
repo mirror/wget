@@ -139,17 +139,7 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
 #ifdef F_GETFL
       flags = fcntl (fd, F_GETFL, 0);
       if (flags < 0)
-        return ret;
-
-      ret = fcntl (fd, F_SETFL, flags | O_NONBLOCK);
-      if (ret < 0)
-        return ret;
-#else
-      /* XXX: Assume it was blocking before.  */
-      const int one = 1;
-      ret = ioctl (fd, FIONBIO, &one);
-      if (ret < 0)
-        return ret;
+        return flags;
 #endif
       timer = ptimer_new ();
       if (timer == 0)
@@ -158,34 +148,56 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
 
   do
     {
-      double timeout = timeout - ptimer_measure (timer);
-      if (timeout < 0)
+      double next_timeout = timeout - ptimer_measure (timer);
+      if (timeout && next_timeout < 0)
         break;
 
       ret = GNUTLS_E_AGAIN;
       if (timeout == 0 || gnutls_record_check_pending (ctx->session)
-          || select_fd (fd, timeout, WAIT_FOR_READ))
-        ret = gnutls_record_recv (ctx->session, buf, bufsize);
+          || select_fd (fd, next_timeout, WAIT_FOR_READ))
+        {
+          if (timeout)
+            {
+#ifdef F_GETFL
+              ret = fcntl (fd, F_SETFL, flags | O_NONBLOCK);
+              if (ret < 0)
+                return ret;
+#else
+              /* XXX: Assume it was blocking before.  */
+              const int one = 1;
+              ret = ioctl (fd, FIONBIO, &one);
+              if (ret < 0)
+                return ret;
+#endif
+            }
+
+          ret = gnutls_record_recv (ctx->session, buf, bufsize);
+
+          if (timeout)
+            {
+              int status;
+#ifdef F_GETFL
+              status = fcntl (fd, F_SETFL, flags);
+              if (status < 0)
+                return status;
+#else
+              const int zero = 0;
+              status = ioctl (fd, FIONBIO, &zero);
+              if (status < 0)
+                return status;
+#endif
+            }
+        }
 
       timed_out = timeout && ptimer_measure (timer) >= timeout;
     }
   while (ret == GNUTLS_E_INTERRUPTED || (ret == GNUTLS_E_AGAIN && !timed_out));
 
   if (timeout)
-    {
-      int status;
-      ptimer_destroy (timer);
-#ifdef F_GETFL
-      status = fcntl (fd, F_SETFL, flags);
-      if (status < 0)
-        return status;
-#else
-      const int zero = 0;
-      status = ioctl (fd, FIONBIO, &zero);
-      if (status < 0)
-        return status;
-#endif
-    }
+    ptimer_destroy (timer);
+
+  if (timeout && timed_out && ret == GNUTLS_E_AGAIN)
+    errno = ETIMEDOUT;
 
   return ret;
 }
@@ -259,7 +271,7 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
         read = 0;
       else
         read = wgnutls_read_timeout (fd, buf + offset, bufsize - offset,
-                                     ctx->session, opt.read_timeout);
+                                     ctx, opt.read_timeout);
       if (read < 0)
         {
           if (offset)
