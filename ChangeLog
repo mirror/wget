@@ -1,3 +1,7 @@
+2011-09-04  Alan Hourihane <alanh@fairlite.co.uk> (tiny change)
+
+	* configure.ac: Check for libz when gnutls is used.
+
 2011-08-26  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac: Under mingw don't check for static OpenSSL

@@ -271,7 +271,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
 AS_IF([test x$ssl_found != xyes],
 [
   dnl Now actually check for -lssl if it wasn't already found
-    AC_LIB_HAVE_LINKFLAGS([ssl], [crypto], [
+    AC_LIB_HAVE_LINKFLAGS([ssl], [crypto z], [
   #include <openssl/ssl.h>
   #include <openssl/x509.h>
   #include <openssl/err.h>
