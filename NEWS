@@ -9,6 +9,7 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Now --version works again.
 
+** Fix a build error on solaris 10 sparc.
 
 * Changes in Wget 1.13.3
 

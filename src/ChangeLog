@@ -1,3 +1,7 @@
+2011-09-04  Christian Jullien <eligis@orange.fr> (tiny change)
+
+	* gnutls.c: Include <sys/fcntl.h>.
+
 2011-09-02  Mojca Miklavec <mojca.miklavec.lists@gmail.com> (tiny change)
 
 	* main.c (print_version): Do not exit prematurely when --version is passed.

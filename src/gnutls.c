@@ -48,6 +48,8 @@ as that of the covered work.  */
 #include "ptimer.h"
 #include "ssl.h"
 
+#include <sys/fcntl.h>
+
 #ifdef WIN32
 # include "w32sock.h"
 #endif
