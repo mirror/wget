@@ -7,7 +7,7 @@ See the end for copying conditions.
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 * Changes in Wget X.Y.Z
 
-** Now --version works again.
+** Now --version and --help work again.
 
 ** Fix a build error on solaris 10 sparc.
 
