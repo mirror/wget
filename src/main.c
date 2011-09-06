@@ -710,7 +710,7 @@ Recursive accept/reject:\n"),
   size_t i;
 
   if (printf (_("GNU Wget %s, a non-interactive network retriever.\n"),
-              version_string))
+              version_string) < 0)
     exit (3);
   if (print_usage (0) < 0)
     exit (3);
