@@ -10,6 +10,9 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Now --version and --help work again.
 
 ** Fix a build error on solaris 10 sparc.
+
+** If --timestamping and --continue can be used at the same time.
+
 
 * Changes in Wget 1.13.3
 

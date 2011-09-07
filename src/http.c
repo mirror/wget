@@ -1626,7 +1626,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       /* ... but some HTTP/1.0 caches doesn't implement Cache-Control.  */
       request_set_header (req, "Pragma", "no-cache", rel_none);
     }
-  if (hs->restval && !opt.timestamping)
+  if (hs->restval)
     request_set_header (req, "Range",
                         aprintf ("bytes=%s-",
                                  number_to_static_string (hs->restval)),
