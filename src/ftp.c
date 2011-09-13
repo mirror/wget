@@ -2125,7 +2125,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
   if (start)
     {
       /* Just get everything.  */
-      ftp_retrieve_list (u, start, con);
+      res = ftp_retrieve_list (u, start, con);
     }
   else
     {
@@ -2154,8 +2154,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
   if (opt.quota && total_downloaded_bytes > opt.quota)
     return QUOTEXC;
   else
-    /* #### Should we return `res' here?  */
-    return RETROK;
+    return res;
 }
 
 /* The wrapper that calls an appropriate routine according to contents

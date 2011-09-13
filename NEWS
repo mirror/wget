@@ -5,13 +5,17 @@ Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
 See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
+
 * Changes in Wget X.Y.Z
 
 ** Now --version and --help work again.
 
 ** Fix a build error on solaris 10 sparc.
 
-** If --timestamping and --continue can be used at the same time.
+** Now --timestamping and --continue work well together.
+
+** Return a network failure when FTP downloads fail and --timestamping
+   is specified.
 
 
 * Changes in Wget 1.13.3
