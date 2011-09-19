@@ -1,6 +1,7 @@
 2011-09-19  Giuseppe Scrivano  <gscrivano@gnu.org>
 
-	* main.c (print_version): Update copyright year and fix typo.
+	* main.c (print_version): Update copyright year.
+	(print_version): Fix typo.
 
 2011-09-13  Giuseppe Scrivano  <gscrivano@gnu.org>
 

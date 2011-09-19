@@ -882,7 +882,7 @@ print_version (void)
     exit (3);
 
   /* TRANSLATORS: When available, an actual copyright character
-     (cirle-c) should be used in preference to "(C)". */
+     (circle-c) should be used in preference to "(C)". */
   if (fputs (_("\
 Copyright (C) 2011 Free Software Foundation, Inc.\n"), stdout) < 0)
     exit (3);
