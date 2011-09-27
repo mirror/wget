@@ -20,9 +20,9 @@
 @set Wget Wget
 @c man title Wget The non-interactive network downloader.
 
-@dircategory Network Applications
+@dircategory Network applications
 @direntry
-* Wget: (wget).         The non-interactive network downloader.
+* Wget: (wget).                 Non-interactive network downloader.
 @end direntry
 
 @copying
