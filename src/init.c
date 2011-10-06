@@ -139,6 +139,7 @@ static const struct {
   { "chooseconfig",     &opt.choose_config,	cmd_file },
   { "connecttimeout",   &opt.connect_timeout,   cmd_time },
   { "contentdisposition", &opt.content_disposition, cmd_boolean },
+  { "contentonerror",   &opt.content_on_error,  cmd_boolean },
   { "continue",         &opt.always_rest,       cmd_boolean },
   { "convertlinks",     &opt.convert_links,     cmd_boolean },
   { "cookies",          &opt.cookies,           cmd_boolean },

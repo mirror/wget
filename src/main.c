@@ -178,6 +178,7 @@ static struct cmdline_option option_data[] =
     { "continue", 'c', OPT_BOOLEAN, "continue", -1 },
     { "convert-links", 'k', OPT_BOOLEAN, "convertlinks", -1 },
     { "content-disposition", 0, OPT_BOOLEAN, "contentdisposition", -1 },
+    { "content-on-error", 0, OPT_BOOLEAN, "contentonerror", -1 },
     { "cookies", 0, OPT_BOOLEAN, "cookies", -1 },
     { "cut-dirs", 0, OPT_VALUE, "cutdirs", -1 },
     { WHEN_DEBUG ("debug"), 'd', OPT_BOOLEAN, "debug", -1 },
@@ -594,6 +595,8 @@ HTTP options:\n"),
     N_("\
        --content-disposition   honor the Content-Disposition header when\n\
                                choosing local file names (EXPERIMENTAL).\n"),
+    N_("\
+       --content-on-error      output the received content on server errors.\n"),
     N_("\
        --auth-no-challenge     send Basic HTTP authentication information\n\
                                without first waiting for the server's\n\

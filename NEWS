@@ -6,6 +6,12 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget X.Y.Z
+
+** Add support for content-on-error.  It allows to store the HTTP
+   payload on 4xx or 5xx errors.
+
+
 * Changes in Wget 1.13.4
 
 ** Now --version and --help work again.

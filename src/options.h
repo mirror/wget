@@ -130,6 +130,8 @@ struct options
   bool server_response;		/* Do we print server response? */
   bool save_headers;		/* Do we save headers together with
 				   file? */
+  bool content_on_error;	/* Do we output the content when the HTTP
+				   status code indicates a server error */
 
 #ifdef ENABLE_DEBUG
   bool debug;			/* Debugging on/off */

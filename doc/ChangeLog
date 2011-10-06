@@ -1,3 +1,7 @@
+2011-10-02  Henrik Holst <henrik.holst@millistream.com> (tiny change)
+
+	* wget.texi (HTTP Options): Document option --content-on-error.
+
 2011-09-27  Karl Berry <karl@freefriends.org> (tiny change)
 
 	* wget.texi: Make dir entry consistent with others.
