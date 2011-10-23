@@ -1,3 +1,28 @@
+2011-10-07  Steven Schweda  <address@hidden>
+
+	* connect.c: Add HAVE_SYS_SELECT_H and HAVE_SYS_SOCKET_H conditions
+	on includes of <sys/select.h> and <sys/socket.h>, respectively.
+	* ftp.c (getftp): Move BIN_TYPE_TRANSFER macro into VMS-specific
+	section.  On VMS, use Stream_LF attributes for listing files.  Pass
+	BIN_TYPE_FILE to fopen_excl() instead of constant-everywhere "true".
+	* ftp.c (ftp_retrieve_list): Restore lost test of opt.preserve_perm
+	(--preserve-permissions) on the chmod() operation.
+	* init.c, main.c: Remove "deprecated" from opt.preserve_perm
+	(--preserve-permissions).
+	* init.c (initialize): Use distinct messages for errors in C macro
+	SYSTEM_WGETRC and environment-variable SYSTEM_WGETRC.  Avoid use of
+	C macro SYSTEM_WGETRC when it's not defined.
+	* log.c (log_close): Avoid closing logfp when it's stderr.
+	* main.c (print_help):  Restore --preserve-permissions.
+	* main.c (main): Avoid using a negative value of longindex as a
+	subscript (for long_options[]) when searching for "--config".
+	* main.c (main): Exit the program using exit() instead of "return".
+	(VMS handles these differently, and exit() is better.)
+	* openssl.c (ssl_init): Add type cast (SSL_METHOD *) to newly "const"
+	"meth" argument to accommodate OpenSSL version 0.9.8, where that
+	argument is not "const" in the OpenSSL function (SSL_CTX_new).
+	* utils.c (fopen_excl): Comment typography.
+
 2011-10-02  Henrik Holst <henrik.holst@millistream.com> (tiny change)
 	* http.c (gethttp): If 'contentonerror' is used then do not
         skip the http body on 4xx and 5xx errors.

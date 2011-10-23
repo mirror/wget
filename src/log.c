@@ -573,14 +573,14 @@ log_init (const char *file, bool appendp)
     }
 }
 
-/* Close LOGFP, inhibit further logging and free the memory associated
-   with it.  */
+/* Close LOGFP (only if we opened it, not if it's stderr), inhibit
+   further logging and free the memory associated with it.  */
 void
 log_close (void)
 {
   int i;
 
-  if (logfp)
+  if (logfp && (logfp != stderr))
     fclose (logfp);
   logfp = NULL;
   inhibit_logging = true;

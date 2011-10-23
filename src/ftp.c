@@ -1152,13 +1152,25 @@ Error in server response, closing control connection.\n"));
    Elsewhere, define a constant "binary" flag.
    Isn't it nice to have distinct text and binary file types?
 */
-# define BIN_TYPE_TRANSFER (type_char != 'A')
+/* 2011-09-30 SMS.
+   Added listing files to the set of non-"binary" (text, Stream_LF)
+   files.  (Wget works either way, but other programs, like, say, text
+   editors, work better on listing files which have text attributes.) 
+   Now we use "binary" attributes for a binary ("IMAGE") transfer,
+   unless "--ftp-stmlf" was specified, and we always use non-"binary"
+   (text, Stream_LF) attributes for a listing file, or for an ASCII
+   transfer.
+   Tidied the VMS-specific BIN_TYPE_xxx macros, and changed the call to
+   fopen_excl() (restored?) to use BIN_TYPE_FILE instead of "true".
+*/
 #ifdef __VMS
+# define BIN_TYPE_TRANSFER (type_char != 'A')
+# define BIN_TYPE_FILE \
+   ((!(cmd & DO_LIST)) && BIN_TYPE_TRANSFER && (opt.ftp_stmlf == 0))
 # define FOPEN_OPT_ARGS "fop=sqo", "acc", acc_cb, &open_id
 # define FOPEN_OPT_ARGS_BIN "ctx=bin,stm", "rfm=fix", "mrs=512" FOPEN_OPT_ARGS
-# define BIN_TYPE_FILE (BIN_TYPE_TRANSFER && (opt.ftp_stmlf == 0))
 #else /* def __VMS */
-# define BIN_TYPE_FILE 1
+# define BIN_TYPE_FILE true
 #endif /* def __VMS [else] */
 
       if (restval && !(con->cmd & DO_LIST))
@@ -1217,7 +1229,7 @@ Error in server response, closing control connection.\n"));
         }
       else
         {
-          fp = fopen_excl (con->target, true);
+          fp = fopen_excl (con->target, BIN_TYPE_FILE);
           if (!fp && errno == EEXIST)
             {
               /* We cannot just invent a new name and use it (which is
@@ -1880,8 +1892,10 @@ Already have correct symlink %s -> %s\n\n"),
 
       set_local_file (&actual_target, con->target);
 
-      /* If downloading a plain file, set valid (non-zero) permissions. */
-      if (dlthis && (actual_target != NULL) && (f->type == FT_PLAINFILE))
+      /* If downloading a plain file, and the user requested it, then
+         set valid (non-zero) permissions. */
+      if (dlthis && (actual_target != NULL) &&
+       (f->type == FT_PLAINFILE) && opt.preserve_perm)
         {
           if (f->perms)
             chmod (actual_target, f->perms);

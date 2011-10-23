@@ -201,7 +201,9 @@ ssl_init ()
       abort ();
     }
 
-  ssl_ctx = SSL_CTX_new (meth);
+  /* The type cast below accommodates older OpenSSL versions (0.9.8)
+     where SSL_CTX_new() is declared without a "const" argument. */
+  ssl_ctx = SSL_CTX_new ((SSL_METHOD *)meth);
   if (!ssl_ctx)
     goto error;
 

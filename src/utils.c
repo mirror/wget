@@ -769,8 +769,7 @@ fopen_excl (const char *fname, int binary)
       open_id = 13;
       fd = open( fname,                 /* File name. */
        flags,                           /* Flags. */
-       0777,                            /* Mode for default protection.
-*/
+       0777,                            /* Mode for default protection. */
        "rfm=stmlf",                     /* Stream_LF. */
        OPEN_OPT_ARGS);                  /* Access callback. */
     }

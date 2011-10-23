@@ -243,7 +243,7 @@ static struct cmdline_option option_data[] =
     { "post-data", 0, OPT_VALUE, "postdata", -1 },
     { "post-file", 0, OPT_VALUE, "postfile", -1 },
     { "prefer-family", 0, OPT_VALUE, "preferfamily", -1 },
-    { "preserve-permissions", 0, OPT_BOOLEAN, "preservepermissions", -1 }, /* deprecated */
+    { "preserve-permissions", 0, OPT_BOOLEAN, "preservepermissions", -1 },
     { IF_SSL ("private-key"), 0, OPT_VALUE, "privatekey", -1 },
     { IF_SSL ("private-key-type"), 0, OPT_VALUE, "privatekeytype", -1 },
     { "progress", 0, OPT_VALUE, "progress", -1 },
@@ -647,6 +647,8 @@ FTP options:\n"),
     N_("\
        --no-passive-ftp        disable the \"passive\" transfer mode.\n"),
     N_("\
+       --preserve-permissions  preserve remote file permissions.\n"),
+    N_("\
        --retr-symlinks         when recursing, get linked-to files (not dir).\n"),
     "\n",
 
@@ -948,8 +950,8 @@ main (int argc, char **argv)
 
   init_switches ();
 
-  /* This seperate getopt_long is needed to find the user config
-     and parse it before the other user options. */
+  /* This separate getopt_long is needed to find the user config file
+     option ("--config") and parse it before the other user options. */
   longindex = -1;
   int retconf;
   bool use_userconfig = false;
@@ -960,20 +962,25 @@ main (int argc, char **argv)
       int confval;
       bool userrc_ret = true;
       struct cmdline_option *config_opt;
-      confval = long_options[longindex].val;
-      config_opt = &option_data[confval & ~BOOLEAN_NEG_MARKER];
-      if (strcmp (config_opt->long_name, "config") == 0)
+
+      /* There is no short option for "--config". */
+      if (longindex >= 0)
         {
-          userrc_ret &= run_wgetrc (optarg);
-          use_userconfig = true;
+          confval = long_options[longindex].val;
+          config_opt = &option_data[confval & ~BOOLEAN_NEG_MARKER];
+          if (strcmp (config_opt->long_name, "config") == 0)
+            {
+              userrc_ret &= run_wgetrc (optarg);
+              use_userconfig = true;
+            }
+          if (!userrc_ret)
+            {
+              printf ("Exiting due to error in %s\n", optarg);
+              exit (2);
+            }
+          else
+            break;
         }
-      if (!userrc_ret)
-        {
-          printf ("Exiting due to error in %s\n", optarg);
-          exit (2);
-        }
-      else
-        break;
     }
 
   /* If the user did not specify a config, read the system wgetrc and ~/.wgetrc. */
@@ -1470,7 +1477,7 @@ outputting to a regular file.\n"));
     xfree (url[i]);
   cleanup ();
 
-  return get_exit_status ();
+  exit (get_exit_status ());
 }
 #endif /* TESTING */
 
