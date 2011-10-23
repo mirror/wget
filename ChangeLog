@@ -1,3 +1,7 @@
+2011-10-23  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (gnulib_modules): Include module `vsnprintf'.
+
 2011-10-16  Steven Schubiger  <stsc@member.fsf.org>
 
 	* util/paramcheck.pl: Match 1 or more times where applicable.
