@@ -63,6 +63,13 @@ static gnutls_certificate_credentials credentials;
 bool
 ssl_init ()
 {
+  /* Becomes true if GnuTLS is initialized. */
+  static bool ssl_initialized = false;
+
+  /* GnuTLS should be initialized only once. */
+  if (ssl_initialized)
+    return true;
+
   const char *ca_directory;
   DIR *dir;
 
@@ -104,6 +111,9 @@ ssl_init ()
   if (opt.ca_cert)
     gnutls_certificate_set_x509_trust_file (credentials, opt.ca_cert,
                                             GNUTLS_X509_FMT_PEM);
+
+  ssl_initialized = true;
+
   return true;
 }
 
