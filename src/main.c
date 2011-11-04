@@ -55,6 +55,7 @@ as that of the covered work.  */
 #include "spider.h"
 #include "http.h"               /* for save_cookies */
 #include "ptimer.h"
+#include "warc.h"
 
 #include <getopt.h>
 #include <getpass.h>
@@ -287,6 +288,15 @@ static struct cmdline_option option_data[] =
     { "version", 'V', OPT_FUNCALL, (void *) print_version, no_argument },
     { "wait", 'w', OPT_VALUE, "wait", -1 },
     { "waitretry", 0, OPT_VALUE, "waitretry", -1 },
+    { "warc-cdx", 0, OPT_BOOLEAN, "warccdx", -1 },
+    { "warc-compression", 0, OPT_BOOLEAN, "warccompression", -1 },
+    { "warc-dedup", 0, OPT_VALUE, "warccdxdedup", -1 },
+    { "warc-digests", 0, OPT_BOOLEAN, "warcdigests", -1 },
+    { "warc-file", 0, OPT_VALUE, "warcfile", -1 },
+    { "warc-header", 0, OPT_VALUE, "warcheader", -1 },
+    { "warc-keep-log", 0, OPT_BOOLEAN, "warckeeplog", -1 },
+    { "warc-max-size", 0, OPT_VALUE, "warcmaxsize", -1 },
+    { "warc-tempdir", 0, OPT_VALUE, "warctempdir", -1 },
 #ifdef USE_WATT32
     { "wdebug", 0, OPT_BOOLEAN, "wdebug", -1 },
 #endif
@@ -653,6 +663,29 @@ FTP options:\n"),
     "\n",
 
     N_("\
+WARC options:\n"),
+    N_("\
+       --warc-file=FILENAME      save request/response data to a .warc.gz file.\n"),
+    N_("\
+       --warc-header=STRING      insert STRING into the warcinfo record.\n"),
+    N_("\
+       --warc-max-size=NUMBER    set maximum size of WARC files to NUMBER.\n"),
+    N_("\
+       --warc-cdx                write CDX index files.\n"),
+    N_("\
+       --warc-dedup=FILENAME     do not store records listed in this CDX file.\n"),
+    N_("\
+       --no-warc-compression     do not compress WARC files with GZIP.\n"),
+    N_("\
+       --no-warc-digests         do not calculate SHA1 digests.\n"),
+    N_("\
+       --no-warc-keep-log        do not store the log file in a WARC record.\n"),
+    N_("\
+       --warc-tempdir=DIRECTORY  location for temporary files created by the\n\
+                                 WARC writer.\n"),
+    "\n",
+
+    N_("\
 Recursive download:\n"),
     N_("\
   -r,  --recursive          specify recursive download.\n"),
@@ -910,6 +943,7 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout) < 0)
 }
 
 char *program_name; /* Needed by lib/error.c. */
+char *program_argstring; /* Needed by wget_warc.c. */
 
 int
 main (int argc, char **argv)
@@ -944,6 +978,22 @@ main (int argc, char **argv)
   /* Drop extension (typically .EXE) from executable filename. */
   windows_main ((char **) &exec_name);
 #endif
+
+  /* Construct the arguments string. */
+  int argstring_length = 1;
+  for (i = 1; i < argc; i++)
+    argstring_length += strlen (argv[i]) + 2 + 1;
+  char *p = program_argstring = malloc (argstring_length * sizeof (char));
+  for (i = 1; i < argc; i++)
+  {
+    *p++ = '"';
+    int arglen = strlen (argv[i]);
+    memcpy (p, argv[i], arglen);
+    p += arglen;
+    *p++ = '"';
+    *p++ = ' ';
+  }
+  *p = '\0';
 
   /* Load the hard-coded defaults.  */
   defaults ();
@@ -1194,6 +1244,47 @@ for details.\n\n"));
            }
     }
 
+  if (opt.warc_filename != 0)
+    {
+      if (opt.noclobber)
+        {
+          fprintf (stderr,
+                   _("WARC output does not work with --no-clobber, "
+                     "--no-clobber will be disabled.\n"));
+          opt.noclobber = false;
+        }
+      if (opt.timestamping)
+        {
+          fprintf (stderr,
+                   _("WARC output does not work with timestamping, "
+                     "timestamping will be disabled.\n"));
+          opt.timestamping = false;
+        }
+      if (opt.spider)
+        {
+          fprintf (stderr,
+                   _("WARC output does not work with --spider.\n"));
+          exit (1);
+        }
+      if (opt.always_rest)
+        {
+          fprintf (stderr,
+                   _("WARC output does not work with --continue, "
+                     "--continue will be disabled.\n"));
+          opt.always_rest = false;
+        }
+      if (opt.warc_cdx_dedup_filename != 0 && !opt.warc_digests_enabled)
+        {
+          fprintf (stderr,
+                   _("Digests are disabled; WARC deduplication will "
+                     "not find duplicate records.\n"));
+        }
+      if (opt.warc_keep_log)
+        {
+          opt.progress_type = "dot";
+        }
+    }
+
   if (opt.ask_passwd && opt.passwd)
     {
       fprintf (stderr,
@@ -1272,6 +1363,10 @@ for details.\n\n"));
 
   /* Initialize logging.  */
   log_init (opt.lfilename, append_to_log);
+
+  /* Open WARC file. */
+  if (opt.warc_filename != 0)
+    warc_init ();
 
   DEBUGP (("DEBUG output created by Wget %s on %s.\n\n",
            version_string, OS_TYPE));
@@ -1472,7 +1567,12 @@ outputting to a regular file.\n"));
   if (opt.convert_links && !opt.delete_after)
     convert_all_links ();
 
+  /* Close WARC file. */
+  if (opt.warc_filename != 0)
+    warc_close ();
+
   log_close ();
+
   for (i = 0; i < nurl; i++)
     xfree (url[i]);
   cleanup ();

@@ -139,13 +139,16 @@ limit_bandwidth (wgint bytes, struct ptimer *timer)
 
 /* Write data in BUF to OUT.  However, if *SKIP is non-zero, skip that
    amount of data and decrease SKIP.  Increment *TOTAL by the amount
-   of data written.  */
+   of data written.  If OUT2 is not NULL, also write BUF to OUT2.
+   In case of error writing to OUT, -1 is returned.  In case of error
+   writing to OUT2, -2 is returned.  In case of any other error,
+   1 is returned.  */
 
 static int
-write_data (FILE *out, const char *buf, int bufsize, wgint *skip,
-            wgint *written)
+write_data (FILE *out, FILE *out2, const char *buf, int bufsize,
+            wgint *skip, wgint *written)
 {
-  if (!out)
+  if (out == NULL && out2 == NULL)
     return 1;
   if (*skip > bufsize)
     {
@@ -161,7 +164,10 @@ write_data (FILE *out, const char *buf, int bufsize, wgint *skip,
         return 1;
     }
 
-  fwrite (buf, 1, bufsize, out);
+  if (out != NULL)
+    fwrite (buf, 1, bufsize, out);
+  if (out2 != NULL)
+    fwrite (buf, 1, bufsize, out2);
   *written += bufsize;
 
   /* Immediately flush the downloaded data.  This should not hinder
@@ -178,9 +184,17 @@ write_data (FILE *out, const char *buf, int bufsize, wgint *skip,
      actual justification.  (Also, why 16K?  Anyone test other values?)
   */
 #ifndef __VMS
-  fflush (out);
+  if (out != NULL)
+    fflush (out);
+  if (out2 != NULL)
+    fflush (out2);
 #endif /* ndef __VMS */
-  return !ferror (out);
+  if (out != NULL && ferror (out))
+    return -1;
+  else if (out2 != NULL && ferror (out2))
+    return -2;
+  else
+    return 0;
 }
 
 /* Read the contents of file descriptor FD until it the connection
@@ -198,13 +212,17 @@ write_data (FILE *out, const char *buf, int bufsize, wgint *skip,
    the amount of data written to disk.  The time it took to download
    the data is stored to ELAPSED.
 
+   If OUT2 is non-NULL, the contents is also written to OUT2.
+
    The function exits and returns the amount of data read.  In case of
    error while reading data, -1 is returned.  In case of error while
-   writing data, -2 is returned.  */
+   writing data to OUT, -2 is returned.  In case of error while writing
+   data to OUT2, -3 is returned.  */
 
 int
 fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
-              wgint *qtyread, wgint *qtywritten, double *elapsed, int flags)
+              wgint *qtyread, wgint *qtywritten, double *elapsed, int flags,
+              FILE *out2)
 {
   int ret = 0;
 #undef max
@@ -343,9 +361,10 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
       if (ret > 0)
         {
           sum_read += ret;
-          if (!write_data (out, dlbuf, ret, &skip, &sum_written))
+          int write_res = write_data (out, out2, dlbuf, ret, &skip, &sum_written);
+          if (write_res != 0)
             {
-              ret = -2;
+              ret = (write_res == -3) ? -3 : -2;
               goto out;
             }
           if (chunked)

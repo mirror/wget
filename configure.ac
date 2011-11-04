@@ -511,7 +511,19 @@ if test "X$iri" != "Xno"; then
   fi
 fi
 
+dnl
+dnl Check for UUID
+dnl
 
+AC_CHECK_HEADER(uuid/uuid.h,
+                AC_CHECK_LIB(uuid, uuid_generate,
+                  [LIBS="${LIBS} -luuid"
+                   AC_DEFINE([HAVE_LIBUUID], 1,
+                             [Define if libuuid is available.])
+                  ])
+)
+
+ 
 dnl Needed by src/Makefile.am
 AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" != "Xno"])
 

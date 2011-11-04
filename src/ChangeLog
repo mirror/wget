@@ -1,3 +1,6 @@
+2011-11-04  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+
 2011-10-07  Steven Schweda  <address@hidden>
 
 	* connect.c: Add HAVE_SYS_SELECT_H and HAVE_SYS_SOCKET_H conditions
@@ -21,7 +24,10 @@
 	* openssl.c (ssl_init): Add type cast (SSL_METHOD *) to newly "const"
 	"meth" argument to accommodate OpenSSL version 0.9.8, where that
 	argument is not "const" in the OpenSSL function (SSL_CTX_new).
+	* test.c: Declare "program_argstring".
 	* utils.c (fopen_excl): Comment typography.
+	* warc.h: New file.
+	* warc.c: New file.
 
 2011-10-02  Henrik Holst <henrik.holst@millistream.com> (tiny change)
 	* http.c (gethttp): If 'contentonerror' is used then do not
