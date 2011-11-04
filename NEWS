@@ -11,6 +11,10 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Add support for content-on-error.  It allows to store the HTTP
    payload on 4xx or 5xx errors.
 
+** Add support for WARC files.
+
+** Fix a memory leak problem in the GNU TLS backend.
+
 
 * Changes in Wget 1.13.4
 
