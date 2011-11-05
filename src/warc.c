@@ -19,6 +19,10 @@
 #include <uuid/uuid.h>
 #endif
 
+#ifndef WINDOWS
+#include <libgen.h>
+#endif
+
 #include "warc.h"
 
 extern char *version_string;
@@ -605,7 +609,7 @@ warc_write_warcinfo_record (char *filename)
 
   char *filename_copy, *filename_basename;
   filename_copy = strdup (filename);
-  filename_basename = basename (filename_copy);
+  filename_basename = strdup (basename (filename_copy));
 
   warc_write_start_record ();
   warc_write_header ("WARC-Type", "warcinfo");
@@ -619,6 +623,7 @@ warc_write_warcinfo_record (char *filename)
   if (warc_tmp == NULL)
     {
       free (filename_copy);
+      free (filename_basename);
       return false;
     }
 
@@ -646,6 +651,7 @@ warc_write_warcinfo_record (char *filename)
     }
 
   free (filename_copy);
+  free (filename_basename);
   fclose (warc_tmp);
   return warc_write_ok;
 }
