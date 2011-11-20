@@ -169,7 +169,7 @@ warc_write_start_record ()
       fflush (warc_current_file);
 
       /* Start a new GZIP stream. */
-      warc_current_gzfile = gzdopen (dup (fileno (warc_current_file)), "wb+9");
+      warc_current_gzfile = gzdopen (dup (fileno (warc_current_file)), "wb9");
       warc_current_gzfile_uncompressed_size = 0;
 
       if (warc_current_gzfile == NULL)
