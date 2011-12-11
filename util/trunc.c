@@ -128,5 +128,11 @@ main (int argc, char *argv[])
       exit (EXIT_FAILURE);
     }
 
+  if (close (fd) < 0)
+    {
+      perror (PROGRAM_NAME ": close");
+      exit (EXIT_FAILURE);
+    }
+
   return 0;
 }

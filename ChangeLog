@@ -1,3 +1,8 @@
+2011-12-11  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* util/trunc.c (main): Call `close' on the fd and check for errors.
+	Reported by: <dga@cs.cmu.edu>.
+
 2011-10-23  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap.conf (gnulib_modules): Include module `vsnprintf'.
