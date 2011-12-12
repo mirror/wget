@@ -1,3 +1,8 @@
+2011-12-12  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am (EXTRA_DIST): Add build-aux/bzr-version-gen.
+	Reported by: Elan Ruusamäe <glen@pld-linux.org>.
+
 2011-12-11  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* util/trunc.c (main): Call `close' on the fd and check for errors.

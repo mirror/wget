@@ -15,6 +15,7 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Fix a memory leak problem in the GNU TLS backend.
 
+** Autoreconf works again for distributed tarballs.
 
 * Changes in Wget 1.13.4
 
