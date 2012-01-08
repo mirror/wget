@@ -1,3 +1,8 @@
+2012-01-09  Sasikantha Babu   <sasikanth.v19@gmail.com> (tiny change)
+	* connect.c (connect_to_ip): properly formatted ipv6 address display.
+	(socket_family): New function - returns socket family type.
+	* http.c (gethttp): properly formatted ipv6 address display.
+
 2011-11-09  Gijs van Tulder  <address@hidden>
 
 	* warc.c: Call gzdopen() with wb9 instead of wb+9, which fails on
