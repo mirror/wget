@@ -1,3 +1,7 @@
+2012-01-09  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* configure.ac: Always try to use libz, even without SSL.
+
 2011-12-12  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am (EXTRA_DIST): Add build-aux/bzr-version-gen.

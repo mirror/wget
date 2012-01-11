@@ -289,7 +289,9 @@ static struct cmdline_option option_data[] =
     { "wait", 'w', OPT_VALUE, "wait", -1 },
     { "waitretry", 0, OPT_VALUE, "waitretry", -1 },
     { "warc-cdx", 0, OPT_BOOLEAN, "warccdx", -1 },
+#ifdef HAVE_LIBZ
     { "warc-compression", 0, OPT_BOOLEAN, "warccompression", -1 },
+#endif
     { "warc-dedup", 0, OPT_VALUE, "warccdxdedup", -1 },
     { "warc-digests", 0, OPT_BOOLEAN, "warcdigests", -1 },
     { "warc-file", 0, OPT_VALUE, "warcfile", -1 },
@@ -674,8 +676,10 @@ WARC options:\n"),
        --warc-cdx                write CDX index files.\n"),
     N_("\
        --warc-dedup=FILENAME     do not store records listed in this CDX file.\n"),
+#ifdef HAVE_LIBZ
     N_("\
        --no-warc-compression     do not compress WARC files with GZIP.\n"),
+#endif
     N_("\
        --no-warc-digests         do not calculate SHA1 digests.\n"),
     N_("\

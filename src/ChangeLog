@@ -1,3 +1,10 @@
+2012-01-09  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* init.c: Disable WARC compression if zlib is disabled.
+	* main.c: Do not show the 'no-warc-compression' option if zlib is
+	disabled.
+	* warc.c: Do not compress WARC files if zlib is disabled.
+
 2012-01-09  Sasikantha Babu   <sasikanth.v19@gmail.com> (tiny change)
 	* connect.c (connect_to_ip): properly formatted ipv6 address display.
 	(socket_family): New function - returns socket family type.

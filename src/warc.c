@@ -14,7 +14,9 @@
 #include <sha1.h>
 #include <base32.h>
 #include <unistd.h>
+#ifdef HAVE_LIBZ
 #include <zlib.h>
+#endif
 #ifdef HAVE_LIBUUID
 #include <uuid/uuid.h>
 #endif
@@ -42,6 +44,7 @@ static FILE *warc_manifest_fp;
 /* The current WARC file (or NULL, if WARC is disabled). */
 static FILE *warc_current_file;
 
+#ifdef HAVE_LIBZ
 /* The gzip stream for the current WARC file
    (or NULL, if WARC or gzip is disabled). */
 static gzFile *warc_current_gzfile;
@@ -51,6 +54,7 @@ static size_t warc_current_gzfile_offset;
 
 /* The uncompressed size (so far) of the current record. */
 static size_t warc_current_gzfile_uncompressed_size;
+# endif
 
 /* This is true until a warc_write_* method fails. */
 static bool warc_write_ok;
@@ -105,12 +109,14 @@ warc_cmp_sha1_digest (const void *digest1, const void *digest2)
 static size_t
 warc_write_buffer (const char *buffer, size_t size)
 {
+#ifdef HAVE_LIBZ
   if (warc_current_gzfile)
     {
       warc_current_gzfile_uncompressed_size += size;
       return gzwrite (warc_current_gzfile, buffer, size);
     }
   else
+#endif
     return fwrite (buffer, 1, size, warc_current_file);
 }
 
@@ -155,6 +161,7 @@ warc_write_start_record ()
   if (opt.warc_maxsize > 0 && ftell (warc_current_file) >= opt.warc_maxsize)
     warc_start_new_file (false);
 
+#ifdef HAVE_LIBZ
   /* Start a GZIP stream, if required. */
   if (opt.warc_compression_enabled)
     {
@@ -179,6 +186,7 @@ warc_write_start_record ()
           return false;
         }
     }
+#endif
 
   warc_write_string ("WARC/1.0\r\n");
   return warc_write_ok;
@@ -247,6 +255,7 @@ warc_write_end_record ()
 {
   warc_write_buffer ("\r\n\r\n", 4);
 
+#ifdef HAVE_LIBZ
   /* We start a new gzip stream for each record.  */
   if (warc_write_ok && warc_current_gzfile)
     {
@@ -325,6 +334,7 @@ warc_write_end_record ()
       fflush (warc_current_file);
       fseek (warc_current_file, 0, SEEK_END);
     }
+#endif /* HAVE_LIBZ */
 
   return warc_write_ok;
 }
@@ -687,7 +697,11 @@ warc_start_new_file (bool meta)
   char *new_filename = malloc (base_filename_length + 1 + 5 + 8 + 1);
   warc_current_filename = new_filename;
 
+#ifdef HAVE_LIBZ
   char *extension = (opt.warc_compression_enabled ? "warc.gz" : "warc");
+#else
+  char *extension = "warc";
+#endif
 
   /* If max size is enabled, we add a serial number to the file names. */
   if (meta)

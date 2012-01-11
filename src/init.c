@@ -267,7 +267,9 @@ static const struct {
   { "waitretry",        &opt.waitretry,         cmd_time },
   { "warccdx",          &opt.warc_cdx_enabled,  cmd_boolean },
   { "warccdxdedup",     &opt.warc_cdx_dedup_filename,  cmd_file },
+#ifdef HAVE_LIBZ
   { "warccompression",  &opt.warc_compression_enabled, cmd_boolean },
+#endif
   { "warcdigests",      &opt.warc_digests_enabled, cmd_boolean },
   { "warcfile",         &opt.warc_filename,     cmd_file },
   { "warcheader",       NULL,                   cmd_spec_warc_header },
@@ -374,7 +376,11 @@ defaults (void)
   opt.show_all_dns_entries = false;
 
   opt.warc_maxsize = 0; /* 1024 * 1024 * 1024; */
+#ifdef HAVE_LIBZ
   opt.warc_compression_enabled = true;
+#else
+  opt.warc_compression_enabled = false;
+#endif
   opt.warc_digests_enabled = true;
   opt.warc_cdx_enabled = false;
   opt.warc_cdx_dedup_filename = NULL;

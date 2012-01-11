@@ -65,6 +65,9 @@ AC_ARG_WITH(ssl,
 [[  --without-ssl           disable SSL autodetection
   --with-ssl={gnutls,openssl} specify the SSL backend.  GNU TLS is the default.]])
 
+AC_ARG_WITH(zlib,
+[[  --without-zlib          disable zlib ]])
+
 AC_ARG_ENABLE(opie,
 [  --disable-opie          disable support for opie or s/key FTP login],
 ENABLE_OPIE=$enableval, ENABLE_OPIE=yes)
@@ -233,6 +236,10 @@ esac
 dnl
 dnl Checks for libraries.
 dnl
+
+AS_IF([test x"$with_zlib" != xno], [
+  AC_CHECK_LIB(z, compress)
+])
 
 AS_IF([test x"$with_ssl" = xopenssl], [
     dnl some versions of openssl use zlib compression
