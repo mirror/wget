@@ -213,6 +213,9 @@ write_data (FILE *out, FILE *out2, const char *buf, int bufsize,
    the data is stored to ELAPSED.
 
    If OUT2 is non-NULL, the contents is also written to OUT2.
+   OUT2 will get an exact copy of the response: if this is a chunked
+   response, everything -- including the chunk headers -- is written
+   to OUT2.  (OUT will only get the unchunked response.)
 
    The function exits and returns the amount of data read.  In case of
    error while reading data, -1 is returned.  In case of error while
@@ -305,6 +308,8 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
                   ret = -1;
                   break;
                 }
+              else if (out2 != NULL)
+                fwrite (line, 1, strlen (line), out2);
 
               remaining_chunk_size = strtol (line, &endl, 16);
               xfree (line);
@@ -316,7 +321,11 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
                   if (line == NULL)
                     ret = -1;
                   else
-                    xfree (line);
+                    {
+                      if (out2 != NULL)
+                        fwrite (line, 1, strlen (line), out2);
+                      xfree (line);
+                    }
                   break;
                 }
             }
@@ -384,7 +393,11 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
                       break;
                     }
                   else
-                    xfree (line);
+                    {
+                      if (out2 != NULL)
+                        fwrite (line, 1, strlen (line), out2);
+                      xfree (line);
+                    }
                 }
             }
         }

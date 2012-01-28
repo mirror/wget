@@ -1,5 +1,11 @@
 2012-01-27  Gijs van Tulder  <gvtulder@gmail.com>
 
+	* retr.c (fd_read_body): If the response is chunked, the chunk
+	headers are now written to the WARC file, making the WARC file
+	an exact copy of the HTTP response.
+
+2012-01-27  Gijs van Tulder  <gvtulder@gmail.com>
+
 	* retr.c (fd_read_body): Fix a memory leak with chunked responses.
 	* http.c (skip_short_body): Fix the same memory leak.
 
