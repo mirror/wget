@@ -951,9 +951,12 @@ skip_short_body (int fd, wgint contlen, bool chunked)
                 break;
 
               remaining_chunk_size = strtol (line, &endl, 16);
+              xfree (line);
+
               if (remaining_chunk_size == 0)
                 {
-                  fd_read_line (fd);
+                  line = fd_read_line (fd);
+                  xfree_null (line);
                   break;
                 }
             }
@@ -978,8 +981,13 @@ skip_short_body (int fd, wgint contlen, bool chunked)
         {
           remaining_chunk_size -= ret;
           if (remaining_chunk_size == 0)
-            if (fd_read_line (fd) == NULL)
-              return false;
+            {
+              char *line = fd_read_line (fd);
+              if (line == NULL)
+                return false;
+              else
+                xfree (line);
+            }
         }
 
       /* Safe even if %.*s bogusly expects terminating \0 because

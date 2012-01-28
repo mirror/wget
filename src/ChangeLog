@@ -1,3 +1,8 @@
+2012-01-27  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* retr.c (fd_read_body): Fix a memory leak with chunked responses.
+	* http.c (skip_short_body): Fix the same memory leak.
+
 2012-01-09  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* init.c: Disable WARC compression if zlib is disabled.
