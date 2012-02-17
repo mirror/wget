@@ -1,3 +1,7 @@
+2012-02-17  Steven Schubiger  <stsc@member.fsf.org>
+
+	* warc.c: Add license header.
+
 2012-01-27  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* retr.c (fd_read_body): If the response is chunked, the chunk
