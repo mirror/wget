@@ -1034,7 +1034,7 @@ main (int argc, char **argv)
             }
           if (!userrc_ret)
             {
-              printf ("Exiting due to error in %s\n", optarg);
+              fprintf (stderr, "Exiting due to error in %s\n", optarg);
               exit (2);
             }
           else
@@ -1062,9 +1062,10 @@ main (int argc, char **argv)
         {
           if (ret == '?')
             {
-              print_usage (0);
-              printf ("\n");
-              printf (_("Try `%s --help' for more options.\n"), exec_name);
+              print_usage (1);
+              fprintf (stderr, "\n");
+              fprintf (stderr, _("Try `%s --help' for more options.\n"),
+		       exec_name);
               exit (2);
             }
           /* Find the short option character in the mapping.  */
@@ -1307,7 +1308,7 @@ for details.\n\n"));
       /* No URL specified.  */
       fprintf (stderr, _("%s: missing URL\n"), exec_name);
       print_usage (1);
-      printf ("\n");
+      fprintf (stderr, "\n");
       /* #### Something nicer should be printed here -- similar to the
          pre-1.5 `--help' page.  */
       fprintf (stderr, _("Try `%s --help' for more options.\n"), exec_name);
