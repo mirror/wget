@@ -217,11 +217,7 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
 static int
 wgnutls_read (int fd, char *buf, int bufsize, void *arg)
 {
-#ifdef F_GETFL
-  int flags = 0;
-#endif
   int ret = 0;
-  struct ptimer *timer;
   struct wgnutls_transport_context *ctx = arg;
 
   if (ctx->peeklen)
