@@ -1,5 +1,7 @@
 2012-02-23  Giuseppe Scrivano  <giuseppe@southpole.se>
 
+	* main.c (main): Fail gracefully if `malloc' fails.
+
 	* gnutls.c (wgnutls_read): Remove unused variables `timer' and `flags'.
 
 2012-02-17  Steven Schubiger  <stsc@member.fsf.org>
