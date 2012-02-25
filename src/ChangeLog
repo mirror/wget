@@ -1,3 +1,9 @@
+2012-02-01  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* warc.c: Fix large file support with ftello, fseeko.
+	* warc.h: Fix large file support.
+	* http.c: Fix large file support.
+
 2012-02-23  Giuseppe Scrivano  <giuseppe@southpole.se>
 
 	* main.c (main): Write diagnostic messages to `stderr' not to `stdout'.

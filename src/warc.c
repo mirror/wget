@@ -78,10 +78,10 @@ static FILE *warc_current_file;
 static gzFile *warc_current_gzfile;
 
 /* The offset of the current gzip record in the WARC file. */
-static size_t warc_current_gzfile_offset;
+static off_t warc_current_gzfile_offset;
 
 /* The uncompressed size (so far) of the current record. */
-static size_t warc_current_gzfile_uncompressed_size;
+static off_t warc_current_gzfile_uncompressed_size;
 # endif
 
 /* This is true until a warc_write_* method fails. */
@@ -186,7 +186,7 @@ warc_write_start_record ()
     return false;
 
   fflush (warc_current_file);
-  if (opt.warc_maxsize > 0 && ftell (warc_current_file) >= opt.warc_maxsize)
+  if (opt.warc_maxsize > 0 && ftello (warc_current_file) >= opt.warc_maxsize)
     warc_start_new_file (false);
 
 #ifdef HAVE_LIBZ
@@ -194,7 +194,7 @@ warc_write_start_record ()
   if (opt.warc_compression_enabled)
     {
       /* Record the starting offset of the new record. */
-      warc_current_gzfile_offset = ftell (warc_current_file);
+      warc_current_gzfile_offset = ftello (warc_current_file);
 
       /* Reserve space for the extra GZIP header field.
          In warc_write_end_record we will fill this space
@@ -245,8 +245,8 @@ warc_write_block_from_file (FILE *data_in)
 {
   /* Add the Content-Length header. */
   char *content_length;
-  fseek (data_in, 0L, SEEK_END);
-  if (! asprintf (&content_length, "%ld", ftell (data_in)))
+  fseeko (data_in, 0L, SEEK_END);
+  if (! asprintf (&content_length, "%ld", ftello (data_in)))
     {
       warc_write_ok = false;
       return false;
@@ -257,7 +257,7 @@ warc_write_block_from_file (FILE *data_in)
   /* End of the WARC header section. */
   warc_write_string ("\r\n");
 
-  if (fseek (data_in, 0L, SEEK_SET) != 0)
+  if (fseeko (data_in, 0L, SEEK_SET) != 0)
     warc_write_ok = false;
 
   /* Copy the data in the file to the WARC record. */
@@ -294,7 +294,7 @@ warc_write_end_record ()
         }
 
       fflush (warc_current_file);
-      fseek (warc_current_file, 0, SEEK_END);
+      fseeko (warc_current_file, 0, SEEK_END);
 
       /* The WARC standard suggests that we add 'skip length' data in the
          extra header field of the GZIP stream.
@@ -312,12 +312,12 @@ warc_write_end_record ()
       */
 
       /* Calculate the uncompressed and compressed sizes. */
-      size_t current_offset = ftell (warc_current_file);
-      size_t uncompressed_size = current_offset - warc_current_gzfile_offset;
-      size_t compressed_size = warc_current_gzfile_uncompressed_size;
+      off_t current_offset = ftello (warc_current_file);
+      off_t uncompressed_size = current_offset - warc_current_gzfile_offset;
+      off_t compressed_size = warc_current_gzfile_uncompressed_size;
 
       /* Go back to the static GZIP header. */
-      fseek (warc_current_file, warc_current_gzfile_offset + EXTRA_GZIP_HEADER_SIZE, SEEK_SET);
+      fseeko (warc_current_file, warc_current_gzfile_offset + EXTRA_GZIP_HEADER_SIZE, SEEK_SET);
 
       /* Read the header. */
       char static_header[GZIP_STATIC_HEADER_SIZE];
@@ -332,7 +332,7 @@ warc_write_end_record ()
       static_header[OFF_FLG] = static_header[OFF_FLG] | FLG_FEXTRA;
 
       /* Write the header back to the file, but starting at warc_current_gzfile_offset. */
-      fseek (warc_current_file, warc_current_gzfile_offset, SEEK_SET);
+      fseeko (warc_current_file, warc_current_gzfile_offset, SEEK_SET);
       fwrite (static_header, 1, GZIP_STATIC_HEADER_SIZE, warc_current_file);
 
       /* Prepare the extra GZIP header. */
@@ -355,12 +355,12 @@ warc_write_end_record ()
       extra_header[11] = (compressed_size >> 24) & 255;
 
       /* Write the extra header after the static header. */
-      fseek (warc_current_file, warc_current_gzfile_offset + GZIP_STATIC_HEADER_SIZE, SEEK_SET);
+      fseeko (warc_current_file, warc_current_gzfile_offset + GZIP_STATIC_HEADER_SIZE, SEEK_SET);
       fwrite (extra_header, 1, EXTRA_GZIP_HEADER_SIZE, warc_current_file);
 
       /* Done, move back to the end of the file. */
       fflush (warc_current_file);
-      fseek (warc_current_file, 0, SEEK_END);
+      fseeko (warc_current_file, 0, SEEK_END);
     }
 #endif /* HAVE_LIBZ */
 
@@ -408,14 +408,14 @@ warc_write_ip_header (ip_address *ip)
    the end of the file.  The digest number will be written into the
    16 bytes beginning ad RES_PAYLOAD.  */
 static int
-warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload, long int payload_offset)
+warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload, off_t payload_offset)
 {
 #define BLOCKSIZE 32768
 
   struct sha1_ctx ctx_block;
   struct sha1_ctx ctx_payload;
-  long int pos;
-  size_t sum;
+  off_t pos;
+  off_t sum;
 
   char *buffer = malloc (BLOCKSIZE + 72);
   if (!buffer)
@@ -434,7 +434,7 @@ warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload,
       /* We read the file in blocks of BLOCKSIZE bytes.  One call of the
          computation function processes the whole buffer so that with the
          next round of the loop another block can be read.  */
-      size_t n;
+      off_t n;
       sum = 0;
 
       /* Read block.  Take care for partial reads.  */
@@ -475,7 +475,7 @@ warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload,
       if (payload_offset >= 0 && payload_offset < pos)
         {
           /* At least part of the buffer contains data from payload. */
-          int start_of_payload = payload_offset - (pos - BLOCKSIZE);
+          off_t start_of_payload = payload_offset - (pos - BLOCKSIZE);
           if (start_of_payload <= 0)
             /* All bytes in the buffer belong to the payload. */
             start_of_payload = 0;
@@ -499,7 +499,7 @@ warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload,
       if (payload_offset >= 0 && payload_offset < pos)
         {
           /* At least part of the buffer contains data from payload. */
-          int start_of_payload = payload_offset - (pos - sum);
+          off_t start_of_payload = payload_offset - (pos - sum);
           if (start_of_payload <= 0)
             /* All bytes in the buffer belong to the payload. */
             start_of_payload = 0;
@@ -1134,7 +1134,7 @@ warc_tempfile ()
    Calling this function will close body.
    Returns true on success, false on error. */
 bool
-warc_write_request_record (char *url, char *timestamp_str, char *record_uuid, ip_address *ip, FILE *body, long int payload_offset)
+warc_write_request_record (char *url, char *timestamp_str, char *record_uuid, ip_address *ip, FILE *body, off_t payload_offset)
 {
   warc_write_start_record ();
   warc_write_header ("WARC-Type", "request");
@@ -1166,7 +1166,7 @@ warc_write_request_record (char *url, char *timestamp_str, char *record_uuid, ip
    response_uuid  is the uuid of the response.
    Returns true on success, false on error. */
 static bool
-warc_write_cdx_record (char *url, char *timestamp_str, char *mime_type, int response_code, char *payload_digest, char *redirect_location, size_t offset, char *warc_filename, char *response_uuid)
+warc_write_cdx_record (char *url, char *timestamp_str, char *mime_type, int response_code, char *payload_digest, char *redirect_location, off_t offset, char *warc_filename, char *response_uuid)
 {
   /* Transform the timestamp. */
   char timestamp_str_cdx [15];
@@ -1258,7 +1258,7 @@ warc_write_revisit_record (char *url, char *timestamp_str, char *concurrent_to_u
    Calling this function will close body.
    Returns true on success, false on error. */
 bool
-warc_write_response_record (char *url, char *timestamp_str, char *concurrent_to_uuid, ip_address *ip, FILE *body, long int payload_offset, char *mime_type, int response_code, char *redirect_location)
+warc_write_response_record (char *url, char *timestamp_str, char *concurrent_to_uuid, ip_address *ip, FILE *body, off_t payload_offset, char *mime_type, int response_code, char *redirect_location)
 {
   char *block_digest = NULL;
   char *payload_digest = NULL;
@@ -1304,8 +1304,8 @@ warc_write_response_record (char *url, char *timestamp_str, char *concurrent_to_
   char response_uuid [48];
   warc_uuid_str (response_uuid);
 
-  fseek (warc_current_file, 0L, SEEK_END);
-  size_t offset = ftell (warc_current_file);
+  fseeko (warc_current_file, 0L, SEEK_END);
+  off_t offset = ftello (warc_current_file);
 
   warc_write_start_record ();
   warc_write_header ("WARC-Type", "response");
@@ -1349,7 +1349,7 @@ warc_write_response_record (char *url, char *timestamp_str, char *concurrent_to_
    Calling this function will close body.
    Returns true on success, false on error. */
 bool
-warc_write_resource_record (char *resource_uuid, char *url, char *timestamp_str, char *concurrent_to_uuid, ip_address *ip, char *content_type, FILE *body, long int payload_offset)
+warc_write_resource_record (char *resource_uuid, char *url, char *timestamp_str, char *concurrent_to_uuid, ip_address *ip, char *content_type, FILE *body, off_t payload_offset)
 {
   if (resource_uuid == NULL)
     {

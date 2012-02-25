@@ -1712,7 +1712,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   char warc_timestamp_str [21];
   char warc_request_uuid [48];
   ip_address *warc_ip = NULL;
-  long int warc_payload_offset = -1;
+  off_t warc_payload_offset = -1;
 
   /* Whether this connection will be kept alive after the HTTP request
      is done. */
@@ -2127,7 +2127,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
           if (write_error >= 0 && warc_tmp != NULL)
             {
               /* Remember end of headers / start of payload. */
-              warc_payload_offset = ftell (warc_tmp);
+              warc_payload_offset = ftello (warc_tmp);
 
               /* Write a copy of the data to the WARC record. */
               int warc_tmp_written = fwrite (opt.post_data, 1, post_data_size, warc_tmp);
@@ -2139,7 +2139,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
         {
           if (warc_tmp != NULL)
             /* Remember end of headers / start of payload. */
-            warc_payload_offset = ftell (warc_tmp);
+            warc_payload_offset = ftello (warc_tmp);
 
           write_error = post_file (sock, opt.post_file_name, post_data_size, warc_tmp);
         }
