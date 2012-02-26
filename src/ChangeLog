@@ -1,3 +1,8 @@
+2012-02-26  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* main.c: Include "closeout.h"
+	(main): Register close_stdout at exit.
+
 2012-02-01  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* warc.c: Fix large file support with ftello, fseeko.

@@ -1,3 +1,7 @@
+2012-02-26  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (gnulib_modules): Add module `closeout'.
+
 2012-01-09  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* configure.ac: Always try to use libz, even without SSL.

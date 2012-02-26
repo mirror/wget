@@ -1,6 +1,6 @@
 /* Command line parsing.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -56,7 +56,7 @@ as that of the covered work.  */
 #include "http.h"               /* for save_cookies */
 #include "ptimer.h"
 #include "warc.h"
-
+#include "closeout.h"
 #include <getopt.h>
 #include <getpass.h>
 #include <quote.h>
@@ -965,6 +965,8 @@ main (int argc, char **argv)
   double start_time = ptimer_measure (timer);
 
   i18n_initialize ();
+
+  atexit (close_stdout);
 
   /* Construct the name of the executable, without the directory part.  */
 #ifdef __VMS
