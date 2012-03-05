@@ -75,4 +75,6 @@ void set_local_file (const char **, const char *);
 
 bool input_file_url (const char *);
 
+wgint convert_to_bits (wgint num);
+
 #endif /* RETR_H */

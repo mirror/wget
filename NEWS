@@ -20,6 +20,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Print some diagnostic messages to stderr not to stdout.
 
 ** Report stdout close errors.
+
+** Accept the --bit option.
 
 * Changes in Wget 1.13.4
 

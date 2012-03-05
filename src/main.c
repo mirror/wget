@@ -167,6 +167,7 @@ static struct cmdline_option option_data[] =
     { "backups", 0, OPT_BOOLEAN, "backups", -1 },
     { "base", 'B', OPT_VALUE, "base", -1 },
     { "bind-address", 0, OPT_VALUE, "bindaddress", -1 },
+    { "bits", 0, OPT_BOOLEAN, "bits", -1 },
     { IF_SSL ("ca-certificate"), 0, OPT_VALUE, "cacertificate", -1 },
     { IF_SSL ("ca-directory"), 0, OPT_VALUE, "cadirectory", -1 },
     { "cache", 0, OPT_BOOLEAN, "cache", -1 },
@@ -746,6 +747,11 @@ Recursive accept/reject:\n"),
   -np, --no-parent                 don't ascend to the parent directory.\n"),
     "\n",
 
+    N_("\
+Output format:\n"),
+    N_("\
+       --bits                      Output bandwidth in bits.\n"),
+    "\n",
     N_("Mail bug reports and suggestions to <bug-wget@gnu.org>.\n")
   };
 

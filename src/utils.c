@@ -1825,6 +1825,17 @@ number_to_static_string (wgint number)
   ringpos = (ringpos + 1) % RING_SIZE;
   return buf;
 }
+
+/* Converts the byte to bits format if --bits option is enabled
+ */
+wgint
+convert_to_bits (wgint num)
+{
+  if (opt.bits_fmt)
+    return num * 8;
+  return num;
+}
+
 
 /* Determine the width of the terminal we're running on.  If that's
    not possible, return 0.  */

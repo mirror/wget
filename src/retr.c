@@ -620,6 +620,7 @@ retr_rate (wgint bytes, double secs)
 {
   static char res[20];
   static const char *rate_names[] = {"B/s", "KB/s", "MB/s", "GB/s" };
+  static const char *rate_names_bits[] = {"b/s", "Kb/s", "Mb/s", "Gb/s" };
   int units;
 
   double dlrate = calc_rate (bytes, secs, &units);
@@ -627,7 +628,7 @@ retr_rate (wgint bytes, double secs)
      e.g. "1022", "247", "12.5", "2.38".  */
   sprintf (res, "%.*f %s",
            dlrate >= 99.95 ? 0 : dlrate >= 9.995 ? 1 : 2,
-           dlrate, rate_names[units]);
+           dlrate, !opt.bits_fmt? rate_names[units]: rate_names_bits[units]);
 
   return res;
 }
@@ -644,6 +645,11 @@ double
 calc_rate (wgint bytes, double secs, int *units)
 {
   double dlrate;
+  double bibyte = 1000.0;
+ 
+  if (!opt.bits_fmt)
+    bibyte = 1024.0;
+
 
   assert (secs >= 0);
   assert (bytes >= 0);
@@ -655,16 +661,17 @@ calc_rate (wgint bytes, double secs, int *units)
        0 and the timer's resolution, assume half the resolution.  */
     secs = ptimer_resolution () / 2.0;
 
-  dlrate = bytes / secs;
-  if (dlrate < 1024.0)
+  dlrate = convert_to_bits (bytes) / secs;
+  if (dlrate < bibyte)
     *units = 0;
-  else if (dlrate < 1024.0 * 1024.0)
-    *units = 1, dlrate /= 1024.0;
-  else if (dlrate < 1024.0 * 1024.0 * 1024.0)
-    *units = 2, dlrate /= (1024.0 * 1024.0);
+  else if (dlrate < (bibyte * bibyte))
+    *units = 1, dlrate /= bibyte;
+  else if (dlrate < (bibyte * bibyte * bibyte))
+    *units = 2, dlrate /= (bibyte * bibyte);
+
   else
     /* Maybe someone will need this, one day. */
-    *units = 3, dlrate /= (1024.0 * 1024.0 * 1024.0);
+    *units = 3, dlrate /= (bibyte * bibyte * bibyte);
 
   return dlrate;
 }

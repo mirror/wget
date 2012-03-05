@@ -127,6 +127,7 @@ static const struct {
   { "backups",          &opt.backups,           cmd_number },
   { "base",             &opt.base_href,         cmd_string },
   { "bindaddress",      &opt.bind_address,      cmd_string },
+  { "bits",             &opt.bits_fmt,          cmd_boolean},
 #ifdef HAVE_SSL
   { "cacertificate",    &opt.ca_cert,           cmd_file },
 #endif

@@ -1,3 +1,16 @@
+2012-03-06   Sasikantha Babu   <sasikanth.v19@gmail.com>
+
+	* utils.c (convert_to_bits): Added new function convert_to_bits to
+	convert bytes to bits.
+	* retr.c (calc_rate): Modified the function to handle --bits
+	option and download rate calculated as bits per sec (SI-prefix)
+	for --bits otherwise bytes (IEC-prefix).
+	(retr_rate): Rates will display in bits per sec for --bits.
+	* options.h (struct opt): Added --bit option bool variable bits_fmt.
+	* main.c (print_help) : Added help for --bit.
+	* init.c: Defined command for --bit option.
+	* retr.h: Added function prototype.
+
 2012-02-26  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* main.c: Include "closeout.h"
