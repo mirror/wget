@@ -1,6 +1,6 @@
 /* Reading/parsing the initialization file.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -469,7 +469,7 @@ wgetrc_env_file_name (void)
   return NULL;
 }
 
-/* Check for the existance of '$HOME/.wgetrc' and return it's path
+/* Check for the existance of '$HOME/.wgetrc' and return its path
    if it exists and is set.  */
 char *
 wgetrc_user_file_name (void)
