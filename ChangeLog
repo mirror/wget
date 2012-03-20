@@ -1,3 +1,8 @@
+2012-03-20  Ángel González <keisial@gmail.com>
+
+	* bootstrap.conf (gnulib_modules): Add modules `ftello',
+	`mkstemp' and `strtok_r'.
+
 2012-02-26  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap.conf (gnulib_modules): Add module `closeout'.
