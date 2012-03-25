@@ -62,9 +62,7 @@ as that of the covered work.  */
 #include <sys/stat.h>
 
 /* For TIOCGWINSZ and friends: */
-#ifdef HAVE_SYS_IOCTL_H
-# include <sys/ioctl.h>
-#endif
+#include <sys/ioctl.h>
 #ifdef HAVE_TERMIOS_H
 # include <termios.h>
 #endif

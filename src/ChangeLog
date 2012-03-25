@@ -1,3 +1,12 @@
+2012-03-25  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* utils.c: Include <sys/ioctl.h>.
+
+	* ptimer.c: Include <sys/time.h>.
+
+	* connect.c: Include <sys/socket.h>, <sys/select.h>, <sys/time.h>.
+	Reported by: Ray Satiro <raysatiro@yahoo.com>.
+
 2012-03-25 Ray Satiro <raysatiro@yahoo.com>
 
 	* build_info.c.in: Check that HAVE_LIBSSL32 is defined when OpenSSL
