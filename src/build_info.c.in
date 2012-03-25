@@ -9,5 +9,5 @@ ntlm            defined ENABLE_NTLM
 opie            defined ENABLE_OPIE
 
 ssl choice:
-    openssl     defined HAVE_LIBSSL
+    openssl     defined HAVE_LIBSSL || defined HAVE_LIBSSL32
     gnutls      defined HAVE_LIBGNUTLS

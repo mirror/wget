@@ -264,6 +264,9 @@ AS_IF([test x"$with_ssl" = xopenssl], [
           AC_CHECK_LIB(ssl32, SSL_connect, [
             ssl_found=yes
             AC_MSG_NOTICE([Enabling support for SSL via OpenSSL (shared)])
+            AC_LIBOBJ([openssl])
+            LIBS="${LIBS} -lssl32"
+            AC_DEFINE([HAVE_LIBSSL32], [1], [Define to 1 if you have the `ssl32' library (-lssl32).])
           ],
           AC_MSG_ERROR([openssl not found: shared lib eay32 found but ssl32 not found]))
           
@@ -289,6 +292,7 @@ AS_IF([test x$ssl_found != xyes],
     ], [SSL_library_init ()])
     if test x"$LIBSSL" != x
     then
+      ssl_found=yes
       AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
       AC_LIBOBJ([openssl])
       LIBS="$LIBSSL $LIBS"
@@ -296,9 +300,6 @@ AS_IF([test x$ssl_found != xyes],
     then
       AC_MSG_ERROR([--with-ssl=openssl was given, but SSL is not available.])
     fi
-
-    AC_LIBOBJ([openssl])
-
 ])
 
 ], [
@@ -316,6 +317,7 @@ AS_IF([test x$ssl_found != xyes],
   ], [gnutls_global_init()])
   if test x"$LIBGNUTLS" != x
   then
+    ssl_found=yes
     AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
     AC_LIBOBJ([gnutls])
     LIBS="$LIBGNUTLS $LIBS"
@@ -328,7 +330,7 @@ AS_IF([test x$ssl_found != xyes],
 ]) # endif: --with-ssl == openssl?
 
 dnl Enable NTLM if requested and if SSL is available.
-if test x"$LIBSSL" != x
+if test x"$LIBSSL" != x || test "$ac_cv_lib_ssl32_SSL_connect" = yes
 then
   if test x"$ENABLE_NTLM" != xno
   then

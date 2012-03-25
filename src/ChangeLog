@@ -1,3 +1,8 @@
+2012-03-25 Ray Satiro <raysatiro@yahoo.com>
+
+	* build_info.c.in: Check that HAVE_LIBSSL32 is defined when OpenSSL
+	is used.
+
 2012-03-07  Steven Schubiger  <stsc@member.fsf.org>
 
 	* init.c (wgetrc_user_file_name): Correct typo.

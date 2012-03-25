@@ -1,3 +1,7 @@
+2012-03-25 Ray Satiro <raysatiro@yahoo.com>
+
+	* configure.ac: Fix build under mingw when OpenSSL is used.
+
 2012-03-20  Ángel González <keisial@gmail.com>
 
 	* bootstrap.conf (gnulib_modules): Add modules `ftello',
