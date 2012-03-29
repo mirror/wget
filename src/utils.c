@@ -59,6 +59,8 @@ as that of the covered work.  */
 # endif
 #endif
 
+#include <sys/time.h>
+
 #include <sys/stat.h>
 
 /* For TIOCGWINSZ and friends: */

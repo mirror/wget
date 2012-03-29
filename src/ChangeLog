@@ -1,3 +1,7 @@
+2012-03-29  From: Tim Ruehsen <tim.ruehsen@gmx.de> (tiny change)
+
+	* utils.c (library): Include <sys/time.h>.
+
 2012-03-25  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* utils.c: Include <sys/ioctl.h>.
