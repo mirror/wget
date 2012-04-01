@@ -1,4 +1,8 @@
-2012-03-29  From: Tim Ruehsen <tim.ruehsen@gmx.de> (tiny change)
+2012-03-30  Tim Ruehsen  <tim.ruehsen@gmx.de> (tiny change)
+
+	* warc.c: make warc_uuid_str() implementation depend on HAVE_LIBUUID.
+
+2012-03-29  Tim Ruehsen <tim.ruehsen@gmx.de> (tiny change)
 
 	* utils.c (library): Include <sys/time.h>.
 

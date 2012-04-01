@@ -580,15 +580,32 @@ warc_timestamp (char *timestamp)
   strftime (timestamp, 21, "%Y-%m-%dT%H:%M:%SZ", timeinfo);
 }
 
-/* Fills uuid_str with a UUID based on random numbers.
+#ifdef HAVE_LIBUUID
+/* Fills urn_str with a UUID in the format required
+   for the WARC-Record-Id header.
+   The string will be 47 characters long. */
+void
+warc_uuid_str (char *urn_str)
+{
+  char uuid_str[37];
+
+  uuid_t record_id;
+  uuid_generate (record_id);
+  uuid_unparse (record_id, uuid_str);
+
+  sprintf (urn_str, "<urn:uuid:%s>", uuid_str);
+}
+#else
+/* Fills urn_str with a UUID based on random numbers in the format
+   required for the WARC-Record-Id header.
    (See RFC 4122, UUID version 4.)
 
    Note: this is a fallback method, it is much better to use the
    methods provided by libuuid.
 
-   The uuid_str will be 36 characters long. */
-static void
-warc_uuid_random (char *uuid_str)
+   The string will be 47 characters long. */
+void
+warc_uuid_str (char *urn_str)
 {
   // RFC 4122, a version 4 UUID with only random numbers
 
@@ -605,32 +622,14 @@ warc_uuid_random (char *uuid_str)
   // clock_seq_hi_and_reserved to zero and one, respectively.
   uuid_data[8] = (uuid_data[8] & 0xBF) | 0x80;
 
-  sprintf (uuid_str,
-    "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+  sprintf (urn_str,
+    "<urn:uuid:%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x>",
     uuid_data[0], uuid_data[1], uuid_data[2], uuid_data[3], uuid_data[4],
     uuid_data[5], uuid_data[6], uuid_data[7], uuid_data[8], uuid_data[9],
     uuid_data[10], uuid_data[11], uuid_data[12], uuid_data[13], uuid_data[14],
     uuid_data[15]);
 }
-
-/* Fills urn_str with a UUID in the format required
-   for the WARC-Record-Id header.
-   The string will be 47 characters long. */
-void
-warc_uuid_str (char *urn_str)
-{
-  char uuid_str[37];
-
-# ifdef HAVE_LIBUUID
-  uuid_t record_id;
-  uuid_generate (record_id);
-  uuid_unparse (record_id, uuid_str);
-# else
-  warc_uuid_random (uuid_str);
-# endif
-
-  sprintf (urn_str, "<urn:uuid:%s>", uuid_str);
-}
+#endif
 
 /* Write a warcinfo record to the current file.
    Updates warc_current_warcinfo_uuid_str. */
