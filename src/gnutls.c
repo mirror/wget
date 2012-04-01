@@ -1,5 +1,5 @@
 /* SSL support via GnuTLS library.
-   Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software
+   Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -160,9 +160,13 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
 
   do
     {
-      double next_timeout = timeout - ptimer_measure (timer);
-      if (timeout && next_timeout < 0)
-        break;
+      double next_timeout;
+      if (timeout > 0.0)
+	{
+	  next_timeout = timeout - ptimer_measure (timer);
+	  if (next_timeout < 0.0)
+	    break;
+	}
 
       ret = GNUTLS_E_AGAIN;
       if (timeout == 0 || gnutls_record_check_pending (ctx->session)

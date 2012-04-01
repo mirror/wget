@@ -1,3 +1,9 @@
+2012-04-01  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* gnutls.c (wgnutls_read_timeout): Do not use timer if it is not
+	allocated.
+	Reported by: Xu Zhongxing <xu_zhong_xing@163.com>
+
 2012-03-30  Tim Ruehsen  <tim.ruehsen@gmx.de> (tiny change)
 
 	* warc.c: make warc_uuid_str() implementation depend on HAVE_LIBUUID.
