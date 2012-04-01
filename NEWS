@@ -34,6 +34,7 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Return a network failure when FTP downloads fail and --timestamping
    is specified.
 
+** Fix a segfault on an incomplete STYLE tag.
 
 * Changes in Wget 1.13.3
 

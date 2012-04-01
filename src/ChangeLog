@@ -1,3 +1,7 @@
+2012-04-01  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* html-url.c: Prevent crash on incomplete STYLE tag.
+
 2012-04-01  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* gnutls.c (wgnutls_read_timeout): Ensure timer is freed.
