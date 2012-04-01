@@ -175,15 +175,13 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
           if (timeout)
             {
 #ifdef F_GETFL
-              ret = fcntl (fd, F_SETFL, flags | O_NONBLOCK);
-              if (ret < 0)
-                return ret;
+              if (fcntl (fd, F_SETFL, flags | O_NONBLOCK))
+		break;
 #else
               /* XXX: Assume it was blocking before.  */
               const int one = 1;
-              ret = ioctl (fd, FIONBIO, &one);
-              if (ret < 0)
-                return ret;
+              if (ioctl (fd, FIONBIO, &one) < 0)
+		break;
 #endif
             }
 
@@ -191,16 +189,13 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
 
           if (timeout)
             {
-              int status;
 #ifdef F_GETFL
-              status = fcntl (fd, F_SETFL, flags);
-              if (status < 0)
-                return status;
+              if (fcntl (fd, F_SETFL, flags) < 0)
+		break;
 #else
               const int zero = 0;
-              status = ioctl (fd, FIONBIO, &zero);
-              if (status < 0)
-                return status;
+              if (ioctl (fd, FIONBIO, &zero) < 0)
+		break;
 #endif
             }
         }
