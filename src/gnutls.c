@@ -54,6 +54,20 @@ as that of the covered work.  */
 # include "w32sock.h"
 #endif
 
+static int
+key_type_to_gnutls_type (enum keyfile_type type)
+{
+  switch (type)
+    {
+    case keyfile_pem:
+      return GNUTLS_X509_FMT_PEM;
+    case keyfile_asn1:
+      return GNUTLS_X509_FMT_DER;
+    default:
+      abort ();
+    }
+}
+
 /* Note: some of the functions private to this file have names that
    begin with "wgnutls_" (e.g. wgnutls_read) so that they wouldn't be
    confused with actual gnutls functions -- such as the gnutls_read
@@ -106,6 +120,36 @@ ssl_init ()
         }
 
       closedir (dir);
+    }
+
+  /* Use the private key from the cert file unless otherwise specified. */
+  if (opt.cert_file && !opt.private_key)
+    {
+      opt.private_key = opt.cert_file;
+      opt.private_key_type = opt.cert_type;
+    }
+  /* Use the cert from the private key file unless otherwise specified. */
+  if (!opt.cert_file && opt.private_key)
+    {
+      opt.cert_file = opt.private_key;
+      opt.cert_type = opt.private_key_type;
+    }
+
+  if (opt.cert_file && opt.private_key)
+    {
+      int type;
+      if (opt.private_key_type != opt.cert_type)
+	{
+	  /* GnuTLS can't handle this */
+	  logprintf (LOG_NOTQUIET, _("ERROR: GnuTLS requires the key and the \
+cert to be of the same type.\n"));
+	}
+
+      type = key_type_to_gnutls_type (opt.private_key_type);
+
+      gnutls_certificate_set_x509_key_file (credentials, opt.cert_file,
+					    opt.private_key,
+					    type);
     }
 
   if (opt.ca_cert)

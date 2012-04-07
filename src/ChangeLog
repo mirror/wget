@@ -1,3 +1,8 @@
+2012-04-07  Daniel Kahn Gillmor <dkg@fifthhorseman.net> (tiny change)
+
+	* gnutls.c (key_type_to_gnutls_type): New function.
+	(ssl_init): Use correctly the specified gnutls certificate.
+
 2012-04-01  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* html-url.c: Prevent crash on incomplete STYLE tag.

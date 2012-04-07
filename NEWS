@@ -22,6 +22,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Report stdout close errors.
 
 ** Accept the --bit option.
+
+** Enable client certificates when GNU TLS is used.
 
 * Changes in Wget 1.13.4
 
