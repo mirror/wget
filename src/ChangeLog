@@ -1,3 +1,11 @@
+2009-06-14  Phil Pennock  <mutt-dev@spodhuis.org> (tiny change)
+	* host.h: Declare `is_valid_ip_address'.
+	* host.c (is_valid_ip_address): New function.
+	* http.c (gethttp): Specify the hostname to ssl_connect_wget.
+	* gnutls.c (ssl_connect_wget): Specify the server name.
+	* openssl.c (ssl_connect_wget): Likewise.
+	* ssl.h: Change method signature for ssl_connect_wget.
+
 2012-04-13  Tim Ruehsen  <tim.ruehsen@gmx.de> (tiny change)
 
 	* warc.c (warc_load_cdx_dedup_file): Fix a memory leak by freeing

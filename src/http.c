@@ -1,6 +1,6 @@
 /* HTTP support.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -2082,7 +2082,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
 
       if (conn->scheme == SCHEME_HTTPS)
         {
-          if (!ssl_connect_wget (sock))
+          if (!ssl_connect_wget (sock, u->host))
             {
               fd_close (sock);
               return CONSSLERR;

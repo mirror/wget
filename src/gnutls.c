@@ -54,6 +54,8 @@ as that of the covered work.  */
 # include "w32sock.h"
 #endif
 
+#include "host.h"
+
 static int
 key_type_to_gnutls_type (enum keyfile_type type)
 {
@@ -369,12 +371,20 @@ static struct transport_implementation wgnutls_transport =
 };
 
 bool
-ssl_connect_wget (int fd)
+ssl_connect_wget (int fd, const char *hostname)
 {
   struct wgnutls_transport_context *ctx;
   gnutls_session session;
   int err;
   gnutls_init (&session, GNUTLS_CLIENT);
+
+  /* We set the server name but only if it's not an IP address. */
+  if (! is_valid_ip_address (hostname))
+    {
+      gnutls_server_name_set (session, GNUTLS_NAME_DNS, hostname,
+			      strlen (hostname));
+    }
+
   gnutls_set_default_priority (session);
   gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, credentials);
 #ifndef FD_TO_SOCKET
