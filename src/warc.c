@@ -956,6 +956,7 @@ warc_load_cdx_dedup_file ()
                               nrecords);
     }
 
+  free (lineptr);
   fclose (f);
 
   return true;

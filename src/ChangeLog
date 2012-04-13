@@ -1,3 +1,8 @@
+2012-04-13  Tim Ruehsen  <tim.ruehsen@gmx.de> (tiny change)
+
+	* warc.c (warc_load_cdx_dedup_file): Fix a memory leak by freeing
+	`lineptr'.
+
 2012-04-07  Daniel Kahn Gillmor <dkg@fifthhorseman.net> (tiny change)
 
 	* gnutls.c (key_type_to_gnutls_type): New function.
