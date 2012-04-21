@@ -2030,6 +2030,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
           if (write_error < 0)
             {
               CLOSE_INVALIDATE (sock);
+              request_free (req);
               return WRITEFAILED;
             }
 
@@ -2039,6 +2040,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
               logprintf (LOG_VERBOSE, _("Failed reading proxy response: %s\n"),
                          fd_errstr (sock));
               CLOSE_INVALIDATE (sock);
+              request_free (req);
               return HERR;
             }
           message = NULL;
@@ -2059,6 +2061,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                          quotearg_style (escape_quoting_style,
                                          _("Malformed status line")));
               xfree (head);
+              request_free (req);
               return HERR;
             }
           hs->message = xstrdup (message);
@@ -2070,6 +2073,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
               logprintf (LOG_NOTQUIET, _("Proxy tunneling failed: %s"),
                          message ? quotearg_style (escape_quoting_style, message) : "?");
               xfree_null (message);
+              request_free (req);
               return CONSSLERR;
             }
           xfree_null (message);
@@ -2085,11 +2089,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
           if (!ssl_connect_wget (sock, u->host))
             {
               fd_close (sock);
+              request_free (req);
               return CONSSLERR;
             }
           else if (!ssl_check_certificate (sock, u->host))
             {
               fd_close (sock);
+              request_free (req);
               return VERIFCERTERR;
             }
           using_ssl = true;
@@ -2222,6 +2228,7 @@ read_header:
                  quotearg_style (escape_quoting_style,
                                  _("Malformed status line")));
       CLOSE_INVALIDATE (sock);
+      resp_free (resp);
       request_free (req);
       xfree (head);
       return HERR;
@@ -2230,6 +2237,7 @@ read_header:
   if (H_10X (statcode))
     {
       DEBUGP (("Ignoring response\n"));
+      resp_free (resp);
       xfree (head);
       goto read_header;
     }
@@ -2450,6 +2458,8 @@ read_header:
              retrieve the file. But if the output_document was given, then this
              test was already done and the file didn't exist. Hence the !opt.output_document */
           get_file_flags (hs->local_file, dt);
+          request_free (req);
+          resp_free (resp);
           xfree (head);
           xfree_null (message);
           return RETRUNNEEDED;
