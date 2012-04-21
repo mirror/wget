@@ -247,9 +247,8 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
   int csock, dtsock, local_sock, res;
   uerr_t err = RETROK;          /* appease the compiler */
   FILE *fp;
-  char *user, *passwd, *respline;
-  char *tms;
-  const char *tmrate;
+  char *respline, *tms;
+  const char *user, *passwd, *tmrate;
   int cmd = con->cmd;
   bool pasv_mode_open = false;
   wgint expected_bytes = 0;
@@ -289,13 +288,6 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
     {
       char    *host = con->proxy ? con->proxy->host : u->host;
       int      port = con->proxy ? con->proxy->port : u->port;
-      char *logname = user;
-
-      if (con->proxy)
-        {
-          /* If proxy is in use, log in as username@target-site. */
-          logname = concat_strings (user, "@", u->host, (char *) 0);
-        }
 
       /* Login to the server: */
 
@@ -303,20 +295,10 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
 
       csock = connect_to_host (host, port);
       if (csock == E_HOST)
-        {
-          if (con->proxy)
-            xfree (logname);
-
           return HOSTERR;
-        }
       else if (csock < 0)
-        {
-          if (con->proxy)
-            xfree (logname);
-
           return (retryable_socket_connect_error (errno)
                   ? CONERROR : CONIMPOSSIBLE);
-        }
 
       if (cmd & LEAVE_PENDING)
         con->csock = csock;
@@ -328,10 +310,15 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
                  quotearg_style (escape_quoting_style, user));
       if (opt.server_response)
         logputs (LOG_ALWAYS, "\n");
-      err = ftp_login (csock, logname, passwd);
-
       if (con->proxy)
-        xfree (logname);
+        {
+          /* If proxy is in use, log in as username@target-site. */
+          char *logname = concat_strings (user, "@", u->host, (char *) 0);
+          err = ftp_login (csock, logname, passwd);
+          xfree (logname);
+        }
+      else
+        err = ftp_login (csock, user, passwd);
 
       /* FTPRERR, FTPSRVERR, WRITEFAILED, FTPLOGREFUSED, FTPLOGINC */
       switch (err)
@@ -514,7 +501,7 @@ Error in server response, closing control connection.\n"));
         logputs (LOG_VERBOSE, _("==> CWD not needed.\n"));
       else
         {
-          char *targ = NULL;
+          const char *targ = NULL;
           int cwd_count;
           int cwd_end;
           int cwd_start;

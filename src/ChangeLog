@@ -4,6 +4,8 @@
 
 	* http.c (gethttp): Fix memory leak.
 
+	* ftp.c (getftp): Silent compiler warning.
+
 2009-06-14  Phil Pennock  <mutt-dev@spodhuis.org> (tiny change)
 	* host.h: Declare `is_valid_ip_address'.
 	* host.c (is_valid_ip_address): New function.
