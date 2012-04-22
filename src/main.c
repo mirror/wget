@@ -1299,7 +1299,7 @@ for details.\n\n"));
         }
       if (opt.warc_keep_log)
         {
-          opt.progress_type = "dot";
+          opt.progress_type = xstrdup ("dot");
         }
     }
 

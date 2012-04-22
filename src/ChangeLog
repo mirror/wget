@@ -1,3 +1,7 @@
+2012-04-22  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* main.c (main): Dynamically allocate `opt.progress_type'.
+
 2012-04-21  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* ftp-basic.c (ftp_pasv): Fix memory leak.
