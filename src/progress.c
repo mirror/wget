@@ -766,7 +766,7 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 }
 
 #if USE_NLS_PROGRESS_BAR
-int
+static int
 count_cols (const char *mbs)
 {
   wchar_t wc;
@@ -795,7 +795,7 @@ count_cols (const char *mbs)
 # define count_cols(mbs) ((int)(strlen(mbs)))
 #endif
 
-const char *
+static const char *
 get_eta (int *bcd)
 {
   /* TRANSLATORS: "ETA" is English-centric, but this must

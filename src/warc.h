@@ -4,12 +4,12 @@
 
 #include "host.h"
 
-void warc_init ();
-void warc_close ();
+void warc_init (void);
+void warc_close (void);
 void warc_timestamp (char *timestamp);
 void warc_uuid_str (char *id_str);
 
-FILE * warc_tempfile ();
+FILE * warc_tempfile (void);
 
 bool warc_write_request_record (char *url, char *timestamp_str, char *concurrent_to_uuid, ip_address *ip, FILE *body, off_t payload_offset);
 bool warc_write_response_record (char *url, char *timestamp_str, char *concurrent_to_uuid, ip_address *ip, FILE *body, off_t payload_offset, char *mime_type, int response_code, char *redirect_location);

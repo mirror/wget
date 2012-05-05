@@ -180,7 +180,7 @@ warc_write_string (const char *str)
    Returns false and set warc_write_ok to false if there
    is an error.  */
 static bool
-warc_write_start_record ()
+warc_write_start_record (void)
 {
   if (!warc_write_ok)
     return false;
@@ -279,7 +279,7 @@ warc_write_block_from_file (FILE *data_in)
    with the uncompressed and compressed length of the
    record. */
 static bool
-warc_write_end_record ()
+warc_write_end_record (void)
 {
   warc_write_buffer ("\r\n\r\n", 4);
 
@@ -633,7 +633,7 @@ warc_uuid_str (char *urn_str)
 
 /* Write a warcinfo record to the current file.
    Updates warc_current_warcinfo_uuid_str. */
-bool
+static bool
 warc_write_warcinfo_record (char *filename)
 {
   /* Write warc-info record as the first record of the file. */
@@ -760,7 +760,7 @@ warc_start_new_file (bool meta)
 
 /* Opens the CDX file for output. */
 static bool
-warc_start_cdx_file ()
+warc_start_cdx_file (void)
 {
   int filename_length = strlen (opt.warc_filename);
   char *cdx_filename = alloca (filename_length + 4 + 1);
@@ -899,8 +899,8 @@ warc_process_cdx_line (char *lineptr, int field_num_original_url, int field_num_
 
 /* Loads the CDX file from opt.warc_cdx_dedup_filename and fills
    the warc_cdx_dedup_table. */
-bool
-warc_load_cdx_dedup_file ()
+static bool
+warc_load_cdx_dedup_file (void)
 {
   FILE *f = fopen (opt.warc_cdx_dedup_filename, "r");
   if (f == NULL)
@@ -985,7 +985,7 @@ warc_find_duplicate_cdx_record (char *url, char *sha1_digest_payload)
 /* Initializes the WARC writer (if opt.warc_filename is set).
    This should be called before any WARC record is written. */
 void
-warc_init ()
+warc_init (void)
 {
   warc_write_ok = true;
 
@@ -1039,8 +1039,8 @@ warc_init ()
 }
 
 /* Writes metadata (manifest, configuration, log file) to the WARC file. */
-void
-warc_write_metadata ()
+static void
+warc_write_metadata (void)
 {
   /* If there are multiple WARC files, the metadata should be written to a separate file. */
   if (opt.warc_maxsize > 0)
@@ -1087,7 +1087,7 @@ warc_write_metadata ()
 /* Finishes the WARC writing.
    This should be called at the end of the program. */
 void
-warc_close ()
+warc_close (void)
 {
   if (warc_current_file != NULL)
     {
@@ -1108,7 +1108,7 @@ warc_close ()
    The temporary file will be created in opt.warc_tempdir.
    Returns the pointer to the temporary file, or NULL. */
 FILE *
-warc_tempfile ()
+warc_tempfile (void)
 {
   char filename[100];
   if (path_search (filename, 100, opt.warc_tempdir, "wget", true) == -1)

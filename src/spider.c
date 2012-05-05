@@ -45,7 +45,7 @@ static struct hash_table *nonexisting_urls_set;
 
 /* Cleanup the data structures associated with this file.  */
 
-void
+static void
 spider_cleanup (void)
 {
   if (nonexisting_urls_set)

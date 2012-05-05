@@ -1,5 +1,37 @@
 2012-03-30  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
+	* convert.c (convert_links_in_hashtable): Mmake it static.
+	* cookies.c (parse_set_cookie): Remove empty else branches.
+	* css-url.c: Include "css-url.h".
+	(get_uri_string): Make it static.
+	* css-url.h (get_urls_css): Add protoype.
+	* gnutls.c (ssl_init): Add prototype.
+	* html-parse.c (tagstack_push): Make it static.
+	* html-parse.c (tagstack_pop): Make it static.
+	* html-parse.c (tagstack_find): Make it static.
+	* html-url.c (cleanup_html_url): Make it static.
+	* progress.c (count_cols): Make it static.
+	* progress.c (get_eta): Make it static.
+	* retr.h (convert_to_bits): Remove prototype.
+	* util.h (convert_to_bits): Add prototype.
+	* spider.c (spider_cleanup): Make it static.
+	* warc.c (warc_write_start_record): Add prototype.
+	* warc.c (warc_write_end_record): Add prototype.
+	* warc.c (warc_start_cdx_file): Add prototype.
+	* warc.c (warc_init): Add prototype.
+	* warc.c (warc_load_cdx_dedup_file): Add prototype.
+	* warc.c (warc_write_metadata): Add prototype.
+	* warc.c (warc_close): Add prototype.
+	* warc.c (warc_tempfile): Add prototype.
+	* warc.c (warc_write_warcinfo_record): Make it static.
+	* warc.c (warc_load_cdx_dedup_file): Make it static.
+	* warc.c (warc_write_metadata): Make it static.
+	* warc.h (warc_init): Fix prototype.
+	* warc.h (warc_close): Fix prototype.
+	* warc.h (warc_tempfile): Fix prototype.
+
+2012-03-30  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
 	* url.c: Use empty query in local filenames.
 
 2012-04-22  Tim Ruehsen <tim.ruehsen@gmx.de>

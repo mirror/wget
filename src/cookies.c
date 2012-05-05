@@ -391,6 +391,9 @@ parse_set_cookie (const char *set_cookie, bool silent)
             goto error;
           BOUNDED_TO_ALLOCA (value.b, value.e, value_copy);
 
+          /* Check if expiration spec is valid.
+             If not, assume default (cookie doesn't expire, but valid only for
+	     this session.) */
           expires = http_atotm (value_copy);
           if (expires != (time_t) -1)
             {
@@ -402,10 +405,6 @@ parse_set_cookie (const char *set_cookie, bool silent)
               if (cookie->expiry_time < cookies_now)
                 cookie->discard_requested = 1;
             }
-          else
-            /* Error in expiration spec.  Assume default (cookie doesn't
-               expire, but valid only for this session.)  */
-            ;
         }
       else if (TOKEN_IS (name, "max-age"))
         {
@@ -433,9 +432,7 @@ parse_set_cookie (const char *set_cookie, bool silent)
           /* ignore value completely */
           cookie->secure = 1;
         }
-      else
-        /* Ignore unrecognized attribute. */
-        ;
+      /* else: Ignore unrecognized attribute. */
     }
   if (*ptr)
     /* extract_param has encountered a syntax error */

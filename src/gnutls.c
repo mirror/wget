@@ -77,7 +77,7 @@ key_type_to_gnutls_type (enum keyfile_type type)
 
 static gnutls_certificate_credentials credentials;
 bool
-ssl_init ()
+ssl_init (void)
 {
   /* Becomes true if GnuTLS is initialized. */
   static bool ssl_initialized = false;

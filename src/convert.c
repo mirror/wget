@@ -58,7 +58,7 @@ struct hash_table *downloaded_css_set;
 static void convert_links (const char *, struct urlpos *);
 
 
-void
+static void
 convert_links_in_hashtable (struct hash_table *downloaded_set,
                             int is_css,
                             int *file_count)

@@ -127,6 +127,7 @@ char *human_readable (HR_NUMTYPE);
 int numdigit (wgint);
 char *number_to_string (char *, wgint);
 char *number_to_static_string (wgint);
+wgint convert_to_bits (wgint);
 
 int determine_screen_width (void);
 int random_number (int);

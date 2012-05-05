@@ -280,7 +280,7 @@ struct tagstack_item {
   struct tagstack_item *next;
 };
 
-struct tagstack_item *
+static struct tagstack_item *
 tagstack_push (struct tagstack_item **head, struct tagstack_item **tail)
 {
   struct tagstack_item *ts = xmalloc(sizeof(struct tagstack_item));
@@ -301,7 +301,7 @@ tagstack_push (struct tagstack_item **head, struct tagstack_item **tail)
 }
 
 /* remove ts and everything after it from the stack */
-void
+static void
 tagstack_pop (struct tagstack_item **head, struct tagstack_item **tail,
               struct tagstack_item *ts)
 {
@@ -343,7 +343,7 @@ tagstack_pop (struct tagstack_item **head, struct tagstack_item **tail,
     }
 }
 
-struct tagstack_item *
+static struct tagstack_item *
 tagstack_find (struct tagstack_item *tail, const char *tagname_begin,
                const char *tagname_end)
 {
