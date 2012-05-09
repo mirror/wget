@@ -26,6 +26,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Enable client certificates when GNU TLS is used.
 
 ** Add support for TLS Server Name Indication.
+
+** Accept the arguments --accept-reject and --reject-regex.
 
 * Changes in Wget 1.13.4
 
