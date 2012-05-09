@@ -586,6 +586,11 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
           goto out;
         }
     }
+  if (!accept_url (url))
+    {
+      DEBUGP (("%s is excluded/not-included through regex.\n", url));
+      goto out;
+    }
 
   /* 6. Check for acceptance/rejection rules.  We ignore these rules
      for directories (no file name to match) and for non-leaf HTMLs,

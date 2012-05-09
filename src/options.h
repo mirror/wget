@@ -74,6 +74,19 @@ struct options
   bool ignore_case;		/* Whether to ignore case when
 				   matching dirs and files */
 
+  char *acceptregex_s;		/* Patterns to accept (a regex string). */
+  char *rejectregex_s;		/* Patterns to reject (a regex string). */
+  void *acceptregex;		/* Patterns to accept (a regex struct). */
+  void *rejectregex;		/* Patterns to reject (a regex struct). */
+  enum {
+#ifdef HAVE_LIBPCRE
+    regex_type_pcre,
+#endif
+    regex_type_posix
+  } regex_type;   /* The regex library. */
+  void *(*regex_compile_fun)(const char *);  /* Function to compile a regex. */
+  bool (*regex_match_fun)(const void *, const char *);  /* Function to match a string to a regex. */
+
   char **domains;		/* See host.c */
   char **exclude_domains;
   bool dns_cache;		/* whether we cache DNS lookups. */

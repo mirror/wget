@@ -1,3 +1,12 @@
+2012-04-11  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* init.c: Add --accept-regex, --reject-regex and --regex-type.
+	* main.c: Likewise.
+	* options.c: Likewise.
+	* recur.c: Likewise.
+	* utils.c: Add regex-related functions.
+	* utils.h: Add regex-related functions.
+
 2012-03-30  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* convert.c (convert_links_in_hashtable): Mmake it static.

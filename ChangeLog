@@ -1,3 +1,8 @@
+2012-04-11  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* bootstrap.conf (gnulib_modules): Include module `regex'.
+	* configure.ac: Check for PCRE library.
+
 2012-03-25 Ray Satiro <raysatiro@yahoo.com>
 
 	* configure.ac: Fix build under mingw when OpenSSL is used.

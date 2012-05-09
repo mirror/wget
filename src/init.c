@@ -46,6 +46,10 @@ as that of the covered work.  */
 # endif
 #endif
 
+#include <regex.h>
+#ifdef HAVE_LIBPCRE
+# include <pcre.h>
+#endif
 
 #ifdef HAVE_PWD_H
 # include <pwd.h>
@@ -94,6 +98,7 @@ CMD_DECLARE (cmd_spec_mirror);
 CMD_DECLARE (cmd_spec_prefer_family);
 CMD_DECLARE (cmd_spec_progress);
 CMD_DECLARE (cmd_spec_recursive);
+CMD_DECLARE (cmd_spec_regex_type);
 CMD_DECLARE (cmd_spec_restrict_file_names);
 #ifdef HAVE_SSL
 CMD_DECLARE (cmd_spec_secure_protocol);
@@ -116,6 +121,7 @@ static const struct {
 } commands[] = {
   /* KEEP THIS LIST ALPHABETICALLY SORTED */
   { "accept",           &opt.accepts,           cmd_vector },
+  { "acceptregex",      &opt.acceptregex_s,     cmd_string },
   { "addhostdir",       &opt.add_hostdir,       cmd_boolean },
   { "adjustextension",  &opt.adjust_extension,  cmd_boolean },
   { "alwaysrest",       &opt.always_rest,       cmd_boolean }, /* deprecated */
@@ -236,7 +242,9 @@ static const struct {
   { "reclevel",         &opt.reclevel,          cmd_number_inf },
   { "recursive",        NULL,                   cmd_spec_recursive },
   { "referer",          &opt.referer,           cmd_string },
+  { "regextype",        &opt.regex_type,        cmd_spec_regex_type },
   { "reject",           &opt.rejects,           cmd_vector },
+  { "rejectregex",      &opt.rejectregex_s,     cmd_string },
   { "relativeonly",     &opt.relative_only,     cmd_boolean },
   { "remoteencoding",   &opt.encoding_remote,   cmd_string },
   { "removelisting",    &opt.remove_listing,    cmd_boolean },
@@ -360,6 +368,8 @@ defaults (void)
   opt.restrict_files_ctrl = true;
   opt.restrict_files_nonascii = false;
   opt.restrict_files_case = restrict_no_case_restriction;
+
+  opt.regex_type = regex_type_posix;
 
   opt.max_redirect = 20;
 
@@ -1366,6 +1376,25 @@ cmd_spec_recursive (const char *com, const char *val, void *place_ignored)
         opt.dirstruct = true;
     }
   return true;
+}
+
+/* Validate --regex-type and set the choice.  */
+
+static bool
+cmd_spec_regex_type (const char *com, const char *val, void *place_ignored)
+{
+  static const struct decode_item choices[] = {
+    { "posix", regex_type_posix },
+#ifdef HAVE_LIBPCRE
+    { "pcre",  regex_type_pcre },
+#endif
+  };
+  int regex_type = regex_type_posix;
+  int ok = decode_string (val, choices, countof (choices), &regex_type);
+  if (!ok)
+    fprintf (stderr, _("%s: %s: Invalid value %s.\n"), exec_name, com, quote (val));
+  opt.regex_type = regex_type;
+  return ok;
 }
 
 static bool

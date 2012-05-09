@@ -158,6 +158,7 @@ struct cmdline_option {
 static struct cmdline_option option_data[] =
   {
     { "accept", 'A', OPT_VALUE, "accept", -1 },
+    { "accept-regex", 0, OPT_VALUE, "acceptregex", -1 },
     { "adjust-extension", 'E', OPT_BOOLEAN, "adjustextension", -1 },
     { "append-output", 'a', OPT__APPEND_OUTPUT, NULL, required_argument },
     { "ask-password", 0, OPT_BOOLEAN, "askpassword", -1 },
@@ -262,7 +263,9 @@ static struct cmdline_option option_data[] =
     { "read-timeout", 0, OPT_VALUE, "readtimeout", -1 },
     { "recursive", 'r', OPT_BOOLEAN, "recursive", -1 },
     { "referer", 0, OPT_VALUE, "referer", -1 },
+    { "regex-type", 0, OPT_VALUE, "regextype", -1 },
     { "reject", 'R', OPT_VALUE, "reject", -1 },
+    { "reject-regex", 0, OPT_VALUE, "rejectregex", -1 },
     { "relative", 'L', OPT_BOOLEAN, "relativeonly", -1 },
     { "remote-encoding", 0, OPT_VALUE, "remoteencoding", -1 },
     { "remove-listing", 0, OPT_BOOLEAN, "removelisting", -1 },
@@ -722,6 +725,17 @@ Recursive accept/reject:\n"),
   -A,  --accept=LIST               comma-separated list of accepted extensions.\n"),
     N_("\
   -R,  --reject=LIST               comma-separated list of rejected extensions.\n"),
+    N_("\
+       --accept-regex=REGEX        regex matching accepted URLs.\n"),
+    N_("\
+       --reject-regex=REGEX        regex matching rejected URLs.\n"),
+#ifdef HAVE_LIBPCRE
+    N_("\
+       --regex-type=TYPE           regex type (posix|pcre).\n"),
+#else
+    N_("\
+       --regex-type=TYPE           regex type (posix).\n"),
+#endif
     N_("\
   -D,  --domains=LIST              comma-separated list of accepted domains.\n"),
     N_("\
@@ -1321,6 +1335,35 @@ for details.\n\n"));
          pre-1.5 `--help' page.  */
       fprintf (stderr, _("Try `%s --help' for more options.\n"), exec_name);
       exit (1);
+    }
+
+  /* Compile the regular expressions.  */
+  switch (opt.regex_type)
+    {
+#ifdef HAVE_LIBPCRE
+      case regex_type_pcre:
+        opt.regex_compile_fun = compile_pcre_regex;
+        opt.regex_match_fun = match_pcre_regex;
+        break;
+#endif
+
+      case regex_type_posix:
+      default:
+        opt.regex_compile_fun = compile_posix_regex;
+        opt.regex_match_fun = match_posix_regex;
+        break;
+    }
+  if (opt.acceptregex_s)
+    {
+      opt.acceptregex = opt.regex_compile_fun (opt.acceptregex_s);
+      if (!opt.acceptregex)
+        exit (1);
+    }
+  if (opt.rejectregex_s)
+    {
+      opt.rejectregex = opt.regex_compile_fun (opt.rejectregex_s);
+      if (!opt.rejectregex)
+        exit (1);
     }
 
 #ifdef ENABLE_IRI

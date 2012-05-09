@@ -90,6 +90,7 @@ char *file_merge (const char *, const char *);
 
 int fnmatch_nocase (const char *, const char *, int);
 bool acceptable (const char *);
+bool accept_url (const char *);
 bool accdir (const char *s);
 char *suffix (const char *s);
 bool match_tail (const char *, const char *, bool);
@@ -141,6 +142,14 @@ void xsleep (double);
 
 int base64_encode (const void *, int, char *);
 int base64_decode (const char *, void *);
+
+#ifdef HAVE_LIBPCRE
+void *compile_pcre_regex (const char *);
+bool match_pcre_regex (const void *, const char *);
+#endif
+
+void *compile_posix_regex (const char *);
+bool match_posix_regex (const void *, const char *);
 
 void stable_sort (void *, size_t, size_t, int (*) (const void *, const void *));
 

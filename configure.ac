@@ -532,6 +532,18 @@ AC_CHECK_HEADER(uuid/uuid.h,
                   ])
 )
 
+dnl
+dnl Check for PCRE
+dnl
+
+AC_CHECK_HEADER(pcre.h,
+                AC_CHECK_LIB(pcre, pcre_compile,
+                  [LIBS="${LIBS} -lpcre"
+                   AC_DEFINE([HAVE_LIBPCRE], 1,
+                             [Define if libpcre is available.])
+                  ])
+)
+
  
 dnl Needed by src/Makefile.am
 AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" != "Xno"])
