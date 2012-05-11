@@ -75,7 +75,7 @@ key_type_to_gnutls_type (enum keyfile_type type)
    confused with actual gnutls functions -- such as the gnutls_read
    preprocessor macro.  */
 
-static gnutls_certificate_credentials credentials;
+static gnutls_certificate_credentials_t credentials;
 bool
 ssl_init (void)
 {
@@ -165,7 +165,7 @@ cert to be of the same type.\n"));
 
 struct wgnutls_transport_context
 {
-  gnutls_session session;       /* GnuTLS session handle */
+  gnutls_session_t session;       /* GnuTLS session handle */
   int last_error;               /* last error returned by read/write/... */
 
   /* Since GnuTLS doesn't support the equivalent to recv(...,
@@ -374,7 +374,7 @@ bool
 ssl_connect_wget (int fd, const char *hostname)
 {
   struct wgnutls_transport_context *ctx;
-  gnutls_session session;
+  gnutls_session_t session;
   int err;
   gnutls_init (&session, GNUTLS_CLIENT);
 
@@ -390,7 +390,7 @@ ssl_connect_wget (int fd, const char *hostname)
 #ifndef FD_TO_SOCKET
 # define FD_TO_SOCKET(X) (X)
 #endif
-  gnutls_transport_set_ptr (session, (gnutls_transport_ptr) FD_TO_SOCKET (fd));
+  gnutls_transport_set_ptr (session, (gnutls_transport_ptr_t) FD_TO_SOCKET (fd));
 
   err = 0;
 #if HAVE_GNUTLS_PRIORITY_SET_DIRECT
@@ -497,8 +497,8 @@ ssl_check_certificate (int fd, const char *host)
   if (gnutls_certificate_type_get (ctx->session) == GNUTLS_CRT_X509)
     {
       time_t now = time (NULL);
-      gnutls_x509_crt cert;
-      const gnutls_datum *cert_list;
+      gnutls_x509_crt_t cert;
+      const gnutls_datum_t *cert_list;
       unsigned int cert_list_size;
 
       if ((err = gnutls_x509_crt_init (&cert)) < 0)

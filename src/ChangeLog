@@ -1,3 +1,10 @@
+2012-05-13  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* gnutls.c (credentials): Change type to
+	gnutls_certificate_credentials_t.
+	(ssl_init): Do not use deprecated types.
+	(ssl_connect_wget): Likewise.
+
 2012-04-11  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* init.c: Add --accept-regex, --reject-regex and --regex-type.
