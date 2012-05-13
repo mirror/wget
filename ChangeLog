@@ -1,3 +1,12 @@
+2012-05-13  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (gnulib_modules): Add `git-version-gen'.
+	* build-aux/bzr-version-gen: Remove file.
+	* configure.ac: Invoke `build-aux/git-version-gen' to get the dist
+	version.
+	* Makefile.am (EXTRA_DIST): Distribute build-aux/git-version-gen instead
+	of build-aux/bzr-version-gen.
+
 2012-04-11  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* bootstrap.conf (gnulib_modules): Include module `regex'.
