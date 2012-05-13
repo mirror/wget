@@ -1,3 +1,8 @@
+2012-05-13  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Types of Files): Document --accept-regex and
+	--reject-regex.
+
 2011-10-02  Henrik Holst <henrik.holst@millistream.com> (tiny change)
 
 	* wget.texi (HTTP Options): Document option --content-on-error.

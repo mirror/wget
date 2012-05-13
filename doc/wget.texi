@@ -2284,6 +2284,8 @@ in @file{.wgetrc}.
 @item -A @var{acclist}
 @itemx --accept @var{acclist}
 @itemx accept = @var{acclist}
+@itemx --accept-regex @var{urlregex}
+@itemx accept-regex = @var{urlregex}
 The argument to @samp{--accept} option is a list of file suffixes or
 patterns that Wget will download during recursive retrieval.  A suffix
 is the ending part of a file, and consists of ``normal'' letters,
@@ -2300,6 +2302,9 @@ a description of how pattern matching works.
 Of course, any number of suffixes and patterns can be combined into a
 comma-separated list, and given as an argument to @samp{-A}.
 
+The argument to @samp{--accept-regex} option is a regular expression which
+is matched against the complete URL.
+
 @cindex reject wildcards
 @cindex reject suffixes
 @cindex wildcards, reject
@@ -2307,6 +2312,8 @@ comma-separated list, and given as an argument to @samp{-A}.
 @item -R @var{rejlist}
 @itemx --reject @var{rejlist}
 @itemx reject = @var{rejlist}
+@itemx --reject-regex @var{urlregex}
+@itemx reject-regex = @var{urlregex}
 The @samp{--reject} option works the same way as @samp{--accept}, only
 its logic is the reverse; Wget will download all files @emph{except} the
 ones matching the suffixes (or patterns) in the list.
@@ -2317,6 +2324,9 @@ Analogously, to download all files except the ones beginning with
 @samp{bjork}, use @samp{wget -R "bjork*"}.  The quotes are to prevent
 expansion by the shell.
 @end table
+
+The argument to @samp{--accept-regex} option is a regular expression which
+is matched against the complete URL.
 
 @noindent
 The @samp{-A} and @samp{-R} options may be combined to achieve even
