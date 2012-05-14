@@ -231,7 +231,7 @@ release_header (struct request_header *hdr)
    */
 
 static void
-request_set_header (struct request *req, char *name, char *value,
+request_set_header (struct request *req, const char *name, const char *value,
                     enum rp release_policy)
 {
   struct request_header *hdr;
@@ -242,7 +242,7 @@ request_set_header (struct request *req, char *name, char *value,
       /* A NULL value is a no-op; if freeing the name is requested,
          free it now to avoid leaks.  */
       if (release_policy == rel_name || release_policy == rel_both)
-        xfree (name);
+        xfree ((void *)name);
       return;
     }
 
@@ -253,8 +253,8 @@ request_set_header (struct request *req, char *name, char *value,
         {
           /* Replace existing header. */
           release_header (hdr);
-          hdr->name = name;
-          hdr->value = value;
+          hdr->name = (void *)name;
+          hdr->value = (void *)value;
           hdr->release_policy = release_policy;
           return;
         }
@@ -268,8 +268,8 @@ request_set_header (struct request *req, char *name, char *value,
       req->headers = xrealloc (req->headers, req->hcapacity * sizeof (*hdr));
     }
   hdr = &req->headers[req->hcount++];
-  hdr->name = name;
-  hdr->value = value;
+  hdr->name = (void *)name;
+  hdr->value = (void *)value;
   hdr->release_policy = release_policy;
 }
 
@@ -296,7 +296,7 @@ request_set_user_header (struct request *req, const char *header)
    the header was actually removed, false otherwise.  */
 
 static bool
-request_remove_header (struct request *req, char *name)
+request_remove_header (struct request *req, const char *name)
 {
   int i;
   for (i = 0; i < req->hcount; i++)

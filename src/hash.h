@@ -42,7 +42,7 @@ int hash_table_get_pair (const struct hash_table *, const void *,
                          void *, void *);
 int hash_table_contains (const struct hash_table *, const void *);
 
-void hash_table_put (struct hash_table *, const void *, void *);
+void hash_table_put (struct hash_table *, const void *, const void *);
 int hash_table_remove (struct hash_table *, const void *);
 void hash_table_clear (struct hash_table *);
 

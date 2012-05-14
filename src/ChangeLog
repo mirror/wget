@@ -1,7 +1,23 @@
 2012-05-14  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
-	* gnutls.c: wgnutls_read_timeout (wgnutls_read_timeout): removed
-	warnings, moved fcntl stuff outside loop.
+	* gnutls.c (wgnutls_read_timeout): removed warnings, moved fcntl stuff
+	outside loop.
+
+	* hash.h (hash_table_put): Make argument "value" const.
+	* hash.c (hash_table_put): Make argument value const.  Cast `value' to
+	void.
+	* http.c (request_set_header): Make argument `name' const.  Cast `value'
+	and `name' to void*.
+	(request_remove_header): Make argument `name' const.
+	* url.c (url_file_name): Make `index_filename' static.
+	* warc.h (warc_write_cdx_record): Make `url', `timestamp', `mime_type',
+	`payload_digest', `redirect_location', `warc_filename', response_uuid'
+	arguments const. Make `checksum' const.
+	* warc.c (warc_write_date_header): Make the `timestamp' argument const.
+	Make `extension' const.
+	(warc_write_cdx_record): Make `url', `timestamp', `mime_type',
+	`payload_digest', `redirect_location', `warc_filename', response_uuid'
+	arguments const. Make `checksum' const.
 
 2012-05-13  Tim Ruehsen  <tim.ruehsen@gmx.de>
 

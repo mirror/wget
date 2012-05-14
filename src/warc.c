@@ -372,7 +372,7 @@ warc_write_end_record (void)
    the current WARC record.
    If timestamp is NULL, the current time will be used.  */
 static bool
-warc_write_date_header (char *timestamp)
+warc_write_date_header (const char *timestamp)
 {
   if (timestamp == NULL)
     {
@@ -725,9 +725,9 @@ warc_start_new_file (bool meta)
   warc_current_filename = new_filename;
 
 #ifdef HAVE_LIBZ
-  char *extension = (opt.warc_compression_enabled ? "warc.gz" : "warc");
+  const char *extension = (opt.warc_compression_enabled ? "warc.gz" : "warc");
 #else
-  char *extension = "warc";
+  const char *extension = "warc";
 #endif
 
   /* If max size is enabled, we add a serial number to the file names. */
@@ -1166,7 +1166,7 @@ warc_write_request_record (char *url, char *timestamp_str, char *record_uuid, ip
    response_uuid  is the uuid of the response.
    Returns true on success, false on error. */
 static bool
-warc_write_cdx_record (char *url, char *timestamp_str, char *mime_type, int response_code, char *payload_digest, char *redirect_location, off_t offset, char *warc_filename, char *response_uuid)
+warc_write_cdx_record (const char *url, const char *timestamp_str, const char *mime_type, int response_code, const char *payload_digest, const char *redirect_location, off_t offset, const char *warc_filename, const char *response_uuid)
 {
   /* Transform the timestamp. */
   char timestamp_str_cdx [15];
@@ -1179,7 +1179,7 @@ warc_write_cdx_record (char *url, char *timestamp_str, char *mime_type, int resp
   timestamp_str_cdx[14] = '\0';
   
   /* Rewrite the checksum. */
-  char *checksum;
+  const char *checksum;
   if (payload_digest != NULL)
     checksum = payload_digest + 5; /* Skip the "sha1:" */
   else
@@ -1349,7 +1349,7 @@ warc_write_response_record (char *url, char *timestamp_str, char *concurrent_to_
    Calling this function will close body.
    Returns true on success, false on error. */
 bool
-warc_write_resource_record (char *resource_uuid, char *url, char *timestamp_str, char *concurrent_to_uuid, ip_address *ip, char *content_type, FILE *body, off_t payload_offset)
+warc_write_resource_record (char *resource_uuid, const char *url, const char *timestamp_str, const char *concurrent_to_uuid, ip_address *ip, const char *content_type, FILE *body, off_t payload_offset)
 {
   if (resource_uuid == NULL)
     {

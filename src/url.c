@@ -1504,7 +1504,7 @@ url_file_name (const struct url *u, char *replaced_filename)
 
   const char *u_file;
   char *fname, *unique;
-  char *index_filename = "index.html"; /* The default index file is index.html */
+  const char *index_filename = "index.html"; /* The default index file is index.html */
 
   fnres.base = NULL;
   fnres.size = 0;
