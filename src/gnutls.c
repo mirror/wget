@@ -188,7 +188,7 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
   int flags = 0;
 #endif
   int ret = 0;
-  struct ptimer *timer;
+  struct ptimer *timer = NULL;
   struct wgnutls_transport_context *ctx = arg;
   int timed_out = 0;
 
@@ -198,19 +198,27 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
       flags = fcntl (fd, F_GETFL, 0);
       if (flags < 0)
         return flags;
+      if (fcntl (fd, F_SETFL, flags | O_NONBLOCK))
+        return -1;
+#else
+      /* XXX: Assume it was blocking before.  */
+      const int one = 1;
+      if (ioctl (fd, FIONBIO, &one) < 0)
+        return -1;
 #endif
+
       timer = ptimer_new ();
-      if (timer == 0)
+      if (timer == NULL)
         return -1;
     }
 
   do
     {
-      double next_timeout;
-      if (timeout > 0.0)
+      double next_timeout = 0;
+      if (timeout)
 	{
 	  next_timeout = timeout - ptimer_measure (timer);
-	  if (next_timeout < 0.0)
+	  if (next_timeout < 0)
 	    break;
 	}
 
@@ -218,43 +226,28 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
       if (timeout == 0 || gnutls_record_check_pending (ctx->session)
           || select_fd (fd, next_timeout, WAIT_FOR_READ))
         {
-          if (timeout)
-            {
-#ifdef F_GETFL
-              if (fcntl (fd, F_SETFL, flags | O_NONBLOCK))
-		break;
-#else
-              /* XXX: Assume it was blocking before.  */
-              const int one = 1;
-              if (ioctl (fd, FIONBIO, &one) < 0)
-		break;
-#endif
-            }
-
           ret = gnutls_record_recv (ctx->session, buf, bufsize);
-
-          if (timeout)
-            {
-#ifdef F_GETFL
-              if (fcntl (fd, F_SETFL, flags) < 0)
-		break;
-#else
-              const int zero = 0;
-              if (ioctl (fd, FIONBIO, &zero) < 0)
-		break;
-#endif
-            }
+          timed_out = timeout && ptimer_measure (timer) >= timeout;
         }
-
-      timed_out = timeout && ptimer_measure (timer) >= timeout;
     }
   while (ret == GNUTLS_E_INTERRUPTED || (ret == GNUTLS_E_AGAIN && !timed_out));
 
   if (timeout)
-    ptimer_destroy (timer);
+    {
+      ptimer_destroy (timer);
 
-  if (timeout && timed_out && ret == GNUTLS_E_AGAIN)
-    errno = ETIMEDOUT;
+#ifdef F_GETFL
+      if (fcntl (fd, F_SETFL, flags) < 0)
+        return -1;
+#else
+      const int zero = 0;
+      if (ioctl (fd, FIONBIO, &zero) < 0)
+        return -1;
+#endif
+
+      if (timed_out && ret == GNUTLS_E_AGAIN)
+        errno = ETIMEDOUT;
+    }
 
   return ret;
 }

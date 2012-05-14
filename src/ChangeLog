@@ -1,3 +1,8 @@
+2012-05-14  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* gnutls.c: wgnutls_read_timeout (wgnutls_read_timeout): removed
+	warnings, moved fcntl stuff outside loop.
+
 2012-05-13  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* gnutls.c (credentials): Change type to
