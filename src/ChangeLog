@@ -1,3 +1,8 @@
+2012-05-16  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* warc.h: Cut length lines to 80 columns.
+	* warc.c: Likewise.
+
 2012-05-14  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* gnutls.c (wgnutls_read_timeout): removed warnings, moved fcntl stuff
