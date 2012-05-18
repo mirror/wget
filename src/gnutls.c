@@ -216,11 +216,11 @@ wgnutls_read_timeout (int fd, char *buf, int bufsize, void *arg, double timeout)
     {
       double next_timeout = 0;
       if (timeout)
-	{
-	  next_timeout = timeout - ptimer_measure (timer);
-	  if (next_timeout < 0)
-	    break;
-	}
+        {
+          next_timeout = timeout - ptimer_measure (timer);
+          if (next_timeout < 0)
+            break;
+        }
 
       ret = GNUTLS_E_AGAIN;
       if (timeout == 0 || gnutls_record_check_pending (ctx->session)
@@ -294,8 +294,12 @@ static int
 wgnutls_poll (int fd, double timeout, int wait_for, void *arg)
 {
   struct wgnutls_transport_context *ctx = arg;
-  return ctx->peeklen || gnutls_record_check_pending (ctx->session)
-    || select_fd (fd, timeout, wait_for);
+
+  if (timeout)
+    return ctx->peeklen || gnutls_record_check_pending (ctx->session)
+      || select_fd (fd, timeout, wait_for);
+  else
+    return ctx->peeklen || gnutls_record_check_pending (ctx->session);
 }
 
 static int
@@ -304,15 +308,19 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
   int read = 0;
   struct wgnutls_transport_context *ctx = arg;
   int offset = MIN (bufsize, ctx->peeklen);
+
+  if (ctx->peeklen)
+    {
+      memcpy (buf, ctx->peekbuf, offset);
+      return offset;
+    }
+
   if (bufsize > sizeof ctx->peekbuf)
     bufsize = sizeof ctx->peekbuf;
 
-  if (ctx->peeklen)
-    memcpy (buf, ctx->peekbuf, offset);
-
   if (bufsize > offset)
     {
-      if (gnutls_record_check_pending (ctx->session) <= 0
+      if (opt.read_timeout && gnutls_record_check_pending (ctx->session) == 0
           && select_fd (fd, 0.0, WAIT_FOR_READ) <= 0)
         read = 0;
       else
