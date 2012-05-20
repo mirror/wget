@@ -870,7 +870,7 @@ register_delete_file (const char *file)
 /* Register that FILE is an HTML file that has been downloaded. */
 
 void
-register_html (const char *url, const char *file)
+register_html (const char *file)
 {
   if (!downloaded_html_set)
     downloaded_html_set = make_string_hash_table (0);
@@ -880,7 +880,7 @@ register_html (const char *url, const char *file)
 /* Register that FILE is a CSS file that has been downloaded. */
 
 void
-register_css (const char *url, const char *file)
+register_css (const char *file)
 {
   if (!downloaded_css_set)
     downloaded_css_set = make_string_hash_table (0);

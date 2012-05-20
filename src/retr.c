@@ -932,10 +932,10 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
         register_redirection (origurl, u->url);
 
       if (*dt & TEXTHTML)
-        register_html (u->url, local_file);
+        register_html (local_file);
 
       if (*dt & TEXTCSS)
-        register_css (u->url, local_file);
+        register_css (local_file);
     }
 
   if (file)

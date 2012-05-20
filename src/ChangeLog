@@ -1,3 +1,10 @@
+2012-05-19  illusionoflife  <illusion.of.life92@gmail.com> (tiny change)
+
+	* convert.c (register_html,register_css): Fixed functions signature to
+	not accept unused argument
+	* retr.c (retrieve_url): Changed register_{css,html} usage according
+	new signature.
+
 2012-05-16  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* warc.h: Cut length lines to 80 columns.
