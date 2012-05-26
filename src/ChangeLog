@@ -1,3 +1,7 @@
+2012-05-26  Mike Frysinger <vapier@gentoo.org>
+
+	* warc.c: Change type of `warc_current_gzfile' to gzFile.
+
 2012-05-26  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* warc.c (warc_load_cdx_dedup_file): Change type of `line_length' to

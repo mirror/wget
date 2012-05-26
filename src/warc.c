@@ -75,7 +75,7 @@ static FILE *warc_current_file;
 #ifdef HAVE_LIBZ
 /* The gzip stream for the current WARC file
    (or NULL, if WARC or gzip is disabled). */
-static gzFile *warc_current_gzfile;
+static gzFile warc_current_gzfile;
 
 /* The offset of the current gzip record in the WARC file. */
 static off_t warc_current_gzfile_offset;
