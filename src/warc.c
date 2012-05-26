@@ -930,7 +930,7 @@ warc_load_cdx_dedup_file (void)
 
   char *lineptr = NULL;
   size_t n = 0;
-  size_t line_length;
+  ssize_t line_length;
 
   /* The first line should contain the CDX header.
      Format:  " CDX x x x x x"

@@ -1,3 +1,9 @@
+2012-05-26  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* warc.c (warc_load_cdx_dedup_file): Change type of `line_length' to
+	ssize_t.
+	Suggested by: Ángel González <keisial@gmail.com>
+
 2012-05-18  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* gnutls.c (wgnutls_poll): Honor the specified `timeout' value.
