@@ -1,3 +1,7 @@
+2011-05-26  Steven Schweda  <sms@antinode.info>
+	* connect.c [HAVE_SYS_SOCKET_H]: Include <sys/socket.h>.
+	[HAVE_SYS_SELECT_H]: Include <sys/select.h>.
+
 2012-05-26  Mike Frysinger <vapier@gentoo.org>
 
 	* warc.c: Change type of `warc_current_gzfile' to gzFile.
