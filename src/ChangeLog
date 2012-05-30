@@ -1,3 +1,7 @@
+2012-05-30  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* warc.c: Fix segfault if CDX record is not found.
+
 2011-05-26  Steven Schweda  <sms@antinode.info>
 	* connect.c [HAVE_SYS_SOCKET_H]: Include <sys/socket.h>.
 	[HAVE_SYS_SELECT_H]: Include <sys/select.h>.
