@@ -1,3 +1,7 @@
+2012-05-31  Ángel González <keisial@gmail.com>
+
+	* convert.c: fix segfault on wrong urls (bug 36570)
+
 2012-05-13  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap.conf (gnulib_modules): Add `git-version-gen'.
