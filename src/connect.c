@@ -36,13 +36,8 @@ as that of the covered work.  */
 #include <unistd.h>
 #include <assert.h>
 
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif /* def HAVE_SYS_SOCKET_H */
-
-#ifdef HAVE_SYS_SELECT_H
-# include <sys/select.h>
-#endif /* def HAVE_SYS_SELECT_H */
+#include <sys/socket.h>
+#include <sys/select.h>
 
 #ifndef WINDOWS
 # ifdef __VMS

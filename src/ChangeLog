@@ -1,3 +1,7 @@
+2012-06-02  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* connect.c: Include <sys/socket.h> and <sys/select.h>.
+
 2012-05-30  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* warc.c: Fix segfault if CDX record is not found.
