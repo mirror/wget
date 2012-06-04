@@ -913,6 +913,12 @@ warc_process_cdx_line (char *lineptr, int field_num_original_url,
           free (record_id);
         }
     }
+  else
+    {
+      xfree_null(checksum);
+      xfree_null(original_url);
+      xfree_null(record_id);
+    }
 }
 
 /* Loads the CDX file from opt.warc_cdx_dedup_filename and fills

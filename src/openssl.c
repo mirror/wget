@@ -159,7 +159,7 @@ key_type_to_ssl_type (enum keyfile_type type)
    Returns true on success, false otherwise.  */
 
 bool
-ssl_init ()
+ssl_init (void)
 {
   SSL_METHOD const *meth;
 

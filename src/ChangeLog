@@ -1,3 +1,11 @@
+2012-06-04  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* main.c (main): Check for filename != NULL.
+	* warc.c (warc_process_cdx_line): Fix memory leak.
+	* utils.c (match_posix_regex, compile_posix_regex): Remove dead
+   assignment.
+	* openssl.c (ssl_init): Fix old-style function definition.
+
 2012-06-02  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* connect.c: Include <sys/socket.h> and <sys/select.h>.
