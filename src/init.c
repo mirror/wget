@@ -133,7 +133,6 @@ static const struct {
   { "backups",          &opt.backups,           cmd_number },
   { "base",             &opt.base_href,         cmd_string },
   { "bindaddress",      &opt.bind_address,      cmd_string },
-  { "bits",             &opt.bits_fmt,          cmd_boolean},
 #ifdef HAVE_SSL
   { "cacertificate",    &opt.ca_cert,           cmd_file },
 #endif
@@ -248,6 +247,7 @@ static const struct {
   { "relativeonly",     &opt.relative_only,     cmd_boolean },
   { "remoteencoding",   &opt.encoding_remote,   cmd_string },
   { "removelisting",    &opt.remove_listing,    cmd_boolean },
+  { "reportbps",             &opt.report_bps,          cmd_boolean},
   { "restrictfilenames", NULL,                  cmd_spec_restrict_file_names },
   { "retrsymlinks",     &opt.retr_symlinks,     cmd_boolean },
   { "retryconnrefused", &opt.retry_connrefused, cmd_boolean },

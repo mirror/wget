@@ -989,7 +989,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       double dltime = hist->total_time + (dl_total_time - bp->recent_start);
       double dlspeed = calc_rate (dlquant, dltime, &units);
       sprintf (p, " %4.*f%s", dlspeed >= 99.95 ? 0 : dlspeed >= 9.995 ? 1 : 2,
-               dlspeed,  !opt.bits_fmt?short_units[units]:short_units_bits[units]);
+               dlspeed,  !opt.report_bps ? short_units[units] : short_units_bits[units]);
       move_to_end (p);
     }
   else

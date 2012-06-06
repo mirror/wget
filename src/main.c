@@ -168,7 +168,6 @@ static struct cmdline_option option_data[] =
     { "backups", 0, OPT_BOOLEAN, "backups", -1 },
     { "base", 'B', OPT_VALUE, "base", -1 },
     { "bind-address", 0, OPT_VALUE, "bindaddress", -1 },
-    { "bits", 0, OPT_BOOLEAN, "bits", -1 },
     { IF_SSL ("ca-certificate"), 0, OPT_VALUE, "cacertificate", -1 },
     { IF_SSL ("ca-directory"), 0, OPT_VALUE, "cadirectory", -1 },
     { "cache", 0, OPT_BOOLEAN, "cache", -1 },
@@ -269,6 +268,7 @@ static struct cmdline_option option_data[] =
     { "relative", 'L', OPT_BOOLEAN, "relativeonly", -1 },
     { "remote-encoding", 0, OPT_VALUE, "remoteencoding", -1 },
     { "remove-listing", 0, OPT_BOOLEAN, "removelisting", -1 },
+    { "report-bps", 0, OPT_BOOLEAN, "reportbps", -1 },
     { "restrict-file-names", 0, OPT_BOOLEAN, "restrictfilenames", -1 },
     { "retr-symlinks", 0, OPT_BOOLEAN, "retrsymlinks", -1 },
     { "retry-connrefused", 0, OPT_BOOLEAN, "retryconnrefused", -1 },
@@ -764,7 +764,7 @@ Recursive accept/reject:\n"),
     N_("\
 Output format:\n"),
     N_("\
-       --bits                      Output bandwidth in bits.\n"),
+       --report-bps                      Output bandwidth in bits.\n"),
     "\n",
     N_("Mail bug reports and suggestions to <bug-wget@gnu.org>.\n")
   };

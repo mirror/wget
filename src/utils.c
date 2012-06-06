@@ -1844,12 +1844,12 @@ number_to_static_string (wgint number)
   return buf;
 }
 
-/* Converts the byte to bits format if --bits option is enabled
+/* Converts the byte to bits format if --report-bps option is enabled
  */
 wgint
 convert_to_bits (wgint num)
 {
-  if (opt.bits_fmt)
+  if (opt.report_bps)
     return num * 8;
   return num;
 }

@@ -628,7 +628,7 @@ retr_rate (wgint bytes, double secs)
      e.g. "1022", "247", "12.5", "2.38".  */
   sprintf (res, "%.*f %s",
            dlrate >= 99.95 ? 0 : dlrate >= 9.995 ? 1 : 2,
-           dlrate, !opt.bits_fmt? rate_names[units]: rate_names_bits[units]);
+           dlrate, !opt.report_bps ? rate_names[units]: rate_names_bits[units]);
 
   return res;
 }
@@ -647,7 +647,7 @@ calc_rate (wgint bytes, double secs, int *units)
   double dlrate;
   double bibyte = 1000.0;
  
-  if (!opt.bits_fmt)
+  if (!opt.report_bps)
     bibyte = 1024.0;
 
 

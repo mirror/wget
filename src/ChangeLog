@@ -1,3 +1,13 @@
+2012-06-06  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* options.h (struct options): Rename `bits_fmt' to `report_bps'.
+	* main.c (print_help): Rename --bits to --report-bps.
+	(cmdline_options): Likewise.
+	* init.c (commands): Likewise
+	* progress.c (create_image): Adjust caller.
+	* retr.c (retr_rate): Likewise.
+	* utils.c (convert_to_bits): Likewise.
+
 2012-06-04  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* main.c (main): Check for filename != NULL.

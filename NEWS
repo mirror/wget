@@ -21,7 +21,7 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 ** Report stdout close errors.
 
-** Accept the --bit option.
+** Accept the --report-bps option.
 
 ** Enable client certificates when GNU TLS is used.
 
