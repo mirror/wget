@@ -268,7 +268,7 @@ static struct cmdline_option option_data[] =
     { "relative", 'L', OPT_BOOLEAN, "relativeonly", -1 },
     { "remote-encoding", 0, OPT_VALUE, "remoteencoding", -1 },
     { "remove-listing", 0, OPT_BOOLEAN, "removelisting", -1 },
-    { "report-bps", 0, OPT_BOOLEAN, "reportbps", -1 },
+    { "report-speed", 0, OPT_BOOLEAN, "reportspeed", -1 },
     { "restrict-file-names", 0, OPT_BOOLEAN, "restrictfilenames", -1 },
     { "retr-symlinks", 0, OPT_BOOLEAN, "retrsymlinks", -1 },
     { "retry-connrefused", 0, OPT_BOOLEAN, "retryconnrefused", -1 },
@@ -764,7 +764,7 @@ Recursive accept/reject:\n"),
     N_("\
 Output format:\n"),
     N_("\
-       --report-bps                      Output bandwidth in bits.\n"),
+       --report-speed=TYPE        Output bandwidth as TYPE.  TYPE can be bits.\n"),
     "\n",
     N_("Mail bug reports and suggestions to <bug-wget@gnu.org>.\n")
   };

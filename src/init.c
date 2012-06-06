@@ -100,6 +100,7 @@ CMD_DECLARE (cmd_spec_progress);
 CMD_DECLARE (cmd_spec_recursive);
 CMD_DECLARE (cmd_spec_regex_type);
 CMD_DECLARE (cmd_spec_restrict_file_names);
+CMD_DECLARE (cmd_spec_report_speed);
 #ifdef HAVE_SSL
 CMD_DECLARE (cmd_spec_secure_protocol);
 #endif
@@ -247,7 +248,7 @@ static const struct {
   { "relativeonly",     &opt.relative_only,     cmd_boolean },
   { "remoteencoding",   &opt.encoding_remote,   cmd_string },
   { "removelisting",    &opt.remove_listing,    cmd_boolean },
-  { "reportbps",             &opt.report_bps,          cmd_boolean},
+  { "reportspeed",             &opt.report_bps, cmd_spec_report_speed},
   { "restrictfilenames", NULL,                  cmd_spec_restrict_file_names },
   { "retrsymlinks",     &opt.retr_symlinks,     cmd_boolean },
   { "retryconnrefused", &opt.retry_connrefused, cmd_boolean },
@@ -1449,6 +1450,15 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
   opt.restrict_files_nonascii = restrict_nonascii;
 
   return true;
+}
+
+static bool
+cmd_spec_report_speed (const char *com, const char *val, void *place_ignored)
+{
+  opt.report_bps = strcasecmp (val, "bits") == 0;
+  if (!opt.report_bps)
+    fprintf (stderr, _("%s: %s: Invalid value %s.\n"), exec_name, com, quote (val));
+  return opt.report_bps;
 }
 
 #ifdef HAVE_SSL

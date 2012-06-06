@@ -1,9 +1,15 @@
 2012-06-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* main.c (print_help): Rename --bits to --report-bps.
+	(cmdline_options): Likewise.
+	* init.c (commands): Rename --report-bps to --report-speed.
+	(cmd_spec_report_speed): New function.
+
 	* options.h (struct options): Rename `bits_fmt' to `report_bps'.
 	* main.c (print_help): Rename --bits to --report-bps.
 	(cmdline_options): Likewise.
 	* init.c (commands): Likewise
+
 	* progress.c (create_image): Adjust caller.
 	* retr.c (retr_rate): Likewise.
 	* utils.c (convert_to_bits): Likewise.
