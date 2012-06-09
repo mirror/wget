@@ -479,6 +479,10 @@ Turn off verbose without being completely quiet (use @samp{-q} for
 that), which means that error messages and basic information still get
 printed.
 
+@item -nv
+@itemx --report-speed=@var{type}
+Output bandwidth as @var{type}.  The only accepted value is @samp{bits}.
+
 @cindex input-file
 @item -i @var{file}
 @itemx --input-file=@var{file}
@@ -1657,6 +1661,35 @@ If this option is not specified (and the equivalent startup command is
 not used), EGD is never contacted.  EGD is not needed on modern Unix
 systems that support @file{/dev/random}.
 @end table
+
+@cindex WARC
+@item --warc-file=@var{file}
+Use @var{file} as the destination WARC file.
+
+@item --warc-header=@var{string}
+Use @var{string} into as the warcinfo record.
+
+@item --warc-max-size=@var{size}
+Set the maximum size of the WARC files to @var{size}.
+
+@item --warc-cdx
+Write CDX index files.
+
+@item --warc-dedup=@var{file}
+Do not store records listed in this CDX file.
+
+@item --no-warc-compression
+Do not compress WARC files with GZIP.
+
+@item --no-warc-digests
+Do not calculate SHA1 digests.
+
+@item --no-warc-keep-log
+Do not store the log file in a WARC record.
+
+@item--warc-tempdir=@var{dir}
+Specify the location for temporary files created by the WARC writer.
+
 
 @node FTP Options, Recursive Retrieval Options, HTTPS (SSL/TLS) Options, Invoking
 @section FTP Options

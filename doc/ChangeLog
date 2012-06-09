@@ -1,5 +1,8 @@
 2012-06-09  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* wget.texi (Logging and Input File Options): Document "--report-speed".
+	(HTTPS (SSL/TLS) Options): Document WARC.
+
 	* texi2pod.pl: Revert change from 2011-08-06.
 
 2012-05-13  Giuseppe Scrivano  <gscrivano@gnu.org>
