@@ -1,3 +1,7 @@
+2012-06-09  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* texi2pod.pl: Revert change from 2011-08-06.
+
 2012-05-13  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi (Types of Files): Document --accept-regex and
