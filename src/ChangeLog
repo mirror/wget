@@ -1,3 +1,8 @@
+2012-06-09  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* main.c (print_help): Move --report-speed under the section
+	"Logging and input file".
+
 2012-06-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* main.c (print_help): Rename --bits to --report-bps.

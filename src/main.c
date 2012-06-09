@@ -461,6 +461,8 @@ Logging and input file:\n"),
     N_("\
   -nv, --no-verbose          turn off verboseness, without being quiet.\n"),
     N_("\
+       --report-speed=TYPE   Output bandwidth as TYPE.  TYPE can be bits.\n"),
+    N_("\
   -i,  --input-file=FILE     download URLs found in local or external FILE.\n"),
     N_("\
   -F,  --force-html          treat input file as HTML.\n"),
@@ -759,12 +761,6 @@ Recursive accept/reject:\n"),
   -X,  --exclude-directories=LIST  list of excluded directories.\n"),
     N_("\
   -np, --no-parent                 don't ascend to the parent directory.\n"),
-    "\n",
-
-    N_("\
-Output format:\n"),
-    N_("\
-       --report-speed=TYPE        Output bandwidth as TYPE.  TYPE can be bits.\n"),
     "\n",
     N_("Mail bug reports and suggestions to <bug-wget@gnu.org>.\n")
   };
