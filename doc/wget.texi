@@ -1663,6 +1663,7 @@ systems that support @file{/dev/random}.
 @end table
 
 @cindex WARC
+@table @samp
 @item --warc-file=@var{file}
 Use @var{file} as the destination WARC file.
 
@@ -1687,9 +1688,9 @@ Do not calculate SHA1 digests.
 @item --no-warc-keep-log
 Do not store the log file in a WARC record.
 
-@item--warc-tempdir=@var{dir}
+@item --warc-tempdir=@var{dir}
 Specify the location for temporary files created by the WARC writer.
-
+@end table
 
 @node FTP Options, Recursive Retrieval Options, HTTPS (SSL/TLS) Options, Invoking
 @section FTP Options
