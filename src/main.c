@@ -1626,14 +1626,6 @@ outputting to a regular file.\n"));
   if (opt.convert_links && !opt.delete_after)
     convert_all_links ();
 
-  /* Close WARC file. */
-  if (opt.warc_filename != 0)
-    warc_close ();
-
-  log_close ();
-
-  for (i = 0; i < nurl; i++)
-    xfree (url[i]);
   cleanup ();
 
   exit (get_exit_status ());

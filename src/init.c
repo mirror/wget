@@ -1675,6 +1675,12 @@ cleanup (void)
 {
   /* Free external resources, close files, etc. */
 
+  /* Close WARC file. */
+  if (opt.warc_filename != 0)
+    warc_close ();
+
+  log_close ();
+
   if (output_stream)
     fclose (output_stream);
   /* No need to check for error because Wget flushes its output (and
@@ -1695,6 +1701,9 @@ cleanup (void)
   cleanup_html_url ();
   host_cleanup ();
   log_cleanup ();
+
+  for (i = 0; i < nurl; i++)
+    xfree (url[i]);
 
   {
     extern acc_t *netrc_list;

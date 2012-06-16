@@ -1,5 +1,8 @@
 2012-06-16  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* main.c (main): Move some cleanup related function to...
+	* init.c (cleanup): ...here.
+
 	* main.c: Do not include "stdout.h".
 	(main): Do not register `close_stdout' at exit.
 	Reported by: Micah Cowan  <micah@cowan.name>.
