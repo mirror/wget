@@ -1,3 +1,9 @@
+2012-06-16  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* main.c: Do not include "stdout.h".
+	(main): Do not register `close_stdout' at exit.
+	Reported by: Micah Cowan  <micah@cowan.name>.
+
 2012-06-09  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* main.c (print_help): Move --report-speed under the section
