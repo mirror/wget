@@ -30,6 +30,7 @@ shall include the source code for the parts of OpenSSL used as well
 as that of the covered work.  */
 
 #include "wget.h"
+#include "exits.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1682,7 +1683,9 @@ cleanup (void)
   log_close ();
 
   if (output_stream)
-    fclose (output_stream);
+    if (fclose (output_stream) == EOF)
+      inform_exit_status (CLOSEFAILED);
+
   /* No need to check for error because Wget flushes its output (and
      checks for errors) after any data arrives.  */
 
