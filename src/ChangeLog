@@ -1,3 +1,8 @@
+2012-07-07  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	(digest_authentication_encode): Add support for RFC 2617 Digest
+	Access Authentication.
+
 2012-07-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* http.c (http_loop): Fix log message.
