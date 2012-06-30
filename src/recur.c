@@ -37,6 +37,8 @@ as that of the covered work.  */
 #include <unistd.h>
 #include <errno.h>
 #include <assert.h>
+#include <pthread.h>
+#include <semaphore.h>
 
 #include "url.h"
 #include "recur.h"
@@ -69,6 +71,21 @@ struct url_queue {
   struct queue_element *head;
   struct queue_element *tail;
   int count, maxcount;
+};
+
+struct s_thread_ctx
+{
+  int used;
+  int terminated;
+  int dt, url_err;
+  char *redirected;
+  char *referer;
+  struct url *url_parsed;
+  struct iri *i;
+  char *file;
+  char *url;
+  sem_t *retr_sem;
+  uerr_t status;
 };
 
 /* Create a URL queue. */
@@ -165,6 +182,18 @@ static bool download_child_p (const struct urlpos *, struct url *, int,
 static bool descend_redirect_p (const char *, struct url *, int,
                                 struct url *, struct hash_table *, struct iri *);
 
+static void *
+start_retrieve_url (void *arg)
+{
+  struct s_thread_ctx *ctx = (struct s_thread_ctx *) arg;
+
+  ctx->status = retrieve_url (ctx->url_parsed, ctx->url,
+                              &ctx->file, &ctx->redirected,
+                              ctx->referer, &ctx->dt,
+                              false, ctx->i, true);
+  ctx->terminated = 1;
+  sem_post (ctx->retr_sem);
+}
 
 /* Retrieve a part of the web beginning with START_URL.  This used to
    be called "recursive retrieval", because the old function was
@@ -190,7 +219,13 @@ static bool descend_redirect_p (const char *, struct url *, int,
 uerr_t
 retrieve_tree (struct url *start_url_parsed, struct iri *pi)
 {
+  const int N_THREADS = opt.jobs > 0 ? opt.jobs : 1;
+  sem_t retr_sem;
+  int free_threads = N_THREADS;
   uerr_t status = RETROK;
+  char *next_url = NULL, *next_referer;
+  int next_depth;
+  bool next_html_allowed, next_css_allowed;
 
   /* The queue of URLs we need to load. */
   struct url_queue *queue;
@@ -200,6 +235,8 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
   struct hash_table *blacklist;
 
   struct iri *i = iri_new ();
+
+  struct s_thread_ctx *thread_ctx;
 
 #define COPYSTR(x)  (x) ? xstrdup(x) : NULL;
   /* Duplicate pi struct if not NULL */
@@ -213,6 +250,10 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
     set_uri_encoding (i, opt.locale, true);
 #undef COPYSTR
 
+  thread_ctx = calloc (N_THREADS, sizeof *thread_ctx);
+  sem_init (&retr_sem, 0, 0);
+  /* FIXME: CHECK FOR ERRORS.  */
+
   queue = url_queue_new ();
   blacklist = make_string_hash_table (0);
 
@@ -225,11 +266,13 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
   while (1)
     {
       bool descend = false;
-      char *url, *referer, *file = NULL;
-      int depth;
-      bool html_allowed, css_allowed;
+      char *file = NULL;
       bool is_css = false;
       bool dash_p_leaf_HTML = false;
+      int index = 0;
+      char *url = NULL, *referer;
+      int depth;
+      bool html_allowed, css_allowed;
 
       if (opt.quota && total_downloaded_bytes > opt.quota)
         break;
@@ -238,10 +281,19 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
 
       /* Get the next URL from the queue... */
 
-      if (!url_dequeue (queue, (struct iri **) &i,
-                        (const char **)&url, (const char **)&referer,
-                        &depth, &html_allowed, &css_allowed))
-        break;
+      if (next_url == NULL)
+        {
+          if (! url_dequeue (queue, (struct iri **) &i,
+                           (const char **)&next_url, (const char **)&next_referer,
+                           &next_depth, &next_html_allowed, &next_css_allowed))
+            url = NULL;
+        }
+
+      url = next_url;
+      referer = next_referer;
+      depth = next_depth;
+      html_allowed = next_html_allowed;
+      css_allowed = next_css_allowed;
 
       /* ...and download it.  Note that this download is in most cases
          unconditional, as download_child_p already makes sure a file
@@ -251,7 +303,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
          and again under URL2, but at a different (possibly smaller)
          depth, we want the URL's children to be taken into account
          the second time.  */
-      if (dl_url_file_map && hash_table_contains (dl_url_file_map, url))
+      if (0 && url && dl_url_file_map && hash_table_contains (dl_url_file_map, url))
         {
           file = xstrdup (hash_table_get (dl_url_file_map, url));
 
@@ -273,18 +325,86 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
               descend = true;
               is_css = true;
             }
+
+          next_url = NULL;
         }
       else
         {
-          int dt = 0, url_err;
-          char *redirected = NULL;
-          struct url *url_parsed = url_parse (url, &url_err, i, true);
+          pthread_t thread;
+          int j;
+retry:
+          if (! url)
+            {
+              int used = 0;
+              for (j = 0; j < N_THREADS; j++)
+                {
+                  if (thread_ctx[j].used)
+                    {
+                      used = 1;
+                      break;
+                    }
+                }
 
-          status = retrieve_url (url_parsed, url, &file, &redirected, referer,
-                                 &dt, false, i, true);
+              if (! used)
+                break;
+            }
+
+          if (url && free_threads)
+            {
+              for (j = 0; j < N_THREADS; j++)
+                if (! thread_ctx[j].used)
+                  {
+                    index = j;
+                    free_threads--;
+                    thread_ctx[j].used = 1;
+                    thread_ctx[j].terminated = 0;
+                    break;
+                  }
+
+              thread_ctx[index].file = file;
+              thread_ctx[index].referer = referer;
+              thread_ctx[index].dt = 0;
+              thread_ctx[index].i = i;
+              thread_ctx[index].redirected = NULL;
+              thread_ctx[index].url = url;
+              thread_ctx[index].retr_sem = &retr_sem;
+              thread_ctx[index].url_parsed = url_parse (thread_ctx[index].url,
+                                                        &thread_ctx[index].url_err,
+                                                        i, true);
+
+              next_url = NULL;
+              pthread_create (&thread, NULL, start_retrieve_url, &thread_ctx[index]);
+              continue;
+            }
+
+          index = -1;
+          for (j = 0; j < N_THREADS; j++)
+            if (thread_ctx[j].used && thread_ctx[j].terminated)
+              {
+                index = j;
+                thread_ctx[j].used = 0;
+                free_threads++;
+                break;
+              }
+
+          if (index < 0)
+            {
+              int ret;
+              do
+                ret = sem_wait (&retr_sem);
+              while (ret < 0 && errno == EINTR);
+              if (ret < 0); /*TODO barf*/
+
+              goto retry;
+            }
+
+          file = thread_ctx[index].file;
+          referer = thread_ctx[index].referer;
+          i = thread_ctx[index].i;
+          url = thread_ctx[index].url;
 
           if (html_allowed && file && status == RETROK
-              && (dt & RETROKF) && (dt & TEXTHTML))
+              && (thread_ctx[index].dt & RETROKF) && (thread_ctx[index].dt & TEXTHTML))
             {
               descend = true;
               is_css = false;
@@ -294,21 +414,22 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
              lots of web servers serve css with an incorrect content type
           */
           if (file && status == RETROK
-              && (dt & RETROKF) &&
-              ((dt & TEXTCSS) || css_allowed))
+              && (thread_ctx[index].dt & RETROKF) &&
+              ((thread_ctx[index].dt & TEXTCSS) || css_allowed))
             {
               descend = true;
               is_css = true;
             }
 
-          if (redirected)
+          if (thread_ctx[index].redirected)
             {
               /* We have been redirected, possibly to another host, or
                  different path, or wherever.  Check whether we really
                  want to follow it.  */
               if (descend)
                 {
-                  if (!descend_redirect_p (redirected, url_parsed, depth,
+                  if (!descend_redirect_p (thread_ctx[index].redirected,
+                                           thread_ctx[index].url_parsed, depth,
                                            start_url_parsed, blacklist, i))
                     descend = false;
                   else
@@ -317,15 +438,15 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
                     string_set_add (blacklist, url);
                 }
 
-              xfree (url);
-              url = redirected;
+              xfree (thread_ctx[index].url);
+              url = thread_ctx[index].redirected;
             }
           else
             {
-              xfree (url);
-              url = xstrdup (url_parsed->url);
+              xfree (thread_ctx[index].url);
+              url = xstrdup (thread_ctx[index].url_parsed->url);
             }
-          url_free(url_parsed);
+          url_free(thread_ctx[index].url_parsed);
         }
 
       if (opt.spider)
@@ -441,11 +562,12 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
           logputs (LOG_VERBOSE, "\n");
           register_delete_file (file);
         }
-
+#if 0
       xfree (url);
       xfree_null (referer);
       xfree_null (file);
       iri_free (i);
+#endif
     }
 
   /* If anything is left of the queue due to a premature exit, free it

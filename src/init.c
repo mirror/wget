@@ -193,6 +193,7 @@ static const struct {
 #endif
   { "input",            &opt.input_filename,    cmd_file },
   { "iri",              &opt.enable_iri,        cmd_boolean },
+  { "jobs",             &opt.jobs,              cmd_number },
   { "keepsessioncookies", &opt.keep_session_cookies, cmd_boolean },
   { "limitrate",        &opt.limit_rate,        cmd_bytes },
   { "loadcookies",      &opt.cookies_input,     cmd_file },

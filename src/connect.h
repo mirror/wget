@@ -59,7 +59,7 @@ enum {
   WAIT_FOR_READ = 1,
   WAIT_FOR_WRITE = 2
 };
-int select_fd (int, double, int);
+int select_fds (int *, int *, int, double, int);
 bool test_socket_open (int);
 
 struct transport_implementation {

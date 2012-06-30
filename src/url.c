@@ -618,12 +618,12 @@ lowercase_str (char *str)
 }
 
 static const char *
-init_seps (enum url_scheme scheme)
+init_seps (enum url_scheme scheme, char *seps)
 {
-  static char seps[8] = ":/";
   char *p = seps + 2;
   int flags = supported_schemes[scheme].flags;
 
+  strcpy (seps, ":/");
   if (flags & scm_has_params)
     *p++ = ';';
   if (flags & scm_has_query)
@@ -676,6 +676,7 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
   const char *params_b,    *params_e;
   const char *query_b,     *query_e;
   const char *fragment_b,  *fragment_e;
+  char seps_b[8];
 
   int port;
   char *user = NULL, *passwd = NULL;
@@ -736,7 +737,7 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
   /* Initialize separators for optional parts of URL, depending on the
      scheme.  For example, FTP has params, and HTTP and HTTPS have
      query string and fragment. */
-  seps = init_seps (scheme);
+  seps = init_seps (scheme, seps_b);
 
   host_b = p;
 
@@ -1716,10 +1717,11 @@ path_end (const char *url)
 {
   enum url_scheme scheme = url_scheme (url);
   const char *seps;
+  char seps_b[8];
   if (scheme == SCHEME_INVALID)
     scheme = SCHEME_HTTP;       /* use http semantics for rel links */
   /* +2 to ignore the first two separators ':' and '/' */
-  seps = init_seps (scheme) + 2;
+  seps = init_seps (scheme, seps_b) + 2;
   return strpbrk_or_eos (url, seps);
 }
 
