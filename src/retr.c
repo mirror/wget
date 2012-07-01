@@ -37,6 +37,7 @@ as that of the covered work.  */
 #include <errno.h>
 #include <string.h>
 #include <assert.h>
+#include <metalink/metalink_parser.h>
 
 #include "exits.h"
 #include "utils.h"
@@ -53,6 +54,7 @@ as that of the covered work.  */
 #include "ptimer.h"
 #include "html-url.h"
 #include "iri.h"
+#include "metalink.h"
 
 /* Total size of downloaded files.  Used to enforce quota.  */
 SUM_SIZE_INT total_downloaded_bytes;
@@ -933,6 +935,8 @@ retrieve_from_file (const char *file, bool html, int *count)
   uerr_t status;
   struct urlpos *url_list, *cur_url;
   struct iri *iri = iri_new();
+  
+  metalink_t *metalink;
 
   char *input_file, *url_file = NULL;
   const char *url = file;
@@ -981,6 +985,29 @@ retrieve_from_file (const char *file, bool html, int *count)
       iri->orig_url = NULL;
 
       input_file = url_file;
+    }
+  else if(metalink = metalink_context(url))
+    {
+      /*GSoC wget*/
+      int i,j;
+      metalink_file_t* file;
+      metalink_resource_t* resource;
+
+      i = 0;
+      while((file = metalink->files[i]) != NULL)
+        {
+          
+
+          j = 0;
+          while((resource = file->resources[j]) != NULL)
+            {
+              ++j;
+            }
+          ++i;
+        }
+        /*FIND WHERE TO PLACE THE DELETION FUNCTION CALL*/
+        /* delete metalink_t */
+        metalink_delete(metalink);
     }
   else
     input_file = (char *) file;
