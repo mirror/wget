@@ -1282,20 +1282,22 @@ register_persistent (const char *host, int port, int fd, bool ssl)
     {
       struct s_pconn *prev = NULL;
       if (pconn)
+        {
         for (it = pconn; it->next; it = it->next)
           prev = it;
 
-      if (it)
-        {
-          xfree (it->host);
-          xzero (it);
-          prev->next = it->next;
-        }
-      else
-        {
-          xfree (pconn->host);
-          xzero (pconn);
-          pconn = NULL;
+        if (it)
+          {
+            xfree (it->host);
+            xzero (it);
+            prev->next = it->next;
+          }
+        else
+          {
+            xfree (pconn->host);
+            xzero (pconn);
+            pconn = NULL;
+          }
         }
     }
 
