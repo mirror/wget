@@ -989,25 +989,66 @@ retrieve_from_file (const char *file, bool html, int *count)
   else if(metalink = metalink_context(url))
     {
       /*GSoC wget*/
-      int i,j;
+      int dt,url_err;
+      int i,j,error_severity;
       metalink_file_t* file;
       metalink_resource_t* resource;
+      struct url *url_parsed;
+      uerr_t status, status_least_severe;
 
       i = 0;
       while((file = metalink->files[i]) != NULL)
         {
-          
+          opt.output_document = file->name;
 
           j = 0;
           while((resource = file->resources[j]) != NULL)
             {
+              url = resource->url;
+              url_parsed = url_parse (url, &url_err, iri, true);
+              if (!url_parsed)
+                {
+                  char *error = url_error (url, url_err);
+                  logprintf (LOG_NOTQUIET, "%s: %s.\n", url, error);
+                  xfree (error);
+                  return URLERROR;
+                }
+
+              if (!opt.base_href)
+                opt.base_href = xstrdup (url);
+
+              status = retrieve_url (url_parsed, url, &url_file, NULL, NULL,
+                             &dt, false, iri, true);
+              url_free (url_parsed);
+              
+              /* 3 indicates WGET_EXIT_IO_FAIL. Used the integral value to
+               * avoid including a .c file (i.e. exits.c) in retr.c. */
+              if ((status == RETROK) ||
+                  get_exit_status() == 3)
+                break;
+
+              /* Pick the least severe error.*/
+              error_severity = get_exit_status();
+              inform_exit_status(status_least_severe);
+              if(get_exit_status() != error_severity)
+                status_least_severe = status;
+
               ++j;
             }
+          /* Either all resources are exhausted and the least severe error
+           * among all is returned, or an error irrelevant to the server is.
+           * MUST be reconsidered for multiple files!!!
+           * Can't just exit after 1 failure, if metalink has multiple files.*/
+          if (status != RETROK)
+            return status;
+
           ++i;
         }
-        /*FIND WHERE TO PLACE THE DELETION FUNCTION CALL*/
+        
+        iri_free (iri);
         /* delete metalink_t */
         metalink_delete(metalink);
+        return status;
     }
   else
     input_file = (char *) file;
