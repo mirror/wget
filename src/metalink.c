@@ -8,7 +8,7 @@ metalink_context (const char *url)
   metalink_error_t err;
   metalink_t* metalink;
 
-  err = metalink_parse_memory (url, strlen(url), &metalink);
+  err = metalink_parse_file (url, &metalink);
 
   if(err != 0)
     {
