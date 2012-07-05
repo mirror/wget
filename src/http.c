@@ -2702,11 +2702,11 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
   bool force_full_retrieve = false;
 
   /* Assert that no value for *LOCAL_FILE was passed. */
-  assert (local_file == NULL || *local_file == NULL);
+/*  assert (local_file == NULL || *local_file == NULL);*/
 
   /* Set LOCAL_FILE parameter. */
-  if (local_file && opt.output_document)
-    *local_file = HYPHENP (opt.output_document) ? NULL : xstrdup (opt.output_document);
+/*  if (local_file && opt.output_document)
+    *local_file = HYPHENP (opt.output_document) ? NULL : xstrdup (opt.output_document); */
 
   /* Reset NEWLOC parameter. */
   *newloc = NULL;
@@ -2732,8 +2732,11 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
     }
   else if (!opt.content_disposition)
     {
-      hstat.local_file =
-        url_file_name (opt.trustservernames ? u : original_url, NULL);
+      if(local_file && *local_file)
+        hstat.local_file = xstrdup (*local_file);
+      else
+        hstat.local_file =
+          url_file_name (opt.trustservernames ? u : original_url, NULL);
       got_name = true;
     }
 
