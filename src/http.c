@@ -1257,7 +1257,7 @@ invalidate_persistent (int fd)
         pconn = it->next;
       pconn_length--;
       xfree (it->host);
-      xzero (it);
+      xfree (it);
     }
 
   PCONN_UNLOCK ();
@@ -1286,16 +1286,16 @@ register_persistent (const char *host, int port, int fd, bool ssl)
         for (it = pconn; it->next; it = it->next)
           prev = it;
 
-        if (it)
+        if (prev)
           {
-            xfree (it->host);
-            xzero (it);
             prev->next = it->next;
+            xfree (it->host);
+            xfree (it);
           }
         else
           {
             xfree (pconn->host);
-            xzero (pconn);
+            xfree (pconn);
             pconn = NULL;
           }
         }
