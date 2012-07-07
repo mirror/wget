@@ -1,3 +1,9 @@
+2012-07-07  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (http_loop): Fix log message.
+	* main.c (main): Likewise.
+	Reported by: Petr Pisar <petr.pisar@atlas.cz>
+
 2012-06-17  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.h: Define `CLOSEFAILED'.
