@@ -1,3 +1,9 @@
+2012-07-08  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap: Update from gnulib.
+	* bootstrap.conf (gnulib_extra_files): Remove $build_aux/missing.
+	* lib/Makefile.am: Delete file.
+
 2012-06-16  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap.conf (gnulib_modules): Remove `closeout'.
