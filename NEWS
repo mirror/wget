@@ -30,6 +30,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Accept the arguments --accept-reject and --reject-regex.
 
 ** The GNU TLS backend honors correctly the timeout value.
+
+** Add support for RFC 2617 Digest Access Authentication.
 
 * Changes in Wget 1.13.4
 
