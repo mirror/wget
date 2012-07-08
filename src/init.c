@@ -67,6 +67,7 @@ as that of the covered work.  */
 #include "res.h"                /* for res_cleanup */
 #include "http.h"               /* for http_cleanup */
 #include "retr.h"               /* for output_stream */
+#include "warc.h"               /* for warc_close */
 
 #ifdef TESTING
 #include "test.h"

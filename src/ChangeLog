@@ -1,3 +1,7 @@
+2012-07-03  Steven Schubiger  <stsc@member.fsf.org>
+
+	* init.c: Include warc.h for warc_close in cleanup function.
+
 2012-07-08  Steven Schubiger  <stsc@member.fsf.org>
 
 	* exits.h: Fix comment.
