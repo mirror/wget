@@ -38,6 +38,8 @@ as that of the covered work.  */
 #include <string.h>
 #include <assert.h>
 #include <metalink/metalink_parser.h>
+#include <pthread.h>
+#include <semaphore.h>
 
 #include "exits.h"
 #include "utils.h"
@@ -55,6 +57,7 @@ as that of the covered work.  */
 #include "html-url.h"
 #include "iri.h"
 #include "metalink.h"
+#include "multi.h"
 
 /* Total size of downloaded files.  Used to enforce quota.  */
 SUM_SIZE_INT total_downloaded_bytes;
@@ -658,7 +661,7 @@ static char *getproxy (struct url *);
 uerr_t
 retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
               char **newloc, const char *refurl, int *dt, bool recursive,
-              struct iri *iri, bool register_status)
+              struct iri *iri, bool register_status, struct range *segment_range)
 {
   uerr_t result;
   char *url;
@@ -740,7 +743,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       || (proxy_url && proxy_url->scheme == SCHEME_HTTP))
     {
       result = http_loop (u, orig_parsed, &mynewloc, &local_file, refurl, dt,
-                          proxy_url, iri);
+                          proxy_url, iri, segment_range);
     }
   else if (u->scheme == SCHEME_FTP)
     {
@@ -927,6 +930,19 @@ bail:
   return result;
 }
 
+static void *
+segmented_retrieve_url (void *arg)
+{
+  struct s_thread_ctx *ctx = (struct s_thread_ctx *) arg;
+
+  ctx->status = retrieve_url (ctx->url_parsed, ctx->url,
+                              &ctx->file, &ctx->redirected,
+                              ctx->referer, &ctx->dt,
+                              false, ctx->i, true, ctx->range);
+  ctx->terminated = 1;
+  sem_post (ctx->retr_sem);
+}
+
 /* Find the URLs in the file and call retrieve_url() for each of them.
    If HTML is true, treat the file as HTML, and construct the URLs
    accordingly.
@@ -969,7 +985,7 @@ retrieve_from_file (const char *file, bool html, int *count)
         opt.base_href = xstrdup (url);
 
       status = retrieve_url (url_parsed, url, &url_file, NULL, NULL, &dt,
-                             false, iri, true);
+                             false, iri, true, NULL);
       url_free (url_parsed);
 
       if (!url_file || (status != RETROK))
@@ -993,16 +1009,23 @@ retrieve_from_file (const char *file, bool html, int *count)
   else if(metalink = metalink_context(url))
     {
       /*GSoC wget*/
-      int dt,url_err;
-      int i,j,error_severity;
+      int i,j,k,index,dt,url_err,error_severity;
       metalink_file_t* file;
       metalink_resource_t* resource;
       struct url *url_parsed;
       uerr_t status, status_least_severe;
+      sem_t retr_sem;
+      pthread_t thread;
+      int N_THREADS = 3, free_threads = N_THREADS, range_start, chunk_size;
+      struct s_thread_ctx *thread_ctx;
 
       i = 0;
       while((file = metalink->files[i]) != NULL)
-        {
+        { 
+          thread_ctx = calloc (N_THREADS, sizeof *thread_ctx);
+          sem_init (&retr_sem, 0, 0);
+          range_start = 0;
+          chunk_size = (file->size) / N_THREADS;
           j = 0;
           while((resource = file->resources[j]) != NULL)
             {
@@ -1019,8 +1042,64 @@ retrieve_from_file (const char *file, bool html, int *count)
               if (!opt.base_href)
                 opt.base_href = xstrdup (url);
 
-              status = retrieve_url (url_parsed, url, &(file->name), NULL, NULL,
-                             &dt, false, iri, true);
+              if(1)
+                {
+retry:
+                  if (url && free_threads && range_start < (file->size - 1))
+                    {
+                      for (k = 0; k < N_THREADS; k++)
+                        if (! thread_ctx[k].used)
+                          {
+                            index = k;
+                            free_threads--;
+                            thread_ctx[k].used = 1;
+                            thread_ctx[k].terminated = 0;
+                            break;
+                          }
+
+                      thread_ctx[index].file = file->name;
+                      thread_ctx[index].referer = NULL;
+                      thread_ctx[index].dt = dt;
+                      thread_ctx[index].i = iri;
+                      thread_ctx[index].redirected = NULL;
+                      thread_ctx[index].url = url;
+                      thread_ctx[index].retr_sem = &retr_sem;
+                      thread_ctx[index].url_parsed = url_parsed;
+                      if(!thread_ctx[index].range)
+                        thread_ctx[index].range = malloc(sizeof(struct range));
+                      (thread_ctx[index].range)->first_byte = range_start;
+                      range_start += chunk_size;
+                      (thread_ctx[index].range)->last_byte = range_start -1;
+
+                      pthread_create (&thread, NULL, segmented_retrieve_url,
+                                      &thread_ctx[index]);
+                      continue;
+                    }
+
+                  index = -1;
+                  for (j = 0; j < N_THREADS; j++)
+                    if (thread_ctx[j].used && thread_ctx[j].terminated)
+                      {
+                        index = j;
+                        thread_ctx[j].used = 0;
+                        free_threads++;
+                        break;
+                      }
+
+                  if (index < 0)
+                    {
+                      int ret;
+                      do
+                        ret = sem_wait (&retr_sem);
+                      while (ret < 0 && errno == EINTR);
+                      if (ret < 0); /*TODO barf*/
+
+                      goto retry;
+                    }
+                }
+              else
+                status = retrieve_url (url_parsed, url, &(file->name), NULL, NULL,
+                               &dt, false, iri, true, NULL);
               url_free (url_parsed);
               
               /* 3 indicates WGET_EXIT_IO_FAIL. Used the integral value to
@@ -1046,7 +1125,9 @@ retrieve_from_file (const char *file, bool html, int *count)
 
           ++i;
         }
-        
+        for(i = 0; i < N_THREADS; ++i)
+          xfree (thread_ctx[i].range);
+        xfree (thread_ctx);
         iri_free (iri);
         /* delete metalink_t */
         metalink_delete(metalink);
@@ -1096,7 +1177,7 @@ retrieve_from_file (const char *file, bool html, int *count)
         status = retrieve_url (parsed_url ? parsed_url : cur_url->url,
                                cur_url->url->url, &filename,
                                &new_file, NULL, &dt, opt.recursive, tmpiri,
-                               true);
+                               true, NULL);
 
       if (parsed_url)
           url_free (parsed_url);

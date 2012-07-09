@@ -32,6 +32,7 @@ as that of the covered work.  */
 #ifndef RETR_H
 #define RETR_H
 
+#include "multi.h"
 #include "url.h"
 
 /* These global vars should be made static to retr.c and exported via
@@ -58,7 +59,7 @@ char *fd_read_hunk (int, hunk_terminator_t, long, long);
 char *fd_read_line (int);
 
 uerr_t retrieve_url (struct url *, const char *, char **, char **,
-                     const char *, int *, bool, struct iri *, bool);
+                     const char *, int *, bool, struct iri *, bool, struct range *);
 uerr_t retrieve_from_file (const char *, bool, int *);
 
 const char *retr_rate (wgint, double);

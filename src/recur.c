@@ -52,6 +52,7 @@ as that of the covered work.  */
 #include "html-url.h"
 #include "css-url.h"
 #include "spider.h"
+#include "multi.h"
 
 /* Functions for maintaining the URL queue.  */
 
@@ -71,21 +72,6 @@ struct url_queue {
   struct queue_element *head;
   struct queue_element *tail;
   int count, maxcount;
-};
-
-struct s_thread_ctx
-{
-  int used;
-  int terminated;
-  int dt, url_err;
-  char *redirected;
-  char *referer;
-  struct url *url_parsed;
-  struct iri *i;
-  char *file;
-  char *url;
-  sem_t *retr_sem;
-  uerr_t status;
 };
 
 /* Create a URL queue. */
@@ -190,7 +176,7 @@ start_retrieve_url (void *arg)
   ctx->status = retrieve_url (ctx->url_parsed, ctx->url,
                               &ctx->file, &ctx->redirected,
                               ctx->referer, &ctx->dt,
-                              false, ctx->i, true);
+                              false, ctx->i, true, NULL);
   ctx->terminated = 1;
   sem_post (ctx->retr_sem);
 }
@@ -366,6 +352,7 @@ retry:
               thread_ctx[index].dt = 0;
               thread_ctx[index].i = i;
               thread_ctx[index].redirected = NULL;
+              thread_ctx[index].range = NULL;
               thread_ctx[index].url = url;
               thread_ctx[index].retr_sem = &retr_sem;
               thread_ctx[index].url_parsed = url_parse (thread_ctx[index].url,
