@@ -1050,7 +1050,6 @@ retrieve_from_file (const char *file, bool html, int *count)
 
               if(1)
                 {
-retry:
                   if (url && free_threads && range_start < (file->size - 1))
                     {
                       for (k = 0; k < N_THREADS; k++)
