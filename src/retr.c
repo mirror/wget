@@ -1016,7 +1016,8 @@ retrieve_from_file (const char *file, bool html, int *count)
       uerr_t status, status_least_severe;
       sem_t retr_sem;
       pthread_t thread;
-      int N_THREADS = 3, free_threads = N_THREADS, range_start, chunk_size,file_extension;
+      int N_THREADS = 3;
+      int free_threads = N_THREADS, range_start, chunk_size,file_extension;
       struct s_thread_ctx *thread_ctx = NULL;
       char *temp_name;
 
@@ -1027,7 +1028,6 @@ retrieve_from_file (const char *file, bool html, int *count)
           sem_init (&retr_sem, 0, 0);
           range_start = 0;
           chunk_size = (file->size) / N_THREADS;
-          temp_name = malloc(6 + strlen(file->name));
           j = file_extension = 0;
           while((resource = file->resources[j]) != NULL)
             {
@@ -1059,6 +1059,7 @@ retry:
                             break;
                           }
 
+                      temp_name = malloc(7 + (N_THREADS/10 + 1) + strlen(file->name));
                       sprintf(temp_name, "temp_%s.%d", file->name, file_extension++);
                       thread_ctx[index].file = temp_name;
                       thread_ctx[index].referer = NULL;

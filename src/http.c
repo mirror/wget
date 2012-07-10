@@ -1703,13 +1703,15 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       /* ... but some HTTP/1.0 caches doesn't implement Cache-Control.  */
       request_set_header (req, "Pragma", "no-cache", rel_none);
     }
-
+  
   if(hs->restval_last)
-    request_set_header (req, "Range",
-                        aprintf ("bytes=%s-%s",
-                                 number_to_static_string (hs->restval),
-                                 number_to_static_string (hs->restval_last)),
-                        rel_value);
+    {
+      request_set_header (req, "Range",
+                          aprintf ("bytes=%s-%s",
+                                   number_to_static_string (hs->restval),
+                                   number_to_static_string (hs->restval_last)),
+                          rel_value);
+    }
   else if (hs->restval)
     request_set_header (req, "Range",
                         aprintf ("bytes=%s-",
@@ -2484,7 +2486,7 @@ read_header:
       xfree (head);
       return RETRUNNEEDED;
     }
-  if ((contrange != 0 && contrange != hs->restval)
+  if ((contrange != 0 && (!(hs->restval_last) && contrange != hs->restval))
       || (H_PARTIAL (statcode) && !contrange))
     {
       /* The Range request was somehow misunderstood by the server.
@@ -2830,10 +2832,7 @@ Spider mode enabled. Check if remote file exists.\n"));
          include cases like server failure in one of the segments. */
       /* Decide whether or not to restart.  */
       if (force_full_retrieve)
-        {
           hstat.restval = hstat.len;
-          hstat.restval_last = 0;
-        }
       else if (opt.always_rest
           && got_name
           && stat (hstat.local_file, &st) == 0
@@ -2841,26 +2840,20 @@ Spider mode enabled. Check if remote file exists.\n"));
         /* When -c is used, continue from on-disk size.  (Can't use
            hstat.len even if count>1 because we don't want a failed
            first attempt to clobber existing data.)  */
-        {
           hstat.restval = st.st_size;
-          hstat.restval_last = 0;
-        }
       else if (count > 1)
-        {
         /* otherwise, continue where the previous try left off */
           hstat.restval = hstat.len;
-          hstat.restval_last = 0;
-        }
-      else if (range)
+      else
+          hstat.restval = 0;
+        
+      if (range)
         {
           hstat.restval = range->first_byte;
           hstat.restval_last = range -> last_byte;
         }
       else
-        {
-          hstat.restval = 0;
-          hstat.restval_last = 0;
-        }
+        hstat.restval_last = 0;
 
       /* Decide whether to send the no-cache directive.  We send it in
          two cases:
