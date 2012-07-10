@@ -1703,20 +1703,18 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       /* ... but some HTTP/1.0 caches doesn't implement Cache-Control.  */
       request_set_header (req, "Pragma", "no-cache", rel_none);
     }
-  if (hs->restval)
-    {
-      if(hs->restval_last)
-        request_set_header (req, "Range",
-                            aprintf ("bytes=%s-%s",
-                                     number_to_static_string (hs->restval),
-                                     number_to_static_string (hs->restval_last)),
-                            rel_value);
-      else
-        request_set_header (req, "Range",
-                            aprintf ("bytes=%s-",
-                                     number_to_static_string (hs->restval)),
-                            rel_value);
-    }
+
+  if(hs->restval_last)
+    request_set_header (req, "Range",
+                        aprintf ("bytes=%s-%s",
+                                 number_to_static_string (hs->restval),
+                                 number_to_static_string (hs->restval_last)),
+                        rel_value);
+  else if (hs->restval)
+    request_set_header (req, "Range",
+                        aprintf ("bytes=%s-",
+                                 number_to_static_string (hs->restval)),
+                        rel_value);
   SET_USER_AGENT (req);
   request_set_header (req, "Accept", "*/*", rel_none);
 
@@ -2274,7 +2272,7 @@ read_header:
           xfree_null (message);
           return RETRUNNEEDED;
         }
-      else if (!ALLOW_CLOBBER && !(hs->restval_last))
+      else if (!ALLOW_CLOBBER)
         {
           char *unique = unique_name (hs->local_file, true);
           if (unique != hs->local_file)

@@ -1017,7 +1017,8 @@ retrieve_from_file (const char *file, bool html, int *count)
       sem_t retr_sem;
       pthread_t thread;
       int N_THREADS = 3, free_threads = N_THREADS, range_start, chunk_size;
-      struct s_thread_ctx *thread_ctx;
+      struct s_thread_ctx *thread_ctx = NULL;
+      char *temp_name;
 
       i = 0;
       while((file = metalink->files[i]) != NULL)
@@ -1026,6 +1027,7 @@ retrieve_from_file (const char *file, bool html, int *count)
           sem_init (&retr_sem, 0, 0);
           range_start = 0;
           chunk_size = (file->size) / N_THREADS;
+          temp_name = malloc(5 + sizeof(file->name));
           j = 0;
           while((resource = file->resources[j]) != NULL)
             {
@@ -1057,7 +1059,8 @@ retry:
                             break;
                           }
 
-                      thread_ctx[index].file = file->name;
+                      sprintf(temp_name, "temp_%s", file->name);
+                      thread_ctx[index].file = temp_name;
                       thread_ctx[index].referer = NULL;
                       thread_ctx[index].dt = dt;
                       thread_ctx[index].i = iri;
@@ -1073,6 +1076,13 @@ retry:
 
                       pthread_create (&thread, NULL, segmented_retrieve_url,
                                       &thread_ctx[index]);
+                      ++j;
+                      /* GSoC TODO: Replace this with something better. */
+                      /* When the resources are traversed once, return to
+                         the first resource to start re-traversing URLs
+                         (and assigning them to the threads).*/
+                      if(!(file->resources[j]))
+                        j=0;
                       continue;
                     }
 
@@ -1098,23 +1108,25 @@ retry:
                     }
                 }
               else
-                status = retrieve_url (url_parsed, url, &(file->name), NULL, NULL,
-                               &dt, false, iri, true, NULL);
-              url_free (url_parsed);
-              
-              /* 3 indicates WGET_EXIT_IO_FAIL. Used the integral value to
-               * avoid including a .c file (i.e. exits.c) in retr.c. */
-              if ((status == RETROK) ||
-                  get_exit_status() == 3)
-                break;
+                {
+                  status = retrieve_url (url_parsed, url, &(file->name), NULL,
+                                         NULL, &dt, false, iri, true, NULL);
+                  url_free (url_parsed);
 
-              /* Pick the least severe error.*/
-              error_severity = get_exit_status();
-              inform_exit_status(status_least_severe);
-              if(get_exit_status() != error_severity)
-                status_least_severe = status;
+                  /* 3 indicates WGET_EXIT_IO_FAIL. Used the integral value to
+                   * avoid including a .c file (i.e. exits.c) in retr.c. */
+                  if ((status == RETROK) ||
+                      get_exit_status() == 3)
+                    break;
 
-              ++j;
+                  /* Pick the least severe error.*/
+                  error_severity = get_exit_status();
+                  inform_exit_status(status_least_severe);
+                  if(get_exit_status() != error_severity)
+                    status_least_severe = status;
+
+                  ++j;
+                }
             }
           /* Either all resources are exhausted and the least severe error
            * among all is returned, or an error irrelevant to the server is.
@@ -1125,8 +1137,20 @@ retry:
 
           ++i;
         }
+        if(thread_ctx)
+          {
+            char *command = malloc(8 + sizeof(temp_name) + sizeof(file->name));
+            sprintf(command, "cat %s* > %s",temp_name , file->name);
+            system(command);
+            sprintf(command, "rm -f %s*", temp_name);
+            free(command);
+          }
         for(i = 0; i < N_THREADS; ++i)
-          xfree (thread_ctx[i].range);
+          {
+            xfree (thread_ctx[i].range);
+            free(thread_ctx[i].file);
+            url_free (thread_ctx[i].url);
+          }
         xfree (thread_ctx);
         iri_free (iri);
         /* delete metalink_t */
