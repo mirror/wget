@@ -1023,12 +1023,16 @@ retrieve_from_file (const char *file, bool html, int *count)
 
       i = 0;
       while((file = metalink->files[i]) != NULL)
-        { 
-          thread_ctx = calloc (N_THREADS, sizeof *thread_ctx);
-          sem_init (&retr_sem, 0, 0);
-          range_start = 0;
-          chunk_size = (file->size) / N_THREADS;
-          j = file_extension = 0;
+        {
+          if(1)
+            {
+              thread_ctx = calloc (N_THREADS, sizeof *thread_ctx);
+              sem_init (&retr_sem, 0, 0);
+              range_start = 0;
+              chunk_size = (file->size) / N_THREADS;
+              file_extension = 0;
+            }
+          j = 0;
           while((resource = file->resources[j]) != NULL)
             {
               url = resource->url;
@@ -1087,25 +1091,41 @@ retry:
                       continue;
                     }
 
-                  index = -1;
-                  for (k = 0; k < N_THREADS; k++)
-                    if (thread_ctx[k].used && thread_ctx[k].terminated)
-                      {
-                        index = k;
-                        thread_ctx[k].used = 0;
-                        free_threads++;
-                        break;
-                      }
+                  /* If file range is not covered yet, wait until a thread is
+                     available. If the file is downloaded, then destroy all
+                     the threads. */
+                  if(range_start < file->size)
+                    {
+                      if(!free_threads)
+                        {
+                          int ret;
+                          do
+                            ret = sem_wait (&retr_sem);
+                          while (ret < 0 && errno == EINTR);
 
-                  if (index < 0)
+                          index = -1;
+                          for (k = 0; k < N_THREADS; k++)
+                            if (thread_ctx[k].used && thread_ctx[k].terminated)
+                              {
+                                index = k;
+                                thread_ctx[k].used = 0;
+                                free_threads++;
+                                break;
+                              }
+                        }
+                    }
+                  else
                     {
                       int ret;
-                      do
-                        ret = sem_wait (&retr_sem);
-                      while (ret < 0 && errno == EINTR);
-                      if (ret < 0); /*TODO barf*/
-
-                      goto retry;
+                      while(free_threads < N_THREADS)
+                        {
+                          ret = sem_wait (&retr_sem);
+                          if(ret >= 0 || errno != EINTR)
+                            free_threads++;
+                        }
+                      /*TODO: Find a way to check the success of downloads.*/
+                      status = RETROK;
+                      break;
                     }
                 }
               else
@@ -1136,22 +1156,26 @@ retry:
           if (status != RETROK)
             return status;
 
+          if(thread_ctx)
+            {
+              char *command;
+              *(strrchr(temp_name, '.')) = '\0';
+              command = malloc(9 + (N_THREADS) * (strlen(temp_name) + (N_THREADS/10 + 1) + 2) + strlen(file->name));
+              sprintf(command, "cat %s* > %s",temp_name , file->name);
+              system(command);
+              sprintf(command, "rm -f %s.*", temp_name);
+              system(command);
+              free(command);
+            }
+          for(k = 0; k < N_THREADS; ++k)
+            {
+              xfree (thread_ctx[k].range);
+              free(thread_ctx[k].file);
+              url_free (thread_ctx[k].url_parsed);
+            }
+
           ++i;
         }
-        if(thread_ctx)
-          {
-            char *command = malloc(9 + strlen(temp_name) + strlen(file->name));
-            sprintf(command, "cat %s* > %s",temp_name , file->name);
-            system(command);
-            sprintf(command, "rm -f %s*", temp_name);
-            free(command);
-          }
-        for(i = 0; i < N_THREADS; ++i)
-          {
-            xfree (thread_ctx[i].range);
-            free(thread_ctx[i].file);
-            url_free (thread_ctx[i].url_parsed);
-          }
         xfree (thread_ctx);
         iri_free (iri);
         /* delete metalink_t */

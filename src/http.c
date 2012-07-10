@@ -2486,8 +2486,7 @@ read_header:
       xfree (head);
       return RETRUNNEEDED;
     }
-  if ((contrange != 0 && (!(hs->restval_last) && contrange != hs->restval))
-      || (H_PARTIAL (statcode) && !contrange))
+  if ((contrange != 0 && (!(hs->restval_last) && contrange != hs->restval)))
     {
       /* The Range request was somehow misunderstood by the server.
          Bail out.  */
