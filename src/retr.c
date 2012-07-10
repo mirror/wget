@@ -1016,7 +1016,7 @@ retrieve_from_file (const char *file, bool html, int *count)
       uerr_t status, status_least_severe;
       sem_t retr_sem;
       pthread_t thread;
-      int N_THREADS = 3, free_threads = N_THREADS, range_start, chunk_size;
+      int N_THREADS = 3, free_threads = N_THREADS, range_start, chunk_size,file_extension;
       struct s_thread_ctx *thread_ctx = NULL;
       char *temp_name;
 
@@ -1027,8 +1027,8 @@ retrieve_from_file (const char *file, bool html, int *count)
           sem_init (&retr_sem, 0, 0);
           range_start = 0;
           chunk_size = (file->size) / N_THREADS;
-          temp_name = malloc(5 + sizeof(file->name));
-          j = 0;
+          temp_name = malloc(6 + strlen(file->name));
+          j = file_extension = 0;
           while((resource = file->resources[j]) != NULL)
             {
               url = resource->url;
@@ -1059,7 +1059,7 @@ retry:
                             break;
                           }
 
-                      sprintf(temp_name, "temp_%s", file->name);
+                      sprintf(temp_name, "temp_%s.%d", file->name, file_extension++);
                       thread_ctx[index].file = temp_name;
                       thread_ctx[index].referer = NULL;
                       thread_ctx[index].dt = dt;
@@ -1087,11 +1087,11 @@ retry:
                     }
 
                   index = -1;
-                  for (j = 0; j < N_THREADS; j++)
-                    if (thread_ctx[j].used && thread_ctx[j].terminated)
+                  for (k = 0; k < N_THREADS; k++)
+                    if (thread_ctx[k].used && thread_ctx[k].terminated)
                       {
-                        index = j;
-                        thread_ctx[j].used = 0;
+                        index = k;
+                        thread_ctx[k].used = 0;
                         free_threads++;
                         break;
                       }
@@ -1139,7 +1139,7 @@ retry:
         }
         if(thread_ctx)
           {
-            char *command = malloc(8 + sizeof(temp_name) + sizeof(file->name));
+            char *command = malloc(9 + strlen(temp_name) + strlen(file->name));
             sprintf(command, "cat %s* > %s",temp_name , file->name);
             system(command);
             sprintf(command, "rm -f %s*", temp_name);
@@ -1149,7 +1149,7 @@ retry:
           {
             xfree (thread_ctx[i].range);
             free(thread_ctx[i].file);
-            url_free (thread_ctx[i].url);
+            url_free (thread_ctx[i].url_parsed);
           }
         xfree (thread_ctx);
         iri_free (iri);
