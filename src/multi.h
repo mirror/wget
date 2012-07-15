@@ -39,6 +39,10 @@ as that of the covered work.  */
 struct range {
   int first_byte;
   int last_byte;
+  int is_covered;
+  int is_assigned;
+  int resources_tried;
+  uerr_t status_least_severe;
 };
 
 struct s_thread_ctx

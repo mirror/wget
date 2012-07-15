@@ -59,6 +59,12 @@ as that of the covered work.  */
 #include "metalink.h"
 #include "multi.h"
 
+static pthread_mutex_t pconn_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+#define PCONN_LOCK() pthread_mutex_lock (&pconn_mutex)
+
+#define PCONN_UNLOCK() pthread_mutex_unlock (&pconn_mutex)
+
 /* Total size of downloaded files.  Used to enforce quota.  */
 SUM_SIZE_INT total_downloaded_bytes;
 
@@ -1009,14 +1015,15 @@ retrieve_from_file (const char *file, bool html, int *count)
   else if(metalink = metalink_context(url))
     {
       /*GSoC wget*/
-      int i, j, k, index, dt, url_err, error_severity;
+      int i, j, k, r, index, dt, url_err, error_severity;
       metalink_file_t* file;
       metalink_resource_t* resource;
       struct url *url_parsed;
-      uerr_t status, status_least_severe;
+      uerr_t status;
       int ret, N_THREADS = opt.jobs > 0 ? opt.jobs : 1;
-      int free_threads, range_start, chunk_size, file_extension;
+      int free_threads, chunk_size, num_of_resources;
       struct s_thread_ctx *thread_ctx;
+      struct range *ranges;
 
       if(N_THREADS>1)
         {
@@ -1024,34 +1031,50 @@ retrieve_from_file (const char *file, bool html, int *count)
           sem_t retr_sem;
           char *command;
 
-          thread_ctx = calloc (N_THREADS, sizeof *thread_ctx);
+          thread_ctx = malloc (N_THREADS* (sizeof *thread_ctx));
+          ranges = malloc (N_THREADS * (sizeof *ranges));
           i = 0;
           while((file = metalink->files[i]) != NULL)
             {
               memset(thread_ctx, '\0', N_THREADS * (sizeof *thread_ctx));
               for(k = 0; k < N_THREADS; ++k)
-                {
-                  thread_ctx[k].file = malloc(7 + (N_THREADS/10 + 1) +
-                                                       strlen(file->name));
-                  thread_ctx[k].range = malloc(sizeof(struct range));
-                }
-              sem_init (&retr_sem, 0, 0);
-              range_start = 0;
+                thread_ctx[k].file = malloc(7 + (N_THREADS/10 + 1) +
+                                                            strlen(file->name));
+
               chunk_size = (file->size) / N_THREADS;
-              file_extension = 0;
+              for(k = 0; k < N_THREADS; ++k)
+                {
+                  ranges[k].first_byte = k * chunk_size;
+                  ranges[k].last_byte = (k+1) * chunk_size - 1;
+                  ranges[k].is_covered = ranges[k].is_assigned = 0;
+                  ranges[k].resources_tried = 0;
+                }
+              ranges[k-1].last_byte = file->size -1;
+
+              sem_init (&retr_sem, 0, 0);
               free_threads = N_THREADS;
 
-              j = 0;
+              j = num_of_resources = 0;
               while(1)
                 {
-                  resource = file->resources[j];
+attemptfail:      resource = file->resources[j];
                   
-                  if (range_start < file->size)
+                  for(r = 0; r < N_THREADS; ++r)
+                    {
+                      if (! (ranges[r].is_assigned || ranges[r].is_covered))
+                        break;
+                    }
+                  
+                  if (r < N_THREADS)
                     {
                       if (free_threads)
                         {
                           if (!resource)
-                            j = 0;
+                            {
+                              num_of_resources = j;
+                              j = 0;
+                              resource = file->resources[j];
+                            }
                           if (url = resource->url)
                             {
                               for (k = 0; k < N_THREADS; k++)
@@ -1078,7 +1101,20 @@ retrieve_from_file (const char *file, bool html, int *count)
                                 opt.base_href = xstrdup (url);
 
                               sprintf(thread_ctx[index].file, "temp_%s.%d",
-                                      file->name, file_extension++);
+                                      file->name, r);
+
+                              /* Update this when configuring fallbacking code
+                                 so that downloading goes on from where the
+                                 previous resource failed. */
+                              if(file_exists_p(thread_ctx[index].file))
+                                {
+                                  command = malloc(15 + (N_THREADS)*(strlen(file->name) +
+                                       (N_THREADS/10 + 1) + 2) + strlen(file->name));
+                                  sprintf(command, "rm -f temp_%s.*", file->name);
+                                  system(command);
+                                  free(command);
+                                }
+
                               thread_ctx[index].referer = NULL;
                               thread_ctx[index].dt = dt;
                               thread_ctx[index].i = iri;
@@ -1086,9 +1122,8 @@ retrieve_from_file (const char *file, bool html, int *count)
                               thread_ctx[index].url = url;
                               thread_ctx[index].retr_sem = &retr_sem;
                               thread_ctx[index].url_parsed = url_parsed;
-                              (thread_ctx[index].range)->first_byte = range_start;
-                              range_start += chunk_size;
-                              (thread_ctx[index].range)->last_byte = range_start - 1;
+                              thread_ctx[index].range = ranges + r;
+                              (thread_ctx[index].range)->is_assigned = 1;
 
                               pthread_create (&thread, NULL, segmented_retrieve_url,
                                               &thread_ctx[index]);
@@ -1099,10 +1134,6 @@ retrieve_from_file (const char *file, bool html, int *count)
                         }
                       else
                         {
-                          /* This part seems redundant FOR NOW, as the file is
-                             initially divided into size/threads many segments,
-                             which means the file size will already be reached
-                             once the initial assignment to threads is made. */
                           do
                             ret = sem_wait (&retr_sem);
                           while (ret < 0 && errno == EINTR);
@@ -1110,16 +1141,42 @@ retrieve_from_file (const char *file, bool html, int *count)
                           for (k = 0; k < N_THREADS; k++)
                             if (thread_ctx[k].used && thread_ctx[k].terminated)
                               {
+                                status = thread_ctx[k].status;
+                                /* Check return status of thread for errors. */
+                                if (status == RETROK)
+                                    (thread_ctx[k].range)->is_covered = 1;
+                                else
+                                  {
+                                    PCONN_LOCK ();
+
+                                    /* Pick the least severe error.*/
+                                    error_severity = get_exit_status();
+                                    inform_exit_status((thread_ctx[k].range)->status_least_severe);
+                                    if(get_exit_status() != error_severity)
+                                      (thread_ctx[k].range)->status_least_severe = status;
+                                    PCONN_UNLOCK ();
+
+                                    ++(thread_ctx[k].range)->resources_tried;
+                                  }
+
                                 thread_ctx[k].used = 0;
                                 url_free (thread_ctx[k].url_parsed);
                                 free_threads++;
                                 break;
                               }
+                          if(num_of_resources &&
+                                  ranges[k].resources_tried == num_of_resources)
+                            goto segmentfail;
+                          else if(ranges[k].resources_tried < num_of_resources)
+                            {
+                              (thread_ctx[k].range)->is_assigned = 0;
+                              (thread_ctx[k].range)->is_covered = 0;
+                            }
                         }
                     }
                   else
                     {
-                      while(free_threads < N_THREADS)
+segmentfail:          while(free_threads < N_THREADS)
                         {
                           do
                             ret = sem_wait (&retr_sem);
@@ -1128,46 +1185,78 @@ retrieve_from_file (const char *file, bool html, int *count)
                           for (k = 0; k < N_THREADS; k++)
                             if (thread_ctx[k].used && thread_ctx[k].terminated)
                               {
+                                status = thread_ctx[k].status;
+                                /* Check return status of thread for errors. */
+                                if (status == RETROK)
+                                    (thread_ctx[k].range)->is_covered = 1;
+                                else
+                                  {
+                                    PCONN_LOCK ();
+
+                                    /* Pick the least severe error.*/
+                                    error_severity = get_exit_status();
+                                    inform_exit_status((thread_ctx[k].range)->status_least_severe);
+                                    if(get_exit_status() != error_severity)
+                                      (thread_ctx[k].range)->status_least_severe = status;
+                                    PCONN_UNLOCK ();
+
+                                    ++(thread_ctx[k].range)->resources_tried;
+                                  }
+
                                 thread_ctx[k].used = 0;
                                 url_free (thread_ctx[k].url_parsed);
                                 free_threads++;
                                 break;
                               }
+                          if(num_of_resources &&
+                                  ranges[k].resources_tried == num_of_resources)
+                            {
+                              (thread_ctx[k].range)->is_assigned = 0;
+                              (thread_ctx[k].range)->is_covered = 0;
+                            }
+                          else if(ranges[k].resources_tried < num_of_resources)
+                            goto attemptfail;
+
                         }
-                      /*TODO: Find a way to check the success of downloads.*/
-                      status = RETROK;
+
+                      /* If true, goto segmentfail was used to come here.*/
+                      if(r < N_THREADS)
+                        status = ranges[r].status_least_severe;
+                      else
+                        status = RETROK;
                       break;
                     }
                 }
-
-              for(k = 0; k < N_THREADS; ++k)
-                {
-                  free(thread_ctx[k].file);
-                  free(thread_ctx[k].range);
-                }
               sem_destroy(&retr_sem);
 
-              /* Either all resources are exhausted and the least severe error
-               * among all is returned, or an error irrelevant to the server is.
-               * MUST be reconsidered for multiple files!!!
-               * Can't just exit after 1 failure, if metalink has multiple files.*/
-              if (status != RETROK)
-                return status;
+              for(k = 0; k < N_THREADS; ++k)
+                free(thread_ctx[k].file);
 
               command = malloc(15 + (N_THREADS) * (strlen(file->name) +
-                               (N_THREADS/10 + 1) + 2) + strlen(file->name));
-              sprintf(command, "cat temp_%s.* > %s",file->name , file->name);
-              system(command);
+                                   (N_THREADS/10 + 1) + 2) + strlen(file->name));
+              if (status != RETROK)
+                {
+                  /* Segment r could not be downloaded due to status.
+                     Do not return, go on with the download. */
+                }
+              else
+                {
+                  sprintf(command, "cat temp_%s.* > %s",file->name , file->name);
+                  system(command);
+                }
               sprintf(command, "rm -f temp_%s.*", file->name);
               system(command);
               free(command);
 
               ++i;
             }
+          free(ranges);
           free (thread_ctx);
         }
       else
         {
+          uerr_t status_least_severe;
+
           i = 0;
           while((file = metalink->files[i]) != NULL)
             {
@@ -1205,9 +1294,14 @@ retrieve_from_file (const char *file, bool html, int *count)
 
                   ++j;
                 }
+              if(! resource)
+                status = status_least_severe;
 
               if (status != RETROK)
-                return status;
+                {
+                  /* File file->name could not be downloaded due to status.
+                     Do not return, go on with the download. */
+                }
 
               ++i;
             }
