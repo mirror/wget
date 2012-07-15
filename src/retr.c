@@ -1212,7 +1212,7 @@ retrieve_from_file (const char *file, bool html, int *count)
               ++i;
             }
         }
-
+      *count = i;
       iri_free (iri);
       /* delete metalink_t */
       metalink_delete(metalink);
