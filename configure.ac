@@ -86,6 +86,18 @@ AC_ARG_ENABLE(debug,
 ENABLE_DEBUG=$enableval, ENABLE_DEBUG=yes)
 test x"${ENABLE_DEBUG}" = xyes && AC_DEFINE([ENABLE_DEBUG], 1,
    [Define if you want the debug output support compiled in.])
+   
+AC_ARG_ENABLE(threads,
+[  --disable-threads      disable support for parallel downloads using threads],
+ENABLE_THREADS=$enableval, ENABLE_THREADS=no)
+test x"${ENABLE_THREADS}" = xyes && AC_DEFINE([ENABLE_THREADS], 1,
+   [Define if you want the concurrent download support compiled in.])
+
+AC_ARG_ENABLE(metalink,
+[  --disable-metalink      disable support for metalink file format],
+ENABLE_METALINK=$enableval, ENABLE_METALINK=no)
+test x"${ENABLE_METALINK}" = xyes && AC_DEFINE([ENABLE_METALINK], 1,
+   [Define if you want the metalink file format support compiled in.])
 
 dnl
 dnl Find the compiler
@@ -337,6 +349,33 @@ else
     AC_MSG_ERROR([NTLM authorization requested and OpenSSL not found; aborting])
   fi
 fi
+
+
+if test x"$ENABLE_METALINK" == xyes
+then
+  AC_MSG_NOTICE([Checking the existence of libraries essential for metalink support])
+  
+  AC_CHECK_LIB(metalink, metalink_parse_file,[
+    AC_MSG_NOTICE([libmetalink exists])
+    
+    AC_LIB_HAVE_LINKFLAGS([metalink])
+    if test x"$LIBMETALINK" != x
+    then
+      AC_MSG_NOTICE([compiling in support for metalink])
+      AC_LIBOBJ([metalink])
+      LIBS="$LIBMETALINK $LIBS"
+      dnl CFLAGS="${CFLAGS} -I/usr/local/include"
+    else
+      AC_MSG_ERROR([--enable-metalink was given, but libmetalink is not available.])
+    fi
+
+    AC_LIBOBJ([metalink])
+    
+  ],[
+    AC_MSG_ERROR([libmetalink not found])
+  ])
+fi
+
 
 dnl **********************************************************************
 dnl Checks for IPv6
