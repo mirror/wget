@@ -350,31 +350,21 @@ else
   fi
 fi
 
-
-if test x"$ENABLE_METALINK" == xyes
-then
-  AC_MSG_NOTICE([Checking the existence of libraries essential for metalink support])
-  
-  AC_CHECK_LIB(metalink, metalink_parse_file,[
-    AC_MSG_NOTICE([libmetalink exists])
-    
-    AC_LIB_HAVE_LINKFLAGS([metalink])
-    if test x"$LIBMETALINK" != x
-    then
-      AC_MSG_NOTICE([compiling in support for metalink])
-      AC_LIBOBJ([metalink])
-      LIBS="$LIBMETALINK $LIBS"
-      dnl CFLAGS="${CFLAGS} -I/usr/local/include"
-    else
-      AC_MSG_ERROR([--enable-metalink was given, but libmetalink is not available.])
-    fi
-
-    AC_LIBOBJ([metalink])
-    
-  ],[
+AS_IF([test x"$ENABLE_METALINK" == xyes],[
+  dnl If metalink support is requested
+  PKG_CHECK_MODULES(LIBMETALINK, libmetalink, [
+    dnl If metalink module is found
+    AC_MSG_NOTICE([compiling in support for metalink])
+    LIBS="$LIBMETALINK_LIBS $LIBS"
+    LIBS="$LIBMETALINK_CFLAGS $CFLAGS"
+  ], [
+    dnl If metalink module is not found
     AC_MSG_ERROR([libmetalink not found])
   ])
-fi
+],[
+  dnl If metalink support is not requested
+  AC_MSG_NOTICE([compiling without support for metalink])
+])
 
 
 dnl **********************************************************************

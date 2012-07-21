@@ -55,7 +55,7 @@ wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c    		  \
 	       spider.h ssl.h sysdep.h url.h utils.h wget.h iri.h 	  \
 	       exits.h gettext.h metalink.h
 nodist_wget_SOURCES = version.c
-EXTRA_wget_SOURCES = iri.c
+EXTRA_wget_SOURCES = iri.c metalink.c
 LDADD = $(LIBOBJS) ../lib/libgnu.a
 AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
 
