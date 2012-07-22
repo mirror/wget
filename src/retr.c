@@ -38,6 +38,7 @@ as that of the covered work.  */
 #include <string.h>
 #include <assert.h>
 #include <metalink/metalink_parser.h>
+#include <metalink/metalink_types.h>
 #include <pthread.h>
 #include <semaphore.h>
 
