@@ -95,7 +95,7 @@ test x"${ENABLE_THREADS}" = xyes && AC_DEFINE([ENABLE_THREADS], 1,
 
 AC_ARG_ENABLE(metalink,
 [  --disable-metalink      disable support for metalink file format],
-ENABLE_METALINK=$enableval, ENABLE_METALINK=no)
+ENABLE_METALINK=$enableval, ENABLE_METALINK=auto)
 test x"${ENABLE_METALINK}" = xyes && AC_DEFINE([ENABLE_METALINK], 1,
    [Define if you want the metalink file format support compiled in.])
 
@@ -350,17 +350,28 @@ else
   fi
 fi
 
-AS_IF([test x"$ENABLE_METALINK" == xyes],[
+AS_IF([test x"$ENABLE_METALINK" != xno],[
   dnl If metalink support is requested
   PKG_CHECK_MODULES(LIBMETALINK, libmetalink, [
     dnl If metalink module is found
-    AC_MSG_NOTICE([compiling in support for metalink])
     LIBS="$LIBMETALINK_LIBS $LIBS"
     CFLAGS="$LIBMETALINK_CFLAGS $CFLAGS"
-    metalink=yes
+    
+    AC_CHECK_LIB(metalink, metalink_parse_file, [
+      metalink=yes
+      AC_MSG_NOTICE([compiling in support for metalink])
+    ], [
+      if test x"$ENABLE_METALINK" == xyes
+      then
+        AC_MSG_ERROR([Could not find the metalink_parse_file function in libmetalink.])
+      fi
+    ])
   ], [
     dnl If metalink module is not found
-    AC_MSG_ERROR([libmetalink not found])
+    if test x"$ENABLE_METALINK" == xyes
+    then
+      AC_MSG_ERROR([libmetalink not found])
+    fi
   ])
 ],[
   dnl If metalink support is not requested

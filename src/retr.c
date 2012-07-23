@@ -66,6 +66,8 @@ static pthread_mutex_t pconn_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #define PCONN_UNLOCK() pthread_mutex_unlock (&pconn_mutex)
 
+#define TEMP_PREFIX "temp_"
+
 /* Total size of downloaded files.  Used to enforce quota.  */
 SUM_SIZE_INT total_downloaded_bytes;
 
@@ -1039,8 +1041,12 @@ retrieve_from_file (const char *file, bool html, int *count)
             {
               memset(thread_ctx, '\0', N_THREADS * (sizeof *thread_ctx));
               for(k = 0; k < N_THREADS; ++k)
-                thread_ctx[k].file = malloc(7 + (N_THREADS/10 + 1) +
-                                                            strlen(file->name));
+                thread_ctx[k].file = malloc( strlen(TEMP_PREFIX)
+                                           + strlen(file->name)
+                                           + (sizeof ".")-1
+                                           + (N_THREADS/10 + 1) /* simpler than log10,
+                                                                   and close enough */
+                                           + sizeof "" );
 
               chunk_size = (file->size) / N_THREADS;
               for(k = 0; k < N_THREADS; ++k)
@@ -1101,7 +1107,7 @@ attemptfail:      resource = file->resources[j];
                               if (!opt.base_href)
                                 opt.base_href = xstrdup (url);
 
-                              sprintf(thread_ctx[index].file, "temp_%s.%d",
+                              sprintf(thread_ctx[index].file, TEMP_PREFIX "%s.%d",
                                       file->name, r);
 
                               /* Update this when configuring fallbacking code
@@ -1111,7 +1117,7 @@ attemptfail:      resource = file->resources[j];
                                 {
                                   command = malloc(15 + (N_THREADS)*(strlen(file->name) +
                                        (N_THREADS/10 + 1) + 2) + strlen(file->name));
-                                  sprintf(command, "rm -f temp_%s.*", file->name);
+                                  sprintf(command, "rm -f " TEMP_PREFIX "%s.*", file->name);
                                   system(command);
                                   free(command);
                                 }
@@ -1228,10 +1234,10 @@ segmentfail:          while(free_threads < N_THREADS)
                       break;
                     }
                 }
-              sem_destroy(&retr_sem);
-
               for(k = 0; k < N_THREADS; ++k)
                 free(thread_ctx[k].file);
+
+              sem_destroy(&retr_sem);
 
               command = malloc(15 + (N_THREADS) * (strlen(file->name) +
                                    (N_THREADS/10 + 1) + 2) + strlen(file->name));
