@@ -1000,7 +1000,10 @@ retrieve_from_file (const char *file, bool html, int *count)
 
       input_file = url_file;
     }
-  else if(metalink = metalink_context(url))
+  else
+    input_file = (char *) file;
+
+  if(metalink = metalink_context(input_file))
     {
       /*GSoC wget*/
       char *command, **files;
@@ -1148,6 +1151,7 @@ retrieve_from_file (const char *file, bool html, int *count)
             }
           else
             {
+              ++*count;
               sprintf(command, "cat ");
               j=0;
               r = 4;
@@ -1182,78 +1186,75 @@ retrieve_from_file (const char *file, bool html, int *count)
       free(ranges);
       free(thread_ctx);
 
-      *count = i;
-      iri_free (iri);
       metalink_delete(metalink);
-      /*What exactly to return MUST be reconsidered.*/
-      return status;
     }
   else
-    input_file = (char *) file;
-
-  url_list = (html ? get_urls_html (input_file, NULL, NULL, iri)
-              : get_urls_file (input_file));
-
-  xfree_null (url_file);
-
-  for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
     {
-      char *filename = NULL, *new_file = NULL;
-      int dt;
-      struct iri *tmpiri = iri_dup (iri);
-      struct url *parsed_url = NULL;
 
-      if (cur_url->ignore_when_downloading)
-        continue;
+      url_list = (html ? get_urls_html (input_file, NULL, NULL, iri)
+                  : get_urls_file (input_file));
 
-      if (opt.quota && total_downloaded_bytes > opt.quota)
+      xfree_null (url_file);
+
+      for (cur_url = url_list; cur_url; cur_url = cur_url->next, ++*count)
         {
-          status = QUOTEXC;
-          break;
-        }
+          char *filename = NULL, *new_file = NULL;
+          int dt;
+          struct iri *tmpiri = iri_dup (iri);
+          struct url *parsed_url = NULL;
 
-      parsed_url = url_parse (cur_url->url->url, NULL, tmpiri, true);
+          if (cur_url->ignore_when_downloading)
+            continue;
 
-      if ((opt.recursive || opt.page_requisites)
-          && (cur_url->url->scheme != SCHEME_FTP || getproxy (cur_url->url)))
-        {
-          int old_follow_ftp = opt.follow_ftp;
+          if (opt.quota && total_downloaded_bytes > opt.quota)
+            {
+              status = QUOTEXC;
+              break;
+            }
 
-          /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-          if (cur_url->url->scheme == SCHEME_FTP)
-            opt.follow_ftp = 1;
+          parsed_url = url_parse (cur_url->url->url, NULL, tmpiri, true);
 
-          status = retrieve_tree (parsed_url ? parsed_url : cur_url->url,
+          if ((opt.recursive || opt.page_requisites)
+              && (cur_url->url->scheme != SCHEME_FTP || getproxy (cur_url->url)))
+            {
+              int old_follow_ftp = opt.follow_ftp;
+
+              /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
+              if (cur_url->url->scheme == SCHEME_FTP)
+                opt.follow_ftp = 1;
+
+              status = retrieve_tree (parsed_url ? parsed_url : cur_url->url,
                                   tmpiri);
 
-          opt.follow_ftp = old_follow_ftp;
-        }
-      else
-        status = retrieve_url (parsed_url ? parsed_url : cur_url->url,
-                               cur_url->url->url, &filename,
-                               &new_file, NULL, &dt, opt.recursive, tmpiri,
-                               true, NULL);
+              opt.follow_ftp = old_follow_ftp;
+            }
+          else
+            status = retrieve_url (parsed_url ? parsed_url : cur_url->url,
+                                   cur_url->url->url, &filename,
+                                   &new_file, NULL, &dt, opt.recursive, tmpiri,
+                                   true, NULL);
 
-      if (parsed_url)
-          url_free (parsed_url);
+          if (parsed_url)
+              url_free (parsed_url);
 
-      if (filename && opt.delete_after && file_exists_p (filename))
-        {
-          DEBUGP (("\
+          if (filename && opt.delete_after && file_exists_p (filename))
+            {
+              DEBUGP (("\
 Removing file due to --delete-after in retrieve_from_file():\n"));
-          logprintf (LOG_VERBOSE, _("Removing %s.\n"), filename);
-          if (unlink (filename))
-            logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
-          dt &= ~RETROKF;
+              logprintf (LOG_VERBOSE, _("Removing %s.\n"), filename);
+              if (unlink (filename))
+                logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
+              dt &= ~RETROKF;
+            }
+
+          xfree_null (new_file);
+          xfree_null (filename);
+          iri_free (tmpiri);
         }
 
-      xfree_null (new_file);
-      xfree_null (filename);
-      iri_free (tmpiri);
+      /* Free the linked list of URL-s.  */
+      free_urlpos (url_list);
     }
-
-  /* Free the linked list of URL-s.  */
-  free_urlpos (url_list);
 
   iri_free (iri);
 
