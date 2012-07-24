@@ -1039,7 +1039,7 @@ retrieve_from_file (const char *file, bool html, int *count)
               for (k = 0; k < num_of_resources; ++k)
                 ranges[j].resources[k] = false;
             }
-          ranges[k-1].last_byte = file->size -1;
+          ranges[j-1].last_byte = file->size -1;
 
           sem_init (&retr_sem, 0, 0);
           j = ranges_covered = 0;
@@ -1175,6 +1175,7 @@ retrieve_from_file (const char *file, bool html, int *count)
             free(ranges[j].resources);
           for (j = 0; j < N_THREADS; ++j)
             free(files[j]);
+          ++i;
         }
 
       free(files);

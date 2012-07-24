@@ -4,9 +4,10 @@
 #include <semaphore.h>
 #include <errno.h>
 
+#include "wget.h"
+
 #include "multi.h"
 #include "url.h"
-#include "wget.h"
 
 int
 spawn_thread (struct s_thread_ctx *thread_ctx, char * name, int index, int resource)

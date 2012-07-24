@@ -3243,7 +3243,7 @@ Remote file exists.\n\n"));
   while (!opt.ntry || (count < opt.ntry));
 
 exit:
-  if (ret == RETROK && local_file)
+  if (ret == RETROK && local_file && !(*local_file))
     *local_file = xstrdup (hstat.local_file);
   free_hstat (&hstat);
 
