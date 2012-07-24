@@ -35,6 +35,12 @@ as that of the covered work.  */
 
 #include "iri.h"
 #include "url.h"
+#include "wget.h"
+
+#define TEMP_PREFIX "temp_"
+
+#define FILENAME_SIZE strlen("temp_") + strlen(file->name) + (sizeof ".")-1 \
+                      + (N_THREADS/10 + 1) + sizeof ""
 
 struct range {
   int first_byte;
@@ -42,6 +48,7 @@ struct range {
   int is_covered;
   int is_assigned;
   int resources_tried;
+  bool *resources;
   uerr_t status_least_severe;
 };
 
@@ -60,5 +67,14 @@ struct s_thread_ctx
   sem_t *retr_sem;
   uerr_t status;
 };
+
+int
+spawn_thread (struct s_thread_ctx*, char *, int, int);
+
+int
+collect_thread (sem_t *, struct s_thread_ctx *);
+
+static void *
+segmented_retrieve_url (void *);
 
 #endif /* MULTI_H */
