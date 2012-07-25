@@ -42,6 +42,8 @@ as that of the covered work.  */
 #define FILENAME_SIZE strlen("temp_") + strlen(file->name) + (sizeof ".")-1 \
                       + (N_THREADS/10 + 1) + sizeof ""
 
+#define MIN_CHUNK_SIZE 2048
+
 struct range {
   int first_byte;
   int last_byte;

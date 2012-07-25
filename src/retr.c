@@ -1025,14 +1025,17 @@ retrieve_from_file (const char *file, bool html, int *count)
       i = 0;
       while ((file = metalink->files[i]) != NULL)
         {
+          N_THREADS = (opt.jobs > 0 ? opt.jobs : 1);
           memset(thread_ctx, '\0', N_THREADS * (sizeof *thread_ctx));
-          for (j = 0; j < N_THREADS; ++j)
-                files[j] = malloc(FILENAME_SIZE);
-          chunk_size = (file->size) / N_THREADS;
           num_of_resources = 0;
           while (file->resources[num_of_resources])
             ++num_of_resources;
-          for (j = 0; j < N_THREADS; ++j)
+
+          chunk_size = (file->size) / N_THREADS;
+          if(chunk_size < MIN_CHUNK_SIZE)
+            chunk_size = MIN_CHUNK_SIZE;
+          j = 0;
+          do
             {
               ranges[j].first_byte = j * chunk_size;
               ranges[j].last_byte = (j+1) * chunk_size - 1;
@@ -1041,8 +1044,15 @@ retrieve_from_file (const char *file, bool html, int *count)
               ranges[j].resources = malloc(num_of_resources * sizeof(bool));
               for (k = 0; k < num_of_resources; ++k)
                 ranges[j].resources[k] = false;
-            }
+              ++j;
+            } while (ranges[j-1].last_byte < (file->size - 1));
           ranges[j-1].last_byte = file->size -1;
+
+          if(j < N_THREADS)
+            N_THREADS = j;
+
+          for (j = 0; j < N_THREADS; ++j)
+                files[j] = malloc(FILENAME_SIZE);
 
           sem_init (&retr_sem, 0, 0);
           j = ranges_covered = 0;
@@ -1152,25 +1162,28 @@ retrieve_from_file (const char *file, bool html, int *count)
           else
             {
               ++*count;
-              sprintf(command, "cat ");
+              strcpy(command, "cat ");
               j=0;
-              r = 4;
               while(j < opt.jobs)
                 {
-                  sprintf(command+r, TEMP_PREFIX "%s.%d ", file->name, j++);
-                  r = strlen(command);
+                  strcat(command, TEMP_PREFIX);
+                  strcat(command, file->name);
+                  strcat(command, ".");
+                  sprintf(command, "%d", j++);
                 }
-              sprintf(command+r, "> %s", file->name);
+              strcat(command, "> ");
+              strcat(command, file->name);
               system(command);
             }
 
-          sprintf(command, "rm -f ");
+          strcpy(command, "rm -f ");
           j=0;
-          r = 6;
           while(j < opt.jobs)
             {
-              sprintf(command+r, TEMP_PREFIX "%s.%d ", file->name, j++);
-              r = strlen(command);
+              strcat(command, TEMP_PREFIX);
+              strcat(command, file->name);
+              strcat(command, ".");
+              sprintf(command, "%d", j++);
             }
           system(command);
           free(command);
