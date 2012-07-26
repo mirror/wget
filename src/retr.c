@@ -1006,8 +1006,8 @@ retrieve_from_file (const char *file, bool html, int *count)
   if(metalink = metalink_context(input_file))
     {
       /*GSoC wget*/
-      char *command, **files;
-      int i, j, k, r, index, dt, url_err, error_severity;
+      char *file_name, *command, **files;
+      int i, j, r, index, dt, url_err, error_severity;
       int ret, N_THREADS = opt.jobs > 0 ? opt.jobs : 1;
       int ranges_covered, chunk_size, num_of_resources;
       pthread_t thread;
@@ -1040,10 +1040,9 @@ retrieve_from_file (const char *file, bool html, int *count)
               ranges[j].first_byte = j * chunk_size;
               ranges[j].last_byte = (j+1) * chunk_size - 1;
               ranges[j].is_covered = ranges[j].is_assigned = 0;
-              ranges[j].resources_tried = 0;
               ranges[j].resources = malloc(num_of_resources * sizeof(bool));
-              for (k = 0; k < num_of_resources; ++k)
-                ranges[j].resources[k] = false;
+              for (r = 0; r < num_of_resources; ++r)
+                ranges[j].resources[r] = false;
               ++j;
             } while (ranges[j-1].last_byte < (file->size - 1));
           ranges[j-1].last_byte = file->size -1;
@@ -1104,6 +1103,14 @@ retrieve_from_file (const char *file, bool html, int *count)
                   (thread_ctx[r].range)->is_covered = 1;
                   ++ranges_covered;
                 }
+              else if (status == FOPENERR || status == WRITEFAILED || status == UNLINKERR ||
+                       status == FWRITEERR || status == FOPEN_EXCL_ERR)
+                {
+                  /* The error is of type WGET_EXIT_IO_FAIL given in exits.c.
+                     No fallbacking is needed for this type of error. */
+                  inform_exit_status(status);
+                  break;
+                }
               else
                 {
                   PCONN_LOCK ();
@@ -1114,8 +1121,6 @@ retrieve_from_file (const char *file, bool html, int *count)
                   if(get_exit_status() != error_severity)
                     (thread_ctx[r].range)->status_least_severe = status;
                   PCONN_UNLOCK ();
-
-                  ++(thread_ctx[r].range)->resources_tried;
                   
                   for (j = 0; j < num_of_resources; ++j)
                     if (!((thread_ctx[r].range)->resources)[j])
@@ -1147,12 +1152,11 @@ retrieve_from_file (const char *file, bool html, int *count)
           sem_destroy(&retr_sem);
 
           command = malloc(sizeof("cat ")
-                         + N_THREADS * (sizeof(TEMP_PREFIX) + strlen(file->name)
-                                     + (sizeof(".") - 1) + (N_THREADS/10 + 1)
-                                     + (sizeof(" ") - 1))
+                         + N_THREADS * (FILENAME_SIZE + (sizeof(" ") - 1))
                          + (sizeof("> ") - 1)
                          + strlen(file->name)
                          + sizeof(""));
+          file_name = malloc(FILENAME_SIZE + sizeof(" ") - 1);
 
           if (status != RETROK)
             {
@@ -1166,10 +1170,8 @@ retrieve_from_file (const char *file, bool html, int *count)
               j=0;
               while(j < opt.jobs)
                 {
-                  strcat(command, TEMP_PREFIX);
-                  strcat(command, file->name);
-                  strcat(command, ".");
-                  sprintf(command, "%d", j++);
+                  sprintf(file_name, TEMP_PREFIX "%s.%d ", file->name, j++);
+                  strcat(command, file_name);
                 }
               strcat(command, "> ");
               strcat(command, file->name);
@@ -1180,14 +1182,13 @@ retrieve_from_file (const char *file, bool html, int *count)
           j=0;
           while(j < opt.jobs)
             {
-              strcat(command, TEMP_PREFIX);
-              strcat(command, file->name);
-              strcat(command, ".");
-              sprintf(command, "%d", j++);
+              sprintf(file_name, TEMP_PREFIX "%s.%d ", file->name, j++);
+              strcat(command, file_name);
             }
           system(command);
-          free(command);
 
+          free(file_name);
+          free(command);
           for (j = 0; j < N_THREADS; ++j)
             free(ranges[j].resources);
           for (j = 0; j < N_THREADS; ++j)
@@ -1198,7 +1199,6 @@ retrieve_from_file (const char *file, bool html, int *count)
       free(files);
       free(ranges);
       free(thread_ctx);
-
       metalink_delete(metalink);
     }
   else

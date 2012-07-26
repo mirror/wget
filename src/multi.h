@@ -49,7 +49,6 @@ struct range {
   int last_byte;
   int is_covered;
   int is_assigned;
-  int resources_tried;
   bool *resources;
   uerr_t status_least_severe;
 };
