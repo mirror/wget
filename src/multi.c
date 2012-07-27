@@ -23,10 +23,7 @@ spawn_thread (struct s_thread_ctx *thread_ctx, char * name, int index, int resou
     return 1;
 
   /* TODO: Update this when configuring fallbacking code so that downloading
-     goes on from where the previous resource failed.
-     TODO: size of the bytes allocated by malloc should be recalculated and
-     the string assignment to that space should be readjusted to contain only
-     the files created by wget.(ONLY the files[] elements) */
+     goes on from where the previous resource failed. */
   if(file_exists_p(thread_ctx[index].file))
     {
       command = malloc(sizeof("rm -f ") + sizeof(TEMP_PREFIX) + strlen(name)

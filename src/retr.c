@@ -37,11 +37,14 @@ as that of the covered work.  */
 #include <errno.h>
 #include <string.h>
 #include <assert.h>
-#include <metalink/metalink_parser.h>
-#include <metalink/metalink_types.h>
 #include <pthread.h>
 #include <semaphore.h>
+#ifdef ENABLE_METALINK
+#include <metalink/metalink_parser.h>
+#include <metalink/metalink_types.h>
 
+#include "metalink.h"
+#endif
 #include "exits.h"
 #include "utils.h"
 #include "retr.h"
@@ -694,13 +697,14 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
   url = xstrdup (origurl);
   if (newloc)
     *newloc = NULL;
-/*
- * GSoC wget - taken into comments to ensure parameter file can be used to 
- * transfer filenames to help assigning the file name.
- * 
- *if (file)
- *  *file = NULL;
-*/
+
+#ifndef ENABLE_METALINK
+  /* Note that, each and every call to retrieve_url(), except the ones made by
+     functions relevant to metalink support, the value of *file is NULL. */
+  if (file)
+    *file = NULL;
+#endif
+
   if (!refurl)
     refurl = opt.referer;
 
@@ -1003,6 +1007,7 @@ retrieve_from_file (const char *file, bool html, int *count)
   else
     input_file = (char *) file;
 
+#ifdef ENABLE_METALINK
   if(metalink = metalink_context(input_file))
     {
       /*GSoC wget*/
@@ -1203,7 +1208,7 @@ retrieve_from_file (const char *file, bool html, int *count)
     }
   else
     {
-
+#endif
       url_list = (html ? get_urls_html (input_file, NULL, NULL, iri)
                   : get_urls_file (input_file));
 
@@ -1267,7 +1272,9 @@ Removing file due to --delete-after in retrieve_from_file():\n"));
 
       /* Free the linked list of URL-s.  */
       free_urlpos (url_list);
+#ifdef ENABLE_METALINK
     }
+#endif
 
   iri_free (iri);
 

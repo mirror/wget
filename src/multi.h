@@ -33,9 +33,10 @@ as that of the covered work.  */
 
 #include <semaphore.h>
 
+#include "wget.h"
+
 #include "iri.h"
 #include "url.h"
-#include "wget.h"
 
 #define TEMP_PREFIX "temp_"
 
@@ -43,15 +44,6 @@ as that of the covered work.  */
                       + (N_THREADS/10 + 1) + sizeof ""
 
 #define MIN_CHUNK_SIZE 2048
-
-struct range {
-  int first_byte;
-  int last_byte;
-  int is_covered;
-  int is_assigned;
-  bool *resources;
-  uerr_t status_least_severe;
-};
 
 struct s_thread_ctx
 {

@@ -89,7 +89,7 @@ test x"${ENABLE_DEBUG}" = xyes && AC_DEFINE([ENABLE_DEBUG], 1,
    
 AC_ARG_ENABLE(threads,
 [  --disable-threads      disable support for parallel downloads using threads],
-ENABLE_THREADS=$enableval, ENABLE_THREADS=no)
+ENABLE_THREADS=$enableval, ENABLE_THREADS=auto)
 test x"${ENABLE_THREADS}" = xyes && AC_DEFINE([ENABLE_THREADS], 1,
    [Define if you want the concurrent download support compiled in.])
 
@@ -356,10 +356,17 @@ AS_IF([test x"$ENABLE_METALINK" != xno],[
     dnl If metalink module is found
     LIBS="$LIBMETALINK_LIBS $LIBS"
     CFLAGS="$LIBMETALINK_CFLAGS $CFLAGS"
+    AC_DEFINE([ENABLE_METALINK], 1,
+     [Define if you want the metalink support compiled in.])
     
     AC_CHECK_LIB(metalink, metalink_parse_file, [
-      metalink=yes
-      AC_MSG_NOTICE([compiling in support for metalink])
+      if test x"$DISABLE_THREADS" == xyes
+      then
+        AC_MSG_ERROR([Metalink support depends on threads, which are requested to be disabled.])
+      else
+        metalink=yes
+        AC_MSG_NOTICE([compiling in support for metalink])
+      fi
     ], [
       if test x"$ENABLE_METALINK" == xyes
       then
@@ -375,8 +382,8 @@ AS_IF([test x"$ENABLE_METALINK" != xno],[
   ])
 ],[
   dnl If metalink support is not requested
-  AC_MSG_NOTICE([compiling without support for metalink])
   metalink=no
+  AC_MSG_NOTICE([compiling without support for metalink])
 ])
 
 
