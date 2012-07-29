@@ -224,7 +224,9 @@ static struct cmdline_option option_data[] =
 #endif
     { "input-file", 'i', OPT_VALUE, "input", -1 },
     { "iri", 0, OPT_BOOLEAN, "iri", -1 },
+#ifdef ENABLE_THREADS
     { "jobs", 0, OPT_VALUE, "jobs", 1 },
+#endif
     { "keep-session-cookies", 0, OPT_BOOLEAN, "keepsessioncookies", -1 },
     { "level", 'l', OPT_VALUE, "reclevel", -1 },
     { "limit-rate", 0, OPT_VALUE, "limitrate", -1 },
@@ -655,8 +657,10 @@ FTP options:\n"),
 Recursive download:\n"),
     N_("\
   -r,  --recursive          specify recursive download.\n"),
+#ifdef ENABLE_THREADS
     N_("\
   --jobs          specify how many threads use.\n"),
+#endif
     N_("\
   -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n"),
     N_("\

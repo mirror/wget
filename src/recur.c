@@ -37,8 +37,10 @@ as that of the covered work.  */
 #include <unistd.h>
 #include <errno.h>
 #include <assert.h>
+#ifdef ENABLE_THREADS
 #include <pthread.h>
 #include <semaphore.h>
+#endif
 
 #include "url.h"
 #include "recur.h"
@@ -168,6 +170,7 @@ static bool download_child_p (const struct urlpos *, struct url *, int,
 static bool descend_redirect_p (const char *, struct url *, int,
                                 struct url *, struct hash_table *, struct iri *);
 
+#ifdef ENABLE_THREADS
 static void *
 start_retrieve_url (void *arg)
 {
@@ -180,6 +183,7 @@ start_retrieve_url (void *arg)
   ctx->terminated = 1;
   sem_post (ctx->retr_sem);
 }
+#endif
 
 /* Retrieve a part of the web beginning with START_URL.  This used to
    be called "recursive retrieval", because the old function was
@@ -205,13 +209,17 @@ start_retrieve_url (void *arg)
 uerr_t
 retrieve_tree (struct url *start_url_parsed, struct iri *pi)
 {
+  uerr_t status = RETROK;
+#ifdef ENABLE_THREADS
   const int N_THREADS = opt.jobs > 0 ? opt.jobs : 1;
   sem_t retr_sem;
   int free_threads = N_THREADS;
-  uerr_t status = RETROK;
   char *next_url = NULL, *next_referer;
   int next_depth;
   bool next_html_allowed, next_css_allowed;
+
+  struct s_thread_ctx *thread_ctx;
+#endif
 
   /* The queue of URLs we need to load. */
   struct url_queue *queue;
@@ -221,8 +229,6 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
   struct hash_table *blacklist;
 
   struct iri *i = iri_new ();
-
-  struct s_thread_ctx *thread_ctx;
 
 #define COPYSTR(x)  (x) ? xstrdup(x) : NULL;
   /* Duplicate pi struct if not NULL */
@@ -236,9 +242,11 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
     set_uri_encoding (i, opt.locale, true);
 #undef COPYSTR
 
+#ifdef ENABLE_THREADS
   thread_ctx = calloc (N_THREADS, sizeof *thread_ctx);
   sem_init (&retr_sem, 0, 0);
   /* FIXME: CHECK FOR ERRORS.  */
+#endif
 
   queue = url_queue_new ();
   blacklist = make_string_hash_table (0);
@@ -255,11 +263,16 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
       char *file = NULL;
       bool is_css = false;
       bool dash_p_leaf_HTML = false;
+#ifndef ENABLE_THREADS
+      char *url, *referer;
+      int depth;
+      bool html_allowed, css_allowed;
+#else
       int index = 0;
       char *url = NULL, *referer;
       int depth;
       bool html_allowed, css_allowed;
-
+#endif
       if (opt.quota && total_downloaded_bytes > opt.quota)
         break;
       if (status == FWRITEERR)
@@ -267,6 +280,12 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
 
       /* Get the next URL from the queue... */
 
+#ifndef ENABLE_THREADS
+      if (!url_dequeue (queue, (struct iri **) &i,
+                        (const char **)&url, (const char **)&referer,
+                        &depth, &html_allowed, &css_allowed))
+        break;
+#else
       if (next_url == NULL)
         {
           if (! url_dequeue (queue, (struct iri **) &i,
@@ -280,6 +299,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
       depth = next_depth;
       html_allowed = next_html_allowed;
       css_allowed = next_css_allowed;
+#endif
 
       /* ...and download it.  Note that this download is in most cases
          unconditional, as download_child_p already makes sure a file
@@ -289,7 +309,11 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
          and again under URL2, but at a different (possibly smaller)
          depth, we want the URL's children to be taken into account
          the second time.  */
-      if (0 && url && dl_url_file_map && hash_table_contains (dl_url_file_map, url))
+      if (
+#ifdef ENABLE_THREADS
+          0 && url &&
+#endif
+          dl_url_file_map && hash_table_contains (dl_url_file_map, url))
         {
           file = xstrdup (hash_table_get (dl_url_file_map, url));
 
@@ -312,10 +336,20 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
               is_css = true;
             }
 
+#ifdef ENABLE_THREADS
           next_url = NULL;
+#endif
         }
       else
         {
+#ifndef ENABLE_THREADS
+          int dt = 0, url_err;
+          char *redirected = NULL;
+          struct url *url_parsed = url_parse (url, &url_err, i, true);
+
+          status = retrieve_url (url_parsed, url, &file, &redirected, referer,
+                                 &dt, false, i, true);
+#else
           pthread_t thread;
           int j;
 retry:
@@ -389,9 +423,15 @@ retry:
           referer = thread_ctx[index].referer;
           i = thread_ctx[index].i;
           url = thread_ctx[index].url;
+#endif
 
           if (html_allowed && file && status == RETROK
-              && (thread_ctx[index].dt & RETROKF) && (thread_ctx[index].dt & TEXTHTML))
+#ifndef ENABLE_THREADS
+              && (dt & RETROKF) && (dt & TEXTHTML)
+#else
+              && (thread_ctx[index].dt & RETROKF) && (thread_ctx[index].dt & TEXTHTML)
+#endif
+             )
             {
               descend = true;
               is_css = false;
@@ -401,22 +441,36 @@ retry:
              lots of web servers serve css with an incorrect content type
           */
           if (file && status == RETROK
+#ifndef ENABLE_THREADS
+              && (dt & RETROKF) &&
+              ((dt & TEXTCSS) || css_allowed)
+#else
               && (thread_ctx[index].dt & RETROKF) &&
-              ((thread_ctx[index].dt & TEXTCSS) || css_allowed))
+              ((thread_ctx[index].dt & TEXTCSS) || css_allowed)
+#endif
+             )
             {
               descend = true;
               is_css = true;
             }
 
+#ifndef ENABLE_THREADS
+          if (redirected)
+#else
           if (thread_ctx[index].redirected)
+#endif
             {
               /* We have been redirected, possibly to another host, or
                  different path, or wherever.  Check whether we really
                  want to follow it.  */
               if (descend)
                 {
+#ifndef ENABLE_THREADS
+                  if (!descend_redirect_p (redirected, url_parsed, depth,
+#else
                   if (!descend_redirect_p (thread_ctx[index].redirected,
                                            thread_ctx[index].url_parsed, depth,
+#endif
                                            start_url_parsed, blacklist, i))
                     descend = false;
                   else
@@ -425,15 +479,29 @@ retry:
                     string_set_add (blacklist, url);
                 }
 
+#ifndef ENABLE_THREADS
+              xfree (url);
+              url = redirected;
+#else
               xfree (thread_ctx[index].url);
               url = thread_ctx[index].redirected;
+#endif
             }
           else
             {
+#ifndef ENABLE_THREADS
+              xfree (url);
+              url = xstrdup (url_parsed->url);
+#else
               xfree (thread_ctx[index].url);
               url = xstrdup (thread_ctx[index].url_parsed->url);
+#endif
             }
+#ifndef ENABLE_THREADS
+          url_free(url_parsed);
+#else
           url_free(thread_ctx[index].url_parsed);
+#endif
         }
 
       if (opt.spider)
@@ -549,7 +617,7 @@ retry:
           logputs (LOG_VERBOSE, "\n");
           register_delete_file (file);
         }
-#if 0
+#ifndef ENABLE_THREADS
       xfree (url);
       xfree_null (referer);
       xfree_null (file);

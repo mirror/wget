@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#ifdef ENABLE_THREADS
 #include <pthread.h>
 #include <semaphore.h>
-#include <errno.h>
+#endif
 
 #include "wget.h"
 

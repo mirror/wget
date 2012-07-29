@@ -350,6 +350,29 @@ else
   fi
 fi
 
+AS_IF([test x"$ENABLE_THREADS" != xno],[
+  AC_CHECK_LIB(pthread, pthread_create, [
+dnl    AC_CHECK_LIB(semaphore, sem_init, [
+      threads=yes
+      AC_DEFINE([ENABLE_THREADS], 1,
+        [Define if you want the thread support compiled in.])
+      AC_MSG_NOTICE([compiling with support for threads])
+dnl    ],[
+dnl      threads=no
+dnl      if test x"$ENABLE_THREADS" == xyes
+dnl      then
+dnl        AC_MSG_ERROR([Could not find the sem_init function in semaphore.])
+dnl      fi
+dnl    ])
+  ],[
+      threads=no
+      if test x"$ENABLE_THREADS" == xyes
+      then
+        AC_MSG_ERROR([Could not find the pthread_create function in pthread.])
+      fi
+  ])
+])
+
 AS_IF([test x"$ENABLE_METALINK" != xno],[
   dnl If metalink support is requested
   PKG_CHECK_MODULES(LIBMETALINK, libmetalink, [
@@ -363,6 +386,9 @@ AS_IF([test x"$ENABLE_METALINK" != xno],[
       if test x"$DISABLE_THREADS" == xyes
       then
         AC_MSG_ERROR([Metalink support depends on threads, which are requested to be disabled.])
+      elif test "X$threads" != "Xyes"
+      then
+        AC_MSG_ERROR([Metalink support depends on threads, support for which could not be enabled.])
       else
         metalink=yes
         AC_MSG_NOTICE([compiling in support for metalink])
@@ -564,6 +590,7 @@ fi
 dnl Needed by src/Makefile.am
 AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" != "Xno"])
 AM_CONDITIONAL([METALINK_IS_ENABLED], [test "X$metalink" != "Xno"])
+AM_CONDITIONAL([THREADS_ARE_ENABLED], [test "X$threads" != "Xno"])
 
 dnl
 dnl Create output

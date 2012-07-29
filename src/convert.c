@@ -36,8 +36,10 @@ as that of the covered work.  */
 #include <unistd.h>
 #include <errno.h>
 #include <assert.h>
-#include "convert.h"
+#ifdef ENABLE_THREADS
 #include <pthread.h>
+#endif
+#include "convert.h"
 #include "url.h"
 #include "recur.h"
 #include "utils.h"
@@ -56,6 +58,7 @@ struct hash_table *dl_url_file_map;
 struct hash_table *downloaded_html_set;
 struct hash_table *downloaded_css_set;
 
+#ifdef ENABLE_THREADS
 static pthread_mutex_t convert_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #define THREAD_SAFE(ret, fn, args, argv)          \
@@ -75,6 +78,11 @@ static pthread_mutex_t convert_mutex = PTHREAD_MUTEX_INITIALIZER;
     fn##_1 argv;                                    \
     pthread_mutex_unlock (&convert_mutex);          \
   }
+
+#define FNNAME_WTHREADS(fn) fn##_1
+#else
+#define FNNAME_WTHREADS(fn) fn
+#endif
 
 static void convert_links (const char *, struct urlpos *);
 
@@ -200,7 +208,7 @@ convert_links_in_hashtable (struct hash_table *downloaded_set,
    extracted from these two lists.  */
 
 static void
-convert_all_links_1 (void)
+FNNAME_WTHREADS(convert_all_links) (void)
 {
   double secs;
   int file_count = 0;
@@ -778,7 +786,7 @@ dissociate_urls_from_file (const char *file)
    URL has already been downloaded.  */
 
 static void
-register_download_1 (const char *url, const char *file)
+FNNAME_WTHREADS(register_download) (const char *url, const char *file)
 {
   char *old_file, *old_url;
 
@@ -858,7 +866,7 @@ register_download_1 (const char *url, const char *file)
    register_download() above.  */
 
 static void
-register_redirection_1 (const char *from, const char *to)
+FNNAME_WTHREADS(register_redirection) (const char *from, const char *to)
 {
   char *file;
 
@@ -873,7 +881,7 @@ register_redirection_1 (const char *from, const char *to)
 /* Register that the file has been deleted. */
 
 static void
-register_delete_file_1 (const char *file)
+FNNAME_WTHREADS(register_delete_file) (const char *file)
 {
   char *old_url, *old_file;
 
@@ -891,7 +899,7 @@ register_delete_file_1 (const char *file)
 /* Register that FILE is an HTML file that has been downloaded. */
 
 static void
-register_html_1 (const char *url, const char *file)
+FNNAME_WTHREADS(register_html) (const char *url, const char *file)
 {
   if (!downloaded_html_set)
     downloaded_html_set = make_string_hash_table (0);
@@ -901,7 +909,7 @@ register_html_1 (const char *url, const char *file)
 /* Register that FILE is a CSS file that has been downloaded. */
 
 static void
-register_css_1 (const char *url, const char *file)
+FNNAME_WTHREADS(register_css) (const char *url, const char *file)
 {
   if (!downloaded_css_set)
     downloaded_css_set = make_string_hash_table (0);
@@ -913,7 +921,7 @@ static void downloaded_files_free (void);
 /* Cleanup the data structures associated with this file.  */
 
 static void
-convert_cleanup_1 (void)
+FNNAME_WTHREADS(convert_cleanup) (void)
 {
   if (dl_file_url_map)
     {
@@ -988,7 +996,7 @@ downloaded_mode_to_ptr (downloaded_file_t mode)
    URLs.  */
 
 static downloaded_file_t
-downloaded_file_1 (downloaded_file_t mode, const char *file)
+FNNAME_WTHREADS(downloaded_file) (downloaded_file_t mode, const char *file)
 {
   downloaded_file_t *ptr;
 
@@ -1102,7 +1110,7 @@ html_quote_string (const char *s)
   return res;
 }
 
-
+#ifdef ENABLE_THREADS
 THREAD_SAFE (downloaded_file_t, downloaded_file, (downloaded_file_t a, const char *b), (a, b));
 THREAD_SAFE_VOID (register_download, (const char *a, const char *b), (a, b));
 THREAD_SAFE_VOID (register_redirection, (const char *a, const char *b), (a, b));
@@ -1111,6 +1119,7 @@ THREAD_SAFE_VOID (register_css, (const char *a, const char *b), (a, b));
 THREAD_SAFE_VOID (register_delete_file, (const char *a), (a));
 THREAD_SAFE_VOID (convert_cleanup, (void), ());
 THREAD_SAFE_VOID (convert_all_links, (void), ());
+#endif
 
 /*
  * vim: et ts=2 sw=2

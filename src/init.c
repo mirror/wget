@@ -193,7 +193,9 @@ static const struct {
 #endif
   { "input",            &opt.input_filename,    cmd_file },
   { "iri",              &opt.enable_iri,        cmd_boolean },
+#ifdef HAVE_SSL
   { "jobs",             &opt.jobs,              cmd_number },
+#endif
   { "keepsessioncookies", &opt.keep_session_cookies, cmd_boolean },
   { "limitrate",        &opt.limit_rate,        cmd_bytes },
   { "loadcookies",      &opt.cookies_input,     cmd_file },

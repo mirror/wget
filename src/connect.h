@@ -59,7 +59,11 @@ enum {
   WAIT_FOR_READ = 1,
   WAIT_FOR_WRITE = 2
 };
+#ifdef ENABLE_THREADS
 int select_fds (int *, int *, int, double, int);
+#else
+int select_fd (int, double, int);
+#endif
 bool test_socket_open (int);
 
 struct transport_implementation {

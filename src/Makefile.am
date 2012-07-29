@@ -37,6 +37,9 @@ endif
 if METALINK_IS_ENABLED
 METALINK_OBJ = metalink.c
 endif
+if THREADS_ARE_ENABLED
+THREAD_OBJ = multi.c
+endif
 
 # The following line is losing on some versions of make!
 DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
@@ -49,8 +52,9 @@ wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c    		  \
 	       css_.c css-url.c \
 	       ftp-basic.c ftp-ls.c hash.c host.c html-parse.c html-url.c \
 	       http.c init.c log.c main.c netrc.c progress.c ptimer.c     \
-	       recur.c res.c retr.c spider.c url.c multi.c	       	  \
-	       utils.c exits.c build_info.c $(IRI_OBJ) $(METALINK_OBJ)	  \
+	       recur.c res.c retr.c spider.c url.c	        	  \
+	       utils.c exits.c build_info.c $(IRI_OBJ)	 	          \
+	       $(THREAD_OBJ) $(METALINK_OBJ)	                          \
 	       css-url.h css-tokens.h connect.h convert.h cookies.h       \
 	       ftp.h hash.h host.h html-parse.h html-url.h      \
 	       http.h http-ntlm.h init.h log.h mswindows.h netrc.h        \

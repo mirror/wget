@@ -39,7 +39,9 @@ as that of the covered work.  */
 #include <errno.h>
 #include <time.h>
 #include <locale.h>
+#ifdef ENABLE_THREADS
 #include <pthread.h>
+#endif
 
 #include "hash.h"
 #include "http.h"
@@ -1193,7 +1195,12 @@ parse_content_disposition (const char *hdr, char **filename)
    below.  Ideally, it should be possible to cache an arbitrary fixed
    number of these connections.  */
 
-
+#ifndef ENABLE_THREADS
+/* Whether a persistent connection is active. */
+static bool pconn_active;
+ 
+static struct {
+#else
 static pthread_mutex_t pconn_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #define PCONN_LOCK() pthread_mutex_lock (&pconn_mutex)
@@ -1203,6 +1210,7 @@ static pthread_mutex_t pconn_mutex = PTHREAD_MUTEX_INITIALIZER;
 static struct s_pconn {
 
   struct s_pconn *next;
+#endif
 
   /* The socket of the connection.  */
   int socket;
@@ -1224,14 +1232,29 @@ static struct s_pconn {
   /* NTLM data of the current connection.  */
   struct ntlmdata ntlm;
 #endif
+
+#ifndef ENABLE_THREADS
+} pconn;
+#else
 } *pconn = NULL;
 
 size_t pconn_length = 0;
-
+#endif
 /* Mark the persistent connection as invalid and free the resources it
    uses.  This is used by the CLOSE_* macros after they forcefully
    close a registered persistent connection.  */
 
+#ifndef ENABLE_THREADS
+static void
+invalidate_persistent (void)
+{
+  DEBUGP (("Disabling further reuse of socket %d.\n", pconn.socket));
+  pconn_active = false;
+  fd_close (pconn.socket);
+  xfree (pconn.host);
+  xzero (pconn);
+}
+#else
 static void
 invalidate_persistent (int fd)
 {
@@ -1264,7 +1287,7 @@ invalidate_persistent (int fd)
 
   PCONN_UNLOCK ();
 }
-
+#endif
 /* Register FD, which should be a TCP/IP connection to HOST:PORT, as
    persistent.  This will enable someone to use the same connection
    later.  In the context of HTTP, this must be called only AFTER the
@@ -1276,6 +1299,34 @@ invalidate_persistent (int fd)
 static void
 register_persistent (const char *host, int port, int fd, bool ssl)
 {
+#ifndef ENABLE_THREADS
+  if (pconn_active)
+    {
+      if (pconn.socket == fd)
+        {
+          /* The connection FD is already registered. */
+          return;
+        }
+      else
+        {
+          /* The old persistent connection is still active; close it
+             first.  This situation arises whenever a persistent
+             connection exists, but we then connect to a different
+             host, and try to register a persistent connection to that
+             one.  */
+          invalidate_persistent ();
+        }
+    }
+
+  pconn_active = true;
+  pconn.socket = fd;
+  pconn.host = xstrdup (host);
+  pconn.port = port;
+  pconn.ssl = ssl;
+  pconn.authorized = false;
+
+  DEBUGP (("Registered socket %d for persistent reuse.\n", fd));
+#else
   PCONN_LOCK ();
 
   struct s_pconn *it;
@@ -1321,29 +1372,48 @@ register_persistent (const char *host, int port, int fd, bool ssl)
   DEBUGP (("Registered socket %d for persistent reuse.\n", fd));
  exit:
   PCONN_UNLOCK ();
+#endif
 }
 
 /* Return true if a persistent connection is available for connecting
    to HOST:PORT.  */
 
 static bool
+#ifndef ENABLE_THREADS
+persistent_available_p (const char *host, int port, bool ssl,
+                        bool *host_lookup_failed)
+#else
 persistent_available_p (struct s_pconn *pconn, const char *host, int port,
                         bool ssl, bool *host_lookup_failed)
+#endif
 {
+#ifndef ENABLE_THREADS
+  /* First, check whether a persistent connection is active at all.  */
+  if (!pconn_active)
+    return false;
 
   /* If we want SSL and the last connection wasn't or vice versa,
      don't use it.  Checking for host and port is not enough because
      HTTP and HTTPS can apparently coexist on the same port.  */
-  if (ssl != pconn->ssl)
+  if (ssl != pconn.ssl)
     return false;
 
   /* If we're not connecting to the same port, we're not interested. */
-  if (port != pconn->port)
+  if (port != pconn.port)
     return false;
 
   /* If the host is the same, we're in business.  If not, there is
      still hope -- read below.  */
+  if (0 != strcasecmp (host, pconn.host))
+#else
+  if (ssl != pconn->ssl)
+    return false;
+
+  if (port != pconn->port)
+    return false;
+
   if (0 != strcasecmp (host, pconn->host))
+#endif
     {
       /* Check if pconn.socket is talking to HOST under another name.
          This happens often when both sites are virtual hosts
@@ -1367,13 +1437,21 @@ persistent_available_p (struct s_pconn *pconn, const char *host, int port,
          resolves to, pconn.socket is for all intents and purposes
          already talking to HOST.  */
 
-      if (!socket_ip_address (pconn->socket, &ip, ENDPOINT_PEER))
+#ifndef ENABLE_THREADS
+      if (!socket_ip_address (pconn.socket, &ip, ENDPOINT_PEER))
         {
           /* Can't get the peer's address -- something must be very
-             wrong with the connection.  */
+             wrong with the connection.  */        
+          invalidate_persistent ();
+          return false;
+        }
+#else
+      if (!socket_ip_address (pconn->socket, &ip, ENDPOINT_PEER))
+        {
           invalidate_persistent (pconn->socket);
           return false;
         }
+#endif
       al = lookup_host (host, 0);
       if (!al)
         {
@@ -1405,19 +1483,27 @@ persistent_available_p (struct s_pconn *pconn, const char *host, int port,
      body in response to HEAD, or if it sends more than conent-length
      data, we won't reuse the corrupted connection.)  */
 
-  if (!test_socket_open (pconn->socket))
+#ifndef ENABLE_THREADS
+  if (!test_socket_open (pconn.socket))
     {
       /* Oops, the socket is no longer open.  Now that we know that,
          let's invalidate the persistent connection before returning
          0.  */
+      invalidate_persistent ();
+      return false;
+    }
+#else
+  if (!test_socket_open (pconn->socket))
+    {
       invalidate_persistent (pconn->socket);
       return false;
     }
+#endif
 
   return true;
 }
 
-
+#ifdef ENABLE_THREADS
 static struct s_pconn *
 get_persistent (const char *host, int port, bool ssl, bool *host_lookup_failed)
 {
@@ -1448,6 +1534,7 @@ get_persistent (const char *host, int port, bool ssl, bool *host_lookup_failed)
 
   return it;
 }
+#endif
 
 
 /* The idea behind these two CLOSE macros is to distinguish between
@@ -1465,6 +1552,31 @@ get_persistent (const char *host, int port, bool ssl, bool *host_lookup_failed)
    `pc_active_p && (fd) == pc_last_fd' is "we're *now* using an
    active, registered connection".  */
 
+#ifndef ENABLE_THREADS
+
+#define CLOSE_FINISH(fd) do {                   \
+  if (!keep_alive)                              \
+    {                                           \
+      if (pconn_active && (fd) == pconn.socket) \
+        invalidate_persistent ();               \
+      else                                      \
+        {                                       \
+          fd_close (fd);                        \
+          fd = -1;                              \
+        }                                       \
+    }                                           \
+} while (0)
+ 
+#define CLOSE_INVALIDATE(fd) do {               \
+  if (pconn_active && (fd) == pconn.socket)     \
+    invalidate_persistent ();                   \
+  else                                          \
+    fd_close (fd);                              \
+  fd = -1;                                      \
+} while (0)
+
+#else
+
 #define CLOSE_FINISH(fd) do {                   \
   if (!keep_alive)                              \
     {                                           \
@@ -1475,6 +1587,8 @@ get_persistent (const char *host, int port, bool ssl, bool *host_lookup_failed)
 #define CLOSE_INVALIDATE(fd) do {               \
     invalidate_persistent (fd);                 \
 } while (0)
+
+#endif
 
 struct http_stat
 {
@@ -1598,7 +1712,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
 
   int sock = -1;
   int flags;
+
+#ifdef ENABLE_THREADS
   struct s_pconn *pconn = NULL;
+#endif
 
   /* Set to 1 when the authorization has already been sent and should
      not be tried again. */
@@ -1870,6 +1987,25 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
         relevant = u;
 #endif
 
+#ifndef ENABLE_THREADS
+
+      if (persistent_available_p (relevant->host, relevant->port,
+#ifdef HAVE_SSL
+                                  relevant->scheme == SCHEME_HTTPS,
+#else
+                                  0,
+#endif
+                                  &host_lookup_failed))
+         {
+          sock = pconn.socket;
+          using_ssl = pconn.ssl;
+          logprintf (LOG_VERBOSE, _("Reusing existing connection to %s:%d.\n"),
+                     quotearg_style (escape_quoting_style, pconn.host),
+                     pconn.port);
+          DEBUGP (("Reusing fd %d.\n", sock));
+          if (pconn.authorized)
+#else
+
       pconn = get_persistent (relevant->host, relevant->port,
 #ifdef HAVE_SSL
                               relevant->scheme == SCHEME_HTTPS,
@@ -1887,6 +2023,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                      pconn->port);
           DEBUGP (("Reusing fd %d.\n", sock));
           if (pconn->authorized)
+#endif
             /* If the connection is already authorized, the "Basic"
                authorization added by code above is unnecessary and
                only hurts us.  */
@@ -2166,7 +2303,11 @@ read_header:
         CLOSE_FINISH (sock);
       else
         CLOSE_INVALIDATE (sock);
+#ifndef ENABLE_THREADS
+      pconn.authorized = false;
+#else
       pconn->authorized = false;
+#endif
       if (!auth_finished && (user && passwd))
         {
           /* IIS sends multiple copies of WWW-Authenticate, one with
@@ -2234,7 +2375,13 @@ read_header:
     {
       /* Kludge: if NTLM is used, mark the TCP connection as authorized. */
       if (ntlm_seen)
+      {
+#ifndef ENABLE_THREADS
+        pconn.authorized = true;
+#else
         pconn->authorized = true;
+#endif
+      }
     }
 
   /* Determine the local filename if needed. Notice that if -O is used
@@ -3571,6 +3718,17 @@ create_authorization_line (const char *au, const char *user,
       *finished = true;
       return digest_authentication_encode (au, user, passwd, method, path);
 #endif
+
+#ifdef ENABLE_NTLM && ENABLE_THREADS
+    case 'N':                   /* NTLM */
+      if (!ntlm_input (&pconn.ntlm, au))
+        {
+          *finished = true;
+          return NULL;
+        }
+      return ntlm_output (&pconn.ntlm, user, passwd, finished);
+#endif
+
 #ifdef ENABLE_NTLM
     case 'N':                   /* NTLM */
       if (!ntlm_input (&pconn->ntlm, au))
@@ -3609,6 +3767,9 @@ save_cookies (void)
 void
 http_cleanup (void)
 {
+#ifndef ENABLE_THREADS
+  xfree_null (pconn.host);
+#else
   struct s_pconn *it = pconn;
 
   for (; it; it = it->next)
@@ -3616,6 +3777,7 @@ http_cleanup (void)
       xfree_null (it->host);
       xzero (it);
     }
+#endif
 
   if (wget_cookie_jar)
     cookie_jar_delete (wget_cookie_jar);

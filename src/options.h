@@ -257,8 +257,9 @@ struct options
 
   bool show_all_dns_entries; /* Show all the DNS entries when resolving a
                                 name. */
-
+#ifdef ENABLE_THREADS
   int jobs; /* How many threads use at the same time.  */
+#endif
 };
 
 extern struct options opt;
