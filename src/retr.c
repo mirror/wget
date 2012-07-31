@@ -1046,7 +1046,7 @@ retrieve_from_file (const char *file, bool html, int *count)
             {
               ranges[j].first_byte = j * chunk_size;
               ranges[j].last_byte = (j+1) * chunk_size - 1;
-              ranges[j].is_covered = ranges[j].is_assigned = 0;
+              ranges[j].bytes_covered = ranges[j].is_assigned = 0;
               ranges[j].resources = malloc(num_of_resources * sizeof(bool));
               for (r = 0; r < num_of_resources; ++r)
                 ranges[j].resources[r] = false;
@@ -1106,10 +1106,7 @@ retrieve_from_file (const char *file, bool html, int *count)
               status = thread_ctx[r].status;
               /* Check return status of thread for errors. */
               if (status == RETROK)
-                {
-                  (thread_ctx[r].range)->is_covered = 1;
                   ++ranges_covered;
-                }
               else if (status == FOPENERR || status == WRITEFAILED || status == UNLINKERR ||
                        status == FWRITEERR || status == FOPEN_EXCL_ERR)
                 {
@@ -1135,6 +1132,12 @@ retrieve_from_file (const char *file, bool html, int *count)
                   if (j < num_of_resources)
                     {
                       thread_ctx[r].url = file->resources[j]->url;
+                      if ((thread_ctx[r].range)->bytes_covered)
+                        {
+                          (thread_ctx[r].range)->first_byte =
+                                            (thread_ctx[r].range)->bytes_covered;
+                          (thread_ctx[r].range)->bytes_covered = 0;
+                        }
                       ret = spawn_thread (thread_ctx, file->name, r, j);
                       if (ret)
                         {

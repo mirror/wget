@@ -359,7 +359,7 @@ typedef enum
 struct range {
   int first_byte;
   int last_byte;
-  int is_covered;
+  int bytes_covered;
   int is_assigned;
   bool *resources;
   uerr_t status_least_severe;
