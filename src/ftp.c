@@ -1388,7 +1388,7 @@ Error in server response, closing control connection.\n"));
    This loop either gets commands from con, or (if ON_YOUR_OWN is
    set), makes them up to retrieve the file given by the URL.  */
 static uerr_t
-ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_file)
+ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_file, struct range *range)
 {
   int count, orig_lp;
   wgint restval, len = 0, qtyread = 0;
@@ -1474,6 +1474,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
         restval = qtyread;          /* start where the previous run left off */
       else
         restval = 0;
+        
 
       /* Get the current time string.  */
       tms = datetime_str (time (NULL));
@@ -1497,7 +1498,19 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
         len = f->size;
       else
         len = 0;
+
+      /* If range is not NULL, then this is a segmented download. Get the relevant
+         segment information from the specified range parameter. */
+      if (range)
+        {
+          restval = range->first_byte;
+          len = range->last_byte - restval + 1;
+        }
+
       err = getftp (u, len, &qtyread, restval, con, count);
+
+      if (range)
+        range->bytes_covered = qtyread;
 
       if (con->csock == -1)
         con->st &= ~DONE_CWD;
@@ -1618,7 +1631,7 @@ Removing file due to --delete-after in ftp_loop_internal():\n"));
       else
         con->cmd &= ~LEAVE_PENDING;
 
-      if (local_file)
+      if (local_file && !*local_file)
         *local_file = xstrdup (locf);
 
       return RETROK;
@@ -1656,7 +1669,7 @@ ftp_get_listing (struct url *u, ccon *con, struct fileinfo **f)
 
   con->target = xstrdup (lf);
   xfree (lf);
-  err = ftp_loop_internal (u, NULL, con, NULL);
+  err = ftp_loop_internal (u, NULL, con, NULL, NULL);
   lf = xstrdup (con->target);
   xfree (con->target);
   con->target = old_target;
@@ -1851,7 +1864,7 @@ Already have correct symlink %s -> %s\n\n"),
           else                /* opt.retr_symlinks */
             {
               if (dlthis)
-                err = ftp_loop_internal (u, f, con, NULL);
+                err = ftp_loop_internal (u, f, con, NULL, NULL);
             } /* opt.retr_symlinks */
           break;
         case FT_DIRECTORY:
@@ -1862,7 +1875,7 @@ Already have correct symlink %s -> %s\n\n"),
         case FT_PLAINFILE:
           /* Call the retrieve loop.  */
           if (dlthis)
-            err = ftp_loop_internal (u, f, con, NULL);
+            err = ftp_loop_internal (u, f, con, NULL, NULL);
           break;
         case FT_UNKNOWN:
           logprintf (LOG_NOTQUIET, _("%s: unknown/unsupported file type.\n"),
@@ -2141,7 +2154,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
         {
           /* Let's try retrieving it anyway.  */
           con->st |= ON_YOUR_OWN;
-          res = ftp_loop_internal (u, NULL, con, NULL);
+          res = ftp_loop_internal (u, NULL, con, NULL, NULL);
           return res;
         }
 
@@ -2162,7 +2175,7 @@ ftp_retrieve_glob (struct url *u, ccon *con, int action)
    encoded into a URL.  */
 uerr_t
 ftp_loop (struct url *u, char **local_file, int *dt, struct url *proxy,
-          bool recursive, bool glob)
+          bool recursive, bool glob, struct range *range)
 {
   ccon con;                     /* FTP connection */
   uerr_t res;
@@ -2176,6 +2189,10 @@ ftp_loop (struct url *u, char **local_file, int *dt, struct url *proxy,
   con.rs = ST_UNIX;
   con.id = NULL;
   con.proxy = proxy;
+  /* To let ftp_loop_internal AND getftp know of the desired file name. Added
+     while implementing metalink support to wget. */
+  if(local_file && *local_file)
+    con.target = *local_file;
 
   /* If the file name is empty, the user probably wants a directory
      index.  We'll provide one, properly HTML-ized.  Unless
@@ -2241,7 +2258,7 @@ ftp_loop (struct url *u, char **local_file, int *dt, struct url *proxy,
                                    ispattern ? GLOB_GLOBALL : GLOB_GETONE);
         }
       else
-        res = ftp_loop_internal (u, NULL, &con, local_file);
+        res = ftp_loop_internal (u, NULL, &con, local_file, range);
     }
   if (res == FTPOK)
     res = RETROK;

@@ -3021,9 +3021,8 @@ Spider mode enabled. Check if remote file exists.\n"));
       /* Time?  */
       tms = datetime_str (time (NULL));
 
-#ifdef ENABLE_METALINK
-      range->bytes_covered = hstat.len;
-#endif
+      if(range)
+        range->bytes_covered = hstat.len;
 
       /* Get the new location (with or without the redirection).  */
       if (hstat.newloc)

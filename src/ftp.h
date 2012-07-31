@@ -32,6 +32,8 @@ as that of the covered work.  */
 #ifndef FTP_H
 #define FTP_H
 
+#include "wget.h"
+
 #include "host.h"
 
 /* System types. */
@@ -129,7 +131,7 @@ enum wget_ftp_fstatus
 };
 
 struct fileinfo *ftp_parse_ls (const char *, const enum stype);
-uerr_t ftp_loop (struct url *, char **, int *, struct url *, bool, bool);
+uerr_t ftp_loop (struct url *, char **, int *, struct url *, bool, bool, struct range *);
 
 uerr_t ftp_index (const char *, struct url *, struct fileinfo *);
 
