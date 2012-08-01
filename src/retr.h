@@ -32,7 +32,6 @@ as that of the covered work.  */
 #ifndef RETR_H
 #define RETR_H
 
-#include "multi.h"
 #include "url.h"
 
 /* These global vars should be made static to retr.c and exported via

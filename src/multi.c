@@ -1,12 +1,11 @@
+#include "wget.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#ifdef ENABLE_THREADS
 #include <pthread.h>
 #include <semaphore.h>
-#endif
-
-#include "wget.h"
+#include <unistd.h>
 
 #include "multi.h"
 #include "url.h"
@@ -14,8 +13,7 @@
 int
 spawn_thread (struct s_thread_ctx *thread_ctx, char * name, int index, int resource)
 {
-  static pthread_t *thread;
-  char *command;
+  static pthread_t thread;
 
   sprintf(thread_ctx[index].file, TEMP_PREFIX "%s.%d", name, index);
 
@@ -23,18 +21,6 @@ spawn_thread (struct s_thread_ctx *thread_ctx, char * name, int index, int resou
                        &(thread_ctx[index].url_err), thread_ctx[index].i, true);
   if(!thread_ctx[index].url_parsed)
     return 1;
-
-  /* TODO: Update this when configuring fallbacking code so that downloading
-     goes on from where the previous resource failed. */
-  if(file_exists_p(thread_ctx[index].file))
-    {
-      command = malloc(sizeof("rm -f ") + sizeof(TEMP_PREFIX) + strlen(name)
-                     + (sizeof(".")-1) + (opt.jobs/10 + 1) + sizeof(""));
-
-      sprintf(command, "rm -f " TEMP_PREFIX "%s.%d", name, index);
-      system(command);
-      free(command);
-    }
 
   (thread_ctx[index].range)->is_assigned = 1;
   (thread_ctx[index].range)->resources[resource] = true;
@@ -74,4 +60,51 @@ segmented_retrieve_url (void *arg)
                               false, ctx->i, true, ctx->range);
   ctx->terminated = 1;
   sem_post (ctx->retr_sem);
+}
+
+void
+merge_temp_files(const char *file, int numfiles)
+{
+  FILE *out, *in;
+  char *file_name = malloc(strlen("temp_") + strlen(file) + (sizeof ".")-1
+                        + (numfiles/10 + 1) + sizeof "");
+  int j, ret;
+  void *buf = malloc(MIN_CHUNK_SIZE);
+  /* FIXME: Check for errors in allocations. */
+
+  sprintf(file_name, "%s", file);
+  out = fopen(file_name,"w");
+  for(j = 0; j < numfiles; ++j)
+    {
+      sprintf(file_name, TEMP_PREFIX "%s.%d", file, j);
+      in = fopen(file_name,"r");
+      ret = MIN_CHUNK_SIZE;
+      while(ret == MIN_CHUNK_SIZE)
+        {
+          ret = fread(buf, 1, MIN_CHUNK_SIZE, in);
+          fwrite(buf, 1, ret, out);
+          /* FIXME: CHECK FOR ERRORS. */
+        }
+      fclose(in);
+    }
+  fclose(out);
+
+  free(buf);
+  free(file_name);
+}
+
+void
+delete_temp_files(const char *file, int numfiles)
+{
+  char *file_name = malloc(strlen("temp_") + strlen(file) + (sizeof ".")-1
+                        + (numfiles/10 + 1) + sizeof "");
+  int j = 0;
+
+  while(j < numfiles)
+  {
+    sprintf(file_name, TEMP_PREFIX "%s.%d", file, j++);
+    unlink(file_name);
+    /* FIXME: CHECK FOR ERRORS. */
+  }
+  free(file_name);
 }

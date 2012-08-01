@@ -41,8 +41,9 @@ as that of the covered work.  */
 #include <locale.h>
 #ifdef ENABLE_THREADS
 #include <pthread.h>
-#endif
 
+# include "multi.h"
+#endif
 #include "hash.h"
 #include "http.h"
 #include "utils.h"
@@ -69,8 +70,6 @@ as that of the covered work.  */
 #ifdef __VMS
 # include "vms.h"
 #endif /* def __VMS */
-
-# include "multi.h"
 
 extern char *version_string;
 
@@ -3722,7 +3721,7 @@ create_authorization_line (const char *au, const char *user,
       return digest_authentication_encode (au, user, passwd, method, path);
 #endif
 
-#ifdef ENABLE_NTLM && ENABLE_THREADS
+#if defined ENABLE_NTLM && defined ENABLE_THREADS
     case 'N':                   /* NTLM */
       if (!ntlm_input (&pconn.ntlm, au))
         {

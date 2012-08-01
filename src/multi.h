@@ -40,9 +40,6 @@ as that of the covered work.  */
 
 #define TEMP_PREFIX "temp_"
 
-#define FILENAME_SIZE strlen("temp_") + strlen(file->name) + (sizeof ".")-1 \
-                      + (N_THREADS/10 + 1) + sizeof ""
-
 #define MIN_CHUNK_SIZE 2048
 
 struct s_thread_ctx
@@ -69,5 +66,11 @@ collect_thread (sem_t *, struct s_thread_ctx *);
 
 static void *
 segmented_retrieve_url (void *);
+
+void
+merge_temp_files(const char *, int);
+
+void
+delete_temp_files(const char *, int);
 
 #endif /* MULTI_H */

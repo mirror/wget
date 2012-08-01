@@ -37,13 +37,18 @@ as that of the covered work.  */
 #include <errno.h>
 #include <string.h>
 #include <assert.h>
-#ifdef ENABLE_METALINK
+#ifdef ENABLE_THREADS
 #include <pthread.h>
 #include <semaphore.h>
+#endif
+#ifdef ENABLE_METALINK
 #include <metalink/metalink_parser.h>
 #include <metalink/metalink_types.h>
 
 #include "metalink.h"
+#endif
+#ifdef ENABLE_THREADS
+#include "multi.h"
 #endif
 #include "exits.h"
 #include "utils.h"
@@ -60,8 +65,6 @@ as that of the covered work.  */
 #include "ptimer.h"
 #include "html-url.h"
 #include "iri.h"
-#include "metalink.h"
-#include "multi.h"
 
 #ifdef ENABLE_METALINK
 static pthread_mutex_t pconn_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -955,8 +958,6 @@ retrieve_from_file (const char *file, bool html, int *count)
   uerr_t status;
   struct urlpos *url_list, *cur_url;
   struct iri *iri = iri_new();
-  
-  metalink_t *metalink;
 
   char *input_file, *url_file = NULL;
   const char *url = file;
@@ -1010,10 +1011,13 @@ retrieve_from_file (const char *file, bool html, int *count)
     input_file = (char *) file;
 
 #ifdef ENABLE_METALINK
+  metalink_t *metalink;
+
   if(metalink = metalink_context(input_file))
     {
       /*GSoC wget*/
-      char *file_name, *command, **files;
+      char *file_name, **files;
+      FILE *file1, *file2;
       int i, j, r, index, dt, url_err, error_severity;
       int ret, N_THREADS = opt.jobs > 0 ? opt.jobs : 1;
       int ranges_covered, chunk_size, num_of_resources;
@@ -1058,7 +1062,12 @@ retrieve_from_file (const char *file, bool html, int *count)
             N_THREADS = j;
 
           for (j = 0; j < N_THREADS; ++j)
-                files[j] = malloc(FILENAME_SIZE);
+                files[j] = malloc(strlen("temp_") + strlen(file->name)
+                                + (sizeof ".")-1 + (N_THREADS/10 + 1) + sizeof "");
+
+          /* To make sure temporary files in which the segments are downloaded
+             do not become corrupt, as wget appends while writing into files.
+          delete_temp_files(file->name, N_THREADS);*/
 
           sem_init (&retr_sem, 0, 0);
           j = ranges_covered = 0;
@@ -1161,13 +1170,6 @@ retrieve_from_file (const char *file, bool html, int *count)
 
           sem_destroy(&retr_sem);
 
-          command = malloc(sizeof("cat ")
-                         + N_THREADS * (FILENAME_SIZE + (sizeof(" ") - 1))
-                         + (sizeof("> ") - 1)
-                         + strlen(file->name)
-                         + sizeof(""));
-          file_name = malloc(FILENAME_SIZE + sizeof(" ") - 1);
-
           if (status != RETROK)
             {
               /* Segment r could not be downloaded due to
@@ -1176,29 +1178,11 @@ retrieve_from_file (const char *file, bool html, int *count)
           else
             {
               ++*count;
-              strcpy(command, "cat ");
-              j=0;
-              while(j < opt.jobs)
-                {
-                  sprintf(file_name, TEMP_PREFIX "%s.%d ", file->name, j++);
-                  strcat(command, file_name);
-                }
-              strcat(command, "> ");
-              strcat(command, file->name);
-              system(command);
+              merge_temp_files(file->name, N_THREADS);
             }
 
-          strcpy(command, "rm -f ");
-          j=0;
-          while(j < opt.jobs)
-            {
-              sprintf(file_name, TEMP_PREFIX "%s.%d ", file->name, j++);
-              strcat(command, file_name);
-            }
-          system(command);
+          delete_temp_files(file->name, N_THREADS);
 
-          free(file_name);
-          free(command);
           for (j = 0; j < N_THREADS; ++j)
             free(ranges[j].resources);
           for (j = 0; j < N_THREADS; ++j)

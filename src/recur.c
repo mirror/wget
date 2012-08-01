@@ -40,8 +40,9 @@ as that of the covered work.  */
 #ifdef ENABLE_THREADS
 #include <pthread.h>
 #include <semaphore.h>
-#endif
 
+#include "multi.h"
+#endif
 #include "url.h"
 #include "recur.h"
 #include "utils.h"
@@ -54,7 +55,6 @@ as that of the covered work.  */
 #include "html-url.h"
 #include "css-url.h"
 #include "spider.h"
-#include "multi.h"
 
 /* Functions for maintaining the URL queue.  */
 

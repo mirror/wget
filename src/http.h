@@ -31,7 +31,7 @@ as that of the covered work.  */
 #ifndef HTTP_H
 #define HTTP_H
 
-#include "multi.h"
+#include "wget.h"
 
 struct url;
 
