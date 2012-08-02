@@ -3576,28 +3576,30 @@ internal networks from the rest of Internet.  In order to obtain
 information from the Web, their users connect and retrieve remote data
 using an authorized proxy.
 
+@c man begin ENVIRONMENT
 Wget supports proxies for both @sc{http} and @sc{ftp} retrievals.  The
 standard way to specify proxy location, which Wget recognizes, is using
 the following environment variables:
 
-@table @code
+@table @env
 @item http_proxy
 @itemx https_proxy
-If set, the @code{http_proxy} and @code{https_proxy} variables should
+If set, the @env{http_proxy} and @env{https_proxy} variables should
 contain the @sc{url}s of the proxies for @sc{http} and @sc{https}
 connections respectively.
 
 @item ftp_proxy
 This variable should contain the @sc{url} of the proxy for @sc{ftp}
-connections.  It is quite common that @code{http_proxy} and
-@code{ftp_proxy} are set to the same @sc{url}.
+connections.  It is quite common that @env{http_proxy} and
+@env{ftp_proxy} are set to the same @sc{url}.
 
 @item no_proxy
 This variable should contain a comma-separated list of domain extensions
 proxy should @emph{not} be used for.  For instance, if the value of
-@code{no_proxy} is @samp{.mit.edu}, proxy will not be used to retrieve
+@env{no_proxy} is @samp{.mit.edu}, proxy will not be used to retrieve
 documents from MIT.
 @end table
+@c man end
 
 In addition to the environment variables, proxy location and settings
 may be specified from within Wget itself.

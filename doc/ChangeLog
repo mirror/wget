@@ -1,3 +1,7 @@
+2012-08-04  mancha <mancha@mac.hush.com> (tiny change)
+
+	* wget.texi: Export ENVIRONMENT to the man page.
+
 2012-06-09  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi (Logging and Input File Options): Document "--report-speed".
