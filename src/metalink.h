@@ -34,4 +34,6 @@ as that of the covered work.  */
 
 metalink_t *metalink_context (const char *);
 
+int verify_hash(FILE *, char *, metalink_checksum_t **);
+
 #endif /* MLINK_H */

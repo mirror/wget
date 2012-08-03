@@ -1177,8 +1177,26 @@ retrieve_from_file (const char *file, bool html, int *count)
             }
           else
             {
-              ++*count;
+              FILE *out;
+              int res;
+
               merge_temp_files(file->name, N_THREADS);
+              if((out = fopen(file->name, "r")) == NULL)
+                {
+                  /*FIXME: file could not be opened.*/
+                }
+              if(res = verify_hash(out, opt.hashtype, file->checksums))
+                ++*count;
+              else if(res > 0)
+                {
+                  /* File is corrupt. Print a message and go on. */
+                  /* TODO: Improving the interoption dependencies to help retrying to
+                  download a file, by just putting here a something similar to;
+                    if(tries < N)
+                      --i; */
+                  
+                }
+              fclose(out);
             }
 
           delete_temp_files(file->name, N_THREADS);

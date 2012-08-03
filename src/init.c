@@ -193,7 +193,7 @@ static const struct {
 #endif
   { "input",            &opt.input_filename,    cmd_file },
   { "iri",              &opt.enable_iri,        cmd_boolean },
-#ifdef HAVE_SSL
+#ifdef ENABLE_THREADS
   { "jobs",             &opt.jobs,              cmd_number },
 #endif
   { "keepsessioncookies", &opt.keep_session_cookies, cmd_boolean },
@@ -265,6 +265,9 @@ static const struct {
   { "useragent",        NULL,                   cmd_spec_useragent },
   { "useservertimestamps", &opt.useservertimestamps, cmd_boolean },
   { "verbose",          NULL,                   cmd_spec_verbose },
+#ifdef ENABLE_METALINK
+  { "verify",           &opt.hashtype,          cmd_string },
+#endif
   { "wait",             &opt.wait,              cmd_time },
   { "waitretry",        &opt.waitretry,         cmd_time },
 #ifdef USE_WATT32

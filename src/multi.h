@@ -58,19 +58,14 @@ struct s_thread_ctx
   uerr_t status;
 };
 
-int
-spawn_thread (struct s_thread_ctx*, char *, int, int);
+int spawn_thread (struct s_thread_ctx*, char *, int, int);
 
-int
-collect_thread (sem_t *, struct s_thread_ctx *);
+int collect_thread (sem_t *, struct s_thread_ctx *);
 
-static void *
-segmented_retrieve_url (void *);
+static void * segmented_retrieve_url (void *);
 
-void
-merge_temp_files(const char *, int);
+void merge_temp_files(const char *, int);
 
-void
-delete_temp_files(const char *, int);
+void delete_temp_files(const char *, int);
 
 #endif /* MULTI_H */
