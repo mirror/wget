@@ -8,16 +8,24 @@
 #include "log.h"
 #include "md5.h"
 #include "sha1.h"
+#include "sha256.h"
 #include "metalink.h"
 
+#define BLOCKSIZE 32768
+#if BLOCKSIZE % 64 != 0
+# error "invalid BLOCKSIZE"
+#endif
 
+#define HASH_TYPES ALL
+/* Between MD5, SHA1 and SHA256, SHA256 has the greatest hash length, which is
+   32. In the line below, 64 is written instead of a more complex expression
+   to have a more readable code. */
+#define MAX_DIGEST_LENGTH 64
 
-#define HASH_TYPES 2
-#define MAX_DIGEST_VALUE 1024
-
-static char supported_hashes[HASH_TYPES][5] = {"md5", "sha1"};
-int digest_values[HASH_TYPES] = {MD5_DIGEST_SIZE, SHA1_DIGEST_SIZE};
-int (*hash_function[HASH_TYPES]) (FILE *, void *);
+enum {MD5, SHA1, SHA256, ALL};
+static char supported_hashes[HASH_TYPES][7] = {"md5", "sha1", "sha256"};
+static int digest_sizes[HASH_TYPES] = {MD5_DIGEST_SIZE, SHA1_DIGEST_SIZE, SHA256_DIGEST_SIZE};
+static int (*hash_function[HASH_TYPES]) (FILE *, void *) = {md5_stream, sha1_stream, sha256_stream};
 
 /* Parses metalink into type metalink_t and returns a pointer to it.
    Returns NULL if the parsing is failed. */
@@ -30,81 +38,281 @@ metalink_context (const char *url)
   err = metalink_parse_file (url, &metalink);
 
   if(err != 0)
-      return NULL;
+      metalink = NULL;
   return metalink;
 }
 
-/* Function checks the hashes of files based on the given values
-   in metalink file.
-   Its return values are;
-   -1    no comparisons could be made. Possible reasons include;
-             - Hash format entered to opt.hashtype is not supported.
-             - Metalink file does not contain the desired/supported hash type(s)
-    0    if at least 1 hash comparisons are made and all turned out to be equal.
-    1    if at least 1 hash comparison turned out to be different */
-int
-verify_hash(FILE *file, char *type, metalink_checksum_t **checksums)
+void
+init_ctx (void *ctx, int type)
 {
-  int i, j, h, t=-2, res = 0, comparisons = 0;
-  unsigned char hash[MAX_DIGEST_VALUE];
-
-  hash_function[0] = md5_stream;
-  hash_function[1] = sha1_stream;
-
-  for(i = 0; i < HASH_TYPES; ++i)
-    if(!strcmp(type, supported_hashes[i]))
-      {
-        t=i;
+  switch (type)
+    {
+      case MD5:
+        md5_init_ctx ((struct md5_ctx *)&ctx);
         break;
-      }
-  if (t < 0)
+      case SHA1:
+        sha1_init_ctx ((struct sha1_ctx *)&ctx);
+        break;
+      case SHA256:
+        sha256_init_ctx ((struct sha256_ctx *)&ctx);
+        break;
+    }
+}
+
+void
+finish_ctx (void *ctx, int type, void *hash)
+{
+  switch (type)
     {
-      if(strcmp(type, "all"))
-        {
-          /* Entered hash type is not supported. Print out an error message and
-             exit appropriately. */
-        }
-      else
-        t = -1;
+      case MD5:
+        md5_finish_ctx ((struct md5_ctx *)&ctx, hash);
+        break;
+      case SHA1:
+        sha1_finish_ctx ((struct sha1_ctx *)&ctx, hash);
+        break;
+      case SHA256:
+        sha256_finish_ctx ((struct sha256_ctx *)&ctx, hash);
+        break;
+    }
+}
+
+void
+process_block(void *ctx, int type, char *buffer)
+{
+  switch (type)
+    {
+      case MD5:
+        md5_process_block (buffer, BLOCKSIZE, (struct md5_ctx *)&ctx);
+        break;
+      case SHA1:
+        sha1_process_block (buffer, BLOCKSIZE, (struct sha1_ctx *)&ctx);
+        break;
+      case SHA256:
+        sha256_process_block (buffer, BLOCKSIZE, (struct sha256_ctx *)&ctx);
+        break;
+    }
+}
+
+void
+process_bytes(void *ctx, int type, char *buffer, size_t sum)
+{
+  switch (type)
+    {
+      case MD5:
+        md5_process_bytes (buffer, sum, (struct md5_ctx *)&ctx);
+        break;
+      case SHA1:
+        sha1_process_bytes (buffer, sum, (struct sha1_ctx *)&ctx);
+        break;
+      case SHA256:
+        sha256_process_bytes (buffer, sum, (struct sha256_ctx *)&ctx);
+        break;
+    }
+}
+
+/* Function finds hash of a file. Type of the hash can be one of the supported
+   types listed in the enum above. Returns;
+   1    if there is an allocation or read error.
+   0    if hash successfuilly found. */
+int
+find_file_hash(FILE *file, int type, void *hash)
+{
+  size_t sum;
+  void *ctx;
+
+  char *buffer = malloc (BLOCKSIZE + 72);
+  if (!buffer)
+    return 1;
+
+  switch(type)
+    {
+      case MD5_DIGEST_SIZE:
+        ctx = malloc(sizeof(struct md5_ctx));
+        break;
+      case SHA1_DIGEST_SIZE:
+        ctx = malloc(sizeof(struct sha1_ctx));
+        break;
+      case SHA256_DIGEST_SIZE:
+        ctx = malloc(sizeof(struct sha256_ctx));
+        break;
+    }
+  if(!ctx)
+    {
+      free(buffer);
+      return 1;
     }
 
-  for (i = 0; checksums[i] != NULL; ++i)
+  /* Initialize the computation context.  */
+  init_ctx (ctx, type);
+
+  /* Iterate over full file contents.  */
+  while (1)
     {
-      /* Pick the hash function and digest value to use. */
-      if(t<0)
+      /* We read the file in blocks of BLOCKSIZE bytes.  One call of the
+         computation function processes the whole buffer so that with the
+         next round of the loop another block can be read.  */
+      size_t n;
+      sum = 0;
+
+      /* Read block.  Take care for partial reads.  */
+      while (1)
         {
-          /* If any supported hash is asked to be inspected, then find if
-             type of checksums [i] is supported and in what index the relevant
-             function is. */
-          for(j = 0; j < HASH_TYPES; ++j)
-            if(!strcmp(checksums[i]->type, supported_hashes[j]))
+          n = fread (buffer + sum, 1, BLOCKSIZE - sum, file);
+
+          sum += n;
+
+          if (sum == BLOCKSIZE)
+            break;
+
+          if (n == 0)
+            {
+              /* Check for the error flag IFF N == 0, so that we don't
+                 exit the loop after a partial read due to e.g., EAGAIN
+                 or EWOULDBLOCK.  */
+              if (ferror (file))
+                {
+                  free (buffer);
+                  free (ctx);
+                  return 1;
+                }
+              goto process_partial_block;
+            }
+
+          /* We've read at least one byte, so ignore errors.  But always
+             check for EOF, since feof may be true even though N > 0.
+             Otherwise, we could end up calling fread after EOF.  */
+          if (feof (file))
+            goto process_partial_block;
+        }
+
+      /* Process buffer with BLOCKSIZE bytes.  Note that
+         BLOCKSIZE % 64 == 0
+       */
+      process_block (ctx, type, buffer);
+    }
+
+process_partial_block:
+
+  /* Process any remaining bytes.  */
+  if (sum > 0)
+      process_bytes (ctx, type, buffer, sum);
+
+  /* Construct result in desired memory.  */
+  finish_ctx (ctx, type, hash);
+  free (buffer);
+  free (ctx);
+  return 0;
+}
+
+/* Verifies file hash by comparing the file hash(es) found by gnulib functions
+   and hash(es) provided by metalink file. Returns;
+   n<0    if n pairs of hashes that were compared turned out to be different.
+   0      if all pairs of hashes compared turned out to be the same.
+   1      if due to some error, comparisons could not be made/completed. */
+int
+verify_file_hash(const char *filename, metalink_checksum_t **checksums)
+{
+  int i, j, res = 0;
+  void *hashes[HASH_TYPES][MAX_DIGEST_LENGTH];
+  FILE *file;
+  int req_type;
+
+  if (!checksums)
+    {
+      /* Metalink file has no hashes for this file. */
+      logprintf (LOG_NOTQUIET, "Validating(%s) failed: digest missing in metalink file.\n",
+                 filename);
+      return 1;
+    }
+
+  if (!(file = fopen(filename, "r")))
+    {
+      /* File could not be opened. */
+      logprintf (LOG_NOTQUIET, "Validating(%s) failed: file could not be opened.\n",
+                 filename);
+      return 1;
+    }
+
+  if (strcmp(opt.hashtype, "all"))
+    {
+      /* Estimate the type of hash we are requested to verify. */
+      for (i = 0; i < HASH_TYPES; ++i)
+        {
+          if(!strcmp(opt.hashtype, supported_hashes[i]))
+            {
+              req_type = i;
+              break;
+            }
+        }
+      if (i == HASH_TYPES)
+        {
+          /* opt.hashtype contains an unsupported hash type. */
+          logprintf (LOG_NOTQUIET, "argument to --verify is either not supported or invalid.\n");
+          fclose(file);
+          exit(1);
+        }
+        
+      /* Find file hash accordingly. */
+      if (find_file_hash(file, req_type, hashes[req_type]))
+        {
+          logprintf (LOG_NOTQUIET, "File hash could not be found.\n");
+          fclose(file);
+          return 1;
+        }
+      fclose(file);
+      
+      /* Traverse checksums and make essential hash comparisons. */
+      for (i = 0; checksums[i] != NULL; ++i)
+        {
+          for (j = 0; j < HASH_TYPES; ++j)
+            if (!strcmp(checksums[i]->type, supported_hashes[j]))
               {
-                h = j;
-                break;
+                if (memcmp(checksums[i]->hash, hashes[j], digest_sizes[j]))
+                  {
+                    logprintf (LOG_NOTQUIET, "Validating(%s) failed: hashes are different.\n",
+                               filename);
+                    --res;
+                  }
+                else
+                  {
+                    logprintf (LOG_NOTQUIET, "Validating(%s) succeeded.\n",
+                               filename);
+                  }
+
               }
-          /*checksums[i] has a hash type that is not supported. Skip it.*/
-          if(h < 0)
-            continue;
         }
-      else if(strcmp(checksums[i]->type, type))
-        continue;
-      else
-        h = t;
+    }
+  else
+    {
+      /* Find file hashes accordingly. */
+      for (i = 0; i < HASH_TYPES; ++i)
+        if (find_file_hash(file, req_type, hashes[i]))
+          {
+            logprintf (LOG_NOTQUIET, "File hash could not be found.\n");
+            fclose(file);
+            return 1;
+          }
 
-      (*hash_function[h]) (file, hash);
-      ++comparisons;
-
-      if (memcmp(hash, checksums[i]->hash, digest_values[h]))
+      /* Traverse checksums and make essential hash comparisons. */
+      for (i = 0; checksums[i] != NULL; ++i)
         {
-          res = 1;
-          break;
+          if (!strcmp(checksums[i]->type, supported_hashes[req_type]))
+            {
+              if (memcmp(checksums[i]->hash, hashes[req_type], digest_sizes[req_type]))
+                {
+                  logprintf (LOG_NOTQUIET, "Validating(%s) failed: hashes are different.\n",
+                             filename);
+                  --res;
+                }
+              else
+                {
+                  logprintf (LOG_NOTQUIET, "Validating(%s) succeeded.\n",
+                             filename);
+                }
+            }
         }
-      else if(opt.verbose)
-        logprintf (LOG_NOTQUIET, _("%s checksum verified.\n"), checksums[i]->type);
     }
 
-  if(comparisons)
-    return res;
-  else
-    return -1;
+  fclose(file);
+  return res;
 }
