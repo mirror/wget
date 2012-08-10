@@ -21,7 +21,6 @@
    32. In the line below, 64 is written to have a more readable code. */
 #define MAX_DIGEST_LENGTH 32
 
-enum {MD5, SHA1, SHA256, ALL};
 static char supported_hashes[HASH_TYPES][7] = {"md5", "sha1", "sha256"};
 static int digest_sizes[HASH_TYPES] = {MD5_DIGEST_SIZE, SHA1_DIGEST_SIZE, SHA256_DIGEST_SIZE};
 static int (*hash_function[HASH_TYPES]) (FILE *, void *) = {md5_stream, sha1_stream, sha256_stream};
@@ -39,170 +38,6 @@ metalink_context (const char *url)
   if(err != 0)
       metalink = NULL;
   return metalink;
-}
-
-void
-init_hash_ctx (void *ctx, int type)
-{
-  switch (type)
-    {
-      case MD5:
-        md5_init_ctx ((struct md5_ctx *)ctx);
-        break;
-      case SHA1:
-        sha1_init_ctx ((struct sha1_ctx *)ctx);
-        break;
-      case SHA256:
-        sha256_init_ctx ((struct sha256_ctx *)ctx);
-        break;
-    }
-}
-
-void
-finish_hash_ctx (void *ctx, int type, void *hash)
-{
-  switch (type)
-    {
-      case MD5:
-        md5_finish_ctx ((struct md5_ctx *)ctx, hash);
-        break;
-      case SHA1:
-        sha1_finish_ctx ((struct sha1_ctx *)ctx, hash);
-        break;
-      case SHA256:
-        sha256_finish_ctx ((struct sha256_ctx *)ctx, hash);
-        break;
-    }
-}
-
-void
-process_block(void *ctx, int type, char *buffer)
-{
-  switch (type)
-    {
-      case MD5:
-        md5_process_block (buffer, BLOCKSIZE, (struct md5_ctx *)ctx);
-        break;
-      case SHA1:
-        sha1_process_block (buffer, BLOCKSIZE, (struct sha1_ctx *)ctx);
-        break;
-      case SHA256:
-        sha256_process_block (buffer, BLOCKSIZE, (struct sha256_ctx *)ctx);
-        break;
-    }
-}
-
-void
-process_bytes(void *ctx, int type, char *buffer, size_t sum)
-{
-  switch (type)
-    {
-      case MD5:
-        md5_process_bytes (buffer, sum, (struct md5_ctx *)ctx);
-        break;
-      case SHA1:
-        sha1_process_bytes (buffer, sum, (struct sha1_ctx *)ctx);
-        break;
-      case SHA256:
-        sha256_process_bytes (buffer, sum, (struct sha256_ctx *)ctx);
-        break;
-    }
-}
-
-/* Function finds hash of a file. Type of the hash can be one of the supported
-   types listed in the enum above. Returns;
-   1    if there is an allocation or read error.
-   0    if hash successfuilly found. */
-int
-find_file_hash(FILE *file, int type, void *hash)
-{
-  size_t sum;
-  void *ctx = NULL;
-  char *buffer;
-
-  switch(type)
-    {
-      case MD5:
-        ctx = malloc(sizeof(struct md5_ctx));
-        break;
-      case SHA1:
-        ctx = malloc(sizeof(struct sha1_ctx));
-        break;
-      case SHA256:
-        ctx = malloc(sizeof(struct sha256_ctx));
-        break;
-    }
-  if(!ctx)
-      return 1;
-
-  /* Initialize the computation context.  */
-  init_hash_ctx (ctx, type);
-
-  buffer = malloc (BLOCKSIZE + 72);
-  if (!buffer)
-    {
-      finish_hash_ctx(ctx, type, hash);
-      free(ctx);
-      return 1;
-    }
-
-  /* Iterate over full file contents.  */
-  while (1)
-    {
-      /* We read the file in blocks of BLOCKSIZE bytes.  One call of the
-         computation function processes the whole buffer so that with the
-         next round of the loop another block can be read.  */
-      size_t n;
-      sum = 0;
-
-      /* Read block.  Take care for partial reads.  */
-      while (1)
-        {
-          n = fread (buffer, 1, BLOCKSIZE - sum, file);
-
-          sum += n;
-
-          if (sum == BLOCKSIZE)
-            break;
-
-          if (n == 0)
-            {
-              /* Check for the error flag IFF N == 0, so that we don't
-                 exit the loop after a partial read due to e.g., EAGAIN
-                 or EWOULDBLOCK.  */
-              if (ferror (file))
-                {
-                  free (buffer);
-                  free (ctx);
-                  return 1;
-                }
-              goto process_partial_block;
-            }
-
-          /* We've read at least one byte, so ignore errors.  But always
-             check for EOF, since feof may be true even though N > 0.
-             Otherwise, we could end up calling fread after EOF.  */
-          if (feof (file))
-            goto process_partial_block;
-        }
-
-      /* Process buffer with BLOCKSIZE bytes.  Note that
-         BLOCKSIZE % 64 == 0
-       */
-      process_block (ctx, type, buffer);
-    }
-
-process_partial_block:
-
-  /* Process any remaining bytes.  */
-  if (sum > 0)
-      process_bytes (ctx, type, buffer, sum);
-
-  /* Construct result in desired memory.  */
-  finish_hash_ctx (ctx, type, hash);
-  free (buffer);
-  free (ctx);
-  return 0;
 }
 
 /* It should be taken into account that file hashes in metalink files may
@@ -267,7 +102,7 @@ verify_file_hash (const char *filename, metalink_checksum_t **checksums)
         }
         
       /* Find file hash accordingly. */
-      if (find_file_hash(file, req_type, hash_raw))
+      if ((*hash_function[req_type]) (file, hash_raw))
         {
           logprintf (LOG_VERBOSE, "File hash could not be found.\n");
           fclose(file);
@@ -275,8 +110,8 @@ verify_file_hash (const char *filename, metalink_checksum_t **checksums)
         }
 
       /* Turn byte-form hash to hex form. */
-      for(j = 0 ; j < digest_sizes[i]; ++j)
-        sprintf(hashes[i] + 2 * j, "%02x", hash_raw[j]);
+      for(j = 0 ; j < digest_sizes[req_type]; ++j)
+        sprintf(hashes[req_type] + 2 * j, "%02x", hash_raw[j]);
       fclose(file);
 
       /* Traverse checksums and make essential hash comparisons. */
@@ -299,7 +134,7 @@ verify_file_hash (const char *filename, metalink_checksum_t **checksums)
       /* Find file hashes accordingly. */
       for (i = 0; i < HASH_TYPES; ++i)
         {
-          if (find_file_hash(file, i, hash_raw))
+          if ((*hash_function[i]) (file, hash_raw))
             {
               logprintf (LOG_VERBOSE, "File hash could not be found.\n");
               fclose(file);
