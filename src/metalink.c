@@ -206,23 +206,37 @@ process_partial_block:
   return 0;
 }
 
+/* It should be taken into account that file hashes in metalink files may
+   include uppercase letter. This function turns the case of the first length
+   letters in the space pointed by hash into lowercase. */
+void
+lower_hex_case (unsigned char *hash, int length)
+{
+  int i;
+
+  /* 32 is the difference between the ascii codes of 'a' and 'A'. */
+  for(i = 0; i < length; ++i)
+    if('A' <= hash[i] && hash[i] <= 'Z')
+      hash[i] += 32;
+}
+
 /* Verifies file hash by comparing the file hash(es) found by gnulib functions
    and hash(es) provided by metalink file. Returns;
    n<0    if n pairs of hashes that were compared turned out to be different.
    0      if all pairs of hashes compared turned out to be the same.
    1      if due to some error, comparisons could not be made/completed. */
 int
-verify_file_hash(const char *filename, metalink_checksum_t **checksums)
+verify_file_hash (const char *filename, metalink_checksum_t **checksums)
 {
-  int i, j, res = 0;
+  int i, j, req_type, res = 0;
+  unsigned char hash_raw[MAX_DIGEST_LENGTH];
   unsigned char hashes[HASH_TYPES][MAX_DIGEST_LENGTH];
   FILE *file;
-  int req_type;
 
   if (!checksums)
     {
       /* Metalink file has no hashes for this file. */
-      logprintf (LOG_NOTQUIET, "Validating(%s) failed: digest missing in metalink file.\n",
+      logprintf (LOG_VERBOSE, "Validating(%s) failed: digest missing in metalink file.\n",
                  filename);
       return 1;
     }
@@ -230,7 +244,7 @@ verify_file_hash(const char *filename, metalink_checksum_t **checksums)
   if (!(file = fopen(filename, "r")))
     {
       /* File could not be opened. */
-      logprintf (LOG_NOTQUIET, "Validating(%s) failed: file could not be opened.\n",
+      logprintf (LOG_VERBOSE, "Validating(%s) failed: file could not be opened.\n",
                  filename);
       return 1;
     }
@@ -239,61 +253,31 @@ verify_file_hash(const char *filename, metalink_checksum_t **checksums)
     {
       /* Estimate the type of hash we are requested to verify. */
       for (i = 0; i < HASH_TYPES; ++i)
-        {
           if(!strcmp(opt.hashtype, supported_hashes[i]))
             {
               req_type = i;
               break;
             }
-        }
+
       if (i == HASH_TYPES)
         {
           /* opt.hashtype contains an unsupported hash type. */
-          logprintf (LOG_NOTQUIET, "argument to --verify is either not supported or invalid.\n");
+          logprintf (LOG_VERBOSE, "argument to --verify is either not supported or invalid.\n");
           fclose(file);
           exit(1);
         }
         
       /* Find file hash accordingly. */
-      if (find_file_hash(file, req_type, hashes[req_type]))
+      if (find_file_hash(file, req_type, hash_raw))
         {
-          logprintf (LOG_NOTQUIET, "File hash could not be found.\n");
+          logprintf (LOG_VERBOSE, "File hash could not be found.\n");
           fclose(file);
           return 1;
         }
-      fclose(file);
-      
-      /* Traverse checksums and make essential hash comparisons. */
-      for (i = 0; checksums[i] != NULL; ++i)
-        {
-          for (j = 0; j < HASH_TYPES; ++j)
-            if (!strcmp(checksums[i]->type, supported_hashes[j]))
-              {
-                if (memcmp(checksums[i]->hash, hashes[j], digest_sizes[j]))
-                  {
-                    logprintf (LOG_NOTQUIET, "Validating(%s) failed: hashes are different.\n",
-                               filename);
-                    --res;
-                  }
-                else
-                  {
-                    logprintf (LOG_NOTQUIET, "Validating(%s) succeeded.\n",
-                               filename);
-                  }
 
-              }
-        }
-    }
-  else
-    {
-      /* Find file hashes accordingly. */
-      for (i = 0; i < HASH_TYPES; ++i)
-        if (find_file_hash(file, req_type, hashes[i]))
-          {
-            logprintf (LOG_NOTQUIET, "File hash could not be found.\n");
-            fclose(file);
-            return 1;
-          }
+      /* Turn byte-form hash to hex form. */
+      for(j = 0 ; j < digest_sizes[i]; ++j)
+        sprintf(hashes[i] + 2 * j, "%x", hash_raw[j]);
       fclose(file);
 
       /* Traverse checksums and make essential hash comparisons. */
@@ -301,18 +285,46 @@ verify_file_hash(const char *filename, metalink_checksum_t **checksums)
         {
           if (!strcmp(checksums[i]->type, supported_hashes[req_type]))
             {
+              lower_hex_case(checksums[i]->hash, digest_sizes[req_type]);
               if (memcmp(checksums[i]->hash, hashes[req_type], digest_sizes[req_type]))
                 {
-                  logprintf (LOG_NOTQUIET, "Validating(%s) failed: hashes are different.\n",
+                  logprintf (LOG_VERBOSE, "Verifying(%s) failed: hashes are different.\n",
                              filename);
                   --res;
                 }
-              else
-                {
-                  logprintf (LOG_NOTQUIET, "Validating(%s) succeeded.\n",
-                             filename);
-                }
             }
+        }
+    }
+  else
+    {
+      /* Find file hashes accordingly. */
+      for (i = 0; i < HASH_TYPES; ++i)
+        {
+          if (find_file_hash(file, req_type, hash_raw))
+            {
+              logprintf (LOG_VERBOSE, "File hash could not be found.\n");
+              fclose(file);
+              return 1;
+            }
+          for(j = 0 ; j < digest_sizes[i]; ++j)
+            sprintf(hashes[i] + 2 * j, "%x", hash_raw[j]);
+        }
+      fclose(file);
+
+      /* Traverse checksums and make essential hash comparisons. */
+      for (i = 0; checksums[i] != NULL; ++i)
+        {
+          for (j = 0; j < HASH_TYPES; ++j)
+            if (!strcmp(checksums[i]->type, supported_hashes[j]))
+              {
+                lower_hex_case(checksums[i]->hash, digest_sizes[j]);
+                if (memcmp(checksums[i]->hash, hashes[j], digest_sizes[j]))
+                  {
+                    logprintf (LOG_VERBOSE, "Verifying(%s) failed: hashes are different.\n",
+                               filename);
+                    --res;
+                  }
+              }
         }
     }
 

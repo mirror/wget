@@ -1182,10 +1182,14 @@ retrieve_from_file (const char *file, bool html, int *count)
               merge_temp_files(file->name, N_THREADS);
               res = verify_file_hash(file->name, file->checksums);
               if(!res)
-                ++*count;
+                {
+                  ++*count;
+                  logprintf (LOG_NOTQUIET, "Verifying(%s) file hash succeeded.\n",
+                               file->name);
+                }
               else if(res < 0)
                 {
-                  logprintf (LOG_NOTQUIET, "File(%s) is corrupt.\n", file->name);
+                  logprintf (LOG_NOTQUIET, "Verifying(%s) failed.\n", file->name);
                   /* TODO: Improving the interoption dependencies to help retrying to
                   download a file, by just putting here a something similar to;
                     if(tries < N)
