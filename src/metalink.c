@@ -43,35 +43,35 @@ metalink_context (const char *url)
 }
 
 void
-init_ctx (void *ctx, int type)
+init_hash_ctx (void *ctx, int type)
 {
   switch (type)
     {
       case MD5:
-        md5_init_ctx ((struct md5_ctx *)&ctx);
+        md5_init_ctx ((struct md5_ctx *)ctx);
         break;
       case SHA1:
-        sha1_init_ctx ((struct sha1_ctx *)&ctx);
+        sha1_init_ctx ((struct sha1_ctx *)ctx);
         break;
       case SHA256:
-        sha256_init_ctx ((struct sha256_ctx *)&ctx);
+        sha256_init_ctx ((struct sha256_ctx *)ctx);
         break;
     }
 }
 
 void
-finish_ctx (void *ctx, int type, void *hash)
+finish_hash_ctx (void *ctx, int type, void *hash)
 {
   switch (type)
     {
       case MD5:
-        md5_finish_ctx ((struct md5_ctx *)&ctx, hash);
+        md5_finish_ctx ((struct md5_ctx *)ctx, hash);
         break;
       case SHA1:
-        sha1_finish_ctx ((struct sha1_ctx *)&ctx, hash);
+        sha1_finish_ctx ((struct sha1_ctx *)ctx, hash);
         break;
       case SHA256:
-        sha256_finish_ctx ((struct sha256_ctx *)&ctx, hash);
+        sha256_finish_ctx ((struct sha256_ctx *)ctx, hash);
         break;
     }
 }
@@ -82,13 +82,13 @@ process_block(void *ctx, int type, char *buffer)
   switch (type)
     {
       case MD5:
-        md5_process_block (buffer, BLOCKSIZE, (struct md5_ctx *)&ctx);
+        md5_process_block (buffer, BLOCKSIZE, (struct md5_ctx *)ctx);
         break;
       case SHA1:
-        sha1_process_block (buffer, BLOCKSIZE, (struct sha1_ctx *)&ctx);
+        sha1_process_block (buffer, BLOCKSIZE, (struct sha1_ctx *)ctx);
         break;
       case SHA256:
-        sha256_process_block (buffer, BLOCKSIZE, (struct sha256_ctx *)&ctx);
+        sha256_process_block (buffer, BLOCKSIZE, (struct sha256_ctx *)ctx);
         break;
     }
 }
@@ -99,13 +99,13 @@ process_bytes(void *ctx, int type, char *buffer, size_t sum)
   switch (type)
     {
       case MD5:
-        md5_process_bytes (buffer, sum, (struct md5_ctx *)&ctx);
+        md5_process_bytes (buffer, sum, (struct md5_ctx *)ctx);
         break;
       case SHA1:
-        sha1_process_bytes (buffer, sum, (struct sha1_ctx *)&ctx);
+        sha1_process_bytes (buffer, sum, (struct sha1_ctx *)ctx);
         break;
       case SHA256:
-        sha256_process_bytes (buffer, sum, (struct sha256_ctx *)&ctx);
+        sha256_process_bytes (buffer, sum, (struct sha256_ctx *)ctx);
         break;
     }
 }
@@ -118,32 +118,34 @@ int
 find_file_hash(FILE *file, int type, void *hash)
 {
   size_t sum;
-  void *ctx;
-
-  char *buffer = malloc (BLOCKSIZE + 72);
-  if (!buffer)
-    return 1;
+  void *ctx = NULL;
+  char *buffer;
 
   switch(type)
     {
-      case MD5_DIGEST_SIZE:
+      case MD5:
         ctx = malloc(sizeof(struct md5_ctx));
         break;
-      case SHA1_DIGEST_SIZE:
+      case SHA1:
         ctx = malloc(sizeof(struct sha1_ctx));
         break;
-      case SHA256_DIGEST_SIZE:
+      case SHA256:
         ctx = malloc(sizeof(struct sha256_ctx));
         break;
     }
   if(!ctx)
-    {
-      free(buffer);
       return 1;
-    }
 
   /* Initialize the computation context.  */
-  init_ctx (ctx, type);
+  init_hash_ctx (ctx, type);
+
+  buffer = malloc (BLOCKSIZE + 72);
+  if (!buffer)
+    {
+      finish_hash_ctx(ctx, type, hash);
+      free(ctx);
+      return 1;
+    }
 
   /* Iterate over full file contents.  */
   while (1)
@@ -157,7 +159,7 @@ find_file_hash(FILE *file, int type, void *hash)
       /* Read block.  Take care for partial reads.  */
       while (1)
         {
-          n = fread (buffer + sum, 1, BLOCKSIZE - sum, file);
+          n = fread (buffer, 1, BLOCKSIZE - sum, file);
 
           sum += n;
 
@@ -198,7 +200,7 @@ process_partial_block:
       process_bytes (ctx, type, buffer, sum);
 
   /* Construct result in desired memory.  */
-  finish_ctx (ctx, type, hash);
+  finish_hash_ctx (ctx, type, hash);
   free (buffer);
   free (ctx);
   return 0;
@@ -213,7 +215,7 @@ int
 verify_file_hash(const char *filename, metalink_checksum_t **checksums)
 {
   int i, j, res = 0;
-  void *hashes[HASH_TYPES][MAX_DIGEST_LENGTH];
+  unsigned char hashes[HASH_TYPES][MAX_DIGEST_LENGTH];
   FILE *file;
   int req_type;
 
@@ -292,6 +294,7 @@ verify_file_hash(const char *filename, metalink_checksum_t **checksums)
             fclose(file);
             return 1;
           }
+      fclose(file);
 
       /* Traverse checksums and make essential hash comparisons. */
       for (i = 0; checksums[i] != NULL; ++i)
@@ -313,6 +316,5 @@ verify_file_hash(const char *filename, metalink_checksum_t **checksums)
         }
     }
 
-  fclose(file);
   return res;
 }
