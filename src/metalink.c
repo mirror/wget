@@ -18,9 +18,8 @@
 
 #define HASH_TYPES ALL
 /* Between MD5, SHA1 and SHA256, SHA256 has the greatest hash length, which is
-   32. In the line below, 64 is written instead of a more complex expression
-   to have a more readable code. */
-#define MAX_DIGEST_LENGTH 64
+   32. In the line below, 64 is written to have a more readable code. */
+#define MAX_DIGEST_LENGTH 32
 
 enum {MD5, SHA1, SHA256, ALL};
 static char supported_hashes[HASH_TYPES][7] = {"md5", "sha1", "sha256"};
@@ -230,7 +229,7 @@ verify_file_hash (const char *filename, metalink_checksum_t **checksums)
 {
   int i, j, req_type, res = 0;
   unsigned char hash_raw[MAX_DIGEST_LENGTH];
-  unsigned char hashes[HASH_TYPES][MAX_DIGEST_LENGTH];
+  unsigned char hashes[HASH_TYPES][2 * MAX_DIGEST_LENGTH + 1];
   FILE *file;
 
   if (!checksums)
@@ -277,7 +276,7 @@ verify_file_hash (const char *filename, metalink_checksum_t **checksums)
 
       /* Turn byte-form hash to hex form. */
       for(j = 0 ; j < digest_sizes[i]; ++j)
-        sprintf(hashes[i] + 2 * j, "%x", hash_raw[j]);
+        sprintf(hashes[i] + 2 * j, "%02x", hash_raw[j]);
       fclose(file);
 
       /* Traverse checksums and make essential hash comparisons. */
@@ -285,8 +284,8 @@ verify_file_hash (const char *filename, metalink_checksum_t **checksums)
         {
           if (!strcmp(checksums[i]->type, supported_hashes[req_type]))
             {
-              lower_hex_case(checksums[i]->hash, digest_sizes[req_type]);
-              if (memcmp(checksums[i]->hash, hashes[req_type], digest_sizes[req_type]))
+              lower_hex_case(checksums[i]->hash, 2 * digest_sizes[req_type]);
+              if (strcmp(checksums[i]->hash, hashes[req_type]))
                 {
                   logprintf (LOG_VERBOSE, "Verifying(%s) failed: hashes are different.\n",
                              filename);
@@ -300,14 +299,14 @@ verify_file_hash (const char *filename, metalink_checksum_t **checksums)
       /* Find file hashes accordingly. */
       for (i = 0; i < HASH_TYPES; ++i)
         {
-          if (find_file_hash(file, req_type, hash_raw))
+          if (find_file_hash(file, i, hash_raw))
             {
               logprintf (LOG_VERBOSE, "File hash could not be found.\n");
               fclose(file);
               return 1;
             }
           for(j = 0 ; j < digest_sizes[i]; ++j)
-            sprintf(hashes[i] + 2 * j, "%x", hash_raw[j]);
+            sprintf(hashes[i] + 2 * j, "%02x", hash_raw[j]);
         }
       fclose(file);
 
@@ -317,13 +316,15 @@ verify_file_hash (const char *filename, metalink_checksum_t **checksums)
           for (j = 0; j < HASH_TYPES; ++j)
             if (!strcmp(checksums[i]->type, supported_hashes[j]))
               {
-                lower_hex_case(checksums[i]->hash, digest_sizes[j]);
-                if (memcmp(checksums[i]->hash, hashes[j], digest_sizes[j]))
+                lower_hex_case(checksums[i]->hash, 2 * digest_sizes[j]);
+                if (strcmp(checksums[i]->hash, hashes[j]))
                   {
                     logprintf (LOG_VERBOSE, "Verifying(%s) failed: hashes are different.\n",
                                filename);
                     --res;
                   }
+                else
+                  break;
               }
         }
     }
