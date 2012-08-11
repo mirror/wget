@@ -11,19 +11,14 @@
 #include "sha256.h"
 #include "metalink.h"
 
-#define BLOCKSIZE 32768
-#if BLOCKSIZE % 64 != 0
-# error "invalid BLOCKSIZE"
-#endif
-
-#define HASH_TYPES ALL
+#define HASH_TYPES 3
 /* Between MD5, SHA1 and SHA256, SHA256 has the greatest hash length, which is
    32. In the line below, 64 is written to have a more readable code. */
 #define MAX_DIGEST_LENGTH 32
 
-static char supported_hashes[HASH_TYPES][7] = {"md5", "sha1", "sha256"};
-static int digest_sizes[HASH_TYPES] = {MD5_DIGEST_SIZE, SHA1_DIGEST_SIZE, SHA256_DIGEST_SIZE};
-static int (*hash_function[HASH_TYPES]) (FILE *, void *) = {md5_stream, sha1_stream, sha256_stream};
+static char supported_hashes[HASH_TYPES][7] = {"sha256", "sha1", "md5"};
+static int digest_sizes[HASH_TYPES] = {SHA256_DIGEST_SIZE, SHA1_DIGEST_SIZE, MD5_DIGEST_SIZE};
+static int (*hash_function[HASH_TYPES]) (FILE *, void *) = {sha256_stream, sha1_stream, md5_stream};
 
 /* Parses metalink into type metalink_t and returns a pointer to it.
    Returns NULL if the parsing is failed. */
@@ -56,15 +51,23 @@ lower_hex_case (unsigned char *hash, int length)
 
 /* Verifies file hash by comparing the file hash(es) found by gnulib functions
    and hash(es) provided by metalink file. Returns;
-   n<0    if n pairs of hashes that were compared turned out to be different.
+   -1     if hashes that were compared turned out to be different.
    0      if all pairs of hashes compared turned out to be the same.
-   1      if due to some error, comparisons could not be made/completed. */
+   1      if due to some error, comparisons could not be made.
+              retrying to download the file is possible.
+   2      if due to a corrupt metalink file, comparisons could not be made.
+              no use in retrying unless you update the metalink.  */
 int
 verify_file_hash (const char *filename, metalink_checksum_t **checksums)
 {
   int i, j, req_type, res = 0;
+  
   unsigned char hash_raw[MAX_DIGEST_LENGTH];
-  unsigned char hashes[HASH_TYPES][2 * MAX_DIGEST_LENGTH + 1];
+  /* Points to a hash of supported type from the metalink file. The index dedicated
+     to a type is inversely proportional to its strength. (check supported_types
+     to see the supported hash types listed in decreasing order of strength)*/
+  unsigned char *metalink_hashes[HASH_TYPES];
+  unsigned char file_hash[2 * MAX_DIGEST_LENGTH + 1];
   FILE *file;
 
   if (!checksums)
@@ -72,8 +75,41 @@ verify_file_hash (const char *filename, metalink_checksum_t **checksums)
       /* Metalink file has no hashes for this file. */
       logprintf (LOG_VERBOSE, "Validating(%s) failed: digest missing in metalink file.\n",
                  filename);
-      return 1;
+      return 2;
     }
+
+  for (i = 0; i < HASH_TYPES; ++i)
+    metalink_hashes[i] = NULL;
+
+  /* Fill metalink_hashes to contain an instance of supported types of hashes. */
+  for (i = 0; checksums[i] != NULL; ++i)
+    for (j = 0; j < HASH_TYPES; ++j)
+      if (!strcmp(checksums[i]->type, supported_hashes[j]))
+        {
+          if(metalink_hashes[j])
+            {
+              /* As of libmetalin-0.03, it is not checked during parsing the
+                 information in the metalink file whether there are multiple
+                 hashes of same type for one file. That case should be checked,
+                 as none of those hashes can be trusted above the other. */
+              logprintf (LOG_VERBOSE, "Validating(%s) failed: metalink file contains different hashes of same type.\n",
+                         filename);
+              return 2;
+            }
+          else
+            metalink_hashes[j] = checksums[i]->hash;
+        }
+
+  for (i = 0; !metalink_hashes[i]; ++i);
+
+  if (i == HASH_TYPES)
+    {
+      /* no hash of supported types could be found. */
+      logprintf (LOG_VERBOSE, "Validating(%s) failed: No hash of supported types could be found in metalink file.\n",
+                 filename);
+      return 2;
+    }
+  req_type = i;
 
   if (!(file = fopen(filename, "r")))
     {
@@ -83,86 +119,30 @@ verify_file_hash (const char *filename, metalink_checksum_t **checksums)
       return 1;
     }
 
-  if (strcmp(opt.hashtype, "all"))
+  res = (*hash_function[req_type]) (file, hash_raw);
+  fclose(file);
+
+  /* Find file hash accordingly. */
+  if (res)
     {
-      /* Estimate the type of hash we are requested to verify. */
-      for (i = 0; i < HASH_TYPES; ++i)
-          if(!strcmp(opt.hashtype, supported_hashes[i]))
-            {
-              req_type = i;
-              break;
-            }
-
-      if (i == HASH_TYPES)
-        {
-          /* opt.hashtype contains an unsupported hash type. */
-          logprintf (LOG_VERBOSE, "argument to --verify is either not supported or invalid.\n");
-          fclose(file);
-          exit(1);
-        }
-        
-      /* Find file hash accordingly. */
-      if ((*hash_function[req_type]) (file, hash_raw))
-        {
-          logprintf (LOG_VERBOSE, "File hash could not be found.\n");
-          fclose(file);
-          return 1;
-        }
-
-      /* Turn byte-form hash to hex form. */
-      for(j = 0 ; j < digest_sizes[req_type]; ++j)
-        sprintf(hashes[req_type] + 2 * j, "%02x", hash_raw[j]);
-      fclose(file);
-
-      /* Traverse checksums and make essential hash comparisons. */
-      for (i = 0; checksums[i] != NULL; ++i)
-        {
-          if (!strcmp(checksums[i]->type, supported_hashes[req_type]))
-            {
-              lower_hex_case(checksums[i]->hash, 2 * digest_sizes[req_type]);
-              if (strcmp(checksums[i]->hash, hashes[req_type]))
-                {
-                  logprintf (LOG_VERBOSE, "Verifying(%s) failed: hashes are different.\n",
-                             filename);
-                  --res;
-                }
-            }
-        }
-    }
-  else
-    {
-      /* Find file hashes accordingly. */
-      for (i = 0; i < HASH_TYPES; ++i)
-        {
-          if ((*hash_function[i]) (file, hash_raw))
-            {
-              logprintf (LOG_VERBOSE, "File hash could not be found.\n");
-              fclose(file);
-              return 1;
-            }
-          for(j = 0 ; j < digest_sizes[i]; ++j)
-            sprintf(hashes[i] + 2 * j, "%02x", hash_raw[j]);
-        }
-      fclose(file);
-
-      /* Traverse checksums and make essential hash comparisons. */
-      for (i = 0; checksums[i] != NULL; ++i)
-        {
-          for (j = 0; j < HASH_TYPES; ++j)
-            if (!strcmp(checksums[i]->type, supported_hashes[j]))
-              {
-                lower_hex_case(checksums[i]->hash, 2 * digest_sizes[j]);
-                if (strcmp(checksums[i]->hash, hashes[j]))
-                  {
-                    logprintf (LOG_VERBOSE, "Verifying(%s) failed: hashes are different.\n",
-                               filename);
-                    --res;
-                  }
-                else
-                  break;
-              }
-        }
+      logprintf (LOG_VERBOSE, "Validating(%s) failed: File hash could not be found.\n",
+                 filename);
+      return 1;
     }
 
-  return res;
+  /* Turn byte-form hash to hex form. */
+  for(j = 0 ; j < digest_sizes[req_type]; ++j)
+    sprintf(file_hash + 2 * j, "%02x", hash_raw[j]);
+
+  lower_hex_case(metalink_hashes[req_type], 2 * digest_sizes[req_type]);
+  if (strcmp(checksums[req_type]->hash, file_hash))
+    {
+      logprintf (LOG_VERBOSE, "Verifying(%s) failed: %s hashes are different.\n",
+                 filename, supported_hashes[i]);
+      return -1;
+    }
+
+  logprintf (LOG_VERBOSE, "Verifying(%s): %s hashes are the same.\n",
+             filename, supported_hashes[i]);
+  return 0;
 }

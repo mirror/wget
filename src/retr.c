@@ -1184,7 +1184,7 @@ retrieve_from_file (const char *file, bool html, int *count)
               if(!res)
                 {
                   ++*count;
-                  logprintf (LOG_NOTQUIET, "Verifying(%s) file hash succeeded.\n",
+                  logprintf (LOG_NOTQUIET, "Verifying(%s) succeeded.\n",
                                file->name);
                 }
               else if(res < 0)

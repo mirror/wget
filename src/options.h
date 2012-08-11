@@ -260,9 +260,6 @@ struct options
 #ifdef ENABLE_THREADS
   int jobs; /* How many threads use at the same time.  */
 #endif
-#ifdef ENABLE_METALINK
-  char *hashtype;
-#endif
 };
 
 extern struct options opt;
