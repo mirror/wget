@@ -86,17 +86,10 @@ merge_temp_files(const char **inputs, const char *output, int numfiles)
 }
 
 void
-delete_temp_files(const char *file, int numfiles)
+delete_temp_files(const char **files, int numfiles)
 {
-  char *file_name = malloc(strlen("temp_") + strlen(file) + (sizeof ".")-1
-                        + (numfiles/10 + 1) + sizeof "");
   int j = 0;
 
   while(j < numfiles)
-  {
-    sprintf(file_name, TEMP_PREFIX "%s.%d", file, j++);
-    unlink(file_name);
-    /* FIXME: CHECK FOR ERRORS. */
-  }
-  free(file_name);
+    unlink(files[j++]);
 }

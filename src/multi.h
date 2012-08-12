@@ -66,6 +66,6 @@ static void * segmented_retrieve_url (void *);
 
 void merge_temp_files(const char **, const char *, int);
 
-void delete_temp_files(const char *, int);
+void delete_temp_files(const char **, int);
 
 #endif /* MULTI_H */
