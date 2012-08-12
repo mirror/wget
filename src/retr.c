@@ -1017,7 +1017,7 @@ retrieve_from_file (const char *file, bool html, int *count)
   if(opt.metalink_file)
     {
       /*GSoC wget*/
-      char *file_name, **files;
+      char *temp, **files;
       FILE *file1, *file2;
       int i, j, r, index, dt, url_err, retries;
       int ret, N_THREADS = opt.jobs > 0 ? opt.jobs : 1;
@@ -1069,12 +1069,15 @@ retrieve_from_file (const char *file, bool html, int *count)
 
           /* Assign temporary file names. */
           for (j = 0; j < N_THREADS; ++j)
-                files[j] = malloc(strlen("temp_") + strlen(file->name)
-                                + (sizeof ".")-1 + (N_THREADS/10 + 1) + sizeof "");
-
-          /* To make sure temporary files in which the segments are downloaded
-             do not become corrupt, as wget appends while writing into files. */
-          delete_temp_files(files, N_THREADS);
+            {
+              files[j] = malloc(L_tmpnam * sizeof(char));
+              temp = tmpnam(files[j]);
+              if(!temp)
+                {
+                  logprintf (LOG_VERBOSE, "Temp file name could not be assigned.\n");
+                  return 1;
+                }
+            }
 
           sem_init (&retr_sem, 0, 0);
           j = ranges_covered = 0;
@@ -1097,7 +1100,7 @@ retrieve_from_file (const char *file, bool html, int *count)
               thread_ctx[r].url = resource->url;
               thread_ctx[r].retr_sem = &retr_sem;
 
-              ret = spawn_thread (thread_ctx, file->name, r, j);
+              ret = spawn_thread (thread_ctx, r, j);
               if (ret)
                 {
                   char *error = url_error (thread_ctx[r].url, thread_ctx[r].url_err);
@@ -1155,7 +1158,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                           (thread_ctx[r].range)->bytes_covered = 0;
                         }
                       --ranges_covered;
-                      ret = spawn_thread (thread_ctx, file->name, r, j);
+                      ret = spawn_thread (thread_ctx, r, j);
                       if (ret)
                         {
                           char *error = url_error (thread_ctx[r].url, thread_ctx[r].url_err);
@@ -1180,7 +1183,7 @@ retrieve_from_file (const char *file, bool html, int *count)
 
           if (status != RETROK)
             {
-              logprintf (LOG_NOTQUIET, "Downloading %s failed. Chunk %d could not be downloaded from any of the URLs listed in metalink file.\n", file->name, r);
+              logprintf (LOG_VERBOSE, "Downloading %s failed. Chunk %d could not be downloaded from any of the URLs listed in metalink file.\n", file->name, r);
 
               /* Unlike downloads with invalid hash values, failed download
                  should only be retried if the error causing failure is not
@@ -1190,7 +1193,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                   if(retries  < opt.n_retries)
                     {
                       --i;
-                      logprintf (LOG_NOTQUIET, "Retrying to download(%s). (TRY #%d)\n",
+                      logprintf (LOG_VERBOSE, "Retrying to download(%s). (TRY #%d)\n",
                                  file->name, ++retries + 1);
                     }
                 }
@@ -1204,16 +1207,16 @@ retrieve_from_file (const char *file, bool html, int *count)
               if(!res)
                 {
                   ++*count;
-                  logprintf (LOG_NOTQUIET, "Verifying(%s) succeeded.\n",
+                  logprintf (LOG_VERBOSE, "Verifying(%s) succeeded.\n",
                                file->name);
                 }
               else if(res < 0)
                 {
-                  logprintf (LOG_NOTQUIET, "Verifying(%s) failed.\n", file->name);
+                  logprintf (LOG_VERBOSE, "Verifying(%s) failed.\n", file->name);
                   if(retries  < opt.n_retries)
                     {
                       --i;
-                      logprintf (LOG_NOTQUIET, "Retrying to download(%s). (TRY #%d)\n", file->name, ++retries + 1);
+                      logprintf (LOG_VERBOSE, "Retrying to download(%s). (TRY #%d)\n", file->name, ++retries + 1);
                     }
                 }
             }

@@ -11,11 +11,9 @@
 #include "url.h"
 
 int
-spawn_thread (struct s_thread_ctx *thread_ctx, char * name, int index, int resource)
+spawn_thread (struct s_thread_ctx *thread_ctx, int index, int resource)
 {
   static pthread_t thread;
-
-  sprintf(thread_ctx[index].file, TEMP_PREFIX "%s.%d", name, index);
 
   thread_ctx[index].url_parsed = url_parse (thread_ctx[index].url,
                        &(thread_ctx[index].url_err), thread_ctx[index].i, true);
@@ -63,7 +61,7 @@ segmented_retrieve_url (void *arg)
 }
 
 void
-merge_temp_files(const char **inputs, const char *output, int numfiles)
+merge_temp_files(char **inputs, const char *output, int numfiles)
 {
   FILE *out, *in;
   int j, ret;
@@ -86,7 +84,7 @@ merge_temp_files(const char **inputs, const char *output, int numfiles)
 }
 
 void
-delete_temp_files(const char **files, int numfiles)
+delete_temp_files(char **files, int numfiles)
 {
   int j = 0;
 

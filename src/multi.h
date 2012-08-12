@@ -38,8 +38,6 @@ as that of the covered work.  */
 #include "iri.h"
 #include "url.h"
 
-#define TEMP_PREFIX "temp_"
-
 #define MIN_CHUNK_SIZE 2048
 
 struct s_thread_ctx
@@ -58,14 +56,14 @@ struct s_thread_ctx
   uerr_t status;
 };
 
-int spawn_thread (struct s_thread_ctx*, char *, int, int);
+int spawn_thread (struct s_thread_ctx*, int, int);
 
 int collect_thread (sem_t *, struct s_thread_ctx *);
 
 static void * segmented_retrieve_url (void *);
 
-void merge_temp_files(const char **, const char *, int);
+void merge_temp_files(char **, const char *, int);
 
-void delete_temp_files(const char **, int);
+void delete_temp_files(char **, int);
 
 #endif /* MULTI_H */
