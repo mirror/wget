@@ -242,6 +242,9 @@ static const struct {
   { "remoteencoding",   &opt.encoding_remote,   cmd_string },
   { "removelisting",    &opt.remove_listing,    cmd_boolean },
   { "restrictfilenames", NULL,                  cmd_spec_restrict_file_names },
+#ifdef ENABLE_METALINK
+  { "retries",          &opt.n_retries,         cmd_number_inf },
+#endif
   { "retrsymlinks",     &opt.retr_symlinks,     cmd_boolean },
   { "retryconnrefused", &opt.retry_connrefused, cmd_boolean },
   { "robots",           &opt.use_robots,        cmd_boolean },
@@ -312,6 +315,9 @@ defaults (void)
   opt.cookies = true;
   opt.verbose = -1;
   opt.ntry = 20;
+#ifdef ENABLE_METALINK
+  opt.n_retries = 0;
+#endif
   opt.reclevel = 5;
   opt.add_hostdir = true;
   opt.netrc = true;

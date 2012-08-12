@@ -35,6 +35,9 @@ struct options
                                    hence not boolean.) */
   bool quiet;			/* Are we quiet? */
   int ntry;			/* Number of tries per URL */
+#ifdef ENABLE_METALINK
+  int n_retries;		/* Number of tries per file */
+#endif
   bool retry_connrefused;	/* Treat CONNREFUSED as non-fatal. */
   bool background;		/* Whether we should work in background. */
   bool ignore_length;		/* Do we heed content-length at all?  */

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <metalink/metalink_parser.h>
@@ -38,7 +39,7 @@ metalink_context (const char *url)
 /* It should be taken into account that file hashes in metalink files may
    include uppercase letter. This function turns the case of the first length
    letters in the space pointed by hash into lowercase. */
-void
+static void
 lower_hex_case (unsigned char *hash, int length)
 {
   int i;
@@ -53,10 +54,7 @@ lower_hex_case (unsigned char *hash, int length)
    and hash(es) provided by metalink file. Returns;
    -1     if hashes that were compared turned out to be different.
    0      if all pairs of hashes compared turned out to be the same.
-   1      if due to some error, comparisons could not be made.
-              retrying to download the file is possible.
-   2      if due to a corrupt metalink file, comparisons could not be made.
-              no use in retrying unless you update the metalink.  */
+   1      if due to some error, comparisons could not be made.  */
 int
 verify_file_hash (const char *filename, metalink_checksum_t **checksums)
 {
@@ -75,7 +73,7 @@ verify_file_hash (const char *filename, metalink_checksum_t **checksums)
       /* Metalink file has no hashes for this file. */
       logprintf (LOG_VERBOSE, "Validating(%s) failed: digest missing in metalink file.\n",
                  filename);
-      return 2;
+      return 1;
     }
 
   for (i = 0; i < HASH_TYPES; ++i)
@@ -94,7 +92,7 @@ verify_file_hash (const char *filename, metalink_checksum_t **checksums)
                  as none of those hashes can be trusted above the other. */
               logprintf (LOG_VERBOSE, "Validating(%s) failed: metalink file contains different hashes of same type.\n",
                          filename);
-              return 2;
+              return 1;
             }
           else
             metalink_hashes[j] = checksums[i]->hash;
@@ -107,7 +105,7 @@ verify_file_hash (const char *filename, metalink_checksum_t **checksums)
       /* no hash of supported types could be found. */
       logprintf (LOG_VERBOSE, "Validating(%s) failed: No hash of supported types could be found in metalink file.\n",
                  filename);
-      return 2;
+      return 1;
     }
   req_type = i;
 

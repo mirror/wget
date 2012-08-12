@@ -269,6 +269,9 @@ static struct cmdline_option option_data[] =
     { "remove-listing", 0, OPT_BOOLEAN, "removelisting", -1 },
     { "restrict-file-names", 0, OPT_BOOLEAN, "restrictfilenames", -1 },
     { "retr-symlinks", 0, OPT_BOOLEAN, "retrsymlinks", -1 },
+#ifdef ENABLE_METALINK
+    { "retries", 0, OPT_VALUE, "retries", -1 },
+#endif
     { "retry-connrefused", 0, OPT_BOOLEAN, "retryconnrefused", -1 },
     { "save-cookies", 0, OPT_VALUE, "savecookies", -1 },
     { "save-headers", 0, OPT_BOOLEAN, "saveheaders", -1 },

@@ -69,6 +69,9 @@ as that of the covered work.  */
 #ifdef ENABLE_METALINK
 static pthread_mutex_t pconn_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+#define IS_IO_ERROR(status) status == FOPENERR || status == WRITEFAILED || \
+          status == UNLINKERR || status == FWRITEERR || status == FOPEN_EXCL_ERR
+
 #define PCONN_LOCK() pthread_mutex_lock (&pconn_mutex)
 
 #define PCONN_UNLOCK() pthread_mutex_unlock (&pconn_mutex)
@@ -1018,7 +1021,7 @@ retrieve_from_file (const char *file, bool html, int *count)
       /*GSoC wget*/
       char *file_name, **files;
       FILE *file1, *file2;
-      int i, j, r, index, dt, url_err, error_severity;
+      int i, j, r, index, dt, url_err, retries;
       int ret, N_THREADS = opt.jobs > 0 ? opt.jobs : 1;
       int ranges_covered, chunk_size, num_of_resources;
       pthread_t thread;
@@ -1033,6 +1036,7 @@ retrieve_from_file (const char *file, bool html, int *count)
       ranges = malloc (N_THREADS * (sizeof *ranges));
       files = malloc (N_THREADS * (sizeof *files));
       
+      retries = 0;
       i = 0;
       while ((file = metalink->files[i]) != NULL)
         {
@@ -1066,8 +1070,8 @@ retrieve_from_file (const char *file, bool html, int *count)
                                 + (sizeof ".")-1 + (N_THREADS/10 + 1) + sizeof "");
 
           /* To make sure temporary files in which the segments are downloaded
-             do not become corrupt, as wget appends while writing into files.
-          delete_temp_files(file->name, N_THREADS);*/
+             do not become corrupt, as wget appends while writing into files. */
+          delete_temp_files(file->name, N_THREADS);
 
           sem_init (&retr_sem, 0, 0);
           j = ranges_covered = 0;
@@ -1111,21 +1115,21 @@ retrieve_from_file (const char *file, bool html, int *count)
           while(ranges_covered < N_THREADS)
             {
               r = collect_thread (&retr_sem, thread_ctx);
+              ++ranges_covered;
               
               status = thread_ctx[r].status;
               /* Check return status of thread for errors. */
-              if (status == RETROK)
-                  ++ranges_covered;
-              else if (status == FOPENERR || status == WRITEFAILED || status == UNLINKERR ||
-                       status == FWRITEERR || status == FOPEN_EXCL_ERR)
+
+              if (IS_IO_ERROR(status))
                 {
                   /* The error is of type WGET_EXIT_IO_FAIL given in exits.c.
                      No fallbacking is needed for this type of error. */
                   inform_exit_status(status);
                   break;
                 }
-              else
+              else if(status != RETROK)
                 {
+                  int error_severity;
                   PCONN_LOCK ();
 
                   /* Pick the least severe error.*/
@@ -1147,6 +1151,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                                             (thread_ctx[r].range)->bytes_covered;
                           (thread_ctx[r].range)->bytes_covered = 0;
                         }
+                      --ranges_covered;
                       ret = spawn_thread (thread_ctx, file->name, r, j);
                       if (ret)
                         {
@@ -1172,8 +1177,20 @@ retrieve_from_file (const char *file, bool html, int *count)
 
           if (status != RETROK)
             {
-              /* Segment r could not be downloaded due to
-                 ranges[r].status_least_severe. Going on with the download. */
+              logprintf (LOG_NOTQUIET, "Downloading %s failed. Chunk %d could not be downloaded from any of the URLs listed in metalink file.\n", file->name, r);
+
+              /* Unlike downloads with invalid hash values, failed download
+                 should only be retried if the error causing failure is not
+                 an IO error. */
+              if (!(IS_IO_ERROR(ranges[r].status_least_severe)))
+                {
+                  if(retries  < opt.n_retries)
+                    {
+                      --i;
+                      logprintf (LOG_NOTQUIET, "Retrying to download(%s). (TRY #%d)\n",
+                                 file->name, ++retries + 1);
+                    }
+                }
             }
           else
             {
@@ -1190,10 +1207,11 @@ retrieve_from_file (const char *file, bool html, int *count)
               else if(res < 0)
                 {
                   logprintf (LOG_NOTQUIET, "Verifying(%s) failed.\n", file->name);
-                  /* TODO: Improving the interoption dependencies to help retrying to
-                  download a file, by just putting here a something similar to;
-                    if(tries < N)
-                      --i; */
+                  if(retries  < opt.n_retries)
+                    {
+                      --i;
+                      logprintf (LOG_NOTQUIET, "Retrying to download(%s). (TRY #%d)\n", file->name, ++retries + 1);
+                    }
                 }
             }
 
