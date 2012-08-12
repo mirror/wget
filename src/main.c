@@ -233,6 +233,9 @@ static struct cmdline_option option_data[] =
     { "load-cookies", 0, OPT_VALUE, "loadcookies", -1 },
     { "local-encoding", 0, OPT_VALUE, "localencoding", -1 },
     { "max-redirect", 0, OPT_VALUE, "maxredirect", -1 },
+#ifdef ENABLE_METALINK
+    { "metalink-file", 0, OPT_VALUE, "metalink", -1 },
+#endif
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
     { "no", 'n', OPT__NO, NULL, required_argument },
     { "no-clobber", 0, OPT_BOOLEAN, "noclobber", -1 },
@@ -538,10 +541,6 @@ Download:\n"),
     N_("\
        --unlink                  remove file before clobber.\n"),
     "\n",
-#ifdef ENABLE_METALINK
-    N_("\
-       --verify          specify hash type to verify the downloaded files. (Works only with metalink downloads for now)\n"),
-#endif
     N_("\
 Directories:\n"),
     N_("\
@@ -1334,6 +1333,29 @@ outputting to a regular file.\n"));
           exit(1);
         }
     }
+
+#ifdef ENABLE_METALINK
+  /* TODO: Add all the options that causes undefined/harmful results when used
+     with option --metalink-file. */
+  if(opt.metalink_file)
+    {
+      if(opt.output_document)
+        {
+          fprintf (stderr, _("-O can not used with --metalink-file.\n"));
+          exit(1);
+        }
+      if(opt.base_href)
+        {
+          fprintf (stderr, _("--base can not used with --metalink-file.\n"));
+          exit(1);
+        }
+      if(opt.force_html)
+        {
+          fprintf (stderr, _("--force-html can not used with --metalink-file.\n"));
+          exit(1);
+        }
+    }
+#endif
 
 #ifdef __VMS
   /* Set global ODS5 flag according to the specified destination (if

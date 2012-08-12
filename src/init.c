@@ -203,6 +203,9 @@ static const struct {
   { "logfile",          &opt.lfilename,         cmd_file },
   { "login",            &opt.ftp_user,          cmd_string },/* deprecated*/
   { "maxredirect",      &opt.max_redirect,      cmd_number },
+#ifdef ENABLE_METALINK
+  { "metalink",         &opt.metalink_file,     cmd_file },
+#endif
   { "mirror",           NULL,                   cmd_spec_mirror },
   { "netrc",            &opt.netrc,             cmd_boolean },
   { "noclobber",        &opt.noclobber,         cmd_boolean },
