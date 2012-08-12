@@ -63,34 +63,26 @@ segmented_retrieve_url (void *arg)
 }
 
 void
-merge_temp_files(const char *file, int numfiles)
+merge_temp_files(const char **inputs, const char *output, int numfiles)
 {
   FILE *out, *in;
-  char *file_name = malloc(strlen("temp_") + strlen(file) + (sizeof ".")-1
-                        + (numfiles/10 + 1) + sizeof "");
   int j, ret;
-  void *buf = malloc(MIN_CHUNK_SIZE);
-  /* FIXME: Check for errors in allocations. */
+  void *buf = malloc (MIN_CHUNK_SIZE);
 
-  sprintf(file_name, "%s", file);
-  out = fopen(file_name,"w");
+  out = fopen (output, "w");
   for(j = 0; j < numfiles; ++j)
     {
-      sprintf(file_name, TEMP_PREFIX "%s.%d", file, j);
-      in = fopen(file_name,"r");
+      in = fopen(inputs[j],"r");
       ret = MIN_CHUNK_SIZE;
       while(ret == MIN_CHUNK_SIZE)
         {
           ret = fread(buf, 1, MIN_CHUNK_SIZE, in);
           fwrite(buf, 1, ret, out);
-          /* FIXME: CHECK FOR ERRORS. */
         }
       fclose(in);
     }
   fclose(out);
-
   free(buf);
-  free(file_name);
 }
 
 void

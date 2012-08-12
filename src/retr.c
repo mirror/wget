@@ -1067,6 +1067,7 @@ retrieve_from_file (const char *file, bool html, int *count)
           if(j < N_THREADS)
             N_THREADS = j;
 
+          /* Assign temporary file names. */
           for (j = 0; j < N_THREADS; ++j)
                 files[j] = malloc(strlen("temp_") + strlen(file->name)
                                 + (sizeof ".")-1 + (N_THREADS/10 + 1) + sizeof "");
@@ -1198,7 +1199,7 @@ retrieve_from_file (const char *file, bool html, int *count)
             {
               int res;
 
-              merge_temp_files(file->name, N_THREADS);
+              merge_temp_files(files, file->name, N_THREADS);
               res = verify_file_hash(file->name, file->checksums);
               if(!res)
                 {

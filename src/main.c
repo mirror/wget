@@ -1207,7 +1207,11 @@ for details.\n\n"));
       exit (1);
     }
 
-  if (!nurl && !opt.input_filename)
+  if (!nurl && !opt.input_filename
+#ifdef ENABLE_METALINK
+       && !opt.metalink_file
+#endif
+     )
     {
       /* No URL specified.  */
       fprintf (stderr, _("%s: missing URL\n"), exec_name);
@@ -1452,12 +1456,28 @@ outputting to a regular file.\n"));
     {
       int count;
       int status;
+
       status = retrieve_from_file (opt.input_filename, opt.force_html, &count);
       inform_exit_status (status);
       if (!count)
         logprintf (LOG_NOTQUIET, _("No URLs found in %s.\n"),
                    opt.input_filename);
     }
+
+#ifdef ENABLE_METALINK
+  /* And then from the metalink file, if any.  */
+  if (opt.metalink_file)
+    {
+      int count;
+      int status;
+
+      status = retrieve_from_file (opt.metalink_file, opt.force_html, &count);
+      inform_exit_status (status);
+      if (!count)
+        logprintf (LOG_NOTQUIET, _("No URLs found in %s.\n"),
+                   opt.input_filename);
+    }
+#endif
 
   /* Print broken links. */
   if (opt.recursive && opt.spider)
@@ -1466,7 +1486,11 @@ outputting to a regular file.\n"));
   /* Print the downloaded sum.  */
   if ((opt.recursive || opt.page_requisites
        || nurl > 1
-       || (opt.input_filename && total_downloaded_bytes != 0))
+       || (opt.input_filename && total_downloaded_bytes != 0)
+#ifdef ENABLE_METALINK
+       || (opt.metalink_file && total_downloaded_bytes != 0)
+#endif
+       )
       &&
       total_downloaded_bytes != 0)
     {
