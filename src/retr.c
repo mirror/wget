@@ -1056,6 +1056,7 @@ retrieve_from_file (const char *file, bool html, int *count)
               ranges[j].last_byte = (j+1) * chunk_size - 1;
               ranges[j].bytes_covered = ranges[j].is_assigned = 0;
               ranges[j].resources = malloc(num_of_resources * sizeof(bool));
+              ranges[j].status_least_severe = RETROK;
               for (r = 0; r < num_of_resources; ++r)
                 ranges[j].resources[r] = false;
               ++j;
