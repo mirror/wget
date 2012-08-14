@@ -58,7 +58,7 @@ struct s_thread_ctx
 
 int spawn_thread (struct s_thread_ctx*, int, int);
 
-int collect_thread (sem_t *, struct s_thread_ctx *);
+int collect_thread (sem_t *, struct s_thread_ctx *, int);
 
 static void * segmented_retrieve_url (void *);
 

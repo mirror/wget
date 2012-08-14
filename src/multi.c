@@ -29,14 +29,14 @@ spawn_thread (struct s_thread_ctx *thread_ctx, int index, int resource)
 }
 
 int
-collect_thread (sem_t *retr_sem, struct s_thread_ctx *thread_ctx)
+collect_thread (sem_t *retr_sem, struct s_thread_ctx *thread_ctx, int numthreads)
 {
   int k, ret;
   do
     ret = sem_wait (retr_sem);
   while (ret < 0 && errno == EINTR);
 
-  for (k = 0; k < opt.jobs; k++)
+  for (k = 0; k < numthreads; k++)
     if (thread_ctx[k].used && thread_ctx[k].terminated)
       {
         url_free (thread_ctx[k].url_parsed);

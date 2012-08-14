@@ -1168,7 +1168,7 @@ retrieve_from_file (const char *file, bool html, int *count)
 
           while(ranges_covered < N_THREADS)
             {
-              r = collect_thread (&retr_sem, thread_ctx);
+              r = collect_thread (&retr_sem, thread_ctx, N_THREADS);
               ++ranges_covered;
               
               status = thread_ctx[r].status;
