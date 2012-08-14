@@ -197,8 +197,6 @@ use_git=true
 # otherwise find the first of the NAMES that can be run (i.e.,
 # supports --version).  If found, set ENVVAR to the program name,
 # die otherwise.
-#
-# FIXME: code duplication, see also gnu-web-doc-update.
 find_tool ()
 {
   find_tool_envvar=$1
@@ -456,14 +454,6 @@ check_versions() {
       if [ 126 -le $? ]; then
         warn "Error: '$app' not found"
         ret=1
-      else
-        latest_ver=$(sort_ver $req_ver $inst_ver | cut -d' ' -f2)
-        if [ ! "$latest_ver" = "$inst_ver" ]; then
-          warnf_ '%s\n'                                        \
-              "Error: '$app' version == $inst_ver is too old"  \
-              "       '$app' version >= $req_ver is required"
-          ret=1
-        fi
       fi
     else
       # Require app to produce a new enough version string.

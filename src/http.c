@@ -2193,12 +2193,12 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
           using_ssl = pconn->ssl;
           if (family == AF_INET6)
              logprintf (LOG_VERBOSE, _("Reusing existing connection to [%s]:%d.\n"),
-                        quotearg_style (escape_quoting_style, pconn.host),
-                         pconn.port);
+                        quotearg_style (escape_quoting_style, pconn->host),
+                         pconn->port);
           else
              logprintf (LOG_VERBOSE, _("Reusing existing connection to %s:%d.\n"),
-                        quotearg_style (escape_quoting_style, pconn.host),
-                        pconn.port);
+                        quotearg_style (escape_quoting_style, pconn->host),
+                        pconn->port);
           DEBUGP (("Reusing fd %d.\n", sock));
           if (pconn->authorized)
 #endif
