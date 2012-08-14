@@ -1063,7 +1063,9 @@ retrieve_from_file (const char *file, bool html, int *count)
     input_file = (char *) file;
 
 #ifdef ENABLE_METALINK
-  if(opt.metalink_file)
+  metalink_t *metalink;
+
+  if(opt.metalink_file && (metalink = metalink_context(input_file)))
     {
       /*GSoC wget*/
       char *temp, **files;
@@ -1074,13 +1076,10 @@ retrieve_from_file (const char *file, bool html, int *count)
       pthread_t thread;
       sem_t retr_sem;
       uerr_t status;
-      metalink_t *metalink;
       metalink_file_t* file;
       metalink_resource_t* resource;
       struct s_thread_ctx *thread_ctx;
       struct range *ranges;
-
-      metalink = metalink_context(input_file);
 
       thread_ctx = malloc (N_THREADS * (sizeof *thread_ctx));
       ranges = malloc (N_THREADS * (sizeof *ranges));
