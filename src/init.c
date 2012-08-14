@@ -343,7 +343,7 @@ defaults (void)
   opt.verbose = -1;
   opt.ntry = 20;
 #ifdef ENABLE_METALINK
-  opt.n_retries = 0;
+  opt.n_retries = 1;
 #endif
   opt.reclevel = 5;
   opt.add_hostdir = true;

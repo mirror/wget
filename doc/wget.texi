@@ -534,6 +534,22 @@ would be resolved to @samp{http://foo/baz/b.html}.
 @cindex specify config 
 @item --config=@var{FILE}
 Specify the location of a startup file you wish to use.
+
+@cindex metalink file 
+@item --metalink_file=@var{FILE}
+Read @sc{url}s from a local or external metalink @var{file}.  If @samp{-} is
+specified as @var{file}, @sc{url}s are read from the standard input.  
+(Use @samp{./-} to read from a file literally named @samp{-}.)
+
+If this function is used, no @sc{url}s need be present on the command
+line.
+
+If the @var{file} is an external one, the document will be automatically
+downloaded and will not be kept even after wget terminates.
+
+See option @samp{--jobs} to enable multi-threaded downloads from metalink
+files, option @samp{--retries} to set a number of retries for downloading a @var{file}
+in case of failure.
 @end table
 
 @node Download Options, Directory Options, Logging and Input File Options, Invoking
@@ -554,10 +570,15 @@ IPs.
 @cindex number of retries
 @item -t @var{number}
 @itemx --tries=@var{number}
-Set number of retries to @var{number}.  Specify 0 or @samp{inf} for
+Set number of retries for a URL to @var{number}.  Specify 0 or @samp{inf} for
 infinite retrying.  The default is to retry 20 times, with the exception
 of fatal errors like ``connection refused'' or ``not found'' (404),
 which are not retried.
+
+@itemx --retries=@var{number}
+Set number of retries for a file specified in a metalink file to @var{number}. 
+Specify 0 or @samp{inf} for no retrying in case of failed attempt.  The default 
+is to retry 1 time.
 
 @item -O @var{file}
 @itemx --output-document=@var{file}
@@ -1090,6 +1111,14 @@ command line.
 Force Wget to unlink file instead of clobbering existing file. This
 option is useful for downloading to the directory with hardlinks.
 
+@cindex jobs
+@item --jobs=@var{number}
+
+Specify the @var{number} of threads to use. Unless specified, the number of 
+threads used is 1.
+
+Currently this option works only for recursive downloading and when specified with 
+option @samp{--metalink-file}.
 @end table
 
 @node Directory Options, HTTP Options, Download Options, Invoking

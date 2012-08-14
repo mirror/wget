@@ -479,10 +479,19 @@ Logging and input file:\n"),
                              relative to URL.\n"),
     N_("\
        --config=FILE         Specify config file to use.\n"), 
+#ifdef ENABLE_METALINK
+    N_("\
+       --metalink-file       download URLs found in local or external metalink FILE.\n"),
+#endif
     "\n",
 
     N_("\
 Download:\n"),
+#ifdef ENABLE_METALINK
+    N_("\
+       --retries                 specify the number of retries for a file.\n\
+                                 (needs to be used with --metalink-file)\n"),
+#endif
     N_("\
   -t,  --tries=NUMBER            set number of retries to NUMBER (0 unlimits).\n"),
     N_("\
@@ -557,6 +566,10 @@ Download:\n"),
        --remote-encoding=ENC     use ENC as the default remote encoding.\n"),
     N_("\
        --unlink                  remove file before clobber.\n"),
+#ifdef ENABLE_THREADS
+    N_("\
+       --jobs                    specify how many threads use.\n"),
+#endif
     "\n",
     N_("\
 Directories:\n"),
@@ -706,10 +719,6 @@ WARC options:\n"),
 Recursive download:\n"),
     N_("\
   -r,  --recursive          specify recursive download.\n"),
-#ifdef ENABLE_THREADS
-    N_("\
-  --jobs          specify how many threads use.\n"),
-#endif
     N_("\
   -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n"),
     N_("\
