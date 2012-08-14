@@ -479,6 +479,10 @@ Turn off verbose without being completely quiet (use @samp{-q} for
 that), which means that error messages and basic information still get
 printed.
 
+@item -nv
+@itemx --report-speed=@var{type}
+Output bandwidth as @var{type}.  The only accepted value is @samp{bits}.
+
 @cindex input-file
 @item -i @var{file}
 @itemx --input-file=@var{file}
@@ -1658,6 +1662,36 @@ not used), EGD is never contacted.  EGD is not needed on modern Unix
 systems that support @file{/dev/random}.
 @end table
 
+@cindex WARC
+@table @samp
+@item --warc-file=@var{file}
+Use @var{file} as the destination WARC file.
+
+@item --warc-header=@var{string}
+Use @var{string} into as the warcinfo record.
+
+@item --warc-max-size=@var{size}
+Set the maximum size of the WARC files to @var{size}.
+
+@item --warc-cdx
+Write CDX index files.
+
+@item --warc-dedup=@var{file}
+Do not store records listed in this CDX file.
+
+@item --no-warc-compression
+Do not compress WARC files with GZIP.
+
+@item --no-warc-digests
+Do not calculate SHA1 digests.
+
+@item --no-warc-keep-log
+Do not store the log file in a WARC record.
+
+@item --warc-tempdir=@var{dir}
+Specify the location for temporary files created by the WARC writer.
+@end table
+
 @node FTP Options, Recursive Retrieval Options, HTTPS (SSL/TLS) Options, Invoking
 @section FTP Options
 
@@ -2284,6 +2318,8 @@ in @file{.wgetrc}.
 @item -A @var{acclist}
 @itemx --accept @var{acclist}
 @itemx accept = @var{acclist}
+@itemx --accept-regex @var{urlregex}
+@itemx accept-regex = @var{urlregex}
 The argument to @samp{--accept} option is a list of file suffixes or
 patterns that Wget will download during recursive retrieval.  A suffix
 is the ending part of a file, and consists of ``normal'' letters,
@@ -2300,6 +2336,9 @@ a description of how pattern matching works.
 Of course, any number of suffixes and patterns can be combined into a
 comma-separated list, and given as an argument to @samp{-A}.
 
+The argument to @samp{--accept-regex} option is a regular expression which
+is matched against the complete URL.
+
 @cindex reject wildcards
 @cindex reject suffixes
 @cindex wildcards, reject
@@ -2307,6 +2346,8 @@ comma-separated list, and given as an argument to @samp{-A}.
 @item -R @var{rejlist}
 @itemx --reject @var{rejlist}
 @itemx reject = @var{rejlist}
+@itemx --reject-regex @var{urlregex}
+@itemx reject-regex = @var{urlregex}
 The @samp{--reject} option works the same way as @samp{--accept}, only
 its logic is the reverse; Wget will download all files @emph{except} the
 ones matching the suffixes (or patterns) in the list.
@@ -2317,6 +2358,9 @@ Analogously, to download all files except the ones beginning with
 @samp{bjork}, use @samp{wget -R "bjork*"}.  The quotes are to prevent
 expansion by the shell.
 @end table
+
+The argument to @samp{--accept-regex} option is a regular expression which
+is matched against the complete URL.
 
 @noindent
 The @samp{-A} and @samp{-R} options may be combined to achieve even
@@ -3532,28 +3576,30 @@ internal networks from the rest of Internet.  In order to obtain
 information from the Web, their users connect and retrieve remote data
 using an authorized proxy.
 
+@c man begin ENVIRONMENT
 Wget supports proxies for both @sc{http} and @sc{ftp} retrievals.  The
 standard way to specify proxy location, which Wget recognizes, is using
 the following environment variables:
 
-@table @code
+@table @env
 @item http_proxy
 @itemx https_proxy
-If set, the @code{http_proxy} and @code{https_proxy} variables should
+If set, the @env{http_proxy} and @env{https_proxy} variables should
 contain the @sc{url}s of the proxies for @sc{http} and @sc{https}
 connections respectively.
 
 @item ftp_proxy
 This variable should contain the @sc{url} of the proxy for @sc{ftp}
-connections.  It is quite common that @code{http_proxy} and
-@code{ftp_proxy} are set to the same @sc{url}.
+connections.  It is quite common that @env{http_proxy} and
+@env{ftp_proxy} are set to the same @sc{url}.
 
 @item no_proxy
 This variable should contain a comma-separated list of domain extensions
 proxy should @emph{not} be used for.  For instance, if the value of
-@code{no_proxy} is @samp{.mit.edu}, proxy will not be used to retrieve
+@env{no_proxy} is @samp{.mit.edu}, proxy will not be used to retrieve
 documents from MIT.
 @end table
+@c man end
 
 In addition to the environment variables, proxy location and settings
 may be specified from within Wget itself.

@@ -1,6 +1,6 @@
 /* Declarations for host.c
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -97,6 +97,8 @@ const char *print_address (const ip_address *);
 #ifdef ENABLE_IPV6
 bool is_valid_ipv6_address (const char *, const char *);
 #endif
+
+bool is_valid_ip_address (const char *name);
 
 bool accept_domain (struct url *);
 bool sufmatch (const char **, const char *);

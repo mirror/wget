@@ -51,6 +51,7 @@ enum {
   ENDPOINT_PEER
 };
 bool socket_ip_address (int, ip_address *, int);
+int  socket_family (int sock, int endpoint);
 
 bool retryable_socket_connect_error (int);
 

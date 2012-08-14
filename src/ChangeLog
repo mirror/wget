@@ -1,3 +1,350 @@
+2012-07-03  Steven Schubiger  <stsc@member.fsf.org>
+
+	* init.c: Include warc.h for warc_close in cleanup function.
+
+2012-07-08  Steven Schubiger  <stsc@member.fsf.org>
+
+	* exits.h: Fix comment.
+	* exits.c: Likewise.
+
+2012-07-07  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	(digest_authentication_encode): Add support for RFC 2617 Digest
+	Access Authentication.
+
+2012-07-07  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (http_loop): Fix log message.
+	* main.c (main): Likewise.
+	Reported by: Petr Pisar <petr.pisar@atlas.cz>
+
+2012-06-17  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.h: Define `CLOSEFAILED'.
+	* init.c: Include "exits.h".
+	(cleanup): Check `fclose' failure.
+	* exits.c (get_status_for_err): Handle `CLOSEFAILED'.
+
+2012-06-16  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* main.c (main): Move some cleanup related function to...
+	* init.c (cleanup): ...here.
+
+	* main.c: Do not include "stdout.h".
+	(main): Do not register `close_stdout' at exit.
+	Reported by: Micah Cowan  <micah@cowan.name>.
+
+2012-06-09  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* main.c (print_help): Move --report-speed under the section
+	"Logging and input file".
+
+2012-06-06  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* main.c (print_help): Rename --bits to --report-bps.
+	(cmdline_options): Likewise.
+	* init.c (commands): Rename --report-bps to --report-speed.
+	(cmd_spec_report_speed): New function.
+
+	* options.h (struct options): Rename `bits_fmt' to `report_bps'.
+	* main.c (print_help): Rename --bits to --report-bps.
+	(cmdline_options): Likewise.
+	* init.c (commands): Likewise
+
+	* progress.c (create_image): Adjust caller.
+	* retr.c (retr_rate): Likewise.
+	* utils.c (convert_to_bits): Likewise.
+
+2012-06-04  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* main.c (main): Check for filename != NULL.
+	* warc.c (warc_process_cdx_line): Fix memory leak.
+	* utils.c (match_posix_regex, compile_posix_regex): Remove dead
+   assignment.
+	* openssl.c (ssl_init): Fix old-style function definition.
+
+2012-06-02  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* connect.c: Include <sys/socket.h> and <sys/select.h>.
+
+2012-05-30  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* warc.c: Fix segfault if CDX record is not found.
+
+2011-05-26  Steven Schweda  <sms@antinode.info>
+	* connect.c [HAVE_SYS_SOCKET_H]: Include <sys/socket.h>.
+	[HAVE_SYS_SELECT_H]: Include <sys/select.h>.
+
+2012-05-26  Mike Frysinger <vapier@gentoo.org>
+
+	* warc.c: Change type of `warc_current_gzfile' to gzFile.
+
+2012-05-26  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* warc.c (warc_load_cdx_dedup_file): Change type of `line_length' to
+	ssize_t.
+	Suggested by: Ángel González <keisial@gmail.com>
+
+2012-05-18  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* gnutls.c (wgnutls_poll): Honor the specified `timeout' value.
+	(wgnutls_peek): Likewise.
+
+2012-05-19  illusionoflife  <illusion.of.life92@gmail.com> (tiny change)
+
+	* convert.c (register_html,register_css): Fixed functions signature to
+	not accept unused argument
+	* retr.c (retrieve_url): Changed register_{css,html} usage according
+	new signature.
+
+2012-05-16  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* warc.h: Cut length lines to 80 columns.
+	* warc.c: Likewise.
+
+2012-05-14  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* gnutls.c (wgnutls_read_timeout): removed warnings, moved fcntl stuff
+	outside loop.
+
+	* hash.h (hash_table_put): Make argument "value" const.
+	* hash.c (hash_table_put): Make argument value const.  Cast `value' to
+	void.
+	* http.c (request_set_header): Make argument `name' const.  Cast `value'
+	and `name' to void*.
+	(request_remove_header): Make argument `name' const.
+	* url.c (url_file_name): Make `index_filename' static.
+	* warc.h (warc_write_cdx_record): Make `url', `timestamp', `mime_type',
+	`payload_digest', `redirect_location', `warc_filename', response_uuid'
+	arguments const. Make `checksum' const.
+	* warc.c (warc_write_date_header): Make the `timestamp' argument const.
+	Make `extension' const.
+	(warc_write_cdx_record): Make `url', `timestamp', `mime_type',
+	`payload_digest', `redirect_location', `warc_filename', response_uuid'
+	arguments const. Make `checksum' const.
+
+2012-05-13  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* gnutls.c (credentials): Change type to
+	gnutls_certificate_credentials_t.
+	(ssl_init): Do not use deprecated types.
+	(ssl_connect_wget): Likewise.
+
+2012-04-11  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* init.c: Add --accept-regex, --reject-regex and --regex-type.
+	* main.c: Likewise.
+	* options.c: Likewise.
+	* recur.c: Likewise.
+	* utils.c: Add regex-related functions.
+	* utils.h: Add regex-related functions.
+
+2012-03-30  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* convert.c (convert_links_in_hashtable): Mmake it static.
+	* cookies.c (parse_set_cookie): Remove empty else branches.
+	* css-url.c: Include "css-url.h".
+	(get_uri_string): Make it static.
+	* css-url.h (get_urls_css): Add protoype.
+	* gnutls.c (ssl_init): Add prototype.
+	* html-parse.c (tagstack_push): Make it static.
+	* html-parse.c (tagstack_pop): Make it static.
+	* html-parse.c (tagstack_find): Make it static.
+	* html-url.c (cleanup_html_url): Make it static.
+	* progress.c (count_cols): Make it static.
+	* progress.c (get_eta): Make it static.
+	* retr.h (convert_to_bits): Remove prototype.
+	* util.h (convert_to_bits): Add prototype.
+	* spider.c (spider_cleanup): Make it static.
+	* warc.c (warc_write_start_record): Add prototype.
+	* warc.c (warc_write_end_record): Add prototype.
+	* warc.c (warc_start_cdx_file): Add prototype.
+	* warc.c (warc_init): Add prototype.
+	* warc.c (warc_load_cdx_dedup_file): Add prototype.
+	* warc.c (warc_write_metadata): Add prototype.
+	* warc.c (warc_close): Add prototype.
+	* warc.c (warc_tempfile): Add prototype.
+	* warc.c (warc_write_warcinfo_record): Make it static.
+	* warc.c (warc_load_cdx_dedup_file): Make it static.
+	* warc.c (warc_write_metadata): Make it static.
+	* warc.h (warc_init): Fix prototype.
+	* warc.h (warc_close): Fix prototype.
+	* warc.h (warc_tempfile): Fix prototype.
+
+2012-03-30  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* url.c: Use empty query in local filenames.
+
+2012-04-22  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* main.c (main): Dynamically allocate `opt.progress_type'.
+
+2012-04-21  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* ftp-basic.c (ftp_pasv): Fix memory leak.
+
+	* http.c (gethttp): Fix memory leak.
+
+	* ftp.c (getftp): Silent compiler warning.
+
+2009-06-14  Phil Pennock  <mutt-dev@spodhuis.org> (tiny change)
+	* host.h: Declare `is_valid_ip_address'.
+	* host.c (is_valid_ip_address): New function.
+	* http.c (gethttp): Specify the hostname to ssl_connect_wget.
+	* gnutls.c (ssl_connect_wget): Specify the server name.
+	* openssl.c (ssl_connect_wget): Likewise.
+	* ssl.h: Change method signature for ssl_connect_wget.
+
+2012-04-13  Tim Ruehsen  <tim.ruehsen@gmx.de> (tiny change)
+
+	* warc.c (warc_load_cdx_dedup_file): Fix a memory leak by freeing
+	`lineptr'.
+
+2012-04-07  Daniel Kahn Gillmor <dkg@fifthhorseman.net> (tiny change)
+
+	* gnutls.c (key_type_to_gnutls_type): New function.
+	(ssl_init): Use correctly the specified gnutls certificate.
+
+2012-04-01  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* html-url.c: Prevent crash on incomplete STYLE tag.
+
+2012-04-01  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* gnutls.c (wgnutls_read_timeout): Ensure timer is freed.
+
+	* gnutls.c (wgnutls_read_timeout): Do not use timer if it is not
+	allocated.
+	Reported by: Xu Zhongxing <xu_zhong_xing@163.com>
+
+2012-03-30  Tim Ruehsen  <tim.ruehsen@gmx.de> (tiny change)
+
+	* warc.c: make warc_uuid_str() implementation depend on HAVE_LIBUUID.
+
+2012-03-29  Tim Ruehsen <tim.ruehsen@gmx.de> (tiny change)
+
+	* utils.c (library): Include <sys/time.h>.
+
+2012-03-25  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* utils.c: Include <sys/ioctl.h>.
+
+	* ptimer.c: Include <sys/time.h>.
+
+	* connect.c: Include <sys/socket.h>, <sys/select.h>, <sys/time.h>.
+	Reported by: Ray Satiro <raysatiro@yahoo.com>.
+
+2012-03-25 Ray Satiro <raysatiro@yahoo.com>
+
+	* build_info.c.in: Check that HAVE_LIBSSL32 is defined when OpenSSL
+	is used.
+
+2012-03-07  Steven Schubiger  <stsc@member.fsf.org>
+
+	* init.c (wgetrc_user_file_name): Correct typo.
+
+2012-03-06   Sasikantha Babu   <sasikanth.v19@gmail.com>
+
+	* utils.c (convert_to_bits): Added new function convert_to_bits to
+	convert bytes to bits.
+	* retr.c (calc_rate): Modified the function to handle --bits
+	option and download rate calculated as bits per sec (SI-prefix)
+	for --bits otherwise bytes (IEC-prefix).
+	(retr_rate): Rates will display in bits per sec for --bits.
+	* options.h (struct opt): Added --bit option bool variable bits_fmt.
+	* main.c (print_help) : Added help for --bit.
+	* init.c: Defined command for --bit option.
+	* retr.h: Added function prototype.
+
+2012-02-26  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* main.c: Include "closeout.h"
+	(main): Register close_stdout at exit.
+
+2012-02-01  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* warc.c: Fix large file support with ftello, fseeko.
+	* warc.h: Fix large file support.
+	* http.c: Fix large file support.
+
+2012-02-23  Giuseppe Scrivano  <giuseppe@southpole.se>
+
+	* main.c (main): Write diagnostic messages to `stderr' not to `stdout'.
+
+	* main.c (main): Fail gracefully if `malloc' fails.
+
+	* gnutls.c (wgnutls_read): Remove unused variables `timer' and `flags'.
+
+2012-02-17  Steven Schubiger  <stsc@member.fsf.org>
+
+	* warc.c: Add license header.
+
+2012-01-27  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* retr.c (fd_read_body): If the response is chunked, the chunk
+	headers are now written to the WARC file, making the WARC file
+	an exact copy of the HTTP response.
+
+2012-01-27  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* retr.c (fd_read_body): Fix a memory leak with chunked responses.
+	* http.c (skip_short_body): Fix the same memory leak.
+
+2012-01-09  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* init.c: Disable WARC compression if zlib is disabled.
+	* main.c: Do not show the 'no-warc-compression' option if zlib is
+	disabled.
+	* warc.c: Do not compress WARC files if zlib is disabled.
+
+2012-01-09  Sasikantha Babu   <sasikanth.v19@gmail.com> (tiny change)
+	* connect.c (connect_to_ip): properly formatted ipv6 address display.
+	(socket_family): New function - returns socket family type.
+	* http.c (gethttp): properly formatted ipv6 address display.
+
+2011-11-09  Gijs van Tulder  <address@hidden>
+
+	* warc.c: Call gzdopen() with wb9 instead of wb+9, which fails on
+	zlib version >= 1.2.4.
+
+2011-11-04  Steven Schweda  <address@hidden>
+
+	* warc.c [! WINDOWS]: Include <libgen.h>.
+	(warc_write_warcinfo_record): Assign a new allocated buffer and
+	free it on errors.
+
+2011-11-01  Steven Schweda  <address@hidden>
+
+	* gnutls.c (ssl_init): Ensure GNU TLS is loaded only once.
+
+2011-10-07  Steven Schweda  <address@hidden>
+
+	* connect.c: Add HAVE_SYS_SELECT_H and HAVE_SYS_SOCKET_H conditions
+	on includes of <sys/select.h> and <sys/socket.h>, respectively.
+	* ftp.c (getftp): Move BIN_TYPE_TRANSFER macro into VMS-specific
+	section.  On VMS, use Stream_LF attributes for listing files.  Pass
+	BIN_TYPE_FILE to fopen_excl() instead of constant-everywhere "true".
+	* ftp.c (ftp_retrieve_list): Restore lost test of opt.preserve_perm
+	(--preserve-permissions) on the chmod() operation.
+	* init.c, main.c: Remove "deprecated" from opt.preserve_perm
+	(--preserve-permissions).
+	* init.c (initialize): Use distinct messages for errors in C macro
+	SYSTEM_WGETRC and environment-variable SYSTEM_WGETRC.  Avoid use of
+	C macro SYSTEM_WGETRC when it's not defined.
+	* log.c (log_close): Avoid closing logfp when it's stderr.
+	* main.c (print_help):  Restore --preserve-permissions.
+	* main.c (main): Avoid using a negative value of longindex as a
+	subscript (for long_options[]) when searching for "--config".
+	* main.c (main): Exit the program using exit() instead of "return".
+	(VMS handles these differently, and exit() is better.)
+	* openssl.c (ssl_init): Add type cast (SSL_METHOD *) to newly "const"
+	"meth" argument to accommodate OpenSSL version 0.9.8, where that
+	argument is not "const" in the OpenSSL function (SSL_CTX_new).
+	* test.c: Declare "program_argstring".
+	* utils.c (fopen_excl): Comment typography.
+	* warc.h: New file.
+	* warc.c: New file.
+
 2011-10-02  Henrik Holst <henrik.holst@millistream.com> (tiny change)
 	* http.c (gethttp): If 'contentonerror' is used then do not
         skip the http body on 4xx and 5xx errors.

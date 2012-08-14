@@ -1503,9 +1503,9 @@ url_file_name (const struct url *u, char *replaced_filename)
 {
   struct growable fnres;        /* stands for "file name result" */
 
-  const char *u_file, *u_query;
+  const char *u_file;
   char *fname, *unique;
-  char *index_filename = "index.html"; /* The default index file is index.html */
+  const char *index_filename = "index.html"; /* The default index file is index.html */
 
   fnres.base = NULL;
   fnres.size = 0;
@@ -1562,12 +1562,11 @@ url_file_name (const struct url *u, char *replaced_filename)
       u_file = *u->file ? u->file : index_filename;
       append_uri_pathel (u_file, u_file + strlen (u_file), false, &fnres);
 
-      /* Append "?query" to the file name. */
-      u_query = u->query && *u->query ? u->query : NULL;
-      if (u_query)
+      /* Append "?query" to the file name, even if empty */
+      if (u->query)
 	{
 	  append_char (FN_QUERY_SEP, &fnres);
-	  append_uri_pathel (u_query, u_query + strlen (u_query),
+	  append_uri_pathel (u->query, u->query + strlen (u->query),
 			     true, &fnres);
 	}
     }

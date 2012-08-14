@@ -1,3 +1,19 @@
+2012-08-04  mancha <mancha@mac.hush.com> (tiny change)
+
+	* wget.texi: Export ENVIRONMENT to the man page.
+
+2012-06-09  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Logging and Input File Options): Document "--report-speed".
+	(HTTPS (SSL/TLS) Options): Document WARC.
+
+	* texi2pod.pl: Revert change from 2011-08-06.
+
+2012-05-13  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Types of Files): Document --accept-regex and
+	--reject-regex.
+
 2011-10-02  Henrik Holst <henrik.holst@millistream.com> (tiny change)
 
 	* wget.texi (HTTP Options): Document option --content-on-error.

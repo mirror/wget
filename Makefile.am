@@ -46,7 +46,7 @@ SUBDIRS = lib src doc po tests util
 EXTRA_DIST = ChangeLog.README MAILING-LIST \
              msdos/ChangeLog msdos/config.h msdos/Makefile.DJ \
              msdos/Makefile.WC ABOUT-NLS \
-             build-aux/build_info.pl .version
+             build-aux/build_info.pl build-aux/git-version-gen .version
 
 CLEANFILES = *~ *.bak $(DISTNAME).tar.gz
 

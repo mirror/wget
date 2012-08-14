@@ -33,11 +33,11 @@ my $tex_content  = read_file($tex_file);
 
 my @args = ([
     $main_content,
-    qr/static \s+? struct \s+? cmdline_option \s+? option_data\[\] \s+? = \s+? \{ (.*?) \}\;/sx,
+    qr/static \s+? struct \s+? cmdline_option \s+? option_data\[\] \s+? = \s+? \{ (.+?) \}\;/sx,
     [ qw(long_name short_name type data argtype) ],
 ], [
     $init_content,
-    qr/commands\[\] \s+? = \s+? \{ (.*?) \}\;/sx,
+    qr/commands\[\] \s+? = \s+? \{ (.+?) \}\;/sx,
     [ qw(name place action) ],
 ]);
 
@@ -78,18 +78,18 @@ sub extract_entries
     my (@entries, %index, $i);
 
     foreach my $chunk (@$chunks) {
-        my ($args) = $chunk =~ /\{ \s+? (.*?) \s+? \}/sx;
+        my ($args) = $chunk =~ /\{ \s+? (.+?) \s+? \}/sx;
         next unless defined $args;
 
         my @args = map {
           tr/'"//d; $_
         } map {
-          /\((.*?)\)/ ? $1 : $_
+          /\((.+?)\)/ ? $1 : $_
         } split /\,\s+/, $args;
 
         my $entry = { map { $_ => shift @args } @$names };
 
-        ($entry->{line}) = $chunk =~ /^ \s+? (\{.*)/mx;
+        ($entry->{line}) = $chunk =~ /^ \s+? (\{.+)/mx;
         if ($chunk =~ /deprecated/i) {
             $entries[-1]->{deprecated} = true;
         }
@@ -103,9 +103,9 @@ sub extract_entries
         push @entries, $entry;
     }
 
-    push @entries, \%index;
+    push @entries, { %index };
 
-    return \@entries;
+    return [ @entries ];
 }
 
 sub output_results
@@ -281,7 +281,7 @@ sub emit_undocumented_opts
     while ($tex =~ /^\@item\w*? \s+? --([-a-z0-9]+)/gmx) {
         $tex_items{$1} = true;
     }
-    my ($help) = $main =~ /\n print_help .*? \{\n (.*) \n\} \n/sx;
+    my ($help) = $main =~ /\n print_help .*? \{\n (.+) \n\} \n/sx;
     while ($help =~ /--([-a-z0-9]+)/g) {
         $main_items{$1} = true;
     }

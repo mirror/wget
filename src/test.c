@@ -46,6 +46,8 @@ const char *test_append_uri_pathel();
 const char *test_are_urls_equal();
 const char *test_is_robots_txt_url();
 
+const char *program_argstring = "TEST";
+
 int tests_run;
 
 static const char *

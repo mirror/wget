@@ -162,13 +162,16 @@ limit_bandwidth (wgint bytes, struct ptimer *timer)
 
 /* Write data in BUF to OUT.  However, if *SKIP is non-zero, skip that
    amount of data and decrease SKIP.  Increment *TOTAL by the amount
-   of data written.  */
+   of data written.  If OUT2 is not NULL, also write BUF to OUT2.
+   In case of error writing to OUT, -1 is returned.  In case of error
+   writing to OUT2, -2 is returned.  In case of any other error,
+   1 is returned.  */
 
 static int
-write_data (FILE *out, const char *buf, int bufsize, wgint *skip,
-            wgint *written)
+write_data (FILE *out, FILE *out2, const char *buf, int bufsize,
+            wgint *skip, wgint *written)
 {
-  if (!out)
+  if (out == NULL && out2 == NULL)
     return 1;
   if (*skip > bufsize)
     {
@@ -184,7 +187,10 @@ write_data (FILE *out, const char *buf, int bufsize, wgint *skip,
         return 1;
     }
 
-  fwrite (buf, 1, bufsize, out);
+  if (out != NULL)
+    fwrite (buf, 1, bufsize, out);
+  if (out2 != NULL)
+    fwrite (buf, 1, bufsize, out2);
   *written += bufsize;
 
   /* Immediately flush the downloaded data.  This should not hinder
@@ -201,9 +207,17 @@ write_data (FILE *out, const char *buf, int bufsize, wgint *skip,
      actual justification.  (Also, why 16K?  Anyone test other values?)
   */
 #ifndef __VMS
-  fflush (out);
+  if (out != NULL)
+    fflush (out);
+  if (out2 != NULL)
+    fflush (out2);
 #endif /* ndef __VMS */
-  return !ferror (out);
+  if (out != NULL && ferror (out))
+    return -1;
+  else if (out2 != NULL && ferror (out2))
+    return -2;
+  else
+    return 0;
 }
 
 /* Read the contents of file descriptor FD until it the connection
@@ -221,13 +235,20 @@ write_data (FILE *out, const char *buf, int bufsize, wgint *skip,
    the amount of data written to disk.  The time it took to download
    the data is stored to ELAPSED.
 
+   If OUT2 is non-NULL, the contents is also written to OUT2.
+   OUT2 will get an exact copy of the response: if this is a chunked
+   response, everything -- including the chunk headers -- is written
+   to OUT2.  (OUT will only get the unchunked response.)
+
    The function exits and returns the amount of data read.  In case of
    error while reading data, -1 is returned.  In case of error while
-   writing data, -2 is returned.  */
+   writing data to OUT, -2 is returned.  In case of error while writing
+   data to OUT2, -3 is returned.  */
 
 int
 fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
-              wgint *qtyread, wgint *qtywritten, double *elapsed, int flags)
+              wgint *qtyread, wgint *qtywritten, double *elapsed, int flags,
+              FILE *out2)
 {
   int ret = 0;
 #undef max
@@ -310,13 +331,24 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
                   ret = -1;
                   break;
                 }
+              else if (out2 != NULL)
+                fwrite (line, 1, strlen (line), out2);
 
               remaining_chunk_size = strtol (line, &endl, 16);
+              xfree (line);
+
               if (remaining_chunk_size == 0)
                 {
                   ret = 0;
-                  if (fd_read_line (fd) == NULL)
+                  line = fd_read_line (fd);
+                  if (line == NULL)
                     ret = -1;
+                  else
+                    {
+                      if (out2 != NULL)
+                        fwrite (line, 1, strlen (line), out2);
+                      xfree (line);
+                    }
                   break;
                 }
             }
@@ -366,20 +398,30 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
       if (ret > 0)
         {
           sum_read += ret;
-          if (!write_data (out, dlbuf, ret, &skip, &sum_written))
+          int write_res = write_data (out, out2, dlbuf, ret, &skip, &sum_written);
+          if (write_res != 0)
             {
-              ret = -2;
+              ret = (write_res == -3) ? -3 : -2;
               goto out;
             }
           if (chunked)
             {
               remaining_chunk_size -= ret;
               if (remaining_chunk_size == 0)
-                if (fd_read_line (fd) == NULL)
-                  {
-                    ret = -1;
-                    break;
-                  }
+                {
+                  char *line = fd_read_line (fd);
+                  if (line == NULL)
+                    {
+                      ret = -1;
+                      break;
+                    }
+                  else
+                    {
+                      if (out2 != NULL)
+                        fwrite (line, 1, strlen (line), out2);
+                      xfree (line);
+                    }
+                }
             }
         }
 
@@ -601,6 +643,7 @@ retr_rate (wgint bytes, double secs)
 {
   static char res[20];
   static const char *rate_names[] = {"B/s", "KB/s", "MB/s", "GB/s" };
+  static const char *rate_names_bits[] = {"b/s", "Kb/s", "Mb/s", "Gb/s" };
   int units;
 
   double dlrate = calc_rate (bytes, secs, &units);
@@ -608,7 +651,7 @@ retr_rate (wgint bytes, double secs)
      e.g. "1022", "247", "12.5", "2.38".  */
   sprintf (res, "%.*f %s",
            dlrate >= 99.95 ? 0 : dlrate >= 9.995 ? 1 : 2,
-           dlrate, rate_names[units]);
+           dlrate, !opt.report_bps ? rate_names[units]: rate_names_bits[units]);
 
   return res;
 }
@@ -625,6 +668,11 @@ double
 calc_rate (wgint bytes, double secs, int *units)
 {
   double dlrate;
+  double bibyte = 1000.0;
+ 
+  if (!opt.report_bps)
+    bibyte = 1024.0;
+
 
   assert (secs >= 0);
   assert (bytes >= 0);
@@ -636,16 +684,17 @@ calc_rate (wgint bytes, double secs, int *units)
        0 and the timer's resolution, assume half the resolution.  */
     secs = ptimer_resolution () / 2.0;
 
-  dlrate = bytes / secs;
-  if (dlrate < 1024.0)
+  dlrate = convert_to_bits (bytes) / secs;
+  if (dlrate < bibyte)
     *units = 0;
-  else if (dlrate < 1024.0 * 1024.0)
-    *units = 1, dlrate /= 1024.0;
-  else if (dlrate < 1024.0 * 1024.0 * 1024.0)
-    *units = 2, dlrate /= (1024.0 * 1024.0);
+  else if (dlrate < (bibyte * bibyte))
+    *units = 1, dlrate /= bibyte;
+  else if (dlrate < (bibyte * bibyte * bibyte))
+    *units = 2, dlrate /= (bibyte * bibyte);
+
   else
     /* Maybe someone will need this, one day. */
-    *units = 3, dlrate /= (1024.0 * 1024.0 * 1024.0);
+    *units = 3, dlrate /= (bibyte * bibyte * bibyte);
 
   return dlrate;
 }
@@ -911,10 +960,10 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
         register_redirection (origurl, u->url);
 
       if (*dt & TEXTHTML)
-        register_html (u->url, local_file);
+        register_html (local_file);
 
       if (*dt & TEXTCSS)
-        register_css (u->url, local_file);
+        register_css (local_file);
     }
 
   if (file)

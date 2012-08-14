@@ -50,7 +50,7 @@ enum {
   rb_chunked_transfer_encoding = 4
 };
 
-int fd_read_body (int, FILE *, wgint, wgint, wgint *, wgint *, double *, int);
+int fd_read_body (int, FILE *, wgint, wgint, wgint *, wgint *, double *, int, FILE *);
 
 typedef const char *(*hunk_terminator_t) (const char *, const char *, int);
 

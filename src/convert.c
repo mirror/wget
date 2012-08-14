@@ -87,7 +87,7 @@ static pthread_mutex_t convert_mutex = PTHREAD_MUTEX_INITIALIZER;
 static void convert_links (const char *, struct urlpos *);
 
 
-void
+static void
 convert_links_in_hashtable (struct hash_table *downloaded_set,
                             int is_css,
                             int *file_count)
@@ -153,6 +153,9 @@ convert_links_in_hashtable (struct hash_table *downloaded_set,
           set_uri_encoding (pi, opt.locale, true);
 
           u = url_parse (cur_url->url->url, NULL, pi, true);
+          if (!u)
+	    continue;
+
           local_name = hash_table_get (dl_url_file_map, u->url);
 
           /* Decide on the conversion type.  */

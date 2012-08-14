@@ -1,16 +1,37 @@
 GNU Wget NEWS -- history of user-visible changes.
 
 Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
-2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
 See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
-* Changes in Wget X.Y.Z
+* Changes in Wget 1.14
 
 ** Add support for content-on-error.  It allows to store the HTTP
    payload on 4xx or 5xx errors.
 
+** Add support for WARC files.
+
+** Fix a memory leak problem in the GNU TLS backend.
+
+** Autoreconf works again for distributed tarballs.
+
+** Print some diagnostic messages to stderr not to stdout.
+
+** Report stdout close errors.
+
+** Accept the --report-speed option.
+
+** Enable client certificates when GNU TLS is used.
+
+** Add support for TLS Server Name Indication.
+
+** Accept the arguments --accept-reject and --reject-regex.
+
+** The GNU TLS backend honors correctly the timeout value.
+
+** Add support for RFC 2617 Digest Access Authentication.
 
 * Changes in Wget 1.13.4
 
@@ -23,6 +44,7 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Return a network failure when FTP downloads fail and --timestamping
    is specified.
 
+** Fix a segfault on an incomplete STYLE tag.
 
 * Changes in Wget 1.13.3
 

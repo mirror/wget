@@ -1,6 +1,6 @@
 /* SSL support via OpenSSL library.
    Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008,
-   2009, 2010, 2011 Free Software Foundation, Inc.
+   2009, 2010, 2011, 2012 Free Software Foundation, Inc.
    Originally contributed by Christian Fraenkel.
 
 This file is part of GNU Wget.
@@ -159,7 +159,7 @@ key_type_to_ssl_type (enum keyfile_type type)
    Returns true on success, false otherwise.  */
 
 bool
-ssl_init ()
+ssl_init (void)
 {
   SSL_METHOD const *meth;
 
@@ -201,7 +201,9 @@ ssl_init ()
       abort ();
     }
 
-  ssl_ctx = SSL_CTX_new (meth);
+  /* The type cast below accommodates older OpenSSL versions (0.9.8)
+     where SSL_CTX_new() is declared without a "const" argument. */
+  ssl_ctx = SSL_CTX_new ((SSL_METHOD *)meth);
   if (!ssl_ctx)
     goto error;
 
@@ -393,7 +395,7 @@ static struct transport_implementation openssl_transport = {
    Returns true on success, false on failure.  */
 
 bool
-ssl_connect_wget (int fd)
+ssl_connect_wget (int fd, const char *hostname)
 {
   SSL *conn;
   struct openssl_transport_context *ctx;
@@ -404,6 +406,19 @@ ssl_connect_wget (int fd)
   conn = SSL_new (ssl_ctx);
   if (!conn)
     goto error;
+#if OPENSSL_VERSION_NUMBER >= 0x0090806fL && !defined(OPENSSL_NO_TLSEXT)
+  /* If the SSL library was build with support for ServerNameIndication
+     then use it whenever we have a hostname.  If not, don't, ever. */
+  if (! is_valid_ip_address (hostname))
+    {
+      if (! SSL_set_tlsext_host_name (conn, hostname))
+	{
+	DEBUGP (("Failed to set TLS server-name indication."));
+	goto error;
+	}
+    }
+#endif
+
 #ifndef FD_TO_SOCKET
 # define FD_TO_SOCKET(X) (X)
 #endif

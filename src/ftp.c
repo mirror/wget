@@ -49,6 +49,7 @@ as that of the covered work.  */
 #include "netrc.h"
 #include "convert.h"            /* for downloaded_file */
 #include "recur.h"              /* for INFINITE_RECURSION */
+#include "warc.h"
 
 #ifdef __VMS
 # include "vms.h"
@@ -237,17 +238,17 @@ static uerr_t ftp_get_listing (struct url *, ccon *, struct fileinfo **);
 
 /* Retrieves a file with denoted parameters through opening an FTP
    connection to the server.  It always closes the data connection,
-   and closes the control connection in case of error.  */
+   and closes the control connection in case of error.  If warc_tmp
+   is non-NULL, the downloaded data will be written there as well.  */
 static uerr_t
 getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
-        wgint restval, ccon *con, int count)
+        wgint restval, ccon *con, int count, FILE *warc_tmp)
 {
   int csock, dtsock, local_sock, res;
   uerr_t err = RETROK;          /* appease the compiler */
   FILE *fp;
-  char *user, *passwd, *respline;
-  char *tms;
-  const char *tmrate;
+  char *respline, *tms;
+  const char *user, *passwd, *tmrate;
   int cmd = con->cmd;
   bool pasv_mode_open = false;
   wgint expected_bytes = 0;
@@ -287,13 +288,6 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
     {
       char    *host = con->proxy ? con->proxy->host : u->host;
       int      port = con->proxy ? con->proxy->port : u->port;
-      char *logname = user;
-
-      if (con->proxy)
-        {
-          /* If proxy is in use, log in as username@target-site. */
-          logname = concat_strings (user, "@", u->host, (char *) 0);
-        }
 
       /* Login to the server: */
 
@@ -301,20 +295,10 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
 
       csock = connect_to_host (host, port);
       if (csock == E_HOST)
-        {
-          if (con->proxy)
-            xfree (logname);
-
           return HOSTERR;
-        }
       else if (csock < 0)
-        {
-          if (con->proxy)
-            xfree (logname);
-
           return (retryable_socket_connect_error (errno)
                   ? CONERROR : CONIMPOSSIBLE);
-        }
 
       if (cmd & LEAVE_PENDING)
         con->csock = csock;
@@ -326,10 +310,15 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
                  quotearg_style (escape_quoting_style, user));
       if (opt.server_response)
         logputs (LOG_ALWAYS, "\n");
-      err = ftp_login (csock, logname, passwd);
-
       if (con->proxy)
-        xfree (logname);
+        {
+          /* If proxy is in use, log in as username@target-site. */
+          char *logname = concat_strings (user, "@", u->host, (char *) 0);
+          err = ftp_login (csock, logname, passwd);
+          xfree (logname);
+        }
+      else
+        err = ftp_login (csock, user, passwd);
 
       /* FTPRERR, FTPSRVERR, WRITEFAILED, FTPLOGREFUSED, FTPLOGINC */
       switch (err)
@@ -512,7 +501,7 @@ Error in server response, closing control connection.\n"));
         logputs (LOG_VERBOSE, _("==> CWD not needed.\n"));
       else
         {
-          char *targ = NULL;
+          const char *targ = NULL;
           int cwd_count;
           int cwd_end;
           int cwd_start;
@@ -1152,13 +1141,25 @@ Error in server response, closing control connection.\n"));
    Elsewhere, define a constant "binary" flag.
    Isn't it nice to have distinct text and binary file types?
 */
-# define BIN_TYPE_TRANSFER (type_char != 'A')
+/* 2011-09-30 SMS.
+   Added listing files to the set of non-"binary" (text, Stream_LF)
+   files.  (Wget works either way, but other programs, like, say, text
+   editors, work better on listing files which have text attributes.)
+   Now we use "binary" attributes for a binary ("IMAGE") transfer,
+   unless "--ftp-stmlf" was specified, and we always use non-"binary"
+   (text, Stream_LF) attributes for a listing file, or for an ASCII
+   transfer.
+   Tidied the VMS-specific BIN_TYPE_xxx macros, and changed the call to
+   fopen_excl() (restored?) to use BIN_TYPE_FILE instead of "true".
+*/
 #ifdef __VMS
+# define BIN_TYPE_TRANSFER (type_char != 'A')
+# define BIN_TYPE_FILE \
+   ((!(cmd & DO_LIST)) && BIN_TYPE_TRANSFER && (opt.ftp_stmlf == 0))
 # define FOPEN_OPT_ARGS "fop=sqo", "acc", acc_cb, &open_id
 # define FOPEN_OPT_ARGS_BIN "ctx=bin,stm", "rfm=fix", "mrs=512" FOPEN_OPT_ARGS
-# define BIN_TYPE_FILE (BIN_TYPE_TRANSFER && (opt.ftp_stmlf == 0))
 #else /* def __VMS */
-# define BIN_TYPE_FILE 1
+# define BIN_TYPE_FILE true
 #endif /* def __VMS [else] */
 
       if (restval && !(con->cmd & DO_LIST))
@@ -1182,7 +1183,7 @@ Error in server response, closing control connection.\n"));
         }
       else if (opt.noclobber || opt.always_rest || opt.timestamping || opt.dirstruct
                || opt.output_document || count > 0)
-        {	  
+        {
 	  if (opt.unlink && file_exists_p (con->target))
 	    {
 	      int res = unlink (con->target);
@@ -1217,7 +1218,7 @@ Error in server response, closing control connection.\n"));
         }
       else
         {
-          fp = fopen_excl (con->target, true);
+          fp = fopen_excl (con->target, BIN_TYPE_FILE);
           if (!fp && errno == EEXIST)
             {
               /* We cannot just invent a new name and use it (which is
@@ -1262,7 +1263,7 @@ Error in server response, closing control connection.\n"));
   rd_size = 0;
   res = fd_read_body (dtsock, fp,
                       expected_bytes ? expected_bytes - restval : 0,
-                      restval, &rd_size, qtyread, &con->dltime, flags);
+                      restval, &rd_size, qtyread, &con->dltime, flags, warc_tmp);
 
   tms = datetime_str (time (NULL));
   tmrate = retr_rate (rd_size, con->dltime);
@@ -1273,15 +1274,18 @@ Error in server response, closing control connection.\n"));
   if (!output_stream || con->cmd & DO_LIST)
     fclose (fp);
 
-  /* If fd_read_body couldn't write to fp, bail out.  */
-  if (res == -2)
+  /* If fd_read_body couldn't write to fp or warc_tmp, bail out.  */
+  if (res == -2 || (warc_tmp != NULL && res == -3))
     {
       logprintf (LOG_NOTQUIET, _("%s: %s, closing control connection.\n"),
                  con->target, strerror (errno));
       fd_close (csock);
       con->csock = -1;
       fd_close (dtsock);
-      return FWRITEERR;
+      if (res == -2)
+        return FWRITEERR;
+      else if (res == -3)
+        return WARC_TMP_FWRITEERR;
     }
   else if (res == -1)
     {
@@ -1397,6 +1401,11 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
   uerr_t err;
   struct_stat st;
 
+  /* Declare WARC variables. */
+  bool warc_enabled = (opt.warc_filename != NULL);
+  FILE *warc_tmp = NULL;
+  ip_address *warc_ip = NULL;
+
   /* Get the target, and set the name for the message accordingly. */
   if ((f == NULL) && (con->target))
     {
@@ -1432,6 +1441,21 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
     con->st = ON_YOUR_OWN;
 
   orig_lp = con->cmd & LEAVE_PENDING ? 1 : 0;
+
+  /* For file RETR requests, we can write a WARC record.
+     We record the file contents to a temporary file. */
+  if (warc_enabled && (con->cmd & DO_RETR))
+    {
+      warc_tmp = warc_tempfile ();
+      if (warc_tmp == NULL)
+        return WARC_TMP_FOPENERR;
+
+      if (!con->proxy && con->csock != -1)
+        {
+          warc_ip = (ip_address *) alloca (sizeof (ip_address));
+          socket_ip_address (con->csock, warc_ip, ENDPOINT_PEER);
+        }
+    }
 
   /* THE loop.  */
   do
@@ -1507,7 +1531,9 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
           len = range->last_byte - restval + 1;
         }
 
-      err = getftp (u, len, &qtyread, restval, con, count);
+      /* If we are working on a WARC record, getftp should also write
+         to the warc_tmp file. */
+      err = getftp (u, len, &qtyread, restval, con, count, warc_tmp);
 
       if (range)
         range->bytes_covered = qtyread;
@@ -1521,8 +1547,10 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
         {
         case HOSTERR: case CONIMPOSSIBLE: case FWRITEERR: case FOPENERR:
         case FTPNSFOD: case FTPLOGINC: case FTPNOPASV: case CONTNOTSUPPORTED:
-        case UNLINKERR:
+        case UNLINKERR: case WARC_TMP_FWRITEERR:
           /* Fatal errors, give up.  */
+          if (warc_tmp != NULL)
+            fclose (warc_tmp);
           return err;
         case CONSOCKERR: case CONERROR: case FTPSRVERR: case FTPRERR:
         case WRITEFAILED: case FTPUNKNOWNTYPE: case FTPSYSERR:
@@ -1588,6 +1616,19 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
           logprintf (LOG_NONVERBOSE, "%s URL: %s [%s] -> \"%s\" [%d]\n",
                      tms, hurl, number_to_static_string (qtyread), locf, count);
           xfree (hurl);
+        }
+
+      if (warc_enabled && (con->cmd & DO_RETR))
+        {
+          /* Create and store a WARC resource record for the retrieved file. */
+          bool warc_res;
+
+          warc_res = warc_write_resource_record (NULL, u->url, NULL, NULL,
+                                                  warc_ip, NULL, warc_tmp, -1);
+          if (! warc_res)
+            return WARC_ERR;
+
+          /* warc_write_resource_record has also closed warc_tmp. */
         }
 
       if ((con->cmd & DO_LIST))
@@ -1893,8 +1934,10 @@ Already have correct symlink %s -> %s\n\n"),
 
       set_local_file (&actual_target, con->target);
 
-      /* If downloading a plain file, set valid (non-zero) permissions. */
-      if (dlthis && (actual_target != NULL) && (f->type == FT_PLAINFILE))
+      /* If downloading a plain file, and the user requested it, then
+         set valid (non-zero) permissions. */
+      if (dlthis && (actual_target != NULL) &&
+       (f->type == FT_PLAINFILE) && opt.preserve_perm)
         {
           if (f->perms)
             chmod (actual_target, f->perms);
@@ -1927,7 +1970,9 @@ Already have correct symlink %s -> %s\n\n"),
       xfree (ofile);
 
       /* Break on fatals.  */
-      if (err == QUOTEXC || err == HOSTERR || err == FWRITEERR)
+      if (err == QUOTEXC || err == HOSTERR || err == FWRITEERR
+          || err == WARC_ERR || err == WARC_TMP_FOPENERR
+          || err == WARC_TMP_FWRITEERR)
         break;
       con->cmd &= ~ (DO_CWD | DO_LOGIN);
       f = f->next;

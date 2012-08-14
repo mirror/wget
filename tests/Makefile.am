@@ -124,6 +124,7 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              Test-restrict-ascii.px \
              Test-Restrict-Lowercase.px \
              Test-Restrict-Uppercase.px \
+	     Test-stdouterr.px \
              Test--spider-fail.px \
              Test--spider.px \
              Test--spider-r-HTTP-Content-Disposition.px \

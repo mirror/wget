@@ -31,7 +31,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 
 AC_INIT([wget],
-  [m4_esyscmd([build-aux/bzr-version-gen])],
+        m4_esyscmd([build-aux/git-version-gen .tarball-version]),
 	[bug-wget@gnu.org])
 AC_PREREQ(2.61)
 
@@ -64,6 +64,9 @@ dnl
 AC_ARG_WITH(ssl,
 [[  --without-ssl           disable SSL autodetection
   --with-ssl={gnutls,openssl} specify the SSL backend.  GNU TLS is the default.]])
+
+AC_ARG_WITH(zlib,
+[[  --without-zlib          disable zlib ]])
 
 AC_ARG_ENABLE(opie,
 [  --disable-opie          disable support for opie or s/key FTP login],
@@ -246,6 +249,10 @@ dnl
 dnl Checks for libraries.
 dnl
 
+AS_IF([test x"$with_zlib" != xno], [
+  AC_CHECK_LIB(z, compress)
+])
+
 AS_IF([test x"$with_ssl" = xopenssl], [
     dnl some versions of openssl use zlib compression
     AC_CHECK_LIB(z, compress)
@@ -269,6 +276,9 @@ AS_IF([test x"$with_ssl" = xopenssl], [
           AC_CHECK_LIB(ssl32, SSL_connect, [
             ssl_found=yes
             AC_MSG_NOTICE([Enabling support for SSL via OpenSSL (shared)])
+            AC_LIBOBJ([openssl])
+            LIBS="${LIBS} -lssl32"
+            AC_DEFINE([HAVE_LIBSSL32], [1], [Define to 1 if you have the `ssl32' library (-lssl32).])
           ],
           AC_MSG_ERROR([openssl not found: shared lib eay32 found but ssl32 not found]))
           
@@ -294,6 +304,7 @@ AS_IF([test x$ssl_found != xyes],
     ], [SSL_library_init ()])
     if test x"$LIBSSL" != x
     then
+      ssl_found=yes
       AC_MSG_NOTICE([compiling in support for SSL via OpenSSL])
       AC_LIBOBJ([openssl])
       LIBS="$LIBSSL $LIBS"
@@ -301,9 +312,6 @@ AS_IF([test x$ssl_found != xyes],
     then
       AC_MSG_ERROR([--with-ssl=openssl was given, but SSL is not available.])
     fi
-
-    AC_LIBOBJ([openssl])
-
 ])
 
 ], [
@@ -321,6 +329,7 @@ AS_IF([test x$ssl_found != xyes],
   ], [gnutls_global_init()])
   if test x"$LIBGNUTLS" != x
   then
+    ssl_found=yes
     AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
     AC_LIBOBJ([gnutls])
     LIBS="$LIBGNUTLS $LIBS"
@@ -333,7 +342,7 @@ AS_IF([test x$ssl_found != xyes],
 ]) # endif: --with-ssl == openssl?
 
 dnl Enable NTLM if requested and if SSL is available.
-if test x"$LIBSSL" != x
+if test x"$LIBSSL" != x || test "$ac_cv_lib_ssl32_SSL_connect" = yes
 then
   if test x"$ENABLE_NTLM" != xno
   then
@@ -586,7 +595,31 @@ if test "X$iri" != "Xno"; then
   fi
 fi
 
+dnl
+dnl Check for UUID
+dnl
 
+AC_CHECK_HEADER(uuid/uuid.h,
+                AC_CHECK_LIB(uuid, uuid_generate,
+                  [LIBS="${LIBS} -luuid"
+                   AC_DEFINE([HAVE_LIBUUID], 1,
+                             [Define if libuuid is available.])
+                  ])
+)
+
+dnl
+dnl Check for PCRE
+dnl
+
+AC_CHECK_HEADER(pcre.h,
+                AC_CHECK_LIB(pcre, pcre_compile,
+                  [LIBS="${LIBS} -lpcre"
+                   AC_DEFINE([HAVE_LIBPCRE], 1,
+                             [Define if libpcre is available.])
+                  ])
+)
+
+ 
 dnl Needed by src/Makefile.am
 AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" != "Xno"])
 AM_CONDITIONAL([METALINK_IS_ENABLED], [test "X$metalink" != "Xno"])

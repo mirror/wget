@@ -1,3 +1,68 @@
+2012-07-08  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap: Update from gnulib.
+	* bootstrap.conf (gnulib_extra_files): Remove $build_aux/missing.
+	* lib/Makefile.am: Delete file.
+
+2012-06-16  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (gnulib_modules): Remove `closeout'.
+	Reported by: Micah Cowan  <micah@cowan.name>.
+
+2012-05-31  Ángel González <keisial@gmail.com>
+
+	* convert.c: fix segfault on wrong urls (bug 36570)
+
+2012-05-13  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (gnulib_modules): Add `git-version-gen'.
+	* build-aux/bzr-version-gen: Remove file.
+	* configure.ac: Invoke `build-aux/git-version-gen' to get the dist
+	version.
+	* Makefile.am (EXTRA_DIST): Distribute build-aux/git-version-gen instead
+	of build-aux/bzr-version-gen.
+
+2012-04-11  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* bootstrap.conf (gnulib_modules): Include module `regex'.
+	* configure.ac: Check for PCRE library.
+
+2012-03-25 Ray Satiro <raysatiro@yahoo.com>
+
+	* configure.ac: Fix build under mingw when OpenSSL is used.
+
+2012-03-20  Ángel González <keisial@gmail.com>
+
+	* bootstrap.conf (gnulib_modules): Add modules `ftello',
+	`mkstemp' and `strtok_r'.
+
+2012-02-26  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (gnulib_modules): Add module `closeout'.
+
+2012-01-09  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* configure.ac: Always try to use libz, even without SSL.
+
+2011-12-12  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am (EXTRA_DIST): Add build-aux/bzr-version-gen.
+	Reported by: Elan Ruusamäe <glen@pld-linux.org>.
+
+2011-12-11  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* util/trunc.c (main): Call `close' on the fd and check for errors.
+	Reported by: <dga@cs.cmu.edu>.
+
+2011-10-23  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap.conf (gnulib_modules): Include module `vsnprintf'.
+
+2011-10-16  Steven Schubiger  <stsc@member.fsf.org>
+
+	* util/paramcheck.pl: Match 1 or more times where applicable.
+	(extract_entries): Return a copy instead of reference.
+
 2011-09-04  Alan Hourihane <alanh@fairlite.co.uk> (tiny change)
 
 	* configure.ac: Check for libz when gnutls is used.

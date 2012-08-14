@@ -1,6 +1,6 @@
 /* Collect URLs from HTML source.
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
-   2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+   2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -675,8 +675,9 @@ collect_tags_mapper (struct taginfo *tag, void *arg)
 
   check_style_attr (tag, ctx);
 
-  if (tag->end_tag_p && (0 == strcasecmp (tag->name, "style")) &&
-      tag->contents_begin && tag->contents_end)
+  if (tag->end_tag_p && (0 == strcasecmp (tag->name, "style"))
+      && tag->contents_begin && tag->contents_end
+      && tag->contents_begin <= tag->contents_end)
   {
     /* parse contents */
     get_urls_css (ctx, tag->contents_begin - ctx->text,
@@ -829,7 +830,7 @@ get_urls_file (const char *file)
   return head;
 }
 
-void
+static void
 cleanup_html_url (void)
 {
   /* Destroy the hash tables.  The hash table keys and values are not

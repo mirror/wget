@@ -11,5 +11,5 @@ threads        defined ENABLE_THREADS
 metalink        defined ENABLE_METALINK
 
 ssl choice:
-    openssl     defined HAVE_LIBSSL
+    openssl     defined HAVE_LIBSSL || defined HAVE_LIBSSL32
     gnutls      defined HAVE_LIBGNUTLS

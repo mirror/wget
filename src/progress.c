@@ -766,7 +766,7 @@ update_speed_ring (struct bar_progress *bp, wgint howmuch, double dltime)
 }
 
 #if USE_NLS_PROGRESS_BAR
-int
+static int
 count_cols (const char *mbs)
 {
   wchar_t wc;
@@ -795,7 +795,7 @@ count_cols (const char *mbs)
 # define count_cols(mbs) ((int)(strlen(mbs)))
 #endif
 
-const char *
+static const char *
 get_eta (int *bcd)
 {
   /* TRANSLATORS: "ETA" is English-centric, but this must
@@ -861,7 +861,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   struct bar_progress_hist *hist = &bp->hist;
 
   /* The progress bar should look like this:
-     xx% [=======>             ] nn,nnn 12.34K/s  eta 36m 51s
+     xx% [=======>             ] nn,nnn 12.34KB/s  eta 36m 51s
 
      Calculate the geometry.  The idea is to assign as much room as
      possible to the progress bar.  The other idea is to never let
@@ -873,7 +873,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
      "xx% " or "100%"  - percentage               - 4 chars
      "[]"              - progress bar decorations - 2 chars
      " nnn,nnn,nnn"    - downloaded bytes         - 12 chars or very rarely more
-     " 12.5K/s"        - download rate             - 8 chars
+     " 12.5KB/s"        - download rate           - 9 chars
      "  eta 36m 51s"   - ETA                      - 14 chars
 
      "=====>..."       - progress bar             - the rest
@@ -977,10 +977,11 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       *p++ = ' ';
     }
 
-  /* " 12.52K/s" */
+  /* " 12.52Kb/s or 12.52KB/s" */
   if (hist->total_time > 0 && hist->total_bytes)
     {
-      static const char *short_units[] = { "B/s", "K/s", "M/s", "G/s" };
+      static const char *short_units[] = { "B/s", "KB/s", "MB/s", "GB/s" };
+      static const char *short_units_bits[] = { "b/s", "Kb/s", "Mb/s", "Gb/s" };
       int units = 0;
       /* Calculate the download speed using the history ring and
          recent data that hasn't made it to the ring yet.  */
@@ -988,7 +989,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       double dltime = hist->total_time + (dl_total_time - bp->recent_start);
       double dlspeed = calc_rate (dlquant, dltime, &units);
       sprintf (p, " %4.*f%s", dlspeed >= 99.95 ? 0 : dlspeed >= 9.995 ? 1 : 2,
-               dlspeed, short_units[units]);
+               dlspeed,  !opt.report_bps ? short_units[units] : short_units_bits[units]);
       move_to_end (p);
     }
   else

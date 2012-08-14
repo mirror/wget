@@ -78,6 +78,19 @@ struct options
   bool ignore_case;		/* Whether to ignore case when
 				   matching dirs and files */
 
+  char *acceptregex_s;		/* Patterns to accept (a regex string). */
+  char *rejectregex_s;		/* Patterns to reject (a regex string). */
+  void *acceptregex;		/* Patterns to accept (a regex struct). */
+  void *rejectregex;		/* Patterns to reject (a regex struct). */
+  enum {
+#ifdef HAVE_LIBPCRE
+    regex_type_pcre,
+#endif
+    regex_type_posix
+  } regex_type;   /* The regex library. */
+  void *(*regex_compile_fun)(const char *);  /* Function to compile a regex. */
+  bool (*regex_match_fun)(const void *, const char *);  /* Function to match a string to a regex. */
+
   char **domains;		/* See host.c */
   char **exclude_domains;
   bool dns_cache;		/* whether we cache DNS lookups. */
@@ -91,6 +104,15 @@ struct options
 				   FTP. */
   char *output_document;	/* The output file to which the
 				   documents will be printed.  */
+  char *warc_filename;		/* WARC output filename */
+  char *warc_tempdir;	/* WARC temp dir */
+  char *warc_cdx_dedup_filename;	/* CDX file to be used for deduplication. */
+  wgint warc_maxsize;           /* WARC max archive size */
+  bool warc_compression_enabled;  /* For GZIP compression. */
+  bool warc_digests_enabled;  /* For SHA1 digests. */
+  bool warc_cdx_enabled;      /* Create CDX files? */
+  bool warc_keep_log;         /* Store the log file in a WARC record. */
+  char **warc_user_headers;		/* User-defined WARC header(s). */
 
   char *user;			/* Generic username */
   char *passwd;			/* Generic password */
@@ -261,6 +283,9 @@ struct options
 
   bool show_all_dns_entries; /* Show all the DNS entries when resolving a
                                 name. */
+
+  bool report_bps;              /*Output bandwidth in bits format*/
+
 #ifdef ENABLE_THREADS
   int jobs; /* How many threads use at the same time.  */
 #endif

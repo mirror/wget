@@ -53,9 +53,7 @@ as that of the covered work.  */
 
 #include <errno.h>
 #include <string.h>
-#ifdef HAVE_SYS_TIME_H
-# include <sys/time.h>
-#endif
+#include <sys/time.h>
 #include "utils.h"
 #include "host.h"
 #include "connect.h"
@@ -293,7 +291,12 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
 					  xfree (str);
         }
       else
-        logprintf (LOG_VERBOSE, _("Connecting to %s:%d... "), txt_addr, port);
+       {
+           if (ip->family == AF_INET)
+               logprintf (LOG_VERBOSE, _("Connecting to %s:%d... "), txt_addr, port);
+           else if (ip->family == AF_INET6)
+               logprintf (LOG_VERBOSE, _("Connecting to [%s]:%d... "), txt_addr, port);
+       }
     }
 
   /* Store the sockaddr info to SA.  */
@@ -579,6 +582,36 @@ socket_ip_address (int sock, ip_address *ip, int endpoint)
     default:
       abort ();
     }
+}
+
+/* Get the socket family of connection on FD and store
+   Return family type on success, -1 otherwise.
+
+   If ENDPOINT is ENDPOINT_LOCAL, it returns the sock family of the local
+   (client) side of the socket.  Else if ENDPOINT is ENDPOINT_PEER, it
+   returns the sock family of the remote (peer's) side of the socket.  */
+
+int
+socket_family (int sock, int endpoint)
+{
+  struct sockaddr_storage storage;
+  struct sockaddr *sockaddr = (struct sockaddr *) &storage;
+  socklen_t addrlen = sizeof (storage);
+  int ret;
+
+  memset (sockaddr, 0, addrlen);
+
+  if (endpoint == ENDPOINT_LOCAL)
+    ret = getsockname (sock, sockaddr, &addrlen);
+  else if (endpoint == ENDPOINT_PEER)
+    ret = getpeername (sock, sockaddr, &addrlen);
+  else
+    abort ();
+
+  if (ret < 0)
+    return -1;
+
+  return sockaddr->sa_family;
 }
 
 /* Return true if the error from the connect code can be considered

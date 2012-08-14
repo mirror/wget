@@ -1,6 +1,6 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2012-07-19.14; # UTC
+scriptversion=2012-07-06.11; # UTC
 
 # Bootstrap this package from checked-out sources.
 
@@ -77,32 +77,15 @@ Running without arguments will suffice in most cases.
 EOF
 }
 
-# warnf_ FORMAT-STRING ARG1...
-warnf_ ()
+warn()
 {
-  warnf_format_=$1
-  shift
-  nl='
-'
-  case $* in
-    *$nl*) me_=$(printf "$me"|tr "$nl|" '??')
-       printf "$warnf_format_" "$@" | sed "s|^|$me_: |" ;;
-    *) printf "$me: $warnf_format_" "$@" ;;
-  esac >&2
+  for i
+  do
+    echo "$i"
+  done | sed -e "s/^/$me: /" >&2
 }
 
-# warn_ WORD1...
-warn_ ()
-{
-  # If IFS does not start with ' ', set it and emit the warning in a subshell.
-  case $IFS in
-    ' '*) warnf_ '%s\n' "$*";;
-    *)    (IFS=' '; warn_ "$@");;
-  esac
-}
-
-# die WORD1...
-die() { warn_ "$@"; exit 1; }
+die() { warn "$@"; exit 1; }
 
 # Configuration.
 
@@ -354,7 +337,8 @@ grep '^[	 ]*AC_CONFIG_AUX_DIR(\['"$build_aux"'\])' configure.ac \
 grep '^[	 ]*AC_CONFIG_AUX_DIR('"$build_aux"')' configure.ac \
     >/dev/null && found_aux_dir=yes
 test $found_aux_dir = yes \
-  || die "configure.ac lacks 'AC_CONFIG_AUX_DIR([$build_aux])'; add it"
+  || die "expected line not found in configure.ac. Add the following:" \
+         "  AC_CONFIG_AUX_DIR([$build_aux])"
 
 # If $build_aux doesn't exist, create it now, otherwise some bits
 # below will malfunction.  If creating it, also mark it as ignored.
@@ -460,7 +444,7 @@ check_versions() {
       automake-ng|aclocal-ng)
         app=${app%-ng}
         ($app --version | grep '(GNU automake-ng)') >/dev/null 2>&1 || {
-          warn_ "Error: '$app' not found or not from Automake-NG"
+          warn "Error: '$app' not found or not from Automake-NG"
           ret=1
           continue
         } ;;
@@ -470,14 +454,7 @@ check_versions() {
       # so we have to rely on $? rather than get_version.
       $app --version >/dev/null 2>&1
       if [ 126 -le $? ]; then
-        warn_ "Error: '$app' not found"
-        ret=1
-      fi
-    else
-      # Require app to produce a new enough version string.
-      inst_ver=$(get_version $app)
-      if [ ! "$inst_ver" ]; then
-        warn_ "Error: '$app' not found"
+        warn "Error: '$app' not found"
         ret=1
       else
         latest_ver=$(sort_ver $req_ver $inst_ver | cut -d' ' -f2)
@@ -485,6 +462,20 @@ check_versions() {
           warnf_ '%s\n'                                        \
               "Error: '$app' version == $inst_ver is too old"  \
               "       '$app' version >= $req_ver is required"
+          ret=1
+        fi
+      fi
+    else
+      # Require app to produce a new enough version string.
+      inst_ver=$(get_version $app)
+      if [ ! "$inst_ver" ]; then
+        warn "Error: '$app' not found"
+        ret=1
+      else
+        latest_ver=$(sort_ver $req_ver $inst_ver | cut -d' ' -f2)
+        if [ ! "$latest_ver" = "$inst_ver" ]; then
+          warn "Error: '$app' version == $inst_ver is too old" \
+               "       '$app' version >= $req_ver is required"
           ret=1
         fi
       fi
@@ -780,7 +771,7 @@ version_controlled_file() {
     grep -F "/${file##*/}/" "$parent/CVS/Entries" 2>/dev/null |
              grep '^/[^/]*/[0-9]' > /dev/null
   else
-    warn_ "no version control for $file?"
+    warn "no version control for $file?"
     false
   fi
 }
