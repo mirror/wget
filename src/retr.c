@@ -1090,12 +1090,14 @@ retrieve_from_file (const char *file, bool html, int *count)
           while (file->resources[num_of_resources])
             ++num_of_resources;
 
+          /* If chunk_size is too small, set it equal to MIN_CHUNK_SIZE. */
           chunk_size = (file->size) / opt.jobs;
           if(chunk_size < MIN_CHUNK_SIZE)
             chunk_size = MIN_CHUNK_SIZE;
           
           j = fill_ranges_data(num_of_resources, file->size, chunk_size);
 
+          /* If chunk_size was set to MIN_CHUNK_SIZE, opt.jobs should be corrected. */
           if(j < opt.jobs)
             opt.jobs = j;
 
@@ -1104,6 +1106,8 @@ retrieve_from_file (const char *file, bool html, int *count)
           sem_init (&retr_sem, 0, 0);
           j = ranges_covered = 0;
 
+          /* Assign values to thread_ctx[] elements and spawn threads that will
+             conduct the download. */
           for (r = 0; r < opt.jobs; ++r)
             {
               resource = file->resources[j];
@@ -1123,6 +1127,7 @@ retrieve_from_file (const char *file, bool html, int *count)
               ret = spawn_thread (thread_ctx, r, j);
               if (ret)
                 {
+                  /* If thread creation is unsuccessful */
                   char *error = url_error (thread_ctx[r].url, thread_ctx[r].url_err);
                   logprintf (LOG_NOTQUIET, "%s: %s.\n", thread_ctx[r].url, error);
                   xfree (error);
@@ -1135,14 +1140,15 @@ retrieve_from_file (const char *file, bool html, int *count)
               ++j;
             }
 
+          /* Until all the ranges are covered, collect threads. */
           while (ranges_covered < opt.jobs)
             {
               r = collect_thread (&retr_sem, thread_ctx);
               ++ranges_covered;
               
               status = thread_ctx[r].status;
-              /* Check return status of thread for errors. */
 
+              /* Check return status of thread for errors. */
               if (IS_IO_ERROR(status))
                 {
                   /* The error is of type WGET_EXIT_IO_FAIL given in exits.c.
@@ -1161,10 +1167,16 @@ retrieve_from_file (const char *file, bool html, int *count)
                   if(get_exit_status() != error_severity)
                     (thread_ctx[r].range)->status_least_severe = status;
                   PCONN_UNLOCK ();
-                  
+
+                  /* Look for resource from which downloading this range is not
+                     tried. */
                   for (j = 0; j < num_of_resources; ++j)
                     if (!((thread_ctx[r].range)->resources)[j])
                       break;
+                  /* If there is such a resource, then update the range values
+                     to try that not-tried resource and spawn thread.
+                     If all the resources are exhausted, stop collecting the
+                     threads, as the download failed. */
                   if (j < num_of_resources)
                     {
                       thread_ctx[r].url = file->resources[j]->url;
@@ -1178,6 +1190,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                       ret = spawn_thread (thread_ctx, r, j);
                       if (ret)
                         {
+                          /* If thread creation is unsuccessful */
                           char *error = url_error (thread_ctx[r].url, thread_ctx[r].url_err);
                           logprintf (LOG_NOTQUIET, "%s: %s.\n", thread_ctx[r].url, error);
                           xfree (error);
@@ -1195,13 +1208,13 @@ retrieve_from_file (const char *file, bool html, int *count)
 
           sem_destroy(&retr_sem);
 
+          /* Check the download status. If conditions are suitable, retry. */
           if (status != RETROK)
             {
               logprintf (LOG_VERBOSE, "Downloading %s failed. Chunk %d could not be downloaded from any of the URLs listed in metalink file.\n", file->name, r);
 
-              /* Unlike downloads with invalid hash values, failed download
-                 should only be retried if the error causing failure is not
-                 an IO error. */
+              /* Failed downloads should only be retried if the error causing
+                 the failure is not an IO error. */
               if (!(IS_IO_ERROR((thread_ctx[r].range)->status_least_severe)))
                 {
                   if(retries  < opt.n_retries)
@@ -1215,7 +1228,7 @@ retrieve_from_file (const char *file, bool html, int *count)
           else
             {
               int res;
-
+              /* Form the actual file to be downloaded and verify hash. */
               merge_temp_files(file->name);
               res = verify_file_hash(file->name, file->checksums);
               if(!res)

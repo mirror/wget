@@ -1,3 +1,33 @@
+/* Declarations for HTTP.
+   Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software
+   Foundation, Inc.
+
+This file is part of GNU Wget.
+
+GNU Wget is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+GNU Wget is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Wget.  If not, see <http://www.gnu.org/licenses/>.
+
+Additional permission under GNU GPL version 3 section 7
+
+If you modify this program, or any covered work, by linking or
+combining it with the OpenSSL project's OpenSSL library (or a
+modified version of that library), containing parts covered by the
+terms of the OpenSSL or SSLeay licenses, the Free Software Foundation
+grants you additional permission to convey the resulting work.
+Corresponding Source for a non-source form of such a combination
+shall include the source code for the parts of OpenSSL used as well
+as that of the covered work.  */
+
 #include "wget.h"
 
 #include <stdio.h>
@@ -13,6 +43,7 @@
 static struct range *ranges;
 char *temp, **files;
 
+/*  Allocate space for temporary file names. */
 void
 init_temp_files()
 {
@@ -31,6 +62,7 @@ init_temp_files()
       }
 }
 
+/*  Assign names to temporary files to be used. */
 void
 name_temp_files()
 {
@@ -44,6 +76,8 @@ name_temp_files()
       }
 }
 
+/*  Merge the temporary files in which the chunks are stored to form the
+    resulting file(output). */
 void
 merge_temp_files(const char *output)
 {
@@ -67,6 +101,7 @@ merge_temp_files(const char *output)
   free(buf);
 }
 
+/* Delete the temporary files used. */
 void
 delete_temp_files()
 {
@@ -76,6 +111,7 @@ delete_temp_files()
     unlink(files[j++]);
 }
 
+/* Clean the space allocated for temporary files data. */
 void
 clean_temp_files()
 {
@@ -86,13 +122,21 @@ clean_temp_files()
   free(files);
 }
 
+/* Allocate ranges array to store the ranges data. */
 void
 init_ranges()
 {
   if(!(ranges = malloc (opt.jobs * (sizeof *ranges))))
-    logprintf (LOG_VERBOSE, "Space for ranges data could not be allocated.\n");
+    {
+      logprintf (LOG_VERBOSE, "Space for ranges data could not be allocated.\n");
+      exit(1);
+    }
 }
 
+/* Assign values to the ranges. 
+   Also allocates the resources array each struct range must have.
+   
+   Returns the number of ranges to which values are assigned. */
 int
 fill_ranges_data(int num_of_resources, long long int file_size,
                  long int chunk_size)
@@ -115,6 +159,7 @@ fill_ranges_data(int num_of_resources, long long int file_size,
   return i;
 }
 
+/* Free the resources array of each range allocated by fill_ranges_data(). */
 void
 clean_range_res_data(int num_of_resources)
 {
@@ -123,6 +168,7 @@ clean_range_res_data(int num_of_resources)
     free (ranges[i].resources);
 }
 
+/* Free the ranges array that is used for storing ranges' data. */
 void
 clean_ranges()
 {
@@ -130,6 +176,8 @@ clean_ranges()
   ranges = NULL;
 }
 
+/* Assign 'last minute' data to struct s_thread_ctx instances regarding their
+   usage and range information. Then create a thread using that instance. */
 int
 spawn_thread (struct s_thread_ctx *thread_ctx, int index, int resource)
 {
@@ -144,12 +192,18 @@ spawn_thread (struct s_thread_ctx *thread_ctx, int index, int resource)
   thread_ctx[index].range = ranges + index;
   (thread_ctx[index].range)->is_assigned = 1;
   (thread_ctx[index].range)->resources[resource] = true;
+
   thread_ctx[index].used = 1;
   thread_ctx[index].terminated = 0;
 
   return pthread_create (&thread, NULL, segmented_retrieve_url, &thread_ctx[index]);
 }
 
+/* Collects the first thread to terminate and updates struct s_thread_ctx
+   instance's data regarding its 'business' (i.e. being used by a thread).
+   
+   Returns the index of the struct s_thread_ctx instance that was used in the
+   terminating thread. */
 int
 collect_thread (sem_t *retr_sem, struct s_thread_ctx *thread_ctx)
 {
@@ -163,12 +217,13 @@ collect_thread (sem_t *retr_sem, struct s_thread_ctx *thread_ctx)
       {
         url_free (thread_ctx[k].url_parsed);
         thread_ctx[k].used = 0;
-        thread_ctx[k].terminated = 0;
         (thread_ctx[k].range)->is_assigned = 0;
         return k;
       }
 }
 
+/* The function which is being called by pthread_create in spawn_thread(). It
+   is used to call retrieve_url(), which requires many arguments. */
 static void *
 segmented_retrieve_url (void *arg)
 {

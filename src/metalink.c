@@ -1,3 +1,33 @@
+/* Declarations for HTTP.
+   Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software
+   Foundation, Inc.
+
+This file is part of GNU Wget.
+
+GNU Wget is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+GNU Wget is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Wget.  If not, see <http://www.gnu.org/licenses/>.
+
+Additional permission under GNU GPL version 3 section 7
+
+If you modify this program, or any covered work, by linking or
+combining it with the OpenSSL project's OpenSSL library (or a
+modified version of that library), containing parts covered by the
+terms of the OpenSSL or SSLeay licenses, the Free Software Foundation
+grants you additional permission to convey the resulting work.
+Corresponding Source for a non-source form of such a combination
+shall include the source code for the parts of OpenSSL used as well
+as that of the covered work.  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,11 +80,14 @@ lower_hex_case (unsigned char *hash, int length)
       hash[i] += 32;
 }
 
-/* Verifies file hash by comparing the file hash(es) found by gnulib functions
-   and hash(es) provided by metalink file. Returns;
-   -1     if hashes that were compared turned out to be different.
-   0      if all pairs of hashes compared turned out to be the same.
-   1      if due to some error, comparisons could not be made.  */
+/* Verifies file hash by comparing the file hashes found by gnulib functions
+   and hashes provided by metalink file. Works by comparing strongest supported
+   hash type available in the metalink file.
+   
+   Returns;
+   -1      if hashes that were compared turned out to be different.
+    0      if all pairs of hashes compared turned out to be the same.
+    1      if due to some error, comparisons could not be made.  */
 int
 verify_file_hash (const char *filename, metalink_checksum_t **checksums)
 {
