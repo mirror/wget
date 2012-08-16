@@ -56,6 +56,14 @@ struct s_thread_ctx
   uerr_t status;
 };
 
+void init_ranges(int);
+
+int fill_ranges_data(int, int, long long int, long int);
+
+void clean_range_res_data(int);
+
+void clean_ranges();
+
 int spawn_thread (struct s_thread_ctx*, int, int);
 
 int collect_thread (sem_t *, struct s_thread_ctx *, int);

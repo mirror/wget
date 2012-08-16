@@ -10,6 +10,50 @@
 #include "multi.h"
 #include "url.h"
 
+static struct range *ranges;
+
+void
+init_ranges(int numthreads)
+{
+  ranges = malloc (numthreads * (sizeof *ranges));
+}
+
+int
+fill_ranges_data(int numthreads, int num_of_resources, long long int file_size,
+                 long int chunk_size)
+{
+  int i, r;
+  i = 0;
+  do
+  {
+      ranges[i].first_byte = i * chunk_size;
+      ranges[i].last_byte = (i+1) * chunk_size - 1;
+      ranges[i].bytes_covered = ranges[i].is_assigned = 0;
+      ranges[i].resources = malloc(num_of_resources * sizeof(bool));
+      ranges[i].status_least_severe = RETROK;
+      for (r = 0; r < num_of_resources; ++r)
+        ranges[i].resources[r] = false;
+      ++i;
+    } while (ranges[i-1].last_byte < (file_size - 1));
+  ranges[i-1].last_byte = file_size -1;
+
+  return i;
+}
+
+void
+clean_range_res_data(int num_of_resources)
+{
+  int i;
+  for (i = 0; i < num_of_resources; ++i)
+    free (ranges[i].resources);
+}
+
+void
+clean_ranges()
+{
+  free (ranges);
+}
+
 int
 spawn_thread (struct s_thread_ctx *thread_ctx, int index, int resource)
 {
@@ -20,6 +64,7 @@ spawn_thread (struct s_thread_ctx *thread_ctx, int index, int resource)
   if(!thread_ctx[index].url_parsed)
     return 1;
 
+  thread_ctx[index].range = ranges + index;
   (thread_ctx[index].range)->is_assigned = 1;
   (thread_ctx[index].range)->resources[resource] = true;
   thread_ctx[index].used = 1;

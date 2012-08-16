@@ -1069,7 +1069,6 @@ retrieve_from_file (const char *file, bool html, int *count)
     {
       /*GSoC wget*/
       char *temp, **files;
-      FILE *file1, *file2;
       int i, j, r, index, dt, url_err, retries;
       int ret, N_THREADS = opt.jobs > 0 ? opt.jobs : 1;
       int ranges_covered, chunk_size, num_of_resources;
@@ -1079,11 +1078,10 @@ retrieve_from_file (const char *file, bool html, int *count)
       metalink_file_t* file;
       metalink_resource_t* resource;
       struct s_thread_ctx *thread_ctx;
-      struct range *ranges;
 
-      thread_ctx = malloc (N_THREADS * (sizeof *thread_ctx));
-      ranges = malloc (N_THREADS * (sizeof *ranges));
       files = malloc (N_THREADS * (sizeof *files));
+      init_ranges (N_THREADS);
+      thread_ctx = malloc (N_THREADS * (sizeof *thread_ctx));
       
       retries = 0;
       i = 0;
@@ -1098,19 +1096,8 @@ retrieve_from_file (const char *file, bool html, int *count)
           chunk_size = (file->size) / N_THREADS;
           if(chunk_size < MIN_CHUNK_SIZE)
             chunk_size = MIN_CHUNK_SIZE;
-          j = 0;
-          do
-            {
-              ranges[j].first_byte = j * chunk_size;
-              ranges[j].last_byte = (j+1) * chunk_size - 1;
-              ranges[j].bytes_covered = ranges[j].is_assigned = 0;
-              ranges[j].resources = malloc(num_of_resources * sizeof(bool));
-              ranges[j].status_least_severe = RETROK;
-              for (r = 0; r < num_of_resources; ++r)
-                ranges[j].resources[r] = false;
-              ++j;
-            } while (ranges[j-1].last_byte < (file->size - 1));
-          ranges[j-1].last_byte = file->size -1;
+          
+          j = fill_ranges_data(N_THREADS, num_of_resources, file->size, chunk_size);
 
           if(j < N_THREADS)
             N_THREADS = j;
@@ -1140,7 +1127,6 @@ retrieve_from_file (const char *file, bool html, int *count)
                 }
 
               thread_ctx[r].file = files[r];
-              thread_ctx[r].range = ranges + r;
               thread_ctx[r].referer = NULL;
               thread_ctx[r].redirected = NULL;
               thread_ctx[r].dt = dt;
@@ -1154,12 +1140,11 @@ retrieve_from_file (const char *file, bool html, int *count)
                   char *error = url_error (thread_ctx[r].url, thread_ctx[r].url_err);
                   logprintf (LOG_NOTQUIET, "%s: %s.\n", thread_ctx[r].url, error);
                   xfree (error);
-                  for(r = 0; r < N_THREADS; ++r)
-                    free(ranges[r].resources);
+                  free(thread_ctx);
+                  clean_range_res_data(num_of_resources);
+                  clean_ranges ();
                   for (r = 0; r < N_THREADS; ++r)
                     free(files[r]);
-                  free(thread_ctx);
-                  free(ranges);
                   free(files);
                   return URLERROR;
                 }
@@ -1212,12 +1197,11 @@ retrieve_from_file (const char *file, bool html, int *count)
                           char *error = url_error (thread_ctx[r].url, thread_ctx[r].url_err);
                           logprintf (LOG_NOTQUIET, "%s: %s.\n", thread_ctx[r].url, error);
                           xfree (error);
-                          for(r = 0; r < N_THREADS; ++r)
-                            free(ranges[r].resources);
+                          free(thread_ctx);
+                          clean_range_res_data(num_of_resources);
+                          clean_ranges ();
                           for (r = 0; r < N_THREADS; ++r)
                             free(files[r]);
-                          free(thread_ctx);
-                          free(ranges);
                           free(files);
                           return URLERROR;
                         }
@@ -1236,7 +1220,7 @@ retrieve_from_file (const char *file, bool html, int *count)
               /* Unlike downloads with invalid hash values, failed download
                  should only be retried if the error causing failure is not
                  an IO error. */
-              if (!(IS_IO_ERROR(ranges[r].status_least_severe)))
+              if (!(IS_IO_ERROR((thread_ctx[r].range)->status_least_severe)))
                 {
                   if(retries  < opt.n_retries)
                     {
@@ -1271,16 +1255,15 @@ retrieve_from_file (const char *file, bool html, int *count)
 
           delete_temp_files(files, N_THREADS);
 
-          for (j = 0; j < N_THREADS; ++j)
-            free(ranges[j].resources);
+          clean_range_res_data(num_of_resources);
           for (j = 0; j < N_THREADS; ++j)
             free(files[j]);
           ++i;
         }
 
-      free(files);
-      free(ranges);
       free(thread_ctx);
+      clean_ranges ();
+      free(files);
       metalink_delete(metalink);
     }
   else
