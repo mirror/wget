@@ -1067,9 +1067,7 @@ retrieve_from_file (const char *file, bool html, int *count)
 
   if(opt.metalink_file && (metalink = metalink_context(input_file)))
     {
-      /*GSoC wget*/
-      char *temp, **files;
-      int i, j, r, index, dt, url_err, retries;
+      int i, j, r, dt, url_err, retries;
       int ret;
       int ranges_covered, chunk_size, num_of_resources;
       pthread_t thread;
@@ -1079,7 +1077,7 @@ retrieve_from_file (const char *file, bool html, int *count)
       metalink_resource_t* resource;
       struct s_thread_ctx *thread_ctx;
 
-      files = malloc (opt.jobs * (sizeof *files));
+      init_temp_files();
       init_ranges ();
       thread_ctx = malloc (opt.jobs * (sizeof *thread_ctx));
       
@@ -1101,17 +1099,7 @@ retrieve_from_file (const char *file, bool html, int *count)
           if(j < opt.jobs)
             opt.jobs = j;
 
-          /* Assign temporary file names. */
-          for (j = 0; j < opt.jobs; ++j)
-            {
-              files[j] = malloc(L_tmpnam * sizeof(char));
-              temp = tmpnam(files[j]);
-              if(!temp)
-                {
-                  logprintf (LOG_VERBOSE, "Temp file name could not be assigned.\n");
-                  return 1;
-                }
-            }
+          name_temp_files();
 
           sem_init (&retr_sem, 0, 0);
           j = ranges_covered = 0;
@@ -1125,7 +1113,6 @@ retrieve_from_file (const char *file, bool html, int *count)
                   resource = file->resources[j];
                 }
 
-              thread_ctx[r].file = files[r];
               thread_ctx[r].referer = NULL;
               thread_ctx[r].redirected = NULL;
               thread_ctx[r].dt = dt;
@@ -1142,9 +1129,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                   free(thread_ctx);
                   clean_range_res_data(num_of_resources);
                   clean_ranges ();
-                  for (r = 0; r < opt.jobs; ++r)
-                    free(files[r]);
-                  free(files);
+                  clean_temp_files ();
                   return URLERROR;
                 }
               ++j;
@@ -1199,9 +1184,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                           free(thread_ctx);
                           clean_range_res_data(num_of_resources);
                           clean_ranges ();
-                          for (r = 0; r < opt.jobs; ++r)
-                            free(files[r]);
-                          free(files);
+                          clean_temp_files ();
                           return URLERROR;
                         }
                     }
@@ -1233,7 +1216,7 @@ retrieve_from_file (const char *file, bool html, int *count)
             {
               int res;
 
-              merge_temp_files(files, file->name);
+              merge_temp_files(file->name);
               res = verify_file_hash(file->name, file->checksums);
               if(!res)
                 {
@@ -1252,17 +1235,15 @@ retrieve_from_file (const char *file, bool html, int *count)
                 }
             }
 
-          delete_temp_files(files);
+          delete_temp_files();
 
           clean_range_res_data(num_of_resources);
-          for (j = 0; j < opt.jobs; ++j)
-            free(files[j]);
           ++i;
         }
 
       free(thread_ctx);
       clean_ranges ();
-      free(files);
+      clean_temp_files ();
       metalink_delete(metalink);
     }
   else

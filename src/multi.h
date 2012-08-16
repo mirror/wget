@@ -56,6 +56,16 @@ struct s_thread_ctx
   uerr_t status;
 };
 
+void init_temp_files();
+
+void name_temp_files();
+
+void merge_temp_files(const char *);
+
+void delete_temp_files();
+
+void clean_temp_files();
+
 void init_ranges();
 
 int fill_ranges_data(int, long long int, long int);
@@ -69,9 +79,5 @@ int spawn_thread (struct s_thread_ctx*, int, int);
 int collect_thread (sem_t *, struct s_thread_ctx *);
 
 static void * segmented_retrieve_url (void *);
-
-void merge_temp_files(char **, const char *);
-
-void delete_temp_files(char **);
 
 #endif /* MULTI_H */

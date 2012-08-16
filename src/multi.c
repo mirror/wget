@@ -11,11 +11,86 @@
 #include "url.h"
 
 static struct range *ranges;
+char *temp, **files;
+
+void
+init_temp_files()
+{
+  int i;
+
+  if(!(files = malloc (opt.jobs * (sizeof *files))))
+    {
+      logprintf (LOG_VERBOSE, "Space for temporary file data could not be allocated.\n");
+      exit(1);
+    }
+  for (i = 0; i < opt.jobs; ++i)
+    if(!(files[i] = malloc (L_tmpnam * sizeof(char))))
+      {
+        logprintf (LOG_VERBOSE, "Space for temporary file names could not be allocated.\n");
+        exit(1);
+      }
+}
+
+void
+name_temp_files()
+{
+  int i;
+
+  for (i = 0; i < opt.jobs; ++i)
+    if(!tmpnam(files[i]))
+      {
+        logprintf (LOG_VERBOSE, "Temporary file name could not be assigned.\n");
+        exit(1);
+      }
+}
+
+void
+merge_temp_files(const char *output)
+{
+  FILE *out, *in;
+  int j, ret;
+  void *buf = malloc (MIN_CHUNK_SIZE);
+
+  out = fopen (output, "w");
+  for(j = 0; j < opt.jobs; ++j)
+    {
+      in = fopen(files[j],"r");
+      ret = MIN_CHUNK_SIZE;
+      while(ret == MIN_CHUNK_SIZE)
+        {
+          ret = fread(buf, 1, MIN_CHUNK_SIZE, in);
+          fwrite(buf, 1, ret, out);
+        }
+      fclose(in);
+    }
+  fclose(out);
+  free(buf);
+}
+
+void
+delete_temp_files()
+{
+  int j = 0;
+
+  while(j < opt.jobs)
+    unlink(files[j++]);
+}
+
+void
+clean_temp_files()
+{
+  int i;
+
+  for (i = 0; i < opt.jobs; ++i)
+    free (files[i]);
+  free(files);
+}
 
 void
 init_ranges()
 {
-  ranges = malloc (opt.jobs * (sizeof *ranges));
+  if(!(ranges = malloc (opt.jobs * (sizeof *ranges))))
+    logprintf (LOG_VERBOSE, "Space for ranges data could not be allocated.\n");
 }
 
 int
@@ -52,6 +127,7 @@ void
 clean_ranges()
 {
   free (ranges);
+  ranges = NULL;
 }
 
 int
@@ -64,6 +140,7 @@ spawn_thread (struct s_thread_ctx *thread_ctx, int index, int resource)
   if(!thread_ctx[index].url_parsed)
     return 1;
 
+  thread_ctx[index].file = files[index];
   thread_ctx[index].range = ranges + index;
   (thread_ctx[index].range)->is_assigned = 1;
   (thread_ctx[index].range)->resources[resource] = true;
@@ -103,36 +180,4 @@ segmented_retrieve_url (void *arg)
                               false, ctx->i, true, ctx->range);
   ctx->terminated = 1;
   sem_post (ctx->retr_sem);
-}
-
-void
-merge_temp_files(char **inputs, const char *output)
-{
-  FILE *out, *in;
-  int j, ret;
-  void *buf = malloc (MIN_CHUNK_SIZE);
-
-  out = fopen (output, "w");
-  for(j = 0; j < opt.jobs; ++j)
-    {
-      in = fopen(inputs[j],"r");
-      ret = MIN_CHUNK_SIZE;
-      while(ret == MIN_CHUNK_SIZE)
-        {
-          ret = fread(buf, 1, MIN_CHUNK_SIZE, in);
-          fwrite(buf, 1, ret, out);
-        }
-      fclose(in);
-    }
-  fclose(out);
-  free(buf);
-}
-
-void
-delete_temp_files(char **files)
-{
-  int j = 0;
-
-  while(j < opt.jobs)
-    unlink(files[j++]);
 }
