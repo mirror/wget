@@ -13,13 +13,13 @@
 static struct range *ranges;
 
 void
-init_ranges(int numthreads)
+init_ranges()
 {
-  ranges = malloc (numthreads * (sizeof *ranges));
+  ranges = malloc (opt.jobs * (sizeof *ranges));
 }
 
 int
-fill_ranges_data(int numthreads, int num_of_resources, long long int file_size,
+fill_ranges_data(int num_of_resources, long long int file_size,
                  long int chunk_size)
 {
   int i, r;
@@ -74,14 +74,14 @@ spawn_thread (struct s_thread_ctx *thread_ctx, int index, int resource)
 }
 
 int
-collect_thread (sem_t *retr_sem, struct s_thread_ctx *thread_ctx, int numthreads)
+collect_thread (sem_t *retr_sem, struct s_thread_ctx *thread_ctx)
 {
   int k, ret;
   do
     ret = sem_wait (retr_sem);
   while (ret < 0 && errno == EINTR);
 
-  for (k = 0; k < numthreads; k++)
+  for (k = 0; k < opt.jobs; k++)
     if (thread_ctx[k].used && thread_ctx[k].terminated)
       {
         url_free (thread_ctx[k].url_parsed);
@@ -106,14 +106,14 @@ segmented_retrieve_url (void *arg)
 }
 
 void
-merge_temp_files(char **inputs, const char *output, int numfiles)
+merge_temp_files(char **inputs, const char *output)
 {
   FILE *out, *in;
   int j, ret;
   void *buf = malloc (MIN_CHUNK_SIZE);
 
   out = fopen (output, "w");
-  for(j = 0; j < numfiles; ++j)
+  for(j = 0; j < opt.jobs; ++j)
     {
       in = fopen(inputs[j],"r");
       ret = MIN_CHUNK_SIZE;
@@ -129,10 +129,10 @@ merge_temp_files(char **inputs, const char *output, int numfiles)
 }
 
 void
-delete_temp_files(char **files, int numfiles)
+delete_temp_files(char **files)
 {
   int j = 0;
 
-  while(j < numfiles)
+  while(j < opt.jobs)
     unlink(files[j++]);
 }

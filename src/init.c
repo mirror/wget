@@ -342,6 +342,9 @@ defaults (void)
   opt.cookies = true;
   opt.verbose = -1;
   opt.ntry = 20;
+#ifdef ENABLE_THREADS
+  opt.jobs = 1;
+#endif
 #ifdef ENABLE_METALINK
   opt.n_retries = 1;
 #endif

@@ -1070,7 +1070,7 @@ retrieve_from_file (const char *file, bool html, int *count)
       /*GSoC wget*/
       char *temp, **files;
       int i, j, r, index, dt, url_err, retries;
-      int ret, N_THREADS = opt.jobs > 0 ? opt.jobs : 1;
+      int ret;
       int ranges_covered, chunk_size, num_of_resources;
       pthread_t thread;
       sem_t retr_sem;
@@ -1079,31 +1079,30 @@ retrieve_from_file (const char *file, bool html, int *count)
       metalink_resource_t* resource;
       struct s_thread_ctx *thread_ctx;
 
-      files = malloc (N_THREADS * (sizeof *files));
-      init_ranges (N_THREADS);
-      thread_ctx = malloc (N_THREADS * (sizeof *thread_ctx));
+      files = malloc (opt.jobs * (sizeof *files));
+      init_ranges ();
+      thread_ctx = malloc (opt.jobs * (sizeof *thread_ctx));
       
       retries = 0;
       i = 0;
       while ((file = metalink->files[i]) != NULL)
         {
-          N_THREADS = (opt.jobs > 0 ? opt.jobs : 1);
-          memset(thread_ctx, '\0', N_THREADS * (sizeof *thread_ctx));
+          memset(thread_ctx, '\0', opt.jobs * (sizeof *thread_ctx));
           num_of_resources = 0;
           while (file->resources[num_of_resources])
             ++num_of_resources;
 
-          chunk_size = (file->size) / N_THREADS;
+          chunk_size = (file->size) / opt.jobs;
           if(chunk_size < MIN_CHUNK_SIZE)
             chunk_size = MIN_CHUNK_SIZE;
           
-          j = fill_ranges_data(N_THREADS, num_of_resources, file->size, chunk_size);
+          j = fill_ranges_data(num_of_resources, file->size, chunk_size);
 
-          if(j < N_THREADS)
-            N_THREADS = j;
+          if(j < opt.jobs)
+            opt.jobs = j;
 
           /* Assign temporary file names. */
-          for (j = 0; j < N_THREADS; ++j)
+          for (j = 0; j < opt.jobs; ++j)
             {
               files[j] = malloc(L_tmpnam * sizeof(char));
               temp = tmpnam(files[j]);
@@ -1117,7 +1116,7 @@ retrieve_from_file (const char *file, bool html, int *count)
           sem_init (&retr_sem, 0, 0);
           j = ranges_covered = 0;
 
-          for (r = 0; r < N_THREADS; ++r)
+          for (r = 0; r < opt.jobs; ++r)
             {
               resource = file->resources[j];
               if (!resource)
@@ -1143,7 +1142,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                   free(thread_ctx);
                   clean_range_res_data(num_of_resources);
                   clean_ranges ();
-                  for (r = 0; r < N_THREADS; ++r)
+                  for (r = 0; r < opt.jobs; ++r)
                     free(files[r]);
                   free(files);
                   return URLERROR;
@@ -1151,9 +1150,9 @@ retrieve_from_file (const char *file, bool html, int *count)
               ++j;
             }
 
-          while(ranges_covered < N_THREADS)
+          while (ranges_covered < opt.jobs)
             {
-              r = collect_thread (&retr_sem, thread_ctx, N_THREADS);
+              r = collect_thread (&retr_sem, thread_ctx);
               ++ranges_covered;
               
               status = thread_ctx[r].status;
@@ -1200,7 +1199,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                           free(thread_ctx);
                           clean_range_res_data(num_of_resources);
                           clean_ranges ();
-                          for (r = 0; r < N_THREADS; ++r)
+                          for (r = 0; r < opt.jobs; ++r)
                             free(files[r]);
                           free(files);
                           return URLERROR;
@@ -1234,7 +1233,7 @@ retrieve_from_file (const char *file, bool html, int *count)
             {
               int res;
 
-              merge_temp_files(files, file->name, N_THREADS);
+              merge_temp_files(files, file->name);
               res = verify_file_hash(file->name, file->checksums);
               if(!res)
                 {
@@ -1253,10 +1252,10 @@ retrieve_from_file (const char *file, bool html, int *count)
                 }
             }
 
-          delete_temp_files(files, N_THREADS);
+          delete_temp_files(files);
 
           clean_range_res_data(num_of_resources);
-          for (j = 0; j < N_THREADS; ++j)
+          for (j = 0; j < opt.jobs; ++j)
             free(files[j]);
           ++i;
         }
