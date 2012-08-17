@@ -60,7 +60,7 @@ void init_temp_files();
 
 void name_temp_files();
 
-void merge_temp_files(const char *);
+void merge_temp_files(char *);
 
 void delete_temp_files();
 
@@ -70,7 +70,7 @@ void init_ranges();
 
 int fill_ranges_data(int, long long int, long int);
 
-void clean_range_res_data(int);
+void clean_range_res_data();
 
 void clean_ranges();
 

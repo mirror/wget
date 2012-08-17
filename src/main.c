@@ -235,7 +235,7 @@ static struct cmdline_option option_data[] =
     { "local-encoding", 0, OPT_VALUE, "localencoding", -1 },
     { "max-redirect", 0, OPT_VALUE, "maxredirect", -1 },
 #ifdef ENABLE_METALINK
-    { "metalink-file", 0, OPT_VALUE, "metalink", -1 },
+    { "metalink", 0, OPT_VALUE, "metalink", -1 },
 #endif
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
     { "no", 'n', OPT__NO, NULL, required_argument },
@@ -1509,23 +1509,47 @@ outputting to a regular file.\n"));
     }
 
 #ifdef ENABLE_METALINK
-  /* TODO: Add all the options that causes undefined/harmful results when used
-     with option --metalink-file. */
   if(opt.metalink_file)
     {
-      if(opt.output_document)
+      /* --protocol-directories is the longest option among the ones checked below. */
+      char *temp_option = malloc(strlen("--protocol-directories"));
+
+      if(opt.user || opt.passwd || opt.http_user || opt.http_passwd ||
+         opt.ftp_user || opt.ftp_passwd || opt.ask_passwd)
         {
-          fprintf (stderr, _("-O can not used with --metalink-file.\n"));
+          fprintf (stderr, _("Username and password information not needed to \
+                   be specified when downloading from a metalink.\n"));
           exit(1);
         }
-      if(opt.base_href)
+      temp_option[0] = '\0';
+      if(opt.input_filename)
+        sprintf(temp_option, "-i");
+      else if(opt.output_document)
+        sprintf(temp_option, "-O");
+      else if(opt.base_href)
+        sprintf(temp_option, "--base");
+      else if(opt.force_html)
+        sprintf(temp_option, "--force-html");
+      else if(opt.always_rest)
+        sprintf(temp_option, "-c");
+      else if(opt.spider)
+        sprintf(temp_option, "-spider");
+      else if(opt.cut_dirs)
+        sprintf(temp_option, "--cut-dirs");
+      else if(opt.wait)
+        sprintf(temp_option, "-w");
+      else if(opt.waitretry != 10)
+        sprintf(temp_option, "--waitretry");
+      else if(opt.timestamping)
+        sprintf(temp_option, "--timestamping");
+      else if(opt.protocol_directories)
+          sprintf(temp_option, "--protocol-directories");
+      else if(opt.dirstruct)
+          sprintf(temp_option, "--force-directories");
+      if(temp_option[0])
         {
-          fprintf (stderr, _("--base can not used with --metalink-file.\n"));
-          exit(1);
-        }
-      if(opt.force_html)
-        {
-          fprintf (stderr, _("--force-html can not used with --metalink-file.\n"));
+          fprintf (stderr, _("%s can not be used with --metalink.\n"), temp_option);
+          free(temp_option);
           exit(1);
         }
     }

@@ -1067,8 +1067,8 @@ retrieve_from_file (const char *file, bool html, int *count)
 
   if(opt.metalink_file && (metalink = metalink_context(input_file)))
     {
-      int i, j, r, dt, url_err, retries;
-      int ret;
+      int i, j, r, url_err, retries;
+      int ret, dt = 0;
       int ranges_covered, chunk_size, num_of_resources;
       pthread_t thread;
       sem_t retr_sem;
@@ -1132,7 +1132,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                   logprintf (LOG_NOTQUIET, "%s: %s.\n", thread_ctx[r].url, error);
                   xfree (error);
                   free(thread_ctx);
-                  clean_range_res_data(num_of_resources);
+                  clean_range_res_data();
                   clean_ranges ();
                   clean_temp_files ();
                   return URLERROR;
@@ -1195,7 +1195,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                           logprintf (LOG_NOTQUIET, "%s: %s.\n", thread_ctx[r].url, error);
                           xfree (error);
                           free(thread_ctx);
-                          clean_range_res_data(num_of_resources);
+                          clean_range_res_data();
                           clean_ranges ();
                           clean_temp_files ();
                           return URLERROR;
@@ -1250,7 +1250,12 @@ retrieve_from_file (const char *file, bool html, int *count)
 
           delete_temp_files();
 
-          clean_range_res_data(num_of_resources);
+          clean_range_res_data();
+          if (opt.quota && total_downloaded_bytes > opt.quota)
+            {
+              status = QUOTEXC;
+              break;
+            }
           ++i;
         }
 

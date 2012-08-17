@@ -79,7 +79,7 @@ name_temp_files()
 /*  Merge the temporary files in which the chunks are stored to form the
     resulting file(output). */
 void
-merge_temp_files(const char *output)
+merge_temp_files(char *output)
 {
   FILE *out, *in;
   int j, ret;
@@ -161,10 +161,10 @@ fill_ranges_data(int num_of_resources, long long int file_size,
 
 /* Free the resources array of each range allocated by fill_ranges_data(). */
 void
-clean_range_res_data(int num_of_resources)
+clean_range_res_data()
 {
   int i;
-  for (i = 0; i < num_of_resources; ++i)
+  for (i = 0; i < opt.jobs; ++i)
     free (ranges[i].resources);
 }
 
