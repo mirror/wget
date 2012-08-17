@@ -1227,10 +1227,19 @@ retrieve_from_file (const char *file, bool html, int *count)
             }
           else
             {
+              char *file_path;
               int res;
               /* Form the actual file to be downloaded and verify hash. */
-              merge_temp_files(file->name);
-              res = verify_file_hash(file->name, file->checksums);
+              file_path = malloc(strlen(opt.dir_prefix) + strlen(file->name)
+                                                        + (sizeof "/"));
+              if(opt.dir_prefix)
+                sprintf(file_path, "%s/%s", opt.dir_prefix, file->name);
+              else
+                sprintf(file_path, "%s", file->name);
+              mkalldirs(file_path);
+              merge_temp_files(file_path);
+              res = verify_file_hash(file_path, file->checksums);
+              free(file_path);
               if(!res)
                 {
                   ++*count;
