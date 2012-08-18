@@ -1258,6 +1258,11 @@ Error in server response, closing control connection.\n"));
 
   /* Get the contents of the document.  */
   flags = 0;
+#ifdef ENABLE_METALINK
+  if (opt.metalink_file && expected_bytes)
+    /* If content-length is present, read that much; otherwise, read until EOF. */
+    flags |= rb_read_exactly;
+#endif
   if (restval && rest_failed)
     flags |= rb_skip_startpos;
   rd_size = 0;
@@ -1316,8 +1321,13 @@ Error in server response, closing control connection.\n"));
   /* If retrieval failed for any reason, return FTPRETRINT, but do not
      close socket, since the control connection is still alive.  If
      there is something wrong with the control connection, it will
-     become apparent later.  */
-  if (*respline != '2')
+     become apparent later.
+     In case of a metalink file download, proabably due to taking only a chunk
+     of the file, respline becomes '2', even though file download is successful.
+     TODO: Make sure exempting metalink downloads from this check does not cause
+     any troubles.
+     */
+  if (*respline != '2' && !opt.metalink_file)
     {
       xfree (respline);
       if (res != -1)
@@ -1528,7 +1538,9 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
       if (range)
         {
           restval = range->first_byte;
-          len = range->last_byte - restval + 1;
+          /* It is not the length in the usual sense, but this is the correct
+             value for getftp to use. */
+          len = range->last_byte + 1;
         }
 
       /* If we are working on a WARC record, getftp should also write
@@ -2237,7 +2249,7 @@ ftp_loop (struct url *u, char **local_file, int *dt, struct url *proxy,
   /* To let ftp_loop_internal AND getftp know of the desired file name. Added
      while implementing metalink support to wget. */
   if(local_file && *local_file)
-    con.target = *local_file;
+    con.target = xstrdup (*local_file);
 
   /* If the file name is empty, the user probably wants a directory
      index.  We'll provide one, properly HTML-ized.  Unless

@@ -1230,8 +1230,8 @@ retrieve_from_file (const char *file, bool html, int *count)
               char *file_path;
               int res;
               /* Form the actual file to be downloaded and verify hash. */
-              file_path = malloc(strlen(opt.dir_prefix) + strlen(file->name)
-                                                        + (sizeof "/"));
+              file_path = malloc((opt.dir_prefix ? strlen(opt.dir_prefix) : 0)
+                               + strlen(file->name) + (sizeof "/"));
               if(opt.dir_prefix)
                 sprintf(file_path, "%s/%s", opt.dir_prefix, file->name);
               else
