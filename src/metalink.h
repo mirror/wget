@@ -32,8 +32,71 @@ as that of the covered work.  */
 #ifndef MLINK_H
 #define MLINK_H
 
+typedef struct metalink_piece_hash
+{
+  struct metalink_piece_hash *next;
+
+  int piece;
+  char *hash;
+} mlink_piece_hash;
+
+typedef struct metalink_checksum
+{
+  struct metalink_checksum *next;
+
+  char *type;
+  char *hash;
+} mlink_checksum;
+
+typedef struct metalink_resource
+{
+  struct metalink_resource *next;
+
+  char *url;
+  char *type;
+  char *location;
+  int preference;
+  int maxconnections;
+} mlink_resource;
+
+typedef struct
+{
+  char *type;
+  int length;
+  mlink_piece_hash *piece_hashes;
+} mlink_chunk_checksum;
+
+typedef struct metalink_file
+{
+  struct metalink_file *next;
+
+  char *name;
+  long long int size;
+  char *version;
+  char *language;
+  char *os;
+  int maxconnections;
+  mlink_resource *resources;
+  int num_of_res;
+  mlink_checksum *checksums;
+  int num_of_checksums;
+  mlink_chunk_checksum *chunk_checksum;
+} mlink_file;
+
+typedef struct
+{
+  char *identity;
+  char *tags;
+  mlink_file *files;
+  int num_of_files;
+} mlink;
+
+mlink *parse_metalink (char *);
+
+void delete_mlink (mlink *);
+
 metalink_t *metalink_context (const char *);
 
-int verify_file_hash(const char *, metalink_checksum_t **);
+int verify_file_hash (const char *, mlink_checksum *);
 
 #endif /* MLINK_H */

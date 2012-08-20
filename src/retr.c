@@ -1063,18 +1063,16 @@ retrieve_from_file (const char *file, bool html, int *count)
     input_file = (char *) file;
 
 #ifdef ENABLE_METALINK
-  metalink_t *metalink;
+  mlink *mlink = parse_metalink(input_file);
 
-  if(opt.metalink_file && (metalink = metalink_context(input_file)))
+  if(opt.metalink_file && mlink)
     {
-      int i, j, r, url_err, retries;
-      int ret, dt = 0;
-      int ranges_covered, chunk_size, num_of_resources;
+      int i, j, r, ranges_covered, chunk_size, url_err, retries, ret, dt=0;
       pthread_t thread;
       sem_t retr_sem;
       uerr_t status;
-      metalink_file_t* file;
-      metalink_resource_t* resource;
+      mlink_file* file;
+      mlink_resource *resource;
       struct s_thread_ctx *thread_ctx;
 
       init_temp_files();
@@ -1082,20 +1080,17 @@ retrieve_from_file (const char *file, bool html, int *count)
       thread_ctx = malloc (opt.jobs * (sizeof *thread_ctx));
       
       retries = 0;
-      i = 0;
-      while ((file = metalink->files[i]) != NULL)
+      file = mlink->files;
+      while (file)
         {
           memset(thread_ctx, '\0', opt.jobs * (sizeof *thread_ctx));
-          num_of_resources = 0;
-          while (file->resources[num_of_resources])
-            ++num_of_resources;
 
           /* If chunk_size is too small, set it equal to MIN_CHUNK_SIZE. */
           chunk_size = (file->size) / opt.jobs;
           if(chunk_size < MIN_CHUNK_SIZE)
             chunk_size = MIN_CHUNK_SIZE;
           
-          j = fill_ranges_data(num_of_resources, file->size, chunk_size);
+          j = fill_ranges_data(file->num_of_res, file->size, chunk_size);
 
           /* If chunk_size was set to MIN_CHUNK_SIZE, opt.jobs should be corrected. */
           if(j < opt.jobs)
@@ -1105,16 +1100,16 @@ retrieve_from_file (const char *file, bool html, int *count)
 
           sem_init (&retr_sem, 0, 0);
           j = ranges_covered = 0;
-
+          resource = file->resources;
+          
           /* Assign values to thread_ctx[] elements and spawn threads that will
              conduct the download. */
           for (r = 0; r < opt.jobs; ++r)
             {
-              resource = file->resources[j];
               if (!resource)
                 {
                   j = 0;
-                  resource = file->resources[j];
+                  resource = file->resources;
                 }
 
               thread_ctx[r].referer = NULL;
@@ -1138,6 +1133,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                   return URLERROR;
                 }
               ++j;
+              resource = resource->next;
             }
 
           /* Until all the ranges are covered, collect threads. */
@@ -1170,18 +1166,24 @@ retrieve_from_file (const char *file, bool html, int *count)
 
                   /* Look for resource from which downloading this range is not
                      tried. */
-                  for (j = 0; j < num_of_resources; ++j)
-                    if (!((thread_ctx[r].range)->resources)[j])
-                      break;
+                  j = 0;
+                  resource = file->resources;
+                  while (j < file->num_of_res)
+                    {
+                      if (!((thread_ctx[r].range)->resources)[j])
+                        break;
+                      ++j;
+                      resource = resource -> next;
+                    }
                   /* If there is such a resource, then update the range values
                      to try that not-tried resource and spawn thread.
                      If all the resources are exhausted, stop collecting the
                      threads, as the download failed. */
-                  if (j < num_of_resources)
+                  if (j < file->num_of_res)
                     {
-                      thread_ctx[r].url = file->resources[j]->url;
                       if ((thread_ctx[r].range)->bytes_covered)
                         {
+                          thread_ctx[r].url = resource->url;
                           (thread_ctx[r].range)->first_byte =
                                             (thread_ctx[r].range)->bytes_covered;
                           (thread_ctx[r].range)->bytes_covered = 0;
@@ -1219,9 +1221,9 @@ retrieve_from_file (const char *file, bool html, int *count)
                 {
                   if(retries  < opt.n_retries)
                     {
-                      --i;
                       logprintf (LOG_VERBOSE, "Retrying to download(%s). (TRY #%d)\n",
                                  file->name, ++retries + 1);
+                      continue;
                     }
                 }
             }
@@ -1251,8 +1253,9 @@ retrieve_from_file (const char *file, bool html, int *count)
                   logprintf (LOG_VERBOSE, "Verifying(%s) failed.\n", file->name);
                   if(retries  < opt.n_retries)
                     {
-                      --i;
-                      logprintf (LOG_VERBOSE, "Retrying to download(%s). (TRY #%d)\n", file->name, ++retries + 1);
+                      logprintf (LOG_VERBOSE, "Retrying to download(%s). (TRY #%d)\n",
+                                 file->name, ++retries + 1);
+                      continue;
                     }
                 }
             }
@@ -1265,13 +1268,13 @@ retrieve_from_file (const char *file, bool html, int *count)
               status = QUOTEXC;
               break;
             }
-          ++i;
+          file = file->next;
         }
 
       free(thread_ctx);
       clean_ranges ();
       clean_temp_files ();
-      metalink_delete(metalink);
+      delete_mlink(mlink);
     }
   else
     {
