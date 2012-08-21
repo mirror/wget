@@ -1,3 +1,8 @@
+2012-08-21  <y-iida@secom.co.jp> (tiny change)
+
+	* connect.c (connect_to_ip) [ENABLE_IPV6]: Attempt to use IPv6.
+	* http.c (gethttp): Likewise.
+
 2012-07-03  Steven Schubiger  <stsc@member.fsf.org>
 
 	* init.c: Include warc.h for warc_close in cleanup function.
