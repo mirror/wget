@@ -1512,7 +1512,7 @@ outputting to a regular file.\n"));
   if(opt.metalink_file)
     {
       /* --protocol-directories is the longest option among the ones checked below. */
-      char *temp_option = malloc(strlen("--protocol-directories"));
+      char *temp_option = malloc(sizeof "--protocol-directories");
 
       if(opt.user || opt.passwd || opt.http_user || opt.http_passwd ||
          opt.ftp_user || opt.ftp_passwd || opt.ask_passwd)
