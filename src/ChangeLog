@@ -1,3 +1,8 @@
+2012-08-25  Hrvoje Niksic  <hniksic@gmail.com>
+
+	* warc.c (warc_find_duplicate_cdx_record): Use hash_table_get
+	instead of hash_table_get_pair.
+
 2012-08-21  <y-iida@secom.co.jp> (tiny change)
 
 	* connect.c (connect_to_ip) [ENABLE_IPV6]: Attempt to use IPv6.

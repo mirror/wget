@@ -1005,12 +1005,10 @@ warc_find_duplicate_cdx_record (char *url, char *sha1_digest_payload)
   if (warc_cdx_dedup_table == NULL)
     return NULL;
 
-  char *key;
-  struct warc_cdx_record *rec_existing;
-  int found = hash_table_get_pair (warc_cdx_dedup_table, sha1_digest_payload,
-                                   &key, &rec_existing);
+  struct warc_cdx_record *rec_existing
+    = hash_table_get (warc_cdx_dedup_table, sha1_digest_payload);
 
-  if (found && strcmp (rec_existing->url, url) == 0)
+  if (rec_existing && strcmp (rec_existing->url, url) == 0)
     return rec_existing;
   else
     return NULL;
