@@ -99,7 +99,7 @@ ssl_init (void)
   dir = opendir (ca_directory);
   if (dir == NULL)
     {
-      if (opt.ca_directory)
+      if (opt.ca_directory && *opt.ca_directory)
         logprintf (LOG_NOTQUIET, _("ERROR: Cannot open directory %s.\n"),
                    opt.ca_directory);
     }

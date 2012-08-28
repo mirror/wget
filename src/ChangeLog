@@ -1,6 +1,7 @@
 2012-08-28  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* gnutls.c (ssl_check_certificate): deinit gnutls_x509_crt_t.
+	* gnutls.c (ssl_init): don't error if CA directory is empty.
 
 2012-07-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
