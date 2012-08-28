@@ -1,3 +1,7 @@
+2012-08-28  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+        * doc/wget.texi: remove -nv from --report-speed
+
 2012-08-04  mancha <mancha@mac.hush.com> (tiny change)
 
 	* wget.texi: Export ENVIRONMENT to the man page.

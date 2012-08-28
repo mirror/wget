@@ -479,8 +479,7 @@ Turn off verbose without being completely quiet (use @samp{-q} for
 that), which means that error messages and basic information still get
 printed.
 
-@item -nv
-@itemx --report-speed=@var{type}
+@item --report-speed=@var{type}
 Output bandwidth as @var{type}.  The only accepted value is @samp{bits}.
 
 @cindex input-file
