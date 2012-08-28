@@ -515,7 +515,7 @@ ssl_check_certificate (int fd, const char *host)
         {
           logprintf (LOG_NOTQUIET, _("No certificate found\n"));
           success = false;
-          goto out;
+          goto crt_deinit;
         }
       err = gnutls_x509_crt_import (cert, cert_list, GNUTLS_X509_FMT_DER);
       if (err < 0)
@@ -523,7 +523,7 @@ ssl_check_certificate (int fd, const char *host)
           logprintf (LOG_NOTQUIET, _("Error parsing certificate: %s\n"),
                      gnutls_strerror (err));
           success = false;
-          goto out;
+          goto crt_deinit;
         }
       if (now < gnutls_x509_crt_get_activation_time (cert))
         {
@@ -542,6 +542,7 @@ ssl_check_certificate (int fd, const char *host)
                      quote (host));
           success = false;
         }
+ crt_deinit:
       gnutls_x509_crt_deinit (cert);
    }
 
