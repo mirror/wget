@@ -1669,6 +1669,7 @@ decode_string (const char *val, const struct decode_item *items, int itemcount,
 
 
 void cleanup_html_url (void);
+void spider_cleanup (void);
 
 
 /* Free the memory allocated by global variables.  */
@@ -1703,6 +1704,7 @@ cleanup (void)
   res_cleanup ();
   http_cleanup ();
   cleanup_html_url ();
+  spider_cleanup ();
   host_cleanup ();
   log_cleanup ();
 

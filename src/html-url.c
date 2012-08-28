@@ -830,7 +830,7 @@ get_urls_file (const char *file)
   return head;
 }
 
-static void
+void
 cleanup_html_url (void)
 {
   /* Destroy the hash tables.  The hash table keys and values are not

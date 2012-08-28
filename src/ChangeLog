@@ -1,3 +1,9 @@
+2012-07-07  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* html-url.c (cleanup_html_url): Remove "static" modifier.
+	* init.c (cleanup_html_url): Likewise.
+	Reported by: Mike Frysinger <vapier@gentoo.org>.
+
 2012-08-25  Hrvoje Niksic  <hniksic@gmail.com>
 
 	* warc.c (warc_find_duplicate_cdx_record): Use hash_table_get
