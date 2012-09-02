@@ -5,8 +5,12 @@
 
 # Package source files
 lib/error.c
+lib/gai_strerror.c
 lib/getopt.c
 lib/quotearg.c
+lib/spawn-pipe.c
+lib/w32spawn.h
+lib/wait-process.c
 lib/xalloc-die.c
 src/connect.c
 src/convert.c
@@ -32,3 +36,4 @@ src/retr.c
 src/spider.c
 src/url.c
 src/utils.c
+src/warc.c
