@@ -1,4 +1,11 @@
+2012-09-03  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* http.c (digest_authentication_encode): Add support for RFC 2617
+	MD5-sess authentication algorithm.
+	Feature request and testing by: Avinash <pavinash@gmail.com>
+
 2012-11-14  Ángel González  <keisial@gmail.com>
+
 	* warc.c (warc_sha1_stream_with_payload): Fix compilation under
 	gcc -std=c89.
 

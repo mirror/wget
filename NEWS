@@ -17,6 +17,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Support shorthand URLs in an input file.
 
 ** Fix -c with servers that don't specify a content-length.
+
+** Add support for MD5-SESS
 
 * Changes in Wget 1.14
 
