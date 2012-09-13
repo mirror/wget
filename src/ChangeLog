@@ -1,3 +1,445 @@
+2012-08-14  Ilim Ugur  <ilimugur@gmail.com>
+
+	* multi.c (collect_thread): Add new argument, numthreads, to prevent a
+	potential memory leak.
+	* multi.h : Update the prototype of collect_thread accordingly.
+	* retr.c (retrieve_from_file): Update the call made to collect_thread
+	accordingly.
+
+2012-08-14  Ilim Ugur  <ilimugur@gmail.com>
+
+	* retr.c (retrieve_from_file): Move the statement in which a call to
+	metalink_context is being made, to prevent a potential segmentation
+	fault in case a non-existing metalink file location is provided.
+
+2012-08-14  Ilim Ugur  <ilimugur@gmail.com>
+
+	* init.c (defaults): Update the default value for n_retries to 1.
+	* main.c (main): Update the output prompted when "wget --help" is used.
+
+2012-08-12  Ilim Ugur  <ilimugur@gmail.com>
+
+	* multi.c (spawn_thread): Delete an argument, name.
+	* multi.c (delete_temp_files): Change type of variable, inputs from
+	const char ** to char **.
+	* multi.c (merge_temp_files): Change type of variable, files from
+	const char ** to char **.
+	* multi.h : Remove obsolete TEMP_PREFIX  macro. Update function
+	prototypes to reflect the changes mentioned above.
+	* retr.c : Use tmpnam to generate unique temporary file names, making
+	sure no file with the same name will exist, before the download.
+	delete_temp_files call before starting to download is, now, not needed.
+	Update the spawn_thread calls accordingly. Update message printing
+	statements (i.e. use LOG_NOTQUIET instead of LOG_VERBOSE).
+
+2012-08-12  Ilim Ugur  <ilimugur@gmail.com>
+
+	* multi.c (delete_temp_files): Instead of passing the name of the final
+	file, pass the array in which the temporary file names are stored.
+	Update the execution to quickly traverse the names and unlink them,
+	deleting an allocation and a now-obsolete loop.
+	* multi.h : Update the prototype of delete_temp_files.
+	* retr.c : Update the calls to delete_temp_files.
+
+2012-08-12  Ilim Ugur  <ilimugur@gmail.com>
+
+	* main.c : Initial URL check is updated so it considers metalink-file
+	option as well as input-file. The conditional statement for printing the
+	downloaded sum is updated so it considers metalink-file option as well
+	as input-file. A conditional statement is added to handle calling
+	retrieve_from_file when opt.metalink_file is specified.
+	* multi.c (merge_temp_files): Add a new parameter which will be used
+	internally to improve the execution of the function.
+	* multi.h : Update the prototype of merge_temp_files.
+	* retr.c : Update the call to merge_temp_files, passing the newly
+	required argument.
+
+2012-08-12  Ilim Ugur  <ilimugur@gmail.com>
+
+	* init.c : Add metalink-file option to commands.
+	* main.c : Add metalink-file option to option_data, as well as a few
+	interoption availability checks of the new option with the existing
+	options output_document, base_href and force_html, enclosed within an
+	ifdef directive.
+	* options.h : Add a new member,metalink_file, to struct options.
+	* retr.c (retrieve_from_file): Update the Metalink portion of the
+	function code so that it is activated when a metalink file is specified
+	using --metalink-file.
+
+2012-08-12  Ilim Ugur  <ilimugur@gmail.com>
+
+	* retr.c (retrieve_from_file): Initialize status_least_severe member of
+	all the members of ranges array with RETROK.
+
+2012-08-11  Ilim Ugur  <ilimugur@gmail.com>
+
+	* init.c : Add retries option to commands.
+	* init.c (defaults): Add an initialization statement for opt.n_retries
+	within an ifdef directive.
+	* main.c : Add retries option to option_data.
+	* metalnk.c (lower_hex_case): Make function static.
+	* metalnk.c (verify_file_hash): Update the return values in case of an
+	error.
+	* metalink.h : Remove the prototype of find_file_hash, which has become
+	obsolete for some time now.
+	* options.h : Add a new member,n_retries, to struct options.
+	* retr.c (verify_file_hash): Call delete_temp_files to delete all the
+	files that have the same name with one of the temporary files, which can
+	cause errors. 
+	* retr.c (retrieve_from_file): Update the code so that, in case of a
+	failed attempt at downloading a file (or corrupt hash after a successful
+	download), it is retried to be downloaded opt.n_retries times in total.
+
+2012-08-10  Ilim Ugur  <ilimugur@gmail.com>
+
+	* init.c : Remove verify option from commands.
+	* main.c : Remove verify option from option_data.
+	* metalink.c : Readjust the elements in supported_hashes, digest_sizes
+	and hash_function in descending order of the strength of the encryption.
+	* metalnk.c (verify_file_hash): Readjust the execution of function so
+	that instead of comparing an explicitly stated type of hash, which used
+	to be stored in opt.hashtype, compare the strongest type available in
+	metalink file and is supported by Wget.
+	* options.h : Remove hashtype member of struct options.
+	* retr.c : Modify a message prompting statement to be more concise.
+
+2012-08-10  Ilim Ugur  <ilimugur@gmail.com>
+
+	* metalink.c : Switch back to using <hash_type>_stream functions,
+	instead of taking a lower level approach. Remove functions init_ctx,
+	finish_hash_ctx, process_block, process_bytes and find_file_hash, as
+	they are no longer needed.
+	* metalink.c (verify_file_hash): Use <hash_type>_stream instead of
+	find_file_hash.
+
+2012-08-10  Ilim Ugur  <ilimugur@gmail.com>
+
+	* metalink.c : Correct the value of MAX_DIGEST_LENGTH macro.
+	* metalink.c (verify_file_hash): Correct the size of two-dimensional
+	array hashes. Correct format error in conversion from byte-form to
+	hex-form of hash. Update the value of the argument fed to lower_hex_case
+	calls, due to the change in value of MAX_DIGEST_LENGTH.
+
+2012-08-10  Ilim Ugur  <ilimugur@gmail.com>
+
+	* metalink.c (find_file_hash): Convert byte-form hash to hex-form.
+	* metalink.c : Add a function lower_hex_case to lower the characters
+	A-E in the hash given in the metalink file.
+	* retr.c : Add message prompting statements to be printed to inform
+	users of the result of the verification.
+
+2012-08-10  Ilim Ugur  <ilimugur@gmail.com>
+
+	* metalink.c (find_file_hash): Update function calls made in this scope.
+	Move a buffer allocation statement.
+	* metalink.c (verify_file_hash): Correct the type of multi-dimensional
+	array, hashes.
+	* metalink.c : Rename init_ctx and finish_ctx to be init_hash_ctx,
+	finish_hash_ctx. Correct passed arguments while making calls to
+	functions *_init_ctx, *_finish_ctx, *_process_blocks, *_process_bytes.
+
+2012-08-08  Ilim Ugur  <ilimugur@gmail.com>
+
+	* metalink.c : Hash verification code is totally rewritten, using a
+	lower level (i.e. in terms of abstraction) approach. Functions named
+	init_ctx, finish_ctx, process_blocks and process_bytes are introduced,
+	to handle the operation which was conducted by functions md5_stream,
+	sha1_steam and sha256_stream. Add function find_file_hash to find the
+	hash of a file. verify_hash is renamed as verify_file_hash. Add error
+	message printing statements to inform user of the progress.
+	* metalink.h : Update the prototype of verify_hash and add the prototype
+	of find_file_hash.
+	* retr.c: Update call to verify_hash.
+
+2012-08-03  Ilim Ugur  <ilimugur@gmail.com>
+
+	* init.c : Correct a faulty ifdef directive and add new verify option
+	to commands array to correspond to the new command-line option.
+	* main.c : Add a command-line option verify to indicate the hash type
+	to be compared.
+	* metalink.c : Include essential modules, md5.h and sha1.h. Define
+	HASH_TYPES and MAX_DIGEST_VALUE macros. Define arrays supported_hashes,
+	digest_values and function pointer hash_function. Write function
+	verify_hash that verifies hash for a given file and its checksums
+	specified in the relevant metalink file.
+	* metalink.h : Add the prototype of verify_hash.
+	* multi.h : Add new member hashtype to struct options.
+	* retr.c : Call verify_hash after successful downloading of a file
+	specified in metalink file, and act according to its return value.
+
+2012-08-01  Ilim Ugur  <ilimugur@gmail.com>
+
+	* http.c (create_authorization_line): Replace an incorrect ifdef
+	directive with an if defined directive.
+	* http.c : Move the inclusion of multi.h within the scope of an ifdef
+	directive.
+	* http.h : Include wget.h instead of multi.h, as that is where the
+	definition of the struct range currently is in.
+	* multi.c : Correct where wget.h is included. Include unistd.h. Two
+	functions named merge_temp_files and delete_temp_files are written to
+	deal with merging and deletion of temporary files, by using fread/fwrite
+	and unlink, respectively.
+	* multi.c (spawn_thread): Correct the type of a variable, thread. Delete
+	a now obsolete portion of code, which used to check if a file name of
+	which is same with a temporary file's name exists. If such a file was
+	found, it used to be deleted.
+	* multi.h : Add the prototypes of merge_temp_files and delete_temp_files
+	and remove the macro FILENAME_SIZE, which is not needed.
+	* recur.c : Move the inclusion of multi.h within the scope of an ifdef
+	directive.
+	* retr.c : Enclose the inclusion of thread and metalink related header
+	files within the scope of an ifdef directive. Remove a variable,
+	command. Use new functions merge_temp_files and delete_temp_files,
+	instead of calling system function and execute commands cat and rm.
+	* retr.h : Remove the inclusion of multi.h, as the definition of struct
+	range is no longer in multi.h and wget.h is known to be included aboe
+	retr.h.
+
+2012-07-31  Ilim Ugur  <ilimugur@gmail.com>
+
+	* ftp.c (ftp_loop_internal): Add a struct range parameter to function
+	signature. Assign first_byte and last_byte members of the new struct
+	range parameter to relevant variables, restval and len, respectively.
+	Assign the size of the data read, qtyread, to range->bytes_covered.
+	Update an if statament which checks the availability of local_file
+	before assigning a value to it.
+	* ftp.c (ftp_loop): Add a struct range parameter to function signature.
+	Pass struct range parameter to ftp_loop_internal.
+	* ftp.c : Update all ftp_loop_internal calls but the one in ftp_loop so
+	that NULL is passed as the value for the expected struct range argument.
+	* ftp.h : Update the prototype of ftp_loop to include its new struct
+	range parameter. Include wget.h, as it is where the definition of struct
+	range is.
+	* http.c : Use an if statement instead of an ifdef directive, which was,
+	in this case, a bad way of trying to simulate conditional execution of a
+	statement.
+	* retr.c (retrieve_url): Update ftp_loop_internal call and pass
+	segment_range as the value of the expected struct range argument.
+
+2012-07-31  Ilim Ugur  <ilimugur@gmail.com>
+
+	* http.c (http_loop): Assign range->bytes_covered the size of retrieved
+	data, hstat.len.
+	* retr.c : Update initialization statements of struct range instances to
+	consider new struct range member, bytes_covered and not is_covered.
+	Update the first_byte member of a struct range instance in case of
+	partially retrieved segments, using new member variable, bytes_covered.
+	* wget.h : Replace the variable is_covered in the definition of struct
+	range with another variable, bytes_covered.
+
+2012-07-29  Ilim Ugur  <ilimugur@gmail.com>
+
+	* Makefile.am : Add a conditional statement for adding metalink.c to
+	wget_SOURCES.
+	* build_info.c.in : Add a line to indicate thread support.
+	* connect.h : Enclose portions of code written either by Giuseppe
+	Scrivano in his patch for multiple threaded recursive downloads or as a
+	part of Google Summer of Code project for adding Metalink support to GNU
+	Wget in ifdef and ifndef directives, based on the availability of thread
+	and/or metalink support.
+	* convert.c : Likewise.
+	* http.c : Likewise.
+	* init.c : Likewise.
+	* main.c : Likewise.
+	* multi.c : Likewise.
+	* options.h : Likewise.
+	* recur.c : Likewise.
+	* retr.c : Likewise.
+
+2012-07-27  Ilim Ugur  <ilimugur@gmail.com>
+
+	* http.c : Take assertion of local_file having a NULL value and
+	assignment of value to local_file within scope of an ifndef directive.
+	* multi.c : Delete a part of a comment, which became redundant.
+	* multi.h : Correct where wget.h is included. Also, delete the
+	definition of struct range, which is moved to wget.h.
+	* retr.c : Take the inclusion of libmetalink header files and metalink.h
+	within scope of an ifdef directive, to include them only if Metalink
+	support is compiled.
+	* retr.c (retrieve_from_file): Take the Metalink downloading portions of
+	the code within ifdef directives, so that they are compiled only if
+	Metalink support is compiled.
+	* wget.h : Definition of struct range is moved to here.
+	*build_info.c.in : Add a line to indicate Metalink support.
+
+2012-07-26  Ilim Ugur  <ilimugur@gmail.com>
+
+	* multi.h : Delete variable resources_tried, which is obsolete, from
+	the definition of struct range.
+	* retr.c (retrieve_from_file): Delete redundant variable k. Add variable
+	file_name to be used in merging and deleting temporary files. Replace
+	strcat calls in merging and deleting temporary files with sprintf calls,
+	which are tidier than the sprintf calls used before (i.e. does not make
+	illegal writes, as Valgrind used to claim). Also, an else if branch is
+	added to the error checking after collecting a thread, to disable
+	fallbacking in case of an IOERROR.
+
+2012-07-25  Ilim Ugur  <ilimugur@gmail.com>
+
+	* multi.h : Define a macro, MIN_CHUNK_SIZE to stand for the minimum size
+	for a segment that can be downloaded by a thread.
+	* retr.c (retrieve_from_file): Check the size of the segments for the
+	specified number of threads. If it is smaller than MIN_CHUNK_SIZE,
+	assign MIN_CHUNK_SIZE to chunk_size and use
+	(file->size / chunk_size) + 1 threads, instead of opt.jobs. In addition,
+	replace sprintf calls with strcpy and strcat in merging-temporary-files
+	and deleting-temporary-files portions of the code.
+
+2012-07-24  Ilim Ugur  <ilimugur@gmail.com>
+
+	* retr.c (retrieve_from_file): Move the code block which deals with
+	Metalink downloads out of the else if scope it used to be, deleting the
+	relevant else if branch. Instead, the code is inserted after the if
+	statement of which it was previously a part(i.e. the if statement which
+	deals with downloading the input file if its URL was given instead of
+	its physical location).
+
+2012-07-24  Ilim Ugur  <ilimugur@gmail.com>
+
+	* http.c (http_loop): Add a missing check to 
+	* multi.c : Correct where wget.h is included.
+	* retr.c (retrieve_from_file): Correct the variable being incorrectly
+	used as index variable in a loop for an array. Add the forgotten
+	pre-incrementation statement of the loop variable of file-traversing
+	loop to the end of the loop scope of the code.
+
+2012-07-24  Ilim Ugur  <ilimugur@gmail.com>
+
+	* Makefile.am : Add multi.c and multi.h to wget_SOURCES.
+	* multi.c : Add functions spawn_thread, segmented_retrieve_url and
+	collect_thread to handle thread creation and collection in function
+	retrieve_from_file of retr.c.
+	* multi.h : Add the prototypes of the functions that are added to
+	multi.c. Add a member resources to struct range to point to a bool array
+	that shows which resources are exhausted. Moved the definition of macros
+	which are relevant to multi-thread downloading, FILENAME_SIZE and
+	TEMP_PREFIX, to here.
+	* retr.c (retrieve_from_file): Rewrite the multi-thread downloading.
+	Instead of adapting the code written by Giuseppe Scrivano for recursive
+	downloading, use an algorithm that separates thread creation from
+	collection. Move some of the assignments to newly written thread
+	spawning and collecting functions in multi.c.
+
+2012-07-23  Ilim Ugur  <ilimugur@gmail.com>
+
+	* retr.c : Define a TEMP_PREFIX macro to use instead of "temp_" within
+	retrieve_from_file.
+	* retr.c (retrieve_from_file): Replace "temp_" with TEMP_PREFIX. Move
+	the sem_destroy call.
+
+2012-07-22  Ilim Ugur  <ilimugur@gmail.com>
+
+	* Makefile.am : Add a conditional statement for adding metalink.c to
+	wget_SOURCES.
+	* retr.c : Include metalink/metalink_types.h, which is a part of
+	libmetalink.
+
+2012-07-21  Ilim Ugur  <ilimugur@gmail.com>
+
+	* Makefile.am : Add metalink.c to EXTRA_wget_SOURCES.
+
+2012-07-20  Ilim Ugur  <ilimugur@gmail.com>
+
+	* Makefile.am : Delete metalink.c from wget_SOURCES.
+
+2012-07-15  Ilim Ugur  <ilimugur@gmail.com>
+
+	* multi.h : Add 4 new variables to the definition of struct range.
+	* retr.c (retrieve_from_file) : Update the multi-thread downloading code
+	so that it does fallbacking(i.e. uses another one of the resources till
+	all the resources are exhausted) if a thread is unable to download a
+	segment from a resource successfully.
+
+2012-07-15  Ilim Ugur  <ilimugur@gmail.com>
+
+	* retr.c (retrieve_from_file) : Add an assignment statement to *count, to
+	correct the "No URLs found in <file>" message that is printed even after
+	a successful download.
+
+2012-07-14  Ilim Ugur  <ilimugur@gmail.com>
+
+	* retr.c (retrieve_from_file) : Totally separate fallbacking and multiple
+	threaded downloading portions of the code based on the value of
+	N_THREADS.
+
+2012-07-10  Ilim Ugur  <ilimugur@gmail.com>
+
+	* retr.c (retrieve_from_file) : Remove obsolete retry tag.
+
+2012-07-10  Ilim Ugur  <ilimugur@gmail.com>
+
+	* http.c (gethttp) : A case in an if statement is removed to prevent the
+	error it causes for multiple thread downloads.
+	* retr.c (retrieve_from_file) : Initializations of variables that are
+	used in multi-thread downloading are taken into an if(1) block for
+	clarification. Encapsulate the thread collecting code within a branching
+	statement that checks if the file range is covered and if there are any
+	free threads. Update the loop in which sem_wait is called so that
+	N_THREADS and free_threads are used in termination condition. Update the
+	allocation statement for the command, and move the merging-deletion code
+	into the outer loop(i.e. the one that traverses files).
+
+2012-07-10  Ilim Ugur  <ilimugur@gmail.com>
+
+	* http.c (gethttp) : An if statement is updated so that a risky case is
+	considered only for the downloads that are not multi-threaded. Update
+	the assignments to hstat.restval and hstat.restval_last.
+	* retr.c (retrieve_from_file) : Move the memory allocation for temp_name
+	inside the inner loop(i.e. the one that traverses resources).
+
+2012-07-10  Ilim Ugur  <ilimugur@gmail.com>
+
+	* retr.c (retrieve_from_file) : Add a variable file_extension to be able
+	to label the temporary files by numbers. The variable is used in naming
+	the files as well and corrects the mistake of threads writing to the
+	same file. Also, usage of the variable j by two loops that are nested is
+	corrected by using another variable, k, for the inner loop.
+
+2012-07-10  Ilim Ugur  <ilimugur@gmail.com>
+
+	* http.c (gethttp) : Correct faulty branching block while calling
+	request_set_header for Range header.
+	* retr.c (retrieve_from_file) : Add a variable temp_name for generating
+	to use while name generation for temporary files. Ensure the continuity
+	of the inner loop even if number of resources is smaller than opt.jobs.
+	Further separation of fallbacking and segmented download blocks. Add a
+	block of code for merging temporary files to the resulting file and
+	deleting the temporary files after the merging. Add freeing statements
+	for struct range instances and temporary file names allocated.
+
+2012-07-09  Ilim Ugur  <ilimugur@gmail.com>
+
+	* http.c : Add wgint restval_last to struct http_stat, to contain the
+	value for the end of the range. Include multi.h.
+	* http.c (gethttp) : Take into account the restval_last while calling
+	request_set_header for Range header. 
+	* http.c (http_loop) : Update the assignments to hstat.restval and
+	hstat.restval_last. Add a struct range argument to function signature.
+	* http.h : Update the prototype for http_loop so that it has the latest
+	argument added, a struct range.
+	* main.c (main) : While calling retrieve_url, add the value for its new
+	argument, a struct range.
+	* multi.h : Add the definition of the struct range. Add the definition
+	of struct s_thread_ctx, which was previously in recur.c.
+	* recur.c () : Remove the definition of the struct s_thread_ctx from here.
+	* recur.c (start_retrieve_url) : While calling retrieve_url, add the
+	value for its new argument, a struct range.
+	* recur.c (retrieve_tree) : Initialize thread_ctx[].range values to NULL.
+	* res.c (res_retrieve_file) : While calling retrieve_url, add the value
+	for its new argument, a struct range.
+	* retr.c (retrieve_url) : Add a struct range parameter to function
+	signature. While calling http_loop, add the value for its new argument,
+	a struct range.
+	* retr.c : Include semaphore.h and pthread.h. Add a function called
+	segmented_retrieve_url for pthread_create to call.
+	* retr.c (retrieve_from_file) : While calling retrieve_url, add the value
+	for its new argument, a struct range. Temporarily disable fallbacking
+	using a branchin statement if(1)-else and adapt multi-threaded download
+	code, written by Giuseppe Scrivano, into the branch that shall be
+	executed.
+	* retr.h : Update the prototype for retrieve_url so that it has the
+	latest argument added, a struct range.
+
 2012-07-03  Steven Schubiger  <stsc@member.fsf.org>
 
 	* init.c: Include warc.h for warc_close in cleanup function.
@@ -17,6 +459,43 @@
 	* http.c (http_loop): Fix log message.
 	* main.c (main): Likewise.
 	Reported by: Petr Pisar <petr.pisar@atlas.cz>
+
+2012-07-05  Micah Cowan  <micah@cowan.name>
+
+	* http.c (invalidate_persistent): Use xfree instead of xzero for pconn
+	freeing.
+	* http.c (register_persistent): Use xfree instead of xzero for pconn
+	freeing. Also, free after using the soon-to-be freed value, not before.
+
+2012-07-05  Ilim Ugur  <ilimugur@gmail.com>
+
+	* http.c (http_loop): Do not assert that no value for *local_file is
+	passed. If a value is passed, assign that to hstat.local_file.
+	* retr.c (retrieve_from_file): Do not use opt.output_document to pass
+	the name of the file to be downloaded. Instead, pass it to retrieve_url
+	through its 3rd argument (i.e. file parameter).
+	* retr.c (retrieve_url): Do not assign NULL value to *file if file is
+	not NULL. Do not assign NULL value to local_file. Instead assign *file.
+
+2012-07-05  Ilim Ugur  <ilimugur@gmail.com>
+
+	* retr.c (retrieve_from_file): Add nested loop structure to utilize the
+	information parsed from the metalink files; outer loop traverses the
+	files in metalink file while the inner loop traverses the resources for
+	that file.
+
+2012-07-03  Micah Cowan  <micah@cowan.name>
+
+	* http.c: Add a parenthesis to fix a bad persistence check.
+
+2012-07-03  Ilim Ugur  <ilimugur@gmail.com>
+
+	* retr.c: Add an else if branch to retrieve_from_file to check if input
+	file is a metalink file.
+	* metalink.c: Add a function metalink_context to parse metalink files
+	using libmetalink.
+	* metalink.h: Add the prototype of the new function in metalink.c.
+	* Makefile.am: Update wget_SOURCES to include metalink.c and metalink.h.
 
 2012-06-17  Giuseppe Scrivano  <gscrivano@gnu.org>
 

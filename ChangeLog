@@ -1,3 +1,54 @@
+2012-08-03  Ilim Ugur  <ilimugur@gmail.com>
+
+	* bootstrap.conf : Add crypto/sha256 to the list of Gnulib modules used
+	by this package.
+
+2012-08-03  Ilim Ugur  <ilimugur@gmail.com>
+
+	* bootstrap.conf : Add crypto/sha1 to the list of Gnulib modules used
+	by this package.
+
+2012-07-29  Ilim Ugur  <ilimugur@gmail.com>
+
+	* configure.ac : Check the availability of pthread library, before
+	enabling thread support.
+
+2012-07-27  Ilim Ugur  <ilimugur@gmail.com>
+
+	* configure.ac : Update libmetalink check so that metalink support is
+	not taken into consideration for compilation, if thread support is not
+	desired.
+
+2012-07-23  Ilim Ugur  <ilimugur@gmail.com>
+
+	* configure.ac : Make Metalink check in configure.ac automatic by
+	assigning auto to ENABLE_METALINK in AC_ARG_ENABLE macro. Update the
+	libmetalink check accordingly.
+
+2012-07-23  Micah Cowan  <micah@cowan.name>
+
+	* bootstrap : Replace the bootstrap with the latest bootstrap from
+	Gnulib.
+	* bootstrap.conf : Remove the line "$build_aux/missing".
+
+2012-07-22  Ilim Ugur  <ilimugur@gmail.com>
+
+	* configure.ac : Correct the faulty assignment by assigning to CFLAGS
+	instead of LIBS. Add AM_CONDITIONAL macro to assign a value to a
+	variable(i.e. METALINK_IS_ENABLED) to be used in src/Metalink.am.
+
+2012-07-21  Ilim Ugur  <ilimugur@gmail.com>
+
+	* configure.ac : Update the check for libmetalink. The new version tries
+	using pkg-config.
+
+2012-07-20  Ilim Ugur  <ilimugur@gmail.com>
+
+	* configure.ac : Add AC_ARG_ENABLE macros to be able to check for the
+	essential libraries for multi-threaded and metalink downloading support.
+	Add checks for libmetalink and make essential additions to LIBS and
+	CFLAGS if found, as well as prompting messages if it is not found.
+
 2012-07-08  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* bootstrap: Update from gnulib.

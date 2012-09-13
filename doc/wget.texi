@@ -535,8 +535,8 @@ would be resolved to @samp{http://foo/baz/b.html}.
 @item --config=@var{FILE}
 Specify the location of a startup file you wish to use.
 
-@cindex metalink file 
-@item --metalink_file=@var{FILE}
+@cindex metalink 
+@item --metalink=@var{FILE}
 Read @sc{url}s from a local or external metalink @var{file}.  If @samp{-} is
 specified as @var{file}, @sc{url}s are read from the standard input.  
 (Use @samp{./-} to read from a file literally named @samp{-}.)
@@ -1118,7 +1118,7 @@ Specify the @var{number} of threads to use. Unless specified, the number of
 threads used is 1.
 
 Currently this option works only for recursive downloading and when specified with 
-option @samp{--metalink-file}.
+option @samp{--metalink}.
 @end table
 
 @node Directory Options, HTTP Options, Download Options, Invoking
