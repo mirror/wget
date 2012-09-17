@@ -52,6 +52,8 @@ static char supported_hashes[HASH_TYPES][7] = {"sha256", "sha1", "md5"};
 static int digest_sizes[HASH_TYPES] = {SHA256_DIGEST_SIZE, SHA1_DIGEST_SIZE, MD5_DIGEST_SIZE};
 static int (*hash_function[HASH_TYPES]) (FILE *, void *) = {sha256_stream, sha1_stream, md5_stream};
 
+/* First, parse the metalink using libmetalink functions and structures. Then
+   pass the information to an internal set of structures. */
 mlink *
 parse_metalink(char *input_file)
 {
@@ -196,6 +198,8 @@ parse_metalink(char *input_file)
   return mlink;
 }
 
+/* Elect resouces so that only the URLs with type HTTP and FTP (i.e. the
+   protocols supported by Metalink&GNU Wget) remain on the list of resources. */
 void
 elect_resources (mlink *mlink)
 {
@@ -228,6 +232,8 @@ elect_resources (mlink *mlink)
     }
 }
 
+/* Elect checksums so that only the hashes with types MD5, SHA-1 or SHA-256
+   (i.e. the hashes supported by Metalink) remain on the list of checksums. */
 void
 elect_checksums (mlink *mlink)
 {
@@ -263,6 +269,7 @@ elect_checksums (mlink *mlink)
     }
 }
 
+/* Free the space allocated for the whole mlink structure. */
 void
 delete_mlink(mlink *metalink)
 {

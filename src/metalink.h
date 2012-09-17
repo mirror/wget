@@ -93,6 +93,10 @@ typedef struct
 
 mlink *parse_metalink (char *);
 
+void elect_resources (mlink *);
+
+void elect_checksums (mlink *);
+
 void delete_mlink (mlink *);
 
 metalink_t *metalink_context (const char *);

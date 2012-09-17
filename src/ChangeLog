@@ -1,6 +1,141 @@
+2012-09-17  Ilim Ugur  <ilimugur@gmail.com>
+
+	* metalink.c : Add comments for functions delete_mlink, elect_checksums,
+	elect_resources and parse_metalink.
+	* metalink.h : Add prototypes of elect_resources and elect_checksums.
+	* multi.c : Remove static variable temp.
+	* options.h : Remove ifdefs that contain metalink_file member, due to
+	the opt.metalink_file check made in an if statement in main.c.
+	* retr.c (retrieve_from_file): Use functions elect_checksums and
+	elect_resources to filter the parsed information during metalink
+	downloads.
+
+2012-08-22  Ilim Ugur  <ilimugur@gmail.com>
+
+	* main.c : Correct malloc size for temp_option.
+
+2012-08-20  Ilim Ugur  <ilimugur@gmail.com>
+
+	* metalink.c (verify_file_hash): Change type of function parameter
+	checksums. Add a variable checksum of type mlink_checksum. Use checksum
+	as the loop variable in for loop instead of i. Replace usage of
+	checksums[i] with checksum within the scope of the loop.
+	* metalink.c : Add functions parse_metalink, elect_resources,
+	elect_checksums and delete_mlink.
+	* metalink.h : Define new types mlink_piece_hash, mlink_checksum,
+	mlink_resource, mlink_chunk_checksum, mlink_file and mlink. Add
+	prototypes of parse_metalink and delete_mlink. Update prototype for
+	verify_file_hash.
+	* retr.c : Update metalink downloading portion of the code so that new
+	data types are used in retr.c instead of types provided by libmetalink.
+
+2012-08-18  Ilim Ugur  <ilimugur@gmail.com>
+
+	* ftp.c : Correct shallow copying of *local_file to con.target.
+	* retr.c (retrieve_from_file): Correct malloc size for file_path.
+
+2012-08-17  Ilim Ugur  <ilimugur@gmail.com>
+
+	* retr.c (retrieve_from_file): Treat file attribute of a file in a
+	metalink file as a relative path, and create any non-existent
+	directories before attempting to merge temporary files.
+
+2012-08-17  Ilim Ugur  <ilimugur@gmail.com>
+
+	* main.c : Change the option metalink-file to metalink in option_data.
+	Extend and make, in terms of readability, more concise the interoption
+	availability checks.
+	* multi.c (merge_temp_files): Change type of parameter output from const
+	char to char.
+	* multi.c (clean_range_res_data): Use opt.jobs instead of
+	num_of_resources in the termination condition of the for loop. Remove
+	parameter num_of_resources.
+	* multi.h : Update prototypes of functions clean_range_res_data and
+	merge_temp_files.
+	* retr.c (retrieve_from file): Update calls to clean_range_res_data and
+	merge_temp_files.
+
+2012-08-16  Ilim Ugur  <ilimugur@gmail.com>
+
+	* metalink.c : Add header comment in the existing source files of Wget.
+	Update comment above function verify_file_hash.
+	* multi.c (init_ranges): Exit after prompting user with a message when
+	allocation to ranges fails.
+	* multi.c (collect_thread): Delete the assignment statement of 0 to
+	thread_ctx[].terminated.
+	* multi.c : Add header comment in the existing source files of Wget. Add
+	comments above functions init_temp_files, name_temp_files,
+	merge_temp_files, delete_temp_files, clean_temp_files, init_ranges,
+	fill_ranges_data, clean_range_res_data, clean_ranges, spawn_thread,
+	collect_thread and segmented_retrieve_url which explain their procedure.
+	* multi.h : Update header comment in the existing source files of Wget.
+	* retr.c (retrieve_from_file): Add several comments to the parts of the
+	code that deals with metalink downloading.
+
+2012-08-16  Ilim Ugur  <ilimugur@gmail.com>
+
+	* muti.c (init_ranges): Control allocation of space for ranges using an
+	if statement and prompting user with a message in case of a failure in
+	allocation.
+	* muti.c (clean_ranges): Assign NULL to ranges after freeing.
+	* multi.c (spawn_thread): Assign files[index] to thread_ctx[].file
+	variable. The statement is moved to here from retr.c after making files
+	of retr.c a static variable of multi.c.
+	* multi.c (merge_temp_files): Remove parameter inputs as the mentioned
+	variable is now a static variable of multi.c.
+	* multi.c (delete_temp_files): Remove parameter files as the mentioned
+	variable is now a static variable of multi.c.
+	* multi.c : Add static variables temp and files (moved from retr.c).
+	Write functions init_temp_files, name_temp_files and clean_temp_files.
+	Move definitions of functions merge_temp_files and delete_temp_files.
+	* multi.h : Add prototypes of the new functions. Update prototypes of
+	merge_temp_files and delete_temp_files.
+	* retr.c (retrieve_from_file): Remove variables temp, files and index.
+	Replace statements using mentioned variables with the new functions in
+	multi.c. Update calls to merge_temp_files and delete_temp_files.
+
+2012-08-16  Ilim Ugur  <ilimugur@gmail.com>
+
+	* init.c (defaults): Add an assignment of 1 to opt.jobs within ifdef
+	brackets.
+	* multi.c (init_ranges): Remove parameter numthreads from function
+	definition. Replace numthreads with opt.jobs in the malloc call.
+	* multi.c (fill_ranges_data): Remove parameter numthreads from function
+	definition.
+	* multi.c (collect_thread): Remove parameter numthreads from function
+	definition. Replace numthreads with opt.jobs in termination condition of
+	the for loop.
+	* multi.c (merge_temp_files): Remove parameter numthreads from function
+	definition. Replace numthreads with opt.jobs in termination condition of
+	the for loop.
+	* multi.c (delete_temp_files): Remove parameter numthreads from function
+	definition. Replace numthreads with opt.jobs in termination condition of
+	the while loop.
+	* multi.h : Update prototypes of the functions modified in multi.c;
+	init_ranges, fill_ranges_data, collect_thread, merge_temp_files and
+	delete_temp_files.
+	* retr.c (retrieve_from_file): Update calls to the updated functions in
+	multi.c appropriately. Replace N_THREADS with opt.jobs throughout the
+	scope of the N_THREADS definition. Remove variable N_THREADS.
+
+2012-08-16  Ilim Ugur  <ilimugur@gmail.com>
+
+	* multi.c (spawn_thread): Assign ranges + index to thread_ctx[].range
+	variable. The statement is moved to here from retr.c after making ranges
+	of retr.c a static variable of multi.c.
+	* multi.c : Add new static variable ranges.(moved from retr.c).
+	Write functions init_ranges, fill_ranges_data, clean_range_res_data and
+	clean_range to initialize, fill, clean and free the data in ranges.
+	* multi.h : Add the prototypes of the functions which are added to
+	multi.c; init_ranges, fill_ranges_data, clean_range_res_data and
+	clean_range.
+	* retr.c (retrieve_from_file): Replace statements involving the variable
+	ranges with the new functions defined in multi.c. Delete two obsolete
+	variables.
+
 2012-08-14  Ilim Ugur  <ilimugur@gmail.com>
 
-	* multi.c (collect_thread): Add new argument, numthreads, to prevent a
+	* multi.c (spawn_thread): Add new argument, numthreads, to prevent a
 	potential memory leak.
 	* multi.h : Update the prototype of collect_thread accordingly.
 	* retr.c (retrieve_from_file): Update the call made to collect_thread

@@ -41,7 +41,7 @@ as that of the covered work.  */
 #include "url.h"
 
 static struct range *ranges;
-char *temp, **files;
+char **files;
 
 /*  Allocate space for temporary file names. */
 void

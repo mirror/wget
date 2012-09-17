@@ -37,8 +37,9 @@ struct options
   int ntry;			/* Number of tries per URL */
 #ifdef ENABLE_METALINK
   int n_retries;		/* Number of tries per file */
-  char *metalink_file;		/* Metalink filename */
 #endif
+  char *metalink_file;		/* Metalink filename */
+
   bool retry_connrefused;	/* Treat CONNREFUSED as non-fatal. */
   bool background;		/* Whether we should work in background. */
   bool ignore_length;		/* Do we heed content-length at all?  */
