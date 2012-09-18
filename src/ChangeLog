@@ -1,3 +1,13 @@
+2012-09-18  Ilim Ugur  <ilimugur@gmail.com>
+	* metalink.c (elect_resources): Rewrite function definition, correcting
+	faulty logic in branching statements.
+	* metalink.c (elect_checksums): Rewrite function definition, correcting
+	faulty logic in branching statements.
+	* metalink.c (delete_mlink): Rename variables tempfile, tempres,
+	tempcsum, temphash as file_temp, res_temp, csum_temp and phash_temp.
+	* retr.c : Take functions elect_resources and elect_checksums out of
+	comment brackets.
+
 2012-09-17  Ilim Ugur  <ilimugur@gmail.com>
 
 	* metalink.c : Add comments for functions delete_mlink, elect_checksums,

@@ -1076,9 +1076,9 @@ retrieve_from_file (const char *file, bool html, int *count)
       struct s_thread_ctx *thread_ctx;
 
       /* Wget supports HTTP&FTP, and Metalink supports MD5, SHA1 & SHA-256. */
-/*      elect_resources(mlink);
+      elect_resources(mlink);
       elect_checksums(mlink);
-*/
+
       init_temp_files();
       init_ranges ();
       thread_ctx = malloc (opt.jobs * (sizeof *thread_ctx));

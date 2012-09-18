@@ -203,28 +203,27 @@ parse_metalink(char *input_file)
 void
 elect_resources (mlink *mlink)
 {
-  mlink_file *file = mlink -> files;
-  mlink_resource *res, *prev;
+  mlink_file *file;
+  mlink_resource *res, *res_next;
 
-  for (; file; file = file->next)
+  for (file = mlink->files; file; file = file->next)
     {
-      prev = file->resources;
-      res = prev->next;
-      while (res)
+      res = file->resources;
+      if (!res)
+        continue;
+
+      while (res_next = res->next)
         {
-          if(strcmp(res->type, "ftp") || strcmp(res->type, "http"))
+          if (strcmp(res_next->type, "ftp") && strcmp(res_next->type, "http"))
             {
-              prev->next = res->next;
-              free (res);
+              res->next = res_next->next;
+              free(res_next);
             }
           else
-            {
-              prev = prev->next;
-              res = prev->next;
-            }
+            res = res_next;
         }
       res = file->resources;
-      if(strcmp(res->type, "ftp") || strcmp(res->type, "http"))
+      if (strcmp(res->type, "ftp") && strcmp(res->type, "http"))
         {
           file->resources = res->next;
           free(res);
@@ -239,32 +238,37 @@ elect_checksums (mlink *mlink)
 {
   int i;
   mlink_file *file = mlink -> files;
-  mlink_checksum *csum, *prev;
+  mlink_checksum *csum, *csum_next;
 
   for (; file; file = file->next)
     {
-      prev = file->checksums;
-      csum = prev->next;
-      while (csum)
+      csum = file->checksums;
+      if (!csum)
+        continue;
+
+      while (csum_next = csum->next)
         {
-          for(i=0; i<HASH_TYPES && strcmp(csum->type, supported_hashes[i]); ++i);
-          if (i < HASH_TYPES)
+          /* Traverse supported hash types & break if csum->type is the same. */
+          for (i = 0; i < HASH_TYPES; ++i)
+            if (!strcmp(csum_next->type, supported_hashes[i]))
+              break;
+
+          if(i == HASH_TYPES)
             {
-              prev->next = csum->next;
-              free (csum);
+              csum->next = csum_next->next;
+              free(csum_next);
             }
           else
-            {
-              prev = prev->next;
-              csum = prev->next;
-            }
+            csum=csum_next;
         }
       csum = file->checksums;
-      for(i=0; i<HASH_TYPES && strcmp(csum->type, supported_hashes[i]); ++i);
-      if (i < HASH_TYPES)
+      for (i = 0; i < HASH_TYPES; ++i)
+        if (!strcmp(csum->type, supported_hashes[i]))
+          break;
+      if(i == HASH_TYPES)
         {
-          prev->next = csum->next;
-          free (csum);
+          file->checksums = csum->next;
+          free(csum);
         }
     }
 }
@@ -273,10 +277,10 @@ elect_checksums (mlink *mlink)
 void
 delete_mlink(mlink *metalink)
 {
-  mlink_file *file, *tempfile;
-  mlink_resource *res, *tempres;
-  mlink_checksum *csum, *tempcsum;
-  mlink_piece_hash *phash, *temphash;
+  mlink_file *file, *file_temp;
+  mlink_resource *res, *res_temp;
+  mlink_checksum *csum, *csum_temp;
+  mlink_piece_hash *phash, *phash_temp;
 
   if(!metalink)
     return;
@@ -299,9 +303,9 @@ delete_mlink(mlink *metalink)
           xfree_null (res->type);
           xfree_null (res->location);
 
-          tempres = res;
+          res_temp = res;
           res = res->next;
-          free (tempres);
+          free (res_temp);
         }
 
       csum = file->checksums;
@@ -310,9 +314,9 @@ delete_mlink(mlink *metalink)
           xfree_null (csum->type);
           xfree_null (csum->hash);
 
-          tempcsum = csum;
+          csum_temp = csum;
           csum = csum->next;
-          free (tempcsum);
+          free (csum_temp);
         }
 
       if(file->chunk_checksum)
@@ -323,15 +327,15 @@ delete_mlink(mlink *metalink)
             {
               xfree_null (phash->hash);
 
-              temphash = phash;
+              phash_temp = phash;
               phash = phash->next;
-              free (temphash);
+              free (phash_temp);
             }
         }
 
-      tempfile = file;
+      file_temp = file;
       file = file->next;
-      free (tempfile);
+      free (file_temp);
     }
   free (metalink);
 }
