@@ -1,3 +1,7 @@
+2012-09-20  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap: Update from gnulib.
+
 2012-09-02  Nguyễn Thái Ngọc Duy  <pclouds@gmail.com> (tiny change)
 
 	* po/POTFILES.in: Add more files.
