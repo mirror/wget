@@ -1,3 +1,7 @@
+2012-09-28  Steven Schubiger  <stsc@member.fsf.org>
+
+	* src/recur.c (retrieve_tree): Combine duplicated code.
+
 2012-09-02  Nguyễn Thái Ngọc Duy  <pclouds@gmail.com> (tiny change)
 
 	* src/main.c (main): mark more strings for translation.

@@ -1,6 +1,6 @@
 /* Handling of recursive HTTP retrieving.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -253,26 +253,23 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
          the second time.  */
       if (dl_url_file_map && hash_table_contains (dl_url_file_map, url))
         {
+	  bool is_css_bool;
+
           file = xstrdup (hash_table_get (dl_url_file_map, url));
 
           DEBUGP (("Already downloaded \"%s\", reusing it from \"%s\".\n",
                    url, file));
 
-          /* this sucks, needs to be combined! */
-          if (html_allowed
-              && downloaded_html_set
-              && string_set_contains (downloaded_html_set, file))
-            {
-              descend = true;
-              is_css = false;
-            }
-          if (css_allowed
-              && downloaded_css_set
-              && string_set_contains (downloaded_css_set, file))
-            {
-              descend = true;
-              is_css = true;
-            }
+	  if ((is_css_bool = (css_allowed
+			      && downloaded_css_set
+			      && string_set_contains (downloaded_css_set, file)))
+	      || (html_allowed
+		  && downloaded_html_set
+		  && string_set_contains (downloaded_html_set, file)))
+	    {
+	      descend = true;
+	      is_css = is_css_bool;
+	    }
         }
       else
         {
