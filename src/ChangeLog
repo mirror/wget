@@ -1,3 +1,8 @@
+2012-09-29 Merinov Nikolay <kim.roader@gmail.com>
+
+	* ftp-ls.c (ftp_parse_winnt_ls): Support filename extracting with
+	new listing format.
+
 2012-09-29  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* url.h (CHOMP_BUFFER): Add definition.
