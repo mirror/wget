@@ -1,3 +1,11 @@
+2012-09-29  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* url.h (CHOMP_BUFFER): Add definition.
+	* url.c (url_file_name): New local variables `fname_len_check' and
+	`max_length'. Check that the length of the file name is acceptable.
+	* utils.h (get_max_length): Declare function.
+	* utils.c (get_max_length): New function.
+
 2012-09-28  Steven Schubiger  <stsc@member.fsf.org>
 
 	* src/recur.c (retrieve_tree): Combine duplicated code.

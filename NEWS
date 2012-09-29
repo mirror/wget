@@ -6,6 +6,11 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget X.Y.Z
+
+** Add support for file names longer than MAX_FILE.
+
+
 * Changes in Wget 1.14
 
 ** Add support for content-on-error.  It allows to store the HTTP

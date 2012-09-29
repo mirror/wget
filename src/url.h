@@ -37,6 +37,16 @@ as that of the covered work.  */
 #define DEFAULT_FTP_PORT 21
 #define DEFAULT_HTTPS_PORT 443
 
+/* This represents how many characters less than the OS max name length a file
+ * should be.  More precisely, a file name should be at most
+ * (NAME_MAX - CHOMP_BUFFER) characters in length.  This number was arrived at
+ * by adding the lengths of all possible strings that could be appended to a
+ * file name later in the code (e.g. ".orig", ".html", etc.).  This is
+ * hopefully plenty of extra characters, but I am not guaranteeing that a file
+ * name will be of the proper length by the time the code wants to open a
+ * file descriptor. */
+#define CHOMP_BUFFER 19
+
 /* Specifies how, or whether, user auth information should be included
  * in URLs regenerated from URL parse structures. */
 enum url_auth_mode {
