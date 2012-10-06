@@ -263,16 +263,13 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
       char *file = NULL;
       bool is_css = false;
       bool dash_p_leaf_HTML = false;
-#ifndef ENABLE_THREADS
-      char *url, *referer;
-      int depth;
-      bool html_allowed, css_allowed;
-#else
-      int index = 0;
       char *url = NULL, *referer;
       int depth;
       bool html_allowed, css_allowed;
+#ifdef ENABLE_THREADS
+      int index = 0;
 #endif
+
       if (opt.quota && total_downloaded_bytes > opt.quota)
         break;
       if (status == FWRITEERR)
@@ -350,7 +347,6 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
           status = retrieve_url (url_parsed, url, &file, &redirected, referer,
                                  &dt, false, i, true);
 #else
-          pthread_t thread;
           int j;
 retry:
           if (! url)
@@ -371,6 +367,7 @@ retry:
 
           if (url && free_threads)
             {
+              int err;
               for (j = 0; j < N_THREADS; j++)
                 if (! thread_ctx[j].used)
                   {
@@ -380,6 +377,7 @@ retry:
                     thread_ctx[j].terminated = 0;
                     break;
                   }
+              assert (j < N_THREADS);
 
               thread_ctx[index].file = file;
               thread_ctx[index].referer = referer;
@@ -393,8 +391,18 @@ retry:
                                                         &thread_ctx[index].url_err,
                                                         i, true);
 
-              next_url = NULL;
-              pthread_create (&thread, NULL, start_retrieve_url, &thread_ctx[index]);
+              err = pthread_create (&thread_ctx[index].thread, NULL,
+                                    start_retrieve_url, &thread_ctx[index]);
+              if (err == 0)
+                next_url = NULL;
+              else
+                {
+                  logprintf (LOG_NOTQUIET, "pthread_create: %s\n", strerror (errno));
+                  url_free (thread_ctx[index].url_parsed);
+                  thread_ctx[index].used = 0;
+                  free_threads++;
+                  return THREADS_ERR;
+                }
               continue;
             }
 
@@ -404,6 +412,7 @@ retry:
               {
                 index = j;
                 thread_ctx[j].used = 0;
+                pthread_join (thread_ctx[j].thread, NULL);
                 free_threads++;
                 break;
               }
@@ -414,7 +423,8 @@ retry:
               do
                 ret = sem_wait (&retr_sem);
               while (ret < 0 && errno == EINTR);
-              if (ret < 0); /*TODO barf*/
+              if (ret < 0)
+                return SEM_ERR;
 
               goto retry;
             }
