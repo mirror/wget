@@ -2509,9 +2509,13 @@ get_max_length (const char *path, int length, int name)
     {
       errno = 0;
       /* For an empty path query the current directory. */
+#if HAVE_PATHCONF
       ret = pathconf (*p ? p : ".", name);
       if (!(ret < 0 && errno == ENOENT))
         break;
+#else
+      ret = PATH_MAX;
+#endif
 
       /* The path does not exist yet, but may be created. */
       /* Already at current or root directory, give up. */

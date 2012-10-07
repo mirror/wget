@@ -1,3 +1,9 @@
+2012-10-07  Tim Ruehsen  <tim.ruehsen@gmx.de>
+	    Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* utils.c (get_max_length): If `pathconf' is not available
+	fallback to PATH_MAX.
+
 2012-10-06  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* http.c (http_loop): Send a HEAD request when -c and

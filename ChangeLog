@@ -1,3 +1,7 @@
+2012-10-07  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* configure.ac: Check for patchconf.
+
 2012-09-23  Merinov Nikolay  <kim.roader@gmail.com>
 
 	* m4/wget.m4 (WGET_FNMATCH): Add AC_LANG_SOURCE into
