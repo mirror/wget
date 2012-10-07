@@ -3004,6 +3004,11 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
   if (!opt.spider)
     send_head_first = false;
 
+  /* Send preliminary HEAD request if --content-disposition and -c are used
+     together.  */
+  if (opt.content_disposition && opt.always_rest)
+    send_head_first = true;
+
   /* Send preliminary HEAD request if -N is given and we have an existing
    * destination file. */
   file_name = url_file_name (opt.trustservernames ? u : original_url, NULL);
