@@ -1245,12 +1245,16 @@ mkalldirs (const char *path)
    The idea is to have a convenient and efficient way to construct a
    string by having various functions append data to it.  Instead of
    passing the obligatory BASEVAR, SIZEVAR and TAILPOS to all the
-   functions in questions, we pass the pointer to this struct.  */
+   functions in questions, we pass the pointer to this struct.
+
+   Functions that write to the members in this struct must make sure
+   that base remains null terminated by calling append_null().
+   */
 
 struct growable {
   char *base;
-  int size;
-  int tail;
+  int size;   /* memory allocated */
+  int tail;   /* string length */
 };
 
 /* Ensure that the string can accept APPEND_COUNT more characters past
@@ -1268,28 +1272,55 @@ struct growable {
 /* Move the tail position by APPEND_COUNT characters. */
 #define TAIL_INCR(r, append_count) ((r)->tail += append_count)
 
-/* Append the string STR to DEST.  NOTICE: the string in DEST is not
-   terminated.  */
 
+/* Append NULL to DEST. */
+static void
+append_null (struct growable *dest)
+{
+  GROW (dest, 1);
+  *TAIL (dest) = 0;
+}
+
+/* Shorten DEST to LENGTH. */
+static void
+shorten_length (size_t length, struct growable *dest)
+{
+  if (length < dest->tail)
+    dest->tail = length;
+
+  append_null (dest);
+}
+
+/* Append CH to DEST. */
+static void
+append_char (char ch, struct growable *dest)
+{
+  if (ch)
+    {
+      GROW (dest, 1);
+      *TAIL (dest) = ch;
+      TAIL_INCR (dest, 1);
+    }
+
+  append_null (dest);
+}
+
+/* Append the string STR to DEST. */
 static void
 append_string (const char *str, struct growable *dest)
 {
   int l = strlen (str);
-  GROW (dest, l);
-  memcpy (TAIL (dest), str, l);
-  TAIL_INCR (dest, l);
+
+  if (l)
+    {
+      GROW (dest, l);
+      memcpy (TAIL (dest), str, l);
+      TAIL_INCR (dest, l);
+    }
+
+  append_null (dest);
 }
 
-/* Append CH to DEST.  For example, append_char (0, DEST)
-   zero-terminates DEST.  */
-
-static void
-append_char (char ch, struct growable *dest)
-{
-  GROW (dest, 1);
-  *TAIL (dest) = ch;
-  TAIL_INCR (dest, 1);
-}
 
 enum {
   filechr_not_unix    = 1,      /* unusable on Unix, / and \0 */
@@ -1455,6 +1486,7 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
     }
 
   TAIL_INCR (dest, outlen);
+  append_null (dest);
 }
 
 /* Append to DEST the directory structure that corresponds the
@@ -1605,9 +1637,6 @@ url_file_name (const struct url *u, char *replaced_filename)
   if (fnres.tail)
     append_char ('/', &fnres);
   append_string (temp_fnres.base, &fnres);
-
-  /* Zero-terminate the file name. */
-  append_char ('\0', &fnres);
 
   fname = fnres.base;
 
@@ -2262,7 +2291,6 @@ test_append_uri_pathel()
 
       append_string (test_array[i].original_url, &dest);
       append_uri_pathel (p, p + strlen(p), test_array[i].escaped, &dest);
-      append_char ('\0', &dest);
 
       mu_assert ("test_append_uri_pathel: wrong result",
                  strcmp (dest.base, test_array[i].expected_result) == 0);

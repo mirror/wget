@@ -1,3 +1,12 @@
+2012-10-07  Ray Satiro <raysatiro@yahoo.com>
+
+	* url.c: Change the functions of a growable string object to null
+	terminate the string.
+	* url.c (append_null): New function to null terminate a growable
+	string object.
+	* url.c (shorten_length): New function to shorten the length of a
+	growable string object.
+
 2012-10-03 Merinov Nikolay <kim.roader@gmail.com>
 
 	* ftp.c (ftp_loop_internal): Ignore --no-clobber option when
