@@ -1,3 +1,7 @@
+2012-08-29  Rohit Mathulla <rohit_mathulla@yahoo.com> (tiny change)
+
+	* html-url.c (get_urls_file): Convert shorthand URLs.
+
 2012-10-07  Ray Satiro <raysatiro@yahoo.com>
 
 	* url.c: Change the functions of a growable string object to null

@@ -804,6 +804,13 @@ get_urls_file (const char *file)
           url_text = merged;
         }
 
+      char *new_url = rewrite_shorthand_url (url_text);
+      if (new_url)
+        {
+          xfree (url_text);
+          url_text = new_url;
+        }
+
       url = url_parse (url_text, &up_error_code, NULL, false);
       if (!url)
         {

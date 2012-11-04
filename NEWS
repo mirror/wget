@@ -13,6 +13,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Support FTP listing for the FTP Server on Windows Server 2008 R2.
 
 ** Fix a regression when -c and --content-disposition are used together.
+
+** Support shorthand URLs in an input file.
 
 * Changes in Wget 1.14
 
