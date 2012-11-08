@@ -1,3 +1,12 @@
+2012-10-08  Stefano Lattarini <stefano.lattarini@gmail.com>  (tiny change)
+
+	docs: fix errors and warnings with Texinfo 5
+	Or rather, with the development version 4.13.90, which will
+	eventually become Texinfo 5.0.
+	* wget.texi: Use '@item' instead of '@itemx' in several places,
+	as Texinfo 5 refuses to process an '@itemx' that is not preceded
+	by an '@item'.
+
 2012-08-28  Tim Ruehsen <tim.ruehsen@gmx.de>
 
         * doc/wget.texi: remove -nv from --report-speed
