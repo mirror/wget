@@ -1,3 +1,8 @@
+2012-11-09  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* HTTPServer.pm: added check for must-not-match request-header
+	* Test-cookies.px: check cookie deletion and cookie domain matching
+
 2012-06-16  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am (EXTRA_DIST): Add Test-stdouterr.px.
