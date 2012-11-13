@@ -1,3 +1,9 @@
+2012-11-13  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* retr.c (fd_read_body): Correctly check the return code from
+	write_data.
+	Reported by: Torsten Scheck <torsten.scheck@gmx.de>
+
 2012-08-29  Rohit Mathulla <rohit_mathulla@yahoo.com> (tiny change)
 
 	* html-url.c (get_urls_file): Convert shorthand URLs.

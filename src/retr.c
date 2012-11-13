@@ -376,7 +376,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
         {
           sum_read += ret;
           int write_res = write_data (out, out2, dlbuf, ret, &skip, &sum_written);
-          if (write_res != 0)
+          if (write_res < 0)
             {
               ret = (write_res == -3) ? -3 : -2;
               goto out;
