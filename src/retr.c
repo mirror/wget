@@ -141,8 +141,8 @@ limit_bandwidth (wgint bytes, struct ptimer *timer)
    amount of data and decrease SKIP.  Increment *TOTAL by the amount
    of data written.  If OUT2 is not NULL, also write BUF to OUT2.
    In case of error writing to OUT, -1 is returned.  In case of error
-   writing to OUT2, -2 is returned.  In case of any other error,
-   1 is returned.  */
+   writing to OUT2, -2 is returned.  Return 1 if the whole BUF was
+   skipped.  */
 
 static int
 write_data (FILE *out, FILE *out2, const char *buf, int bufsize,
