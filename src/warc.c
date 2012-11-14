@@ -527,7 +527,7 @@ warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload,
 static char *
 warc_base32_sha1_digest (char *sha1_digest)
 {
-  // length: "sha1:" + digest + "\0"
+  /* length: "sha1:" + digest + "\0" */
   char *sha1_base32 = malloc (BASE32_LENGTH(SHA1_DIGEST_SIZE) + 1 + 5 );
   base32_encode (sha1_digest, SHA1_DIGEST_SIZE, sha1_base32 + 5,
                  BASE32_LENGTH(SHA1_DIGEST_SIZE) + 1);

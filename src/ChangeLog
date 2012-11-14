@@ -1,3 +1,7 @@
+2012-11-14  Ángel González  <keisial@gmail.com>
+	* warc.c (warc_sha1_stream_with_payload): Fix compilation under
+	gcc -std=c89.
+
 2012-11-24  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* warc.c (warc_write_cdx_record): Use `number_to_string' to
