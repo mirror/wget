@@ -1,3 +1,8 @@
+2012-11-24  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* warc.c (warc_write_cdx_record): Use `number_to_string' to
+	convert the offset to a string.
+
 2012-11-24  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* warc.c (warc_write_block_from_file): Use `number_to_string' to
