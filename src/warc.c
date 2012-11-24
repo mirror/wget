@@ -245,15 +245,10 @@ static bool
 warc_write_block_from_file (FILE *data_in)
 {
   /* Add the Content-Length header. */
-  char *content_length;
+  char content_length[22];
   fseeko (data_in, 0L, SEEK_END);
-  if (! asprintf (&content_length, "%ld", ftello (data_in)))
-    {
-      warc_write_ok = false;
-      return false;
-    }
+  number_to_string (content_length, ftello (data_in));
   warc_write_header ("Content-Length", content_length);
-  free (content_length);
 
   /* End of the WARC header section. */
   warc_write_string ("\r\n");
