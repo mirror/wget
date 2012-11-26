@@ -1,3 +1,10 @@
+2012-11-26  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.h (MAX_INT_TO_STRING_LEN): Define macro.
+	* warc.c (warc_write_block_from_file): Use `MAX_INT_TO_STRING_LEN'
+	to find the buffer size.
+	(warc_write_cdx_record): Likewise.
+
 2012-09-03  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* http.c (digest_authentication_encode): Add support for RFC 2617

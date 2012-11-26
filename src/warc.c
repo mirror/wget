@@ -245,7 +245,7 @@ static bool
 warc_write_block_from_file (FILE *data_in)
 {
   /* Add the Content-Length header. */
-  char content_length[22];
+  char content_length[MAX_INT_TO_STRING_LEN(off_t)];
   fseeko (data_in, 0L, SEEK_END);
   number_to_string (content_length, ftello (data_in));
   warc_write_header ("Content-Length", content_length);
@@ -1225,7 +1225,7 @@ warc_write_cdx_record (const char *url, const char *timestamp_str,
   if (redirect_location == NULL || strlen(redirect_location) == 0)
     redirect_location = "-";
 
-  char offset_string[22];
+  char offset_string[MAX_INT_TO_STRING_LEN(off_t)];
   number_to_string (offset_string, offset);
 
   /* Print the CDX line. */

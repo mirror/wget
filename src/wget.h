@@ -314,6 +314,10 @@ typedef double SUM_SIZE_INT;
    0-pad the address.)  */
 #define PTR_FORMAT(p) (int) (2 * sizeof (void *)), (unsigned long) (p)
 
+/* Find the maximum buffer length needed to print an integer of type `x'
+   in base 10. 24082 / 10000 = 8*log_{10}(2).  */
+#define MAX_INT_TO_STRING_LEN(x) ((sizeof(x) * 24082 / 10000) + 2)
+
 extern const char *exec_name;
 
 /* Document type ("dt") flags */
