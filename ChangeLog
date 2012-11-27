@@ -1,3 +1,8 @@
+2012-11-28  Domenico Chierico <spaghetty@gmail.com>
+
+	* bootstrap: update from upstream.
+	* configure.ac: Change tests for iri/threads/metalink detection.
+
 2012-08-03  Ilim Ugur  <ilimugur@gmail.com>
 
 	* bootstrap.conf : Add crypto/sha256 to the list of Gnulib modules used

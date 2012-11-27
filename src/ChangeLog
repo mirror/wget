@@ -1,3 +1,17 @@
+2012-11-28  Domenico Chierico <spaghetty@gmail.com>
+
+	* Makefile.am (THREAD_LIB): Add -lpthread.
+	* convert.h (register_download): Add definition.
+	(convert_all_links): Likewise.
+	(register_delete_file): Likewise.
+	(register_redirection): Likewise.
+	(register_css): Likewise.
+	(register_html): Likewise.
+	* convert.c: Remove static from register_download, convert_all_links,
+	register_delete_file, register_redirection, register_css,
+	register_html.
+	* retr.c: Call register_html and register_css properly.
+
 2012-11-29  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* http.c (pconn_lock): New function.

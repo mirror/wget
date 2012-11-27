@@ -621,9 +621,9 @@ AC_CHECK_HEADER(pcre.h,
 
  
 dnl Needed by src/Makefile.am
-AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" != "Xno"])
-AM_CONDITIONAL([METALINK_IS_ENABLED], [test "X$metalink" != "Xno"])
-AM_CONDITIONAL([THREADS_ARE_ENABLED], [test "X$threads" != "Xno"])
+AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" == "Xyes"])
+AM_CONDITIONAL([METALINK_IS_ENABLED], [test "X$metalink" == "Xyes"])
+AM_CONDITIONAL([THREADS_ARE_ENABLED], [test "X$threads" == "Xyes"])
 
 dnl
 dnl Create output

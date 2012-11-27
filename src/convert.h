@@ -98,6 +98,12 @@ typedef enum
 } downloaded_file_t;
 
 downloaded_file_t downloaded_file (downloaded_file_t, const char *);
+void register_download (const char *a, const char *b);
+void convert_all_links (void);
+void register_delete_file (const char *a);
+void register_redirection (const char *a, const char *b);
+void register_css (const char *a, const char *b);
+void register_html (const char *a, const char *b);
 
 char *html_quote_string (const char *);
 

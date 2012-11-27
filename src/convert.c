@@ -210,7 +210,7 @@ convert_links_in_hashtable (struct hash_table *downloaded_set,
    downloaded URLs in urls_downloaded.  All the information is
    extracted from these two lists.  */
 
-static void
+void
 FNNAME_WTHREADS(convert_all_links) (void)
 {
   double secs;
@@ -788,7 +788,7 @@ dissociate_urls_from_file (const char *file)
    to references to local files.  It is also being used to check if a
    URL has already been downloaded.  */
 
-static void
+void
 FNNAME_WTHREADS(register_download) (const char *url, const char *file)
 {
   char *old_file, *old_url;
@@ -868,7 +868,7 @@ FNNAME_WTHREADS(register_download) (const char *url, const char *file)
    is successfully downloaded and already registered using
    register_download() above.  */
 
-static void
+void
 FNNAME_WTHREADS(register_redirection) (const char *from, const char *to)
 {
   char *file;
@@ -883,7 +883,7 @@ FNNAME_WTHREADS(register_redirection) (const char *from, const char *to)
 
 /* Register that the file has been deleted. */
 
-static void
+void
 FNNAME_WTHREADS(register_delete_file) (const char *file)
 {
   char *old_url, *old_file;
@@ -901,7 +901,7 @@ FNNAME_WTHREADS(register_delete_file) (const char *file)
 
 /* Register that FILE is an HTML file that has been downloaded. */
 
-static void
+void
 FNNAME_WTHREADS(register_html) (const char *url, const char *file)
 {
   if (!downloaded_html_set)
@@ -911,7 +911,7 @@ FNNAME_WTHREADS(register_html) (const char *url, const char *file)
 
 /* Register that FILE is a CSS file that has been downloaded. */
 
-static void
+void
 FNNAME_WTHREADS(register_css) (const char *url, const char *file)
 {
   if (!downloaded_css_set)
@@ -998,7 +998,7 @@ downloaded_mode_to_ptr (downloaded_file_t mode)
    sure to call this function with local filenames, not remote
    URLs.  */
 
-static downloaded_file_t
+downloaded_file_t
 FNNAME_WTHREADS(downloaded_file) (downloaded_file_t mode, const char *file)
 {
   downloaded_file_t *ptr;
