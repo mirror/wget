@@ -1,3 +1,10 @@
+2012-11-29  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (pconn_lock): New function.
+	(PCONN_LOCK): Use pconn_lock.
+	(persistent_available_p): Change signature.
+	(get_persistent): Change calls to persistent_available_p.
+
 2012-10-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.h (enum): Add THREADS_ERR and SEM_ERR.

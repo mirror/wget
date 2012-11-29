@@ -1155,7 +1155,7 @@ append_value_to_filename (char **filename, param_token const * const value)
   int original_length = strlen(*filename);
   int new_length = strlen(*filename) + (value->e - value->b);
   *filename = xrealloc (*filename, new_length+1);
-  memcpy (*filename + original_length, value->b, (value->e - value->b)); 
+  memcpy (*filename + original_length, value->b, (value->e - value->b));
   (*filename)[new_length] = '\0';
 }
 
@@ -1227,13 +1227,29 @@ parse_content_disposition (const char *hdr, char **filename)
 #ifndef ENABLE_THREADS
 /* Whether a persistent connection is active. */
 static bool pconn_active;
- 
+
 static struct {
 #else
-static pthread_mutex_t pconn_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t pconn_mutex;
 
-#define PCONN_LOCK() pthread_mutex_lock (&pconn_mutex)
+static void
+pconn_lock()
+  {
+    static int pconn_mutex_init_p = 0;
+    if (! pconn_mutex_init_p)
+      {
+        pthread_mutexattr_t mta;
+        pthread_mutexattr_init (&mta);
+        pthread_mutexattr_settype (&mta, PTHREAD_MUTEX_RECURSIVE);
 
+        pthread_mutex_init (&pconn_mutex, &mta);
+        pconn_mutex_init_p = 1;
+      }
+
+    pthread_mutex_lock (&pconn_mutex);
+  }
+
+#define PCONN_LOCK()  pconn_lock()
 #define PCONN_UNLOCK() pthread_mutex_unlock (&pconn_mutex)
 
 static struct s_pconn {
@@ -1404,14 +1420,17 @@ register_persistent (const char *host, int port, int fd, bool ssl)
 #endif
 }
 
+#ifndef ENABLE_THREADS
 /* Return true if a persistent connection is available for connecting
    to HOST:PORT.  */
-
 static bool
-#ifndef ENABLE_THREADS
 persistent_available_p (const char *host, int port, bool ssl,
                         bool *host_lookup_failed)
 #else
+/* Return 1 if a persistent connection is available for connecting
+   to HOST:PORT.  0 if it is not available, -1 if the connection must
+   be destroyed by the caller.  */
+static int
 persistent_available_p (struct s_pconn *pconn, const char *host, int port,
                         bool ssl, bool *host_lookup_failed)
 #endif
@@ -1419,27 +1438,27 @@ persistent_available_p (struct s_pconn *pconn, const char *host, int port,
 #ifndef ENABLE_THREADS
   /* First, check whether a persistent connection is active at all.  */
   if (!pconn_active)
-    return false;
+    return 0;
 
   /* If we want SSL and the last connection wasn't or vice versa,
      don't use it.  Checking for host and port is not enough because
      HTTP and HTTPS can apparently coexist on the same port.  */
   if (ssl != pconn.ssl)
-    return false;
+    return 0;
 
   /* If we're not connecting to the same port, we're not interested. */
   if (port != pconn.port)
-    return false;
+    return 0;
 
   /* If the host is the same, we're in business.  If not, there is
      still hope -- read below.  */
   if (0 != strcasecmp (host, pconn.host))
 #else
   if (ssl != pconn->ssl)
-    return false;
+    return 0;
 
   if (port != pconn->port)
-    return false;
+    return 0;
 
   if (0 != strcasecmp (host, pconn->host))
 #endif
@@ -1460,7 +1479,7 @@ persistent_available_p (struct s_pconn *pconn, const char *host, int port,
         /* Don't try to talk to two different SSL sites over the same
            secure connection!  (Besides, it's not clear that
            name-based virtual hosting is even possible with SSL.)  */
-        return false;
+        return 0;
 
       /* If pconn.socket's peer is one of the IP addresses HOST
          resolves to, pconn.socket is for all intents and purposes
@@ -1470,29 +1489,27 @@ persistent_available_p (struct s_pconn *pconn, const char *host, int port,
       if (!socket_ip_address (pconn.socket, &ip, ENDPOINT_PEER))
         {
           /* Can't get the peer's address -- something must be very
-             wrong with the connection.  */        
-          invalidate_persistent ();
-          return false;
+             wrong with the connection.  */
+          return 0;
         }
 #else
       if (!socket_ip_address (pconn->socket, &ip, ENDPOINT_PEER))
         {
-          invalidate_persistent (pconn->socket);
-          return false;
+          return -1;
         }
 #endif
       al = lookup_host (host, 0);
       if (!al)
         {
           *host_lookup_failed = true;
-          return false;
+          return 0;
         }
 
       found = address_list_contains (al, &ip);
       address_list_release (al);
 
       if (!found)
-        return false;
+        return 0;
 
       /* The persistent connection's peer address was found among the
          addresses HOST resolved to; therefore, pconn.sock is in fact
@@ -1518,18 +1535,16 @@ persistent_available_p (struct s_pconn *pconn, const char *host, int port,
       /* Oops, the socket is no longer open.  Now that we know that,
          let's invalidate the persistent connection before returning
          0.  */
-      invalidate_persistent ();
-      return false;
+      return -1;
     }
 #else
   if (!test_socket_open (pconn->socket))
     {
-      invalidate_persistent (pconn->socket);
-      return false;
+      return -1;
     }
 #endif
 
-  return true;
+  return 1;
 }
 
 #ifdef ENABLE_THREADS
@@ -1544,10 +1559,22 @@ get_persistent (const char *host, int port, bool ssl, bool *host_lookup_failed)
   it = pconn;
   for (; it; it = it->next)
     {
-      if (persistent_available_p (it, host, port, ssl, host_lookup_failed))
+      int ret;
+      ret = persistent_available_p (it, host, port, ssl, host_lookup_failed);
+
+      if (ret == 1)
         break;
 
-      prev = it;
+      if (ret == 0)
+        prev = it;
+      else
+        {
+          struct s_pconn *next = it->next;
+          invalidate_persistent (it->socket);
+          it = next;
+          if (it == NULL)
+            break;
+        }
     }
 
   if (it)
@@ -1595,7 +1622,7 @@ get_persistent (const char *host, int port, bool ssl, bool *host_lookup_failed)
         }                                       \
     }                                           \
 } while (0)
- 
+
 #define CLOSE_INVALIDATE(fd) do {               \
   if (pconn_active && (fd) == pconn.socket)     \
     invalidate_persistent ();                   \
@@ -1693,13 +1720,13 @@ File %s already there; not retrieving.\n\n"), quote (filename));
    url, warc_timestamp_str, warc_request_uuid, warc_ip, type
    and statcode will be saved in the headers of the WARC record.
    The head parameter contains the HTTP headers of the response.
- 
+
    If fp is NULL and WARC is enabled, the response body will be
    written only to the WARC file.  If WARC is disabled and fp
    is a file pointer, the data will be written to the file.
    If fp is a file pointer and WARC is enabled, the body will
    be written to both destinations.
-   
+
    Returns the error code.   */
 static int
 read_response_body (struct http_stat *hs, int sock, FILE *fp, wgint contlen,
@@ -1788,7 +1815,7 @@ read_response_body (struct http_stat *hs, int sock, FILE *fp, wgint contlen,
 
       return RETRFINISHED;
     }
-  
+
   if (warc_tmp != NULL)
     fclose (warc_tmp);
 
@@ -1986,7 +2013,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       /* ... but some HTTP/1.0 caches doesn't implement Cache-Control.  */
       request_set_header (req, "Pragma", "no-cache", rel_none);
     }
-  
+
   if(hs->restval_last)
     {
       request_set_header (req, "Range",
@@ -2843,7 +2870,7 @@ read_header:
                      _("Location: %s%s\n"),
                      hs->newloc ? escnonprint_uri (hs->newloc) : _("unspecified"),
                      hs->newloc ? _(" [following]") : "");
- 
+
           /* In case the caller cares to look...  */
           hs->len = 0;
           hs->res = 0;
@@ -2884,7 +2911,7 @@ read_header:
           /* From RFC2616: The status codes 303 and 307 have
              been added for servers that wish to make unambiguously
              clear which kind of reaction is expected of the client.
-             
+
              A 307 should be redirected using the same method,
              in other words, a POST should be preserved and not
              converted to a GET in that case. */
@@ -3319,7 +3346,7 @@ Spider mode enabled. Check if remote file exists.\n"));
           hstat.restval = hstat.len;
       else
           hstat.restval = 0;
-        
+
       if (range)
         {
           hstat.restval = range->first_byte;
