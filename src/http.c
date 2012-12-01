@@ -2614,7 +2614,8 @@ read_header:
 #ifndef ENABLE_THREADS
       pconn.authorized = false;
 #else
-      pconn->authorized = false;
+      if (pconn)
+        pconn->authorized = false;
 #endif
       if (!auth_finished && (user && passwd))
         {
@@ -2687,7 +2688,8 @@ read_header:
 #ifndef ENABLE_THREADS
         pconn.authorized = true;
 #else
-        pconn->authorized = true;
+        if (pconn)
+          pconn->authorized = true;
 #endif
       }
     }
