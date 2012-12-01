@@ -61,11 +61,28 @@ struct hash_table *downloaded_css_set;
 #ifdef ENABLE_THREADS
 static pthread_mutex_t convert_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+static void
+lock_convert_mutex()
+{
+  static int convert_mutex_init_p = 0;
+  if (! convert_mutex_init_p)
+    {
+      pthread_mutexattr_t mta;
+      pthread_mutexattr_init (&mta);
+      pthread_mutexattr_settype (&mta, PTHREAD_MUTEX_RECURSIVE);
+
+      pthread_mutex_init (&convert_mutex, &mta);
+      convert_mutex_init_p = 1;
+    }
+  pthread_mutex_lock (&convert_mutex);
+}
+
+
 #define THREAD_SAFE(ret, fn, args, argv)          \
   ret fn args                                     \
   {                                               \
     ret r;                                        \
-    pthread_mutex_lock (&convert_mutex);          \
+    lock_convert_mutex();                         \
     r = fn##_1 argv;                              \
     pthread_mutex_unlock (&convert_mutex);        \
     return r;                                     \
@@ -74,7 +91,7 @@ static pthread_mutex_t convert_mutex = PTHREAD_MUTEX_INITIALIZER;
 #define THREAD_SAFE_VOID(fn, args, argv)            \
   void fn args                                      \
   {                                                 \
-    pthread_mutex_lock (&convert_mutex);            \
+    lock_convert_mutex();                           \
     fn##_1 argv;                                    \
     pthread_mutex_unlock (&convert_mutex);          \
   }

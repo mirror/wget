@@ -1,3 +1,9 @@
+2012-12-01  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* convert.c (lock_convert_mutex): New function.
+	(THREAD_SAFE): Use `lock_convert_mutex'.
+	(THREAD_SAFE_VOID): Likewise.
+
 2012-11-28  Domenico Chierico <spaghetty@gmail.com>
 
 	* Makefile.am (THREAD_LIB): Add -lpthread.
