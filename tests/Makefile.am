@@ -135,6 +135,6 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
 
 check_PROGRAMS = unit-tests
 unit_tests_SOURCES =
-LDADD = ../src/libunittest.a ../lib/libgnu.a $(LIBS)
+LDADD = ../src/libunittest.a ../lib/libgnu.a
 
 CLEANFILES = *~ *.bak core core.[0-9]*

@@ -41,7 +41,6 @@ endif
 if THREADS_ARE_ENABLED
 THREAD_OBJ = multi.c
 MULTI_HEADER = multi.h
-THREAD_LIB = -lpthread
 endif
 
 # The following line is losing on some versions of make!

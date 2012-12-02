@@ -363,6 +363,7 @@ AS_IF([test x"$ENABLE_THREADS" != xno],[
   AC_CHECK_LIB(pthread, pthread_create, [
 dnl    AC_CHECK_LIB(semaphore, sem_init, [
       threads=yes
+      LIBS="${LIBS} -lpthread"
       AC_DEFINE([ENABLE_THREADS], 1,
         [Define if you want the thread support compiled in.])
       AC_MSG_NOTICE([compiling with support for threads])
