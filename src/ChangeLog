@@ -1,5 +1,7 @@
 2012-12-02  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* recur.c (retrieve_tree): New variable `next_i'.
+
 	* http.c (gethttp): Check for pconn before access it.
 
 2012-12-01  Giuseppe Scrivano  <gscrivano@gnu.org>

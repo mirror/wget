@@ -217,6 +217,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
   char *next_url = NULL, *next_referer;
   int next_depth;
   bool next_html_allowed, next_css_allowed;
+  struct iri *next_i = NULL;
 
   struct s_thread_ctx *thread_ctx;
 #endif
@@ -285,12 +286,13 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
 #else
       if (next_url == NULL)
         {
-          if (! url_dequeue (queue, (struct iri **) &i,
+          if (! url_dequeue (queue, (struct iri **) &next_i,
                            (const char **)&next_url, (const char **)&next_referer,
                            &next_depth, &next_html_allowed, &next_css_allowed))
             url = NULL;
         }
 
+      i = next_i;
       url = next_url;
       referer = next_referer;
       depth = next_depth;
@@ -306,11 +308,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
          and again under URL2, but at a different (possibly smaller)
          depth, we want the URL's children to be taken into account
          the second time.  */
-      if (
-#ifdef ENABLE_THREADS
-          0 && url &&
-#endif
-          dl_url_file_map && hash_table_contains (dl_url_file_map, url))
+      if (url && dl_url_file_map && hash_table_contains (dl_url_file_map, url))
         {
           file = xstrdup (hash_table_get (dl_url_file_map, url));
 
@@ -332,10 +330,6 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
               descend = true;
               is_css = true;
             }
-
-#ifdef ENABLE_THREADS
-          next_url = NULL;
-#endif
         }
       else
         {
