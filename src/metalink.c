@@ -28,13 +28,13 @@ Corresponding Source for a non-source form of such a combination
 shall include the source code for the parts of OpenSSL used as well
 as that of the covered work.  */
 
+#include "wget.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <metalink/metalink_parser.h>
 #include <metalink/metalink_types.h>
-
-#include "wget.h"
 
 #include "log.h"
 #include "md5.h"
@@ -42,6 +42,7 @@ as that of the covered work.  */
 #include "sha256.h"
 #include "metalink.h"
 #include "utils.h"
+
 
 #define HASH_TYPES 3
 /* Between MD5, SHA1 and SHA256, SHA256 has the greatest hash length, which is
