@@ -838,6 +838,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       iri->utf8_encode = opt.enable_iri;
       set_content_encoding (iri, NULL);
       xfree_null (iri->orig_url);
+      iri->orig_url = NULL;
 
       /* Now, see if this new location makes sense. */
       newloc_parsed = url_parse (mynewloc, &up_error_code, iri, true);
