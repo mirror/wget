@@ -1,3 +1,7 @@
+2012-12-09  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* test.c: Include "wget.h".
+
 2012-12-08  Michael Stapelberg <michael@stapelberg.de> (tiny change)
 
 	* retr.c (retrieve_url): Set iri->orig_url to NULL after it is
