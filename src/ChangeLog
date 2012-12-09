@@ -1,5 +1,9 @@
 2012-12-09  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* main.c (main): Keep looking for "config" until there are
+	arguments to parse.
+	Reported by: Adrien Dumont <adr.dum@hotmail.fr>
+
 	* test.c: Include "wget.h".
 
 2012-12-08  Michael Stapelberg <michael@stapelberg.de> (tiny change)
