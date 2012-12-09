@@ -267,6 +267,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
       char *url = NULL, *referer;
       int depth;
       bool html_allowed, css_allowed;
+      bool dequed = false;
 #ifdef ENABLE_THREADS
       int index = 0;
 #endif
@@ -286,10 +287,10 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
 #else
       if (next_url == NULL)
         {
-          if (! url_dequeue (queue, (struct iri **) &next_i,
+          if (url_dequeue (queue, (struct iri **) &next_i,
                            (const char **)&next_url, (const char **)&next_referer,
                            &next_depth, &next_html_allowed, &next_css_allowed))
-            url = NULL;
+            dequed = true;
         }
 
       i = next_i;
@@ -308,7 +309,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
          and again under URL2, but at a different (possibly smaller)
          depth, we want the URL's children to be taken into account
          the second time.  */
-      if (url && dl_url_file_map && hash_table_contains (dl_url_file_map, url))
+      if (dequed && url && dl_url_file_map && hash_table_contains (dl_url_file_map, url))
         {
           file = xstrdup (hash_table_get (dl_url_file_map, url));
 
