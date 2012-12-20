@@ -401,7 +401,7 @@ ssl_connect_wget (int fd, const char *hostname)
       break;
     case secure_protocol_sslv2:
     case secure_protocol_sslv3:
-      err = gnutls_priority_set_direct (session, "NORMAL:-VERS-TLS-ALL", NULL);
+      err = gnutls_priority_set_direct (session, "NORMAL:-VERS-TLS-ALL:+VERS-SSL3.0", NULL);
       break;
     case secure_protocol_tlsv1:
       err = gnutls_priority_set_direct (session, "NORMAL:-VERS-SSL3.0", NULL);
