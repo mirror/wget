@@ -1,3 +1,8 @@
+2013-02-15  Darshit Shah <darnir@gmail.com>
+
+	* cookies.c (cookie_handle_set_cookie): Set cookie-descard_requested
+	to true on domain mismatch.
+
 2012-12-20  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* gnutls.c (ssl_connect_wget): added +VERS-SSL3.0 to fix
