@@ -1,6 +1,15 @@
+2013-03-12  Darshit Shah <darnir@gmail.com>
+
+	* http.c (gethttp): Make wget return FILEBADFILE error and abort if
+	post-file does not exist.
+
+	* http.c (http_loop): Handle FILEBADFILE as a valid err.
+
+	* exits.c (get_status_for_err): Mark FILEBADFILE as an IO error.
+
 2013-02-15  Darshit Shah <darnir@gmail.com>
 
-	* cookies.c (cookie_handle_set_cookie): Set cookie-descard_requested
+	* cookies.c (cookie_handle_set_cookie): Set cookie->discard_requested
 	to true on domain mismatch.
 
 2012-12-20  Tim Ruehsen  <tim.ruehsen@gmx.de>

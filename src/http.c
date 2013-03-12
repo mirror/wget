@@ -1865,7 +1865,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
             {
               logprintf (LOG_NOTQUIET, _("POST data file %s missing: %s\n"),
                          quote (opt.post_file_name), strerror (errno));
-              post_data_size = 0;
+              return FILEBADFILE;
             }
         }
       request_set_header (req, "Content-Length",
@@ -3119,6 +3119,7 @@ Spider mode enabled. Check if remote file exists.\n"));
                      quote (hstat.local_file), strerror (errno));
         case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED:
         case SSLINITFAILED: case CONTNOTSUPPORTED: case VERIFCERTERR:
+        case FILEBADFILE:
           /* Fatal errors just return from the function.  */
           ret = err;
           goto exit;
