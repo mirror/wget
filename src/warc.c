@@ -165,7 +165,7 @@ warc_write_string (const char *str)
 }
 
 
-#define EXTRA_GZIP_HEADER_SIZE 12
+#define EXTRA_GZIP_HEADER_SIZE 14
 #define GZIP_STATIC_HEADER_SIZE  10
 #define FLG_FEXTRA          0x04
 #define OFF_FLG             3
@@ -200,7 +200,7 @@ warc_write_start_record (void)
          In warc_write_end_record we will fill this space
          with information about the uncompressed and
          compressed size of the record. */
-      fprintf (warc_current_file, "XXXXXXXXXXXX");
+      fseek (warc_current_file, EXTRA_GZIP_HEADER_SIZE, SEEK_CUR);
       fflush (warc_current_file);
 
       /* Start a new GZIP stream. */
@@ -342,16 +342,19 @@ warc_write_end_record (void)
       /* The extra header field identifier for the WARC skip length. */
       extra_header[2]  = 's';
       extra_header[3]  = 'l';
+      /* The size of the field value (8 bytes).  */
+      extra_header[4]  = (8 & 255);
+      extra_header[5]  = ((8 >> 8) & 255);
       /* The size of the uncompressed record.  */
-      extra_header[4]  = (uncompressed_size & 255);
-      extra_header[5]  = (uncompressed_size >> 8) & 255;
-      extra_header[6]  = (uncompressed_size >> 16) & 255;
-      extra_header[7]  = (uncompressed_size >> 24) & 255;
+      extra_header[6]  = (uncompressed_size & 255);
+      extra_header[7]  = (uncompressed_size >> 8) & 255;
+      extra_header[8]  = (uncompressed_size >> 16) & 255;
+      extra_header[9]  = (uncompressed_size >> 24) & 255;
       /* The size of the compressed record.  */
-      extra_header[8]  = (compressed_size & 255);
-      extra_header[9]  = (compressed_size >> 8) & 255;
-      extra_header[10] = (compressed_size >> 16) & 255;
-      extra_header[11] = (compressed_size >> 24) & 255;
+      extra_header[10] = (compressed_size & 255);
+      extra_header[11] = (compressed_size >> 8) & 255;
+      extra_header[12] = (compressed_size >> 16) & 255;
+      extra_header[13] = (compressed_size >> 24) & 255;
 
       /* Write the extra header after the static header. */
       fseeko (warc_current_file, warc_current_gzfile_offset

@@ -1,3 +1,8 @@
+2013-03-31  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* warc.c: Correctly write the field length in the skip length field
+	of .warc.gz files. (Following the GZIP spec in RFC 1952.)
+
 2013-03-12  Darshit Shah <darnir@gmail.com>
 
 	* http.c (gethttp): Make wget return FILEBADFILE error and abort if
