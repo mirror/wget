@@ -459,14 +459,14 @@ register_basic_auth_host (const char *hostname)
    also be written to that file.  */
 
 static int
-post_file (int sock, const char *file_name, wgint promised_size, FILE *warc_tmp)
+body_file_send (int sock, const char *file_name, wgint promised_size, FILE *warc_tmp)
 {
   static char chunk[8192];
   wgint written = 0;
   int write_error;
   FILE *fp;
 
-  DEBUGP (("[writing POST file %s ... ", file_name));
+  DEBUGP (("[writing BODY file %s ... ", file_name));
 
   fp = fopen (file_name, "rb");
   if (!fp)
@@ -1726,7 +1726,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
     !opt.http_keep_alive || opt.ignore_length;
 
   /* Headers sent when using POST. */
-  wgint post_data_size = 0;
+  wgint body_data_size = 0;
 
   bool host_lookup_failed = false;
 
@@ -1767,6 +1767,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       meth = "HEAD";
     else if (opt.post_file_name || opt.post_data)
       meth = "POST";
+    else if (opt.method)
+      {
+        char *q;
+        for (q = opt.method; *q; ++q)
+          *q = c_toupper (*q);
+        meth = opt.method;
+      }
     /* Use the full path, i.e. one that includes the leading slash and
        the query string.  E.g. if u->path is "foo/bar" and u->query is
        "param=value", full_path will be "/foo/bar?param=value".  */
@@ -1852,25 +1859,30 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
         }
     }
 
-  if (opt.post_data || opt.post_file_name)
+  if (opt.method)
     {
-      request_set_header (req, "Content-Type",
-                          "application/x-www-form-urlencoded", rel_none);
-      if (opt.post_data)
-        post_data_size = strlen (opt.post_data);
-      else
+
+      if (opt.body_data || opt.body_file)
         {
-          post_data_size = file_size (opt.post_file_name);
-          if (post_data_size == -1)
+          request_set_header (req, "Content-Type",
+                              "application/x-www-form-urlencoded", rel_none);
+
+          if (opt.body_data)
+            body_data_size = strlen (opt.body_data);
+          else
             {
-              logprintf (LOG_NOTQUIET, _("POST data file %s missing: %s\n"),
-                         quote (opt.post_file_name), strerror (errno));
-              return FILEBADFILE;
+              body_data_size = file_size (opt.body_file);
+              if (body_data_size == -1)
+                {
+                  logprintf (LOG_NOTQUIET, _("BODY data file %s missing: %s\n"),
+                             quote (opt.body_file), strerror (errno));
+                  return FILEBADFILE;
+                }
             }
+          request_set_header (req, "Content-Length",
+                              xstrdup (number_to_static_string (body_data_size)),
+                              rel_value);
         }
-      request_set_header (req, "Content-Length",
-                          xstrdup (number_to_static_string (post_data_size)),
-                          rel_value);
     }
 
  retry_with_auth:
@@ -2128,28 +2140,28 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
 
   if (write_error >= 0)
     {
-      if (opt.post_data)
+      if (opt.body_data)
         {
-          DEBUGP (("[POST data: %s]\n", opt.post_data));
-          write_error = fd_write (sock, opt.post_data, post_data_size, -1);
+          DEBUGP (("[BODY data: %s]\n", opt.body_data));
+          write_error = fd_write (sock, opt.body_data, body_data_size, -1);
           if (write_error >= 0 && warc_tmp != NULL)
             {
               /* Remember end of headers / start of payload. */
               warc_payload_offset = ftello (warc_tmp);
 
               /* Write a copy of the data to the WARC record. */
-              int warc_tmp_written = fwrite (opt.post_data, 1, post_data_size, warc_tmp);
-              if (warc_tmp_written != post_data_size)
+              int warc_tmp_written = fwrite (opt.post_data, 1, body_data_size, warc_tmp);
+              if (warc_tmp_written != body_data_size)
                 write_error = -2;
             }
-        }
-      else if (opt.post_file_name && post_data_size != 0)
+         }
+      else if (opt.body_file && body_data_size != 0)
         {
           if (warc_tmp != NULL)
-            /* Remember end of headers / start of payload. */
+            /* Remember end of headers / start of payload */
             warc_payload_offset = ftello (warc_tmp);
 
-          write_error = post_file (sock, opt.post_file_name, post_data_size, warc_tmp);
+          write_error = body_file_send (sock, opt.body_file, body_data_size, warc_tmp);
         }
     }
 

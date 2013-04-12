@@ -1,3 +1,19 @@
+2013-03-15  Darshit Shah <darnir@gmail.com>
+
+	* http.c (post_file): Rename function to body_file_send to more
+	accurately reflect its use.
+	* http.c (gethttp): Add support for --method, --body-data and
+	--body-file
+	* init.c (commands): Same.
+	* options.h (options): Same.
+	* main.c (option_data): Same.
+	* main.c (print_help): Add --method command.
+	* main.c (main): Make old --post-{data,file} commands aliases to
+	--method.
+	Add sanity checks for --method, --body-data and --body-file.
+	* retr.c (SUSPEND_POST_DATA): Edit Macro Definition to use body_data.
+	* retr.c (RESTORE_POST_DATA): Same.
+
 2013-03-31  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* warc.c: Correctly write the field length in the skip length field

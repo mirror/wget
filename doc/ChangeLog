@@ -1,3 +1,10 @@
+2013-04-05  Darshit Shah <darnir@gmail.com>
+
+	* doc/wget.texi: Fix ambiguous wording in --post-data section. Make it
+	clear that wget does not check for the format of the post-data.
+	* doc/wget.texi: Add documentation for --method, --body-data and
+	--body-file.
+
 2012-10-08  Stefano Lattarini <stefano.lattarini@gmail.com>  (tiny change)
 
 	docs: fix errors and warnings with Texinfo 5

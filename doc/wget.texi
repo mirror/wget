@@ -1457,6 +1457,11 @@ like everything else. Wget does not currently support
 @code{application/x-www-form-urlencoded}. Only one of
 @samp{--post-data} and @samp{--post-file} should be specified.
 
+Please note that wget does not require the content to be of the form
+@code{key1=value1&key2=value2}, and neither does it test for it. Wget will
+simply transmit whatever data is provided to it. Most servers however expect
+the POST data to be in the above format when processing HTML Forms.
+
 Please be aware that Wget needs to know the size of the POST data in
 advance.  Therefore the argument to @code{--post-file} must be a regular
 file; specifying a FIFO or something like @file{/dev/stdin} won't work.
@@ -1496,6 +1501,34 @@ the above will not work because @samp{--save-cookies} will not save
 them (and neither will browsers) and the @file{cookies.txt} file will
 be empty.  In that case use @samp{--keep-session-cookies} along with
 @samp{--save-cookies} to force saving of session cookies.
+
+@cindex Other HTTP Methods
+@item --method=@var{HTTP-Method}
+For the purpose of RESTful scripting, Wget allows sending of other HTTP Methods
+without the need to explicitly set them using @samp{--header=Header-Line}.
+Wget will use whatever string is passed to it after @samp{--method} as the HTTP
+Method to the server.
+
+@item --body-data=@var{Data-String}
+@itemx --body-file=@var{Data-File}
+Must be set when additional data needs to be sent to the server along with the
+Method specified using @samp{--method}. @samp{--post-data} sends @var{string} as
+data, whereas @samp{--post-file} sends the contents of @var{file}. Other than that,
+they work in exactly the same way.
+
+Currently, @samp{--body-file} is @emph{not} for transmitting files as a whole.
+Wget does not currently support @code{multipart/form-data} for transmitting data;
+only @code{application/x-www-form-urlencoded}. In the future, this may be changed
+so that wget sends the @samp{--body-file} as a complete file instead of sending its
+contents to the server. Please be aware that Wget needs to know the contents of
+BODY Data in advance, and hence the argument to @samp{--body-file} should be a
+regular file. See @samp{--post-file} for a more detailed explanation.
+Only one of @samp{--body-data} and @samp{--body-file} should be specified.
+
+Wget handles these requests in the same way that it handles @samp{--post-data}
+and @samp{--post-file}. If you invoke Wget with @samp{--method=POST} and the server
+responds with a redirect request, then Wget will revert to a GET request during the
+redirection as is explained in @samp{--post-data}.
 
 @cindex Content-Disposition
 @item --content-disposition

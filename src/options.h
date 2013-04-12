@@ -228,6 +228,9 @@ struct options
 
   char *post_data;		/* POST query string */
   char *post_file_name;		/* File to post */
+  char *method;                 /* HTTP Method to use in Header */
+  char *body_data;              /* HTTP Method Data String */
+  char *body_file;              /* HTTP Method File */
 
   enum {
     restrict_unix,

@@ -679,18 +679,20 @@ calc_rate (wgint bytes, double secs, int *units)
 
 #define SUSPEND_POST_DATA do {                  \
   post_data_suspended = true;                   \
-  saved_post_data = opt.post_data;              \
-  saved_post_file_name = opt.post_file_name;    \
-  opt.post_data = NULL;                         \
-  opt.post_file_name = NULL;                    \
+  saved_post_data = opt.body_data;              \
+  saved_post_file_name = opt.body_file;         \
+  opt.body_data = NULL;                         \
+  opt.body_file = NULL;                         \
+  opt.method = NULL;                            \
 } while (0)
 
 #define RESTORE_POST_DATA do {                          \
   if (post_data_suspended)                              \
     {                                                   \
-      opt.post_data = saved_post_data;                  \
-      opt.post_file_name = saved_post_file_name;        \
+      opt.body_data = saved_post_data;                  \
+      opt.body_file = saved_post_file_name;             \
       post_data_suspended = false;                      \
+      opt.method = "POST";                              \
     }                                                   \
 } while (0)
 
