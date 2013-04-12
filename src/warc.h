@@ -19,5 +19,8 @@ bool warc_write_response_record (char *url, char *timestamp_str,
 bool warc_write_resource_record (char *resource_uuid, const char *url,
   const char *timestamp_str, const char *concurrent_to_uuid, ip_address *ip,
   const char *content_type, FILE *body, off_t payload_offset);
+bool warc_write_metadata_record (char *record_uuid, const char *url,
+  const char *timestamp_str, const char *concurrent_to_uuid, ip_address *ip,
+  const char *content_type, FILE *body, off_t payload_offset);
 
 #endif /* WARC_H */

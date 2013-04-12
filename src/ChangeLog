@@ -1,3 +1,11 @@
+2013-04-12  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* warc.c: Generate unique UUIDs for the manifest and the record
+	holding the command-line arguments.
+	Write the manifest to a "metadata" record to follow the WARC
+	implementation guidelines.
+	* warc.h: Declare new function warc_write_metadata_record.
+
 2013-03-15  Darshit Shah <darnir@gmail.com>
 
 	* http.c (post_file): Rename function to body_file_send to more

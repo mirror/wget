@@ -1083,7 +1083,7 @@ warc_write_metadata (void)
   warc_uuid_str (manifest_uuid);
 
   fflush (warc_manifest_fp);
-  warc_write_resource_record (manifest_uuid,
+  warc_write_metadata_record (manifest_uuid,
                               "metadata://gnu.org/software/wget/warc/MANIFEST.txt",
                               NULL, NULL, NULL, "text/plain",
                               warc_manifest_fp, -1);
@@ -1098,9 +1098,9 @@ warc_write_metadata (void)
   fflush (warc_tmp_fp);
   fprintf (warc_tmp_fp, "%s\n", program_argstring);
 
-  warc_write_resource_record (manifest_uuid,
+  warc_write_resource_record (NULL,
                    "metadata://gnu.org/software/wget/warc/wget_arguments.txt",
-                              NULL, NULL, NULL, "text/plain",
+                              NULL, manifest_uuid, NULL, "text/plain",
                               warc_tmp_fp, -1);
   /* warc_write_resource_record has closed warc_tmp_fp. */
 
@@ -1395,20 +1395,22 @@ warc_write_response_record (char *url, char *timestamp_str,
   return warc_write_ok;
 }
 
-/* Writes a resource record to the WARC file.
+/* Writes a resource or metadata record to the WARC file.
+   warc_type  is either "resource" or "metadata",
    resource_uuid  is the uuid of the resource (or NULL),
    url  is the target uri of the resource,
    timestamp_str  is the timestamp (generated with warc_timestamp),
-   concurrent_to_uuid  is the uuid of the request for that generated this
+   concurrent_to_uuid  is the uuid of the record that generated this,
    resource (generated with warc_uuid_str) or NULL,
    ip  is the ip address of the server (or NULL),
    content_type  is the mime type of the body (or NULL),
    body  is a pointer to a file containing the resource data.
    Calling this function will close body.
    Returns true on success, false on error. */
-bool
-warc_write_resource_record (char *resource_uuid, const char *url,
-                 const char *timestamp_str, const char *concurrent_to_uuid,
+static bool
+warc_write_record (const char *record_type, char *resource_uuid,
+                 const char *url, const char *timestamp_str,
+                 const char *concurrent_to_uuid,
                  ip_address *ip, const char *content_type, FILE *body,
                  off_t payload_offset)
 {
@@ -1422,7 +1424,7 @@ warc_write_resource_record (char *resource_uuid, const char *url,
     content_type = "application/octet-stream";
 
   warc_write_start_record ();
-  warc_write_header ("WARC-Type", "resource");
+  warc_write_header ("WARC-Type", record_type);
   warc_write_header ("WARC-Record-ID", resource_uuid);
   warc_write_header ("WARC-Warcinfo-ID", warc_current_warcinfo_uuid_str);
   warc_write_header ("WARC-Concurrent-To", concurrent_to_uuid);
@@ -1437,4 +1439,48 @@ warc_write_resource_record (char *resource_uuid, const char *url,
   fclose (body);
 
   return warc_write_ok;
+}
+
+/* Writes a resource record to the WARC file.
+   resource_uuid  is the uuid of the resource (or NULL),
+   url  is the target uri of the resource,
+   timestamp_str  is the timestamp (generated with warc_timestamp),
+   concurrent_to_uuid  is the uuid of the record that generated this,
+   resource (generated with warc_uuid_str) or NULL,
+   ip  is the ip address of the server (or NULL),
+   content_type  is the mime type of the body (or NULL),
+   body  is a pointer to a file containing the resource data.
+   Calling this function will close body.
+   Returns true on success, false on error. */
+bool
+warc_write_resource_record (char *resource_uuid, const char *url,
+                 const char *timestamp_str, const char *concurrent_to_uuid,
+                 ip_address *ip, const char *content_type, FILE *body,
+                 off_t payload_offset)
+{
+  return warc_write_record ("resource",
+      resource_uuid, url, timestamp_str, concurrent_to_uuid,
+      ip, content_type, body, payload_offset);
+}
+
+/* Writes a metadata record to the WARC file.
+   record_uuid  is the uuid of the record (or NULL),
+   url  is the target uri of the record,
+   timestamp_str  is the timestamp (generated with warc_timestamp),
+   concurrent_to_uuid  is the uuid of the record that generated this,
+   record (generated with warc_uuid_str) or NULL,
+   ip  is the ip address of the server (or NULL),
+   content_type  is the mime type of the body (or NULL),
+   body  is a pointer to a file containing the record data.
+   Calling this function will close body.
+   Returns true on success, false on error. */
+bool
+warc_write_metadata_record (char *record_uuid, const char *url,
+                 const char *timestamp_str, const char *concurrent_to_uuid,
+                 ip_address *ip, const char *content_type, FILE *body,
+                 off_t payload_offset)
+{
+  return warc_write_record ("metadata",
+      record_uuid, url, timestamp_str, concurrent_to_uuid,
+      ip, content_type, body, payload_offset);
 }
