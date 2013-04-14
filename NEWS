@@ -8,6 +8,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+** Add support for --method.
+
 ** Add support for file names longer than MAX_FILE.
 
 ** Support FTP listing for the FTP Server on Windows Server 2008 R2.
