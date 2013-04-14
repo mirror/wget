@@ -1,3 +1,7 @@
+2013-04-14  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Download Options): Document "mega" dot style.
+
 2013-04-05  Darshit Shah <darnir@gmail.com>
 
 	* doc/wget.texi: Fix ambiguous wording in --post-data section. Make it

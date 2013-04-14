@@ -715,9 +715,12 @@ different meaning to one dot.  With the @code{default} style each dot
 represents 1K, there are ten dots in a cluster and 50 dots in a line.
 The @code{binary} style has a more ``computer''-like orientation---8K
 dots, 16-dots clusters and 48 dots per line (which makes for 384K
-lines).  The @code{mega} style is suitable for downloading very large
+lines).  The @code{mega} style is suitable for downloading large
 files---each dot represents 64K retrieved, there are eight dots in a
 cluster, and 48 dots on each line (so each line contains 3M).
+If @code{mega} is not enough then you can use the @code{giga}
+style---each dot represents 1M retrieved, there are eight dots in a
+cluster, and 32 dots on each line (so each line contains 32M).
 
 Note that you can set the default style using the @code{progress}
 command in @file{.wgetrc}.  That setting may be overridden from the
