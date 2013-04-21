@@ -463,14 +463,14 @@ register_basic_auth_host (const char *hostname)
    also be written to that file.  */
 
 static int
-post_file (int sock, const char *file_name, wgint promised_size, FILE *warc_tmp)
+body_file_send (int sock, const char *file_name, wgint promised_size, FILE *warc_tmp)
 {
   static char chunk[8192];
   wgint written = 0;
   int write_error;
   FILE *fp;
 
-  DEBUGP (("[writing POST file %s ... ", file_name));
+  DEBUGP (("[writing BODY file %s ... ", file_name));
 
   fp = fopen (file_name, "rb");
   if (!fp)
@@ -1946,7 +1946,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
     !opt.http_keep_alive || opt.ignore_length;
 
   /* Headers sent when using POST. */
-  wgint post_data_size = 0;
+  wgint body_data_size = 0;
 
   bool host_lookup_failed = false;
 
@@ -1987,6 +1987,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       meth = "HEAD";
     else if (opt.post_file_name || opt.post_data)
       meth = "POST";
+    else if (opt.method)
+      {
+        char *q;
+        for (q = opt.method; *q; ++q)
+          *q = c_toupper (*q);
+        meth = opt.method;
+      }
     /* Use the full path, i.e. one that includes the leading slash and
        the query string.  E.g. if u->path is "foo/bar" and u->query is
        "param=value", full_path will be "/foo/bar?param=value".  */
@@ -2081,25 +2088,30 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
         }
     }
 
-  if (opt.post_data || opt.post_file_name)
+  if (opt.method)
     {
-      request_set_header (req, "Content-Type",
-                          "application/x-www-form-urlencoded", rel_none);
-      if (opt.post_data)
-        post_data_size = strlen (opt.post_data);
-      else
+
+      if (opt.body_data || opt.body_file)
         {
-          post_data_size = file_size (opt.post_file_name);
-          if (post_data_size == -1)
+          request_set_header (req, "Content-Type",
+                              "application/x-www-form-urlencoded", rel_none);
+
+          if (opt.body_data)
+            body_data_size = strlen (opt.body_data);
+          else
             {
-              logprintf (LOG_NOTQUIET, _("POST data file %s missing: %s\n"),
-                         quote (opt.post_file_name), strerror (errno));
-              post_data_size = 0;
+              body_data_size = file_size (opt.body_file);
+              if (body_data_size == -1)
+                {
+                  logprintf (LOG_NOTQUIET, _("BODY data file %s missing: %s\n"),
+                             quote (opt.body_file), strerror (errno));
+                  return FILEBADFILE;
+                }
             }
+          request_set_header (req, "Content-Length",
+                              xstrdup (number_to_static_string (body_data_size)),
+                              rel_value);
         }
-      request_set_header (req, "Content-Length",
-                          xstrdup (number_to_static_string (post_data_size)),
-                          rel_value);
     }
 
  retry_with_auth:
@@ -2193,11 +2205,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
           int family = socket_family (pconn.socket, ENDPOINT_PEER);
           sock = pconn.socket;
           using_ssl = pconn.ssl;
+#if ENABLE_IPV6
           if (family == AF_INET6)
              logprintf (LOG_VERBOSE, _("Reusing existing connection to [%s]:%d.\n"),
                         quotearg_style (escape_quoting_style, pconn.host),
                          pconn.port);
           else
+#endif
              logprintf (LOG_VERBOSE, _("Reusing existing connection to %s:%d.\n"),
                         quotearg_style (escape_quoting_style, pconn.host),
                         pconn.port);
@@ -2383,28 +2397,28 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
 
   if (write_error >= 0)
     {
-      if (opt.post_data)
+      if (opt.body_data)
         {
-          DEBUGP (("[POST data: %s]\n", opt.post_data));
-          write_error = fd_write (sock, opt.post_data, post_data_size, -1);
+          DEBUGP (("[BODY data: %s]\n", opt.body_data));
+          write_error = fd_write (sock, opt.body_data, body_data_size, -1);
           if (write_error >= 0 && warc_tmp != NULL)
             {
               /* Remember end of headers / start of payload. */
               warc_payload_offset = ftello (warc_tmp);
 
               /* Write a copy of the data to the WARC record. */
-              int warc_tmp_written = fwrite (opt.post_data, 1, post_data_size, warc_tmp);
-              if (warc_tmp_written != post_data_size)
+              int warc_tmp_written = fwrite (opt.post_data, 1, body_data_size, warc_tmp);
+              if (warc_tmp_written != body_data_size)
                 write_error = -2;
             }
-        }
-      else if (opt.post_file_name && post_data_size != 0)
+         }
+      else if (opt.body_file && body_data_size != 0)
         {
           if (warc_tmp != NULL)
-            /* Remember end of headers / start of payload. */
+            /* Remember end of headers / start of payload */
             warc_payload_offset = ftello (warc_tmp);
 
-          write_error = post_file (sock, opt.post_file_name, post_data_size, warc_tmp);
+          write_error = body_file_send (sock, opt.body_file, body_data_size, warc_tmp);
         }
     }
 
@@ -3275,6 +3289,11 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
   if (!opt.spider)
     send_head_first = false;
 
+  /* Send preliminary HEAD request if --content-disposition and -c are used
+     together.  */
+  if (opt.content_disposition && opt.always_rest)
+    send_head_first = true;
+
   /* Send preliminary HEAD request if -N is given and we have an existing
    * destination file. */
   file_name = url_file_name (opt.trustservernames ? u : original_url, NULL);
@@ -3399,6 +3418,7 @@ Spider mode enabled. Check if remote file exists.\n"));
                      quote (hstat.local_file), strerror (errno));
         case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED:
         case SSLINITFAILED: case CONTNOTSUPPORTED: case VERIFCERTERR:
+        case FILEBADFILE:
           /* Fatal errors just return from the function.  */
           ret = err;
           goto exit;
@@ -3942,7 +3962,7 @@ digest_authentication_encode (const char *au, const char *user,
                               const char *passwd, const char *method,
                               const char *path)
 {
-  static char *realm, *opaque, *nonce, *qop;
+  static char *realm, *opaque, *nonce, *qop, *algorithm;
   static struct {
     const char *name;
     char **variable;
@@ -3950,15 +3970,17 @@ digest_authentication_encode (const char *au, const char *user,
     { "realm", &realm },
     { "opaque", &opaque },
     { "nonce", &nonce },
-    { "qop", &qop }
+    { "qop", &qop },
+    { "algorithm", &algorithm }
   };
   char cnonce[16] = "";
   char *res;
+  int res_len;
   size_t res_size;
   param_token name, value;
 
 
-  realm = opaque = nonce = qop = NULL;
+  realm = opaque = nonce = qop = algorithm = NULL;
 
   au += 6;                      /* skip over `Digest' */
   while (extract_param (&au, &name, &value, ','))
@@ -3981,12 +4003,19 @@ digest_authentication_encode (const char *au, const char *user,
       user = NULL; /* force freeing mem and return */
     }
 
+  if (algorithm != NULL && strcmp (algorithm,"MD5") && strcmp (algorithm,"MD5-sess"))
+    {
+      logprintf (LOG_NOTQUIET, _("Unsupported algorithm '%s'.\n"), algorithm);
+      user = NULL; /* force freeing mem and return */
+    }
+
   if (!realm || !nonce || !user || !passwd || !path || !method)
     {
       xfree_null (realm);
       xfree_null (opaque);
       xfree_null (nonce);
       xfree_null (qop);
+      xfree_null (algorithm);
       return NULL;
     }
 
@@ -4005,7 +4034,25 @@ digest_authentication_encode (const char *au, const char *user,
     md5_process_bytes ((unsigned char *)":", 1, &ctx);
     md5_process_bytes ((unsigned char *)passwd, strlen (passwd), &ctx);
     md5_finish_ctx (&ctx, hash);
+
     dump_hash (a1buf, hash);
+
+    if (! strcmp (algorithm, "MD5-sess"))
+      {
+        /* A1BUF = H( H(user ":" realm ":" password) ":" nonce ":" cnonce ) */
+        snprintf (cnonce, sizeof (cnonce), "%08x", random_number(INT_MAX));
+
+        md5_init_ctx (&ctx);
+        // md5_process_bytes (hash, MD5_DIGEST_SIZE, &ctx);
+        md5_process_bytes (a1buf, MD5_DIGEST_SIZE * 2, &ctx);
+        md5_process_bytes ((unsigned char *)":", 1, &ctx);
+        md5_process_bytes ((unsigned char *)nonce, strlen (nonce), &ctx);
+        md5_process_bytes ((unsigned char *)":", 1, &ctx);
+        md5_process_bytes ((unsigned char *)cnonce, strlen (cnonce), &ctx);
+        md5_finish_ctx (&ctx, hash);
+
+        dump_hash (a1buf, hash);
+      }
 
     /* A2BUF = H(method ":" path) */
     md5_init_ctx (&ctx);
@@ -4015,11 +4062,12 @@ digest_authentication_encode (const char *au, const char *user,
     md5_finish_ctx (&ctx, hash);
     dump_hash (a2buf, hash);
 
-    if (!strcmp(qop,"auth"))
+    if (!strcmp(qop, "auth") || !strcmp (qop, "auth-int"))
       {
         /* RFC 2617 Digest Access Authentication */
         /* generate random hex string */
-        snprintf(cnonce, sizeof(cnonce), "%08x", random_number(INT_MAX));
+        if (!*cnonce)
+          snprintf(cnonce, sizeof(cnonce), "%08x", random_number(INT_MAX));
 
         /* RESPONSE_DIGEST = H(A1BUF ":" nonce ":" noncecount ":" clientnonce ":" qop ": " A2BUF) */
         md5_init_ctx (&ctx);
@@ -4052,20 +4100,21 @@ digest_authentication_encode (const char *au, const char *user,
     dump_hash (response_digest, hash);
 
     res_size = strlen (user)
-             + strlen (user)
              + strlen (realm)
              + strlen (nonce)
              + strlen (path)
              + 2 * MD5_DIGEST_SIZE /*strlen (response_digest)*/
              + (opaque ? strlen (opaque) : 0)
+             + (algorithm ? strlen (algorithm) : 0)
              + (qop ? 128: 0)
+             + strlen (cnonce)
              + 128;
 
     res = xmalloc (res_size);
 
     if (!strcmp(qop,"auth"))
       {
-        snprintf (res, res_size, "Digest "\
+        res_len = snprintf (res, res_size, "Digest "\
                 "username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\""\
                 ", qop=auth, nc=00000001, cnonce=\"%s\"",
                   user, realm, nonce, path, response_digest, cnonce);
@@ -4073,17 +4122,19 @@ digest_authentication_encode (const char *au, const char *user,
       }
     else
       {
-        snprintf (res, res_size, "Digest "\
+        res_len = snprintf (res, res_size, "Digest "\
                 "username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\"",
                   user, realm, nonce, path, response_digest);
       }
 
     if (opaque)
       {
-        char *p = res + strlen (res);
-        strcat (p, ", opaque=\"");
-        strcat (p, opaque);
-        strcat (p, "\"");
+        res_len += snprintf(res + res_len, res_size - res_len, ", opaque=\"%s\"", opaque);
+      }
+
+    if (algorithm)
+      {
+        snprintf(res + res_len, res_size - res_len, ", algorithm=\"%s\"", algorithm);
       }
   }
   return res;

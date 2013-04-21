@@ -99,7 +99,7 @@ ssl_init (void)
   dir = opendir (ca_directory);
   if (dir == NULL)
     {
-      if (opt.ca_directory)
+      if (opt.ca_directory && *opt.ca_directory)
         logprintf (LOG_NOTQUIET, _("ERROR: Cannot open directory %s.\n"),
                    opt.ca_directory);
     }
@@ -401,7 +401,7 @@ ssl_connect_wget (int fd, const char *hostname)
       break;
     case secure_protocol_sslv2:
     case secure_protocol_sslv3:
-      err = gnutls_priority_set_direct (session, "NORMAL:-VERS-TLS-ALL", NULL);
+      err = gnutls_priority_set_direct (session, "NORMAL:-VERS-TLS-ALL:+VERS-SSL3.0", NULL);
       break;
     case secure_protocol_tlsv1:
       err = gnutls_priority_set_direct (session, "NORMAL:-VERS-SSL3.0", NULL);
@@ -515,7 +515,7 @@ ssl_check_certificate (int fd, const char *host)
         {
           logprintf (LOG_NOTQUIET, _("No certificate found\n"));
           success = false;
-          goto out;
+          goto crt_deinit;
         }
       err = gnutls_x509_crt_import (cert, cert_list, GNUTLS_X509_FMT_DER);
       if (err < 0)
@@ -523,7 +523,7 @@ ssl_check_certificate (int fd, const char *host)
           logprintf (LOG_NOTQUIET, _("Error parsing certificate: %s\n"),
                      gnutls_strerror (err));
           success = false;
-          goto out;
+          goto crt_deinit;
         }
       if (now < gnutls_x509_crt_get_activation_time (cert))
         {
@@ -542,6 +542,7 @@ ssl_check_certificate (int fd, const char *host)
                      quote (host));
           success = false;
         }
+ crt_deinit:
       gnutls_x509_crt_deinit (cert);
    }
 

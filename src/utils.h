@@ -155,6 +155,8 @@ void stable_sort (void *, size_t, size_t, int (*) (const void *, const void *));
 
 const char *print_decimal (double);
 
+size_t get_max_length (const char *path, int length, int name);
+
 extern unsigned char char_prop[];
 
 #endif /* UTILS_H */

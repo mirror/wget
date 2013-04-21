@@ -1,3 +1,14 @@
+2013-03-12  Darshit Shah <darnir@gmail.com>
+
+	* Makefile.am (EXTRA_DIST): Add Test--post-file.px.
+	* run-px (tests): Likewise.
+	* Test--post-file.px: New file.
+
+2012-11-09  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* HTTPServer.pm: added check for must-not-match request-header
+	* Test-cookies.px: check cookie deletion and cookie domain matching
+
 2012-12-02  Domenico Chierico <spaghetty@gmail.com>
 
 	* Makefile.am (LDADD): Remove $(LIBS).

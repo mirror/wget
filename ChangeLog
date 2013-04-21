@@ -1,3 +1,20 @@
+2012-10-07  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* configure.ac: Check for patchconf.
+
+2012-09-23  Merinov Nikolay  <kim.roader@gmail.com>
+
+	* m4/wget.m4 (WGET_FNMATCH): Add AC_LANG_SOURCE into
+	AC_COMPILE_IFELSE in order to silence autoconf 2.68 warning.
+
+2012-09-20  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* bootstrap: Update from gnulib.
+
+2012-09-02  Nguyễn Thái Ngọc Duy  <pclouds@gmail.com> (tiny change)
+
+	* po/POTFILES.in: Add more files.
+
 2012-11-28  Domenico Chierico <spaghetty@gmail.com>
 
 	* bootstrap: update from upstream.

@@ -1,3 +1,27 @@
+2013-04-14  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Download Options): Document "mega" dot style.
+
+2013-04-05  Darshit Shah <darnir@gmail.com>
+
+	* doc/wget.texi: Fix ambiguous wording in --post-data section. Make it
+	clear that wget does not check for the format of the post-data.
+	* doc/wget.texi: Add documentation for --method, --body-data and
+	--body-file.
+
+2012-10-08  Stefano Lattarini <stefano.lattarini@gmail.com>  (tiny change)
+
+	docs: fix errors and warnings with Texinfo 5
+	Or rather, with the development version 4.13.90, which will
+	eventually become Texinfo 5.0.
+	* wget.texi: Use '@item' instead of '@itemx' in several places,
+	as Texinfo 5 refuses to process an '@itemx' that is not preceded
+	by an '@item'.
+
+2012-08-28  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+        * doc/wget.texi: remove -nv from --report-speed
+
 2012-08-14  Ilim Ugur <ilimugur@gmail.com>
 
 	* wget.texi: Document --metalink-file and --retries.

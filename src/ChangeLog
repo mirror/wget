@@ -1,3 +1,175 @@
+2013-04-12  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* warc.c: Generate unique UUIDs for the manifest and the record
+	holding the command-line arguments.
+	Write the manifest to a "metadata" record to follow the WARC
+	implementation guidelines.
+	* warc.h: Declare new function warc_write_metadata_record.
+
+2013-03-15  Darshit Shah <darnir@gmail.com>
+
+	* http.c (post_file): Rename function to body_file_send to more
+	accurately reflect its use.
+	* http.c (gethttp): Add support for --method, --body-data and
+	--body-file
+	* init.c (commands): Same.
+	* options.h (options): Same.
+	* main.c (option_data): Same.
+	* main.c (print_help): Add --method command.
+	* main.c (main): Make old --post-{data,file} commands aliases to
+	--method.
+	Add sanity checks for --method, --body-data and --body-file.
+	* retr.c (SUSPEND_POST_DATA): Edit Macro Definition to use body_data.
+	* retr.c (RESTORE_POST_DATA): Same.
+
+2013-03-31  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* warc.c: Correctly write the field length in the skip length field
+	of .warc.gz files. (Following the GZIP spec in RFC 1952.)
+
+2013-03-12  Darshit Shah <darnir@gmail.com>
+
+	* http.c (gethttp): Make wget return FILEBADFILE error and abort if
+	post-file does not exist.
+
+	* http.c (http_loop): Handle FILEBADFILE as a valid err.
+
+	* exits.c (get_status_for_err): Mark FILEBADFILE as an IO error.
+
+2013-02-15  Darshit Shah <darnir@gmail.com>
+
+	* cookies.c (cookie_handle_set_cookie): Set cookie->discard_requested
+	to true on domain mismatch.
+
+2012-12-20  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* gnutls.c (ssl_connect_wget): added +VERS-SSL3.0 to fix
+	--secure-protocol=SSLv2/SSLv3.
+
+2012-12-09  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* main.c (main): Keep looking for "config" until there are
+	arguments to parse.
+	Reported by: Adrien Dumont <adr.dum@hotmail.fr>
+
+	* test.c: Include "wget.h".
+
+2012-12-08  Michael Stapelberg <michael@stapelberg.de> (tiny change)
+
+	* retr.c (retrieve_url): Set iri->orig_url to NULL after it is
+	freed.
+
+2012-11-26  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.h (MAX_INT_TO_STRING_LEN): Define macro.
+	* warc.c (warc_write_block_from_file): Use `MAX_INT_TO_STRING_LEN'
+	to find the buffer size.
+	(warc_write_cdx_record): Likewise.
+
+2012-09-03  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* http.c (digest_authentication_encode): Add support for RFC 2617
+	MD5-sess authentication algorithm.
+	Feature request and testing by: Avinash <pavinash@gmail.com>
+
+2012-11-14  Ángel González  <keisial@gmail.com>
+
+	* warc.c (warc_sha1_stream_with_payload): Fix compilation under
+	gcc -std=c89.
+
+2012-11-24  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* warc.c (warc_write_cdx_record): Use `number_to_string' to
+	convert the offset to a string.
+
+2012-11-24  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* warc.c (warc_write_block_from_file): Use `number_to_string' to
+	convert the content-length to a string.
+
+2012-11-15  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* retr.c (write_data): Fix comment.
+
+2012-11-13  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* retr.c (fd_read_body): Correctly check the return code from
+	write_data.
+	Reported by: Torsten Scheck <torsten.scheck@gmx.de>
+
+2012-08-29  Rohit Mathulla <rohit_mathulla@yahoo.com> (tiny change)
+
+	* html-url.c (get_urls_file): Convert shorthand URLs.
+
+2012-10-07  Ray Satiro <raysatiro@yahoo.com>
+
+	* url.c: Change the functions of a growable string object to null
+	terminate the string.
+	* url.c (append_null): New function to null terminate a growable
+	string object.
+	* url.c (shorten_length): New function to shorten the length of a
+	growable string object.
+
+2012-10-03 Merinov Nikolay <kim.roader@gmail.com>
+
+	* ftp.c (ftp_loop_internal): Ignore --no-clobber option when
+	receiving directory listing.
+
+2012-10-07  Tim Ruehsen  <tim.ruehsen@gmx.de>
+	    Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* utils.c (get_max_length): If `pathconf' is not available
+	fallback to PATH_MAX.
+
+2012-10-06  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (http_loop): Send a HEAD request when -c and
+	--content-disposition are used together.
+
+2012-09-29 Merinov Nikolay <kim.roader@gmail.com>
+
+	* ftp-ls.c (ftp_parse_winnt_ls): Support filename extracting with
+	new listing format.
+
+2012-09-29  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* url.h (CHOMP_BUFFER): Add definition.
+	* url.c (url_file_name): New local variables `fname_len_check' and
+	`max_length'. Check that the length of the file name is acceptable.
+	* utils.h (get_max_length): Declare function.
+	* utils.c (get_max_length): New function.
+
+2012-09-28  Steven Schubiger  <stsc@member.fsf.org>
+
+	* src/recur.c (retrieve_tree): Combine duplicated code.
+
+2012-09-02  Nguyễn Thái Ngọc Duy  <pclouds@gmail.com> (tiny change)
+
+	* src/main.c (main): mark more strings for translation.
+	* src/mswindows.c (fork_to_background): Likewise.
+	* src/recur.c (download_child_p): Likewise.
+
+2012-08-28  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* gnutls.c (ssl_check_certificate): deinit gnutls_x509_crt_t.
+	* gnutls.c (ssl_init): don't error if CA directory is empty.
+
+2012-07-07  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* html-url.c (cleanup_html_url): Remove "static" modifier.
+	* init.c (cleanup_html_url): Likewise.
+	Reported by: Mike Frysinger <vapier@gentoo.org>.
+
+2012-08-25  Hrvoje Niksic  <hniksic@gmail.com>
+
+	* warc.c (warc_find_duplicate_cdx_record): Use hash_table_get
+	instead of hash_table_get_pair.
+
+2012-08-21  <y-iida@secom.co.jp> (tiny change)
+
+	* connect.c (connect_to_ip) [ENABLE_IPV6]: Attempt to use IPv6.
+	* http.c (gethttp): Likewise.
+
 2013-02-07  Ilim Ugur  <ilimugur@gmail.com>
 
 	* metalink.c (parse_metalink): Rename `mlink' to 'm_link'.

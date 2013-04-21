@@ -165,7 +165,7 @@ warc_write_string (const char *str)
 }
 
 
-#define EXTRA_GZIP_HEADER_SIZE 12
+#define EXTRA_GZIP_HEADER_SIZE 14
 #define GZIP_STATIC_HEADER_SIZE  10
 #define FLG_FEXTRA          0x04
 #define OFF_FLG             3
@@ -200,7 +200,7 @@ warc_write_start_record (void)
          In warc_write_end_record we will fill this space
          with information about the uncompressed and
          compressed size of the record. */
-      fprintf (warc_current_file, "XXXXXXXXXXXX");
+      fseek (warc_current_file, EXTRA_GZIP_HEADER_SIZE, SEEK_CUR);
       fflush (warc_current_file);
 
       /* Start a new GZIP stream. */
@@ -245,15 +245,10 @@ static bool
 warc_write_block_from_file (FILE *data_in)
 {
   /* Add the Content-Length header. */
-  char *content_length;
+  char content_length[MAX_INT_TO_STRING_LEN(off_t)];
   fseeko (data_in, 0L, SEEK_END);
-  if (! asprintf (&content_length, "%ld", ftello (data_in)))
-    {
-      warc_write_ok = false;
-      return false;
-    }
+  number_to_string (content_length, ftello (data_in));
   warc_write_header ("Content-Length", content_length);
-  free (content_length);
 
   /* End of the WARC header section. */
   warc_write_string ("\r\n");
@@ -347,16 +342,19 @@ warc_write_end_record (void)
       /* The extra header field identifier for the WARC skip length. */
       extra_header[2]  = 's';
       extra_header[3]  = 'l';
+      /* The size of the field value (8 bytes).  */
+      extra_header[4]  = (8 & 255);
+      extra_header[5]  = ((8 >> 8) & 255);
       /* The size of the uncompressed record.  */
-      extra_header[4]  = (uncompressed_size & 255);
-      extra_header[5]  = (uncompressed_size >> 8) & 255;
-      extra_header[6]  = (uncompressed_size >> 16) & 255;
-      extra_header[7]  = (uncompressed_size >> 24) & 255;
+      extra_header[6]  = (uncompressed_size & 255);
+      extra_header[7]  = (uncompressed_size >> 8) & 255;
+      extra_header[8]  = (uncompressed_size >> 16) & 255;
+      extra_header[9]  = (uncompressed_size >> 24) & 255;
       /* The size of the compressed record.  */
-      extra_header[8]  = (compressed_size & 255);
-      extra_header[9]  = (compressed_size >> 8) & 255;
-      extra_header[10] = (compressed_size >> 16) & 255;
-      extra_header[11] = (compressed_size >> 24) & 255;
+      extra_header[10] = (compressed_size & 255);
+      extra_header[11] = (compressed_size >> 8) & 255;
+      extra_header[12] = (compressed_size >> 16) & 255;
+      extra_header[13] = (compressed_size >> 24) & 255;
 
       /* Write the extra header after the static header. */
       fseeko (warc_current_file, warc_current_gzfile_offset
@@ -532,7 +530,7 @@ warc_sha1_stream_with_payload (FILE *stream, void *res_block, void *res_payload,
 static char *
 warc_base32_sha1_digest (char *sha1_digest)
 {
-  // length: "sha1:" + digest + "\0"
+  /* length: "sha1:" + digest + "\0" */
   char *sha1_base32 = malloc (BASE32_LENGTH(SHA1_DIGEST_SIZE) + 1 + 5 );
   base32_encode (sha1_digest, SHA1_DIGEST_SIZE, sha1_base32 + 5,
                  BASE32_LENGTH(SHA1_DIGEST_SIZE) + 1);
@@ -1005,12 +1003,10 @@ warc_find_duplicate_cdx_record (char *url, char *sha1_digest_payload)
   if (warc_cdx_dedup_table == NULL)
     return NULL;
 
-  char *key;
-  struct warc_cdx_record *rec_existing;
-  int found = hash_table_get_pair (warc_cdx_dedup_table, sha1_digest_payload,
-                                   &key, &rec_existing);
+  struct warc_cdx_record *rec_existing
+    = hash_table_get (warc_cdx_dedup_table, sha1_digest_payload);
 
-  if (found && strcmp (rec_existing->url, url) == 0)
+  if (rec_existing && strcmp (rec_existing->url, url) == 0)
     return rec_existing;
   else
     return NULL;
@@ -1087,7 +1083,7 @@ warc_write_metadata (void)
   warc_uuid_str (manifest_uuid);
 
   fflush (warc_manifest_fp);
-  warc_write_resource_record (manifest_uuid,
+  warc_write_metadata_record (manifest_uuid,
                               "metadata://gnu.org/software/wget/warc/MANIFEST.txt",
                               NULL, NULL, NULL, "text/plain",
                               warc_manifest_fp, -1);
@@ -1102,9 +1098,9 @@ warc_write_metadata (void)
   fflush (warc_tmp_fp);
   fprintf (warc_tmp_fp, "%s\n", program_argstring);
 
-  warc_write_resource_record (manifest_uuid,
+  warc_write_resource_record (NULL,
                    "metadata://gnu.org/software/wget/warc/wget_arguments.txt",
-                              NULL, NULL, NULL, "text/plain",
+                              NULL, manifest_uuid, NULL, "text/plain",
                               warc_tmp_fp, -1);
   /* warc_write_resource_record has closed warc_tmp_fp. */
 
@@ -1232,10 +1228,14 @@ warc_write_cdx_record (const char *url, const char *timestamp_str,
   if (redirect_location == NULL || strlen(redirect_location) == 0)
     redirect_location = "-";
 
+  char offset_string[MAX_INT_TO_STRING_LEN(off_t)];
+  number_to_string (offset_string, offset);
+
   /* Print the CDX line. */
-  fprintf (warc_current_cdx_file, "%s %s %s %s %d %s %s - %ld %s %s\n", url,
+  fprintf (warc_current_cdx_file, "%s %s %s %s %d %s %s - %s %s %s\n", url,
            timestamp_str_cdx, url, mime_type, response_code, checksum,
-           redirect_location, offset, warc_current_filename, response_uuid);
+           redirect_location, offset_string, warc_current_filename,
+           response_uuid);
   fflush (warc_current_cdx_file);
 
   return true;
@@ -1395,20 +1395,22 @@ warc_write_response_record (char *url, char *timestamp_str,
   return warc_write_ok;
 }
 
-/* Writes a resource record to the WARC file.
+/* Writes a resource or metadata record to the WARC file.
+   warc_type  is either "resource" or "metadata",
    resource_uuid  is the uuid of the resource (or NULL),
    url  is the target uri of the resource,
    timestamp_str  is the timestamp (generated with warc_timestamp),
-   concurrent_to_uuid  is the uuid of the request for that generated this
+   concurrent_to_uuid  is the uuid of the record that generated this,
    resource (generated with warc_uuid_str) or NULL,
    ip  is the ip address of the server (or NULL),
    content_type  is the mime type of the body (or NULL),
    body  is a pointer to a file containing the resource data.
    Calling this function will close body.
    Returns true on success, false on error. */
-bool
-warc_write_resource_record (char *resource_uuid, const char *url,
-                 const char *timestamp_str, const char *concurrent_to_uuid,
+static bool
+warc_write_record (const char *record_type, char *resource_uuid,
+                 const char *url, const char *timestamp_str,
+                 const char *concurrent_to_uuid,
                  ip_address *ip, const char *content_type, FILE *body,
                  off_t payload_offset)
 {
@@ -1422,7 +1424,7 @@ warc_write_resource_record (char *resource_uuid, const char *url,
     content_type = "application/octet-stream";
 
   warc_write_start_record ();
-  warc_write_header ("WARC-Type", "resource");
+  warc_write_header ("WARC-Type", record_type);
   warc_write_header ("WARC-Record-ID", resource_uuid);
   warc_write_header ("WARC-Warcinfo-ID", warc_current_warcinfo_uuid_str);
   warc_write_header ("WARC-Concurrent-To", concurrent_to_uuid);
@@ -1437,4 +1439,48 @@ warc_write_resource_record (char *resource_uuid, const char *url,
   fclose (body);
 
   return warc_write_ok;
+}
+
+/* Writes a resource record to the WARC file.
+   resource_uuid  is the uuid of the resource (or NULL),
+   url  is the target uri of the resource,
+   timestamp_str  is the timestamp (generated with warc_timestamp),
+   concurrent_to_uuid  is the uuid of the record that generated this,
+   resource (generated with warc_uuid_str) or NULL,
+   ip  is the ip address of the server (or NULL),
+   content_type  is the mime type of the body (or NULL),
+   body  is a pointer to a file containing the resource data.
+   Calling this function will close body.
+   Returns true on success, false on error. */
+bool
+warc_write_resource_record (char *resource_uuid, const char *url,
+                 const char *timestamp_str, const char *concurrent_to_uuid,
+                 ip_address *ip, const char *content_type, FILE *body,
+                 off_t payload_offset)
+{
+  return warc_write_record ("resource",
+      resource_uuid, url, timestamp_str, concurrent_to_uuid,
+      ip, content_type, body, payload_offset);
+}
+
+/* Writes a metadata record to the WARC file.
+   record_uuid  is the uuid of the record (or NULL),
+   url  is the target uri of the record,
+   timestamp_str  is the timestamp (generated with warc_timestamp),
+   concurrent_to_uuid  is the uuid of the record that generated this,
+   record (generated with warc_uuid_str) or NULL,
+   ip  is the ip address of the server (or NULL),
+   content_type  is the mime type of the body (or NULL),
+   body  is a pointer to a file containing the record data.
+   Calling this function will close body.
+   Returns true on success, false on error. */
+bool
+warc_write_metadata_record (char *record_uuid, const char *url,
+                 const char *timestamp_str, const char *concurrent_to_uuid,
+                 ip_address *ip, const char *content_type, FILE *body,
+                 off_t payload_offset)
+{
+  return warc_write_record ("metadata",
+      record_uuid, url, timestamp_str, concurrent_to_uuid,
+      ip, content_type, body, payload_offset);
 }

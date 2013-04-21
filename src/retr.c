@@ -164,8 +164,8 @@ limit_bandwidth (wgint bytes, struct ptimer *timer)
    amount of data and decrease SKIP.  Increment *TOTAL by the amount
    of data written.  If OUT2 is not NULL, also write BUF to OUT2.
    In case of error writing to OUT, -1 is returned.  In case of error
-   writing to OUT2, -2 is returned.  In case of any other error,
-   1 is returned.  */
+   writing to OUT2, -2 is returned.  Return 1 if the whole BUF was
+   skipped.  */
 
 static int
 write_data (FILE *out, FILE *out2, const char *buf, int bufsize,
@@ -399,7 +399,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
         {
           sum_read += ret;
           int write_res = write_data (out, out2, dlbuf, ret, &skip, &sum_written);
-          if (write_res != 0)
+          if (write_res < 0)
             {
               ret = (write_res == -3) ? -3 : -2;
               goto out;
@@ -702,18 +702,20 @@ calc_rate (wgint bytes, double secs, int *units)
 
 #define SUSPEND_POST_DATA do {                  \
   post_data_suspended = true;                   \
-  saved_post_data = opt.post_data;              \
-  saved_post_file_name = opt.post_file_name;    \
-  opt.post_data = NULL;                         \
-  opt.post_file_name = NULL;                    \
+  saved_post_data = opt.body_data;              \
+  saved_post_file_name = opt.body_file;         \
+  opt.body_data = NULL;                         \
+  opt.body_file = NULL;                         \
+  opt.method = NULL;                            \
 } while (0)
 
 #define RESTORE_POST_DATA do {                          \
   if (post_data_suspended)                              \
     {                                                   \
-      opt.post_data = saved_post_data;                  \
-      opt.post_file_name = saved_post_file_name;        \
+      opt.body_data = saved_post_data;                  \
+      opt.body_file = saved_post_file_name;             \
       post_data_suspended = false;                      \
+      opt.method = "POST";                              \
     }                                                   \
 } while (0)
 
@@ -866,6 +868,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       iri->utf8_encode = opt.enable_iri;
       set_content_encoding (iri, NULL);
       xfree_null (iri->orig_url);
+      iri->orig_url = NULL;
 
       /* Now, see if this new location makes sense. */
       newloc_parsed = url_parse (mynewloc, &up_error_code, iri, true);

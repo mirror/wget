@@ -294,8 +294,10 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
        {
            if (ip->family == AF_INET)
                logprintf (LOG_VERBOSE, _("Connecting to %s:%d... "), txt_addr, port);
+#ifdef ENABLE_IPV6
            else if (ip->family == AF_INET6)
                logprintf (LOG_VERBOSE, _("Connecting to [%s]:%d... "), txt_addr, port);
+#endif
        }
     }
 

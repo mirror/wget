@@ -323,7 +323,7 @@ fork_to_background (void)
   rv = fake_fork_child ();
   if (rv < 0)
     {
-      fprintf (stderr, "fake_fork_child() failed\n");
+      fprintf (stderr, _("fake_fork_child() failed\n"));
       abort ();
     }
   else if (rv == 0)
@@ -331,7 +331,7 @@ fork_to_background (void)
       /* We're the parent.  */
       fake_fork ();
       /* If fake_fork() returns, it failed.  */
-      fprintf (stderr, "fake_fork() failed\n");
+      fprintf (stderr, _("fake_fork() failed\n"));
       abort ();
     }
   /* If we get here, we're the child.  */
@@ -646,7 +646,7 @@ set_windows_fd_as_blocking_socket (int fd)
 	if(ret)
     {
       fprintf (stderr,
-               "ioctl() failed.  The socket could not be set as blocking.\n" );
+               _("ioctl() failed.  The socket could not be set as blocking.\n") );
       DEBUGP (("Winsock error: %d\n", WSAGetLastError ()));
       abort ();
     }

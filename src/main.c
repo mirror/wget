@@ -167,6 +167,8 @@ static struct cmdline_option option_data[] =
     { "backups", 0, OPT_BOOLEAN, "backups", -1 },
     { "base", 'B', OPT_VALUE, "base", -1 },
     { "bind-address", 0, OPT_VALUE, "bindaddress", -1 },
+    { "body-data", 0, OPT_VALUE, "bodydata", -1 },
+    { "body-file", 0, OPT_VALUE, "bodyfile", -1 },
     { IF_SSL ("ca-certificate"), 0, OPT_VALUE, "cacertificate", -1 },
     { IF_SSL ("ca-directory"), 0, OPT_VALUE, "cadirectory", -1 },
     { "cache", 0, OPT_BOOLEAN, "cache", -1 },
@@ -237,6 +239,7 @@ static struct cmdline_option option_data[] =
 #ifdef ENABLE_METALINK
     { "metalink", 0, OPT_VALUE, "metalink", -1 },
 #endif
+    { "method", 0, OPT_VALUE, "method", -1 },
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
     { "no", 'n', OPT__NO, NULL, required_argument },
     { "no-clobber", 0, OPT_BOOLEAN, "noclobber", -1 },
@@ -630,6 +633,12 @@ HTTP options:\n"),
        --post-data=STRING      use the POST method; send STRING as the data.\n"),
     N_("\
        --post-file=FILE        use the POST method; send contents of FILE.\n"),
+    N_("\
+       --method=HTTPMethod     use method \"HTTPMethod\" in the header.\n"),
+    N_("\
+       --body-data=STRING      Send STRING as data. --method MUST be set.\n"),
+    N_("\
+       --body-file=FILE        Send contents of FILE. --method MUST be set.\n"),
     N_("\
        --content-disposition   honor the Content-Disposition header when\n\
                                choosing local file names (EXPERIMENTAL).\n"),
@@ -1055,7 +1064,6 @@ main (int argc, char **argv)
                                 short_options, long_options, &longindex)) != -1)
     {
       int confval;
-      bool userrc_ret = true;
       struct cmdline_option *config_opt;
 
       /* There is no short option for "--config". */
@@ -1065,16 +1073,17 @@ main (int argc, char **argv)
           config_opt = &option_data[confval & ~BOOLEAN_NEG_MARKER];
           if (strcmp (config_opt->long_name, "config") == 0)
             {
+              bool userrc_ret = true;
               userrc_ret &= run_wgetrc (optarg);
               use_userconfig = true;
+              if (userrc_ret)
+                break;
+              else
+                {
+                  fprintf (stderr, _("Exiting due to error in %s\n"), optarg);
+                  exit (2);
+                }
             }
-          if (!userrc_ret)
-            {
-              fprintf (stderr, "Exiting due to error in %s\n", optarg);
-              exit (2);
-            }
-          else
-            break;
         }
     }
 
@@ -1232,6 +1241,21 @@ main (int argc, char **argv)
   if (opt.verbose == -1)
     opt.verbose = !opt.quiet;
 
+  if (opt.post_data || opt.post_file_name)
+    {
+        setoptval ("method", "POST", "method");
+        if (opt.post_data)
+          {
+            setoptval ("bodydata", opt.post_data, "body-data");
+            opt.post_data = NULL;
+          }
+        else
+          {
+            setoptval ("bodyfile", opt.post_file_name, "body-file");
+            opt.post_file_name = NULL;
+          }
+    }
+
   /* Sanity checks.  */
   if (opt.verbose && opt.quiet)
     {
@@ -1382,6 +1406,34 @@ for details.\n\n"));
       opt.rejectregex = opt.regex_compile_fun (opt.rejectregex_s);
       if (!opt.rejectregex)
         exit (1);
+    }
+  if (opt.post_data || opt.post_file_name)
+    {
+      if (opt.post_data && opt.post_file_name)
+        {
+          fprintf (stderr, _("You cannot specify both --post-data and --post-file.\n"));
+          exit (1);
+        }
+      else if (opt.method)
+        {
+          fprintf (stderr, _("You cannot use --post-data or --post-file along with --method. "
+                             "--method expects data through --body-data and --body-file options"));
+          exit (1);
+        }
+    }
+  if (opt.body_data || opt.body_file)
+    {
+      if (!opt.method)
+        {
+          fprintf (stderr, _("You must specify a method through --method=HTTPMethod "
+                              "to use with --body-data or --body-file.\n"));
+          exit (1);
+        }
+      else if (opt.body_data && opt.body_file)
+        {
+          fprintf (stderr, _("You cannot specify both --body-data and --body-file.\n"));
+          exit (1);
+        }
     }
 
 #ifdef ENABLE_IRI

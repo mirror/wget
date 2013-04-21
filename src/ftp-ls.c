@@ -434,6 +434,7 @@ ftp_parse_winnt_ls (const char *file)
   struct tm timestruct;
 
   char *line, *tok;             /* tokenizer */
+  char *filename;
   struct fileinfo *dir, *l, cur; /* list creation */
 
   fp = fopen (file, "rb");
@@ -449,19 +450,16 @@ ftp_parse_winnt_ls (const char *file)
     {
       len = clean_line (line);
 
-      /* Extracting name is a bit of black magic and we have to do it
-         before `strtok' inserted extra \0 characters in the line
-         string. For the moment let us just suppose that the name starts at
-         column 39 of the listing. This way we could also recognize
-         filenames that begin with a series of space characters (but who
-         really wants to use such filenames anyway?). */
+      /* Name begins at 39 column of the listing if date presented in `mm-dd-yy'
+         format or at 41 column if date presented in `mm-dd-yyyy' format. Thus,
+         we cannot extract name before we parse date. Using this information we
+         also can recognize filenames that begin with a series of space
+         characters (but who really wants to use such filenames anyway?). */
       if (len < 40) goto continue_loop;
-      tok = line + 39;
-      cur.name = xstrdup(tok);
-      DEBUGP (("Name: '%s'\n", cur.name));
+      filename = line + 39;
 
-      /* First column: mm-dd-yy. Should atoi() on the month fail, january
-         will be assumed.  */
+      /* First column: mm-dd-yy or mm-dd-yyyy. Should atoi() on the month fail,
+         january will be assumed.  */
       tok = strtok(line, "-");
       if (tok == NULL) goto continue_loop;
       month = atoi(tok) - 1;
@@ -473,7 +471,20 @@ ftp_parse_winnt_ls (const char *file)
       if (tok == NULL) goto continue_loop;
       year = atoi(tok);
       /* Assuming the epoch starting at 1.1.1970 */
-      if (year <= 70) year += 100;
+      if (year <= 70)
+	{
+	  year += 100;
+	}
+      else if (year >= 1900)
+	{
+	  year -= 1900;
+	  filename += 2;
+	}
+      /* Now it is possible to determine the position of the first symbol in
+	 filename. */
+      cur.name = xstrdup(filename);
+      DEBUGP (("Name: '%s'\n", cur.name));
+
 
       /* Second column: hh:mm[AP]M, listing does not contain value for
          seconds */

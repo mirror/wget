@@ -6,6 +6,22 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget X.Y.Z
+
+** Add support for --method.
+
+** Add support for file names longer than MAX_FILE.
+
+** Support FTP listing for the FTP Server on Windows Server 2008 R2.
+
+** Fix a regression when -c and --content-disposition are used together.
+
+** Support shorthand URLs in an input file.
+
+** Fix -c with servers that don't specify a content-length.
+
+** Add support for MD5-SESS
+
 * Changes in Wget 1.14
 
 ** Add support for content-on-error.  It allows to store the HTTP

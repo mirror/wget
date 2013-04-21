@@ -673,9 +673,6 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
 
   if (!cookie->domain)
     {
-    copy_domain:
-      /* If the domain was not provided, we use the one we're talking
-         to, and set exact match.  */
       cookie->domain = xstrdup (host);
       cookie->domain_exact = 1;
       /* Set the port, but only if it's non-default. */
@@ -687,11 +684,12 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
       if (!check_domain_match (cookie->domain, host))
         {
           logprintf (LOG_NOTQUIET,
-                     _("Cookie coming from %s attempted to set domain to %s\n"),
-                     quotearg_style (escape_quoting_style, host),
+                     _("Cookie coming from %s attempted to set domain to "),
+                     quotearg_style (escape_quoting_style, host));
+          logprintf (LOG_NOTQUIET,
+                     _("%s\n"),
                      quotearg_style (escape_quoting_style, cookie->domain));
-          xfree (cookie->domain);
-          goto copy_domain;
+          cookie->discard_requested = true;
         }
     }
 

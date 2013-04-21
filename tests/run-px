@@ -70,6 +70,7 @@ my @tests = (
     'Test-O--no-content-disposition-trivial.px',
     'Test-O-nonexisting.px',
     'Test-O.px',
+    'Test--post-file.px',
     'Test-O-nc.px',
     'Test-restrict-ascii.px',
     'Test-Restrict-Lowercase.px',

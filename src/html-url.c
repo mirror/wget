@@ -804,6 +804,13 @@ get_urls_file (const char *file)
           url_text = merged;
         }
 
+      char *new_url = rewrite_shorthand_url (url_text);
+      if (new_url)
+        {
+          xfree (url_text);
+          url_text = new_url;
+        }
+
       url = url_parse (url_text, &up_error_code, NULL, false);
       if (!url)
         {
@@ -830,7 +837,7 @@ get_urls_file (const char *file)
   return head;
 }
 
-static void
+void
 cleanup_html_url (void)
 {
   /* Destroy the hash tables.  The hash table keys and values are not

@@ -51,8 +51,8 @@ dnl /usr/local/include (!), which GCC uses before /usr/include.
 
 AC_DEFUN([WGET_FNMATCH], [
   AC_MSG_CHECKING([for working fnmatch.h])
-  AC_COMPILE_IFELSE([#include <fnmatch.h>
-                    ], [
+  AC_COMPILE_IFELSE([AC_LANG_SOURCE([#include <fnmatch.h>
+                    ])], [
     AC_MSG_RESULT(yes)
     AC_DEFINE([HAVE_WORKING_FNMATCH_H], 1,
               [Define if fnmatch.h can be included.])

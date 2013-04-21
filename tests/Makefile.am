@@ -119,6 +119,7 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              Test-O--no-content-disposition-trivial.px \
              Test-O-nonexisting.px \
              Test-O.px \
+             Test--post-file.px \
              Test-proxied-https-auth.px \
              Test-proxy-auth-basic.px \
              Test-restrict-ascii.px \

@@ -2494,6 +2494,60 @@ print_decimal (double number)
   return buf;
 }
 
+/* Get the maximum name length for the given path. */
+/* Return 0 if length is unknown. */
+size_t
+get_max_length (const char *path, int length, int name)
+{
+  long ret;
+  char *p, *d;
+
+  /* Make a copy of the path that we can modify. */
+  p = path ? strdupdelim (path, path + length) : strdup ("");
+
+  for (;;)
+    {
+      errno = 0;
+      /* For an empty path query the current directory. */
+#if HAVE_PATHCONF
+      ret = pathconf (*p ? p : ".", name);
+      if (!(ret < 0 && errno == ENOENT))
+        break;
+#else
+      ret = PATH_MAX;
+#endif
+
+      /* The path does not exist yet, but may be created. */
+      /* Already at current or root directory, give up. */
+      if (!*p || strcmp (p, "/") == 0)
+        break;
+
+      /* Remove one directory level and try again. */
+      d = strrchr (p, '/');
+      if (d == p)
+        p[1] = '\0';  /* check root directory */
+      else if (d)
+        *d = '\0';  /* remove last directory part */
+      else
+        *p = '\0';  /* check current directory */
+    }
+
+  xfree (p);
+
+  if (ret < 0)
+    {
+      /* pathconf() has a message for us. */
+      if (errno != 0)
+          perror ("pathconf");
+
+      /* If (errno == 0) then there is no max length.
+         Even on error return 0 so the caller can continue. */
+      return 0;
+    }
+
+  return ret;
+}
+
 #ifdef TESTING
 
 const char *

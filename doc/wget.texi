@@ -479,8 +479,7 @@ Turn off verbose without being completely quiet (use @samp{-q} for
 that), which means that error messages and basic information still get
 printed.
 
-@item -nv
-@itemx --report-speed=@var{type}
+@item --report-speed=@var{type}
 Output bandwidth as @var{type}.  The only accepted value is @samp{bits}.
 
 @cindex input-file
@@ -737,9 +736,12 @@ different meaning to one dot.  With the @code{default} style each dot
 represents 1K, there are ten dots in a cluster and 50 dots in a line.
 The @code{binary} style has a more ``computer''-like orientation---8K
 dots, 16-dots clusters and 48 dots per line (which makes for 384K
-lines).  The @code{mega} style is suitable for downloading very large
+lines).  The @code{mega} style is suitable for downloading large
 files---each dot represents 64K retrieved, there are eight dots in a
 cluster, and 48 dots on each line (so each line contains 3M).
+If @code{mega} is not enough then you can use the @code{giga}
+style---each dot represents 1M retrieved, there are eight dots in a
+cluster, and 32 dots on each line (so each line contains 32M).
 
 Note that you can set the default style using the @code{progress}
 command in @file{.wgetrc}.  That setting may be overridden from the
@@ -897,7 +899,7 @@ recommendation to block many unrelated users from a web site due to the
 actions of one.
 
 @cindex proxy
-@itemx --no-proxy
+@item --no-proxy
 Don't use proxies, even if the appropriate @code{*_proxy} environment
 variable is defined.
 
@@ -998,7 +1000,7 @@ are outside the range of @sc{ascii} characters (that is, greater than
 whose encoding does not match the one used locally.
 
 @cindex IPv6
-@itemx -4
+@item -4
 @itemx --inet4-only
 @itemx -6
 @itemx --inet6-only
@@ -1487,6 +1489,11 @@ like everything else. Wget does not currently support
 @code{application/x-www-form-urlencoded}. Only one of
 @samp{--post-data} and @samp{--post-file} should be specified.
 
+Please note that wget does not require the content to be of the form
+@code{key1=value1&key2=value2}, and neither does it test for it. Wget will
+simply transmit whatever data is provided to it. Most servers however expect
+the POST data to be in the above format when processing HTML Forms.
+
 Please be aware that Wget needs to know the size of the POST data in
 advance.  Therefore the argument to @code{--post-file} must be a regular
 file; specifying a FIFO or something like @file{/dev/stdin} won't work.
@@ -1526,6 +1533,34 @@ the above will not work because @samp{--save-cookies} will not save
 them (and neither will browsers) and the @file{cookies.txt} file will
 be empty.  In that case use @samp{--keep-session-cookies} along with
 @samp{--save-cookies} to force saving of session cookies.
+
+@cindex Other HTTP Methods
+@item --method=@var{HTTP-Method}
+For the purpose of RESTful scripting, Wget allows sending of other HTTP Methods
+without the need to explicitly set them using @samp{--header=Header-Line}.
+Wget will use whatever string is passed to it after @samp{--method} as the HTTP
+Method to the server.
+
+@item --body-data=@var{Data-String}
+@itemx --body-file=@var{Data-File}
+Must be set when additional data needs to be sent to the server along with the
+Method specified using @samp{--method}. @samp{--post-data} sends @var{string} as
+data, whereas @samp{--post-file} sends the contents of @var{file}. Other than that,
+they work in exactly the same way.
+
+Currently, @samp{--body-file} is @emph{not} for transmitting files as a whole.
+Wget does not currently support @code{multipart/form-data} for transmitting data;
+only @code{application/x-www-form-urlencoded}. In the future, this may be changed
+so that wget sends the @samp{--body-file} as a complete file instead of sending its
+contents to the server. Please be aware that Wget needs to know the contents of
+BODY Data in advance, and hence the argument to @samp{--body-file} should be a
+regular file. See @samp{--post-file} for a more detailed explanation.
+Only one of @samp{--body-data} and @samp{--body-file} should be specified.
+
+Wget handles these requests in the same way that it handles @samp{--post-data}
+and @samp{--post-file}. If you invoke Wget with @samp{--method=POST} and the server
+responds with a redirect request, then Wget will revert to a GET request during the
+redirection as is explained in @samp{--post-data}.
 
 @cindex Content-Disposition
 @item --content-disposition
@@ -3123,7 +3158,7 @@ display properly---the same as @samp{-p}.
 Change setting of passive @sc{ftp}, equivalent to the
 @samp{--passive-ftp} option.
 
-@itemx password = @var{string}
+@item password = @var{string}
 Specify password @var{string} for both @sc{ftp} and @sc{http} file retrieval. 
 This command can be overridden using the @samp{ftp_password} and 
 @samp{http_password} command for @sc{ftp} and @sc{http} respectively.
@@ -3634,7 +3669,7 @@ In addition to the environment variables, proxy location and settings
 may be specified from within Wget itself.
 
 @table @samp
-@itemx --no-proxy
+@item --no-proxy
 @itemx proxy = on/off
 This option and the corresponding command may be used to suppress the
 use of proxy, even if the appropriate environment variables are set.

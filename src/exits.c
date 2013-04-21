@@ -58,7 +58,7 @@ get_status_for_err (uerr_t err)
     case RETROK:
       return WGET_EXIT_SUCCESS;
     case FOPENERR: case FOPEN_EXCL_ERR: case FWRITEERR: case WRITEFAILED:
-    case UNLINKERR: case CLOSEFAILED:
+    case UNLINKERR: case CLOSEFAILED: case FILEBADFILE:
       return WGET_EXIT_IO_FAIL;
     case NOCONERROR: case HOSTERR: case CONSOCKERR: case CONERROR:
     case CONSSLERR: case CONIMPOSSIBLE: case FTPRERR: case FTPINVPASV:
