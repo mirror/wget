@@ -2150,7 +2150,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
               warc_payload_offset = ftello (warc_tmp);
 
               /* Write a copy of the data to the WARC record. */
-              int warc_tmp_written = fwrite (opt.post_data, 1, body_data_size, warc_tmp);
+              int warc_tmp_written = fwrite (opt.body_data, 1, body_data_size, warc_tmp);
               if (warc_tmp_written != body_data_size)
                 write_error = -2;
             }

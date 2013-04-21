@@ -1,3 +1,8 @@
+2013-04-21  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* http.c: Copy opt.body_data to the WARC file, instead of
+	opt.post_data (the old option).
+
 2013-04-12  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* warc.c: Generate unique UUIDs for the manifest and the record
