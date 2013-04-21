@@ -1,3 +1,8 @@
+2013-04-21  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (gethttp): Do not register the persistent connection too
+	early.
+
 2013-04-12  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* warc.c: Generate unique UUIDs for the manifest and the record
