@@ -1765,8 +1765,6 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
     const char *meth = "GET";
     if (head_only)
       meth = "HEAD";
-    else if (opt.post_file_name || opt.post_data)
-      meth = "POST";
     else if (opt.method)
       {
         char *q;

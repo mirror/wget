@@ -1,3 +1,10 @@
+2013-04-24  Darshit Shah <darnir@gmail.com>
+
+	* http.c (gethttp): Remove check for opt.post_data and
+	opt.post_file_name.
+	* main.c (main): Change location in code where --post-data and
+	--post-file options are converted to --body-data --body-file.
+
 2013-04-21  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* http.c: Copy opt.body_data to the WARC file, instead of
