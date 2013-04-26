@@ -1,3 +1,9 @@
+2013-04-26  Tomas Hozza  <thozza@redhat.com> (tiny change)
+
+	* log.c (redirect_output): Use DEFAULT_LOGFILE in diagnostic message
+	when `logfile' is NULL.
+	* utils.c (unique_create): Ensure `logfile' has always a value.
+
 2013-06-26  Darshit Shah <darnir@gmail.com>
 
 	* http.c (gethttp): Reverse change by commit 90896 that prevented

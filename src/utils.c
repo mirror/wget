@@ -703,7 +703,7 @@ unique_create (const char *name, bool binary, char **opened_name)
       xfree (uname);
       uname = unique_name (name, false);
     }
-  if (opened_name && fp != NULL)
+  if (opened_name)
     {
       if (fp)
         *opened_name = uname;
