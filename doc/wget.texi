@@ -2049,6 +2049,10 @@ any of the wildcard characters, @samp{*}, @samp{?}, @samp{[} or
 @samp{]}, appear in an element of @var{acclist} or @var{rejlist},
 it will be treated as a pattern, rather than a suffix.
 
+@item --accept-regex @var{urlregex}
+@itemx --reject-regex @var{urlregex}
+Specify a regular expression to accept or reject the complete URL.
+
 @item -D @var{domain-list}
 @itemx --domains=@var{domain-list}
 Set domains to be followed.  @var{domain-list} is a comma-separated list

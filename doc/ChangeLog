@@ -1,3 +1,9 @@
+2013-04-28  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Types of Files...): Document --accept-regex,
+	--reject-regex.
+	Reported by: Tomas Hozza <thozza@redhat.com>.
+
 2013-04-14  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi (Download Options): Document "mega" dot style.
