@@ -1,3 +1,11 @@
+2013-05-01  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* init.c: Declare `cmd_string_uppercase'.
+	(commands): Now `method' uses cmd_string_uppercase.
+	(cmd_string_uppercase): New method
+	* http.c (gethttp): Do not transform opt.method to uppercase.
+	Reported by: Stefano Lattarini <stefano.lattarini@gmail.com>
+
 2013-04-24  Darshit Shah <darnir@gmail.com>
 
 	* http.c (gethttp): Remove check for opt.post_data and

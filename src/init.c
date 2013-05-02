@@ -87,6 +87,7 @@ CMD_DECLARE (cmd_directory_vector);
 CMD_DECLARE (cmd_number);
 CMD_DECLARE (cmd_number_inf);
 CMD_DECLARE (cmd_string);
+CMD_DECLARE (cmd_string_uppercase);
 CMD_DECLARE (cmd_file);
 CMD_DECLARE (cmd_directory);
 CMD_DECLARE (cmd_time);
@@ -212,7 +213,7 @@ static const struct {
   { "logfile",          &opt.lfilename,         cmd_file },
   { "login",            &opt.ftp_user,          cmd_string },/* deprecated*/
   { "maxredirect",      &opt.max_redirect,      cmd_number },
-  { "method",           &opt.method,            cmd_string },
+  { "method",           &opt.method,            cmd_string_uppercase },
   { "mirror",           NULL,                   cmd_spec_mirror },
   { "netrc",            &opt.netrc,             cmd_boolean },
   { "noclobber",        &opt.noclobber,         cmd_boolean },
@@ -959,8 +960,24 @@ cmd_string (const char *com, const char *val, void *place)
   return true;
 }
 
+/* Like cmd_string but ensure the string is upper case.  */
+static bool
+cmd_string_uppercase (const char *com, const char *val, void *place)
+{
+  char *q;
+  bool ret = cmd_string (com, val, place);
+  q = *((char **) place);
+  if (!ret || q == NULL)
+    return false;
 
-/* Like the above, but handles tilde-expansion when reading a user's
+  while (*q)
+    *q++ = c_toupper (*q);
+
+  return true;
+}
+
+
+/* Like cmd_string, but handles tilde-expansion when reading a user's
    `.wgetrc'.  In that case, and if VAL begins with `~', the tilde
    gets expanded to the user's home directory.  */
 static bool

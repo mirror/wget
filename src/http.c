@@ -1766,12 +1766,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
     if (head_only)
       meth = "HEAD";
     else if (opt.method)
-      {
-        char *q;
-        for (q = opt.method; *q; ++q)
-          *q = c_toupper (*q);
-        meth = opt.method;
-      }
+      meth = opt.method;
     /* Use the full path, i.e. one that includes the leading slash and
        the query string.  E.g. if u->path is "foo/bar" and u->query is
        "param=value", full_path will be "/foo/bar?param=value".  */
