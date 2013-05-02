@@ -1,3 +1,9 @@
+2013-05-01  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* retr.c (retrieve_url): New variable `saved_method'.
+	(SUSPEND_POST_DATA): Save the method to `saved_method'.
+	(RESTORE_POST_DATA): Restore the method from `saved_method'.
+
 2013-05-01  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* init.c: Declare `cmd_string_uppercase'.
