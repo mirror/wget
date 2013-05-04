@@ -1,3 +1,8 @@
+2013-05-04  Darshit Shah <darnir@gmail.com>
+
+	* init.c (cmd_string_uppercase): Fix issue that cased invalid headers
+	when converting to uppercase.
+
 2013-05-01  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* retr.c (retrieve_url): New variable `saved_method'.

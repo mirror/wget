@@ -970,8 +970,8 @@ cmd_string_uppercase (const char *com, const char *val, void *place)
   if (!ret || q == NULL)
     return false;
 
-  while (*q)
-    *q++ = c_toupper (*q);
+  for ( ;*q; *q++)
+    *q = c_toupper (*q);
 
   return true;
 }
