@@ -1,3 +1,9 @@
+2013-05-05  mancha  <mancha1@hush.com> (tiny change)
+
+	* gnutls.c (ssl_connect_wget): Don't abort on non-fatal alerts
+        received during handshake. For example, when connecting to servers
+        using TSL-SNI that send warning-level unrecognized_name alerts.
+
 2013-05-04  Darshit Shah <darnir@gmail.com>
 
 	* init.c (cmd_string_uppercase): Fix issue that cased invalid headers
