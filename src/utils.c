@@ -900,15 +900,14 @@ static bool in_acclist (const char *const *, const char *, bool);
 bool
 acceptable (const char *s)
 {
-  int l = strlen (s);
+  const char *p;
 
   if (opt.output_document && strcmp (s, opt.output_document) == 0)
     return true;
 
-  while (l && s[l] != '/')
-    --l;
-  if (s[l] == '/')
-    s += (l + 1);
+  if ((p = strrchr (s, '/')))
+    s = p + 1;
+
   if (opt.accepts)
     {
       if (opt.rejects)
@@ -919,6 +918,7 @@ acceptable (const char *s)
     }
   else if (opt.rejects)
     return !in_acclist ((const char *const *)opt.rejects, s, true);
+
   return true;
 }
 
@@ -1018,29 +1018,15 @@ accdir (const char *directory)
 bool
 match_tail (const char *string, const char *tail, bool fold_case)
 {
-  int i, j;
+  int pos = strlen (string) - strlen (tail);
 
-  /* We want this to be fast, so we code two loops, one with
-     case-folding, one without. */
+  if (pos < 0)
+    return false;  /* tail is longer than string.  */
 
   if (!fold_case)
-    {
-      for (i = strlen (string), j = strlen (tail); i >= 0 && j >= 0; i--, j--)
-        if (string[i] != tail[j])
-          break;
-    }
+    return strcmp (string + pos, tail);
   else
-    {
-      for (i = strlen (string), j = strlen (tail); i >= 0 && j >= 0; i--, j--)
-        if (c_tolower (string[i]) != c_tolower (tail[j]))
-          break;
-    }
-
-  /* If the tail was exhausted, the match was succesful.  */
-  if (j == -1)
-    return true;
-  else
-    return false;
+    return strcasecmp (string + pos, tail);
 }
 
 /* Checks whether string S matches each element of ACCEPTS.  A list
@@ -1089,15 +1075,12 @@ in_acclist (const char *const *accepts, const char *s, bool backward)
 char *
 suffix (const char *str)
 {
-  int i;
+  char *p;
 
-  for (i = strlen (str); i && str[i] != '/' && str[i] != '.'; i--)
-    ;
+  if ((p = strrchr (str, '.')) && !strchr (p + 1, '/'))
+    return p + 1;
 
-  if (str[i++] == '.')
-    return (char *)str + i;
-  else
-    return NULL;
+  return NULL;
 }
 
 /* Return true if S contains globbing wildcards (`*', `?', `[' or
@@ -1106,10 +1089,7 @@ suffix (const char *str)
 bool
 has_wildcards_p (const char *s)
 {
-  for (; *s; s++)
-    if (*s == '*' || *s == '?' || *s == '[' || *s == ']')
-      return true;
-  return false;
+  return !!strpbrk (s, "*?[]");
 }
 
 /* Return true if FNAME ends with a typical HTML suffix.  The
@@ -2553,16 +2533,16 @@ get_max_length (const char *path, int length, int name)
 const char *
 test_subdir_p()
 {
-  int i;
-  struct {
-    char *d1;
-    char *d2;
+  static struct {
+    const char *d1;
+    const char *d2;
     bool result;
   } test_array[] = {
     { "/somedir", "/somedir", true },
     { "/somedir", "/somedir/d2", true },
     { "/somedir/d1", "/somedir", false },
   };
+  unsigned i;
 
   for (i = 0; i < countof(test_array); ++i)
     {
@@ -2578,10 +2558,9 @@ test_subdir_p()
 const char *
 test_dir_matches_p()
 {
-  int i;
-  struct {
-    char *dirlist[3];
-    char *dir;
+  static struct {
+    const char *dirlist[3];
+    const char *dir;
     bool result;
   } test_array[] = {
     { { "/somedir", "/someotherdir", NULL }, "somedir", true },
@@ -2600,6 +2579,7 @@ test_dir_matches_p()
     { { "/Tmp/has", NULL, NULL }, "/Tmp/has space", false },
     { { "/Tmp/has", NULL, NULL }, "/Tmp/has,comma", false },
   };
+  unsigned i;
 
   for (i = 0; i < countof(test_array); ++i)
     {

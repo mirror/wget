@@ -1,3 +1,13 @@
+2013-05-09  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* utils.c (acceptable): use standard string functions instead of
+	self-written code.
+	(match_tail): Likewise.
+	(suffix): Likewise.
+	(has_wildcards_p): Likewise.
+	(test_subdir_p): Fix some warnings.
+	(test_dir_matches_p): Likewise.
+
 2013-05-05  mancha  <mancha1@hush.com> (tiny change)
 
 	* gnutls.c (ssl_connect_wget): Don't abort on non-fatal alerts
