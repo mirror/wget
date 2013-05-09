@@ -1,3 +1,18 @@
+2013-05-14  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* cookies.c (cookie_jar_load): Replaced read_whole_file() by getline().
+	* init.c (run_wgetrc): Likewise.
+	* netrc.c (parse_netrc): Likewise.
+	* utils.c: Likewise.
+	* ftp.c (getftp): Likewise.
+	* ftp-ls.c (ftp_parse_unix_ls, ftp_parse_winnt_ls, ftp_parse_vms_ls): Likewise.
+	* ftp-ls.c (clean_line): Accept the string length as parameter.
+	* ftp-ls.c: Replaced indent tabs by spaces.
+	* ftp.c: Likewise.
+	* utils.c: Removed read_whole_file() definition.
+	* netrc.c: Removed read_whole_file() definition for STANDALONE.
+	* utils.h: Removed read_whole_file() declaration.
+
 2013-05-09  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* utils.c (acceptable): use standard string functions instead of

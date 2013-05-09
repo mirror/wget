@@ -574,7 +574,8 @@ bool
 run_wgetrc (const char *file)
 {
   FILE *fp;
-  char *line;
+  char *line = NULL;
+  size_t bufsize = 0;
   int ln;
   int errcnt = 0;
 
@@ -586,7 +587,7 @@ run_wgetrc (const char *file)
       return true;                      /* not a fatal error */
     }
   ln = 1;
-  while ((line = read_whole_line (fp)) != NULL)
+  while (getline (&line, &bufsize, fp) > 0)
     {
       char *com = NULL, *val = NULL;
       int comind;
@@ -620,9 +621,9 @@ run_wgetrc (const char *file)
         }
       xfree_null (com);
       xfree_null (val);
-      xfree (line);
       ++ln;
     }
+  xfree (line);
   fclose (fp);
 
   return errcnt == 0;

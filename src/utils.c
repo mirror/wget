@@ -1118,56 +1118,6 @@ has_html_suffix_p (const char *fname)
   return false;
 }
 
-/* Read a line from FP and return the pointer to freshly allocated
-   storage.  The storage space is obtained through malloc() and should
-   be freed with free() when it is no longer needed.
-
-   The length of the line is not limited, except by available memory.
-   The newline character at the end of line is retained.  The line is
-   terminated with a zero character.
-
-   After end-of-file is encountered without anything being read, NULL
-   is returned.  NULL is also returned on error.  To distinguish
-   between these two cases, use the stdio function ferror().  */
-
-char *
-read_whole_line (FILE *fp)
-{
-  int length = 0;
-  int bufsize = 82;
-  char *line = xmalloc (bufsize);
-
-  while (fgets (line + length, bufsize - length, fp))
-    {
-      length += strlen (line + length);
-      if (length == 0)
-        /* Possible for example when reading from a binary file where
-           a line begins with \0.  */
-        continue;
-
-      if (line[length - 1] == '\n')
-        break;
-
-      /* fgets() guarantees to read the whole line, or to use up the
-         space we've given it.  We can double the buffer
-         unconditionally.  */
-      bufsize <<= 1;
-      line = xrealloc (line, bufsize);
-    }
-  if (length == 0 || ferror (fp))
-    {
-      xfree (line);
-      return NULL;
-    }
-  if (length + 1 < bufsize)
-    /* Relieve the memory from our exponential greediness.  We say
-       `length + 1' because the terminating \0 is not included in
-       LENGTH.  We don't need to zero-terminate the string ourselves,
-       though, because fgets() does that.  */
-    line = xrealloc (line, length + 1);
-  return line;
-}
-
 /* Read FILE into memory.  A pointer to `struct file_memory' are
    returned; use struct element `content' to access file contents, and
    the element `length' to know the file length.  `content' is *not*

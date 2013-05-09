@@ -164,48 +164,6 @@ search_netrc (const char *host, const char **acc, const char **passwd,
 
 # define xrealloc realloc
 
-/* Read a line from FP.  The function reallocs the storage as needed
-   to accomodate for any length of the line.  Reallocs are done
-   storage exponentially, doubling the storage after each overflow to
-   minimize the number of calls to realloc() and fgets().  The newline
-   character at the end of line is retained.
-
-   After end-of-file is encountered without anything being read, NULL
-   is returned.  NULL is also returned on error.  To distinguish
-   between these two cases, use the stdio function ferror().  */
-
-char *
-read_whole_line (FILE *fp)
-{
-  int length = 0;
-  int bufsize = 81;
-  char *line = xmalloc (bufsize);
-
-  while (fgets (line + length, bufsize - length, fp))
-    {
-      length += strlen (line + length);
-      assert (length > 0);
-      if (line[length - 1] == '\n')
-        break;
-      /* fgets() guarantees to read the whole line, or to use up the
-         space we've given it.  We can double the buffer
-         unconditionally.  */
-      bufsize <<= 1;
-      line = xrealloc (line, bufsize);
-    }
-  if (length == 0 || ferror (fp))
-    {
-      xfree (line);
-      return NULL;
-    }
-  if (length + 1 < bufsize)
-    /* Relieve the memory from our exponential greediness.  We say
-       `length + 1' because the terminating \0 is not included in
-       LENGTH.  We don't need to zero-terminate the string ourselves,
-       though, because fgets() does that.  */
-    line = xrealloc (line, length + 1);
-  return line;
-}
 #endif /* STANDALONE */
 
 /* Maybe add NEWENTRY to the account information list, LIST.  NEWENTRY is
@@ -264,10 +222,11 @@ static acc_t *
 parse_netrc (const char *path)
 {
   FILE *fp;
-  char *line, *p, *tok;
+  char *line = NULL, *p, *tok;
   const char *premature_token;
   acc_t *current, *retval;
   int ln, qmark;
+  size_t bufsize = 0;
 
   /* The latest token we've seen in the file.  */
   enum
@@ -290,7 +249,7 @@ parse_netrc (const char *path)
   premature_token = NULL;
 
   /* While there are lines in the file...  */
-  while ((line = read_whole_line (fp)) != NULL)
+  while (getline (&line, &bufsize, fp) > 0)
     {
       ln ++;
 
@@ -423,10 +382,9 @@ parse_netrc (const char *path)
                          exec_name, path, ln, tok);
             }
         }
-
-      xfree (line);
     }
 
+  xfree (line);
   fclose (fp);
 
   /* Finalize the last machine entry we found.  */
