@@ -1,3 +1,9 @@
+2013-05-14 Bykov Aleksey <gnfalex@rambler.ru>
+
+	* warc.c (warc_tempfile): For fix "Could not open temporary WARC manifest
+	file." issue in Win system force to use `mkostemp(filename, O_TEMPORARY)'
+	instead  of `mkstemp(filename)'. Thank to Angel Gonzalez for help.
+
 2013-05-14  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* cookies.c (cookie_jar_load): Replaced read_whole_file() by getline().
