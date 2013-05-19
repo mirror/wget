@@ -1,3 +1,15 @@
+2013-05-10  Darshit Shah <darnir@gmail.com>  (tiny change)
+
+	* wget.texi (No of tries): Fix typo to make it clear that --tries
+	option sets number of tries not retries.
+	Reported by: Hauke Hoffman <haukebjoernhoffman@googlemail.com>
+
+2013-04-28  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Types of Files...): Document --accept-regex,
+	--reject-regex.
+	Reported by: Tomas Hozza <thozza@redhat.com>.
+
 2013-04-14  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi (Download Options): Document "mega" dot style.

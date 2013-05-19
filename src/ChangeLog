@@ -3,6 +3,68 @@
 	* http.c (gethttp): Do not register the persistent connection too
 	early.
 
+2013-05-14  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* cookies.c (cookie_jar_load): Replaced read_whole_file() by getline().
+	* init.c (run_wgetrc): Likewise.
+	* netrc.c (parse_netrc): Likewise.
+	* utils.c: Likewise.
+	* ftp.c (getftp): Likewise.
+	* ftp-ls.c (ftp_parse_unix_ls, ftp_parse_winnt_ls, ftp_parse_vms_ls): Likewise.
+	* ftp-ls.c (clean_line): Accept the string length as parameter.
+	* ftp-ls.c: Replaced indent tabs by spaces.
+	* ftp.c: Likewise.
+	* utils.c: Removed read_whole_file() definition.
+	* netrc.c: Removed read_whole_file() definition for STANDALONE.
+	* utils.h: Removed read_whole_file() declaration.
+
+2013-05-09  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* utils.c (acceptable): use standard string functions instead of
+	self-written code.
+	(match_tail): Likewise.
+	(suffix): Likewise.
+	(has_wildcards_p): Likewise.
+	(test_subdir_p): Fix some warnings.
+	(test_dir_matches_p): Likewise.
+
+2013-05-05  mancha  <mancha1@hush.com> (tiny change)
+
+	* gnutls.c (ssl_connect_wget): Don't abort on non-fatal alerts
+        received during handshake. For example, when connecting to servers
+        using TSL-SNI that send warning-level unrecognized_name alerts.
+
+2013-05-04  Darshit Shah <darnir@gmail.com>
+
+	* init.c (cmd_string_uppercase): Fix issue that cased invalid headers
+	when converting to uppercase.
+
+2013-05-01  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* retr.c (retrieve_url): New variable `saved_method'.
+	(SUSPEND_POST_DATA): Save the method to `saved_method'.
+	(RESTORE_POST_DATA): Restore the method from `saved_method'.
+
+2013-05-01  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* init.c: Declare `cmd_string_uppercase'.
+	(commands): Now `method' uses cmd_string_uppercase.
+	(cmd_string_uppercase): New method
+	* http.c (gethttp): Do not transform opt.method to uppercase.
+	Reported by: Stefano Lattarini <stefano.lattarini@gmail.com>
+
+2013-04-24  Darshit Shah <darnir@gmail.com>
+
+	* http.c (gethttp): Remove check for opt.post_data and
+	opt.post_file_name.
+	* main.c (main): Change location in code where --post-data and
+	--post-file options are converted to --body-data --body-file.
+
+2013-04-21  Gijs van Tulder  <gvtulder@gmail.com>
+
+	* http.c: Copy opt.body_data to the WARC file, instead of
+	opt.post_data (the old option).
+
 2013-04-12  Gijs van Tulder  <gvtulder@gmail.com>
 
 	* warc.c: Generate unique UUIDs for the manifest and the record

@@ -1129,7 +1129,9 @@ domain_port (const char *domain_b, const char *domain_e,
 void
 cookie_jar_load (struct cookie_jar *jar, const char *file)
 {
-  char *line;
+  char *line = NULL;
+  size_t bufsize = 0;
+
   FILE *fp = fopen (file, "r");
   if (!fp)
     {
@@ -1137,9 +1139,10 @@ cookie_jar_load (struct cookie_jar *jar, const char *file)
                  quote (file), strerror (errno));
       return;
     }
+
   cookies_now = time (NULL);
 
-  for (; ((line = read_whole_line (fp)) != NULL); xfree (line))
+  while (getline (&line, &bufsize, fp) > 0)
     {
       struct cookie *cookie;
       char *p = line;
@@ -1233,6 +1236,8 @@ cookie_jar_load (struct cookie_jar *jar, const char *file)
     abort_cookie:
       delete_cookie (cookie);
     }
+
+  xfree(line);
   fclose (fp);
 }
 

@@ -704,6 +704,7 @@ calc_rate (wgint bytes, double secs, int *units)
   post_data_suspended = true;                   \
   saved_post_data = opt.body_data;              \
   saved_post_file_name = opt.body_file;         \
+  saved_method = opt.method;                    \
   opt.body_data = NULL;                         \
   opt.body_file = NULL;                         \
   opt.method = NULL;                            \
@@ -714,8 +715,8 @@ calc_rate (wgint bytes, double secs, int *units)
     {                                                   \
       opt.body_data = saved_post_data;                  \
       opt.body_file = saved_post_file_name;             \
+      opt.method = saved_method;                        \
       post_data_suspended = false;                      \
-      opt.method = "POST";                              \
     }                                                   \
 } while (0)
 
@@ -745,6 +746,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
 
   bool post_data_suspended = false;
   char *saved_post_data = NULL;
+  char *saved_method = NULL;
   char *saved_post_file_name = NULL;
 
   /* If dt is NULL, use local storage.  */

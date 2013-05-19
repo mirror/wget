@@ -900,15 +900,14 @@ static bool in_acclist (const char *const *, const char *, bool);
 bool
 acceptable (const char *s)
 {
-  int l = strlen (s);
+  const char *p;
 
   if (opt.output_document && strcmp (s, opt.output_document) == 0)
     return true;
 
-  while (l && s[l] != '/')
-    --l;
-  if (s[l] == '/')
-    s += (l + 1);
+  if ((p = strrchr (s, '/')))
+    s = p + 1;
+
   if (opt.accepts)
     {
       if (opt.rejects)
@@ -919,6 +918,7 @@ acceptable (const char *s)
     }
   else if (opt.rejects)
     return !in_acclist ((const char *const *)opt.rejects, s, true);
+
   return true;
 }
 
@@ -1018,29 +1018,15 @@ accdir (const char *directory)
 bool
 match_tail (const char *string, const char *tail, bool fold_case)
 {
-  int i, j;
+  int pos = strlen (string) - strlen (tail);
 
-  /* We want this to be fast, so we code two loops, one with
-     case-folding, one without. */
+  if (pos < 0)
+    return false;  /* tail is longer than string.  */
 
   if (!fold_case)
-    {
-      for (i = strlen (string), j = strlen (tail); i >= 0 && j >= 0; i--, j--)
-        if (string[i] != tail[j])
-          break;
-    }
+    return strcmp (string + pos, tail);
   else
-    {
-      for (i = strlen (string), j = strlen (tail); i >= 0 && j >= 0; i--, j--)
-        if (c_tolower (string[i]) != c_tolower (tail[j]))
-          break;
-    }
-
-  /* If the tail was exhausted, the match was succesful.  */
-  if (j == -1)
-    return true;
-  else
-    return false;
+    return strcasecmp (string + pos, tail);
 }
 
 /* Checks whether string S matches each element of ACCEPTS.  A list
@@ -1089,15 +1075,12 @@ in_acclist (const char *const *accepts, const char *s, bool backward)
 char *
 suffix (const char *str)
 {
-  int i;
+  char *p;
 
-  for (i = strlen (str); i && str[i] != '/' && str[i] != '.'; i--)
-    ;
+  if ((p = strrchr (str, '.')) && !strchr (p + 1, '/'))
+    return p + 1;
 
-  if (str[i++] == '.')
-    return (char *)str + i;
-  else
-    return NULL;
+  return NULL;
 }
 
 /* Return true if S contains globbing wildcards (`*', `?', `[' or
@@ -1106,10 +1089,7 @@ suffix (const char *str)
 bool
 has_wildcards_p (const char *s)
 {
-  for (; *s; s++)
-    if (*s == '*' || *s == '?' || *s == '[' || *s == ']')
-      return true;
-  return false;
+  return !!strpbrk (s, "*?[]");
 }
 
 /* Return true if FNAME ends with a typical HTML suffix.  The
@@ -1138,56 +1118,6 @@ has_html_suffix_p (const char *fname)
   return false;
 }
 
-/* Read a line from FP and return the pointer to freshly allocated
-   storage.  The storage space is obtained through malloc() and should
-   be freed with free() when it is no longer needed.
-
-   The length of the line is not limited, except by available memory.
-   The newline character at the end of line is retained.  The line is
-   terminated with a zero character.
-
-   After end-of-file is encountered without anything being read, NULL
-   is returned.  NULL is also returned on error.  To distinguish
-   between these two cases, use the stdio function ferror().  */
-
-char *
-read_whole_line (FILE *fp)
-{
-  int length = 0;
-  int bufsize = 82;
-  char *line = xmalloc (bufsize);
-
-  while (fgets (line + length, bufsize - length, fp))
-    {
-      length += strlen (line + length);
-      if (length == 0)
-        /* Possible for example when reading from a binary file where
-           a line begins with \0.  */
-        continue;
-
-      if (line[length - 1] == '\n')
-        break;
-
-      /* fgets() guarantees to read the whole line, or to use up the
-         space we've given it.  We can double the buffer
-         unconditionally.  */
-      bufsize <<= 1;
-      line = xrealloc (line, bufsize);
-    }
-  if (length == 0 || ferror (fp))
-    {
-      xfree (line);
-      return NULL;
-    }
-  if (length + 1 < bufsize)
-    /* Relieve the memory from our exponential greediness.  We say
-       `length + 1' because the terminating \0 is not included in
-       LENGTH.  We don't need to zero-terminate the string ourselves,
-       though, because fgets() does that.  */
-    line = xrealloc (line, length + 1);
-  return line;
-}
-
 /* Read FILE into memory.  A pointer to `struct file_memory' are
    returned; use struct element `content' to access file contents, and
    the element `length' to know the file length.  `content' is *not*
@@ -2553,16 +2483,16 @@ get_max_length (const char *path, int length, int name)
 const char *
 test_subdir_p()
 {
-  int i;
-  struct {
-    char *d1;
-    char *d2;
+  static struct {
+    const char *d1;
+    const char *d2;
     bool result;
   } test_array[] = {
     { "/somedir", "/somedir", true },
     { "/somedir", "/somedir/d2", true },
     { "/somedir/d1", "/somedir", false },
   };
+  unsigned i;
 
   for (i = 0; i < countof(test_array); ++i)
     {
@@ -2578,10 +2508,9 @@ test_subdir_p()
 const char *
 test_dir_matches_p()
 {
-  int i;
-  struct {
-    char *dirlist[3];
-    char *dir;
+  static struct {
+    const char *dirlist[3];
+    const char *dir;
     bool result;
   } test_array[] = {
     { { "/somedir", "/someotherdir", NULL }, "somedir", true },
@@ -2600,6 +2529,7 @@ test_dir_matches_p()
     { { "/Tmp/has", NULL, NULL }, "/Tmp/has space", false },
     { { "/Tmp/has", NULL, NULL }, "/Tmp/has,comma", false },
   };
+  unsigned i;
 
   for (i = 0; i < countof(test_array); ++i)
     {

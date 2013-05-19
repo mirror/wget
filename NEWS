@@ -21,6 +21,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Fix -c with servers that don't specify a content-length.
 
 ** Add support for MD5-SESS
+
+** Do not fail on non fatal GNU TLS alerts during handshake.
 
 * Changes in Wget 1.14
 

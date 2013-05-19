@@ -616,16 +616,16 @@ Error in server response, closing control connection.\n"));
              The VMS restriction may be relaxed when the squirrely code
              above is reformed.
           */
-	  if ((con->rs == ST_VMS) && (target[0] != '/'))
-	    {
-	      cwd_start = 0;
-	      DEBUGP (("Using two-step CWD for relative path.\n"));
-	    }
-	  else
-	    {
+          if ((con->rs == ST_VMS) && (target[0] != '/'))
+            {
+              cwd_start = 0;
+              DEBUGP (("Using two-step CWD for relative path.\n"));
+            }
+          else
+            {
               /* Go straight to the target. */
-	      cwd_start = 1;
-	    }
+              cwd_start = 1;
+            }
 
           /* At least one VMS FTP server (TCPware V5.6-2) can switch to
              a UNIX emulation mode when given a UNIX-like directory
@@ -643,10 +643,10 @@ Error in server response, closing control connection.\n"));
              Unlike the rest of this block, this particular behavior
              _is_ VMS-specific, so it gets its own VMS test.
           */
-	  if ((con->rs == ST_VMS) && (strchr( target, '/') != NULL))
+          if ((con->rs == ST_VMS) && (strchr( target, '/') != NULL))
             {
               cwd_end = 3;
-	      DEBUGP (("Using extra \"CWD []\" step for VMS server.\n"));
+              DEBUGP (("Using extra \"CWD []\" step for VMS server.\n"));
             }
           else
             {
@@ -656,22 +656,22 @@ Error in server response, closing control connection.\n"));
           /* 2004-09-20 SMS. */
           /* Sorry about the deviant indenting.  Laziness. */
 
-	  for (cwd_count = cwd_start; cwd_count < cwd_end; cwd_count++)
-	{
+          for (cwd_count = cwd_start; cwd_count < cwd_end; cwd_count++)
+            {
           switch (cwd_count)
             {
               case 0:
-	        /* Step one (optional): Go to the initial directory,
-	           exactly as reported by the server.
-	        */
-	        targ = con->id;
+                /* Step one (optional): Go to the initial directory,
+                   exactly as reported by the server.
+                */
+                targ = con->id;
                 break;
 
               case 1:
-	        /* Step two: Go to the target directory.  (Absolute or
-	           relative will work now.)
-	        */
-	        targ = target;
+                /* Step two: Go to the target directory.  (Absolute or
+                   relative will work now.)
+                */
+                targ = target;
                 break;
 
               case 2:
@@ -684,7 +684,7 @@ Error in server response, closing control connection.\n"));
               default:
                 /* Can't happen. */
                 assert (1);
-	    }
+            }
 
           if (!opt.server_response)
             logprintf (LOG_VERBOSE, "==> CWD (%d) %s ... ", cwd_count,
@@ -938,42 +938,42 @@ Error in server response, closing control connection.\n"));
   if (cmd & DO_RETR)
     {
       /* If we're in spider mode, don't really retrieve anything except
-	 the directory listing and verify whether the given "file" exists.  */
+         the directory listing and verify whether the given "file" exists.  */
       if (opt.spider)
         {
-	  bool exists = false;
-	  uerr_t res;
-	  struct fileinfo *f;
-	  res = ftp_get_listing (u, con, &f);
-	  /* Set the DO_RETR command flag again, because it gets unset when
-	     calling ftp_get_listing() and would otherwise cause an assertion
-	     failure earlier on when this function gets repeatedly called
-	     (e.g., when recursing).  */
-	  con->cmd |= DO_RETR;
-	  if (res == RETROK)
-	    {
-	      while (f)
-		{
-		  if (!strcmp (f->name, u->file))
-		    {
-		      exists = true;
-		      break;
-		    }
-		  f = f->next;
-		}
+          bool exists = false;
+          uerr_t res;
+          struct fileinfo *f;
+          res = ftp_get_listing (u, con, &f);
+          /* Set the DO_RETR command flag again, because it gets unset when
+             calling ftp_get_listing() and would otherwise cause an assertion
+             failure earlier on when this function gets repeatedly called
+             (e.g., when recursing).  */
+          con->cmd |= DO_RETR;
+          if (res == RETROK)
+            {
+              while (f)
+                {
+                  if (!strcmp (f->name, u->file))
+                    {
+                      exists = true;
+                      break;
+                    }
+                  f = f->next;
+                }
               if (exists)
                 {
                   logputs (LOG_VERBOSE, "\n");
                   logprintf (LOG_NOTQUIET, _("File %s exists.\n"),
                              quote (u->file));
                 }
-	      else
+              else
                 {
-		  logputs (LOG_VERBOSE, "\n");
-		  logprintf (LOG_NOTQUIET, _("No such file %s.\n"),
-			     quote (u->file));
-		}
-	    }
+                  logputs (LOG_VERBOSE, "\n");
+                  logprintf (LOG_NOTQUIET, _("No such file %s.\n"),
+                             quote (u->file));
+                }
+            }
           fd_close (csock);
           con->csock = -1;
           fd_close (dtsock);
@@ -1184,20 +1184,20 @@ Error in server response, closing control connection.\n"));
       else if (opt.noclobber || opt.always_rest || opt.timestamping || opt.dirstruct
                || opt.output_document || count > 0)
         {
-	  if (opt.unlink && file_exists_p (con->target))
-	    {
-	      int res = unlink (con->target);
-	      if (res < 0)
-		{
-		  logprintf (LOG_NOTQUIET, "%s: %s\n", con->target,
-			     strerror (errno));
-		  fd_close (csock);
-		  con->csock = -1;
-		  fd_close (dtsock);
-		  fd_close (local_sock);
-		  return UNLINKERR;
-		}
-	    }
+          if (opt.unlink && file_exists_p (con->target))
+            {
+              int res = unlink (con->target);
+              if (res < 0)
+                {
+                  logprintf (LOG_NOTQUIET, "%s: %s\n", con->target,
+                    strerror (errno));
+                    fd_close (csock);
+                    con->csock = -1;
+                    fd_close (dtsock);
+                    fd_close (local_sock);
+                    return UNLINKERR;
+                }
+            }
 
 #ifdef __VMS
           int open_id;
@@ -1377,18 +1377,20 @@ Error in server response, closing control connection.\n"));
         logprintf (LOG_ALWAYS, "%s: %s\n", con->target, strerror (errno));
       else
         {
-          char *line;
-          /* The lines are being read with read_whole_line because of
+          char *line = NULL;
+          size_t bufsize = 0;
+          ssize_t len;
+
+          /* The lines are being read with getline because of
              no-buffering on opt.lfile.  */
-          while ((line = read_whole_line (fp)) != NULL)
+          while ((len = getline (&line, &bufsize, fp)) > 0)
             {
-              char *p = strchr (line, '\0');
-              while (p > line && (p[-1] == '\n' || p[-1] == '\r'))
-                *--p = '\0';
+              while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r'))
+                line[--len] = '\0';
               logprintf (LOG_ALWAYS, "%s\n",
                          quotearg_style (escape_quoting_style, line));
-              xfree (line);
             }
+          xfree (line);
           fclose (fp);
         }
     } /* con->cmd & DO_LIST && server_response */

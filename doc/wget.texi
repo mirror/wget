@@ -566,10 +566,10 @@ IPs.
 
 @cindex retries
 @cindex tries
-@cindex number of retries
+@cindex number of tries
 @item -t @var{number}
 @itemx --tries=@var{number}
-Set number of retries for a URL to @var{number}.  Specify 0 or @samp{inf} for
+Set number of tries to @var{number}. Specify 0 or @samp{inf} for
 infinite retrying.  The default is to retry 20 times, with the exception
 of fatal errors like ``connection refused'' or ``not found'' (404),
 which are not retried.
@@ -2077,6 +2077,10 @@ accept or reject (@pxref{Types of Files}). Note that if
 any of the wildcard characters, @samp{*}, @samp{?}, @samp{[} or
 @samp{]}, appear in an element of @var{acclist} or @var{rejlist},
 it will be treated as a pattern, rather than a suffix.
+
+@item --accept-regex @var{urlregex}
+@itemx --reject-regex @var{urlregex}
+Specify a regular expression to accept or reject the complete URL.
 
 @item -D @var{domain-list}
 @itemx --domains=@var{domain-list}

@@ -151,27 +151,20 @@ struct request {
 
 extern int numurls;
 
-/* Create a new, empty request.  At least request_set_method must be
-   called before the request can be used.  */
+/* Create a new, empty request. Set the request's method and its
+   arguments.  METHOD should be a literal string (or it should outlive
+   the request) because it will not be freed.  ARG will be freed by
+   request_free.  */
 
 static struct request *
-request_new (void)
+request_new (const char *method, char *arg)
 {
   struct request *req = xnew0 (struct request);
   req->hcapacity = 8;
   req->headers = xnew_array (struct request_header, req->hcapacity);
-  return req;
-}
-
-/* Set the request's method and its arguments.  METH should be a
-   literal string (or it should outlive the request) because it will
-   not be freed.  ARG will be freed by request_free.  */
-
-static void
-request_set_method (struct request *req, const char *meth, char *arg)
-{
-  req->method = meth;
+  req->method = method;
   req->arg = arg;
+  return req;
 }
 
 /* Return the method string passed with the last call to
@@ -1978,22 +1971,13 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
   conn = u;
 
   /* Prepare the request to send. */
-
-  req = request_new ();
   {
     char *meth_arg;
     const char *meth = "GET";
     if (head_only)
       meth = "HEAD";
-    else if (opt.post_file_name || opt.post_data)
-      meth = "POST";
     else if (opt.method)
-      {
-        char *q;
-        for (q = opt.method; *q; ++q)
-          *q = c_toupper (*q);
-        meth = opt.method;
-      }
+      meth = opt.method;
     /* Use the full path, i.e. one that includes the leading slash and
        the query string.  E.g. if u->path is "foo/bar" and u->query is
        "param=value", full_path will be "/foo/bar?param=value".  */
@@ -2008,7 +1992,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
       meth_arg = xstrdup (u->url);
     else
       meth_arg = url_full_path (u);
-    request_set_method (req, meth, meth_arg);
+    req = request_new (meth, meth_arg);
   }
 
   request_set_header (req, "Referer", (char *) hs->referer, rel_none);
@@ -2278,8 +2262,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
         {
           /* When requesting SSL URLs through proxies, use the
              CONNECT method to request passthrough.  */
-          struct request *connreq = request_new ();
-          request_set_method (connreq, "CONNECT",
+          struct request *connreq = request_new ("CONNECT",
                               aprintf ("%s:%d", u->host, u->port));
           SET_USER_AGENT (connreq);
           if (proxyauth)
@@ -2407,7 +2390,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
               warc_payload_offset = ftello (warc_tmp);
 
               /* Write a copy of the data to the WARC record. */
-              int warc_tmp_written = fwrite (opt.post_data, 1, body_data_size, warc_tmp);
+              int warc_tmp_written = fwrite (opt.body_data, 1, body_data_size, warc_tmp);
               if (warc_tmp_written != body_data_size)
                 write_error = -2;
             }

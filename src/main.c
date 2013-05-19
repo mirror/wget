@@ -1241,20 +1241,6 @@ main (int argc, char **argv)
   if (opt.verbose == -1)
     opt.verbose = !opt.quiet;
 
-  if (opt.post_data || opt.post_file_name)
-    {
-        setoptval ("method", "POST", "method");
-        if (opt.post_data)
-          {
-            setoptval ("bodydata", opt.post_data, "body-data");
-            opt.post_data = NULL;
-          }
-        else
-          {
-            setoptval ("bodyfile", opt.post_file_name, "body-file");
-            opt.post_file_name = NULL;
-          }
-    }
 
   /* Sanity checks.  */
   if (opt.verbose && opt.quiet)
@@ -1434,6 +1420,29 @@ for details.\n\n"));
           fprintf (stderr, _("You cannot specify both --body-data and --body-file.\n"));
           exit (1);
         }
+    }
+
+  /* Convert post_data to body-data and post_file_name to body-file options.
+     This is required so as to remove redundant code later on in gethttp().
+     The --post-data and --post-file options may also be removed in
+     the future hence it makes sense to convert them to aliases for
+     the more generic --method options.
+     This MUST occur only after the sanity checks so as to prevent the
+     user from setting both post and body options simultaneously.
+  */
+  if (opt.post_data || opt.post_file_name)
+    {
+        setoptval ("method", "POST", "method");
+        if (opt.post_data)
+          {
+            setoptval ("bodydata", opt.post_data, "body-data");
+            opt.post_data = NULL;
+          }
+        else
+          {
+            setoptval ("bodyfile", opt.post_file_name, "body-file");
+            opt.post_file_name = NULL;
+          }
     }
 
 #ifdef ENABLE_IRI
