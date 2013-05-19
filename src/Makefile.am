@@ -47,7 +47,7 @@ endif
 DEFS     = @DEFS@ -DSYSTEM_WGETRC=\"$(sysconfdir)/wgetrc\" -DLOCALEDIR=\"$(localedir)\"
 LIBS     = @LIBICONV@ @LIBINTL@ @LIBS@ $(LIB_CLOCK_GETTIME)
 
-EXTRA_DIST = css.l css.c css_.c build_info.c.in
+EXTRA_DIST = css.l css.c css_.c build_info.c.in iri.c multi.c multi.h metalink.c metalink.h
 
 bin_PROGRAMS = wget
 wget_SOURCES = cmpt.c connect.c convert.c cookies.c ftp.c    		  \

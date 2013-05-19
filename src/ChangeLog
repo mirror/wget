@@ -1,3 +1,7 @@
+2013-05-19  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* Makefile.am (EXTRA_DIST): Add iri.c multi.c multi.h metalink.c metalink.h.
+
 2013-04-21  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* http.c (gethttp): Do not register the persistent connection too
