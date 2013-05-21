@@ -4186,22 +4186,20 @@ create_authorization_line (const char *au, const char *user,
 
 #if defined ENABLE_NTLM && defined ENABLE_THREADS
     case 'N':                   /* NTLM */
-      if (!ntlm_input (&pconn.ntlm, au))
-        {
-          *finished = true;
-          return NULL;
-        }
-      return ntlm_output (&pconn.ntlm, user, passwd, finished);
-#endif
-
-#ifdef ENABLE_NTLM
-    case 'N':                   /* NTLM */
       if (!ntlm_input (&pconn->ntlm, au))
         {
           *finished = true;
           return NULL;
         }
       return ntlm_output (&pconn->ntlm, user, passwd, finished);
+#elif defined ENABLE_NTLM
+    case 'N':                   /* NTLM */
+      if (!ntlm_input (&pconn.ntlm, au))
+        {
+          *finished = true;
+          return NULL;
+        }
+      return ntlm_output (&pconn.ntlm, user, passwd, finished);
 #endif
     default:
       /* We shouldn't get here -- this function should be only called

@@ -1,3 +1,9 @@
+2013-05-21  Ray Satiro  <raysatiro@yahoo.com>
+
+	* http.c (create_authorization_line): Fix syntax error in calls to NTLM
+	functions.
+	* url.c (url_file_name): Use MAX_PATH in Windows.
+
 2013-05-19  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* Makefile.am (EXTRA_DIST): Add iri.c multi.c multi.h metalink.c metalink.h.

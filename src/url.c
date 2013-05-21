@@ -1618,7 +1618,26 @@ url_file_name (const struct url *u, char *replaced_filename)
   append_char ('\0', &temp_fnres);
 
   /* Check that the length of the file name is acceptable. */
+#ifdef WINDOWS
+  if (MAX_PATH > (fnres.tail + CHOMP_BUFFER + 2))
+    {
+      max_length = MAX_PATH - (fnres.tail + CHOMP_BUFFER + 2);
+      /* FIXME: In Windows a filename is usually limited to 255 characters.
+      To really be accurate you could call GetVolumeInformation() to get
+      lpMaximumComponentLength
+      */
+      if (max_length > 255)
+        {
+          max_length = 255;
+        }
+    }
+  else
+    {
+      max_length = 0;
+    }
+#else
   max_length = get_max_length (fnres.base, fnres.tail, _PC_NAME_MAX) - CHOMP_BUFFER;
+#endif
   if (max_length > 0 && strlen (temp_fnres.base) > max_length)
     {
       logprintf (LOG_NOTQUIET, "The name is too long, %lu chars total.\n",
