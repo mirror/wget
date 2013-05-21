@@ -433,7 +433,7 @@ verify_file_hash (const char *filename, mlink_checksum *checksums)
     }
   req_type = i;
 
-  if (!(file = fopen(filename, "r")))
+  if (!(file = fopen(filename, "rb")))
     {
       /* File could not be opened. */
       logprintf (LOG_VERBOSE, "Validating(%s) failed: file could not be opened.\n",

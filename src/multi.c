@@ -85,10 +85,10 @@ merge_temp_files(char *output)
   int j, ret;
   void *buf = malloc (MIN_CHUNK_SIZE);
 
-  out = fopen (output, "w");
+  out = fopen (output, "wb");
   for(j = 0; j < opt.jobs; ++j)
     {
-      in = fopen(files[j],"r");
+      in = fopen(files[j],"rb");
       ret = MIN_CHUNK_SIZE;
       while(ret == MIN_CHUNK_SIZE)
         {

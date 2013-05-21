@@ -1,3 +1,8 @@
+2013-05-22  Bykov Aleksey <gnfalex@rambler.ru>
+
+	* multi.c (merge_temp_files): Changed fopen mode from text to binary.
+	* metalink.c (verify_file_hash): Likewise.
+
 2013-05-21  Ray Satiro  <raysatiro@yahoo.com>
 
 	* http.c (create_authorization_line): Fix syntax error in calls to NTLM
