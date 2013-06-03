@@ -1579,7 +1579,7 @@ outputting to a regular file.\n"));
          opt.ftp_user || opt.ftp_passwd || opt.ask_passwd)
         {
           fprintf (stderr, _("Username and password information not needed to \
-                   be specified when downloading from a metalink.\n"));
+be specified when downloading from a metalink.\n"));
           exit(1);
         }
       temp_option[0] = '\0';

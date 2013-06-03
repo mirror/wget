@@ -1,3 +1,7 @@
+2013-06-03  Jochen Hein  <jochen@jochen.org> (tiny change)
+
+	* main.c (main): Remove double empty space from string.
+
 2013-05-22  Bykov Aleksey <gnfalex@rambler.ru>
 
 	* multi.c (merge_temp_files): Changed fopen mode from text to binary.
