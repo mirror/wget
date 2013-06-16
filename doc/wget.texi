@@ -1475,14 +1475,15 @@ use chunked unless it knows it's talking to an HTTP/1.1 server.  And it
 can't know that until it receives a response, which in turn requires the
 request to have been completed -- a chicken-and-egg problem.
 
-Note: if Wget is redirected after the POST request is completed, it
-will not send the POST data to the redirected URL.  This is because
-URLs that process POST often respond with a redirection to a regular
-page, which does not desire or accept POST.  It is not completely
-clear that this behavior is optimal; if it doesn't work out, it might
-be changed in the future.
+Note: As of version 1.15 if Wget is redirected after the POST request is
+completed, its behaviour will depend on the response code returned by the
+server.  In case of a 301 Moved Permanently, 302 Moved Temporarily or
+307 Temporary Redirect, Wget will, in accordance with RFC2616, continue
+to send a POST request.
+In case a server wants the client to change the Request method upon
+redirection, it should send a 303 See Other response code.
 
-This example shows how to log to a server using POST and then proceed to
+This example shows how to log in to a server using POST and then proceed to
 download the desired pages, presumably only accessible to authorized
 users:
 
@@ -1515,8 +1516,8 @@ Method to the server.
 @item --body-data=@var{Data-String}
 @itemx --body-file=@var{Data-File}
 Must be set when additional data needs to be sent to the server along with the
-Method specified using @samp{--method}. @samp{--post-data} sends @var{string} as
-data, whereas @samp{--post-file} sends the contents of @var{file}. Other than that,
+Method specified using @samp{--method}.  @samp{--body-data} sends @var{string} as
+data, whereas @samp{--body-file} sends the contents of @var{file}.  Other than that,
 they work in exactly the same way.
 
 Currently, @samp{--body-file} is @emph{not} for transmitting files as a whole.
@@ -1528,10 +1529,13 @@ BODY Data in advance, and hence the argument to @samp{--body-file} should be a
 regular file. See @samp{--post-file} for a more detailed explanation.
 Only one of @samp{--body-data} and @samp{--body-file} should be specified.
 
-Wget handles these requests in the same way that it handles @samp{--post-data}
-and @samp{--post-file}. If you invoke Wget with @samp{--method=POST} and the server
-responds with a redirect request, then Wget will revert to a GET request during the
-redirection as is explained in @samp{--post-data}.
+If Wget is redirected after the request is completed, Wget will
+suspend the current method and send a GET request till the redirection
+is completed.  This is true for all redirection response codes except
+307 Temporary Redirect which is used to explicitly specify that the
+request method should @emph{not} change.  Another exception is when
+the method is set to @code{POST}, in which case the redirection rules
+specified under @samp{--post-data} are followed.
 
 @cindex Content-Disposition
 @item --content-disposition

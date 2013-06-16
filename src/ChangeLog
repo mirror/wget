@@ -1,3 +1,15 @@
+2013-06-13  Darshit Shah  <darnir@gmail.com>
+
+	* http.c (gethttp): Follow RFC 2616 and httpbis specifications when
+	handling redirections. Do not suspend the method on 301/302 redirects.
+	(gethttp): If method if not GET, we do not intend to download
+	anything.
+	* main.c (main): Set spider mode when opt.method is HEAD. This will
+	prevent Wget from downloading any file.
+	* retr.c (SUSPEND_METHOD): Rename macro SUSPEND_POST_DATA to
+	SUSPEND_METHOD to more accurately reflect its use. Similarly rename
+	related variables.
+
 2013-05-14 Bykov Aleksey <gnfalex@rambler.ru>
 
 	* warc.c (warc_tempfile): For fix "Could not open temporary WARC manifest

@@ -2641,12 +2641,35 @@ read_header:
           /* From RFC2616: The status codes 303 and 307 have
              been added for servers that wish to make unambiguously
              clear which kind of reaction is expected of the client.
-             
+
              A 307 should be redirected using the same method,
              in other words, a POST should be preserved and not
-             converted to a GET in that case. */
-          if (statcode == HTTP_STATUS_TEMPORARY_REDIRECT)
-            return NEWLOCATION_KEEP_POST;
+             converted to a GET in that case.
+
+             With strict adherence to RFC2616, POST requests are not
+             converted to a GET request on 301 Permanent Redirect
+             or 302 Temporary Redirect.
+
+             A switch may be provided later based on the HTTPbis draft
+             that allows clients to convert POST requests to GET
+             requests on 301 and 302 response codes. */
+          switch (statcode)
+            {
+            case HTTP_STATUS_TEMPORARY_REDIRECT:
+              return NEWLOCATION_KEEP_POST;
+              break;
+            case HTTP_STATUS_MOVED_PERMANENTLY:
+              if (opt.method && strcasecmp (opt.method, "post") != 0)
+                return NEWLOCATION_KEEP_POST;
+              break;
+            case HTTP_STATUS_MOVED_TEMPORARILY:
+              if (opt.method && strcasecmp (opt.method, "post") != 0)
+                return NEWLOCATION_KEEP_POST;
+              break;
+            default:
+              return NEWLOCATION;
+              break;
+            }
           return NEWLOCATION;
         }
     }
@@ -2755,7 +2778,8 @@ read_header:
     }
 
   /* Return if we have no intention of further downloading.  */
-  if ((!(*dt & RETROKF) && !opt.content_on_error) || head_only)
+  if ((!(*dt & RETROKF) && !opt.content_on_error) || head_only
+      || (opt.method && strcasecmp (opt.method, "get") != 0))
     {
       /* In case the caller cares to look...  */
       hs->len = 0;
