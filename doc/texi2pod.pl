@@ -291,7 +291,7 @@ while(<$inf>) {
 	if (defined $1) {
             my $thing = $1;
             if ($ic =~ /\@asis/) {
-                $_ = "\n=item $thing\n";
+                $_ = "\n=item C<$thing>\n";
             } else {
                 # Entity escapes prevent munging by the <> processing below.
                 $_ = "\n=item $ic\&LT;$thing\&GT;\n";
