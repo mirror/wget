@@ -1449,21 +1449,6 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
 
   orig_lp = con->cmd & LEAVE_PENDING ? 1 : 0;
 
-  /* For file RETR requests, we can write a WARC record.
-     We record the file contents to a temporary file. */
-  if (warc_enabled && (con->cmd & DO_RETR))
-    {
-      warc_tmp = warc_tempfile ();
-      if (warc_tmp == NULL)
-        return WARC_TMP_FOPENERR;
-
-      if (!con->proxy && con->csock != -1)
-        {
-          warc_ip = (ip_address *) alloca (sizeof (ip_address));
-          socket_ip_address (con->csock, warc_ip, ENDPOINT_PEER);
-        }
-    }
-
   /* THE loop.  */
   do
     {
@@ -1489,6 +1474,21 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
             con->cmd &= ~DO_CWD;
           else
             con->cmd |= DO_CWD;
+        }
+
+      /* For file RETR requests, we can write a WARC record.
+         We record the file contents to a temporary file. */
+      if (warc_enabled && (con->cmd & DO_RETR) && warc_tmp == NULL)
+        {
+          warc_tmp = warc_tempfile ();
+          if (warc_tmp == NULL)
+            return WARC_TMP_FOPENERR;
+
+          if (!con->proxy && con->csock != -1)
+            {
+              warc_ip = (ip_address *) alloca (sizeof (ip_address));
+              socket_ip_address (con->csock, warc_ip, ENDPOINT_PEER);
+            }
         }
 
       /* Decide whether or not to restart.  */

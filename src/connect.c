@@ -559,6 +559,7 @@ socket_ip_address (int sock, ip_address *ip, int endpoint)
   if (ret < 0)
     return false;
 
+  memset(ip, 0, sizeof(ip_address));
   ip->family = sockaddr->sa_family;
   switch (sockaddr->sa_family)
     {
