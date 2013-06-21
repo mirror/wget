@@ -965,15 +965,16 @@ cmd_string (const char *com, const char *val, void *place)
 static bool
 cmd_string_uppercase (const char *com, const char *val, void *place)
 {
-  char *q;
-  bool ret = cmd_string (com, val, place);
-  q = *((char **) place);
-  if (!ret || q == NULL)
-    return false;
+  char *q, **pstring;
+  pstring = (char **)place;
+  xfree_null (*pstring);
 
-  for ( ;*q; *q++)
-    *q = c_toupper (*q);
+  *pstring = xmalloc (strlen (val) + 1);
 
+  for (q = *pstring; *val; val++, q++)
+    *q = c_toupper (*val);
+
+  *q = '\0';
   return true;
 }
 
