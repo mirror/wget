@@ -92,13 +92,13 @@ test x"${ENABLE_DEBUG}" = xyes && AC_DEFINE([ENABLE_DEBUG], 1,
    
 AC_ARG_ENABLE(threads,
 [  --disable-threads      disable support for parallel downloads using threads],
-ENABLE_THREADS=$enableval, ENABLE_THREADS=auto)
+ENABLE_THREADS=$enableval, ENABLE_THREADS=no)
 test x"${ENABLE_THREADS}" = xyes && AC_DEFINE([ENABLE_THREADS], 1,
    [Define if you want the concurrent download support compiled in.])
 
 AC_ARG_ENABLE(metalink,
 [  --disable-metalink      disable support for metalink file format],
-ENABLE_METALINK=$enableval, ENABLE_METALINK=auto)
+ENABLE_METALINK=$enableval, ENABLE_METALINK=no)
 test x"${ENABLE_METALINK}" = xyes && AC_DEFINE([ENABLE_METALINK], 1,
    [Define if you want the metalink file format support compiled in.])
 

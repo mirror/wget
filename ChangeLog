@@ -1,3 +1,7 @@
+2013-06-23  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* configure.ac: By default disable threads and metalink support.
+
 2013-05-17 Bykov Aleksey <gnfalex@rambler.ru>
 
 	* bootstrap: Add `mkostemp'
