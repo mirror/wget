@@ -1,3 +1,14 @@
+2013-06-17  Dave Reisner  <dreisner@archlinux.org> (tiny change)
+
+	* texi2pod.pl: Fix formatting error that causes build to fail with
+	Perl 5.18
+
+2013-06-17  Darshit Shah  <darnir@gmail.com>
+
+	* wget.texi (POST): Explain the new redirection rules.
+	* wget.texi (Other HTTP Methods): Same.
+	* wget.texi (body-data): Fix typo in description.
+
 2013-05-10  Darshit Shah <darnir@gmail.com>  (tiny change)
 
 	* wget.texi (No of tries): Fix typo to make it clear that --tries

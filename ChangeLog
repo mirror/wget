@@ -1,3 +1,7 @@
+2013-05-17 Bykov Aleksey <gnfalex@rambler.ru>
+
+	* bootstrap: Add `mkostemp'
+
 2012-10-07  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac: Check for patchconf.

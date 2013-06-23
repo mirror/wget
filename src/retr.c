@@ -700,23 +700,23 @@ calc_rate (wgint bytes, double secs, int *units)
 }
 
 
-#define SUSPEND_POST_DATA do {                  \
-  post_data_suspended = true;                   \
-  saved_post_data = opt.body_data;              \
-  saved_post_file_name = opt.body_file;         \
+#define SUSPEND_METHOD do {                     \
+  method_suspended = true;                      \
+  saved_body_data = opt.body_data;              \
+  saved_body_file_name = opt.body_file;         \
   saved_method = opt.method;                    \
   opt.body_data = NULL;                         \
   opt.body_file = NULL;                         \
   opt.method = NULL;                            \
 } while (0)
 
-#define RESTORE_POST_DATA do {                          \
-  if (post_data_suspended)                              \
+#define RESTORE_METHOD do {                             \
+  if (method_suspended)                                 \
     {                                                   \
-      opt.body_data = saved_post_data;                  \
-      opt.body_file = saved_post_file_name;             \
+      opt.body_data = saved_body_data;                  \
+      opt.body_file = saved_body_file_name;             \
       opt.method = saved_method;                        \
-      post_data_suspended = false;                      \
+      method_suspended = false;                         \
     }                                                   \
 } while (0)
 
@@ -744,10 +744,10 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
   char *local_file;
   int redirection_count = 0;
 
-  bool post_data_suspended = false;
-  char *saved_post_data = NULL;
+  bool method_suspended = false;
+  char *saved_body_data = NULL;
   char *saved_method = NULL;
-  char *saved_post_file_name = NULL;
+  char *saved_body_file_name = NULL;
 
   /* If dt is NULL, use local storage.  */
   if (!dt)
@@ -793,7 +793,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
                      proxy, error);
           xfree (url);
           xfree (error);
-          RESTORE_POST_DATA;
+          RESTORE_METHOD;
           result = PROXERR;
           goto bail;
         }
@@ -802,7 +802,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           logprintf (LOG_NOTQUIET, _("Error in proxy URL %s: Must be HTTP.\n"), proxy);
           url_free (proxy_url);
           xfree (url);
-          RESTORE_POST_DATA;
+          RESTORE_METHOD;
           result = PROXERR;
           goto bail;
         }
@@ -886,7 +886,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           xfree (url);
           xfree (mynewloc);
           xfree (error);
-          RESTORE_POST_DATA;
+          RESTORE_METHOD;
           goto bail;
         }
 
@@ -908,7 +908,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
             }
           xfree (url);
           xfree (mynewloc);
-          RESTORE_POST_DATA;
+          RESTORE_METHOD;
           result = WRONGCODE;
           goto bail;
         }
@@ -931,8 +931,8 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
 	 RFC2616 HTTP/1.1 introduces code 307 Temporary Redirect
 	 specifically to preserve the method of the request.
 	 */
-      if (result != NEWLOCATION_KEEP_POST && !post_data_suspended)
-        SUSPEND_POST_DATA;
+      if (result != NEWLOCATION_KEEP_POST && !method_suspended)
+        SUSPEND_METHOD;
 
       goto redirected;
     }
@@ -995,7 +995,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       xfree (url);
     }
 
-  RESTORE_POST_DATA;
+  RESTORE_METHOD;
 
 bail:
   if (register_status)

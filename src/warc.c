@@ -51,9 +51,15 @@ as that of the covered work.  */
 
 #ifndef WINDOWS
 #include <libgen.h>
+#else
+#include <fcntl.h>
 #endif
 
 #include "warc.h"
+
+#ifndef O_TEMPORARY
+#define O_TEMPORARY 0
+#endif
 
 extern char *version_string;
 
@@ -1147,12 +1153,15 @@ warc_tempfile (void)
   if (path_search (filename, 100, opt.warc_tempdir, "wget", true) == -1)
     return NULL;
 
-  int fd = mkstemp (filename);
+  int fd = mkostemp (filename, O_TEMPORARY);
   if (fd < 0)
     return NULL;
 
+#if !O_TEMPORARY
   if (unlink (filename) < 0)
     return NULL;
+#endif
+
 
   return fdopen (fd, "wb+");
 }
