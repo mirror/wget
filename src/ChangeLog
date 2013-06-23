@@ -1,3 +1,7 @@
+2013-06-23  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (gethttp): Lock access to `connect_to_host'.
+
 2013-06-03  Jochen Hein  <jochen@jochen.org> (tiny change)
 
 	* main.c (main): Remove double empty space from string.

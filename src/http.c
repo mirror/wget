@@ -2244,7 +2244,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
 
   if (sock < 0)
     {
+      PCONN_LOCK();
       sock = connect_to_host (conn->host, conn->port);
+      PCONN_UNLOCK();
       if (sock == E_HOST)
         {
           request_free (req);
