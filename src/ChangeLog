@@ -1,5 +1,8 @@
 2013-06-23  Giuseppe Scrivano  <gscrivano@gnu.org>
 
+	* http.c (PCONN_LOCK) [!ENABLE_THREADS]: Define.
+	(PCONN_UNLOCK) [!ENABLE_THREADS]: Likewise.
+
 	* http.c (gethttp): Lock access to `connect_to_host'.
 
 2013-06-03  Jochen Hein  <jochen@jochen.org> (tiny change)
