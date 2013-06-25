@@ -1,3 +1,8 @@
+2013-06-19 Ciprian Vieru <devel.php@gmail.com> (tiny change)
+
+        * html-url.c: Define TAG_TD, TAG_TH, TAG_VIDEO, TAG_AUDIO, TAG_SOURCE.
+	(tag_url_attributes, known_tags): Likewise.
+
 2013-06-22  Ángel González <keisial@gmail.com>
 
 	* init.c (cmd_string_uppercase): Rewrite function.

@@ -79,7 +79,10 @@ enum {
   TAG_SCRIPT,
   TAG_TABLE,
   TAG_TD,
-  TAG_TH
+  TAG_TH,
+  TAG_VIDEO,
+  TAG_AUDIO,
+  TAG_SOURCE
 };
 
 /* The list of known tags and functions used for handling them.  Most
@@ -110,7 +113,10 @@ static struct known_tag {
   { TAG_SCRIPT,  "script",      tag_find_urls },
   { TAG_TABLE,   "table",       tag_find_urls },
   { TAG_TD,      "td",          tag_find_urls },
-  { TAG_TH,      "th",          tag_find_urls }
+  { TAG_TH,      "th",          tag_find_urls },
+  { TAG_VIDEO,   "video",       tag_find_urls },
+  { TAG_AUDIO,   "audio",       tag_find_urls },
+  { TAG_SOURCE,  "source",      tag_find_urls }
 };
 
 /* tag_url_attributes documents which attributes of which tags contain
@@ -157,7 +163,12 @@ static struct {
   { TAG_SCRIPT,         "src",          ATTR_INLINE },
   { TAG_TABLE,          "background",   ATTR_INLINE },
   { TAG_TD,             "background",   ATTR_INLINE },
-  { TAG_TH,             "background",   ATTR_INLINE }
+  { TAG_TH,             "background",   ATTR_INLINE },
+  { TAG_VIDEO,          "src",          ATTR_INLINE },
+  { TAG_VIDEO,          "poster",       ATTR_INLINE },
+  { TAG_AUDIO,          "src",          ATTR_INLINE },
+  { TAG_AUDIO,          "poster",       ATTR_INLINE },
+  { TAG_SOURCE,         "src",          ATTR_INLINE }
 };
 
 /* The lists of interesting tags and attributes are built dynamically,
