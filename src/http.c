@@ -2778,8 +2778,7 @@ read_header:
     }
 
   /* Return if we have no intention of further downloading.  */
-  if ((!(*dt & RETROKF) && !opt.content_on_error) || head_only
-      || (opt.method && strcasecmp (opt.method, "get") != 0))
+  if ((!(*dt & RETROKF) && !opt.content_on_error) || head_only)
     {
       /* In case the caller cares to look...  */
       hs->len = 0;
