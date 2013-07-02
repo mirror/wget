@@ -1,3 +1,13 @@
+2013-06-26  Darshit Shah <darnir@gmail.com>
+
+	* http.c (gethttp): Reverse change by commit 90896 that prevented
+	downloading response body data to non-GET Request methods.
+
+2013-06-19 Ciprian Vieru <devel.php@gmail.com> (tiny change)
+
+        * html-url.c: Define TAG_TD, TAG_TH, TAG_VIDEO, TAG_AUDIO, TAG_SOURCE.
+	(tag_url_attributes, known_tags): Likewise.
+
 2013-06-23  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* http.c (PCONN_LOCK) [!ENABLE_THREADS]: Define.
