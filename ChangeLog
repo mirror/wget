@@ -1,3 +1,7 @@
+2013-07-02  Darshit Shah  <darnir@gmail.com>
+
+	* README.checkout: Add dependency on libmetalink.
+
 2013-06-23  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* configure.ac: By default disable threads and metalink support.

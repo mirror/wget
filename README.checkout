@@ -4,8 +4,8 @@ Compiling From Repository Sources
    does not contain automatically-generated files, even when these are
    normally present in the distribution tarballs. Therefore, to build GNU
    Wget from the sources in the repository, you'll need to have one or
-   more of the following (note that gettext, OpenSSL, libidn and libiconv
-   are not absolutely required):
+   more of the following (note that gettext, OpenSSL, libidn, libiconv
+   and libmetalink are not absolutely required):
 
      * [20]autoconf (currently, GNU Wget requires version 2.61). This is
        needed to generate the configure script from configure.in. This is
@@ -67,6 +67,8 @@ Compiling From Repository Sources
        present in the system libraries.
 
      * [34]git is used to fetch gnulib files trough the bootstrap.sh script.
+
+     * [44]libmetalink is required for compiling with Metalink support.
 
    For those who might be confused as to what to do once they check out
    the source code, considering configure and Makefile do not yet exist at
@@ -138,3 +140,4 @@ References
   41. http://moinmo.in/GPL
   42. http://validator.w3.org/check?uri=referer
   43. http://wget.addictivecode.org/WikiLicense
+  44. https://launchpad.net/libmetalink
