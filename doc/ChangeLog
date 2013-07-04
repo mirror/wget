@@ -1,3 +1,8 @@
+2013-07-04  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Download Options): Use '@item' instead of '@itemx'.
+	Reported by: Darshit Shah  <darnir@gmail.com>.
+
 2013-06-17  Dave Reisner  <dreisner@archlinux.org> (tiny change)
 
 	* texi2pod.pl: Fix formatting error that causes build to fail with

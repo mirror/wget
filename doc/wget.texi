@@ -574,7 +574,7 @@ infinite retrying.  The default is to retry 20 times, with the exception
 of fatal errors like ``connection refused'' or ``not found'' (404),
 which are not retried.
 
-@itemx --retries=@var{number}
+@item --retries=@var{number}
 Set number of retries for a file specified in a metalink file to @var{number}. 
 Specify 0 or @samp{inf} for no retrying in case of failed attempt.  The default 
 is to retry 1 time.
