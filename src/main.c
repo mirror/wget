@@ -714,6 +714,9 @@ Recursive download:\n"),
     N_("\
   -k,  --convert-links      make links in downloaded HTML or CSS point to\n\
                             local files.\n"),
+    N_("\
+  --backups=N   before writing file X, rotate up to N backup files.\n"),
+
 #ifdef __VMS
     N_("\
   -K,  --backup-converted   before converting file X, back up as X_orig.\n"),

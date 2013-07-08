@@ -630,6 +630,13 @@ Note that when @samp{-nc} is specified, files with the suffixes
 @samp{.html} or @samp{.htm} will be loaded from the local disk and
 parsed as if they had been retrieved from the Web.
 
+@cindex backing up files
+@item --backups=@var{backups}
+Before (over)writing a file, back up an existing file by adding a
+@samp{.1} suffix (@samp{_1} on VMS) to the file name.  Such backup
+files are rotated to @samp{.2}, @samp{.3}, and so on, up to
+@var{backups} (and lost beyond that).
+
 @cindex continue retrieval
 @cindex incomplete downloads
 @cindex resume download
@@ -2882,9 +2889,11 @@ enables it).
 Enable/disable saving pre-converted files with the suffix
 @samp{.orig}---the same as @samp{-K} (which enables it).
 
-@c @item backups = @var{number}
-@c #### Document me!
-@c
+@item backups = @var{number}
+Use up to @var{number} backups for a file.  Backups are rotated by
+adding an incremental counter that starts at @samp{1}.  The default is
+@samp{0}.
+
 @item base = @var{string}
 Consider relative @sc{url}s in input files (specified via the
 @samp{input} command or the @samp{--input-file}/@samp{-i} option,

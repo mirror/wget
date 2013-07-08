@@ -1,3 +1,9 @@
+2013-07-09  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* wget.texi (Download Options): Add documentation for --backups.
+	(Wgetrc Commands): Add documentation for backups.
+	Reported by: Tomas Hozza <thozza@redhat.com>.
+
 2013-07-11  Tomas Hozza  <thozza@redhat.com>
 
 	* wget.texi: Document --regex-type and --preserve-permissions.
