@@ -1,3 +1,7 @@
+2013-07-08  Steven M. Schweda <sms@antinode.info>
+
+	* retr.c (rotate_backups): Support for VMS files.
+
 2013-07-12  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* http.c (digest_authentication_encode): Set default value of

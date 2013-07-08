@@ -37,6 +37,9 @@ as that of the covered work.  */
 #include <errno.h>
 #include <string.h>
 #include <assert.h>
+#ifdef VMS
+# include <unixio.h>            /* For delete(). */
+#endif
 
 #include "exits.h"
 #include "utils.h"
@@ -1182,7 +1185,16 @@ free_urlpos (struct urlpos *l)
 void
 rotate_backups(const char *fname)
 {
-  int maxlen = strlen (fname) + 1 + numdigit (opt.backups) + 1;
+#ifdef __VMS
+# define SEP "_"
+# define AVS ";*"                       /* All-version suffix. */
+# define AVSL (sizeof (AVS) - 1)
+#else
+# define SEP "."
+# define AVSL 0
+#endif
+
+  int maxlen = strlen (fname) + sizeof (SEP) + numdigit (opt.backups) + AVSL;
   char *from = (char *)alloca (maxlen);
   char *to = (char *)alloca (maxlen);
   struct_stat sb;
@@ -1194,12 +1206,24 @@ rotate_backups(const char *fname)
 
   for (i = opt.backups; i > 1; i--)
     {
-      sprintf (from, "%s.%d", fname, i - 1);
-      sprintf (to, "%s.%d", fname, i);
+#ifdef VMS
+      /* Delete (all versions of) any existing max-suffix file, to avoid
+       * creating multiple versions of it.  (On VMS, rename() will
+       * create a new version of an existing destination file, not
+       * destroy/overwrite it.)
+       */
+      if (i == opt.backups)
+        {
+          sprintf (to, "%s%s%d%s", fname, SEP, i, AVS);
+          delete (to);
+        }
+#endif
+      sprintf (to, "%s%s%d", fname, SEP, i);
+      sprintf (from, "%s%s%d", fname, SEP, i - 1);
       rename (from, to);
     }
 
-  sprintf (to, "%s.%d", fname, 1);
+  sprintf (to, "%s%s%d", fname, SEP, 1);
   rename(fname, to);
 }
 
