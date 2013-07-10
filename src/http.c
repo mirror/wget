@@ -1641,12 +1641,6 @@ read_response_body (struct http_stat *hs, int sock, FILE *fp, wgint contlen,
 } while (0)
 #endif /* def __VMS [else] */
 
-/* The flags that allow clobbering the file (opening with "wb").
-   Defined here to avoid repetition later.  #### This will require
-   rework.  */
-#define ALLOW_CLOBBER (opt.noclobber || opt.always_rest || opt.timestamping \
-                       || opt.dirstruct || opt.output_document)
-
 /* Retrieve a document through HTTP protocol.  It recognizes status
    code, and correctly handles redirections.  It closes the network
    socket.  If it receives an error from the functions below it, it

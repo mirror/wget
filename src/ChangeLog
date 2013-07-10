@@ -1,3 +1,11 @@
+2013-07-10  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (read_response_body) [ALLOW_CLOBBER]: Move definition to..
+	* options.h (struct options): Make `backups' an int.
+	* url.h [ALLOW_CLOBBER]: .. Here.  Do not clobber when backups are used.
+	* url.c (url_file_name): Use the ALLOW_CLOBBER macro instead of
+	repeating the code.
+
 2013-07-08  Steven M. Schweda <sms@antinode.info>
 
 	* retr.c (rotate_backups): Support for VMS files.

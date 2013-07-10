@@ -1669,11 +1669,12 @@ url_file_name (const struct url *u, char *replaced_filename)
      2) Retrieval with regetting.
      3) Timestamping is used.
      4) Hierarchy is built.
+     5) Backups are specified.
 
      The exception is the case when file does exist and is a
      directory (see `mkalldirs' for explanation).  */
 
-  if ((opt.noclobber || opt.always_rest || opt.timestamping || opt.dirstruct)
+  if (ALLOW_CLOBBER
       && !(file_exists_p (fname) && !file_non_directory_p (fname)))
     {
       unique = fname;

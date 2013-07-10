@@ -166,7 +166,7 @@ struct options
   bool timestamping;		/* Whether to use time-stamping. */
 
   bool backup_converted;	/* Do we save pre-converted files as *.orig? */
-  bool backups;			/* Are numeric backups made? */
+  int backups;			/* Are numeric backups made? */
 
   char *useragent;		/* User-Agent string, which can be set
 				   to something other than Wget. */
