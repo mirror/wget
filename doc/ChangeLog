@@ -1,3 +1,7 @@
+2013-07-11  Tomas Hozza  <thozza@redhat.com>
+
+	* wget.texi: Document --regex-type and --preserve-permissions.
+
 2013-07-04  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi (Download Options): Use '@item' instead of '@itemx'.

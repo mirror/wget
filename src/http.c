@@ -2243,6 +2243,10 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                     exec_name, quote (relevant->host));
           return HOSTERR;
         }
+      else if (sock != -1)
+        {
+          sock = -1;
+        }
     }
 
   if (sock < 0)
