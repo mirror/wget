@@ -251,24 +251,50 @@ ssl_init (void)
   return false;
 }
 
-struct openssl_transport_context {
+struct openssl_transport_context
+{
   SSL *conn;                    /* SSL connection handle */
   char *last_error;             /* last error printed with openssl_errstr */
 };
 
+struct openssl_read_args
+{
+  int fd;
+  struct openssl_transport_context *ctx;
+  char *buf;
+  int bufsize;
+  int retval;
+};
+
+static void openssl_read_callback(void *arg)
+{
+  struct openssl_read_args *args = (struct openssl_read_args *) arg;
+  struct openssl_transport_context *ctx = args->ctx;
+  SSL *conn = ctx->conn;
+  char *buf = args->buf;
+  int bufsize = args->bufsize;
+  int ret;
+
+  do
+    ret = SSL_read (conn, buf, bufsize);
+  while (ret == -1 && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
+         && errno == EINTR);
+  args->retval = ret;
+}
+
 static int
 openssl_read (int fd, char *buf, int bufsize, void *arg)
 {
-  int ret;
-  struct openssl_transport_context *ctx = arg;
-  SSL *conn = ctx->conn;
-  do
-    ret = SSL_read (conn, buf, bufsize);
-  while (ret == -1
-         && SSL_get_error (conn, ret) == SSL_ERROR_SYSCALL
-         && errno == EINTR);
+  struct openssl_read_args args;
+  args.fd = fd;
+  args.buf = buf;
+  args.bufsize = bufsize;
+  args.ctx = (struct openssl_transport_context*) arg;
 
-  return ret;
+  if (run_with_timeout(opt.read_timeout, openssl_read_callback, &args)) {
+    return -1;
+  }
+  return args.retval;
 }
 
 static int
@@ -386,6 +412,19 @@ static struct transport_implementation openssl_transport = {
   openssl_peek, openssl_errstr, openssl_close
 };
 
+struct scwt_context
+{
+  SSL *ssl;
+  int result;
+};
+
+static void
+ssl_connect_with_timeout_callback(void *arg)
+{
+  struct scwt_context *ctx = (struct scwt_context *)arg;
+  ctx->result = SSL_connect(ctx->ssl);
+}
+
 /* Perform the SSL handshake on file descriptor FD, which is assumed
    to be connected to an SSL server.  The SSL handle provided by
    OpenSSL is registered with the file descriptor FD using
@@ -398,6 +437,7 @@ bool
 ssl_connect_wget (int fd, const char *hostname)
 {
   SSL *conn;
+  struct scwt_context scwt_ctx;
   struct openssl_transport_context *ctx;
 
   DEBUGP (("Initiating SSL handshake.\n"));
@@ -425,7 +465,14 @@ ssl_connect_wget (int fd, const char *hostname)
   if (!SSL_set_fd (conn, FD_TO_SOCKET (fd)))
     goto error;
   SSL_set_connect_state (conn);
-  if (SSL_connect (conn) <= 0 || conn->state != SSL_ST_OK)
+
+  scwt_ctx.ssl = conn;
+  if (run_with_timeout(opt.read_timeout, ssl_connect_with_timeout_callback,
+                       &scwt_ctx)) {
+    DEBUGP (("SSL handshake timed out.\n"));
+    goto timeout;
+  }
+  if (scwt_ctx.result <= 0 || conn->state != SSL_ST_OK)
     goto error;
 
   ctx = xnew0 (struct openssl_transport_context);
@@ -441,6 +488,7 @@ ssl_connect_wget (int fd, const char *hostname)
  error:
   DEBUGP (("SSL handshake failed.\n"));
   print_errors ();
+ timeout:
   if (conn)
     SSL_free (conn);
   return false;
