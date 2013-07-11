@@ -1,9 +1,14 @@
+2013-07-11  Tomas Hozza  <thozza@redhat.com>
+
+	* ftp.c (ftp_loop): Use ftp_retrieve_glob() also in case
+	--preserve-permissions was specified.
+
 2013-03-20  Tomas Hozza  <thozza@redhat.com>
 
 	* http.c (gethttp): Set "sock" to -1 if it's not and we have no
 	persistent connection
 
-2013-04-26  Tomas Hozza  <thozza@redhat.com>
+2013-04-26  Tomas Hozza  <thozza@redhat.com> (tiny change)
 
 	* log.c (redirect_output): Use DEFAULT_LOGFILE in diagnostic message
 	when `logfile' is NULL.

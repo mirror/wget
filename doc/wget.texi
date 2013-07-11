@@ -1816,6 +1816,10 @@ in some rare firewall configurations, active FTP actually works when
 passive FTP doesn't.  If you suspect this to be the case, use this
 option, or set @code{passive_ftp=off} in your init file.
 
+@cindex file permissions
+@item --preserve-permissions
+Preserve remote file permissions instead of permissions set by umask.
+
 @cindex symbolic links, retrieving
 @item --retr-symlinks
 Usually, when retrieving @sc{ftp} directories recursively and a symbolic
@@ -2056,6 +2060,11 @@ it will be treated as a pattern, rather than a suffix.
 @item --accept-regex @var{urlregex}
 @itemx --reject-regex @var{urlregex}
 Specify a regular expression to accept or reject the complete URL.
+
+@item --regex-type @var{regextype}
+Specify the regular expression type.  Possible types are @samp{posix} or
+@samp{pcre}.  Note that to be able to use @samp{pcre} type, wget has to be
+compiled with libpcre support.
 
 @item -D @var{domain-list}
 @itemx --domains=@var{domain-list}

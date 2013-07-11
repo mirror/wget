@@ -2285,11 +2285,11 @@ ftp_loop (struct url *u, char **local_file, int *dt, struct url *proxy,
             file_part = u->path;
           ispattern = has_wildcards_p (file_part);
         }
-      if (ispattern || recursive || opt.timestamping)
+      if (ispattern || recursive || opt.timestamping || opt.preserve_perm)
         {
           /* ftp_retrieve_glob is a catch-all function that gets called
-             if we need globbing, time-stamping or recursion.  Its
-             third argument is just what we really need.  */
+             if we need globbing, time-stamping, recursion or preserve
+             permissions.  Its third argument is just what we really need.  */
           res = ftp_retrieve_glob (u, &con,
                                    ispattern ? GLOB_GLOBALL : GLOB_GETONE);
         }
