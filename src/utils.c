@@ -2008,6 +2008,16 @@ run_with_timeout (double timeout, void (*fun) (void *), void *arg)
       return false;
     }
 
+#ifdef ENABLE_THREADS
+  if (opt.jobs > 1)
+    {
+      /* XXX: FIXME.  Support this functionality when there are
+         multiple threads.  Do not translate the string.  */
+      logputs (LOG_NOTQUIET, "\ntimeouts not (yet) supported with threads.\n");
+      abort ();
+    }
+#endif
+
   signal (SIGALRM, abort_run_with_timeout);
   if (SETJMP (run_with_timeout_env) != 0)
     {

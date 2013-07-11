@@ -1,3 +1,7 @@
+2013-07-12  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* utils.c (run_with_timeout): abort when there are more threads.
+
 2013-07-11  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
         * gnutls.c (ssl_connect_wget): respect connect timeout.
