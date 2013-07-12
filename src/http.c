@@ -3697,8 +3697,7 @@ digest_authentication_encode (const char *au, const char *user,
   param_token name, value;
 
 
-  realm = opaque = nonce = qop = NULL;
-  algorithm = "MD5";
+  realm = opaque = nonce = algorithm = qop = NULL;
 
   au += 6;                      /* skip over `Digest' */
   while (extract_param (&au, &name, &value, ','))
@@ -3755,7 +3754,7 @@ digest_authentication_encode (const char *au, const char *user,
 
     dump_hash (a1buf, hash);
 
-    if (! strcmp (algorithm, "MD5-sess"))
+    if (algorithm && !strcmp (algorithm, "MD5-sess"))
       {
         /* A1BUF = H( H(user ":" realm ":" password) ":" nonce ":" cnonce ) */
         snprintf (cnonce, sizeof (cnonce), "%08x", random_number(INT_MAX));
@@ -3855,6 +3854,13 @@ digest_authentication_encode (const char *au, const char *user,
         snprintf(res + res_len, res_size - res_len, ", algorithm=\"%s\"", algorithm);
       }
   }
+
+  xfree_null (realm);
+  xfree_null (opaque);
+  xfree_null (nonce);
+  xfree_null (qop);
+  xfree_null (algorithm);
+
   return res;
 }
 #endif /* ENABLE_DIGEST */

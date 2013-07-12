@@ -1,3 +1,10 @@
+2013-07-13  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (digest_authentication_encode): Fix a crash when the algorithm
+	is not specified in the server response.  Free dynamic memory used by
+	the function when the function exits.
+	Reported by: Tim Ruehsen  <tim.ruehsen@gmx.de>.
+
 2013-07-13  Steven M. Schweda <sms@antinode.info>
 
 	* warc.c (warc_tempfile): Fix a portability issue on VMS.
