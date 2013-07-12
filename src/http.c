@@ -3703,7 +3703,8 @@ digest_authentication_encode (const char *au, const char *user,
   param_token name, value;
 
 
-  realm = opaque = nonce = qop = algorithm = NULL;
+  realm = opaque = nonce = qop = NULL;
+  algorithm = "MD5";
 
   au += 6;                      /* skip over `Digest' */
   while (extract_param (&au, &name, &value, ','))
@@ -3785,7 +3786,7 @@ digest_authentication_encode (const char *au, const char *user,
     md5_finish_ctx (&ctx, hash);
     dump_hash (a2buf, hash);
 
-    if (!strcmp(qop, "auth") || !strcmp (qop, "auth-int"))
+    if (qop && (!strcmp(qop, "auth") || !strcmp (qop, "auth-int")))
       {
         /* RFC 2617 Digest Access Authentication */
         /* generate random hex string */
@@ -3835,7 +3836,7 @@ digest_authentication_encode (const char *au, const char *user,
 
     res = xmalloc (res_size);
 
-    if (!strcmp(qop,"auth"))
+    if (qop && !strcmp (qop, "auth"))
       {
         res_len = snprintf (res, res_size, "Digest "\
                 "username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\""\

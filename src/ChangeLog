@@ -1,3 +1,8 @@
+2013-07-12  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (digest_authentication_encode): Set default value of
+	`algorithm' to "MD5".  Check if `qop' is not-NULL before access it.
+
 2013-07-11  Karsten Hopp  <karsten@redhat.com>
 
 	* openssl.c (struct openssl_read_args, struct scwt_context): New struct.
