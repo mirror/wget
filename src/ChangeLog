@@ -1,3 +1,7 @@
+2013-07-13  Steven M. Schweda <sms@antinode.info>
+
+	* warc.c (warc_tempfile): Fix a portability issue on VMS.
+
 2013-07-10  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* http.c (read_response_body) [ALLOW_CLOBBER]: Move definition to..
