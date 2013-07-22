@@ -1,3 +1,22 @@
+2013-07-16  Darshit Shah  <darnir@gmail.com>
+
+	* wget.h (err_t): Added new errors, ATTRMISSING and UNKNOWNATTR to
+	handle missing attributes and Unknown attribute values respectively in
+	HTTP Headers.
+	* exits.c (get_status_for_err): ATTRMISSING is a Protocol Error while
+	UNKNOWNATTR is a general error, presumably because of a feature that
+	is not yet implemented.
+	* http.c (gethttp): Call create_authorization_line () separately. In
+	case the auth_err flag has been set with an error, handle it and exit.
+	* http.c (create_authorization_line): Pass a pointer, auth_err to set
+	the flag for different kinds of errors encountered.
+	* http.c (http_loop): Handle the errors raised by the authentication
+	handlers.
+	* http.c (digest_authentication_encode): Pass pointer auth_err to set
+	the error flags.
+	Set qop to NULL in case the value of the qop / algorithm attribute is
+	unknown to Wget. Set an	appropriate error too.
+
 2013-07-13  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* http.c (digest_authentication_encode): Fix a crash when the algorithm

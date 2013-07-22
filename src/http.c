@@ -74,7 +74,7 @@ extern char *version_string;
 struct http_stat;
 static char *create_authorization_line (const char *, const char *,
                                         const char *, const char *,
-                                        const char *, bool *);
+                                        const char *, bool *, uerr_t *);
 static char *basic_authentication_encode (const char *, const char *);
 static bool known_authentication_scheme_p (const char *, const char *);
 static void ensure_extension (struct http_stat *, const char *, int *);
@@ -2350,6 +2350,7 @@ read_header:
         }
 
       pconn.authorized = false;
+      uerr_t auth_err = RETROK;
       if (!auth_finished && (user && passwd))
         {
           /* IIS sends multiple copies of WWW-Authenticate, one with
@@ -2377,28 +2378,44 @@ read_header:
           else if (!basic_auth_finished
                    || !BEGINS_WITH (www_authenticate, "Basic"))
             {
-              char *pth;
-              pth = url_full_path (u);
-              request_set_header (req, "Authorization",
-                                  create_authorization_line (www_authenticate,
-                                                             user, passwd,
-                                                             request_method (req),
-                                                             pth,
-                                                             &auth_finished),
-                                  rel_value);
-              if (BEGINS_WITH (www_authenticate, "NTLM"))
-                ntlm_seen = true;
-              else if (!u->user && BEGINS_WITH (www_authenticate, "Basic"))
+              char *pth = url_full_path (u);
+              const char *value;
+              uerr_t *auth_stat;
+              auth_stat = xmalloc (sizeof (uerr_t));
+              *auth_stat = RETROK;
+
+              value =  create_authorization_line (www_authenticate,
+                                                  user, passwd,
+                                                  request_method (req),
+                                                  pth,
+                                                  &auth_finished,
+                                                  auth_stat);
+
+              auth_err = *auth_stat;
+              if (auth_err == RETROK)
                 {
-                  /* Need to register this host as using basic auth,
-                   * so we automatically send creds next time. */
-                  register_basic_auth_host (u->host);
+                  request_set_header (req, "Authorization", value, rel_value);
+
+                  if (BEGINS_WITH (www_authenticate, "NTLM"))
+                    ntlm_seen = true;
+                  else if (!u->user && BEGINS_WITH (www_authenticate, "Basic"))
+                    {
+                      /* Need to register this host as using basic auth,
+                       * so we automatically send creds next time. */
+                      register_basic_auth_host (u->host);
+                    }
+
+                  xfree (pth);
+                  xfree_null (message);
+                  resp_free (resp);
+                  xfree (head);
+                  xfree (auth_stat);
+                  goto retry_with_auth;
                 }
-              xfree (pth);
-              xfree_null (message);
-              resp_free (resp);
-              xfree (head);
-              goto retry_with_auth;
+              else
+                {
+                  /* Creating the Authorization header went wrong */
+                }
             }
           else
             {
@@ -2406,12 +2423,14 @@ read_header:
                * give up. */
             }
         }
-      logputs (LOG_NOTQUIET, _("Authorization failed.\n"));
       request_free (req);
       xfree_null (message);
       resp_free (resp);
       xfree (head);
-      return AUTHFAILED;
+      if (auth_err == RETROK)
+        return AUTHFAILED;
+      else
+        return auth_err;
     }
   else /* statcode != HTTP_STATUS_UNAUTHORIZED */
     {
@@ -3133,10 +3152,21 @@ Spider mode enabled. Check if remote file exists.\n"));
           logputs (LOG_VERBOSE, "\n");
           logprintf (LOG_NOTQUIET, _("Cannot write to %s (%s).\n"),
                      quote (hstat.local_file), strerror (errno));
-        case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case AUTHFAILED:
-        case SSLINITFAILED: case CONTNOTSUPPORTED: case VERIFCERTERR:
-        case FILEBADFILE:
+        case HOSTERR: case CONIMPOSSIBLE: case PROXERR: case SSLINITFAILED:
+        case CONTNOTSUPPORTED: case VERIFCERTERR: case FILEBADFILE:
+        case UNKNOWNATTR:
           /* Fatal errors just return from the function.  */
+          ret = err;
+          goto exit;
+        case ATTRMISSING:
+          /* A missing attribute in a Header is a fatal Protocol error. */
+          logputs (LOG_VERBOSE, "\n");
+          logprintf (LOG_NOTQUIET, _("Required attribute missing from Header received.\n"));
+          ret = err;
+          goto exit;
+        case AUTHFAILED:
+          logputs (LOG_VERBOSE, "\n");
+          logprintf (LOG_NOTQUIET, _("Username/Password Authentication Failed.\n"));
           ret = err;
           goto exit;
         case WARC_ERR:
@@ -3677,7 +3707,7 @@ dump_hash (char *buf, const unsigned char *hash)
 static char *
 digest_authentication_encode (const char *au, const char *user,
                               const char *passwd, const char *method,
-                              const char *path)
+                              const char *path, uerr_t *auth_err)
 {
   static char *realm, *opaque, *nonce, *qop, *algorithm;
   static struct {
@@ -3717,22 +3747,27 @@ digest_authentication_encode (const char *au, const char *user,
   if (qop != NULL && strcmp(qop,"auth"))
     {
       logprintf (LOG_NOTQUIET, _("Unsupported quality of protection '%s'.\n"), qop);
-      user = NULL; /* force freeing mem and return */
+      xfree_null (qop); /* force freeing mem and return */
+      qop = NULL;
     }
-
-  if (algorithm != NULL && strcmp (algorithm,"MD5") && strcmp (algorithm,"MD5-sess"))
+  else if (algorithm != NULL && strcmp (algorithm,"MD5") && strcmp (algorithm,"MD5-sess"))
     {
       logprintf (LOG_NOTQUIET, _("Unsupported algorithm '%s'.\n"), algorithm);
-      user = NULL; /* force freeing mem and return */
+      xfree_null (qop); /* force freeing mem and return */
+      qop = NULL;
     }
 
-  if (!realm || !nonce || !user || !passwd || !path || !method)
+  if (!realm || !nonce || !user || !passwd || !path || !method || !qop)
     {
       xfree_null (realm);
       xfree_null (opaque);
       xfree_null (nonce);
       xfree_null (qop);
       xfree_null (algorithm);
+      if (!qop)
+        *auth_err = UNKNOWNATTR;
+      else
+        *auth_err = ATTRMISSING;
       return NULL;
     }
 
@@ -3902,7 +3937,7 @@ known_authentication_scheme_p (const char *hdrbeg, const char *hdrend)
 static char *
 create_authorization_line (const char *au, const char *user,
                            const char *passwd, const char *method,
-                           const char *path, bool *finished)
+                           const char *path, bool *finished, uerr_t *auth_err)
 {
   /* We are called only with known schemes, so we can dispatch on the
      first letter. */
@@ -3914,7 +3949,7 @@ create_authorization_line (const char *au, const char *user,
 #ifdef ENABLE_DIGEST
     case 'D':                   /* Digest */
       *finished = true;
-      return digest_authentication_encode (au, user, passwd, method, path);
+      return digest_authentication_encode (au, user, passwd, method, path, auth_err);
 #endif
 #ifdef ENABLE_NTLM
     case 'N':                   /* NTLM */
