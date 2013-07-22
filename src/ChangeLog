@@ -1,8 +1,13 @@
-2013-07-13  Giuseppe Scrivano  <gscrivano@gnu.org>
+2013-07-13  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* http.c (digest_authentication_encode): Fix a crash when the algorithm
 	is not specified in the server response.  Free dynamic memory used by
 	the function when the function exits.
+	* http-ntlm.c [HAVE_NETTLE]: Include <nettle/md4.h> and <nettle/des.h>.
+	(setup_des_key) [HAVE_NETTLE]: New function to deal with
+	libnettle.
+	(calc_resp) [HAVE_NETTLE]: Add support for libnettle.
+	(mkhash) [HAVE_NETTLE]: Likewise.
 	Reported by: Tim Ruehsen  <tim.ruehsen@gmx.de>.
 
 2013-07-13  Steven M. Schweda <sms@antinode.info>

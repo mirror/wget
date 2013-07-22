@@ -42,27 +42,33 @@ as that of the covered work.  */
 #include <string.h>
 #include <stdlib.h>
 
-#include <openssl/des.h>
-#include <openssl/md4.h>
-#include <openssl/opensslv.h>
-
 #include "utils.h"
 #include "http-ntlm.h"
 
-#if OPENSSL_VERSION_NUMBER < 0x00907001L
-#define DES_key_schedule des_key_schedule
-#define DES_cblock des_cblock
-#define DES_set_odd_parity des_set_odd_parity
-#define DES_set_key des_set_key
-#define DES_ecb_encrypt des_ecb_encrypt
+#ifdef HAVE_NETTLE
+# include <nettle/md4.h>
+# include <nettle/des.h>
+#else
+# include <openssl/des.h>
+# include <openssl/md4.h>
+# include <openssl/opensslv.h>
+
+# if OPENSSL_VERSION_NUMBER < 0x00907001L
+#  define DES_key_schedule des_key_schedule
+#  define DES_cblock des_cblock
+#  define DES_set_odd_parity des_set_odd_parity
+#  define DES_set_key des_set_key
+#  define DES_ecb_encrypt des_ecb_encrypt
 
 /* This is how things were done in the old days */
-#define DESKEY(x) x
-#define DESKEYARG(x) x
-#else
+#  define DESKEY(x) x
+#  define DESKEYARG(x) x
+# else
 /* Modern version */
-#define DESKEYARG(x) *x
-#define DESKEY(x) &x
+#  define DESKEYARG(x) *x
+#  define DESKEY(x) &x
+# endif
+
 #endif
 
 /* Define this to make the type-3 message include the NT response message */
@@ -176,6 +182,25 @@ ntlm_input (struct ntlmdata *ntlm, const char *header)
  * Turns a 56 bit key into the 64 bit, odd parity key and sets the key.  The
  * key schedule ks is also set.
  */
+#ifdef HAVE_NETTLE
+static void
+setup_des_key(unsigned char *key_56,
+              struct des_ctx *des)
+{
+  unsigned char key[8];
+
+  key[0] = key_56[0];
+  key[1] = ((key_56[0] << 7) & 0xFF) | (key_56[1] >> 1);
+  key[2] = ((key_56[1] << 6) & 0xFF) | (key_56[2] >> 2);
+  key[3] = ((key_56[2] << 5) & 0xFF) | (key_56[3] >> 3);
+  key[4] = ((key_56[3] << 4) & 0xFF) | (key_56[4] >> 4);
+  key[5] = ((key_56[4] << 3) & 0xFF) | (key_56[5] >> 5);
+  key[6] = ((key_56[5] << 2) & 0xFF) | (key_56[6] >> 6);
+  key[7] =  (key_56[6] << 1) & 0xFF;
+
+  nettle_des_set_key(des, key);
+}
+#else
 static void
 setup_des_key(unsigned char *key_56,
               DES_key_schedule DESKEYARG(ks))
@@ -194,6 +219,7 @@ setup_des_key(unsigned char *key_56,
   DES_set_odd_parity(&key);
   DES_set_key(&key, ks);
 }
+#endif
 
  /*
   * takes a 21 byte array and treats it as 3 56-bit DES keys. The
@@ -203,6 +229,18 @@ setup_des_key(unsigned char *key_56,
 static void
 calc_resp(unsigned char *keys, unsigned char *plaintext, unsigned char *results)
 {
+#ifdef HAVE_NETTLE
+  struct des_ctx des;
+
+  setup_des_key(keys, &des);
+  nettle_des_encrypt(&des, 8, results, plaintext);
+
+  setup_des_key(keys + 7, &des);
+  nettle_des_encrypt(&des, 8, results + 8, plaintext);
+
+  setup_des_key(keys + 14, &des);
+  nettle_des_encrypt(&des, 8, results + 16, plaintext);
+#else
   DES_key_schedule ks;
 
   setup_des_key(keys, DESKEY(ks));
@@ -216,6 +254,7 @@ calc_resp(unsigned char *keys, unsigned char *plaintext, unsigned char *results)
   setup_des_key(keys+14, DESKEY(ks));
   DES_ecb_encrypt((DES_cblock*) plaintext, (DES_cblock*) (results+16),
                   DESKEY(ks), DES_ENCRYPT);
+#endif
 }
 
 /*
@@ -255,6 +294,15 @@ mkhash(const char *password,
 
   {
     /* create LanManager hashed password */
+#ifdef HAVE_NETTLE
+    struct des_ctx des;
+
+    setup_des_key(pw, &des);
+    nettle_des_encrypt(&des, 8, lmbuffer, magic);
+
+    setup_des_key(pw + 7, &des);
+    nettle_des_encrypt(&des, 8, lmbuffer + 8, magic);
+#else
     DES_key_schedule ks;
 
     setup_des_key(pw, DESKEY(ks));
@@ -264,6 +312,7 @@ mkhash(const char *password,
     setup_des_key(pw+7, DESKEY(ks));
     DES_ecb_encrypt((DES_cblock *)magic, (DES_cblock *)(lmbuffer+8),
                     DESKEY(ks), DES_ENCRYPT);
+#endif
 
     memset(lmbuffer+16, 0, 5);
   }
@@ -272,8 +321,11 @@ mkhash(const char *password,
 
 #ifdef USE_NTRESPONSES
   {
-    /* create NT hashed password */
+#ifdef HAVE_NETTLE
+    struct md4_ctx MD4;
+#else
     MD4_CTX MD4;
+#endif
 
     len = strlen(password);
 
@@ -282,9 +334,16 @@ mkhash(const char *password,
       pw[2*i+1] = 0;
     }
 
+#ifdef HAVE_NETTLE
+    nettle_md4_init(&MD4);
+    nettle_md4_update(&MD4, 2*len, pw);
+    nettle_md4_digest(&MD4, MD4_DIGEST_SIZE, ntbuffer);
+#else
+    /* create NT hashed password */
     MD4_Init(&MD4);
     MD4_Update(&MD4, pw, 2*len);
     MD4_Final(ntbuffer, &MD4);
+#endif
 
     memset(ntbuffer+16, 0, 5);
   }
