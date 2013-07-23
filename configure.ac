@@ -340,7 +340,6 @@ then
   fi
 else
   AC_CHECK_LIB(nettle, nettle_md4_init, [HAVE_NETTLE=yes], [HAVE_NETTLE=no; AC_MSG_WARN(*** libnettle was not found. You will not be able to use NTLM)])
-  AM_CONDITIONAL([HAVE_NETTLE], [test "x$HAVE_NETTLE" = "xyes"])
 
   if test x"$HAVE_NETTLE" = xyes
   then

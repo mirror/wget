@@ -1,3 +1,12 @@
+2013-07-23  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* configure.ac: Remove AM_CONDITIONAL HAVE_NETTLE.
+	Reported by: Darshit Shah  <darnir@gmail.com>.
+
+2013-07-13  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* configure.ac: check for libnettle when GNU TLS is used.
+
 2013-05-17 Bykov Aleksey <gnfalex@rambler.ru>
 
 	* bootstrap: Add `mkostemp'
