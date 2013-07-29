@@ -351,11 +351,26 @@ then
     AC_LIBOBJ([http-ntlm])
   fi
 else
-  dnl If SSL is unavailable and the user explicitly requested NTLM,
-  dnl abort.
-  if test x"$ENABLE_NTLM" = xyes
+  AC_CHECK_LIB(nettle, nettle_md4_init, [HAVE_NETTLE=yes], [HAVE_NETTLE=no; AC_MSG_WARN(*** libnettle was not found. You will not be able to use NTLM)])
+
+  if test x"$HAVE_NETTLE" = xyes
   then
-    AC_MSG_ERROR([NTLM authorization requested and OpenSSL not found; aborting])
+    AC_SUBST(NETTLE_LIBS, "-lnettle")
+    AC_DEFINE([HAVE_NETTLE], [1], [Use libnettle])
+    if test x"$ENABLE_NTLM" != xno
+    then
+      AC_DEFINE([ENABLE_NTLM], 1,
+       [Define if you want the NTLM authorization support compiled in.])
+      AC_LIBOBJ([http-ntlm])
+      LIBS="$NETTLE_LIBS $LIBS"
+    fi
+  else
+    dnl If SSL is unavailable and the user explicitly requested NTLM,
+    dnl abort.
+    if test x"$ENABLE_NTLM" = xyes
+    then
+      AC_MSG_ERROR([NTLM authorization requested and SSL not enabled; aborting])
+    fi
   fi
 fi
 

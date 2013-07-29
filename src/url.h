@@ -47,6 +47,12 @@ as that of the covered work.  */
  * file descriptor. */
 #define CHOMP_BUFFER 19
 
+/* The flags that allow clobbering the file (opening with "wb").
+   Defined here to avoid repetition later.  #### This will require
+   rework.  */
+#define ALLOW_CLOBBER (opt.noclobber || opt.always_rest || opt.timestamping \
+                  || opt.dirstruct || opt.output_document || opt.backups > 0)
+
 /* Specifies how, or whether, user auth information should be included
  * in URLs regenerated from URL parse structures. */
 enum url_auth_mode {

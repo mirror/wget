@@ -738,8 +738,14 @@ warc_start_new_file (bool meta)
   char *new_filename = malloc (base_filename_length + 1 + 5 + 8 + 1);
   warc_current_filename = new_filename;
 
+#ifdef __VMS
+# define WARC_GZ "warc-gz"
+#else /* def __VMS */
+# define WARC_GZ "warc.gz"
+#endif /* def __VMS [else] */
+
 #ifdef HAVE_LIBZ
-  const char *extension = (opt.warc_compression_enabled ? "warc.gz" : "warc");
+  const char *extension = (opt.warc_compression_enabled ? WARC_GZ : "warc");
 #else
   const char *extension = "warc";
 #endif
@@ -1153,6 +1159,21 @@ warc_tempfile (void)
   if (path_search (filename, 100, opt.warc_tempdir, "wget", true) == -1)
     return NULL;
 
+#ifdef __VMS
+  /* 2013-07-12 SMS.
+   * mkostemp()+unlink()+fdopen() scheme causes trouble on VMS, so use
+   * mktemp() to uniquify the (VMS-style) name, and then use a normal
+   * fopen() with a "create temp file marked for delete" option.
+   */
+  {
+    char *tfn;
+
+    tfn = mktemp (filename);            /* Get unique name from template. */
+    if (tfn == NULL)
+      return NULL;
+    return fopen (tfn, "w+", "fop=tmd");    /* Create auto-delete temp file. */
+  }
+#else /* def __VMS */
   int fd = mkostemp (filename, O_TEMPORARY);
   if (fd < 0)
     return NULL;
@@ -1162,8 +1183,8 @@ warc_tempfile (void)
     return NULL;
 #endif
 
-
   return fdopen (fd, "wb+");
+#endif /* def __VMS [else] */
 }
 
 

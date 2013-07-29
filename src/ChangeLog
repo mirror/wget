@@ -2,6 +2,64 @@
 
 	* utils.c (run_with_timeout): abort when there are more threads.
 
+2013-07-16  Darshit Shah  <darnir@gmail.com>
+
+	* wget.h (err_t): Added new errors, ATTRMISSING and UNKNOWNATTR to
+	handle missing attributes and Unknown attribute values respectively in
+	HTTP Headers.
+	* exits.c (get_status_for_err): ATTRMISSING is a Protocol Error while
+	UNKNOWNATTR is a general error, presumably because of a feature that
+	is not yet implemented.
+	* http.c (gethttp): Call create_authorization_line () separately. In
+	case the auth_err flag has been set with an error, handle it and exit.
+	* http.c (create_authorization_line): Pass a pointer, auth_err to set
+	the flag for different kinds of errors encountered.
+	* http.c (http_loop): Handle the errors raised by the authentication
+	handlers.
+	* http.c (digest_authentication_encode): Pass pointer auth_err to set
+	the error flags.
+	Set qop to NULL in case the value of the qop / algorithm attribute is
+	unknown to Wget. Set an	appropriate error too.
+
+2013-07-13  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* http.c (digest_authentication_encode): Fix a crash when the algorithm
+	is not specified in the server response.  Free dynamic memory used by
+	the function when the function exits.
+	* http-ntlm.c [HAVE_NETTLE]: Include <nettle/md4.h> and <nettle/des.h>.
+	(setup_des_key) [HAVE_NETTLE]: New function to deal with
+	libnettle.
+	(calc_resp) [HAVE_NETTLE]: Add support for libnettle.
+	(mkhash) [HAVE_NETTLE]: Likewise.
+	Reported by: Tim Ruehsen  <tim.ruehsen@gmx.de>.
+
+2013-07-13  Steven M. Schweda <sms@antinode.info>
+
+	* warc.c (warc_tempfile): Fix a portability issue on VMS.
+
+2013-07-10  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (read_response_body) [ALLOW_CLOBBER]: Move definition to..
+	* options.h (struct options): Make `backups' an int.
+	* url.h [ALLOW_CLOBBER]: .. Here.  Do not clobber when backups are used.
+	* url.c (url_file_name): Use the ALLOW_CLOBBER macro instead of
+	repeating the code.
+
+2013-07-08  Steven M. Schweda <sms@antinode.info>
+
+	* retr.c (rotate_backups): Support for VMS files.
+
+2013-07-12  Giuseppe Scrivano  <gscrivano@gnu.org>
+
+	* http.c (digest_authentication_encode): Set default value of
+	`algorithm' to "MD5".  Check if `qop' is not-NULL before access it.
+
+2013-07-11  Karsten Hopp  <karsten@redhat.com>
+
+	* openssl.c (struct openssl_read_args, struct scwt_context): New struct.
+	(openssl_read, ssl_connect_with_timeout_callback): New function.
+	(ssl_connect_wget): respect connect timeout.
+
 2013-07-11  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
         * gnutls.c (ssl_connect_wget): respect connect timeout.
