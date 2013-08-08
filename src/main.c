@@ -840,15 +840,16 @@ format_and_print_line (const char *prefix, const char *line,
 
   assert (prefix != NULL);
   assert (line != NULL);
+  assert (line_length > TABULATION);
 
   line_dup = xstrdup (line);
 
-  if (line_length <= 0)
-    line_length = MAX_CHARS_PER_LINE - TABULATION;
-
   if (printf ("%s", prefix) < 0)
     return -1;
-  remaining_chars = line_length;
+
+  /* Wrap to new line after prefix. */
+  remaining_chars = 0;
+
   /* We break on spaces. */
   token = strtok (line_dup, " ");
   while (token != NULL)
@@ -856,7 +857,7 @@ format_and_print_line (const char *prefix, const char *line,
       /* If however a token is much larger than the maximum
          line length, all bets are off and we simply print the
          token on the next line. */
-      if (remaining_chars <= strlen (token))
+      if (remaining_chars <= (int) strlen (token))
         {
           if (printf ("\n%*c", TABULATION, ' ') < 0)
             return -1;
@@ -930,7 +931,7 @@ print_version (void)
 
 #ifdef ENABLE_NLS
   if (format_and_print_line (locale_title,
-                        LOCALEDIR,
+                             LOCALEDIR,
                              MAX_CHARS_PER_LINE) < 0)
     exit (3);
 #endif /* def ENABLE_NLS */

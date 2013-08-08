@@ -1,3 +1,7 @@
+2013-08-08  Will Dietz  <w@wdtz.org> (tiny change):
+
+	* main.c (format_and_print_line): Wrap correctly long tokens.
+
 2013-07-16  Darshit Shah  <darnir@gmail.com>
 
 	* wget.h (err_t): Added new errors, ATTRMISSING and UNKNOWNATTR to
