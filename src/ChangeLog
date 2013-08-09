@@ -1,3 +1,10 @@
+2013-08-09  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* gnutls.c (ssl_init): Prevent CA files from being loaded twice
+	  if possible.
+	* gnutls.c (ssl_check_certificate): Added some error messages
+	* gnutls.c: Fixed some compiler warnings
+
 2013-08-08  Will Dietz  <w@wdtz.org> (tiny change):
 
 	* main.c (format_and_print_line): Wrap correctly long tokens.

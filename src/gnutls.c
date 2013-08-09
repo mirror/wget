@@ -46,6 +46,7 @@ as that of the covered work.  */
 #include "connect.h"
 #include "url.h"
 #include "ptimer.h"
+#include "hash.h"
 #include "ssl.h"
 
 #include <sys/fcntl.h>
@@ -81,48 +82,75 @@ ssl_init (void)
 {
   /* Becomes true if GnuTLS is initialized. */
   static bool ssl_initialized = false;
+  const char *ca_directory;
+  DIR *dir;
+  int ncerts = -1;
 
   /* GnuTLS should be initialized only once. */
   if (ssl_initialized)
     return true;
 
-  const char *ca_directory;
-  DIR *dir;
-
   gnutls_global_init ();
   gnutls_certificate_allocate_credentials (&credentials);
-  gnutls_certificate_set_verify_flags(credentials,
-                                      GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT);
+  gnutls_certificate_set_verify_flags (credentials,
+                                       GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT);
 
-  ca_directory = opt.ca_directory ? opt.ca_directory : "/etc/ssl/certs";
+#if GNUTLS_VERSION_MAJOR >= 3
+  if (!opt.ca_directory)
+    ncerts = gnutls_certificate_set_x509_system_trust (credentials);
+#endif
 
-  dir = opendir (ca_directory);
-  if (dir == NULL)
+  /* If GnuTLS version is too old or CA loading failed, fallback to old behaviour.
+   * Also use old behaviour if the CA directory is user-provided.  */
+  if (ncerts <= 0)
     {
-      if (opt.ca_directory && *opt.ca_directory)
-        logprintf (LOG_NOTQUIET, _("ERROR: Cannot open directory %s.\n"),
-                   opt.ca_directory);
-    }
-  else
-    {
-      struct dirent *dent;
-      while ((dent = readdir (dir)) != NULL)
+      ca_directory = opt.ca_directory ? opt.ca_directory : "/etc/ssl/certs";
+      if ((dir = opendir (ca_directory)) == NULL)
         {
-          struct stat st;
-          char *ca_file;
-          asprintf (&ca_file, "%s/%s", ca_directory, dent->d_name);
-
-          stat (ca_file, &st);
-
-          if (S_ISREG (st.st_mode))
-            gnutls_certificate_set_x509_trust_file (credentials, ca_file,
-                                                    GNUTLS_X509_FMT_PEM);
-
-          free (ca_file);
+          if (opt.ca_directory && *opt.ca_directory)
+            logprintf (LOG_NOTQUIET, _("ERROR: Cannot open directory %s.\n"),
+                       opt.ca_directory);
         }
+      else
+        {
+          struct hash_table *inode_map = hash_table_new (196, NULL, NULL);
+          struct dirent *dent;
+          size_t dirlen = strlen(ca_directory);
+          int rc;
 
-      closedir (dir);
+          ncerts = 0;
+
+          while ((dent = readdir (dir)) != NULL)
+            {
+              struct stat st;
+              char ca_file[dirlen + strlen(dent->d_name) + 2];
+
+              snprintf (ca_file, sizeof(ca_file), "%s/%s", ca_directory, dent->d_name);
+              if (stat (ca_file, &st) != 0)
+                continue;
+
+              if (! S_ISREG (st.st_mode))
+                continue;
+
+              /* avoid loading the same file twice by checking the inode.  */
+              if (hash_table_contains (inode_map, (void *)(intptr_t) st.st_ino))
+                continue;
+
+              hash_table_put (inode_map, (void *)(intptr_t) st.st_ino, NULL);
+              if ((rc = gnutls_certificate_set_x509_trust_file (credentials, ca_file,
+                                                                GNUTLS_X509_FMT_PEM)) <= 0)
+                logprintf (LOG_NOTQUIET, _("ERROR: Failed to open cert %s: (%d).\n"),
+                           ca_file, rc);
+              else
+                ncerts += rc;
+            }
+
+          hash_table_destroy (inode_map);
+          closedir (dir);
+        }
     }
+
+  DEBUGP (("Certificates loaded: %d\n", ncerts));
 
   /* Use the private key from the cert file unless otherwise specified. */
   if (opt.cert_file && !opt.private_key)
@@ -141,17 +169,17 @@ ssl_init (void)
     {
       int type;
       if (opt.private_key_type != opt.cert_type)
-	{
-	  /* GnuTLS can't handle this */
-	  logprintf (LOG_NOTQUIET, _("ERROR: GnuTLS requires the key and the \
+        {
+          /* GnuTLS can't handle this */
+          logprintf (LOG_NOTQUIET, _("ERROR: GnuTLS requires the key and the \
 cert to be of the same type.\n"));
-	}
+        }
 
       type = key_type_to_gnutls_type (opt.private_key_type);
 
       gnutls_certificate_set_x509_key_file (credentials, opt.cert_file,
-					    opt.private_key,
-					    type);
+                                            opt.private_key,
+                                            type);
     }
 
   if (opt.ca_cert)
@@ -278,7 +306,7 @@ wgnutls_read (int fd, char *buf, int bufsize, void *arg)
 }
 
 static int
-wgnutls_write (int fd, char *buf, int bufsize, void *arg)
+wgnutls_write (int fd _GL_UNUSED, char *buf, int bufsize, void *arg)
 {
   int ret;
   struct wgnutls_transport_context *ctx = arg;
@@ -315,7 +343,7 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
       return offset;
     }
 
-  if (bufsize > sizeof ctx->peekbuf)
+  if (bufsize > (int) sizeof ctx->peekbuf)
     bufsize = sizeof ctx->peekbuf;
 
   if (bufsize > offset)
@@ -346,7 +374,7 @@ wgnutls_peek (int fd, char *buf, int bufsize, void *arg)
 }
 
 static const char *
-wgnutls_errstr (int fd, void *arg)
+wgnutls_errstr (int fd _GL_UNUSED, void *arg)
 {
   struct wgnutls_transport_context *ctx = arg;
   return gnutls_strerror (ctx->last_error);
@@ -387,7 +415,7 @@ ssl_connect_wget (int fd, const char *hostname)
   if (! is_valid_ip_address (hostname))
     {
       gnutls_server_name_set (session, GNUTLS_NAME_DNS, hostname,
-			      strlen (hostname));
+                              strlen (hostname));
     }
 
   gnutls_set_default_priority (session);
@@ -395,7 +423,11 @@ ssl_connect_wget (int fd, const char *hostname)
 #ifndef FD_TO_SOCKET
 # define FD_TO_SOCKET(X) (X)
 #endif
+#ifdef HAVE_INTPTR_T
+  gnutls_transport_set_ptr (session, (gnutls_transport_ptr_t) (intptr_t) FD_TO_SOCKET (fd));
+#else
   gnutls_transport_set_ptr (session, (gnutls_transport_ptr_t) FD_TO_SOCKET (fd));
+#endif
 
   err = 0;
 #if HAVE_GNUTLS_PRIORITY_SET_DIRECT
@@ -531,6 +563,14 @@ ssl_connect_wget (int fd, const char *hostname)
   return true;
 }
 
+#define _CHECK_CERT(flag,msg) \
+  if (status & (flag))\
+    {\
+      logprintf (LOG_NOTQUIET, (msg),\
+                 severity, quote (host));\
+      success = false;\
+    }
+
 bool
 ssl_check_certificate (int fd, const char *host)
 {
@@ -553,24 +593,13 @@ ssl_check_certificate (int fd, const char *host)
       goto out;
     }
 
-  if (status & GNUTLS_CERT_INVALID)
-    {
-      logprintf (LOG_NOTQUIET, _("%s: The certificate of %s is not trusted.\n"),
-                 severity, quote (host));
-      success = false;
-    }
-  if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
-    {
-      logprintf (LOG_NOTQUIET, _("%s: The certificate of %s hasn't got a known issuer.\n"),
-                 severity, quote (host));
-      success = false;
-    }
-  if (status & GNUTLS_CERT_REVOKED)
-    {
-      logprintf (LOG_NOTQUIET, _("%s: The certificate of %s has been revoked.\n"),
-                 severity, quote (host));
-      success = false;
-    }
+  _CHECK_CERT (GNUTLS_CERT_INVALID, _("%s: The certificate of %s is not trusted.\n"));
+  _CHECK_CERT (GNUTLS_CERT_SIGNER_NOT_FOUND, _("%s: The certificate of %s hasn't got a known issuer.\n"));
+  _CHECK_CERT (GNUTLS_CERT_REVOKED, _("%s: The certificate of %s has been revoked.\n"));
+  _CHECK_CERT (GNUTLS_CERT_SIGNER_NOT_CA, _("%s: The certificate signer of %s was not a CA.\n"));
+  _CHECK_CERT (GNUTLS_CERT_INSECURE_ALGORITHM, _("%s: The certificate of %s was signed using an insecure algorithm.\n"));
+  _CHECK_CERT (GNUTLS_CERT_NOT_ACTIVATED, _("%s: The certificate of %s is not yet activated.\n"));
+  _CHECK_CERT (GNUTLS_CERT_EXPIRED, _("%s: The certificate of %s has expired.\n"));
 
   if (gnutls_certificate_type_get (ctx->session) == GNUTLS_CRT_X509)
     {
@@ -621,7 +650,12 @@ ssl_check_certificate (int fd, const char *host)
         }
  crt_deinit:
       gnutls_x509_crt_deinit (cert);
-   }
+    }
+  else
+    {
+      logprintf (LOG_NOTQUIET, _("Certificate must be X.509\n"));
+      success = false;
+    }
 
  out:
   return opt.check_cert ? success : true;
