@@ -1,3 +1,7 @@
+2013-08-13  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Download Options): Fix misspelling.
+
 2013-07-09  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi (Download Options): Add documentation for --backups.

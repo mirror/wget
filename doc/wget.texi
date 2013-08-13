@@ -742,7 +742,7 @@ Turn on time-stamping.  @xref{Time-Stamping}, for details.
 @item --no-use-server-timestamps
 Don't set the local file's timestamp by the one on the server.
 
-By default, when a file is downloaded, it's timestamps are set to
+By default, when a file is downloaded, its timestamps are set to
 match those from the remote file. This allows the use of
 @samp{--timestamping} on subsequent invocations of wget. However, it
 is sometimes useful to base the local file's timestamp on when it was
