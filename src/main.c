@@ -217,6 +217,7 @@ static struct cmdline_option option_data[] =
     { "http-passwd", 0, OPT_VALUE, "httppassword", -1 }, /* deprecated */
     { "http-password", 0, OPT_VALUE, "httppassword", -1 },
     { "http-user", 0, OPT_VALUE, "httpuser", -1 },
+    { IF_SSL ("https-only"), 0, OPT_BOOLEAN, "httpsonly", -1 },
     { "ignore-case", 0, OPT_BOOLEAN, "ignorecase", -1 },
     { "ignore-length", 0, OPT_BOOLEAN, "ignorelength", -1 },
     { "ignore-tags", 0, OPT_VALUE, "ignoretags", -1 },
@@ -635,6 +636,8 @@ HTTPS (SSL/TLS) options:\n"),
     N_("\
        --secure-protocol=PR     choose secure protocol, one of auto, SSLv2,\n\
                                 SSLv3, and TLSv1.\n"),
+    N_("\
+       --https-only             only follow secure HTTPS links\n"),
     N_("\
        --no-check-certificate   don't validate the server's certificate.\n"),
     N_("\

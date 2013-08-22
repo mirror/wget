@@ -1,3 +1,9 @@
+2013-08-22  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* main.c: Add new option --https-only.
+	* options.h: Likewise.
+	* recur.c (download_child_p): add check for HTTPS.
+
 2013-08-09  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* gnutls.c (ssl_init): Prevent CA files from being loaded twice

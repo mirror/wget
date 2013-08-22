@@ -194,6 +194,9 @@ static const struct {
   { "httppasswd",       &opt.http_passwd,       cmd_string }, /* deprecated */
   { "httppassword",     &opt.http_passwd,       cmd_string },
   { "httpproxy",        &opt.http_proxy,        cmd_string },
+#ifdef HAVE_SSL
+  { "httpsonly",        &opt.https_only,        cmd_boolean },
+#endif
   { "httpsproxy",       &opt.https_proxy,       cmd_string },
   { "httpuser",         &opt.http_user,         cmd_string },
   { "ignorecase",       &opt.ignore_case,       cmd_boolean },

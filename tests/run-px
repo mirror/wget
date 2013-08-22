@@ -81,6 +81,7 @@ my @tests = (
     'Test--spider-r--no-content-disposition.px',
     'Test--spider-r--no-content-disposition-trivial.px',
     'Test--spider-r.px',
+    'Test--httpsonly-r.px',
 );
 
 foreach my $var (qw(SYSTEM_WGETRC WGETRC)) {

@@ -215,9 +215,9 @@ struct options
   char *ca_directory;		/* CA directory (hash files) */
   char *ca_cert;		/* CA certificate file to use */
 
-
   char *random_file;		/* file with random data to seed the PRNG */
   char *egd_file;		/* file name of the egd daemon socket */
+  bool https_only;		/* whether to follow HTTPS only */
 #endif /* HAVE_SSL */
 
   bool cookies;			/* whether cookies are used. */

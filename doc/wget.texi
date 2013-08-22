@@ -1606,6 +1606,9 @@ buggy SSL server implementations that make it hard for OpenSSL to
 choose the correct protocol version.  Fortunately, such servers are
 quite rare.
 
+@item --https-only
+When in recursive mode, only HTTPS links are followed.
+
 @cindex SSL certificate, check
 @item --no-check-certificate
 Don't check the server certificate against the available certificate
