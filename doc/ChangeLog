@@ -1,3 +1,7 @@
+2013-08-23  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* sample.wgetrc: added "httpsonly" example
+
 2013-08-22  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* wget.texi: added description for --https-only

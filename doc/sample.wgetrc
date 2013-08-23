@@ -123,3 +123,6 @@
 
 # Force the default remote server encoding
 #remoteencoding = UTF-8
+
+# Turn on to prevent following non-HTTPS links when in recursive mode
+#httpsonly = off
