@@ -15,6 +15,10 @@ class InvalidRangeHeader (Exception):
     def __init__ (self, err_message):
         self.err_message = err_message
 
+class ServerError (Exception):
+    def __init__ (self, err_message):
+        self.err_message = err_message
+
 
 class StoppableHTTPServer (HTTPServer):
 
@@ -158,16 +162,27 @@ class __Handler (WgetHTTPRequestHandler):
         except Exception:
             pass
 
+    def SendHeader (self, header_obj):
+        pass
+#        headers_list = header_obj.headers
+#        for header_line in headers_list:
+#            print (header_line + " : " + headers_list[header_line])
+#            self.send_header (header_line, headers_list[header_line])
+
     def send_cust_headers (self):
-        header_obj_list = self.get_rule_list ('SendHeader')
-        if header_obj_list:
-            header_obj = header_obj_list
+        header_obj = self.get_rule_list ('SendHeader')
+        if header_obj:
             for header in header_obj.headers:
                 self.send_header (header, header_obj.headers[header])
 
     def finish_headers (self):
         self.send_cust_headers ()
         self.end_headers ()
+
+    def Response (self, resp_obj):
+        self.send_response (resp_obj.response_code)
+        self.finish_headers ()
+        raise ServerError ("Custom Response code sent.")
 
     def custom_response (self):
         codes = self.get_rule_list ('Response')
@@ -267,6 +282,28 @@ class __Handler (WgetHTTPRequestHandler):
     def authorize_Both_inline (self, auth_header, auth_rule):
         return False
 
+    def Authentication (self, auth_rule):
+        try:
+            self.handle_auth (auth_rule)
+        except ServerError as se:
+            self.send_response (401, "Authorization Required")
+            self.send_challenge (auth_rule.auth_type)
+            self.finish_headers ()
+            raise ServerError (se.__str__())
+
+    def handle_auth (self, auth_rule):
+        is_auth = True
+        auth_header = self.headers.get ("Authorization")
+        required_auth = auth_rule.auth_type
+        if required_auth == "Both" or required_auth == "Both_inline":
+            auth_type = auth_header.split(' ')[0] if auth_header else required_auth
+        else:
+            auth_type = required_auth
+        assert hasattr (self, "authorize_" + auth_type)
+        is_auth = getattr (self, "authorize_" + auth_type) (auth_header, auth_rule)
+        if is_auth is False:
+            raise ServerError ("Unable to Authenticate")
+
     def is_authorized (self):
         is_auth = True
         auth_rule = self.get_rule_list ('Authentication')
@@ -285,6 +322,15 @@ class __Handler (WgetHTTPRequestHandler):
                 self.finish_headers ()
         return is_auth
 
+    def ExpectHeader (self, header_obj):
+        exp_headers = header_obj.headers
+        for header_line in exp_headers:
+            header_recd = self.headers.get (header_line)
+            if header_recd is None or header_recd != exp_headers[header_line]:
+                self.send_error (400, "Expected Header " + header_line + " not found")
+                self.finish_headers ()
+                raise ServerError ("Header " + header_line + " not found")
+
     def expect_headers (self):
         """ This is modified code to handle a few changes. Should be removed ASAP """
         exp_headers_obj = self.get_rule_list ('ExpectHeader')
@@ -297,6 +343,15 @@ class __Handler (WgetHTTPRequestHandler):
                     self.end_headers ()
                     return False
         return True
+
+    def RejectHeader (self, header_obj):
+        rej_headers = header_obj.headers
+        for header_line in rej_headers:
+            header_recd = self.headers.get (header_line)
+            if header_recd is not None and header_recd == rej_headers[header_line]:
+                self.send_error (400, 'Blackisted Header ' + header_line + ' received')
+                self.finish_headers ()
+                raise ServerError ("Header " + header_line + ' received')
 
     def reject_headers (self):
         rej_headers = self.get_rule_list ("RejectHeader")
@@ -318,6 +373,18 @@ class __Handler (WgetHTTPRequestHandler):
 
         if path in fileSys:
             self.rules = self.server.server_configs.get (path)
+
+            for rule_name in self.rules:
+                try:
+                    assert hasattr (self, rule_name)
+                    getattr (self, rule_name) (self.rules [rule_name])
+                except AssertionError as ae:
+                    msg = "Method " + rule_name + " not defined"
+                    self.send_error (500, msg)
+                    return (None, None)
+                except ServerError as se:
+                    print (se.__str__())
+                    return (None, None)
 
             testPassed = True
             for check in self.tests:

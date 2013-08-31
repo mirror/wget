@@ -1,5 +1,21 @@
 2013-08-31  Darshit Shah  <darnir@gmail.com>
 
+	* HTTPTest.py (ServerError): Define new Exception for handling
+	internal control flow.
+	(StoppableHTTPServer.SendHeader): Simply pass. Do nothing. Adding
+	functionality here seems to crash for no apparent reason.
+	(stoppableHTTPServer.send_cust_headers): Minor optimization. No need
+	for extra variable.
+	(__Handler.Response): Handle explicit Response Code Rules
+	(__Handler.Authentication): Handle Authentication rules
+	(__Handler.handle_auth): Actual worker method for authentication
+	(__Handler.ExpectHeader): Ensure Expected Headers are received
+	(__Handler.RejectHeader): Ensure Blacklisted Headers are NOT received
+	(__Handler.send_HEAD): Dynamically call server rule functions based on
+	the self.rules list. This feature will later be added to POST/PUT, etc
+
+2013-08-31  Darshit Shah  <darnir@gmail.com>
+
 	* WgetTest.py: Remove import module defaultdict.
 	(CommonMethods.get_server_rules): server_rules should be a dict, not a
 	defaultdict (list).
