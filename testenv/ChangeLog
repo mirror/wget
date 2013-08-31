@@ -1,5 +1,19 @@
 2013-08-31  Darshit Shah  <darnir@gmail.com>
 
+	* WgetTest.py: Remove import module defaultdict.
+	(CommonMethods.get_server_rules): server_rules should be a dict, not a
+	defaultdict (list).
+	* HTTPServer.py (WgetHTTPRequestHandler.get_rule_list): If rule does
+	not exist, return None.	Not an emppty list.
+	(WgetHTTPRequestHandler.test_cookies): Rule variable is not a list
+	(__Handler.send_cust_headers): Same
+	(__Handler.custom_response): Same
+	(__Handler.is_authorized): Same
+	(__Handler.expect_headers): Same
+	(__Handler.reject_headers): Same
+
+2013-08-31  Darshit Shah  <darnir@gmail.com>
+
 	* README: (newfile) Simple help / instructions about using the Test
 	Environment.
 	* Makefile.am: (newfile) Makefile for the Test Environment. Uses the

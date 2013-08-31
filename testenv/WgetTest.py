@@ -7,7 +7,6 @@ import HTTPServer
 import http.client
 import re
 from subprocess import call
-from collections import defaultdict
 from ColourTerm import printer
 
 """ A Custom Exception raised by the Test Environment. """
@@ -134,10 +133,10 @@ class CommonMethods:
             options are parsed in a true and better fashion. For an example,
             see the commented portion in Test-basic-auth.py.
         """
-        server_rules = defaultdict (list)
+        server_rules = dict ()
         for rule in file_obj.rules:
             r_obj = getattr (self, rule) (file_obj.rules[rule])
-            server_rules[rule].append (r_obj)
+            server_rules[rule] = r_obj
         return server_rules
 
     """ Pre-Test Hook Function Calls """

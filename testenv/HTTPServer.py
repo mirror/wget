@@ -56,7 +56,7 @@ class WgetHTTPRequestHandler (BaseHTTPRequestHandler):
     def test_cookies (self):
         cookie_recd = self.headers.get ('Cookie')
         cookies = self.get_rule_list ('Cookie')
-        cookie_exp = cookies[0].cookie_value if cookies else None
+        cookie_exp = cookies.cookie_value if cookies else None
         if cookie_exp == cookie_recd:
             return True
         else:
@@ -65,7 +65,7 @@ class WgetHTTPRequestHandler (BaseHTTPRequestHandler):
             return False
 
     def get_rule_list (self, name):
-        r_list = self.rules.get (name) if name in self.rules else list ()
+        r_list = self.rules.get (name) if name in self.rules else None
         return r_list
 
     def do_QUIT (self):
@@ -161,7 +161,7 @@ class __Handler (WgetHTTPRequestHandler):
     def send_cust_headers (self):
         header_obj_list = self.get_rule_list ('SendHeader')
         if header_obj_list:
-            header_obj = header_obj_list[0]
+            header_obj = header_obj_list
             for header in header_obj.headers:
                 self.send_header (header, header_obj.headers[header])
 
@@ -172,7 +172,7 @@ class __Handler (WgetHTTPRequestHandler):
     def custom_response (self):
         codes = self.get_rule_list ('Response')
         if codes:
-            self.send_response (codes[0].response_code)
+            self.send_response (codes.response_code)
             self.finish_headers ()
             return False
         else:
@@ -272,13 +272,13 @@ class __Handler (WgetHTTPRequestHandler):
         auth_rule = self.get_rule_list ('Authentication')
         if auth_rule:
             auth_header = self.headers.get ("Authorization")
-            req_auth = auth_rule[0].auth_type
+            req_auth = auth_rule.auth_type
             if req_auth == "Both" or req_auth == "Both_inline":
                 auth_type = auth_header.split(' ')[0] if auth_header else req_auth
             else:
                 auth_type = req_auth
             assert hasattr (self, "authorize_" + auth_type)
-            is_auth = getattr (self, "authorize_" + auth_type) (auth_header, auth_rule[0])
+            is_auth = getattr (self, "authorize_" + auth_type) (auth_header, auth_rule)
             if is_auth is False:
                 self.send_response (401)
                 self.send_challenge (auth_type)
@@ -289,7 +289,7 @@ class __Handler (WgetHTTPRequestHandler):
         """ This is modified code to handle a few changes. Should be removed ASAP """
         exp_headers_obj = self.get_rule_list ('ExpectHeader')
         if exp_headers_obj:
-            exp_headers = exp_headers_obj[0].headers
+            exp_headers = exp_headers_obj.headers
             for header_line in exp_headers:
                 header_re = self.headers.get (header_line)
                 if header_re is None or header_re != exp_headers[header_line]:
@@ -299,9 +299,9 @@ class __Handler (WgetHTTPRequestHandler):
         return True
 
     def reject_headers (self):
-        rej_headers_list = self.get_rule_list ("RejectHeader")
-        if rej_headers_list:
-            rej_headers = rej_headers_list[0].headers
+        rej_headers = self.get_rule_list ("RejectHeader")
+        if rej_headers:
+            rej_headers = rej_headers.headers
             for header_line in rej_headers:
                 header_re = self.headers.get (header_line)
                 if header_re is not None and header_re == rej_headers[header_line]:
