@@ -1,3 +1,8 @@
+2013-08-31  Darshit Shah  <darnir@gmail.com>
+
+	* configure.ac: Add testenv/Makefile to	AC_CONFIG_FILES.
+	* Makefile.am: Add testenv to SUBDIRS
+
 2013-07-23  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* configure.ac: Remove AM_CONDITIONAL HAVE_NETTLE.

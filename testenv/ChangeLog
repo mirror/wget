@@ -1,0 +1,28 @@
+2013-08-31  Darshit Shah  <darnir@gmail.com>
+
+	* README: (newfile) Simple help / instructions about using the Test
+	Environment.
+	* Makefile.am: (newfile) Makefile for the Test Environment. Uses the
+	Automake Parallel Test Harness
+	* WgetTest.py: (newfile) Base module that executes the Test.
+	* HTTPServer.py: (newfile) Contains the custom HTTP Server for the
+	Test Environment. Creates an instance of http.server in Python3.
+	* FTPServer.py: (newfile) Overrides methods from pyftpdlib for use in
+	the Test Environment. ** Work under progress **.
+	* ColourTerm.py: (newfile) A custom module to output coloured text to
+	the terminal. Known to work on POSIX shells.
+	* Test-Proto.py: (newfile) A prototype Test File. This should be
+	copied when writing a new Test Case.
+	* Test-Content-disposition-2.py: Test Content Disposition clobbering
+	* Test-Content-disposition.py: Test Content Disposition Headers
+	* Test-O.py: Test Output filename command
+	* Test-auth-basic-fail.py: Test returncode on auth failure
+	* Test-auth-basic.py: Test Basic Auth negotiation
+	* Test-auth-both.py: Test handling of Multiple auth providers. This
+	test currently fails.
+	* Test-auth-digest.py: Test Digest Auth Negotiation
+	* Test-auth-no-challenge-url.py: Ensure --auth-no-challenge is handled
+	when auth details are in-URL.
+	* Test-auth-no-challenge.py: Ensure --auth-no-challenge is honoured
+	* Test-auth-retcode.py: Ensure correct return code after 403 Forbidden
+	response.
