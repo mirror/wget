@@ -1,5 +1,10 @@
 2013-08-31  Darshit Shah  <darnir@gmail.com>
 
+	* README: Explain that TEST_NAME needs to be unique
+	* Test-auth-no-challenge.py: Edit non-unique TEST_NAME
+
+2013-08-31  Darshit Shah  <darnir@gmail.com>
+
 	* HTTPTest.py (ServerError): Define new Exception for handling
 	internal control flow.
 	(StoppableHTTPServer.SendHeader): Simply pass. Do nothing. Adding

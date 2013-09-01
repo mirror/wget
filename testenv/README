@@ -206,6 +206,13 @@ also be added to the XFAIL_TESTS variable. This will allow expected failures to
 pass through. If a test mentioned in the XFAIL_TESTS variable passes, it gets
 red-flagged as a XPASS.
 
+Remember to always name the Test correctly using the TEST_NAME variable. This
+is essential since a directory with the Test Name is created and this can
+cause synchronization problems when the Parallel Test Harness is used.
+One can use the following command on Unix systems to check for TEST_NAME
+clashes:
+$ grep -r -h "TEST_NAME =" | cut -c13- | uniq -c -d
+
 Requirements:
 ================================================================================
 

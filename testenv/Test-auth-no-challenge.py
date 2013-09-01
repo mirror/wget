@@ -6,7 +6,7 @@ from WgetTest import HTTPTest, WgetFile
     This test ensures Wget's Basic Authorization Negotiation, when the
     --auth-no-challenge command is used.
 """
-TEST_NAME = "Digest Authorization"
+TEST_NAME = "Auth No Challenge Command"
 ############# File Definitions ###############################################
 File1 = "Need a cookie?"
 
