@@ -1,3 +1,8 @@
+2013-09-02  Darshit Shah  <darnir@gmail.com>
+
+	* Makefile.am:	Add new Test
+	* Test-Head.py: New Test to ensure HEAD requests are handled correctly
+
 2013-08-31  Darshit Shah  <darnir@gmail.com>
 
 	* README: Explain that TEST_NAME needs to be unique
