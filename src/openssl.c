@@ -194,6 +194,7 @@ ssl_init (void)
     case secure_protocol_sslv3:
       meth = SSLv3_client_method ();
       break;
+    case secure_protocol_pfs:
     case secure_protocol_tlsv1:
       meth = TLSv1_client_method ();
       break;
@@ -206,6 +207,12 @@ ssl_init (void)
   ssl_ctx = SSL_CTX_new ((SSL_METHOD *)meth);
   if (!ssl_ctx)
     goto error;
+
+  /* OpenSSL ciphers: https://www.openssl.org/docs/apps/ciphers.html
+   * Since we want a good protection, we also use HIGH (that excludes MD4 ciphers and some more)
+   */
+  if (opt.secure_protocol == secure_protocol_pfs)
+    SSL_CTX_set_cipher_list (ssl_ctx, "HIGH:MEDIUM:!RC4:!SRP:!PSK:!RSA:!aNULL@STRENGTH");
 
   SSL_CTX_set_default_verify_paths (ssl_ctx);
   SSL_CTX_load_verify_locations (ssl_ctx, opt.ca_cert, opt.ca_directory);

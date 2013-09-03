@@ -1,3 +1,10 @@
+2013-09-03  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* main.c: Add new value 'PFS' to --secure-protocol to
+	  enforce the so-called Perfect Forward Security.
+	* init.c (cmd_spec_secure_protocol): added secure_protocol_pfs
+	* openssl.c, gnutls.c, options.h: likewise
+
 2013-08-22  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* main.c: Add new option --https-only.
