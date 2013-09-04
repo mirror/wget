@@ -1,3 +1,9 @@
+2013-09-05  Darshit Shah  <darnir@gmail.com>
+
+	* Test-auth-with-content-disposition.py: Add test that ensures Content
+	Disposition works alongwith authentication
+	* Makefile.am: Add new test
+
 2013-09-04  Darshit Shah  <darnir@gmail.com>
 
 	* Test-c-full.py: Test Continue options
