@@ -35,9 +35,11 @@ TESTS = Test-auth-basic-fail.py			\
 	Test-auth-no-challenge.py		\
 	Test-auth-no-challenge-url.py		\
 	Test-auth-retcode.py			\
+	Test-c-full.py				\
 	Test-Content-disposition-2.py		\
 	Test-Content-disposition.py 		\
-	Test-Head.py
+	Test-Head.py				\
+	Test-O.py
 
 XFAIL_TESTS = Test-auth-both.py
 LOG_COMPILER = python3

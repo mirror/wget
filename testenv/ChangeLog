@@ -1,3 +1,8 @@
+2013-09-04  Darshit Shah  <darnir@gmail.com>
+
+	* Test-c-full.py: Test Continue options
+	* Makefile.am: Add Test-c-full.py and Test-O
+
 2013-09-02  Darshit Shah  <darnir@gmail.com>
 
 	* Makefile.am:	Add new Test
