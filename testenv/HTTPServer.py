@@ -58,6 +58,8 @@ class WgetHTTPRequestHandler (BaseHTTPRequestHandler):
     ]
 
     def test_cookies (self):
+        pass
+        """
         cookie_recd = self.headers.get ('Cookie')
         cookies = self.get_rule_list ('Cookie')
         cookie_exp = cookies.cookie_value if cookies else None
@@ -67,6 +69,7 @@ class WgetHTTPRequestHandler (BaseHTTPRequestHandler):
             self.send_response (400, "Cookie Mismatch")
             self.finish_headers ()
             return False
+        """
 
     def get_rule_list (self, name):
         r_list = self.rules.get (name) if name in self.rules else None

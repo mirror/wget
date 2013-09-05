@@ -39,6 +39,10 @@ TESTS = Test-auth-basic-fail.py			\
 	Test-c-full.py				\
 	Test-Content-disposition-2.py		\
 	Test-Content-disposition.py 		\
+	Test-cookie-401.py			\
+	Test-cookie-domain-mismatch.py		\
+	Test-cookie-expires.py			\
+	Test-cookie.py				\
 	Test-Head.py				\
 	Test-O.py
 

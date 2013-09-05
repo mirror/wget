@@ -1,5 +1,18 @@
 2013-09-06  Darshit Shah  <darnir@gmail.com>
 
+	* HTTPServer.py (WgetHTTPRequestHandler.test_cookies): Comment out the
+	old test_cookies code. This is no longer used and was causing problems
+	with expected cookies. The code will soon be removed anyways
+	* Test-cookie.py: Add new test for basic cookie functionality
+	* Test-cookie-401.py: Ensure cookies are saved during a 401 response
+	* Test-cookie-expires.py: Ensure that the Expires field is correctly
+	handled
+	* Test-cookies-domain-mismatch.py: Ensure that mismatched domains are
+	handled by Wget
+	* Makefile.am: Add the new tests
+
+2013-09-06  Darshit Shah  <darnir@gmail.com>
+
 	* README: New section on pending work. Will keep updating this to keep
 	track of work that remains to be done on this implementation
 
