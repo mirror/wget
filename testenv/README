@@ -213,6 +213,21 @@ One can use the following command on Unix systems to check for TEST_NAME
 clashes:
 $ grep -r -h "TEST_NAME =" | cut -c13- | uniq -c -d
 
+Work Remaining:
+================================================================================
+
+Some amount of work still remains to be done.
+    * Shift to a Thread-based model
+    * Errors in server-side checks need to be handled more explicitly
+    * Support parallel-wget branch
+        * This can easily be done by using the multiprocess.mixin functionality
+        A sample of the required code exists in the earliest commits of the
+        test environment code in my GitHub account.
+        * However, a smarter handling of the same with Threads should be found
+    * SSL Tests. Use xyne's HTTPS server implemention
+    * Complete support for FTP Tests
+    * IRI Support. This shouldn't require much effort
+
 Requirements:
 ================================================================================
 

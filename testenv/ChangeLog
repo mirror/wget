@@ -1,3 +1,8 @@
+2013-09-06  Darshit Shah  <darnir@gmail.com>
+
+	* README: New section on pending work. Will keep updating this to keep
+	track of work that remains to be done on this implementation
+
 2013-09-05  Darshit Shah  <darnir@gmail.com>
 
 	* Test-auth-with-content-disposition.py: Add test that ensures Content
