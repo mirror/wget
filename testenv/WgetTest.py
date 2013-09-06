@@ -8,6 +8,7 @@ import http.client
 import re
 from subprocess import call
 from ColourTerm import printer
+from difflib import unified_diff
 
 """ A Custom Exception raised by the Test Environment. """
 
@@ -92,6 +93,8 @@ class CommonMethods:
             if files.name in local_filesys:
                 local_file = local_filesys.pop (files.name)
                 if files.content != local_file ['content']:
+                    for line in unified_diff (local_file['content'], files.content, fromfile="Actual", tofile="Expected"):
+                        sys.stderr.write (line)
                     raise TestFailed ("Contents of " + files.name + " do not match")
             else:
                 raise TestFailed ("Expected file " + files.name +  " not found")

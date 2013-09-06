@@ -1,5 +1,10 @@
 2013-09-06  Darshit Shah  <darnir@gmail.com>
 
+	* WgetTest.py (CommonMethods.__check_downloaded_files): Print a
+	unified diff in case there is a mismatch in the file contents
+
+2013-09-06  Darshit Shah  <darnir@gmail.com>
+
 	* HTTPServer.py (WgetHTTPRequestHandler.test_cookies): Comment out the
 	old test_cookies code. This is no longer used and was causing problems
 	with expected cookies. The code will soon be removed anyways
