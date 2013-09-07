@@ -1,3 +1,9 @@
+2013-09-07  Darshit Shah  <darnir@gmail.com>
+
+	* Test-Post.py: Test basic functionality for sending HTTP POST
+	requests using the --method command
+	* Makefile.am: Add new test
+
 2013-09-06  Darshit Shah  <darnir@gmail.com>
 
 	* WgetTest.py (CommonMethods.__check_downloaded_files): Print a

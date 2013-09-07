@@ -44,7 +44,8 @@ TESTS = Test-auth-basic-fail.py			\
 	Test-cookie-expires.py			\
 	Test-cookie.py				\
 	Test-Head.py				\
-	Test-O.py
+	Test-O.py				\
+	Test-Post.py
 
 XFAIL_TESTS = Test-auth-both.py
 LOG_COMPILER = python3
