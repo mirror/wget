@@ -443,11 +443,10 @@ ssl_connect_wget (int fd, const char *hostname)
       err = gnutls_priority_set_direct (session, "NORMAL:-VERS-SSL3.0", NULL);
       break;
     case secure_protocol_pfs:
-#if defined (GNUTLS_VERSION_NUMBER) && GNUTLS_VERSION_NUMBER >= 0x030204
-      err = gnutls_priority_set_direct (session, "PFS", NULL);
-#else
-      err = gnutls_priority_set_direct (session, "NORMAL:-RSA", NULL);
-#endif
+      if (gnutls_check_version("3.2.4"))
+        err = gnutls_priority_set_direct (session, "PFS", NULL);
+      else
+        err = gnutls_priority_set_direct (session, "NORMAL:-RSA", NULL);
       break;
     default:
       abort ();
