@@ -204,13 +204,12 @@ class HTTPTest (CommonMethods):
             self.HTTP_setup (name, pre_hook, test_params, post_hook)
         except TestFailed as tf:
             printer ("RED", "Error: " + tf.error)
-            self.act_retcode = 100
             self.tests_passed = False
         except Exception as ae:
             printer ("RED", "Unhandled Exception Caught.")
             print ( ae.__str__ ())
             traceback.print_exc ()
-            self.act_retcode = 100
+            self.tests_passed = False
         else:
             printer ("GREEN", "Test Passed")
         finally:
@@ -239,7 +238,7 @@ class HTTPTest (CommonMethods):
             getattr (self, test_func) (test_params[test_func])
 
 
-        HTTPServer.spawn_server (self.server)
+        #HTTPServer.spawn_server (self.server)
         self.act_retcode = self.exec_wget (self.options, self.urls, self.domain)
         self.stop_HTTP_Server ()
 
@@ -251,16 +250,16 @@ class HTTPTest (CommonMethods):
             getattr (self, post_hook_func) (post_hook[post_hook_func])
 
     def init_HTTP_Server (self):
-        server = HTTPServer.create_server ()
-        return server
-        #server = HTTPServer.HTTPd ()
-        #server.start (self)
+        #server = HTTPServer.create_server ()
         #return server
+        server = HTTPServer.HTTPd ()
+        server.start ()
+        return server
 
     def stop_HTTP_Server (self):
         conn = http.client.HTTPConnection (self.domain.strip ('/'))
         conn.request ("QUIT", "/")
-        self.fileSys = HTTPServer.ret_fileSys ()
+        #self.fileSys = HTTPServer.ret_fileSys ()
         conn.getresponse ()
         #server.stop ()
 

@@ -3,6 +3,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from base64 import b64encode
 from random import random
 from hashlib import md5
+import threading
 import os
 import re
 
@@ -32,17 +33,22 @@ class StoppableHTTPServer (HTTPServer):
 
         """
         self.server_configs = conf_dict
-        global fileSys
-        fileSys = filelist
+        self.fileSys = filelist
 
-    def serve_forever (self, q):
-        """ Override method allowing for programmatical shutdown process. """
+    def serve_forever (self):
+        self.stop = False
+        while not self.stop:
+            self.handle_request ()
+
+
+"""    def serve_forever (self, q):
+        # Override method allowing for programmatical shutdown process.
         global queue
         queue = q
         self.stop = False
         while not self.stop:
             self.handle_request ()
-
+"""
 
 class WgetHTTPRequestHandler (BaseHTTPRequestHandler):
 
@@ -76,13 +82,13 @@ class WgetHTTPRequestHandler (BaseHTTPRequestHandler):
         return r_list
 
     def do_QUIT (self):
-        queue.put (fileSys)
+        #queue.put (self.server.fileSys)
         self.send_response (200)
         self.end_headers ()
         self.server.stop = True
 
 
-class __Handler (WgetHTTPRequestHandler):
+class _Handler (WgetHTTPRequestHandler):
 
     """ Define Handler Methods for different Requests. """
 
@@ -107,13 +113,13 @@ class __Handler (WgetHTTPRequestHandler):
         self.rules = self.server.server_configs.get (path)
         if not self.custom_response ():
             return (None, None)
-        if path in fileSys:
+        if path in self.server.fileSys:
             body_data = self.get_body_data ()
             self.send_response (200)
             self.send_header ("Content-type", "text/plain")
-            content = fileSys.pop (path) + "\n" + body_data
+            content = self.server.fileSys.pop (path) + "\n" + body_data
             total_length = len (content)
-            fileSys[path] = content
+            self.server.fileSys[path] = content
             self.send_header ("Content-Length", total_length)
             self.finish_headers ()
             try:
@@ -128,7 +134,7 @@ class __Handler (WgetHTTPRequestHandler):
         self.rules = self.server.server_configs.get (path)
         if not self.custom_response ():
             return (None, None)
-        fileSys.pop (path, None)
+        self.server.fileSys.pop (path, None)
         self.send_put (path)
 
     """ End of HTTP Request Method Handlers. """
@@ -156,7 +162,7 @@ class __Handler (WgetHTTPRequestHandler):
     def send_put (self, path):
         body_data = self.get_body_data ()
         self.send_response (201)
-        fileSys[path] = body_data
+        self.server.fileSys[path] = body_data
         self.send_header ("Content-type", "text/plain")
         self.send_header ("Content-Length", len (body_data))
         self.finish_headers ()
@@ -374,7 +380,7 @@ class __Handler (WgetHTTPRequestHandler):
         """
         path = self.path[1:]
 
-        if path in fileSys:
+        if path in self.server.fileSys:
             self.rules = self.server.server_configs.get (path)
 
             for rule_name in self.rules:
@@ -397,7 +403,7 @@ class __Handler (WgetHTTPRequestHandler):
                 else:
                     return (None, None)
 
-            content = fileSys.get (path)
+            content = self.server.fileSys.get (path)
             content_length = len (content)
             try:
                 self.range_begin = self.parse_range_header (
@@ -428,20 +434,33 @@ class __Handler (WgetHTTPRequestHandler):
             self.send_error (404, "Not Found")
             return (None, None)
 
+class HTTPd (threading.Thread):
+    server_class = StoppableHTTPServer
+    handler = _Handler
+    def __init__ (self, addr=None):
+        threading.Thread.__init__ (self)
+        if addr is None:
+            addr = ('localhost', 0)
+        self.server = self.server_class (addr, self.handler)
+        self.server_address = self.server.socket.getsockname()[:2]
+
+    def run (self):
+       self.server.serve_forever ()
+
+    def server_conf (self, file_list, server_rules):
+        self.server.server_conf (file_list, server_rules)
+
 
 def create_server ():
-    server = StoppableHTTPServer (("localhost", 0), __Handler)
+    server = HTTPd ()
     return server
 
 
 def spawn_server (server):
-    global q
-    q = Queue()
-    server_process = Process (target=server.serve_forever, args=(q,))
-    server_process.start ()
-
-
-def ret_fileSys ():
-    return (q.get (True))
+    #global q
+    #q = Queue()
+    #server_process = Process (target=server.serve_forever, args=(q,))
+    #server_process.start ()
+    server.start ()
 
 # vim: set ts=8 sts=4 sw=3 tw=0 et :

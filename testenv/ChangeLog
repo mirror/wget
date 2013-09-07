@@ -1,5 +1,33 @@
 2013-09-07  Darshit Shah  <darnir@gmail.com>
 
+	* HTTPServer.py (StoppableHTTPServer.server_conf): Change global
+	variable fileSys to an object variable. This is good programming
+	practice and required for parallel-wget support.
+	(StoppableHTTPServer.server_forever): Edit overridden method to remove
+	the global queue variable. No longer required under the new working
+	(WgetHTTPRequestHandler.do_QUIT): Don't push fileSys through the queue
+	(_Handler): Rename class __Handler to _Handler to match Python's
+	encapsulation rules
+	(_Handler.do_POST): fileSys is now an object variable of the server
+	(_Handler.do_PUT): Same
+	(_Handler.send_put): Same
+	(_Handler.send_head): Same
+	(HTTPd): New class that wraps around the server for Threading
+	(create_server): Make new object of HTTPd.
+	(spawn_server): Start the thread created through create_server
+	(ret_fileSys): Removed method. No longer required.
+	* WgetTest.py (HTTPTest.__init__): Don't explicitly set
+	self.act_retcode. Instead toggle tests_passed boolean to set the
+	correct return code.
+	(HTTPTest.HTTP_setup): We no longer call HTTPServer.spawn_server to
+	start a new instance of the server.
+	(HTTPTest.init_HTTP_server): We no longer call the old
+	create_server(), spawn_server() methods. Instead use the new HTTPd
+	class interface to create new instances of the server
+	(HTTPTest.stop_HTTP_server): Don't ask server to return fileSys.
+
+2013-09-07  Darshit Shah  <darnir@gmail.com>
+
 	* Test-Post.py: Test basic functionality for sending HTTP POST
 	requests using the --method command
 	* Makefile.am: Add new test
