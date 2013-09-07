@@ -238,7 +238,6 @@ class HTTPTest (CommonMethods):
             getattr (self, test_func) (test_params[test_func])
 
 
-        #HTTPServer.spawn_server (self.server)
         self.act_retcode = self.exec_wget (self.options, self.urls, self.domain)
         self.stop_HTTP_Server ()
 
@@ -250,8 +249,6 @@ class HTTPTest (CommonMethods):
             getattr (self, post_hook_func) (post_hook[post_hook_func])
 
     def init_HTTP_Server (self):
-        #server = HTTPServer.create_server ()
-        #return server
         server = HTTPServer.HTTPd ()
         server.start ()
         return server
@@ -259,9 +256,7 @@ class HTTPTest (CommonMethods):
     def stop_HTTP_Server (self):
         conn = http.client.HTTPConnection (self.domain.strip ('/'))
         conn.request ("QUIT", "/")
-        #self.fileSys = HTTPServer.ret_fileSys ()
         conn.getresponse ()
-        #server.stop ()
 
 """ WgetFile is a File Data Container object """
 

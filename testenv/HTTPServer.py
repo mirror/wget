@@ -1,4 +1,3 @@
-from multiprocessing import Process, Queue
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from base64 import b64encode
 from random import random
@@ -11,7 +10,7 @@ import re
 class InvalidRangeHeader (Exception):
 
     """ Create an Exception for handling of invalid Range Headers. """
-    # Maybe: This exception should be generalized to handle other issues too.
+    # TODO: Eliminate this exception and use only ServerError
 
     def __init__ (self, err_message):
         self.err_message = err_message
@@ -26,12 +25,7 @@ class StoppableHTTPServer (HTTPServer):
     """ Define methods for configuring the Server. """
 
     def server_conf (self, filelist, conf_dict):
-        """ Set Server Rules and File System for this instance.
-
-        This method should be called before the Server is forked into a new
-        process. This is because of how the system-level fork() call works.
-
-        """
+        """ Set Server Rules and File System for this instance. """
         self.server_configs = conf_dict
         self.fileSys = filelist
 
@@ -41,48 +35,15 @@ class StoppableHTTPServer (HTTPServer):
             self.handle_request ()
 
 
-"""    def serve_forever (self, q):
-        # Override method allowing for programmatical shutdown process.
-        global queue
-        queue = q
-        self.stop = False
-        while not self.stop:
-            self.handle_request ()
-"""
-
 class WgetHTTPRequestHandler (BaseHTTPRequestHandler):
 
     """ Define methods for handling Test Checks. """
-
-    # List of Checks that are run on the Server-side.
-    tests = [
-        "expect_headers",
-        "reject_headers",
-        "is_authorized",
-        "custom_response",
-        "test_cookies"
-    ]
-
-    def test_cookies (self):
-        pass
-        """
-        cookie_recd = self.headers.get ('Cookie')
-        cookies = self.get_rule_list ('Cookie')
-        cookie_exp = cookies.cookie_value if cookies else None
-        if cookie_exp == cookie_recd:
-            return True
-        else:
-            self.send_response (400, "Cookie Mismatch")
-            self.finish_headers ()
-            return False
-        """
 
     def get_rule_list (self, name):
         r_list = self.rules.get (name) if name in self.rules else None
         return r_list
 
     def do_QUIT (self):
-        #queue.put (self.server.fileSys)
         self.send_response (200)
         self.end_headers ()
         self.server.stop = True
@@ -395,14 +356,6 @@ class _Handler (WgetHTTPRequestHandler):
                     print (se.__str__())
                     return (None, None)
 
-            testPassed = True
-            for check in self.tests:
-                if testPassed is True:
-                    assert hasattr (self, check)
-                    testPassed = getattr (self, check) ()
-                else:
-                    return (None, None)
-
             content = self.server.fileSys.get (path)
             content_length = len (content)
             try:
@@ -449,18 +402,5 @@ class HTTPd (threading.Thread):
 
     def server_conf (self, file_list, server_rules):
         self.server.server_conf (file_list, server_rules)
-
-
-def create_server ():
-    server = HTTPd ()
-    return server
-
-
-def spawn_server (server):
-    #global q
-    #q = Queue()
-    #server_process = Process (target=server.serve_forever, args=(q,))
-    #server_process.start ()
-    server.start ()
 
 # vim: set ts=8 sts=4 sw=3 tw=0 et :

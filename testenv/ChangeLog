@@ -1,5 +1,10 @@
 2013-09-07  Darshit Shah  <darnir@gmail.com>
 
+	* HTTPServer.py: Remove bunch of old code artefacts
+	* WgetTest.py: Same
+
+2013-09-07  Darshit Shah  <darnir@gmail.com>
+
 	* HTTPServer.py (StoppableHTTPServer.server_conf): Change global
 	variable fileSys to an object variable. This is good programming
 	practice and required for parallel-wget support.
