@@ -1,3 +1,8 @@
+2013-09-06  Darshit Shah  <darnir@gmail.com>
+
+	* main.c (option_data[]): Change option to metalink-file in accordance
+	with the information in the documentation
+
 2013-07-12  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* utils.c (run_with_timeout): abort when there are more threads.

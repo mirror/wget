@@ -237,7 +237,7 @@ static struct cmdline_option option_data[] =
     { "local-encoding", 0, OPT_VALUE, "localencoding", -1 },
     { "max-redirect", 0, OPT_VALUE, "maxredirect", -1 },
 #ifdef ENABLE_METALINK
-    { "metalink", 0, OPT_VALUE, "metalink", -1 },
+    { "metalink-file", 0, OPT_VALUE, "metalink", -1 },
 #endif
     { "method", 0, OPT_VALUE, "method", -1 },
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
