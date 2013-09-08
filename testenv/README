@@ -107,15 +107,38 @@ The timestamp string should be a valid Unix Timestamp as defined in RFC xxxx.
 The rules object is a dictionary element, with the key as the Rule Name and
 value as the Rule Data. In most cases, the Rule Data is another dictionary.
 
+Various variables used consistently across all tests are:
+    * WGET_OPTIONS: The command line string passed to Wget upon invokation. This
+    string may contain URLs, like in the case where in-URL authentication is
+    used. Variable names passed like {{var_name}} will be replaced by the contents
+    of the variable self.var_name before being passed to Wget
+    * WGET_URLS: This is a list of filenames which will be appended as the URLs
+    to Wget during invokation.
+    * Files: This variable defines the files that exist in the Server's
+    filesystem. It has two forms. In the Single Server Test Model, this variable
+    is a List of WgetFile objects which lie on the server. However, in the case
+    where multiple servers are spawned, the Files variable MUST be a list of
+    lists of WgetFile objects. This means that File[0] is a list of WgetFile
+    objects that lie on Server[0], File[1] a list of files on Server[1] and so
+    on.
+    * Existing_Files: This is a list of files that already exist in the
+    directory from which Wget is invoked.
+    * ExpectedReturnCode: The Exit Code expected to be returned by Wget after
+    the test.
+    * ExpectedDownloadedFiles: A list of files that are expected in the local
+    directory after Wget has finished executing. This does not include the files
+    already existing before Wget was launched and must be mentioned again.
+
 Both, the HTTPTest and FTPTest modules have the same prototype:
 {
     name,
     pre_hook,
     test_options,
-    post_hook
+    post_hook,
+    servers
 }
-name expects the string name, and is usually passed the TEST_NAME variable.
-The remaining three hooks, expect python dictionary objects.
+name expects the string name, and is usually passed the TEST_NAME variable,
+the three hooks, expect python dictionary objects and servers is an integer.
 
 Valid File Rules:
 ================================================================================

@@ -1,3 +1,8 @@
+2013-09-08  Darshit Shah  <darnir@gmail.com>
+
+	* README (File Structure): Add explanation about various variables
+	used consistently across all tests.
+
 2013-09-07  Darshit Shah  <darnir@gmail.com>
 
 	* HTTPServer.py: Remove bunch of old code artefacts
