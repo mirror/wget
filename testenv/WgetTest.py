@@ -36,19 +36,23 @@ class CommonMethods:
         self.port = str (addr[1])
         return addr[0] + ":" + str(addr[1]) + "/"
 
-    def exec_wget (self, options, urls, domain):
-        cmd_line = self.get_cmd_line (options, urls, domain)
+    def exec_wget (self, options, urls, domain_list):
+        cmd_line = self.get_cmd_line (options, urls, domain_list)
         params = shlex.split (cmd_line)
+        print (params)
         retcode = call (params)
         return retcode
 
-    def get_cmd_line (self, options, urls, domain):
+    def get_cmd_line (self, options, urls, domain_list):
         TEST_PATH = os.path.abspath (".")
         WGET_PATH = os.path.join (TEST_PATH, "..", "..", "src", "wget")
         WGET_PATH = os.path.abspath (WGET_PATH)
         cmd_line = WGET_PATH + " " + options + " "
-        for url in urls:
-            cmd_line += domain + url + " "
+        for i in range (0, self.servers):
+            for url in urls[i]:
+                cmd_line += domain_list[i] + url + " "
+#        for url in urls:
+#            cmd_line += domain_list[0] + url + " "
         print (cmd_line)
         return cmd_line
 
@@ -144,13 +148,14 @@ class CommonMethods:
     """ Pre-Test Hook Function Calls """
 
     def ServerFiles (self, server_files):
-        file_list = dict ()
-        server_rules = dict ()
-        for file_obj in server_files:
-            file_list[file_obj.name] = file_obj.content
-            rule_obj = self.get_server_rules (file_obj)
-            server_rules[file_obj.name] = rule_obj
-        self.server.server_conf (file_list, server_rules)
+        for i in range (0, self.servers):
+            file_list = dict ()
+            server_rules = dict ()
+            for file_obj in server_files[i]:
+                file_list[file_obj.name] = file_obj.content
+                rule_obj = self.get_server_rules (file_obj)
+                server_rules[file_obj.name] = rule_obj
+            self.server_list[i].server_conf (file_list, server_rules)
 
 
     def LocalFiles (self, local_files):
@@ -197,10 +202,11 @@ class HTTPTest (CommonMethods):
         name="Unnamed Test",
         pre_hook=dict(),
         test_params=dict(),
-        post_hook=dict()
+        post_hook=dict(),
+        servers=1
     ):
         try:
-            self.HTTP_setup (name, pre_hook, test_params, post_hook)
+            self.HTTP_setup (name, pre_hook, test_params, post_hook, servers)
         except TestFailed as tf:
             printer ("RED", "Error: " + tf.error)
             self.tests_passed = False
@@ -213,12 +219,20 @@ class HTTPTest (CommonMethods):
             printer ("GREEN", "Test Passed")
         finally:
             self._exit_test ()
-    def HTTP_setup (self, name, pre_hook, test_params, post_hook):
+    def HTTP_setup (self, name, pre_hook, test_params, post_hook, servers):
         self.name = name
+        self.servers = servers
         printer ("BLUE", "Running Test " + self.name)
         self.init_test_env (name)
-        self.server = self.init_HTTP_Server ()
-        self.domain = self.get_domain_addr (self.server.server_address)
+        self.server_list = list()
+        self.domain_list = list()
+        for server_number in range (0, servers):
+            server_inst = self.init_HTTP_Server ()
+            self.server_list.append (server_inst)
+            domain = self.get_domain_addr (server_inst.server_address)
+            self.domain_list.append (domain)
+        #self.server = self.init_HTTP_Server ()
+        #self.domain = self.get_domain_addr (self.server.server_address)
 
         for pre_hook_func in pre_hook:
             try:
@@ -236,8 +250,7 @@ class HTTPTest (CommonMethods):
                 raise TestFailed ("Test Option " + test_func + " unknown.")
             getattr (self, test_func) (test_params[test_func])
 
-
-        self.act_retcode = self.exec_wget (self.options, self.urls, self.domain)
+        self.act_retcode = self.exec_wget (self.options, self.urls, self.domain_list)
         self.stop_HTTP_Server ()
 
         for post_hook_func in post_hook:
@@ -253,7 +266,8 @@ class HTTPTest (CommonMethods):
         return server
 
     def stop_HTTP_Server (self):
-        self.server.server_inst.shutdown ()
+        for server in self.server_list:
+            server.server_inst.shutdown ()
 
 """ WgetFile is a File Data Container object """
 

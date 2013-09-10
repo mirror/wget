@@ -1,3 +1,20 @@
+2013-09-11  Darshit Shah  <darnir@gmail.com>
+
+	* WgetTest.py (CommonMethods.exec_wget): Expect domain_list instead of
+	domain.
+	(CommonMethods.get_cmd_line): Same. Generate command line by
+	prepending to each file it's respective domain string
+	(CommonMethods.ServerFiles): Generate file_list and server_rules for
+	each Server and set the config details
+	(HTTPTest): New named parameter, servers which signifies number of
+	servers to spawn
+	(HTTPTest.HTTP_setup): This method now takes servers as a new
+	parameter. Instead of storing server and domain, we now store
+	server_list and domain_list. Each server must be initialized through a
+	loop.
+	(HTTPTest.stop_HTTP_server): Stop all servers in a loop.
+	* Test-Parallel-Proto.py: Prototype test file for multiple servers.
+
 2013-09-10  Darshit Shah  <darnir@gmail.com>
 
 	* WgetTest.py (HTTPTest.stop_HTTP_server): With the threaded servers,
