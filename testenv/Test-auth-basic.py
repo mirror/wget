@@ -28,9 +28,9 @@ A_File = WgetFile ("File1", File1, rules=File1_rules)
 B_File = WgetFile ("File2", File2, rules=File2_rules)
 
 WGET_OPTIONS = "-d --user=Sauron --password=TheEye"
-WGET_URLS = ["File1", "File2"]
+WGET_URLS = [["File1", "File2"]]
 
-Files = [A_File, B_File]
+Files = [[A_File, B_File]]
 
 ExpectedReturnCode = 0
 ExpectedDownloadedFiles = [A_File, B_File]

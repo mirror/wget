@@ -25,9 +25,9 @@ File1_rules = {
 A_File = WgetFile ("LOTR", File1, rules=File1_rules)
 
 WGET_OPTIONS = "-d --content-disposition"
-WGET_URLS = ["LOTR"]
+WGET_URLS = [["LOTR"]]
 
-Files = [A_File]
+Files = [[A_File]]
 
 ExpectedReturnCode = 0
 ExpectedDownloadedFiles = [WgetFile ("JRR.Tolkein", File1)]

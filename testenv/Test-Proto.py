@@ -38,9 +38,9 @@ B_File = WgetFile ("File2", File2, rules=File2_rules)
 C_File = WgetFile ("File3", File3)
 
 WGET_OPTIONS = "-d --content-disposition --user=Sauron --password=TheEye"
-WGET_URLS = ["File1", "File2"]
+WGET_URLS = [["File1", "File2"]]
 
-Files = [A_File, B_File]
+Files = [[A_File, B_File]]
 Existing_Files = [C_File]
 
 ExpectedReturnCode = 0

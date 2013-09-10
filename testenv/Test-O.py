@@ -13,9 +13,9 @@ File1 = "Test Contents."
 A_File = WgetFile ("File1", File1)
 
 WGET_OPTIONS = "-d -O NewFile.txt"
-WGET_URLS = ["File1"]
+WGET_URLS = [["File1"]]
 
-Files = [A_File]
+Files = [[A_File]]
 ExistingFiles = [A_File]
 
 ExpectedReturnCode = 0

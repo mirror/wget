@@ -23,9 +23,9 @@ File1_rules = {
 A_File = WgetFile ("File1", File1, rules=File1_rules)
 
 WGET_OPTIONS = "-d --auth-no-challenge http://Pacman:Omnomnom@localhost:{{port}}/File1"
-WGET_URLS = []
+WGET_URLS = [[]]
 
-Files = [A_File]
+Files = [[A_File]]
 
 ExpectedReturnCode = 0
 ExpectedDownloadedFiles = [A_File]

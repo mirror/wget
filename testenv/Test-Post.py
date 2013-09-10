@@ -17,9 +17,9 @@ TestMessage"""
 A_File = WgetFile ("File1", File1)
 
 WGET_OPTIONS = "-d --method=post --body-data=TestMessage"
-WGET_URLS = ["File1"]
+WGET_URLS = [["File1"]]
 
-Files = [A_File]
+Files = [[A_File]]
 
 ExpectedReturnCode = 0
 ExpectedDownloadedFiles = [WgetFile ("File1", File1_response)]

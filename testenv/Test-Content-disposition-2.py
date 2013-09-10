@@ -20,9 +20,9 @@ A_File = WgetFile ("HTTP.Teapot", File1)
 B_File = WgetFile ("File2", File2, rules=File2_rules)
 
 WGET_OPTIONS = "-d --content-disposition"
-WGET_URLS = ["File2"]
+WGET_URLS = [["File2"]]
 
-Files = [B_File]
+Files = [[B_File]]
 Existing_Files = [A_File]
 
 ExpectedReturnCode = 0
