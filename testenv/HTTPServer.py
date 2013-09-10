@@ -3,7 +3,6 @@ from base64 import b64encode
 from random import random
 from hashlib import md5
 import threading
-import os
 import re
 
 
@@ -29,11 +28,6 @@ class StoppableHTTPServer (HTTPServer):
         self.server_configs = conf_dict
         self.fileSys = filelist
 
-    def serve_forever (self):
-        self.stop = False
-        while not self.stop:
-            self.handle_request ()
-
 
 class WgetHTTPRequestHandler (BaseHTTPRequestHandler):
 
@@ -42,11 +36,6 @@ class WgetHTTPRequestHandler (BaseHTTPRequestHandler):
     def get_rule_list (self, name):
         r_list = self.rules.get (name) if name in self.rules else None
         return r_list
-
-    def do_QUIT (self):
-        self.send_response (200)
-        self.end_headers ()
-        self.server.stop = True
 
 
 class _Handler (WgetHTTPRequestHandler):
@@ -394,13 +383,13 @@ class HTTPd (threading.Thread):
         threading.Thread.__init__ (self)
         if addr is None:
             addr = ('localhost', 0)
-        self.server = self.server_class (addr, self.handler)
-        self.server_address = self.server.socket.getsockname()[:2]
+        self.server_inst = self.server_class (addr, self.handler)
+        self.server_address = self.server_inst.socket.getsockname()[:2]
 
     def run (self):
-       self.server.serve_forever ()
+       self.server_inst.serve_forever ()
 
     def server_conf (self, file_list, server_rules):
-        self.server.server_conf (file_list, server_rules)
+        self.server_inst.server_conf (file_list, server_rules)
 
 # vim: set ts=8 sts=4 sw=3 tw=0 et :

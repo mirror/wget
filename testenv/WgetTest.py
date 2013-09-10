@@ -4,7 +4,6 @@ import shlex
 import sys
 import traceback
 import HTTPServer
-import http.client
 import re
 from subprocess import call
 from ColourTerm import printer
@@ -254,9 +253,7 @@ class HTTPTest (CommonMethods):
         return server
 
     def stop_HTTP_Server (self):
-        conn = http.client.HTTPConnection (self.domain.strip ('/'))
-        conn.request ("QUIT", "/")
-        conn.getresponse ()
+        self.server.server_inst.shutdown ()
 
 """ WgetFile is a File Data Container object """
 

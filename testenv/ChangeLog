@@ -1,3 +1,14 @@
+2013-09-10  Darshit Shah  <darnir@gmail.com>
+
+	* WgetTest.py (HTTPTest.stop_HTTP_server): With the threaded servers,
+	we can simply use the socketserver.shutdown() method to close the
+	server instead of sending a QUIT command
+	* HTTPServer.py (StoppabelHTTPServer.serve_forever): Delete method. No
+	need to override this method anymore.
+	(WgetHTTPRequestHandler.do_QUIT): No longer required
+	(HTTPd): Rename self.server to self.server_inst to reduce ambiguity
+	when referenced from WgetTest
+
 2013-09-08  Darshit Shah  <darnir@gmail.com>
 
 	* README (File Structure): Add explanation about various variables
