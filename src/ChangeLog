@@ -1,3 +1,7 @@
+2013-09-07  Darshit Shah  <darnir@gmail.com>
+
+	* wget.h (option_data[]): Use wgint instead of int.
+
 2013-09-06  Darshit Shah  <darnir@gmail.com>
 
 	* main.c (option_data[]): Change option to metalink-file in accordance

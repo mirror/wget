@@ -363,10 +363,10 @@ typedef enum
 } uerr_t;
 
 struct range {
-  int first_byte;
-  int last_byte;
-  int bytes_covered;
-  int is_assigned;
+  wgint first_byte;
+  wgint last_byte;
+  wgint bytes_covered;
+  wgint is_assigned;
   bool *resources;
   uerr_t status_least_severe;
 };
