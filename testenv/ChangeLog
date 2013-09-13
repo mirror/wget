@@ -1,5 +1,15 @@
 2013-09-13  Darshit Shah  <darnir@gmail.com>
 
+	* HTTPServer.py (_Handler.do_HEAD): If requested path is /, respond
+	with /index.html
+	(_Handler.do_HEAD): Smartly guess value of Content-Type Header from
+	file extension
+	(_Handler.guess_type): Use a preset list of extensions and
+	Content-Type strings. If the extension matches one in the list, use
+	that string, else default to "text/plain"
+
+2013-09-13  Darshit Shah  <darnir@gmail.com>
+
 	* WgetTest.py (CommonMethods._replace_substring): New method that will
 	replace a substring delimited by {{ }} characters by the value of
 	self.<substring> variable

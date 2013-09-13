@@ -1,4 +1,5 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from posixpath import basename, splitext
 from base64 import b64encode
 from random import random
 from hashlib import md5
@@ -328,7 +329,11 @@ class _Handler (WgetHTTPRequestHandler):
         """ Common code for GET and HEAD Commands.
         This method is overriden to use the fileSys dict.
         """
-        path = self.path[1:]
+
+        if self.path == "/":
+            path = "index.html"
+        else:
+            path = self.path[1:]
 
         if path in self.server.fileSys:
             self.rules = self.server.server_configs.get (path)
@@ -368,13 +373,28 @@ class _Handler (WgetHTTPRequestHandler):
                                                       content_length - 1,
                                                       content_length))
                 content_length -= self.range_begin
-            self.send_header ("Content-type", "text/plain")
+            cont_type = self.guess_type (path)
+            self.send_header ("Content-type", cont_type)
             self.send_header ("Content-Length", content_length)
             self.finish_headers ()
             return (content, self.range_begin)
         else:
             self.send_error (404, "Not Found")
             return (None, None)
+
+    def guess_type (self, path):
+        base_name = basename ("/" + path)
+        name, ext = splitext (base_name)
+        extension_map = {
+        ".txt"   :   "text/plain",
+        ".css"   :   "text/css",
+        ".html"  :   "text/html"
+        }
+        if ext in extension_map:
+            return extension_map[ext]
+        else:
+            return "text/plain"
+
 
 class HTTPd (threading.Thread):
     server_class = StoppableHTTPServer
