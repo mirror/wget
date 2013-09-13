@@ -1,3 +1,10 @@
+2013-09-13  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* configure.ac: added a summary of build options
+	  fixed some indentations
+	  removed the unconditionally adding of libz with --with-ssl
+	  removed -lgcrypt and -lgpg-error for gnutls
+
 2013-07-23  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* configure.ac: Remove AM_CONDITIONAL HAVE_NETTLE.
