@@ -1,3 +1,13 @@
+2013-09-13  Darshit Shah  <darnir@gmail.com>
+
+	* WgetTest.py (CommonMethods._replace_substring): New method that will
+	replace a substring delimited by {{ }} characters by the value of
+	self.<substring> variable
+	(CommonMethods.WgetCommands): Use the _replace_substring () call to
+	replace the substrings in the the command line.
+	(CommonMethods.ServerFiles): Run the _replace_substring () method on
+	the File contents too.
+
 2013-09-11  Darshit Shah  <darnir@gmail.com>
 
 	* WgetTest.py (CommonMethods.exec_wget): Expect domain_list instead of

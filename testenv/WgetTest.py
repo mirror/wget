@@ -105,6 +105,16 @@ class CommonMethods:
             print (local_filesys)
             raise TestFailed ("Extra files downloaded.")
 
+    def _replace_substring (self, string):
+        pattern = re.compile ('\{\{\w+\}\}')
+        match_obj = pattern.search (string)
+        if match_obj is not None:
+            rep = match_obj.group()
+            temp = getattr (self, rep.strip ('{}'))
+            string = string.replace (rep, temp)
+        return string
+
+
     """ Test Rule Definitions """
     """ This should really be taken out soon. All this extra stuff to ensure
         re-use of old code is crap. Someone needs to re-write it. The new rework
@@ -152,7 +162,8 @@ class CommonMethods:
             file_list = dict ()
             server_rules = dict ()
             for file_obj in server_files[i]:
-                file_list[file_obj.name] = file_obj.content
+                content = self._replace_substring (file_obj.content)
+                file_list[file_obj.name] = content
                 rule_obj = self.get_server_rules (file_obj)
                 server_rules[file_obj.name] = rule_obj
             self.server_list[i].server_conf (file_list, server_rules)
@@ -167,13 +178,7 @@ class CommonMethods:
     """ Test Option Function Calls """
 
     def WgetCommands (self, command_list):
-        pattern = re.compile ('\{\{\w+\}\}')
-        match_obj = pattern.search (command_list)
-        if match_obj is not None:
-            rep = match_obj.group()
-            temp = getattr (self, rep.strip ('{}'))
-            command_list = command_list.replace (rep, temp)
-        self.options = command_list
+        self.options = self._replace_substring (command_list)
 
     def Urls (self, url_list):
         self.urls = url_list
