@@ -1,3 +1,8 @@
+2013-09-13  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* recur.c (download_child_p): fix compile error when
+	  configured using --without-ssl.
+
 2013-09-07  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* gnutls.c (ssl_connect_wget): use gnutls_check_version()

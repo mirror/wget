@@ -526,11 +526,13 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
      More time- and memory- consuming tests should be put later on
      the list.  */
 
+#ifdef HAVE_SSL
   if (opt.https_only && u->scheme != SCHEME_HTTPS)
     {
       DEBUGP (("Not following non-HTTPS links.\n"));
       goto out;
     }
+#endif
 
   /* Determine whether URL under consideration has a HTTP-like scheme. */
   u_scheme_like_http = schemes_are_similar_p (u->scheme, SCHEME_HTTP);
