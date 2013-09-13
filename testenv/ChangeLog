@@ -1,5 +1,10 @@
 2013-09-13  Darshit Shah  <darnir@gmail.com>
 
+	* Test--spider-r.py: Test retrieval in recursive spider mode.
+	* Makefile.am: add new file
+
+2013-09-13  Darshit Shah  <darnir@gmail.com>
+
 	* HTTPServer.py (_Handler.do_HEAD): If requested path is /, respond
 	with /index.html
 	(_Handler.do_HEAD): Smartly guess value of Content-Type Header from
