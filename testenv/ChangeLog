@@ -1,3 +1,22 @@
+2013-09-14  Darshit Shah  <darnir@gmail.com>
+
+	* HTTPServer.py (StoppableHTTPServer): Define object variable
+	request_headers which stores a list of requests received by the server
+	(StoppableHTTPServer.get_req_headers): Return the list of Request
+	Headers stored by the server
+	(_Handler.do_HEAD): Send the Request MEthod string for identification
+	(_Handler.do_GET): Same
+	(_Handler.__log_request): Log the request in Request_Headers list
+	(_Handler.send_head): Make a call to __log_request
+	* Test--spider-r.py: Add new list, Request_List, which contains all
+	the requests that Wget is expected to send. This will allow for
+	fine-grained tests on recursive downloading.
+	* WgetTest.py (CommonMethods.FilesCrawled): New Post-Test Hook, that
+	ensures that all the expected Files on the server were accessed as
+	expected.
+	(HTTPTest.stop_HTTP_server): On stopping server, asks it to respond
+	with list of all requests it received.
+
 2013-09-13  Darshit Shah  <darnir@gmail.com>
 
 	* Test--spider-r.py: Test retrieval in recursive spider mode.

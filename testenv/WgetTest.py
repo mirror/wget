@@ -168,7 +168,6 @@ class CommonMethods:
                 server_rules[file_obj.name] = rule_obj
             self.server_list[i].server_conf (file_list, server_rules)
 
-
     def LocalFiles (self, local_files):
         for file_obj in local_files:
             file_handler = open (file_obj.name, "w")
@@ -192,6 +191,15 @@ class CommonMethods:
 
     def ExpectedFiles (self, exp_filesys):
         self.__check_downloaded_files (exp_filesys)
+
+    def FilesCrawled (self, Request_Headers):
+        for i in range (0, self.servers):
+            headers = set(Request_Headers[i])
+            o_headers = self.Request_remaining[i]
+            header_diff = headers.symmetric_difference (o_headers)
+            if len(header_diff) is not 0:
+                printer ("RED", str (header_diff))
+                raise TestFailed ("Not all files were crawled correctly")
 
 
 """ Class for HTTP Tests. """
@@ -271,7 +279,10 @@ class HTTPTest (CommonMethods):
         return server
 
     def stop_HTTP_Server (self):
+        self.Request_remaining = list ()
         for server in self.server_list:
+            server_req = server.server_inst.get_req_headers ()
+            self.Request_remaining.append (server_req)
             server.server_inst.shutdown ()
 
 """ WgetFile is a File Data Container object """

@@ -58,6 +58,21 @@ secondpage_html = WgetFile ("secondpage.html", secondpage)
 thirdpage_html = WgetFile ("thirdpage.html", thirdpage)
 dummy_txt = WgetFile ("dummy.txt", dummyfile)
 
+Request_List = [
+    [
+        "HEAD /",
+        "GET /",
+        "GET /robots.txt",
+        "HEAD /secondpage.html",
+        "GET /secondpage.html",
+        "HEAD /nonexistent",
+        "HEAD /thirdpage.html",
+        "GET /thirdpage.html",
+        "HEAD /dummy.txt",
+        "HEAD /againnonexistent"
+    ]
+]
+
 WGET_OPTIONS = "-d --spider -r"
 WGET_URLS = [[""]]
 
@@ -76,7 +91,8 @@ test_options = {
 }
 post_test = {
     "ExpectedFiles"     : ExpectedDownloadedFiles,
-    "ExpectedRetcode"   : ExpectedReturnCode
+    "ExpectedRetcode"   : ExpectedReturnCode,
+    "FilesCrawled"      : Request_List
 }
 
 err = HTTPTest (

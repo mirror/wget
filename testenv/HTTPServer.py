@@ -22,12 +22,17 @@ class ServerError (Exception):
 
 class StoppableHTTPServer (HTTPServer):
 
+    request_headers = list ()
+
     """ Define methods for configuring the Server. """
 
     def server_conf (self, filelist, conf_dict):
         """ Set Server Rules and File System for this instance. """
         self.server_configs = conf_dict
         self.fileSys = filelist
+
+    def get_req_headers (self):
+        return self.request_headers
 
 
 class WgetHTTPRequestHandler (BaseHTTPRequestHandler):
@@ -49,10 +54,10 @@ class _Handler (WgetHTTPRequestHandler):
     """ Define functions for various HTTP Requests. """
 
     def do_HEAD (self):
-        self.send_head ()
+        self.send_head ("HEAD")
 
     def do_GET (self):
-        content, start = self.send_head ()
+        content, start = self.send_head ("GET")
         if content:
             if start is None:
                 self.wfile.write (content.encode ('utf-8'))
@@ -325,15 +330,25 @@ class _Handler (WgetHTTPRequestHandler):
                     return False
         return True
 
-    def send_head (self):
+    def __log_request (self, method):
+        req = method + " " + self.path
+        self.server.request_headers.append (req)
+
+    def send_head (self, method):
         """ Common code for GET and HEAD Commands.
         This method is overriden to use the fileSys dict.
+
+        The method variable contains whether this was a HEAD or a GET Request.
+        According to RFC 2616, the server should not differentiate between
+        the two requests, however, we use it here for a specific test.
         """
 
         if self.path == "/":
             path = "index.html"
         else:
             path = self.path[1:]
+
+        self.__log_request (method)
 
         if path in self.server.fileSys:
             self.rules = self.server.server_configs.get (path)
