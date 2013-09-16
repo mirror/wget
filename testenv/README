@@ -5,11 +5,10 @@ Install Instructions:
 
 This Test Suite exploits the Parallel Test Harness available in GNU Autotools.
 Since it uses features from a relatively recent verion of Autotools, the minimum
-required version as been bumped up to 1.11. Even with Automake v1.11, one MUST
-run automake with the --add-missing switch to add the required driver files to
-the repo. This is not required as of Automake v1.13.
+required version as been bumped up to 1.11.
 Run the './configure' command to generate the Makefile and then run 'make check'
-to execute the Test Suite.
+to execute the Test Suite. Use the '-j n' option with 'make check' to execute
+n tests simultaneously.
 
 File List:
 ================================================================================
@@ -58,16 +57,18 @@ Exit Codes:
 
 Following is a list of Exit Status Codes for the tests:
 *   0  Test Successful
+*  66  Errors/Warnings Reported by Thread Sanitizer (If built with -fsanitize)
 *  77  Test Skipped
 *  99  Hard Error
 * 100  Test Failed
 
-Tests are skipped when they are either not supported by the platform, or Wget is
-not compiled with support for that feature. This feature has not yet been
+Tests are skipped when they are either not supported by the platform, or Wget
+is not compiled with support for that feature. This feature has not yet been
 implemented.
 
-Hard Errors occur when the Test File could not be found or there were errors
-while parsing it.
+Hard Errors occur when there are problems with the Environment code. Hard
+Error reporting is currently not enabled and all errors are reported as
+failures.
 
 All exceptions should ideally be handled gracefully. If you see any unhandled
 exceptions, please file a bug report at <bug-wget@gnu.org>
@@ -75,6 +76,7 @@ exceptions, please file a bug report at <bug-wget@gnu.org>
 Environment Variables:
 ================================================================================
 
+TODO: Set variables for ONLY_SERVER and WGET_PATH too.
 * NO_CLEANUP: Do not remove the temporary files created by the test.
   This will prevent the ${testname}-test directory from being deleted
 
@@ -110,17 +112,16 @@ value as the Rule Data. In most cases, the Rule Data is another dictionary.
 Various variables used consistently across all tests are:
     * WGET_OPTIONS: The command line string passed to Wget upon invokation. This
     string may contain URLs, like in the case where in-URL authentication is
-    used. Variable names passed like {{var_name}} will be replaced by the contents
-    of the variable self.var_name before being passed to Wget
+    used. Variable names passed like {{var_name}} will be replaced by the
+    contents of the variable self.var_name before being passed to Wget
     * WGET_URLS: This is a list of filenames which will be appended as the URLs
-    to Wget during invokation.
+    to Wget during invokation. This is a list of lists, where WGET_URLS[0]
+    represents the list of Filenames called from Server[0], WGET_URLS[1] is a
+    list of files downloaded from Server[2], etc.
     * Files: This variable defines the files that exist in the Server's
-    filesystem. It has two forms. In the Single Server Test Model, this variable
-    is a List of WgetFile objects which lie on the server. However, in the case
-    where multiple servers are spawned, the Files variable MUST be a list of
-    lists of WgetFile objects. This means that File[0] is a list of WgetFile
-    objects that lie on Server[0], File[1] a list of files on Server[1] and so
-    on.
+    filesystem. The Files variable is a list of lists of WgetFile objects.
+    This means that File[0] is a list of WgetFile objects that lie on Server[0],
+    File[1] a list of files on Server[1] and so on.
     * Existing_Files: This is a list of files that already exist in the
     directory from which Wget is invoked.
     * ExpectedReturnCode: The Exit Code expected to be returned by Wget after
@@ -128,6 +129,8 @@ Various variables used consistently across all tests are:
     * ExpectedDownloadedFiles: A list of files that are expected in the local
     directory after Wget has finished executing. This does not include the files
     already existing before Wget was launched and must be mentioned again.
+    * Request_List: An unordered list of Requests that each server must receive.
+    This too is a list of lists and follows the same convention as others above.
 
 Both, the HTTPTest and FTPTest modules have the same prototype:
 {
@@ -207,6 +210,10 @@ etc. The following hooks are currently supported:
     Wget is expected to exit.
     * ExpectedFiles   : This is a list of WgetFile objects of the files that
     must exist locally on disk in the Test directory.
+    * FilesCrawled    : This requires a list of the Requests that the server is
+    expected to receive. The order is un-important since it will vary on the
+    parallel-wget branch. This hook is used in tests for Recursive mode to
+    ensure that the website is traversed correctly.
 
 Writing New Tests:
 ================================================================================
@@ -240,13 +247,10 @@ Work Remaining:
 ================================================================================
 
 Some amount of work still remains to be done.
-    * Shift to a Thread-based model
     * Errors in server-side checks need to be handled more explicitly
     * Support parallel-wget branch
-        * This can easily be done by using the multiprocess.mixin functionality
-        A sample of the required code exists in the earliest commits of the
-        test environment code in my GitHub account.
-        * However, a smarter handling of the same with Threads should be found
+        * Support to spawn multiple servers is already in place. Need to handle
+        multiple requests to a server simultaneously. Use THreading MixIn.
     * SSL Tests. Use xyne's HTTPS server implemention
     * Complete support for FTP Tests
     * IRI Support. This shouldn't require much effort

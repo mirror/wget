@@ -1,3 +1,7 @@
+2013-09-16  Darshit Shah  <darnir@gmail.com>
+
+	* README: Update documentation
+
 2013-09-14  Darshit Shah  <darnir@gmail.com>
 
 	* HTTPServer.py (StoppableHTTPServer): Define object variable
