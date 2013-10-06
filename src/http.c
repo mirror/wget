@@ -2572,6 +2572,8 @@ read_header:
 #define REGISTER_PERSISTENT_CONNECTION()  {                             \
     if (keep_alive)                                                     \
       register_persistent (conn->host, conn->port, sock, using_ssl);    \
+    else                                                                \
+      CLOSE_FINISH(sock);                                               \
   } while (0)
 
   if (statcode == HTTP_STATUS_UNAUTHORIZED)
@@ -2601,14 +2603,15 @@ read_header:
               return err;
             }
           else
-            CLOSE_FINISH (sock);
+            REGISTER_PERSISTENT_CONNECTION ();
         }
       else
         {
           /* Since WARC is disabled, we are not interested in the response body.  */
           if (keep_alive && !head_only
-              && skip_short_body (sock, contlen, chunked_transfer_encoding))
-            CLOSE_FINISH (sock);
+              && skip_short_body (sock, contlen, chunked_transfer_encoding)) {
+            REGISTER_PERSISTENT_CONNECTION ();
+          }
           else
             CLOSE_INVALIDATE (sock);
         }
@@ -2920,14 +2923,16 @@ read_header:
                   return err;
                 }
               else
-                CLOSE_FINISH (sock);
+                REGISTER_PERSISTENT_CONNECTION ();
             }
           else
             {
               /* Since WARC is disabled, we are not interested in the response body.  */
               if (keep_alive && !head_only
                   && skip_short_body (sock, contlen, chunked_transfer_encoding))
-                CLOSE_FINISH (sock);
+                {
+                  REGISTER_PERSISTENT_CONNECTION ();
+                }
               else
                 CLOSE_INVALIDATE (sock);
             }
@@ -3099,7 +3104,7 @@ read_header:
               return err;
             }
           else
-            CLOSE_FINISH (sock);
+            REGISTER_PERSISTENT_CONNECTION();
         }
       else
         {
@@ -3113,8 +3118,10 @@ read_header:
             CLOSE_FINISH (sock);
           else if (keep_alive
                    && skip_short_body (sock, contlen, chunked_transfer_encoding))
-            /* Successfully skipped the body; also keep using the socket. */
-            CLOSE_FINISH (sock);
+            {
+              /* Successfully skipped the body; also keep using the socket. */
+              REGISTER_PERSISTENT_CONNECTION();
+            }
           else
             CLOSE_INVALIDATE (sock);
         }
