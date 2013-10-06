@@ -205,7 +205,8 @@ struct options
     secure_protocol_auto,
     secure_protocol_sslv2,
     secure_protocol_sslv3,
-    secure_protocol_tlsv1
+    secure_protocol_tlsv1,
+    secure_protocol_pfs
   } secure_protocol;		/* type of secure protocol to use. */
   bool check_cert;		/* whether to validate the server's cert */
   char *cert_file;		/* external client certificate to use. */
@@ -220,9 +221,9 @@ struct options
   char *ca_directory;		/* CA directory (hash files) */
   char *ca_cert;		/* CA certificate file to use */
 
-
   char *random_file;		/* file with random data to seed the PRNG */
   char *egd_file;		/* file name of the egd daemon socket */
+  bool https_only;		/* whether to follow HTTPS only */
 #endif /* HAVE_SSL */
 
   bool cookies;			/* whether cookies are used. */

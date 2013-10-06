@@ -763,7 +763,7 @@ Turn on time-stamping.  @xref{Time-Stamping}, for details.
 @item --no-use-server-timestamps
 Don't set the local file's timestamp by the one on the server.
 
-By default, when a file is downloaded, it's timestamps are set to
+By default, when a file is downloaded, its timestamps are set to
 match those from the remote file. This allows the use of
 @samp{--timestamping} on subsequent invocations of wget. However, it
 is sometimes useful to base the local file's timestamp on when it was
@@ -1624,16 +1624,24 @@ without SSL support, none of these options are available.
 @cindex SSL protocol, choose
 @item --secure-protocol=@var{protocol}
 Choose the secure protocol to be used.  Legal values are @samp{auto},
-@samp{SSLv2}, @samp{SSLv3}, and @samp{TLSv1}.  If @samp{auto} is used,
-the SSL library is given the liberty of choosing the appropriate
+@samp{SSLv2}, @samp{SSLv3}, @samp{TLSv1} and @samp{PFS}.  If @samp{auto}
+is used, the SSL library is given the liberty of choosing the appropriate
 protocol automatically, which is achieved by sending an SSLv2 greeting
 and announcing support for SSLv3 and TLSv1.  This is the default.
 
 Specifying @samp{SSLv2}, @samp{SSLv3}, or @samp{TLSv1} forces the use
 of the corresponding protocol.  This is useful when talking to old and
-buggy SSL server implementations that make it hard for OpenSSL to
-choose the correct protocol version.  Fortunately, such servers are
-quite rare.
+buggy SSL server implementations that make it hard for the underlying
+SSL library to choose the correct protocol version.  Fortunately, such
+servers are quite rare.
+
+Specifying @samp{PFS} enforces the use of the so-called Perfect Forward
+Security cipher suites. In short, PFS adds security by creating a one-time
+key for each SSL connection. It has a bit more CPU impact on client and server.
+We use known to be secure ciphers (e.g. no MD4) and the TLS protocol.
+
+@item --https-only
+When in recursive mode, only HTTPS links are followed.
 
 @cindex SSL certificate, check
 @item --no-check-certificate

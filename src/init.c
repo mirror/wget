@@ -194,6 +194,9 @@ static const struct {
   { "httppasswd",       &opt.http_passwd,       cmd_string }, /* deprecated */
   { "httppassword",     &opt.http_passwd,       cmd_string },
   { "httpproxy",        &opt.http_proxy,        cmd_string },
+#ifdef HAVE_SSL
+  { "httpsonly",        &opt.https_only,        cmd_boolean },
+#endif
   { "httpsproxy",       &opt.https_proxy,       cmd_string },
   { "httpuser",         &opt.http_user,         cmd_string },
   { "ignorecase",       &opt.ignore_case,       cmd_boolean },
@@ -1509,6 +1512,7 @@ cmd_spec_secure_protocol (const char *com, const char *val, void *place)
     { "sslv2", secure_protocol_sslv2 },
     { "sslv3", secure_protocol_sslv3 },
     { "tlsv1", secure_protocol_tlsv1 },
+    { "pfs", secure_protocol_pfs },
   };
   int ok = decode_string (val, choices, countof (choices), place);
   if (!ok)

@@ -687,15 +687,16 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
     }
 
   /* Several things to check for:
-     1. if scheme is not http, and we don't load it
-     2. check for relative links (if relative_only is set)
-     3. check for domain
-     4. check for no-parent
-     5. check for excludes && includes
-     6. check for suffix
-     7. check for same host (if spanhost is unset), with possible
+     1. if scheme is not https and https_only requested
+     2. if scheme is not http, and we don't load it
+     3. check for relative links (if relative_only is set)
+     4. check for domain
+     5. check for no-parent
+     6. check for excludes && includes
+     7. check for suffix
+     8. check for same host (if spanhost is unset), with possible
      gethostbyname baggage
-     8. check for robots.txt
+     9. check for robots.txt
 
      Addendum: If the URL is FTP, and it is to be loaded, only the
      domain and suffix settings are "stronger".
@@ -706,6 +707,14 @@ download_child_p (const struct urlpos *upos, struct url *parent, int depth,
 
      More time- and memory- consuming tests should be put later on
      the list.  */
+
+#ifdef HAVE_SSL
+  if (opt.https_only && u->scheme != SCHEME_HTTPS)
+    {
+      DEBUGP (("Not following non-HTTPS links.\n"));
+      goto out;
+    }
+#endif
 
   /* Determine whether URL under consideration has a HTTP-like scheme. */
   u_scheme_like_http = schemes_are_similar_p (u->scheme, SCHEME_HTTP);

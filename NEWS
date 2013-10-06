@@ -23,6 +23,11 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Add support for MD5-SESS
 
 ** Do not fail on non fatal GNU TLS alerts during handshake.
+
+** Add support for --https-only.  When used wget will follow only
+   HTTPS links in recursive mode.
+
+** Support Perfect-Forward Secrecy in --secure-protocol.
 
 * Changes in Wget 1.14
 

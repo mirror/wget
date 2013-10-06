@@ -250,57 +250,54 @@ dnl Checks for libraries.
 dnl
 
 AS_IF([test x"$with_zlib" != xno], [
+  with_zlib=yes
   AC_CHECK_LIB(z, compress)
 ])
 
 AS_IF([test x"$with_ssl" = xopenssl], [
-    dnl some versions of openssl use zlib compression
-    AC_CHECK_LIB(z, compress)
+  dnl As of this writing (OpenSSL 0.9.6), the libcrypto shared library
+  dnl doesn't record its dependency on libdl, so we need to make sure
+  dnl -ldl ends up in LIBS on systems that have it.  Most OSes use
+  dnl dlopen(), but HP-UX uses shl_load().
+  AC_CHECK_LIB(dl, dlopen, [], [
+    AC_CHECK_LIB(dl, shl_load)
+  ])
 
-    dnl As of this writing (OpenSSL 0.9.6), the libcrypto shared library
-    dnl doesn't record its dependency on libdl, so we need to make sure
-    dnl -ldl ends up in LIBS on systems that have it.  Most OSes use
-    dnl dlopen(), but HP-UX uses shl_load().
-    AC_CHECK_LIB(dl, dlopen, [], [
-      AC_CHECK_LIB(dl, shl_load)
-    ])
-
-    ssl_found=no
-    case $host_os in
-      *mingw32* )
-        dnl prefer link to openssl dlls if possible. if not then fallback on static libs. if not then error
+  ssl_found=no
+  case $host_os in
+    *mingw32* )
+      dnl prefer link to openssl dlls if possible. if not then fallback on static libs. if not then error
         
-        AC_CHECK_LIB(eay32, EVP_MD_CTX_init)
-        if test x"$ac_cv_lib_eay32_EVP_MD_CTX_init" != xno
-        then
-          AC_CHECK_LIB(ssl32, SSL_connect, [
-            ssl_found=yes
-            AC_MSG_NOTICE([Enabling support for SSL via OpenSSL (shared)])
-            AC_LIBOBJ([openssl])
-            LIBS="${LIBS} -lssl32"
-            AC_DEFINE([HAVE_LIBSSL32], [1], [Define to 1 if you have the `ssl32' library (-lssl32).])
-          ],
-          AC_MSG_ERROR([openssl not found: shared lib eay32 found but ssl32 not found]))
+      AC_CHECK_LIB(eay32, EVP_MD_CTX_init)
+      if test x"$ac_cv_lib_eay32_EVP_MD_CTX_init" != xno
+      then
+        AC_CHECK_LIB(ssl32, SSL_connect, [
+          ssl_found=yes
+          AC_MSG_NOTICE([Enabling support for SSL via OpenSSL (shared)])
+          AC_LIBOBJ([openssl])
+          LIBS="${LIBS} -lssl32"
+          AC_DEFINE([HAVE_LIBSSL32], [1], [Define to 1 if you have the `ssl32' library (-lssl32).])
+        ],
+        AC_MSG_ERROR([openssl not found: shared lib eay32 found but ssl32 not found]))
           
-        else
-          LIBS+=' -lgdi32'
-          dnl fallback and test static libs
-        fi
-        dnl add zdll lib as dep for above tests?
-      ;;
-    esac
+      else
+        LIBS+=' -lgdi32'
+        dnl fallback and test static libs
+      fi
+      dnl add zdll lib as dep for above tests?
+    ;;
+  esac
 
-AS_IF([test x$ssl_found != xyes],
-[
-  dnl Now actually check for -lssl if it wasn't already found
-    AC_LIB_HAVE_LINKFLAGS([ssl], [crypto z], [
-  #include <openssl/ssl.h>
-  #include <openssl/x509.h>
-  #include <openssl/err.h>
-  #include <openssl/rand.h>
-  #include <openssl/des.h>
-  #include <openssl/md4.h>
-  #include <openssl/md5.h>
+  AS_IF([test x$ssl_found != xyes], [
+    dnl Now actually check for -lssl if it wasn't already found
+    AC_LIB_HAVE_LINKFLAGS([ssl], [crypto], [
+#include <openssl/ssl.h>
+#include <openssl/x509.h>
+#include <openssl/err.h>
+#include <openssl/rand.h>
+#include <openssl/des.h>
+#include <openssl/md4.h>
+#include <openssl/md5.h>
     ], [SSL_library_init ()])
     if test x"$LIBSSL" != x
     then
@@ -312,33 +309,30 @@ AS_IF([test x$ssl_found != xyes],
     then
       AC_MSG_ERROR([--with-ssl=openssl was given, but SSL is not available.])
     fi
-])
+  ])
 
 ], [
-  # --with-ssl is not gnutls: check if it's no
+  # --with-ssl is not openssl: check if it's no
   AS_IF([test x"$with_ssl" != xno], [
-    dnl Now actually check for -lssl
+    dnl default is -lgnutls
+    with_ssl=gnutls
 
-    AC_CHECK_LIB(z, compress)
-    AC_CHECK_LIB(gpg-error, gpg_err_init)
-    AC_CHECK_LIB(gcrypt, gcry_control)
-
-  dnl Now actually check for -lssl
-  AC_LIB_HAVE_LINKFLAGS([gnutls], [], [
+    dnl Now actually check for -lgnutls
+    AC_LIB_HAVE_LINKFLAGS([gnutls], [], [
 #include <gnutls/gnutls.h>
-  ], [gnutls_global_init()])
-  if test x"$LIBGNUTLS" != x
-  then
-    ssl_found=yes
-    AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
-    AC_LIBOBJ([gnutls])
-    LIBS="$LIBGNUTLS $LIBS"
-  else
-    AC_MSG_ERROR([--with-ssl was given, but GNUTLS is not available.])
-  fi
+    ], [gnutls_global_init()])
+    if test x"$LIBGNUTLS" != x
+    then
+      ssl_found=yes
+      AC_MSG_NOTICE([compiling in support for SSL via GnuTLS])
+      AC_LIBOBJ([gnutls])
+      LIBS="$LIBGNUTLS $LIBS"
+    else
+      AC_MSG_ERROR([--with-ssl=gnutls was given, but GNUTLS is not available.])
+    fi
 
-  AC_CHECK_FUNCS(gnutls_priority_set_direct)
-  ]) # endif: --with-ssl == no?
+    AC_CHECK_FUNCS(gnutls_priority_set_direct)
+  ]) # endif: --with-ssl != no?
 ]) # endif: --with-ssl == openssl?
 
 dnl Enable NTLM if requested and if SSL is available.
@@ -346,6 +340,7 @@ if test x"$LIBSSL" != x || test "$ac_cv_lib_ssl32_SSL_connect" = yes
 then
   if test x"$ENABLE_NTLM" != xno
   then
+    ENABLE_NTLM=yes
     AC_DEFINE([ENABLE_NTLM], 1,
      [Define if you want the NTLM authorization support compiled in.])
     AC_LIBOBJ([http-ntlm])
@@ -359,6 +354,7 @@ else
     AC_DEFINE([HAVE_NETTLE], [1], [Use libnettle])
     if test x"$ENABLE_NTLM" != xno
     then
+      ENABLE_NTLM=yes
       AC_DEFINE([ENABLE_NTLM], 1,
        [Define if you want the NTLM authorization support compiled in.])
       AC_LIBOBJ([http-ntlm])
@@ -649,3 +645,20 @@ AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile util/Makefile
                  lib/Makefile])
 AC_CONFIG_HEADERS([src/config.h])
 AC_OUTPUT
+
+AC_MSG_NOTICE([Summary of build options:
+
+  Version:           $PACKAGE_VERSION
+  Host OS:           $host_os
+  Install prefix:    $prefix
+  Compiler:          $CC
+  CFlags:            $CFLAGS $CPPFLAGS
+  LDFlags:           $LDFLAGS
+  Libs:              $LIBS
+  SSL:               $with_ssl
+  Zlib:              $with_zlib
+  Digest:            $ENABLE_DIGEST
+  NTLM:              $ENABLE_NTLM
+  OPIE:              $ENABLE_OPIE
+  Debugging:         $ENABLE_DEBUG
+])

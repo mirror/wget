@@ -1,3 +1,20 @@
+2013-09-04  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* sample.wgetrc: added "secureprotocol" example
+	* wget.texi (HTTPS (SSL/TLS) Options): Document PFS.
+
+2013-08-23  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* sample.wgetrc: added "httpsonly" example
+
+2013-08-22  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* wget.texi: added description for --https-only
+
+2013-08-13  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* wget.texi (Download Options): Fix misspelling.
+
 2013-07-09  Giuseppe Scrivano  <gscrivano@gnu.org>
 
 	* wget.texi (Download Options): Add documentation for --backups.
