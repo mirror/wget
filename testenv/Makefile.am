@@ -51,3 +51,30 @@ TESTS = Test-auth-basic-fail.py			\
 XFAIL_TESTS =   Test-auth-both.py	\
 		Test--spider-r.py
 LOG_COMPILER = python3
+
+EXTRA_DIST = ColourTerm.py			\
+	FTPServer.py				\
+	HTTPServer.py				\
+	README					\
+	Test--spider-r.py			\
+	Test-Content-disposition-2.py		\
+	Test-Content-disposition.py		\
+	Test-Head.py				\
+	Test-O.py				\
+	Test-Parallel-Proto.py			\
+	Test-Post.py				\
+	Test-Proto.py				\
+	Test-auth-basic-fail.py			\
+	Test-auth-basic.py			\
+	Test-auth-both.py			\
+	Test-auth-digest.py			\
+	Test-auth-no-challenge-url.py		\
+	Test-auth-no-challenge.py		\
+	Test-auth-retcode.py			\
+	Test-auth-with-content-disposition.py	\
+	Test-c-full.py				\
+	Test-cookie-401.py			\
+	Test-cookie-domain-mismatch.py		\
+	Test-cookie-expires.py			\
+	Test-cookie.py				\
+	WgetTest.py
