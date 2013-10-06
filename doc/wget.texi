@@ -2071,6 +2071,8 @@ accept or reject (@pxref{Types of Files}). Note that if
 any of the wildcard characters, @samp{*}, @samp{?}, @samp{[} or
 @samp{]}, appear in an element of @var{acclist} or @var{rejlist},
 it will be treated as a pattern, rather than a suffix.
+In this case, you have to enclose the pattern into quotes to prevent
+your shell from expanding it, like in @samp{-A "*.mp3"} or @samp{-A '*.mp3'}.
 
 @item --accept-regex @var{urlregex}
 @itemx --reject-regex @var{urlregex}
@@ -2128,8 +2130,10 @@ dedicated @samp{--page-requisites} option.
 Ignore case when matching files and directories.  This influences the
 behavior of -R, -A, -I, and -X options, as well as globbing
 implemented when downloading from FTP sites.  For example, with this
-option, @samp{-A *.txt} will match @samp{file1.txt}, but also
+option, @samp{-A "*.txt"} will match @samp{file1.txt}, but also
 @samp{file2.TXT}, @samp{file3.TxT}, and so on.
+The quotes in the example are to prevent the shell from expanding the
+pattern.
 
 @item -H
 @itemx --span-hosts

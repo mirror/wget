@@ -1,3 +1,7 @@
+2013-10-06  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* wget.texi: add/explain quoting of wildcard patterns
+
 2013-09-04  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* sample.wgetrc: added "secureprotocol" example
