@@ -1,3 +1,8 @@
+2013-10-10  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* url.c (url_parse): Try to convert UTF-8 URLs to IDN.
+	* html-url.c (append_url): Parse URLs specifying an IRI structure.
+
 2013-09-13  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* recur.c (download_child_p): fix compile error when

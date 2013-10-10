@@ -701,7 +701,10 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
       if (!iri->utf8_encode)
         new_url = NULL;
       else
-        iri->orig_url = xstrdup (url);
+        {
+          iri->orig_url = xstrdup (url);
+          percent_encode = true;
+        }
     }
 
   /* XXX XXX Could that change introduce (security) bugs ???  XXX XXX*/
