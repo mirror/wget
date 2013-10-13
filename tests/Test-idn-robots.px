@@ -9,11 +9,14 @@ use HTTPTest;
 # " Kon'nichiwa <dot> Japan
 my $euc_jp_hostname = "\272\243\306\374\244\317.\306\374\313\334";
 my $punycoded_hostname = 'xn--v9ju72g90p.xn--wgv71a';
+my $escaped_hostname = "%ba%a3%c6%fc%a4%cf.%c6%fc%cb%dc";
 
 ###############################################################################
 
 my $starter_file = <<EOF;
 <a href="http://$euc_jp_hostname/foo.txt">The link</a>
+<a href="http://$punycoded_hostname/foo2.txt">The second link</a>
+<a href="http://$escaped_hostname/foo3.txt">The third link</a>
 EOF
 
 my $result_file = <<EOF;
@@ -38,6 +41,22 @@ my %urls = (
         },
         content => $result_file,
     },
+    "http://$punycoded_hostname/foo2.txt" => {
+        code => "200",
+        msg => "Uh-huh2",
+        headers => {
+            'Content-Type' => 'text/plain',
+        },
+        content => $result_file,
+    },
+    "http://$punycoded_hostname/foo3.txt" => {
+        code => "200",
+        msg => "Uh-huh3",
+        headers => {
+            'Content-Type' => 'text/plain',
+        },
+        content => $result_file,
+    },
     "http://$punycoded_hostname/robots.txt" => {
         code => "200",
         msg => "Uh-huh",
@@ -48,7 +67,7 @@ my %urls = (
     },
 );
 
-my $cmdline = $WgetTest::WGETPATH . " --iri -rH"
+my $cmdline = $WgetTest::WGETPATH . " --iri -r"
     . " -e http_proxy=localhost:{{port}} --local-encoding=EUC-JP"
     . " http://$euc_jp_hostname/";
 
@@ -59,6 +78,12 @@ my %expected_downloaded_files = (
         content => $starter_file,
     },
     "$punycoded_hostname/foo.txt" => {
+        content => $result_file,
+    },
+    "$punycoded_hostname/foo2.txt" => {
+        content => $result_file,
+    },
+    "$punycoded_hostname/foo3.txt" => {
         content => $result_file,
     },
     "$punycoded_hostname/robots.txt" => {

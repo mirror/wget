@@ -284,6 +284,10 @@ append_url (const char *link_uri, int position, int size,
   const char *base = ctx->base ? ctx->base : ctx->parent_base;
   struct url *url;
 
+  struct iri *iri = iri_new ();
+  set_uri_encoding (iri, opt.locale, true);
+  iri->utf8_encode = true;
+
   if (!base)
     {
       DEBUGP (("%s: no base, merge will use \"%s\".\n",
@@ -301,7 +305,7 @@ append_url (const char *link_uri, int position, int size,
           return NULL;
         }
 
-      url = url_parse (link_uri, NULL, NULL, false);
+      url = url_parse (link_uri, NULL, iri, false);
       if (!url)
         {
           DEBUGP (("%s: link \"%s\" doesn't parse.\n",
@@ -323,7 +327,7 @@ append_url (const char *link_uri, int position, int size,
                quote_n (2, link_uri),
                quotearg_n_style (3, escape_quoting_style, complete_uri)));
 
-      url = url_parse (complete_uri, NULL, NULL, false);
+      url = url_parse (complete_uri, NULL, iri, false);
       if (!url)
         {
           DEBUGP (("%s: merged link \"%s\" doesn't parse.\n",
@@ -333,6 +337,8 @@ append_url (const char *link_uri, int position, int size,
         }
       xfree (complete_uri);
     }
+
+  iri_free (iri);
 
   DEBUGP (("appending %s to urlpos.\n", quote (url->url)));
 

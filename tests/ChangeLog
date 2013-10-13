@@ -1,3 +1,15 @@
+2013-10-10  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* Test-idn-robots-utf8.px: Remove -H.
+	* Test-idn-cmd.px: Likewise.
+	* Test-idn-cmd-utf8.px: Likewise.
+	Suggested by: Tim Ruehsen <tim.ruehsen@gmx.de>
+
+2013-10-07  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+	* Test-idn-robots.px: added punycoded and escaped URLs to follow
+	  removed -H
+
 2013-08-22  Tim Ruehsen <tim.ruehsen@gmx.de>
 
 	* Makefile.am (EXTRA_DIST): Add Test--httpsonly-r.px.
