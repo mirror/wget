@@ -1,3 +1,7 @@
+2013-10-14  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* Makefile.am (XFAIL_TESTS): Remove Test--spider-r.py.
+
 2013-10-06  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Distribute test files.
