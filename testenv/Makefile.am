@@ -48,8 +48,8 @@ TESTS = Test-auth-basic-fail.py			\
 	Test-Post.py				\
 	Test--spider-r.py
 
-XFAIL_TESTS =   Test-auth-both.py	\
-		Test--spider-r.py
+XFAIL_TESTS =   Test-auth-both.py
+
 LOG_COMPILER = python3
 
 EXTRA_DIST = ColourTerm.py			\
