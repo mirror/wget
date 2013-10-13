@@ -1226,7 +1226,10 @@ retrieve_from_file (const char *file, bool html, int *count)
           /* Check the download status. If conditions are suitable, retry. */
           if (status != RETROK)
             {
-              logprintf (LOG_VERBOSE, "Downloading %s failed. Chunk %d could not be downloaded from any of the URLs listed in metalink file.\n", file->name, r);
+              logprintf (LOG_VERBOSE, _("Downloading %s failed. Chunk %d could "
+                                        "not be downloaded from any of the "
+                                        "URLs listed in metalink file.\n"),
+                         file->name, r);
 
               /* Failed downloads should only be retried if the error causing
                  the failure is not an IO error. */
@@ -1234,7 +1237,8 @@ retrieve_from_file (const char *file, bool html, int *count)
                 {
                   if(retries  < opt.n_retries)
                     {
-                      logprintf (LOG_VERBOSE, "Retrying to download(%s). (TRY #%d)\n",
+                      logprintf (LOG_VERBOSE,
+                                 _("Retrying to download(%s). (TRY #%d)\n"),
                                  file->name, ++retries + 1);
                       continue;
                     }
@@ -1258,15 +1262,17 @@ retrieve_from_file (const char *file, bool html, int *count)
               if(!res)
                 {
                   ++*count;
-                  logprintf (LOG_VERBOSE, "Verifying(%s) succeeded.\n",
+                  logprintf (LOG_VERBOSE, _("Verifying(%s) succeeded.\n"),
                                file->name);
                 }
               else if(res < 0)
                 {
-                  logprintf (LOG_VERBOSE, "Verifying(%s) failed.\n", file->name);
+                  logprintf (LOG_VERBOSE, _("Verifying(%s) failed.\n"),
+                             file->name);
                   if(retries  < opt.n_retries)
                     {
-                      logprintf (LOG_VERBOSE, "Retrying to download(%s). (TRY #%d)\n",
+                      logprintf (LOG_VERBOSE,
+                                 _("Retrying to download(%s). (TRY #%d)\n"),
                                  file->name, ++retries + 1);
                       continue;
                     }
