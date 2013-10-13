@@ -672,7 +672,7 @@ calc_rate (wgint bytes, double secs, int *units)
 {
   double dlrate;
   double bibyte = 1000.0;
- 
+
   if (!opt.report_bps)
     bibyte = 1024.0;
 
@@ -930,7 +930,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
          index page; that redirection is clearly a GET.  We "suspend"
          POST data for the duration of the redirections, and restore
          it when we're done.
-	 
+
 	 RFC2616 HTTP/1.1 introduces code 307 Temporary Redirect
 	 specifically to preserve the method of the request.
 	 */
@@ -1084,36 +1084,36 @@ retrieve_from_file (const char *file, bool html, int *count)
       struct s_thread_ctx *thread_ctx;
 
       /* Wget supports HTTP&FTP, and Metalink supports MD5, SHA1 & SHA-256. */
-      elect_resources(mlink);
-      elect_checksums(mlink);
+      elect_resources (mlink);
+      elect_checksums (mlink);
 
       init_temp_files();
       init_ranges ();
       thread_ctx = malloc (opt.jobs * (sizeof *thread_ctx));
-      
+
       retries = 0;
       file = mlink->files;
       while (file)
         {
-          memset(thread_ctx, '\0', opt.jobs * (sizeof *thread_ctx));
+          memset (thread_ctx, '\0', opt.jobs * (sizeof *thread_ctx));
 
           /* If chunk_size is too small, set it equal to MIN_CHUNK_SIZE. */
           chunk_size = (file->size) / opt.jobs;
           if(chunk_size < MIN_CHUNK_SIZE)
             chunk_size = MIN_CHUNK_SIZE;
-          
-          j = fill_ranges_data(file->num_of_res, file->size, chunk_size);
+
+          j = fill_ranges_data (file->num_of_res, file->size, chunk_size);
 
           /* If chunk_size was set to MIN_CHUNK_SIZE, opt.jobs should be corrected. */
-          if(j < opt.jobs)
+          if (j < opt.jobs)
             opt.jobs = j;
 
-          name_temp_files();
+          name_temp_files ();
 
           sem_init (&retr_sem, 0, 0);
           j = ranges_covered = 0;
           resource = file->resources;
-          
+
           /* Assign values to thread_ctx[] elements and spawn threads that will
              conduct the download. */
           for (r = 0; r < opt.jobs; ++r)
@@ -1138,8 +1138,8 @@ retrieve_from_file (const char *file, bool html, int *count)
                   char *error = url_error (thread_ctx[r].url, thread_ctx[r].url_err);
                   logprintf (LOG_NOTQUIET, "%s: %s.\n", thread_ctx[r].url, error);
                   xfree (error);
-                  free(thread_ctx);
-                  clean_range_res_data();
+                  free (thread_ctx);
+                  clean_range_res_data ();
                   clean_ranges ();
                   clean_temp_files ();
                   return URLERROR;
@@ -1153,15 +1153,15 @@ retrieve_from_file (const char *file, bool html, int *count)
             {
               r = collect_thread (&retr_sem, thread_ctx);
               ++ranges_covered;
-              
+
               status = thread_ctx[r].status;
 
               /* Check return status of thread for errors. */
-              if (IS_IO_ERROR(status))
+              if (IS_IO_ERROR (status))
                 {
                   /* The error is of type WGET_EXIT_IO_FAIL given in exits.c.
                      No fallbacking is needed for this type of error. */
-                  inform_exit_status(status);
+                  inform_exit_status (status);
                   break;
                 }
               else if(status != RETROK)
@@ -1171,9 +1171,10 @@ retrieve_from_file (const char *file, bool html, int *count)
 
                   /* Pick the least severe error.*/
                   error_severity = get_exit_status();
-                  inform_exit_status((thread_ctx[r].range)->status_least_severe);
+                  inform_exit_status ((thread_ctx[r].range)->status_least_severe);
                   if(get_exit_status() != error_severity)
                     (thread_ctx[r].range)->status_least_severe = status;
+
                   PCONN_UNLOCK ();
 
                   /* Look for resource from which downloading this range is not
@@ -1197,7 +1198,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                         {
                           thread_ctx[r].url = resource->url;
                           (thread_ctx[r].range)->first_byte =
-                                            (thread_ctx[r].range)->bytes_covered;
+                            (thread_ctx[r].range)->bytes_covered;
                           (thread_ctx[r].range)->bytes_covered = 0;
                         }
                       --ranges_covered;
@@ -1208,8 +1209,8 @@ retrieve_from_file (const char *file, bool html, int *count)
                           char *error = url_error (thread_ctx[r].url, thread_ctx[r].url_err);
                           logprintf (LOG_NOTQUIET, "%s: %s.\n", thread_ctx[r].url, error);
                           xfree (error);
-                          free(thread_ctx);
-                          clean_range_res_data();
+                          free (thread_ctx);
+                          clean_range_res_data ();
                           clean_ranges ();
                           clean_temp_files ();
                           return URLERROR;

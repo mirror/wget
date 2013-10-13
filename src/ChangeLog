@@ -1,3 +1,7 @@
+2013-10-13  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* retr.c (retrieve_from_file): Follow GNU Coding style.
+
 2013-10-06  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* http.c (gethttp): Unregister a connection while it is used.
