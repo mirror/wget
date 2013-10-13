@@ -1,5 +1,12 @@
 2013-10-13  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* multi.h (struct s_thread_ctx) [!ENABLE_THREADS]: Define "retr_sem"
+	* recur.c (THREAD_JOIN): Define.
+	(retrieve_tree) [!ENABLE_THREADS]: Refactor to use similar code
+	paths to the threads enabled version.
+	(SEM_INIT): Likewise.
+	(SEM_WAIT): Likewise.
+
 	* retr.c (retrieve_from_file): Internationalize messages.
 
 	* retr.c (retrieve_from_file): Follow GNU Coding style.

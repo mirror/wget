@@ -53,7 +53,12 @@ struct s_thread_ctx
   struct range *range;
   char *file;
   char *url;
+#ifdef ENABLE_THREADS
   sem_t *retr_sem;
+#else
+  /* Not used.  */
+  void *retr_sem;
+#endif
   uerr_t status;
 };
 
