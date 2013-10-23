@@ -70,6 +70,7 @@ typedef struct
   int csock;                    /* control connection socket */
   double dltime;                /* time of the download in msecs */
   enum stype rs;                /* remote system reported by ftp server */
+  enum ustype rsu;              /* when rs is ST_UNIX, here there are more details */
   char *id;                     /* initial directory */
   char *target;                 /* target file name */
   struct url *proxy;            /* FTWK-style proxy */
@@ -255,8 +256,10 @@ getftp (struct url *u, wgint passed_expected_bytes, wgint *qtyread,
   bool got_expected_bytes = false;
   bool rest_failed = false;
   int flags;
-  wgint rd_size;
+  wgint rd_size, previous_rd_size = 0;
   char type_char;
+  bool try_again;
+  bool list_a_used = false;
 
   assert (con != NULL);
   assert (con->target != NULL);
@@ -365,7 +368,7 @@ Error in server response, closing control connection.\n"));
       /* Third: Get the system type */
       if (!opt.server_response)
         logprintf (LOG_VERBOSE, "==> SYST ... ");
-      err = ftp_syst (csock, &con->rs);
+      err = ftp_syst (csock, &con->rs, &con->rsu);
       /* FTPRERR */
       switch (err)
         {
@@ -389,6 +392,44 @@ Error in server response, closing control connection.\n"));
         }
       if (!opt.server_response && err != FTPSRVERR)
         logputs (LOG_VERBOSE, _("done.    "));
+
+      /* 2013-10-17 Andrea Urbani (matfanjol)
+         According to the system type I choose which
+         list command will be used.
+         If I don't know that system, I will try, the
+         first time of each session, "LIST -a" and
+         "LIST". (see __LIST_A_EXPLANATION__ below) */
+      switch (con->rs)
+        {
+        case ST_VMS:
+          /* About ST_VMS there is an old note:
+             2008-01-29  SMS.  For a VMS FTP server, where "LIST -a" may not
+             fail, but will never do what is desired here,
+             skip directly to the simple "LIST" command
+             (assumed to be the last one in the list).  */
+          DEBUGP (("\nVMS: I know it and I will use \"LIST\" as standard list command\n"));
+          con->st |= LIST_AFTER_LIST_A_CHECK_DONE;
+          con->st |= AVOID_LIST_A;
+          break;
+        case ST_UNIX:
+          if (con->rsu == UST_MULTINET)
+            {
+              DEBUGP (("\nUNIX MultiNet: I know it and I will use \"LIST\" "
+                       "as standard list command\n"));
+              con->st |= LIST_AFTER_LIST_A_CHECK_DONE;
+              con->st |= AVOID_LIST_A;
+            }
+          else if (con->rsu == UST_TYPE_L8)
+            {
+              DEBUGP (("\nUNIX TYPE L8: I know it and I will use \"LIST -a\" "
+                       "as standard list command\n"));
+              con->st |= LIST_AFTER_LIST_A_CHECK_DONE;
+              con->st |= AVOID_LIST;
+            }
+          break;
+        default:
+          break;
+        }
 
       /* Fourth: Find the initial ftp directory */
 
@@ -775,6 +816,9 @@ Error in server response, closing control connection.\n"));
       return RETRFINISHED;
     }
 
+  do
+  {
+  try_again = false;
   /* If anything is to be retrieved, PORT (or PASV) must be sent.  */
   if (cmd & (DO_LIST | DO_RETR))
     {
@@ -1041,7 +1085,8 @@ Error in server response, closing control connection.\n"));
       /* As Maciej W. Rozycki (macro@ds2.pg.gda.pl) says, `LIST'
          without arguments is better than `LIST .'; confirmed by
          RFC959.  */
-      err = ftp_list (csock, NULL, con->rs);
+      err = ftp_list (csock, NULL, con->st&AVOID_LIST_A, con->st&AVOID_LIST, &list_a_used);
+
       /* FTPRERR, WRITEFAILED */
       switch (err)
         {
@@ -1343,8 +1388,10 @@ Error in server response, closing control connection.\n"));
     }
   /* If it was a listing, and opt.server_response is true,
      print it out.  */
-  if (opt.server_response && (con->cmd & DO_LIST))
+  if (con->cmd & DO_LIST)
     {
+      if (opt.server_response)
+        {
 /* 2005-02-25 SMS.
    Much of this work may already have been done, but repeating it should
    do no damage beyond wasting time.
@@ -1383,8 +1430,99 @@ Error in server response, closing control connection.\n"));
           xfree (line);
           fclose (fp);
         }
-    } /* con->cmd & DO_LIST && server_response */
+        } /* server_response */
 
+      /* 2013-10-17 Andrea Urbani (matfanjol)
+         < __LIST_A_EXPLANATION__ >
+          After the SYST command, looks if it knows that system.
+          If yes, wget will force the use of "LIST" or "LIST -a".
+          If no, wget will try, only the first time of each session, before the
+          "LIST -a" command and after the "LIST".
+          If "LIST -a" works and returns more or equal data of the "LIST",
+          "LIST -a" will be the standard list command for all the session.
+          If "LIST -a" fails or returns less data than "LIST" (think on the case
+          of an existing file called "-a"), "LIST" will be the standard list
+          command for all the session.
+          ("LIST -a" is used to get also the hidden files)
+
+          */
+      if (!(con->st & LIST_AFTER_LIST_A_CHECK_DONE))
+        {
+          /* We still have to check "LIST" after the first "LIST -a" to see
+             if with "LIST" we get more data than "LIST -a", that means
+             "LIST -a" returned files/folders with "-a" name. */
+          if (con->st & AVOID_LIST_A)
+            {
+              /* LIST was used in this cycle.
+                 Let's see the result. */
+              if (rd_size > previous_rd_size)
+                {
+                  /* LIST returns more data than "LIST -a".
+                     "LIST" is the official command to use. */
+                  con->st |= LIST_AFTER_LIST_A_CHECK_DONE;
+                  DEBUGP (("LIST returned more data than \"LIST -a\": "
+                           "I will use \"LIST\" as standard list command\n"));
+                }
+              else if (previous_rd_size > rd_size)
+                {
+                  /* "LIST -a" returned more data then LIST.
+                     "LIST -a" is the official command to use. */
+                  con->st |= LIST_AFTER_LIST_A_CHECK_DONE;
+                  con->st |= AVOID_LIST;
+                  con->st &= ~AVOID_LIST_A;
+                  /* Sorry, please, download again the "LIST -a"... */
+                  try_again = true;
+                  DEBUGP (("LIST returned less data than \"LIST -a\": I will "
+                           "use \"LIST -a\" as standard list command\n"));
+                }
+              else
+                {
+                  /* LIST and "LIST -a" return the same data. */
+                  if (rd_size == 0)
+                    {
+                      /* Same empty data. We will check both again because
+                         we cannot check if "LIST -a" has returned an empty
+                         folder instead of a folder content. */
+                      con->st &= ~AVOID_LIST_A;
+                    }
+                  else
+                    {
+                      /* Same data, so, better to take "LIST -a" that
+                         shows also hidden files/folders (when present) */
+                      con->st |= LIST_AFTER_LIST_A_CHECK_DONE;
+                      con->st |= AVOID_LIST;
+                      con->st &= ~AVOID_LIST_A;
+                      DEBUGP (("LIST returned the same amount of data of "
+                               "\"LIST -a\": I will use \"LIST -a\" as standard "
+                               "list command\n"));
+                    }
+                }
+            }
+          else
+            {
+              /* In this cycle "LIST -a" should being used. Is it true? */
+              if (list_a_used)
+                {
+                  /* Yes, it is.
+                     OK, let's save the amount of data and try again
+                     with LIST */
+                  previous_rd_size = rd_size;
+                  try_again = true;
+                  con->st |= AVOID_LIST_A;
+                }
+              else
+                {
+                  /* No: something happens and LIST was used.
+                     This means "LIST -a" raises an error. */
+                  con->st |= LIST_AFTER_LIST_A_CHECK_DONE;
+                  con->st |= AVOID_LIST_A;
+                  DEBUGP (("\"LIST -a\" failed: I will use \"LIST\" "
+                           "as standard list command\n"));
+                }
+            }
+        }
+    }
+  } while (try_again);
   return RETRFINISHED;
 }
 
@@ -1626,7 +1764,7 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
           /* warc_write_resource_record has also closed warc_tmp. */
         }
 
-      if ((con->cmd & DO_LIST))
+      if (con->cmd & DO_LIST)
         /* This is a directory listing file. */
         {
           if (!opt.remove_listing)

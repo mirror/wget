@@ -1,3 +1,30 @@
+2013-10-17  Andrea Urbani  <matfanjol@mail.com>
+
+	* FTPServer.pm (GetBehavior): new routine.
+	* FTPServer.pm (get_list): new parameter to skip hidden files
+	* Test-ftp-list-Multinet.px: Test LIST on a "UNIX MultiNet
+	  Unix Emulation" system that returns an empty content when
+	  "LIST -a" is requested (probably because no "-a" files
+	  exist)
+	* Test-ftp-list-Unknown.px: Test LIST on a "Unknown ftp
+	  service" system that returns an empty content when
+	  "LIST -a" is requested (probably because no "-a" files
+	  exist)
+	* Test-ftp-list-Unknown-a.px: Test LIST on a "Unknown ftp
+	  service" system that recognises "LIST -a" as "give me the
+	  -a file" and there is a "-a" file + other two files.
+	  "LIST -a" will return only "-a", "LIST" all the three files.
+	* Test-ftp-list-Unknown-hidden.px: Test LIST on a "Unknown ftp
+	  service" system that recognises "LIST -a" as an "UNIX Type:
+	  L8" system (show me also the hidden files) and there is an
+	  hidden file.
+	* Test-ftp-list-Unknown-list-a-fails.px: Test LIST on a
+	  "Unknown ftp service" system that raises an error on
+	  "LIST -a" command.
+	* Test-ftp-list-UNIX-hidden.px: Test LIST on a "UNIX Type:
+	  L8" system that recognises "LIST -a" as "show me also the
+	  hidden files" and there is an hidden file.
+
 2013-10-10  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* Test-idn-robots-utf8.px: Remove -H.

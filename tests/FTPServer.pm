@@ -81,10 +81,25 @@ sub _LIST_command
     my ($conn, $cmd, $path) = @_;
     my $paths = $conn->{'paths'};
 
-    # This is something of a hack. Some clients expect a Unix server
-    # to respond to flags on the 'ls command line'. Remove these flags
-    # and ignore them. This is particularly an issue with ncftp 2.4.3.
-    $path =~ s/^-[a-zA-Z0-9]+\s?//;
+    my $ReturnEmptyList = ( $paths->GetBehavior('list_empty_if_list_a') &&
+                            $path eq '-a');
+    my $SkipHiddenFiles = ( $paths->GetBehavior('list_no_hidden_if_list') &&
+                            ( ! $path ) );
+
+    if ($paths->GetBehavior('list_fails_if_list_a') && $path eq '-a')
+      {
+            print {$conn->{socket}} "500 Unknown command\r\n";
+            return;
+      }
+
+
+    if (!$paths->GetBehavior('list_dont_clean_path'))
+      {
+        # This is something of a hack. Some clients expect a Unix server
+        # to respond to flags on the 'ls command line'. Remove these flags
+        # and ignore them. This is particularly an issue with ncftp 2.4.3.
+        $path =~ s/^-[a-zA-Z0-9]+\s?//;
+      }
 
     my $dir = $conn->{'dir'};
 
@@ -94,12 +109,16 @@ sub _LIST_command
     # working directory.
     local $_;
 
-    $dir = FTPPaths::path_merge($dir, $path);
-    my $listing = $paths->get_list($dir);
-    unless ($listing) {
-        print {$conn->{socket}} "550 File or directory not found.\r\n";
-        return;
-    }
+    my $listing;
+    if (!$ReturnEmptyList)
+      {
+        $dir = FTPPaths::path_merge($dir, $path);
+        $listing = $paths->get_list($dir,$SkipHiddenFiles);
+        unless ($listing) {
+            print {$conn->{socket}} "550 File or directory not found.\r\n";
+            return;
+        }
+      }
 
     print STDERR "_LIST_command - dir is: $dir\n" if $log;
 
@@ -112,9 +131,12 @@ sub _LIST_command
         return;
     }
 
-    for my $item (@$listing) {
-        print $sock "$item\r\n";
-    }
+    if (!$ReturnEmptyList)
+      {
+        for my $item (@$listing) {
+            print $sock "$item\r\n";
+        }
+      }
 
     unless ($sock->close) {
         print {$conn->{socket}} "550 Error closing data connection: $!\r\n";
@@ -372,7 +394,14 @@ sub _SYST_command
 {
     my ($conn, $cmd, $dummy) = @_;
 
-    print {$conn->{socket}} "215 UNIX Type: L8\r\n";
+    if ($conn->{'paths'}->GetBehavior('syst_response'))
+      {
+        print {$conn->{socket}} $conn->{'paths'}->GetBehavior('syst_response') . "\r\n";
+      }
+    else
+      {
+        print {$conn->{socket}} "215 UNIX Type: L8\r\n";
+      }
 }
 
 sub _TYPE_command
@@ -780,7 +809,7 @@ sub _format_for_list {
 }
 
 sub get_list {
-    my ($self, $path) = @_;
+    my ($self, $path, $no_hidden) = @_;
     my $info = $self->get_info($path);
     return undef unless defined $info;
     my $list = [];
@@ -788,13 +817,48 @@ sub get_list {
     if ($info->{'_type'} eq 'd') {
         for my $item (keys %$info) {
             next if $item =~ /^_/;
-            push @$list, $self->_format_for_list($item, $info->{$item});
+            # 2013-10-17 Andrea Urbani (matfanjol)
+            #            I skip the hidden files if requested
+            if (($no_hidden) &&
+                (defined($info->{$item}->{'attr'})) &&
+                (index($info->{$item}->{'attr'}, "H")>=0))
+              {
+                # This is an hidden file and I don't want to see it!
+                print STDERR "get_list: Skipped hidden file [$item]\n";
+              }
+            else
+              {
+                push @$list, $self->_format_for_list($item, $info->{$item});
+              }
         }
     } else {
         push @$list, $self->_format_for_list(final_component($path), $info);
     }
 
     return $list;
+}
+
+# 2013-10-17 Andrea Urbani (matfanjol)
+# It returns the behavior of the given name.
+# In this file I handle also the following behaviors:
+#  list_dont_clean_path  : if defined, the command
+#                           $path =~ s/^-[a-zA-Z0-9]+\s?//;
+#                          is not runt and the given path
+#                          remains the original one
+#  list_empty_if_list_a  : if defined, "LIST -a" returns an
+#                          empty content
+#  list_fails_if_list_a  : if defined, "LIST -a" returns an
+#                          error
+#  list_no_hidden_if_list: if defined, "LIST" doesn't return
+#                          hidden files.
+#                          To define an hidden file add
+#                            attr => "H"
+#                          to the url files
+#  syst_response         : if defined, its content is printed
+#                          out as SYST response
+sub GetBehavior {
+  my ($self, $name) = @_;
+  return $self->{'_behavior'}{$name};
 }
 
 1;

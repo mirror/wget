@@ -960,23 +960,32 @@ ftp_retr (int csock, const char *file)
 /* Sends the LIST command to the server.  If FILE is NULL, send just
    `LIST' (no space).  */
 uerr_t
-ftp_list (int csock, const char *file, enum stype rs)
+ftp_list (int csock, const char *file, bool avoid_list_a, bool avoid_list,
+          bool *list_a_used)
 {
   char *request, *respline;
   int nwritten;
   uerr_t err;
   bool ok = false;
   size_t i = 0;
-  /* Try `LIST -a' first and revert to `LIST' in case of failure.  */
+
+  *list_a_used = false;
+
+  /* 2013-10-12 Andrea Urbani (matfanjol)
+     For more information about LIST and "LIST -a" please look at ftp.c,
+     function getftp, text "__LIST_A_EXPLANATION__".
+
+     If somebody changes the following commands, please, checks also the
+     later "i" variable.  */
   const char *list_commands[] = { "LIST -a",
                                   "LIST" };
 
-  /* 2008-01-29  SMS.  For a VMS FTP server, where "LIST -a" may not
-     fail, but will never do what is desired here, skip directly to the
-     simple "LIST" command (assumed to be the last one in the list).
-  */
-  if (rs == ST_VMS)
-    i = countof (list_commands)- 1;
+  if (avoid_list_a)
+    {
+      i = countof (list_commands)- 1;
+      DEBUGP (("(skipping \"LIST -a\")"));
+    }
+
 
   do {
     /* Send request.  */
@@ -1000,6 +1009,8 @@ ftp_list (int csock, const char *file, enum stype rs)
           {
             err = FTPOK;
             ok = true;
+            /* Which list command was used? */
+            *list_a_used = (i == 0);
           }
         else
           {
@@ -1008,6 +1019,12 @@ ftp_list (int csock, const char *file, enum stype rs)
         xfree (respline);
       }
     ++i;
+    if ((avoid_list) && (i == 1))
+      {
+        /* I skip LIST */
+        ++i;
+        DEBUGP (("(skipping \"LIST\")"));
+      }
   } while (i < countof (list_commands) && !ok);
 
   return err;
@@ -1015,7 +1032,7 @@ ftp_list (int csock, const char *file, enum stype rs)
 
 /* Sends the SYST command to the server. */
 uerr_t
-ftp_syst (int csock, enum stype *server_type)
+ftp_syst (int csock, enum stype *server_type, enum ustype *unix_type)
 {
   char *request, *respline;
   int nwritten;
@@ -1048,12 +1065,23 @@ ftp_syst (int csock, enum stype *server_type)
      first word of the server response)?  */
   request = strtok (NULL, " ");
 
+  *unix_type = UST_OTHER;
+
   if (request == NULL)
     *server_type = ST_OTHER;
   else if (!strcasecmp (request, "VMS"))
     *server_type = ST_VMS;
   else if (!strcasecmp (request, "UNIX"))
-    *server_type = ST_UNIX;
+    {
+      *server_type = ST_UNIX;
+      /* 2013-10-17 Andrea Urbani (matfanjol)
+         I check more in depth the system type */
+      if (!strncasecmp (ftp_last_respline, "215 UNIX Type: L8", 17))
+        *unix_type = UST_TYPE_L8;
+      else if (!strncasecmp (ftp_last_respline,
+                             "215 UNIX MultiNet Unix Emulation V5.3(93)", 41))
+        *unix_type = UST_MULTINET;
+    }
   else if (!strcasecmp (request, "WINDOWS_NT")
            || !strcasecmp (request, "WINDOWS2000"))
     *server_type = ST_WINNT;

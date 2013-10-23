@@ -1,3 +1,22 @@
+2013-10-17  Andrea Urbani  <matfanjol@mail.com>
+
+	* ftp.c (getftp): force "LIST" or "LIST -a"
+	  according to the remote system type. If the remote
+	  system is not known, it tries, only the first time,
+	  "LIST -a", after "LIST" and decides which one to use.
+	  For more information look for "__LIST_A_EXPLANATION__"
+	* ftp.h (enum ustype): New ustype enum.
+	* ftp.h (ftp_syst): New enum ustype *unix_type parameter.
+	* ftp.h (ftp_list): Removed enum stype rs parameter, added.
+	  bool avoid_list_a, bool avoid_list, bool *list_a_used
+	  parameters.
+	* ftp.h (wget_ftp_fstatus): New AVOID_LIST_A, AVOID_LIST,
+	  LIST_AFTER_LIST_A_CHECK_DONE values.
+	* ftp-basic.c (ftp_list): it handles the new avoid_list_a,
+	  avoid_list and list_a_used parameters.
+	* ftp.h (ftp_syst): it stores information about the "215 UNIX"
+	  systems into the new unix_type parameter.
+
 2013-10-26  Bykov Aleksey <gnfalex@rambler.ru>
 
 	* utils.c (match_tail): Fix cookies reject
