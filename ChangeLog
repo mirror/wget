@@ -1,3 +1,8 @@
+2013-10-23  Darshit Shah  <darnir@gmail.com>
+
+    * configure.ac: Remove redundant --enable-threads option.
+                    Add Metalink to configure summary
+
 2013-07-02  Darshit Shah  <darnir@gmail.com>
 
 	* README.checkout: Add dependency on libmetalink.

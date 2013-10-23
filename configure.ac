@@ -89,12 +89,6 @@ AC_ARG_ENABLE(debug,
 ENABLE_DEBUG=$enableval, ENABLE_DEBUG=yes)
 test x"${ENABLE_DEBUG}" = xyes && AC_DEFINE([ENABLE_DEBUG], 1,
    [Define if you want the debug output support compiled in.])
-   
-AC_ARG_ENABLE(threads,
-[  --disable-threads      disable support for parallel downloads using threads],
-ENABLE_THREADS=$enableval, ENABLE_THREADS=no)
-test x"${ENABLE_THREADS}" = xyes && AC_DEFINE([ENABLE_THREADS], 1,
-   [Define if you want the concurrent download support compiled in.])
 
 AC_ARG_ENABLE(metalink,
 [  --disable-metalink      disable support for metalink file format],
@@ -660,5 +654,6 @@ AC_MSG_NOTICE([Summary of build options:
   Digest:            $ENABLE_DIGEST
   NTLM:              $ENABLE_NTLM
   OPIE:              $ENABLE_OPIE
+  Metalink:          $ENABLE_METALINK
   Debugging:         $ENABLE_DEBUG
 ])
