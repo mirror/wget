@@ -1,4 +1,7 @@
 2013-10-26  Bykov Aleksey <gnfalex@rambler.ru>
+
+	* utils.c (match_tail): Fix cookies reject
+
 	* ftp-ls.c (ftp_parse_unix_ls): Fix parsing month name in uppercase
 
 2013-09-09  Tim Ruehsen  <tim.ruehsen@gmx.de>
