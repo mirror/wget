@@ -1,3 +1,6 @@
+2013-10-26  Bykov Aleksey <gnfalex@rambler.ru>
+	* ftp-ls.c (ftp_parse_unix_ls): Fix parsing month name in uppercase
+
 2013-09-09  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* gnutls.c (ssl_connect_wget): changed checking of option "PFS"
