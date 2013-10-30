@@ -924,8 +924,6 @@ skip_short_body (int fd, wgint contlen, bool chunked)
   char dlbuf[SKIP_SIZE + 1];
   dlbuf[SKIP_SIZE] = '\0';        /* so DEBUGP can safely print it */
 
-  assert (contlen != -1 || contlen);
-
   /* If the body is too large, it makes more sense to simply close the
      connection than to try to read the body.  */
   if (contlen > SKIP_THRESHOLD)

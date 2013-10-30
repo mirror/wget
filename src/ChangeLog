@@ -1,3 +1,8 @@
+2013-10-30  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* http.c (skip_short_body): Remove assert which is always true.
+	Reported by: David Binderman <dcb314@hotmail.com>
+
 2013-10-17  Andrea Urbani  <matfanjol@mail.com>
 
 	* ftp.c (getftp): force "LIST" or "LIST -a"
