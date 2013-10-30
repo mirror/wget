@@ -232,7 +232,7 @@ retrieve_tree (struct url *start_url_parsed, struct iri *pi)
   void *retr_sem;
 #endif
 
-  int free_threads = 1;
+  int free_threads = N_THREADS;
 
   /* The queue of URLs we need to load. */
   struct url_queue *queue;
