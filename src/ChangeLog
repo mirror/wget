@@ -1,5 +1,12 @@
 2013-11-02  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* progress.c (struct progress_implementation): New method draw.
+	(bar_update): Split into...
+	(bar_draw): ...this new function.
+	(dot_update): Split into...
+	(dot_draw): New function.
+	(progress_update): Also invoke draw on `current_impl'.
+
 	* http.c (CLOSE_INVALIDATE): Set socket fd to be invalid.
 	(register_persistent): Add control and avoid to add the same fd
 	multiple times.
