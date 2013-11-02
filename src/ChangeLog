@@ -1,3 +1,7 @@
+2013-11-02  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* http.c (gethttp): Increase max header value length to 512.
+
 2013-01-30  Pavel Mateja  <pavel@netsafe.cz> (tiny change)
 
 	* http.c (gethttp): Specify "Host" for CONNECT method.

@@ -1688,7 +1688,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
 
   char *head;
   struct response *resp;
-  char hdrval[256];
+  char hdrval[512];
   char *message;
 
   /* Declare WARC variables. */
