@@ -249,7 +249,7 @@ write_data (FILE *out, FILE *out2, const char *buf, int bufsize,
    data to OUT2, -3 is returned.  */
 
 int
-fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
+fd_read_body (const char *url, int fd, FILE *out, wgint toread, wgint startpos,
               wgint *qtyread, wgint *qtywritten, double *elapsed, int flags,
               FILE *out2)
 {
@@ -291,7 +291,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
          argument to progress_create because the indicator doesn't
          (yet) know about "skipping" data.  */
       wgint start = skip ? 0 : startpos;
-      progress = progress_create (start, start + toread);
+      progress = progress_create (url, start, start + toread);
       progress_interactive = progress_interactive_p (progress);
     }
 

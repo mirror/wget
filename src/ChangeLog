@@ -1,3 +1,14 @@
+2013-11-03  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* retr.h (fd_read_body): Accept an additional argument `url'.
+	* retr.c (fd_read_body): Likewise.
+	(fd_read_body): Pass the url to the progress bar.
+	* ftp.c (getftp): Adjust call to fd_read_body.
+	* http.c (read_response_body): Likewise.
+	* progress.h (progress_create): Add new argument `url'.
+	* progress.c (create_image): Show url near the progress bar.
+	(process_create): Add new argument `url'.
+
 2013-11-02  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* progress.c (struct progress_header): New struct
