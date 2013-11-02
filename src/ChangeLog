@@ -1,5 +1,12 @@
 2013-11-02  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* progress.c (struct progress_header): New struct
+	(progress_update): Dispatch the draw call to a progress struct.
+	include <pthread.h>.
+	(dot_draw): Add argument `force'.
+	(bar_draw): Likewise.
+	(dot_draw): Likewise.
+
 	* progress.c (struct progress_implementation): New method draw.
 	(bar_update): Split into...
 	(bar_draw): ...this new function.

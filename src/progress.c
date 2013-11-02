@@ -40,16 +40,21 @@ as that of the covered work.  */
 # include <wchar.h>
 #endif
 
+#ifdef ENABLE_THREADS
+#include <pthread.h>
+#endif
+
 #include "progress.h"
 #include "utils.h"
 #include "retr.h"
+#include "ptimer.h"
 
 struct progress_implementation {
   const char *name;
   bool interactive;
   void *(*create) (wgint, wgint);
   void (*update) (void *, wgint, double);
-  void (*draw) (void *);
+  void (*draw) (void *, bool);
   void (*finish) (void *, double);
   void (*set_params) (const char *);
 };
@@ -59,14 +64,32 @@ struct progress_implementation {
 static void *dot_create (wgint, wgint);
 static void dot_update (void *, wgint, double);
 static void dot_finish (void *, double);
-static void dot_draw (void *);
+static void dot_draw (void *, bool);
 static void dot_set_params (const char *);
 
 static void *bar_create (wgint, wgint);
 static void bar_update (void *, wgint, double);
-static void bar_draw (void *);
+static void bar_draw (void *, bool);
 static void bar_finish (void *, double);
 static void bar_set_params (const char *);
+
+struct progress_header
+{
+  struct progress_header *next;
+};
+
+static struct progress_header *progress_list = NULL;
+static struct progress_header *current_progress = NULL;
+
+#ifdef ENABLE_THREADS
+static pthread_mutex_t progress_mutex = PTHREAD_MUTEX_INITIALIZER;
+# define LOCK_PROGRESS() pthread_mutex_lock (&progress_mutex);
+# define UNLOCK_PROGRESS() pthread_mutex_unlock (&progress_mutex);
+#else
+# define LOCK_PROGRESS()
+# define UNLOCK_PROGRESS()
+#endif
+
 
 static struct progress_implementation implementations[] = {
   { "dot", 0, dot_create, dot_update, dot_draw, dot_finish, dot_set_params },
@@ -87,6 +110,37 @@ static int current_impl_locked;
    infloop.  */
 
 #define FALLBACK_PROGRESS_IMPLEMENTATION "dot"
+
+
+/* Time between screen refreshes will not be shorter than this, so
+   that Wget doesn't swamp the TTY with output.  */
+#define REFRESH_INTERVAL 0.2
+
+/* Time between screen refreshes the file to show when there are multiple
+   downloads at the same time.  */
+#define REFRESH_SWITCH_FILE 1.0
+
+/* Assumed screen width if we can't find the real value.  */
+#define DEFAULT_SCREEN_WIDTH 80
+
+/* Minimum screen width we'll try to work with.  If this is too small,
+   create_image will overflow the buffer.  */
+#define MINIMUM_SCREEN_WIDTH 45
+
+/* The last known screen width.  This can be updated by the code that
+   detects that SIGWINCH was received (but it's never updated from the
+   signal handler).  */
+static int screen_width;
+
+/* A flag that, when set, means SIGWINCH was received.  */
+static volatile sig_atomic_t received_sigwinch;
+
+static int bp_width;            /* screen width we're using at the
+                                   time the progress gauge was
+                                   created.  this is different from
+                                   the screen_width global variable in
+                                   that the latter can be changed by a
+                                   signal. */
 
 /* Return true if NAME names a valid progress bar implementation.  The
    characters after the first : will be ignored.  */
@@ -157,6 +211,7 @@ void *
 progress_create (wgint initial, wgint total)
 {
   /* Check if the log status has changed under our feet. */
+  struct progress_header *ret;
   if (output_redirected)
     {
       if (!current_impl_locked)
@@ -164,7 +219,17 @@ progress_create (wgint initial, wgint total)
       output_redirected = 0;
     }
 
-  return current_impl->create (initial, total);
+  ret = current_impl->create (initial, total);
+  if (ret)
+    {
+      LOCK_PROGRESS ();
+      if (current_progress == NULL)
+        current_progress = ret;
+      ret->next = progress_list;
+      progress_list = ret;
+      UNLOCK_PROGRESS ();
+    }
+  return ret;
 }
 
 /* Return true if the progress gauge is "interactive", i.e. if it can
@@ -184,8 +249,50 @@ progress_interactive_p (void *progress)
 void
 progress_update (void *progress, wgint howmuch, double dltime)
 {
+  static struct ptimer *last_draw = NULL;
+  static struct ptimer *last_switch = NULL;
+  bool force_screen_update = false;
+
   current_impl->update (progress, howmuch, dltime);
-  current_impl->draw (progress);
+  LOCK_PROGRESS ();
+
+  if (last_draw == NULL)
+    last_draw = ptimer_new ();
+  if (last_switch == NULL)
+    last_switch = ptimer_new ();
+
+  /* If SIGWINCH (the window size change signal) been received,
+     determine the new screen size and update the screen.  */
+  if (received_sigwinch)
+    {
+      int old_width = screen_width;
+      screen_width = determine_screen_width ();
+      if (!screen_width)
+        screen_width = DEFAULT_SCREEN_WIDTH;
+      else if (screen_width < MINIMUM_SCREEN_WIDTH)
+        screen_width = MINIMUM_SCREEN_WIDTH;
+      if (screen_width != old_width)
+        force_screen_update = true;
+      received_sigwinch = 0;
+    }
+
+  if (ptimer_measure (last_draw) >= REFRESH_INTERVAL || force_screen_update)
+    {
+      if (current_progress == NULL)
+        current_progress = progress_list;
+
+      bp_width = screen_width - 1;
+      current_impl->draw (current_progress, force_screen_update);
+      ptimer_reset (last_draw);
+
+      if (ptimer_measure (last_switch) >= REFRESH_SWITCH_FILE)
+        {
+          ptimer_reset (last_switch);
+          current_progress = current_progress->next;
+        }
+    }
+
+  UNLOCK_PROGRESS ();
 }
 
 /* Tell the progress gauge to clean up.  Calling this will free the
@@ -194,12 +301,38 @@ progress_update (void *progress, wgint howmuch, double dltime)
 void
 progress_finish (void *progress, double dltime)
 {
+  struct progress_header *header = progress;
+    {
+      struct progress_header *it, *prev = NULL;
+
+      LOCK_PROGRESS ();
+
+      for (it = progress_list; it; it = it->next)
+        {
+          if (it == progress)
+            {
+              if (current_progress == progress)
+                current_progress = it->next;
+
+              if (it == progress_list)
+                progress_list = NULL;
+              else
+                prev->next = it->next;
+              break;
+            }
+          prev = it;
+        }
+
+      UNLOCK_PROGRESS ();
+    }
   current_impl->finish (progress, dltime);
 }
 
 /* Dot-printing. */
 
 struct dot_progress {
+  struct progress_header header;
+
   wgint initial_length;         /* how many bytes have been downloaded
                                    previously. */
   wgint total_length;           /* expected total byte count when the
@@ -354,11 +487,15 @@ dot_update (void *progress, wgint howmuch, double dltime)
 }
 
 static void
-dot_draw (void *progress)
+dot_draw (void *progress, bool force)
 {
   struct dot_progress *dp = progress;
   int dot_bytes = opt.dot_bytes;
   wgint ROW_BYTES = opt.dot_bytes * opt.dots_in_line;
+
+  /* FIXME: support threads.  */
+  if (opt.jobs > 1)
+    return;
 
   log_set_flush (false);
 
@@ -469,21 +606,6 @@ dot_set_params (const char *params)
 
 /* "Thermometer" (bar) progress. */
 
-/* Assumed screen width if we can't find the real value.  */
-#define DEFAULT_SCREEN_WIDTH 80
-
-/* Minimum screen width we'll try to work with.  If this is too small,
-   create_image will overflow the buffer.  */
-#define MINIMUM_SCREEN_WIDTH 45
-
-/* The last known screen width.  This can be updated by the code that
-   detects that SIGWINCH was received (but it's never updated from the
-   signal handler).  */
-static int screen_width;
-
-/* A flag that, when set, means SIGWINCH was received.  */
-static volatile sig_atomic_t received_sigwinch;
-
 /* Size of the download speed history ring. */
 #define DLSPEED_HISTORY_SIZE 20
 
@@ -498,15 +620,12 @@ static volatile sig_atomic_t received_sigwinch;
    download speeds are scratched.  */
 #define STALL_START_TIME 5
 
-/* Time between screen refreshes will not be shorter than this, so
-   that Wget doesn't swamp the TTY with output.  */
-#define REFRESH_INTERVAL 0.2
-
 /* Don't refresh the ETA too often to avoid jerkiness in predictions.
    This allows ETA to change approximately once per second.  */
 #define ETA_REFRESH_INTERVAL 0.99
 
 struct bar_progress {
+  struct progress_header header;
   wgint initial_length;         /* how many bytes have been downloaded
                                    previously. */
   wgint total_length;           /* expected total byte count when the
@@ -518,14 +637,7 @@ struct bar_progress {
                                    download. */
 
   double dltime;                /* download time so far */
-  int width;                    /* screen width we're using at the
-                                   time the progress gauge was
-                                   created.  this is different from
-                                   the screen_width global variable in
-                                   that the latter can be changed by a
-                                   signal. */
-  char *buffer;                 /* buffer where the bar "image" is
-                                   stored. */
+
   int tick;                     /* counter used for drawing the
                                    progress bar where the total size
                                    is not known. */
@@ -560,7 +672,7 @@ struct bar_progress {
   int last_eta_value;
 };
 
-static void create_image (struct bar_progress *, double, bool);
+static void create_image (struct bar_progress *, char *buffer, double, bool);
 static void display_image (char *);
 
 static void *
@@ -589,15 +701,11 @@ bar_create (wgint initial, wgint total)
     }
 
   /* - 1 because we don't want to use the last screen column. */
-  bp->width = screen_width - 1;
-  /* + enough space for the terminating zero, and hopefully enough room
-   * for multibyte characters. */
-  bp->buffer = xmalloc (bp->width + 100);
+  bp_width = screen_width - 1;
 
   logputs (LOG_VERBOSE, "\n");
 
-  create_image (bp, 0, false);
-  display_image (bp->buffer);
+  bar_draw (bp, false);
 
   return bp;
 }
@@ -624,36 +732,20 @@ bar_update (void *progress, wgint howmuch, double dltime)
 }
 
 static void
-bar_draw (void *progress)
+bar_draw (void *progress, bool force)
 {
-  bool force_screen_update = false;
   struct bar_progress *bp = progress;
+  static char *buffer = NULL;
 
-  /* If SIGWINCH (the window size change signal) been received,
-     determine the new screen size and update the screen.  */
-  if (received_sigwinch)
+  if (buffer == NULL)
+    buffer = xmalloc (bp_width + 100);
+
+  if (force)
     {
-      int old_width = screen_width;
-      screen_width = determine_screen_width ();
-      if (!screen_width)
-        screen_width = DEFAULT_SCREEN_WIDTH;
-      else if (screen_width < MINIMUM_SCREEN_WIDTH)
-        screen_width = MINIMUM_SCREEN_WIDTH;
-      if (screen_width != old_width)
-        {
-          bp->width = screen_width - 1;
-          bp->buffer = xrealloc (bp->buffer, bp->width + 100);
-          force_screen_update = true;
-        }
-      received_sigwinch = 0;
+      buffer = xrealloc (buffer, bp_width + 100);
     }
-
-  if (bp->dltime - bp->last_screen_update < REFRESH_INTERVAL && !force_screen_update)
-    /* Don't update more often than five times per second. */
-    return;
-
-  create_image (bp, bp->dltime, false);
-  display_image (bp->buffer);
+  create_image (bp, buffer, bp->dltime, false);
+  display_image (buffer);
   bp->last_screen_update = bp->dltime;
 }
 
@@ -667,12 +759,10 @@ bar_finish (void *progress, double dltime)
     /* See bar_update() for explanation. */
     bp->total_length = bp->initial_length + bp->count;
 
-  create_image (bp, dltime, true);
-  display_image (bp->buffer);
+  bar_draw (bp, false);
 
   logputs (LOG_VERBOSE, "\n\n");
 
-  xfree (bp->buffer);
   xfree (bp);
 }
 
@@ -867,9 +957,9 @@ get_eta (int *bcd)
 #endif
 
 static void
-create_image (struct bar_progress *bp, double dl_total_time, bool done)
+create_image (struct bar_progress *bp, char *buffer, double dl_total_time, bool done)
 {
-  char *p = bp->buffer;
+  char *p = buffer;
   wgint size = bp->initial_length + bp->count;
 
   const char *size_grouped = with_thousand_seps (size);
@@ -899,7 +989,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
      "=====>..."       - progress bar             - the rest
   */
   int dlbytes_size = 1 + MAX (size_grouped_len, 11);
-  int progress_size = bp->width - (4 + 2 + dlbytes_size + 8 + 14);
+  int progress_size = bp_width - (4 + 2 + dlbytes_size + 8 + 14);
 
   /* The difference between the number of bytes used,
      and the number of columns used. */
@@ -1078,7 +1168,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       move_to_end (p);
     }
 
-  while (p - bp->buffer - bytes_cols_diff - size_grouped_diff < bp->width)
+  while (p - buffer - bytes_cols_diff - size_grouped_diff < bp_width)
     *p++ = ' ';
   *p = '\0';
 }
