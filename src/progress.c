@@ -49,6 +49,7 @@ struct progress_implementation {
   bool interactive;
   void *(*create) (wgint, wgint);
   void (*update) (void *, wgint, double);
+  void (*draw) (void *);
   void (*finish) (void *, double);
   void (*set_params) (const char *);
 };
@@ -58,16 +59,18 @@ struct progress_implementation {
 static void *dot_create (wgint, wgint);
 static void dot_update (void *, wgint, double);
 static void dot_finish (void *, double);
+static void dot_draw (void *);
 static void dot_set_params (const char *);
 
 static void *bar_create (wgint, wgint);
 static void bar_update (void *, wgint, double);
+static void bar_draw (void *);
 static void bar_finish (void *, double);
 static void bar_set_params (const char *);
 
 static struct progress_implementation implementations[] = {
-  { "dot", 0, dot_create, dot_update, dot_finish, dot_set_params },
-  { "bar", 1, bar_create, bar_update, bar_finish, bar_set_params }
+  { "dot", 0, dot_create, dot_update, dot_draw, dot_finish, dot_set_params },
+  { "bar", 1, bar_create, bar_update, bar_draw, bar_finish, bar_set_params }
 };
 static struct progress_implementation *current_impl;
 static int current_impl_locked;
@@ -182,6 +185,7 @@ void
 progress_update (void *progress, wgint howmuch, double dltime)
 {
   current_impl->update (progress, howmuch, dltime);
+  current_impl->draw (progress);
 }
 
 /* Tell the progress gauge to clean up.  Calling this will free the
@@ -204,6 +208,7 @@ struct dot_progress {
   int accumulated;              /* number of bytes accumulated after
                                    the last printed dot */
 
+  double dltime;                /* download time so far */
   int rows;                     /* number of rows printed so far */
   int dots;                     /* number of dots printed in this row */
 
@@ -344,12 +349,19 @@ static void
 dot_update (void *progress, wgint howmuch, double dltime)
 {
   struct dot_progress *dp = progress;
+  dp->accumulated += howmuch;
+  dp->dltime = dltime;
+}
+
+static void
+dot_draw (void *progress)
+{
+  struct dot_progress *dp = progress;
   int dot_bytes = opt.dot_bytes;
   wgint ROW_BYTES = opt.dot_bytes * opt.dots_in_line;
 
   log_set_flush (false);
 
-  dp->accumulated += howmuch;
   for (; dp->accumulated >= dot_bytes; dp->accumulated -= dot_bytes)
     {
       if (dp->dots == 0)
@@ -366,7 +378,7 @@ dot_update (void *progress, wgint howmuch, double dltime)
           ++dp->rows;
           dp->dots = 0;
 
-          print_row_stats (dp, dltime, false);
+          print_row_stats (dp, dp->dltime, false);
         }
     }
 
@@ -505,6 +517,7 @@ struct bar_progress {
                                    measured since the beginning of
                                    download. */
 
+  double dltime;                /* download time so far */
   int width;                    /* screen width we're using at the
                                    time the progress gauge was
                                    created.  this is different from
@@ -595,8 +608,8 @@ static void
 bar_update (void *progress, wgint howmuch, double dltime)
 {
   struct bar_progress *bp = progress;
-  bool force_screen_update = false;
 
+  bp->dltime = dltime;
   bp->count += howmuch;
   if (bp->total_length > 0
       && bp->count + bp->initial_length > bp->total_length)
@@ -608,6 +621,13 @@ bar_update (void *progress, wgint howmuch, double dltime)
     bp->total_length = bp->initial_length + bp->count;
 
   update_speed_ring (bp, howmuch, dltime);
+}
+
+static void
+bar_draw (void *progress)
+{
+  bool force_screen_update = false;
+  struct bar_progress *bp = progress;
 
   /* If SIGWINCH (the window size change signal) been received,
      determine the new screen size and update the screen.  */
@@ -628,13 +648,13 @@ bar_update (void *progress, wgint howmuch, double dltime)
       received_sigwinch = 0;
     }
 
-  if (dltime - bp->last_screen_update < REFRESH_INTERVAL && !force_screen_update)
+  if (bp->dltime - bp->last_screen_update < REFRESH_INTERVAL && !force_screen_update)
     /* Don't update more often than five times per second. */
     return;
 
-  create_image (bp, dltime, false);
+  create_image (bp, bp->dltime, false);
   display_image (bp->buffer);
-  bp->last_screen_update = dltime;
+  bp->last_screen_update = bp->dltime;
 }
 
 static void
