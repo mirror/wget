@@ -1,3 +1,7 @@
+2013-01-30  Pavel Mateja  <pavel@netsafe.cz> (tiny change)
+
+	* http.c (gethttp): Specify "Host" for CONNECT method.
+
 2013-10-30  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* http.c (skip_short_body): Remove assert which is always true.
