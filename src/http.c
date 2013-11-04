@@ -928,8 +928,6 @@ skip_short_body (int fd, wgint contlen, bool chunked)
   char dlbuf[SKIP_SIZE + 1];
   dlbuf[SKIP_SIZE] = '\0';        /* so DEBUGP can safely print it */
 
-  assert (contlen != -1 || contlen);
-
   /* If the body is too large, it makes more sense to simply close the
      connection than to try to read the body.  */
   if (contlen > SKIP_THRESHOLD)
@@ -1920,7 +1918,7 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
 
   char *head;
   struct response *resp;
-  char hdrval[256];
+  char hdrval[512];
   char *message;
 
   /* Declare WARC variables. */
@@ -2284,10 +2282,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
                  the regular request below.  */
               proxyauth = NULL;
             }
-          /* Examples in rfc2817 use the Host header in CONNECT
-             requests.  I don't see how that gains anything, given
-             that the contents of Host would be exactly the same as
-             the contents of CONNECT.  */
+          request_set_header (connreq, "Host",
+                              aprintf ("%s:%d", u->host, u->port),
+                              rel_value);
 
           write_error = request_send (connreq, sock, 0);
           request_free (connreq);

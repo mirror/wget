@@ -1024,9 +1024,9 @@ match_tail (const char *string, const char *tail, bool fold_case)
     return false;  /* tail is longer than string.  */
 
   if (!fold_case)
-    return strcmp (string + pos, tail);
+    return !strcmp (string + pos, tail);
   else
-    return strcasecmp (string + pos, tail);
+    return !strcasecmp (string + pos, tail);
 }
 
 /* Checks whether string S matches each element of ACCEPTS.  A list

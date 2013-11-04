@@ -443,9 +443,9 @@ ssl_connect_wget (int fd, const char *hostname)
       err = gnutls_priority_set_direct (session, "NORMAL:-VERS-SSL3.0", NULL);
       break;
     case secure_protocol_pfs:
-      if (gnutls_check_version("3.2.4"))
-        err = gnutls_priority_set_direct (session, "PFS", NULL);
-      else
+      err = gnutls_priority_set_direct (session, "PFS", NULL);
+      if (err != GNUTLS_E_SUCCESS)
+        /* fallback if PFS is not available */
         err = gnutls_priority_set_direct (session, "NORMAL:-RSA", NULL);
       break;
     default:

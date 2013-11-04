@@ -199,7 +199,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
           if (next < 0)         /* a month name was not encountered */
             {
               for (i = 0; i < 12; i++)
-                if (!strcmp (tok, months[i]))
+                if (!strcasecmp (tok, months[i]))
                   break;
               /* If we got a month, it means the token before it is the
                  size, and the filename is three tokens away.  */
