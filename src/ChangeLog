@@ -1,3 +1,9 @@
+2013-11-10  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* progress.c (progress_create): Do not set `current_progress'.
+	(progress_finish): Do not reset `current_progress' when the progress bar
+	to remove is the first one in the list.
+
 2013-11-03  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* retr.h (fd_read_body): Accept an additional argument `url'.
