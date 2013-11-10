@@ -291,9 +291,7 @@ struct options
 
   bool report_bps;              /*Output bandwidth in bits format*/
 
-#ifdef ENABLE_THREADS
-  int jobs; /* How many threads use at the same time.  */
-#endif
+  int jobs;                 /* How many threads use at the same time.  */
 };
 
 extern struct options opt;

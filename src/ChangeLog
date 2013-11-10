@@ -1,5 +1,7 @@
 2013-11-10  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* options.h (struct options) [!ENABLE_THREADS]: Define jobs.
+
 	* progress.c (progress_create): Do not set `current_progress'.
 	(progress_finish): Do not reset `current_progress' when the progress bar
 	to remove is the first one in the list.
