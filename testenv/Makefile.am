@@ -28,27 +28,35 @@
 
 AUTOMAKE_OPTIONS = parallel-tests
 AM_TESTS_ENVIRONMENT = MAKE_CHECK=True; export MAKE_CHECK;
-TESTS = Test-auth-basic-fail.py			\
-	Test-auth-basic.py			\
-	Test-auth-both.py			\
-	Test-auth-digest.py			\
-	Test-auth-no-challenge.py		\
-	Test-auth-no-challenge-url.py		\
-	Test-auth-retcode.py			\
-	Test-auth-with-content-disposition.py	\
-	Test-c-full.py				\
-	Test-Content-disposition-2.py		\
-	Test-Content-disposition.py 		\
-	Test-cookie-401.py			\
-	Test-cookie-domain-mismatch.py		\
-	Test-cookie-expires.py			\
-	Test-cookie.py				\
-	Test-Head.py				\
-	Test-O.py				\
-	Test-Post.py				\
-	Test--spider-r.py
 
-XFAIL_TESTS =   Test-auth-both.py
+if RACE_CHECKING_IS_ENABLED
+RACE_FAIL = Test--spider-r.py
+RACE_TESTS =
+endif
+
+TESTS = Test-auth-basic-fail.py             \
+    Test-auth-basic.py                      \
+    Test-auth-both.py                       \
+    Test-auth-digest.py                     \
+    Test-auth-no-challenge.py               \
+    Test-auth-no-challenge-url.py           \
+    Test-auth-retcode.py                    \
+    Test-auth-with-content-disposition.py   \
+    Test-c-full.py                          \
+    Test-Content-disposition-2.py           \
+    Test-Content-disposition.py             \
+    Test-cookie-401.py                      \
+    Test-cookie-domain-mismatch.py          \
+    Test-cookie-expires.py                  \
+    Test-cookie.py                          \
+    $(RACE_TESTS)                           \
+    Test-Head.py                            \
+    Test-O.py                               \
+    Test-Post.py                            \
+    Test--spider-r.py
+
+XFAIL_TESTS = Test-auth-both.py             \
+    $(RACE_FAIL)
 
 LOG_COMPILER = python3
 

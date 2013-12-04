@@ -96,6 +96,12 @@ ENABLE_METALINK=$enableval, ENABLE_METALINK=no)
 test x"${ENABLE_METALINK}" = xyes && AC_DEFINE([ENABLE_METALINK], 1,
    [Define if you want the metalink file format support compiled in.])
 
+AC_ARG_ENABLE(race-detection,
+[  --enable-race-detection enable support for detecting race conditions],
+ENABLE_RACES=$enableval, ENABLE_RACES=no)
+test x"${ENABLE_RACES}" = xyes && AC_DEFINE([ENABLE_RACES], 1,
+   [Define if you want runtime Race Detection enabled.])
+
 dnl
 dnl Find the compiler
 dnl
@@ -388,6 +394,11 @@ dnl    ])
   ])
 ])
 
+AS_IF([test x"$ENABLE_RACES" != xno],[
+   CFLAGS="$CFLAGS -fsanitize=thread -fPIE";
+   LDFLAGS="$LDFLAGS -fsanitize=thread -pie";
+])
+
 AS_IF([test x"$ENABLE_METALINK" != xno],[
   dnl If metalink support is requested
   PKG_CHECK_MODULES(LIBMETALINK, libmetalink, [
@@ -630,6 +641,7 @@ dnl Needed by src/Makefile.am
 AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" == "Xyes"])
 AM_CONDITIONAL([METALINK_IS_ENABLED], [test "X$metalink" == "Xyes"])
 AM_CONDITIONAL([THREADS_ARE_ENABLED], [test "X$threads" == "Xyes"])
+AM_CONDITIONAL([RACE_CHECKING_IS_ENABLED], [test "X$race-detection" == "Xyes"])
 
 dnl
 dnl Create output
@@ -656,4 +668,5 @@ AC_MSG_NOTICE([Summary of build options:
   OPIE:              $ENABLE_OPIE
   Metalink:          $ENABLE_METALINK
   Debugging:         $ENABLE_DEBUG
+  Race Detection:    $ENABLE_RACES
 ])

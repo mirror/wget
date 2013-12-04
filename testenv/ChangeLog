@@ -1,3 +1,8 @@
+2013-12-04  Darshit Shah  <darnir@gmail.com>
+
+	* Makefile.am [RACE_CHECKING_IS_ENABLED]: Define `RACE_FAIL' and
+	RACE_TESTS'.
+
 2013-10-14  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* Makefile.am (XFAIL_TESTS): Remove Test--spider-r.py.
