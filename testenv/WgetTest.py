@@ -219,7 +219,7 @@ class HTTPTest (CommonMethods):
         servers=1
     ):
         try:
-            self.HTTP_setup (name, pre_hook, test_params, post_hook, servers)
+            self.Server_setup (name, pre_hook, test_params, post_hook, servers)
         except TestFailed as tf:
             printer ("RED", "Error: " + tf.error)
             self.tests_passed = False
@@ -232,7 +232,8 @@ class HTTPTest (CommonMethods):
             printer ("GREEN", "Test Passed")
         finally:
             self._exit_test ()
-    def HTTP_setup (self, name, pre_hook, test_params, post_hook, servers):
+
+    def Server_setup (self, name, pre_hook, test_params, post_hook, servers):
         self.name = name
         self.servers = servers
         printer ("BLUE", "Running Test " + self.name)
@@ -247,6 +248,11 @@ class HTTPTest (CommonMethods):
         #self.server = self.init_HTTP_Server ()
         #self.domain = self.get_domain_addr (self.server.server_address)
 
+        self.pre_hook_call (pre_hook)
+        self.call_test (test_params)
+        self.post_hook_call (post_hook)
+
+    def pre_hook_call (self, pre_hook):
         for pre_hook_func in pre_hook:
             try:
                 assert hasattr (self, pre_hook_func)
@@ -255,6 +261,7 @@ class HTTPTest (CommonMethods):
                 raise TestFailed ("Pre Test Function " + pre_hook_func + " not defined.")
             getattr (self, pre_hook_func) (pre_hook[pre_hook_func])
 
+    def call_test (self, test_params):
         for test_func in test_params:
             try:
                 assert hasattr (self, test_func)
@@ -266,6 +273,7 @@ class HTTPTest (CommonMethods):
         self.act_retcode = self.exec_wget (self.options, self.urls, self.domain_list)
         self.stop_HTTP_Server ()
 
+    def post_hook_call (self, post_hook):
         for post_hook_func in post_hook:
             try:
                 assert hasattr (self, post_hook_func)

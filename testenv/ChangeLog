@@ -1,3 +1,17 @@
+2013-12-15  Darshit Shah  <darnir@gmail.com>
+
+	* WgetTest.py (HTTPTest.HTTP_setup): Rename to Server_setup so it can be
+	easily reused for other non-HTTP servers.
+	(HTTPTest.__init__): Call Server_setup instead of HTTP_setup
+	(HTTPTest.Server_setup): Split into three more functions, that handle
+	pre-hooks, test execution and post-hooks respectively.
+	(HTTPTest.pre_hook_call): Set up and execute the pre-test hooks. Code split
+	from HTTPTest.Server_setup
+	(HTTPTest.call_test): Execute wget and log exit code. Code split from
+	HTTPTest.Server_setup
+	(HTTPTest.post_hook_call): Set up and execute post-test hooks. Code split
+	from HTTPTest.Server_setup
+
 2013-12-04  Darshit Shah  <darnir@gmail.com>
 
 	* Makefile.am [RACE_CHECKING_IS_ENABLED]: Define `RACE_FAIL' and
