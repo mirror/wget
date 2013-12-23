@@ -1,3 +1,7 @@
+2013-12-22  Mike Frysinger  <vapier@gentoo.org>
+
+	* sample.wgetrc: add links to the manual.
+
 2013-10-06  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* wget.texi: add/explain quoting of wildcard patterns

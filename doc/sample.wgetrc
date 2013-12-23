@@ -5,7 +5,10 @@
 ## You can use this file to change the default behaviour of wget or to
 ## avoid having to type many many command-line options. This file does
 ## not contain a comprehensive list of commands -- look at the manual
-## to find out what you can put into this file.
+## to find out what you can put into this file. You can find this here:
+##   $ info wget.info 'Startup File'
+## Or online here:
+##   https://www.gnu.org/software/wget/manual/wget.html#Startup-File
 ##
 ## Wget initialization file can reside in /usr/local/etc/wgetrc
 ## (global, for all users) or $HOME/.wgetrc (for a single user).
