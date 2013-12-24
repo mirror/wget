@@ -40,7 +40,11 @@ class CommonMethods:
         cmd_line = self.get_cmd_line (options, urls, domain_list)
         params = shlex.split (cmd_line)
         print (params)
-        retcode = call (params)
+        try:
+            retcode = call (params)
+        except FileNotFoundError as filenotfound:
+            raise TestFailed (
+                "The Wget Executable does not exist at the expected path")
         return retcode
 
     def get_cmd_line (self, options, urls, domain_list):
@@ -270,7 +274,11 @@ class HTTPTest (CommonMethods):
                 raise TestFailed ("Test Option " + test_func + " unknown.")
             getattr (self, test_func) (test_params[test_func])
 
-        self.act_retcode = self.exec_wget (self.options, self.urls, self.domain_list)
+        try:
+            self.act_retcode = self.exec_wget (self.options, self.urls, self.domain_list)
+        except TestFailed as tf:
+            self.stop_HTTP_Server ()
+            raise TestFailed (tf.__str__ ())
         self.stop_HTTP_Server ()
 
     def post_hook_call (self, post_hook):

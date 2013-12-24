@@ -1,3 +1,10 @@
+2013-12-25  Darshit Shah  <darnir@gmail.com>
+
+	* WgetTest.py (CommonMehtods.exec_wget): Catch and handle exception if the
+	Wget executable is not found at src/wget
+	(HTTPTest.call_test): In case of error during execution, remove all existing
+	servers before quitting
+
 2013-12-15  Darshit Shah  <darnir@gmail.com>
 
 	* WgetTest.py (HTTPTest.HTTP_setup): Rename to Server_setup so it can be
