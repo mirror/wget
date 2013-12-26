@@ -1,3 +1,7 @@
+2013-12-26  Darshit Shah  <darnir@gmail.com>
+
+	* WgetTest.py (HTTPTest.call_test): Correct the call to stop_HTTP_Server.
+
 2013-12-25  Darshit Shah  <darnir@gmail.com>
 
 	* WgetTest.py (CommonMehtods.exec_wget): Catch and handle exception if the

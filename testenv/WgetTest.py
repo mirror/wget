@@ -261,7 +261,7 @@ class HTTPTest (CommonMethods):
             try:
                 assert hasattr (self, pre_hook_func)
             except AssertionError as ae:
-                self.stop_HTTP_Server (self.server)
+                self.stop_HTTP_Server ()
                 raise TestFailed ("Pre Test Function " + pre_hook_func + " not defined.")
             getattr (self, pre_hook_func) (pre_hook[pre_hook_func])
 
@@ -270,7 +270,7 @@ class HTTPTest (CommonMethods):
             try:
                 assert hasattr (self, test_func)
             except AssertionError as ae:
-                self.stop_HTTP_Server (self.server)
+                self.stop_HTTP_Server ()
                 raise TestFailed ("Test Option " + test_func + " unknown.")
             getattr (self, test_func) (test_params[test_func])
 
