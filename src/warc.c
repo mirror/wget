@@ -726,10 +726,9 @@ warc_start_new_file (bool meta)
 
   if (warc_current_file != NULL)
     fclose (warc_current_file);
-  if (warc_current_warcinfo_uuid_str)
-    free (warc_current_warcinfo_uuid_str);
-  if (warc_current_filename)
-    free (warc_current_filename);
+  
+  free (warc_current_warcinfo_uuid_str);
+  free (warc_current_filename);
 
   warc_current_file_number++;
 
@@ -918,8 +917,7 @@ warc_process_cdx_line (char *lineptr, int field_num_original_url,
       else
         {
           free (original_url);
-          if (checksum_v != NULL)
-            free (checksum_v);
+          free (checksum_v);
           free (record_id);
         }
     }
@@ -1417,10 +1415,8 @@ warc_write_response_record (char *url, char *timestamp_str,
       response_uuid);
     }
 
-  if (block_digest)
-    free (block_digest);
-  if (payload_digest)
-    free (payload_digest);
+  free (block_digest);
+  free (payload_digest);
 
   return warc_write_ok;
 }

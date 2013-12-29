@@ -1,3 +1,10 @@
+2013-12-29  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* init.c (home_dir): Remove useless 'if'.
+	* warc.c (warc_start_new_file): Likewise.
+	(warc_process_cdx_line): Likewise.
+	(warc_write_response_record): Likewise.
+
 2013-12-26  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* gnutls.c (ssl_connect_wget): Fix connect timeout failure
