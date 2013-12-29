@@ -178,6 +178,10 @@ class CommonMethods:
             file_handler.write (file_obj.content)
             file_handler.close ()
 
+    def ServerConf (self, server_settings):
+        for i in range (0, self.servers):
+            self.server_list[i].server_sett (server_settings)
+
     """ Test Option Function Calls """
 
     def WgetCommands (self, command_list):
@@ -316,3 +320,5 @@ class WgetFile:
         self.content = content
         self.timestamp = timestamp
         self.rules = rules
+
+# vim: set ts=4 sts=4 sw=4 tw=80 et :

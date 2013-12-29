@@ -31,6 +31,10 @@ class StoppableHTTPServer (HTTPServer):
         self.server_configs = conf_dict
         self.fileSys = filelist
 
+    def server_sett (self, settings):
+        for settings_key in settings:
+            setattr (self.RequestHandlerClass, settings_key, settings[settings_key])
+
     def get_req_headers (self):
         return self.request_headers
 
@@ -264,8 +268,13 @@ class _Handler (WgetHTTPRequestHandler):
             auth_type = auth_header.split(' ')[0] if auth_header else required_auth
         else:
             auth_type = required_auth
-        assert hasattr (self, "authorize_" + auth_type)
-        is_auth = getattr (self, "authorize_" + auth_type) (auth_header, auth_rule)
+        try:
+            assert hasattr (self, "authorize_" + auth_type)
+            is_auth = getattr (self, "authorize_" + auth_type) (auth_header, auth_rule)
+        except AssertionError:
+            raise ServerError ("Authentication Mechanism " + auth_rule + " not supported")
+        except AttributeError as ae:
+            raise ServerError (ae.__str__())
         if is_auth is False:
             raise ServerError ("Unable to Authenticate")
 
@@ -427,4 +436,7 @@ class HTTPd (threading.Thread):
     def server_conf (self, file_list, server_rules):
         self.server_inst.server_conf (file_list, server_rules)
 
-# vim: set ts=8 sts=4 sw=3 tw=0 et :
+    def server_sett (self, settings):
+         self.server_inst.server_sett (settings)
+
+# vim: set ts=4 sts=4 sw=4 tw=80 et :

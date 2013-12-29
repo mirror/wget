@@ -1,3 +1,12 @@
+2013-12-27  Darshit Shah  <darnir@gmail.com>
+
+	* WgetTest.py: Add modeline
+	(CommonMethods.ServerConf): New pre-test hook that sets
+	BaseHTTPRequestHandler class variables in all available servers
+	* HTTPServer.py (HTTPd.ServerConf): Call the respective method in the Server
+	to set the class variables
+	(StoppableHTTPServer.server_sett): Set the handler class variables
+
 2013-12-26  Darshit Shah  <darnir@gmail.com>
 
 	* WgetTest.py (HTTPTest.call_test): Correct the call to stop_HTTP_Server.
