@@ -1,3 +1,8 @@
+2014-01-02  Darshit Shah  <darnir@gmail.com>
+
+	* WgetTest.py (CommonMentods.exec_wget): Wait for n seconds before calling
+	the Wget executable.
+
 2013-12-27  Darshit Shah  <darnir@gmail.com>
 
 	* WgetTest.py: Add modeline

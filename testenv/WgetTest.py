@@ -5,6 +5,7 @@ import sys
 import traceback
 import HTTPServer
 import re
+import time
 from subprocess import call
 from ColourTerm import printer
 from difflib import unified_diff
@@ -40,6 +41,8 @@ class CommonMethods:
         cmd_line = self.get_cmd_line (options, urls, domain_list)
         params = shlex.split (cmd_line)
         print (params)
+        if os.getenv ("SERVER_WAIT"):
+            time.sleep (float (os.getenv ("SERVER_WAIT")))
         try:
             retcode = call (params)
         except FileNotFoundError as filenotfound:
