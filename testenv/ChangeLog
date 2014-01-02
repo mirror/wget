@@ -1,4 +1,26 @@
 2014-01-02  Darshit Shah  <darnir@gmail.com>
+	* Makefile.am: Add new Test--https.py to list of tests and EXTRA_DIST.
+	Also replace all tabs with spaces in file for conformity.
+	* Test--https.py: New test to check if Wget works correctly with HTTPS
+	servers
+	* HTTPServer.py: Import new modules for use in HTTPS Servers
+	(HTTPSServer): New class that generates a SSL-wrapped socket for use in a
+	HTTPS Server.
+	(HTTPSd): HTTPS daemon class. Analogous to the HTTPd class
+	* WgetTest.py: Define global variables HTTP and HTTPS to reflect Server
+	types
+	(CommonMethods.exec_wget): Add the protocol information to the URL before
+	passing it to wget
+	(HTTPTest.__init__): Edit syntax. The servers variable now accepts a list of
+	servers defined by their type. E.g. HTTP, HTTPS.
+	(HTTPTest.Server_setup): Reflect change in type of variable servers.
+	However, we maintin the value of self.servers to allow most of the code to
+	remain unchanged.
+	(HTTPTest.init_HTTPS_Server): Initialize a HTTPS Server
+	* Test-Parallel-Proto.py: Edit to reflect slight change in Test Fiel Syntax.
+	* Test-Proto.py: Same
+
+2014-01-02  Darshit Shah  <darnir@gmail.com>
 
 	* WgetTest.py (CommonMentods.exec_wget): Wait for n seconds before calling
 	the Wget executable.

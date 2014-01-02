@@ -10,6 +10,9 @@ from subprocess import call
 from ColourTerm import printer
 from difflib import unified_diff
 
+HTTP = "HTTP"
+HTTPS = "HTTPS"
+
 """ A Custom Exception raised by the Test Environment. """
 
 class TestFailed (Exception):
@@ -57,7 +60,8 @@ class CommonMethods:
         cmd_line = WGET_PATH + " " + options + " "
         for i in range (0, self.servers):
             for url in urls[i]:
-                cmd_line += domain_list[i] + url + " "
+                protocol = "http://" if self.server_types[i] is "HTTP" else "https://"
+                cmd_line += protocol + domain_list[i] + url + " "
 #        for url in urls:
 #            cmd_line += domain_list[0] + url + " "
         print (cmd_line)
@@ -227,7 +231,7 @@ class HTTPTest (CommonMethods):
         pre_hook=dict(),
         test_params=dict(),
         post_hook=dict(),
-        servers=1
+        servers=[HTTP]
     ):
         try:
             self.Server_setup (name, pre_hook, test_params, post_hook, servers)
@@ -246,13 +250,14 @@ class HTTPTest (CommonMethods):
 
     def Server_setup (self, name, pre_hook, test_params, post_hook, servers):
         self.name = name
-        self.servers = servers
+        self.server_types = servers
+        self.servers = len (servers)
         printer ("BLUE", "Running Test " + self.name)
         self.init_test_env (name)
         self.server_list = list()
         self.domain_list = list()
-        for server_number in range (0, servers):
-            server_inst = self.init_HTTP_Server ()
+        for server_type in servers:
+            server_inst = getattr (self, "init_" + server_type + "_Server") ()
             self.server_list.append (server_inst)
             domain = self.get_domain_addr (server_inst.server_address)
             self.domain_list.append (domain)
@@ -298,6 +303,11 @@ class HTTPTest (CommonMethods):
 
     def init_HTTP_Server (self):
         server = HTTPServer.HTTPd ()
+        server.start ()
+        return server
+
+    def init_HTTPS_Server (self):
+        server = HTTPServer.HTTPSd ()
         server.start ()
         return server
 

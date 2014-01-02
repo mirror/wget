@@ -1,10 +1,14 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from socketserver import BaseServer
 from posixpath import basename, splitext
 from base64 import b64encode
 from random import random
 from hashlib import md5
 import threading
+import socket
 import re
+import ssl
+import os
 
 
 class InvalidRangeHeader (Exception):
@@ -38,6 +42,23 @@ class StoppableHTTPServer (HTTPServer):
     def get_req_headers (self):
         return self.request_headers
 
+class HTTPSServer (StoppableHTTPServer):
+
+   def __init__ (self, address, handler):
+         BaseServer.__init__ (self, address, handler)
+         print (os.getcwd())
+         CERTFILE = os.path.abspath (os.path.join ('..', 'certs', 'wget-cert.pem'))
+         print (CERTFILE)
+         fop = open (CERTFILE)
+         print (fop.readline())
+         self.socket = ssl.wrap_socket (
+               sock = socket.socket (self.address_family, self.socket_type),
+               ssl_version = ssl.PROTOCOL_TLSv1,
+               certfile = CERTFILE,
+               server_side = True
+               )
+         self.server_bind ()
+         self.server_activate ()
 
 class WgetHTTPRequestHandler (BaseHTTPRequestHandler):
 
@@ -438,5 +459,9 @@ class HTTPd (threading.Thread):
 
     def server_sett (self, settings):
          self.server_inst.server_sett (settings)
+
+class HTTPSd (HTTPd):
+
+   server_class = HTTPSServer
 
 # vim: set ts=4 sts=4 sw=4 tw=80 et :
