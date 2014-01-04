@@ -3043,7 +3043,10 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
 
   /* Send preliminary HEAD request if -N is given and we have an existing
    * destination file. */
-  file_name = url_file_name (opt.trustservernames ? u : original_url, NULL);
+  if (!opt.output_document)
+      file_name = url_file_name (opt.trustservernames ? u : original_url, NULL);
+  else
+    file_name = xstrdup (opt.output_document);
   if (opt.timestamping && (file_exists_p (file_name)
                            || opt.content_disposition))
     send_head_first = true;

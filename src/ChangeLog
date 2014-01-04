@@ -1,3 +1,8 @@
+2014-01-05  Håkon Vågsether <hauk142@gmail.com> (tiny change)
+
+	* http.c (http_loop): Fix checking the URL length when filename is
+	specified.
+
 2013-12-29  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* init.c (home_dir): Remove useless 'if'.
