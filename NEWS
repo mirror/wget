@@ -8,6 +8,10 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+** Introduce --no-config.
+
+* Changes in Wget 1.15
+
 ** Add support for --method.
 
 ** Add support for file names longer than MAX_FILE.
@@ -35,6 +39,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 ** Support some FTP servers that return an empty list with "LIST -a".
 
 ** Specify Host with the HTTP CONNECT method.
+
+** Use the correct HTTP method on a redirection.
 
 * Changes in Wget 1.14
 

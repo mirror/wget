@@ -244,6 +244,7 @@ static struct cmdline_option option_data[] =
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
     { "no", 'n', OPT__NO, NULL, required_argument },
     { "no-clobber", 0, OPT_BOOLEAN, "noclobber", -1 },
+    { "no-config", 0, OPT_BOOLEAN, "noconfig", -1},
     { "no-parent", 0, OPT_BOOLEAN, "noparent", -1 },
     { "output-document", 'O', OPT_VALUE, "outputdocument", -1 },
     { "output-file", 'o', OPT_VALUE, "logfile", -1 },
@@ -483,11 +484,14 @@ Logging and input file:\n"),
                              relative to URL.\n"),
     N_("\
        --config=FILE         Specify config file to use.\n"), 
+    N_("\
+       --no-config           Do not read any config file.\n"),
+    "\n",
+
 #ifdef ENABLE_METALINK
     N_("\
        --metalink-file       download URLs found in local or external metalink FILE.\n"),
 #endif
-    "\n",
 
     N_("\
 Download:\n"),
@@ -1066,6 +1070,7 @@ main (int argc, char **argv)
   longindex = -1;
   int retconf;
   bool use_userconfig = false;
+  bool noconfig = false;
 
   while ((retconf = getopt_long (argc, argv,
                                 short_options, long_options, &longindex)) != -1)
@@ -1078,7 +1083,12 @@ main (int argc, char **argv)
         {
           confval = long_options[longindex].val;
           config_opt = &option_data[confval & ~BOOLEAN_NEG_MARKER];
-          if (strcmp (config_opt->long_name, "config") == 0)
+          if (strcmp (config_opt->long_name, "no-config") == 0)
+            {
+              noconfig = true;
+              break;
+            }
+          else if (strcmp (config_opt->long_name, "config") == 0)
             {
               bool userrc_ret = true;
               userrc_ret &= run_wgetrc (optarg);
@@ -1095,7 +1105,7 @@ main (int argc, char **argv)
     }
 
   /* If the user did not specify a config, read the system wgetrc and ~/.wgetrc. */
-  if (use_userconfig == false)
+  if (noconfig == false && use_userconfig == false)
     initialize ();
 
   opterr = 0;

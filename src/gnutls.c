@@ -526,8 +526,7 @@ ssl_connect_wget (int fd, const char *hostname)
               break;
             }
 
-          if (err <= 0)
-            break;
+           err = GNUTLS_E_AGAIN;
         }
       else if (err < 0)
         {
@@ -543,7 +542,7 @@ ssl_connect_wget (int fd, const char *hostname)
             }
         }
     }
-  while (err == GNUTLS_E_WARNING_ALERT_RECEIVED && gnutls_error_is_fatal (err) == 0);
+  while (err && gnutls_error_is_fatal (err) == 0);
 
   if (opt.connect_timeout)
     {

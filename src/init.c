@@ -160,7 +160,7 @@ static const struct {
 #ifdef ENABLE_DEBUG
   { "debug",            &opt.debug,             cmd_boolean },
 #endif
-  { "defaultpage", 	&opt.default_page,      cmd_string },
+  { "defaultpage",      &opt.default_page,      cmd_string },
   { "deleteafter",      &opt.delete_after,      cmd_boolean },
   { "dirprefix",        &opt.dir_prefix,        cmd_directory },
   { "dirstruct",        NULL,                   cmd_spec_dirstruct },
@@ -226,6 +226,7 @@ static const struct {
   { "mirror",           NULL,                   cmd_spec_mirror },
   { "netrc",            &opt.netrc,             cmd_boolean },
   { "noclobber",        &opt.noclobber,         cmd_boolean },
+  { "noconfig",         &opt.noconfig,          cmd_boolean },
   { "noparent",         &opt.no_parent,         cmd_boolean },
   { "noproxy",          &opt.no_proxy,          cmd_vector },
   { "numtries",         &opt.ntry,              cmd_number_inf },/* deprecated*/
@@ -477,8 +478,7 @@ home_dir (void)
     }
 
   ret = home ? xstrdup (home) : NULL;
-  if (buf)
-    free (buf);
+  free (buf);
 
   return ret;
 }

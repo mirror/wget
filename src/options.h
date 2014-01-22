@@ -65,6 +65,7 @@ struct options
   char *lfilename;		/* Log filename */
   char *input_filename;		/* Input filename */
   char *choose_config;		/* Specified config file */
+  bool noconfig;
   bool force_html;		/* Is the input file an HTML file? */
 
   char *default_page;           /* Alternative default page (index file) */

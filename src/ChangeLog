@@ -1,3 +1,27 @@
+2014-01-17  Darshit Shah  <darnir@gmail.com>
+
+	* init.c (commands[]): Add --no-config.
+	* options.h: Same.
+	* main.c (option_data[]): Same.
+	(print_help): Same.
+	(main): If --no-config is set, then do not read the wgetrc files.
+
+2014-01-05  Håkon Vågsether <hauk142@gmail.com> (tiny change)
+
+	* http.c (http_loop): Fix checking the URL length when filename is
+	specified.
+
+2013-12-29  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* init.c (home_dir): Remove useless 'if'.
+	* warc.c (warc_start_new_file): Likewise.
+	(warc_process_cdx_line): Likewise.
+	(warc_write_response_record): Likewise.
+
+2013-12-26  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* gnutls.c (ssl_connect_wget): Fix connect timeout failure
+
 2013-11-10  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* options.h (struct options) [!ENABLE_THREADS]: Define jobs.
