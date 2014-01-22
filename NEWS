@@ -6,6 +6,8 @@ See the end for copying conditions.
 
 Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
+* Changes in Wget X.Y.Z
+
 * Changes in Wget 1.15
 
 ** Add support for --method.
