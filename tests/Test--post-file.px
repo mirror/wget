@@ -8,7 +8,7 @@ use HTTPTest;
 
 ###############################################################################
 
-my $cmdline = $WgetTest::WGETPATH . " -d --post-file=nofile http://localhost:{{port}}/";
+my $cmdline = $WgetTest::WGETPATH . " --post-file=nofile http://localhost:{{port}}/";
 
 my $expected_error_code = 3;
 
