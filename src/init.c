@@ -157,9 +157,7 @@ static const struct {
   { "convertlinks",     &opt.convert_links,     cmd_boolean },
   { "cookies",          &opt.cookies,           cmd_boolean },
   { "cutdirs",          &opt.cut_dirs,          cmd_number },
-#ifdef ENABLE_DEBUG
   { "debug",            &opt.debug,             cmd_boolean },
-#endif
   { "defaultpage",      &opt.default_page,      cmd_string },
   { "deleteafter",      &opt.delete_after,      cmd_boolean },
   { "dirprefix",        &opt.dir_prefix,        cmd_directory },
