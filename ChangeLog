@@ -1,3 +1,7 @@
+2014-02-06  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* configure.ac: Update copyright years.
+
 2013-12-22  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* gnulib: add git submodule.
