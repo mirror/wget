@@ -1,3 +1,18 @@
+2014-02-14  Vladimír Pýcha  <vpycha@gmail.com> (tiny change)
+
+	* http.c (parse_content_disposition, extract_param)
+	(append_value_to_filename, digest_authentication_encode): URL-decode the
+	filename parameter of Content-Disposition HTTP header if it is encoded. This
+	is related to --content-disposition.
+	New parameter of extract_param(), "is_url_encoded".
+	Add argument NULL to the call of extract_param() in
+	digest_authentication_encode().
+	* http.h: Add the new parameter to the declaration of extract_param().
+	* cookies.c (parse_set_cookie, test_cookies): Add argument NULL to the calls
+	of extract_param().
+	* url.c (url_unescape): Remove "static" modifier.
+	* url.h: Add declaration of url_unescape().
+
 2014-02-06  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* main.c (print_version): Move copyright year out of the localized

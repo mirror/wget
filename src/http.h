@@ -43,7 +43,7 @@ typedef struct {
   /* A token consists of characters in the [b, e) range. */
   const char *b, *e;
 } param_token;
-bool extract_param (const char **, param_token *, param_token *, char);
+bool extract_param (const char **, param_token *, param_token *, char, bool *);
 
 
 #endif /* HTTP_H */
