@@ -1,3 +1,8 @@
+2014-02-24  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* gnulib: update module.
+	Reported by: Darshit Shah  <darnir@gmail.com>.
+
 2014-02-06  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* configure.ac: Update copyright years.
