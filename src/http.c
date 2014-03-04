@@ -1040,7 +1040,7 @@ modify_param_name(param_token *name)
 static void
 modify_param_value (param_token *value, int encoding_type )
 {
-  if (RFC2231_ENCODING == encoding_type)
+  if (encoding_type == RFC2231_ENCODING)
     {
       const char *delim = memrchr (value->b, '\'', value->e - value->b);
       if ( delim != NULL )
@@ -1073,6 +1073,7 @@ extract_param (const char **source, param_token *name, param_token *value,
                char separator, bool *is_url_encoded)
 {
   const char *p = *source;
+  int param_type;
   if (is_url_encoded)
     *is_url_encoded = false;   /* initializing the out parameter */
 
@@ -1130,10 +1131,10 @@ extract_param (const char **source, param_token *name, param_token *value,
     }
   *source = p;
 
-  int param_type = modify_param_name(name);
-  if (NOT_RFC2231 != param_type)
+  param_type = modify_param_name(name);
+  if (param_type != NOT_RFC2231)
     {
-      if (RFC2231_ENCODING == param_type && is_url_encoded)
+      if (param_type == RFC2231_ENCODING && is_url_encoded)
         *is_url_encoded = true;
       modify_param_value(value, param_type);
     }

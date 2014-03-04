@@ -1,3 +1,7 @@
+2014-03-04  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* http.c (modify_param_value, extract_param): Aesthetic change.
+
 2014-02-14  Vladimír Pýcha  <vpycha@gmail.com> (tiny change)
 
 	* http.c (parse_content_disposition, extract_param)
