@@ -161,9 +161,7 @@ struct options
   bool content_on_error;	/* Do we output the content when the HTTP
 				   status code indicates a server error */
 
-#ifdef ENABLE_DEBUG
   bool debug;			/* Debugging on/off */
-#endif
 
 #ifdef USE_WATT32
   bool wdebug;                  /* Watt-32 tcp/ip debugging on/off */

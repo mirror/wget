@@ -128,12 +128,6 @@ static void print_version (void);
 # define IF_SSL(x) NULL
 #endif
 
-#ifdef ENABLE_DEBUG
-# define WHEN_DEBUG(x) x
-#else
-# define WHEN_DEBUG(x) NULL
-#endif
-
 struct cmdline_option {
   const char *long_name;
   char short_name;
@@ -184,7 +178,7 @@ static struct cmdline_option option_data[] =
     { "content-on-error", 0, OPT_BOOLEAN, "contentonerror", -1 },
     { "cookies", 0, OPT_BOOLEAN, "cookies", -1 },
     { "cut-dirs", 0, OPT_VALUE, "cutdirs", -1 },
-    { WHEN_DEBUG ("debug"), 'd', OPT_BOOLEAN, "debug", -1 },
+    { "debug", 'd', OPT_BOOLEAN, "debug", -1 },
     { "default-page", 0, OPT_VALUE, "defaultpage", -1 },
     { "delete-after", 0, OPT_BOOLEAN, "deleteafter", -1 },
     { "directories", 0, OPT_BOOLEAN, "dirstruct", -1 },
@@ -321,7 +315,6 @@ static struct cmdline_option option_data[] =
 #endif
   };
 
-#undef WHEN_DEBUG
 #undef IF_SSL
 
 /* Return a string that contains S with "no-" prepended.  The string
@@ -981,8 +974,8 @@ print_version (void)
 
   /* TRANSLATORS: When available, an actual copyright character
      (circle-c) should be used in preference to "(C)". */
-  if (fputs (_("\
-Copyright (C) 2011 Free Software Foundation, Inc.\n"), stdout) < 0)
+  if (printf (_("\
+Copyright (C) %s Free Software Foundation, Inc.\n"), "2014") < 0)
     exit (3);
   if (fputs (_("\
 License GPLv3+: GNU GPL version 3 or later\n\
@@ -1228,9 +1221,22 @@ main (int argc, char **argv)
 
   nurl = argc - optind;
 
+  /* If we do not have Debug support compiled in AND Wget is invoked with the
+   * --debug switch, instead of failing, we silently turn it into a no-op. For
+   *  this no-op, we explicitly set opt.debug to false and hence none of the
+   *  Debug output messages will be printed.
+   */
+#ifndef ENABLE_DEBUG
+  if (opt.debug)
+    {
+      fprintf (stderr, _("Debugging support not compiled in. "
+                         "Ignoring --debug flag.\n"));
+      opt.debug = false;
+    }
+#endif
+
   /* All user options have now been processed, so it's now safe to do
      interoption dependency checks. */
-
   if (opt.noclobber && opt.convert_links)
     {
       fprintf (stderr,

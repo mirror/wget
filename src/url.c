@@ -169,7 +169,7 @@ static const unsigned char urlchr_table[256] =
    The transformation is done in place.  If you need the original
    string intact, make a copy before calling this function.  */
 
-static void
+void
 url_unescape (char *s)
 {
   char *t = s;                  /* t - tortoise */

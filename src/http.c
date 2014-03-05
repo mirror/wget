@@ -1044,7 +1044,7 @@ modify_param_name(param_token *name)
 static void
 modify_param_value (param_token *value, int encoding_type )
 {
-  if (RFC2231_ENCODING == encoding_type)
+  if (encoding_type == RFC2231_ENCODING)
     {
       const char *delim = memrchr (value->b, '\'', value->e - value->b);
       if ( delim != NULL )
@@ -1064,13 +1064,22 @@ modify_param_value (param_token *value, int encoding_type )
    filename=\"foo bar\"", the first call to this function will return
    the token named "attachment" and no value, and the second call will
    return the token named "filename" and value "foo bar".  The third
-   call will return false, indicating no more valid tokens.  */
+   call will return false, indicating no more valid tokens.
+
+   is_url_encoded is an out parameter. If not NULL, a boolean value will be
+   stored into it, letting the caller know whether or not the extracted value is
+   URL-encoded. The caller can then decode it with url_unescape(), which however
+   performs decoding in-place. URL-encoding is used by RFC 2231 to support
+   non-US-ASCII characters in HTTP header values.  */
 
 bool
 extract_param (const char **source, param_token *name, param_token *value,
-               char separator)
+               char separator, bool *is_url_encoded)
 {
   const char *p = *source;
+  int param_type;
+  if (is_url_encoded)
+    *is_url_encoded = false;   /* initializing the out parameter */
 
   while (c_isspace (*p)) ++p;
   if (!*p)
@@ -1126,9 +1135,11 @@ extract_param (const char **source, param_token *name, param_token *value,
     }
   *source = p;
 
-  int param_type = modify_param_name(name);
-  if (NOT_RFC2231 != param_type)
+  param_type = modify_param_name(name);
+  if (param_type != NOT_RFC2231)
     {
+      if (param_type == RFC2231_ENCODING && is_url_encoded)
+        *is_url_encoded = true;
       modify_param_value(value, param_type);
     }
   return true;
@@ -1141,13 +1152,16 @@ extract_param (const char **source, param_token *name, param_token *value,
 /* Appends the string represented by VALUE to FILENAME */
 
 static void
-append_value_to_filename (char **filename, param_token const * const value)
+append_value_to_filename (char **filename, param_token const * const value,
+                          bool is_url_encoded)
 {
   int original_length = strlen(*filename);
   int new_length = strlen(*filename) + (value->e - value->b);
   *filename = xrealloc (*filename, new_length+1);
   memcpy (*filename + original_length, value->b, (value->e - value->b));
   (*filename)[new_length] = '\0';
+  if (is_url_encoded)
+    url_unescape (*filename + original_length);
 }
 
 #undef MAX
@@ -1180,7 +1194,9 @@ parse_content_disposition (const char *hdr, char **filename)
 {
   param_token name, value;
   *filename = NULL;
-  while (extract_param (&hdr, &name, &value, ';'))
+  bool is_url_encoded = false;
+  for ( ; extract_param (&hdr, &name, &value, ';', &is_url_encoded);
+        is_url_encoded = false)
     {
       int isFilename = BOUNDED_EQUAL_NO_CASE ( name.b, name.e, "filename" );
       if ( isFilename && value.b != NULL)
@@ -1196,9 +1212,13 @@ parse_content_disposition (const char *hdr, char **filename)
             continue;
 
           if (*filename)
-            append_value_to_filename (filename, &value);
+            append_value_to_filename (filename, &value, is_url_encoded);
           else
-            *filename = strdupdelim (value.b, value.e);
+            {
+              *filename = strdupdelim (value.b, value.e);
+              if (is_url_encoded)
+                url_unescape (*filename);
+            }
         }
     }
 
@@ -4045,7 +4065,7 @@ digest_authentication_encode (const char *au, const char *user,
   realm = opaque = nonce = algorithm = qop = NULL;
 
   au += 6;                      /* skip over `Digest' */
-  while (extract_param (&au, &name, &value, ','))
+  while (extract_param (&au, &name, &value, ',', NULL))
     {
       size_t i;
       size_t namelen = name.e - name.b;
