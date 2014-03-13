@@ -26,6 +26,9 @@ Structure:
     the acceptable elements and their uses. Typically, one must copy this file
     and edit it for writing Test Cases.
 
+    * exc: This package contains custom exception classes used in this test
+    suite.
+
     * misc: This package contains several helper modules used in this test
     suite.
         - colour_terminal.py: A custom module for printing coloured output to

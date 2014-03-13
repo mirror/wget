@@ -9,16 +9,11 @@ import time
 from subprocess import call
 from misc.colour_terminal import print_red, print_green, print_blue
 from difflib import unified_diff
+from exc.test_failed import TestFailed
 
 HTTP = "HTTP"
 HTTPS = "HTTPS"
 
-""" A Custom Exception raised by the Test Environment. """
-
-class TestFailed (Exception):
-
-    def __init__ (self, error):
-        self.error = error
 
 
 """ Class that defines methods common to both HTTP and FTP Tests. """

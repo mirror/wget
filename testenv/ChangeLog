@@ -1,5 +1,10 @@
 2014-03-13  Zihang Chen  <chsc4698@gmail.com>
 
+	* exc: (new package) package for miscellaneous exceptions
+	* WgetTest.py: Move TestFailed to exc/test_failed.py.
+
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
 	* Test-Proto.py: Fix a typo (line 71: server to servers).
 
 2014-03-13  Zihang Chen  <chsc4698@gmail.com>
