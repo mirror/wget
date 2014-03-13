@@ -13,9 +13,9 @@ n tests simultaneously.
 Structure:
 ================================================================================
 
-    * HTTPServer.py: This file contains a custom, programmatically configurable
-    HTTP Server for testing Wget. It runs an instance of Python's http.server
-    module.
+    * server: This package contains custom programmatically configurable servers
+    (both HTTP and FTP) for testing Wget. The HTTP server runs an instance of
+    Python's http.server module. The FTP server is to be implemented.
 
     * WgetTest.py: This file contains various functions and global variables for
     each instance of the server that is initiated. It includes functions to

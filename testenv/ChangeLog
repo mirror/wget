@@ -1,5 +1,15 @@
 2014-03-13  Zihang Chen  <chsc4698@gmail.com>
 
+	* server: (new package) package for the server classes
+	* server.http: (new package) package for HTTP server
+	* server.ftp: (new package) package for FTP server
+	* HTTPServer.py: Move to server/http/http_server.py. Also change the
+	CERTFILE to '../certs/wget-cert.pem'.
+	* FTPServer.py: Move to server/ftp/ftp_server.py.
+	* WgetTest.py: Optimize import respect to the server classes.
+
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
 	* conf: (new package) package for rule classes and hook methods
 	* WgetTest.py:
 	(CommonMethods.Authentication): Move to conf/authentication.py.

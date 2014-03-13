@@ -3,7 +3,6 @@ import shutil
 import shlex
 import sys
 import traceback
-import HTTPServer
 import re
 import time
 from subprocess import call
@@ -11,10 +10,10 @@ from misc.colour_terminal import print_red, print_green, print_blue
 from difflib import unified_diff
 from exc.test_failed import TestFailed
 import conf
+from server.http import http_server
 
 HTTP = "HTTP"
 HTTPS = "HTTPS"
-
 
 
 """ Class that defines methods common to both HTTP and FTP Tests. """
@@ -218,12 +217,12 @@ class HTTPTest (CommonMethods):
         self.hook_call(post_hook, 'Post Test Function')
 
     def init_HTTP_Server (self):
-        server = HTTPServer.HTTPd ()
+        server = http_server.HTTPd ()
         server.start ()
         return server
 
     def init_HTTPS_Server (self):
-        server = HTTPServer.HTTPSd ()
+        server = http_server.HTTPSd ()
         server.start ()
         return server
 
