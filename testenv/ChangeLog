@@ -1,3 +1,15 @@
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
+	* misc: (new package) package for miscellaneous modules
+	* ColourTerm.py: Move to package misc and rename to colour_terminal.py,
+	add print_color functions to reduce the use of string literals like
+	"BLUE", "RED" etc.
+	* WgetTest.py:
+	(CommonMethods.Server_setup): Change invocation to printer to print_blue.
+	(CommonMethods.FilesCrawled): Change invocation to printer to print_red.
+	(HTTPTest.__init__): Change invocations to printer to print_red and
+	print_green respectively.
+
 2014-01-02  Darshit Shah  <darnir@gmail.com>
 	* Makefile.am: Add new Test--https.py to list of tests and EXTRA_DIST.
 	Also replace all tabs with spaces in file for conformity.

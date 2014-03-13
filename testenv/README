@@ -10,7 +10,7 @@ Run the './configure' command to generate the Makefile and then run 'make check'
 to execute the Test Suite. Use the '-j n' option with 'make check' to execute
 n tests simultaneously.
 
-File List:
+Structure:
 ================================================================================
 
     * HTTPServer.py: This file contains a custom, programmatically configurable
@@ -26,8 +26,11 @@ File List:
     the acceptable elements and their uses. Typically, one must copy this file
     and edit it for writing Test Cases.
 
-    * ColourTerm.py: A custom library for printing coloured output to the
-    terminal. Currently it only supports 4 colours in a *nix environment.
+    * misc: This package contains several helper modules used in this test
+    suite.
+        - colour_terminal.py: A custom module for printing coloured output to
+        the terminal. Currently it only supports 4 colours in a *nix
+        environment.
 
 Working:
 ================================================================================

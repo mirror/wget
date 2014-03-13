@@ -7,7 +7,7 @@ import HTTPServer
 import re
 import time
 from subprocess import call
-from ColourTerm import printer
+from misc.colour_terminal import print_red, print_green, print_blue
 from difflib import unified_diff
 
 HTTP = "HTTP"
@@ -213,7 +213,7 @@ class CommonMethods:
             o_headers = self.Request_remaining[i]
             header_diff = headers.symmetric_difference (o_headers)
             if len(header_diff) is not 0:
-                printer ("RED", str (header_diff))
+                print_red(header_diff)
                 raise TestFailed ("Not all files were crawled correctly")
 
 
@@ -236,15 +236,15 @@ class HTTPTest (CommonMethods):
         try:
             self.Server_setup (name, pre_hook, test_params, post_hook, servers)
         except TestFailed as tf:
-            printer ("RED", "Error: " + tf.error)
+            print_red("Error: " + tf.error)
             self.tests_passed = False
         except Exception as ae:
-            printer ("RED", "Unhandled Exception Caught.")
+            print_red("Unhandled Exception Caught.")
             print ( ae.__str__ ())
             traceback.print_exc ()
             self.tests_passed = False
         else:
-            printer ("GREEN", "Test Passed")
+            print_green("Test Passed")
         finally:
             self._exit_test ()
 
@@ -252,7 +252,7 @@ class HTTPTest (CommonMethods):
         self.name = name
         self.server_types = servers
         self.servers = len (servers)
-        printer ("BLUE", "Running Test " + self.name)
+        print_blue("Running Test " + self.name)
         self.init_test_env (name)
         self.server_list = list()
         self.domain_list = list()
