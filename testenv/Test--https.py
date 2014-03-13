@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from sys import exit
-from WgetTest import HTTPTest, WgetFile, HTTPS, HTTP
+from WgetTest import HTTPTest, HTTPS, HTTP
+from misc.wget_file import WgetFile
 
 """
     This test ensures that Wget can download files from HTTPS Servers

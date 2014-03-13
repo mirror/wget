@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from sys import exit
-from WgetTest import HTTPTest, WgetFile, HTTP, HTTPS
+from WgetTest import HTTPTest, HTTP, HTTPS
+from misc.wget_file import WgetFile
 
 """
     This is a Prototype Test File.

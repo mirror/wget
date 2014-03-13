@@ -31,6 +31,8 @@ Structure:
         - colour_terminal.py: A custom module for printing coloured output to
         the terminal. Currently it only supports 4 colours in a *nix
         environment.
+        - wget_file.py: Module which contains WgetFile, which is a file data
+        container object.
 
 Working:
 ================================================================================
@@ -96,7 +98,8 @@ effort to get accustomed to.
 All Test Files MUST begin with the following Three Lines:
 #!/usr/bin/python3
 from sys import exit
-from WgetTest import {HTTPTest|FTPTest}, WgetFile
+from WgetTest import {HTTPTest|FTPTest}
+from misc.wget_file import WgetFile
 
 It is recommended that a small description of the Test Case is provided next.
 This would be very helpful to future contributors.
@@ -104,7 +107,7 @@ Next, is the const variable, TEST_NAME that defines the name of the Test.
 
 Each File in the Test must be represented as a WgetFile object. The WgetFile
 Class has the following prototype:
-WgetFile (String name, String contents, String timestamp, dict rules)
+WgetFile (str name, str contents, str timestamp, dict rules)
 None except name is a mandatory paramter, one may pass only those parameters
 that are required by the File object.
 

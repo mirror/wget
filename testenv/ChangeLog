@@ -1,5 +1,11 @@
 2014-03-13  Zihang Chen  <chsc4698@gmail.com>
 
+	* WgetTest.py: Move WgetFile to package misc.
+	* README: Modify documentation respect to WgetFile.
+	* Test-*.py: Optimize imports about WgetFile.
+
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
 	* misc: (new package) package for miscellaneous modules
 	* ColourTerm.py: Move to package misc and rename to colour_terminal.py,
 	add print_color functions to reduce the use of string literals like

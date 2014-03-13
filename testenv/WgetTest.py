@@ -318,20 +318,5 @@ class HTTPTest (CommonMethods):
             self.Request_remaining.append (server_req)
             server.server_inst.shutdown ()
 
-""" WgetFile is a File Data Container object """
-
-class WgetFile:
-
-    def __init__ (
-        self,
-        name,
-        content="Test Contents",
-        timestamp=None,
-        rules=dict()
-    ):
-        self.name = name
-        self.content = content
-        self.timestamp = timestamp
-        self.rules = rules
 
 # vim: set ts=4 sts=4 sw=4 tw=80 et :
