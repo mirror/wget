@@ -1,5 +1,11 @@
 2014-03-13  Zihang Chen  <chsc4698@gmail.com>
 
+	* test: (new package) package for test case classes
+	* WgetTest.py: Split into test/base_test.py and test/http_test.py.
+	* Test-*.py: Optimize the imports according to changes of WgetTest.py
+
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
 	* server: (new package) package for the server classes
 	* server.http: (new package) package for HTTP server
 	* server.ftp: (new package) package for FTP server

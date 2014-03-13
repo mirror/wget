@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from sys import exit
-from WgetTest import HTTPTest, HTTPS, HTTP
+from test.http_test import HTTPTest
+from test.base_test import HTTP, HTTPS
 from misc.wget_file import WgetFile
 
 """

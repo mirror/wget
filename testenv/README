@@ -17,10 +17,9 @@ Structure:
     (both HTTP and FTP) for testing Wget. The HTTP server runs an instance of
     Python's http.server module. The FTP server is to be implemented.
 
-    * WgetTest.py: This file contains various functions and global variables for
-    each instance of the server that is initiated. It includes functions to
-    start and stop the server, to initialze the test environment and to cleanup
-    after a test.
+    * test: This package contains the test case classes for HTTP and FTP. The
+    test case classes includes methods for initializing and cleaning up of the
+    test environment.
 
     * Test-Proto.py: This is a prototype Test Case file. The file defines all
     the acceptable elements and their uses. Typically, one must copy this file
