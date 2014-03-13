@@ -68,7 +68,7 @@ err = HTTPTest (
                 pre_hook=pre_test,
                 test_params=test_options,
                 post_hook=post_test,
-                server=Servers
+                servers=Servers
 ).begin ()
 
 exit (err)
