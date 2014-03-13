@@ -10,6 +10,7 @@ from subprocess import call
 from misc.colour_terminal import print_red, print_green, print_blue
 from difflib import unified_diff
 from exc.test_failed import TestFailed
+import conf
 
 HTTP = "HTTP"
 HTTPS = "HTTPS"
@@ -96,7 +97,7 @@ class CommonMethods:
         return file_sys
 
 
-    def __check_downloaded_files (self, exp_filesys):
+    def _check_downloaded_files (self, exp_filesys):
         local_filesys = self.__gen_local_filesys ()
         for files in exp_filesys:
             if files.name in local_filesys:
@@ -121,35 +122,6 @@ class CommonMethods:
         return string
 
 
-    """ Test Rule Definitions """
-    """ This should really be taken out soon. All this extra stuff to ensure
-        re-use of old code is crap. Someone needs to re-write it. The new rework
-        branch is much better written, but integrating it requires effort.
-        All these classes should never exist. The whole server needs to modified.
-    """
-
-    class Authentication:
-        def __init__ (self, auth_obj):
-            self.auth_type = auth_obj['Type']
-            self.auth_user = auth_obj['User']
-            self.auth_pass = auth_obj['Pass']
-
-    class ExpectHeader:
-        def __init__ (self, header_obj):
-            self.headers = header_obj
-
-    class RejectHeader:
-        def __init__ (self, header_obj):
-            self.headers = header_obj
-
-    class Response:
-        def __init__ (self, retcode):
-            self.response_code = retcode
-
-    class SendHeader:
-        def __init__ (self, header_obj):
-            self.headers = header_obj
-
     def get_server_rules (self, file_obj):
         """ The handling of expect header could be made much better when the
             options are parsed in a true and better fashion. For an example,
@@ -157,59 +129,9 @@ class CommonMethods:
         """
         server_rules = dict ()
         for rule in file_obj.rules:
-            r_obj = getattr (self, rule) (file_obj.rules[rule])
+            r_obj = conf.find_conf(rule)(file_obj.rules[rule])
             server_rules[rule] = r_obj
         return server_rules
-
-    """ Pre-Test Hook Function Calls """
-
-    def ServerFiles (self, server_files):
-        for i in range (0, self.servers):
-            file_list = dict ()
-            server_rules = dict ()
-            for file_obj in server_files[i]:
-                content = self._replace_substring (file_obj.content)
-                file_list[file_obj.name] = content
-                rule_obj = self.get_server_rules (file_obj)
-                server_rules[file_obj.name] = rule_obj
-            self.server_list[i].server_conf (file_list, server_rules)
-
-    def LocalFiles (self, local_files):
-        for file_obj in local_files:
-            file_handler = open (file_obj.name, "w")
-            file_handler.write (file_obj.content)
-            file_handler.close ()
-
-    def ServerConf (self, server_settings):
-        for i in range (0, self.servers):
-            self.server_list[i].server_sett (server_settings)
-
-    """ Test Option Function Calls """
-
-    def WgetCommands (self, command_list):
-        self.options = self._replace_substring (command_list)
-
-    def Urls (self, url_list):
-        self.urls = url_list
-
-    """ Post-Test Hook Function Calls """
-
-    def ExpectedRetcode (self, retcode):
-        if self.act_retcode != retcode:
-            pr = "Return codes do not match.\nExpected: " + str(retcode) + "\nActual: " + str(self.act_retcode)
-            raise TestFailed (pr)
-
-    def ExpectedFiles (self, exp_filesys):
-        self.__check_downloaded_files (exp_filesys)
-
-    def FilesCrawled (self, Request_Headers):
-        for i in range (0, self.servers):
-            headers = set(Request_Headers[i])
-            o_headers = self.Request_remaining[i]
-            header_diff = headers.symmetric_difference (o_headers)
-            if len(header_diff) is not 0:
-                print_red(header_diff)
-                raise TestFailed ("Not all files were crawled correctly")
 
 
 """ Class for HTTP Tests. """
@@ -263,23 +185,27 @@ class HTTPTest (CommonMethods):
         self.call_test (test_params)
         self.post_hook_call (post_hook)
 
-    def pre_hook_call (self, pre_hook):
-        for pre_hook_func in pre_hook:
+
+    def hook_call(self, configs, name):
+        for conf_name, conf_arg in configs.items():
             try:
-                assert hasattr (self, pre_hook_func)
-            except AssertionError as ae:
-                self.stop_HTTP_Server ()
-                raise TestFailed ("Pre Test Function " + pre_hook_func + " not defined.")
-            getattr (self, pre_hook_func) (pre_hook[pre_hook_func])
+                # conf.find_conf(conf_name) returns the required conf class,
+                # then the class is instantiated with conf_arg, then the
+                # conf instance is called with this test instance itself to
+                # invoke the desired hook
+                conf.find_conf(conf_name)(conf_arg)(self)
+            except AttributeError as e:
+                print(e)
+                self.stop_HTTP_Server()
+                raise TestFailed("%s %s not defined." %
+                                 (name, conf_name))
+
+
+    def pre_hook_call (self, pre_hook):
+        self.hook_call(pre_hook, 'Pre Test Function')
 
     def call_test (self, test_params):
-        for test_func in test_params:
-            try:
-                assert hasattr (self, test_func)
-            except AssertionError as ae:
-                self.stop_HTTP_Server ()
-                raise TestFailed ("Test Option " + test_func + " unknown.")
-            getattr (self, test_func) (test_params[test_func])
+        self.hook_call(test_params, 'Test Option')
 
         try:
             self.act_retcode = self.exec_wget (self.options, self.urls, self.domain_list)
@@ -289,12 +215,7 @@ class HTTPTest (CommonMethods):
         self.stop_HTTP_Server ()
 
     def post_hook_call (self, post_hook):
-        for post_hook_func in post_hook:
-            try:
-                assert hasattr (self, post_hook_func)
-            except AssertionError as ae:
-                raise TestFailed ("Post Test Function " + post_hook_func + " not defined.")
-            getattr (self, post_hook_func) (post_hook[post_hook_func])
+        self.hook_call(post_hook, 'Post Test Function')
 
     def init_HTTP_Server (self):
         server = HTTPServer.HTTPd ()

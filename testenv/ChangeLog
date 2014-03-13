@@ -1,5 +1,33 @@
 2014-03-13  Zihang Chen  <chsc4698@gmail.com>
 
+	* conf: (new package) package for rule classes and hook methods
+	* WgetTest.py:
+	(CommonMethods.Authentication): Move to conf/authentication.py.
+	(CommonMethods.ExpectHeader): Move to conf/expect_header.py.
+	(CommonMethods.RejectHeader): Move to conf/reject_header.py.
+	(CommonMethods.Response): Move to conf/response.py.
+	(CommonMethods.SendHeader): Move to conf/send_header.py.
+	(CommonMethods.ServerFiles): Move to conf/server_files.py.
+	(CommonMethods.LocalFiles): Move to conf/local_files.py.
+	(CommonMethods.ServerConf): Move to conf/server_conf.py.
+	(CommonMethods.WgetCommands): Move to conf/wget_commands.py.
+	(CommonMethods.Urls): Move to conf/urls.py.
+	(CommonMethods.ExpectedRetcode): Move to conf/expected_retcode.py.
+	(CommonMethods.ExpectedFiles): Move to conf/expected_files.py.
+	(CommonMethods.FilesCrawled): Move to conf/files_crawled.py.
+	(CommonMethods.__check_downloaded_files): Rename to
+	_check_downloaded_files, so that the method is callable from outside the
+	class.
+	(CommomMethods.get_server_rules): Modify so that it utilizes the conf
+	package.
+	(HTTPTest): Add a method hook_call(configs, name) to reduce duplications
+	in pre_hook_call, call_test and post_hook_call utilizing the conf package.
+	* conf/hook_sample.py: (new file) sample for hooks
+	* conf/rule_sample.py: (new file) sample for rules
+	* REAMDE: Update sections about customizing rules and hooks.
+
+2014-03-13  Zihang Chen  <chsc4698@gmail.com>
+
 	* exc: (new package) package for miscellaneous exceptions
 	* WgetTest.py: Move TestFailed to exc/test_failed.py.
 
