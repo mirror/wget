@@ -149,10 +149,11 @@ Both, the HTTPTest and FTPTest modules have the same prototype:
     pre_hook,
     test_options,
     post_hook,
-    servers
+    protocols
 }
-name expects the string name, and is usually passed the TEST_NAME variable,
-the three hooks, expect python dictionary objects and servers is an integer.
+name should be a string, and is usually passed to the TEST_NAME variable,
+the three hooks should be Python dict objects and protocols should be a list of
+protocols, like [HTTP, HTTPS].
 
 Valid File Rules:
 ================================================================================

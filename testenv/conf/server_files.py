@@ -7,12 +7,9 @@ class ServerFiles:
         self.server_files = server_files
 
     def __call__(self, test_obj):
-        for i in range (0, test_obj.servers):
-            file_list = dict ()
-            server_rules = dict ()
-            for file_obj in self.server_files[i]:
-                content = test_obj._replace_substring (file_obj.content)
-                file_list[file_obj.name] = content
-                rule_obj = test_obj.get_server_rules (file_obj)
-                server_rules[file_obj.name] = rule_obj
-            test_obj.server_list[i].server_conf (file_list, server_rules)
+        for server, files in zip(test_obj.servers, self.server_files):
+            rules = {f.name: test_obj.get_server_rules(f)
+                     for f in files}
+            files = {f.name: test_obj._replace_substring(f.content)
+                     for f in files}
+            server.server_conf(files, rules)

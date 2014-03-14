@@ -7,5 +7,5 @@ class ServerConf:
         self.server_settings = server_settings
 
     def __call__(self, test_obj):
-        for i in range (0, test_obj.servers):
-            test_obj.server_list[i].server_sett (self.server_settings)
+        for server in test_obj.servers:
+            server.server_sett(self.server_settings)

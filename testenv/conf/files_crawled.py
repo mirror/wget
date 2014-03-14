@@ -5,14 +5,14 @@ from exc.test_failed import TestFailed
 
 @hook()
 class FilesCrawled:
-    def __init__(self, Request_Headers):
-        self.Request_Headers = Request_Headers
+    def __init__(self, request_headers):
+        self.request_headers = request_headers
 
     def __call__(self, test_obj):
-        for i in range (0, test_obj.servers):
-            headers = set(self.Request_Headers[i])
-            o_headers = test_obj.Request_remaining[i]
-            header_diff = headers.symmetric_difference (o_headers)
-            if len(header_diff) is not 0:
-                print_red(header_diff)
-                raise TestFailed ("Not all files were crawled correctly")
+        for headers, remaining in zip(map(set, self.request_headers),
+                                      test_obj.request_remaining()):
+            diff = headers.symmetric_difference(remaining)
+
+            if diff:
+                print_red(diff)
+                raise TestFailed('Not all files were crawled correctly.')

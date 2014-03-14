@@ -7,7 +7,6 @@ class LocalFiles:
         self.local_files = local_files
 
     def __call__(self, _):
-        for file_obj in self.local_files:
-            file_handler = open (file_obj.name, "w")
-            file_handler.write (file_obj.content)
-            file_handler.close ()
+        for f in self.local_files:
+            with open(f.name, 'w') as fp:
+                fp.write(f.content)

@@ -1,16 +1,11 @@
 import os
 import shutil
 import shlex
-import sys
 import traceback
-from server.http import http_server
 import re
 import time
-import shlex
-import shutil
 from subprocess import call
-from misc.colour_terminal import print_red, print_green, print_blue
-from difflib import unified_diff
+from misc.colour_terminal import print_red, print_blue
 from exc.test_failed import TestFailed
 import conf
 
@@ -18,101 +13,159 @@ HTTP = "HTTP"
 HTTPS = "HTTPS"
 
 
-class CommonMethods:
+class BaseTest:
 
-    """ Class that defines methods common to both HTTP and FTP Tests. """
+    """
+    Class that defines methods common to both HTTP and FTP Tests.
+    Note that this is an abstract class, subclasses must implement
+        * stop_server()
+        * instantiate_server_by(protocol)
+    """
 
-    TestFailed = TestFailed
+    def __init__(self, name, pre_hook, test_params, post_hook, protocols):
+        """
+        Define the class-wide variables (or attributes).
+        Attributes should not be defined outside __init__.
+        """
+        self.name = name
+        self.pre_configs = pre_hook or {} # if pre_hook == None, then
+                                          # {} (an empty dict object) is
+                                          # passed to self.pre_configs
+        self.test_params = test_params or {}
+        self.post_configs = post_hook or {}
+        self.protocols = protocols
 
-    def init_test_env (self, name):
-        testDir = name + "-test"
-        try:
-            os.mkdir (testDir)
-        except FileExistsError:
-            shutil.rmtree (testDir)
-            os.mkdir (testDir)
-        os.chdir (testDir)
+        self.servers = []
+        self.domains = []
+        self.port = -1
+
+        self.wget_options = ''
+        self.urls = []
+
         self.tests_passed = True
+        self.init_test_env()
 
-    def get_domain_addr (self, addr):
-        self.port = str (addr[1])
-        return addr[0] + ":" + str(addr[1]) + "/"
+        self.ret_code = 0
 
-    def exec_wget (self, options, urls, domain_list):
-        cmd_line = self.get_cmd_line (options, urls, domain_list)
-        params = shlex.split (cmd_line)
-        print (params)
-        if os.getenv ("SERVER_WAIT"):
-            time.sleep (float (os.getenv ("SERVER_WAIT")))
+    def get_test_dir(self):
+        return self.name + '-test'
+
+    def init_test_env(self):
+        test_dir = self.get_test_dir()
         try:
-            retcode = call (params)
-        except FileNotFoundError as filenotfound:
-            raise TestFailed (
-                "The Wget Executable does not exist at the expected path")
-        return retcode
+            os.mkdir(test_dir)
+        except FileExistsError:
+            shutil.rmtree(test_dir)
+            os.mkdir(test_dir)
+        os.chdir(test_dir)
 
-    def get_cmd_line (self, options, urls, domain_list):
-        TEST_PATH = os.path.abspath (".")
-        WGET_PATH = os.path.join (TEST_PATH, "..", "..", "src", "wget")
-        WGET_PATH = os.path.abspath (WGET_PATH)
-        cmd_line = WGET_PATH + " " + options + " "
-        for i in range (0, self.servers):
-            for url in urls[i]:
-                protocol = "http://" if self.server_types[i] is "HTTP" else "https://"
-                cmd_line += protocol + domain_list[i] + url + " "
-#        for url in urls:
-#            cmd_line += domain_list[0] + url + " "
-        print (cmd_line)
+    def get_domain_addr(self, addr):
+        # TODO if there's a multiple number of ports, wouldn't it be
+        # overridden to the port of the last invocation?
+        self.port = str(addr[1])
+
+        return '%s:%s' % (addr[0], self.port)
+
+    def server_setup(self):
+        print_blue("Running Test %s" % self.name)
+        for protocol in self.protocols:
+            instance = self.instantiate_server_by(protocol)
+            self.servers.append(instance)
+
+            # servers instantiated by different protocols may differ in
+            # ports and etc.
+            # so we should record different domains respect to servers.
+            domain = self.get_domain_addr(instance.server_address)
+            self.domains.append(domain)
+
+    def exec_wget(self):
+        cmd_line = self.gen_cmd_line()
+        params = shlex.split(cmd_line)
+        print(params)
+
+        if os.getenv("SERVER_WAIT"):
+            time.sleep(float(os.getenv("SERVER_WAIT")))
+
+        try:
+            ret_code = call(params)
+        except FileNotFoundError:
+            raise TestFailed("The Wget Executable does not exist at the "
+                             "expected path.")
+
+        return ret_code
+
+    def gen_cmd_line(self):
+        test_path = os.path.abspath(".")
+        wget_path = os.path.abspath(os.path.join(test_path,
+                                                 "..", '..', 'src', "wget"))
+
+        cmd_line = '%s %s ' % (wget_path, self.wget_options)
+        for protocol, urls, domain in zip(self.protocols,
+                                          self.urls,
+                                          self.domains):
+            # zip is function for iterating multiple lists at the same time.
+            # e.g. for item1, item2 in zip([1, 5, 3],
+            #                              ['a', 'e', 'c']):
+            #          print(item1, item2)
+            # generates the following output:
+            # 1 a
+            # 5 e
+            # 3 c
+            protocol = protocol.lower()
+            for url in urls:
+                cmd_line += '%s://%s/%s ' % (protocol, domain, url)
+
+        print(cmd_line)
+
         return cmd_line
 
-    def __test_cleanup (self):
-        testDir = self.name + "-test"
-        os.chdir ('..')
+    def __test_cleanup(self):
+        os.chdir('..')
         try:
-            if os.getenv ("NO_CLEANUP") is None:
-                shutil.rmtree (testDir)
-        except Exception as ae:
+            if not os.getenv("NO_CLEANUP"):
+                shutil.rmtree(self.get_test_dir())
+        except:
             print ("Unknown Exception while trying to remove Test Environment.")
 
     def _exit_test (self):
-        self.__test_cleanup ()
+        self.__test_cleanup()
 
     def begin (self):
         return 0 if self.tests_passed else 100
 
-    """ Methods to check if the Test Case passes or not. """
+    def call_test(self):
+        self.hook_call(self.test_params, 'Test Option')
 
-    def __gen_local_filesys (self):
-        file_sys = dict ()
-        for parent, dirs, files in os.walk ('.'):
-            for name in files:
-                onefile = dict ()
-                # Create the full path to file, removing the leading ./
-                # Might not work on non-unix systems. Someone please test.
-                filepath = os.path.join (parent, name)
-                file_handle = open (filepath, 'r')
-                file_content = file_handle.read ()
-                onefile['content'] = file_content
-                filepath = filepath[2:]
-                file_sys[filepath] = onefile
-                file_handle.close ()
-        return file_sys
+        try:
+            self.ret_code = self.exec_wget()
+        except TestFailed as e:
+            raise e
+        finally:
+            self.stop_server()
 
+    def do_test(self):
+        self.pre_hook_call()
+        self.call_test()
+        self.post_hook_call()
 
-    def _check_downloaded_files (self, exp_filesys):
-        local_filesys = self.__gen_local_filesys ()
-        for files in exp_filesys:
-            if files.name in local_filesys:
-                local_file = local_filesys.pop (files.name)
-                if files.content != local_file ['content']:
-                    for line in unified_diff (local_file['content'], files.content, fromfile="Actual", tofile="Expected"):
-                        sys.stderr.write (line)
-                    raise TestFailed ("Contents of " + files.name + " do not match")
-            else:
-                raise TestFailed ("Expected file " + files.name +  " not found")
-        if local_filesys:
-            print (local_filesys)
-            raise TestFailed ("Extra files downloaded.")
+    def hook_call(self, configs, name):
+        for conf_name, conf_arg in configs.items():
+            try:
+                # conf.find_conf(conf_name) returns the required conf class,
+                # then the class is instantiated with conf_arg, then the
+                # conf instance is called with this test instance itself to
+                # invoke the desired hook
+                conf.find_conf(conf_name)(conf_arg)(self)
+            except AttributeError:
+                self.stop_server()
+                raise TestFailed("%s %s not defined." %
+                                 (name, conf_name))
+
+    def pre_hook_call(self):
+        self.hook_call(self.pre_configs, 'Pre Test Function')
+
+    def post_hook_call(self):
+        self.hook_call(self.post_configs, 'Post Test Function')
 
     def _replace_substring (self, string):
         pattern = re.compile ('\{\{\w+\}\}')
@@ -123,14 +176,51 @@ class CommonMethods:
             string = string.replace (rep, temp)
         return string
 
-
-    def get_server_rules (self, file_obj):
-        """ The handling of expect header could be made much better when the
-            options are parsed in a true and better fashion. For an example,
-            see the commented portion in Test-basic-auth.py.
+    def instantiate_server_by(self, protocol):
         """
-        server_rules = dict ()
-        for rule in file_obj.rules:
-            r_obj = conf.find_conf(rule)(file_obj.rules[rule])
-            server_rules[rule] = r_obj
+        Subclasses must override this method to actually instantiate servers
+        for test cases.
+        """
+        raise NotImplementedError
+
+    def stop_server(self):
+        """
+        Subclasses must implement this method in order to stop certain
+        servers of different types.
+        """
+        raise NotImplementedError
+
+    @staticmethod
+    def get_server_rules(file_obj):
+        """
+        The handling of expect header could be made much better when the
+        options are parsed in a true and better fashion. For an example,
+        see the commented portion in Test-basic-auth.py.
+        """
+        server_rules = {}
+        for rule_name, rule in file_obj.rules.items():
+            server_rules[rule_name] = conf.find_conf(rule_name)(rule)
         return server_rules
+
+    def __enter__(self):
+        """
+        Initialization for with statement.
+        """
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        If the with statement got executed with no exception raised, then
+        exc_type, exc_val, exc_tb are all None.
+        """
+        if exc_val:
+            self.tests_passed = False
+            if exc_type is TestFailed:
+                print_red('Error: %s.' % exc_val.error)
+            else:
+                print_red('Unhandled exception caught.')
+                print(exc_val)
+                traceback.print_tb(exc_tb)
+        self.__test_cleanup()
+
+        return True
