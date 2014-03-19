@@ -256,7 +256,10 @@ sub _verify_download {
     # make sure no unexpected files were downloaded
     chdir ("$self->{_workdir}/$self->{_name}/output");
 
-    __dir_walk('.', sub { push @unexpected_downloads, $_[0] unless (exists $self->{_output}{$_[0]}) }, sub { shift; return @_ } );
+    __dir_walk('.',
+               sub { push @unexpected_downloads,
+                          $_[0] unless (exists $self->{_output}{$_[0]} || $self->{_existing}{$_[0]}) },
+               sub { shift; return @_ } );
     if (@unexpected_downloads) {
         return "Test failed: unexpected downloaded files [" . join(', ', @unexpected_downloads) . "]\n";
     }
