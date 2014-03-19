@@ -298,12 +298,13 @@ sub _RETR_command
     # What mode are we sending this file in?
     unless ($conn->{type} eq 'A') # Binary type.
     {
-        my ($r, $buffer, $n, $w);
-
+        my ($r, $buffer, $n, $w, $sent);
 
         # Copy data.
-        while ($buffer = substr($content, 0, 65536))
+        $sent = 0;
+        while ($sent < length($content))
         {
+            $buffer = substr($content, $sent, 65536);
             $r = length $buffer;
 
             # Restart alarm clock timer.
@@ -330,6 +331,7 @@ sub _RETR_command
                 print {$conn->{socket}} "426 Transfer aborted. Data connection closed.\r\n";
                 return;
             }
+            $sent += $r;
         }
 
         # Cleanup and exit if there was an error.
@@ -410,9 +412,9 @@ sub _TYPE_command
 
     # See RFC 959 section 5.3.2.
     if ($type =~ /^([AI])$/i) {
-        $conn->{type} = 'A';
+        $conn->{type} = $1;
     } elsif ($type =~ /^([AI])\sN$/i) {
-        $conn->{type} = 'A';
+        $conn->{type} = $1;
     } elsif ($type =~ /^L\s8$/i) {
         $conn->{type} = 'L8';
     } else {

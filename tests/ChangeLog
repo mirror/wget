@@ -1,3 +1,8 @@
+2014-02-13  Yousong Zhou  <yszhou4tech@gmail.com>
+
+	* FTPServer.pm: Fix the handling of TYPE command and avoid endless
+	loop when doing binary mode RETR.
+
 2014-01-23  Lars Wendler  <polynomial-c@gentoo.org> (tiny change)
 
 	* Test--post-file.px: Do not fail when wget has no debug support.
