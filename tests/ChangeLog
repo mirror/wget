@@ -1,5 +1,12 @@
 2014-02-13  Yousong Zhou  <yszhou4tech@gmail.com>
 
+	* Test--start-pos.px: Test --start-pos for HTTP downloads.
+	* Test-ftp--start-pos.px: Test --start-pos for FTP downloads.
+	* Test--start-pos--continue.px: Test the case when --start-pos and
+	  --continue were both specified.
+
+2014-02-13  Yousong Zhou  <yszhou4tech@gmail.com>
+
 	* Wget.pm.in: Exclude existing files from the check of unexpected
 	  downloads.
 
