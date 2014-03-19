@@ -1632,6 +1632,8 @@ ftp_loop_internal (struct url *u, struct fileinfo *f, ccon *con, char **local_fi
       /* Decide whether or not to restart.  */
       if (con->cmd & DO_LIST)
         restval = 0;
+      else if (opt.start_pos >= 0)
+        restval = opt.start_pos;
       else if (opt.always_rest
           && stat (locf, &st) == 0
           && S_ISREG (st.st_mode))

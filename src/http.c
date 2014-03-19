@@ -3121,6 +3121,8 @@ Spider mode enabled. Check if remote file exists.\n"));
       /* Decide whether or not to restart.  */
       if (force_full_retrieve)
         hstat.restval = hstat.len;
+      else if (opt.start_pos >= 0)
+        hstat.restval = opt.start_pos;
       else if (opt.always_rest
           && got_name
           && stat (hstat.local_file, &st) == 0

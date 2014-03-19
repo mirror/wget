@@ -701,6 +701,22 @@ Another instance where you'll get a garbled file if you try to use
 Note that @samp{-c} only works with @sc{ftp} servers and with @sc{http}
 servers that support the @code{Range} header.
 
+@cindex offset
+@cindex continue retrieval
+@cindex incomplete downloads
+@cindex resume download
+@cindex start position
+@item --start-pos=@var{OFFSET}
+Start downloading at zero-based position @var{OFFSET}.  Offset may be expressed
+in bytes, kilobytes with the `k' suffix, or megabytes with the `m' suffix, etc.
+
+@samp{--start-pos} has higher precedence over @samp{--continue}.  When
+@samp{--start-pos} and @samp{--continue} are both specified, wget will emit a
+warning then proceed as if @samp{--continue} was absent.
+
+Server support for continued download is required, otherwise @samp{--start-pos}
+cannot help.  See @samp{-c} for details.
+
 @cindex progress indicator
 @cindex dot style
 @item --progress=@var{type}

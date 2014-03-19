@@ -270,6 +270,7 @@ static const struct {
   { "showalldnsentries", &opt.show_all_dns_entries, cmd_boolean },
   { "spanhosts",        &opt.spanhost,          cmd_boolean },
   { "spider",           &opt.spider,            cmd_boolean },
+  { "startpos",         &opt.start_pos,         cmd_bytes },
   { "strictcomments",   &opt.strict_comments,   cmd_boolean },
   { "timeout",          NULL,                   cmd_spec_timeout },
   { "timestamping",     &opt.timestamping,      cmd_boolean },
@@ -406,6 +407,9 @@ defaults (void)
   opt.warc_cdx_dedup_filename = NULL;
   opt.warc_tempdir = NULL;
   opt.warc_keep_log = true;
+
+  /* Use a negative value to mark the absence of --start-pos option */
+  opt.start_pos = -1;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is

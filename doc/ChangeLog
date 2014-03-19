@@ -1,3 +1,7 @@
+2014-02-10  Yousong Zhou  <yszhou4tech@gmail.com>
+
+	* wget.texi: Add documentation for --start-pos.
+
 2013-12-29  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* wget.texi: Update to GFDL 1.3.
