@@ -1,3 +1,7 @@
+2014-02-24  Yousong Zhou  <yszhou4tech@gmail.com> (tiny change)
+
+	* tests/Test--httpsonly-r.px: Add feature constraint on https.
+
 2014-02-13  Yousong Zhou  <yszhou4tech@gmail.com>
 
 	* Test--start-pos.px: Test --start-pos for HTTP downloads.
