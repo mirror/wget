@@ -9,6 +9,8 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 * Changes in Wget X.Y.Z
 
 ** Introduce --no-config.
+
+** Introduce --start-pos to allow starting downloads from a specified position.
 
 * Changes in Wget 1.15
 

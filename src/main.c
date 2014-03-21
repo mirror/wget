@@ -285,6 +285,7 @@ static struct cmdline_option option_data[] =
     { "server-response", 'S', OPT_BOOLEAN, "serverresponse", -1 },
     { "span-hosts", 'H', OPT_BOOLEAN, "spanhosts", -1 },
     { "spider", 0, OPT_BOOLEAN, "spider", -1 },
+    { "start-pos", 0, OPT_VALUE, "startpos", -1 },
     { "strict-comments", 0, OPT_BOOLEAN, "strictcomments", -1 },
     { "timeout", 'T', OPT_VALUE, "timeout", -1 },
     { "timestamping", 'N', OPT_BOOLEAN, "timestamping", -1 },
@@ -504,6 +505,8 @@ Download:\n"),
                                  existing files (overwriting them).\n"),
     N_("\
   -c,  --continue                resume getting a partially-downloaded file.\n"),
+    N_("\
+       --start-pos=OFFSET        start downloading from zero-based position OFFSET.\n"),
     N_("\
        --progress=TYPE           select progress gauge type.\n"),
     N_("\
@@ -1345,12 +1348,13 @@ for details.\n\n"));
                    _("WARC output does not work with --spider.\n"));
           exit (1);
         }
-      if (opt.always_rest)
+      if (opt.always_rest || opt.start_pos >= 0)
         {
           fprintf (stderr,
-                   _("WARC output does not work with --continue, "
-                     "--continue will be disabled.\n"));
+                   _("WARC output does not work with --continue or"
+                     " --start-pos, they will be disabled.\n"));
           opt.always_rest = false;
+          opt.start_pos = -1;
         }
       if (opt.warc_cdx_dedup_filename != 0 && !opt.warc_digests_enabled)
         {
@@ -1370,6 +1374,14 @@ for details.\n\n"));
                _("Cannot specify both --ask-password and --password.\n"));
       print_usage (1);
       exit (1);
+    }
+
+  if (opt.start_pos >= 0 && opt.always_rest)
+    {
+      fprintf (stderr,
+               _("Specifying both --start-pos and --continue is not "
+                 "recommended; --continue will be disabled.\n"));
+      opt.always_rest = false;
     }
 
   if (!nurl && !opt.input_filename

@@ -1,3 +1,10 @@
+2014-03-19  Yousong Zhou  <yszhou4tech@gmail.com>
+
+	* init.c, main.c, options.h: Add option --start-pos for specifying
+	start position of a download.
+	* http.c: Utilize opt.start_pos for HTTP download.
+	* ftp.c: Utilize opt.start_pos for FTP retrieval.
+
 2014-03-04  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* http.c (modify_param_value, extract_param): Aesthetic change.

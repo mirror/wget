@@ -121,6 +121,7 @@ struct options
   bool ask_passwd;              /* Ask for password? */
 
   bool always_rest;		/* Always use REST. */
+  wgint start_pos;		/* Start position of a download. */
   char *ftp_user;		/* FTP username */
   char *ftp_passwd;		/* FTP password */
   bool netrc;			/* Whether to read .netrc. */

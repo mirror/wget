@@ -1,3 +1,24 @@
+2014-02-24  Yousong Zhou  <yszhou4tech@gmail.com> (tiny change)
+
+	* tests/Test--httpsonly-r.px: Add feature constraint on https.
+
+2014-02-13  Yousong Zhou  <yszhou4tech@gmail.com>
+
+	* Test--start-pos.px: Test --start-pos for HTTP downloads.
+	* Test-ftp--start-pos.px: Test --start-pos for FTP downloads.
+	* Test--start-pos--continue.px: Test the case when --start-pos and
+	  --continue were both specified.
+
+2014-02-13  Yousong Zhou  <yszhou4tech@gmail.com>
+
+	* Wget.pm.in: Exclude existing files from the check of unexpected
+	  downloads.
+
+2014-02-13  Yousong Zhou  <yszhou4tech@gmail.com>
+
+	* FTPServer.pm: Fix the handling of TYPE command and avoid endless
+	loop when doing binary mode RETR.
+
 2014-01-23  Lars Wendler  <polynomial-c@gentoo.org> (tiny change)
 
 	* Test--post-file.px: Do not fail when wget has no debug support.
