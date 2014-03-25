@@ -1,3 +1,7 @@
+2014-03-25  Daniel Stenberg  <daniel@haxx.se>
+
+	* url.c (shorten_length): Remove unused function.
+
 2014-03-19  Yousong Zhou  <yszhou4tech@gmail.com>
 
 	* init.c, main.c, options.h: Add option --start-pos for specifying
