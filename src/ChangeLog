@@ -1,3 +1,9 @@
+2014-03-26  Darshit Shah  <darnir@gmail.com>
+
+	* ftp.c (getftp): Rearrange parameters to fix compiler warning
+	* utils.c (get_dir_matches_p): Do not pass a const char** to a function that
+	expects char**
+
 2014-03-25  Daniel Stenberg  <daniel@haxx.se>
 
 	* url.c (shorten_length): Remove unused function.

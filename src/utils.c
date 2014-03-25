@@ -2509,7 +2509,7 @@ const char *
 test_dir_matches_p()
 {
   static struct {
-    const char *dirlist[3];
+    char *dirlist[3];
     const char *dir;
     bool result;
   } test_array[] = {
