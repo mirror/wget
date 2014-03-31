@@ -1285,16 +1285,6 @@ append_null (struct growable *dest)
   *TAIL (dest) = 0;
 }
 
-/* Shorten DEST to LENGTH. */
-static void
-shorten_length (size_t length, struct growable *dest)
-{
-  if (length < dest->tail)
-    dest->tail = length;
-
-  append_null (dest);
-}
-
 /* Append CH to DEST. */
 static void
 append_char (char ch, struct growable *dest)
