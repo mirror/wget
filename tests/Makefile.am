@@ -142,6 +142,7 @@ EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
              Test--start-pos.px \
              Test--start-pos--continue.px \
              Test--httpsonly-r.px \
+             Test-204.px \
              run-px certs
 
 check_PROGRAMS = unit-tests

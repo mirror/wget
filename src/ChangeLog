@@ -1,3 +1,7 @@
+2014-04-22  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+        * http.c (gethttp): Fix 204 response handling
+
 2014-03-26  Darshit Shah  <darnir@gmail.com>
 
 	* ftp.c (getftp): Rearrange parameters to fix compiler warning

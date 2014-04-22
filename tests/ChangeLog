@@ -1,3 +1,9 @@
+2014-40-22  Tim Ruehsen <tim.ruehsen@gmx.de>
+
+        * Test-204.px: added file
+        * run-px: added Test-204.px
+        * Makefile.am: added Test-204.px
+
 2014-04-22  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Add missing Test--start-pos.px,

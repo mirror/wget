@@ -2618,6 +2618,22 @@ read_header:
   if (H_20X (statcode))
     *dt |= RETROKF;
 
+  if (statcode == HTTP_STATUS_NO_CONTENT)
+    {
+      /* 204 response has no body (RFC 2616, 4.3) */
+
+      /* In case the caller cares to look...  */
+      hs->len = 0;
+      hs->res = 0;
+      hs->restval = 0;
+
+      CLOSE_FINISH (sock);
+      xfree_null (type);
+      xfree (head);
+
+      return RETRFINISHED;
+    }
+
   /* Return if redirected.  */
   if (H_REDIRECTED (statcode) || statcode == HTTP_STATUS_MULTIPLE_CHOICES)
     {
