@@ -1,3 +1,7 @@
+2014-05-01  Benjamin Goose  <gans+wget@tngtech.com>
+
+	* http.c: Fix small memory leak
+
 2014-05-01  Darshit Shah  <darnir@gmail.com> (tiny change)
 
 	* progress.c (dot_finish): Do not print extra newlines when not in verbose

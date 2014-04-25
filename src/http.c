@@ -2596,6 +2596,7 @@ read_header:
               tmp = parse_charset (tmp2);
               if (tmp)
                 set_content_encoding (iri, tmp);
+              xfree_null(tmp);
             }
         }
     }
