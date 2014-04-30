@@ -247,6 +247,7 @@ static struct cmdline_option option_data[] =
     { IF_SSL ("private-key"), 0, OPT_VALUE, "privatekey", -1 },
     { IF_SSL ("private-key-type"), 0, OPT_VALUE, "privatekeytype", -1 },
     { "progress", 0, OPT_VALUE, "progress", -1 },
+    { "show-progress", 0, OPT_BOOLEAN, "showprogress", -1 },
     { "protocol-directories", 0, OPT_BOOLEAN, "protocoldirectories", -1 },
     { "proxy", 0, OPT_BOOLEAN, "useproxy", -1 },
     { "proxy__compat", 'Y', OPT_VALUE, "useproxy", -1 }, /* back-compatible */
@@ -316,7 +317,7 @@ static struct cmdline_option option_data[] =
 static char *
 no_prefix (const char *s)
 {
-  static char buffer[1024];
+  static char buffer[2048];
   static char *p = buffer;
 
   char *cp = p;
@@ -490,6 +491,8 @@ Download:\n"),
        --start-pos=OFFSET        start downloading from zero-based position OFFSET.\n"),
     N_("\
        --progress=TYPE           select progress gauge type.\n"),
+    N_("\
+       --show-progress           display the progress bar in any verbosity mode.\n"),
     N_("\
   -N,  --timestamping            don't re-retrieve files unless newer than\n\
                                  local.\n"),
@@ -1218,6 +1221,7 @@ main (int argc, char **argv)
 
   /* All user options have now been processed, so it's now safe to do
      interoption dependency checks. */
+
   if (opt.noclobber && opt.convert_links)
     {
       fprintf (stderr,
@@ -1245,6 +1249,8 @@ main (int argc, char **argv)
   if (opt.verbose == -1)
     opt.verbose = !opt.quiet;
 
+  if (opt.verbose == 1)
+    opt.show_progress = true;
 
   /* Sanity checks.  */
   if (opt.verbose && opt.quiet)
@@ -1502,7 +1508,7 @@ for details.\n\n"));
 
   /* Initialize progress.  Have to do this after the options are
      processed so we know where the log file is.  */
-  if (opt.verbose)
+  if (opt.show_progress)
     set_progress_implementation (opt.progress_type);
 
   /* Fill in the arguments.  */

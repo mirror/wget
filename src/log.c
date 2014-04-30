@@ -278,6 +278,10 @@ saved_append (const char *s)
 #define CHECK_VERBOSE(x)                        \
   switch (x)                                    \
     {                                           \
+    case LOG_PROGRESS:                          \
+      if (!opt.show_progress)                   \
+        return;                                 \
+      break;                                    \
     case LOG_ALWAYS:                            \
       break;                                    \
     case LOG_NOTQUIET:                          \

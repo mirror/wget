@@ -268,6 +268,7 @@ static const struct {
 #endif
   { "serverresponse",   &opt.server_response,   cmd_boolean },
   { "showalldnsentries", &opt.show_all_dns_entries, cmd_boolean },
+  { "showprogress",     &opt.show_progress,      cmd_boolean },
   { "spanhosts",        &opt.spanhost,          cmd_boolean },
   { "spider",           &opt.spider,            cmd_boolean },
   { "startpos",         &opt.start_pos,         cmd_bytes },
@@ -410,6 +411,7 @@ defaults (void)
 
   /* Use a negative value to mark the absence of --start-pos option */
   opt.start_pos = -1;
+  opt.show_progress = false;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is

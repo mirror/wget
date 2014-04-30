@@ -1,3 +1,39 @@
+2014-04-19  Darshit Shah  <darnir@gmail.com>
+
+	* log.h (log_options): Add new logging options, LOG_PROGRESS. All progress
+	bar related output should use LOG_PROGRESS.
+	* log.c (CHECK_VERBOSE): Implement LOG_PROGRESS output
+	* progress.c (dot_create, print_row_stats, dot_update, dot_finish,
+	bar_finish, display_image): Output progress information through LOG_PROGRESS
+	(progress_implementation, dot_create, bar_create, progress_create): The
+	progress bar create functions accept an extra paramter for the filename of the
+	local file
+	(bar_progress): Add new variable to store filename of currently downloading
+	file
+	(bar_finish): Aesthetic change. Print two newlines if in verbose mode, else
+	only one.
+	(MACRO): Define new macro, MIN
+	(create_image): Implement displaying filename in progress bar output
+	Filename tick implementation copied from Giuseppe's patch on parallel-wget
+	* progress.h (progress_create): Accept another parameter for filename
+	* http.c (gethttp): Remove unnecessary conditional
+	(read_response_body): Send local filename to fd_read_body so that it can be
+	printed on the progress bar
+	* main.c (option_data): Add new switch, --show-progress
+	(main): If in verbose output, show progress bar by default
+	(main): Set progress implemetation when displaying progress bar
+	(no_prefix): Increase buffer size to 2048 to prevent overflows
+	* init.c (commands): Add new command, showprogress
+	(defaults): By default initialize show_progress to false
+	* options.h (options): Add new option, show_progress
+	* retr.c (fd_read_body): Accept new parameter for filename of currently
+	downlaoding file
+	(fd_read_body): Create and update progress bar when opt.show_progress is set
+	(fd_read_body): Display progress information in Windows console titlebars
+	* retr.h (fd_read_body): Update declaration
+	* ftp.c (getftp): Send filename of the local file so that it can be printed
+	with the progress bar.
+
 2013-11-02  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* progress.c (struct progress_implementation): New method draw.
@@ -9,7 +45,7 @@
 
 2014-04-22  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
-        * http.c (gethttp): Fix 204 response handling
+	* http.c (gethttp): Fix 204 response handling
 
 2014-03-26  Darshit Shah  <darnir@gmail.com>
 

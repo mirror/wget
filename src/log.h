@@ -36,7 +36,7 @@ as that of the covered work.  */
 
 #include <stdio.h>
 
-enum log_options { LOG_VERBOSE, LOG_NOTQUIET, LOG_NONVERBOSE, LOG_ALWAYS };
+enum log_options { LOG_VERBOSE, LOG_NOTQUIET, LOG_NONVERBOSE, LOG_ALWAYS, LOG_PROGRESS };
 
 void log_set_warc_log_fp (FILE *);
 

@@ -1,3 +1,7 @@
+2014-05-01  Darshit Shah  <darnir@gmail.com>
+
+	* wget.texi: Add documentation for --show-progress
+
 2014-02-10  Yousong Zhou  <yszhou4tech@gmail.com>
 
 	* wget.texi: Add documentation for --start-pos.

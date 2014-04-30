@@ -8,6 +8,10 @@ Please send GNU Wget bug reports to <bug-wget@gnu.org>.
 
 * Changes in Wget X.Y.Z
 
+** Default progress bar output changed
+
+** Introduce --show-progress to force display the progress bar
+
 ** Introduce --no-config.
 
 ** Introduce --start-pos to allow starting downloads from a specified position.

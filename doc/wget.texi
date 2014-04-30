@@ -751,6 +751,16 @@ command line.  The exception is that, when the output is not a TTY, the
 ``dot'' progress will be favored over ``bar''.  To force the bar output,
 use @samp{--progress=bar:force}.
 
+@item --show-progress
+Force wget to display the progress bar in any verbosity.
+
+By default, wget only displays the progress bar in verbose mode.  One may
+however want wget to display the progress bar on screen in conjunction with
+any other verbosity modes like @samp{--no-verbose} or @samp{--quiet}.  This
+is often a desired a property when invoking wget to download several small/large
+files.  In such a case, wget could simply be invoked with this parameter to get
+a much cleaner output on the screen.
+
 @item -N
 @itemx --timestamping
 Turn on time-stamping.  @xref{Time-Stamping}, for details.

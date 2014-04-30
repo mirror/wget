@@ -226,7 +226,8 @@ write_data (FILE *out, FILE *out2, const char *buf, int bufsize,
    data to OUT2, -3 is returned.  */
 
 int
-fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
+fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, wgint startpos,
+
               wgint *qtyread, wgint *qtywritten, double *elapsed, int flags,
               FILE *out2)
 {
@@ -262,13 +263,13 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
   if (flags & rb_skip_startpos)
     skip = startpos;
 
-  if (opt.verbose)
+  if (opt.show_progress)
     {
       /* If we're skipping STARTPOS bytes, pass 0 as the INITIAL
          argument to progress_create because the indicator doesn't
          (yet) know about "skipping" data.  */
       wgint start = skip ? 0 : startpos;
-      progress = progress_create (start, start + toread);
+      progress = progress_create (downloaded_filename, start, start + toread);
       progress_interactive = progress_interactive_p (progress);
     }
 
@@ -411,7 +412,7 @@ fd_read_body (int fd, FILE *out, wgint toread, wgint startpos,
       if (progress)
         progress_update (progress, ret, ptimer_read (timer));
 #ifdef WINDOWS
-      if (toread > 0 && !opt.quiet)
+      if (toread > 0 && opt.show_progress)
         ws_percenttitle (100.0 *
                          (startpos + sum_read) / (startpos + toread));
 #endif

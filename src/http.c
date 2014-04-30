@@ -1586,7 +1586,7 @@ read_response_body (struct http_stat *hs, int sock, FILE *fp, wgint contlen,
   /* Download the response body and write it to fp.
      If we are working on a WARC file, we simultaneously write the
      response body to warc_tmp.  */
-  hs->res = fd_read_body (sock, fp, contlen != -1 ? contlen : 0,
+  hs->res = fd_read_body (hs->local_file, sock, fp, contlen != -1 ? contlen : 0,
                           hs->restval, &hs->rd_size, &hs->len, &hs->dltime,
                           flags, warc_tmp);
   if (hs->res >= 0)
@@ -2961,11 +2961,8 @@ read_header:
     fp = output_stream;
 
   /* Print fetch message, if opt.verbose.  */
-  if (opt.verbose)
-    {
-      logprintf (LOG_NOTQUIET, _("Saving to: %s\n"),
+      logprintf (LOG_VERBOSE, _("Saving to: %s\n"),
                  HYPHENP (hs->local_file) ? quote ("STDOUT") : quote (hs->local_file));
-    }
 
 
   err = read_response_body (hs, sock, fp, contlen, contrange,
