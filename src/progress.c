@@ -407,7 +407,7 @@ dot_finish (void *progress, double dltime)
     }
 
   print_row_stats (dp, dltime, true);
-  logputs (LOG_PROGRESS, "\n\n");
+  logputs (LOG_VERBOSE, "\n\n");
   log_set_flush (false);
 
   xfree (dp);
@@ -823,7 +823,7 @@ get_eta (int *bcd)
 {
   /* TRANSLATORS: "ETA" is English-centric, but this must
      be short, ideally 3 chars.  Abbreviate if necessary.  */
-  static const char eta_str[] = N_("  eta %s");
+  static const char eta_str[] = N_("   eta %s");
   static const char *eta_trans;
   static int bytes_cols_diff;
   if (eta_trans == NULL)
@@ -875,7 +875,7 @@ get_eta (int *bcd)
 static void
 create_image (struct bar_progress *bp, double dl_total_time, bool done)
 {
-  const int MAX_FILENAME_LEN = bp->width / 3;
+  const int MAX_FILENAME_LEN = bp->width / 4;
   char *p = bp->buffer;
   wgint size = bp->initial_length + bp->count;
 
@@ -887,7 +887,6 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 
   struct bar_progress_hist *hist = &bp->hist;
   int orig_filename_len = strlen (bp->f_download);
-  int filename_len = MIN (orig_filename_len, MAX_FILENAME_LEN);
 
   /* The progress bar should look like this:
      file xx% [=======>             ] nn,nnn 12.34KB/s  eta 36m 51s
@@ -909,7 +908,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
      "=====>..."       - progress bar             - the rest
   */
   int dlbytes_size = 1 + MAX (size_grouped_len, 11);
-  int progress_size = bp->width - (filename_len + 1 + 4 + 2 + dlbytes_size + 8 + 14);
+  int progress_size = bp->width - (MAX_FILENAME_LEN + 1 + 4 + 2 + dlbytes_size + 8 + 14);
 
   /* The difference between the number of bytes used,
      and the number of columns used. */
@@ -920,8 +919,11 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
 
   if (orig_filename_len <= MAX_FILENAME_LEN)
     {
+      int padding = MAX_FILENAME_LEN - orig_filename_len;
       sprintf (p, "%s ", bp->f_download);
-      p += filename_len + 1;
+      p += orig_filename_len + 1;
+      for (;padding;padding--)
+        *p++ = ' ';
     }
   else
     {
@@ -931,7 +933,6 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
         offset = ((int) bp->tick) % (orig_filename_len - MAX_FILENAME_LEN);
       else
         offset = 0;
-      *p++ = ' ';
       memcpy (p, bp->f_download + offset, MAX_FILENAME_LEN);
       p += MAX_FILENAME_LEN;
       *p++ = ' ';
@@ -1037,12 +1038,12 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       wgint dlquant = hist->total_bytes + bp->recent_bytes;
       double dltime = hist->total_time + (dl_total_time - bp->recent_start);
       double dlspeed = calc_rate (dlquant, dltime, &units);
-      sprintf (p, " %4.*f%s", dlspeed >= 99.95 ? 0 : dlspeed >= 9.995 ? 1 : 2,
+      sprintf (p, "%4.*f%s", dlspeed >= 99.95 ? 0 : dlspeed >= 9.995 ? 1 : 2,
                dlspeed,  !opt.report_bps ? short_units[units] : short_units_bits[units]);
       move_to_end (p);
     }
   else
-    APPEND_LITERAL (" --.-K/s");
+    APPEND_LITERAL ("--.-KB/s");
 
   if (!done)
     {

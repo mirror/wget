@@ -1,3 +1,13 @@
+2014-05-01  Darshit Shah  <darnir@gmail.com> (tiny change)
+
+	* progress.c (dot_finish): Do not print extra newlines when not in verbose
+	mode. (Purely aesthetic change)
+	(get_eta): Add extra space when eta is printed.
+	(create_image): Remove erroneous space from being added to progress bar when
+	filename > MAX_FILENAME_LEN
+	(create_image): Remove extra space before printed download speeds
+	Make the filename a fixed width column.
+
 2014-04-19  Darshit Shah  <darnir@gmail.com>
 
 	* log.h (log_options): Add new logging options, LOG_PROGRESS. All progress
