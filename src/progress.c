@@ -173,7 +173,7 @@ progress_create (const char *f_download, wgint initial, wgint total)
    and current update.  */
 
 bool
-progress_interactive_p (void *progress)
+progress_interactive_p (void *progress _GL_UNUSED)
 {
   return current_impl->interactive;
 }
@@ -1162,7 +1162,7 @@ bar_set_params (const char *params)
 
 #ifdef SIGWINCH
 void
-progress_handle_sigwinch (int sig)
+progress_handle_sigwinch (int sig _GL_UNUSED)
 {
   received_sigwinch = 1;
   signal (SIGWINCH, progress_handle_sigwinch);

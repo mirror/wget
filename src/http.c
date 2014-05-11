@@ -2335,23 +2335,23 @@ read_header:
          But if we are writing a WARC file we are: we like to keep everyting.  */
       if (warc_enabled)
         {
-          int err;
+          int _err;
           type = resp_header_strdup (resp, "Content-Type");
-          err = read_response_body (hs, sock, NULL, contlen, 0,
+          _err = read_response_body (hs, sock, NULL, contlen, 0,
                                     chunked_transfer_encoding,
                                     u->url, warc_timestamp_str,
                                     warc_request_uuid, warc_ip, type,
                                     statcode, head);
           xfree_null (type);
 
-          if (err != RETRFINISHED || hs->res < 0)
+          if (_err != RETRFINISHED || hs->res < 0)
             {
               CLOSE_INVALIDATE (sock);
               request_free (req);
               xfree_null (message);
               resp_free (resp);
               xfree (head);
-              return err;
+              return _err;
             }
           else
             CLOSE_FINISH (sock);
@@ -2661,18 +2661,18 @@ read_header:
              But if we are writing a WARC file we are: we like to keep everyting.  */
           if (warc_enabled)
             {
-              int err = read_response_body (hs, sock, NULL, contlen, 0,
+              int _err = read_response_body (hs, sock, NULL, contlen, 0,
                                             chunked_transfer_encoding,
                                             u->url, warc_timestamp_str,
                                             warc_request_uuid, warc_ip, type,
                                             statcode, head);
 
-              if (err != RETRFINISHED || hs->res < 0)
+              if (_err != RETRFINISHED || hs->res < 0)
                 {
                   CLOSE_INVALIDATE (sock);
                   xfree_null (type);
                   xfree (head);
-                  return err;
+                  return _err;
                 }
               else
                 CLOSE_FINISH (sock);
@@ -2708,7 +2708,6 @@ read_header:
             {
             case HTTP_STATUS_TEMPORARY_REDIRECT:
               return NEWLOCATION_KEEP_POST;
-              break;
             case HTTP_STATUS_MOVED_PERMANENTLY:
               if (opt.method && strcasecmp (opt.method, "post") != 0)
                 return NEWLOCATION_KEEP_POST;
@@ -2719,7 +2718,6 @@ read_header:
               break;
             default:
               return NEWLOCATION;
-              break;
             }
           return NEWLOCATION;
         }
@@ -2840,18 +2838,18 @@ read_header:
          But if we are writing a WARC file we are: we like to keep everyting.  */
       if (warc_enabled)
         {
-          int err = read_response_body (hs, sock, NULL, contlen, 0,
+          int _err = read_response_body (hs, sock, NULL, contlen, 0,
                                         chunked_transfer_encoding,
                                         u->url, warc_timestamp_str,
                                         warc_request_uuid, warc_ip, type,
                                         statcode, head);
 
-          if (err != RETRFINISHED || hs->res < 0)
+          if (_err != RETRFINISHED || hs->res < 0)
             {
               CLOSE_INVALIDATE (sock);
               xfree (head);
               xfree_null (type);
-              return err;
+              return _err;
             }
           else
             CLOSE_FINISH (sock);
@@ -4070,12 +4068,12 @@ ensure_extension (struct http_stat *hs, const char *ext, int *dt)
 #ifdef TESTING
 
 const char *
-test_parse_content_disposition()
+test_parse_content_disposition(void)
 {
-  int i;
-  struct {
-    char *hdrval;
-    char *filename;
+  unsigned i;
+  static const struct {
+    const char *hdrval;
+    const char *filename;
     bool result;
   } test_array[] = {
     { "filename=\"file.ext\"", "file.ext", true },
@@ -4086,7 +4084,7 @@ test_parse_content_disposition()
     { "attachement; filename*0=\"hello\"; filename*1=\"world.txt\"", "helloworld.txt", true },
   };
 
-  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i)
+  for (i = 0; i < countof(test_array); ++i)
     {
       char *filename;
       bool res;

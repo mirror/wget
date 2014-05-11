@@ -351,26 +351,26 @@ init_switches (void)
   size_t i, o = 0;
   for (i = 0; i < countof (option_data); i++)
     {
-      struct cmdline_option *opt = &option_data[i];
+      struct cmdline_option *cmdopt = &option_data[i];
       struct option *longopt;
 
-      if (!opt->long_name)
+      if (!cmdopt->long_name)
         /* The option is disabled. */
         continue;
 
       longopt = &long_options[o++];
-      longopt->name = opt->long_name;
+      longopt->name = cmdopt->long_name;
       longopt->val = i;
-      if (opt->short_name)
+      if (cmdopt->short_name)
         {
-          *p++ = opt->short_name;
-          optmap[opt->short_name - 32] = longopt - long_options;
+          *p++ = cmdopt->short_name;
+          optmap[cmdopt->short_name - 32] = longopt - long_options;
         }
-      switch (opt->type)
+      switch (cmdopt->type)
         {
         case OPT_VALUE:
           longopt->has_arg = required_argument;
-          if (opt->short_name)
+          if (cmdopt->short_name)
             *p++ = ':';
           break;
         case OPT_BOOLEAN:
@@ -384,16 +384,16 @@ init_switches (void)
              identical to "--foo", except it has opposite meaning and
              it doesn't allow an argument.  */
           longopt = &long_options[o++];
-          longopt->name = no_prefix (opt->long_name);
+          longopt->name = no_prefix (cmdopt->long_name);
           longopt->has_arg = no_argument;
           /* Mask the value so we'll be able to recognize that we're
              dealing with the false value.  */
           longopt->val = i | BOOLEAN_NEG_MARKER;
           break;
         default:
-          assert (opt->argtype != -1);
-          longopt->has_arg = opt->argtype;
-          if (opt->short_name)
+          assert (cmdopt->argtype != -1);
+          longopt->has_arg = cmdopt->argtype;
+          if (cmdopt->short_name)
             {
               if (longopt->has_arg == required_argument)
                 *p++ = ':';
@@ -979,7 +979,7 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout) < 0)
   exit (0);
 }
 
-char *program_name; /* Needed by lib/error.c. */
+static char *program_name; /* Needed by lib/error.c. */
 char *program_argstring; /* Needed by wget_warc.c. */
 
 int
@@ -1093,7 +1093,7 @@ main (int argc, char **argv)
                              short_options, long_options, &longindex)) != -1)
     {
       int val;
-      struct cmdline_option *opt;
+      struct cmdline_option *cmdopt;
 
       /* If LONGINDEX is unchanged, it means RET is referring a short
          option.  */
@@ -1115,31 +1115,31 @@ main (int argc, char **argv)
       /* Use the retrieved value to locate the option in the
          option_data array, and to see if we're dealing with the
          negated "--no-FOO" variant of the boolean option "--foo".  */
-      opt = &option_data[val & ~BOOLEAN_NEG_MARKER];
-      switch (opt->type)
+      cmdopt = &option_data[val & ~BOOLEAN_NEG_MARKER];
+      switch (cmdopt->type)
         {
         case OPT_VALUE:
-          setoptval (opt->data, optarg, opt->long_name);
+          setoptval (cmdopt->data, optarg, cmdopt->long_name);
           break;
         case OPT_BOOLEAN:
           if (optarg)
             /* The user has specified a value -- use it. */
-            setoptval (opt->data, optarg, opt->long_name);
+            setoptval (cmdopt->data, optarg, cmdopt->long_name);
           else
             {
               /* NEG is true for `--no-FOO' style boolean options. */
               bool neg = !!(val & BOOLEAN_NEG_MARKER);
-              setoptval (opt->data, neg ? "0" : "1", opt->long_name);
+              setoptval (cmdopt->data, neg ? "0" : "1", cmdopt->long_name);
             }
           break;
         case OPT_FUNCALL:
           {
-            void (*func) (void) = (void (*) (void)) opt->data;
+            void (*func) (void) = (void (*) (void)) cmdopt->data;
             func ();
           }
           break;
         case OPT__APPEND_OUTPUT:
-          setoptval ("logfile", optarg, opt->long_name);
+          setoptval ("logfile", optarg, cmdopt->long_name);
           append_to_log = true;
           break;
         case OPT__EXECUTE:
@@ -1150,24 +1150,23 @@ main (int argc, char **argv)
             /* We support real --no-FOO flags now, but keep these
                short options for convenience and backward
                compatibility.  */
-            char *p;
             for (p = optarg; p && *p; p++)
               switch (*p)
                 {
                 case 'v':
-                  setoptval ("verbose", "0", opt->long_name);
+                  setoptval ("verbose", "0", cmdopt->long_name);
                   break;
                 case 'H':
-                  setoptval ("addhostdir", "0", opt->long_name);
+                  setoptval ("addhostdir", "0", cmdopt->long_name);
                   break;
                 case 'd':
-                  setoptval ("dirstruct", "0", opt->long_name);
+                  setoptval ("dirstruct", "0", cmdopt->long_name);
                   break;
                 case 'c':
-                  setoptval ("noclobber", "1", opt->long_name);
+                  setoptval ("noclobber", "1", cmdopt->long_name);
                   break;
                 case 'p':
-                  setoptval ("noparent", "1", opt->long_name);
+                  setoptval ("noparent", "1", cmdopt->long_name);
                   break;
                 default:
                   fprintf (stderr, _("%s: illegal option -- `-n%c'\n"),
@@ -1191,12 +1190,12 @@ main (int argc, char **argv)
               flag = (*optarg == '1' || c_tolower (*optarg) == 'y'
                       || (c_tolower (optarg[0]) == 'o'
                           && c_tolower (optarg[1]) == 'n'));
-            setoptval (opt->type == OPT__PARENT ? "noparent" : "noclobber",
-                       flag ? "0" : "1", opt->long_name);
+            setoptval (cmdopt->type == OPT__PARENT ? "noparent" : "noclobber",
+                       flag ? "0" : "1", cmdopt->long_name);
             break;
           }
         case OPT__DONT_REMOVE_LISTING:
-          setoptval ("removelisting", "0", opt->long_name);
+          setoptval ("removelisting", "0", cmdopt->long_name);
           break;
         }
 

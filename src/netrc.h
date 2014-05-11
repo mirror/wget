@@ -42,5 +42,6 @@ typedef struct _acc_t
 
 void search_netrc (const char *, const char **, const char **, int);
 void free_netrc (acc_t *l);
+void netrc_cleanup(void);
 
 #endif /* NETRC_H */

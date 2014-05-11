@@ -34,5 +34,6 @@ as that of the covered work.  */
 #define visited_url(a,b)
 void nonexisting_url (const char *);
 void print_broken_links (void);
+void spider_cleanup (void);
 
 #endif /* SPIDER_H */

@@ -44,9 +44,15 @@ as that of the covered work.  */
 
 #define NETRC_FILE_NAME ".netrc"
 
-acc_t *netrc_list;
+static acc_t *netrc_list;
 
 static acc_t *parse_netrc (const char *);
+
+void
+netrc_cleanup(void)
+{
+  free_netrc (netrc_list);
+}
 
 /* Return the correct user and password, given the host, user (as
    given in the URL), and password (as given in the URL).  May return

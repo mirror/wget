@@ -2036,7 +2036,7 @@ url_string (const struct url *url, enum url_auth_mode auth_mode)
           if (url->passwd)
             {
               if (auth_mode == URL_AUTH_HIDE_PASSWD)
-                quoted_passwd = HIDDEN_PASSWORD;
+                quoted_passwd = (char *) HIDDEN_PASSWORD;
               else
                 quoted_passwd = url_escape_allow_passthrough (url->passwd);
             }
@@ -2205,7 +2205,7 @@ ps (char *path)
 #endif
 
 static const char *
-run_test (char *test, char *expected_result, enum url_scheme scheme,
+run_test (const char *test, const char *expected_result, enum url_scheme scheme,
           bool expected_change)
 {
   char *test_copy = xstrdup (test);
@@ -2234,8 +2234,8 @@ run_test (char *test, char *expected_result, enum url_scheme scheme,
 const char *
 test_path_simplify (void)
 {
-  static struct {
-    char *test, *result;
+  static const struct {
+    const char *test, *result;
     enum url_scheme scheme;
     bool should_modify;
   } tests[] = {
@@ -2267,15 +2267,16 @@ test_path_simplify (void)
     { "a/b/../../c",            "c",            SCHEME_HTTP, true },
     { "./a/../b",               "b",            SCHEME_HTTP, true }
   };
-  int i;
+  unsigned i;
 
   for (i = 0; i < countof (tests); i++)
     {
       const char *message;
-      char *test = tests[i].test;
-      char *expected_result = tests[i].result;
+      const char *test = tests[i].test;
+      const char *expected_result = tests[i].result;
       enum url_scheme scheme = tests[i].scheme;
       bool  expected_change = tests[i].should_modify;
+
       message = run_test (test, expected_result, scheme, expected_change);
       if (message) return message;
     }
@@ -2283,19 +2284,19 @@ test_path_simplify (void)
 }
 
 const char *
-test_append_uri_pathel()
+test_append_uri_pathel(void)
 {
-  int i;
-  struct {
-    char *original_url;
-    char *input;
+  unsigned i;
+  static const struct {
+    const char *original_url;
+    const char *input;
     bool escaped;
-    char *expected_result;
+    const char *expected_result;
   } test_array[] = {
     { "http://www.yoyodyne.com/path/", "somepage.html", false, "http://www.yoyodyne.com/path/somepage.html" },
   };
 
-  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i)
+  for (i = 0; i < countof(test_array); ++i)
     {
       struct growable dest;
       const char *p = test_array[i].input;
@@ -2312,13 +2313,13 @@ test_append_uri_pathel()
   return NULL;
 }
 
-const char*
-test_are_urls_equal()
+const char *
+test_are_urls_equal(void)
 {
-  int i;
-  struct {
-    char *url1;
-    char *url2;
+  unsigned i;
+  static const struct {
+    const char *url1;
+    const char *url2;
     bool expected_result;
   } test_array[] = {
     { "http://www.adomain.com/apath/", "http://www.adomain.com/apath/",       true },
@@ -2329,7 +2330,7 @@ test_are_urls_equal()
     { "http://www.adomain.com/path%2f", "http://www.adomain.com/path/",       false },
   };
 
-  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i)
+  for (i = 0; i < countof(test_array); ++i)
     {
       mu_assert ("test_are_urls_equal: wrong result",
                  are_urls_equal (test_array[i].url1, test_array[i].url2) == test_array[i].expected_result);

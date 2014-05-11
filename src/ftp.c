@@ -990,15 +990,14 @@ Error in server response, closing control connection.\n"));
       if (opt.spider)
         {
           bool exists = false;
-          uerr_t res;
           struct fileinfo *f;
-          res = ftp_get_listing (u, con, &f);
+          uerr_t _res = ftp_get_listing (u, con, &f);
           /* Set the DO_RETR command flag again, because it gets unset when
              calling ftp_get_listing() and would otherwise cause an assertion
              failure earlier on when this function gets repeatedly called
              (e.g., when recursing).  */
           con->cmd |= DO_RETR;
-          if (res == RETROK)
+          if (_res == RETROK)
             {
               while (f)
                 {
@@ -1235,8 +1234,7 @@ Error in server response, closing control connection.\n"));
         {
           if (opt.unlink && file_exists_p (con->target))
             {
-              int res = unlink (con->target);
-              if (res < 0)
+              if (unlink (con->target) < 0)
                 {
                   logprintf (LOG_NOTQUIET, "%s: %s\n", con->target,
                     strerror (errno));

@@ -1,3 +1,58 @@
+2014-05-03  Tim Ruehsen  <tim.ruehsen@gmx.de>
+
+	* ftp-ls.c (ftp_parse_vms_ls): Explicitly typecast strlen's output
+	* ftp.c (getftp): Prevent declaration of shadow variable
+	* html-url.c (tag_handle_base, tag_handle_form, tag_handle_link,
+	tag_handle_meta): Compiler directive to ignore unused variable
+	* html-url.h (cleanup_html_url): Add function declaration
+	* http-ntlm.c (ntlm_input, mkhash): Use ssize_t to declare variables that store
+	sizes.
+	(mkhash): Explicitly typecast output of c_toupper
+	(short_pair): Add typecasts to prevent compiler warnings
+	(ntlm-output): Fix datatypes of various variables
+	* http.c (gethttp): Prevent declaration of shadow variable err
+	(gethttp): remove unreachable code
+	(test_parse_content_disposition): Fix variable declarations and use
+	countof() macro
+	* init.c (run_command): Prevent declaration of ghost variable
+	(cmd_string, cmd_string_uppercase, cmd_file, cnd_vector,
+	cmd_directory_vector, cmd_spec_dirstruct, cmd_spec_header,
+	cmd_spec_warc_header, cmd_spec_htmlify, cmd_spec_mirror,
+	cmd_spec_prefer_family, cmd_spec_progress, cmd_spec_recursive,
+	cmd_spec_regex_type, cmd_spec_restrict_file_names, cmd_spec_report_speed,
+	cmd_spec_timeout, cmd_spec_useragent, cmd_spec_verbose): Add compiler
+	directive to ignore unused variable
+	(cleanup_html_url, spider_cleanup): Remove declarations
+	(test_commands_sorted): Cleanup code
+	(test_cmd_spec_restrict_file_names): Use correct data types
+	* iri.c (remote_to_utf8): Use more verbose variable name
+	* main.c (init_switches): Prevent declaration of ghost variable
+	* netrc.c (netrc_cleanup): Create cleanup function on common naming scheme
+	* netrc.h (netrc_cleanup): Declare function
+	* openssl.c (openssl_write, openssl_errstr): Compiler directive to ignore
+	unused parameter
+	(openssl_errstr): Explcicitly typecasr output of ASN1_STRING_length
+	* options.h (struct options): Declare includes and excludes as const char **
+	* progress.c (progress_interactive_p, progress_handle_sigwinch): Compiler
+	directive to ignore unused parameter
+	* res.c (test_is_robots_txt_url): Fix datatypes
+	* retr.c (line_terminator): Add compiler directive for ignoring unused
+	paramter. Remove unused variable.
+	* spider.h (spider_cleanup): Declare function
+	* test,c (main): declare unused paramter
+	* test.h (test_*): Declare functions
+	* url.c (url_string): Explicit typecast of password strings
+	(run_test): Declare *test, struct tests and *expected_result as const
+	(test_path_simplify, test_append_uri_pathl, test_are_urls_equal): Fix datatypes
+	* utls.c (fork_to_background): Be more verbose when errors occur
+	(dir_matches_p, test_dir_matches_p): Declare char * as const as required
+	(base64_encode, base64_decode, get_max_length): Set correct return type
+	(match_pcre_regex, match_posix_regex): Use correct datatypes and typecasts
+	(test_subdir_p): static const struct
+	* utils.h (base64_encode, base64_decode, get_max_length): Fix return type
+	* warc.c (ward_write_cdx_record): unused parameter
+	(struct hash_table *warc_cdx_dedup_table): Declare as static
+
 2014-05-01  Benjamin Goose  <gans+wget@tngtech.com>
 
 	* http.c: Fix small memory leak

@@ -588,7 +588,7 @@ fd_read_hunk (int fd, hunk_terminator_t terminator, long sizehint, long maxsize)
 }
 
 static const char *
-line_terminator (const char *start, const char *peeked, int peeklen)
+line_terminator (const char *start _GL_UNUSED, const char *peeked, int peeklen)
 {
   const char *p = memchr (peeked, '\n', peeklen);
   if (p)
@@ -1005,7 +1005,6 @@ retrieve_from_file (const char *file, bool html, int *count)
   if (url_valid_scheme (url))
     {
       int dt,url_err;
-      uerr_t status;
       struct url *url_parsed = url_parse (url, &url_err, iri, true);
       if (!url_parsed)
         {

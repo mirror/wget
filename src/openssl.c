@@ -305,7 +305,7 @@ openssl_read (int fd, char *buf, int bufsize, void *arg)
 }
 
 static int
-openssl_write (int fd, char *buf, int bufsize, void *arg)
+openssl_write (int fd _GL_UNUSED, char *buf, int bufsize, void *arg)
 {
   int ret = 0;
   struct openssl_transport_context *ctx = arg;
@@ -347,7 +347,7 @@ openssl_peek (int fd, char *buf, int bufsize, void *arg)
 }
 
 static const char *
-openssl_errstr (int fd, void *arg)
+openssl_errstr (int fd _GL_UNUSED, void *arg)
 {
   struct openssl_transport_context *ctx = arg;
   unsigned long errcode;
@@ -689,7 +689,7 @@ ssl_check_certificate (int fd, const char *host)
                       /* Compare and check for NULL attack in ASN1_STRING */
                       if (pattern_match ((char *)name_in_utf8, host) &&
                             (strlen ((char *)name_in_utf8) ==
-                                ASN1_STRING_length (name->d.dNSName)))
+                                (size_t) ASN1_STRING_length (name->d.dNSName)))
                         {
                           OPENSSL_free (name_in_utf8);
                           break;
@@ -753,7 +753,7 @@ ssl_check_certificate (int fd, const char *host)
 
           xentry = X509_NAME_get_entry(xname,i);
           sdata = X509_NAME_ENTRY_get_data(xentry);
-          if (strlen (common_name) != ASN1_STRING_length (sdata))
+          if (strlen (common_name) != (size_t) ASN1_STRING_length (sdata))
             {
               logprintf (LOG_NOTQUIET, _("\
     %s: certificate common name is invalid (contains a NUL character).\n\

@@ -895,7 +895,8 @@ ftp_parse_vms_ls (const char *file)
               /* Protections (permissions). */
               perms = 0;
               j = 0;
-              for (i = 0; i < strlen(tok); i++)
+              /*FIXME: Should not be using the variable like this. */
+              for (i = 0; i < (int) strlen(tok); i++)
                 {
                   switch (tok[ i])
                     {

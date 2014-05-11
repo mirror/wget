@@ -69,8 +69,8 @@ struct options
 
   char **accepts;		/* List of patterns to accept. */
   char **rejects;		/* List of patterns to reject. */
-  char **excludes;		/* List of excluded FTP directories. */
-  char **includes;		/* List of FTP directories to
+  const char **excludes;	/* List of excluded FTP directories. */
+  const char **includes;	/* List of FTP directories to
 				   follow. */
   bool ignore_case;		/* Whether to ignore case when
 				   matching dirs and files */
