@@ -135,6 +135,7 @@ struct options
   char *base_href;
   char *progress_type;		/* progress indicator type. */
   bool show_progress;        /* Show only the progress bar */
+  bool noscroll;             /* Don't scroll the filename in the progressbar */
   char *proxy_user; /*oli*/
   char *proxy_passwd;
 

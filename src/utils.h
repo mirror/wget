@@ -121,7 +121,7 @@ const char *with_thousand_seps (wgint);
 #else
 # define HR_NUMTYPE double
 #endif
-char *human_readable (HR_NUMTYPE);
+char *human_readable (HR_NUMTYPE, const int, const int);
 
 
 int numdigit (wgint);

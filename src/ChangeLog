@@ -1,3 +1,21 @@
+2014-05-20  Darshit Shah  <darnir@gmail.com>
+
+	* utils.c (human_readable): Add new parameters, acc and decimals for the
+	function. acc decides the number under which decimal values are shown for a
+	certain value, while decimals decides the number of decimal digits displayed
+	* utils.h (human_readable): Update declartion of the function
+	* ftp.c (print_length): Update call to human_readable
+	* http.c (gethttp): Same
+	* init.c (defaults): Enable scrolling filenames by default
+	* main.c (main): Update call to human_readable
+	* options.h (options): Add new option noscroll
+	* progress.c (create_image): Update the look of the progress bar. Human
+	readable download size by default and add support for noscroll.
+	(dot_set_params, bar_set_params): Change paramter to char * since strtok
+	needs to modify the string.
+	(bar_set_params): Add support for noscroll parameter to bar.
+
+
 2014-05-03  Tim Ruehsen  <tim.ruehsen@gmx.de>
 
 	* ftp-ls.c (ftp_parse_vms_ls): Explicitly typecast strlen's output

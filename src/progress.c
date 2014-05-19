@@ -51,7 +51,7 @@ struct progress_implementation {
   void (*update) (void *, wgint, double);
   void (*draw) (void *);
   void (*finish) (void *, double);
-  void (*set_params) (const char *);
+  void (*set_params) (char *);
 };
 
 /* Necessary forward declarations. */
@@ -60,13 +60,13 @@ static void *dot_create (const char *, wgint, wgint);
 static void dot_update (void *, wgint, double);
 static void dot_finish (void *, double);
 static void dot_draw (void *);
-static void dot_set_params (const char *);
+static void dot_set_params (char *);
 
 static void *bar_create (const char *, wgint, wgint);
 static void bar_update (void *, wgint, double);
 static void bar_draw (void *);
 static void bar_finish (void *, double);
-static void bar_set_params (const char *);
+static void bar_set_params (char *);
 
 static struct progress_implementation implementations[] = {
   { "dot", 0, dot_create, dot_update, dot_draw, dot_finish, dot_set_params },
@@ -112,7 +112,7 @@ set_progress_implementation (const char *name)
 {
   size_t i, namelen;
   struct progress_implementation *pi = implementations;
-  const char *colon;
+  char *colon;
 
   if (!name)
     name = DEFAULT_PROGRESS_IMPLEMENTATION;
@@ -419,7 +419,7 @@ dot_finish (void *progress, double dltime)
    giga.  */
 
 static void
-dot_set_params (const char *params)
+dot_set_params (char *params)
 {
   if (!params || !*params)
     params = opt.dot_style;
@@ -889,7 +889,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   int orig_filename_len = strlen (bp->f_download);
 
   /* The progress bar should look like this:
-     file xx% [=======>             ] nn,nnn 12.34KB/s  eta 36m 51s
+     file xx% [=======>             ] nnn.nnK 12.34KB/s  eta 36m 51s
 
      Calculate the geometry.  The idea is to assign as much room as
      possible to the progress bar.  The other idea is to never let
@@ -898,17 +898,26 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
      It would be especially bad for the progress bar to be resized
      randomly.
 
-     "file "           - Downloaded filename      - MAX MAX_FILENAME_LEN chars + 1
+     "file "           - Downloaded filename      - MAX_FILENAME_LEN chars + 1
      "xx% " or "100%"  - percentage               - 4 chars
      "[]"              - progress bar decorations - 2 chars
-     " nnn,nnn,nnn"    - downloaded bytes         - 12 chars or very rarely more
-     " 12.5KB/s"       - download rate            - 9 chars
+     " nnn.nnK"        - downloaded bytes         - 7 chars + 1
+     " 12.5KB/s"       - download rate            - 8 chars + 1
      "  eta 36m 51s"   - ETA                      - 14 chars
 
      "=====>..."       - progress bar             - the rest
   */
-  int dlbytes_size = 1 + MAX (size_grouped_len, 11);
-  int progress_size = bp->width - (MAX_FILENAME_LEN + 1 + 4 + 2 + dlbytes_size + 8 + 14);
+
+#define PROGRESS_FILENAME_LEN  MAX_FILENAME_LEN + 1
+#define PROGRESS_PERCENT_LEN   4
+#define PROGRESS_DECORAT_LEN   2
+#define PROGRESS_FILESIZE_LEN  7 + 1
+#define PROGRESS_DWNLOAD_RATE  8 + 1
+#define PROGRESS_ETA_LEN       14
+
+  int progress_size = bp->width - (PROGRESS_FILENAME_LEN + PROGRESS_PERCENT_LEN +
+                                   PROGRESS_DECORAT_LEN + PROGRESS_FILESIZE_LEN +
+                                   PROGRESS_DWNLOAD_RATE + PROGRESS_ETA_LEN);
 
   /* The difference between the number of bytes used,
      and the number of columns used. */
@@ -929,7 +938,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
     {
       int offset;
 
-      if (orig_filename_len > MAX_FILENAME_LEN)
+      if (((orig_filename_len > MAX_FILENAME_LEN) && !opt.noscroll) && !done)
         offset = ((int) bp->tick) % (orig_filename_len - MAX_FILENAME_LEN);
       else
         offset = 0;
@@ -1014,13 +1023,20 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
     }
  ++bp->tick;
 
-  /* " 234,567,890" */
-  sprintf (p, " %s", size_grouped);
+  /* " 234.56M" */
+  const char * down_size = human_readable (size, 1000, 2);
+  int cols_diff = 7 - count_cols (down_size);
+  while (cols_diff > 0)
+  {
+    *p++=' ';
+    cols_diff--;
+  }
+  sprintf (p, " %s", down_size);
   move_to_end (p);
-  /* Pad with spaces to 11 chars for the size_grouped field;
+  /* Pad with spaces to 7 chars for the size_grouped field;
    * couldn't use the field width specifier in sprintf, because
    * it counts in bytes, not characters. */
-  for (size_grouped_pad = 11 - size_grouped_len;
+  for (size_grouped_pad = PROGRESS_FILESIZE_LEN - 7;
        size_grouped_pad > 0;
        --size_grouped_pad)
     {
@@ -1030,20 +1046,20 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
   /* " 12.52Kb/s or 12.52KB/s" */
   if (hist->total_time > 0 && hist->total_bytes)
     {
-      static const char *short_units[] = { "B/s", "KB/s", "MB/s", "GB/s" };
-      static const char *short_units_bits[] = { "b/s", "Kb/s", "Mb/s", "Gb/s" };
+      static const char *short_units[] = { " B/s", "KB/s", "MB/s", "GB/s" };
+      static const char *short_units_bits[] = { " b/s", "Kb/s", "Mb/s", "Gb/s" };
       int units = 0;
       /* Calculate the download speed using the history ring and
          recent data that hasn't made it to the ring yet.  */
       wgint dlquant = hist->total_bytes + bp->recent_bytes;
       double dltime = hist->total_time + (dl_total_time - bp->recent_start);
       double dlspeed = calc_rate (dlquant, dltime, &units);
-      sprintf (p, "%4.*f%s", dlspeed >= 99.95 ? 0 : dlspeed >= 9.995 ? 1 : 2,
+      sprintf (p, " %4.*f%s", dlspeed >= 99.95 ? 0 : dlspeed >= 9.995 ? 1 : 2,
                dlspeed,  !opt.report_bps ? short_units[units] : short_units_bits[units]);
       move_to_end (p);
     }
   else
-    APPEND_LITERAL ("--.-KB/s");
+    APPEND_LITERAL (" --.-KB/s");
 
   if (!done)
     {
@@ -1126,13 +1142,21 @@ display_image (char *buf)
 }
 
 static void
-bar_set_params (const char *params)
+bar_set_params (char *params)
 {
   char *term = getenv ("TERM");
 
-  if (params
-      && 0 == strcmp (params, "force"))
-    current_impl_locked = 1;
+  if (params)
+    {
+      char *param = strtok (params, ":");
+      do
+        {
+          if (0 == strcmp (param, "force"))
+            current_impl_locked = 1;
+          else if (0 == strcmp (param, "noscroll"))
+            opt.noscroll = true;
+        } while ((param = strtok (NULL, ":")) != NULL);
+    }
 
   if ((opt.lfilename
 #ifdef HAVE_ISATTY

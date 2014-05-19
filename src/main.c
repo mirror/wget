@@ -1714,7 +1714,7 @@ outputting to a regular file.\n"));
 		 datetime_str (time (NULL)),
 		 wall_time,
 		 numurls,
-		 human_readable (total_downloaded_bytes),
+		 human_readable (total_downloaded_bytes, 10, 1),
 		 download_time,
 		 retr_rate (total_downloaded_bytes, total_download_time));
       xfree (wall_time);
@@ -1724,7 +1724,7 @@ outputting to a regular file.\n"));
       if (opt.quota && total_downloaded_bytes > opt.quota)
         logprintf (LOG_NOTQUIET,
                    _("Download quota of %s EXCEEDED!\n"),
-                   human_readable (opt.quota));
+                   human_readable (opt.quota, 10, 1));
     }
 
   if (opt.cookies_output)

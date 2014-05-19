@@ -413,6 +413,7 @@ defaults (void)
   /* Use a negative value to mark the absence of --start-pos option */
   opt.start_pos = -1;
   opt.show_progress = false;
+  opt.noscroll = false;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is

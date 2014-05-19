@@ -1523,7 +1523,7 @@ with_thousand_seps (wgint n)
    some detail.  */
 
 char *
-human_readable (HR_NUMTYPE n)
+human_readable (HR_NUMTYPE n, const int acc, const int decimals)
 {
   /* These suffixes are compatible with those of GNU `ls -lh'. */
   static char powers[] =
@@ -1556,10 +1556,10 @@ human_readable (HR_NUMTYPE n)
       if ((n / 1024) < 1024 || i == countof (powers) - 1)
         {
           double val = n / 1024.0;
-          /* Print values smaller than 10 with one decimal digits, and
-             others without any decimals.  */
+          /* Print values smaller than the accuracy level (acc) with (decimal)
+           * decimal digits, and others without any decimals.  */
           snprintf (buf, sizeof (buf), "%.*f%c",
-                    val < 10 ? 1 : 0, val, powers[i]);
+                    val < acc ? decimals : 0, val, powers[i]);
           return buf;
         }
       n /= 1024;
