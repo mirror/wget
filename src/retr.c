@@ -650,7 +650,7 @@ calc_rate (wgint bytes, double secs, int *units)
 {
   double dlrate;
   double bibyte = 1000.0;
- 
+
   if (!opt.report_bps)
     bibyte = 1024.0;
 
@@ -903,10 +903,10 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
          index page; that redirection is clearly a GET.  We "suspend"
          POST data for the duration of the redirections, and restore
          it when we're done.
-	 
-	 RFC2616 HTTP/1.1 introduces code 307 Temporary Redirect
-	 specifically to preserve the method of the request.
-	 */
+
+         RFC2616 HTTP/1.1 introduces code 307 Temporary Redirect
+         specifically to preserve the method of the request.
+     */
       if (result != NEWLOCATION_KEEP_POST && !method_suspended)
         SUSPEND_METHOD;
 
@@ -1030,7 +1030,7 @@ retrieve_from_file (const char *file, bool html, int *count)
       /* If we have a found a content encoding, use it.
        * ( == is okay, because we're checking for identical object) */
       if (iri->content_encoding != opt.locale)
-	  set_uri_encoding (iri, iri->content_encoding, false);
+          set_uri_encoding (iri, iri->content_encoding, false);
 
       /* Reset UTF-8 encode status */
       iri->utf8_encode = opt.enable_iri;

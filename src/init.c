@@ -150,7 +150,7 @@ static const struct {
   { "certificatetype",  &opt.cert_type,         cmd_cert_type },
   { "checkcertificate", &opt.check_cert,        cmd_boolean },
 #endif
-  { "chooseconfig",     &opt.choose_config,	cmd_file },
+  { "chooseconfig",     &opt.choose_config,     cmd_file },
   { "connecttimeout",   &opt.connect_timeout,   cmd_time },
   { "contentdisposition", &opt.content_disposition, cmd_boolean },
   { "contentonerror",   &opt.content_on_error,  cmd_boolean },
@@ -821,16 +821,16 @@ setval_internal_tilde (int comind, const char *com, const char *val)
       pstring = commands[comind].place;
       home = home_dir ();
       if (home)
-	{
-	  homelen = strlen (home);
-	  while (homelen && ISSEP (home[homelen - 1]))
-            home[--homelen] = '\0';
+        {
+          homelen = strlen (home);
+          while (homelen && ISSEP (home[homelen - 1]))
+                 home[--homelen] = '\0';
 
-	  /* Skip the leading "~/". */
-	  for (++val; ISSEP (*val); val++)
-  	    ;
-	  *pstring = concat_strings (home, "/", val, (char *)0);
-	}
+          /* Skip the leading "~/". */
+          for (++val; ISSEP (*val); val++)
+            ;
+          *pstring = concat_strings (home, "/", val, (char *)0);
+        }
     }
   return ret;
 }

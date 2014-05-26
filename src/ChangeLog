@@ -1,3 +1,10 @@
+2014-05-30  Darshit Shah  <darnir@gmail.com>
+
+	* connect.{c,h}, convert.{c,h}, cookies.{c,h}, ftp-ls.c, ftp.h, gettext.h,
+	hash.h, host.h, html-parse.h, html-url.h, http.c, init.c, main.c, mswindows.c,
+	netrc.h, openssl.c, options.h, ptimer.h, recur.c, retr.c, sysdep.h, url.h,
+	vms.c, warc.c, wget.h: Whitespace and formatting changes only.
+
 2014-05-20  Darshit Shah  <darnir@gmail.com>
 
 	* utils.c (human_readable): Add new parameters, acc and decimals for the

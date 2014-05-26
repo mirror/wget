@@ -32,15 +32,15 @@ as that of the covered work.  */
 #define HTML_URL_H
 
 struct map_context {
-  char *text;			/* HTML text. */
-  char *base;			/* Base URI of the document, possibly
-				   changed through <base href=...>. */
-  const char *parent_base;	/* Base of the current document. */
-  const char *document_file;	/* File name of this document. */
-  bool nofollow;		/* whether NOFOLLOW was specified in a
+  char *text;                   /* HTML text. */
+  char *base;                   /* Base URI of the document, possibly
+                                   changed through <base href=...>. */
+  const char *parent_base;      /* Base of the current document. */
+  const char *document_file;    /* File name of this document. */
+  bool nofollow;                /* whether NOFOLLOW was specified in a
                                    <meta name=robots> tag. */
 
-  struct urlpos *head;	/* List of URLs that is being built. */
+  struct urlpos *head;          /* List of URLs that is being built. */
 };
 
 struct urlpos *get_urls_file (const char *);

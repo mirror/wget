@@ -33,10 +33,10 @@ as that of the covered work.  */
 
 typedef struct _acc_t
 {
-  char *host;			/* NULL if this is the default machine
-				   entry.  */
+  char *host;           /* NULL if this is the default machine
+                           entry.  */
   char *acc;
-  char *passwd;			/* NULL if there is no password.  */
+  char *passwd;         /* NULL if there is no password.  */
   struct _acc_t *next;
 } acc_t;
 

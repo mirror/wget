@@ -222,10 +222,10 @@ int vsnprintf (char *str, size_t count, const char *fmt, va_list arg);
 # undef FNM_PERIOD
 # undef FNM_NOMATCH
 
-# define FNM_PATHNAME	(1 << 0) /* No wildcard can ever match `/'.  */
-# define FNM_NOESCAPE	(1 << 1) /* Backslashes don't quote special chars.  */
-# define FNM_PERIOD	(1 << 2) /* Leading `.' is matched only explicitly.  */
-# define FNM_NOMATCH	1
+# define FNM_PATHNAME   (1 << 0) /* No wildcard can ever match `/'.  */
+# define FNM_NOESCAPE   (1 << 1) /* Backslashes don't quote special chars.  */
+# define FNM_PERIOD     (1 << 2) /* Leading `.' is matched only explicitly.  */
+# define FNM_NOMATCH    1
 
 int fnmatch (const char *, const char *, int);
 #endif

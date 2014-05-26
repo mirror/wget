@@ -31,7 +31,7 @@ as that of the covered work.  */
 #ifndef PTIMER_H
 #define PTIMER_H
 
-struct ptimer;			/* forward declaration; all struct
+struct ptimer;                  /* forward declaration; all struct
                                    members are private */
 
 struct ptimer *ptimer_new (void);

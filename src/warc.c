@@ -726,7 +726,7 @@ warc_start_new_file (bool meta)
 
   if (warc_current_file != NULL)
     fclose (warc_current_file);
-  
+
   free (warc_current_warcinfo_uuid_str);
   free (warc_current_filename);
 

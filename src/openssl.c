@@ -459,10 +459,10 @@ ssl_connect_wget (int fd, const char *hostname)
   if (! is_valid_ip_address (hostname))
     {
       if (! SSL_set_tlsext_host_name (conn, hostname))
-	{
-	DEBUGP (("Failed to set TLS server-name indication."));
-	goto error;
-	}
+        {
+          DEBUGP (("Failed to set TLS server-name indication."));
+          goto error;
+        }
     }
 #endif
 
@@ -712,7 +712,7 @@ ssl_check_certificate (int fd, const char *host)
           success = false;
         }
     }
-  
+
   if (alt_name_checked == false)
     {
       /* Test commomName */

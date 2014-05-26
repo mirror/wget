@@ -58,9 +58,9 @@ typedef struct {
 
   /* The actual data, in the form of struct in_addr or in6_addr: */
   union {
-    struct in_addr d4;		/* IPv4 address */
+    struct in_addr d4;      /* IPv4 address */
 #ifdef ENABLE_IPV6
-    struct in6_addr d6;		/* IPv6 address */
+    struct in6_addr d6;     /* IPv6 address */
 #endif
   } data;
 

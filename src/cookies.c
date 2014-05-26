@@ -95,7 +95,7 @@ struct cookie {
   int port;                     /* port number */
   char *path;                   /* path prefix of the cookie */
 
-  unsigned discard_requested :1; /* whether cookie was created to
+  unsigned discard_requested :1;/* whether cookie was created to
                                    request discarding another
                                    cookie. */
 
@@ -393,7 +393,7 @@ parse_set_cookie (const char *set_cookie, bool silent)
 
           /* Check if expiration spec is valid.
              If not, assume default (cookie doesn't expire, but valid only for
-	     this session.) */
+             this session.) */
           expires = http_atotm (value_copy);
           if (expires != (time_t) -1)
             {
@@ -460,9 +460,9 @@ parse_set_cookie (const char *set_cookie, bool silent)
 
 
 #define REQUIRE_DIGITS(p) do {                  \
-  if (!c_isdigit (*p))                            \
+  if (!c_isdigit (*p))                          \
     return false;                               \
-  for (++p; c_isdigit (*p); p++)                  \
+  for (++p; c_isdigit (*p); p++)                \
     ;                                           \
 } while (0)
 

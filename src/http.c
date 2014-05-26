@@ -1016,13 +1016,13 @@ modify_param_name(param_token *name)
   else if(delim1 == delim2)
     {
       if ((name->e - 1) == delim1)
-	{
-	  result = RFC2231_ENCODING;
-	}
+        {
+          result = RFC2231_ENCODING;
+        }
       else
-	{
-	  result = RFC2231_NOENCODING;
-	}
+        {
+          result = RFC2231_NOENCODING;
+        }
       name->e = delim1;
     }
   else
@@ -1043,10 +1043,10 @@ modify_param_value (param_token *value, int encoding_type )
   if (encoding_type == RFC2231_ENCODING)
     {
       const char *delim = memrchr (value->b, '\'', value->e - value->b);
-      if ( delim != NULL )
-	{
-	  value->b = (delim+1);
-	}
+      if (delim != NULL)
+        {
+          value->b = (delim+1);
+        }
     }
 }
 
@@ -1154,7 +1154,7 @@ append_value_to_filename (char **filename, param_token const * const value,
   int original_length = strlen(*filename);
   int new_length = strlen(*filename) + (value->e - value->b);
   *filename = xrealloc (*filename, new_length+1);
-  memcpy (*filename + original_length, value->b, (value->e - value->b)); 
+  memcpy (*filename + original_length, value->b, (value->e - value->b));
   (*filename)[new_length] = '\0';
   if (is_url_encoded)
     url_unescape (*filename + original_length);
@@ -1515,13 +1515,13 @@ File %s already there; not retrieving.\n\n"), quote (filename));
    url, warc_timestamp_str, warc_request_uuid, warc_ip, type
    and statcode will be saved in the headers of the WARC record.
    The head parameter contains the HTTP headers of the response.
- 
+
    If fp is NULL and WARC is enabled, the response body will be
    written only to the WARC file.  If WARC is disabled and fp
    is a file pointer, the data will be written to the file.
    If fp is a file pointer and WARC is enabled, the body will
    be written to both destinations.
-   
+
    Returns the error code.   */
 static int
 read_response_body (struct http_stat *hs, int sock, FILE *fp, wgint contlen,
@@ -1610,7 +1610,7 @@ read_response_body (struct http_stat *hs, int sock, FILE *fp, wgint contlen,
 
       return RETRFINISHED;
     }
-  
+
   if (warc_tmp != NULL)
     fclose (warc_tmp);
 
@@ -2651,7 +2651,7 @@ read_header:
                      _("Location: %s%s\n"),
                      hs->newloc ? escnonprint_uri (hs->newloc) : _("unspecified"),
                      hs->newloc ? _(" [following]") : "");
- 
+
           /* In case the caller cares to look...  */
           hs->len = 0;
           hs->res = 0;
@@ -2906,19 +2906,19 @@ read_header:
         }
       else if (ALLOW_CLOBBER || count > 0)
         {
-	  if (opt.unlink && file_exists_p (hs->local_file))
-	    {
-	      int res = unlink (hs->local_file);
-	      if (res < 0)
-		{
-		  logprintf (LOG_NOTQUIET, "%s: %s\n", hs->local_file,
-			     strerror (errno));
-		  CLOSE_INVALIDATE (sock);
-		  xfree (head);
-      xfree_null (type);
-		  return UNLINKERR;
-		}
-	    }
+      if (opt.unlink && file_exists_p (hs->local_file))
+        {
+          int res = unlink (hs->local_file);
+          if (res < 0)
+            {
+              logprintf (LOG_NOTQUIET, "%s: %s\n", hs->local_file,
+                         strerror (errno));
+              CLOSE_INVALIDATE (sock);
+              xfree (head);
+              xfree_null (type);
+              return UNLINKERR;
+            }
+        }
 
 #ifdef __VMS
           int open_id;
