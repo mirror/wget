@@ -61,6 +61,10 @@ dnl
 dnl Process features.
 dnl
 
+AC_ARG_WITH(libpsl,
+    AS_HELP_STRING([--without-libpsl],
+                   [disable support for libpsl cookie checking.]))
+
 AC_ARG_WITH(ssl,
 [[  --without-ssl           disable SSL autodetection
   --with-ssl={gnutls,openssl} specify the SSL backend.  GNU TLS is the default.]])
@@ -237,6 +241,11 @@ dnl
 dnl Checks for libraries.
 dnl
 
+AS_IF([test x"$with_libpsl" != xno], [
+  with_libpsl=yes
+  AC_CHECK_LIB([psl], [psl_builtin])
+])
+
 AS_IF([test x"$with_zlib" != xno], [
   with_zlib=yes
   AC_CHECK_LIB(z, compress)
@@ -357,6 +366,7 @@ else
     fi
   fi
 fi
+
 
 dnl **********************************************************************
 dnl Checks for IPv6
@@ -580,6 +590,7 @@ AC_MSG_NOTICE([Summary of build options:
   Libs:              $LIBS
   SSL:               $with_ssl
   Zlib:              $with_zlib
+  PSL:               $with_libpsl
   Digest:            $ENABLE_DIGEST
   NTLM:              $ENABLE_NTLM
   OPIE:              $ENABLE_OPIE

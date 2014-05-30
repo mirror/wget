@@ -7,6 +7,7 @@ large-file      SIZEOF_OFF_T >= 8
 nls             defined ENABLE_NLS
 ntlm            defined ENABLE_NTLM
 opie            defined ENABLE_OPIE
+psl             defined HAVE_LIBPSL
 
 ssl choice:
     openssl     defined HAVE_LIBSSL || defined HAVE_LIBSSL32

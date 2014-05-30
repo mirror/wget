@@ -1,5 +1,10 @@
 2014-05-30  Darshit Shah  <darnir@gmail.com>
 
+	* cookies.c (check_domain_match): Use libpsl to check if the cookie domain
+	is valid. Also remove unneeded test for numeric addresses.
+
+2014-05-30  Darshit Shah  <darnir@gmail.com>
+
 	* connect.{c,h}, convert.{c,h}, cookies.{c,h}, ftp-ls.c, ftp.h, gettext.h,
 	hash.h, host.h, html-parse.h, html-url.h, http.c, init.c, main.c, mswindows.c,
 	netrc.h, openssl.c, options.h, ptimer.h, recur.c, retr.c, sysdep.h, url.h,
@@ -21,7 +26,6 @@
 	(dot_set_params, bar_set_params): Change paramter to char * since strtok
 	needs to modify the string.
 	(bar_set_params): Add support for noscroll parameter to bar.
-
 
 2014-05-03  Tim Ruehsen  <tim.ruehsen@gmx.de>
 

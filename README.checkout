@@ -4,8 +4,8 @@ Compiling From Repository Sources
    does not contain automatically-generated files, even when these are
    normally present in the distribution tarballs. Therefore, to build GNU
    Wget from the sources in the repository, you'll need to have one or
-   more of the following (note that gettext, OpenSSL, libidn and libiconv
-   are not absolutely required):
+   more of the following (note that gettext, OpenSSL, libidn, libiconv
+   and libpsl are not absolutely required):
 
      * [20]autoconf (currently, GNU Wget requires version 2.61). This is
        needed to generate the configure script from configure.in. This is
@@ -68,6 +68,9 @@ Compiling From Repository Sources
 
      * [34]git is used to fetch gnulib files trough the bootstrap.sh script.
 
+     * [35]libpsl is required for using a public suffix list to check for valid
+       cookie domains.
+
    For those who might be confused as to what to do once they check out
    the source code, considering configure and Makefile do not yet exist at
    that point, a shell script called bootstrap.sh has been provided. After
@@ -96,21 +99,21 @@ Compiling From Repository Sources
 
  Originally written by Hrvoje Niksic <hniksic@xemacs.org>.
 
-     * [35]Edit
-     * [36]Comments
-     * [37]Info
-     * [38]Attachments
+     * [36]Edit
+     * [37]Comments
+     * [38]Info
+     * [39]Attachments
      * More Actions:
        [Raw Text................] Do
 
-     * [39]MoinMoin Powered
-     * [40]Python Powered
-     * [41]GPL licensed
-     * [42]Valid HTML 4.01
+     * [40]MoinMoin Powered
+     * [41]Python Powered
+     * [42]GPL licensed
+     * [43]Valid HTML 4.01
      __________________________________________________________________
 
    All content © 2007 Free Software Foundation. For terms of use,
-   redistribution, and modification, please see the [43]WikiLicense page.
+   redistribution, and modification, please see the [44]WikiLicense page.
 
 References
 
@@ -129,12 +132,13 @@ References
   32. http://www.gnu.org/software/libidn/
   33. http://www.gnu.org/software/libiconv/
   34. http://git-scm.com/
-  35. http://wget.addictivecode.org/CompilingRepoSources?action=edit&editor=text
-  36. http://wget.addictivecode.org/CompilingRepoSources
-  37. http://wget.addictivecode.org/CompilingRepoSources?action=info
-  38. http://wget.addictivecode.org/CompilingRepoSources?action=AttachFile
-  39. http://moinmo.in/
-  40. http://moinmo.in/Python
-  41. http://moinmo.in/GPL
-  42. http://validator.w3.org/check?uri=referer
-  43. http://wget.addictivecode.org/WikiLicense
+  35. https://github.com/rockdaboot/libpsl
+  36. http://wget.addictivecode.org/CompilingRepoSources?action=edit&editor=text
+  37. http://wget.addictivecode.org/CompilingRepoSources
+  38. http://wget.addictivecode.org/CompilingRepoSources?action=info
+  39. http://wget.addictivecode.org/CompilingRepoSources?action=AttachFile
+  40. http://moinmo.in/
+  41. http://moinmo.in/Python
+  42. http://moinmo.in/GPL
+  43. http://validator.w3.org/check?uri=referer
+  44. http://wget.addictivecode.org/WikiLicense
