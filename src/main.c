@@ -1,7 +1,5 @@
 /* Command line parsing.
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation,
-   Inc.
+   Copyright (C) 1996-2014 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -979,7 +977,7 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout) < 0)
   exit (0);
 }
 
-static char *program_name; /* Needed by lib/error.c. */
+char *program_name; /* Needed by lib/error.c. */
 char *program_argstring; /* Needed by wget_warc.c. */
 
 int

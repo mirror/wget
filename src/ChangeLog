@@ -1,5 +1,7 @@
 2014-06-08  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* main.c: Make `program_name' not static.
+
 	* cookies.c [HAVE_PSL]: Include <libpsl.h> only when HAVE_PSL is defined.
 
 2014-05-30  Darshit Shah  <darnir@gmail.com>
