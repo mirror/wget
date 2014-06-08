@@ -1,3 +1,7 @@
+2014-06-08  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* cookies.c [HAVE_PSL]: Include <libpsl.h> only when HAVE_PSL is defined.
+
 2014-05-30  Darshit Shah  <darnir@gmail.com>
 
 	* cookies.c (check_domain_match): Use libpsl to check if the cookie domain

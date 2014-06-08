@@ -51,7 +51,9 @@ as that of the covered work.  */
 #include <assert.h>
 #include <errno.h>
 #include <time.h>
-#include <libpsl.h>
+#ifdef HAVE_LIBPSL
+# include <libpsl.h>
+#endif
 #include "utils.h"
 #include "hash.h"
 #include "cookies.h"
