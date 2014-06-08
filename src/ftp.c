@@ -221,13 +221,13 @@ print_length (wgint size, wgint start, bool authoritative)
 {
   logprintf (LOG_VERBOSE, _("Length: %s"), number_to_static_string (size));
   if (size >= 1024)
-    logprintf (LOG_VERBOSE, " (%s)", human_readable (size));
+    logprintf (LOG_VERBOSE, " (%s)", human_readable (size, 10, 1));
   if (start > 0)
     {
       if (size - start >= 1024)
         logprintf (LOG_VERBOSE, _(", %s (%s) remaining"),
                    number_to_static_string (size - start),
-                   human_readable (size - start));
+                   human_readable (size - start, 10, 1));
       else
         logprintf (LOG_VERBOSE, _(", %s remaining"),
                    number_to_static_string (size - start));
@@ -990,15 +990,14 @@ Error in server response, closing control connection.\n"));
       if (opt.spider)
         {
           bool exists = false;
-          uerr_t res;
           struct fileinfo *f;
-          res = ftp_get_listing (u, con, &f);
+          uerr_t _res = ftp_get_listing (u, con, &f);
           /* Set the DO_RETR command flag again, because it gets unset when
              calling ftp_get_listing() and would otherwise cause an assertion
              failure earlier on when this function gets repeatedly called
              (e.g., when recursing).  */
           con->cmd |= DO_RETR;
-          if (res == RETROK)
+          if (_res == RETROK)
             {
               while (f)
                 {
@@ -1235,8 +1234,7 @@ Error in server response, closing control connection.\n"));
         {
           if (opt.unlink && file_exists_p (con->target))
             {
-              int res = unlink (con->target);
-              if (res < 0)
+              if (unlink (con->target) < 0)
                 {
                   logprintf (LOG_NOTQUIET, "%s: %s\n", con->target,
                     strerror (errno));
@@ -1315,7 +1313,7 @@ Error in server response, closing control connection.\n"));
   if (restval && rest_failed)
     flags |= rb_skip_startpos;
   rd_size = 0;
-  res = fd_read_body (u->url, dtsock, fp,
+  res = fd_read_body (con->target, dtsock, fp,
                       expected_bytes ? expected_bytes - restval : 0,
                       restval, &rd_size, qtyread, &con->dltime, flags, warc_tmp);
 

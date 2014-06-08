@@ -76,11 +76,11 @@ enum url_scheme {
 /* Structure containing info on a URL.  */
 struct url
 {
-  char *url;			/* Original URL */
-  enum url_scheme scheme;	/* URL scheme */
+  char *url;                /* Original URL */
+  enum url_scheme scheme;   /* URL scheme */
 
-  char *host;			/* Extracted hostname */
-  int port;			/* Port number */
+  char *host;               /* Extracted hostname */
+  int port;                 /* Port number */
 
   /* URL components (URL-quoted). */
   char *path;

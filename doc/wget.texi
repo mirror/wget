@@ -753,7 +753,12 @@ Use @samp{--progress=dot} to switch to the ``dot'' display.  It traces
 the retrieval by printing dots on the screen, each dot representing a
 fixed amount of downloaded data.
 
-When using the dotted retrieval, you may also set the @dfn{style} by
+The progress @var{type} can also take one or more parameters.  The parameters
+vary based on the @var{type} selected.  Parameters to @var{type} are passed by
+appending them to the type sperated by a colon (:) like this:
+@samp{--progress=@var{type}:@var{parameter1}:@var{parameter2}}.
+
+When using the dotted retrieval, you may set the @dfn{style} by
 specifying the type as @samp{dot:@var{style}}.  Different styles assign
 different meaning to one dot.  With the @code{default} style each dot
 represents 1K, there are ten dots in a cluster and 50 dots in a line.
@@ -766,11 +771,35 @@ If @code{mega} is not enough then you can use the @code{giga}
 style---each dot represents 1M retrieved, there are eight dots in a
 cluster, and 32 dots on each line (so each line contains 32M).
 
+With @samp{--progress=bar}, there are currently two possible parameters,
+@var{force} and @var{noscroll}.
+
+When the output is not a TTY, the progress bar always falls back to ``dot'',
+even if @samp{--progress=bar} was passed to Wget during invokation. This
+behaviour can be overridden and the ``bar'' output forced by using the ``force''
+parameter as @samp{--progress=bar:force}.
+
+By default, the @samp{bar} style progress bar scroll the name of the file from
+left to right for the file being downloaded if the filename exceeds the maximum
+length allotted for its display.  In certain cases, such as with
+@samp{--progress=bar:force}, one may not want the scrolling filename in the
+progress bar.  By passing the ``noscroll'' parameter, Wget can be forced to
+display as much of the filename as possible without scrolling through it.
+
 Note that you can set the default style using the @code{progress}
 command in @file{.wgetrc}.  That setting may be overridden from the
-command line.  The exception is that, when the output is not a TTY, the
-``dot'' progress will be favored over ``bar''.  To force the bar output,
-use @samp{--progress=bar:force}.
+command line.  For example, to force the bar output without scrolling,
+use @samp{--progress=bar:force:noscroll}.
+
+@item --show-progress
+Force wget to display the progress bar in any verbosity.
+
+By default, wget only displays the progress bar in verbose mode.  One may
+however want wget to display the progress bar on screen in conjunction with
+any other verbosity modes like @samp{--no-verbose} or @samp{--quiet}.  This
+is often a desired a property when invoking wget to download several small/large
+files.  In such a case, wget could simply be invoked with this parameter to get
+a much cleaner output on the screen.
 
 @item -N
 @itemx --timestamping

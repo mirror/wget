@@ -253,6 +253,7 @@ static struct cmdline_option option_data[] =
     { IF_SSL ("private-key"), 0, OPT_VALUE, "privatekey", -1 },
     { IF_SSL ("private-key-type"), 0, OPT_VALUE, "privatekeytype", -1 },
     { "progress", 0, OPT_VALUE, "progress", -1 },
+    { "show-progress", 0, OPT_BOOLEAN, "showprogress", -1 },
     { "protocol-directories", 0, OPT_BOOLEAN, "protocoldirectories", -1 },
     { "proxy", 0, OPT_BOOLEAN, "useproxy", -1 },
     { "proxy__compat", 'Y', OPT_VALUE, "useproxy", -1 }, /* back-compatible */
@@ -325,7 +326,7 @@ static struct cmdline_option option_data[] =
 static char *
 no_prefix (const char *s)
 {
-  static char buffer[1024];
+  static char buffer[2048];
   static char *p = buffer;
 
   char *cp = p;
@@ -359,26 +360,26 @@ init_switches (void)
   size_t i, o = 0;
   for (i = 0; i < countof (option_data); i++)
     {
-      struct cmdline_option *opt = &option_data[i];
+      struct cmdline_option *cmdopt = &option_data[i];
       struct option *longopt;
 
-      if (!opt->long_name)
+      if (!cmdopt->long_name)
         /* The option is disabled. */
         continue;
 
       longopt = &long_options[o++];
-      longopt->name = opt->long_name;
+      longopt->name = cmdopt->long_name;
       longopt->val = i;
-      if (opt->short_name)
+      if (cmdopt->short_name)
         {
-          *p++ = opt->short_name;
-          optmap[opt->short_name - 32] = longopt - long_options;
+          *p++ = cmdopt->short_name;
+          optmap[cmdopt->short_name - 32] = longopt - long_options;
         }
-      switch (opt->type)
+      switch (cmdopt->type)
         {
         case OPT_VALUE:
           longopt->has_arg = required_argument;
-          if (opt->short_name)
+          if (cmdopt->short_name)
             *p++ = ':';
           break;
         case OPT_BOOLEAN:
@@ -392,16 +393,16 @@ init_switches (void)
              identical to "--foo", except it has opposite meaning and
              it doesn't allow an argument.  */
           longopt = &long_options[o++];
-          longopt->name = no_prefix (opt->long_name);
+          longopt->name = no_prefix (cmdopt->long_name);
           longopt->has_arg = no_argument;
           /* Mask the value so we'll be able to recognize that we're
              dealing with the false value.  */
           longopt->val = i | BOOLEAN_NEG_MARKER;
           break;
         default:
-          assert (opt->argtype != -1);
-          longopt->has_arg = opt->argtype;
-          if (opt->short_name)
+          assert (cmdopt->argtype != -1);
+          longopt->has_arg = cmdopt->argtype;
+          if (cmdopt->short_name)
             {
               if (longopt->has_arg == required_argument)
                 *p++ = ':';
@@ -438,48 +439,48 @@ Mandatory arguments to long options are mandatory for short options too.\n\n"),
     N_("\
 Startup:\n"),
     N_("\
-  -V,  --version           display the version of Wget and exit.\n"),
+  -V,  --version                   display the version of Wget and exit.\n"),
     N_("\
-  -h,  --help              print this help.\n"),
+  -h,  --help                      print this help.\n"),
     N_("\
-  -b,  --background        go to background after startup.\n"),
+  -b,  --background                go to background after startup.\n"),
     N_("\
-  -e,  --execute=COMMAND   execute a `.wgetrc'-style command.\n"),
+  -e,  --execute=COMMAND           execute a `.wgetrc'-style command.\n"),
     "\n",
 
     N_("\
 Logging and input file:\n"),
     N_("\
-  -o,  --output-file=FILE    log messages to FILE.\n"),
+  -o,  --output-file=FILE          log messages to FILE.\n"),
     N_("\
-  -a,  --append-output=FILE  append messages to FILE.\n"),
+  -a,  --append-output=FILE        append messages to FILE.\n"),
 #ifdef ENABLE_DEBUG
     N_("\
-  -d,  --debug               print lots of debugging information.\n"),
+  -d,  --debug                     print lots of debugging information.\n"),
 #endif
 #ifdef USE_WATT32
     N_("\
-       --wdebug              print Watt-32 debug output.\n"),
+       --wdebug                    print Watt-32 debug output.\n"),
 #endif
     N_("\
-  -q,  --quiet               quiet (no output).\n"),
+  -q,  --quiet                     quiet (no output).\n"),
     N_("\
-  -v,  --verbose             be verbose (this is the default).\n"),
+  -v,  --verbose                   be verbose (this is the default).\n"),
     N_("\
-  -nv, --no-verbose          turn off verboseness, without being quiet.\n"),
+  -nv, --no-verbose                turn off verboseness, without being quiet.\n"),
     N_("\
-       --report-speed=TYPE   Output bandwidth as TYPE.  TYPE can be bits.\n"),
+       --report-speed=TYPE         Output bandwidth as TYPE.  TYPE can be bits.\n"),
     N_("\
-  -i,  --input-file=FILE     download URLs found in local or external FILE.\n"),
+  -i,  --input-file=FILE           download URLs found in local or external FILE.\n"),
     N_("\
-  -F,  --force-html          treat input file as HTML.\n"),
+  -F,  --force-html                treat input file as HTML.\n"),
     N_("\
-  -B,  --base=URL            resolves HTML input-file links (-i -F)\n\
-                             relative to URL.\n"),
+  -B,  --base=URL                  resolves HTML input-file links (-i -F)\n\
+                                   relative to URL.\n"),
     N_("\
-       --config=FILE         Specify config file to use.\n"), 
+       --config=FILE               Specify config file to use.\n"),
     N_("\
-       --no-config           Do not read any config file.\n"),
+       --no-config                 Do not read any config file.\n"),
     "\n",
 
 #ifdef ENABLE_METALINK
@@ -495,188 +496,190 @@ Download:\n"),
                                  (needs to be used with --metalink-file)\n"),
 #endif
     N_("\
-  -t,  --tries=NUMBER            set number of retries to NUMBER (0 unlimits).\n"),
+  -t,  --tries=NUMBER              set number of retries to NUMBER (0 unlimits).\n"),
     N_("\
-       --retry-connrefused       retry even if connection is refused.\n"),
+       --retry-connrefused         retry even if connection is refused.\n"),
     N_("\
-  -O,  --output-document=FILE    write documents to FILE.\n"),
+  -O,  --output-document=FILE      write documents to FILE.\n"),
     N_("\
-  -nc, --no-clobber              skip downloads that would download to\n\
-                                 existing files (overwriting them).\n"),
+  -nc, --no-clobber                skip downloads that would download to\n\
+                                   existing files (overwriting them).\n"),
     N_("\
-  -c,  --continue                resume getting a partially-downloaded file.\n"),
+  -c,  --continue                  resume getting a partially-downloaded file.\n"),
     N_("\
-       --start-pos=OFFSET        start downloading from zero-based position OFFSET.\n"),
+       --start-pos=OFFSET          start downloading from zero-based position OFFSET.\n"),
     N_("\
-       --progress=TYPE           select progress gauge type.\n"),
+       --progress=TYPE             select progress gauge type.\n"),
     N_("\
-  -N,  --timestamping            don't re-retrieve files unless newer than\n\
-                                 local.\n"),
+       --show-progress             display the progress bar in any verbosity mode.\n"),
     N_("\
-  --no-use-server-timestamps     don't set the local file's timestamp by\n\
-                                 the one on the server.\n"),
+  -N,  --timestamping              don't re-retrieve files unless newer than\n\
+                                   local.\n"),
     N_("\
-  -S,  --server-response         print server response.\n"),
+  --no-use-server-timestamps       don't set the local file's timestamp by\n\
+                                   the one on the server.\n"),
     N_("\
-       --spider                  don't download anything.\n"),
+  -S,  --server-response           print server response.\n"),
     N_("\
-  -T,  --timeout=SECONDS         set all timeout values to SECONDS.\n"),
+       --spider                    don't download anything.\n"),
     N_("\
-       --dns-timeout=SECS        set the DNS lookup timeout to SECS.\n"),
+  -T,  --timeout=SECONDS           set all timeout values to SECONDS.\n"),
     N_("\
-       --connect-timeout=SECS    set the connect timeout to SECS.\n"),
+       --dns-timeout=SECS          set the DNS lookup timeout to SECS.\n"),
     N_("\
-       --read-timeout=SECS       set the read timeout to SECS.\n"),
+       --connect-timeout=SECS      set the connect timeout to SECS.\n"),
     N_("\
-  -w,  --wait=SECONDS            wait SECONDS between retrievals.\n"),
+       --read-timeout=SECS         set the read timeout to SECS.\n"),
     N_("\
-       --waitretry=SECONDS       wait 1..SECONDS between retries of a retrieval.\n"),
+  -w,  --wait=SECONDS              wait SECONDS between retrievals.\n"),
     N_("\
-       --random-wait             wait from 0.5*WAIT...1.5*WAIT secs between retrievals.\n"),
+       --waitretry=SECONDS         wait 1..SECONDS between retries of a retrieval.\n"),
     N_("\
-       --no-proxy                explicitly turn off proxy.\n"),
+       --random-wait               wait from 0.5*WAIT...1.5*WAIT secs between retrievals.\n"),
     N_("\
-  -Q,  --quota=NUMBER            set retrieval quota to NUMBER.\n"),
+       --no-proxy                  explicitly turn off proxy.\n"),
     N_("\
-       --bind-address=ADDRESS    bind to ADDRESS (hostname or IP) on local host.\n"),
+  -Q,  --quota=NUMBER              set retrieval quota to NUMBER.\n"),
     N_("\
-       --limit-rate=RATE         limit download rate to RATE.\n"),
+       --bind-address=ADDRESS      bind to ADDRESS (hostname or IP) on local host.\n"),
     N_("\
-       --no-dns-cache            disable caching DNS lookups.\n"),
+       --limit-rate=RATE           limit download rate to RATE.\n"),
     N_("\
-       --restrict-file-names=OS  restrict chars in file names to ones OS allows.\n"),
+       --no-dns-cache              disable caching DNS lookups.\n"),
     N_("\
-       --ignore-case             ignore case when matching files/directories.\n"),
+       --restrict-file-names=OS    restrict chars in file names to ones OS allows.\n"),
+    N_("\
+       --ignore-case               ignore case when matching files/directories.\n"),
 #ifdef ENABLE_IPV6
     N_("\
-  -4,  --inet4-only              connect only to IPv4 addresses.\n"),
+  -4,  --inet4-only                connect only to IPv4 addresses.\n"),
     N_("\
-  -6,  --inet6-only              connect only to IPv6 addresses.\n"),
+  -6,  --inet6-only                connect only to IPv6 addresses.\n"),
     N_("\
-       --prefer-family=FAMILY    connect first to addresses of specified family,\n\
-                                 one of IPv6, IPv4, or none.\n"),
+       --prefer-family=FAMILY      connect first to addresses of specified family,\n\
+                                   one of IPv6, IPv4, or none.\n"),
 #endif
     N_("\
-       --user=USER               set both ftp and http user to USER.\n"),
+       --user=USER                 set both ftp and http user to USER.\n"),
     N_("\
-       --password=PASS           set both ftp and http password to PASS.\n"),
+       --password=PASS             set both ftp and http password to PASS.\n"),
     N_("\
-       --ask-password            prompt for passwords.\n"),
+       --ask-password              prompt for passwords.\n"),
     N_("\
-       --no-iri                  turn off IRI support.\n"),
+       --no-iri                    turn off IRI support.\n"),
     N_("\
-       --local-encoding=ENC      use ENC as the local encoding for IRIs.\n"),
+       --local-encoding=ENC        use ENC as the local encoding for IRIs.\n"),
     N_("\
-       --remote-encoding=ENC     use ENC as the default remote encoding.\n"),
+       --remote-encoding=ENC       use ENC as the default remote encoding.\n"),
     N_("\
-       --unlink                  remove file before clobber.\n"),
+       --unlink                    remove file before clobber.\n"),
 #ifdef ENABLE_THREADS
     N_("\
-       --jobs                    specify how many threads use.\n"),
+       --jobs                      specify how many threads use.\n"),
 #endif
     "\n",
     N_("\
 Directories:\n"),
     N_("\
-  -nd, --no-directories           don't create directories.\n"),
+  -nd, --no-directories            don't create directories.\n"),
     N_("\
-  -x,  --force-directories        force creation of directories.\n"),
+  -x,  --force-directories         force creation of directories.\n"),
     N_("\
-  -nH, --no-host-directories      don't create host directories.\n"),
+  -nH, --no-host-directories       don't create host directories.\n"),
     N_("\
-       --protocol-directories     use protocol name in directories.\n"),
+       --protocol-directories      use protocol name in directories.\n"),
     N_("\
-  -P,  --directory-prefix=PREFIX  save files to PREFIX/...\n"),
+  -P,  --directory-prefix=PREFIX   save files to PREFIX/...\n"),
     N_("\
-       --cut-dirs=NUMBER          ignore NUMBER remote directory components.\n"),
+       --cut-dirs=NUMBER           ignore NUMBER remote directory components.\n"),
     "\n",
 
     N_("\
 HTTP options:\n"),
     N_("\
-       --http-user=USER        set http user to USER.\n"),
+       --http-user=USER            set http user to USER.\n"),
     N_("\
-       --http-password=PASS    set http password to PASS.\n"),
+       --http-password=PASS        set http password to PASS.\n"),
     N_("\
-       --no-cache              disallow server-cached data.\n"),
+       --no-cache                  disallow server-cached data.\n"),
     N_ ("\
-       --default-page=NAME     Change the default page name (normally\n\
-                               this is `index.html'.).\n"),
+       --default-page=NAME         Change the default page name (normally\n\
+                                   this is `index.html'.).\n"),
     N_("\
-  -E,  --adjust-extension      save HTML/CSS documents with proper extensions.\n"),
+  -E,  --adjust-extension          save HTML/CSS documents with proper extensions.\n"),
     N_("\
-       --ignore-length         ignore `Content-Length' header field.\n"),
+       --ignore-length             ignore `Content-Length' header field.\n"),
     N_("\
-       --header=STRING         insert STRING among the headers.\n"),
+       --header=STRING             insert STRING among the headers.\n"),
     N_("\
-       --max-redirect          maximum redirections allowed per page.\n"),
+       --max-redirect              maximum redirections allowed per page.\n"),
     N_("\
-       --proxy-user=USER       set USER as proxy username.\n"),
+       --proxy-user=USER           set USER as proxy username.\n"),
     N_("\
-       --proxy-password=PASS   set PASS as proxy password.\n"),
+       --proxy-password=PASS       set PASS as proxy password.\n"),
     N_("\
-       --referer=URL           include `Referer: URL' header in HTTP request.\n"),
+       --referer=URL               include `Referer: URL' header in HTTP request.\n"),
     N_("\
-       --save-headers          save the HTTP headers to file.\n"),
+       --save-headers              save the HTTP headers to file.\n"),
     N_("\
-  -U,  --user-agent=AGENT      identify as AGENT instead of Wget/VERSION.\n"),
+  -U,  --user-agent=AGENT          identify as AGENT instead of Wget/VERSION.\n"),
     N_("\
-       --no-http-keep-alive    disable HTTP keep-alive (persistent connections).\n"),
+       --no-http-keep-alive        disable HTTP keep-alive (persistent connections).\n"),
     N_("\
-       --no-cookies            don't use cookies.\n"),
+       --no-cookies                don't use cookies.\n"),
     N_("\
-       --load-cookies=FILE     load cookies from FILE before session.\n"),
+       --load-cookies=FILE         load cookies from FILE before session.\n"),
     N_("\
-       --save-cookies=FILE     save cookies to FILE after session.\n"),
+       --save-cookies=FILE         save cookies to FILE after session.\n"),
     N_("\
-       --keep-session-cookies  load and save session (non-permanent) cookies.\n"),
+       --keep-session-cookies      load and save session (non-permanent) cookies.\n"),
     N_("\
-       --post-data=STRING      use the POST method; send STRING as the data.\n"),
+       --post-data=STRING          use the POST method; send STRING as the data.\n"),
     N_("\
-       --post-file=FILE        use the POST method; send contents of FILE.\n"),
+       --post-file=FILE            use the POST method; send contents of FILE.\n"),
     N_("\
-       --method=HTTPMethod     use method \"HTTPMethod\" in the header.\n"),
+       --method=HTTPMethod         use method \"HTTPMethod\" in the header.\n"),
     N_("\
-       --body-data=STRING      Send STRING as data. --method MUST be set.\n"),
+       --body-data=STRING          Send STRING as data. --method MUST be set.\n"),
     N_("\
-       --body-file=FILE        Send contents of FILE. --method MUST be set.\n"),
+       --body-file=FILE            Send contents of FILE. --method MUST be set.\n"),
     N_("\
-       --content-disposition   honor the Content-Disposition header when\n\
-                               choosing local file names (EXPERIMENTAL).\n"),
+       --content-disposition       honor the Content-Disposition header when\n\
+                                   choosing local file names (EXPERIMENTAL).\n"),
     N_("\
-       --content-on-error      output the received content on server errors.\n"),
+       --content-on-error          output the received content on server errors.\n"),
     N_("\
-       --auth-no-challenge     send Basic HTTP authentication information\n\
-                               without first waiting for the server's\n\
-                               challenge.\n"),
+       --auth-no-challenge         send Basic HTTP authentication information\n\
+                                   without first waiting for the server's\n\
+                                   challenge.\n"),
     "\n",
 
 #ifdef HAVE_SSL
     N_("\
 HTTPS (SSL/TLS) options:\n"),
     N_("\
-       --secure-protocol=PR     choose secure protocol, one of auto, SSLv2,\n\
-                                SSLv3, TLSv1 and PFS.\n"),
+       --secure-protocol=PR        choose secure protocol, one of auto, SSLv2,\n\
+                                   SSLv3, TLSv1 and PFS.\n"),
     N_("\
-       --https-only             only follow secure HTTPS links\n"),
+       --https-only                only follow secure HTTPS links\n"),
     N_("\
-       --no-check-certificate   don't validate the server's certificate.\n"),
+       --no-check-certificate      don't validate the server's certificate.\n"),
     N_("\
-       --certificate=FILE       client certificate file.\n"),
+       --certificate=FILE          client certificate file.\n"),
     N_("\
-       --certificate-type=TYPE  client certificate type, PEM or DER.\n"),
+       --certificate-type=TYPE     client certificate type, PEM or DER.\n"),
     N_("\
-       --private-key=FILE       private key file.\n"),
+       --private-key=FILE          private key file.\n"),
     N_("\
-       --private-key-type=TYPE  private key type, PEM or DER.\n"),
+       --private-key-type=TYPE     private key type, PEM or DER.\n"),
     N_("\
-       --ca-certificate=FILE    file with the bundle of CA's.\n"),
+       --ca-certificate=FILE       file with the bundle of CA's.\n"),
     N_("\
-       --ca-directory=DIR       directory where hash list of CA's is stored.\n"),
+       --ca-directory=DIR          directory where hash list of CA's is stored.\n"),
     N_("\
-       --random-file=FILE       file with random data for seeding the SSL PRNG.\n"),
+       --random-file=FILE          file with random data for seeding the SSL PRNG.\n"),
     N_("\
-       --egd-file=FILE          file naming the EGD socket with random data.\n"),
+       --egd-file=FILE             file naming the EGD socket with random data.\n"),
     "\n",
 #endif /* HAVE_SSL */
 
@@ -684,76 +687,76 @@ HTTPS (SSL/TLS) options:\n"),
 FTP options:\n"),
 #ifdef __VMS
     N_("\
-       --ftp-stmlf             Use Stream_LF format for all binary FTP files.\n"),
+       --ftp-stmlf                 Use Stream_LF format for all binary FTP files.\n"),
 #endif /* def __VMS */
     N_("\
-       --ftp-user=USER         set ftp user to USER.\n"),
+       --ftp-user=USER             set ftp user to USER.\n"),
     N_("\
-       --ftp-password=PASS     set ftp password to PASS.\n"),
+       --ftp-password=PASS         set ftp password to PASS.\n"),
     N_("\
-       --no-remove-listing     don't remove `.listing' files.\n"),
+       --no-remove-listing         don't remove `.listing' files.\n"),
     N_("\
-       --no-glob               turn off FTP file name globbing.\n"),
+       --no-glob                   turn off FTP file name globbing.\n"),
     N_("\
-       --no-passive-ftp        disable the \"passive\" transfer mode.\n"),
+       --no-passive-ftp            disable the \"passive\" transfer mode.\n"),
     N_("\
-       --preserve-permissions  preserve remote file permissions.\n"),
+       --preserve-permissions      preserve remote file permissions.\n"),
     N_("\
-       --retr-symlinks         when recursing, get linked-to files (not dir).\n"),
+       --retr-symlinks             when recursing, get linked-to files (not dir).\n"),
     "\n",
 
     N_("\
 WARC options:\n"),
     N_("\
-       --warc-file=FILENAME      save request/response data to a .warc.gz file.\n"),
+       --warc-file=FILENAME        save request/response data to a .warc.gz file.\n"),
     N_("\
-       --warc-header=STRING      insert STRING into the warcinfo record.\n"),
+       --warc-header=STRING        insert STRING into the warcinfo record.\n"),
     N_("\
-       --warc-max-size=NUMBER    set maximum size of WARC files to NUMBER.\n"),
+       --warc-max-size=NUMBER      set maximum size of WARC files to NUMBER.\n"),
     N_("\
-       --warc-cdx                write CDX index files.\n"),
+       --warc-cdx                  write CDX index files.\n"),
     N_("\
-       --warc-dedup=FILENAME     do not store records listed in this CDX file.\n"),
+       --warc-dedup=FILENAME       do not store records listed in this CDX file.\n"),
 #ifdef HAVE_LIBZ
     N_("\
-       --no-warc-compression     do not compress WARC files with GZIP.\n"),
+       --no-warc-compression       do not compress WARC files with GZIP.\n"),
 #endif
     N_("\
-       --no-warc-digests         do not calculate SHA1 digests.\n"),
+       --no-warc-digests           do not calculate SHA1 digests.\n"),
     N_("\
-       --no-warc-keep-log        do not store the log file in a WARC record.\n"),
+       --no-warc-keep-log          do not store the log file in a WARC record.\n"),
     N_("\
-       --warc-tempdir=DIRECTORY  location for temporary files created by the\n\
-                                 WARC writer.\n"),
+       --warc-tempdir=DIRECTORY    location for temporary files created by the\n\
+                                   WARC writer.\n"),
     "\n",
 
     N_("\
 Recursive download:\n"),
     N_("\
-  -r,  --recursive          specify recursive download.\n"),
+  -r,  --recursive                 specify recursive download.\n"),
     N_("\
-  -l,  --level=NUMBER       maximum recursion depth (inf or 0 for infinite).\n"),
+  -l,  --level=NUMBER              maximum recursion depth (inf or 0 for infinite).\n"),
     N_("\
-       --delete-after       delete files locally after downloading them.\n"),
+       --delete-after              delete files locally after downloading them.\n"),
     N_("\
-  -k,  --convert-links      make links in downloaded HTML or CSS point to\n\
-                            local files.\n"),
+  -k,  --convert-links             make links in downloaded HTML or CSS point to\n\
+                                   local files.\n"),
     N_("\
-  --backups=N   before writing file X, rotate up to N backup files.\n"),
+       --backups=N                 before writing file X, rotate up to N backup files.\n"),
 
 #ifdef __VMS
     N_("\
-  -K,  --backup-converted   before converting file X, back up as X_orig.\n"),
+  -K,  --backup-converted          before converting file X, back up as X_orig.\n"),
 #else /* def __VMS */
     N_("\
-  -K,  --backup-converted   before converting file X, back up as X.orig.\n"),
+  -K,  --backup-converted          before converting file X, back up as X.orig.\n"),
 #endif /* def __VMS [else] */
     N_("\
-  -m,  --mirror             shortcut for -N -r -l inf --no-remove-listing.\n"),
+  -m,  --mirror                    shortcut for -N -r -l inf --no-remove-listing.\n"),
     N_("\
-  -p,  --page-requisites    get all images, etc. needed to display HTML page.\n"),
+  -p,  --page-requisites           get all images, etc. needed to display HTML page.\n"),
     N_("\
-       --strict-comments    turn on strict (SGML) handling of HTML comments.\n"),
+       --strict-comments           turn on strict (SGML) handling of HTML comments.\n"),
     "\n",
 
     N_("\
@@ -790,7 +793,7 @@ Recursive accept/reject:\n"),
     N_("\
   -I,  --include-directories=LIST  list of allowed directories.\n"),
     N_("\
-  --trust-server-names             use the name specified by the redirection\n\
+       --trust-server-names        use the name specified by the redirection\n\
                                    url last component.\n"),
     N_("\
   -X,  --exclude-directories=LIST  list of excluded directories.\n"),
@@ -998,7 +1001,7 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout) < 0)
   exit (0);
 }
 
-char *program_name; /* Needed by lib/error.c. */
+static char *program_name; /* Needed by lib/error.c. */
 char *program_argstring; /* Needed by wget_warc.c. */
 
 int
@@ -1112,7 +1115,7 @@ main (int argc, char **argv)
                              short_options, long_options, &longindex)) != -1)
     {
       int val;
-      struct cmdline_option *opt;
+      struct cmdline_option *cmdopt;
 
       /* If LONGINDEX is unchanged, it means RET is referring a short
          option.  */
@@ -1123,7 +1126,7 @@ main (int argc, char **argv)
               print_usage (1);
               fprintf (stderr, "\n");
               fprintf (stderr, _("Try `%s --help' for more options.\n"),
-		       exec_name);
+                       exec_name);
               exit (2);
             }
           /* Find the short option character in the mapping.  */
@@ -1134,31 +1137,31 @@ main (int argc, char **argv)
       /* Use the retrieved value to locate the option in the
          option_data array, and to see if we're dealing with the
          negated "--no-FOO" variant of the boolean option "--foo".  */
-      opt = &option_data[val & ~BOOLEAN_NEG_MARKER];
-      switch (opt->type)
+      cmdopt = &option_data[val & ~BOOLEAN_NEG_MARKER];
+      switch (cmdopt->type)
         {
         case OPT_VALUE:
-          setoptval (opt->data, optarg, opt->long_name);
+          setoptval (cmdopt->data, optarg, cmdopt->long_name);
           break;
         case OPT_BOOLEAN:
           if (optarg)
             /* The user has specified a value -- use it. */
-            setoptval (opt->data, optarg, opt->long_name);
+            setoptval (cmdopt->data, optarg, cmdopt->long_name);
           else
             {
               /* NEG is true for `--no-FOO' style boolean options. */
               bool neg = !!(val & BOOLEAN_NEG_MARKER);
-              setoptval (opt->data, neg ? "0" : "1", opt->long_name);
+              setoptval (cmdopt->data, neg ? "0" : "1", cmdopt->long_name);
             }
           break;
         case OPT_FUNCALL:
           {
-            void (*func) (void) = (void (*) (void)) opt->data;
+            void (*func) (void) = (void (*) (void)) cmdopt->data;
             func ();
           }
           break;
         case OPT__APPEND_OUTPUT:
-          setoptval ("logfile", optarg, opt->long_name);
+          setoptval ("logfile", optarg, cmdopt->long_name);
           append_to_log = true;
           break;
         case OPT__EXECUTE:
@@ -1169,24 +1172,23 @@ main (int argc, char **argv)
             /* We support real --no-FOO flags now, but keep these
                short options for convenience and backward
                compatibility.  */
-            char *p;
             for (p = optarg; p && *p; p++)
               switch (*p)
                 {
                 case 'v':
-                  setoptval ("verbose", "0", opt->long_name);
+                  setoptval ("verbose", "0", cmdopt->long_name);
                   break;
                 case 'H':
-                  setoptval ("addhostdir", "0", opt->long_name);
+                  setoptval ("addhostdir", "0", cmdopt->long_name);
                   break;
                 case 'd':
-                  setoptval ("dirstruct", "0", opt->long_name);
+                  setoptval ("dirstruct", "0", cmdopt->long_name);
                   break;
                 case 'c':
-                  setoptval ("noclobber", "1", opt->long_name);
+                  setoptval ("noclobber", "1", cmdopt->long_name);
                   break;
                 case 'p':
-                  setoptval ("noparent", "1", opt->long_name);
+                  setoptval ("noparent", "1", cmdopt->long_name);
                   break;
                 default:
                   fprintf (stderr, _("%s: illegal option -- `-n%c'\n"),
@@ -1210,12 +1212,12 @@ main (int argc, char **argv)
               flag = (*optarg == '1' || c_tolower (*optarg) == 'y'
                       || (c_tolower (optarg[0]) == 'o'
                           && c_tolower (optarg[1]) == 'n'));
-            setoptval (opt->type == OPT__PARENT ? "noparent" : "noclobber",
-                       flag ? "0" : "1", opt->long_name);
+            setoptval (cmdopt->type == OPT__PARENT ? "noparent" : "noclobber",
+                       flag ? "0" : "1", cmdopt->long_name);
             break;
           }
         case OPT__DONT_REMOVE_LISTING:
-          setoptval ("removelisting", "0", opt->long_name);
+          setoptval ("removelisting", "0", cmdopt->long_name);
           break;
         }
 
@@ -1240,6 +1242,7 @@ main (int argc, char **argv)
 
   /* All user options have now been processed, so it's now safe to do
      interoption dependency checks. */
+
   if (opt.noclobber && opt.convert_links)
     {
       fprintf (stderr,
@@ -1267,6 +1270,8 @@ main (int argc, char **argv)
   if (opt.verbose == -1)
     opt.verbose = !opt.quiet;
 
+  if (opt.verbose == 1)
+    opt.show_progress = true;
 
   /* Sanity checks.  */
   if (opt.verbose && opt.quiet)
@@ -1528,7 +1533,7 @@ for details.\n\n"));
 
   /* Initialize progress.  Have to do this after the options are
      processed so we know where the log file is.  */
-  if (opt.verbose)
+  if (opt.show_progress)
     set_progress_implementation (opt.progress_type);
 
   /* Fill in the arguments.  */
@@ -1797,14 +1802,14 @@ be specified when downloading from a metalink.\n"));
       char *wall_time = xstrdup (secs_to_human_time (end_time - start_time));
       char *download_time = xstrdup (secs_to_human_time (total_download_time));
       logprintf (LOG_NOTQUIET,
-		 _("FINISHED --%s--\nTotal wall clock time: %s\n"
-		   "Downloaded: %d files, %s in %s (%s)\n"),
-		 datetime_str (time (NULL)),
-		 wall_time,
-		 numurls,
-		 human_readable (total_downloaded_bytes),
-		 download_time,
-		 retr_rate (total_downloaded_bytes, total_download_time));
+                 _("FINISHED --%s--\nTotal wall clock time: %s\n"
+                   "Downloaded: %d files, %s in %s (%s)\n"),
+                 datetime_str (time (NULL)),
+                 wall_time,
+                 numurls,
+                 human_readable (total_downloaded_bytes, 10, 1),
+                 download_time,
+                 retr_rate (total_downloaded_bytes, total_download_time));
       xfree (wall_time);
       xfree (download_time);
 
@@ -1812,7 +1817,7 @@ be specified when downloading from a metalink.\n"));
       if (opt.quota && total_downloaded_bytes > opt.quota)
         logprintf (LOG_NOTQUIET,
                    _("Download quota of %s EXCEEDED!\n"),
-                   human_readable (opt.quota));
+                   human_readable (opt.quota, 10, 1));
     }
 
   if (opt.cookies_output)

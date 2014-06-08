@@ -108,7 +108,7 @@ static char *warc_current_filename;
 static int warc_current_file_number;
 
 /* The table of CDX records, if deduplication is enabled. */
-struct hash_table * warc_cdx_dedup_table;
+static struct hash_table * warc_cdx_dedup_table;
 
 static bool warc_start_new_file (bool meta);
 
@@ -726,7 +726,7 @@ warc_start_new_file (bool meta)
 
   if (warc_current_file != NULL)
     fclose (warc_current_file);
-  
+
   free (warc_current_warcinfo_uuid_str);
   free (warc_current_filename);
 
@@ -1231,7 +1231,7 @@ static bool
 warc_write_cdx_record (const char *url, const char *timestamp_str,
                        const char *mime_type, int response_code,
                        const char *payload_digest, const char *redirect_location,
-                       off_t offset, const char *warc_filename,
+                       off_t offset, const char *warc_filename _GL_UNUSED,
                        const char *response_uuid)
 {
   /* Transform the timestamp. */

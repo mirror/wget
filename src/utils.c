@@ -484,9 +484,12 @@ fork_to_background (void)
 
   /* child: give up the privileges and keep running. */
   setsid ();
-  freopen ("/dev/null", "r", stdin);
-  freopen ("/dev/null", "w", stdout);
-  freopen ("/dev/null", "w", stderr);
+  if (freopen ("/dev/null", "r", stdin) == NULL)
+    DEBUGP (("Failed to redirect stdin to /dev/null.\n"));
+  if (freopen ("/dev/null", "w", stdout) == NULL)
+    DEBUGP (("Failed to redirect stdout to /dev/null.\n"));
+  if (freopen ("/dev/null", "w", stderr) == NULL)
+    DEBUGP (("Failed to redirect stderr to /dev/null.\n"));
 }
 #endif /* !WINDOWS && !MSDOS */
 
@@ -957,16 +960,16 @@ subdir_p (const char *d1, const char *d2)
    first element that matches DIR, through wildcards or front comparison (as
    appropriate).  */
 static bool
-dir_matches_p (char **dirlist, const char *dir)
+dir_matches_p (const char **dirlist, const char *dir)
 {
-  char **x;
+  const char **x;
   int (*matcher) (const char *, const char *, int)
     = opt.ignore_case ? fnmatch_nocase : fnmatch;
 
   for (x = dirlist; *x; x++)
     {
       /* Remove leading '/' */
-      char *p = *x + (**x == '/');
+      const char *p = *x + (**x == '/');
       if (has_wildcards_p (p))
         {
           if (matcher (p, dir, FNM_PATHNAME) == 0)
@@ -1520,7 +1523,7 @@ with_thousand_seps (wgint n)
    some detail.  */
 
 char *
-human_readable (HR_NUMTYPE n)
+human_readable (HR_NUMTYPE n, const int acc, const int decimals)
 {
   /* These suffixes are compatible with those of GNU `ls -lh'. */
   static char powers[] =
@@ -1553,10 +1556,10 @@ human_readable (HR_NUMTYPE n)
       if ((n / 1024) < 1024 || i == countof (powers) - 1)
         {
           double val = n / 1024.0;
-          /* Print values smaller than 10 with one decimal digits, and
-             others without any decimals.  */
+          /* Print values smaller than the accuracy level (acc) with (decimal)
+           * decimal digits, and others without any decimals.  */
           snprintf (buf, sizeof (buf), "%.*f%c",
-                    val < 10 ? 1 : 0, val, powers[i]);
+                    val < acc ? decimals : 0, val, powers[i]);
           return buf;
         }
       n /= 1024;
@@ -2112,8 +2115,8 @@ xsleep (double seconds)
    This implementation does not emit newlines after 76 characters of
    base64 data.  */
 
-int
-base64_encode (const void *data, int length, char *dest)
+size_t
+base64_encode (const void *data, size_t length, char *dest)
 {
   /* Conversion table.  */
   static const char tbl[64] = {
@@ -2180,7 +2183,7 @@ base64_encode (const void *data, int length, char *dest)
 
    This function originates from Free Recode.  */
 
-int
+ssize_t
 base64_decode (const char *base64, void *dest)
 {
   /* Table of base64 values for first 128 characters.  Note that this
@@ -2293,7 +2296,7 @@ compile_posix_regex (const char *str)
   int errcode = regcomp ((regex_t *) regex, str, REG_EXTENDED | REG_NOSUB);
   if (errcode != 0)
     {
-      int errbuf_size = regerror (errcode, (regex_t *) regex, NULL, 0);
+      size_t errbuf_size = regerror (errcode, (regex_t *) regex, NULL, 0);
       char *errbuf = xmalloc (errbuf_size);
       regerror (errcode, (regex_t *) regex, errbuf, errbuf_size);
       fprintf (stderr, _("Invalid regular expression %s, %s\n"),
@@ -2311,10 +2314,10 @@ compile_posix_regex (const char *str)
 bool
 match_pcre_regex (const void *regex, const char *str)
 {
-  int l = strlen (str);
+  size_t l = strlen (str);
   int ovector[OVECCOUNT];
 
-  int rc = pcre_exec ((pcre *) regex, 0, str, l, 0, 0, ovector, OVECCOUNT);
+  int rc = pcre_exec ((pcre *) regex, 0, str, (int) l, 0, 0, ovector, OVECCOUNT);
   if (rc == PCRE_ERROR_NOMATCH)
     return false;
   else if (rc < 0)
@@ -2340,7 +2343,7 @@ match_posix_regex (const void *regex, const char *str)
     return true;
   else
     {
-      int errbuf_size = regerror (rc, opt.acceptregex, NULL, 0);
+      size_t errbuf_size = regerror (rc, opt.acceptregex, NULL, 0);
       char *errbuf = xmalloc (errbuf_size);
       regerror (rc, opt.acceptregex, errbuf, errbuf_size);
       logprintf (LOG_VERBOSE, _("Error while matching %s: %d\n"),
@@ -2436,7 +2439,7 @@ print_decimal (double number)
 
 /* Get the maximum name length for the given path. */
 /* Return 0 if length is unknown. */
-size_t
+long
 get_max_length (const char *path, int length, int name)
 {
   long ret;
@@ -2491,9 +2494,9 @@ get_max_length (const char *path, int length, int name)
 #ifdef TESTING
 
 const char *
-test_subdir_p()
+test_subdir_p(void)
 {
-  static struct {
+  static const struct {
     const char *d1;
     const char *d2;
     bool result;
@@ -2516,10 +2519,10 @@ test_subdir_p()
 }
 
 const char *
-test_dir_matches_p()
+test_dir_matches_p(void)
 {
   static struct {
-    char *dirlist[3];
+    const char *dirlist[3];
     const char *dir;
     bool result;
   } test_array[] = {

@@ -51,6 +51,7 @@ as that of the covered work.  */
 #include <assert.h>
 #include <errno.h>
 #include <time.h>
+#include <libpsl.h>
 #include "utils.h"
 #include "hash.h"
 #include "cookies.h"
@@ -95,7 +96,7 @@ struct cookie {
   int port;                     /* port number */
   char *path;                   /* path prefix of the cookie */
 
-  unsigned discard_requested :1; /* whether cookie was created to
+  unsigned discard_requested :1;/* whether cookie was created to
                                    request discarding another
                                    cookie. */
 
@@ -393,7 +394,7 @@ parse_set_cookie (const char *set_cookie, bool silent)
 
           /* Check if expiration spec is valid.
              If not, assume default (cookie doesn't expire, but valid only for
-	     this session.) */
+             this session.) */
           expires = http_atotm (value_copy);
           if (expires != (time_t) -1)
             {
@@ -460,9 +461,9 @@ parse_set_cookie (const char *set_cookie, bool silent)
 
 
 #define REQUIRE_DIGITS(p) do {                  \
-  if (!c_isdigit (*p))                            \
+  if (!c_isdigit (*p))                          \
     return false;                               \
-  for (++p; c_isdigit (*p); p++)                  \
+  for (++p; c_isdigit (*p); p++)                \
     ;                                           \
 } while (0)
 
@@ -503,14 +504,27 @@ numeric_address_p (const char *addr)
 static bool
 check_domain_match (const char *cookie_domain, const char *host)
 {
+
+#ifdef HAVE_LIBPSL
   DEBUGP (("cdm: 1"));
+  const psl_ctx_t *psl;
+  int is_acceptable;
 
-  /* Numeric address requires exact match.  It also requires HOST to
-     be an IP address.  */
-  if (numeric_address_p (cookie_domain))
-    return 0 == strcmp (cookie_domain, host);
+  if (!(psl = psl_builtin()))
+    {
+      DEBUGP (("\nlibpsl not built with a public suffix list. "
+               "Falling back to simple heuristics.\n"));
+      goto no_psl;
+    }
 
-  DEBUGP ((" 2"));
+  is_acceptable = psl_is_cookie_domain_acceptable (psl, host, cookie_domain);
+  return true ? (is_acceptable == 1) : false;
+
+no_psl:
+#endif
+
+  /* For efficiency make some elementary checks first */
+  DEBUGP (("cdm: 2"));
 
   /* For the sake of efficiency, check for exact match first. */
   if (0 == strcasecmp (cookie_domain, host))

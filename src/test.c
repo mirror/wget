@@ -71,7 +71,7 @@ all_tests()
 char *program_name; /* Needed by lib/error.c. */
 
 int
-main (int argc, char *argv[])
+main (int argc _GL_UNUSED, char *argv[])
 {
   const char *result;
 

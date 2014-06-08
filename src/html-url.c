@@ -472,7 +472,7 @@ tag_find_urls (int tagid, struct taginfo *tag, struct map_context *ctx)
 /* Handle the BASE tag, for <base href=...>. */
 
 static void
-tag_handle_base (int tagid, struct taginfo *tag, struct map_context *ctx)
+tag_handle_base (int tagid _GL_UNUSED, struct taginfo *tag, struct map_context *ctx)
 {
   struct urlpos *base_urlpos;
   int attrind;
@@ -498,7 +498,7 @@ tag_handle_base (int tagid, struct taginfo *tag, struct map_context *ctx)
 /* Mark the URL found in <form action=...> for conversion. */
 
 static void
-tag_handle_form (int tagid, struct taginfo *tag, struct map_context *ctx)
+tag_handle_form (int tagid _GL_UNUSED, struct taginfo *tag, struct map_context *ctx)
 {
   int attrind;
   char *action = find_attr (tag, "action", &attrind);
@@ -516,7 +516,7 @@ tag_handle_form (int tagid, struct taginfo *tag, struct map_context *ctx)
    links will be followed in -p mode depends on the REL attribute.  */
 
 static void
-tag_handle_link (int tagid, struct taginfo *tag, struct map_context *ctx)
+tag_handle_link (int tagid _GL_UNUSED, struct taginfo *tag, struct map_context *ctx)
 {
   int attrind;
   char *href = find_attr (tag, "href", &attrind);
@@ -565,7 +565,7 @@ tag_handle_link (int tagid, struct taginfo *tag, struct map_context *ctx)
    refresh feature and because of robot exclusion.  */
 
 static void
-tag_handle_meta (int tagid, struct taginfo *tag, struct map_context *ctx)
+tag_handle_meta (int tagid _GL_UNUSED, struct taginfo *tag, struct map_context *ctx)
 {
   char *name = find_attr (tag, "name", NULL);
   char *http_equiv = find_attr (tag, "http-equiv", NULL);

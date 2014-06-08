@@ -106,7 +106,7 @@ ftp_parse_unix_ls (const char *file, int ignore_perms)
   size_t bufsize = 0;
 
   char *line = NULL, *tok, *ptok;      /* tokenizer */
-  struct fileinfo *dir, *l, cur; /* list creation */
+  struct fileinfo *dir, *l, cur;       /* list creation */
 
   fp = fopen (file, "rb");
   if (!fp)
@@ -895,7 +895,8 @@ ftp_parse_vms_ls (const char *file)
               /* Protections (permissions). */
               perms = 0;
               j = 0;
-              for (i = 0; i < strlen(tok); i++)
+              /*FIXME: Should not be using the variable like this. */
+              for (i = 0; i < (int) strlen(tok); i++)
                 {
                   switch (tok[ i])
                     {

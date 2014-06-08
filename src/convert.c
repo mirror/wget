@@ -171,7 +171,7 @@ convert_links_in_hashtable (struct hash_table *downloaded_set,
 
           u = url_parse (cur_url->url->url, NULL, pi, true);
           if (!u)
-	    continue;
+              continue;
 
           local_name = hash_table_get (dl_url_file_map, u->url);
 

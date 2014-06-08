@@ -64,41 +64,6 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 extern YY_BUFFER_STATE yy_scan_bytes (const char *bytes,int len  );
 extern int yylex (void);
 
-#if 1
-const char *token_names[] = {
-  "CSSEOF",
-  "S",
-  "CDO",
-  "CDC",
-  "INCLUDES",
-  "DASHMATCH",
-  "LBRACE",
-  "PLUS",
-  "GREATER",
-  "COMMA",
-  "STRING",
-  "INVALID",
-  "IDENT",
-  "HASH",
-  "IMPORT_SYM",
-  "PAGE_SYM",
-  "MEDIA_SYM",
-  "CHARSET_SYM",
-  "IMPORTANT_SYM",
-  "EMS",
-  "EXS",
-  "LENGTH",
-  "ANGLE",
-  "TIME",
-  "FREQ",
-  "DIMENSION",
-  "PERCENTAGE",
-  "NUMBER",
-  "URI",
-  "FUNCTION"
-};
-#endif
-
 /*
   Given a detected URI token, get only the URI specified within.
   Also adjust the starting position and length of the string.

@@ -68,6 +68,7 @@ as that of the covered work.  */
 #include "http.h"               /* for http_cleanup */
 #include "retr.h"               /* for output_stream */
 #include "warc.h"               /* for warc_close */
+#include "spider.h"             /* for spider_cleanup */
 
 #ifdef TESTING
 #include "test.h"
@@ -149,7 +150,7 @@ static const struct {
   { "certificatetype",  &opt.cert_type,         cmd_cert_type },
   { "checkcertificate", &opt.check_cert,        cmd_boolean },
 #endif
-  { "chooseconfig",     &opt.choose_config,	cmd_file },
+  { "chooseconfig",     &opt.choose_config,     cmd_file },
   { "connecttimeout",   &opt.connect_timeout,   cmd_time },
   { "contentdisposition", &opt.content_disposition, cmd_boolean },
   { "contentonerror",   &opt.content_on_error,  cmd_boolean },
@@ -277,6 +278,7 @@ static const struct {
 #endif
   { "serverresponse",   &opt.server_response,   cmd_boolean },
   { "showalldnsentries", &opt.show_all_dns_entries, cmd_boolean },
+  { "showprogress",     &opt.show_progress,      cmd_boolean },
   { "spanhosts",        &opt.spanhost,          cmd_boolean },
   { "spider",           &opt.spider,            cmd_boolean },
   { "startpos",         &opt.start_pos,         cmd_bytes },
@@ -425,6 +427,8 @@ defaults (void)
 
   /* Use a negative value to mark the absence of --start-pos option */
   opt.start_pos = -1;
+  opt.show_progress = false;
+  opt.noscroll = false;
 }
 
 /* Return the user's home directory (strdup-ed), or NULL if none is
@@ -832,16 +836,16 @@ setval_internal_tilde (int comind, const char *com, const char *val)
       pstring = commands[comind].place;
       home = home_dir ();
       if (home)
-	{
-	  homelen = strlen (home);
-	  while (homelen && ISSEP (home[homelen - 1]))
-            home[--homelen] = '\0';
+        {
+          homelen = strlen (home);
+          while (homelen && ISSEP (home[homelen - 1]))
+                 home[--homelen] = '\0';
 
-	  /* Skip the leading "~/". */
-	  for (++val; ISSEP (*val); val++)
-  	    ;
-	  *pstring = concat_strings (home, "/", val, (char *)0);
-	}
+          /* Skip the leading "~/". */
+          for (++val; ISSEP (*val); val++)
+            ;
+          *pstring = concat_strings (home, "/", val, (char *)0);
+        }
     }
   return ret;
 }
@@ -875,11 +879,11 @@ setoptval (const char *com, const char *val, const char *optname)
    This is used by the `--execute' flag in main.c.  */
 
 void
-run_command (const char *opt)
+run_command (const char *cmdopt)
 {
   char *com, *val;
   int comind;
-  switch (parse_line (opt, &com, &val, &comind))
+  switch (parse_line (cmdopt, &com, &val, &comind))
     {
     case line_ok:
       if (!setval_internal (comind, com, val))
@@ -889,7 +893,7 @@ run_command (const char *opt)
       break;
     default:
       fprintf (stderr, _("%s: Invalid --execute command %s\n"),
-               exec_name, quote (opt));
+               exec_name, quote (cmdopt));
       exit (2);
     }
 }
@@ -972,7 +976,7 @@ cmd_number_inf (const char *com, const char *val, void *place)
 /* Copy (strdup) the string at COM to a new location and place a
    pointer to *PLACE.  */
 static bool
-cmd_string (const char *com, const char *val, void *place)
+cmd_string (const char *com _GL_UNUSED, const char *val, void *place)
 {
   char **pstring = (char **)place;
 
@@ -983,7 +987,7 @@ cmd_string (const char *com, const char *val, void *place)
 
 /* Like cmd_string but ensure the string is upper case.  */
 static bool
-cmd_string_uppercase (const char *com, const char *val, void *place)
+cmd_string_uppercase (const char *com _GL_UNUSED, const char *val, void *place)
 {
   char *q, **pstring;
   pstring = (char **)place;
@@ -1003,7 +1007,7 @@ cmd_string_uppercase (const char *com, const char *val, void *place)
    `.wgetrc'.  In that case, and if VAL begins with `~', the tilde
    gets expanded to the user's home directory.  */
 static bool
-cmd_file (const char *com, const char *val, void *place)
+cmd_file (const char *com _GL_UNUSED, const char *val, void *place)
 {
   char **pstring = (char **)place;
 
@@ -1050,7 +1054,7 @@ cmd_directory (const char *com, const char *val, void *place)
    PLACE vector is cleared instead.  */
 
 static bool
-cmd_vector (const char *com, const char *val, void *place)
+cmd_vector (const char *com _GL_UNUSED, const char *val, void *place)
 {
   char ***pvec = (char ***)place;
 
@@ -1065,7 +1069,7 @@ cmd_vector (const char *com, const char *val, void *place)
 }
 
 static bool
-cmd_directory_vector (const char *com, const char *val, void *place)
+cmd_directory_vector (const char *com _GL_UNUSED, const char *val, void *place)
 {
   char ***pvec = (char ***)place;
 
@@ -1281,7 +1285,7 @@ cmd_cert_type (const char *com, const char *val, void *place)
 static bool check_user_specified_header (const char *);
 
 static bool
-cmd_spec_dirstruct (const char *com, const char *val, void *place_ignored)
+cmd_spec_dirstruct (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   if (!cmd_boolean (com, val, &opt.dirstruct))
     return false;
@@ -1295,7 +1299,7 @@ cmd_spec_dirstruct (const char *com, const char *val, void *place_ignored)
 }
 
 static bool
-cmd_spec_header (const char *com, const char *val, void *place_ignored)
+cmd_spec_header (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   /* Empty value means reset the list of headers. */
   if (*val == '\0')
@@ -1316,7 +1320,7 @@ cmd_spec_header (const char *com, const char *val, void *place_ignored)
 }
 
 static bool
-cmd_spec_warc_header (const char *com, const char *val, void *place_ignored)
+cmd_spec_warc_header (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   /* Empty value means reset the list of headers. */
   if (*val == '\0')
@@ -1337,7 +1341,7 @@ cmd_spec_warc_header (const char *com, const char *val, void *place_ignored)
 }
 
 static bool
-cmd_spec_htmlify (const char *com, const char *val, void *place_ignored)
+cmd_spec_htmlify (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   int flag = cmd_boolean (com, val, &opt.htmlify);
   if (flag && !opt.htmlify)
@@ -1349,7 +1353,7 @@ cmd_spec_htmlify (const char *com, const char *val, void *place_ignored)
    no limit on max. recursion depth, and don't remove listings.  */
 
 static bool
-cmd_spec_mirror (const char *com, const char *val, void *place_ignored)
+cmd_spec_mirror (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   int mirror;
 
@@ -1371,7 +1375,7 @@ cmd_spec_mirror (const char *com, const char *val, void *place_ignored)
    "IPv4", "IPv6", and "none".  */
 
 static bool
-cmd_spec_prefer_family (const char *com, const char *val, void *place_ignored)
+cmd_spec_prefer_family (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   static const struct decode_item choices[] = {
     { "IPv4", prefer_ipv4 },
@@ -1390,7 +1394,7 @@ cmd_spec_prefer_family (const char *com, const char *val, void *place_ignored)
    implementation before that.  */
 
 static bool
-cmd_spec_progress (const char *com, const char *val, void *place_ignored)
+cmd_spec_progress (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   if (!valid_progress_implementation_p (val))
     {
@@ -1411,7 +1415,7 @@ cmd_spec_progress (const char *com, const char *val, void *place_ignored)
    is specified.  */
 
 static bool
-cmd_spec_recursive (const char *com, const char *val, void *place_ignored)
+cmd_spec_recursive (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   if (!cmd_boolean (com, val, &opt.recursive))
     return false;
@@ -1426,7 +1430,7 @@ cmd_spec_recursive (const char *com, const char *val, void *place_ignored)
 /* Validate --regex-type and set the choice.  */
 
 static bool
-cmd_spec_regex_type (const char *com, const char *val, void *place_ignored)
+cmd_spec_regex_type (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   static const struct decode_item choices[] = {
     { "posix", regex_type_posix },
@@ -1443,7 +1447,7 @@ cmd_spec_regex_type (const char *com, const char *val, void *place_ignored)
 }
 
 static bool
-cmd_spec_restrict_file_names (const char *com, const char *val, void *place_ignored)
+cmd_spec_restrict_file_names (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   int restrict_os = opt.restrict_files_os;
   int restrict_ctrl = opt.restrict_files_ctrl;
@@ -1497,7 +1501,7 @@ cmd_spec_restrict_file_names (const char *com, const char *val, void *place_igno
 }
 
 static bool
-cmd_spec_report_speed (const char *com, const char *val, void *place_ignored)
+cmd_spec_report_speed (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   opt.report_bps = strcasecmp (val, "bits") == 0;
   if (!opt.report_bps)
@@ -1526,7 +1530,7 @@ cmd_spec_secure_protocol (const char *com, const char *val, void *place)
 /* Set all three timeout values. */
 
 static bool
-cmd_spec_timeout (const char *com, const char *val, void *place_ignored)
+cmd_spec_timeout (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   double value;
   if (!cmd_time (com, val, &value))
@@ -1538,7 +1542,7 @@ cmd_spec_timeout (const char *com, const char *val, void *place_ignored)
 }
 
 static bool
-cmd_spec_useragent (const char *com, const char *val, void *place_ignored)
+cmd_spec_useragent (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   /* Disallow embedded newlines.  */
   if (strchr (val, '\n'))
@@ -1557,7 +1561,7 @@ cmd_spec_useragent (const char *com, const char *val, void *place_ignored)
    some random hackery for disallowing -q -v).  */
 
 static bool
-cmd_spec_verbose (const char *com, const char *val, void *place_ignored)
+cmd_spec_verbose (const char *com, const char *val, void *place_ignored _GL_UNUSED)
 {
   bool flag;
   if (cmd_boolean (com, val, &flag))
@@ -1710,11 +1714,6 @@ decode_string (const char *val, const struct decode_item *items, int itemcount,
   return false;
 }
 
-
-void cleanup_html_url (void);
-void spider_cleanup (void);
-
-
 /* Free the memory allocated by global variables.  */
 void
 cleanup (void)
@@ -1750,14 +1749,11 @@ cleanup (void)
   spider_cleanup ();
   host_cleanup ();
   log_cleanup ();
+  netrc_cleanup (netrc_list);
 
   for (i = 0; i < nurl; i++)
     xfree (url[i]);
 
-  {
-    extern acc_t *netrc_list;
-    free_netrc (netrc_list);
-  }
   xfree_null (opt.choose_config);
   xfree_null (opt.lfilename);
   xfree_null (opt.dir_prefix);
@@ -1807,34 +1803,27 @@ cleanup (void)
 #ifdef TESTING
 
 const char *
-test_commands_sorted()
+test_commands_sorted(void)
 {
-  int prev_idx = 0, next_idx = 1;
-  int command_count = countof (commands) - 1;
-  int cmp = 0;
-  while (next_idx <= command_count)
+  unsigned i;
+
+  for (i = 1; i < countof(commands); ++i)
     {
-      cmp = strcasecmp (commands[prev_idx].name, commands[next_idx].name);
-      if (cmp > 0)
+      if (strcasecmp (commands[i - 1].name, commands[i].name) > 0)
         {
           mu_assert ("FAILED", false);
           break;
-        }
-      else
-        {
-          prev_idx ++;
-	  next_idx ++;
         }
     }
   return NULL;
 }
 
 const char *
-test_cmd_spec_restrict_file_names()
+test_cmd_spec_restrict_file_names(void)
 {
-  int i;
-  struct {
-    char *val;
+  unsigned i;
+  static const struct {
+    const char *val;
     int expected_restrict_files_os;
     int expected_restrict_files_ctrl;
     int expected_restrict_files_case;
@@ -1846,7 +1835,7 @@ test_cmd_spec_restrict_file_names()
     { "unix,nocontrol,lowercase,", restrict_unix, false, restrict_lowercase, true },
   };
 
-  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i)
+  for (i = 0; i < countof(test_array); ++i)
     {
       bool res;
 

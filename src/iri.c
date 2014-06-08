@@ -256,22 +256,22 @@ idn_decode (char *host)
 /* Try to transcode string str from remote encoding to UTF-8. On success, *new
    contains the transcoded string. *new content is unspecified otherwise. */
 bool
-remote_to_utf8 (struct iri *i, const char *str, const char **new)
+remote_to_utf8 (struct iri *iri, const char *str, const char **new)
 {
   iconv_t cd;
   bool ret = false;
 
-  if (!i->uri_encoding)
+  if (!iri->uri_encoding)
     return false;
 
   /* When `i->uri_encoding' == "UTF-8" there is nothing to convert.  But we must
      test for non-ASCII symbols for correct hostname processing in `idn_encode'
      function. */
-  if (!strcmp (i->uri_encoding, "UTF-8"))
+  if (!strcmp (iri->uri_encoding, "UTF-8"))
     {
-      int i, len = strlen (str);
-      for (i = 0; i < len; i++)
-        if ((unsigned char) str[i] >= (unsigned char) '\200')
+      const char *p = str;
+      for (p = str; *p; p++)
+        if (*p < 0)
           {
             *new = strdup (str);
             return true;
@@ -279,7 +279,7 @@ remote_to_utf8 (struct iri *i, const char *str, const char **new)
       return false;
     }
 
-  cd = iconv_open ("UTF-8", i->uri_encoding);
+  cd = iconv_open ("UTF-8", iri->uri_encoding);
   if (cd == (iconv_t)(-1))
     return false;
 

@@ -249,7 +249,7 @@ write_data (FILE *out, FILE *out2, const char *buf, int bufsize,
    data to OUT2, -3 is returned.  */
 
 int
-fd_read_body (const char *url, int fd, FILE *out, wgint toread, wgint startpos,
+fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, wgint startpos,
               wgint *qtyread, wgint *qtywritten, double *elapsed, int flags,
               FILE *out2)
 {
@@ -285,13 +285,13 @@ fd_read_body (const char *url, int fd, FILE *out, wgint toread, wgint startpos,
   if (flags & rb_skip_startpos)
     skip = startpos;
 
-  if (opt.verbose)
+  if (opt.show_progress)
     {
       /* If we're skipping STARTPOS bytes, pass 0 as the INITIAL
          argument to progress_create because the indicator doesn't
          (yet) know about "skipping" data.  */
       wgint start = skip ? 0 : startpos;
-      progress = progress_create (url, start, start + toread);
+      progress = progress_create (downloaded_filename, start, start + toread);
       progress_interactive = progress_interactive_p (progress);
     }
 
@@ -434,7 +434,7 @@ fd_read_body (const char *url, int fd, FILE *out, wgint toread, wgint startpos,
       if (progress)
         progress_update (progress, ret, ptimer_read (timer));
 #ifdef WINDOWS
-      if (toread > 0 && !opt.quiet)
+      if (toread > 0 && opt.show_progress)
         ws_percenttitle (100.0 *
                          (startpos + sum_read) / (startpos + toread));
 #endif
@@ -610,7 +610,7 @@ fd_read_hunk (int fd, hunk_terminator_t terminator, long sizehint, long maxsize)
 }
 
 static const char *
-line_terminator (const char *start, const char *peeked, int peeklen)
+line_terminator (const char *start _GL_UNUSED, const char *peeked, int peeklen)
 {
   const char *p = memchr (peeked, '\n', peeklen);
   if (p)
@@ -931,9 +931,9 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
          POST data for the duration of the redirections, and restore
          it when we're done.
 
-	 RFC2616 HTTP/1.1 introduces code 307 Temporary Redirect
-	 specifically to preserve the method of the request.
-	 */
+         RFC2616 HTTP/1.1 introduces code 307 Temporary Redirect
+         specifically to preserve the method of the request.
+     */
       if (result != NEWLOCATION_KEEP_POST && !method_suspended)
         SUSPEND_METHOD;
 
@@ -1032,7 +1032,6 @@ retrieve_from_file (const char *file, bool html, int *count)
   if (url_valid_scheme (url))
     {
       int dt,url_err;
-      uerr_t status;
       struct url *url_parsed = url_parse (url, &url_err, iri, true);
       if (!url_parsed)
         {
@@ -1058,7 +1057,7 @@ retrieve_from_file (const char *file, bool html, int *count)
       /* If we have a found a content encoding, use it.
        * ( == is okay, because we're checking for identical object) */
       if (iri->content_encoding != opt.locale)
-	  set_uri_encoding (iri, iri->content_encoding, false);
+          set_uri_encoding (iri, iri->content_encoding, false);
 
       /* Reset UTF-8 encode status */
       iri->utf8_encode = opt.enable_iri;

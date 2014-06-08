@@ -615,11 +615,11 @@ res_cleanup (void)
 #ifdef TESTING
 
 const char *
-test_is_robots_txt_url()
+test_is_robots_txt_url(void)
 {
-  int i;
-  struct {
-    char *url;
+  unsigned i;
+  static const struct {
+    const char *url;
     bool expected_result;
   } test_array[] = {
     { "http://www.yoyodyne.com/robots.txt", true },
@@ -627,7 +627,7 @@ test_is_robots_txt_url()
     { "http://www.yoyodyne.com/somepath/robots.txt", false },
   };
 
-  for (i = 0; i < sizeof(test_array)/sizeof(test_array[0]); ++i)
+  for (i = 0; i < countof(test_array); ++i)
     {
       mu_assert ("test_is_robots_txt_url: wrong result",
                  is_robots_txt_url (test_array[i].url) == test_array[i].expected_result);

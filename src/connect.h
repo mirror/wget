@@ -32,7 +32,7 @@ as that of the covered work.  */
 #ifndef CONNECT_H
 #define CONNECT_H
 
-#include "host.h"		/* for definition of ip_address */
+#include "host.h"       /* for definition of ip_address */
 
 /* Function declarations */
 

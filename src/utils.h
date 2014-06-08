@@ -121,7 +121,7 @@ const char *with_thousand_seps (wgint);
 #else
 # define HR_NUMTYPE double
 #endif
-char *human_readable (HR_NUMTYPE);
+char *human_readable (HR_NUMTYPE, const int, const int);
 
 
 int numdigit (wgint);
@@ -139,8 +139,8 @@ void xsleep (double);
 /* How many bytes it will take to store LEN bytes in base64.  */
 #define BASE64_LENGTH(len) (4 * (((len) + 2) / 3))
 
-int base64_encode (const void *, int, char *);
-int base64_decode (const char *, void *);
+size_t base64_encode (const void *, size_t, char *);
+ssize_t base64_decode (const char *, void *);
 
 #ifdef HAVE_LIBPCRE
 void *compile_pcre_regex (const char *);
@@ -154,7 +154,7 @@ void stable_sort (void *, size_t, size_t, int (*) (const void *, const void *));
 
 const char *print_decimal (double);
 
-size_t get_max_length (const char *path, int length, int name);
+long get_max_length (const char *path, int length, int name);
 
 extern unsigned char char_prop[];
 

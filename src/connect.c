@@ -273,7 +273,7 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
       const char *txt_addr = print_address (ip);
       if (0 != strcmp (print, txt_addr))
         {
-				  char *str = NULL, *name;
+          char *str = NULL, *name;
 
           if (opt.enable_iri && (name = idn_decode ((char *) print)) != NULL)
             {
@@ -287,18 +287,18 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
           logprintf (LOG_VERBOSE, _("Connecting to %s|%s|:%d... "),
                      str ? str : escnonprint_uri (print), txt_addr, port);
 
-					if (str)
-					  xfree (str);
+          if (str)
+              xfree (str);
         }
       else
-       {
+        {
            if (ip->family == AF_INET)
                logprintf (LOG_VERBOSE, _("Connecting to %s:%d... "), txt_addr, port);
 #ifdef ENABLE_IPV6
            else if (ip->family == AF_INET6)
                logprintf (LOG_VERBOSE, _("Connecting to [%s]:%d... "), txt_addr, port);
 #endif
-       }
+        }
     }
 
   /* Store the sockaddr info to SA.  */

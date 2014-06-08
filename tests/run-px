@@ -91,6 +91,7 @@ my @tests = (
     'Test--start-pos.px',
     'Test-ftp--start-pos.px',
     'Test--start-pos--continue.px',
+    'Test-204.px',
 );
 
 foreach my $var (qw(SYSTEM_WGETRC WGETRC)) {
