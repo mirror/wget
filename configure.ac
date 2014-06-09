@@ -264,7 +264,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
   case $host_os in
     *mingw32* )
       dnl prefer link to openssl dlls if possible. if not then fallback on static libs. if not then error
-        
+
       AC_CHECK_LIB(eay32, EVP_MD_CTX_init)
       if test x"$ac_cv_lib_eay32_EVP_MD_CTX_init" != xno
       then
@@ -276,7 +276,7 @@ AS_IF([test x"$with_ssl" = xopenssl], [
           AC_DEFINE([HAVE_LIBSSL32], [1], [Define to 1 if you have the `ssl32' library (-lssl32).])
         ],
         AC_MSG_ERROR([openssl not found: shared lib eay32 found but ssl32 not found]))
-          
+
       else
         LIBS+=' -lgdi32'
         dnl fallback and test static libs
@@ -565,7 +565,7 @@ AC_CHECK_HEADER(pcre.h,
                   ])
 )
 
- 
+
 dnl Needed by src/Makefile.am
 AM_CONDITIONAL([IRI_IS_ENABLED], [test "X$iri" != "Xno"])
 

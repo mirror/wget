@@ -1,5 +1,7 @@
 2014-06-10  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* wget.h: Remove trailing whitespaces.
+
 	* retr.c (getproxy): Return a dinamically allocated string and...
 	(retrieve_from_file, retrieve_url, url_uses_proxy): ...fix the caller
 	to handle it.

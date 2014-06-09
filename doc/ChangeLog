@@ -1,5 +1,7 @@
 2014-06-10  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* wget.texi: Remove trailing whitespaces.
+
 	* fdl.texi: Copy from gnulib.
 
 2014-05-24  Darshit Shah  <darnir@gmail.com>

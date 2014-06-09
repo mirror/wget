@@ -1,3 +1,8 @@
+2014-06-10  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* build-aux/build_info.pl: Remove trailing whitespaces.
+	* configure.ac: Likewise.
+
 2014-05-30  Darshit Shah  <darnir@gmail.com>
 
 	* configure.ac: Allow compilation without libpsl.
