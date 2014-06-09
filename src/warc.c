@@ -36,7 +36,6 @@ as that of the covered work.  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 #include <time.h>
 #include <tmpdir.h>
 #include <sha1.h>
