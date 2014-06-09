@@ -1,6 +1,6 @@
 /* Reading/parsing the initialization file.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2014 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -445,12 +445,7 @@ home_dir (void)
           assert (p);
 
           len = p - buff + 1;
-          buff = malloc (len + 1);
-          if (buff == NULL)
-            return NULL;
-
-          strncpy (buff, _w32_get_argv0 (), len);
-          buff[len] = '\0';
+          buff = strdup (_w32_get_argv0 ());
 
           home = buf;
 #elif !defined(WINDOWS)

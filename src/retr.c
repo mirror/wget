@@ -1,6 +1,6 @@
 /* File retrieval.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2014 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -782,6 +782,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
           result = PROXERR;
           goto bail;
         }
+      free (proxy);
     }
 
   if (u->scheme == SCHEME_HTTP
@@ -1065,8 +1066,9 @@ retrieve_from_file (const char *file, bool html, int *count)
 
       parsed_url = url_parse (cur_url->url->url, NULL, tmpiri, true);
 
+      char *proxy = getproxy (cur_url->url);
       if ((opt.recursive || opt.page_requisites)
-          && (cur_url->url->scheme != SCHEME_FTP || getproxy (cur_url->url)))
+          && (cur_url->url->scheme != SCHEME_FTP || proxy))
         {
           int old_follow_ftp = opt.follow_ftp;
 
@@ -1084,6 +1086,7 @@ retrieve_from_file (const char *file, bool html, int *count)
                                cur_url->url->url, &filename,
                                &new_file, NULL, &dt, opt.recursive, tmpiri,
                                true);
+      free(proxy);
 
       if (parsed_url)
           url_free (parsed_url);
@@ -1236,7 +1239,6 @@ getproxy (struct url *u)
 {
   char *proxy = NULL;
   char *rewritten_url;
-  static char rewritten_storage[1024];
 
   if (!opt.use_proxy)
     return NULL;
@@ -1266,13 +1268,9 @@ getproxy (struct url *u)
      getproxy() to return static storage. */
   rewritten_url = rewrite_shorthand_url (proxy);
   if (rewritten_url)
-    {
-      strncpy (rewritten_storage, rewritten_url, sizeof (rewritten_storage));
-      rewritten_storage[sizeof (rewritten_storage) - 1] = '\0';
-      proxy = rewritten_storage;
-    }
+    return rewritten_url;
 
-  return proxy;
+  return strdup(proxy);
 }
 
 /* Returns true if URL would be downloaded through a proxy. */
@@ -1283,7 +1281,9 @@ url_uses_proxy (struct url * u)
   bool ret;
   if (!u)
     return false;
-  ret = getproxy (u) != NULL;
+  char *proxy = getproxy (u);
+  ret = proxy != NULL;
+  free(proxy);
   return ret;
 }
 

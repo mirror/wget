@@ -1,6 +1,6 @@
 /* mswindows.c -- Windows-specific support
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2014 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -123,7 +123,7 @@ struct fake_fork_info
 {
   HANDLE event;
   bool logfile_changed;
-  char lfilename[MAX_PATH + 1];
+  char *lfilename;
 };
 
 /* Determines if we are the child and if so performs the child logic.
@@ -165,8 +165,7 @@ fake_fork_child (void)
       if (new_log_fp)
         {
           info->logfile_changed = true;
-          strncpy (info->lfilename, opt.lfilename, sizeof (info->lfilename));
-          info->lfilename[sizeof (info->lfilename) - 1] = '\0';
+          info->lfilename = strdup (opt.lfilename);
           fclose (new_log_fp);
         }
     }

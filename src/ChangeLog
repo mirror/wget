@@ -1,5 +1,20 @@
 2014-06-10  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* retr.c (getproxy): Return a dinamically allocated string and...
+	(retrieve_from_file, retrieve_url, url_uses_proxy): ...fix the caller
+	to handle it.
+	* init.c (home_dir): Replace strncpy with strdup.
+	* mswindows.c (struct fake_fork_info): Make lfilename a pointer.
+	(fake_fork_child): Replace strncpy with strdup.
+	* http.c (ensure_extension): Replace strncpy with memcpy, not much
+	better but make "make syntax-check" happy and we know the size.
+	* ftp.c (getftp): Add parameter last_expected_bytes.
+	(ftp_loop_internal): Pass parameter last_expected_bytes to getftp.
+	* ftp-basic.c: Remove declaration of ftp_last_respline.
+	(ftp_response): Do not set ftp_last_respline.
+	* css-url.c (get_uri_string): Replace strncpy with strdup.
+	* vms.c (set_vms_name): Replace strncpy with strdup.
+
 	* exits.c: Move WGET_EXIT_* definitions to...
 	* exits.h: ...here.  Add WGET_EXIT_GENERIC_ERROR, WGET_EXIT_PARSE_ERROR.
 	Remove WGET_EXIT_MINIMUM.

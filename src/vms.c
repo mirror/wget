@@ -841,12 +841,11 @@ else
 
 /* Action routine for decc$to_vms(), in utime(). */
 
-char vms_path[ NAMX$C_MAXRSS+ 1];
+char *vms_path;
 
 int set_vms_name( char *name, int type)
 {
-   strncpy( vms_path, name, NAMX$C_MAXRSS);
-   vms_path[ NAMX$C_MAXRSS] = '\0';
+   vms_path = strdup(name);
    return 1;
 }
 

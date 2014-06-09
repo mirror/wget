@@ -1,6 +1,6 @@
 /* HTTP support.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2014 Free Software Foundation,
    Inc.
 
 This file is part of GNU Wget.
@@ -4033,10 +4033,12 @@ ensure_extension (struct http_stat *hs, const char *ext, int *dt)
 {
   char *last_period_in_local_filename = strrchr (hs->local_file, '.');
   char shortext[8];
-  int len = strlen (ext);
+  int len;
+  shortext[0] = '\0';
+  len = strlen (ext);
   if (len == 5)
     {
-      strncpy (shortext, ext, len - 1);
+      memcpy (shortext, ext, len - 1);
       shortext[len - 1] = '\0';
     }
 
