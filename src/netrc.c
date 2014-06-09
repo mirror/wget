@@ -448,7 +448,7 @@ main (int argc, char **argv)
   if (argc < 2 || argc > 3)
     {
       fprintf (stderr, _("Usage: %s NETRC [HOSTNAME]\n"), argv[0]);
-      exit (1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
 
   program_name = argv[0];
@@ -459,7 +459,7 @@ main (int argc, char **argv)
     {
       fprintf (stderr, _("%s: cannot stat %s: %s\n"), argv[0], file,
                strerror (errno));
-      exit (1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
 
   head = parse_netrc (file);
@@ -498,14 +498,14 @@ main (int argc, char **argv)
 
       /* Exit if we found the target.  */
       if (target)
-        exit (0);
+        exit (WGET_EXIT_SUCCESS);
       a = a->next;
     }
 
   /* Exit with failure if we had a target, success otherwise.  */
   if (target)
-    exit (1);
+    exit (WGET_EXIT_GENERIC_ERROR);
 
-  exit (0);
+  exit (WGET_EXIT_SUCCESS);
 }
 #endif /* STANDALONE */

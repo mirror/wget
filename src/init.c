@@ -488,7 +488,7 @@ wgetrc_env_file_name (void)
         {
           fprintf (stderr, _("%s: WGETRC points to %s, which doesn't exist.\n"),
                    exec_name, env);
-          exit (1);
+          exit (WGET_EXIT_GENERIC_ERROR);
         }
       return xstrdup (env);
     }
@@ -660,7 +660,7 @@ initialize (void)
 Parsing system wgetrc file (env SYSTEM_WGETRC) failed.  Please check\n\
 '%s',\n\
 or specify a different file using --config.\n"), env_sysrc);
-          exit (2);
+          exit (WGET_EXIT_PARSE_ERROR);
         }
     }
   /* Otherwise, if SYSTEM_WGETRC is defined, use it.  */
@@ -675,7 +675,7 @@ or specify a different file using --config.\n"), env_sysrc);
 Parsing system wgetrc file failed.  Please check\n\
 '%s',\n\
 or specify a different file using --config.\n"), SYSTEM_WGETRC);
-      exit (2);
+      exit (WGET_EXIT_PARSE_ERROR);
     }
 #endif
   /* Override it with your own, if one exists.  */
@@ -697,7 +697,7 @@ or specify a different file using --config.\n"), SYSTEM_WGETRC);
 
   /* If there were errors processing either `.wgetrc', abort. */
   if (!ok)
-    exit (2);
+    exit (WGET_EXIT_PARSE_ERROR);
 
   xfree (file);
   return;
@@ -856,7 +856,7 @@ setoptval (const char *com, const char *val, const char *optname)
 
   assert (val != NULL);
   if (!setval_internal (command_by_name (com), dd_optname, val))
-    exit (2);
+    exit (WGET_EXIT_PARSE_ERROR);
 }
 
 /* Parse OPT into command and value and run it.  For example,
@@ -872,14 +872,14 @@ run_command (const char *cmdopt)
     {
     case line_ok:
       if (!setval_internal (comind, com, val))
-        exit (2);
+        exit (WGET_EXIT_PARSE_ERROR);
       xfree (com);
       xfree (val);
       break;
     default:
       fprintf (stderr, _("%s: Invalid --execute command %s\n"),
                exec_name, quote (cmdopt));
-      exit (2);
+      exit (WGET_EXIT_PARSE_ERROR);
     }
 }
 

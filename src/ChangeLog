@@ -1,3 +1,17 @@
+2014-06-10  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* exits.c: Move WGET_EXIT_* definitions to...
+	* exits.h: ...here.  Add WGET_EXIT_GENERIC_ERROR, WGET_EXIT_PARSE_ERROR.
+	Remove WGET_EXIT_MINIMUM.
+	* init.c: Fix calls to exit().
+	* log.c: Likewise.
+	* main.c: Likewise.
+	* mswindows.c: Likewise.
+	* netrc.c: Likewise.
+	* utils.c: Likewise.
+	* warc.c: Likewise.
+	* Test-stdouterr.px: Likewise.
+
 2014-06-08  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* main.c: Make `program_name' not static.

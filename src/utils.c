@@ -100,6 +100,8 @@ as that of the covered work.  */
 #include "test.h"
 #endif
 
+#include "exits.h"
+
 static void
 memfatal (const char *context, long attempted_size)
 {
@@ -123,7 +125,7 @@ memfatal (const char *context, long attempted_size)
                  exec_name, context, attempted_size);
     }
 
-  exit (1);
+  exit (WGET_EXIT_GENERIC_ERROR);
 }
 
 /* Character property table for (re-)escaping VMS ODS5 extended file
@@ -471,7 +473,7 @@ fork_to_background (void)
     {
       /* parent, error */
       perror ("fork");
-      exit (1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
   else if (pid != 0)
     {
@@ -479,7 +481,7 @@ fork_to_background (void)
       printf (_("Continuing in background, pid %d.\n"), (int) pid);
       if (logfile_changed)
         printf (_("Output will be written to %s.\n"), quote (opt.lfilename));
-      exit (0);                 /* #### should we use _exit()? */
+      exit (WGET_EXIT_SUCCESS);                 /* #### should we use _exit()? */
     }
 
   /* child: give up the privileges and keep running. */

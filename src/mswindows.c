@@ -42,6 +42,7 @@ as that of the covered work.  */
 
 #include "utils.h"
 #include "url.h"
+#include "exits.h"
 
 #ifndef ES_SYSTEM_REQUIRED
 #define ES_SYSTEM_REQUIRED  0x00000001
@@ -308,7 +309,7 @@ cleanup:
 
   /* We're the parent.  If all is well, terminate.  */
   if (rv)
-    exit (0);
+    exit (WGET_EXIT_SUCCESS);
 
   /* We failed, return.  */
 }
@@ -461,7 +462,7 @@ ws_startup (void)
     {
       fprintf (stderr, _("%s: Couldn't find usable socket driver.\n"),
                exec_name);
-      exit (1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
 
   if (data.wVersion < requested)
@@ -469,7 +470,7 @@ ws_startup (void)
       fprintf (stderr, _("%s: Couldn't find usable socket driver.\n"),
                exec_name);
       WSACleanup ();
-      exit (1);
+      exit (WGET_EXIT_GENERIC_ERROR);
     }
 
   atexit (ws_cleanup);
