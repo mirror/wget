@@ -1,5 +1,7 @@
 2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* gnutls.c: Do not include <assert.h>.
+
 	* connect.c: Do not depend on always defined macros.
 	* convert.c: Likewise.
 	* css-url.c: Likewise.
