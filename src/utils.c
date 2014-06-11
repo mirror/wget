@@ -2168,7 +2168,7 @@ base64_encode (const void *data, size_t length, char *dest)
 
    Since DEST is assumed to contain binary data, it is not
    NUL-terminated.  The function returns the length of the data
-   written to TO.  -1 is returned in case of error caused by malformed
+   written to "TO".  -1 is returned in case of error caused by malformed
    base64 input.
 
    This function originates from Free Recode.  */
