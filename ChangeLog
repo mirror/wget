@@ -1,5 +1,7 @@
 2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* po/POTFILES.in: Add lib/regcomp.c.
+
 	* configure.ac: Do not depend on always defined macros.
 	* vms/vms.h: Likewise.
 
