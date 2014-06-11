@@ -1,5 +1,20 @@
 2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* DESCRIP_MODS.MMS: Remove terminating empty lines.
+	* DESCRIP_SRC.MMS: Likewise.
+	* convert.c: Likewise.
+	* exits.c: Likewise.
+	* http.c: Likewise.
+	* init.c: Likewise.
+	* iri.c: Likewise.
+	* res.c: Likewise.
+	* spider.c: Likewise.
+	* test.c: Likewise.
+	* test.h
+	* url.c: Likewise.
+	* utils.c: Likewise.
+	* vms.c: Likewise.
+
 	* decc_ver.c (main): Ensure bindtextdomain is called.
 	* hash.c (main): Likewise.
 	* html-parse.c: Likewise.

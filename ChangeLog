@@ -1,5 +1,9 @@
 2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* ABOUT-NLS: Remove terminating empty lines.
+	* MAILING-LIST: Likewise.
+	* util/rmold.pl: Likewise.
+
 	* util/trunc.c (main): Ensure bindtextdomain is called.
 
 2014-06-10  Giuseppe Scrivano  <gscrivan@redhat.com>

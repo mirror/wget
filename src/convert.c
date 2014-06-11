@@ -1087,4 +1087,3 @@ html_quote_string (const char *s)
 /*
  * vim: et ts=2 sw=2
  */
-

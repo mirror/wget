@@ -90,4 +90,3 @@ get_exit_status (void)
       ? 1
       : final_exit_status;
 }
-

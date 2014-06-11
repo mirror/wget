@@ -105,4 +105,3 @@ getpass (const char *prompt)
 
   return strdup (getpassbuf);
 }
-

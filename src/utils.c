@@ -2548,4 +2548,3 @@ test_dir_matches_p(void)
 }
 
 #endif /* TESTING */
-

@@ -49,4 +49,3 @@ my $the_test = HTTPTest->new (name => "Test-idn-cmd-utf8",
 exit $the_test->run();
 
 # vim: et ts=4 sw=4
-

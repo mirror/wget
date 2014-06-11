@@ -2344,4 +2344,3 @@ test_are_urls_equal(void)
 /*
  * vim: et ts=2 sw=2
  */
-

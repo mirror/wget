@@ -65,4 +65,3 @@ version.c: ..\msdos\Makefile.WC
 clean: .SYMBOLIC
 	- rm $(OBJ_DIR)\*.obj wget.exe wget.map version.c css.c
 	- rmdir $(OBJ_DIR)
-

@@ -1,3 +1,7 @@
+2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* fdl.texi: Remove terminating empty lines.
+
 2014-06-10  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* wget.texi: Remove trailing whitespaces.

@@ -1839,4 +1839,3 @@ test_cmd_spec_restrict_file_names(void)
 }
 
 #endif /* TESTING */
-

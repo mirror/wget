@@ -104,4 +104,3 @@ main (int argc _GL_UNUSED, char *argv[])
 /*
  * vim: et ts=2 sw=2
  */
-

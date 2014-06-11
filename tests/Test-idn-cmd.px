@@ -49,4 +49,3 @@ my $the_test = HTTPTest->new (name => "Test-idn-cmd",
 exit $the_test->run();
 
 # vim: et ts=4 sw=4
-
