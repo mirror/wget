@@ -75,6 +75,14 @@ main (int argc _GL_UNUSED, char *argv[])
 {
   const char *result;
 
+#ifdef ENABLE_NLS
+  /* Set the current locale.  */
+  setlocale (LC_ALL, "");
+  /* Set the text message domain.  */
+  bindtextdomain ("wget", LOCALEDIR);
+  textdomain ("wget");
+#endif /* ENABLE_NLS */
+
   program_name = argv[0];
 
   result = all_tests();

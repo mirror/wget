@@ -1189,6 +1189,14 @@ int main ()
   int read_count;
   int tag_counter = 0;
 
+#ifdef ENABLE_NLS
+  /* Set the current locale.  */
+  setlocale (LC_ALL, "");
+  /* Set the text message domain.  */
+  bindtextdomain ("wget", LOCALEDIR);
+  textdomain ("wget");
+#endif /* ENABLE_NLS */
+
   while ((read_count = fread (x + length, 1, size - length, stdin)))
     {
       length += read_count;

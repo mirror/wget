@@ -1,3 +1,7 @@
+2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* util/trunc.c (main): Ensure bindtextdomain is called.
+
 2014-06-10  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* build-aux/build_info.pl: Remove trailing whitespaces.

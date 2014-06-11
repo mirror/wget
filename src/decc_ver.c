@@ -2,6 +2,15 @@
 
 int main( void)
 {
+
+#ifdef ENABLE_NLS
+  /* Set the current locale.  */
+  setlocale (LC_ALL, "");
+  /* Set the text message domain.  */
+  bindtextdomain ("wget", LOCALEDIR);
+  textdomain ("wget");
+#endif /* ENABLE_NLS */
+
 #ifdef __VMS_VERSION
 printf( " __VMS_VERSION: >%s<.\n", __VMS_VERSION);
 #else /* def __VMS_VERSION */

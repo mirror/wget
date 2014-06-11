@@ -767,6 +767,15 @@ main (void)
 {
   struct hash_table *ht = make_string_hash_table (0);
   char line[80];
+
+#ifdef ENABLE_NLS
+  /* Set the current locale.  */
+  setlocale (LC_ALL, "");
+  /* Set the text message domain.  */
+  bindtextdomain ("wget", LOCALEDIR);
+  textdomain ("wget");
+#endif /* ENABLE_NLS */
+
   while ((fgets (line, sizeof (line), stdin)))
     {
       int len = strlen (line);

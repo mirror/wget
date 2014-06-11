@@ -1,3 +1,12 @@
+2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* decc_ver.c (main): Ensure bindtextdomain is called.
+	* hash.c (main): Likewise.
+	* html-parse.c: Likewise.
+	* netrc.c: Likewise.
+	* test.c: Likewise.
+	* trunc.c: Likewise.
+
 2014-06-10  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* wget.h: Remove trailing whitespaces.

@@ -455,6 +455,14 @@ main (int argc, char **argv)
   file = argv[1];
   target = argv[2];
 
+#ifdef ENABLE_NLS
+  /* Set the current locale.  */
+  setlocale (LC_ALL, "");
+  /* Set the text message domain.  */
+  bindtextdomain ("wget", LOCALEDIR);
+  textdomain ("wget");
+#endif /* ENABLE_NLS */
+
   if (stat (file, &sb))
     {
       fprintf (stderr, _("%s: cannot stat %s: %s\n"), argv[0], file,
