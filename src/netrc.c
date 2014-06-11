@@ -161,8 +161,6 @@ search_netrc (const char *host, const char **acc, const char **passwd,
 
 #ifdef STANDALONE
 
-#include <assert.h>
-
 /* Normally, these functions would be defined by your package.  */
 # define xmalloc malloc
 # define xfree free

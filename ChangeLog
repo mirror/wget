@@ -1,5 +1,8 @@
 2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* configure.ac: Do not depend on always defined macros.
+	* vms/vms.h: Likewise.
+
 	* Makefile.am: Remove @VAR@ with $FOO.
 	* util/Makefile.am: Likewise.
 

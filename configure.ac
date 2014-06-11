@@ -146,8 +146,7 @@ AC_C_VOLATILE
 
 dnl Check for basic headers, even though we expect them to exist and
 dnl #include them unconditionally in the code.  Their detection is
-dnl still needed because test programs used by Autoconf macros check
-dnl for STDC_HEADERS, HAVE_SYS_TYPES_H, etc. before using them.
+dnl still needed because test programs used by Autoconf macros check.
 dnl Without the checks they will fail to be included in test programs,
 dnl which will subsequently fail.
 AC_HEADER_STDC
@@ -188,9 +187,7 @@ AC_CHECK_TYPES([uint32_t, uintptr_t, intptr_t, int64_t])
 AC_CHECK_TYPES(sig_atomic_t, [], [], [
 #include <stdio.h>
 #include <sys/types.h>
-#if HAVE_INTTYPES_H
-# include <inttypes.h>
-#endif
+#include <inttypes.h>
 #include <signal.h>
 ])
 

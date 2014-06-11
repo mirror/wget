@@ -55,11 +55,7 @@ as that of the covered work.  */
 # endif
 # include <ctype.h>
 # define c_tolower(x) tolower ((unsigned char) (x))
-# ifdef HAVE_STDINT_H
-#  include <stdint.h>
-# else
-   typedef unsigned long uintptr_t;
-# endif
+# include <stdint.h>
 #endif
 
 #include "hash.h"

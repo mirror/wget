@@ -36,9 +36,7 @@ as that of the covered work.  */
 #include <assert.h>
 #include <unistd.h>
 #include <signal.h>
-#ifdef HAVE_WCHAR_H
-# include <wchar.h>
-#endif
+#include <wchar.h>
 
 #include "progress.h"
 #include "utils.h"

@@ -65,9 +65,7 @@ as that of the covered work.  */
 
 /* For TIOCGWINSZ and friends: */
 #include <sys/ioctl.h>
-#ifdef HAVE_TERMIOS_H
-# include <termios.h>
-#endif
+#include <termios.h>
 
 /* Needed for Unix version of run_with_timeout. */
 #include <signal.h>

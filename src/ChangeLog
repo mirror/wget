@@ -1,5 +1,16 @@
 2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* connect.c: Do not depend on always defined macros.
+	* convert.c: Likewise.
+	* css-url.c: Likewise.
+	* hash.c: Likewise.
+	* mswindows.h: Likewise.
+	* netrc.c: Likewise.
+	* progress.c: Likewise.
+	* sysdep.h: Likewise.
+	* utils.c: Likewise.
+	* wget.h: Likewise.
+
 	* Makefile.am: Remove @VAR@ with $FOO.
 
 	* DESCRIP_MODS.MMS: Remove terminating empty lines.
