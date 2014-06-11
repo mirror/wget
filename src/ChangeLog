@@ -1,5 +1,7 @@
 2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* Makefile.am: Remove @VAR@ with $FOO.
+
 	* DESCRIP_MODS.MMS: Remove terminating empty lines.
 	* DESCRIP_SRC.MMS: Likewise.
 	* convert.c: Likewise.

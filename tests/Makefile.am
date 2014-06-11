@@ -28,13 +28,13 @@
 # as that of the covered work.
 
 #
-# Version: @VERSION@
+# Version: $(VERSION)
 #
 
 PERL     = perl
 PERLRUN = $(PERL) -I$(srcdir)
 
-LIBS     = @LIBICONV@ @LIBINTL@ @LIBS@ $(LIB_CLOCK_GETTIME)
+LIBS     += $(LIBICONV) $(LIBINTL) $(LIB_CLOCK_GETTIME)
 
 .PHONY: test run-unit-tests run-px-tests
 

@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-# Version: @VERSION@
+# Version: $(VERSION)
 #
 
 # Program to convert DVI files to PostScript
@@ -28,7 +28,6 @@ manext     = 1
 RM = rm -f
 
 TEXI2POD     = $(srcdir)/texi2pod.pl
-POD2MAN      = @POD2MAN@
 MAN          = wget.$(manext)
 WGETRC       = $(sysconfdir)/wgetrc
 SAMPLERCTEXI = sample.wgetrc.munged_for_texi_inclusion
@@ -39,7 +38,7 @@ SAMPLERCTEXI = sample.wgetrc.munged_for_texi_inclusion
 
 man_MANS = $(MAN)
 
-all: wget.info @COMMENT_IF_NO_POD2MAN@$(MAN)
+all: wget.info $(COMMENT_IF_NO_POD2MAN)$(MAN)
 
 everything: all wget_us.ps wget_a4.ps wget_toc.html
 
@@ -57,7 +56,7 @@ wget.pod: $(srcdir)/wget.texi version.texi
 	$(TEXI2POD) -D VERSION="$(VERSION)" $(srcdir)/wget.texi $@
 
 $(MAN): wget.pod
-	$(POD2MAN) --center="GNU Wget" --release="GNU Wget @VERSION@" $? > $@
+	$(POD2MAN) --center="GNU Wget" --release="GNU Wget $(VERSION)" $? > $@
 
 #wget.cat: $(MAN)
 #	nroff -man $? > $@
@@ -76,10 +75,10 @@ wget_toc.html: $(srcdir)/wget.texi
 #
 
 # install all the documentation
-install-data-local: install.wgetrc @COMMENT_IF_NO_POD2MAN@install.man
+install-data-local: install.wgetrc $(COMMENT_IF_NO_POD2MAN)install.man
 
 # uninstall all the documentation
-uninstall-local: @COMMENT_IF_NO_POD2MAN@uninstall.man
+uninstall-local: $(COMMENT_IF_NO_POD2MAN)uninstall.man
 
 
 # install man page, creating install directory if necessary

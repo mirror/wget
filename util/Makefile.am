@@ -27,7 +27,7 @@
 # as that of the covered work.
 
 #
-# Version: @VERSION@
+# Version: $(VERSION)
 #
 
 EXTRA_DIST = README rmold.pl trunc.c

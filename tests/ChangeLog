@@ -1,5 +1,7 @@
 2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* Makefile.am: Remove @VAR@ with $FOO.
+
 	* FTPTest.pm: Remove terminating empty lines.
 	* HTTPServer.pm: Likewise.
 	* HTTPTest.pm: Likewise.

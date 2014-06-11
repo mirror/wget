@@ -27,7 +27,7 @@
 # as that of the covered work.
 
 #
-# Version: @VERSION@
+# Version: $(VERSION)
 #
 
 
