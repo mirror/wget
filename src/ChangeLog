@@ -1,5 +1,9 @@
 2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
 
+	* ftp.c: Replace main() with main in comments.
+	* http.c: Likewise.
+	* init.c: Likewise.
+
 	* cmpt.c (day_of_the_week): Remove repeated word in a comment.
 	* utils.c: Remove repeated word in a comment.
 

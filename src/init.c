@@ -833,8 +833,8 @@ setval_internal_tilde (int comind, const char *com, const char *val)
 /* Run command COM with value VAL.  If running the command produces an
    error, report the error and exit.
 
-   This is intended to be called from main() to modify Wget's behavior
-   through command-line switches.  Since COM is hard-coded in main(),
+   This is intended to be called from main to modify Wget's behavior
+   through command-line switches.  Since COM is hard-coded in main,
    it is not canonicalized, and this aborts when COM is not found.
 
    If COMIND's are exported to init.h, this function will be changed
@@ -1385,7 +1385,7 @@ cmd_spec_progress (const char *com, const char *val, void *place_ignored _GL_UNU
   xfree_null (opt.progress_type);
 
   /* Don't call set_progress_implementation here.  It will be called
-     in main() when it becomes clear what the log output is.  */
+     in main when it becomes clear what the log output is.  */
   opt.progress_type = xstrdup (val);
   return true;
 }

@@ -1160,7 +1160,7 @@ Error in server response, closing control connection.\n"));
   /* Open the file -- if output_stream is set, use it instead.  */
 
   /* 2005-04-17 SMS.
-     Note that having the output_stream ("-O") file opened in main()
+     Note that having the output_stream ("-O") file opened in main
      (main.c) rather limits the ability in VMS to open the file
      differently for ASCII versus binary FTP here.  (Of course, doing it
      there allows a open failure to be detected immediately, without first

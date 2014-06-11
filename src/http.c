@@ -3022,7 +3022,7 @@ http_loop (struct url *u, struct url *original_url, char **newloc,
   /* Reset NEWLOC parameter. */
   *newloc = NULL;
 
-  /* This used to be done in main(), but it's a better idea to do it
+  /* This used to be done in main, but it's a better idea to do it
      here so that we don't go through the hoops if we're just using
      FTP or whatever. */
   if (opt.cookies)
