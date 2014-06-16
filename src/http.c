@@ -1846,13 +1846,9 @@ gethttp (struct url *u, struct http_stat *hs, int *dt, struct url *proxy,
     request_set_header (req, "Connection", "Close", rel_none);
   else
     {
-      if (proxy == NULL)
-        request_set_header (req, "Connection", "Keep-Alive", rel_none);
-      else
-        {
-          request_set_header (req, "Connection", "Close", rel_none);
-          request_set_header (req, "Proxy-Connection", "Keep-Alive", rel_none);
-        }
+      request_set_header (req, "Connection", "Keep-Alive", rel_none);
+      if (proxy)
+        request_set_header (req, "Proxy-Connection", "Keep-Alive", rel_none);
     }
 
   if (opt.method)

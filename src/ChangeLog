@@ -1,3 +1,9 @@
+2014-06-16  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* http.c (gethttp): Set "Connection: Keep-Alive" with keep-alive
+	connections when using a proxy too.
+	Reported by: Thorsten Schroeteler <Thorsten.Schroeteler@cassidian.com>.
+
 2014-06-16  Darshit Shah  <darnir@gmail.com>
 
 	* main.c (print_help, print_version): Mark as noreturn.
