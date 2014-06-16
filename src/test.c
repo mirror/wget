@@ -31,6 +31,9 @@ as that of the covered work.  */
 #include "wget.h"
 
 #include <stdio.h>
+#ifdef ENABLE_NLS
+# include <locale.h>
+#endif
 
 #include "test.h"
 

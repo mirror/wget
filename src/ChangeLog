@@ -1,3 +1,7 @@
+2014-06-16  Darshit Shah  <darnir@gmail.com>
+
+	* test.c: Include locale.h header for gettext.
+
 2014-06-16  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* http.c (gethttp): Set "Connection: Keep-Alive" with keep-alive
