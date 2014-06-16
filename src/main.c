@@ -416,7 +416,7 @@ print_usage (int error)
 
 /* Print the help message, describing all the available options.  If
    you add an option, be sure to update this list.  */
-static void
+static void _Noreturn
 print_help (void)
 {
   /* We split the help text this way to ease translation of individual
@@ -879,7 +879,7 @@ format_and_print_line (const char *prefix, const char *line,
   return 0;
 }
 
-static void
+static void _Noreturn
 print_version (void)
 {
   const char *wgetrc_title  = _("Wgetrc: ");

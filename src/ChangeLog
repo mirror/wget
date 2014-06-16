@@ -1,3 +1,8 @@
+2014-06-16  Darshit Shah  <darnir@gmail.com>
+
+	* main.c (print_help, print_version): Mark as noreturn.
+	* utils.c (memfatal, abort_run_with_timout): Same
+
 2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* ftp.c: Replace main() with main in comments.

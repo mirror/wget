@@ -100,7 +100,7 @@ as that of the covered work.  */
 
 #include "exits.h"
 
-static void
+static void _Noreturn
 memfatal (const char *context, long attempted_size)
 {
   /* Make sure we don't try to store part of the log line, and thus
@@ -1896,7 +1896,7 @@ random_float (void)
 
 static sigjmp_buf run_with_timeout_env;
 
-static void
+static void _Noreturn
 abort_run_with_timeout (int sig)
 {
   assert (sig == SIGALRM);
