@@ -123,7 +123,7 @@ struct fake_fork_info
 {
   HANDLE event;
   bool logfile_changed;
-  char *lfilename;
+  char lfilename[MAX_PATH + 1];
 };
 
 /* Determines if we are the child and if so performs the child logic.
@@ -165,7 +165,7 @@ fake_fork_child (void)
       if (new_log_fp)
         {
           info->logfile_changed = true;
-          info->lfilename = strdup (opt.lfilename);
+          snprintf (info->filename, sizeof (info->lfilename), "%s", opt.lfilename);
           fclose (new_log_fp);
         }
     }

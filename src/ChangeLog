@@ -1,3 +1,9 @@
+2014-06-19  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* mswindows.c (fake_fork_child): Revert dinamic allocation of
+	info->lfilename.
+	Reported by: Gisle Vanem <gvanem@yahoo.no>.
+
 2014-06-16  Darshit Shah  <darnir@gmail.com>
 
 	* test.c: Include locale.h header for gettext.
