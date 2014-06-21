@@ -1,3 +1,8 @@
+2014-06-22  Darshit Shah  <darnir@gmail.com>
+
+	* (conf.files_crawled): diff is a set object and needs explicit str
+	conversion.
+
 2014-03-13  Zihang Chen  <chsc4698@gmail.com>
 
 	* base_test.py:
