@@ -1,3 +1,8 @@
+2014-06-21  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* mswindows.c (fake_fork_child): Fix build error.
+	Reported by: Gisle Vanem <gvanem@yahoo.no>.
+
 2014-06-21  Nikita Vetrov  <admin@kanaria.ru> (tiny change)
 
 	* openssl.c: Add one-time call OPENSSL_config in ssl_init.

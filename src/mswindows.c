@@ -165,7 +165,8 @@ fake_fork_child (void)
       if (new_log_fp)
         {
           info->logfile_changed = true;
-          snprintf (info->filename, sizeof (info->lfilename), "%s", opt.lfilename);
+          snprintf (info->lfilename, sizeof (info->lfilename), "%s",
+                    opt.lfilename);
           fclose (new_log_fp);
         }
     }
