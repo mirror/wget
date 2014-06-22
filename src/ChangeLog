@@ -1,3 +1,10 @@
+2014-06-22  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* warc.c [HAVE_UUID_CREATE]: Include <uuid.h>
+	(warc_uuid_str) [HAVE_UUID_CREATE]: Use uuid_create and
+	uuid_to_string to generate the UUID.
+	Reported by: Alex Zimnitsky <aavzz@yandex.ru>
+
 2014-06-22  Darshit Shah  <darnir@gmail.com> (tiny change)
 
 	* progress.c (create_image): Align percentage download output better.

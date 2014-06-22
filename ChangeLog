@@ -1,3 +1,7 @@
+2014-06-22  Giuseppe Scrivano  <gscrivan@redhat.com>
+
+	* configure.ac: Add check for uuid_create.
+
 2014-06-11  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* NEWS: Remove repeated word.

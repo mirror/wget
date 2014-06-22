@@ -44,8 +44,11 @@ as that of the covered work.  */
 #ifdef HAVE_LIBZ
 #include <zlib.h>
 #endif
+
 #ifdef HAVE_LIBUUID
 #include <uuid/uuid.h>
+#elif HAVE_UUID_CREATE
+#include <uuid.h>
 #endif
 
 #ifndef WINDOWS
@@ -594,7 +597,7 @@ warc_timestamp (char *timestamp)
   strftime (timestamp, 21, "%Y-%m-%dT%H:%M:%SZ", timeinfo);
 }
 
-#ifdef HAVE_LIBUUID
+#if HAVE_LIBUUID || HAVE_UUID_CREATE
 /* Fills urn_str with a UUID in the format required
    for the WARC-Record-Id header.
    The string will be 47 characters long. */
@@ -604,8 +607,13 @@ warc_uuid_str (char *urn_str)
   char uuid_str[37];
 
   uuid_t record_id;
+#if HAVE_UUID_CREATE
+  uuid_create (&record_id, NULL);
+  uuid_to_string (&record_id, &uuid_str, NULL);
+#else
   uuid_generate (record_id);
   uuid_unparse (record_id, uuid_str);
+#endif
 
   sprintf (urn_str, "<urn:uuid:%s>", uuid_str);
 }
