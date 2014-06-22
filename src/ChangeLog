@@ -1,3 +1,7 @@
+2014-06-22  Darshit Shah  <darnir@gmail.com> (tiny change)
+
+	* progress.c (create_image): Align percentage download output better.
+
 2014-06-21  Giuseppe Scrivano  <gscrivan@redhat.com>
 
 	* mswindows.c (fake_fork_child): Fix build error.

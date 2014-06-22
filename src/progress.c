@@ -952,7 +952,7 @@ create_image (struct bar_progress *bp, double dl_total_time, bool done)
       assert (percentage <= 100);
 
       if (percentage < 100)
-        sprintf (p, "%2d%% ", percentage);
+        sprintf (p, "%3d%%", percentage);
       else
         strcpy (p, "100%");
       p += 4;
